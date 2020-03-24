@@ -18,7 +18,11 @@ const useScrollThreadList = (
 
     const {scrollTop, scrollHeight, clientHeight} = el
     if (isInit) {
-      el.scrollTo({top: scrollHeight})
+      if (el.scrollTo) {
+        el.scrollTo({top: scrollHeight})
+      } else {
+        el.scrollTop = el.scrollHeight
+      }
       return
     }
     // get the element for the draft-js el or android fallback
@@ -30,7 +34,11 @@ const useScrollThreadList = (
       scrollTop + clientHeight > oldScrollHeightRef.current - 20
     ) {
       setTimeout(() => {
-        el.scrollTo({top: scrollHeight, behavior: 'smooth'})
+        if (el.scrollTo) {
+          el.scrollTo({top: scrollHeight, behavior: 'smooth'})
+        } else {
+          el.scrollTop = el.scrollHeight
+        }
         // the delay is required for new task cards, not sure why height is determined async
       }, 50)
     }

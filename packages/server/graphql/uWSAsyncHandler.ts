@@ -16,7 +16,7 @@ const uWSAsyncHandler = (handler: uWSHandler, ignoreDone?: boolean) => async (
       throw new Error('Async handler did not respond')
     }
   } catch (e) {
-    res.writeStatus('500').end()
+    res.writeStatus('503').end()
     sendToSentry(e, {userId: authToken.sub})
   }
 }
