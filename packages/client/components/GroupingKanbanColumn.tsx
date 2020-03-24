@@ -116,11 +116,10 @@ const GroupingKanbanColumn = (props: Props) => {
             // group may be undefined because relay could GC before useMemo in the Kanban recomputes >:-(
             return group && group.reflections.length > 0
           })
-          .map((reflectionGroup) => {
-            const groupIndex = reflectionGroups.indexOf(reflectionGroup)
+          .map((reflectionGroup, idx) => {
             return (
               <ReflectionGroup
-                dataCy={`${question}-group-${groupIndex}`}
+                dataCy={`${question}-group-${idx}`}
                 key={reflectionGroup.id}
                 meeting={meeting}
                 phaseRef={phaseRef}
