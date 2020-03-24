@@ -15,6 +15,7 @@ import ResponsiveDashSidebar from './ResponsiveDashSidebar'
 import {RetroDemo} from '../types/constEnums'
 import {RetroMeeting_meeting} from '__generated__/RetroMeeting_meeting.graphql'
 import useGotoNext from '../hooks/useGotoNext'
+import PROD from 'parabol-server/PROD';
 
 interface Props {
   meeting: RetroMeeting_meeting
@@ -76,7 +77,7 @@ const RetroMeeting = (props: Props) => {
   const localPhaseType = localPhase?.phaseType
   const isDemoStageComplete =
     meetingId === RetroDemo.MEETING_ID
-      ? ((atmosphere as unknown) as LocalAtmosphere).clientGraphQLServer.isBotFinished()
+      ? ((atmosphere as unknown) as LocalAtmosphere).clientGraphQLServer.isBotFinished() || !PROD
       : false
   const Phase = phaseLookup[localPhaseType] as PhaseComponent
   return (

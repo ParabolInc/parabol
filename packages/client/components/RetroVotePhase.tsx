@@ -174,9 +174,9 @@ const RetroVotePhase = (props: Props) => {
             <StyledMetaBlock>
               <Label>{'My Votes Remaining'}</Label>
               <MyVotesCountLabel>{myVotesRemaining}</MyVotesCountLabel>
-              <CheckMarkRow>
+              <CheckMarkRow data-cy="my-votes-remaining">
                 {checkMarks.map((idx) => (
-                  <CheckIcon key={idx} isDark={idx < myVotesRemaining}>
+                  <CheckIcon data-cy={`vote-${idx}`} key={idx} isDark={idx < myVotesRemaining}>
                     {meetingVoteIcon}
                   </CheckIcon>
                 ))}
@@ -184,7 +184,7 @@ const RetroVotePhase = (props: Props) => {
             </StyledMetaBlock>
             <MetaBlock>
               <Label>{'Team Votes Remaining'}</Label>
-              <TeamVotesCountLabel>{teamVotesRemaining}</TeamVotesCountLabel>
+              <TeamVotesCountLabel data-cy="team-votes-remaining">{teamVotesRemaining}</TeamVotesCountLabel>
             </MetaBlock>
           </VoteMeta>
           <StageTimerDisplay meeting={meeting} />
@@ -198,6 +198,7 @@ const RetroVotePhase = (props: Props) => {
         {!isComplete && <StageTimerControl defaultTimeLimit={3} meeting={meeting} />}
         <CenterControlBlock isComplete={isComplete}>
           <BottomNavControl
+            dataCy={`next-${nextPhaseLabel.toLowerCase()}`}
             isBouncing={teamVotesRemaining === 0}
             disabled={!discussStage.isNavigableByFacilitator}
             onClick={() => gotoNext()}
