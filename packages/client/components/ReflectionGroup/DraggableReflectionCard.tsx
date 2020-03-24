@@ -52,6 +52,7 @@ interface Props {
   staticIdx: number
   staticReflections: DraggableReflectionCard_staticReflections
   swipeColumn?: SwipeColumn
+  dataCy: string
 }
 
 export interface TargetBBox {
@@ -70,7 +71,8 @@ const DraggableReflectionCard = (props: Props) => {
     staticReflections,
     meeting,
     isDraggable,
-    swipeColumn
+    swipeColumn,
+    dataCy
   } = props
   const {id: meetingId, teamId, localStage} = meeting
   const {isComplete, phaseType} = localStage
@@ -98,7 +100,7 @@ const DraggableReflectionCard = (props: Props) => {
       onTouchStart={handleDrag}
       isDraggable={canDrag}
     >
-      <ReflectionCard reflection={reflection} isClipped={isClipped} meeting={meeting} />
+      <ReflectionCard dataCy={dataCy} reflection={reflection} isClipped={isClipped} meeting={meeting} />
     </DragWrapper>
   )
 }

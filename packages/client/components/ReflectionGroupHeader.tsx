@@ -19,6 +19,7 @@ interface Props {
   isExpanded?: boolean
   portalStatus: PortalStatus
   titleInputRef: RefObject<HTMLInputElement>
+  dataCy: string
 }
 
 const GroupHeader = styled('div')<{isExpanded: boolean; portalStatus: PortalStatus}>(
@@ -46,7 +47,7 @@ const StyledTag = styled(BaseTag)<{dialogClosed: boolean}>(({dialogClosed}) => (
 }))
 
 const ReflectionGroupHeader = forwardRef((props: Props, ref: Ref<HTMLDivElement>) => {
-  const {meeting, reflectionGroup, titleInputRef, portalStatus} = props
+  const {meeting, reflectionGroup, titleInputRef, portalStatus, dataCy} = props
   const isExpanded = !!props.isExpanded
   const {
     localStage,
@@ -55,7 +56,7 @@ const ReflectionGroupHeader = forwardRef((props: Props, ref: Ref<HTMLDivElement>
   const {reflections} = reflectionGroup
   const canEdit = (phaseType === GROUP || phaseType === VOTE) && !localStage.isComplete
   return (
-    <GroupHeader portalStatus={portalStatus} isExpanded={isExpanded} ref={ref}>
+    <GroupHeader data-cy={dataCy} portalStatus={portalStatus} isExpanded={isExpanded} ref={ref}>
       <ReflectionGroupTitleEditor
         isExpanded={isExpanded && portalStatus !== PortalStatus.Exiting}
         reflectionGroup={reflectionGroup}
