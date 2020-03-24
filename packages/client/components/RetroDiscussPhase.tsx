@@ -201,7 +201,7 @@ const RetroDiscussPhase = (props: Props) => {
           </PhaseHeaderDescription>
         </MeetingTopBar>
         <PhaseWrapper>
-          <StageTimerDisplay stage={localStage} />
+          <StageTimerDisplay meeting={meeting} />
           <DiscussPhaseWrapper>
             <HeaderContainer>
               <DiscussHeader>
@@ -262,7 +262,6 @@ const RetroDiscussPhase = (props: Props) => {
 
 graphql`
   fragment RetroDiscussPhase_stage on NewMeetingStage {
-    ...StageTimerDisplay_stage
     ... on RetroDiscussStage {
       reflectionGroup {
         ...ReflectionGroup_reflectionGroup
@@ -285,6 +284,7 @@ export default createFragmentContainer(RetroDiscussPhase, {
     fragment RetroDiscussPhase_meeting on RetrospectiveMeeting {
       ...StageTimerControl_meeting
       ...ReflectionGroup_meeting
+      ...StageTimerDisplay_meeting
       endedAt
       organization {
         ...DiscussPhaseSqueeze_organization
@@ -298,6 +298,7 @@ export default createFragmentContainer(RetroDiscussPhase, {
           ...RetroDiscussPhase_stage @relay(mask: false)
         }
       }
+
       localStage {
         ...RetroDiscussPhase_stage @relay(mask: false)
       }

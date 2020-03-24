@@ -187,7 +187,7 @@ const RetroVotePhase = (props: Props) => {
               <TeamVotesCountLabel>{teamVotesRemaining}</TeamVotesCountLabel>
             </MetaBlock>
           </VoteMeta>
-          <StageTimerDisplay stage={localStage} />
+          <StageTimerDisplay meeting={meeting} />
           <MeetingPhaseWrapper>
             <GroupingKanban meeting={meeting} phaseRef={phaseRef} />
           </MeetingPhaseWrapper>
@@ -221,6 +221,7 @@ export default createFragmentContainer(RetroVotePhase, {
   meeting: graphql`
     fragment RetroVotePhase_meeting on RetrospectiveMeeting {
       ...StageTimerControl_meeting
+      ...StageTimerDisplay_meeting
       ...GroupingKanban_meeting
       endedAt
       settings {
@@ -230,14 +231,12 @@ export default createFragmentContainer(RetroVotePhase, {
       id
       facilitatorUserId
       localStage {
-        ...StageTimerDisplay_stage
         isComplete
       }
       phases {
         phaseType
         ... on DiscussPhase {
           stages {
-            ...StageTimerDisplay_stage
             ... on RetroDiscussStage {
               id
               isNavigableByFacilitator
