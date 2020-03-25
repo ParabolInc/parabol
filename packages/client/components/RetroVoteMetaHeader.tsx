@@ -114,15 +114,17 @@ const RetroVoteMetaHeader = (props: Props) => {
         <TeamVotesCountLabel>{teamVotesRemaining}</TeamVotesCountLabel>
       </FollowingVoteMetaBlock>
       {isFacilitating && (
-        <FacilitatorVoteBlock
-          ref={originRef}
-          onClick={togglePortal}
-          onMouseEnter={VoteSettingsMenu.preload}
-        >
-          <FacilitatorLabel>{'Vote Settings'}</FacilitatorLabel>
-          <FacilitatorDropdownIcon>{'expand_more'}</FacilitatorDropdownIcon>
+        <>
+          <FacilitatorVoteBlock
+            ref={originRef}
+            onClick={togglePortal}
+            onMouseEnter={VoteSettingsMenu.preload}
+          >
+            <FacilitatorLabel>{'Vote Settings'}</FacilitatorLabel>
+            <FacilitatorDropdownIcon>{'expand_more'}</FacilitatorDropdownIcon>
+          </FacilitatorVoteBlock>
           {menuPortal(<VoteSettingsMenu meeting={meeting} menuProps={menuProps} />)}
-        </FacilitatorVoteBlock>
+        </>
       )}
     </VoteMeta>
   )

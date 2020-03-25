@@ -2,11 +2,11 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
+import {PALETTE} from 'styles/paletteV2'
+import {VoteSettingsMenu_meeting} from '__generated__/VoteSettingsMenu_meeting.graphql'
 import {MenuProps} from '../hooks/useMenu'
 import Menu from './Menu'
 import VoteStepper from './VoteSettingsStepper'
-import {VoteSettingsMenu_meeting} from '__generated__/VoteSettingsMenu_meeting.graphql'
-import {PALETTE} from 'styles/paletteV2'
 
 interface Props {
   menuProps: MenuProps
@@ -28,8 +28,9 @@ const Label = styled('div')({})
 const VoteSettingsMenu = (props: Props) => {
   const {menuProps, meeting} = props
   const {id: meetingId} = props
+  const {portalStatus, isDropdown} = menuProps
   return (
-    <Menu ariaLabel='Adjust the vote count' {...menuProps}>
+    <Menu ariaLabel='Adjust the vote count' portalStatus={portalStatus} isDropdown={isDropdown}>
       <VoteOption>
         <Label>Votes per participant</Label>
         <VoteStepper field={'totalVotes'} value={5} />

@@ -44,6 +44,10 @@ const RetrospectiveMeeting = new GraphQLObjectType<any, GQLContext>({
       type: new GraphQLNonNull(GraphQLInt),
       description: 'The number of comments generated in the meeting'
     },
+    maxVotesPerGroup: {
+      type: GraphQLNonNull(GraphQLInt),
+      description: 'the number of votes allowed for each participant to cast on a single group'
+    },
     meetingMembers: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(RetrospectiveMeetingMember))),
       description: 'The team members that were active during the time of the meeting',
@@ -125,6 +129,10 @@ const RetrospectiveMeeting = new GraphQLObjectType<any, GQLContext>({
     topicCount: {
       type: GraphQLNonNull(GraphQLInt),
       description: 'The number of topics generated in the meeting'
+    },
+    totalVotes: {
+      type: GraphQLNonNull(GraphQLInt),
+      description: 'the total number of votes allowed for each participant'
     },
     votesRemaining: {
       type: new GraphQLNonNull(GraphQLInt),

@@ -159,9 +159,10 @@ export const enum MeetingLabels {
   TIMER = 'Timer'
 }
 
-export const enum MeetingSettingsDefaults {
-  RETROSPECTIVE_TOTAL_VOTES = 5,
-  RETROSPECTIVE_MAX_VOTES_PER_GROUP = 3
+export const enum MeetingSettingsThreshold {
+  RETROSPECTIVE_TOTAL_VOTES_DEFAULT = 5,
+  RETROSPECTIVE_MAX_VOTES_PER_GROUP_DEFAULT = 3,
+  RETROSPECTIVE_TOTAL_VOTES_MAX = 12
 }
 
 // equal to utils/constants

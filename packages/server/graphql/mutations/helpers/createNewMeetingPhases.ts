@@ -67,12 +67,9 @@ const createNewMeetingPhases = async (
 ) => {
   const r = await getRethink()
   const now = new Date()
-  const meetingSettings = (await r
-    .table('MeetingSettings')
-    .getAll(teamId, {index: 'teamId'})
-    .filter({meetingType})
-    .nth(0)
-    .default(null)
+  const meetingSettings = (await dataLoader
+    .get('meetingSettings')
+    .load({teamId, meetingType})
     .run()) as MeetingSettingsRetrospective
   if (!meetingSettings) {
     throw new Error('No meeting setting found for team!')
