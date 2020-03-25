@@ -193,9 +193,10 @@ class ReflectionGroupTitleEditor extends Component<Props> {
     } = this.props
     return (
       <InputWithIconWrap>
-        <RootBlock>
+        <RootBlock data-cy="group-title-editor">
           <FormBlock onSubmit={this.onSubmit}>
             <NameInput
+              data-cy="group-title-editor-input"
               isExpanded={isExpanded}
               onBlur={this.onSubmit}
               onChange={this.onChange}

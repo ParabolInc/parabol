@@ -20,10 +20,10 @@ interface Props {
   isComplete: boolean
 }
 
-const StageCompleteTag = (props: Props) => {
+const PhaseCompleteTag = (props: Props) => {
   const {isComplete} = props
   if (!isComplete) return null
-  return <Wrapper>Stage Completed</Wrapper>
+  return <Wrapper>Phase Completed</Wrapper>
 }
 
-export default StageCompleteTag
+export default PhaseCompleteTag

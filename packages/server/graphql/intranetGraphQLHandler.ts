@@ -15,7 +15,7 @@ const intranetHttpGraphQLHandler = uWSAsyncHandler(async (res: HttpResponse, req
   const authToken = getReqAuth(req)
   const ip = uwsGetIP(res, req)
   if (!isAuthenticated(authToken) || !isSuperUser(authToken)) {
-    res.writeStatus('404').end()
+    res.writeStatus('401').end()
     return
   }
   const contentType = req.getHeader('content-type')

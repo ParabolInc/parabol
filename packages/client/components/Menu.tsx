@@ -109,7 +109,11 @@ const Menu = forwardRef((props: Props, ref: any) => {
             if (!current) return
             const el = current.parentElement || current
             // if we're at the top & there's a header, put the header into view
-            el.scrollTo(0, 0)
+            if (el.scrollTo) {
+              el.scrollTo(0, 0)
+            } else {
+              el.scrollTop = 0
+            }
           }
         }
       }
