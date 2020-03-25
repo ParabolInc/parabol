@@ -75,9 +75,8 @@ const makeHandleCompleted = (onCompleted: () => void, atmosphere: Atmosphere) =>
 const ReflectionGroupVoting = (props: Props) => {
   const {isExpanded, meeting, reflectionGroup} = props
   const {id: reflectionGroupId} = reflectionGroup
-  const {id: meetingId, localStage, settings, viewerMeetingMember} = meeting
+  const {id: meetingId, localStage, maxVotesPerGroup, viewerMeetingMember} = meeting
   const {isComplete} = localStage!
-  const {maxVotesPerGroup} = settings
   const {votesRemaining} = viewerMeetingMember
   const viewerVoteCount = Math.max(0, reflectionGroup.viewerVoteCount || 0)
   const canUpvote = viewerVoteCount < maxVotesPerGroup && votesRemaining > 0 && !isComplete
@@ -141,10 +140,7 @@ export default createFragmentContainer(withMutationProps(withAtmosphere(Reflecti
       viewerMeetingMember {
         votesRemaining
       }
-      settings {
-        maxVotesPerGroup
-        totalVotes
-      }
+      maxVotesPerGroup
     }
   `,
   reflectionGroup: graphql`

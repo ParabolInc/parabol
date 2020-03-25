@@ -3,9 +3,11 @@ import React from 'react'
 import {PALETTE} from '../styles/paletteV2'
 import Icon from './Icon'
 import PlainButton from './PlainButton/PlainButton'
+import {MeetingSettingsThreshold} from 'types/constEnums'
 
 interface Props {
-  field: 'totalVotes' | 'maxVotesPerGroup'
+  increase(): void
+  decrease(): void
   value: number
 }
 
@@ -15,28 +17,24 @@ const Wrapper = styled('div')({
   paddingLeft: 16
 })
 
-const Stepper = styled(PlainButton)({
+const Stepper = styled(PlainButton)<{isDisabled: boolean}>(({isDisabled}) => ({
   borderRadius: '100%',
   boxShadow: '0px 1px 1px 1px rgba(0,0,0,0.3)',
-  height: 24
-})
+  height: 24,
+  opacity: isDisabled ? 0.35 : undefined
+}))
 
 const Value = styled('span')({
   color: PALETTE.TEXT_MAIN_DARK,
-  padding: '0 8px'
+  display: 'flex',
+  width: 34,
+  justifyContent: 'center'
 })
 
-const MAX_VOTES = 12
 const VoteStepper = (props: Props) => {
-  const {field, value} = props
+  const {increase, decrease, value} = props
   const canDecrease = value > 1
-  const canIncrease = value < MAX_VOTES
-
-  const decrease = () => {
-    const nextValue = value - 1
-    if (nextValue < 1) return
-    console.log('field', field)
-  }
+  const canIncrease = value < MeetingSettingsThreshold.RETROSPECTIVE_TOTAL_VOTES_MAX
 
   return (
     <Wrapper>
@@ -44,7 +42,7 @@ const VoteStepper = (props: Props) => {
         <Icon>remove</Icon>
       </Stepper>
       <Value>{value}</Value>
-      <Stepper isDisabled={!canIncrease} onClick={decrease}>
+      <Stepper isDisabled={!canIncrease} onClick={increase}>
         <Icon>add</Icon>
       </Stepper>
     </Wrapper>

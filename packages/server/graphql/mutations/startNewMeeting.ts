@@ -96,7 +96,7 @@ export default {
       })
     }
     const teamMembers = await dataLoader.get('teamMembersByTeamId').load(meeting.teamId)
-    const meetingMembers = await createMeetingMembers(meeting, teamMembers, dataLoader)
+    const meetingMembers = createMeetingMembers(meeting, teamMembers)
     await r
       .table('NewMeeting')
       .insert(meeting)

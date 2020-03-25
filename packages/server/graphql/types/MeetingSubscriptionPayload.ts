@@ -21,6 +21,7 @@ import VoteForReflectionGroupPayload from './VoteForReflectionGroupPayload'
 import {AddCommentSuccess} from './AddCommentPayload'
 import {DeleteCommentSuccess} from './DeleteCommentPayload'
 import {UpdateCommentContentSuccess} from './UpdateCommentContentPayload'
+import {UpdateRetroMaxVotesSuccess} from './UpdateRetroMaxVotesPayload'
 
 const types = [
   AddCommentSuccess,
@@ -44,6 +45,7 @@ const types = [
   UpdateNewCheckInQuestionPayload,
   UpdateReflectionContentPayload,
   UpdateReflectionGroupTitlePayload,
+  UpdateRetroMaxVotesSuccess,
   VoteForReflectionGroupPayload
 ]
 

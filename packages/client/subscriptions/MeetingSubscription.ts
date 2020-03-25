@@ -40,6 +40,7 @@ const subscription = graphql`
       ...UpdateDragLocationMutation_meeting @relay(mask: false)
       ...UpdateReflectionContentMutation_meeting @relay(mask: false)
       ...UpdateReflectionGroupTitleMutation_meeting @relay(mask: false)
+      ...UpdateRetroMaxVotesMutation_meeting @relay(mask: false)
       ...VoteForReflectionGroupMutation_meeting @relay(mask: false)
     }
   }

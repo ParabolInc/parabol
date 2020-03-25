@@ -194,7 +194,7 @@ export const meetingSettings = (parent: RethinkDataLoader) => {
           const [meetingType, teamIds] = entry
           return r
             .table('MeetingSettings')
-            .getAll(r.args(teamIds))
+            .getAll(r.args(teamIds), {index: 'teamId'})
             .filter({meetingType: meetingType as MeetingTypeEnum})
             .run()
         })
