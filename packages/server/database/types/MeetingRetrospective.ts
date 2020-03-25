@@ -15,6 +15,11 @@ export default class MeetingRetrospective extends Meeting {
   showConversionModal?: boolean
   autoGroupThreshold?: number | null
   nextAutoGroupThreshold?: number | null
+  // end meeting stats
+  commentCount?: number
+  taskCount?: number
+  topicCount?: number
+  reflectionCount?: number
   constructor(input: Input) {
     const {showConversionModal, teamId, meetingCount, name, phases, facilitatorUserId} = input
     super({

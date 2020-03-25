@@ -68,7 +68,9 @@ const TaskFooter = (props: Props) => {
   }
   const handleCompleted = (res, errors) => {
     onCompleted(res, errors)
-    setLocalTaskError(atmosphere, taskId, null)
+    const payload = res?.[Object.keys(res)[0]]
+    const error = payload?.error?.message ?? errors?.[0]?.message ?? null
+    setLocalTaskError(atmosphere, taskId, error)
   }
 
   const mutationProps = {

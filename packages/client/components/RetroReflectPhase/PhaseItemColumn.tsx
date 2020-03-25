@@ -181,20 +181,20 @@ const PhaseItemColumn = (props: Props) => {
   const isFocused = focusedPhaseItemId === retroPhaseItemId
 
   const columnStack = useMemo(() => {
-    const groups = reflectionGroups.filter(
-      (group) =>
-        group.retroPhaseItemId === retroPhaseItemId &&
-        group.reflections.length > 0 &&
-        !cardsInFlightRef.current.find((card) => card.key === group.reflections[0].content)
-    )
-    return groups
+    return reflectionGroups
+      .slice()
+      .sort((a, b) => (a.sortOrder > b.sortOrder ? -1 : 1))
+      .flatMap(({reflections}) => reflections || [])
+      .filter((reflection) => {
+        return (
+          reflection.retroPhaseItemId === retroPhaseItemId &&
+          !cardsInFlightRef.current.find((card) => card.key === reflection.content)
+        )
+      })
   }, [reflectionGroups, retroPhaseItemId, cardsInFlightRef.current])
 
   const reflectionStack = useMemo(() => {
-    return columnStack
-      .filter((group) => group.reflections[0].isViewerCreator)
-      .sort((a, b) => (a.sortOrder > b.sortOrder ? -1 : 1))
-      .map((group) => group.reflections[0])
+    return columnStack.filter(({isViewerCreator}) => isViewerCreator)
   }, [columnStack])
 
   const {tooltipPortal, openTooltip, closeTooltip, originRef} = useTooltip<HTMLDivElement>(
@@ -288,7 +288,6 @@ export default createFragmentContainer(PhaseItemColumn, {
       reflectionGroups {
         id
         ...ReflectionGroup_reflectionGroup
-        retroPhaseItemId
         sortOrder
         reflections {
           ...ReflectionCard_reflection
@@ -298,6 +297,7 @@ export default createFragmentContainer(PhaseItemColumn, {
           id
           isEditing
           isViewerCreator
+          retroPhaseItemId
           sortOrder
         }
       }

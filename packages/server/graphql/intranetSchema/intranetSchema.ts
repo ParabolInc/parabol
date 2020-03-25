@@ -28,10 +28,12 @@ import signups from './queries/signups'
 import connectSocket from './mutations/connectSocket'
 import loginSAML from './mutations/loginSAML'
 import disconnectSocket from './mutations/disconnectSocket'
+import dailyPulse from './queries/dailyPulse'
 
 const query = new GraphQLObjectType<any, GQLContext, any>({
   name: 'Query',
   fields: () => ({
+    dailyPulse,
     pingActionTick,
     suCountTiersForUser,
     suUserCount,

@@ -53,7 +53,9 @@ export default {
       if (teamPushInvitation) {
         const {denialCount, lastDenialAt} = teamPushInvitation
         if (denialCount >= MAX_TEAM_DENIALS && lastDenialAt && lastDenialAt >= thresh) {
-          return standardError(new Error('Previously denied. Must wait for an invitation'))
+          return standardError(new Error('Previously denied. Must wait for an invitation'), {
+            userId: viewerId
+          })
         }
       }
 
@@ -61,7 +63,9 @@ export default {
         ({lastDenialAt}) => lastDenialAt && lastDenialAt >= thresh
       )
       if (globalBlacklist.length >= MAX_GLOBAL_DENIALS) {
-        return standardError(new Error('Denied from other teams. Must wait for an invitation'))
+        return standardError(new Error('Denied from other teams. Must wait for an invitation'), {
+          userId: viewerId
+        })
       }
 
       // RESOLUTION

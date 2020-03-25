@@ -12,6 +12,7 @@ import MeetingNavList from './MeetingNavList'
 import {RetroMeetingSidebar_meeting} from '__generated__/RetroMeetingSidebar_meeting.graphql'
 import useGotoStageId from '../hooks/useGotoStageId'
 import useAtmosphere from '../hooks/useAtmosphere'
+import useRouter from 'hooks/useRouter'
 
 interface Props {
   gotoStageId: ReturnType<typeof useGotoStageId>
@@ -27,9 +28,19 @@ const collapsiblePhases: string[] = [
 
 const RetroMeetingSidebar = (props: Props) => {
   const atmosphere = useAtmosphere()
+  const {history} = useRouter()
   const {viewerId} = atmosphere
   const {gotoStageId, handleMenuClick, toggleSidebar, meeting} = props
-  const {facilitatorUserId, facilitatorStageId, localPhase, localStage, phases, settings} = meeting
+  const {
+    id: meetingId,
+    endedAt,
+    facilitatorUserId,
+    facilitatorStageId,
+    localPhase,
+    localStage,
+    phases,
+    settings
+  } = meeting
   const {phaseTypes} = settings
   const localPhaseType = localPhase ? localPhase.phaseType : ''
   const facilitatorStageRes = findStageById(phases, facilitatorStageId)
@@ -86,6 +97,16 @@ const RetroMeetingSidebar = (props: Props) => {
             </NewMeetingSidebarPhaseListItem>
           )
         })}
+        {endedAt && (
+          <NewMeetingSidebarPhaseListItem
+            key={'summary'}
+            isActive={false}
+            isFacilitatorPhase={false}
+            isUnsyncedFacilitatorPhase={false}
+            handleClick={() => history.push(`/new-summary/${meetingId}`)}
+            phaseType={NewMeetingPhaseTypeEnum.SUMMARY}
+          />
+        )}
       </MeetingNavList>
     </NewMeetingSidebar>
   )
@@ -101,6 +122,7 @@ export default createFragmentContainer(RetroMeetingSidebar, {
         phaseTypes
       }
       id
+      endedAt
       facilitatorUserId
       facilitatorStageId
       localPhase {

@@ -98,7 +98,7 @@ const RetroReflectPhase = (props: Props) => {
           </PhaseHeaderDescription>
         </MeetingTopBar>
         <PhaseWrapper>
-          <StageTimerDisplay stage={localStage!} />
+          <StageTimerDisplay meeting={meeting} />
           <ColumnWrapper
             setActiveIdx={setActiveIdx}
             activeIdx={activeIdx}
@@ -155,7 +155,6 @@ graphql`
       editorIds
     }
     stages {
-      ...StageTimerDisplay_stage
       isAsync
       isComplete
       localScheduledEndTime
@@ -166,6 +165,7 @@ graphql`
 export default createFragmentContainer(RetroReflectPhase, {
   meeting: graphql`
     fragment RetroReflectPhase_meeting on RetrospectiveMeeting {
+      ...StageTimerDisplay_meeting
       endedAt
       showSidebar
       ...StageTimerControl_meeting
@@ -174,7 +174,6 @@ export default createFragmentContainer(RetroReflectPhase, {
       facilitatorUserId
       ... on RetrospectiveMeeting {
         localStage {
-          ...StageTimerDisplay_stage
           isAsync
           isComplete
           localScheduledEndTime

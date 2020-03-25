@@ -81,7 +81,7 @@ const RetroGroupPhase = (props: Props) => {
           <PhaseHeaderDescription>{'Drag cards to group by common topics'}</PhaseHeaderDescription>
         </MeetingTopBar>
         <PhaseWrapper>
-          <StageTimerDisplay stage={localStage!} />
+          <StageTimerDisplay meeting={meeting} />
           {/*{error && <StyledError>{error}</StyledError>}*/}
           <MeetingPhaseWrapper>
             <GroupingKanban
@@ -97,6 +97,7 @@ const RetroGroupPhase = (props: Props) => {
         {!isComplete && <StageTimerControl defaultTimeLimit={5} meeting={meeting} />}
         <CenteredControlBlock isComplete={isComplete}>
           <BottomNavControl
+            dataCy={`next-${nextPhaseLabel.toLowerCase()}`}
             isBouncing={isDemoStageComplete || (!isAsync && !isComplete && timedOut)}
             disabled={isDemoRoute() && !isDemoStageComplete}
             onClick={() => gotoNext()}
@@ -118,7 +119,6 @@ const RetroGroupPhase = (props: Props) => {
 
 graphql`
   fragment RetroGroupPhase_stage on GenericMeetingStage {
-    ...StageTimerDisplay_stage
     isAsync
     isComplete
     localScheduledEndTime
@@ -129,6 +129,7 @@ export default createFragmentContainer(RetroGroupPhase, {
   meeting: graphql`
     fragment RetroGroupPhase_meeting on RetrospectiveMeeting {
       ...StageTimerControl_meeting
+      ...StageTimerDisplay_meeting
       endedAt
       showSidebar
       id
