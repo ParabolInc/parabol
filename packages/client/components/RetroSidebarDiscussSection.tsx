@@ -1,23 +1,22 @@
+import styled from '@emotion/styled'
+import graphql from 'babel-plugin-relay/macro'
+import useGotoStageId from 'hooks/useGotoStageId'
 import React from 'react'
 import {DragDropContext, Draggable, Droppable} from 'react-beautiful-dnd'
-import styled from '@emotion/styled'
 import {createFragmentContainer} from 'react-relay'
-import graphql from 'babel-plugin-relay/macro'
-import MeetingSubnavItem from './MeetingSubnavItem'
+import {RetroSidebarDiscussSection_meeting} from '__generated__/RetroSidebarDiscussSection_meeting.graphql'
 import withAtmosphere, {WithAtmosphereProps} from '../decorators/withAtmosphere/withAtmosphere'
 import DragDiscussionTopicMutation from '../mutations/DragDiscussionTopicMutation'
 import {navItemRaised} from '../styles/elevation'
-import {meetingVoteIcon} from '../styles/meeting'
+import {PALETTE} from '../styles/paletteV2'
+import {ICON_SIZE} from '../styles/typographyV2'
+import {NavSidebar} from '../types/constEnums'
+import {NewMeetingPhaseTypeEnum} from '../types/graphql'
 import {DISCUSSION_TOPIC, SORT_STEP} from '../utils/constants'
 import dndNoise from '../utils/dndNoise'
 import Icon from './Icon'
 import MeetingSidebarPhaseItemChild from './MeetingSidebarPhaseItemChild'
-import {NavSidebar} from '../types/constEnums'
-import {ICON_SIZE} from '../styles/typographyV2'
-import {PALETTE} from '../styles/paletteV2'
-import {NewMeetingPhaseTypeEnum} from '../types/graphql'
-import {RetroSidebarDiscussSection_meeting} from '__generated__/RetroSidebarDiscussSection_meeting.graphql'
-import useGotoStageId from 'hooks/useGotoStageId'
+import MeetingSubnavItem from './MeetingSubnavItem'
 
 const lineHeight = NavSidebar.SUB_LINE_HEIGHT
 
@@ -121,7 +120,7 @@ const RetroSidebarDiscussSection = (props: Props) => {
                   const isUnsyncedFacilitatorStage = !inSync && stage.id === facilitatorStageId
                   const voteMeta = (
                     <VoteTally isUnsyncedFacilitatorStage={isUnsyncedFacilitatorStage}>
-                      <VoteIcon>{meetingVoteIcon}</VoteIcon>
+                      <VoteIcon>{'thumb_up'}</VoteIcon>
                       {voteCount || 0}
                     </VoteTally>
                   )
