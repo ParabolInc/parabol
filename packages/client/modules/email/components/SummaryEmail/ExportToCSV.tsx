@@ -45,7 +45,7 @@ const query = graphql`
           }
         }
         ... on RetrospectiveMeeting {
-          reflectionGroups {
+          reflectionGroups(sortBy: stageOrder) {
             reflections {
               content
               phaseItem {

@@ -4909,7 +4909,8 @@ export interface IThreadableEdge {
  * sorts for the reflection group. default is sortOrder. sorting by voteCount filters out items without votes.
  */
 export const enum ReflectionGroupSortEnum {
-  voteCount = 'voteCount'
+  voteCount = 'voteCount',
+  stageOrder = 'stageOrder'
 }
 
 /**
