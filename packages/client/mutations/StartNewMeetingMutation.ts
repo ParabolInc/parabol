@@ -41,35 +41,6 @@ const mutation = graphql`
   }
 `
 
-export const startNewMeetingTeamOnNext: OnNextHandler<
-  StartNewMeetingMutation_team,
-  OnNextHistoryContext
-> = (payload, context) => {
-  const {atmosphere, history} = context
-  const {viewerId} = atmosphere
-  const {meeting} = payload
-  if (!meeting) return
-  const {id: meetingId, defaultFacilitatorUserId, meetingMembers, name: meetingName} = meeting
-  const viewerMeetingMember = meetingMembers.find((member) => member.user.id === viewerId)
-  const facilitatorMeetingMember = meetingMembers.find(
-    (member) => member.user.id === defaultFacilitatorUserId
-  )
-  if (!facilitatorMeetingMember || !viewerMeetingMember) return
-  const {user: facilitator} = facilitatorMeetingMember
-  const {preferredName} = facilitator
-  atmosphere.eventEmitter.emit('addSnackbar', {
-    autoDismiss: 5,
-    key: `newMeeting:${meetingId}`,
-    message: `${preferredName} just started ${meetingName}`,
-    action: {
-      label: 'Join Now',
-      callback: () => {
-        history.push(`/meet/${meetingId}`)
-      }
-    }
-  })
-}
-
 const StartNewMeetingMutation: StandardMutation<TStartNewMeetingMutation, HistoryLocalHandler> = (
   atmosphere,
   variables,
