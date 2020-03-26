@@ -64,6 +64,7 @@ const RetroMeeting = (props: Props) => {
   if (!safeRoute) return null
   const {
     id: meetingId,
+    endedAt,
     showSidebar,
     viewerMeetingMember,
     facilitatorStageId,
@@ -105,6 +106,7 @@ const RetroMeeting = (props: Props) => {
         }
       />
       <RejoinFacilitatorButton
+        endedAt={endedAt}
         inSync={localStage ? localStage.id === facilitatorStageId : true}
         onClick={() => gotoStageId(facilitatorStageId)}
       />
@@ -125,6 +127,7 @@ export default createFragmentContainer(RetroMeeting, {
       ...NewMeetingAvatarGroup_meeting
       id
       showSidebar
+      endedAt
       facilitatorStageId
       localPhase {
         phaseType

@@ -2,6 +2,7 @@ import getRethink from '../database/rethinkDriver'
 import countTiersForUserId from '../graphql/queries/helpers/countTiersForUserId'
 import segmentIo from './segmentIo'
 import {ISegmentEventTrackOptions, TierEnum, OrgUserRole} from '../../client/types/graphql'
+import sendToSentry from './sendToSentry'
 
 const PERSONAL_TIER_MAX_TEAMS = 2
 
@@ -127,6 +128,10 @@ const sendSegmentEvent = async (
   maybeUserIds: string | string[],
   options: Options = {}
 ) => {
+  if (!maybeUserIds) {
+    sendToSentry(new Error('Undefined Segment userId'), {tags: {event}})
+    return
+  }
   const userIds = Array.isArray(maybeUserIds) ? maybeUserIds : [maybeUserIds]
   if (userIds.length === 0) return
   const [traitsArr, orgId] = await getSegmentProps(userIds, options.teamId)

@@ -40,7 +40,10 @@ export default {
       .get(reflectionGroupId)
       .run()
     if (!reflectionGroup || !reflectionGroup.isActive) {
-      return standardError(new Error('Reflection group not found'), {userId: viewerId})
+      return standardError(new Error('Reflection group not found'), {
+        userId: viewerId,
+        tags: {reflectionGroupId, isUnvote}
+      })
     }
     const {meetingId} = reflectionGroup
     const meeting = await dataLoader.get('newMeetings').load(meetingId)

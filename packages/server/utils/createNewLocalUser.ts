@@ -5,7 +5,7 @@ import User from '../database/types/User'
 interface Props {
   email: string
   hashedPassword: string
-  segmentId?: string
+  segmentId?: string | null
   isEmailVerified: boolean
 }
 

@@ -16,7 +16,7 @@ interface Input {
   inactive?: boolean
   identities?: AuthIdentity[]
   createdAt?: Date
-  segmentId?: string
+  segmentId?: string | null
   tier?: TierEnum
   tms?: string[]
 }
@@ -85,7 +85,7 @@ export default class User {
     this.lastSeenAt = lastSeenAt ?? null
     this.lastSeenAtURL = lastSeenAtURL ?? null
     this.preferredName = preferredName
-    this.segmentId = segmentId
+    this.segmentId = segmentId ?? undefined
     this.tier = tier ?? TierEnum.personal
   }
 }

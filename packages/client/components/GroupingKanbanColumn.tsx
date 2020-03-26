@@ -96,11 +96,12 @@ const GroupingKanbanColumn = (props: Props) => {
   const ref = useRef<HTMLDivElement>(null)
   const canAdd = phaseType === NewMeetingPhaseTypeEnum.group && !isComplete
   return (
-    <Column isDesktop={isDesktop} ref={ref}>
+    <Column data-cy={`group-column-${question}`} isDesktop={isDesktop} ref={ref}>
       <ColumnHeader>
         <Prompt>{question}</Prompt>
         {canAdd && (
           <AddReflectionButton
+            dataCy={`add-reflection-${question}`}
             aria-label={'Add a reflection'}
             onClick={onClick}
             waiting={submitting}
@@ -109,15 +110,20 @@ const GroupingKanbanColumn = (props: Props) => {
           </AddReflectionButton>
         )}
       </ColumnHeader>
-      <ColumnBody isDesktop={isDesktop} {...{[DragAttribute.DROPZONE]: promptId}}>
+      <ColumnBody
+        data-cy={`group-column-${question}-body`}
+        isDesktop={isDesktop}
+        {...{[DragAttribute.DROPZONE]: promptId}}
+      >
         {reflectionGroups
           .filter((group) => {
             // group may be undefined because relay could GC before useMemo in the Kanban recomputes >:-(
             return group && group.reflections.length > 0
           })
-          .map((reflectionGroup) => {
+          .map((reflectionGroup, idx) => {
             return (
               <ReflectionGroup
+                dataCy={`${question}-group-${idx}`}
                 key={reflectionGroup.id}
                 meeting={meeting}
                 phaseRef={phaseRef}

@@ -1,13 +1,14 @@
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import {StageTimerDisplay_stage} from '../../__generated__/StageTimerDisplay_stage.graphql'
 import styled from '@emotion/styled'
 import StageTimerDisplayGauge from './StageTimerDisplayGauge'
 import {Breakpoint} from 'types/constEnums'
+import PhaseCompleteTag from './PhaseCompleteTag'
+import {StageTimerDisplay_meeting} from '__generated__/StageTimerDisplay_meeting.graphql'
 
 interface Props {
-  stage: StageTimerDisplay_stage
+  meeting: StageTimerDisplay_meeting
 }
 
 const DisplayRow = styled('div')({
@@ -22,24 +23,46 @@ const DisplayRow = styled('div')({
 })
 
 const StageTimerDisplay = (props: Props) => {
-  const {stage} = props
-  const {localScheduledEndTime, isComplete} = stage
+  const {meeting} = props
+  const {localPhase, localStage} = meeting
+  const {localScheduledEndTime, isComplete} = localStage
+  const {stages} = localPhase
+  const isPhaseComplete = stages.every((stage) => stage.isComplete)
   return (
     <DisplayRow>
       {localScheduledEndTime && !isComplete ? (
         <StageTimerDisplayGauge endTime={localScheduledEndTime} />
       ) : null}
+      <PhaseCompleteTag isComplete={isPhaseComplete} />
     </DisplayRow>
   )
 }
 
+graphql`
+  fragment StageTimerDisplayStage on NewMeetingStage {
+    isComplete
+    scheduledEndTime @__clientField(handle: "localTime")
+    timeRemaining
+    localScheduledEndTime
+  }
+`
 export default createFragmentContainer(StageTimerDisplay, {
-  stage: graphql`
-    fragment StageTimerDisplay_stage on NewMeetingStage {
-      isComplete
-      scheduledEndTime @__clientField(handle: "localTime")
-      timeRemaining
-      localScheduledEndTime
+  meeting: graphql`
+    fragment StageTimerDisplay_meeting on NewMeeting {
+      localPhase {
+        stages {
+          isComplete
+        }
+      }
+      localStage {
+        ...StageTimerDisplayStage
+      }
+      phases {
+        stages {
+          ...StageTimerDisplayStage
+          isComplete
+        }
+      }
     }
   `
 })

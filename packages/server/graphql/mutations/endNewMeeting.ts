@@ -33,6 +33,7 @@ import EndNewMeetingPayload from '../types/EndNewMeetingPayload'
 import {COMPLETED_ACTION_MEETING, COMPLETED_RETRO_MEETING} from '../types/TimelineEventTypeEnum'
 import sendNewMeetingSummary from './helpers/endMeeting/sendNewMeetingSummary'
 import {endSlackMeeting} from './helpers/notifySlack'
+import MeetingRetrospective from '../../database/types/MeetingRetrospective'
 
 const timelineEventLookup = {
   [RETROSPECTIVE]: COMPLETED_RETRO_MEETING,
@@ -170,8 +171,46 @@ const finishActionMeeting = async (meeting: MeetingAction, dataLoader: DataLoade
   return {updatedTaskIds: [...tasks, ...doneTasks].map(({id}) => id)}
 }
 
+const finishRetroMeting = async (meeting: MeetingRetrospective, dataLoader: DataLoaderWorker) => {
+  const {id: meetingId} = meeting
+  const r = await getRethink()
+  const [reflectionGroups, reflections] = await Promise.all([
+    dataLoader.get('retroReflectionGroupsByMeetingId').load(meetingId),
+    dataLoader.get('retroReflectionsByMeetingId').load(meetingId)
+  ])
+  const reflectionGroupIds = reflectionGroups.map(({id}) => id)
+
+  await r
+    .table('NewMeeting')
+    .get(meetingId)
+    .update(
+      {
+        commentCount: (r
+          .table('Comment')
+          .getAll(r.args(reflectionGroupIds), {index: 'threadId'})
+          .filter({isActive: true})
+          .count()
+          .default(0) as unknown) as number,
+        taskCount: (r
+          .table('Task')
+          .getAll(r.args(reflectionGroupIds), {index: 'threadId'})
+          .count()
+          .default(0) as unknown) as number,
+        topicCount: reflectionGroupIds.length,
+        reflectionCount: reflections.length
+      },
+      {nonAtomic: true}
+    )
+    .run()
+}
+
 const finishMeetingType = async (meeting: Meeting, dataLoader: DataLoaderWorker) => {
-  if (meeting.meetingType === ACTION) return finishActionMeeting(meeting, dataLoader)
+  switch (meeting.meetingType) {
+    case MeetingTypeEnum.action:
+      return finishActionMeeting(meeting, dataLoader)
+    case MeetingTypeEnum.retrospective:
+      return finishRetroMeting(meeting, dataLoader)
+  }
   return undefined
 }
 

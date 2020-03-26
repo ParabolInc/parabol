@@ -1375,7 +1375,8 @@ export const enum NewMeetingPhaseTypeEnum {
   reflect = 'reflect',
   group = 'group',
   vote = 'vote',
-  discuss = 'discuss'
+  discuss = 'discuss',
+  SUMMARY = 'SUMMARY'
 }
 
 /**
@@ -4580,9 +4581,19 @@ export interface IRetrospectiveMeeting {
   autoGroupThreshold: number | null
 
   /**
+   * The number of comments generated in the meeting
+   */
+  commentCount: number
+
+  /**
    * the next smallest distance threshold to guarantee at least 1 more grouping will be achieved
    */
   nextAutoGroupThreshold: number | null
+
+  /**
+   * The number of reflections generated in the meeting
+   */
+  reflectionCount: number
 
   /**
    * a single reflection group
@@ -4608,6 +4619,11 @@ export interface IRetrospectiveMeeting {
    * The tasks created within the meeting
    */
   tasks: Array<ITask>
+
+  /**
+   * The number of topics generated in the meeting
+   */
+  topicCount: number
 
   /**
    * The sum total of the votes remaining for the meeting members that are present in the meeting
@@ -4893,7 +4909,8 @@ export interface IThreadableEdge {
  * sorts for the reflection group. default is sortOrder. sorting by voteCount filters out items without votes.
  */
 export const enum ReflectionGroupSortEnum {
-  voteCount = 'voteCount'
+  voteCount = 'voteCount',
+  stageOrder = 'stageOrder'
 }
 
 /**

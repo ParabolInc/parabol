@@ -49,7 +49,6 @@ const emailPasswordReset = {
         .count()
         .ge(Threshold.MAX_DAILY_PASSWORD_RESETS) as unknown) as boolean
     }).run()
-    console.log('reset', failOnAccount, failOnTime, user)
     if (failOnAccount || failOnTime || !user) return true
     const {id: userId, identities} = user
     const localIdentity = identities.find(

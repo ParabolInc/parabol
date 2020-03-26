@@ -3,7 +3,7 @@
   "description": "An open-source app for building smarter, more agile teams.",
   "author": "Parabol Inc. <love@parabol.com> (http://github.com/ParabolInc)",
   "license": "AGPL-3.0",
-  "version": "5.1.0",
+  "version": "5.2.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/ParabolInc/parabol"
@@ -14,7 +14,7 @@
   },
   "scripts": {
     "start": "cross-env NODE_ENV=production pm2-runtime start pm2.config.js",
-    "start:tunnel": "export $(grep ^ULTRAHOOK_API_KEY .env | tr -d '\"') && ultrahook -k $ULTRAHOOK_API_KEY dev 3000",
+    "start:tunnel": "export $(grep ^ULTRAHOOK_API_KEY .env | tr -d \"'\") && ultrahook -k $ULTRAHOOK_API_KEY dev 3000",
     "start:memwatch": "NODE_ENV=production MEMWATCH=true node --expose-gc --inspect --trace-warnings server.babel.js",
     "quickstart": "yarn db:migrate && yarn bs",
     "dev": "node webpack/buildDll.js && node server.babel.js",
@@ -165,7 +165,7 @@
     "ms": "^2.0.0",
     "node-env-flag": "0.1.0",
     "node-fetch": "^2.6.0",
-    "parabol-client": "^5.1.0",
+    "parabol-client": "^5.2.0",
     "pm2": "^4.2.1",
     "react": "^16.12.0",
     "react-dom": "^16.12.0",

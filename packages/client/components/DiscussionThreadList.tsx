@@ -51,7 +51,7 @@ const DiscussionThreadList = forwardRef((props: Props, ref: any) => {
   const {editorRef, meeting, reflectionGroupId, threadables} = props
   const isEmpty = threadables.length === 0
   useScrollThreadList(threadables, editorRef, ref)
-  const HeaderBlock = () => <Header>{'Discussion & Take-away Tasks'}</Header>
+  const HeaderBlock = () => <Header>{'Discussion & Takeaway Tasks'}</Header>
   if (isEmpty) {
     return (
       <EmptyWrapper>

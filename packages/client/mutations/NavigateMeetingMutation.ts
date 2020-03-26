@@ -1,23 +1,23 @@
-import {
-  NavigateMeetingMutation as TNavigateMeetingMutation,
-  NavigateMeetingMutationVariables
-} from '../__generated__/NavigateMeetingMutation.graphql'
-import {commitMutation} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
+import {commitMutation} from 'react-relay'
 import {RecordProxy} from 'relay-runtime'
-import handleRemoveReflectionGroups from './handlers/handleRemoveReflectionGroups'
+import {NavigateMeetingMutation_team} from '__generated__/NavigateMeetingMutation_team.graphql'
+import Atmosphere from '../Atmosphere'
+import {ClientRetrospectiveMeeting} from '../types/clientSchema'
+import {IReflectPhase} from '../types/graphql'
+import {SharedUpdater} from '../types/relayMutations'
 import {VOTE} from '../utils/constants'
 import isInterruptingChickenPhase from '../utils/isInterruptingChickenPhase'
 import isViewerTyping from '../utils/isViewerTyping'
 import getBaseRecord from '../utils/relay/getBaseRecord'
 import getInProxy from '../utils/relay/getInProxy'
-import {setLocalStageAndPhase} from '../utils/relay/updateLocalStage'
-import Atmosphere from '../Atmosphere'
-import {ClientRetroPhaseItem, ClientRetrospectiveMeeting} from '../types/clientSchema'
-import {IReflectPhase} from '../types/graphql'
 import safeProxy from '../utils/relay/safeProxy'
-import {SharedUpdater} from '../types/relayMutations'
-import {NavigateMeetingMutation_team} from '__generated__/NavigateMeetingMutation_team.graphql'
+import {setLocalStageAndPhase} from '../utils/relay/updateLocalStage'
+import {
+  NavigateMeetingMutation as TNavigateMeetingMutation,
+  NavigateMeetingMutationVariables
+} from '../__generated__/NavigateMeetingMutation.graphql'
+import handleRemoveReflectionGroups from './handlers/handleRemoveReflectionGroups'
 
 graphql`
   fragment NavigateMeetingMutation_team on NavigateMeetingPayload {
@@ -139,7 +139,7 @@ export const navigateMeetingTeamUpdater: SharedUpdater<NavigateMeetingMutation_t
     const prompts = reflectPhase.getLinkedRecords('reflectPrompts')
     if (!prompts) return
     prompts.forEach((phaseItem) => {
-      ;((phaseItem as any) as RecordProxy<ClientRetroPhaseItem>).setValue([], 'editorIds')
+      phaseItem?.setValue([], 'editorIds')
     })
   }
 }
