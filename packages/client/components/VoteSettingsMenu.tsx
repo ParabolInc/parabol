@@ -30,6 +30,10 @@ const VoteOption = styled('div')({
 
 const Label = styled('div')({})
 
+const Error = styled(StyledError)({
+  fontSize: 12
+})
+
 const VoteSettingsMenu = (props: Props) => {
   const {menuProps, meeting} = props
   const {id: meetingId, totalVotes, maxVotesPerGroup} = meeting
@@ -76,7 +80,7 @@ const VoteSettingsMenu = (props: Props) => {
           decrease={decreaseTotalVotes}
         />
       </VoteOption>
-      {error && <StyledError>{error?.message}</StyledError>}
+      {error && <Error>{error?.message}</Error>}
       <VoteOption>
         <Label>Votes per topic</Label>
         <VoteStepper

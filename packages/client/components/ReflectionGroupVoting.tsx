@@ -37,7 +37,7 @@ const UpvoteIcon = styled(Icon)<{isExpanded: boolean; isEnabled: boolean}>(
       : isEnabled
       ? PALETTE.TEXT_GRAY
       : PALETTE.BORDER_GRAY,
-    cursor: 'pointer',
+    cursor: isEnabled ? 'pointer' : undefined,
     fontSize: ICON_SIZE.MD18,
     height: 24,
     lineHeight: '24px',
@@ -47,11 +47,20 @@ const UpvoteIcon = styled(Icon)<{isExpanded: boolean; isEnabled: boolean}>(
   })
 )
 
-const VoteCount = styled('span')<{voteCount: number}>(({voteCount}) => ({
-  color: voteCount === 0 ? PALETTE.TEXT_GRAY_DARK : PALETTE.TEXT_BLUE_DARK,
-  fontWeight: 600,
-  padding: '0 4px'
-}))
+const VoteCount = styled('span')<{voteCount: number; isExpanded: boolean}>(
+  ({voteCount, isExpanded}) => ({
+    color: isExpanded
+      ? voteCount === 0
+        ? '#fff'
+        : '#fff'
+      : voteCount === 0
+      ? PALETTE.TEXT_GRAY_DARK
+      : PALETTE.TEXT_BLUE_DARK,
+    fontWeight: 600,
+    padding: '0 4px',
+    userSelect: 'none'
+  })
+)
 
 const UpvoteColumn = styled('div')({
   display: 'flex',
@@ -116,7 +125,9 @@ const ReflectionGroupVoting = (props: Props) => {
         >
           {'thumb_down'}
         </UpvoteIcon>
-        <VoteCount voteCount={viewerVoteCount}>{viewerVoteCount}</VoteCount>
+        <VoteCount isExpanded={isExpanded} voteCount={viewerVoteCount}>
+          {viewerVoteCount}
+        </VoteCount>
         <UpvoteIcon
           isExpanded={isExpanded}
           isEnabled={canUpvote}

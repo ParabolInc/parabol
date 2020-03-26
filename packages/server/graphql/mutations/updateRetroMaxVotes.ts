@@ -94,7 +94,7 @@ const updateRetroMaxVotes = {
         ...meetingMembers.map(({votesRemaining}) => oldTotalVotes - votesRemaining)
       )
       if (maxVotesSpent > totalVotes) {
-        return {error: {message: 'Your team has already spent their votes!'}}
+        return {error: {message: 'Your team has already spent their votes'}}
       }
     }
 
@@ -107,7 +107,7 @@ const updateRetroMaxVotes = {
         ...reflectionGroups.map(({voterIds}) => mode(voterIds)[0])
       )
       if (maxVotesByASingleUser > maxVotesPerGroup) {
-        return {error: {message: 'Your team has already spent their votes!'}}
+        return {error: {message: 'Your team has already spent their votes'}}
       }
     }
 
