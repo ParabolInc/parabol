@@ -62,6 +62,7 @@ export default {
     try {
       phases = await createNewMeetingPhases(teamId, meetingCount, meetingType, dataLoader)
     } catch (e) {
+      console.log('e', e)
       return standardError(new Error('Could not start meeting'), {userId: viewerId})
     }
     const organization = (await r
@@ -75,8 +76,7 @@ export default {
     if (meetingType === EMeetingTypeEnum.retrospective) {
       const meetingSettings = (await dataLoader
         .get('meetingSettings')
-        .load({teamId, meetingType})
-        .run()) as MeetingSettingsRetrospective
+        .load({teamId, meetingType})) as MeetingSettingsRetrospective
       const {totalVotes, maxVotesPerGroup} = meetingSettings
       meeting = new MeetingRetrospective({
         teamId,

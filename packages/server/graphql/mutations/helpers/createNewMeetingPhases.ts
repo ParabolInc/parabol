@@ -69,8 +69,7 @@ const createNewMeetingPhases = async (
   const now = new Date()
   const meetingSettings = (await dataLoader
     .get('meetingSettings')
-    .load({teamId, meetingType})
-    .run()) as MeetingSettingsRetrospective
+    .load({teamId, meetingType})) as MeetingSettingsRetrospective
   if (!meetingSettings) {
     throw new Error('No meeting setting found for team!')
   }
