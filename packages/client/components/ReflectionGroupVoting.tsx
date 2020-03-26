@@ -32,7 +32,7 @@ const UpvoteIcon = styled(Icon)<{isExpanded: boolean; isEnabled: boolean}>(
   ({isExpanded, isEnabled}) => ({
     color: isExpanded
       ? isEnabled
-        ? 'rgba(255, 255, 255, .65)'
+        ? '#fff'
         : 'rgba(255, 255, 255, .25)'
       : isEnabled
       ? PALETTE.TEXT_GRAY
@@ -51,11 +51,11 @@ const VoteCount = styled('span')<{voteCount: number; isExpanded: boolean}>(
   ({voteCount, isExpanded}) => ({
     color: isExpanded
       ? voteCount === 0
-        ? '#fff'
+        ? PALETTE.TEXT_LIGHT
         : '#fff'
       : voteCount === 0
       ? PALETTE.TEXT_GRAY_DARK
-      : PALETTE.TEXT_BLUE_DARK,
+      : PALETTE.TEXT_BLUE,
     fontWeight: 600,
     padding: '0 4px',
     userSelect: 'none'

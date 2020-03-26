@@ -14,9 +14,6 @@ const useAutoCheckIn = (meetingRef: any) => {
       graphql`
         fragment useAutoCheckIn_meeting on NewMeeting @inline {
           id
-          phases {
-            phaseType
-          }
           viewerMeetingMember {
             isCheckedIn
           }
@@ -24,10 +21,9 @@ const useAutoCheckIn = (meetingRef: any) => {
       `,
       meetingRef
     )
-    const {id: meetingId, phases, viewerMeetingMember} = meeting
+    const {id: meetingId, viewerMeetingMember} = meeting
     const {isCheckedIn} = viewerMeetingMember
-    const checkInPhase = phases.find((phase) => phase.phaseType === NewMeetingPhaseTypeEnum.checkin)
-    if (!checkInPhase && !isCheckedIn) {
+    if (!isCheckedIn) {
       NewMeetingCheckInMutation(atmosphere, {meetingId, userId: viewerId, isCheckedIn: true})
     }
   }, [])

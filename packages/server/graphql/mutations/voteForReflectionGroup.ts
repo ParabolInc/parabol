@@ -46,8 +46,11 @@ export default {
       })
     }
     const {meetingId} = reflectionGroup
-    const meeting = await dataLoader.get('newMeetings').load(meetingId)
-    const {endedAt, phases, teamId} = meeting
+    const meeting = await r
+      .table('NewMeeting')
+      .get(meetingId)
+      .run()
+    const {endedAt, phases, maxVotesPerGroup, teamId} = meeting
     if (!isTeamMember(authToken, teamId)) {
       return standardError(new Error('Team not found'), {userId: viewerId})
     }
@@ -78,9 +81,6 @@ export default {
       )
       if (votingError) return votingError
     } else {
-      const allSettings = await dataLoader.get('meetingSettingsByTeamId').load(teamId)
-      const retroSettings = allSettings.find((settings) => settings.meetingType === RETROSPECTIVE)
-      const {maxVotesPerGroup} = retroSettings
       const votingError = await safelyCastVote(
         authToken,
         meetingId,

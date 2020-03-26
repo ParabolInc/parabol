@@ -1,15 +1,15 @@
 import {GraphQLID, GraphQLInt, GraphQLNonNull} from 'graphql'
 import {MeetingSettingsThreshold, SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {MeetingTypeEnum, NewMeetingPhaseTypeEnum} from 'parabol-client/types/graphql'
+import mode from 'parabol-client/utils/mode'
 import isPhaseComplete from '../../../client/utils/meetings/isPhaseComplete'
 import getRethink from '../../database/rethinkDriver'
+import MeetingRetrospective from '../../database/types/MeetingRetrospective'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import UpdateRetroMaxVotesPayload from '../types/UpdateRetroMaxVotesPayload'
-import RetroMeetingMember from '../../database/types/RetroMeetingMember'
-import mode from 'parabol-client/utils/mode'
 
 const updateRetroMaxVotes = {
   type: GraphQLNonNull(UpdateRetroMaxVotesPayload),
@@ -39,10 +39,10 @@ const updateRetroMaxVotes = {
     const subOptions = {mutatorId, operationId}
 
     //AUTH
-    const meeting = await r
+    const meeting = (await r
       .table('NewMeeting')
       .get(meetingId)
-      .run()
+      .run()) as MeetingRetrospective
 
     if (!meeting) {
       return {error: {message: 'Meeting not found'}}
@@ -86,16 +86,40 @@ const updateRetroMaxVotes = {
       })
     }
 
-    if (totalVotes < oldTotalVotes) {
-      const meetingMembers = (await dataLoader
-        .get('meetingMembersByMeetingId')
-        .load(meetingId)) as RetroMeetingMember[]
-      const maxVotesSpent = Math.max(
-        ...meetingMembers.map(({votesRemaining}) => oldTotalVotes - votesRemaining)
-      )
-      if (maxVotesSpent > totalVotes) {
-        return {error: {message: 'Your team has already spent their votes'}}
-      }
+    const delta = totalVotes - oldTotalVotes
+    // this isn't 100% atomic, but it's done in a single call, so it's pretty close
+    // eventual consistancy is OK, it's just possible for a client to get a bad data in between the 2 updates
+    // if votesRemaining goes negative for any user, we know we can't decrease any more
+    console.log('')
+    const hasError = await r
+      .table('MeetingMember')
+      .getAll(meetingId, {index: 'meetingId'})
+      .update(
+        (member) => ({
+          votesRemaining: member('votesRemaining').add(delta)
+        }),
+        {returnChanges: true}
+      )('changes')('new_val')('votesRemaining')
+      .min()
+      .lt(0)
+      .default(false)
+      .do((undo) => {
+        return r.branch(
+          undo,
+          r
+            .table('MeetingMember')
+            .getAll(meetingId, {index: 'meetingId'})
+            .update((member) => ({
+              votesRemaining: member('votesRemaining').add(-delta)
+            })),
+          null
+        )
+      })
+      .run()
+
+    if (hasError) {
+      console.log('cannot continue')
+      return {error: {message: 'Your team has already spent their votes'}}
     }
 
     if (maxVotesPerGroup < oldMaxVotesPerGroup) {

@@ -99,7 +99,9 @@ const RetroVoteMetaHeader = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
   const {viewerMeetingMember, endedAt, facilitatorUserId} = meeting
-  const {menuProps, menuPortal, originRef, togglePortal} = useMenu(MenuPosition.UPPER_RIGHT)
+  const {menuProps, menuPortal, originRef, togglePortal} = useMenu<HTMLDivElement>(
+    MenuPosition.UPPER_RIGHT
+  )
   const teamVotesRemaining = meeting.votesRemaining || 0
   const myVotesRemaining = viewerMeetingMember.votesRemaining || 0
   const isFacilitating = facilitatorUserId === viewerId && !endedAt

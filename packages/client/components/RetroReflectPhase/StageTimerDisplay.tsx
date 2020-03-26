@@ -55,11 +55,11 @@ export default createFragmentContainer(StageTimerDisplay, {
         }
       }
       localStage {
-        ...StageTimerDisplayStage
+        ...StageTimerDisplayStage @relay(mask: false)
       }
       phases {
         stages {
-          ...StageTimerDisplayStage
+          ...StageTimerDisplayStage @relay(mask: false)
           isComplete
         }
       }

@@ -8,6 +8,10 @@ graphql`
     meeting {
       totalVotes
       maxVotesPerGroup
+      votesRemaining
+      viewerMeetingMember {
+        votesRemaining
+      }
     }
   }
 `
