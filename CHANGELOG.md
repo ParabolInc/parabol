@@ -5,6 +5,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 5.2.1 2020-Mar-26
+
+### Fixed
+* Broken timer
+
 ## 5.2.0 2020-Mar-25
 
 ### Added
