@@ -60,7 +60,7 @@ const ScrollWrapper = styled('div')({
 
 const RetroSidebarDiscussSection = (props: Props) => {
   const {atmosphere, gotoStageId, handleMenuClick, meeting} = props
-  const {localStage, facilitatorStageId, id: meetingId, phases} = meeting
+  const {localStage, facilitatorStageId, id: meetingId, phases, endedAt} = meeting
   const discussPhase = phases!.find(({phaseType}) => phaseType === NewMeetingPhaseTypeEnum.discuss)!
   // assert that the discuss phase and its stages are non-null
   // since we render this component when the vote phase is complete
@@ -125,7 +125,12 @@ const RetroSidebarDiscussSection = (props: Props) => {
                     </VoteTally>
                   )
                   return (
-                    <Draggable key={stage.id} draggableId={stage.id} index={idx}>
+                    <Draggable
+                      key={stage.id}
+                      draggableId={stage.id}
+                      index={idx}
+                      isDragDisabled={!!endedAt}
+                    >
                       {(dragProvided, dragSnapshot) => {
                         return (
                           <DraggableMeetingSubnavItem
@@ -181,18 +186,17 @@ export default createFragmentContainer(withAtmosphere(RetroSidebarDiscussSection
   meeting: graphql`
     fragment RetroSidebarDiscussSection_meeting on RetrospectiveMeeting {
       id
+      endedAt
       localStage {
         id
       }
-      ... on RetrospectiveMeeting {
-        facilitatorStageId
-        # load up the localPhase
-        phases {
-          ...RetroSidebarDiscussSectionDiscussPhase @relay(mask: false)
-        }
-        localStage {
-          id
-        }
+      facilitatorStageId
+      # load up the localPhase
+      phases {
+        ...RetroSidebarDiscussSectionDiscussPhase @relay(mask: false)
+      }
+      localStage {
+        id
       }
     }
   `

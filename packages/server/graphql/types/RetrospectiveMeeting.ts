@@ -18,13 +18,15 @@ import toTeamMemberId from '../../../client/utils/relay/toTeamMemberId'
 import RetrospectiveMeetingMember from './RetrospectiveMeetingMember'
 import filterTasksByMeeting from '../../utils/filterTasksByMeeting'
 import {GQLContext} from '../graphql'
+import {NewMeetingPhaseTypeEnum} from 'parabol-client/types/graphql'
 
 const ReflectionGroupSortEnum = new GraphQLEnumType({
   name: 'ReflectionGroupSortEnum',
   description:
     'sorts for the reflection group. default is sortOrder. sorting by voteCount filters out items without votes.',
   values: {
-    voteCount: {}
+    voteCount: {},
+    stageOrder: {}
   }
 })
 
@@ -96,6 +98,17 @@ const RetrospectiveMeeting = new GraphQLObjectType<any, GQLContext>({
           const groupsWithVotes = reflectionGroups.filter(({voterIds}) => voterIds.length > 0)
           groupsWithVotes.sort((a, b) => (a.voterIds.length < b.voterIds.length ? 1 : -1))
           return groupsWithVotes
+        } else if (sortBy === 'stageOrder') {
+          const meeting = await dataLoader.get('newMeetings').load(meetingId)
+          const {phases} = meeting
+          const discussPhase = phases.find(
+            (phase) => phase.phaseType === NewMeetingPhaseTypeEnum.discuss
+          )
+          if (!discussPhase) return reflectionGroups
+          const {stages} = discussPhase
+          return stages.map((stage) =>
+            reflectionGroups.find((group) => group.id === stage.reflectionGroupId)
+          )
         }
         reflectionGroups.sort((a, b) => (a.sortOrder < b.sortOrder ? -1 : 1))
         return reflectionGroups

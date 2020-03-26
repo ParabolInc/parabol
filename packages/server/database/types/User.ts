@@ -85,7 +85,7 @@ export default class User {
     this.lastSeenAt = lastSeenAt ?? null
     this.lastSeenAtURL = lastSeenAtURL ?? null
     this.preferredName = preferredName
-    this.segmentId = segmentId || undefined
+    this.segmentId = segmentId ?? undefined
     this.tier = tier ?? TierEnum.personal
   }
 }

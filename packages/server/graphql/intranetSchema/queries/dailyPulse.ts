@@ -87,7 +87,8 @@ const dailyPulse = {
       .nth(0)
       .default(null)
       .run()
-    const {id: userId} = user!
+    if (!user) throw new Error('Bad user')
+    const {id: userId} = user
     const slackAuth = await r
       .table('SlackAuth')
       .getAll(userId, {index: 'userId'})
