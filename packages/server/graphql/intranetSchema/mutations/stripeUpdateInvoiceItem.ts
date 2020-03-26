@@ -1,22 +1,76 @@
 import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql'
-import {InternalContext} from '../../graphql'
-import {isSuperUser} from '../../../utils/authorization'
+import Stripe from 'stripe'
 import getRethink from '../../../database/rethinkDriver'
-import StripeManager from '../../../utils/StripeManager'
 import InvoiceItemHook from '../../../database/types/InvoiceItemHook'
+import {isSuperUser} from '../../../utils/authorization'
+import sendToSentry from '../../../utils/sendToSentry'
+import StripeManager from '../../../utils/StripeManager'
+import {InternalContext} from '../../graphql'
 
 const MAX_STRIPE_DELAY = 3 // seconds
 
-const getBestHook = (possibleHooks: InvoiceItemHook[], hookQuantity: number) => {
+const getBestHook = (possibleHooks: InvoiceItemHook[]) => {
   if (possibleHooks.length === 1) return possibleHooks[0]
-  for (let i = 0; i < possibleHooks.length; i++) {
-    const curHook = possibleHooks[i]
-    const {quantity} = curHook
-    // if 2 hooks occurred at the same second, try grabbing the one with the accurate quantity
-    if (quantity === hookQuantity) return curHook
+  const firstHook = possibleHooks[possibleHooks.length - 1]
+  const {id: hookId} = firstHook
+  sendToSentry(new Error('Imperfect invoice item hook selected'), {tags: {hookId}})
+  return firstHook
+}
+
+const tagInvoiceItemWithHook = async (invoiceItem: Stripe.invoiceItems.InvoiceItem) => {
+  const r = await getRethink()
+  const {
+    id: invoiceItemId,
+    subscription,
+    period: {start},
+    amount,
+    quantity
+  } = invoiceItem
+  const isRefund = amount < 0
+  const invoiceItemName = isRefund ? 'previousInvoiceItemId' : 'invoiceItemId'
+  const quantityName = isRefund ? 'previousQuantity' : 'quantity'
+  const possibleHooks = await r
+    .table('InvoiceItemHook')
+    .between(start - MAX_STRIPE_DELAY, start, {index: 'prorationDate', rightBound: 'closed'})
+    .filter({
+      [quantityName]: quantity,
+      stripeSubscriptionId: subscription as string
+    })
+    .filter((row) =>
+      row(invoiceItemName)
+        .default(null)
+        .eq(null)
+    )
+    .orderBy(r.desc('prorationDate'))
+    .run()
+
+  if (possibleHooks.length === 0) {
+    sendToSentry(new Error('No hooks found invoice item'), {tags: {invoiceItemId}})
+    return false
   }
-  console.log('imperfect invoice item hook selected', possibleHooks[0])
-  return possibleHooks[0]
+
+  const hook = getBestHook(possibleHooks)
+  const {id: hookId, type, userId} = hook
+  const updatedRecord = await r
+    .table('InvoiceItemHook')
+    .get(hookId)
+    .update(
+      (row) => ({
+        [invoiceItemName]: row(invoiceItemName).default(invoiceItemId)
+      }),
+      {returnChanges: true}
+    )('changes')(0)('new_val')
+    .default(null)
+    .run()
+
+  if (!updatedRecord) {
+    // another webhook already picked this one, try again
+    return tagInvoiceItemWithHook(invoiceItem)
+  }
+
+  const manager = new StripeManager()
+  await manager.updateInvoiceItem(invoiceItemId, type, userId, hookId)
+  return true
 }
 
 export default {
@@ -30,40 +84,12 @@ export default {
     }
   },
   resolve: async (_source, {invoiceItemId}, {authToken}: InternalContext) => {
-    const r = await getRethink()
-
     // AUTH
     if (!isSuperUser(authToken)) {
       throw new Error('Don’t be rude.')
     }
-
     const manager = new StripeManager()
     const invoiceItem = await manager.retrieveInvoiceItem(invoiceItemId)
-    const {
-      subscription,
-      period: {start},
-      quantity,
-      amount
-    } = invoiceItem
-
-    const possibleHooks = await r
-      .table('InvoiceItemHook')
-      .between(start - MAX_STRIPE_DELAY, start, {index: 'prorationDate', rightBound: 'closed'})
-      .filter({stripeSubscriptionId: subscription as string})
-      .orderBy(r.desc('prorationDate'))
-      .run()
-
-    if (possibleHooks.length === 0) {
-      console.log('No hook found for', invoiceItemId)
-      return false
-    }
-
-    // if amount < 0, then the line item is a refund for unused time. else, it is a charge for remaining time
-    // the InvoiceItemHook.quantity is for the remaining time
-    const hookQty = amount < 0 ? quantity - 1 : quantity
-    const hook = getBestHook(possibleHooks, hookQty)
-    const {type, userId} = hook
-    await manager.updateInvoiceItem(invoiceItemId, type, userId)
-    return true
+    return tagInvoiceItemWithHook(invoiceItem)
   }
 }

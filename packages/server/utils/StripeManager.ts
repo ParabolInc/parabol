@@ -83,8 +83,13 @@ export default class StripeManager {
     return this.stripe.invoices.update(invoiceId, {metadata: {orgId}})
   }
 
-  async updateInvoiceItem(invoiceItemId: string, type: InvoiceItemType, userId: string) {
-    return this.stripe.invoiceItems.update(invoiceItemId, {metadata: {type, userId}})
+  async updateInvoiceItem(
+    invoiceItemId: string,
+    type: InvoiceItemType,
+    userId: string,
+    hookId: string
+  ) {
+    return this.stripe.invoiceItems.update(invoiceItemId, {metadata: {type, userId, hookId}})
   }
 
   async retrieveCustomer(customerId: string) {
@@ -101,6 +106,10 @@ export default class StripeManager {
 
   async retrieveInvoiceLines(invoiceId: string, options: IInvoiceLineItemRetrievalOptions) {
     return this.stripe.invoices.retrieveLines(invoiceId, options)
+  }
+
+  async retrieveSubscription(subscriptionId: string) {
+    return this.stripe.subscriptions.retrieve(subscriptionId)
   }
 
   async retrieveUpcomingInvoice(stripeId: string, stripeSubscriptionId: string) {
