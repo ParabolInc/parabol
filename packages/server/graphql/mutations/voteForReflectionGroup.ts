@@ -1,16 +1,17 @@
 import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import {NewMeetingPhaseTypeEnum} from 'parabol-client/types/graphql'
+import {VOTE} from '../../../client/utils/constants'
+import isPhaseComplete from '../../../client/utils/meetings/isPhaseComplete'
+import unlockAllStagesForPhase from '../../../client/utils/unlockAllStagesForPhase'
 import getRethink from '../../database/rethinkDriver'
+import MeetingRetrospective from '../../database/types/MeetingRetrospective'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
-import {RETROSPECTIVE, VOTE} from '../../../client/utils/constants'
-import isPhaseComplete from '../../../client/utils/meetings/isPhaseComplete'
+import standardError from '../../utils/standardError'
 import VoteForReflectionGroupPayload from '../types/VoteForReflectionGroupPayload'
 import safelyCastVote from './helpers/safelyCastVote'
 import safelyWithdrawVote from './helpers/safelyWithdrawVote'
-import unlockAllStagesForPhase from '../../../client/utils/unlockAllStagesForPhase'
-import standardError from '../../utils/standardError'
-import {NewMeetingPhaseTypeEnum} from 'parabol-client/types/graphql'
-import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 
 export default {
   type: VoteForReflectionGroupPayload,
@@ -46,10 +47,10 @@ export default {
       })
     }
     const {meetingId} = reflectionGroup
-    const meeting = await r
+    const meeting = (await r
       .table('NewMeeting')
       .get(meetingId)
-      .run()
+      .run()) as MeetingRetrospective
     const {endedAt, phases, maxVotesPerGroup, teamId} = meeting
     if (!isTeamMember(authToken, teamId)) {
       return standardError(new Error('Team not found'), {userId: viewerId})
@@ -101,7 +102,7 @@ export default {
     if (!isUnvote) {
       const discussPhase = phases.find(
         (phase) => phase.phaseType === NewMeetingPhaseTypeEnum.discuss
-      )
+      )!
       const {stages} = discussPhase
       const [firstStage] = stages
       const {isNavigableByFacilitator} = firstStage

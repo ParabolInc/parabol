@@ -12,7 +12,7 @@ const RejoinButton = styled(FloatingActionButton)({
 })
 
 interface Props {
-  endedAt: string
+  endedAt: string | null
   inSync: boolean
   onClick: (e: React.MouseEvent) => void
 }

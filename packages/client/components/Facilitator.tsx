@@ -108,7 +108,7 @@ const Facilitator = (props: Props) => {
   )
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
-  const isReadOnly = isDemoRoute() || viewerId === facilitatorUserId || endedAt
+  const isReadOnly = isDemoRoute() || viewerId === facilitatorUserId || !!endedAt
   const handleOnMouseEnter = () => !isReadOnly && FacilitatorMenu.preload()
   const handleOnClick = () => !isReadOnly && togglePortal()
   return (
