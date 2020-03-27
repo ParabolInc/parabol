@@ -46,7 +46,14 @@ export interface ActionMeetingPhaseProps {
 
 const ActionMeeting = (props: Props) => {
   const {meeting} = props
-  const {facilitatorStageId, localPhase, localStage, showSidebar, viewerMeetingMember} = meeting
+  const {
+    endedAt,
+    facilitatorStageId,
+    localPhase,
+    localStage,
+    showSidebar,
+    viewerMeetingMember
+  } = meeting
   const {
     toggleSidebar,
     streams,
@@ -91,6 +98,7 @@ const ActionMeeting = (props: Props) => {
         />
       </MeetingArea>
       <RejoinFacilitatorButton
+        endedAt={endedAt}
         inSync={localStage ? localStage.id === facilitatorStageId : true}
         onClick={() => gotoStageId(facilitatorStageId)}
       />
@@ -109,6 +117,7 @@ export default createFragmentContainer(ActionMeeting, {
       ...ActionMeetingAgendaItems_meeting
       ...ActionMeetingLastCall_meeting
       ...NewMeetingAvatarGroup_meeting
+      endedAt
       localPhase {
         id
         phaseType

@@ -19,7 +19,7 @@ interface Props {
   isExpanded?: boolean
   portalStatus: PortalStatus
   titleInputRef: RefObject<HTMLInputElement>
-  dataCy: string
+  dataCy?: string
 }
 
 const GroupHeader = styled('div')<{isExpanded: boolean; portalStatus: PortalStatus}>(

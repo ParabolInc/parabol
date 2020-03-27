@@ -52,7 +52,7 @@ interface Props {
   staticIdx: number
   staticReflections: DraggableReflectionCard_staticReflections
   swipeColumn?: SwipeColumn
-  dataCy: string
+  dataCy?: string
 }
 
 export interface TargetBBox {

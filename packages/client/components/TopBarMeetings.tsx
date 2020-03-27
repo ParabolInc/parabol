@@ -1,16 +1,12 @@
 import graphql from 'babel-plugin-relay/macro'
 import {MenuPosition} from 'hooks/useCoords'
 import useMenu from 'hooks/useMenu'
-import React, {useEffect, useState} from 'react'
+import useSnacksForNewMeetings from 'hooks/useSnacksForNewMeetings'
+import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import lazyPreload from 'utils/lazyPreload'
-import TopBarIcon from './TopBarIcon'
 import {TopBarMeetings_teams} from '__generated__/TopBarMeetings_teams.graphql'
-import {TopBarMeetingsActiveMeetings} from '__generated__/TopBarMeetingsActiveMeetings.graphql'
-import ms from 'ms'
-import useAtmosphere from 'hooks/useAtmosphere'
-import useRouter from 'hooks/useRouter'
-import useSnacksForNewMeetings from 'hooks/useSnacksForNewMeetings'
+import TopBarIcon from './TopBarIcon'
 
 const SelectMeetingDropdown = lazyPreload(() =>
   import(
