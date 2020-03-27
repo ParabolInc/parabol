@@ -25,7 +25,7 @@ const AuthProvider = () => {
       <InviteDialog>
         <DialogTitle>Authentication Error</DialogTitle>
         <DialogContent>
-          <StyledError>{error}</StyledError>}
+          <StyledError>{error}</StyledError>
         </DialogContent>
       </InviteDialog>
     )

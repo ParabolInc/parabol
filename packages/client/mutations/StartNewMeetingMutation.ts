@@ -1,12 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {StartNewMeetingMutation_team} from '__generated__/StartNewMeetingMutation_team.graphql'
-import {
-  HistoryLocalHandler,
-  OnNextHandler,
-  OnNextHistoryContext,
-  StandardMutation
-} from '../types/relayMutations'
+import {HistoryLocalHandler, StandardMutation} from '../types/relayMutations'
 import {StartNewMeetingMutation as TStartNewMeetingMutation} from '../__generated__/StartNewMeetingMutation.graphql'
 
 graphql`
