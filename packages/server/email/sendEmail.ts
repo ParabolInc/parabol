@@ -103,7 +103,7 @@ const sendMailgunEmail = async (to: string, emailContent: EmailContent, tags: st
     })
   } catch (e) {
     console.log(e)
-    sendToSentry(new Error(`Error sending email: ${e.message}`))
+    sendToSentry(new Error(`Error sending email: ${e.message}`), {tags: {to}})
     return false
   }
   return true
