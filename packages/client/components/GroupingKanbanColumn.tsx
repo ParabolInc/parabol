@@ -110,7 +110,11 @@ const GroupingKanbanColumn = (props: Props) => {
           </AddReflectionButton>
         )}
       </ColumnHeader>
-      <ColumnBody data-cy={`group-column-${question}-body`} isDesktop={isDesktop} {...{[DragAttribute.DROPZONE]: promptId}}>
+      <ColumnBody
+        data-cy={`group-column-${question}-body`}
+        isDesktop={isDesktop}
+        {...{[DragAttribute.DROPZONE]: promptId}}
+      >
         {reflectionGroups
           .filter((group) => {
             // group may be undefined because relay could GC before useMemo in the Kanban recomputes >:-(

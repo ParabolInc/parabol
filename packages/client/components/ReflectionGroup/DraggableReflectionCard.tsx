@@ -100,7 +100,12 @@ const DraggableReflectionCard = (props: Props) => {
       onTouchStart={handleDrag}
       isDraggable={canDrag}
     >
-      <ReflectionCard dataCy={dataCy} reflection={reflection} isClipped={isClipped} meeting={meeting} />
+      <ReflectionCard
+        dataCy={dataCy}
+        reflection={reflection}
+        isClipped={isClipped}
+        meeting={meeting}
+      />
     </DragWrapper>
   )
 }

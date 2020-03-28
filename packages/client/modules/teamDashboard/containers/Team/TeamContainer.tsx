@@ -7,6 +7,7 @@ import {matchPath, Switch} from 'react-router-dom'
 import Team from '../../components/Team/Team'
 import useRouter from '../../../../hooks/useRouter'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
+import ErrorBoundary from 'components/ErrorBoundary'
 
 const AgendaTasks = lazy(() =>
   import(/* webpackChunkName: 'AgendaAndTasksRoot' */ '../../components/AgendaAndTasksRoot')
@@ -50,19 +51,21 @@ const TeamContainer = (props: Props) => {
     })
   )
   return (
-    <Team isSettings={isSettings} team={team}>
-      <Suspense fallback={''}>
-        <Switch>
-          {/* TODO: replace match.path with a relative when the time comes: https://github.com/ReactTraining/react-router/pull/4539 */}
-          <Route exact path={match.path} component={AgendaTasks} />
-          <Route path={`${match.path}/settings`} component={TeamSettings} />
-          <Route
-            path={`${match.path}/archive`}
-            render={(p) => <ArchivedTasks {...p} team={team} />}
-          />
-        </Switch>
-      </Suspense>
-    </Team>
+    <ErrorBoundary>
+      <Team isSettings={isSettings} team={team}>
+        <Suspense fallback={''}>
+          <Switch>
+            {/* TODO: replace match.path with a relative when the time comes: https://github.com/ReactTraining/react-router/pull/4539 */}
+            <Route exact path={match.path} component={AgendaTasks} />
+            <Route path={`${match.path}/settings`} component={TeamSettings} />
+            <Route
+              path={`${match.path}/archive`}
+              render={(p) => <ArchivedTasks {...p} team={team} />}
+            />
+          </Switch>
+        </Suspense>
+      </Team>
+    </ErrorBoundary>
   )
 }
 

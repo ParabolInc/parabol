@@ -278,9 +278,9 @@ const maybeReduceUnknowns = async (
       .default(null)
       .run()
     if (hook) {
-      const {type, userId} = hook
+      const {id: hookId, type, userId} = hook
       // push it back to stripe for posterity
-      manager.updateInvoiceItem(unknownLineItem.id, type, userId).catch()
+      manager.updateInvoiceItem(unknownLineItem.id, type, userId, hookId).catch()
       // mutate the original line item
       unknownLineItem.metadata = {
         type,

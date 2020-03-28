@@ -16,6 +16,7 @@ const useGotoStageId = (meetingRef: any) => {
   const meeting = readInlineData<useGotoStageId_meeting>(
     graphql`
       fragment useGotoStageId_meeting on NewMeeting @inline {
+        endedAt
         teamId
         facilitatorStageId
         facilitatorUserId
@@ -35,7 +36,14 @@ const useGotoStageId = (meetingRef: any) => {
   )
   return useCallback(
     async (stageId: string) => {
-      const {teamId, facilitatorStageId, facilitatorUserId, id: meetingId, phases} = meeting
+      const {
+        endedAt,
+        teamId,
+        facilitatorStageId,
+        facilitatorUserId,
+        id: meetingId,
+        phases
+      } = meeting
       const {viewerId} = atmosphere
       const isViewerFacilitator = viewerId === facilitatorUserId
       const res = findStageById(phases, stageId)
@@ -48,7 +56,7 @@ const useGotoStageId = (meetingRef: any) => {
         await ((atmosphere as any) as LocalAtmosphere).clientGraphQLServer.finishBotActions()
       }
       updateLocalStage(atmosphere, meetingId, stageId)
-      if (isViewerFacilitator && isNavigableByFacilitator) {
+      if (isViewerFacilitator && isNavigableByFacilitator && !endedAt) {
         const res = findStageById(phases, facilitatorStageId)
         if (!res) return
         const {stage} = res
