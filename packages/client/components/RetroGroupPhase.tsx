@@ -95,11 +95,11 @@ const RetroGroupPhase = (props: Props) => {
       </MeetingHeaderAndPhase>
       <MeetingFacilitatorBar isFacilitating={isFacilitating}>
         {!isComplete && <StageTimerControl defaultTimeLimit={5} meeting={meeting} />}
-        <CenteredControlBlock isComplete={isComplete}>
+        <CenteredControlBlock data-cy={`grouping-complete-${isDemoStageComplete}`}isComplete={isComplete}>
           <BottomNavControl
             dataCy={`next-${nextPhaseLabel.toLowerCase()}`}
             isBouncing={isDemoStageComplete || (!isAsync && !isComplete && timedOut)}
-            disabled={isDemoRoute() && !isDemoStageComplete}
+            disabled={isDemoRoute() && !isDemoStageComplete && !window.Cypress }
             onClick={() => gotoNext()}
             onKeyDown={handleRightArrow(() => gotoNext())}
             ref={gotoNextRef}
