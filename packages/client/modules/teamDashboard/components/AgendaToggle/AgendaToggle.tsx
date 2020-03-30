@@ -10,11 +10,21 @@ import LinkButton from '../../../../components/LinkButton'
 import IconLabel from '../../../../components/IconLabel'
 import styled from '@emotion/styled'
 import {PALETTE} from '../../../../styles/paletteV2'
+import {Breakpoint} from '../../../../types/constEnums'
+import makeMinWidthMediaQuery from 'utils/makeMinWidthMediaQuery'
+
+const desktopBreakpoint = makeMinWidthMediaQuery(Breakpoint.SIDEBAR_LEFT)
 
 const StyledLinkButton = styled(LinkButton)({
+  color: PALETTE.TEXT_GRAY,
+  fontWeight: 600,
   height: 24,
-  '&:hover, &:focus, &:active': {
-    color: PALETTE.TEXT_GRAY
+  marginTop: 16,
+  ':hover, :focus, :active': {
+    color: PALETTE.TEXT_MAIN
+  },
+  [desktopBreakpoint]: {
+    marginTop: 0
   }
 })
 

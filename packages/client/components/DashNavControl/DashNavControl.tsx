@@ -6,8 +6,10 @@ import styled from '@emotion/styled'
 import {PALETTE} from '../../styles/paletteV2'
 
 const StyledLinkButton = styled(LinkButton)({
-  '&:hover, &:focus, &:active': {
-    color: PALETTE.TEXT_GRAY
+  color: PALETTE.TEXT_GRAY,
+  fontWeight: 600,
+  ':hover, :focus, :active': {
+    color: PALETTE.TEXT_MAIN
   }
 })
 
