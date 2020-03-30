@@ -18,6 +18,7 @@ const StyledCopyShortLink = styled(CopyShortLink)({
   border: `1px dashed ${PALETTE.EMPHASIS_COOL_LIGHTER}`,
   color: PALETTE.EMPHASIS_COOL,
   fontSize: 15,
+  fontWeight: 600,
   margin: '0 0 32px',
   padding: 11,
   ':hover': {

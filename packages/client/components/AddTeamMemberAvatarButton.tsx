@@ -22,6 +22,7 @@ interface Props extends WithAtmosphereProps {
 
 const AddButton = styled(OutlinedButton)<{isMeeting: boolean | undefined}>(
   {
+    borderWidth: 2,
     fontSize: 24,
     fontWeight: 400,
     height: 32,
