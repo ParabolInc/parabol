@@ -56,7 +56,7 @@ const removeFromOrg = async (
 
   // need to make sure the org doc is updated before adjusting this
   const {joinedAt, newUserUntil} = organizationUser
-  const prorationDate = newUserUntil >= now ? new Date(joinedAt) : now
+  const prorationDate = newUserUntil >= now ? new Date(joinedAt) : undefined
   try {
     await adjustUserCount(userId, orgId, InvoiceItemType.REMOVE_USER, {prorationDate})
   } catch (e) {

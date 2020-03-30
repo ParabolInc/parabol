@@ -58,7 +58,7 @@ export default {
           index: 'prorationDate'
         })
         .filter({
-          stripeSubscriptionId,
+          stripeSubscriptionId: stripeSubscriptionId!,
           type: InvoiceItemType.PAUSE_USER,
           userId
         })

@@ -95,7 +95,7 @@ export default createFragmentContainer(QuickStats, {
       __typename
       meetingType
       ... on RetrospectiveMeeting {
-        reflectionGroups {
+        reflectionGroups(sortBy: stageOrder) {
           voteCount
           reflections {
             id

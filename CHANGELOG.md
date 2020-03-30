@@ -5,6 +5,26 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 5.2.1 2020-Mar-26
+
+### Fixed
+* Broken timer
+
+## 5.2.0 2020-Mar-25
+
+### Added
+* Links to discussion items in the meeting summary (#3708)
+* Links to old meetings in the timeline events (#3683)
+* Ability to re-enter old meetings (#3683)
+* Tests for Group phase (#3665)
+
+### Fixed
+* Sanitize jpg user avatar uploads (#3706)
+* Show task errors in footer (#3696)
+* Calls to stripe are Atomic and throttled (#3673)
+* Handful of Sentry fixes (#3670)
+* case-insensitive email addresses (#3667)
+
 ## 5.1.0 2020-Mar-22
 
 ### Added

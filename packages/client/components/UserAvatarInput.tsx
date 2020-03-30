@@ -10,6 +10,7 @@ import UpdateUserProfileMutation from '../mutations/UpdateUserProfileMutation'
 import withMutationProps, {WithMutationProps} from '../utils/relay/withMutationProps'
 import sendAssetToS3 from '../utils/sendAssetToS3'
 import svgToPng from '../utils/svgToPng'
+import jpgWithoutEXIF from 'utils/jpgWithoutEXIF'
 
 interface Props extends WithAtmosphereProps, WithMutationProps {
   picture: string
@@ -44,6 +45,9 @@ class UserAvatarInput extends Component<Props> {
     const {atmosphere, setDirty, submitting, onError, onCompleted, submitMutation} = this.props
     if (submitting) return
     setDirty()
+    if (file.type === 'image/jpeg') {
+      file = (await jpgWithoutEXIF(file)) as File
+    }
     if (file.size > 2 ** 20) {
       onError('File is too large')
       return

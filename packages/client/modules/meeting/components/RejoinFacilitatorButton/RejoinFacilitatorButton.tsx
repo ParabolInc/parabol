@@ -12,13 +12,14 @@ const RejoinButton = styled(FloatingActionButton)({
 })
 
 interface Props {
+  endedAt: string
   inSync: boolean
   onClick: (e: React.MouseEvent) => void
 }
 
 const RejoinFacilitatorButton = (props: Props) => {
-  const {inSync, onClick} = props
-  if (inSync) return null
+  const {endedAt, inSync, onClick} = props
+  if (inSync || endedAt) return null
   return (
     <RejoinButton onClick={onClick} palette='pink'>
       <IconLabel icon='person_pin_circle' label='Rejoin Facilitator' />
