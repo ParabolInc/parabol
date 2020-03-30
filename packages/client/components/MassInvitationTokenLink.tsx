@@ -11,6 +11,7 @@ import {PALETTE} from '../styles/paletteV2'
 import {Threshold} from '../types/constEnums'
 import makeHref from '../utils/makeHref'
 import {MassInvitationTokenLink_viewer} from '../__generated__/MassInvitationTokenLink_viewer.graphql'
+import makeMinWidthQuery from 'utils/makeMinWidthMediaQuery'
 
 const StyledCopyShortLink = styled(CopyShortLink)({
   borderRadius: 4,
@@ -18,11 +19,13 @@ const StyledCopyShortLink = styled(CopyShortLink)({
   color: PALETTE.EMPHASIS_COOL,
   fontSize: 15,
   margin: '0 0 32px',
-  // make sure the length doesn't change the width
-  minWidth: 280,
   padding: 11,
   ':hover': {
     color: PALETTE.EMPHASIS_COOL_LIGHTER
+  },
+  [makeMinWidthQuery(400)]: {
+    // make sure the length doesn't change the width
+    minWidth: 280
   }
 })
 
