@@ -5,7 +5,7 @@ import {PALETTE} from '../../styles/paletteV2'
 import useRefreshInterval from '../../hooks/useRefreshInterval'
 import useBreakpoint from '../../hooks/useBreakpoint'
 import {DECELERATE, fadeIn} from '../../styles/animation'
-import {Breakpoint, ZIndex} from '../../types/constEnums'
+import {Breakpoint} from '../../types/constEnums'
 
 interface Props {
   endTime: string
