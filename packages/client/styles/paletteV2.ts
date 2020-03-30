@@ -62,6 +62,7 @@ export const enum PALETTE {
   GRADIENT_WARM_LIGHTENED = 'linear-gradient(to right, #EA8288 0, #EA82A7 100%)',
   ERROR_MAIN = '#ED4C56',
   LINK_BLUE = '#329AE5',
+  LINK_BLUE_HOVER = '#246FA6',
   LINK_MAIN = '#444258',
   LINK_LIGHT = '#82809A',
   PLACEHOLDER = '#4442589a',
