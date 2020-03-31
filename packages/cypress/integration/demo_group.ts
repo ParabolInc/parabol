@@ -1,3 +1,5 @@
+
+
 function addReflection(column, text) {
   cy.get(`[data-cy=add-reflection-${column}]`).click()
 
@@ -151,14 +153,16 @@ describe('Test Group page Demo', () => {
   })
 
   it('Verify that robots can group cards', () => {
-    cy.wait(3000)
 
+    cy.get(`[data-cy=grouping-complete-true]`).should('exist')
+        
     checkGroup('Start', 3)
 
     checkGroup('Continue', 3)
   })
 
   it('Test advancing to voting', () => {
+
     cy.visitPhase('vote')
   })
 })

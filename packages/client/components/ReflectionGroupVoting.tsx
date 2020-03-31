@@ -105,9 +105,10 @@ class ReflectionGroupVoting extends Component<Props> {
     const canVote = viewerVoteCount < maxVotesPerGroup && votesRemaining > 0 && !isComplete
     return (
       <UpvoteColumn>
-        <UpvoteRow>
+        <UpvoteRow data-cy="reflection-vote-row">
           {upvotes.map((idx) => (
             <UpvoteIcon
+              data-cy={`completed-vote-${idx}`}
               key={idx}
               color={isExpanded ? PALETTE.EMPHASIS_COOL_LIGHTER : PALETTE.EMPHASIS_COOL}
               onClick={this.unvote}
@@ -117,6 +118,7 @@ class ReflectionGroupVoting extends Component<Props> {
           ))}
           {canVote && (
             <UpvoteIcon
+              data-cy={`add-vote`}
               color={isExpanded ? 'rgba(255, 255, 255, .65)' : PALETTE.TEXT_GRAY}
               onClick={this.vote}
             >
