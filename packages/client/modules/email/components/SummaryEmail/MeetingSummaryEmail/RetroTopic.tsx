@@ -24,7 +24,9 @@ const votesBlock = {
 }
 
 const voteCountStyle = {
-  paddingLeft: 4
+  color: PALETTE.TEXT_GRAY,
+  paddingLeft: 4,
+  textDecoration: 'none'
 }
 
 const imageStyle = {
