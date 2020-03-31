@@ -14,8 +14,7 @@ const topicThemeHeading = {
   display: 'block',
   fontFamily: FONT_FAMILY.SANS_SERIF,
   fontSize: 16,
-  fontWeight: 600,
-  paddingTop: 16
+  fontWeight: 600
 }
 
 const votesBlock = {
@@ -48,7 +47,7 @@ const RetroTopic = (props: Props) => {
   return (
     <>
       <tr>
-        <td align='center'>
+        <td align='center' style={{paddingTop: 20}}>
           <AnchorIfEmail href={to} isEmail={isEmail} style={topicThemeHeading}>
             {title}
           </AnchorIfEmail>
