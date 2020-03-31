@@ -30,7 +30,7 @@ const ErrorComponent = (props: Props) => {
   return (
     <ErrorBlock>
       {'An error has occurred! We’ve alerted the developers. Try refreshing the page'}
-      <Button onClick={openPortal}>Report Feedback</Button>
+      {eventId && <Button onClick={openPortal}>Report Feedback</Button>}
       {modalPortal(<ReportErrorFeedback closePortal={closePortal} eventId={eventId} />)}
     </ErrorBlock>
   )
