@@ -11,6 +11,7 @@ import EmailReflectionCard from './EmailReflectionCard'
 
 const topicThemeHeading = {
   color: PALETTE.TEXT_BLUE,
+  display: 'block',
   fontFamily: FONT_FAMILY.SANS_SERIF,
   fontSize: 16,
   fontWeight: 600,
