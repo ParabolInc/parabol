@@ -1,6 +1,8 @@
 import styled from '@emotion/styled'
 import {keyframes} from '@emotion/core'
 import FlatButton, {FlatButtonProps} from './FlatButton'
+import {TransitionStatus} from 'hooks/useTransition'
+import {BezierCurve} from 'types/constEnums'
 
 const BounceKeyframes = keyframes`
   from, 10%, 26%, 40%, 50%, to {
@@ -23,16 +25,19 @@ const BounceKeyframes = keyframes`
 
 interface Props extends FlatButtonProps {
   isBouncing?: boolean
+  status: TransitionStatus
 }
 
-const BottomNavControl = styled(FlatButton)<Props>(({isBouncing}) => ({
+const BottomNavControl = styled(FlatButton)<Props>(({isBouncing, status}) => ({
   animation: isBouncing ? `${BounceKeyframes.toString()} 2s infinite` : undefined,
   border: 0,
   borderRadius: 0,
   minHeight: 56,
-  minWidth: 90,
+  width: status === TransitionStatus.MOUNTED || status === TransitionStatus.EXITING ? 0 : 90,
+  opacity: status === TransitionStatus.MOUNTED || status === TransitionStatus.EXITING ? 0 : 1,
   padding: 0,
-  transformOrigin: 'center bottom'
+  transformOrigin: 'center bottom',
+  transition: `all 300ms ${BezierCurve.DECELERATE}`
 }))
 
 export default BottomNavControl
