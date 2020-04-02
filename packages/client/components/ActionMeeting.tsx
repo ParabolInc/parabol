@@ -1,18 +1,17 @@
+import graphql from 'babel-plugin-relay/macro'
 import React, {ReactElement, useEffect} from 'react'
 import {createFragmentContainer} from 'react-relay'
-import graphql from 'babel-plugin-relay/macro'
+import {ActionMeeting_meeting} from '__generated__/ActionMeeting_meeting.graphql'
+import useGotoNext from '../hooks/useGotoNext'
+import useMeeting from '../hooks/useMeeting'
+import NewMeetingAvatarGroup from '../modules/meeting/components/MeetingAvatarGroup/NewMeetingAvatarGroup'
 import {ValueOf} from '../types/generics'
+import {NewMeetingPhaseTypeEnum} from '../types/graphql'
+import lazyPreload from '../utils/lazyPreload'
 import ActionMeetingSidebar from './ActionMeetingSidebar'
 import MeetingArea from './MeetingArea'
 import MeetingStyles from './MeetingStyles'
-import useMeeting from '../hooks/useMeeting'
-import NewMeetingAvatarGroup from '../modules/meeting/components/MeetingAvatarGroup/NewMeetingAvatarGroup'
-import RejoinFacilitatorButton from '../modules/meeting/components/RejoinFacilitatorButton/RejoinFacilitatorButton'
-import {NewMeetingPhaseTypeEnum} from '../types/graphql'
-import lazyPreload from '../utils/lazyPreload'
 import ResponsiveDashSidebar from './ResponsiveDashSidebar'
-import {ActionMeeting_meeting} from '__generated__/ActionMeeting_meeting.graphql'
-import useGotoNext from '../hooks/useGotoNext'
 
 interface Props {
   meeting: ActionMeeting_meeting
@@ -97,11 +96,6 @@ const ActionMeeting = (props: Props) => {
           }
         />
       </MeetingArea>
-      <RejoinFacilitatorButton
-        endedAt={endedAt}
-        inSync={localStage ? localStage.id === facilitatorStageId : true}
-        onClick={() => gotoStageId(facilitatorStageId)}
-      />
     </MeetingStyles>
   )
 }

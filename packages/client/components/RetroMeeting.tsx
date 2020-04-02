@@ -1,20 +1,20 @@
+import graphql from 'babel-plugin-relay/macro'
 import React, {ReactElement} from 'react'
 import {createFragmentContainer} from 'react-relay'
-import graphql from 'babel-plugin-relay/macro'
-import {ValueOf} from '../types/generics'
-import MeetingStyles from './MeetingStyles'
-import RetroMeetingSidebar from './RetroMeetingSidebar'
+import {RetroMeeting_meeting} from '__generated__/RetroMeeting_meeting.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
+import useGotoNext from '../hooks/useGotoNext'
 import useMeeting from '../hooks/useMeeting'
+import LocalAtmosphere from '../modules/demo/LocalAtmosphere'
 import NewMeetingAvatarGroup from '../modules/meeting/components/MeetingAvatarGroup/NewMeetingAvatarGroup'
-import RejoinFacilitatorButton from '../modules/meeting/components/RejoinFacilitatorButton/RejoinFacilitatorButton'
+import {RetroDemo} from '../types/constEnums'
+import {ValueOf} from '../types/generics'
 import {NewMeetingPhaseTypeEnum} from '../types/graphql'
 import lazyPreload from '../utils/lazyPreload'
-import LocalAtmosphere from '../modules/demo/LocalAtmosphere'
+import MeetingControlBar from './MeetingControlBar'
+import MeetingStyles from './MeetingStyles'
 import ResponsiveDashSidebar from './ResponsiveDashSidebar'
-import {RetroDemo} from '../types/constEnums'
-import {RetroMeeting_meeting} from '__generated__/RetroMeeting_meeting.graphql'
-import useGotoNext from '../hooks/useGotoNext'
+import RetroMeetingSidebar from './RetroMeetingSidebar'
 
 interface Props {
   meeting: RetroMeeting_meeting
@@ -105,10 +105,10 @@ const RetroMeeting = (props: Props) => {
           />
         }
       />
-      <RejoinFacilitatorButton
-        endedAt={endedAt}
-        inSync={localStage ? localStage.id === facilitatorStageId : true}
-        onClick={() => gotoStageId(facilitatorStageId)}
+      <MeetingControlBar
+        meeting={meeting}
+        handleGotoNext={handleGotoNext}
+        gotoStageId={gotoStageId}
       />
     </MeetingStyles>
   )
@@ -125,6 +125,7 @@ export default createFragmentContainer(RetroMeeting, {
       ...RetroVotePhase_meeting
       ...RetroDiscussPhase_meeting
       ...NewMeetingAvatarGroup_meeting
+      ...MeetingControlBar_meeting
       id
       showSidebar
       endedAt
