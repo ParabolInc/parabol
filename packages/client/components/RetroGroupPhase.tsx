@@ -102,7 +102,7 @@ const RetroGroupPhase = (props: Props) => {
           <BottomNavControl
             dataCy={`next-${nextPhaseLabel.toLowerCase()}`}
             isBouncing={isDemoStageComplete || (!isAsync && !isComplete && timedOut)}
-            disabled={isDemoRoute() && !isDemoStageComplete && !window.Cypress}
+            disabled={isDemoRoute() && !isDemoStageComplete && !(window as any).Cypress}
             onClick={() => gotoNext()}
             onKeyDown={handleRightArrow(() => gotoNext())}
             ref={gotoNextRef}
