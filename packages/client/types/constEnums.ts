@@ -24,7 +24,8 @@ export const enum Breakpoint {
   NEW_MEETING_GRID = 1112,
   NEW_MEETING_SELECTOR = 500,
   SINGLE_REFLECTION_COLUMN = 704, // (ReflectionWith + 16) * 2,
-  DASH_BREAKPOINT_WIDEST = 1816 // (4*296) + (5*24) + (256*2) = 4 card cols, 4 col gutters, 2 sidebars
+  DASH_BREAKPOINT_WIDEST = 1816, // (4*296) + (5*24) + (256*2) = 4 card cols, 4 col gutters, 2 sidebars
+  VOTE_PHASE = 800
 }
 
 export const enum Card {
@@ -158,9 +159,10 @@ export const enum MeetingLabels {
   TIMER = 'Timer'
 }
 
-export const enum MeetingSettingsDefaults {
-  RETROSPECTIVE_TOTAL_VOTES = 5,
-  RETROSPECTIVE_MAX_VOTES_PER_GROUP = 3
+export const enum MeetingSettingsThreshold {
+  RETROSPECTIVE_TOTAL_VOTES_DEFAULT = 5,
+  RETROSPECTIVE_MAX_VOTES_PER_GROUP_DEFAULT = 3,
+  RETROSPECTIVE_TOTAL_VOTES_MAX = 12
 }
 
 // equal to utils/constants

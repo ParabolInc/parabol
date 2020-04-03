@@ -7,7 +7,6 @@ import {RetroDiscussPhase_meeting} from '__generated__/RetroDiscussPhase_meeting
 import EditorHelpModalContainer from '../containers/EditorHelpModalContainer/EditorHelpModalContainer'
 import useAtmosphere from '../hooks/useAtmosphere'
 import MeetingFacilitatorBar from '../modules/meeting/components/MeetingControlBar/MeetingFacilitatorBar'
-import {meetingVoteIcon} from '../styles/meeting'
 import {PALETTE} from '../styles/paletteV2'
 import {ICON_SIZE} from '../styles/typographyV2'
 import {Breakpoint, ElementWidth} from '../types/constEnums'
@@ -207,7 +206,7 @@ const RetroDiscussPhase = (props: Props) => {
               <DiscussHeader>
                 <TopicHeading>{`“${title}”`}</TopicHeading>
                 <VoteMeta>
-                  <VoteIcon>{meetingVoteIcon}</VoteIcon>
+                  <VoteIcon>{'thumb_up'}</VoteIcon>
                   {voteCount || 0}
                 </VoteMeta>
               </DiscussHeader>

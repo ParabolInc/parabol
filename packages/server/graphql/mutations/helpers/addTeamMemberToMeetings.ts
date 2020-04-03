@@ -42,7 +42,7 @@ const addTeamMemberToMeetings = async (
       if (updatesPhase) {
         setInPhase(updatesPhase, new UpdatesStage(teamMember.id))
       }
-      const [meetingMember] = await createMeetingMembers(activeMeeting, [teamMember], dataLoader)
+      const [meetingMember] = createMeetingMembers(activeMeeting, [teamMember])
       await r({
         meeting: r
           .table('NewMeeting')

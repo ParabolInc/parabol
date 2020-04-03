@@ -3205,6 +3205,11 @@ export interface IMutation {
   updateReflectionGroupTitle: IUpdateReflectionGroupTitlePayload | null
 
   /**
+   * Change the max votes for participants
+   */
+  updateRetroMaxVotes: UpdateRetroMaxVotesPayload
+
+  /**
    * Update a task with a change in content, ownership, or status
    */
   updateTask: IUpdateTaskPayload | null
@@ -3999,6 +4004,23 @@ export interface IUpdateReflectionGroupTitleOnMutationArguments {
   title: string
 }
 
+export interface IUpdateRetroMaxVotesOnMutationArguments {
+  /**
+   * The total number of votes for each participant
+   */
+  totalVotes: number
+
+  /**
+   * The total number of votes for each participant to vote on a single topic
+   */
+  maxVotesPerGroup: number
+
+  /**
+   * the meeting to update
+   */
+  meetingId: string
+}
+
 export interface IUpdateTaskOnMutationArguments {
   /**
    * The part of the site where the creation occurred
@@ -4586,6 +4608,11 @@ export interface IRetrospectiveMeeting {
   commentCount: number
 
   /**
+   * the number of votes allowed for each participant to cast on a single group
+   */
+  maxVotesPerGroup: number
+
+  /**
    * the next smallest distance threshold to guarantee at least 1 more grouping will be achieved
    */
   nextAutoGroupThreshold: number | null
@@ -4624,6 +4651,11 @@ export interface IRetrospectiveMeeting {
    * The number of topics generated in the meeting
    */
   topicCount: number
+
+  /**
+   * the total number of votes allowed for each participant
+   */
+  totalVotes: number
 
   /**
    * The sum total of the votes remaining for the meeting members that are present in the meeting
@@ -6619,6 +6651,20 @@ export interface IUpdateReflectionGroupTitlePayload {
   reflectionGroup: IRetroReflectionGroup | null
 }
 
+/**
+ * Return object for UpdateRetroMaxVotesPayload
+ */
+export type UpdateRetroMaxVotesPayload = IErrorPayload | IUpdateRetroMaxVotesSuccess
+
+export interface IUpdateRetroMaxVotesSuccess {
+  __typename: 'UpdateRetroMaxVotesSuccess'
+
+  /**
+   * the meeting with the updated max votes
+   */
+  meeting: IRetrospectiveMeeting
+}
+
 export interface IUpdateTaskInput {
   /**
    * The task id
@@ -6777,6 +6823,7 @@ export type MeetingSubscriptionPayload =
   | IUpdateNewCheckInQuestionPayload
   | IUpdateReflectionContentPayload
   | IUpdateReflectionGroupTitlePayload
+  | IUpdateRetroMaxVotesSuccess
   | IVoteForReflectionGroupPayload
 
 export interface IUpdateDragLocationPayload {
