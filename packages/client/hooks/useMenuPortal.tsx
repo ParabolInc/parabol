@@ -52,9 +52,9 @@ const useMenuPortal = (
           isDropdown={isDropdown}
         />
         <ErrorBoundary
-          fallback={(error) => (
+          fallback={(error, eventId) => (
             <Menu ariaLabel='Error' closePortal={undefined as any} portalStatus={portalStatus}>
-              <ModalError error={error} portalStatus={portalStatus} />
+              <ModalError error={error} portalStatus={portalStatus} eventId={eventId} />
             </Menu>
           )}
         >

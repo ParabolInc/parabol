@@ -61,7 +61,7 @@
     "@babel/preset-typescript": "^7.7.2",
     "@babel/register": "^7.7.0",
     "@cypress/webpack-preprocessor": "^4.0.3",
-    "@mattkrick/fast-rtc-swarm": "^0.3.3",
+    "@mattkrick/fast-rtc-swarm": "^0.4.0",
     "@mattkrick/graphql-trebuchet-client": "^0.2.0",
     "@sucrase/webpack-loader": "^2.0.0",
     "@types/dotenv": "^6.1.1",
