@@ -20,17 +20,15 @@ const AuthProvider = () => {
     callOpener().catch()
   }, [])
 
-  if (error) {
-    return (
-      <InviteDialog>
-        <DialogTitle>Authentication Error</DialogTitle>
-        <DialogContent>
-          <StyledError>{error}</StyledError>
-        </DialogContent>
-      </InviteDialog>
-    )
-  }
-  return null
+  if (!error) return null
+  return (
+    <InviteDialog>
+      <DialogTitle>{'Authentication Error'}</DialogTitle>
+      <DialogContent>
+        <StyledError>{error}</StyledError>
+      </DialogContent>
+    </InviteDialog>
+  )
 }
 
 export default AuthProvider

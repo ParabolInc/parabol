@@ -14,7 +14,7 @@ import {
 import getDemoAvatar from '../../utils/getDemoAvatar'
 import demoUserAvatar from '../../styles/theme/images/avatar-user.svg'
 import {DemoReflection, DemoReflectionGroup, DemoTask} from './ClientGraphQLServer'
-import {RetroDemo} from '../../types/constEnums'
+import {RetroDemo, MeetingSettingsThreshold} from '../../types/constEnums'
 
 export const demoViewerId = 'demoUser'
 export const demoTeamId = 'demoTeam'
@@ -366,6 +366,8 @@ const initNewMeeting = (organization, teamMembers, meetingMembers) => {
     teamVotesRemaining: teamMembers.length * 5,
     phases: initPhases(teamMembers),
     summarySentAt: null,
+    totalVotes: MeetingSettingsThreshold.RETROSPECTIVE_TOTAL_VOTES_DEFAULT,
+    maxVotesPerGroup: MeetingSettingsThreshold.RETROSPECTIVE_MAX_VOTES_PER_GROUP_DEFAULT,
     teamId: demoTeamId
   } as Partial<IRetrospectiveMeeting>
 }

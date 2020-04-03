@@ -11,10 +11,10 @@ import EmailReflectionCard from './EmailReflectionCard'
 
 const topicThemeHeading = {
   color: PALETTE.TEXT_BLUE,
+  display: 'block',
   fontFamily: FONT_FAMILY.SANS_SERIF,
   fontSize: 16,
-  fontWeight: 600,
-  paddingTop: 16
+  fontWeight: 600
 }
 
 const votesBlock = {
@@ -24,7 +24,9 @@ const votesBlock = {
 }
 
 const voteCountStyle = {
-  paddingLeft: 4
+  color: PALETTE.TEXT_GRAY,
+  paddingLeft: 4,
+  textDecoration: 'none'
 }
 
 const imageStyle = {
@@ -47,7 +49,7 @@ const RetroTopic = (props: Props) => {
   return (
     <>
       <tr>
-        <td align='center'>
+        <td align='center' style={{paddingTop: 20}}>
           <AnchorIfEmail href={to} isEmail={isEmail} style={topicThemeHeading}>
             {title}
           </AnchorIfEmail>

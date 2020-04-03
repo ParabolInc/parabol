@@ -61,7 +61,8 @@ const DashHR = styled('div')({
 
 const Footer = styled('div')({
   display: 'flex',
-  flex: 1,
+  // safari flexbox bug: https://stackoverflow.com/a/58720054/3155110
+  flex: '1 0 auto',
   flexDirection: 'column',
   justifyContent: 'space-between'
 })

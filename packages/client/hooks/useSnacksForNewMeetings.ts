@@ -26,7 +26,7 @@ const useSnacksForNewMeetings = (meetings: TopBarMeetingsActiveMeetings['activeM
     const isInit = facilitatorUserId === viewerId
     const name = isInit ? 'You' : preferredName
     atmosphere.eventEmitter.emit('addSnackbar', {
-      autoDismiss: 5,
+      autoDismiss: 15,
       key: `newMeeting:${meetingId}`,
       message: `${name} just started ${meetingName}`,
       onDismiss: () => {

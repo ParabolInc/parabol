@@ -1,5 +1,8 @@
-import React from 'react'
 import styled from '@emotion/styled'
+import PrimaryButton from 'components/PrimaryButton'
+import ReportErrorFeedback from 'components/ReportErrorFeedback'
+import useModal from 'hooks/useModal'
+import React from 'react'
 
 const ErrorBlock = styled('div')({
   alignItems: 'center',
@@ -11,17 +14,24 @@ const ErrorBlock = styled('div')({
   height: '100%'
 })
 
+const Button = styled(PrimaryButton)({
+  marginTop: 8
+})
+
 interface Props {
-  // can make nonnull when RelayTransitionRoot explicitly defines an error on the ErrorComponent
-  error?: Error
+  error: Error
+  eventId: string
 }
 
 const ErrorComponent = (props: Props) => {
-  const {error} = props
+  const {error, eventId} = props
   console.error(error)
+  const {modalPortal, openPortal, closePortal} = useModal()
   return (
     <ErrorBlock>
       {'An error has occurred! We’ve alerted the developers. Try refreshing the page'}
+      {eventId && <Button onClick={openPortal}>Report Feedback</Button>}
+      {modalPortal(<ReportErrorFeedback closePortal={closePortal} eventId={eventId} />)}
     </ErrorBlock>
   )
 }

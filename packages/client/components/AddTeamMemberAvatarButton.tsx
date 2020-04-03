@@ -12,6 +12,7 @@ import lazyPreload from '../utils/lazyPreload'
 import {AddTeamMemberAvatarButton_teamMembers} from '../__generated__/AddTeamMemberAvatarButton_teamMembers.graphql'
 import Icon from './Icon'
 import OutlinedButton from './OutlinedButton'
+import {PALETTE} from 'styles/paletteV2'
 
 interface Props extends WithAtmosphereProps {
   meetingId?: string
@@ -21,12 +22,17 @@ interface Props extends WithAtmosphereProps {
 
 const AddButton = styled(OutlinedButton)<{isMeeting: boolean | undefined}>(
   {
+    borderWidth: 2,
     fontSize: 24,
     fontWeight: 400,
     height: 32,
     maxWidth: 32,
     padding: 0,
-    width: 32
+    width: 32,
+    ':hover, :focus, :active': {
+      borderColor: PALETTE.LINK_BLUE_HOVER,
+      color: PALETTE.LINK_BLUE_HOVER
+    }
   },
   ({isMeeting}) =>
     isMeeting && {

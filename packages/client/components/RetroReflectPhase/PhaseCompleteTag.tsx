@@ -8,11 +8,12 @@ const Wrapper = styled('div')({
   borderRadius: 4,
   color: '#fff',
   display: 'flex',
-  fontWeight: 600,
   fontSize: 14,
-  padding: '4px 16px',
+  fontWeight: 600,
+  lineHeight: '20px',
   marginBottom: 8,
-  maxHeight: 32
+  maxHeight: 28,
+  padding: '4px 16px'
 })
 
 interface Props {

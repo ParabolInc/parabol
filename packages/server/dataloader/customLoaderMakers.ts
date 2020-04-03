@@ -1,6 +1,6 @@
 import DataLoader from 'dataloader'
 import {decode} from 'jsonwebtoken'
-import {ReactableEnum, ThreadSourceEnum} from 'parabol-client/types/graphql'
+import {ReactableEnum, ThreadSourceEnum, MeetingTypeEnum} from 'parabol-client/types/graphql'
 import promiseAllPartial from 'parabol-client/utils/promiseAllPartial'
 import getRethink from '../database/rethinkDriver'
 import {Reactable} from '../database/types/Reactable'
@@ -9,6 +9,7 @@ import {ThreadSource} from '../database/types/ThreadSource'
 import AtlassianServerManager from '../utils/AtlassianServerManager'
 import normalizeRethinkDbResults from './normalizeRethinkDbResults'
 import RethinkDataLoader from './RethinkDataLoader'
+import MeetingSettings from '../database/types/MeetingSettings'
 
 type AccessTokenKey = {teamId: string; userId: string}
 interface JiraRemoteProjectKey {
@@ -30,6 +31,11 @@ interface ReactablesKey {
 interface ThreadSourceKey {
   sourceId: string
   type: ThreadSourceEnum
+}
+
+interface MeetingSettingsKey {
+  teamId: string
+  meetingType: MeetingTypeEnum
 }
 
 const reactableLoaders = [
@@ -168,6 +174,41 @@ export const jiraRemoteProject = (parent: RethinkDataLoader) => {
     {
       ...parent.dataLoaderOptions,
       cacheKeyFn: (key) => `${key.atlassianProjectId}:${key.cloudId}`
+    }
+  )
+}
+
+export const meetingSettingsByType = (parent: RethinkDataLoader) => {
+  return new DataLoader<MeetingSettingsKey, MeetingSettings, string>(
+    async (keys) => {
+      const r = await getRethink()
+      const types = {} as {[meetingType: string]: string[]}
+      keys.forEach((key) => {
+        const {meetingType} = key
+        types[meetingType] = types[meetingType] || []
+        types[meetingType].push(key.teamId)
+      })
+      const entries = Object.entries(types)
+      console.log('types', types)
+      const resultsByType = await Promise.all(
+        entries.map((entry) => {
+          const [meetingType, teamIds] = entry
+          return r
+            .table('MeetingSettings')
+            .getAll(r.args(teamIds), {index: 'teamId'})
+            .filter({meetingType: meetingType as MeetingTypeEnum})
+            .run()
+        })
+      )
+      const docs = resultsByType.flat()
+      return keys.map((key) => {
+        const {teamId, meetingType} = key
+        return docs.find((doc) => doc.teamId === teamId && doc.meetingType === meetingType)!
+      })
+    },
+    {
+      ...parent.dataLoaderOptions,
+      cacheKeyFn: (key) => `${key.teamId}:${key.meetingType}`
     }
   )
 }

@@ -9,19 +9,32 @@ interface Input {
   phases: GenericMeetingPhase[]
   facilitatorUserId: string
   showConversionModal?: boolean
+  totalVotes: number
+  maxVotesPerGroup: number
 }
 
 export default class MeetingRetrospective extends Meeting {
   showConversionModal?: boolean
   autoGroupThreshold?: number | null
   nextAutoGroupThreshold?: number | null
+  totalVotes: number
+  maxVotesPerGroup: number
   // end meeting stats
   commentCount?: number
   taskCount?: number
   topicCount?: number
   reflectionCount?: number
   constructor(input: Input) {
-    const {showConversionModal, teamId, meetingCount, name, phases, facilitatorUserId} = input
+    const {
+      showConversionModal,
+      teamId,
+      meetingCount,
+      name,
+      phases,
+      facilitatorUserId,
+      totalVotes,
+      maxVotesPerGroup
+    } = input
     super({
       teamId,
       meetingCount,
@@ -30,6 +43,8 @@ export default class MeetingRetrospective extends Meeting {
       meetingType: MeetingTypeEnum.retrospective,
       name: name ?? `Retro #${meetingCount + 1}`
     })
+    this.totalVotes = totalVotes
+    this.maxVotesPerGroup = maxVotesPerGroup
     this.showConversionModal = showConversionModal
   }
 }

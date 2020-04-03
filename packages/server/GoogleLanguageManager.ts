@@ -63,7 +63,7 @@ export type GoogleErrorResponse = [
 
 export default class GoogleLanguageManager {
   static GOOGLE_EXPIRY = 3600
-  jwt!: string
+  jwt: string | undefined
   cloudKey: CloudKey
   constructor(cloudKey: CloudKey) {
     this.cloudKey = cloudKey
@@ -76,16 +76,32 @@ export default class GoogleLanguageManager {
 
   refreshJWT() {
     const {clientEmail, privateKeyId, privateKey} = this.cloudKey
-    this.jwt = sign({}, privateKey, {
-      algorithm: 'RS256',
-      audience: 'https://language.googleapis.com/',
-      subject: clientEmail,
-      issuer: clientEmail,
-      keyid: privateKeyId,
-      expiresIn: GoogleLanguageManager.GOOGLE_EXPIRY
-    })
+    try {
+      this.jwt = sign({}, privateKey, {
+        algorithm: 'RS256',
+        audience: 'https://language.googleapis.com/',
+        subject: clientEmail,
+        issuer: clientEmail,
+        keyid: privateKeyId,
+        expiresIn: GoogleLanguageManager.GOOGLE_EXPIRY
+      })
+    } catch (e) {
+      this.jwt = undefined
+    }
   }
+
   async post<T>(endpoint: string, content: string): Promise<T> {
+    if (!this.jwt) {
+      return [
+        {
+          error: {
+            code: 500,
+            message: 'No JWT provided',
+            status: 'GOOGLE_CLOUD_PRIVATE_KEY is invalid in the .env'
+          }
+        }
+      ] as any
+    }
     const res = await fetch(`https://language.googleapis.com/v1/${endpoint}`, {
       method: 'POST',
       headers: {
@@ -101,11 +117,15 @@ export default class GoogleLanguageManager {
       })
     }).catch((e: Error) => {
       sendToSentry(e)
-      return {
-        code: 500,
-        message: e.message,
-        status: 'Google is down'
-      }
+      return [
+        {
+          error: {
+            code: 500,
+            message: e.message,
+            status: 'Google is down'
+          }
+        }
+      ]
     })
     const resJSON = await res.json()
     return resJSON
