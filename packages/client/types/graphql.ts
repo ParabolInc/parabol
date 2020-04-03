@@ -4838,6 +4838,11 @@ export interface IRetroPhaseItem {
    * The description to the question for further context. A long version of the question.
    */
   description: string
+
+  /**
+   * The color used to visually group a phase item.
+   */
+  groupColor: string
 }
 
 /**

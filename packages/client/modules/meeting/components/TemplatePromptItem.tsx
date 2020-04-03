@@ -105,7 +105,7 @@ class TemplatePromptItem extends Component<Props, State> {
 
   render() {
     const {canRemove, dragProvided, isDragging, prompt, prompts} = this.props
-    const {id: promptId, description, question} = prompt
+    const {id: promptId, description, question, groupColor} = prompt
     const {isEditingDescription, isHover} = this.state
     return (
       <PromptItem
@@ -149,6 +149,7 @@ export default createFragmentContainer<PassedProps>(
         id
         question
         description
+        groupColor
       }
     `
   }
