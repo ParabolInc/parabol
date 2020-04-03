@@ -174,14 +174,14 @@ const initDemoMeetingMember = (user) => {
   return {
     __typename: 'RetrospectiveMeetingMember',
     id: toTeamMemberId(RetroDemo.MEETING_ID, user.id),
+    isCheckedIn: true,
     meetingId: RetroDemo.MEETING_ID,
     meetingType: RETROSPECTIVE,
     teamId: demoTeamId,
     tasks: [] as ITask[],
     user,
     userId: user.id,
-    votesRemaining: 5,
-    myVotesRemaining: 5
+    votesRemaining: 5
   }
 }
 
@@ -363,7 +363,6 @@ const initNewMeeting = (organization, teamMembers, meetingMembers) => {
     viewerMeetingMember,
     reflectionGroups: [] as any[],
     votesRemaining: teamMembers.length * 5,
-    teamVotesRemaining: teamMembers.length * 5,
     phases: initPhases(teamMembers),
     summarySentAt: null,
     totalVotes: MeetingSettingsThreshold.RETROSPECTIVE_TOTAL_VOTES_DEFAULT,
