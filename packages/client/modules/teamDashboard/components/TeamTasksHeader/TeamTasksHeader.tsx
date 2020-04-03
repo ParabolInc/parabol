@@ -16,9 +16,6 @@ import lazyPreload from '../../../../utils/lazyPreload'
 import graphql from 'babel-plugin-relay/macro'
 import {ClassNames} from '@emotion/core'
 import useRouter from '../../../../hooks/useRouter'
-import FlatButton from 'components/FlatButton'
-import Icon from 'components/Icon'
-import useTooltip from '../../../../hooks/useTooltip'
 import DashboardAvatars from 'components/DashboardAvatars/DashboardAvatars'
 import AgendaToggle from 'modules/teamDashboard/components/AgendaToggle/AgendaToggle'
 import makeMinWidthMediaQuery from 'utils/makeMinWidthMediaQuery'
@@ -32,16 +29,15 @@ const TeamMeta = styled('div')({
 const TeamLinks = styled('div')({
   alignItems: 'center',
   display: 'flex',
+  flexWrap: 'wrap',
   fontSize: 14,
-  justifyContent: 'space-between',
+  justifyContent: 'flex-start',
   lineHeight: '20px',
-  margin: '0 0 16px',
   maxWidth: '100%',
   overflow: 'auto',
   width: '100%',
   [desktopBreakpoint]: {
     justifyContent: 'flex-start',
-    margin: 0,
     width: 'auto'
   }
 })
@@ -57,15 +53,23 @@ const DashHeading = styled('div')({
   }
 })
 
-const orgLinkStyles = {
-  color: PALETTE.TEXT_GRAY,
+const linkStyles = {
+  color: PALETTE.LINK_BLUE,
   cursor: 'pointer',
+  fontWeight: 600,
   height: 24,
   lineHeight: '24px',
-  marginRight: 16,
-  ':hover, :focus': {
-    color: PALETTE.LINK_BLUE
+  marginRight: 8,
+  outline: 0,
+  ':hover, :focus, :active': {
+    color: PALETTE.LINK_BLUE_HOVER
   }
+}
+
+const secondLink = {
+  ...linkStyles,
+  marginRight: 0,
+  marginLeft: 8
 }
 
 const TeamDashTeamMemberMenu = lazyPreload(() =>
@@ -74,17 +78,6 @@ const TeamDashTeamMemberMenu = lazyPreload(() =>
     '../../../../components/TeamDashTeamMemberMenu'
   )
 )
-
-const StyledFlatButton = styled(FlatButton)({
-  border: 0,
-  padding: 0,
-  height: 24,
-  marginLeft: 8,
-  width: 24,
-  '&:hover, &:focus, &:active': {
-    color: PALETTE.LINK_BLUE
-  }
-})
 
 const TeamHeaderAndAvatars = styled('div')({
   borderBottom: `1px solid ${PALETTE.BORDER_DASH_LIGHT}`,
@@ -112,11 +105,6 @@ const AvatarsAndAgendaToggle = styled('div')({
   }
 })
 
-const StyledIcon = styled(Icon)({
-  color: PALETTE.TEXT_GRAY,
-  fontSize: 18
-})
-
 interface Props {
   team: TeamTasksHeader_team
   viewer: TeamTasksHeader_viewer
@@ -134,40 +122,35 @@ const TeamTasksHeader = (props: Props) => {
   const {togglePortal, menuProps, originRef, menuPortal} = useMenu(MenuPosition.UPPER_RIGHT, {
     isDropdown: true
   })
-  const goToTeamSettings = () => {
-    closeTooltip()
-    history.push(`/team/${teamId}/settings/`)
-  }
-  const {tooltipPortal, openTooltip, closeTooltip, originRef: tooltipOriginRef} = useTooltip<
-    HTMLButtonElement
-  >(MenuPosition.UPPER_CENTER)
   return (
     <DashSectionHeader>
       <TeamHeaderAndAvatars>
         <TeamMeta>
-          <DashHeading>
-            {teamName}
-            <StyledFlatButton
-              aria-label='Team Settings'
-              onMouseEnter={openTooltip}
-              onMouseLeave={closeTooltip}
-              onClick={goToTeamSettings}
-              ref={tooltipOriginRef}
-            >
-              <StyledIcon>settings</StyledIcon>
-            </StyledFlatButton>
-            {tooltipPortal('Team Settings')}
-          </DashHeading>
+          <DashHeading>{teamName}</DashHeading>
           <TeamLinks>
             <ClassNames>
               {({css}) => {
                 return (
                   <NavLink
-                    className={css(orgLinkStyles)}
+                    className={css(linkStyles)}
                     title={orgName}
                     to={`/me/organizations/${orgId}`}
                   >
                     {orgName}
+                  </NavLink>
+                )
+              }}
+            </ClassNames>
+            {'•'}
+            <ClassNames>
+              {({css}) => {
+                return (
+                  <NavLink
+                    className={css(secondLink)}
+                    title={'Settings & Integrations'}
+                    to={`/team/${teamId}/settings/`}
+                  >
+                    {'Settings & Integrations'}
                   </NavLink>
                 )
               }}

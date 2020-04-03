@@ -6,10 +6,15 @@ import StyledLink from './StyledLink'
 import TimelineEventBody from './TimelineEventBody'
 import TimelineEventCard from './TimelineEventCard'
 import TimelineEventTitle from './TImelineEventTitle'
+import styled from '@emotion/styled'
 
 interface Props {
   timelineEvent: TimelineEventTeamCreated_timelineEvent
 }
+
+const Link = styled(StyledLink)({
+  fontWeight: 600
+})
 
 class TimelineEventTeamCreated extends Component<Props> {
   render() {
@@ -28,8 +33,7 @@ class TimelineEventTeamCreated extends Component<Props> {
           ) : (
             <>
               {'Visit your '}
-              <StyledLink to={`/team/${teamId}`}>Team Dashboard</StyledLink>
-              {'.'}
+              <Link to={`/team/${teamId}`}>team dashboard</Link>
             </>
           )}
         </TimelineEventBody>

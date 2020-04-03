@@ -17,7 +17,7 @@ const IconButton = styled(FlatButton)({
   marginRight: 16,
   padding: '3px 0',
   width: 32,
-  ':hover,:focus,:active': {
+  ':hover, :focus, :active': {
     color: PALETTE.TEXT_MAIN
   }
 })

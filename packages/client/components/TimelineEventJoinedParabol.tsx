@@ -6,10 +6,15 @@ import StyledLink from './StyledLink'
 import TimelineEventBody from './TimelineEventBody'
 import TimelineEventCard from './TimelineEventCard'
 import TimelineEventTitle from './TImelineEventTitle'
+import styled from '@emotion/styled'
 
 interface Props {
   timelineEvent: TimelineEventJoinedParabol_timelineEvent
 }
+
+const Link = styled(StyledLink)({
+  fontWeight: 600
+})
 
 class TimelineEventJoinedParabol extends Component<Props> {
   render() {
@@ -21,9 +26,8 @@ class TimelineEventJoinedParabol extends Component<Props> {
         title={<TimelineEventTitle>You joined Parabol</TimelineEventTitle>}
       >
         <TimelineEventBody>
-          {'Get started by updating your name and avatar in '}
-          <StyledLink to='/me/profile'>User Profile</StyledLink>
-          {'.'}
+          {'Get started by updating your name and avatar in your '}
+          <Link to='/me/profile'>user profile</Link>
         </TimelineEventBody>
       </TimelineEventCard>
     )
