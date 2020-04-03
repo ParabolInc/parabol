@@ -4,19 +4,17 @@ import useAtmosphere from 'hooks/useAtmosphere'
 import useGotoNext from 'hooks/useGotoNext'
 import useGotoStageId from 'hooks/useGotoStageId'
 import useTransition from 'hooks/useTransition'
-import React, {useEffect} from 'react'
+import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {PALETTE} from 'styles/paletteV2'
 import {Breakpoint} from 'types/constEnums'
 import {NewMeetingPhaseTypeEnum} from 'types/graphql'
-import handleRightArrow from 'utils/handleRightArrow'
 import findStageAfterId from 'utils/meetings/findStageAfterId'
 import {MeetingControlBar_meeting} from '__generated__/MeetingControlBar_meeting.graphql'
 import {bottomBarShadow, desktopBarShadow} from '../styles/elevation'
+import BottomControlBarNext from './BottomControlBarNext'
 import BottomControlBarRejoin from './BottomControlBarRejoin'
 import BottomControlBarTips from './BottomControlBarTips'
-import BottomNavControl from './BottomNavControl'
-import BottomNavIconLabel from './BottomNavIconLabel'
 import EndMeetingButton from './EndMeetingButton'
 import StageTimerControl from './StageTimerControl'
 
@@ -64,7 +62,6 @@ interface Props {
 
 const MeetingControlBar = (props: Props) => {
   const {handleGotoNext, meeting, gotoStageId} = props
-  const {gotoNext, ref: gotoNextRef} = handleGotoNext
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
   const {
@@ -77,14 +74,6 @@ const MeetingControlBar = (props: Props) => {
     phases
   } = meeting
   const isFacilitating = facilitatorUserId === viewerId && !endedAt
-  useEffect(() => {
-    return () => {
-      // console.log('unmount')
-    }
-  })
-  if (!localPhase || !localStage) {
-    return null
-  }
   const {phaseType} = localPhase
   const {id: localStageId, isComplete} = localStage
   const isCheckIn = phaseType === NewMeetingPhaseTypeEnum.checkin
@@ -100,7 +89,6 @@ const MeetingControlBar = (props: Props) => {
   const buttons = getPossibleButtons()
   const tranChildren = useTransition(buttons)
   if (endedAt) return null
-  console.log('show', tranChildren)
   return (
     <Wrapper>
       {tranChildren
@@ -129,18 +117,7 @@ const MeetingControlBar = (props: Props) => {
                 />
               )
             case 'next':
-              const isBouncing = false
-              return (
-                <BottomNavControl
-                  {...tranProps}
-                  isBouncing={isBouncing}
-                  onClick={() => gotoNext()}
-                  ref={gotoNextRef}
-                  onKeyDown={handleRightArrow(() => gotoNext())}
-                >
-                  <BottomNavIconLabel icon='arrow_forward' iconColor='warm' label={'Next'} />
-                </BottomNavControl>
-              )
+              return <BottomControlBarNext {...tranProps} handleGotoNext={handleGotoNext} />
             case 'end':
               return <EndMeetingButton {...tranProps} meetingId={meetingId} isEnded={!!endedAt} />
           }
