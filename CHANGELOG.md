@@ -5,6 +5,18 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 5.3.0 2020-Apr-03
+
+### Fixed
+* Demo Discussion Topics were all concated together
+
+### Added
+* "Report feedback" for fatal bugs (#3714)
+* Custom voting (#3707)
+
+### Changed
+* New Meeting Snackbar created for new meetings (<5 mins ago) (#3713)
+
 ## 5.2.1 2020-Mar-26
 
 ### Fixed
