@@ -1,4 +1,4 @@
-function addVote(column, cardIndex, voteIndex) {
+function addVote(column, cardIndex) {
   cy.get(`[data-cy=group-column-${column}-body]`)
     .children()
     .eq(cardIndex)
@@ -12,25 +12,16 @@ function addVote(column, cardIndex, voteIndex) {
   cy.get('@add-vote').click()
 
   cy.get('@vote-card')
-    .find(`[data-cy=completed-vote-${voteIndex}]`)
+    .find(`[data-cy=completed-vote-count]`)
     .should('exist')
-
-  if (voteIndex == 2) {
-    cy.get('@add-vote').should('not.exist')
-  }
 }
 
-function removeVote(column, cardIndex, voteIndex) {
+function removeVote(column, cardIndex) {
   cy.get(`[data-cy=group-column-${column}-body]`)
     .children()
     .eq(cardIndex)
     .find(`[data-cy=reflection-vote-row]`)
     .as('vote-card')
-
-  cy.get('@vote-card')
-    .find(`[data-cy=completed-vote-${voteIndex}]`)
-    .should('exist')
-    .click()
 
   cy.get('@vote-card')
     .find(`[data-cy=add-vote]`)
@@ -46,43 +37,38 @@ describe('Test Vote page Demo', () => {
   })
 
   it('Check that all personal votes are remaining and no team votes have been used', () => {
-    cy.get(`[data-cy=my-votes-remaining]`)
-      .children()
-      .should('have.length', 5)
-    for (let idx = 0; idx < 5; idx++) {
-      cy.get(`[data-cy=vote-${idx}]`).should('exist')
-    }
+    cy.get(`[data-cy=my-votes-remaining]`).should('have.text', '5')
     cy.wait(3000)
     cy.get(`[data-cy=team-votes-remaining]`).should('have.text', '5')
   })
 
   it('Test voting on cards (ensure they can be voted on multiple times)', () => {
-    addVote('Start', 0, 0)
-    addVote('Stop', 0, 0)
-    addVote('Continue', 0, 0)
+    addVote('Start', 0)
+    addVote('Stop', 0)
+    addVote('Continue', 0)
   })
 
   it('Test voting limit on cards', () => {
-    addVote('Start', 0, 1)
-    addVote('Start', 0, 2)
+    addVote('Start', 0)
+    addVote('Start', 0)
   })
 
   it('Test removing votes from cards', () => {
-    removeVote('Start', 0, 2)
-    removeVote('Start', 0, 1)
-    removeVote('Start', 0, 0)
+    removeVote('Start', 0)
+    removeVote('Start', 0)
+    removeVote('Start', 0)
 
-    removeVote('Stop', 0, 0)
+    removeVote('Stop', 0)
 
-    removeVote('Continue', 0, 0)
+    removeVote('Continue', 0)
   })
 
   it('Test emptying vote counter (should become zero when all votes are spent)', () => {
-    addVote('Start', 0, 0)
-    addVote('Start', 0, 1)
-    addVote('Start', 0, 2)
-    addVote('Stop', 0, 0)
-    addVote('Continue', 0, 0)
+    addVote('Start', 0)
+    addVote('Start', 0)
+    addVote('Start', 0)
+    addVote('Stop', 0)
+    addVote('Continue', 0)
 
     cy.get(`[data-cy=team-votes-remaining]`).should('have.text', '0')
   })
