@@ -105,7 +105,7 @@ class ReflectionGroupVoting extends Component<Props> {
     const canVote = viewerVoteCount < maxVotesPerGroup && votesRemaining > 0 && !isComplete
     return (
       <UpvoteColumn>
-        <UpvoteRow data-cy="reflection-vote-row">
+        <UpvoteRow data-cy='reflection-vote-row'>
           {upvotes.map((idx) => (
             <UpvoteIcon
               data-cy={`completed-vote-${idx}`}

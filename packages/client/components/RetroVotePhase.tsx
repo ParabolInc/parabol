@@ -174,7 +174,7 @@ const RetroVotePhase = (props: Props) => {
             <StyledMetaBlock>
               <Label>{'My Votes Remaining'}</Label>
               <MyVotesCountLabel>{myVotesRemaining}</MyVotesCountLabel>
-              <CheckMarkRow data-cy="my-votes-remaining">
+              <CheckMarkRow data-cy='my-votes-remaining'>
                 {checkMarks.map((idx) => (
                   <CheckIcon data-cy={`vote-${idx}`} key={idx} isDark={idx < myVotesRemaining}>
                     {meetingVoteIcon}
@@ -184,7 +184,9 @@ const RetroVotePhase = (props: Props) => {
             </StyledMetaBlock>
             <MetaBlock>
               <Label>{'Team Votes Remaining'}</Label>
-              <TeamVotesCountLabel data-cy="team-votes-remaining">{teamVotesRemaining}</TeamVotesCountLabel>
+              <TeamVotesCountLabel data-cy='team-votes-remaining'>
+                {teamVotesRemaining}
+              </TeamVotesCountLabel>
             </MetaBlock>
           </VoteMeta>
           <StageTimerDisplay meeting={meeting} />
