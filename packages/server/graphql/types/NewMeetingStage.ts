@@ -97,6 +97,13 @@ export const newMeetingStageFields = () => ({
     type: GraphQLBoolean,
     description: 'true if a time limit is set, false if end time is set, null if neither is set'
   },
+  readyCount: {
+    type: GraphQLNonNull(GraphQLInt),
+    description: 'the number of meeting members ready to advance',
+    resolve: ({readyToAdvance}) => {
+      return readyToAdvance?.length ?? 0
+    }
+  },
   scheduledEndTime: {
     type: GraphQLISO8601Type,
     description:
