@@ -151,7 +151,7 @@ describe('Test Group page Demo', () => {
   })
 
   it('Verify that robots can group cards', () => {
-    cy.wait(3000)
+    cy.get(`[data-cy=grouping-complete-true]`).should('exist')
 
     checkGroup('Start', 3)
 

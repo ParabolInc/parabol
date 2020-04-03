@@ -12,12 +12,15 @@ interface Props {
 }
 
 const StyledIcon = styled(Icon)({
+  fontWeight: 400,
   marginRight: 8
 })
 
 const StyledLinkButton = styled(LinkButton)({
-  '&:hover, &:focus, &:active': {
-    color: PALETTE.TEXT_GRAY
+  color: PALETTE.TEXT_GRAY,
+  fontWeight: 600,
+  ':hover, :focus, :active': {
+    color: PALETTE.TEXT_MAIN
   }
 })
 

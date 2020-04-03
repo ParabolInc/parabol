@@ -84,6 +84,7 @@ const RetroVotePhase = (props: Props) => {
         {!isComplete && <StageTimerControl defaultTimeLimit={3} meeting={meeting} />}
         <CenterControlBlock isComplete={isComplete}>
           <BottomNavControl
+            dataCy={`next-${nextPhaseLabel.toLowerCase()}`}
             isBouncing={teamVotesRemaining === 0}
             disabled={!discussStage.isNavigableByFacilitator}
             onClick={() => gotoNext()}

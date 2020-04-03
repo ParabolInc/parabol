@@ -116,8 +116,9 @@ const ReflectionGroupVoting = (props: Props) => {
 
   return (
     <UpvoteColumn>
-      <UpvoteRow>
+      <UpvoteRow data-cy='reflection-vote-row'>
         <UpvoteIcon
+          data-cy={`remove-vote`}
           isExpanded={isExpanded}
           isEnabled={canDownvote}
           color={isExpanded ? PALETTE.EMPHASIS_COOL_LIGHTER : PALETTE.EMPHASIS_COOL}
@@ -125,10 +126,15 @@ const ReflectionGroupVoting = (props: Props) => {
         >
           {'thumb_down'}
         </UpvoteIcon>
-        <VoteCount isExpanded={isExpanded} voteCount={viewerVoteCount}>
+        <VoteCount
+          isExpanded={isExpanded}
+          voteCount={viewerVoteCount}
+          data-cy={`completed-vote-count`}
+        >
           {viewerVoteCount}
         </VoteCount>
         <UpvoteIcon
+          data-cy={`add-vote`}
           isExpanded={isExpanded}
           isEnabled={canUpvote}
           color={isExpanded ? 'rgba(255, 255, 255, .65)' : PALETTE.TEXT_GRAY}

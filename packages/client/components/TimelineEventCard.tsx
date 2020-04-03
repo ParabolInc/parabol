@@ -4,7 +4,7 @@ import styled from '@emotion/styled'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import Icon from './Icon'
-import {buttonShadow, cardShadow} from '../styles/elevation'
+import {cardShadow} from '../styles/elevation'
 import {PALETTE} from '../styles/paletteV2'
 import {ICON_SIZE} from '../styles/typographyV2'
 import TimelineEventDate from './TimelineEventDate'
@@ -32,23 +32,19 @@ const Surface = styled('div')({
 
 const CardHeader = styled('div')({
   display: 'flex',
-  margin: 16,
+  margin: '16px 16px 8px',
   position: 'relative'
 })
 
 const EventIcon = styled(Icon)({
-  // explicit alignSelf & height for multi-line titles
-  alignSelf: 'center',
-  background: PALETTE.TEXT_GRAY,
+  alignSelf: 'flex-start',
   borderRadius: '100%',
-  boxShadow: buttonShadow,
-  color: '#FFFFFF',
+  color: PALETTE.TEXT_GRAY,
   display: 'block',
   fontSize: ICON_SIZE.MD24,
-  height: 40,
-  padding: 8,
+  height: 24,
   userSelect: 'none',
-  width: 40
+  width: 24
 })
 
 // const MenuIcon = styled(Icon)({
@@ -63,8 +59,11 @@ const EventIcon = styled(Icon)({
 const HeaderText = styled('div')({
   display: 'flex',
   flexDirection: 'column',
+  fontSize: 14,
+  justifyContent: 'space-around',
+  lineHeight: '20px',
   paddingLeft: 16,
-  justifyContent: 'space-around'
+  paddingTop: 2
 })
 
 class TimelineEventCard extends Component<Props> {

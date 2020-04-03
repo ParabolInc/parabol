@@ -14,8 +14,10 @@ const desktopBreakpoint = makeMinWidthMediaQuery(Breakpoint.SIDEBAR_LEFT)
 const AvatarsList = styled('div')({
   display: 'flex',
   overflow: 'auto',
+  marginTop: 16,
   maxWidth: '100%',
   [desktopBreakpoint]: {
+    marginTop: 0,
     overflow: 'visible'
   }
 })
