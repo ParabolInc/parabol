@@ -75,7 +75,7 @@ export default {
     let meeting: Meeting
     if (meetingType === EMeetingTypeEnum.retrospective) {
       const meetingSettings = (await dataLoader
-        .get('meetingSettings')
+        .get('meetingSettingsByType')
         .load({teamId, meetingType})) as MeetingSettingsRetrospective
       const {totalVotes, maxVotesPerGroup} = meetingSettings
       meeting = new MeetingRetrospective({

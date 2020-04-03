@@ -109,11 +109,13 @@ const RetroVoteMetaHeader = (props: Props) => {
     <VoteMeta>
       <FirstVoteMetaBlock>
         <VoteLabelHeading>{'My Votes'}</VoteLabelHeading>
-        <VoteCountLabel>{myVotesRemaining}</VoteCountLabel>
+        <VoteCountLabel data-cy={'my-votes-remaining'}>{myVotesRemaining}</VoteCountLabel>
       </FirstVoteMetaBlock>
       <FollowingVoteMetaBlock>
         <VoteLabelHeading>{'Team Votes'}</VoteLabelHeading>
-        <TeamVotesCountLabel>{teamVotesRemaining}</TeamVotesCountLabel>
+        <TeamVotesCountLabel data-cy={'team-votes-remaining'}>
+          {teamVotesRemaining}
+        </TeamVotesCountLabel>
       </FollowingVoteMetaBlock>
       {isFacilitating && (
         <>

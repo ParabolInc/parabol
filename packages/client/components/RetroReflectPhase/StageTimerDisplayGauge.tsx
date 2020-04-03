@@ -5,7 +5,7 @@ import {PALETTE} from '../../styles/paletteV2'
 import useRefreshInterval from '../../hooks/useRefreshInterval'
 import useBreakpoint from '../../hooks/useBreakpoint'
 import {DECELERATE, fadeIn} from '../../styles/animation'
-import {Breakpoint, ZIndex} from '../../types/constEnums'
+import {Breakpoint} from '../../types/constEnums'
 
 interface Props {
   endTime: string
@@ -18,16 +18,16 @@ const Gauge = styled('div')<{isTimeUp: boolean; isDesktop}>(({isTimeUp, isDeskto
   background: isTimeUp ? PALETTE.BACKGROUND_YELLOW : PALETTE.BACKGROUND_GREEN,
   borderRadius: 4,
   display: 'flex',
+  fontSize: isTimeUp ? 14 : 16,
   fontVariantNumeric: 'tabular-nums',
   fontWeight: 600,
   justifyContent: 'center',
   lineHeight: '28px',
   margin: isDesktop ? '0 0 16px' : '0 0 8px',
-  minWidth: 72,
+  minWidth: 100,
   padding: '0 8px',
   transition: `background 1s ${DECELERATE}`,
-  userSelect: 'none',
-  zIndex: ZIndex.SNACKBAR
+  userSelect: 'none'
 }))
 
 const StageTimerDisplayGauge = (props: Props) => {

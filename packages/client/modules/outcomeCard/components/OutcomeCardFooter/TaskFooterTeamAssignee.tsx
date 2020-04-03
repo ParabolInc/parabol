@@ -14,13 +14,14 @@ import {UseTaskChild} from '../../../../hooks/useTaskChildFocus'
 import useTooltip from 'hooks/useTooltip'
 
 const TooltipToggle = styled('div')({
-  display: 'inline-flex'
+  width: '100%'
 })
 const TeamToggleButton = styled(CardButton)({
   ...textOverflow,
+  border: 0,
   borderRadius: Radius.BUTTON_PILL,
   color: PALETTE.TEXT_GRAY,
-  display: 'inline-flex',
+  display: 'block',
   fontSize: 12,
   fontWeight: 400,
   height: 24,

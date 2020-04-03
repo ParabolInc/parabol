@@ -34,7 +34,8 @@ const SetCheckInEnabledMutation: StandardMutation<TSetCheckInEnabledMutation> = 
       const {isEnabled, settingsId} = variables
       const settings = store.get<ITeamMeetingSettings>(settingsId)
       if (!settings) return
-      const phaseTypes = settings.getValue('phaseTypes')
+      // relay
+      const phaseTypes = settings.getValue('phaseTypes').slice()
       if (isEnabled && !phaseTypes.includes(NewMeetingPhaseTypeEnum.checkin)) {
         phaseTypes.unshift(NewMeetingPhaseTypeEnum.checkin)
       } else if (!isEnabled && phaseTypes.includes(NewMeetingPhaseTypeEnum.checkin)) {

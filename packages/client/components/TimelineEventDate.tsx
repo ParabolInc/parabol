@@ -7,8 +7,7 @@ import relativeDate from '../utils/date/relativeDate'
 const StyledSpan = styled('span')({
   color: PALETTE.TEXT_GRAY,
   fontSize: 11,
-  lineHeight: '1rem',
-  paddingTop: 4
+  lineHeight: '16px'
 })
 
 interface State {

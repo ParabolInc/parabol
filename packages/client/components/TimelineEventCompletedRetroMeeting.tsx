@@ -2,7 +2,6 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {Component} from 'react'
 import {createFragmentContainer} from 'react-relay'
-import {PALETTE} from 'styles/paletteV2'
 import plural from '../utils/plural'
 import {TimelineEventCompletedRetroMeeting_timelineEvent} from '../__generated__/TimelineEventCompletedRetroMeeting_timelineEvent.graphql'
 import StyledLink from './StyledLink'
@@ -16,10 +15,6 @@ interface Props {
 
 const CountItem = styled('span')({
   fontWeight: 600
-})
-
-const SubHeader = styled('span')({
-  color: PALETTE.TEXT_GRAY
 })
 
 const Link = styled(StyledLink)({
@@ -68,10 +63,9 @@ class TimelineEventCompletedRetroMeeting extends Component<Props> {
           </CountItem>
           {'.'}
           <br />
-          <Link to={`/meet/${meetingId}/discuss/1`}>See the Discussion</Link>
-          <SubHeader>{' in your meeting or '}</SubHeader>
+          <Link to={`/meet/${meetingId}/discuss/1`}>See the discussion</Link>
+          {' in your meeting or '}
           <Link to={`/new-summary/${meetingId}`}>review a summary</Link>
-          {'.'}
         </TimelineEventBody>
       </TimelineEventCard>
     )

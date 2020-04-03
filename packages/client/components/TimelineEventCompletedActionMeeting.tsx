@@ -9,10 +9,19 @@ import relativeDate from '../utils/date/relativeDate'
 import TimelineEventBody from './TimelineEventBody'
 import TimelineEventCard from './TimelineEventCard'
 import TimelineEventTitle from './TImelineEventTitle'
+import styled from '@emotion/styled'
 
 interface Props extends RouteComponentProps<{}> {
   timelineEvent: TimelineEventCompletedActionMeeting_timelineEvent
 }
+
+const Link = styled(StyledLink)({
+  fontWeight: 600
+})
+
+const CountItem = styled('span')({
+  fontWeight: 600
+})
 
 class TimelineEventCompletedActionMeeting extends Component<Props> {
   render() {
@@ -35,10 +44,11 @@ class TimelineEventCompletedActionMeeting extends Component<Props> {
         }
       >
         <TimelineEventBody>
-          {`It lasted ${meetingDuration} and generated ${taskCount} ${plural(taskCount, 'task')}.`}
-          <br />
-          <StyledLink to={`/new-summary/${meetingId}`}>See the Full Summary</StyledLink>
+          {`It lasted ${meetingDuration} and generated `}
+          <CountItem>{`${taskCount} ${plural(taskCount, 'task')}`}</CountItem>
           {'.'}
+          <br />
+          <Link to={`/new-summary/${meetingId}`}>See the full summary</Link>
         </TimelineEventBody>
       </TimelineEventCard>
     )

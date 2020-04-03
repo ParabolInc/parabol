@@ -75,11 +75,13 @@ const RetroMeeting = (props: Props) => {
   const {featureFlags} = user
   const {video: allowVideo} = featureFlags
   const localPhaseType = localPhase?.phaseType
+
+  const Phase = phaseLookup[localPhaseType] as PhaseComponent
+
   const isDemoStageComplete =
     meetingId === RetroDemo.MEETING_ID
       ? ((atmosphere as unknown) as LocalAtmosphere).clientGraphQLServer.isBotFinished()
       : false
-  const Phase = phaseLookup[localPhaseType] as PhaseComponent
   return (
     <MeetingStyles>
       {demoPortal()}

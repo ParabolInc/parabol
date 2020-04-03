@@ -11,9 +11,11 @@ const manageErrorResponse = <T>(res: T) => {
       const {error} = firstError
       if (error) {
         const {message} = error
-        const re = /language \S+ is not supported/
-        if (!re.test(message)) {
-          sendToSentry(new Error(`Grouping Error: Google NLP: ${message}`))
+        if (message !== 'No JWT provided') {
+          const re = /language \S+ is not supported/
+          if (!re.test(message)) {
+            sendToSentry(new Error(`Grouping Error: Google NLP: ${message}`))
+          }
         }
       }
     }
