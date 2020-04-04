@@ -61,7 +61,9 @@ const flagReadyToAdvance = {
       return {error: {message: 'Invalid meeting stage'}}
     }
     const {stage} = stageRes
+    stage.readyToAdvance = stage.readyToAdvance || []
     const {isNavigable, readyToAdvance} = stage
+
     if (!isNavigable) {
       return {error: {message: 'Stage is not ready yet'}}
     }
@@ -86,7 +88,7 @@ const flagReadyToAdvance = {
       .get(meetingId)
       .update({phases, updatedAt: now})
       .run()
-    const data = {meetingId}
+    const data = {meetingId, stageId}
     publish(SubscriptionChannel.MEETING, meetingId, 'FlagReadyToAdvanceSuccess', data, subOptions)
     return data
   }

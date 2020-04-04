@@ -1,46 +1,25 @@
-import ms from 'ms'
-import React, {useEffect, useMemo} from 'react'
 import styled from '@emotion/styled'
-import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import {ActionMeetingPhaseProps} from './ActionMeeting'
-import BottomNavControl from './BottomNavControl'
-import BottomNavIconLabel from './BottomNavIconLabel'
-import MeetingContent from './MeetingContent'
-import MeetingTopBar from './MeetingTopBar'
-import MeetingHelpToggle from './MenuHelpToggle'
-import useAtmosphere from '../hooks/useAtmosphere'
-import MeetingFacilitatorBar from '../modules/meeting/components/MeetingControlBar/MeetingFacilitatorBar'
+import React, {useMemo} from 'react'
+import {createFragmentContainer} from 'react-relay'
+import {ActionMeetingAgendaItems_meeting} from '__generated__/ActionMeetingAgendaItems_meeting.graphql'
+import EditorHelpModalContainer from '../containers/EditorHelpModalContainer/EditorHelpModalContainer'
+import MeetingAgendaCards from '../modules/meeting/components/MeetingAgendaCards/MeetingAgendaCards'
 import MeetingCopy from '../modules/meeting/components/MeetingCopy/MeetingCopy'
 import MeetingPhaseHeading from '../modules/meeting/components/MeetingPhaseHeading/MeetingPhaseHeading'
-import handleRightArrow from '../utils/handleRightArrow'
-import lazyPreload from '../utils/lazyPreload'
-import EndMeetingButton from './EndMeetingButton'
-import Avatar from './Avatar/Avatar'
-import MeetingAgendaCards from '../modules/meeting/components/MeetingAgendaCards/MeetingAgendaCards'
-import EditorHelpModalContainer from '../containers/EditorHelpModalContainer/EditorHelpModalContainer'
-import findStageAfterId from '../utils/meetings/findStageAfterId'
 import {NewMeetingPhaseTypeEnum} from '../types/graphql'
 import {phaseLabelLookup} from '../utils/meetings/lookups'
-import useTimeoutWithReset from '../hooks/useTimeoutWithReset'
+import {ActionMeetingPhaseProps} from './ActionMeeting'
+import Avatar from './Avatar/Avatar'
+import MeetingContent from './MeetingContent'
 import MeetingHeaderAndPhase from './MeetingHeaderAndPhase'
-import PhaseWrapper from './PhaseWrapper'
+import MeetingTopBar from './MeetingTopBar'
 import PhaseHeaderTitle from './PhaseHeaderTitle'
-import {ActionMeetingAgendaItems_meeting} from '__generated__/ActionMeetingAgendaItems_meeting.graphql'
-
-const BottomControlSpacer = styled('div')({
-  minWidth: 90
-})
+import PhaseWrapper from './PhaseWrapper'
 
 interface Props extends ActionMeetingPhaseProps {
   meeting: ActionMeetingAgendaItems_meeting
 }
-
-const ActionMeetingAgendaItemsHelpMenu = lazyPreload(async () =>
-  import(
-    /* webpackChunkName: 'ActionMeetingAgendaItemsHelpMenu' */ './MeetingHelp/ActionMeetingAgendaItemsHelpMenu'
-  )
-)
 
 const AgendaVerbatim = styled('div')({
   alignItems: 'center',
@@ -84,18 +63,10 @@ const Inception = styled('div')({
 })
 
 const ActionMeetingAgendaItems = (props: Props) => {
-  const {avatarGroup, toggleSidebar, meeting, handleGotoNext} = props
-  const atmosphere = useAtmosphere()
-  const {gotoNext, ref: gotoNextRef} = handleGotoNext
-  const [minTimeComplete, resetMinTimeComplete] = useTimeoutWithReset(ms('2m'))
-  const {viewerId} = atmosphere
-  const {endedAt, showSidebar, team, facilitatorUserId, id: meetingId, localStage, phases} = meeting
+  const {avatarGroup, toggleSidebar, meeting} = props
+  const {showSidebar, team, id: meetingId, localStage} = meeting
   const {id: teamId, agendaItems, tasks} = team
-  const {id: localStageId, agendaItemId} = localStage
-  useEffect(() => {
-    resetMinTimeComplete()
-  }, [agendaItemId, resetMinTimeComplete])
-
+  const {agendaItemId} = localStage
   const agendaTasks = useMemo(() => {
     return tasks.edges
       .map(({node}) => node)
@@ -107,11 +78,6 @@ const ActionMeetingAgendaItems = (props: Props) => {
   if (!agendaItem) return null
   const {content, teamMember} = agendaItem
   const {picture, preferredName} = teamMember
-  const isFacilitating = facilitatorUserId === viewerId && !endedAt
-  const nextStageRes = findStageAfterId(phases, localStageId)
-  const {phase: nextPhase} = nextStageRes!
-  const label =
-    nextPhase.phaseType === NewMeetingPhaseTypeEnum.lastcall ? 'Last Call' : 'Next Topic'
   return (
     <MeetingContent>
       <MeetingHeaderAndPhase>
@@ -146,30 +112,14 @@ const ActionMeetingAgendaItems = (props: Props) => {
           </TaskCardBlock>
           <EditorHelpModalContainer />
         </PhaseWrapper>
-        <MeetingHelpToggle menu={<ActionMeetingAgendaItemsHelpMenu />} />
       </MeetingHeaderAndPhase>
-      <MeetingFacilitatorBar isFacilitating={isFacilitating}>
-        <BottomControlSpacer />
-        <BottomNavControl
-          isBouncing={minTimeComplete}
-          onClick={() => gotoNext()}
-          ref={gotoNextRef}
-          onKeyDown={handleRightArrow(() => gotoNext())}
-        >
-          <BottomNavIconLabel icon='arrow_forward' iconColor='warm' label={label} />
-        </BottomNavControl>
-        <EndMeetingButton meetingId={meetingId} isEnded={!!endedAt} />
-      </MeetingFacilitatorBar>
     </MeetingContent>
   )
 }
 
 graphql`
-  fragment ActionMeetingAgendaItemsStage on NewMeetingStage {
-    id
-    ... on AgendaItemsStage {
-      agendaItemId
-    }
+  fragment ActionMeetingAgendaItemsStage on AgendaItemsStage {
+    agendaItemId
   }
 `
 
@@ -184,8 +134,6 @@ export default createFragmentContainer(ActionMeetingAgendaItems, {
         ...ActionMeetingAgendaItemsStage @relay(mask: false)
       }
       phases {
-        id
-        phaseType
         stages {
           ...ActionMeetingAgendaItemsStage @relay(mask: false)
         }

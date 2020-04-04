@@ -12,7 +12,7 @@ import {NewMeetingPhaseTypeEnum} from 'types/graphql'
 import findStageAfterId from 'utils/meetings/findStageAfterId'
 import {MeetingControlBar_meeting} from '__generated__/MeetingControlBar_meeting.graphql'
 import {bottomBarShadow, desktopBarShadow} from '../styles/elevation'
-import BottomControlBarNext from './BottomControlBarNext'
+import BottomControlBarReady from './BottomControlBarReady'
 import BottomControlBarRejoin from './BottomControlBarRejoin'
 import BottomControlBarTips from './BottomControlBarTips'
 import EndMeetingButton from './EndMeetingButton'
@@ -56,12 +56,13 @@ const DEFAULT_TIME_LIMIT = {
 
 interface Props {
   handleGotoNext: ReturnType<typeof useGotoNext>
+  isDemoStageComplete?: boolean
   gotoStageId: ReturnType<typeof useGotoStageId>
   meeting: MeetingControlBar_meeting
 }
 
 const MeetingControlBar = (props: Props) => {
-  const {handleGotoNext, meeting, gotoStageId} = props
+  const {handleGotoNext, isDemoStageComplete, meeting, gotoStageId} = props
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
   const {
@@ -100,7 +101,13 @@ const MeetingControlBar = (props: Props) => {
             case 'tips':
               return <BottomControlBarTips {...tranProps} meeting={meeting} />
             case 'ready':
-              return null
+              return (
+                <BottomControlBarReady
+                  {...tranProps}
+                  isDemoStageComplete={isDemoStageComplete}
+                  meeting={meeting}
+                />
+              )
             case 'rejoin':
               return (
                 <BottomControlBarRejoin
@@ -117,9 +124,18 @@ const MeetingControlBar = (props: Props) => {
                 />
               )
             case 'next':
-              return <BottomControlBarNext {...tranProps} handleGotoNext={handleGotoNext} />
+              return (
+                <BottomControlBarReady
+                  {...tranProps}
+                  isDemoStageComplete={isDemoStageComplete}
+                  meeting={meeting}
+                  handleGotoNext={handleGotoNext}
+                />
+              )
             case 'end':
               return <EndMeetingButton {...tranProps} meetingId={meetingId} isEnded={!!endedAt} />
+            default:
+              return null
           }
         })
         .filter(Boolean)}
@@ -131,6 +147,7 @@ export default createFragmentContainer(MeetingControlBar, {
   meeting: graphql`
     fragment MeetingControlBar_meeting on NewMeeting {
       ...BottomControlBarTips_meeting
+      ...BottomControlBarReady_meeting
       ...StageTimerControl_meeting
       id
       endedAt

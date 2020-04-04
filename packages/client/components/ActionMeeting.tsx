@@ -2,7 +2,6 @@ import graphql from 'babel-plugin-relay/macro'
 import React, {ReactElement, useEffect} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {ActionMeeting_meeting} from '__generated__/ActionMeeting_meeting.graphql'
-import useGotoNext from '../hooks/useGotoNext'
 import useMeeting from '../hooks/useMeeting'
 import NewMeetingAvatarGroup from '../modules/meeting/components/MeetingAvatarGroup/NewMeetingAvatarGroup'
 import {ValueOf} from '../types/generics'
@@ -12,6 +11,7 @@ import ActionMeetingSidebar from './ActionMeetingSidebar'
 import MeetingArea from './MeetingArea'
 import MeetingStyles from './MeetingStyles'
 import ResponsiveDashSidebar from './ResponsiveDashSidebar'
+import MeetingControlBar from './MeetingControlBar'
 
 interface Props {
   meeting: ActionMeeting_meeting
@@ -39,20 +39,12 @@ type PhaseComponent = ValueOf<typeof phaseLookup>
 
 export interface ActionMeetingPhaseProps {
   avatarGroup: ReactElement
-  handleGotoNext: ReturnType<typeof useGotoNext>
   toggleSidebar: () => void
 }
 
 const ActionMeeting = (props: Props) => {
   const {meeting} = props
-  const {
-    endedAt,
-    facilitatorStageId,
-    localPhase,
-    localStage,
-    showSidebar,
-    viewerMeetingMember
-  } = meeting
+  const {localPhase, showSidebar, viewerMeetingMember} = meeting
   const {
     toggleSidebar,
     streams,
@@ -83,7 +75,6 @@ const ActionMeeting = (props: Props) => {
       </ResponsiveDashSidebar>
       <MeetingArea>
         <Phase
-          handleGotoNext={handleGotoNext}
           meeting={meeting}
           toggleSidebar={toggleSidebar}
           avatarGroup={
@@ -96,6 +87,11 @@ const ActionMeeting = (props: Props) => {
           }
         />
       </MeetingArea>
+      <MeetingControlBar
+        meeting={meeting}
+        handleGotoNext={handleGotoNext}
+        gotoStageId={gotoStageId}
+      />
     </MeetingStyles>
   )
 }
@@ -111,22 +107,15 @@ export default createFragmentContainer(ActionMeeting, {
       ...ActionMeetingAgendaItems_meeting
       ...ActionMeetingLastCall_meeting
       ...NewMeetingAvatarGroup_meeting
-      endedAt
+      ...MeetingControlBar_meeting
       localPhase {
         id
         phaseType
       }
-      localStage {
-        id
-      }
       phases {
         id
         phaseType
-        stages {
-          id
-        }
       }
-      facilitatorStageId
       showSidebar
       viewerMeetingMember {
         user {

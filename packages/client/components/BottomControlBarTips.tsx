@@ -94,7 +94,7 @@ interface Props {
 }
 const BottomControlBarTips = (props: Props) => {
   const {meeting, status, onTransitionEnd} = props
-  const {localPhase} = meeting
+  const {localPhase, meetingType} = meeting
   const {phaseType} = localPhase
   const {menuProps, menuPortal, originRef, togglePortal, openPortal} = useMenu(
     MenuPosition.LOWER_RIGHT
@@ -128,7 +128,7 @@ const BottomControlBarTips = (props: Props) => {
       <BottomNavIconLabel icon='help_outline' iconColor='midGray' label={'Tips'} />
       {menuPortal(
         <TallMenu ariaLabel='Meeting tips' {...menuProps}>
-          <MenuContent />
+          <MenuContent meetingType={meetingType} />
         </TallMenu>
       )}
     </BottomNavControl>
@@ -139,6 +139,7 @@ export default createFragmentContainer(BottomControlBarTips, {
   meeting: graphql`
     fragment BottomControlBarTips_meeting on NewMeeting {
       id
+      meetingType
       localPhase {
         phaseType
       }
