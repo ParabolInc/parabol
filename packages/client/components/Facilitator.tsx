@@ -97,7 +97,7 @@ const FacilitatorMenu = lazyPreload(() =>
 
 const Facilitator = (props: Props) => {
   const {meeting} = props
-  const {facilitatorUserId, facilitator} = meeting
+  const {endedAt, facilitatorUserId, facilitator} = meeting
   const {user, picture, preferredName} = facilitator
   const {isConnected} = user
   const {togglePortal, menuProps, menuPortal, originRef, portalStatus} = useMenu<HTMLDivElement>(
@@ -108,7 +108,7 @@ const Facilitator = (props: Props) => {
   )
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
-  const isReadOnly = isDemoRoute() || viewerId === facilitatorUserId
+  const isReadOnly = isDemoRoute() || viewerId === facilitatorUserId || !!endedAt
   const handleOnMouseEnter = () => !isReadOnly && FacilitatorMenu.preload()
   const handleOnClick = () => !isReadOnly && togglePortal()
   return (
@@ -138,6 +138,7 @@ export default createFragmentContainer(Facilitator, {
   meeting: graphql`
     fragment Facilitator_meeting on NewMeeting {
       ...FacilitatorMenu_meeting
+      endedAt
       facilitatorUserId
       facilitator {
         picture

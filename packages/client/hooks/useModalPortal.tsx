@@ -116,10 +116,12 @@ const useModalPortal = (
             portalStatus={portalStatus}
           />
         </BlurredScrim>
-        <ErrorBoundary
-          fallback={(error) => <ModalError error={error} portalStatus={portalStatus} />}
-        >
-          <ModalContents portalStatus={portalStatus}>
+        <ModalContents portalStatus={portalStatus}>
+          <ErrorBoundary
+            fallback={(error, eventId) => (
+              <ModalError error={error} portalStatus={portalStatus} eventId={eventId} />
+            )}
+          >
             <Suspense
               fallback={
                 <LoadingComponent
@@ -132,8 +134,8 @@ const useModalPortal = (
             >
               {reactEl}
             </Suspense>
-          </ModalContents>
-        </ErrorBoundary>
+          </ErrorBoundary>
+        </ModalContents>
       </ModalBlock>
     )
   }

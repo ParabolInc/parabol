@@ -1,4 +1,4 @@
-const mode = (array, getField = (item) => item) => {
+const mode = <T>(array: T[], getField = (item: T) => item) => {
   const map = new Map()
   let maxFreq = 0
   let maxFreqItem
@@ -14,7 +14,7 @@ const mode = (array, getField = (item) => item) => {
     }
     map.set(itemField, nextFreq)
   }
-  return maxFreqItem
+  return [maxFreq, maxFreqItem] as [number, T]
 }
 
 export default mode

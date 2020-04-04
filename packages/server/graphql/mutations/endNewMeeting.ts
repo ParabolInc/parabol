@@ -204,12 +204,15 @@ const finishRetroMeting = async (meeting: MeetingRetrospective, dataLoader: Data
     .run()
 }
 
-const finishMeetingType = async (meeting: Meeting, dataLoader: DataLoaderWorker) => {
+const finishMeetingType = async (
+  meeting: MeetingRetrospective | MeetingAction,
+  dataLoader: DataLoaderWorker
+) => {
   switch (meeting.meetingType) {
     case MeetingTypeEnum.action:
       return finishActionMeeting(meeting, dataLoader)
     case MeetingTypeEnum.retrospective:
-      return finishRetroMeting(meeting, dataLoader)
+      return finishRetroMeting(meeting as MeetingRetrospective, dataLoader)
   }
   return undefined
 }

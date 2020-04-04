@@ -168,7 +168,24 @@ export default class Atmosphere extends Environment {
 
   trySockets = () => {
     const wsProtocol = window.location.protocol.replace('http', 'ws')
-    const getUrl = () => `${wsProtocol}//${window.location.host}/?token=${this.authToken}`
+    const getUrl = () => {
+      this.setAuthToken(this.authToken)
+      if (!this.authToken) {
+        this.eventEmitter.emit('addSnackbar', {
+          autoDismiss: 0,
+          key: 'cannotConnectJWT',
+          message: 'Session expired. Please refresh to continue',
+          action: {
+            label: 'Refresh',
+            callback: () => {
+              window.location.reload()
+            }
+          }
+        })
+        return ''
+      }
+      return `${wsProtocol}//${window.location.host}/?token=${this.authToken}`
+    }
     return new SocketTrebuchet({getUrl})
   }
 
@@ -178,21 +195,6 @@ export default class Atmosphere extends Environment {
   }
 
   async promiseToUpgrade() {
-    this.setAuthToken(this.authToken)
-    if (!this.authToken) {
-      this.eventEmitter.emit('addSnackbar', {
-        autoDismiss: 0,
-        key: 'cannotConnectJWT',
-        message: 'Session expired. Please refresh to continue',
-        action: {
-          label: 'Refresh',
-          callback: () => {
-            window.location.reload()
-          }
-        }
-      })
-      return
-    }
     const trebuchets = [this.trySockets, this.trySSE]
     const trebuchet = await getTrebuchet(trebuchets)
     if (!trebuchet) {
@@ -251,7 +253,13 @@ export default class Atmosphere extends Environment {
       window.localStorage.removeItem(LocalStorageKey.APP_TOKEN_KEY)
       return
     }
-    this.authObj = jwtDecode(authToken)
+    try {
+      this.authObj = jwtDecode(authToken)
+    } catch (e) {
+      this.authObj = null
+      this.authToken = null
+    }
+
     if (!this.authObj) return
     const {exp, sub: viewerId} = this.authObj
     if (exp < Date.now() / 1000) {

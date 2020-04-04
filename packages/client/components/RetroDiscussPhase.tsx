@@ -7,7 +7,6 @@ import {RetroDiscussPhase_meeting} from '__generated__/RetroDiscussPhase_meeting
 import EditorHelpModalContainer from '../containers/EditorHelpModalContainer/EditorHelpModalContainer'
 import useAtmosphere from '../hooks/useAtmosphere'
 import MeetingFacilitatorBar from '../modules/meeting/components/MeetingControlBar/MeetingFacilitatorBar'
-import {meetingVoteIcon} from '../styles/meeting'
 import {PALETTE} from '../styles/paletteV2'
 import {ICON_SIZE} from '../styles/typographyV2'
 import {Breakpoint, ElementWidth} from '../types/constEnums'
@@ -37,6 +36,8 @@ import ReflectionGroup from './ReflectionGroup/ReflectionGroup'
 import {RetroMeetingPhaseProps} from './RetroMeeting'
 import StageTimerDisplay from './RetroReflectPhase/StageTimerDisplay'
 import StageTimerControl from './StageTimerControl'
+import * as Sentry from '@sentry/browser'
+
 interface Props extends RetroMeetingPhaseProps {
   meeting: RetroDiscussPhase_meeting
 }
@@ -178,13 +179,18 @@ const RetroDiscussPhase = (props: Props) => {
   const isDesktop = useBreakpoint(Breakpoint.SINGLE_REFLECTION_COLUMN)
   // reflection group will be null until the server overwrites the placeholder.
   if (!reflectionGroup) return null
-  const {id: reflectionGroupId, title, reflections, voteCount} = reflectionGroup
+  const {id: reflectionGroupId, title, voteCount} = reflectionGroup
   const isFacilitating = facilitatorUserId === viewerId && !endedAt
   const nextStageRes = findStageAfterId(phases, localStageId)
-  if (!reflections) {
+  const reflections = reflectionGroup.reflections ?? []
+  if (!reflectionGroup.reflections) {
     // this shouldn't ever happen, yet
     // https://sentry.io/organizations/parabol/issues/1322927523/?environment=client&project=107196&query=is%3Aunresolved
-    console.error('NO REFLECTIONS', JSON.stringify(reflectionGroup))
+    const errObj = {id: reflectionGroup.id} as any
+    if (reflectionGroup.hasOwnProperty('reflections')) {
+      errObj.reflections = reflections
+    }
+    Sentry.captureException(new Error(`NO REFLECTIONS ${JSON.stringify(errObj)}`))
   }
   return (
     <MeetingContent ref={phaseRef}>
@@ -207,7 +213,7 @@ const RetroDiscussPhase = (props: Props) => {
               <DiscussHeader>
                 <TopicHeading>{`“${title}”`}</TopicHeading>
                 <VoteMeta>
-                  <VoteIcon>{meetingVoteIcon}</VoteIcon>
+                  <VoteIcon>{'thumb_up'}</VoteIcon>
                   {voteCount || 0}
                 </VoteMeta>
               </DiscussHeader>

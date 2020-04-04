@@ -1,6 +1,6 @@
 import MeetingSettings from './MeetingSettings'
 import {MeetingTypeEnum, NewMeetingPhaseTypeEnum} from 'parabol-client/types/graphql'
-import {MeetingSettingsDefaults} from 'parabol-client/types/constEnums'
+import {MeetingSettingsThreshold} from 'parabol-client/types/constEnums'
 
 interface Input {
   teamId: string
@@ -25,8 +25,8 @@ export default class MeetingSettingsRetrospective extends MeetingSettings {
     const {teamId, id, maxVotesPerGroup, selectedTemplateId, totalVotes} = input
     super({teamId, id, meetingType: MeetingTypeEnum.retrospective, phaseTypes})
     this.maxVotesPerGroup =
-      maxVotesPerGroup ?? MeetingSettingsDefaults.RETROSPECTIVE_MAX_VOTES_PER_GROUP
-    this.totalVotes = totalVotes ?? MeetingSettingsDefaults.RETROSPECTIVE_TOTAL_VOTES
+      maxVotesPerGroup ?? MeetingSettingsThreshold.RETROSPECTIVE_MAX_VOTES_PER_GROUP_DEFAULT
+    this.totalVotes = totalVotes ?? MeetingSettingsThreshold.RETROSPECTIVE_TOTAL_VOTES_DEFAULT
     this.selectedTemplateId = selectedTemplateId
   }
 }

@@ -2072,21 +2072,21 @@
     shortid "^2.2.12"
     tslib "^1.9.3"
 
-"@mattkrick/fast-rtc-peer@^0.3.2":
-  version "0.3.2"
-  resolved "https://registry.yarnpkg.com/@mattkrick/fast-rtc-peer/-/fast-rtc-peer-0.3.2.tgz#1d52730d0ccf342cbc7557e01ea57d810f286eac"
-  integrity sha512-4P8EiJNyKQvPpB0ZFvY5XpMPsnb9k+pisg1eYdBZ5ChQZHpjRJnAi58b6fCmqlGIsLqcZHSp19swj5fg4HVs6w==
+"@mattkrick/fast-rtc-peer@^0.4.0":
+  version "0.4.0"
+  resolved "https://registry.yarnpkg.com/@mattkrick/fast-rtc-peer/-/fast-rtc-peer-0.4.0.tgz#c063684a7d64f2043c0e05898ca88fbe0d8ba0ad"
+  integrity sha512-EIAhjhSkQ7Tc+bXF34jqVOQAe7x7f5InGpUWFab5fM14DHm9/4n1Nw7XBZ8TGNH7bKqqCBRiO1S5mX+2cW/nNg==
   dependencies:
     eventemitter3 "^3.1.0"
     shortid "^2.2.12"
     tslib "^1.9.3"
 
-"@mattkrick/fast-rtc-swarm@^0.3.3":
-  version "0.3.3"
-  resolved "https://registry.yarnpkg.com/@mattkrick/fast-rtc-swarm/-/fast-rtc-swarm-0.3.3.tgz#3fd2f6dd0e9a10fbd3c8ad50abbaf010c0d6b038"
-  integrity sha512-U5n5B9UPHzFBS0PYNjZTwCCt9NR6osLDes8MT7hTm7KKBGo2r84qzxwR5fRwS+EuQeL0jJIWWad43LDdmraQwg==
+"@mattkrick/fast-rtc-swarm@^0.4.0":
+  version "0.4.0"
+  resolved "https://registry.yarnpkg.com/@mattkrick/fast-rtc-swarm/-/fast-rtc-swarm-0.4.0.tgz#b1cbcd73c2a10d7fa1c7b32b6132d892c8f7c06c"
+  integrity sha512-gDFLwR8M1U/wRLK00juc7Duwkuqbrm9S/iAQkXhZWOGf7hykG/8jbLzfsh2cR78RYugJP9aqo381yXgKrbPPVw==
   dependencies:
-    "@mattkrick/fast-rtc-peer" "^0.3.2"
+    "@mattkrick/fast-rtc-peer" "^0.4.0"
     eventemitter3 "^3.1.0"
     tslib "^1.9.3"
 
@@ -17955,10 +17955,10 @@ typedarray@^0.0.6:
   resolved "https://registry.yarnpkg.com/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
   integrity sha1-hnrHTjhkGHsdPUfZlqeOxciDB3c=
 
-typescript@^3.8.3:
-  version "3.8.3"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.8.3.tgz#409eb8544ea0335711205869ec458ab109ee1061"
-  integrity sha512-MYlEfn5VrLNsgudQTVJeNaQFUAI7DkhnOjdpAp4T+ku1TfQClewlbSuTVHiA+8skNBgaf02TL/kLOvig4y3G8w==
+typescript@^3.9.0, typescript@^3.9.0-beta:
+  version "3.9.0-dev.20200327"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.9.0-dev.20200327.tgz#52179aae816587f772a0526e91143760f2bee42f"
+  integrity sha512-/TWD/zPvhAcN2Toqx2NBQ+oDVGVj4iqupjWcUAwL45TfcODeHpzszneABR1b/EjHbtUObtLH40vy5Z6rdVvKzg==
 
 uWebSockets.js@uNetworking/uWebSockets.js#v17.3.0:
   version "17.3.0"

@@ -5,7 +5,7 @@ import Reflection from 'parabol-server/database/types/Reflection'
 import {Variables} from 'relay-runtime'
 import StrictEventEmitter from 'strict-event-emitter-types'
 import stringSimilarity from 'string-similarity'
-import {RetroDemo, SubscriptionChannel} from '../../types/constEnums'
+import {RetroDemo, SubscriptionChannel, MeetingSettingsThreshold} from '../../types/constEnums'
 import {
   DragReflectionDropTargetTypeEnum,
   IDiscussPhase,
@@ -79,7 +79,7 @@ interface GQLDemoEmitter {
   new (): StrictEventEmitter<EventEmitter, DemoEvents>
 }
 
-const reflectionGroupThread = {
+const makeReflectionGroupThread = () => ({
   __typename: 'ThreadableConnection',
   edges: [],
   pageInfo: {
@@ -89,7 +89,8 @@ const reflectionGroupThread = {
     hasNextPage: false,
     hasPreviousPage: false
   }
-}
+})
+
 class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
   atmosphere: LocalAtmosphere
   db: ReturnType<typeof initDB>
@@ -449,7 +450,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         reflections: [reflection],
         sortOrder,
         tasks: [],
-        thread: {...reflectionGroupThread},
+        thread: makeReflectionGroupThread(),
         titleIsUserDefined: false,
         updatedAt: now,
         voterIds: []
@@ -529,6 +530,17 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       }
       return {removeReflection: data}
     },
+    NewMeetingCheckInMutation: async (_, userId) => {
+      const meetingMember = this.db.meetingMembers.find((member) => member.userId === userId)
+      if (!meetingMember) return null
+      meetingMember.isCheckedIn = true
+      const data = {
+        __typename: 'NewMeetingCheckInMutation',
+        meeting: this.db.newMeeting,
+        meetingMember
+      }
+      return {newMeetingCheckIn: data}
+    },
     UpdateReflectionContentMutation: async ({reflectionId, content}, userId) => {
       const reflection = this.db.reflections.find((reflection) => reflection.id === reflectionId)!
       reflection.content = content
@@ -566,6 +578,35 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         this.emit(SubscriptionChannel.MEETING, data)
       }
       return {updateReflectionContent: data}
+    },
+    UpdateRetroMaxVotesMutation: async ({totalVotes, maxVotesPerGroup}) => {
+      const {newMeeting: meeting, meetingMembers} = this.db
+      if (
+        totalVotes < MeetingSettingsThreshold.RETROSPECTIVE_TOTAL_VOTES_DEFAULT ||
+        maxVotesPerGroup < MeetingSettingsThreshold.RETROSPECTIVE_MAX_VOTES_PER_GROUP_DEFAULT
+      ) {
+        return {
+          updateRetroMaxVotes: {
+            __typename: 'ErrorPayload',
+            error: {message: 'Your team has already spent their votes'}
+          }
+        }
+      }
+      const totalDiff = totalVotes - (meeting as any).totalVotes
+      meeting.totalVotes = totalVotes
+      meeting.maxVotesPerGroup = maxVotesPerGroup
+      meetingMembers.forEach((member) => {
+        member.votesRemaining += totalDiff
+      })
+      meeting.votesRemaining = meetingMembers.reduce(
+        (sum, member) => sum + member.votesRemaining,
+        0
+      )
+      const data = {
+        __typename: 'UpdateRetroMaxVotesSuccess',
+        meeting
+      }
+      return {updateRetroMaxVotes: data}
     },
     NavigateMeetingMutation: async ({completedStageId, facilitatorStageId, meetingId}, userId) => {
       let phaseCompleteData
@@ -771,7 +812,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
           reflections: [reflection],
           sortOrder: 0,
           tasks: [],
-          thread: {...reflectionGroupThread},
+          thread: makeReflectionGroupThread(),
           updatedAt: now,
           voterIds: []
         } as any
@@ -1015,8 +1056,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
           updatedAt: now
         })
         Object.assign(this.db.newMeeting, {
-          votesRemaining: this.db.newMeeting.votesRemaining! + 1,
-          teamVotesRemaining: this.db.newMeeting.votesRemaining! + 1
+          votesRemaining: this.db.newMeeting.votesRemaining! + 1
         })
       } else {
         voterIds.push(userId)
@@ -1025,8 +1065,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
           updatedAt: now
         })
         Object.assign(this.db.newMeeting, {
-          votesRemaining: this.db.newMeeting.votesRemaining! - 1,
-          teamVotesRemaining: this.db.newMeeting.votesRemaining! - 1
+          votesRemaining: this.db.newMeeting.votesRemaining! - 1
         })
       }
       reflectionGroup.voteCount = voterIds.length

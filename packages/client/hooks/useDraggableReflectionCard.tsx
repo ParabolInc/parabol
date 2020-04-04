@@ -117,7 +117,11 @@ const removeClone = (reflectionId: string, setPortal: SetPortal) => {
   // shouldn't always be necessary, but do it to prevent sticky cards
   const el = document.getElementById(`clone-${reflectionId}`)
   if (el) {
-    el.parentElement!.removeChild(el)
+    try {
+      el.parentElement!.removeChild(el)
+    } catch (e) {
+      // already removed
+    }
   }
 }
 

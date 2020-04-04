@@ -1,35 +1,29 @@
-import Meeting from '../../../database/types/Meeting'
-import RetroMeetingMember from '../../../database/types/RetroMeetingMember'
-import {DataLoaderWorker} from '../../graphql'
-import {IRetrospectiveMeetingSettings, MeetingTypeEnum} from '../../../../client/types/graphql'
-import TeamMember from '../../../database/types/TeamMember'
+import {MeetingTypeEnum} from '../../../../client/types/graphql'
 import ActionMeetingMember from '../../../database/types/ActionMeetingMember'
+import Meeting from '../../../database/types/Meeting'
+import MeetingRetrospective from '../../../database/types/MeetingRetrospective'
+import RetroMeetingMember from '../../../database/types/RetroMeetingMember'
+import TeamMember from '../../../database/types/TeamMember'
 
-const createMeetingMembers = async (
-  meeting: Meeting,
-  teamMembers: TeamMember[],
-  dataLoader: DataLoaderWorker
-) => {
+const createMeetingMembers = (meeting: Meeting, teamMembers: TeamMember[]) => {
+  const isLateArrival = teamMembers.length === 1
+  const isCheckedIn = isLateArrival
   switch (meeting.meetingType) {
     case MeetingTypeEnum.action:
       return teamMembers.map(
         ({teamId, userId}) =>
-          new ActionMeetingMember({teamId, userId, meetingId: meeting.id, isCheckedIn: true})
+          new ActionMeetingMember({teamId, userId, meetingId: meeting.id, isCheckedIn})
       )
     case MeetingTypeEnum.retrospective:
-      const allSettings = await dataLoader.get('meetingSettingsByTeamId').load(meeting.teamId)
-      const retroSettings = (allSettings.find(
-        (settings) => settings.meetingType === meeting.meetingType
-      ) as unknown) as IRetrospectiveMeetingSettings
-      const {totalVotes} = retroSettings
+      const {id: meetingId, totalVotes} = meeting as MeetingRetrospective
       return teamMembers.map(
         ({teamId, userId}) =>
           new RetroMeetingMember({
             teamId,
             userId,
-            meetingId: meeting.id,
+            meetingId,
             votesRemaining: totalVotes,
-            isCheckedIn: true
+            isCheckedIn
           })
       )
   }

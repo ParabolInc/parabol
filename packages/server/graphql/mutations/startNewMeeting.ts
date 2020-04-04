@@ -17,6 +17,9 @@ import StartNewMeetingPayload from '../types/StartNewMeetingPayload'
 import createMeetingMembers from './helpers/createMeetingMembers'
 import createNewMeetingPhases from './helpers/createNewMeetingPhases'
 import {startSlackMeeting} from './helpers/notifySlack'
+import MeetingRetrospective from '../../database/types/MeetingRetrospective'
+import MeetingAction from '../../database/types/MeetingAction'
+import MeetingSettingsRetrospective from '../../database/types/MeetingSettingsRetrospective'
 
 export default {
   type: new GraphQLNonNull(StartNewMeetingPayload),
@@ -59,6 +62,7 @@ export default {
     try {
       phases = await createNewMeetingPhases(teamId, meetingCount, meetingType, dataLoader)
     } catch (e) {
+      console.log('e', e)
       return standardError(new Error('Could not start meeting'), {userId: viewerId})
     }
     const organization = (await r
@@ -68,16 +72,31 @@ export default {
       .run()) as Organization
 
     const {showConversionModal} = organization
-    const meeting = new Meeting({
-      teamId,
-      meetingType,
-      meetingCount,
-      phases,
-      showConversionModal,
-      facilitatorUserId: viewerId
-    })
+    let meeting: Meeting
+    if (meetingType === EMeetingTypeEnum.retrospective) {
+      const meetingSettings = (await dataLoader
+        .get('meetingSettingsByType')
+        .load({teamId, meetingType})) as MeetingSettingsRetrospective
+      const {totalVotes, maxVotesPerGroup} = meetingSettings
+      meeting = new MeetingRetrospective({
+        teamId,
+        meetingCount,
+        phases,
+        showConversionModal,
+        facilitatorUserId: viewerId,
+        totalVotes,
+        maxVotesPerGroup
+      })
+    } else {
+      meeting = new MeetingAction({
+        teamId,
+        meetingCount,
+        phases,
+        facilitatorUserId: viewerId
+      })
+    }
     const teamMembers = await dataLoader.get('teamMembersByTeamId').load(meeting.teamId)
-    const meetingMembers = await createMeetingMembers(meeting, teamMembers, dataLoader)
+    const meetingMembers = createMeetingMembers(meeting, teamMembers)
     await r
       .table('NewMeeting')
       .insert(meeting)

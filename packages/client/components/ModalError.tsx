@@ -1,30 +1,36 @@
-import React, {forwardRef, Ref} from 'react'
 import styled from '@emotion/styled'
+import useModal from 'hooks/useModal'
+import React, {forwardRef, Ref} from 'react'
 import DialogContent from './DialogContent'
 import DialogTitle from './DialogTitle'
 import MenuContents, {MenuContentsProps} from './MenuContents'
+import PrimaryButton from './PrimaryButton'
+import ReportErrorFeedback from './ReportErrorFeedback'
 
 interface Props extends MenuContentsProps {
   error: Error
+  eventId: string
 }
 
 const ErrorBlock = styled(MenuContents)({
+  background: '#fff',
   padding: 16
 })
 
-const SmallPrint = styled('div')({
-  marginTop: 16,
-  fontSize: 10
+const Button = styled(PrimaryButton)({
+  marginTop: 8
 })
 
 const ModalError = forwardRef((props: Props, ref: Ref<HTMLDivElement>) => {
-  const {error, ...blockProps} = props
+  const {error, eventId, ...blockProps} = props
+  const {modalPortal, openPortal, closePortal} = useModal()
   return (
     <ErrorBlock {...blockProps} ref={ref}>
       <DialogTitle>You found a bug!</DialogTitle>
       <DialogContent>
         {'We’ve alerted the developers. Try refreshing the page'}
-        <SmallPrint>Error: {error.message}</SmallPrint>
+        <Button onClick={openPortal}>Report Feedback</Button>
+        {modalPortal(<ReportErrorFeedback closePortal={closePortal} eventId={eventId} />)}
       </DialogContent>
     </ErrorBlock>
   )

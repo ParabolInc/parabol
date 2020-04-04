@@ -1,14 +1,9 @@
-import {commitMutation} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
+import {commitMutation} from 'react-relay'
+import {IRetroReflectionGroup, IRetrospectiveMeetingMember} from '../types/graphql'
+import {BaseLocalHandlers, StandardMutation} from '../types/relayMutations'
 import toTeamMemberId from '../utils/relay/toTeamMemberId'
-import {LocalHandlers} from '../types/relayMutations'
-import {
-  IRetroReflectionGroup,
-  IRetrospectiveMeetingMember,
-  IVoteForReflectionGroupOnMutationArguments
-} from '../types/graphql'
-import Atmosphere from '../Atmosphere'
-import {VoteForReflectionGroupMutation as IVoteForReflectionGroupMutation} from '../__generated__/VoteForReflectionGroupMutation.graphql'
+import {VoteForReflectionGroupMutation as TVoteForReflectionGroupMutation} from '../__generated__/VoteForReflectionGroupMutation.graphql'
 
 graphql`
   fragment VoteForReflectionGroupMutation_meeting on VoteForReflectionGroupPayload {
@@ -42,12 +37,15 @@ const mutation = graphql`
   }
 `
 
-const VoteForReflectionGroupMutation = (
-  atmosphere: Atmosphere,
-  variables: IVoteForReflectionGroupOnMutationArguments,
-  {onError, onCompleted, meetingId}: LocalHandlers & {meetingId: string}
-) => {
-  return commitMutation<IVoteForReflectionGroupMutation>(atmosphere, {
+interface Handlers extends BaseLocalHandlers {
+  meetingId: string
+}
+
+const VoteForReflectionGroupMutation: StandardMutation<
+  TVoteForReflectionGroupMutation,
+  Handlers
+> = (atmosphere, variables, {onError, onCompleted, meetingId}) => {
+  return commitMutation<TVoteForReflectionGroupMutation>(atmosphere, {
     mutation,
     variables,
     onCompleted,

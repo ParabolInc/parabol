@@ -34,50 +34,52 @@ const Action = memo(() => {
   useTrebuchetEvents()
   useServiceWorkerUpdater()
   return (
-    <ErrorBoundary>
+    <>
       <Global
         styles={css`
           ${globalStyles}
         `}
       />
-      <Snackbar />
-      <Suspense fallback={<LoadingComponent spinnerSize={LoaderSize.WHOLE_PAGE} />}>
-        <AnalyticsPage />
-        <Switch>
-          <Route exact path='/' render={(p) => <AuthenticationPage {...p} page={'signin'} />} />
-          <Route
-            exact
-            path={`/${SIGNIN_SLUG}`}
-            render={(p) => <AuthenticationPage {...p} page={'signin'} />}
-          />
-          <Route
-            exact
-            path={`/${CREATE_ACCOUNT_SLUG}`}
-            render={(p) => <AuthenticationPage {...p} page={'create-account'} />}
-          />
-          <Route exact path={`/auth/:provider`} component={AuthProvider} />
-          <Route path={`/saml-redirect`} component={SAMLRedirect} />
-          <Route
-            path='/retrospective-demo/:localPhaseSlug?/:stageIdxSlug?'
-            component={DemoMeeting}
-          />
-          <Route path='/retrospective-demo-summary' component={DemoSummary} />
-          <Route
-            exact
-            path={`/forgot-password`}
-            render={(p) => <AuthenticationPage {...p} page={'forgot-password'} />}
-          />
-          <Route
-            path='/verify-email/:verificationToken/:invitationToken?'
-            component={VerifyEmail}
-          />
-          <Route path='/reset-password/:token' component={SetNewPassword} />
-          <Route path='/team-invitation/:token' component={TeamInvitation} />
-          <Route path='/invitation-link/:token' component={InvitationLink} />
-          <Route component={PrivateRoutes} />
-        </Switch>
-      </Suspense>
-    </ErrorBoundary>
+      <ErrorBoundary>
+        <Snackbar />
+        <Suspense fallback={<LoadingComponent spinnerSize={LoaderSize.WHOLE_PAGE} />}>
+          <AnalyticsPage />
+          <Switch>
+            <Route exact path='/' render={(p) => <AuthenticationPage {...p} page={'signin'} />} />
+            <Route
+              exact
+              path={`/${SIGNIN_SLUG}`}
+              render={(p) => <AuthenticationPage {...p} page={'signin'} />}
+            />
+            <Route
+              exact
+              path={`/${CREATE_ACCOUNT_SLUG}`}
+              render={(p) => <AuthenticationPage {...p} page={'create-account'} />}
+            />
+            <Route exact path={`/auth/:provider`} component={AuthProvider} />
+            <Route path={`/saml-redirect`} component={SAMLRedirect} />
+            <Route
+              path='/retrospective-demo/:localPhaseSlug?/:stageIdxSlug?'
+              component={DemoMeeting}
+            />
+            <Route path='/retrospective-demo-summary' component={DemoSummary} />
+            <Route
+              exact
+              path={`/forgot-password`}
+              render={(p) => <AuthenticationPage {...p} page={'forgot-password'} />}
+            />
+            <Route
+              path='/verify-email/:verificationToken/:invitationToken?'
+              component={VerifyEmail}
+            />
+            <Route path='/reset-password/:token' component={SetNewPassword} />
+            <Route path='/team-invitation/:token' component={TeamInvitation} />
+            <Route path='/invitation-link/:token' component={InvitationLink} />
+            <Route component={PrivateRoutes} />
+          </Switch>
+        </Suspense>
+      </ErrorBoundary>
+    </>
   )
 })
 
