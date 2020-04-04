@@ -1,10 +1,9 @@
 import {GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql'
-import NewMeetingStage, {newMeetingStageFields} from './NewMeetingStage'
-import AgendaItem from './AgendaItem'
-import {IAgendaItemsStage} from '../../../client/types/graphql'
 import {GQLContext} from '../graphql'
+import AgendaItem from './AgendaItem'
+import NewMeetingStage, {newMeetingStageFields} from './NewMeetingStage'
 
-const AgendaItemsStage = new GraphQLObjectType<IAgendaItemsStage, GQLContext>({
+const AgendaItemsStage = new GraphQLObjectType<any, GQLContext>({
   name: 'AgendaItemsStage',
   description: 'The stage where the team discusses a single agenda item',
   interfaces: () => [NewMeetingStage],

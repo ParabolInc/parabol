@@ -1,42 +1,31 @@
 import styled from '@emotion/styled'
+import * as Sentry from '@sentry/browser'
 import graphql from 'babel-plugin-relay/macro'
 import useBreakpoint from 'hooks/useBreakpoint'
 import React, {useRef} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {RetroDiscussPhase_meeting} from '__generated__/RetroDiscussPhase_meeting.graphql'
 import EditorHelpModalContainer from '../containers/EditorHelpModalContainer/EditorHelpModalContainer'
-import useAtmosphere from '../hooks/useAtmosphere'
-import MeetingFacilitatorBar from '../modules/meeting/components/MeetingControlBar/MeetingFacilitatorBar'
 import {PALETTE} from '../styles/paletteV2'
 import {ICON_SIZE} from '../styles/typographyV2'
-import {Breakpoint, ElementWidth} from '../types/constEnums'
+import {Breakpoint} from '../types/constEnums'
 import {NewMeetingPhaseTypeEnum} from '../types/graphql'
-import handleRightArrow from '../utils/handleRightArrow'
-import isDemoRoute from '../utils/isDemoRoute'
-import lazyPreload from '../utils/lazyPreload'
-import findStageAfterId from '../utils/meetings/findStageAfterId'
 import {phaseLabelLookup} from '../utils/meetings/lookups'
 import plural from '../utils/plural'
-import BottomNavControl from './BottomNavControl'
-import BottomNavIconLabel from './BottomNavIconLabel'
 import DiscussionThreadRoot from './DiscussionThreadRoot'
 import DiscussPhaseReflectionGrid from './DiscussPhaseReflectionGrid'
 import DiscussPhaseSqueeze from './DiscussPhaseSqueeze'
-import EndMeetingButton from './EndMeetingButton'
 import Icon from './Icon'
 import LabelHeading from './LabelHeading/LabelHeading'
 import MeetingContent from './MeetingContent'
 import MeetingHeaderAndPhase from './MeetingHeaderAndPhase'
 import MeetingTopBar from './MeetingTopBar'
-import MeetingHelpToggle from './MenuHelpToggle'
 import PhaseHeaderDescription from './PhaseHeaderDescription'
 import PhaseHeaderTitle from './PhaseHeaderTitle'
 import PhaseWrapper from './PhaseWrapper'
 import ReflectionGroup from './ReflectionGroup/ReflectionGroup'
 import {RetroMeetingPhaseProps} from './RetroMeeting'
 import StageTimerDisplay from './RetroReflectPhase/StageTimerDisplay'
-import StageTimerControl from './StageTimerControl'
-import * as Sentry from '@sentry/browser'
 
 interface Props extends RetroMeetingPhaseProps {
   meeting: RetroDiscussPhase_meeting
@@ -143,45 +132,15 @@ const ColumnInner = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   width: '100%'
 }))
 
-const BottomControlSpacer = styled('div')({
-  minWidth: 90
-})
-
-const CenterControlBlock = styled('div')<{isComplete: boolean}>(({isComplete}) => ({
-  margin: '0 auto',
-  paddingLeft: isComplete ? ElementWidth.END_MEETING_BUTTON : undefined
-}))
-
-const DiscussHelpMenu = lazyPreload(async () =>
-  import(/* webpackChunkName: 'DiscussHelpMenu' */ './MeetingHelp/DiscussHelpMenu')
-)
-const DemoDiscussHelpMenu = lazyPreload(async () =>
-  import(/* webpackChunkName: 'DemoDiscussHelpMenu' */ './MeetingHelp/DemoDiscussHelpMenu')
-)
-
 const RetroDiscussPhase = (props: Props) => {
-  const {avatarGroup, toggleSidebar, handleGotoNext, meeting, isDemoStageComplete} = props
-  const atmosphere = useAtmosphere()
+  const {avatarGroup, toggleSidebar, meeting} = props
   const phaseRef = useRef<HTMLDivElement>(null)
-  const {viewerId} = atmosphere
-  const {gotoNext, ref: gotoNextRef} = handleGotoNext
-  const {
-    endedAt,
-    id: meetingId,
-    facilitatorUserId,
-    localStage,
-    phases,
-    showSidebar,
-    organization
-  } = meeting
-  const {id: localStageId, reflectionGroup} = localStage
-  const isComplete = localStage ? localStage.isComplete : false
+  const {id: meetingId, localStage, showSidebar, organization} = meeting
+  const {reflectionGroup} = localStage
   const isDesktop = useBreakpoint(Breakpoint.SINGLE_REFLECTION_COLUMN)
   // reflection group will be null until the server overwrites the placeholder.
   if (!reflectionGroup) return null
   const {id: reflectionGroupId, title, voteCount} = reflectionGroup
-  const isFacilitating = facilitatorUserId === viewerId && !endedAt
-  const nextStageRes = findStageAfterId(phases, localStageId)
   const reflections = reflectionGroup.reflections ?? []
   if (!reflectionGroup.reflections) {
     // this shouldn't ever happen, yet
@@ -241,27 +200,8 @@ const RetroDiscussPhase = (props: Props) => {
             </ColumnsContainer>
           </DiscussPhaseWrapper>
         </PhaseWrapper>
-        <MeetingHelpToggle menu={isDemoRoute() ? <DemoDiscussHelpMenu /> : <DiscussHelpMenu />} />
         <EditorHelpModalContainer />
       </MeetingHeaderAndPhase>
-      <MeetingFacilitatorBar isFacilitating={isFacilitating}>
-        <StageTimerControl defaultTimeLimit={5} meeting={meeting} />
-        {!nextStageRes && isComplete && <BottomControlSpacer />}
-        {nextStageRes && (
-          <CenterControlBlock isComplete={isComplete}>
-            <BottomNavControl
-              isBouncing={isDemoStageComplete}
-              onClick={() => gotoNext()}
-              ref={gotoNextRef}
-              onKeyDown={handleRightArrow(() => gotoNext())}
-            >
-              <BottomNavIconLabel icon='arrow_forward' iconColor='warm' label={'Next Topic'} />
-            </BottomNavControl>
-          </CenterControlBlock>
-        )}
-        <EndMeetingButton meetingId={meetingId} isEnded={!!endedAt} />
-        {!nextStageRes && <BottomControlSpacer />}
-      </MeetingFacilitatorBar>
     </MeetingContent>
   )
 }
@@ -280,25 +220,21 @@ graphql`
         }
       }
     }
-    isComplete
-    id
   }
 `
 
 export default createFragmentContainer(RetroDiscussPhase, {
   meeting: graphql`
     fragment RetroDiscussPhase_meeting on RetrospectiveMeeting {
+      ...DiscussPhaseSqueeze_meeting
       ...StageTimerControl_meeting
       ...ReflectionGroup_meeting
       ...StageTimerDisplay_meeting
-      endedAt
+      id
       organization {
         ...DiscussPhaseSqueeze_organization
       }
       showSidebar
-      ...DiscussPhaseSqueeze_meeting
-      id
-      facilitatorUserId
       phases {
         stages {
           ...RetroDiscussPhase_stage @relay(mask: false)
@@ -308,7 +244,6 @@ export default createFragmentContainer(RetroDiscussPhase, {
       localStage {
         ...RetroDiscussPhase_stage @relay(mask: false)
       }
-      teamId
     }
   `
 })

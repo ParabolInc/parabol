@@ -3,7 +3,6 @@ import React, {ReactElement} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {RetroMeeting_meeting} from '__generated__/RetroMeeting_meeting.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
-import useGotoNext from '../hooks/useGotoNext'
 import useMeeting from '../hooks/useMeeting'
 import LocalAtmosphere from '../modules/demo/LocalAtmosphere'
 import NewMeetingAvatarGroup from '../modules/meeting/components/MeetingAvatarGroup/NewMeetingAvatarGroup'
@@ -41,8 +40,6 @@ const phaseLookup = {
 type PhaseComponent = ValueOf<typeof phaseLookup>
 
 export interface RetroMeetingPhaseProps {
-  handleGotoNext: ReturnType<typeof useGotoNext>
-  isDemoStageComplete: boolean
   toggleSidebar: () => void
   meeting: any
   avatarGroup: ReactElement
@@ -62,15 +59,7 @@ const RetroMeeting = (props: Props) => {
   } = useMeeting(meeting)
   const atmosphere = useAtmosphere()
   if (!safeRoute) return null
-  const {
-    id: meetingId,
-    endedAt,
-    showSidebar,
-    viewerMeetingMember,
-    facilitatorStageId,
-    localPhase,
-    localStage
-  } = meeting
+  const {id: meetingId, showSidebar, viewerMeetingMember, localPhase} = meeting
   const {user} = viewerMeetingMember
   const {featureFlags} = user
   const {video: allowVideo} = featureFlags
@@ -94,9 +83,7 @@ const RetroMeeting = (props: Props) => {
         />
       </ResponsiveDashSidebar>
       <Phase
-        handleGotoNext={handleGotoNext}
         meeting={meeting}
-        isDemoStageComplete={isDemoStageComplete}
         toggleSidebar={toggleSidebar}
         avatarGroup={
           <NewMeetingAvatarGroup
@@ -108,6 +95,7 @@ const RetroMeeting = (props: Props) => {
         }
       />
       <MeetingControlBar
+        isDemoStageComplete={isDemoStageComplete}
         meeting={meeting}
         handleGotoNext={handleGotoNext}
         gotoStageId={gotoStageId}
@@ -130,13 +118,8 @@ export default createFragmentContainer(RetroMeeting, {
       ...MeetingControlBar_meeting
       id
       showSidebar
-      endedAt
-      facilitatorStageId
       localPhase {
         phaseType
-      }
-      localStage {
-        id
       }
       phases {
         phaseType
