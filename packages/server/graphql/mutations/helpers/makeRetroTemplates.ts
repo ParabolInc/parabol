@@ -1,44 +1,100 @@
 import ReflectTemplate from '../../../database/types/ReflectTemplate'
 import RetrospectivePrompt from '../../../database/types/RetrospectivePrompt'
+import {PALETTE} from '../../../../client/styles/paletteV2'
 
 const templateBase = {
   'Working & Stuck': [
     {
       description: 'What’s helping us make progress toward our goals?',
       question: 'What’s working?',
-      title: 'Positive'
+      title: 'Positive',
+      groupColor: PALETTE.PROMPT_GREEN
     },
     {
       description: 'What’s blocking us from achieving our goals?',
       question: 'Where did you get stuck?',
-      title: 'Negative'
+      title: 'Negative',
+      groupColor: PALETTE.PROMPT_RED
     }
   ],
   'Glad, Sad, Mad': [
-    {description: 'What are you happy about?', question: 'Glad'},
-    {description: 'What could be improved?', question: 'Sad'},
-    {description: 'What are you angry or disappointed about?', question: 'Mad'}
+    {
+      description: 'What are you happy about?',
+      question: 'Glad',
+      groupColor: PALETTE.PROMPT_GREEN
+    },
+    {
+      description: 'What could be improved?',
+      question: 'Sad',
+      groupColor: PALETTE.PROMPT_YELLOW
+    },
+    {
+      description: 'What are you angry or disappointed about?',
+      question: 'Mad',
+      groupColor: PALETTE.PROMPT_RED
+    }
   ],
   'Liked, Learned, Lacked, Longed for': [
-    {description: 'What went well?', question: 'Liked'},
-    {description: 'What did you learn?', question: 'Learned'},
-    {description: 'What was missing?', question: 'Lacked'},
-    {description: 'What did you want to happen?', question: 'Longed for'}
+    {
+      description: 'What went well?',
+      question: 'Liked',
+      groupColor: PALETTE.PROMPT_GREEN
+    },
+    {
+      description: 'What did you learn?',
+      question: 'Learned',
+      groupColor: PALETTE.PROMPT_BLUE
+    },
+    {
+      description: 'What was missing?',
+      question: 'Lacked',
+      groupColor: PALETTE.PROMPT_ORANGE
+    },
+    {
+      description: 'What did you want to happen?',
+      question: 'Longed for',
+      groupColor: PALETTE.PROMPT_VIOLET
+    }
   ],
   'Start Stop Continue': [
-    {description: 'What new behaviors should we adopt?', question: 'Start'},
-    {description: 'What existing behaviors should we cease doing?', question: 'Stop'},
-    {description: 'What current behaviors should we keep doing?', question: 'Continue'}
+    {
+      description: 'What new behaviors should we adopt?',
+      question: 'Start',
+      groupColor: PALETTE.PROMPT_GREEN
+    },
+    {
+      description: 'What existing behaviors should we cease doing?',
+      question: 'Stop',
+      groupColor: PALETTE.PROMPT_RED
+    },
+    {
+      description: 'What current behaviors should we keep doing?',
+      question: 'Continue',
+      groupColor: PALETTE.PROMPT_YELLOW
+    }
   ],
   Sailboat: [
-    {description: 'What’s helping the team reach its goals?', question: 'Wind in the sails'},
-    {description: 'What’s slowing the team down in your journey?', question: 'Anchors'},
-    {description: 'What risks may the team encounter ahead?', question: 'Risks'}
+    {
+      description: 'What’s helping the team reach its goals?',
+      question: 'Wind in the sails',
+      groupColor: PALETTE.PROMPT_GREEN
+    },
+    {
+      description: 'What’s slowing the team down in your journey?',
+      question: 'Anchors',
+      groupColor: PALETTE.PROMPT_YELLOW
+    },
+    {
+      description: 'What risks may the team encounter ahead?',
+      question: 'Risks',
+      groupColor: PALETTE.PROMPT_RED
+    }
   ]
 } as TemplateObject
 
 interface TemplatePrompt {
   description: string
+  groupColor: string
   question: string
   title?: string
 }
@@ -63,6 +119,7 @@ const makeRetroTemplates = (teamId: string, templateObj = templateBase) => {
           sortOrder: idx,
           question: prompt.question,
           description: prompt.description,
+          groupColor: prompt.groupColor,
           title: prompt.title
         })
     )

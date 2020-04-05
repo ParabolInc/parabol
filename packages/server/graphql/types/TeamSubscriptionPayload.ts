@@ -12,6 +12,7 @@ import EndNewMeetingPayload from './EndNewMeetingPayload'
 import MoveReflectTemplatePromptPayload from './MoveReflectTemplatePromptPayload'
 import PromoteToTeamLeadPayload from './PromoteToTeamLeadPayload'
 import ReflectTemplatePromptUpdateDescriptionPayload from './ReflectTemplatePromptUpdateDescriptionPayload'
+import ReflectTemplatePromptUpdateGroupColorPayload from './ReflectTemplatePromptUpdateGroupColorPayload'
 import RemoveAgendaItemPayload from './RemoveAgendaItemPayload'
 import RemoveAtlassianAuthPayload from './RemoveAtlassianAuthPayload'
 import RemoveGitHubAuthPayload from './RemoveGitHubAuthPayload'
@@ -65,6 +66,7 @@ const types = [
   AddReflectTemplatePromptPayload,
   MoveReflectTemplatePromptPayload,
   ReflectTemplatePromptUpdateDescriptionPayload,
+  ReflectTemplatePromptUpdateGroupColorPayload,
   RemoveAtlassianAuthPayload,
   RemoveGitHubAuthPayload,
   RemoveSlackAuthPayload,

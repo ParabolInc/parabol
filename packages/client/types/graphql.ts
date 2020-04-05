@@ -3042,6 +3042,7 @@ export interface IMutation {
    * Update the description of a reflection prompt
    */
   reflectTemplatePromptUpdateDescription: IReflectTemplatePromptUpdateDescriptionPayload | null
+  reflectTemplatePromptUpdateGroupColor: IReflectTemplatePromptUpdateGroupColorPayload | null
 
   /**
    * Remove an agenda item
@@ -3726,6 +3727,11 @@ export interface IPromoteToTeamLeadOnMutationArguments {
 export interface IReflectTemplatePromptUpdateDescriptionOnMutationArguments {
   promptId: string
   description: string
+}
+
+export interface IReflectTemplatePromptUpdateGroupColorOnMutationArguments {
+  promptId: string
+  groupColor: string
 }
 
 export interface IRemoveAgendaItemOnMutationArguments {
@@ -6013,6 +6019,12 @@ export interface IReflectTemplatePromptUpdateDescriptionPayload {
   prompt: IRetroPhaseItem | null
 }
 
+export interface IReflectTemplatePromptUpdateGroupColorPayload {
+  __typename: 'ReflectTemplatePromptUpdateGroupColorPayload'
+  error: IStandardMutationError | null
+  prompt: IRetroPhaseItem | null
+}
+
 export interface IRemoveAgendaItemPayload {
   __typename: 'RemoveAgendaItemPayload'
   error: IStandardMutationError | null
@@ -7048,6 +7060,7 @@ export type TeamSubscriptionPayload =
   | IAddReflectTemplatePromptPayload
   | IMoveReflectTemplatePromptPayload
   | IReflectTemplatePromptUpdateDescriptionPayload
+  | IReflectTemplatePromptUpdateGroupColorPayload
   | IRemoveAtlassianAuthPayload
   | IRemoveGitHubAuthPayload
   | IRemoveSlackAuthPayload

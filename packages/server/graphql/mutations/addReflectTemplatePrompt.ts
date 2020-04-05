@@ -6,6 +6,7 @@ import RetrospectivePrompt from '../../database/types/RetrospectivePrompt'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
+import {PALETTE} from '../../../client/styles/paletteV2'
 import AddReflectTemplatePromptPayload from '../types/AddReflectTemplatePromptPayload'
 
 const addReflectTemplatePrompt = {
@@ -52,7 +53,8 @@ const addReflectTemplatePrompt = {
       teamId: template.teamId,
       sortOrder,
       question: `New prompt #${activePrompts.length + 1}`,
-      description: ''
+      description: '',
+      groupColor: PALETTE.PROMPT_GREEN
     })
 
     await r
