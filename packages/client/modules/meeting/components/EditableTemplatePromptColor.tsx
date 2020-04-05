@@ -1,26 +1,21 @@
 import React, {Component} from 'react'
-import withAtmosphere, {
-  WithAtmosphereProps
-} from '../../../decorators/withAtmosphere/withAtmosphere'
-import withMutationProps, {WithMutationProps} from '../../../utils/relay/withMutationProps'
 import styled from '@emotion/styled'
 import {ICON_SIZE} from '../../../styles/typographyV2'
 import {PALETTE} from '../../../styles/paletteV2'
 import PalettePicker from '../../../components/PalettePicker/PalettePicker'
 import Icon from 'components/Icon'
 
-interface Props extends WithAtmosphereProps, WithMutationProps {
+interface Props {
   groupColor: string
   pickedColors?: string[]
 }
 
 interface StyledProps {
-  groupColor: string
+  groupColor?: string
   isHover?: boolean
 }
 
 interface State {
-  isEditingColor: boolean
   isHover: boolean
 }
 
@@ -49,8 +44,7 @@ const DropdownIcon = styled(Icon)<StyledProps>(({isHover}) => ({
 
 class EditableTemplatePromptColor extends Component<Props, State> {
   state = {
-    isHover: false,
-    isEditingColor: false
+    isHover: false
   }
 
   onMouseEnter = () => {
@@ -65,19 +59,12 @@ class EditableTemplatePromptColor extends Component<Props, State> {
     })
   }
 
-  onEditColor = (isEditingColor: boolean) => {
-    this.setState({
-      isEditingColor
-    })
-  }
-
   render() {
     const {groupColor, pickedColors} = this.props
-    const {isEditingColor, isHover} = this.state
+    const {isHover} = this.state
     return (
       <PromptColor
         isHover={isHover}
-        isEditingColor={isEditingColor}
         onMouseEnter={this.onMouseEnter}
         onMouseLeave={this.onMouseLeave}
       >
@@ -89,4 +76,4 @@ class EditableTemplatePromptColor extends Component<Props, State> {
   }
 }
 
-export default withAtmosphere(withMutationProps(EditableTemplatePromptColor))
+export default EditableTemplatePromptColor

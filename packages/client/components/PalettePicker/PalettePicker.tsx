@@ -5,7 +5,7 @@ import {PALETTE} from '../../styles/paletteV2'
 
 interface Props {
   className?: string
-  pickedColors: string[]
+  pickedColors?: string[]
   isHover: boolean
 }
 
