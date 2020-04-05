@@ -14,6 +14,7 @@ import {ICON_SIZE} from '../../../styles/typographyV2'
 import {PALETTE} from '../../../styles/paletteV2'
 import withMutationProps, {WithMutationProps} from '../../../utils/relay/withMutationProps'
 import EditableTemplatePrompt from './EditableTemplatePrompt'
+import EditableTemplatePromptColor from './EditableTemplatePromptColor'
 
 interface PassedProps {
   canRemove: boolean
@@ -58,7 +59,9 @@ const RemovePromptIcon = styled(Icon)<StyledProps>(({isHover}) => ({
 }))
 
 const PromptAndDescription = styled('div')({
-  width: '100%'
+  width: '100%',
+  display: 'flex',
+  flexDirection: 'column'
 })
 
 class TemplatePromptItem extends Component<Props, State> {
@@ -117,6 +120,7 @@ class TemplatePromptItem extends Component<Props, State> {
         onMouseEnter={this.onMouseEnter}
         onMouseLeave={this.onMouseLeave}
       >
+        <EditableTemplatePromptColor groupColor={groupColor} />
         <PromptAndDescription>
           <EditableTemplatePrompt
             isEditingDescription={isEditingDescription}

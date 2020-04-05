@@ -20,14 +20,15 @@ const AddPromptLink = styled(LinkButton)({
   fontSize: 18,
   margin: 0,
   marginBottom: 16,
-  outline: 'none'
+  outline: 'none',
+  paddingLeft: 32
 })
 
 const AddPromptLinkPlus = styled(Icon)({
   display: 'block',
   fontSize: ICON_SIZE.MD18,
   lineHeight: ICON_SIZE.MD18,
-  margin: '0 8px 0 22px',
+  margin: '0 24px 0 16px',
   width: ICON_SIZE.MD18
 })
 
