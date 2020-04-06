@@ -56,8 +56,12 @@ const MassInvitationTokenLink = (props: Props) => {
     }
     doFetch().catch()
   }, [])
+  const HOST = window.location.host
+  const isDevelopment = HOST != 'action.parabol.co'
   const displayToken = isTokenValid ? token : '············'
-  const linkLabel = `prbl.in/${displayToken}`
+  const linkLabel = isDevelopment
+    ? `${HOST}/invitation-link/${displayToken}`
+    : `prbl.in/${displayToken}`
   const url = __PRODUCTION__ ? `https://${linkLabel}` : makeHref(`/invitation-link/${token}`)
   return (
     <StyledCopyShortLink
