@@ -1,20 +1,13 @@
-import React, {Component} from 'react'
+import React from 'react'
 import CreateCardRootStyles from '../CreateCard/CreateCardRootStyles'
+import useHover from '../../hooks/useHover'
+import PaletteColor from '../PaletteColor/PaletteColor'
 import styled from '@emotion/styled'
 import {PALETTE} from '../../styles/paletteV2'
 
 interface Props {
   className?: string
   pickedColors?: string[]
-  isHover: boolean
-}
-
-interface ColorProps {
-  color: string
-  isHover: boolean
-}
-
-interface State {
   isHover: boolean
 }
 
@@ -38,16 +31,6 @@ const PaletteList = styled('ul')({
   padding: 0
 })
 
-const PaletteColor = styled('li')<ColorProps>(({isHover, color}) => ({
-  backgroundColor: color,
-  height: 32,
-  width: 32,
-  borderRadius: '50%',
-  opacity: isHover ? 0.5 : 1,
-  flex: '0 32px',
-  margin: 9
-}))
-
 const Colors = [
   PALETTE.PROMPT_RED,
   PALETTE.PROMPT_ORANGE,
@@ -63,36 +46,23 @@ const Colors = [
   PALETTE.PROMPT_PINK
 ]
 
-class PalettePicker extends Component<Props, State> {
-  state = {
-    isHover: false
-  }
-
-  onMouseEnter = () => {
-    this.setState({
-      isHover: true
-    })
-  }
-
-  onMouseLeave = () => {
-    this.setState({
-      isHover: false
-    })
-  }
-
-  render() {
-    const {className, pickedColors} = this.props
-    const {isHover} = this.state
-    return (
-      <PaletteDropDown isHover={isHover} className={className} pickedColors={pickedColors}>
-        <PaletteList>
-          {Colors.map((color, id) => {
-            return <PaletteColor color={color} isHover={isHover} key={id} />
-          })}
-        </PaletteList>
-      </PaletteDropDown>
-    )
-  }
+const PalettePicker = (props: Props) => {
+  const {className, pickedColors} = props
+  const [hoverRef, isHover] = useHover<HTMLDivElement>()
+  return (
+    <PaletteDropDown
+      ref={hoverRef}
+      isHover={isHover}
+      className={className}
+      pickedColors={pickedColors}
+    >
+      <PaletteList>
+        {Colors.map((color, id) => {
+          return <PaletteColor color={color} key={id} />
+        })}
+      </PaletteList>
+    </PaletteDropDown>
+  )
 }
 
 export default PalettePicker
