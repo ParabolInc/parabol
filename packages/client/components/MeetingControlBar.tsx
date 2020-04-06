@@ -4,11 +4,12 @@ import useAtmosphere from 'hooks/useAtmosphere'
 import useGotoNext from 'hooks/useGotoNext'
 import useGotoStageId from 'hooks/useGotoStageId'
 import useTransition from 'hooks/useTransition'
-import React from 'react'
+import React, {forwardRef} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {PALETTE} from 'styles/paletteV2'
-import {Breakpoint} from 'types/constEnums'
+import {Breakpoint, ZIndex} from 'types/constEnums'
 import {NewMeetingPhaseTypeEnum} from 'types/graphql'
+import makeMinWidthMediaQuery from 'utils/makeMinWidthMediaQuery'
 import findStageAfterId from 'utils/meetings/findStageAfterId'
 import {MeetingControlBar_meeting} from '__generated__/MeetingControlBar_meeting.graphql'
 import {bottomBarShadow, desktopBarShadow} from '../styles/elevation'
@@ -21,8 +22,7 @@ import StageTimerControl from './StageTimerControl'
 const Wrapper = styled('div')({
   alignItems: 'center',
   backgroundColor: '#FFFFFF',
-  borderRadius: 4,
-  bottom: 16,
+  bottom: 0,
   boxShadow: bottomBarShadow,
   color: PALETTE.TEXT_GRAY,
   display: 'flex',
@@ -36,14 +36,14 @@ const Wrapper = styled('div')({
   padding: 8,
   position: 'absolute',
   right: 0,
-  width: 'fit-content',
-  // zIndex: ZIndex.BOTTOM_BAR,
-  zIndex: 999,
-
-  [`@media screen and (min-width: ${Breakpoint.MEETING_FACILITATOR_BAR}px)`]: {
+  width: '100%',
+  zIndex: ZIndex.BOTTOM_BAR,
+  [makeMinWidthMediaQuery(Breakpoint.SINGLE_REFLECTION_COLUMN)]: {
+    borderRadius: 4,
+    bottom: 8,
     boxShadow: desktopBarShadow,
-    zIndex: 999
-    // zIndex: ZIndex.BOTTOM_BAR_DESKTOP
+    width: 'fit-content',
+    zIndex: ZIndex.BOTTOM_BAR_DESKTOP
   }
 })
 
@@ -61,7 +61,7 @@ interface Props {
   meeting: MeetingControlBar_meeting
 }
 
-const MeetingControlBar = (props: Props) => {
+const MeetingControlBar = forwardRef((props: Props, ref: any) => {
   const {handleGotoNext, isDemoStageComplete, meeting, gotoStageId} = props
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
@@ -91,7 +91,7 @@ const MeetingControlBar = (props: Props) => {
   const tranChildren = useTransition(buttons)
   if (endedAt) return null
   return (
-    <Wrapper>
+    <Wrapper ref={ref}>
       {tranChildren
         .map((tranChild) => {
           const {onTransitionEnd, child, status} = tranChild
@@ -141,7 +141,7 @@ const MeetingControlBar = (props: Props) => {
         .filter(Boolean)}
     </Wrapper>
   )
-}
+})
 
 export default createFragmentContainer(MeetingControlBar, {
   meeting: graphql`

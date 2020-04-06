@@ -56,6 +56,7 @@ export const enum DiscussionThreadEnum {
 }
 
 export const enum DragAttribute {
+  CONTROL_BAR_COVERABLE = 'data-control-bar-coverable',
   DROPPABLE = 'data-droppable',
   DROPZONE = 'data-dropzone'
 }
@@ -152,6 +153,10 @@ export const enum AuthenticationError {
 
 export const enum MathEnum {
   MAX_INT = 2147483647
+}
+
+export const enum MeetingControlBarEnum {
+  HEIGHT = 56
 }
 
 export const enum MeetingLabels {

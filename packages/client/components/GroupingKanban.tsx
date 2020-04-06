@@ -1,17 +1,17 @@
-import React, {RefObject, useMemo, useState} from 'react'
+import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
+import React, {RefObject, useMemo, useState} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {GroupingKanban_meeting} from '__generated__/GroupingKanban_meeting.graphql'
-import {NewMeetingPhaseTypeEnum} from '../types/graphql'
-import styled from '@emotion/styled'
-import GroupingKanbanColumn from './GroupingKanbanColumn'
-import PortalProvider from './AtmosphereProvider/PortalProvider'
-import useHideBodyScroll from '../hooks/useHideBodyScroll'
-import ReflectWrapperDesktop from './RetroReflectPhase/ReflectWrapperDesktop'
-import ReflectWrapperMobile from './RetroReflectPhase/ReflectionWrapperMobile'
 import useBreakpoint from '../hooks/useBreakpoint'
-import {Breakpoint, Times} from '../types/constEnums'
+import useHideBodyScroll from '../hooks/useHideBodyScroll'
 import useThrottledEvent from '../hooks/useThrottledEvent'
+import {Breakpoint, Times, MeetingControlBarEnum} from '../types/constEnums'
+import {NewMeetingPhaseTypeEnum} from '../types/graphql'
+import PortalProvider from './AtmosphereProvider/PortalProvider'
+import GroupingKanbanColumn from './GroupingKanbanColumn'
+import ReflectWrapperMobile from './RetroReflectPhase/ReflectionWrapperMobile'
+import ReflectWrapperDesktop from './RetroReflectPhase/ReflectWrapperDesktop'
 
 interface Props {
   meeting: GroupingKanban_meeting
@@ -23,7 +23,7 @@ const ColumnsBlock = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   display: 'flex',
   flex: '1',
   flexDirection: 'column',
-  height: '100%',
+  height: `calc(100% - ${isDesktop ? MeetingControlBarEnum.HEIGHT : 0}px)`,
   justifyContent: 'center',
   margin: '0 auto',
   overflow: 'auto',
