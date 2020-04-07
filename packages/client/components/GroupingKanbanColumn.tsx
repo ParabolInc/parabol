@@ -10,7 +10,13 @@ import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
 import CreateReflectionMutation from '../mutations/CreateReflectionMutation'
 import {PALETTE} from '../styles/paletteV2'
-import {BezierCurve, DragAttribute, ElementWidth, Gutters} from '../types/constEnums'
+import {
+  BezierCurve,
+  DragAttribute,
+  ElementWidth,
+  Gutters,
+  MeetingControlBarEnum
+} from '../types/constEnums'
 import {NewMeetingPhaseTypeEnum} from '../types/graphql'
 import getNextSortOrder from '../utils/getNextSortOrder'
 import FlatButton from './FlatButton'
@@ -27,7 +33,7 @@ const Column = styled('div')<{isDesktop: boolean; isExpanded: boolean}>(
     display: 'flex',
     flex: 1,
     flexDirection: 'column',
-    height: isExpanded ? '100%' : 'calc(100% - 56px)',
+    height: isExpanded ? '100%' : `calc(100% - ${MeetingControlBarEnum.HEIGHT}px)`,
     margin: isDesktop ? '0 8px' : undefined,
     minWidth: isDesktop ? 320 : undefined,
     position: 'relative',
@@ -97,7 +103,7 @@ const GroupingKanbanColumn = (props: Props) => {
   }
   const ref = useRef<HTMLDivElement>(null)
   const canAdd = phaseType === NewMeetingPhaseTypeEnum.group && !isComplete
-  const isExpanded = useCoverable(promptId, ref)
+  const isExpanded = useCoverable(promptId, ref, MeetingControlBarEnum.HEIGHT)
   return (
     <Column
       isExpanded={isExpanded}

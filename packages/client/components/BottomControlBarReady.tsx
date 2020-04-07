@@ -45,7 +45,7 @@ const BottomControlBarReady = (props: Props) => {
   const {id: meetingId, localStage, meetingMembers, reflectionGroups} = meeting
   const {id: stageId, isViewerReady, readyCount, phaseType} = localStage
   const activeCount = meetingMembers.filter((member) => member.isCheckedIn).length
-  const progress = readyCount / Math.max(1, activeCount - 1)
+  const progress = (readyCount ?? 0) / Math.max(1, activeCount - 1)
   const atmosphere = useAtmosphere()
 
   const onClick = () => {
