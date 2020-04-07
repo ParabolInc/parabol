@@ -304,7 +304,6 @@ export const enum TrebuchetCloseReason {
 /* https://material.io/design/environment/elevation.html#default-elevations */
 export const enum ZIndex {
   BOTTOM_BAR = 8,
-  BOTTOM_BAR_DESKTOP = 4,
   DIALOG = 24,
   FAB = 6,
   MENU = 24 /* portal needs to float above other components, especially sidebars */,

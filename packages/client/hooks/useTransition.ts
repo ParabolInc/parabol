@@ -32,7 +32,9 @@ const useTransition = <T extends {key: Key}>(children: T[]) => {
   const previousTransitionChildrenRef = useRef<TransitionChild<T>[]>([])
   const forceUpdate = useForceUpdate()
 
-  const transitionEndFactory = useEventCallback((key: Key) => () => {
+  const transitionEndFactory = useEventCallback((key: Key) => (e: React.TransitionEvent) => {
+    // animations must live in the outermost element
+    if (e.target !== e.currentTarget) return
     const idx = previousTransitionChildrenRef.current.findIndex(
       (tChild) => tChild.child.key === key
     )
@@ -56,20 +58,26 @@ const useTransition = <T extends {key: Key}>(children: T[]) => {
     }
   })
 
-  const beginTransition = useEventCallback((key: Key) => {
+  const beginTransition = useEventCallback((keys: Key[]) => {
     // double required to ensure entering animations get called
     requestDoubleAnimationFrame(() => {
-      const tChildIdx = previousTransitionChildrenRef.current.findIndex(
-        ({child}) => child.key === key
-      )
-      if (tChildIdx !== -1) {
-        const nextChildren = previousTransitionChildrenRef.current
-        const tChild = {...nextChildren[tChildIdx], status: TransitionStatus.ENTERING}
-        previousTransitionChildrenRef.current = [
-          ...nextChildren.slice(0, tChildIdx),
-          tChild,
-          ...nextChildren.slice(tChildIdx + 1)
-        ]
+      let doUpdate = false
+      keys.forEach((key) => {
+        const tChildIdx = previousTransitionChildrenRef.current.findIndex(
+          ({child}) => child.key === key
+        )
+        if (tChildIdx !== -1) {
+          const nextChildren = previousTransitionChildrenRef.current
+          const tChild = {...nextChildren[tChildIdx], status: TransitionStatus.ENTERING}
+          previousTransitionChildrenRef.current = [
+            ...nextChildren.slice(0, tChildIdx),
+            tChild,
+            ...nextChildren.slice(tChildIdx + 1)
+          ]
+          doUpdate = true
+        }
+      })
+      if (doUpdate) {
         forceUpdate()
       }
     })
@@ -81,6 +89,7 @@ const useTransition = <T extends {key: Key}>(children: T[]) => {
 
     let touched = false
     // add mounted nodes
+    const mountingKeys = []
     for (let i = 0; i < children.length; i++) {
       const nextChild = children[i]
       const idxInPrev = prevTChildren.findIndex(({child}) => child.key === nextChild.key)
@@ -92,8 +101,12 @@ const useTransition = <T extends {key: Key}>(children: T[]) => {
       })
       if (idxInPrev === -1) {
         touched = true
-        beginTransition(nextChild.key)
+        mountingKeys.push(nextChild.key)
+        // beginTransition(nextChild.key)
       }
+    }
+    if (touched) {
+      beginTransition(mountingKeys)
     }
 
     // add exiting nodes

@@ -23,7 +23,7 @@ const ColumnsBlock = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   display: 'flex',
   flex: '1',
   flexDirection: 'column',
-  height: `calc(100% - ${isDesktop ? MeetingControlBarEnum.HEIGHT : 0}px)`,
+  height: '100%',
   justifyContent: 'center',
   margin: '0 auto',
   overflow: 'auto',

@@ -1,5 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
+import {useCoverable} from 'hooks/useControlBarCovers'
 import React, {RefObject, useRef} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {GroupingKanbanColumn_meeting} from '__generated__/GroupingKanbanColumn_meeting.graphql'
@@ -18,20 +19,21 @@ import Icon from './Icon'
 import ReflectionGroup from './ReflectionGroup/ReflectionGroup'
 import RetroPrompt from './RetroPrompt'
 
-// TODO share with TaskColumn
-const Column = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
-  alignItems: 'center',
-  background: PALETTE.BACKGROUND_REFLECTION,
-  borderRadius: 8,
-  display: 'flex',
-  flex: 1,
-  flexDirection: 'column',
-  height: '100%',
-  margin: isDesktop ? '0 8px' : undefined,
-  minWidth: isDesktop ? 320 : undefined,
-  position: 'relative',
-  transition: `background 300ms ${BezierCurve.DECELERATE}`
-}))
+const Column = styled('div')<{isDesktop: boolean; isExpanded: boolean}>(
+  ({isDesktop, isExpanded}) => ({
+    alignItems: 'center',
+    background: PALETTE.BACKGROUND_REFLECTION,
+    borderRadius: 8,
+    display: 'flex',
+    flex: 1,
+    flexDirection: 'column',
+    height: isExpanded ? '100%' : 'calc(100% - 56px)',
+    margin: isDesktop ? '0 8px' : undefined,
+    minWidth: isDesktop ? 320 : undefined,
+    position: 'relative',
+    transition: `height 100ms ${BezierCurve.DECELERATE}`
+  })
+)
 
 const ColumnHeader = styled('div')({
   color: PALETTE.TEXT_MAIN,
@@ -95,8 +97,14 @@ const GroupingKanbanColumn = (props: Props) => {
   }
   const ref = useRef<HTMLDivElement>(null)
   const canAdd = phaseType === NewMeetingPhaseTypeEnum.group && !isComplete
+  const isExpanded = useCoverable(promptId, ref)
   return (
-    <Column data-cy={`group-column-${question}`} isDesktop={isDesktop} ref={ref}>
+    <Column
+      isExpanded={isExpanded}
+      data-cy={`group-column-${question}`}
+      isDesktop={isDesktop}
+      ref={ref}
+    >
       <ColumnHeader>
         <Prompt>{question}</Prompt>
         {canAdd && (

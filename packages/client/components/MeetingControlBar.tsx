@@ -1,10 +1,13 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import useAtmosphere from 'hooks/useAtmosphere'
+import {useCovering} from 'hooks/useControlBarCovers'
+import useDraggableFixture from 'hooks/useDraggableFixture'
 import useGotoNext from 'hooks/useGotoNext'
 import useGotoStageId from 'hooks/useGotoStageId'
-import useTransition from 'hooks/useTransition'
-import React, {forwardRef} from 'react'
+import useInitialRender from 'hooks/useInitialRender'
+import useTransition, {TransitionStatus} from 'hooks/useTransition'
+import React, {useRef} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {PALETTE} from 'styles/paletteV2'
 import {Breakpoint, ZIndex} from 'types/constEnums'
@@ -42,8 +45,7 @@ const Wrapper = styled('div')({
     borderRadius: 4,
     bottom: 8,
     boxShadow: desktopBarShadow,
-    width: 'fit-content',
-    zIndex: ZIndex.BOTTOM_BAR_DESKTOP
+    width: 'fit-content'
   }
 })
 
@@ -61,7 +63,7 @@ interface Props {
   meeting: MeetingControlBar_meeting
 }
 
-const MeetingControlBar = forwardRef((props: Props, ref: any) => {
+const MeetingControlBar = (props: Props) => {
   const {handleGotoNext, isDemoStageComplete, meeting, gotoStageId} = props
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
@@ -89,14 +91,27 @@ const MeetingControlBar = forwardRef((props: Props, ref: any) => {
   }
   const buttons = getPossibleButtons()
   const tranChildren = useTransition(buttons)
+  const {onMouseDown, onClickCapture} = useDraggableFixture()
+  const ref = useRef<HTMLDivElement>(null)
+  useCovering(ref)
+  const isInit = useInitialRender()
   if (endedAt) return null
   return (
-    <Wrapper ref={ref}>
+    <Wrapper
+      ref={ref}
+      onMouseDown={onMouseDown}
+      onClickCapture={onClickCapture}
+      onTouchStart={onMouseDown}
+    >
       {tranChildren
         .map((tranChild) => {
           const {onTransitionEnd, child, status} = tranChild
           const {key} = child
-          const tranProps = {onTransitionEnd, status, key}
+          const tranProps = {
+            onTransitionEnd,
+            status: isInit ? TransitionStatus.ENTERED : status,
+            key
+          }
           switch (key) {
             case 'tips':
               return <BottomControlBarTips {...tranProps} meeting={meeting} />
@@ -141,7 +156,7 @@ const MeetingControlBar = forwardRef((props: Props, ref: any) => {
         .filter(Boolean)}
     </Wrapper>
   )
-})
+}
 
 export default createFragmentContainer(MeetingControlBar, {
   meeting: graphql`

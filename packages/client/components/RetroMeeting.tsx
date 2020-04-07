@@ -1,5 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
-import React, {ReactElement, useRef} from 'react'
+import React, {ReactElement, Suspense} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {RetroMeeting_meeting} from '__generated__/RetroMeeting_meeting.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
@@ -14,7 +14,6 @@ import MeetingControlBar from './MeetingControlBar'
 import MeetingStyles from './MeetingStyles'
 import ResponsiveDashSidebar from './ResponsiveDashSidebar'
 import RetroMeetingSidebar from './RetroMeetingSidebar'
-import useInitControlBarCoverables from 'hooks/useInitControlBarCoverables'
 
 interface Props {
   meeting: RetroMeeting_meeting
@@ -59,8 +58,6 @@ const RetroMeeting = (props: Props) => {
     demoPortal
   } = useMeeting(meeting)
   const atmosphere = useAtmosphere()
-  const meetingControlBarRef = useRef<HTMLDivElement>(null)
-  useInitControlBarCoverables(meetingControlBarRef)
   if (!safeRoute) return null
   const {id: meetingId, showSidebar, viewerMeetingMember, localPhase} = meeting
   const {user} = viewerMeetingMember
@@ -85,24 +82,25 @@ const RetroMeeting = (props: Props) => {
           meeting={meeting}
         />
       </ResponsiveDashSidebar>
-      <Phase
-        meeting={meeting}
-        toggleSidebar={toggleSidebar}
-        avatarGroup={
-          <NewMeetingAvatarGroup
-            allowVideo={allowVideo}
-            camStreams={streams.cam}
-            swarm={swarm}
-            meeting={meeting}
-          />
-        }
-      />
+      <Suspense fallback={''}>
+        <Phase
+          meeting={meeting}
+          toggleSidebar={toggleSidebar}
+          avatarGroup={
+            <NewMeetingAvatarGroup
+              allowVideo={allowVideo}
+              camStreams={streams.cam}
+              swarm={swarm}
+              meeting={meeting}
+            />
+          }
+        />
+      </Suspense>
       <MeetingControlBar
         isDemoStageComplete={isDemoStageComplete}
         meeting={meeting}
         handleGotoNext={handleGotoNext}
         gotoStageId={gotoStageId}
-        ref={meetingControlBarRef}
       />
     </MeetingStyles>
   )
