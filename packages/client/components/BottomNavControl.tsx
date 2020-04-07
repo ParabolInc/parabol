@@ -7,7 +7,7 @@ interface Props extends FlatButtonProps {
   status: TransitionStatus
 }
 
-const BottomNavControl = styled(FlatButton)<Props>(({status, disabled}) => ({
+const BottomNavControl = styled(FlatButton)<Props>(({status}) => ({
   border: 0,
   borderRadius: 0,
   minHeight: 56,
