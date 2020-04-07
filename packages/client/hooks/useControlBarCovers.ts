@@ -1,10 +1,12 @@
 import {RefObject, useEffect} from 'react'
+import {BezierCurve} from 'types/constEnums'
 
 interface ControlBarCoverable {
   id: string
   el: HTMLDivElement
   left: number
   right: number
+  height: number
   isExpanded: boolean
 }
 
@@ -15,16 +17,24 @@ const covering = {el: null, left: 0, right: 0} as {
   right: number
 }
 
-const ensureCovering = (coverable: ControlBarCoverable, leftBound: number, rightBound: number) => {
+const ensureCovering = (
+  coverable: ControlBarCoverable,
+  leftBound: number,
+  rightBound: number,
+  isDrag?: boolean
+) => {
+  if (!coverable.el) return
   const willBeExpanded = coverable.left > rightBound || coverable.right < leftBound ? true : false
-  const height = willBeExpanded ? '100%' : 'calc(100% - 56px)'
+  const height = willBeExpanded ? '100%' : `calc(100% - ${coverable.height}px)`
   const {style} = coverable.el
   style.height = height
+  if (isDrag) {
+    style.transition = `height 100ms ${BezierCurve.DECELERATE}`
+  }
   coverable.isExpanded = willBeExpanded
-  // style.transition = !isAnimated ? `height 100ms ${BezierCurve.DECELERATE}` : ''
 }
 
-export const useCoverable = (id: string, ref: RefObject<HTMLDivElement>) => {
+export const useCoverable = (id: string, ref: RefObject<HTMLDivElement>, height: number) => {
   useEffect(() => {
     const el = ref.current
     if (!el) return
@@ -35,14 +45,13 @@ export const useCoverable = (id: string, ref: RefObject<HTMLDivElement>) => {
     const coverable = {
       id,
       el,
+      height,
       left: left - BUFFER,
       right: right + BUFFER,
       isExpanded: oldCoverable?.isExpanded ?? false
     }
     if (covering.el) {
-      // if (covering.right === 0) {
       cacheCoveringBBox()
-      // }
       ensureCovering(coverable, covering.left, covering.right)
     }
     coverables[id] = coverable
@@ -56,7 +65,7 @@ export const useCoverable = (id: string, ref: RefObject<HTMLDivElement>) => {
 
 export const ensureAllCovering = (leftBound: number, rightBound: number) => {
   Object.values(coverables).forEach((coverable) => {
-    ensureCovering(coverable, leftBound, rightBound)
+    ensureCovering(coverable, leftBound, rightBound, true)
   })
 }
 
