@@ -1,4 +1,5 @@
 import React, {Component} from 'react'
+import {TemplatePromptItem_prompt} from '../../../__generated__/TemplatePromptItem_prompt.graphql'
 import styled from '@emotion/styled'
 import {ICON_SIZE} from '../../../styles/typographyV2'
 import {PALETTE} from '../../../styles/paletteV2'
@@ -8,6 +9,8 @@ import Icon from 'components/Icon'
 interface Props {
   groupColor: string
   pickedColors?: string[]
+  prompt: TemplatePromptItem_prompt
+  prompts: any
 }
 
 interface StyledProps {
@@ -27,12 +30,11 @@ const PromptColor = styled('div')<StyledProps>(({isHover}) => ({
   position: 'relative'
 }))
 
-const ColorBadge = styled('div')<StyledProps>(({groupColor, isHover}) => ({
+const ColorBadge = styled('div')<StyledProps>(({groupColor}) => ({
   backgroundColor: groupColor ? groupColor : 'green',
   borderRadius: '50%',
   height: '16px',
-  width: '16px',
-  opacity: isHover ? 0.6 : 1
+  width: '16px'
 }))
 
 const DropdownIcon = styled(Icon)<StyledProps>(({isHover}) => ({
@@ -60,7 +62,7 @@ class EditableTemplatePromptColor extends Component<Props, State> {
   }
 
   render() {
-    const {groupColor, pickedColors} = this.props
+    const {groupColor, prompt, prompts} = this.props
     const {isHover} = this.state
     return (
       <PromptColor
@@ -70,7 +72,7 @@ class EditableTemplatePromptColor extends Component<Props, State> {
       >
         <ColorBadge groupColor={groupColor} />
         <DropdownIcon isHover={isHover}>arrow_drop_down</DropdownIcon>
-        {isHover && <PalettePicker isHover={isHover} pickedColors={pickedColors} />}
+        {isHover && <PalettePicker prompt={prompt} prompts={prompts} />}
       </PromptColor>
     )
   }

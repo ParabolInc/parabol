@@ -11,8 +11,9 @@ interface ColorProps {
   isHover: boolean
 }
 
-const ColorItem = styled('div')<ColorProps>(({isHover, color}) => ({
+const ColorItem = styled('li')<ColorProps>(({isHover, color}) => ({
   backgroundColor: color,
+  cursor: isHover ? 'pointer' : 'grab',
   height: 32,
   width: 32,
   borderRadius: '50%',
@@ -24,11 +25,7 @@ const ColorItem = styled('div')<ColorProps>(({isHover, color}) => ({
 const PaletteColor = (props: Props) => {
   const {color} = props
   const [hoverRef, isHover] = useHover<HTMLElement>()
-  return (
-    <li ref={hoverRef}>
-      <ColorItem isHover={isHover} color={color} />
-    </li>
-  )
+  return <ColorItem ref={hoverRef} isHover={isHover} color={color} />
 }
 
 export default PaletteColor

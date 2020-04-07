@@ -18,6 +18,7 @@ graphql`
       ...TemplatePromptList_prompts @relay(mask: false)
       id
       description
+      groupColor
       question
       sortOrder
       templateId

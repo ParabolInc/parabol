@@ -1,5 +1,5 @@
-import {TemplatePromptItem_prompt} from '../../../__generated__/TemplatePromptItem_prompt.graphql'
 import React, {Component} from 'react'
+import {TemplatePromptItem_prompt} from '../../../__generated__/TemplatePromptItem_prompt.graphql'
 import {DraggableProvided} from 'react-beautiful-dnd'
 import styled from '@emotion/styled'
 import {createFragmentContainer} from 'react-relay'
@@ -120,7 +120,7 @@ class TemplatePromptItem extends Component<Props, State> {
         onMouseEnter={this.onMouseEnter}
         onMouseLeave={this.onMouseLeave}
       >
-        <EditableTemplatePromptColor groupColor={groupColor} />
+        <EditableTemplatePromptColor groupColor={groupColor} prompt={prompt} prompts={prompts} />
         <PromptAndDescription>
           <EditableTemplatePrompt
             isEditingDescription={isEditingDescription}

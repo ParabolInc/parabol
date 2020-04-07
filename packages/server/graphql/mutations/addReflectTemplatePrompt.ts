@@ -48,6 +48,7 @@ const addReflectTemplatePrompt = {
 
     // RESOLUTION
     const sortOrder = Math.max(...activePrompts.map((prompt) => prompt.sortOrder)) + 1 + dndNoise()
+    // TODO use random groupColor when default groupColor isn't available
     const phaseItem = new RetrospectivePrompt({
       templateId: template.id,
       teamId: template.teamId,
