@@ -1,9 +1,9 @@
 import {GraphQLNonNull, GraphQLObjectType} from 'graphql'
+import findStageById from 'parabol-client/utils/meetings/findStageById'
 import {GQLContext} from '../graphql'
 import makeMutationPayload from './makeMutationPayload'
 import NewMeeting from './NewMeeting'
-import GenericMeetingStage from './GenericMeetingStage'
-import findStageById from 'parabol-client/utils/meetings/findStageById'
+import NewMeetingStage from './NewMeetingStage'
 
 export const FlagReadyToAdvanceSuccess = new GraphQLObjectType<any, GQLContext>({
   name: 'FlagReadyToAdvanceSuccess',
@@ -16,7 +16,7 @@ export const FlagReadyToAdvanceSuccess = new GraphQLObjectType<any, GQLContext>(
       }
     },
     stage: {
-      type: GraphQLNonNull(GenericMeetingStage),
+      type: GraphQLNonNull(NewMeetingStage),
       description: 'the stage with the updated readyCount',
       resolve: async ({meetingId, stageId}, _args, {dataLoader}) => {
         const meeting = await dataLoader.get('newMeetings').load(meetingId)

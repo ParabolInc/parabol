@@ -112,16 +112,17 @@ const ReflectionColumn = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   width: '100%'
 }))
 
-const ThreadColumn = styled('div')({
+const ThreadColumn = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   alignItems: 'center',
   display: 'flex',
   flex: 1,
   flexDirection: 'column',
   height: '100%',
   overflow: 'auto',
-  padding: '4px 0 16px',
+  paddingTop: 4,
+  paddingBottom: isDesktop ? 16 : 8,
   width: '100%'
-})
+}))
 
 const ColumnInner = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   display: isDesktop ? undefined : 'flex',
@@ -194,7 +195,7 @@ const RetroDiscussPhase = (props: Props) => {
                   )}
                 </ColumnInner>
               </ReflectionColumn>
-              <ThreadColumn>
+              <ThreadColumn isDesktop={isDesktop}>
                 <DiscussionThreadRoot meetingId={meetingId} reflectionGroupId={reflectionGroupId} />
               </ThreadColumn>
             </ColumnsContainer>

@@ -219,7 +219,10 @@ export const enum ReflectionStackPerspective {
 
 export const enum RetroDemo {
   MEETING_ID = 'demoMeetingId',
-  TEAM_ID = 'demoTeamId'
+  TEAM_ID = 'demoTeamId',
+  REFLECT_STAGE_ID = 'reflectStage',
+  GROUP_STAGE_ID = 'groupStage',
+  VOTE_STAGE_ID = 'voteStage'
 }
 
 export const enum RightSidebar {

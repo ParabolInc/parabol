@@ -97,7 +97,7 @@ const BottomControlBarTips = (props: Props) => {
   const {localPhase, meetingType} = meeting
   const {phaseType} = localPhase
   const {menuProps, menuPortal, originRef, togglePortal, openPortal} = useMenu(
-    MenuPosition.LOWER_RIGHT
+    MenuPosition.LOWER_LEFT
   )
   const atmosphere = useAtmosphere()
   const demoPauseOpen = useTimeout(1000)
