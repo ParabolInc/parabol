@@ -11,9 +11,16 @@ import {PALETTE} from '../../styles/paletteV2'
 interface Props extends WithAtmosphereProps, WithMutationProps {
   prompt: TemplatePromptItem_prompt
   prompts: any
+  offsetTop: number
+  scrollOffset: number
 }
 
-const PaletteDropDown = styled('div')({
+interface StyledProps {
+  offsetTop: number
+  scrollOffset: number
+}
+
+const PaletteDropDown = styled('div')<StyledProps>(({offsetTop, scrollOffset}) => ({
   ...CreateCardRootStyles,
   boxShadow: `rgba(0,0,0,0.1) -2px 3px 5px 0px,
      rgba(0,0,0,0.04) -1px 1px 4px 0px,
@@ -25,8 +32,8 @@ const PaletteDropDown = styled('div')({
   padding: 5,
   position: 'absolute',
   zIndex: 1,
-  top: 34
-})
+  top: offsetTop - scrollOffset + 34
+}))
 
 const PaletteList = styled('ul')({
   display: 'flex',
@@ -56,7 +63,16 @@ const Colors = [
 ]
 
 const PalettePicker = (props: Props) => {
-  const {prompt, prompts, atmosphere, onError, onCompleted, submitMutation} = props
+  const {
+    prompt,
+    prompts,
+    atmosphere,
+    onError,
+    onCompleted,
+    submitMutation,
+    offsetTop,
+    scrollOffset
+  } = props
   const [groupColor, setGroupColor] = useState(prompt.groupColor)
   const pickedColors = prompts.map((prompt) => prompt.groupColor) as string[]
   const availableColors = Colors.filter((color) => !pickedColors.includes(color)) as string[]
@@ -81,7 +97,7 @@ const PalettePicker = (props: Props) => {
   }, [groupColor])
 
   return (
-    <PaletteDropDown>
+    <PaletteDropDown offsetTop={offsetTop} scrollOffset={scrollOffset}>
       <PaletteList>
         {Colors.map((color, id) => {
           return (

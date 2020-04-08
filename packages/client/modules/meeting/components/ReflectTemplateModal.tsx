@@ -86,7 +86,8 @@ const PromptEditor = styled('div')({
   flex: 1,
   flexDirection: 'column',
   minWidth: 500,
-  width: '100%'
+  width: '100%',
+  position: 'relative'
 })
 
 class ReflectTemplateModal extends Component<Props> {

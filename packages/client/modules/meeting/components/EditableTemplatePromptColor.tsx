@@ -11,6 +11,7 @@ interface Props {
   pickedColors?: string[]
   prompt: TemplatePromptItem_prompt
   prompts: any
+  scrollOffset: number
 }
 
 interface StyledProps {
@@ -20,14 +21,14 @@ interface StyledProps {
 
 interface State {
   isHover: boolean
+  offsetTop: number
 }
 
 const PromptColor = styled('div')<StyledProps>(({isHover}) => ({
   cursor: isHover ? 'pointer' : 'grab',
   display: 'flex',
   flex: 1,
-  padding: '14px 0 5px',
-  position: 'relative'
+  padding: '14px 0 5px'
 }))
 
 const ColorBadge = styled('div')<StyledProps>(({groupColor}) => ({
@@ -46,7 +47,20 @@ const DropdownIcon = styled(Icon)<StyledProps>(({isHover}) => ({
 
 class EditableTemplatePromptColor extends Component<Props, State> {
   state = {
-    isHover: false
+    isHover: false,
+    offsetTop: 0
+  }
+
+  promptRef: HTMLDivElement | null = null
+
+  setPromptRef = (element: HTMLDivElement) => {
+    this.promptRef = element
+  }
+
+  componentDidMount() {
+    if (this.promptRef) {
+      this.setState({offsetTop: this.promptRef.offsetTop})
+    }
   }
 
   onMouseEnter = () => {
@@ -62,17 +76,25 @@ class EditableTemplatePromptColor extends Component<Props, State> {
   }
 
   render() {
-    const {groupColor, prompt, prompts} = this.props
-    const {isHover} = this.state
+    const {groupColor, prompt, prompts, scrollOffset} = this.props
+    const {isHover, offsetTop} = this.state
     return (
       <PromptColor
+        ref={this.setPromptRef}
         isHover={isHover}
         onMouseEnter={this.onMouseEnter}
         onMouseLeave={this.onMouseLeave}
       >
         <ColorBadge groupColor={groupColor} />
         <DropdownIcon isHover={isHover}>arrow_drop_down</DropdownIcon>
-        {isHover && <PalettePicker prompt={prompt} prompts={prompts} />}
+        {isHover && (
+          <PalettePicker
+            prompt={prompt}
+            prompts={prompts}
+            scrollOffset={scrollOffset}
+            offsetTop={offsetTop}
+          />
+        )}
       </PromptColor>
     )
   }
