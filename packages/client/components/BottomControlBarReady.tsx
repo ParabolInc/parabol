@@ -75,6 +75,7 @@ const BottomControlBarReady = (props: Props) => {
     if (phaseType === NewMeetingPhaseTypeEnum.reflect) {
       return reflectionGroups?.length === 0 ?? true
     }
+    return false
   }
   const disabled = getDisabled()
   return (

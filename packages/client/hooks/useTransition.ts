@@ -89,7 +89,7 @@ const useTransition = <T extends {key: Key}>(children: T[]) => {
 
     let touched = false
     // add mounted nodes
-    const mountingKeys = []
+    const mountingKeys = [] as Key[]
     for (let i = 0; i < children.length; i++) {
       const nextChild = children[i]
       const idxInPrev = prevTChildren.findIndex(({child}) => child.key === nextChild.key)

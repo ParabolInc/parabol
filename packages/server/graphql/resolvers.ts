@@ -1,14 +1,10 @@
-import {getUserId, isSuperUser, isUserBillingLeader} from '../utils/authorization'
+import {NewMeetingPhaseTypeEnum} from 'parabol-client/types/graphql'
+import findStageById from '../../client/utils/meetings/findStageById'
 import nullIfEmpty from '../../client/utils/nullIfEmpty'
 import toTeamMemberId from '../../client/utils/relay/toTeamMemberId'
-import findStageById from '../../client/utils/meetings/findStageById'
-import {
-  NewMeetingPhase,
-  NewMeetingPhaseTypeEnum,
-  NewMeetingStage
-} from 'parabol-client/types/graphql'
-import Meeting from '../database/types/Meeting'
 import GenericMeetingStage from '../database/types/GenericMeetingStage'
+import Meeting from '../database/types/Meeting'
+import {getUserId, isSuperUser, isUserBillingLeader} from '../utils/authorization'
 
 export const resolveAgendaItem = ({agendaItemId, agendaItem}, _args, {dataLoader}) => {
   return agendaItemId ? dataLoader.get('agendaItems').load(agendaItemId) : agendaItem
