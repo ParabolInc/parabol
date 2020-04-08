@@ -18,6 +18,7 @@ import {
   UPDATES,
   VOTE
 } from '../../../client/utils/constants'
+import {resolveGQLStagesFromPhase} from '../resolvers'
 
 export const newMeetingPhaseFields = () => ({
   id: {
@@ -33,12 +34,7 @@ export const newMeetingPhaseFields = () => ({
   },
   stages: {
     type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(NewMeetingStage))),
-    resolve: ({meetingId, stages}) => {
-      return stages.map((stage) => ({
-        ...stage,
-        meetingId
-      }))
-    }
+    resolve: resolveGQLStagesFromPhase
   }
 })
 

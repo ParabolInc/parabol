@@ -4,6 +4,7 @@ import {GQLContext} from '../graphql'
 import makeMutationPayload from './makeMutationPayload'
 import NewMeeting from './NewMeeting'
 import NewMeetingStage from './NewMeetingStage'
+import {resolveGQLStageFromId} from '../resolvers'
 
 export const FlagReadyToAdvanceSuccess = new GraphQLObjectType<any, GQLContext>({
   name: 'FlagReadyToAdvanceSuccess',
@@ -20,10 +21,7 @@ export const FlagReadyToAdvanceSuccess = new GraphQLObjectType<any, GQLContext>(
       description: 'the stage with the updated readyCount',
       resolve: async ({meetingId, stageId}, _args, {dataLoader}) => {
         const meeting = await dataLoader.get('newMeetings').load(meetingId)
-        const {phases} = meeting
-        const stageRes = findStageById(phases, stageId)!
-        const {stage} = stageRes
-        return stage
+        return resolveGQLStageFromId(stageId, meeting)
       }
     }
   })
