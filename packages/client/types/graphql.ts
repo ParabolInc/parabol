@@ -5834,104 +5834,7 @@ export interface IFlagReadyToAdvanceSuccess {
   /**
    * the stage with the updated readyCount
    */
-  stage: IGenericMeetingStage
-}
-
-/**
- * A stage of a meeting that has no extra state. Only used for single-stage phases
- */
-export interface IGenericMeetingStage {
-  __typename: 'GenericMeetingStage'
-
-  /**
-   * stageId, shortid
-   */
-  id: string
-
-  /**
-   * The datetime the stage was completed
-   */
-  endAt: any | null
-
-  /**
-   * foreign key. try using meeting
-   */
-  meetingId: string
-
-  /**
-   * The meeting this stage belongs to
-   */
-  meeting: NewMeeting | null
-
-  /**
-   * true if the facilitator has completed this stage, else false. Should be boolean(endAt)
-   */
-  isComplete: boolean
-
-  /**
-   * true if any meeting participant can navigate to this stage
-   */
-  isNavigable: boolean
-
-  /**
-   * true if the facilitator can navigate to this stage
-   */
-  isNavigableByFacilitator: boolean
-
-  /**
-   * The phase this stage belongs to
-   */
-  phase: NewMeetingPhase | null
-
-  /**
-   * The type of the phase
-   */
-  phaseType: NewMeetingPhaseTypeEnum | null
-
-  /**
-   * The datetime the stage was started
-   */
-  startAt: any | null
-
-  /**
-   * Number of times the facilitator has visited this stage
-   */
-  viewCount: number | null
-
-  /**
-   * true if a time limit is set, false if end time is set, null if neither is set
-   */
-  isAsync: boolean | null
-
-  /**
-   * true if the viewer is ready to advance, else false
-   */
-  isViewerReady: boolean
-
-  /**
-   * the number of meeting members ready to advance
-   */
-  readyCount: number
-
-  /**
-   * The datetime the phase is scheduled to be finished, null if no time limit or end time is set
-   */
-  scheduledEndTime: any | null
-
-  /**
-   * The suggested ending datetime for a phase to be completed async, null if not enough data to make a suggestion
-   */
-  suggestedEndTime: any | null
-
-  /**
-   * The suggested time limit for a phase to be completed together, null if not enough data to make a suggestion
-   */
-  suggestedTimeLimit: number | null
-
-  /**
-   * The number of milliseconds left before the scheduled end time. Useful for unsynced client clocks. null if scheduledEndTime is null
-   */
-  timeRemaining: number | null
+  stage: NewMeetingStage
 }
 
 export interface IInactivateUserPayload {
@@ -6505,6 +6408,103 @@ export interface IReflectPhase {
    */
   reflectPrompts: Array<IRetroPhaseItem>
   teamId: string
+}
+
+/**
+ * A stage of a meeting that has no extra state. Only used for single-stage phases
+ */
+export interface IGenericMeetingStage {
+  __typename: 'GenericMeetingStage'
+
+  /**
+   * stageId, shortid
+   */
+  id: string
+
+  /**
+   * The datetime the stage was completed
+   */
+  endAt: any | null
+
+  /**
+   * foreign key. try using meeting
+   */
+  meetingId: string
+
+  /**
+   * The meeting this stage belongs to
+   */
+  meeting: NewMeeting | null
+
+  /**
+   * true if the facilitator has completed this stage, else false. Should be boolean(endAt)
+   */
+  isComplete: boolean
+
+  /**
+   * true if any meeting participant can navigate to this stage
+   */
+  isNavigable: boolean
+
+  /**
+   * true if the facilitator can navigate to this stage
+   */
+  isNavigableByFacilitator: boolean
+
+  /**
+   * The phase this stage belongs to
+   */
+  phase: NewMeetingPhase | null
+
+  /**
+   * The type of the phase
+   */
+  phaseType: NewMeetingPhaseTypeEnum | null
+
+  /**
+   * The datetime the stage was started
+   */
+  startAt: any | null
+
+  /**
+   * Number of times the facilitator has visited this stage
+   */
+  viewCount: number | null
+
+  /**
+   * true if a time limit is set, false if end time is set, null if neither is set
+   */
+  isAsync: boolean | null
+
+  /**
+   * true if the viewer is ready to advance, else false
+   */
+  isViewerReady: boolean
+
+  /**
+   * the number of meeting members ready to advance
+   */
+  readyCount: number
+
+  /**
+   * The datetime the phase is scheduled to be finished, null if no time limit or end time is set
+   */
+  scheduledEndTime: any | null
+
+  /**
+   * The suggested ending datetime for a phase to be completed async, null if not enough data to make a suggestion
+   */
+  suggestedEndTime: any | null
+
+  /**
+   * The suggested time limit for a phase to be completed together, null if not enough data to make a suggestion
+   */
+  suggestedTimeLimit: number | null
+
+  /**
+   * The number of milliseconds left before the scheduled end time. Useful for unsynced client clocks. null if scheduledEndTime is null
+   */
+  timeRemaining: number | null
 }
 
 export interface ISetStageTimerPayload {

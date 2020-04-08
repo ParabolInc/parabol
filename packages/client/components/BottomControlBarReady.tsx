@@ -31,13 +31,13 @@ const CheckIcon = styled(Icon)<{progress: number; isNext: boolean}>(({progress, 
       ? PALETTE.TEXT_GREEN
       : PALETTE.EMPHASIS_WARM
     : progress > 0
-    ? PALETTE.TEXT_BLUE
+    ? PALETTE.TEXT_GREEN
     : PALETTE.TEXT_GRAY,
-  fontSize: progress > 0 ? 18 : 24,
+  fontSize: 24,
   fontWeight: 600,
   height: 24,
-  padding: progress > 0 ? 3 : undefined,
-  transition: `all 100ms ${BezierCurve.DECELERATE}`
+  transform: progress > 0 ? `scale(0.75)translateY(${isNext ? 0 : 1}px)` : undefined,
+  transition: `transform 100ms ${BezierCurve.DECELERATE}`
 }))
 
 const BottomControlBarReady = (props: Props) => {

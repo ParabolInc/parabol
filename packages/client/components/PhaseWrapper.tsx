@@ -1,9 +1,6 @@
 import styled from '@emotion/styled'
-import {forwardRef, ReactNode} from 'react'
+import React, {forwardRef, ReactNode} from 'react'
 import ErrorBoundary from './ErrorBoundary'
-import React from 'react'
-import makeMinWidthMediaQuery from 'utils/makeMinWidthMediaQuery'
-import {Breakpoint, MeetingControlBarEnum} from 'types/constEnums'
 
 const PhaseWrapperStyles = styled('div')({
   display: 'flex',
@@ -12,11 +9,7 @@ const PhaseWrapperStyles = styled('div')({
   height: '100%',
   alignItems: 'center',
   justifyContent: 'center',
-  minHeight: 0, // FF68 hack to allow discuss tasks to scroll & facilitatorbar to stay visible when shrinking viewpoint height
-  paddingBottom: MeetingControlBarEnum.HEIGHT,
-  [makeMinWidthMediaQuery(Breakpoint.SINGLE_REFLECTION_COLUMN)]: {
-    paddingBottom: 0
-  }
+  minHeight: 0 // FF68 hack to allow discuss tasks to scroll & facilitatorbar to stay visible when shrinking viewpoint height
 })
 
 interface Props {

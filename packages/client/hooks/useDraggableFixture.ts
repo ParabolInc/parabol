@@ -1,6 +1,8 @@
 import getIsDrag from 'utils/retroGroup/getIsDrag'
 import {cacheCoveringBBox, ensureAllCovering} from './useControlBarCovers'
 import useEventCallback from './useEventCallback'
+import useBreakpoint from './useBreakpoint'
+import {Breakpoint} from 'types/constEnums'
 
 const makeDrag = (ref: HTMLDivElement, lastX: number) => ({
   ref,
@@ -14,7 +16,9 @@ const makeDrag = (ref: HTMLDivElement, lastX: number) => ({
 
 let drag: ReturnType<typeof makeDrag>
 
+const noop = () => {}
 const useDraggableFixture = () => {
+  const isDesktop = useBreakpoint(Breakpoint.SINGLE_REFLECTION_COLUMN)
   const onMouseUp = useEventCallback((e: MouseEvent | TouchEvent) => {
     if (e.type === 'touchend') {
       drag.ref.removeEventListener('touchmove', onMouseMove)
@@ -80,7 +84,10 @@ const useDraggableFixture = () => {
     }
   })
 
-  return {onMouseDown, onClickCapture}
+  if (isDesktop) {
+    return {onMouseDown, onClickCapture}
+  }
+  return {onMouseDown: noop, onClickCapture: noop}
 }
 
 export default useDraggableFixture
