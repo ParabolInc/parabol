@@ -15,6 +15,9 @@ interface Props extends WithAtmosphereProps, WithMutationProps {
 
 const PaletteDropDown = styled('div')({
   ...CreateCardRootStyles,
+  boxShadow: `rgba(0,0,0,0.1) -2px 3px 5px 0px,
+     rgba(0,0,0,0.04) -1px 1px 4px 0px,
+     rgba(0,0,0,0.12) -2px 4px 6px 2px`,
   border: 0,
   height: '160px',
   width: '214px',
@@ -83,7 +86,11 @@ const PalettePicker = (props: Props) => {
         {Colors.map((color, id) => {
           return (
             <PaletteItem onClick={() => setGroupColor(color)} key={id}>
-              <PaletteColor color={color} />
+              <PaletteColor
+                color={color}
+                isPicked={pickedColors.includes(color)}
+                currentSelection={groupColor === color}
+              />
             </PaletteItem>
           )
         })}
