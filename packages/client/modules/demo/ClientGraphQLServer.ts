@@ -1154,7 +1154,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         const threadParent =
           this.db.comments.find(({id}) => id === threadParentId) ||
           this.db.tasks.find(({id}) => id === threadParentId)
-        threadParent.push(task)
+        threadParent.replies.push(task)
       } else {
         reflectionGroup.thread.edges.push({
           __typename: 'ThreadableEdge',
