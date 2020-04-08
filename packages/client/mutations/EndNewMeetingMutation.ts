@@ -15,6 +15,7 @@ import {RetroDemo} from '../types/constEnums'
 import {EndNewMeetingMutation_team} from '__generated__/EndNewMeetingMutation_team.graphql'
 import {EndNewMeetingMutation_notification} from '__generated__/EndNewMeetingMutation_notification.graphql'
 import handleRemoveTasks from './handlers/handleRemoveTasks'
+import onMeetingRoute from 'utils/onMeetingRoute'
 
 graphql`
   fragment EndNewMeetingMutation_team on EndNewMeetingPayload {
@@ -89,7 +90,7 @@ export const endNewMeetingTeamOnNext: OnNextHandler<
     } else {
       history.push('/retrospective-demo-summary')
     }
-  } else {
+  } else if (onMeetingRoute(window.location.pathname, [meetingId])) {
     if (isKill) {
       history.push(`/team/${teamId}`)
       popEndNewMeetingToast(atmosphere, meetingId)
