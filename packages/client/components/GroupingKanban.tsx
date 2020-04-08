@@ -6,7 +6,7 @@ import {GroupingKanban_meeting} from '__generated__/GroupingKanban_meeting.graph
 import useBreakpoint from '../hooks/useBreakpoint'
 import useHideBodyScroll from '../hooks/useHideBodyScroll'
 import useThrottledEvent from '../hooks/useThrottledEvent'
-import {Breakpoint, Times, MeetingControlBarEnum} from '../types/constEnums'
+import {Breakpoint, Times} from '../types/constEnums'
 import {NewMeetingPhaseTypeEnum} from '../types/graphql'
 import PortalProvider from './AtmosphereProvider/PortalProvider'
 import GroupingKanbanColumn from './GroupingKanbanColumn'

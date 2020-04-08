@@ -1,10 +1,9 @@
 import {GraphQLNonNull, GraphQLObjectType} from 'graphql'
-import findStageById from 'parabol-client/utils/meetings/findStageById'
 import {GQLContext} from '../graphql'
+import {resolveGQLStageFromId} from '../resolvers'
 import makeMutationPayload from './makeMutationPayload'
 import NewMeeting from './NewMeeting'
 import NewMeetingStage from './NewMeetingStage'
-import {resolveGQLStageFromId} from '../resolvers'
 
 export const FlagReadyToAdvanceSuccess = new GraphQLObjectType<any, GQLContext>({
   name: 'FlagReadyToAdvanceSuccess',
