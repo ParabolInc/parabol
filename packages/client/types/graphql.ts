@@ -1868,7 +1868,7 @@ export interface INewMeetingStage {
   isViewerReady: boolean
 
   /**
-   * the number of meeting members ready to advance
+   * the number of meeting members ready to advance, excluding the facilitator
    */
   readyCount: number
 
@@ -5627,7 +5627,7 @@ export interface IRetroDiscussStage {
   isViewerReady: boolean
 
   /**
-   * the number of meeting members ready to advance
+   * the number of meeting members ready to advance, excluding the facilitator
    */
   readyCount: number
 
@@ -6045,6 +6045,7 @@ export interface IPromoteNewMeetingFacilitatorPayload {
    * The meeting in progress
    */
   meeting: NewMeeting | null
+  facilitatorStage: NewMeetingStage | null
 
   /**
    * The old meeting facilitator
@@ -6482,7 +6483,7 @@ export interface IGenericMeetingStage {
   isViewerReady: boolean
 
   /**
-   * the number of meeting members ready to advance
+   * the number of meeting members ready to advance, excluding the facilitator
    */
   readyCount: number
 
@@ -7255,7 +7256,7 @@ export interface ICheckInStage {
   isViewerReady: boolean
 
   /**
-   * the number of meeting members ready to advance
+   * the number of meeting members ready to advance, excluding the facilitator
    */
   readyCount: number
 
@@ -7446,7 +7447,7 @@ export interface IUpdatesStage {
   isViewerReady: boolean
 
   /**
-   * the number of meeting members ready to advance
+   * the number of meeting members ready to advance, excluding the facilitator
    */
   readyCount: number
 
@@ -7577,7 +7578,7 @@ export interface IAgendaItemsStage {
   isViewerReady: boolean
 
   /**
-   * the number of meeting members ready to advance
+   * the number of meeting members ready to advance, excluding the facilitator
    */
   readyCount: number
 

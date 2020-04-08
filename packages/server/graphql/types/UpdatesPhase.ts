@@ -2,6 +2,7 @@ import {GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import NewMeetingPhase, {newMeetingPhaseFields} from './NewMeetingPhase'
 import UpdatesStage from './UpdatesStage'
 import {GQLContext} from '../graphql'
+import {resolveGQLStagesFromPhase} from '../resolvers'
 
 const UpdatesPhase = new GraphQLObjectType<any, GQLContext>({
   name: 'UpdatesPhase',
@@ -10,7 +11,8 @@ const UpdatesPhase = new GraphQLObjectType<any, GQLContext>({
   fields: () => ({
     ...newMeetingPhaseFields(),
     stages: {
-      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(UpdatesStage)))
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(UpdatesStage))),
+      resolve: resolveGQLStagesFromPhase
     }
   })
 })

@@ -22,7 +22,7 @@ interface Props {
   meeting: BottomControlBarReady_meeting
   status: TransitionStatus
   onTransitionEnd: () => void
-  handleGotoNext?: ReturnType<typeof useGotoNext>
+  handleGotoNext: ReturnType<typeof useGotoNext>
 }
 
 const CheckIcon = styled(Icon)<{progress: number; isNext: boolean}>(({progress, isNext}) => ({
@@ -36,34 +36,39 @@ const CheckIcon = styled(Icon)<{progress: number; isNext: boolean}>(({progress, 
   fontSize: 24,
   fontWeight: 600,
   height: 24,
-  transform: progress > 0 ? `scale(0.75)translateY(${isNext ? 0 : 1}px)` : undefined,
+  transformOrigin: '0 0',
+  // 20px to 16 = 0.75
+  transform: progress > 0 ? `scale(0.75)translate(4px, 4px)` : undefined,
   transition: `transform 100ms ${BezierCurve.DECELERATE}`
 }))
 
 const BottomControlBarReady = (props: Props) => {
   const {handleGotoNext, isDemoStageComplete, meeting, onTransitionEnd, status} = props
-  const {id: meetingId, localStage, meetingMembers, reflectionGroups} = meeting
-  const {id: stageId, isViewerReady, readyCount, phaseType} = localStage
+  const {id: meetingId, facilitatorUserId, localStage, meetingMembers, reflectionGroups} = meeting
+  const {id: stageId, isViewerReady, phaseType} = localStage
+  const {gotoNext, ref} = handleGotoNext
   const activeCount = meetingMembers.filter((member) => member.isCheckedIn).length
-  const progress = (readyCount ?? 0) / Math.max(1, activeCount - 1)
   const atmosphere = useAtmosphere()
-
+  const {viewerId} = atmosphere
+  const isFacilitating = facilitatorUserId === viewerId
+  const readyCount = localStage.readyCount || 0
+  const progress = readyCount / Math.max(1, activeCount - 1)
   const onClick = () => {
-    if (handleGotoNext) {
-      handleGotoNext.gotoNext()
+    if (isFacilitating) {
+      gotoNext()
     } else {
       FlagReadyToAdvanceMutation(atmosphere, {isReady: !isViewerReady, meetingId, stageId})
     }
   }
-  const onKeyDown = handleGotoNext
+  const onKeyDown = isFacilitating
     ? handleRightArrow(() => {
-        handleGotoNext.gotoNext()
+        gotoNext()
       })
     : undefined
-  const icon = handleGotoNext ? 'arrow_forward' : 'check'
-  const label = handleGotoNext ? 'Next' : 'Ready'
+  const icon = isFacilitating ? 'arrow_forward' : 'check'
+  const label = isFacilitating ? 'Next' : 'Ready'
   const getDisabled = () => {
-    if (!handleGotoNext) return false
+    if (!isFacilitating) return false
     if (isDemoRoute()) {
       return !isDemoStageComplete && !(window as any).Cypress
     }
@@ -79,11 +84,11 @@ const BottomControlBarReady = (props: Props) => {
       status={status}
       onTransitionEnd={onTransitionEnd}
       onKeyDown={onKeyDown}
-      ref={handleGotoNext?.ref}
+      ref={ref}
     >
       <BottomControlBarProgress progress={progress} />
       <BottomNavIconLabel label={label}>
-        <CheckIcon isNext={!!handleGotoNext} progress={progress}>
+        <CheckIcon isNext={isFacilitating} progress={progress}>
           {icon}
         </CheckIcon>
       </BottomNavIconLabel>
@@ -109,6 +114,7 @@ export default createFragmentContainer(BottomControlBarReady, {
         }
       }
       id
+      facilitatorUserId
       localStage {
         ...BottomControlBarReadyStage @relay(mask: false)
       }

@@ -1,9 +1,9 @@
 import {GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
+import {GQLContext} from '../graphql'
+import {resolveGQLStagesFromPhase} from '../resolvers'
 import CheckInStage from './CheckInStage'
 import MeetingGreeting from './MeetingGreeting'
 import NewMeetingPhase, {newMeetingPhaseFields} from './NewMeetingPhase'
-import {ICheckInPhase} from '../../../client/types/graphql'
-import {GQLContext} from '../graphql'
 
 const CheckInPhase = new GraphQLObjectType<any, GQLContext>({
   name: 'CheckInPhase',
@@ -21,13 +21,7 @@ const CheckInPhase = new GraphQLObjectType<any, GQLContext>({
     },
     stages: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(CheckInStage))),
-      resolve: ({meetingId, phaseType, stages}: ICheckInPhase) => {
-        return stages.map((stage) => ({
-          ...stage,
-          meetingId,
-          phaseType
-        }))
-      }
+      resolve: resolveGQLStagesFromPhase
     }
   })
 })

@@ -116,11 +116,13 @@ const MeetingControlBar = (props: Props) => {
             case 'tips':
               return <BottomControlBarTips {...tranProps} meeting={meeting} />
             case 'ready':
+            case 'next':
               return (
                 <BottomControlBarReady
                   {...tranProps}
                   isDemoStageComplete={isDemoStageComplete}
                   meeting={meeting}
+                  handleGotoNext={handleGotoNext}
                 />
               )
             case 'rejoin':
@@ -136,15 +138,6 @@ const MeetingControlBar = (props: Props) => {
                   {...tranProps}
                   defaultTimeLimit={DEFAULT_TIME_LIMIT[phaseType]}
                   meeting={meeting}
-                />
-              )
-            case 'next':
-              return (
-                <BottomControlBarReady
-                  {...tranProps}
-                  isDemoStageComplete={isDemoStageComplete}
-                  meeting={meeting}
-                  handleGotoNext={handleGotoNext}
                 />
               )
             case 'end':

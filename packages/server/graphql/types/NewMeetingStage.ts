@@ -108,9 +108,10 @@ export const newMeetingStageFields = () => ({
   },
   readyCount: {
     type: GraphQLNonNull(GraphQLInt),
-    description: 'the number of meeting members ready to advance',
-    resolve: async ({meetingId, readyToAdvance}, _args, {dataLoader}) => {
+    description: 'the number of meeting members ready to advance, excluding the facilitator',
+    resolve: async ({meetingId, readyToAdvance}, _args, {dataLoader}, ref) => {
       if (!readyToAdvance) return 0
+      if (!meetingId) console.log('no meetingid', ref)
       const meeting = await dataLoader.get('newMeetings').load(meetingId)
       const {facilitatorUserId} = meeting
       return readyToAdvance.filter((userId) => userId !== facilitatorUserId).length
