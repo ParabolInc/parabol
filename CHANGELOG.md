@@ -9,10 +9,12 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
 ### Fixed
 * Demo Discussion Topics were all concated together
+* Add Team button appears on dashboard's leftnav when using iOS mobile
 
 ### Added
 * "Report feedback" for fatal bugs (#3714)
 * Custom voting (#3707)
+* "Settings & Integrations" link added to Team Dashboard
 
 ### Changed
 * New Meeting Snackbar created for new meetings (<5 mins ago) (#3713)
