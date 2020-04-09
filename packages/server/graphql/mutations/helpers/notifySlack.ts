@@ -80,14 +80,21 @@ export const startSlackMeeting = async (
   dataLoader: DataLoaderWorker
 ) => {
   const team = await dataLoader.get('teams').load(teamId)
+
   const meetingUrl = makeAppLink(`meet/${meetingId}`)
   const slackText = `${team.name} has started a meeting!\n To join, click here: ${meetingUrl}`
   notifySlack('meetingStart', dataLoader, teamId, slackText).catch(console.log)
 }
 
 export const endSlackMeeting = async (meetingId, teamId, dataLoader: DataLoaderWorker) => {
+  const params = {
+    utm_source: 'slack_summary',
+    utm_medium: 'product',
+    utm_campaign: 'after_meeting'
+  }
+  const options = {params}
   const team = await dataLoader.get('teams').load(teamId)
-  const summaryUrl = makeAppLink(`new-summary/${meetingId}`)
+  const summaryUrl = makeAppLink(`new-summary/${meetingId}`, options)
   const slackText = `The meeting for ${team.name} has ended!\n Check out the summary here: ${summaryUrl}`
   notifySlack('meetingEnd', dataLoader, teamId, slackText).catch(console.log)
 }

@@ -40,10 +40,16 @@ const MeetingSummaryEmailRootSSR = (props: Props) => {
         if (!newMeeting) return null
         const {team} = newMeeting
         const {id: teamId} = team
-        const referrerUrl = makeAppLink(`new-summary/${meetingId}`)
-        const meetingUrl = makeAppLink(`meet/${meetingId}`)
-        const teamDashUrl = makeAppLink(`team/${teamId}`)
-        const emailCSVUrl = makeAppLink(`new-summary/${meetingId}/csv`)
+        const params = {
+          utm_source: 'summary_email',
+          utm_medium: 'email',
+          utm_campaign: 'after_meeting'
+        }
+        const options = {params}
+        const referrerUrl = makeAppLink(`new-summary/${meetingId}`, options)
+        const meetingUrl = makeAppLink(`meet/${meetingId}`, options)
+        const teamDashUrl = makeAppLink(`team/${teamId}`, options)
+        const emailCSVUrl = makeAppLink(`new-summary/${meetingId}/csv`, options)
         return (
           <MeetingSummaryEmail
             meeting={newMeeting}

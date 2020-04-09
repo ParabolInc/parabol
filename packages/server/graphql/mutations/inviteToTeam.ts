@@ -123,6 +123,12 @@ export default {
       const bestMeeting = await getBestInvitationMeeting(teamId, meetingId, dataLoader)
 
       // send emails
+      const params = {
+        utm_source: 'invite_email',
+        utm_medium: 'email',
+        utm_campaign: 'invitations'
+      }
+      const options = {params}
       const emailResults = await Promise.all(
         teamInvitationsToInsert.map((invitation) => {
           const user = users.find((user) => user.email === invitation.email)
@@ -130,7 +136,7 @@ export default {
             invitation.email,
             'teamInvite',
             {
-              inviteLink: makeAppLink(`team-invitation/${invitation.token}`),
+              inviteLink: makeAppLink(`team-invitation/${invitation.token}`, options),
               inviteeName: user ? user.preferredName : null,
               inviteeEmail: invitation.email,
               inviterName: inviter.preferredName,

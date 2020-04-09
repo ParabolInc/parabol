@@ -15,7 +15,13 @@ const emailVerificationEmailCreator = (props: Props) => {
   const fullToken = invitationToken
     ? `${verifiedEmailToken}/${invitationToken}`
     : verifiedEmailToken
-  const verificationURL = makeAppLink(`verify-email/${fullToken}`)
+  const params = {
+    utm_source: 'verify_account',
+    utm_medium: 'email',
+    utm_campaign: 'invitations'
+  }
+  const options = {params}
+  const verificationURL = makeAppLink(`verify-email/${fullToken}`, options)
   const bodyContent = ReactDOMServer.renderToStaticMarkup(
     <EmailVerificationEmail verificationURL={verificationURL} />
   )
