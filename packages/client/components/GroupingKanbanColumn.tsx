@@ -58,6 +58,16 @@ const Prompt = styled(RetroPrompt)({
   marginRight: 8
 })
 
+const ColorBadge = styled('div')<{groupColor: string}>(({groupColor}) => ({
+  backgroundColor: groupColor,
+  borderRadius: '50%',
+  display: 'inline-block',
+  verticalAlign: 'middle',
+  marginRight: 8,
+  height: 8,
+  width: 8
+}))
+
 const AddReflectionButton = styled(FlatButton)({
   border: 0,
   height: 24,
@@ -77,7 +87,7 @@ interface Props {
 
 const GroupingKanbanColumn = (props: Props) => {
   const {isDesktop, meeting, reflectionGroups, phaseRef, prompt, swipeColumn} = props
-  const {question, id: promptId} = prompt
+  const {question, id: promptId, groupColor} = prompt
   const {id: meetingId, localStage} = meeting
   const {isComplete, phaseType} = localStage
   const {submitting, onError, submitMutation, onCompleted} = useMutationProps()
@@ -98,7 +108,10 @@ const GroupingKanbanColumn = (props: Props) => {
   return (
     <Column data-cy={`group-column-${question}`} isDesktop={isDesktop} ref={ref}>
       <ColumnHeader>
-        <Prompt>{question}</Prompt>
+        <Prompt>
+          <ColorBadge groupColor={groupColor} />
+          {question}
+        </Prompt>
         {canAdd && (
           <AddReflectionButton
             dataCy={`add-reflection-${question}`}
@@ -168,6 +181,7 @@ export default createFragmentContainer(GroupingKanbanColumn, {
     fragment GroupingKanbanColumn_prompt on RetroPhaseItem {
       id
       question
+      groupColor
     }
   `
 })

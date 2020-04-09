@@ -24,6 +24,24 @@ const CardStack = styled('div')({
   position: 'relative'
 })
 
+const ColorBadge = styled('div')<{groupColor: string}>(({groupColor}) => ({
+  backgroundColor: groupColor,
+  height: 32,
+  width: 32
+}))
+
+const BadgeWrapper = styled('div')({
+  borderTopLeftRadius: 30,
+  borderBottomRightRadius: 100,
+  height: 16,
+  width: 16,
+  left: 0,
+  top: 0,
+  overflow: 'hidden',
+  position: 'absolute',
+  zIndex: 4
+})
+
 export const getCardStackPadding = (count: number) => {
   return Math.max(0, Math.min(3, count) - 1) * ReflectionStackPerspective.Y
 }
@@ -187,6 +205,9 @@ const ReflectionGroup = (props: Props) => {
                 staticIdx={staticIdx}
                 isDropping={isDropping}
               >
+                <BadgeWrapper>
+                  <ColorBadge groupColor={reflection.groupColor} />
+                </BadgeWrapper>
                 <DraggableReflectionCard
                   dataCy={`${dataCy}-card-${staticIdx}`}
                   key={reflection.id}
@@ -237,6 +258,7 @@ export default createFragmentContainer(ReflectionGroup, {
         id
         retroPhaseItemId
         sortOrder
+        groupColor
         isViewerDragging
         isDropping
         isEditing

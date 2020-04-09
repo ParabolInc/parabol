@@ -38,6 +38,24 @@ interface Props {
   dataCy?: string
 }
 
+const ColorBadge = styled('div')<{groupColor: string}>(({groupColor}) => ({
+  backgroundColor: groupColor,
+  height: 32,
+  width: 32
+}))
+
+const BadgeWrapper = styled('div')({
+  borderTopLeftRadius: 30,
+  borderBottomRightRadius: 100,
+  height: 16,
+  width: 16,
+  left: 0,
+  top: 0,
+  overflow: 'hidden',
+  position: 'relative',
+  zIndex: 4
+})
+
 const getReadOnly = (
   reflection: {id: string; isViewerCreator: boolean | null; isEditing: boolean | null},
   phaseType: NewMeetingPhaseTypeEnum,
@@ -178,6 +196,9 @@ const ReflectionCard = (props: Props) => {
   }
   return (
     <ReflectionCardRoot data-cy={`${dataCy}-root`}>
+      <BadgeWrapper className={'heeeeelp'}>
+        <ColorBadge groupColor={reflection.phaseItem.groupColor} />
+      </BadgeWrapper>
       {showOriginFooter && !isClipped && <ReflectionCardFooter>{question}</ReflectionCardFooter>}
       <ReflectionEditorWrapper
         dataCy={`editor-wrapper`}
@@ -219,6 +240,7 @@ export default createFragmentContainer(ReflectionCard, {
       content
       phaseItem {
         question
+        groupColor
       }
       reactjis {
         ...ReactjiSection_reactjis

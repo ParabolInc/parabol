@@ -2,7 +2,6 @@ import {GraphQLFloat, GraphQLID, GraphQLNonNull, GraphQLObjectType, GraphQLStrin
 import CustomPhaseItem, {customPhaseItemFields} from './CustomPhaseItem'
 import ReflectTemplate from './ReflectTemplate'
 import {GQLContext} from '../graphql'
-import {PALETTE} from '../../../client/styles/paletteV2'
 
 const RetroPhaseItem = new GraphQLObjectType<any, GQLContext>({
   name: 'RetroPhaseItem',
@@ -45,7 +44,7 @@ const RetroPhaseItem = new GraphQLObjectType<any, GQLContext>({
     groupColor: {
       description: 'The color used to visually group a phase item.',
       type: new GraphQLNonNull(GraphQLString),
-      resolve: ({groupColor}) => groupColor || PALETTE.PROMPT_GREEN
+      resolve: ({groupColor}) => groupColor || '#FFFFFF'
     }
   })
 })

@@ -110,6 +110,7 @@ const RetroReflectPhase = (props: Props) => {
                 meeting={meeting}
                 retroPhaseItemId={prompt.id}
                 question={prompt.question}
+                groupColor={prompt.groupColor}
                 editorIds={prompt.editorIds}
                 description={prompt.description}
                 idx={idx}
@@ -151,6 +152,7 @@ graphql`
     reflectPrompts {
       id
       question
+      groupColor
       description
       editorIds
     }

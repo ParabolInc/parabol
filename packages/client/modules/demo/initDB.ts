@@ -15,6 +15,7 @@ import getDemoAvatar from '../../utils/getDemoAvatar'
 import demoUserAvatar from '../../styles/theme/images/avatar-user.svg'
 import {DemoReflection, DemoReflectionGroup, DemoTask} from './ClientGraphQLServer'
 import {RetroDemo, MeetingSettingsThreshold} from '../../types/constEnums'
+import {PALETTE} from 'styles/paletteV2'
 
 export const demoViewerId = 'demoUser'
 export const demoTeamId = 'demoTeam'
@@ -257,19 +258,22 @@ const initPhases = (teamMembers) => {
           id: 'startId',
           retroPhaseItemId: 'startId',
           question: 'Start',
-          description: 'What new behaviors should we adopt?'
+          description: 'What new behaviors should we adopt?',
+          groupColor: PALETTE.PROMPT_GREEN
         },
         {
           id: 'stopId',
           retroPhaseItemId: 'stopId',
           question: 'Stop',
-          description: 'What existing behaviors should we cease doing?'
+          description: 'What existing behaviors should we cease doing?',
+          groupColor: PALETTE.PROMPT_RED
         },
         {
           id: 'continueId',
           retroPhaseItemId: 'continueId',
           question: 'Continue',
-          description: 'What current behaviors should we keep doing?'
+          description: 'What current behaviors should we keep doing?',
+          groupColor: PALETTE.PROMPT_YELLOW
         }
       ],
       stages: [

@@ -21,6 +21,7 @@ interface Props {
   phaseEditorRef: React.RefObject<HTMLDivElement>
   phaseRef: React.RefObject<HTMLDivElement>
   dataCy: string
+  groupColor: string
   reflectionStack: readonly PhaseItemColumn_meeting['reflectionGroups'][0]['reflections'][0][]
   stackTopRef: RefObject<HTMLDivElement>
 }
@@ -30,10 +31,29 @@ const CardStack = styled('div')({
   display: 'flex',
   flex: 1,
   margin: '0 0 24px', // stacked cards + row gutter = 6 + 6 + 12 = 24
+  position: 'relative',
   justifyContent: 'center',
   [`@media screen and (min-width: ${Breakpoint.SINGLE_REFLECTION_COLUMN}px)`]: {
     minHeight: ElementHeight.REFLECTION_CARD_MAX
   }
+})
+
+const ColorBadge = styled('div')<{groupColor: string}>(({groupColor}) => ({
+  backgroundColor: groupColor,
+  height: 32,
+  width: 32
+}))
+
+const BadgeWrapper = styled('div')({
+  borderTopLeftRadius: 30,
+  borderBottomRightRadius: 100,
+  height: 16,
+  width: 16,
+  left: 0,
+  top: 0,
+  overflow: 'hidden',
+  position: 'absolute',
+  zIndex: 4
 })
 
 const CenteredCardStack = styled('div')({
@@ -58,7 +78,7 @@ const ReflectionWrapper = styled('div')<{idx: number}>(({idx}): any => {
 })
 
 const ReflectionStack = (props: Props) => {
-  const {phaseRef, idx, meeting, reflectionStack, stackTopRef, dataCy} = props
+  const {phaseRef, idx, meeting, reflectionStack, stackTopRef, dataCy, groupColor} = props
   const stackRef = useRef<HTMLDivElement>(null)
   const {setItemsRef, scrollRef, bgRef, portal, collapse, expand} = useExpandedReflections(
     stackRef,
@@ -84,6 +104,9 @@ const ReflectionStack = (props: Props) => {
       )}
       <div>
         <CardStack data-cy={dataCy} onClick={expand} ref={stackRef}>
+          <BadgeWrapper>
+            <ColorBadge groupColor={groupColor} />
+          </BadgeWrapper>
           <CenteredCardStack>
             {reflectionStack.map((reflection, idx) => {
               return (

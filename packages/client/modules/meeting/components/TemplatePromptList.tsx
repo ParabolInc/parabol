@@ -59,6 +59,14 @@ class TemplatePromptList extends Component<Props, State> {
     }
   }
 
+  componentDidUpdate(prevProps) {
+    if (this.props.prompts.length < prevProps.prompts.length) {
+      // Trigger scroll event so scrollOffset can be recalculated.
+      // This is useful for when prompts are removed.
+      window.scrollTo(window.scrollX, window.scrollY)
+    }
+  }
+
   handleScroll = (event) => {
     this.setState({
       scrollOffset: event.srcElement.scrollTop

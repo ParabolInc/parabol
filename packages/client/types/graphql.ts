@@ -4440,6 +4440,11 @@ export interface IRetroReflection {
   editorIds: Array<string>
 
   /**
+   * The color used to visually group a phase item
+   */
+  groupColor: string
+
+  /**
    * True if the reflection was not removed, else false
    */
   isActive: boolean

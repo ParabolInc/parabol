@@ -94,16 +94,30 @@ const FocusArrow = styled(Icon)<{isFocused: boolean}>(({isFocused}) => ({
   opacity: isFocused ? 1 : 0,
   position: 'absolute',
   transition: `all 150ms ${DECELERATE}`,
-  transform: `translateX(${isFocused ? 0 : '-100%'})`
+  transform: `translateX(${isFocused ? '-16px' : '-100%'})`
 }))
 
-const PromptHeader = styled('div')<{isClickable: boolean}>(({isClickable}) => ({
-  cursor: isClickable ? 'pointer' : undefined,
-  padding: `0 0 ${Gutters.ROW_INNER_GUTTER} ${Gutters.REFLECTION_INNER_GUTTER_HORIZONTAL}`,
-  position: 'relative',
-  userSelect: 'none',
-  width: '100%'
+const ColorBadge = styled('div')<{groupColor: string}>(({groupColor}) => ({
+  backgroundColor: groupColor,
+  borderRadius: '50%',
+  display: 'inline-block',
+  verticalAlign: 'middle',
+  marginRight: 8,
+  height: 8,
+  width: 8
 }))
+
+const PromptHeader = styled('div')<{isClickable: boolean; isFocused: boolean}>(
+  ({isClickable, isFocused}) => ({
+    cursor: isClickable ? 'pointer' : undefined,
+    padding: `0 0 ${Gutters.ROW_INNER_GUTTER} 0`,
+    position: 'relative',
+    userSelect: 'none',
+    transition: `all 150ms ${DECELERATE}`,
+    transform: `translateX(${isFocused ? Gutters.REFLECTION_INNER_GUTTER_HORIZONTAL : 0})`,
+    width: '100%'
+  })
+)
 
 interface EditorAndStatusProps {
   isGroupingComplete: boolean
@@ -135,6 +149,7 @@ interface Props {
   phaseRef: React.RefObject<HTMLDivElement>
   retroPhaseItemId: string
   question: string
+  groupColor: string
 }
 
 const PhaseItemColumn = (props: Props) => {
@@ -146,6 +161,7 @@ const PhaseItemColumn = (props: Props) => {
     meeting,
     phaseRef,
     question,
+    groupColor,
     isDesktop
   } = props
   const {meetingId, facilitatorUserId, localPhase, phases, reflectionGroups} = meeting
@@ -210,9 +226,14 @@ const PhaseItemColumn = (props: Props) => {
       <ColumnHighlight isDesktop={isDesktop} isFocused={isFocused}>
         <ColumnContent isDesktop={isDesktop}>
           <HeaderAndEditor isDesktop={isDesktop}>
-            <PromptHeader isClickable={isFacilitator && !isComplete} onClick={setColumnFocus}>
+            <PromptHeader
+              isClickable={isFacilitator && !isComplete}
+              isFocused={isFocused}
+              onClick={setColumnFocus}
+            >
               <FocusArrow isFocused={isFocused}>arrow_forward</FocusArrow>
               <RetroPrompt onMouseEnter={openTooltip} onMouseLeave={closeTooltip} ref={originRef}>
+                <ColorBadge groupColor={groupColor} />
                 {question}
               </RetroPrompt>
               {tooltipPortal(<div>Tap to highlight prompt for everybody</div>)}
@@ -244,6 +265,7 @@ const PhaseItemColumn = (props: Props) => {
               phaseEditorRef={phaseEditorRef}
               phaseRef={phaseRef}
               meeting={meeting}
+              groupColor={groupColor}
               stackTopRef={stackTopRef}
             />
           </ReflectionStackSection>
@@ -294,6 +316,7 @@ export default createFragmentContainer(PhaseItemColumn, {
           ...DraggableReflectionCard_reflection
           ...DraggableReflectionCard_staticReflections
           content
+          groupColor
           id
           isEditing
           isViewerCreator

@@ -43,6 +43,7 @@ import initDB, {
   JiraProjectKeyLookup
 } from './initDB'
 import LocalAtmosphere from './LocalAtmosphere'
+import {PALETTE} from 'styles/paletteV2'
 
 export type DemoReflection = Omit<
   IRetroReflection,
@@ -413,6 +414,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         createdAt: now,
         creatorId: userId,
         content: normalizedContent,
+        groupColor: PALETTE.PROMPT_GREEN,
         plaintextContent,
         dragContext: null,
         editorIds: [],
