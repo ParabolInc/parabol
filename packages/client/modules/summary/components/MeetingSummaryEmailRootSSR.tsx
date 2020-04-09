@@ -41,9 +41,9 @@ const MeetingSummaryEmailRootSSR = (props: Props) => {
         const {team} = newMeeting
         const {id: teamId} = team
         const params = {
-          utm_source: 'summary_email',
+          utm_source: 'summary email',
           utm_medium: 'email',
-          utm_campaign: 'after_meeting'
+          utm_campaign: 'after-meeting'
         }
         const options = {params}
         const referrerUrl = makeAppLink(`new-summary/${meetingId}`, options)

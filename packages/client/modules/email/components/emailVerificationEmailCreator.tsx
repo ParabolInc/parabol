@@ -16,7 +16,7 @@ const emailVerificationEmailCreator = (props: Props) => {
     ? `${verifiedEmailToken}/${invitationToken}`
     : verifiedEmailToken
   const params = {
-    utm_source: 'verify_account',
+    utm_source: 'verify account',
     utm_medium: 'email',
     utm_campaign: 'invitations'
   }

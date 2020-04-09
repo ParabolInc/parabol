@@ -124,7 +124,7 @@ export default {
 
       // send emails
       const params = {
-        utm_source: 'invite_email',
+        utm_source: 'invite email',
         utm_medium: 'email',
         utm_campaign: 'invitations'
       }
