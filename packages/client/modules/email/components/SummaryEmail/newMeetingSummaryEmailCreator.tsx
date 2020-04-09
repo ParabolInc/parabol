@@ -4,7 +4,6 @@ import ServerEnvironment from '../../../../../server/email/ServerEnvironment'
 import {GQLContext} from '../../../../../server/graphql/graphql'
 import {PALETTE} from '../../../../styles/paletteV2'
 import {MEETING_SUMMARY_LABEL} from '../../../../utils/constants'
-import makeDateString from '../../../../utils/makeDateString'
 import emailTemplate from './MeetingSummaryEmail/EmailTemplate'
 
 interface Props {
