@@ -13,6 +13,7 @@ import ReflectionGroup from '../components/ReflectionGroup/ReflectionGroup'
 import Grid from './components/Grid'
 import RetroBackground from './components/RetroBackground'
 import StoryContainer from './components/StoryContainer'
+import {PALETTE} from '../styles/paletteV2'
 
 const newId = () => shortid.generate()
 
@@ -30,11 +31,13 @@ storiesOf('Reflection Group', module)
                 {
                   id: newId(),
                   content: ContentState.createFromText('This is the bottom card'),
+                  groupColor: PALETTE.PROMPT_GREEN,
                   reflectionPhaseQuestion: null
                 },
                 {
                   id: newId(),
                   content: ContentState.createFromText('This is the top card'),
+                  groupColor: PALETTE.PROMPT_FUCHSIA,
                   reflectionPhaseQuestion: null
                 }
               ]}
@@ -47,24 +50,28 @@ storiesOf('Reflection Group', module)
                 {
                   id: newId(),
                   content: ContentState.createFromText('Card'),
+                  groupColor: PALETTE.PROMPT_ORANGE,
                   reflectionPhaseQuestion: null
                 },
                 {
                   id: newId(),
                   content: ContentState.createFromText('Card'),
+                  groupColor: PALETTE.PROMPT_PURPLE,
                   reflectionPhaseQuestion: null
                 },
                 {
                   id: newId(),
                   content: ContentState.createFromText(`
-                    This one has a lot to say!
-                    Fortunately it does not screw up the translation computation.
+                  This one has a lot to say!
+                  Fortunately it does not screw up the translation computation.
                   `),
+                  groupColor: PALETTE.PROMPT_GREEN,
                   reflectionPhaseQuestion: null
                 },
                 {
                   id: newId(),
                   content: ContentState.createFromText('Card'),
+                  groupColor: PALETTE.PROMPT_LIGHT_BLUE,
                   reflectionPhaseQuestion: null
                 }
               ]}
@@ -77,46 +84,55 @@ storiesOf('Reflection Group', module)
                 {
                   id: newId(),
                   content: ContentState.createFromText('Card'),
+                  groupColor: PALETTE.PROMPT_GREEN,
                   reflectionPhaseQuestion: null
                 },
                 {
                   id: newId(),
                   content: ContentState.createFromText('Card'),
+                  groupColor: PALETTE.PROMPT_CYAN,
                   reflectionPhaseQuestion: null
                 },
                 {
                   id: newId(),
                   content: ContentState.createFromText('Card'),
+                  groupColor: PALETTE.PROMPT_RED,
                   reflectionPhaseQuestion: null
                 },
                 {
                   id: newId(),
                   content: ContentState.createFromText('Card'),
+                  groupColor: PALETTE.PROMPT_RED,
                   reflectionPhaseQuestion: null
                 },
                 {
                   id: newId(),
                   content: ContentState.createFromText('Card'),
+                  groupColor: PALETTE.PROMPT_BLUE,
                   reflectionPhaseQuestion: null
                 },
                 {
                   id: newId(),
                   content: ContentState.createFromText('Card'),
+                  groupColor: PALETTE.PROMPT_YELLOW,
                   reflectionPhaseQuestion: null
                 },
                 {
                   id: newId(),
                   content: ContentState.createFromText('Card'),
+                  groupColor: PALETTE.PROMPT_PINK,
                   reflectionPhaseQuestion: null
                 },
                 {
                   id: newId(),
                   content: ContentState.createFromText('Card'),
+                  groupColor: PALETTE.PROMPT_LIGHT_GREEN,
                   reflectionPhaseQuestion: null
                 },
                 {
                   id: newId(),
                   content: ContentState.createFromText('Card'),
+                  groupColor: PALETTE.PROMPT_VIOLET,
                   reflectionPhaseQuestion: null
                 }
               ]}
@@ -141,11 +157,13 @@ storiesOf('Reflection Group', module)
                 {
                   id: newId(),
                   content: ContentState.createFromText('Card'),
+                  groupColor: PALETTE.PROMPT_ORANGE,
                   reflectionPhaseQuestion: null
                 },
                 {
                   id: newId(),
                   content: ContentState.createFromText('Card'),
+                  groupColor: PALETTE.PROMPT_FUCHSIA,
                   reflectionPhaseQuestion: null
                 }
               ]}

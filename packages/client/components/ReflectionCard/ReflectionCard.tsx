@@ -12,6 +12,8 @@ import isTempId from '../../utils/relay/isTempId'
 import ReflectionCardDeleteButton from './ReflectionCardDeleteButton'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import useMutationProps from '../../hooks/useMutationProps'
+import {MenuPosition} from '../../hooks/useCoords'
+import useTooltip from '../../hooks/useTooltip'
 import {NewMeetingPhaseTypeEnum, ReactableEnum} from '../../types/graphql'
 import {ReflectionCard_meeting} from '__generated__/ReflectionCard_meeting.graphql'
 import isAndroid from '../../utils/draftjs/isAndroid'
@@ -81,6 +83,9 @@ const ReflectionCard = (props: Props) => {
   const {onCompleted, submitting, submitMutation, error, onError} = useMutationProps()
   const editorRef = useRef<HTMLTextAreaElement>(null)
   const [editorState, setEditorState] = useEditorState(content)
+  const {tooltipPortal, openTooltip, closeTooltip, originRef} = useTooltip<HTMLDivElement>(
+    MenuPosition.LOWER_LEFT
+  )
 
   const handleEditorFocus = () => {
     if (isTempId(reflectionId)) return
@@ -196,9 +201,10 @@ const ReflectionCard = (props: Props) => {
   }
   return (
     <ReflectionCardRoot data-cy={`${dataCy}-root`}>
-      <BadgeWrapper className={'heeeeelp'}>
+      <BadgeWrapper onMouseEnter={openTooltip} onMouseLeave={closeTooltip} ref={originRef}>
         <ColorBadge groupColor={reflection.phaseItem.groupColor} />
       </BadgeWrapper>
+      {tooltipPortal(reflection.phaseItem.question)}
       {showOriginFooter && !isClipped && <ReflectionCardFooter>{question}</ReflectionCardFooter>}
       <ReflectionEditorWrapper
         dataCy={`editor-wrapper`}
