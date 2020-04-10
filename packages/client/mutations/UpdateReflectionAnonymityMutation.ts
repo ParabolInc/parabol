@@ -9,17 +9,9 @@ import {StandardMutation} from '../types/relayMutations'
 import {UpdateReflectionAnonymityMutation as TUpdateReflectionAnonymityMutation} from '../__generated__/UpdateReflectionAnonymityMutation.graphql'
 
 graphql`
-  fragment UpdateReflectionAnonymityMutation_meeting on UpdateReflectionContentPayload {
-    meeting {
-      id
-    }
+  fragment UpdateReflectionAnonymityMutation_meeting on UpdateReflectionAnonymityPayload {
     reflection {
-      id
-      content
       isAnonymous
-      retroReflectionGroup {
-        title
-      }
     }
   }
 `

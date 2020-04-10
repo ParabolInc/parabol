@@ -3202,7 +3202,7 @@ export interface IMutation {
   /**
    * Update the anonymity of a reflection
    */
-  updateReflectionAnonymity: IUpdateReflectionContentPayload | null
+  updateReflectionAnonymity: IUpdateReflectionAnonymityPayload | null
 
   /**
    * Update the title of a reflection group
@@ -6668,6 +6668,13 @@ export interface IUpdateReflectionContentPayload {
   reflection: IRetroReflection | null
 }
 
+export interface IUpdateReflectionAnonymityPayload {
+  __typename: 'UpdateReflectionAnonymityPayload'
+  error: IStandardMutationError | null
+  meeting: NewMeeting | null
+  reflection: IRetroReflection | null
+}
+
 export interface IUpdateReflectionGroupTitlePayload {
   __typename: 'UpdateReflectionGroupTitlePayload'
   error: IStandardMutationError | null
@@ -6846,6 +6853,7 @@ export type MeetingSubscriptionPayload =
   | IUpdateDragLocationPayload
   | IUpdateNewCheckInQuestionPayload
   | IUpdateReflectionContentPayload
+  | IUpdateReflectionAnonymityPayload
   | IUpdateReflectionGroupTitlePayload
   | IUpdateRetroMaxVotesSuccess
   | IVoteForReflectionGroupPayload

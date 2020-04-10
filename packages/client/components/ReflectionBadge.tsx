@@ -15,7 +15,6 @@ const ReflectionBadge = ({
   createdBy,
   toggleAnonymity
 }: ReflectionBadgeProps) => {
-  console.log(isAnonymous)
   // If the reflection is anonymous and does not belong to the viewer, show nothing
   if (isAnonymous && !isViewerCreator) return null
 

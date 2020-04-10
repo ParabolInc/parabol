@@ -66,7 +66,6 @@ const ReflectionCard = (props: Props) => {
     phaseItem,
     reactjis
   } = reflection
-  console.log(reflection.isAnonymous)
   const {question} = phaseItem
   const phaseType = meeting ? meeting.localPhase.phaseType : null
   const phases = meeting ? meeting.phases : null
@@ -137,7 +136,6 @@ const ReflectionCard = (props: Props) => {
   }
 
   const handleSetAnonymous = (isAnonymous: boolean) => {
-    console.log('???', isAnonymous)
     if (isTempId(reflectionId)) return
     submitMutation()
     UpdateReflectionAnonymityMutation(
