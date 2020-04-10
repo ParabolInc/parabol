@@ -13,7 +13,6 @@ import getRateLimiter from './getRateLimiter'
 import privateSchema from './intranetSchema/intranetSchema'
 import publicSchema from './rootSchema'
 import getRethink from '../database/rethinkDriver'
-import ms from 'ms'
 
 interface GQLRequest {
   authToken: AuthToken
@@ -51,7 +50,7 @@ const flushLogToDB = async () => {
   REQUESTS.length = 0
 }
 
-setInterval(flushLogToDB, ms('10m'))
+// setInterval(flushLogToDB, ms('10m'))
 
 const executeGraphQL = async <T = ExecutionResultDataDefault>(req: GQLRequest) => {
   const {
