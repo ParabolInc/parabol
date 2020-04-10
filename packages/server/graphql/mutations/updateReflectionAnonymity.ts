@@ -1,20 +1,16 @@
-import {GraphQLID, GraphQLNonNull, GraphQLBoolean, GraphQLString} from 'graphql'
+import {GraphQLID, GraphQLNonNull, GraphQLBoolean} from 'graphql'
 import getRethink from '../../database/rethinkDriver'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import UpdateReflectionContentPayload from '../types/UpdateReflectionContentPayload'
-import normalizeRawDraftJS from '../../../client/validation/normalizeRawDraftJS'
 import publish from '../../utils/publish'
 import isPhaseComplete from '../../../client/utils/meetings/isPhaseComplete'
 import standardError from '../../utils/standardError'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {NewMeetingPhaseTypeEnum} from 'parabol-client/types/graphql'
 import Reflection from '../../database/types/Reflection'
-import extractTextFromDraftString from 'parabol-client/utils/draftjs/extractTextFromDraftString'
-import getReflectionEntities from './helpers/getReflectionEntities'
 import {GQLContext} from '../graphql'
 import getGroupSmartTitle from 'parabol-client/utils/autogroup/getGroupSmartTitle'
 import updateSmartGroupTitle from './helpers/updateReflectionLocation/updateSmartGroupTitle'
-import stringSimilarity from 'string-similarity'
 
 export default {
   type: UpdateReflectionContentPayload,
