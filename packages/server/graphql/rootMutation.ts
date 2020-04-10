@@ -38,6 +38,7 @@ import updateUserProfile from './mutations/updateUserProfile'
 import endNewMeeting from './mutations/endNewMeeting'
 import createReflection from './mutations/createReflection'
 import updateReflectionContent from './mutations/updateReflectionContent'
+import updateReflectionAnonymity from './mutations/updateReflectionAnonymity'
 import editReflection from './mutations/editReflection'
 import removeReflection from './mutations/removeReflection'
 import updateReflectionGroupTitle from './mutations/updateReflectionGroupTitle'
@@ -185,6 +186,7 @@ export default new GraphQLObjectType<any, Context, any>({
     updateNewCheckInQuestion,
     updateDragLocation,
     updateReflectionContent,
+    updateReflectionAnonymity,
     updateReflectionGroupTitle,
     updateRetroMaxVotes,
     updateTask,
