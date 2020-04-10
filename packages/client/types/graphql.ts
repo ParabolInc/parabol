@@ -4429,6 +4429,16 @@ export interface IRetroReflection {
   creatorId: string | null
 
   /**
+   * The user that created the reflection
+   */
+  createdBy: IUser | null
+
+  /**
+   * true if the comment is anonymous, else false
+   */
+  isAnonymous: boolean
+
+  /**
    * an array of all the socketIds that are currently editing the reflection
    */
   editorIds: Array<string>

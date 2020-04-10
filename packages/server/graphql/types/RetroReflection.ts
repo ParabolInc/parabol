@@ -10,7 +10,7 @@ import {
 import Reflection from '../../database/types/Reflection'
 import {getUserId} from '../../utils/authorization'
 import {GQLContext} from '../graphql'
-import {resolveForSU} from '../resolvers'
+import {resolveUser, resolveForSU} from '../resolvers'
 import resolveReactjis from '../resolvers/resolveReactjis'
 import GoogleAnalyzedEntity from './GoogleAnalyzedEntity'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
@@ -19,6 +19,7 @@ import RetroPhaseItem from './RetroPhaseItem'
 import RetroReflectionGroup from './RetroReflectionGroup'
 import RetrospectiveMeeting from './RetrospectiveMeeting'
 import Team from './Team'
+import User from './User'
 
 const RetroReflection = new GraphQLObjectType<Reflection, GQLContext>({
   name: 'RetroReflection',
@@ -44,6 +45,18 @@ const RetroReflection = new GraphQLObjectType<Reflection, GQLContext>({
       description: 'The userId that created the reflection (or unique Id if not a team member)',
       type: GraphQLID,
       resolve: resolveForSU('creatorId')
+    },
+    createdBy: {
+      description: 'The user that created the reflection',
+      type: User,
+      resolve: ({creatorId}, _args, {dataLoader}) => {
+        return resolveUser({userId: creatorId, user: undefined}, _args, {dataLoader})
+      }
+    },
+    isAnonymous: {
+      type: GraphQLNonNull(GraphQLBoolean),
+      description: 'true if the comment is anonymous, else false',
+      resolve: ({isAnonymous}) => !!isAnonymous
     },
     editorIds: {
       description: 'an array of all the socketIds that are currently editing the reflection',

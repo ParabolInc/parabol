@@ -27,6 +27,7 @@ export default class Reflection {
   plaintextContent: string
   entities: GoogleAnalyzedEntity[]
   isActive: boolean
+  isAnonymous: boolean
   meetingId: string
   reactjis: Reactji[]
   reflectionGroupId: string
@@ -56,6 +57,7 @@ export default class Reflection {
     this.plaintextContent = plaintextContent || extractTextFromDraftString(content)
     this.entities = entities
     this.isActive = true
+    this.isAnonymous = true
     this.meetingId = meetingId
     this.reactjis = reactjis || []
     this.reflectionGroupId = reflectionGroupId || shortid.generate()
