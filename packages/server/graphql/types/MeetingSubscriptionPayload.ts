@@ -16,6 +16,7 @@ import StartDraggingReflectionPayload from './StartDraggingReflectionPayload'
 import UpdateDragLocationPayload from './UpdateDragLocationPayload'
 import UpdateNewCheckInQuestionPayload from './UpdateNewCheckInQuestionPayload'
 import UpdateReflectionContentPayload from './UpdateReflectionContentPayload'
+import UpdateReflectionAnonymityPayload from './UpdateReflectionAnonymityPayload'
 import UpdateReflectionGroupTitlePayload from './UpdateReflectionGroupTitlePayload'
 import VoteForReflectionGroupPayload from './VoteForReflectionGroupPayload'
 import {AddCommentSuccess} from './AddCommentPayload'
@@ -44,6 +45,7 @@ const types = [
   UpdateDragLocationPayload,
   UpdateNewCheckInQuestionPayload,
   UpdateReflectionContentPayload,
+  UpdateReflectionAnonymityPayload,
   UpdateReflectionGroupTitlePayload,
   UpdateRetroMaxVotesSuccess,
   VoteForReflectionGroupPayload

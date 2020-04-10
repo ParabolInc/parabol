@@ -1,7 +1,7 @@
 import {GraphQLID, GraphQLNonNull, GraphQLBoolean} from 'graphql'
 import getRethink from '../../database/rethinkDriver'
 import {getUserId, isTeamMember} from '../../utils/authorization'
-import UpdateReflectionContentPayload from '../types/UpdateReflectionContentPayload'
+import UpdateReflectionAnonymityPayload from '../types/UpdateReflectionAnonymityPayload'
 import publish from '../../utils/publish'
 import isPhaseComplete from '../../../client/utils/meetings/isPhaseComplete'
 import standardError from '../../utils/standardError'
@@ -13,7 +13,7 @@ import getGroupSmartTitle from 'parabol-client/utils/autogroup/getGroupSmartTitl
 import updateSmartGroupTitle from './helpers/updateReflectionLocation/updateSmartGroupTitle'
 
 export default {
-  type: UpdateReflectionContentPayload,
+  type: UpdateReflectionAnonymityPayload,
   description: 'Update the anonymity of a reflection',
   args: {
     reflectionId: {
@@ -79,7 +79,7 @@ export default {
     publish(
       SubscriptionChannel.MEETING,
       meetingId,
-      'UpdateReflectionContentPayload',
+      'UpdateReflectionAnonymityPayload',
       data,
       subOptions
     )
