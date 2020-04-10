@@ -3200,6 +3200,11 @@ export interface IMutation {
   updateReflectionContent: IUpdateReflectionContentPayload | null
 
   /**
+   * Update the anonymity of a reflection
+   */
+  updateReflectionAnonymity: IUpdateReflectionContentPayload | null
+
+  /**
    * Update the title of a reflection group
    */
   updateReflectionGroupTitle: IUpdateReflectionGroupTitlePayload | null
@@ -3993,6 +3998,15 @@ export interface IUpdateReflectionContentOnMutationArguments {
    * A stringified draft-js document containing thoughts
    */
   content: string
+}
+
+export interface IUpdateReflectionAnonymityOnMutationArguments {
+  reflectionId: string
+
+  /**
+   * A boolean indicating the anonymity of a refrlection
+   */
+  isAnonymous: boolean
 }
 
 export interface IUpdateReflectionGroupTitleOnMutationArguments {

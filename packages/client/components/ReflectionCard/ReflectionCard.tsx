@@ -8,6 +8,7 @@ import StyledError from '../StyledError'
 import EditReflectionMutation from '../../mutations/EditReflectionMutation'
 import RemoveReflectionMutation from '../../mutations/RemoveReflectionMutation'
 import UpdateReflectionContentMutation from '../../mutations/UpdateReflectionContentMutation'
+import UpdateReflectionAnonymityMutation from '../../mutations/UpdateReflectionAnonymityMutation'
 import isTempId from '../../utils/relay/isTempId'
 import ReflectionCardDeleteButton from './ReflectionCardDeleteButton'
 import useAtmosphere from '../../hooks/useAtmosphere'
@@ -54,11 +55,21 @@ const getReadOnly = (
 
 const ReflectionCard = (props: Props) => {
   const {showOriginFooter, meeting, reflection, isClipped, stackCount, showReactji, dataCy} = props
-  const {meetingId, phaseItem, reactjis} = reflection
+  const {
+    id: reflectionId,
+    content,
+    retroPhaseItemId,
+    isViewerCreator,
+    isAnonymous,
+    createdBy,
+    meetingId,
+    phaseItem,
+    reactjis
+  } = reflection
+  console.log(reflection.isAnonymous)
   const {question} = phaseItem
   const phaseType = meeting ? meeting.localPhase.phaseType : null
   const phases = meeting ? meeting.phases : null
-  const {id: reflectionId, content, retroPhaseItemId, isViewerCreator} = reflection
   const atmosphere = useAtmosphere()
   const {onCompleted, submitting, submitMutation, error, onError} = useMutationProps()
   const editorRef = useRef<HTMLTextAreaElement>(null)
@@ -123,6 +134,17 @@ const ReflectionCard = (props: Props) => {
       submitMutation()
       RemoveReflectionMutation(atmosphere, {reflectionId}, {meetingId, onError, onCompleted})
     }
+  }
+
+  const handleSetAnonymous = (isAnonymous: boolean) => {
+    console.log('???', isAnonymous)
+    if (isTempId(reflectionId)) return
+    submitMutation()
+    UpdateReflectionAnonymityMutation(
+      atmosphere,
+      {isAnonymous, reflectionId},
+      {onError, onCompleted}
+    )
   }
 
   const handleEditorBlur = () => {
@@ -190,6 +212,10 @@ const ReflectionCard = (props: Props) => {
         handleReturn={handleReturn}
         handleKeyDownFallback={handleKeyDownFallback}
         placeholder={isViewerCreator ? 'My reflection… (press enter to add)' : '*New Reflection*'}
+        isViewerCreator={isViewerCreator}
+        isAnonymous={isAnonymous}
+        handleSetAnonymous={handleSetAnonymous}
+        createdBy={createdBy}
         readOnly={readOnly}
         setEditorState={setEditorState}
         userSelect={userSelect}
@@ -211,6 +237,12 @@ export default createFragmentContainer(ReflectionCard, {
   reflection: graphql`
     fragment ReflectionCard_reflection on RetroReflection {
       isViewerCreator
+      isAnonymous
+      createdBy {
+        id
+        picture
+        preferredName
+      }
       id
       isEditing
       meetingId

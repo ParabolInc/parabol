@@ -12,7 +12,9 @@ import withEmojis from './TaskEditor/withEmojis'
 import isRichDraft from '../utils/draftjs/isRichDraft'
 import lazyPreload from '../utils/lazyPreload'
 import isAndroid from '../utils/draftjs/isAndroid'
+import ReflectionBadge from './ReflectionBadge'
 import {Card, ElementHeight, Gutters} from '../types/constEnums'
+import {IUser} from '../types/graphql'
 
 interface Props {
   ariaLabel: string
@@ -23,9 +25,13 @@ interface Props {
   handleChange: (editorState: EditorState) => void
   handleKeyCommand: (command: string) => DraftHandleValue
   handleReturn: (e: React.KeyboardEvent) => DraftHandleValue
+  handleSetAnonymous: (isAnonymous: boolean) => Promise<void>
+  isAnonymous: boolean
+  createdBy?: Pick<IUser, 'preferredName' | 'picture' | 'id'>
   isBlurred: boolean
   isClipped?: boolean
   isPhaseItemEditor?: boolean
+  isViewerCreator?: boolean
   keyBindingFn: (e: React.KeyboardEvent) => string
   placeholder: string
   onBlur: () => void
@@ -139,6 +145,11 @@ class ReflectionEditorWrapper extends PureComponent<Props> {
     setEditorState(editorState)
   }
 
+  toggleAnonymity = () => {
+    const {handleSetAnonymous, isAnonymous} = this.props
+    handleSetAnonymous(!isAnonymous)
+  }
+
   handleReturn = (e) => {
     const {handleReturn, renderModal} = this.props
     if (handleReturn && !renderModal) {
@@ -220,8 +231,12 @@ class ReflectionEditorWrapper extends PureComponent<Props> {
       renderModal,
       readOnly,
       userSelect,
-      dataCy
+      isViewerCreator,
+      createdBy,
+      dataCy,
+      isAnonymous
     } = this.props
+
     const useFallback = isAndroid && !readOnly
     const showFallback = useFallback && !isRichDraft(editorState)
     return (
@@ -244,28 +259,36 @@ class ReflectionEditorWrapper extends PureComponent<Props> {
             />
           </Suspense>
         ) : (
-          <Editor
-            spellCheck
-            ariaLabel={ariaLabel}
-            editorState={editorState}
-            handleBeforeInput={this.handleBeforeInput}
-            handleKeyCommand={this.handleKeyCommand}
-            handlePastedText={this.handlePastedText}
-            handleReturn={this.handleReturn}
-            keyBindingFn={this.keyBindingFn}
-            onBlur={onBlur}
-            onFocus={onFocus}
-            onChange={this.handleChange}
-            placeholder={placeholder}
-            readOnly={readOnly || (useFallback && !showFallback)}
-            ref={editorRef as any}
-            // @ts-ignore
-            style={{
-              padding: `${Gutters.REFLECTION_INNER_GUTTER_VERTICAL} ${Gutters.REFLECTION_INNER_GUTTER_HORIZONTAL}`,
-              userSelect,
-              WebkitUserSelect: userSelect
-            }}
-          />
+          <>
+            <Editor
+              spellCheck
+              ariaLabel={ariaLabel}
+              editorState={editorState}
+              handleBeforeInput={this.handleBeforeInput}
+              handleKeyCommand={this.handleKeyCommand}
+              handlePastedText={this.handlePastedText}
+              handleReturn={this.handleReturn}
+              keyBindingFn={this.keyBindingFn}
+              onBlur={onBlur}
+              onFocus={onFocus}
+              onChange={this.handleChange}
+              placeholder={placeholder}
+              readOnly={readOnly || (useFallback && !showFallback)}
+              ref={editorRef as any}
+              // @ts-ignore
+              style={{
+                padding: `${Gutters.REFLECTION_INNER_GUTTER_VERTICAL} ${Gutters.REFLECTION_INNER_GUTTER_HORIZONTAL}`,
+                userSelect,
+                WebkitUserSelect: userSelect
+              }}
+            />
+            <ReflectionBadge
+              isAnonymous={isAnonymous}
+              createdBy={createdBy}
+              toggleAnonymity={this.toggleAnonymity}
+              isViewerCreator={isViewerCreator || false}
+            />
+          </>
         )}
         {renderModal && renderModal()}
       </EditorStyles>
