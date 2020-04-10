@@ -32,47 +32,6 @@ const PromptList = styled('ul')({
 const TEMPLATE_PROMPT = 'TEMPLATE_PROMPT'
 
 class TemplatePromptList extends Component<Props, State> {
-  state = {
-    scrollOffset: 0
-  }
-
-  /**
-   * This is needed to offset the Palette Picker dropdown since it needs to
-   * position itself to the ReflectTemplateModal's PromptEditor in order to not
-   * be hidden by the overflow on scroll.
-   */
-  scrollRef: HTMLUListElement | null = null
-
-  setScrollRef = (element: HTMLUListElement) => {
-    this.scrollRef = element
-  }
-
-  componentDidMount() {
-    if (this.scrollRef) {
-      this.scrollRef.addEventListener('scroll', this.handleScroll)
-    }
-  }
-
-  componentWillUnmount() {
-    if (this.scrollRef) {
-      this.scrollRef.removeEventListener('scroll', this.handleScroll)
-    }
-  }
-
-  componentDidUpdate(prevProps) {
-    if (this.props.prompts.length < prevProps.prompts.length) {
-      // Trigger scroll event so scrollOffset can be recalculated.
-      // This is useful for when prompts are removed.
-      window.scrollTo(window.scrollX, window.scrollY)
-    }
-  }
-
-  handleScroll = (event) => {
-    this.setState({
-      scrollOffset: event.srcElement.scrollTop
-    })
-  }
-
   onDragEnd = (result) => {
     const {source, destination} = result
     const {atmosphere, prompts, templateId} = this.props
@@ -107,10 +66,9 @@ class TemplatePromptList extends Component<Props, State> {
 
   render() {
     const {prompts} = this.props
-    const {scrollOffset} = this.state
     return (
       <DragDropContext onDragEnd={this.onDragEnd}>
-        <PromptList ref={this.setScrollRef}>
+        <PromptList>
           <Droppable droppableId={TEMPLATE_PROMPT}>
             {(provided) => {
               return (
@@ -121,7 +79,6 @@ class TemplatePromptList extends Component<Props, State> {
                         {(dragProvided, dragSnapshot) => {
                           return (
                             <TemplatePromptItem
-                              scrollOffset={scrollOffset}
                               canRemove={prompts.length > 1}
                               prompt={prompt}
                               prompts={prompts}

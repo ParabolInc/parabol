@@ -1,10 +1,11 @@
 import React, {useEffect, useState} from 'react'
 import {TemplatePromptItem_prompt} from '../../__generated__/TemplatePromptItem_prompt.graphql'
 import PaletteColor from '../PaletteColor/PaletteColor'
+import Menu from '../Menu'
+import {MenuProps} from '../../hooks/useMenu'
 import withAtmosphere, {WithAtmosphereProps} from '../../decorators/withAtmosphere/withAtmosphere'
 import withMutationProps, {WithMutationProps} from '../../utils/relay/withMutationProps'
 import ReflectTemplatePromptUpdateGroupColorMutation from '../../mutations/ReflectTemplatePromptUpdateGroupColorMutation'
-import CreateCardRootStyles from '../CreateCard/CreateCardRootStyles'
 import styled from '@emotion/styled'
 import {PALETTE} from '../../styles/paletteV2'
 import {palettePickerOptions} from '../../styles/palettePickerOptions'
@@ -12,37 +13,22 @@ import {palettePickerOptions} from '../../styles/palettePickerOptions'
 interface Props extends WithAtmosphereProps, WithMutationProps {
   prompt: TemplatePromptItem_prompt
   prompts: any
-  offsetTop: number
-  scrollOffset: number
-  clickHandler: () => void
+  menuProps: MenuProps
 }
 
-interface StyledProps {
-  offsetTop: number
-  scrollOffset: number
-}
-
-const PaletteDropDown = styled('div')<StyledProps>(({offsetTop, scrollOffset}) => ({
-  ...CreateCardRootStyles,
-  boxShadow: `rgba(0,0,0,0.1) -2px 3px 5px 0px,
-     rgba(0,0,0,0.04) -1px 1px 4px 0px,
-     rgba(0,0,0,0.12) -2px 4px 6px 2px`,
-  border: 0,
-  height: '160px',
+const PaletteDropDown = styled(Menu)({
   width: '214px',
   minWidth: '214px',
-  padding: 5,
-  position: 'absolute',
-  zIndex: 1,
-  top: offsetTop - scrollOffset + 34
-}))
+  padding: 5
+})
 
 const PaletteList = styled('ul')({
   display: 'flex',
   flexWrap: 'wrap',
   justifyContent: 'center',
   listStyle: 'none',
-  padding: 0
+  padding: 0,
+  margin: 0
 })
 
 const PaletteItem = styled('div')({
@@ -50,19 +36,8 @@ const PaletteItem = styled('div')({
 })
 
 const PalettePicker = (props: Props) => {
-  const {
-    prompt,
-    prompts,
-    atmosphere,
-    onError,
-    onCompleted,
-    submitMutation,
-    offsetTop,
-    scrollOffset,
-    clickHandler
-  } = props
+  const {prompt, prompts, menuProps, atmosphere, onError, onCompleted, submitMutation} = props
   const [groupColor, setGroupColor] = useState(prompt.groupColor)
-  const [didMount, setDidMount] = useState(false)
   const pickedColors = prompts.map((prompt) => prompt.groupColor) as string[]
   const availableColors = palettePickerOptions.filter(
     (color) => !pickedColors.includes(color)
@@ -70,9 +45,8 @@ const PalettePicker = (props: Props) => {
 
   const handleClick = (color: string) => {
     setGroupColor(color)
-    if (didMount) {
-      setTimeout(() => clickHandler(), 0)
-    }
+    menuProps.closePortal()
+    ;(document as any).activeElement?.blur()
   }
 
   const updateColor = (promptId: string, groupColor: string) => {
@@ -83,9 +57,6 @@ const PalettePicker = (props: Props) => {
       {onError, onCompleted}
     )
   }
-
-  // Sets didMount to true upon mounting
-  useEffect(() => setDidMount(true), [])
 
   useEffect(() => {
     const newColor = groupColor || PALETTE.PROMPT_GREEN
@@ -98,7 +69,7 @@ const PalettePicker = (props: Props) => {
   }, [groupColor])
 
   return (
-    <PaletteDropDown offsetTop={offsetTop} scrollOffset={scrollOffset}>
+    <PaletteDropDown ariaLabel='Pick a group color' {...menuProps}>
       <PaletteList>
         {palettePickerOptions.map((color, id) => {
           return (

@@ -22,7 +22,6 @@ interface PassedProps {
   prompt: TemplatePromptItem_prompt
   prompts: any
   dragProvided: DraggableProvided
-  scrollOffset: number
 }
 
 interface Props extends WithAtmosphereProps, WithMutationProps, PassedProps {}
@@ -108,7 +107,7 @@ class TemplatePromptItem extends Component<Props, State> {
   }
 
   render() {
-    const {canRemove, dragProvided, isDragging, prompt, prompts, scrollOffset} = this.props
+    const {canRemove, dragProvided, isDragging, prompt, prompts} = this.props
     const {id: promptId, description, question, groupColor} = prompt
     const {isEditingDescription, isHover} = this.state
     return (
@@ -121,12 +120,7 @@ class TemplatePromptItem extends Component<Props, State> {
         onMouseEnter={this.onMouseEnter}
         onMouseLeave={this.onMouseLeave}
       >
-        <EditableTemplatePromptColor
-          scrollOffset={scrollOffset}
-          groupColor={groupColor}
-          prompt={prompt}
-          prompts={prompts}
-        />
+        <EditableTemplatePromptColor groupColor={groupColor} prompt={prompt} prompts={prompts} />
         <PromptAndDescription>
           <EditableTemplatePrompt
             isEditingDescription={isEditingDescription}
