@@ -68,6 +68,7 @@ export type RethinkTypes = {
   }
   GQLRequest: {
     type: any
+    index: 'id'
   }
   Invoice: {
     type: Invoice
