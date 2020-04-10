@@ -96,18 +96,21 @@ const executeGraphQL = async <T = ExecutionResultDataDefault>(req: GQLRequest) =
   }
   const end = Date.now()
   const duration = end - start
-  console.log('duration', duration)
   if (duration > MIN_DURATION) {
-    const length = REQUESTS.push({
-      duration,
-      ip: ip ?? '',
-      userId: authToken?.sub ?? '',
-      docId: docId ?? '',
-      variables: JSON.stringify(variables)
-    })
+    try {
+      const length = REQUESTS.push({
+        duration,
+        ip: ip ?? '',
+        userId: authToken?.sub ?? '',
+        docId: docId ?? '',
+        variables: JSON.stringify(variables)
+      })
 
-    if (length > LOG_BATCH_SIZE) {
-      flushLogToDB()
+      if (length > LOG_BATCH_SIZE) {
+        flushLogToDB()
+      }
+    } catch (e) {
+      console.log('Error flushing', e)
     }
   }
   dataLoader.dispose()
