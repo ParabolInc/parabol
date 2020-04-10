@@ -12,6 +12,8 @@ import getDataLoader from './getDataLoader'
 import getRateLimiter from './getRateLimiter'
 import privateSchema from './intranetSchema/intranetSchema'
 import publicSchema from './rootSchema'
+import getRethink from '../database/rethinkDriver'
+import ms from 'ms'
 
 interface GQLRequest {
   authToken: AuthToken
@@ -29,6 +31,27 @@ interface GQLRequest {
 }
 
 const queryCache = new CompiledQueryCache()
+interface LongQuery {
+  duration: number
+  userId: string
+  ip: string
+  docId: string
+  variables: string
+}
+
+const REQUESTS = [] as LongQuery[]
+const MIN_DURATION = Number(process.env.MIN_LOG_DURATION)
+const LOG_BATCH_SIZE = 50
+const flushLogToDB = async () => {
+  if (REQUESTS.length === 0) return
+  const r = await getRethink()
+  r.table('GQLRequest')
+    .insert(REQUESTS)
+    .run()
+  REQUESTS.length = 0
+}
+
+setInterval(flushLogToDB, ms('10m'))
 
 const executeGraphQL = async <T = ExecutionResultDataDefault>(req: GQLRequest) => {
   const {
@@ -55,6 +78,7 @@ const executeGraphQL = async <T = ExecutionResultDataDefault>(req: GQLRequest) =
   const variableValues = variables
   const source = query!
   let response: ExecutionResult<T>
+  const start = Date.now()
   if (isAdHoc) {
     response = await graphql({schema, source, variableValues, contextValue})
   } else {
@@ -69,6 +93,22 @@ const executeGraphQL = async <T = ExecutionResultDataDefault>(req: GQLRequest) =
       )) as any) as ExecutionResultDataDefault
     } else {
       response = {errors: [new Error(`DocumentID not found: ${docId}`)] as any}
+    }
+  }
+  const end = Date.now()
+  const duration = end - start
+  console.log('duration', duration)
+  if (duration > MIN_DURATION) {
+    const length = REQUESTS.push({
+      duration,
+      ip: ip ?? '',
+      userId: authToken?.sub ?? '',
+      docId: docId ?? '',
+      variables: JSON.stringify(variables)
+    })
+
+    if (length > LOG_BATCH_SIZE) {
+      flushLogToDB()
     }
   }
   dataLoader.dispose()
