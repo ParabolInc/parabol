@@ -148,7 +148,15 @@ const PhaseItemColumn = (props: Props) => {
     question,
     isDesktop
   } = props
-  const {meetingId, facilitatorUserId, localPhase, phases, reflectionGroups} = meeting
+  const {
+    meetingId,
+    facilitatorUserId,
+    localPhase,
+    phases,
+    reflectionGroups,
+    viewerMeetingMember
+  } = meeting
+  const {user: currentViewer} = viewerMeetingMember
   const {phaseId, focusedPhaseItemId} = localPhase
   const groupPhase = phases.find((phase) => phase.phaseType === NewMeetingPhaseTypeEnum.group)!
   const {stages: groupStages} = groupPhase
@@ -226,6 +234,7 @@ const PhaseItemColumn = (props: Props) => {
                 <PhaseItemEditor
                   dataCy={`phase-item-editor-${question}`}
                   cardsInFlightRef={cardsInFlightRef}
+                  currentViewer={currentViewer}
                   setCardsInFlight={setCardsInFlight}
                   phaseEditorRef={phaseEditorRef}
                   meetingId={meetingId}
@@ -265,6 +274,14 @@ export default createFragmentContainer(PhaseItemColumn, {
       ...ReflectionStack_meeting
       facilitatorUserId
       meetingId: id
+      viewerMeetingMember {
+        user {
+          id
+          picture
+          preferredName
+        }
+      }
+
       localPhase {
         phaseId: id
         phaseType

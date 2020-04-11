@@ -419,6 +419,8 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         isActive: true,
         isEditing: null,
         isViewerCreator: userId === demoViewerId,
+        isAnonymous: true,
+        createdBy: null,
         entities,
         meetingId: RetroDemo.MEETING_ID,
         meeting: this.db.newMeeting,

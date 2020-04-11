@@ -5320,6 +5320,7 @@ export interface ICreateReflectionInput {
    */
   retroPhaseItemId: string
   sortOrder: number
+  isAnonymous: boolean
 }
 
 export interface ICreateReflectionPayload {

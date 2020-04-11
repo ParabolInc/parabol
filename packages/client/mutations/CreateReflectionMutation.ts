@@ -72,7 +72,7 @@ const CreateReflectionMutation: StandardMutation<TCreateReflectionMutation> = (
     optimisticUpdater: (store) => {
       const {input} = variables
       const {viewerId} = atmosphere
-      const {meetingId} = input
+      const {meetingId, isAnonymous} = input
       const nowISO = new Date().toJSON()
       const optimisticReflection = {
         id: clientTempId(),
@@ -82,6 +82,7 @@ const CreateReflectionMutation: StandardMutation<TCreateReflectionMutation> = (
         isActive: true,
         isEditing: true,
         isViewerCreator: true,
+        isAnonymous,
         meetingId,
         retroPhaseItemId: input.retroPhaseItemId,
         sortOrder: 0,

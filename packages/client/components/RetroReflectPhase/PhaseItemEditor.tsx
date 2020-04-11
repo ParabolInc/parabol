@@ -4,7 +4,6 @@ import ReflectionCardRoot from '../ReflectionCard/ReflectionCardRoot'
 import ReflectionEditorWrapper from '../ReflectionEditorWrapper'
 import CreateReflectionMutation from '../../mutations/CreateReflectionMutation'
 import EditReflectionMutation from '../../mutations/EditReflectionMutation'
-import UpdateReflectionAnonymityMutation from '../../mutations/UpdateReflectionAnonymityMutation'
 import convertToTaskContent from '../../utils/draftjs/convertToTaskContent'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import useMutationProps from '../../hooks/useMutationProps'
@@ -14,6 +13,7 @@ import {BezierCurve, ZIndex} from '../../types/constEnums'
 import {ReflectColumnCardInFlight} from './PhaseItemColumn'
 import {Elevation} from '../../styles/elevation'
 import usePortal from '../../hooks/usePortal'
+import {IUser} from '../../types/graphql'
 
 const FLIGHT_TIME = 500
 const CardInFlightStyles = styled(ReflectionCardRoot)<{transform: string; isStart: boolean}>(
@@ -29,6 +29,7 @@ const CardInFlightStyles = styled(ReflectionCardRoot)<{transform: string; isStar
 
 interface Props {
   cardsInFlightRef: MutableRefObject<ReflectColumnCardInFlight[]>
+  currentViewer: Pick<IUser, 'preferredName' | 'picture' | 'id'>
   setCardsInFlight: (cards: ReflectColumnCardInFlight[]) => void
   meetingId: string
   nextSortOrder: () => number
@@ -47,12 +48,14 @@ const PhaseItemEditor = (props: Props) => {
     stackTopRef,
     cardsInFlightRef,
     setCardsInFlight,
-    dataCy
+    dataCy,
+    currentViewer
   } = props
   const atmosphere = useAtmosphere()
   const {onCompleted, onError, submitMutation} = useMutationProps()
   const [editorState, setEditorState] = useState(EditorState.createEmpty)
   const [isEditing, setIsEditing] = useState(false)
+  const [isAnonymous, setIsAnonymous] = useState(true)
   const idleTimerIdRef = useRef<number>()
   const {terminatePortal, openPortal, portal} = usePortal({noClose: true, id: 'phaseItemEditor'})
 
@@ -65,6 +68,7 @@ const PhaseItemEditor = (props: Props) => {
   const handleSubmit = (content) => {
     const input = {
       content,
+      isAnonymous,
       meetingId,
       retroPhaseItemId,
       sortOrder: nextSortOrder()
@@ -114,6 +118,8 @@ const PhaseItemEditor = (props: Props) => {
     if (!content.hasText()) return
     handleSubmit(JSON.stringify(convertToRaw(content)))
   }
+
+  const handleSetAnonymous = (isAnonymous: boolean) => setIsAnonymous(isAnonymous)
 
   const ensureNotEditing = () => {
     if (!isEditing) return
@@ -176,6 +182,10 @@ const PhaseItemEditor = (props: Props) => {
           handleReturn={handleReturn}
           handleKeyDownFallback={handleKeyDownFallback}
           keyBindingFn={ensureEditing}
+          isViewerCreator={true}
+          handleSetAnonymous={handleSetAnonymous}
+          isAnonymous={isAnonymous}
+          createdBy={currentViewer}
           placeholder='My reflection… (press enter to add)'
           setEditorState={setEditorState}
         />

@@ -88,7 +88,9 @@ const GroupingKanbanColumn = (props: Props) => {
       content: undefined,
       meetingId,
       retroPhaseItemId: promptId,
-      sortOrder: getNextSortOrder(reflectionGroups)
+      sortOrder: getNextSortOrder(reflectionGroups),
+      // TODO
+      isAnonymous: true
     }
     submitMutation()
     CreateReflectionMutation(atmosphere, {input}, {onError, onCompleted})
