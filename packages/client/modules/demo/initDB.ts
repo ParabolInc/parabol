@@ -181,8 +181,7 @@ const initDemoMeetingMember = (user) => {
     tasks: [] as ITask[],
     user,
     userId: user.id,
-    votesRemaining: 5,
-    myVotesRemaining: 5
+    votesRemaining: 5
   }
 }
 
@@ -368,7 +367,6 @@ const initNewMeeting = (organization, teamMembers, meetingMembers) => {
     viewerMeetingMember,
     reflectionGroups: [] as any[],
     votesRemaining: teamMembers.length * 5,
-    teamVotesRemaining: teamMembers.length * 5,
     phases: initPhases(teamMembers),
     summarySentAt: null,
     totalVotes: MeetingSettingsThreshold.RETROSPECTIVE_TOTAL_VOTES_DEFAULT,

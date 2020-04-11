@@ -9,18 +9,9 @@ import {InternalContext} from '../../graphql'
 
 const MAX_STRIPE_DELAY = 3 // seconds
 
-const getBestHook = (possibleHooks: InvoiceItemHook[]) => {
-  if (possibleHooks.length === 1) return possibleHooks[0]
-  const firstHook = possibleHooks[possibleHooks.length - 1]
-  const {id: hookId} = firstHook
-  sendToSentry(new Error('Imperfect invoice item hook selected'), {tags: {hookId}})
-  return firstHook
-}
-
-const tagInvoiceItemWithHook = async (invoiceItem: Stripe.invoiceItems.InvoiceItem) => {
+const getPossibleHooks = async (invoiceItem: Stripe.invoiceItems.InvoiceItem) => {
   const r = await getRethink()
   const {
-    id: invoiceItemId,
     subscription,
     period: {start},
     amount,
@@ -29,7 +20,8 @@ const tagInvoiceItemWithHook = async (invoiceItem: Stripe.invoiceItems.InvoiceIt
   const isRefund = amount < 0
   const invoiceItemName = isRefund ? 'previousInvoiceItemId' : 'invoiceItemId'
   const quantityName = isRefund ? 'previousQuantity' : 'quantity'
-  const possibleHooks = await r
+
+  const proratedHooks = await r
     .table('InvoiceItemHook')
     .between(start - MAX_STRIPE_DELAY, start, {index: 'prorationDate', rightBound: 'closed'})
     .filter({
@@ -43,7 +35,34 @@ const tagInvoiceItemWithHook = async (invoiceItem: Stripe.invoiceItems.InvoiceIt
     )
     .orderBy(r.desc('prorationDate'))
     .run()
+  if (proratedHooks.length) return proratedHooks
+  return r
+    .table('InvoiceItemHook')
+    .getAll(subscription as string, {index: 'stripeSubscriptionId'})
+    .filter({[quantityName]: quantity, isProrated: false})
+    .filter((row) =>
+      row(invoiceItemName)
+        .default(null)
+        .eq(null)
+    )
+    .orderBy(r.desc('createdAt'))
+    .run()
+}
 
+const getBestHook = (possibleHooks: InvoiceItemHook[]) => {
+  if (possibleHooks.length === 1) return possibleHooks[0]
+  const firstHook = possibleHooks[possibleHooks.length - 1]
+  const {id: hookId} = firstHook
+  sendToSentry(new Error('Imperfect invoice item hook selected'), {tags: {hookId}})
+  return firstHook
+}
+
+const tagInvoiceItemWithHook = async (invoiceItem: Stripe.invoiceItems.InvoiceItem) => {
+  const r = await getRethink()
+  const {id: invoiceItemId, amount} = invoiceItem
+  const isRefund = amount < 0
+  const invoiceItemName = isRefund ? 'previousInvoiceItemId' : 'invoiceItemId'
+  const possibleHooks = await getPossibleHooks(invoiceItem)
   if (possibleHooks.length === 0) {
     sendToSentry(new Error('No hooks found invoice item'), {tags: {invoiceItemId}})
     return false

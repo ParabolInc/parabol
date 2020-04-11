@@ -5,6 +5,25 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 5.3.1 2020-Apr-10
+
+### Added
+* GQL Request logging
+
+## 5.3.0 2020-Apr-03
+
+### Fixed
+* Demo Discussion Topics were all concated together
+* Add Team button appears on dashboard's leftnav when using iOS mobile
+
+### Added
+* "Report feedback" for fatal bugs (#3714)
+* Custom voting (#3707)
+* "Settings & Integrations" link added to Team Dashboard
+
+### Changed
+* New Meeting Snackbar created for new meetings (<5 mins ago) (#3713)
+
 ## 5.2.1 2020-Mar-26
 
 ### Fixed

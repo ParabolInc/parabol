@@ -1,18 +1,19 @@
+import graphql from 'babel-plugin-relay/macro'
+import useRouter from 'hooks/useRouter'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
-import graphql from 'babel-plugin-relay/macro'
-import NewMeetingSidebarPhaseListItem from './NewMeetingSidebarPhaseListItem'
-import RetroSidebarPhaseListItemChildren from './RetroSidebarPhaseListItemChildren'
+import isDemoRoute from 'utils/isDemoRoute'
+import {RetroMeetingSidebar_meeting} from '__generated__/RetroMeetingSidebar_meeting.graphql'
+import useAtmosphere from '../hooks/useAtmosphere'
+import useGotoStageId from '../hooks/useGotoStageId'
 import {NewMeetingPhaseTypeEnum} from '../types/graphql'
 import getSidebarItemStage from '../utils/getSidebarItemStage'
 import findStageById from '../utils/meetings/findStageById'
 import isPhaseComplete from '../utils/meetings/isPhaseComplete'
-import NewMeetingSidebar from './NewMeetingSidebar'
 import MeetingNavList from './MeetingNavList'
-import {RetroMeetingSidebar_meeting} from '__generated__/RetroMeetingSidebar_meeting.graphql'
-import useGotoStageId from '../hooks/useGotoStageId'
-import useAtmosphere from '../hooks/useAtmosphere'
-import useRouter from 'hooks/useRouter'
+import NewMeetingSidebar from './NewMeetingSidebar'
+import NewMeetingSidebarPhaseListItem from './NewMeetingSidebarPhaseListItem'
+import RetroSidebarPhaseListItemChildren from './RetroSidebarPhaseListItemChildren'
 
 interface Props {
   gotoStageId: ReturnType<typeof useGotoStageId>
@@ -103,7 +104,13 @@ const RetroMeetingSidebar = (props: Props) => {
             isActive={false}
             isFacilitatorPhase={false}
             isUnsyncedFacilitatorPhase={false}
-            handleClick={() => history.push(`/new-summary/${meetingId}`)}
+            handleClick={() => {
+              if (isDemoRoute()) {
+                history.push('/retrospective-demo-summary')
+              } else {
+                history.push(`/new-summary/${meetingId}`)
+              }
+            }}
             phaseType={NewMeetingPhaseTypeEnum.SUMMARY}
           />
         )}

@@ -118,7 +118,6 @@ const updateRetroMaxVotes = {
       .run()
 
     if (hasError) {
-      console.log('cannot continue')
       return {error: {message: 'Your team has already spent their votes'}}
     }
 

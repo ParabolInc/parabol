@@ -1,32 +1,31 @@
-import {addTeamTeamUpdater} from '../mutations/AddTeamMutation'
-import {archiveTeamTeamOnNext, archiveTeamTeamUpdater} from '../mutations/ArchiveTeamMutation'
-import {
-  removeTeamMemberTeamOnNext,
-  removeTeamMemberTeamUpdater
-} from '../mutations/RemoveTeamMemberMutation'
-import {removeOrgUserTeamOnNext, removeOrgUserTeamUpdater} from '../mutations/RemoveOrgUserMutation'
-import {startNewMeetingTeamOnNext} from '../mutations/StartNewMeetingMutation'
-import {endNewMeetingTeamOnNext, endNewMeetingTeamUpdater} from '../mutations/EndNewMeetingMutation'
-import {addReflectTemplateTeamUpdater} from '../mutations/AddReflectTemplateMutation'
-import {removeReflectTemplateTeamUpdater} from '../mutations/RemoveReflectTemplateMutation'
-import {addReflectTemplatePromptTeamUpdater} from '../mutations/AddReflectTemplatePromptMutation'
-import {removeReflectTemplatePromptTeamUpdater} from '../mutations/RemoveReflectTemplatePromptMutation'
-import {moveReflectTemplatePromptTeamUpdater} from '../mutations/MoveReflectTemplatePromptMutation'
+import graphql from 'babel-plugin-relay/macro'
+import {navigateMeetingTeamUpdater} from 'mutations/NavigateMeetingMutation'
+import {RouterProps} from 'react-router'
+import {requestSubscription, Variables} from 'relay-runtime'
+import Atmosphere from '../Atmosphere'
 import {
   acceptTeamInvitationTeamOnNext,
   acceptTeamInvitationTeamUpdater
 } from '../mutations/AcceptTeamInvitationMutation'
 import {addAgendaItemUpdater} from '../mutations/AddAgendaItemMutation'
-import {removeAgendaItemUpdater} from '../mutations/RemoveAgendaItemMutation'
-import {updateAgendaItemUpdater} from '../mutations/UpdateAgendaItemMutation'
-import graphql from 'babel-plugin-relay/macro'
-import {pushInvitationTeamOnNext} from '../mutations/PushInvitationMutation'
+import {addReflectTemplateTeamUpdater} from '../mutations/AddReflectTemplateMutation'
+import {addReflectTemplatePromptTeamUpdater} from '../mutations/AddReflectTemplatePromptMutation'
+import {addTeamTeamUpdater} from '../mutations/AddTeamMutation'
+import {archiveTeamTeamOnNext, archiveTeamTeamUpdater} from '../mutations/ArchiveTeamMutation'
 import {denyPushInvitationTeamOnNext} from '../mutations/DenyPushInvitationMutation'
-import Atmosphere from '../Atmosphere'
-import {requestSubscription, Variables} from 'relay-runtime'
+import {endNewMeetingTeamOnNext, endNewMeetingTeamUpdater} from '../mutations/EndNewMeetingMutation'
+import {moveReflectTemplatePromptTeamUpdater} from '../mutations/MoveReflectTemplatePromptMutation'
+import {pushInvitationTeamOnNext} from '../mutations/PushInvitationMutation'
+import {removeAgendaItemUpdater} from '../mutations/RemoveAgendaItemMutation'
+import {removeOrgUserTeamOnNext, removeOrgUserTeamUpdater} from '../mutations/RemoveOrgUserMutation'
+import {removeReflectTemplateTeamUpdater} from '../mutations/RemoveReflectTemplateMutation'
+import {removeReflectTemplatePromptTeamUpdater} from '../mutations/RemoveReflectTemplatePromptMutation'
+import {
+  removeTeamMemberTeamOnNext,
+  removeTeamMemberTeamUpdater
+} from '../mutations/RemoveTeamMemberMutation'
+import {updateAgendaItemUpdater} from '../mutations/UpdateAgendaItemMutation'
 import {TeamSubscriptionResponse} from '../__generated__/TeamSubscription.graphql'
-import {RouterProps} from 'react-router'
-import {navigateMeetingTeamUpdater} from 'mutations/NavigateMeetingMutation'
 
 const subscription = graphql`
   subscription TeamSubscription {
@@ -69,7 +68,6 @@ const onNextHandlers = {
   ArchiveTeamPayload: archiveTeamTeamOnNext,
   DenyPushInvitationPayload: denyPushInvitationTeamOnNext,
   EndNewMeetingPayload: endNewMeetingTeamOnNext,
-  StartNewMeetingPayload: startNewMeetingTeamOnNext,
   RemoveOrgUserPayload: removeOrgUserTeamOnNext,
   RemoveTeamMemberPayload: removeTeamMemberTeamOnNext,
   PushInvitationPayload: pushInvitationTeamOnNext
