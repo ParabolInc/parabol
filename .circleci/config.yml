@@ -13,6 +13,7 @@ jobs:
       DEVOPS_WORKDIR: "~/action-devops"
       GITHUB_REMOTE_DEVELOPMENT: "dokku@action-dev-nyc1-01.parabol.co:web"
       GITHUB_REMOTE_PRODUCTION: "dokku@action-production.parabol.co:web"
+      GITHUB_REMOTE_PRODUCTION2: "dokku@action-production2.parabol.co:web"
       GITHUB_REMOTE_STAGING: "dokku@action-staging.parabol.co:web"
       GITHUB_REMOTE_STAGING2: "dokku@action-staging2.parabol.co:web"
       PRODUCTION_BACKUP_VOLUME: "/mnt/volume-nyc1-01/action-production"
@@ -83,6 +84,9 @@ jobs:
             if [ "${CIRCLE_BRANCH}" == "production" ]; then
               export GITHUB_REMOTE="${GITHUB_REMOTE_PRODUCTION}"
               export DEPLOY_ENV="production"
+            elif [ "${CIRCLE_BRANCH}" == "production2" ]; then
+              export GITHUB_REMOTE="${GITHUB_REMOTE_PRODUCTION2}"
+              export DEPLOY_ENV="staging"                           # TODO: change me when prod2 is prod
             elif [ "${CIRCLE_BRANCH}" == "staging" ]; then
               export GITHUB_REMOTE="${GITHUB_REMOTE_STAGING}"
               export DEPLOY_ENV="staging"
@@ -110,6 +114,8 @@ jobs:
           command: |
             if [ "${CIRCLE_BRANCH}" == "production" ]; then
               export GITHUB_REMOTE="${GITHUB_REMOTE_PRODUCTION}"
+            elif [ "${CIRCLE_BRANCH}" == "production2" ]; then
+              export GITHUB_REMOTE="${GITHUB_REMOTE_PRODUCTION2}"
             elif [ "${CIRCLE_BRANCH}" == "staging" ]; then
               export GITHUB_REMOTE="${GITHUB_REMOTE_STAGING}"
             elif [ "${CIRCLE_BRANCH}" == "staging2" ]; then
@@ -124,6 +130,10 @@ jobs:
             fi &&
             if [ "${GITHUB_REMOTE}" == "${GITHUB_REMOTE_PRODUCTION}" ]; then
               $DEVOPS_WORKDIR/rethinkdb/dokku/rethinkdb-backup.sh \
+                -s "${SSH_DESTINATION}" -d "${PRODUCTION_BACKUP_VOLUME}"
+            fi &&
+            if [ "${GITHUB_REMOTE}" == "${GITHUB_REMOTE_PRODUCTION2}" ]; then
+              $DEVOPS_WORKDIR/rethinkdb/rethinkdb-backup.sh \
                 -s "${SSH_DESTINATION}" -d "${PRODUCTION_BACKUP_VOLUME}"
             fi &&
             if [ -n "${GITHUB_REMOTE}" ]; then
