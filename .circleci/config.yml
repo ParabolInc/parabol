@@ -17,6 +17,8 @@ jobs:
       GITHUB_REMOTE_STAGING: "dokku@action-staging.parabol.co:web"
       GITHUB_REMOTE_STAGING2: "dokku@action-staging2.parabol.co:web"
       PRODUCTION_BACKUP_VOLUME: "/mnt/volume-nyc1-01/action-production"
+      PRODUCTION2_BACKUP_LOCATION: "dokku@backups.action-production2.parabol.co"
+      PRODUCTION2_BACKUP_VOLUME: "/var/backups/rethinkdb1"
       SENTRY_ORG: "parabol"
       SENTRY_PROJECT: "action-production"
     working_directory: ~/action
@@ -133,8 +135,9 @@ jobs:
                 -s "${SSH_DESTINATION}" -d "${PRODUCTION_BACKUP_VOLUME}"
             fi &&
             if [ "${GITHUB_REMOTE}" == "${GITHUB_REMOTE_PRODUCTION2}" ]; then
+              ssh -o StrictHostKeyChecking=no "${PRODUCTION2_BACKUP_LOCATION}" -T >/dev/null
               $DEVOPS_WORKDIR/rethinkdb/rethinkdb-backup.sh \
-                -s "${SSH_DESTINATION}" -d "${PRODUCTION_BACKUP_VOLUME}"
+                -s "${PRODUCTION2_BACKUP_LOCATION}" -d "${PRODUCTION2_BACKUP_VOLUME}"
             fi &&
             if [ -n "${GITHUB_REMOTE}" ]; then
               git push -f dokku $CIRCLE_BRANCH:master
