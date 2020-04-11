@@ -3,7 +3,8 @@ import {
   GraphQLID,
   GraphQLInputObjectType,
   GraphQLNonNull,
-  GraphQLString
+  GraphQLString,
+  GraphQLBoolean
 } from 'graphql'
 
 const CreateReflectionInput = new GraphQLInputObjectType({
@@ -22,6 +23,9 @@ const CreateReflectionInput = new GraphQLInputObjectType({
     },
     sortOrder: {
       type: new GraphQLNonNull(GraphQLFloat)
+    },
+    isAnonymous: {
+      type: new GraphQLNonNull(GraphQLBoolean)
     }
   })
 })

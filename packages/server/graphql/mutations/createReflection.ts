@@ -27,7 +27,7 @@ export default {
   },
   async resolve(
     _source,
-    {input: {content, retroPhaseItemId, sortOrder, meetingId}},
+    {input: {content, isAnonymous, retroPhaseItemId, sortOrder, meetingId}},
     {authToken, dataLoader, socketId: mutatorId}
   ) {
     const r = await getRethink()
@@ -78,6 +78,7 @@ export default {
       meetingId,
       retroPhaseItemId,
       reflectionGroupId,
+      isAnonymous,
       updatedAt: now
     })
 

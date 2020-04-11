@@ -15,6 +15,7 @@ export interface ReflectionInput {
   reflectionGroupId?: string
   retroPhaseItemId: string
   sortOrder?: number
+  isAnonymous: boolean
   updatedAt?: Date
 }
 
@@ -45,6 +46,7 @@ export default class Reflection {
       meetingId,
       reactjis,
       reflectionGroupId,
+      isAnonymous,
       retroPhaseItemId,
       sortOrder,
       updatedAt
@@ -59,6 +61,7 @@ export default class Reflection {
     this.isActive = true
     this.isAnonymous = true
     this.meetingId = meetingId
+    this.isAnonymous = isAnonymous
     this.reactjis = reactjis || []
     this.reflectionGroupId = reflectionGroupId || shortid.generate()
     this.retroPhaseItemId = retroPhaseItemId
