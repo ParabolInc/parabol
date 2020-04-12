@@ -1,6 +1,6 @@
 // import Redis from 'ioredis'
 // import {ServerChannel} from 'parabol-client/src/types/constEnums'
-import executeGraphQL from 'parabol-server/graphql/executeGraphQL'
+import executeGraphQL from 'parabol-server/lib/graphql/executeGraphQL'
 
 // const publisher = new Redis(process.env.REDIS_URL)
 // const subscriber = new Redis(process.env.REDIS_URL)

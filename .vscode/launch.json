@@ -55,5 +55,20 @@
                 "<node_internals>/**"
             ]
         },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Debug Codeshift",
+            "console": "integratedTerminal",
+            // "autoAttachChildProcesses": true,
+            "program": "${workspaceFolder}/node_modules/.bin/jscodeshift",
+            "args": [
+                "--transform=${workspaceFolder}/scripts/codeshift/packageRefToRelative.ts",
+                "${workspaceFolder}/packages/gql-executor/lib/gql-executor/src"
+            ],
+            "skipFiles": [
+                "<node_internals>/**"
+            ]
+        },
     ]
 }

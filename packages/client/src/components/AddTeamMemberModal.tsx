@@ -107,7 +107,7 @@ const AddTeamMemberModal = (props: Props) => {
     if (rawInvitees === nextValue) return
     const parsedInvitees = parseEmailAddressList(nextValue)
     const allInvitees = parsedInvitees
-      ? (parsedInvitees.map(({address}) => address) as string[])
+      ? (parsedInvitees.map((invitee) => (invitee as any).address) as string[])
       : invitees
     const teamEmailSet = new Set(teamMembers.map(({email}) => email))
     const uniqueInvitees = Array.from(new Set(allInvitees))

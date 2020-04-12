@@ -37,7 +37,7 @@ const underlineStyles = {
   borderRightColor: 'transparent !important',
   borderTopColor: 'transparent !important',
   boxShadow: 'none !important'
-}
+} as any
 
 const InputWithIconWrap = styled('div')({
   alignItems: 'center',

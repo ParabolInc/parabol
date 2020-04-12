@@ -4,7 +4,7 @@ import {SubscriptionChannel, Threshold} from 'parabol-client/src/types/constEnum
 import toTeamMemberId from 'parabol-client/src/utils/relay/toTeamMemberId'
 import getRethink from '../../database/rethinkDriver'
 import {getUserId} from '../../utils/authorization'
-import emojiIds from '../../utils/emojiIds.json'
+import emojiIds from '../../utils/emojiIds'
 import publish from '../../utils/publish'
 import {GQLContext} from '../graphql'
 import AddReactjiToReflectionPayload from '../types/AddReactjiToReflectionPayload'

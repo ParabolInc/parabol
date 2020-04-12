@@ -7,7 +7,8 @@ import {autoCompleteEmoji} from '../../utils/draftjs/completeEnitity'
 import EmojiMenuContainer from './EmojiMenuContainer'
 
 const withEmojis = (ComposedComponent) => {
-  class WithEmojis extends Component {
+  class WithEmojis extends Component<any> {
+    cachedCoords: any
     static propTypes = {
       editorState: PropTypes.object.isRequired,
       handleChange: PropTypes.func,
@@ -34,7 +35,7 @@ const withEmojis = (ComposedComponent) => {
       return undefined
     }
 
-    menuRef = React.createRef()
+    menuRef = React.createRef<any>()
 
     menuItemClickFactory = (emoji, editorState) => (e) => {
       e.preventDefault()
@@ -106,7 +107,7 @@ const withEmojis = (ComposedComponent) => {
       )
     }
   }
-  return WithEmojis
+  return WithEmojis as any
 }
 
 export default withEmojis

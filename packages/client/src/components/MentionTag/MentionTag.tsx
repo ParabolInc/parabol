@@ -3,7 +3,7 @@ import styled from '@emotion/styled'
 import DraftMentionRow from './DraftMentionRow'
 import DraftionMentionDescription from './DraftMentionDescription'
 
-interface Props {
+export interface TagProps {
   active: boolean
   description: string
   name: string
@@ -14,7 +14,7 @@ const Value = styled('div')({
   minWidth: 72
 })
 
-const MentionTag = (props: Props) => {
+const MentionTag = (props: TagProps) => {
   const {active, description, name} = props
   return (
     <DraftMentionRow active={active}>

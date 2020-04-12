@@ -3,13 +3,13 @@ import Avatar from '../Avatar/Avatar'
 import DraftMentionRow from '../MentionTag/DraftMentionRow'
 import DraftMentionDescription from '../MentionTag/DraftMentionDescription'
 
-interface Props {
+export interface MentionUserProps {
   active: boolean
   preferredName: string
   picture: string
 }
 
-const MentionUser = (props: Props) => {
+const MentionUser = (props: MentionUserProps) => {
   const {active, preferredName, picture} = props
   return (
     <DraftMentionRow active={active}>

@@ -1,9 +1,23 @@
 {
   "compilerOptions": {
-    "target": "esnext",
-    "module": "esnext",
+    "baseUrl": "./packages",
+    // "paths": {
+    // "parabol-server/src/*": [
+    // "./server/src/*"
+    // ],
+    // "parabol-client/src/*": [
+    // "./client/src/*"
+    // ],
+    // },
+    "allowJs": true,
+    "checkJs": false,
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "composite": true,
+    "target": "es2019",
+    "module": "commonjs",
     "jsx": "react",
-    "outDir": "lib",
     "importHelpers": true,
     "strict": true,
     "noImplicitAny": false,
@@ -18,10 +32,8 @@
     "noFallthroughCasesInSwitch": true,
     "moduleResolution": "node",
     "pretty": true,
-    // "baseUrl": "./",
     "esModuleInterop": true,
     "resolveJsonModule": true,
-    "skipLibCheck": true,
-    "noEmit": true
+    "skipLibCheck": true
   }
 }

@@ -1,7 +1,8 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    //    "composite": true,
+    "rootDir": ".",
+    "outDir": "./lib",
     "lib": [
       "esnext",
       "dom"
@@ -9,21 +10,12 @@
     "types": [
       "node"
     ],
-    "target": "esnext",
-    "module": "esnext",
-    "sourceMap": true,
-    "baseUrl": "../",
-    "paths": {
-      "parabol-client/*": [
-        "client/src/*"
-      ],
-      "parabol-server/*": [
-        "server/src/*"
-      ],
-    }
   },
   "exclude": [
+    "lib",
     "src/serviceWorker"
-  ]
-  //  "references": []
+  ],
+  // "include": [
+  // "src"
+  // ]
 }

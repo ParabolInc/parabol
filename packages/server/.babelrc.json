@@ -3,14 +3,17 @@
     [
       "module-resolver",
       {
+        "root": [
+          "../"
+        ],
         "alias": {
-          "parabol-server": "packages/server/lib./lib4/server",
-          "parabol-client": "./lib4/client"
+          "parabol-server": "server/lib-tmp",
+          "parabol-client": "client/lib-tmp"
         }
       }
     ],
     [
-      "../babel-plugin-inline-import",
+      "../../../babel-plugin-inline-import",
       {
         "extensions": [
           ".graphql"

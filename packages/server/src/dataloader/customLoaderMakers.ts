@@ -12,28 +12,28 @@ import RethinkDataLoader from './RethinkDataLoader'
 import MeetingSettings from '../database/types/MeetingSettings'
 
 type AccessTokenKey = {teamId: string; userId: string}
-interface JiraRemoteProjectKey {
+export interface JiraRemoteProjectKey {
   accessToken: string
   cloudId: string
   atlassianProjectId: string
 }
 
-interface UserTasksKey {
+export interface UserTasksKey {
   userId: string
   teamIds: string[]
 }
 
-interface ReactablesKey {
+export interface ReactablesKey {
   id: string
   type: ReactableEnum
 }
 
-interface ThreadSourceKey {
+export interface ThreadSourceKey {
   sourceId: string
   type: ThreadSourceEnum
 }
 
-interface MeetingSettingsKey {
+export interface MeetingSettingsKey {
   teamId: string
   meetingType: MeetingTypeEnum
 }

@@ -23,7 +23,7 @@ const label = {
   lineHeight: '24px',
   maxWidth: '100%',
   textAlign: 'left'
-}
+} as const
 
 const AvatarButton = styled(BaseButton)({
   border: 0,

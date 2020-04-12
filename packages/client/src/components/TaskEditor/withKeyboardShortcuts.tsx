@@ -5,7 +5,7 @@ import PropTypes from 'prop-types'
 const {hasCommandModifier} = KeyBindingUtil
 
 const withKeyboardShortcuts = (ComposedComponent) => {
-  class WithKeyboardShortcuts extends Component {
+  class WithKeyboardShortcuts extends Component<any> {
     static propTypes = {
       editorState: PropTypes.object.isRequired,
       handleKeyCommand: PropTypes.func,
@@ -60,7 +60,7 @@ const withKeyboardShortcuts = (ComposedComponent) => {
       )
     }
   }
-  return WithKeyboardShortcuts
+  return WithKeyboardShortcuts as any
 }
 
 export default withKeyboardShortcuts

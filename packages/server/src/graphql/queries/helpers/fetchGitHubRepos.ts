@@ -3,7 +3,12 @@ import GitHubServerManager from '../../../utils/GitHubServerManager'
 import {Omit} from 'parabol-client/src/types/generics'
 import {ISuggestedIntegrationGitHub} from 'parabol-client/src/types/graphql'
 import {GITHUB} from 'parabol-client/src/utils/constants'
-import {GetReposQueryData} from 'parabol-client/src/utils/githubQueries/getRepos.graphql'
+// import {GetReposQueryData} from 'parabol-client/src/utils/githubQueries/getRepos.graphql'
+
+namespace GetReposQueryData {
+  export type ViewerOrganizationsNodes = any
+  export type ViewerRepositoriesNodes = any
+}
 
 const getUniqueRepos = (
   orgs: (GetReposQueryData.ViewerOrganizationsNodes | null)[],

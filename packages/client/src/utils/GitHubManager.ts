@@ -1,11 +1,15 @@
 import {DocumentNode} from 'graphql-typed'
 import {ICreateIssueInput} from '../types/githubGraphql'
 import {IGraphQLResponseError} from '../types/graphql'
-import createIssue from './githubQueries/createIssue.graphql'
-import getProfile from './githubQueries/getProfile.graphql'
-import getRepoInfo from './githubQueries/getRepoInfo.graphql'
-import getRepos from './githubQueries/getRepos.graphql'
+// import createIssue from './githubQueries/createIssue.graphql'
+// import getProfile from './githubQueries/getProfile.graphql'
+// import getRepoInfo from './githubQueries/getRepoInfo.graphql'
+// import getRepos from './githubQueries/getRepos.graphql'
 
+const createIssue = ''
+const getProfile = ''
+const getRepoInfo = ''
+const getRepos = ''
 export interface GQLResponse<TData> {
   data?: TData
   errors?: IGraphQLResponseError[]
@@ -19,7 +23,8 @@ export interface GitHubCredentialError {
 type GitHubResponse<TData> = GQLResponse<TData> | GitHubCredentialError
 
 type DocResponse<T> = T extends DocumentNode<infer R> ? R : never
-type DocVariables<T> = T extends DocumentNode<any, infer V> ? V : never
+type DocVariables = any
+// type DocVariables<T> = T extends DocumentNode<any, infer V> ? V : never
 
 abstract class GitHubManager {
   static SCOPE = 'admin:org_hook,read:org,repo,user:email,write:repo_hook'
@@ -50,7 +55,7 @@ abstract class GitHubManager {
 
   private async query<T>(
     query: T,
-    variables?: DocVariables<T>
+    variables?: DocVariables
   ): Promise<GitHubResponse<DocResponse<T>>> {
     // const query = _query as unknown as string
     const body = JSON.stringify({query, variables})
@@ -74,7 +79,7 @@ abstract class GitHubManager {
 
   private async mutate<T>(
     query: T,
-    variables?: DocVariables<T>
+    variables?: DocVariables
   ): Promise<GitHubResponse<DocResponse<T>>> {
     const body = JSON.stringify({query, variables})
     return this.post(body)
@@ -86,7 +91,7 @@ abstract class GitHubManager {
 
   async getRepoInfo(nameWithOwner: string, assigneeLogin: string) {
     const [repoOwner, repoName] = nameWithOwner.split('/')
-    return this.query(getRepoInfo, {repoName, repoOwner, assigneeLogin})
+    return this.query(getRepoInfo, {repoName, repoOwner, assigneeLogin} as any)
   }
 
   async getProfile() {
@@ -94,7 +99,7 @@ abstract class GitHubManager {
   }
 
   async createIssue(createIssueInput: ICreateIssueInput) {
-    return this.mutate(createIssue, {input: createIssueInput})
+    return this.mutate(createIssue, {input: createIssueInput} as any)
   }
 }
 
