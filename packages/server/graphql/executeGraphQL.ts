@@ -14,7 +14,8 @@ import privateSchema from './intranetSchema/intranetSchema'
 import publicSchema from './rootSchema'
 import getRethink from '../database/rethinkDriver'
 
-interface GQLRequest {
+export interface GQLRequest {
+  jobId: string
   authToken: AuthToken
   ip?: string
   socketId?: string

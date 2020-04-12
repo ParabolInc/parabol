@@ -9,6 +9,7 @@ import LoginWithGoogleMutation from '../mutations/LoginWithGoogleMutation'
 import {RouterProps} from 'react-router'
 
 class GoogleClientManager extends GoogleManager {
+  fetch = window.fetch.bind(window)
   static openOAuth(
     atmosphere: Atmosphere,
     mutationProps: MenuMutationProps,

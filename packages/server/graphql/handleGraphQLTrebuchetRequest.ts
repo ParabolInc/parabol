@@ -1,10 +1,10 @@
 import {OutgoingMessage} from '@mattkrick/graphql-trebuchet-client'
 import PROD from '../PROD'
 import ConnectionContext from '../socketHelpers/ConnectionContext'
+import getGraphQLExecutor from '../utils/getGraphQLExecutor'
 import relayUnsubscribe from '../utils/relayUnsubscribe'
 import sanitizeGraphQLErrors from '../utils/sanitizeGraphQLErrors'
 import sendToSentry from '../utils/sendToSentry'
-import executeGraphQL from './executeGraphQL'
 import subscribeGraphQL from './subscribeGraphQL'
 
 export type GraphQLMessageType = 'data' | 'complete' | 'error'
@@ -35,7 +35,16 @@ const handleGraphQLTrebuchetRequest = async (
       subscribeGraphQL({docId, query, opId, variables, connectionContext})
       return
     }
-    const result = await executeGraphQL({docId, query, variables, socketId, authToken, ip})
+    const jobId = `${socketId}:${opId}`
+    const result = await getGraphQLExecutor().publish({
+      jobId,
+      docId,
+      query,
+      variables,
+      socketId,
+      authToken,
+      ip
+    })
     if (result.errors) {
       const [firstError] = result.errors
       const safeError = new Error(firstError.message)

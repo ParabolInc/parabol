@@ -1,9 +1,9 @@
 {
   "compilerOptions": {
-    "target": "es2017",
+    "target": "esnext",
     "module": "esnext",
     "jsx": "react",
-    "outDir": "dist",
+    "outDir": "lib",
     "importHelpers": true,
     "strict": true,
     "noImplicitAny": false,
@@ -17,6 +17,7 @@
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
     "moduleResolution": "node",
+    "pretty": true,
     // "baseUrl": "./",
     "esModuleInterop": true,
     "resolveJsonModule": true,

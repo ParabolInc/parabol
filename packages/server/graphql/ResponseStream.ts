@@ -1,6 +1,6 @@
 import {ExecutionResult} from 'graphql'
+import getGraphQLExecutor from '../utils/getGraphQLExecutor'
 import sendToSentry from '../utils/sendToSentry'
-import executeGraphQL from './executeGraphQL'
 import SubscriptionIterator from '../utils/SubscriptionIterator'
 import {SubscribeRequest} from './subscribeGraphQL'
 
@@ -20,10 +20,11 @@ export default class ResponseStream implements AsyncIterableIterator<ExecutionRe
     const sourceIter = await this.sourceStream.next()
     if (sourceIter.done) return sourceIter
     const {mutatorId, operationId: dataLoaderId, rootValue} = sourceIter.value
-    const {connectionContext, query, variables, docId} = this.req
+    const {connectionContext, query, variables, docId, opId} = this.req
     const {id: socketId, authToken, ip} = connectionContext
     if (mutatorId === socketId) return this.next()
-    const result = await executeGraphQL({
+    const result = await getGraphQLExecutor().publish({
+      jobId: `${socketId}:${opId}`,
       docId,
       authToken,
       dataLoaderId,

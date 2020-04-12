@@ -1,8 +1,9 @@
+import shortid from 'shortid'
 import {HttpRequest, HttpResponse} from 'uWebSockets.js'
 import ServerAuthToken from '../database/types/ServerAuthToken'
-import executeGraphQL from '../graphql/executeGraphQL'
 import uWSAsyncHandler from '../graphql/uWSAsyncHandler'
 import parseBody from '../parseBody'
+import getGraphQLExecutor from '../utils/getGraphQLExecutor'
 import StripeManager from '../utils/StripeManager'
 
 const eventLookup = {
@@ -103,7 +104,13 @@ const stripeWebhookHandler = uWSAsyncHandler(async (res: HttpResponse, req: Http
   const {getVars, query} = actionHandler
   const variables = getVars(payload)
   const authToken = new ServerAuthToken()
-  executeGraphQL({authToken, query, variables, isPrivate: true})
+  getGraphQLExecutor().publish({
+    jobId: shortid.generate(),
+    authToken,
+    query,
+    variables,
+    isPrivate: true
+  })
 })
 
 export default stripeWebhookHandler

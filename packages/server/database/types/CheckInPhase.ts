@@ -1,7 +1,7 @@
-import CheckInStage from './CheckInStage'
-import {CHECKIN} from '../../../client/utils/constants'
+import {NewMeetingPhaseTypeEnum} from 'parabol-client/types/graphql'
 import convertToTaskContent from '../../../client/utils/draftjs/convertToTaskContent'
 import {makeCheckinGreeting, makeCheckinQuestion} from '../../../client/utils/makeCheckinGreeting'
+import CheckInStage from './CheckInStage'
 import GenericMeetingPhase from './GenericMeetingPhase'
 
 interface TeamMember {
@@ -14,8 +14,8 @@ export default class CheckInPhase extends GenericMeetingPhase {
   checkInQuestion: string
   stages: CheckInStage[]
 
-  constructor (teamId: string, meetingCount: number, teamMembers: TeamMember[]) {
-    super(CHECKIN)
+  constructor(teamId: string, meetingCount: number, teamMembers: TeamMember[]) {
+    super(NewMeetingPhaseTypeEnum.checkin)
     this.checkInGreeting = makeCheckinGreeting(meetingCount, teamId)
     this.checkInQuestion = convertToTaskContent(makeCheckinQuestion(meetingCount, teamId))
     this.stages = teamMembers

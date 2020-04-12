@@ -1,0 +1,37 @@
+{
+  "name": "gql-executor",
+  "version": "5.3.1",
+  "description": "A Stateless GraphQL Executor",
+  "author": "Matt Krick <matt.krick@gmail.com>",
+  "homepage": "https://github.com/ParabolInc/parabol/tree/master/packages/gqlExecutor#readme",
+  "license": "AGPL-3.0-or-later",
+  "main": "gqlExecutor.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ParabolInc/parabol.git"
+  },
+  "scripts": {
+    "build": "sucrase ../ -d ../../lib4 -q --transforms=imports,jsx,typescript && sucrase ../ -d ../../lib4 -q --transforms=imports,jsx && cp -r ../client/utils/githubQueries ../../lib4/client/utils",
+    "build:babel": "babel -d ../../lib5 ../../lib4",
+    "debug": "babel -d lib2 lib",
+    "dev": "ts-node-dev --respawn --transpileOnly ./src/index.ts",
+    "start": "node ./lib/gql-executor/src/index.js"
+  },
+  "bugs": {
+    "url": "https://github.com/ParabolInc/parabol/issues"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.8.4",
+    "@babel/core": "^7.9.0",
+    "@types/node": "^13.11.1",
+    "babel-plugin-inline-import": "^3.0.0",
+    "babel-plugin-module-resolver": "^4.0.0",
+    "sucrase": "^3.13.0",
+    "ts-node-dev": "^1.0.0-pre.44",
+    "typescript": "^3.8.3"
+  },
+  "dependencies": {
+    "parabol-server": "^5.3.1",
+    "parabol-client": "^5.3.1"
+  }
+}

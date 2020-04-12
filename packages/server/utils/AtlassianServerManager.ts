@@ -21,6 +21,7 @@ interface OAuth2Response {
 }
 
 class AtlassianServerManager extends AtlassianManager {
+  fetch = fetch
   static async init(code: string) {
     return AtlassianServerManager.fetchToken({
       grant_type: 'authorization_code',
@@ -73,7 +74,7 @@ class AtlassianServerManager extends AtlassianManager {
   refreshToken?: string
 
   constructor(accessToken: string, refreshToken?: string) {
-    super(accessToken, {fetch})
+    super(accessToken)
     this.refreshToken = refreshToken
   }
 }

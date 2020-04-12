@@ -1,9 +1,9 @@
 import {Threshold} from 'parabol-client/types/constEnums'
 import AuthToken from '../database/types/AuthToken'
-import executeGraphQL from '../graphql/executeGraphQL'
 import ConnectionContext from '../socketHelpers/ConnectionContext'
 import encodeAuthToken from '../utils/encodeAuthToken'
 import {fromEpochSeconds} from '../utils/epochTime'
+import getGraphQLExecutor from '../utils/getGraphQLExecutor'
 
 const isTmsValid = (tmsFromDB: string[] = [], tmsFromToken: string[] = []) => {
   if (tmsFromDB.length !== tmsFromToken.length) return false
@@ -37,7 +37,15 @@ mutation ConnectSocket {
 
 const handleConnect = async (connectionContext: ConnectionContext) => {
   const {authToken, ip, id: socketId} = connectionContext
-  const result = await executeGraphQL({authToken, ip, query, isPrivate: true, socketId})
+  const jobId = `${socketId}:connect`
+  const result = await getGraphQLExecutor().publish({
+    jobId,
+    authToken,
+    ip,
+    query,
+    isPrivate: true,
+    socketId
+  })
   const {data} = result
   const tms = data?.connectSocket?.tms
   if (!tms) return null // should NEVER happen

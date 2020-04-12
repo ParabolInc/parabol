@@ -42,7 +42,7 @@ export default {
       const {
         data: {newTeam, orgName},
         errors
-      } = addOrgValidation()(args)
+      } = addOrgValidation()(args) as any
       if (Object.keys(errors).length) {
         return standardError(new Error('Failed input validation'), {userId: viewerId})
       }

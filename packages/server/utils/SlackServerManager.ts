@@ -26,6 +26,7 @@ interface OAuth2Response {
 }
 
 class SlackServerManager extends SlackManager {
+  fetch = fetch
   static async init(code: string) {
     return SlackServerManager.fetchToken(code)
   }
@@ -59,7 +60,7 @@ class SlackServerManager extends SlackManager {
   }
 
   constructor(botAccessToken, public response?: OAuth2Response) {
-    super(botAccessToken, {fetch})
+    super(botAccessToken)
   }
 }
 

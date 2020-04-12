@@ -1,8 +1,9 @@
+import shortid from 'shortid'
 import {HttpRequest, HttpResponse} from 'uWebSockets.js'
 import ServerAuthToken from '../database/types/ServerAuthToken'
-import executeGraphQL from '../graphql/executeGraphQL'
 import uWSAsyncHandler from '../graphql/uWSAsyncHandler'
 import parseBody from '../parseBody'
+import getGraphQLExecutor from './getGraphQLExecutor'
 
 const query = `
 mutation LoginSAML($queryString: String!, $domain: String!) {
@@ -32,7 +33,8 @@ const SAMLhandler23 = uWSAsyncHandler(async (res: HttpResponse, req: HttpRequest
   }
   const parser = (buffer: Buffer) => buffer.toString()
   const queryString = await parseBody(res, parser)
-  const payload = await executeGraphQL({
+  const payload = await getGraphQLExecutor().publish({
+    jobId: shortid.generate(),
     authToken: new ServerAuthToken(),
     query,
     variables: {domain, queryString},

@@ -100,7 +100,7 @@ export default {
       startStage_(facilitatorStage)
 
       // mutative! sets isNavigable and isNavigableByFacilitator
-      unlockedStageIds = unlockNextStages(facilitatorStageId, phases, meetingId)
+      unlockedStageIds = unlockNextStages(facilitatorStageId, phases)
     }
 
     // RESOLUTION

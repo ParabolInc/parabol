@@ -30,6 +30,7 @@ export interface GoogleIDToken {
 }
 
 export default class GoogleServerManager extends GoogleManager {
+  fetch = fetch
   static async init(code: string) {
     return GoogleServerManager.fetchToken(code)
   }
@@ -60,7 +61,7 @@ export default class GoogleServerManager extends GoogleManager {
 
   id?: GoogleIDToken
   constructor(accessToken: string, id?: GoogleIDToken) {
-    super(accessToken, {fetch})
+    super(accessToken)
     this.id = id
   }
 }

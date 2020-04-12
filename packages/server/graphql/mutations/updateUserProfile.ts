@@ -35,7 +35,7 @@ const updateUserProfile = {
 
     // VALIDATION
     const schema = makeUserServerSchema()
-    const {data: validUpdatedUser, errors} = schema(updatedUser)
+    const {data: validUpdatedUser, errors} = schema(updatedUser) as any
     if (Object.keys(errors).length) {
       return standardError(new Error('Failed input validation'), {userId})
     }

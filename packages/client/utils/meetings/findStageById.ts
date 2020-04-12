@@ -9,7 +9,7 @@ export interface FindStageByIdPhase {
 }
 
 const findStageById = <T extends FindStageByIdPhase = GenericMeetingPhase>(
-  phases: readonly T[] | null | undefined,
+  phases: T[] | readonly T[] | null | undefined,
   foreginKey: string,
   stageKey = 'id'
 ) => {

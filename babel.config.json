@@ -1,0 +1,24 @@
+{
+  "plugins": [
+    [
+      "module-resolver",
+      {
+        // "root": [
+        // "../"
+        // ],
+        "alias": {
+          "parabol-server": "./lib4/server",
+          "parabol-client": "./lib4/client"
+        }
+      }
+    ],
+    [
+      "../babel-plugin-inline-import",
+      {
+        "extensions": [
+          ".graphql"
+        ]
+      }
+    ]
+  ]
+}

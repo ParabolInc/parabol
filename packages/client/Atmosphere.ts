@@ -5,7 +5,6 @@ import GQLTrebuchetClient, {
 import getTrebuchet, {SocketTrebuchet, SSETrebuchet} from '@mattkrick/trebuchet-client'
 import EventEmitter from 'eventemitter3'
 import jwtDecode from 'jwt-decode'
-import AuthToken from 'parabol-server/database/types/AuthToken'
 import {Disposable} from 'react-relay'
 import {RouterProps} from 'react-router'
 import {
@@ -29,6 +28,7 @@ import {LocalStorageKey, TrebuchetCloseReason} from './types/constEnums'
 import handlerProvider from './utils/relay/handlerProvider'
 import {InviteToTeamMutation_notification} from './__generated__/InviteToTeamMutation_notification.graphql'
 import RelayFeatureFlags from 'relay-runtime/lib/util/RelayFeatureFlags'
+import AuthToken from 'parabol-server/database/types/AuthToken'
 
 // https://github.com/facebook/relay/issues/3006
 ;(RelayFeatureFlags as any).ENABLE_RELAY_CONTAINERS_SUSPENSE = false

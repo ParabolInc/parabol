@@ -21,7 +21,7 @@ const groupReflections = (reflections: Reflection[], groupingThreshold: number) 
   )
   // replace the arrays with reflections
   const updatedReflections = [] as Reflection[]
-  const updatedGroups = groupedArrays.map((group) => {
+  const updatedGroups = (groupedArrays as any[]).map((group) => {
     // look up the reflection by its vector, put them all in the same group
     let reflectionGroupId = ''
     const groupedReflections = group.map((reflectionDistanceArr, sortOrder) => {

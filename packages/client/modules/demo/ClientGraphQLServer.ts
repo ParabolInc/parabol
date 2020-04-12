@@ -522,7 +522,6 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       }
       return {renameMeeting: data}
     },
-    NewMeetingCheckInMutation: () => {},
     RemoveReflectionMutation: ({reflectionId}: {reflectionId: string}, userId: string) => {
       const reflection = this.db.reflections.find((reflection) => reflection.id === reflectionId)!
       reflection.isActive = false
@@ -670,7 +669,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         startStage_(facilitatorStage)
 
         // mutative! sets isNavigable and isNavigableByFacilitator
-        unlockedStageIds = unlockNextStages(facilitatorStageId, phases, meetingId)
+        unlockedStageIds = unlockNextStages(facilitatorStageId, phases!)
       }
 
       const oldFacilitatorStageId = this.db.newMeeting.facilitatorStageId!

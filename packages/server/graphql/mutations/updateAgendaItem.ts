@@ -45,7 +45,7 @@ export default {
     const {
       errors,
       data: {id, ...doc}
-    } = schema(updatedAgendaItem)
+    } = schema(updatedAgendaItem) as any
     if (Object.keys(errors).length) {
       return standardError(new Error('Failed input validation'), {userId: viewerId})
     }

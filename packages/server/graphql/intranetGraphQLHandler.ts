@@ -1,9 +1,10 @@
+import shortid from 'shortid'
 import {HttpRequest, HttpResponse} from 'uWebSockets.js'
 import parseBody from '../parseBody'
 import {isAuthenticated, isSuperUser} from '../utils/authorization'
+import getGraphQLExecutor from '../utils/getGraphQLExecutor'
 import getReqAuth from '../utils/getReqAuth'
 import uwsGetIP from '../utils/uwsGetIP'
-import executeGraphQL from './executeGraphQL'
 import uWSAsyncHandler from './uWSAsyncHandler'
 
 interface IntranetPayload {
@@ -29,7 +30,8 @@ const intranetHttpGraphQLHandler = uWSAsyncHandler(async (res: HttpResponse, req
     return
   }
   const {query, variables, isPrivate} = (body as any) as IntranetPayload
-  const result = await executeGraphQL({
+  const result = await getGraphQLExecutor().publish({
+    jobId: shortid.generate(),
     authToken,
     ip,
     query,

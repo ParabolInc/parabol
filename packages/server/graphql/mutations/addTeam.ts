@@ -54,7 +54,7 @@ export default {
       const {
         data: {newTeam},
         errors
-      } = addTeamValidation(orgTeamNames)(args)
+      } = addTeamValidation(orgTeamNames)(args) as any
       if (Object.keys(errors).length) {
         if (errors.newTeam && errors.newTeam.name) {
           return {

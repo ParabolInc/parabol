@@ -1,0 +1,33 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "allowJs": true,
+    "noEmit": false,
+    "outDir": "lib",
+    "esModuleInterop": true,
+    "lib": [
+      "esnext"
+    ],
+    "types": [
+      "node"
+    ],
+    "target": "es2019",
+    "module": "commonjs",
+    "sourceMap": true,
+    "baseUrl": "../",
+    "paths": {
+      "parabol-server/*": [
+        "server/*"
+      ],
+      "parabol-client/*": [
+        "client/*"
+      ]
+    }
+  },
+  "include": [
+    "../../**/*"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}
