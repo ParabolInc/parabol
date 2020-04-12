@@ -15,7 +15,6 @@ jobs:
       GITHUB_REMOTE_PRODUCTION: "dokku@action-production.parabol.co:web"
       GITHUB_REMOTE_PRODUCTION2: "dokku@action-production2.parabol.co:web"
       GITHUB_REMOTE_STAGING: "dokku@action-staging.parabol.co:web"
-      GITHUB_REMOTE_STAGING2: "dokku@action-staging2.parabol.co:web"
       PRODUCTION_BACKUP_VOLUME: "/mnt/volume-nyc1-01/action-production"
       PRODUCTION2_BACKUP_LOCATION: "dokku@backups.action-production2.parabol.co"
       PRODUCTION2_BACKUP_VOLUME: "/var/backups/rethinkdb1"
@@ -30,11 +29,11 @@ jobs:
           name: Slack setup
           command: |
             if [ "${CIRCLE_BRANCH}" =~ "production2?" ]; then
-              curl --ssl -X POST -H 'Content-type: application/json' --data '{"text":"Starting CI and Deployment..."}' $SLACK_PROD_URL
-            elif [ "${CIRCLE_BRANCH}" =~ "staging2?" ]; then
-              curl --ssl -X POST -H 'Content-type: application/json' --data '{"text":"Starting CI and Deployment..."}' $SLACK_STAGING_URL
+              curl --ssl -X POST -H 'Content-type: application/json' --data '{"text":"Starting Production CI and Deployment..."}' $SLACK_DEVOPS_URL
+            elif [ "${CIRCLE_BRANCH}" == "staging" ]; then
+              curl --ssl -X POST -H 'Content-type: application/json' --data '{"text":"Starting Staging CI and Deployment..."}' $SLACK_DEVOPS_URL
             elif [ "${CIRCLE_BRANCH}" == "development" ]; then
-              curl --ssl -X POST -H 'Content-type: application/json' --data '{"text":"Starting CI and Deployment..."}' $SLACK_DEV_URL
+              curl --ssl -X POST -H 'Content-type: application/json' --data '{"text":"Starting Development CI and Deployment..."}' $SLACK_DEVOPS_URL
             fi
       - checkout
       - restore_cache:
@@ -66,7 +65,7 @@ jobs:
       - run:
           name: Cypress Tests
           command: |
-            if [ "${CIRCLE_BRANCH}" =~ "production2?" ] || [ "${CIRCLE_BRANCH}" =~ "staging?" ]; then
+            if [ "${CIRCLE_BRANCH}" =~ "production2?" ] || [ "${CIRCLE_BRANCH}" == "staging" ]; then
               cp $DEVOPS_WORKDIR/environments/cypress ./packages/cypress/.env
               cp $DEVOPS_WORKDIR/environments/cypress ./packages/server/.env
               # cypress docker image has a bug, sideloading these mitigates it
@@ -92,9 +91,6 @@ jobs:
             elif [ "${CIRCLE_BRANCH}" == "staging" ]; then
               export GITHUB_REMOTE="${GITHUB_REMOTE_STAGING}"
               export DEPLOY_ENV="staging"
-            elif [ "${CIRCLE_BRANCH}" == "staging2" ]; then
-              export GITHUB_REMOTE="${GITHUB_REMOTE_STAGING}"
-              export DEPLOY_ENV="staging2"
             elif [ "${CIRCLE_BRANCH}" == "development" ]; then
               export GITHUB_REMOTE="${GITHUB_REMOTE_DEVELOPMENT}"
               export DEPLOY_ENV="development"
@@ -120,8 +116,6 @@ jobs:
               export GITHUB_REMOTE="${GITHUB_REMOTE_PRODUCTION2}"
             elif [ "${CIRCLE_BRANCH}" == "staging" ]; then
               export GITHUB_REMOTE="${GITHUB_REMOTE_STAGING}"
-            elif [ "${CIRCLE_BRANCH}" == "staging2" ]; then
-              export GITHUB_REMOTE="${GITHUB_REMOTE_STAGING2}"
             elif [ "${CIRCLE_BRANCH}" == "development" ]; then
               export GITHUB_REMOTE="${GITHUB_REMOTE_DEVELOPMENT}"
             fi
@@ -142,6 +136,17 @@ jobs:
             if [ -n "${GITHUB_REMOTE}" ]; then
               git push -f dokku $CIRCLE_BRANCH:master
             fi
+      - run:
+          name: Slack completion
+          command: |
+            if [ "${CIRCLE_BRANCH}" =~ "production2?" ]; then
+              curl --ssl -X POST -H 'Content-type: application/json' --data '{"text":"Production CI and Deployment complete"}' $SLACK_DEVOPS_URL
+            elif [ "${CIRCLE_BRANCH}" == "staging" ]; then
+              curl --ssl -X POST -H 'Content-type: application/json' --data '{"text":"Staging CI and Deployment complete"}' $SLACK_DEVOPS_URL
+            elif [ "${CIRCLE_BRANCH}" == "development" ]; then
+              curl --ssl -X POST -H 'Content-type: application/json' --data '{"text":"Development CI and Deployment complete"}' $SLACK_DEVOPS_URL
+            fi
+      - checkout
       - store_artifacts:
           path: ~/action/build
           destination: build
