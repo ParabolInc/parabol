@@ -1,14 +1,5 @@
 {
   "compilerOptions": {
-    "baseUrl": "./packages",
-    // "paths": {
-    // "parabol-server/src/*": [
-    // "./server/src/*"
-    // ],
-    // "parabol-client/src/*": [
-    // "./client/src/*"
-    // ],
-    // },
     "allowJs": true,
     "checkJs": false,
     "declaration": true,

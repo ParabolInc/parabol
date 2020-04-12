@@ -1,6 +1,12 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "~/*": [
+        "src/*"
+      ]
+    },
     "rootDir": ".",
     "outDir": "./lib",
     "lib": [
@@ -15,7 +21,7 @@
     "lib",
     "src/serviceWorker"
   ],
-  // "include": [
-  // "src"
-  // ]
+  "include": [
+    "src"
+  ]
 }

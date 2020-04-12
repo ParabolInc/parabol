@@ -10,8 +10,6 @@
       "path": "packages/client"
     }
   ],
-  "files": [],
-  "include": [],
   "exclude": [
     "**/node_modules"
   ]
