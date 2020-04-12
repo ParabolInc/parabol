@@ -29,11 +29,11 @@ jobs:
           name: Slack setup
           command: |
             if [ "${CIRCLE_BRANCH}" =~ "production2?" ]; then
-              curl --ssl -X POST -H 'Content-type: application/json' --data '{"text":"Starting Production CI and Deployment..."}' $SLACK_DEVOPS_URL
+              curl --ssl -X POST -H 'Content-type: application/json' --data '{"text":"Starting `production` CI and Deployment..."}' $SLACK_DEVOPS_URL
             elif [ "${CIRCLE_BRANCH}" == "staging" ]; then
-              curl --ssl -X POST -H 'Content-type: application/json' --data '{"text":"Starting Staging CI and Deployment..."}' $SLACK_DEVOPS_URL
+              curl --ssl -X POST -H 'Content-type: application/json' --data '{"text":"Starting `staging` CI and Deployment..."}' $SLACK_DEVOPS_URL
             elif [ "${CIRCLE_BRANCH}" == "development" ]; then
-              curl --ssl -X POST -H 'Content-type: application/json' --data '{"text":"Starting Development CI and Deployment..."}' $SLACK_DEVOPS_URL
+              curl --ssl -X POST -H 'Content-type: application/json' --data '{"text":"Starting `development` CI and Deployment..."}' $SLACK_DEVOPS_URL
             fi
       - checkout
       - restore_cache:
@@ -140,11 +140,11 @@ jobs:
           name: Slack completion
           command: |
             if [ "${CIRCLE_BRANCH}" =~ "production2?" ]; then
-              curl --ssl -X POST -H 'Content-type: application/json' --data '{"text":"Production CI and Deployment complete"}' $SLACK_DEVOPS_URL
+              curl --ssl -X POST -H 'Content-type: application/json' --data '{"text":"`production` CI and Deployment complete"}' $SLACK_DEVOPS_URL
             elif [ "${CIRCLE_BRANCH}" == "staging" ]; then
-              curl --ssl -X POST -H 'Content-type: application/json' --data '{"text":"Staging CI and Deployment complete"}' $SLACK_DEVOPS_URL
+              curl --ssl -X POST -H 'Content-type: application/json' --data '{"text":"`staging` CI and Deployment complete"}' $SLACK_DEVOPS_URL
             elif [ "${CIRCLE_BRANCH}" == "development" ]; then
-              curl --ssl -X POST -H 'Content-type: application/json' --data '{"text":"Development CI and Deployment complete"}' $SLACK_DEVOPS_URL
+              curl --ssl -X POST -H 'Content-type: application/json' --data '{"text":"`development` CI and Deployment complete"}' $SLACK_DEVOPS_URL
             fi
       - checkout
       - store_artifacts:
