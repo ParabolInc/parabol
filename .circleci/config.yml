@@ -135,7 +135,6 @@ jobs:
             elif [ "${CIRCLE_BRANCH}" == "development" ]; then
               curl --ssl -X POST -H 'Content-type: application/json' --data '{"text":"`development` CI and Deployment complete"}' $SLACK_DEVOPS_URL
             fi
-      - checkout
       - store_artifacts:
           path: ~/action/build
           destination: build
