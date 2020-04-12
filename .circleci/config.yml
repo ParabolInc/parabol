@@ -13,8 +13,11 @@ jobs:
       DEVOPS_WORKDIR: "~/action-devops"
       GITHUB_REMOTE_DEVELOPMENT: "dokku@action-dev-nyc1-01.parabol.co:web"
       GITHUB_REMOTE_PRODUCTION: "dokku@action-production.parabol.co:web"
+      GITHUB_REMOTE_PRODUCTION2: "dokku@action-production2.parabol.co:web"
       GITHUB_REMOTE_STAGING: "dokku@action-staging.parabol.co:web"
       PRODUCTION_BACKUP_VOLUME: "/mnt/volume-nyc1-01/action-production"
+      PRODUCTION2_BACKUP_LOCATION: "dokku@backups.action-production2.parabol.co"
+      PRODUCTION2_BACKUP_VOLUME: "/var/backups/rethinkdb1"
       SENTRY_ORG: "parabol"
       SENTRY_PROJECT: "action-production"
     working_directory: ~/action
@@ -25,12 +28,12 @@ jobs:
       - run:
           name: Slack setup
           command: |
-            if [ "${CIRCLE_BRANCH}" == "production" ]; then
-              curl --ssl -X POST -H 'Content-type: application/json' --data '{"text":"Starting CI and Deployment..."}' $SLACK_PROD_URL
+            if [ "${CIRCLE_BRANCH}" =~ "production2?" ]; then
+              curl --ssl -X POST -H 'Content-type: application/json' --data '{"text":"Starting Production CI and Deployment..."}' $SLACK_DEVOPS_URL
             elif [ "${CIRCLE_BRANCH}" == "staging" ]; then
-              curl --ssl -X POST -H 'Content-type: application/json' --data '{"text":"Starting CI and Deployment..."}' $SLACK_STAGING_URL
+              curl --ssl -X POST -H 'Content-type: application/json' --data '{"text":"Starting Staging CI and Deployment..."}' $SLACK_DEVOPS_URL
             elif [ "${CIRCLE_BRANCH}" == "development" ]; then
-              curl --ssl -X POST -H 'Content-type: application/json' --data '{"text":"Starting CI and Deployment..."}' $SLACK_DEV_URL
+              curl --ssl -X POST -H 'Content-type: application/json' --data '{"text":"Starting Development CI and Deployment..."}' $SLACK_DEVOPS_URL
             fi
       - checkout
       - restore_cache:
@@ -82,6 +85,9 @@ jobs:
             if [ "${CIRCLE_BRANCH}" == "production" ]; then
               export GITHUB_REMOTE="${GITHUB_REMOTE_PRODUCTION}"
               export DEPLOY_ENV="production"
+            elif [ "${CIRCLE_BRANCH}" == "production2" ]; then
+              export GITHUB_REMOTE="${GITHUB_REMOTE_PRODUCTION2}"
+              export DEPLOY_ENV="staging"                           # TODO: change me when prod2 is prod
             elif [ "${CIRCLE_BRANCH}" == "staging" ]; then
               export GITHUB_REMOTE="${GITHUB_REMOTE_STAGING}"
               export DEPLOY_ENV="staging"
@@ -106,6 +112,8 @@ jobs:
           command: |
             if [ "${CIRCLE_BRANCH}" == "production" ]; then
               export GITHUB_REMOTE="${GITHUB_REMOTE_PRODUCTION}"
+            elif [ "${CIRCLE_BRANCH}" == "production2" ]; then
+              export GITHUB_REMOTE="${GITHUB_REMOTE_PRODUCTION2}"
             elif [ "${CIRCLE_BRANCH}" == "staging" ]; then
               export GITHUB_REMOTE="${GITHUB_REMOTE_STAGING}"
             elif [ "${CIRCLE_BRANCH}" == "development" ]; then
@@ -117,12 +125,28 @@ jobs:
               ssh -o StrictHostKeyChecking=no "${SSH_DESTINATION}" -T >/dev/null
             fi &&
             if [ "${GITHUB_REMOTE}" == "${GITHUB_REMOTE_PRODUCTION}" ]; then
-              $DEVOPS_WORKDIR/dokku/rethinkdb-backup.sh \
+              $DEVOPS_WORKDIR/rethinkdb/dokku/rethinkdb-backup.sh \
                 -s "${SSH_DESTINATION}" -d "${PRODUCTION_BACKUP_VOLUME}"
+            fi &&
+            if [ "${GITHUB_REMOTE}" == "${GITHUB_REMOTE_PRODUCTION2}" ]; then
+              ssh -o StrictHostKeyChecking=no "${PRODUCTION2_BACKUP_LOCATION}" -T >/dev/null
+              $DEVOPS_WORKDIR/rethinkdb/rethinkdb-backup.sh \
+                -s "${PRODUCTION2_BACKUP_LOCATION}" -d "${PRODUCTION2_BACKUP_VOLUME}"
             fi &&
             if [ -n "${GITHUB_REMOTE}" ]; then
               git push -f dokku $CIRCLE_BRANCH:master
             fi
+      - run:
+          name: Slack completion
+          command: |
+            if [ "${CIRCLE_BRANCH}" =~ "production2?" ]; then
+              curl --ssl -X POST -H 'Content-type: application/json' --data '{"text":"Production CI and Deployment complete"}' $SLACK_DEVOPS_URL
+            elif [ "${CIRCLE_BRANCH}" == "staging" ]; then
+              curl --ssl -X POST -H 'Content-type: application/json' --data '{"text":"Staging CI and Deployment complete"}' $SLACK_DEVOPS_URL
+            elif [ "${CIRCLE_BRANCH}" == "development" ]; then
+              curl --ssl -X POST -H 'Content-type: application/json' --data '{"text":"Development CI and Deployment complete"}' $SLACK_DEVOPS_URL
+            fi
+      - checkout
       - store_artifacts:
           path: ~/action/build
           destination: build
