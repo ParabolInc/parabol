@@ -62,7 +62,7 @@ jobs:
       - run:
           name: Cypress Tests
           command: |
-            if [ "${CIRCLE_BRANCH}" == "production" ] || [ "${CIRCLE_BRANCH}" == "staging" ]; then
+            if [ "${CIRCLE_BRANCH}" =~ "production2?" ] || [ "${CIRCLE_BRANCH}" == "staging" ]; then
               cp $DEVOPS_WORKDIR/environments/cypress ./packages/cypress/.env
               cp $DEVOPS_WORKDIR/environments/cypress ./packages/server/.env
               # cypress docker image has a bug, sideloading these mitigates it
