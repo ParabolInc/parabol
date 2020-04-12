@@ -1,11 +1,8 @@
-# `gqlExecutor`
+# `GraphQL Executor`
 
-> TODO: description
+> A Stateless GraphQL Execution Service
 
 ## Usage
 
-```
-const gqlExecutor = require('gqlExecutor');
-
-// TODO: DEMONSTRATE API
-```
+GraphQL Executor is subscribed to the redis channel `ServerChannel.GQL_EXECUTOR_REQUEST`.
+When it receives a request, it creates a standard GraphQL Response and publishes it to `ServerChannel.GQL_EXECUTOR_RESPONSE `.

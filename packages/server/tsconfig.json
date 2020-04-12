@@ -9,10 +9,15 @@
     "types": [
       "node"
     ],
-    "target": "esnext",
+    "target": "es2017",
     "module": "esnext",
     "sourceMap": true,
-    // "baseUrl": ".",
+    "baseUrl": ".",
+    "paths": {
+      "parabol-client/*": [
+        "../client/src/*"
+      ]
+    }
     //     "paths": {
     //       "*": [
     //         // resolve all absolute imports as imports relative to the package,

@@ -12,15 +12,18 @@
     "target": "esnext",
     "module": "esnext",
     "sourceMap": true,
-    "baseUrl": ".",
+    "baseUrl": "../",
     "paths": {
-      "*": [
-        "*" // resolve all absolute imports as imports relative to the package
-      ]
+      "parabol-client/*": [
+        "client/src/*"
+      ],
+      "parabol-server/*": [
+        "server/src/*"
+      ],
     }
   },
   "exclude": [
-    "serviceWorker"
+    "src/serviceWorker"
   ]
   //  "references": []
 }

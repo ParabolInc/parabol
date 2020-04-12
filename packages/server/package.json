@@ -17,7 +17,7 @@
     "start:tunnel": "export $(grep ^ULTRAHOOK_API_KEY .env | tr -d \"'\") && ultrahook -k $ULTRAHOOK_API_KEY dev 3000",
     "start:memwatch": "NODE_ENV=production MEMWATCH=true node --expose-gc --inspect --trace-warnings server.babel.js",
     "quickstart": "yarn db:migrate && yarn bs",
-    "dev": "node webpack/buildDll.js && node server.babel.js",
+    "dev": "node src/server.babel.js",
     "bs": "yarn build && yarn start",
     "build": "yarn build:relay && yarn build:client",
     "build:client": "webpack --config webpack/webpack.prod.config.js",
@@ -136,7 +136,7 @@
   },
   "dependencies": {
     "@authenio/samlify-node-xmllint": "^1.0.1",
-    "@mattkrick/sanitize-svg": "0.2.1",
+    "@mattkrick/sanitize-svg": "^0.2.1",
     "@sentry/integrations": "^5.8.0",
     "@sentry/node": "^5.8.0",
     "analytics-node": "^3.0.0",
