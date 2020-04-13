@@ -1,9 +1,6 @@
-import shortid from 'shortid'
 import {HttpRequest, HttpResponse} from 'uWebSockets.js'
-import ServerAuthToken from '../database/types/ServerAuthToken'
 import uWSAsyncHandler from '../graphql/uWSAsyncHandler'
 import parseBody from '../parseBody'
-import getGraphQLExecutor from './getGraphQLExecutor'
 
 const query = `
 mutation LoginSAML($queryString: String!, $domain: String!) {
@@ -25,7 +22,7 @@ const redirectOnError = (res: HttpResponse, error: string) => {
 
 const GENERIC_ERROR = 'Error signing in|Please try again'
 
-const SAMLhandler23 = uWSAsyncHandler(async (res: HttpResponse, req: HttpRequest) => {
+const SAMLHandler = uWSAsyncHandler(async (res: HttpResponse, req: HttpRequest) => {
   const domain = req.getParameter(0)
   if (!domain) {
     redirectOnError(res, 'No Domain Provided!|Did you set up the service provider correctly?')
@@ -33,15 +30,10 @@ const SAMLhandler23 = uWSAsyncHandler(async (res: HttpResponse, req: HttpRequest
   }
   const parser = (buffer: Buffer) => buffer.toString()
   const queryString = await parseBody(res, parser)
-  const payload = await getGraphQLExecutor().publish({
-    jobId: shortid.generate(),
-    authToken: new ServerAuthToken(),
-    query,
-    variables: {domain, queryString},
-    isPrivate: true
-  })
+  const payload = await publishWebhookGQL(query, {domain, queryString})
   const {data, errors} = payload
   if (!data || errors) {
+    w
     redirectOnError(res, GENERIC_ERROR)
     return
   }
@@ -60,4 +52,4 @@ const SAMLhandler23 = uWSAsyncHandler(async (res: HttpResponse, req: HttpRequest
   })
 })
 
-export default SAMLhandler23
+export default SAMLHandler

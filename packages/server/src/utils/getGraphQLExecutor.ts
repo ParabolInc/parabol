@@ -1,12 +1,12 @@
-import PubSubPromise from './PubSubPromise'
-import {ServerChannel} from 'parabol-client/lib/types/constEnums'
 import {ExecutionResult} from 'graphql'
+import {ServerChannel} from 'parabol-client/lib/types/constEnums'
+import PubSubPromise from './PubSubPromise'
 
-interface Response extends ExecutionResult {
+export interface PubSubPromiseResponse extends ExecutionResult {
   jobId: string
 }
 
-let pubsub: PubSubPromise<Response>
+let pubsub: PubSubPromise<PubSubPromiseResponse>
 const getGraphQLExecutor = () => {
   if (!pubsub) {
     pubsub = new PubSubPromise(

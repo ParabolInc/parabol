@@ -3,7 +3,7 @@ import AuthToken from '../database/types/AuthToken'
 import ConnectionContext from '../socketHelpers/ConnectionContext'
 import encodeAuthToken from '../utils/encodeAuthToken'
 import {fromEpochSeconds} from '../utils/epochTime'
-import getGraphQLExecutor from '../utils/getGraphQLExecutor'
+import publishInternalGQL from '../utils/publishInternalGQL'
 
 const isTmsValid = (tmsFromDB: string[] = [], tmsFromToken: string[] = []) => {
   if (tmsFromDB.length !== tmsFromToken.length) return false
@@ -37,15 +37,8 @@ mutation ConnectSocket {
 
 const handleConnect = async (connectionContext: ConnectionContext) => {
   const {authToken, ip, id: socketId} = connectionContext
-  const jobId = `${socketId}:connect`
-  const result = await getGraphQLExecutor().publish({
-    jobId,
-    authToken,
-    ip,
-    query,
-    isPrivate: true,
-    socketId
-  })
+  const result = await publishInternalGQL({type: 'connect', authToken, ip, query, socketId})
+  if (!result) return null
   const {data} = result
   const tms = data?.connectSocket?.tms
   if (!tms) return null // should NEVER happen

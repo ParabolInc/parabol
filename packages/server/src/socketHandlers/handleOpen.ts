@@ -28,7 +28,7 @@ const authorize = async (connectionContext: ConnectionContext<WebSocket>) => {
   keepAlive(connectionContext)
 }
 
-const wssConnectionHandler = (socket: WebSocket, req: HttpRequest) => {
+const handleOpen = (socket: WebSocket, req: HttpRequest) => {
   try {
     const protocol = req.getHeader('sec-websocket-protocol')
     if (protocol !== 'trebuchet-ws') {
@@ -58,4 +58,4 @@ const wssConnectionHandler = (socket: WebSocket, req: HttpRequest) => {
   }
 }
 
-export default wssConnectionHandler
+export default handleOpen

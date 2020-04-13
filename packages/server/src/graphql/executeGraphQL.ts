@@ -66,10 +66,7 @@ const executeGraphQL = async <T = ExecutionResultDataDefault>(req: GQLRequest) =
     dataLoaderId,
     rootValue
   } = req
-  // const viewerId = getUserId(authToken)
-  // dataloaders are only reuseable if they are non-mutative
-  // since the mutation might change the underlying data but keep the previously used dataloader
-  // const reuseableId = docId?.[0] === 'q' ? viewerId : undefined // removing to triage the wonky behavior
+  // never re-use a dataloader since the things it cached may be old
   const dataLoader = getDataLoader(dataLoaderId)
   dataLoader.share()
   const rateLimiter = getRateLimiter()

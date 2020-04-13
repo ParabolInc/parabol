@@ -5,8 +5,14 @@ interface PubSubPromisePayload {
   [key: string]: any
 }
 
+const MAX_TIMEOUT = 10000
+interface Job {
+  resolve: (payload: any) => void
+  timeoutId: NodeJS.Timeout
+}
+
 export default class PubSubPromise<T extends PubSubPromisePayload> {
-  promises = {} as {[jobId: string]: (payload: any) => void}
+  jobs = {} as {[jobId: string]: Job}
   publisher = new Redis(process.env.REDIS_URL)
   subscriber = new Redis(process.env.REDIS_URL)
   subChannel: string
@@ -19,10 +25,12 @@ export default class PubSubPromise<T extends PubSubPromisePayload> {
   onMessage = (_channel: string, message: string) => {
     const payload = JSON.parse(message) as PubSubPromisePayload
     const {jobId} = payload
-    const resolve = this.promises[jobId]
-    if (resolve) {
+    const cachedJob = this.jobs[jobId]
+    if (cachedJob) {
+      const {resolve, timeoutId} = cachedJob
+      clearTimeout(timeoutId)
       resolve(payload)
-      delete this.promises[jobId]
+      delete this.jobs[jobId]
     }
   }
 
@@ -32,9 +40,14 @@ export default class PubSubPromise<T extends PubSubPromisePayload> {
   }
 
   publish = (payload: PubSubPromisePayload) => {
-    return new Promise<T>((resolve) => {
+    return new Promise<T>((resolve, reject) => {
       const {jobId} = payload
-      this.promises[jobId] = resolve
+      const timeoutId = setTimeout(() => {
+        delete this.jobs[jobId]
+        resolve(undefined)
+        reject('Redis took too long to respond')
+      }, MAX_TIMEOUT)
+      this.jobs[jobId] = {resolve, timeoutId}
       this.publisher.publish(this.pubChannel, JSON.stringify(payload))
     })
   }

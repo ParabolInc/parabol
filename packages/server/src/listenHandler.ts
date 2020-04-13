@@ -3,7 +3,7 @@ import getGraphQLExecutor from './utils/getGraphQLExecutor'
 
 const listenHandler = (listenSocket: us_listen_socket) => {
   if (listenSocket) {
-    console.log('\n🔥🔥🔥 Ready for Action 🔥🔥🔥')
+    console.log(`\n🔥🔥🔥 Ready for Action on Port ${process.env.PORT} 🔥🔥🔥`)
     getGraphQLExecutor().subscribe()
   }
 }

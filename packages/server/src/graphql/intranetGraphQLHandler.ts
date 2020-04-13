@@ -30,18 +30,22 @@ const intranetHttpGraphQLHandler = uWSAsyncHandler(async (res: HttpResponse, req
     return
   }
   const {query, variables, isPrivate} = (body as any) as IntranetPayload
-  const result = await getGraphQLExecutor().publish({
-    jobId: shortid.generate(),
-    authToken,
-    ip,
-    query,
-    variables,
-    isPrivate,
-    isAdHoc: true
-  })
-  res.cork(() => {
-    res.writeHeader('content-type', 'application/json').end(JSON.stringify(result))
-  })
+  try {
+    const result = await getGraphQLExecutor().publish({
+      jobId: shortid.generate(),
+      authToken,
+      ip,
+      query,
+      variables,
+      isPrivate,
+      isAdHoc: true
+    })
+    res.cork(() => {
+      res.writeHeader('content-type', 'application/json').end(JSON.stringify(result))
+    })
+  } catch (e) {
+    res.writeStatus('502').end()
+  }
 })
 
 export default intranetHttpGraphQLHandler
