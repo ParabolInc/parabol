@@ -10,8 +10,8 @@
 
 import {createSourceEventStream, ExecutionResult} from 'graphql'
 import {decode} from 'jsonwebtoken'
-import {TrebuchetCloseReason} from 'parabol-client/src/types/constEnums'
-import {IAuthTokenPayload} from 'parabol-client/src/types/graphql'
+import {TrebuchetCloseReason} from 'parabol-client/lib/types/constEnums'
+import {IAuthTokenPayload} from 'parabol-client/lib/types/graphql'
 import AuthToken from '../database/types/AuthToken'
 import handleDisconnect from '../socketHandlers/handleDisconnect'
 import ConnectionContext from '../socketHelpers/ConnectionContext'

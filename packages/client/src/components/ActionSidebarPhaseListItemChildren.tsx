@@ -4,7 +4,7 @@ import graphql from 'babel-plugin-relay/macro'
 import ActionSidebarAgendaItemsSection from './ActionSidebarAgendaItemsSection'
 import MeetingSidebarTeamMemberStageItems from './MeetingSidebarTeamMemberStageItems'
 import {NewMeetingPhaseTypeEnum} from '../types/graphql'
-import {ActionSidebarPhaseListItemChildren_meeting} from 'parabol-client/src/__generated__/ActionSidebarPhaseListItemChildren_meeting.graphql'
+import {ActionSidebarPhaseListItemChildren_meeting} from '~/__generated__/ActionSidebarPhaseListItemChildren_meeting.graphql'
 import useGotoStageId from '../hooks/useGotoStageId'
 
 interface Props {

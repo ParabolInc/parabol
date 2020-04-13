@@ -1,17 +1,17 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import useRouter from 'parabol-client/src/hooks/useRouter'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
-import {PALETTE} from 'parabol-client/src/styles/paletteV2'
-import getTeamIdFromPathname from 'parabol-client/src/utils/getTeamIdFromPathname'
-import plural from 'parabol-client/src/utils/plural'
-import {SelectMeetingDropdown_meetings} from 'parabol-client/src/__generated__/SelectMeetingDropdown_meetings.graphql'
+import Icon from '~/components/Icon'
+import useRouter from '~/hooks/useRouter'
+import {PALETTE} from '~/styles/paletteV2'
+import getTeamIdFromPathname from '~/utils/getTeamIdFromPathname'
+import plural from '~/utils/plural'
+import {SelectMeetingDropdown_meetings} from '~/__generated__/SelectMeetingDropdown_meetings.graphql'
 import {MenuProps} from '../hooks/useMenu'
 import Menu from './Menu'
 import MenuItem from './MenuItem'
 import SelectMeetingDropdownItem from './SelectMeetingDropdownItem'
-import Icon from 'parabol-client/src/components/Icon'
 
 interface Props {
   menuProps: MenuProps

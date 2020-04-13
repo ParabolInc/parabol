@@ -7,9 +7,9 @@ import {
   GraphQLObjectType,
   GraphQLString
 } from 'graphql'
-import isTaskPrivate from 'parabol-client/src/utils/isTaskPrivate'
-import {ITeam} from 'parabol-client/src/types/graphql'
-import toTeamMemberId from 'parabol-client/src/utils/relay/toTeamMemberId'
+import isTaskPrivate from 'parabol-client/lib/utils/isTaskPrivate'
+import {ITeam} from 'parabol-client/lib/types/graphql'
+import toTeamMemberId from 'parabol-client/lib/utils/relay/toTeamMemberId'
 import getRethink from '../../database/rethinkDriver'
 import MassInvitationDB from '../../database/types/MassInvitation'
 import {getUserId, isTeamMember} from '../../utils/authorization'

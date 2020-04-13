@@ -14,7 +14,7 @@ import {
 import {SharedUpdater} from '../types/relayMutations'
 import updateProxyRecord from '../utils/relay/updateProxyRecord'
 import {UpdateAgendaItemMutation as TUpdateAgendaItemMutation} from '../__generated__/UpdateAgendaItemMutation.graphql'
-import {UpdateAgendaItemMutation_team} from 'parabol-client/src/__generated__/UpdateAgendaItemMutation_team.graphql'
+import {UpdateAgendaItemMutation_team} from '~/__generated__/UpdateAgendaItemMutation_team.graphql'
 
 graphql`
   fragment UpdateAgendaItemMutation_team on UpdateAgendaItemPayload {

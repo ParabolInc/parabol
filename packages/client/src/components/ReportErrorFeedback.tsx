@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import React, {useState} from 'react'
-import {PALETTE} from 'parabol-client/src/styles/paletteV2'
+import {PALETTE} from '~/styles/paletteV2'
 import DialogContainer from './DialogContainer'
 import DialogContent from './DialogContent'
 import DialogTitle from './DialogTitle'

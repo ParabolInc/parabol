@@ -1,5 +1,5 @@
-import toTeamMemberId from 'parabol-client/src/utils/relay/toTeamMemberId'
-import {MeetingTypeEnum} from 'parabol-client/src/types/graphql'
+import toTeamMemberId from 'parabol-client/lib/utils/relay/toTeamMemberId'
+import {MeetingTypeEnum} from 'parabol-client/lib/types/graphql'
 
 interface MeetingMemberInput {
   id?: string

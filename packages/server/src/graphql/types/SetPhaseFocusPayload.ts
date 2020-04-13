@@ -3,7 +3,7 @@ import {resolveNewMeeting} from '../resolvers'
 import StandardMutationError from './StandardMutationError'
 import RetrospectiveMeeting from './RetrospectiveMeeting'
 import ReflectPhase from './ReflectPhase'
-import {REFLECT} from 'parabol-client/src/utils/constants'
+import {REFLECT} from 'parabol-client/lib/utils/constants'
 import {GQLContext} from '../graphql'
 
 const SetPhaseFocusPayload = new GraphQLObjectType<any, GQLContext>({

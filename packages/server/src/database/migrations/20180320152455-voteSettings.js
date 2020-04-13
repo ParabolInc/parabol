@@ -1,4 +1,4 @@
-import { RETROSPECTIVE } from 'parabol-client/src/utils/constants'
+import {RETROSPECTIVE} from 'parabol-client/lib/utils/constants'
 
 exports.up = async (r) => {
   try {
@@ -27,7 +27,7 @@ exports.up = async (r) => {
   try {
     await r
       .table('MeetingSettings')
-      .filter({ meetingType: RETROSPECTIVE })
+      .filter({meetingType: RETROSPECTIVE})
       .update({
         totalVotes: 5,
         maxVotesPerGroup: 3
@@ -42,7 +42,7 @@ exports.down = async (r) => {
   try {
     await r
       .table('MeetingSettings')
-      .filter({ meetingType: RETROSPECTIVE })
+      .filter({meetingType: RETROSPECTIVE})
       .replace((settings) => settings.without('totalVotes', 'maxVotesPerGroup'))
       .run()
   } catch (e) {

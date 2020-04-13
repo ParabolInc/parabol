@@ -1,4 +1,4 @@
-import {NewMeetingPhaseTypeEnum} from 'parabol-client/src/types/graphql'
+import {NewMeetingPhaseTypeEnum} from 'parabol-client/lib/types/graphql'
 import AgendaItemsStage from './AgendaItemsStage'
 import GenericMeetingPhase from './GenericMeetingPhase'
 

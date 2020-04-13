@@ -7,8 +7,8 @@ import sendSegmentEvent, {sendSegmentIdentify} from '../../utils/sendSegmentEven
 import standardError from '../../utils/standardError'
 import upgradeToPro from './helpers/upgradeToPro'
 import {GQLContext} from '../graphql'
-import {SubscriptionChannel} from 'parabol-client/src/types/constEnums'
-import {OrgUserRole} from 'parabol-client/src/types/graphql'
+import {SubscriptionChannel} from 'parabol-client/lib/types/constEnums'
+import {OrgUserRole} from 'parabol-client/lib/types/graphql'
 import hideConversionModal from './helpers/hideConversionModal'
 
 export default {

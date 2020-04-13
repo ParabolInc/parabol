@@ -3,10 +3,10 @@ import getRethink from '../../database/rethinkDriver'
 import PromoteToTeamLeadPayload from '../types/PromoteToTeamLeadPayload'
 import {getUserId, isTeamLead} from '../../utils/authorization'
 import publish from '../../utils/publish'
-import fromTeamMemberId from 'parabol-client/src/utils/relay/fromTeamMemberId'
-import toTeamMemberId from 'parabol-client/src/utils/relay/toTeamMemberId'
+import fromTeamMemberId from 'parabol-client/lib/utils/relay/fromTeamMemberId'
+import toTeamMemberId from 'parabol-client/lib/utils/relay/toTeamMemberId'
 import standardError from '../../utils/standardError'
-import {SubscriptionChannel} from 'parabol-client/src/types/constEnums'
+import {SubscriptionChannel} from 'parabol-client/lib/types/constEnums'
 
 export default {
   type: PromoteToTeamLeadPayload,

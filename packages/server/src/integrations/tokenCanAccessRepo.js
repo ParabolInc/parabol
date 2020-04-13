@@ -1,5 +1,5 @@
-import { GITHUB_ENDPOINT } from 'parabol-client/src/utils/constants'
-import makeGitHubPostOptions from 'parabol-client/src/utils/makeGitHubPostOptions'
+import {GITHUB_ENDPOINT} from 'parabol-client/lib/utils/constants'
+import makeGitHubPostOptions from 'parabol-client/lib/utils/makeGitHubPostOptions'
 import fetch from 'node-fetch'
 
 // repo collaborators isn't part of github v4 yet, so we'll need to check that using v3
@@ -23,7 +23,7 @@ const tokenCanAccessRepo = async (accessToken, nameWithOwner) => {
 
   const authedPostOptions = makeGitHubPostOptions(accessToken, {
     query: getRepoQuery,
-    variables: { name, owner }
+    variables: {name, owner}
   })
   const ghProfile = await fetch(GITHUB_ENDPOINT, authedPostOptions)
   return ghProfile.json()

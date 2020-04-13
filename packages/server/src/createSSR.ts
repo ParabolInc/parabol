@@ -8,8 +8,6 @@ import PROD from './PROD'
 import {minify} from 'html-minifier-terser'
 import acceptsBrotli from './acceptsBrotli'
 
-let rawHTML
-
 export const getClientKeys = () => {
   const webpackPublicPath = getWebpackPublicPath()
 
@@ -25,28 +23,33 @@ export const getClientKeys = () => {
     stripe: process.env.STRIPE_PUBLISHABLE_KEY
   }
 }
+
+let minifiedHTML: Buffer
+let brotliHTML: Buffer
 const getRaw = () => {
-  if (!rawHTML) {
+  if (!minifiedHTML) {
     const clientIds = getClientKeys()
-    const htmlFile = PROD ? '../../build/index.html' : './template.html'
-    const html = fs.readFileSync(path.join(__dirname, htmlFile), 'utf8')
+    const htmlPath = PROD ? '../../../build/index.html' : '../template.html'
+    const html = fs.readFileSync(path.join(__dirname, htmlPath), 'utf8')
     const extraHead = `<script>${dehydrate('__ACTION__', clientIds)}</script>`
     const devBody = PROD
       ? ''
       : '<script src="/static/vendors.dll.js"></script><script src="/static/app.js"></script>'
 
-    rawHTML = html.replace('<head>', `<head>${extraHead}`).replace('</body>', `${devBody}</body>`)
+    const rawHTML = html
+      .replace('<head>', `<head>${extraHead}`)
+      .replace('</body>', `${devBody}</body>`)
+    minifiedHTML = minify(rawHTML, {
+      collapseBooleanAttributes: true,
+      collapseWhitespace: true,
+      minifyJS: true,
+      removeScriptTypeAttributes: true,
+      removeComments: true
+    })
   }
-  return minify(rawHTML, {
-    collapseBooleanAttributes: true,
-    collapseWhitespace: true,
-    minifyJS: true,
-    removeScriptTypeAttributes: true,
-    removeComments: true
-  })
+  return minifiedHTML
 }
 
-let brotliHTML: Buffer
 const getBrotli = () => {
   if (!brotliHTML) {
     brotliHTML = brotliCompressSync(getRaw())

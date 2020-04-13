@@ -3,7 +3,6 @@
 *.log
 .DS_Store
 .awcache/
-packages/server/.googlecloudkey.json
 .heapprofile
 .heapsnapshot
 .history/
@@ -15,10 +14,9 @@ node_modules/
 package-lock.json
 packages/cypress/screenshots/
 packages/cypress/videos/
-packages/server/graphql/queryMap.json
-packages/server/webpack/dll/
+packages/server/**/queryMap.json
+**/webpack/dll/
 packages/**/lib/*
-packages/**/lib2/*
 rethinkdb_data/
 rethinkdb_dump_*
 schema.graphql

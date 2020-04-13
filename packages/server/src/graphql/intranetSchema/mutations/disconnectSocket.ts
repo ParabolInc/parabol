@@ -4,7 +4,7 @@ import publish from '../../../utils/publish'
 import DisconnectSocketPayload from '../../types/DisconnectSocketPayload'
 import sendSegmentEvent from '../../../utils/sendSegmentEvent'
 import {GQLContext} from '../../graphql'
-import {SubscriptionChannel} from 'parabol-client/src/types/constEnums'
+import {SubscriptionChannel} from 'parabol-client/lib/types/constEnums'
 
 export default {
   name: 'DisconnectSocket',

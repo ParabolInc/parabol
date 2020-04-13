@@ -1,15 +1,15 @@
-import useAtmosphere from 'parabol-client/src/hooks/useAtmosphere'
-import useForm from 'parabol-client/src/hooks/useForm'
-import useMutationProps from 'parabol-client/src/hooks/useMutationProps'
-import useRouter from 'parabol-client/src/hooks/useRouter'
+import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {createFragmentContainer} from 'react-relay'
+import useAtmosphere from '~/hooks/useAtmosphere'
+import useForm from '~/hooks/useForm'
+import useMutationProps from '~/hooks/useMutationProps'
+import useRouter from '~/hooks/useRouter'
+import {ArchiveTeamForm_team} from '~/__generated__/ArchiveTeamForm_team.graphql'
 import FieldLabel from '../../../../components/FieldLabel/FieldLabel'
 import BasicInput from '../../../../components/InputField/BasicInput'
 import ArchiveTeamMutation from '../../../../mutations/ArchiveTeamMutation'
 import Legitity from '../../../../validation/Legitity'
-import graphql from 'babel-plugin-relay/macro'
-import {ArchiveTeamForm_team} from 'parabol-client/src/__generated__/ArchiveTeamForm_team.graphql'
-import {createFragmentContainer} from 'react-relay'
 
 interface Props {
   handleFormBlur: () => any

@@ -1,5 +1,5 @@
 import InvoiceLineItem from './InvoiceLineItem'
-import {InvoiceLineItemEnum} from 'parabol-client/src/types/graphql'
+import {InvoiceLineItemEnum} from 'parabol-client/lib/types/graphql'
 
 interface Input {
   amount: number

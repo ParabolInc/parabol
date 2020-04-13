@@ -2,11 +2,11 @@ import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import GraphQLISO8601Type from '../types/GraphQLISO8601Type'
-import isValidDate from 'parabol-client/src/utils/isValidDate'
+import isValidDate from 'parabol-client/lib/utils/isValidDate'
 import getRethink from '../../database/rethinkDriver'
 import UpdateTaskDueDatePayload from '../types/UpdateTaskDueDatePayload'
 import standardError from '../../utils/standardError'
-import {SubscriptionChannel} from 'parabol-client/src/types/constEnums'
+import {SubscriptionChannel} from 'parabol-client/lib/types/constEnums'
 
 export default {
   type: UpdateTaskDueDatePayload,

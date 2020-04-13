@@ -1,10 +1,10 @@
-import { RETRO_PHASE_ITEM } from 'parabol-client/src/utils/constants'
+import {RETRO_PHASE_ITEM} from 'parabol-client/lib/utils/constants'
 import shortid from 'shortid'
 
 exports.up = async (r) => {
   try {
     await Promise.all([r.tableCreate('ReflectTemplate').run()])
-  } catch (e) { }
+  } catch (e) {}
   try {
     await Promise.all([
       r
@@ -16,7 +16,7 @@ exports.up = async (r) => {
         .indexCreate('teamId')
         .run()
     ])
-  } catch (e) { }
+  } catch (e) {}
 
   const now = new Date()
   const makeTemplate = (name, teamId) => ({
@@ -80,7 +80,7 @@ exports.up = async (r) => {
       return r({
         phaseItemUpdates: r
           .table('CustomPhaseItem')
-          .getAll(teamId, { index: 'teamId' })
+          .getAll(teamId, {index: 'teamId'})
           .update((row) => ({
             templateId,
             createdAt: retrosCreatedAtDate,
@@ -89,7 +89,7 @@ exports.up = async (r) => {
           })),
         settingsUpdates: r
           .table('MeetingSettings')
-          .getAll(teamId, { index: 'teamId' })
+          .getAll(teamId, {index: 'teamId'})
           .update({
             selectedTemplateId: templateId
           })
@@ -120,13 +120,13 @@ exports.up = async (r) => {
       .table('CustomPhaseItem')
       .insert(phaseItemInserts)
       .run()
-  } catch (e) { }
+  } catch (e) {}
 }
 
 exports.down = async (r) => {
   try {
     await Promise.all([r.tableDrop('ReflectTemplate').run()])
-  } catch (e) { }
+  } catch (e) {}
   try {
     const retrosCreatedAtDate = new Date('02/12/2018')
     await r
@@ -138,5 +138,5 @@ exports.down = async (r) => {
       .table('CustomPhaseItem')
       .replace((r) => r.row.without('createdAt', 'updatedAt', 'templateId'))
       .run()
-  } catch (e) { }
+  } catch (e) {}
 }

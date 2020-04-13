@@ -1,5 +1,5 @@
 import Notification from './Notification'
-import {NotificationEnum} from 'parabol-client/src/types/graphql'
+import {NotificationEnum} from 'parabol-client/lib/types/graphql'
 
 interface Input {
   meetingId: string

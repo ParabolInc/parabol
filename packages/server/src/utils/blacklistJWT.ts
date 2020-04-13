@@ -1,5 +1,5 @@
 import getBlacklistJWTKey from './getBlacklistJWTKey'
-import {Threshold, SubscriptionChannel} from 'parabol-client/src/types/constEnums'
+import {Threshold, SubscriptionChannel} from 'parabol-client/lib/types/constEnums'
 import {toEpochSeconds} from './epochTime'
 import publish from './publish'
 import getRedis from './getRedis'

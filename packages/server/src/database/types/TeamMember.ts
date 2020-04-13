@@ -1,4 +1,4 @@
-import toTeamMemberId from 'parabol-client/src/utils/relay/toTeamMemberId'
+import toTeamMemberId from 'parabol-client/lib/utils/relay/toTeamMemberId'
 
 interface Input {
   isNotRemoved?: boolean

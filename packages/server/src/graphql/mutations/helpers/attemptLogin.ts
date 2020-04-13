@@ -1,14 +1,14 @@
 import User from '../../../database/types/User'
-import {AuthIdentityTypeEnum} from 'parabol-client/src/types/graphql'
+import {AuthIdentityTypeEnum} from 'parabol-client/lib/types/graphql'
 import AuthIdentityLocal from '../../../database/types/AuthIdentityLocal'
-import {AuthenticationError, Threshold} from 'parabol-client/src/types/constEnums'
+import {AuthenticationError, Threshold} from 'parabol-client/lib/types/constEnums'
 import {sendSegmentIdentify} from '../../../utils/sendSegmentEvent'
 import AuthToken from '../../../database/types/AuthToken'
 import getRethink from '../../../database/rethinkDriver'
 import bcrypt from 'bcrypt'
 import ms from 'ms'
 import FailedAuthRequest from '../../../database/types/FailedAuthRequest'
-import sleep from 'parabol-client/src/utils/sleep'
+import sleep from 'parabol-client/lib/utils/sleep'
 
 const logFailedLogin = async (ip: string, email: string) => {
   const r = await getRethink()

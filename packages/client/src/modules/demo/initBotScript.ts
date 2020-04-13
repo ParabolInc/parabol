@@ -1,6 +1,6 @@
+import {RetroDemo} from '~/types/constEnums'
 import {DragReflectionDropTargetTypeEnum} from '../../types/graphql'
 import {demoTeamId} from './initDB'
-import {RetroDemo} from 'parabol-client/src/types/constEnums'
 
 // 3 -> 1
 // 4 -> 1

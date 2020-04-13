@@ -1,4 +1,4 @@
-import {GROUP, REFLECT, RETROSPECTIVE, VOTE} from 'parabol-client/src/utils/constants'
+import {GROUP, REFLECT, RETROSPECTIVE, VOTE} from 'parabol-client/lib/utils/constants'
 import addDiscussionTopics from './addDiscussionTopics'
 import removeEmptyReflections from './removeEmptyReflections'
 import Meeting from '../../../database/types/Meeting'

@@ -1,5 +1,5 @@
 import MeetingMember from '../types/MeetingMember'
-import fromTeamMemberId from 'parabol-client/src/utils/relay/fromTeamMemberId'
+import fromTeamMemberId from 'parabol-client/lib/utils/relay/fromTeamMemberId'
 import CheckInPhase from '../types/CheckInPhase'
 import UpdatesPhase from '../types/UpdatesPhase'
 import GenericMeetingPhase from '../types/GenericMeetingPhase'
@@ -13,7 +13,7 @@ exports.up = async (r) => {
     const meetings = await r.table('Meeting').run()
     const completedAgendaItems = await r
       .table('AgendaItem')
-      .filter({ isActive: false })
+      .filter({isActive: false})
       .pluck('id', 'createdAt')
       .run()
     const agendaItemswithMeetingId = completedAgendaItems.map((agendaItem) => {
@@ -46,8 +46,8 @@ exports.up = async (r) => {
       const facilitatorUserId = facilitator ? facilitator.split('::')[0] : null
       meetingMemberInserts.push(
         ...invitees.map((invitee) => {
-          const { id: teamMemberId, present } = invitee
-          const { userId } = fromTeamMemberId(teamMemberId)
+          const {id: teamMemberId, present} = invitee
+          const {userId} = fromTeamMemberId(teamMemberId)
           const member = new MeetingMember(teamId, userId, 'action', meetingId)
           member.isCheckedIn = present
           member.isLegacy = true
@@ -71,7 +71,7 @@ exports.up = async (r) => {
       }))
       const agendaItemIds = agendaItemswithMeetingId
         .filter((agendaItem) => agendaItem.meetingId === meetingId)
-        .map(({ id }) => id)
+        .map(({id}) => id)
       const phases = [
         new CheckInPhase(teamId, meetingNumber - 1, teamMembers),
         new UpdatesPhase(teamMembers),
@@ -118,9 +118,9 @@ exports.down = async (r) => {
   try {
     await r
       .table('TimelineEvent')
-      .filter({ type: 'actionComplete' })
+      .filter({type: 'actionComplete'})
       .replace((row) => {
-        return row.merge({ meetingId: row('legacyMeetingId') }).without('legacyMeetingId')
+        return row.merge({meetingId: row('legacyMeetingId')}).without('legacyMeetingId')
       })
       .run()
   } catch (e) {

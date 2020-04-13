@@ -2,7 +2,7 @@ import {GraphQLBoolean, GraphQLList, GraphQLNonNull} from 'graphql'
 import getRethink from '../../database/rethinkDriver'
 import {requireSU} from '../../utils/authorization'
 import Organization from '../types/Organization'
-import {TierEnum} from 'parabol-client/src/types/graphql'
+import {TierEnum} from 'parabol-client/lib/types/graphql'
 
 export default {
   type: new GraphQLList(new GraphQLNonNull(Organization)),

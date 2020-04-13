@@ -1,5 +1,5 @@
-import {TransitionStatus} from 'parabol-client/src/hooks/useTransition'
 import React from 'react'
+import {TransitionStatus} from '~/hooks/useTransition'
 import BottomNavControl from './BottomNavControl'
 import BottomNavIconLabel from './BottomNavIconLabel'
 

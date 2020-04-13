@@ -8,7 +8,7 @@ import TimelinePriorityTasks from './TimelinePriorityTasks'
 import {PALETTE} from '../styles/paletteV2'
 import TimelineNewFeature from './TimelineNewFeature'
 import {Breakpoint, DashTimeline, NavSidebar} from '../types/constEnums'
-import makeMinWidthMediaQuery from 'parabol-client/src/utils/makeMinWidthMediaQuery'
+import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
 
 interface Props {
   viewer: TimelineRightDrawer_viewer

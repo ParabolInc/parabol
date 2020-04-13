@@ -1,4 +1,4 @@
-import {MeetingTypeEnum} from 'parabol-client/src/types/graphql'
+import {MeetingTypeEnum} from 'parabol-client/lib/types/graphql'
 import {
   AGENDA_ITEMS,
   CHECKIN,
@@ -9,7 +9,7 @@ import {
   REFLECT,
   UPDATES,
   VOTE
-} from 'parabol-client/src/utils/constants'
+} from 'parabol-client/lib/utils/constants'
 import getRethink from '../../../database/rethinkDriver'
 import AgendaItemsPhase from '../../../database/types/AgendaItemsPhase'
 import CheckInPhase from '../../../database/types/CheckInPhase'

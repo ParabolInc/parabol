@@ -10,7 +10,7 @@
  * Tags: scaling
  */
 
-import {InvoiceItemType} from 'parabol-client/src/types/constEnums'
+import {InvoiceItemType} from 'parabol-client/lib/types/constEnums'
 import getRethink from '../../database/rethinkDriver'
 import InvoiceItemHook from '../../database/types/InvoiceItemHook'
 import {toEpochSeconds} from '../../utils/epochTime'

@@ -1,5 +1,5 @@
 import shortid from 'shortid'
-import {InvoiceItemType} from 'parabol-client/src/types/constEnums'
+import {InvoiceItemType} from 'parabol-client/lib/types/constEnums'
 
 interface Input {
   id?: string

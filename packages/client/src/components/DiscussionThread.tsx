@@ -1,14 +1,10 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import {useCoverable} from 'parabol-client/src/hooks/useControlBarCovers'
+import {useCoverable} from '~/hooks/useControlBarCovers'
 import React, {useRef} from 'react'
 import {createFragmentContainer} from 'react-relay'
-import {
-  Breakpoint,
-  DiscussionThreadEnum,
-  MeetingControlBarEnum
-} from 'parabol-client/src/types/constEnums'
-import {DiscussionThread_viewer} from 'parabol-client/src/__generated__/DiscussionThread_viewer.graphql'
+import {Breakpoint, DiscussionThreadEnum, MeetingControlBarEnum} from '~/types/constEnums'
+import {DiscussionThread_viewer} from '~/__generated__/DiscussionThread_viewer.graphql'
 import {Elevation} from '../styles/elevation'
 import makeMinWidthMediaQuery from '../utils/makeMinWidthMediaQuery'
 import DiscussionThreadInput from './DiscussionThreadInput'

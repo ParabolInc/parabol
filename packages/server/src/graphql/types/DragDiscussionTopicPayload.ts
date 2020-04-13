@@ -3,7 +3,7 @@ import {resolveNewMeeting} from '../resolvers'
 import StandardMutationError from './StandardMutationError'
 import NewMeeting from './NewMeeting'
 import RetroDiscussStage from './RetroDiscussStage'
-import {DISCUSS} from 'parabol-client/src/utils/constants'
+import {DISCUSS} from 'parabol-client/lib/utils/constants'
 import {GQLContext} from '../graphql'
 
 const DragDiscussionTopicPayload = new GraphQLObjectType<any, GQLContext>({

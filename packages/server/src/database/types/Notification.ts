@@ -1,5 +1,5 @@
 import shortid from 'shortid'
-import {NotificationStatusEnum, NotificationEnum} from 'parabol-client/src/types/graphql'
+import {NotificationStatusEnum, NotificationEnum} from 'parabol-client/lib/types/graphql'
 
 export interface NotificationInput {
   type: NotificationEnum

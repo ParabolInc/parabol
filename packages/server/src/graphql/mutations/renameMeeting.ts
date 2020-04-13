@@ -1,6 +1,6 @@
 import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
-import {SubscriptionChannel} from 'parabol-client/src/types/constEnums'
-import linkify from 'parabol-client/src/utils/linkify'
+import {SubscriptionChannel} from 'parabol-client/lib/types/constEnums'
+import linkify from 'parabol-client/lib/utils/linkify'
 import getRethink from '../../database/rethinkDriver'
 import {getUserId} from '../../utils/authorization'
 import publish from '../../utils/publish'

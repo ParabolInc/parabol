@@ -1,5 +1,5 @@
 import {GraphQLID, GraphQLInt, GraphQLNonNull} from 'graphql'
-import {OrgUserRole, TierEnum} from 'parabol-client/src/types/graphql'
+import {OrgUserRole, TierEnum} from 'parabol-client/lib/types/graphql'
 import {DataLoaderWorker, GQLContext} from '../../graphql'
 import getRethink from '../../../database/rethinkDriver'
 import {requireSU} from '../../../utils/authorization'

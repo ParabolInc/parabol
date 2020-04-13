@@ -1,4 +1,4 @@
-import toTeamMemberId from 'parabol-client/src/utils/relay/toTeamMemberId'
+import toTeamMemberId from 'parabol-client/lib/utils/relay/toTeamMemberId'
 import getRethink from '../database/rethinkDriver'
 import TeamMember from '../database/types/TeamMember'
 

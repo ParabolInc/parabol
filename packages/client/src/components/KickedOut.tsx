@@ -1,8 +1,8 @@
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
+import {KickedOut_notification} from '~/__generated__/KickedOut_notification.graphql'
 import NotificationTemplate from './NotificationTemplate'
-import {KickedOut_notification} from 'parabol-client/src/__generated__/KickedOut_notification.graphql'
 
 interface Props {
   notification: KickedOut_notification

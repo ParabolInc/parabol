@@ -1,10 +1,10 @@
 import {GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
-import {IActionMeetingMember} from 'parabol-client/src/types/graphql'
+import {IActionMeetingMember} from 'parabol-client/lib/types/graphql'
 import getRethink from '../../database/rethinkDriver'
 import {GQLContext} from '../graphql'
 import MeetingMember, {meetingMemberFields} from './MeetingMember'
 import Task from './Task'
-import isTaskPrivate from 'parabol-client/src/utils/isTaskPrivate'
+import isTaskPrivate from 'parabol-client/lib/utils/isTaskPrivate'
 
 const ActionMeetingMember = new GraphQLObjectType<IActionMeetingMember, GQLContext>({
   name: 'ActionMeetingMember',

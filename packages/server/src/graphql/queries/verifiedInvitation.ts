@@ -5,10 +5,10 @@ import VerifiedInvitationPayload from '../types/VerifiedInvitationPayload'
 import getRethink from '../../database/rethinkDriver'
 import promisify from 'es6-promisify'
 import getSAMLURLFromEmail from '../../utils/getSAMLURLFromEmail'
-import {AuthIdentityTypeEnum, ITeam} from 'parabol-client/src/types/graphql'
+import {AuthIdentityTypeEnum, ITeam} from 'parabol-client/lib/types/graphql'
 import User from '../../database/types/User'
 import {GQLContext} from '../graphql'
-import {InvitationTokenError} from 'parabol-client/src/types/constEnums'
+import {InvitationTokenError} from 'parabol-client/lib/types/constEnums'
 import getBestInvitationMeeting from '../../utils/getBestInvitationMeeting'
 
 const resolveMx = promisify(dns.resolveMx, dns)

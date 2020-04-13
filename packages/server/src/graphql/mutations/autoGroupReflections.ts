@@ -2,13 +2,13 @@ import {GraphQLFloat, GraphQLID, GraphQLNonNull} from 'graphql'
 import getRethink from '../../database/rethinkDriver'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
-import {GROUP} from 'parabol-client/src/utils/constants'
-import isPhaseComplete from 'parabol-client/src/utils/meetings/isPhaseComplete'
+import {GROUP} from 'parabol-client/lib/utils/constants'
+import isPhaseComplete from 'parabol-client/lib/utils/meetings/isPhaseComplete'
 import AutoGroupReflectionsPayload from '../types/AutoGroupReflectionsPayload'
-import groupReflections from 'parabol-client/src/utils/autogroup/groupReflections'
+import groupReflections from 'parabol-client/lib/utils/autogroup/groupReflections'
 import sendSegmentEvent from '../../utils/sendSegmentEvent'
 import standardError from '../../utils/standardError'
-import {SubscriptionChannel} from 'parabol-client/src/types/constEnums'
+import {SubscriptionChannel} from 'parabol-client/lib/types/constEnums'
 
 export default {
   type: AutoGroupReflectionsPayload,

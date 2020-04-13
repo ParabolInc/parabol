@@ -1,5 +1,5 @@
 import MeetingMember from './MeetingMember'
-import {MeetingTypeEnum} from 'parabol-client/src/types/graphql'
+import {MeetingTypeEnum} from 'parabol-client/lib/types/graphql'
 
 interface Input {
   id?: string

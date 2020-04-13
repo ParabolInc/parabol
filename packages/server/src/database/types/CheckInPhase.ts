@@ -1,9 +1,9 @@
-import {NewMeetingPhaseTypeEnum} from 'parabol-client/src/types/graphql'
-import convertToTaskContent from 'parabol-client/src/utils/draftjs/convertToTaskContent'
+import {NewMeetingPhaseTypeEnum} from 'parabol-client/lib/types/graphql'
+import convertToTaskContent from 'parabol-client/lib/utils/draftjs/convertToTaskContent'
 import {
   makeCheckinGreeting,
   makeCheckinQuestion
-} from 'parabol-client/src/utils/makeCheckinGreeting'
+} from 'parabol-client/lib/utils/makeCheckinGreeting'
 import CheckInStage from './CheckInStage'
 import GenericMeetingPhase from './GenericMeetingPhase'
 

@@ -1,12 +1,12 @@
-import {Dispatch, SetStateAction, useEffect, useRef} from 'react'
-import useRouter from './useRouter'
-import {readInlineData} from 'relay-runtime'
-import useAtmosphere from './useAtmosphere'
-import findStageById from '../utils/meetings/findStageById'
-import updateLocalStage from '../utils/relay/updateLocalStage'
-import fromStageIdToUrl from '../utils/meetings/fromStageIdToUrl'
 import graphql from 'babel-plugin-relay/macro'
-import {useUpdatedSafeRoute_meeting} from 'parabol-client/src/__generated__/useUpdatedSafeRoute_meeting.graphql'
+import {Dispatch, SetStateAction, useEffect, useRef} from 'react'
+import {readInlineData} from 'relay-runtime'
+import {useUpdatedSafeRoute_meeting} from '~/__generated__/useUpdatedSafeRoute_meeting.graphql'
+import findStageById from '../utils/meetings/findStageById'
+import fromStageIdToUrl from '../utils/meetings/fromStageIdToUrl'
+import updateLocalStage from '../utils/relay/updateLocalStage'
+import useAtmosphere from './useAtmosphere'
+import useRouter from './useRouter'
 
 const useUpdatedSafeRoute = (setSafeRoute: Dispatch<SetStateAction<boolean>>, meetingRef: any) => {
   const {history} = useRouter()

@@ -5,8 +5,8 @@ import lazyPreload from '../utils/lazyPreload'
 import {MenuPosition} from '../hooks/useCoords'
 import useMenu from '../hooks/useMenu'
 import useRouter from '../hooks/useRouter'
-import {NewMeetingTeamPicker_teams} from 'parabol-client/src/__generated__/NewMeetingTeamPicker_teams.graphql'
-import {NewMeetingTeamPicker_selectedTeam} from 'parabol-client/src/__generated__/NewMeetingTeamPicker_selectedTeam.graphql'
+import {NewMeetingTeamPicker_teams} from '~/__generated__/NewMeetingTeamPicker_teams.graphql'
+import {NewMeetingTeamPicker_selectedTeam} from '~/__generated__/NewMeetingTeamPicker_selectedTeam.graphql'
 import NewMeetingDropdown from './NewMeetingDropdown'
 
 const SelectTeamDropdown = lazyPreload(() =>

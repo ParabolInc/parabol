@@ -2,7 +2,7 @@ import {GraphQLInt} from 'graphql'
 import adjustUserCount from '../../../billing/helpers/adjustUserCount'
 import getRethink from '../../../database/rethinkDriver'
 import {requireSU} from '../../../utils/authorization'
-import {InvoiceItemType, Threshold} from 'parabol-client/src/types/constEnums'
+import {InvoiceItemType, Threshold} from 'parabol-client/lib/types/constEnums'
 
 const autopauseUsers = {
   type: GraphQLInt,

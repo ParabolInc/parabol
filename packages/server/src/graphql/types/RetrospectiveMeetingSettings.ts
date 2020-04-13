@@ -1,7 +1,7 @@
 import {GraphQLID, GraphQLInt, GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import CustomPhaseItem from './CustomPhaseItem'
 import TeamMeetingSettings, {teamMeetingSettingsFields} from './TeamMeetingSettings'
-import {RETRO_PHASE_ITEM} from 'parabol-client/src/utils/constants'
+import {RETRO_PHASE_ITEM} from 'parabol-client/lib/utils/constants'
 import ReflectTemplate from './ReflectTemplate'
 import {GQLContext} from '../graphql'
 

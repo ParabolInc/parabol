@@ -2,7 +2,7 @@ import {GraphQLID, GraphQLInterfaceType, GraphQLList, GraphQLNonNull} from 'grap
 import Reactji from './Reactji'
 import resolveReactjis from '../resolvers/resolveReactjis'
 import getReactableType from './getReactableType'
-import {ReactableEnum} from 'parabol-client/src/types/graphql'
+import {ReactableEnum} from 'parabol-client/lib/types/graphql'
 
 export const reactableFields = () => ({
   id: {

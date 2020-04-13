@@ -6,8 +6,8 @@ import UserTasksHeader from '../modules/userDashboard/components/UserTasksHeader
 import {MyDashboardTasks_viewer} from '../__generated__/MyDashboardTasks_viewer.graphql'
 import filterTeam from '../utils/relay/filterTeam'
 import useAtmosphere from '../hooks/useAtmosphere'
-import useDocumentTitle from 'parabol-client/src/hooks/useDocumentTitle'
-import useStoreQueryRetry from 'parabol-client/src/hooks/useStoreQueryRetry'
+import useDocumentTitle from '~/hooks/useDocumentTitle'
+import useStoreQueryRetry from '~/hooks/useStoreQueryRetry'
 
 interface Props {
   viewer: MyDashboardTasks_viewer

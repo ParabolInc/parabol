@@ -1,4 +1,4 @@
-import {Times} from 'parabol-client/src/types/constEnums'
+import {Times} from 'parabol-client/lib/types/constEnums'
 import handleDisconnect from '../socketHandlers/handleDisconnect'
 import sendSSEMessage from '../sse/sendSSEMessage'
 import ConnectionContext from './ConnectionContext'

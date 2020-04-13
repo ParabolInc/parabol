@@ -6,7 +6,7 @@ import shortid from 'shortid'
 import getRethink from '../../database/rethinkDriver'
 import AtlassianServerManager from '../../utils/AtlassianServerManager'
 import standardError from '../../utils/standardError'
-import {SubscriptionChannel} from 'parabol-client/src/types/constEnums'
+import {SubscriptionChannel} from 'parabol-client/lib/types/constEnums'
 
 export default {
   name: 'AddAtlassianAuth',

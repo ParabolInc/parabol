@@ -1,6 +1,6 @@
-import DashContent from 'parabol-client/src/components/Dashboard/DashContent'
 import React, {lazy, Suspense} from 'react'
 import {Route, RouteComponentProps, Switch} from 'react-router'
+import DashContent from '~/components/Dashboard/DashContent'
 import LoadingComponent from '../../../../components/LoadingComponent/LoadingComponent'
 import {LoaderSize} from '../../../../types/constEnums'
 

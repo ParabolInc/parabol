@@ -5,7 +5,7 @@ import useAtmosphere from '../hooks/useAtmosphere'
 import useRouter from '../hooks/useRouter'
 import renderQuery from '../utils/relay/renderQuery'
 import MeetingSelector from './MeetingSelector'
-import SetAppLocationMutation from 'parabol-client/src/mutations/SetAppLocationMutation'
+import SetAppLocationMutation from '~/mutations/SetAppLocationMutation'
 
 // Changing the name here requires a change to getLastSeenAtURL.ts
 const query = graphql`

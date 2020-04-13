@@ -4,7 +4,7 @@ import RemoveAtlassianAuthPayload from '../types/RemoveAtlassianAuthPayload'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
-import {SubscriptionChannel} from 'parabol-client/src/types/constEnums'
+import {SubscriptionChannel} from 'parabol-client/lib/types/constEnums'
 
 export default {
   name: 'RemoveAtlassianAuth',

@@ -1,4 +1,4 @@
-import { CHECKIN } from 'parabol-client/src/utils/constants'
+import {CHECKIN} from 'parabol-client/lib/utils/constants'
 import shortid from 'shortid'
 
 export const makeCheckInStage = (teamMember, meetingId, isFirstStage) => ({

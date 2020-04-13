@@ -1,6 +1,6 @@
 import {GraphQLScalarType} from 'graphql'
 import {Kind} from 'graphql/language'
-import {urlRegex} from 'parabol-client/src/validation/regex'
+import {urlRegex} from 'parabol-client/lib/validation/regex'
 
 const GraphQLURLType = new GraphQLScalarType({
   name: 'URL',

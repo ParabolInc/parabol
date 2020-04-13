@@ -1,4 +1,4 @@
-import fromTeamMemberId from 'parabol-client/src/utils/relay/fromTeamMemberId'
+import fromTeamMemberId from 'parabol-client/lib/utils/relay/fromTeamMemberId'
 import getRethink from '../../../database/rethinkDriver'
 import CheckInStage from '../../../database/types/CheckInStage'
 import NotificationKickedOut from '../../../database/types/NotificationKickedOut'

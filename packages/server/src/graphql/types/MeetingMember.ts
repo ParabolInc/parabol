@@ -2,13 +2,13 @@ import {GraphQLBoolean, GraphQLID, GraphQLInterfaceType, GraphQLNonNull} from 'g
 import ActionMeetingMember from './ActionMeetingMember'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import MeetingTypeEnum from './MeetingTypeEnum'
-import {ACTION, RETROSPECTIVE} from 'parabol-client/src/utils/constants'
+import {ACTION, RETROSPECTIVE} from 'parabol-client/lib/utils/constants'
 import RetrospectiveMeetingMember from './RetrospectiveMeetingMember'
 import {resolveUser} from '../resolvers'
 import User from './User'
 import TeamMember from './TeamMember'
 import {GQLContext} from '../graphql'
-import toTeamMemberId from 'parabol-client/src/utils/relay/toTeamMemberId'
+import toTeamMemberId from 'parabol-client/lib/utils/relay/toTeamMemberId'
 
 export const meetingMemberFields = () => ({
   id: {

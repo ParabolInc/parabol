@@ -3,10 +3,10 @@ import getRethink from '../../database/rethinkDriver'
 import EditReflectionPayload from '../types/EditReflectionPayload'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
-import isPhaseComplete from 'parabol-client/src/utils/meetings/isPhaseComplete'
+import isPhaseComplete from 'parabol-client/lib/utils/meetings/isPhaseComplete'
 import standardError from '../../utils/standardError'
-import {NewMeetingPhaseTypeEnum} from 'parabol-client/src/types/graphql'
-import {SubscriptionChannel} from 'parabol-client/src/types/constEnums'
+import {NewMeetingPhaseTypeEnum} from 'parabol-client/lib/types/graphql'
+import {SubscriptionChannel} from 'parabol-client/lib/types/constEnums'
 
 export default {
   description: 'Changes the editing state of a user for a phase item',

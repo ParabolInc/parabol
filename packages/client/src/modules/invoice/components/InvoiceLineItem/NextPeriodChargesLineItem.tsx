@@ -1,11 +1,11 @@
-import React from 'react'
-import invoiceLineFormat from '../../helpers/invoiceLineFormat'
-import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import {NextPeriodChargesLineItem_item} from 'parabol-client/src/__generated__/NextPeriodChargesLineItem_item.graphql'
-import plural from '../../../../utils/plural'
-import InvoiceLineItemContent from './InvoiceLineItemContent'
+import React from 'react'
+import {createFragmentContainer} from 'react-relay'
+import {NextPeriodChargesLineItem_item} from '~/__generated__/NextPeriodChargesLineItem_item.graphql'
 import {TierEnum} from '../../../../types/graphql'
+import plural from '../../../../utils/plural'
+import invoiceLineFormat from '../../helpers/invoiceLineFormat'
+import InvoiceLineItemContent from './InvoiceLineItemContent'
 
 interface Props {
   item: NextPeriodChargesLineItem_item

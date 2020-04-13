@@ -2,7 +2,7 @@ import {GraphQLID, GraphQLNonNull} from 'graphql'
 import NewMeeting from '../types/NewMeeting'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import standardError from '../../utils/standardError'
-import toTeamMemberId from 'parabol-client/src/utils/relay/toTeamMemberId'
+import toTeamMemberId from 'parabol-client/lib/utils/relay/toTeamMemberId'
 
 export default {
   type: NewMeeting,

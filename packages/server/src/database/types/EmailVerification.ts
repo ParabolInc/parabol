@@ -1,5 +1,5 @@
 import shortid from 'shortid'
-import {Threshold} from 'parabol-client/src/types/constEnums'
+import {Threshold} from 'parabol-client/lib/types/constEnums'
 
 interface Input {
   id?: string

@@ -1,5 +1,5 @@
 import {GraphQLBoolean, GraphQLID, GraphQLInterfaceType, GraphQLNonNull} from 'graphql'
-import {RETRO_PHASE_ITEM} from 'parabol-client/src/utils/constants'
+import {RETRO_PHASE_ITEM} from 'parabol-client/lib/utils/constants'
 import RetroPhaseItem from './RetroPhaseItem'
 import CustomPhaseItemTypeEnum from './CustomPhaseItemTypeEnum'
 import Team from './Team'

@@ -1,9 +1,9 @@
 import shortid from 'shortid'
-import dndNoise from 'parabol-client/src/utils/dndNoise'
-import getTagsFromEntityMap from 'parabol-client/src/utils/draftjs/getTagsFromEntityMap'
+import dndNoise from 'parabol-client/lib/utils/dndNoise'
+import getTagsFromEntityMap from 'parabol-client/lib/utils/draftjs/getTagsFromEntityMap'
 import TaskIntegrationJira from './TaskIntegrationJira'
 import TaskIntegrationGitHub from './TaskIntegrationGitHub'
-import {ThreadSourceEnum} from 'parabol-client/src/types/graphql'
+import {ThreadSourceEnum} from 'parabol-client/lib/types/graphql'
 
 export type TaskStatus = 'active' | 'stuck' | 'done' | 'future'
 export type TaskTag = 'private' | 'archived'

@@ -8,7 +8,7 @@ import {
   GraphQLObjectType,
   GraphQLString
 } from 'graphql'
-import isTaskPrivate from 'parabol-client/src/utils/isTaskPrivate'
+import isTaskPrivate from 'parabol-client/lib/utils/isTaskPrivate'
 import Comment from '../../database/types/Comment'
 import TaskDB from '../../database/types/Task'
 import {Threadable} from '../../database/types/Threadable'
@@ -145,7 +145,7 @@ const RetroReflectionGroup = new GraphQLObjectType<any, GQLContext>({
           filteredThreadables.push(threadable)
           if (replies) {
             replies.sort((a, b) => (a.threadSortOrder < b.threadSortOrder ? -1 : 1))
-              ; (threadable as any).replies = replies
+            ;(threadable as any).replies = replies
           }
         })
 

@@ -1,5 +1,5 @@
 import {GraphQLEnumType} from 'graphql'
-import {ASSIGNEE, MENTIONEE} from 'parabol-client/src/utils/constants'
+import {ASSIGNEE, MENTIONEE} from 'parabol-client/lib/utils/constants'
 
 const TaskInvolvementType = new GraphQLEnumType({
   name: 'TaskInvolvementType',

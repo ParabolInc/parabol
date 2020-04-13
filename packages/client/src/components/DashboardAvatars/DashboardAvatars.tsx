@@ -1,13 +1,13 @@
-import {DashboardAvatars_team} from '../../__generated__/DashboardAvatars_team.graphql'
-import React from 'react'
 import styled from '@emotion/styled'
-import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
+import React from 'react'
+import {createFragmentContainer} from 'react-relay'
+import {Breakpoint} from '~/types/constEnums'
+import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
+import {DashboardAvatars_team} from '../../__generated__/DashboardAvatars_team.graphql'
 import AddTeamMemberAvatarButton from '../AddTeamMemberAvatarButton'
-import DashboardAvatar from './DashboardAvatar'
 import ErrorBoundary from '../ErrorBoundary'
-import {Breakpoint} from 'parabol-client/src/types/constEnums'
-import makeMinWidthMediaQuery from 'parabol-client/src/utils/makeMinWidthMediaQuery'
+import DashboardAvatar from './DashboardAvatar'
 
 const desktopBreakpoint = makeMinWidthMediaQuery(Breakpoint.SIDEBAR_LEFT)
 

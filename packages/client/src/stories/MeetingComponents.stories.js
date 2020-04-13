@@ -3,7 +3,7 @@ import React from 'react'
 // import {action} from '@storybook/addon-actions';
 import {storiesOf} from '@storybook/react'
 
-import MeetingFacilitatorBar from 'parabol-client/src/modules/meeting/components/MeetingControlBar/MeetingFacilitatorBar'
+import MeetingFacilitatorBar from '~/modules/meeting/components/MeetingControlBar/MeetingFacilitatorBar'
 import MeetingPhaseHeading from '../modules/meeting/components/MeetingPhaseHeading/MeetingPhaseHeading'
 import MeetingCopy from '../modules/meeting/components/MeetingCopy/MeetingCopy'
 

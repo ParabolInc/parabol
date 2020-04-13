@@ -1,5 +1,5 @@
 import base64url from 'base64url'
-import getSSODomainFromEmail from 'parabol-client/src/utils/getSSODomainFromEmail'
+import getSSODomainFromEmail from 'parabol-client/lib/utils/getSSODomainFromEmail'
 import getRethink from '../database/rethinkDriver'
 import {URL} from 'url'
 

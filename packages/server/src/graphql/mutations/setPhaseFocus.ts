@@ -3,10 +3,10 @@ import getRethink from '../../database/rethinkDriver'
 import {getUserId} from '../../utils/authorization'
 import SetPhaseFocusPayload from '../types/SetPhaseFocusPayload'
 import publish from '../../utils/publish'
-import {GROUP, REFLECT} from 'parabol-client/src/utils/constants'
-import isPhaseComplete from 'parabol-client/src/utils/meetings/isPhaseComplete'
+import {GROUP, REFLECT} from 'parabol-client/lib/utils/constants'
+import isPhaseComplete from 'parabol-client/lib/utils/meetings/isPhaseComplete'
 import standardError from '../../utils/standardError'
-import {SubscriptionChannel} from 'parabol-client/src/types/constEnums'
+import {SubscriptionChannel} from 'parabol-client/lib/types/constEnums'
 import ReflectPhase from '../../database/types/ReflectPhase'
 
 const setPhaseFocus = {

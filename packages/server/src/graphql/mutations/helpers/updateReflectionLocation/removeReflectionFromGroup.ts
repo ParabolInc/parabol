@@ -1,4 +1,4 @@
-import getGroupSmartTitle from 'parabol-client/src/utils/autogroup/getGroupSmartTitle'
+import getGroupSmartTitle from 'parabol-client/lib/utils/autogroup/getGroupSmartTitle'
 import getRethink from '../../../../database/rethinkDriver'
 import updateSmartGroupTitle from './updateSmartGroupTitle'
 import ReflectionGroup from '../../../../database/types/ReflectionGroup'

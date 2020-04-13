@@ -1,6 +1,6 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
-import {SubscriptionChannel} from 'parabol-client/src/types/constEnums'
-import {InvoiceStatusEnum, OrgUserRole} from 'parabol-client/src/types/graphql'
+import {SubscriptionChannel} from 'parabol-client/lib/types/constEnums'
+import {InvoiceStatusEnum, OrgUserRole} from 'parabol-client/lib/types/graphql'
 import fetchAllLines from '../../../billing/helpers/fetchAllLines'
 import terminateSubscription from '../../../billing/helpers/terminateSubscription'
 import getRethink from '../../../database/rethinkDriver'

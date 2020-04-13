@@ -8,7 +8,7 @@ import rateLimit from '../rateLimit'
 import ms from 'ms'
 import PushInvitationPayload from '../types/PushInvitationPayload'
 import PushInvitation from '../../database/types/PushInvitation'
-import {SubscriptionChannel} from 'parabol-client/src/types/constEnums'
+import {SubscriptionChannel} from 'parabol-client/lib/types/constEnums'
 
 const MAX_GLOBAL_DENIALS = 3
 const GLOBAL_DENIAL_TIME = ms('30d')

@@ -5,16 +5,13 @@
   "author": "Matt Krick <matt.krick@gmail.com>",
   "homepage": "https://github.com/ParabolInc/parabol/tree/master/packages/gqlExecutor#readme",
   "license": "AGPL-3.0-or-later",
-  "main": "lib/index.js",
+  "main": "lib/gqlExecutor.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ParabolInc/parabol.git"
   },
   "scripts": {
-    "sucrase": "sucrase src -d lib --transforms=imports,jsx,typescript",
-    "babel": "babel lib-tmp lib",
-    "tsc": "tsc",
-    "debug": "babel -d lib2 lib",
+    "sucrase": "sucrase src -d lib --transforms=imports,jsx,typescript -q",
     "dev": "ts-node-dev --respawn --transpileOnly ./src/index.ts",
     "start": "node ./lib/gql-executor/src/index.js"
   },

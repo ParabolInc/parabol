@@ -1,5 +1,5 @@
 import Stripe from 'stripe'
-import {InvoiceItemType} from 'parabol-client/src/types/constEnums'
+import {InvoiceItemType} from 'parabol-client/lib/types/constEnums'
 import IInvoiceLineItemRetrievalOptions = Stripe.invoices.IInvoiceLineItemRetrievalOptions
 
 export default class StripeManager {

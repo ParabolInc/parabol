@@ -1,13 +1,13 @@
+import styled from '@emotion/styled'
+import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {createFragmentContainer} from 'react-relay'
+import {InvoiceHeader_invoice} from '~/__generated__/InvoiceHeader_invoice.graphql'
+import TierTag from '../../../../components/Tag/TierTag'
+import {PALETTE} from '../../../../styles/paletteV2'
 import defaultOrgAvatar from '../../../../styles/theme/images/avatar-organization.svg'
 import {Breakpoint} from '../../../../types/constEnums'
-import graphql from 'babel-plugin-relay/macro'
-import {createFragmentContainer} from 'react-relay'
-import {InvoiceHeader_invoice} from 'parabol-client/src/__generated__/InvoiceHeader_invoice.graphql'
-import styled from '@emotion/styled'
-import {PALETTE} from '../../../../styles/paletteV2'
 import {TierEnum} from '../../../../types/graphql'
-import TierTag from '../../../../components/Tag/TierTag'
 
 const Header = styled('div')({
   alignItems: 'center',

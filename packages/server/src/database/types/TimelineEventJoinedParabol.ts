@@ -1,11 +1,11 @@
 import TimelineEvent from './TimelineEvent'
-import {TimelineEventEnum} from 'parabol-client/src/types/graphql'
+import {TimelineEventEnum} from 'parabol-client/lib/types/graphql'
 
 interface Input {
   id?: string
   createdAt?: Date
-  interactionCount?: number,
-  seenCount?: number,
+  interactionCount?: number
+  seenCount?: number
   userId: string
 }
 export default class TimelineEventJoinedParabol extends TimelineEvent {

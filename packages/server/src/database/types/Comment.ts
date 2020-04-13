@@ -1,7 +1,7 @@
 import shortid from 'shortid'
 import Reactji from './Reactji'
-import {ThreadSourceEnum} from 'parabol-client/src/types/graphql'
-import extractTextFromDraftString from 'parabol-client/src/utils/draftjs/extractTextFromDraftString'
+import {ThreadSourceEnum} from 'parabol-client/lib/types/graphql'
+import extractTextFromDraftString from 'parabol-client/lib/utils/draftjs/extractTextFromDraftString'
 
 export interface CommentInput {
   id?: string

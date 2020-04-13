@@ -1,12 +1,12 @@
-import React, {useState} from 'react'
-import LinkButton from '../../../../components/LinkButton'
-import IconLabel from '../../../../components/IconLabel'
-import ArchiveOrganizationForm from './ArchiveOrganizationForm'
 import styled from '@emotion/styled'
-import {PALETTE} from '../../../../styles/paletteV2'
-import {ArchiveOrganization_organization} from 'parabol-client/src/__generated__/ArchiveOrganization_organization.graphql'
 import graphql from 'babel-plugin-relay/macro'
+import React, {useState} from 'react'
 import {createFragmentContainer} from 'react-relay'
+import {ArchiveOrganization_organization} from '~/__generated__/ArchiveOrganization_organization.graphql'
+import IconLabel from '../../../../components/IconLabel'
+import LinkButton from '../../../../components/LinkButton'
+import {PALETTE} from '../../../../styles/paletteV2'
+import ArchiveOrganizationForm from './ArchiveOrganizationForm'
 
 interface Props {
   organization: ArchiveOrganization_organization

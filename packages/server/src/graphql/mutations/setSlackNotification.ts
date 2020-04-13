@@ -10,8 +10,8 @@ import SlackNotification, {
   slackNotificationEventTypeLookup
 } from '../../database/types/SlackNotification'
 import SlackNotificationEventEnum from '../types/SlackNotificationEventEnum'
-import {ISetSlackNotificationOnMutationArguments} from 'parabol-client/src/types/graphql'
-import {SubscriptionChannel} from 'parabol-client/src/types/constEnums'
+import {ISetSlackNotificationOnMutationArguments} from 'parabol-client/lib/types/graphql'
+import {SubscriptionChannel} from 'parabol-client/lib/types/constEnums'
 
 export default {
   name: 'SetSlackNotification',

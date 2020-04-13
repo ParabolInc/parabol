@@ -1,4 +1,4 @@
-import {ThreadSourceEnum} from 'parabol-client/src/types/graphql'
+import {ThreadSourceEnum} from 'parabol-client/lib/types/graphql'
 import {DataLoaderWorker} from '../graphql'
 
 const validateThreadableReflectionGroupId = async (

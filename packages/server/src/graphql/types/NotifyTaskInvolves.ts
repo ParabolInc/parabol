@@ -7,7 +7,7 @@ import TeamMember from './TeamMember'
 import TeamNotification from './TeamNotification'
 import {GQLContext} from '../graphql'
 import {isTeamMember, getUserId} from '../../utils/authorization'
-import isTaskPrivate from 'parabol-client/src/utils/isTaskPrivate'
+import isTaskPrivate from 'parabol-client/lib/utils/isTaskPrivate'
 
 const NotifyTaskInvolves = new GraphQLObjectType<any, GQLContext, any>({
   name: 'NotifyTaskInvolves',

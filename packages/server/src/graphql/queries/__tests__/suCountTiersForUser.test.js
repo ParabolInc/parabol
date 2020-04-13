@@ -3,17 +3,17 @@ import mockAuthToken from '../../../__tests__/setup/mockAuthToken'
 import MockDB from '../../../__tests__/setup/MockDB'
 import expectAsyncToThrow from '../../../__tests__/utils/expectAsyncToThrow'
 import suCountTiersForUser from '../suCountTiersForUser'
-import { PRO } from 'parabol-client/src/utils/constants'
+import {PRO} from 'parabol-client/lib/utils/constants'
 
 console.error = jest.fn()
 
 test('return counts for a userId', async () => {
   // SETUP
   const mockDB = new MockDB()
-  const { user } = await mockDB.init()
-  const authToken = mockAuthToken(user[0], { rol: 'su' })
+  const {user} = await mockDB.init()
+  const authToken = mockAuthToken(user[0], {rol: 'su'})
   // TEST
-  const result = await suCountTiersForUser.resolve(undefined, { userId: user[0].id }, { authToken })
+  const result = await suCountTiersForUser.resolve(undefined, {userId: user[0].id}, {authToken})
 
   // VERIFY
   expect(result.tierPersonalCount).toBeGreaterThanOrEqual(0)
@@ -25,13 +25,13 @@ test('return counts for a userId', async () => {
 test('pro count increments on new Pro Org for userId', async () => {
   // SETUP
   const mockDB = new MockDB()
-  await mockDB.init().newOrg({ name: 'Marvel', tier: PRO })
-  const authToken = mockAuthToken(mockDB.context.user, { rol: 'su' })
+  await mockDB.init().newOrg({name: 'Marvel', tier: PRO})
+  const authToken = mockAuthToken(mockDB.context.user, {rol: 'su'})
   // TEST
   const result = await suCountTiersForUser.resolve(
     undefined,
-    { userId: mockDB.context.user.id },
-    { authToken }
+    {userId: mockDB.context.user.id},
+    {authToken}
   )
 
   // VERIFY
@@ -44,11 +44,11 @@ test('pro count increments on new Pro Org for userId', async () => {
 test('user token requires su role', async () => {
   // SETUP
   const mockDB = new MockDB()
-  const { user } = await mockDB.init()
+  const {user} = await mockDB.init()
   const authToken = mockAuthToken(user[0])
 
   // TEST & VERIFY
   await expectAsyncToThrow(
-    suCountTiersForUser.resolve(undefined, { userId: user[0].id }, { authToken })
+    suCountTiersForUser.resolve(undefined, {userId: user[0].id}, {authToken})
   )
 })

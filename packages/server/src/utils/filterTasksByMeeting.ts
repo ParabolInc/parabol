@@ -1,4 +1,4 @@
-import isTaskPrivate from 'parabol-client/src/utils/isTaskPrivate'
+import isTaskPrivate from 'parabol-client/lib/utils/isTaskPrivate'
 import Task from '../database/types/Task'
 
 const filterTasksByMeeting = (tasks: Task[], meetingId: string, viewerId: string) => {

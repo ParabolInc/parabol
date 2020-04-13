@@ -8,7 +8,7 @@ import publish from '../../utils/publish'
 import {GQLContext} from '../graphql'
 import SlackNotification, {SlackNotificationEvent} from '../../database/types/SlackNotification'
 import SlackAuth from '../../database/types/SlackAuth'
-import {SubscriptionChannel} from 'parabol-client/src/types/constEnums'
+import {SubscriptionChannel} from 'parabol-client/lib/types/constEnums'
 
 const upsertNotifications = async (
   viewerId: string,

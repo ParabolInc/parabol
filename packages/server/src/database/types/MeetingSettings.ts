@@ -1,5 +1,5 @@
 import shortid from 'shortid'
-import {MeetingTypeEnum, NewMeetingPhaseTypeEnum} from 'parabol-client/src/types/graphql'
+import {MeetingTypeEnum, NewMeetingPhaseTypeEnum} from 'parabol-client/lib/types/graphql'
 
 interface Input {
   id?: string

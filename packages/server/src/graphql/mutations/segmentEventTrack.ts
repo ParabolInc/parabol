@@ -6,7 +6,7 @@ import SegmentEventTrackOptions from '../types/SegmentEventTrackOptions'
 import {getUserId, isTeamMember, isUserBillingLeader} from '../../utils/authorization'
 import sendSegmentEvent from '../../utils/sendSegmentEvent'
 import standardError from '../../utils/standardError'
-import {ISegmentEventTrackOnMutationArguments} from 'parabol-client/src/types/graphql'
+import {ISegmentEventTrackOnMutationArguments} from 'parabol-client/lib/types/graphql'
 
 const extraOptionsCreator = {
   HelpMenuOpen: async (viewerId: string, _dataLoader: DataLoaderWorker, _options: object) => {

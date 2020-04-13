@@ -1,5 +1,5 @@
 import getRethink from '../database/rethinkDriver'
-import {TierEnum} from 'parabol-client/src/types/graphql'
+import {TierEnum} from 'parabol-client/lib/types/graphql'
 
 // Only does something if the organization is empty & not paid
 // safeArchiveTeam & downgradeToPersonal should be called before calling this

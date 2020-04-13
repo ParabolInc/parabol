@@ -1,11 +1,11 @@
-import React from 'react'
 import graphql from 'babel-plugin-relay/macro'
-import {RouteComponentProps} from 'react-router'
-import useAtmosphere from '../hooks/useAtmosphere'
-import InvitationLink from './InvitationLink'
+import React from 'react'
 import {QueryRenderer} from 'react-relay'
-import {InvitationLinkRootQuery} from 'parabol-client/src/__generated__/InvitationLinkRootQuery.graphql'
+import {RouteComponentProps} from 'react-router'
+import {InvitationLinkRootQuery} from '~/__generated__/InvitationLinkRootQuery.graphql'
+import useAtmosphere from '../hooks/useAtmosphere'
 import useNoIndex from '../hooks/useNoIndex'
+import InvitationLink from './InvitationLink'
 
 interface Props extends RouteComponentProps<{token: string}> {}
 

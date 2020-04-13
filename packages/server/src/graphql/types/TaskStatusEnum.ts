@@ -1,5 +1,5 @@
 import {GraphQLEnumType} from 'graphql'
-import {ACTIVE, DONE, FUTURE, STUCK} from 'parabol-client/src/utils/constants'
+import {ACTIVE, DONE, FUTURE, STUCK} from 'parabol-client/lib/utils/constants'
 
 const TaskStatusEnum = new GraphQLEnumType({
   name: 'TaskStatusEnum',

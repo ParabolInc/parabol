@@ -1,7 +1,7 @@
 import * as validator from '@authenio/samlify-node-xmllint'
 import base64url from 'base64url'
 import {GraphQLNonNull, GraphQLString} from 'graphql'
-import getSSODomainFromEmail from 'parabol-client/src/utils/getSSODomainFromEmail'
+import getSSODomainFromEmail from 'parabol-client/lib/utils/getSSODomainFromEmail'
 import querystring from 'querystring'
 import * as samlify from 'samlify'
 import shortid from 'shortid'
@@ -14,7 +14,7 @@ import bootstrapNewUser from '../../mutations/helpers/bootstrapNewUser'
 import SAML from '../../../database/types/SAML'
 import {SSORelayState} from '../../queries/SAMLIdP'
 import LoginSAMLPayload from '../types/LoginSAMLPayload'
-import {TierEnum} from 'parabol-client/src/types/graphql'
+import {TierEnum} from 'parabol-client/lib/types/graphql'
 
 const serviceProvider = samlify.ServiceProvider({})
 samlify.setSchemaValidator(validator)

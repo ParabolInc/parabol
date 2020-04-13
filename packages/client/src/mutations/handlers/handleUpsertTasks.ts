@@ -1,6 +1,6 @@
-import getReflectionGroupThreadConn from 'parabol-client/src/mutations/connections/getReflectionGroupThreadConn'
 import {RecordProxy, RecordSourceSelectorProxy} from 'relay-runtime'
-import {ThreadSourceEnum} from 'parabol-client/src/types/graphql'
+import getReflectionGroupThreadConn from '~/mutations/connections/getReflectionGroupThreadConn'
+import {ThreadSourceEnum} from '~/types/graphql'
 import addNodeToArray from '../../utils/relay/addNodeToArray'
 import safeRemoveNodeFromConn from '../../utils/relay/safeRemoveNodeFromConn'
 import getArchivedTasksConn from '../connections/getArchivedTasksConn'

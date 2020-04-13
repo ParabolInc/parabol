@@ -29,7 +29,6 @@ if (!PROD) {
   getWebpackDevMiddleware()
 }
 
-console.log('here')
 uws
   .App()
   .get('/favicon.ico', PWAHandler)

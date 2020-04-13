@@ -1,11 +1,11 @@
-import React from 'react'
-import PlainButton from './PlainButton/PlainButton'
 import styled from '@emotion/styled'
+import React from 'react'
+import {MenuPosition} from '~/hooks/useCoords'
+import useMenu from '~/hooks/useMenu'
+import {PALETTE} from '~/styles/paletteV2'
+import lazyPreload from '~/utils/lazyPreload'
 import Icon from './Icon'
-import {PALETTE} from 'parabol-client/src/styles/paletteV2'
-import useMenu from 'parabol-client/src/hooks/useMenu'
-import {MenuPosition} from 'parabol-client/src/hooks/useCoords'
-import lazyPreload from 'parabol-client/src/utils/lazyPreload'
+import PlainButton from './PlainButton/PlainButton'
 
 const CommentAuthorOptionsDropdown = lazyPreload(() =>
   import(/* webpackChunkName: 'CommentAuthorOptionsDropdown' */ './CommentAuthorOptionsDropdown')

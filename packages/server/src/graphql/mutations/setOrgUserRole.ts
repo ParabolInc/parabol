@@ -1,6 +1,6 @@
 import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
-import {SubscriptionChannel} from 'parabol-client/src/types/constEnums'
-import {OrgUserRole} from 'parabol-client/src/types/graphql'
+import {SubscriptionChannel} from 'parabol-client/lib/types/constEnums'
+import {OrgUserRole} from 'parabol-client/lib/types/graphql'
 import getRethink from '../../database/rethinkDriver'
 import NotificationPromoteToBillingLeader from '../../database/types/NotificationPromoteToBillingLeader'
 import {getUserId, isUserBillingLeader} from '../../utils/authorization'

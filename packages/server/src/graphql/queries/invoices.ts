@@ -1,5 +1,5 @@
 import {GraphQLID, GraphQLNonNull, GraphQLInt} from 'graphql'
-import {InvoiceStatusEnum} from 'parabol-client/src/types/graphql'
+import {InvoiceStatusEnum} from 'parabol-client/lib/types/graphql'
 import getRethink from '../../database/rethinkDriver'
 import Invoice from '../../database/types/Invoice'
 import {getUserId, isUserBillingLeader} from '../../utils/authorization'

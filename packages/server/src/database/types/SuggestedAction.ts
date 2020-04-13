@@ -1,12 +1,12 @@
 import shortid from 'shortid'
-import {SuggestedActionTypeEnum} from 'parabol-client/src/types/graphql'
+import {SuggestedActionTypeEnum} from 'parabol-client/lib/types/graphql'
 
 interface Input {
-  id?: string,
-  createdAt?: Date,
-  priority: number,
-  removedAt?: Date | null,
-  type: SuggestedActionTypeEnum,
+  id?: string
+  createdAt?: Date
+  priority: number
+  removedAt?: Date | null
+  type: SuggestedActionTypeEnum
   userId: string
 }
 

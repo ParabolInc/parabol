@@ -5,7 +5,7 @@ import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import AddReflectTemplatePayload from '../types/AddReflectTemplatePayload'
 import makeRetroTemplates from './helpers/makeRetroTemplates'
-import {SubscriptionChannel} from 'parabol-client/src/types/constEnums'
+import {SubscriptionChannel} from 'parabol-client/lib/types/constEnums'
 
 const addReflectTemplate = {
   description: 'Add a new template full of prompts',

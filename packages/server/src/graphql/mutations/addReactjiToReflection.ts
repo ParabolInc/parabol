@@ -1,7 +1,7 @@
 // DEPRECATED, USE ADDREACTJITOENTITY
 import {GraphQLBoolean, GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
-import {SubscriptionChannel, Threshold} from 'parabol-client/src/types/constEnums'
-import toTeamMemberId from 'parabol-client/src/utils/relay/toTeamMemberId'
+import {SubscriptionChannel, Threshold} from 'parabol-client/lib/types/constEnums'
+import toTeamMemberId from 'parabol-client/lib/utils/relay/toTeamMemberId'
 import getRethink from '../../database/rethinkDriver'
 import {getUserId} from '../../utils/authorization'
 import emojiIds from '../../utils/emojiIds'

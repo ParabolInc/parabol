@@ -1,5 +1,5 @@
 import getRethink from '../../../database/rethinkDriver'
-import {OrgUserRole, TierEnum} from 'parabol-client/src/types/graphql'
+import {OrgUserRole, TierEnum} from 'parabol-client/lib/types/graphql'
 import Organization from '../../../database/types/Organization'
 import OrganizationUser from '../../../database/types/OrganizationUser'
 

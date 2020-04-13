@@ -1,5 +1,5 @@
 import mime from 'mime-types'
-import { APP_MAX_AVATAR_FILE_SIZE } from 'parabol-client/src/utils/constants'
+import {APP_MAX_AVATAR_FILE_SIZE} from 'parabol-client/lib/utils/constants'
 
 const validateAvatarUpload = (contentType, contentLength) => {
   if (typeof process.env.CDN_BASE_URL === 'undefined') {

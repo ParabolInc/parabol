@@ -3,7 +3,7 @@ import {readInlineData} from 'relay-runtime'
 import findStageById from '../utils/meetings/findStageById'
 import findStageAfterId from '../utils/meetings/findStageAfterId'
 import graphql from 'babel-plugin-relay/macro'
-import {useGotoNext_meeting} from 'parabol-client/src/__generated__/useGotoNext_meeting.graphql'
+import {useGotoNext_meeting} from '~/__generated__/useGotoNext_meeting.graphql'
 import useGotoStageId from './useGotoStageId'
 
 export const useGotoNext = (meetingRef: any, gotoStageId: ReturnType<typeof useGotoStageId>) => {

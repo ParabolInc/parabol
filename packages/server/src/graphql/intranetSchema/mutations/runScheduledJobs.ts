@@ -1,5 +1,5 @@
 import {GraphQLInt, GraphQLNonNull} from 'graphql'
-import {SubscriptionChannel} from 'parabol-client/src/types/constEnums'
+import {SubscriptionChannel} from 'parabol-client/lib/types/constEnums'
 import getRethink from '../../../database/rethinkDriver'
 import Meeting from '../../../database/types/Meeting'
 import NotificationMeetingStageTimeLimitEnd from '../../../database/types/NotificationMeetingStageTimeLimitEnd'

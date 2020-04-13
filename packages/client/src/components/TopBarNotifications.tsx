@@ -1,12 +1,12 @@
 import graphql from 'babel-plugin-relay/macro'
-import {MenuPosition} from 'parabol-client/src/hooks/useCoords'
-import useMenu from 'parabol-client/src/hooks/useMenu'
 import React, {useRef} from 'react'
 import {createFragmentContainer} from 'react-relay'
-import lazyPreload from 'parabol-client/src/utils/lazyPreload'
-import TopBarIcon from './TopBarIcon'
-import {TopBarNotifications_viewer} from 'parabol-client/src/__generated__/TopBarNotifications_viewer.graphql'
+import {MenuPosition} from '~/hooks/useCoords'
+import useMenu from '~/hooks/useMenu'
+import lazyPreload from '~/utils/lazyPreload'
+import {TopBarNotifications_viewer} from '~/__generated__/TopBarNotifications_viewer.graphql'
 import {NotificationStatusEnum} from '../types/graphql'
+import TopBarIcon from './TopBarIcon'
 
 const NotificationDropdown = lazyPreload(() =>
   import(

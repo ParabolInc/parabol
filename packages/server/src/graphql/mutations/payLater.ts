@@ -5,7 +5,7 @@ import PayLaterPayload from '../types/PayLaterPayload'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import sendSegmentEvent from '../../utils/sendSegmentEvent'
-import {SubscriptionChannel} from 'parabol-client/src/types/constEnums'
+import {SubscriptionChannel} from 'parabol-client/lib/types/constEnums'
 import publish from '../../utils/publish'
 import Meeting from '../../database/types/Meeting'
 

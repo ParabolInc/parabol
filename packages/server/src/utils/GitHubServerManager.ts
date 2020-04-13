@@ -1,5 +1,5 @@
 import fetch from 'node-fetch'
-import GitHubManager from 'parabol-client/src/utils/GitHubManager'
+import GitHubManager from 'parabol-client/lib/utils/GitHubManager'
 import {stringify} from 'querystring'
 
 interface OAuth2Response {

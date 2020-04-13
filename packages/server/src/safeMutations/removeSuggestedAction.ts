@@ -1,5 +1,5 @@
 import getRethink from '../database/rethinkDriver'
-import {SuggestedActionTypeEnum} from 'parabol-client/src/types/graphql'
+import {SuggestedActionTypeEnum} from 'parabol-client/lib/types/graphql'
 
 const removeSuggestedAction = async (userId: string, type: SuggestedActionTypeEnum) => {
   const r = await getRethink()

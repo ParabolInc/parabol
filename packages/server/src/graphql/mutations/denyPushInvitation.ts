@@ -7,7 +7,7 @@ import rateLimit from '../rateLimit'
 import DenyPushInvitationPayload from '../types/DenyPushInvitationPayload'
 import PushInvitation from '../../database/types/PushInvitation'
 import publish from '../../utils/publish'
-import {SubscriptionChannel} from 'parabol-client/src/types/constEnums'
+import {SubscriptionChannel} from 'parabol-client/lib/types/constEnums'
 
 export default {
   type: DenyPushInvitationPayload,

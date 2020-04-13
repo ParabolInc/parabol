@@ -1,14 +1,14 @@
 import shortid from 'shortid'
-import {TimelineEventEnum} from 'parabol-client/src/types/graphql'
+import {TimelineEventEnum} from 'parabol-client/lib/types/graphql'
 
 // export type ScheduledJobType = 'MEETING_STAGE_TIME_LIMIT_END'
 
 interface Input {
   id?: string
   createdAt?: Date
-  interactionCount?: number,
-  seenCount?: number,
-  type: TimelineEventEnum,
+  interactionCount?: number
+  seenCount?: number
+  type: TimelineEventEnum
   userId: string
 }
 

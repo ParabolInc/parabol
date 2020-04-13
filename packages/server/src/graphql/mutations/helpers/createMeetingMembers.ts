@@ -1,4 +1,4 @@
-import {MeetingTypeEnum} from 'parabol-client/src/types/graphql'
+import {MeetingTypeEnum} from 'parabol-client/lib/types/graphql'
 import ActionMeetingMember from '../../../database/types/ActionMeetingMember'
 import Meeting from '../../../database/types/Meeting'
 import MeetingRetrospective from '../../../database/types/MeetingRetrospective'

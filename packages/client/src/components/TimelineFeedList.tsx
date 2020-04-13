@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
-import useLoadMoreOnScrollBottom from 'parabol-client/src/hooks/useLoadMoreOnScrollBottom'
 import React from 'react'
 import {createPaginationContainer, RelayPaginationProp} from 'react-relay'
+import useLoadMoreOnScrollBottom from '~/hooks/useLoadMoreOnScrollBottom'
 import {TimelineFeedList_viewer} from '../__generated__/TimelineFeedList_viewer.graphql'
 import TimelineEvent from './TimelineEvent'
 

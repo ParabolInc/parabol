@@ -1,4 +1,4 @@
-import { LOBBY, SUMMARY } from 'parabol-client/src/utils/constants'
+import {LOBBY, SUMMARY} from 'parabol-client/lib/utils/constants'
 
 exports.up = async (r) => {
   try {

@@ -6,7 +6,7 @@ import {MenuProps} from '../../../hooks/useMenu'
 import TaskFooterTeamAssigneeMenu from './OutcomeCardAssignMenu/TaskFooterTeamAssigneeMenu'
 import renderQuery from '../../../utils/relay/renderQuery'
 import {UseTaskChild} from '../../../hooks/useTaskChildFocus'
-import {TaskFooterTeamAssigneeMenuRootQuery} from 'parabol-client/src/__generated__/TaskFooterTeamAssigneeMenuRootQuery.graphql'
+import {TaskFooterTeamAssigneeMenuRootQuery} from '~/__generated__/TaskFooterTeamAssigneeMenuRootQuery.graphql'
 
 const query = graphql`
   query TaskFooterTeamAssigneeMenuRootQuery {

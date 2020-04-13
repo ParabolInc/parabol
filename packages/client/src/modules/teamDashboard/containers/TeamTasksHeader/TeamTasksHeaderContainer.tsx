@@ -1,11 +1,11 @@
+import graphql from 'babel-plugin-relay/macro'
 import React, {useEffect} from 'react'
 import {createFragmentContainer} from 'react-relay'
-import TeamTasksHeader from '../../components/TeamTasksHeader/TeamTasksHeader'
-import graphql from 'babel-plugin-relay/macro'
-import {TeamTasksHeaderContainer_team} from 'parabol-client/src/__generated__/TeamTasksHeaderContainer_team.graphql'
-import {TeamTasksHeaderContainer_viewer} from 'parabol-client/src/__generated__/TeamTasksHeaderContainer_viewer.graphql'
+import filterTeamMember from '~/utils/relay/filterTeamMember'
+import {TeamTasksHeaderContainer_team} from '~/__generated__/TeamTasksHeaderContainer_team.graphql'
+import {TeamTasksHeaderContainer_viewer} from '~/__generated__/TeamTasksHeaderContainer_viewer.graphql'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
-import filterTeamMember from 'parabol-client/src/utils/relay/filterTeamMember'
+import TeamTasksHeader from '../../components/TeamTasksHeader/TeamTasksHeader'
 
 interface Props {
   team: TeamTasksHeaderContainer_team

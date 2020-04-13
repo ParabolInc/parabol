@@ -1,6 +1,6 @@
-import {OrgUserRole, TierEnum} from 'parabol-client/src/types/graphql'
+import {OrgUserRole, TierEnum} from 'parabol-client/lib/types/graphql'
 import getRethink from '../database/rethinkDriver'
-import toTeamMemberId from 'parabol-client/src/utils/relay/toTeamMemberId'
+import toTeamMemberId from 'parabol-client/lib/utils/relay/toTeamMemberId'
 import AuthToken from '../database/types/AuthToken'
 import OrganizationUser from '../database/types/OrganizationUser'
 import {DataLoaderWorker} from '../graphql/graphql'

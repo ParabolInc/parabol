@@ -7,7 +7,7 @@ import stripeWebhookHandler from '../../../billing/stripeWebhookHandler'
 import getRethink from '../../../database/rethinkDriver'
 import invoicePaymentFailedEvent from './mockStripeEvents/invoicePaymentFailedEvent'
 import shortid from 'shortid'
-import { PRO } from 'parabol-client/src/utils/constants'
+import {PRO} from 'parabol-client/lib/utils/constants'
 import MockRes from '../../../__mocks__/MockRes'
 import MockReq from '../../../__mocks__/MockReq'
 import DataLoaderWarehouse from 'dataloader-warehouse'
@@ -22,7 +22,7 @@ describe('stripeFailPayment', () => {
     const r = await getRethink()
     const dynamicSerializer = new DynamicSerializer()
     const mockDB = new MockDB()
-    const { organization } = await mockDB.init({ plan: PRO }).newInvoice({ id: invoiceId })
+    const {organization} = await mockDB.init({plan: PRO}).newInvoice({id: invoiceId})
     const org = organization[0]
     stripe.__setMockData(org)
     const req = new MockReq({
@@ -50,7 +50,7 @@ describe('stripeFailPayment', () => {
         invoice: r.table('Invoice').get(invoiceId),
         notification: r
           .table('Notification')
-          .getAll(billingLeaderId, { index: 'userIds' })
+          .getAll(billingLeaderId, {index: 'userIds'})
           .orderBy('startAt')
       },
       dynamicSerializer

@@ -1,14 +1,14 @@
 import {EditorState} from 'draft-js'
 import React from 'react'
+import useTooltip from '~/hooks/useTooltip'
 import CardButton from '../../../../components/CardButton'
 import IconLabel from '../../../../components/IconLabel'
 import {MenuPosition} from '../../../../hooks/useCoords'
 import useMenu from '../../../../hooks/useMenu'
-import lazyPreload from '../../../../utils/lazyPreload'
 import {MenuMutationProps} from '../../../../hooks/useMutationProps'
-import {AreaEnum} from '../../../../types/graphql'
 import {UseTaskChild} from '../../../../hooks/useTaskChildFocus'
-import useTooltip from 'parabol-client/src/hooks/useTooltip'
+import {AreaEnum} from '../../../../types/graphql'
+import lazyPreload from '../../../../utils/lazyPreload'
 
 interface Props {
   area: AreaEnum

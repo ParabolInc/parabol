@@ -1,7 +1,7 @@
 import GenericMeetingPhase from '../../../database/types/GenericMeetingPhase'
-import findStageById from 'parabol-client/src/utils/meetings/findStageById'
-import findStageAfterId from 'parabol-client/src/utils/meetings/findStageAfterId'
-import findStageBeforeId from 'parabol-client/src/utils/meetings/findStageBeforeId'
+import findStageById from 'parabol-client/lib/utils/meetings/findStageById'
+import findStageAfterId from 'parabol-client/lib/utils/meetings/findStageAfterId'
+import findStageBeforeId from 'parabol-client/lib/utils/meetings/findStageBeforeId'
 import GenericMeetingStage from '../../../database/types/GenericMeetingStage'
 
 const getNextFacilitatorStageAfterStageRemoved = (

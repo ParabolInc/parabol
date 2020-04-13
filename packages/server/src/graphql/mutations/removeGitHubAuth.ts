@@ -4,8 +4,8 @@ import RemoveGitHubAuthPayload from '../types/RemoveGitHubAuthPayload'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
-import {GITHUB} from 'parabol-client/src/utils/constants'
-import {SubscriptionChannel} from 'parabol-client/src/types/constEnums'
+import {GITHUB} from 'parabol-client/lib/utils/constants'
+import {SubscriptionChannel} from 'parabol-client/lib/types/constEnums'
 
 export default {
   name: 'RemoveGitHubAuth',

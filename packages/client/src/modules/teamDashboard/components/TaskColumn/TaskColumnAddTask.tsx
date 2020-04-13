@@ -1,17 +1,17 @@
+import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {createFragmentContainer} from 'react-relay'
+import {TaskColumnAddTask_teams} from '~/__generated__/TaskColumnAddTask_teams.graphql'
 import AddTaskButton from '../../../../components/AddTaskButton/AddTaskButton'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
-import TaskColumnAddTaskSelectTeam from './TaskColumnAddTaskSelectTeam'
 import CreateTaskMutation from '../../../../mutations/CreateTaskMutation'
 import {AreaEnum, TaskStatusEnum} from '../../../../types/graphql'
 import dndNoise from '../../../../utils/dndNoise'
 import getNextSortOrder from '../../../../utils/getNextSortOrder'
 import fromTeamMemberId from '../../../../utils/relay/fromTeamMemberId'
-import {createFragmentContainer} from 'react-relay'
-import graphql from 'babel-plugin-relay/macro'
-import {TaskColumnAddTask_tasks} from '../../../../__generated__/TaskColumnAddTask_tasks.graphql'
 import {taskStatusLabels} from '../../../../utils/taskStatus'
-import {TaskColumnAddTask_teams} from 'parabol-client/src/__generated__/TaskColumnAddTask_teams.graphql'
+import {TaskColumnAddTask_tasks} from '../../../../__generated__/TaskColumnAddTask_tasks.graphql'
+import TaskColumnAddTaskSelectTeam from './TaskColumnAddTaskSelectTeam'
 
 interface Props {
   area: AreaEnum

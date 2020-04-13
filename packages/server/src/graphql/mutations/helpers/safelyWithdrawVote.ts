@@ -1,10 +1,15 @@
-import toTeamMemberId from 'parabol-client/src/utils/relay/toTeamMemberId'
+import toTeamMemberId from 'parabol-client/lib/utils/relay/toTeamMemberId'
 import getRethink from '../../../database/rethinkDriver'
 import standardError from '../../../utils/standardError'
 import {getUserId} from '../../../utils/authorization'
 import AuthToken from '../../../database/types/AuthToken'
 
-const safelyWithdrawVote = async (authToken: AuthToken, meetingId: string, userId: string, reflectionGroupId: string) => {
+const safelyWithdrawVote = async (
+  authToken: AuthToken,
+  meetingId: string,
+  userId: string,
+  reflectionGroupId: string
+) => {
   const meetingMemberId = toTeamMemberId(meetingId, userId)
   const r = await getRethink()
   const now = new Date()
@@ -29,7 +34,8 @@ const safelyWithdrawVote = async (authToken: AuthToken, meetingId: string, userI
         {}
       )
     })('replaced')
-    .eq(1).run()
+    .eq(1)
+    .run()
   if (!isVoteRemovedFromGroup) {
     return standardError(new Error('Already removed vote'), {userId: viewerId})
   }
@@ -39,7 +45,8 @@ const safelyWithdrawVote = async (authToken: AuthToken, meetingId: string, userI
     .update((member) => ({
       updatedAt: now,
       votesRemaining: member('votesRemaining').add(1)
-    })).run()
+    }))
+    .run()
   return undefined
 }
 

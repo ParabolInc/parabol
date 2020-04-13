@@ -1,5 +1,5 @@
 import {GraphQLNonNull, GraphQLString} from 'graphql'
-import {SubscriptionChannel} from 'parabol-client/src/types/constEnums'
+import {SubscriptionChannel} from 'parabol-client/lib/types/constEnums'
 import getRethink from '../../database/rethinkDriver'
 import {getUserId} from '../../utils/authorization'
 import publish from '../../utils/publish'
@@ -48,8 +48,8 @@ export default {
       const meetingId = lastSeenAtURL?.includes('/meet/')
         ? lastSeenAtURL.slice(6)
         : location?.includes('/meet/')
-          ? location.slice(6)
-          : null
+        ? location.slice(6)
+        : null
       viewer.lastSeenAtURL = location
       viewer.lastSeenAt
       if (meetingId) {

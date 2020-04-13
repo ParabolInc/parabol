@@ -18,7 +18,7 @@ import {
   UPDATES,
   VOTE,
   AGENDA_ITEMS
-} from 'parabol-client/src/utils/constants'
+} from 'parabol-client/lib/utils/constants'
 import CheckInStage from './CheckInStage'
 import GenericMeetingStage from './GenericMeetingStage'
 import RetroDiscussStage from './RetroDiscussStage'

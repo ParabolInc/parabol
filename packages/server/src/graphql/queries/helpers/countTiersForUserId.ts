@@ -1,5 +1,5 @@
 import getRethink from '../../../database/rethinkDriver'
-import {OrgUserRole, TierEnum} from 'parabol-client/src/types/graphql'
+import {OrgUserRole, TierEnum} from 'parabol-client/lib/types/graphql'
 
 // breaking this out into its own helper so it can be used directly to
 // populate segment traits

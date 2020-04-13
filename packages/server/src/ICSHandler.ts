@@ -1,4 +1,4 @@
-import {createICS} from 'parabol-client/src/utils/makeCalendarInvites'
+import {createICS} from 'parabol-client/lib/utils/makeCalendarInvites'
 import {HttpResponse, HttpRequest} from 'uWebSockets.js'
 import qs from 'querystring'
 

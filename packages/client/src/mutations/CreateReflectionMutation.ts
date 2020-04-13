@@ -10,7 +10,7 @@ import makeEmptyStr from '../utils/draftjs/makeEmptyStr'
 import clientTempId from '../utils/relay/clientTempId'
 import createProxyRecord from '../utils/relay/createProxyRecord'
 import {CreateReflectionMutation as TCreateReflectionMutation} from '../__generated__/CreateReflectionMutation.graphql'
-import {CreateReflectionMutation_meeting} from 'parabol-client/src/__generated__/CreateReflectionMutation_meeting.graphql'
+import {CreateReflectionMutation_meeting} from '~/__generated__/CreateReflectionMutation_meeting.graphql'
 
 graphql`
   fragment CreateReflectionMutation_meeting on CreateReflectionPayload {

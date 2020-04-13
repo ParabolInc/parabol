@@ -3,10 +3,10 @@ import getRethink from '../../../database/rethinkDriver'
 import sendEmailPromise from '../../../email/sendEmail'
 import {requireSU} from '../../../utils/authorization'
 import {UPCOMING_INVOICE_EMAIL_WARNING} from '../../../utils/serverConstants'
-import {months} from 'parabol-client/src/utils/makeDateString'
+import {months} from 'parabol-client/lib/utils/makeDateString'
 import makeAppLink from '../../../utils/makeAppLink'
-import {UpcomingInvoiceEmailProps} from 'parabol-client/src/modules/email/components/UpcomingInvoiceEmail'
-import {OrgUserRole, TierEnum} from 'parabol-client/src/types/graphql'
+import {UpcomingInvoiceEmailProps} from 'parabol-client/lib/modules/email/components/UpcomingInvoiceEmail'
+import {OrgUserRole, TierEnum} from 'parabol-client/lib/types/graphql'
 
 interface Details extends UpcomingInvoiceEmailProps {
   emailStr: string

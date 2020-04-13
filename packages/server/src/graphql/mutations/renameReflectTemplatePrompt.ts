@@ -4,7 +4,7 @@ import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import RenameReflectTemplatePromptPayload from '../types/RenameReflectTemplatePromptPayload'
-import {SubscriptionChannel} from 'parabol-client/src/types/constEnums'
+import {SubscriptionChannel} from 'parabol-client/lib/types/constEnums'
 
 const renameReflectTemplate = {
   description: 'Rename a reflect template',

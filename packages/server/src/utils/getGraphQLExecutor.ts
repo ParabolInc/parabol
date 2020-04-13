@@ -1,5 +1,5 @@
 import PubSubPromise from './PubSubPromise'
-import {ServerChannel} from 'parabol-client/src/types/constEnums'
+import {ServerChannel} from 'parabol-client/lib/types/constEnums'
 import {ExecutionResult} from 'graphql'
 
 interface Response extends ExecutionResult {

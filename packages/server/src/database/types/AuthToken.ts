@@ -1,6 +1,6 @@
 import makeAppLink from '../../utils/makeAppLink'
 import {toEpochSeconds} from '../../utils/epochTime'
-import {Threshold} from 'parabol-client/src/types/constEnums'
+import {Threshold} from 'parabol-client/lib/types/constEnums'
 
 interface Input {
   sub: string

@@ -1,7 +1,7 @@
 import Mousetrap from 'mousetrap'
 import {useEffect} from 'react'
-import useEventCallback from 'parabol-client/src/hooks/useEventCallback'
-import useDeepEqual from 'parabol-client/src/hooks/useDeepEqual'
+import useEventCallback from '~/hooks/useEventCallback'
+import useDeepEqual from '~/hooks/useDeepEqual'
 
 type Binding = string | string[]
 const useHotkey = (

@@ -4,9 +4,9 @@ import UpdatedTeamInput from '../types/UpdatedTeamInput'
 import UpdateTeamNamePayload from '../types/UpdateTeamNamePayload'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
-import teamNameValidation from 'parabol-client/src/validation/teamNameValidation'
+import teamNameValidation from 'parabol-client/lib/validation/teamNameValidation'
 import standardError from '../../utils/standardError'
-import {SubscriptionChannel} from 'parabol-client/src/types/constEnums'
+import {SubscriptionChannel} from 'parabol-client/lib/types/constEnums'
 
 export default {
   type: UpdateTeamNamePayload,

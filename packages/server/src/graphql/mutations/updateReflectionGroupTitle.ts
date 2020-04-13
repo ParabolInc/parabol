@@ -1,11 +1,11 @@
 import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
-import {SubscriptionChannel} from 'parabol-client/src/types/constEnums'
+import {SubscriptionChannel} from 'parabol-client/lib/types/constEnums'
 import stringSimilarity from 'string-similarity'
 import {
   IUpdateReflectionGroupTitleOnMutationArguments,
   NewMeetingPhaseTypeEnum
-} from 'parabol-client/src/types/graphql'
-import isPhaseComplete from 'parabol-client/src/utils/meetings/isPhaseComplete'
+} from 'parabol-client/lib/types/graphql'
+import isPhaseComplete from 'parabol-client/lib/utils/meetings/isPhaseComplete'
 import getRethink from '../../database/rethinkDriver'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'

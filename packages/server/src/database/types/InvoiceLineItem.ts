@@ -1,4 +1,4 @@
-import {InvoiceLineItemEnum} from 'parabol-client/src/types/graphql'
+import {InvoiceLineItemEnum} from 'parabol-client/lib/types/graphql'
 import InvoiceLineItemDetail from './InvoiceLineItemDetail'
 import shortid from 'shortid'
 

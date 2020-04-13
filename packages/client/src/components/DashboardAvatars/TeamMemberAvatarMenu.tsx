@@ -9,7 +9,7 @@ import {MenuProps} from '../../hooks/useMenu'
 import {PALETTE} from '../../styles/paletteV2'
 import MenuItemLabel from '../MenuItemLabel'
 import styled from '@emotion/styled'
-import RoleTag from 'parabol-client/src/components/Tag/RoleTag'
+import RoleTag from '~/components/Tag/RoleTag'
 
 interface Props extends WithAtmosphereProps {
   isLead: boolean

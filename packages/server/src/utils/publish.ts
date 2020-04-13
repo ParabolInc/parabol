@@ -5,7 +5,7 @@ import {
   OrganizationSubscriptionPayload,
   TaskSubscriptionPayload,
   TeamSubscriptionPayload
-} from 'parabol-client/src/types/graphql'
+} from 'parabol-client/lib/types/graphql'
 
 export interface SubOptions {
   mutatorId?: string

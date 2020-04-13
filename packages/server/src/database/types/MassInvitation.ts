@@ -1,4 +1,4 @@
-import {Security, Threshold} from 'parabol-client/src/types/constEnums'
+import {Security, Threshold} from 'parabol-client/lib/types/constEnums'
 import generateRandomString from '../../generateRandomString'
 
 interface Input {

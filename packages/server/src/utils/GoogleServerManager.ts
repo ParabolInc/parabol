@@ -1,4 +1,4 @@
-import GoogleManager from 'parabol-client/src/utils/GoogleManager'
+import GoogleManager from 'parabol-client/lib/utils/GoogleManager'
 import {stringify} from 'querystring'
 import makeAppLink from './makeAppLink'
 import fetch from 'node-fetch'

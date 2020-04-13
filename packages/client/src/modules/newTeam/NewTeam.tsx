@@ -1,16 +1,16 @@
+import styled from '@emotion/styled'
+import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
-import graphql from 'babel-plugin-relay/macro'
-import LinkButton from '../../components/LinkButton'
+import useDocumentTitle from '~/hooks/useDocumentTitle'
 import IconLabel from '../../components/IconLabel'
-import styled from '@emotion/styled'
+import LinkButton from '../../components/LinkButton'
+import useBreakpoint from '../../hooks/useBreakpoint'
 import {cardShadow} from '../../styles/elevation'
 import {PALETTE} from '../../styles/paletteV2'
-import NewTeamForm from './components/NewTeamForm/NewTeamForm'
-import useBreakpoint from '../../hooks/useBreakpoint'
-import {NewTeam_viewer} from '../../__generated__/NewTeam_viewer.graphql'
 import {ExternalLinks} from '../../types/constEnums'
-import useDocumentTitle from 'parabol-client/src/hooks/useDocumentTitle'
+import {NewTeam_viewer} from '../../__generated__/NewTeam_viewer.graphql'
+import NewTeamForm from './components/NewTeamForm/NewTeamForm'
 
 const NewTeamLayout = styled('div')({
   alignItems: 'center',

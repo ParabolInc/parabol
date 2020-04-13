@@ -1,6 +1,6 @@
 import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql'
 import getRethink from '../../../database/rethinkDriver'
-import {InvoiceStatusEnum} from 'parabol-client/src/types/graphql'
+import {InvoiceStatusEnum} from 'parabol-client/lib/types/graphql'
 import StripeManager from '../../../utils/StripeManager'
 import {isSuperUser} from '../../../utils/authorization'
 import {InternalContext} from '../../graphql'

@@ -1,12 +1,12 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
-import {SubscriptionChannel} from 'parabol-client/src/types/constEnums'
-import extractTextFromDraftString from 'parabol-client/src/utils/draftjs/extractTextFromDraftString'
+import {SubscriptionChannel} from 'parabol-client/lib/types/constEnums'
+import extractTextFromDraftString from 'parabol-client/lib/utils/draftjs/extractTextFromDraftString'
 import shortid from 'shortid'
 import {
   MeetingTypeEnum,
   NewMeetingPhaseTypeEnum,
   SuggestedActionTypeEnum
-} from 'parabol-client/src/types/graphql'
+} from 'parabol-client/lib/types/graphql'
 import {
   ACTION,
   AGENDA_ITEMS,
@@ -14,8 +14,8 @@ import {
   DONE,
   LAST_CALL,
   RETROSPECTIVE
-} from 'parabol-client/src/utils/constants'
-import findStageById from 'parabol-client/src/utils/meetings/findStageById'
+} from 'parabol-client/lib/utils/constants'
+import findStageById from 'parabol-client/lib/utils/meetings/findStageById'
 import getRethink from '../../database/rethinkDriver'
 import GenericMeetingPhase from '../../database/types/GenericMeetingPhase'
 import Meeting from '../../database/types/Meeting'

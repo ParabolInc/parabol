@@ -6,12 +6,12 @@ import {getUserId, isTeamMember} from '../../utils/authorization'
 import standardError from '../../utils/standardError'
 import GraphQLISO8601Type from '../types/GraphQLISO8601Type'
 import {GQLContext} from '../graphql'
-import findStageById from 'parabol-client/src/utils/meetings/findStageById'
+import findStageById from 'parabol-client/lib/utils/meetings/findStageById'
 import ScheduledJobMeetingStageTimeLimit from '../../database/types/ScheduledJobMetingStageTimeLimit'
 import removeScheduledJobs from './helpers/removeScheduledJobs'
 import {notifySlackTimeLimitStart} from './helpers/notifySlack'
 import sendSegmentEvent from '../../utils/sendSegmentEvent'
-import {MeetingLabels, SubscriptionChannel} from 'parabol-client/src/types/constEnums'
+import {MeetingLabels, SubscriptionChannel} from 'parabol-client/lib/types/constEnums'
 
 const BAD_CLOCK_THRESH = 2000
 const AVG_PING = 150

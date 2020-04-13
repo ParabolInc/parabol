@@ -1,16 +1,16 @@
+import styled from '@emotion/styled'
 import sanitizeSVG from '@mattkrick/sanitize-svg'
 import React, {Component} from 'react'
-import styled from '@emotion/styled'
-import Avatar from './Avatar/Avatar'
-import AvatarInput from './AvatarInput'
-import DialogTitle from './DialogTitle'
+import jpgWithoutEXIF from '~/utils/jpgWithoutEXIF'
 import withAtmosphere, {WithAtmosphereProps} from '../decorators/withAtmosphere/withAtmosphere'
 import CreateUserPicturePutUrlMutation from '../mutations/CreateUserPicturePutUrlMutation'
 import UpdateUserProfileMutation from '../mutations/UpdateUserProfileMutation'
 import withMutationProps, {WithMutationProps} from '../utils/relay/withMutationProps'
 import sendAssetToS3 from '../utils/sendAssetToS3'
 import svgToPng from '../utils/svgToPng'
-import jpgWithoutEXIF from 'parabol-client/src/utils/jpgWithoutEXIF'
+import Avatar from './Avatar/Avatar'
+import AvatarInput from './AvatarInput'
+import DialogTitle from './DialogTitle'
 
 interface Props extends WithAtmosphereProps, WithMutationProps {
   picture: string

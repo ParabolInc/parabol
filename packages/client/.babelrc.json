@@ -1,0 +1,54 @@
+{
+  "presets": [
+    [
+      "@babel/env",
+      {
+        "targets": {
+          "node": "current"
+        }
+      }
+    ],
+    [
+      "@babel/typescript",
+      {
+        "isTSX": true,
+        "allExtensions": true,
+        "allowNamespaces": true
+      }
+    ],
+    [
+      "@babel/react"
+    ]
+  ],
+  "plugins": [
+    [
+      "@babel/plugin-proposal-object-rest-spread"
+    ],
+    [
+      "module-resolver",
+      {
+        "root": [
+          "src"
+        ],
+        "alias": {
+          "~/": ".",
+          "parabol-server/src": "parabol-server/lib"
+        }
+      }
+    ],
+    [
+      "inline-import",
+      {
+        "extensions": [
+          ".graphql"
+        ]
+      }
+    ],
+    [
+      "const-enum"
+    ],
+    [
+      "@babel/plugin-proposal-class-properties"
+    ]
+  ]
+}

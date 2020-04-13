@@ -14,7 +14,7 @@
     "url": "https://github.com/ParabolInc/parabol/issues"
   },
   "scripts": {
-    "sucrase": "sucrase src -d lib-tmp --transforms=imports,jsx,typescript",
+    "babel": "npx babel src -d lib --extensions .js,.ts,.tsx",
     "storybook": "start-storybook -p 6006 -c .storybook",
     "build-storybook": "build-storybook",
     "lint": "eslint --fix ./**/*.{ts,tsx}",
@@ -22,7 +22,14 @@
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
+    "@babel/cli": "^7.8.4",
     "@babel/core": "^7.8.3",
+    "@babel/plugin-proposal-class-properties": "^7.8.3",
+    "@babel/plugin-proposal-object-rest-spread": "^7.9.5",
+    "@babel/plugin-transform-typescript": "^7.9.4",
+    "@babel/preset-env": "^7.9.5",
+    "@babel/preset-react": "^7.9.4",
+    "@babel/preset-typescript": "^7.9.0",
     "@storybook/addon-actions": "^5.3.17",
     "@storybook/addon-info": "^5.3.17",
     "@storybook/addon-knobs": "^5.3.17",
@@ -48,7 +55,9 @@
     "@typescript-eslint/eslint-plugin": "2.7.0",
     "@typescript-eslint/parser": "2.7.0",
     "babel-loader": "^8.0.6",
-    "babel-plugin-macros": "^2.6.1",
+    "babel-plugin-const-enum": "^1.0.0",
+    "babel-plugin-inline-import": "^3.0.0",
+    "babel-plugin-macros": "^2.8.0",
     "babel-plugin-relay": "^8.0.0",
     "eslint": "^6.6.0",
     "eslint-config-prettier": "^6.5.0",
@@ -66,6 +75,7 @@
     "webpack": "^4.41.5"
   },
   "dependencies": {
+    "parabol-server": "^5.3.1",
     "@emotion/core": "^10.0.27",
     "@emotion/styled": "^10.0.27",
     "@mattkrick/fast-rtc-swarm": "^0.4.0",

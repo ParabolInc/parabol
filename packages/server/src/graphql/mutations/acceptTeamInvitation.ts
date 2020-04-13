@@ -1,6 +1,6 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
-import {SubscriptionChannel, InvitationTokenError} from 'parabol-client/src/types/constEnums'
-import toTeamMemberId from 'parabol-client/src/utils/relay/toTeamMemberId'
+import {SubscriptionChannel, InvitationTokenError} from 'parabol-client/lib/types/constEnums'
+import toTeamMemberId from 'parabol-client/lib/utils/relay/toTeamMemberId'
 import AuthToken from '../../database/types/AuthToken'
 import acceptTeamInvitation from '../../safeMutations/acceptTeamInvitation'
 import {getUserId, isAuthenticated} from '../../utils/authorization'

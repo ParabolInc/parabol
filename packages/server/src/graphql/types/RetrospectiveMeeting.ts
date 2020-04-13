@@ -11,14 +11,14 @@ import NewMeeting, {newMeetingFields} from './NewMeeting'
 import RetroReflectionGroup from './RetroReflectionGroup'
 import {resolveForSU} from '../resolvers'
 import RetrospectiveMeetingSettings from './RetrospectiveMeetingSettings'
-import {RETROSPECTIVE} from 'parabol-client/src/utils/constants'
+import {RETROSPECTIVE} from 'parabol-client/lib/utils/constants'
 import Task from './Task'
 import {getUserId} from '../../utils/authorization'
-import toTeamMemberId from 'parabol-client/src/utils/relay/toTeamMemberId'
+import toTeamMemberId from 'parabol-client/lib/utils/relay/toTeamMemberId'
 import RetrospectiveMeetingMember from './RetrospectiveMeetingMember'
 import filterTasksByMeeting from '../../utils/filterTasksByMeeting'
 import {GQLContext} from '../graphql'
-import {NewMeetingPhaseTypeEnum} from 'parabol-client/src/types/graphql'
+import {NewMeetingPhaseTypeEnum} from 'parabol-client/lib/types/graphql'
 
 const ReflectionGroupSortEnum = new GraphQLEnumType({
   name: 'ReflectionGroupSortEnum',

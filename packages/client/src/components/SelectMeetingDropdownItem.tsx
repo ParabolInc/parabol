@@ -1,14 +1,14 @@
+import styled from '@emotion/styled'
+import * as Sentry from '@sentry/browser'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import styled from '@emotion/styled'
-import Icon from './Icon'
-import {ICON_SIZE} from 'parabol-client/src/styles/typographyV2'
-import {PALETTE} from 'parabol-client/src/styles/paletteV2'
-import useRouter from 'parabol-client/src/hooks/useRouter'
 import {createFragmentContainer} from 'react-relay'
-import {SelectMeetingDropdownItem_meeting} from 'parabol-client/src/__generated__/SelectMeetingDropdownItem_meeting.graphql'
-import {meetingTypeToIcon, phaseLabelLookup} from 'parabol-client/src/utils/meetings/lookups'
-import * as Sentry from '@sentry/browser'
+import useRouter from '~/hooks/useRouter'
+import {PALETTE} from '~/styles/paletteV2'
+import {ICON_SIZE} from '~/styles/typographyV2'
+import {meetingTypeToIcon, phaseLabelLookup} from '~/utils/meetings/lookups'
+import {SelectMeetingDropdownItem_meeting} from '~/__generated__/SelectMeetingDropdownItem_meeting.graphql'
+import Icon from './Icon'
 
 const Wrapper = styled('div')({
   alignItems: 'center',

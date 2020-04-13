@@ -1,13 +1,13 @@
 import graphql from 'babel-plugin-relay/macro'
-import NotificationAction from 'parabol-client/src/components/NotificationAction'
-import useMutationProps from 'parabol-client/src/hooks/useMutationProps'
-import useRouter from 'parabol-client/src/hooks/useRouter'
+import NotificationAction from '~/components/NotificationAction'
+import useMutationProps from '~/hooks/useMutationProps'
+import useRouter from '~/hooks/useRouter'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import AcceptTeamInvitationMutation from '../mutations/AcceptTeamInvitationMutation'
 import NotificationTemplate from './NotificationTemplate'
-import useAtmosphere from 'parabol-client/src/hooks/useAtmosphere'
-import {TeamInvitationNotification_notification} from 'parabol-client/src/__generated__/TeamInvitationNotification_notification.graphql'
+import useAtmosphere from '~/hooks/useAtmosphere'
+import {TeamInvitationNotification_notification} from '~/__generated__/TeamInvitationNotification_notification.graphql'
 
 interface Props {
   notification: TeamInvitationNotification_notification

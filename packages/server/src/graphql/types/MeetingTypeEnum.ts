@@ -1,5 +1,5 @@
 import {GraphQLEnumType} from 'graphql'
-import {ACTION, RETROSPECTIVE} from 'parabol-client/src/utils/constants'
+import {ACTION, RETROSPECTIVE} from 'parabol-client/lib/utils/constants'
 
 const MeetingTypeEnum = new GraphQLEnumType({
   name: 'MeetingTypeEnum',

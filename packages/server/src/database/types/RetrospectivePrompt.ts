@@ -1,5 +1,5 @@
 import shortid from 'shortid'
-import {CustomPhaseItemTypeEnum} from 'parabol-client/src/types/graphql'
+import {CustomPhaseItemTypeEnum} from 'parabol-client/lib/types/graphql'
 
 interface Input {
   teamId: string

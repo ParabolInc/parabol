@@ -1,13 +1,13 @@
+import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {createFragmentContainer} from 'react-relay'
+import {UserDashTeamMenu_viewer} from '~/__generated__/UserDashTeamMenu_viewer.graphql'
+import useAtmosphere from '../hooks/useAtmosphere'
+import {MenuProps} from '../hooks/useMenu'
+import filterTeam from '../utils/relay/filterTeam'
 import DropdownMenuLabel from './DropdownMenuLabel'
 import Menu from './Menu'
 import MenuItem from './MenuItem'
-import {MenuProps} from '../hooks/useMenu'
-import {createFragmentContainer} from 'react-relay'
-import graphql from 'babel-plugin-relay/macro'
-import {UserDashTeamMenu_viewer} from 'parabol-client/src/__generated__/UserDashTeamMenu_viewer.graphql'
-import filterTeam from '../utils/relay/filterTeam'
-import useAtmosphere from '../hooks/useAtmosphere'
 
 interface Props {
   menuProps: MenuProps

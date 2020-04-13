@@ -1,4 +1,4 @@
-import useCanonical from 'parabol-client/src/hooks/useCanonical'
+import useCanonical from '~/hooks/useCanonical'
 import React, {useEffect} from 'react'
 import NewMeetingSummaryRoot from '../modules/summary/components/NewMeetingSummaryRoot'
 import AtmosphereProvider from './AtmosphereProvider/AtmosphereProvider'

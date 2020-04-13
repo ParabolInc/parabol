@@ -4,14 +4,14 @@ import UpdateAgendaItemInput from '../types/UpdateAgendaItemInput'
 import UpdateAgendaItemPayload from '../types/UpdateAgendaItemPayload'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
-import {AGENDA_ITEMS} from 'parabol-client/src/utils/constants'
-import makeUpdateAgendaItemSchema from 'parabol-client/src/validation/makeUpdateAgendaItemSchema'
+import {AGENDA_ITEMS} from 'parabol-client/lib/utils/constants'
+import makeUpdateAgendaItemSchema from 'parabol-client/lib/validation/makeUpdateAgendaItemSchema'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import AgendaItemsStage from '../../database/types/AgendaItemsStage'
-import {IAgendaItem, MeetingTypeEnum} from 'parabol-client/src/types/graphql'
+import {IAgendaItem, MeetingTypeEnum} from 'parabol-client/lib/types/graphql'
 import AgendaItemsPhase from '../../database/types/AgendaItemsPhase'
-import {SubscriptionChannel} from 'parabol-client/src/types/constEnums'
+import {SubscriptionChannel} from 'parabol-client/lib/types/constEnums'
 
 export default {
   type: UpdateAgendaItemPayload,

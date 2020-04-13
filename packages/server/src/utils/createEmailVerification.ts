@@ -1,12 +1,12 @@
 import base64url from 'base64url'
 import crypto from 'crypto'
-import emailVerificationEmailCreator from 'parabol-client/src/modules/email/components/emailVerificationEmailCreator'
+import emailVerificationEmailCreator from 'parabol-client/lib/modules/email/components/emailVerificationEmailCreator'
 import {sendEmailContent} from '../email/sendEmail'
-import {Security} from 'parabol-client/src/types/constEnums'
+import {Security} from 'parabol-client/lib/types/constEnums'
 import bcrypt from 'bcrypt'
 import EmailVerification from '../database/types/EmailVerification'
 import getRethink from '../database/rethinkDriver'
-import {ISignUpWithPasswordOnMutationArguments} from 'parabol-client/src/types/graphql'
+import {ISignUpWithPasswordOnMutationArguments} from 'parabol-client/lib/types/graphql'
 
 const createEmailVerification = async (props: ISignUpWithPasswordOnMutationArguments) => {
   const {email, password, invitationToken, segmentId} = props

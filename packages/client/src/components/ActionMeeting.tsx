@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import React, {ReactElement, useEffect} from 'react'
 import {createFragmentContainer} from 'react-relay'
-import {ActionMeeting_meeting} from 'parabol-client/src/__generated__/ActionMeeting_meeting.graphql'
+import {ActionMeeting_meeting} from '~/__generated__/ActionMeeting_meeting.graphql'
 import useMeeting from '../hooks/useMeeting'
 import NewMeetingAvatarGroup from '../modules/meeting/components/MeetingAvatarGroup/NewMeetingAvatarGroup'
 import {ValueOf} from '../types/generics'
@@ -9,9 +9,9 @@ import {NewMeetingPhaseTypeEnum} from '../types/graphql'
 import lazyPreload from '../utils/lazyPreload'
 import ActionMeetingSidebar from './ActionMeetingSidebar'
 import MeetingArea from './MeetingArea'
+import MeetingControlBar from './MeetingControlBar'
 import MeetingStyles from './MeetingStyles'
 import ResponsiveDashSidebar from './ResponsiveDashSidebar'
-import MeetingControlBar from './MeetingControlBar'
 
 interface Props {
   meeting: ActionMeeting_meeting

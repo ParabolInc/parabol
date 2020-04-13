@@ -1,8 +1,8 @@
 import styled from '@emotion/styled'
-import useAtmosphere from 'parabol-client/src/hooks/useAtmosphere'
-import useMutationProps from 'parabol-client/src/hooks/useMutationProps'
-import EmailPasswordResetMutation from 'parabol-client/src/mutations/EmailPasswordResetMutation'
 import React, {useState} from 'react'
+import useAtmosphere from '~/hooks/useAtmosphere'
+import useMutationProps from '~/hooks/useMutationProps'
+import EmailPasswordResetMutation from '~/mutations/EmailPasswordResetMutation'
 import {PALETTE} from '../styles/paletteV2'
 import PlainButton from './PlainButton/PlainButton'
 

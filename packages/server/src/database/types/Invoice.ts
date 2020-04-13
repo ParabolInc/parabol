@@ -1,7 +1,7 @@
 import CreditCard from './CreditCard'
 import Coupon from './Coupon'
 import InvoiceLineItem from './InvoiceLineItem'
-import {InvoiceStatusEnum, TierEnum} from 'parabol-client/src/types/graphql'
+import {InvoiceStatusEnum, TierEnum} from 'parabol-client/lib/types/graphql'
 import NextPeriodCharges from './NextPeriodCharges'
 
 interface Input {

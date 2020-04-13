@@ -1,8 +1,8 @@
 import styled from '@emotion/styled'
-import PrimaryButton from 'parabol-client/src/components/PrimaryButton'
-import ReportErrorFeedback from 'parabol-client/src/components/ReportErrorFeedback'
-import useModal from 'parabol-client/src/hooks/useModal'
 import React from 'react'
+import PrimaryButton from '~/components/PrimaryButton'
+import ReportErrorFeedback from '~/components/ReportErrorFeedback'
+import useModal from '~/hooks/useModal'
 
 const ErrorBlock = styled('div')({
   alignItems: 'center',

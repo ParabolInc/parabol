@@ -1,6 +1,6 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
-import {SubscriptionChannel} from 'parabol-client/src/types/constEnums'
-import {TierEnum} from 'parabol-client/src/types/graphql'
+import {SubscriptionChannel} from 'parabol-client/lib/types/constEnums'
+import {TierEnum} from 'parabol-client/lib/types/graphql'
 import getRethink from '../../database/rethinkDriver'
 import safeArchiveTeam from '../../safeMutations/safeArchiveTeam'
 import {getUserId, isSuperUser, isUserBillingLeader} from '../../utils/authorization'

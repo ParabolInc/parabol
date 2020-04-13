@@ -1,8 +1,8 @@
-import {MenuPosition} from 'parabol-client/src/hooks/useCoords'
-import useMenu from 'parabol-client/src/hooks/useMenu'
-import useModal from 'parabol-client/src/hooks/useModal'
 import React, {lazy} from 'react'
-import lazyPreload from 'parabol-client/src/utils/lazyPreload'
+import {MenuPosition} from '~/hooks/useCoords'
+import useMenu from '~/hooks/useMenu'
+import useModal from '~/hooks/useModal'
+import lazyPreload from '~/utils/lazyPreload'
 import TopBarIcon from './TopBarIcon'
 
 const TopBarHelpMenu = lazyPreload(() =>

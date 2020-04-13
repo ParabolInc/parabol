@@ -6,7 +6,7 @@ import {getUserId, isTeamMember} from '../../utils/authorization'
 import standardError from '../../utils/standardError'
 import removeStagesFromMeetings from './helpers/removeStagesFromMeetings'
 import AgendaItemsStage from '../../database/types/AgendaItemsStage'
-import {SubscriptionChannel} from 'parabol-client/src/types/constEnums'
+import {SubscriptionChannel} from 'parabol-client/lib/types/constEnums'
 
 export default {
   type: RemoveAgendaItemPayload,

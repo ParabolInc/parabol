@@ -138,10 +138,6 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
     }
     const {delay, op, variables, botId} = nextMutaton
     this.pendingBotAction = () => {
-      if (!this.ops[op]) {
-        console.log('here')
-        debugger
-      }
       this.ops[op](variables, botId)
       return mutations
     }

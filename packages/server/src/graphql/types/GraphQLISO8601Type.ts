@@ -1,6 +1,6 @@
 import {GraphQLScalarType} from 'graphql'
 import {Kind} from 'graphql/language'
-import isValidDate from 'parabol-client/src/utils/isValidDate'
+import isValidDate from 'parabol-client/lib/utils/isValidDate'
 
 function parseDate(value) {
   const result = new Date(value)

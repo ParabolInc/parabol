@@ -8,14 +8,14 @@ import {getUserId} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import sendSegmentEvent from '../../utils/sendSegmentEvent'
 import shortid from 'shortid'
-import toTeamMemberId from 'parabol-client/src/utils/relay/toTeamMemberId'
+import toTeamMemberId from 'parabol-client/lib/utils/relay/toTeamMemberId'
 import rateLimit from '../rateLimit'
 import removeSuggestedAction from '../../safeMutations/removeSuggestedAction'
 import standardError from '../../utils/standardError'
-import {SubscriptionChannel} from 'parabol-client/src/types/constEnums'
+import {SubscriptionChannel} from 'parabol-client/lib/types/constEnums'
 import encodeAuthToken from '../../utils/encodeAuthToken'
 import AuthToken from '../../database/types/AuthToken'
-import {SuggestedActionTypeEnum} from 'parabol-client/src/types/graphql'
+import {SuggestedActionTypeEnum} from 'parabol-client/lib/types/graphql'
 
 export default {
   type: new GraphQLNonNull(AddOrgPayload),

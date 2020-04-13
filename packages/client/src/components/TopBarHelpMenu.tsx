@@ -1,10 +1,10 @@
 import React from 'react'
-import {ExternalLinks, Breakpoint} from 'parabol-client/src/types/constEnums'
+import useBreakpoint from '~/hooks/useBreakpoint'
+import {Breakpoint, ExternalLinks} from '~/types/constEnums'
 import {MenuProps} from '../hooks/useMenu'
 import Menu from './Menu'
 import MenuItem from './MenuItem'
 import MenuItemWithIcon from './MenuItemWithIcon'
-import useBreakpoint from 'parabol-client/src/hooks/useBreakpoint'
 
 interface Props {
   menuProps: MenuProps

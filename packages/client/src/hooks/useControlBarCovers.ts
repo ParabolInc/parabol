@@ -1,5 +1,5 @@
 import {RefObject, useEffect} from 'react'
-import {BezierCurve} from 'parabol-client/src/types/constEnums'
+import {BezierCurve} from '~/types/constEnums'
 
 interface ControlBarCoverable {
   id: string

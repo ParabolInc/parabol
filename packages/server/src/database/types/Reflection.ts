@@ -1,6 +1,6 @@
 import shortid from 'shortid'
 import GoogleAnalyzedEntity from './GoogleAnalyzedEntity'
-import extractTextFromDraftString from 'parabol-client/src/utils/draftjs/extractTextFromDraftString'
+import extractTextFromDraftString from 'parabol-client/lib/utils/draftjs/extractTextFromDraftString'
 import Reactji from './Reactji'
 
 export interface ReflectionInput {

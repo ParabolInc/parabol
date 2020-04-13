@@ -1,4 +1,4 @@
-import { RETRO_PHASE_ITEM } from 'parabol-client/src/utils/constants'
+import {RETRO_PHASE_ITEM} from 'parabol-client/lib/utils/constants'
 import shortid from 'shortid'
 
 exports.up = async (r) => {

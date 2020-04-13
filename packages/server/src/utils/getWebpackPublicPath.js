@@ -1,7 +1,7 @@
 import './dotenv'
 import path from 'path'
 import protocolRelativeUrl from './protocolRelativeUrl'
-import { APP_WEBPACK_PUBLIC_PATH_DEFAULT } from 'parabol-client/src/utils/constants'
+import {APP_WEBPACK_PUBLIC_PATH_DEFAULT} from 'parabol-client/lib/utils/constants'
 
 const APP_VERSION = process.env.npm_package_version
 

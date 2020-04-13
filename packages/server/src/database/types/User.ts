@@ -1,7 +1,7 @@
-import {AuthTokenRole} from 'parabol-client/src/types/constEnums'
+import {AuthTokenRole} from 'parabol-client/lib/types/constEnums'
 import AuthIdentity from './AuthIdentity'
 import shortid from 'shortid'
-import {TierEnum} from 'parabol-client/src/types/graphql'
+import {TierEnum} from 'parabol-client/lib/types/graphql'
 
 interface Input {
   id?: string

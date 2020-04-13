@@ -2,16 +2,16 @@ import {GraphQLID, GraphQLNonNull} from 'graphql'
 import EndDraggingReflectionPayload from '../types/EndDraggingReflectionPayload'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
-import isPhaseComplete from 'parabol-client/src/utils/meetings/isPhaseComplete'
+import isPhaseComplete from 'parabol-client/lib/utils/meetings/isPhaseComplete'
 import DragReflectionDropTargetTypeEnum from '../types/DragReflectionDropTargetTypeEnum'
 import addReflectionToGroup from './helpers/updateReflectionLocation/addReflectionToGroup'
 import removeReflectionFromGroup from './helpers/updateReflectionLocation/removeReflectionFromGroup'
 import standardError from '../../utils/standardError'
-import {SubscriptionChannel} from 'parabol-client/src/types/constEnums'
+import {SubscriptionChannel} from 'parabol-client/lib/types/constEnums'
 import {
   DragReflectionDropTargetTypeEnum as EDragReflectionDropTargetTypeEnum,
   NewMeetingPhaseTypeEnum
-} from 'parabol-client/src/types/graphql'
+} from 'parabol-client/lib/types/graphql'
 
 export default {
   description: 'Broadcast that the viewer stopped dragging a reflection',

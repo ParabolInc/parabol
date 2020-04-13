@@ -1,9 +1,9 @@
-import {AGENDA_ITEMS} from 'parabol-client/src/utils/constants'
+import {AGENDA_ITEMS} from 'parabol-client/lib/utils/constants'
 import getRethink from '../../../database/rethinkDriver'
 import {DataLoaderWorker} from '../../graphql'
 import AgendaItemsPhase from '../../../database/types/AgendaItemsPhase'
 import AgendaItemsStage from '../../../database/types/AgendaItemsStage'
-import {MeetingTypeEnum} from 'parabol-client/src/types/graphql'
+import {MeetingTypeEnum} from 'parabol-client/lib/types/graphql'
 
 /*
  * NewMeetings have a predefined set of stages, we need to add the new agenda item manually

@@ -1,4 +1,4 @@
-import {TierEnum} from 'parabol-client/src/types/graphql'
+import {TierEnum} from 'parabol-client/lib/types/graphql'
 import getRethink from '../../../database/rethinkDriver'
 import {fromEpochSeconds} from '../../../utils/epochTime'
 import setUserTierForOrgId from '../../../utils/setUserTierForOrgId'

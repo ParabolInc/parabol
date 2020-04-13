@@ -1,9 +1,9 @@
+import graphql from 'babel-plugin-relay/macro'
 import {useCallback} from 'react'
 import {readInlineData} from 'relay-runtime'
+import {useGotoPrev_meeting} from '~/__generated__/useGotoPrev_meeting.graphql'
 import findStageBeforeId from '../utils/meetings/findStageBeforeId'
-import graphql from 'babel-plugin-relay/macro'
 import useGotoStageId from './useGotoStageId'
-import {useGotoPrev_meeting} from 'parabol-client/src/__generated__/useGotoPrev_meeting.graphql'
 
 export const useGotoPrev = (meetingRef: any, gotoStageId: ReturnType<typeof useGotoStageId>) => {
   const meeting = readInlineData<useGotoPrev_meeting>(

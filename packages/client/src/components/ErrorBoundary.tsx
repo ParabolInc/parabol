@@ -1,9 +1,7 @@
 import * as Sentry from '@sentry/browser'
 import React, {Component, ErrorInfo, ReactNode} from 'react'
 import ErrorComponent from './ErrorComponent/ErrorComponent'
-import withAtmosphere, {
-  WithAtmosphereProps
-} from 'parabol-client/src/decorators/withAtmosphere/withAtmosphere'
+import withAtmosphere, {WithAtmosphereProps} from '~/decorators/withAtmosphere/withAtmosphere'
 
 interface Props extends WithAtmosphereProps {
   fallback?: (error: Error, eventId: string) => ReactNode

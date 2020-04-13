@@ -1,4 +1,4 @@
-import {TrebuchetCloseReason} from 'parabol-client/src/types/constEnums'
+import {TrebuchetCloseReason} from 'parabol-client/lib/types/constEnums'
 import {HttpRequest, HttpResponse} from 'uWebSockets.js'
 import uWSAsyncHandler from '../graphql/uWSAsyncHandler'
 import handleConnect from '../socketHandlers/handleConnect'

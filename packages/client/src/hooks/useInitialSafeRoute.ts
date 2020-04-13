@@ -1,16 +1,16 @@
-import {Dispatch, SetStateAction, useEffect} from 'react'
 import graphql from 'babel-plugin-relay/macro'
-import useAtmosphere from './useAtmosphere'
-import useRouter from './useRouter'
+import {Dispatch, SetStateAction, useEffect} from 'react'
+import {readInlineData} from 'relay-runtime'
+import {useInitialSafeRoute_meeting} from '~/__generated__/useInitialSafeRoute_meeting.graphql'
+import {RetroDemo} from '../types/constEnums'
 import findKeyByValue from '../utils/findKeyByValue'
 import findStageById from '../utils/meetings/findStageById'
 import fromStageIdToUrl from '../utils/meetings/fromStageIdToUrl'
 import getMeetingPathParams from '../utils/meetings/getMeetingPathParams'
 import {phaseTypeToSlug} from '../utils/meetings/lookups'
 import updateLocalStage from '../utils/relay/updateLocalStage'
-import {readInlineData} from 'relay-runtime'
-import {RetroDemo} from '../types/constEnums'
-import {useInitialSafeRoute_meeting} from 'parabol-client/src/__generated__/useInitialSafeRoute_meeting.graphql'
+import useAtmosphere from './useAtmosphere'
+import useRouter from './useRouter'
 
 const useInitialSafeRoute = (setSafeRoute: Dispatch<SetStateAction<boolean>>, meetingRef: any) => {
   const atmosphere = useAtmosphere()

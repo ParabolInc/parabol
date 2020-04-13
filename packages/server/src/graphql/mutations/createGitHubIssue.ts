@@ -9,9 +9,9 @@ import GitHubServerManager from '../../utils/GitHubServerManager'
 import publish from '../../utils/publish'
 import sendSegmentEvent from '../../utils/sendSegmentEvent'
 import standardError from '../../utils/standardError'
-import {ICreateGitHubIssueOnMutationArguments} from 'parabol-client/src/types/graphql'
-import {GITHUB} from 'parabol-client/src/utils/constants'
-import {SubscriptionChannel} from 'parabol-client/src/types/constEnums'
+import {ICreateGitHubIssueOnMutationArguments} from 'parabol-client/lib/types/graphql'
+import {GITHUB} from 'parabol-client/lib/utils/constants'
+import {SubscriptionChannel} from 'parabol-client/lib/types/constEnums'
 
 export default {
   name: 'CreateGitHubIssue',

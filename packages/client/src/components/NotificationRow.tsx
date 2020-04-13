@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import React, {ReactNode, useState} from 'react'
-import {NotificationStatusEnum} from 'parabol-client/src/types/graphql'
+import {NotificationStatusEnum} from '~/types/graphql'
 import {PALETTE} from '../styles/paletteV2'
 
 const Row = styled('div')<{isNew: boolean}>(({isNew}) => ({

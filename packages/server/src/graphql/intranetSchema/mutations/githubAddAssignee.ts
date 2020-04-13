@@ -2,9 +2,9 @@
 // import ms from 'ms'
 // import getRethink from '../../../database/rethinkDriver'
 // import getPubSub from '../../../utils/getPubSub'
-// import {DONE, GITHUB} from 'parabol-client/src/utils/constants'
-// import getTagsFromEntityMap from 'parabol-client/src/utils/draftjs/getTagsFromEntityMap'
-// import removeAllRangesForEntity from 'parabol-client/src/utils/draftjs/removeAllRangesForEntity'
+// import {DONE, GITHUB} from 'parabol-client/lib/utils/constants'
+// import getTagsFromEntityMap from 'parabol-client/lib/utils/draftjs/getTagsFromEntityMap'
+// import removeAllRangesForEntity from 'parabol-client/lib/utils/draftjs/removeAllRangesForEntity'
 // import {isSuperUser} from '../../../utils/authorization'
 // import {TaskTag} from '../../../database/types/Task'
 

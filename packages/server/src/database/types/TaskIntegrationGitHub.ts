@@ -1,4 +1,4 @@
-import {TaskServiceEnum} from 'parabol-client/src/types/graphql'
+import {TaskServiceEnum} from 'parabol-client/lib/types/graphql'
 import TaskIntegration from '../../graphql/types/TaskIntegration'
 
 interface Input {

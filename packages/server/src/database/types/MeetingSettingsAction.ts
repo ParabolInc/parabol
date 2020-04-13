@@ -1,5 +1,5 @@
 import MeetingSettings from './MeetingSettings'
-import {MeetingTypeEnum, NewMeetingPhaseTypeEnum} from 'parabol-client/src/types/graphql'
+import {MeetingTypeEnum, NewMeetingPhaseTypeEnum} from 'parabol-client/lib/types/graphql'
 
 interface Input {
   teamId: string

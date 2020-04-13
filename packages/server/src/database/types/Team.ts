@@ -1,4 +1,4 @@
-import {TierEnum, MeetingTypeEnum} from 'parabol-client/src/types/graphql'
+import {TierEnum, MeetingTypeEnum} from 'parabol-client/lib/types/graphql'
 import shortid from 'shortid'
 
 interface Input {

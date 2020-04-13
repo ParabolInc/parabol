@@ -1,11 +1,11 @@
+import graphql from 'babel-plugin-relay/macro'
 import React, {useEffect} from 'react'
 import {createFragmentContainer} from 'react-relay'
-import graphql from 'babel-plugin-relay/macro'
 import stringScore from 'string-score'
-import {DraftSuggestion} from './TaskEditor/useSuggestions'
-import EditorSuggestions from './EditorSuggestions/EditorSuggestions'
-import {SuggestMentionableUsers_viewer} from 'parabol-client/src/__generated__/SuggestMentionableUsers_viewer.graphql'
+import {SuggestMentionableUsers_viewer} from '~/__generated__/SuggestMentionableUsers_viewer.graphql'
 import {BBox} from '../types/animations'
+import EditorSuggestions from './EditorSuggestions/EditorSuggestions'
+import {DraftSuggestion} from './TaskEditor/useSuggestions'
 
 const makeSuggestions = (triggerWord, teamMembers) => {
   if (!triggerWord) {

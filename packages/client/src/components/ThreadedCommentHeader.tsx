@@ -2,13 +2,13 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
-import {PALETTE} from 'parabol-client/src/styles/paletteV2'
-import relativeDate from 'parabol-client/src/utils/date/relativeDate'
-import {ThreadedCommentHeader_comment} from 'parabol-client/src/__generated__/ThreadedCommentHeader_comment.graphql'
+import {PALETTE} from '~/styles/paletteV2'
+import relativeDate from '~/utils/date/relativeDate'
+import {ThreadedCommentHeader_comment} from '~/__generated__/ThreadedCommentHeader_comment.graphql'
 import CommentAuthorOptionsButton from './CommentAuthorOptionsButton'
 import AddReactjiButton from './ReflectionCard/AddReactjiButton'
-import ThreadedReplyButton from './ThreadedReplyButton'
 import ThreadedItemHeaderDescription from './ThreadedItemHeaderDescription'
+import ThreadedReplyButton from './ThreadedReplyButton'
 
 const HeaderActions = styled('div')<{isViewerComment: boolean}>(({isViewerComment}) => ({
   color: PALETTE.TEXT_GRAY,

@@ -1,13 +1,13 @@
-import React, {useState} from 'react'
-import graphql from 'babel-plugin-relay/macro'
-import {createFragmentContainer} from 'react-relay'
-import invoiceLineFormat from '../../helpers/invoiceLineFormat'
-import makeDateString from '../../../../utils/makeDateString'
-import {InvoiceLineItemEnum} from '../../../../types/graphql'
-import {InvoiceLineItemDetails_details} from 'parabol-client/src/__generated__/InvoiceLineItemDetails_details.graphql'
 import styled from '@emotion/styled'
+import graphql from 'babel-plugin-relay/macro'
+import React, {useState} from 'react'
+import {createFragmentContainer} from 'react-relay'
+import {InvoiceLineItemDetails_details} from '~/__generated__/InvoiceLineItemDetails_details.graphql'
 import {PALETTE} from '../../../../styles/paletteV2'
 import {Breakpoint} from '../../../../types/constEnums'
+import {InvoiceLineItemEnum} from '../../../../types/graphql'
+import makeDateString from '../../../../utils/makeDateString'
+import invoiceLineFormat from '../../helpers/invoiceLineFormat'
 
 const detailDescriptionMaker = {
   [InvoiceLineItemEnum.ADDED_USERS]: (detail: InvoiceLineItemDetails_details[0]) =>

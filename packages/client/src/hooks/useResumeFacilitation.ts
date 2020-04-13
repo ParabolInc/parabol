@@ -3,7 +3,7 @@ import useAtmosphere from './useAtmosphere'
 import {useEffect} from 'react'
 import PromoteNewMeetingFacilitatorMutation from '../mutations/PromoteNewMeetingFacilitatorMutation'
 import {readInlineData} from 'relay-runtime'
-import {useResumeFacilitation_meeting} from 'parabol-client/src/__generated__/useResumeFacilitation_meeting.graphql'
+import {useResumeFacilitation_meeting} from '~/__generated__/useResumeFacilitation_meeting.graphql'
 
 const useResumeFacilitation = (meetingRef: any) => {
   const atmosphere = useAtmosphere()

@@ -8,9 +8,9 @@ import AtlassianServerManager from '../../utils/AtlassianServerManager'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
-import {ICreateJiraIssueOnMutationArguments} from 'parabol-client/src/types/graphql'
+import {ICreateJiraIssueOnMutationArguments} from 'parabol-client/lib/types/graphql'
 import sendSegmentEvent from '../../utils/sendSegmentEvent'
-import {SubscriptionChannel} from 'parabol-client/src/types/constEnums'
+import {SubscriptionChannel} from 'parabol-client/lib/types/constEnums'
 
 export default {
   name: 'CreateJiraIssue',

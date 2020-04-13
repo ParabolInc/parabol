@@ -1,13 +1,13 @@
+import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import {MenuPosition} from 'parabol-client/src/hooks/useCoords'
-import useMenu from 'parabol-client/src/hooks/useMenu'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
-import lazyPreload from 'parabol-client/src/utils/lazyPreload'
-import {TopBarAvatar_viewer} from 'parabol-client/src/__generated__/TopBarAvatar_viewer.graphql'
+import {MenuPosition} from '~/hooks/useCoords'
+import useMenu from '~/hooks/useMenu'
+import lazyPreload from '~/utils/lazyPreload'
+import {TopBarAvatar_viewer} from '~/__generated__/TopBarAvatar_viewer.graphql'
 import defaultUserAvatar from '../styles/theme/images/avatar-user.svg'
 import Avatar from './Avatar/Avatar'
-import styled from '@emotion/styled'
 
 const SpacedAvatar = styled(Avatar)({
   marginLeft: 8

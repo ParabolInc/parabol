@@ -1,4 +1,4 @@
-import {SuggestedActionTypeEnum} from 'parabol-client/src/types/graphql'
+import {SuggestedActionTypeEnum} from 'parabol-client/lib/types/graphql'
 import SuggestedAction from './SuggestedAction'
 
 interface Input {

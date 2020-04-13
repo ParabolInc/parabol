@@ -1,5 +1,5 @@
 import {GraphQLEnumType} from 'graphql'
-import {RETRO_PHASE_ITEM} from 'parabol-client/src/utils/constants'
+import {RETRO_PHASE_ITEM} from 'parabol-client/lib/utils/constants'
 
 const CustomPhaseItemTypeEnum = new GraphQLEnumType({
   name: 'CustomPhaseItemTypeEnum',

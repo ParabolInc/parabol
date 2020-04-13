@@ -1,4 +1,4 @@
-import {TrebuchetCloseReason} from 'parabol-client/src/types/constEnums'
+import {TrebuchetCloseReason} from 'parabol-client/lib/types/constEnums'
 import {HttpRequest, WebSocket} from 'uWebSockets.js'
 import ConnectionContext from '../socketHelpers/ConnectionContext'
 import sendEncodedMessage from '../socketHelpers/sendEncodedMessage'

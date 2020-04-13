@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
-import useEventCallback from 'parabol-client/src/hooks/useEventCallback'
 import React, {ReactNode, useCallback, useEffect} from 'react'
+import useEventCallback from '~/hooks/useEventCallback'
 import usePortal from '../hooks/usePortal'
 import useRefState from '../hooks/useRefState'
 import {DECELERATE} from '../styles/animation'

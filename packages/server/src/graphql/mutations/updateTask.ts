@@ -9,14 +9,14 @@ import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import shortid from 'shortid'
 import standardError from '../../utils/standardError'
-import {IUpdateTaskOnMutationArguments} from 'parabol-client/src/types/graphql'
+import {IUpdateTaskOnMutationArguments} from 'parabol-client/lib/types/graphql'
 import {GQLContext} from '../graphql'
 import {validateTaskUserId} from './createTask'
 import Task from '../../database/types/Task'
-import normalizeRawDraftJS from 'parabol-client/src/validation/normalizeRawDraftJS'
-import {ITeamMember} from 'parabol-client/src/types/graphql'
+import normalizeRawDraftJS from 'parabol-client/lib/validation/normalizeRawDraftJS'
+import {ITeamMember} from 'parabol-client/lib/types/graphql'
 import getUsersToIgnore from './helpers/getUsersToIgnore'
-import {SubscriptionChannel} from 'parabol-client/src/types/constEnums'
+import {SubscriptionChannel} from 'parabol-client/lib/types/constEnums'
 
 const DEBOUNCE_TIME = ms('5m')
 

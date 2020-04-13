@@ -1,4 +1,4 @@
-import {Threshold} from 'parabol-client/src/types/constEnums'
+import {Threshold} from 'parabol-client/lib/types/constEnums'
 import AuthToken from '../database/types/AuthToken'
 import ConnectionContext from '../socketHelpers/ConnectionContext'
 import encodeAuthToken from '../utils/encodeAuthToken'

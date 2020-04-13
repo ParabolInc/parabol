@@ -1,7 +1,7 @@
 import {GraphQLInt, GraphQLBoolean, GraphQLString} from 'graphql'
 import getRethink from '../../database/rethinkDriver'
 import {requireSU} from '../../utils/authorization'
-import {TierEnum as ETierEnum} from 'parabol-client/src/types/graphql'
+import {TierEnum as ETierEnum} from 'parabol-client/lib/types/graphql'
 import TierEnum from '../types/TierEnum'
 
 export default {

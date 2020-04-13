@@ -1,5 +1,5 @@
-import {InvoiceItemType} from 'parabol-client/src/types/constEnums'
-import {TierEnum} from 'parabol-client/src/types/graphql'
+import {InvoiceItemType} from 'parabol-client/lib/types/constEnums'
+import {TierEnum} from 'parabol-client/lib/types/graphql'
 import getRethink from '../../database/rethinkDriver'
 import InvoiceItemHook from '../../database/types/InvoiceItemHook'
 import Organization from '../../database/types/Organization'

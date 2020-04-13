@@ -1,10 +1,10 @@
-import {SuggestedActionTypeEnum} from 'parabol-client/src/types/graphql'
+import {SuggestedActionTypeEnum} from 'parabol-client/lib/types/graphql'
 import SuggestedAction from './SuggestedAction'
 
 interface Input {
-  id?: string,
-  createdAt?: Date,
-  removedAt?: Date | null,
+  id?: string
+  createdAt?: Date
+  removedAt?: Date | null
   userId: string
 }
 export default class SuggestedActionTryTheDemo extends SuggestedAction {

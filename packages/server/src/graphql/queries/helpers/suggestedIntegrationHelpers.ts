@@ -1,7 +1,7 @@
 import ms from 'ms'
 import getRethink from '../../../database/rethinkDriver'
 import {DataLoaderWorker} from '../../graphql'
-import makeSuggestedIntegrationId from 'parabol-client/src/utils/makeSuggestedIntegrationId'
+import makeSuggestedIntegrationId from 'parabol-client/lib/utils/makeSuggestedIntegrationId'
 
 export interface IntegrationByUserId {
   id: string

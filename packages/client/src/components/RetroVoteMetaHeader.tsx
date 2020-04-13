@@ -1,17 +1,17 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import {MenuPosition} from 'parabol-client/src/hooks/useCoords'
-import useMenu from 'parabol-client/src/hooks/useMenu'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
+import useAtmosphere from '~/hooks/useAtmosphere'
+import {MenuPosition} from '~/hooks/useCoords'
+import useMenu from '~/hooks/useMenu'
+import lazyPreload from '~/utils/lazyPreload'
+import {RetroVoteMetaHeader_meeting} from '~/__generated__/RetroVoteMetaHeader_meeting.graphql'
 import {PALETTE} from '../styles/paletteV2'
 import {FONT_FAMILY, ICON_SIZE} from '../styles/typographyV2'
 import {Breakpoint} from '../types/constEnums'
 import Icon from './Icon'
 import LabelHeading from './LabelHeading/LabelHeading'
-import lazyPreload from 'parabol-client/src/utils/lazyPreload'
-import useAtmosphere from 'parabol-client/src/hooks/useAtmosphere'
-import {RetroVoteMetaHeader_meeting} from 'parabol-client/src/__generated__/RetroVoteMetaHeader_meeting.graphql'
 
 const VoteSettingsMenu = lazyPreload(() =>
   import(

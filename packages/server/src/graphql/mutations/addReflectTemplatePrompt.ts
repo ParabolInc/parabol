@@ -1,6 +1,6 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
-import {SubscriptionChannel, Threshold} from 'parabol-client/src/types/constEnums'
-import dndNoise from 'parabol-client/src/utils/dndNoise'
+import {SubscriptionChannel, Threshold} from 'parabol-client/lib/types/constEnums'
+import dndNoise from 'parabol-client/lib/utils/dndNoise'
 import getRethink from '../../database/rethinkDriver'
 import RetrospectivePrompt from '../../database/types/RetrospectivePrompt'
 import {getUserId, isTeamMember} from '../../utils/authorization'

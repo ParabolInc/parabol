@@ -4,7 +4,7 @@ import publish from '../../utils/publish'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import PromoteNewMeetingFacilitatorPayload from '../types/PromoteNewMeetingFacilitatorPayload'
 import standardError from '../../utils/standardError'
-import {SubscriptionChannel} from 'parabol-client/src/types/constEnums'
+import {SubscriptionChannel} from 'parabol-client/lib/types/constEnums'
 
 export default {
   type: PromoteNewMeetingFacilitatorPayload,

@@ -8,11 +8,11 @@ import {
   InvoiceStatusEnum,
   OrgUserRole,
   TierEnum
-} from 'parabol-client/src/types/graphql'
+} from 'parabol-client/lib/types/graphql'
 import InvoiceLineItemDetail from '../../database/types/InvoiceLineItemDetail'
 import QuantityChangeLineItem from '../../database/types/QuantityChangeLineItem'
 import InvoiceLineItemOtherAdjustments from '../../database/types/InvoiceLineItemOtherAdjustments'
-import {InvoiceItemType} from 'parabol-client/src/types/constEnums'
+import {InvoiceItemType} from 'parabol-client/lib/types/constEnums'
 import StripeManager from '../../utils/StripeManager'
 import NextPeriodCharges from '../../database/types/NextPeriodCharges'
 import Coupon from '../../database/types/Coupon'

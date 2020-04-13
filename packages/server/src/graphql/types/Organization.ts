@@ -7,7 +7,7 @@ import {
   GraphQLObjectType,
   GraphQLString
 } from 'graphql'
-import {OrgUserRole} from 'parabol-client/src/types/graphql'
+import {OrgUserRole} from 'parabol-client/lib/types/graphql'
 import {getUserId, isSuperUser, isUserBillingLeader} from '../../utils/authorization'
 import {resolveForBillingLeaders} from '../resolvers'
 import CreditCard from './CreditCard'

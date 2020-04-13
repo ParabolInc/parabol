@@ -31,7 +31,7 @@ const RootEditor = styled('div')<{noText: boolean; readOnly: boolean | undefined
 
 const AndroidEditorFallback = lazyPreload(() =>
   import(
-    /* webpackChunkName: 'AndroidEditorFallback' */ 'parabol-client/src/components/AndroidEditorFallback'
+    /* webpackChunkName: 'AndroidEditorFallback' */ 'parabol-client/lib/components/AndroidEditorFallback'
   )
 )
 

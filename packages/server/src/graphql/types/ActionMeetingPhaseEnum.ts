@@ -7,7 +7,7 @@ import {
   LOBBY,
   SUMMARY,
   UPDATES
-} from 'parabol-client/src/utils/constants'
+} from 'parabol-client/lib/utils/constants'
 
 const ActionMeetingPhaseEnum = new GraphQLEnumType({
   name: 'ActionMeetingPhaseEnum',

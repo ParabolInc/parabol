@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {IComment, IRetroReflection} from 'parabol-client/src/types/graphql'
-import createProxyRecord from 'parabol-client/src/utils/relay/createProxyRecord'
+import {IComment, IRetroReflection} from '~/types/graphql'
+import createProxyRecord from '~/utils/relay/createProxyRecord'
 import {StandardMutation} from '../types/relayMutations'
 import {AddReactjiToReactableMutation as TAddReactjiToReactableMutation} from '../__generated__/AddReactjiToReactableMutation.graphql'
 

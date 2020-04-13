@@ -9,7 +9,7 @@ import {
 import {GQLContext} from '../graphql'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import TeamMember from './TeamMember'
-import {IAgendaItem} from 'parabol-client/src/types/graphql'
+import {IAgendaItem} from 'parabol-client/lib/types/graphql'
 
 const AgendaItem = new GraphQLObjectType<IAgendaItem, GQLContext>({
   name: 'AgendaItem',

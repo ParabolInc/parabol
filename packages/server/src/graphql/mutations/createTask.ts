@@ -7,20 +7,20 @@ import CreateTaskPayload from '../types/CreateTaskPayload'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish, {SubOptions} from '../../utils/publish'
 import shortid from 'shortid'
-import getTypeFromEntityMap from 'parabol-client/src/utils/draftjs/getTypeFromEntityMap'
-import toTeamMemberId from 'parabol-client/src/utils/relay/toTeamMemberId'
+import getTypeFromEntityMap from 'parabol-client/lib/utils/draftjs/getTypeFromEntityMap'
+import toTeamMemberId from 'parabol-client/lib/utils/relay/toTeamMemberId'
 import standardError from '../../utils/standardError'
 import Task from '../../database/types/Task'
 import {
   ICreateTaskOnMutationArguments,
   ThreadSourceEnum,
   NewMeetingPhaseTypeEnum
-} from 'parabol-client/src/types/graphql'
+} from 'parabol-client/lib/types/graphql'
 import {DataLoaderWorker, GQLContext} from '../graphql'
-import normalizeRawDraftJS from 'parabol-client/src/validation/normalizeRawDraftJS'
+import normalizeRawDraftJS from 'parabol-client/lib/validation/normalizeRawDraftJS'
 import NotificationTaskInvolves from '../../database/types/NotificationTaskInvolves'
-import {ITeamMember} from 'parabol-client/src/types/graphql'
-import {SubscriptionChannel} from 'parabol-client/src/types/constEnums'
+import {ITeamMember} from 'parabol-client/lib/types/graphql'
+import {SubscriptionChannel} from 'parabol-client/lib/types/constEnums'
 import validateThreadableReflectionGroupId from './validateThreadableReflectionGroupId'
 import sendSegmentEvent from '../../utils/sendSegmentEvent'
 

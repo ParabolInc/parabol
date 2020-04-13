@@ -1,4 +1,4 @@
-import chunkArray from 'parabol-client/src/utils/chunkArray'
+import chunkArray from 'parabol-client/lib/utils/chunkArray'
 import createEmbeddedImages from './createEmbeddedImages'
 import {getMailgunApiConfig, getMailgunOptions} from './getMailgunConfig'
 import mailgun from './mailgunDriver'
@@ -63,8 +63,8 @@ export function sendBatchEmail(recipients, template, props, recipientVariables) 
     const chunkedRecipients = chunkArray(recipients, MAILGUN_MAX_BATCH_SIZE)
     console.warn(
       `Email for template ${template} exceeded mailgun maximum batch size of ${MAILGUN_MAX_BATCH_SIZE} ` +
-      `with ${recipients.length} requested recipients.  ` +
-      `Sending ${chunkedRecipients.length} mailgun requests of up to ${MAILGUN_MAX_BATCH_SIZE} recipients each.`
+        `with ${recipients.length} requested recipients.  ` +
+        `Sending ${chunkedRecipients.length} mailgun requests of up to ${MAILGUN_MAX_BATCH_SIZE} recipients each.`
     )
     return Promise.all(
       chunkedRecipients.map((chunk) => sendBatchEmail(chunk, template, props, recipientVariables))

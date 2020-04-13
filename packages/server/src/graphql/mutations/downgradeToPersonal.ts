@@ -6,8 +6,8 @@ import {getUserId, isSuperUser, isUserBillingLeader} from '../../utils/authoriza
 import publish from '../../utils/publish'
 import sendSegmentEvent, {sendSegmentIdentify} from '../../utils/sendSegmentEvent'
 import standardError from '../../utils/standardError'
-import {TierEnum} from 'parabol-client/src/types/graphql'
-import {SubscriptionChannel} from 'parabol-client/src/types/constEnums'
+import {TierEnum} from 'parabol-client/lib/types/graphql'
+import {SubscriptionChannel} from 'parabol-client/lib/types/constEnums'
 import setUserTierForOrgId from '../../utils/setUserTierForOrgId'
 
 export default {

@@ -1,5 +1,5 @@
 import {GraphQLNonNull} from 'graphql'
-import {InvoiceItemType, SubscriptionChannel} from 'parabol-client/src/types/constEnums'
+import {InvoiceItemType, SubscriptionChannel} from 'parabol-client/lib/types/constEnums'
 import adjustUserCount from '../../../billing/helpers/adjustUserCount'
 import getRethink from '../../../database/rethinkDriver'
 import {getUserId} from '../../../utils/authorization'

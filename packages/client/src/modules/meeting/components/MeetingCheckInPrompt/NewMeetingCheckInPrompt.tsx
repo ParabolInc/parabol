@@ -1,15 +1,15 @@
-import {NewMeetingCheckInPrompt_teamMember} from '../../../../__generated__/NewMeetingCheckInPrompt_teamMember.graphql'
-import React from 'react'
 import styled from '@emotion/styled'
-import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
+import React from 'react'
+import {createFragmentContainer} from 'react-relay'
+import {NewMeetingCheckInPrompt_meeting} from '~/__generated__/NewMeetingCheckInPrompt_meeting.graphql'
 import Avatar from '../../../../components/Avatar/Avatar'
-import NewCheckInQuestion from './NewCheckInQuestion'
-import NewMeetingCheckInGreeting from '../NewMeetingCheckInGreeting'
-import defaultUserAvatar from '../../../../styles/theme/images/avatar-user.svg'
 import useBreakpoint from '../../../../hooks/useBreakpoint'
+import defaultUserAvatar from '../../../../styles/theme/images/avatar-user.svg'
 import {Breakpoint} from '../../../../types/constEnums'
-import {NewMeetingCheckInPrompt_meeting} from 'parabol-client/src/__generated__/NewMeetingCheckInPrompt_meeting.graphql'
+import {NewMeetingCheckInPrompt_teamMember} from '../../../../__generated__/NewMeetingCheckInPrompt_teamMember.graphql'
+import NewMeetingCheckInGreeting from '../NewMeetingCheckInGreeting'
+import NewCheckInQuestion from './NewCheckInQuestion'
 
 const PromptBlock = styled('div')({
   alignItems: 'center',

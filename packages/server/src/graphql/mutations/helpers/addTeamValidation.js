@@ -1,5 +1,5 @@
-import legitify from 'parabol-client/src/validation/legitify'
-import { makeTeamNameSchema, requiredId } from 'parabol-client/src/validation/templates'
+import legitify from 'parabol-client/lib/validation/legitify'
+import {makeTeamNameSchema, requiredId} from 'parabol-client/lib/validation/templates'
 
 export default function addTeamValidation(teamNames) {
   return legitify({

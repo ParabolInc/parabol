@@ -4,11 +4,11 @@ import AddAgendaItemPayload from '../types/AddAgendaItemPayload'
 import CreateAgendaItemInput from '../types/CreateAgendaItemInput'
 import publish from '../../utils/publish'
 import shortid from 'shortid'
-import makeAgendaItemSchema from 'parabol-client/src/validation/makeAgendaItemSchema'
+import makeAgendaItemSchema from 'parabol-client/lib/validation/makeAgendaItemSchema'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import standardError from '../../utils/standardError'
 import addAgendaItemToActiveActionMeeting from './helpers/addAgendaItemToActiveActionMeeting'
-import {SubscriptionChannel} from 'parabol-client/src/types/constEnums'
+import {SubscriptionChannel} from 'parabol-client/lib/types/constEnums'
 
 export default {
   type: AddAgendaItemPayload,

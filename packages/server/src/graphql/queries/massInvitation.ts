@@ -3,8 +3,8 @@ import rateLimit from '../rateLimit'
 import MassInvitationPayload from '../types/MassInvitationPayload'
 import {verifyMassInviteToken} from '../../utils/massInviteToken'
 import {GQLContext} from '../graphql'
-import toTeamMemberId from 'parabol-client/src/utils/relay/toTeamMemberId'
-import {InvitationTokenError} from 'parabol-client/src/types/constEnums'
+import toTeamMemberId from 'parabol-client/lib/utils/relay/toTeamMemberId'
+import {InvitationTokenError} from 'parabol-client/lib/types/constEnums'
 
 export default {
   type: new GraphQLNonNull(MassInvitationPayload),

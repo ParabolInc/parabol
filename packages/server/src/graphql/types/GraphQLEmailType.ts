@@ -1,6 +1,6 @@
 import {GraphQLScalarType} from 'graphql'
 import {Kind} from 'graphql/language'
-import {emailRegex} from 'parabol-client/src/validation/regex'
+import {emailRegex} from 'parabol-client/lib/validation/regex'
 
 const GraphQLEmailType = new GraphQLScalarType({
   name: 'Email',

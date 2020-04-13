@@ -1,5 +1,5 @@
 import {GraphQLNonNull} from 'graphql'
-import {SubscriptionChannel} from 'parabol-client/src/types/constEnums'
+import {SubscriptionChannel} from 'parabol-client/lib/types/constEnums'
 import {getUserId, isAuthenticated} from '../../utils/authorization'
 import getPubSub from '../../utils/getPubSub'
 import {GQLContext} from '../graphql'

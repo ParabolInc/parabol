@@ -1,6 +1,6 @@
 import {GraphQLInt, GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
-import {IActionMeeting, MeetingTypeEnum} from 'parabol-client/src/types/graphql'
-import toTeamMemberId from 'parabol-client/src/utils/relay/toTeamMemberId'
+import {IActionMeeting, MeetingTypeEnum} from 'parabol-client/lib/types/graphql'
+import toTeamMemberId from 'parabol-client/lib/utils/relay/toTeamMemberId'
 import {getUserId} from '../../utils/authorization'
 import filterTasksByMeeting from '../../utils/filterTasksByMeeting'
 import {GQLContext} from '../graphql'

@@ -5,7 +5,7 @@ import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import upgradeToPro from './helpers/upgradeToPro'
 import {GQLContext} from '../graphql'
-import {SubscriptionChannel} from 'parabol-client/src/types/constEnums'
+import {SubscriptionChannel} from 'parabol-client/lib/types/constEnums'
 
 export default {
   type: UpdateCreditCardPayload,

@@ -1,4 +1,4 @@
-import extractTextFromDraftString from 'parabol-client/src/utils/draftjs/extractTextFromDraftString'
+import extractTextFromDraftString from 'parabol-client/lib/utils/draftjs/extractTextFromDraftString'
 
 exports.up = async (r) => {
   const reflections = await r.table('RetroReflection').run()

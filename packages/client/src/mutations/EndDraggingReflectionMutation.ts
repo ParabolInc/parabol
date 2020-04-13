@@ -13,7 +13,7 @@ import {LocalHandlers, SharedUpdater} from '../types/relayMutations'
 import {IEndDraggingReflectionOnMutationArguments} from '../types/graphql'
 import Atmosphere from '../Atmosphere'
 import clientTempId from '../utils/relay/clientTempId'
-import {EndDraggingReflectionMutation_meeting} from 'parabol-client/src/__generated__/EndDraggingReflectionMutation_meeting.graphql'
+import {EndDraggingReflectionMutation_meeting} from '~/__generated__/EndDraggingReflectionMutation_meeting.graphql'
 
 graphql`
   fragment EndDraggingReflectionMutation_meeting on EndDraggingReflectionPayload {

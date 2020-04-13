@@ -12,7 +12,7 @@ import lazyPreload from '../utils/lazyPreload'
 import {AddTeamMemberAvatarButton_teamMembers} from '../__generated__/AddTeamMemberAvatarButton_teamMembers.graphql'
 import Icon from './Icon'
 import OutlinedButton from './OutlinedButton'
-import {PALETTE} from 'parabol-client/src/styles/paletteV2'
+import {PALETTE} from '~/styles/paletteV2'
 
 interface Props extends WithAtmosphereProps {
   meetingId?: string

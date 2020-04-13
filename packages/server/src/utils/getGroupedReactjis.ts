@@ -1,5 +1,5 @@
 import Reactji from '../database/types/Reactji'
-import {IReactji} from 'parabol-client/src/types/graphql'
+import {IReactji} from 'parabol-client/lib/types/graphql'
 
 const getGroupedReactjis = (reactjis: Reactji[], viewerId: string, idPrefix: string) => {
   const agg = {}

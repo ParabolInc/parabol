@@ -1,6 +1,6 @@
 import GenericMeetingStage from './GenericMeetingStage'
 import shortid from 'shortid'
-import {NewMeetingPhaseTypeEnum} from 'parabol-client/src/types/graphql'
+import {NewMeetingPhaseTypeEnum} from 'parabol-client/lib/types/graphql'
 
 export default class GenericMeetingPhase {
   id = shortid.generate()

@@ -1,6 +1,6 @@
 import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql'
-import {SubscriptionChannel} from 'parabol-client/src/types/constEnums'
-import {NewMeetingPhaseTypeEnum} from 'parabol-client/src/types/graphql'
+import {SubscriptionChannel} from 'parabol-client/lib/types/constEnums'
+import {NewMeetingPhaseTypeEnum} from 'parabol-client/lib/types/graphql'
 import getRethink from '../../database/rethinkDriver'
 import {getUserId} from '../../utils/authorization'
 import publish from '../../utils/publish'

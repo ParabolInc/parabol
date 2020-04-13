@@ -2,7 +2,7 @@ import {verifyMassInviteToken} from '../../../utils/massInviteToken'
 import TeamInvitation from '../../../database/types/TeamInvitation'
 import getRethink from '../../../database/rethinkDriver'
 import {DataLoaderWorker} from '../../graphql'
-import {InvitationTokenError} from 'parabol-client/src/types/constEnums'
+import {InvitationTokenError} from 'parabol-client/lib/types/constEnums'
 
 const handleMassInviteToken = async (
   invitationToken: string,

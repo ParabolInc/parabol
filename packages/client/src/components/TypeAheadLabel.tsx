@@ -1,6 +1,6 @@
-import React from 'react'
 import styled from '@emotion/styled'
-import getSafeRegex from 'parabol-client/src/utils/getSafeRegex'
+import React from 'react'
+import getSafeRegex from '~/utils/getSafeRegex'
 
 interface Props {
   query: string

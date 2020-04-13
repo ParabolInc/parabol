@@ -1,7 +1,7 @@
 import {GraphQLNonNull} from 'graphql'
-import {SubscriptionChannel} from 'parabol-client/src/types/constEnums'
-import toTeamMemberId from 'parabol-client/src/utils/relay/toTeamMemberId'
-import normalizeRawDraftJS from 'parabol-client/src/validation/normalizeRawDraftJS'
+import {SubscriptionChannel} from 'parabol-client/lib/types/constEnums'
+import toTeamMemberId from 'parabol-client/lib/utils/relay/toTeamMemberId'
+import normalizeRawDraftJS from 'parabol-client/lib/validation/normalizeRawDraftJS'
 import getRethink from '../../database/rethinkDriver'
 import Comment from '../../database/types/Comment'
 import {getUserId} from '../../utils/authorization'
@@ -13,7 +13,7 @@ import validateThreadableReflectionGroupId from './validateThreadableReflectionG
 import {
   IAddCommentOnMutationArguments,
   NewMeetingPhaseTypeEnum
-} from 'parabol-client/src/types/graphql'
+} from 'parabol-client/lib/types/graphql'
 import sendSegmentEvent from '../../utils/sendSegmentEvent'
 
 const addComment = {

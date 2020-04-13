@@ -3,9 +3,9 @@ import getRethink from '../../database/rethinkDriver'
 import DragDiscussionTopicPayload from '../types/DragDiscussionTopicPayload'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
-import {DISCUSS} from 'parabol-client/src/utils/constants'
+import {DISCUSS} from 'parabol-client/lib/utils/constants'
 import standardError from '../../utils/standardError'
-import {SubscriptionChannel} from 'parabol-client/src/types/constEnums'
+import {SubscriptionChannel} from 'parabol-client/lib/types/constEnums'
 import DiscussPhase from '../../database/types/DiscussPhase'
 
 export default {

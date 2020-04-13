@@ -14,7 +14,7 @@ import useEventCallback from '../../hooks/useEventCallback'
 import dndNoise from '../../utils/dndNoise'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import UpdateTaskMutation from '../../mutations/UpdateTaskMutation'
-import {TaskColumns_teams} from 'parabol-client/src/__generated__/TaskColumns_teams.graphql'
+import {TaskColumns_teams} from '~/__generated__/TaskColumns_teams.graphql'
 
 const ColumnsBlock = styled('div')({
   display: 'flex',

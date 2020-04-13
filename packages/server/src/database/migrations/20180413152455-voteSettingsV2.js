@@ -1,4 +1,4 @@
-import { RETROSPECTIVE } from 'parabol-client/src/utils/constants'
+import {RETROSPECTIVE} from 'parabol-client/lib/utils/constants'
 
 // the first voteSettings did not take (possible merge conflict?) trying again
 exports.up = async (r) => {
@@ -28,7 +28,7 @@ exports.up = async (r) => {
   try {
     await r
       .table('MeetingSettings')
-      .filter({ meetingType: RETROSPECTIVE })
+      .filter({meetingType: RETROSPECTIVE})
       .update({
         totalVotes: 5,
         maxVotesPerGroup: 3
@@ -43,7 +43,7 @@ exports.down = async (r) => {
   try {
     await r
       .table('MeetingSettings')
-      .filter({ meetingType: RETROSPECTIVE })
+      .filter({meetingType: RETROSPECTIVE})
       .replace((settings) => settings.without('totalVotes', 'maxVotesPerGroup'))
       .run()
   } catch (e) {

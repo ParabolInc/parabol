@@ -4,9 +4,9 @@
 // import getRethink from '../../database/rethinkDriver'
 // import {ADD_USER} from '../../utils/serverConstants'
 // import shortid from 'shortid'
-// import {ACTIVE, CHECKIN, LOBBY, PERSONAL, PRO} from 'parabol-client/src/utils/constants'
-// import getWeekOfYear from 'parabol-client/src/utils/getWeekOfYear'
-// import {makeCheckinGreeting, makeCheckinQuestion} from 'parabol-client/src/utils/makeCheckinGreeting'
+// import {ACTIVE, CHECKIN, LOBBY, PERSONAL, PRO} from 'parabol-client/lib/utils/constants'
+// import getWeekOfYear from 'parabol-client/lib/utils/getWeekOfYear'
+// import {makeCheckinGreeting, makeCheckinQuestion} from 'parabol-client/lib/utils/makeCheckinGreeting'
 // import convertToRichText from './convertToRichText'
 // import creditCardByToken from '../utils/creditCardByToken'
 //

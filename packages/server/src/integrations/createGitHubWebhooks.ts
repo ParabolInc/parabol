@@ -1,6 +1,6 @@
 import makeGitHubWebhookParams from '../utils/makeGitHubWebhookParams'
-import {GITHUB_ENDPOINT} from 'parabol-client/src/utils/constants'
-import makeGitHubPostOptions from 'parabol-client/src/utils/makeGitHubPostOptions'
+import {GITHUB_ENDPOINT} from 'parabol-client/lib/utils/constants'
+import makeGitHubPostOptions from 'parabol-client/lib/utils/makeGitHubPostOptions'
 import fetch from 'node-fetch'
 
 export const createRepoWebhook = async (accessToken, nameWithOwner, publicKey) => {

@@ -1,10 +1,10 @@
-import React from 'react'
 import graphql from 'babel-plugin-relay/macro'
-import {RouteComponentProps, withRouter} from 'react-router-dom'
+import React from 'react'
 import {QueryRenderer} from 'react-relay'
-import TeamContainer from '../containers/Team/TeamContainer'
+import {RouteComponentProps, withRouter} from 'react-router-dom'
+import {TeamRootQuery} from '~/__generated__/TeamRootQuery.graphql'
 import useAtmosphere from '../../../hooks/useAtmosphere'
-import {TeamRootQuery} from 'parabol-client/src/__generated__/TeamRootQuery.graphql'
+import TeamContainer from '../containers/Team/TeamContainer'
 
 const query = graphql`
   query TeamRootQuery($teamId: ID!) {

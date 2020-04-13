@@ -1,7 +1,7 @@
 import stripe from '../../../billing/stripe'
 import {fromEpochSeconds} from '../../../utils/epochTime'
 import getUpcomingInvoiceId from '../../../utils/getUpcomingInvoiceId'
-import {InvoiceStatusEnum} from 'parabol-client/src/types/graphql'
+import {InvoiceStatusEnum} from 'parabol-client/lib/types/graphql'
 
 export default async function makeUpcomingInvoice(orgId, stripeId, stripeSubscriptionId) {
   if (!stripeId || !stripeSubscriptionId) return undefined

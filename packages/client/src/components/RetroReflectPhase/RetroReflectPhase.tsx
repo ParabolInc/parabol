@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import React, {useRef, useState} from 'react'
 import {createFragmentContainer} from 'react-relay'
-import {RetroReflectPhase_meeting} from 'parabol-client/src/__generated__/RetroReflectPhase_meeting.graphql'
+import {RetroReflectPhase_meeting} from '~/__generated__/RetroReflectPhase_meeting.graphql'
 import useBreakpoint from '../../hooks/useBreakpoint'
 import {Breakpoint} from '../../types/constEnums'
 import {NewMeetingPhaseTypeEnum} from '../../types/graphql'

@@ -1,5 +1,5 @@
 import {GraphQLEnumType} from 'graphql'
-import {GITHUB, SLACK} from 'parabol-client/src/utils/constants'
+import {GITHUB, SLACK} from 'parabol-client/lib/utils/constants'
 
 const IntegrationServiceEnum = new GraphQLEnumType({
   name: 'IntegrationServiceEnum',

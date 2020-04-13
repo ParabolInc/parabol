@@ -1,9 +1,9 @@
 import getRethink from '../../../database/rethinkDriver'
 import GitHubServerManager from '../../../utils/GitHubServerManager'
-import {Omit} from 'parabol-client/src/types/generics'
-import {ISuggestedIntegrationGitHub} from 'parabol-client/src/types/graphql'
-import {GITHUB} from 'parabol-client/src/utils/constants'
-// import {GetReposQueryData} from 'parabol-client/src/utils/githubQueries/getRepos.graphql'
+import {Omit} from 'parabol-client/lib/types/generics'
+import {ISuggestedIntegrationGitHub} from 'parabol-client/lib/types/graphql'
+import {GITHUB} from 'parabol-client/lib/utils/constants'
+// import {GetReposQueryData} from 'parabol-client/lib/utils/githubQueries/getRepos.graphql'
 
 namespace GetReposQueryData {
   export type ViewerOrganizationsNodes = any

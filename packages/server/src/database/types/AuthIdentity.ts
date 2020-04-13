@@ -1,4 +1,4 @@
-import {AuthIdentityTypeEnum} from 'parabol-client/src/types/graphql'
+import {AuthIdentityTypeEnum} from 'parabol-client/lib/types/graphql'
 
 interface Input {
   id: string

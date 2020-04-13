@@ -1,4 +1,4 @@
-import {IAgendaItem, IAtlassianAuth, INewFeatureBroadcast} from 'parabol-client/src/types/graphql'
+import {IAgendaItem, IAtlassianAuth, INewFeatureBroadcast} from 'parabol-client/lib/types/graphql'
 import {r} from 'rethinkdb-ts'
 import MeetingMember from '../database/types/MeetingMember'
 import Organization from '../database/types/Organization'
@@ -100,13 +100,13 @@ export type RethinkTypes = {
   }
   Notification: {
     type:
-    | NotificationTaskInvolves
-    | NotificationTeamArchived
-    | NotificationMeetingStageTimeLimitEnd
-    | NotificationPaymentRejected
-    | NotificationKickedOut
-    | NotificationPromoteToBillingLeader
-    | NotificationTeamInvitation
+      | NotificationTaskInvolves
+      | NotificationTeamArchived
+      | NotificationMeetingStageTimeLimitEnd
+      | NotificationPaymentRejected
+      | NotificationKickedOut
+      | NotificationPromoteToBillingLeader
+      | NotificationTeamInvitation
     index: 'userId'
   }
   Organization: {

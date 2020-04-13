@@ -7,7 +7,7 @@ import SuggestedActionInviteYourTeam from '../../../database/types/SuggestedActi
 import SuggestedActionTryTheDemo from '../../../database/types/SuggestedActionTryTheDemo'
 import SuggestedActionCreateNewTeam from '../../../database/types/SuggestedActionCreateNewTeam'
 import AuthToken from '../../../database/types/AuthToken'
-import sleep from 'parabol-client/src/utils/sleep'
+import sleep from 'parabol-client/lib/utils/sleep'
 import {sendSegmentIdentify} from '../../../utils/sendSegmentEvent'
 import getRethink from '../../../database/rethinkDriver'
 import User from '../../../database/types/User'

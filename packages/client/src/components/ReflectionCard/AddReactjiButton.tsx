@@ -1,9 +1,9 @@
 import styled from '@emotion/styled'
-import PlainButton from 'parabol-client/src/components/PlainButton/PlainButton'
 import React from 'react'
-import lazyPreload from 'parabol-client/src/utils/lazyPreload'
-import useMenu from 'parabol-client/src/hooks/useMenu'
-import {MenuPosition} from 'parabol-client/src/hooks/useCoords'
+import PlainButton from '~/components/PlainButton/PlainButton'
+import {MenuPosition} from '~/hooks/useCoords'
+import useMenu from '~/hooks/useMenu'
+import lazyPreload from '~/utils/lazyPreload'
 
 const icon = `${__STATIC_IMAGES__}/icons/add_reactji_24.svg`
 

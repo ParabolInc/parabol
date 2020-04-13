@@ -1,6 +1,6 @@
 import fetch from 'node-fetch'
 import makeAppLink from './makeAppLink'
-import AtlassianManager from 'parabol-client/src/utils/AtlassianManager'
+import AtlassianManager from 'parabol-client/lib/utils/AtlassianManager'
 
 interface AuthQueryParams {
   grant_type: 'authorization_code'

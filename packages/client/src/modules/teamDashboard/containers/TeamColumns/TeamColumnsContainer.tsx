@@ -6,7 +6,7 @@ import TaskColumns from '../../../../components/TaskColumns/TaskColumns'
 import {AreaEnum} from '../../../../types/graphql'
 import toTeamMemberId from '../../../../utils/relay/toTeamMemberId'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
-import getSafeRegex from 'parabol-client/src/utils/getSafeRegex'
+import getSafeRegex from '~/utils/getSafeRegex'
 
 interface Props {
   viewer: TeamColumnsContainer_viewer

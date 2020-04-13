@@ -1,8 +1,8 @@
-import getIsDrag from 'parabol-client/src/utils/retroGroup/getIsDrag'
+import getIsDrag from '~/utils/retroGroup/getIsDrag'
 import {cacheCoveringBBox, ensureAllCovering} from './useControlBarCovers'
 import useEventCallback from './useEventCallback'
 import useBreakpoint from './useBreakpoint'
-import {Breakpoint} from 'parabol-client/src/types/constEnums'
+import {Breakpoint} from '~/types/constEnums'
 
 const makeDrag = (ref: HTMLDivElement, lastX: number) => ({
   ref,

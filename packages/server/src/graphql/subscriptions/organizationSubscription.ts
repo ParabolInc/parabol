@@ -1,6 +1,6 @@
 import getRethink from '../../database/rethinkDriver'
 import {GraphQLNonNull} from 'graphql'
-import {SubscriptionChannel} from 'parabol-client/src/types/constEnums'
+import {SubscriptionChannel} from 'parabol-client/lib/types/constEnums'
 import getPubSub from '../../utils/getPubSub'
 import {getUserId} from '../../utils/authorization'
 import OrganizationSubscriptionPayload from '../types/OrganizationSubscriptionPayload'

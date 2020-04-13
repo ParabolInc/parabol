@@ -1,5 +1,5 @@
 import {GraphQLNonNull, GraphQLString} from 'graphql'
-import {SubscriptionChannel} from 'parabol-client/src/types/constEnums'
+import {SubscriptionChannel} from 'parabol-client/lib/types/constEnums'
 import getRethink from '../../database/rethinkDriver'
 import {getUserId, requireSU} from '../../utils/authorization'
 import publish from '../../utils/publish'

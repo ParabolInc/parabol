@@ -1,5 +1,5 @@
-import {InvoiceItemType} from 'parabol-client/src/types/constEnums'
-import {ITeam, NotificationEnum, NotificationStatusEnum} from 'parabol-client/src/types/graphql'
+import {InvoiceItemType} from 'parabol-client/lib/types/constEnums'
+import {ITeam, NotificationEnum, NotificationStatusEnum} from 'parabol-client/lib/types/graphql'
 import shortid from 'shortid'
 import adjustUserCount from '../billing/helpers/adjustUserCount'
 import getRethink from '../database/rethinkDriver'

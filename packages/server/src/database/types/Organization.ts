@@ -1,5 +1,5 @@
 import shortid from 'shortid'
-import {TierEnum} from 'parabol-client/src/types/graphql'
+import {TierEnum} from 'parabol-client/lib/types/graphql'
 import CreditCard from './CreditCard'
 
 interface Input {

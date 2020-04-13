@@ -1,13 +1,13 @@
+import styled from '@emotion/styled'
+import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
-import graphql from 'babel-plugin-relay/macro'
-import useAtmosphere from '../hooks/useAtmosphere'
-import MeetingSidebarPhaseItemChild from './MeetingSidebarPhaseItemChild'
-import MeetingSubnavItem from '../components/MeetingSubnavItem'
+import {MeetingSidebarTeamMemberStageItems_meeting} from '~/__generated__/MeetingSidebarTeamMemberStageItems_meeting.graphql'
 import Avatar from '../components/Avatar/Avatar'
-import styled from '@emotion/styled'
-import {MeetingSidebarTeamMemberStageItems_meeting} from 'parabol-client/src/__generated__/MeetingSidebarTeamMemberStageItems_meeting.graphql'
+import MeetingSubnavItem from '../components/MeetingSubnavItem'
+import useAtmosphere from '../hooks/useAtmosphere'
 import useGotoStageId from '../hooks/useGotoStageId'
+import MeetingSidebarPhaseItemChild from './MeetingSidebarPhaseItemChild'
 
 const AvatarBlock = styled('div')({
   width: 32

@@ -1,5 +1,5 @@
 import shortid from 'shortid'
-import {OrgUserRole} from 'parabol-client/src/types/graphql'
+import {OrgUserRole} from 'parabol-client/lib/types/graphql'
 
 interface Input {
   orgId: string

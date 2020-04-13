@@ -1,11 +1,11 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
-import {SubscriptionChannel} from 'parabol-client/src/types/constEnums'
+import {SubscriptionChannel} from 'parabol-client/lib/types/constEnums'
 import getRethink from '../../database/rethinkDriver'
 import {getUserId} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import {GQLContext} from '../graphql'
 import DeleteCommentPayload from '../types/DeleteCommentPayload'
-import {IDeleteCommentOnMutationArguments} from 'parabol-client/src/types/graphql'
+import {IDeleteCommentOnMutationArguments} from 'parabol-client/lib/types/graphql'
 
 const deleteComment = {
   type: GraphQLNonNull(DeleteCommentPayload),

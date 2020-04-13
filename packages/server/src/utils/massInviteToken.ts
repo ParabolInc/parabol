@@ -1,5 +1,5 @@
-import {InvitationTokenError} from 'parabol-client/src/types/constEnums'
-import fromTeamMemberId from 'parabol-client/src/utils/relay/fromTeamMemberId'
+import {InvitationTokenError} from 'parabol-client/lib/types/constEnums'
+import fromTeamMemberId from 'parabol-client/lib/utils/relay/fromTeamMemberId'
 import {DataLoaderWorker} from '../graphql/graphql'
 
 interface ErrorRes {

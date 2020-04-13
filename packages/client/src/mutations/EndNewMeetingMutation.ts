@@ -12,8 +12,8 @@ import {
 import {EndNewMeetingMutation as TEndNewMeetingMutation} from '../__generated__/EndNewMeetingMutation.graphql'
 import handleUpsertTasks from './handlers/handleUpsertTasks'
 import {RetroDemo} from '../types/constEnums'
-import {EndNewMeetingMutation_team} from 'parabol-client/src/__generated__/EndNewMeetingMutation_team.graphql'
-import {EndNewMeetingMutation_notification} from 'parabol-client/src/__generated__/EndNewMeetingMutation_notification.graphql'
+import {EndNewMeetingMutation_team} from '~/__generated__/EndNewMeetingMutation_team.graphql'
+import {EndNewMeetingMutation_notification} from '~/__generated__/EndNewMeetingMutation_notification.graphql'
 import handleRemoveTasks from './handlers/handleRemoveTasks'
 
 graphql`

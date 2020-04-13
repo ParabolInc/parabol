@@ -1,5 +1,5 @@
-import useInitialRender from 'parabol-client/src/hooks/useInitialRender'
 import {RefObject, useEffect, useRef} from 'react'
+import useInitialRender from '~/hooks/useInitialRender'
 
 const useScrollThreadList = (
   threadables: readonly any[],

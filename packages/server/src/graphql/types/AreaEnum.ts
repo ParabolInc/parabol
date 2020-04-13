@@ -1,5 +1,5 @@
 import {GraphQLEnumType} from 'graphql'
-import {MEETING, TEAM_DASH, USER_DASH} from 'parabol-client/src/utils/constants'
+import {MEETING, TEAM_DASH, USER_DASH} from 'parabol-client/lib/utils/constants'
 
 const AreaEnum = new GraphQLEnumType({
   name: 'AreaEnum',

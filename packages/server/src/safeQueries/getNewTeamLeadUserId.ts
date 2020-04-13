@@ -1,5 +1,5 @@
 import getRethink from '../database/rethinkDriver'
-import {SuggestedActionTypeEnum} from 'parabol-client/src/types/graphql'
+import {SuggestedActionTypeEnum} from 'parabol-client/lib/types/graphql'
 
 // returns the userId of the team lead if they have never received the initial starting suggested actions
 const getNewTeamLeadUserId = async (teamId: string) => {

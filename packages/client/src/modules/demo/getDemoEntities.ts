@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {fetchQuery} from 'relay-runtime'
+import {getDemoEntitiesQuery} from '~/__generated__/getDemoEntitiesQuery.graphql'
 import Atmosphere from '../../Atmosphere'
-import {getDemoEntitiesQuery} from 'parabol-client/src/__generated__/getDemoEntitiesQuery.graphql'
 
 const query = graphql`
   query getDemoEntitiesQuery($text: String!) {

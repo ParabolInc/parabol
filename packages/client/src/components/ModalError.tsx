@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
-import useModal from 'parabol-client/src/hooks/useModal'
 import React, {forwardRef, Ref} from 'react'
+import useModal from '~/hooks/useModal'
 import DialogContent from './DialogContent'
 import DialogTitle from './DialogTitle'
 import MenuContents, {MenuContentsProps} from './MenuContents'

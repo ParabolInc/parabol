@@ -1,12 +1,12 @@
-import SecondaryButton from '../../../../components/SecondaryButton'
-import Panel from '../../../../components/Panel/Panel'
-import React from 'react'
 import styled from '@emotion/styled'
-import {Layout} from '../../../../types/constEnums'
 import graphql from 'babel-plugin-relay/macro'
+import React from 'react'
 import {createPaginationContainer, RelayPaginationProp} from 'react-relay'
+import {OrgBillingInvoices_viewer} from '~/__generated__/OrgBillingInvoices_viewer.graphql'
+import Panel from '../../../../components/Panel/Panel'
+import SecondaryButton from '../../../../components/SecondaryButton'
+import {Layout} from '../../../../types/constEnums'
 import InvoiceRow from '../InvoiceRow/InvoiceRow'
-import {OrgBillingInvoices_viewer} from 'parabol-client/src/__generated__/OrgBillingInvoices_viewer.graphql'
 
 const MoreGutter = styled('div')({
   paddingBottom: Layout.ROW_GUTTER

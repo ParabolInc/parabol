@@ -6,7 +6,7 @@ import CheckInPhase from '../../../database/types/CheckInPhase'
 import UpdatesPhase from '../../../database/types/UpdatesPhase'
 import TeamMember from '../../../database/types/TeamMember'
 import {DataLoaderWorker} from '../../graphql'
-import {NewMeetingPhaseTypeEnum} from 'parabol-client/src/types/graphql'
+import {NewMeetingPhaseTypeEnum} from 'parabol-client/lib/types/graphql'
 
 /*
  * NewMeetings have a predefined set of stages, we need to add the new team member manually

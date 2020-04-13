@@ -2,12 +2,12 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
-import {ReactjiSection_reactjis} from 'parabol-client/src/__generated__/ReactjiSection_reactjis.graphql'
+import {ReactjiSection_reactjis} from '~/__generated__/ReactjiSection_reactjis.graphql'
 import AddReactjiButton from './AddReactjiButton'
 import ReactjiCount from './ReactjiCount'
-import useTransition, {TransitionStatus} from 'parabol-client/src/hooks/useTransition'
-import useInitialRender from 'parabol-client/src/hooks/useInitialRender'
-import {Threshold} from 'parabol-client/src/types/constEnums'
+import useTransition, {TransitionStatus} from '~/hooks/useTransition'
+import useInitialRender from '~/hooks/useInitialRender'
+import {Threshold} from '~/types/constEnums'
 
 const Wrapper = styled('div')({
   alignItems: 'flex-start',

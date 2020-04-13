@@ -5,7 +5,7 @@ import graphql from 'babel-plugin-relay/macro'
  */
 import React, {useRef} from 'react'
 import {createFragmentContainer} from 'react-relay'
-import {RetroGroupPhase_meeting} from 'parabol-client/src/__generated__/RetroGroupPhase_meeting.graphql'
+import {RetroGroupPhase_meeting} from '~/__generated__/RetroGroupPhase_meeting.graphql'
 import {NewMeetingPhaseTypeEnum} from '../types/graphql'
 import {phaseLabelLookup} from '../utils/meetings/lookups'
 import GroupingKanban from './GroupingKanban'

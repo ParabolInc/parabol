@@ -2,7 +2,7 @@ import {commitMutation} from 'react-relay'
 import toTeamMemberId from '../utils/relay/toTeamMemberId'
 import graphql from 'babel-plugin-relay/macro'
 import {ToggleAgendaListMutation as TToggleAgendaListMutation} from '../__generated__/ToggleAgendaListMutation.graphql'
-import {ITeamMember} from 'parabol-client/src/types/graphql'
+import {ITeamMember} from '~/types/graphql'
 
 const mutation = graphql`
   mutation ToggleAgendaListMutation($teamId: ID!) {

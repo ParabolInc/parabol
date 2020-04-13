@@ -1,13 +1,13 @@
-import {TeamContainer_viewer} from '../../../../__generated__/TeamContainer_viewer.graphql'
+import graphql from 'babel-plugin-relay/macro'
 import React, {lazy, Suspense, useEffect} from 'react'
 import {createFragmentContainer} from 'react-relay'
-import graphql from 'babel-plugin-relay/macro'
 import {Route} from 'react-router'
 import {matchPath, Switch} from 'react-router-dom'
-import Team from '../../components/Team/Team'
-import useRouter from '../../../../hooks/useRouter'
+import ErrorBoundary from '~/components/ErrorBoundary'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
-import ErrorBoundary from 'parabol-client/src/components/ErrorBoundary'
+import useRouter from '../../../../hooks/useRouter'
+import {TeamContainer_viewer} from '../../../../__generated__/TeamContainer_viewer.graphql'
+import Team from '../../components/Team/Team'
 
 const AgendaTasks = lazy(() =>
   import(/* webpackChunkName: 'AgendaAndTasksRoot' */ '../../components/AgendaAndTasksRoot')

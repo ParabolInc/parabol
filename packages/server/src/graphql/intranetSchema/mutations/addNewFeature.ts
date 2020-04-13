@@ -4,7 +4,7 @@ import {requireSU} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import shortid from 'shortid'
 import AddNewFeaturePayload from '../../types/addNewFeaturePayload'
-import {SubscriptionChannel} from 'parabol-client/src/types/constEnums'
+import {SubscriptionChannel} from 'parabol-client/lib/types/constEnums'
 
 const addNewFeature = {
   type: AddNewFeaturePayload,

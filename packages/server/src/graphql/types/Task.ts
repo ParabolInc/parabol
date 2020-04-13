@@ -16,7 +16,7 @@ import TaskIntegration from './TaskIntegration'
 import TaskStatusEnum from './TaskStatusEnum'
 import Team from './Team'
 import Threadable, {threadableFields} from './Threadable'
-import {ThreadSourceEnum} from 'parabol-client/src/types/graphql'
+import {ThreadSourceEnum} from 'parabol-client/lib/types/graphql'
 
 const Task = new GraphQLObjectType<any, GQLContext, any>({
   name: 'Task',

@@ -14,8 +14,7 @@
     "url": "https://github.com/ParabolInc/parabol/issues"
   },
   "scripts": {
-    "sucrase": "sucrase src -d lib --transforms=imports,jsx,typescript",
-    "babel": "babel lib-tmp lib",
+    "sucrase": "sucrase src -d lib --transforms=imports,typescript,jsx -q & sucrase src -d lib --transforms=imports,jsx -q",
     "start": "cross-env NODE_ENV=production pm2-runtime start pm2.config.js",
     "start:tunnel": "export $(grep ^ULTRAHOOK_API_KEY .env | tr -d \"'\") && ultrahook -k $ULTRAHOOK_API_KEY dev 3000",
     "start:memwatch": "NODE_ENV=production MEMWATCH=true node --expose-gc --inspect --trace-warnings server.babel.js",

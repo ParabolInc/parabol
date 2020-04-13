@@ -1,6 +1,6 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
-import {SubscriptionChannel} from 'parabol-client/src/types/constEnums'
-import toTeamMemberId from 'parabol-client/src/utils/relay/toTeamMemberId'
+import {SubscriptionChannel} from 'parabol-client/lib/types/constEnums'
+import toTeamMemberId from 'parabol-client/lib/utils/relay/toTeamMemberId'
 import getRethink from '../../database/rethinkDriver'
 import {getUserId} from '../../utils/authorization'
 import getPubSub from '../../utils/getPubSub'

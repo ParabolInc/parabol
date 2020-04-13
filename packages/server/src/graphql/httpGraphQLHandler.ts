@@ -1,4 +1,4 @@
-import {TrebuchetCloseReason} from 'parabol-client/src/types/constEnums'
+import {TrebuchetCloseReason} from 'parabol-client/lib/types/constEnums'
 import {HttpRequest, HttpResponse} from 'uWebSockets.js'
 import AuthToken from '../database/types/AuthToken'
 import parseBody from '../parseBody'

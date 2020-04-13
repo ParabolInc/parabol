@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {ChangeTaskTeamMutation_task} from 'parabol-client/src/__generated__/ChangeTaskTeamMutation_task.graphql'
+import {ChangeTaskTeamMutation_task} from '~/__generated__/ChangeTaskTeamMutation_task.graphql'
 import Atmosphere from '../Atmosphere'
 import {IChangeTaskTeamOnMutationArguments, ITask, ITeam} from '../types/graphql'
 import {LocalHandlers, SharedUpdater} from '../types/relayMutations'
