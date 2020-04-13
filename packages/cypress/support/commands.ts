@@ -73,7 +73,19 @@ const visitReflect = () => {
     })
 }
 
+const resizeObserverLoopErrRe = /^ResizeObserver loop limit exceeded/
+
 const visitPhase = (phase: string, idx = '') => {
+  cy.on('uncaught:exception', (err) => {
+    if (resizeObserverLoopErrRe.test(err.message)){
+      // return false to prevent the error from
+      // failing this test
+      expect(err.message).to.include('ResizeObserver loop limit exceeded')
+
+      return false
+    }
+  })
+
   cy.get(`[data-cy=next-${phase}]:not(:disabled)`)
     .should('be.visible')
     .pipe(click)
