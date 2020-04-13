@@ -54,10 +54,11 @@ interface Props extends DraftProps {
   setEditorState: (newEditorState: EditorState) => void
   teamId: string
   useTaskChild: UseTaskChild
+  dataCy: string
 }
 
 const TaskEditor = (props: Props) => {
-  const {editorRef, editorState, readOnly, setEditorState} = props
+  const {editorRef, editorState, readOnly, setEditorState, dataCy} = props
   const entityPasteStartRef = useRef<{anchorOffset: number; anchorKey: string} | undefined>()
   const {
     removeModal,
@@ -171,7 +172,7 @@ const TaskEditor = (props: Props) => {
   const useFallback = isAndroid && !readOnly
   const showFallback = useFallback && !isRichDraft(editorState)
   return (
-    <RootEditor noText={noText} readOnly={readOnly}>
+    <RootEditor data-cy={`${dataCy}-editor`} noText={noText} readOnly={readOnly}>
       {showFallback ? (
         <Suspense fallback={<div />}>
           <TaskEditorFallback

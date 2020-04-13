@@ -55,10 +55,11 @@ interface Props {
   isAgenda: boolean
   task: TaskFooter_task
   useTaskChild: UseTaskChild
+  dataCy: string
 }
 
 const TaskFooter = (props: Props) => {
-  const {area, cardIsActive, editorState, isAgenda, task, useTaskChild} = props
+  const {area, cardIsActive, editorState, isAgenda, task, useTaskChild, dataCy} = props
   const {onCompleted, onError, submitMutation, submitting} = useMutationProps()
   const handleError = (err: Error) => {
     onError(err)
@@ -105,6 +106,7 @@ const TaskFooter = (props: Props) => {
             <ButtonSpacer />
           ) : (
             <TaskFooterIntegrateToggle
+              dataCy={`${dataCy}-integration`}
               mutationProps={mutationProps}
               task={task}
               useTaskChild={useTaskChild}
@@ -118,6 +120,7 @@ const TaskFooter = (props: Props) => {
             </CardButton>
           ) : (
             <TaskFooterTagMenuToggle
+              dataCy={`${dataCy}-tag`}
               area={area}
               editorState={editorState}
               isAgenda={isAgenda}

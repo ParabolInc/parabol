@@ -28,10 +28,11 @@ interface Props {
   isAgenda: boolean | undefined
   isDraggingOver: TaskStatusEnum | undefined
   task: OutcomeCardContainer_task
+  dataCy: string
 }
 
 const OutcomeCardContainer = memo((props: Props) => {
-  const {contentState, className, isDraggingOver, task, area, isAgenda} = props
+  const {contentState, className, isDraggingOver, task, area, isAgenda, dataCy} = props
   const {id: taskId, team} = task
   const {id: teamId} = team
   const atmosphere = useAtmosphere()
@@ -108,6 +109,7 @@ const OutcomeCardContainer = memo((props: Props) => {
       ref={ref}
     >
       <OutcomeCard
+        dataCy={`${dataCy}-card`}
         area={area}
         editorRef={editorRef}
         editorState={editorStateRef.current}

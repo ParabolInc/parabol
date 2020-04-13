@@ -235,7 +235,7 @@ const RetroDiscussPhase = (props: Props) => {
                   )}
                 </ColumnInner>
               </ReflectionColumn>
-              <TaskColumn>
+              <TaskColumn data-cy="discuss-task-column">
                 <DiscussionThreadRoot meetingId={meetingId} reflectionGroupId={reflectionGroupId} />
               </TaskColumn>
             </ColumnsContainer>
@@ -250,6 +250,7 @@ const RetroDiscussPhase = (props: Props) => {
         {nextStageRes && (
           <CenterControlBlock isComplete={isComplete}>
             <BottomNavControl
+              dataCy={`next-topic`}
               isBouncing={isDemoStageComplete}
               onClick={() => gotoNext()}
               ref={gotoNextRef}

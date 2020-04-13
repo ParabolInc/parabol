@@ -28,7 +28,7 @@ const SuggestedIntegrationJiraMenuItem = forwardRef((props: Props, ref: any) => 
     <MenuItem
       ref={ref}
       label={
-        <MenuItemLabel>
+        <MenuItemLabel data-cy={`jira-integration`} >
           <SuggestedIntegrationMenuItemAvatar>
             <JiraSVG />
           </SuggestedIntegrationMenuItemAvatar>

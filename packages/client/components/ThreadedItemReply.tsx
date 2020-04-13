@@ -17,10 +17,11 @@ interface Props {
   meeting: ThreadedItemReply_meeting
   replyMention?: ReplyMention
   setReplyMention: SetReplyMention
+  dataCy: string
 }
 
 const ThreadedItemReply = (props: Props) => {
-  const {replyMention, threadable, editorRef, reflectionGroupId, meeting, setReplyMention} = props
+  const {replyMention, threadable, editorRef, reflectionGroupId, meeting, setReplyMention, dataCy} = props
   const {id: threadableId, replies} = threadable
   const {id: meetingId, replyingToCommentId} = meeting
   const isReplying = replyingToCommentId === threadableId
@@ -50,6 +51,7 @@ const ThreadedItemReply = (props: Props) => {
   }
   return (
     <DiscussionThreadInput
+      dataCy={`${dataCy}-input`}
       ref={replyRef}
       editorRef={editorRef}
       isReply

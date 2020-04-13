@@ -79,6 +79,7 @@ interface Props {
   reflectionGroupId: string
   threadParentId?: string
   onSubmit: () => void
+  dataCy: string
 }
 
 const CommentSendOrAdd = (props: Props) => {
@@ -89,13 +90,14 @@ const CommentSendOrAdd = (props: Props) => {
     meeting,
     reflectionGroupId,
     threadParentId,
-    onSubmit
+    onSubmit, 
+    dataCy
   } = props
   const {id: meetingId, teamId} = meeting
   const atmosphere = useAtmosphere()
   if (commentSubmitState === 'send') {
     return (
-      <PlainButton onClick={onSubmit}>
+      <PlainButton data-cy={`${dataCy}-send`} onClick={onSubmit}>
         <SendIcon>send</SendIcon>
       </PlainButton>
     )
@@ -121,7 +123,7 @@ const CommentSendOrAdd = (props: Props) => {
   }
   const isExpanded = commentSubmitState === 'addExpanded'
   return (
-    <ButtonGroup>
+    <ButtonGroup data-cy={`${dataCy}-add`}>
       <AddButton onClick={addTask}>
         <AddIcon isExpanded={isExpanded}>playlist_add_check</AddIcon>
         <ExpandedLabel isExpanded={isExpanded}>Add a Task</ExpandedLabel>

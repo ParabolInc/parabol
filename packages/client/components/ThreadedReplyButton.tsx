@@ -9,11 +9,12 @@ const Reply = styled(PlainButton)({
 
 interface Props {
   onReply: () => void
+  dataCy: string
 }
 
 const ThreadedReplyButton = (props: Props) => {
-  const {onReply} = props
-  return <Reply onClick={onReply}>Reply</Reply>
+  const {onReply, dataCy} = props
+  return <Reply data-cy={`${dataCy}-reply-button`} onClick={onReply}>Reply</Reply>
 }
 
 export default ThreadedReplyButton

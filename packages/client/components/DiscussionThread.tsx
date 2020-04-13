@@ -41,8 +41,9 @@ const DiscussionThread = (props: Props) => {
   const listRef = useRef<HTMLDivElement>(null)
   const editorRef = useRef<HTMLTextAreaElement>(null)
   return (
-    <Wrapper>
+    <Wrapper >
       <DiscussionThreadList
+        dataCy="discuss-thread-list"
         reflectionGroupId={reflectionGroupId}
         meeting={meeting}
         threadables={threadables}
@@ -50,6 +51,7 @@ const DiscussionThread = (props: Props) => {
         editorRef={editorRef}
       />
       <DiscussionThreadInput
+        dataCy="discuss-input"
         editorRef={editorRef}
         isDisabled={!!replyingToCommentId}
         getMaxSortOrder={getMaxSortOrder}

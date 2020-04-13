@@ -45,10 +45,11 @@ interface Props {
   meeting: DiscussionThreadList_meeting
   reflectionGroupId: string
   threadables: DiscussionThreadList_threadables
+  dataCy: String
 }
 
 const DiscussionThreadList = forwardRef((props: Props, ref: any) => {
-  const {editorRef, meeting, reflectionGroupId, threadables} = props
+  const {editorRef, meeting, reflectionGroupId, threadables, dataCy} = props
   const isEmpty = threadables.length === 0
   useScrollThreadList(threadables, editorRef, ref)
   const HeaderBlock = () => <Header>{'Discussion & Takeaway Tasks'}</Header>
@@ -62,13 +63,14 @@ const DiscussionThreadList = forwardRef((props: Props, ref: any) => {
   }
 
   return (
-    <Wrapper ref={ref}>
+    <Wrapper data-cy={`${dataCy}`} ref={ref}>
       <HeaderBlock />
       <PusherDowner />
-      {threadables.map((threadable) => {
+      {threadables.map((threadable,idx) => {
         const {id} = threadable
         return (
           <ThreadedItem
+            dataCy={`thread-item-${idx}`}
             key={id}
             threadable={threadable}
             meeting={meeting}
