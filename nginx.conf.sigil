@@ -1,11 +1,18 @@
-{{*/ Customized Dokku NGINX configuration */}}
-{{*/ See: http://dokku.viewdocs.io/dokku/configuration/nginx/ */}}
-{{*/ */}}
+{{/* Customized Dokku NGINX configuration */}}
+{{/* See: http://dokku.viewdocs.io/dokku/configuration/nginx/ */}}
+{{/* */}}
+
+log_format datadog '\$remote_addr - \$remote_user [\$time_local] '
+          '"\$request" \$status \$body_bytes_sent \$request_time '
+          '"\$http_referer" "\$http_user_agent"';
+
 {{ range $port_map := .PROXY_PORT_MAP | split " " }}
 {{ $port_map_list := $port_map | split ":" }}
 {{ $scheme := index $port_map_list 0 }}
 {{ $listen_port := index $port_map_list 1 }}
 {{ $upstream_port := index $port_map_list 2 }}
+
+# found scheme {{ $scheme }} {{ $port_map_list }}
 
 {{ if eq $scheme "nginx_stub_status" }}
 server {
@@ -26,12 +33,7 @@ server {
   listen      {{ if $.NGINX_BIND_ADDRESS_IP4 }}{{ $.NGINX_BIND_ADDRESS_IP4 }}:{{end}}{{ $listen_port }};
   {{ if $.NOSSL_SERVER_NAME }}server_name {{ $.NOSSL_SERVER_NAME }}; {{ end }}
 
-  # Datadog log format
-  log_format nginx '\$remote_addr - \$remote_user [\$time_local] '
-                  '"\$request" \$status \$body_bytes_sent \$request_time '
-                  '"\$http_referer" "\$http_user_agent"';
-
-  access_log  {{ $.NGINX_ACCESS_LOG_PATH }};
+  access_log  {{ $.NGINX_ACCESS_LOG_PATH }} datadog;
   error_log   {{ $.NGINX_ERROR_LOG_PATH }};
 {{ if (and (eq $listen_port "80") ($.SSL_INUSE)) }}
   return 301 https://$host:{{ $.PROXY_SSL_PORT }}$request_uri;
@@ -83,12 +85,7 @@ server {
   {{ if $.SSL_SERVER_NAME }}server_name {{ $.SSL_SERVER_NAME }}; {{ end }}
   {{ if $.NOSSL_SERVER_NAME }}server_name {{ $.NOSSL_SERVER_NAME }}; {{ end }}
 
-  # Datadog log format
-  log_format nginx '\$remote_addr - \$remote_user [\$time_local] '
-                  '"\$request" \$status \$body_bytes_sent \$request_time '
-                  '"\$http_referer" "\$http_user_agent"';
-
-  access_log  {{ $.NGINX_ACCESS_LOG_PATH }};
+  access_log  {{ $.NGINX_ACCESS_LOG_PATH }} datadog;
   error_log   {{ $.NGINX_ERROR_LOG_PATH }};
 
   ssl_certificate           {{ $.APP_SSL_PATH }}/server.crt;
@@ -151,7 +148,7 @@ server {
   listen      [{{ $.NGINX_BIND_ADDRESS_IP6 }}]:{{ $listen_port }} http2;
   listen      {{ if $.NGINX_BIND_ADDRESS_IP4 }}{{ $.NGINX_BIND_ADDRESS_IP4 }}:{{end}}{{ $listen_port }} http2;
   {{ if $.NOSSL_SERVER_NAME }}server_name {{ $.NOSSL_SERVER_NAME }}; {{ end }}
-  access_log  {{ $.NGINX_ACCESS_LOG_PATH }};
+  access_log  {{ $.NGINX_ACCESS_LOG_PATH }} datadog;
   error_log   {{ $.NGINX_ERROR_LOG_PATH }};
   location    / {
     grpc_pass  grpc://{{ $.APP }}-{{ $upstream_port }};
@@ -165,7 +162,7 @@ server {
   listen      [{{ $.NGINX_BIND_ADDRESS_IP6 }}]:{{ $listen_port }} ssl http2;
   listen      {{ if $.NGINX_BIND_ADDRESS_IP4 }}{{ $.NGINX_BIND_ADDRESS_IP4 }}:{{end}}{{ $listen_port }} ssl http2;
   {{ if $.NOSSL_SERVER_NAME }}server_name {{ $.NOSSL_SERVER_NAME }}; {{ end }}
-  access_log  {{ $.NGINX_ACCESS_LOG_PATH }};
+  access_log  {{ $.NGINX_ACCESS_LOG_PATH }} datadog;
   error_log   {{ $.NGINX_ERROR_LOG_PATH }};
 
   ssl_certificate           {{ $.APP_SSL_PATH }}/server.crt;
