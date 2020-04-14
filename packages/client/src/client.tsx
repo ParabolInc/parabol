@@ -1,11 +1,11 @@
-import './cdnFallback'
-import React from 'react'
-import {render} from 'react-dom'
-import Root from './Root'
-import './scrollIntoViewIfNeeded'
 // do this here so useBuiltIns can replace it with only the polyfills required to hit browser targets
 import 'core-js/stable'
+import React from 'react'
+import {render} from 'react-dom'
 import 'regenerator-runtime/runtime'
+import './cdnFallback'
+import Root from './Root'
+import './scrollIntoViewIfNeeded'
 
 render(<Root />, document.getElementById('root'))
 

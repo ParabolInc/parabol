@@ -9,7 +9,6 @@ interface OAuth2Response {
 }
 
 class GitHubServerManager extends GitHubManager {
-  fetch = fetch
   static async init(code: string) {
     return GitHubServerManager.fetchToken(code)
   }
@@ -44,7 +43,7 @@ class GitHubServerManager extends GitHubManager {
     }
     return new GitHubServerManager(accessToken)
   }
-
+  fetch = fetch
   constructor(accessToken: string) {
     super(accessToken)
   }

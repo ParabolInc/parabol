@@ -1,10 +1,10 @@
 {
   "extends": "../../tsconfig.base.json",
-  "references": [
-    {
-      "path": "../client"
-    }
-  ],
+  // "references": [
+  // {
+  // "path": "../client"
+  // }
+  // ],
   "compilerOptions": {
     "rootDir": "src",
     "outDir": "lib",
@@ -15,10 +15,9 @@
     "types": [
       "node"
     ],
-    "allowJs": true
   },
   "include": [
-    "src/**/*.ts",
+    "src",
     "src/**/*.json"
   ],
   "exclude": [

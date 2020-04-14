@@ -44,7 +44,6 @@ export default class PubSubPromise<T extends PubSubPromisePayload> {
       const {jobId} = payload
       const timeoutId = setTimeout(() => {
         delete this.jobs[jobId]
-        resolve(undefined)
         reject('Redis took too long to respond')
       }, MAX_TIMEOUT)
       this.jobs[jobId] = {resolve, timeoutId}

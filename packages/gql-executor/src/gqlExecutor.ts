@@ -1,15 +1,15 @@
 import Redis from 'ioredis'
 import {ServerChannel} from 'parabol-client/lib/types/constEnums'
 import hotSwap from 'parabol-server/lib/hotSwap'
-import path from 'path'
+import makeLiveReloadable from 'parabol-server/lib/makeLiveReloadable'
 import PROD from 'parabol-server/lib/PROD'
-import makeRefs from 'parabol-server/lib/makeRefs'
+import path from 'path'
 
 const publisher = new Redis(process.env.REDIS_URL)
 const subscriber = new Redis(process.env.REDIS_URL)
 
 // imports go here because in dev we make them hot but in prod we want them fast
-const ref = makeRefs(__dirname, {
+const reloadable = makeLiveReloadable(__dirname, {
   executeGraphQL: 'parabol-server/lib/graphql/executeGraphQL'
 })
 
@@ -20,8 +20,7 @@ if (!PROD) {
 
 const onMessage = async (_channel: string, message: string) => {
   const payload = JSON.parse(message)
-  // calling it from ref allows for invalidating the server files in dev
-  const result = await ref.executeGraphQL(payload)
+  const result = await reloadable.executeGraphQL(payload)
   publisher.publish(
     ServerChannel.GQL_EXECUTOR_RESPONSE,
     JSON.stringify({...result, jobId: payload.jobId})
@@ -30,3 +29,4 @@ const onMessage = async (_channel: string, message: string) => {
 
 subscriber.on('message', onMessage)
 subscriber.subscribe(ServerChannel.GQL_EXECUTOR_REQUEST)
+console.log(`\n💧💧💧Ready for GraphQL Execution💧💧💧`)

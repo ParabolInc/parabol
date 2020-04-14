@@ -1,14 +1,14 @@
 import {TrebuchetCloseReason} from 'parabol-client/lib/types/constEnums'
 import {HttpRequest, WebSocket} from 'uWebSockets.js'
 import ConnectionContext from '../socketHelpers/ConnectionContext'
+import keepAlive from '../socketHelpers/keepAlive'
 import sendEncodedMessage from '../socketHelpers/sendEncodedMessage'
 import {isAuthenticated} from '../utils/authorization'
 import checkBlacklistJWT from '../utils/checkBlacklistJWT'
 import getQueryToken from '../utils/getQueryToken'
+import sendToSentry from '../utils/sendToSentry'
 import uwsGetIP from '../utils/uwsGetIP'
 import handleConnect from './handleConnect'
-import keepAlive from '../socketHelpers/keepAlive'
-import sendToSentry from '../utils/sendToSentry'
 
 const APP_VERSION = process.env.npm_package_version
 

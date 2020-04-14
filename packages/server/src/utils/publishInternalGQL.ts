@@ -16,6 +16,7 @@ const publishInternalGQL = async (options: Options) => {
   try {
     return await getGraphQLExecutor().publish({
       jobId,
+      socketId,
       authToken,
       query,
       ip,

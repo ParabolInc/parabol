@@ -1,17 +1,16 @@
 {
   "extends": "../../tsconfig.base.json",
-  "references": [
-    {
-      "path": "../server"
-    },
-    {
-      "path": "../client"
-    }
-  ],
+  // "references": [
+  //   {
+  //     "path": "../server"
+  //   },
+  //   {
+  //     "path": "../client"
+  //   }
+  // ],
   "compilerOptions": {
     "rootDir": "src",
     "outDir": "lib",
-    // "esModuleInterop": true,
     "lib": [
       "esnext"
     ],

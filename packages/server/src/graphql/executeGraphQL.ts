@@ -6,13 +6,13 @@
  */
 import {ExecutionResult, graphql} from 'graphql'
 import {ExecutionResultDataDefault} from 'graphql/execution/execute'
+import getRethink from '../database/rethinkDriver'
 import AuthToken from '../database/types/AuthToken'
 import CompiledQueryCache from './CompiledQueryCache'
 import getDataLoader from './getDataLoader'
 import getRateLimiter from './getRateLimiter'
 import privateSchema from './intranetSchema/intranetSchema'
 import publicSchema from './rootSchema'
-import getRethink from '../database/rethinkDriver'
 
 export interface GQLRequest {
   jobId: string

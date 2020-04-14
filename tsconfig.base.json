@@ -5,7 +5,8 @@
     "declaration": true,
     "declarationMap": true,
     "sourceMap": true,
-    "composite": true,
+    "noEmit": true,
+    // "composite": true, // can't run with noEmit
     "target": "es2019",
     "module": "commonjs",
     "jsx": "react",

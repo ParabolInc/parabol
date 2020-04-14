@@ -10,7 +10,7 @@ type RefMapper<T> = {
   [K in keyof T]: any
 }
 
-const makeRefs = <T>(rootDir: string, refObj: T) => {
+const makeLiveReloadable = <T>(rootDir: string, refObj: T) => {
   const refs = {} as RefMapper<T>
   Object.keys(refObj).forEach((modName) => {
     const reqPath = refObj[modName]
@@ -18,11 +18,10 @@ const makeRefs = <T>(rootDir: string, refObj: T) => {
     if (reqPath.startsWith('.')) {
       const absPath = path.join(rootDir, reqPath)
       const absLookingRelPath = path.relative(rootDir, absPath)
+      // path.relative won't prefix with ./ for modules in the same dir
       relativeReqPath = absLookingRelPath.startsWith('.')
         ? absLookingRelPath
         : `./${absLookingRelPath}`
-      // } else if (reqPath.startsWith('parabol-server')) {
-      // relativeReqPath = relativeReqPath.replace('parabol-server')
     }
     const value = PROD ? require(relativeReqPath).default : hotProxy(relativeReqPath)
     refs[modName] = value
@@ -30,4 +29,4 @@ const makeRefs = <T>(rootDir: string, refObj: T) => {
   return refs
 }
 
-export default makeRefs
+export default makeLiveReloadable

@@ -1,6 +1,7 @@
 import {HttpRequest, HttpResponse} from 'uWebSockets.js'
 import uWSAsyncHandler from '../graphql/uWSAsyncHandler'
 import parseBody from '../parseBody'
+import publishWebhookGQL from './publishWebhookGQL'
 
 const query = `
 mutation LoginSAML($queryString: String!, $domain: String!) {
@@ -31,9 +32,9 @@ const SAMLHandler = uWSAsyncHandler(async (res: HttpResponse, req: HttpRequest) 
   const parser = (buffer: Buffer) => buffer.toString()
   const queryString = await parseBody(res, parser)
   const payload = await publishWebhookGQL(query, {domain, queryString})
+  if (!payload) return
   const {data, errors} = payload
   if (!data || errors) {
-    w
     redirectOnError(res, GENERIC_ERROR)
     return
   }

@@ -1,16 +1,16 @@
-{
-  "references": [
-    {
-      "path": "packages/gql-executor"
-    },
-    {
-      "path": "packages/server"
-    },
-    {
-      "path": "packages/client"
-    }
-  ],
-  "exclude": [
-    "**/node_modules"
-  ]
-}
+// {
+//   "references": [
+//     {
+//       "path": "packages/gql-executor"
+//     },
+//     {
+//       "path": "packages/server"
+//     },
+//     {
+//       "path": "packages/client"
+//     }
+//   ],
+//   "exclude": [
+//     "**/node_modules"
+//   ]
+// }
