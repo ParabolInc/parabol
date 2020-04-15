@@ -1,15 +1,16 @@
 {
   "extends": "../../tsconfig.base.json",
-  // "references": [
-  //   {
-  //     "path": "../server"
-  //   },
-  //   {
-  //     "path": "../client"
-  //   }
-  // ],
   "compilerOptions": {
-    "rootDir": "src",
+    "baseUrl": "../",
+    "paths": {
+      // when we import from lib, make goto-definition point to the src
+      "parabol-server/lib/*": [
+        "server/src/*"
+      ],
+      "parabol-client/lib/*": [
+        "client/src/*"
+      ]
+    },
     "outDir": "lib",
     "lib": [
       "esnext"
@@ -19,9 +20,9 @@
     ]
   },
   "include": [
-    "src"
-  ],
-  "exclude": [
-    "lib"
+    // Intellisense suggestions are based off these
+    "../server/lib",
+    "../client/lib",
+    "src",
   ]
 }

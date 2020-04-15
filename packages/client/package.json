@@ -19,7 +19,7 @@
     "build-storybook": "build-storybook",
     "lint": "eslint --fix ./**/*.{ts,tsx}",
     "precommit": "lint-staged",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "yarn tsc --noEmit -p tsconfig.typecheck.json"
   },
   "devDependencies": {
     "@babel/cli": "^7.8.4",

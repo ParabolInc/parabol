@@ -12,9 +12,9 @@ interface Options {
 
 export default function makeAppLink(location = '', options: Options = {}) {
   const {qs, isWebhook} = options
-  const proto = process.env.PROTO || 'http'
-  const host = process.env.HOST || 'localhost'
-  const port = process.env.PORT || '3000'
+  const proto = process.env.PROTO
+  const host = process.env.HOST
+  const port = process.env.PORT
   const portSuffix = host !== 'localhost' ? '' : `:${port}`
   const qsSuffix = qs ? `?${querystring.stringify(qs)}` : ''
   if (host === 'localhost' && isWebhook) {

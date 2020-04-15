@@ -2,10 +2,10 @@
  * Takes a guess at what the cards are talking about.
  * If that fails, just gives them a generic name
  */
-import getAllLemmasFromReflections from './getAllLemmasFromReflections'
+import Reflection from 'parabol-server/lib/database/types/Reflection'
 import computeDistanceMatrix from './computeDistanceMatrix'
+import getAllLemmasFromReflections from './getAllLemmasFromReflections'
 import getTitleFromComputedGroup from './getTitleFromComputedGroup'
-import Reflection from 'parabol-server/src/database/types/Reflection'
 
 const getGroupSmartTitle = (reflections: Reflection[]) => {
   const allReflectionEntities = reflections.map(({entities}) => entities).filter(Boolean)

@@ -5,7 +5,7 @@ module.exports = {
   'persist-function': path.join(__dirname, 'packages/server/graphql/persistFunction.js'),
   'persist-output': path.join(__dirname, 'packages/server/graphql/queryMap.json'),
   language: 'typescript',
-  src: path.join(__dirname, 'packages/client'),
+  src: path.join(__dirname, 'packages'),
   'custom-scalars': {
     Email: 'string',
     DateTime: 'string',

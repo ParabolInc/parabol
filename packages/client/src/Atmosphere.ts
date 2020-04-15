@@ -5,6 +5,7 @@ import GQLTrebuchetClient, {
 import getTrebuchet, {SocketTrebuchet, SSETrebuchet} from '@mattkrick/trebuchet-client'
 import EventEmitter from 'eventemitter3'
 import jwtDecode from 'jwt-decode'
+import AuthToken from 'parabol-server/lib/database/types/AuthToken'
 import {Disposable} from 'react-relay'
 import {RouterProps} from 'react-router'
 import {
@@ -21,16 +22,13 @@ import {
   Variables
 } from 'relay-runtime'
 import {Sink} from 'relay-runtime/lib/network/RelayObservable'
+import RelayFeatureFlags from 'relay-runtime/lib/util/RelayFeatureFlags'
 import StrictEventEmitter from 'strict-event-emitter-types'
 import {Snack, SnackbarRemoveFn} from './components/Snackbar'
 import handleInvalidatedSession from './hooks/handleInvalidatedSession'
 import {LocalStorageKey, TrebuchetCloseReason} from './types/constEnums'
 import handlerProvider from './utils/relay/handlerProvider'
 import {InviteToTeamMutation_notification} from './__generated__/InviteToTeamMutation_notification.graphql'
-import RelayFeatureFlags from 'relay-runtime/lib/util/RelayFeatureFlags'
-import AuthToken from 'parabol-server/src/database/types/AuthToken'
-
-// https://github.com/facebook/relay/issues/3006
 ;(RelayFeatureFlags as any).ENABLE_RELAY_CONTAINERS_SUSPENSE = false
 
 interface QuerySubscription {
@@ -152,7 +150,7 @@ export default class Atmosphere extends Environment {
     const transport = this.transport as GQLTrebuchetClient
     if (!transport.subscribe) return
     if (!__PRODUCTION__) {
-      const queryMap = await import('parabol-server/src/graphql/queryMap.json')
+      const queryMap = await import('parabol-server/lib/graphql/queryMap.json')
       const query = queryMap[documentId!]
       this.subscriptions[subKey] = transport.subscribe({query, variables}, sink)
     } else {
@@ -228,7 +226,7 @@ export default class Atmosphere extends Environment {
     const field = __PRODUCTION__ ? 'documentId' : 'query'
     let data = request.id
     if (!__PRODUCTION__) {
-      const queryMap = await import('parabol-server/src/graphql/queryMap.json')
+      const queryMap = await import('parabol-server/lib/graphql/queryMap.json')
       data = queryMap[request.id!]
     }
     return this.transport.fetch({[field]: data, variables}, sink || noopSink)

@@ -5,10 +5,12 @@
     "paths": {
       "~/*": [
         "src/*"
+      ],
+      "parabol-server/lib/*": [
+        "../server/src/*"
       ]
     },
-    "rootDir": ".",
-    "outDir": "./lib",
+    "outDir": "lib",
     "lib": [
       "esnext",
       "dom"
@@ -17,11 +19,12 @@
       "node"
     ],
   },
-  "exclude": [
-    "lib",
-    "src/serviceWorker"
-  ],
   "include": [
-    "src"
+    "src",
+    "../server/lib"
+  ],
+  "exclude": [
+    "src/serviceWorker",
+    "**/node_modules"
   ]
 }

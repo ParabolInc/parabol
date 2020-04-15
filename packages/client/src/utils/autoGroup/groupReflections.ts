@@ -1,8 +1,8 @@
-import getAllLemmasFromReflections from './getAllLemmasFromReflections'
-import computeDistanceMatrix from './computeDistanceMatrix'
+import Reflection from 'parabol-server/lib/database/types/Reflection'
 import getGroupMatrix from '../autoGroup/getGroupMatrix'
+import computeDistanceMatrix from './computeDistanceMatrix'
+import getAllLemmasFromReflections from './getAllLemmasFromReflections'
 import getTitleFromComputedGroup from './getTitleFromComputedGroup'
-import Reflection from 'parabol-server/src/database/types/Reflection'
 
 /*
  * Read each reflection, parse the content for entities (i.e. nouns), group the reflections based on common themes

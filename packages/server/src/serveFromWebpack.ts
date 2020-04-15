@@ -6,7 +6,7 @@ let middleware
 const startHotServer = async (compiler) => {
   return new Promise((resolve) => {
     const hotClient = require('webpack-hot-client')
-    const client = hotClient(compiler, {port: 8082})
+    const client = hotClient(compiler, {port: 8082, logLevel: 'silent'})
     const {server} = client
     server.on('listening', () => {
       resolve()

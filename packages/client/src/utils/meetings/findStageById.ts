@@ -1,4 +1,4 @@
-import GenericMeetingPhase from 'parabol-server/src/database/types/GenericMeetingPhase'
+import GenericMeetingPhase from 'parabol-server/lib/database/types/GenericMeetingPhase'
 
 export interface FindStageByIdStage {
   id: string

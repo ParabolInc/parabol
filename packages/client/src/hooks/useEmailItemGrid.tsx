@@ -1,5 +1,5 @@
-import getMinColumns from '../modules/email/components/SummaryEmail/MeetingSummaryEmail/getMinColumns'
-import unflattenIntoRows from '../modules/email/components/SummaryEmail/MeetingSummaryEmail/unflattenIntoRows'
+import getMinColumns from 'parabol-server/lib/email/components/SummaryEmail/MeetingSummaryEmail/getMinColumns'
+import unflattenIntoRows from 'parabol-server/lib/email/components/SummaryEmail/MeetingSummaryEmail/unflattenIntoRows'
 import React, {ReactElement} from 'react'
 
 /*  Given an array of items, this unflattens them into the fewest # of columsn while still minimizing the number of columns

@@ -5,8 +5,7 @@ declare module '*.png'
 declare module '*.svg'
 
 declare const __PRODUCTION__: string
-
+declare const __STATIC_IMAGES__: string
 interface Window {
-  ResizeObserver: any
   __ACTION__: any
 }

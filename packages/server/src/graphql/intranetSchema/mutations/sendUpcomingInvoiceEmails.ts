@@ -1,12 +1,12 @@
 import {GraphQLList, GraphQLString} from 'graphql'
+import {OrgUserRole, TierEnum} from 'parabol-client/lib/types/graphql'
+import {months} from 'parabol-client/lib/utils/makeDateString'
 import getRethink from '../../../database/rethinkDriver'
+import {UpcomingInvoiceEmailProps} from '../../../email/components/UpcomingInvoiceEmail'
 import sendEmailPromise from '../../../email/sendEmail'
 import {requireSU} from '../../../utils/authorization'
-import {UPCOMING_INVOICE_EMAIL_WARNING} from '../../../utils/serverConstants'
-import {months} from 'parabol-client/lib/utils/makeDateString'
 import makeAppLink from '../../../utils/makeAppLink'
-import {UpcomingInvoiceEmailProps} from 'parabol-client/lib/modules/email/components/UpcomingInvoiceEmail'
-import {OrgUserRole, TierEnum} from 'parabol-client/lib/types/graphql'
+import {UPCOMING_INVOICE_EMAIL_WARNING} from '../../../utils/serverConstants'
 
 interface Details extends UpcomingInvoiceEmailProps {
   emailStr: string

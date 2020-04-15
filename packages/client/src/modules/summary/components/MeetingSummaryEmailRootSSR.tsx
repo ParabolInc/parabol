@@ -1,10 +1,10 @@
 import graphql from 'babel-plugin-relay/macro'
-import makeAppLink from 'parabol-server/src/utils/makeAppLink'
+import MeetingSummaryEmail from 'parabol-server/lib/email/components/SummaryEmail/MeetingSummaryEmail/MeetingSummaryEmail'
+import makeAppLink from 'parabol-server/lib/utils/makeAppLink'
 import React from 'react'
 import {QueryRenderer} from 'react-relay'
 import {Environment} from 'relay-runtime'
 import {MeetingSummaryEmailRootSSRQuery} from '~/__generated__/MeetingSummaryEmailRootSSRQuery.graphql'
-import MeetingSummaryEmail from '../../email/components/SummaryEmail/MeetingSummaryEmail/MeetingSummaryEmail'
 
 const query = graphql`
   query MeetingSummaryEmailRootSSRQuery($meetingId: ID!) {

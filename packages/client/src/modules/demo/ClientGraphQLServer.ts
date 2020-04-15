@@ -1,11 +1,10 @@
 import EventEmitter from 'eventemitter3'
 import {parse} from 'flatted'
 import ms from 'ms'
-import Reflection from 'parabol-server/src/database/types/Reflection'
 import {Variables} from 'relay-runtime'
 import StrictEventEmitter from 'strict-event-emitter-types'
 import stringSimilarity from 'string-similarity'
-import {RetroDemo, SubscriptionChannel, MeetingSettingsThreshold} from '../../types/constEnums'
+import {MeetingSettingsThreshold, RetroDemo, SubscriptionChannel} from '../../types/constEnums'
 import {
   DragReflectionDropTargetTypeEnum,
   IDiscussPhase,
@@ -848,7 +847,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
           updatedAt: now
         })
         this.db.newMeeting.nextAutoGroupThreshold = null
-        const nextTitle = getGroupSmartTitle([reflection as Reflection])
+        const nextTitle = getGroupSmartTitle([reflection as DemoReflection])
         newReflectionGroup.smartTitle = nextTitle
         newReflectionGroup.title = nextTitle
         if (oldReflections.length > 0) {

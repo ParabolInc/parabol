@@ -2,7 +2,7 @@
  * Make a list of all the entities mentioned across all the reflections
  */
 
-import GoogleAnalyzedEntity from 'parabol-server/src/database/types/GoogleAnalyzedEntity'
+import GoogleAnalyzedEntity from 'parabol-server/lib/database/types/GoogleAnalyzedEntity'
 const getAllLemmasFromReflections = (reflectionEntities: GoogleAnalyzedEntity[][] = []) => {
   const lemmaSet = new Set<string>()
   for (let jj = 0; jj < reflectionEntities.length; jj++) {

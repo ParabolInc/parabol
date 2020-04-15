@@ -1,7 +1,7 @@
 import getRethink from '../../../../database/rethinkDriver'
-import {sendEmailContent} from '../../../../email/sendEmail'
-import newMeetingSummaryEmailCreator from 'parabol-client/lib/modules/email/components/SummaryEmail/newMeetingSummaryEmailCreator'
 import Meeting from '../../../../database/types/Meeting'
+import newMeetingSummaryEmailCreator from '../../../../email/newMeetingSummaryEmailCreator'
+import {sendEmailContent} from '../../../../email/sendEmail'
 import {GQLContext} from '../../../graphql'
 
 export default async function sendNewMeetingSummary(newMeeting: Meeting, context: GQLContext) {

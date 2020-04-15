@@ -3,9 +3,9 @@
  * Uses the most salient entities to create a 40-character theme to summarize the content of the reflections
  */
 
+import GoogleAnalyzedEntity from 'parabol-server/lib/database/types/GoogleAnalyzedEntity'
+import Reflection from 'parabol-server/lib/database/types/Reflection'
 import extractTextFromDraftString from '../draftjs/extractTextFromDraftString'
-import GoogleAnalyzedEntity from 'parabol-server/src/database/types/GoogleAnalyzedEntity'
-import Reflection from 'parabol-server/src/database/types/Reflection'
 
 const SALIENT_THRESHOLD = 0.6
 const MIN_ENTITIES = 2

@@ -1,15 +1,15 @@
 import DataLoader from 'dataloader'
 import {decode} from 'jsonwebtoken'
-import {ReactableEnum, ThreadSourceEnum, MeetingTypeEnum} from 'parabol-client/lib/types/graphql'
+import {MeetingTypeEnum, ReactableEnum, ThreadSourceEnum} from 'parabol-client/lib/types/graphql'
 import promiseAllPartial from 'parabol-client/lib/utils/promiseAllPartial'
 import getRethink from '../database/rethinkDriver'
+import MeetingSettings from '../database/types/MeetingSettings'
 import {Reactable} from '../database/types/Reactable'
 import Task from '../database/types/Task'
 import {ThreadSource} from '../database/types/ThreadSource'
 import AtlassianServerManager from '../utils/AtlassianServerManager'
 import normalizeRethinkDbResults from './normalizeRethinkDbResults'
 import RethinkDataLoader from './RethinkDataLoader'
-import MeetingSettings from '../database/types/MeetingSettings'
 
 type AccessTokenKey = {teamId: string; userId: string}
 export interface JiraRemoteProjectKey {

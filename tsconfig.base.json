@@ -2,10 +2,10 @@
   "compilerOptions": {
     "allowJs": true,
     "checkJs": false,
-    "declaration": true,
-    "declarationMap": true,
-    "sourceMap": true,
-    "noEmit": true,
+    // "declaration": true,
+    // "declarationMap": true,
+    // "sourceMap": true,
+    // "noEmit": true,
     // "composite": true, // can't run with noEmit
     "target": "es2019",
     "module": "commonjs",

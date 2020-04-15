@@ -1,0 +1,13 @@
+{
+  "extends": "./tsconfig.json",
+  "files": [
+    "src/types/modules.d.ts",
+    "src/client.tsx"
+  ],
+  "include": [
+    // "src/**/*"
+  ],
+  "exclude": [
+    // "src/serviceWorker"
+  ]
+}

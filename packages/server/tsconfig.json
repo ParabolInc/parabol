@@ -1,12 +1,15 @@
 {
   "extends": "../../tsconfig.base.json",
-  // "references": [
-  // {
-  // "path": "../client"
-  // }
-  // ],
   "compilerOptions": {
-    "rootDir": "src",
+    "baseUrl": "../",
+    "paths": {
+      "parabol-client/lib/*": [
+        "client/src/*"
+      ],
+      "~/*": [
+        "client/src/*"
+      ]
+    },
     "outDir": "lib",
     "lib": [
       "esnext",
@@ -16,11 +19,14 @@
       "node"
     ],
   },
+  "exclude": [
+    "lib",
+    "**/node_modules",
+    "src/__mocks__"
+  ],
   "include": [
     "src",
-    "src/**/*.json"
-  ],
-  "exclude": [
-    "lib"
+    "src/**/*.json",
+    "../client/lib"
   ]
 }
