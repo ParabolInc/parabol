@@ -11,7 +11,7 @@ import React, {useRef} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {PALETTE} from 'styles/paletteV2'
 import {Breakpoint, ZIndex} from 'types/constEnums'
-import {NewMeetingPhaseTypeEnum} from 'types/graphql'
+import {MeetingTypeEnum, NewMeetingPhaseTypeEnum} from 'types/graphql'
 import makeMinWidthMediaQuery from 'utils/makeMinWidthMediaQuery'
 import findStageAfterId from 'utils/meetings/findStageAfterId'
 import {MeetingControlBar_meeting} from '__generated__/MeetingControlBar_meeting.graphql'
@@ -74,17 +74,19 @@ const MeetingControlBar = (props: Props) => {
     localPhase,
     id: meetingId,
     localStage,
-    phases
+    phases,
+    meetingType
   } = meeting
   const isFacilitating = facilitatorUserId === viewerId && !endedAt
   const {phaseType} = localPhase
   const {id: localStageId, isComplete} = localStage
   const isCheckIn = phaseType === NewMeetingPhaseTypeEnum.checkin
+  const isRetro = meetingType === MeetingTypeEnum.retrospective
   const getPossibleButtons = () => {
     const buttons = ['tips']
     if (!isFacilitating && !isCheckIn && !isComplete) buttons.push('ready')
     if (!isFacilitating && localStageId !== facilitatorStageId) buttons.push('rejoin')
-    if (isFacilitating && !isCheckIn && !isComplete) buttons.push('timer')
+    if (isFacilitating && isRetro && !isCheckIn && !isComplete) buttons.push('timer')
     if (isFacilitating && findStageAfterId(phases, localStageId)) buttons.push('next')
     if (isFacilitating) buttons.push('end')
     return buttons.map((key) => ({key}))
@@ -161,6 +163,7 @@ export default createFragmentContainer(MeetingControlBar, {
       endedAt
       facilitatorStageId
       facilitatorUserId
+      meetingType
       localStage {
         id
         isComplete
