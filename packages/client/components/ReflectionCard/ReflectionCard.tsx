@@ -54,7 +54,7 @@ const BadgeWrapper = styled('div')({
   left: 0,
   top: 0,
   overflow: 'hidden',
-  position: 'relative',
+  position: 'absolute',
   zIndex: 4
 })
 

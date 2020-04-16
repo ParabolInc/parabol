@@ -3,14 +3,14 @@ import {TemplatePromptItem_prompt} from '../../__generated__/TemplatePromptItem_
 import PaletteColor from '../PaletteColor/PaletteColor'
 import Menu from '../Menu'
 import {MenuProps} from '../../hooks/useMenu'
-import withAtmosphere, {WithAtmosphereProps} from '../../decorators/withAtmosphere/withAtmosphere'
-import withMutationProps, {WithMutationProps} from '../../utils/relay/withMutationProps'
+import useAtmosphere from '../../hooks/useAtmosphere'
+import useMutationProps from '../../hooks/useMutationProps'
 import ReflectTemplatePromptUpdateGroupColorMutation from '../../mutations/ReflectTemplatePromptUpdateGroupColorMutation'
 import styled from '@emotion/styled'
 import {PALETTE} from '../../styles/paletteV2'
 import {palettePickerOptions} from '../../styles/palettePickerOptions'
 
-interface Props extends WithAtmosphereProps, WithMutationProps {
+interface Props {
   prompt: TemplatePromptItem_prompt
   prompts: any
   menuProps: MenuProps
@@ -31,12 +31,12 @@ const PaletteList = styled('ul')({
   margin: 0
 })
 
-const PaletteItem = styled('div')({
-  cursor: 'grab'
-})
+const PaletteItem = styled('div')()
 
 const PalettePicker = (props: Props) => {
-  const {prompt, prompts, menuProps, atmosphere, onError, onCompleted, submitMutation} = props
+  const {prompt, prompts, menuProps} = props
+  const atmosphere = useAtmosphere()
+  const {onCompleted, onError, submitMutation} = useMutationProps()
   const [groupColor, setGroupColor] = useState(prompt.groupColor)
   const pickedColors = prompts.map((prompt) => prompt.groupColor) as string[]
   const availableColors = palettePickerOptions.filter(
@@ -46,7 +46,9 @@ const PalettePicker = (props: Props) => {
   const handleClick = (color: string) => {
     setGroupColor(color)
     menuProps.closePortal()
-    ;(document as any).activeElement?.blur()
+    if (document.activeElement instanceof HTMLElement) {
+      document.activeElement.blur()
+    }
   }
 
   const updateColor = (promptId: string, groupColor: string) => {
@@ -87,4 +89,4 @@ const PalettePicker = (props: Props) => {
   )
 }
 
-export default withAtmosphere(withMutationProps(PalettePicker))
+export default PalettePicker
