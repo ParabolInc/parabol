@@ -5,6 +5,17 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 5.4.0 2020-Apr-16
+
+### Added
+* Floating bottom bar in meetings (#3723)
+* Ready button in meetings (#3723)
+* Add utm params to emails (#3736)
+
+### Fixed
+* No redirect on meeting end if not in meeting (#3736)
+* WebRTC DataChannel safely sends (#3747)
+
 ## 5.3.1 2020-Apr-10
 
 ### Added
