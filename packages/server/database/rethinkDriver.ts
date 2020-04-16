@@ -66,6 +66,10 @@ export type RethinkTypes = {
     type: FailedAuthRequest
     index: 'email' | 'ip'
   }
+  GQLRequest: {
+    type: any
+    index: 'id'
+  }
   Invoice: {
     type: Invoice
     index: 'orgIdStartAt'

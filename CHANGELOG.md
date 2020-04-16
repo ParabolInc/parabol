@@ -5,6 +5,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 5.3.1 2020-Apr-10
+
+### Added
+* GQL Request logging
+
 ## 5.3.0 2020-Apr-03
 
 ### Fixed
