@@ -4,7 +4,6 @@ import ServerEnvironment from '../../../../../server/email/ServerEnvironment'
 import {GQLContext} from '../../../../../server/graphql/graphql'
 import {PALETTE} from '../../../../styles/paletteV2'
 import {MEETING_SUMMARY_LABEL} from '../../../../utils/constants'
-import makeDateString from '../../../../utils/makeDateString'
 import emailTemplate from './MeetingSummaryEmail/EmailTemplate'
 
 interface Props {
@@ -26,10 +25,9 @@ const newMeetingSummaryEmailCreator = async (props: Props) => {
   )
   const newMeeting = await dataLoader.get('newMeetings').load(meetingId)
   const team = await dataLoader.get('teams').load(newMeeting.teamId)
-  const {name: meetingName, endedAt} = newMeeting
+  const {name: meetingName} = newMeeting
   const {name: teamName} = team
-  const dateStr = makeDateString(endedAt)
-  const subject = `${teamName} ${dateStr} ${meetingName} ${MEETING_SUMMARY_LABEL}`
+  const subject = `${teamName} ${meetingName} ${MEETING_SUMMARY_LABEL}`
   const html = emailTemplate({
     bodyContent,
     title: subject,
