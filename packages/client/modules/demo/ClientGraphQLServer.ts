@@ -5,7 +5,7 @@ import Reflection from 'parabol-server/database/types/Reflection'
 import {Variables} from 'relay-runtime'
 import StrictEventEmitter from 'strict-event-emitter-types'
 import stringSimilarity from 'string-similarity'
-import {RetroDemo, SubscriptionChannel, MeetingSettingsThreshold} from '../../types/constEnums'
+import {MeetingSettingsThreshold, RetroDemo, SubscriptionChannel} from '../../types/constEnums'
 import {
   DragReflectionDropTargetTypeEnum,
   IDiscussPhase,
@@ -138,6 +138,10 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
     }
     const {delay, op, variables, botId} = nextMutaton
     this.pendingBotAction = () => {
+      if (!this.ops[op]) {
+        console.log('here')
+        debugger
+      }
       this.ops[op](variables, botId)
       return mutations
     }
@@ -160,7 +164,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
     this.pendingBotTimeout = undefined
     if (!this.pendingBotAction) return
     const mutationsToFlush = this.pendingBotAction()
-    if (this.db.newMeeting.facilitatorStageId !== 'groupStage') {
+    if (this.db.newMeeting.facilitatorStageId !== RetroDemo.GROUP_STAGE_ID) {
       mutationsToFlush.forEach((mutation) => {
         this.ops[mutation.op](mutation.variables, mutation.botId)
       })
@@ -495,6 +499,28 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         this.emit(SubscriptionChannel.MEETING, data)
       }
       return {editReflection: data}
+    },
+    FlagReadyToAdvanceMutation: (
+      {stageId, isReady}: {stageId: string; isReady: boolean},
+      userId: string
+    ) => {
+      const meeting = this.db.newMeeting
+      const {phases} = meeting
+      const stageRes = findStageById(phases, stageId)
+      const {stage} = stageRes!
+      const increment = isReady ? 1 : -1
+      stage.readyCount += increment
+
+      const data = {
+        __typename: 'FlagReadyToAdvanceSuccess',
+        stage,
+        meeting
+      }
+
+      if (userId !== demoViewerId) {
+        this.emit(SubscriptionChannel.MEETING, data)
+      }
+      return {renameMeeting: data}
     },
     RemoveReflectionMutation: ({reflectionId}: {reflectionId: string}, userId: string) => {
       const reflection = this.db.reflections.find((reflection) => reflection.id === reflectionId)!

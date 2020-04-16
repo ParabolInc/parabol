@@ -1,37 +1,30 @@
-import React from 'react'
-import BottomNavIconLabel from './BottomNavIconLabel'
-import BottomNavControl from './BottomNavControl'
-import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import useMenu from '../hooks/useMenu'
-import {MenuPosition} from '../hooks/useCoords'
-import lazyPreload from '../utils/lazyPreload'
-import styled from '@emotion/styled'
-import {ElementWidth, MeetingLabels} from '../types/constEnums'
+import {TransitionStatus} from 'hooks/useTransition'
+import React from 'react'
+import {createFragmentContainer} from 'react-relay'
 import {StageTimerControl_meeting} from '__generated__/StageTimerControl_meeting.graphql'
+import {MenuPosition} from '../hooks/useCoords'
+import useMenu from '../hooks/useMenu'
+import {MeetingLabels} from '../types/constEnums'
+import lazyPreload from '../utils/lazyPreload'
+import BottomNavControl from './BottomNavControl'
+import BottomNavIconLabel from './BottomNavIconLabel'
 
 interface Props {
   defaultTimeLimit: number
   meeting: StageTimerControl_meeting
+  onTransitionEnd: () => void
+  status: TransitionStatus
 }
 
 const StageTimerModal = lazyPreload(async () =>
   import(/* webpackChunkName: 'StageTimerModal' */ './StageTimerModal')
 )
 
-const IconLabel = styled(BottomNavIconLabel)({
-  // required to keep an 8px left padding for the modal
-  minWidth: 80
-})
-
-const TimerButton = styled(BottomNavControl)({
-  width: ElementWidth.END_MEETING_BUTTON
-})
-
 const StageTimerControl = (props: Props) => {
-  const {defaultTimeLimit, meeting} = props
+  const {defaultTimeLimit, meeting, status, onTransitionEnd} = props
   const {meetingMembers, localStage, facilitator, id: meetingId} = meeting
-  const {isAsync, isComplete, scheduledEndTime} = localStage
+  const {isAsync, scheduledEndTime} = localStage
   const connectedMemberCount = meetingMembers.filter((member) => member.user.isConnected).length
   const color = scheduledEndTime ? 'green' : 'midGray'
   const icon = isAsync ? 'event' : 'timer'
@@ -43,12 +36,16 @@ const StageTimerControl = (props: Props) => {
       id: 'StageTimerModal'
     }
   )
-  if (isComplete) return null
   return (
     <>
-      <TimerButton onMouseEnter={StageTimerModal.preload} onClick={togglePortal}>
-        <IconLabel ref={originRef} icon={icon} iconColor={color} label={label} />
-      </TimerButton>
+      <BottomNavControl
+        onMouseEnter={StageTimerModal.preload}
+        onClick={togglePortal}
+        status={status}
+        onTransitionEnd={onTransitionEnd}
+      >
+        <BottomNavIconLabel ref={originRef} icon={icon} iconColor={color} label={label} />
+      </BottomNavControl>
       {menuPortal(
         <StageTimerModal
           defaultToAsync={connectedMemberCount <= 1}

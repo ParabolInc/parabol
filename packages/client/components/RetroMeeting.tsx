@@ -1,20 +1,19 @@
-import React, {ReactElement} from 'react'
-import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import {ValueOf} from '../types/generics'
-import MeetingStyles from './MeetingStyles'
-import RetroMeetingSidebar from './RetroMeetingSidebar'
+import React, {ReactElement, Suspense} from 'react'
+import {createFragmentContainer} from 'react-relay'
+import {RetroMeeting_meeting} from '__generated__/RetroMeeting_meeting.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMeeting from '../hooks/useMeeting'
+import LocalAtmosphere from '../modules/demo/LocalAtmosphere'
 import NewMeetingAvatarGroup from '../modules/meeting/components/MeetingAvatarGroup/NewMeetingAvatarGroup'
-import RejoinFacilitatorButton from '../modules/meeting/components/RejoinFacilitatorButton/RejoinFacilitatorButton'
+import {RetroDemo} from '../types/constEnums'
+import {ValueOf} from '../types/generics'
 import {NewMeetingPhaseTypeEnum} from '../types/graphql'
 import lazyPreload from '../utils/lazyPreload'
-import LocalAtmosphere from '../modules/demo/LocalAtmosphere'
+import MeetingControlBar from './MeetingControlBar'
+import MeetingStyles from './MeetingStyles'
 import ResponsiveDashSidebar from './ResponsiveDashSidebar'
-import {RetroDemo} from '../types/constEnums'
-import {RetroMeeting_meeting} from '__generated__/RetroMeeting_meeting.graphql'
-import useGotoNext from '../hooks/useGotoNext'
+import RetroMeetingSidebar from './RetroMeetingSidebar'
 
 interface Props {
   meeting: RetroMeeting_meeting
@@ -41,8 +40,6 @@ const phaseLookup = {
 type PhaseComponent = ValueOf<typeof phaseLookup>
 
 export interface RetroMeetingPhaseProps {
-  handleGotoNext: ReturnType<typeof useGotoNext>
-  isDemoStageComplete: boolean
   toggleSidebar: () => void
   meeting: any
   avatarGroup: ReactElement
@@ -62,15 +59,7 @@ const RetroMeeting = (props: Props) => {
   } = useMeeting(meeting)
   const atmosphere = useAtmosphere()
   if (!safeRoute) return null
-  const {
-    id: meetingId,
-    endedAt,
-    showSidebar,
-    viewerMeetingMember,
-    facilitatorStageId,
-    localPhase,
-    localStage
-  } = meeting
+  const {id: meetingId, showSidebar, viewerMeetingMember, localPhase} = meeting
   const {user} = viewerMeetingMember
   const {featureFlags} = user
   const {video: allowVideo} = featureFlags
@@ -93,24 +82,25 @@ const RetroMeeting = (props: Props) => {
           meeting={meeting}
         />
       </ResponsiveDashSidebar>
-      <Phase
-        handleGotoNext={handleGotoNext}
-        meeting={meeting}
+      <Suspense fallback={''}>
+        <Phase
+          meeting={meeting}
+          toggleSidebar={toggleSidebar}
+          avatarGroup={
+            <NewMeetingAvatarGroup
+              allowVideo={allowVideo}
+              camStreams={streams.cam}
+              swarm={swarm}
+              meeting={meeting}
+            />
+          }
+        />
+      </Suspense>
+      <MeetingControlBar
         isDemoStageComplete={isDemoStageComplete}
-        toggleSidebar={toggleSidebar}
-        avatarGroup={
-          <NewMeetingAvatarGroup
-            allowVideo={allowVideo}
-            camStreams={streams.cam}
-            swarm={swarm}
-            meeting={meeting}
-          />
-        }
-      />
-      <RejoinFacilitatorButton
-        endedAt={endedAt}
-        inSync={localStage ? localStage.id === facilitatorStageId : true}
-        onClick={() => gotoStageId(facilitatorStageId)}
+        meeting={meeting}
+        handleGotoNext={handleGotoNext}
+        gotoStageId={gotoStageId}
       />
     </MeetingStyles>
   )
@@ -127,15 +117,11 @@ export default createFragmentContainer(RetroMeeting, {
       ...RetroVotePhase_meeting
       ...RetroDiscussPhase_meeting
       ...NewMeetingAvatarGroup_meeting
+      ...MeetingControlBar_meeting
       id
       showSidebar
-      endedAt
-      facilitatorStageId
       localPhase {
         phaseType
-      }
-      localStage {
-        id
       }
       phases {
         phaseType

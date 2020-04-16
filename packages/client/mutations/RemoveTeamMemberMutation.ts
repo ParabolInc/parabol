@@ -41,6 +41,7 @@ graphql`
       phases {
         stages {
           id
+          readyCount
         }
       }
     }

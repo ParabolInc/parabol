@@ -20,6 +20,10 @@ graphql`
       isConnected
       preferredName
     }
+    facilitatorStage {
+      readyCount
+      isViewerReady
+    }
   }
 `
 
