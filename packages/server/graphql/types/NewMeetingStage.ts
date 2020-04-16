@@ -26,6 +26,7 @@ import GraphQLISO8601Type from './GraphQLISO8601Type'
 import NewMeetingPhase from './NewMeetingPhase'
 import UpdatesStage from './UpdatesStage'
 import AgendaItemsStage from './AgendaItemsStage'
+import {getUserId} from '../../utils/authorization'
 
 /*
  * Each meeting has many phases.
@@ -96,6 +97,25 @@ export const newMeetingStageFields = () => ({
   isAsync: {
     type: GraphQLBoolean,
     description: 'true if a time limit is set, false if end time is set, null if neither is set'
+  },
+  isViewerReady: {
+    type: GraphQLNonNull(GraphQLBoolean),
+    description: 'true if the viewer is ready to advance, else false',
+    resolve: ({readyToAdvance}, _args, {authToken}) => {
+      const viewerId = getUserId(authToken)
+      return readyToAdvance?.includes(viewerId) ?? false
+    }
+  },
+  readyCount: {
+    type: GraphQLNonNull(GraphQLInt),
+    description: 'the number of meeting members ready to advance, excluding the facilitator',
+    resolve: async ({meetingId, readyToAdvance}, _args, {dataLoader}, ref) => {
+      if (!readyToAdvance) return 0
+      if (!meetingId) console.log('no meetingid', ref)
+      const meeting = await dataLoader.get('newMeetings').load(meetingId)
+      const {facilitatorUserId} = meeting
+      return readyToAdvance.filter((userId) => userId !== facilitatorUserId).length
+    }
   },
   scheduledEndTime: {
     type: GraphQLISO8601Type,
