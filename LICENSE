@@ -1,9 +1,9 @@
 Copyright 2020 Parabol, Inc.
 
-Action is distributed under the GNU AFFERO GENERAL PUBLIC LICENSE, Version 3.0
+Parabol is distributed under the GNU AFFERO GENERAL PUBLIC LICENSE, Version 3.0
 and is also available under alternative licenses negotiated directly with
 Parabol, Inc. If you obtained Action under the GPL, then the GPL applies to all
-loadable Action modules used on your system as well, except as defined below.
+loadable Parabol modules used on your system as well, except as defined below.
 The GPL (version 3) is included in this source tree in the file COPYING.
 
 Parabol, Inc. holds copyright and/or sufficient licenses to all components of
