@@ -3,6 +3,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {useCoverable} from 'hooks/useControlBarCovers'
 import React, {RefObject, useRef} from 'react'
 import {createFragmentContainer} from 'react-relay'
+import makeMinWidthMediaQuery from 'utils/makeMinWidthMediaQuery'
 import {GroupingKanbanColumn_meeting} from '__generated__/GroupingKanbanColumn_meeting.graphql'
 import {GroupingKanbanColumn_prompt} from '__generated__/GroupingKanbanColumn_prompt.graphql'
 import {GroupingKanbanColumn_reflectionGroups} from '__generated__/GroupingKanbanColumn_reflectionGroups.graphql'
@@ -12,6 +13,7 @@ import CreateReflectionMutation from '../mutations/CreateReflectionMutation'
 import {PALETTE} from '../styles/paletteV2'
 import {
   BezierCurve,
+  Breakpoint,
   DragAttribute,
   ElementWidth,
   Gutters,
@@ -25,21 +27,22 @@ import Icon from './Icon'
 import ReflectionGroup from './ReflectionGroup/ReflectionGroup'
 import RetroPrompt from './RetroPrompt'
 
-const Column = styled('div')<{isDesktop: boolean; isExpanded: boolean}>(
-  ({isDesktop, isExpanded}) => ({
-    alignItems: 'center',
-    background: PALETTE.BACKGROUND_REFLECTION,
-    borderRadius: 8,
-    display: 'flex',
-    flex: 1,
-    flexDirection: 'column',
+const Column = styled('div')<{isExpanded: boolean}>(({isExpanded}) => ({
+  alignItems: 'center',
+  background: PALETTE.BACKGROUND_REFLECTION,
+  borderRadius: 8,
+  display: 'flex',
+  flex: 1,
+  flexDirection: 'column',
+  height: '100%',
+  position: 'relative',
+  transition: `height 100ms ${BezierCurve.DECELERATE}`,
+  [makeMinWidthMediaQuery(Breakpoint.SINGLE_REFLECTION_COLUMN)]: {
     height: isExpanded ? '100%' : `calc(100% - ${MeetingControlBarEnum.HEIGHT}px)`,
-    margin: isDesktop ? '0 8px' : undefined,
-    minWidth: isDesktop ? 320 : undefined,
-    position: 'relative',
-    transition: `height 100ms ${BezierCurve.DECELERATE}`
-  })
-)
+    margin: '0 8px',
+    minWidth: 320
+  }
+}))
 
 const ColumnHeader = styled('div')({
   color: PALETTE.TEXT_MAIN,
@@ -86,7 +89,7 @@ interface Props {
 const GroupingKanbanColumn = (props: Props) => {
   const {isDesktop, meeting, reflectionGroups, phaseRef, prompt, swipeColumn} = props
   const {question, id: promptId} = prompt
-  const {id: meetingId, localStage} = meeting
+  const {id: meetingId, endedAt, localStage} = meeting
   const {isComplete, phaseType} = localStage
   const {submitting, onError, submitMutation, onCompleted} = useMutationProps()
   const atmosphere = useAtmosphere()
@@ -103,14 +106,9 @@ const GroupingKanbanColumn = (props: Props) => {
   }
   const ref = useRef<HTMLDivElement>(null)
   const canAdd = phaseType === NewMeetingPhaseTypeEnum.group && !isComplete
-  const isExpanded = useCoverable(promptId, ref, MeetingControlBarEnum.HEIGHT)
+  const isExpanded = useCoverable(promptId, ref, MeetingControlBarEnum.HEIGHT) || !!endedAt
   return (
-    <Column
-      isExpanded={isExpanded}
-      data-cy={`group-column-${question}`}
-      isDesktop={isDesktop}
-      ref={ref}
-    >
+    <Column isExpanded={isExpanded} data-cy={`group-column-${question}`} ref={ref}>
       <ColumnHeader>
         <Prompt>{question}</Prompt>
         {canAdd && (
@@ -156,6 +154,7 @@ export default createFragmentContainer(GroupingKanbanColumn, {
     fragment GroupingKanbanColumn_meeting on RetrospectiveMeeting {
       ...ReflectionGroup_meeting
       id
+      endedAt
       localStage {
         isComplete
         phaseType

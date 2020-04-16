@@ -40,7 +40,7 @@ const ActionMeetingFirstCall = (props: Props) => {
   const phaseName = phaseLabelLookup[AGENDA_ITEMS]
   return (
     <MeetingContent>
-      <MeetingHeaderAndPhase>
+      <MeetingHeaderAndPhase hideBottomBar={!!endedAt}>
         <MeetingTopBar
           avatarGroup={avatarGroup}
           isMeetingSidebarCollapsed={!showSidebar}

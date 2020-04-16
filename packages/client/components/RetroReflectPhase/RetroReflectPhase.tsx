@@ -27,15 +27,14 @@ const RetroReflectPhase = (props: Props) => {
   const phaseRef = useRef<HTMLDivElement>(null)
   const [activeIdx, setActiveIdx] = useState(0)
   const isDesktop = useBreakpoint(Breakpoint.SINGLE_REFLECTION_COLUMN)
-  const {localPhase, showSidebar} = meeting
+  const {localPhase, endedAt, showSidebar} = meeting
   if (!localPhase || !localPhase.reflectPrompts) return null
   const reflectPrompts = localPhase!.reflectPrompts
-
   const focusedPhaseItemId = localPhase!.focusedPhaseItemId
   const ColumnWrapper = isDesktop ? ReflectWrapperDesktop : ReflectWrapperMobile
   return (
     <MeetingContent ref={phaseRef}>
-      <MeetingHeaderAndPhase>
+      <MeetingHeaderAndPhase hideBottomBar={!!endedAt}>
         <MeetingTopBar
           avatarGroup={avatarGroup}
           isMeetingSidebarCollapsed={!showSidebar}
@@ -91,8 +90,12 @@ export default createFragmentContainer(RetroReflectPhase, {
       ...StageTimerDisplay_meeting
       ...StageTimerControl_meeting
       ...PhaseItemColumn_meeting
+      endedAt
       localPhase {
         ...RetroReflectPhase_phase @relay(mask: false)
+      }
+      localStage {
+        isComplete
       }
       phases {
         ...RetroReflectPhase_phase @relay(mask: false)

@@ -32,7 +32,7 @@ interface Props {
 const DiscussionThread = (props: Props) => {
   const {viewer} = props
   const meeting = viewer.meeting!
-  const {replyingToCommentId, reflectionGroup} = meeting
+  const {endedAt, replyingToCommentId, reflectionGroup} = meeting
   const {id: reflectionGroupId, thread} = reflectionGroup!
   const edges = thread?.edges ?? [] // should never happen, but Terry reported it in demo. likely relay error
   const threadables = edges.map(({node}) => node)
@@ -42,7 +42,7 @@ const DiscussionThread = (props: Props) => {
   const listRef = useRef<HTMLDivElement>(null)
   const editorRef = useRef<HTMLTextAreaElement>(null)
   const ref = useRef<HTMLDivElement>(null)
-  const isExpanded = useCoverable('threads', ref, MeetingControlBarEnum.HEIGHT)
+  const isExpanded = useCoverable('threads', ref, MeetingControlBarEnum.HEIGHT) || !!endedAt
   return (
     <Wrapper isExpanded={isExpanded} ref={ref}>
       <DiscussionThreadList
@@ -70,6 +70,7 @@ export default createFragmentContainer(DiscussionThread, {
         ... on RetrospectiveMeeting {
           ...DiscussionThreadInput_meeting
           ...DiscussionThreadList_meeting
+          endedAt
           replyingToCommentId
           reflectionGroup(reflectionGroupId: $reflectionGroupId) {
             id

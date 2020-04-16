@@ -2081,12 +2081,30 @@
     shortid "^2.2.12"
     tslib "^1.9.3"
 
+"@mattkrick/fast-rtc-peer@^0.4.1":
+  version "0.4.1"
+  resolved "https://registry.yarnpkg.com/@mattkrick/fast-rtc-peer/-/fast-rtc-peer-0.4.1.tgz#68a0c7053f19b088b1737f0d03c2ef7935de7dd4"
+  integrity sha512-BTQS3xEbFq9VD/AWYNACjQZDsh4Rczemukk0MvS9tXG4odoUZa3S1FFD8lBgnCp0pteB5rvYBggX/AaJCk2VHQ==
+  dependencies:
+    eventemitter3 "^3.1.0"
+    shortid "^2.2.12"
+    tslib "^1.9.3"
+
 "@mattkrick/fast-rtc-swarm@^0.4.0":
   version "0.4.0"
   resolved "https://registry.yarnpkg.com/@mattkrick/fast-rtc-swarm/-/fast-rtc-swarm-0.4.0.tgz#b1cbcd73c2a10d7fa1c7b32b6132d892c8f7c06c"
   integrity sha512-gDFLwR8M1U/wRLK00juc7Duwkuqbrm9S/iAQkXhZWOGf7hykG/8jbLzfsh2cR78RYugJP9aqo381yXgKrbPPVw==
   dependencies:
     "@mattkrick/fast-rtc-peer" "^0.4.0"
+    eventemitter3 "^3.1.0"
+    tslib "^1.9.3"
+
+"@mattkrick/fast-rtc-swarm@^0.4.1":
+  version "0.4.1"
+  resolved "https://registry.yarnpkg.com/@mattkrick/fast-rtc-swarm/-/fast-rtc-swarm-0.4.1.tgz#1024c4aff66ba1e2a408d5435206c7bda3f32a44"
+  integrity sha512-4KX4MmX3q/K9Pkw4MqRF8dw2sCW1Q2Hmq8UedNnGg8usUrrMOIJQIkO9sAEShZF3tmQ0YWouXA4cNoLg3Lvnbg==
+  dependencies:
+    "@mattkrick/fast-rtc-peer" "^0.4.1"
     eventemitter3 "^3.1.0"
     tslib "^1.9.3"
 

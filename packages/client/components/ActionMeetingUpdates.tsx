@@ -40,7 +40,7 @@ const ActionMeetingUpdates = (props: Props) => {
   const {avatarGroup, toggleSidebar, meeting} = props
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
-  const {id: meetingId, localStage, showSidebar, team} = meeting
+  const {id: meetingId, endedAt, localStage, showSidebar, team} = meeting
   const {id: teamId, tasks} = team
   const {teamMember} = localStage!
   const {userId} = teamMember!
@@ -51,7 +51,7 @@ const ActionMeetingUpdates = (props: Props) => {
   }, [tasks, userId])
   return (
     <MeetingContent>
-      <MeetingHeaderAndPhase>
+      <MeetingHeaderAndPhase hideBottomBar={!!endedAt}>
         <MeetingTopBar
           avatarGroup={avatarGroup}
           isMeetingSidebarCollapsed={!showSidebar}
@@ -91,6 +91,7 @@ export default createFragmentContainer(ActionMeetingUpdates, {
     fragment ActionMeetingUpdates_meeting on ActionMeeting {
       ...ActionMeetingUpdatesPrompt_meeting
       id
+      endedAt
       showSidebar
       localStage {
         ...ActionMeetingUpdatesStage @relay(mask: false)

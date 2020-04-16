@@ -37,7 +37,7 @@ const Wrapper = styled('div')({
   margin: '0 auto',
   minHeight: 56,
   padding: 8,
-  position: 'absolute',
+  position: 'fixed',
   right: 0,
   width: '100%',
   zIndex: ZIndex.BOTTOM_BAR,

@@ -5,7 +5,7 @@ import Reflection from 'parabol-server/database/types/Reflection'
 import {Variables} from 'relay-runtime'
 import StrictEventEmitter from 'strict-event-emitter-types'
 import stringSimilarity from 'string-similarity'
-import {RetroDemo, SubscriptionChannel, MeetingSettingsThreshold} from '../../types/constEnums'
+import {MeetingSettingsThreshold, RetroDemo, SubscriptionChannel} from '../../types/constEnums'
 import {
   DragReflectionDropTargetTypeEnum,
   IDiscussPhase,
@@ -522,7 +522,6 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       }
       return {renameMeeting: data}
     },
-    NewMeetingCheckInMutation: () => {},
     RemoveReflectionMutation: ({reflectionId}: {reflectionId: string}, userId: string) => {
       const reflection = this.db.reflections.find((reflection) => reflection.id === reflectionId)!
       reflection.isActive = false
