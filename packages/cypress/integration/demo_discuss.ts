@@ -126,9 +126,19 @@ function deleteComment(idx) {
 
 }
 
-let taskIndex;
+function publishToJira(idx) {
+  cy.get(`[data-cy=thread-item-${idx}-task-card-integration-button]`).click()  
 
-let commentIndex;
+  cy.get(`[data-cy=jira-integration]`).click()
+
+  cy.get(`[data-cy=thread-item-${idx}-task-card-jira-issue-link]`)
+    .should('include.text', 'Issue')  
+
+}
+
+var taskIndex;
+
+var commentIndex;
 
 describe('Test Discuss page Demo', () => {
 
@@ -175,12 +185,16 @@ describe('Test Discuss page Demo', () => {
     deleteComment(commentIndex)
   })
 
-  it.skip('can "publish" a task to "JIRA" (this is simulated)', () => {
-    
+  it('can "publish" a task to "JIRA" (this is simulated)', () => {
+    addTask('Create task to test publish to JIRA').then((result) => {
+      publishToJira(result)
+    })
   })
 
-  it.skip('can advance to a new discussion item', () => {
-    
+  it('can advance to a new discussion item', () => {
+    cy.get(`[data-cy=next-topic]`).click()
+    cy.get(`[data-cy=next-topic]`).click()
+
   })
 
   it.skip('can navigate back to a previous item', () => {

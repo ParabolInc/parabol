@@ -112,7 +112,7 @@ const OutcomeCard = memo((props: Props) => {
           teamId={teamId}
           useTaskChild={useTaskChild}
         />
-        <TaskIntegrationLink integration={integration || null} />
+        <TaskIntegrationLink dataCy={`${dataCy}`} integration={integration || null} />
         <TaskFooter
           dataCy={`${dataCy}`} 
           area={area}

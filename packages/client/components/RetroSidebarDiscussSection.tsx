@@ -107,7 +107,7 @@ const RetroSidebarDiscussSection = (props: Props) => {
   }
   return (
     <DragDropContext onDragEnd={onDragEnd}>
-      <MeetingSidebarPhaseItemChild>
+      <MeetingSidebarPhaseItemChild data-cy="discussion-section">
         <Droppable droppableId={DISCUSSION_TOPIC}>
           {(provided) => {
             return (

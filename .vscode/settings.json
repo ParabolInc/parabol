@@ -33,4 +33,5 @@
 	"typescript.preferences.quoteStyle": "single",
 	"typescript.preferences.renameShorthandProperties": false,
 	"editor.gotoLocation.multipleDefinitions": "goto",
+	"editor.formatOnSave": true,
 }

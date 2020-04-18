@@ -6,6 +6,5 @@
   "screenshotsFolder": "screenshots",
   "supportFile": "support/index.js",
   "videosFolder": "videos",
-  "projectId": "3wn18n",
-  "ignoreTestFiles": "demo_*"
+  "projectId": "3wn18n"
 }

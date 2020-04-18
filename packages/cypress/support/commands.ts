@@ -60,6 +60,8 @@ declare global {
   }
 }
 
+const resizeObserverLoopErrRe = /^ResizeObserver loop limit exceeded/  
+
 const visitReflect = () => {
   cy.viewport('macbook-15')
   cy.visit('/retrospective-demo/reflect')
@@ -67,13 +69,22 @@ const visitReflect = () => {
     .should('be.visible')
     .click()
     .then(() => {
-      cy.get('[data-cy=sidebar-header]')
-        .find('button')
+      cy.get('[data-cy=sidebar-toggle]')
         .click()
     })
 }
 
 const visitPhase = (phase: string, idx = '') => {
+  cy.on('uncaught:exception', (err) => {
+    if (resizeObserverLoopErrRe.test(err.message)){
+      // return false to prevent the error from
+      // failing this test
+      expect(err.message).to.include('ResizeObserver loop limit exceeded')
+
+      return false
+    }
+  })
+
   cy.get(`[data-cy=next-${phase}]:not(:disabled)`)
     .should('be.visible')
     .pipe(click)
