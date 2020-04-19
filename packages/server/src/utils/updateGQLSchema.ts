@@ -1,38 +1,36 @@
 import fs from 'fs'
-import {graphql, introspectionQuery, printSchema} from 'graphql'
+import {printSchema} from 'graphql'
 import path from 'path'
 import {promisify} from 'util'
 import schema from '../graphql/rootSchema'
 
 const write = promisify(fs.writeFile)
-const PROJECT_ROOT = path.join(__dirname, '..', '..', '..')
+// relative to the output file
+const PROJECT_ROOT = path.join(__dirname, '..')
 const schemaPath = path.join(PROJECT_ROOT, 'schema.graphql')
-const jsonPath = path.join(PROJECT_ROOT, 'schema.json')
 
-const updateGQLSchema = async (context) => {
-  if (context.isUpdating) {
-    context.isUpdateQueued = true
-    return
-  }
-  context.isUpdating = true
-  const result = await graphql(schema, introspectionQuery)
-  const nextSchema = printSchema(schema)
-  if (context.oldSchema === nextSchema) {
-    context.isUpdating = false
-    console.log('no change')
-    return
-  }
-  context.oldSchema = nextSchema
-  await Promise.all([
-    write(schemaPath, nextSchema),
-    write(jsonPath, JSON.stringify(result, null, 2))
-  ])
-  context.isUpdating = false
-
-  if (context.isUpdateQueued) {
-    setTimeout(updateGQLSchema, 1000)
-  }
-  console.log('new schema saved!')
+interface Context {
+  throttleId?: any
+  oldSchema?: string
+  delay: number
+}
+const updateGQLSchema = (context: Context = {delay: 0}) => {
+  return new Promise<boolean>((resolve) => {
+    if (context.throttleId) {
+      resolve(false)
+      return
+    }
+    clearTimeout(context.throttleId)
+    context.throttleId = setTimeout(async () => {
+      context.throttleId = undefined
+      const nextSchema = printSchema(schema)
+      if (context.oldSchema === nextSchema) return
+      context.oldSchema = nextSchema
+      await write(schemaPath, nextSchema)
+      console.log(`💥💥💥 GraphQL Schema Created    💥💥💥`)
+      resolve(true)
+    }, context.delay)
+  })
 }
 
 export default updateGQLSchema

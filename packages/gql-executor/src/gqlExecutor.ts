@@ -17,7 +17,7 @@ const onMessage = async (_channel: string, message: string) => {
 
 subscriber.on('message', onMessage)
 subscriber.subscribe(ServerChannel.GQL_EXECUTOR_REQUEST)
-console.log(`\n💧💧💧Ready for GraphQL Execution💧💧💧`)
+console.log(`\n💧💧💧 Ready for GraphQL Execution 💧💧💧`)
 
 if (module.hot) {
   module.hot.accept('../../server/src/graphql/executeGraphQL')

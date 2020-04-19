@@ -12,48 +12,6 @@ process.on('uncaughtException', (err) => {
 
 const PORT = Number(process.env.PORT)
 
-const rootSchemaRef = {current: rootSchema}
-
-if (module.hot) {
-  const schemaCtx = {oldSchema: ''}
-  module.hot.accept(
-    [
-      './serveFromWebpack',
-      './ICSHandler',
-      './PWAHandler',
-      './listenHandler',
-      './billing/stripeWebhookHandler',
-      './integrations/githubWebhookHandler',
-      './sse/SSEConnectionHandler',
-      './sse/SSEPingHandler',
-      './staticFileHandler',
-      './utils/SAMLHandler',
-      './graphql/httpGraphQLHandler',
-      './graphql/intranetGraphQLHandler',
-      './createSSR',
-      './socketHandlers/handleMessage',
-      './socketHandlers/handleClose',
-      './socketHandlers/handleOpen',
-      // these are just needed to keep the gql schema fresh
-      './graphql/rootSchema',
-      './utils/updateGQLSchema'
-    ],
-    () => {
-      const nextRootSchema = require('./graphql/rootSchema').default
-      if (nextRootSchema !== rootSchemaRef.current) {
-        // update the schema
-        const updateGQLSchema = require('./utils/updateGQLSchema').default
-        updateGQLSchema(schemaCtx)
-        rootSchemaRef.current = nextRootSchema
-      }
-    }
-  )
-}
-
-if (!PROD) {
-  require('./serveFromWebpack').getWebpackDevMiddleware()
-}
-
 uws
   .App()
   .get('/favicon.ico', (...args) => require('./PWAHandler').default(...args))
@@ -83,3 +41,44 @@ uws
   })
   .any('/*', (...args) => require('./createSSR').default(...args))
   .listen(PORT, (...args) => require('./listenHandler').default(...args))
+
+// Development server details
+if (module.hot) {
+  const rootSchemaRef = {current: rootSchema}
+  const schemaCtx = {oldSchema: '', delay: 3000}
+  module.hot.accept(
+    [
+      './serveFromWebpack',
+      './ICSHandler',
+      './PWAHandler',
+      './listenHandler',
+      './billing/stripeWebhookHandler',
+      './integrations/githubWebhookHandler',
+      './sse/SSEConnectionHandler',
+      './sse/SSEPingHandler',
+      './staticFileHandler',
+      './utils/SAMLHandler',
+      './graphql/httpGraphQLHandler',
+      './graphql/intranetGraphQLHandler',
+      './createSSR',
+      './socketHandlers/handleMessage',
+      './socketHandlers/handleClose',
+      './socketHandlers/handleOpen',
+      // these are just needed to keep the gql schema fresh
+      './graphql/rootSchema',
+      './utils/updateGQLSchema'
+    ],
+    () => {
+      // update the gql schema here vs. in a helper file because we've alreayd parsed it here
+      const nextRootSchema = require('./graphql/rootSchema').default
+      if (nextRootSchema === rootSchemaRef.current) return
+      rootSchemaRef.current = nextRootSchema
+      const updateGQLSchema = require('./utils/updateGQLSchema').default
+      updateGQLSchema(schemaCtx)
+    }
+  )
+}
+
+if (!PROD) {
+  require('./serveFromWebpack').getWebpackDevMiddleware()
+}

@@ -4,33 +4,43 @@ const webpack = require('webpack')
 const config = require('./webpack.config.dll.js')
 const crypto = require('crypto')
 const path = require('path')
-const scriptName = path.basename(__filename)
 
-const DLL_ROOT = path.join(__dirname, 'dll')
-const CACHE_HASH_FN = path.join(DLL_ROOT, 'yarn.lock.md5')
 const PROJECT_ROOT = path.join(__dirname, '../../')
+const DLL_ROOT = path.join(PROJECT_ROOT, 'dev', 'dll')
+const CACHE_HASH = path.join(DLL_ROOT, 'yarn.lock.md5')
 
-let cacheHash
-try {
-  cacheHash = fs.readFileSync(CACHE_HASH_FN, 'utf8')
-} catch (e) {
-  cacheHash = ''
-}
+const buildDll = async () => {
+  return new Promise((resolve) => {
+    let cacheHash
+    try {
+      cacheHash = fs.readFileSync(CACHE_HASH, 'utf8')
+    } catch (e) {
+      cacheHash = ''
+    }
+    const lockfile = fs.readFileSync(path.join(PROJECT_ROOT, 'yarn.lock'), 'utf8')
 
-const lockfile = fs.readFileSync(path.join(PROJECT_ROOT, 'yarn.lock'), 'utf8')
-
-const hash = crypto
-  .createHash('md5')
-  .update(lockfile)
-  .digest('hex')
-if (hash !== cacheHash) {
-  webpack(config, () => {
-    console.log(`${scriptName}: DLL created`)
+    const hash = crypto
+      .createHash('md5')
+      .update(lockfile)
+      .digest('hex')
+    if (hash !== cacheHash) {
+      webpack(config, () => {
+        console.log(`📘 DLL created`)
+        resolve()
+      })
+      if (!fs.existsSync(DLL_ROOT)) {
+        fs.mkdirSync(DLL_ROOT, { recursive: true })
+      }
+      fs.writeFileSync(CACHE_HASH, hash)
+    } else {
+      console.log(`📘 Using cached DLL`)
+      resolve()
+    }
   })
-  if (!fs.existsSync(DLL_ROOT)) {
-    fs.mkdirSync(DLL_ROOT)
-  }
-  fs.writeFileSync(CACHE_HASH_FN, hash)
-} else {
-  console.log(`${scriptName}: using cached DLL`)
 }
+
+if (require.main === module) {
+  buildDll()
+}
+
+module.exports = buildDll

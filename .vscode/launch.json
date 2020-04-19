@@ -7,6 +7,37 @@
         {
             "type": "node",
             "request": "launch",
+            "name": "Launch dev.js",
+            "program": "${workspaceFolder}/scripts/webpack/dev.js",
+            "skipFiles": [
+                "<node_internals>/**"
+            ]
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Launch Webpack",
+            "program": "${workspaceFolder}/node_modules/.bin/webpack",
+            "args": [
+                "--config",
+                "${workspaceFolder}/scripts/webpack/webpack.all.config.js"
+            ],
+            "skipFiles": [
+                "<node_internals>/**"
+            ]
+        },
+        {
+            "type": "node",
+            "request": "attach",
+            "name": "Attach by Process ID",
+            "processId": "${command:PickProcess}",
+            "skipFiles": [
+                "<node_internals>/**"
+            ]
+        },
+        {
+            "type": "node",
+            "request": "launch",
             "name": "Debug Executor",
             "runtimeExecutable": "yarn",
             "runtimeArgs": [

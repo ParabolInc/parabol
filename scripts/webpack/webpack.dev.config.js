@@ -26,7 +26,19 @@ module.exports = {
       'parabol-client/lib': CLIENT_ROOT
     },
     extensions: ['.js', '.json', '.ts', '.tsx'],
-    unsafeCache: false
+    unsafeCache: false,
+    modules: [
+      path.resolve(SERVER_ROOT, '../node_modules'),
+      path.resolve(CLIENT_ROOT, '../node_modules'),
+      'node_modules'
+    ]
+  },
+  resolveLoader: {
+    modules: [
+      path.resolve(SERVER_ROOT, '../node_modules'),
+      path.resolve(CLIENT_ROOT, '../node_modules'),
+      'node_modules'
+    ]
   },
   plugins: [
     // reliably produces errors on rebuild, disabled for now

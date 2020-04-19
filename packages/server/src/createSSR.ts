@@ -58,7 +58,6 @@ const getBrotli = () => {
 }
 
 const createSSR = (res: HttpResponse, req: HttpRequest) => {
-  console.log('8')
   if (req.getMethod() !== 'get') {
     res.end()
     return

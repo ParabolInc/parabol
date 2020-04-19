@@ -6,7 +6,7 @@ import uwsGetHeaders from './utils/uwsGetHeaders'
 const startHotServer = async (compiler) => {
   return new Promise((resolve) => {
     const hotClient = require('webpack-hot-client')
-    const client = hotClient(compiler, {port: 8082})
+    const client = hotClient(compiler, {port: 8082, logLevel: 'error'})
     const {server} = client
     server.on('listening', () => {
       resolve()
@@ -50,6 +50,7 @@ export const getWebpackDevMiddleware = async () => {
       const config = require('../../../scripts/webpack/webpack.dev.config')
       const webpack = require('webpack')
       const compiler = webpack(config)
+      // todo begin building before awaiting hot server
       await startHotServer(compiler)
       resolve(buildMiddleware(compiler, config))
     })
