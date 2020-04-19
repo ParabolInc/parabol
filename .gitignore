@@ -9,6 +9,7 @@
 .idea/
 build/
 coverage/
+dev/
 dump.rdb
 node_modules/
 package-lock.json
@@ -20,6 +21,7 @@ packages/**/lib/*
 rethinkdb_data/
 rethinkdb_dump_*
 schema.graphql
+schema.json
 scratch/
 stats.json
 storybook-static/

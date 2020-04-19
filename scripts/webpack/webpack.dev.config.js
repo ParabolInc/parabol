@@ -3,7 +3,7 @@ const webpack = require('webpack')
 const vendors = require('./dll/vendors')
 
 // __dirname is the location of the webpack bundle, if this is inside one
-const PROJECT_ROOT = path.join(__dirname, '..', '..', '..')
+const PROJECT_ROOT = path.join(__dirname, '..')
 const CLIENT_ROOT = path.join(PROJECT_ROOT, 'packages', 'client', 'src')
 const SERVER_ROOT = path.join(PROJECT_ROOT, 'packages', 'server', 'src')
 

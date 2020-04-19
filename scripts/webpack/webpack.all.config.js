@@ -4,15 +4,18 @@ const PROJECT_ROOT = path.join(__dirname, '..', '..')
 const CLIENT_ROOT = path.join(PROJECT_ROOT, 'packages', 'client', 'src')
 const SERVER_ROOT = path.join(PROJECT_ROOT, 'packages', 'server', 'src')
 const GQL_ROOT = path.join(PROJECT_ROOT, 'packages', 'gql-executor', 'src')
-
+// const CircularDependencyPlugin = require('circular-dependency-plugin')
+const webpack = require('webpack')
 // TODO
 // move __generated__ outside of src
 const ext = nodeExternals({
-  modulesDir: '../../node_modules',
+  // modulesDir: '../../node_modules',
   whitelist: [/parabol-client/, '/parabol-server/']
 })
 module.exports = [
   {
+    stats: 'minimal',
+    watch: true,
     // devtool: 'eval',
     mode: 'development',
     node: {
@@ -22,7 +25,7 @@ module.exports = [
     // entry: [path.join(SERVER_ROOT, '.dotenv.ts'), path.join(CLIENT_ROOT, 'utils/GitHubManager.ts')],
     entry: {
       main: [
-        '../../node_modules/webpack/hot/poll?1000',
+        './node_modules/webpack/hot/poll?1000',
         path.join(SERVER_ROOT, '.dotenv.ts'),
         path.join(SERVER_ROOT, 'server.ts')
       ],
@@ -34,7 +37,7 @@ module.exports = [
     },
     output: {
       filename: '[name].js',
-      path: path.join(SERVER_ROOT, '../lib')
+      path: path.join(PROJECT_ROOT, 'dev')
     },
     resolve: {
       alias: {
@@ -47,6 +50,16 @@ module.exports = [
     },
     target: 'node',
     externals: [ext],
+    plugins: [
+      new webpack.HotModuleReplacementPlugin()
+      // new CircularDependencyPlugin({
+      // add errors to webpack instead of warnings
+      // failOnError: false,
+      // allow import cycles that include an asyncronous import,
+      // e.g. via import(/* webpackMode: "weak" */ './file.js')
+      // allowAsyncCycles: false
+      // })
+    ],
     module: {
       rules: [
         {
@@ -86,7 +99,7 @@ module.exports = [
           use: {
             loader: '@sucrase/webpack-loader',
             options: {
-              transforms: ['jsx', 'typescript']
+              transforms: ['imports', 'jsx', 'typescript']
             }
           }
         },

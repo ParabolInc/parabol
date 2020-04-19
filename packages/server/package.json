@@ -36,7 +36,7 @@
     "relay": "yarn build:relay --watch --watchman true --quiet false",
     "update-schema": "node lib/updateSchema.js && yarn tsgen",
     "postversion": "git push --follow-tags",
-    "tsgen": "gql2ts ../../build/schema.json -e $(pwd)/../client/src/types/config.js -o ../client/src/types/graphql.ts",
+    "tsgen": "gql2ts ../../schema.json -e $(pwd)/../client/src/types/config.js -o ../client/src/types/graphql.ts",
     "tsgen:gh": "gql2ts utils/githubSchema.json -e $(pwd)/../client/types/configGH.js -o packages/client/types/githubGraphql.d.ts && eslint --fix 'packages/client/types/githubGraphql.d.ts'",
     "tsgen:ghQuery": "graphql-typescript-definitions --schema-types-path . && eslint --fix 'packages/client/src/utils/githubQueries/**/*.d.ts' ",
     "typecheck": "yarn tsc --noEmit -p tsconfig.typecheck.json"

@@ -9,12 +9,9 @@ const PROJECT_ROOT = path.join(__dirname, '..', '..', '..')
 const BUILD_ROOT = path.join(PROJECT_ROOT, 'build')
 
 const schemaPath = path.join(PROJECT_ROOT, 'schema.graphql')
-const jsonPath = path.join(BUILD_ROOT, 'schema.json')
+const jsonPath = path.join(PROJECT_ROOT, 'schema.json')
   ; (async () => {
     const result = await graphql(schema, introspectionQuery)
-    if (!fs.existsSync(BUILD_ROOT)) {
-      fs.mkdirSync(BUILD_ROOT)
-    }
     await Promise.all([
       write(schemaPath, printSchema(schema)),
       write(jsonPath, JSON.stringify(result, null, 2))

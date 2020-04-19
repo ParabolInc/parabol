@@ -7,6 +7,6 @@ import dotenvExpand from 'dotenv-expand'
 import path from 'path'
 
 const name = process.env.NODE_ENV === 'test' ? '.env.test' : '.env'
-const envPath = path.join(__dirname, '..', name)
+const envPath = path.join(__dirname, '..', 'packages', 'server', name)
 const myEnv = dotenv.config({path: envPath})
 dotenvExpand(myEnv)

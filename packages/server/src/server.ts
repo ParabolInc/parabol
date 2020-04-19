@@ -2,36 +2,52 @@
 // import './tracer'
 import uws, {SHARED_COMPRESSOR} from 'uWebSockets.js'
 import './.dotenv' // has side effect, must be first!
+import rootSchema from './graphql/rootSchema'
 import './initSentry'
 import PROD from './PROD'
+
 process.on('uncaughtException', (err) => {
   console.log('FIXME UNCAUGHT EXCEPTION', err)
 })
 
 const PORT = Number(process.env.PORT)
 
+const rootSchemaRef = {current: rootSchema}
+
 if (module.hot) {
-  module.hot.accept([
-    './serveFromWebpack',
-    './ICSHandler',
-    './PWAHandler',
-    './listenHandler',
-    './billing/stripeWebhookHandler',
-    './integrations/githubWebhookHandler',
-    './sse/SSEConnectionHandler',
-    './sse/SSEPingHandler',
-    './staticFileHandler',
-    './utils/SAMLHandler',
-    './graphql/httpGraphQLHandler',
-    './graphql/intranetGraphQLHandler',
-    './createSSR',
-    './socketHandlers/handleMessage',
-    './socketHandlers/handleClose',
-    './socketHandlers/handleOpen'
-  ])
-  module.hot.accept('./graphql/rootSchema.ts', () => {
-    console.log('root schema found!')
-  })
+  const schemaCtx = {oldSchema: ''}
+  module.hot.accept(
+    [
+      './serveFromWebpack',
+      './ICSHandler',
+      './PWAHandler',
+      './listenHandler',
+      './billing/stripeWebhookHandler',
+      './integrations/githubWebhookHandler',
+      './sse/SSEConnectionHandler',
+      './sse/SSEPingHandler',
+      './staticFileHandler',
+      './utils/SAMLHandler',
+      './graphql/httpGraphQLHandler',
+      './graphql/intranetGraphQLHandler',
+      './createSSR',
+      './socketHandlers/handleMessage',
+      './socketHandlers/handleClose',
+      './socketHandlers/handleOpen',
+      // these are just needed to keep the gql schema fresh
+      './graphql/rootSchema',
+      './utils/updateGQLSchema'
+    ],
+    () => {
+      const nextRootSchema = require('./graphql/rootSchema').default
+      if (nextRootSchema !== rootSchemaRef.current) {
+        // update the schema
+        const updateGQLSchema = require('./utils/updateGQLSchema').default
+        updateGQLSchema(schemaCtx)
+        rootSchemaRef.current = nextRootSchema
+      }
+    }
+  )
 }
 
 if (!PROD) {

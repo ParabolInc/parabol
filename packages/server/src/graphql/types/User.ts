@@ -7,39 +7,34 @@ import {
   GraphQLObjectType,
   GraphQLString
 } from 'graphql'
-import archivedTasksCount from '../queries/archivedTasksCount'
+import {GITHUB} from 'parabol-client/lib/utils/constants'
+import toTeamMemberId from 'parabol-client/lib/utils/relay/toTeamMemberId'
+import getRethink from '../../database/rethinkDriver'
+import {getUserId, isSuperUser, isTeamMember} from '../../utils/authorization'
+import standardError from '../../utils/standardError'
+import {GQLContext} from '../graphql'
 import invoiceDetails from '../queries/invoiceDetails'
 import invoices from '../queries/invoices'
+import organization from '../queries/organization'
+import suggestedIntegrations from '../queries/suggestedIntegrations'
+import AtlassianAuth from './AtlassianAuth'
+import AuthIdentity from './AuthIdentity'
 import BlockedUserType from './BlockedUserType'
+import GitHubAuth from './GitHubAuth'
 import GraphQLEmailType from './GraphQLEmailType'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import GraphQLURLType from './GraphQLURLType'
-import Team from './Team'
-import TeamMember from './TeamMember'
-import toTeamMemberId from 'parabol-client/lib/utils/relay/toTeamMemberId'
-import organization from '../queries/organization'
-import tasks from '../queries/tasks'
-import archivedTasks from '../queries/archivedTasks'
-import {getUserId, isSuperUser, isTeamMember} from '../../utils/authorization'
 import MeetingMember from './MeetingMember'
-import UserFeatureFlags from './UserFeatureFlags'
+import NewFeatureBroadcast from './NewFeatureBroadcast'
 import Organization from './Organization'
-import {TimelineEventConnection} from './TimelineEvent'
-import getRethink from '../../database/rethinkDriver'
 import OrganizationUser from './OrganizationUser'
 import SuggestedAction from './SuggestedAction'
-import NewFeatureBroadcast from './NewFeatureBroadcast'
-import standardError from '../../utils/standardError'
-import newMeeting from '../queries/newMeeting'
-import suggestedIntegrations from '../queries/suggestedIntegrations'
-import AtlassianAuth from './AtlassianAuth'
-import GitHubAuth from './GitHubAuth'
-import {GITHUB} from 'parabol-client/lib/utils/constants'
-import allAvailableIntegrations from '../queries/allAvailableIntegrations'
-import {GQLContext} from '../graphql'
+import Team from './Team'
 import TeamInvitationPayload from './TeamInvitationPayload'
-import AuthIdentity from './AuthIdentity'
+import TeamMember from './TeamMember'
 import TierEnum from './TierEnum'
+import {TimelineEventConnection} from './TimelineEvent'
+import UserFeatureFlags from './UserFeatureFlags'
 
 const User = new GraphQLObjectType<any, GQLContext, any>({
   name: 'User',
@@ -49,9 +44,12 @@ const User = new GraphQLObjectType<any, GQLContext, any>({
       type: new GraphQLNonNull(GraphQLID),
       description: 'The userId provided by us'
     },
-    allAvailableIntegrations,
-    archivedTasks,
-    archivedTasksCount,
+    food: {
+      type: GraphQLString
+    },
+    allAvailableIntegrations: require('../queries/allAvailableIntegrations').default,
+    archivedTasks: require('../queries/archivedTasks').default,
+    archivedTasksCount: require('../queries/archivedTasksCount').default,
     atlassianAuth: {
       type: AtlassianAuth,
       description:
@@ -268,8 +266,8 @@ const User = new GraphQLObjectType<any, GQLContext, any>({
         return meetingId ? dataLoader.get('meetingMembers').load(meetingMemberId) : undefined
       }
     },
-    meeting: newMeeting,
-    newMeeting,
+    meeting: require('../queries/newMeeting').default,
+    newMeeting: require('../queries/newMeeting').default, // deprecated
     notifications: require('../queries/notifications').default,
     organization,
     organizationUser: {
@@ -344,7 +342,7 @@ const User = new GraphQLObjectType<any, GQLContext, any>({
       type: GraphQLString
     },
     suggestedIntegrations,
-    tasks,
+    tasks: require('../queries/tasks').default,
     team: require('../queries/team').default,
     teamInvitation: {
       type: new GraphQLNonNull(TeamInvitationPayload),

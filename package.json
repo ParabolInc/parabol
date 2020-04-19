@@ -25,6 +25,8 @@
     "start": "yarn workspace parabol-server start",
     "heroku-postbuild": "echo 'Skipping build'",
     "build": "yarn workspace parabol-server build",
+    "build:dev": "webpack --config scripts/webpack/webpack.all.config.js",
+    "build:dll": "node scripts/webpack/buildDll.js",
     "build:relay": "yarn workspace parabol-server build:relay",
     "db:migrate": "yarn workspace parabol-server db:migrate",
     "quickstart": "yarn workspace parabol-server quickstart",
@@ -32,7 +34,7 @@
     "debug": "yarn workspace parabol-server debug",
     "debug:executor": "yarn workspace gql-executor debug",
     "debug:prod": "yarn workspace parabol-server debug",
-    "dev": "node scripts/webpack/buildDll.js && yarn workspace parabol-server dev",
+    "dev": "yarn build:dll && yarn build:dev && node packages/server/lib.gql.js & node packages/server/lib/main.js",
     "lint": "lerna run --parallel lint",
     "test": "yarn workspace parabol-cypress test",
     "typecheck": "yarn tsc -p tsconfig.typecheck.json"
@@ -45,7 +47,9 @@
     "immutable": "3.8.2"
   },
   "devDependencies": {
+    "@sucrase/webpack-loader": "^2.0.0",
     "@types/jscodeshift": "^0.6.2",
+    "babel-loader": "^8.1.0",
     "graphql": "^14.6.0",
     "husky": "^3.0.1",
     "jscodeshift": "^0.7.0",
@@ -54,7 +58,8 @@
     "relay-compiler": "^8.0.0",
     "relay-config": "^8.0.0",
     "vscode-apollo-relay": "^1.5.0",
-    "webpack": "^4.41.5"
+    "webpack": "^4.42.1",
+    "webpack-cli": "^3.3.11"
   },
   "husky": {
     "hooks": {
