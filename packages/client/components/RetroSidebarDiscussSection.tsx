@@ -2,17 +2,17 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import useGotoStageId from 'hooks/useGotoStageId'
 import React from 'react'
-import {DragDropContext, Draggable, Droppable} from 'react-beautiful-dnd'
-import {createFragmentContainer} from 'react-relay'
-import {RetroSidebarDiscussSection_meeting} from '__generated__/RetroSidebarDiscussSection_meeting.graphql'
-import withAtmosphere, {WithAtmosphereProps} from '../decorators/withAtmosphere/withAtmosphere'
+import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd'
+import { createFragmentContainer } from 'react-relay'
+import { RetroSidebarDiscussSection_meeting } from '__generated__/RetroSidebarDiscussSection_meeting.graphql'
+import withAtmosphere, { WithAtmosphereProps } from '../decorators/withAtmosphere/withAtmosphere'
 import DragDiscussionTopicMutation from '../mutations/DragDiscussionTopicMutation'
-import {navItemRaised} from '../styles/elevation'
-import {PALETTE} from '../styles/paletteV2'
-import {ICON_SIZE} from '../styles/typographyV2'
-import {NavSidebar} from '../types/constEnums'
-import {NewMeetingPhaseTypeEnum} from '../types/graphql'
-import {DISCUSSION_TOPIC, SORT_STEP} from '../utils/constants'
+import { navItemRaised } from '../styles/elevation'
+import { PALETTE } from '../styles/paletteV2'
+import { ICON_SIZE } from '../styles/typographyV2'
+import { NavSidebar } from '../types/constEnums'
+import { NewMeetingPhaseTypeEnum } from '../types/graphql'
+import { DISCUSSION_TOPIC, SORT_STEP } from '../utils/constants'
 import dndNoise from '../utils/dndNoise'
 import Icon from './Icon'
 import MeetingSidebarPhaseItemChild from './MeetingSidebarPhaseItemChild'
@@ -26,8 +26,8 @@ interface Props extends WithAtmosphereProps {
   meeting: RetroSidebarDiscussSection_meeting
 }
 
-const VoteTally = styled('div')<{isUnsyncedFacilitatorStage: boolean | null}>(
-  ({isUnsyncedFacilitatorStage}) => ({
+const VoteTally = styled('div')<{ isUnsyncedFacilitatorStage: boolean | null }>(
+  ({ isUnsyncedFacilitatorStage }) => ({
     alignItems: 'center',
     color: isUnsyncedFacilitatorStage ? PALETTE.EMPHASIS_WARM : PALETTE.TEXT_GRAY,
     display: 'flex',
@@ -47,7 +47,7 @@ const VoteIcon = styled(Icon)({
   marginRight: 2
 })
 
-const DraggableMeetingSubnavItem = styled('div')<{isDragging: boolean}>(({isDragging}) => ({
+const DraggableMeetingSubnavItem = styled('div')<{ isDragging: boolean }>(({ isDragging }) => ({
   boxShadow: isDragging ? navItemRaised : undefined
 }))
 
@@ -59,18 +59,18 @@ const ScrollWrapper = styled('div')({
 })
 
 const RetroSidebarDiscussSection = (props: Props) => {
-  const {atmosphere, gotoStageId, handleMenuClick, meeting} = props
-  const {localStage, facilitatorStageId, id: meetingId, phases, endedAt} = meeting
-  const discussPhase = phases!.find(({phaseType}) => phaseType === NewMeetingPhaseTypeEnum.discuss)!
+  const { atmosphere, gotoStageId, handleMenuClick, meeting } = props
+  const { localStage, facilitatorStageId, id: meetingId, phases, endedAt } = meeting
+  const discussPhase = phases!.find(({ phaseType }) => phaseType === NewMeetingPhaseTypeEnum.discuss)!
   // assert that the discuss phase and its stages are non-null
   // since we render this component when the vote phase is complete
   // see: RetroSidebarPhaseListItemChildren.tsx
-  const {stages} = discussPhase!
-  const {id: localStageId} = localStage
+  const { stages } = discussPhase!
+  const { id: localStageId } = localStage
   const inSync = localStageId === facilitatorStageId
 
   const onDragEnd = (result) => {
-    const {source, destination} = result
+    const { source, destination } = result
 
     if (
       !destination ||
@@ -96,8 +96,8 @@ const RetroSidebarDiscussSection = (props: Props) => {
         dndNoise()
     }
 
-    const {id: stageId} = sourceTopic
-    const variables = {meetingId, stageId, sortOrder}
+    const { id: stageId } = sourceTopic
+    const variables = { meetingId, stageId, sortOrder }
     DragDiscussionTopicMutation(atmosphere, variables)
   }
 
@@ -107,15 +107,15 @@ const RetroSidebarDiscussSection = (props: Props) => {
   }
   return (
     <DragDropContext onDragEnd={onDragEnd}>
-      <MeetingSidebarPhaseItemChild data-cy="discussion-section">
+      <MeetingSidebarPhaseItemChild >
         <Droppable droppableId={DISCUSSION_TOPIC}>
           {(provided) => {
             return (
-              <ScrollWrapper ref={provided.innerRef}>
+              <ScrollWrapper data-cy="discussion-section" ref={provided.innerRef}>
                 {stages!.map((stage, idx) => {
-                  const {reflectionGroup} = stage
+                  const { reflectionGroup } = stage
                   if (!reflectionGroup) return null
-                  const {title, voteCount} = reflectionGroup
+                  const { title, voteCount } = reflectionGroup
                   // the local user is at another stage than the facilitator stage
                   const isUnsyncedFacilitatorStage = !inSync && stage.id === facilitatorStageId
                   const voteMeta = (
@@ -134,6 +134,7 @@ const RetroSidebarDiscussSection = (props: Props) => {
                       {(dragProvided, dragSnapshot) => {
                         return (
                           <DraggableMeetingSubnavItem
+                            data-cy={`discuss-item-${idx}`}
                             isDragging={dragSnapshot.isDragging}
                             ref={dragProvided.innerRef}
                             {...dragProvided.draggableProps}

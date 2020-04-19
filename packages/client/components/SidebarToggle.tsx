@@ -1,8 +1,8 @@
 import React from 'react'
 import IconButton from './IconButton'
 import styled from '@emotion/styled'
-import {PALETTE} from '../styles/paletteV2'
-import {BaseButtonProps} from './BaseButton'
+import { PALETTE } from '../styles/paletteV2'
+import { BaseButtonProps } from './BaseButton'
 
 const StyledButton = styled(IconButton)({
   height: 24,
@@ -12,13 +12,14 @@ const StyledButton = styled(IconButton)({
   }
 })
 
-interface Props extends BaseButtonProps {}
+interface Props extends BaseButtonProps { }
 
 const SidebarToggle = (props: Props) => {
+  const { dataCy } = props
   return (
     <StyledButton
       {...props}
-      dataCy={`sidebar-toggle`}
+      dataCy={`${dataCy}-toggle`}
       aria-label='Toggle the sidebar'
       icon='menu'
       iconLarge
