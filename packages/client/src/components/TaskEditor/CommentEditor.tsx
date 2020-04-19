@@ -1,12 +1,5 @@
 import styled from '@emotion/styled'
-import {
-  DraftEditorCommand,
-  DraftHandleValue,
-  Editor,
-  EditorProps,
-  EditorState,
-  getDefaultKeyBinding
-} from 'draft-js'
+import {DraftEditorCommand, DraftHandleValue, Editor, EditorProps, EditorState, getDefaultKeyBinding} from 'draft-js'
 import React, {RefObject, Suspense, useRef} from 'react'
 import {Card} from '../../types/constEnums'
 import {textTags} from '../../utils/constants'
@@ -27,9 +20,7 @@ const RootEditor = styled('div')({
 })
 
 const AndroidEditorFallback = lazyPreload(() =>
-  import(
-    /* webpackChunkName: 'AndroidEditorFallback' */ 'parabol-client/lib/components/AndroidEditorFallback'
-  )
+  import(/* webpackChunkName: 'AndroidEditorFallback' */ '../AndroidEditorFallback')
 )
 
 const TaskEditorFallback = styled(AndroidEditorFallback)({
@@ -183,23 +174,23 @@ const CommentEditor = (props: Props) => {
           />
         </Suspense>
       ) : (
-        <Editor
-          spellCheck
-          blockStyleFn={blockStyleFn}
-          editorState={editorState}
-          handleBeforeInput={onBeforeInput}
-          handleKeyCommand={nextKeyCommand}
-          handlePastedText={onPastedText}
-          handleReturn={onReturn}
-          keyBindingFn={onKeyBindingFn}
-          onBlur={onBlur}
-          onChange={onChange}
-          onFocus={onFocus}
-          placeholder={placeholder}
-          readOnly={readOnly || (useFallback && !showFallback)}
-          ref={editorRef as any}
-        />
-      )}
+          <Editor
+            spellCheck
+            blockStyleFn={blockStyleFn}
+            editorState={editorState}
+            handleBeforeInput={onBeforeInput}
+            handleKeyCommand={nextKeyCommand}
+            handlePastedText={onPastedText}
+            handleReturn={onReturn}
+            keyBindingFn={onKeyBindingFn}
+            onBlur={onBlur}
+            onChange={onChange}
+            onFocus={onFocus}
+            placeholder={placeholder}
+            readOnly={readOnly || (useFallback && !showFallback)}
+            ref={editorRef as any}
+          />
+        )}
       {renderModal && renderModal()}
     </RootEditor>
   )

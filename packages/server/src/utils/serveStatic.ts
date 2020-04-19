@@ -5,7 +5,7 @@ import pipeStreamOverResponse from '../pipeStreamOverResponse'
 import PROD from '../PROD'
 import StaticServer from './StaticServer'
 
-const PROJECT_ROOT = path.join(__dirname, '..', '..', '..', '..')
+const PROJECT_ROOT = path.join(__dirname, '..', '..', '..')
 const staticPaths = {
   [path.join(PROJECT_ROOT, 'build')]: true,
   [path.join(PROJECT_ROOT, 'static')]: true,

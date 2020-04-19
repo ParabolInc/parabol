@@ -1,6 +1,6 @@
 const path = require('path')
 
-const PROJECT_ROOT = path.join(__dirname, '..', '..')
+const PROJECT_ROOT = path.join(__dirname, '..', '..', '..')
 const CLIENT_ROOT = path.join(PROJECT_ROOT, 'packages', 'client', 'src')
 
 module.exports = {

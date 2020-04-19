@@ -1,0 +1,28 @@
+{
+  "extends": "./tsconfig.base.json",
+  "include": [
+    "packages/server/src/types/modules.d.ts",
+    "packages/client/src/",
+    "packages/server/src",
+  ],
+  "compilerOptions": {
+    "baseUrl": "packages",
+    "paths": {
+      "~/*": [
+        "client/src/*"
+      ],
+      "parabol-client/lib/*": [
+        "client/src/*"
+      ]
+    },
+    "lib": [
+      "esnext",
+      "dom",
+      "webworker"
+    ],
+    "types": [
+      "node"
+    ],
+    "noEmit": true
+  }
+}

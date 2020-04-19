@@ -1,7 +1,7 @@
 import Oy from 'oy-vey'
 import makeDateString from 'parabol-client/lib/utils/makeDateString'
-import makeAppLink from 'parabol-server/src/utils/makeAppLink'
 import React from 'react'
+import makeAppLink from '../../../utils/makeAppLink'
 import NotificationSummaryEmail from './NotificationSummaryEmail'
 
 /*

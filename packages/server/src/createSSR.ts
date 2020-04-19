@@ -1,12 +1,12 @@
 import fs from 'fs'
+import {minify} from 'html-minifier-terser'
 import path from 'path'
-import {HttpResponse, HttpRequest} from 'uWebSockets.js'
+import {HttpRequest, HttpResponse} from 'uWebSockets.js'
+import {brotliCompressSync} from 'zlib'
+import acceptsBrotli from './acceptsBrotli'
+import PROD from './PROD'
 import dehydrate from './utils/dehydrate'
 import getWebpackPublicPath from './utils/getWebpackPublicPath'
-import {brotliCompressSync} from 'zlib'
-import PROD from './PROD'
-import {minify} from 'html-minifier-terser'
-import acceptsBrotli from './acceptsBrotli'
 
 export const getClientKeys = () => {
   const webpackPublicPath = getWebpackPublicPath()
@@ -58,6 +58,7 @@ const getBrotli = () => {
 }
 
 const createSSR = (res: HttpResponse, req: HttpRequest) => {
+  console.log('8')
   if (req.getMethod() !== 'get') {
     res.end()
     return

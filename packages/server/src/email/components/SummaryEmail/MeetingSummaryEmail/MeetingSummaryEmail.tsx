@@ -1,22 +1,9 @@
-import React, {useEffect} from 'react'
-import ViewInBrowserHeader from './ViewInBrowserHeader'
-import SummarySheet from './SummarySheet'
-import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-
-declare module 'react' {
-  interface TdHTMLAttributes<T> {
-    height?: string | number
-    width?: string | number
-    bgcolor?: string
-  }
-  interface TableHTMLAttributes<T> {
-    align?: 'center' | 'left' | 'right'
-    bgcolor?: string
-    height?: string | number
-    width?: string | number
-  }
-}
+import React, {useEffect} from 'react'
+import {createFragmentContainer} from 'react-relay'
+// import './reactEmailDeclarations'
+import SummarySheet from './SummarySheet'
+import ViewInBrowserHeader from './ViewInBrowserHeader'
 
 const parentStyles = {
   WebkitTextSizeAdjust: '100%',
@@ -42,6 +29,20 @@ interface Props {
 
 const pagePadding = {
   paddingTop: 24
+}
+
+declare module 'react' {
+  interface TdHTMLAttributes<T> {
+    height?: string | number
+    width?: string | number
+    bgcolor?: string
+  }
+  interface TableHTMLAttributes<T> {
+    align?: 'center' | 'left' | 'right'
+    bgcolor?: string
+    height?: string | number
+    width?: string | number
+  }
 }
 
 const PagePadding = () => {

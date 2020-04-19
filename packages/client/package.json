@@ -14,9 +14,13 @@
     "url": "https://github.com/ParabolInc/parabol/issues"
   },
   "scripts": {
-    "babel": "npx babel src -d lib --extensions .js,.ts,.tsx",
+    "babelz": "npx babel src -d lib --extensions .js,.ts,.tsx",
+    "foo": "npx babel src/utils/getSAMLIdP.ts -o foo.js",
+    "build:client": "sucrase src -d lib --transforms=imports,jsx -q && sucrase src -d lib --transforms=imports,typescript,jsx -q",
+    "suc": "sucrase src/utils --transforms=jsx,typescript -d foo",
+    "babel:graphql": "yarn babel src/components -d lib --extensions .js,.ts,.tsx",
     "storybook": "start-storybook -p 6006 -c .storybook",
-    "build-storybook": "build-storybook",
+    "build-storybook": "build-sFtorybook",
     "lint": "eslint --fix ./**/*.{ts,tsx}",
     "precommit": "lint-staged",
     "typecheck": "yarn tsc --noEmit -p tsconfig.typecheck.json"
@@ -26,6 +30,7 @@
     "@babel/core": "^7.8.3",
     "@babel/plugin-proposal-class-properties": "^7.8.3",
     "@babel/plugin-proposal-object-rest-spread": "^7.9.5",
+    "@babel/plugin-syntax-typescript": "^7.8.3",
     "@babel/plugin-transform-typescript": "^7.9.4",
     "@babel/preset-env": "^7.9.5",
     "@babel/preset-react": "^7.9.4",
@@ -75,7 +80,6 @@
     "webpack": "^4.41.5"
   },
   "dependencies": {
-    "parabol-server": "^5.3.1",
     "@emotion/core": "^10.0.27",
     "@emotion/styled": "^10.0.27",
     "@mattkrick/fast-rtc-swarm": "^0.4.0",
@@ -101,6 +105,7 @@
     "mousetrap": "^1.6.3",
     "ms": "^2.0.0",
     "oy-vey": "^0.11.0",
+    "parabol-server": "^5.3.1",
     "prop-types": "^15.5.10",
     "react": "^16.11.0",
     "react-beautiful-dnd": "12.0.0",

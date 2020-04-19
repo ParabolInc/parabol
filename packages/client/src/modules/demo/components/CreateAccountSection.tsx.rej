@@ -1,8 +1,0 @@
-diff a/packages/client/src/modules/demo/components/CreateAccountSection.tsx b/packages/client/src/modules/demo/components/CreateAccountSection.tsx	(rejected hunks)
-@@ -3 +3,5 @@ import emailDir from 'parabol-server/src/email/emailDir'
--import {emailFontFamily, emailPrimaryButtonStyle, emailTableBase} from 'parabol-server/src/email/styles'
-+import {
-+  emailFontFamily,
-+  emailPrimaryButtonStyle,
-+  emailTableBase
-+} from 'parabol-server/src/email/styles'

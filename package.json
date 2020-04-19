@@ -35,7 +35,7 @@
     "dev": "node scripts/webpack/buildDll.js && yarn workspace parabol-server dev",
     "lint": "lerna run --parallel lint",
     "test": "yarn workspace parabol-cypress test",
-    "typecheck": "lerna run --parallel typecheck"
+    "typecheck": "yarn tsc -p tsconfig.typecheck.json"
   },
   "resolutions": {
     "hoist-non-react-statics": "^3.3.0",

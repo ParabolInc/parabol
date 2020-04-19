@@ -1,39 +1,11 @@
-const resolve = require('./webpackResolve')
 const path = require('path')
 const webpack = require('webpack')
-const pluginDynamicImport = require('@babel/plugin-syntax-dynamic-import').default
 const vendors = require('./dll/vendors')
-const pluginInlineImport = require('babel-plugin-inline-import').default
-const pluginOptionalChaining = require('@babel/plugin-proposal-optional-chaining').default
-const pluginNullishCoalescing = require('@babel/plugin-proposal-nullish-coalescing-operator')
-  .default
-// const HardSourceWebpackPlugin = require('hard-source-webpack-plugin');
-const pluginMacros = require('babel-plugin-macros')
 
-const PROJECT_ROOT = path.join(__dirname, '..', '..')
+// __dirname is the location of the webpack bundle, if this is inside one
+const PROJECT_ROOT = path.join(__dirname, '..', '..', '..')
 const CLIENT_ROOT = path.join(PROJECT_ROOT, 'packages', 'client', 'src')
-
-const babelLoader = {
-  loader: 'babel-loader',
-  options: {
-    cacheDirectory: true,
-    babelrc: false,
-    plugins: [
-      [
-        pluginMacros,
-        {
-          relay: {
-            artifactDirectory: path.join(CLIENT_ROOT, '__generated__')
-          }
-        }
-      ],
-      pluginInlineImport,
-      pluginDynamicImport,
-      pluginOptionalChaining,
-      pluginNullishCoalescing
-    ]
-  }
-}
+const SERVER_ROOT = path.join(PROJECT_ROOT, 'packages', 'server', 'src')
 
 module.exports = {
   devtool: 'eval',
@@ -47,7 +19,15 @@ module.exports = {
     chunkFilename: '[name].chunk.js',
     publicPath: '/static/'
   },
-  resolve,
+  resolve: {
+    alias: {
+      '~': CLIENT_ROOT,
+      'parabol-server/lib': SERVER_ROOT,
+      'parabol-client/lib': CLIENT_ROOT
+    },
+    extensions: ['.js', '.json', '.ts', '.tsx'],
+    unsafeCache: false
+  },
   plugins: [
     // reliably produces errors on rebuild, disabled for now
     // new HardSourceWebpackPlugin(),
@@ -65,14 +45,65 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.js$/,
-        include: [CLIENT_ROOT],
+        test: /\.tsx?$/,
+        include: [CLIENT_ROOT, SERVER_ROOT],
         use: [
-          babelLoader,
+          {
+            loader: 'babel-loader',
+            options: {
+              cacheDirectory: false,
+              babelrc: false,
+              plugins: [
+                [
+                  'macros',
+                  {
+                    relay: {
+                      artifactDirectory: path.join(CLIENT_ROOT, '__generated__')
+                    }
+                  }
+                ],
+                [
+                  'inline-import',
+                  {
+                    extensions: ['.graphql']
+                  }
+                ]
+              ]
+            }
+          },
           {
             loader: '@sucrase/webpack-loader',
             options: {
-              transforms: ['jsx', 'flow']
+              transforms: ['jsx', 'typescript']
+            }
+          }
+        ]
+      },
+      {
+        test: /\.js$/,
+        include: [CLIENT_ROOT, SERVER_ROOT],
+        use: [
+          {
+            loader: 'babel-loader',
+            options: {
+              cacheDirectory: true,
+              babelrc: false,
+              plugins: [
+                [
+                  'macros',
+                  {
+                    relay: {
+                      artifactDirectory: path.join(CLIENT_ROOT, '__generated__')
+                    }
+                  }
+                ]
+              ]
+            }
+          },
+          {
+            loader: '@sucrase/webpack-loader',
+            options: {
+              transforms: ['jsx']
             }
           }
         ]
@@ -81,20 +112,6 @@ module.exports = {
         test: /\.mjs$/,
         include: /node_modules/,
         type: 'javascript/auto'
-      },
-      { test: /\.flow$/, loader: 'ignore-loader' },
-      {
-        test: /\.tsx?$/,
-        include: [CLIENT_ROOT],
-        use: [
-          babelLoader,
-          {
-            loader: '@sucrase/webpack-loader',
-            options: {
-              transforms: ['jsx', 'typescript']
-            }
-          }
-        ]
       },
       {
         test: /\.css$/,
@@ -120,6 +137,10 @@ module.exports = {
         test: /\/__tests__\//i,
         use: ['ignore-loader']
       }
+      // {
+      // test: /\.graphql$/,
+      // use: ['ignore-loader']
+      // }
     ]
   }
 }

@@ -1,6 +1,6 @@
-import makeAppLink from 'parabol-server/src/utils/makeAppLink'
 import PropTypes from 'prop-types'
 import React from 'react'
+import makeAppLink from '../../../utils/makeAppLink'
 import {emailCopyStyle, emailLinkStyle, emailProductTeamSignature} from '../../styles'
 import Button from '../Button'
 import EmailBlock from '../EmailBlock/EmailBlock'

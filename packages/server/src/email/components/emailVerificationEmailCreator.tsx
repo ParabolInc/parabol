@@ -1,7 +1,7 @@
 import {PALETTE} from 'parabol-client/lib/styles/paletteV2'
-import makeAppLink from 'parabol-server/src/utils/makeAppLink'
 import React from 'react'
 import ReactDOMServer from 'react-dom/server'
+import makeAppLink from '../../utils/makeAppLink'
 import emailTemplate from '../emailTemplate'
 import EmailVerificationEmail from './EmailVerificationEmail'
 

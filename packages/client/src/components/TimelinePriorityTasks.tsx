@@ -1,22 +1,22 @@
-import {TimelinePriorityTasks_viewer} from '../__generated__/TimelinePriorityTasks_viewer.graphql'
-import React, {useMemo} from 'react'
 import styled from '@emotion/styled'
-import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import {ACTIVE, SORT_STEP} from '../utils/constants'
+import React, {useMemo} from 'react'
+import {DragDropContext, Droppable, DroppableProvided, DropResult} from 'react-beautiful-dnd'
+import {createFragmentContainer} from 'react-relay'
 import DraggableTask from '../containers/TaskCard/DraggableTask'
 import withAtmosphere, {WithAtmosphereProps} from '../decorators/withAtmosphere/withAtmosphere'
+import useAtmosphere from '../hooks/useAtmosphere'
+import useEventCallback from '../hooks/useEventCallback'
+import UpdateTaskMutation from '../mutations/UpdateTaskMutation'
 import {PALETTE} from '../styles/paletteV2'
 import {ICON_SIZE} from '../styles/typographyV2'
+import {DroppableType} from '../types/constEnums'
 import {AreaEnum, TaskStatusEnum} from '../types/graphql'
+import {ACTIVE, SORT_STEP} from '../utils/constants'
+import dndNoise from '../utils/dndNoise'
+import {TimelinePriorityTasks_viewer} from '../__generated__/TimelinePriorityTasks_viewer.graphql'
 import Icon from './Icon'
 import TimelineNoTasks from './TimelineNoTasks'
-import {DragDropContext, Droppable, DroppableProvided, DropResult} from 'react-beautiful-dnd'
-import useEventCallback from '../hooks/useEventCallback'
-import dndNoise from '../utils/dndNoise'
-import UpdateTaskMutation from '../mutations/UpdateTaskMutation'
-import useAtmosphere from '../hooks/useAtmosphere'
-import {DroppableType} from '../types/constEnums'
 
 interface Props extends WithAtmosphereProps {
   viewer: TimelinePriorityTasks_viewer
@@ -76,7 +76,7 @@ const TimelinePriorityTasks = (props: Props) => {
       sortOrder =
         (activeTasks[destination.index + offset].sortOrder +
           activeTasks[destination.index].sortOrder) /
-          2 +
+        2 +
         dndNoise()
     }
     const updatedTask = {id: draggableId, sortOrder}

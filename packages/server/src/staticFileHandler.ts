@@ -1,8 +1,8 @@
 import {HttpRequest, HttpResponse} from 'uWebSockets.js'
-import serveFromWebpack from './serveFromWebpack'
-import serveStatic from './utils/serveStatic'
 import acceptsBrotli from './acceptsBrotli'
 import safetyPatchRes from './safetyPatchRes'
+import serveFromWebpack from './serveFromWebpack'
+import serveStatic from './utils/serveStatic'
 
 const ROUTE = '/static/'
 const staticFileHandler = async (res: HttpResponse, req: HttpRequest) => {
