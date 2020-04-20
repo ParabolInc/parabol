@@ -1,7 +1,7 @@
 const webpack = require('webpack')
 const path = require('path')
 const nodeExternals = require('webpack-node-externals')
-const relayPlugin = require('./relayPlugin')
+const transformRules = require('./transformRules')
 
 const PROJECT_ROOT = path.join(__dirname, '..', '..')
 const CLIENT_ROOT = path.join(PROJECT_ROOT, 'packages', 'client', 'src')
@@ -59,70 +59,7 @@ module.exports = {
   plugins: [new webpack.HotModuleReplacementPlugin()],
   module: {
     rules: [
-      {
-        test: /\.tsx?$/,
-        // things that need the relay plugin
-        include: [path.join(SERVER_ROOT, 'email'), path.join(CLIENT_ROOT)],
-        // but don't need the inline-import plugin
-        exclude: [path.join(CLIENT_ROOT, 'utils/GitHubManager.ts')],
-        use: [
-          {
-            loader: 'babel-loader',
-            options: {
-              cacheDirectory: true,
-              babelrc: false,
-              plugins: [relayPlugin]
-            }
-          },
-          {
-            loader: '@sucrase/webpack-loader',
-            options: {
-              transforms: ['jsx', 'typescript']
-            }
-          }
-        ]
-      },
-      {
-        test: /\.tsx?/,
-        // things that don't need babel
-        include: [SERVER_ROOT, GQL_ROOT],
-        // things that need babel
-        exclude: path.join(SERVER_ROOT, 'email'),
-        use: {
-          loader: '@sucrase/webpack-loader',
-          options: {
-            transforms: ['jsx', 'typescript']
-          }
-        }
-      },
-      {
-        test: /GitHubManager\.ts/,
-        // things that need inline-import
-        include: path.join(CLIENT_ROOT, 'utils'),
-        use: [
-          {
-            loader: 'babel-loader',
-            options: {
-              cacheDirectory: true,
-              babelrc: false,
-              plugins: [
-                [
-                  'inline-import',
-                  {
-                    extensions: ['.graphql']
-                  }
-                ]
-              ]
-            }
-          },
-          {
-            loader: '@sucrase/webpack-loader',
-            options: {
-              transforms: ['jsx', 'typescript']
-            }
-          }
-        ]
-      },
+      ...transformRules(PROJECT_ROOT),
       {
         test: /\.(png|jpg|jpeg|gif|svg|graphql)$/,
         use: ['ignore-loader']

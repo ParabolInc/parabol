@@ -1,6 +1,7 @@
 const path = require('path')
 const webpack = require('webpack')
 const vendors = require('./dll/vendors')
+const transformRules = require('./transformRules')
 
 // __dirname is the location of the webpack bundle, if this is inside one
 const PROJECT_ROOT = path.join(__dirname, '..')
@@ -26,23 +27,21 @@ module.exports = {
       'parabol-client/lib': CLIENT_ROOT
     },
     extensions: ['.js', '.json', '.ts', '.tsx'],
-    unsafeCache: false,
+    unsafeCache: true,
     modules: [
-      path.resolve(SERVER_ROOT, '../node_modules'),
       path.resolve(CLIENT_ROOT, '../node_modules'),
+      path.resolve(SERVER_ROOT, '../node_modules'),
       'node_modules'
     ]
   },
   resolveLoader: {
     modules: [
-      path.resolve(SERVER_ROOT, '../node_modules'),
       path.resolve(CLIENT_ROOT, '../node_modules'),
+      path.resolve(SERVER_ROOT, '../node_modules'),
       'node_modules'
     ]
   },
   plugins: [
-    // reliably produces errors on rebuild, disabled for now
-    // new HardSourceWebpackPlugin(),
     new webpack.DefinePlugin({
       __CLIENT__: true,
       __PRODUCTION__: false,
@@ -56,44 +55,10 @@ module.exports = {
   ],
   module: {
     rules: [
-      {
-        test: /\.tsx?$/,
-        include: [CLIENT_ROOT, SERVER_ROOT],
-        use: [
-          {
-            loader: 'babel-loader',
-            options: {
-              cacheDirectory: false,
-              babelrc: false,
-              plugins: [
-                [
-                  'macros',
-                  {
-                    relay: {
-                      artifactDirectory: path.join(CLIENT_ROOT, '__generated__')
-                    }
-                  }
-                ],
-                [
-                  'inline-import',
-                  {
-                    extensions: ['.graphql']
-                  }
-                ]
-              ]
-            }
-          },
-          {
-            loader: '@sucrase/webpack-loader',
-            options: {
-              transforms: ['jsx', 'typescript']
-            }
-          }
-        ]
-      },
+      ...transformRules(PROJECT_ROOT),
       {
         test: /\.js$/,
-        include: [CLIENT_ROOT, SERVER_ROOT],
+        include: [path.join(SERVER_ROOT, 'email'), path.join(CLIENT_ROOT)],
         use: [
           {
             loader: 'babel-loader',
@@ -149,10 +114,6 @@ module.exports = {
         test: /\/__tests__\//i,
         use: ['ignore-loader']
       }
-      // {
-      // test: /\.graphql$/,
-      // use: ['ignore-loader']
-      // }
     ]
   }
 }
