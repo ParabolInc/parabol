@@ -1,9 +1,40 @@
 version: '3.7'
 
 services:
-  db:
+  rethinkdb:
     image: rethinkdb:latest
+    container_name: rethinkdb
     ports:
       - '8080:8080'
       - '29015:29015'
       - '28015:28015'
+    volumes:
+      - rethinkdbData:/data
+
+  redis:
+    image: redis:latest
+    container_name: redis
+    ports:
+      - '6379:6379'      
+    restart: always
+
+  web:
+    container_name: parabol
+    build: 
+      context: ./
+      dockerfile: ./parabolDocker/Dockerfile
+    restart: always
+    expose:
+      - "3000"
+    ports:
+      - "3000:3000"
+    depends_on:
+      - redis
+      - rethinkdb
+    links:
+      - redis
+      - rethinkdb
+    entrypoint: /docker-entrypoint.sh
+
+volumes:
+   rethinkdbData:

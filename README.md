@@ -50,6 +50,25 @@ $ rethinkdb & redis-server & # Or if you prefer docker: $ docker-compose up -d d
 $ yarn && yarn db:migrate && yarn build:relay && yarn dev
 ```
 
+
+### Run in docker
+```bash
+$ docker-compose up -d #bring up db and redis and parabol(this may need x minutes because build,..)
+$ docker logs -f parabol # follow the deployment
+```
+Parbol website: http://localhost:3000
+
+### Developing inside a Containers with VSCode Remote Development
+- On linux in ./devcontainer/docker-compose.yml replace UID by yours at nodeUID: xxxx, eventualy GID too (nodeGID)
+- when starting VSCode run:
+![VSCodeRemote](./docs/images/vscodeRemoteDev0.png)
+or (Reopen in Container)
+![VSCodeRemote](./docs/images/vscodeRemoteDev.png)
+Every modifications localy will be sync in your dev containers (two way)
+
+- more details [VSCode Remote Development](https://code.visualstudio.com/docs/remote/containers)
+                   
+
 ### Database
 
 - Migrations are stored in `packages/server/database/migrations`
