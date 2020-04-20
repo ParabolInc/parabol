@@ -1,38 +1,30 @@
-import {ActionMeetingLastCall_meeting} from '../__generated__/ActionMeetingLastCall_meeting.graphql'
-import React from 'react'
 import styled from '@emotion/styled'
-import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import {ActionMeetingPhaseProps} from './ActionMeeting'
-import ErrorBoundary from './ErrorBoundary'
-import MeetingContent from './MeetingContent'
-import MeetingTopBar from './MeetingTopBar'
-import MeetingHelpToggle from './MenuHelpToggle'
+import React from 'react'
+import {createFragmentContainer} from 'react-relay'
 import useAtmosphere from '../hooks/useAtmosphere'
+import useMutationProps from '../hooks/useMutationProps'
+import useRouter from '../hooks/useRouter'
 import AgendaShortcutHint from '../modules/meeting/components/AgendaShortcutHint/AgendaShortcutHint'
 import MeetingCopy from '../modules/meeting/components/MeetingCopy/MeetingCopy'
 import MeetingFacilitationHint from '../modules/meeting/components/MeetingFacilitationHint/MeetingFacilitationHint'
 import MeetingPhaseHeading from '../modules/meeting/components/MeetingPhaseHeading/MeetingPhaseHeading'
-import {AGENDA_ITEM_LABEL} from '../utils/constants'
-import lazyPreload from '../utils/lazyPreload'
-import PrimaryButton from './PrimaryButton'
 import EndNewMeetingMutation from '../mutations/EndNewMeetingMutation'
-import useRouter from '../hooks/useRouter'
 import {NewMeetingPhaseTypeEnum} from '../types/graphql'
+import {AGENDA_ITEM_LABEL} from '../utils/constants'
 import {phaseLabelLookup} from '../utils/meetings/lookups'
 import plural from '../utils/plural'
-import useMutationProps from '../hooks/useMutationProps'
+import {ActionMeetingLastCall_meeting} from '../__generated__/ActionMeetingLastCall_meeting.graphql'
+import {ActionMeetingPhaseProps} from './ActionMeeting'
+import ErrorBoundary from './ErrorBoundary'
+import MeetingContent from './MeetingContent'
+import MeetingTopBar from './MeetingTopBar'
 import PhaseHeaderTitle from './PhaseHeaderTitle'
+import PrimaryButton from './PrimaryButton'
 
 interface Props extends ActionMeetingPhaseProps {
   meeting: ActionMeetingLastCall_meeting
 }
-
-const ActionMeetingLastCallHelpMenu = lazyPreload(async () =>
-  import(
-    /* webpackChunkName: 'ActionMeetingLastCallHelpMenu' */ './MeetingHelp/ActionMeetingLastCallHelpMenu'
-  )
-)
 
 const LastCallWrapper = styled('div')({
   display: 'flex',
@@ -116,7 +108,6 @@ const ActionMeetingLastCall = (props: Props) => {
           )}
         </LastCallWrapper>
       </ErrorBoundary>
-      <MeetingHelpToggle menu={<ActionMeetingLastCallHelpMenu />} />
     </MeetingContent>
   )
 }

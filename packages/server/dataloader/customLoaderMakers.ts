@@ -189,7 +189,6 @@ export const meetingSettingsByType = (parent: RethinkDataLoader) => {
         types[meetingType].push(key.teamId)
       })
       const entries = Object.entries(types)
-      console.log('types', types)
       const resultsByType = await Promise.all(
         entries.map((entry) => {
           const [meetingType, teamIds] = entry

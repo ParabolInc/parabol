@@ -1,14 +1,14 @@
-import React, {useRef} from 'react'
-import {createFragmentContainer} from 'react-relay'
-import graphql from 'babel-plugin-relay/macro'
-import {DraggableReflectionCard_reflection} from '../../__generated__/DraggableReflectionCard_reflection.graphql'
-import ReflectionCard from '../ReflectionCard/ReflectionCard'
-import {DraggableReflectionCard_meeting} from '../../__generated__/DraggableReflectionCard_meeting.graphql'
-import {DraggableReflectionCard_staticReflections} from '../../__generated__/DraggableReflectionCard_staticReflections.graphql'
-import useDraggableReflectionCard from '../../hooks/useDraggableReflectionCard'
 import styled from '@emotion/styled'
-import {SwipeColumn} from '../GroupingKanban'
+import graphql from 'babel-plugin-relay/macro'
+import React, {useState} from 'react'
+import {createFragmentContainer} from 'react-relay'
+import useDraggableReflectionCard from '../../hooks/useDraggableReflectionCard'
 import {NewMeetingPhaseTypeEnum} from '../../types/graphql'
+import {DraggableReflectionCard_meeting} from '../../__generated__/DraggableReflectionCard_meeting.graphql'
+import {DraggableReflectionCard_reflection} from '../../__generated__/DraggableReflectionCard_reflection.graphql'
+import {DraggableReflectionCard_staticReflections} from '../../__generated__/DraggableReflectionCard_staticReflections.graphql'
+import {SwipeColumn} from '../GroupingKanban'
+import ReflectionCard from '../ReflectionCard/ReflectionCard'
 
 export interface DropZoneBBox {
   height: number
@@ -16,7 +16,7 @@ export interface DropZoneBBox {
   bottom: number
 }
 
-const DRAG_STATE = {
+const makeDragState = () => ({
   id: '',
   cardOffsetX: 0,
   cardOffsetY: 0,
@@ -36,13 +36,13 @@ const DRAG_STATE = {
   // dropZoneId: '',
   dropZoneBBox: null as null | DropZoneBBox,
   timeout: null as null | number
-}
+})
 
 const DragWrapper = styled('div')<{isDraggable: boolean | undefined}>(({isDraggable}) => ({
   cursor: isDraggable ? 'grab' : undefined
 }))
 
-export type ReflectionDragState = typeof DRAG_STATE
+export type ReflectionDragState = ReturnType<typeof makeDragState>
 
 interface Props {
   isClipped?: boolean
@@ -77,8 +77,7 @@ const DraggableReflectionCard = (props: Props) => {
   const {id: meetingId, teamId, localStage} = meeting
   const {isComplete, phaseType} = localStage
   const {isDropping, isEditing} = reflection
-  const dragRef = useRef({...DRAG_STATE})
-  const {current: drag} = dragRef
+  const [drag] = useState(makeDragState)
   const staticReflectionCount = staticReflections.length
   const {onMouseDown} = useDraggableReflectionCard(
     reflection,

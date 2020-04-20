@@ -22,6 +22,7 @@ import {AddCommentSuccess} from './AddCommentPayload'
 import {DeleteCommentSuccess} from './DeleteCommentPayload'
 import {UpdateCommentContentSuccess} from './UpdateCommentContentPayload'
 import {UpdateRetroMaxVotesSuccess} from './UpdateRetroMaxVotesPayload'
+import {FlagReadyToAdvanceSuccess} from './FlagReadyToAdvancePayload'
 
 const types = [
   AddCommentSuccess,
@@ -33,6 +34,7 @@ const types = [
   DragDiscussionTopicPayload,
   EndDraggingReflectionPayload,
   EditReflectionPayload,
+  FlagReadyToAdvanceSuccess,
   NewMeetingCheckInPayload,
   PromoteNewMeetingFacilitatorPayload,
   RemoveReflectionPayload,

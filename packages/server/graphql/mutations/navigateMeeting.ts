@@ -71,6 +71,10 @@ export default {
         // MUTATIVE
         stage.isComplete = true
         stage.endAt = now
+        stage.readyToAdvance = stage.readyToAdvance || []
+        if (!stage.readyToAdvance.includes(facilitatorUserId)) {
+          stage.readyToAdvance.push(facilitatorUserId)
+        }
         // handle any side effects, this could mutate the meeting object!
         phaseCompleteData = await handleCompletedStage(stage, meeting, dataLoader)
         if (stage.scheduledEndTime) {

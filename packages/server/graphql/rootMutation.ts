@@ -95,6 +95,7 @@ import addComment from './mutations/addComment'
 import deleteComment from './mutations/deleteComment'
 import updateCommentContent from './mutations/updateCommentContent'
 import updateRetroMaxVotes from './mutations/updateRetroMaxVotes'
+import flagReadyToAdvance from './mutations/flagReadyToAdvance'
 
 interface Context extends InternalContext, GQLContext {}
 
@@ -140,6 +141,7 @@ export default new GraphQLObjectType<any, Context, any>({
     editReflection,
     editTask,
     endNewMeeting,
+    flagReadyToAdvance,
     inactivateUser,
     invalidateSessions,
     inviteToTeam,

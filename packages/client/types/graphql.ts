@@ -1863,6 +1863,16 @@ export interface INewMeetingStage {
   isAsync: boolean | null
 
   /**
+   * true if the viewer is ready to advance, else false
+   */
+  isViewerReady: boolean
+
+  /**
+   * the number of meeting members ready to advance, excluding the facilitator
+   */
+  readyCount: number
+
+  /**
    * The datetime the phase is scheduled to be finished, null if no time limit or end time is set
    */
   scheduledEndTime: any | null
@@ -2974,6 +2984,11 @@ export interface IMutation {
   endNewMeeting: IEndNewMeetingPayload
 
   /**
+   * flag a viewer as ready to advance to the next stage of a meeting
+   */
+  flagReadyToAdvance: FlagReadyToAdvancePayload
+
+  /**
    * pauses the subscription for a single user
    */
   inactivateUser: IInactivateUserPayload | null
@@ -3599,6 +3614,20 @@ export interface IEndNewMeetingOnMutationArguments {
    * The meeting to end
    */
   meetingId: string
+}
+
+export interface IFlagReadyToAdvanceOnMutationArguments {
+  meetingId: string
+
+  /**
+   * the stage that the viewer marked as ready
+   */
+  stageId: string
+
+  /**
+   * true if ready to advance, else false
+   */
+  isReady: boolean
 }
 
 export interface IInactivateUserOnMutationArguments {
@@ -5609,6 +5638,16 @@ export interface IRetroDiscussStage {
   isAsync: boolean | null
 
   /**
+   * true if the viewer is ready to advance, else false
+   */
+  isViewerReady: boolean
+
+  /**
+   * the number of meeting members ready to advance, excluding the facilitator
+   */
+  readyCount: number
+
+  /**
    * The datetime the phase is scheduled to be finished, null if no time limit or end time is set
    */
   scheduledEndTime: any | null
@@ -5793,6 +5832,25 @@ export interface IEndNewMeetingPayload {
    * Any tasks that were updated during the meeting
    */
   updatedTasks: Array<ITask> | null
+}
+
+/**
+ * Return object for FlagReadyToAdvancePayload
+ */
+export type FlagReadyToAdvancePayload = IErrorPayload | IFlagReadyToAdvanceSuccess
+
+export interface IFlagReadyToAdvanceSuccess {
+  __typename: 'FlagReadyToAdvanceSuccess'
+
+  /**
+   * the meeting with the updated readyCount
+   */
+  meeting: NewMeeting
+
+  /**
+   * the stage with the updated readyCount
+   */
+  stage: NewMeetingStage
 }
 
 export interface IInactivateUserPayload {
@@ -6003,6 +6061,7 @@ export interface IPromoteNewMeetingFacilitatorPayload {
    * The meeting in progress
    */
   meeting: NewMeeting | null
+  facilitatorStage: NewMeetingStage | null
 
   /**
    * The old meeting facilitator
@@ -6441,6 +6500,16 @@ export interface IGenericMeetingStage {
   isAsync: boolean | null
 
   /**
+   * true if the viewer is ready to advance, else false
+   */
+  isViewerReady: boolean
+
+  /**
+   * the number of meeting members ready to advance, excluding the facilitator
+   */
+  readyCount: number
+
+  /**
    * The datetime the phase is scheduled to be finished, null if no time limit or end time is set
    */
   scheduledEndTime: any | null
@@ -6833,6 +6902,7 @@ export type MeetingSubscriptionPayload =
   | IDragDiscussionTopicPayload
   | IEndDraggingReflectionPayload
   | IEditReflectionPayload
+  | IFlagReadyToAdvanceSuccess
   | INewMeetingCheckInPayload
   | IPromoteNewMeetingFacilitatorPayload
   | IRemoveReflectionPayload
@@ -7204,6 +7274,16 @@ export interface ICheckInStage {
   isAsync: boolean | null
 
   /**
+   * true if the viewer is ready to advance, else false
+   */
+  isViewerReady: boolean
+
+  /**
+   * the number of meeting members ready to advance, excluding the facilitator
+   */
+  readyCount: number
+
+  /**
    * The datetime the phase is scheduled to be finished, null if no time limit or end time is set
    */
   scheduledEndTime: any | null
@@ -7385,6 +7465,16 @@ export interface IUpdatesStage {
   isAsync: boolean | null
 
   /**
+   * true if the viewer is ready to advance, else false
+   */
+  isViewerReady: boolean
+
+  /**
+   * the number of meeting members ready to advance, excluding the facilitator
+   */
+  readyCount: number
+
+  /**
    * The datetime the phase is scheduled to be finished, null if no time limit or end time is set
    */
   scheduledEndTime: any | null
@@ -7504,6 +7594,16 @@ export interface IAgendaItemsStage {
    * true if a time limit is set, false if end time is set, null if neither is set
    */
   isAsync: boolean | null
+
+  /**
+   * true if the viewer is ready to advance, else false
+   */
+  isViewerReady: boolean
+
+  /**
+   * the number of meeting members ready to advance, excluding the facilitator
+   */
+  readyCount: number
 
   /**
    * The datetime the phase is scheduled to be finished, null if no time limit or end time is set

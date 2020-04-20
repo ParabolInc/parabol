@@ -7,7 +7,8 @@
 ## Overview
 
 
-[Parabol](https://www.parabol.co) is a free SaaS application for running team retrospectives and operating a distributed organization. Our [business metrics](https://focus.parabol.co/) are also open source.
+[Parabol](https://www.parabol.co) is an open-source SaaS application for running team retrospectives and operating a
+distributed organization. We publish our company's [history and business metrics](https://focus.parabol.co/), too.
 
 
 ![Dashboard](./docs/images/d2.gif)
@@ -45,7 +46,7 @@
 $ git clone https://github.com/ParabolInc/parabol.git
 $ cd parabol
 $ cp packages/server/.env.example packages/server/.env # Add your own vars here
-$ rethinkdb & # Or if you prefer docker: $ docker-compose up -d db
+$ rethinkdb & redis-server & # Or if you prefer docker: $ docker-compose up -d db
 $ yarn && yarn db:migrate && yarn build:relay && yarn dev
 ```
 

@@ -8,10 +8,13 @@ import useRouter from '../hooks/useRouter'
 import useMutationProps from '../hooks/useMutationProps'
 import styled from '@emotion/styled'
 import {ElementWidth} from '../types/constEnums'
+import {TransitionStatus} from 'hooks/useTransition'
 
 interface Props {
   meetingId: string
   isEnded: boolean
+  status: TransitionStatus
+  onTransitionEnd: () => void
 }
 
 const EndMeetingButtonStyles = styled(BottomNavControl)({
@@ -19,7 +22,7 @@ const EndMeetingButtonStyles = styled(BottomNavControl)({
 })
 
 const EndMeetingButton = forwardRef((props: Props, ref: Ref<HTMLButtonElement>) => {
-  const {isEnded, meetingId} = props
+  const {isEnded, meetingId, status, onTransitionEnd} = props
   const atmosphere = useAtmosphere()
   const {history} = useRouter()
   const {submitMutation, onCompleted, onError, submitting} = useMutationProps()
@@ -32,7 +35,14 @@ const EndMeetingButton = forwardRef((props: Props, ref: Ref<HTMLButtonElement>) 
 
   const label = isDemoRoute() ? 'End Demo' : 'End Meeting'
   return (
-    <EndMeetingButtonStyles onClick={endMeeting} waiting={submitting} ref={ref} disabled={isEnded}>
+    <EndMeetingButtonStyles
+      onClick={endMeeting}
+      waiting={submitting}
+      ref={ref}
+      disabled={isEnded}
+      status={status}
+      onTransitionEnd={onTransitionEnd}
+    >
       <BottomNavIconLabel icon='flag' iconColor='blue' label={label} />
     </EndMeetingButtonStyles>
   )
