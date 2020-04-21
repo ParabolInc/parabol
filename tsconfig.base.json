@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "allowJs": true,
+    // "allowJs": true,
     "checkJs": false,
     // "declaration": true,
     // "declarationMap": true,

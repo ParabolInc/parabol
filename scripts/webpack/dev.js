@@ -6,7 +6,7 @@ const fs = require('fs')
 
 const compileServers = () => {
   return new Promise((resolve) => {
-    const config = require('./servers.config')
+    const config = require('./dev.servers.config')
     const webpack = require('webpack')
     const compiler = webpack(config)
     compiler.watch(true, () => {

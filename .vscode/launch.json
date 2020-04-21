@@ -20,7 +20,7 @@
             "program": "${workspaceFolder}/node_modules/.bin/webpack",
             "args": [
                 "--config",
-                "${workspaceFolder}/scripts/webpack/webpack.all.config.js"
+                "${workspaceFolder}/scripts/webpack/prod.client.config.js"
             ],
             "skipFiles": [
                 "<node_internals>/**"

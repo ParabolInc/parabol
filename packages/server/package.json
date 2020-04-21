@@ -19,7 +19,7 @@
     "dev": "yarn build:server & node .",
     "wp": "webpack --config ../../scripts/webpack/webpack.all.config.js",
     "build": "yarn build:server && yarn build:relay && yarn build:client",
-    "build:client": "webpack --config webpack/webpack.prod.config.js",
+    "build:client": "webpack --config ../../scripts/webpack/prod.client.config.js",
     "build:deploy": "export WEBPACK_DEPLOY=true && yarn build",
     "build:relay": "yarn update-schema && yarn build:relay-unsafe",
     "build:relay-unsafe": "relay-compiler",

@@ -1,7 +1,7 @@
 import path from 'path'
 import * as migrate from 'rethinkdb-ts-migrate'
 import {parse} from 'url'
-import '../.dotenv'
+import '../dotenv'
 
 const startMigration = async () => {
   const [, , name] = process.argv

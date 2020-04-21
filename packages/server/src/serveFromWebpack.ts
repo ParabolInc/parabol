@@ -47,7 +47,7 @@ const buildMiddleware = (compiler, config) => {
 export const getWebpackDevMiddleware = async () => {
   if (!global.middleware) {
     global.middleware = new Promise(async (resolve) => {
-      const config = require('../../../scripts/webpack/webpack.dev.config')
+      const config = require('../../../scripts/webpack/dev.client.config')
       const webpack = require('webpack')
       const compiler = webpack(config)
       // todo begin building before awaiting hot server

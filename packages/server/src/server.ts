@@ -1,7 +1,6 @@
 // Datadog APM, must be first import (disabled for now)
 // import './tracer'
 import uws, {SHARED_COMPRESSOR} from 'uWebSockets.js'
-import './.dotenv' // has side effect, must be first!
 import rootSchema from './graphql/rootSchema'
 import './initSentry'
 import PROD from './PROD'
@@ -43,7 +42,8 @@ uws
   .listen(PORT, (...args) => require('./listenHandler').default(...args))
 
 // Development server details
-if (module.hot) {
+
+if (!PROD && module.hot) {
   const rootSchemaRef = {current: rootSchema}
   const schemaCtx = {oldSchema: '', delay: 3000}
   module.hot.accept(
@@ -80,5 +80,6 @@ if (module.hot) {
 }
 
 if (!PROD) {
+  console.log('requiring')
   require('./serveFromWebpack').getWebpackDevMiddleware()
 }

@@ -10,6 +10,7 @@
 build/
 coverage/
 dev/
+dist/
 dump.rdb
 node_modules/
 package-lock.json
