@@ -21,7 +21,7 @@ export default class CompiledQueryCache {
       .default(null)
       .run()
     if (!queryString && !PROD) {
-      const queryMap = require('./queryMap.json')
+      const queryMap = require('../../../../queryMap.json')
       queryString = queryMap[docId]
     }
     if (!queryString) return undefined

@@ -1,4 +1,4 @@
-import getRethink from '../database/rethinkDriver'
+import getRethink from '../../packages/server/src/database/rethinkDriver'
 
 const flushSocketConnections = async () => {
   const r = await getRethink()
@@ -11,7 +11,7 @@ const flushSocketConnections = async () => {
 }
 
 const storePersistedQueries = async () => {
-  const queryMap = require('../graphql/queryMap.json')
+  const queryMap = require('../queryMap.json')
   const hashes = Object.keys(queryMap)
   const records = hashes.map((hash) => ({
     id: hash,

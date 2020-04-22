@@ -19,9 +19,9 @@ import sendGQLMessage from '../socketHelpers/sendGQLMessage'
 import relayUnsubscribeAll from '../utils/relayUnsubscribeAll'
 import sendToSentry from '../utils/sendToSentry'
 import SubscriptionIterator from '../utils/SubscriptionIterator'
+import DocumentCache from './DocumentCache'
 import ResponseStream from './ResponseStream'
 import publicSchema from './rootSchema'
-import DocumentCache from './DocumentCache'
 
 export interface SubscribeRequest {
   connectionContext: ConnectionContext

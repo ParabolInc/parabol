@@ -150,7 +150,7 @@ export default class Atmosphere extends Environment {
     const transport = this.transport as GQLTrebuchetClient
     if (!transport.subscribe) return
     if (!__PRODUCTION__) {
-      const queryMap = await import('parabol-server/lib/graphql/queryMap.json')
+      const queryMap = await import('../../../queryMap.json')
       const query = queryMap[documentId!]
       this.subscriptions[subKey] = transport.subscribe({query, variables}, sink)
     } else {
@@ -226,7 +226,7 @@ export default class Atmosphere extends Environment {
     const field = __PRODUCTION__ ? 'documentId' : 'query'
     let data = request.id
     if (!__PRODUCTION__) {
-      const queryMap = await import('parabol-server/lib/graphql/queryMap.json')
+      const queryMap = await import('../../../queryMap.json')
       data = queryMap[request.id!]
     }
     return this.transport.fetch({[field]: data, variables}, sink || noopSink)

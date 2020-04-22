@@ -44,9 +44,6 @@ const User = new GraphQLObjectType<any, GQLContext, any>({
       type: new GraphQLNonNull(GraphQLID),
       description: 'The userId provided by us'
     },
-    foods: {
-      type: GraphQLString
-    },
     allAvailableIntegrations: require('../queries/allAvailableIntegrations').default,
     archivedTasks: require('../queries/archivedTasks').default,
     archivedTasksCount: require('../queries/archivedTasksCount').default,

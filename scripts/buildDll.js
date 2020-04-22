@@ -1,11 +1,12 @@
 /* cwd needs to be project root */
 const fs = require('fs')
 const webpack = require('webpack')
-const config = require('./webpack.config.dll.js')
+const config = require('./webpack/dev.clientdll.config')
 const crypto = require('crypto')
 const path = require('path')
+const getProjectRoot = require('./webpack/utils/getProjectRoot')
 
-const PROJECT_ROOT = path.join(__dirname, '../../')
+const PROJECT_ROOT = getProjectRoot()
 const DLL_ROOT = path.join(PROJECT_ROOT, 'dev', 'dll')
 const CACHE_HASH = path.join(DLL_ROOT, 'yarn.lock.md5')
 
@@ -24,14 +25,14 @@ const buildDll = async () => {
       .update(lockfile)
       .digest('hex')
     if (hash !== cacheHash) {
-      webpack(config, () => {
-        console.log(`📘 DLL created`)
-        resolve()
-      })
       if (!fs.existsSync(DLL_ROOT)) {
         fs.mkdirSync(DLL_ROOT, { recursive: true })
       }
       fs.writeFileSync(CACHE_HASH, hash)
+      webpack(config, () => {
+        console.log(`📘 DLL created`)
+        resolve()
+      })
     } else {
       console.log(`📘 Using cached DLL`)
       resolve()

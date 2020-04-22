@@ -1,7 +1,9 @@
 const path = require('path')
 const webpack = require('webpack')
+const getProjectRoot = require('./utils/getProjectRoot')
 
-const DLL_ROOT = path.join(__dirname, '../../dev/dll')
+const PROJECT_ROOT = getProjectRoot()
+const DLL_ROOT = path.join(PROJECT_ROOT, 'dev/dll')
 
 module.exports = {
   mode: 'development',

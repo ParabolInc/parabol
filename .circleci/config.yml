@@ -97,7 +97,7 @@ jobs:
               export ACTION_VERSION=$(grep '"version":' package.json | cut -d\" -f4)
               git config --global user.name "Parabol CircleCI"
               git config --global user.email "admin+circleci@parabol.co"
-              git add ./packages/server/graphql/queryMap.json build -f
+              git add ./queryMap.json build -f
               git add ./packages/client/__generated__ build -f
               git commit -m "build $ACTION_VERSION"
             fi

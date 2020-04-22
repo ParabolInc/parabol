@@ -34,6 +34,7 @@ import TimelineEventJoinedParabol from './types/TimelineEventJoinedParabol'
 import TimelineEventTeamCreated from './types/TimelineEventTeamCreated'
 import UpdatesPhase from './types/UpdatesPhase'
 
+console.log('hey4')
 export default new GraphQLSchema({
   query,
   mutation,

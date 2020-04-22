@@ -2,11 +2,12 @@ import fs from 'fs'
 import {printSchema} from 'graphql'
 import path from 'path'
 import {promisify} from 'util'
+import getProjectRoot from '../../../../scripts/webpack/utils/getProjectRoot'
 import schema from '../graphql/rootSchema'
 
 const write = promisify(fs.writeFile)
 // relative to the output file
-const PROJECT_ROOT = path.join(__dirname, '..')
+const PROJECT_ROOT = getProjectRoot()
 const schemaPath = path.join(PROJECT_ROOT, 'schema.graphql')
 
 interface Context {
@@ -27,7 +28,7 @@ const updateGQLSchema = (context: Context = {delay: 0}) => {
       if (context.oldSchema === nextSchema) return
       context.oldSchema = nextSchema
       await write(schemaPath, nextSchema)
-      console.log(`💥💥💥   GraphQL Schema Created    💥💥💥`)
+      // console.log(`💥💥💥   GraphQL Schema Created    💥💥💥`)
       resolve(true)
     }, context.delay)
   })

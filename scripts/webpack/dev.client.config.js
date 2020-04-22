@@ -1,10 +1,10 @@
 const path = require('path')
 const webpack = require('webpack')
 const vendors = require('../../dev/dll/vendors')
-const transformRules = require('./transformRules')
+const transformRules = require('./utils/transformRules')
+const getProjectRoot = require('./utils/getProjectRoot')
 
-// __dirname is the location of the webpack bundle, if this is inside one
-const PROJECT_ROOT = path.join(__dirname, '..')
+const PROJECT_ROOT = getProjectRoot()
 const CLIENT_ROOT = path.join(PROJECT_ROOT, 'packages', 'client', 'src')
 const SERVER_ROOT = path.join(PROJECT_ROOT, 'packages', 'server', 'src')
 

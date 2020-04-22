@@ -1,5 +1,6 @@
 // Datadog APM, must be first import (disabled for now)
 // import './tracer'
+
 import uws, {SHARED_COMPRESSOR} from 'uWebSockets.js'
 import rootSchema from './graphql/rootSchema'
 import './initSentry'
@@ -70,16 +71,20 @@ if (!PROD && module.hot) {
     ],
     () => {
       // update the gql schema here vs. in a helper file because we've alreayd parsed it here
-      const nextRootSchema = require('./graphql/rootSchema').default
-      if (nextRootSchema === rootSchemaRef.current) return
-      rootSchemaRef.current = nextRootSchema
-      const updateGQLSchema = require('./utils/updateGQLSchema').default
-      updateGQLSchema(schemaCtx)
+      try {
+        const nextRootSchema = require('./graphql/rootSchema').default
+        if (nextRootSchema === rootSchemaRef.current) return
+        rootSchemaRef.current = nextRootSchema
+        const updateGQLSchema = require('./utils/updateGQLSchema').default
+        updateGQLSchema(schemaCtx)
+      } catch (e) {
+        console.log('failed to update, setting good')
+        // ignore
+      }
     }
   )
 }
 
 if (!PROD) {
-  console.log('requiring')
   require('./serveFromWebpack').getWebpackDevMiddleware()
 }

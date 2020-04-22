@@ -27,7 +27,6 @@
     "build:stats": "export WEBPACK_STATS=true && yarn build:client",
     "db:migrate": "node lib/database/migrate.js",
     "db:migrate-testing": "export NODE_ENV=test && yarn db:migrate && node lib/database/softenDurability.js",
-    "db:migrate-create": "node lib/database/migrate-create.js",
     "debug": "node --nolazy --inspect=9229 .",
     "debug:stripe": "node billing/debug.babel.js",
     "postdeploy": "node src/utils/postDeploy.babel.js",
