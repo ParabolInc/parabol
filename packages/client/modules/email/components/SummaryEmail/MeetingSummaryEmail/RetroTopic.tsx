@@ -36,13 +36,18 @@ const imageStyle = {
   verticalAlign: 'text-bottom'
 }
 
-const commentLinkStyle = {
+const someCommentsLinkStyle = {
   color: PALETTE.TEXT_BLUE,
   display: 'block',
   fontFamily: FONT_FAMILY.SANS_SERIF,
   fontSize: 13,
   fontWeight: 600,
   textDecoration: 'none'
+}
+
+const noCommentLinkStyle = {
+  ...someCommentsLinkStyle,
+  color: PALETTE.TEXT_GRAY
 }
 
 interface Props {
@@ -64,14 +69,13 @@ const RetroTopic = (props: Props) => {
       : commentCount >= 101
       ? 'See 100+ Comments'
       : `See ${commentCount} ${plural(commentCount, 'Comment')}`
+  const commentLinkStyle = commentCount === 0 ? noCommentLinkStyle : someCommentsLinkStyle
   return (
     <>
       <tr>
         <td align='center' style={{paddingTop: 20}}>
           <AnchorIfEmail href={to} isEmail={isEmail} style={topicThemeHeading}>
-            {'“'}
             {title}
-            {'”'}
           </AnchorIfEmail>
         </td>
       </tr>
