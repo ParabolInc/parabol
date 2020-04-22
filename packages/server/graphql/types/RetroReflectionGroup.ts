@@ -31,6 +31,14 @@ const RetroReflectionGroup = new GraphQLObjectType<any, GQLContext>({
       type: new GraphQLNonNull(GraphQLID),
       description: 'shortid'
     },
+    commentCount: {
+      type: new GraphQLNonNull(GraphQLInt),
+      description: 'The number of comments in this group’s thread, if any',
+      resolve: async ({id: reflectionGroupId}, _args, {dataLoader}) => {
+        const comments = await dataLoader.get('commentsByThreadId').load(reflectionGroupId)
+        return comments ? comments.length : 0
+      }
+    },
     createdAt: {
       type: new GraphQLNonNull(GraphQLISO8601Type),
       description: 'The timestamp the meeting was created'

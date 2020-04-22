@@ -53,18 +53,17 @@ interface Props {
 
 const RetroTopic = (props: Props) => {
   const {isEmail, to, topic} = props
-  const {reflections, title, voteCount, thread} = topic
+  const {reflections, title, voteCount, commentCount} = topic
   const imageSource = isEmail ? 'static' : 'local'
   const icon = imageSource === 'local' ? 'thumb_up_18.svg' : 'thumb_up_18@3x.png'
   const src = `${emailDir}${icon}`
   const grid = useEmailItemGrid(reflections, 3)
-  const commentLength = thread.edges.length
   const commentLinkLabel =
-    commentLength === 0
+    commentCount === 0
       ? 'No Comments'
-      : commentLength >= 101
+      : commentCount >= 101
       ? 'See 100+ Comments'
-      : `See ${commentLength} ${plural(commentLength, 'Comment')}`
+      : `See ${commentCount} ${plural(commentCount, 'Comment')}`
   return (
     <>
       <tr>
@@ -107,15 +106,9 @@ const RetroTopic = (props: Props) => {
 export default createFragmentContainer(RetroTopic, {
   topic: graphql`
     fragment RetroTopic_topic on RetroReflectionGroup {
+      commentCount
       title
       voteCount
-      thread(first: 101) @connection(key: "DiscussionThread_thread") {
-        edges {
-          node {
-            threadId
-          }
-        }
-      }
       reflections {
         ...EmailReflectionCard_reflection
       }
