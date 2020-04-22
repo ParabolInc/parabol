@@ -18,10 +18,14 @@ services:
     # Uncomment if you want to add a different Dockerfile in the .devcontainer folder
     build:
       context: ./
-      dockerfile: ./parabolDocker/Dockerfile
+      dockerfile: ./docker/Dockerfile
       args:
         nodeUID: 6267 # on Linux please relpace this UID by yours
         nodeGID: 1000
+
+    # ENV VAR for dev
+    environment:
+      TARGET_ENV: 'dev' 
 
 
     # Uncomment if you want to expose any additional ports. The snippet below exposes port 3000.

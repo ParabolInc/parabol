@@ -34,7 +34,7 @@
 	// "shutdownAction": "none",
 
 	// Uncomment the next line to run commands after the container is created - for example installing git.
-	"postCreateCommand": "cp /opt/parabol/parabolDocker/.env_test /opt/parabol/packages/server/.env"
+	"postCreateCommand": "cp /opt/parabol/docker/.env_test /opt/parabol/packages/server/.env"
 
 	// Uncomment to connect as a non-root user. See https://aka.ms/vscode-remote/containers/non-root.
 	//"remoteUser": "node"

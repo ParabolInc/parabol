@@ -22,7 +22,7 @@ services:
     container_name: parabol
     build: 
       context: ./
-      dockerfile: ./parabolDocker/Dockerfile
+      dockerfile: ./docker/Dockerfile
     restart: always
     expose:
       - "3000"
