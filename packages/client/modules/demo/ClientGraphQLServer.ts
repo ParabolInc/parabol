@@ -1,11 +1,11 @@
 import EventEmitter from 'eventemitter3'
-import {parse} from 'flatted'
+import { parse } from 'flatted'
 import ms from 'ms'
 import Reflection from 'parabol-server/database/types/Reflection'
-import {Variables} from 'relay-runtime'
+import { Variables } from 'relay-runtime'
 import StrictEventEmitter from 'strict-event-emitter-types'
 import stringSimilarity from 'string-similarity'
-import {RetroDemo, SubscriptionChannel, MeetingSettingsThreshold} from '../../types/constEnums'
+import { MeetingSettingsThreshold, RetroDemo, SubscriptionChannel } from '../../types/constEnums'
 import {
   DragReflectionDropTargetTypeEnum,
   IDiscussPhase,
@@ -21,7 +21,7 @@ import {
 } from '../../types/graphql'
 import getGroupSmartTitle from '../../utils/autogroup/getGroupSmartTitle'
 import groupReflections from '../../utils/autogroup/groupReflections'
-import {DISCUSS, GROUP, REFLECT, TASK, TEAM, VOTE} from '../../utils/constants'
+import { DISCUSS, GROUP, REFLECT, TASK, TEAM, VOTE } from '../../utils/constants'
 import dndNoise from '../../utils/dndNoise'
 import extractTextFromDraftString from '../../utils/draftjs/extractTextFromDraftString'
 import getTagsFromEntityMap from '../../utils/draftjs/getTagsFromEntityMap'
@@ -76,7 +76,7 @@ interface DemoEvents {
 }
 
 interface GQLDemoEmitter {
-  new (): StrictEventEmitter<EventEmitter, DemoEvents>
+  new(): StrictEventEmitter<EventEmitter, DemoEvents>
 }
 
 const makeReflectionGroupThread = () => ({
@@ -119,7 +119,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
   getUnlockedStages(stageIds: string[]) {
     const unlockedStages = [] as INewMeetingStage[]
     this.db.newMeeting.phases!.forEach((phase) => {
-      ;(phase.stages as any).forEach((stage) => {
+      ; (phase.stages as any).forEach((stage) => {
         if (stageIds.includes(stage.id)) {
           unlockedStages.push(stage)
         }
@@ -136,8 +136,12 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       this.emit('botsFinished')
       return
     }
-    const {delay, op, variables, botId} = nextMutaton
+    const { delay, op, variables, botId } = nextMutaton
     this.pendingBotAction = () => {
+      if (!this.ops[op]) {
+        console.log('here')
+        debugger
+      }
       this.ops[op](variables, botId)
       return mutations
     }
@@ -158,9 +162,12 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
   finishBotActions = async () => {
     window.clearTimeout(this.pendingBotTimeout)
     this.pendingBotTimeout = undefined
+    // if ((window as any).Cypress) {
+    //   this.pendingBotAction = undefined
+    // }
     if (!this.pendingBotAction) return
     const mutationsToFlush = this.pendingBotAction()
-    if (this.db.newMeeting.facilitatorStageId !== 'groupStage') {
+    if (this.db.newMeeting.facilitatorStageId !== RetroDemo.GROUP_STAGE_ID) {
       mutationsToFlush.forEach((mutation) => {
         this.ops[mutation.op](mutation.variables, mutation.botId)
       })
@@ -226,7 +233,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         }
       }
     },
-    DiscussionThreadRootQuery: ({reflectionGroupId}) => {
+    DiscussionThreadRootQuery: ({ reflectionGroupId }) => {
       return {
         viewer: {
           ...this.db.users[0],
@@ -260,9 +267,9 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         }
       }
     },
-    AddCommentMutation: ({comment}, userId) => {
+    AddCommentMutation: ({ comment }, userId) => {
       const commentId = comment.id || this.getTempId('comment')
-      const {isAnonymous} = comment
+      const { isAnonymous } = comment
       const newComment = {
         ...comment,
         __typename: 'Comment',
@@ -270,7 +277,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         createdAt: new Date().toJSON(),
         updatedAt: new Date().toJSON(),
         createdBy: isAnonymous ? null : userId,
-        createdByUser: isAnonymous ? null : this.db.users.find(({id}) => id === userId),
+        createdByUser: isAnonymous ? null : this.db.users.find(({ id }) => id === userId),
         id: commentId,
         isActive: true,
         isViewerComment: userId === demoViewerId,
@@ -279,12 +286,12 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         threadParentId: comment.threadParentId || null
       }
       this.db.comments.push(newComment)
-      const {threadParentId, threadId} = newComment
+      const { threadParentId, threadId } = newComment
       if (threadParentId) {
         const threadParent =
-          this.db.tasks.find(({id}) => id === threadParentId) ||
-          this.db.comments.find(({id}) => id === threadParentId)
-        threadParent?.replies.push(newComment)
+          this.db.tasks.find(({ id }) => id === threadParentId) ||
+          this.db.comments.find(({ id }) => id === threadParentId)
+        threadParent ?.replies.push(newComment)
       } else {
         const reflectionGroup = this.db.reflectionGroups.find((group) => group.id === threadId)!
         reflectionGroup.thread.edges.push({
@@ -302,15 +309,15 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       if (userId !== demoViewerId) {
         this.emit(SubscriptionChannel.MEETING, data)
       }
-      return {addComment: data}
+      return { addComment: data }
     },
-    AddReactjiToReactableMutation: ({reactableId, reactableType, isRemove, reactji}, userId) => {
+    AddReactjiToReactableMutation: ({ reactableId, reactableType, isRemove, reactji }, userId) => {
       const table =
         reactableType === ReactableEnum.REFLECTION ? this.db.reflections : this.db.comments
-      const reactable = table.find(({id}) => id === reactableId)
+      const reactable = table.find(({ id }) => id === reactableId)
       if (!reactable) return null
       const reactjiId = `${reactableId}:${reactji}`
-      const {reactjis} = reactable
+      const { reactjis } = reactable
       const existingReactjiIdx = reactjis.findIndex((agg) => agg.id === reactjiId)
       const existingReactji = reactjis[existingReactjiIdx]
       if (isRemove) {
@@ -323,7 +330,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         }
       } else {
         if (!existingReactji) {
-          reactjis.push({id: reactjiId, count: 1, isViewerReactji: userId === demoViewerId})
+          reactjis.push({ id: reactjiId, count: 1, isViewerReactji: userId === demoViewerId })
         } else {
           existingReactji.count++
           existingReactji.isViewerReactji =
@@ -337,9 +344,9 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       if (userId !== demoViewerId) {
         this.emit(SubscriptionChannel.MEETING, data)
       }
-      return {addReactjiToReactable: data}
+      return { addReactjiToReactable: data }
     },
-    CreateGitHubIssueMutation: ({taskId, nameWithOwner}, userId) => {
+    CreateGitHubIssueMutation: ({ taskId, nameWithOwner }, userId) => {
       const task = this.db.tasks.find((task) => task.id === taskId)
       // if the human deleted the task, exit fast
       if (!task) return null
@@ -361,9 +368,9 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       if (userId !== demoViewerId) {
         this.emit(TASK, data)
       }
-      return {createGitHubIssue: data}
+      return { createGitHubIssue: data }
     },
-    CreateJiraIssueMutation: ({projectKey, taskId}, userId) => {
+    CreateJiraIssueMutation: ({ projectKey, taskId }, userId) => {
       const task = this.db.tasks.find((task) => task.id === taskId)
       // if the human deleted the task, exit fast
       if (!task) return null
@@ -385,10 +392,10 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       if (userId !== demoViewerId) {
         this.emit(TASK, data)
       }
-      return {createJiraIssue: data}
+      return { createJiraIssue: data }
     },
     CreateReflectionMutation: async (
-      {input: {content, retroPhaseItemId, sortOrder, id, groupId}},
+      { input: { content, retroPhaseItemId, sortOrder, id, groupId } },
       userId: string
     ) => {
       const now = new Date().toJSON()
@@ -479,10 +486,10 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       if (userId !== demoViewerId) {
         this.emit(SubscriptionChannel.MEETING, data)
       }
-      return {createReflection: data}
+      return { createReflection: data }
     },
     EditReflectionMutation: (
-      {phaseItemId, isEditing}: {phaseItemId: string; isEditing: boolean},
+      { phaseItemId, isEditing }: { phaseItemId: string; isEditing: boolean },
       userId
     ) => {
       const data = {
@@ -494,9 +501,31 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       if (userId !== demoViewerId) {
         this.emit(SubscriptionChannel.MEETING, data)
       }
-      return {editReflection: data}
+      return { editReflection: data }
     },
-    RemoveReflectionMutation: ({reflectionId}: {reflectionId: string}, userId: string) => {
+    FlagReadyToAdvanceMutation: (
+      { stageId, isReady }: { stageId: string; isReady: boolean },
+      userId: string
+    ) => {
+      const meeting = this.db.newMeeting
+      const { phases } = meeting
+      const stageRes = findStageById(phases, stageId)
+      const { stage } = stageRes!
+      const increment = isReady ? 1 : -1
+      stage.readyCount += increment
+
+      const data = {
+        __typename: 'FlagReadyToAdvanceSuccess',
+        stage,
+        meeting
+      }
+
+      if (userId !== demoViewerId) {
+        this.emit(SubscriptionChannel.MEETING, data)
+      }
+      return { renameMeeting: data }
+    },
+    RemoveReflectionMutation: ({ reflectionId }: { reflectionId: string }, userId: string) => {
       const reflection = this.db.reflections.find((reflection) => reflection.id === reflectionId)!
       reflection.isActive = false
       const group = this.db.reflectionGroups.find(
@@ -509,11 +538,11 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
 
       const unlockedStageIds = remainingReflections.length
         ? unlockAllStagesForPhase(
-            this.db.newMeeting.phases as any,
-            NewMeetingPhaseTypeEnum.group,
-            true,
-            false
-          )
+          this.db.newMeeting.phases as any,
+          NewMeetingPhaseTypeEnum.group,
+          true,
+          false
+        )
         : []
       const unlockedStages = this.getUnlockedStages(unlockedStageIds)
       const data = {
@@ -528,7 +557,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       if (userId !== demoViewerId) {
         this.emit(SubscriptionChannel.MEETING, data)
       }
-      return {removeReflection: data}
+      return { removeReflection: data }
     },
     NewMeetingCheckInMutation: async (_, userId) => {
       const meetingMember = this.db.meetingMembers.find((member) => member.userId === userId)
@@ -539,9 +568,9 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         meeting: this.db.newMeeting,
         meetingMember
       }
-      return {newMeetingCheckIn: data}
+      return { newMeetingCheckIn: data }
     },
-    UpdateReflectionContentMutation: async ({reflectionId, content}, userId) => {
+    UpdateReflectionContentMutation: async ({ reflectionId, content }, userId) => {
       const reflection = this.db.reflections.find((reflection) => reflection.id === reflectionId)!
       reflection.content = content
       reflection.updatedAt = new Date().toJSON()
@@ -555,7 +584,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       reflection.entities = entities as any
 
       const reflectionsInGroup = this.db.reflections.filter(
-        ({reflectionGroupId}) => reflectionGroupId === reflection.reflectionGroupId
+        ({ reflectionGroupId }) => reflectionGroupId === reflection.reflectionGroupId
       )
       const newTitle = getGroupSmartTitle(reflectionsInGroup)
       const reflectionGroup = this.db.reflectionGroups.find(
@@ -577,10 +606,10 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       if (userId !== demoViewerId) {
         this.emit(SubscriptionChannel.MEETING, data)
       }
-      return {updateReflectionContent: data}
+      return { updateReflectionContent: data }
     },
-    UpdateRetroMaxVotesMutation: async ({totalVotes, maxVotesPerGroup}) => {
-      const {newMeeting: meeting, meetingMembers} = this.db
+    UpdateRetroMaxVotesMutation: async ({ totalVotes, maxVotesPerGroup }) => {
+      const { newMeeting: meeting, meetingMembers } = this.db
       if (
         totalVotes < MeetingSettingsThreshold.RETROSPECTIVE_TOTAL_VOTES_DEFAULT ||
         maxVotesPerGroup < MeetingSettingsThreshold.RETROSPECTIVE_MAX_VOTES_PER_GROUP_DEFAULT
@@ -588,7 +617,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         return {
           updateRetroMaxVotes: {
             __typename: 'ErrorPayload',
-            error: {message: 'Your team has already spent their votes'}
+            error: { message: 'Your team has already spent their votes' }
           }
         }
       }
@@ -606,17 +635,17 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         __typename: 'UpdateRetroMaxVotesSuccess',
         meeting
       }
-      return {updateRetroMaxVotes: data}
+      return { updateRetroMaxVotes: data }
     },
-    NavigateMeetingMutation: async ({completedStageId, facilitatorStageId, meetingId}, userId) => {
+    NavigateMeetingMutation: async ({ completedStageId, facilitatorStageId, meetingId }, userId) => {
       let phaseCompleteData
       let unlockedStageIds
       const meeting = this.db.newMeeting
-      const {phases} = meeting
+      const { phases } = meeting
       let runBot = false
       if (completedStageId) {
         const completedStageRes = findStageById(phases, completedStageId)
-        const {stage} = completedStageRes!
+        const { stage } = completedStageRes!
         if (!stage.isComplete) {
           runBot = true
           stage.isComplete = true
@@ -635,11 +664,11 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         }
       }
       if (!phaseCompleteData || Object.keys(phaseCompleteData).length === 0) {
-        phaseCompleteData = {[REFLECT]: null, [GROUP]: null, [VOTE]: null}
+        phaseCompleteData = { [REFLECT]: null, [GROUP]: null, [VOTE]: null }
       }
       if (facilitatorStageId) {
         const facilitatorStageRes = findStageById(phases, facilitatorStageId)
-        const {stage: facilitatorStage} = facilitatorStageRes!
+        const { stage: facilitatorStage } = facilitatorStageRes!
         startStage_(facilitatorStage)
 
         // mutative! sets isNavigable and isNavigableByFacilitator
@@ -671,9 +700,9 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       if (runBot) {
         this.startBot()
       }
-      return {navigateMeeting: data}
+      return { navigateMeeting: data }
     },
-    RenameMeetingMutation: ({name}, userId) => {
+    RenameMeetingMutation: ({ name }, userId) => {
       const meeting = this.db.newMeeting
       meeting.name = name
       const data = {
@@ -683,9 +712,9 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       if (userId !== demoViewerId) {
         this.emit(SubscriptionChannel.MEETING, data)
       }
-      return {renameMeeting: data}
+      return { renameMeeting: data }
     },
-    SetPhaseFocusMutation: ({focusedPhaseItemId}, userId) => {
+    SetPhaseFocusMutation: ({ focusedPhaseItemId }, userId) => {
       const reflectPhase = this.db.newMeeting.phases!.find(
         (phase) => phase.phaseType === REFLECT
       ) as IReflectPhase
@@ -699,18 +728,18 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       if (userId !== demoViewerId) {
         this.emit(SubscriptionChannel.MEETING, data)
       }
-      return {setPhaseFocus: data}
+      return { setPhaseFocus: data }
     },
-    SetSlackNotificationMutation: ({slackChannelId, slackNotificationEvents}, userId) => {
+    SetSlackNotificationMutation: ({ slackChannelId, slackNotificationEvents }, userId) => {
       const teamMember = this.db.teamMembers.find((teamMember) => teamMember.userId === userId)!
-      const {slackNotifications} = teamMember
+      const { slackNotifications } = teamMember
       const filteredNotifications = slackNotifications.filter((notification) =>
         slackNotificationEvents.includes(notification.event)
       )
       filteredNotifications.forEach((notification) => {
         notification.channelId = slackChannelId
       })
-      const slackNotificationIds = filteredNotifications.map(({id}) => id)
+      const slackNotificationIds = filteredNotifications.map(({ id }) => id)
       const data = {
         __typename: 'SetSlackNotificationMutation',
         error: null,
@@ -721,12 +750,12 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       if (userId !== demoViewerId) {
         this.emit(TEAM, data)
       }
-      return {setSlackNotification: data}
+      return { setSlackNotification: data }
     },
-    SetStageTimerMutation: ({scheduledEndTime: newScheduledEndTime, timeRemaining}, userId) => {
-      const {phases, facilitatorStageId} = this.db.newMeeting
+    SetStageTimerMutation: ({ scheduledEndTime: newScheduledEndTime, timeRemaining }, userId) => {
+      const { phases, facilitatorStageId } = this.db.newMeeting
       const stageRes = findStageById(phases, facilitatorStageId!)
-      const {stage} = stageRes!
+      const { stage } = stageRes!
 
       if (newScheduledEndTime) {
         stage.scheduledEndTime = newScheduledEndTime
@@ -748,9 +777,9 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       if (userId !== demoViewerId) {
         this.emit(SubscriptionChannel.MEETING, data)
       }
-      return {setStageTimer: data}
+      return { setStageTimer: data }
     },
-    StartDraggingReflectionMutation: ({reflectionId, dragId}, userId) => {
+    StartDraggingReflectionMutation: ({ reflectionId, dragId }, userId) => {
       const reflection = this.db.reflections.find((reflection) => reflection.id === reflectionId)!
       if (!reflection) return
       if (userId !== demoViewerId) {
@@ -775,10 +804,10 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       if (userId !== demoViewerId) {
         this.emit(SubscriptionChannel.MEETING, data)
       }
-      return {startDraggingReflection: data}
+      return { startDraggingReflection: data }
     },
     EndDraggingReflectionMutation: (
-      {reflectionId, dropTargetType, dropTargetId, dragId},
+      { reflectionId, dropTargetType, dropTargetId, dragId },
       userId
     ) => {
       const now = new Date().toJSON()
@@ -787,14 +816,14 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       if (userId !== demoViewerId) {
         if (!reflection || reflection.isHumanTouched) return undefined
       }
-      const {reflectionGroupId: oldReflectionGroupId} = reflection
+      const { reflectionGroupId: oldReflectionGroupId } = reflection
       const oldReflectionGroup = this.db.reflectionGroups.find(
         (group) => group.id === oldReflectionGroupId
       )!
       const oldReflections = oldReflectionGroup.reflections!
       let failedDrop = false
       if (dropTargetType === DragReflectionDropTargetTypeEnum.REFLECTION_GRID) {
-        const {retroPhaseItemId} = reflection
+        const { retroPhaseItemId } = reflection
         newReflectionGroupId = this.getTempId('group')
         const newReflectionGroup = {
           __typename: 'RetroReflectionGroup',
@@ -929,10 +958,10 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       if (userId !== demoViewerId) {
         this.emit(SubscriptionChannel.MEETING, data)
       }
-      return {endDraggingReflection: data}
+      return { endDraggingReflection: data }
     },
-    UpdateDragLocationMutation: ({input}, userId) => {
-      const {teamId, ...inputData} = input
+    UpdateDragLocationMutation: ({ input }, userId) => {
+      const { teamId, ...inputData } = input
       const data = {
         drag: inputData,
         remoteDrag: inputData,
@@ -940,14 +969,14 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         __typename: 'UpdateDragLocationPayload'
       }
       if (userId !== demoViewerId) {
-        const {sourceId} = inputData
+        const { sourceId } = inputData
         const reflection = this.db.reflections.find((reflection) => reflection.id === sourceId)
         if (!reflection || reflection.isHumanTouched) return undefined
         this.emit(SubscriptionChannel.MEETING, data)
       }
-      return {updateDragLocation: data}
+      return { updateDragLocation: data }
     },
-    AutoGroupReflectionsMutation: ({meetingId, groupingThreshold}, userId) => {
+    AutoGroupReflectionsMutation: ({ meetingId, groupingThreshold }, userId) => {
       const now = new Date().toJSON()
       const reflections = this.db.reflections.filter((reflection) => reflection.isActive)
       const {
@@ -993,8 +1022,8 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         nextAutoGroupThreshold: nextThresh
       })
 
-      const reflectionGroupIds = groups.map(({id}) => id)
-      const reflectionIds = groupedReflections.map(({id}) => id)
+      const reflectionGroupIds = groups.map(({ id }) => id)
+      const reflectionIds = groupedReflections.map(({ id }) => id)
       const data = {
         error: null,
         meeting: this.db.newMeeting,
@@ -1012,9 +1041,9 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       if (userId !== demoViewerId) {
         this.emit(SubscriptionChannel.MEETING, data)
       }
-      return {autoGroupReflections: data}
+      return { autoGroupReflections: data }
     },
-    UpdateReflectionGroupTitleMutation: ({reflectionGroupId, title}, userId) => {
+    UpdateReflectionGroupTitleMutation: ({ reflectionGroupId, title }, userId) => {
       const reflectionGroup = this.db.reflectionGroups.find(
         (group) => group.id === reflectionGroupId
       )!
@@ -1035,20 +1064,20 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       if (userId !== demoViewerId) {
         this.emit(SubscriptionChannel.MEETING, data)
       }
-      return {updateReflectionGroupTitle: data}
+      return { updateReflectionGroupTitle: data }
     },
-    VoteForReflectionGroupMutation: ({isUnvote, reflectionGroupId}, userId) => {
+    VoteForReflectionGroupMutation: ({ isUnvote, reflectionGroupId }, userId) => {
       const reflectionGroup =
         this.db.reflectionGroups.find((group) => group.id === reflectionGroupId) ||
         this.db.reflectionGroups.find((group) => Boolean(group.isActive))!
       if (!reflectionGroup) return null
       const meetingMember = this.db.meetingMembers.find((member) => member.userId === userId)!
-      const {voterIds} = reflectionGroup
+      const { voterIds } = reflectionGroup
       const now = new Date().toJSON()
       if (isUnvote) {
         const idx = voterIds.indexOf(userId)
         if (idx === -1) {
-          return {error: {message: 'no votes'}}
+          return { error: { message: 'no votes' } }
         }
         voterIds.splice(idx, 1)
         Object.assign(meetingMember, {
@@ -1109,14 +1138,14 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       if (userId !== demoViewerId) {
         this.emit(SubscriptionChannel.MEETING, data)
       }
-      return {voteForReflectionGroup: data}
+      return { voteForReflectionGroup: data }
     },
-    CreateTaskMutation: async ({newTask}, userId) => {
+    CreateTaskMutation: async ({ newTask }, userId) => {
       const now = new Date().toJSON()
       const taskId = newTask.id || this.getTempId('task')
-      const {threadId, threadSource, threadParentId, threadSortOrder, sortOrder, status} = newTask
+      const { threadId, threadSource, threadParentId, threadSortOrder, sortOrder, status } = newTask
       const content = newTask.content || makeEmptyStr()
-      const {entityMap} = JSON.parse(content)
+      const { entityMap } = JSON.parse(content)
       const tags = getTagsFromEntityMap(entityMap)
       const user = this.db.users.find((user) => user.id === userId)
       const task = {
@@ -1152,8 +1181,8 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       const reflectionGroup = this.db.reflectionGroups.find((group) => group.id === threadId)!
       if (threadParentId) {
         const threadParent =
-          this.db.comments.find(({id}) => id === threadParentId) ||
-          this.db.tasks.find(({id}) => id === threadParentId)
+          this.db.comments.find(({ id }) => id === threadParentId) ||
+          this.db.tasks.find(({ id }) => id === threadParentId)
         threadParent.replies.push(task)
       } else {
         reflectionGroup.thread.edges.push({
@@ -1181,32 +1210,32 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       // if a sleep is added, RetroDiscussPhase component is notified, but without, only MeetingAgendaCards is notified
       // honestly, no good idea what is going on here. don't even know if it's relay or react (or me)
       await sleep(100)
-      return {createTask: data}
+      return { createTask: data }
     },
-    DeleteCommentMutation: ({commentId}, userId) => {
-      const comment = this.db.comments.find(({id}) => id === commentId)
+    DeleteCommentMutation: ({ commentId }, userId) => {
+      const comment = this.db.comments.find(({ id }) => id === commentId)
       if (!comment) return
       comment.updatedAt = new Date().toJSON()
       comment.isActive = false
 
-      const {threadParentId} = comment
+      const { threadParentId } = comment
       if (comment.threadParentId) {
         const threadParent =
-          this.db.tasks.find(({id}) => id === threadParentId) ||
-          this.db.comments.find(({id}) => id === threadParentId)
+          this.db.tasks.find(({ id }) => id === threadParentId) ||
+          this.db.comments.find(({ id }) => id === threadParentId)
         if (threadParent) {
-          const {__typename, isActive, replies} = threadParent
+          const { __typename, isActive, replies } = threadParent
           const idx = replies.findIndex((reply) => reply.id === commentId)
           replies.splice(idx, 1)
           if (__typename === 'Comment' && !isActive) {
-            this.ops.DeleteCommentMutation({commentId: threadParentId}, userId)
+            this.ops.DeleteCommentMutation({ commentId: threadParentId }, userId)
           }
         }
       } else if (comment.replies.length === 0) {
-        const reflectionGroup = this.db.reflectionGroups.find(({id}) => id === threadParentId)
+        const reflectionGroup = this.db.reflectionGroups.find(({ id }) => id === threadParentId)
         if (reflectionGroup) {
-          const {thread} = reflectionGroup
-          const {edges} = thread
+          const { thread } = reflectionGroup
+          const { edges } = thread
           const idx = edges.findIndex((edge) => edge.node.id === commentId)
           edges.splice(idx, 1)
         }
@@ -1219,9 +1248,9 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       if (userId !== demoViewerId) {
         this.emit(SubscriptionChannel.MEETING, data)
       }
-      return {deleteComment: data}
+      return { deleteComment: data }
     },
-    EditTaskMutation: ({taskId, isEditing}, userId) => {
+    EditTaskMutation: ({ taskId, isEditing }, userId) => {
       const task = this.db.tasks.find((task) => task.id === taskId)!
       const data = {
         __typename: 'EditTaskMutation',
@@ -1233,10 +1262,10 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       if (userId !== demoViewerId) {
         this.emit(TASK, data)
       }
-      return {editTask: data}
+      return { editTask: data }
     },
-    UpdateTaskMutation: ({updatedTask}, userId) => {
-      const {content, status, sortOrder} = updatedTask
+    UpdateTaskMutation: ({ updatedTask }, userId) => {
+      const { content, status, sortOrder } = updatedTask
       const task = this.db.tasks.find((task) => task.id === updatedTask.id)
       // if the human deleted the task, exit fast
       if (!task) return null
@@ -1281,11 +1310,11 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       if (userId !== demoViewerId) {
         this.emit(TASK, data)
       }
-      return {updateTask: data}
+      return { updateTask: data }
     },
-    DeleteTaskMutation: ({taskId}, userId) => {
+    DeleteTaskMutation: ({ taskId }, userId) => {
       const task = this.db.tasks.find((task) => task.id === taskId)!
-      const {threadId} = task
+      const { threadId } = task
       const reflectionGroup = this.db.reflectionGroups.find((group) => group.id === threadId)
       if (!reflectionGroup) return
       reflectionGroup.tasks!.splice(reflectionGroup.tasks!.indexOf(task as any), 1)
@@ -1298,23 +1327,23 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       if (userId !== demoViewerId) {
         this.emit(TASK, data)
       }
-      return {deleteTask: data}
+      return { deleteTask: data }
     },
-    UpdateTaskDueDateMutation: ({taskId, dueDate}, userId) => {
+    UpdateTaskDueDateMutation: ({ taskId, dueDate }, userId) => {
       const task = this.db.tasks.find((task) => task.id === taskId)!
       task.dueDate = dueDate
 
-      const data = {__typename: 'UpdateTaskDueDatePayload', error: null, task}
+      const data = { __typename: 'UpdateTaskDueDatePayload', error: null, task }
       if (userId !== demoViewerId) {
         this.emit(TASK, data)
       }
-      return {updateTaskDueDate: data}
+      return { updateTaskDueDate: data }
     },
-    DragDiscussionTopicMutation: ({stageId, sortOrder}, userId) => {
+    DragDiscussionTopicMutation: ({ stageId, sortOrder }, userId) => {
       const discussPhase = this.db.newMeeting.phases!.find(
         (phase) => phase.phaseType === DISCUSS
       ) as IDiscussPhase
-      const {stages} = discussPhase
+      const { stages } = discussPhase
       const draggedStage = stages.find((stage) => stage.id === stageId)!
       draggedStage.sortOrder = sortOrder
       stages.sort((a, b) => {
@@ -1329,9 +1358,9 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       if (userId !== demoViewerId) {
         this.emit(SubscriptionChannel.MEETING, data)
       }
-      return {dragDiscussionTopic: data}
+      return { dragDiscussionTopic: data }
     },
-    EndNewMeetingMutation: ({meetingId}, userId) => {
+    EndNewMeetingMutation: ({ meetingId }, userId) => {
       const phases = this.db.newMeeting.phases as NewMeetingPhase[]
       const lastPhase = phases[phases.length - 1] as IDiscussPhase
       const currentStage = lastPhase.stages.find((stage) => stage.startAt && !stage.endAt)
@@ -1358,20 +1387,20 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       if (userId !== demoViewerId) {
         this.emit(TEAM, data)
       }
-      return {endNewMeeting: data}
+      return { endNewMeeting: data }
     },
-    InviteToTeamMutation: ({invitees}) => {
-      return {inviteToTeam: {invitees}}
+    InviteToTeamMutation: ({ invitees }) => {
+      return { inviteToTeam: { invitees } }
     },
-    UpdateCommentContentMutation: ({commentId, content}, userId) => {
+    UpdateCommentContentMutation: ({ commentId, content }, userId) => {
       const comment = this.db.comments.find((comment) => comment.id === commentId)!
       comment.content = content
 
-      const data = {__typename: 'UpdateCommentContentSuccess', error: null, comment}
+      const data = { __typename: 'UpdateCommentContentSuccess', error: null, comment }
       if (userId !== demoViewerId) {
         this.emit(SubscriptionChannel.MEETING, data)
       }
-      return {updateCommentContent: data}
+      return { updateCommentContent: data }
     }
   }
 
@@ -1380,7 +1409,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
     if (!resolve) {
       console.error('op not found', opName)
       return {
-        errors: [{message: `op not found ${opName}`}]
+        errors: [{ message: `op not found ${opName}` }]
       }
     }
     return {

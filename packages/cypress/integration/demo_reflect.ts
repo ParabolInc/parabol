@@ -1,14 +1,14 @@
 function addCard(column, text) {
   cy.get(`[data-cy=phase-item-editor-${column}-wrapper]`)
-      .as('column-phase-item-editor')
-    
+    .as('column-phase-item-editor')
+
   cy.get('@column-phase-item-editor')
     .type(`${text}`)
     .should('have.text', `${text}`)
 
   cy.get('@column-phase-item-editor')
     .type('{enter}')
-  
+
 }
 
 function editCard(column, oldText, newText) {
@@ -25,7 +25,7 @@ function editCard(column, oldText, newText) {
 }
 
 function deleteCard(column) {
-      
+
   cy.get(`[data-cy=reflection-stack-${column}-card-0-root]`)
     .as('reflection-card-delete')
 
@@ -37,7 +37,7 @@ function deleteCard(column) {
 
 describe('Test Reflect page Demo', () => {
 
-  before(function() {
+  before(function () {
     // runs before all tests in the block
     cy.visitReflect()
 
@@ -45,42 +45,39 @@ describe('Test Reflect page Demo', () => {
 
   it('Test help menu toggle', () => {
 
-    cy.get('[data-cy=help-menu-toggle]').should('be.visible')
-    
-    cy.get('[data-cy=help-menu-close]').should('be.visible').click()
-
     cy.get('[data-cy=help-menu-close]').should('not.exist')
-    
-    cy.get('[data-cy=help-menu-toggle]').should('be.visible').click().get('[data-cy=help-menu-close]').should('be.visible')
 
+    cy.get('[data-cy=tip-menu-toggle]').should('be.visible').click()
 
-  })
-
-  it('Test adding, editing, and deleting reflections', () => {
-
-    addCard('Start', 'Start column reflection')
-
-    addCard('Stop', 'Stop column reflection')
-
-    addCard('Continue', 'Continue column reflection')
-
-    editCard('Start', 'Start column reflection', 'Edit reflection')
-
-    editCard('Stop', 'Stop column reflection', 'Edit reflection')
-
-    editCard('Continue', 'Continue column reflection', 'Edit reflection')
-  
-    deleteCard('Start')
-
-    deleteCard('Stop')
-
-    deleteCard('Continue')
-  })
-
-  it('Test if can advance to groups', () => {
-
-    cy.visitPhase('group')
+    cy.get('[data-cy=help-menu-close]').should('be.visible').click().should('not.exist')
 
   })
+
+  // it('Test adding, editing, and deleting reflections', () => {
+
+  //   addCard('Start', 'Start column reflection')
+
+  //   addCard('Stop', 'Stop column reflection')
+
+  //   addCard('Continue', 'Continue column reflection')
+
+  //   editCard('Start', 'Start column reflection', 'Edit reflection')
+
+  //   editCard('Stop', 'Stop column reflection', 'Edit reflection')
+
+  //   editCard('Continue', 'Continue column reflection', 'Edit reflection')
+
+  //   deleteCard('Start')
+
+  //   deleteCard('Stop')
+
+  //   deleteCard('Continue')
+  // })
+
+  // it('Test if can advance to groups', () => {
+
+  //   cy.visitPhase('group')
+
+  // })
 
 })

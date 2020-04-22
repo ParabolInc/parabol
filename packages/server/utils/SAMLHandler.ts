@@ -24,7 +24,7 @@ const redirectOnError = (res: HttpResponse, error: string) => {
 
 const GENERIC_ERROR = 'Error signing in|Please try again'
 
-const SAMLhandler23 = uWSAsyncHandler(async (res: HttpResponse, req: HttpRequest) => {
+const SAMLhandler = uWSAsyncHandler(async (res: HttpResponse, req: HttpRequest) => {
   const domain = req.getParameter(0)
   if (!domain) {
     redirectOnError(res, 'No Domain Provided!|Did you set up the service provider correctly?')
@@ -58,4 +58,4 @@ const SAMLhandler23 = uWSAsyncHandler(async (res: HttpResponse, req: HttpRequest
   })
 })
 
-export default SAMLhandler23
+export default SAMLhandler

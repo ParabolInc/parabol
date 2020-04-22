@@ -56,6 +56,7 @@ export const enum DiscussionThreadEnum {
 }
 
 export const enum DragAttribute {
+  CONTROL_BAR_COVERABLE = 'data-control-bar-coverable',
   DROPPABLE = 'data-droppable',
   DROPZONE = 'data-dropzone'
 }
@@ -154,6 +155,10 @@ export const enum MathEnum {
   MAX_INT = 2147483647
 }
 
+export const enum MeetingControlBarEnum {
+  HEIGHT = 56
+}
+
 export const enum MeetingLabels {
   TIME_LIMIT = 'Time Limit',
   TIMER = 'Timer'
@@ -214,7 +219,10 @@ export const enum ReflectionStackPerspective {
 
 export const enum RetroDemo {
   MEETING_ID = 'demoMeetingId',
-  TEAM_ID = 'demoTeamId'
+  TEAM_ID = 'demoTeamId',
+  REFLECT_STAGE_ID = 'reflectStage',
+  GROUP_STAGE_ID = 'groupStage',
+  VOTE_STAGE_ID = 'voteStage'
 }
 
 export const enum RightSidebar {
@@ -299,7 +307,6 @@ export const enum TrebuchetCloseReason {
 /* https://material.io/design/environment/elevation.html#default-elevations */
 export const enum ZIndex {
   BOTTOM_BAR = 8,
-  BOTTOM_BAR_DESKTOP = 4,
   DIALOG = 24,
   FAB = 6,
   MENU = 24 /* portal needs to float above other components, especially sidebars */,

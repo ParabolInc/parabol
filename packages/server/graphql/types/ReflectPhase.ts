@@ -3,6 +3,7 @@ import NewMeetingPhase, {newMeetingPhaseFields} from './NewMeetingPhase'
 import RetroPhaseItem from './RetroPhaseItem'
 import GenericMeetingStage from './GenericMeetingStage'
 import {GQLContext} from '../graphql'
+import {resolveGQLStagesFromPhase} from '../resolvers'
 
 const ReflectPhase = new GraphQLObjectType<any, GQLContext>({
   name: 'ReflectPhase',
@@ -36,7 +37,8 @@ const ReflectPhase = new GraphQLObjectType<any, GQLContext>({
       }
     },
     stages: {
-      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GenericMeetingStage)))
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GenericMeetingStage))),
+      resolve: resolveGQLStagesFromPhase
     },
     teamId: {
       type: new GraphQLNonNull(GraphQLID)

@@ -107,6 +107,24 @@ const addStageToBotScript = (stageId, db, reflectionGroupId) => {
       ]
     )
   })
+  ops.push({
+    op: 'FlagReadyToAdvanceMutation',
+    delay: 1000,
+    botId: 'bot1',
+    variables: {
+      stageId,
+      isReady: true
+    }
+  })
+  ops.push({
+    op: 'FlagReadyToAdvanceMutation',
+    delay: 2000,
+    botId: 'bot2',
+    variables: {
+      stageId,
+      isReady: true
+    }
+  })
   db._botScript[stageId] = ops
 }
 
@@ -123,7 +141,8 @@ const addDiscussionTopics = (db) => {
     addStageToBotScript(id, db, reflectionGroup.id)
     return Object.assign(discussStage, {
       __typename: 'RetroDiscussStage',
-      reflectionGroup
+      reflectionGroup,
+      readyCount: 0
     })
   })
   const firstDiscussStage = nextDiscussStages[0]

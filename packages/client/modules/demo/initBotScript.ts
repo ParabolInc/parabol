@@ -1,5 +1,6 @@
 import {DragReflectionDropTargetTypeEnum} from '../../types/graphql'
 import {demoTeamId} from './initDB'
+import {RetroDemo} from 'types/constEnums'
 
 // 3 -> 1
 // 4 -> 1
@@ -220,6 +221,15 @@ const initBotScript = () => {
         }
       },
       {
+        op: 'FlagReadyToAdvanceMutation',
+        delay: 500,
+        botId: 'bot1',
+        variables: {
+          stageId: RetroDemo.REFLECT_STAGE_ID,
+          isReady: true
+        }
+      },
+      {
         op: 'EditReflectionMutation',
         delay: 2000,
         botId: 'bot1',
@@ -235,6 +245,15 @@ const initBotScript = () => {
         variables: {
           phaseItemId: 'continueId',
           isEditing: false
+        }
+      },
+      {
+        op: 'FlagReadyToAdvanceMutation',
+        delay: 1,
+        botId: 'bot2',
+        variables: {
+          stageId: RetroDemo.REFLECT_STAGE_ID,
+          isReady: true
         }
       }
     ],
@@ -474,6 +493,15 @@ const initBotScript = () => {
         }
       },
       {
+        op: 'FlagReadyToAdvanceMutation',
+        delay: 1,
+        botId: 'bot1',
+        variables: {
+          stageId: RetroDemo.GROUP_STAGE_ID,
+          isReady: true
+        }
+      },
+      {
         op: 'UpdateDragLocationMutation',
         delay: 700,
         botId: 'bot2',
@@ -513,6 +541,15 @@ const initBotScript = () => {
             targetOffsetX: 10,
             targetOffsetY: 20
           }
+        }
+      },
+      {
+        op: 'FlagReadyToAdvanceMutation',
+        delay: 1,
+        botId: 'bot2',
+        variables: {
+          stageId: RetroDemo.GROUP_STAGE_ID,
+          isReady: true
         }
       }
     ],
@@ -590,12 +627,30 @@ const initBotScript = () => {
         }
       },
       {
+        op: 'FlagReadyToAdvanceMutation',
+        delay: 1,
+        botId: 'bot1',
+        variables: {
+          stageId: RetroDemo.VOTE_STAGE_ID,
+          isReady: true
+        }
+      },
+      {
         op: 'VoteForReflectionGroupMutation',
         delay: 1000,
         botId: 'bot2',
         variables: {
           isUnvote: false,
           reflectionGroupId: 'botGroup7'
+        }
+      },
+      {
+        op: 'FlagReadyToAdvanceMutation',
+        delay: 1,
+        botId: 'bot2',
+        variables: {
+          stageId: RetroDemo.VOTE_STAGE_ID,
+          isReady: true
         }
       },
       {
