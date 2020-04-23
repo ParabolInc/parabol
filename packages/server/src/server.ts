@@ -2,11 +2,18 @@
 // import './tracer'
 
 import uws, {SHARED_COMPRESSOR} from 'uWebSockets.js'
-import rootSchema from './graphql/rootSchema'
 import './initSentry'
 import PROD from './PROD'
 
+let lastPrint
 process.on('uncaughtException', (err) => {
+  const {message} = err
+  if (message === '__webpack_require__(...).default is not a function') {
+    if (Date.now() - lastPrint < 1000) return
+    lastPrint = Date.now()
+    console.log('ERROR: The last file you saved has a syntax error')
+    return
+  }
   console.log('FIXME UNCAUGHT EXCEPTION', err)
 })
 
@@ -42,59 +49,28 @@ uws
   .any('/*', (...args) => require('./createSSR').default(...args))
   .listen(PORT, (...args) => require('./listenHandler').default(...args))
 
+if (!PROD) {
+  require('./serveFromWebpack').getWebpackDevMiddleware()
+}
 // Development server details
 
 if (!PROD && module.hot) {
-  const rootSchemaRef = {current: rootSchema}
-  const schemaCtx = {oldSchema: '', delay: 3000}
-  // function hotErrorHandler(err) {
-  // console.log("HANDLE")
-  // require.cache[module.id].hot.accept(hotErrorHandler)
-  // }
-
-  // module.hot.accept((err) => {
-
-  // })
-
-  module.hot.accept(
-    [
-      './serveFromWebpack',
-      './ICSHandler',
-      './PWAHandler',
-      './listenHandler',
-      './billing/stripeWebhookHandler',
-      './integrations/githubWebhookHandler',
-      './sse/SSEConnectionHandler',
-      './sse/SSEPingHandler',
-      './staticFileHandler',
-      './utils/SAMLHandler',
-      './graphql/httpGraphQLHandler',
-      './graphql/intranetGraphQLHandler',
-      './createSSR',
-      './socketHandlers/handleMessage',
-      './socketHandlers/handleClose',
-      './socketHandlers/handleOpen'
-      // these are just needed to keep the gql schema fresh
-      // './graphql/rootSchema',
-      // './utils/updateGQLSchema'
-    ],
-    () => {
-      // console.log('ACCEPT CB')
-      // update the gql schema here vs. in a helper file because we've alreayd parsed it here
-      // try {
-      // const nextRootSchema = require('./graphql/rootSchema').default
-      // if (nextRootSchema === rootSchemaRef.current) return
-      // rootSchemaRef.current = nextRootSchema
-      // const updateGQLSchema = require('./utils/updateGQLSchema').default
-      // updateGQLSchema(schemaCtx)
-      // } catch (e) {
-      // console.log('failed to update, setting good')
-      // ignore
-      // }
-    }
-  )
-}
-
-if (!PROD) {
-  require('./serveFromWebpack').getWebpackDevMiddleware()
+  module.hot.accept([
+    './serveFromWebpack',
+    './ICSHandler',
+    './PWAHandler',
+    './listenHandler',
+    './billing/stripeWebhookHandler',
+    './integrations/githubWebhookHandler',
+    './sse/SSEConnectionHandler',
+    './sse/SSEPingHandler',
+    './staticFileHandler',
+    './utils/SAMLHandler',
+    './graphql/httpGraphQLHandler',
+    './graphql/intranetGraphQLHandler',
+    './createSSR',
+    './socketHandlers/handleMessage',
+    './socketHandlers/handleClose',
+    './socketHandlers/handleOpen'
+  ])
 }

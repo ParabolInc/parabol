@@ -34,12 +34,25 @@ import TimelineEventJoinedParabol from './types/TimelineEventJoinedParabol'
 import TimelineEventTeamCreated from './types/TimelineEventTeamCreated'
 import UpdatesPhase from './types/UpdatesPhase'
 
-function hotErrorHandler(err) {
-  console.log('ROOT ACCEPT', module.id)
-  require.cache[module.id].hot.accept(hotErrorHandler)
+if (module.hot) {
+  const acceptChildren = () => {
+    require.cache[module.id].hot.accept(acceptChildren)
+  }
+  // accepting here allows us to make errors in the schema childrem without requirimg a restart
+  module.hot.accept(acceptChildren)
+  // every time this module gets loaded, see if it's different from it's previous version.
+  //if so, update the schema.graphql
+  if (!global.hmrSchema) {
+    global.hmrSchema = module
+  } else {
+    const nextRootSchema = module
+    if (nextRootSchema !== global.hmrSchema) {
+      global.hmrSchema = nextRootSchema
+      const updateGQLSchema = require('../utils/updateGQLSchema').default
+      updateGQLSchema({delay: 3000, oldSchema: global.hmrSchema})
+    }
+  }
 }
-
-module.hot.accept(hotErrorHandler)
 
 export default new GraphQLSchema({
   query,

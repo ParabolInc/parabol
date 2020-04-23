@@ -34,12 +34,10 @@ const schemaPath = path.join(PROJECT_ROOT, 'schema.graphql')
 const compileGraphQL = () => {
   return new Promise((resolve) => {
     const compileRelayPath = path.join(__dirname, 'compileRelay.js')
-    console.log('forking relay')
-    let relayWatchFork = fork(compileRelayPath)
+    let relayWatchFork = fork(compileRelayPath, { stdio: 'pipe' })
     let resolved = false
-    const handleStdOut = (data) => {
+    relayWatchFork.stdout.on('data', (data) => {
       const str = data.toString().trim()
-      if (!str) return
       if (str.startsWith('Watching for changes to graphql...')) {
         console.log('🌧️ 🌧️ 🌧️        Watching Relay        🌧️ 🌧️ 🌧️')
         resolved = true
@@ -47,11 +45,10 @@ const compileGraphQL = () => {
       } else if (resolved) {
         console.log(str)
       }
-    }
-    // relayWatchFork.stderr.on('data', (data) => {
-    // console.log('ERR', data.toString())
-    // })
-    // relayWatchFork.stdout.on('data', handleStdOut)
+    })
+    relayWatchFork.stderr.on('data', (data) => {
+      console.log('ERR', data.toString().trim())
+    })
 
     let throttleId
     let tooSoonToWatch = true
@@ -60,30 +57,26 @@ const compileGraphQL = () => {
       resolve()
     }, 3000)
     fs.watch(schemaPath, () => {
-      console.log('schema path changed', tooSoonToWatch)
       if (tooSoonToWatch) return
       clearTimeout(throttleId)
       throttleId = setTimeout(() => {
         throttleId = undefined
         console.log('killing & forking relay')
         relayWatchFork.kill('SIGINT')
-        relayWatchFork = fork(compileRelayPath)
+        relayWatchFork = fork(compileRelayPath, { stdio: 'pipe' })
       }, 3000)
     })
   })
 }
 
-const dev = async (isDangerous) => {
-  const isInit = !fs.existsSync(path.join(TOOLBOX_ROOT, 'migrateDB.js'))
+const dev = async (maybeInit, isDangerous) => {
+  const isInit = !fs.existsSync(path.join(TOOLBOX_ROOT, 'migrateDB.js')) || maybeInit
   if (isInit) {
     console.log('👋👋👋      Welcome to Parabol!      👋👋👋')
     await compileToolbox()
   }
   await require('./toolbox/updateSchema.js').default()
   await compileGraphQL()
-  const qm = require('../queryMap.json')
-  console.log('isQMEmpty', Object.keys(qm).length)
-  // return
   if (!isDangerous) {
     fork(path.join(TOOLBOX_ROOT, 'migrateDB.js'))
     await rmdir(path.join(PROJECT_ROOT, 'dev/hot'), { recursive: true })
@@ -96,5 +89,8 @@ const dev = async (isDangerous) => {
 
 }
 
-const isDangerous = process.argv[2] === '-d'
-dev(isDangerous)
+const args = process.argv.slice(2)
+const isInit = args.includes('-i')
+const isDangerous = isInit ? false : args.includes('-d')
+
+dev(isInit, isDangerous)

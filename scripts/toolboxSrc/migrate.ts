@@ -16,7 +16,6 @@ const startMigration = async () => {
   process.env.port = port
   process.env.db = urlPath.slice(1)
   process.env.r = process.cwd()
-  console.log('Migrating DB', process.env.db, DB_ROOT)
   try {
     await migrate[direction]({all, root: DB_ROOT})
   } catch (e) {

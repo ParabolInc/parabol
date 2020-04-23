@@ -16,8 +16,7 @@ node_modules/
 package-lock.json
 packages/cypress/screenshots/
 packages/cypress/videos/
-packages/server/**/queryMap.json
-**/webpack/dll/
+queryMap.json
 packages/**/lib/*
 rethinkdb_data/
 rethinkdb_dump_*

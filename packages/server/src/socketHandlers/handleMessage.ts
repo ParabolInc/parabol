@@ -4,9 +4,9 @@ import handleGraphQLTrebuchetRequest from '../graphql/handleGraphQLTrebuchetRequ
 import ConnectionContext from '../socketHelpers/ConnectionContext'
 import keepAlive from '../socketHelpers/keepAlive'
 import sendGQLMessage from '../socketHelpers/sendGQLMessage'
+import sendToSentry from '../utils/sendToSentry'
 import handleSignal from '../wrtc/signalServer/handleSignal'
 import validateInit from '../wrtc/signalServer/validateInit'
-import sendToSentry from '../utils/sendToSentry'
 
 interface WRTCMessage {
   type: 'WRTC_SIGNAL'
@@ -66,5 +66,4 @@ const safeHandleMessage = (websocket: WebSocket, message: ArrayBuffer) => {
     sendToSentry(e)
   }
 }
-
 export default safeHandleMessage
