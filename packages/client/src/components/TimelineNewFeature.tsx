@@ -118,6 +118,7 @@ class TimelineNewFeature extends Component<Props> {
 export default createFragmentContainer(withAtmosphere(withMutationProps(TimelineNewFeature)), {
   viewer: graphql`
     fragment TimelineNewFeature_viewer on User {
+      picture
       newFeature {
         copy
         url

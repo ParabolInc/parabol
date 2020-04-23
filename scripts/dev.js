@@ -35,20 +35,23 @@ const compileGraphQL = () => {
   return new Promise((resolve) => {
     const compileRelayPath = path.join(__dirname, 'compileRelay.js')
     console.log('forking relay')
-    let relayWatchFork = fork(compileRelayPath, { stdio: 'pipe' })
+    let relayWatchFork = fork(compileRelayPath)
     let resolved = false
     const handleStdOut = (data) => {
       const str = data.toString().trim()
       if (!str) return
       if (str.startsWith('Watching for changes to graphql...')) {
-        // console.log('🌧️ 🌧️ 🌧️        Watching Relay        🌧️ 🌧️ 🌧️')
+        console.log('🌧️ 🌧️ 🌧️        Watching Relay        🌧️ 🌧️ 🌧️')
         resolved = true
         resolve()
       } else if (resolved) {
         console.log(str)
       }
     }
-    relayWatchFork.stdout.on('data', handleStdOut)
+    // relayWatchFork.stderr.on('data', (data) => {
+    // console.log('ERR', data.toString())
+    // })
+    // relayWatchFork.stdout.on('data', handleStdOut)
 
     let throttleId
     let tooSoonToWatch = true
@@ -56,16 +59,17 @@ const compileGraphQL = () => {
       tooSoonToWatch = false
       resolve()
     }, 3000)
-    // fs.watch(schemaPath, () => {
-    //   if (tooSoonToWatch) return
-    //   clearTimeout(throttleId)
-    //   throttleId = setTimeout(() => {
-    //     throttleId = undefined
-    //     console.log('killing & forking relay')
-    //     relayWatchFork.kill('SIGINT')
-    //     relayWatchFork = fork(compileRelayPath)
-    //   }, 3000)
-    // })
+    fs.watch(schemaPath, () => {
+      console.log('schema path changed', tooSoonToWatch)
+      if (tooSoonToWatch) return
+      clearTimeout(throttleId)
+      throttleId = setTimeout(() => {
+        throttleId = undefined
+        console.log('killing & forking relay')
+        relayWatchFork.kill('SIGINT')
+        relayWatchFork = fork(compileRelayPath)
+      }, 3000)
+    })
   })
 }
 
@@ -77,13 +81,13 @@ const dev = async (isDangerous) => {
   }
   await require('./toolbox/updateSchema.js').default()
   await compileGraphQL()
-  // const qm = require('../queryMap.json')
-  // console.log('isQMEmpty', Object.keys(qm).length)
+  const qm = require('../queryMap.json')
+  console.log('isQMEmpty', Object.keys(qm).length)
   // return
   if (!isDangerous) {
-    // fork(path.join(TOOLBOX_ROOT, 'migrateDB.js'))
-    // await rmdir(path.join(PROJECT_ROOT, 'dev/hot'), { recursive: true })
-    // await require('./buildDll')()
+    fork(path.join(TOOLBOX_ROOT, 'migrateDB.js'))
+    await rmdir(path.join(PROJECT_ROOT, 'dev/hot'), { recursive: true })
+    await require('./buildDll')()
     await compileServers()
   }
 

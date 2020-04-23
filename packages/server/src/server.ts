@@ -47,6 +47,15 @@ uws
 if (!PROD && module.hot) {
   const rootSchemaRef = {current: rootSchema}
   const schemaCtx = {oldSchema: '', delay: 3000}
+  // function hotErrorHandler(err) {
+  // console.log("HANDLE")
+  // require.cache[module.id].hot.accept(hotErrorHandler)
+  // }
+
+  // module.hot.accept((err) => {
+
+  // })
+
   module.hot.accept(
     [
       './serveFromWebpack',
@@ -64,23 +73,24 @@ if (!PROD && module.hot) {
       './createSSR',
       './socketHandlers/handleMessage',
       './socketHandlers/handleClose',
-      './socketHandlers/handleOpen',
+      './socketHandlers/handleOpen'
       // these are just needed to keep the gql schema fresh
-      './graphql/rootSchema',
-      './utils/updateGQLSchema'
+      // './graphql/rootSchema',
+      // './utils/updateGQLSchema'
     ],
     () => {
+      // console.log('ACCEPT CB')
       // update the gql schema here vs. in a helper file because we've alreayd parsed it here
-      try {
-        const nextRootSchema = require('./graphql/rootSchema').default
-        if (nextRootSchema === rootSchemaRef.current) return
-        rootSchemaRef.current = nextRootSchema
-        const updateGQLSchema = require('./utils/updateGQLSchema').default
-        updateGQLSchema(schemaCtx)
-      } catch (e) {
-        console.log('failed to update, setting good')
-        // ignore
-      }
+      // try {
+      // const nextRootSchema = require('./graphql/rootSchema').default
+      // if (nextRootSchema === rootSchemaRef.current) return
+      // rootSchemaRef.current = nextRootSchema
+      // const updateGQLSchema = require('./utils/updateGQLSchema').default
+      // updateGQLSchema(schemaCtx)
+      // } catch (e) {
+      // console.log('failed to update, setting good')
+      // ignore
+      // }
     }
   )
 }

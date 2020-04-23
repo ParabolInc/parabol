@@ -1,6 +1,5 @@
 const path = require('path')
 
-console.log(__dirname, 'DD')
 module.exports = {
   artifactDirectory: path.join(__dirname, 'packages/client/src/__generated__'),
   clientSchema: path.join(__dirname, 'packages/client/clientSchema.graphql'),

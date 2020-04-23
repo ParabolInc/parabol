@@ -34,7 +34,13 @@ import TimelineEventJoinedParabol from './types/TimelineEventJoinedParabol'
 import TimelineEventTeamCreated from './types/TimelineEventTeamCreated'
 import UpdatesPhase from './types/UpdatesPhase'
 
-console.log('hey4')
+function hotErrorHandler(err) {
+  console.log('ROOT ACCEPT', module.id)
+  require.cache[module.id].hot.accept(hotErrorHandler)
+}
+
+module.hot.accept(hotErrorHandler)
+
 export default new GraphQLSchema({
   query,
   mutation,

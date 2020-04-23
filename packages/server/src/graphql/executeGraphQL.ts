@@ -115,4 +115,10 @@ const executeGraphQL = async <T = ExecutionResultDataDefault>(req: GQLRequest) =
   return response
 }
 
+function hotErrorHandler(err) {
+  console.log('EX ACCEPT', module.id)
+  require.cache[module.id].hot.accept(hotErrorHandler)
+}
+module.hot.accept(hotErrorHandler)
+
 export default executeGraphQL
