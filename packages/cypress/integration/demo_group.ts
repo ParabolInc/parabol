@@ -107,7 +107,7 @@ function editGroupTitle(column, newText) {
 }
 
 describe('Test Group page Demo', () => {
-  before(function() {
+  before(function () {
     // runs before all tests in the block
     cy.visitReflect().visitPhase('group')
   })
@@ -151,7 +151,6 @@ describe('Test Group page Demo', () => {
   })
 
   it('Verify that robots can group cards', () => {
-    cy.get(`[data-cy=grouping-complete-true]`).should('exist')
 
     checkGroup('Start', 3)
 

@@ -1,15 +1,15 @@
 import useAtmosphere from './useAtmosphere'
-import {readInlineData} from 'relay-runtime'
-import {useCallback} from 'react'
+import { readInlineData } from 'relay-runtime'
+import { useCallback } from 'react'
 import findStageById from '../utils/meetings/findStageById'
-import {demoTeamId} from '../modules/demo/initDB'
+import { demoTeamId } from '../modules/demo/initDB'
 import LocalAtmosphere from '../modules/demo/LocalAtmosphere'
 import updateLocalStage from '../utils/relay/updateLocalStage'
-import {INavigateMeetingOnMutationArguments} from '../types/graphql'
+import { INavigateMeetingOnMutationArguments } from '../types/graphql'
 import isForwardProgress from '../utils/meetings/isForwardProgress'
 import NavigateMeetingMutation from '../mutations/NavigateMeetingMutation'
 import graphql from 'babel-plugin-relay/macro'
-import {useGotoStageId_meeting} from '__generated__/useGotoStageId_meeting.graphql'
+import { useGotoStageId_meeting } from '__generated__/useGotoStageId_meeting.graphql'
 
 const useGotoStageId = (meetingRef: any) => {
   const atmosphere = useAtmosphere()
@@ -44,12 +44,13 @@ const useGotoStageId = (meetingRef: any) => {
         id: meetingId,
         phases
       } = meeting
-      const {viewerId} = atmosphere
+      const { viewerId } = atmosphere
       const isViewerFacilitator = viewerId === facilitatorUserId
       const res = findStageById(phases, stageId)
       if (!res) return
-      const {stage} = res
-      const {isNavigable, isNavigableByFacilitator} = stage
+      const { stage } = res
+      const { isNavigable, isNavigableByFacilitator } = stage
+
       const canNavigate = isViewerFacilitator ? isNavigableByFacilitator : isNavigable
       if (!canNavigate) return
       if (teamId === demoTeamId) {
@@ -59,8 +60,8 @@ const useGotoStageId = (meetingRef: any) => {
       if (isViewerFacilitator && isNavigableByFacilitator && !endedAt) {
         const res = findStageById(phases, facilitatorStageId)
         if (!res) return
-        const {stage} = res
-        const {isComplete} = stage
+        const { stage } = res
+        const { isComplete } = stage
         const variables = {
           meetingId,
           facilitatorStageId: stageId

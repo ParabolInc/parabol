@@ -93,11 +93,9 @@ const visitPhase = (phase: string, idx = '') => {
       return false
     }
   })
-  // cy.wait(300000)
   cy.get(`[data-cy=next-phase]`)
     .should('be.visible')
     .click()
-  // .pipe(click)
 
   cy.url().should('be.eq', `http://localhost:3000/retrospective-demo/${phase}${idx}`)
 }

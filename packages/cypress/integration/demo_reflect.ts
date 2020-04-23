@@ -53,31 +53,31 @@ describe('Test Reflect page Demo', () => {
 
   })
 
-  // it('Test adding, editing, and deleting reflections', () => {
+  it('Test adding, editing, and deleting reflections', () => {
 
-  //   addCard('Start', 'Start column reflection')
+    addCard('Start', 'Start column reflection')
 
-  //   addCard('Stop', 'Stop column reflection')
+    addCard('Stop', 'Stop column reflection')
 
-  //   addCard('Continue', 'Continue column reflection')
+    addCard('Continue', 'Continue column reflection')
 
-  //   editCard('Start', 'Start column reflection', 'Edit reflection')
+    editCard('Start', 'Start column reflection', 'Edit reflection')
 
-  //   editCard('Stop', 'Stop column reflection', 'Edit reflection')
+    editCard('Stop', 'Stop column reflection', 'Edit reflection')
 
-  //   editCard('Continue', 'Continue column reflection', 'Edit reflection')
+    editCard('Continue', 'Continue column reflection', 'Edit reflection')
 
-  //   deleteCard('Start')
+    deleteCard('Start')
 
-  //   deleteCard('Stop')
+    deleteCard('Stop')
 
-  //   deleteCard('Continue')
-  // })
+    deleteCard('Continue')
+  })
 
-  // it('Test if can advance to groups', () => {
+  it('Test if can advance to groups', () => {
 
-  //   cy.visitPhase('group')
+    cy.visitPhase('group')
 
-  // })
+  })
 
 })

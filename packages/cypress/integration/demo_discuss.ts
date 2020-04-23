@@ -178,77 +178,77 @@ describe('Test Discuss page Demo', () => {
 
     // cy.get(`[data-cy=next-topic]`).click()
 
-    // cy.wait(3000)
+    cy.wait(1000)
 
     // cy.get(`[data-cy=help-menu-toggle]`).click()
   })
 
-  // it('can create a new task', () => {
-  //   addTask('New Task created').then((result) => {
-  //     taskIndex = result
-  //   })
-  // })
+  it('can create a new task', () => {
+    addTask('New Task created').then((result) => {
+      taskIndex = result
+    })
+  })
 
-  // it('can edit a created task', () => {
-  //   editTask('Edited the task', taskIndex)
-  // })
+  it('can edit a created task', () => {
+    editTask('Edited the task', taskIndex)
+  })
 
-  // it('can reply to a created task', () => {
-  //   replyComment('Replied to task', taskIndex, 0)
-  // })
+  it('can reply to a created task', () => {
+    replyComment('Replied to task', taskIndex, 0)
+  })
 
-  // it('can reply to a created task with a task', () => {
-  //   replyTask('Replied to task with task', taskIndex, 1)
+  it('can reply to a created task with a task', () => {
+    replyTask('Replied to task with task', taskIndex, 1)
 
-  // })
+  })
 
-  // it('can create a new comment in discussion board', () => {
-  //   addComment('New comment created').then((result) => {
-  //     commentIndex = result
-  //   })
-  // })
+  it('can create a new comment in discussion board', () => {
+    addComment('New comment created').then((result) => {
+      commentIndex = result
+    })
+  })
 
-  // it('can edit a created comment in discussion board', () => {
-  //   editComment('Edited the comment', commentIndex)
-  // })
+  it('can edit a created comment in discussion board', () => {
+    editComment('Edited the comment', commentIndex)
+  })
 
-  // it('can delete a created comment in discussion board', () => {
-  //   deleteComment(commentIndex)
-  // })
+  it('can delete a created comment in discussion board', () => {
+    deleteComment(commentIndex)
+  })
 
-  // it('can "publish" a task to "JIRA" (this is simulated)', () => {
-  //   addTask('Create task to test publish to JIRA').then((result) => {
-  //     publishToJira(result)
-  //   })
-  // })
+  it('can "publish" a task to "JIRA" (this is simulated)', () => {
+    addTask('Create task to test publish to JIRA').then((result) => {
+      publishToJira(result)
+    })
+  })
 
-  // it('can advance to a new discussion item', () => {
-  //   cy.get(`[data-cy=next-topic]`).click()
-  //   cy.get(`[data-cy=next-topic]`).click()
+  it('can advance to a new discussion item', () => {
+    cy.get(`[data-cy=next-phase]`).click()
+    cy.get(`[data-cy=next-phase]`).click()
 
-  // })
+  })
 
-  // it('can navigate back to a previous item', () => {
-  //   goToPreviousTopic(1)
-  // })
+  it('can navigate back to a previous item', () => {
+    goToPreviousTopic(1)
+  })
 
-  // it('can still add a new task', () => {
-  //   addTask('Can still add a new task')
-  // })
+  it('can still add a new task', () => {
+    addTask('Can still add a new task')
+  })
 
-  // it('can end meeting', () => {
-  //   cy.get('[data-cy=end-button').click()
-  // })
+  it('can end meeting', () => {
+    cy.get('[data-cy=end-button').click()
+  })
 
-  // it('can see a meeting summary', () => {
-  //   cy.url().should('include', '/retrospective-demo-summary')
-  // })
+  it('can see a meeting summary', () => {
+    cy.url().should('include', '/retrospective-demo-summary')
+  })
 
-  // it('can click CTA', () => {
-  //   cy.get(`[data-cy=create-account]`)
-  //     .should('be.visible')
-  //     .click()
-  // })
+  it('can click CTA', () => {
+    cy.get(`[data-cy=create-account]`)
+      .should('be.visible')
+      .click()
+  })
 
 
 })
