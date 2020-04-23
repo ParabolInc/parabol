@@ -51,13 +51,14 @@ const noCommentLinkStyle = {
 }
 
 interface Props {
+  isDemo: boolean
   isEmail: boolean
   topic: RetroTopic_topic
   to: string
 }
 
 const RetroTopic = (props: Props) => {
-  const {isEmail, to, topic} = props
+  const {isDemo, isEmail, to, topic} = props
   const {reflections, title, voteCount, commentCount} = topic
   const imageSource = isEmail ? 'static' : 'local'
   const icon = imageSource === 'local' ? 'thumb_up_18.svg' : 'thumb_up_18@3x.png'
@@ -74,28 +75,30 @@ const RetroTopic = (props: Props) => {
     <>
       <tr>
         <td align='center' style={{paddingTop: 20}}>
-          <AnchorIfEmail href={to} isEmail={isEmail} style={topicThemeHeading}>
+          <AnchorIfEmail href={to} isDemo={isDemo} isEmail={isEmail} style={topicThemeHeading}>
             {title}
           </AnchorIfEmail>
         </td>
       </tr>
       <tr>
         <td align='center' style={votesBlock}>
-          <AnchorIfEmail href={to} isEmail={isEmail}>
+          <AnchorIfEmail href={to} isDemo={isDemo} isEmail={isEmail}>
             <img crossOrigin='' height='18' src={src} width='18' style={imageStyle} />
           </AnchorIfEmail>
-          <AnchorIfEmail href={to} isEmail={isEmail} style={voteCountStyle}>
+          <AnchorIfEmail href={to} isDemo={isDemo} isEmail={isEmail} style={voteCountStyle}>
             {voteCount}
           </AnchorIfEmail>
         </td>
       </tr>
-      <tr>
-        <td align='center'>
-          <AnchorIfEmail href={to} isEmail={isEmail} style={commentLinkStyle}>
-            {commentLinkLabel}
-          </AnchorIfEmail>
-        </td>
-      </tr>
+      {!isDemo && (
+        <tr>
+          <td align='center'>
+            <AnchorIfEmail href={to} isEmail={isEmail} style={commentLinkStyle}>
+              {commentLinkLabel}
+            </AnchorIfEmail>
+          </td>
+        </tr>
+      )}
       <tr>
         <td>
           {grid((reflectionCard) => (
