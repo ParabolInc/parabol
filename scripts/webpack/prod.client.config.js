@@ -1,4 +1,4 @@
-require('./dotenv')
+require('./utils/dotenv')
 const path = require('path')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const webpack = require('webpack')
@@ -17,12 +17,13 @@ const getProjectRoot = require('./utils/getProjectRoot')
 const PROJECT_ROOT = getProjectRoot()
 const CLIENT_ROOT = path.join(PROJECT_ROOT, 'packages', 'client', 'src')
 const SERVER_ROOT = path.join(PROJECT_ROOT, 'packages', 'server', 'src')
-const GQL_ROOT = path.join(PROJECT_ROOT, 'packages', 'gql-executor', 'src')
 const buildPath = path.join(PROJECT_ROOT, 'build')
 const publicPath = getWebpackPublicPath()
 
 // babel-plugin-relay requires a prod BABEL_ENV to remove hash checking logic. Probably a bug in the package.
 process.env.BABEL_ENV = 'production'
+const isDeploy = process.env.WEBPACK_DEPLOY === 'true'
+const isStats = process.env.WEBPACK_STATS === 'true'
 module.exports = {
   stats: {
     assets: false
@@ -59,11 +60,11 @@ module.exports = {
     ]
   },
   optimization: {
-    minimize: Boolean(process.env.WEBPACK_DEPLOY || process.env.WEBPACK_STATS),
+    minimize: Boolean(isDeploy || process.env.WEBPACK_STATS),
     minimizer: [
       new TerserPlugin({
         cache: true,
-        parallel: process.env.WEBPACK_DEPLOY ? 2 : true,
+        parallel: isDeploy ? 2 : true,
         sourceMap: true, // Must be set to true if using source-maps in production
         terserOptions: {
           output: {
@@ -130,7 +131,7 @@ module.exports = {
       importWorkboxFrom: 'disabled',
       exclude: [/GraphqlContainer/, /\.map$/, /^manifest.*\.js$/, /index.html$/]
     }),
-    process.env.WEBPACK_DEPLOY &&
+    isDeploy &&
     new S3Plugin({
       s3Options: {
         accessKeyId: process.env.AWS_ACCESS_KEY_ID,
@@ -143,7 +144,7 @@ module.exports = {
       basePath: getS3BasePath(),
       directory: buildPath
     }),
-    process.env.WEBPACK_STATS && new BundleAnalyzerPlugin({ generateStatsFile: true })
+    isStats && new BundleAnalyzerPlugin({ generateStatsFile: true })
   ].filter(Boolean),
   module: {
     rules: [

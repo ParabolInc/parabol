@@ -18,13 +18,10 @@ module.exports = {
   entry: {
     web: [DOTENV, path.join(SERVER_ROOT, 'server.ts')],
     gqlExecutor: [DOTENV, path.join(GQL_ROOT, 'gqlExecutor.ts')],
-    // TODO add more helpers like this
-    updateSchema: path.join(SERVER_ROOT, 'utils', 'updateGQLSchema.ts')
   },
   output: {
     filename: '[name].js',
-    path: path.join(PROJECT_ROOT, 'dist'),
-    libraryTarget: 'commonjs'
+    path: path.join(PROJECT_ROOT, 'dist')
   },
   resolve: {
     alias: {

@@ -11,7 +11,7 @@ const flushSocketConnections = async () => {
 }
 
 const storePersistedQueries = async () => {
-  const queryMap = require('../queryMap.json')
+  const queryMap = require('../../queryMap.json')
   const hashes = Object.keys(queryMap)
   const records = hashes.map((hash) => ({
     id: hash,
@@ -27,11 +27,16 @@ const storePersistedQueries = async () => {
 }
 
 const postDeploy = async () => {
-  const r = await getRethink()
-  await flushSocketConnections()
-  await storePersistedQueries()
-  await r.getPoolMaster().drain()
+  try {
+    const r = await getRethink()
+    await flushSocketConnections()
+    await storePersistedQueries()
+    await r.getPoolMaster().drain()
+  } catch (e) {
+    console.log('Post deploy error', e)
+  }
+
   process.exit()
 }
 
-export default postDeploy
+postDeploy()

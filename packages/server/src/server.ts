@@ -2,75 +2,47 @@
 // import './tracer'
 
 import uws, {SHARED_COMPRESSOR} from 'uWebSockets.js'
+import stripeWebhookHandler from './billing/stripeWebhookHandler'
+import createSSR from './createSSR'
+import httpGraphQLHandler from './graphql/httpGraphQLHandler'
+import intranetGraphQLHandler from './graphql/intranetGraphQLHandler'
+import ICSHandler from './ICSHandler'
 import './initSentry'
-import PROD from './PROD'
-
-let lastPrint
-process.on('uncaughtException', (err) => {
-  const {message} = err
-  if (message === '__webpack_require__(...).default is not a function') {
-    if (Date.now() - lastPrint < 1000) return
-    lastPrint = Date.now()
-    console.log('ERROR: The last file you saved has a syntax error')
-    return
-  }
-  console.log('FIXME UNCAUGHT EXCEPTION', err)
-})
+import githubWebhookHandler from './integrations/githubWebhookHandler'
+import listenHandler from './listenHandler'
+import PWAHandler from './PWAHandler'
+import handleClose from './socketHandlers/handleClose'
+import handleMessage from './socketHandlers/handleMessage'
+import handleOpen from './socketHandlers/handleOpen'
+import SSEConnectionHandler from './sse/SSEConnectionHandler'
+import SSEPingHandler from './sse/SSEPingHandler'
+import staticFileHandler from './staticFileHandler'
+import SAMLHandler from './utils/SAMLHandler'
 
 const PORT = Number(process.env.PORT)
 
 uws
   .App()
-  .get('/favicon.ico', (...args) => require('./PWAHandler').default(...args))
-  .get('/sw.js', (...args) => require('./PWAHandler').default(...args))
-  .get('/manifest.json', (...args) => require('./PWAHandler').default(...args))
-  .get('/static/*', (...args) => require('./staticFileHandler').default(...args))
-  .get('/email/createics', (...args) => require('./ICSHandler').default(...args))
-  .get('/sse', (...args) => require('./sse/SSEConnectionHandler').default(...args))
-  .get('/sse-ping', (...args) => require('./sse/SSEPingHandler').default(...args))
-  .post('/stripe', (...args) => require('./billing/stripeWebhookHandler').default(...args))
-  .post('/webhooks/github', (...args) =>
-    require('./integrations/githubWebhookHandler').default(...args)
-  )
-  .post('/graphql', (...args) => require('./graphql/httpGraphQLHandler').default(...args))
-  .post('/intranet-graphql', (...args) =>
-    require('./graphql/intranetGraphQLHandler').default(...args)
-  )
-  .post('/saml/:domain', (...args) => require('./utils/SAMLHandler').default(...args))
+  .get('/favicon.ico', PWAHandler)
+  .get('/sw.js', PWAHandler)
+  .get('/manifest.json', PWAHandler)
+  .get('/static/*', staticFileHandler)
+  .get('/email/createics', ICSHandler)
+  .get('/sse', SSEConnectionHandler)
+  .get('/sse-ping', SSEPingHandler)
+  .post('/stripe', stripeWebhookHandler)
+  .post('/webhooks/github', githubWebhookHandler)
+  .post('/graphql', httpGraphQLHandler)
+  .post('/intranet-graphql', intranetGraphQLHandler)
+  .post('/saml/:domain', SAMLHandler)
   .ws('/*', {
     compression: SHARED_COMPRESSOR,
     idleTimeout: 0,
     maxPayloadLength: 5 * 2 ** 20,
-    open: (...args) => require('./socketHandlers/handleOpen').default(...args),
-    message: (...args) => require('./socketHandlers/handleMessage').default(...args),
+    open: handleOpen,
+    message: handleMessage,
     // today, we don't send folks enough data to worry about backpressure
-    close: (...args) => require('./socketHandlers/handleClose').default(...args)
+    close: handleClose
   })
-  .any('/*', (...args) => require('./createSSR').default(...args))
-  .listen(PORT, (...args) => require('./listenHandler').default(...args))
-
-if (!PROD) {
-  require('./serveFromWebpack').getWebpackDevMiddleware()
-}
-// Development server details
-
-if (!PROD && module.hot) {
-  module.hot.accept([
-    './serveFromWebpack',
-    './ICSHandler',
-    './PWAHandler',
-    './listenHandler',
-    './billing/stripeWebhookHandler',
-    './integrations/githubWebhookHandler',
-    './sse/SSEConnectionHandler',
-    './sse/SSEPingHandler',
-    './staticFileHandler',
-    './utils/SAMLHandler',
-    './graphql/httpGraphQLHandler',
-    './graphql/intranetGraphQLHandler',
-    './createSSR',
-    './socketHandlers/handleMessage',
-    './socketHandlers/handleClose',
-    './socketHandlers/handleOpen'
-  ])
-}
+  .any('/*', createSSR)
+  .listen(PORT, listenHandler)
