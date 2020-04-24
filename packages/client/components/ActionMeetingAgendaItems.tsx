@@ -64,7 +64,7 @@ const Inception = styled('div')({
 
 const ActionMeetingAgendaItems = (props: Props) => {
   const {avatarGroup, toggleSidebar, meeting} = props
-  const {showSidebar, team, id: meetingId, localStage} = meeting
+  const {showSidebar, team, id: meetingId, endedAt, localStage} = meeting
   const {id: teamId, agendaItems, tasks} = team
   const {agendaItemId} = localStage
   const agendaTasks = useMemo(() => {
@@ -80,7 +80,7 @@ const ActionMeetingAgendaItems = (props: Props) => {
   const {picture, preferredName} = teamMember
   return (
     <MeetingContent>
-      <MeetingHeaderAndPhase>
+      <MeetingHeaderAndPhase hideBottomBar={!!endedAt}>
         <MeetingTopBar
           avatarGroup={avatarGroup}
           isMeetingSidebarCollapsed={!showSidebar}

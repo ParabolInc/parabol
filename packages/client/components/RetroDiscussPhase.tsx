@@ -136,7 +136,7 @@ const ColumnInner = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
 const RetroDiscussPhase = (props: Props) => {
   const {avatarGroup, toggleSidebar, meeting} = props
   const phaseRef = useRef<HTMLDivElement>(null)
-  const {id: meetingId, localStage, showSidebar, organization} = meeting
+  const {id: meetingId, endedAt, localStage, showSidebar, organization} = meeting
   const {reflectionGroup} = localStage
   const isDesktop = useBreakpoint(Breakpoint.SINGLE_REFLECTION_COLUMN)
   // reflection group will be null until the server overwrites the placeholder.
@@ -155,7 +155,7 @@ const RetroDiscussPhase = (props: Props) => {
   return (
     <MeetingContent ref={phaseRef}>
       <DiscussPhaseSqueeze meeting={meeting} organization={organization} />
-      <MeetingHeaderAndPhase>
+      <MeetingHeaderAndPhase hideBottomBar={!!endedAt}>
         <MeetingTopBar
           avatarGroup={avatarGroup}
           isMeetingSidebarCollapsed={!showSidebar}
@@ -232,6 +232,7 @@ export default createFragmentContainer(RetroDiscussPhase, {
       ...ReflectionGroup_meeting
       ...StageTimerDisplay_meeting
       id
+      endedAt
       organization {
         ...DiscussPhaseSqueeze_organization
       }

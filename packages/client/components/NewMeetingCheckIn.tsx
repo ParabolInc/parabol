@@ -46,7 +46,7 @@ interface Props {
 const NewMeetingCheckIn = (props: Props) => {
   const {avatarGroup, meeting, toggleSidebar} = props
   const atmosphere = useAtmosphere()
-  const {showSidebar, localStage, phases} = meeting
+  const {endedAt, showSidebar, localStage, phases} = meeting
   const {id: localStageId} = localStage
   const teamMember = localStage.teamMember!
   const {userId} = teamMember
@@ -57,7 +57,7 @@ const NewMeetingCheckIn = (props: Props) => {
   const isMyMeetingSection = userId === viewerId
   return (
     <MeetingContent>
-      <MeetingHeaderAndPhase>
+      <MeetingHeaderAndPhase hideBottomBar={!!endedAt}>
         <MeetingTopBar
           avatarGroup={avatarGroup}
           isMeetingSidebarCollapsed={!showSidebar}
@@ -96,6 +96,7 @@ export default createFragmentContainer(NewMeetingCheckIn, {
   meeting: graphql`
     fragment NewMeetingCheckIn_meeting on NewMeeting {
       ...NewMeetingCheckInPrompt_meeting
+      endedAt
       showSidebar
       facilitatorStageId
       localStage {

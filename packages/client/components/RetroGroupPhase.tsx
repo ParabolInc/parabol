@@ -26,10 +26,10 @@ interface Props extends RetroMeetingPhaseProps {
 const RetroGroupPhase = (props: Props) => {
   const phaseRef = useRef<HTMLDivElement>(null)
   const {avatarGroup, toggleSidebar, meeting} = props
-  const {showSidebar} = meeting
+  const {endedAt, showSidebar} = meeting
   return (
     <MeetingContent ref={phaseRef}>
-      <MeetingHeaderAndPhase>
+      <MeetingHeaderAndPhase hideBottomBar={!!endedAt}>
         <MeetingTopBar
           avatarGroup={avatarGroup}
           isMeetingSidebarCollapsed={!showSidebar}
@@ -55,6 +55,7 @@ export default createFragmentContainer(RetroGroupPhase, {
       ...StageTimerControl_meeting
       ...StageTimerDisplay_meeting
       ...GroupingKanban_meeting
+      endedAt
       showSidebar
     }
   `

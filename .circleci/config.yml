@@ -14,7 +14,8 @@ jobs:
       GITHUB_REMOTE_DEVELOPMENT: "dokku@action-dev-nyc1-01.parabol.co:web"
       GITHUB_REMOTE_PRODUCTION: "dokku@action-production.parabol.co:web"
       GITHUB_REMOTE_STAGING: "dokku@action-staging.parabol.co:web"
-      PRODUCTION_BACKUP_VOLUME: "/mnt/volume-nyc1-01/action-production"
+      PRODUCTION_BACKUP_LOCATION: "dokku@backups.action-production.parabol.co"
+      PRODUCTION_BACKUP_VOLUME: "/mnt/volume_nyc1_01/action-production-rethinkdb-nyc1-01"
       SENTRY_ORG: "parabol"
       SENTRY_PROJECT: "action-production"
     working_directory: ~/action
@@ -26,11 +27,11 @@ jobs:
           name: Slack setup
           command: |
             if [ "${CIRCLE_BRANCH}" == "production" ]; then
-              curl --ssl -X POST -H 'Content-type: application/json' --data '{"text":"Starting CI and Deployment..."}' $SLACK_PROD_URL
+              curl --ssl -X POST -H 'Content-type: application/json' --data '{"text":"Starting `production` CI and Deployment..."}' $SLACK_DEVOPS_URL
             elif [ "${CIRCLE_BRANCH}" == "staging" ]; then
-              curl --ssl -X POST -H 'Content-type: application/json' --data '{"text":"Starting CI and Deployment..."}' $SLACK_STAGING_URL
+              curl --ssl -X POST -H 'Content-type: application/json' --data '{"text":"Starting `staging` CI and Deployment..."}' $SLACK_DEVOPS_URL
             elif [ "${CIRCLE_BRANCH}" == "development" ]; then
-              curl --ssl -X POST -H 'Content-type: application/json' --data '{"text":"Starting CI and Deployment..."}' $SLACK_DEV_URL
+              curl --ssl -X POST -H 'Content-type: application/json' --data '{"text":"Starting `development` CI and Deployment..."}' $SLACK_DEVOPS_URL
             fi
       - checkout
       - restore_cache:
@@ -108,11 +109,22 @@ jobs:
               ssh -o StrictHostKeyChecking=no "${SSH_DESTINATION}" -T >/dev/null
             fi &&
             if [ "${GITHUB_REMOTE}" == "${GITHUB_REMOTE_PRODUCTION}" ]; then
-              $DEVOPS_WORKDIR/dokku/rethinkdb-backup.sh \
-                -s "${SSH_DESTINATION}" -d "${PRODUCTION_BACKUP_VOLUME}"
+              ssh -o StrictHostKeyChecking=no "${PRODUCTION_BACKUP_LOCATION}" -T >/dev/null
+              $DEVOPS_WORKDIR/rethinkdb/rethinkdb-backup.sh \
+                -s "${PRODUCTION_BACKUP_LOCATION}" -d "${PRODUCTION_BACKUP_VOLUME}"
             fi &&
             if [ -n "${GITHUB_REMOTE}" ]; then
               git push -f dokku $CIRCLE_BRANCH:master
+            fi
+      - run:
+          name: Slack completion
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "production" ]; then
+              curl --ssl -X POST -H 'Content-type: application/json' --data '{"text":"`production` CI and Deployment complete"}' $SLACK_DEVOPS_URL
+            elif [ "${CIRCLE_BRANCH}" == "staging" ]; then
+              curl --ssl -X POST -H 'Content-type: application/json' --data '{"text":"`staging` CI and Deployment complete"}' $SLACK_DEVOPS_URL
+            elif [ "${CIRCLE_BRANCH}" == "development" ]; then
+              curl --ssl -X POST -H 'Content-type: application/json' --data '{"text":"`development` CI and Deployment complete"}' $SLACK_DEVOPS_URL
             fi
       - store_artifacts:
           path: ~/action/build

@@ -1,5 +1,5 @@
 import {RefObject, useEffect} from 'react'
-import {BezierCurve} from '~/types/constEnums'
+import {BezierCurve, Breakpoint} from '~/types/constEnums'
 
 interface ControlBarCoverable {
   id: string
@@ -38,6 +38,7 @@ export const useCoverable = (id: string, ref: RefObject<HTMLDivElement>, height:
   useEffect(() => {
     const el = ref.current
     if (!el) return
+    if (window.innerWidth < Breakpoint.SINGLE_REFLECTION_COLUMN) return
     const bbox = el.getBoundingClientRect()
     const {left, right} = bbox
     const oldCoverable = coverables[id]

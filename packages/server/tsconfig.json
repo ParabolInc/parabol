@@ -21,13 +21,15 @@
   },
   "files": [
     "types/modules.d.ts",
-    "email/components/SummaryEmail/MeetingSummaryEmail/MeetingSummaryEmail.tsx"
+    "email/components/SummaryEmail/MeetingSummaryEmail/MeetingSummaryEmail.tsx",
+    "email/components/MeetingSummaryEmailRootSSR.tsx",
   ],
   "exclude": [
     "**/node_modules",
   ],
   "include": [
     "*",
+    "./.eslintrc.js",
     "**/*.json",
   ]
 }

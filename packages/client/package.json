@@ -37,8 +37,6 @@
     "@types/segment-analytics": "^0.0.31",
     "@types/shortid": "^0.0.29",
     "@types/stripe-v2": "^2.0.1",
-    "@typescript-eslint/eslint-plugin": "2.7.0",
-    "@typescript-eslint/parser": "2.7.0",
     "babel-plugin-relay": "^8.0.0",
     "eslint": "^6.6.0",
     "eslint-config-prettier": "^6.5.0",
@@ -57,7 +55,7 @@
   "dependencies": {
     "@emotion/core": "^10.0.27",
     "@emotion/styled": "^10.0.27",
-    "@mattkrick/fast-rtc-swarm": "^0.4.0",
+    "@mattkrick/fast-rtc-swarm": "^0.4.1",
     "@mattkrick/graphql-trebuchet-client": "^1.0.0",
     "@mattkrick/sanitize-svg": "0.2.1",
     "@mattkrick/trebuchet-client": "^2.0.0",

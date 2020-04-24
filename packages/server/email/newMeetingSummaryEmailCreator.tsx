@@ -1,6 +1,5 @@
 import {PALETTE} from 'parabol-client/styles/paletteV2'
 import {MEETING_SUMMARY_LABEL} from 'parabol-client/utils/constants'
-import makeDateString from 'parabol-client/utils/makeDateString'
 import React from 'react'
 import {GQLContext} from '../graphql/graphql'
 import emailTemplate from './emailTemplate'
@@ -25,10 +24,9 @@ const newMeetingSummaryEmailCreator = async (props: Props) => {
   )
   const newMeeting = await dataLoader.get('newMeetings').load(meetingId)
   const team = await dataLoader.get('teams').load(newMeeting.teamId)
-  const {name: meetingName, endedAt} = newMeeting
+  const {name: meetingName} = newMeeting
   const {name: teamName} = team
-  const dateStr = makeDateString(endedAt)
-  const subject = `${teamName} ${dateStr} ${meetingName} ${MEETING_SUMMARY_LABEL}`
+  const subject = `${teamName} ${meetingName} ${MEETING_SUMMARY_LABEL}`
   const html = emailTemplate({
     bodyContent,
     title: subject,

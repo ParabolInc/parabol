@@ -27,13 +27,13 @@ module.exports = {
   output: {
     filename: '[name].js',
     path: path.join(PROJECT_ROOT, 'scripts', 'toolbox'),
-    libraryTarget: 'commonjs',
+    libraryTarget: 'commonjs'
   },
   resolve: {
     alias: {
       '~': path.join(CLIENT_ROOT),
       'parabol-server': SERVER_ROOT,
-      'parabol-client': CLIENT_ROOT,
+      'parabol-client': CLIENT_ROOT
     },
     extensions: ['.js', '.json', '.ts', '.tsx'],
     unsafeCache: true,
