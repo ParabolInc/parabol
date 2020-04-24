@@ -1,12 +1,10 @@
-// Calling this while the cwd is in dev is MUCH slower than calling it at the root dir.
-// Penalty goes away when debugging.
 const webpack = require('webpack')
-const { fork } = require('child_process')
-const getProjectRoot = require('./webpack/utils/getProjectRoot')
-const path = require('path')
+// const { fork } = require('child_process')
+// const getProjectRoot = require('./webpack/utils/getProjectRoot')
+// const path = require('path')
 
-const PROJECT_ROOT = getProjectRoot()
-const TOOLBOX_ROOT = path.join(PROJECT_ROOT, 'scripts', 'toolbox')
+// const PROJECT_ROOT = getProjectRoot()
+// const TOOLBOX_ROOT = path.join(PROJECT_ROOT, 'scripts', 'toolbox')
 
 const compileToolbox = () => {
   return new Promise((resolve) => {
@@ -40,7 +38,7 @@ const prod = async (isDeploy) => {
   await compileToolbox()
   await require('./toolbox/updateSchema.js').default()
   await require('./compileRelay')()
-  fork(path.join(TOOLBOX_ROOT, 'migrateDB.js'))
+  // fork(path.join(TOOLBOX_ROOT, 'migrateDB.js'))
   await Promise.all([
     compileServers(),
     compileClient()

@@ -39,7 +39,7 @@ const compileGraphQL = () => {
     relayWatchFork.stdout.on('data', (data) => {
       const str = data.toString().trim()
       if (str.startsWith('Watching for changes to graphql...')) {
-        console.log('🌧️ 🌧️ 🌧️        Watching Relay        🌧️ 🌧️ 🌧️')
+        console.log('🌧️ 🌧️ 🌧️         Watching Relay       🌧️ 🌧️ 🌧️')
         resolved = true
         resolve()
       } else if (resolved) {

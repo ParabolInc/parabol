@@ -10,7 +10,7 @@ const staticFileHandler = async (res: HttpResponse, req: HttpRequest) => {
   if (servedStatic) return
   safetyPatchRes(res)
   if (process.env.NODE_ENV !== 'production') {
-    const serveFromWebpack = require('./serveFromWebpack')
+    const serveFromWebpack = require('./serveFromWebpack').default
     const servedWebpack = await serveFromWebpack(res, req)
     if (servedWebpack) return
   }
