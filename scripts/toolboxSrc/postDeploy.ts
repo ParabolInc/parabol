@@ -1,4 +1,4 @@
-import getRethink from '../../packages/server/src/database/rethinkDriver'
+import getRethink from '../../packages/server/database/rethinkDriver'
 
 const flushSocketConnections = async () => {
   const r = await getRethink()

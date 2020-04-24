@@ -10,7 +10,7 @@ const startMigration = async () => {
     console.log('NODE_ENV is test, loading .env.test...')
   }
   const PROJECT_ROOT = getProjectRoot()
-  const DB_ROOT = path.join(PROJECT_ROOT, 'packages/server/src/database')
+  const DB_ROOT = path.join(PROJECT_ROOT, 'packages/server/database')
   const {hostname, port, path: urlPath} = parse(process.env.RETHINKDB_URL)
   process.env.host = hostname
   process.env.port = port

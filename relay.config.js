@@ -1,9 +1,9 @@
 const path = require('path')
 
 module.exports = {
-  artifactDirectory: path.join(__dirname, 'packages/client/src/__generated__'),
+  artifactDirectory: path.join(__dirname, 'packages/client/__generated__'),
   clientSchema: path.join(__dirname, 'packages/client/clientSchema.graphql'),
-  persistFunction: path.join(__dirname, 'packages/server/src/graphql/persistFunction.js'),
+  persistFunction: path.join(__dirname, 'packages/server/graphql/persistFunction.js'),
   persistOutput: path.join(__dirname, 'queryMap.json'),
   language: 'typescript',
   src: path.join(__dirname, 'packages'),
@@ -15,7 +15,7 @@ module.exports = {
   extensions: ['js', 'ts', 'tsx'],
   noFutureProofEnums: true,
   schema: path.join(__dirname, 'schema.graphql'),
-  include: ['client/**', 'server/src/email/**'],
+  include: ['client/**', 'server/email/**'],
   exclude: [
     '**/lib/**',
     '**/node_modules/**',

@@ -3,8 +3,8 @@ const nodeExternals = require('webpack-node-externals')
 const transformRules = require('./utils/transformRules')
 
 const PROJECT_ROOT = path.join(__dirname, '..', '..')
-const CLIENT_ROOT = path.join(PROJECT_ROOT, 'packages', 'client', 'src')
-const SERVER_ROOT = path.join(PROJECT_ROOT, 'packages', 'server', 'src')
+const CLIENT_ROOT = path.join(PROJECT_ROOT, 'packages', 'client')
+const SERVER_ROOT = path.join(PROJECT_ROOT, 'packages', 'server')
 const DOTENV = path.join(PROJECT_ROOT, 'scripts/webpack/utils/dotenv.js')
 const TOOLBOX_SRC = path.join(PROJECT_ROOT, 'scripts/toolboxSrc')
 // const CircularDependencyPlugin = require('circular-dependency-plugin')
@@ -30,9 +30,9 @@ module.exports = {
   },
   resolve: {
     alias: {
-      '~': path.join(CLIENT_ROOT, 'src'),
-      'parabol-server/lib': SERVER_ROOT,
-      'parabol-client/lib': CLIENT_ROOT,
+      '~': path.join(CLIENT_ROOT),
+      'parabol-server': SERVER_ROOT,
+      'parabol-client': CLIENT_ROOT,
     },
     extensions: ['.js', '.json', '.ts', '.tsx'],
     unsafeCache: true,

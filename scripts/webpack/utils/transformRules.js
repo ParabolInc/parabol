@@ -1,9 +1,9 @@
 const path = require('path')
 
 const transformRules = (projectRoot) => {
-  const CLIENT_ROOT = path.join(projectRoot, 'packages', 'client', 'src')
-  const SERVER_ROOT = path.join(projectRoot, 'packages', 'server', 'src')
-  const GQL_ROOT = path.join(projectRoot, 'packages', 'gql-executor', 'src')
+  const CLIENT_ROOT = path.join(projectRoot, 'packages', 'client')
+  const SERVER_ROOT = path.join(projectRoot, 'packages', 'server')
+  const GQL_ROOT = path.join(projectRoot, 'packages', 'gql-executor')
   return [
     {
       test: /\.tsx?$/,

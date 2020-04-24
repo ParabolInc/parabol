@@ -1,18 +1,18 @@
 {
   "extends": "./tsconfig.base.json",
   "include": [
-    "packages/server/src/types/modules.d.ts",
-    "packages/client/src/",
-    "packages/server/src",
+    "packages/server/types/modules.d.ts",
+    "packages/client/",
+    "packages/server",
   ],
   "compilerOptions": {
     "baseUrl": "packages",
     "paths": {
       "~/*": [
-        "client/src/*"
+        "client/*"
       ],
-      "parabol-client/lib/*": [
-        "client/src/*"
+      "parabol-client/*": [
+        "client/*"
       ]
     },
     "lib": [

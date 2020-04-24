@@ -5,8 +5,8 @@ const transformRules = require('./utils/transformRules')
 const getProjectRoot = require('./utils/getProjectRoot')
 
 const PROJECT_ROOT = getProjectRoot()
-const CLIENT_ROOT = path.join(PROJECT_ROOT, 'packages', 'client', 'src')
-const SERVER_ROOT = path.join(PROJECT_ROOT, 'packages', 'server', 'src')
+const CLIENT_ROOT = path.join(PROJECT_ROOT, 'packages', 'client')
+const SERVER_ROOT = path.join(PROJECT_ROOT, 'packages', 'server')
 
 module.exports = {
   devtool: 'eval',
@@ -23,8 +23,8 @@ module.exports = {
   resolve: {
     alias: {
       '~': CLIENT_ROOT,
-      'parabol-server/lib': SERVER_ROOT,
-      'parabol-client/lib': CLIENT_ROOT
+      'parabol-server': SERVER_ROOT,
+      'parabol-client': CLIENT_ROOT
     },
     extensions: ['.js', '.json', '.ts', '.tsx'],
     unsafeCache: true,

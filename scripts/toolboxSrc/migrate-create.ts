@@ -7,7 +7,7 @@ const startMigration = async () => {
   const name = process.argv[2]
   const {hostname, port, path: rethinkPath} = parse(process.env.RETHINKDB_URL)
   const PROJECT_ROOT = getProjectRoot()
-  const DB_ROOT = path.join(PROJECT_ROOT, 'packages/server/src/database')
+  const DB_ROOT = path.join(PROJECT_ROOT, 'packages/server/database')
   process.env.host = hostname
   process.env.port = port
   process.env.db = rethinkPath.slice(1)

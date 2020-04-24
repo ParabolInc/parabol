@@ -4,10 +4,10 @@
     "baseUrl": ".",
     "paths": {
       "~/*": [
-        "src/*"
+        "*"
       ],
-      "parabol-server/lib/*": [
-        "../server/src/*"
+      "parabol-server/*": [
+        "../server/*"
       ]
     },
     "outDir": "lib",

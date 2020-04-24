@@ -3,11 +3,11 @@
   "compilerOptions": {
     "baseUrl": "../",
     "paths": {
-      "parabol-client/lib/*": [
-        "client/src/*"
+      "parabol-client/*": [
+        "client/*"
       ],
       "~/*": [
-        "client/src/*"
+        "client/*"
       ]
     },
     "outDir": "lib",

@@ -4,11 +4,11 @@
     "baseUrl": "../",
     "paths": {
       // when we import from lib, make goto-definition point to the src
-      "parabol-server/lib/*": [
-        "server/src/*"
+      "parabol-server/*": [
+        "server/*"
       ],
-      "parabol-client/lib/*": [
-        "client/src/*"
+      "parabol-client/*": [
+        "client/*"
       ]
     },
     "outDir": "lib",

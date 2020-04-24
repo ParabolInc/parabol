@@ -1,5 +1,5 @@
 const path = require('path')
-const protocolRelativeUrl = require('../../../packages/server/src/utils/protocolRelativeUrl')
+const protocolRelativeUrl = require('../../../packages/server/utils/protocolRelativeUrl')
 
 const APP_VERSION = process.env.npm_package_version
 const APP_WEBPACK_PUBLIC_PATH_DEFAULT = '/static/'

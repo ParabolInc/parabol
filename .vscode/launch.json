@@ -108,7 +108,7 @@
             "program": "${workspaceFolder}/node_modules/.bin/jscodeshift",
             "args": [
                 "--transform=${workspaceFolder}/scripts/codeshift/packageRefToRelative.ts",
-                "${workspaceFolder}/packages/gql-executor/lib/gql-executor/src"
+                "${workspaceFolder}/packages/gql-executor/"
             ],
             "skipFiles": [
                 "<node_internals>/**"

@@ -11,9 +11,6 @@
     "url": "git+https://github.com/ParabolInc/parabol.git"
   },
   "scripts": {
-    "dev": "yarn sucrase && node .",
-    "debug": "node --nolazy --inspect=9229 .",
-    "sucrase": "sucrase src -d lib --transforms=imports,jsx,typescript -q",
     "typecheck": "yarn tsc --noEmit -p tsconfig.typecheck.json"
   },
   "bugs": {

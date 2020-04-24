@@ -1,7 +1,7 @@
 // importing cypress for typescript defs
 import 'cypress'
 
-const getRethink = require('parabol-server/src/database/rethinkDriver')
+const getRethink = require('parabol-server/database/rethinkDriver')
 
 interface DBOptions {
   source: string
