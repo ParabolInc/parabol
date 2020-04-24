@@ -36,7 +36,7 @@ import UpdatesPhase from './types/UpdatesPhase'
 
 if (module.hot) {
   const acceptChildren = () => {
-    require.cache[module.id].hot.accept(acceptChildren)
+    require.cache[module.id]!.hot.accept(acceptChildren)
   }
   // accepting here allows us to make errors in the schema childrem without requirimg a restart
   module.hot.accept(acceptChildren)

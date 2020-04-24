@@ -29,7 +29,7 @@ import handleInvalidatedSession from './hooks/handleInvalidatedSession'
 import {LocalStorageKey, TrebuchetCloseReason} from './types/constEnums'
 import handlerProvider from './utils/relay/handlerProvider'
 import {InviteToTeamMutation_notification} from './__generated__/InviteToTeamMutation_notification.graphql'
-  ; (RelayFeatureFlags as any).ENABLE_RELAY_CONTAINERS_SUSPENSE = false
+;(RelayFeatureFlags as any).ENABLE_RELAY_CONTAINERS_SUSPENSE = false
 
 interface QuerySubscription {
   subKey: string
@@ -150,7 +150,7 @@ export default class Atmosphere extends Environment {
     const transport = this.transport as GQLTrebuchetClient
     if (!transport.subscribe) return
     if (!__PRODUCTION__) {
-      const queryMap = await import('../../../queryMap.json')
+      const queryMap = await import('../../queryMap.json')
       const query = queryMap[documentId!]
       this.subscriptions[subKey] = transport.subscribe({query, variables}, sink)
     } else {
@@ -226,7 +226,7 @@ export default class Atmosphere extends Environment {
     const field = __PRODUCTION__ ? 'documentId' : 'query'
     let data = request.id
     if (!__PRODUCTION__) {
-      const queryMap = await import('../../../queryMap.json')
+      const queryMap = await import('../../queryMap.json')
       data = queryMap[request.id!]
     }
     return this.transport.fetch({[field]: data, variables}, sink || noopSink)
@@ -354,8 +354,8 @@ export default class Atmosphere extends Environment {
     this.querySubscriptions.forEach((querySub) => {
       this.unregisterQuery(querySub.queryKey)
     })
-      // remove all records
-      ; (this.getStore().getSource() as any).clear()
+    // remove all records
+    ;(this.getStore().getSource() as any).clear()
     this.upgradeTransportPromise = null
     this.authObj = null
     this.authToken = null

@@ -9,6 +9,7 @@ import {CREATE_ACCOUNT_SLUG, SIGNIN_SLUG} from '../../utils/constants'
 import ErrorBoundary from '../ErrorBoundary'
 import LoadingComponent from '../LoadingComponent/LoadingComponent'
 import PrivateRoutes from '../PrivateRoutes'
+import Snackbar from '../Snackbar'
 
 const AnalyticsPage = lazy(() => import(/* webpackChunkName: 'AnalyticsPage' */ '../AnalyticsPage'))
 const AuthenticationPage = lazy(() =>
@@ -40,7 +41,7 @@ const Action = memo(() => {
         `}
       />
       <ErrorBoundary>
-        {/* <Snackbar /> */}
+        <Snackbar />
         <Suspense fallback={<LoadingComponent spinnerSize={LoaderSize.WHOLE_PAGE} />}>
           <AnalyticsPage />
           <Switch>

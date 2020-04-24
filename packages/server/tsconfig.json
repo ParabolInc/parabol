@@ -19,14 +19,15 @@
       "node"
     ],
   },
+  "files": [
+    "types/modules.d.ts",
+    "email/components/SummaryEmail/MeetingSummaryEmail/MeetingSummaryEmail.tsx"
+  ],
   "exclude": [
-    "lib",
     "**/node_modules",
-    "src/__mocks__"
   ],
   "include": [
-    "src",
-    "src/**/*.json",
-    "../client/lib"
+    "*",
+    "**/*.json",
   ]
 }

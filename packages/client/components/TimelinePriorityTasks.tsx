@@ -76,7 +76,7 @@ const TimelinePriorityTasks = (props: Props) => {
       sortOrder =
         (activeTasks[destination.index + offset].sortOrder +
           activeTasks[destination.index].sortOrder) /
-        2 +
+          2 +
         dndNoise()
     }
     const updatedTask = {id: draggableId, sortOrder}

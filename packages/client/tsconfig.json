@@ -19,12 +19,8 @@
       "node"
     ],
   },
-  "include": [
-    "src",
-    "../server/lib"
-  ],
   "exclude": [
-    "src/serviceWorker",
+    "serviceWorker",
     "**/node_modules"
   ]
 }

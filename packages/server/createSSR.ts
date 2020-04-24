@@ -20,7 +20,7 @@ export const getClientKeys = () => {
   }
 }
 
-let minifiedHTML: Buffer
+let minifiedHTML: string
 let brotliHTML: Buffer
 const getRaw = () => {
   if (!minifiedHTML) {

@@ -17,11 +17,9 @@ package-lock.json
 packages/cypress/screenshots/
 packages/cypress/videos/
 queryMap.json
-packages/**/lib/*
 rethinkdb_data/
 rethinkdb_dump_*
 schema.graphql
-schema.json
 scratch/
 scripts/toolbox/*
 stats.json

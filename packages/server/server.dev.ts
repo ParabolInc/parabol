@@ -2,8 +2,6 @@
 // import './tracer'
 
 import uws, {SHARED_COMPRESSOR} from 'uWebSockets.js'
-import './initSentry'
-import PROD from './PROD'
 
 let lastPrint
 process.on('uncaughtException', (err) => {
@@ -49,12 +47,10 @@ uws
   .any('/*', (...args) => require('./createSSR').default(...args))
   .listen(PORT, (...args) => require('./listenHandler').default(...args))
 
-if (!PROD) {
-  require('./serveFromWebpack').getWebpackDevMiddleware()
-}
+require('./serveFromWebpack').getWebpackDevMiddleware()
 // Development server details
 
-if (!PROD && module.hot) {
+if (module.hot) {
   module.hot.accept([
     './serveFromWebpack',
     './ICSHandler',

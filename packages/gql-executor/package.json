@@ -5,7 +5,6 @@
   "author": "Matt Krick <matt.krick@gmail.com>",
   "homepage": "https://github.com/ParabolInc/parabol/tree/master/packages/gqlExecutor#readme",
   "license": "AGPL-3.0-or-later",
-  "main": "lib/gqlExecutor.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ParabolInc/parabol.git"

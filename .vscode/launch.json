@@ -93,7 +93,7 @@
             "program": "${workspaceFolder}/node_modules/.bin/babel",
             "args": [
                 "--config-file=${workspaceFolder}/packages/gql-executor/babel.config.json",
-                "${workspaceFolder}/packages/gql-executor/lib/client/utils/GitHubManager.js"
+                "${workspaceFolder}/packages/gql-executor/client/utils/GitHubManager.js"
             ],
             "skipFiles": [
                 "<node_internals>/**"
