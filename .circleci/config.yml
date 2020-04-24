@@ -62,7 +62,7 @@ jobs:
             fi
       - run:
           name: Build Assets
-          command: /
+          command: |
             if [ "${CIRCLE_BRANCH}" == "production" ] || [ "${CIRCLE_BRANCH}" == "staging" ]; then
               yarn build --deploy
             fi
