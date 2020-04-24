@@ -158,6 +158,7 @@
   "lint-staged": {
     "**/*.{js,ts,tsx}": [
       "eslint --fix",
+      "tsc --noEmit",
       "git add"
     ]
   },

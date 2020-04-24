@@ -19,10 +19,7 @@
       "node"
     ]
   },
-  "include": [
-    // Intellisense suggestions are based off these
-    "../server/lib",
-    "../client/lib",
-    "src",
+  "files": [
+    "../server/types/modules.d.ts"
   ]
 }

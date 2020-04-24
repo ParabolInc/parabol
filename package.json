@@ -31,7 +31,7 @@
     "dev": "node scripts/dev.js",
     "lint": "lerna run --parallel lint",
     "test": "yarn workspace parabol-cypress test",
-    "typecheck": "yarn tsc -p tsconfig.typecheck.json"
+    "typecheck": "lerna run --parallel typecheck"
   },
   "resolutions": {
     "hoist-non-react-statics": "^3.3.0",

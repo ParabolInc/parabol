@@ -10,7 +10,7 @@
     "url": "git+https://github.com/ParabolInc/parabol.git"
   },
   "scripts": {
-    "typecheck": "yarn tsc --noEmit -p tsconfig.typecheck.json"
+    "typecheck": "yarn tsc --noEmit -p tsconfig.json"
   },
   "bugs": {
     "url": "https://github.com/ParabolInc/parabol/issues"

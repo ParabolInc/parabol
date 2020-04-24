@@ -2,7 +2,7 @@ import fs from 'fs'
 import {printSchema} from 'graphql'
 import path from 'path'
 import {promisify} from 'util'
-import getProjectRoot from '../../../../scripts/webpack/utils/getProjectRoot'
+import getProjectRoot from '../../../scripts/webpack/utils/getProjectRoot'
 import schema from '../graphql/rootSchema'
 
 const write = promisify(fs.writeFile)
