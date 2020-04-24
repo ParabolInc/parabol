@@ -31,8 +31,22 @@ if (!PROD) {
   getWebpackDevMiddleware()
 }
 
-uws
+var app
+if (process.env.PROTO == "https") {
+  app = uws
+  .SSLApp(
+    {
+      key_file_name: 'misc/key.pem',
+      cert_file_name: 'misc/cert.pem',
+      passphrase: 'lkjp'
+    }
+  )
+} else {
+  app = uws
   .App()
+}
+
+app
   .get('/favicon.ico', PWAHandler)
   .get('/sw.js', PWAHandler)
   .get('/manifest.json', PWAHandler)
