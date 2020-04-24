@@ -23,7 +23,7 @@ module.exports = {
     web: [
       './node_modules/webpack/hot/poll?1000',
       DOTENV,
-      path.join(SERVER_ROOT, 'server.ts')
+      path.join(SERVER_ROOT, 'server.dev.ts')
     ],
     gqlExecutor: [DOTENV, path.join(GQL_ROOT, 'gqlExecutor.ts')]
   },

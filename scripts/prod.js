@@ -38,7 +38,6 @@ const prod = async (isDeploy) => {
   }
   console.log('👋👋👋      Building Production Server      👋👋👋')
   await compileToolbox()
-  return
   await require('./toolbox/updateSchema.js').default()
   await require('./compileRelay')()
   fork(path.join(TOOLBOX_ROOT, 'migrateDB.js'))

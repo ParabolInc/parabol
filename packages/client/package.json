@@ -14,11 +14,6 @@
     "url": "https://github.com/ParabolInc/parabol/issues"
   },
   "scripts": {
-    "babelz": "npx babel src -d lib --extensions .js,.ts,.tsx",
-    "foo": "npx babel src/utils/getSAMLIdP.ts -o foo.js",
-    "build:client": "sucrase src -d lib --transforms=imports,jsx -q && sucrase src -d lib --transforms=imports,typescript,jsx -q",
-    "suc": "sucrase src/utils --transforms=jsx,typescript -d foo",
-    "babel:graphql": "yarn babel src/components -d lib --extensions .js,.ts,.tsx",
     "storybook": "start-storybook -p 6006 -c .storybook",
     "build-storybook": "build-sFtorybook",
     "lint": "eslint --fix ./**/*.{ts,tsx}",
