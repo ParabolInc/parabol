@@ -3,6 +3,10 @@ import React, {useEffect} from 'react'
 import NewMeetingSummaryRoot from '../modules/summary/components/NewMeetingSummaryRoot'
 import AtmosphereProvider from './AtmosphereProvider/AtmosphereProvider'
 
+const getLocalAtmosphere = () => {
+  return import(/* webpackChunkName: 'LocalAtmosphere' */ '~/modules/demo/LocalAtmosphere')
+}
+
 const DemoSummary = () => {
   useCanonical('retrospective-demo-summary')
   useEffect(() => {
@@ -11,7 +15,7 @@ const DemoSummary = () => {
     }
   }, [])
   return (
-    <AtmosphereProvider isDemo>
+    <AtmosphereProvider getLocalAtmosphere={getLocalAtmosphere}>
       <NewMeetingSummaryRoot />
     </AtmosphereProvider>
   )

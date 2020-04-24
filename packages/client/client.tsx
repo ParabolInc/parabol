@@ -1,8 +1,5 @@
-// do this here so useBuiltIns can replace it with only the polyfills required to hit browser targets
-import 'core-js/stable'
 import React from 'react'
 import {render} from 'react-dom'
-import 'regenerator-runtime/runtime'
 import './cdnFallback'
 import Root from './Root'
 import './scrollIntoViewIfNeeded'
@@ -10,7 +7,7 @@ import './scrollIntoViewIfNeeded'
 render(<Root />, document.getElementById('root'))
 
 if ((module as any).hot) {
-  ;(module as any).hot.accept('./Root', () => {
+  ; (module as any).hot.accept('./Root', () => {
     const Root = require('./Root').default
     render(<Root />, document.getElementById('root'))
   })

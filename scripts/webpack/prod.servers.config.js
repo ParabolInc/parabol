@@ -10,7 +10,7 @@ const GQL_ROOT = path.join(PROJECT_ROOT, 'packages', 'gql-executor')
 const DOTENV = path.join(PROJECT_ROOT, 'scripts/webpack/utils/dotenv.js')
 
 module.exports = {
-  devtool: 'inline-source-map',
+  devtool: 'source-map',
   mode: 'production',
   node: {
     __dirname: false

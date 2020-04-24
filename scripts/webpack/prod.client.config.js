@@ -17,9 +17,11 @@ const getProjectRoot = require('./utils/getProjectRoot')
 const PROJECT_ROOT = getProjectRoot()
 const CLIENT_ROOT = path.join(PROJECT_ROOT, 'packages', 'client')
 const SERVER_ROOT = path.join(PROJECT_ROOT, 'packages', 'server')
+const STATIC_ROOT = path.join(PROJECT_ROOT, 'static')
 const buildPath = path.join(PROJECT_ROOT, 'build')
 const publicPath = getWebpackPublicPath()
 
+console.log('stat', STATIC_ROOT)
 // babel-plugin-relay requires a prod BABEL_ENV to remove hash checking logic. Probably a bug in the package.
 process.env.BABEL_ENV = 'production'
 const isDeploy = process.env.WEBPACK_DEPLOY === 'true'
@@ -43,7 +45,8 @@ module.exports = {
     alias: {
       '~': CLIENT_ROOT,
       'parabol-server': SERVER_ROOT,
-      'parabol-client': CLIENT_ROOT
+      'parabol-client': CLIENT_ROOT,
+      'static': STATIC_ROOT
     },
     extensions: ['.js', '.json', '.ts', '.tsx', '.graphql'],
     modules: [

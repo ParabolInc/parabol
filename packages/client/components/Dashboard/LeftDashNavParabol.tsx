@@ -3,7 +3,7 @@ import React from 'react'
 import PlainButton from '~/components/PlainButton/PlainButton'
 import {PALETTE} from '~/styles/paletteV2'
 import {NavSidebar} from '~/types/constEnums'
-import parabolLogo from '../../../../../static/images/brand/mark-color.svg'
+import parabolLogo from 'static/images/brand/mark-color.svg'
 
 const Parabol = styled(PlainButton)({
   alignItems: 'center',

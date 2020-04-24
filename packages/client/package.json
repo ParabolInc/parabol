@@ -20,6 +20,9 @@
     "typecheck": "yarn tsc --noEmit -p tsconfig.json"
   },
   "devDependencies": {
+    "@storybook/cli": "^5.3.17",
+    "@storybook/core": "^5.3.17",
+    "@storybook/react": "^5.3.17",
     "@types/draft-js": "^0.10.24",
     "@types/json2csv": "^4.4.0",
     "@types/mousetrap": "^1.6.2",
@@ -45,7 +48,6 @@
     "eslint-plugin-react-hooks": "^1.6.1",
     "expect": "^24.8.0",
     "flow-bin": "^0.103.0",
-    "jscodeshift": "^0.6.4",
     "lint-staged": "^9.4.2",
     "prettier": "^1.19.1",
     "strict-event-emitter-types": "^2.0.0",
@@ -60,7 +62,6 @@
     "@mattkrick/sanitize-svg": "0.2.1",
     "@mattkrick/trebuchet-client": "^2.0.0",
     "@sentry/browser": "^5.8.0",
-    "core-js": "^3.1.4",
     "draft-js": "https://github.com/mattkrick/draft-js/tarball/559a21968370c4944511657817d601a6c4ade0f6",
     "email-addresses": "^3.0.1",
     "emoji-mart": "^2.11.2",
@@ -96,7 +97,6 @@
     "react-textarea-autosize": "^7.1.0",
     "react-transition-group": "^4.3.0",
     "react-virtualized": "^9.21.1",
-    "regenerator-runtime": "^0.13.3",
     "relay-runtime": "https://github.com/mattkrick/relay/tarball/ea411fa5aa507b9c1082f12e6111bdea7186c817F",
     "resize-observer-polyfill": "^1.5.0",
     "shortid": "^2.2.15",
@@ -105,13 +105,6 @@
     "tlds": "^1.192.0",
     "tslib": "^1.11.1",
     "unicode-substring": "^1.0.0"
-  },
-  "lint-staged": {
-    "**/*.{js,ts,tsx}": [
-      "tsc --noEmit",
-      "eslint --fix",
-      "git add"
-    ]
   },
   "jest": {
     "modulePaths": [

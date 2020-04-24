@@ -25,7 +25,7 @@ export default class DocumentCache {
         .run()
       if (!queryString && !PROD) {
         // In development, use the frequently changing queryMap to look up persisted queries by hash
-        const queryMap = require('../../../../queryMap.json')
+        const queryMap = require('../../../queryMap.json')
         queryString = queryMap[docId]
       }
       if (!queryString) return undefined

@@ -8,6 +8,9 @@
       ],
       "parabol-server/*": [
         "../server/*"
+      ],
+      "static/*": [
+        "../../static/*"
       ]
     },
     "outDir": "lib",

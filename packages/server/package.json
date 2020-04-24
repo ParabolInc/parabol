@@ -25,21 +25,9 @@
     "typecheck": "yarn tsc --noEmit -p tsconfig.json"
   },
   "devDependencies": {
-    "@babel/core": "^7.7.2",
-    "@babel/plugin-proposal-class-properties": "^7.7.0",
-    "@babel/plugin-proposal-nullish-coalescing-operator": "^7.4.4",
-    "@babel/plugin-proposal-object-rest-spread": "^7.6.2",
-    "@babel/plugin-proposal-optional-chaining": "^7.6.0",
-    "@babel/plugin-syntax-dynamic-import": "^7.0.0",
-    "@babel/preset-env": "^7.7.1",
-    "@babel/preset-flow": "^7.0.0",
-    "@babel/preset-react": "^7.7.0",
-    "@babel/preset-typescript": "^7.7.2",
-    "@babel/register": "^7.7.0",
     "@cypress/webpack-preprocessor": "^4.0.3",
     "@mattkrick/fast-rtc-swarm": "^0.4.0",
     "@mattkrick/graphql-trebuchet-client": "^0.2.0",
-    "@sucrase/webpack-loader": "^2.0.0",
     "@types/dotenv": "^6.1.1",
     "@types/graphql": "^14.5.0",
     "@types/ioredis": "^4.0.10",
@@ -52,12 +40,7 @@
     "@types/stripe": "^6.32.0",
     "@typescript-eslint/eslint-plugin": "2.7.0",
     "@typescript-eslint/parser": "2.7.0",
-    "awesome-typescript-loader": "^5.2.0",
-    "babel-eslint": "^10.0.1",
-    "babel-loader": "^8.0.5",
-    "babel-plugin-inline-import": "^3.0.0",
     "babel-plugin-relay": "^8.0.0",
-    "babel-plugin-transform-react-remove-prop-types": "^0.4.24",
     "clean-webpack-plugin": "^3.0.0",
     "copy-webpack-plugin": "^5.0.4",
     "cross-env": "^5.1.6",
@@ -79,10 +62,9 @@
     "html-webpack-plugin": "^3.2.0",
     "html-webpack-tags-plugin": "^2.0.13",
     "ignore-loader": "^0.1.2",
-    "jscodeshift": "^0.6.4",
     "jsdom": "^15.1.1",
     "json-loader": "^0.5.7",
-    "lint-staged": "^9.4.2",
+    "lint-staged": "^10.1.7",
     "mocha": "^5.2.0",
     "mockdate": "^2.0.1",
     "piping": "^1.0.0-rc.4",
@@ -154,13 +136,6 @@
     "stripe": "^4.24.0",
     "tslib": "^1.11.1",
     "uWebSockets.js": "uNetworking/uWebSockets.js#v17.3.0"
-  },
-  "lint-staged": {
-    "**/*.{js,ts,tsx}": [
-      "eslint --fix",
-      "tsc --noEmit",
-      "git add"
-    ]
   },
   "jest": {
     "modulePaths": [
