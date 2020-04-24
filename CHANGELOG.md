@@ -5,6 +5,19 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 5.5.0 2020-Apr-24
+
+### Added
+* Stateless GraphQL Executor
+* Toolbox webpack config built separetely
+* 1 command development & build
+
+## Changed
+* Server assets now built with webpack
+
+## Removed
+* Old browser polyfills (core-js, regenerator-runtime)
+
 ## 5.4.0 2020-Apr-16
 
 ### Added
