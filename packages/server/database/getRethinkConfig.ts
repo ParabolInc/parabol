@@ -1,9 +1,10 @@
+import flag from 'node-env-flag'
 import {parse} from 'url'
 import readCert from './readCert'
-import flag from 'node-env-flag'
 
 export default function getRethinkConfig() {
-  const urlString = process.env.RETHINKDB_URL || 'rethinkdb://localhost:28015/actionDevelopment'
+  const urlString = process.env.RETHINKDB_URL
+  if (!urlString) throw new Error('Invalid RETHINKDB_URL in ENV')
   const u = parse(urlString)
   if (!u.port || !u.path) throw new Error('Invalid RethinkDB URL')
   const config = {

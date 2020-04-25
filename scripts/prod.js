@@ -10,8 +10,11 @@ const compileToolbox = () => {
   return new Promise((resolve) => {
     const config = require('./webpack/toolbox.config')
     const compiler = webpack(config)
-    compiler.run(resolve)
-  })
+    compiler.run((err, stats) => {
+      console.log('e', err, stats)
+      resovle()
+    }))
+})
 }
 
 const compileServers = () => {
