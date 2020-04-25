@@ -2,6 +2,8 @@ const path = require('path')
 const nodeExternals = require('webpack-node-externals')
 const transformRules = require('./utils/transformRules')
 const getProjectRoot = require('./utils/getProjectRoot')
+const S3Plugin = require('webpack-s3-plugin')
+const getS3BasePath = require('./utils/getS3BasePath')
 
 const PROJECT_ROOT = getProjectRoot()
 const CLIENT_ROOT = path.join(PROJECT_ROOT, 'packages', 'client')
@@ -9,8 +11,7 @@ const SERVER_ROOT = path.join(PROJECT_ROOT, 'packages', 'server')
 const GQL_ROOT = path.join(PROJECT_ROOT, 'packages', 'gql-executor')
 const DOTENV = path.join(PROJECT_ROOT, 'scripts/webpack/utils/dotenv.js')
 
-module.exports = {
-  devtool: 'source-map',
+module.exports = ({ isDeploy }) => ({
   mode: 'production',
   node: {
     __dirname: false
@@ -42,6 +43,25 @@ module.exports = {
       whitelist: [/parabol-client/, '/parabol-server/']
     })
   ],
+  plugins: [
+    new webpack.SourceMapDevToolPlugin({
+      filename: '[name]_[hash].js.map',
+      append: `\n//# sourceMappingURL=${publicPath}[url]`
+    }),
+    isDeploy &&
+    new S3Plugin({
+      s3Options: {
+        accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+        region: process.env.AWS_REGION
+      },
+      s3UploadOptions: {
+        Bucket: process.env.AWS_S3_BUCKET
+      },
+      basePath: getS3BasePath(),
+      directory: buildPath
+    }),
+  ].filter(Boolean),
   module: {
     rules: [
       ...transformRules(PROJECT_ROOT),
@@ -51,4 +71,4 @@ module.exports = {
       }
     ]
   }
-}
+})

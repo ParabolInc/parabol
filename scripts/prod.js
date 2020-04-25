@@ -1,7 +1,7 @@
 const webpack = require('webpack')
-const toolbox = require('./webpack/toolbox.config')
-const servers = require('./webpack/prod.servers.config')
-const client = require('./webpack/prod.client.config')
+const toolboxConfig = require('./webpack/toolbox.config')
+const makeServersConfig = require('./webpack/prod.servers.config')
+const makeClientConfig = require('./webpack/prod.client.config')
 
 const compile = (config) => {
   return new Promise((resolve) => {
@@ -11,16 +11,15 @@ const compile = (config) => {
 }
 
 const prod = async (isDeploy) => {
-  if (isDeploy) {
-    process.env.WEBPACK_DEPLOY = true
-  }
   console.log('🙏🙏🙏      Building Production Server      🙏🙏🙏')
-  await compile(toolbox)
+  await compile(toolboxConfig)
   await require('./toolbox/updateSchema.js').default()
   await require('./compileRelay')()
+  const serversConfig = makeServersConfig({ isDeploy })
+  const clientConfig = makeClientConfig({ isDeploy })
   await Promise.all([
-    compile(servers),
-    compile(client)
+    compile(serversConfig),
+    compile(clientConfig)
   ])
 }
 

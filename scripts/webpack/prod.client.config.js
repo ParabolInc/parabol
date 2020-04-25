@@ -23,9 +23,7 @@ const publicPath = getWebpackPublicPath()
 
 // babel-plugin-relay requires a prod BABEL_ENV to remove hash checking logic. Probably a bug in the package.
 process.env.BABEL_ENV = 'production'
-const isDeploy = process.env.WEBPACK_DEPLOY === 'true'
-const isStats = process.env.WEBPACK_STATS === 'true'
-module.exports = {
+module.exports = ({ isDeploy, isStats }) => ({
   stats: {
     assets: false
   },
@@ -62,7 +60,7 @@ module.exports = {
     ]
   },
   optimization: {
-    minimize: Boolean(isDeploy || process.env.WEBPACK_STATS),
+    minimize: Boolean(isDeploy || isStats),
     minimizer: [
       new TerserPlugin({
         cache: true,
@@ -208,4 +206,4 @@ module.exports = {
       }
     ]
   }
-}
+})
