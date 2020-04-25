@@ -22,8 +22,8 @@ module.exports = {
     updateSchema: [DOTENV, path.join(SERVER_ROOT, 'utils', 'updateGQLSchema.ts')],
     migrateDB: [DOTENV, path.join(TOOLBOX_SRC, 'migrate.ts')],
     createMigration: [DOTENV, path.join(TOOLBOX_SRC, 'migrate-create.ts')],
-    postDeploy: path.join(TOOLBOX_SRC, 'postDeploys.ts'),
-    softenDurability: path.join(SERVER_ROOT, 'database', 'softenDurability.ts')
+    postDeploy: path.join(TOOLBOX_SRC, 'postDeploy.ts'),
+    softenDurability: path.join(TOOLBOX_SRC, 'softenDurability.ts')
   },
   output: {
     filename: '[name].js',

@@ -14,7 +14,6 @@
   },
   "scripts": {
     "start:tunnel": "export $(grep ^ULTRAHOOK_API_KEY .env | tr -d \"'\") && ultrahook -k $ULTRAHOOK_API_KEY dev 3000",
-    "db:migrate-testing": "export NODE_ENV=test && yarn db:migrate && node database/softenDurability.js",
     "debug:stripe": "node billing/debug.babel.js",
     "precommit": "lint-staged",
     "lint": "eslint --fix ./**/*.ts",

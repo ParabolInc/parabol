@@ -1,4 +1,4 @@
-import getRethink from './rethinkDriver'
+import getRethink from '../../packages/server/database/rethinkDriver'
 export default async function softenDurability() {
   const r = await getRethink()
   console.log('Softening durability for faster tests')
@@ -16,3 +16,5 @@ export default async function softenDurability() {
   console.log('Table durability set to "soft"')
   process.exit()
 }
+
+softenDurability()

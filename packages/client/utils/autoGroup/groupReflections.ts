@@ -1,7 +1,7 @@
 import Reflection from 'parabol-server/database/types/Reflection'
-import getGroupMatrix from '../autoGroup/getGroupMatrix'
 import computeDistanceMatrix from './computeDistanceMatrix'
 import getAllLemmasFromReflections from './getAllLemmasFromReflections'
+import getGroupMatrix from './getGroupMatrix'
 import getTitleFromComputedGroup from './getTitleFromComputedGroup'
 
 /*
