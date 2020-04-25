@@ -52,18 +52,10 @@ jobs:
           command: |
             git clone $DEVOPS_REPO $DEVOPS_WORKDIR
       - run:
-          name: NPM run test
-          command: |
-            if [ "${CIRCLE_BRANCH}" == "development" ]; then
-            echo "info: development server deploy, skipping"
-            # else
-            #            npm run test
-            #            mkdir test-report ; mv test-report.xml test-report
-            fi
-      - run:
           name: Build Assets
           command: |
             if [ "${CIRCLE_BRANCH}" == "production" ] || [ "${CIRCLE_BRANCH}" == "staging" ]; then
+              cp $DEVOPS_WORKDIR/environments/$CIRCLE_BRANCH .env
               yarn build --deploy
             fi
       - run:

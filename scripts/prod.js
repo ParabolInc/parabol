@@ -34,7 +34,7 @@ const prod = async (isDeploy) => {
   if (isDeploy) {
     process.env.WEBPACK_DEPLOY = true
   }
-  console.log('👋👋👋      Building Production Server      👋👋👋')
+  console.log('🙏🙏🙏      Building Production Server      🙏🙏🙏')
   await compileToolbox()
   await require('./toolbox/updateSchema.js').default()
   await require('./compileRelay')()
