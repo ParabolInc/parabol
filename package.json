@@ -30,7 +30,7 @@
     "postdeploy": "node scripts/toolbox/postDeploy.js",
     "dev": "node scripts/dev.js",
     "lint": "lerna run --parallel lint",
-    "test": "yarn workspace parabol-cypress test",
+    "test": "start-server-and-test start http://localhost:3000 yarn workspace parabol-cypress start",
     "typecheck": "lerna run --parallel typecheck"
   },
   "resolutions": {
