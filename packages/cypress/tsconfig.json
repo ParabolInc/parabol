@@ -1,8 +1,7 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    //    "composite": true,
-    "noEmitOnError": false,
+    "allowJs": true,
     "lib": [
       "esnext",
       "dom"
@@ -13,16 +12,8 @@
     ],
     "target": "esnext",
     "module": "es2015",
-    "sourceMap": true,
-    // "paths": {
-    // "*": [
-    // "*"
-    // resolve all absolute imports as imports relative to the package
-    // ]
-  }
+  },
+  "include": [
+    "**/*.ts"
+  ]
 }
-//  "references": [
-//    {
-//      "path": "../client"
-//    }
-//  ]

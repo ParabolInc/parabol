@@ -46,7 +46,7 @@
     "eslint-plugin-react-hooks": "^1.6.1",
     "expect": "^24.8.0",
     "flow-bin": "^0.103.0",
-    "lint-staged": "^9.4.2",
+    "lint-staged": "^10.1.7",
     "prettier": "^1.19.1",
     "strict-event-emitter-types": "^2.0.0",
     "typescript": "^3.8.3",
