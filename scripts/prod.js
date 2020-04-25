@@ -13,8 +13,8 @@ const compileToolbox = () => {
     compiler.run((err, stats) => {
       console.log('e', err, stats)
       resovle()
-    }))
-})
+    })
+  })
 }
 
 const compileServers = () => {
