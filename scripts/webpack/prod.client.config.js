@@ -21,7 +21,6 @@ const STATIC_ROOT = path.join(PROJECT_ROOT, 'static')
 const buildPath = path.join(PROJECT_ROOT, 'build')
 const publicPath = getWebpackPublicPath()
 
-console.log('stat', STATIC_ROOT)
 // babel-plugin-relay requires a prod BABEL_ENV to remove hash checking logic. Probably a bug in the package.
 process.env.BABEL_ENV = 'production'
 const isDeploy = process.env.WEBPACK_DEPLOY === 'true'

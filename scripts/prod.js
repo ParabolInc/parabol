@@ -1,33 +1,10 @@
 const webpack = require('webpack')
-// const { fork } = require('child_process')
-// const getProjectRoot = require('./webpack/utils/getProjectRoot')
-// const path = require('path')
+const toolbox = require('./webpack/toolbox.config')
+const servers = require('./webpack/prod.servers.config')
+const client = require('./webpack/prod.client.config')
 
-// const PROJECT_ROOT = getProjectRoot()
-// const TOOLBOX_ROOT = path.join(PROJECT_ROOT, 'scripts', 'toolbox')
-
-const compileToolbox = () => {
+const compile = (config) => {
   return new Promise((resolve) => {
-    const config = require('./webpack/toolbox.config')
-    const compiler = webpack(config)
-    compiler.run((err, stats) => {
-      console.log('e', err, stats)
-      resolve()
-    })
-  })
-}
-
-const compileServers = () => {
-  return new Promise((resolve) => {
-    const config = require('./webpack/prod.servers.config')
-    const compiler = webpack(config)
-    compiler.run(resolve)
-  })
-}
-
-const compileClient = () => {
-  return new Promise((resolve) => {
-    const config = require('./webpack/prod.client.config')
     const compiler = webpack(config)
     compiler.run(resolve)
   })
@@ -38,13 +15,12 @@ const prod = async (isDeploy) => {
     process.env.WEBPACK_DEPLOY = true
   }
   console.log('🙏🙏🙏      Building Production Server      🙏🙏🙏')
-  await compileToolbox()
+  await compile(toolbox)
   await require('./toolbox/updateSchema.js').default()
   await require('./compileRelay')()
-  // fork(path.join(TOOLBOX_ROOT, 'migrateDB.js'))
   await Promise.all([
-    compileServers(),
-    compileClient()
+    compile(servers),
+    compile(client)
   ])
 }
 
