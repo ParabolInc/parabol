@@ -95,6 +95,7 @@ jobs:
               git config --global user.email "admin+circleci@parabol.co"
               git add ./queryMap.json build -f
               git add ./packages/client/__generated__ build -f
+              git add ./scripts/toolbox build -f
               git commit -m "build $ACTION_VERSION"
               git remote add dokku $GITHUB_REMOTE
               export SSH_DESTINATION=$(echo $GITHUB_REMOTE | cut -f1 -d:)
