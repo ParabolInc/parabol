@@ -4,6 +4,7 @@ const transformRules = require('./utils/transformRules')
 const getProjectRoot = require('./utils/getProjectRoot')
 const S3Plugin = require('webpack-s3-plugin')
 const getS3BasePath = require('./utils/getS3BasePath')
+const webpack = require('webpack')
 
 const PROJECT_ROOT = getProjectRoot()
 const CLIENT_ROOT = path.join(PROJECT_ROOT, 'packages', 'client')
