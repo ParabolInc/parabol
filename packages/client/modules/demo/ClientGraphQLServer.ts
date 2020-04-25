@@ -5,21 +5,7 @@ import {Variables} from 'relay-runtime'
 import StrictEventEmitter from 'strict-event-emitter-types'
 import stringSimilarity from 'string-similarity'
 import {MeetingSettingsThreshold, RetroDemo, SubscriptionChannel} from '../../types/constEnums'
-import {
-  DragReflectionDropTargetTypeEnum,
-  IDiscussPhase,
-  IGoogleAnalyzedEntity,
-  INewMeetingStage,
-  IReflectPhase,
-  IRetroReflection,
-  IRetroReflectionGroup,
-  ITask,
-  NewMeetingPhase,
-  NewMeetingPhaseTypeEnum,
-  ReactableEnum
-} from '../../types/graphql'
-import getGroupSmartTitle from '../../utils/autogroup/getGroupSmartTitle'
-import groupReflections from '../../utils/autogroup/groupReflections'
+import {DragReflectionDropTargetTypeEnum, IDiscussPhase, IGoogleAnalyzedEntity, INewMeetingStage, IReflectPhase, IRetroReflection, IRetroReflectionGroup, ITask, NewMeetingPhase, NewMeetingPhaseTypeEnum, ReactableEnum} from '../../types/graphql'
 import {DISCUSS, GROUP, REFLECT, TASK, TEAM, VOTE} from '../../utils/constants'
 import dndNoise from '../../utils/dndNoise'
 import extractTextFromDraftString from '../../utils/draftjs/extractTextFromDraftString'
@@ -27,6 +13,8 @@ import getTagsFromEntityMap from '../../utils/draftjs/getTagsFromEntityMap'
 import makeEmptyStr from '../../utils/draftjs/makeEmptyStr'
 import findStageById from '../../utils/meetings/findStageById'
 import sleep from '../../utils/sleep'
+import getGroupSmartTitle from '../../utils/smartGroup/getGroupSmartTitle'
+import groupReflections from '../../utils/smartGroup/groupReflections'
 import startStage_ from '../../utils/startStage_'
 import unlockAllStagesForPhase from '../../utils/unlockAllStagesForPhase'
 import unlockNextStages from '../../utils/unlockNextStages'
@@ -35,12 +23,7 @@ import entityLookup from './entityLookup'
 import getDemoEntities from './getDemoEntities'
 import handleCompletedDemoStage from './handleCompletedDemoStage'
 import initBotScript from './initBotScript'
-import initDB, {
-  demoTeamId,
-  demoViewerId,
-  GitHubProjectKeyLookup,
-  JiraProjectKeyLookup
-} from './initDB'
+import initDB, {demoTeamId, demoViewerId, GitHubProjectKeyLookup, JiraProjectKeyLookup} from './initDB'
 import LocalAtmosphere from './LocalAtmosphere'
 
 export type DemoReflection = Omit<
@@ -75,7 +58,7 @@ interface DemoEvents {
 }
 
 interface GQLDemoEmitter {
-  new (): StrictEventEmitter<EventEmitter, DemoEvents>
+  new(): StrictEventEmitter<EventEmitter, DemoEvents>
 }
 
 const makeReflectionGroupThread = () => ({
@@ -118,7 +101,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
   getUnlockedStages(stageIds: string[]) {
     const unlockedStages = [] as INewMeetingStage[]
     this.db.newMeeting.phases!.forEach((phase) => {
-      ;(phase.stages as any).forEach((stage) => {
+      ; (phase.stages as any).forEach((stage) => {
         if (stageIds.includes(stage.id)) {
           unlockedStages.push(stage)
         }
@@ -530,11 +513,11 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
 
       const unlockedStageIds = remainingReflections.length
         ? unlockAllStagesForPhase(
-            this.db.newMeeting.phases as any,
-            NewMeetingPhaseTypeEnum.group,
-            true,
-            false
-          )
+          this.db.newMeeting.phases as any,
+          NewMeetingPhaseTypeEnum.group,
+          true,
+          false
+        )
         : []
       const unlockedStages = this.getUnlockedStages(unlockedStageIds)
       const data = {

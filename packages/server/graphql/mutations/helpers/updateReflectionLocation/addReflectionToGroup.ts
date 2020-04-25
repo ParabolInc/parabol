@@ -1,8 +1,8 @@
-import getGroupSmartTitle from 'parabol-client/utils/autogroup/getGroupSmartTitle'
-import getRethink from '../../../../database/rethinkDriver'
-import updateSmartGroupTitle from './updateSmartGroupTitle'
 import dndNoise from 'parabol-client/utils/dndNoise'
+import getGroupSmartTitle from 'parabol-client/utils/smartGroup/getGroupSmartTitle'
+import getRethink from '../../../../database/rethinkDriver'
 import Reflection from '../../../../database/types/Reflection'
+import updateSmartGroupTitle from './updateSmartGroupTitle'
 
 const addReflectionToGroup = async (
   reflectionId: string,
