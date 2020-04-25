@@ -5,12 +5,15 @@ const getProjectRoot = require('./utils/getProjectRoot')
 const S3Plugin = require('webpack-s3-plugin')
 const getS3BasePath = require('./utils/getS3BasePath')
 const webpack = require('webpack')
+const getWebpackPublicPath = require('./utils/getWebpackPublicPath')
 
 const PROJECT_ROOT = getProjectRoot()
 const CLIENT_ROOT = path.join(PROJECT_ROOT, 'packages', 'client')
 const SERVER_ROOT = path.join(PROJECT_ROOT, 'packages', 'server')
 const GQL_ROOT = path.join(PROJECT_ROOT, 'packages', 'gql-executor')
 const DOTENV = path.join(PROJECT_ROOT, 'scripts/webpack/utils/dotenv.js')
+const publicPath = getWebpackPublicPath()
+const distPath = path.join(PROJECT_ROOT, 'dist')
 
 module.exports = ({ isDeploy }) => ({
   mode: 'production',
@@ -60,7 +63,7 @@ module.exports = ({ isDeploy }) => ({
         Bucket: process.env.AWS_S3_BUCKET
       },
       basePath: getS3BasePath(),
-      directory: buildPath
+      directory: distPath
     }),
   ].filter(Boolean),
   module: {
