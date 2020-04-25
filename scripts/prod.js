@@ -12,7 +12,7 @@ const compileToolbox = () => {
     const compiler = webpack(config)
     compiler.run((err, stats) => {
       console.log('e', err, stats)
-      resovle()
+      resolve()
     })
   })
 }
