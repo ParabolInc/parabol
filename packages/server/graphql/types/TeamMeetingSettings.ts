@@ -3,7 +3,7 @@ import NewMeetingPhaseTypeEnum from './NewMeetingPhaseTypeEnum'
 import Team from './Team'
 import {resolveTeam} from '../resolvers'
 import MeetingTypeEnum from './MeetingTypeEnum'
-import {ACTION, RETROSPECTIVE} from '../../../client/utils/constants'
+import {ACTION, RETROSPECTIVE} from 'parabol-client/utils/constants'
 import RetrospectiveMeetingSettings from './RetrospectiveMeetingSettings'
 import ActionMeetingSettings from './ActionMeetingSettings'
 

@@ -1,12 +1,12 @@
-import React from 'react'
 import styled from '@emotion/styled'
-import Icon from 'components/Icon'
-import {ICON_SIZE} from 'styles/typographyV2'
-import {PALETTE} from 'styles/paletteV2'
-import {Breakpoint, NavSidebar} from 'types/constEnums'
-import PlainButton from 'components/PlainButton/PlainButton'
-import useRouter from 'hooks/useRouter'
-import makeMinWidthMediaQuery from 'utils/makeMinWidthMediaQuery'
+import React from 'react'
+import Icon from '~/components/Icon'
+import PlainButton from '~/components/PlainButton/PlainButton'
+import useRouter from '~/hooks/useRouter'
+import {PALETTE} from '~/styles/paletteV2'
+import {ICON_SIZE} from '~/styles/typographyV2'
+import {Breakpoint, NavSidebar} from '~/types/constEnums'
+import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
 
 const NavItem = styled(PlainButton)<{isActive: boolean}>(({isActive}) => ({
   alignItems: 'center',

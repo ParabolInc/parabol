@@ -39,17 +39,14 @@ const withForm = (fields: FieldInputDict) => <P extends WithFormProps>(
     _mounted = false
 
     state = {
-      fields: Object.keys(fields).reduce(
-        (obj, name) => {
-          obj[name] = {
-            value: fields[name].getDefault(this.props),
-            error: undefined,
-            dirty: false
-          }
-          return obj
-        },
-        {} as FieldState
-      )
+      fields: Object.keys(fields).reduce((obj, name) => {
+        obj[name] = {
+          value: fields[name].getDefault(this.props),
+          error: undefined,
+          dirty: false
+        }
+        return obj
+      }, {} as FieldState)
     }
 
     onChange = (e: React.ChangeEvent<HTMLInputElement>) => {

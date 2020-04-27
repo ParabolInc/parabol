@@ -10,7 +10,7 @@ import {
   REFLECT,
   UPDATES,
   VOTE
-} from '../../../client/utils/constants'
+} from 'parabol-client/utils/constants'
 
 const NewMeetingPhaseTypeEnum = new GraphQLEnumType({
   name: 'NewMeetingPhaseTypeEnum',

@@ -1,6 +1,6 @@
+import {RetroDemo} from '~/types/constEnums'
 import {DragReflectionDropTargetTypeEnum} from '../../types/graphql'
 import {demoTeamId} from './initDB'
-import {RetroDemo} from 'types/constEnums'
 
 // 3 -> 1
 // 4 -> 1

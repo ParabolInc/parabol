@@ -11,7 +11,7 @@ import {
   SUMMARY,
   UPDATES,
   VOTE
-} from '../../../client/utils/constants'
+} from 'parabol-client/utils/constants'
 import shortid from 'shortid'
 
 exports.up = async (r) => {

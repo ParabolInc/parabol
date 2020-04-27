@@ -1,17 +1,17 @@
-import {TaskFooterUserAssignee_task} from '../../../../__generated__/TaskFooterUserAssignee_task.graphql'
-import React from 'react'
 import styled from '@emotion/styled'
-import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
+import React from 'react'
+import {createFragmentContainer} from 'react-relay'
+import useTooltip from '~/hooks/useTooltip'
 import BaseButton from '../../../../components/BaseButton'
 import {MenuPosition} from '../../../../hooks/useCoords'
 import useMenu from '../../../../hooks/useMenu'
-import textOverflow from '../../../../styles/helpers/textOverflow'
-import avatarUser from '../../../../styles/theme/images/avatar-user.svg'
-import {PALETTE} from '../../../../styles/paletteV2'
-import lazyPreload from '../../../../utils/lazyPreload'
 import {UseTaskChild} from '../../../../hooks/useTaskChildFocus'
-import useTooltip from 'hooks/useTooltip'
+import textOverflow from '../../../../styles/helpers/textOverflow'
+import {PALETTE} from '../../../../styles/paletteV2'
+import avatarUser from '../../../../styles/theme/images/avatar-user.svg'
+import lazyPreload from '../../../../utils/lazyPreload'
+import {TaskFooterUserAssignee_task} from '../../../../__generated__/TaskFooterUserAssignee_task.graphql'
 
 const label = {
   ...textOverflow,
@@ -23,7 +23,7 @@ const label = {
   lineHeight: '24px',
   maxWidth: '100%',
   textAlign: 'left'
-}
+} as const
 
 const AvatarButton = styled(BaseButton)({
   border: 0,

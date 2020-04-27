@@ -1,14 +1,15 @@
 import getRethink from '../../../database/rethinkDriver'
-import extractTextFromDraftString from '../../../../client/utils/draftjs/extractTextFromDraftString'
+import extractTextFromDraftString from 'parabol-client/utils/draftjs/extractTextFromDraftString'
 import Meeting from '../../../database/types/Meeting'
 
-const removeEmptyReflections = async (meeting: Meeting ) => {
+const removeEmptyReflections = async (meeting: Meeting) => {
   const r = await getRethink()
   const {id: meetingId} = meeting
   const reflections = await r
     .table('RetroReflection')
     .getAll(meetingId, {index: 'meetingId'})
-    .filter({isActive: true}).run()
+    .filter({isActive: true})
+    .run()
   const emptyReflectionGroupIds = [] as string[]
   const emptyReflectionIds = [] as string[]
   reflections.forEach((reflection) => {

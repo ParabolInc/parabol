@@ -1,6 +1,6 @@
-import React from 'react'
-import {PALETTE} from 'styles/paletteV2'
 import styled from '@emotion/styled'
+import React from 'react'
+import {PALETTE} from '~/styles/paletteV2'
 
 const Wrapper = styled('div')({
   alignItems: 'center',

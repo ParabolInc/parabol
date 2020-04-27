@@ -1,7 +1,6 @@
 import React from 'react'
-import DayPicker from 'react-day-picker'
+import DayPicker, {DayModifiers} from 'react-day-picker'
 import '../styles/daypicker.css'
-import {DayModifiers} from 'react-day-picker/types/common'
 import Menu from './Menu'
 import {MenuProps} from '../hooks/useMenu'
 import UpdateTaskDueDateMutation from '../mutations/UpdateTaskDueDateMutation'

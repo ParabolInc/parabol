@@ -1,8 +1,8 @@
-import {MenuPosition} from 'hooks/useCoords'
-import useMenu from 'hooks/useMenu'
-import useModal from 'hooks/useModal'
 import React, {lazy} from 'react'
-import lazyPreload from 'utils/lazyPreload'
+import {MenuPosition} from '~/hooks/useCoords'
+import useMenu from '~/hooks/useMenu'
+import useModal from '~/hooks/useModal'
+import lazyPreload from '~/utils/lazyPreload'
 import TopBarIcon from './TopBarIcon'
 
 const TopBarHelpMenu = lazyPreload(() =>

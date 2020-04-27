@@ -1,4 +1,4 @@
-import Atmosphere from 'Atmosphere'
+import Atmosphere from '../Atmosphere'
 import {useEffect} from 'react'
 import useAtmosphere from './useAtmosphere'
 import ms from 'ms'

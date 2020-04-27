@@ -9,7 +9,7 @@ import {
   REFLECT,
   UPDATES,
   VOTE
-} from '../../../../client/utils/constants'
+} from 'parabol-client/utils/constants'
 import getRethink from '../../../database/rethinkDriver'
 import AgendaItemsPhase from '../../../database/types/AgendaItemsPhase'
 import CheckInPhase from '../../../database/types/CheckInPhase'

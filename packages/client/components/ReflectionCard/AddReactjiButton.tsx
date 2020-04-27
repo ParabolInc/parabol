@@ -1,9 +1,9 @@
 import styled from '@emotion/styled'
-import PlainButton from 'components/PlainButton/PlainButton'
 import React from 'react'
-import lazyPreload from 'utils/lazyPreload'
-import useMenu from 'hooks/useMenu'
-import {MenuPosition} from 'hooks/useCoords'
+import PlainButton from '~/components/PlainButton/PlainButton'
+import {MenuPosition} from '~/hooks/useCoords'
+import useMenu from '~/hooks/useMenu'
+import lazyPreload from '~/utils/lazyPreload'
 
 const icon = `${__STATIC_IMAGES__}/icons/add_reactji_24.svg`
 

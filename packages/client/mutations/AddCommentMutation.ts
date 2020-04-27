@@ -1,14 +1,14 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {ThreadSourceEnum} from 'types/graphql'
-import makeEmptyStr from 'utils/draftjs/makeEmptyStr'
-import createProxyRecord from 'utils/relay/createProxyRecord'
-import {AddCommentMutation_meeting} from '__generated__/AddCommentMutation_meeting.graphql'
+import {ThreadSourceEnum} from '~/types/graphql'
+import makeEmptyStr from '~/utils/draftjs/makeEmptyStr'
+import createProxyRecord from '~/utils/relay/createProxyRecord'
+import {AddCommentMutation_meeting} from '~/__generated__/AddCommentMutation_meeting.graphql'
 import {SharedUpdater, StandardMutation} from '../types/relayMutations'
 import {AddCommentMutation as TAddCommentMutation} from '../__generated__/AddCommentMutation.graphql'
 import getReflectionGroupThreadConn from './connections/getReflectionGroupThreadConn'
 import safePutNodeInConn from './handlers/safePutNodeInConn'
-import addNodeToArray from 'utils/relay/addNodeToArray'
+import addNodeToArray from '~/utils/relay/addNodeToArray'
 
 graphql`
   fragment AddCommentMutation_meeting on AddCommentSuccess {

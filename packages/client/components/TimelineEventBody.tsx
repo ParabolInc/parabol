@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import makeMinWidthQuery from 'utils/makeMinWidthMediaQuery'
+import makeMinWidthQuery from '~/utils/makeMinWidthMediaQuery'
 
 const TimelineEventBody = styled('div')({
   padding: '0 16px 16px 16px',

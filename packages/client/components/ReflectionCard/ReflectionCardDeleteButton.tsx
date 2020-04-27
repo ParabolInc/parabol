@@ -72,7 +72,12 @@ class ReflectionCardDeleteButton extends Component<Props> {
     const userLabel = 'Delete this reflection card'
     if (submitting) return null
     return (
-      <DeleteButton data-cy={dataCy} aria-label={userLabel} onClick={this.handleDelete} title={userLabel}>
+      <DeleteButton
+        data-cy={dataCy}
+        aria-label={userLabel}
+        onClick={this.handleDelete}
+        title={userLabel}
+      >
         <StyledIcon>cancel</StyledIcon>
         <Background />
       </DeleteButton>

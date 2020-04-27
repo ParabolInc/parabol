@@ -1,8 +1,8 @@
-import React, {forwardRef, Ref} from 'react'
 import styled from '@emotion/styled'
-import LinkButton from '../LinkButton'
+import React, {forwardRef, Ref} from 'react'
+import {PALETTE} from '~/styles/paletteV2'
 import Icon from '../Icon'
-import {PALETTE} from 'styles/paletteV2'
+import LinkButton from '../LinkButton'
 
 interface Props {
   label: string

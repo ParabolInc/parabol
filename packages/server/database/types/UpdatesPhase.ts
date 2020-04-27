@@ -1,6 +1,6 @@
-import UpdatesStage from './UpdatesStage'
+import {NewMeetingPhaseTypeEnum} from 'parabol-client/types/graphql'
 import GenericMeetingPhase from './GenericMeetingPhase'
-import {UPDATES} from '../../../client/utils/constants'
+import UpdatesStage from './UpdatesStage'
 
 interface TeamMember {
   id: string
@@ -9,8 +9,8 @@ interface TeamMember {
 
 export default class UpdatesPhase extends GenericMeetingPhase {
   stages: UpdatesStage[]
-  constructor (teamMembers: TeamMember[], durations: number[] | undefined) {
-    super(UPDATES)
+  constructor(teamMembers: TeamMember[], durations: number[] | undefined) {
+    super(NewMeetingPhaseTypeEnum.updates)
     this.stages = teamMembers
       .sort((a, b) => (a.checkInOrder > b.checkInOrder ? 1 : -1))
       .map((teamMember) => new UpdatesStage(teamMember.id, durations))

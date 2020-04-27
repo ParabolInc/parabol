@@ -2,7 +2,7 @@ import React, {Component, ReactNode} from 'react'
 import styled from '@emotion/styled'
 import {BrowserRouter as Router} from 'react-router-dom'
 
-import RelayStub from './RelayStub'
+// import RelayStub from './RelayStub'
 import {css, Global} from '@emotion/core'
 import globalStyles from '../../styles/theme/globalStyles'
 import AtmosphereProvider from '../../components/AtmosphereProvider/AtmosphereProvider'
@@ -31,9 +31,9 @@ export default class StoryContainer extends Component<Props> {
           `}
         />
         <AtmosphereProvider>
-          <RelayStub>
-            <FullPageWrapper>{this.props.children}</FullPageWrapper>
-          </RelayStub>
+          {/* <RelayStub> */}
+          <FullPageWrapper>{this.props.children}</FullPageWrapper>
+          {/* </RelayStub> */}
         </AtmosphereProvider>
       </Router>
     )

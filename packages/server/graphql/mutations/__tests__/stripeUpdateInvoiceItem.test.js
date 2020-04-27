@@ -10,7 +10,7 @@ import DataLoaderWarehouse from 'dataloader-warehouse'
 import getRethink from '../../../database/rethinkDriver'
 import invoiceItemCreatedEvent from './mockStripeEvents/invoiceItemCreatedEvent'
 import shortid from 'shortid'
-import {PRO} from '../../../../client/utils/constants'
+import { PRO } from 'parabol-client/utils/constants'
 
 console.error = jest.fn()
 
@@ -23,9 +23,9 @@ describe('stripeUpdateInvoiceItem', () => {
     const r = await getRethink()
     const dynamicSerializer = new DynamicSerializer()
     const mockDB = new MockDB()
-    const {organization, invoiceItemHook} = await mockDB
-      .init({plan: PRO})
-      .newInvoiceItemHook({id: hookId})
+    const { organization, invoiceItemHook } = await mockDB
+      .init({ plan: PRO })
+      .newInvoiceItemHook({ id: hookId })
 
     const org = organization[0]
     const hook = invoiceItemHook[0]
@@ -33,7 +33,7 @@ describe('stripeUpdateInvoiceItem', () => {
     await stripe.invoiceItems.create({
       subscription: org.stripeSubscriptionId,
       id: invoiceItemId,
-      metadata: {orgId: org.id},
+      metadata: { orgId: org.id },
       periodStart: hook.prorationDate
     })
     const req = new MockReq({

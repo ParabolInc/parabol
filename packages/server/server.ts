@@ -1,35 +1,25 @@
 // Datadog APM, must be first import (disabled for now)
 // import './tracer'
-import uws from 'uWebSockets.js'
-import getDotenv from '../server/utils/dotenv'
+
+import uws, {SHARED_COMPRESSOR} from 'uWebSockets.js'
 import stripeWebhookHandler from './billing/stripeWebhookHandler'
 import createSSR from './createSSR'
 import httpGraphQLHandler from './graphql/httpGraphQLHandler'
-import intranetHttpGraphQLHandler from './graphql/intranetGraphQLHandler'
+import intranetGraphQLHandler from './graphql/intranetGraphQLHandler'
+import ICSHandler from './ICSHandler'
 import './initSentry'
 import githubWebhookHandler from './integrations/githubWebhookHandler'
 import listenHandler from './listenHandler'
-import PROD from './PROD'
-import ICSHandler from './ICSHandler'
-import {getWebpackDevMiddleware} from './serveFromWebpack'
 import PWAHandler from './PWAHandler'
+import handleClose from './socketHandlers/handleClose'
+import handleMessage from './socketHandlers/handleMessage'
+import handleOpen from './socketHandlers/handleOpen'
 import SSEConnectionHandler from './sse/SSEConnectionHandler'
 import SSEPingHandler from './sse/SSEPingHandler'
 import staticFileHandler from './staticFileHandler'
 import SAMLHandler from './utils/SAMLHandler'
-import wsHandler from './wsHandler'
 
-getDotenv()
-
-process.on('uncaughtException', (err) => {
-  console.log('FIXME UNCAUGHT EXCEPTION', err)
-})
-
-const PORT = Number(process.env.PORT || 3000)
-
-if (!PROD) {
-  getWebpackDevMiddleware()
-}
+const PORT = Number(process.env.PORT)
 
 uws
   .App()
@@ -43,8 +33,16 @@ uws
   .post('/stripe', stripeWebhookHandler)
   .post('/webhooks/github', githubWebhookHandler)
   .post('/graphql', httpGraphQLHandler)
-  .post('/intranet-graphql', intranetHttpGraphQLHandler)
+  .post('/intranet-graphql', intranetGraphQLHandler)
   .post('/saml/:domain', SAMLHandler)
-  .ws('/*', wsHandler)
+  .ws('/*', {
+    compression: SHARED_COMPRESSOR,
+    idleTimeout: 0,
+    maxPayloadLength: 5 * 2 ** 20,
+    open: handleOpen,
+    message: handleMessage,
+    // today, we don't send folks enough data to worry about backpressure
+    close: handleClose
+  })
   .any('/*', createSSR)
   .listen(PORT, listenHandler)

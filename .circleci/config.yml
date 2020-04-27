@@ -52,33 +52,29 @@ jobs:
           command: |
             git clone $DEVOPS_REPO $DEVOPS_WORKDIR
       - run:
-          name: NPM run test
+          name: Build Assets
           command: |
-            if [ "${CIRCLE_BRANCH}" == "development" ]; then
-            echo "info: development server deploy, skipping"
-            # else
-            #            npm run test
-            #            mkdir test-report ; mv test-report.xml test-report
+            if [ "${CIRCLE_BRANCH}" == "production" ] || [ "${CIRCLE_BRANCH}" == "staging" ]; then
+              cp $DEVOPS_WORKDIR/environments/$CIRCLE_BRANCH .env
+              yarn build --deploy
             fi
       - run:
           name: Cypress Tests
           command: |
             if [ "${CIRCLE_BRANCH}" == "production" ] || [ "${CIRCLE_BRANCH}" == "staging" ]; then
-              cp $DEVOPS_WORKDIR/environments/cypress ./packages/cypress/.env
-              cp $DEVOPS_WORKDIR/environments/cypress ./packages/server/.env
+              cp $DEVOPS_WORKDIR/environments/cypress .env
               # cypress docker image has a bug, sideloading these mitigates it
               sudo apt-get update && sudo apt-get install xvfb libgtk2.0-0 libnotify-dev libgconf-2-4 libnss3 libxss1 libasound2
               curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
               sudo python get-pip.py
               sudo pip install rethinkdb==2.3.0
               rethinkdb-restore --force packages/cypress/fixtures/rdb_test.tar.gz
-              yarn workspace parabol-server db:migrate-testing
-              yarn workspace parabol-server build
-              yarn workspace parabol-server postdeploy
-              yarn workspace parabol-cypress test
+              node scripts/toolbox/softenDurability.js
+              yarn postdeploy
+              yarn test
             fi
       - deploy:
-          name: Possible deployment build
+          name: Commit Deployment
           command: |
             if [ "${CIRCLE_BRANCH}" == "production" ]; then
               export GITHUB_REMOTE="${GITHUB_REMOTE_PRODUCTION}"
@@ -93,26 +89,12 @@ jobs:
               export DEPLOY_ENV="local"
             fi
             if [ -n "${GITHUB_REMOTE}" ]; then
-              cp $DEVOPS_WORKDIR/environments/$DEPLOY_ENV ./packages/server/.env
-              yarn workspace parabol-server build:deploy &&
+              cp $DEVOPS_WORKDIR/environments/$DEPLOY_ENV .env
               export ACTION_VERSION=$(grep '"version":' package.json | cut -d\" -f4)
               git config --global user.name "Parabol CircleCI"
               git config --global user.email "admin+circleci@parabol.co"
-              git add ./packages/server/graphql/queryMap.json build -f
-              git add ./packages/client/__generated__ build -f
+              git add queryMap.json build dist packages/client/__generated__ scripts/toolbox -f
               git commit -m "build $ACTION_VERSION"
-            fi
-      - deploy:
-          name: Possible (production backup) and deployment
-          command: |
-            if [ "${CIRCLE_BRANCH}" == "production" ]; then
-              export GITHUB_REMOTE="${GITHUB_REMOTE_PRODUCTION}"
-            elif [ "${CIRCLE_BRANCH}" == "staging" ]; then
-              export GITHUB_REMOTE="${GITHUB_REMOTE_STAGING}"
-            elif [ "${CIRCLE_BRANCH}" == "development" ]; then
-              export GITHUB_REMOTE="${GITHUB_REMOTE_DEVELOPMENT}"
-            fi
-            if [ -n "${GITHUB_REMOTE}" ]; then
               git remote add dokku $GITHUB_REMOTE
               export SSH_DESTINATION=$(echo $GITHUB_REMOTE | cut -f1 -d:)
               ssh -o StrictHostKeyChecking=no "${SSH_DESTINATION}" -T >/dev/null
@@ -138,6 +120,9 @@ jobs:
       - store_artifacts:
           path: ~/action/build
           destination: build
+      - store_artifacts:
+          path: ~/action/dist
+          destination: dist
       - run:
           name: Upload sentry artifacts
           command: |
@@ -146,6 +131,7 @@ jobs:
               export ACTION_VERSION=$(grep '"version":' package.json | cut -d\" -f4)
               sentry-cli releases new "$ACTION_VERSION"
               sentry-cli releases files "$ACTION_VERSION" upload-sourcemaps ~/action/build
+              sentry-cli releases files "$ACTION_VERSION" upload-sourcemaps ~/action/dist
               sentry-cli releases finalize "$ACTION_VERSION"
             fi
       - store_test_results:

@@ -2,7 +2,7 @@
 // The global should be that of a service worker.
 
 // This fixes `self`'s type.
-declare var self: ServiceWorkerGlobalScope
+declare let self: ServiceWorkerGlobalScope
 
 declare global {
   interface ServiceWorkerGlobalScope {
@@ -21,7 +21,7 @@ const waitUntil = (cb: (e: ExtendableEvent) => void) => (e: ExtendableEvent) => 
   e.waitUntil(cb(e))
 }
 
-const onInstall = async (event: ExtendableEvent) => {
+const onInstall = async (_event: ExtendableEvent) => {
   await self.skipWaiting()
   const urls = self.__precacheManifest.map(({url}) => url)
   const cacheNames = await caches.keys()
@@ -37,7 +37,7 @@ const onInstall = async (event: ExtendableEvent) => {
   // if they already have some assets, forward them over to the new cache & fetch the rest
   const oldStaticCache = await caches.open(oldStaticCacheName)
   const cachedResponses = await Promise.all(urls.map((url) => oldStaticCache.match(url)))
-  const newUrls = urls.filter((url, idx) => !cachedResponses[idx])
+  const newUrls = urls.filter((_url, idx) => !cachedResponses[idx])
   console.log(`Installing ${urls.length} modules (${newUrls.length} new)`)
   await Promise.all(
     cachedResponses.map((res: Response | undefined, idx) => {
@@ -48,7 +48,7 @@ const onInstall = async (event: ExtendableEvent) => {
   return newCache.addAll(newUrls)
 }
 
-const onActivate = async (event: ExtendableEvent) => {
+const onActivate = async (_event: ExtendableEvent) => {
   await self.clients.claim()
   const cacheNames = await caches.keys()
   return Promise.all(

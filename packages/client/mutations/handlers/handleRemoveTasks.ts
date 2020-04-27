@@ -1,13 +1,13 @@
+import {RecordSourceSelectorProxy} from 'relay-runtime'
+import getReflectionGroupThreadConn from '~/mutations/connections/getReflectionGroupThreadConn'
+import {handleRemoveReply} from '~/mutations/DeleteCommentMutation'
+import {ITask, IUser} from '../../types/graphql'
+import safeRemoveNodeFromArray from '../../utils/relay/safeRemoveNodeFromArray'
+import safeRemoveNodeFromConn from '../../utils/relay/safeRemoveNodeFromConn'
 import getArchivedTasksConn from '../connections/getArchivedTasksConn'
 import getTeamTasksConn from '../connections/getTeamTasksConn'
 import getUserTasksConn from '../connections/getUserTasksConn'
 import pluralizeHandler from './pluralizeHandler'
-import safeRemoveNodeFromConn from '../../utils/relay/safeRemoveNodeFromConn'
-import safeRemoveNodeFromArray from '../../utils/relay/safeRemoveNodeFromArray'
-import {RecordSourceSelectorProxy} from 'relay-runtime'
-import {ITask, IUser} from '../../types/graphql'
-import getReflectionGroupThreadConn from 'mutations/connections/getReflectionGroupThreadConn'
-import {handleRemoveReply} from 'mutations/DeleteCommentMutation'
 
 const handleRemoveTask = (taskId: string, store: RecordSourceSelectorProxy<any>) => {
   const viewer = store.getRoot().getLinkedRecord<IUser>('viewer')

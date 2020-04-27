@@ -15,9 +15,9 @@ interface Options {
 
 export default function makeAppLink(location = '', options: Options = {}) {
   const {params, isWebhook} = options
-  const proto = process.env.PROTO || 'http'
-  const host = process.env.HOST || 'localhost'
-  const port = process.env.PORT || '3000'
+  const proto = process.env.PROTO
+  const host = process.env.HOST
+  const port = process.env.PORT
   const portSuffix = host !== 'localhost' ? '' : `:${port}`
   const useHook = host === 'localhost' && isWebhook
   const hostname = useHook ? 'http://dev.parabol.ultrahook.com' : `${proto}://${host}${portSuffix}`

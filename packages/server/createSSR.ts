@@ -1,21 +1,15 @@
 import fs from 'fs'
-import path from 'path'
-import {HttpResponse, HttpRequest} from 'uWebSockets.js'
-import dehydrate from './utils/dehydrate'
-import getWebpackPublicPath from './utils/getWebpackPublicPath'
-import {brotliCompressSync} from 'zlib'
-import PROD from './PROD'
 import {minify} from 'html-minifier-terser'
+import path from 'path'
+import {HttpRequest, HttpResponse} from 'uWebSockets.js'
+import {brotliCompressSync} from 'zlib'
 import acceptsBrotli from './acceptsBrotli'
-
-let rawHTML
+import PROD from './PROD'
+import dehydrate from './utils/dehydrate'
 
 export const getClientKeys = () => {
-  const webpackPublicPath = getWebpackPublicPath()
-
   return {
     atlassian: process.env.ATLASSIAN_CLIENT_ID,
-    cdn: webpackPublicPath,
     github: process.env.GITHUB_CLIENT_ID,
     googleTagManagerId: process.env.GOOGLE_TAG_MANAGER_CONTAINER_ID,
     google: process.env.GOOGLE_OAUTH_CLIENT_ID,
@@ -25,28 +19,34 @@ export const getClientKeys = () => {
     stripe: process.env.STRIPE_PUBLISHABLE_KEY
   }
 }
+
+let minifiedHTML: string
+let brotliHTML: Buffer
 const getRaw = () => {
-  if (!rawHTML) {
+  if (!minifiedHTML) {
     const clientIds = getClientKeys()
-    const htmlFile = PROD ? '../../build/index.html' : './template.html'
-    const html = fs.readFileSync(path.join(__dirname, htmlFile), 'utf8')
+    const PROJECT_ROOT = path.join(__dirname, '../')
+    const htmlPath = PROD ? './build/index.html' : './template.html'
+    const html = fs.readFileSync(path.join(PROJECT_ROOT, htmlPath), 'utf8')
     const extraHead = `<script>${dehydrate('__ACTION__', clientIds)}</script>`
     const devBody = PROD
       ? ''
       : '<script src="/static/vendors.dll.js"></script><script src="/static/app.js"></script>'
 
-    rawHTML = html.replace('<head>', `<head>${extraHead}`).replace('</body>', `${devBody}</body>`)
+    const rawHTML = html
+      .replace('<head>', `<head>${extraHead}`)
+      .replace('</body>', `${devBody}</body>`)
+    minifiedHTML = minify(rawHTML, {
+      collapseBooleanAttributes: true,
+      collapseWhitespace: true,
+      minifyJS: true,
+      removeScriptTypeAttributes: true,
+      removeComments: true
+    })
   }
-  return minify(rawHTML, {
-    collapseBooleanAttributes: true,
-    collapseWhitespace: true,
-    minifyJS: true,
-    removeScriptTypeAttributes: true,
-    removeComments: true
-  })
+  return minifiedHTML
 }
 
-let brotliHTML: Buffer
 const getBrotli = () => {
   if (!brotliHTML) {
     brotliHTML = brotliCompressSync(getRaw())

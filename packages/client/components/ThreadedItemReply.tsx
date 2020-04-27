@@ -1,14 +1,14 @@
 import graphql from 'babel-plugin-relay/macro'
 import {Editor} from 'draft-js'
-import useAtmosphere from 'hooks/useAtmosphere'
-import useClickAway from 'hooks/useClickAway'
 import React, {RefObject, useRef} from 'react'
 import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
-import isAndroid from 'utils/draftjs/isAndroid'
-import {ThreadedItemReply_meeting} from '__generated__/ThreadedItemReply_meeting.graphql'
+import useAtmosphere from '~/hooks/useAtmosphere'
+import useClickAway from '~/hooks/useClickAway'
+import isAndroid from '~/utils/draftjs/isAndroid'
+import {ThreadedItemReply_meeting} from '~/__generated__/ThreadedItemReply_meeting.graphql'
+import {ThreadedItemReply_threadable} from '~/__generated__/ThreadedItemReply_threadable.graphql'
 import DiscussionThreadInput from './DiscussionThreadInput'
 import {ReplyMention, SetReplyMention} from './ThreadedItem'
-import {ThreadedItemReply_threadable} from '__generated__/ThreadedItemReply_threadable.graphql'
 
 interface Props {
   threadable: ThreadedItemReply_threadable

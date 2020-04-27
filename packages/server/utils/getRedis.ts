@@ -1,7 +1,4 @@
 import Redis from 'ioredis'
-import getDotenv from '../../server/utils/dotenv'
-
-getDotenv()
 
 let redis: Redis.Redis
 const getRedis = () => {

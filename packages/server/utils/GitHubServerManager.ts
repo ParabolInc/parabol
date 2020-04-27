@@ -43,9 +43,9 @@ class GitHubServerManager extends GitHubManager {
     }
     return new GitHubServerManager(accessToken)
   }
-
+  fetch = fetch
   constructor(accessToken: string) {
-    super(accessToken, {fetch})
+    super(accessToken)
   }
 }
 

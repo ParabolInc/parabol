@@ -1,10 +1,10 @@
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
+import NotificationAction from '~/components/NotificationAction'
 import useRouter from '../hooks/useRouter'
 import {MeetingStageTimeLimitEnd_notification} from '../__generated__/MeetingStageTimeLimitEnd_notification.graphql'
 import NotificationTemplate from './NotificationTemplate'
-import NotificationAction from 'components/NotificationAction'
 
 interface Props {
   notification: MeetingStageTimeLimitEnd_notification

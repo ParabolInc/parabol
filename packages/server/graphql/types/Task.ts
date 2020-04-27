@@ -1,11 +1,5 @@
-import {
-  GraphQLFloat,
-  GraphQLID,
-  GraphQLList,
-  GraphQLNonNull,
-  GraphQLObjectType,
-  GraphQLString
-} from 'graphql'
+import {GraphQLFloat, GraphQLID, GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
+import {ThreadSourceEnum} from 'parabol-client/types/graphql'
 import connectionDefinitions from '../connectionDefinitions'
 import {GQLContext} from '../graphql'
 import AgendaItem from './AgendaItem'
@@ -16,7 +10,6 @@ import TaskIntegration from './TaskIntegration'
 import TaskStatusEnum from './TaskStatusEnum'
 import Team from './Team'
 import Threadable, {threadableFields} from './Threadable'
-import {ThreadSourceEnum} from 'parabol-client/types/graphql'
 
 const Task = new GraphQLObjectType<any, GQLContext, any>({
   name: 'Task',

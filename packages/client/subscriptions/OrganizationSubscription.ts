@@ -10,12 +10,12 @@ import {
 import graphql from 'babel-plugin-relay/macro'
 import Atmosphere from '../Atmosphere'
 import {requestSubscription, Variables} from 'relay-runtime'
-import {OrganizationSubscriptionResponse} from '__generated__/OrganizationSubscription.graphql'
+import {OrganizationSubscriptionResponse} from '~/__generated__/OrganizationSubscription.graphql'
 import {RouterProps} from 'react-router'
 import {
   archiveOrganizationOrganizationOnNext,
   archiveOrganizationOrganizationUpdater
-} from 'mutations/ArchiveOrganizationMutation'
+} from '~/mutations/ArchiveOrganizationMutation'
 
 const subscription = graphql`
   subscription OrganizationSubscription {

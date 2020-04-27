@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
-import {Breakpoint} from 'types/constEnums'
-import makeMinWidthMediaQuery from 'utils/makeMinWidthMediaQuery'
+import {Breakpoint} from '~/types/constEnums'
+import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
 
 const MeetingHeaderAndPhase = styled('div')<{hideBottomBar: boolean}>(({hideBottomBar}) => ({
   display: 'flex',

@@ -7,7 +7,7 @@ import {changeTaskTeamTaskUpdater} from '../mutations/ChangeTaskTeamMutation'
 import graphql from 'babel-plugin-relay/macro'
 import {RecordSourceSelectorProxy, requestSubscription, Variables} from 'relay-runtime'
 import Atmosphere from '../Atmosphere'
-import {TaskSubscriptionResponse} from '__generated__/TaskSubscription.graphql'
+import {TaskSubscriptionResponse} from '~/__generated__/TaskSubscription.graphql'
 import {RouterProps} from 'react-router'
 
 const subscription = graphql`

@@ -1,13 +1,13 @@
+import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {createFragmentContainer} from 'react-relay'
+import {UserTasksHeader_viewer} from '~/__generated__/UserTasksHeader_viewer.graphql'
 import DashSectionControls from '../../../../components/Dashboard/DashSectionControls'
 import DashSectionHeader from '../../../../components/Dashboard/DashSectionHeader'
 import DashFilterToggle from '../../../../components/DashFilterToggle/DashFilterToggle'
-import lazyPreload from '../../../../utils/lazyPreload'
 import {MenuPosition} from '../../../../hooks/useCoords'
 import useMenu from '../../../../hooks/useMenu'
-import {createFragmentContainer} from 'react-relay'
-import graphql from 'babel-plugin-relay/macro'
-import {UserTasksHeader_viewer} from '__generated__/UserTasksHeader_viewer.graphql'
+import lazyPreload from '../../../../utils/lazyPreload'
 
 const UserDashTeamMenu = lazyPreload(() =>
   import(

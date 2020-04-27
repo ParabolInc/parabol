@@ -1,4 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
+import MeetingSummaryEmail from 'parabol-server/email/components/SummaryEmail/MeetingSummaryEmail/MeetingSummaryEmail'
 import React, {useEffect} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import useDocumentTitle from '../../../hooks/useDocumentTitle'
@@ -8,7 +9,6 @@ import {MEETING_SUMMARY_LABEL} from '../../../utils/constants'
 import makeHref from '../../../utils/makeHref'
 import {NewMeetingSummary_viewer} from '../../../__generated__/NewMeetingSummary_viewer.graphql'
 import {demoTeamId} from '../../demo/initDB'
-import MeetingSummaryEmail from '../../email/components/SummaryEmail/MeetingSummaryEmail/MeetingSummaryEmail'
 
 interface Props {
   viewer: NewMeetingSummary_viewer

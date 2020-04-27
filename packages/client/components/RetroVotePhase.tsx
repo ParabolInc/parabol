@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import React, {useRef} from 'react'
 import {createFragmentContainer} from 'react-relay'
-import {RetroVotePhase_meeting} from '__generated__/RetroVotePhase_meeting.graphql'
+import {RetroVotePhase_meeting} from '~/__generated__/RetroVotePhase_meeting.graphql'
 import {NewMeetingPhaseTypeEnum} from '../types/graphql'
 import {phaseLabelLookup} from '../utils/meetings/lookups'
 import GroupingKanban from './GroupingKanban'

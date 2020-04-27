@@ -1,7 +1,7 @@
 import getRethink from '../database/rethinkDriver'
 import countTiersForUserId from '../graphql/queries/helpers/countTiersForUserId'
 import segmentIo from './segmentIo'
-import {ISegmentEventTrackOptions, TierEnum, OrgUserRole} from '../../client/types/graphql'
+import {ISegmentEventTrackOptions, TierEnum, OrgUserRole} from 'parabol-client/types/graphql'
 import sendToSentry from './sendToSentry'
 
 const PERSONAL_TIER_MAX_TEAMS = 2
@@ -87,9 +87,9 @@ const getOrgId = async (teamId: string | undefined | null) => {
   const r = await getRethink()
   return teamId
     ? r
-        .table('Team')
-        .get(teamId)('orgId')
-        .run()
+      .table('Team')
+      .get(teamId)('orgId')
+      .run()
     : undefined
 }
 
@@ -136,19 +136,19 @@ const sendSegmentEvent = async (
   if (userIds.length === 0) return
   const [traitsArr, orgId] = await getSegmentProps(userIds, options.teamId)
     // typescript 3.7 is borked
-  ;(traitsArr as Traits[]).forEach((traitsWithId) => {
-    const {id: userId, ...traits} = traitsWithId
-    segmentIo.track({
-      userId,
-      event,
-      properties: {
-        orgId,
-        traits,
-        // options is a superset of SegmentEventTrackOptions
-        ...options
-      }
+    ; (traitsArr as Traits[]).forEach((traitsWithId) => {
+      const {id: userId, ...traits} = traitsWithId
+      segmentIo.track({
+        userId,
+        event,
+        properties: {
+          orgId,
+          traits,
+          // options is a superset of SegmentEventTrackOptions
+          ...options
+        }
+      })
     })
-  })
 }
 
 export default sendSegmentEvent

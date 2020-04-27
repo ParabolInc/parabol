@@ -1,15 +1,15 @@
+import {css, Global} from '@emotion/core'
 import React, {lazy, memo, Suspense} from 'react'
 import {Route, Switch} from 'react-router'
-import {CREATE_ACCOUNT_SLUG, SIGNIN_SLUG} from '../../utils/constants'
+import useServiceWorkerUpdater from '../../hooks/useServiceWorkerUpdater'
+import useTrebuchetEvents from '../../hooks/useTrebuchetEvents'
+import globalStyles from '../../styles/theme/globalStyles'
 import {LoaderSize} from '../../types/constEnums'
+import {CREATE_ACCOUNT_SLUG, SIGNIN_SLUG} from '../../utils/constants'
 import ErrorBoundary from '../ErrorBoundary'
 import LoadingComponent from '../LoadingComponent/LoadingComponent'
 import PrivateRoutes from '../PrivateRoutes'
 import Snackbar from '../Snackbar'
-import {css, Global} from '@emotion/core'
-import globalStyles from '../../styles/theme/globalStyles'
-import useTrebuchetEvents from '../../hooks/useTrebuchetEvents'
-import useServiceWorkerUpdater from '../../hooks/useServiceWorkerUpdater'
 
 const AnalyticsPage = lazy(() => import(/* webpackChunkName: 'AnalyticsPage' */ '../AnalyticsPage'))
 const AuthenticationPage = lazy(() =>

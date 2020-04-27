@@ -2,7 +2,7 @@ import {GraphQLBoolean, GraphQLID, GraphQLInterfaceType, GraphQLNonNull} from 'g
 import ActionMeetingMember from './ActionMeetingMember'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import MeetingTypeEnum from './MeetingTypeEnum'
-import {ACTION, RETROSPECTIVE} from '../../../client/utils/constants'
+import {ACTION, RETROSPECTIVE} from 'parabol-client/utils/constants'
 import RetrospectiveMeetingMember from './RetrospectiveMeetingMember'
 import {resolveUser} from '../resolvers'
 import User from './User'

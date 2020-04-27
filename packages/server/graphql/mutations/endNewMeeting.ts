@@ -6,7 +6,7 @@ import {
   MeetingTypeEnum,
   NewMeetingPhaseTypeEnum,
   SuggestedActionTypeEnum
-} from '../../../client/types/graphql'
+} from 'parabol-client/types/graphql'
 import {
   ACTION,
   AGENDA_ITEMS,
@@ -14,8 +14,8 @@ import {
   DONE,
   LAST_CALL,
   RETROSPECTIVE
-} from '../../../client/utils/constants'
-import findStageById from '../../../client/utils/meetings/findStageById'
+} from 'parabol-client/utils/constants'
+import findStageById from 'parabol-client/utils/meetings/findStageById'
 import getRethink from '../../database/rethinkDriver'
 import GenericMeetingPhase from '../../database/types/GenericMeetingPhase'
 import Meeting from '../../database/types/Meeting'

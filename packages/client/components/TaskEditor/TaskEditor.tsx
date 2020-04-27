@@ -1,23 +1,16 @@
-import {
-  DraftEditorCommand,
-  DraftHandleValue,
-  Editor,
-  EditorProps,
-  EditorState,
-  getDefaultKeyBinding
-} from 'draft-js'
+import styled from '@emotion/styled'
+import {DraftEditorCommand, DraftHandleValue, Editor, EditorProps, EditorState, getDefaultKeyBinding} from 'draft-js'
 import React, {RefObject, Suspense, useEffect, useRef} from 'react'
+import {UseTaskChild} from '../../hooks/useTaskChildFocus'
 import {Card} from '../../types/constEnums'
 import {textTags} from '../../utils/constants'
 import entitizeText from '../../utils/draftjs/entitizeText'
-import './Draft.css'
-import styled from '@emotion/styled'
-import lazyPreload from '../../utils/lazyPreload'
-import isRichDraft from '../../utils/draftjs/isRichDraft'
 import isAndroid from '../../utils/draftjs/isAndroid'
-import {UseTaskChild} from '../../hooks/useTaskChildFocus'
-import useTaskPlugins from './useTaskPlugins'
+import isRichDraft from '../../utils/draftjs/isRichDraft'
+import lazyPreload from '../../utils/lazyPreload'
 import blockStyleFn from './blockStyleFn'
+import './Draft.css'
+import useTaskPlugins from './useTaskPlugins'
 
 const RootEditor = styled('div')<{noText: boolean; readOnly: boolean | undefined}>(
   ({noText, readOnly}) => ({
@@ -30,9 +23,7 @@ const RootEditor = styled('div')<{noText: boolean; readOnly: boolean | undefined
 )
 
 const AndroidEditorFallback = lazyPreload(() =>
-  import(
-    /* webpackChunkName: 'AndroidEditorFallback' */ '../../../client/components/AndroidEditorFallback'
-  )
+  import(/* webpackChunkName: 'AndroidEditorFallback' */ '../AndroidEditorFallback')
 )
 
 const TaskEditorFallback = styled(AndroidEditorFallback)({
@@ -182,21 +173,21 @@ const TaskEditor = (props: Props) => {
           />
         </Suspense>
       ) : (
-        <Editor
-          spellCheck
-          blockStyleFn={blockStyleFn}
-          editorState={editorState}
-          handleBeforeInput={onBeforeInput}
-          handleKeyCommand={nextKeyCommand}
-          handlePastedText={onPastedText}
-          handleReturn={onReturn}
-          keyBindingFn={onKeyBindingFn}
-          onChange={onChange}
-          placeholder={placeholder}
-          readOnly={readOnly || (useFallback && !showFallback)}
-          ref={editorRef as any}
-        />
-      )}
+          <Editor
+            spellCheck
+            blockStyleFn={blockStyleFn}
+            editorState={editorState}
+            handleBeforeInput={onBeforeInput}
+            handleKeyCommand={nextKeyCommand}
+            handlePastedText={onPastedText}
+            handleReturn={onReturn}
+            keyBindingFn={onKeyBindingFn}
+            onChange={onChange}
+            placeholder={placeholder}
+            readOnly={readOnly || (useFallback && !showFallback)}
+            ref={editorRef as any}
+          />
+        )}
       {renderModal && renderModal()}
     </RootEditor>
   )

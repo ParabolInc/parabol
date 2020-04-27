@@ -1,4 +1,4 @@
-import toTeamMemberId from '../../../client/utils/relay/toTeamMemberId'
+import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import {MeetingTypeEnum} from 'parabol-client/types/graphql'
 
 interface MeetingMemberInput {

@@ -8,7 +8,7 @@ import {getUserId} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import sendSegmentEvent from '../../utils/sendSegmentEvent'
 import shortid from 'shortid'
-import toTeamMemberId from '../../../client/utils/relay/toTeamMemberId'
+import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import rateLimit from '../rateLimit'
 import removeSuggestedAction from '../../safeMutations/removeSuggestedAction'
 import standardError from '../../utils/standardError'
@@ -42,7 +42,7 @@ export default {
       const {
         data: {newTeam, orgName},
         errors
-      } = addOrgValidation()(args)
+      } = addOrgValidation()(args) as any
       if (Object.keys(errors).length) {
         return standardError(new Error('Failed input validation'), {userId: viewerId})
       }

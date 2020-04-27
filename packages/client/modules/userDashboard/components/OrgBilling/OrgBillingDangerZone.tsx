@@ -1,15 +1,15 @@
-import Panel from '../../../../components/Panel/Panel'
-import React from 'react'
 import styled from '@emotion/styled'
-import {PALETTE} from '../../../../styles/paletteV2'
+import graphql from 'babel-plugin-relay/macro'
+import React from 'react'
+import {createFragmentContainer} from 'react-relay'
+import ArchiveOrganization from '~/modules/teamDashboard/components/ArchiveTeam/ArchiveOrganization'
+import {TierEnum} from '~/types/graphql'
+import {OrgBillingDangerZone_organization} from '~/__generated__/OrgBillingDangerZone_organization.graphql'
 import Icon from '../../../../components/Icon'
+import Panel from '../../../../components/Panel/Panel'
+import {PALETTE} from '../../../../styles/paletteV2'
 import {ICON_SIZE} from '../../../../styles/typographyV2'
 import {Layout} from '../../../../types/constEnums'
-import graphql from 'babel-plugin-relay/macro'
-import {createFragmentContainer} from 'react-relay'
-import {OrgBillingDangerZone_organization} from '__generated__/OrgBillingDangerZone_organization.graphql'
-import {TierEnum} from 'types/graphql'
-import ArchiveOrganization from 'modules/teamDashboard/components/ArchiveTeam/ArchiveOrganization'
 
 const EnvelopeIcon = styled(Icon)({
   fontSize: ICON_SIZE.MD18,

@@ -10,7 +10,10 @@ import {GQLContext} from '../graphql'
 import AddCommentInput from '../types/AddCommentInput'
 import AddCommentPayload from '../types/AddCommentPayload'
 import validateThreadableReflectionGroupId from './validateThreadableReflectionGroupId'
-import {IAddCommentOnMutationArguments, NewMeetingPhaseTypeEnum} from 'parabol-client/types/graphql'
+import {
+  IAddCommentOnMutationArguments,
+  NewMeetingPhaseTypeEnum
+} from 'parabol-client/types/graphql'
 import sendSegmentEvent from '../../utils/sendSegmentEvent'
 
 const addComment = {

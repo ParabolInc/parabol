@@ -4,7 +4,7 @@
 // import getPubSub from '../../../utils/getPubSub'
 // import {DONE, GITHUB} from 'parabol-client/utils/constants'
 // import getTagsFromEntityMap from 'parabol-client/utils/draftjs/getTagsFromEntityMap'
-// import removeAllRangesForEntity from '../../../../client/utils/draftjs/removeAllRangesForEntity'
+// import removeAllRangesForEntity from 'parabol-client/utils/draftjs/removeAllRangesForEntity'
 // import {isSuperUser} from '../../../utils/authorization'
 // import {TaskTag} from '../../../database/types/Task'
 

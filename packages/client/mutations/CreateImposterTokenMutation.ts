@@ -3,7 +3,7 @@ import {commitMutation} from 'react-relay'
 import Atmosphere from '../Atmosphere'
 import getGraphQLError from '../utils/relay/getGraphQLError'
 import {CreateImposterTokenMutation as ICreateImposterTokenMutation} from '../__generated__/CreateImposterTokenMutation.graphql'
-import {LocalStorageKey} from 'types/constEnums'
+import {LocalStorageKey} from '~/types/constEnums'
 
 graphql`
   fragment CreateImposterTokenMutation_agendaItem on CreateImposterTokenPayload {

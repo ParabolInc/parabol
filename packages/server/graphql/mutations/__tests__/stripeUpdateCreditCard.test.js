@@ -9,7 +9,7 @@ import DataLoaderWarehouse from 'dataloader-warehouse'
 import getRethink from '../../../database/rethinkDriver'
 import customerSourceUpdatedEvent from './mockStripeEvents/customerSourceUpdatedEvent'
 import shortid from 'shortid'
-import {PRO} from '../../../../client/utils/constants'
+import { PRO } from 'parabol-client/utils/constants'
 import MockReq from '../../../__mocks__/MockReq'
 
 console.error = jest.fn()
@@ -23,9 +23,9 @@ describe('stripeUpdateCreditCard', () => {
     const r = await getRethink()
     const dynamicSerializer = new DynamicSerializer()
     const mockDB = new MockDB()
-    const {organization} = await mockDB.init({plan: PRO})
+    const { organization } = await mockDB.init({ plan: PRO })
     const org = organization[0]
-    const req = new MockReq({body: customerSourceUpdatedEvent(org.stripeId)})
+    const req = new MockReq({ body: customerSourceUpdatedEvent(org.stripeId) })
     stripe.__setMockData(org)
     const subscription = stripe.__db.subscriptions[org.stripeSubscriptionId]
     await stripe.invoices.create({

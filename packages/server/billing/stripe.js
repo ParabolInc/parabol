@@ -1,8 +1,7 @@
 /* Deprecated, use StripeManager */
 
 import initStripe from 'stripe'
-import getDotenv from '../../server/utils/dotenv'
-import {usedMethods, usedResources} from './constants'
+import { usedMethods, usedResources } from './constants'
 
 const tryCatchWrapper = (target) => async (...args) => {
   try {
@@ -14,7 +13,6 @@ const tryCatchWrapper = (target) => async (...args) => {
   }
 }
 
-getDotenv()
 const stripe = initStripe(process.env.STRIPE_SECRET_KEY)
 
 // whenever we call stripe, we want to 1) make sure we throw the error and 2) throw our special message for the client

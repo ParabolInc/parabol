@@ -1,15 +1,15 @@
+import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
+import {Organizations_viewer} from '~/__generated__/Organizations_viewer.graphql'
+import LinkButton from '../../../../components/LinkButton'
+import Panel from '../../../../components/Panel/Panel'
+import SettingsWrapper from '../../../../components/Settings/SettingsWrapper'
+import useDocumentTitle from '../../../../hooks/useDocumentTitle'
+import useRouter from '../../../../hooks/useRouter'
 import EmptyOrgsCallOut from '../EmptyOrgsCallOut/EmptyOrgsCallOut'
 import OrganizationRow from '../OrganizationRow/OrganizationRow'
 import UserSettingsWrapper from '../UserSettingsWrapper/UserSettingsWrapper'
-import LinkButton from '../../../../components/LinkButton'
-import Panel from '../../../../components/Panel/Panel'
-import graphql from 'babel-plugin-relay/macro'
-import SettingsWrapper from '../../../../components/Settings/SettingsWrapper'
-import {Organizations_viewer} from '__generated__/Organizations_viewer.graphql'
-import useRouter from '../../../../hooks/useRouter'
-import useDocumentTitle from '../../../../hooks/useDocumentTitle'
 
 interface Props {
   viewer: Organizations_viewer

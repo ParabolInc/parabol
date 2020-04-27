@@ -3,7 +3,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {INewMeeting, INewMeetingStage} from '../types/graphql'
 import {RelayDateHack, SharedUpdater, StandardMutation} from '../types/relayMutations'
 import {SetStageTimerMutation as _SetStageTimerMutation} from '../__generated__/SetStageTimerMutation.graphql'
-import {SetStageTimerMutation_meeting} from '__generated__/SetStageTimerMutation_meeting.graphql'
+import {SetStageTimerMutation_meeting} from '~/__generated__/SetStageTimerMutation_meeting.graphql'
 import LocalTimeHandler from '../utils/relay/LocalTimeHandler'
 
 graphql`

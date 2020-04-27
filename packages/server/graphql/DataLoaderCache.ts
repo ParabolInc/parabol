@@ -1,6 +1,6 @@
 import DataLoader from 'dataloader'
 
-interface DataLoaderBase {
+export interface DataLoaderBase {
   get: (loaderName: any) => DataLoader<any, any>
 }
 

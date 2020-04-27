@@ -1,7 +1,7 @@
 import shortid from 'shortid'
 import getRethink from '../../../database/rethinkDriver'
-import convertToTaskContent from '../../../../client/utils/draftjs/convertToTaskContent'
-import getTagsFromEntityMap from '../../../../client/utils/draftjs/getTagsFromEntityMap'
+import convertToTaskContent from 'parabol-client/utils/draftjs/convertToTaskContent'
+import getTagsFromEntityMap from 'parabol-client/utils/draftjs/getTagsFromEntityMap'
 import {TaskStatusEnum} from 'parabol-client/types/graphql'
 
 const SEED_TASKS = [

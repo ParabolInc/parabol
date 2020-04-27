@@ -3,10 +3,10 @@ import getRethink from '../../database/rethinkDriver'
 import {getUserId} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import NavigateMeetingPayload from '../types/NavigateMeetingPayload'
-import findStageById from '../../../client/utils/meetings/findStageById'
+import findStageById from 'parabol-client/utils/meetings/findStageById'
 import handleCompletedStage from './helpers/handleCompletedStage'
-import unlockNextStages from '../../../client/utils/unlockNextStages'
-import startStage_ from '../../../client/utils/startStage_'
+import unlockNextStages from 'parabol-client/utils/unlockNextStages'
+import startStage_ from 'parabol-client/utils/startStage_'
 import standardError from '../../utils/standardError'
 import Meeting from '../../database/types/Meeting'
 import removeScheduledJobs from './helpers/removeScheduledJobs'
@@ -100,7 +100,7 @@ export default {
       startStage_(facilitatorStage)
 
       // mutative! sets isNavigable and isNavigableByFacilitator
-      unlockedStageIds = unlockNextStages(facilitatorStageId, phases, meetingId)
+      unlockedStageIds = unlockNextStages(facilitatorStageId, phases)
     }
 
     // RESOLUTION

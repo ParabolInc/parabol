@@ -1,18 +1,18 @@
-import React, {Component} from 'react'
 import styled from '@emotion/styled'
-import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import {TimelineNewFeature_viewer} from '../__generated__/TimelineNewFeature_viewer.graphql'
+import React, {Component} from 'react'
+import {createFragmentContainer} from 'react-relay'
 import withAtmosphere, {WithAtmosphereProps} from '../decorators/withAtmosphere/withAtmosphere'
 import DismissNewFeatureMutation from '../mutations/DismissNewFeatureMutation'
 import {DECELERATE, fadeIn} from '../styles/animation'
+import {cardShadow} from '../styles/elevation'
 import {PALETTE} from '../styles/paletteV2'
-import Icon from './Icon'
-import PlainButton from './PlainButton/PlainButton'
+import gift from '../styles/theme/images/gift.svg'
 import {ICON_SIZE} from '../styles/typographyV2'
 import withMutationProps, {WithMutationProps} from '../utils/relay/withMutationProps'
-import {cardShadow} from '../styles/elevation'
-import gift from '../styles/theme/images/gift.svg'
+import {TimelineNewFeature_viewer} from '../__generated__/TimelineNewFeature_viewer.graphql'
+import Icon from './Icon'
+import PlainButton from './PlainButton/PlainButton'
 
 interface Props extends WithAtmosphereProps, WithMutationProps {
   viewer: TimelineNewFeature_viewer
@@ -118,6 +118,7 @@ class TimelineNewFeature extends Component<Props> {
 export default createFragmentContainer(withAtmosphere(withMutationProps(TimelineNewFeature)), {
   viewer: graphql`
     fragment TimelineNewFeature_viewer on User {
+      picture
       newFeature {
         copy
         url

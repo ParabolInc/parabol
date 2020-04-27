@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import Icon from './Icon'
 import React from 'react'
-import {PALETTE} from 'styles/paletteV2'
+import {PALETTE} from '~/styles/paletteV2'
 
 const MenuToggleInner = styled('div')({
   alignItems: 'center',

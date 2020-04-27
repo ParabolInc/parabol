@@ -1,4 +1,9 @@
-import {RawDraftContentBlock, RawDraftContentState, RawDraftEntity, RawDraftEntityRange} from 'draft-js'
+import {
+  RawDraftContentBlock,
+  RawDraftContentState,
+  RawDraftEntity,
+  RawDraftEntityRange
+} from 'draft-js'
 
 const updateBlockEntityRanges = (blocks: RawDraftContentBlock[], updatedKeyMap: any) => {
   const nextBlocks = [] as RawDraftContentBlock[]

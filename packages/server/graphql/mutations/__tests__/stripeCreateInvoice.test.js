@@ -7,7 +7,7 @@ import stripeWebhookHandler from '../../../billing/stripeWebhookHandler'
 import getRethink from '../../../database/rethinkDriver'
 import invoiceCreatedEvent from './mockStripeEvents/invoiceCreatedEvent'
 import shortid from 'shortid'
-import {PRO} from '../../../../client/utils/constants'
+import { PRO } from 'parabol-client/utils/constants'
 import MockRes from '../../../__mocks__/MockRes'
 import MockReq from '../../../__mocks__/MockReq'
 import DataLoaderWarehouse from 'dataloader-warehouse'
@@ -18,12 +18,12 @@ describe('stripeCreateInvoice', () => {
   test('handles invoice.created', async () => {
     // SETUP
     const invoiceId = `in_${shortid.generate()}`
-    const req = new MockReq({body: invoiceCreatedEvent(invoiceId)})
+    const req = new MockReq({ body: invoiceCreatedEvent(invoiceId) })
     const res = new MockRes()
     const r = await getRethink()
     const dynamicSerializer = new DynamicSerializer()
     const mockDB = new MockDB()
-    const {organization} = await mockDB.init({plan: PRO})
+    const { organization } = await mockDB.init({ plan: PRO })
     const org = organization[0]
     const sharedDataLoader = new DataLoaderWarehouse({
       ttl: 1000,

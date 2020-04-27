@@ -1,7 +1,7 @@
 import {HttpRequest, HttpResponse} from 'uWebSockets.js'
+import AuthToken from '../database/types/AuthToken'
 import sseClients from '../sseClients'
 import getReqAuth from '../utils/getReqAuth'
-import AuthToken from '../database/types/AuthToken'
 
 const SSEPingHandler = (res: HttpResponse, req: HttpRequest) => {
   const connectionId = req.getHeader('x-correlation-id')

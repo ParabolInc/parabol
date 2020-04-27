@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
-import {TransitionStatus} from 'hooks/useTransition'
-import {BezierCurve} from 'types/constEnums'
+import {TransitionStatus} from '~/hooks/useTransition'
+import {BezierCurve} from '~/types/constEnums'
 import FlatButton, {FlatButtonProps} from './FlatButton'
 
 interface Props extends FlatButtonProps {

@@ -1,11 +1,11 @@
 import graphql from 'babel-plugin-relay/macro'
+import {readInlineData} from 'relay-runtime'
+import {fromStageIdToUrl_meeting} from '~/__generated__/fromStageIdToUrl_meeting.graphql'
+import {RetroDemo} from '../../types/constEnums'
 import {NewMeetingPhaseTypeEnum} from '../../types/graphql'
 import findStageById from './findStageById'
 import getMeetingPathParams from './getMeetingPathParams'
 import {phaseTypeToSlug} from './lookups'
-import {RetroDemo} from '../../types/constEnums'
-import {readInlineData} from 'relay-runtime'
-import {fromStageIdToUrl_meeting} from '__generated__/fromStageIdToUrl_meeting.graphql'
 
 const phaseIsMultiStage = {
   [NewMeetingPhaseTypeEnum.checkin]: true,

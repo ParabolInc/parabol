@@ -8,7 +8,7 @@ import {
   GraphQLString
 } from 'graphql'
 import isTaskPrivate from 'parabol-client/utils/isTaskPrivate'
-import toTeamMemberId from '../../../client/utils/relay/toTeamMemberId'
+import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import {getUserId} from '../../utils/authorization'
 import {GQLContext} from '../graphql'
 import connectionFromTasks from '../queries/helpers/connectionFromTasks'

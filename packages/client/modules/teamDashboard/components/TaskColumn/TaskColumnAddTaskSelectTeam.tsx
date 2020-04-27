@@ -1,4 +1,7 @@
+import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {createFragmentContainer} from 'react-relay'
+import {TaskColumnAddTaskSelectTeam_teams} from '~/__generated__/TaskColumnAddTaskSelectTeam_teams.graphql'
 import AddTaskButton from '../../../../components/AddTaskButton/AddTaskButton'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import {MenuPosition} from '../../../../hooks/useCoords'
@@ -7,9 +10,6 @@ import CreateTaskMutation from '../../../../mutations/CreateTaskMutation'
 import {TaskStatusEnum} from '../../../../types/graphql'
 import lazyPreload from '../../../../utils/lazyPreload'
 import {taskStatusLabels} from '../../../../utils/taskStatus'
-import {createFragmentContainer} from 'react-relay'
-import graphql from 'babel-plugin-relay/macro'
-import {TaskColumnAddTaskSelectTeam_teams} from '__generated__/TaskColumnAddTaskSelectTeam_teams.graphql'
 
 interface Props {
   status: TaskStatusEnum

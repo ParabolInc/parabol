@@ -3,7 +3,7 @@ import getRethink from '../../database/rethinkDriver'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import NewMeetingCheckInPayload from '../types/NewMeetingCheckInPayload'
-import toTeamMemberId from '../../../client/utils/relay/toTeamMemberId'
+import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import standardError from '../../utils/standardError'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 

@@ -39,7 +39,7 @@ const withMutationProps = <P extends WithMutationProps>(
   class MutationProps extends Component<Subtract<P, WithMutationProps>> {
     static displayName = `WithMutationProps(${getDisplayName(ComposedComponent)})`
 
-    _mounted: boolean = false
+    _mounted = false
 
     state = {
       submitting: false,

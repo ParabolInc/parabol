@@ -7,8 +7,6 @@ export const APP_CDN_USER_ASSET_SUBDIR = '/store'
 export const APP_MAX_AVATAR_FILE_SIZE = 1024 * 1024
 export const APP_NAME = 'Action'
 
-export const APP_WEBPACK_PUBLIC_PATH_DEFAULT = '/static/'
-
 /* Meeting Misc. */
 export const MEETING_NAME = 'Check-in Meeting'
 export const MEETING_SUMMARY_LABEL = 'Summary'

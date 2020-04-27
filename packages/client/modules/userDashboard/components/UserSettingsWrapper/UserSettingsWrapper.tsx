@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import React, {ReactNode} from 'react'
+import {Layout} from '~/types/constEnums'
 import DashContent from '../../../../components/Dashboard/DashContent'
-import {Layout} from 'types/constEnums'
 
 const SettingsContentBlock = styled('div')({
   alignItems: 'center',

@@ -100,13 +100,13 @@ export type RethinkTypes = {
   }
   Notification: {
     type:
-      | NotificationTaskInvolves
-      | NotificationTeamArchived
-      | NotificationMeetingStageTimeLimitEnd
-      | NotificationPaymentRejected
-      | NotificationKickedOut
-      | NotificationPromoteToBillingLeader
-      | NotificationTeamInvitation
+    | NotificationTaskInvolves
+    | NotificationTeamArchived
+    | NotificationMeetingStageTimeLimitEnd
+    | NotificationPaymentRejected
+    | NotificationKickedOut
+    | NotificationPromoteToBillingLeader
+    | NotificationTeamInvitation
     index: 'userId'
   }
   Organization: {

@@ -1,17 +1,17 @@
-import VerifyEmailMutation from 'mutations/VerifyEmailMutation'
 import React, {useEffect} from 'react'
 import {RouteComponentProps} from 'react-router'
+import useCanonical from '~/hooks/useCanonical'
+import VerifyEmailMutation from '~/mutations/VerifyEmailMutation'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
-import DialogTitle from './DialogTitle'
-import PrimaryButton from './PrimaryButton'
-import TeamInvitationWrapper from './TeamInvitationWrapper'
 import DialogContent from './DialogContent'
+import DialogTitle from './DialogTitle'
 import Ellipsis from './Ellipsis/Ellipsis'
 import InvitationCenteredCopy from './InvitationCenteredCopy'
 import InvitationDialogCopy from './InvitationDialogCopy'
 import InviteDialog from './InviteDialog'
-import useCanonical from 'hooks/useCanonical'
+import PrimaryButton from './PrimaryButton'
+import TeamInvitationWrapper from './TeamInvitationWrapper'
 
 interface Props
   extends RouteComponentProps<{verificationToken: string; invitationToken?: string}> {}

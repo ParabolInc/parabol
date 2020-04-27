@@ -2,7 +2,7 @@ import {sign} from 'jsonwebtoken'
 import fetch from 'node-fetch'
 import sendToSentry from './utils/sendToSentry'
 
-interface SyntaxTextToken {
+export interface SyntaxTextToken {
   content: string
   beginOffset: number
 }
@@ -102,20 +102,24 @@ export default class GoogleLanguageManager {
         }
       ] as any
     }
-    const res = await fetch(`https://language.googleapis.com/v1/${endpoint}`, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${this.jwt}`,
-        Accept: 'application/json',
-        'Content-Type': 'application/json; charset=utf-8'
-      },
-      body: JSON.stringify({
-        document: {
-          type: 'PLAIN_TEXT',
-          content
-        }
+
+    try {
+      const res = await fetch(`https://language.googleapis.com/v1/${endpoint}`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${this.jwt}`,
+          Accept: 'application/json',
+          'Content-Type': 'application/json; charset=utf-8'
+        },
+        body: JSON.stringify({
+          document: {
+            type: 'PLAIN_TEXT',
+            content
+          }
+        })
       })
-    }).catch((e: Error) => {
+      return res.json()
+    } catch (e) {
       sendToSentry(e)
       return [
         {
@@ -125,10 +129,8 @@ export default class GoogleLanguageManager {
             status: 'Google is down'
           }
         }
-      ]
-    })
-    const resJSON = await res.json()
-    return resJSON
+      ] as any
+    }
   }
 
   analyzeEntities(content: string) {

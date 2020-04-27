@@ -5,6 +5,7 @@ import getOAuthPopupFeatures from './getOAuthPopupFeatures'
 import GitHubManager from './GitHubManager'
 
 class GitHubClientManager extends GitHubManager {
+  fetch = window.fetch.bind(window)
   static openOAuth(atmosphere: Atmosphere, teamId: string, mutationProps: MenuMutationProps) {
     const {submitting, onError, onCompleted, submitMutation} = mutationProps
     const providerState = Math.random()
