@@ -1,9 +1,9 @@
 // Calling this while the cwd is in dev is MUCH slower than calling it at the root dir.
 // Penalty goes away when debugging.
 const path = require('path')
-const { fork } = require('child_process')
+const {fork} = require('child_process')
 const fs = require('fs')
-const { promisify } = require('util')
+const {promisify} = require('util')
 const webpack = require('webpack')
 const getProjectRoot = require('./webpack/utils/getProjectRoot')
 
@@ -34,7 +34,7 @@ const schemaPath = path.join(PROJECT_ROOT, 'schema.graphql')
 const compileGraphQL = () => {
   return new Promise((resolve) => {
     const compileRelayPath = path.join(__dirname, 'compileRelay.js')
-    let relayWatchFork = fork(compileRelayPath, { stdio: 'pipe' })
+    let relayWatchFork = fork(compileRelayPath, {stdio: 'pipe'})
     let resolved = false
     relayWatchFork.stdout.on('data', (data) => {
       const str = data.toString().trim()
@@ -63,7 +63,7 @@ const compileGraphQL = () => {
         throttleId = undefined
         console.log('killing & forking relay')
         relayWatchFork.kill('SIGINT')
-        relayWatchFork = fork(compileRelayPath, { stdio: 'pipe' })
+        relayWatchFork = fork(compileRelayPath, {stdio: 'pipe'})
       }, 3000)
     })
   })
@@ -79,7 +79,7 @@ const dev = async (maybeInit, isDangerous) => {
   await compileGraphQL()
   if (!isDangerous) {
     fork(path.join(TOOLBOX_ROOT, 'migrateDB.js'))
-    await rmdir(path.join(PROJECT_ROOT, 'dev/hot'), { recursive: true })
+    await rmdir(path.join(PROJECT_ROOT, 'dev/hot'), {recursive: true})
     await require('./buildDll')()
     await compileServers()
   }

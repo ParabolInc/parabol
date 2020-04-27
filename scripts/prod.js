@@ -15,8 +15,8 @@ const prod = async (isDeploy) => {
   await compile(toolboxConfig)
   await require('./toolbox/updateSchema.js').default()
   await require('./compileRelay')()
-  const serversConfig = makeServersConfig({ isDeploy })
-  const clientConfig = makeClientConfig({ isDeploy })
+  const serversConfig = makeServersConfig({isDeploy})
+  const clientConfig = makeClientConfig({isDeploy})
   await Promise.all([
     compile(serversConfig),
     compile(clientConfig)

@@ -47,7 +47,7 @@ const buildMiddleware = (compiler, config) => {
 export const getWebpackDevMiddleware = async () => {
   if (!global.hmrMiddleware) {
     global.hmrMiddleware = new Promise(async (resolve) => {
-      const config = require('../../../scripts/webpack/dev.client.config')
+      const config = require('../../scripts/webpack/dev.client.config')
       const webpack = require('webpack')
       const compiler = webpack(config)
       const mwPromise = buildMiddleware(compiler, config)
