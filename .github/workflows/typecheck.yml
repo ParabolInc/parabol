@@ -15,8 +15,7 @@ jobs:
     - name: Typecheck
       run: |
         yarn
-        yarn build:relay
+        yarn build
         yarn typecheck
-        yarn lint
       env:
         CI: true
