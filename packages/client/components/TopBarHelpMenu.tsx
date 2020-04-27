@@ -1,10 +1,10 @@
 import React from 'react'
-import {ExternalLinks, Breakpoint} from 'types/constEnums'
+import useBreakpoint from '~/hooks/useBreakpoint'
+import {Breakpoint, ExternalLinks} from '~/types/constEnums'
 import {MenuProps} from '../hooks/useMenu'
 import Menu from './Menu'
 import MenuItem from './MenuItem'
 import MenuItemWithIcon from './MenuItemWithIcon'
-import useBreakpoint from 'hooks/useBreakpoint'
 
 interface Props {
   menuProps: MenuProps

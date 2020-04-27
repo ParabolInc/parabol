@@ -1,7 +1,7 @@
-import {createFragmentContainer} from 'react-relay'
-import React from 'react'
 import graphql from 'babel-plugin-relay/macro'
-import {NewMeetingExistingMeetings_viewer} from '__generated__/NewMeetingExistingMeetings_viewer.graphql'
+import React from 'react'
+import {createFragmentContainer} from 'react-relay'
+import {NewMeetingExistingMeetings_viewer} from '~/__generated__/NewMeetingExistingMeetings_viewer.graphql'
 
 interface Props {
   viewer: NewMeetingExistingMeetings_viewer

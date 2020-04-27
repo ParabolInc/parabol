@@ -16,7 +16,7 @@ import {
 import handleRemoveSuggestedActions from './handlers/handleRemoveSuggestedActions'
 import onMeetingRoute from '../utils/onMeetingRoute'
 import SetNotificationStatusMutation from './SetNotificationStatusMutation'
-import {NotificationStatusEnum} from 'types/graphql'
+import {NotificationStatusEnum} from '~/types/graphql'
 
 graphql`
   fragment ArchiveTeamMutation_team on ArchiveTeamPayload {

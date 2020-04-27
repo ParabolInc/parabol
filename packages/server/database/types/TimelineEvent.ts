@@ -6,9 +6,9 @@ import {TimelineEventEnum} from 'parabol-client/types/graphql'
 interface Input {
   id?: string
   createdAt?: Date
-  interactionCount?: number,
-  seenCount?: number,
-  type: TimelineEventEnum,
+  interactionCount?: number
+  seenCount?: number
+  type: TimelineEventEnum
   userId: string
 }
 
@@ -19,7 +19,7 @@ export default abstract class TimelineEvent {
   seenCount: number
   type: TimelineEventEnum
   userId: string
-  protected constructor (input: Input) {
+  protected constructor(input: Input) {
     const {createdAt, id, userId, type, interactionCount, seenCount} = input
     this.id = id || shortid.generate()
     this.createdAt = createdAt || new Date()

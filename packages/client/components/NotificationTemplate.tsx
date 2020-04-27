@@ -1,15 +1,15 @@
 import graphql from 'babel-plugin-relay/macro'
-import NotificationSubtitle from 'components/NotificationSubtitle'
+import ms from 'ms'
 import React, {ReactNode} from 'react'
 import {createFragmentContainer} from 'react-relay'
-import {NotificationStatusEnum} from 'types/graphql'
-import {NotificationTemplate_notification} from '__generated__/NotificationTemplate_notification.graphql'
-import NotificationRow from './NotificationRow'
+import NotificationSubtitle from '~/components/NotificationSubtitle'
+import useRefreshInterval from '~/hooks/useRefreshInterval'
+import {NotificationStatusEnum} from '~/types/graphql'
+import {NotificationTemplate_notification} from '~/__generated__/NotificationTemplate_notification.graphql'
+import parabolLogo from 'static/images/brand/mark-color.svg'
 import NotificationBody from './NotificationBody'
 import NotificationMessage from './NotificationMessage'
-import parabolLogo from '../../../static/images/brand/mark-color.svg'
-import useRefreshInterval from 'hooks/useRefreshInterval'
-import ms from 'ms'
+import NotificationRow from './NotificationRow'
 
 interface Props {
   avatar?: string

@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import React, {ReactElement, Suspense} from 'react'
 import {createFragmentContainer} from 'react-relay'
-import {RetroMeeting_meeting} from '__generated__/RetroMeeting_meeting.graphql'
+import {RetroMeeting_meeting} from '~/__generated__/RetroMeeting_meeting.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMeeting from '../hooks/useMeeting'
 import LocalAtmosphere from '../modules/demo/LocalAtmosphere'

@@ -1,17 +1,17 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import useMutationProps from 'hooks/useMutationProps'
 import ms from 'ms'
-import CreateMassInvitationMutation from 'mutations/CreateMassInvitationMutation'
 import React, {useEffect} from 'react'
 import {createFragmentContainer} from 'react-relay'
+import useMutationProps from '~/hooks/useMutationProps'
+import CreateMassInvitationMutation from '~/mutations/CreateMassInvitationMutation'
+import makeMinWidthQuery from '~/utils/makeMinWidthMediaQuery'
 import useAtmosphere from '../hooks/useAtmosphere'
 import CopyShortLink from '../modules/meeting/components/CopyShortLink/CopyShortLink'
 import {PALETTE} from '../styles/paletteV2'
 import {Threshold} from '../types/constEnums'
 import makeHref from '../utils/makeHref'
 import {MassInvitationTokenLink_viewer} from '../__generated__/MassInvitationTokenLink_viewer.graphql'
-import makeMinWidthQuery from 'utils/makeMinWidthMediaQuery'
 
 const StyledCopyShortLink = styled(CopyShortLink)({
   borderRadius: 4,

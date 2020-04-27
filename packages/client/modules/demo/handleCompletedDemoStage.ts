@@ -1,11 +1,11 @@
 import shortid from 'shortid'
+import {ReactableEnum, ThreadSourceEnum} from '~/types/graphql'
 import {ACTIVE, DISCUSS, GROUP, REFLECT, VOTE} from '../../utils/constants'
 import extractTextFromDraftString from '../../utils/draftjs/extractTextFromDraftString'
 import makeDiscussionStage from '../../utils/makeDiscussionStage'
 import mapGroupsToStages from '../../utils/makeGroupsToStages'
-import taskLookup from './taskLookup'
 import reactjiLookup from './reactjiLookup'
-import {ThreadSourceEnum, ReactableEnum} from 'types/graphql'
+import taskLookup from './taskLookup'
 
 const removeEmptyReflections = (db) => {
   const reflections = db.reflections.filter((reflection) => reflection.isActive)

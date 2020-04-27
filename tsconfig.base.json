@@ -1,9 +1,13 @@
 {
   "compilerOptions": {
-    "target": "es2017",
-    "module": "esnext",
+    // allowJs causes some bugs using ts-loader, if we decide to use that in the future
+    // "allowJs": true,
+    "checkJs": false,
+    // composite is just not worth it. the savings come from persisting files (.d + maps) and it's buggy as heck
+    // "composite": true,
+    "target": "es2019",
+    "module": "commonjs",
     "jsx": "react",
-    "outDir": "dist",
     "importHelpers": true,
     "strict": true,
     "noImplicitAny": false,
@@ -17,10 +21,9 @@
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
     "moduleResolution": "node",
-    // "baseUrl": "./",
+    "pretty": true,
     "esModuleInterop": true,
     "resolveJsonModule": true,
-    "skipLibCheck": true,
-    "noEmit": true
+    "skipLibCheck": true
   }
 }

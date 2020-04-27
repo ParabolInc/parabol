@@ -1,7 +1,6 @@
 import * as Sentry from '@sentry/node'
 import getRethink from '../database/rethinkDriver'
 import User from '../database/types/User'
-import PROD from '../PROD'
 
 export interface SentryOptions {
   sampleRate?: number
@@ -14,9 +13,9 @@ export interface SentryOptions {
 // Even though this is a promise we'll never need to await it, so we'll never need to worry about catching an error
 // @ts-ignore
 const sendToSentry = async (error: Error, options: SentryOptions = {}): void => {
-  if (!PROD) {
-    console.error('SEND TO SENTRY', error, options.tags)
-  }
+  // if (!PROD) {
+  console.error('SEND TO SENTRY', error, options.tags)
+  // }
   const r = await getRethink()
   const {sampleRate, tags, userId} = options
   if (sampleRate && Math.random() > sampleRate) return

@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useEffect} from 'react'
 import {readInlineData} from 'relay-runtime'
-import {useAutoCheckIn_meeting} from '__generated__/useAutoCheckIn_meeting.graphql'
+import {useAutoCheckIn_meeting} from '~/__generated__/useAutoCheckIn_meeting.graphql'
 import NewMeetingCheckInMutation from '../mutations/NewMeetingCheckInMutation'
 import useAtmosphere from './useAtmosphere'
 

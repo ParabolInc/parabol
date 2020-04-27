@@ -1,9 +1,9 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import useAtmosphere from 'hooks/useAtmosphere'
-import useMutationProps from 'hooks/useMutationProps'
 import React, {useState} from 'react'
 import {createFragmentContainer} from 'react-relay'
+import useAtmosphere from '~/hooks/useAtmosphere'
+import useMutationProps from '~/hooks/useMutationProps'
 import useBreakpoint from '../hooks/useBreakpoint'
 import InviteToTeamMutation from '../mutations/InviteToTeamMutation'
 import parseEmailAddressList from '../utils/parseEmailAddressList'
@@ -107,7 +107,7 @@ const AddTeamMemberModal = (props: Props) => {
     if (rawInvitees === nextValue) return
     const parsedInvitees = parseEmailAddressList(nextValue)
     const allInvitees = parsedInvitees
-      ? (parsedInvitees.map(({address}) => address) as string[])
+      ? (parsedInvitees.map((invitee) => (invitee as any).address) as string[])
       : invitees
     const teamEmailSet = new Set(teamMembers.map(({email}) => email))
     const uniqueInvitees = Array.from(new Set(allInvitees))

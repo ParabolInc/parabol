@@ -4,12 +4,12 @@ import UpdateAgendaItemInput from '../types/UpdateAgendaItemInput'
 import UpdateAgendaItemPayload from '../types/UpdateAgendaItemPayload'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
-import {AGENDA_ITEMS} from '../../../client/utils/constants'
-import makeUpdateAgendaItemSchema from '../../../client/validation/makeUpdateAgendaItemSchema'
+import {AGENDA_ITEMS} from 'parabol-client/utils/constants'
+import makeUpdateAgendaItemSchema from 'parabol-client/validation/makeUpdateAgendaItemSchema'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import AgendaItemsStage from '../../database/types/AgendaItemsStage'
-import {IAgendaItem, MeetingTypeEnum} from '../../../client/types/graphql'
+import {IAgendaItem, MeetingTypeEnum} from 'parabol-client/types/graphql'
 import AgendaItemsPhase from '../../database/types/AgendaItemsPhase'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 
@@ -45,7 +45,7 @@ export default {
     const {
       errors,
       data: {id, ...doc}
-    } = schema(updatedAgendaItem)
+    } = schema(updatedAgendaItem) as any
     if (Object.keys(errors).length) {
       return standardError(new Error('Failed input validation'), {userId: viewerId})
     }

@@ -1,6 +1,6 @@
 import {NotificationEnum} from 'parabol-client/types/graphql'
-import {ASSIGNEE, MENTIONEE} from '../../../../client/utils/constants'
-import getTypeFromEntityMap from '../../../../client/utils/draftjs/getTypeFromEntityMap'
+import {ASSIGNEE, MENTIONEE} from 'parabol-client/utils/constants'
+import getTypeFromEntityMap from 'parabol-client/utils/draftjs/getTypeFromEntityMap'
 import getRethink from '../../../database/rethinkDriver'
 import NotificationTaskInvolves from '../../../database/types/NotificationTaskInvolves'
 import Task from '../../../database/types/Task'

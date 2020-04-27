@@ -3,11 +3,11 @@ import useModal from '../hooks/useModal'
 import CreditCardModal from '../modules/userDashboard/components/CreditCardModal/CreditCardModal'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import {DiscussPhaseSqueeze_organization} from '__generated__/DiscussPhaseSqueeze_organization.graphql'
+import {DiscussPhaseSqueeze_organization} from '~/__generated__/DiscussPhaseSqueeze_organization.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import WaitingForFacilitatorToPay from './WaitingForFacilitatorToPay'
 import {PALETTE} from '../styles/paletteV2'
-import {DiscussPhaseSqueeze_meeting} from '__generated__/DiscussPhaseSqueeze_meeting.graphql'
+import {DiscussPhaseSqueeze_meeting} from '~/__generated__/DiscussPhaseSqueeze_meeting.graphql'
 
 interface Props {
   meeting: DiscussPhaseSqueeze_meeting

@@ -3,7 +3,7 @@ import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useEffect} from 'react'
 import useRouter from '../hooks/useRouter'
-import {MeetingSelector_viewer} from '__generated__/MeetingSelector_viewer.graphql'
+import {MeetingSelector_viewer} from '~/__generated__/MeetingSelector_viewer.graphql'
 import lazyPreload from '../utils/lazyPreload'
 import useSubscription from '../hooks/useSubscription'
 import NotificationSubscription from '../subscriptions/NotificationSubscription'
@@ -11,7 +11,7 @@ import OrganizationSubscription from '../subscriptions/OrganizationSubscription'
 import TaskSubscription from '../subscriptions/TaskSubscription'
 import TeamSubscription from '../subscriptions/TeamSubscription'
 import MeetingSubscription from '../subscriptions/MeetingSubscription'
-import useStoreQueryRetry from 'hooks/useStoreQueryRetry'
+import useStoreQueryRetry from '~/hooks/useStoreQueryRetry'
 
 interface Props {
   meetingId: string

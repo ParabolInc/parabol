@@ -12,7 +12,7 @@ import handleRemoveTeamMembers from './handlers/handleRemoveTeamMembers'
 import handleRemoveTeams from './handlers/handleRemoveTeams'
 import handleUpsertTasks from './handlers/handleUpsertTasks'
 import SetNotificationStatusMutation from './SetNotificationStatusMutation'
-import {NotificationStatusEnum} from 'types/graphql'
+import {NotificationStatusEnum} from '~/types/graphql'
 
 graphql`
   fragment RemoveTeamMemberMutation_task on RemoveTeamMemberPayload {

@@ -1,12 +1,12 @@
 import React from 'react'
+import useTooltip from '~/hooks/useTooltip'
 import CardButton from '../../../../components/CardButton'
 import IconLabel from '../../../../components/IconLabel'
 import {MenuPosition} from '../../../../hooks/useCoords'
 import useMenu from '../../../../hooks/useMenu'
-import lazyPreload from '../../../../utils/lazyPreload'
 import {MenuMutationProps} from '../../../../hooks/useMutationProps'
 import {UseTaskChild} from '../../../../hooks/useTaskChildFocus'
-import useTooltip from 'hooks/useTooltip'
+import lazyPreload from '../../../../utils/lazyPreload'
 
 const TaskFooterIntegrateMenuRoot = lazyPreload(() =>
   import(

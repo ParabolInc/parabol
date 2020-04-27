@@ -1,10 +1,9 @@
-export default class GoogleManager {
+export default abstract class GoogleManager {
+  abstract fetch: any
   static SCOPE = 'openid email profile'
   accessToken: string
-  fetch: Window['fetch']
 
-  constructor(accessToken: string, {fetch}) {
-    this.fetch = fetch
+  constructor(accessToken: string) {
     this.accessToken = accessToken
   }
 }

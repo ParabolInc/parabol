@@ -1,10 +1,10 @@
 import shortid from 'shortid'
-import {DISCUSS} from '../../../../client/utils/constants'
-import makeDiscussionStage from '../../../../client/utils/makeDiscussionStage'
-import mapGroupsToStages from '../../../../client/utils/makeGroupsToStages'
+import { DISCUSS } from 'parabol-client/utils/constants'
+import makeDiscussionStage from 'parabol-client/utils/makeDiscussionStage'
+import mapGroupsToStages from 'parabol-client/utils/makeGroupsToStages'
 
 const addDiscussionTopics = async (meeting, dataLoader) => {
-  const {id: meetingId, phases} = meeting
+  const { id: meetingId, phases } = meeting
   const discussPhase = phases.find((phase) => phase.phaseType === DISCUSS)
   if (!discussPhase) return {}
   const placeholderStage = discussPhase.stages[0]
@@ -19,7 +19,7 @@ const addDiscussionTopics = async (meeting, dataLoader) => {
 
   // MUTATIVE
   discussPhase.stages = nextDiscussStages
-  return {meetingId, discussPhaseStages: nextDiscussStages}
+  return { meetingId, discussPhaseStages: nextDiscussStages }
 }
 
 export default addDiscussionTopics

@@ -1,20 +1,20 @@
-import React, {Component} from 'react'
 import styled from '@emotion/styled'
+import graphql from 'babel-plugin-relay/macro'
+import React, {Component} from 'react'
+import {Droppable, DroppableProvided, DroppableStateSnapshot} from 'react-beautiful-dnd'
+import {createFragmentContainer} from 'react-relay'
+import {TaskColumn_teams} from '~/__generated__/TaskColumn_teams.graphql'
 import withAtmosphere, {
   WithAtmosphereProps
 } from '../../../../decorators/withAtmosphere/withAtmosphere'
-import TaskColumnAddTask from './TaskColumnAddTask'
+import {PALETTE} from '../../../../styles/paletteV2'
+import {BezierCurve, DroppableType} from '../../../../types/constEnums'
 import {AreaEnum, TaskStatusEnum} from '../../../../types/graphql'
 import {TEAM_DASH, USER_DASH} from '../../../../utils/constants'
-import {createFragmentContainer} from 'react-relay'
-import graphql from 'babel-plugin-relay/macro'
-import {TaskColumn_tasks} from '../../../../__generated__/TaskColumn_tasks.graphql'
-import {BezierCurve, DroppableType} from '../../../../types/constEnums'
-import {Droppable, DroppableProvided, DroppableStateSnapshot} from 'react-beautiful-dnd'
-import {PALETTE} from '../../../../styles/paletteV2'
-import TaskColumnInner from './TaskColumnInner'
 import {taskStatusLabels} from '../../../../utils/taskStatus'
-import {TaskColumn_teams} from '__generated__/TaskColumn_teams.graphql'
+import {TaskColumn_tasks} from '../../../../__generated__/TaskColumn_tasks.graphql'
+import TaskColumnAddTask from './TaskColumnAddTask'
+import TaskColumnInner from './TaskColumnInner'
 
 const Column = styled('div')<{isDragging: boolean}>(({isDragging}) => ({
   background: isDragging ? PALETTE.BACKGROUND_MAIN_DARKENED : undefined,

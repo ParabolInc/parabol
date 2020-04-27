@@ -1,4 +1,5 @@
-import url from 'url'
+// in commonjs because used by webpack config
+const url = require('url')
 
 /*
  * Node's url.parse is unable to handle protocol-relative URLs
@@ -36,4 +37,4 @@ const protocolRelativeUrl = {
   }
 }
 
-export default protocolRelativeUrl
+module.exports = protocolRelativeUrl

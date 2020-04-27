@@ -1,7 +1,7 @@
-import {requiredId, url} from '../../../../client/validation/templates'
-import legitify from '../../../../client/validation/legitify'
+import { requiredId, url } from 'parabol-client/validation/templates'
+import legitify from 'parabol-client/validation/legitify'
 
-export default function updateOrgValidation () {
+export default function updateOrgValidation() {
   return legitify({
     id: requiredId,
     picture: url,

@@ -5,6 +5,7 @@ import AddSlackAuthMutation from '../mutations/AddSlackAuthMutation'
 import Atmosphere from '../Atmosphere'
 import SlackManager from './SlackManager'
 class SlackClientManager extends SlackManager {
+  fetch = window.fetch.bind(window)
   static openOAuth(atmosphere: Atmosphere, teamId: string, mutationProps: MenuMutationProps) {
     const {submitting, onError, onCompleted, submitMutation} = mutationProps
     const providerState = Math.random()

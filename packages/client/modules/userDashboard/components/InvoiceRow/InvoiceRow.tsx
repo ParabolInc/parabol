@@ -12,7 +12,7 @@ import {PALETTE} from '../../../../styles/paletteV2'
 import {InvoiceStatusEnum} from '../../../../types/graphql'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import {InvoiceRow_invoice} from '__generated__/InvoiceRow_invoice.graphql'
+import {InvoiceRow_invoice} from '~/__generated__/InvoiceRow_invoice.graphql'
 
 const InvoiceAmount = styled('span')({
   color: PALETTE.TEXT_MAIN,

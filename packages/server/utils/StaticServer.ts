@@ -62,6 +62,9 @@ export default class StaticServer {
     Object.keys(staticPaths).forEach((dirname) => {
       if (!staticPaths[dirname]) return
       try {
+        if (!fs.existsSync(dirname)) {
+          fs.mkdirSync(dirname)
+        }
         makePathnames(dirname, this.pathnames, '')
       } catch (e) {
         console.log(e)

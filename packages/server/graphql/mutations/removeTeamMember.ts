@@ -3,7 +3,7 @@ import removeTeamMember from './helpers/removeTeamMember'
 import RemoveTeamMemberPayload from '../types/RemoveTeamMemberPayload'
 import {getUserId, isTeamLead} from '../../utils/authorization'
 import publish from '../../utils/publish'
-import fromTeamMemberId from '../../../client/utils/relay/fromTeamMemberId'
+import fromTeamMemberId from 'parabol-client/utils/relay/fromTeamMemberId'
 import standardError from '../../utils/standardError'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 

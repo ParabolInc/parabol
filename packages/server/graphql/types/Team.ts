@@ -8,8 +8,8 @@ import {
   GraphQLString
 } from 'graphql'
 import isTaskPrivate from 'parabol-client/utils/isTaskPrivate'
-import {ITeam} from '../../../client/types/graphql'
-import toTeamMemberId from '../../../client/utils/relay/toTeamMemberId'
+import {ITeam} from 'parabol-client/types/graphql'
+import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import getRethink from '../../database/rethinkDriver'
 import MassInvitationDB from '../../database/types/MassInvitation'
 import {getUserId, isTeamMember} from '../../utils/authorization'

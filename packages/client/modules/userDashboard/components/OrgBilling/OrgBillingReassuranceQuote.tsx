@@ -1,9 +1,8 @@
-import React, {useState} from 'react'
-import ian from 'styles/theme/images/ian.png'
-import adam from 'styles/theme/images/adam.jpeg'
-import cliff from 'styles/theme/images/cliff.jpeg'
-
 import styled from '@emotion/styled'
+import React, {useState} from 'react'
+import adam from '~/styles/theme/images/adam.jpeg'
+import cliff from '~/styles/theme/images/cliff.jpeg'
+import ian from '~/styles/theme/images/ian.png'
 import {PALETTE} from '../../../../styles/paletteV2'
 
 const quotes = [

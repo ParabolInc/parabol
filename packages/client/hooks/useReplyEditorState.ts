@@ -1,6 +1,6 @@
 import {ContentState, EditorState, Modifier} from 'draft-js'
-import useEditorState from 'hooks/useEditorState'
 import {useEffect} from 'react'
+import useEditorState from '~/hooks/useEditorState'
 import {ReplyMention, SetReplyMention} from '../components/ThreadedItem'
 
 const useReplyEditorState = (

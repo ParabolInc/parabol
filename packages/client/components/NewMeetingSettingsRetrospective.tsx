@@ -1,8 +1,8 @@
+import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
-import graphql from 'babel-plugin-relay/macro'
+import {NewMeetingSettingsRetrospective_team} from '~/__generated__/NewMeetingSettingsRetrospective_team.graphql'
 import RetroTemplatePicker from '../modules/meeting/components/RetroTemplatePicker'
-import {NewMeetingSettingsRetrospective_team} from '__generated__/NewMeetingSettingsRetrospective_team.graphql'
 import NewMeetingSettingsToggleCheckIn from './NewMeetingSettingsToggleCheckIn'
 
 interface Props {

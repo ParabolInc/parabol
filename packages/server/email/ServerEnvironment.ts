@@ -2,6 +2,7 @@ import {ExecutionResult} from 'graphql'
 import {Environment, FetchFunction, Network, RecordSource, Store} from 'relay-runtime'
 import AuthToken from '../database/types/AuthToken'
 import executeGraphQL from '../graphql/executeGraphQL'
+import shortid from 'shortid'
 
 const noop = (): any => {
   /**/
@@ -36,6 +37,7 @@ export default class ServerEnvironment extends Environment {
     if (!this.isFetched) {
       this.requestCache.push(
         executeGraphQL({
+          jobId: shortid.generate(),
           authToken: this.authToken,
           docId: request.id!,
           variables,

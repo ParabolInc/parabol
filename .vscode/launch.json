@@ -7,6 +7,50 @@
         {
             "type": "node",
             "request": "launch",
+            "name": "Launch dev.js",
+            "program": "${workspaceFolder}/scripts/compileRelay.js",
+            "skipFiles": [
+                "<node_internals>/**"
+            ]
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Launch Webpack",
+            "program": "${workspaceFolder}/node_modules/.bin/webpack",
+            "args": [
+                "--config",
+                "${workspaceFolder}/scripts/webpack/prod.client.config.js"
+            ],
+            "skipFiles": [
+                "<node_internals>/**"
+            ]
+        },
+        {
+            "type": "node",
+            "request": "attach",
+            "name": "Attach by Process ID",
+            "processId": "${command:PickProcess}",
+            "skipFiles": [
+                "<node_internals>/**"
+            ]
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Debug Executor",
+            "runtimeExecutable": "yarn",
+            "runtimeArgs": [
+                "debug:executor"
+            ],
+            "port": 9229,
+            "skipFiles": [
+                "<node_internals>/**"
+            ]
+        },
+        {
+            "type": "node",
+            "request": "launch",
             "name": "Debug Prod",
             "runtimeExecutable": "yarn",
             "runtimeArgs": [
@@ -36,6 +80,36 @@
             "name": "Debug relay compiler",
             "program": "${workspaceFolder}/node_modules/.bin/relay-compiler",
             "args": [],
+            "skipFiles": [
+                "<node_internals>/**"
+            ]
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Debug Babel Plugin",
+            "console": "integratedTerminal",
+            "autoAttachChildProcesses": true,
+            "program": "${workspaceFolder}/node_modules/.bin/babel",
+            "args": [
+                "--config-file=${workspaceFolder}/packages/gql-executor/babel.config.json",
+                "${workspaceFolder}/packages/gql-executor/client/utils/GitHubManager.js"
+            ],
+            "skipFiles": [
+                "<node_internals>/**"
+            ]
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Debug Codeshift",
+            "console": "integratedTerminal",
+            // "autoAttachChildProcesses": true,
+            "program": "${workspaceFolder}/node_modules/.bin/jscodeshift",
+            "args": [
+                "--transform=${workspaceFolder}/scripts/codeshift/packageRefToRelative.ts",
+                "${workspaceFolder}/packages/gql-executor/"
+            ],
             "skipFiles": [
                 "<node_internals>/**"
             ]

@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import React from 'react'
-import {PALETTE} from 'styles/paletteV2'
-import {BezierCurve} from 'types/constEnums'
+import {PALETTE} from '~/styles/paletteV2'
+import {BezierCurve} from '~/types/constEnums'
 
 const RADIUS = 12
 const THICKNESS = 2

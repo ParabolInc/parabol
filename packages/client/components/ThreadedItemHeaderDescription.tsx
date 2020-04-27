@@ -1,6 +1,6 @@
-import React, {ReactNode} from 'react'
 import styled from '@emotion/styled'
-import {PALETTE} from 'styles/paletteV2'
+import React, {ReactNode} from 'react'
+import {PALETTE} from '~/styles/paletteV2'
 
 const Header = styled('div')({
   display: 'flex',

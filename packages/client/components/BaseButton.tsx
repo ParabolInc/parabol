@@ -17,7 +17,7 @@ const ButtonRoot = styled(PlainButton)<Root>(
   ({disabled, elevationResting, elevationHovered, elevationPressed, pressedDown, size}) => {
     return {
       // size is easy to override, it adds: fontSize, lineHeight, padding
-      ...ui.buttonSizeStyles[size],
+      ...(ui.buttonSizeStyles[size] as any),
       alignItems: 'center',
       border: '1px solid transparent',
       boxShadow: disabled ? undefined : pressedDown ? elevationPressed : elevationResting,

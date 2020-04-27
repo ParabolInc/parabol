@@ -1,10 +1,6 @@
-import getDotenv from '../../server/utils/dotenv'
 import Stripe from 'stripe'
 import {InvoiceItemType} from 'parabol-client/types/constEnums'
 import IInvoiceLineItemRetrievalOptions = Stripe.invoices.IInvoiceLineItemRetrievalOptions
-// import {toEpochSeconds} from 'server/utils/epochTime'
-
-getDotenv()
 
 export default class StripeManager {
   static PARABOL_PRO_600 = 'parabol-pro-600' // $6/seat/mo

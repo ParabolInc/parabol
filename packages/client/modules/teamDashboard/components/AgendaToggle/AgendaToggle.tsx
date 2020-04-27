@@ -1,17 +1,17 @@
+import styled from '@emotion/styled'
 import React from 'react'
+import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
+import IconLabel from '../../../../components/IconLabel'
+import LinkButton from '../../../../components/LinkButton'
 import withAtmosphere, {
   WithAtmosphereProps
 } from '../../../../decorators/withAtmosphere/withAtmosphere'
 import ToggleAgendaListMutation from '../../../../mutations/ToggleAgendaListMutation'
-import withMutationProps, {WithMutationProps} from '../../../../utils/relay/withMutationProps'
-import {CompletedHandler, ErrorHandler} from '../../../../types/relayMutations'
-import {AGENDA_ITEM_LABEL} from '../../../../utils/constants'
-import LinkButton from '../../../../components/LinkButton'
-import IconLabel from '../../../../components/IconLabel'
-import styled from '@emotion/styled'
 import {PALETTE} from '../../../../styles/paletteV2'
 import {Breakpoint} from '../../../../types/constEnums'
-import makeMinWidthMediaQuery from 'utils/makeMinWidthMediaQuery'
+import {CompletedHandler, ErrorHandler} from '../../../../types/relayMutations'
+import {AGENDA_ITEM_LABEL} from '../../../../utils/constants'
+import withMutationProps, {WithMutationProps} from '../../../../utils/relay/withMutationProps'
 
 const desktopBreakpoint = makeMinWidthMediaQuery(Breakpoint.SIDEBAR_LEFT)
 

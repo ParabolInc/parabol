@@ -1,5 +1,5 @@
 import {RefObject, useEffect} from 'react'
-import {BezierCurve, Breakpoint} from 'types/constEnums'
+import {BezierCurve, Breakpoint} from '~/types/constEnums'
 
 interface ControlBarCoverable {
   id: string

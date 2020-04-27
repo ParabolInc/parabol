@@ -1,4 +1,4 @@
-import {AGENDA_ITEMS} from '../../../../client/utils/constants'
+import {AGENDA_ITEMS} from 'parabol-client/utils/constants'
 import getRethink from '../../../database/rethinkDriver'
 import {DataLoaderWorker} from '../../graphql'
 import AgendaItemsPhase from '../../../database/types/AgendaItemsPhase'

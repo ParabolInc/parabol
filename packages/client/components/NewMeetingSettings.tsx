@@ -1,10 +1,10 @@
+import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
-import graphql from 'babel-plugin-relay/macro'
+import {NewMeetingSettings_selectedTeam} from '~/__generated__/NewMeetingSettings_selectedTeam.graphql'
 import {MeetingTypeEnum} from '../types/graphql'
-import NewMeetingSettingsRetrospective from './NewMeetingSettingsRetrospective'
-import {NewMeetingSettings_selectedTeam} from '__generated__/NewMeetingSettings_selectedTeam.graphql'
 import NewMeetingSettingsAction from './NewMeetingSettingsAction'
+import NewMeetingSettingsRetrospective from './NewMeetingSettingsRetrospective'
 
 interface Props {
   meetingType: MeetingTypeEnum

@@ -1,8 +1,8 @@
 import {convertFromRaw, convertToRaw} from 'draft-js'
 import getRethink from '../database/rethinkDriver'
-import addTagToTask from '../../client/utils/draftjs/addTagToTask'
-import getTagsFromEntityMap from '../../client/utils/draftjs/getTagsFromEntityMap'
-import {ITask} from '../../client/types/graphql'
+import addTagToTask from 'parabol-client/utils/draftjs/addTagToTask'
+import getTagsFromEntityMap from 'parabol-client/utils/draftjs/getTagsFromEntityMap'
+import {ITask} from 'parabol-client/types/graphql'
 
 type Task = Pick<ITask, 'content' | 'id' | 'tags'>
 

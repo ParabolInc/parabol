@@ -3,7 +3,7 @@ import graphql from 'babel-plugin-relay/macro'
 import handleEditReflection from './handlers/handleEditReflection'
 import {SharedUpdater, SimpleMutation} from '../types/relayMutations'
 import {EditReflectionMutation as TEditReflectionMutation} from '../__generated__/EditReflectionMutation.graphql'
-import {EditReflectionMutation_meeting} from '__generated__/EditReflectionMutation_meeting.graphql'
+import {EditReflectionMutation_meeting} from '~/__generated__/EditReflectionMutation_meeting.graphql'
 
 graphql`
   fragment EditReflectionMutation_meeting on EditReflectionPayload {

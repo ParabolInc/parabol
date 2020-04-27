@@ -2,11 +2,11 @@ import {HttpRequest, HttpResponse} from 'uWebSockets.js'
 import PROD from './PROD'
 import uwsGetHeaders from './utils/uwsGetHeaders'
 
-let middleware
+// let middleware
 const startHotServer = async (compiler) => {
   return new Promise((resolve) => {
     const hotClient = require('webpack-hot-client')
-    const client = hotClient(compiler, {port: 8082})
+    const client = hotClient(compiler, {port: 8082, logLevel: 'error'})
     const {server} = client
     server.on('listening', () => {
       resolve()
@@ -45,16 +45,17 @@ const buildMiddleware = (compiler, config) => {
 }
 
 export const getWebpackDevMiddleware = async () => {
-  if (!middleware) {
-    middleware = new Promise(async (resolve) => {
-      const config = require('./webpack/webpack.dev.config')
+  if (!global.hmrMiddleware) {
+    global.hmrMiddleware = new Promise(async (resolve) => {
+      const config = require('../../scripts/webpack/dev.client.config')
       const webpack = require('webpack')
       const compiler = webpack(config)
+      const mwPromise = buildMiddleware(compiler, config)
       await startHotServer(compiler)
-      resolve(buildMiddleware(compiler, config))
+      resolve(mwPromise)
     })
   }
-  return middleware
+  return global.hmrMiddleware
 }
 
 const makeExpressHandlers = (res: HttpResponse, req: HttpRequest) => {
@@ -79,7 +80,7 @@ const serveFromWebpack = async (res: HttpResponse, req: HttpRequest) => {
   const {req: mwReq, res: mwRes, next} = makeExpressHandlers(res, req)
   const mw = await getWebpackDevMiddleware()
   await mw(mwReq, mwRes, next)
-  return mwRes.statusCode === 200
+  return mwRes.statusCode !== 200
 }
 
 export default serveFromWebpack

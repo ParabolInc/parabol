@@ -1,7 +1,6 @@
 import EventEmitter from 'eventemitter3'
 import {parse} from 'flatted'
 import ms from 'ms'
-import Reflection from 'parabol-server/database/types/Reflection'
 import {Variables} from 'relay-runtime'
 import StrictEventEmitter from 'strict-event-emitter-types'
 import stringSimilarity from 'string-similarity'
@@ -19,8 +18,6 @@ import {
   NewMeetingPhaseTypeEnum,
   ReactableEnum
 } from '../../types/graphql'
-import getGroupSmartTitle from '../../utils/autogroup/getGroupSmartTitle'
-import groupReflections from '../../utils/autogroup/groupReflections'
 import {DISCUSS, GROUP, REFLECT, TASK, TEAM, VOTE} from '../../utils/constants'
 import dndNoise from '../../utils/dndNoise'
 import extractTextFromDraftString from '../../utils/draftjs/extractTextFromDraftString'
@@ -28,6 +25,8 @@ import getTagsFromEntityMap from '../../utils/draftjs/getTagsFromEntityMap'
 import makeEmptyStr from '../../utils/draftjs/makeEmptyStr'
 import findStageById from '../../utils/meetings/findStageById'
 import sleep from '../../utils/sleep'
+import getGroupSmartTitle from '../../utils/smartGroup/getGroupSmartTitle'
+import groupReflections from '../../utils/smartGroup/groupReflections'
 import startStage_ from '../../utils/startStage_'
 import unlockAllStagesForPhase from '../../utils/unlockAllStagesForPhase'
 import unlockNextStages from '../../utils/unlockNextStages'
@@ -138,10 +137,6 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
     }
     const {delay, op, variables, botId} = nextMutaton
     this.pendingBotAction = () => {
-      if (!this.ops[op]) {
-        console.log('here')
-        debugger
-      }
       this.ops[op](variables, botId)
       return mutations
     }
@@ -669,7 +664,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         startStage_(facilitatorStage)
 
         // mutative! sets isNavigable and isNavigableByFacilitator
-        unlockedStageIds = unlockNextStages(facilitatorStageId, phases, meetingId)
+        unlockedStageIds = unlockNextStages(facilitatorStageId, phases!)
       }
 
       const oldFacilitatorStageId = this.db.newMeeting.facilitatorStageId!
@@ -852,7 +847,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
           updatedAt: now
         })
         this.db.newMeeting.nextAutoGroupThreshold = null
-        const nextTitle = getGroupSmartTitle([reflection as Reflection])
+        const nextTitle = getGroupSmartTitle([reflection as DemoReflection])
         newReflectionGroup.smartTitle = nextTitle
         newReflectionGroup.title = nextTitle
         if (oldReflections.length > 0) {

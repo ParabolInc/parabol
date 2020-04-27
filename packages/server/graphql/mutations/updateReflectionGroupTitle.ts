@@ -4,8 +4,8 @@ import stringSimilarity from 'string-similarity'
 import {
   IUpdateReflectionGroupTitleOnMutationArguments,
   NewMeetingPhaseTypeEnum
-} from '../../../client/types/graphql'
-import isPhaseComplete from '../../../client/utils/meetings/isPhaseComplete'
+} from 'parabol-client/types/graphql'
+import isPhaseComplete from 'parabol-client/utils/meetings/isPhaseComplete'
 import getRethink from '../../database/rethinkDriver'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'

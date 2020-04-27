@@ -1,11 +1,11 @@
 import React from 'react'
-import TeamInvitationWrapper from './TeamInvitationWrapper'
-import GenericAuthentication, {AuthPageSlug, GotoAuthPage} from './GenericAuthentication'
-import useRouter from '../hooks/useRouter'
-import getValidRedirectParam from '../utils/getValidRedirectParam'
+import useCanonical from '~/hooks/useCanonical'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useDocumentTitle from '../hooks/useDocumentTitle'
-import useCanonical from 'hooks/useCanonical'
+import useRouter from '../hooks/useRouter'
+import getValidRedirectParam from '../utils/getValidRedirectParam'
+import GenericAuthentication, {AuthPageSlug, GotoAuthPage} from './GenericAuthentication'
+import TeamInvitationWrapper from './TeamInvitationWrapper'
 
 interface Props {
   page: AuthPageSlug

@@ -1,8 +1,8 @@
-import {Breakpoint} from 'types/constEnums'
-import getIsDrag from 'utils/retroGroup/getIsDrag'
-import useBreakpoint from './useBreakpoint'
+import getIsDrag from '~/utils/retroGroup/getIsDrag'
 import {cacheCoveringBBox, ensureAllCovering} from './useControlBarCovers'
 import useEventCallback from './useEventCallback'
+import useBreakpoint from './useBreakpoint'
+import {Breakpoint} from '~/types/constEnums'
 
 const makeDrag = (ref: HTMLDivElement, lastX: number) => ({
   ref,

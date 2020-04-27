@@ -1,6 +1,7 @@
 import GenericMeetingPhase from './GenericMeetingPhase'
 import GenericMeetingStage from './GenericMeetingStage'
-import {REFLECT} from '../../../client/utils/constants'
+import {REFLECT} from 'parabol-client/utils/constants'
+import {NewMeetingPhaseTypeEnum} from 'parabol-client/types/graphql'
 
 export default class ReflectPhase extends GenericMeetingPhase {
   stages: GenericMeetingStage[]
@@ -11,7 +12,7 @@ export default class ReflectPhase extends GenericMeetingPhase {
     public promptTemplateId: string,
     durations: number[] | undefined
   ) {
-    super(REFLECT)
+    super(NewMeetingPhaseTypeEnum.reflect)
     this.stages = [new GenericMeetingStage(REFLECT, durations)]
   }
 }

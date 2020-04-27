@@ -6,7 +6,7 @@ import {getUserId, isUserInOrg} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import sendSegmentEvent from '../../utils/sendSegmentEvent'
 import shortid from 'shortid'
-import toTeamMemberId from '../../../client/utils/relay/toTeamMemberId'
+import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import addTeamValidation from './helpers/addTeamValidation'
 import rateLimit from '../rateLimit'
 import getRethink from '../../database/rethinkDriver'
@@ -54,7 +54,7 @@ export default {
       const {
         data: {newTeam},
         errors
-      } = addTeamValidation(orgTeamNames)(args)
+      } = addTeamValidation(orgTeamNames)(args) as any
       if (Object.keys(errors).length) {
         if (errors.newTeam && errors.newTeam.name) {
           return {

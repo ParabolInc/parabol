@@ -1,7 +1,7 @@
-import getGroupSmartTitle from 'parabol-client/utils/autogroup/getGroupSmartTitle'
+import getGroupSmartTitle from 'parabol-client/utils/smartGroup/getGroupSmartTitle'
 import getRethink from '../../../../database/rethinkDriver'
-import updateSmartGroupTitle from './updateSmartGroupTitle'
 import ReflectionGroup from '../../../../database/types/ReflectionGroup'
+import updateSmartGroupTitle from './updateSmartGroupTitle'
 
 const removeReflectionFromGroup = async (reflectionId, {dataLoader}) => {
   const r = await getRethink()

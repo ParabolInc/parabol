@@ -17,7 +17,7 @@ import {
   REFLECT,
   UPDATES,
   VOTE
-} from '../../../client/utils/constants'
+} from 'parabol-client/utils/constants'
 import {resolveGQLStagesFromPhase} from '../resolvers'
 
 export const newMeetingPhaseFields = () => ({

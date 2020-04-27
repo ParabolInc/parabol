@@ -1,7 +1,10 @@
-import {commitMutation} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import handleRemoveSuggestedActions from './handlers/handleRemoveSuggestedActions'
+import {commitMutation} from 'react-relay'
+import onMeetingRoute from '~/utils/onMeetingRoute'
+import {EndNewMeetingMutation_notification} from '~/__generated__/EndNewMeetingMutation_notification.graphql'
+import {EndNewMeetingMutation_team} from '~/__generated__/EndNewMeetingMutation_team.graphql'
 import Atmosphere from '../Atmosphere'
+import {RetroDemo} from '../types/constEnums'
 import {
   HistoryMaybeLocalHandler,
   OnNextHandler,
@@ -10,12 +13,9 @@ import {
   StandardMutation
 } from '../types/relayMutations'
 import {EndNewMeetingMutation as TEndNewMeetingMutation} from '../__generated__/EndNewMeetingMutation.graphql'
-import handleUpsertTasks from './handlers/handleUpsertTasks'
-import {RetroDemo} from '../types/constEnums'
-import {EndNewMeetingMutation_team} from '__generated__/EndNewMeetingMutation_team.graphql'
-import {EndNewMeetingMutation_notification} from '__generated__/EndNewMeetingMutation_notification.graphql'
+import handleRemoveSuggestedActions from './handlers/handleRemoveSuggestedActions'
 import handleRemoveTasks from './handlers/handleRemoveTasks'
-import onMeetingRoute from 'utils/onMeetingRoute'
+import handleUpsertTasks from './handlers/handleUpsertTasks'
 
 graphql`
   fragment EndNewMeetingMutation_team on EndNewMeetingPayload {

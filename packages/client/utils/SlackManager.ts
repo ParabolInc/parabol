@@ -1,7 +1,3 @@
-interface SlackClientManagerOptions {
-  fetch?: Window['fetch']
-}
-
 interface ErrorResponse {
   ok: false
   error: string
@@ -213,19 +209,18 @@ interface ChannelInfoResponse {
 // }
 type ConversationType = 'public_channel' | 'private_channel' | 'im' | 'mpim'
 
-class SlackManager {
+abstract class SlackManager {
   static SCOPE = 'identify,bot,incoming-webhook,channels:read,chat:write:bot'
   // token can be a botAccessToken or accessToken!
   token: string
-  fetch: typeof fetch
+  abstract fetch: any
   // the any is for node until we can use tsc in nodeland
   cache: {[key: string]: {result: any; expiration: number | any}} = {}
   timeout = 5000
   headers: any
 
-  constructor(token: string, options: SlackClientManagerOptions = {}) {
+  constructor(token: string) {
     this.token = token
-    this.fetch = options.fetch || window.fetch.bind(window)
   }
 
   private async post<T>(url: string, payload: any): Promise<T | ErrorResponse> {

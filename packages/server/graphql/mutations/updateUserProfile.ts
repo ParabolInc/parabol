@@ -3,14 +3,14 @@ import getRethink from '../../database/rethinkDriver'
 import UpdateUserProfileInput from '../types/UpdateUserProfileInput'
 import UpdateUserProfilePayload from '../types/UpdateUserProfilePayload'
 import {getUserId, isAuthenticated} from '../../utils/authorization'
-import makeUserServerSchema from '../../../client/validation/makeUserServerSchema'
+import makeUserServerSchema from 'parabol-client/validation/makeUserServerSchema'
 import publish from '../../utils/publish'
 import {sendSegmentIdentify} from '../../utils/sendSegmentEvent'
 import {JSDOM} from 'jsdom'
 import sanitizeSVG from '@mattkrick/sanitize-svg'
 import fetch from 'node-fetch'
 import standardError from '../../utils/standardError'
-import linkify from '../../../client/utils/linkify'
+import linkify from 'parabol-client/utils/linkify'
 import User from '../../database/types/User'
 import {ITeamMember} from 'parabol-client/types/graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
@@ -35,7 +35,7 @@ const updateUserProfile = {
 
     // VALIDATION
     const schema = makeUserServerSchema()
-    const {data: validUpdatedUser, errors} = schema(updatedUser)
+    const {data: validUpdatedUser, errors} = schema(updatedUser) as any
     if (Object.keys(errors).length) {
       return standardError(new Error('Failed input validation'), {userId})
     }

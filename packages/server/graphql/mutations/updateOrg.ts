@@ -34,7 +34,7 @@ export default {
     const {
       errors,
       data: {id: orgId, ...org}
-    } = schema(updatedOrg)
+    } = schema(updatedOrg) as any
     if (Object.keys(errors).length) {
       return standardError(new Error('Failed input validation'), {userId: viewerId})
     }

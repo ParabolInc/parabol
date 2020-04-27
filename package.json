@@ -3,7 +3,7 @@
   "description": "An open-source app for building smarter, more agile teams.",
   "author": "Parabol Inc. <love@parabol.com> (http://github.com/ParabolInc)",
   "license": "AGPL-3.0",
-  "version": "5.4.0",
+  "version": "5.5.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/ParabolInc/parabol"
@@ -22,18 +22,16 @@
     "packages/*"
   ],
   "scripts": {
-    "start": "yarn workspace parabol-server start",
+    "start": "pm2-runtime start pm2.config.js",
     "heroku-postbuild": "echo 'Skipping build'",
-    "build": "yarn workspace parabol-server build",
-    "build:relay": "yarn workspace parabol-server build:relay",
-    "db:migrate": "yarn workspace parabol-server db:migrate",
-    "quickstart": "yarn workspace parabol-server quickstart",
-    "postdeploy": "yarn workspace parabol-server postdeploy",
-    "debug": "yarn workspace parabol-server debug",
-    "debug:prod": "yarn workspace parabol-server debug:prod",
-    "dev": "yarn workspace parabol-server dev",
+    "build": "node scripts/prod.js",
+    "db:create": "node scripts/toolbox/createMigration.js",
+    "db:migrate": "node scripts/toolbox/migrateDB.js",
+    "postdeploy": "node scripts/toolbox/postDeploy.js",
+    "dev": "node scripts/dev.js",
     "lint": "lerna run --parallel lint",
-    "test": "yarn workspace parabol-cypress test",
+    "test": "start-server-and-test start http://localhost:3000 cypress",
+    "cypress": "yarn workspace parabol-cypress start",
     "typecheck": "lerna run --parallel typecheck"
   },
   "resolutions": {
@@ -44,7 +42,12 @@
     "immutable": "3.8.2"
   },
   "devDependencies": {
+    "@babel/preset-env": "^7.9.5",
+    "@sucrase/webpack-loader": "^2.0.0",
     "@types/jscodeshift": "^0.6.2",
+    "@typescript-eslint/eslint-plugin": "^2.29.0",
+    "@typescript-eslint/parser": "^2.29.0",
+    "babel-loader": "^8.1.0",
     "graphql": "^14.6.0",
     "husky": "^3.0.1",
     "jscodeshift": "^0.7.0",
@@ -52,8 +55,10 @@
     "prettier": "^1.19.1",
     "relay-compiler": "^8.0.0",
     "relay-config": "^8.0.0",
+    "ts-loader": "^7.0.1",
     "vscode-apollo-relay": "^1.5.0",
-    "webpack": "^4.41.5"
+    "webpack": "^4.42.1",
+    "webpack-cli": "^3.3.11"
   },
   "husky": {
     "hooks": {

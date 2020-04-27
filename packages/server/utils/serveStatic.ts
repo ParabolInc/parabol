@@ -5,11 +5,12 @@ import pipeStreamOverResponse from '../pipeStreamOverResponse'
 import PROD from '../PROD'
 import StaticServer from './StaticServer'
 
-const PROJECT_ROOT = path.join(__dirname, '..', '..', '..')
+// this is relative to where the server is built
+const PROJECT_ROOT = path.join(__dirname, '..')
 const staticPaths = {
   [path.join(PROJECT_ROOT, 'build')]: true,
   [path.join(PROJECT_ROOT, 'static')]: true,
-  [path.join(PROJECT_ROOT, 'packages', 'server', 'webpack', 'dll')]: !PROD
+  [path.join(PROJECT_ROOT, 'dev', 'dll')]: !PROD
 }
 const filesToCache = ['sw.js', 'favicon.ico', 'manifest.json']
 const staticServer = new StaticServer({staticPaths, filesToCache})

@@ -1,9 +1,9 @@
-import useAtmosphere from 'hooks/useAtmosphere'
-import useRouter from 'hooks/useRouter'
+import useAtmosphere from '~/hooks/useAtmosphere'
+import useRouter from '~/hooks/useRouter'
 import ms from 'ms'
 import {useEffect, useState} from 'react'
-import {TopBarMeetingsActiveMeetings} from '__generated__/TopBarMeetingsActiveMeetings.graphql'
-import fromTeamMemberId from 'utils/relay/fromTeamMemberId'
+import {TopBarMeetingsActiveMeetings} from '~/__generated__/TopBarMeetingsActiveMeetings.graphql'
+import fromTeamMemberId from '~/utils/relay/fromTeamMemberId'
 
 const useSnacksForNewMeetings = (meetings: TopBarMeetingsActiveMeetings['activeMeetings']) => {
   const [dismissedMeetingIds] = useState(() => new Set<string>())

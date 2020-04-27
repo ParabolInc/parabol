@@ -4,9 +4,9 @@ import React, {useMemo, Fragment} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {DashNavList_viewer} from '../../__generated__/DashNavList_viewer.graphql'
 import LeftDashNavItem from '../Dashboard/LeftDashNavItem'
-import {PALETTE} from 'styles/paletteV2'
-import {Breakpoint} from 'types/constEnums'
-import makeMinWidthMediaQuery from 'utils/makeMinWidthMediaQuery'
+import {PALETTE} from '~/styles/paletteV2'
+import {Breakpoint} from '~/types/constEnums'
+import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
 
 const DashNavListStyles = styled('div')({
   paddingRight: 8,
