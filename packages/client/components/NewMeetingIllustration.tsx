@@ -1,8 +1,6 @@
 import styled from '@emotion/styled'
 import {PALETTE} from '../styles/paletteV2'
 import {Elevation} from '../styles/elevation'
-import RetroMeetingIllustration from '../../../static/images/illustrations/illus-equal-footing.png'
-import ActionMeetingIllustration from '../../../static/images/illustrations/illus-momentum.png'
 import {MeetingTypeEnum} from '../types/graphql'
 import React, {Fragment} from 'react'
 import SwipeableViews from 'react-swipeable-views'
@@ -22,8 +20,8 @@ interface Props {
 }
 
 const ILLUSTRATIONS = {
-  [MeetingTypeEnum.retrospective]: RetroMeetingIllustration,
-  [MeetingTypeEnum.action]: ActionMeetingIllustration
+  [MeetingTypeEnum.retrospective]: `${__STATIC_IMAGES__}/illustrations/meeting-types_retro.svg`,
+  [MeetingTypeEnum.action]: `${__STATIC_IMAGES__}/illustrations/meeting-types_check-in.svg`
 }
 const VirtualizeSwipeableViews = virtualize(SwipeableViews)
 
