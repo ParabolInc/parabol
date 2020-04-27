@@ -1,8 +1,6 @@
 import React from 'react'
 import {render} from 'react-dom'
-import './cdnFallback'
 import Root from './Root'
-import './scrollIntoViewIfNeeded'
 
 render(<Root />, document.getElementById('root'))
 

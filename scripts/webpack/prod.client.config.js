@@ -11,7 +11,6 @@ const ScriptExtHtmlWebpackPlugin = require('script-ext-html-webpack-plugin')
 const TerserPlugin = require('terser-webpack-plugin')
 const { InjectManifest } = require('wrkbx')
 const CopyPlugin = require('copy-webpack-plugin')
-const transformRules = require('./utils/transformRules')
 const getProjectRoot = require('./utils/getProjectRoot')
 
 const PROJECT_ROOT = getProjectRoot()
@@ -23,13 +22,29 @@ const publicPath = getWebpackPublicPath()
 
 // babel-plugin-relay requires a prod BABEL_ENV to remove hash checking logic. Probably a bug in the package.
 process.env.BABEL_ENV = 'production'
+
+const babelPresets = [
+  [
+    '@babel/preset-env',
+    {
+      targets: {
+        browsers: ['> 1%', 'not ie 11']
+      },
+      bugfixes: true,
+      // debug: true,
+      corejs: 3,
+      useBuiltIns: 'entry'
+    }
+  ]
+]
+
 module.exports = ({ isDeploy, isStats }) => ({
   stats: {
     assets: false
   },
   mode: 'production',
   entry: {
-    app: [path.join(CLIENT_ROOT, 'client.tsx')]
+    app: [path.join(CLIENT_ROOT, 'polyfills.ts')]
   },
   output: {
     path: buildPath,
@@ -148,7 +163,90 @@ module.exports = ({ isDeploy, isStats }) => ({
   ].filter(Boolean),
   module: {
     rules: [
-      ...transformRules(PROJECT_ROOT),
+      {
+        test: /\.tsx?$/,
+        // things that need the relay plugin
+        include: [path.join(SERVER_ROOT, 'email'), path.join(CLIENT_ROOT)],
+        // but don't need the inline-import plugin
+        exclude: [path.join(CLIENT_ROOT, 'utils/GitHubManager.ts')],
+        use: [
+          {
+            loader: 'babel-loader',
+            options: {
+              cacheDirectory: true,
+              babelrc: false,
+              presets: babelPresets,
+              plugins: [
+                [
+                  'macros',
+                  {
+                    relay: {
+                      artifactDirectory: path.join(CLIENT_ROOT, '__generated__')
+                    }
+                  }
+                ]
+              ]
+            }
+          },
+          {
+            loader: '@sucrase/webpack-loader',
+            options: {
+              transforms: ['jsx', 'typescript']
+            }
+          }
+        ]
+      },
+      {
+        test: /\.tsx?/,
+        // things that don't need babel
+        include: [SERVER_ROOT],
+        // things that need babel
+        exclude: path.join(SERVER_ROOT, 'email'),
+        use: [
+          {
+            loader: 'babel-loader',
+            options: {
+              cacheDirectory: true,
+              babelrc: false,
+              presets: babelPresets
+            }
+          },
+          {
+            loader: '@sucrase/webpack-loader',
+            options: {
+              transforms: ['jsx', 'typescript']
+            }
+          }]
+      },
+      {
+        test: /GitHubManager\.ts/,
+        // things that need inline-import
+        include: path.join(CLIENT_ROOT, 'utils'),
+        use: [
+          {
+            loader: 'babel-loader',
+            options: {
+              cacheDirectory: true,
+              babelrc: false,
+              presets: babelPresets,
+              plugins: [
+                [
+                  'inline-import',
+                  {
+                    extensions: ['.graphql']
+                  }
+                ]
+              ]
+            }
+          },
+          {
+            loader: '@sucrase/webpack-loader',
+            options: {
+              transforms: ['jsx', 'typescript']
+            }
+          }
+        ]
+      },
       {
         test: /\.js$/,
         include: [path.join(SERVER_ROOT), path.join(CLIENT_ROOT)],
@@ -158,6 +256,7 @@ module.exports = ({ isDeploy, isStats }) => ({
             options: {
               cacheDirectory: true,
               babelrc: false,
+              presets: babelPresets,
               plugins: [
                 [
                   'macros',
