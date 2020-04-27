@@ -20,8 +20,8 @@ interface Props {
 }
 
 const ILLUSTRATIONS = {
-  [MeetingTypeEnum.retrospective]: `${__STATIC_IMAGES__}/illustrations/meeting-types_retro.svg`,
-  [MeetingTypeEnum.action]: `${__STATIC_IMAGES__}/illustrations/meeting-types_check-in.svg`
+  [MeetingTypeEnum.retrospective]: `${__STATIC_IMAGES__}/illustrations/meeting_types-retro.svg`,
+  [MeetingTypeEnum.action]: `${__STATIC_IMAGES__}/illustrations/meeting_types-check_in.svg`
 }
 const VirtualizeSwipeableViews = virtualize(SwipeableViews)
 
