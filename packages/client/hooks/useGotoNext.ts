@@ -1,9 +1,9 @@
-import { useCallback, useRef } from 'react'
-import { readInlineData } from 'relay-runtime'
+import {useCallback, useRef} from 'react'
+import {readInlineData} from 'relay-runtime'
 import findStageById from '../utils/meetings/findStageById'
 import findStageAfterId from '../utils/meetings/findStageAfterId'
 import graphql from 'babel-plugin-relay/macro'
-import { useGotoNext_meeting } from '__generated__/useGotoNext_meeting.graphql'
+import {useGotoNext_meeting} from '__generated__/useGotoNext_meeting.graphql'
 import useGotoStageId from './useGotoStageId'
 
 export const useGotoNext = (meetingRef: any, gotoStageId: ReturnType<typeof useGotoStageId>) => {
@@ -26,14 +26,14 @@ export const useGotoNext = (meetingRef: any, gotoStageId: ReturnType<typeof useG
     meetingRef
   )
   const gotoNext = useCallback(
-    (options: { isHotkey?: boolean } = {}) => {
-      const { localStage, phases } = meeting
-      const { id: localStageId } = localStage
+    (options: {isHotkey?: boolean} = {}) => {
+      const {localStage, phases} = meeting
+      const {id: localStageId} = localStage
       const currentStageRes = findStageById(phases, localStageId)
       const nextStageRes = findStageAfterId(phases, localStageId)
       if (!nextStageRes || !currentStageRes) return
-      const { stage } = nextStageRes
-      const { id: nextStageId } = stage
+      const {stage} = nextStageRes
+      const {id: nextStageId} = stage
       if (!options.isHotkey || currentStageRes.stage.isComplete) {
         gotoStageId(nextStageId).catch()
       } else if (options.isHotkey) {
@@ -42,7 +42,7 @@ export const useGotoNext = (meetingRef: any, gotoStageId: ReturnType<typeof useG
     },
     [gotoStageId, meeting]
   )
-  return { gotoNext, ref }
+  return {gotoNext, ref}
 }
 
 export default useGotoNext

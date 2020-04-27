@@ -21,7 +21,15 @@ interface Props {
 }
 
 const ThreadedItemReply = (props: Props) => {
-  const {replyMention, threadable, editorRef, reflectionGroupId, meeting, setReplyMention, dataCy} = props
+  const {
+    replyMention,
+    threadable,
+    editorRef,
+    reflectionGroupId,
+    meeting,
+    setReplyMention,
+    dataCy
+  } = props
   const {id: threadableId, replies} = threadable
   const {id: meetingId, replyingToCommentId} = meeting
   const isReplying = replyingToCommentId === threadableId

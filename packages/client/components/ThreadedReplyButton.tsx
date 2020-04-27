@@ -14,7 +14,11 @@ interface Props {
 
 const ThreadedReplyButton = (props: Props) => {
   const {onReply, dataCy} = props
-  return <Reply data-cy={`${dataCy}-reply-button`} onClick={onReply}>Reply</Reply>
+  return (
+    <Reply data-cy={`${dataCy}-reply-button`} onClick={onReply}>
+      Reply
+    </Reply>
+  )
 }
 
 export default ThreadedReplyButton

@@ -1,12 +1,12 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import useAtmosphere from 'hooks/useAtmosphere'
-import { TransitionStatus } from 'hooks/useTransition'
+import {TransitionStatus} from 'hooks/useTransition'
 import FlagReadyToAdvanceMutation from 'mutations/FlagReadyToAdvanceMutation'
 import React from 'react'
-import { createFragmentContainer } from 'react-relay'
-import { PALETTE } from 'styles/paletteV2'
-import { BezierCurve } from 'types/constEnums'
+import {createFragmentContainer} from 'react-relay'
+import {PALETTE} from 'styles/paletteV2'
+import {BezierCurve} from 'types/constEnums'
 import BottomNavControl from './BottomNavControl'
 import BottomNavIconLabel from './BottomNavIconLabel'
 import Icon from './Icon'
@@ -14,8 +14,8 @@ import BottomControlBarProgress from './BottomControlBarProgress'
 import handleRightArrow from 'utils/handleRightArrow'
 import useGotoNext from 'hooks/useGotoNext'
 import isDemoRoute from 'utils/isDemoRoute'
-import { BottomControlBarReady_meeting } from '__generated__/BottomControlBarReady_meeting.graphql'
-import { NewMeetingPhaseTypeEnum } from 'types/graphql'
+import {BottomControlBarReady_meeting} from '__generated__/BottomControlBarReady_meeting.graphql'
+import {NewMeetingPhaseTypeEnum} from 'types/graphql'
 
 interface Props {
   isDemoStageComplete?: boolean
@@ -25,14 +25,14 @@ interface Props {
   handleGotoNext: ReturnType<typeof useGotoNext>
 }
 
-const CheckIcon = styled(Icon)<{ progress: number; isNext: boolean }>(({ progress, isNext }) => ({
+const CheckIcon = styled(Icon)<{progress: number; isNext: boolean}>(({progress, isNext}) => ({
   color: isNext
     ? progress === 1
       ? PALETTE.TEXT_GREEN
       : PALETTE.EMPHASIS_WARM
     : progress > 0
-      ? PALETTE.TEXT_GREEN
-      : PALETTE.TEXT_GRAY,
+    ? PALETTE.TEXT_GREEN
+    : PALETTE.TEXT_GRAY,
   fontSize: 24,
   fontWeight: 600,
   height: 24,
@@ -43,13 +43,13 @@ const CheckIcon = styled(Icon)<{ progress: number; isNext: boolean }>(({ progres
 }))
 
 const BottomControlBarReady = (props: Props) => {
-  const { handleGotoNext, isDemoStageComplete, meeting, onTransitionEnd, status } = props
-  const { id: meetingId, facilitatorUserId, localStage, meetingMembers, reflectionGroups } = meeting
-  const { id: stageId, isViewerReady, phaseType } = localStage
-  const { gotoNext, ref } = handleGotoNext
+  const {handleGotoNext, isDemoStageComplete, meeting, onTransitionEnd, status} = props
+  const {id: meetingId, facilitatorUserId, localStage, meetingMembers, reflectionGroups} = meeting
+  const {id: stageId, isViewerReady, phaseType} = localStage
+  const {gotoNext, ref} = handleGotoNext
   const activeCount = meetingMembers.filter((member) => member.isCheckedIn).length
   const atmosphere = useAtmosphere()
-  const { viewerId } = atmosphere
+  const {viewerId} = atmosphere
   const isFacilitating = facilitatorUserId === viewerId
   const readyCount = localStage.readyCount || 0
   const progress = readyCount / Math.max(1, activeCount - 1)
@@ -57,13 +57,13 @@ const BottomControlBarReady = (props: Props) => {
     if (isFacilitating) {
       gotoNext()
     } else {
-      FlagReadyToAdvanceMutation(atmosphere, { isReady: !isViewerReady, meetingId, stageId })
+      FlagReadyToAdvanceMutation(atmosphere, {isReady: !isViewerReady, meetingId, stageId})
     }
   }
   const onKeyDown = isFacilitating
     ? handleRightArrow(() => {
-      gotoNext()
-    })
+        gotoNext()
+      })
     : undefined
   const icon = isFacilitating ? 'arrow_forward' : 'check'
   const label = isFacilitating ? 'Next' : 'Ready'
@@ -73,7 +73,7 @@ const BottomControlBarReady = (props: Props) => {
       return !isDemoStageComplete && !(window as any).Cypress
     }
     if (phaseType === NewMeetingPhaseTypeEnum.reflect) {
-      return reflectionGroups ?.length === 0 ?? true
+      return reflectionGroups?.length === 0 ?? true
     }
     return false
   }

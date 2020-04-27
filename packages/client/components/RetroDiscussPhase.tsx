@@ -2,15 +2,15 @@ import styled from '@emotion/styled'
 import * as Sentry from '@sentry/browser'
 import graphql from 'babel-plugin-relay/macro'
 import useBreakpoint from 'hooks/useBreakpoint'
-import React, { useRef } from 'react'
-import { createFragmentContainer } from 'react-relay'
-import { RetroDiscussPhase_meeting } from '__generated__/RetroDiscussPhase_meeting.graphql'
+import React, {useRef} from 'react'
+import {createFragmentContainer} from 'react-relay'
+import {RetroDiscussPhase_meeting} from '__generated__/RetroDiscussPhase_meeting.graphql'
 import EditorHelpModalContainer from '../containers/EditorHelpModalContainer/EditorHelpModalContainer'
-import { PALETTE } from '../styles/paletteV2'
-import { ICON_SIZE } from '../styles/typographyV2'
-import { Breakpoint } from '../types/constEnums'
-import { NewMeetingPhaseTypeEnum } from '../types/graphql'
-import { phaseLabelLookup } from '../utils/meetings/lookups'
+import {PALETTE} from '../styles/paletteV2'
+import {ICON_SIZE} from '../styles/typographyV2'
+import {Breakpoint} from '../types/constEnums'
+import {NewMeetingPhaseTypeEnum} from '../types/graphql'
+import {phaseLabelLookup} from '../utils/meetings/lookups'
 import plural from '../utils/plural'
 import DiscussionThreadRoot from './DiscussionThreadRoot'
 import DiscussPhaseReflectionGrid from './DiscussPhaseReflectionGrid'
@@ -24,7 +24,7 @@ import PhaseHeaderDescription from './PhaseHeaderDescription'
 import PhaseHeaderTitle from './PhaseHeaderTitle'
 import PhaseWrapper from './PhaseWrapper'
 import ReflectionGroup from './ReflectionGroup/ReflectionGroup'
-import { RetroMeetingPhaseProps } from './RetroMeeting'
+import {RetroMeetingPhaseProps} from './RetroMeeting'
 import StageTimerDisplay from './RetroReflectPhase/StageTimerDisplay'
 
 interface Props extends RetroMeetingPhaseProps {
@@ -40,7 +40,7 @@ const HeaderContainer = styled('div')({
   userSelect: 'none'
 })
 
-const LabelContainer = styled(LabelHeading)<{ isDesktop: boolean }>(({ isDesktop }) => ({
+const LabelContainer = styled(LabelHeading)<{isDesktop: boolean}>(({isDesktop}) => ({
   background: PALETTE.BACKGROUND_MAIN,
   margin: '0 16px',
   padding: isDesktop ? '0 0 8px' : undefined,
@@ -56,7 +56,7 @@ const DiscussHeader = styled('div')({
   margin: '0 0 12px'
 })
 
-const ColumnsContainer = styled('div')<{ isDesktop: boolean }>(({ isDesktop }) => ({
+const ColumnsContainer = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   display: 'flex',
   flexDirection: isDesktop ? undefined : 'column',
   flex: 1,
@@ -103,7 +103,7 @@ const DiscussPhaseWrapper = styled('div')({
   width: '100%'
 })
 
-const ReflectionColumn = styled('div')<{ isDesktop: boolean }>(({ isDesktop }) => ({
+const ReflectionColumn = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   display: 'flex',
   flexDirection: 'column',
   height: isDesktop ? '100%' : undefined,
@@ -112,7 +112,7 @@ const ReflectionColumn = styled('div')<{ isDesktop: boolean }>(({ isDesktop }) =
   width: '100%'
 }))
 
-const ThreadColumn = styled('div')<{ isDesktop: boolean }>(({ isDesktop }) => ({
+const ThreadColumn = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   alignItems: 'center',
   display: 'flex',
   flex: 1,
@@ -124,7 +124,7 @@ const ThreadColumn = styled('div')<{ isDesktop: boolean }>(({ isDesktop }) => ({
   width: '100%'
 }))
 
-const ColumnInner = styled('div')<{ isDesktop: boolean }>(({ isDesktop }) => ({
+const ColumnInner = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   display: isDesktop ? undefined : 'flex',
   justifyContent: 'center',
   height: '100%',
@@ -134,19 +134,19 @@ const ColumnInner = styled('div')<{ isDesktop: boolean }>(({ isDesktop }) => ({
 }))
 
 const RetroDiscussPhase = (props: Props) => {
-  const { avatarGroup, toggleSidebar, meeting } = props
+  const {avatarGroup, toggleSidebar, meeting} = props
   const phaseRef = useRef<HTMLDivElement>(null)
-  const { id: meetingId, endedAt, localStage, showSidebar, organization } = meeting
-  const { reflectionGroup } = localStage
+  const {id: meetingId, endedAt, localStage, showSidebar, organization} = meeting
+  const {reflectionGroup} = localStage
   const isDesktop = useBreakpoint(Breakpoint.SINGLE_REFLECTION_COLUMN)
   // reflection group will be null until the server overwrites the placeholder.
   if (!reflectionGroup) return null
-  const { id: reflectionGroupId, title, voteCount } = reflectionGroup
+  const {id: reflectionGroupId, title, voteCount} = reflectionGroup
   const reflections = reflectionGroup.reflections ?? []
   if (!reflectionGroup.reflections) {
     // this shouldn't ever happen, yet
     // https://sentry.io/organizations/parabol/issues/1322927523/?environment=client&project=107196&query=is%3Aunresolved
-    const errObj = { id: reflectionGroup.id } as any
+    const errObj = {id: reflectionGroup.id} as any
     if (reflectionGroup.hasOwnProperty('reflections')) {
       errObj.reflections = reflections
     }
@@ -187,15 +187,15 @@ const RetroDiscussPhase = (props: Props) => {
                   {isDesktop ? (
                     <DiscussPhaseReflectionGrid reflections={reflections} />
                   ) : (
-                      <ReflectionGroup
-                        meeting={meeting}
-                        phaseRef={phaseRef}
-                        reflectionGroup={reflectionGroup}
-                      />
-                    )}
+                    <ReflectionGroup
+                      meeting={meeting}
+                      phaseRef={phaseRef}
+                      reflectionGroup={reflectionGroup}
+                    />
+                  )}
                 </ColumnInner>
               </ReflectionColumn>
-              <ThreadColumn data-cy="discuss-task-column" isDesktop={isDesktop}>
+              <ThreadColumn data-cy='discuss-task-column' isDesktop={isDesktop}>
                 <DiscussionThreadRoot meetingId={meetingId} reflectionGroupId={reflectionGroupId} />
               </ThreadColumn>
             </ColumnsContainer>
@@ -203,7 +203,7 @@ const RetroDiscussPhase = (props: Props) => {
         </PhaseWrapper>
         <EditorHelpModalContainer />
       </MeetingHeaderAndPhase>
-    </MeetingContent >
+    </MeetingContent>
   )
 }
 

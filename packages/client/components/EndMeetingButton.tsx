@@ -1,14 +1,14 @@
-import React, { forwardRef, Ref } from 'react'
+import styled from '@emotion/styled'
+import {TransitionStatus} from 'hooks/useTransition'
+import React, {forwardRef, Ref} from 'react'
+import useAtmosphere from '../hooks/useAtmosphere'
+import useMutationProps from '../hooks/useMutationProps'
+import useRouter from '../hooks/useRouter'
 import EndNewMeetingMutation from '../mutations/EndNewMeetingMutation'
+import {ElementWidth} from '../types/constEnums'
 import isDemoRoute from '../utils/isDemoRoute'
 import BottomNavControl from './BottomNavControl'
 import BottomNavIconLabel from './BottomNavIconLabel'
-import useAtmosphere from '../hooks/useAtmosphere'
-import useRouter from '../hooks/useRouter'
-import useMutationProps from '../hooks/useMutationProps'
-import styled from '@emotion/styled'
-import { ElementWidth } from '../types/constEnums'
-import { TransitionStatus } from 'hooks/useTransition'
 
 interface Props {
   meetingId: string
@@ -22,15 +22,15 @@ const EndMeetingButtonStyles = styled(BottomNavControl)({
 })
 
 const EndMeetingButton = forwardRef((props: Props, ref: Ref<HTMLButtonElement>) => {
-  const { isEnded, meetingId, status, onTransitionEnd } = props
+  const {isEnded, meetingId, status, onTransitionEnd} = props
   const atmosphere = useAtmosphere()
-  const { history } = useRouter()
-  const { submitMutation, onCompleted, onError, submitting } = useMutationProps()
+  const {history} = useRouter()
+  const {submitMutation, onCompleted, onError, submitting} = useMutationProps()
 
   const endMeeting = () => {
     if (submitting) return
     submitMutation()
-    EndNewMeetingMutation(atmosphere, { meetingId }, { history, onError, onCompleted })
+    EndNewMeetingMutation(atmosphere, {meetingId}, {history, onError, onCompleted})
   }
 
   const label = isDemoRoute() ? 'End Demo' : 'End Meeting'

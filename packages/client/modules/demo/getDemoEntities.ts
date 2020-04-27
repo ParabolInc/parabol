@@ -1,8 +1,8 @@
 import graphql from 'babel-plugin-relay/macro'
+import PROD from 'parabol-server/PROD'
 import {fetchQuery} from 'relay-runtime'
-import Atmosphere from '../../Atmosphere'
 import {getDemoEntitiesQuery} from '__generated__/getDemoEntitiesQuery.graphql'
-import PROD from 'parabol-server/PROD';
+import Atmosphere from '../../Atmosphere'
 
 const query = graphql`
   query getDemoEntitiesQuery($text: String!) {

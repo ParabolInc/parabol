@@ -1,10 +1,10 @@
-import React, { ReactElement, ReactNode } from 'react'
+import React, {ReactElement, ReactNode} from 'react'
 import styled from '@emotion/styled'
 import DemoCreateAccountButton from './DemoCreateAccountButton'
 import SidebarToggle from './SidebarToggle'
 import isDemoRoute from '../utils/isDemoRoute'
 import hasToken from '../utils/hasToken'
-import { meetingAvatarMediaQueries } from '../styles/meeting'
+import {meetingAvatarMediaQueries} from '../styles/meeting'
 import makeMinWidthMediaQuery from '../utils/makeMinWidthMediaQuery'
 
 const localHeaderBreakpoint = makeMinWidthMediaQuery(600)
@@ -25,8 +25,8 @@ const MeetingTopBarStyles = styled('div')({
   }
 })
 
-const HeadingBlock = styled('div')<{ isMeetingSidebarCollapsed: boolean }>(
-  ({ isMeetingSidebarCollapsed }) => ({
+const HeadingBlock = styled('div')<{isMeetingSidebarCollapsed: boolean}>(
+  ({isMeetingSidebarCollapsed}) => ({
     alignItems: 'flex-start',
     display: 'flex',
     paddingLeft: isMeetingSidebarCollapsed ? undefined : 8,
@@ -69,7 +69,7 @@ interface Props {
 }
 
 const MeetingTopBar = (props: Props) => {
-  const { avatarGroup, children, isMeetingSidebarCollapsed, toggleSidebar } = props
+  const {avatarGroup, children, isMeetingSidebarCollapsed, toggleSidebar} = props
   const showButton = isDemoRoute() && !hasToken()
   return (
     <MeetingTopBarStyles>

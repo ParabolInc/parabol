@@ -1,9 +1,9 @@
 import React from 'react'
-import { PALETTE } from '../../../../styles/paletteV2'
-import { emailFontFamily, emailPrimaryButtonStyle, emailTableBase } from '../../../../styles/email'
+import {emailFontFamily, emailPrimaryButtonStyle, emailTableBase} from '../../../../styles/email'
+import {PALETTE} from '../../../../styles/paletteV2'
+import {LocalStorageKey} from '../../../../types/constEnums'
 import emailDir from '../../emailDir'
 import EmailBorderBottom from '../SummaryEmail/MeetingSummaryEmail/EmailBorderBottom'
-import { LocalStorageKey } from '../../../../types/constEnums'
 
 const tableStyle = {
   ...emailTableBase,
@@ -66,10 +66,10 @@ const buttonCellStyle = {
 } as React.CSSProperties
 
 const features = [
-  { icon: 'feature-prompts@3x.png', copy: 'Custom retrospective formats' },
-  { icon: 'feature-grouping@3x.png', copy: 'Realtime group participation' },
-  { icon: 'feature-summary@3x.png', copy: 'Detailed meeting summary email' },
-  { icon: 'feature-owners@3x.png', copy: 'Takeaway tasks with owners' }
+  {icon: 'feature-prompts@3x.png', copy: 'Custom retrospective formats'},
+  {icon: 'feature-grouping@3x.png', copy: 'Realtime group participation'},
+  {icon: 'feature-summary@3x.png', copy: 'Detailed meeting summary email'},
+  {icon: 'feature-owners@3x.png', copy: 'Takeaway tasks with owners'}
 ]
 
 const makeFeatureRow = (featureIconFile, featureCopy, idx) => {
@@ -87,7 +87,7 @@ const makeFeatureRow = (featureIconFile, featureCopy, idx) => {
 }
 
 const CreateAccountSection = (props) => {
-  const { isDemo } = props
+  const {isDemo} = props
   if (!isDemo) return null
   const isLoggedIn = localStorage.getItem(LocalStorageKey.APP_TOKEN_KEY)
   const primaryActionLabel = isLoggedIn ? 'Go to My Dashboard' : 'Create a Free Account'
@@ -136,7 +136,7 @@ const CreateAccountSection = (props) => {
       <tr>
         <td>
           <table style={featureTableStyle} width={featureWidth}>
-            <tbody>{features.map(({ icon, copy }, idx) => makeFeatureRow(icon, copy, idx))}</tbody>
+            <tbody>{features.map(({icon, copy}, idx) => makeFeatureRow(icon, copy, idx))}</tbody>
           </table>
         </td>
       </tr>

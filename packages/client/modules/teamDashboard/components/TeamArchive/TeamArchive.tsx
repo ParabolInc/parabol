@@ -1,17 +1,17 @@
+import styled from '@emotion/styled'
+import graphql from 'babel-plugin-relay/macro'
 import React, {useEffect, useRef, useState} from 'react'
 import {createPaginationContainer, RelayPaginationProp} from 'react-relay'
-import graphql from 'babel-plugin-relay/macro'
 import {AutoSizer, CellMeasurer, CellMeasurerCache, Grid, InfiniteLoader} from 'react-virtualized'
-import NullableTask from '../../../../components/NullableTask/NullableTask'
-import TeamArchiveHeader from '../TeamArchiveHeader/TeamArchiveHeader'
-import getRallyLink from '../../../userDashboard/helpers/getRallyLink'
-import {TeamArchive_viewer} from '__generated__/TeamArchive_viewer.graphql'
-import {AreaEnum} from '../../../../types/graphql'
 import {TeamArchive_team} from '__generated__/TeamArchive_team.graphql'
-import styled from '@emotion/styled'
-import {MathEnum, NavSidebar} from '../../../../types/constEnums'
-import {PALETTE} from '../../../../styles/paletteV2'
+import {TeamArchive_viewer} from '__generated__/TeamArchive_viewer.graphql'
+import NullableTask from '../../../../components/NullableTask/NullableTask'
 import useDocumentTitle from '../../../../hooks/useDocumentTitle'
+import {PALETTE} from '../../../../styles/paletteV2'
+import {MathEnum, NavSidebar} from '../../../../types/constEnums'
+import {AreaEnum} from '../../../../types/graphql'
+import getRallyLink from '../../../userDashboard/helpers/getRallyLink'
+import TeamArchiveHeader from '../TeamArchiveHeader/TeamArchiveHeader'
 
 const CARD_WIDTH = 256 + 32 // account for box model and horizontal padding
 const GRID_PADDING = 16
@@ -173,7 +173,7 @@ const TeamArchive = (props: Props) => {
               key={`cardBlockFor${task.id}`}
               style={{...style, width: CARD_WIDTH, padding: '1rem 0.5rem 0'}}
             >
-              <NullableTask key={key} area={AreaEnum.teamDash} measure={measure} task={task} />
+              <NullableTask dataCy={`archive-task`} key={key} area={AreaEnum.teamDash} measure={measure} task={task} />
             </div>
           )
         }}
@@ -238,15 +238,15 @@ const TeamArchive = (props: Props) => {
             </InfiniteLoader>
           </CardGrid>
         ) : (
-          <EmptyMsg>
-            <span>
-              {'🤓'}
-              {' Hi there! There are zero archived tasks. '}
-              {'Nothing to see here. How about a fun rally video? '}
-              <LinkSpan>{getRallyLink()}!</LinkSpan>
-            </span>
-          </EmptyMsg>
-        )}
+            <EmptyMsg>
+              <span>
+                {'🤓'}
+                {' Hi there! There are zero archived tasks. '}
+                {'Nothing to see here. How about a fun rally video? '}
+                <LinkSpan>{getRallyLink()}!</LinkSpan>
+              </span>
+            </EmptyMsg>
+          )}
       </Body>
     </Root>
   )

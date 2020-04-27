@@ -3,13 +3,13 @@ import graphql from 'babel-plugin-relay/macro'
 import useAtmosphere from 'hooks/useAtmosphere'
 import useMutationProps from 'hooks/useMutationProps'
 import RenameMeetingMutation from 'mutations/RenameMeetingMutation'
-import React, { ReactNode } from 'react'
-import { createFragmentContainer } from 'react-relay'
-import { Link } from 'react-router-dom'
+import React, {ReactNode} from 'react'
+import {createFragmentContainer} from 'react-relay'
+import {Link} from 'react-router-dom'
 import Legitity from 'validation/Legitity'
-import { NewMeetingSidebar_meeting } from '__generated__/NewMeetingSidebar_meeting.graphql'
-import { PALETTE } from '../styles/paletteV2'
-import { NavSidebar } from '../types/constEnums'
+import {NewMeetingSidebar_meeting} from '__generated__/NewMeetingSidebar_meeting.graphql'
+import {PALETTE} from '../styles/paletteV2'
+import {NavSidebar} from '../types/constEnums'
 import isDemoRoute from '../utils/isDemoRoute'
 import EditableText from './EditableText'
 import Facilitator from './Facilitator'
@@ -77,18 +77,18 @@ interface Props {
 }
 
 const NewMeetingSidebar = (props: Props) => {
-  const { children, handleMenuClick, toggleSidebar, meeting } = props
-  const { error, submitMutation, submitting, onCompleted, onError } = useMutationProps()
-  const { id: meetingId, endedAt, team, name: meetingName, facilitatorUserId } = meeting
-  const { id: teamId, name: teamName } = team
+  const {children, handleMenuClick, toggleSidebar, meeting} = props
+  const {error, submitMutation, submitting, onCompleted, onError} = useMutationProps()
+  const {id: meetingId, endedAt, team, name: meetingName, facilitatorUserId} = meeting
+  const {id: teamId, name: teamName} = team
   const teamLink = isDemoRoute() ? '/create-account' : `/team/${teamId}`
   const atmosphere = useAtmosphere()
-  const { viewerId } = atmosphere
+  const {viewerId} = atmosphere
   const isFacilitator = viewerId === facilitatorUserId
   const handleSubmit = (name: string) => {
     if (submitting || error) return
     submitMutation()
-    RenameMeetingMutation(atmosphere, { meetingId, name }, { onCompleted, onError })
+    RenameMeetingMutation(atmosphere, {meetingId, name}, {onCompleted, onError})
   }
   const validate = (rawMeetingName: string) => {
     const res = new Legitity(rawMeetingName)
@@ -107,12 +107,12 @@ const NewMeetingSidebar = (props: Props) => {
 
   return (
     <SidebarParent>
-      <SidebarHeader >
+      <SidebarHeader>
         <StyledToggle dataCy={`sidebar`} onClick={toggleSidebar} />
         <div>
           {isFacilitator ? (
             <EditableMeetingName
-              error={error ?.message}
+              error={error?.message}
               handleSubmit={handleSubmit}
               initialValue={meetingName}
               isWrap
@@ -121,8 +121,8 @@ const NewMeetingSidebar = (props: Props) => {
               placeholder={'Best Meeting Ever!'}
             />
           ) : (
-              <MeetingName>{meetingName}</MeetingName>
-            )}
+            <MeetingName>{meetingName}</MeetingName>
+          )}
           <TeamDashboardLink to={teamLink}>
             {'Team: '}
             {teamName}

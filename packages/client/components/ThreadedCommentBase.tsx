@@ -44,7 +44,15 @@ interface Props {
 }
 
 const ThreadedCommentBase = (props: Props) => {
-  const {children, comment, reflectionGroupId, replyMention, setReplyMention, meeting, dataCy} = props
+  const {
+    children,
+    comment,
+    reflectionGroupId,
+    replyMention,
+    setReplyMention,
+    meeting,
+    dataCy
+  } = props
   const isReply = !!props.isReply
   const {id: meetingId, replyingToCommentId, teamId} = meeting
   const {id: commentId, content, createdByUser, isActive, reactjis, threadParentId} = comment

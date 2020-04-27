@@ -1,20 +1,20 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import { MenuPosition } from 'hooks/useCoords'
+import {MenuPosition} from 'hooks/useCoords'
 import useMenu from 'hooks/useMenu'
 import useTimeout from 'hooks/useTimeout'
 import LocalAtmosphere from 'modules/demo/LocalAtmosphere'
-import React, { useEffect } from 'react'
-import { createFragmentContainer } from 'react-relay'
-import { NewMeetingPhaseTypeEnum } from 'types/graphql'
+import React, {useEffect} from 'react'
+import {createFragmentContainer} from 'react-relay'
+import {NewMeetingPhaseTypeEnum} from 'types/graphql'
 import lazyPreload from 'utils/lazyPreload'
-import { BottomControlBarTips_meeting } from '__generated__/BottomControlBarTips_meeting.graphql'
+import {BottomControlBarTips_meeting} from '__generated__/BottomControlBarTips_meeting.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import isDemoRoute from '../utils/isDemoRoute'
 import BottomNavIconLabel from './BottomNavIconLabel'
 import Menu from './Menu'
 import BottomNavControl from './BottomNavControl'
-import { TransitionStatus } from 'hooks/useTransition'
+import {TransitionStatus} from 'hooks/useTransition'
 
 const TallMenu = styled(Menu)({
   maxHeight: 320
@@ -93,10 +93,10 @@ interface Props {
   onTransitionEnd: () => void
 }
 const BottomControlBarTips = (props: Props) => {
-  const { meeting, status, onTransitionEnd } = props
-  const { localPhase, meetingType } = meeting
-  const { phaseType } = localPhase
-  const { menuProps, menuPortal, originRef, togglePortal, openPortal } = useMenu(
+  const {meeting, status, onTransitionEnd} = props
+  const {localPhase, meetingType} = meeting
+  const {phaseType} = localPhase
+  const {menuProps, menuPortal, originRef, togglePortal, openPortal} = useMenu(
     MenuPosition.LOWER_LEFT
   )
   const atmosphere = useAtmosphere()
@@ -105,8 +105,8 @@ const BottomControlBarTips = (props: Props) => {
   const MenuContent = menus[phaseType]
   useEffect(() => {
     if (demoPauseOpen && isDemoRoute()) {
-      const { clientGraphQLServer } = (atmosphere as unknown) as LocalAtmosphere
-      const { isNew } = clientGraphQLServer
+      const {clientGraphQLServer} = (atmosphere as unknown) as LocalAtmosphere
+      const {isNew} = clientGraphQLServer
       if (!isNew) {
         openPortal()
       } else {

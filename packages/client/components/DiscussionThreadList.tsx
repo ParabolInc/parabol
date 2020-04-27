@@ -45,7 +45,7 @@ interface Props {
   meeting: DiscussionThreadList_meeting
   reflectionGroupId: string
   threadables: DiscussionThreadList_threadables
-  dataCy: String
+  dataCy: string
 }
 
 const DiscussionThreadList = forwardRef((props: Props, ref: any) => {
@@ -66,7 +66,7 @@ const DiscussionThreadList = forwardRef((props: Props, ref: any) => {
     <Wrapper data-cy={`${dataCy}`} ref={ref}>
       <HeaderBlock />
       <PusherDowner />
-      {threadables.map((threadable,idx) => {
+      {threadables.map((threadable, idx) => {
         const {id} = threadable
         return (
           <ThreadedItem

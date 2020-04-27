@@ -90,7 +90,7 @@ const CommentSendOrAdd = (props: Props) => {
     meeting,
     reflectionGroupId,
     threadParentId,
-    onSubmit, 
+    onSubmit,
     dataCy
   } = props
   const {id: meetingId, teamId} = meeting

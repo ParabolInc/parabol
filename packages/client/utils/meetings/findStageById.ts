@@ -16,11 +16,11 @@ const findStageById = <T extends FindStageByIdPhase = GenericMeetingPhase>(
   if (!phases) return undefined
   for (let ii = 0; ii < phases.length; ii++) {
     const phase = phases[ii]
-    const { stages } = phase
+    const {stages} = phase
     for (let jj = 0; jj < stages.length; jj++) {
       const stage = stages[jj] as T['stages'][0] & FindStageByIdStage
       if (stage[stageKey] === foreignKey) {
-        return { phase, stage, stageIdx: jj }
+        return {phase, stage, stageIdx: jj}
       }
     }
   }

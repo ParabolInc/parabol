@@ -53,7 +53,11 @@ const ThreadedCommentHeader = (props: Props) => {
             </>
           )}
           {isViewerComment && (
-            <CommentAuthorOptionsButton dataCy={`${dataCy}`} editComment={editComment} commentId={commentId} />
+            <CommentAuthorOptionsButton
+              dataCy={`${dataCy}`}
+              editComment={editComment}
+              commentId={commentId}
+            />
           )}
         </HeaderActions>
       )}

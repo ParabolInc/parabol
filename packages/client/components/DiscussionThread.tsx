@@ -1,16 +1,16 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import { useCoverable } from 'hooks/useControlBarCovers'
-import React, { useRef } from 'react'
-import { createFragmentContainer } from 'react-relay'
-import { Breakpoint, DiscussionThreadEnum, MeetingControlBarEnum } from 'types/constEnums'
-import { DiscussionThread_viewer } from '__generated__/DiscussionThread_viewer.graphql'
-import { Elevation } from '../styles/elevation'
+import {useCoverable} from 'hooks/useControlBarCovers'
+import React, {useRef} from 'react'
+import {createFragmentContainer} from 'react-relay'
+import {Breakpoint, DiscussionThreadEnum, MeetingControlBarEnum} from 'types/constEnums'
+import {DiscussionThread_viewer} from '__generated__/DiscussionThread_viewer.graphql'
+import {Elevation} from '../styles/elevation'
 import makeMinWidthMediaQuery from '../utils/makeMinWidthMediaQuery'
 import DiscussionThreadInput from './DiscussionThreadInput'
 import DiscussionThreadList from './DiscussionThreadList'
 
-const Wrapper = styled('div')<{ isExpanded: boolean }>(({ isExpanded }) => ({
+const Wrapper = styled('div')<{isExpanded: boolean}>(({isExpanded}) => ({
   background: '#fff',
   borderRadius: 4,
   boxShadow: Elevation.DISCUSSION_THREAD,
@@ -30,12 +30,12 @@ interface Props {
 }
 
 const DiscussionThread = (props: Props) => {
-  const { viewer } = props
+  const {viewer} = props
   const meeting = viewer.meeting!
-  const { endedAt, replyingToCommentId, reflectionGroup } = meeting
-  const { id: reflectionGroupId, thread } = reflectionGroup!
-  const edges = thread ?.edges ?? [] // should never happen, but Terry reported it in demo. likely relay error
-  const threadables = edges.map(({ node }) => node)
+  const {endedAt, replyingToCommentId, reflectionGroup} = meeting
+  const {id: reflectionGroupId, thread} = reflectionGroup!
+  const edges = thread?.edges ?? [] // should never happen, but Terry reported it in demo. likely relay error
+  const threadables = edges.map(({node}) => node)
   const getMaxSortOrder = () => {
     return Math.max(0, ...threadables.map((threadable) => threadable.threadSortOrder || 0))
   }
@@ -46,7 +46,7 @@ const DiscussionThread = (props: Props) => {
   return (
     <Wrapper isExpanded={isExpanded} ref={ref}>
       <DiscussionThreadList
-        dataCy="discuss-thread-list"
+        dataCy='discuss-thread-list'
         reflectionGroupId={reflectionGroupId}
         meeting={meeting}
         threadables={threadables}
@@ -54,7 +54,7 @@ const DiscussionThread = (props: Props) => {
         editorRef={editorRef}
       />
       <DiscussionThreadInput
-        dataCy="discuss-input"
+        dataCy='discuss-input'
         editorRef={editorRef}
         isDisabled={!!replyingToCommentId}
         getMaxSortOrder={getMaxSortOrder}
