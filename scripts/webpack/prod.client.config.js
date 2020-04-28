@@ -3,13 +3,13 @@ const path = require('path')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const webpack = require('webpack')
 const getWebpackPublicPath = require('./utils/getWebpackPublicPath')
-const { CleanWebpackPlugin } = require('clean-webpack-plugin')
+const {CleanWebpackPlugin} = require('clean-webpack-plugin')
 const S3Plugin = require('webpack-s3-plugin')
 const getS3BasePath = require('./utils/getS3BasePath')
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
 const ScriptExtHtmlWebpackPlugin = require('script-ext-html-webpack-plugin')
 const TerserPlugin = require('terser-webpack-plugin')
-const { InjectManifest } = require('wrkbx')
+const {InjectManifest} = require('wrkbx')
 const CopyPlugin = require('copy-webpack-plugin')
 const getProjectRoot = require('./utils/getProjectRoot')
 
@@ -38,13 +38,13 @@ const babelPresets = [
   ]
 ]
 
-module.exports = ({ isDeploy, isStats }) => ({
+module.exports = ({isDeploy, isStats}) => ({
   stats: {
     assets: false
   },
   mode: 'production',
   entry: {
-    app: [path.join(CLIENT_ROOT, 'polyfills.ts')]
+    app: [path.join(CLIENT_ROOT, 'polyfills.ts'), path.join(CLIENT_ROOT, 'client.tsx')]
   },
   output: {
     path: buildPath,
@@ -159,7 +159,7 @@ module.exports = ({ isDeploy, isStats }) => ({
       basePath: getS3BasePath(),
       directory: buildPath
     }),
-    isStats && new BundleAnalyzerPlugin({ generateStatsFile: true })
+    isStats && new BundleAnalyzerPlugin({generateStatsFile: true})
   ].filter(Boolean),
   module: {
     rules: [
@@ -277,7 +277,7 @@ module.exports = ({ isDeploy, isStats }) => ({
           }
         ]
       },
-      { test: /\.flow$/, loader: 'ignore-loader' },
+      {test: /\.flow$/, loader: 'ignore-loader'},
       {
         test: /\.css$/,
         use: ['style-loader', 'css-loader']
