@@ -24,12 +24,12 @@ export default class PubSubPromise<T extends PubSubPromisePayload> {
   }
   onMessage = (_channel: string, message: string) => {
     const payload = JSON.parse(message) as PubSubPromisePayload
-    const {jobId} = payload
+    const {jobId, ...rest} = payload
     const cachedJob = this.jobs[jobId]
     if (cachedJob) {
       const {resolve, timeoutId} = cachedJob
       clearTimeout(timeoutId)
-      resolve(payload)
+      resolve(rest)
       delete this.jobs[jobId]
     }
   }
