@@ -16,10 +16,11 @@ interface Props {
   isDraggingOver?: TaskStatusEnum
   measure?: () => void
   task: NullableTask_task
+  dataCy: string
 }
 
 const NullableTask = (props: Props) => {
-  const {area, className, isAgenda, task, isDraggingOver} = props
+  const {area, className, isAgenda, task, isDraggingOver, dataCy} = props
   const {content, createdBy, createdByUser} = task
   const {preferredName} = createdByUser
   const contentState = useMemo(() => {
@@ -49,6 +50,7 @@ const NullableTask = (props: Props) => {
   const showOutcome = contentState.hasText() || createdBy === atmosphere.viewerId
   return showOutcome ? (
     <OutcomeCardContainer
+      dataCy={`${dataCy}`}
       area={area}
       className={className}
       contentState={contentState}

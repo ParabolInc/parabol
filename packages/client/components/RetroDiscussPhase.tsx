@@ -195,7 +195,7 @@ const RetroDiscussPhase = (props: Props) => {
                   )}
                 </ColumnInner>
               </ReflectionColumn>
-              <ThreadColumn isDesktop={isDesktop}>
+              <ThreadColumn data-cy='discuss-task-column' isDesktop={isDesktop}>
                 <DiscussionThreadRoot meetingId={meetingId} reflectionGroupId={reflectionGroupId} />
               </ThreadColumn>
             </ColumnsContainer>

@@ -74,7 +74,7 @@ const MeetingTopBar = (props: Props) => {
   return (
     <MeetingTopBarStyles>
       <HeadingBlock isMeetingSidebarCollapsed={isMeetingSidebarCollapsed}>
-        {isMeetingSidebarCollapsed ? <Toggle onClick={toggleSidebar} /> : null}
+        {isMeetingSidebarCollapsed ? <Toggle dataCy={`topbar`} onClick={toggleSidebar} /> : null}
         <ChildrenBlock>{children}</ChildrenBlock>
       </HeadingBlock>
       <AvatarGroupBlock>

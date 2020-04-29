@@ -1,5 +1,12 @@
 import styled from '@emotion/styled'
-import {DraftEditorCommand, DraftHandleValue, Editor, EditorProps, EditorState, getDefaultKeyBinding} from 'draft-js'
+import {
+  DraftEditorCommand,
+  DraftHandleValue,
+  Editor,
+  EditorProps,
+  EditorState,
+  getDefaultKeyBinding
+} from 'draft-js'
 import React, {RefObject, Suspense, useEffect, useRef} from 'react'
 import {UseTaskChild} from '../../hooks/useTaskChildFocus'
 import {Card} from '../../types/constEnums'
@@ -45,10 +52,11 @@ interface Props extends DraftProps {
   setEditorState: (newEditorState: EditorState) => void
   teamId: string
   useTaskChild: UseTaskChild
+  dataCy: string
 }
 
 const TaskEditor = (props: Props) => {
-  const {editorRef, editorState, readOnly, setEditorState} = props
+  const {editorRef, editorState, readOnly, setEditorState, dataCy} = props
   const entityPasteStartRef = useRef<{anchorOffset: number; anchorKey: string} | undefined>()
   const {
     removeModal,
@@ -162,7 +170,7 @@ const TaskEditor = (props: Props) => {
   const useFallback = isAndroid && !readOnly
   const showFallback = useFallback && !isRichDraft(editorState)
   return (
-    <RootEditor noText={noText} readOnly={readOnly}>
+    <RootEditor data-cy={`${dataCy}-editor`} noText={noText} readOnly={readOnly}>
       {showFallback ? (
         <Suspense fallback={<div />}>
           <TaskEditorFallback
@@ -173,21 +181,21 @@ const TaskEditor = (props: Props) => {
           />
         </Suspense>
       ) : (
-          <Editor
-            spellCheck
-            blockStyleFn={blockStyleFn}
-            editorState={editorState}
-            handleBeforeInput={onBeforeInput}
-            handleKeyCommand={nextKeyCommand}
-            handlePastedText={onPastedText}
-            handleReturn={onReturn}
-            keyBindingFn={onKeyBindingFn}
-            onChange={onChange}
-            placeholder={placeholder}
-            readOnly={readOnly || (useFallback && !showFallback)}
-            ref={editorRef as any}
-          />
-        )}
+        <Editor
+          spellCheck
+          blockStyleFn={blockStyleFn}
+          editorState={editorState}
+          handleBeforeInput={onBeforeInput}
+          handleKeyCommand={nextKeyCommand}
+          handlePastedText={onPastedText}
+          handleReturn={onReturn}
+          keyBindingFn={onKeyBindingFn}
+          onChange={onChange}
+          placeholder={placeholder}
+          readOnly={readOnly || (useFallback && !showFallback)}
+          ref={editorRef as any}
+        />
+      )}
       {renderModal && renderModal()}
     </RootEditor>
   )

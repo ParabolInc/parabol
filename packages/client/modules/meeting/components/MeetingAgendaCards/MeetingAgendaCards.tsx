@@ -1,17 +1,17 @@
+import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {createFragmentContainer} from 'react-relay'
 import CreateCard from '../../../../components/CreateCard/CreateCard'
 import MasonryCSSGrid from '../../../../components/MasonryCSSGrid'
 import NullableTask from '../../../../components/NullableTask/NullableTask'
 import sortOrderBetween from '../../../../dnd/sortOrderBetween'
+import useAtmosphere from '../../../../hooks/useAtmosphere'
+import useEventCallback from '../../../../hooks/useEventCallback'
+import useHotkey from '../../../../hooks/useHotkey'
 import CreateTaskMutation from '../../../../mutations/CreateTaskMutation'
 import {meetingGridMinWidth} from '../../../../styles/meeting'
-import useHotkey from '../../../../hooks/useHotkey'
-import useAtmosphere from '../../../../hooks/useAtmosphere'
-import {createFragmentContainer} from 'react-relay'
-import graphql from 'babel-plugin-relay/macro'
-import {MeetingAgendaCards_tasks} from '../../../../__generated__/MeetingAgendaCards_tasks.graphql'
 import {AreaEnum, TaskStatusEnum, ThreadSourceEnum} from '../../../../types/graphql'
-import useEventCallback from '../../../../hooks/useEventCallback'
+import {MeetingAgendaCards_tasks} from '../../../../__generated__/MeetingAgendaCards_tasks.graphql'
 
 const makePlaceholders = (
   length: number,
@@ -65,7 +65,12 @@ const MeetingAgendaCards = (props: Props) => {
               if (!task) return null
               return (
                 <div key={task.id} ref={setItemRef(task.id)}>
-                  <NullableTask area={AreaEnum.meeting} isAgenda task={task} />
+                  <NullableTask
+                    dataCy={`meeting-agenda-task`}
+                    area={AreaEnum.meeting}
+                    isAgenda
+                    task={task}
+                  />
                 </div>
               )
             })}

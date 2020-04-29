@@ -36,6 +36,7 @@ const EndMeetingButton = forwardRef((props: Props, ref: Ref<HTMLButtonElement>) 
   const label = isDemoRoute() ? 'End Demo' : 'End Meeting'
   return (
     <EndMeetingButtonStyles
+      dataCy='end-button'
       onClick={endMeeting}
       waiting={submitting}
       ref={ref}

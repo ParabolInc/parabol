@@ -80,6 +80,7 @@ const BottomControlBarReady = (props: Props) => {
   const disabled = getDisabled()
   return (
     <BottomNavControl
+      dataCy={`next-phase`}
       disabled={disabled}
       onClick={onClick}
       status={status}

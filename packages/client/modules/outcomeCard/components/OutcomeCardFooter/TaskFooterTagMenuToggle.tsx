@@ -17,6 +17,7 @@ interface Props {
   task: any
   useTaskChild: UseTaskChild
   mutationProps: MenuMutationProps
+  dataCy: string
 }
 
 const TaskFooterTagMenu = lazyPreload(() =>
@@ -24,14 +25,19 @@ const TaskFooterTagMenu = lazyPreload(() =>
 )
 
 const TaskFooterTagMenuToggle = (props: Props) => {
-  const {area, editorState, isAgenda, mutationProps, task, useTaskChild} = props
+  const {area, editorState, isAgenda, mutationProps, task, useTaskChild, dataCy} = props
   const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT)
   const {tooltipPortal, openTooltip, closeTooltip, originRef: tipRef} = useTooltip<HTMLDivElement>(
     MenuPosition.UPPER_CENTER
   )
   return (
     <>
-      <CardButton onMouseEnter={TaskFooterTagMenu.preload} ref={originRef} onClick={togglePortal}>
+      <CardButton
+        dataCy={`${dataCy}-button`}
+        onMouseEnter={TaskFooterTagMenu.preload}
+        ref={originRef}
+        onClick={togglePortal}
+      >
         <IconLabel
           icon='more_vert'
           onMouseEnter={openTooltip}
