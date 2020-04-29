@@ -59,6 +59,7 @@ interface Props {
   task: OutcomeCard_task
   setEditorState: (newEditorState: EditorState) => void
   useTaskChild: UseTaskChild
+  dataCy: string
 }
 
 const OutcomeCard = memo((props: Props) => {
@@ -72,7 +73,8 @@ const OutcomeCard = memo((props: Props) => {
     isDraggingOver,
     task,
     setEditorState,
-    useTaskChild
+    useTaskChild,
+    dataCy
   } = props
   const isPrivate = isTaskPrivate(task.tags)
   const isArchived = isTaskArchived(task.tags)
@@ -95,13 +97,14 @@ const OutcomeCard = memo((props: Props) => {
       <TaskWatermark service={service} />
       <ContentBlock>
         <EditingStatus isTaskHovered={isTaskHovered} task={task} useTaskChild={useTaskChild}>
-          <StatusIndicatorBlock title={statusIndicatorTitle}>
+          <StatusIndicatorBlock data-cy={`${dataCy}-status`} title={statusIndicatorTitle}>
             <OutcomeCardStatusIndicator status={isDraggingOver || status} />
             {isPrivate && <OutcomeCardStatusIndicator status='private' />}
             {isArchived && <OutcomeCardStatusIndicator status='archived' />}
           </StatusIndicatorBlock>
         </EditingStatus>
         <TaskEditor
+          dataCy={`${dataCy}`}
           editorRef={editorRef}
           editorState={editorState}
           readOnly={Boolean(isTempId(taskId) || isArchived || isDraggingOver || service)}
@@ -109,8 +112,9 @@ const OutcomeCard = memo((props: Props) => {
           teamId={teamId}
           useTaskChild={useTaskChild}
         />
-        <TaskIntegrationLink integration={integration || null} />
+        <TaskIntegrationLink dataCy={`${dataCy}`} integration={integration || null} />
         <TaskFooter
+          dataCy={`${dataCy}`}
           area={area}
           cardIsActive={isTaskFocused || isTaskHovered}
           editorState={editorState}

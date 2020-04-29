@@ -1,11 +1,11 @@
-import React from 'react'
-import {createFragmentContainer} from 'react-relay'
-import graphql from 'babel-plugin-relay/macro'
-import NullableTask from '../../components/NullableTask/NullableTask'
-import {DraggableTask_task} from '../../__generated__/DraggableTask_task.graphql'
-import {AreaEnum, TaskStatusEnum} from '../../types/graphql'
 import styled from '@emotion/styled'
+import graphql from 'babel-plugin-relay/macro'
+import React from 'react'
 import {Draggable, DraggableProvided, DraggableStateSnapshot} from 'react-beautiful-dnd'
+import {createFragmentContainer} from 'react-relay'
+import NullableTask from '../../components/NullableTask/NullableTask'
+import {AreaEnum, TaskStatusEnum} from '../../types/graphql'
+import {DraggableTask_task} from '../../__generated__/DraggableTask_task.graphql'
 
 const DraggableStyles = styled('div')({
   // sometimes the default blue fuzzies show up around the containing div
@@ -30,6 +30,7 @@ const DraggableTask = (props: Props) => {
           {...dragProvided.dragHandleProps}
         >
           <NullableTask
+            dataCy={`draggable-task`}
             area={area}
             task={task}
             isDraggingOver={dragSnapshot.draggingOver as TaskStatusEnum}

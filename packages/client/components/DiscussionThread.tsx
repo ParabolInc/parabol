@@ -46,6 +46,7 @@ const DiscussionThread = (props: Props) => {
   return (
     <Wrapper isExpanded={isExpanded} ref={ref}>
       <DiscussionThreadList
+        dataCy='discuss-thread-list'
         reflectionGroupId={reflectionGroupId}
         meeting={meeting}
         threadables={threadables}
@@ -53,6 +54,7 @@ const DiscussionThread = (props: Props) => {
         editorRef={editorRef}
       />
       <DiscussionThreadInput
+        dataCy='discuss-input'
         editorRef={editorRef}
         isDisabled={!!replyingToCommentId}
         getMaxSortOrder={getMaxSortOrder}

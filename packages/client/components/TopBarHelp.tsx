@@ -29,7 +29,9 @@ const TopBarHelp = () => {
         onMouseEnter={TopBarHelpMenu.preload}
         icon={'help_outline'}
       />
-      {menuPortal(<TopBarHelpMenu menuProps={menuProps} toggleShortcuts={toggleShortcuts} />)}
+      {menuPortal(
+        <TopBarHelpMenu dataCy='top-bar' menuProps={menuProps} toggleShortcuts={toggleShortcuts} />
+      )}
       {modalPortal(<EditorHelpModal handleCloseModal={closeShortcuts} />)}
     </>
   )

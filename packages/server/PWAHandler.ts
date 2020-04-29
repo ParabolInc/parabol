@@ -1,6 +1,6 @@
-import {HttpResponse, HttpRequest} from 'uWebSockets.js'
-import serveStatic from './utils/serveStatic'
+import {HttpRequest, HttpResponse} from 'uWebSockets.js'
 import acceptsBrotli from './acceptsBrotli'
+import serveStatic from './utils/serveStatic'
 
 const PWAHandler = (res: HttpResponse, req: HttpRequest) => {
   serveStatic(res, req.getUrl().slice(1), acceptsBrotli(req))

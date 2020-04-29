@@ -107,8 +107,8 @@ const NewMeetingSidebar = (props: Props) => {
 
   return (
     <SidebarParent>
-      <SidebarHeader data-cy='sidebar-header'>
-        <StyledToggle onClick={toggleSidebar} />
+      <SidebarHeader>
+        <StyledToggle dataCy={`sidebar`} onClick={toggleSidebar} />
         <div>
           {isFacilitator ? (
             <EditableMeetingName

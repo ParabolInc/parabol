@@ -111,7 +111,7 @@ const RetroSidebarDiscussSection = (props: Props) => {
         <Droppable droppableId={DISCUSSION_TOPIC}>
           {(provided) => {
             return (
-              <ScrollWrapper ref={provided.innerRef}>
+              <ScrollWrapper data-cy='discussion-section' ref={provided.innerRef}>
                 {stages!.map((stage, idx) => {
                   const {reflectionGroup} = stage
                   if (!reflectionGroup) return null
@@ -134,6 +134,7 @@ const RetroSidebarDiscussSection = (props: Props) => {
                       {(dragProvided, dragSnapshot) => {
                         return (
                           <DraggableMeetingSubnavItem
+                            data-cy={`discuss-item-${idx}`}
                             isDragging={dragSnapshot.isDragging}
                             ref={dragProvided.innerRef}
                             {...dragProvided.draggableProps}
