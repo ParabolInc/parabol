@@ -2,6 +2,7 @@ import {Link} from 'react-router-dom'
 import React, {ReactNode} from 'react'
 
 interface Props {
+  isDemo?: boolean
   isEmail: boolean
   href: string
   title?: string
@@ -10,8 +11,14 @@ interface Props {
 }
 
 const AnchorIfEmail = (props: Props) => {
-  const {isEmail, href, ...aProps} = props
-  return isEmail ? <a href={href} {...aProps} /> : <Link to={href} {...aProps} />
+  const {isDemo, isEmail, href, ...aProps} = props
+  return isDemo ? (
+    <span {...aProps} />
+  ) : isEmail ? (
+    <a href={href} {...aProps} />
+  ) : (
+    <Link to={href} {...aProps} />
+  )
 }
 
 export default AnchorIfEmail

@@ -21,7 +21,7 @@ module.exports = {
   },
   entry: {
     web: [
-      './node_modules/webpack/hot/poll?1000',
+      'webpack/hot/poll?1000',
       DOTENV,
       path.join(SERVER_ROOT, 'server.dev.ts')
     ],
@@ -43,15 +43,15 @@ module.exports = {
     extensions: ['.js', '.json', '.ts', '.tsx'],
     unsafeCache: true,
     // this is run outside the server dir, but we want to favor using modules from the server dir
-    modules: [path.resolve(SERVER_ROOT, '../node_modules'), 'node_modules']
+    modules: [path.resolve(SERVER_ROOT, 'node_modules'), path.resolve(PROJECT_ROOT, 'node_modules')]
   },
   resolveLoader: {
-    modules: [path.resolve(SERVER_ROOT, '../node_modules'), 'node_modules']
+    modules: [path.resolve(SERVER_ROOT, 'node_modules'), path.resolve(PROJECT_ROOT, 'node_modules')]
   },
   target: 'node',
   externals: [
     nodeExternals({
-      whitelist: [/parabol-client/, '/parabol-server/']
+      whitelist: ['webpack/hot/poll?1000', /parabol-client/, '/parabol-server/']
     })
   ],
   plugins: [

@@ -3,7 +3,6 @@ import {printSchema} from 'graphql'
 import path from 'path'
 import {promisify} from 'util'
 import getProjectRoot from '../../../scripts/webpack/utils/getProjectRoot'
-import schema from '../graphql/rootSchema'
 
 const write = promisify(fs.writeFile)
 // relative to the output file
@@ -24,9 +23,13 @@ const updateGQLSchema = (context: Context = {delay: 0}) => {
     clearTimeout(context.throttleId)
     context.throttleId = setTimeout(async () => {
       context.throttleId = undefined
+      // very important to require this so it's the latest version
+      const schema = require('../graphql/rootSchema').default
       const nextSchema = printSchema(schema)
+      console.log("maybe writing schema")
       if (context.oldSchema === nextSchema) return
       context.oldSchema = nextSchema
+      console.log('writing new schema')
       await write(schemaPath, nextSchema)
       // console.log(`💥💥💥   GraphQL Schema Created    💥💥💥`)
       resolve(true)

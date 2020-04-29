@@ -434,6 +434,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
 
       const reflectionGroup = {
         __typename: 'RetroReflectionGroup',
+        commentCount: 0,
         id: reflectionGroupId,
         reflectionGroupId,
         smartTitle,
