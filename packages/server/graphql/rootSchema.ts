@@ -1,5 +1,6 @@
 import fs from 'fs'
 import {GraphQLSchema} from 'graphql'
+import path from 'path'
 import mutation from './rootMutation'
 import query from './rootQuery'
 import subscription from './rootSubscription'
@@ -46,7 +47,9 @@ if (module.hot) {
   if (!global.hmrSchema) {
     // console.log('setting hmr')
     // relative to the build path
-    global.hmrSchema = fs.readFileSync('../schema.graphql')
+    const PROJECT_ROOT = path.join(__dirname, '../')
+    const SCHEMA = path.join(PROJECT_ROOT, 'schema.graphql')
+    global.hmrSchema = fs.readFileSync(SCHEMA)
     // console.log('set', global.hmrSchema.length)
   } else {
     const updateGQLSchema = require('../utils/updateGQLSchema').default

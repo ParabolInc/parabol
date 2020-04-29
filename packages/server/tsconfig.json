@@ -23,6 +23,7 @@
     "types/modules.d.ts",
     "email/components/SummaryEmail/MeetingSummaryEmail/MeetingSummaryEmail.tsx",
     "email/components/MeetingSummaryEmailRootSSR.tsx",
+    "utils/updateGQLSchema.ts"
   ],
   "exclude": [
     "**/node_modules",

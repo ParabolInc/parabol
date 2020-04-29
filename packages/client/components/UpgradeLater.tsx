@@ -3,10 +3,10 @@ import styled from '@emotion/styled'
 import InvitationDialogCopy from './InvitationDialogCopy'
 import SecondaryButton from './SecondaryButton'
 import DialogContainer from './DialogContainer'
-import wearyCat from '../styles/theme/images/emoji/emoji_u1f640.png'
 
-const Emoji = styled('img')({
-  padding: 24
+const Illustration = styled('img')({
+  display: 'block ',
+  maxWidth: 256
 })
 
 const ButtonBlock = styled('div')({
@@ -34,7 +34,9 @@ const UpgradeLater = (props: Props) => {
   const {closePortal} = props
   return (
     <Container>
-      <Emoji src={wearyCat} />
+      <Illustration
+        src={`${__STATIC_IMAGES__}/illustrations/conversion_prompt-upgrade_later.svg`}
+      />
       <InvitationDialogCopy>{'Your organization has exceeded'}</InvitationDialogCopy>
       <InvitationDialogCopy>
         {'the free tier limit of '}
