@@ -8,15 +8,16 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 ## 5.5.0 2020-Apr-24
 
 ### Added
-* Stateless GraphQL Executor
+* Stateless GraphQL Executor (#3771)
 * Toolbox webpack config built separetely
 * 1 command development & build
+* More cypress tests (#3795)
+* Comment count to the retro summary (#3777)
 
 ## Changed
-* Server assets now built with webpack
-
-## Removed
-* Old browser polyfills (core-js, regenerator-runtime)
+* Server assets now built with webpack (#3771)
+* Illustrations for upgrades & meetings (#3785)
+* .env now lives in the project root (#3771)
 
 ## 5.4.0 2020-Apr-16
 
