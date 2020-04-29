@@ -11,7 +11,6 @@ export const getClientKeys = () => {
   return {
     atlassian: process.env.ATLASSIAN_CLIENT_ID,
     github: process.env.GITHUB_CLIENT_ID,
-    googleTagManagerId: process.env.GOOGLE_TAG_MANAGER_CONTAINER_ID,
     google: process.env.GOOGLE_OAUTH_CLIENT_ID,
     segment: process.env.SEGMENT_WRITE_KEY,
     sentry: process.env.SENTRY_DSN,
