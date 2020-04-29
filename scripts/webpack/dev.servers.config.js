@@ -51,7 +51,7 @@ module.exports = {
   target: 'node',
   externals: [
     nodeExternals({
-      whitelist: ['webpack/hot/poll?1000', /parabol-client/, '/parabol-server/']
+      whitelist: ['webpack/hot/poll?1000', /parabol-client/, /parabol-server/]
     })
   ],
   plugins: [
