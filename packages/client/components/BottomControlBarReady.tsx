@@ -10,7 +10,6 @@ import {PALETTE} from '~/styles/paletteV2'
 import {BezierCurve} from '~/types/constEnums'
 import {NewMeetingPhaseTypeEnum} from '~/types/graphql'
 import handleRightArrow from '~/utils/handleRightArrow'
-import isDemoRoute from '~/utils/isDemoRoute'
 import {BottomControlBarReady_meeting} from '~/__generated__/BottomControlBarReady_meeting.graphql'
 import BottomControlBarProgress from './BottomControlBarProgress'
 import BottomNavControl from './BottomNavControl'
@@ -43,7 +42,7 @@ const CheckIcon = styled(Icon)<{progress: number; isNext: boolean}>(({progress, 
 }))
 
 const BottomControlBarReady = (props: Props) => {
-  const {handleGotoNext, isDemoStageComplete, meeting, onTransitionEnd, status} = props
+  const {handleGotoNext, meeting, onTransitionEnd, status} = props
   const {id: meetingId, facilitatorUserId, localStage, meetingMembers, reflectionGroups} = meeting
   const {id: stageId, isViewerReady, phaseType} = localStage
   const {gotoNext, ref} = handleGotoNext
@@ -69,9 +68,6 @@ const BottomControlBarReady = (props: Props) => {
   const label = isFacilitating ? 'Next' : 'Ready'
   const getDisabled = () => {
     if (!isFacilitating) return false
-    if (isDemoRoute()) {
-      return !isDemoStageComplete && !(window as any).Cypress
-    }
     if (phaseType === NewMeetingPhaseTypeEnum.reflect) {
       return reflectionGroups?.length === 0 ?? true
     }
