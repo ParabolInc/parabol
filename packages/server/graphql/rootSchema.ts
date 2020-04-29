@@ -49,7 +49,7 @@ if (module.hot) {
     // relative to the build path
     const PROJECT_ROOT = path.join(__dirname, '../')
     const SCHEMA = path.join(PROJECT_ROOT, 'schema.graphql')
-    global.hmrSchema = fs.readFileSync(SCHEMA)
+    global.hmrSchema = fs.readFileSync(SCHEMA).toString()
     // console.log('set', global.hmrSchema.length)
   } else {
     const updateGQLSchema = require('../utils/updateGQLSchema').default

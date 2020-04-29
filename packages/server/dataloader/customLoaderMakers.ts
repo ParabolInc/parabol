@@ -56,20 +56,21 @@ export const commentCountByThreadId = (parent: RethinkDataLoader) => {
   return new DataLoader<string, number, string>(
     async (threadIds) => {
       const r = await getRethink()
-      const groups = await (r.table('Comment')
+      const groups = (await (r
+        .table('Comment')
         .getAll(r.args(threadIds as string[]), {index: 'threadId'})
         .group('threadId') as any)
         .count()
         .ungroup()
-        .run() as {group: string, reduction: number}[]
+        .run()) as {group: string; reduction: number}[]
       const lookup = {}
       groups.forEach(({group, reduction}) => {
         lookup[group] = reduction
       })
-      return threadIds.map((threadId) => lookup[threadId])
+      return threadIds.map((threadId) => lookup[threadId] || 0)
     },
     {
-      ...parent.dataLoaderOptions,
+      ...parent.dataLoaderOptions
     }
   )
 }
