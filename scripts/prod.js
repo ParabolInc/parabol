@@ -21,6 +21,9 @@ const prod = async (isDeploy) => {
     compile(serversConfig),
     compile(clientConfig)
   ])
+  if (!isDeploy) {
+    require('./toolbox/postDeploy.js')
+  }
 }
 
 if (require.main === module) {

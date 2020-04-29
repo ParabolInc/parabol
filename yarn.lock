@@ -18571,10 +18571,9 @@ webpack-dev-server@3.9.0:
     ws "^6.2.1"
     yargs "12.0.5"
 
-webpack-hot-client@^4.1.1:
-  version "4.1.2"
-  resolved "https://registry.yarnpkg.com/webpack-hot-client/-/webpack-hot-client-4.1.2.tgz#3088c5533e021dd579fce8428235955248ed6a6c"
-  integrity sha512-J0qt5mxEOt9UAQkyQ59Mz0n9Sk4NWKJ4awVE5/idmG2vOHVjseczbY9hbdzHV3NyNllufhN2USvSJK5FUBFbeg==
+"webpack-hot-client@https://github.com/mattkrick/webpack-hot-client/tarball/2e0b804700ba886f17bd9c5e2e60ec03b58aecdb":
+  version "4.1.1"
+  resolved "https://github.com/mattkrick/webpack-hot-client/tarball/2e0b804700ba886f17bd9c5e2e60ec03b58aecdb#5b0c551e858ecf1aa59c1e7d1db4902589eb4fa5"
   dependencies:
     "@webpack-contrib/schema-utils" "^1.0.0-beta.0"
     json-stringify-safe "^5.0.1"

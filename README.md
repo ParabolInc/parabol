@@ -45,13 +45,13 @@ distributed organization. We publish our company's [history and business metrics
 ```bash
 $ git clone https://github.com/ParabolInc/parabol.git
 $ cd parabol
-$ cp packages/server/.env.example packages/server/.env # Add your own vars here
+$ cp .env.example .env # Add your own vars here
 $ rethinkdb & redis-server & # Or if you prefer docker: $ docker-compose up -d db
-$ yarn && yarn db:migrate && yarn build:relay && yarn dev
+$ yarn && yarn dev
 ```
 Build for production and start application:
 ```bash
-$ yarn && yarn workspace parabol-server db:migrate && yarn build && yarn workspace parabol-server postdeploy && yarn start
+$ yarn && yarn build && yarn start
 ```
 
 ### Database

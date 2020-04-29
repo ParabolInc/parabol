@@ -4752,6 +4752,11 @@ export interface IRetroReflectionGroup {
   id: string;
 
   /**
+   * The number of comments in this group’s thread, if any
+   */
+  commentCount: number
+
+  /**
    * The timestamp the meeting was created
    */
   createdAt: any;

@@ -40,10 +40,19 @@ interface Props {
   reflectionGroupId: string
   setReplyMention: SetReplyMention
   replyMention?: ReplyMention
+  dataCy: string
 }
 
 const ThreadedCommentBase = (props: Props) => {
-  const {children, comment, reflectionGroupId, replyMention, setReplyMention, meeting} = props
+  const {
+    children,
+    comment,
+    reflectionGroupId,
+    replyMention,
+    setReplyMention,
+    meeting,
+    dataCy
+  } = props
   const isReply = !!props.isReply
   const {id: meetingId, replyingToCommentId, teamId} = meeting
   const {id: commentId, content, createdByUser, isActive, reactjis, threadParentId} = comment
@@ -124,10 +133,11 @@ const ThreadedCommentBase = (props: Props) => {
   }
 
   return (
-    <ThreadedItemWrapper isReply={isReply} ref={ref}>
+    <ThreadedItemWrapper data-cy={`${dataCy}-wrapper`} isReply={isReply} ref={ref}>
       <ThreadedAvatarColumn isReply={isReply} picture={picture} />
       <BodyCol>
         <ThreadedCommentHeader
+          dataCy={dataCy}
           comment={comment}
           editComment={editComment}
           onToggleReactji={onToggleReactji}
@@ -135,6 +145,7 @@ const ThreadedCommentBase = (props: Props) => {
         />
         {isActive && (
           <CommentEditor
+            dataCy={`${dataCy}`}
             editorRef={editorRef}
             teamId={teamId}
             editorState={editorState}
@@ -154,6 +165,7 @@ const ThreadedCommentBase = (props: Props) => {
         )}
         {children}
         <ThreadedItemReply
+          dataCy={`${dataCy}-reply`}
           reflectionGroupId={reflectionGroupId}
           meeting={meeting}
           editorRef={replyEditorRef}

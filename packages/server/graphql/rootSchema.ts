@@ -1,3 +1,4 @@
+import fs from 'fs'
 import {GraphQLSchema} from 'graphql'
 import mutation from './rootMutation'
 import query from './rootQuery'
@@ -43,14 +44,13 @@ if (module.hot) {
   // every time this module gets loaded, see if it's different from it's previous version.
   //if so, update the schema.graphql
   if (!global.hmrSchema) {
-    global.hmrSchema = module
+    // console.log('setting hmr')
+    // relative to the build path
+    global.hmrSchema = fs.readFileSync('../schema.graphql')
+    // console.log('set', global.hmrSchema.length)
   } else {
-    const nextRootSchema = module
-    if (nextRootSchema !== global.hmrSchema) {
-      global.hmrSchema = nextRootSchema
-      const updateGQLSchema = require('../utils/updateGQLSchema').default
-      updateGQLSchema({delay: 3000, oldSchema: global.hmrSchema})
-    }
+    const updateGQLSchema = require('../utils/updateGQLSchema').default
+    updateGQLSchema({delay: 3000, oldSchema: global.hmrSchema})
   }
 }
 

@@ -18,13 +18,14 @@ const sectionHeading = {
 }
 
 interface Props {
+  isDemo: boolean
   isEmail: boolean
   meeting: RetroTopics_meeting
   meetingUrl: string
 }
 
 const RetroTopics = (props: Props) => {
-  const {isEmail, meeting, meetingUrl} = props
+  const {isDemo, isEmail, meeting, meetingUrl} = props
   const {id: meetingId, reflectionGroups} = meeting
   if (!reflectionGroups) return null
   const toPart = isEmail ? meetingUrl : `/meet/${meetingId}`
@@ -38,6 +39,7 @@ const RetroTopics = (props: Props) => {
       {reflectionGroups.map((topic, idx) => (
         <RetroTopic
           key={topic.id}
+          isDemo={isDemo}
           isEmail={isEmail}
           topic={topic}
           to={`${toPart}/discuss/${idx + 1}`}

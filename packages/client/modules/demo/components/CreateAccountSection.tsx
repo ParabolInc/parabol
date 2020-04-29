@@ -1,10 +1,6 @@
 import EmailBorderBottom from 'parabol-server/email/components/SummaryEmail/MeetingSummaryEmail/EmailBorderBottom'
 import emailDir from 'parabol-server/email/emailDir'
-import {
-  emailFontFamily,
-  emailPrimaryButtonStyle,
-  emailTableBase
-} from 'parabol-server/email/styles'
+import {emailFontFamily, emailPrimaryButtonStyle, emailTableBase} from 'parabol-server/email/styles'
 import React from 'react'
 import {PALETTE} from '~/styles/paletteV2'
 import {LocalStorageKey} from '~/types/constEnums'
@@ -104,10 +100,10 @@ const CreateAccountSection = (props) => {
       to run <b>a real retrospective</b> with your team.
     </span>
   ) : (
-      <span>
-        to run <b>unlimited retrospectives</b> with your team.
-      </span>
-    )
+    <span>
+      to run <b>unlimited retrospectives</b> with your team.
+    </span>
+  )
   return (
     <>
       <tr>
@@ -127,7 +123,12 @@ const CreateAccountSection = (props) => {
       </tr>
       <tr>
         <td style={buttonCellStyle}>
-          <a href={primaryActionLink} style={primaryButtonStyle} title={primaryActionLabel}>
+          <a
+            data-cy='create-account'
+            href={primaryActionLink}
+            style={primaryButtonStyle}
+            title={primaryActionLabel}
+          >
             {primaryActionLabel}
           </a>
         </td>

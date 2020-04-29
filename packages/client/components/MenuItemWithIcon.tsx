@@ -27,12 +27,13 @@ const Label = styled('div')({
 interface Props {
   icon: string
   label: string
+  dataCy: string
 }
 
 const MenuItemWithIcon = (props: Props) => {
-  const {icon, label} = props
+  const {icon, label, dataCy} = props
   return (
-    <Wrapper>
+    <Wrapper data-cy={`${dataCy}`}>
       <ItemIcon>{icon}</ItemIcon>
       <Label>{label}</Label>
     </Wrapper>

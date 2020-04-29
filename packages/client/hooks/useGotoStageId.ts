@@ -50,6 +50,7 @@ const useGotoStageId = (meetingRef: any) => {
       if (!res) return
       const {stage} = res
       const {isNavigable, isNavigableByFacilitator} = stage
+
       const canNavigate = isViewerFacilitator ? isNavigableByFacilitator : isNavigable
       if (!canNavigate) return
       if (teamId === demoTeamId) {

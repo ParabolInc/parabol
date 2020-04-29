@@ -120,6 +120,7 @@ const BottomControlBarTips = (props: Props) => {
   }, [demoPauseOpen, openPortal])
   return (
     <BottomNavControl
+      dataCy={`tip-menu-toggle`}
       onClick={togglePortal}
       ref={originRef}
       status={status}

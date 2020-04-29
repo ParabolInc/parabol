@@ -1,12 +1,12 @@
-import React from 'react'
 import graphql from 'babel-plugin-relay/macro'
-import {RouteComponentProps, withRouter} from 'react-router-dom'
+import React from 'react'
 import {QueryRenderer} from 'react-relay'
-import withAtmosphere from '../../../decorators/withAtmosphere/withAtmosphere'
-import NewMeetingSummary from './NewMeetingSummary'
-import renderQuery from '../../../utils/relay/renderQuery'
+import {RouteComponentProps, withRouter} from 'react-router-dom'
 import Atmosphere from '../../../Atmosphere'
+import withAtmosphere from '../../../decorators/withAtmosphere/withAtmosphere'
 import {LoaderSize} from '../../../types/constEnums'
+import renderQuery from '../../../utils/relay/renderQuery'
+import NewMeetingSummary from './NewMeetingSummary'
 
 const query = graphql`
   query NewMeetingSummaryRootQuery($meetingId: ID!) {

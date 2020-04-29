@@ -49,6 +49,7 @@ interface Props {
   isDisabled?: boolean
   setReplyMention?: SetReplyMention
   replyMention?: ReplyMention
+  dataCy: string
 }
 
 const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
@@ -60,7 +61,8 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
     reflectionGroupId,
     threadParentId,
     replyMention,
-    setReplyMention
+    setReplyMention,
+    dataCy
   } = props
   const isReply = !!props.isReply
   const isDisabled = !!props.isDisabled
@@ -126,9 +128,10 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
 
   const avatar = isAnonymousComment ? anonymousAvatar : picture
   return (
-    <Wrapper ref={ref} isReply={isReply} isDisabled={isDisabled}>
+    <Wrapper data-cy={`${dataCy}-wrapper`} ref={ref} isReply={isReply} isDisabled={isDisabled}>
       <CommentAvatar size={32} picture={avatar} onClick={toggleAnonymous} />
       <CommentEditor
+        dataCy={`${dataCy}`}
         teamId={teamId}
         editorRef={editorRef}
         editorState={editorState}
@@ -138,6 +141,7 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
         onFocus={collapseAddTask}
       />
       <CommentSendOrAdd
+        dataCy={`${dataCy}`}
         getMaxSortOrder={getMaxSortOrder}
         commentSubmitState={commentSubmitState}
         meeting={meeting}

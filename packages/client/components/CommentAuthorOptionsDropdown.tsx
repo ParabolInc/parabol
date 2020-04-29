@@ -21,11 +21,13 @@ const CommentAuthorOptionsDropdown = (props: Props) => {
   return (
     <Menu ariaLabel={'Select the action for your comment'} {...menuProps}>
       <MenuItem
-        label={<MenuItemWithIcon label={'Edit Comment'} icon={'edit'} />}
+        label={<MenuItemWithIcon dataCy='edit-comment' label={'Edit Comment'} icon={'edit'} />}
         onClick={editComment}
       />
       <MenuItem
-        label={<MenuItemWithIcon label={'Delete Comment'} icon={'delete'} />}
+        label={
+          <MenuItemWithIcon dataCy='delete-comment' label={'Delete Comment'} icon={'delete'} />
+        }
         onClick={deleteComment}
       />
     </Menu>

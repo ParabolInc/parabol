@@ -21,10 +21,11 @@ const StyledLink = styled('a')({
 
 interface Props {
   integration: TaskIntegrationLink_integration | null
+  dataCy: string
 }
 
 const TaskIntegrationLink = (props: Props) => {
-  const {integration} = props
+  const {integration, dataCy} = props
   if (!integration) return null
   const {service} = integration
   if (service === TaskServiceEnum.jira) {
@@ -35,6 +36,7 @@ const TaskIntegrationLink = (props: Props) => {
         : `https://${cloudName}.atlassian.net/browse/${issueKey}`
     return (
       <StyledLink
+        data-cy={`${dataCy}-jira-issue-link`}
         href={href}
         rel='noopener noreferrer'
         target='_blank'

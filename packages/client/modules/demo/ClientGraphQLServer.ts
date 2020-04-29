@@ -140,6 +140,8 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       this.ops[op](variables, botId)
       return mutations
     }
+    const timeout = (window as any).Cypress ? 0 : delay
+
     this.pendingBotTimeout = window.setTimeout(() => {
       this.pendingBotTimeout = undefined
       if (this.pendingBotAction) {
@@ -147,7 +149,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         this.pendingBotAction = undefined
       }
       this.startBot()
-    }, delay)
+    }, timeout)
   }
 
   isBotFinished = () => {
@@ -434,6 +436,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
 
       const reflectionGroup = {
         __typename: 'RetroReflectionGroup',
+        commentCount: 0,
         id: reflectionGroupId,
         reflectionGroupId,
         smartTitle,
@@ -527,15 +530,14 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         group.isActive = false
       }
       const remainingReflections = this.db.reflections.filter((reflection) => reflection.isActive)
-
       const unlockedStageIds = remainingReflections.length
         ? unlockAllStagesForPhase(
             this.db.newMeeting.phases as any,
             NewMeetingPhaseTypeEnum.group,
-            true,
-            false
+            true
           )
         : []
+
       const unlockedStages = this.getUnlockedStages(unlockedStageIds)
       const data = {
         meetingId: RetroDemo.MEETING_ID,

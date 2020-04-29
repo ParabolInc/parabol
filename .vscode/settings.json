@@ -35,4 +35,5 @@
 	"editor.gotoLocation.multipleDefinitions": "goto",
 	"typescript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyBraces": false,
 	"javascript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyBraces": false,
+	"editor.formatOnSave": true,
 }

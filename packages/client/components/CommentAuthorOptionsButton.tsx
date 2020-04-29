@@ -27,13 +27,15 @@ const StyledIcon = styled(Icon)({
 interface Props {
   commentId: string
   editComment: () => void
+  dataCy: string
 }
 
 const CommentAuthorOptionsButton = (props: Props) => {
-  const {commentId, editComment} = props
+  const {commentId, editComment, dataCy} = props
   const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT)
   return (
     <PlainButton
+      data-cy={`${dataCy}-dropdown-menu`}
       onMouseEnter={CommentAuthorOptionsDropdown.preload}
       ref={originRef}
       onClick={togglePortal}

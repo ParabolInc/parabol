@@ -51,6 +51,29 @@ const threadableLoaders = [
 // export type LoaderMakerCustom<K, V, C = K> = (parent: RethinkDataLoader) => DataLoader<K, V, C>
 
 // TODO: refactor if the interface pattern is used a total of 3 times
+
+export const commentCountByThreadId = (parent: RethinkDataLoader) => {
+  return new DataLoader<string, number, string>(
+    async (threadIds) => {
+      const r = await getRethink()
+      const groups = await (r.table('Comment')
+        .getAll(r.args(threadIds as string[]), {index: 'threadId'})
+        .group('threadId') as any)
+        .count()
+        .ungroup()
+        .run() as {group: string, reduction: number}[]
+      const lookup = {}
+      groups.forEach(({group, reduction}) => {
+        lookup[group] = reduction
+      })
+      return threadIds.map((threadId) => lookup[threadId])
+    },
+    {
+      ...parent.dataLoaderOptions,
+    }
+  )
+}
+
 export const reactables = (parent: RethinkDataLoader) => {
   return new DataLoader<ReactablesKey, Reactable, string>(
     async (keys) => {
