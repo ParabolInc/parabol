@@ -19,6 +19,9 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 * Illustrations for upgrades & meetings (#3785)
 * .env now lives in the project root (#3771)
 
+## Removed
+* Google Analytics bootstrap (#3798)
+
 ## 5.4.0 2020-Apr-16
 
 ### Added
