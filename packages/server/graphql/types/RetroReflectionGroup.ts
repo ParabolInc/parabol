@@ -1,13 +1,4 @@
-import {
-  GraphQLBoolean,
-  GraphQLFloat,
-  GraphQLID,
-  GraphQLInt,
-  GraphQLList,
-  GraphQLNonNull,
-  GraphQLObjectType,
-  GraphQLString
-} from 'graphql'
+import {GraphQLBoolean, GraphQLFloat, GraphQLID, GraphQLInt, GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
 import isTaskPrivate from 'parabol-client/utils/isTaskPrivate'
 import Comment from '../../database/types/Comment'
 import TaskDB from '../../database/types/Task'
@@ -35,8 +26,7 @@ const RetroReflectionGroup = new GraphQLObjectType<any, GQLContext>({
       type: new GraphQLNonNull(GraphQLInt),
       description: 'The number of comments in this group’s thread, if any',
       resolve: async ({id: reflectionGroupId}, _args, {dataLoader}) => {
-        const comments = await dataLoader.get('commentsByThreadId').load(reflectionGroupId)
-        return comments ? comments.length : 0
+        return dataLoader.get('commentCountByThreadId').load(reflectionGroupId)
       }
     },
     createdAt: {

@@ -2,13 +2,13 @@ import graphql from 'babel-plugin-relay/macro'
 import useEmailItemGrid from 'parabol-client/hooks/useEmailItemGrid'
 import {PALETTE} from 'parabol-client/styles/paletteV2'
 import {FONT_FAMILY, ICON_SIZE} from 'parabol-client/styles/typographyV2'
+import plural from 'parabol-client/utils/plural'
 import {RetroTopic_topic} from 'parabol-client/__generated__/RetroTopic_topic.graphql'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import emailDir from '../../../emailDir'
 import AnchorIfEmail from './AnchorIfEmail'
 import EmailReflectionCard from './EmailReflectionCard'
-import plural from '../../../../../utils/plural'
 
 const topicThemeHeading = {
   color: PALETTE.TEXT_MAIN,
@@ -68,8 +68,8 @@ const RetroTopic = (props: Props) => {
     commentCount === 0
       ? 'No Comments'
       : commentCount >= 101
-      ? 'See 100+ Comments'
-      : `See ${commentCount} ${plural(commentCount, 'Comment')}`
+        ? 'See 100+ Comments'
+        : `See ${commentCount} ${plural(commentCount, 'Comment')}`
   const commentLinkStyle = commentCount === 0 ? noCommentLinkStyle : someCommentsLinkStyle
   return (
     <>

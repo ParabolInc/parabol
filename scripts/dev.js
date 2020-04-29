@@ -38,12 +38,11 @@ const compileGraphQL = () => {
     let resolved = false
     relayWatchFork.stdout.on('data', (data) => {
       const str = data.toString().trim()
+      console.log(str)
       if (str.startsWith('Watching for changes to graphql...')) {
         console.log('🌧️ 🌧️ 🌧️         Watching Relay       🌧️ 🌧️ 🌧️')
         resolved = true
         resolve()
-      } else if (resolved) {
-        console.log(str)
       }
     })
     relayWatchFork.stderr.on('data', (data) => {
@@ -61,9 +60,9 @@ const compileGraphQL = () => {
       clearTimeout(throttleId)
       throttleId = setTimeout(() => {
         throttleId = undefined
-        console.log('killing & forking relay')
+        console.log('🌈 🌈 🌈       Restarting Relay       🌈 🌈 🌈')
         relayWatchFork.kill('SIGINT')
-        relayWatchFork = fork(compileRelayPath, {stdio: 'pipe'})
+        relayWatchFork = fork(compileRelayPath)
       }, 3000)
     })
   })
