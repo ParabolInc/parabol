@@ -5,6 +5,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 5.5.1 2020-Apr-30
+
+## Fixed
+* Save progress in demo
+
 ## 5.5.0 2020-Apr-24
 
 ### Added
