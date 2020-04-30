@@ -112,6 +112,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
     this.db = isStale ? initDB(initBotScript()) : validDB
     if (!isStale) {
       this.isNew = false
+      this.startBot()
     }
   }
 
