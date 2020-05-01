@@ -6,9 +6,10 @@ import Organization from '../../database/types/Organization'
 import OrganizationUser from '../../database/types/OrganizationUser'
 import {toEpochSeconds} from '../../utils/epochTime'
 import {sendSegmentIdentify} from '../../utils/sendSegmentEvent'
+import handleEnterpriseOrgQuantityChanges from './handleEnterpriseOrgQuantityChanges'
 import processInvoiceItemHook from './processInvoiceItemHook'
 
-const changePause = (inactive) => async (_orgIds, userId) => {
+const changePause = (inactive: boolean) => async (_orgIds: string[], userId: string) => {
   const r = await getRethink()
   return r({
     user: r
@@ -23,7 +24,7 @@ const changePause = (inactive) => async (_orgIds, userId) => {
   }).run()
 }
 
-const addUser = async (orgIds, userId) => {
+const addUser = async (orgIds: string[], userId: string) => {
   const r = await getRethink()
   const {organizations, organizationUsers} = await r({
     organizationUsers: (r
@@ -54,7 +55,7 @@ const addUser = async (orgIds, userId) => {
     .run()
 }
 
-const deleteUser = async (orgIds, userId) => {
+const deleteUser = async (orgIds: string[], userId: string) => {
   const r = await getRethink()
   return r
     .table('OrganizationUser')
@@ -88,7 +89,7 @@ export default async function adjustUserCount(
   const orgIds = Array.isArray(orgInput) ? orgInput : [orgInput]
   const dbAction = typeLookup[type]
   await dbAction(orgIds, userId)
-  const orgs = await r
+  const paidOrgs = await r
     .table('Organization')
     .getAll(r.args(orgIds), {index: 'id'})
     .filter((org) =>
@@ -98,10 +99,23 @@ export default async function adjustUserCount(
     )
     .run()
 
-  const prorationDate = options.prorationDate ? toEpochSeconds(options.prorationDate) : undefined
+  const proOrgs = paidOrgs.filter((org) => org.tier === TierEnum.pro)
+  handleEnterpriseOrgQuantityChanges(paidOrgs).catch()
+  // personal & enterprise tiers do not follow the per-seat model
+  if (proOrgs.length === 0) return
+  if (type === InvoiceItemType.REMOVE_USER) {
+    // if the user is paused, they've already been removed from stripe
+    const user = await r
+      .table('User')
+      .get(userId)
+      .run()
+    if (user.inactive) {
+      return
+    }
+  }
 
-  // includes enterprise orgs so we can atomically change quantity
-  const hooks = orgs.map((org) => {
+  const prorationDate = options.prorationDate ? toEpochSeconds(options.prorationDate) : undefined
+  const hooks = proOrgs.map((org) => {
     return new InvoiceItemHook({
       stripeSubscriptionId: org.stripeSubscriptionId!,
       isProrated: org.tier !== TierEnum.enterprise,

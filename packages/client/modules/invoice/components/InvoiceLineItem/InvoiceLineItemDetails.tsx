@@ -18,7 +18,7 @@ const detailDescriptionMaker = {
     if (!detail.endAt) {
       return `${detail.email} has been paused since ${makeDateString(detail.startAt)}`
     } else if (!detail.startAt) {
-      return `${detail.email} was paused until ${makeDateString(detail.startAt)}`
+      return `${detail.email} was paused until ${makeDateString(detail.endAt)}`
     }
     return `${detail.email} was paused from ${makeDateString(detail.startAt)} to ${makeDateString(
       detail.endAt
