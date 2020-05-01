@@ -1160,7 +1160,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         replies: [],
         threadId,
         threadSource,
-        threadParentId,
+        threadParentId: threadParentId || null,
         threadSortOrder,
         sortOrder: sortOrder || 0,
         status,
