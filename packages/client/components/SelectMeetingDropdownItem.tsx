@@ -6,6 +6,7 @@ import {createFragmentContainer} from 'react-relay'
 import useRouter from '~/hooks/useRouter'
 import {PALETTE} from '~/styles/paletteV2'
 import {ICON_SIZE} from '~/styles/typographyV2'
+import getMeetingPhase from '~/utils/getMeetingPhase'
 import {meetingTypeToIcon, phaseLabelLookup} from '~/utils/meetings/lookups'
 import {SelectMeetingDropdownItem_meeting} from '~/__generated__/SelectMeetingDropdownItem_meeting.graphql'
 import Icon from './Icon'
@@ -44,18 +45,6 @@ const Action = styled(Icon)({
   textAlign: 'right',
   padding: 16
 })
-
-interface Phase {
-  stages: ReadonlyArray<{
-    isComplete: boolean
-  }>
-}
-
-const getMeetingPhase = <T extends Phase>(phases: readonly T[]) => {
-  return (phases.find((phase) => {
-    return !phase.stages.every((stage) => stage.isComplete)
-  }) as unknown) as T
-}
 
 interface Props {
   meeting: SelectMeetingDropdownItem_meeting
