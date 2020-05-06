@@ -1,17 +1,7 @@
 import {useMemo, useRef} from 'react'
-import useForceUpdate from './useForceUpdate'
-import useEventCallback from './useEventCallback'
 import requestDoubleAnimationFrame from '../components/RetroReflectPhase/requestDoubleAnimationFrame'
-
-// const getValidChildren = (children: ReactNode) => {
-//   const validChildren = [] as ReactElement<any>[]
-//   Children.forEach(children, (child) => {
-//     if (isValidElement(child)) {
-//       validChildren.push(child)
-//     }
-//   })
-//   return validChildren
-// }
+import useEventCallback from './useEventCallback'
+import useForceUpdate from './useForceUpdate'
 
 export enum TransitionStatus {
   MOUNTED,
@@ -32,9 +22,9 @@ const useTransition = <T extends {key: Key}>(children: T[]) => {
   const previousTransitionChildrenRef = useRef<TransitionChild<T>[]>([])
   const forceUpdate = useForceUpdate()
 
-  const transitionEndFactory = useEventCallback((key: Key) => (e: React.TransitionEvent) => {
-    // animations must live in the outermost element
-    if (e.target !== e.currentTarget) return
+  const transitionEndFactory = useEventCallback((key: Key) => (e?: React.TransitionEvent) => {
+    // animations must live in the outermost element if triggered on onTransitionEnd
+    if (e && e.target !== e.currentTarget) return
     const idx = previousTransitionChildrenRef.current.findIndex(
       (tChild) => tChild.child.key === key
     )
