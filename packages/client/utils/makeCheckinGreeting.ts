@@ -68,10 +68,6 @@ const greetings = [
     language: 'Greek'
   },
   {
-    content: 'Yasou',
-    language: 'Greek'
-  },
-  {
     content: 'Lei Ho',
     language: 'Cantonese'
   }
