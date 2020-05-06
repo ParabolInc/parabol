@@ -32,7 +32,8 @@
     "lint": "lerna run --parallel lint",
     "test": "start-server-and-test start http://localhost:3000 cypress",
     "cypress": "yarn workspace parabol-cypress start",
-    "typecheck": "lerna run --parallel typecheck"
+    "typecheck": "lerna run --parallel typecheck",
+    "ultrahook": "export $(grep ^ULTRAHOOK_API_KEY .env | tr -d \"'\") && ultrahook -k $ULTRAHOOK_API_KEY dev 3000"
   },
   "resolutions": {
     "hoist-non-react-statics": "^3.3.0",
