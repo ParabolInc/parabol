@@ -190,7 +190,7 @@ class ExportToCSV extends Component<Props> {
     const {endedAt, team, meetingType} = newMeeting
     const {name: teamName} = team
     const label = meetingType[0].toUpperCase() + meetingType.slice(1)
-    const withBOM = true, opts = {withBOM}, parser = new Parser(opts)
+    const parser = new Parser({withBOM: true})
     const csv = parser.parse(rows)
     const date = new Date(endedAt!)
     const numDate = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`
