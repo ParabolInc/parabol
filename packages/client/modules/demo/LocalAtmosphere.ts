@@ -9,11 +9,11 @@ import {
   Store,
   SubscribeFunction
 } from 'relay-runtime'
+import Atmosphere from '../../Atmosphere'
+import {SubscriptionChannel} from '../../types/constEnums'
 import {TASK, TEAM} from '../../utils/constants'
 import handlerProvider from '../../utils/relay/handlerProvider'
-import Atmosphere from '../../Atmosphere'
 import ClientGraphQLServer from './ClientGraphQLServer'
-import {SubscriptionChannel} from '../../types/constEnums'
 // import sleep from 'universal/utils/sleep'
 
 const store = new Store(new RecordSource())
@@ -60,7 +60,7 @@ export default class LocalAtmosphere extends Environment {
     return res
   }
 
-  handleFetchPromise = () => {}
+  handleFetchPromise = () => 42
 
   subscribeLocal: SubscribeFunction = (operation, _variables, _cacheConfig) => {
     return Observable.create((sink) => {
@@ -81,6 +81,10 @@ export default class LocalAtmosphere extends Environment {
       const fields = channelLookup[operation.name]
       if (fields) {
         this.clientGraphQLServer.on(fields.channel, (data) => {
+          if (this.clientGraphQLServer.db._updatedAt < new Date(Date.now() - 1000)) {
+            this.clientGraphQLServer.db._updatedAt = new Date()
+            window.localStorage.setItem('retroDemo', stringify(this.clientGraphQLServer.db))
+          }
           sink.next({
             data: {
               [fields.dataField]: data
