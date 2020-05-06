@@ -1,5 +1,6 @@
 import styled from '@emotion/styled'
 import React, {forwardRef, Ref} from 'react'
+import useClickConfirmation from '~/hooks/useClickConfirmation'
 import {TransitionStatus} from '~/hooks/useTransition'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
@@ -26,11 +27,15 @@ const EndMeetingButton = forwardRef((props: Props, ref: Ref<HTMLButtonElement>) 
   const atmosphere = useAtmosphere()
   const {history} = useRouter()
   const {submitMutation, onCompleted, onError, submitting} = useMutationProps()
-
+  const [isConfirming, startConfirming] = useClickConfirmation()
   const endMeeting = () => {
     if (submitting) return
-    submitMutation()
-    EndNewMeetingMutation(atmosphere, {meetingId}, {history, onError, onCompleted})
+    if (isConfirming) {
+      submitMutation()
+      EndNewMeetingMutation(atmosphere, {meetingId}, {history, onError, onCompleted})
+    } else {
+      startConfirming()
+    }
   }
 
   const label = isDemoRoute() ? 'End Demo' : 'End Meeting'

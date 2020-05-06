@@ -1,8 +1,9 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {useEffect, useRef, useState} from 'react'
+import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
+import useClickConfirmation from '~/hooks/useClickConfirmation'
 import useGotoNext from '~/hooks/useGotoNext'
 import {TransitionStatus} from '~/hooks/useTransition'
 import FlagReadyToAdvanceMutation from '~/mutations/FlagReadyToAdvanceMutation'
@@ -24,7 +25,6 @@ interface Props {
   handleGotoNext: ReturnType<typeof useGotoNext>
 }
 
-const CONFIRMATION_DELAY = 3000
 const CheckIcon = styled(Icon)<{progress: number; isNext: boolean; isViewerReady: boolean}>(
   ({isViewerReady, progress, isNext}) => ({
     color: isNext
@@ -51,31 +51,21 @@ const BottomControlBarReady = (props: Props) => {
   const {gotoNext, ref} = handleGotoNext
   const activeCount = meetingMembers.filter((member) => member.isCheckedIn).length
   const atmosphere = useAtmosphere()
-  const [isConfirming, setIsConfirming] = useState(false)
   const {viewerId} = atmosphere
   const isFacilitating = facilitatorUserId === viewerId
   const readyCount = localStage.readyCount || 0
   const progress = readyCount / Math.max(1, activeCount - 1)
-  const isConfirmRequired = readyCount <= activeCount - 1
-  const timeoutRef = useRef<number>()
-  // const isConfirmRequired = activeCount > 1 && readyCount === activeCount - 1
+  const isConfirmRequired = readyCount <= activeCount - 1 && activeCount > 1
+  const [isConfirming, startConfirming] = useClickConfirmation()
   const onClick = () => {
     if (!isFacilitating) {
       FlagReadyToAdvanceMutation(atmosphere, {isReady: !isViewerReady, meetingId, stageId})
     } else if (isComplete || !isConfirmRequired || isConfirming) {
       gotoNext()
     } else {
-      setIsConfirming(true)
-      timeoutRef.current = window.setTimeout(() => {
-        setIsConfirming(false)
-      }, CONFIRMATION_DELAY)
+      startConfirming()
     }
   }
-  useEffect(() => {
-    return () => {
-      window.clearTimeout(timeoutRef.current)
-    }
-  }, [])
   const onKeyDown = isFacilitating
     ? handleRightArrow(() => {
         gotoNext()
