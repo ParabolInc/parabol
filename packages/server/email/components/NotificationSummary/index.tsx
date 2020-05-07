@@ -1,5 +1,4 @@
 import Oy from 'oy-vey'
-import makeDateString from 'parabol-client/utils/makeDateString'
 import React from 'react'
 import makeAppLink from '../../../utils/makeAppLink'
 import NotificationSummaryEmail from './NotificationSummaryEmail'
@@ -11,30 +10,28 @@ import NotificationSummaryEmail from './NotificationSummaryEmail'
  */
 
 const textOnlySummary = () => {
-  const notificationPageUrl = makeAppLink('me')
+  const dashUrl = makeAppLink('me')
   return `Hi there, %recipient.name%!
 
-You have received %recipient.numNotifications% new notification(s) in the last day.
+You’ve received %recipient.numNotifications% new notification(s) in the last day.
 
-View them on Parabol here: ${notificationPageUrl}
+View them on Parabol here: ${dashUrl}
+
+If you ever need anything from us, don’t hesitate to reach out at love@parabol.co.
 
 - The Product Team at Parabol
-
-P.S. Help us make our software better!
-Email us at love@parabol.co and tell us the good, the bad, and the Ugly!
-Or better yet, pick a time on our calendar for a video chat with our core product team: https://calendly.com/parabol/
 `
 }
 
 export default (props) => {
-  const {date} = props
-  const subject = `Parabol notifications for ${makeDateString(date)}`
+  const subject = `Your team needs you: %recipient.numNotifications% notification(s) 👀`
+  const previewText = 'You’ve been tagged in some tasks — see what people need'
   return {
     subject,
     body: textOnlySummary(),
     html: Oy.renderTemplate(<NotificationSummaryEmail {...props} />, {
       title: subject,
-      previewText: subject
+      previewText
     })
   }
 }

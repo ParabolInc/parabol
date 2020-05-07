@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import makeAppLink from '../../../utils/makeAppLink'
-import {emailCopyStyle, emailLinkStyle, emailProductTeamSignature} from '../../styles'
+import {emailCopyStyle, emailLinkStyle} from '../../styles'
 import Button from '../Button'
 import EmailBlock from '../EmailBlock/EmailBlock'
 import EmailFooter from '../EmailFooter/EmailFooter'
@@ -20,7 +20,8 @@ const linkStyle = {
   ...emailLinkStyle
 }
 
-const notificationPageUrl = makeAppLink('me')
+const dashUrl = makeAppLink('me')
+const tasksUrl = makeAppLink('me/tasks')
 
 export default function NotificationSummaryEmail() {
   return (
@@ -31,32 +32,47 @@ export default function NotificationSummaryEmail() {
           {'Hi '}%recipient.name%{','}
         </p>
         <p style={copyStyle}>
+          {'A friendly nudge, in case you missed it:'}
+          <b>
+            {'you’ve been mentioned in '}
+            %recipient.numNotifications%
+            {' task(s)'}
+          </b>
+          {'in the past day — '}
+          <a style={linkStyle} href={dashUrl}>
+            {'see what’s new and what your team needs'}
+          </a>
+          {'.'}
+        </p>
+        <p style={copyStyle}>
           {'You have received '}
           <span style={{fontWeight: 600}}>
             %recipient.numNotifications%{' new notification(s)'}
           </span>
           {' in the last day.'}
         </p>
-        <Button url={notificationPageUrl}>{'See My Notifications'}</Button>
+        <Button url={dashUrl}>{'See Notifications'}</Button>
         <EmptySpace height={24} />
-        <p style={copyStyle}>{'This is just a friendly, automated nudge!'}</p>
-        <p style={copyStyle}>{'Your teammates need you!'}</p>
-        <p style={copyStyle}>{emailProductTeamSignature}</p>
         <p style={copyStyle}>
-          <b>{'P.S. We want to hear from you:'}</b>
+          {'You can also see '}
+          <a style={linkStyle} href={tasksUrl}>
+            {'everything on your plate in the Tasks view'}
+          </a>
+          {'.'}
         </p>
         <p style={copyStyle}>
-          {'Email us at '}
+          {'And if you ever need anything from us, don’t hesitate to reach out at '}
           <a style={linkStyle} href='mailto:love@parabol.co'>
             {'love@parabol.co'}
           </a>
-          {' with any feedback or questions you may have about our software.'}
+          {'.'}
         </p>
         <p style={copyStyle}>
-          {'Or, schedule a video chat with our product team: '}
+          {'Have fun & do great work,'}
           <br />
-          <a style={linkStyle} href='https://calendly.com/parabol/product/'>
-            {'https://calendly.com/parabol/product/'}
+          {'-'}
+          <a style={linkStyle} href='https://www.parabol.co/team'>
+            {'Parabol Team'}
           </a>
         </p>
         <EmptySpace height={16} />
