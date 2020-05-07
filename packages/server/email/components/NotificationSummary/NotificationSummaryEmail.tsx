@@ -29,29 +29,22 @@ export default function NotificationSummaryEmail() {
       <EmailBlock innerMaxWidth={innerMaxWidth}>
         <Header />
         <p style={copyStyle}>
-          {'Hi '}%recipient.name%{','}
+          {'Hi '}%recipient.name%{' -'}
         </p>
         <p style={copyStyle}>
           {'A friendly nudge, in case you missed it:'}
-          <b>
-            {'you’ve been mentioned in '}
+          <span style={{fontWeight: 600}}>
+            {'you have '}
             %recipient.numNotifications%
-            {' task(s)'}
-          </b>
-          {'in the past day — '}
+            {' unread notification(s)'}
+          </span>
+          {' — '}
           <a style={linkStyle} href={dashUrl}>
-            {'see what’s new and what your team needs'}
+            {'see what your team needs'}
           </a>
           {'.'}
         </p>
-        <p style={copyStyle}>
-          {'You have received '}
-          <span style={{fontWeight: 600}}>
-            %recipient.numNotifications%{' new notification(s)'}
-          </span>
-          {' in the last day.'}
-        </p>
-        <Button url={dashUrl}>{'See Notifications'}</Button>
+        <Button url={dashUrl}>{'Open Parabol'}</Button>
         <EmptySpace height={24} />
         <p style={copyStyle}>
           {'You can also see '}
@@ -61,7 +54,7 @@ export default function NotificationSummaryEmail() {
           {'.'}
         </p>
         <p style={copyStyle}>
-          {'And if you ever need anything from us, don’t hesitate to reach out at '}
+          {'If you need anything from us, don’t hesitate to reach out at '}
           <a style={linkStyle} href='mailto:love@parabol.co'>
             {'love@parabol.co'}
           </a>
@@ -70,7 +63,7 @@ export default function NotificationSummaryEmail() {
         <p style={copyStyle}>
           {'Have fun & do great work,'}
           <br />
-          {'-'}
+          {'- '}
           <a style={linkStyle} href='https://www.parabol.co/team'>
             {'Parabol Team'}
           </a>

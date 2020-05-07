@@ -25,7 +25,7 @@ If you ever need anything from us, don’t hesitate to reach out at love@parabol
 
 export default (props) => {
   const subject = `Your team needs you: %recipient.numNotifications% notification(s) 👀`
-  const previewText = 'You’ve been tagged in some tasks — see what people need'
+  const previewText = 'You have unread notifications — see what your team needs'
   return {
     subject,
     body: textOnlySummary(),
