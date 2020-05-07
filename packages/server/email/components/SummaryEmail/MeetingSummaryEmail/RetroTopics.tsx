@@ -8,6 +8,8 @@ import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import EmailBorderBottom from './EmailBorderBottom'
 import RetroTopic from './RetroTopic'
+import makeAppLink from 'parabol-server/utils/makeAppLink'
+import {meetingSummaryUrlParams} from 'parabol-server/email/components/MeetingSummaryEmailRootSSR'
 
 const sectionHeading = {
   color: PALETTE.TEXT_MAIN,
@@ -21,14 +23,12 @@ interface Props {
   isDemo: boolean
   isEmail: boolean
   meeting: RetroTopics_meeting
-  meetingUrl: string
 }
 
 const RetroTopics = (props: Props) => {
-  const {isDemo, isEmail, meeting, meetingUrl} = props
+  const {isDemo, isEmail, meeting} = props
   const {id: meetingId, reflectionGroups} = meeting
   if (!reflectionGroups) return null
-  const toPart = isEmail ? meetingUrl : `/meet/${meetingId}`
   return (
     <>
       <tr>
@@ -36,15 +36,21 @@ const RetroTopics = (props: Props) => {
           {plural(reflectionGroups.length, RETRO_TOPIC_LABEL)}
         </td>
       </tr>
-      {reflectionGroups.map((topic, idx) => (
-        <RetroTopic
-          key={topic.id}
-          isDemo={isDemo}
-          isEmail={isEmail}
-          topic={topic}
-          to={`${toPart}/discuss/${idx + 1}`}
-        />
-      ))}
+      {reflectionGroups.map((topic, idx) => {
+        const topicUrlPath = `meet/${meetingId}/discuss/${idx + 1}`
+        const topicUrl = isEmail
+          ? makeAppLink(topicUrlPath, {params: meetingSummaryUrlParams})
+          : `/${topicUrlPath}`
+        return (
+          <RetroTopic
+            key={topic.id}
+            isDemo={isDemo}
+            isEmail={isEmail}
+            topic={topic}
+            to={topicUrl}
+          />
+        )
+      })}
       <EmailBorderBottom />
     </>
   )

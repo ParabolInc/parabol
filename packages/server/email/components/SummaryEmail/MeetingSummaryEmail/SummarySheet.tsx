@@ -57,12 +57,7 @@ const SummarySheet = (props: Props) => {
         <CreateAccountSection isDemo={isDemo} />
         <MeetingMembersWithTasks meeting={meeting} />
         <MeetingMembersWithoutTasks meeting={meeting} />
-        <RetroTopics
-          isDemo={isDemo}
-          isEmail={referrer === 'email'}
-          meeting={meeting}
-          meetingUrl={meetingUrl}
-        />
+        <RetroTopics isDemo={isDemo} isEmail={referrer === 'email'} meeting={meeting} />
         {meetingType === ACTION && (
           <SummaryEmailScheduleCalendar
             isDemo={isDemo}
