@@ -196,6 +196,7 @@ const User = new GraphQLObjectType<any, GQLContext, any>({
           .between([viewerId, r.minval], [viewerId, dbAfter], {
             index: 'userIdCreatedAt'
           })
+          .filter({isActive: true})
           .orderBy(r.desc('createdAt'))
           .limit(first + 1)
           .coerceTo('array')

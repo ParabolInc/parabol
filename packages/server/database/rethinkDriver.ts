@@ -193,7 +193,7 @@ export type RethinkTypes = {
   }
   TimelineEvent: {
     type: TimelineEvent
-    index: 'userIdCreatedAt'
+    index: 'userIdCreatedAt' | 'meetingId'
   }
   User: {
     type: User

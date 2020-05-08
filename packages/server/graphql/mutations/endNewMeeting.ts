@@ -329,7 +329,8 @@ export default {
       userId: meetingMember.userId,
       teamId,
       orgId: team.orgId,
-      meetingId
+      meetingId,
+      isActive: true
     }))
     await r
       .table('TimelineEvent')

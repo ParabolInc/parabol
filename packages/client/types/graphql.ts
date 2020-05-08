@@ -2541,6 +2541,11 @@ export interface ITimelineEvent {
    * The user than can see this event
    */
   user: IUser
+
+  /**
+   * true if the timeline event is active, false if arvhiced
+   */
+  isActive: boolean
 }
 
 /**
@@ -2870,6 +2875,11 @@ export interface IMutation {
   addTeam: IAddTeamPayload
   archiveOrganization: IArchiveOrganizationPayload
   archiveTeam: IArchiveTeamPayload
+
+  /**
+   * Archive a timeline event
+   */
+  archiveTimelineEvent: ArchiveTimelineEventPayload
 
   /**
    * Automatically group reflections
@@ -3382,6 +3392,23 @@ export interface IArchiveOrganizationOnMutationArguments {
 export interface IArchiveTeamOnMutationArguments {
   /**
    * The teamId to archive (or delete, if team is unused)
+   */
+  teamId: string
+}
+
+export interface IArchiveTimelineEventOnMutationArguments {
+  /**
+   * the id for the timeline event
+   */
+  timelineEventId: string
+
+  /**
+   * the meeting id for the timeline event
+   */
+  meetingId: string
+
+  /**
+   * the team id for the timeline event
    */
   teamId: string
 }
@@ -5234,6 +5261,20 @@ export interface INotifyTeamArchived {
    * *The userId that should see this notification
    */
   userId: string
+}
+
+/**
+ * Return object for ArchiveTimelineEventPayload
+ */
+export type ArchiveTimelineEventPayload = IErrorPayload | IArchiveTimelineEventSuccess
+
+export interface IArchiveTimelineEventSuccess {
+  __typename: 'ArchiveTimelineEventSuccess'
+
+  /**
+   * the archived timelineEvent
+   */
+  timelineEvent: TimelineEvent
 }
 
 export interface IAutoGroupReflectionsPayload {
@@ -7093,6 +7134,7 @@ export type TeamSubscriptionPayload =
   | IAddSlackAuthPayload
   | IAddTeamPayload
   | IArchiveTeamPayload
+  | IArchiveTimelineEventSuccess
   | IDenyPushInvitationPayload
   | IDowngradeToPersonalPayload
   | IEndNewMeetingPayload
@@ -8136,6 +8178,11 @@ export interface ITimelineEventTeamCreated {
    * The user than can see this event
    */
   user: IUser
+
+  /**
+   * true if the timeline event is active, false if arvhiced
+   */
+  isActive: boolean
 }
 
 /**
@@ -8198,6 +8245,11 @@ export interface ITimelineEventJoinedParabol {
    * The user than can see this event
    */
   user: IUser
+
+  /**
+   * true if the timeline event is active, false if arvhiced
+   */
+  isActive: boolean
 }
 
 /**
@@ -8260,6 +8312,11 @@ export interface ITimelineEventCompletedRetroMeeting {
    * The user than can see this event
    */
   user: IUser
+
+  /**
+   * true if the timeline event is active, false if arvhiced
+   */
+  isActive: boolean
 
   /**
    * The meeting that was completed
@@ -8332,6 +8389,11 @@ export interface ITimelineEventCompletedActionMeeting {
    * The user than can see this event
    */
   user: IUser
+
+  /**
+   * true if the timeline event is active, false if arvhiced
+   */
+  isActive: boolean
 
   /**
    * The meeting that was completed
