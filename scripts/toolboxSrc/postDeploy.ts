@@ -1,4 +1,9 @@
+import fs from 'fs'
+import path from 'path'
 import getRethink from '../../packages/server/database/rethinkDriver'
+import getProjectRoot from '../webpack/utils/getProjectRoot'
+
+const PROJECT_ROOT = getProjectRoot()
 
 const flushSocketConnections = async () => {
   const r = await getRethink()
@@ -11,7 +16,7 @@ const flushSocketConnections = async () => {
 }
 
 const storePersistedQueries = async () => {
-  const queryMap = require('../../queryMap.json')
+  const queryMap = JSON.parse(fs.readFileSync(path.join(PROJECT_ROOT, 'queryMap.json')).toString())
   const hashes = Object.keys(queryMap)
   const records = hashes.map((hash) => ({
     id: hash,

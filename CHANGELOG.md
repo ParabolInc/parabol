@@ -5,6 +5,22 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 5.6.0 2020-May-06
+
+## Fixed
+* Ghost snackbar covering up meeting control bar (#3819)
+* Empty emails when meeting is killed early (#3819)
+* Correct active meeting current state (#3819)
+* Can start retro when action is in progress (#3819)
+* Scrolling in development works in firefox (#3813)
+* Stripe removing a paused user (#3810)
+* __dirname incorrect in dev mode (#3806)
+
+## 5.5.1 2020-Apr-30
+
+## Fixed
+* Save progress in demo
+
 ## 5.5.0 2020-Apr-24
 
 ### Added

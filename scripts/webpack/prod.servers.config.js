@@ -15,7 +15,7 @@ const DOTENV = path.join(PROJECT_ROOT, 'scripts/webpack/utils/dotenv.js')
 const publicPath = getWebpackPublicPath()
 const distPath = path.join(PROJECT_ROOT, 'dist')
 
-module.exports = ({ isDeploy }) => ({
+module.exports = ({isDeploy}) => ({
   mode: 'production',
   node: {
     __dirname: false
@@ -44,7 +44,7 @@ module.exports = ({ isDeploy }) => ({
   target: 'node',
   externals: [
     nodeExternals({
-      whitelist: [/parabol-client/, '/parabol-server/']
+      whitelist: [/parabol-client/, /parabol-server/]
     })
   ],
   plugins: [

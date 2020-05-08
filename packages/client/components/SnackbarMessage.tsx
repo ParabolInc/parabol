@@ -1,12 +1,12 @@
 import styled from '@emotion/styled'
+import React, {useEffect} from 'react'
 import {TransitionStatus} from '../hooks/useTransition'
+import {DECELERATE} from '../styles/animation'
+import {snackbarShadow} from '../styles/elevation'
 import {PALETTE} from '../styles/paletteV2'
 import {Radius, ZIndex} from '../types/constEnums'
-import React from 'react'
-import {DECELERATE} from '../styles/animation'
 import {SnackAction} from './Snackbar'
 import SnackbarMessageAction from './SnackbarMessageAction'
-import {snackbarShadow} from '../styles/elevation'
 
 interface Props {
   onTransitionEnd: () => void
@@ -46,6 +46,16 @@ const MessageStyles = styled('div')<{status: TransitionStatus}>(({status}) => ({
   zIndex: ZIndex.SNACKBAR
 }))
 
+const useTransitionEnd = (
+  timeout: number,
+  status: TransitionStatus,
+  onTransitionEnd: () => void
+) => {
+  useEffect(() => {
+    setTimeout(onTransitionEnd, timeout)
+  }, [status])
+}
+
 const SnackbarMessage = (props: Props) => {
   const {
     action,
@@ -57,11 +67,11 @@ const SnackbarMessage = (props: Props) => {
     onMouseEnter,
     onMouseLeave
   } = props
+  useTransitionEnd(300, status, onTransitionEnd)
   return (
     <Space>
       <MessageStyles
         status={status}
-        onTransitionEnd={onTransitionEnd}
         onClick={dismissSnack}
         onMouseEnter={onMouseEnter}
         onMouseLeave={onMouseLeave}
