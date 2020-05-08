@@ -15,6 +15,7 @@ import {BottomControlBarReady_meeting} from '~/__generated__/BottomControlBarRea
 import BottomControlBarProgress from './BottomControlBarProgress'
 import BottomNavControl from './BottomNavControl'
 import BottomNavIconLabel from './BottomNavIconLabel'
+import ConfirmingToggle from './ConfirmingToggle'
 import Icon from './Icon'
 
 interface Props {
@@ -93,9 +94,11 @@ const BottomControlBarReady = (props: Props) => {
     >
       <BottomControlBarProgress isConfirming={isConfirming} progress={progress} />
       <BottomNavIconLabel label={label}>
-        <CheckIcon isViewerReady={isViewerReady} isNext={isFacilitating} progress={progress}>
-          {icon}
-        </CheckIcon>
+        <ConfirmingToggle isConfirming={isConfirming}>
+          <CheckIcon isViewerReady={isViewerReady} isNext={isFacilitating} progress={progress}>
+            {icon}
+          </CheckIcon>
+        </ConfirmingToggle>
       </BottomNavIconLabel>
     </BottomNavControl>
   )
