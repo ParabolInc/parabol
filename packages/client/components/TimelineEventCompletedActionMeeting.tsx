@@ -1,15 +1,15 @@
-import {TimelineEventCompletedActionMeeting_timelineEvent} from '../__generated__/TimelineEventCompletedActionMeeting_timelineEvent.graphql'
+import styled from '@emotion/styled'
+import graphql from 'babel-plugin-relay/macro'
 import React, {Component} from 'react'
 import {createFragmentContainer} from 'react-relay'
-import graphql from 'babel-plugin-relay/macro'
 import {RouteComponentProps} from 'react-router'
-import StyledLink from './StyledLink'
-import plural from '../utils/plural'
 import relativeDate from '../utils/date/relativeDate'
+import plural from '../utils/plural'
+import {TimelineEventCompletedActionMeeting_timelineEvent} from '../__generated__/TimelineEventCompletedActionMeeting_timelineEvent.graphql'
+import StyledLink from './StyledLink'
 import TimelineEventBody from './TimelineEventBody'
 import TimelineEventCard from './TimelineEventCard'
 import TimelineEventTitle from './TImelineEventTitle'
-import styled from '@emotion/styled'
 
 interface Props extends RouteComponentProps<{}> {
   timelineEvent: TimelineEventCompletedActionMeeting_timelineEvent
@@ -38,7 +38,6 @@ class TimelineEventCompletedActionMeeting extends Component<Props> {
     return (
       <TimelineEventCard
         iconName='change_history'
-        meetingId={meetingId}
         timelineEvent={timelineEvent}
         title={
           <TimelineEventTitle>{`${meetingName} with ${teamName} Complete`}</TimelineEventTitle>

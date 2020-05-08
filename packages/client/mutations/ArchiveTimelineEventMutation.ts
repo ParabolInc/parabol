@@ -1,13 +1,13 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {SimpleMutation, SharedUpdater} from '../types/relayMutations'
+import {ArchiveTimelineEventMutation_notification} from '__generated__/ArchiveTimelineEventMutation_notification.graphql'
+import safeRemoveNodeFromConn from '~/utils/relay/safeRemoveNodeFromConn'
+import {SharedUpdater, SimpleMutation} from '../types/relayMutations'
 import {ArchiveTimelineEventMutation as TArchiveTimelineEventMutation} from '../__generated__/ArchiveTimelineEventMutation.graphql'
 import getUserTimelineEventsConn from './connections/getUserTimelineEventsConn'
-import safeRemoveNodeFromConn from 'utils/relay/safeRemoveNodeFromConn'
-import {ArchiveTimelineEventMutation_timelineEvent} from '__generated__/ArchiveTimelineEventMutation_timelineEvent.graphql'
 
 graphql`
-  fragment ArchiveTimelineEventMutation_timelineEvent on ArchiveTimelineEventSuccess {
+  fragment ArchiveTimelineEventMutation_notification on ArchiveTimelineEventSuccess {
     timelineEvent {
       id
       isActive
@@ -16,23 +16,19 @@ graphql`
 `
 
 const mutation = graphql`
-  mutation ArchiveTimelineEventMutation($timelineEventId: ID!, $meetingId: ID!, $teamId: ID!) {
-    archiveTimelineEvent(
-      timelineEventId: $timelineEventId
-      meetingId: $meetingId
-      teamId: $teamId
-    ) {
+  mutation ArchiveTimelineEventMutation($timelineEventId: ID!) {
+    archiveTimelineEvent(timelineEventId: $timelineEventId) {
       ... on ErrorPayload {
         error {
           message
         }
       }
-      ...ArchiveTimelineEventMutation_timelineEvent @relay(mask: false)
+      ...ArchiveTimelineEventMutation_notification @relay(mask: false)
     }
   }
 `
 
-export const archiveTimelineEventUpdater: SharedUpdater<ArchiveTimelineEventMutation_timelineEvent> = (
+export const archiveTimelineEventNotificationUpdater: SharedUpdater<ArchiveTimelineEventMutation_notification> = (
   payload,
   {store}
 ) => {
@@ -50,20 +46,19 @@ const handleRemoveTimelineEvent = (timelineEventId, store) => {
 
 const ArchiveTimelineEventMutation: SimpleMutation<TArchiveTimelineEventMutation> = (
   atmosphere,
-  {timelineEventId, meetingId, teamId}
+  variables
 ) => {
   return commitMutation<TArchiveTimelineEventMutation>(atmosphere, {
     mutation,
-    variables: {
-      timelineEventId,
-      meetingId,
-      teamId
-    },
+    variables,
     updater: (store) => {
       const payload = store.getRootField('archiveTimelineEvent')
-      archiveTimelineEventUpdater(payload as any, {atmosphere, store})
+      archiveTimelineEventNotificationUpdater(payload as any, {atmosphere, store})
     },
-    optimisticUpdater: (store) => handleRemoveTimelineEvent(timelineEventId, store)
+    optimisticUpdater: (store) => {
+      const {timelineEventId} = variables
+      handleRemoveTimelineEvent(timelineEventId, store)
+    }
   })
 }
 

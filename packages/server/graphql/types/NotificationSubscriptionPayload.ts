@@ -1,21 +1,22 @@
 import graphQLSubscriptionType from '../graphQLSubscriptionType'
+import AcceptTeamInvitationPayload from './AcceptTeamInvitationPayload'
+import AddFeatureFlagPayload from './AddFeatureFlagPayload'
+import AddNewFeaturePayload from './addNewFeaturePayload'
 import AddOrgPayload from './AddOrgPayload'
 import AddTeamPayload from './AddTeamPayload'
-import SetNotificationStatusPayload from './SetNotificationStatusPayload'
+import {ArchiveTimelineEventSuccess} from './ArchiveTimelineEventPayload'
+import AuthTokenPayload from './AuthTokenPayload'
 import CreateTaskPayload from './CreateTaskPayload'
 import DeleteTaskPayload from './DeleteTaskPayload'
+import DisconnectSocketPayload from './DisconnectSocketPayload'
+import EndNewMeetingPayload from './EndNewMeetingPayload'
+import InvalidateSessionsPayload from './InvalidateSessionsPayload'
+import InviteToTeamPayload from './InviteToTeamPayload'
+import MeetingStageTimeLimitPayload from './MeetingStageTimeLimitPayload'
+import RemoveOrgUserPayload from './RemoveOrgUserPayload'
+import SetNotificationStatusPayload from './SetNotificationStatusPayload'
 import StripeFailPaymentPayload from './StripeFailPaymentPayload'
 import User from './User'
-import RemoveOrgUserPayload from './RemoveOrgUserPayload'
-import DisconnectSocketPayload from './DisconnectSocketPayload'
-import AddFeatureFlagPayload from './AddFeatureFlagPayload'
-import InviteToTeamPayload from './InviteToTeamPayload'
-import AcceptTeamInvitationPayload from './AcceptTeamInvitationPayload'
-import EndNewMeetingPayload from './EndNewMeetingPayload'
-import AddNewFeaturePayload from './addNewFeaturePayload'
-import MeetingStageTimeLimitPayload from './MeetingStageTimeLimitPayload'
-import AuthTokenPayload from './AuthTokenPayload'
-import InvalidateSessionsPayload from './InvalidateSessionsPayload'
 
 const types = [
   AcceptTeamInvitationPayload,
@@ -23,6 +24,7 @@ const types = [
   AddNewFeaturePayload,
   AddOrgPayload,
   AddTeamPayload,
+  ArchiveTimelineEventSuccess,
   SetNotificationStatusPayload,
   CreateTaskPayload,
   DeleteTaskPayload,

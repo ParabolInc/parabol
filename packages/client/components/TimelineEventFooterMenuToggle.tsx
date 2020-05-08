@@ -1,10 +1,10 @@
-import React from 'react'
-import useTooltip from 'hooks/useTooltip'
-import useMenu from 'hooks/useMenu'
-import {MenuPosition} from 'hooks/useCoords'
-import CardButton from 'components/CardButton'
-import IconLabel from 'components/IconLabel'
 import styled from '@emotion/styled'
+import React from 'react'
+import CardButton from '~/components/CardButton'
+import IconLabel from '~/components/IconLabel'
+import {MenuPosition} from '~/hooks/useCoords'
+import useMenu from '~/hooks/useMenu'
+import useTooltip from '~/hooks/useTooltip'
 import TimelineEventFooterMenu from './TimelineEventFooterMenu'
 
 const ButtonGroup = styled('div')({
@@ -14,12 +14,10 @@ const ButtonGroup = styled('div')({
 
 interface Props {
   timelineEventId: string
-  meetingId: string
-  teamId: string
 }
 
 const TimelineEventFooterMenuToggle = (props: Props) => {
-  const {timelineEventId, meetingId, teamId} = props
+  const {timelineEventId} = props
   const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT)
   const {tooltipPortal, openTooltip, closeTooltip, originRef: tipRef} = useTooltip<HTMLDivElement>(
     MenuPosition.UPPER_CENTER
@@ -36,12 +34,7 @@ const TimelineEventFooterMenuToggle = (props: Props) => {
         />
       </CardButton>
       {menuPortal(
-        <TimelineEventFooterMenu
-          menuProps={menuProps}
-          timelineEventId={timelineEventId}
-          meetingId={meetingId}
-          teamId={teamId}
-        />
+        <TimelineEventFooterMenu menuProps={menuProps} timelineEventId={timelineEventId} />
       )}
       {tooltipPortal(<div>{'Set Status'}</div>)}
     </ButtonGroup>

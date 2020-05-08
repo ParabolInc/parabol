@@ -3402,16 +3402,6 @@ export interface IArchiveTimelineEventOnMutationArguments {
    * the id for the timeline event
    */
   timelineEventId: string
-
-  /**
-   * the meeting id for the timeline event
-   */
-  meetingId: string
-
-  /**
-   * the team id for the timeline event
-   */
-  teamId: string
 }
 
 export interface IAutoGroupReflectionsOnMutationArguments {
@@ -6961,6 +6951,7 @@ export type NotificationSubscriptionPayload =
   | IAddNewFeaturePayload
   | IAddOrgPayload
   | IAddTeamPayload
+  | IArchiveTimelineEventSuccess
   | ISetNotificationStatusPayload
   | ICreateTaskPayload
   | IDeleteTaskPayload
@@ -7142,7 +7133,6 @@ export type TeamSubscriptionPayload =
   | IAddSlackAuthPayload
   | IAddTeamPayload
   | IArchiveTeamPayload
-  | IArchiveTimelineEventSuccess
   | IDenyPushInvitationPayload
   | IDowngradeToPersonalPayload
   | IEndNewMeetingPayload

@@ -1,12 +1,14 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import {TimelineEventEnum} from 'parabol-client/types/graphql'
+import TimelineEventCheckinComplete from 'server/database/types/TimelineEventCheckinComplete'
+import TimelineEventRetroComplete from 'server/database/types/TimelineEventRetroComplete'
 import getRethink from '../../database/rethinkDriver'
+import {getUserId, isTeamMember} from '../../utils/authorization'
+import publish from '../../utils/publish'
+import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import ArchiveTimelineEventPayload from '../types/ArchiveTimelineEventPayload'
-import publish from '../../utils/publish'
-import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import TimelineEvent from '../../database/types/TimelineEvent'
-import {getUserId, isTeamMember} from '../../utils/authorization'
-import standardError from '../../utils/standardError'
 
 const archiveTimelineEvent = {
   type: GraphQLNonNull(ArchiveTimelineEventPayload),
@@ -15,19 +17,11 @@ const archiveTimelineEvent = {
     timelineEventId: {
       type: GraphQLNonNull(GraphQLID),
       description: 'the id for the timeline event'
-    },
-    meetingId: {
-      type: GraphQLNonNull(GraphQLID),
-      description: 'the meeting id for the timeline event'
-    },
-    teamId: {
-      type: GraphQLNonNull(GraphQLID),
-      description: 'the team id for the timeline event'
     }
   },
   resolve: async (
     _source,
-    {timelineEventId, meetingId, teamId},
+    {timelineEventId},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) => {
     const r = await getRethink()
@@ -35,35 +29,46 @@ const archiveTimelineEvent = {
     const subOptions = {mutatorId, operationId}
     const viewerId = getUserId(authToken)
 
-    // AUTH
-    if (!isTeamMember(authToken, teamId)) {
-      return standardError(new Error('Team not found'), {userId: viewerId})
-    }
-
     // VALIDATION
-    const timelineEvents = await dataLoader.get('timelineEventsByMeetingId').load(meetingId)
-    if (!timelineEvents) {
-      return {error: {message: 'TimelineEvents not found'}}
+    const timelineEvent = await dataLoader.get('timelineEvents').load(timelineEventId)
+    if (!timelineEvent) {
+      return {error: {message: 'Timeline Event not found'}}
     }
 
-    // RESOLUTION
-    await Promise.all(
-      timelineEvents.map((timelineEvent: TimelineEvent) => {
-        timelineEvent.isActive = false
-        r.table('TimelineEvent')
-          .get(timelineEvent.id)
-          .update({
-            isActive: false
-          })
-          .run()
+    const {isActive, type} = timelineEvent
+    if (!isActive) {
+      return {error: {message: 'Timeline Event not found'}}
+    }
+
+    const meetingTypes = [TimelineEventEnum.actionComplete, TimelineEventEnum.retroComplete]
+    if (meetingTypes.includes(type)) {
+      // it's a meeting timeline event, archive it for everyone
+      const {teamId, meetingId} = timelineEvent as
+        | TimelineEventRetroComplete
+        | TimelineEventCheckinComplete
+      if (!isTeamMember(authToken, teamId)) {
+        return standardError(new Error('Team not found'), {userId: viewerId})
+      }
+      const meetingTimelineEvents = await dataLoader
+        .get('timelineEventsByMeetingId')
+        .load(meetingId)
+      const eventIds = meetingTimelineEvents.map(({id}) => id)
+      await r
+        .table('TimelineEvent')
+        .getAll(r.args(eventIds))
+        .update({isActive: false})
+        .run()
+      meetingTimelineEvents.map((event) => {
+        const {id: timelineEventId, userId} = event
+        publish(
+          SubscriptionChannel.NOTIFICATION,
+          userId,
+          'ArchiveTimelineEventSuccess',
+          {timelineEventId},
+          subOptions
+        )
       })
-    )
-
-    timelineEvents.map(({id: timelineEventId}) => {
-      const data = {timelineEventId}
-      publish(SubscriptionChannel.TEAM, teamId, 'ArchiveTimelineEventSuccess', data, subOptions)
-    })
-
+    }
     return {timelineEventId}
   }
 }

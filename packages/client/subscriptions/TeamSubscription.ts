@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
-import {navigateMeetingTeamUpdater} from '~/mutations/NavigateMeetingMutation'
 import {RouterProps} from 'react-router'
 import {requestSubscription, Variables} from 'relay-runtime'
+import {navigateMeetingTeamUpdater} from '~/mutations/NavigateMeetingMutation'
 import Atmosphere from '../Atmosphere'
 import {
   acceptTeamInvitationTeamOnNext,
@@ -26,7 +26,6 @@ import {
 } from '../mutations/RemoveTeamMemberMutation'
 import {updateAgendaItemUpdater} from '../mutations/UpdateAgendaItemMutation'
 import {TeamSubscriptionResponse} from '../__generated__/TeamSubscription.graphql'
-import {archiveTimelineEventUpdater} from 'mutations/ArchiveTimelineEventMutation'
 
 const subscription = graphql`
   subscription TeamSubscription {
@@ -37,7 +36,6 @@ const subscription = graphql`
       ...AddReflectTemplatePromptMutation_team @relay(mask: false)
       ...AddTeamMutation_team @relay(mask: false)
       ...ArchiveTeamMutation_team @relay(mask: false)
-      ...ArchiveTimelineEventMutation_timelineEvent @relay(mask: false)
       ...DenyPushInvitationMutation_team @relay(mask: false)
       ...EndNewMeetingMutation_team @relay(mask: false)
       ...MoveReflectTemplatePromptMutation_team @relay(mask: false)
@@ -84,7 +82,6 @@ const updateHandlers = {
   AddReflectTemplatePromptPayload: addReflectTemplatePromptTeamUpdater,
   AddTeamMutationPayload: addTeamTeamUpdater,
   ArchiveTeamPayload: archiveTeamTeamUpdater,
-  ArchiveTimelineEventSuccess: archiveTimelineEventUpdater,
   EndNewMeetingPayload: endNewMeetingTeamUpdater,
   MoveReflectTemplatePromptPayload: moveReflectTemplatePromptTeamUpdater,
   NavigateMeetingPayload: navigateMeetingTeamUpdater,

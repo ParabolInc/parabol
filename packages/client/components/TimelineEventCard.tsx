@@ -1,12 +1,12 @@
-import {TimelineEventCard_timelineEvent} from '../__generated__/TimelineEventCard_timelineEvent.graphql'
-import React, {Component, ReactNode} from 'react'
 import styled from '@emotion/styled'
-import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import Icon from './Icon'
+import React, {Component, ReactNode} from 'react'
+import {createFragmentContainer} from 'react-relay'
 import {cardShadow} from '../styles/elevation'
 import {PALETTE} from '../styles/paletteV2'
 import {ICON_SIZE} from '../styles/typographyV2'
+import {TimelineEventCard_timelineEvent} from '../__generated__/TimelineEventCard_timelineEvent.graphql'
+import Icon from './Icon'
 import TimelineEventDate from './TimelineEventDate'
 import TimelineEventFooterMenuToggle from './TimelineEventFooterMenuToggle'
 
@@ -17,7 +17,6 @@ interface Props {
   iconName: string
   title: ReactNode
   timelineEvent: TimelineEventCard_timelineEvent
-  meetingId?: string
 }
 
 const Surface = styled('div')({
@@ -75,8 +74,8 @@ const HeaderText = styled('div')({
 
 class TimelineEventCard extends Component<Props> {
   render() {
-    const {children, iconName, title, timelineEvent, meetingId} = this.props
-    const {id: timelineEventId, createdAt, type, teamId} = timelineEvent
+    const {children, iconName, title, timelineEvent} = this.props
+    const {id: timelineEventId, createdAt, type} = timelineEvent
     return (
       <Surface>
         <CardHeader>
@@ -93,11 +92,7 @@ class TimelineEventCard extends Component<Props> {
           {/*</PlainButton>*/}
 
           {type == 'retroComplete' || type == 'actionComplete' ? (
-            <TimelineEventFooterMenuToggle
-              timelineEventId={timelineEventId}
-              meetingId={meetingId as string}
-              teamId={teamId as string}
-            />
+            <TimelineEventFooterMenuToggle timelineEventId={timelineEventId} />
           ) : null}
         </CardHeader>
         {children}
@@ -112,7 +107,6 @@ export default createFragmentContainer(TimelineEventCard, {
       id
       createdAt
       type
-      teamId
     }
   `
 })

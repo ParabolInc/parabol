@@ -1,20 +1,18 @@
-import {MenuProps} from 'hooks/useMenu'
-import Menu from 'components/Menu'
-import React from 'react'
 import styled from '@emotion/styled'
-import MenuItem from 'components/MenuItem'
-import useAtmosphere from 'hooks/useAtmosphere'
-import {MenuItemLabelStyle} from './MenuItemLabel'
-import {PALETTE} from 'styles/paletteV2'
-import ArchiveTimelineEventMutation from 'mutations/ArchiveTimelineEventMutation'
-import {ICON_SIZE} from 'styles/typographyV2'
+import React from 'react'
+import Menu from '~/components/Menu'
+import MenuItem from '~/components/MenuItem'
+import useAtmosphere from '~/hooks/useAtmosphere'
+import {MenuProps} from '~/hooks/useMenu'
+import ArchiveTimelineEventMutation from '~/mutations/ArchiveTimelineEventMutation'
+import {PALETTE} from '~/styles/paletteV2'
+import {ICON_SIZE} from '~/styles/typographyV2'
 import Icon from './Icon'
+import {MenuItemLabelStyle} from './MenuItemLabel'
 
 interface Props {
   menuProps: MenuProps
   timelineEventId: string
-  meetingId: string
-  teamId: string
 }
 
 const StyledIcon = styled(Icon)({
@@ -29,7 +27,7 @@ const TimelineEventMenuItemLabel = styled('div')({
 })
 
 const TimelineEventFooterMenu = (props: Props) => {
-  const {menuProps, ...mutationParameters} = props
+  const {menuProps, timelineEventId} = props
   const atmosphere = useAtmosphere()
   return (
     <Menu ariaLabel={'Change the status of the timeline event'} {...menuProps}>
@@ -41,7 +39,7 @@ const TimelineEventFooterMenu = (props: Props) => {
             <span>{'Archive meeting'}</span>
           </TimelineEventMenuItemLabel>
         }
-        onClick={() => ArchiveTimelineEventMutation(atmosphere, mutationParameters)}
+        onClick={() => ArchiveTimelineEventMutation(atmosphere, {timelineEventId})}
       />
     </Menu>
   )
