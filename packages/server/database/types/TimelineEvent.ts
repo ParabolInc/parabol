@@ -1,5 +1,5 @@
-import shortid from 'shortid'
 import {TimelineEventEnum} from 'parabol-client/types/graphql'
+import shortid from 'shortid'
 
 // export type ScheduledJobType = 'MEETING_STAGE_TIME_LIMIT_END'
 
@@ -10,6 +10,7 @@ interface Input {
   seenCount?: number
   type: TimelineEventEnum
   userId: string
+  isActive?: boolean
 }
 
 export default abstract class TimelineEvent {
@@ -19,13 +20,15 @@ export default abstract class TimelineEvent {
   seenCount: number
   type: TimelineEventEnum
   userId: string
+  isActive: boolean
   protected constructor(input: Input) {
-    const {createdAt, id, userId, type, interactionCount, seenCount} = input
+    const {createdAt, id, userId, type, interactionCount, seenCount, isActive} = input
     this.id = id || shortid.generate()
     this.createdAt = createdAt || new Date()
     this.userId = userId
     this.type = type
     this.interactionCount = interactionCount || 0
     this.seenCount = seenCount || 0
+    this.isActive = isActive ?? true
   }
 }

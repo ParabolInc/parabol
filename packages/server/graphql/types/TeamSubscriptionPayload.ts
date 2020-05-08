@@ -36,6 +36,7 @@ import SetCheckInEnabledPayload from './SetCheckInEnabledPayload'
 import SetSlackNotificationPayload from './SetSlackNotificationPayload'
 import {RenameMeetingSuccess} from './RenameMeetingPayload'
 import NavigateMeetingPayload from './NavigateMeetingPayload'
+import {ArchiveTimelineEventSuccess} from './ArchiveTimelineEventPayload'
 
 const types = [
   AcceptTeamInvitationPayload,
@@ -45,6 +46,7 @@ const types = [
   AddSlackAuthPayload,
   AddTeamPayload,
   ArchiveTeamPayload,
+  ArchiveTimelineEventSuccess,
   DenyPushInvitationPayload,
   DowngradeToPersonalPayload,
   EndNewMeetingPayload,

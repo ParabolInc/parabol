@@ -171,6 +171,19 @@ export const retroReflectionsByMeetingId = new LoaderMakerForeign(
   }
 )
 
+export const timelineEventsByMeetingId = new LoaderMakerForeign(
+  'timelineEvents',
+  'meetingId',
+  async (meetingIds) => {
+    const r = await getRethink()
+    return r
+      .table('TimelineEvent')
+      .getAll(r.args(meetingIds), {index: 'meetingId'})
+      .filter({isActive: true})
+      .run()
+  }
+)
+
 export const slackAuthByUserId = new LoaderMakerForeign('slackAuths', 'userId', async (userIds) => {
   const r = await getRethink()
   return r

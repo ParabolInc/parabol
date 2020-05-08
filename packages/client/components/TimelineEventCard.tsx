@@ -8,6 +8,7 @@ import {cardShadow} from '../styles/elevation'
 import {PALETTE} from '../styles/paletteV2'
 import {ICON_SIZE} from '../styles/typographyV2'
 import TimelineEventDate from './TimelineEventDate'
+import TimelineEventFooterMenuToggle from './TimelineEventFooterMenuToggle'
 
 // import PlainButton from 'universal/components/PlainButton/PlainButton'
 
@@ -16,6 +17,7 @@ interface Props {
   iconName: string
   title: ReactNode
   timelineEvent: TimelineEventCard_timelineEvent
+  meetingId?: string
 }
 
 const Surface = styled('div')({
@@ -33,7 +35,12 @@ const Surface = styled('div')({
 const CardHeader = styled('div')({
   display: 'flex',
   margin: '16px 16px 8px',
-  position: 'relative'
+  position: 'relative',
+  justifyContent: 'space-between'
+})
+
+const CardTitleBlock = styled('div')({
+  display: 'flex'
 })
 
 const EventIcon = styled(Icon)({
@@ -68,19 +75,30 @@ const HeaderText = styled('div')({
 
 class TimelineEventCard extends Component<Props> {
   render() {
-    const {children, iconName, title, timelineEvent} = this.props
-    const {createdAt} = timelineEvent
+    const {children, iconName, title, timelineEvent, meetingId} = this.props
+    const {id: timelineEventId, createdAt, type, teamId} = timelineEvent
     return (
       <Surface>
         <CardHeader>
-          <EventIcon>{iconName}</EventIcon>
-          <HeaderText>
-            {title}
-            <TimelineEventDate createdAt={createdAt} />
-          </HeaderText>
+          <CardTitleBlock>
+            <EventIcon>{iconName}</EventIcon>
+            <HeaderText>
+              {title}
+              <TimelineEventDate createdAt={createdAt} />
+            </HeaderText>
+          </CardTitleBlock>
+
           {/*<PlainButton>*/}
           {/*<MenuIcon>more_vert</MenuIcon>*/}
           {/*</PlainButton>*/}
+
+          {type == 'retroComplete' || type == 'actionComplete' ? (
+            <TimelineEventFooterMenuToggle
+              timelineEventId={timelineEventId}
+              meetingId={meetingId as string}
+              teamId={teamId as string}
+            />
+          ) : null}
         </CardHeader>
         {children}
       </Surface>
@@ -93,6 +111,8 @@ export default createFragmentContainer(TimelineEventCard, {
     fragment TimelineEventCard_timelineEvent on TimelineEvent {
       id
       createdAt
+      type
+      teamId
     }
   `
 })

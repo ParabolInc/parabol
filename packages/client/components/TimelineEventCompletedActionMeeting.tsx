@@ -38,6 +38,7 @@ class TimelineEventCompletedActionMeeting extends Component<Props> {
     return (
       <TimelineEventCard
         iconName='change_history'
+        meetingId={meetingId}
         timelineEvent={timelineEvent}
         title={
           <TimelineEventTitle>{`${meetingName} with ${teamName} Complete`}</TimelineEventTitle>
@@ -60,6 +61,7 @@ export default createFragmentContainer(TimelineEventCompletedActionMeeting, {
     fragment TimelineEventCompletedActionMeeting_timelineEvent on TimelineEventCompletedActionMeeting {
       ...TimelineEventCard_timelineEvent
       id
+      type
       meeting {
         id
         createdAt
@@ -68,6 +70,7 @@ export default createFragmentContainer(TimelineEventCompletedActionMeeting, {
         taskCount
       }
       team {
+        id
         name
       }
     }

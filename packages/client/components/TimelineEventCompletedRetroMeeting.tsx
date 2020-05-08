@@ -37,6 +37,7 @@ class TimelineEventCompletedRetroMeeting extends Component<Props> {
     return (
       <TimelineEventCard
         iconName='history'
+        meetingId={meetingId}
         timelineEvent={timelineEvent}
         title={
           <TimelineEventTitle>{`${meetingName} with ${teamName} Complete`}</TimelineEventTitle>
@@ -86,6 +87,7 @@ export default createFragmentContainer(TimelineEventCompletedRetroMeeting, {
         topicCount
       }
       team {
+        id
         name
       }
     }
