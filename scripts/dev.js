@@ -72,11 +72,15 @@ const compileGraphQL = () => {
 const removeArtifacts = async () => {
   const generated = path.join(PROJECT_ROOT, 'packages/client/__generated__')
   const queryMap = path.join(PROJECT_ROOT, 'queryMap.json')
-  await Promise.all([
-    rmdir(generated, {recursive: true}),
-    unlink(schemaPath),
-    unlink(queryMap)
-  ])
+  try {
+    await Promise.all([
+      rmdir(generated, {recursive: true}),
+      unlink(schemaPath),
+      unlink(queryMap)
+    ])
+  } catch (_) {
+    // probably didn't exist, noop
+  }
 }
 
 const dev = async (maybeInit, isDangerous) => {
