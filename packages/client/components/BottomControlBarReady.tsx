@@ -56,7 +56,7 @@ const BottomControlBarReady = (props: Props) => {
   const isFacilitating = facilitatorUserId === viewerId
   const readyCount = localStage.readyCount || 0
   const progress = readyCount / Math.max(1, activeCount - 1)
-  const isConfirmRequired = readyCount <= activeCount - 1 && activeCount > 1
+  const isConfirmRequired = readyCount < activeCount - 1 && activeCount > 1
   const [isConfirming, startConfirming] = useClickConfirmation()
   const onClick = () => {
     if (!isFacilitating) {
