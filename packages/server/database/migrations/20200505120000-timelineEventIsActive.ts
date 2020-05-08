@@ -27,7 +27,7 @@ export const down = async function(r: R) {
 
     await r
       .table('TimelineEvent')
-      .indexCreate('meetingId')
+      .indexDrop('meetingId')
       .run()
   } catch (e) {
     console.log(e)
