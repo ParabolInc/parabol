@@ -7,3 +7,15 @@ services:
       - '8080:8080'
       - '29015:29015'
       - '28015:28015'
+    volumes:
+      - rethink-data:/rethinkdb/data
+  redis:
+    image: redis
+    ports:
+      - '6379:6379'
+    volumes:
+      - redis-data:/data
+    restart: always
+volumes:
+  redis-data:
+  rethink-data:
