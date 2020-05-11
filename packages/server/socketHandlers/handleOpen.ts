@@ -41,9 +41,13 @@ const handleOpen = (socket: WebSocket, req: HttpRequest) => {
     const authToken = getQueryToken(req)
     if (!isAuthenticated(authToken)) {
       const clientIp = req.getHeader('x-forwarded-for')
+      const badAuthToken = getQueryToken(req, true)
+      const {sub, exp} = badAuthToken
       // internal error (bad auth)
       sendToSentry(new Error(`WebSocket error: not authenticated`), {
-        tags: {ip: clientIp},
+        userId: sub,
+        ip: clientIp,
+        tags: {exp: new Date(exp * 1000).toJSON()},
         sampleRate: 0.01
       })
       socket.end(1011)

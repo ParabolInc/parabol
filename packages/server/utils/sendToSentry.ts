@@ -5,6 +5,7 @@ import User from '../database/types/User'
 export interface SentryOptions {
   sampleRate?: number
   userId?: string
+  ip?: string
   tags?: {
     [tag: string]: string | number
   }
@@ -17,7 +18,7 @@ const sendToSentry = async (error: Error, options: SentryOptions = {}): void => 
   console.error('SEND TO SENTRY', error, options.tags)
   // }
   const r = await getRethink()
-  const {sampleRate, tags, userId} = options
+  const {sampleRate, tags, userId, ip} = options
   if (sampleRate && Math.random() > sampleRate) return
   const user = userId
     ? ((await r
@@ -27,7 +28,9 @@ const sendToSentry = async (error: Error, options: SentryOptions = {}): void => 
         .pluck('id', 'email')
         .run()) as User | null)
     : null
-
+  if (user && ip) {
+    ;(user as any).ip_address = ip
+  }
   Sentry.withScope((scope) => {
     user && scope.setUser(user)
     if (tags) {
