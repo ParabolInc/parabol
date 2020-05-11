@@ -3,16 +3,22 @@ async function addTask(text) {
   cy.get('button')
     .contains('Add a Task')
     .click()
-  // retries until is editable
-  cy.get('div[contenteditable="true"]').should('have.length', 4)
-  cy.get('.DraftEditor-root')
-    .contains('.DraftEditor-root', 'Describe what')
-    .type(`${text}{enter}`)
+
+  cy.contains('.DraftEditor-root', 'Describe what')
+    .should(($e) => {
+      expect($e.find('.public-DraftEditor-content')).to.have.prop('contenteditable', 'true')
+    })
+    .type(text)
+    .type('{enter}')
+    .should('have.text', text)
 }
 
 function editTask(text: string, oldContent: string) {
   cy.contains('.DraftEditor-root', oldContent)
-    .type(`{selectall}{backspace}${text}{enter}`)
+    .type('{selectall}')
+    .type('{backspace}')
+    .type(text)
+    .type('{enter}')
     .should('have.text', text)
 }
 
