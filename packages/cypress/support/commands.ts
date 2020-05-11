@@ -71,7 +71,7 @@ const visitReflect = () => {
   cy.visit('/retrospective-demo/reflect')
   cy.get('[data-cy=start-demo-button]')
     .should('be.visible')
-    .click()
+    .click({force: true})
     .then(() => {
       cy.get('[data-cy=sidebar-toggle]').click()
     })
