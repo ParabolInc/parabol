@@ -1,5 +1,5 @@
 import nodemailer from 'nodemailer'
-import sendToSentry from 'server/utils/sendToSentry'
+import sendToSentry from '../utils/sendToSentry'
 import MailManager, {MailManagerOptions} from './MailManager'
 
 export default class MailManagerGoogle extends MailManager {

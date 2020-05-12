@@ -1,6 +1,6 @@
-import getMailManager from 'server/email/getMailManager'
 import getRethink from '../../../../database/rethinkDriver'
 import Meeting from '../../../../database/types/Meeting'
+import getMailManager from '../../../../email/getMailManager'
 import newMeetingSummaryEmailCreator from '../../../../email/newMeetingSummaryEmailCreator'
 import {GQLContext} from '../../../graphql'
 

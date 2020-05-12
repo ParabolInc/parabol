@@ -1,5 +1,5 @@
 import Mailgun from 'mailgun-js'
-import sendToSentry from 'server/utils/sendToSentry'
+import sendToSentry from '../utils/sendToSentry'
 import MailManager, {MailManagerOptions} from './MailManager'
 
 export default class MailManagerMailgun extends MailManager {
