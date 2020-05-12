@@ -24,7 +24,7 @@ The Parabol Product Team
 `
 }
 
-export default (props) => ({
+export default (props: UpcomingInvoiceEmailProps) => ({
   subject,
   body: makeBody(props),
   html: Oy.renderTemplate(<UpcomingInvoiceEmail {...props} />, {
