@@ -5,6 +5,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 5.6.1 2020-May-12
+
+## Fixed
+* Put timeout on fetch to google
+
 ## 5.6.0 2020-May-06
 
 ## Fixed

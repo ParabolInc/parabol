@@ -1,3 +1,4 @@
+import AbortController from 'abort-controller'
 import {sign} from 'jsonwebtoken'
 import fetch from 'node-fetch'
 import sendToSentry from './utils/sendToSentry'
@@ -61,6 +62,8 @@ export type GoogleErrorResponse = [
   }
 ]
 
+const MAX_REQUEST_TIME = 10000
+
 export default class GoogleLanguageManager {
   static GOOGLE_EXPIRY = 3600
   jwt: string | undefined
@@ -102,9 +105,14 @@ export default class GoogleLanguageManager {
         }
       ] as any
     }
-
+    const controller = new AbortController()
+    const {signal} = controller as any
+    const timeout = setTimeout(() => {
+      controller.abort()
+    }, MAX_REQUEST_TIME)
     try {
       const res = await fetch(`https://language.googleapis.com/v1/${endpoint}`, {
+        signal,
         method: 'POST',
         headers: {
           Authorization: `Bearer ${this.jwt}`,
@@ -118,9 +126,11 @@ export default class GoogleLanguageManager {
           }
         })
       })
+      clearTimeout(timeout)
       return res.json()
     } catch (e) {
       sendToSentry(e)
+      clearTimeout(timeout)
       return [
         {
           error: {
