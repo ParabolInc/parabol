@@ -13139,6 +13139,11 @@ nodemailer-shared@1.1.0:
   dependencies:
     nodemailer-fetch "1.6.0"
 
+nodemailer@^6.4.6:
+  version "6.4.6"
+  resolved "https://registry.yarnpkg.com/nodemailer/-/nodemailer-6.4.6.tgz#d37f504f6560b36616f646a606894fe18819107f"
+  integrity sha512-/kJ+FYVEm2HuUlw87hjSqTss+GU35D4giOpdSfGp7DO+5h6RlJj7R94YaYHOkoxu1CSaM0d3WRBtCzwXrY6MKA==
+
 "nopt@2 || 3":
   version "3.0.6"
   resolved "https://registry.yarnpkg.com/nopt/-/nopt-3.0.6.tgz#c6465dbf08abcd4db359317f79ac68a646b28ff9"

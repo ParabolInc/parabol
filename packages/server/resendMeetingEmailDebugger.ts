@@ -1,6 +1,5 @@
 // import jwtDecode from 'jwt-decode'
 // import newMeetingSummaryEmailCreator from '../client/modules/email/components/SummaryEmail/newMeetingSummaryEmailCreator'
-// import {sendEmailContent} from './email/sendEmail'
 // import RateLimiter from './graphql/RateLimiter'
 // import DataLoaderCache from './graphql/DataLoaderCache'
 // import RethinkDataLoader from './dataloader/RethinkDataLoader'
@@ -26,7 +25,6 @@
 
 // const resendMeetingEmailDebugger = async () => {
 //   const email = await newMeetingSummaryEmailCreator({meetingId: MEETING_ID, context})
-//   sendEmailContent(EMAIL_ADDRESS, email, []).catch(console.log)
 // }
 
 // export default resendMeetingEmailDebugger

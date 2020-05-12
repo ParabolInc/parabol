@@ -1,7 +1,7 @@
+import getMailManager from 'server/email/getMailManager'
 import getRethink from '../../../../database/rethinkDriver'
 import Meeting from '../../../../database/types/Meeting'
 import newMeetingSummaryEmailCreator from '../../../../email/newMeetingSummaryEmailCreator'
-import {sendEmailContent} from '../../../../email/sendEmail'
 import {GQLContext} from '../../../graphql'
 
 export default async function sendNewMeetingSummary(newMeeting: Meeting, context: GQLContext) {
@@ -9,28 +9,31 @@ export default async function sendNewMeetingSummary(newMeeting: Meeting, context
   if (summarySentAt) return
   const now = new Date()
   const r = await getRethink()
-  await r
-    .table('NewMeeting')
-    .get(meetingId)
-    .update({summarySentAt: now})
-    .run()
   const {dataLoader} = context
   const [meetingMembers, team] = await Promise.all([
     dataLoader.get('meetingMembersByMeetingId').load(meetingId),
-    dataLoader.get('teams').load(teamId)
+    dataLoader.get('teams').load(teamId),
+    r
+      .table('NewMeeting')
+      .get(meetingId)
+      .update({summarySentAt: now})
+      .run()
   ])
   const {name: teamName, orgId} = team
   const userIds = meetingMembers.map(({userId}) => userId)
-  const [users, organization] = await Promise.all([
+  const [content, users, organization] = await Promise.all([
+    newMeetingSummaryEmailCreator({meetingId, context}),
     dataLoader.get('users').loadMany(userIds),
     dataLoader.get('organizations').load(orgId)
   ])
   const {tier, name: orgName} = organization
   const emailAddresses = users.map(({email}) => email)
-  const emailContent = await newMeetingSummaryEmailCreator({meetingId, context})
-  return sendEmailContent(emailAddresses, emailContent, [
-    'type:meetingSummary',
-    `tier:${tier}`,
-    `team:${teamName}:${orgName}:${teamId}:${orgId}`
-  ])
+  const {subject, body, html} = content
+  await getMailManager().sendEmail({
+    to: emailAddresses,
+    subject,
+    body,
+    html,
+    tags: ['type:meetingSummary', `tier:${tier}`, `team:${teamName}:${orgName}:${teamId}:${orgId}`]
+  })
 }

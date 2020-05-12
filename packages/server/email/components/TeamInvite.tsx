@@ -1,5 +1,4 @@
 import {ExternalLinks} from 'parabol-client/types/constEnums'
-import PropTypes from 'prop-types'
 import React from 'react'
 import emailDir from '../emailDir'
 import {emailCopyStyle, emailLinkStyle, emailProductTeamSignature} from '../styles'
@@ -33,7 +32,20 @@ const videoGraphicStyle = {
 
 const videoGraphicSrc = `${emailDir}retro-video-still.png`
 
-const TeamInvite = (props) => {
+export interface TeamInviteProps {
+  inviteeName: string
+  inviteeEmail: string
+  inviterName: string
+  inviterEmail: string
+  inviteLink: string
+  teamName: string
+  meeting?: {
+    meetingType: string
+    name: string
+  }
+}
+
+const TeamInvite = (props: TeamInviteProps) => {
   const {
     inviterName,
     inviterEmail,
@@ -77,25 +89,25 @@ const TeamInvite = (props) => {
             <Button url={inviteLink}>Join {meeting.name}</Button>
           </div>
         ) : (
-            <div>
-              <p style={emailCopyStyle}>
-                {'Hi '}
-                <span style={emailCopyStyle}>{nameOrEmail}</span>
-                {','}
-              </p>
-              <p style={emailCopyStyle}>
-                <span style={boldStyle}>{inviterName}</span>
-                {' ('}
-                <a href={`mailto:${inviterEmail}`} style={emailLinkStyle}>
-                  {inviterEmail}
-                </a>
-                {') has invited you to join a team ('}
-                <b>{teamName}</b>
-                {') on Parabol.'}
-              </p>
-              <Button url={inviteLink}>Join Team</Button>
-            </div>
-          )}
+          <div>
+            <p style={emailCopyStyle}>
+              {'Hi '}
+              <span style={emailCopyStyle}>{nameOrEmail}</span>
+              {','}
+            </p>
+            <p style={emailCopyStyle}>
+              <span style={boldStyle}>{inviterName}</span>
+              {' ('}
+              <a href={`mailto:${inviterEmail}`} style={emailLinkStyle}>
+                {inviterEmail}
+              </a>
+              {') has invited you to join a team ('}
+              <b>{teamName}</b>
+              {') on Parabol.'}
+            </p>
+            <Button url={inviteLink}>Join Team</Button>
+          </div>
+        )}
         <EmptySpace height={24} />
         <p style={emailCopyStyle}>
           <span style={boldStyle}>{'New to Parabol?'}</span>
@@ -143,16 +155,6 @@ const TeamInvite = (props) => {
       </EmailBlock>
     </Layout>
   )
-}
-
-TeamInvite.propTypes = {
-  inviteLink: PropTypes.string.isRequired,
-  inviteeName: PropTypes.string,
-  inviteeEmail: PropTypes.string.isRequired,
-  inviterName: PropTypes.string.isRequired,
-  inviterEmail: PropTypes.string.isRequired,
-  teamName: PropTypes.string.isRequired,
-  meeting: PropTypes.object
 }
 
 export default TeamInvite
