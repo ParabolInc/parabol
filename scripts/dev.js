@@ -8,6 +8,7 @@ const webpack = require('webpack')
 const getProjectRoot = require('./webpack/utils/getProjectRoot')
 
 const rmdir = promisify(fs.rmdir)
+const unlink = promisify(fs.unlink)
 const PROJECT_ROOT = getProjectRoot()
 const TOOLBOX_ROOT = path.join(PROJECT_ROOT, 'scripts', 'toolbox')
 
@@ -68,11 +69,28 @@ const compileGraphQL = () => {
   })
 }
 
+const removeArtifacts = async () => {
+  const generated = path.join(PROJECT_ROOT, 'packages/client/__generated__')
+  const queryMap = path.join(PROJECT_ROOT, 'queryMap.json')
+  try {
+    await Promise.all([
+      rmdir(generated, {recursive: true}),
+      unlink(schemaPath),
+      unlink(queryMap)
+    ])
+  } catch (_) {
+    // probably didn't exist, noop
+  }
+}
+
 const dev = async (maybeInit, isDangerous) => {
   const isInit = !fs.existsSync(path.join(TOOLBOX_ROOT, 'migrateDB.js')) || maybeInit
   if (isInit) {
     console.log('👋👋👋      Welcome to Parabol!      👋👋👋')
-    await compileToolbox()
+    await Promise.all([
+      removeArtifacts(),
+      compileToolbox()
+    ])
   }
   await require('./toolbox/updateSchema.js').default()
   await compileGraphQL()

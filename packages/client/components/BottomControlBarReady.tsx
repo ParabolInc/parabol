@@ -3,6 +3,7 @@ import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
+import useClickConfirmation from '~/hooks/useClickConfirmation'
 import useGotoNext from '~/hooks/useGotoNext'
 import {TransitionStatus} from '~/hooks/useTransition'
 import FlagReadyToAdvanceMutation from '~/mutations/FlagReadyToAdvanceMutation'
@@ -14,6 +15,7 @@ import {BottomControlBarReady_meeting} from '~/__generated__/BottomControlBarRea
 import BottomControlBarProgress from './BottomControlBarProgress'
 import BottomNavControl from './BottomNavControl'
 import BottomNavIconLabel from './BottomNavIconLabel'
+import ConfirmingToggle from './ConfirmingToggle'
 import Icon from './Icon'
 
 interface Props {
@@ -24,27 +26,29 @@ interface Props {
   handleGotoNext: ReturnType<typeof useGotoNext>
 }
 
-const CheckIcon = styled(Icon)<{progress: number; isNext: boolean}>(({progress, isNext}) => ({
-  color: isNext
-    ? progress === 1
+const CheckIcon = styled(Icon)<{progress: number; isNext: boolean; isViewerReady: boolean}>(
+  ({isViewerReady, progress, isNext}) => ({
+    color: isNext
+      ? progress === 1
+        ? PALETTE.TEXT_GREEN
+        : PALETTE.EMPHASIS_WARM
+      : isViewerReady
       ? PALETTE.TEXT_GREEN
-      : PALETTE.EMPHASIS_WARM
-    : progress > 0
-    ? PALETTE.TEXT_GREEN
-    : PALETTE.TEXT_GRAY,
-  fontSize: 24,
-  fontWeight: 600,
-  height: 24,
-  transformOrigin: '0 0',
-  // 20px to 16 = 0.75
-  transform: progress > 0 ? `scale(0.75)translate(4px, 4px)` : undefined,
-  transition: `transform 100ms ${BezierCurve.DECELERATE}`
-}))
+      : PALETTE.TEXT_GRAY,
+    fontSize: 24,
+    fontWeight: 600,
+    height: 24,
+    transformOrigin: '0 0',
+    // 20px to 16 = 0.75
+    transform: progress > 0 ? `scale(0.75)translate(4px, 4px)` : undefined,
+    transition: `transform 100ms ${BezierCurve.DECELERATE}`
+  })
+)
 
 const BottomControlBarReady = (props: Props) => {
   const {handleGotoNext, meeting, onTransitionEnd, status} = props
   const {id: meetingId, facilitatorUserId, localStage, meetingMembers, reflectionGroups} = meeting
-  const {id: stageId, isViewerReady, phaseType} = localStage
+  const {id: stageId, isComplete, isViewerReady, phaseType} = localStage
   const {gotoNext, ref} = handleGotoNext
   const activeCount = meetingMembers.filter((member) => member.isCheckedIn).length
   const atmosphere = useAtmosphere()
@@ -52,11 +56,15 @@ const BottomControlBarReady = (props: Props) => {
   const isFacilitating = facilitatorUserId === viewerId
   const readyCount = localStage.readyCount || 0
   const progress = readyCount / Math.max(1, activeCount - 1)
+  const isConfirmRequired = readyCount < activeCount - 1 && activeCount > 1
+  const [isConfirming, startConfirming] = useClickConfirmation()
   const onClick = () => {
-    if (isFacilitating) {
+    if (!isFacilitating) {
+      FlagReadyToAdvanceMutation(atmosphere, {isReady: !isViewerReady, meetingId, stageId})
+    } else if (isComplete || !isConfirmRequired || isConfirming) {
       gotoNext()
     } else {
-      FlagReadyToAdvanceMutation(atmosphere, {isReady: !isViewerReady, meetingId, stageId})
+      startConfirming()
     }
   }
   const onKeyDown = isFacilitating
@@ -65,7 +73,7 @@ const BottomControlBarReady = (props: Props) => {
       })
     : undefined
   const icon = isFacilitating ? 'arrow_forward' : 'check'
-  const label = isFacilitating ? 'Next' : 'Ready'
+  const label = isFacilitating ? (isConfirming ? 'Confirm' : 'Next') : 'Ready'
   const getDisabled = () => {
     if (!isFacilitating) return false
     if (phaseType === NewMeetingPhaseTypeEnum.reflect) {
@@ -84,11 +92,13 @@ const BottomControlBarReady = (props: Props) => {
       onKeyDown={onKeyDown}
       ref={ref}
     >
-      <BottomControlBarProgress progress={progress} />
+      <BottomControlBarProgress isConfirming={isConfirming} progress={progress} />
       <BottomNavIconLabel label={label}>
-        <CheckIcon isNext={isFacilitating} progress={progress}>
-          {icon}
-        </CheckIcon>
+        <ConfirmingToggle isConfirming={isConfirming}>
+          <CheckIcon isViewerReady={isViewerReady} isNext={isFacilitating} progress={progress}>
+            {icon}
+          </CheckIcon>
+        </ConfirmingToggle>
       </BottomNavIconLabel>
     </BottomNavControl>
   )
@@ -97,6 +107,7 @@ const BottomControlBarReady = (props: Props) => {
 graphql`
   fragment BottomControlBarReadyStage on NewMeetingStage {
     id
+    isComplete
     readyCount
     isViewerReady
     phaseType
