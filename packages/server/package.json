@@ -92,6 +92,7 @@
     "@mattkrick/sanitize-svg": "^0.2.1",
     "@sentry/integrations": "^5.8.0",
     "@sentry/node": "^5.8.0",
+    "abort-controller": "^3.0.0",
     "analytics-node": "^3.0.0",
     "aws-sdk": "^2.99.0",
     "base64url": "^3.0.1",
