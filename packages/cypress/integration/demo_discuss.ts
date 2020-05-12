@@ -1,51 +1,25 @@
 // Adds the task in cypress and returns an index to use for editing and replying to the task
-function addTask(text) {
-  cy.get(`[data-cy=discuss-input-add]`).click()
+async function addTask(text) {
+  cy.get('button')
+    .contains('Add a Task')
+    .click()
 
-  cy.get(`[data-cy=discuss-thread-list]`)
-    .children()
-    .last()
-    .as('add-discuss-task')
-
-  return new Cypress.Promise((resolve) => {
-    cy.get('@add-discuss-task')
-      .invoke('index')
-      .then((i) => {
-        i = i - 2
-
-        cy.get(`[data-cy=thread-item-${i}-task-card-editor]`).as('card-editor')
-
-        cy.get('@card-editor').should('be.visible')
-
-        cy.wait(50)
-
-        cy.get('@card-editor').type(`${text}`)
-
-        cy.wait(50)
-
-        cy.get('@card-editor').should('have.text', `${text}`)
-
-        cy.wait(50)
-
-        cy.get('@card-editor').type('{enter}')
-
-        resolve(i)
-      })
-  })
+  cy.contains('.DraftEditor-root', 'Describe what')
+    .should(($e) => {
+      expect($e.find('.public-DraftEditor-content')).to.have.prop('contenteditable', 'true')
+    })
+    .type(text)
+    .type('{enter}')
+    .should('have.text', text)
 }
 
-function editTask(text, idx) {
-  cy.get(`[data-cy=thread-item-${idx}-task-card-editor]`).as('edit-discuss-task')
-
-  cy.get('@edit-discuss-task')
+function editTask(text: string, oldContent: string) {
+  cy.contains('.DraftEditor-root', oldContent)
     .type('{selectall}')
     .type('{backspace}')
-    .type(`${text}`)
-    .should('have.text', `${text}`)
-
-  cy.get('@edit-discuss-task').type('{enter}')
-
-  cy.get('@edit-discuss-task').should('have.text', text)
+    .type(text)
+    .type('{enter}')
+    .should('have.text', text)
 }
 
 function replyComment(text, idx, child) {
@@ -166,13 +140,11 @@ describe('Test Discuss page Demo', () => {
   })
 
   it('can create a new task', () => {
-    addTask('New Task created').then((result) => {
-      taskIndex = result
-    })
+    addTask('New Task created')
   })
 
   it('can edit a created task', () => {
-    editTask('Edited the task', taskIndex)
+    editTask('Edited the task', 'New Task created')
   })
 
   it('can reply to a created task', () => {
