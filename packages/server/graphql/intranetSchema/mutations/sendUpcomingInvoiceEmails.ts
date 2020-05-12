@@ -3,13 +3,14 @@ import {OrgUserRole, TierEnum} from 'parabol-client/types/graphql'
 import {months} from 'parabol-client/utils/makeDateString'
 import getRethink from '../../../database/rethinkDriver'
 import {UpcomingInvoiceEmailProps} from '../../../email/components/UpcomingInvoiceEmail'
-import sendEmailPromise from '../../../email/sendEmail'
+import UpcomingInvoiceEmailTemplate from '../../../email/components/UpcomingInvoiceEmailTemplate'
+import getMailManager from '../../../email/getMailManager'
 import {requireSU} from '../../../utils/authorization'
 import makeAppLink from '../../../utils/makeAppLink'
 import {UPCOMING_INVOICE_EMAIL_WARNING} from '../../../utils/serverConstants'
 
 interface Details extends UpcomingInvoiceEmailProps {
-  emailStr: string
+  emails: string[]
 }
 
 const makePeriodEndStr = (periodEnd: Date) => {
@@ -29,10 +30,8 @@ const getEmailDetails = (organizations) => {
       email: newUser.user.email,
       name: newUser.user.preferredName
     }))
-    const billingLeaderEmails = billingLeaders.map((billingLeader) => billingLeader.user.email)
-    const emailStr = billingLeaderEmails.join(', ')
     details.push({
-      emailStr,
+      emails: billingLeaders.map((billingLeader) => billingLeader.user.email),
       periodEndStr: makePeriodEndStr(periodEnd),
       memberUrl: makeAppLink(`me/organizations/${orgId}/members`),
       newUsers
@@ -101,27 +100,35 @@ const sendUpcomingInvoiceEmails = {
       .coerceTo('array')
       .run()
 
-    if (organizations.length) {
-      const details = getEmailDetails(organizations)
-      await Promise.all(
-        details.map((detail) => {
-          const {emailStr, ...props} = detail
-          sendEmailPromise(emailStr, 'UpcomingInvoiceEmailTemplate', props, [
-            'type:upcomingInvoice'
-          ]).catch()
-        })
-      )
-      const orgIds = organizations.map(({id}) => id)
-      await r
-        .table('Organization')
-        .getAll(r.args(orgIds))
-        .update({
-          upcomingInvoiceEmailSentAt: now
-        })
-        .run()
-      return details.map(({emailStr}) => emailStr)
-    }
-    return []
+    if (organizations.length === 0) return []
+
+    const details = getEmailDetails(organizations)
+    await Promise.all(
+      details.map((detail) => {
+        const {emails, ...props} = detail
+        const {subject, body, html} = UpcomingInvoiceEmailTemplate(props)
+        return Promise.all(
+          emails.map((to) => {
+            return getMailManager().sendEmail({
+              to,
+              subject,
+              body,
+              html,
+              tags: ['type:upcomingInvoice']
+            })
+          })
+        )
+      })
+    )
+    const orgIds = organizations.map(({id}) => id)
+    await r
+      .table('Organization')
+      .getAll(r.args(orgIds))
+      .update({
+        upcomingInvoiceEmailSentAt: now
+      })
+      .run()
+    return details.map(({emails}) => emails.join(','))
   }
 }
 

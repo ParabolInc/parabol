@@ -6,7 +6,8 @@ import {SuggestedActionTypeEnum} from 'parabol-client/types/graphql'
 import getRethink from '../../database/rethinkDriver'
 import NotificationTeamInvitation from '../../database/types/NotificationTeamInvitation'
 import TeamInvitation from '../../database/types/TeamInvitation'
-import sendEmailPromise from '../../email/sendEmail'
+import getMailManager from '../../email/getMailManager'
+import teamInviteEmailCreator from '../../email/teamInviteEmailCreator'
 import removeSuggestedAction from '../../safeMutations/removeSuggestedAction'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import getBestInvitationMeeting from '../../utils/getBestInvitationMeeting'
@@ -15,10 +16,10 @@ import publish from '../../utils/publish'
 import sendSegmentEvent from '../../utils/sendSegmentEvent'
 import {TEAM_INVITATION_LIFESPAN} from '../../utils/serverConstants'
 import standardError from '../../utils/standardError'
+import {GQLContext} from '../graphql'
 import rateLimit from '../rateLimit'
 import GraphQLEmailType from '../types/GraphQLEmailType'
 import InviteToTeamPayload from '../types/InviteToTeamPayload'
-import {GQLContext} from '../graphql'
 
 const randomBytes = promisify(crypto.randomBytes, crypto)
 
@@ -132,24 +133,26 @@ export default {
       const emailResults = await Promise.all(
         teamInvitationsToInsert.map((invitation) => {
           const user = users.find((user) => user.email === invitation.email)
-          return sendEmailPromise(
-            invitation.email,
-            'teamInvite',
-            {
-              inviteLink: makeAppLink(`team-invitation/${invitation.token}`, options),
-              inviteeName: user ? user.preferredName : null,
-              inviteeEmail: invitation.email,
-              inviterName: inviter.preferredName,
-              inviterEmail: inviter.email,
-              teamName,
-              meeting: bestMeeting
-            },
-            [
+          const {html, subject, body} = teamInviteEmailCreator({
+            inviteLink: makeAppLink(`team-invitation/${invitation.token}`, options),
+            inviteeName: user ? user.preferredName : '',
+            inviteeEmail: invitation.email,
+            inviterName: inviter.preferredName,
+            inviterEmail: inviter.email,
+            teamName,
+            meeting: bestMeeting
+          })
+          return getMailManager().sendEmail({
+            to: invitation.email,
+            html,
+            subject,
+            body,
+            tags: [
               'type:teamInvitation',
               `tier:${tier}`,
               `team:${teamName}:${orgName}:${teamId}:${orgId}`
             ]
-          )
+          })
         })
       )
 

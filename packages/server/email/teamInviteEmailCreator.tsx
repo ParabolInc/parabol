@@ -1,11 +1,11 @@
 import Oy from 'oy-vey'
 import React from 'react'
-import TeamInvite from './components/TeamInvite'
+import TeamInvite, {TeamInviteProps} from './components/TeamInvite'
 import {headCSS} from './styles'
 
 const subject = 'You’ve been invited to Parabol'
 
-const teamInviteText = (props) => {
+const teamInviteText = (props: TeamInviteProps) => {
   const {inviteeName, inviteeEmail, inviterName, inviterEmail, inviteLink, teamName} = props
   return `
 Hello ${inviteeName || inviteeEmail},
@@ -21,7 +21,7 @@ The Parabol Product Team
 `
 }
 
-export default (props) => ({
+export default (props: TeamInviteProps) => ({
   subject,
   body: teamInviteText(props),
   html: Oy.renderTemplate(<TeamInvite {...props} />, {

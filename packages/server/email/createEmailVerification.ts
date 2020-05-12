@@ -5,17 +5,22 @@ import {Security} from 'parabol-client/types/constEnums'
 import {ISignUpWithPasswordOnMutationArguments} from 'parabol-client/types/graphql'
 import getRethink from '../database/rethinkDriver'
 import EmailVerification from '../database/types/EmailVerification'
-import {sendEmailContent} from '../email/sendEmail'
 import emailVerificationEmailCreator from './components/emailVerificationEmailCreator'
+import getMailManager from './getMailManager'
 
 const createEmailVerification = async (props: ISignUpWithPasswordOnMutationArguments) => {
   const {email, password, invitationToken, segmentId} = props
   const tokenBuffer = crypto.randomBytes(48)
   const verifiedEmailToken = base64url.encode(tokenBuffer)
-  const emailContent = emailVerificationEmailCreator({verifiedEmailToken, invitationToken})
-  try {
-    await sendEmailContent([email], emailContent, ['type:emailVerification'])
-  } catch (e) {
+  const {subject, body, html} = emailVerificationEmailCreator({verifiedEmailToken, invitationToken})
+  const success = await getMailManager().sendEmail({
+    to: email,
+    subject,
+    body,
+    html,
+    tags: ['type:emailVerification']
+  })
+  if (!success) {
     return {error: {message: 'Unable to send verification email'}}
   }
   const r = await getRethink()

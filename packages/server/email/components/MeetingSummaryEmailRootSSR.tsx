@@ -25,6 +25,12 @@ interface Props {
   meetingId: string
 }
 
+export const meetingSummaryUrlParams = {
+  utm_source: 'summary email',
+  utm_medium: 'email',
+  utm_campaign: 'after-meeting'
+}
+
 const MeetingSummaryEmailRootSSR = (props: Props) => {
   const {environment, meetingId} = props
   return (
@@ -40,12 +46,7 @@ const MeetingSummaryEmailRootSSR = (props: Props) => {
         if (!newMeeting) return null
         const {team} = newMeeting
         const {id: teamId} = team
-        const params = {
-          utm_source: 'summary email',
-          utm_medium: 'email',
-          utm_campaign: 'after-meeting'
-        }
-        const options = {params}
+        const options = {params: meetingSummaryUrlParams}
         const referrerUrl = makeAppLink(`new-summary/${meetingId}`, options)
         const meetingUrl = makeAppLink(`meet/${meetingId}`, options)
         const teamDashUrl = makeAppLink(`team/${teamId}`, options)
