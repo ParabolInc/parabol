@@ -1,8 +1,8 @@
 import {GraphQLList, GraphQLString} from 'graphql'
 import ms from 'ms'
-import getMailManager from 'server/email/getMailManager'
 import getRethink from '../../../database/rethinkDriver'
 import notificationSummaryCreator from '../../../email/components/notificationSummaryCreator'
+import getMailManager from '../../../email/getMailManager'
 import {requireSU} from '../../../utils/authorization'
 
 const sendBatchNotificationEmails = {
