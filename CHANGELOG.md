@@ -5,6 +5,18 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 5.7.0 2020-May-13
+
+## Fixed
+* Throw error instead of string when redis response times out (#3847)
+* Topic links on meeting summary emails (#3843)
+* Remove wait pattern in cypress demo_discuss tests (#3837)
+
+## Added
+* email attribute to segment page events (#3847)
+* support for other mail providers (#3838)
+* Confirm on next and end buttons (#3823)
+
 ## 5.6.1 2020-May-12
 
 ## Fixed
