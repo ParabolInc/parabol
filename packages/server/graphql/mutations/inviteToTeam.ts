@@ -182,6 +182,10 @@ export default {
         teamId,
         invitees: successfulInvitees
       }).catch()
+      const inviteTo = meetingId ? 'meeting' : 'team'
+      successfulInvitees.forEach((invitee) => {
+        sendSegmentEvent('Invite Non-Parabol User', viewerId, {invitee, inviteTo})
+      })
       return data
     }
   )
