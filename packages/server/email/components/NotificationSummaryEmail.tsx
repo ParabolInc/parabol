@@ -1,8 +1,9 @@
 import plural from 'parabol-client/utils/plural'
+import {ContactInfo, ExternalLinks} from 'parabol-client/types/constEnums'
 import PropTypes from 'prop-types'
 import React from 'react'
 import makeAppLink from '../../utils/makeAppLink'
-import {emailCopyStyle, emailLinkStyle, emailProductTeamSignature} from '../styles'
+import {emailCopyStyle, emailLinkStyle} from '../styles'
 import Button from './Button'
 import EmailBlock from './EmailBlock/EmailBlock'
 import EmailFooter from './EmailFooter/EmailFooter'
@@ -21,7 +22,7 @@ const linkStyle = {
   ...emailLinkStyle
 }
 
-const notificationPageUrl = makeAppLink('me/tasks')
+const tasksUrl = makeAppLink('me/tasks')
 
 export interface NotificationSummaryProps {
   preferredName: string
@@ -33,34 +34,29 @@ export default function NotificationSummaryEmail(props: NotificationSummaryProps
     <Layout maxWidth={544}>
       <EmailBlock innerMaxWidth={innerMaxWidth}>
         <Header />
-        <p style={copyStyle}>{`Hi ${preferredName},`}</p>
+        <p style={copyStyle}>{`Hi ${preferredName} -`}</p>
         <p style={copyStyle}>
-          {'You have received '}
+          {'You have '}
           <span style={{fontWeight: 600}}>
             {`${notificationCount} new ${plural(notificationCount, 'notification')}`}
           </span>
-          {' in the last day.'}
+          {' — see what’s changed with your teams.'}
         </p>
-        <Button url={notificationPageUrl}>{'See My Notifications'}</Button>
+        <Button url={tasksUrl}>{'See My Dashboard'}</Button>
         <EmptySpace height={24} />
-        <p style={copyStyle}>{'This is just a friendly, automated nudge!'}</p>
-        <p style={copyStyle}>{'Your teammates need you!'}</p>
-        <p style={copyStyle}>{emailProductTeamSignature}</p>
         <p style={copyStyle}>
-          <b>{'P.S. We want to hear from you:'}</b>
-        </p>
-        <p style={copyStyle}>
-          {'Email us at '}
-          <a style={linkStyle} href='mailto:love@parabol.co'>
-            {'love@parabol.co'}
+          {'If you need anything from us, don’t hesitate to reach out at '}
+          <a style={linkStyle} href={`mailto:${ContactInfo.EMAIL_LOVE}`}>
+            {ContactInfo.EMAIL_LOVE}
           </a>
-          {' with any feedback or questions you may have about our software.'}
+          {'.'}
         </p>
         <p style={copyStyle}>
-          {'Or, schedule a video chat with our product team: '}
+          {'Have fun & do great work,'}
           <br />
-          <a style={linkStyle} href='https://calendly.com/parabol/product/'>
-            {'https://calendly.com/parabol/product/'}
+          {'- '}
+          <a style={linkStyle} href={ExternalLinks.TEAM}>
+            {'Parabol Team'}
           </a>
         </p>
         <EmptySpace height={16} />
