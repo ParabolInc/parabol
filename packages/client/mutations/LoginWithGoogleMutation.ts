@@ -1,7 +1,8 @@
-import {LoginWithGoogleMutation as TLoginWithGoogleMutation} from '../__generated__/LoginWithGoogleMutation.graphql'
-import {commitMutation} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
+import {commitMutation} from 'react-relay'
+import handleSuccessfulLogin from '~/utils/handleSuccessfulLogin'
 import {HistoryLocalHandler, StandardMutation} from '../types/relayMutations'
+import {LoginWithGoogleMutation as TLoginWithGoogleMutation} from '../__generated__/LoginWithGoogleMutation.graphql'
 import handleAuthenticationRedirect from './handlers/handleAuthenticationRedirect'
 
 const mutation = graphql`
@@ -35,6 +36,7 @@ const LoginWithGoogleMutation: StandardMutation<TLoginWithGoogleMutation, Histor
       onCompleted({loginWithGoogle}, errors)
       const {error: uiError} = loginWithGoogle
       if (!uiError && !errors) {
+        handleSuccessfulLogin(loginWithGoogle)
         const authToken = acceptTeamInvitation.authToken || loginWithGoogle.authToken
         atmosphere.setAuthToken(authToken)
         handleAuthenticationRedirect(acceptTeamInvitation, {atmosphere, history})

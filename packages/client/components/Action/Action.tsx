@@ -1,6 +1,7 @@
 import {css, Global} from '@emotion/core'
 import React, {lazy, memo, Suspense} from 'react'
 import {Route, Switch} from 'react-router'
+import useCacheEmail from '~/hooks/useCacheEmail'
 import useServiceWorkerUpdater from '../../hooks/useServiceWorkerUpdater'
 import useTrebuchetEvents from '../../hooks/useTrebuchetEvents'
 import globalStyles from '../../styles/theme/globalStyles'
@@ -31,6 +32,7 @@ const InvitationLink = lazy(() =>
 )
 
 const Action = memo(() => {
+  useCacheEmail()
   useTrebuchetEvents()
   useServiceWorkerUpdater()
   return (

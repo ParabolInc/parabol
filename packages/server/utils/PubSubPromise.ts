@@ -27,10 +27,10 @@ export default class PubSubPromise<T extends PubSubPromisePayload> {
     const {jobId, ...rest} = payload
     const cachedJob = this.jobs[jobId]
     if (cachedJob) {
+      delete this.jobs[jobId]
       const {resolve, timeoutId} = cachedJob
       clearTimeout(timeoutId)
       resolve(rest)
-      delete this.jobs[jobId]
     }
   }
 
@@ -44,7 +44,7 @@ export default class PubSubPromise<T extends PubSubPromisePayload> {
       const {jobId} = payload
       const timeoutId = setTimeout(() => {
         delete this.jobs[jobId]
-        reject('Redis took too long to respond')
+        reject(new Error('Redis took too long to respond'))
       }, MAX_TIMEOUT)
       this.jobs[jobId] = {resolve, timeoutId}
       this.publisher.publish(this.pubChannel, JSON.stringify(payload))
