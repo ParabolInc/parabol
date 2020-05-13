@@ -320,7 +320,7 @@ export default {
       meetingNumber
     }
     const meetingTemplateName = await getMeetingTemplateName(meetingType, phases, dataLoader)
-    const segmentData = {...traits, meetingType, meetingTemplateName}
+    const segmentData = {...traits, meetingType, meetingTemplateName, meetingNumber}
     const facilitatorSegmentData = {...segmentData, wasFacilitator: true}
     sendSegmentEvent('Meeting Completed', facilitatorUserId, facilitatorSegmentData).catch()
     sendSegmentEvent('Meeting Completed', nonFacilitators, segmentData).catch()
