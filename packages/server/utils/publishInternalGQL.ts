@@ -1,4 +1,5 @@
 import AuthToken from '../database/types/AuthToken'
+import {getUserId} from './authorization'
 import getGraphQLExecutor from './getGraphQLExecutor'
 import sendToSentry from './sendToSentry'
 
@@ -23,7 +24,9 @@ const publishInternalGQL = async (options: Options) => {
       isPrivate: true
     })
   } catch (e) {
-    sendToSentry(e, {tags: {jobId}})
+    const viewerId = getUserId(authToken)
+    const error = typeof e === 'string' ? new Error(e) : e
+    sendToSentry(error, {userId: viewerId, tags: {jobId}})
     return undefined
   }
 }

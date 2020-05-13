@@ -1,9 +1,10 @@
 /// <reference types="@types/segment-analytics" />
 
-import {useEffect, useRef} from 'react'
-import makeHref from '../utils/makeHref'
 import * as Sentry from '@sentry/browser'
+import {useEffect, useRef} from 'react'
+import {LocalStorageKey} from '~/types/constEnums'
 import useScript from '../hooks/useScript'
+import makeHref from '../utils/makeHref'
 
 declare global {
   interface Window {
@@ -12,6 +13,15 @@ declare global {
 }
 
 const dsn = window.__ACTION__.sentry
+
+let email: string | null = null
+const getEmail = () => {
+  if (!email) {
+    email = window.localStorage.getItem(LocalStorageKey.EMAIL)
+  }
+  return email
+}
+
 if (dsn) {
   Sentry.init({
     dsn,
@@ -38,6 +48,7 @@ const AnalyticsPage = () => {
       // This is the magic. Ignore everything after hitting the pipe
       const [pageName] = title.split(' | ')
       window.analytics.page(pageName, {
+        email: getEmail(),
         referrer: makeHref(prevPathname),
         title
       })

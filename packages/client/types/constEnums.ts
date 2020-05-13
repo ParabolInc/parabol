@@ -141,7 +141,8 @@ export const enum LoaderSize {
 export const enum LocalStorageKey {
   APP_TOKEN_KEY = 'Action:token',
   INVITATION_TOKEN = 'invitationToken',
-  GRAPHIQL_SCHEMA = 'gqlSchema'
+  GRAPHIQL_SCHEMA = 'gqlSchema',
+  EMAIL = 'email'
 }
 
 export const enum AuthenticationError {
