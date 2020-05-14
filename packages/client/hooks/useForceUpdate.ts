@@ -1,4 +1,4 @@
-import {useEffect, useReducer, useRef} from 'react'
+import {useCallback, useEffect, useReducer, useRef} from 'react'
 
 const useForceUpdate = () => {
   const isMountedRef = useRef(true)
@@ -8,11 +8,11 @@ const useForceUpdate = () => {
     }
   }, [])
   const forceUpdate = useReducer((x) => x + 1, 0)[1] as () => void
-  return () => {
+  return useCallback(() => {
     if (isMountedRef.current) {
       forceUpdate()
     }
-  }
+  }, [])
 }
 
 export default useForceUpdate
