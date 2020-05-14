@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
-import {navigateMeetingTeamUpdater} from '~/mutations/NavigateMeetingMutation'
 import {RouterProps} from 'react-router'
 import {requestSubscription, Variables} from 'relay-runtime'
+import {navigateMeetingTeamUpdater} from '~/mutations/NavigateMeetingMutation'
 import Atmosphere from '../Atmosphere'
 import {
   acceptTeamInvitationTeamOnNext,

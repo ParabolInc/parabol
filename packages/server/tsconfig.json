@@ -30,6 +30,7 @@
   ],
   "include": [
     "*",
+    "database/migrations/*",
     "./.eslintrc.js",
     "**/*.json",
   ]

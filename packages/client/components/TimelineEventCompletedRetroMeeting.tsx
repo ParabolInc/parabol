@@ -86,6 +86,7 @@ export default createFragmentContainer(TimelineEventCompletedRetroMeeting, {
         topicCount
       }
       team {
+        id
         name
       }
     }

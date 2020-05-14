@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import textOverflow from '../styles/helpers/textOverflow'
 
-const MenuItemLabel = styled('div')({
+export const MenuItemLabelStyle = {
   ...textOverflow,
   alignItems: 'center',
   display: 'flex',
@@ -9,6 +9,8 @@ const MenuItemLabel = styled('div')({
   fontSize: 14,
   lineHeight: '24px',
   padding: `4px 8px 4px 16px`
-})
+}
+
+const MenuItemLabel = styled('div')(MenuItemLabelStyle)
 
 export default MenuItemLabel

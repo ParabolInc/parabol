@@ -1,13 +1,14 @@
-import {TimelineEventCard_timelineEvent} from '../__generated__/TimelineEventCard_timelineEvent.graphql'
-import React, {Component, ReactNode} from 'react'
 import styled from '@emotion/styled'
-import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import Icon from './Icon'
+import React, {Component, ReactNode} from 'react'
+import {createFragmentContainer} from 'react-relay'
 import {cardShadow} from '../styles/elevation'
 import {PALETTE} from '../styles/paletteV2'
 import {ICON_SIZE} from '../styles/typographyV2'
+import {TimelineEventCard_timelineEvent} from '../__generated__/TimelineEventCard_timelineEvent.graphql'
+import Icon from './Icon'
 import TimelineEventDate from './TimelineEventDate'
+import TimelineEventFooterMenuToggle from './TimelineEventFooterMenuToggle'
 
 // import PlainButton from 'universal/components/PlainButton/PlainButton'
 
@@ -33,7 +34,12 @@ const Surface = styled('div')({
 const CardHeader = styled('div')({
   display: 'flex',
   margin: '16px 16px 8px',
-  position: 'relative'
+  position: 'relative',
+  justifyContent: 'space-between'
+})
+
+const CardTitleBlock = styled('div')({
+  display: 'flex'
 })
 
 const EventIcon = styled(Icon)({
@@ -69,18 +75,25 @@ const HeaderText = styled('div')({
 class TimelineEventCard extends Component<Props> {
   render() {
     const {children, iconName, title, timelineEvent} = this.props
-    const {createdAt} = timelineEvent
+    const {id: timelineEventId, createdAt, type} = timelineEvent
     return (
       <Surface>
         <CardHeader>
-          <EventIcon>{iconName}</EventIcon>
-          <HeaderText>
-            {title}
-            <TimelineEventDate createdAt={createdAt} />
-          </HeaderText>
+          <CardTitleBlock>
+            <EventIcon>{iconName}</EventIcon>
+            <HeaderText>
+              {title}
+              <TimelineEventDate createdAt={createdAt} />
+            </HeaderText>
+          </CardTitleBlock>
+
           {/*<PlainButton>*/}
           {/*<MenuIcon>more_vert</MenuIcon>*/}
           {/*</PlainButton>*/}
+
+          {type == 'retroComplete' || type == 'actionComplete' ? (
+            <TimelineEventFooterMenuToggle timelineEventId={timelineEventId} />
+          ) : null}
         </CardHeader>
         {children}
       </Surface>
@@ -93,6 +106,7 @@ export default createFragmentContainer(TimelineEventCard, {
     fragment TimelineEventCard_timelineEvent on TimelineEvent {
       id
       createdAt
+      type
     }
   `
 })
