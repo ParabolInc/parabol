@@ -51,9 +51,9 @@ const RetroReflection = new GraphQLObjectType<Reflection, GQLContext>({
       resolve: () => []
     },
     groupColor: {
-      type: new GraphQLNonNull(GraphQLString),
       description: 'The color used to visually group a phase item',
-      resolve: ({groupColor}) => groupColor || '#FFFFFF'
+      type: new GraphQLNonNull(GraphQLString),
+      resolve: ({groupColor}) => groupColor
     },
     isActive: {
       type: new GraphQLNonNull(GraphQLBoolean),
