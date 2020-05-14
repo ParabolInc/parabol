@@ -5,18 +5,22 @@ const CONFIRMATION_DELAY = 3000
 const useClickConfirmation = () => {
   const [isConfirming, setIsConfirming] = useState(false)
   const timeoutRef = useRef<number>()
-  const startConfirming = useCallback(() => {
-    setIsConfirming(true)
-    timeoutRef.current = window.setTimeout(() => {
-      setIsConfirming(false)
-    }, CONFIRMATION_DELAY)
+  const setConfirming = useCallback((start: boolean) => {
+    setIsConfirming(start)
+    if (start) {
+      timeoutRef.current = window.setTimeout(() => {
+        setIsConfirming(false)
+      }, CONFIRMATION_DELAY)
+    } else {
+      window.clearTimeout(timeoutRef.current)
+    }
   }, [])
   useEffect(() => {
     return () => {
       window.clearTimeout(timeoutRef.current)
     }
   }, [])
-  return [isConfirming, startConfirming] as [boolean, () => void]
+  return [isConfirming, setConfirming] as [typeof isConfirming, typeof setConfirming]
 }
 
 export default useClickConfirmation

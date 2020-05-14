@@ -57,14 +57,15 @@ const BottomControlBarReady = (props: Props) => {
   const readyCount = localStage.readyCount || 0
   const progress = readyCount / Math.max(1, activeCount - 1)
   const isConfirmRequired = readyCount < activeCount - 1 && activeCount > 1
-  const [isConfirming, startConfirming] = useClickConfirmation()
+  const [isConfirming, setConfirming] = useClickConfirmation()
   const onClick = () => {
     if (!isFacilitating) {
       FlagReadyToAdvanceMutation(atmosphere, {isReady: !isViewerReady, meetingId, stageId})
     } else if (isComplete || !isConfirmRequired || isConfirming) {
+      setConfirming(false)
       gotoNext()
     } else {
-      startConfirming()
+      setConfirming(true)
     }
   }
   const onKeyDown = isFacilitating

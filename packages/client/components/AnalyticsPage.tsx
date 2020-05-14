@@ -35,7 +35,7 @@ const AnalyticsPage = () => {
   const key = window.__ACTION__.segment
   if (!key) return null // development use
   /* eslint-disable */
-  const {pathname} = location
+  const {href, pathname} = location
   const pathnameRef = useRef(pathname)
   const [isSegmentLoaded] = useScript(`https://cdn.segment.com/analytics.js/v1/${key}/analytics.min.js`, {crossOrigin: true})
   useEffect(() => {
@@ -50,7 +50,9 @@ const AnalyticsPage = () => {
       window.analytics.page(pageName, {
         email: getEmail(),
         referrer: makeHref(prevPathname),
-        title
+        title,
+        path: pathname,
+        url: href
       })
     }, 300)
   }, [isSegmentLoaded, pathname])

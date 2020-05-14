@@ -36,14 +36,15 @@ const EndMeetingButton = forwardRef((props: Props, ref: Ref<HTMLButtonElement>) 
   const atmosphere = useAtmosphere()
   const {history} = useRouter()
   const {submitMutation, onCompleted, onError, submitting} = useMutationProps()
-  const [isConfirming, startConfirming] = useClickConfirmation()
+  const [isConfirming, setConfirming] = useClickConfirmation()
   const endMeeting = () => {
     if (submitting) return
     if (isConfirming) {
+      setConfirming(false)
       submitMutation()
       EndNewMeetingMutation(atmosphere, {meetingId}, {history, onError, onCompleted})
     } else {
-      startConfirming()
+      setConfirming(true)
     }
   }
 
