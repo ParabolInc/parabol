@@ -9,14 +9,14 @@ import SetCheckInEnabledPayload from '../types/SetCheckInEnabledPayload'
 
 const setCheckInEnabled = {
   type: GraphQLNonNull(SetCheckInEnabledPayload),
-  description: 'Enabled or disable the check-in round',
+  description: 'Enabled or disable the icebreaker round',
   args: {
     settingsId: {
       type: new GraphQLNonNull(GraphQLID)
     },
     isEnabled: {
       type: new GraphQLNonNull(GraphQLBoolean),
-      description: 'true to turn check-in phase on, false to turn it off'
+      description: 'true to turn icebreaker phase on, false to turn it off'
     }
   },
   resolve: async (
