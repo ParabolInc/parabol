@@ -1,19 +1,19 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {convertToRaw, EditorState, ContentState} from 'draft-js'
-import useAtmosphere from 'hooks/useAtmosphere'
-import useMutationProps from 'hooks/useMutationProps'
-import useReplyEditorState from 'hooks/useReplyEditorState'
-import AddCommentMutation from 'mutations/AddCommentMutation'
+import useAtmosphere from '~/hooks/useAtmosphere'
+import useMutationProps from '~/hooks/useMutationProps'
+import useReplyEditorState from '~/hooks/useReplyEditorState'
+import AddCommentMutation from '~/mutations/AddCommentMutation'
 import React, {forwardRef, RefObject, useState} from 'react'
 import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
-import {Elevation} from 'styles/elevation'
-import {ThreadSourceEnum} from 'types/graphql'
-import {SORT_STEP} from 'utils/constants'
-import dndNoise from 'utils/dndNoise'
-import convertToTaskContent from 'utils/draftjs/convertToTaskContent'
-import isAndroid from 'utils/draftjs/isAndroid'
-import {DiscussionThreadInput_meeting} from '__generated__/DiscussionThreadInput_meeting.graphql'
+import {Elevation} from '~/styles/elevation'
+import {ThreadSourceEnum} from '~/types/graphql'
+import {SORT_STEP} from '~/utils/constants'
+import dndNoise from '~/utils/dndNoise'
+import convertToTaskContent from '~/utils/draftjs/convertToTaskContent'
+import isAndroid from '~/utils/draftjs/isAndroid'
+import {DiscussionThreadInput_meeting} from '~/__generated__/DiscussionThreadInput_meeting.graphql'
 import anonymousAvatar from '../styles/theme/images/anonymous-avatar.svg'
 import Avatar from './Avatar/Avatar'
 import CommentSendOrAdd from './CommentSendOrAdd'
@@ -49,6 +49,7 @@ interface Props {
   isDisabled?: boolean
   setReplyMention?: SetReplyMention
   replyMention?: ReplyMention
+  dataCy: string
 }
 
 const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
@@ -60,7 +61,8 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
     reflectionGroupId,
     threadParentId,
     replyMention,
-    setReplyMention
+    setReplyMention,
+    dataCy
   } = props
   const isReply = !!props.isReply
   const isDisabled = !!props.isDisabled
@@ -126,9 +128,10 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
 
   const avatar = isAnonymousComment ? anonymousAvatar : picture
   return (
-    <Wrapper ref={ref} isReply={isReply} isDisabled={isDisabled}>
+    <Wrapper data-cy={`${dataCy}-wrapper`} ref={ref} isReply={isReply} isDisabled={isDisabled}>
       <CommentAvatar size={32} picture={avatar} onClick={toggleAnonymous} />
       <CommentEditor
+        dataCy={`${dataCy}`}
         teamId={teamId}
         editorRef={editorRef}
         editorState={editorState}
@@ -138,6 +141,7 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
         onFocus={collapseAddTask}
       />
       <CommentSendOrAdd
+        dataCy={`${dataCy}`}
         getMaxSortOrder={getMaxSortOrder}
         commentSubmitState={commentSubmitState}
         meeting={meeting}

@@ -31,7 +31,7 @@ export const countdown = (date: string | Date) => {
   }
   const keep: string[] = []
 
-  for (let k in periods) {
+  for (const k in periods) {
     const val = String(Math.floor(periods[k]))
     if (val === '0' && keep.length === 0 && k !== 'm') continue
     keep.push(keep.length === 0 ? val : val.padStart(2, '0'))

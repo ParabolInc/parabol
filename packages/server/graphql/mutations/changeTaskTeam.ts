@@ -1,7 +1,7 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import shortid from 'shortid'
-import removeEntityKeepText from '../../../client/utils/draftjs/removeEntityKeepText'
+import removeEntityKeepText from 'parabol-client/utils/draftjs/removeEntityKeepText'
 import getRethink from '../../database/rethinkDriver'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'

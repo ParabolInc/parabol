@@ -1,5 +1,5 @@
 import {GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
-import {IActionMeetingMember} from '../../../client/types/graphql'
+import {IActionMeetingMember} from 'parabol-client/types/graphql'
 import getRethink from '../../database/rethinkDriver'
 import {GQLContext} from '../graphql'
 import MeetingMember, {meetingMemberFields} from './MeetingMember'

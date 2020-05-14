@@ -1,18 +1,18 @@
-import {AddTemplatePrompt_prompts} from '../../../__generated__/AddTemplatePrompt_prompts.graphql'
-import React, {Component} from 'react'
 import styled from '@emotion/styled'
-import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
+import React, {Component} from 'react'
+import {createFragmentContainer} from 'react-relay'
+import {Threshold} from '~/types/constEnums'
+import Icon from '../../../components/Icon'
 import LinkButton from '../../../components/LinkButton'
-import dndNoise from '../../../utils/dndNoise'
 import withAtmosphere, {
   WithAtmosphereProps
 } from '../../../decorators/withAtmosphere/withAtmosphere'
 import AddReflectTemplatePromptMutation from '../../../mutations/AddReflectTemplatePromptMutation'
-import withMutationProps, {WithMutationProps} from '../../../utils/relay/withMutationProps'
-import Icon from '../../../components/Icon'
 import {ICON_SIZE} from '../../../styles/typographyV2'
-import {Threshold} from 'types/constEnums'
+import dndNoise from '../../../utils/dndNoise'
+import withMutationProps, {WithMutationProps} from '../../../utils/relay/withMutationProps'
+import {AddTemplatePrompt_prompts} from '../../../__generated__/AddTemplatePrompt_prompts.graphql'
 
 const AddPromptLink = styled(LinkButton)({
   alignItems: 'center',

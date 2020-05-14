@@ -1,15 +1,13 @@
 // Working on new meeting components
-import React from 'react'
 // import {action} from '@storybook/addon-actions';
 import {storiesOf} from '@storybook/react'
-
 import MeetingFacilitatorBar from 'modules/meeting/components/MeetingControlBar/MeetingFacilitatorBar'
-import MeetingPhaseHeading from '../modules/meeting/components/MeetingPhaseHeading/MeetingPhaseHeading'
+import React from 'react'
+import LabelHeading from '../components/LabelHeading/LabelHeading'
 import MeetingCopy from '../modules/meeting/components/MeetingCopy/MeetingCopy'
-
+import MeetingPhaseHeading from '../modules/meeting/components/MeetingPhaseHeading/MeetingPhaseHeading'
 import RetroBackground from './components/RetroBackground'
 import StoryContainer from './components/StoryContainer'
-import LabelHeading from '../components/LabelHeading/LabelHeading'
 
 storiesOf('Meeting Components', module)
   .add('Social Check-in Heading', () => (

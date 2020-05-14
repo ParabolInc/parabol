@@ -1,10 +1,10 @@
 import graphql from 'babel-plugin-relay/macro'
-import useAtmosphere from 'hooks/useAtmosphere'
-import useNoIndex from 'hooks/useNoIndex'
 import React from 'react'
 import {QueryRenderer} from 'react-relay'
 import {RouteComponentProps} from 'react-router'
-import {TeamInvitationRootQuery} from '__generated__/TeamInvitationRootQuery.graphql'
+import useAtmosphere from '~/hooks/useAtmosphere'
+import useNoIndex from '~/hooks/useNoIndex'
+import {TeamInvitationRootQuery} from '~/__generated__/TeamInvitationRootQuery.graphql'
 import {WithAtmosphereProps} from '../decorators/withAtmosphere/withAtmosphere'
 import TeamInvitation from './TeamInvitation'
 

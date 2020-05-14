@@ -1,8 +1,9 @@
+import AbortController from 'abort-controller'
 import {sign} from 'jsonwebtoken'
 import fetch from 'node-fetch'
 import sendToSentry from './utils/sendToSentry'
 
-interface SyntaxTextToken {
+export interface SyntaxTextToken {
   content: string
   beginOffset: number
 }
@@ -61,6 +62,8 @@ export type GoogleErrorResponse = [
   }
 ]
 
+const MAX_REQUEST_TIME = 10000
+
 export default class GoogleLanguageManager {
   static GOOGLE_EXPIRY = 3600
   jwt: string | undefined
@@ -102,21 +105,32 @@ export default class GoogleLanguageManager {
         }
       ] as any
     }
-    const res = await fetch(`https://language.googleapis.com/v1/${endpoint}`, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${this.jwt}`,
-        Accept: 'application/json',
-        'Content-Type': 'application/json; charset=utf-8'
-      },
-      body: JSON.stringify({
-        document: {
-          type: 'PLAIN_TEXT',
-          content
-        }
+    const controller = new AbortController()
+    const {signal} = controller as any
+    const timeout = setTimeout(() => {
+      controller.abort()
+    }, MAX_REQUEST_TIME)
+    try {
+      const res = await fetch(`https://language.googleapis.com/v1/${endpoint}`, {
+        signal,
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${this.jwt}`,
+          Accept: 'application/json',
+          'Content-Type': 'application/json; charset=utf-8'
+        },
+        body: JSON.stringify({
+          document: {
+            type: 'PLAIN_TEXT',
+            content
+          }
+        })
       })
-    }).catch((e: Error) => {
+      clearTimeout(timeout)
+      return res.json()
+    } catch (e) {
       sendToSentry(e)
+      clearTimeout(timeout)
       return [
         {
           error: {
@@ -125,10 +139,8 @@ export default class GoogleLanguageManager {
             status: 'Google is down'
           }
         }
-      ]
-    })
-    const resJSON = await res.json()
-    return resJSON
+      ] as any
+    }
   }
 
   analyzeEntities(content: string) {

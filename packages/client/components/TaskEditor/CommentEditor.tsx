@@ -27,9 +27,7 @@ const RootEditor = styled('div')({
 })
 
 const AndroidEditorFallback = lazyPreload(() =>
-  import(
-    /* webpackChunkName: 'AndroidEditorFallback' */ '../../../client/components/AndroidEditorFallback'
-  )
+  import(/* webpackChunkName: 'AndroidEditorFallback' */ '../AndroidEditorFallback')
 )
 
 const TaskEditorFallback = styled(AndroidEditorFallback)({
@@ -53,6 +51,7 @@ interface Props extends DraftProps {
   setEditorState: (newEditorState: EditorState) => void
   onSubmit: () => void
   teamId: string
+  dataCy: string
 }
 
 const CommentEditor = (props: Props) => {
@@ -64,7 +63,8 @@ const CommentEditor = (props: Props) => {
     setEditorState,
     onFocus,
     onSubmit,
-    onBlur
+    onBlur,
+    dataCy
   } = props
   const entityPasteStartRef = useRef<{anchorOffset: number; anchorKey: string} | undefined>()
   const {
@@ -171,7 +171,7 @@ const CommentEditor = (props: Props) => {
   const useFallback = isAndroid && !readOnly
   const showFallback = useFallback && !isRichDraft(editorState)
   return (
-    <RootEditor>
+    <RootEditor data-cy={`${dataCy}-editor`}>
       {showFallback ? (
         <Suspense fallback={<div />}>
           <TaskEditorFallback

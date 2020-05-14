@@ -1,15 +1,15 @@
-import {BillingLeaderActionMenu_organization} from '../__generated__/BillingLeaderActionMenu_organization.graphql'
-import {BillingLeaderActionMenu_organizationUser} from '../__generated__/BillingLeaderActionMenu_organizationUser.graphql'
+import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
-import graphql from 'babel-plugin-relay/macro'
-import Menu from './Menu'
-import MenuItem from './MenuItem'
 import withAtmosphere, {WithAtmosphereProps} from '../decorators/withAtmosphere/withAtmosphere'
 import {MenuProps} from '../hooks/useMenu'
 import SetOrgUserRoleMutation from '../mutations/SetOrgUserRoleMutation'
+import {OrgUserRole, TierEnum} from '../types/graphql'
 import withMutationProps, {WithMutationProps} from '../utils/relay/withMutationProps'
-import {OrgUserRole} from '../types/graphql'
+import {BillingLeaderActionMenu_organization} from '../__generated__/BillingLeaderActionMenu_organization.graphql'
+import {BillingLeaderActionMenu_organizationUser} from '../__generated__/BillingLeaderActionMenu_organizationUser.graphql'
+import Menu from './Menu'
+import MenuItem from './MenuItem'
 
 interface Props extends WithMutationProps, WithAtmosphereProps {
   menuProps: MenuProps
@@ -34,7 +34,7 @@ const BillingLeaderActionMenu = (props: Props) => {
     toggleLeave,
     toggleRemove
   } = props
-  const {orgId} = organization
+  const {id: orgId, tier} = organization
   const {viewerId} = atmosphere
   const {newUserUntil, role, user} = organizationUser
   const isBillingLeader = role === OrgUserRole.BILLING_LEADER
@@ -65,7 +65,9 @@ const BillingLeaderActionMenu = (props: Props) => {
         {viewerId !== userId && (
           <MenuItem
             label={
-              new Date(newUserUntil) > new Date() ? 'Refund and Remove' : 'Remove from Organization'
+              tier === TierEnum.pro && new Date(newUserUntil) > new Date()
+                ? 'Refund and Remove'
+                : 'Remove from Organization'
             }
             onClick={toggleRemove}
           />
@@ -78,7 +80,8 @@ const BillingLeaderActionMenu = (props: Props) => {
 export default createFragmentContainer(withMutationProps(withAtmosphere(BillingLeaderActionMenu)), {
   organization: graphql`
     fragment BillingLeaderActionMenu_organization on Organization {
-      orgId: id
+      id
+      tier
     }
   `,
   organizationUser: graphql`

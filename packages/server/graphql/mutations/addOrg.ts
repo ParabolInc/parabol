@@ -1,21 +1,21 @@
 import {GraphQLNonNull, GraphQLString} from 'graphql'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import {SuggestedActionTypeEnum} from 'parabol-client/types/graphql'
+import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
+import shortid from 'shortid'
+import AuthToken from '../../database/types/AuthToken'
+import removeSuggestedAction from '../../safeMutations/removeSuggestedAction'
+import {getUserId} from '../../utils/authorization'
+import encodeAuthToken from '../../utils/encodeAuthToken'
+import publish from '../../utils/publish'
+import sendSegmentEvent from '../../utils/sendSegmentEvent'
+import standardError from '../../utils/standardError'
+import rateLimit from '../rateLimit'
+import AddOrgPayload from '../types/AddOrgPayload'
+import NewTeamInput from '../types/NewTeamInput'
 import addOrgValidation from './helpers/addOrgValidation'
 import createNewOrg from './helpers/createNewOrg'
 import createTeamAndLeader from './helpers/createTeamAndLeader'
-import AddOrgPayload from '../types/AddOrgPayload'
-import NewTeamInput from '../types/NewTeamInput'
-import {getUserId} from '../../utils/authorization'
-import publish from '../../utils/publish'
-import sendSegmentEvent from '../../utils/sendSegmentEvent'
-import shortid from 'shortid'
-import toTeamMemberId from '../../../client/utils/relay/toTeamMemberId'
-import rateLimit from '../rateLimit'
-import removeSuggestedAction from '../../safeMutations/removeSuggestedAction'
-import standardError from '../../utils/standardError'
-import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import encodeAuthToken from '../../utils/encodeAuthToken'
-import AuthToken from '../../database/types/AuthToken'
-import {SuggestedActionTypeEnum} from 'parabol-client/types/graphql'
 
 export default {
   type: new GraphQLNonNull(AddOrgPayload),
@@ -42,7 +42,7 @@ export default {
       const {
         data: {newTeam, orgName},
         errors
-      } = addOrgValidation()(args)
+      } = addOrgValidation()(args) as any
       if (Object.keys(errors).length) {
         return standardError(new Error('Failed input validation'), {userId: viewerId})
       }
@@ -56,7 +56,7 @@ export default {
       const {tms} = authToken
       // MUTATIVE
       tms.push(teamId)
-      sendSegmentEvent('New Org', viewerId, {orgId, teamId}).catch()
+      sendSegmentEvent('New Org', viewerId, {orgId, teamId, fromSignup: false}).catch()
       publish(SubscriptionChannel.NOTIFICATION, viewerId, 'AuthTokenPayload', {tms})
 
       const teamMemberId = toTeamMemberId(teamId, viewerId)

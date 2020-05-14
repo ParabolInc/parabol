@@ -1,13 +1,13 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {IComment, ThreadSourceEnum} from 'types/graphql'
-import convertToTaskContent from 'utils/draftjs/convertToTaskContent'
-import safeRemoveNodeFromConn from 'utils/relay/safeRemoveNodeFromConn'
-import {DeleteCommentMutation_meeting} from '__generated__/DeleteCommentMutation_meeting.graphql'
+import {IComment, ThreadSourceEnum} from '~/types/graphql'
+import convertToTaskContent from '~/utils/draftjs/convertToTaskContent'
+import safeRemoveNodeFromConn from '~/utils/relay/safeRemoveNodeFromConn'
+import {DeleteCommentMutation_meeting} from '~/__generated__/DeleteCommentMutation_meeting.graphql'
 import {SharedUpdater, SimpleMutation} from '../types/relayMutations'
 import {DeleteCommentMutation as TDeleteCommentMutation} from '../__generated__/DeleteCommentMutation.graphql'
 import getReflectionGroupThreadConn from './connections/getReflectionGroupThreadConn'
-import safeRemoveNodeFromArray from 'utils/relay/safeRemoveNodeFromArray'
+import safeRemoveNodeFromArray from '~/utils/relay/safeRemoveNodeFromArray'
 import {RecordSourceSelectorProxy} from 'relay-runtime'
 
 graphql`

@@ -6,10 +6,6 @@ import getProfile from './githubQueries/getProfile.graphql'
 import getRepoInfo from './githubQueries/getRepoInfo.graphql'
 import getRepos from './githubQueries/getRepos.graphql'
 
-interface GitHubClientManagerOptions {
-  fetch?: Window['fetch']
-}
-
 export interface GQLResponse<TData> {
   data?: TData
   errors?: IGraphQLResponseError[]
@@ -23,19 +19,19 @@ export interface GitHubCredentialError {
 type GitHubResponse<TData> = GQLResponse<TData> | GitHubCredentialError
 
 type DocResponse<T> = T extends DocumentNode<infer R> ? R : never
-type DocVariables<T> = T extends DocumentNode<any, infer V> ? V : never
+type DocVariables = any
+// type DocVariables<T> = T extends DocumentNode<any, infer V> ? V : never
 
-class GitHubManager {
+abstract class GitHubManager {
   static SCOPE = 'admin:org_hook,read:org,repo,user:email,write:repo_hook'
   accessToken: string
-  fetch: typeof fetch
+  abstract fetch: any
   // the any is for node until we can use tsc in nodeland
   cache: {[key: string]: {result: any; expiration: number | any}} = {}
   timeout = 5000
   headers: any
-  constructor(accessToken: string, options: GitHubClientManagerOptions = {}) {
+  constructor(accessToken: string) {
     this.accessToken = accessToken
-    this.fetch = options.fetch || window?.fetch
     this.headers = {
       'Content-Type': 'application/json',
       // an Authorization requires a preflight request, ie reqs are slow
@@ -55,7 +51,7 @@ class GitHubManager {
 
   private async query<T>(
     query: T,
-    variables?: DocVariables<T>
+    variables?: DocVariables
   ): Promise<GitHubResponse<DocResponse<T>>> {
     // const query = _query as unknown as string
     const body = JSON.stringify({query, variables})
@@ -79,7 +75,7 @@ class GitHubManager {
 
   private async mutate<T>(
     query: T,
-    variables?: DocVariables<T>
+    variables?: DocVariables
   ): Promise<GitHubResponse<DocResponse<T>>> {
     const body = JSON.stringify({query, variables})
     return this.post(body)
@@ -91,7 +87,7 @@ class GitHubManager {
 
   async getRepoInfo(nameWithOwner: string, assigneeLogin: string) {
     const [repoOwner, repoName] = nameWithOwner.split('/')
-    return this.query(getRepoInfo, {repoName, repoOwner, assigneeLogin})
+    return this.query(getRepoInfo, {repoName, repoOwner, assigneeLogin} as any)
   }
 
   async getProfile() {
@@ -99,7 +95,7 @@ class GitHubManager {
   }
 
   async createIssue(createIssueInput: ICreateIssueInput) {
-    return this.mutate(createIssue, {input: createIssueInput})
+    return this.mutate(createIssue, {input: createIssueInput} as any)
   }
 }
 

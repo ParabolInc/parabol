@@ -1,19 +1,19 @@
 import {keyframes} from '@emotion/core'
 import styled from '@emotion/styled'
+import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {PALETTE} from 'styles/paletteV2'
-import {BezierCurve} from 'types/constEnums'
+import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
+import useAtmosphere from '~/hooks/useAtmosphere'
+import CreateTaskMutation from '~/mutations/CreateTaskMutation'
+import {PALETTE} from '~/styles/paletteV2'
+import {BezierCurve} from '~/types/constEnums'
+import {TaskStatusEnum, ThreadSourceEnum} from '~/types/graphql'
+import {SORT_STEP} from '~/utils/constants'
+import dndNoise from '~/utils/dndNoise'
+import {CommentSendOrAdd_meeting} from '~/__generated__/CommentSendOrAdd_meeting.graphql'
 import {DECELERATE} from '../styles/animation'
 import Icon from './Icon'
 import PlainButton from './PlainButton/PlainButton'
-import dndNoise from 'utils/dndNoise'
-import CreateTaskMutation from 'mutations/CreateTaskMutation'
-import {TaskStatusEnum, ThreadSourceEnum} from 'types/graphql'
-import useAtmosphere from 'hooks/useAtmosphere'
-import {CommentSendOrAdd_meeting} from '__generated__/CommentSendOrAdd_meeting.graphql'
-import {createFragmentContainer, commitLocalUpdate} from 'react-relay'
-import graphql from 'babel-plugin-relay/macro'
-import {SORT_STEP} from 'utils/constants'
 
 export type CommentSubmitState = 'send' | 'add' | 'addExpanded'
 
@@ -79,6 +79,7 @@ interface Props {
   reflectionGroupId: string
   threadParentId?: string
   onSubmit: () => void
+  dataCy: string
 }
 
 const CommentSendOrAdd = (props: Props) => {
@@ -89,13 +90,14 @@ const CommentSendOrAdd = (props: Props) => {
     meeting,
     reflectionGroupId,
     threadParentId,
-    onSubmit
+    onSubmit,
+    dataCy
   } = props
   const {id: meetingId, teamId} = meeting
   const atmosphere = useAtmosphere()
   if (commentSubmitState === 'send') {
     return (
-      <PlainButton onClick={onSubmit}>
+      <PlainButton data-cy={`${dataCy}-send`} onClick={onSubmit}>
         <SendIcon>send</SendIcon>
       </PlainButton>
     )
@@ -121,7 +123,7 @@ const CommentSendOrAdd = (props: Props) => {
   }
   const isExpanded = commentSubmitState === 'addExpanded'
   return (
-    <ButtonGroup>
+    <ButtonGroup data-cy={`${dataCy}-add`}>
       <AddButton onClick={addTask}>
         <AddIcon isExpanded={isExpanded}>playlist_add_check</AddIcon>
         <ExpandedLabel isExpanded={isExpanded}>Add a Task</ExpandedLabel>

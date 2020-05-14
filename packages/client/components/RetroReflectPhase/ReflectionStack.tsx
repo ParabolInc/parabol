@@ -1,19 +1,19 @@
-import {PhaseItemColumn_meeting} from '../../__generated__/PhaseItemColumn_meeting.graphql'
-import React, {RefObject, useRef} from 'react'
 import styled from '@emotion/styled'
-import ReflectionCard from '../ReflectionCard/ReflectionCard'
-import ExpandedReflectionStack from './ExpandedReflectionStack'
-import ReflectionStackPlaceholder from './ReflectionStackPlaceholder'
+import graphql from 'babel-plugin-relay/macro'
+import React, {RefObject, useRef} from 'react'
+import {createFragmentContainer} from 'react-relay'
+import {ReflectionStack_meeting} from '~/__generated__/ReflectionStack_meeting.graphql'
+import useExpandedReflections from '../../hooks/useExpandedReflections'
 import {
   Breakpoint,
   ElementHeight,
   ElementWidth,
   ReflectionStackPerspective
 } from '../../types/constEnums'
-import useExpandedReflections from '../../hooks/useExpandedReflections'
-import {createFragmentContainer} from 'react-relay'
-import graphql from 'babel-plugin-relay/macro'
-import {ReflectionStack_meeting} from '__generated__/ReflectionStack_meeting.graphql'
+import {PhaseItemColumn_meeting} from '../../__generated__/PhaseItemColumn_meeting.graphql'
+import ReflectionCard from '../ReflectionCard/ReflectionCard'
+import ExpandedReflectionStack from './ExpandedReflectionStack'
+import ReflectionStackPlaceholder from './ReflectionStackPlaceholder'
 
 interface Props {
   idx: number

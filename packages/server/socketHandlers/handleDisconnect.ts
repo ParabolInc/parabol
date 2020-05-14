@@ -1,7 +1,7 @@
-import executeGraphQL from '../graphql/executeGraphQL'
 import closeTransport from '../socketHelpers/closeTransport'
 import ConnectionContext from '../socketHelpers/ConnectionContext'
 import sseClients from '../sseClients'
+import publishInternalGQL from '../utils/publishInternalGQL'
 import relayUnsubscribeAll from '../utils/relayUnsubscribeAll'
 import closeWRTC from '../wrtc/signalServer/closeWRTC'
 
@@ -24,7 +24,7 @@ const handleDisconnect = (connectionContext: ConnectionContext, options: Options
   clearInterval(cancelKeepAlive!)
   relayUnsubscribeAll(connectionContext)
   closeWRTC(socket as any)
-  executeGraphQL({authToken, ip, query, isPrivate: true, socketId})
+  publishInternalGQL({type: 'disconnect', authToken, ip, query, socketId})
   if (connectionContext.id.startsWith('sse')) {
     sseClients.delete(connectionContext.id)
   }

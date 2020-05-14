@@ -1,10 +1,9 @@
 module.exports = {
-  parser: '@typescript-eslint/parser',
-  plugins: ['@typescript-eslint', 'emotion', 'react', 'react-hooks'],
+  plugins: ['@typescript-eslint', 'prettier', 'emotion', 'react', 'react-hooks'],
   extends: ['plugin:react/recommended', '../../.eslintrc.js'],
   parserOptions: {
     project: './tsconfig.json',
-    ecmaVersion: 2018,
+    ecmaVersion: 2020,
     sourceType: 'module'
   },
   rules: {

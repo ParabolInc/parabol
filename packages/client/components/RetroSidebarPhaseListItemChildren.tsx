@@ -5,8 +5,8 @@ import MeetingSidebarTeamMemberStageItems from './MeetingSidebarTeamMemberStageI
 import RetroSidebarDiscussSection from './RetroSidebarDiscussSection'
 import isPhaseComplete from '../utils/meetings/isPhaseComplete'
 import {NewMeetingPhaseTypeEnum} from '../types/graphql'
-import useGotoStageId from 'hooks/useGotoStageId'
-import {RetroSidebarPhaseListItemChildren_meeting} from '__generated__/RetroSidebarPhaseListItemChildren_meeting.graphql'
+import useGotoStageId from '~/hooks/useGotoStageId'
+import {RetroSidebarPhaseListItemChildren_meeting} from '~/__generated__/RetroSidebarPhaseListItemChildren_meeting.graphql'
 
 interface Props {
   gotoStageId: ReturnType<typeof useGotoStageId>

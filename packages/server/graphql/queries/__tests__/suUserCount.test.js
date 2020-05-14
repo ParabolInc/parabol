@@ -3,7 +3,7 @@ import mockAuthToken from '../../../__tests__/setup/mockAuthToken'
 import MockDB from '../../../__tests__/setup/MockDB'
 import expectAsyncToThrow from '../../../__tests__/utils/expectAsyncToThrow'
 import suUserCount from '../suUserCount'
-import {PERSONAL, PRO} from '../../../../client/utils/constants'
+import { PERSONAL, PRO } from 'parabol-client/utils/constants'
 import shortid from 'shortid'
 
 console.error = jest.fn()
@@ -17,8 +17,8 @@ const defaultResolverArgs = {
 test('counts the number of Personal users', async () => {
   // SETUP
   const mockDB = new MockDB()
-  const {user} = await mockDB.init()
-  const authToken = mockAuthToken(user[1], {rol: 'su'})
+  const { user } = await mockDB.init()
+  const authToken = mockAuthToken(user[1], { rol: 'su' })
   // TEST
   const initial = await suUserCount.resolve(
     undefined,
@@ -26,7 +26,7 @@ test('counts the number of Personal users', async () => {
       ...defaultResolverArgs,
       tier: PERSONAL
     },
-    {authToken}
+    { authToken }
   )
 
   // VERIFY
@@ -36,8 +36,8 @@ test('counts the number of Personal users', async () => {
 test('counts the number of Pro users', async () => {
   // SETUP
   const mockDB = new MockDB()
-  const {user} = await mockDB.init()
-  const authToken = mockAuthToken(user[1], {rol: 'su'})
+  const { user } = await mockDB.init()
+  const authToken = mockAuthToken(user[1], { rol: 'su' })
   // TEST
   const initial = await suUserCount.resolve(undefined, defaultResolverArgs, {
     authToken
@@ -50,16 +50,16 @@ test('counts the number of Pro users', async () => {
 test('new Pro org increments number of Pro users', async () => {
   // SETUP
   const mockDB = new MockDB()
-  const {user} = await mockDB.init()
-  const authToken = mockAuthToken(user[1], {rol: 'su'})
+  const { user } = await mockDB.init()
+  const authToken = mockAuthToken(user[1], { rol: 'su' })
   // TEST
   // Each newOrg will add one new billing leader:
   const initial = await suUserCount.resolve(undefined, defaultResolverArgs, {
     authToken
   })
   await mockDB
-    .newOrg({name: shortid.generate(), tier: PRO})
-    .newOrg({name: shortid.generate(), tier: PRO})
+    .newOrg({ name: shortid.generate(), tier: PRO })
+    .newOrg({ name: shortid.generate(), tier: PRO })
   const next = await suUserCount.resolve(undefined, defaultResolverArgs, {
     authToken
   })
@@ -72,9 +72,9 @@ test('new Pro org increments number of Pro users', async () => {
 test('user token requires su role', async () => {
   // SETUP
   const mockDB = new MockDB()
-  const {user} = await mockDB.init()
+  const { user } = await mockDB.init()
   const authToken = mockAuthToken(user[1])
 
   // TEST & VERIFY
-  await expectAsyncToThrow(suUserCount.resolve(undefined, defaultResolverArgs, {authToken}))
+  await expectAsyncToThrow(suUserCount.resolve(undefined, defaultResolverArgs, { authToken }))
 })

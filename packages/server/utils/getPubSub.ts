@@ -1,8 +1,5 @@
 import Redis from 'ioredis'
-import getDotenv from './dotenv'
 import GraphQLRedisPubSub from './GraphQLRedisPubSub'
-
-getDotenv()
 
 let pubsub: GraphQLRedisPubSub
 const getPubSub = () => {

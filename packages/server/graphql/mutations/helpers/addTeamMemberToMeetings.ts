@@ -1,12 +1,12 @@
-import createMeetingMembers from './createMeetingMembers'
-import getRethink from '../../../database/rethinkDriver'
-import CheckInStage from '../../../database/types/CheckInStage'
-import UpdatesStage from '../../../database/types/UpdatesStage'
-import CheckInPhase from '../../../database/types/CheckInPhase'
-import UpdatesPhase from '../../../database/types/UpdatesPhase'
-import TeamMember from '../../../database/types/TeamMember'
-import {DataLoaderWorker} from '../../graphql'
 import {NewMeetingPhaseTypeEnum} from 'parabol-client/types/graphql'
+import getRethink from '../../../database/rethinkDriver'
+import CheckInPhase from '../../../database/types/CheckInPhase'
+import CheckInStage from '../../../database/types/CheckInStage'
+import TeamMember from '../../../database/types/TeamMember'
+import UpdatesPhase from '../../../database/types/UpdatesPhase'
+import UpdatesStage from '../../../database/types/UpdatesStage'
+import {DataLoaderWorker} from '../../graphql'
+import createMeetingMembers from './createMeetingMembers'
 
 /*
  * NewMeetings have a predefined set of stages, we need to add the new team member manually
@@ -14,8 +14,10 @@ import {NewMeetingPhaseTypeEnum} from 'parabol-client/types/graphql'
 
 const setInPhase = (phase: CheckInPhase | UpdatesPhase, newStage: CheckInStage | UpdatesStage) => {
   const firstStage = phase.stages[0]
+  const isPhaseComplete = phase.stages.every((stage) => stage.isComplete)
   newStage.isNavigable = firstStage.isNavigable
   newStage.isNavigableByFacilitator = firstStage.isNavigableByFacilitator
+  newStage.isComplete = isPhaseComplete
   phase.stages.push(newStage)
 }
 

@@ -1,9 +1,9 @@
+import graphql from 'babel-plugin-relay/macro'
 import React, {memo} from 'react'
+import {createFragmentContainer} from 'react-relay'
+import {TaskColumnInner_tasks} from '~/__generated__/TaskColumnInner_tasks.graphql'
 import DraggableTask from '../../../../containers/TaskCard/DraggableTask'
 import {AreaEnum} from '../../../../types/graphql'
-import graphql from 'babel-plugin-relay/macro'
-import {createFragmentContainer} from 'react-relay'
-import {TaskColumnInner_tasks} from '__generated__/TaskColumnInner_tasks.graphql'
 
 interface Props {
   area: AreaEnum

@@ -1,8 +1,8 @@
 /*eslint-disable*/
 import {EventEmitter} from 'events'
 import {TcpNetConnectOpts} from 'net'
-import {ConnectionOptions} from 'tls'
 import {DeepPartial} from 'rethinkdb-ts/lib/internal-types'
+import {ConnectionOptions} from 'tls'
 
 // User defined schemas
 export interface TableSchema {
@@ -1039,7 +1039,7 @@ export interface RDatabase<Schema extends UserSchema> {
     options?: TableCreateOptions
   ): RDatum<TableChangeResult>
   tableDrop(tableName: RValue<string>): RDatum<TableChangeResult>
-  tableList(): RDatum<string[]>
+  tableList(): RDatum<(keyof Schema)[]>
   table<T extends keyof Schema>(tableName: RValue<T>, options?: TableOptions): RTable<Schema[T]>
 
   config(): RSingleSelection<TableConfig>
@@ -1203,7 +1203,7 @@ export interface R<Schema extends UserSchema> {
     options?: TableCreateOptions
   ): RDatum<TableChangeResult>
   tableDrop(tableName: RValue<string>): RDatum<TableChangeResult>
-  tableList(): RDatum<string[]>
+  tableList(): RDatum<(keyof Schema)[]>
 
   // Additional -
   // DATABASE / TABLE

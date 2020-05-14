@@ -1,6 +1,6 @@
 import React, {useState} from 'react'
 import CreditCardForm from './CreditCardForm'
-import DialogTitle from 'components/DialogTitle'
+import DialogTitle from '~/components/DialogTitle'
 import DialogContainer from '../../../../components/DialogContainer'
 import UpgradeSuccess from '../../../../components/UpgradeSuccess'
 import UpgradeLater from '../../../../components/UpgradeLater'

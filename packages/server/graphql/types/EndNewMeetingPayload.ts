@@ -6,7 +6,7 @@ import StandardMutationError from './StandardMutationError'
 import NewMeeting from './NewMeeting'
 import {GQLContext} from '../graphql'
 import {getUserId} from '../../utils/authorization'
-import isTaskPrivate from '../../../client/utils/isTaskPrivate'
+import isTaskPrivate from 'parabol-client/utils/isTaskPrivate'
 
 const EndNewMeetingPayload = new GraphQLObjectType<any, GQLContext>({
   name: 'EndNewMeetingPayload',

@@ -5,6 +5,72 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 5.7.0 2020-May-13
+
+## Fixed
+* Throw error instead of string when redis response times out (#3847)
+* Topic links on meeting summary emails (#3843)
+* Remove wait pattern in cypress demo_discuss tests (#3837)
+
+## Added
+* email attribute to segment page events (#3847)
+* support for other mail providers (#3838)
+* Confirm on next and end buttons (#3823)
+
+## 5.6.1 2020-May-12
+
+## Fixed
+* Put timeout on fetch to google
+
+## 5.6.0 2020-May-06
+
+## Fixed
+* Ghost snackbar covering up meeting control bar (#3819)
+* Empty emails when meeting is killed early (#3819)
+* Correct active meeting current state (#3819)
+* Can start retro when action is in progress (#3819)
+* Scrolling in development works in firefox (#3813)
+* Stripe removing a paused user (#3810)
+* __dirname incorrect in dev mode (#3806)
+
+## 5.5.1 2020-Apr-30
+
+## Fixed
+* Save progress in demo
+
+## 5.5.0 2020-Apr-24
+
+### Added
+* Stateless GraphQL Executor (#3771)
+* Toolbox webpack config built separetely
+* 1 command development & build
+* More cypress tests (#3795)
+* Comment count to the retro summary (#3777)
+
+## Changed
+* Server assets now built with webpack (#3771)
+* Illustrations for upgrades & meetings (#3785)
+* .env now lives in the project root (#3771)
+
+## Removed
+* Google Analytics bootstrap (#3798)
+
+## 5.4.0 2020-Apr-16
+
+### Added
+* Floating bottom bar in meetings (#3723)
+* Ready button in meetings (#3723)
+* Add utm params to emails (#3736)
+
+### Fixed
+* No redirect on meeting end if not in meeting (#3736)
+* WebRTC DataChannel safely sends (#3747)
+
+## 5.3.1 2020-Apr-10
+
+### Added
+* GQL Request logging
+
 ## 5.3.0 2020-Apr-03
 
 ### Fixed

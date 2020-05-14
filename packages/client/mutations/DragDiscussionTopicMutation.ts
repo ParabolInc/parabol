@@ -7,7 +7,7 @@ import {IDragDiscussionTopicOnMutationArguments} from '../types/graphql'
 import Atmosphere from '../Atmosphere'
 import {DragDiscussionTopicMutation as IDragDiscussionTopicMutation} from '../__generated__/DragDiscussionTopicMutation.graphql'
 import {SharedUpdater} from '../types/relayMutations'
-import {DragDiscussionTopicMutation_meeting} from '__generated__/DragDiscussionTopicMutation_meeting.graphql'
+import {DragDiscussionTopicMutation_meeting} from '~/__generated__/DragDiscussionTopicMutation_meeting.graphql'
 
 graphql`
   fragment DragDiscussionTopicMutation_meeting on DragDiscussionTopicPayload {

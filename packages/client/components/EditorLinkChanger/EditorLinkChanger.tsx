@@ -81,7 +81,10 @@ const EditorLinkChanger = (props: Props) => {
     useTaskChild
   } = props
   useTaskChild('editor-link-changer')
-  const {menuPortal, openPortal} = useMenu(MenuPosition.UPPER_LEFT, {isDropdown: true, originCoords})
+  const {menuPortal, openPortal} = useMenu(MenuPosition.UPPER_LEFT, {
+    isDropdown: true,
+    originCoords
+  })
   useEffect(openPortal, [])
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -116,11 +119,7 @@ const EditorLinkChanger = (props: Props) => {
   const hasError = !!(fields.text.error || fields.link.error)
   const label = text ? 'Update' : 'Add'
   return menuPortal(
-    <ModalBoundary
-      onBlur={handleBlur}
-      onKeyDown={handleKeyDown}
-      tabIndex={-1}
-    >
+    <ModalBoundary onBlur={handleBlur} onKeyDown={handleKeyDown} tabIndex={-1}>
       <form onSubmit={onSubmit}>
         {text !== null && (
           <TextBlock>

@@ -1,21 +1,21 @@
 import {GraphQLNonNull} from 'graphql'
-import createTeamAndLeader from './helpers/createTeamAndLeader'
-import AddTeamPayload from '../types/AddTeamPayload'
-import NewTeamInput from '../types/NewTeamInput'
+import {SubscriptionChannel, Threshold} from 'parabol-client/types/constEnums'
+import {SuggestedActionTypeEnum, TierEnum} from 'parabol-client/types/graphql'
+import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
+import shortid from 'shortid'
+import getRethink from '../../database/rethinkDriver'
+import AuthToken from '../../database/types/AuthToken'
+import removeSuggestedAction from '../../safeMutations/removeSuggestedAction'
 import {getUserId, isUserInOrg} from '../../utils/authorization'
+import encodeAuthToken from '../../utils/encodeAuthToken'
 import publish from '../../utils/publish'
 import sendSegmentEvent from '../../utils/sendSegmentEvent'
-import shortid from 'shortid'
-import toTeamMemberId from '../../../client/utils/relay/toTeamMemberId'
-import addTeamValidation from './helpers/addTeamValidation'
-import rateLimit from '../rateLimit'
-import getRethink from '../../database/rethinkDriver'
-import removeSuggestedAction from '../../safeMutations/removeSuggestedAction'
 import standardError from '../../utils/standardError'
-import {SubscriptionChannel, Threshold} from 'parabol-client/types/constEnums'
-import {TierEnum, SuggestedActionTypeEnum} from 'parabol-client/types/graphql'
-import encodeAuthToken from '../../utils/encodeAuthToken'
-import AuthToken from '../../database/types/AuthToken'
+import rateLimit from '../rateLimit'
+import AddTeamPayload from '../types/AddTeamPayload'
+import NewTeamInput from '../types/NewTeamInput'
+import addTeamValidation from './helpers/addTeamValidation'
+import createTeamAndLeader from './helpers/createTeamAndLeader'
 
 export default {
   type: new GraphQLNonNull(AddTeamPayload),
@@ -43,18 +43,13 @@ export default {
       const orgTeams = await r
         .table('Team')
         .getAll(orgId, {index: 'orgId'})
-        .filter((team) =>
-          team('isArchived')
-            .default(false)
-            .ne(true)
-        )
         .run()
 
-      const orgTeamNames = orgTeams.map((team) => team.name)
+      const orgTeamNames = orgTeams.map((team) => !team.isArchived && team.name)
       const {
         data: {newTeam},
         errors
-      } = addTeamValidation(orgTeamNames)(args)
+      } = addTeamValidation(orgTeamNames)(args) as any
       if (Object.keys(errors).length) {
         if (errors.newTeam && errors.newTeam.name) {
           return {
@@ -80,7 +75,11 @@ export default {
       const {tms} = authToken
       // MUTATIVE
       tms.push(teamId)
-      sendSegmentEvent('New Team', viewerId, {orgId, teamId}).catch()
+      sendSegmentEvent('New Team', viewerId, {
+        orgId,
+        teamId,
+        teamNumber: orgTeams.length + 1
+      }).catch()
       publish(SubscriptionChannel.NOTIFICATION, viewerId, 'AuthTokenPayload', {tms})
       const teamMemberId = toTeamMemberId(teamId, viewerId)
       const data = {

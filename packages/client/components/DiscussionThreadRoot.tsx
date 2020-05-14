@@ -1,9 +1,9 @@
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {QueryRenderer} from 'react-relay'
+import useAtmosphere from '~/hooks/useAtmosphere'
 import renderQuery from '../utils/relay/renderQuery'
 import DiscussionThread from './DiscussionThread'
-import useAtmosphere from 'hooks/useAtmosphere'
 
 const query = graphql`
   query DiscussionThreadRootQuery($meetingId: ID!, $reflectionGroupId: ID!) {

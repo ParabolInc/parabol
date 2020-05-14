@@ -15,7 +15,7 @@ import Reactable, {reactableFields} from './Reactable'
 import Reactji from './Reactji'
 import Threadable, {threadableFields} from './Threadable'
 import resolveReactjis from '../resolvers/resolveReactjis'
-import convertToTaskContent from '../../../client/utils/draftjs/convertToTaskContent'
+import convertToTaskContent from 'parabol-client/utils/draftjs/convertToTaskContent'
 
 const TOMBSTONE = convertToTaskContent('[deleted]')
 

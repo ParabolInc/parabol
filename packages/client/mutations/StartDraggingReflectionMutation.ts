@@ -8,7 +8,7 @@ import {
 } from '../__generated__/StartDraggingReflectionMutation.graphql'
 import {LocalHandlers, SharedUpdater} from '../types/relayMutations'
 import Atmosphere from '../Atmosphere'
-import {StartDraggingReflectionMutation_meeting} from '__generated__/StartDraggingReflectionMutation_meeting.graphql'
+import {StartDraggingReflectionMutation_meeting} from '~/__generated__/StartDraggingReflectionMutation_meeting.graphql'
 import {ClientRetroReflection} from '../types/clientSchema'
 
 graphql`

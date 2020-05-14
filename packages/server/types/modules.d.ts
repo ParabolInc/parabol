@@ -5,8 +5,25 @@ declare module '*.png'
 declare module '*.svg'
 
 declare const __PRODUCTION__: string
-
+declare const __STATIC_IMAGES__: string
 interface Window {
-  ResizeObserver: any
   __ACTION__: any
 }
+
+declare namespace NodeJS {
+  interface Global {
+    hmrMiddleware: any
+    hmrSchema: any
+  }
+  interface NodeModule {
+    hot: any
+  }
+}
+
+interface HotMod extends NodeJS.Module {
+  hot: {
+    accept: any
+  }
+}
+
+declare let module: HotMod

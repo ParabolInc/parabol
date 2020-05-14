@@ -1,6 +1,8 @@
 import styled from '@emotion/styled'
+import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
+import {NewMeetingActions_team} from '~/__generated__/NewMeetingActions_team.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useBreakpoint from '../hooks/useBreakpoint'
 import useMutationProps from '../hooks/useMutationProps'
@@ -12,8 +14,6 @@ import Icon from './Icon'
 import NewMeetingActionsCurrentMeetings from './NewMeetingActionsCurrentMeetings'
 import PrimaryButton from './PrimaryButton'
 import StyledError from './StyledError'
-import graphql from 'babel-plugin-relay/macro'
-import {NewMeetingActions_team} from '__generated__/NewMeetingActions_team.graphql'
 
 const newMeetingGridMediaQuery = `@media screen and (min-width: ${Breakpoint.NEW_MEETING_GRID}px)`
 

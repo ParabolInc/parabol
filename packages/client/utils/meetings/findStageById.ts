@@ -9,8 +9,8 @@ export interface FindStageByIdPhase {
 }
 
 const findStageById = <T extends FindStageByIdPhase = GenericMeetingPhase>(
-  phases: readonly T[] | null | undefined,
-  foreginKey: string,
+  phases: T[] | readonly T[] | null | undefined,
+  foreignKey: string,
   stageKey = 'id'
 ) => {
   if (!phases) return undefined
@@ -19,7 +19,7 @@ const findStageById = <T extends FindStageByIdPhase = GenericMeetingPhase>(
     const {stages} = phase
     for (let jj = 0; jj < stages.length; jj++) {
       const stage = stages[jj] as T['stages'][0] & FindStageByIdStage
-      if (stage[stageKey] === foreginKey) {
+      if (stage[stageKey] === foreignKey) {
         return {phase, stage, stageIdx: jj}
       }
     }

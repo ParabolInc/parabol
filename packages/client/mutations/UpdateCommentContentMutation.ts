@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {IComment} from 'types/graphql'
+import {IComment} from '~/types/graphql'
 import {StandardMutation} from '../types/relayMutations'
 import {UpdateCommentContentMutation as TUpdateCommentContentMutation} from '../__generated__/UpdateCommentContentMutation.graphql'
 

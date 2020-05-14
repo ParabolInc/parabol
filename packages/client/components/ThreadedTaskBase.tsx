@@ -1,19 +1,19 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {ReactNode, useRef} from 'react'
-import {createFragmentContainer, commitLocalUpdate} from 'react-relay'
-import {PALETTE} from 'styles/paletteV2'
-import {AreaEnum} from 'types/graphql'
-import {ThreadedTaskBase_task} from '__generated__/ThreadedTaskBase_task.graphql'
+import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
+import useAtmosphere from '~/hooks/useAtmosphere'
+import {PALETTE} from '~/styles/paletteV2'
+import {AreaEnum} from '~/types/graphql'
+import {ThreadedTaskBase_meeting} from '~/__generated__/ThreadedTaskBase_meeting.graphql'
+import {ThreadedTaskBase_task} from '~/__generated__/ThreadedTaskBase_task.graphql'
 import NullableTask from './NullableTask/NullableTask'
 import ThreadedAvatarColumn from './ThreadedAvatarColumn'
-import ThreadedReplyButton from './ThreadedReplyButton'
-import useAtmosphere from 'hooks/useAtmosphere'
-import {ThreadedTaskBase_meeting} from '__generated__/ThreadedTaskBase_meeting.graphql'
+import {ReplyMention, SetReplyMention} from './ThreadedItem'
+import ThreadedItemHeaderDescription from './ThreadedItemHeaderDescription'
 import ThreadedItemReply from './ThreadedItemReply'
 import ThreadedItemWrapper from './ThreadedItemWrapper'
-import {SetReplyMention, ReplyMention} from './ThreadedItem'
-import ThreadedItemHeaderDescription from './ThreadedItemHeaderDescription'
+import ThreadedReplyButton from './ThreadedReplyButton'
 import useFocusedReply from './useFocusedReply'
 
 const BodyCol = styled('div')({
@@ -42,10 +42,11 @@ interface Props {
   reflectionGroupId: string
   setReplyMention: SetReplyMention
   replyMention?: ReplyMention
+  dataCy: string
 }
 
 const ThreadedTaskBase = (props: Props) => {
-  const {children, meeting, reflectionGroupId, setReplyMention, replyMention, task} = props
+  const {children, meeting, reflectionGroupId, setReplyMention, replyMention, task, dataCy} = props
   const isReply = !!props.isReply
   const {id: meetingId, replyingToCommentId} = meeting
   const {id: taskId, createdByUser, threadParentId} = task
@@ -61,17 +62,18 @@ const ThreadedTaskBase = (props: Props) => {
   }
   useFocusedReply(ownerId, replyingToCommentId, ref, replyEditorRef)
   return (
-    <ThreadedItemWrapper isReply={isReply} ref={ref}>
+    <ThreadedItemWrapper data-cy={`${dataCy}-wrapper`} isReply={isReply} ref={ref}>
       <ThreadedAvatarColumn isReply={isReply} picture={picture} />
       <BodyCol>
         <ThreadedItemHeaderDescription title={preferredName} subTitle={'added a Task'}>
           <HeaderActions>
-            <ThreadedReplyButton onReply={onReply} />
+            <ThreadedReplyButton dataCy={`${dataCy}`} onReply={onReply} />
           </HeaderActions>
         </ThreadedItemHeaderDescription>
-        <StyledNullableTask area={AreaEnum.meeting} task={task} />
+        <StyledNullableTask dataCy={`${dataCy}`} area={AreaEnum.meeting} task={task} />
         {children}
         <ThreadedItemReply
+          dataCy={`${dataCy}-reply`}
           reflectionGroupId={reflectionGroupId}
           meeting={meeting}
           threadable={task}

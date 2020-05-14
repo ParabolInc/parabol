@@ -5,13 +5,13 @@ import {
   REFLECT,
   RETROSPECTIVE,
   VOTE
-} from '../../../client/utils/constants'
+} from 'parabol-client/utils/constants'
 
 exports.up = async (r) => {
   try {
     await r
       .table('MeetingSettings')
-      .filter({meetingType: RETROSPECTIVE})
+      .filter({ meetingType: RETROSPECTIVE })
       .update({
         phaseTypes: [CHECKIN, REFLECT, GROUP, VOTE, DISCUSS]
       })

@@ -3,9 +3,9 @@ import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import NotificationAction from './NotificationAction'
 import NotificationTemplate from './NotificationTemplate'
-import useRouter from 'hooks/useRouter'
-import {PromoteToBillingLeader_notification} from '__generated__/PromoteToBillingLeader_notification.graphql'
-import defaultOrgAvatar from 'styles/theme/images/avatar-organization.svg'
+import useRouter from '~/hooks/useRouter'
+import {PromoteToBillingLeader_notification} from '~/__generated__/PromoteToBillingLeader_notification.graphql'
+import defaultOrgAvatar from '~/styles/theme/images/avatar-organization.svg'
 interface Props {
   notification: PromoteToBillingLeader_notification
 }

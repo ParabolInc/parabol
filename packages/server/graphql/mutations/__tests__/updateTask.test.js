@@ -2,12 +2,12 @@
 import getRethink from '../../../database/rethinkDriver'
 import mockAuthToken from '../../../__tests__/setup/mockAuthToken'
 import MockDate from 'mockdate'
-import {__aMinuteAgo, __anHourAgo, __now} from '../../../__tests__/setup/mockTimes'
+import { __aMinuteAgo, __anHourAgo, __now } from '../../../__tests__/setup/mockTimes'
 import fetchAndSerialize from '../../../__tests__/utils/fetchAndSerialize'
 import DynamicSerializer from 'dynamic-serializer'
 import MockDB from '../../../__tests__/setup/MockDB'
 import socket from '../../../__mocks__/socket'
-import {DONE} from '../../../../client/utils/constants'
+import { DONE } from 'parabol-client/utils/constants'
 import convertToRichText from '../../../__tests__/setup/convertToRichText'
 import updateTask from '../updateTask'
 import makeDataLoader from '../../../__tests__/setup/makeDataLoader'
@@ -21,7 +21,7 @@ describe('updateTask', () => {
     const r = await getRethink()
     const dynamicSerializer = new DynamicSerializer()
     const mockDB = new MockDB()
-    const {task, user} = await mockDB.init().newTask()
+    const { task, user } = await mockDB.init().newTask()
     const taskId = task[0].id
     const authToken = mockAuthToken(user[7])
     const dataLoader = makeDataLoader(authToken)
@@ -31,7 +31,7 @@ describe('updateTask', () => {
       id: taskId,
       sortOrder: 2
     }
-    await updateTask.resolve(undefined, {updatedTask}, {authToken, dataLoader, socket})
+    await updateTask.resolve(undefined, { updatedTask }, { authToken, dataLoader, socket })
 
     // VERIFY
     const db = await fetchAndSerialize(
@@ -42,7 +42,7 @@ describe('updateTask', () => {
           .between([taskId, r.minval], [taskId, r.maxval], {
             index: 'taskIdUpdatedAt'
           })
-          .orderBy({index: 'taskIdUpdatedAt'})
+          .orderBy({ index: 'taskIdUpdatedAt' })
       },
       dynamicSerializer
     )
@@ -55,7 +55,7 @@ describe('updateTask', () => {
     const r = await getRethink()
     const dynamicSerializer = new DynamicSerializer()
     const mockDB = new MockDB()
-    const {task, user} = await mockDB.init().newTask()
+    const { task, user } = await mockDB.init().newTask()
     const taskId = task[0].id
     const authToken = mockAuthToken(user[7])
     const dataLoader = makeDataLoader(authToken)
@@ -64,7 +64,7 @@ describe('updateTask', () => {
       id: taskId,
       content: convertToRichText('Updated content')
     }
-    await updateTask.resolve(undefined, {updatedTask}, {authToken, dataLoader, socket})
+    await updateTask.resolve(undefined, { updatedTask }, { authToken, dataLoader, socket })
 
     // VERIFY
     const db = await fetchAndSerialize(
@@ -75,7 +75,7 @@ describe('updateTask', () => {
           .between([taskId, r.minval], [taskId, r.maxval], {
             index: 'taskIdUpdatedAt'
           })
-          .orderBy({index: 'taskIdUpdatedAt'})
+          .orderBy({ index: 'taskIdUpdatedAt' })
       },
       dynamicSerializer
     )
@@ -88,9 +88,9 @@ describe('updateTask', () => {
     const r = await getRethink()
     const dynamicSerializer = new DynamicSerializer()
     const mockDB = new MockDB()
-    const {task, teamMember, user} = await mockDB
+    const { task, teamMember, user } = await mockDB
       .init()
-      .newTask({updatedAt: new Date(__anHourAgo)})
+      .newTask({ updatedAt: new Date(__anHourAgo) })
       .newTaskHistory()
     const taskId = task[0].id
     const authToken = mockAuthToken(user[7])
@@ -101,7 +101,7 @@ describe('updateTask', () => {
       id: taskId,
       teamMemberId: teamMember[5].id
     }
-    await updateTask.resolve(undefined, {updatedTask}, {authToken, dataLoader, socket})
+    await updateTask.resolve(undefined, { updatedTask }, { authToken, dataLoader, socket })
 
     // VERIFY
     const db = await fetchAndSerialize(
@@ -112,7 +112,7 @@ describe('updateTask', () => {
           .between([taskId, r.minval], [taskId, r.maxval], {
             index: 'taskIdUpdatedAt'
           })
-          .orderBy({index: 'taskIdUpdatedAt'})
+          .orderBy({ index: 'taskIdUpdatedAt' })
       },
       dynamicSerializer
     )
@@ -125,9 +125,9 @@ describe('updateTask', () => {
     const r = await getRethink()
     const dynamicSerializer = new DynamicSerializer()
     const mockDB = new MockDB()
-    const {task, user} = await mockDB
+    const { task, user } = await mockDB
       .init()
-      .newTask({updatedAt: new Date(__aMinuteAgo)})
+      .newTask({ updatedAt: new Date(__aMinuteAgo) })
       .newTaskHistory()
     const taskId = task[0].id
     const authToken = mockAuthToken(user[7])
@@ -138,7 +138,7 @@ describe('updateTask', () => {
       id: taskId,
       content: convertToRichText('Updated content')
     }
-    await updateTask.resolve(undefined, {updatedTask}, {authToken, dataLoader, socket})
+    await updateTask.resolve(undefined, { updatedTask }, { authToken, dataLoader, socket })
 
     // VERIFY
     const db = await fetchAndSerialize(
@@ -149,7 +149,7 @@ describe('updateTask', () => {
           .between([taskId, r.minval], [taskId, r.maxval], {
             index: 'taskIdUpdatedAt'
           })
-          .orderBy({index: 'taskIdUpdatedAt'})
+          .orderBy({ index: 'taskIdUpdatedAt' })
       },
       dynamicSerializer
     )
@@ -162,7 +162,7 @@ describe('updateTask', () => {
     const r = await getRethink()
     const dynamicSerializer = new DynamicSerializer()
     const mockDB = new MockDB()
-    const {task, user} = await mockDB.init().newTask()
+    const { task, user } = await mockDB.init().newTask()
     const taskId = task[0].id
     const authToken = mockAuthToken(user[7])
     const dataLoader = makeDataLoader(authToken)
@@ -172,7 +172,7 @@ describe('updateTask', () => {
       id: taskId,
       status: DONE
     }
-    await updateTask.resolve(undefined, {updatedTask}, {authToken, dataLoader, socket})
+    await updateTask.resolve(undefined, { updatedTask }, { authToken, dataLoader, socket })
 
     // VERIFY
     const db = await fetchAndSerialize(
@@ -183,7 +183,7 @@ describe('updateTask', () => {
           .between([taskId, r.minval], [taskId, r.maxval], {
             index: 'taskIdUpdatedAt'
           })
-          .orderBy({index: 'taskIdUpdatedAt'})
+          .orderBy({ index: 'taskIdUpdatedAt' })
       },
       dynamicSerializer
     )
@@ -194,8 +194,8 @@ describe('updateTask', () => {
   test('return error when the caller is not a team member', async () => {
     // SETUP
     const mockDB = new MockDB()
-    const {task, user} = await mockDB.init().newTask()
-    const authToken = mockAuthToken(user[1], {tms: ['foo']})
+    const { task, user } = await mockDB.init().newTask()
+    const authToken = mockAuthToken(user[1], { tms: ['foo'] })
     const taskId = task[0].id
     const dataLoader = makeDataLoader(authToken)
     // TEST
@@ -203,7 +203,7 @@ describe('updateTask', () => {
       id: taskId,
       status: DONE
     }
-    const res = await updateTask.resolve(undefined, {updatedTask}, {authToken, dataLoader, socket})
-    expect(res).toEqual(expect.objectContaining({error: expect.any(Object)}))
+    const res = await updateTask.resolve(undefined, { updatedTask }, { authToken, dataLoader, socket })
+    expect(res).toEqual(expect.objectContaining({ error: expect.any(Object) }))
   })
 })

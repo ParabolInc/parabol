@@ -1,25 +1,30 @@
-import TimelineEventJoinedParabol from '../../../database/types/TimelineEventJoinedParabol'
+import sleep from 'parabol-client/utils/sleep'
 import shortid from 'shortid'
-import createNewOrg from './createNewOrg'
-import createTeamAndLeader from './createTeamAndLeader'
-import addSeedTasks from './addSeedTasks'
+import getRethink from '../../../database/rethinkDriver'
+import AuthToken from '../../../database/types/AuthToken'
+import SuggestedActionCreateNewTeam from '../../../database/types/SuggestedActionCreateNewTeam'
 import SuggestedActionInviteYourTeam from '../../../database/types/SuggestedActionInviteYourTeam'
 import SuggestedActionTryTheDemo from '../../../database/types/SuggestedActionTryTheDemo'
-import SuggestedActionCreateNewTeam from '../../../database/types/SuggestedActionCreateNewTeam'
-import AuthToken from '../../../database/types/AuthToken'
-import sleep from 'parabol-client/utils/sleep'
-import {sendSegmentIdentify} from '../../../utils/sendSegmentEvent'
-import getRethink from '../../../database/rethinkDriver'
+import TimelineEventJoinedParabol from '../../../database/types/TimelineEventJoinedParabol'
 import User from '../../../database/types/User'
 import segmentIo from '../../../utils/segmentIo'
+import sendSegmentEvent, {sendSegmentIdentify} from '../../../utils/sendSegmentEvent'
+import addSeedTasks from './addSeedTasks'
+import createNewOrg from './createNewOrg'
+import createTeamAndLeader from './createTeamAndLeader'
 
 // no waiting necessary, it's just analytics
-const handleSegment = async (userId: string, previousId: string | null | undefined) => {
+const handleSegment = async (
+  isInvited: boolean,
+  userId: string,
+  previousId: string | null | undefined
+) => {
   if (previousId) {
     await segmentIo.alias({previousId, userId})
     // https://segment.com/docs/destinations/mixpanel/#aliasing-server-side
     await sleep(1000)
   }
+  sendSegmentEvent('Account Created', userId, {isInvited})
   return sendSegmentIdentify(userId)
 }
 
@@ -53,13 +58,14 @@ const bootstrapNewUser = async (newUser: User, isOrganic: boolean, segmentId?: s
         .insert(new SuggestedActionInviteYourTeam({userId, teamId}))
         .run()
     ])
+    sendSegmentEvent('New Org', userId, {teamId, orgId, fromSignup: true})
   } else {
     await r
       .table('SuggestedAction')
       .insert([new SuggestedActionTryTheDemo({userId}), new SuggestedActionCreateNewTeam({userId})])
       .run()
   }
-  handleSegment(userId, segmentId).catch()
+  handleSegment(!isOrganic, userId, segmentId).catch()
 
   return new AuthToken({sub: userId, tms})
 }

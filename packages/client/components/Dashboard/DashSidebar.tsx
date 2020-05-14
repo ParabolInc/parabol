@@ -2,12 +2,12 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
+import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
 import {PALETTE} from '../../styles/paletteV2'
 import {AppBar, Breakpoint, NavSidebar} from '../../types/constEnums'
 import {DashSidebar_viewer} from '../../__generated__/DashSidebar_viewer.graphql'
 import DashNavList from '../DashNavList/DashNavList'
 import LeftDashNavItem from './LeftDashNavItem'
-import makeMinWidthMediaQuery from 'utils/makeMinWidthMediaQuery'
 
 interface Props {
   isOpen: boolean

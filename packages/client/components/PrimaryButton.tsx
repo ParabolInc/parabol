@@ -1,9 +1,9 @@
-import React, {forwardRef} from 'react'
 import styled from '@emotion/styled'
+import React, {forwardRef} from 'react'
+import {Elevation} from '~/styles/elevation'
+import {PALETTE} from '~/styles/paletteV2'
+import {Radius} from '~/types/constEnums'
 import BaseButton, {BaseButtonProps} from './BaseButton'
-import {PALETTE} from 'styles/paletteV2'
-import {Radius} from 'types/constEnums'
-import {Elevation} from 'styles/elevation'
 
 const StyledBaseButton = styled(BaseButton)((props: BaseButtonProps) => {
   const {disabled, waiting} = props

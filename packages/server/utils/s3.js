@@ -7,9 +7,7 @@ import protocolRelativeUrl from './protocolRelativeUrl'
  * Initializing AWS S3 implicitly uses environment variables
  * AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY
  */
-const s3 =
-  process.env.DISABLE_CDN_BUILD !== 'true' &&
-  typeof process.env.CDN_BASE_URL !== 'undefined' &&
+const s3 = typeof process.env.CDN_BASE_URL === 'string' && process.env.CDN_BASE_URL !== 'key_CDN_BASE_URL' &&
   new aws.S3({
     endpoint: protocolRelativeUrl.parse(process.env.CDN_BASE_URL).hostname,
     s3BucketEndpoint: true,

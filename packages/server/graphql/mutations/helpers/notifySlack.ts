@@ -1,9 +1,9 @@
 import ms from 'ms'
-import {Unpromise} from '../../../../client/types/generics'
-import formatTime from '../../../../client/utils/date/formatTime'
-import formatWeekday from '../../../../client/utils/date/formatWeekday'
-import findStageById from '../../../../client/utils/meetings/findStageById'
-import {phaseLabelLookup} from '../../../../client/utils/meetings/lookups'
+import {Unpromise} from 'parabol-client/types/generics'
+import formatTime from 'parabol-client/utils/date/formatTime'
+import formatWeekday from 'parabol-client/utils/date/formatWeekday'
+import findStageById from 'parabol-client/utils/meetings/findStageById'
+import {phaseLabelLookup} from 'parabol-client/utils/meetings/lookups'
 import getRethink from '../../../database/rethinkDriver'
 import SlackNotification, {SlackNotificationEvent} from '../../../database/types/SlackNotification'
 import {toEpochSeconds} from '../../../utils/epochTime'
@@ -79,15 +79,28 @@ export const startSlackMeeting = async (
   teamId: string,
   dataLoader: DataLoaderWorker
 ) => {
+  const params = {
+    utm_source: 'slack meeting start',
+    utm_medium: 'product',
+    utm_campaign: 'invitations'
+  }
+  const options = {params}
   const team = await dataLoader.get('teams').load(teamId)
-  const meetingUrl = makeAppLink(`meet/${meetingId}`)
+
+  const meetingUrl = makeAppLink(`meet/${meetingId}`, options)
   const slackText = `${team.name} has started a meeting!\n To join, click here: ${meetingUrl}`
   notifySlack('meetingStart', dataLoader, teamId, slackText).catch(console.log)
 }
 
 export const endSlackMeeting = async (meetingId, teamId, dataLoader: DataLoaderWorker) => {
+  const params = {
+    utm_source: 'slack summary',
+    utm_medium: 'product',
+    utm_campaign: 'after-meeting'
+  }
+  const options = {params}
   const team = await dataLoader.get('teams').load(teamId)
-  const summaryUrl = makeAppLink(`new-summary/${meetingId}`)
+  const summaryUrl = makeAppLink(`new-summary/${meetingId}`, options)
   const slackText = `The meeting for ${team.name} has ended!\n Check out the summary here: ${summaryUrl}`
   notifySlack('meetingEnd', dataLoader, teamId, slackText).catch(console.log)
 }

@@ -14,9 +14,9 @@ jobs:
         node-version: 13.x
     - name: Typecheck
       run: |
+        cp .env.example .env
         yarn
-        yarn build:relay
+        yarn build
         yarn typecheck
-        yarn lint
       env:
         CI: true

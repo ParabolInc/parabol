@@ -7,5 +7,6 @@
   "supportFile": "support/index.js",
   "videosFolder": "videos",
   "projectId": "3wn18n",
+  "chromeWebSecurity": false,
   "ignoreTestFiles": "demo_*"
 }

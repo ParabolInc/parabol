@@ -1,24 +1,24 @@
+import styled from '@emotion/styled'
+import graphql from 'babel-plugin-relay/macro'
+import {EditorState} from 'draft-js'
 import React, {memo, RefObject} from 'react'
 import {createFragmentContainer} from 'react-relay'
+import EditingStatus from '~/components/EditingStatus/EditingStatus'
+import {OutcomeCard_task} from '~/__generated__/OutcomeCard_task.graphql'
 import TaskEditor from '../../../../components/TaskEditor/TaskEditor'
 import TaskIntegrationLink from '../../../../components/TaskIntegrationLink'
 import TaskWatermark from '../../../../components/TaskWatermark'
-import TaskFooter from '../OutcomeCardFooter/TaskFooter'
-import OutcomeCardStatusIndicator from '../OutcomeCardStatusIndicator/OutcomeCardStatusIndicator'
-import {Card} from '../../../../types/constEnums'
+import {UseTaskChild} from '../../../../hooks/useTaskChildFocus'
 import {cardFocusShadow, cardHoverShadow, cardShadow, Elevation} from '../../../../styles/elevation'
+import cardRootStyles from '../../../../styles/helpers/cardRootStyles'
+import {Card} from '../../../../types/constEnums'
+import {AreaEnum, TaskServiceEnum, TaskStatusEnum} from '../../../../types/graphql'
 import isTaskArchived from '../../../../utils/isTaskArchived'
 import isTaskPrivate from '../../../../utils/isTaskPrivate'
-import {taskStatusLabels} from '../../../../utils/taskStatus'
 import isTempId from '../../../../utils/relay/isTempId'
-import cardRootStyles from '../../../../styles/helpers/cardRootStyles'
-import styled from '@emotion/styled'
-import graphql from 'babel-plugin-relay/macro'
-import {AreaEnum, TaskServiceEnum, TaskStatusEnum} from '../../../../types/graphql'
-import {EditorState} from 'draft-js'
-import {OutcomeCard_task} from '__generated__/OutcomeCard_task.graphql'
-import {UseTaskChild} from '../../../../hooks/useTaskChildFocus'
-import EditingStatus from 'components/EditingStatus/EditingStatus'
+import {taskStatusLabels} from '../../../../utils/taskStatus'
+import TaskFooter from '../OutcomeCardFooter/TaskFooter'
+import OutcomeCardStatusIndicator from '../OutcomeCardStatusIndicator/OutcomeCardStatusIndicator'
 
 const RootCard = styled('div')<{
   isTaskHovered: boolean
@@ -59,6 +59,7 @@ interface Props {
   task: OutcomeCard_task
   setEditorState: (newEditorState: EditorState) => void
   useTaskChild: UseTaskChild
+  dataCy: string
 }
 
 const OutcomeCard = memo((props: Props) => {
@@ -72,7 +73,8 @@ const OutcomeCard = memo((props: Props) => {
     isDraggingOver,
     task,
     setEditorState,
-    useTaskChild
+    useTaskChild,
+    dataCy
   } = props
   const isPrivate = isTaskPrivate(task.tags)
   const isArchived = isTaskArchived(task.tags)
@@ -95,13 +97,14 @@ const OutcomeCard = memo((props: Props) => {
       <TaskWatermark service={service} />
       <ContentBlock>
         <EditingStatus isTaskHovered={isTaskHovered} task={task} useTaskChild={useTaskChild}>
-          <StatusIndicatorBlock title={statusIndicatorTitle}>
+          <StatusIndicatorBlock data-cy={`${dataCy}-status`} title={statusIndicatorTitle}>
             <OutcomeCardStatusIndicator status={isDraggingOver || status} />
             {isPrivate && <OutcomeCardStatusIndicator status='private' />}
             {isArchived && <OutcomeCardStatusIndicator status='archived' />}
           </StatusIndicatorBlock>
         </EditingStatus>
         <TaskEditor
+          dataCy={`${dataCy}`}
           editorRef={editorRef}
           editorState={editorState}
           readOnly={Boolean(isTempId(taskId) || isArchived || isDraggingOver || service)}
@@ -109,8 +112,9 @@ const OutcomeCard = memo((props: Props) => {
           teamId={teamId}
           useTaskChild={useTaskChild}
         />
-        <TaskIntegrationLink integration={integration || null} />
+        <TaskIntegrationLink dataCy={`${dataCy}`} integration={integration || null} />
         <TaskFooter
+          dataCy={`${dataCy}`}
           area={area}
           cardIsActive={isTaskFocused || isTaskHovered}
           editorState={editorState}

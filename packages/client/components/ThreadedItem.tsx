@@ -1,8 +1,8 @@
 import graphql from 'babel-plugin-relay/macro'
 import React, {useState} from 'react'
 import {createFragmentContainer} from 'react-relay'
-import {ThreadedItem_meeting} from '__generated__/ThreadedItem_meeting.graphql'
-import {ThreadedItem_threadable} from '__generated__/ThreadedItem_threadable.graphql'
+import {ThreadedItem_meeting} from '~/__generated__/ThreadedItem_meeting.graphql'
+import {ThreadedItem_threadable} from '~/__generated__/ThreadedItem_threadable.graphql'
 import ThreadedCommentBase from './ThreadedCommentBase'
 import ThreadedRepliesList from './ThreadedRepliesList'
 import ThreadedTaskBase from './ThreadedTaskBase'
@@ -11,6 +11,7 @@ interface Props {
   threadable: ThreadedItem_threadable
   meeting: ThreadedItem_meeting
   reflectionGroupId: string
+  dataCy: string
 }
 
 export type ReplyMention = {
@@ -21,12 +22,13 @@ export type ReplyMention = {
 export type SetReplyMention = (replyMention: ReplyMention) => void
 
 export const ThreadedItem = (props: Props) => {
-  const {threadable, reflectionGroupId, meeting} = props
+  const {threadable, reflectionGroupId, meeting, dataCy} = props
   const {__typename, replies} = threadable
   const [replyMention, setReplyMention] = useState<ReplyMention>(null)
   if (!replies) debugger
   const child = (
     <ThreadedRepliesList
+      dataCy={`${dataCy}-child`}
       meeting={meeting}
       replies={replies}
       reflectionGroupId={reflectionGroupId}
@@ -36,6 +38,7 @@ export const ThreadedItem = (props: Props) => {
   if (__typename === 'Task') {
     return (
       <ThreadedTaskBase
+        dataCy={`${dataCy}-task`}
         task={threadable}
         meeting={meeting}
         reflectionGroupId={reflectionGroupId}
@@ -48,6 +51,7 @@ export const ThreadedItem = (props: Props) => {
   }
   return (
     <ThreadedCommentBase
+      dataCy={`${dataCy}-comment`}
       comment={threadable}
       meeting={meeting}
       reflectionGroupId={reflectionGroupId}

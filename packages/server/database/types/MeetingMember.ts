@@ -1,4 +1,4 @@
-import toTeamMemberId from '../../../client/utils/relay/toTeamMemberId'
+import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import {MeetingTypeEnum} from 'parabol-client/types/graphql'
 
 interface MeetingMemberInput {
@@ -13,7 +13,7 @@ interface MeetingMemberInput {
 
 export default abstract class MeetingMember {
   id: string
-  isCheckedIn: boolean | null
+  isCheckedIn: boolean
   meetingType: MeetingTypeEnum
   meetingId: string
   teamId: string
@@ -22,7 +22,7 @@ export default abstract class MeetingMember {
   constructor(input: MeetingMemberInput) {
     const {teamId, meetingType, id, updatedAt, isCheckedIn, meetingId, userId} = input
     this.id = id ?? toTeamMemberId(meetingId, userId)
-    this.isCheckedIn = isCheckedIn ?? null
+    this.isCheckedIn = isCheckedIn ?? false
     this.meetingType = meetingType
     this.meetingId = meetingId
     this.teamId = teamId

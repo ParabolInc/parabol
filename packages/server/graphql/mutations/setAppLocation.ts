@@ -48,8 +48,8 @@ export default {
       const meetingId = lastSeenAtURL?.includes('/meet/')
         ? lastSeenAtURL.slice(6)
         : location?.includes('/meet/')
-        ? location.slice(6)
-        : null
+          ? location.slice(6)
+          : null
       viewer.lastSeenAtURL = location
       viewer.lastSeenAt
       if (meetingId) {

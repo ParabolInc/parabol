@@ -1,8 +1,8 @@
-import {MenuPosition} from 'hooks/useCoords'
-import useMenu from 'hooks/useMenu'
-import useModal from 'hooks/useModal'
 import React, {lazy} from 'react'
-import lazyPreload from 'utils/lazyPreload'
+import {MenuPosition} from '~/hooks/useCoords'
+import useMenu from '~/hooks/useMenu'
+import useModal from '~/hooks/useModal'
+import lazyPreload from '~/utils/lazyPreload'
 import TopBarIcon from './TopBarIcon'
 
 const TopBarHelpMenu = lazyPreload(() =>
@@ -29,7 +29,9 @@ const TopBarHelp = () => {
         onMouseEnter={TopBarHelpMenu.preload}
         icon={'help_outline'}
       />
-      {menuPortal(<TopBarHelpMenu menuProps={menuProps} toggleShortcuts={toggleShortcuts} />)}
+      {menuPortal(
+        <TopBarHelpMenu dataCy='top-bar' menuProps={menuProps} toggleShortcuts={toggleShortcuts} />
+      )}
       {modalPortal(<EditorHelpModal handleCloseModal={closeShortcuts} />)}
     </>
   )

@@ -1,15 +1,15 @@
-import useAtmosphere from 'hooks/useAtmosphere'
-import useForm from 'hooks/useForm'
-import useMutationProps from 'hooks/useMutationProps'
-import useRouter from 'hooks/useRouter'
+import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {createFragmentContainer} from 'react-relay'
+import useAtmosphere from '~/hooks/useAtmosphere'
+import useForm from '~/hooks/useForm'
+import useMutationProps from '~/hooks/useMutationProps'
+import useRouter from '~/hooks/useRouter'
+import ArchiveOrganizationMutation from '~/mutations/ArchiveOrganizationMutation'
+import {ArchiveOrganizationForm_organization} from '~/__generated__/ArchiveOrganizationForm_organization.graphql'
 import FieldLabel from '../../../../components/FieldLabel/FieldLabel'
 import BasicInput from '../../../../components/InputField/BasicInput'
 import Legitity from '../../../../validation/Legitity'
-import graphql from 'babel-plugin-relay/macro'
-import {ArchiveOrganizationForm_organization} from '__generated__/ArchiveOrganizationForm_organization.graphql'
-import {createFragmentContainer} from 'react-relay'
-import ArchiveOrganizationMutation from 'mutations/ArchiveOrganizationMutation'
 
 interface Props {
   handleFormBlur: () => any

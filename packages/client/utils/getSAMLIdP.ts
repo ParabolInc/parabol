@@ -1,8 +1,8 @@
-import {getSAMLIdPQuery} from '../__generated__/getSAMLIdPQuery.graphql'
-import {fetchQuery} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
+import {fetchQuery} from 'react-relay'
 import Atmosphere from '../Atmosphere'
 import {ISAMLIdPOnQueryArguments} from '../types/graphql'
+import {getSAMLIdPQuery} from '../__generated__/getSAMLIdPQuery.graphql'
 
 const query = graphql`
   query getSAMLIdPQuery($email: ID!, $isInvited: Boolean) {

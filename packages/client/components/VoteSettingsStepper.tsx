@@ -1,10 +1,10 @@
 import styled from '@emotion/styled'
 import React from 'react'
+import {MeetingSettingsThreshold} from '~/types/constEnums'
 import {PALETTE} from '../styles/paletteV2'
 import {ICON_SIZE} from '../styles/typographyV2'
 import Icon from './Icon'
 import PlainButton from './PlainButton/PlainButton'
-import {MeetingSettingsThreshold} from 'types/constEnums'
 
 interface Props {
   increase(): void

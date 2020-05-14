@@ -1,4 +1,4 @@
-import fromTeamMemberId from '../../../../client/utils/relay/fromTeamMemberId'
+import fromTeamMemberId from 'parabol-client/utils/relay/fromTeamMemberId'
 import getRethink from '../../../database/rethinkDriver'
 import CheckInStage from '../../../database/types/CheckInStage'
 import NotificationKickedOut from '../../../database/types/NotificationKickedOut'
@@ -8,6 +8,7 @@ import User from '../../../database/types/User'
 import archiveTasksForDB from '../../../safeMutations/archiveTasksForDB'
 import {DataLoaderWorker} from '../../graphql'
 import removeStagesFromMeetings from './removeStagesFromMeetings'
+import removeUserFromMeetingStages from './removeUserFromMeetingStages'
 
 interface Options {
   evictorUserId?: string
@@ -145,7 +146,7 @@ const removeTeamMember = async (
     return stage.teamMemberId === teamMemberId
   }
   await removeStagesFromMeetings(filterFn, teamId, dataLoader)
-
+  await removeUserFromMeetingStages(userId, teamId, dataLoader)
   // TODO should probably just inactivate the meeting member
   const activeMeetings = await dataLoader.get('activeMeetingsByTeamId').load(teamId)
   const meetingIds = activeMeetings.map(({id}) => id)

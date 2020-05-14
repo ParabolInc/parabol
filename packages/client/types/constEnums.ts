@@ -56,6 +56,7 @@ export const enum DiscussionThreadEnum {
 }
 
 export const enum DragAttribute {
+  CONTROL_BAR_COVERABLE = 'data-control-bar-coverable',
   DROPPABLE = 'data-droppable',
   DROPZONE = 'data-dropzone'
 }
@@ -92,7 +93,8 @@ export const enum ExternalLinks {
   GETTING_STARTED_RETROS = 'https://www.parabol.co/resources/retrospective-meetings',
   GETTING_STARTED_CHECK_INS = 'https://www.parabol.co/resources/check-in-meetings',
   RESOURCES = 'https://www.parabol.co/resources',
-  SUPPORT = 'https://www.parabol.co/support'
+  SUPPORT = 'https://www.parabol.co/support',
+  TEAM = 'https://www.parabol.co/team/'
 }
 
 export const enum Filter {
@@ -139,7 +141,8 @@ export const enum LoaderSize {
 export const enum LocalStorageKey {
   APP_TOKEN_KEY = 'Action:token',
   INVITATION_TOKEN = 'invitationToken',
-  GRAPHIQL_SCHEMA = 'gqlSchema'
+  GRAPHIQL_SCHEMA = 'gqlSchema',
+  EMAIL = 'email'
 }
 
 export const enum AuthenticationError {
@@ -152,6 +155,10 @@ export const enum AuthenticationError {
 
 export const enum MathEnum {
   MAX_INT = 2147483647
+}
+
+export const enum MeetingControlBarEnum {
+  HEIGHT = 56
 }
 
 export const enum MeetingLabels {
@@ -214,7 +221,10 @@ export const enum ReflectionStackPerspective {
 
 export const enum RetroDemo {
   MEETING_ID = 'demoMeetingId',
-  TEAM_ID = 'demoTeamId'
+  TEAM_ID = 'demoTeamId',
+  REFLECT_STAGE_ID = 'reflectStage',
+  GROUP_STAGE_ID = 'groupStage',
+  VOTE_STAGE_ID = 'voteStage'
 }
 
 export const enum RightSidebar {
@@ -226,6 +236,10 @@ export const enum Security {
   MASS_INVITATION_TOKEN_LENGTH = 12
 }
 
+export const enum ServerChannel {
+  GQL_EXECUTOR_REQUEST = 'gqlExRreq',
+  GQL_EXECUTOR_RESPONSE = 'gqlExRes'
+}
 export const enum SubscriptionChannel {
   TASK = 'task',
   TEAM = 'team',
@@ -299,7 +313,6 @@ export const enum TrebuchetCloseReason {
 /* https://material.io/design/environment/elevation.html#default-elevations */
 export const enum ZIndex {
   BOTTOM_BAR = 8,
-  BOTTOM_BAR_DESKTOP = 4,
   DIALOG = 24,
   FAB = 6,
   MENU = 24 /* portal needs to float above other components, especially sidebars */,

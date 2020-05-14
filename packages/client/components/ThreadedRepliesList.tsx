@@ -1,8 +1,8 @@
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
-import {ThreadedRepliesList_meeting} from '__generated__/ThreadedRepliesList_meeting.graphql'
-import {ThreadedRepliesList_replies} from '__generated__/ThreadedRepliesList_replies.graphql'
+import {ThreadedRepliesList_meeting} from '~/__generated__/ThreadedRepliesList_meeting.graphql'
+import {ThreadedRepliesList_replies} from '~/__generated__/ThreadedRepliesList_replies.graphql'
 import ThreadedCommentBase from './ThreadedCommentBase'
 import {SetReplyMention} from './ThreadedItem'
 import ThreadedTaskBase from './ThreadedTaskBase'
@@ -12,19 +12,21 @@ interface Props {
   reflectionGroupId: string
   replies: ThreadedRepliesList_replies
   setReplyMention: SetReplyMention
+  dataCy: string
 }
 
 const ThreadedRepliesList = (props: Props) => {
-  const {replies, setReplyMention, meeting, reflectionGroupId} = props
+  const {replies, setReplyMention, meeting, reflectionGroupId, dataCy} = props
   // https://sentry.io/organizations/parabol/issues/1569570376/?project=107196&query=is%3Aunresolved
   // not sure why this is required addComment and createTask but request replies
   if (!replies) return null
   return (
     <>
-      {replies.map((reply) => {
+      {replies.map((reply, idx) => {
         const {__typename, id} = reply
         return __typename === 'Task' ? (
           <ThreadedTaskBase
+            dataCy={`${dataCy}-task-${idx}`}
             key={id}
             isReply
             task={reply}
@@ -34,6 +36,7 @@ const ThreadedRepliesList = (props: Props) => {
           />
         ) : (
           <ThreadedCommentBase
+            dataCy={`${dataCy}-comment-${idx}`}
             key={id}
             isReply
             comment={reply}

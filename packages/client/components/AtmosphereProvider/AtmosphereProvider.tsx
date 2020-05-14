@@ -8,7 +8,8 @@ export const AtmosphereContext = React.createContext<Atmosphere | TLocalAtmosphe
 
 interface Props {
   children: ReactNode
-  isDemo?: boolean
+  // LocalAtmosphere has a bunch of junk we don't want to SSR, so we have client-only files pass it in
+  getLocalAtmosphere?: () => Promise<{default: {new (): TLocalAtmosphere}}>
 }
 
 class AtmosphereProvider extends Component<Props> {
@@ -16,7 +17,7 @@ class AtmosphereProvider extends Component<Props> {
 
   constructor(props) {
     super(props)
-    if (props.isDemo) {
+    if (props.getLocalAtmosphere) {
       this.loadDemo().catch()
     } else {
       this.atmosphere = new Atmosphere()
@@ -25,9 +26,7 @@ class AtmosphereProvider extends Component<Props> {
   }
 
   async loadDemo() {
-    const LocalAtmosphere = await import(
-      /* webpackChunkName: 'LocalAtmosphere' */ '../../modules/demo/LocalAtmosphere'
-    )
+    const LocalAtmosphere = await this.props.getLocalAtmosphere!()
       .then((mod) => mod.default)
       .catch()
     this.atmosphere = new LocalAtmosphere()

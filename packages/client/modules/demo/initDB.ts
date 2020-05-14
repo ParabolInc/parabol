@@ -279,12 +279,13 @@ const initPhases = (teamMembers) => {
       stages: [
         {
           __typename: 'GenericMeetingStage',
-          id: 'reflectStage',
+          id: RetroDemo.REFLECT_STAGE_ID,
           isComplete: false,
           isNavigable: true,
           isNavigableByFacilitator: true,
           meetingId: RetroDemo.MEETING_ID,
           phaseType: REFLECT,
+          readyCount: 0,
           startAt: now
         }
       ]
@@ -297,10 +298,11 @@ const initPhases = (teamMembers) => {
       stages: [
         {
           __typename: 'GenericMeetingStage',
-          id: 'groupStage',
+          id: RetroDemo.GROUP_STAGE_ID,
           isComplete: false,
           meetingId: RetroDemo.MEETING_ID,
-          phaseType: GROUP
+          phaseType: GROUP,
+          readyCount: 0
         }
       ]
     },
@@ -312,10 +314,11 @@ const initPhases = (teamMembers) => {
       stages: [
         {
           __typename: 'GenericMeetingStage',
-          id: 'voteStage',
+          id: RetroDemo.VOTE_STAGE_ID,
           isComplete: false,
           meetingId: RetroDemo.MEETING_ID,
-          phaseType: VOTE
+          phaseType: VOTE,
+          readyCount: 0
         }
       ]
     },
@@ -334,6 +337,7 @@ const initPhases = (teamMembers) => {
           isNavigableByFacilitator: false,
           phaseType: DISCUSS,
           reflectionGroup: null,
+          readyCount: 0,
           sortOrder: 0
         }
       ]
@@ -350,7 +354,7 @@ const initNewMeeting = (organization, teamMembers, meetingMembers) => {
     createdAt: now,
     defaultFacilitatorUserId: demoViewerId,
     endedAt: null,
-    facilitatorStageId: 'reflectStage',
+    facilitatorStageId: RetroDemo.REFLECT_STAGE_ID,
     facilitatorUserId: demoViewerId,
     facilitator: viewerTeamMember,
     id: RetroDemo.MEETING_ID,

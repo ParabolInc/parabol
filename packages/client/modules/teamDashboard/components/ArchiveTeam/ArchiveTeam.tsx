@@ -1,12 +1,12 @@
-import React, {useState} from 'react'
-import LinkButton from '../../../../components/LinkButton'
-import IconLabel from '../../../../components/IconLabel'
-import ArchiveTeamForm from './ArchiveTeamForm'
 import styled from '@emotion/styled'
-import {PALETTE} from '../../../../styles/paletteV2'
-import {ArchiveTeam_team} from '__generated__/ArchiveTeam_team.graphql'
 import graphql from 'babel-plugin-relay/macro'
+import React, {useState} from 'react'
 import {createFragmentContainer} from 'react-relay'
+import {ArchiveTeam_team} from '~/__generated__/ArchiveTeam_team.graphql'
+import IconLabel from '../../../../components/IconLabel'
+import LinkButton from '../../../../components/LinkButton'
+import {PALETTE} from '../../../../styles/paletteV2'
+import ArchiveTeamForm from './ArchiveTeamForm'
 
 interface Props {
   team: ArchiveTeam_team

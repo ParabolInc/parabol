@@ -29,6 +29,7 @@ import connectSocket from './mutations/connectSocket'
 import loginSAML from './mutations/loginSAML'
 import disconnectSocket from './mutations/disconnectSocket'
 import dailyPulse from './queries/dailyPulse'
+import profileCPU from './mutations/profileCPU'
 
 const query = new GraphQLObjectType<any, GQLContext, any>({
   name: 'Query',
@@ -51,6 +52,7 @@ const mutation = new GraphQLObjectType<any, GQLContext, any>({
     addNewFeature,
     autopauseUsers,
     connectSocket,
+    profileCPU,
     disconnectSocket,
     draftEnterpriseInvoice,
     dumpHeap,

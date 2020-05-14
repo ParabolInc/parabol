@@ -47,7 +47,10 @@ interface Props {
 
 const EditorLinkViewer = (props: Props) => {
   const {href, addHyperlink, editorState, removeModal, setEditorState, originCoords} = props
-  const {menuPortal, openPortal} = useMenu(MenuPosition.UPPER_LEFT, {isDropdown: true, originCoords})
+  const {menuPortal, openPortal} = useMenu(MenuPosition.UPPER_LEFT, {
+    isDropdown: true,
+    originCoords
+  })
   useEffect(openPortal, [])
   const handleRemove = () => {
     setEditorState(removeLink(editorState))

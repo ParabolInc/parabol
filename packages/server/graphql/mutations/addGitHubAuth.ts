@@ -2,7 +2,7 @@ import {GraphQLID, GraphQLNonNull} from 'graphql'
 import AddGitHubAuthPayload from '../types/AddGitHubAuthPayload'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import shortid from 'shortid'
-import {GITHUB} from '../../../client/utils/constants'
+import {GITHUB} from 'parabol-client/utils/constants'
 import getRethink from '../../database/rethinkDriver'
 import GitHubServerManager from '../../utils/GitHubServerManager'
 import standardError from '../../utils/standardError'
@@ -59,17 +59,17 @@ export default {
         return r.branch(
           providerId.eq(null),
           r.table('Provider').insert({
-              id: shortid.generate(),
-              accessToken,
-              createdAt: now,
-              isActive: true,
-              providerUserId: login,
-              providerUserName: login,
-              service: GITHUB,
-              teamId,
-              updatedAt: now,
-              userId: viewerId
-            }, {returnChanges: true})('changes')(0),
+            id: shortid.generate(),
+            accessToken,
+            createdAt: now,
+            isActive: true,
+            providerUserId: login,
+            providerUserName: login,
+            service: GITHUB,
+            teamId,
+            updatedAt: now,
+            userId: viewerId
+          }, {returnChanges: true})('changes')(0),
           r
             .table('Provider')
             .get(providerId)

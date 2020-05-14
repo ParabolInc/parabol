@@ -8,8 +8,8 @@ import {
   GraphQLString
 } from 'graphql'
 import isTaskPrivate from 'parabol-client/utils/isTaskPrivate'
-import {ITeam} from '../../../client/types/graphql'
-import toTeamMemberId from '../../../client/utils/relay/toTeamMemberId'
+import {ITeam} from 'parabol-client/types/graphql'
+import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import getRethink from '../../database/rethinkDriver'
 import MassInvitationDB from '../../database/types/MassInvitation'
 import {getUserId, isTeamMember} from '../../utils/authorization'
@@ -157,6 +157,8 @@ const Team = new GraphQLObjectType<ITeam, GQLContext>({
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(NewMeeting))),
       description: 'a list of meetings that are currently in progress',
       resolve: async ({id: teamId}, _args, {dataLoader}) => {
+        // this is by team, not by meeting member, which caused an err in dev, not sure about prod
+        // we need better perms for people to view/not view a meeting that happened before they joined the team
         return dataLoader.get('activeMeetingsByTeamId').load(teamId)
       }
     },

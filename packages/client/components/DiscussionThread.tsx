@@ -1,28 +1,29 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
+import {useCoverable} from '~/hooks/useControlBarCovers'
 import React, {useRef} from 'react'
 import {createFragmentContainer} from 'react-relay'
+import {Breakpoint, DiscussionThreadEnum, MeetingControlBarEnum} from '~/types/constEnums'
+import {DiscussionThread_viewer} from '~/__generated__/DiscussionThread_viewer.graphql'
 import {Elevation} from '../styles/elevation'
+import makeMinWidthMediaQuery from '../utils/makeMinWidthMediaQuery'
 import DiscussionThreadInput from './DiscussionThreadInput'
 import DiscussionThreadList from './DiscussionThreadList'
-import {DiscussionThread_viewer} from '__generated__/DiscussionThread_viewer.graphql'
-import {Breakpoint, DiscussionThreadEnum} from 'types/constEnums'
-import makeMinWidthMediaQuery from '../utils/makeMinWidthMediaQuery'
 
-const Wrapper = styled('div')({
+const Wrapper = styled('div')<{isExpanded: boolean}>(({isExpanded}) => ({
   background: '#fff',
   borderRadius: 4,
   boxShadow: Elevation.DISCUSSION_THREAD,
   display: 'flex',
   flexDirection: 'column',
   height: '100%',
-  marginBottom: 64,
   overflow: 'hidden',
   width: 'calc(100% - 16px)',
   [makeMinWidthMediaQuery(Breakpoint.SIDEBAR_LEFT)]: {
+    height: isExpanded ? '100%' : `calc(100% - ${MeetingControlBarEnum.HEIGHT}px)`,
     width: DiscussionThreadEnum.WIDTH
   }
-})
+}))
 
 interface Props {
   viewer: DiscussionThread_viewer
@@ -31,7 +32,7 @@ interface Props {
 const DiscussionThread = (props: Props) => {
   const {viewer} = props
   const meeting = viewer.meeting!
-  const {replyingToCommentId, reflectionGroup} = meeting
+  const {endedAt, replyingToCommentId, reflectionGroup} = meeting
   const {id: reflectionGroupId, thread} = reflectionGroup!
   const edges = thread?.edges ?? [] // should never happen, but Terry reported it in demo. likely relay error
   const threadables = edges.map(({node}) => node)
@@ -40,9 +41,12 @@ const DiscussionThread = (props: Props) => {
   }
   const listRef = useRef<HTMLDivElement>(null)
   const editorRef = useRef<HTMLTextAreaElement>(null)
+  const ref = useRef<HTMLDivElement>(null)
+  const isExpanded = useCoverable('threads', ref, MeetingControlBarEnum.HEIGHT) || !!endedAt
   return (
-    <Wrapper>
+    <Wrapper isExpanded={isExpanded} ref={ref}>
       <DiscussionThreadList
+        dataCy='discuss-thread-list'
         reflectionGroupId={reflectionGroupId}
         meeting={meeting}
         threadables={threadables}
@@ -50,6 +54,7 @@ const DiscussionThread = (props: Props) => {
         editorRef={editorRef}
       />
       <DiscussionThreadInput
+        dataCy='discuss-input'
         editorRef={editorRef}
         isDisabled={!!replyingToCommentId}
         getMaxSortOrder={getMaxSortOrder}
@@ -67,6 +72,7 @@ export default createFragmentContainer(DiscussionThread, {
         ... on RetrospectiveMeeting {
           ...DiscussionThreadInput_meeting
           ...DiscussionThreadList_meeting
+          endedAt
           replyingToCommentId
           reflectionGroup(reflectionGroupId: $reflectionGroupId) {
             id

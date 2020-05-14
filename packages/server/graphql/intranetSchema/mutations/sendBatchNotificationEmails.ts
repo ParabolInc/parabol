@@ -1,7 +1,8 @@
 import {GraphQLList, GraphQLString} from 'graphql'
 import ms from 'ms'
 import getRethink from '../../../database/rethinkDriver'
-import {sendBatchEmail} from '../../../email/sendEmail'
+import notificationSummaryCreator from '../../../email/components/notificationSummaryCreator'
+import getMailManager from '../../../email/getMailManager'
 import {requireSU} from '../../../utils/authorization'
 
 const sendBatchNotificationEmails = {
@@ -18,9 +19,8 @@ const sendBatchNotificationEmails = {
     // associated notifications.
     const r = await getRethink()
     const now = Date.now()
-    const today = new Date(now)
     const yesterday = new Date(now - ms('1d'))
-    const userNotifications = await r
+    const userNotifications = ((await r
       .table('Notification')
       // Only include notifications which occurred within the last day
       .filter((row) => row('createdAt').gt(yesterday))
@@ -41,25 +41,26 @@ const sendBatchNotificationEmails = {
       .group('userId')
       .ungroup()
       .map((group) => ({
-        userId: group('group'),
         email: group('reduction')(0)('email'),
-        name: group('reduction')(0)('preferredName'),
-        numNotifications: group('reduction').count()
+        preferredName: group('reduction')(0)('preferredName'),
+        notificationCount: group('reduction').count()
       }))
-      .run()
+      .run()) as unknown) as {email: string; preferredName: string; notificationCount: number}[]
 
-    const emails = userNotifications.map(({email}) => email)
-    const recipientVariables = userNotifications.reduce(
-      (addressMap, {email, name, numNotifications}) => ({
-        ...addressMap,
-        [email]: {name, numNotifications}
-      }),
-      {}
+    await Promise.all(
+      userNotifications.map((notification) => {
+        const {email, preferredName, notificationCount} = notification
+        const {subject, html, body} = notificationSummaryCreator({preferredName, notificationCount})
+        return getMailManager().sendEmail({
+          to: email,
+          subject,
+          body,
+          html,
+          tags: ['type:notificationSummary']
+        })
+      })
     )
-    if (emails.length) {
-      await sendBatchEmail(emails, 'notificationSummary', {date: today}, recipientVariables)
-    }
-    return emails
+    return userNotifications.map(({email}) => email)
   }
 }
 

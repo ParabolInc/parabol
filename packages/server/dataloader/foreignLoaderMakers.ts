@@ -1,3 +1,5 @@
+import TimelineEventCheckinComplete from 'server/database/types/TimelineEventCheckinComplete'
+import TimelineEventRetroComplete from 'server/database/types/TimelineEventRetroComplete'
 import getRethink from '../database/rethinkDriver'
 import LoaderMakerForeign from './LoaderMakerForeign'
 
@@ -168,6 +170,19 @@ export const retroReflectionsByMeetingId = new LoaderMakerForeign(
       .getAll(r.args(meetingIds), {index: 'meetingId'})
       .filter({isActive: true})
       .run()
+  }
+)
+
+export const timelineEventsByMeetingId = new LoaderMakerForeign(
+  'timelineEvents',
+  'meetingId',
+  async (meetingIds) => {
+    const r = await getRethink()
+    return r
+      .table('TimelineEvent')
+      .getAll(r.args(meetingIds), {index: 'meetingId'})
+      .filter({isActive: true})
+      .run() as Promise<TimelineEventCheckinComplete[] | TimelineEventRetroComplete[]>
   }
 )
 

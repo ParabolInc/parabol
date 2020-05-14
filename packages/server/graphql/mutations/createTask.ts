@@ -7,17 +7,17 @@ import CreateTaskPayload from '../types/CreateTaskPayload'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish, {SubOptions} from '../../utils/publish'
 import shortid from 'shortid'
-import getTypeFromEntityMap from '../../../client/utils/draftjs/getTypeFromEntityMap'
-import toTeamMemberId from '../../../client/utils/relay/toTeamMemberId'
+import getTypeFromEntityMap from 'parabol-client/utils/draftjs/getTypeFromEntityMap'
+import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import standardError from '../../utils/standardError'
 import Task from '../../database/types/Task'
 import {
   ICreateTaskOnMutationArguments,
   ThreadSourceEnum,
   NewMeetingPhaseTypeEnum
-} from '../../../client/types/graphql'
+} from 'parabol-client/types/graphql'
 import {DataLoaderWorker, GQLContext} from '../graphql'
-import normalizeRawDraftJS from '../../../client/validation/normalizeRawDraftJS'
+import normalizeRawDraftJS from 'parabol-client/validation/normalizeRawDraftJS'
 import NotificationTaskInvolves from '../../database/types/NotificationTaskInvolves'
 import {ITeamMember} from 'parabol-client/types/graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'

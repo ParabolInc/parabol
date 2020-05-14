@@ -2,13 +2,13 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {forwardRef, RefObject} from 'react'
 import {createFragmentContainer} from 'react-relay'
-import {DiscussionThreadList_meeting} from '__generated__/DiscussionThreadList_meeting.graphql'
-import {DiscussionThreadList_threadables} from '__generated__/DiscussionThreadList_threadables.graphql'
-import DiscussionThreadListEmptyState from './DiscussionThreadListEmptyState'
-import ThreadedItem from './ThreadedItem'
-import LabelHeading from './LabelHeading/LabelHeading'
-import useScrollThreadList from 'hooks/useScrollThreadList'
+import useScrollThreadList from '~/hooks/useScrollThreadList'
+import {DiscussionThreadList_meeting} from '~/__generated__/DiscussionThreadList_meeting.graphql'
+import {DiscussionThreadList_threadables} from '~/__generated__/DiscussionThreadList_threadables.graphql'
 import {PALETTE} from '../styles/paletteV2'
+import DiscussionThreadListEmptyState from './DiscussionThreadListEmptyState'
+import LabelHeading from './LabelHeading/LabelHeading'
+import ThreadedItem from './ThreadedItem'
 
 const EmptyWrapper = styled('div')({
   alignItems: 'center',
@@ -45,10 +45,11 @@ interface Props {
   meeting: DiscussionThreadList_meeting
   reflectionGroupId: string
   threadables: DiscussionThreadList_threadables
+  dataCy: string
 }
 
 const DiscussionThreadList = forwardRef((props: Props, ref: any) => {
-  const {editorRef, meeting, reflectionGroupId, threadables} = props
+  const {editorRef, meeting, reflectionGroupId, threadables, dataCy} = props
   const isEmpty = threadables.length === 0
   useScrollThreadList(threadables, editorRef, ref)
   const HeaderBlock = () => <Header>{'Discussion & Takeaway Tasks'}</Header>
@@ -62,13 +63,14 @@ const DiscussionThreadList = forwardRef((props: Props, ref: any) => {
   }
 
   return (
-    <Wrapper ref={ref}>
+    <Wrapper data-cy={`${dataCy}`} ref={ref}>
       <HeaderBlock />
       <PusherDowner />
-      {threadables.map((threadable) => {
+      {threadables.map((threadable, idx) => {
         const {id} = threadable
         return (
           <ThreadedItem
+            dataCy={`thread-item-${idx}`}
             key={id}
             threadable={threadable}
             meeting={meeting}

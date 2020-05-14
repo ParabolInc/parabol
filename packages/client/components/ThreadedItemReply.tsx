@@ -1,14 +1,14 @@
 import graphql from 'babel-plugin-relay/macro'
 import {Editor} from 'draft-js'
-import useAtmosphere from 'hooks/useAtmosphere'
-import useClickAway from 'hooks/useClickAway'
 import React, {RefObject, useRef} from 'react'
 import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
-import isAndroid from 'utils/draftjs/isAndroid'
-import {ThreadedItemReply_meeting} from '__generated__/ThreadedItemReply_meeting.graphql'
+import useAtmosphere from '~/hooks/useAtmosphere'
+import useClickAway from '~/hooks/useClickAway'
+import isAndroid from '~/utils/draftjs/isAndroid'
+import {ThreadedItemReply_meeting} from '~/__generated__/ThreadedItemReply_meeting.graphql'
+import {ThreadedItemReply_threadable} from '~/__generated__/ThreadedItemReply_threadable.graphql'
 import DiscussionThreadInput from './DiscussionThreadInput'
 import {ReplyMention, SetReplyMention} from './ThreadedItem'
-import {ThreadedItemReply_threadable} from '__generated__/ThreadedItemReply_threadable.graphql'
 
 interface Props {
   threadable: ThreadedItemReply_threadable
@@ -17,10 +17,19 @@ interface Props {
   meeting: ThreadedItemReply_meeting
   replyMention?: ReplyMention
   setReplyMention: SetReplyMention
+  dataCy: string
 }
 
 const ThreadedItemReply = (props: Props) => {
-  const {replyMention, threadable, editorRef, reflectionGroupId, meeting, setReplyMention} = props
+  const {
+    replyMention,
+    threadable,
+    editorRef,
+    reflectionGroupId,
+    meeting,
+    setReplyMention,
+    dataCy
+  } = props
   const {id: threadableId, replies} = threadable
   const {id: meetingId, replyingToCommentId} = meeting
   const isReplying = replyingToCommentId === threadableId
@@ -50,6 +59,7 @@ const ThreadedItemReply = (props: Props) => {
   }
   return (
     <DiscussionThreadInput
+      dataCy={`${dataCy}-input`}
       ref={replyRef}
       editorRef={editorRef}
       isReply

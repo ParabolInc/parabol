@@ -9,7 +9,7 @@ import {IRetroReflection, IRetroReflectionGroup} from '../types/graphql'
 import {BaseLocalHandlers, SharedUpdater, StandardMutation} from '../types/relayMutations'
 import {RemoveReflectionMutation as TRemoveReflectionMutation} from '../__generated__/RemoveReflectionMutation.graphql'
 import safeRemoveNodeFromArray from '../utils/relay/safeRemoveNodeFromArray'
-import {RemoveReflectionMutation_meeting} from '__generated__/RemoveReflectionMutation_meeting.graphql'
+import {RemoveReflectionMutation_meeting} from '~/__generated__/RemoveReflectionMutation_meeting.graphql'
 import {RecordSourceSelectorProxy} from 'relay-runtime'
 
 graphql`

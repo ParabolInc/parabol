@@ -2,9 +2,10 @@ import graphql from 'babel-plugin-relay/macro'
 import {RouterProps} from 'react-router'
 import {requestSubscription, Variables} from 'relay-runtime'
 import {RecordSourceSelectorProxy} from 'relay-runtime/lib/store/RelayStoreTypes'
-import {InvalidateSessionsMutation_notification} from '__generated__/InvalidateSessionsMutation_notification.graphql'
-import {NotificationSubscription_meetingStageTimeLimitEnd} from '__generated__/NotificationSubscription_meetingStageTimeLimitEnd.graphql'
-import {NotificationSubscription_paymentRejected} from '__generated__/NotificationSubscription_paymentRejected.graphql'
+import {archiveTimelineEventNotificationUpdater} from '~/mutations/ArchiveTimelineEventMutation'
+import {InvalidateSessionsMutation_notification} from '~/__generated__/InvalidateSessionsMutation_notification.graphql'
+import {NotificationSubscription_meetingStageTimeLimitEnd} from '~/__generated__/NotificationSubscription_meetingStageTimeLimitEnd.graphql'
+import {NotificationSubscription_paymentRejected} from '~/__generated__/NotificationSubscription_paymentRejected.graphql'
 import Atmosphere from '../Atmosphere'
 import {acceptTeamInvitationNotificationUpdater} from '../mutations/AcceptTeamInvitationMutation'
 import {addOrgMutationNotificationUpdater} from '../mutations/AddOrgMutation'
@@ -62,6 +63,7 @@ const subscription = graphql`
       __typename
       ...AddOrgMutation_notification @relay(mask: false)
       ...AddTeamMutation_notification @relay(mask: false)
+      ...ArchiveTimelineEventMutation_notification @relay(mask: false)
       ...SetNotificationStatusMutation_notification @relay(mask: false)
       ...CreateTaskMutation_notification @relay(mask: false)
       ...EndNewMeetingMutation_notification @relay(mask: false)
@@ -261,6 +263,9 @@ const NotificationSubscription = (
           break
         case 'StripeFailPaymentPayload':
           stripeFailPaymentNotificationUpdater(payload, context)
+          break
+        case 'ArchiveTimelineEventSuccess':
+          archiveTimelineEventNotificationUpdater(payload, context)
           break
         default:
           console.error('NotificationSubscription case fail', type)

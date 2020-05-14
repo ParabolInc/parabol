@@ -1,9 +1,10 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import useAtmosphere from 'hooks/useAtmosphere'
-import useMutationProps from 'hooks/useMutationProps'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
+import useAtmosphere from '~/hooks/useAtmosphere'
+import useMutationProps from '~/hooks/useMutationProps'
+import Atmosphere from '../Atmosphere'
 import withAtmosphere, {WithAtmosphereProps} from '../decorators/withAtmosphere/withAtmosphere'
 import VoteForReflectionGroupMutation from '../mutations/VoteForReflectionGroupMutation'
 import {PALETTE} from '../styles/paletteV2'
@@ -14,7 +15,6 @@ import withMutationProps, {WithMutationProps} from '../utils/relay/withMutationP
 import {ReflectionGroupVoting_meeting} from '../__generated__/ReflectionGroupVoting_meeting.graphql'
 import {ReflectionGroupVoting_reflectionGroup} from '../__generated__/ReflectionGroupVoting_reflectionGroup.graphql'
 import Icon from './Icon'
-import Atmosphere from 'Atmosphere'
 
 interface Props extends WithMutationProps, WithAtmosphereProps {
   isExpanded: boolean

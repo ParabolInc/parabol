@@ -1,22 +1,21 @@
-import React, {RefObject, useMemo, useState} from 'react'
-import graphql from 'babel-plugin-relay/macro'
-import {createFragmentContainer} from 'react-relay'
-import {GroupingKanban_meeting} from '__generated__/GroupingKanban_meeting.graphql'
-import {NewMeetingPhaseTypeEnum} from '../types/graphql'
 import styled from '@emotion/styled'
-import GroupingKanbanColumn from './GroupingKanbanColumn'
-import PortalProvider from './AtmosphereProvider/PortalProvider'
-import useHideBodyScroll from '../hooks/useHideBodyScroll'
-import ReflectWrapperDesktop from './RetroReflectPhase/ReflectWrapperDesktop'
-import ReflectWrapperMobile from './RetroReflectPhase/ReflectionWrapperMobile'
+import graphql from 'babel-plugin-relay/macro'
+import React, {RefObject, useMemo, useState} from 'react'
+import {createFragmentContainer} from 'react-relay'
+import {GroupingKanban_meeting} from '~/__generated__/GroupingKanban_meeting.graphql'
 import useBreakpoint from '../hooks/useBreakpoint'
-import {Breakpoint, Times} from '../types/constEnums'
+import useHideBodyScroll from '../hooks/useHideBodyScroll'
 import useThrottledEvent from '../hooks/useThrottledEvent'
+import {Breakpoint, Times} from '../types/constEnums'
+import {NewMeetingPhaseTypeEnum} from '../types/graphql'
+import PortalProvider from './AtmosphereProvider/PortalProvider'
+import GroupingKanbanColumn from './GroupingKanbanColumn'
+import ReflectWrapperMobile from './RetroReflectPhase/ReflectionWrapperMobile'
+import ReflectWrapperDesktop from './RetroReflectPhase/ReflectWrapperDesktop'
 
 interface Props {
   meeting: GroupingKanban_meeting
   phaseRef: RefObject<HTMLDivElement>
-  resetActivityTimeout?: () => void
 }
 
 const ColumnsBlock = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
@@ -35,7 +34,7 @@ const ColumnsBlock = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
 export type SwipeColumn = (offset: number) => void
 
 const GroupingKanban = (props: Props) => {
-  const {meeting, phaseRef, resetActivityTimeout} = props
+  const {meeting, phaseRef} = props
   const {reflectionGroups, phases} = meeting
   const reflectPhase = phases.find((phase) => phase.phaseType === NewMeetingPhaseTypeEnum.reflect)!
   const reflectPrompts = reflectPhase.reflectPrompts!
@@ -48,8 +47,6 @@ const GroupingKanban = (props: Props) => {
       container[retroPhaseItemId] = container[retroPhaseItemId] || []
       container[retroPhaseItemId].push(group)
     }
-    // anytime the groups change, reset the timeout. OK if it's not perfect
-    resetActivityTimeout?.()
     return container
   }, [reflectionGroups])
   const isDesktop = useBreakpoint(Breakpoint.SINGLE_REFLECTION_COLUMN)

@@ -1,15 +1,15 @@
-import useAtmosphere from './useAtmosphere'
-import {readInlineData} from 'relay-runtime'
+import graphql from 'babel-plugin-relay/macro'
 import {useCallback} from 'react'
-import findStageById from '../utils/meetings/findStageById'
+import {readInlineData} from 'relay-runtime'
+import {useGotoStageId_meeting} from '~/__generated__/useGotoStageId_meeting.graphql'
 import {demoTeamId} from '../modules/demo/initDB'
 import LocalAtmosphere from '../modules/demo/LocalAtmosphere'
-import updateLocalStage from '../utils/relay/updateLocalStage'
-import {INavigateMeetingOnMutationArguments} from '../types/graphql'
-import isForwardProgress from '../utils/meetings/isForwardProgress'
 import NavigateMeetingMutation from '../mutations/NavigateMeetingMutation'
-import graphql from 'babel-plugin-relay/macro'
-import {useGotoStageId_meeting} from '__generated__/useGotoStageId_meeting.graphql'
+import {INavigateMeetingOnMutationArguments} from '../types/graphql'
+import findStageById from '../utils/meetings/findStageById'
+import isForwardProgress from '../utils/meetings/isForwardProgress'
+import updateLocalStage from '../utils/relay/updateLocalStage'
+import useAtmosphere from './useAtmosphere'
 
 const useGotoStageId = (meetingRef: any) => {
   const atmosphere = useAtmosphere()
@@ -50,6 +50,7 @@ const useGotoStageId = (meetingRef: any) => {
       if (!res) return
       const {stage} = res
       const {isNavigable, isNavigableByFacilitator} = stage
+
       const canNavigate = isViewerFacilitator ? isNavigableByFacilitator : isNavigable
       if (!canNavigate) return
       if (teamId === demoTeamId) {

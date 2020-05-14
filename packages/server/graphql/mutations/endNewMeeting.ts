@@ -1,12 +1,10 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import extractTextFromDraftString from 'parabol-client/utils/draftjs/extractTextFromDraftString'
-import shortid from 'shortid'
 import {
   MeetingTypeEnum,
   NewMeetingPhaseTypeEnum,
   SuggestedActionTypeEnum
-} from '../../../client/types/graphql'
+} from 'parabol-client/types/graphql'
 import {
   ACTION,
   AGENDA_ITEMS,
@@ -14,14 +12,19 @@ import {
   DONE,
   LAST_CALL,
   RETROSPECTIVE
-} from '../../../client/utils/constants'
-import findStageById from '../../../client/utils/meetings/findStageById'
+} from 'parabol-client/utils/constants'
+import extractTextFromDraftString from 'parabol-client/utils/draftjs/extractTextFromDraftString'
+import getMeetingPhase from 'parabol-client/utils/getMeetingPhase'
+import findStageById from 'parabol-client/utils/meetings/findStageById'
 import getRethink from '../../database/rethinkDriver'
 import GenericMeetingPhase from '../../database/types/GenericMeetingPhase'
 import Meeting from '../../database/types/Meeting'
 import MeetingAction from '../../database/types/MeetingAction'
+import MeetingRetrospective from '../../database/types/MeetingRetrospective'
 import ReflectPhase from '../../database/types/ReflectPhase'
 import Task from '../../database/types/Task'
+import TimelineEventCheckinComplete from '../../database/types/TimelineEventCheckinComplete'
+import TimelineEventRetroComplete from '../../database/types/TimelineEventRetroComplete'
 import archiveTasksForDB from '../../safeMutations/archiveTasksForDB'
 import removeSuggestedAction from '../../safeMutations/removeSuggestedAction'
 import {getUserId, isTeamMember} from '../../utils/authorization'
@@ -30,15 +33,13 @@ import sendSegmentEvent, {sendSegmentIdentify} from '../../utils/sendSegmentEven
 import standardError from '../../utils/standardError'
 import {DataLoaderWorker, GQLContext} from '../graphql'
 import EndNewMeetingPayload from '../types/EndNewMeetingPayload'
-import {COMPLETED_ACTION_MEETING, COMPLETED_RETRO_MEETING} from '../types/TimelineEventTypeEnum'
 import sendNewMeetingSummary from './helpers/endMeeting/sendNewMeetingSummary'
 import {endSlackMeeting} from './helpers/notifySlack'
-import MeetingRetrospective from '../../database/types/MeetingRetrospective'
 
 const timelineEventLookup = {
-  [RETROSPECTIVE]: COMPLETED_RETRO_MEETING,
-  [ACTION]: COMPLETED_ACTION_MEETING
-}
+  [RETROSPECTIVE]: TimelineEventRetroComplete,
+  [ACTION]: TimelineEventCheckinComplete
+} as const
 
 const suggestedActionLookup = {
   [MeetingTypeEnum.retrospective]: SuggestedActionTypeEnum.tryRetroMeeting,
@@ -226,6 +227,20 @@ const getIsKill = (meetingType: MeetingTypeEnum, phase: GenericMeetingPhase) => 
   }
 }
 
+const getMeetingTemplateName = async (
+  meetingType: MeetingTypeEnum,
+  phases: any[],
+  dataLoader: DataLoaderWorker
+) => {
+  if (meetingType !== MeetingTypeEnum.retrospective) return undefined
+  const reflectPhase = phases.find(
+    (phase) => phase.phaseType === NewMeetingPhaseTypeEnum.reflect
+  ) as ReflectPhase
+  const {promptTemplateId} = reflectPhase
+  const template = await dataLoader.get('reflectTemplates').load(promptTemplateId)
+  return template.name
+}
+
 export default {
   type: new GraphQLNonNull(EndNewMeetingPayload),
   description: 'Finish a new meeting',
@@ -252,7 +267,6 @@ export default {
     const {endedAt, facilitatorStageId, meetingNumber, phases, teamId, meetingType} = meeting
 
     // VALIDATION
-    // called by endOldMeetings, SU is OK
     if (!isTeamMember(authToken, teamId) && authToken.rol !== 'su') {
       return standardError(new Error('Team not found'), {userId: viewerId})
     }
@@ -263,7 +277,8 @@ export default {
     if (!currentStageRes) {
       return standardError(new Error('Cannot find facilitator stage'), {userId: viewerId})
     }
-    const {stage, phase} = currentStageRes
+    const {stage} = currentStageRes
+    const phase = getMeetingPhase(phases)
     stage.isComplete = true
     stage.endAt = now
 
@@ -304,33 +319,25 @@ export default {
       teamId,
       meetingNumber
     }
-    let meetingTemplateName
-    if (meetingType === MeetingTypeEnum.retrospective) {
-      const reflectPhase = phases.find(
-        (phase) => phase.phaseType === NewMeetingPhaseTypeEnum.reflect
-      ) as ReflectPhase
-      const {promptTemplateId} = reflectPhase
-      const template = await dataLoader.get('reflectTemplates').load(promptTemplateId)
-      meetingTemplateName = template.name
-    }
-    const segmentData = {...traits, meetingType, meetingTemplateName}
+    const meetingTemplateName = await getMeetingTemplateName(meetingType, phases, dataLoader)
+    const segmentData = {...traits, meetingType, meetingTemplateName, meetingNumber}
     const facilitatorSegmentData = {...segmentData, wasFacilitator: true}
     sendSegmentEvent('Meeting Completed', facilitatorUserId, facilitatorSegmentData).catch()
     sendSegmentEvent('Meeting Completed', nonFacilitators, segmentData).catch()
     sendSegmentIdentify(presentMemberUserIds).catch()
-    sendNewMeetingSummary(completedMeeting, context).catch(console.log)
 
-    const events = meetingMembers.map((meetingMember) => ({
-      id: shortid.generate(),
-      createdAt: now,
-      interactionCount: 0,
-      seenCount: 0,
-      type: timelineEventLookup[meetingType],
-      userId: meetingMember.userId,
-      teamId,
-      orgId: team.orgId,
-      meetingId
-    }))
+    sendNewMeetingSummary(completedMeeting, context).catch(console.log)
+    const TimelineEvent = timelineEventLookup[meetingType]
+
+    const events = meetingMembers.map(
+      (meetingMember) =>
+        new TimelineEvent({
+          userId: meetingMember.userId,
+          teamId,
+          orgId: team.orgId,
+          meetingId
+        })
+    )
     await r
       .table('TimelineEvent')
       .insert(events)

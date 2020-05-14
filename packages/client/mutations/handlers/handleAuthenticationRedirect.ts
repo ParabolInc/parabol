@@ -1,8 +1,8 @@
+import {AcceptTeamInvitationMutationReply} from '~/__generated__/AcceptTeamInvitationMutationReply.graphql'
+import {SegmentClientEventEnum} from '../../types/graphql'
 import {OnNextHandler, OnNextHistoryContext} from '../../types/relayMutations'
 import getValidRedirectParam from '../../utils/getValidRedirectParam'
 import SendClientSegmentEventMutation from '../SendClientSegmentEventMutation'
-import {SegmentClientEventEnum} from '../../types/graphql'
-import {AcceptTeamInvitationMutationReply} from '__generated__/AcceptTeamInvitationMutationReply.graphql'
 
 interface OnNextMeetingId extends OnNextHistoryContext {
   meetingId?: string | null

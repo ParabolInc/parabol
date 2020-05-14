@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {InvitationTokenError} from 'types/constEnums'
-import {AcceptTeamInvitationMutation_notification} from '__generated__/AcceptTeamInvitationMutation_notification.graphql'
+import {InvitationTokenError} from '~/types/constEnums'
+import {AcceptTeamInvitationMutation_notification} from '~/__generated__/AcceptTeamInvitationMutation_notification.graphql'
 import {
   HistoryMaybeLocalHandler,
   OnNextHandler,

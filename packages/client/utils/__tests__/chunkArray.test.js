@@ -21,7 +21,10 @@ describe('chunkArray', () => {
   })
 
   it('returns an array of equally sized chunks when the chunk size cleanly divides into the array length', () => {
-    expect(chunkArray([1, 2, 3, 4], 2)).toEqual([[1, 2], [3, 4]])
+    expect(chunkArray([1, 2, 3, 4], 2)).toEqual([
+      [1, 2],
+      [3, 4]
+    ])
   })
 
   it("returns an array with the last chunk smaller than the chunk size when the chunk size doesn't divide into the array length", () => {

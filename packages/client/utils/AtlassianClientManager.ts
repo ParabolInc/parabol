@@ -6,6 +6,7 @@ import AddAtlassianAuthMutation from '../mutations/AddAtlassianAuthMutation'
 import AtlassianManager from './AtlassianManager'
 
 class AtlassianClientManager extends AtlassianManager {
+  fetch = window.fetch.bind(window)
   static openOAuth(atmosphere: Atmosphere, teamId: string, mutationProps: MenuMutationProps) {
     const {submitting, onError, onCompleted, submitMutation} = mutationProps
     const providerState = Math.random()

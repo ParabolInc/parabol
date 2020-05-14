@@ -1,29 +1,29 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {convertToRaw, EditorState} from 'draft-js'
-import useAtmosphere from 'hooks/useAtmosphere'
-import useEditorState from 'hooks/useEditorState'
-import useMutationProps from 'hooks/useMutationProps'
-import AddReactjiToReactableMutation from 'mutations/AddReactjiToReactableMutation'
-import UpdateCommentContentMutation from 'mutations/UpdateCommentContentMutation'
 import React, {ReactNode, useRef, useState} from 'react'
 import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
-import {ReactableEnum} from 'types/graphql'
-import convertToTaskContent from 'utils/draftjs/convertToTaskContent'
-import isAndroid from 'utils/draftjs/isAndroid'
-import isTempId from 'utils/relay/isTempId'
-import {ThreadedCommentBase_comment} from '__generated__/ThreadedCommentBase_comment.graphql'
-import {ThreadedCommentBase_meeting} from '__generated__/ThreadedCommentBase_meeting.graphql'
+import useAtmosphere from '~/hooks/useAtmosphere'
+import useEditorState from '~/hooks/useEditorState'
+import useMutationProps from '~/hooks/useMutationProps'
+import AddReactjiToReactableMutation from '~/mutations/AddReactjiToReactableMutation'
+import UpdateCommentContentMutation from '~/mutations/UpdateCommentContentMutation'
+import {ReactableEnum} from '~/types/graphql'
+import convertToTaskContent from '~/utils/draftjs/convertToTaskContent'
+import isAndroid from '~/utils/draftjs/isAndroid'
+import isTempId from '~/utils/relay/isTempId'
+import {ThreadedCommentBase_comment} from '~/__generated__/ThreadedCommentBase_comment.graphql'
+import {ThreadedCommentBase_meeting} from '~/__generated__/ThreadedCommentBase_meeting.graphql'
 import anonymousAvatar from '../styles/theme/images/anonymous-avatar.svg'
 import deletedAvatar from '../styles/theme/images/deleted-avatar-placeholder.svg'
 import CommentEditor from './TaskEditor/CommentEditor'
 import ThreadedAvatarColumn from './ThreadedAvatarColumn'
 import ThreadedCommentFooter from './ThreadedCommentFooter'
 import ThreadedCommentHeader from './ThreadedCommentHeader'
+import {ReplyMention, SetReplyMention} from './ThreadedItem'
 import ThreadedItemReply from './ThreadedItemReply'
-import useFocusedReply from './useFocusedReply'
-import {SetReplyMention, ReplyMention} from './ThreadedItem'
 import ThreadedItemWrapper from './ThreadedItemWrapper'
+import useFocusedReply from './useFocusedReply'
 
 const BodyCol = styled('div')({
   display: 'flex',
@@ -40,10 +40,19 @@ interface Props {
   reflectionGroupId: string
   setReplyMention: SetReplyMention
   replyMention?: ReplyMention
+  dataCy: string
 }
 
 const ThreadedCommentBase = (props: Props) => {
-  const {children, comment, reflectionGroupId, replyMention, setReplyMention, meeting} = props
+  const {
+    children,
+    comment,
+    reflectionGroupId,
+    replyMention,
+    setReplyMention,
+    meeting,
+    dataCy
+  } = props
   const isReply = !!props.isReply
   const {id: meetingId, replyingToCommentId, teamId} = meeting
   const {id: commentId, content, createdByUser, isActive, reactjis, threadParentId} = comment
@@ -124,10 +133,11 @@ const ThreadedCommentBase = (props: Props) => {
   }
 
   return (
-    <ThreadedItemWrapper isReply={isReply} ref={ref}>
+    <ThreadedItemWrapper data-cy={`${dataCy}-wrapper`} isReply={isReply} ref={ref}>
       <ThreadedAvatarColumn isReply={isReply} picture={picture} />
       <BodyCol>
         <ThreadedCommentHeader
+          dataCy={dataCy}
           comment={comment}
           editComment={editComment}
           onToggleReactji={onToggleReactji}
@@ -135,6 +145,7 @@ const ThreadedCommentBase = (props: Props) => {
         />
         {isActive && (
           <CommentEditor
+            dataCy={`${dataCy}`}
             editorRef={editorRef}
             teamId={teamId}
             editorState={editorState}
@@ -154,6 +165,7 @@ const ThreadedCommentBase = (props: Props) => {
         )}
         {children}
         <ThreadedItemReply
+          dataCy={`${dataCy}-reply`}
           reflectionGroupId={reflectionGroupId}
           meeting={meeting}
           editorRef={replyEditorRef}

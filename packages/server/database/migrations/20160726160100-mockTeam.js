@@ -1,4 +1,4 @@
-import {LOBBY} from '../../../client/utils/constants'
+import { LOBBY } from 'parabol-client/utils/constants'
 
 /* eslint-disable max-len */
 exports.up = async (r) => {

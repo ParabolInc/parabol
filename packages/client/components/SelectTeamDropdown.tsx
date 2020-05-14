@@ -6,7 +6,7 @@ import DropdownMenuItemLabel from './DropdownMenuItemLabel'
 import {MenuProps} from '../hooks/useMenu'
 import graphql from 'babel-plugin-relay/macro'
 import {createFragmentContainer} from 'react-relay'
-import {SelectTeamDropdown_teams} from '__generated__/SelectTeamDropdown_teams.graphql'
+import {SelectTeamDropdown_teams} from '~/__generated__/SelectTeamDropdown_teams.graphql'
 
 interface Props {
   menuProps: MenuProps

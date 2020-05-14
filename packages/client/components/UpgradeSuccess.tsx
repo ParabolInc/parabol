@@ -6,10 +6,10 @@ import DialogTitle from './DialogTitle'
 import InvitationDialogCopy from './InvitationDialogCopy'
 import SecondaryButton from './SecondaryButton'
 import DialogContainer from './DialogContainer'
-import rocket from '../styles/theme/images/emoji/emoji_u1f680.png'
 
-const Emoji = styled('img')({
-  padding: 24
+const Illustration = styled('img')({
+  display: 'block ',
+  maxWidth: 256
 })
 
 const ButtonBlock = styled('div')({
@@ -23,6 +23,10 @@ const ModalButton = styled(SecondaryButton)({
 
 const Container = styled(DialogContainer)({
   alignItems: 'center'
+})
+
+const StyledDialogTitle = styled(DialogTitle)({
+  padding: '0 24px'
 })
 
 interface Props {
@@ -39,8 +43,10 @@ const UpgradeSuccess = (props: Props) => {
   const {closePortal} = props
   return (
     <Container>
-      <Emoji src={rocket} />
-      <DialogTitle>{'Upgraded!'}</DialogTitle>
+      <Illustration
+        src={`${__STATIC_IMAGES__}/illustrations/conversion_prompt-payment_success.svg`}
+      />
+      <StyledDialogTitle>{'Upgraded!'}</StyledDialogTitle>
       <InvitationDialogCopy>{'Your organization is'}</InvitationDialogCopy>
       <InvitationDialogCopy>
         {'now on the '}

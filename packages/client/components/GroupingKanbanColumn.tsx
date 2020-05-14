@@ -1,25 +1,33 @@
-import React, {RefObject, useRef} from 'react'
-import graphql from 'babel-plugin-relay/macro'
-import {createFragmentContainer} from 'react-relay'
-import {GroupingKanbanColumn_reflectionGroups} from '__generated__/GroupingKanbanColumn_reflectionGroups.graphql'
-import {GroupingKanbanColumn_meeting} from '__generated__/GroupingKanbanColumn_meeting.graphql'
-import {BezierCurve, DragAttribute, ElementWidth, Gutters} from '../types/constEnums'
 import styled from '@emotion/styled'
-import {PALETTE} from '../styles/paletteV2'
-import Icon from './Icon'
-import {GroupingKanbanColumn_prompt} from '__generated__/GroupingKanbanColumn_prompt.graphql'
-import ReflectionGroup from './ReflectionGroup/ReflectionGroup'
-import FlatButton from './FlatButton'
-import RetroPrompt from './RetroPrompt'
-import CreateReflectionMutation from '../mutations/CreateReflectionMutation'
-import getNextSortOrder from '../utils/getNextSortOrder'
-import useMutationProps from '../hooks/useMutationProps'
+import graphql from 'babel-plugin-relay/macro'
+import React, {RefObject, useRef} from 'react'
+import {createFragmentContainer} from 'react-relay'
+import {useCoverable} from '~/hooks/useControlBarCovers'
+import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
+import {GroupingKanbanColumn_meeting} from '~/__generated__/GroupingKanbanColumn_meeting.graphql'
+import {GroupingKanbanColumn_prompt} from '~/__generated__/GroupingKanbanColumn_prompt.graphql'
+import {GroupingKanbanColumn_reflectionGroups} from '~/__generated__/GroupingKanbanColumn_reflectionGroups.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
-import {SwipeColumn} from './GroupingKanban'
+import useMutationProps from '../hooks/useMutationProps'
+import CreateReflectionMutation from '../mutations/CreateReflectionMutation'
+import {PALETTE} from '../styles/paletteV2'
+import {
+  BezierCurve,
+  Breakpoint,
+  DragAttribute,
+  ElementWidth,
+  Gutters,
+  MeetingControlBarEnum
+} from '../types/constEnums'
 import {NewMeetingPhaseTypeEnum} from '../types/graphql'
+import getNextSortOrder from '../utils/getNextSortOrder'
+import FlatButton from './FlatButton'
+import {SwipeColumn} from './GroupingKanban'
+import Icon from './Icon'
+import ReflectionGroup from './ReflectionGroup/ReflectionGroup'
+import RetroPrompt from './RetroPrompt'
 
-// TODO share with TaskColumn
-const Column = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
+const Column = styled('div')<{isExpanded: boolean}>(({isExpanded}) => ({
   alignItems: 'center',
   background: PALETTE.BACKGROUND_REFLECTION,
   borderRadius: 8,
@@ -27,10 +35,13 @@ const Column = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   flex: 1,
   flexDirection: 'column',
   height: '100%',
-  margin: isDesktop ? '0 8px' : undefined,
-  minWidth: isDesktop ? 320 : undefined,
   position: 'relative',
-  transition: `background 300ms ${BezierCurve.DECELERATE}`
+  transition: `height 100ms ${BezierCurve.DECELERATE}`,
+  [makeMinWidthMediaQuery(Breakpoint.SINGLE_REFLECTION_COLUMN)]: {
+    height: isExpanded ? '100%' : `calc(100% - ${MeetingControlBarEnum.HEIGHT}px)`,
+    margin: '0 8px',
+    minWidth: 320
+  }
 }))
 
 const ColumnHeader = styled('div')({
@@ -88,7 +99,7 @@ interface Props {
 const GroupingKanbanColumn = (props: Props) => {
   const {isDesktop, meeting, reflectionGroups, phaseRef, prompt, swipeColumn} = props
   const {question, id: promptId, groupColor} = prompt
-  const {id: meetingId, localStage} = meeting
+  const {id: meetingId, endedAt, localStage} = meeting
   const {isComplete, phaseType} = localStage
   const {submitting, onError, submitMutation, onCompleted} = useMutationProps()
   const atmosphere = useAtmosphere()
@@ -105,8 +116,9 @@ const GroupingKanbanColumn = (props: Props) => {
   }
   const ref = useRef<HTMLDivElement>(null)
   const canAdd = phaseType === NewMeetingPhaseTypeEnum.group && !isComplete
+  const isExpanded = useCoverable(promptId, ref, MeetingControlBarEnum.HEIGHT) || !!endedAt
   return (
-    <Column data-cy={`group-column-${question}`} isDesktop={isDesktop} ref={ref}>
+    <Column isExpanded={isExpanded} data-cy={`group-column-${question}`} ref={ref}>
       <ColumnHeader>
         <Prompt>
           <ColorBadge groupColor={groupColor} />
@@ -155,6 +167,7 @@ export default createFragmentContainer(GroupingKanbanColumn, {
     fragment GroupingKanbanColumn_meeting on RetrospectiveMeeting {
       ...ReflectionGroup_meeting
       id
+      endedAt
       localStage {
         isComplete
         phaseType

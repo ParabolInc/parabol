@@ -1,9 +1,14 @@
 import getRethink from '../../../database/rethinkDriver'
 import GitHubServerManager from '../../../utils/GitHubServerManager'
-import {Omit} from '../../../../client/types/generics'
-import {ISuggestedIntegrationGitHub} from '../../../../client/types/graphql'
-import {GITHUB} from '../../../../client/utils/constants'
-import {GetReposQueryData} from '../../../../client/utils/githubQueries/getRepos.graphql'
+import {Omit} from 'parabol-client/types/generics'
+import {ISuggestedIntegrationGitHub} from 'parabol-client/types/graphql'
+import {GITHUB} from 'parabol-client/utils/constants'
+// import {GetReposQueryData} from 'parabol-client/utils/githubQueries/getRepos.graphql'
+
+namespace GetReposQueryData {
+  export type ViewerOrganizationsNodes = any
+  export type ViewerRepositoriesNodes = any
+}
 
 const getUniqueRepos = (
   orgs: (GetReposQueryData.ViewerOrganizationsNodes | null)[],

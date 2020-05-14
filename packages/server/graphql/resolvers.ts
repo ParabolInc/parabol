@@ -1,7 +1,10 @@
+import {NewMeetingPhaseTypeEnum} from 'parabol-client/types/graphql'
+import findStageById from 'parabol-client/utils/meetings/findStageById'
+import nullIfEmpty from 'parabol-client/utils/nullIfEmpty'
+import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
+import GenericMeetingStage from '../database/types/GenericMeetingStage'
+import Meeting from '../database/types/Meeting'
 import {getUserId, isSuperUser, isUserBillingLeader} from '../utils/authorization'
-import nullIfEmpty from '../../client/utils/nullIfEmpty'
-import toTeamMemberId from '../../client/utils/relay/toTeamMemberId'
-import findStageById from '../../client/utils/meetings/findStageById'
 
 export const resolveAgendaItem = ({agendaItemId, agendaItem}, _args, {dataLoader}) => {
   return agendaItemId ? dataLoader.get('agendaItems').load(agendaItemId) : agendaItem
@@ -69,10 +72,36 @@ export const resolveTeamMembers = ({teamMemberIds, teamMembers}, _args, {dataLoa
     : teamMembers
 }
 
+export const resolveGQLStageFromId = (stageId: string, meeting: Meeting) => {
+  const {id: meetingId, phases} = meeting
+  const stageRes = findStageById(phases, stageId)!
+  const {stage} = stageRes
+  return {
+    ...stage,
+    meetingId
+  }
+}
+
+export const resolveGQLStagesFromPhase = ({
+  meetingId,
+  phaseType,
+  stages
+}: {
+  meetingId: string
+  phaseType: NewMeetingPhaseTypeEnum
+  stages: GenericMeetingStage[]
+}) => {
+  return stages.map((stage) => ({
+    ...stage,
+    meetingId,
+    phaseType
+  }))
+}
+
 export const resolveUnlockedStages = async ({meetingId, unlockedStageIds}, _args, {dataLoader}) => {
   if (!unlockedStageIds || unlockedStageIds.length === 0 || !meetingId) return undefined
   const meeting = await dataLoader.get('newMeetings').load(meetingId)
-  return unlockedStageIds.map((stageId) => findStageById(meeting.phases, stageId)!.stage)
+  return unlockedStageIds.map((stageId) => resolveGQLStageFromId(stageId, meeting))
 }
 
 export const resolveUser = ({userId, user}, _args, {dataLoader}) => {

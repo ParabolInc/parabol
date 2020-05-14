@@ -19,7 +19,7 @@ export default class InvoiceLineItem {
   quantity: number
   type: InvoiceLineItemEnum
 
-  constructor (input: Input) {
+  constructor(input: Input) {
     const {quantity, amount, id, description, details, type} = input
     this.id = id || shortid.generate()
     this.amount = amount

@@ -1,39 +1,39 @@
 import DataLoader from 'dataloader'
 import {decode} from 'jsonwebtoken'
-import {ReactableEnum, ThreadSourceEnum, MeetingTypeEnum} from 'parabol-client/types/graphql'
+import {MeetingTypeEnum, ReactableEnum, ThreadSourceEnum} from 'parabol-client/types/graphql'
 import promiseAllPartial from 'parabol-client/utils/promiseAllPartial'
 import getRethink from '../database/rethinkDriver'
+import MeetingSettings from '../database/types/MeetingSettings'
 import {Reactable} from '../database/types/Reactable'
 import Task from '../database/types/Task'
 import {ThreadSource} from '../database/types/ThreadSource'
 import AtlassianServerManager from '../utils/AtlassianServerManager'
 import normalizeRethinkDbResults from './normalizeRethinkDbResults'
 import RethinkDataLoader from './RethinkDataLoader'
-import MeetingSettings from '../database/types/MeetingSettings'
 
 type AccessTokenKey = {teamId: string; userId: string}
-interface JiraRemoteProjectKey {
+export interface JiraRemoteProjectKey {
   accessToken: string
   cloudId: string
   atlassianProjectId: string
 }
 
-interface UserTasksKey {
+export interface UserTasksKey {
   userId: string
   teamIds: string[]
 }
 
-interface ReactablesKey {
+export interface ReactablesKey {
   id: string
   type: ReactableEnum
 }
 
-interface ThreadSourceKey {
+export interface ThreadSourceKey {
   sourceId: string
   type: ThreadSourceEnum
 }
 
-interface MeetingSettingsKey {
+export interface MeetingSettingsKey {
   teamId: string
   meetingType: MeetingTypeEnum
 }
@@ -51,6 +51,30 @@ const threadableLoaders = [
 // export type LoaderMakerCustom<K, V, C = K> = (parent: RethinkDataLoader) => DataLoader<K, V, C>
 
 // TODO: refactor if the interface pattern is used a total of 3 times
+
+export const commentCountByThreadId = (parent: RethinkDataLoader) => {
+  return new DataLoader<string, number, string>(
+    async (threadIds) => {
+      const r = await getRethink()
+      const groups = (await (r
+        .table('Comment')
+        .getAll(r.args(threadIds as string[]), {index: 'threadId'})
+        .group('threadId') as any)
+        .count()
+        .ungroup()
+        .run()) as {group: string; reduction: number}[]
+      const lookup = {}
+      groups.forEach(({group, reduction}) => {
+        lookup[group] = reduction
+      })
+      return threadIds.map((threadId) => lookup[threadId] || 0)
+    },
+    {
+      ...parent.dataLoaderOptions
+    }
+  )
+}
+
 export const reactables = (parent: RethinkDataLoader) => {
   return new DataLoader<ReactablesKey, Reactable, string>(
     async (keys) => {
@@ -189,7 +213,6 @@ export const meetingSettingsByType = (parent: RethinkDataLoader) => {
         types[meetingType].push(key.teamId)
       })
       const entries = Object.entries(types)
-      console.log('types', types)
       const resultsByType = await Promise.all(
         entries.map((entry) => {
           const [meetingType, teamIds] = entry

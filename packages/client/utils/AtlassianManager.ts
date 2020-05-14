@@ -71,10 +71,6 @@ export interface AtlassianError {
   message: string
 }
 
-interface AtlassianClientManagerOptions {
-  fetch?: Window['fetch']
-}
-
 interface GetProjectsResult {
   cloudId: string
   newProjects: JiraProject[]
@@ -118,7 +114,8 @@ interface JiraError {
   }
 }
 
-export default class AtlassianManager {
+export default abstract class AtlassianManager {
+  abstract fetch: any
   static SCOPE = 'read:jira-user read:jira-work write:jira-work offline_access'
   accessToken: string
   private readonly get: (url: string) => any
@@ -127,9 +124,8 @@ export default class AtlassianManager {
   cache: {[key: string]: {result: any; expiration: number | any}} = {}
   timeout = 5000
 
-  constructor(accessToken: string, options: AtlassianClientManagerOptions = {}) {
+  constructor(accessToken: string) {
     this.accessToken = accessToken
-    const fetch = options.fetch || window?.fetch
     const headers = {
       // an Authorization requires a preflight request, ie reqs are slow
       Authorization: `Bearer ${accessToken}`,
@@ -137,7 +133,7 @@ export default class AtlassianManager {
       'Content-Type': 'application/json'
     }
     this.post = async (url, payload) => {
-      const res = await fetch(url, {
+      const res = await this.fetch(url, {
         method: 'POST',
         headers,
         body: JSON.stringify(payload)
@@ -148,7 +144,7 @@ export default class AtlassianManager {
     this.get = async (url) => {
       const record = this.cache[url]
       if (!record) {
-        const res = await fetch(url, {headers})
+        const res = await this.fetch(url, {headers})
         const result = await res.json()
         this.cache[url] = {
           result,

@@ -1,38 +1,61 @@
+import fs from 'fs'
 import {GraphQLSchema} from 'graphql'
-import NotifyPromoteToOrgLeader from './types/NotifyPromoteToOrgLeader'
-import NotificationTeamInvitation from './types/NotificationTeamInvitation'
+import path from 'path'
 import mutation from './rootMutation'
 import query from './rootQuery'
 import subscription from './rootSubscription'
-import RetroPhaseItem from './types/RetroPhaseItem'
-import RetrospectiveMeeting from './types/RetrospectiveMeeting'
-import GenericMeetingPhase from './types/GenericMeetingPhase'
-import DiscussPhase from './types/DiscussPhase'
-import ReflectPhase from './types/ReflectPhase'
-import CheckInPhase from './types/CheckInPhase'
-import RetrospectiveMeetingSettings from './types/RetrospectiveMeetingSettings'
-import ActionMeetingSettings from './types/ActionMeetingSettings'
-import RetrospectiveMeetingMember from './types/RetrospectiveMeetingMember'
-import SuggestedActionInviteYourTeam from './types/SuggestedActionInviteYourTeam'
-import SuggestedActionTryTheDemo from './types/SuggestedActionTryTheDemo'
-import SuggestedActionCreateNewTeam from './types/SuggestedActionCreateNewTeam'
-import SuggestedActionTryActionMeeting from './types/SuggestedActionTryActionMeeting'
-import SuggestedActionTryRetroMeeting from './types/SuggestedActionTryRetroMeeting'
-import TimelineEventTeamCreated from './types/TimelineEventTeamCreated'
-import TimelineEventJoinedParabol from './types/TimelineEventJoinedParabol'
-import TimelineEventCompletedRetroMeeting from './types/TimelineEventCompletedRetroMeeting'
-import TimelineEventCompletedActionMeeting from './types/TimelineEventCompletedActionMeeting'
-import TaskIntegrationGitHub from './types/TaskIntegrationGitHub'
-import SuggestedIntegrationJira from './types/SuggestedIntegrationJira'
-import SuggestedIntegrationGitHub from './types/SuggestedIntegrationGitHub'
-import TaskIntegrationJira from './types/TaskIntegrationJira'
 import ActionMeeting from './types/ActionMeeting'
 import ActionMeetingMember from './types/ActionMeetingMember'
-import UpdatesPhase from './types/UpdatesPhase'
+import ActionMeetingSettings from './types/ActionMeetingSettings'
 import AgendaItemsPhase from './types/AgendaItemsPhase'
 import AuthIdentityGoogle from './types/AuthIdentityGoogle'
 import AuthIdentityLocal from './types/AuthIdentityLocal'
+import CheckInPhase from './types/CheckInPhase'
 import Comment from './types/Comment'
+import DiscussPhase from './types/DiscussPhase'
+import GenericMeetingPhase from './types/GenericMeetingPhase'
+import NotificationTeamInvitation from './types/NotificationTeamInvitation'
+import NotifyPromoteToOrgLeader from './types/NotifyPromoteToOrgLeader'
+import ReflectPhase from './types/ReflectPhase'
+import RetroPhaseItem from './types/RetroPhaseItem'
+import RetrospectiveMeeting from './types/RetrospectiveMeeting'
+import RetrospectiveMeetingMember from './types/RetrospectiveMeetingMember'
+import RetrospectiveMeetingSettings from './types/RetrospectiveMeetingSettings'
+import SuggestedActionCreateNewTeam from './types/SuggestedActionCreateNewTeam'
+import SuggestedActionInviteYourTeam from './types/SuggestedActionInviteYourTeam'
+import SuggestedActionTryActionMeeting from './types/SuggestedActionTryActionMeeting'
+import SuggestedActionTryRetroMeeting from './types/SuggestedActionTryRetroMeeting'
+import SuggestedActionTryTheDemo from './types/SuggestedActionTryTheDemo'
+import SuggestedIntegrationGitHub from './types/SuggestedIntegrationGitHub'
+import SuggestedIntegrationJira from './types/SuggestedIntegrationJira'
+import TaskIntegrationGitHub from './types/TaskIntegrationGitHub'
+import TaskIntegrationJira from './types/TaskIntegrationJira'
+import TimelineEventCompletedActionMeeting from './types/TimelineEventCompletedActionMeeting'
+import TimelineEventCompletedRetroMeeting from './types/TimelineEventCompletedRetroMeeting'
+import TimelineEventJoinedParabol from './types/TimelineEventJoinedParabol'
+import TimelineEventTeamCreated from './types/TimelineEventTeamCreated'
+import UpdatesPhase from './types/UpdatesPhase'
+
+if (module.hot) {
+  const acceptChildren = () => {
+    require.cache[module.id]!.hot.accept(acceptChildren)
+  }
+  // accepting here allows us to make errors in the schema childrem without requirimg a restart
+  module.hot.accept(acceptChildren)
+  // every time this module gets loaded, see if it's different from it's previous version.
+  //if so, update the schema.graphql
+  if (!global.hmrSchema) {
+    // console.log('setting hmr')
+    // relative to the build path
+    const PROJECT_ROOT = path.join(__dirname, '../')
+    const SCHEMA = path.join(PROJECT_ROOT, 'schema.graphql')
+    global.hmrSchema = fs.readFileSync(SCHEMA).toString()
+    // console.log('set', global.hmrSchema.length)
+  } else {
+    const updateGQLSchema = require('../utils/updateGQLSchema').default
+    updateGQLSchema({delay: 3000, oldSchema: global.hmrSchema})
+  }
+}
 
 export default new GraphQLSchema({
   query,

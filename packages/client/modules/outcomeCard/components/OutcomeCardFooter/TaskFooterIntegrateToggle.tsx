@@ -1,12 +1,12 @@
 import React from 'react'
+import useTooltip from '~/hooks/useTooltip'
 import CardButton from '../../../../components/CardButton'
 import IconLabel from '../../../../components/IconLabel'
 import {MenuPosition} from '../../../../hooks/useCoords'
 import useMenu from '../../../../hooks/useMenu'
-import lazyPreload from '../../../../utils/lazyPreload'
 import {MenuMutationProps} from '../../../../hooks/useMutationProps'
 import {UseTaskChild} from '../../../../hooks/useTaskChildFocus'
-import useTooltip from 'hooks/useTooltip'
+import lazyPreload from '../../../../utils/lazyPreload'
 
 const TaskFooterIntegrateMenuRoot = lazyPreload(() =>
   import(
@@ -18,10 +18,11 @@ interface Props {
   mutationProps: MenuMutationProps
   task: any
   useTaskChild: UseTaskChild
+  dataCy: string
 }
 
 const TaskFooterIntegrateToggle = (props: Props) => {
-  const {mutationProps, task, useTaskChild} = props
+  const {mutationProps, task, useTaskChild, dataCy} = props
   const {togglePortal, originRef, menuPortal, menuProps, loadingWidth, loadingDelay} = useMenu(
     MenuPosition.UPPER_RIGHT,
     {
@@ -37,6 +38,7 @@ const TaskFooterIntegrateToggle = (props: Props) => {
         onClick={togglePortal}
         ref={originRef}
         onMouseEnter={TaskFooterIntegrateMenuRoot.preload}
+        dataCy={`${dataCy}-button`}
       >
         <IconLabel
           icon='publish'

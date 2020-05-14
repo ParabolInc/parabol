@@ -1,11 +1,11 @@
-import React from 'react'
-import PlainButton from './PlainButton/PlainButton'
 import styled from '@emotion/styled'
+import React from 'react'
+import {MenuPosition} from '~/hooks/useCoords'
+import useMenu from '~/hooks/useMenu'
+import {PALETTE} from '~/styles/paletteV2'
+import lazyPreload from '~/utils/lazyPreload'
 import Icon from './Icon'
-import {PALETTE} from 'styles/paletteV2'
-import useMenu from 'hooks/useMenu'
-import {MenuPosition} from 'hooks/useCoords'
-import lazyPreload from 'utils/lazyPreload'
+import PlainButton from './PlainButton/PlainButton'
 
 const CommentAuthorOptionsDropdown = lazyPreload(() =>
   import(/* webpackChunkName: 'CommentAuthorOptionsDropdown' */ './CommentAuthorOptionsDropdown')
@@ -27,13 +27,15 @@ const StyledIcon = styled(Icon)({
 interface Props {
   commentId: string
   editComment: () => void
+  dataCy: string
 }
 
 const CommentAuthorOptionsButton = (props: Props) => {
-  const {commentId, editComment} = props
+  const {commentId, editComment, dataCy} = props
   const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT)
   return (
     <PlainButton
+      data-cy={`${dataCy}-dropdown-menu`}
       onMouseEnter={CommentAuthorOptionsDropdown.preload}
       ref={originRef}
       onClick={togglePortal}

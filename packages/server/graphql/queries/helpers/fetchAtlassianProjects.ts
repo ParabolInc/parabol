@@ -1,9 +1,9 @@
 import {DataLoaderWorker} from '../../graphql'
 import AtlassianServerManager from '../../../utils/AtlassianServerManager'
-import {Omit} from '../../../../client/types/generics'
-import {ISuggestedIntegrationJira} from '../../../../client/types/graphql'
-import makeJiraProjectName from '../../../../client/utils/makeJiraProjectName'
-import makeSuggestedIntegrationId from '../../../../client/utils/makeSuggestedIntegrationId'
+import {Omit} from 'parabol-client/types/generics'
+import {ISuggestedIntegrationJira} from 'parabol-client/types/graphql'
+import makeJiraProjectName from 'parabol-client/utils/makeJiraProjectName'
+import makeSuggestedIntegrationId from 'parabol-client/utils/makeSuggestedIntegrationId'
 
 const fetchAtlassianProjects = async (dataLoader: DataLoaderWorker, teamId, userId) => {
   const [accessToken, auths] = await Promise.all([

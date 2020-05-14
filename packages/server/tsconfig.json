@@ -1,30 +1,37 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    //    "composite": true,
+    "baseUrl": "../",
+    "paths": {
+      "parabol-client/*": [
+        "client/*"
+      ],
+      "~/*": [
+        "client/*"
+      ]
+    },
+    "outDir": "lib",
     "lib": [
       "esnext",
-      "dom" // unfortunately almost inescapable. we extend client managers, etc which use the DOM
+      "dom"
     ],
     "types": [
       "node"
     ],
-    "target": "esnext",
-    "module": "esnext",
-    "sourceMap": true,
-    // "baseUrl": ".",
-    //     "paths": {
-    //       "*": [
-    //         // resolve all absolute imports as imports relative to the package,
-    //         "*"
-    //         // also try looking in the client package (this makes for incorrect imports, don't do this)
-    // //        "../client/*"
-    //       ]
-    //     }
-  }
-  //  "references": [
-  //    {
-  //      "path": "../client"
-  //    }
-  //  ]
+  },
+  "files": [
+    "types/modules.d.ts",
+    "email/components/SummaryEmail/MeetingSummaryEmail/MeetingSummaryEmail.tsx",
+    "email/components/MeetingSummaryEmailRootSSR.tsx",
+    "utils/updateGQLSchema.ts"
+  ],
+  "exclude": [
+    "**/node_modules",
+  ],
+  "include": [
+    "*",
+    "database/migrations/*",
+    "./.eslintrc.js",
+    "**/*.json",
+  ]
 }

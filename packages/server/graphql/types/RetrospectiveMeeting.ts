@@ -1,24 +1,24 @@
 import {
   GraphQLEnumType,
   GraphQLFloat,
+  GraphQLID,
   GraphQLInt,
   GraphQLList,
   GraphQLNonNull,
-  GraphQLObjectType,
-  GraphQLID
+  GraphQLObjectType
 } from 'graphql'
-import NewMeeting, {newMeetingFields} from './NewMeeting'
-import RetroReflectionGroup from './RetroReflectionGroup'
-import {resolveForSU} from '../resolvers'
-import RetrospectiveMeetingSettings from './RetrospectiveMeetingSettings'
-import {RETROSPECTIVE} from '../../../client/utils/constants'
-import Task from './Task'
+import {NewMeetingPhaseTypeEnum} from 'parabol-client/types/graphql'
+import {RETROSPECTIVE} from 'parabol-client/utils/constants'
+import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import {getUserId} from '../../utils/authorization'
-import toTeamMemberId from '../../../client/utils/relay/toTeamMemberId'
-import RetrospectiveMeetingMember from './RetrospectiveMeetingMember'
 import filterTasksByMeeting from '../../utils/filterTasksByMeeting'
 import {GQLContext} from '../graphql'
-import {NewMeetingPhaseTypeEnum} from 'parabol-client/types/graphql'
+import {resolveForSU} from '../resolvers'
+import NewMeeting, {newMeetingFields} from './NewMeeting'
+import RetroReflectionGroup from './RetroReflectionGroup'
+import RetrospectiveMeetingMember from './RetrospectiveMeetingMember'
+import RetrospectiveMeetingSettings from './RetrospectiveMeetingSettings'
+import Task from './Task'
 
 const ReflectionGroupSortEnum = new GraphQLEnumType({
   name: 'ReflectionGroupSortEnum',
@@ -106,9 +106,10 @@ const RetrospectiveMeeting = new GraphQLObjectType<any, GQLContext>({
           )
           if (!discussPhase) return reflectionGroups
           const {stages} = discussPhase
-          return stages.map((stage) =>
-            reflectionGroups.find((group) => group.id === stage.reflectionGroupId)
-          )
+          // boolean filter in case the meeting was terminated & there are no groups made yet
+          return stages
+            .map((stage) => reflectionGroups.find((group) => group.id === stage.reflectionGroupId))
+            .filter(Boolean)
         }
         reflectionGroups.sort((a, b) => (a.sortOrder < b.sortOrder ? -1 : 1))
         return reflectionGroups

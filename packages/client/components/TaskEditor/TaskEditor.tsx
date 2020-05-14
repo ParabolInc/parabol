@@ -1,3 +1,4 @@
+import styled from '@emotion/styled'
 import {
   DraftEditorCommand,
   DraftHandleValue,
@@ -7,17 +8,16 @@ import {
   getDefaultKeyBinding
 } from 'draft-js'
 import React, {RefObject, Suspense, useEffect, useRef} from 'react'
+import {UseTaskChild} from '../../hooks/useTaskChildFocus'
 import {Card} from '../../types/constEnums'
 import {textTags} from '../../utils/constants'
 import entitizeText from '../../utils/draftjs/entitizeText'
-import './Draft.css'
-import styled from '@emotion/styled'
-import lazyPreload from '../../utils/lazyPreload'
-import isRichDraft from '../../utils/draftjs/isRichDraft'
 import isAndroid from '../../utils/draftjs/isAndroid'
-import {UseTaskChild} from '../../hooks/useTaskChildFocus'
-import useTaskPlugins from './useTaskPlugins'
+import isRichDraft from '../../utils/draftjs/isRichDraft'
+import lazyPreload from '../../utils/lazyPreload'
 import blockStyleFn from './blockStyleFn'
+import './Draft.css'
+import useTaskPlugins from './useTaskPlugins'
 
 const RootEditor = styled('div')<{noText: boolean; readOnly: boolean | undefined}>(
   ({noText, readOnly}) => ({
@@ -30,9 +30,7 @@ const RootEditor = styled('div')<{noText: boolean; readOnly: boolean | undefined
 )
 
 const AndroidEditorFallback = lazyPreload(() =>
-  import(
-    /* webpackChunkName: 'AndroidEditorFallback' */ '../../../client/components/AndroidEditorFallback'
-  )
+  import(/* webpackChunkName: 'AndroidEditorFallback' */ '../AndroidEditorFallback')
 )
 
 const TaskEditorFallback = styled(AndroidEditorFallback)({
@@ -54,10 +52,11 @@ interface Props extends DraftProps {
   setEditorState: (newEditorState: EditorState) => void
   teamId: string
   useTaskChild: UseTaskChild
+  dataCy: string
 }
 
 const TaskEditor = (props: Props) => {
-  const {editorRef, editorState, readOnly, setEditorState} = props
+  const {editorRef, editorState, readOnly, setEditorState, dataCy} = props
   const entityPasteStartRef = useRef<{anchorOffset: number; anchorKey: string} | undefined>()
   const {
     removeModal,
@@ -171,7 +170,7 @@ const TaskEditor = (props: Props) => {
   const useFallback = isAndroid && !readOnly
   const showFallback = useFallback && !isRichDraft(editorState)
   return (
-    <RootEditor noText={noText} readOnly={readOnly}>
+    <RootEditor data-cy={`${dataCy}-editor`} noText={noText} readOnly={readOnly}>
       {showFallback ? (
         <Suspense fallback={<div />}>
           <TaskEditorFallback

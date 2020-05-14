@@ -13,9 +13,9 @@ import {promoteNewMeetingFacilitatorMeetingOnNext} from '../mutations/PromoteNew
 import {removeReflectionMeetingUpdater} from '../mutations/RemoveReflectionMutation'
 import {setStageTimerMeetingUpdater} from '../mutations/SetStageTimerMutation'
 import {startDraggingReflectionMeetingUpdater} from '../mutations/StartDraggingReflectionMutation'
-import {MeetingSubscriptionResponse} from '__generated__/MeetingSubscription.graphql'
-import {addCommentMeetingUpdater} from 'mutations/AddCommentMutation'
-import {deleteCommentMeetingUpdater} from 'mutations/DeleteCommentMutation'
+import {MeetingSubscriptionResponse} from '~/__generated__/MeetingSubscription.graphql'
+import {addCommentMeetingUpdater} from '~/mutations/AddCommentMutation'
+import {deleteCommentMeetingUpdater} from '~/mutations/DeleteCommentMutation'
 
 const subscription = graphql`
   subscription MeetingSubscription($meetingId: ID!) {
@@ -28,6 +28,7 @@ const subscription = graphql`
       ...DragDiscussionTopicMutation_meeting @relay(mask: false)
       ...EditReflectionMutation_meeting @relay(mask: false)
       ...EndDraggingReflectionMutation_meeting @relay(mask: false)
+      ...FlagReadyToAdvanceMutation_meeting @relay(mask: false)
       ...NewMeetingCheckInMutation_meeting @relay(mask: false)
       ...PromoteNewMeetingFacilitatorMutation_meeting @relay(mask: false)
       ...RemoveReflectionMutation_meeting @relay(mask: false)

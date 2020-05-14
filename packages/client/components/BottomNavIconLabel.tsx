@@ -1,7 +1,7 @@
-import React, {forwardRef, Ref} from 'react'
 import styled from '@emotion/styled'
-import Icon from './Icon'
+import React, {forwardRef, ReactNode, Ref} from 'react'
 import {PALETTE} from '../styles/paletteV2'
+import Icon from './Icon'
 
 const paletteColors = {
   warm: PALETTE.EMPHASIS_WARM,
@@ -13,9 +13,11 @@ const paletteColors = {
 
 interface Props {
   className?: string
-  icon: string | undefined
+  fontSize?: number
+  icon?: string | undefined
   iconColor?: keyof typeof paletteColors
   label: any | undefined
+  children?: ReactNode
 }
 
 const Inner = styled('div')({
@@ -26,7 +28,8 @@ const Inner = styled('div')({
 })
 
 const StyledIcon = styled(Icon)<{iconColor?: string}>(({iconColor}) => ({
-  color: iconColor ? paletteColors[iconColor] : 'inherit'
+  color: iconColor ? paletteColors[iconColor] : 'inherit',
+  height: 24
 }))
 
 const Label = styled('div')({
@@ -37,10 +40,10 @@ const Label = styled('div')({
 })
 
 const BottomNavIconLabel = forwardRef((props: Props, ref: Ref<HTMLDivElement>) => {
-  const {className, icon, iconColor, label} = props
+  const {children, className, icon, iconColor, label} = props
   return (
     <Inner className={className} ref={ref}>
-      <StyledIcon iconColor={iconColor}>{icon}</StyledIcon>
+      {children || <StyledIcon iconColor={iconColor}>{icon}</StyledIcon>}
       <Label>{label}</Label>
     </Inner>
   )

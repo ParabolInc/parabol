@@ -66,6 +66,10 @@ export type RethinkTypes = {
     type: FailedAuthRequest
     index: 'email' | 'ip'
   }
+  GQLRequest: {
+    type: any
+    index: 'id'
+  }
   Invoice: {
     type: Invoice
     index: 'orgIdStartAt'
@@ -189,7 +193,7 @@ export type RethinkTypes = {
   }
   TimelineEvent: {
     type: TimelineEvent
-    index: 'userIdCreatedAt'
+    index: 'userIdCreatedAt' | 'meetingId'
   }
   User: {
     type: User

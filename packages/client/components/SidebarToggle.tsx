@@ -15,9 +15,11 @@ const StyledButton = styled(IconButton)({
 interface Props extends BaseButtonProps {}
 
 const SidebarToggle = (props: Props) => {
+  const {dataCy} = props
   return (
     <StyledButton
       {...props}
+      dataCy={`${dataCy}-toggle`}
       aria-label='Toggle the sidebar'
       icon='menu'
       iconLarge
