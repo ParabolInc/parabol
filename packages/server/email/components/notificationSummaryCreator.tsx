@@ -8,12 +8,12 @@ import NotificationSummaryEmail, {NotificationSummaryProps} from './Notification
 const textOnlySummary = (props: NotificationSummaryProps) => {
   const {preferredName, notificationCount} = props
   const taskUrl = makeAppLink('me/tasks')
-  return `Hi ${preferredName}-
+  return `Hi ${preferredName} -
 
-A friendly nudge, in case you missed it: you have ${notificationCount} unread ${plural(
+You have ${notificationCount} new ${plural(
     notificationCount,
     'notification'
-  )} — see what your team needs.
+  )} — see what’s changed with your teams.
 
 You can see everything on your plate in the Tasks view: ${taskUrl}
 
@@ -27,10 +27,10 @@ ${ExternalLinks.TEAM}
 
 const notificationSummaryCreator = (props: NotificationSummaryProps) => {
   const {notificationCount} = props
-  const subject = `Your team needs you: ${notificationCount} unread ${plural(
+  const subject = `You have ${notificationCount} new ${plural(
     notificationCount,
     'notification'
-  )}👀`
+  )} 👀`
   return {
     subject,
     body: textOnlySummary(props),
