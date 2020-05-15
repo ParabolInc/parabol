@@ -1,10 +1,7 @@
-import {ReflectTemplatePromptUpdateGroupColorMutation as TReflectTemplatePromptUpdateGroupColorMutation} from '../__generated__/ReflectTemplatePromptUpdateGroupColorMutation.graphql'
-import {commitMutation} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import {Disposable} from 'relay-runtime'
-import Atmosphere from '../Atmosphere'
-import {IReflectTemplatePromptUpdateGroupColorOnMutationArguments} from '../types/graphql'
-import {LocalHandlers} from '../types/relayMutations'
+import {commitMutation} from 'react-relay'
+import {SimpleMutation} from '../types/relayMutations'
+import {ReflectTemplatePromptUpdateGroupColorMutation as TReflectTemplatePromptUpdateGroupColorMutation} from '../__generated__/ReflectTemplatePromptUpdateGroupColorMutation.graphql'
 
 graphql`
   fragment ReflectTemplatePromptUpdateGroupColorMutation_team on ReflectTemplatePromptUpdateGroupColorPayload {
@@ -25,16 +22,13 @@ const mutation = graphql`
   }
 `
 
-const ReflectTemplatePromptUpdateGroupColorMutation = (
-  atmosphere: Atmosphere,
-  variables: IReflectTemplatePromptUpdateGroupColorOnMutationArguments,
-  {onError, onCompleted}: LocalHandlers
-): Disposable => {
+const ReflectTemplatePromptUpdateGroupColorMutation: SimpleMutation<TReflectTemplatePromptUpdateGroupColorMutation> = (
+  atmosphere,
+  variables
+) => {
   return commitMutation<TReflectTemplatePromptUpdateGroupColorMutation>(atmosphere, {
     mutation,
     variables,
-    onCompleted,
-    onError,
     optimisticUpdater: (store) => {
       const {groupColor, promptId} = variables
       const prompt = store.get(promptId)

@@ -1,18 +1,21 @@
-import React from 'react'
-import {TemplatePromptItem_prompt} from '../../../__generated__/TemplatePromptItem_prompt.graphql'
 import styled from '@emotion/styled'
-import {MenuPosition} from '../../../hooks/useCoords'
-import useMenu from '../../../hooks/useMenu'
-import useHover from '../../../hooks/useHover'
-import {ICON_SIZE} from '../../../styles/typographyV2'
-import {PALETTE} from '../../../styles/paletteV2'
+import graphql from 'babel-plugin-relay/macro'
+import React from 'react'
+import {createFragmentContainer} from 'react-relay'
+import Icon from '~/components/Icon'
+import {EditableTemplatePromptColor_prompt} from '~/__generated__/EditableTemplatePromptColor_prompt.graphql'
+import {EditableTemplatePromptColor_prompts} from '~/__generated__/EditableTemplatePromptColor_prompts.graphql'
 import PalettePicker from '../../../components/PalettePicker/PalettePicker'
-import Icon from 'components/Icon'
+import {MenuPosition} from '../../../hooks/useCoords'
+import useHover from '../../../hooks/useHover'
+import useMenu from '../../../hooks/useMenu'
+import {PALETTE} from '../../../styles/paletteV2'
+import {ICON_SIZE} from '../../../styles/typographyV2'
 
 interface Props {
   groupColor: string
-  prompt: TemplatePromptItem_prompt
-  prompts: any
+  prompt: EditableTemplatePromptColor_prompt
+  prompts: EditableTemplatePromptColor_prompts
 }
 
 interface StyledProps {
@@ -59,4 +62,15 @@ const EditableTemplatePromptColor = (props: Props) => {
   )
 }
 
-export default EditableTemplatePromptColor
+export default createFragmentContainer(EditableTemplatePromptColor, {
+  prompts: graphql`
+    fragment EditableTemplatePromptColor_prompts on RetroPhaseItem @relay(plural: true) {
+      ...PalettePicker_prompts
+    }
+  `,
+  prompt: graphql`
+    fragment EditableTemplatePromptColor_prompt on RetroPhaseItem {
+      ...PalettePicker_prompt
+    }
+  `
+})

@@ -4,6 +4,7 @@ import ms from 'ms'
 import {Variables} from 'relay-runtime'
 import StrictEventEmitter from 'strict-event-emitter-types'
 import stringSimilarity from 'string-similarity'
+import {PALETTE} from '~/styles/paletteV2'
 import {MeetingSettingsThreshold, RetroDemo, SubscriptionChannel} from '../../types/constEnums'
 import {
   DragReflectionDropTargetTypeEnum,
@@ -42,7 +43,6 @@ import initDB, {
   JiraProjectKeyLookup
 } from './initDB'
 import LocalAtmosphere from './LocalAtmosphere'
-import {PALETTE} from 'styles/paletteV2'
 
 export type DemoReflection = Omit<
   IRetroReflection,

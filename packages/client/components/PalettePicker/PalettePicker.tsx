@@ -1,18 +1,20 @@
-import React, {useEffect, useState} from 'react'
-import {TemplatePromptItem_prompt} from '../../__generated__/TemplatePromptItem_prompt.graphql'
-import PaletteColor from '../PaletteColor/PaletteColor'
-import Menu from '../Menu'
-import {MenuProps} from '../../hooks/useMenu'
+import styled from '@emotion/styled'
+import graphql from 'babel-plugin-relay/macro'
+import React from 'react'
+import {createFragmentContainer} from 'react-relay'
+import {PalettePicker_prompt} from '~/__generated__/PalettePicker_prompt.graphql'
+import {PalettePicker_prompts} from '~/__generated__/PalettePicker_prompts.graphql'
 import useAtmosphere from '../../hooks/useAtmosphere'
+import {MenuProps} from '../../hooks/useMenu'
 import useMutationProps from '../../hooks/useMutationProps'
 import ReflectTemplatePromptUpdateGroupColorMutation from '../../mutations/ReflectTemplatePromptUpdateGroupColorMutation'
-import styled from '@emotion/styled'
-import {PALETTE} from '../../styles/paletteV2'
-import {palettePickerOptions} from '../../styles/palettePickerOptions'
+import palettePickerOptions from '../../styles/palettePickerOptions'
+import Menu from '../Menu'
+import PaletteColor from '../PaletteColor/PaletteColor'
 
 interface Props {
-  prompt: TemplatePromptItem_prompt
-  prompts: any
+  prompt: PalettePicker_prompt
+  prompts: PalettePicker_prompts
   menuProps: MenuProps
 }
 
@@ -31,57 +33,31 @@ const PaletteList = styled('ul')({
   margin: 0
 })
 
-const PaletteItem = styled('div')()
-
 const PalettePicker = (props: Props) => {
   const {prompt, prompts, menuProps} = props
+  const {id: promptId, groupColor} = prompt
   const atmosphere = useAtmosphere()
-  const {onCompleted, onError, submitMutation} = useMutationProps()
-  const [groupColor, setGroupColor] = useState(prompt.groupColor)
-  const pickedColors = prompts.map((prompt) => prompt.groupColor) as string[]
-  const availableColors = palettePickerOptions.filter(
-    (color) => !pickedColors.includes(color)
-  ) as string[]
-
+  const {submitMutation, submitting} = useMutationProps()
+  const allTakenColors = prompts.map((prompt) => prompt.groupColor)
   const handleClick = (color: string) => {
-    setGroupColor(color)
-    menuProps.closePortal()
-    if (document.activeElement instanceof HTMLElement) {
-      document.activeElement.blur()
-    }
-  }
-
-  const updateColor = (promptId: string, groupColor: string) => {
+    if (submitting) return
     submitMutation()
-    ReflectTemplatePromptUpdateGroupColorMutation(
-      atmosphere,
-      {promptId, groupColor},
-      {onError, onCompleted}
-    )
+    ReflectTemplatePromptUpdateGroupColorMutation(atmosphere, {promptId, groupColor: color})
+    menuProps.closePortal()
   }
-
-  useEffect(() => {
-    const newColor = groupColor || PALETTE.PROMPT_GREEN
-    if (pickedColors.includes(newColor)) {
-      const randomColor = availableColors[Math.floor(Math.random() * availableColors.length)]
-      const promptToUpdate = prompts.find((prompt) => prompt.groupColor === newColor)
-      promptToUpdate ? updateColor(promptToUpdate.id, randomColor) : null
-    }
-    updateColor(prompt.id, newColor)
-  }, [groupColor])
 
   return (
     <PaletteDropDown ariaLabel='Pick a group color' {...menuProps}>
       <PaletteList>
-        {palettePickerOptions.map((color, id) => {
+        {palettePickerOptions.map((color) => {
           return (
-            <PaletteItem onClick={() => handleClick(color)} key={id}>
-              <PaletteColor
-                color={color}
-                isPicked={pickedColors.includes(color)}
-                currentSelection={groupColor === color}
-              />
-            </PaletteItem>
+            <PaletteColor
+              key={color.hex}
+              color={color}
+              isAvailable={!allTakenColors.includes(color.hex)}
+              isCurrentColor={groupColor === color.hex}
+              handleClick={handleClick}
+            />
           )
         })}
       </PaletteList>
@@ -89,4 +65,17 @@ const PalettePicker = (props: Props) => {
   )
 }
 
-export default PalettePicker
+export default createFragmentContainer(PalettePicker, {
+  prompts: graphql`
+    fragment PalettePicker_prompts on RetroPhaseItem @relay(plural: true) {
+      id
+      groupColor
+    }
+  `,
+  prompt: graphql`
+    fragment PalettePicker_prompt on RetroPhaseItem {
+      id
+      groupColor
+    }
+  `
+})

@@ -1,34 +1,25 @@
-import React, {Component} from 'react'
-import {TemplatePromptItem_prompt} from '../../../__generated__/TemplatePromptItem_prompt.graphql'
-import {DraggableProvided} from 'react-beautiful-dnd'
 import styled from '@emotion/styled'
-import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
+import React, {useState} from 'react'
+import {DraggableProvided} from 'react-beautiful-dnd'
+import {createFragmentContainer} from 'react-relay'
+import useAtmosphere from '~/hooks/useAtmosphere'
+import useMutationProps from '~/hooks/useMutationProps'
+import {TemplatePromptItem_prompts} from '~/__generated__/TemplatePromptItem_prompts.graphql'
 import Icon from '../../../components/Icon'
-import withAtmosphere, {
-  WithAtmosphereProps
-} from '../../../decorators/withAtmosphere/withAtmosphere'
-import EditableTemplateDescription from './EditableTemplateDescription'
 import RemoveReflectTemplatePromptMutation from '../../../mutations/RemoveReflectTemplatePromptMutation'
-import {ICON_SIZE} from '../../../styles/typographyV2'
 import {PALETTE} from '../../../styles/paletteV2'
-import withMutationProps, {WithMutationProps} from '../../../utils/relay/withMutationProps'
+import {ICON_SIZE} from '../../../styles/typographyV2'
+import {TemplatePromptItem_prompt} from '../../../__generated__/TemplatePromptItem_prompt.graphql'
+import EditableTemplateDescription from './EditableTemplateDescription'
 import EditableTemplatePrompt from './EditableTemplatePrompt'
 import EditableTemplatePromptColor from './EditableTemplatePromptColor'
 
-interface PassedProps {
-  canRemove: boolean
+interface Props {
   isDragging: boolean
   prompt: TemplatePromptItem_prompt
-  prompts: any
+  prompts: TemplatePromptItem_prompts
   dragProvided: DraggableProvided
-}
-
-interface Props extends WithAtmosphereProps, WithMutationProps, PassedProps {}
-
-interface State {
-  isEditingDescription: boolean
-  isHover: boolean
 }
 
 interface StyledProps {
@@ -64,97 +55,77 @@ const PromptAndDescription = styled('div')({
   flexDirection: 'column'
 })
 
-class TemplatePromptItem extends Component<Props, State> {
-  state = {
-    isHover: false,
-    isEditingDescription: false
+const TemplatePromptItem = (props: Props) => {
+  const {dragProvided, isDragging, prompt, prompts} = props
+  const {id: promptId, description, question, groupColor} = prompt
+  const [isHover, setIsHover] = useState(false)
+  const [isEditingDescription, setIsEditingDescription] = useState(false)
+  const {submitting, submitMutation, onError, onCompleted} = useMutationProps()
+  const atmosphere = useAtmosphere()
+  const canRemove = prompts.length > 1
+  const onMouseEnter = () => {
+    setIsHover(true)
   }
-  onMouseEnter = () => {
-    this.setState({
-      isHover: true
-    })
+  const onMouseLeave = () => {
+    setIsHover(false)
   }
-
-  onMouseLeave = () => {
-    this.setState({
-      isHover: false
-    })
-  }
-
-  onEditDescription = (isEditingDescription: boolean) => {
-    this.setState({
-      isEditingDescription
-    })
-  }
-
-  removePrompt = () => {
-    const {
-      onError,
-      onCompleted,
-      submitting,
-      submitMutation,
-      atmosphere,
-      prompt,
-      prompts
-    } = this.props
+  const removePrompt = () => {
     if (submitting) return
-    if (prompts.length <= 1) {
-      onError('You must have at least 1 prompt')
+    if (!canRemove) {
+      onError(new Error('You must have at least 1 prompt'))
       return
     }
     submitMutation()
-    RemoveReflectTemplatePromptMutation(atmosphere, {promptId: prompt.id}, {}, onError, onCompleted)
+    RemoveReflectTemplatePromptMutation(atmosphere, {promptId}, {}, onError, onCompleted)
   }
 
-  render() {
-    const {canRemove, dragProvided, isDragging, prompt, prompts} = this.props
-    const {id: promptId, description, question, groupColor} = prompt
-    const {isEditingDescription, isHover} = this.state
-    return (
-      <PromptItem
-        ref={dragProvided.innerRef}
-        {...dragProvided.dragHandleProps}
-        {...dragProvided.draggableProps}
-        isDragging={isDragging}
-        isHover={isHover}
-        onMouseEnter={this.onMouseEnter}
-        onMouseLeave={this.onMouseLeave}
-      >
-        <EditableTemplatePromptColor groupColor={groupColor} prompt={prompt} prompts={prompts} />
-        <PromptAndDescription>
-          <EditableTemplatePrompt
-            isEditingDescription={isEditingDescription}
-            isHover={isHover}
-            question={question}
-            promptId={promptId}
-            prompts={prompts}
-          />
-          <EditableTemplateDescription
-            description={description}
-            onEditingChange={this.onEditDescription}
-            promptId={promptId}
-          />
-        </PromptAndDescription>
-        {canRemove && (
-          <RemovePromptIcon isHover={isHover} onClick={this.removePrompt}>
-            cancel
-          </RemovePromptIcon>
-        )}
-      </PromptItem>
-    )
-  }
+  return (
+    <PromptItem
+      ref={dragProvided.innerRef}
+      {...dragProvided.dragHandleProps}
+      {...dragProvided.draggableProps}
+      isDragging={isDragging}
+      isHover={isHover}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
+    >
+      <EditableTemplatePromptColor groupColor={groupColor} prompt={prompt} prompts={prompts} />
+      <PromptAndDescription>
+        <EditableTemplatePrompt
+          isEditingDescription={isEditingDescription}
+          isHover={isHover}
+          question={question}
+          promptId={promptId}
+          prompts={prompts}
+        />
+        <EditableTemplateDescription
+          description={description}
+          onEditingChange={setIsEditingDescription}
+          promptId={promptId}
+        />
+      </PromptAndDescription>
+      {canRemove && (
+        <RemovePromptIcon isHover={isHover} onClick={removePrompt}>
+          cancel
+        </RemovePromptIcon>
+      )}
+    </PromptItem>
+  )
 }
-
-export default createFragmentContainer<PassedProps>(
-  withAtmosphere(withMutationProps(TemplatePromptItem)),
-  {
-    prompt: graphql`
-      fragment TemplatePromptItem_prompt on RetroPhaseItem {
-        id
-        question
-        description
-        groupColor
-      }
-    `
-  }
-)
+export default createFragmentContainer(TemplatePromptItem, {
+  prompts: graphql`
+    fragment TemplatePromptItem_prompts on RetroPhaseItem @relay(plural: true) {
+      ...EditableTemplatePromptColor_prompts
+      ...EditableTemplatePrompt_prompts
+    }
+  `,
+  prompt: graphql`
+    fragment TemplatePromptItem_prompt on RetroPhaseItem {
+      ...EditableTemplatePromptColor_prompt
+      id
+      question
+      description
+      groupColor
+    }
+  `
+})

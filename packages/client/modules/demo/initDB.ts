@@ -1,5 +1,6 @@
-import {CHECKIN, DISCUSS, GROUP, REFLECT, RETROSPECTIVE, VOTE} from '../../utils/constants'
-import toTeamMemberId from '../../utils/relay/toTeamMemberId'
+import {PALETTE} from '~/styles/paletteV2'
+import demoUserAvatar from '../../styles/theme/images/avatar-user.svg'
+import {MeetingSettingsThreshold, RetroDemo} from '../../types/constEnums'
 import {
   IJiraRemoteProject,
   IRetrospectiveMeeting,
@@ -11,11 +12,10 @@ import {
   TaskServiceEnum,
   TierEnum
 } from '../../types/graphql'
+import {CHECKIN, DISCUSS, GROUP, REFLECT, RETROSPECTIVE, VOTE} from '../../utils/constants'
 import getDemoAvatar from '../../utils/getDemoAvatar'
-import demoUserAvatar from '../../styles/theme/images/avatar-user.svg'
+import toTeamMemberId from '../../utils/relay/toTeamMemberId'
 import {DemoReflection, DemoReflectionGroup, DemoTask} from './ClientGraphQLServer'
-import {RetroDemo, MeetingSettingsThreshold} from '../../types/constEnums'
-import {PALETTE} from 'styles/paletteV2'
 
 export const demoViewerId = 'demoUser'
 export const demoTeamId = 'demoTeam'

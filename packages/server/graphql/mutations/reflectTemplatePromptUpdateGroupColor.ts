@@ -1,10 +1,10 @@
 import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getRethink from '../../database/rethinkDriver'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import ReflectTemplatePromptUpdateGroupColorPayload from '../types/ReflectTemplatePromptUpdateGroupColorPayload'
-import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 
 const reflectTemplatePromptUpdateGroupColor = {
   groupColor: 'Update the groupColor of a reflection prompt',
@@ -22,11 +22,12 @@ const reflectTemplatePromptUpdateGroupColor = {
     const now = new Date()
     const operationId = dataLoader.share()
     const subOptions = {operationId, mutatorId}
+    const viewerId = getUserId(authToken)
+
     const prompt = await r
       .table('CustomPhaseItem')
       .get(promptId)
       .run()
-    const viewerId = getUserId(authToken)
 
     // AUTH
     if (!prompt || !isTeamMember(authToken, prompt.teamId) || !prompt.isActive) {

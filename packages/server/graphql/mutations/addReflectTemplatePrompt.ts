@@ -1,13 +1,13 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel, Threshold} from 'parabol-client/types/constEnums'
 import dndNoise from 'parabol-client/utils/dndNoise'
+import palettePickerOptions from '../../../client/styles/palettePickerOptions'
+import {PALETTE} from '../../../client/styles/paletteV2'
 import getRethink from '../../database/rethinkDriver'
 import RetrospectivePrompt from '../../database/types/RetrospectivePrompt'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
-import {PALETTE} from '../../../client/styles/paletteV2'
-import {palettePickerOptions} from '../../../client/styles/palettePickerOptions'
 import AddReflectTemplatePromptPayload from '../types/AddReflectTemplatePromptPayload'
 
 const addReflectTemplatePrompt = {
@@ -49,15 +49,17 @@ const addReflectTemplatePrompt = {
 
     // RESOLUTION
     const sortOrder = Math.max(...activePrompts.map((prompt) => prompt.sortOrder)) + 1 + dndNoise()
-    const pickedColors = activePrompts.map((prompt) => prompt.groupColor) as string[]
-    const availableNewColor = palettePickerOptions.find((color) => !pickedColors.includes(color))
+    const pickedColors = activePrompts.map((prompt) => prompt.groupColor)
+    const availableNewColor = palettePickerOptions.find(
+      (color) => !pickedColors.includes(color.hex)
+    )
     const phaseItem = new RetrospectivePrompt({
       templateId: template.id,
       teamId: template.teamId,
       sortOrder,
       question: `New prompt #${activePrompts.length + 1}`,
       description: '',
-      groupColor: availableNewColor || PALETTE.PROMPT_GREEN
+      groupColor: availableNewColor?.hex ?? PALETTE.PROMPT_GREEN
     })
 
     await r
