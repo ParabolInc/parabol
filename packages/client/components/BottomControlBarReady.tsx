@@ -65,7 +65,11 @@ const BottomControlBarReady = (props: Props) => {
   const readyCount = localStage.readyCount || 0
   const progress = readyCount / Math.max(1, activeCount - 1)
   const isLastStageInPhase = stages[stages.length - 1]?.id === localStage?.id
-  const isConfirmRequired = isLastStageInPhase && readyCount < activeCount - 1 && activeCount > 1
+  const isConfirmRequired =
+    isLastStageInPhase &&
+    phaseType !== NewMeetingPhaseTypeEnum.checkin &&
+    readyCount < activeCount - 1 &&
+    activeCount > 1
   const [isConfirming, setConfirming] = useClickConfirmation()
   const onClick = () => {
     if (!isFacilitating) {
