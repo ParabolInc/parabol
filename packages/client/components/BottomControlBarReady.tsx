@@ -45,6 +45,12 @@ const CheckIcon = styled(Icon)<{progress: number; isNext: boolean; isViewerReady
   })
 )
 
+const PHASE_REQUIRES_CONFIRM = new Set<string>([
+  NewMeetingPhaseTypeEnum.reflect,
+  NewMeetingPhaseTypeEnum.group,
+  NewMeetingPhaseTypeEnum.vote
+])
+
 const BottomControlBarReady = (props: Props) => {
   const {handleGotoNext, meeting, onTransitionEnd, status} = props
   const {
@@ -67,7 +73,7 @@ const BottomControlBarReady = (props: Props) => {
   const isLastStageInPhase = stages[stages.length - 1]?.id === localStage?.id
   const isConfirmRequired =
     isLastStageInPhase &&
-    phaseType !== NewMeetingPhaseTypeEnum.checkin &&
+    PHASE_REQUIRES_CONFIRM.has(phaseType!) &&
     readyCount < activeCount - 1 &&
     activeCount > 1
   const [isConfirming, setConfirming] = useClickConfirmation()
