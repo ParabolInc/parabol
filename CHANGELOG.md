@@ -5,6 +5,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 5.7.1 2020-May-15
+
+## Fixed
+* Only prompt next confirmation when on the last stage in phase
+
 ## 5.7.0 2020-May-13
 
 ## Fixed
