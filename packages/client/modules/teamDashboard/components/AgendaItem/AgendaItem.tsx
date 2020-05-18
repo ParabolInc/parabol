@@ -19,6 +19,18 @@ import {MeetingTypeEnum} from '../../../../types/graphql'
 import findStageById from '../../../../utils/meetings/findStageById'
 import {AgendaItem_agendaItem} from '../../../../__generated__/AgendaItem_agendaItem.graphql'
 
+const AgendaItemStyles = styled('div')({
+  position: 'relative',
+  // show the DeleteIconButton on hover
+  '&:hover > button': {
+    opacity: 1
+  }
+})
+
+const AvatarBlock = styled('div')({
+  width: '2rem'
+})
+
 const DeleteIconButton = styled(IconButton)<{disabled?: boolean}>(({disabled}) => ({
   display: 'block',
   // we can make the position of the del (x) more centered when there’s a low number of agenda items
@@ -30,18 +42,6 @@ const DeleteIconButton = styled(IconButton)<{disabled?: boolean}>(({disabled}) =
   transition: 'opacity .1s ease-in',
   visibility: disabled ? 'hidden' : undefined
 }))
-
-const AvatarBlock = styled('div')({
-  width: '2rem'
-})
-
-const AgendaItemStyles = styled('div')({
-  position: 'relative',
-  // show the DeleteIconButton on hover
-  '&:hover > button': {
-    opacity: 1
-  }
-})
 
 const getItemProps = (
   activeMeetings: AgendaItem_activeMeetings,
