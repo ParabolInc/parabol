@@ -42,6 +42,7 @@ const AgendaList = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {dashSearch, gotoStageId, meetingId, team} = props
   const {activeMeetings, agendaItems} = team
+  console.log('AgendaList -> agendaItems', agendaItems)
   const filteredAgendaItems = useMemo(() => {
     return dashSearch ? agendaItems.filter(({content}) => content.match(dashSearch)) : agendaItems
   }, [dashSearch, agendaItems])
@@ -100,11 +101,12 @@ const AgendaList = (props: Props) => {
                         >
                           <AgendaItem
                             key={item.id}
+                            activeMeetings={activeMeetings}
                             agendaItem={item}
                             gotoStageId={gotoStageId}
                             idx={agendaItems.findIndex((agendaItem) => agendaItem === item)}
                             isDragging={dragSnapshot.isDragging}
-                            activeMeetings={activeMeetings}
+                            meetingId={meetingId}
                           />
                         </DraggableAgendaItem>
                       )
@@ -127,6 +129,7 @@ export default createFragmentContainer(AgendaList, {
       agendaItems {
         id
         content
+        pinned
         # need this for the DnD
         sortOrder
         ...AgendaItem_agendaItem

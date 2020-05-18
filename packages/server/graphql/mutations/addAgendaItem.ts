@@ -36,6 +36,7 @@ export default {
     if (Object.keys(errors).length) {
       return standardError(new Error('Failed input validation'), {userId: viewerId})
     }
+    console.log('resolve -> validNewAgendaItem', validNewAgendaItem)
 
     // RESOLUTION
     const now = new Date()

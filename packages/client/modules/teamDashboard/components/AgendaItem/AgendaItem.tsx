@@ -1,15 +1,17 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {useEffect, useRef} from 'react'
+import React, {useEffect, useRef, useState} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {AgendaItem_activeMeetings} from '~/__generated__/AgendaItem_activeMeetings.graphql'
 import Avatar from '../../../../components/Avatar/Avatar'
+import Icon from '../../../../components/Icon'
 import IconButton from '../../../../components/IconButton'
 import MeetingSubnavItem from '../../../../components/MeetingSubnavItem'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useGotoStageId from '../../../../hooks/useGotoStageId'
 import useScrollIntoView from '../../../../hooks/useScrollIntoVIew'
 import RemoveAgendaItemMutation from '../../../../mutations/RemoveAgendaItemMutation'
+import UpdateAgendaItemMutation from '../../../../mutations/UpdateAgendaItemMutation'
 import {ICON_SIZE} from '../../../../styles/typographyV2'
 import {MeetingTypeEnum} from '../../../../types/graphql'
 import findStageById from '../../../../utils/meetings/findStageById'
@@ -82,16 +84,18 @@ const getItemProps = (
 }
 
 interface Props {
+  activeMeetings: AgendaItem_activeMeetings
   agendaItem: AgendaItem_agendaItem
   gotoStageId: ReturnType<typeof useGotoStageId> | undefined
   idx: number
   isDragging: boolean
-  activeMeetings: AgendaItem_activeMeetings
+  meetingId?: string | null
 }
 
 const AgendaItem = (props: Props) => {
-  const {agendaItem, gotoStageId, isDragging, activeMeetings} = props
-  const {id: agendaItemId, content, teamMember} = agendaItem
+  const [hovering, setHovering] = useState(false)
+  const {activeMeetings, agendaItem, gotoStageId, isDragging, meetingId} = props
+  const {id: agendaItemId, content, pinned, teamMember} = agendaItem
   const {picture} = teamMember
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
@@ -109,24 +113,41 @@ const AgendaItem = (props: Props) => {
     ref.current && ref.current.scrollIntoView({behavior: 'smooth'})
   }, [])
 
+  const handleClick = (e: React.FormEvent) => {
+    e.preventDefault()
+    UpdateAgendaItemMutation(
+      atmosphere,
+      {updatedAgendaItem: {id: agendaItemId, pinned: true}},
+      {meetingId}
+    )
+  }
+
   const handleRemove = () => {
     RemoveAgendaItemMutation(atmosphere, {agendaItemId})
   }
+
+  const getIcon = () => {
+    if (pinned) {
+      if (hovering) return <Icon onClick={handleClick}>{'archive'}</Icon>
+      else return <Icon onClick={handleClick}>{'menu'}</Icon>
+    } else {
+      if (hovering) return <Icon onClick={handleClick}>{'add'}</Icon>
+      else return <Avatar hasBadge={false} picture={picture} size={24} />
+    }
+  }
+
   return (
     <AgendaItemStyles title={content}>
       <MeetingSubnavItem
         label={content}
-        metaContent={
-          <AvatarBlock>
-            <Avatar hasBadge={false} picture={picture} size={24} />
-          </AvatarBlock>
-        }
+        metaContent={<AvatarBlock>{getIcon()}</AvatarBlock>}
         isDisabled={isDisabled}
         onClick={onClick}
         isActive={isActive}
         isComplete={isComplete}
         isDragging={isDragging}
         isUnsyncedFacilitatorStage={isUnsyncedFacilitatorStage}
+        setHovering={setHovering}
       />
       <DeleteIconButton
         aria-label={'Remove this agenda topic'}
@@ -164,6 +185,7 @@ export default createFragmentContainer(AgendaItem, {
     fragment AgendaItem_agendaItem on AgendaItem {
       id
       content
+      pinned
       teamMember {
         picture
       }

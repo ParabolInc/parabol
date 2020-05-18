@@ -763,6 +763,11 @@ export interface IAgendaItem {
   isActive: boolean
 
   /**
+   * True if the agenda item has been pinned
+   */
+  pinned: boolean
+
+  /**
    * The sort order of the agenda item in the list
    */
   sortOrder: number
@@ -4224,6 +4229,11 @@ export interface ICreateAgendaItemInput {
    * The content of the agenda item
    */
   content: string
+
+  /**
+   * True if the agenda item has been pinned
+   */
+  pinned: boolean
   teamId: string
 
   /**
@@ -6617,6 +6627,11 @@ export interface IUpdateAgendaItemInput {
    * The content of the agenda item
    */
   content?: string | null
+
+  /**
+   * true if agenda item has been pinned
+   */
+  pinned?: boolean | null
 
   /**
    * true if not processed or deleted

@@ -86,6 +86,7 @@ const clearAgendaItems = async (teamId: string) => {
   return r
     .table('AgendaItem')
     .getAll(teamId, {index: 'teamId'})
+    .filter({pinned: false})
     .update({
       isActive: false
     })

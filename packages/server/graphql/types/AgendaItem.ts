@@ -32,6 +32,11 @@ const AgendaItem = new GraphQLObjectType<IAgendaItem, GQLContext>({
       description: 'true if the agenda item has not been processed or deleted',
       resolve: ({isActive}) => !!isActive
     },
+    pinned: {
+      type: new GraphQLNonNull(GraphQLBoolean),
+      // type: GraphQLBoolean,
+      description: 'True if the agenda item has been pinned'
+    },
     sortOrder: {
       type: new GraphQLNonNull(GraphQLFloat),
       description: 'The sort order of the agenda item in the list'

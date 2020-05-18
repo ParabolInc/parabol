@@ -18,6 +18,10 @@ const UpdateAgendaItemInput = new GraphQLInputObjectType({
       type: GraphQLString,
       description: 'The content of the agenda item'
     },
+    pinned: {
+      type: GraphQLBoolean,
+      description: 'true if agenda item has been pinned'
+    },
     isActive: {
       type: GraphQLBoolean,
       description: 'true if not processed or deleted'
