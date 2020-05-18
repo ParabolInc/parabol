@@ -57,7 +57,7 @@ const PromptAndDescription = styled('div')({
 
 const TemplatePromptItem = (props: Props) => {
   const {dragProvided, isDragging, prompt, prompts} = props
-  const {id: promptId, description, question, groupColor} = prompt
+  const {id: promptId, description, question} = prompt
   const [isHover, setIsHover] = useState(false)
   const [isEditingDescription, setIsEditingDescription] = useState(false)
   const {submitting, submitMutation, onError, onCompleted} = useMutationProps()
@@ -89,7 +89,7 @@ const TemplatePromptItem = (props: Props) => {
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
     >
-      <EditableTemplatePromptColor groupColor={groupColor} prompt={prompt} prompts={prompts} />
+      <EditableTemplatePromptColor prompt={prompt} prompts={prompts} />
       <PromptAndDescription>
         <EditableTemplatePrompt
           isEditingDescription={isEditingDescription}
@@ -125,7 +125,6 @@ export default createFragmentContainer(TemplatePromptItem, {
       id
       question
       description
-      groupColor
     }
   `
 })

@@ -185,7 +185,7 @@ const RetroDiscussPhase = (props: Props) => {
                 </LabelContainer>
                 <ColumnInner isDesktop={isDesktop}>
                   {isDesktop ? (
-                    <DiscussPhaseReflectionGrid reflections={reflections} />
+                    <DiscussPhaseReflectionGrid meeting={meeting} />
                   ) : (
                     <ReflectionGroup
                       meeting={meeting}
@@ -216,7 +216,6 @@ graphql`
         title
         voteCount
         reflections {
-          ...DiscussPhaseReflectionGrid_reflections
           id
         }
       }
@@ -227,6 +226,7 @@ graphql`
 export default createFragmentContainer(RetroDiscussPhase, {
   meeting: graphql`
     fragment RetroDiscussPhase_meeting on RetrospectiveMeeting {
+      ...DiscussPhaseReflectionGrid_meeting
       ...DiscussPhaseSqueeze_meeting
       ...StageTimerControl_meeting
       ...ReflectionGroup_meeting

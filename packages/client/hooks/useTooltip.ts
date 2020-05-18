@@ -1,4 +1,4 @@
-import {useRef} from 'react'
+import {useEffect, useRef} from 'react'
 import {Duration} from '../types/constEnums'
 import useCoords, {MenuPosition} from './useCoords'
 import useEventCallback from './useEventCallback'
@@ -21,6 +21,11 @@ const useTooltip = <T extends HTMLElement = HTMLElement>(
 
   const tooltipPortal = useTooltipPortal(portal, targetRef, coords, portalStatus, setPortalStatus)
   const openDelayRef = useRef<number>()
+  useEffect(() => {
+    return () => {
+      window.clearTimeout(openDelayRef.current)
+    }
+  })
 
   const openTooltip = useEventCallback(() => {
     if (disabled) return

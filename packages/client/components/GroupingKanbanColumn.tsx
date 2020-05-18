@@ -69,7 +69,7 @@ const Prompt = styled(RetroPrompt)({
   marginRight: 8
 })
 
-const ColorBadge = styled('div')<{groupColor: string}>(({groupColor}) => ({
+const ColumnColorDrop = styled('div')<{groupColor: string}>(({groupColor}) => ({
   backgroundColor: groupColor,
   borderRadius: '50%',
   display: 'inline-block',
@@ -121,7 +121,7 @@ const GroupingKanbanColumn = (props: Props) => {
     <Column isExpanded={isExpanded} data-cy={`group-column-${question}`} ref={ref}>
       <ColumnHeader>
         <Prompt>
-          <ColorBadge groupColor={groupColor} />
+          <ColumnColorDrop groupColor={groupColor} />
           {question}
         </Prompt>
         {canAdd && (

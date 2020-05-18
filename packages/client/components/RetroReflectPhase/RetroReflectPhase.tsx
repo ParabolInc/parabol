@@ -56,11 +56,7 @@ const RetroReflectPhase = (props: Props) => {
               <PhaseItemColumn
                 key={prompt.id}
                 meeting={meeting}
-                retroPhaseItemId={prompt.id}
-                question={prompt.question}
-                groupColor={prompt.groupColor}
-                editorIds={prompt.editorIds}
-                description={prompt.description}
+                prompt={prompt}
                 idx={idx}
                 phaseRef={phaseRef}
                 isDesktop={isDesktop}
@@ -77,11 +73,8 @@ graphql`
   fragment RetroReflectPhase_phase on ReflectPhase {
     focusedPhaseItemId
     reflectPrompts {
+      ...PhaseItemColumn_prompt
       id
-      question
-      groupColor
-      description
-      editorIds
     }
   }
 `

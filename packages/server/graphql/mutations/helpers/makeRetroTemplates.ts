@@ -1,6 +1,6 @@
+import {PALETTE} from '../../../../client/styles/paletteV2'
 import ReflectTemplate from '../../../database/types/ReflectTemplate'
 import RetrospectivePrompt from '../../../database/types/RetrospectivePrompt'
-import {PALETTE} from '../../../../client/styles/paletteV2'
 
 const templateBase = {
   'Working & Stuck': [

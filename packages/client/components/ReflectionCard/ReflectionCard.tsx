@@ -6,10 +6,8 @@ import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import AddReactjiToReactableMutation from '~/mutations/AddReactjiToReactableMutation'
 import {ReflectionCard_meeting} from '~/__generated__/ReflectionCard_meeting.graphql'
 import useAtmosphere from '../../hooks/useAtmosphere'
-import {MenuPosition} from '../../hooks/useCoords'
 import useEditorState from '../../hooks/useEditorState'
 import useMutationProps from '../../hooks/useMutationProps'
-import useTooltip from '../../hooks/useTooltip'
 import EditReflectionMutation from '../../mutations/EditReflectionMutation'
 import RemoveReflectionMutation from '../../mutations/RemoveReflectionMutation'
 import UpdateReflectionContentMutation from '../../mutations/UpdateReflectionContentMutation'
@@ -21,6 +19,7 @@ import isTempId from '../../utils/relay/isTempId'
 import {ReflectionCard_reflection} from '../../__generated__/ReflectionCard_reflection.graphql'
 import ReflectionEditorWrapper from '../ReflectionEditorWrapper'
 import StyledError from '../StyledError'
+import ColorBadge from './ColorBadge'
 import ReactjiSection from './ReactjiSection'
 import ReflectionCardDeleteButton from './ReflectionCardDeleteButton'
 import ReflectionCardFooter from './ReflectionCardFooter'
@@ -39,24 +38,6 @@ interface Props {
   showReactji?: boolean
   dataCy?: string
 }
-
-const ColorBadge = styled('div')<{groupColor: string}>(({groupColor}) => ({
-  backgroundColor: groupColor,
-  height: 32,
-  width: 32
-}))
-
-const BadgeWrapper = styled('div')({
-  borderTopLeftRadius: 30,
-  borderBottomRightRadius: 100,
-  height: 16,
-  width: 16,
-  left: 0,
-  top: 0,
-  overflow: 'hidden',
-  position: 'absolute',
-  zIndex: 4
-})
 
 const getReadOnly = (
   reflection: {id: string; isViewerCreator: boolean | null; isEditing: boolean | null},
@@ -77,15 +58,13 @@ const ReflectionCard = (props: Props) => {
   const {meetingId, phaseItem, reactjis} = reflection
   const {question} = phaseItem
   const phaseType = meeting ? meeting.localPhase.phaseType : null
+  console.log('phaseTypez', phaseType, meeting)
   const phases = meeting ? meeting.phases : null
   const {id: reflectionId, content, retroPhaseItemId, isViewerCreator} = reflection
   const atmosphere = useAtmosphere()
   const {onCompleted, submitting, submitMutation, error, onError} = useMutationProps()
   const editorRef = useRef<HTMLTextAreaElement>(null)
   const [editorState, setEditorState] = useEditorState(content)
-  const {tooltipPortal, openTooltip, closeTooltip, originRef} = useTooltip<HTMLDivElement>(
-    MenuPosition.LOWER_LEFT
-  )
 
   const handleEditorFocus = () => {
     if (isTempId(reflectionId)) return
@@ -201,10 +180,7 @@ const ReflectionCard = (props: Props) => {
   }
   return (
     <ReflectionCardRoot data-cy={`${dataCy}-root`}>
-      <BadgeWrapper onMouseEnter={openTooltip} onMouseLeave={closeTooltip} ref={originRef}>
-        <ColorBadge groupColor={reflection.phaseItem.groupColor} />
-      </BadgeWrapper>
-      {tooltipPortal(reflection.phaseItem.question)}
+      <ColorBadge phaseType={phaseType as NewMeetingPhaseTypeEnum} reflection={reflection} />
       {showOriginFooter && !isClipped && <ReflectionCardFooter>{question}</ReflectionCardFooter>}
       <ReflectionEditorWrapper
         dataCy={`editor-wrapper`}
@@ -237,6 +213,7 @@ const ReflectionCard = (props: Props) => {
 export default createFragmentContainer(ReflectionCard, {
   reflection: graphql`
     fragment ReflectionCard_reflection on RetroReflection {
+      ...ColorBadge_reflection
       isViewerCreator
       id
       isEditing
@@ -246,7 +223,6 @@ export default createFragmentContainer(ReflectionCard, {
       content
       phaseItem {
         question
-        groupColor
       }
       reactjis {
         ...ReactjiSection_reactjis
