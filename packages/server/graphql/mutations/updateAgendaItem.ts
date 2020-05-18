@@ -44,21 +44,18 @@ export default {
     const schema = makeUpdateAgendaItemSchema()
     const {
       errors,
-      data: {id, pinned}
-      // data: {id, ...doc}
+      data: {id, ...doc}
     } = schema(updatedAgendaItem) as any
     if (Object.keys(errors).length) {
       return standardError(new Error('Failed input validation'), {userId: viewerId})
     }
-    console.log('make update', pinned)
 
     // RESOLUTION
     await r
       .table('AgendaItem')
       .get(id)
       .update({
-        // ...doc,
-        pinned,
+        ...doc,
         updatedAt: now
       })
       .run()

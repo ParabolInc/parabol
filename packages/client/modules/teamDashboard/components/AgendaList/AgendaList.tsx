@@ -42,7 +42,6 @@ const AgendaList = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {dashSearch, gotoStageId, meetingId, team} = props
   const {activeMeetings, agendaItems} = team
-  console.log('AgendaList -> agendaItems', agendaItems)
   const filteredAgendaItems = useMemo(() => {
     return dashSearch ? agendaItems.filter(({content}) => content.match(dashSearch)) : agendaItems
   }, [dashSearch, agendaItems])
