@@ -8,8 +8,10 @@ import Icon from '../../../../components/Icon'
 import IconButton from '../../../../components/IconButton'
 import MeetingSubnavItem from '../../../../components/MeetingSubnavItem'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
+import {MenuPosition} from '../../../..//hooks/useCoords'
 import useGotoStageId from '../../../../hooks/useGotoStageId'
 import useScrollIntoView from '../../../../hooks/useScrollIntoVIew'
+import useTooltip from '../../../../hooks/useTooltip'
 import RemoveAgendaItemMutation from '../../../../mutations/RemoveAgendaItemMutation'
 import UpdateAgendaItemMutation from '../../../../mutations/UpdateAgendaItemMutation'
 import {ICON_SIZE} from '../../../../styles/typographyV2'
@@ -96,6 +98,9 @@ const AgendaItem = (props: Props) => {
   const [hovering, setHovering] = useState(false)
   const {activeMeetings, agendaItem, gotoStageId, isDragging, meetingId} = props
   const {id: agendaItemId, content, pinned, teamMember} = agendaItem
+  const {tooltipPortal, openTooltip, closeTooltip, originRef: tipRef} = useTooltip<HTMLDivElement>(
+    MenuPosition.UPPER_CENTER
+  )
   const {picture} = teamMember
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
@@ -113,11 +118,10 @@ const AgendaItem = (props: Props) => {
     ref.current && ref.current.scrollIntoView({behavior: 'smooth'})
   }, [])
 
-  const handleClick = (e: React.FormEvent) => {
-    e.preventDefault()
+  const handleClick = (pinItem: boolean) => {
     UpdateAgendaItemMutation(
       atmosphere,
-      {updatedAgendaItem: {id: agendaItemId, pinned: true}},
+      {updatedAgendaItem: {id: agendaItemId, pinned: pinItem}},
       {meetingId}
     )
   }
@@ -128,10 +132,36 @@ const AgendaItem = (props: Props) => {
 
   const getIcon = () => {
     if (pinned) {
-      if (hovering) return <Icon onClick={handleClick}>{'archive'}</Icon>
-      else return <Icon onClick={handleClick}>{'menu'}</Icon>
+      if (hovering)
+        return (
+          <>
+            <Icon
+              onClick={() => handleClick(false)}
+              onMouseEnter={openTooltip}
+              onMouseLeave={closeTooltip}
+              ref={tipRef}
+            >
+              {'archive'}
+            </Icon>
+            {tooltipPortal(`This will unpin "${content}" from every meeting`)}
+          </>
+        )
+      else return <Icon>{'menu'}</Icon>
     } else {
-      if (hovering) return <Icon onClick={handleClick}>{'add'}</Icon>
+      if (hovering)
+        return (
+          <>
+            <Icon
+              onClick={() => handleClick(true)}
+              onMouseEnter={openTooltip}
+              onMouseLeave={closeTooltip}
+              ref={tipRef}
+            >
+              {'add'}
+            </Icon>
+            {tooltipPortal(`This will pin "${content}" to every meeting`)}
+          </>
+        )
       else return <Avatar hasBadge={false} picture={picture} size={24} />
     }
   }
