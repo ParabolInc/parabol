@@ -128,7 +128,6 @@ export default createFragmentContainer(AgendaList, {
       agendaItems {
         id
         content
-        pinned
         # need this for the DnD
         sortOrder
         ...AgendaItem_agendaItem

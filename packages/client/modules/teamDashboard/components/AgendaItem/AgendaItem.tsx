@@ -4,7 +4,6 @@ import React, {useEffect, useRef, useState} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {AgendaItem_activeMeetings} from '~/__generated__/AgendaItem_activeMeetings.graphql'
 import Avatar from '../../../../components/Avatar/Avatar'
-import Icon from '../../../../components/Icon'
 import IconButton from '../../../../components/IconButton'
 import MeetingSubnavItem from '../../../../components/MeetingSubnavItem'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
@@ -18,6 +17,7 @@ import {ICON_SIZE} from '../../../../styles/typographyV2'
 import {MeetingTypeEnum} from '../../../../types/graphql'
 import findStageById from '../../../../utils/meetings/findStageById'
 import {AgendaItem_agendaItem} from '../../../../__generated__/AgendaItem_agendaItem.graphql'
+import pinIcon from '../../../../styles/theme/images/icons/fa-thumbtack.svg'
 
 const AgendaItemStyles = styled('div')({
   position: 'relative',
@@ -27,8 +27,14 @@ const AgendaItemStyles = styled('div')({
   }
 })
 
-const AvatarBlock = styled('div')({
-  width: '2rem'
+const IconBlock = styled('div')({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  width: '2rem',
+  '&:hover': {
+    cursor: 'pointer'
+  }
 })
 
 const DeleteIconButton = styled(IconButton)<{disabled?: boolean}>(({disabled}) => ({
@@ -41,6 +47,11 @@ const DeleteIconButton = styled(IconButton)<{disabled?: boolean}>(({disabled}) =
   top: '.6875rem',
   transition: 'opacity .1s ease-in',
   visibility: disabled ? 'hidden' : undefined
+}))
+
+const SvgIcon = styled('img')<{unpin?: boolean}>(({unpin}) => ({
+  opacity: 0.6,
+  transform: unpin ? 'rotate(180deg) scaleX(-1)' : undefined
 }))
 
 const getItemProps = (
@@ -99,7 +110,7 @@ const AgendaItem = (props: Props) => {
   const {activeMeetings, agendaItem, gotoStageId, isDragging, meetingId} = props
   const {id: agendaItemId, content, pinned, teamMember} = agendaItem
   const {tooltipPortal, openTooltip, closeTooltip, originRef: tipRef} = useTooltip<HTMLDivElement>(
-    MenuPosition.UPPER_CENTER
+    content.length > 35 ? MenuPosition.UPPER_LEFT : MenuPosition.UPPER_CENTER
   )
   const {picture} = teamMember
   const atmosphere = useAtmosphere()
@@ -118,10 +129,10 @@ const AgendaItem = (props: Props) => {
     ref.current && ref.current.scrollIntoView({behavior: 'smooth'})
   }, [])
 
-  const handleClick = (pinItem: boolean) => {
+  const handleClick = () => {
     UpdateAgendaItemMutation(
       atmosphere,
-      {updatedAgendaItem: {id: agendaItemId, pinned: pinItem}},
+      {updatedAgendaItem: {id: agendaItemId, pinned: !pinned}},
       {meetingId}
     )
   }
@@ -135,31 +146,29 @@ const AgendaItem = (props: Props) => {
       if (hovering)
         return (
           <>
-            <Icon
-              onClick={() => handleClick(false)}
+            <SvgIcon
+              alt='unpinIcon'
               onMouseEnter={openTooltip}
               onMouseLeave={closeTooltip}
-              ref={tipRef}
-            >
-              {'archive'}
-            </Icon>
-            {tooltipPortal(`This will unpin "${content}" from every meeting`)}
+              src={pinIcon}
+              unpin={true}
+            />
+            {tooltipPortal(`Unpin "${content}" from every meeting`)}
           </>
         )
-      else return <Icon>{'menu'}</Icon>
+      else return <SvgIcon src={pinIcon} alt='pinIcon' unpin={false} />
     } else {
       if (hovering)
         return (
           <>
-            <Icon
-              onClick={() => handleClick(true)}
+            <SvgIcon
+              alt='pinIcon'
               onMouseEnter={openTooltip}
               onMouseLeave={closeTooltip}
-              ref={tipRef}
-            >
-              {'add'}
-            </Icon>
-            {tooltipPortal(`This will pin "${content}" to every meeting`)}
+              src={pinIcon}
+              unpin={false}
+            />
+            {tooltipPortal(`Pin "${content}" to every meeting`)}
           </>
         )
       else return <Avatar hasBadge={false} picture={picture} size={24} />
@@ -170,7 +179,11 @@ const AgendaItem = (props: Props) => {
     <AgendaItemStyles title={content}>
       <MeetingSubnavItem
         label={content}
-        metaContent={<AvatarBlock>{getIcon()}</AvatarBlock>}
+        metaContent={
+          <IconBlock onClick={handleClick} ref={tipRef}>
+            {getIcon()}
+          </IconBlock>
+        }
         isDisabled={isDisabled}
         onClick={onClick}
         isActive={isActive}

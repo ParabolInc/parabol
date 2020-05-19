@@ -108,6 +108,7 @@ const AgendaAndTasks = (props: Props) => {
   const team = viewer.team!
   const teamMember = viewer.teamMember!
   const {hideAgenda} = teamMember
+  console.log('AgendaAndTasks -> hideAgenda', hideAgenda)
   const {teamId, teamName} = team
   useStoreQueryRetry(retry)
   useDocumentTitle(`Team Dashboard | ${teamName}`, teamName)
