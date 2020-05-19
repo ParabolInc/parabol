@@ -39,7 +39,6 @@ const ColorBadge = (props: Props) => {
       disabled: phaseType !== NewMeetingPhaseTypeEnum.discuss
     }
   )
-  console.log('phaseTYpe', phaseType, NewMeetingPhaseTypeEnum.discuss)
   if (phaseType === NewMeetingPhaseTypeEnum.reflect) return null
   return (
     <>

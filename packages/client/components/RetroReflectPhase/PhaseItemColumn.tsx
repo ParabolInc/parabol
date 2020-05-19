@@ -1,10 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {EditorState} from 'draft-js'
-/**
- * Renders a column for a particular "type" of reflection
- * (e.g. positive or negative) during the Reflect phase of the retro meeting.
- */
 import React, {useEffect, useMemo, useRef} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {PhaseItemColumn_prompt} from '~/__generated__/PhaseItemColumn_prompt.graphql'
@@ -57,7 +53,9 @@ const ColumnContent = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   height: '100%',
   justifyContent: isDesktop ? 'space-between' : 'space-between',
   margin: '0 auto',
-  width: ElementWidth.REFLECTION_CARD
+  width: ElementWidth.REFLECTION_CARD,
+  // must be greater than the highlighted el
+  zIndex: 1
 }))
 
 const HeaderAndEditor = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
@@ -110,8 +108,6 @@ const PromptHeader = styled('div')<{isClickable: boolean}>(({isClickable}) => ({
   padding: `0 0 ${Gutters.ROW_INNER_GUTTER} 0`,
   position: 'relative',
   userSelect: 'none',
-  // transition: `all 150ms ${DECELERATE}`,
-  // transform: `translateX(${isFocused ? Gutters.REFLECTION_INNER_GUTTER_HORIZONTAL : 0})`,
   width: '100%'
 }))
 

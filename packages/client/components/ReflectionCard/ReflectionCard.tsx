@@ -58,7 +58,6 @@ const ReflectionCard = (props: Props) => {
   const {meetingId, phaseItem, reactjis} = reflection
   const {question} = phaseItem
   const phaseType = meeting ? meeting.localPhase.phaseType : null
-  console.log('phaseTypez', phaseType, meeting)
   const phases = meeting ? meeting.phases : null
   const {id: reflectionId, content, retroPhaseItemId, isViewerCreator} = reflection
   const atmosphere = useAtmosphere()
