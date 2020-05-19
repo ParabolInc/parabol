@@ -160,7 +160,7 @@ const AgendaItem = (props: Props) => {
             {tooltipPortal(`Unpin "${content}" from every meeting`)}
           </>
         )
-      else return <SvgIcon src={pinIcon} alt='pinIcon' pinned />
+      else return <SvgIcon src={pinIcon} alt='pinnedIcon' pinned />
     } else {
       if (hovering)
         return (
