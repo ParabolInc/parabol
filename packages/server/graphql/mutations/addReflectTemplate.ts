@@ -6,6 +6,7 @@ import standardError from '../../utils/standardError'
 import AddReflectTemplatePayload from '../types/AddReflectTemplatePayload'
 import makeRetroTemplates from './helpers/makeRetroTemplates'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import {PALETTE} from '../../../client/styles/paletteV2'
 
 const addReflectTemplate = {
   description: 'Add a new template full of prompts',
@@ -41,7 +42,15 @@ const addReflectTemplate = {
     }
 
     // RESOLUTION
-    const base = {'*New Template': [{question: 'New prompt', description: ''}]}
+    const base = {
+      '*New Template': [
+        {
+          question: 'New prompt',
+          description: '',
+          groupColor: PALETTE.PROMPT_GREEN
+        }
+      ]
+    }
     const {phaseItems, templates} = makeRetroTemplates(teamId, base)
 
     await r({

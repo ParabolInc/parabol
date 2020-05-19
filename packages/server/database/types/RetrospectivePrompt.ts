@@ -7,6 +7,7 @@ interface Input {
   sortOrder: number
   question: string
   description: string
+  groupColor: string
   title?: string
 }
 
@@ -14,6 +15,7 @@ export default class RetrospectivePrompt {
   id: string
   createdAt = new Date()
   description: string
+  groupColor: string
   isActive = true
   phaseItemType: CustomPhaseItemTypeEnum
   sortOrder: number
@@ -24,7 +26,7 @@ export default class RetrospectivePrompt {
   updatedAt = new Date()
 
   constructor(input: Input) {
-    const {teamId, templateId, sortOrder, question, description, title} = input
+    const {teamId, templateId, sortOrder, question, description, groupColor, title} = input
     this.id = shortid.generate()
     this.phaseItemType = CustomPhaseItemTypeEnum.retroPhaseItem
     this.sortOrder = sortOrder
@@ -32,6 +34,7 @@ export default class RetrospectivePrompt {
     this.templateId = templateId
     this.question = question
     this.description = description || ''
+    this.groupColor = groupColor
     this.title = title || question
   }
 }

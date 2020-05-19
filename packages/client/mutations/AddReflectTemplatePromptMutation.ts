@@ -19,6 +19,7 @@ graphql`
       id
       description
       question
+      groupColor
       sortOrder
       templateId
     }

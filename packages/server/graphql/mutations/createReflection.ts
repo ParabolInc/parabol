@@ -75,6 +75,7 @@ export default {
       content: normalizedContent,
       plaintextContent,
       entities,
+      groupColor: '#FFFFFF',
       meetingId,
       retroPhaseItemId,
       reflectionGroupId,

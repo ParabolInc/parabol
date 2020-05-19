@@ -1,29 +1,24 @@
-import {PhaseItemColumn_meeting} from '../../__generated__/PhaseItemColumn_meeting.graphql'
-/**
- * Renders a column for a particular "type" of reflection
- * (e.g. positive or negative) during the Reflect phase of the retro meeting.
- */
-import React, {useEffect, useMemo, useRef} from 'react'
 import styled from '@emotion/styled'
-import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import Icon from '../Icon'
+import {EditorState} from 'draft-js'
+import React, {useEffect, useMemo, useRef} from 'react'
+import {createFragmentContainer} from 'react-relay'
+import {PhaseItemColumn_prompt} from '~/__generated__/PhaseItemColumn_prompt.graphql'
+import useAtmosphere from '../../hooks/useAtmosphere'
+import {MenuPosition} from '../../hooks/useCoords'
+import useRefState from '../../hooks/useRefState'
+import useTooltip from '../../hooks/useTooltip'
+import SetPhaseFocusMutation from '../../mutations/SetPhaseFocusMutation'
+import {DECELERATE} from '../../styles/animation'
+import {PALETTE} from '../../styles/paletteV2'
+import {BezierCurve, ElementWidth, Gutters} from '../../types/constEnums'
+import {NewMeetingPhaseTypeEnum} from '../../types/graphql'
+import getNextSortOrder from '../../utils/getNextSortOrder'
+import {PhaseItemColumn_meeting} from '../../__generated__/PhaseItemColumn_meeting.graphql'
+import RetroPrompt from '../RetroPrompt'
 import PhaseItemChits from './PhaseItemChits'
 import PhaseItemEditor from './PhaseItemEditor'
 import ReflectionStack from './ReflectionStack'
-import RetroPrompt from '../RetroPrompt'
-import SetPhaseFocusMutation from '../../mutations/SetPhaseFocusMutation'
-import {DECELERATE} from '../../styles/animation'
-import getNextSortOrder from '../../utils/getNextSortOrder'
-import {PALETTE} from '../../styles/paletteV2'
-import {ICON_SIZE} from '../../styles/typographyV2'
-import useAtmosphere from '../../hooks/useAtmosphere'
-import {EditorState} from 'draft-js'
-import {ElementWidth, Gutters} from '../../types/constEnums'
-import useRefState from '../../hooks/useRefState'
-import useTooltip from '../../hooks/useTooltip'
-import {MenuPosition} from '../../hooks/useCoords'
-import {NewMeetingPhaseTypeEnum} from '../../types/graphql'
 
 const ColumnWrapper = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   alignItems: 'center',
@@ -35,24 +30,21 @@ const ColumnWrapper = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   minHeight: isDesktop ? undefined : '100%'
 }))
 
-const ColumnHighlight = styled('div')<{isFocused: boolean; isDesktop: boolean}>(
-  ({isDesktop, isFocused}) => ({
-    backgroundColor: isFocused
-      ? PALETTE.BACKGROUND_REFLECTION_FOCUSED
-      : PALETTE.BACKGROUND_REFLECTION,
-    borderRadius: 8,
-    boxShadow: isFocused ? `inset 0 0 0 3px ${PALETTE.BORDER_FACILITATOR_FOCUS}` : undefined,
-    display: 'flex',
-    flex: 1,
-    flexDirection: 'column',
-    flexShrink: 0,
-    height: isDesktop ? undefined : '100%',
-    maxHeight: isDesktop ? 600 : undefined,
-    padding: `${Gutters.ROW_INNER_GUTTER} ${Gutters.COLUMN_INNER_GUTTER}`,
-    transition: `background 150ms ${DECELERATE}`,
-    width: '100%'
-  })
-)
+const ColumnHighlight = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
+  backgroundColor: PALETTE.BACKGROUND_REFLECTION,
+  borderRadius: 8,
+  display: 'flex',
+  flex: 1,
+  flexDirection: 'column',
+  flexShrink: 0,
+  height: isDesktop ? undefined : '100%',
+  maxHeight: isDesktop ? 600 : undefined,
+  overflow: 'hidden',
+  padding: `${Gutters.ROW_INNER_GUTTER} ${Gutters.COLUMN_INNER_GUTTER}`,
+  position: 'relative',
+  transition: `background 150ms ${DECELERATE}`,
+  width: '100%'
+}))
 
 const ColumnContent = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   display: 'flex',
@@ -61,7 +53,9 @@ const ColumnContent = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   height: '100%',
   justifyContent: isDesktop ? 'space-between' : 'space-between',
   margin: '0 auto',
-  width: ElementWidth.REFLECTION_CARD
+  width: ElementWidth.REFLECTION_CARD,
+  // must be greater than the highlighted el
+  zIndex: 1
 }))
 
 const HeaderAndEditor = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
@@ -84,22 +78,34 @@ const Description = styled('div')({
   lineHeight: '16px'
 })
 
-const FocusArrow = styled(Icon)<{isFocused: boolean}>(({isFocused}) => ({
-  color: PALETTE.EMPHASIS_WARM,
-  display: 'block',
-  fontSize: ICON_SIZE.MD24,
-  height: ICON_SIZE.MD24,
-  left: -8,
-  lineHeight: 1,
-  opacity: isFocused ? 1 : 0,
-  position: 'absolute',
-  transition: `all 150ms ${DECELERATE}`,
-  transform: `translateX(${isFocused ? 0 : '-100%'})`
-}))
+const ColorSpacer = styled('div')({
+  position: 'relative',
+  height: 8,
+  width: 8,
+  display: 'inline-block',
+  verticalAlign: 'middle',
+  marginRight: 4
+})
+const ColumnColorDrop = styled('div')<{groupColor: string; isFocused: boolean}>(
+  ({groupColor, isFocused}) => ({
+    backgroundColor: groupColor,
+    borderRadius: '50%',
+    display: 'inline-block',
+    verticalAlign: 'middle',
+    position: 'absolute',
+    marginRight: 8,
+    height: 8,
+    width: 8,
+    top: 20, // must be out of layout  so it doesn't color the text
+    transform: `scale(${isFocused ? 163 : 1})`,
+    transition: `all 300ms ${BezierCurve.DECELERATE}`,
+    opacity: isFocused ? 0.25 : 1
+  })
+)
 
 const PromptHeader = styled('div')<{isClickable: boolean}>(({isClickable}) => ({
   cursor: isClickable ? 'pointer' : undefined,
-  padding: `0 0 ${Gutters.ROW_INNER_GUTTER} ${Gutters.REFLECTION_INNER_GUTTER_HORIZONTAL}`,
+  padding: `0 0 ${Gutters.ROW_INNER_GUTTER} 0`,
   position: 'relative',
   userSelect: 'none',
   width: '100%'
@@ -129,25 +135,14 @@ export interface ReflectColumnCardInFlight {
 interface Props {
   idx: number
   isDesktop: boolean
-  description: string | null
-  editorIds: readonly string[] | null
   meeting: PhaseItemColumn_meeting
   phaseRef: React.RefObject<HTMLDivElement>
-  retroPhaseItemId: string
-  question: string
+  prompt: PhaseItemColumn_prompt
 }
 
 const PhaseItemColumn = (props: Props) => {
-  const {
-    retroPhaseItemId,
-    description,
-    editorIds,
-    idx,
-    meeting,
-    phaseRef,
-    question,
-    isDesktop
-  } = props
+  const {idx, meeting, phaseRef, prompt, isDesktop} = props
+  const {id: retroPhaseItemId, editorIds, question, groupColor, description} = prompt
   const {meetingId, facilitatorUserId, localPhase, phases, reflectionGroups} = meeting
   const {phaseId, focusedPhaseItemId} = localPhase
   const groupPhase = phases.find((phase) => phase.phaseType === NewMeetingPhaseTypeEnum.group)!
@@ -207,12 +202,13 @@ const PhaseItemColumn = (props: Props) => {
 
   return (
     <ColumnWrapper data-cy={`reflection-column-${question}`} isDesktop={isDesktop}>
-      <ColumnHighlight isDesktop={isDesktop} isFocused={isFocused}>
+      <ColumnHighlight isDesktop={isDesktop}>
+        <ColumnColorDrop isFocused={isFocused} groupColor={groupColor} />
         <ColumnContent isDesktop={isDesktop}>
           <HeaderAndEditor isDesktop={isDesktop}>
             <PromptHeader isClickable={isFacilitator && !isComplete} onClick={setColumnFocus}>
-              <FocusArrow isFocused={isFocused}>arrow_forward</FocusArrow>
               <RetroPrompt onMouseEnter={openTooltip} onMouseLeave={closeTooltip} ref={originRef}>
+                <ColorSpacer />
                 {question}
               </RetroPrompt>
               {tooltipPortal(<div>Tap to highlight prompt for everybody</div>)}
@@ -260,6 +256,15 @@ const PhaseItemColumn = (props: Props) => {
 }
 
 export default createFragmentContainer(PhaseItemColumn, {
+  prompt: graphql`
+    fragment PhaseItemColumn_prompt on RetroPhaseItem {
+      id
+      description
+      editorIds
+      groupColor
+      question
+    }
+  `,
   meeting: graphql`
     fragment PhaseItemColumn_meeting on RetrospectiveMeeting {
       ...ReflectionStack_meeting
@@ -294,6 +299,7 @@ export default createFragmentContainer(PhaseItemColumn, {
           ...DraggableReflectionCard_reflection
           ...DraggableReflectionCard_staticReflections
           content
+          groupColor
           id
           isEditing
           isViewerCreator

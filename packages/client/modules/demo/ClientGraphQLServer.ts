@@ -4,6 +4,7 @@ import ms from 'ms'
 import {Variables} from 'relay-runtime'
 import StrictEventEmitter from 'strict-event-emitter-types'
 import stringSimilarity from 'string-similarity'
+import {PALETTE} from '~/styles/paletteV2'
 import {MeetingSettingsThreshold, RetroDemo, SubscriptionChannel} from '../../types/constEnums'
 import {
   DragReflectionDropTargetTypeEnum,
@@ -415,6 +416,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         createdAt: now,
         creatorId: userId,
         content: normalizedContent,
+        groupColor: PALETTE.PROMPT_GREEN,
         plaintextContent,
         dragContext: null,
         editorIds: [],

@@ -19,6 +19,7 @@ import isTempId from '../../utils/relay/isTempId'
 import {ReflectionCard_reflection} from '../../__generated__/ReflectionCard_reflection.graphql'
 import ReflectionEditorWrapper from '../ReflectionEditorWrapper'
 import StyledError from '../StyledError'
+import ColorBadge from './ColorBadge'
 import ReactjiSection from './ReactjiSection'
 import ReflectionCardDeleteButton from './ReflectionCardDeleteButton'
 import ReflectionCardFooter from './ReflectionCardFooter'
@@ -178,6 +179,7 @@ const ReflectionCard = (props: Props) => {
   }
   return (
     <ReflectionCardRoot data-cy={`${dataCy}-root`}>
+      <ColorBadge phaseType={phaseType as NewMeetingPhaseTypeEnum} reflection={reflection} />
       {showOriginFooter && !isClipped && <ReflectionCardFooter>{question}</ReflectionCardFooter>}
       <ReflectionEditorWrapper
         dataCy={`editor-wrapper`}
@@ -210,6 +212,7 @@ const ReflectionCard = (props: Props) => {
 export default createFragmentContainer(ReflectionCard, {
   reflection: graphql`
     fragment ReflectionCard_reflection on RetroReflection {
+      ...ColorBadge_reflection
       isViewerCreator
       id
       isEditing

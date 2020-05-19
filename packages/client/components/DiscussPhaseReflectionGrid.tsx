@@ -1,11 +1,11 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import {useCoverable} from '~/hooks/useControlBarCovers'
 import React, {useRef} from 'react'
 import {createFragmentContainer} from 'react-relay'
+import {useCoverable} from '~/hooks/useControlBarCovers'
 import {MeetingControlBarEnum} from '~/types/constEnums'
+import {DiscussPhaseReflectionGrid_meeting} from '~/__generated__/DiscussPhaseReflectionGrid_meeting.graphql'
 import {meetingGridMinWidth} from '../styles/meeting'
-import {DiscussPhaseReflectionGrid_reflections} from '../__generated__/DiscussPhaseReflectionGrid_reflections.graphql'
 import MasonryCSSGrid from './MasonryCSSGrid'
 import ReflectionCard from './ReflectionCard/ReflectionCard'
 
@@ -16,13 +16,17 @@ const GridWrapper = styled('div')<{isExpanded: boolean}>(({isExpanded}) => ({
 }))
 
 interface Props {
-  reflections: DiscussPhaseReflectionGrid_reflections
+  meeting: DiscussPhaseReflectionGrid_meeting
 }
 
 const DiscussPhaseReflectionGrid = (props: Props) => {
-  const {reflections} = props
+  const {meeting} = props
+  const {localStage} = meeting
+  const {reflectionGroup} = localStage
+  const {reflections} = reflectionGroup!
   const ref = useRef<HTMLDivElement>(null)
   const isExpanded = useCoverable('reflections', ref, MeetingControlBarEnum.HEIGHT + 16)
+  if (!reflections) return null
   return (
     <GridWrapper ref={ref} isExpanded={isExpanded}>
       <MasonryCSSGrid colWidth={meetingGridMinWidth} gap={12}>
@@ -34,7 +38,7 @@ const DiscussPhaseReflectionGrid = (props: Props) => {
                   showReactji
                   showOriginFooter
                   reflection={reflection}
-                  meeting={null}
+                  meeting={meeting}
                 />
               </div>
             )
@@ -46,10 +50,31 @@ const DiscussPhaseReflectionGrid = (props: Props) => {
 }
 
 export default createFragmentContainer(DiscussPhaseReflectionGrid, {
-  reflections: graphql`
-    fragment DiscussPhaseReflectionGrid_reflections on RetroReflection @relay(plural: true) {
-      id
-      ...ReflectionCard_reflection
+  meeting: graphql`
+    fragment DiscussPhaseReflectionGrid_meeting on RetrospectiveMeeting {
+      ...ReflectionCard_meeting
+      localStage {
+        ... on RetroDiscussStage {
+          reflectionGroup {
+            reflections {
+              ...ReflectionCard_reflection
+              id
+            }
+          }
+        }
+      }
+      phases {
+        stages {
+          ... on RetroDiscussStage {
+            reflectionGroup {
+              reflections {
+                ...ReflectionCard_reflection
+                id
+              }
+            }
+          }
+        }
+      }
     }
   `
 })

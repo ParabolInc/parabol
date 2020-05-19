@@ -1,14 +1,14 @@
-import {commitMutation} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
+import {commitMutation} from 'react-relay'
 import {Disposable} from 'relay-runtime'
 import Atmosphere from '../Atmosphere'
-import createProxyRecord from '../utils/relay/createProxyRecord'
 import {IAddReflectTemplateOnMutationArguments} from '../types/graphql'
 import {CompletedHandler, ErrorHandler, SharedUpdater} from '../types/relayMutations'
+import createProxyRecord from '../utils/relay/createProxyRecord'
 import getCachedRecord from '../utils/relay/getCachedRecord'
-import handleAddReflectTemplate from './handlers/handleAddReflectTemplate'
-import {AddReflectTemplateMutation_team} from '../__generated__/AddReflectTemplateMutation_team.graphql'
 import {AddReflectTemplateMutation as IAddReflectTemplateMutation} from '../__generated__/AddReflectTemplateMutation.graphql'
+import {AddReflectTemplateMutation_team} from '../__generated__/AddReflectTemplateMutation_team.graphql'
+import handleAddReflectTemplate from './handlers/handleAddReflectTemplate'
 
 graphql`
   fragment AddReflectTemplateMutation_team on AddReflectTemplatePayload {
@@ -18,6 +18,7 @@ graphql`
       teamId
       prompts {
         description
+        groupColor
         question
         sortOrder
       }

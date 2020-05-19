@@ -40,6 +40,11 @@ const RetroPhaseItem = new GraphQLObjectType<any, GQLContext>({
         'The description to the question for further context. A long version of the question.',
       type: new GraphQLNonNull(GraphQLString),
       resolve: ({description}) => description || ''
+    },
+    groupColor: {
+      description: 'The color used to visually group a phase item.',
+      type: new GraphQLNonNull(GraphQLString),
+      resolve: ({groupColor}) => groupColor || '#FFFFFF'
     }
   })
 })

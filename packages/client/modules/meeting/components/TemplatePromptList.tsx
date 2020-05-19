@@ -1,20 +1,24 @@
-import {TemplatePromptList_prompts} from '../../../__generated__/TemplatePromptList_prompts.graphql'
+import styled from '@emotion/styled'
+import graphql from 'babel-plugin-relay/macro'
 import React, {Component} from 'react'
 import {DragDropContext, Draggable, Droppable} from 'react-beautiful-dnd'
-import styled from '@emotion/styled'
 import {createFragmentContainer} from 'react-relay'
-import graphql from 'babel-plugin-relay/macro'
 import withAtmosphere, {
   WithAtmosphereProps
 } from '../../../decorators/withAtmosphere/withAtmosphere'
 import MoveReflectTemplatePromptMutation from '../../../mutations/MoveReflectTemplatePromptMutation'
-import withMutationProps, {WithMutationProps} from '../../../utils/relay/withMutationProps'
-import TemplatePromptItem from './TemplatePromptItem'
 import dndNoise from '../../../utils/dndNoise'
+import withMutationProps, {WithMutationProps} from '../../../utils/relay/withMutationProps'
+import {TemplatePromptList_prompts} from '../../../__generated__/TemplatePromptList_prompts.graphql'
+import TemplatePromptItem from './TemplatePromptItem'
 
 interface Props extends WithAtmosphereProps, WithMutationProps {
   prompts: TemplatePromptList_prompts
   templateId: string
+}
+
+interface State {
+  scrollOffset: number
 }
 
 const PromptList = styled('ul')({
@@ -27,8 +31,7 @@ const PromptList = styled('ul')({
 
 const TEMPLATE_PROMPT = 'TEMPLATE_PROMPT'
 
-class TemplatePromptList extends Component<Props> {
-  const
+class TemplatePromptList extends Component<Props, State> {
   onDragEnd = (result) => {
     const {source, destination} = result
     const {atmosphere, prompts, templateId} = this.props
@@ -76,7 +79,6 @@ class TemplatePromptList extends Component<Props> {
                         {(dragProvided, dragSnapshot) => {
                           return (
                             <TemplatePromptItem
-                              canRemove={prompts.length > 1}
                               prompt={prompt}
                               prompts={prompts}
                               isDragging={dragSnapshot.isDragging}
@@ -104,8 +106,9 @@ export default createFragmentContainer(withAtmosphere(withMutationProps(Template
       id
       sortOrder
       question
+      groupColor
       ...TemplatePromptItem_prompt
-      ...EditableTemplatePrompt_prompts
+      ...TemplatePromptItem_prompts
     }
   `
 })

@@ -1,24 +1,24 @@
-import {ReflectionGroup_meeting} from '../../__generated__/ReflectionGroup_meeting.graphql'
-import {ReflectionGroup_reflectionGroup} from '../../__generated__/ReflectionGroup_reflectionGroup.graphql'
-import React, {RefObject, useEffect, useMemo, useRef, useState} from 'react'
 import styled from '@emotion/styled'
-import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import {NewMeetingPhaseTypeEnum} from '../../types/graphql'
-import DraggableReflectionCard from './DraggableReflectionCard'
+import React, {RefObject, useEffect, useMemo, useRef, useState} from 'react'
+import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
+import useAtmosphere from '../../hooks/useAtmosphere'
+import useEventCallback from '../../hooks/useEventCallback'
+import useExpandedReflections from '../../hooks/useExpandedReflections'
 import {
   DragAttribute,
   ElementWidth,
   ReflectionStackPerspective,
   Times
 } from '../../types/constEnums'
+import {NewMeetingPhaseTypeEnum} from '../../types/graphql'
+import {GROUP} from '../../utils/constants'
+import {ReflectionGroup_meeting} from '../../__generated__/ReflectionGroup_meeting.graphql'
+import {ReflectionGroup_reflectionGroup} from '../../__generated__/ReflectionGroup_reflectionGroup.graphql'
+import {SwipeColumn} from '../GroupingKanban'
 import ReflectionGroupHeader from '../ReflectionGroupHeader'
 import ExpandedReflectionStack from '../RetroReflectPhase/ExpandedReflectionStack'
-import useExpandedReflections from '../../hooks/useExpandedReflections'
-import {GROUP} from '../../utils/constants'
-import useAtmosphere from '../../hooks/useAtmosphere'
-import {SwipeColumn} from '../GroupingKanban'
-import useEventCallback from '../../hooks/useEventCallback'
+import DraggableReflectionCard from './DraggableReflectionCard'
 
 const CardStack = styled('div')({
   position: 'relative'
