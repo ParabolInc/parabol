@@ -1,6 +1,8 @@
 import styled from '@emotion/styled'
 
 const RetroPrompt = styled('div')({
+  alignItems: 'center',
+  display: 'flex',
   fontSize: 18,
   fontStyle: 'italic',
   fontWeight: 600,

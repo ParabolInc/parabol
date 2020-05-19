@@ -83,13 +83,12 @@ const ColorSpacer = styled('div')({
   position: 'relative',
   height: 8,
   width: 8,
-  display: 'inline-block',
-  verticalAlign: 'middle',
   marginRight: 8
 })
 const ColumnColorDrop = styled('div')<{groupColor: string; isFocused: boolean}>(
   ({groupColor, isFocused}) => ({
     backgroundColor: groupColor,
+    boxShadow: `0 0 0 1px ${PALETTE.BACKGROUND_MAIN}`,
     borderRadius: '50%',
     display: 'inline-block',
     verticalAlign: 'middle',
@@ -100,7 +99,7 @@ const ColumnColorDrop = styled('div')<{groupColor: string; isFocused: boolean}>(
     top: 20, // must be out of layout  so it doesn't color the text
     transform: `scale(${isFocused ? 163 : 1})`,
     transition: `all 300ms ${BezierCurve.DECELERATE}`,
-    opacity: isFocused ? 0.25 : 1
+    opacity: isFocused ? 0.35 : 1
   })
 )
 
