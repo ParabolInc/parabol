@@ -16,7 +16,6 @@ import {
   Breakpoint,
   DragAttribute,
   ElementWidth,
-  Gutters,
   MeetingControlBarEnum
 } from '../types/constEnums'
 import {NewMeetingPhaseTypeEnum} from '../types/graphql'
@@ -51,7 +50,7 @@ const ColumnHeader = styled('div')({
   lineHeight: '24px',
   margin: '0 auto',
   maxWidth: ElementWidth.REFLECTION_CARD_PADDED,
-  padding: `12px 0 0 ${Gutters.REFLECTION_INNER_GUTTER_HORIZONTAL}`,
+  paddingTop: 12,
   width: '100%'
 })
 
@@ -66,14 +65,15 @@ const ColumnBody = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
 }))
 
 const Prompt = styled(RetroPrompt)({
+  alignItems: 'center',
+  display: 'flex',
   marginRight: 8
 })
 
 const ColumnColorDrop = styled('div')<{groupColor: string}>(({groupColor}) => ({
   backgroundColor: groupColor,
   borderRadius: '50%',
-  display: 'inline-block',
-  verticalAlign: 'middle',
+  boxShadow: `0 0 0 1px ${PALETTE.BACKGROUND_MAIN}`,
   marginRight: 8,
   height: 8,
   width: 8

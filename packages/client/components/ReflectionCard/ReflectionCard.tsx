@@ -22,7 +22,6 @@ import StyledError from '../StyledError'
 import ColorBadge from './ColorBadge'
 import ReactjiSection from './ReactjiSection'
 import ReflectionCardDeleteButton from './ReflectionCardDeleteButton'
-import ReflectionCardFooter from './ReflectionCardFooter'
 import ReflectionCardRoot from './ReflectionCardRoot'
 
 const StyledReacjis = styled(ReactjiSection)({
@@ -54,9 +53,8 @@ const getReadOnly = (
 }
 
 const ReflectionCard = (props: Props) => {
-  const {showOriginFooter, meeting, reflection, isClipped, stackCount, showReactji, dataCy} = props
-  const {meetingId, phaseItem, reactjis} = reflection
-  const {question} = phaseItem
+  const {meeting, reflection, isClipped, stackCount, showReactji, dataCy} = props
+  const {meetingId, reactjis} = reflection
   const phaseType = meeting ? meeting.localPhase.phaseType : null
   const phases = meeting ? meeting.phases : null
   const {id: reflectionId, content, retroPhaseItemId, isViewerCreator} = reflection
@@ -180,7 +178,6 @@ const ReflectionCard = (props: Props) => {
   return (
     <ReflectionCardRoot data-cy={`${dataCy}-root`}>
       <ColorBadge phaseType={phaseType as NewMeetingPhaseTypeEnum} reflection={reflection} />
-      {showOriginFooter && !isClipped && <ReflectionCardFooter>{question}</ReflectionCardFooter>}
       <ReflectionEditorWrapper
         dataCy={`editor-wrapper`}
         isClipped={isClipped}
@@ -220,9 +217,6 @@ export default createFragmentContainer(ReflectionCard, {
       reflectionGroupId
       retroPhaseItemId
       content
-      phaseItem {
-        question
-      }
       reactjis {
         ...ReactjiSection_reactjis
         id

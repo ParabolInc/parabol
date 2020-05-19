@@ -6,17 +6,24 @@ import {MenuPosition} from '~/hooks/useCoords'
 import useTooltip from '~/hooks/useTooltip'
 import {NewMeetingPhaseTypeEnum} from '~/types/graphql'
 import {ColorBadge_reflection} from '~/__generated__/ColorBadge_reflection.graphql'
+
+const DROP_SIZE = 32
+const DROP_SIZE_HALF = DROP_SIZE / 2
+
 const ColorDrop = styled('div')<{groupColor: string}>(({groupColor}) => ({
   backgroundColor: groupColor,
-  height: 32,
-  width: 32
+  borderRadius: 100,
+  height: DROP_SIZE,
+  left: -DROP_SIZE_HALF,
+  position: 'absolute',
+  top: -DROP_SIZE_HALF,
+  width: DROP_SIZE
 }))
 
 const BadgeWrapper = styled('div')({
-  borderTopLeftRadius: 30,
-  borderBottomRightRadius: 100,
-  height: 16,
-  width: 16,
+  borderRadius: '4px 0 0 0',
+  height: DROP_SIZE_HALF,
+  width: DROP_SIZE_HALF,
   left: 0,
   top: 0,
   overflow: 'hidden',
