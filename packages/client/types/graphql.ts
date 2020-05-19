@@ -6629,12 +6629,12 @@ export interface IUpdateAgendaItemInput {
   content?: string | null
 
   /**
-   * true if agenda item has been pinned
+   * True if agenda item has been pinned
    */
   pinned?: boolean | null
 
   /**
-   * true if not processed or deleted
+   * True if not processed or deleted
    */
   isActive?: boolean | null
 

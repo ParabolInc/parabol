@@ -51,10 +51,10 @@ const IconBlock = styled('div')({
 
 const SvgIcon = styled('img')<{pinned?: boolean}>(({pinned}) => ({
   opacity: 0.6,
-  transform: pinned ? 'rotate(45deg) scaleX(-1)' : null,
+  transform: pinned ? 'rotate(45deg) scaleX(-1)' : undefined,
   transition: 'transform .75s',
   '&:hover': {
-    transform: pinned ? 'rotate(180deg) scaleX(-1)' : null
+    transform: pinned ? 'rotate(180deg) scaleX(-1)' : undefined
   }
 }))
 
