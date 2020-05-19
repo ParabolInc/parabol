@@ -11,9 +11,15 @@ const CommentAuthorOptionsDropdown = lazyPreload(() =>
   import(/* webpackChunkName: 'CommentAuthorOptionsDropdown' */ './CommentAuthorOptionsDropdown')
 )
 
+const StyledButton = styled(PlainButton)({
+  ':hover, :focus, :active': {
+    color: PALETTE.TEXT_MAIN
+  }
+})
+
 const StyledIcon = styled(Icon)({
   borderRadius: 24,
-  color: PALETTE.TEXT_GRAY,
+  color: 'inherit',
   display: 'block',
   flexShrink: 0,
   fontSize: 18,
@@ -34,7 +40,7 @@ const CommentAuthorOptionsButton = (props: Props) => {
   const {commentId, editComment, dataCy} = props
   const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT)
   return (
-    <PlainButton
+    <StyledButton
       data-cy={`${dataCy}-dropdown-menu`}
       onMouseEnter={CommentAuthorOptionsDropdown.preload}
       ref={originRef}
@@ -48,7 +54,7 @@ const CommentAuthorOptionsButton = (props: Props) => {
           editComment={editComment}
         />
       )}
-    </PlainButton>
+    </StyledButton>
   )
 }
 
