@@ -45,6 +45,7 @@ const ColumnHighlight = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   maxHeight: isDesktop ? 600 : undefined,
   overflow: 'hidden',
   padding: `${Gutters.ROW_INNER_GUTTER} ${Gutters.COLUMN_INNER_GUTTER}`,
+  position: 'relative',
   transition: `background 150ms ${DECELERATE}`,
   width: '100%'
 }))
@@ -97,7 +98,7 @@ const ColumnColorDrop = styled('div')<{groupColor: string; isFocused: boolean}>(
     marginRight: 8,
     height: 8,
     width: 8,
-    // transformOrigin: '0 0',
+    top: 20, // must be out of layout  so it doesn't color the text
     transform: `scale(${isFocused ? 163 : 1})`,
     transition: `all 300ms ${BezierCurve.DECELERATE}`,
     opacity: isFocused ? 0.25 : 1
@@ -206,13 +207,12 @@ const PhaseItemColumn = (props: Props) => {
   return (
     <ColumnWrapper data-cy={`reflection-column-${question}`} isDesktop={isDesktop}>
       <ColumnHighlight isDesktop={isDesktop}>
+        <ColumnColorDrop isFocused={isFocused} groupColor={groupColor} />
         <ColumnContent isDesktop={isDesktop}>
           <HeaderAndEditor isDesktop={isDesktop}>
             <PromptHeader isClickable={isFacilitator && !isComplete} onClick={setColumnFocus}>
               <RetroPrompt onMouseEnter={openTooltip} onMouseLeave={closeTooltip} ref={originRef}>
-                <ColorSpacer>
-                  <ColumnColorDrop isFocused={isFocused} groupColor={groupColor} />
-                </ColorSpacer>
+                <ColorSpacer />
                 {question}
               </RetroPrompt>
               {tooltipPortal(<div>Tap to highlight prompt for everybody</div>)}
