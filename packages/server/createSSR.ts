@@ -15,7 +15,8 @@ export const getClientKeys = () => {
     segment: process.env.SEGMENT_WRITE_KEY,
     sentry: process.env.SENTRY_DSN,
     slack: process.env.SLACK_CLIENT_ID,
-    stripe: process.env.STRIPE_PUBLISHABLE_KEY
+    stripe: process.env.STRIPE_PUBLISHABLE_KEY,
+    prblIn: process.env.INVITATION_SHORTLINK
   }
 }
 
