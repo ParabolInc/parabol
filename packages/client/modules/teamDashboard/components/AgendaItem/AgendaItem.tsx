@@ -49,9 +49,13 @@ const DeleteIconButton = styled(IconButton)<{disabled?: boolean}>(({disabled}) =
   visibility: disabled ? 'hidden' : undefined
 }))
 
-const SvgIcon = styled('img')<{unpin?: boolean}>(({unpin}) => ({
+const SvgIcon = styled('img')<{pinned?: boolean}>(({pinned}) => ({
   opacity: 0.6,
-  transform: unpin ? 'rotate(180deg) scaleX(-1)' : undefined
+  transform: pinned ? 'rotate(45deg) scaleX(-1)' : undefined,
+  transition: 'transform 0.75s',
+  '&:hover': {
+    transform: pinned ? 'rotate(180deg) scaleX(-1)' : undefined
+  }
 }))
 
 const getItemProps = (
@@ -151,12 +155,12 @@ const AgendaItem = (props: Props) => {
               onMouseEnter={openTooltip}
               onMouseLeave={closeTooltip}
               src={pinIcon}
-              unpin={true}
+              pinned
             />
             {tooltipPortal(`Unpin "${content}" from every meeting`)}
           </>
         )
-      else return <SvgIcon src={pinIcon} alt='pinIcon' unpin={false} />
+      else return <SvgIcon src={pinIcon} alt='pinIcon' pinned />
     } else {
       if (hovering)
         return (
@@ -166,7 +170,6 @@ const AgendaItem = (props: Props) => {
               onMouseEnter={openTooltip}
               onMouseLeave={closeTooltip}
               src={pinIcon}
-              unpin={false}
             />
             {tooltipPortal(`Pin "${content}" to every meeting`)}
           </>
@@ -176,7 +179,11 @@ const AgendaItem = (props: Props) => {
   }
 
   return (
-    <AgendaItemStyles title={content}>
+    <AgendaItemStyles
+      onMouseEnter={() => setHovering(true)}
+      onMouseLeave={() => setHovering(false)}
+      title={content}
+    >
       <MeetingSubnavItem
         label={content}
         metaContent={
@@ -190,7 +197,6 @@ const AgendaItem = (props: Props) => {
         isComplete={isComplete}
         isDragging={isDragging}
         isUnsyncedFacilitatorStage={isUnsyncedFacilitatorStage}
-        setHovering={setHovering}
       />
       <DeleteIconButton
         aria-label={'Remove this agenda topic'}

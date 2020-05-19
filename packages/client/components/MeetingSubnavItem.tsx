@@ -73,7 +73,6 @@ interface Props {
   label: string
   metaContent: any
   onClick: ((e: React.MouseEvent) => void) | undefined
-  setHovering?: (boolean) => void
 }
 
 const MeetingSubnavItem = (props: Props) => {
@@ -85,8 +84,7 @@ const MeetingSubnavItem = (props: Props) => {
     isUnsyncedFacilitatorStage,
     label,
     metaContent,
-    onClick,
-    setHovering
+    onClick
   } = props
   const ref = useRef(null)
   useScrollIntoView(ref, isActive)
@@ -99,8 +97,6 @@ const MeetingSubnavItem = (props: Props) => {
       isDragging={isDragging}
       isUnsyncedFacilitatorStage={isUnsyncedFacilitatorStage}
       onClick={!isDisabled ? onClick : undefined}
-      onMouseEnter={() => setHovering && setHovering(true)}
-      onMouseLeave={() => setHovering && setHovering(false)}
     >
       <ItemLabel isComplete={isComplete}>{label}</ItemLabel>
       <ItemMeta>{metaContent}</ItemMeta>
