@@ -30,10 +30,10 @@ const CheckIcon = styled(Icon)<{progress: number; isNext: boolean; isViewerReady
   ({isViewerReady, progress, isNext}) => ({
     color: isNext
       ? progress === 1
-        ? PALETTE.TEXT_GREEN
-        : PALETTE.EMPHASIS_WARM
+        ? PALETTE.TEXT_BLUE
+        : PALETTE.TEXT_GRAY
       : isViewerReady
-      ? PALETTE.TEXT_GREEN
+      ? PALETTE.TEXT_BLUE
       : PALETTE.TEXT_GRAY,
     fontSize: 24,
     fontWeight: 600,
