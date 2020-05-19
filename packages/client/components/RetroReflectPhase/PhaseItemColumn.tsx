@@ -75,7 +75,8 @@ const Description = styled('div')({
   fontSize: 12,
   fontStyle: 'italic',
   fontWeight: 400,
-  lineHeight: '16px'
+  lineHeight: '16px',
+  paddingLeft: 16
 })
 
 const ColorSpacer = styled('div')({
@@ -84,7 +85,7 @@ const ColorSpacer = styled('div')({
   width: 8,
   display: 'inline-block',
   verticalAlign: 'middle',
-  marginRight: 4
+  marginRight: 8
 })
 const ColumnColorDrop = styled('div')<{groupColor: string; isFocused: boolean}>(
   ({groupColor, isFocused}) => ({
