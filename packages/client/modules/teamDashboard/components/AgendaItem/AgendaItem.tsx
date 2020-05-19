@@ -27,13 +27,6 @@ const AgendaItemStyles = styled('div')({
   }
 })
 
-const IconBlock = styled('div')({
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  width: '2rem'
-})
-
 const DeleteIconButton = styled(IconButton)<{disabled?: boolean}>(({disabled}) => ({
   display: 'block',
   // we can make the position of the del (x) more centered when there’s a low number of agenda items
@@ -46,12 +39,22 @@ const DeleteIconButton = styled(IconButton)<{disabled?: boolean}>(({disabled}) =
   visibility: disabled ? 'hidden' : undefined
 }))
 
+const IconBlock = styled('div')({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  width: '2rem',
+  '&:hover': {
+    cursor: 'pointer'
+  }
+})
+
 const SvgIcon = styled('img')<{pinned?: boolean}>(({pinned}) => ({
   opacity: 0.6,
-  transform: pinned ? 'rotate(45deg) scaleX(-1)' : undefined,
+  transform: pinned ? 'rotate(45deg) scaleX(-1)' : null,
   transition: 'transform .75s',
   '&:hover': {
-    transform: pinned ? 'rotate(180deg) scaleX(-1)' : undefined
+    transform: pinned ? 'rotate(180deg) scaleX(-1)' : null
   }
 }))
 
