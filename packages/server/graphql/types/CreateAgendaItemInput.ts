@@ -16,7 +16,6 @@ const CreateAgendaItemInput = new GraphQLInputObjectType({
     },
     pinned: {
       type: new GraphQLNonNull(GraphQLBoolean),
-      // type: GraphQLBoolean,
       description: 'True if the agenda item has been pinned'
     },
     teamId: {

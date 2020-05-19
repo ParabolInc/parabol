@@ -34,7 +34,6 @@ const AgendaItem = new GraphQLObjectType<IAgendaItem, GQLContext>({
     },
     pinned: {
       type: new GraphQLNonNull(GraphQLBoolean),
-      // type: GraphQLBoolean,
       description: 'True if the agenda item has been pinned'
     },
     sortOrder: {
