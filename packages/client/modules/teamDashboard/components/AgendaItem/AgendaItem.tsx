@@ -31,10 +31,7 @@ const IconBlock = styled('div')({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
-  width: '2rem',
-  '&:hover': {
-    cursor: 'pointer'
-  }
+  width: '2rem'
 })
 
 const DeleteIconButton = styled(IconButton)<{disabled?: boolean}>(({disabled}) => ({
@@ -52,7 +49,7 @@ const DeleteIconButton = styled(IconButton)<{disabled?: boolean}>(({disabled}) =
 const SvgIcon = styled('img')<{pinned?: boolean}>(({pinned}) => ({
   opacity: 0.6,
   transform: pinned ? 'rotate(45deg) scaleX(-1)' : undefined,
-  transition: 'transform 0.75s',
+  transition: 'transform .75s',
   '&:hover': {
     transform: pinned ? 'rotate(180deg) scaleX(-1)' : undefined
   }
@@ -113,8 +110,8 @@ const AgendaItem = (props: Props) => {
   const [hovering, setHovering] = useState(false)
   const {activeMeetings, agendaItem, gotoStageId, isDragging, meetingId} = props
   const {id: agendaItemId, content, pinned, teamMember} = agendaItem
-  const {tooltipPortal, openTooltip, closeTooltip, originRef: tipRef} = useTooltip<HTMLDivElement>(
-    content.length > 35 ? MenuPosition.UPPER_LEFT : MenuPosition.UPPER_CENTER
+  const {tooltipPortal, openTooltip, closeTooltip, originRef} = useTooltip<HTMLDivElement>(
+    content.length > 52 ? MenuPosition.LOWER_LEFT : MenuPosition.LOWER_CENTER
   )
   const {picture} = teamMember
   const atmosphere = useAtmosphere()
@@ -147,33 +144,9 @@ const AgendaItem = (props: Props) => {
 
   const getIcon = () => {
     if (pinned) {
-      if (hovering)
-        return (
-          <>
-            <SvgIcon
-              alt='unpinIcon'
-              onMouseEnter={openTooltip}
-              onMouseLeave={closeTooltip}
-              src={pinIcon}
-              pinned
-            />
-            {tooltipPortal(`Unpin "${content}" from every meeting`)}
-          </>
-        )
-      else return <SvgIcon src={pinIcon} alt='pinnedIcon' pinned />
+      return <SvgIcon alt='unpinIcon' pinned src={pinIcon} />
     } else {
-      if (hovering)
-        return (
-          <>
-            <SvgIcon
-              alt='pinIcon'
-              onMouseEnter={openTooltip}
-              onMouseLeave={closeTooltip}
-              src={pinIcon}
-            />
-            {tooltipPortal(`Pin "${content}" to every meeting`)}
-          </>
-        )
+      if (hovering) return <SvgIcon alt='pinIcon' src={pinIcon} />
       else return <Avatar hasBadge={false} picture={picture} size={24} />
     }
   }
@@ -187,9 +160,19 @@ const AgendaItem = (props: Props) => {
       <MeetingSubnavItem
         label={content}
         metaContent={
-          <IconBlock onClick={handleClick} ref={tipRef}>
-            {getIcon()}
-          </IconBlock>
+          <>
+            <IconBlock
+              onClick={handleClick}
+              onMouseEnter={openTooltip}
+              onMouseLeave={closeTooltip}
+              ref={originRef}
+            >
+              {getIcon()}
+            </IconBlock>
+            {tooltipPortal(
+              pinned ? `Unpin "${content}" from every meeting` : `Pin "${content}" to every meeting`
+            )}
+          </>
         }
         isDisabled={isDisabled}
         onClick={onClick}

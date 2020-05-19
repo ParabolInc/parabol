@@ -107,7 +107,7 @@ const PhaseCountBlock = styled('div')({
 const StyledBadge = styled(Badge)({
   backgroundColor: PALETTE.BACKGROUND_GRAY,
   boxShadow: 'none',
-  marginRight: 8,
+  marginRight: 2,
   minWidth: 24,
   textShadow: 'none'
 })
