@@ -6,9 +6,8 @@ import {
   GraphQLInterfaceType,
   GraphQLNonNull
 } from 'graphql'
-import NewMeeting from './NewMeeting'
-import NewMeetingPhaseTypeEnum from './NewMeetingPhaseTypeEnum'
 import {
+  AGENDA_ITEMS,
   CHECKIN,
   DISCUSS,
   FIRST_CALL,
@@ -16,24 +15,25 @@ import {
   LAST_CALL,
   REFLECT,
   UPDATES,
-  VOTE,
-  AGENDA_ITEMS
+  VOTE
 } from 'parabol-client/utils/constants'
+import {getUserId} from '../../utils/authorization'
+import AgendaItemsStage from './AgendaItemsStage'
 import CheckInStage from './CheckInStage'
 import GenericMeetingStage from './GenericMeetingStage'
-import RetroDiscussStage from './RetroDiscussStage'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
+import NewMeeting from './NewMeeting'
 import NewMeetingPhase from './NewMeetingPhase'
+import NewMeetingPhaseTypeEnum from './NewMeetingPhaseTypeEnum'
+import RetroDiscussStage from './RetroDiscussStage'
 import UpdatesStage from './UpdatesStage'
-import AgendaItemsStage from './AgendaItemsStage'
-import {getUserId} from '../../utils/authorization'
 
 /*
  * Each meeting has many phases.
  * Each phase has 1 or more stages.
  * Each stage is an "instance" of a phase item type.
  * By instance, I mean it combines the phase item with meeting-specific state, like an instantiated class
- * A generic phase item (eg a Check-in) is created by parabol-defined server logic
+ * A generic phase item (eg an Icebreaker) is created by parabol-defined server logic
  * A custom phase item (eg the Retrospective categories like 4Ls or Start, Stop, Continue) is defined by the team
  * Each type of meeting has type-specific state (see NewMeeting)
  * Each phase of each meeting has phase-specific state (see NewMeetingPhase)

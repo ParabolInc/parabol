@@ -1,17 +1,17 @@
 import React, {forwardRef} from 'react'
+import useSegmentTrack from '../../hooks/useSegmentTrack'
+import {ExternalLinks} from '../../types/constEnums'
+import {MeetingTypeEnum, NewMeetingPhaseTypeEnum, SegmentClientEventEnum} from '../../types/graphql'
+import {CHECKIN} from '../../utils/constants'
+import {phaseLabelLookup} from '../../utils/meetings/lookups'
 import HelpMenuContent from './HelpMenuContent'
 import HelpMenuCopy from './HelpMenuCopy'
 import HelpMenuHeader from './HelpMenuHeader'
 import HelpMenuLink from './HelpMenuLink'
-import useSegmentTrack from '../../hooks/useSegmentTrack'
-import {MeetingTypeEnum, NewMeetingPhaseTypeEnum, SegmentClientEventEnum} from '../../types/graphql'
-import {CHECKIN} from '../../utils/constants'
-import {phaseLabelLookup} from '../../utils/meetings/lookups'
-import {ExternalLinks} from '../../types/constEnums'
 
 const linkLookup = {
-  [MeetingTypeEnum.action]: `${ExternalLinks.GETTING_STARTED_CHECK_INS}#social-check-in`,
-  [MeetingTypeEnum.retrospective]: `${ExternalLinks.GETTING_STARTED_RETROS}#social-check-in`
+  [MeetingTypeEnum.action]: `${ExternalLinks.GETTING_STARTED_CHECK_INS}#icebreaker`,
+  [MeetingTypeEnum.retrospective]: `${ExternalLinks.GETTING_STARTED_RETROS}#icebreaker`
 }
 
 interface Props {
@@ -26,9 +26,7 @@ const CheckInHelpMenu = forwardRef((props: Props, ref: any) => {
     <HelpMenuContent closePortal={closePortal}>
       <HelpMenuHeader>{phaseLabelLookup[CHECKIN]}</HelpMenuHeader>
       <HelpMenuCopy>
-        {
-          'The Social Check-in is an opportunity to quickly share some personal context with your team.'
-        }
+        {'The Icebreaker is an opportunity to quickly share some personal context with your team.'}
       </HelpMenuCopy>
       <HelpMenuCopy>
         {'Avoid cross-talk so that everybody can have uninterrupted airtime.'}

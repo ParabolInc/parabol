@@ -1,27 +1,27 @@
 import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
-import getRethink from '../../database/rethinkDriver'
-import {getUserId, isTeamMember} from '../../utils/authorization'
-import publish from '../../utils/publish'
-import {CHECKIN} from 'parabol-client/utils/constants'
-import normalizeRawDraftJS from 'parabol-client/validation/normalizeRawDraftJS'
-import UpdateNewCheckInQuestionPayload from '../types/UpdateNewCheckInQuestionPayload'
-import standardError from '../../utils/standardError'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import {CHECKIN} from 'parabol-client/utils/constants'
 import convertToTaskContent from 'parabol-client/utils/draftjs/convertToTaskContent'
 import {makeCheckinQuestion} from 'parabol-client/utils/makeCheckinGreeting'
+import normalizeRawDraftJS from 'parabol-client/validation/normalizeRawDraftJS'
+import getRethink from '../../database/rethinkDriver'
 import CheckInPhase from '../../database/types/CheckInPhase'
+import {getUserId, isTeamMember} from '../../utils/authorization'
+import publish from '../../utils/publish'
+import standardError from '../../utils/standardError'
+import UpdateNewCheckInQuestionPayload from '../types/UpdateNewCheckInQuestionPayload'
 
 export default {
   type: UpdateNewCheckInQuestionPayload,
-  description: "Update a Team's Check-in question in a new meeting",
+  description: "Update a Team's Icebreaker in a new meeting",
   args: {
     meetingId: {
       type: new GraphQLNonNull(GraphQLID),
-      description: 'ID of the Team which will have its Check-in question updated'
+      description: 'ID of the Team which will have its Icebreaker updated'
     },
     checkInQuestion: {
       type: new GraphQLNonNull(GraphQLString),
-      description: "The Team's new Check-in question"
+      description: "The Team's new Icebreaker"
     }
   },
   async resolve(

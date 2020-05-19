@@ -5,7 +5,7 @@ import {ACTION, RETROSPECTIVE} from '../constants'
 
 /* These are the labels show to the viewer */
 export const phaseLabelLookup = {
-  [NewMeetingPhaseTypeEnum.checkin]: 'Social Check-in',
+  [NewMeetingPhaseTypeEnum.checkin]: 'Icebreaker',
   [NewMeetingPhaseTypeEnum.reflect]: 'Reflect',
   [NewMeetingPhaseTypeEnum.group]: 'Group',
   [NewMeetingPhaseTypeEnum.vote]: 'Vote',
