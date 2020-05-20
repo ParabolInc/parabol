@@ -26,7 +26,7 @@ const templateBase = {
     {
       description: 'What could be improved?',
       question: 'Sad',
-      groupColor: PALETTE.PROMPT_YELLOW
+      groupColor: PALETTE.PROMPT_BLUE
     },
     {
       description: 'What are you angry or disappointed about?',
@@ -70,7 +70,7 @@ const templateBase = {
     {
       description: 'What current behaviors should we keep doing?',
       question: 'Continue',
-      groupColor: PALETTE.PROMPT_YELLOW
+      groupColor: PALETTE.PROMPT_BLUE
     }
   ],
   Sailboat: [
@@ -82,7 +82,7 @@ const templateBase = {
     {
       description: 'What’s slowing the team down in your journey?',
       question: 'Anchors',
-      groupColor: PALETTE.PROMPT_YELLOW
+      groupColor: PALETTE.PROMPT_BLUE
     },
     {
       description: 'What risks may the team encounter ahead?',
