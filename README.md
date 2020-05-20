@@ -6,10 +6,8 @@
 
 ## Overview
 
-
 [Parabol](https://www.parabol.co) is an open-source SaaS application for running team retrospectives and operating a
 distributed organization. We publish our company's [history and business metrics](https://focus.parabol.co/), too.
-
 
 ![Dashboard](./docs/images/d2.gif)
 ![Discuss](./docs/images/d1.gif)
@@ -34,11 +32,11 @@ distributed organization. We publish our company's [history and business metrics
 
 ### Prerequisites
 
- - Node
- - Redis
- - RethinkDB
- - Watchman (for Relay)
- - Yarn
+- Node
+- Redis
+- RethinkDB
+- Watchman (for Relay)
+- Yarn
 
 ### Installation
 
@@ -47,9 +45,11 @@ $ git clone https://github.com/ParabolInc/parabol.git
 $ cd parabol
 $ cp .env.example .env # Add your own vars here
 $ rethinkdb & redis-server & # Or if you prefer docker: $ docker-compose up -d db
-$ yarn && yarn dev
+$ yarn && yarn db:migrate && yarn dev
 ```
+
 Build for production and start application:
+
 ```bash
 $ yarn && yarn build && yarn start
 ```
@@ -72,9 +72,9 @@ For details on all releases, refer to [CHANGELOG.md](./CHANGELOG.md).
 
 ## Parabol Core Team
 
-* [jordanh](https://github.com/jordanh)
-* [ackernaut](https://github.com/ackernaut)
-* [mattkrick](https://github.com/mattkrick)
+- [jordanh](https://github.com/jordanh)
+- [ackernaut](https://github.com/ackernaut)
+- [mattkrick](https://github.com/mattkrick)
 
 ## License
 

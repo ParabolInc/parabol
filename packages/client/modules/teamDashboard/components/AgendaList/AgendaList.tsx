@@ -100,11 +100,12 @@ const AgendaList = (props: Props) => {
                         >
                           <AgendaItem
                             key={item.id}
+                            activeMeetings={activeMeetings}
                             agendaItem={item}
                             gotoStageId={gotoStageId}
                             idx={agendaItems.findIndex((agendaItem) => agendaItem === item)}
                             isDragging={dragSnapshot.isDragging}
-                            activeMeetings={activeMeetings}
+                            meetingId={meetingId}
                           />
                         </DraggableAgendaItem>
                       )

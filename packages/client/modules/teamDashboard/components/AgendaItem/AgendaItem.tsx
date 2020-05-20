@@ -1,19 +1,31 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {useEffect, useRef} from 'react'
+import React, {useEffect, useRef, useState} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {AgendaItem_activeMeetings} from '~/__generated__/AgendaItem_activeMeetings.graphql'
 import Avatar from '../../../../components/Avatar/Avatar'
 import IconButton from '../../../../components/IconButton'
 import MeetingSubnavItem from '../../../../components/MeetingSubnavItem'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
+import {MenuPosition} from '../../../..//hooks/useCoords'
 import useGotoStageId from '../../../../hooks/useGotoStageId'
 import useScrollIntoView from '../../../../hooks/useScrollIntoVIew'
+import useTooltip from '../../../../hooks/useTooltip'
 import RemoveAgendaItemMutation from '../../../../mutations/RemoveAgendaItemMutation'
+import UpdateAgendaItemMutation from '../../../../mutations/UpdateAgendaItemMutation'
 import {ICON_SIZE} from '../../../../styles/typographyV2'
 import {MeetingTypeEnum} from '../../../../types/graphql'
 import findStageById from '../../../../utils/meetings/findStageById'
 import {AgendaItem_agendaItem} from '../../../../__generated__/AgendaItem_agendaItem.graphql'
+import pinIcon from '../../../../styles/theme/images/icons/fa-thumbtack.svg'
+
+const AgendaItemStyles = styled('div')({
+  position: 'relative',
+  // show the DeleteIconButton on hover
+  '&:hover > button': {
+    opacity: 1
+  }
+})
 
 const DeleteIconButton = styled(IconButton)<{disabled?: boolean}>(({disabled}) => ({
   display: 'block',
@@ -27,17 +39,24 @@ const DeleteIconButton = styled(IconButton)<{disabled?: boolean}>(({disabled}) =
   visibility: disabled ? 'hidden' : undefined
 }))
 
-const AvatarBlock = styled('div')({
-  width: '2rem'
-})
-
-const AgendaItemStyles = styled('div')({
-  position: 'relative',
-  // show the DeleteIconButton on hover
-  '&:hover > button': {
-    opacity: 1
+const IconBlock = styled('div')({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  width: '2rem',
+  '&:hover': {
+    cursor: 'pointer'
   }
 })
+
+const SvgIcon = styled('img')<{pinned?: boolean}>(({pinned}) => ({
+  opacity: 0.6,
+  transform: pinned ? 'rotate(45deg) scaleX(-1)' : undefined,
+  transition: 'transform .75s',
+  '&:hover': {
+    transform: pinned ? 'rotate(180deg) scaleX(-1)' : undefined
+  }
+}))
 
 const getItemProps = (
   activeMeetings: AgendaItem_activeMeetings,
@@ -82,16 +101,21 @@ const getItemProps = (
 }
 
 interface Props {
+  activeMeetings: AgendaItem_activeMeetings
   agendaItem: AgendaItem_agendaItem
   gotoStageId: ReturnType<typeof useGotoStageId> | undefined
   idx: number
   isDragging: boolean
-  activeMeetings: AgendaItem_activeMeetings
+  meetingId?: string | null
 }
 
 const AgendaItem = (props: Props) => {
-  const {agendaItem, gotoStageId, isDragging, activeMeetings} = props
-  const {id: agendaItemId, content, teamMember} = agendaItem
+  const [hovering, setHovering] = useState(false)
+  const {activeMeetings, agendaItem, gotoStageId, isDragging, meetingId} = props
+  const {id: agendaItemId, content, pinned, teamMember} = agendaItem
+  const {tooltipPortal, openTooltip, closeTooltip, originRef} = useTooltip<HTMLDivElement>(
+    content.length > 52 ? MenuPosition.LOWER_LEFT : MenuPosition.LOWER_CENTER
+  )
   const {picture} = teamMember
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
@@ -109,17 +133,49 @@ const AgendaItem = (props: Props) => {
     ref.current && ref.current.scrollIntoView({behavior: 'smooth'})
   }, [])
 
+  const handleClick = () => {
+    UpdateAgendaItemMutation(
+      atmosphere,
+      {updatedAgendaItem: {id: agendaItemId, pinned: !pinned}},
+      {meetingId}
+    )
+  }
+
   const handleRemove = () => {
     RemoveAgendaItemMutation(atmosphere, {agendaItemId})
   }
+
+  const getIcon = () => {
+    if (pinned) {
+      return <SvgIcon alt='unpinIcon' pinned src={pinIcon} />
+    } else {
+      if (hovering) return <SvgIcon alt='pinIcon' src={pinIcon} />
+      else return <Avatar hasBadge={false} picture={picture} size={24} />
+    }
+  }
+
   return (
-    <AgendaItemStyles title={content}>
+    <AgendaItemStyles
+      onMouseEnter={() => setHovering(true)}
+      onMouseLeave={() => setHovering(false)}
+      title={content}
+    >
       <MeetingSubnavItem
         label={content}
         metaContent={
-          <AvatarBlock>
-            <Avatar hasBadge={false} picture={picture} size={24} />
-          </AvatarBlock>
+          <>
+            <IconBlock
+              onClick={handleClick}
+              onMouseEnter={openTooltip}
+              onMouseLeave={closeTooltip}
+              ref={originRef}
+            >
+              {getIcon()}
+            </IconBlock>
+            {tooltipPortal(
+              pinned ? `Unpin "${content}" from every meeting` : `Pin "${content}" to every meeting`
+            )}
+          </>
         }
         isDisabled={isDisabled}
         onClick={onClick}
@@ -164,6 +220,7 @@ export default createFragmentContainer(AgendaItem, {
     fragment AgendaItem_agendaItem on AgendaItem {
       id
       content
+      pinned
       teamMember {
         picture
       }

@@ -18,9 +18,13 @@ const UpdateAgendaItemInput = new GraphQLInputObjectType({
       type: GraphQLString,
       description: 'The content of the agenda item'
     },
+    pinned: {
+      type: GraphQLBoolean,
+      description: 'True if agenda item has been pinned'
+    },
     isActive: {
       type: GraphQLBoolean,
-      description: 'true if not processed or deleted'
+      description: 'True if not processed or deleted'
     },
     sortOrder: {
       type: GraphQLFloat,
