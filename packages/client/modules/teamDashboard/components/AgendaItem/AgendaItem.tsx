@@ -17,7 +17,8 @@ import {ICON_SIZE} from '../../../../styles/typographyV2'
 import {MeetingTypeEnum} from '../../../../types/graphql'
 import findStageById from '../../../../utils/meetings/findStageById'
 import {AgendaItem_agendaItem} from '../../../../__generated__/AgendaItem_agendaItem.graphql'
-import pinIcon from '../../../../styles/theme/images/icons/fa-thumbtack.svg'
+import pinIcon from '../../../../styles/theme/images/icons/pin.svg'
+import unpinIcon from '../../../../styles/theme/images/icons/unpin.svg'
 
 const AgendaItemStyles = styled('div')({
   position: 'relative',
@@ -50,12 +51,12 @@ const IconBlock = styled('div')({
 })
 
 const SvgIcon = styled('img')<{pinned?: boolean}>(({pinned}) => ({
+  backgroundRepeat: 'no-repeat',
+  height: 24,
+  width: 24,
   opacity: 0.6,
-  transform: pinned ? 'rotate(45deg) scaleX(-1)' : undefined,
-  transition: 'transform .75s',
-  '&:hover': {
-    transform: pinned ? 'rotate(180deg) scaleX(-1)' : undefined
-  }
+  transform: pinned ? 'rotate(45deg) scaleX(1)' : undefined,
+  transition: 'transform .75s'
 }))
 
 const getItemProps = (
@@ -113,7 +114,7 @@ const AgendaItem = (props: Props) => {
   const [hovering, setHovering] = useState(false)
   const {activeMeetings, agendaItem, gotoStageId, isDragging, meetingId} = props
   const {id: agendaItemId, content, pinned, teamMember} = agendaItem
-  const {tooltipPortal, openTooltip, closeTooltip, originRef} = useTooltip<HTMLDivElement>(
+  const {tooltipPortal, openTooltip, closeTooltip, originRef: tipRef} = useTooltip<HTMLDivElement>(
     content.length > 52 ? MenuPosition.LOWER_LEFT : MenuPosition.LOWER_CENTER
   )
   const {picture} = teamMember
@@ -147,10 +148,17 @@ const AgendaItem = (props: Props) => {
 
   const getIcon = () => {
     if (pinned) {
-      return <SvgIcon alt='unpinIcon' pinned src={pinIcon} />
+      if (hovering) {
+        return <SvgIcon alt='unpinIcon' src={unpinIcon} />
+      } else {
+        return <SvgIcon alt='pinnedIcon' src={pinIcon} pinned />
+      }
     } else {
-      if (hovering) return <SvgIcon alt='pinIcon' src={pinIcon} />
-      else return <Avatar hasBadge={false} picture={picture} size={24} />
+      if (hovering) {
+        return <SvgIcon alt='pinIcon' src={pinIcon} />
+      } else {
+        return <Avatar hasBadge={false} picture={picture} size={24} />
+      }
     }
   }
 
@@ -168,7 +176,7 @@ const AgendaItem = (props: Props) => {
               onClick={handleClick}
               onMouseEnter={openTooltip}
               onMouseLeave={closeTooltip}
-              ref={originRef}
+              ref={tipRef}
             >
               {getIcon()}
             </IconBlock>

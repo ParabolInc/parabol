@@ -17,6 +17,8 @@ const useTooltipPortal = (
   portalStatus: PortalStatus,
   setPortalStatus: (portalStatus: PortalStatus) => void
 ) => {
+  console.log('useTooltipPortal', targetRef, coords, portalStatus)
+
   useEffect(() => {
     let isMounted = true
     if (portalStatus === PortalStatus.Entering) {
