@@ -1,6 +1,6 @@
 import {useEffect} from 'react'
-import useAtmosphere from './useAtmosphere'
 import {commitLocalUpdate} from 'react-relay'
+import useAtmosphere from './useAtmosphere'
 
 // pageName is shown on the header of mobile devices
 const useDocumentTitle = (title: string, pageName: string) => {

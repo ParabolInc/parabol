@@ -143,8 +143,8 @@ interface Props {
 const PhaseItemColumn = (props: Props) => {
   const {idx, meeting, phaseRef, prompt, isDesktop} = props
   const {id: retroPhaseItemId, editorIds, question, groupColor, description} = prompt
-  const {meetingId, facilitatorUserId, localPhase, phases, reflectionGroups} = meeting
-  const {phaseId, focusedPhaseItemId} = localPhase
+  const {id: meetingId, facilitatorUserId, localPhase, phases, reflectionGroups} = meeting
+  const {id: phaseId, focusedPhaseItemId} = localPhase
   const groupPhase = phases.find((phase) => phase.phaseType === NewMeetingPhaseTypeEnum.group)!
   const {stages: groupStages} = groupPhase
   const [groupStage] = groupStages
@@ -269,9 +269,9 @@ export default createFragmentContainer(PhaseItemColumn, {
     fragment PhaseItemColumn_meeting on RetrospectiveMeeting {
       ...ReflectionStack_meeting
       facilitatorUserId
-      meetingId: id
+      id
       localPhase {
-        phaseId: id
+        id
         phaseType
         ... on ReflectPhase {
           focusedPhaseItemId
@@ -299,7 +299,6 @@ export default createFragmentContainer(PhaseItemColumn, {
           ...DraggableReflectionCard_reflection
           ...DraggableReflectionCard_staticReflections
           content
-          groupColor
           id
           isEditing
           isViewerCreator
