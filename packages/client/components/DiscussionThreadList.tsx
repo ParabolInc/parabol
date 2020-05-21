@@ -70,7 +70,6 @@ const DiscussionThreadList = forwardRef((props: Props, ref: any) => {
         const {id} = threadable
         return (
           <ThreadedItem
-            dataCy={`thread-item-${idx}`}
             key={id}
             threadable={threadable}
             meeting={meeting}
