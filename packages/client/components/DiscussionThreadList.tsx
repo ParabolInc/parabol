@@ -66,7 +66,7 @@ const DiscussionThreadList = forwardRef((props: Props, ref: any) => {
     <Wrapper data-cy={`${dataCy}`} ref={ref}>
       <HeaderBlock />
       <PusherDowner />
-      {threadables.map((threadable, idx) => {
+      {threadables.map((threadable) => {
         const {id} = threadable
         return (
           <ThreadedItem
