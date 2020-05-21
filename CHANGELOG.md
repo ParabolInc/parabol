@@ -5,7 +5,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
-## 5.8.0 2020-May-20
+## 5.8.0 2020-May-21
 
 ### Added
 
@@ -15,6 +15,10 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
 - The Social Check-In phase is now called Icebreaker (#3850)
 - Moved the invitation shortlink to the env (#3865)
+
+### Fixed
+
+- Fixed identify on the client for hubspot (#3872)
 
 ## 5.7.1 2020-May-15
 
