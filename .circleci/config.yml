@@ -70,7 +70,7 @@ jobs:
               sudo pip install rethinkdb==2.3.0
               rethinkdb-restore --force packages/cypress/fixtures/rdb_test.tar.gz
               node scripts/toolbox/softenDurability.js
-              yarn predeploy
+              yarn db:migrate
               yarn postdeploy
               yarn test
             fi
