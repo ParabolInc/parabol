@@ -28,7 +28,6 @@ const useTooltip = <T extends HTMLElement = HTMLElement>(
   })
 
   const openTooltip = useEventCallback(() => {
-    console.log('OPEN TOOL')
     if (disabled) return
     window.clearTimeout(openDelayRef.current)
     openDelayRef.current = window.setTimeout(() => {
@@ -37,7 +36,6 @@ const useTooltip = <T extends HTMLElement = HTMLElement>(
   })
 
   const closeTooltip = useEventCallback(() => {
-    console.log('CLOSING TOOL')
     window.clearTimeout(openDelayRef.current)
     closePortal()
   })

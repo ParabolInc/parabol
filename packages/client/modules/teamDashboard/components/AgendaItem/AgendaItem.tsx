@@ -44,16 +44,13 @@ const IconBlock = styled('div')({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
-  width: '2rem',
+  marginRight: '4px',
   '&:hover': {
     cursor: 'pointer'
   }
 })
 
 const SvgIcon = styled('img')<{pinned?: boolean}>(({pinned}) => ({
-  backgroundRepeat: 'no-repeat',
-  height: 24,
-  width: 24,
   opacity: 0.6,
   transform: pinned ? 'rotate(45deg) scaleX(1)' : undefined,
   transition: 'transform .75s'
@@ -115,7 +112,8 @@ const AgendaItem = (props: Props) => {
   const {activeMeetings, agendaItem, gotoStageId, isDragging, meetingId} = props
   const {id: agendaItemId, content, pinned, teamMember} = agendaItem
   const {tooltipPortal, openTooltip, closeTooltip, originRef: tipRef} = useTooltip<HTMLDivElement>(
-    content.length > 52 ? MenuPosition.LOWER_LEFT : MenuPosition.LOWER_CENTER
+    content.length > 52 ? MenuPosition.LOWER_LEFT : MenuPosition.LOWER_CENTER,
+    {delay: -2000}
   )
   const {picture} = teamMember
   const atmosphere = useAtmosphere()
