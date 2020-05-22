@@ -111,9 +111,8 @@ const AgendaItem = (props: Props) => {
   const [hovering, setHovering] = useState(false)
   const {activeMeetings, agendaItem, gotoStageId, isDragging, meetingId} = props
   const {id: agendaItemId, content, pinned, teamMember} = agendaItem
-  const {tooltipPortal, openTooltip, closeTooltip, originRef: tipRef} = useTooltip<HTMLDivElement>(
-    content.length > 52 ? MenuPosition.LOWER_LEFT : MenuPosition.LOWER_CENTER,
-    {delay: -2000}
+  const {tooltipPortal, openTooltip, closeTooltip, originRef} = useTooltip<HTMLDivElement>(
+    content.length > 52 ? MenuPosition.LOWER_LEFT : MenuPosition.LOWER_CENTER
   )
   const {picture} = teamMember
   const atmosphere = useAtmosphere()
@@ -146,17 +145,11 @@ const AgendaItem = (props: Props) => {
 
   const getIcon = () => {
     if (pinned) {
-      if (hovering) {
-        return <SvgIcon alt='unpinIcon' src={unpinIcon} />
-      } else {
-        return <SvgIcon alt='pinnedIcon' src={pinIcon} pinned />
-      }
+      if (hovering) return <SvgIcon alt='unpinIcon' src={unpinIcon} />
+      else return <SvgIcon alt='pinnedIcon' src={pinIcon} pinned />
     } else {
-      if (hovering) {
-        return <SvgIcon alt='pinIcon' src={pinIcon} />
-      } else {
-        return <Avatar hasBadge={false} picture={picture} size={24} />
-      }
+      if (hovering) return <SvgIcon alt='pinIcon' src={pinIcon} />
+      else return <Avatar hasBadge={false} picture={picture} size={24} />
     }
   }
 
@@ -174,7 +167,7 @@ const AgendaItem = (props: Props) => {
               onClick={handleClick}
               onMouseEnter={openTooltip}
               onMouseLeave={closeTooltip}
-              ref={tipRef}
+              ref={originRef}
             >
               {getIcon()}
             </IconBlock>

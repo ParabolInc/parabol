@@ -41,7 +41,6 @@ interface Props {
   isConnected?: boolean
   onClick?: (e?: React.MouseEvent) => void
   onMouseEnter?: () => void
-  onMouseLeave?: () => void
   picture: string
   sansRadius?: boolean
   sansShadow?: boolean
@@ -55,7 +54,6 @@ const Avatar = forwardRef((props: Props, ref: any) => {
     isConnected,
     onClick,
     onMouseEnter,
-    onMouseLeave,
     picture,
     sansRadius,
     sansShadow,
@@ -68,7 +66,6 @@ const Avatar = forwardRef((props: Props, ref: any) => {
       ref={ref}
       onClick={onClick}
       onMouseEnter={onMouseEnter}
-      onMouseLeave={onMouseLeave}
       sansRadius={sansRadius}
       sansShadow={sansShadow}
       picture={picture}
