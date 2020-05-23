@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {useEffect, useRef, useState} from 'react'
+import React, {useEffect, useRef} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {AgendaItem_activeMeetings} from '~/__generated__/AgendaItem_activeMeetings.graphql'
 import Avatar from '../../../../components/Avatar/Avatar'
@@ -45,16 +45,15 @@ const IconBlock = styled('div')({
   alignItems: 'center',
   justifyContent: 'center',
   marginRight: '4px',
+  width: '2rem',
   '&:hover': {
     cursor: 'pointer'
   }
 })
 
-const SvgIcon = styled('img')<{pinned?: boolean}>(({pinned}) => ({
-  opacity: 0.6,
-  transform: pinned ? 'rotate(45deg) scaleX(1)' : undefined,
-  transition: 'transform .75s'
-}))
+const SvgIcon = styled('img')({
+  opacity: 0.7
+})
 
 const getItemProps = (
   activeMeetings: AgendaItem_activeMeetings,
@@ -88,6 +87,7 @@ const getItemProps = (
   const isViewerFacilitator = viewerId === facilitatorUserId
   const isDisabled = isViewerFacilitator ? !isNavigableByFacilitator : !isNavigable
   const onClick = () => gotoStageId!(stageId)
+
   return {
     isUnsyncedFacilitatorStage,
     isComplete: !!isComplete,
@@ -102,21 +102,30 @@ interface Props {
   activeMeetings: AgendaItem_activeMeetings
   agendaItem: AgendaItem_agendaItem
   gotoStageId: ReturnType<typeof useGotoStageId> | undefined
-  idx: number
+  hoveringId: string
   isDragging: boolean
   meetingId?: string | null
+  updateHoveringId: (id: string) => void
 }
 
 const AgendaItem = (props: Props) => {
-  const [hovering, setHovering] = useState(false)
-  const {activeMeetings, agendaItem, gotoStageId, isDragging, meetingId} = props
+  const {
+    activeMeetings,
+    agendaItem,
+    gotoStageId,
+    hoveringId,
+    isDragging,
+    meetingId,
+    updateHoveringId
+  } = props
   const {id: agendaItemId, content, pinned, teamMember} = agendaItem
   const {tooltipPortal, openTooltip, closeTooltip, originRef} = useTooltip<HTMLDivElement>(
-    content.length > 52 ? MenuPosition.LOWER_LEFT : MenuPosition.LOWER_CENTER
+    content.length > 52 ? MenuPosition.UPPER_LEFT : MenuPosition.UPPER_CENTER
   )
   const {picture} = teamMember
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
+  const hovering = hoveringId === agendaItemId
   const ref = useRef<HTMLDivElement>(null)
   const {
     isDisabled,
@@ -131,7 +140,8 @@ const AgendaItem = (props: Props) => {
     ref.current && ref.current.scrollIntoView({behavior: 'smooth'})
   }, [])
 
-  const handleClick = () => {
+  const handleIconClick = (e: React.MouseEvent) => {
+    e.stopPropagation()
     UpdateAgendaItemMutation(
       atmosphere,
       {updatedAgendaItem: {id: agendaItemId, pinned: !pinned}},
@@ -144,27 +154,25 @@ const AgendaItem = (props: Props) => {
   }
 
   const getIcon = () => {
-    if (pinned) {
-      if (hovering) return <SvgIcon alt='unpinIcon' src={unpinIcon} />
-      else return <SvgIcon alt='pinnedIcon' src={pinIcon} pinned />
-    } else {
-      if (hovering) return <SvgIcon alt='pinIcon' src={pinIcon} />
-      else return <Avatar hasBadge={false} picture={picture} size={24} />
+    if (pinned && hovering) return <SvgIcon alt='unpinIcon' src={unpinIcon} />
+    else if (!pinned && !hovering) return <Avatar hasBadge={false} picture={picture} size={24} />
+    else return <SvgIcon alt='pinnedIcon' src={pinIcon} />
+  }
+
+  const handleMouseMove = () => {
+    if (!hovering) {
+      updateHoveringId(agendaItemId)
     }
   }
 
   return (
-    <AgendaItemStyles
-      onMouseEnter={() => setHovering(true)}
-      onMouseLeave={() => setHovering(false)}
-      title={content}
-    >
+    <AgendaItemStyles onMouseMove={handleMouseMove}>
       <MeetingSubnavItem
         label={content}
         metaContent={
           <>
             <IconBlock
-              onClick={handleClick}
+              onClick={handleIconClick}
               onMouseEnter={openTooltip}
               onMouseLeave={closeTooltip}
               ref={originRef}
@@ -172,7 +180,9 @@ const AgendaItem = (props: Props) => {
               {getIcon()}
             </IconBlock>
             {tooltipPortal(
-              pinned ? `Unpin "${content}" from every meeting` : `Pin "${content}" to every meeting`
+              pinned
+                ? `Unpin "${content}" from every check-in`
+                : `Pin "${content}" to every check-in`
             )}
           </>
         }

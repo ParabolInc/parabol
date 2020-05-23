@@ -1,5 +1,5 @@
 import {AgendaList_team} from '../../../../__generated__/AgendaList_team.graphql'
-import React, {useMemo} from 'react'
+import React, {useMemo, useState} from 'react'
 import {DragDropContext, Draggable, Droppable} from 'react-beautiful-dnd'
 // import SexyScrollbar from 'universal/components/Dashboard/SexyScrollbar'
 import styled from '@emotion/styled'
@@ -41,6 +41,7 @@ interface Props {
 const AgendaList = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {dashSearch, gotoStageId, meetingId, team} = props
+  const [hoveringId, setHoveringId] = useState('')
   const {activeMeetings, agendaItems} = team
   const filteredAgendaItems = useMemo(() => {
     return dashSearch ? agendaItems.filter(({content}) => content.match(dashSearch)) : agendaItems
@@ -77,6 +78,14 @@ const AgendaList = (props: Props) => {
     )
   })
 
+  const handleLeave = () => {
+    setHoveringId('')
+  }
+
+  const updateHoveringId = (id: string) => {
+    setHoveringId(id)
+  }
+
   if (filteredAgendaItems.length === 0) {
     return <AgendaListEmptyState isDashboard={!meetingId} />
   }
@@ -86,7 +95,7 @@ const AgendaList = (props: Props) => {
       <Droppable droppableId={AGENDA_ITEM}>
         {(provided) => {
           return (
-            <AgendaListRoot ref={provided.innerRef}>
+            <AgendaListRoot onMouseLeave={handleLeave} ref={provided.innerRef}>
               {filteredAgendaItems.map((item, idx) => {
                 return (
                   <Draggable key={item.id} draggableId={item.id} index={idx}>
@@ -103,9 +112,10 @@ const AgendaList = (props: Props) => {
                             activeMeetings={activeMeetings}
                             agendaItem={item}
                             gotoStageId={gotoStageId}
-                            idx={agendaItems.findIndex((agendaItem) => agendaItem === item)}
+                            hoveringId={hoveringId}
                             isDragging={dragSnapshot.isDragging}
                             meetingId={meetingId}
+                            updateHoveringId={updateHoveringId}
                           />
                         </DraggableAgendaItem>
                       )
