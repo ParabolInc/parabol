@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {useEffect, useRef, useState} from 'react'
+import React, {useEffect, useRef} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {AgendaItem_activeMeetings} from '~/__generated__/AgendaItem_activeMeetings.graphql'
 import Avatar from '../../../../components/Avatar/Avatar'
@@ -103,21 +103,30 @@ interface Props {
   activeMeetings: AgendaItem_activeMeetings
   agendaItem: AgendaItem_agendaItem
   gotoStageId: ReturnType<typeof useGotoStageId> | undefined
-  idx: number
+  hoveringId: string
   isDragging: boolean
   meetingId?: string | null
+  updateHoveringId: (id: string) => void
 }
 
 const AgendaItem = (props: Props) => {
-  const [hovering, setHovering] = useState(false)
-  const {activeMeetings, agendaItem, gotoStageId, isDragging, meetingId} = props
+  const {
+    activeMeetings,
+    agendaItem,
+    gotoStageId,
+    hoveringId,
+    isDragging,
+    meetingId,
+    updateHoveringId
+  } = props
   const {id: agendaItemId, content, pinned, teamMember} = agendaItem
   const {tooltipPortal, openTooltip, closeTooltip, originRef} = useTooltip<HTMLDivElement>(
-    content.length > 52 ? MenuPosition.LOWER_LEFT : MenuPosition.LOWER_CENTER
+    content.length > 52 ? MenuPosition.UPPER_LEFT : MenuPosition.UPPER_CENTER
   )
   const {picture} = teamMember
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
+  const hovering = hoveringId === agendaItemId
   const ref = useRef<HTMLDivElement>(null)
   const {
     isDisabled,
@@ -132,7 +141,7 @@ const AgendaItem = (props: Props) => {
     ref.current && ref.current.scrollIntoView({behavior: 'smooth'})
   }, [])
 
-  const handleClick = (e: React.MouseEvent) => {
+  const handleIconClick = (e: React.MouseEvent) => {
     e.stopPropagation()
     UpdateAgendaItemMutation(
       atmosphere,
@@ -151,25 +160,20 @@ const AgendaItem = (props: Props) => {
     else return <SvgIcon alt='pinnedIcon' src={pinIcon} />
   }
 
-  const handleMouseEnter = (e) => {
-    e.preventDefault()
-    e.stopPropagation()
-    setHovering(true)
-  }
-  const handleMouseLeave = (e) => {
-    e.preventDefault()
-    e.stopPropagation()
-    setHovering(false)
+  const handleMouseMove = () => {
+    if (!hovering) {
+      updateHoveringId(agendaItemId)
+    }
   }
 
   return (
-    <AgendaItemStyles onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+    <AgendaItemStyles onMouseMove={handleMouseMove}>
       <MeetingSubnavItem
         label={content}
         metaContent={
           <>
             <IconBlock
-              onClick={handleClick}
+              onClick={handleIconClick}
               onMouseEnter={openTooltip}
               onMouseLeave={closeTooltip}
               ref={originRef}
