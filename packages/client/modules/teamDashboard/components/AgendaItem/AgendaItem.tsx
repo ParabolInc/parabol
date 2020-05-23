@@ -53,7 +53,7 @@ const IconBlock = styled('div')({
 const SvgIcon = styled('img')<{pinned?: boolean}>(({pinned}) => ({
   opacity: 0.6,
   transform: pinned ? 'rotate(45deg) scaleX(1)' : undefined,
-  transition: 'transform .75s'
+  transition: 'transform .4s'
 }))
 
 const getItemProps = (
@@ -88,6 +88,7 @@ const getItemProps = (
   const isViewerFacilitator = viewerId === facilitatorUserId
   const isDisabled = isViewerFacilitator ? !isNavigableByFacilitator : !isNavigable
   const onClick = () => gotoStageId!(stageId)
+
   return {
     isUnsyncedFacilitatorStage,
     isComplete: !!isComplete,
@@ -131,7 +132,8 @@ const AgendaItem = (props: Props) => {
     ref.current && ref.current.scrollIntoView({behavior: 'smooth'})
   }, [])
 
-  const handleClick = () => {
+  const handleClick = (event) => {
+    event.stopPropagation()
     UpdateAgendaItemMutation(
       atmosphere,
       {updatedAgendaItem: {id: agendaItemId, pinned: !pinned}},
@@ -146,7 +148,7 @@ const AgendaItem = (props: Props) => {
   const getIcon = () => {
     if (pinned) {
       if (hovering) return <SvgIcon alt='unpinIcon' src={unpinIcon} />
-      else return <SvgIcon alt='pinnedIcon' src={pinIcon} pinned />
+      else return <SvgIcon alt='pinnedIcon' src={pinIcon} />
     } else {
       if (hovering) return <SvgIcon alt='pinIcon' src={pinIcon} />
       else return <Avatar hasBadge={false} picture={picture} size={24} />
