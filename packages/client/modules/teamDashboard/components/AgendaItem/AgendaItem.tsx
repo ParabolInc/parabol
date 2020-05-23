@@ -45,16 +45,16 @@ const IconBlock = styled('div')({
   alignItems: 'center',
   justifyContent: 'center',
   marginRight: '4px',
+  // transform: 'rotate(45deg) scaleX(1)',
+  width: '2rem',
   '&:hover': {
     cursor: 'pointer'
   }
 })
 
-const SvgIcon = styled('img')<{pinned?: boolean}>(({pinned}) => ({
-  opacity: 0.6,
-  transform: pinned ? 'rotate(45deg) scaleX(1)' : undefined,
-  transition: 'transform .4s'
-}))
+const SvgIcon = styled('img')({
+  opacity: 0.7
+})
 
 const getItemProps = (
   activeMeetings: AgendaItem_activeMeetings,
@@ -132,8 +132,8 @@ const AgendaItem = (props: Props) => {
     ref.current && ref.current.scrollIntoView({behavior: 'smooth'})
   }, [])
 
-  const handleClick = (event) => {
-    event.stopPropagation()
+  const handleClick = (e: React.MouseEvent) => {
+    e.stopPropagation()
     UpdateAgendaItemMutation(
       atmosphere,
       {updatedAgendaItem: {id: agendaItemId, pinned: !pinned}},
@@ -146,21 +146,24 @@ const AgendaItem = (props: Props) => {
   }
 
   const getIcon = () => {
-    if (pinned) {
-      if (hovering) return <SvgIcon alt='unpinIcon' src={unpinIcon} />
-      else return <SvgIcon alt='pinnedIcon' src={pinIcon} />
-    } else {
-      if (hovering) return <SvgIcon alt='pinIcon' src={pinIcon} />
-      else return <Avatar hasBadge={false} picture={picture} size={24} />
-    }
+    if (pinned && hovering) return <SvgIcon alt='unpinIcon' src={unpinIcon} />
+    else if (!pinned && !hovering) return <Avatar hasBadge={false} picture={picture} size={24} />
+    else return <SvgIcon alt='pinnedIcon' src={pinIcon} />
+  }
+
+  const handleMouseEnter = (e) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setHovering(true)
+  }
+  const handleMouseLeave = (e) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setHovering(false)
   }
 
   return (
-    <AgendaItemStyles
-      onMouseEnter={() => setHovering(true)}
-      onMouseLeave={() => setHovering(false)}
-      title={content}
-    >
+    <AgendaItemStyles onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
       <MeetingSubnavItem
         label={content}
         metaContent={

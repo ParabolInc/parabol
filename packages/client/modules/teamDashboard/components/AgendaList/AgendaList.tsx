@@ -81,12 +81,16 @@ const AgendaList = (props: Props) => {
     return <AgendaListEmptyState isDashboard={!meetingId} />
   }
 
+  const handleMouseEnter = (e) => {
+    e.preventDefault()
+  }
+
   return (
     <DragDropContext onDragEnd={onDragEnd}>
       <Droppable droppableId={AGENDA_ITEM}>
         {(provided) => {
           return (
-            <AgendaListRoot ref={provided.innerRef}>
+            <AgendaListRoot onMouseOver={handleMouseEnter} ref={provided.innerRef}>
               {filteredAgendaItems.map((item, idx) => {
                 return (
                   <Draggable key={item.id} draggableId={item.id} index={idx}>
