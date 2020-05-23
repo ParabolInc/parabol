@@ -78,7 +78,7 @@ const AgendaList = (props: Props) => {
     )
   })
 
-  const handleLeave = () => {
+  const handleMouseLeave = () => {
     setHoveringId('')
   }
 
@@ -95,7 +95,7 @@ const AgendaList = (props: Props) => {
       <Droppable droppableId={AGENDA_ITEM}>
         {(provided) => {
           return (
-            <AgendaListRoot onMouseLeave={handleLeave} ref={provided.innerRef}>
+            <AgendaListRoot onMouseLeave={handleMouseLeave} ref={provided.innerRef}>
               {filteredAgendaItems.map((item, idx) => {
                 return (
                   <Draggable key={item.id} draggableId={item.id} index={idx}>
