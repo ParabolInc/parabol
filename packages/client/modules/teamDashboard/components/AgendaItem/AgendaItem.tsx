@@ -45,7 +45,6 @@ const IconBlock = styled('div')({
   alignItems: 'center',
   justifyContent: 'center',
   marginRight: '4px',
-  // transform: 'rotate(45deg) scaleX(1)',
   width: '2rem',
   '&:hover': {
     cursor: 'pointer'
