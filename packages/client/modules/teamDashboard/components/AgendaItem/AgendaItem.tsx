@@ -181,7 +181,9 @@ const AgendaItem = (props: Props) => {
               {getIcon()}
             </IconBlock>
             {tooltipPortal(
-              pinned ? `Unpin "${content}" from every meeting` : `Pin "${content}" to every meeting`
+              pinned
+                ? `Unpin "${content}" from every check-in`
+                : `Pin "${content}" to every check-in`
             )}
           </>
         }
