@@ -43,7 +43,8 @@ const useTooltip = <T extends HTMLElement = HTMLElement>(
     openTooltip,
     closeTooltip,
     originRef,
-    tooltipPortal
+    tooltipPortal,
+    portalStatus
   }
 }
 

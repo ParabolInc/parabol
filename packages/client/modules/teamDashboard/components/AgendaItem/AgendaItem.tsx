@@ -21,6 +21,8 @@ import pinIcon from '../../../../styles/theme/images/icons/pin.svg'
 import unpinIcon from '../../../../styles/theme/images/icons/unpin.svg'
 
 const AgendaItemStyles = styled('div')({
+  display: 'flex',
+  alignSelf: 'center',
   position: 'relative',
   // show the DeleteIconButton on hover
   '&:hover > button': {
@@ -43,9 +45,13 @@ const DeleteIconButton = styled(IconButton)<{disabled?: boolean}>(({disabled}) =
 const IconBlock = styled('div')({
   display: 'flex',
   alignItems: 'center',
+  alignSelf: 'center',
   justifyContent: 'center',
   marginRight: '4px',
   width: '2rem',
+  '&:active': {
+    opacity: 0.5
+  },
   '&:hover': {
     cursor: 'pointer'
   }
@@ -119,9 +125,13 @@ const AgendaItem = (props: Props) => {
     updateHoveringId
   } = props
   const {id: agendaItemId, content, pinned, teamMember} = agendaItem
-  const {tooltipPortal, openTooltip, closeTooltip, originRef} = useTooltip<HTMLDivElement>(
-    content.length > 52 ? MenuPosition.UPPER_LEFT : MenuPosition.UPPER_CENTER
-  )
+  const {
+    tooltipPortal,
+    openTooltip,
+    closeTooltip,
+    originRef,
+    portalStatus: tooltipStatus
+  } = useTooltip<HTMLDivElement>(MenuPosition.UPPER_CENTER)
   const {picture} = teamMember
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
@@ -139,6 +149,13 @@ const AgendaItem = (props: Props) => {
   useEffect(() => {
     ref.current && ref.current.scrollIntoView({behavior: 'smooth'})
   }, [])
+
+  useEffect(() => {
+    const closedTooltipStatus = 4
+    if (tooltipStatus === closedTooltipStatus) {
+      updateHoveringId('')
+    }
+  }, [tooltipStatus])
 
   const handleIconClick = (e: React.MouseEvent) => {
     e.stopPropagation()
