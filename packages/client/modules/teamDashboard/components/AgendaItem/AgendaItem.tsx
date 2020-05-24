@@ -21,8 +21,6 @@ import pinIcon from '../../../../styles/theme/images/icons/pin.svg'
 import unpinIcon from '../../../../styles/theme/images/icons/unpin.svg'
 
 const AgendaItemStyles = styled('div')({
-  display: 'flex',
-  alignSelf: 'center',
   position: 'relative',
   // show the DeleteIconButton on hover
   '&:hover > button': {
@@ -136,6 +134,7 @@ const AgendaItem = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
   const hovering = hoveringId === agendaItemId
+  const closedTooltipStatus = 4
   const ref = useRef<HTMLDivElement>(null)
   const {
     isDisabled,
@@ -151,8 +150,9 @@ const AgendaItem = (props: Props) => {
   }, [])
 
   useEffect(() => {
-    const closedTooltipStatus = 4
-    if (tooltipStatus === closedTooltipStatus) {
+    // if the tooltip has closed and we're not hovering in a new item, remove hover
+    // this is required because onMouseLeave isn't triggered if the cursor moves over the tooltip
+    if (tooltipStatus === closedTooltipStatus && hovering) {
       updateHoveringId('')
     }
   }, [tooltipStatus])
@@ -177,8 +177,15 @@ const AgendaItem = (props: Props) => {
   }
 
   const handleMouseMove = () => {
+    // onMouseEnter isn't triggered if the cursor quickly moves over tooltip so check onMouseMove
     if (!hovering) {
       updateHoveringId(agendaItemId)
+    }
+  }
+
+  const handleIconMove = () => {
+    if (hovering && tooltipStatus === closedTooltipStatus) {
+      openTooltip()
     }
   }
 
@@ -190,7 +197,7 @@ const AgendaItem = (props: Props) => {
           <>
             <IconBlock
               onClick={handleIconClick}
-              onMouseEnter={openTooltip}
+              onMouseMove={handleIconMove}
               onMouseLeave={closeTooltip}
               ref={originRef}
             >
