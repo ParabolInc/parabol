@@ -177,7 +177,7 @@ const AgendaItem = (props: Props) => {
     }
   }
 
-  const handleIconMove = () => {
+  const handleMouseMoveIcon = () => {
     if (hovering && tooltipStatus === closedTooltipStatus) {
       openTooltip()
     }
@@ -197,7 +197,7 @@ const AgendaItem = (props: Props) => {
           <>
             <IconBlock
               onClick={handleIconClick}
-              onMouseMove={handleIconMove}
+              onMouseMove={handleMouseMoveIcon}
               onMouseLeave={closeTooltip}
               ref={originRef}
             >
