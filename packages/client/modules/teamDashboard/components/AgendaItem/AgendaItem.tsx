@@ -46,6 +46,9 @@ const IconBlock = styled('div')({
   justifyContent: 'center',
   marginRight: '4px',
   width: '2rem',
+  '&:active': {
+    opacity: 0.8
+  },
   '&:hover': {
     cursor: 'pointer'
   }
@@ -119,13 +122,18 @@ const AgendaItem = (props: Props) => {
     updateHoveringId
   } = props
   const {id: agendaItemId, content, pinned, teamMember} = agendaItem
-  const {tooltipPortal, openTooltip, closeTooltip, originRef} = useTooltip<HTMLDivElement>(
-    content.length > 52 ? MenuPosition.UPPER_LEFT : MenuPosition.UPPER_CENTER
-  )
+  const {
+    tooltipPortal,
+    openTooltip,
+    closeTooltip,
+    originRef,
+    portalStatus: tooltipStatus
+  } = useTooltip<HTMLDivElement>(MenuPosition.UPPER_CENTER)
   const {picture} = teamMember
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
   const hovering = hoveringId === agendaItemId
+  const closedTooltipStatus = 4
   const ref = useRef<HTMLDivElement>(null)
   const {
     isDisabled,
@@ -140,6 +148,14 @@ const AgendaItem = (props: Props) => {
     ref.current && ref.current.scrollIntoView({behavior: 'smooth'})
   }, [])
 
+  useEffect(() => {
+    // if the tooltip has closed and we're not hovering in a new item, remove hover
+    // this is required because onMouseLeave isn't triggered if the cursor moves over the tooltip
+    if (tooltipStatus === closedTooltipStatus && hovering) {
+      updateHoveringId('')
+    }
+  }, [tooltipStatus])
+
   const handleIconClick = (e: React.MouseEvent) => {
     e.stopPropagation()
     UpdateAgendaItemMutation(
@@ -153,16 +169,23 @@ const AgendaItem = (props: Props) => {
     RemoveAgendaItemMutation(atmosphere, {agendaItemId})
   }
 
+  const handleMouseMove = () => {
+    // onMouseEnter isn't triggered if the cursor quickly moves over tooltip so check onMouseMove
+    if (!hovering) {
+      updateHoveringId(agendaItemId)
+    }
+  }
+
+  const handleMouseMoveIcon = () => {
+    if (hovering && tooltipStatus === closedTooltipStatus) {
+      openTooltip()
+    }
+  }
+
   const getIcon = () => {
     if (pinned && hovering) return <SvgIcon alt='unpinIcon' src={unpinIcon} />
     else if (!pinned && !hovering) return <Avatar hasBadge={false} picture={picture} size={24} />
     else return <SvgIcon alt='pinnedIcon' src={pinIcon} />
-  }
-
-  const handleMouseMove = () => {
-    if (!hovering) {
-      updateHoveringId(agendaItemId)
-    }
   }
 
   return (
@@ -173,7 +196,7 @@ const AgendaItem = (props: Props) => {
           <>
             <IconBlock
               onClick={handleIconClick}
-              onMouseEnter={openTooltip}
+              onMouseMove={handleMouseMoveIcon}
               onMouseLeave={closeTooltip}
               ref={originRef}
             >
