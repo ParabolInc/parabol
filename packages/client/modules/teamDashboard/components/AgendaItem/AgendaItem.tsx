@@ -48,7 +48,7 @@ const IconBlock = styled('div')({
   marginRight: '4px',
   width: '2rem',
   '&:active': {
-    opacity: 0.5
+    opacity: 0.8
   },
   '&:hover': {
     cursor: 'pointer'
@@ -170,12 +170,6 @@ const AgendaItem = (props: Props) => {
     RemoveAgendaItemMutation(atmosphere, {agendaItemId})
   }
 
-  const getIcon = () => {
-    if (pinned && hovering) return <SvgIcon alt='unpinIcon' src={unpinIcon} />
-    else if (!pinned && !hovering) return <Avatar hasBadge={false} picture={picture} size={24} />
-    else return <SvgIcon alt='pinnedIcon' src={pinIcon} />
-  }
-
   const handleMouseMove = () => {
     // onMouseEnter isn't triggered if the cursor quickly moves over tooltip so check onMouseMove
     if (!hovering) {
@@ -187,6 +181,12 @@ const AgendaItem = (props: Props) => {
     if (hovering && tooltipStatus === closedTooltipStatus) {
       openTooltip()
     }
+  }
+
+  const getIcon = () => {
+    if (pinned && hovering) return <SvgIcon alt='unpinIcon' src={unpinIcon} />
+    else if (!pinned && !hovering) return <Avatar hasBadge={false} picture={picture} size={24} />
+    else return <SvgIcon alt='pinnedIcon' src={pinIcon} />
   }
 
   return (
