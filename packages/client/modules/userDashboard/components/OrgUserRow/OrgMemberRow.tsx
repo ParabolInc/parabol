@@ -74,7 +74,8 @@ interface Props extends WithMutationProps, WithAtmosphereProps {
 
 const StyledButton = styled(FlatButton)({
   paddingLeft: 0,
-  paddingRight: 0
+  paddingRight: 0,
+  width: '100%'
 })
 
 const StyledFlatButton = styled(FlatButton)({
