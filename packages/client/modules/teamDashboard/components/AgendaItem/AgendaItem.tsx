@@ -41,13 +41,13 @@ const DeleteIconButton = styled(IconButton)<{disabled?: boolean}>(({disabled}) =
 }))
 
 const IconBlock = styled('div')({
-  display: 'flex',
   alignItems: 'center',
+  display: 'flex',
   justifyContent: 'center',
   marginRight: '4px',
   width: '2rem',
   '&:active': {
-    opacity: 0.8
+    opacity: 0.7
   },
   '&:hover': {
     cursor: 'pointer'
@@ -105,10 +105,10 @@ interface Props {
   activeMeetings: AgendaItem_activeMeetings
   agendaItem: AgendaItem_agendaItem
   gotoStageId: ReturnType<typeof useGotoStageId> | undefined
-  hoveringId: string
+  hoveringId: string | null
   isDragging: boolean
   meetingId?: string | null
-  updateHoveringId: (id: string) => void
+  updateHoveringId: (id: string | null) => void
 }
 
 const AgendaItem = (props: Props) => {
@@ -132,7 +132,7 @@ const AgendaItem = (props: Props) => {
   const {picture} = teamMember
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
-  const hovering = hoveringId === agendaItemId
+  const isHovering = hoveringId === agendaItemId
   const closedTooltipStatus = 4
   const ref = useRef<HTMLDivElement>(null)
   const {
@@ -151,8 +151,8 @@ const AgendaItem = (props: Props) => {
   useEffect(() => {
     // if the tooltip has closed and we're not hovering in a new item, remove hover
     // this is required because onMouseLeave isn't triggered if the cursor moves over the tooltip
-    if (tooltipStatus === closedTooltipStatus && hovering) {
-      updateHoveringId('')
+    if (tooltipStatus === closedTooltipStatus && isHovering) {
+      updateHoveringId(null)
     }
   }, [tooltipStatus])
 
@@ -169,27 +169,27 @@ const AgendaItem = (props: Props) => {
     RemoveAgendaItemMutation(atmosphere, {agendaItemId})
   }
 
-  const handleMouseMove = () => {
+  const handleMouseMoveItem = () => {
     // onMouseEnter isn't triggered if the cursor quickly moves over tooltip so check onMouseMove
-    if (!hovering) {
+    if (!isHovering) {
       updateHoveringId(agendaItemId)
     }
   }
 
   const handleMouseMoveIcon = () => {
-    if (hovering && tooltipStatus === closedTooltipStatus) {
+    if (isHovering && tooltipStatus === closedTooltipStatus) {
       openTooltip()
     }
   }
 
   const getIcon = () => {
-    if (pinned && hovering) return <SvgIcon alt='unpinIcon' src={unpinIcon} />
-    else if (!pinned && !hovering) return <Avatar hasBadge={false} picture={picture} size={24} />
+    if (pinned && isHovering) return <SvgIcon alt='unpinIcon' src={unpinIcon} />
+    else if (!pinned && !isHovering) return <Avatar hasBadge={false} picture={picture} size={24} />
     else return <SvgIcon alt='pinnedIcon' src={pinIcon} />
   }
 
   return (
-    <AgendaItemStyles onMouseMove={handleMouseMove}>
+    <AgendaItemStyles onMouseMove={handleMouseMoveItem}>
       <MeetingSubnavItem
         label={content}
         metaContent={
