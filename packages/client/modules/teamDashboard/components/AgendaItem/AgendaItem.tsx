@@ -54,11 +54,9 @@ const IconBlock = styled('div')({
   }
 })
 
-const SvgIcon = styled('img')<{pinned?: boolean}>(({pinned}) => ({
-  opacity: 0.7,
-  transform: pinned ? 'rotate(45deg) scaleX(1)' : undefined,
-  transition: 'transform .2s'
-}))
+const SvgIcon = styled('img')({
+  opacity: 0.7
+})
 
 const getItemProps = (
   activeMeetings: AgendaItem_activeMeetings,
