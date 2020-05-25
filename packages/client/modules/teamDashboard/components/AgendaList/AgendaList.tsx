@@ -79,7 +79,7 @@ const AgendaList = (props: Props) => {
   })
 
   const handleMouseLeave = () => {
-    setHoveringId('')
+    setHoveringId(null)
   }
 
   const updateHoveringId = (id: string | null) => {
