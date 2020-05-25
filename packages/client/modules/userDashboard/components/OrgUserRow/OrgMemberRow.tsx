@@ -57,8 +57,7 @@ const ActionsBlock = styled('div')({
 })
 
 const MenuToggleBlock = styled('div')({
-  marginLeft: 8,
-  width: '2rem'
+  marginLeft: 8
 })
 
 const ToggleBlock = styled('div')({
@@ -75,7 +74,8 @@ interface Props extends WithMutationProps, WithAtmosphereProps {
 const StyledButton = styled(FlatButton)({
   paddingLeft: 0,
   paddingRight: 0,
-  width: '100%'
+  width: '100%',
+  zIndex: 0
 })
 
 const StyledFlatButton = styled(FlatButton)({
@@ -146,10 +146,20 @@ const OrgMemberRow = (props: Props) => {
       })
     }
   }
-
   const {tooltipPortal, openTooltip, closeTooltip, originRef: tooltipRef} = useTooltip<
     HTMLDivElement
   >(MenuPosition.LOWER_RIGHT)
+
+  const handleMouseOver = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    openTooltip()
+  }
+
+  const handleMouseOut = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    closeTooltip()
+  }
+
   return (
     <StyledRow>
       <AvatarBlock>
@@ -173,11 +183,9 @@ const OrgMemberRow = (props: Props) => {
       <RowActions>
         <ActionsBlock>
           {!isBillingLeader && viewerId === userId && (
-            <>
-              <StyledFlatButton onClick={toggleLeave} onMouseEnter={LeaveOrgModal.preload}>
-                Leave Organization
-              </StyledFlatButton>
-            </>
+            <StyledFlatButton onClick={toggleLeave} onMouseEnter={LeaveOrgModal.preload}>
+              Leave Organization
+            </StyledFlatButton>
           )}
           {isProTier && isViewerBillingLeader && (
             <ToggleBlock>
@@ -187,8 +195,8 @@ const OrgMemberRow = (props: Props) => {
           {isViewerLastBillingLeader && userId === viewerId && (
             <MenuToggleBlock
               onClick={closeTooltip}
-              onMouseEnter={openTooltip}
-              onMouseLeave={closeTooltip}
+              onMouseOver={handleMouseOver}
+              onMouseOut={handleMouseOut}
               ref={tooltipRef}
             >
               {tooltipPortal(

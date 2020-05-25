@@ -41,7 +41,7 @@ interface Props {
 const AgendaList = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {dashSearch, gotoStageId, meetingId, team} = props
-  const [hoveringId, setHoveringId] = useState('')
+  const [hoveringId, setHoveringId] = useState<string | null>(null)
   const {activeMeetings, agendaItems} = team
   const filteredAgendaItems = useMemo(() => {
     return dashSearch ? agendaItems.filter(({content}) => content.match(dashSearch)) : agendaItems
@@ -82,7 +82,7 @@ const AgendaList = (props: Props) => {
     setHoveringId('')
   }
 
-  const updateHoveringId = (id: string) => {
+  const updateHoveringId = (id: string | null) => {
     setHoveringId(id)
   }
 
