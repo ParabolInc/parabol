@@ -150,16 +150,6 @@ const OrgMemberRow = (props: Props) => {
     HTMLDivElement
   >(MenuPosition.LOWER_RIGHT)
 
-  const handleMouseOver = (e: React.MouseEvent) => {
-    e.stopPropagation()
-    openTooltip()
-  }
-
-  const handleMouseOut = (e: React.MouseEvent) => {
-    e.stopPropagation()
-    closeTooltip()
-  }
-
   return (
     <StyledRow>
       <AvatarBlock>
@@ -195,8 +185,8 @@ const OrgMemberRow = (props: Props) => {
           {isViewerLastBillingLeader && userId === viewerId && (
             <MenuToggleBlock
               onClick={closeTooltip}
-              onMouseOver={handleMouseOver}
-              onMouseOut={handleMouseOut}
+              onMouseOver={openTooltip}
+              onMouseOut={closeTooltip}
               ref={tooltipRef}
             >
               {tooltipPortal(
