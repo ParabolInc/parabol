@@ -57,7 +57,8 @@ const ActionsBlock = styled('div')({
 })
 
 const MenuToggleBlock = styled('div')({
-  marginLeft: 8
+  marginLeft: 8,
+  width: '2rem'
 })
 
 const ToggleBlock = styled('div')({
@@ -73,9 +74,7 @@ interface Props extends WithMutationProps, WithAtmosphereProps {
 
 const StyledButton = styled(FlatButton)({
   paddingLeft: 0,
-  paddingRight: 0,
-  width: '100%',
-  zIndex: 0
+  paddingRight: 0
 })
 
 const StyledFlatButton = styled(FlatButton)({
