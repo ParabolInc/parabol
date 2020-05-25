@@ -41,10 +41,6 @@ const DeleteIconButton = styled(IconButton)<{disabled?: boolean}>(({disabled}) =
 }))
 
 const IconBlock = styled('div')({
-  alignItems: 'center',
-  display: 'flex',
-  justifyContent: 'center',
-  marginRight: '4px',
   width: '2rem',
   '&:active': {
     opacity: 0.7
