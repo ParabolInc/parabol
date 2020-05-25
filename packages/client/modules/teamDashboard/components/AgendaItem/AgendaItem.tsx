@@ -47,7 +47,7 @@ const IconBlock = styled('div')({
   marginRight: '4px',
   width: '2rem',
   '&:active': {
-    opacity: 0.8
+    opacity: 0.7
   },
   '&:hover': {
     cursor: 'pointer'
@@ -56,7 +56,7 @@ const IconBlock = styled('div')({
 
 const SvgIcon = styled('img')<{pinned?: boolean}>(({pinned}) => ({
   opacity: 0.7,
-  transform: pinned ? 'rotate(45deg) scaleX(-1)' : undefined,
+  transform: pinned ? 'rotate(45deg) scaleX(1)' : undefined,
   transition: 'transform .2s'
 }))
 
@@ -187,7 +187,7 @@ const AgendaItem = (props: Props) => {
   const getIcon = () => {
     if (pinned && isHovering) return <SvgIcon alt='unpinIcon' src={unpinIcon} />
     else if (!pinned && !isHovering) return <Avatar hasBadge={false} picture={picture} size={24} />
-    else return <SvgIcon alt='pinnedIcon' pinned src={pinIcon} />
+    else return <SvgIcon alt='pinnedIcon' src={pinIcon} />
   }
 
   return (
