@@ -6,7 +6,6 @@ import {SummarySheet_meeting} from 'parabol-client/__generated__/SummarySheet_me
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import ExportToCSV from '../ExportToCSV'
-import SummaryEmailScheduleCalendar from '../SummaryEmailScheduleCalendar'
 import ContactUsFooter from './ContactUsFooter'
 import LogoFooter from './LogoFooter'
 import MeetingMembersWithoutTasks from './MeetingMembersWithoutTasks'
@@ -34,9 +33,8 @@ const sheetStyle = {
 }
 
 const SummarySheet = (props: Props) => {
-  const {emailCSVUrl, urlAction, meeting, meetingUrl, referrer, teamDashUrl} = props
-  const {id: meetingId, createdAt, meetingNumber, meetingType, team} = meeting
-  const {name: teamName} = team
+  const {emailCSVUrl, urlAction, meeting, referrer, teamDashUrl} = props
+  const {id: meetingId, meetingType} = meeting
   const isDemo = !!props.isDemo
   return (
     <table width='100%' height='100%' align='center' bgcolor='#FFFFFF' style={sheetStyle}>
