@@ -58,15 +58,6 @@ const SummarySheet = (props: Props) => {
         <MeetingMembersWithTasks meeting={meeting} />
         <MeetingMembersWithoutTasks meeting={meeting} />
         <RetroTopics isDemo={isDemo} isEmail={referrer === 'email'} meeting={meeting} />
-        {meetingType === ACTION && (
-          <SummaryEmailScheduleCalendar
-            isDemo={isDemo}
-            createdAt={createdAt}
-            meetingUrl={meetingUrl}
-            meetingNumber={meetingNumber}
-            teamName={teamName}
-          />
-        )}
         <ContactUsFooter
           isDemo={isDemo}
           hasLearningLink={meetingType === ACTION}
