@@ -146,7 +146,7 @@ const AgendaItem = (props: Props) => {
 
   useEffect(() => {
     // if the tooltip has closed and we're not hovering in a new item, remove hover
-    // this is required because onMouseLeave isn't triggered if the cursor moves over the tooltip
+    // this is required because onMouseLeave isn't triggered if the cursor leaves the sidebar through the tooltip
     if (tooltipStatus === closedTooltipStatus && isHovering) {
       updateHoveringId(null)
     }
