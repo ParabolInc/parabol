@@ -43,7 +43,7 @@ interface Props {
   getMaxSortOrder: () => number
   meeting: DiscussionThreadInput_meeting
   onSubmitCommentSuccess?: () => void
-  reflectionGroupId: string
+  threadSourceId: string
   threadParentId?: string
   isReply?: boolean
   isDisabled?: boolean
@@ -58,7 +58,7 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
     getMaxSortOrder,
     meeting,
     onSubmitCommentSuccess,
-    reflectionGroupId,
+    threadSourceId,
     threadParentId,
     replyMention,
     setReplyMention,
@@ -96,7 +96,7 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
       content: rawContent,
       isAnonymous: isAnonymousComment,
       meetingId,
-      threadId: reflectionGroupId,
+      threadId: threadSourceId,
       threadParentId,
       threadSource: ThreadSourceEnum.REFLECTION_GROUP,
       threadSortOrder: getMaxSortOrder() + SORT_STEP + dndNoise()
@@ -145,7 +145,7 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
         getMaxSortOrder={getMaxSortOrder}
         commentSubmitState={commentSubmitState}
         meeting={meeting}
-        reflectionGroupId={reflectionGroupId}
+        threadSourceId={threadSourceId}
         threadParentId={threadParentId}
         collapseAddTask={collapseAddTask}
         onSubmit={onSubmit}

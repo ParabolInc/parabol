@@ -13,7 +13,7 @@ import {ReplyMention, SetReplyMention} from './ThreadedItem'
 interface Props {
   threadable: ThreadedItemReply_threadable
   editorRef: RefObject<HTMLTextAreaElement>
-  reflectionGroupId: string
+  threadSourceId: string
   meeting: ThreadedItemReply_meeting
   replyMention?: ReplyMention
   setReplyMention: SetReplyMention
@@ -25,7 +25,7 @@ const ThreadedItemReply = (props: Props) => {
     replyMention,
     threadable,
     editorRef,
-    reflectionGroupId,
+    threadSourceId,
     meeting,
     setReplyMention,
     dataCy
@@ -67,7 +67,7 @@ const ThreadedItemReply = (props: Props) => {
       getMaxSortOrder={getMaxSortOrder}
       meeting={meeting}
       onSubmitCommentSuccess={clearReplyingToCommentId}
-      reflectionGroupId={reflectionGroupId}
+      threadSourceId={threadSourceId}
       setReplyMention={setReplyMention}
       threadParentId={threadableId}
     />

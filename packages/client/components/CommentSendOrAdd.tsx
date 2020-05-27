@@ -76,7 +76,7 @@ interface Props {
   commentSubmitState: CommentSubmitState
   getMaxSortOrder: () => number
   meeting: CommentSendOrAdd_meeting
-  reflectionGroupId: string
+  threadSourceId: string
   threadParentId?: string
   onSubmit: () => void
   dataCy: string
@@ -88,7 +88,7 @@ const CommentSendOrAdd = (props: Props) => {
     commentSubmitState,
     getMaxSortOrder,
     meeting,
-    reflectionGroupId,
+    threadSourceId,
     threadParentId,
     onSubmit,
     dataCy
@@ -108,7 +108,7 @@ const CommentSendOrAdd = (props: Props) => {
       status: TaskStatusEnum.active,
       sortOrder: dndNoise(),
       meetingId,
-      threadId: reflectionGroupId,
+      threadId: threadSourceId,
       threadParentId,
       threadSource: ThreadSourceEnum.REFLECTION_GROUP,
       threadSortOrder: getMaxSortOrder() + SORT_STEP + dndNoise(),
