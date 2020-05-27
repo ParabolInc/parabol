@@ -1,5 +1,5 @@
-import TimelineEventCheckinComplete from 'server/database/types/TimelineEventCheckinComplete'
-import TimelineEventRetroComplete from 'server/database/types/TimelineEventRetroComplete'
+import TimelineEventCheckinComplete from 'parabol-server/database/types/TimelineEventCheckinComplete'
+import TimelineEventRetroComplete from 'parabol-server/database/types/TimelineEventRetroComplete'
 import getRethink from '../database/rethinkDriver'
 import LoaderMakerForeign from './LoaderMakerForeign'
 

@@ -2,6 +2,7 @@ import {GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel, Threshold} from 'parabol-client/types/constEnums'
 import {SuggestedActionTypeEnum, TierEnum} from 'parabol-client/types/graphql'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
+import segmentIo from 'parabol-server/utils/segmentIo'
 import shortid from 'shortid'
 import getRethink from '../../database/rethinkDriver'
 import AuthToken from '../../database/types/AuthToken'
@@ -9,7 +10,6 @@ import removeSuggestedAction from '../../safeMutations/removeSuggestedAction'
 import {getUserId, isUserInOrg} from '../../utils/authorization'
 import encodeAuthToken from '../../utils/encodeAuthToken'
 import publish from '../../utils/publish'
-import sendSegmentEvent from '../../utils/sendSegmentEvent'
 import standardError from '../../utils/standardError'
 import rateLimit from '../rateLimit'
 import AddTeamPayload from '../types/AddTeamPayload'
@@ -75,11 +75,15 @@ export default {
       const {tms} = authToken
       // MUTATIVE
       tms.push(teamId)
-      sendSegmentEvent('New Team', viewerId, {
-        orgId,
-        teamId,
-        teamNumber: orgTeams.length + 1
-      }).catch()
+      segmentIo.track({
+        userId: viewerId,
+        event: 'New Team',
+        properties: {
+          orgId,
+          teamId,
+          teamNumber: orgTeams.length + 1
+        }
+      })
       publish(SubscriptionChannel.NOTIFICATION, viewerId, 'AuthTokenPayload', {tms})
       const teamMemberId = toTeamMemberId(teamId, viewerId)
       const data = {

@@ -1,11 +1,11 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import segmentIo from 'parabol-server/utils/segmentIo'
 import getRethink from '../../database/rethinkDriver'
 import NotificationTeamArchived from '../../database/types/NotificationTeamArchived'
 import safeArchiveTeam from '../../safeMutations/safeArchiveTeam'
 import {getUserId, isTeamLead} from '../../utils/authorization'
 import publish from '../../utils/publish'
-import sendSegmentEvent from '../../utils/sendSegmentEvent'
 import standardError from '../../utils/standardError'
 import ArchiveTeamPayload from '../types/ArchiveTeamPayload'
 
@@ -29,7 +29,13 @@ export default {
     }
 
     // RESOLUTION
-    sendSegmentEvent('Archive Team', viewerId, {teamId}).catch()
+    segmentIo.track({
+      userId: viewerId,
+      event: 'Archive Team',
+      properties: {
+        teamId
+      }
+    })
     const {team, users, removedSuggestedActionIds} = await safeArchiveTeam(teamId)
 
     if (!team) {

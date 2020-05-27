@@ -1,15 +1,15 @@
 import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import stringSimilarity from 'string-similarity'
 import {
   IUpdateReflectionGroupTitleOnMutationArguments,
   NewMeetingPhaseTypeEnum
 } from 'parabol-client/types/graphql'
 import isPhaseComplete from 'parabol-client/utils/meetings/isPhaseComplete'
+import segmentIo from 'parabol-server/utils/segmentIo'
+import stringSimilarity from 'string-similarity'
 import getRethink from '../../database/rethinkDriver'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
-import sendSegmentEvent from '../../utils/sendSegmentEvent'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import UpdateReflectionGroupTitlePayload from '../types/UpdateReflectionGroupTitlePayload'
@@ -84,11 +84,15 @@ export default {
     if (smartTitle && smartTitle === oldTitle) {
       // let's see how smart those smart titles really are. A high similarity means very helpful. Not calling this mutation means perfect!
       const similarity = stringSimilarity.compareTwoStrings(smartTitle, normalizedTitle)
-      sendSegmentEvent('Smart group title changed', viewerId, {
-        similarity,
-        smartTitle,
-        title: normalizedTitle
-      }).catch()
+      segmentIo.track({
+        userId: viewerId,
+        event: 'Smart group title changed',
+        properties: {
+          similarity,
+          smartTitle,
+          title: normalizedTitle
+        }
+      })
     }
 
     const data = {meetingId, reflectionGroupId}

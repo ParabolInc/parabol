@@ -1,13 +1,13 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import segmentIo from 'parabol-server/utils/segmentIo'
 import getRethink from '../../database/rethinkDriver'
+import Meeting from '../../database/types/Meeting'
 import {getUserId, isTeamMember} from '../../utils/authorization'
-import PayLaterPayload from '../types/PayLaterPayload'
+import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
-import sendSegmentEvent from '../../utils/sendSegmentEvent'
-import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import publish from '../../utils/publish'
-import Meeting from '../../database/types/Meeting'
+import PayLaterPayload from '../types/PayLaterPayload'
 
 export default {
   type: new GraphQLNonNull(PayLaterPayload),
@@ -65,10 +65,14 @@ export default {
       .run()
 
     const organization = await dataLoader.get('organizations').load(orgId)
-    sendSegmentEvent('Conversion Modal Pay Later Clicked', viewerId, {
-      payLaterOrgId: orgId,
-      payLaterClickCount: organization.payLaterClickCount
-    }).catch()
+    segmentIo.track({
+      userId: viewerId,
+      event: 'Conversion Modal Pay Later Clicked',
+      properties: {
+        payLaterOrgId: orgId,
+        payLaterClickCount: organization.payLaterClickCount
+      }
+    })
     const data = {orgId, meetingId}
     publish(SubscriptionChannel.ORGANIZATION, orgId, 'PayLaterPayload', data, subOptions)
     return {orgId, meetingId}

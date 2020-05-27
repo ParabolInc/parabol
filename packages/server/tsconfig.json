@@ -3,6 +3,9 @@
   "compilerOptions": {
     "baseUrl": "../",
     "paths": {
+      "server/*": [
+        ""
+      ],
       "parabol-client/*": [
         "client/*"
       ],
@@ -10,7 +13,6 @@
         "client/*"
       ]
     },
-    "outDir": "lib",
     "lib": [
       "esnext",
       "dom"
@@ -21,17 +23,18 @@
   },
   "files": [
     "types/modules.d.ts",
+    "server.ts",
     "email/components/SummaryEmail/MeetingSummaryEmail/MeetingSummaryEmail.tsx",
-    "email/components/MeetingSummaryEmailRootSSR.tsx",
-    "utils/updateGQLSchema.ts"
+    // "email/components/MeetingSummaryEmailRootSSR.tsx",
+    // "utils/updateGQLSchema.ts"
   ],
   "exclude": [
     "**/node_modules",
   ],
-  "include": [
-    "*",
-    "database/migrations/*",
-    "./.eslintrc.js",
-    "**/*.json",
-  ]
+  // "include": [
+  // "**/*",
+  // "database/migrations/*",
+  // "./.eslintrc.js",
+  // "**/*.json",
+  // ]
 }

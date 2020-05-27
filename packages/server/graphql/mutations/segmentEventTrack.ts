@@ -1,12 +1,12 @@
 import {GraphQLBoolean, GraphQLNonNull} from 'graphql'
+import {ISegmentEventTrackOnMutationArguments} from 'parabol-client/types/graphql'
+import segmentIo from 'parabol-server/utils/segmentIo'
 import getRethink from '../../database/rethinkDriver'
+import {getUserId, isTeamMember, isUserBillingLeader} from '../../utils/authorization'
+import standardError from '../../utils/standardError'
 import {DataLoaderWorker} from '../graphql'
 import SegmentClientEventEnum from '../types/SegmentClientEventEnum'
 import SegmentEventTrackOptions from '../types/SegmentEventTrackOptions'
-import {getUserId, isTeamMember, isUserBillingLeader} from '../../utils/authorization'
-import sendSegmentEvent from '../../utils/sendSegmentEvent'
-import standardError from '../../utils/standardError'
-import {ISegmentEventTrackOnMutationArguments} from 'parabol-client/types/graphql'
 
 const extraOptionsCreator = {
   HelpMenuOpen: async (viewerId: string, _dataLoader: DataLoaderWorker, _options: object) => {
@@ -67,7 +67,14 @@ export default {
     const getExtraOptions = extraOptionsCreator[event]
     const extraOptions = getExtraOptions ? await getExtraOptions(viewerId, dataLoader, options) : {}
     const eventName = eventNameLookup[event]
-    sendSegmentEvent(eventName, viewerId, {...options, ...extraOptions}).catch()
+    segmentIo.track({
+      userId: viewerId,
+      event: eventName,
+      properties: {
+        ...options,
+        ...extraOptions
+      }
+    })
     return true
   }
 }

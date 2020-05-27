@@ -3,6 +3,7 @@ import promisify from 'es6-promisify'
 import {GraphQLID, GraphQLList, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {SuggestedActionTypeEnum} from 'parabol-client/types/graphql'
+import segmentIo from 'parabol-server/utils/segmentIo'
 import getRethink from '../../database/rethinkDriver'
 import NotificationTeamInvitation from '../../database/types/NotificationTeamInvitation'
 import TeamInvitation from '../../database/types/TeamInvitation'
@@ -13,7 +14,6 @@ import {getUserId, isTeamMember} from '../../utils/authorization'
 import getBestInvitationMeeting from '../../utils/getBestInvitationMeeting'
 import makeAppLink from '../../utils/makeAppLink'
 import publish from '../../utils/publish'
-import sendSegmentEvent from '../../utils/sendSegmentEvent'
 import {TEAM_INVITATION_LIFESPAN} from '../../utils/serverConstants'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
@@ -178,13 +178,21 @@ export default {
           subOptions
         )
       })
-      sendSegmentEvent('Invite Email Sent', viewerId, {
-        teamId,
-        invitees: successfulInvitees
-      }).catch()
+      segmentIo.track({
+        userId: viewerId,
+        event: 'Invite Email Sent',
+        properties: {
+          teamId,
+          invitees: successfulInvitees
+        }
+      })
       const inviteTo = meetingId ? 'meeting' : 'team'
       successfulInvitees.forEach((invitee) => {
-        sendSegmentEvent('Invite Non-Parabol User', viewerId, {invitee, inviteTo})
+        segmentIo.track({
+          userId: viewerId,
+          event: 'Invite Non-Parabol User',
+          properties: {invitee, inviteTo}
+        })
       })
       return data
     }

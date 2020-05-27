@@ -1,11 +1,11 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {TierEnum} from 'parabol-client/types/graphql'
+import segmentIo from 'parabol-server/utils/segmentIo'
 import getRethink from '../../database/rethinkDriver'
 import safeArchiveTeam from '../../safeMutations/safeArchiveTeam'
 import {getUserId, isSuperUser, isUserBillingLeader} from '../../utils/authorization'
 import publish from '../../utils/publish'
-import sendSegmentEvent from '../../utils/sendSegmentEvent'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import ArchiveOrganizationPayload from '../types/ArchiveOrganizationPayload'
@@ -41,7 +41,13 @@ export default {
     }
 
     // RESOLUTION
-    sendSegmentEvent('Archive Organization', viewerId, {orgId}).catch()
+    segmentIo.track({
+      userId: viewerId,
+      event: 'Archive Organization',
+      properties: {
+        orgId
+      }
+    })
     const teams = await dataLoader.get('teamsByOrgId').load(orgId)
     const teamIds = teams.map(({id}) => id)
     const teamArchiveResults = (await Promise.all(

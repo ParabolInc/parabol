@@ -1,17 +1,17 @@
 import {GraphQLFloat, GraphQLID, GraphQLNonNull} from 'graphql'
-import getRethink from '../../database/rethinkDriver'
-import SetStageTimerPayload from '../types/SetStageTimerPayload'
-import publish from '../../utils/publish'
-import {getUserId, isTeamMember} from '../../utils/authorization'
-import standardError from '../../utils/standardError'
-import GraphQLISO8601Type from '../types/GraphQLISO8601Type'
-import {GQLContext} from '../graphql'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import findStageById from 'parabol-client/utils/meetings/findStageById'
+import segmentIo from 'parabol-server/utils/segmentIo'
+import getRethink from '../../database/rethinkDriver'
 import ScheduledJobMeetingStageTimeLimit from '../../database/types/ScheduledJobMetingStageTimeLimit'
-import removeScheduledJobs from './helpers/removeScheduledJobs'
+import {getUserId, isTeamMember} from '../../utils/authorization'
+import publish from '../../utils/publish'
+import standardError from '../../utils/standardError'
+import {GQLContext} from '../graphql'
+import GraphQLISO8601Type from '../types/GraphQLISO8601Type'
+import SetStageTimerPayload from '../types/SetStageTimerPayload'
 import {notifySlackTimeLimitStart} from './helpers/notifySlack'
-import sendSegmentEvent from '../../utils/sendSegmentEvent'
-import {MeetingLabels, SubscriptionChannel} from 'parabol-client/types/constEnums'
+import removeScheduledJobs from './helpers/removeScheduledJobs'
 
 const BAD_CLOCK_THRESH = 2000
 const AVG_PING = 150
@@ -115,25 +115,24 @@ export default {
 
     const data = {meetingId, stageId: facilitatorStageId}
     const {isAsync, phaseType, startAt, viewCount} = stage
-    const segmentOptions = {
-      isAsync,
-      meetingId,
-      newScheduledEndTime,
-      phaseType,
-      previousScheduledEndTime: scheduledEndTime,
-      stageStartAt: startAt,
-      timeRemaining,
-      viewCount
-    }
-    const stoppedOrStarted = newScheduledEndTime
-      ? `Meeting ${MeetingLabels.TIMER} Started`
-      : `Meeting ${MeetingLabels.TIMER} Stopped`
+    const stoppedOrStarted = newScheduledEndTime ? `Meeting Timer Started` : `Meeting Timer Stopped`
     const eventName =
-      scheduledEndTime && newScheduledEndTime
-        ? `Meeting ${MeetingLabels.TIMER} Updated`
-        : stoppedOrStarted
+      scheduledEndTime && newScheduledEndTime ? `Meeting Timer Updated` : stoppedOrStarted
     publish(SubscriptionChannel.MEETING, meetingId, 'SetStageTimerPayload', data, subOptions)
-    sendSegmentEvent(eventName, viewerId, segmentOptions).catch()
+    segmentIo.track({
+      userId: viewerId,
+      event: eventName,
+      properties: {
+        isAsync,
+        meetingId,
+        newScheduledEndTime,
+        phaseType,
+        previousScheduledEndTime: scheduledEndTime,
+        stageStartAt: startAt,
+        timeRemaining,
+        viewCount
+      }
+    })
     return data
   }
 }

@@ -5,7 +5,6 @@ import InvoiceItemHook from '../../database/types/InvoiceItemHook'
 import Organization from '../../database/types/Organization'
 import OrganizationUser from '../../database/types/OrganizationUser'
 import {toEpochSeconds} from '../../utils/epochTime'
-import {sendSegmentIdentify} from '../../utils/sendSegmentEvent'
 import handleEnterpriseOrgQuantityChanges from './handleEnterpriseOrgQuantityChanges'
 import processInvoiceItemHook from './processInvoiceItemHook'
 
@@ -134,7 +133,4 @@ export default async function adjustUserCount(
   hooks.forEach((hook) => {
     processInvoiceItemHook(hook.stripeSubscriptionId).catch()
   })
-
-  // publish any changes to user traits (like tier counts) to segment:
-  sendSegmentIdentify(userId).catch()
 }

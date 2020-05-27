@@ -6,7 +6,6 @@ import groupReflections from 'parabol-client/utils/smartGroup/groupReflections'
 import getRethink from '../../database/rethinkDriver'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
-import sendSegmentEvent from '../../utils/sendSegmentEvent'
 import standardError from '../../utils/standardError'
 import AutoGroupReflectionsPayload from '../types/AutoGroupReflectionsPayload'
 
@@ -108,7 +107,6 @@ export default {
     const reflectionIds = groupedReflections.map(({id}) => id)
     const data = {meetingId, reflectionGroupIds, reflectionIds, removedReflectionGroupIds}
     publish(SubscriptionChannel.MEETING, meetingId, 'AutoGroupReflectionsPayload', data, subOptions)
-    sendSegmentEvent('Autogroup', viewerId, {meetingId})
     return data
   }
 }

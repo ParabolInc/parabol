@@ -5,7 +5,6 @@ import getRethink from '../../database/rethinkDriver'
 import NotificationPromoteToBillingLeader from '../../database/types/NotificationPromoteToBillingLeader'
 import {getUserId, isUserBillingLeader} from '../../utils/authorization'
 import publish from '../../utils/publish'
-import {sendSegmentIdentify} from '../../utils/sendSegmentEvent'
 import standardError from '../../utils/standardError'
 import SetOrgUserRolePayload from '../types/SetOrgUserRolePayload'
 
@@ -96,7 +95,6 @@ export default {
         data,
         subOptions
       )
-      await sendSegmentIdentify(userId)
       return data
     }
     if (role === null) {
@@ -115,7 +113,6 @@ export default {
         data,
         subOptions
       )
-      await sendSegmentIdentify(userId)
       return data
     }
     return null

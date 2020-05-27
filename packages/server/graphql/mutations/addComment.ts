@@ -1,7 +1,9 @@
 import {GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import {IAddCommentOnMutationArguments, NewMeetingPhaseTypeEnum} from 'parabol-client/types/graphql'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import normalizeRawDraftJS from 'parabol-client/validation/normalizeRawDraftJS'
+import segmentIo from 'parabol-server/utils/segmentIo'
 import getRethink from '../../database/rethinkDriver'
 import Comment from '../../database/types/Comment'
 import {getUserId} from '../../utils/authorization'
@@ -10,11 +12,6 @@ import {GQLContext} from '../graphql'
 import AddCommentInput from '../types/AddCommentInput'
 import AddCommentPayload from '../types/AddCommentPayload'
 import validateThreadableReflectionGroupId from './validateThreadableReflectionGroupId'
-import {
-  IAddCommentOnMutationArguments,
-  NewMeetingPhaseTypeEnum
-} from 'parabol-client/types/graphql'
-import sendSegmentEvent from '../../utils/sendSegmentEvent'
 
 const addComment = {
   type: GraphQLNonNull(AddCommentPayload),
@@ -69,13 +66,17 @@ const addComment = {
     )!
     const {stages} = discussPhase
     const isAsync = stages.some((stage) => stage.isAsync)
-    sendSegmentEvent('Comment added', viewerId, {
-      meetingId,
-      teamId,
-      isAnonymous,
-      isAsync,
-      isReply: !!threadParentId
-    }).catch()
+    segmentIo.track({
+      userId: viewerId,
+      event: 'Comment added',
+      properties: {
+        meetingId,
+        teamId,
+        isAnonymous,
+        isAsync,
+        isReply: !!threadParentId
+      }
+    })
     publish(SubscriptionChannel.MEETING, meetingId, 'AddCommentSuccess', data, subOptions)
     return data
   }

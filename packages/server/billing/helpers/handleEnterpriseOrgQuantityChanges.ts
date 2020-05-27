@@ -1,7 +1,7 @@
 import {OrgUserRole, TierEnum} from 'parabol-client/types/graphql'
+import segmentIo from 'parabol-server/utils/segmentIo'
 import getRethink from '../../database/rethinkDriver'
 import Organization from '../../database/types/Organization'
-import sendSegmentEvent from '../../utils/sendSegmentEvent'
 import StripeManager from '../../utils/StripeManager'
 
 const sendEnterpriseOverageToSegment = async (organization: Organization) => {
@@ -28,7 +28,11 @@ const sendEnterpriseOverageToSegment = async (organization: Organization) => {
       .nth(0)
       .run()
     const {id: userId} = billingLeaderOrgUser
-    sendSegmentEvent('Enterprise Over User Limit', userId, {orgId})
+    segmentIo.track({
+      userId,
+      event: 'Enterprise Over User Limit',
+      properties: {orgId}
+    })
   }
 }
 

@@ -1,17 +1,17 @@
 import {ContentState, convertFromRaw} from 'draft-js'
 import {stateToMarkdown} from 'draft-js-export-markdown'
 import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import {ICreateGitHubIssueOnMutationArguments} from 'parabol-client/types/graphql'
+import {GITHUB} from 'parabol-client/utils/constants'
+import segmentIo from 'parabol-server/utils/segmentIo'
 import getRethink from '../../database/rethinkDriver'
-import {GQLContext} from '../graphql'
-import CreateGitHubIssuePayload from '../types/CreateGitHubIssuePayload'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import GitHubServerManager from '../../utils/GitHubServerManager'
 import publish from '../../utils/publish'
-import sendSegmentEvent from '../../utils/sendSegmentEvent'
 import standardError from '../../utils/standardError'
-import {ICreateGitHubIssueOnMutationArguments} from 'parabol-client/types/graphql'
-import {GITHUB} from 'parabol-client/utils/constants'
-import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import {GQLContext} from '../graphql'
+import CreateGitHubIssuePayload from '../types/CreateGitHubIssuePayload'
 
 export default {
   name: 'CreateGitHubIssue',
@@ -151,7 +151,14 @@ export default {
     teamMembers.forEach(({userId}) => {
       publish(SubscriptionChannel.TASK, userId, 'CreateGitHubIssuePayload', data, subOptions)
     })
-    sendSegmentEvent('Published Task to GitHub', viewerId, {teamId, meetingId}).catch()
+    segmentIo.track({
+      userId: viewerId,
+      event: 'Published Task to GitHub',
+      properties: {
+        teamId,
+        meetingId
+      }
+    })
     return data
   }
 }
