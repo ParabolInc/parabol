@@ -76,7 +76,24 @@ export default createFragmentContainer(DiscussionThread, {
         }
         ... on RetrospectiveMeeting {
           replyingToCommentId
-          threadSource: threadSource(threadSourceId: $threadSourceId) {
+          threadSource: reflectionGroup(reflectionGroupId: $threadSourceId) {
+            id
+            thread(first: 1000) @connection(key: "DiscussionThread_thread") {
+              edges {
+                node {
+                  threadSortOrder
+                  threadId
+                  threadSource
+                  ...DiscussionThreadList_threadables
+                  threadSortOrder
+                }
+              }
+            }
+          }
+        }
+
+        ... on ActionMeeting {
+          threadSource: agendaItem(agendaItemId: $threadSourceId) {
             id
             thread(first: 1000) @connection(key: "DiscussionThread_thread") {
               edges {

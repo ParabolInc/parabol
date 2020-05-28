@@ -1,4 +1,4 @@
-import {GraphQLInt, GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
+import {GraphQLInt, GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLID} from 'graphql'
 import {IActionMeeting, MeetingTypeEnum} from 'parabol-client/types/graphql'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import {getUserId} from '../../utils/authorization'
@@ -8,6 +8,7 @@ import ActionMeetingMember from './ActionMeetingMember'
 import ActionMeetingSettings from './ActionMeetingSettings'
 import NewMeeting, {newMeetingFields} from './NewMeeting'
 import Task from './Task'
+import AgendaItem from './AgendaItem'
 
 const ActionMeeting = new GraphQLObjectType<IActionMeeting, GQLContext>({
   name: 'ActionMeeting',
@@ -60,6 +61,21 @@ const ActionMeeting = new GraphQLObjectType<IActionMeeting, GQLContext>({
         const viewerId = getUserId(authToken)
         const meetingMemberId = toTeamMemberId(meetingId, viewerId)
         return dataLoader.get('meetingMembers').load(meetingMemberId)
+      }
+    },
+    agendaItem: {
+      type: AgendaItem,
+      description: 'A single agenda item',
+      args: {
+        agendaItemId: {
+          type: GraphQLNonNull(GraphQLID)
+        }
+      },
+      resolve: async ({id: meetingId}, {agendaItemId}, {dataLoader}) => {
+        const agendaItem = await dataLoader.get('agendaItems').load(agendaItemId)
+        const meeting = await dataLoader.get('newMeetings').load(meetingId)
+        if (agendaItem.teamId !== meeting.teamId) return null
+        return agendaItem
       }
     }
   })
