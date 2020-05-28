@@ -134,7 +134,7 @@ const CommentSendOrAdd = (props: Props) => {
 
 export default createFragmentContainer(CommentSendOrAdd, {
   meeting: graphql`
-    fragment CommentSendOrAdd_meeting on RetrospectiveMeeting {
+    fragment CommentSendOrAdd_meeting on NewMeeting {
       id
       teamId
     }

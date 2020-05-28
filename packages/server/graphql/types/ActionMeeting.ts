@@ -16,6 +16,12 @@ const ActionMeeting = new GraphQLObjectType<IActionMeeting, GQLContext>({
   description: 'An action meeting',
   fields: () => ({
     ...newMeetingFields(),
+    cake: {
+      type: new GraphQLNonNull(GraphQLInt),
+      resolve: ({id: meetingId}, _args, {dataLoader}) => {
+        return 42
+      }
+    },
     meetingMembers: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(ActionMeetingMember))),
       description: 'The team members that were active during the time of the meeting',
