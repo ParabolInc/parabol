@@ -16,9 +16,11 @@ const addAgendaItemToActiveActionMeeting = async (
   const now = new Date()
   const r = await getRethink()
   const activeMeetings = await dataLoader.get('activeMeetingsByTeamId').load(teamId)
+  console.log('activeMeetings', activeMeetings)
   const actionMeeting = activeMeetings.find(
     (activeMeeting) => activeMeeting.meetingType === MeetingTypeEnum.action
   )
+  console.log('actionMeeting -->', actionMeeting)
   if (!actionMeeting) return undefined
   const {id: meetingId, phases} = actionMeeting
   const agendaItemPhase = phases.find((phase) => phase.phaseType === AGENDA_ITEMS) as
