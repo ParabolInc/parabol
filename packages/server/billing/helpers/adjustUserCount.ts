@@ -5,9 +5,43 @@ import InvoiceItemHook from '../../database/types/InvoiceItemHook'
 import Organization from '../../database/types/Organization'
 import OrganizationUser from '../../database/types/OrganizationUser'
 import {toEpochSeconds} from '../../utils/epochTime'
+import getActiveDomainForOrgId from '../../utils/getActiveDomainForOrgId'
+import getDomainFromEmail from '../../utils/getDomainFromEmail'
+import isCompanyDomain from '../../utils/isCompanyDomain'
 import {sendSegmentIdentify} from '../../utils/sendSegmentEvent'
 import handleEnterpriseOrgQuantityChanges from './handleEnterpriseOrgQuantityChanges'
 import processInvoiceItemHook from './processInvoiceItemHook'
+
+const maybeUpdateOrganizationActiveDomain = async (orgId: string, userId: string) => {
+  const r = await getRethink()
+  const organization = await r
+    .table('Organization')
+    .get(orgId)
+    .run()
+  const {isActiveDomainTouched, activeDomain} = organization
+  // don't modify if the domain was set manually
+  if (isActiveDomainTouched) return
+
+  //don't modify if the user doesn't have a company tld or has the same tld as the active one
+  const newUserEmail = await r
+    .table('User')
+    .get(userId)('email')
+    .run()
+  const newUserDomain = getDomainFromEmail(newUserEmail)
+  if (!isCompanyDomain(newUserDomain) || newUserDomain === activeDomain) return
+
+  // don't modify if we can't guess the domain or the domain we guess is the current domain
+  const domain = await getActiveDomainForOrgId(orgId)
+  if (!domain || domain === activeDomain) return
+
+  await r
+    .table('Organization')
+    .get(orgId)
+    .update({
+      activeDomain: domain
+    })
+    .run()
+}
 
 const changePause = (inactive: boolean) => async (_orgIds: string[], userId: string) => {
   const r = await getRethink()
@@ -49,10 +83,15 @@ const addUser = async (orgIds: string[], userId: string) => {
       new Date()
     return new OrganizationUser({orgId, userId, newUserUntil})
   })
-  return r
+  await r
     .table('OrganizationUser')
     .insert(docs)
     .run()
+  await Promise.all(
+    orgIds.map((orgId) => {
+      return maybeUpdateOrganizationActiveDomain(orgId, userId)
+    })
+  )
 }
 
 const deleteUser = async (orgIds: string[], userId: string) => {

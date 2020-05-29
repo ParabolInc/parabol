@@ -1,0 +1,141 @@
+import {GraphQLID, GraphQLInt, GraphQLNonNull, GraphQLObjectType} from 'graphql'
+import getRethink from '../../database/rethinkDriver'
+import OrganizationUser from '../../database/types/OrganizationUser'
+import {GQLContext} from '../graphql'
+
+const Company = new GraphQLObjectType<any, GQLContext, any>({
+  name: 'Company',
+  description: 'A grouping of organizations. Automatically grouped by top level domain of each',
+  fields: () => ({
+    id: {
+      type: GraphQLNonNull(GraphQLID),
+      description: 'the top level domain'
+    },
+    activeTeamCount: {
+      type: GraphQLNonNull(GraphQLInt),
+      description: 'the number of active teams across all organizations',
+      resolve: async ({id: domain}, _args, {dataLoader}) => {
+        const organizations = await dataLoader.get('organizationsByActiveDomain').load(domain)
+        const orgIds = organizations.map(({id}) => id)
+        const teams = await dataLoader.get('teamsByOrgId').loadMany(orgIds)
+        return teams.length
+      }
+    },
+    activeUserCount: {
+      type: GraphQLNonNull(GraphQLInt),
+      description: 'the number of active users across all organizations',
+      resolve: async ({id: domain}, _args, {dataLoader}) => {
+        const organizations = await dataLoader.get('organizationsByActiveDomain').load(domain)
+        const orgIds = organizations.map(({id}) => id)
+        const organizationUsers = (await dataLoader
+          .get('organizationUsersByUserId')
+          .loadMany(orgIds)) as OrganizationUser[]
+        const activeOrganizationUsers = organizationUsers.filter(
+          (organizationUser) => !organizationUser.inactive
+        )
+        const userIds = activeOrganizationUsers.map((organizationUser) => organizationUser.userId)
+        const uniqueUserIds = new Set(userIds)
+        return uniqueUserIds.size
+      }
+    },
+    meetingCount: {
+      type: GraphQLNonNull(GraphQLInt),
+      description: 'the total number of meetings run across all teams on all organizations',
+      resolve: async ({id: domain}, _args, {dataLoader}) => {
+        const r = await getRethink()
+        const organizations = await dataLoader.get('organizationsByActiveDomain').load(domain)
+        const orgIds = organizations.map(({id}) => id)
+        const teams = await dataLoader.get('teamsByOrgId').loadMany(orgIds)
+        const teamIds = teams.map(({id}) => id)
+        return r
+          .table('NewMeeting')
+          .getAll(r.args(teamIds), {index: 'teamId'})
+          .count()
+          .run()
+      }
+    },
+    monthlyTeamStreakMax: {
+      type: GraphQLNonNull(GraphQLInt),
+      description:
+        'the longest monthly streak for meeting at least once per month for any team in the company',
+      resolve: async ({id: domain}, _args, {dataLoader}) => {
+        const r = await getRethink()
+        const organizations = await dataLoader.get('organizationsByActiveDomain').load(domain)
+        const orgIds = organizations.map(({id}) => id)
+        const teams = await dataLoader.get('teamsByOrgId').loadMany(orgIds)
+        const teamIds = teams.map(({id}) => id)
+        // this gets pretty involved. it replaces dates with a epochMonth & groups by them
+        // then, it sh
+        return (
+          r
+            .table('NewMeeting')
+            .getAll(r.args(teamIds), {index: 'teamId'})
+            .filter((row) =>
+              row('endedAt')
+                .default(null)
+                .ne(null)
+            )
+            // number of months since unix epoch
+            .merge((row) => ({
+              epochMonth: row('endedAt')
+                .month()
+                .add(
+                  row('endedAt')
+                    .year()
+                    .mul(12)
+                )
+            }))
+            .group((row) => [row('teamId'), row('epochMonth')])
+            .count()
+            .ungroup()
+            .map((row) => ({
+              teamId: row('group')(0),
+              epochMonth: row('group')(1)
+            }))
+            .group('teamId')('epochMonth')
+            .ungroup()
+            .map((row) => ({
+              teamId: row('group'),
+              epochMonth: row('reduction'),
+              // epochMonth shifted 1 index position
+              shift: row('reduction')
+                .deleteAt(0)
+                .map((z) => z.add(-1))
+            }))
+            .merge((row) => ({
+              // 1 if there are 2 consecutive epochMonths next to each other, else 0
+              teamStreak: r
+                .map(row('shift'), row('epochMonth'), (shift, epochMonth) =>
+                  r.branch(shift.eq(epochMonth), '1', '0')
+                )
+                .reduce((left, right) => left.add(right).default(''))
+                .default('')
+                // get an array of all the groupings of 1
+                .split('0')
+                .map((val) => val.count())
+                .max()
+                .add(1)
+            }))
+            .max('teamStreak')('teamStreak')
+            .run()
+        )
+      },
+      userCount: {
+        type: GraphQLNonNull(GraphQLInt),
+        description: 'the total number of users across all organizations',
+        resolve: async ({id: domain}, _args, {dataLoader}) => {
+          const organizations = await dataLoader.get('organizationsByActiveDomain').load(domain)
+          const orgIds = organizations.map(({id}) => id)
+          const organizationUsers = (await dataLoader
+            .get('organizationUsersByUserId')
+            .loadMany(orgIds)) as OrganizationUser[]
+          const userIds = organizationUsers.map((organizationUser) => organizationUser.userId)
+          const uniqueUserIds = new Set(userIds)
+          return uniqueUserIds.size
+        }
+      }
+    }
+  })
+})
+
+export default Company

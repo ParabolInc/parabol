@@ -1,9 +1,11 @@
-import shortid from 'shortid'
 import {TierEnum} from 'parabol-client/types/graphql'
+import shortid from 'shortid'
 import CreditCard from './CreditCard'
 
 interface Input {
   id?: string
+  activeDomain?: string
+  isActiveDomainTouched?: boolean
   creditCard?: CreditCard
   createdAt?: Date
   name: string
@@ -16,6 +18,8 @@ interface Input {
 
 export default class Organization {
   id: string
+  activeDomain?: string
+  isActiveDomainTouched?: boolean
   creditCard?: CreditCard
   createdAt: Date
   name: string
@@ -32,6 +36,8 @@ export default class Organization {
   constructor(input: Input) {
     const {
       id,
+      activeDomain,
+      isActiveDomainTouched,
       createdAt,
       updatedAt,
       creditCard,
@@ -42,6 +48,8 @@ export default class Organization {
       tier
     } = input
     this.id = id || shortid.generate()
+    this.activeDomain = activeDomain
+    this.isActiveDomainTouched = isActiveDomainTouched
     this.createdAt = createdAt || new Date()
     this.updatedAt = updatedAt || new Date()
     this.creditCard = creditCard

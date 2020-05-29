@@ -9,8 +9,11 @@ import {
 } from 'graphql'
 import {GITHUB} from 'parabol-client/utils/constants'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
+import {OrgUserRole} from '../../../client/types/graphql'
 import getRethink from '../../database/rethinkDriver'
 import {getUserId, isSuperUser, isTeamMember} from '../../utils/authorization'
+import getDomainFromEmail from '../../utils/getDomainFromEmail'
+import getMonthlyStreak from '../../utils/getMonthlyStreak'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import invoiceDetails from '../queries/invoiceDetails'
@@ -137,6 +140,16 @@ const User = new GraphQLObjectType<any, GQLContext, any>({
     },
     invoiceDetails,
     invoices,
+    isAnyBillingLeader: {
+      type: GraphQLNonNull(GraphQLBoolean),
+      description: 'true if the user is a billing leader on any organization, else false',
+      resolve: async ({id: userId}, _args, {dataLoader}) => {
+        const organizationUsers = await dataLoader.get('organizationUsersByUserId').load(userId)
+        return organizationUsers.some(
+          (organizationUser) => organizationUser.role === OrgUserRole.BILLING_LEADER
+        )
+      }
+    },
     isConnected: {
       type: GraphQLBoolean,
       description: 'true if the user is currently online',
@@ -145,9 +158,61 @@ const User = new GraphQLObjectType<any, GQLContext, any>({
         return Array.isArray(connectedSockets) && connectedSockets.length > 0
       }
     },
+    isPatientZero: {
+      type: GraphQLNonNull(GraphQLBoolean),
+      description: 'true if the user is the first to sign up from their domain, else false',
+      resolve: async ({id: userId, email}) => {
+        const r = await getRethink()
+        const domain = getDomainFromEmail(email)
+        return r
+          .table('User')
+          .filter((row: any) => row('email').match(`${domain}$`))
+          .orderBy('createdAt')
+          .nth(0)('id')
+          .eq(userId)
+          .run()
+      }
+    },
+    lastMetAt: {
+      type: GraphQLISO8601Type,
+      description: 'the endedAt timestamp of the most recent meeting they were a member of',
+      resolve: async ({id: userId}, _args, {dataLoader}) => {
+        const meetingMembers = await dataLoader.get('meetingMembersByUserId').load(userId)
+        const checkedInMeetingMembers = meetingMembers.filter(
+          (meetingMember) => meetingMember.isCheckedIn
+        )
+        const lastMetAt = Math.max(0, ...checkedInMeetingMembers.map(({updatedAt}) => updatedAt))
+        return lastMetAt ? new Date(lastMetAt) : null
+      }
+    },
     loginsCount: {
       type: GraphQLInt,
       description: 'The number of logins for this user'
+    },
+    monthlyStreakMax: {
+      type: GraphQLNonNull(GraphQLInt),
+      description: 'The largest number of consecutive months the user has checked into a meeting',
+      resolve: async ({id: userId}, _args, {dataLoader}) => {
+        const meetingMembers = await dataLoader.get('meetingMembersByUserId').load(userId)
+        const meetingDates = meetingMembers
+          .filter(({isCheckedIn}) => isCheckedIn)
+          .map(({updatedAt}) => updatedAt.getTime())
+          .sort((a, b) => (a < b ? 1 : -1))
+
+        return getMonthlyStreak(meetingDates)
+      }
+    },
+    monthlyStreakCurrent: {
+      type: GraphQLNonNull(GraphQLInt),
+      description: 'The largest number of consecutive months the user has checked into a meeting',
+      resolve: async ({id: userId}, _args, {dataLoader}) => {
+        const meetingMembers = await dataLoader.get('meetingMembersByUserId').load(userId)
+        const meetingDates = meetingMembers
+          .filter(({isCheckedIn}) => isCheckedIn)
+          .map(({updatedAt}) => updatedAt.getTime())
+          .sort((a, b) => (a < b ? 1 : -1))
+        return getMonthlyStreak(meetingDates, true)
+      }
     },
     name: {
       type: GraphQLString,

@@ -29,7 +29,7 @@ const handleSegment = async (
 }
 
 const bootstrapNewUser = async (newUser: User, isOrganic: boolean, segmentId?: string | null) => {
-  const {id: userId, preferredName} = newUser
+  const {id: userId, preferredName, email} = newUser
   const r = await getRethink()
   const joinEvent = new TimelineEventJoinedParabol({userId})
   await r({
@@ -49,7 +49,7 @@ const bootstrapNewUser = async (newUser: User, isOrganic: boolean, segmentId?: s
       isOnboardTeam: true
     }
     const orgName = `${newUser.preferredName}’s Org`
-    await createNewOrg(orgId, orgName, userId)
+    await createNewOrg(orgId, orgName, userId, email)
     await Promise.all([
       createTeamAndLeader(userId, validNewTeam),
       addSeedTasks(userId, teamId),

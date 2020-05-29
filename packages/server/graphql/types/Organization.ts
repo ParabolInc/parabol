@@ -9,7 +9,9 @@ import {
 } from 'graphql'
 import {OrgUserRole} from 'parabol-client/types/graphql'
 import {getUserId, isSuperUser, isUserBillingLeader} from '../../utils/authorization'
+import {GQLContext} from '../graphql'
 import {resolveForBillingLeaders} from '../resolvers'
+import Company from './Company'
 import CreditCard from './CreditCard'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import GraphQLURLType from './GraphQLURLType'
@@ -18,13 +20,23 @@ import OrgUserCount from './OrgUserCount'
 import Team from './Team'
 import TierEnum from './TierEnum'
 import User from './User'
-import {GQLContext} from '../graphql'
 
 const Organization = new GraphQLObjectType<any, GQLContext>({
   name: 'Organization',
   description: 'An organization',
   fields: () => ({
     id: {type: new GraphQLNonNull(GraphQLID), description: 'The unique organization ID'},
+    activeDomain: {
+      type: GraphQLString,
+      description:
+        'The top level domain this organization is linked to, null if only generic emails used'
+    },
+    isActiveDomainTouched: {
+      type: GraphQLNonNull(GraphQLBoolean),
+      description:
+        'false if the activeDomain is null or was set automatically via a heuristic, true if set manually',
+      resolve: ({isActiveDomainTouched}) => !!isActiveDomainTouched
+    },
     createdAt: {
       type: new GraphQLNonNull(GraphQLISO8601Type),
       description: 'The datetime the organization was created'
@@ -33,6 +45,14 @@ const Organization = new GraphQLObjectType<any, GQLContext>({
       type: CreditCard,
       description: 'The safe credit card details',
       resolve: resolveForBillingLeaders('creditCard')
+    },
+    company: {
+      type: Company,
+      description: 'The assumed company this organizaiton belongs to',
+      resolve: async ({activeDomain}, _args) => {
+        if (!activeDomain) return null
+        return {id: activeDomain}
+      }
     },
     isBillingLeader: {
       type: new GraphQLNonNull(GraphQLBoolean),
