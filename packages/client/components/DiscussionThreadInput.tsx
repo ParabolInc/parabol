@@ -82,11 +82,15 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
   const {submitting, onError, onCompleted, submitMutation} = useMutationProps()
   const placeholder = isAnonymousComment ? 'Comment anonymously' : 'Comment publicly'
 
-  var threadSource
-  if (meetingType === MeetingTypeEnum.retrospective)
-    threadSource = ThreadSourceEnum.REFLECTION_GROUP
-  else if (meetingType === MeetingTypeEnum.action)
-    threadSource = ThreadSourceEnum.AGENDA_ITEM
+  let threadSource
+  switch (meetingType) {
+    case MeetingTypeEnum.retrospective:
+      threadSource = ThreadSourceEnum.REFLECTION_GROUP
+      break
+    case MeetingTypeEnum.action:
+      threadSource = ThreadSourceEnum.AGENDA_ITEM
+      break
+  }
 
   const toggleAnonymous = () => {
     commitLocalUpdate(atmosphere, (store) => {
@@ -176,14 +180,11 @@ export default createFragmentContainer(DiscussionThreadInput, {
       id
       teamId
       meetingType
+      isAnonymousComment
       viewerMeetingMember {
         user {
           picture
         }
-      }
-
-      ... on RetrospectiveMeeting {
-        isAnonymousComment
       }
     }
   `
