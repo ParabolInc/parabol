@@ -1,5 +1,5 @@
 import {RecordProxy, RecordSourceSelectorProxy} from 'relay-runtime'
-import getReflectionGroupThreadConn from '~/mutations/connections/getReflectionGroupThreadConn'
+import getThreadSourceThreadConn from '~/mutations/connections/getThreadSourceThreadConn'
 import {ThreadSourceEnum} from '~/types/graphql'
 import addNodeToArray from '../../utils/relay/addNodeToArray'
 import safeRemoveNodeFromConn from '../../utils/relay/safeRemoveNodeFromConn'
@@ -36,16 +36,19 @@ const handleUpsertTask = (task: Task | null, store: RecordSourceSelectorProxy<an
     addNodeToArray(task, store.get(threadParentId), 'replies', 'threadSortOrder')
     return
   }
-  const reflectionGroupId =
-    threadSource === ThreadSourceEnum.REFLECTION_GROUP ? task.getValue('threadId') : undefined
   const meetingId = task.getValue('meetingId')
   const isNowArchived = tags.includes('archived')
   const archiveConn = getArchivedTasksConn(viewer, teamId)
   const team = store.get(teamId)
   const teamConn = getTeamTasksConn(team)
   const userConn = getUserTasksConn(viewer)
-  const reflectionGroup = (reflectionGroupId && store.get(reflectionGroupId)) || null
-  const reflectionGroupConn = getReflectionGroupThreadConn(reflectionGroup)
+
+  const threadSourceId =
+    (threadSource === ThreadSourceEnum.REFLECTION_GROUP ||
+      threadSource === ThreadSourceEnum.AGENDA_ITEM) ?
+      task.getValue('threadId') : undefined
+  const threadSourceProxy = (threadSourceId && store.get(threadSourceId as string)) || null
+  const threadSourceConn = getThreadSourceThreadConn(threadSourceProxy)
   const meeting = meetingId ? store.get(meetingId) : null
 
   if (isNowArchived) {
@@ -55,7 +58,7 @@ const handleUpsertTask = (task: Task | null, store: RecordSourceSelectorProxy<an
   } else {
     safeRemoveNodeFromConn(taskId, archiveConn)
     safePutNodeInConn(teamConn, task, store)
-    safePutNodeInConn(reflectionGroupConn, task, store, 'threadSortOrder', true)
+    safePutNodeInConn(threadSourceConn, task, store, 'threadSortOrder', true)
     addNodeToArray(task, meeting, 'tasks', 'createdAt')
     if (userConn) {
       const ownedByViewer = task.getValue('userId') === viewerId

@@ -187,12 +187,12 @@ const RetroDiscussPhase = (props: Props) => {
                   {isDesktop ? (
                     <DiscussPhaseReflectionGrid meeting={meeting} />
                   ) : (
-                    <ReflectionGroup
-                      meeting={meeting}
-                      phaseRef={phaseRef}
-                      reflectionGroup={reflectionGroup}
-                    />
-                  )}
+                      <ReflectionGroup
+                        meeting={meeting}
+                        phaseRef={phaseRef}
+                        reflectionGroup={reflectionGroup}
+                      />
+                    )}
                 </ColumnInner>
               </ReflectionColumn>
               <ThreadColumn data-cy='discuss-task-column' isDesktop={isDesktop}>
