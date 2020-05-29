@@ -120,17 +120,6 @@ export default createFragmentContainer(ActionMeetingAgendaItems, {
             preferredName
           }
         }
-        tasks(first: 1000) @connection(key: "TeamColumnsContainer_tasks") {
-          edges {
-            node {
-              ...MeetingAgendaCards_tasks
-              id
-              createdAt
-              sortOrder
-              threadId
-            }
-          }
-        }
       }
     }
   `
