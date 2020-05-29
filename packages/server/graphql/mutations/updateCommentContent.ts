@@ -8,6 +8,7 @@ import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import UpdateCommentContentPayload from '../types/UpdateCommentContentPayload'
+import RetroReflectionGroup from '../types/RetroReflectionGroup'
 
 export default {
   type: UpdateCommentContentPayload,
@@ -19,11 +20,15 @@ export default {
     content: {
       type: new GraphQLNonNull(GraphQLString),
       description: 'A stringified draft-js document containing thoughts'
-    }
+    },
+    meetingId: {
+      type: GraphQLID,
+      description: 'Optional meeting id'
+    },
   },
   async resolve(
     _source,
-    {commentId, content},
+    {commentId, content, meetingId},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) {
     const r = await getRethink()
@@ -45,11 +50,13 @@ export default {
     if (createdBy !== viewerId) {
       return {error: {message: 'Can only update your own comment'}}
     }
-    // TODO: look into the getter for this?!!
+
     const thread = await dataLoader
       .get('threadSources')
       .load({sourceId: threadId, type: threadSource})
-    const {meetingId} = thread // TODO: this is prolly not working for agenda item
+
+    if (thread.threadSource === RetroReflectionGroup)
+      meetingId = thread.meetingId
 
     // VALIDATION
     const normalizedContent = normalizeRawDraftJS(content)

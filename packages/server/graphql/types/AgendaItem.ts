@@ -60,7 +60,6 @@ const AgendaItem = new GraphQLObjectType<IAgendaItem, GQLContext>({
         return dataLoader.get('teamMembers').load(teamMemberId)
       }
     },
-
     thread: {
       type: GraphQLNonNull(ThreadableConnection),
       args: {

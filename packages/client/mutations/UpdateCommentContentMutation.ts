@@ -15,8 +15,8 @@ graphql`
 `
 
 const mutation = graphql`
-  mutation UpdateCommentContentMutation($commentId: ID!, $content: String!) {
-    updateCommentContent(commentId: $commentId, content: $content) {
+  mutation UpdateCommentContentMutation($commentId: ID!, $content: String!, $meetingId: ID) {
+    updateCommentContent(commentId: $commentId, content: $content, meetingId: $meetingId) {
       ... on ErrorPayload {
         error {
           message
@@ -36,7 +36,7 @@ const UpdateCommentContentMutation: StandardMutation<TUpdateCommentContentMutati
     mutation,
     variables,
     optimisticUpdater: (store) => {
-      const {commentId, content} = variables
+      const {commentId, content, } = variables
       const comment = store.get<IComment>(commentId)
       if (!comment) return
       const now = new Date().toJSON()
