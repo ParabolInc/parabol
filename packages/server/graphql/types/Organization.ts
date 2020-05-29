@@ -49,8 +49,8 @@ const Organization = new GraphQLObjectType<any, GQLContext>({
     company: {
       type: Company,
       description: 'The assumed company this organizaiton belongs to',
-      resolve: async ({activeDomain}, _args) => {
-        if (!activeDomain) return null
+      resolve: async ({activeDomain}, _args, {authToken}) => {
+        if (!activeDomain || !isSuperUser(authToken)) return null
         return {id: activeDomain}
       }
     },

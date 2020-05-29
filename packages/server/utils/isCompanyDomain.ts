@@ -1,4 +1,4 @@
-const GENERIC_DOMAINS = [
+const GENERIC_DOMAINS = new Set([
   'gmail.com',
   'yahoo.com',
   'parabol.co',
@@ -6,8 +6,8 @@ const GENERIC_DOMAINS = [
   'hotmail.com',
   'outlook.com',
   'mail.com'
-]
+])
 
-const isCompanyDomain = (domain: string) => !GENERIC_DOMAINS.includes(domain)
+const isCompanyDomain = (domain: string) => !GENERIC_DOMAINS.has(domain)
 
 export default isCompanyDomain

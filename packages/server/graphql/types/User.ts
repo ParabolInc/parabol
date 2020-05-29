@@ -14,6 +14,7 @@ import getRethink from '../../database/rethinkDriver'
 import {getUserId, isSuperUser, isTeamMember} from '../../utils/authorization'
 import getDomainFromEmail from '../../utils/getDomainFromEmail'
 import getMonthlyStreak from '../../utils/getMonthlyStreak'
+import isCompanyDomain from '../../utils/isCompanyDomain'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import invoiceDetails from '../queries/invoiceDetails'
@@ -23,6 +24,7 @@ import suggestedIntegrations from '../queries/suggestedIntegrations'
 import AtlassianAuth from './AtlassianAuth'
 import AuthIdentity from './AuthIdentity'
 import BlockedUserType from './BlockedUserType'
+import Company from './Company'
 import GitHubAuth from './GitHubAuth'
 import GraphQLEmailType from './GraphQLEmailType'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
@@ -77,6 +79,15 @@ const User = new GraphQLObjectType<any, GQLContext, any>({
     cacheExpiresAt: {
       type: GraphQLISO8601Type,
       description: 'The timestamp when the cached user expires'
+    },
+    company: {
+      type: Company,
+      description: 'The assumed company this organizaiton belongs to',
+      resolve: async ({email}, _args, {authToken}) => {
+        const domain = getDomainFromEmail(email)
+        if (!domain || !isCompanyDomain(domain) || !isSuperUser(authToken)) return null
+        return {id: domain}
+      }
     },
     connectedSockets: {
       type: new GraphQLList(GraphQLID),
