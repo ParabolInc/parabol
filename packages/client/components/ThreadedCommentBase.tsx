@@ -134,6 +134,7 @@ const ThreadedCommentBase = (props: Props) => {
           editComment={editComment}
           onToggleReactji={onToggleReactji}
           onReply={onReply}
+          meetingId={meetingId}
         />
         {isActive && (
           <CommentEditor

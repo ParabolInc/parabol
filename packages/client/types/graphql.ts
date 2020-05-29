@@ -3534,6 +3534,7 @@ export interface ICreateUserPicturePutUrlOnMutationArguments {
 
 export interface IDeleteCommentOnMutationArguments {
   commentId: string
+  meetingId?: string | null
 }
 
 export interface IDeleteTaskOnMutationArguments {
