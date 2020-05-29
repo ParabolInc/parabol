@@ -1,10 +1,9 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {useMemo} from 'react'
+import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {ActionMeetingAgendaItems_meeting} from '~/__generated__/ActionMeetingAgendaItems_meeting.graphql'
 import EditorHelpModalContainer from '../containers/EditorHelpModalContainer/EditorHelpModalContainer'
-import MeetingAgendaCards from '../modules/meeting/components/MeetingAgendaCards/MeetingAgendaCards'
 import MeetingCopy from '../modules/meeting/components/MeetingCopy/MeetingCopy'
 import MeetingPhaseHeading from '../modules/meeting/components/MeetingPhaseHeading/MeetingPhaseHeading'
 import {NewMeetingPhaseTypeEnum} from '../types/graphql'
@@ -39,32 +38,6 @@ const StyledCopy = styled(MeetingCopy)({
   margin: '16px 0 0'
 })
 
-const TaskCardBlock = styled('div')({
-  display: 'flex',
-  flex: 1,
-  margin: '0 auto',
-  position: 'relative',
-  width: '100%'
-})
-
-const Inner = styled('div')({
-  display: 'flex',
-  overflow: 'auto',
-  position: 'absolute',
-  top: 0,
-  right: 0,
-  bottom: 0,
-  left: 0
-})
-
-const Inception = styled('div')({
-  flex: 1,
-  margin: '0 auto',
-  maxWidth: 296 * 4 + 16 * 5,
-  height: '100%',
-  padding: 16
-})
-
 const ThreadColumn = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   alignItems: 'center',
   display: 'flex',
@@ -80,14 +53,8 @@ const ThreadColumn = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
 const ActionMeetingAgendaItems = (props: Props) => {
   const {avatarGroup, toggleSidebar, meeting} = props
   const {showSidebar, team, id: meetingId, endedAt, localStage} = meeting
-  const {id: teamId, agendaItems, tasks} = team
+  const {agendaItems} = team
   const {agendaItemId} = localStage
-  const agendaTasks = useMemo(() => {
-    return tasks.edges
-      .map(({node}) => node)
-      .filter((node) => node.threadId === agendaItemId)
-      .sort((a, b) => (a.sortOrder < b.sortOrder ? 1 : -1))
-  }, [agendaItemId, tasks])
   const agendaItem = agendaItems.find((item) => item.id === agendaItemId!)
   // optimistic updater could remove the agenda item
   if (!agendaItem) return null
@@ -112,20 +79,6 @@ const ActionMeetingAgendaItems = (props: Props) => {
             <StyledHeading>{content}</StyledHeading>
           </AgendaVerbatim>
           <StyledCopy>{`${preferredName}, what do you need?`}</StyledCopy>
-          <TaskCardBlock>
-            <Inner>
-              <Inception>
-                <MeetingAgendaCards
-                  agendaId={agendaItem.id}
-                  maxCols={4}
-                  meetingId={meetingId}
-                  showPlaceholders
-                  tasks={agendaTasks}
-                  teamId={teamId}
-                />
-              </Inception>
-            </Inner>
-          </TaskCardBlock>
           <ThreadColumn data-cy='discuss-task-column' isDesktop={isDesktop}>
             <DiscussionThreadRoot meetingId={meetingId} threadSourceId={agendaItemId!} />
           </ThreadColumn>

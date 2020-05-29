@@ -42,7 +42,7 @@ const deleteComment = {
     const thread = await dataLoader
       .get('threadSources')
       .load({sourceId: threadId, type: threadSource})
-    const {meetingId} = thread
+    const {meetingId} = thread // TODO: this is totally not working for agenda item
 
     await r
       .table('Comment')

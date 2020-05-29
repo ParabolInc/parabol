@@ -45,11 +45,11 @@ export default {
     if (createdBy !== viewerId) {
       return {error: {message: 'Can only update your own comment'}}
     }
-
+    // TODO: look into the getter for this?!!
     const thread = await dataLoader
       .get('threadSources')
       .load({sourceId: threadId, type: threadSource})
-    const {meetingId} = thread
+    const {meetingId} = thread // TODO: this is prolly not working for agenda item
 
     // VALIDATION
     const normalizedContent = normalizeRawDraftJS(content)
