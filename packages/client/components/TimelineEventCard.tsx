@@ -8,9 +8,7 @@ import {ICON_SIZE} from '../styles/typographyV2'
 import {TimelineEventCard_timelineEvent} from '../__generated__/TimelineEventCard_timelineEvent.graphql'
 import Icon from './Icon'
 import TimelineEventDate from './TimelineEventDate'
-import TimelineEventFooterMenuToggle from './TimelineEventFooterMenuToggle'
-
-// import PlainButton from 'universal/components/PlainButton/PlainButton'
+import TimelineEventHeaderMenuToggle from './TimelineEventHeaderMenuToggle'
 
 interface Props {
   children: ReactNode
@@ -86,13 +84,8 @@ class TimelineEventCard extends Component<Props> {
               <TimelineEventDate createdAt={createdAt} />
             </HeaderText>
           </CardTitleBlock>
-
-          {/*<PlainButton>*/}
-          {/*<MenuIcon>more_vert</MenuIcon>*/}
-          {/*</PlainButton>*/}
-
           {type == 'retroComplete' || type == 'actionComplete' ? (
-            <TimelineEventFooterMenuToggle timelineEventId={timelineEventId} />
+            <TimelineEventHeaderMenuToggle timelineEventId={timelineEventId} />
           ) : null}
         </CardHeader>
         {children}
