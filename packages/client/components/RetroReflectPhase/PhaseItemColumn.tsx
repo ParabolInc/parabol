@@ -75,20 +75,20 @@ const Description = styled('div')({
   fontSize: 12,
   fontStyle: 'italic',
   fontWeight: 400,
-  lineHeight: '16px'
+  lineHeight: '16px',
+  paddingLeft: 16
 })
 
 const ColorSpacer = styled('div')({
   position: 'relative',
   height: 8,
   width: 8,
-  display: 'inline-block',
-  verticalAlign: 'middle',
-  marginRight: 4
+  marginRight: 8
 })
 const ColumnColorDrop = styled('div')<{groupColor: string; isFocused: boolean}>(
   ({groupColor, isFocused}) => ({
     backgroundColor: groupColor,
+    boxShadow: `0 0 0 1px ${PALETTE.BACKGROUND_MAIN}`,
     borderRadius: '50%',
     display: 'inline-block',
     verticalAlign: 'middle',
@@ -99,7 +99,7 @@ const ColumnColorDrop = styled('div')<{groupColor: string; isFocused: boolean}>(
     top: 20, // must be out of layout  so it doesn't color the text
     transform: `scale(${isFocused ? 163 : 1})`,
     transition: `all 300ms ${BezierCurve.DECELERATE}`,
-    opacity: isFocused ? 0.25 : 1
+    opacity: isFocused ? 0.35 : 1
   })
 )
 
@@ -143,8 +143,8 @@ interface Props {
 const PhaseItemColumn = (props: Props) => {
   const {idx, meeting, phaseRef, prompt, isDesktop} = props
   const {id: retroPhaseItemId, editorIds, question, groupColor, description} = prompt
-  const {meetingId, facilitatorUserId, localPhase, phases, reflectionGroups} = meeting
-  const {phaseId, focusedPhaseItemId} = localPhase
+  const {id: meetingId, facilitatorUserId, localPhase, phases, reflectionGroups} = meeting
+  const {id: phaseId, focusedPhaseItemId} = localPhase
   const groupPhase = phases.find((phase) => phase.phaseType === NewMeetingPhaseTypeEnum.group)!
   const {stages: groupStages} = groupPhase
   const [groupStage] = groupStages
@@ -269,9 +269,9 @@ export default createFragmentContainer(PhaseItemColumn, {
     fragment PhaseItemColumn_meeting on RetrospectiveMeeting {
       ...ReflectionStack_meeting
       facilitatorUserId
-      meetingId: id
+      id
       localPhase {
-        phaseId: id
+        id
         phaseType
         ... on ReflectPhase {
           focusedPhaseItemId
@@ -299,7 +299,6 @@ export default createFragmentContainer(PhaseItemColumn, {
           ...DraggableReflectionCard_reflection
           ...DraggableReflectionCard_staticReflections
           content
-          groupColor
           id
           isEditing
           isViewerCreator

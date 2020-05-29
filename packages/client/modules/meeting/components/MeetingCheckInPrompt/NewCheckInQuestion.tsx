@@ -84,7 +84,7 @@ const NewCheckInQuestion = (props: Props) => {
   }
   const {viewerId} = atmosphere
   const isFacilitating = facilitatorUserId === viewerId
-  const tip = 'Tap to customize the Social Check-in question.'
+  const tip = 'Tap to customize the Icebreaker.'
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const {tooltipPortal, openTooltip, closeTooltip, originRef} = useTooltip<HTMLButtonElement>(
     MenuPosition.UPPER_CENTER,
@@ -103,7 +103,7 @@ const NewCheckInQuestion = (props: Props) => {
     <QuestionBlock>
       {/* cannot set min width because iPhone 5 has a width of 320*/}
       <EditorInputWrapper
-        ariaLabel={'Edit the check in question'}
+        ariaLabel={'Edit the icebreaker'}
         editorState={editorState}
         setEditorState={updateQuestion}
         readOnly={!isFacilitating}

@@ -50,11 +50,6 @@ const RetroReflection = new GraphQLObjectType<Reflection, GQLContext>({
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLID))),
       resolve: () => []
     },
-    groupColor: {
-      description: 'The color used to visually group a phase item',
-      type: new GraphQLNonNull(GraphQLString),
-      resolve: ({groupColor}) => groupColor
-    },
     isActive: {
       type: new GraphQLNonNull(GraphQLBoolean),
       description: 'True if the reflection was not removed, else false',

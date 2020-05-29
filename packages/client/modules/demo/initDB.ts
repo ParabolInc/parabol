@@ -273,7 +273,7 @@ const initPhases = (teamMembers) => {
           retroPhaseItemId: 'continueId',
           question: 'Continue',
           description: 'What current behaviors should we keep doing?',
-          groupColor: PALETTE.PROMPT_YELLOW
+          groupColor: PALETTE.PROMPT_BLUE
         }
       ],
       stages: [

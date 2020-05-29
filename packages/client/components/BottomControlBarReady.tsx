@@ -30,10 +30,10 @@ const CheckIcon = styled(Icon)<{progress: number; isNext: boolean; isViewerReady
   ({isViewerReady, progress, isNext}) => ({
     color: isNext
       ? progress === 1
-        ? PALETTE.TEXT_GREEN
-        : PALETTE.EMPHASIS_WARM
+        ? PALETTE.TEXT_BLUE
+        : PALETTE.TEXT_GRAY
       : isViewerReady
-      ? PALETTE.TEXT_GREEN
+      ? PALETTE.TEXT_BLUE
       : PALETTE.TEXT_GRAY,
     fontSize: 24,
     fontWeight: 600,
@@ -45,9 +45,23 @@ const CheckIcon = styled(Icon)<{progress: number; isNext: boolean; isViewerReady
   })
 )
 
+const PHASE_REQUIRES_CONFIRM = new Set<string>([
+  NewMeetingPhaseTypeEnum.reflect,
+  NewMeetingPhaseTypeEnum.group,
+  NewMeetingPhaseTypeEnum.vote
+])
+
 const BottomControlBarReady = (props: Props) => {
   const {handleGotoNext, meeting, onTransitionEnd, status} = props
-  const {id: meetingId, facilitatorUserId, localStage, meetingMembers, reflectionGroups} = meeting
+  const {
+    id: meetingId,
+    facilitatorUserId,
+    localPhase,
+    localStage,
+    meetingMembers,
+    reflectionGroups
+  } = meeting
+  const stages = localPhase.stages || []
   const {id: stageId, isComplete, isViewerReady, phaseType} = localStage
   const {gotoNext, ref} = handleGotoNext
   const activeCount = meetingMembers.filter((member) => member.isCheckedIn).length
@@ -56,7 +70,12 @@ const BottomControlBarReady = (props: Props) => {
   const isFacilitating = facilitatorUserId === viewerId
   const readyCount = localStage.readyCount || 0
   const progress = readyCount / Math.max(1, activeCount - 1)
-  const isConfirmRequired = readyCount < activeCount - 1 && activeCount > 1
+  const isLastStageInPhase = stages[stages.length - 1]?.id === localStage?.id
+  const isConfirmRequired =
+    isLastStageInPhase &&
+    PHASE_REQUIRES_CONFIRM.has(phaseType!) &&
+    readyCount < activeCount - 1 &&
+    activeCount > 1
   const [isConfirming, setConfirming] = useClickConfirmation()
   const onClick = () => {
     if (!isFacilitating) {
@@ -127,6 +146,11 @@ export default createFragmentContainer(BottomControlBarReady, {
       facilitatorUserId
       localStage {
         ...BottomControlBarReadyStage @relay(mask: false)
+      }
+      localPhase {
+        stages {
+          ...BottomControlBarReadyStage @relay(mask: false)
+        }
       }
       meetingMembers {
         id

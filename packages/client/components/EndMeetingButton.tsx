@@ -16,7 +16,7 @@ import ConfirmingToggle from './ConfirmingToggle'
 import Icon from './Icon'
 
 const FlagIcon = styled(Icon)({
-  color: PALETTE.TEXT_BLUE,
+  color: PALETTE.TEXT_GRAY,
   height: 24
 })
 
