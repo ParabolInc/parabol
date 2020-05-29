@@ -5,11 +5,11 @@ import {
   NewMeetingPhaseTypeEnum
 } from 'parabol-client/types/graphql'
 import isPhaseComplete from 'parabol-client/utils/meetings/isPhaseComplete'
-import segmentIo from 'parabol-server/utils/segmentIo'
 import stringSimilarity from 'string-similarity'
 import getRethink from '../../database/rethinkDriver'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
+import segmentIo from '../../utils/segmentIo'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import UpdateReflectionGroupTitlePayload from '../types/UpdateReflectionGroupTitlePayload'

@@ -1,11 +1,11 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import segmentIo from 'parabol-server/utils/segmentIo'
 import getRethink from '../../database/rethinkDriver'
 import NotificationTeamArchived from '../../database/types/NotificationTeamArchived'
 import safeArchiveTeam from '../../safeMutations/safeArchiveTeam'
 import {getUserId, isTeamLead} from '../../utils/authorization'
 import publish from '../../utils/publish'
+import segmentIo from '../../utils/segmentIo'
 import standardError from '../../utils/standardError'
 import ArchiveTeamPayload from '../types/ArchiveTeamPayload'
 

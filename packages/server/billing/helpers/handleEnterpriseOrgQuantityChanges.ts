@@ -1,7 +1,7 @@
 import {OrgUserRole, TierEnum} from 'parabol-client/types/graphql'
-import segmentIo from 'parabol-server/utils/segmentIo'
 import getRethink from '../../database/rethinkDriver'
 import Organization from '../../database/types/Organization'
+import segmentIo from '../../utils/segmentIo'
 import StripeManager from '../../utils/StripeManager'
 
 const sendEnterpriseOverageToSegment = async (organization: Organization) => {

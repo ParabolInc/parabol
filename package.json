@@ -27,6 +27,7 @@
     "build": "node scripts/prod.js",
     "db:create": "node scripts/toolbox/createMigration.js",
     "db:migrate": "node scripts/toolbox/migrateDB.js up --all",
+    "db:migrate-down": "node scripts/toolbox/migrateDB.js down",
     "postdeploy": "node scripts/toolbox/postDeploy.js",
     "dev": "node scripts/dev.js",
     "lint": "lerna run --parallel lint",

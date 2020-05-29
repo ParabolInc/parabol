@@ -31,10 +31,10 @@
   "exclude": [
     "**/node_modules",
   ],
-  // "include": [
-  // "**/*",
-  // "database/migrations/*",
-  // "./.eslintrc.js",
-  // "**/*.json",
-  // ]
+  "include": [
+    // "**/*",
+    "database/migrations/*",
+    // "./.eslintrc.js",
+    // "**/*.json",
+  ]
 }
