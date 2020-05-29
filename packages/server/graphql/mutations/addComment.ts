@@ -43,6 +43,7 @@ const addComment = {
       dataLoader.get('newMeetings').load(meetingId),
       dataLoader.get('meetingMembers').load(meetingMemberId),
       validateThreadableReflectionGroupId(threadSource, threadId, meetingId, dataLoader)
+      // TODO: validation for agendaItem too
     ])
 
     if (!viewerMeetingMember) {
@@ -64,10 +65,11 @@ const addComment = {
 
     const data = {commentId}
     const {phases, teamId} = meeting!
-    const discussPhase = phases.find(
-      (phase) => phase.phaseType === NewMeetingPhaseTypeEnum.discuss
+    const containsThreadablePhase = phases.find(
+      (phase) => (phase.phaseType === NewMeetingPhaseTypeEnum.discuss ||
+        phase.phaseType === NewMeetingPhaseTypeEnum.agendaitems)
     )!
-    const {stages} = discussPhase
+    const {stages} = containsThreadablePhase
     const isAsync = stages.some((stage) => stage.isAsync)
     sendSegmentEvent('Comment added', viewerId, {
       meetingId,

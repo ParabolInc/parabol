@@ -6,7 +6,7 @@ import createProxyRecord from '~/utils/relay/createProxyRecord'
 import {AddCommentMutation_meeting} from '~/__generated__/AddCommentMutation_meeting.graphql'
 import {SharedUpdater, StandardMutation} from '../types/relayMutations'
 import {AddCommentMutation as TAddCommentMutation} from '../__generated__/AddCommentMutation.graphql'
-import getReflectionGroupThreadConn from './connections/getReflectionGroupThreadConn'
+import getThreadSourceThreadConn from './connections/getThreadSourceThreadConn'
 import safePutNodeInConn from './handlers/safePutNodeInConn'
 import addNodeToArray from '~/utils/relay/addNodeToArray'
 
@@ -47,12 +47,16 @@ export const addCommentMeetingUpdater: SharedUpdater<AddCommentMutation_meeting>
     addNodeToArray(comment, store.get(threadParentId), 'replies', 'threadSortOrder')
     return
   }
-  const reflectionGroupId =
-    threadSource === ThreadSourceEnum.REFLECTION_GROUP ? comment.getValue('threadId') : undefined
-  if (reflectionGroupId) {
-    const reflectionGroup = (reflectionGroupId && store.get(reflectionGroupId as string)) || null
-    const reflectionGroupConn = getReflectionGroupThreadConn(reflectionGroup)
-    safePutNodeInConn(reflectionGroupConn, comment, store, 'threadSortOrder', true)
+  // TODO: create some thread source type
+  const threadSourceId =
+    (threadSource === ThreadSourceEnum.REFLECTION_GROUP ||
+      threadSource === ThreadSourceEnum.AGENDA_ITEM) ?
+      comment.getValue('threadId') : undefined
+
+  if (threadSourceId) {
+    const threadSourceProxy = (threadSourceId && store.get(threadSourceId as string)) || null
+    const threadSourceConn = getThreadSourceThreadConn(threadSourceProxy)
+    safePutNodeInConn(threadSourceConn, comment, store, 'threadSortOrder', true)
   }
 }
 

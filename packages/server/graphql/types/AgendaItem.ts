@@ -60,6 +60,7 @@ const AgendaItem = new GraphQLObjectType<IAgendaItem, GQLContext>({
         return dataLoader.get('teamMembers').load(teamMemberId)
       }
     },
+
     thread: {
       type: GraphQLNonNull(ThreadableConnection),
       args: {
@@ -72,10 +73,10 @@ const AgendaItem = new GraphQLObjectType<IAgendaItem, GQLContext>({
         }
       },
       description: 'the comments and tasks created from the discussion',
-      resolve: async ({id: reflectionGroupId}, _args, {dataLoader}) => {
+      resolve: async ({id: agendaItemId}, _args, {dataLoader}) => {
         const [comments, tasks] = await Promise.all([
-          dataLoader.get('commentsByThreadId').load(reflectionGroupId),
-          dataLoader.get('tasksByThreadId').load(reflectionGroupId)
+          dataLoader.get('commentsByThreadId').load(agendaItemId),
+          dataLoader.get('tasksByThreadId').load(agendaItemId)
         ])
         // type Item = IThreadable & {threadSortOrder: NonNullable<number>}
         const threadables = [...comments, ...tasks] as Threadable[]
