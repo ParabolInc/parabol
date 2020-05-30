@@ -47,7 +47,8 @@ const ThreadColumn = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   overflow: 'auto',
   paddingTop: 4,
   paddingBottom: isDesktop ? 16 : 8,
-  width: '100%'
+  width: '100%',
+  maxWidth: 700
 }))
 
 const ActionMeetingAgendaItems = (props: Props) => {
