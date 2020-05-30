@@ -37,7 +37,6 @@ import sendNewMeetingSummary from './helpers/endMeeting/sendNewMeetingSummary'
 import {endSlackMeeting} from './helpers/notifySlack'
 import makeAgendaItemSchema from 'parabol-client/validation/makeAgendaItemSchema'
 import shortid from 'shortid'
-import addAgendaItemToActiveActionMeeting from './helpers/addAgendaItemToActiveActionMeeting'
 
 const timelineEventLookup = {
   [RETROSPECTIVE]: TimelineEventRetroComplete,
