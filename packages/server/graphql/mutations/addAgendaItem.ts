@@ -40,7 +40,6 @@ export default {
     // RESOLUTION
     const now = new Date()
     const agendaItemId = `${teamId}::${shortid.generate()}`
-    console.log('resolve -> validNewAgendaItem', validNewAgendaItem)
     await r
       .table('AgendaItem')
       .insert({

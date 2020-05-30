@@ -7,7 +7,7 @@ import Avatar from '../../../../components/Avatar/Avatar'
 import IconButton from '../../../../components/IconButton'
 import MeetingSubnavItem from '../../../../components/MeetingSubnavItem'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
-import {MenuPosition} from '../../../..//hooks/useCoords'
+import {MenuPosition} from '../../../../hooks/useCoords'
 import useGotoStageId from '../../../../hooks/useGotoStageId'
 import useScrollIntoView from '../../../../hooks/useScrollIntoVIew'
 import useTooltip from '../../../../hooks/useTooltip'
@@ -19,6 +19,7 @@ import findStageById from '../../../../utils/meetings/findStageById'
 import {AgendaItem_agendaItem} from '../../../../__generated__/AgendaItem_agendaItem.graphql'
 import pinIcon from '../../../../styles/theme/images/icons/pin.svg'
 import unpinIcon from '../../../../styles/theme/images/icons/unpin.svg'
+import {PortalStatus} from '../../../../hooks/usePortal'
 
 const AgendaItemStyles = styled('div')({
   position: 'relative',
@@ -129,7 +130,6 @@ const AgendaItem = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
   const isHovering = hoveringId === agendaItemId
-  const closedTooltipStatus = 4
   const ref = useRef<HTMLDivElement>(null)
   const {
     isDisabled,
@@ -147,7 +147,7 @@ const AgendaItem = (props: Props) => {
   useEffect(() => {
     // if the tooltip has closed and we're not hovering in a new item, remove hover
     // this is required because onMouseLeave isn't triggered if the cursor leaves the sidebar through the tooltip
-    if (tooltipStatus === closedTooltipStatus && isHovering) {
+    if (tooltipStatus === PortalStatus.Exited && isHovering) {
       updateHoveringId(null)
     }
   }, [tooltipStatus])
@@ -173,7 +173,7 @@ const AgendaItem = (props: Props) => {
   }
 
   const handleMouseMoveIcon = () => {
-    if (isHovering && tooltipStatus === closedTooltipStatus) {
+    if (isHovering && tooltipStatus === PortalStatus.Exited) {
       openTooltip()
     }
   }

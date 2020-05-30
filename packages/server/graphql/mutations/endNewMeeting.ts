@@ -35,9 +35,9 @@ import {DataLoaderWorker, GQLContext} from '../graphql'
 import EndNewMeetingPayload from '../types/EndNewMeetingPayload'
 import sendNewMeetingSummary from './helpers/endMeeting/sendNewMeetingSummary'
 import {endSlackMeeting} from './helpers/notifySlack'
-import addAgendaItemToActiveActionMeeting from './helpers/addAgendaItemToActiveActionMeeting'
 import makeAgendaItemSchema from 'parabol-client/validation/makeAgendaItemSchema'
 import shortid from 'shortid'
+import addAgendaItemToActiveActionMeeting from './helpers/addAgendaItemToActiveActionMeeting'
 
 const timelineEventLookup = {
   [RETROSPECTIVE]: TimelineEventRetroComplete,
@@ -105,8 +105,7 @@ const getPinnedAgendaItems = async (teamId: string) => {
     .run()
 }
 
-const clonePinnedAgendaItems = async (agendaItem, teamId) => {
-  const agendaItemId = `${teamId}::${shortid.generate()}`
+const clonePinnedAgendaItem = async (agendaItem, teamId) => {
   const r = await getRethink()
 
   const clonedAgendaItem = {
@@ -119,6 +118,7 @@ const clonePinnedAgendaItems = async (agendaItem, teamId) => {
   const schema = makeAgendaItemSchema()
   const {data: validNewAgendaItem} = schema(clonedAgendaItem)
 
+  const agendaItemId = `${teamId}::${shortid.generate()}`
   const now = new Date()
 
   await r
@@ -126,6 +126,7 @@ const clonePinnedAgendaItems = async (agendaItem, teamId) => {
     .insert({
       id: agendaItemId,
       ...validNewAgendaItem,
+      pinnedParentId: agendaItem.pinnedParentId ? agendaItem.pinnedParentId : agendaItem.id,
       createdAt: now,
       updatedAt: now,
       isActive: true,
@@ -203,9 +204,6 @@ const finishActionMeeting = async (meeting: MeetingAction, dataLoader: DataLoade
   ])
   const userIds = meetingMembers.map(({userId}) => userId)
 
-  const pinnedAgendaItems = await getPinnedAgendaItems(teamId)
-  console.log('finishActionMeeting -> pinnedAgendaItems', pinnedAgendaItems)
-
   await Promise.all([
     archiveTasksForDB(doneTasks, meetingId),
     updateTaskSortOrders(userIds, tasks),
@@ -216,9 +214,6 @@ const finishActionMeeting = async (meeting: MeetingAction, dataLoader: DataLoade
       .update({taskCount: tasks.length})
       .run()
   ])
-  pinnedAgendaItems.map((agendaItem) => {
-    clonePinnedAgendaItems(agendaItem, teamId)
-  })
 
   return {updatedTaskIds: [...tasks, ...doneTasks].map(({id}) => id)}
 }
@@ -303,12 +298,12 @@ export default {
   },
   async resolve(_source, {meetingId}, context: GQLContext) {
     const {authToken, socketId: mutatorId, dataLoader} = context
-    // console.log('BEG resolve -> dataLoader', dataLoader)s
     const r = await getRethink()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
     const now = new Date()
     const viewerId = getUserId(authToken)
+
     // AUTH
     const meeting = (await r
       .table('NewMeeting')
@@ -359,7 +354,12 @@ export default {
     const presentMemberUserIds = presentMembers.map(({userId}) => userId)
     endSlackMeeting(meetingId, teamId, dataLoader).catch(console.log)
 
+    const pinnedAgendaItems = await getPinnedAgendaItems(teamId)
     const result = await finishMeetingType(completedMeeting, dataLoader)
+
+    pinnedAgendaItems.map((agendaItem) => {
+      clonePinnedAgendaItem(agendaItem, teamId)
+    })
 
     await shuffleCheckInOrder(teamId)
     const updatedTaskIds = (result && result.updatedTaskIds) || []

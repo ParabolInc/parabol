@@ -43,19 +43,11 @@ const AgendaList = (props: Props) => {
   const {dashSearch, gotoStageId, meetingId, team} = props
   const [hoveringId, setHoveringId] = useState<string | null>(null)
   const {activeMeetings, agendaItems} = team
-  console.log('AgendaList -> agendaItems', agendaItems)
-  console.log('filteredAgendaItems -> dashSearch', dashSearch)
-  // const filteredAgendaItems = useMemo(() => {
-  //   return dashSearch ? agendaItems.filter(({content}) => content.match(dashSearch)) : agendaItems
-  // }, [dashSearch, agendaItems])
-
-  // const {activeMeetings, agendaItems} = team
   const filteredAgendaItems = useMemo(() => {
     return dashSearch
       ? agendaItems.filter(({content}) => content && content.match(dashSearch))
       : agendaItems.filter(({content}) => content)
   }, [dashSearch, agendaItems])
-  console.log('filteredAgendaItems -> filteredAgendaItems', filteredAgendaItems)
 
   const onDragEnd = useEventCallback((result) => {
     const {source, destination} = result

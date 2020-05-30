@@ -6,6 +6,7 @@ export default function makeAgendaItemSchema() {
     content: (value) => value.trim().max(63, 'Try something a little shorter'),
     isActive: (value) => value.boolean(),
     pinned: (value) => value.boolean(),
+    pinnedParentId: id,
     sortOrder: (value) => value.float(),
     teamId: id,
     teamMemberId: compositeId
