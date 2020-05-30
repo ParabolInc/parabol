@@ -44,7 +44,9 @@ const AgendaList = (props: Props) => {
   const [hoveringId, setHoveringId] = useState<string | null>(null)
   const {activeMeetings, agendaItems} = team
   const filteredAgendaItems = useMemo(() => {
-    return dashSearch ? agendaItems.filter(({content}) => content.match(dashSearch)) : agendaItems
+    return dashSearch
+      ? agendaItems.filter(({content}) => content && content.match(dashSearch))
+      : agendaItems.filter(({content}) => content)
   }, [dashSearch, agendaItems])
 
   const onDragEnd = useEventCallback((result) => {

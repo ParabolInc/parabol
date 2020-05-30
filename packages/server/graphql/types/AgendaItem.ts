@@ -33,8 +33,12 @@ const AgendaItem = new GraphQLObjectType<IAgendaItem, GQLContext>({
       resolve: ({isActive}) => !!isActive
     },
     pinned: {
-      type: new GraphQLNonNull(GraphQLBoolean),
+      type: GraphQLBoolean,
       description: 'True if the agenda item has been pinned'
+    },
+    pinnedParentId: {
+      type: GraphQLID,
+      description: 'If pinned, this is the unique id of the original agenda item'
     },
     sortOrder: {
       type: new GraphQLNonNull(GraphQLFloat),

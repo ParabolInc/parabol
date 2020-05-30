@@ -3,7 +3,8 @@ import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {
   MeetingTypeEnum,
   NewMeetingPhaseTypeEnum,
-  SuggestedActionTypeEnum
+  SuggestedActionTypeEnum,
+  IAgendaItem
 } from 'parabol-client/types/graphql'
 import {
   ACTION,
@@ -35,6 +36,8 @@ import {DataLoaderWorker, GQLContext} from '../graphql'
 import EndNewMeetingPayload from '../types/EndNewMeetingPayload'
 import sendNewMeetingSummary from './helpers/endMeeting/sendNewMeetingSummary'
 import {endSlackMeeting} from './helpers/notifySlack'
+import makeAgendaItemSchema from 'parabol-client/validation/makeAgendaItemSchema'
+import shortid from 'shortid'
 
 const timelineEventLookup = {
   [RETROSPECTIVE]: TimelineEventRetroComplete,
@@ -83,12 +86,54 @@ const updateTaskSortOrders = async (userIds: string[], tasks: SortOrderTask[]) =
 
 const clearAgendaItems = async (teamId: string) => {
   const r = await getRethink()
+
+  await r
+    .table('AgendaItem')
+    .getAll(teamId, {index: 'teamId'})
+    .update({
+      isActive: false
+    })
+    .run()
+}
+
+const getPinnedAgendaItems = async (teamId: string) => {
+  const r = await getRethink()
   return r
     .table('AgendaItem')
     .getAll(teamId, {index: 'teamId'})
-    .filter({pinned: false})
-    .update({
-      isActive: false
+    .filter({isActive: true, pinned: true})
+    .run()
+}
+
+const clonePinnedAgendaItem = async (agendaItem: IAgendaItem, teamId: string, viewerId: string) => {
+  const r = await getRethink()
+
+  const clonedAgendaItem = {
+    content: agendaItem.content,
+    pinned: agendaItem.pinned,
+    sortOrder: agendaItem.sortOrder,
+    teamId,
+    teamMemberId: agendaItem.teamMemberId
+  }
+  const schema = makeAgendaItemSchema()
+  const {errors, data: validNewAgendaItem} = schema(clonedAgendaItem)
+  if (Object.keys(errors).length) {
+    return standardError(new Error('Failed input validation'), {userId: viewerId})
+  }
+
+  const agendaItemId = `${teamId}::${shortid.generate()}`
+  const now = new Date()
+  return r
+    .table('AgendaItem')
+    .insert({
+      id: agendaItemId,
+      ...validNewAgendaItem,
+      pinnedParentId: agendaItem.pinnedParentId ? agendaItem.pinnedParentId : agendaItem.id,
+      createdAt: now,
+      updatedAt: now,
+      isActive: true,
+      isComplete: false,
+      teamId
     })
     .run()
 }
@@ -160,6 +205,7 @@ const finishActionMeeting = async (meeting: MeetingAction, dataLoader: DataLoade
       .run()
   ])
   const userIds = meetingMembers.map(({userId}) => userId)
+
   await Promise.all([
     archiveTasksForDB(doneTasks, meetingId),
     updateTaskSortOrders(userIds, tasks),
@@ -170,6 +216,7 @@ const finishActionMeeting = async (meeting: MeetingAction, dataLoader: DataLoade
       .update({taskCount: tasks.length})
       .run()
   ])
+
   return {updatedTaskIds: [...tasks, ...doneTasks].map(({id}) => id)}
 }
 
@@ -258,6 +305,7 @@ export default {
     const subOptions = {mutatorId, operationId}
     const now = new Date()
     const viewerId = getUserId(authToken)
+
     // AUTH
     const meeting = (await r
       .table('NewMeeting')
@@ -308,7 +356,13 @@ export default {
     const presentMemberUserIds = presentMembers.map(({userId}) => userId)
     endSlackMeeting(meetingId, teamId, dataLoader).catch(console.log)
 
+    const pinnedAgendaItems = await getPinnedAgendaItems(teamId)
     const result = await finishMeetingType(completedMeeting, dataLoader)
+
+    pinnedAgendaItems.map((agendaItem) => {
+      clonePinnedAgendaItem(agendaItem, teamId, viewerId)
+    })
+
     await shuffleCheckInOrder(teamId)
     const updatedTaskIds = (result && result.updatedTaskIds) || []
     const {facilitatorUserId} = completedMeeting
@@ -374,6 +428,7 @@ export default {
       removedTaskIds
     }
     publish(SubscriptionChannel.TEAM, teamId, 'EndNewMeetingPayload', data, subOptions)
+
     return data
   }
 }
