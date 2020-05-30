@@ -85,7 +85,7 @@ export default createFragmentContainer(ThreadedItemReply, {
     }
   `,
   meeting: graphql`
-    fragment ThreadedItemReply_meeting on RetrospectiveMeeting {
+    fragment ThreadedItemReply_meeting on NewMeeting {
       ...DiscussionThreadInput_meeting
       id
       replyingToCommentId

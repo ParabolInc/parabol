@@ -3,6 +3,7 @@ extend interface NewMeeting {
   localStage: NewMeetingStage!
   showSidebar: Boolean!
   isAnonymousComment: Boolean
+  replyingToCommentId: String
 }
 
 extend type ActionMeeting {
@@ -16,7 +17,6 @@ extend type RetrospectiveMeeting {
   isViewerDragInProgress: Boolean
   localPhase: NewMeetingPhase!
   localStage: NewMeetingStage!
-  replyingToCommentId: String
   showSidebar: Boolean!
 }
 

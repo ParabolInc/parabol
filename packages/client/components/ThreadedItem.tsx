@@ -65,7 +65,7 @@ export const ThreadedItem = (props: Props) => {
 
 export default createFragmentContainer(ThreadedItem, {
   meeting: graphql`
-    fragment ThreadedItem_meeting on RetrospectiveMeeting {
+    fragment ThreadedItem_meeting on NewMeeting {
       ...ThreadedCommentBase_meeting
       ...ThreadedTaskBase_meeting
       ...ThreadedRepliesList_meeting

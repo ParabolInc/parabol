@@ -88,7 +88,7 @@ const ThreadedTaskBase = (props: Props) => {
 
 export default createFragmentContainer(ThreadedTaskBase, {
   meeting: graphql`
-    fragment ThreadedTaskBase_meeting on RetrospectiveMeeting {
+    fragment ThreadedTaskBase_meeting on NewMeeting {
       ...ThreadedItemReply_meeting
       id
       replyingToCommentId

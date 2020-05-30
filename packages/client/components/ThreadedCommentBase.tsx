@@ -173,7 +173,7 @@ const ThreadedCommentBase = (props: Props) => {
 
 export default createFragmentContainer(ThreadedCommentBase, {
   meeting: graphql`
-    fragment ThreadedCommentBase_meeting on RetrospectiveMeeting {
+    fragment ThreadedCommentBase_meeting on NewMeeting {
       ...DiscussionThreadInput_meeting
       ...ThreadedItemReply_meeting
       id

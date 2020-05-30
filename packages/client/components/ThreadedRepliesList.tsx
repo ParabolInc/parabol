@@ -35,16 +35,16 @@ const ThreadedRepliesList = (props: Props) => {
             setReplyMention={setReplyMention}
           />
         ) : (
-          <ThreadedCommentBase
-            dataCy={`${dataCy}-comment-${idx}`}
-            key={id}
-            isReply
-            comment={reply}
-            meeting={meeting}
-            threadSourceId={threadSourceId}
-            setReplyMention={setReplyMention}
-          />
-        )
+            <ThreadedCommentBase
+              dataCy={`${dataCy}-comment-${idx}`}
+              key={id}
+              isReply
+              comment={reply}
+              meeting={meeting}
+              threadSourceId={threadSourceId}
+              setReplyMention={setReplyMention}
+            />
+          )
       })}
     </>
   )
@@ -52,7 +52,7 @@ const ThreadedRepliesList = (props: Props) => {
 
 export default createFragmentContainer(ThreadedRepliesList, {
   meeting: graphql`
-    fragment ThreadedRepliesList_meeting on RetrospectiveMeeting {
+    fragment ThreadedRepliesList_meeting on NewMeeting {
       ...ThreadedCommentBase_meeting
       ...ThreadedTaskBase_meeting
     }

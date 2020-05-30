@@ -73,9 +73,9 @@ export default createFragmentContainer(DiscussionThread, {
           ...DiscussionThreadInput_meeting
           ...DiscussionThreadList_meeting
           endedAt
+          replyingToCommentId
         }
         ... on RetrospectiveMeeting {
-          replyingToCommentId
           threadSource: reflectionGroup(reflectionGroupId: $threadSourceId) {
             id
             thread(first: 1000) @connection(key: "DiscussionThread_thread") {

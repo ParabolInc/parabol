@@ -84,7 +84,7 @@ const DiscussionThreadList = forwardRef((props: Props, ref: any) => {
 
 export default createFragmentContainer(DiscussionThreadList, {
   meeting: graphql`
-    fragment DiscussionThreadList_meeting on RetrospectiveMeeting {
+    fragment DiscussionThreadList_meeting on NewMeeting {
       ...ThreadedItem_meeting
     }
   `,
