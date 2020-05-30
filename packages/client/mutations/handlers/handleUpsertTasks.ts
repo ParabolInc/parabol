@@ -42,7 +42,6 @@ const handleUpsertTask = (task: Task | null, store: RecordSourceSelectorProxy<an
   const team = store.get(teamId)
   const teamConn = getTeamTasksConn(team)
   const userConn = getUserTasksConn(viewer)
-  // TODO: use ThreadSource type, need to define AgendaItem type from scratch too
   const threadSourceId =
     (threadSource === ThreadSourceEnum.REFLECTION_GROUP ||
       threadSource === ThreadSourceEnum.AGENDA_ITEM) ?

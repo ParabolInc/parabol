@@ -74,6 +74,7 @@ const ActionMeeting = new GraphQLObjectType<IActionMeeting, GQLContext>({
       resolve: async ({id: meetingId}, {agendaItemId}, {dataLoader}) => {
         const agendaItem = await dataLoader.get('agendaItems').load(agendaItemId)
         const meeting = await dataLoader.get('newMeetings').load(meetingId)
+        // TODO: change to check meeting id after adding meeting id field on agenda item
         if (agendaItem.teamId !== meeting.teamId) return null
         return agendaItem
       }

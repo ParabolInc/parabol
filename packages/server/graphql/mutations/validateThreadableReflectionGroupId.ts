@@ -18,6 +18,7 @@ const validateThreadableReflectionGroupId = async (
       break
     case MeetingTypeEnum.action:
       // TODO: add validation for action items here, plus change filename
+      // if agendaItem has meetingId on it, this becomes trivial and can be generic
       break
   }
   return undefined

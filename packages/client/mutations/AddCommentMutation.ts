@@ -47,7 +47,6 @@ export const addCommentMeetingUpdater: SharedUpdater<AddCommentMutation_meeting>
     addNodeToArray(comment, store.get(threadParentId), 'replies', 'threadSortOrder')
     return
   }
-  // TODO: use ThreadSource type, need to define AgendaItem type too
   const threadSourceId =
     (threadSource === ThreadSourceEnum.REFLECTION_GROUP ||
       threadSource === ThreadSourceEnum.AGENDA_ITEM) ?

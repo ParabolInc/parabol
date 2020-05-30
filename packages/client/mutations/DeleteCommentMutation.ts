@@ -66,7 +66,6 @@ const handleDeleteComment = (comment, store) => {
     comment.setValue(false, 'isActive')
   } else {
     const threadSource = comment.getValue('threadSource')!
-    // TODO: use ThreadSource type, need to define AgendaItem type from scratch too
     const threadSourceId =
       (threadSource === ThreadSourceEnum.REFLECTION_GROUP ||
         threadSource === ThreadSourceEnum.AGENDA_ITEM) ?
