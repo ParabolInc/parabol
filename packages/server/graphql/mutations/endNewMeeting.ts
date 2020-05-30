@@ -3,7 +3,8 @@ import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {
   MeetingTypeEnum,
   NewMeetingPhaseTypeEnum,
-  SuggestedActionTypeEnum
+  SuggestedActionTypeEnum,
+  IAgendaItem
 } from 'parabol-client/types/graphql'
 import {
   ACTION,
@@ -104,7 +105,7 @@ const getPinnedAgendaItems = async (teamId: string) => {
     .run()
 }
 
-const clonePinnedAgendaItem = async (agendaItem, teamId) => {
+const clonePinnedAgendaItem = async (agendaItem: IAgendaItem, teamId: string, viewerId: string) => {
   const r = await getRethink()
 
   const clonedAgendaItem = {
@@ -115,12 +116,14 @@ const clonePinnedAgendaItem = async (agendaItem, teamId) => {
     teamMemberId: agendaItem.teamMemberId
   }
   const schema = makeAgendaItemSchema()
-  const {data: validNewAgendaItem} = schema(clonedAgendaItem)
+  const {errors, data: validNewAgendaItem} = schema(clonedAgendaItem)
+  if (Object.keys(errors).length) {
+    return standardError(new Error('Failed input validation'), {userId: viewerId})
+  }
 
   const agendaItemId = `${teamId}::${shortid.generate()}`
   const now = new Date()
-
-  await r
+  return r
     .table('AgendaItem')
     .insert({
       id: agendaItemId,
@@ -357,7 +360,7 @@ export default {
     const result = await finishMeetingType(completedMeeting, dataLoader)
 
     pinnedAgendaItems.map((agendaItem) => {
-      clonePinnedAgendaItem(agendaItem, teamId)
+      clonePinnedAgendaItem(agendaItem, teamId, viewerId)
     })
 
     await shuffleCheckInOrder(teamId)
