@@ -166,6 +166,7 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
         meeting={meeting}
         threadSourceId={threadSourceId}
         threadParentId={threadParentId}
+        threadSource={threadSource}
         collapseAddTask={collapseAddTask}
         onSubmit={onSubmit}
       />

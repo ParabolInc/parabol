@@ -78,6 +78,7 @@ interface Props {
   meeting: CommentSendOrAdd_meeting
   threadSourceId: string
   threadParentId?: string
+  threadSource: string
   onSubmit: () => void
   dataCy: string
 }
@@ -90,6 +91,7 @@ const CommentSendOrAdd = (props: Props) => {
     meeting,
     threadSourceId,
     threadParentId,
+    threadSource,
     onSubmit,
     dataCy
   } = props
@@ -110,7 +112,7 @@ const CommentSendOrAdd = (props: Props) => {
       meetingId,
       threadId: threadSourceId,
       threadParentId,
-      threadSource: ThreadSourceEnum.REFLECTION_GROUP, // TODO: FIX THIS
+      threadSource: threadSource as ThreadSourceEnum,
       threadSortOrder: getMaxSortOrder() + SORT_STEP + dndNoise(),
       userId: viewerId,
       teamId
