@@ -48,7 +48,7 @@ const deleteComment = {
     const thread = await dataLoader
       .get('threadSources')
       .load({sourceId: threadId, type: threadSource})
-
+    // TODO: implement meeting id field on agenda item??
     if (thread.threadSource === RetroReflectionGroup)
       meetingId = thread.meetingId
 

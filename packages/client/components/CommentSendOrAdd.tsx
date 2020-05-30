@@ -110,7 +110,7 @@ const CommentSendOrAdd = (props: Props) => {
       meetingId,
       threadId: threadSourceId,
       threadParentId,
-      threadSource: ThreadSourceEnum.REFLECTION_GROUP,
+      threadSource: ThreadSourceEnum.REFLECTION_GROUP, // TODO: FIX THIS
       threadSortOrder: getMaxSortOrder() + SORT_STEP + dndNoise(),
       userId: viewerId,
       teamId
