@@ -9,7 +9,7 @@ import publish from '../../utils/publish'
 import {GQLContext} from '../graphql'
 import AddCommentInput from '../types/AddCommentInput'
 import AddCommentPayload from '../types/AddCommentPayload'
-import validateThreadableReflectionGroupId from './validateThreadableReflectionGroupId'
+import validateThreadableThreadSourceId from './validateThreadableThreadSourceId'
 import {
   IAddCommentOnMutationArguments,
   NewMeetingPhaseTypeEnum
@@ -42,8 +42,7 @@ const addComment = {
     const [meeting, viewerMeetingMember, threadError] = await Promise.all([
       dataLoader.get('newMeetings').load(meetingId),
       dataLoader.get('meetingMembers').load(meetingMemberId),
-      validateThreadableReflectionGroupId(threadSource, threadId, meetingId, dataLoader)
-      // TODO: validation for agendaItem too
+      validateThreadableThreadSourceId(threadSource, threadId, meetingId, dataLoader)
     ])
 
     if (!viewerMeetingMember) {

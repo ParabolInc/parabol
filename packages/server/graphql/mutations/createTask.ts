@@ -21,7 +21,7 @@ import normalizeRawDraftJS from 'parabol-client/validation/normalizeRawDraftJS'
 import NotificationTaskInvolves from '../../database/types/NotificationTaskInvolves'
 import {ITeamMember} from 'parabol-client/types/graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import validateThreadableReflectionGroupId from './validateThreadableReflectionGroupId'
+import validateThreadableThreadSourceId from './validateThreadableThreadSourceId'
 import sendSegmentEvent from '../../utils/sendSegmentEvent'
 
 const validateTaskAgendaItemId = async (
@@ -205,7 +205,7 @@ export default {
     const errors = await Promise.all([
       // threadParentId not validated because if it's invalid it simply won't appear
       validateTaskAgendaItemId(threadSource, threadId, teamId, dataLoader),
-      validateThreadableReflectionGroupId(threadSource, threadId, meetingId, dataLoader),
+      validateThreadableThreadSourceId(threadSource, threadId, meetingId, dataLoader),
       validateTaskMeetingId(meetingId, teamId, dataLoader),
       validateTaskUserId(userId, teamId, dataLoader)
     ])
