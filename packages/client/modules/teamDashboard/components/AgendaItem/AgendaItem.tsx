@@ -185,11 +185,11 @@ const AgendaItem = (props: Props) => {
   }
 
   return (
-    <AgendaItemStyles onMouseMove={handleMouseMoveItem}>
-      <MeetingSubnavItem
-        label={content}
-        metaContent={
-          <>
+    <>
+      <AgendaItemStyles onMouseMove={handleMouseMoveItem}>
+        <MeetingSubnavItem
+          label={content}
+          metaContent={
             <IconBlock
               onClick={handleIconClick}
               onMouseMove={handleMouseMoveIcon}
@@ -198,27 +198,25 @@ const AgendaItem = (props: Props) => {
             >
               {getIcon()}
             </IconBlock>
-            {tooltipPortal(
-              pinned
-                ? `Unpin "${content}" from every check-in`
-                : `Pin "${content}" to every check-in`
-            )}
-          </>
-        }
-        isDisabled={isDisabled}
-        onClick={onClick}
-        isActive={isActive}
-        isComplete={isComplete}
-        isDragging={isDragging}
-        isUnsyncedFacilitatorStage={isUnsyncedFacilitatorStage}
-      />
-      <DeleteIconButton
-        aria-label={'Remove this agenda topic'}
-        icon='cancel'
-        onClick={handleRemove}
-        palette='midGray'
-      />
-    </AgendaItemStyles>
+          }
+          isDisabled={isDisabled}
+          onClick={onClick}
+          isActive={isActive}
+          isComplete={isComplete}
+          isDragging={isDragging}
+          isUnsyncedFacilitatorStage={isUnsyncedFacilitatorStage}
+        />
+        <DeleteIconButton
+          aria-label={'Remove this agenda topic'}
+          icon='cancel'
+          onClick={handleRemove}
+          palette='midGray'
+        />
+      </AgendaItemStyles>
+      {tooltipPortal(
+        pinned ? `Unpin "${content}" from every check-in` : `Pin "${content}" to every check-in`
+      )}
+    </>
   )
 }
 

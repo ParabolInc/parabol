@@ -87,7 +87,7 @@ const updateTaskSortOrders = async (userIds: string[], tasks: SortOrderTask[]) =
 const clearAgendaItems = async (teamId: string) => {
   const r = await getRethink()
 
-  await r
+  return r
     .table('AgendaItem')
     .getAll(teamId, {index: 'teamId'})
     .update({
@@ -105,8 +105,9 @@ const getPinnedAgendaItems = async (teamId: string) => {
     .run()
 }
 
-const clonePinnedAgendaItem = async (agendaItem: IAgendaItem, teamId: string, viewerId: string) => {
+const clonePinnedAgendaItem = async (agendaItem: IAgendaItem, viewerId: string) => {
   const r = await getRethink()
+  const teamId = agendaItem.teamId
 
   const clonedAgendaItem = {
     content: agendaItem.content,
@@ -360,7 +361,7 @@ export default {
     const result = await finishMeetingType(completedMeeting, dataLoader)
 
     pinnedAgendaItems.map((agendaItem) => {
-      clonePinnedAgendaItem(agendaItem, teamId, viewerId)
+      clonePinnedAgendaItem(agendaItem, viewerId)
     })
 
     await shuffleCheckInOrder(teamId)
