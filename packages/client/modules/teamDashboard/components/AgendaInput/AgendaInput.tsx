@@ -82,7 +82,6 @@ interface Props {
   className?: string
   disabled: boolean
   team: AgendaInput_team
-  meetingId?: string
 }
 
 const AgendaInput = (props: Props) => {
@@ -105,7 +104,7 @@ const AgendaInput = (props: Props) => {
   const {onCompleted, onError, submitMutation, submitting} = useMutationProps()
   const {newItem} = fields
   const {resetValue, value} = newItem
-  const {className, disabled, team, meetingId} = props
+  const {className, disabled, team} = props
   const {id: teamId, agendaItems} = team
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -118,7 +117,6 @@ const AgendaInput = (props: Props) => {
       sortOrder: getNextSortOrder(agendaItems),
       teamId,
       teamMemberId: toTeamMemberId(teamId, atmosphere.viewerId),
-      meetingId: meetingId,
     }
     resetValue()
     // setTimeout required when going from 0 to 1 agenda items

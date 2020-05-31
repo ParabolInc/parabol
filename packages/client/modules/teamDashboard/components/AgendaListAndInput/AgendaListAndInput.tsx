@@ -49,7 +49,6 @@ const AgendaListAndInput = (props: Props) => {
         disabled={!!isDisabled}
         isMeeting={!!meetingId}
         team={team}
-        meetingId={meetingId}
       />
     </RootStyles>
   )

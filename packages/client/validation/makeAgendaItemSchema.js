@@ -8,6 +8,5 @@ export default function makeAgendaItemSchema() {
     sortOrder: (value) => value.float(),
     teamId: id,
     teamMemberId: compositeId,
-    meetingId: id,
   })
 }
