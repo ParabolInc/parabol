@@ -24,8 +24,8 @@ graphql`
 `
 
 const mutation = graphql`
-  mutation DeleteCommentMutation($commentId: ID!, $meetingId: ID) {
-    deleteComment(commentId: $commentId, meetingId: $meetingId) {
+  mutation DeleteCommentMutation($commentId: ID!) {
+    deleteComment(commentId: $commentId) {
       ... on ErrorPayload {
         error {
           message

@@ -8,7 +8,6 @@ import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import UpdateCommentContentPayload from '../types/UpdateCommentContentPayload'
-import RetroReflectionGroup from '../types/RetroReflectionGroup'
 
 export default {
   type: UpdateCommentContentPayload,
@@ -21,14 +20,10 @@ export default {
       type: new GraphQLNonNull(GraphQLString),
       description: 'A stringified draft-js document containing thoughts'
     },
-    meetingId: {
-      type: GraphQLID,
-      description: 'Optional meeting id'
-    },
   },
   async resolve(
     _source,
-    {commentId, content, meetingId},
+    {commentId, content},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) {
     const r = await getRethink()
@@ -54,9 +49,7 @@ export default {
     const thread = await dataLoader
       .get('threadSources')
       .load({sourceId: threadId, type: threadSource})
-    // todo: implement meeting id field on agenda item
-    if (thread.threadSource === RetroReflectionGroup)
-      meetingId = thread.meetingId
+    const {meetingId} = thread
 
     // VALIDATION
     const normalizedContent = normalizeRawDraftJS(content)

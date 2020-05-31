@@ -1,10 +1,10 @@
 import {Threadable} from '../../database/types/Threadable'
 import TaskDB from '../../database/types/Task'
 
-const resovleThread = async ({id: agendaItemId}, _args, {dataLoader}) => {
+const resovleThread = async ({id: threadSourceId}, _args, {dataLoader}) => {
   const [comments, tasks] = await Promise.all([
-    dataLoader.get('commentsByThreadId').load(agendaItemId),
-    dataLoader.get('tasksByThreadId').load(agendaItemId)
+    dataLoader.get('commentsByThreadId').load(threadSourceId),
+    dataLoader.get('tasksByThreadId').load(threadSourceId)
   ])
   // type Item = IThreadable & {threadSortOrder: NonNullable<number>}
   const threadables = [...comments, ...tasks] as Threadable[]

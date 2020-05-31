@@ -6,7 +6,6 @@ import publish from '../../utils/publish'
 import {GQLContext} from '../graphql'
 import DeleteCommentPayload from '../types/DeleteCommentPayload'
 import {IDeleteCommentOnMutationArguments} from 'parabol-client/types/graphql'
-import RetroReflectionGroup from '../types/RetroReflectionGroup'
 
 const deleteComment = {
   type: GraphQLNonNull(DeleteCommentPayload),
@@ -15,15 +14,10 @@ const deleteComment = {
     commentId: {
       type: GraphQLNonNull(GraphQLID)
     },
-    meetingId: {
-      type: GraphQLID,
-      description: 'Optional meeting id'
-    },
-
   },
   resolve: async (
     _source,
-    {commentId, meetingId}: IDeleteCommentOnMutationArguments,
+    {commentId}: IDeleteCommentOnMutationArguments,
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) => {
     const r = await getRethink()
@@ -48,9 +42,7 @@ const deleteComment = {
     const thread = await dataLoader
       .get('threadSources')
       .load({sourceId: threadId, type: threadSource})
-    // TODO: implement meeting id field on agenda item??
-    if (thread.threadSource === RetroReflectionGroup)
-      meetingId = thread.meetingId
+    const {meetingId} = thread
 
     await r
       .table('Comment')
