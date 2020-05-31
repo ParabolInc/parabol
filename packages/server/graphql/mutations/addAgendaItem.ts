@@ -29,7 +29,6 @@ export default {
     if (!isTeamMember(authToken, teamId)) {
       return standardError(new Error('Team not found'), {userId: viewerId})
     }
-
     // VALIDATION
     const schema = makeAgendaItemSchema()
     const {errors, data: validNewAgendaItem} = schema(newAgendaItem)

@@ -7,6 +7,7 @@ export default function makeAgendaItemSchema() {
     isActive: (value) => value.boolean(),
     sortOrder: (value) => value.float(),
     teamId: id,
-    teamMemberId: compositeId
+    teamMemberId: compositeId,
+    meetingId: id,
   })
 }

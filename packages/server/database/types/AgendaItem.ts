@@ -10,6 +10,7 @@ export interface AgendaItemInput {
   teamMemberId: string
   updatedAt?: Date
   content?: string
+  meetingId?: string
 }
 
 export default class AgendaItem {
@@ -22,6 +23,7 @@ export default class AgendaItem {
   teamId: string
   teamMemberId: string
   updatedAt?: Date
+  meetingId?: string
 
   constructor(input: AgendaItemInput) {
     const {
@@ -34,6 +36,7 @@ export default class AgendaItem {
       teamMemberId,
       updatedAt,
       content,
+      meetingId,
     } = input
     const now = new Date()
     this.id = id || shortid.generate()
@@ -45,5 +48,6 @@ export default class AgendaItem {
     this.teamMemberId = teamMemberId
     this.updatedAt = updatedAt || now
     this.content = content || ''
+    this.meetingId = meetingId
   }
 }

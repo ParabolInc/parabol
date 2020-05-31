@@ -32,7 +32,7 @@ interface Props {
   gotoStageId?: ReturnType<typeof useGotoStageId>
   isDisabled?: boolean
   team: AgendaListAndInput_team
-  meetingId?: string | null
+  meetingId?: string
 }
 
 const AgendaListAndInput = (props: Props) => {
@@ -45,7 +45,12 @@ const AgendaListAndInput = (props: Props) => {
         team={team}
         dashSearch={dashSearch}
       />
-      <StyledAgendaInput disabled={!!isDisabled} isMeeting={!!meetingId} team={team} />
+      <StyledAgendaInput
+        disabled={!!isDisabled}
+        isMeeting={!!meetingId}
+        team={team}
+        meetingId={meetingId}
+      />
     </RootStyles>
   )
 }

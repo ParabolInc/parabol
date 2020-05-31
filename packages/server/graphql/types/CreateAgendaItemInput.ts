@@ -23,7 +23,11 @@ const CreateAgendaItemInput = new GraphQLInputObjectType({
     sortOrder: {
       type: GraphQLFloat,
       description: 'The sort order of the agenda item in the list'
-    }
+    },
+    meetingId: {
+      type: GraphQLString,
+      description: 'The meeting ID of the agenda item'
+    },
   })
 })
 

@@ -48,6 +48,10 @@ const AgendaItem = new GraphQLObjectType<IAgendaItem, GQLContext>({
       type: new GraphQLNonNull(GraphQLID),
       description: 'The teamMemberId that created this agenda item'
     },
+    meetingId: {
+      type: GraphQLID,
+      description: 'The meetingId of the agenda item',
+    },
     updatedAt: {
       type: GraphQLISO8601Type,
       description: 'The timestamp the agenda item was updated'
