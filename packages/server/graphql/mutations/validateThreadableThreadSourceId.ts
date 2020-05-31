@@ -12,7 +12,7 @@ const validateThreadableThreadSourceId = async (
       .get('threadSources')
       .load({sourceId: threadId, type: threadSource})
     if (!thread || thread.meetingId !== meetingId) {
-      return 'Invalid reflection group ID'
+      return 'Invalid thread source ID'
     }
   }
   return undefined
