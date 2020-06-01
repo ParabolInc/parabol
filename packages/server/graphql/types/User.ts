@@ -215,7 +215,7 @@ const User = new GraphQLObjectType<any, GQLContext, any>({
     },
     monthlyStreakCurrent: {
       type: GraphQLNonNull(GraphQLInt),
-      description: 'The largest number of consecutive months the user has checked into a meeting',
+      description: 'The number of consecutive 30-day intervals that the user has checked into a meeting as of this moment',
       resolve: async ({id: userId}, _args, {dataLoader}) => {
         const meetingMembers = await dataLoader.get('meetingMembersByUserId').load(userId)
         const meetingDates = meetingMembers

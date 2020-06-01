@@ -1,7 +1,6 @@
 const GENERIC_DOMAINS = new Set([
   'gmail.com',
   'yahoo.com',
-  'parabol.co',
   'googlemail.com',
   'hotmail.com',
   'outlook.com',

@@ -43,14 +43,13 @@ const Company = new GraphQLObjectType<any, GQLContext, any>({
     },
     meetingCount: {
       type: GraphQLNonNull(GraphQLInt),
-      description: 'the total number of meetings run across all teams on all organizations',
+      description: 'the total number of meetings started across all teams on all organizations',
       resolve: async ({id: domain}, _args, {dataLoader}) => {
         const r = await getRethink()
         const organizations = await dataLoader.get('organizationsByActiveDomain').load(domain)
         const orgIds = organizations.map(({id}) => id)
         const teamsByOrgId = await dataLoader.get('teamsByOrgId').loadMany(orgIds)
         const teams = teamsByOrgId.flat()
-        console.log({teams})
         const teamIds = teams.map(({id}) => id)
         return r
           .table('NewMeeting')

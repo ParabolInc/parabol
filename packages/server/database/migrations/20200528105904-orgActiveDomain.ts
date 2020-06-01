@@ -3,7 +3,6 @@ import {R} from 'rethinkdb-ts'
 const GENERIC_DOMAINS = [
   'gmail.com',
   'yahoo.com',
-  'parabol.co',
   'googlemail.com',
   'hotmail.com',
   'outlook.com',
@@ -40,7 +39,7 @@ const getActiveDomainFromEmails = (emails: string[]) => {
   return getGroupMajority(companyDomains)
 }
 
-export const up = async function(r: R) {
+export const up = async function (r: R) {
   try {
     await r
       .table('Organization')
@@ -88,7 +87,7 @@ export const up = async function(r: R) {
   }
 }
 
-export const down = async function(r: R) {
+export const down = async function (r: R) {
   try {
     await r
       .table('Organization')
