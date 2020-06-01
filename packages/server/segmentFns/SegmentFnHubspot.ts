@@ -26,7 +26,7 @@ const companyKeys = {
   activeUserCount: 'active_user_count',
   activeTeamCount: 'active_team_count',
   meetingCount: 'meeting_count',
-  monthlyTeamStreakMax: 'monthly_team_streak_max',
+  monthlyTeamStreakMax: 'monthly_team_streak_max'
 }
 
 const queries = {
@@ -142,7 +142,7 @@ const parabolFetch = async (query: string, userId: string, token: string) => {
     headers: {
       Authorization: `Bearer ${token}`,
       Accept: 'application/json',
-      'Content-Type': 'application/json',
+      'Content-Type': 'application/json'
     },
     body: JSON.stringify({
       query,
@@ -161,7 +161,11 @@ const normalize = (value: string) => {
   return value
 }
 
-const updateHubspotContact = async (email: string, hapiKey: string, propertiesObj: {[key: string]: string | number}) => {
+const updateHubspotContact = async (
+  email: string,
+  hapiKey: string,
+  propertiesObj: {[key: string]: string | number}
+) => {
   if (!propertiesObj || Object.keys(propertiesObj).length === 0) return
   await fetch(
     `https://api.hubapi.com/contacts/v1/contact/email/${email}/profile?hapikey=${hapiKey}`,
@@ -180,9 +184,15 @@ const updateHubspotContact = async (email: string, hapiKey: string, propertiesOb
   )
 }
 
-const updateHubspotCompany = async (email: string, hapiKey: string, propertiesObj: {[key: string]: string | number}) => {
+const updateHubspotCompany = async (
+  email: string,
+  hapiKey: string,
+  propertiesObj: {[key: string]: string | number}
+) => {
   if (!propertiesObj || Object.keys(propertiesObj).length === 0) return
-  const contactRes = await fetch(`https://api.hubapi.com/contacts/v1/contact/email/${email}/profile?hapikey=${hapiKey}&property=associatedcompanyid&property_mode=value_only&formSubmissionMode=none&showListMemberships=false`)
+  const contactRes = await fetch(
+    `https://api.hubapi.com/contacts/v1/contact/email/${email}/profile?hapikey=${hapiKey}&property=associatedcompanyid&property_mode=value_only&formSubmissionMode=none&showListMemberships=false`
+  )
   const contactResJSON = await contactRes.json()
   const companyId = contactResJSON['associated-company']['company-id']
   await fetch(`https://api.hubapi.com/companies/v2/companies/${companyId}?hapikey=${hapiKey}`, {
@@ -199,7 +209,12 @@ const updateHubspotCompany = async (email: string, hapiKey: string, propertiesOb
   })
 }
 
-const updateHubspot = async (query: string | undefined, userId: string, queryToken: string, hubspotKey: string) => {
+const updateHubspot = async (
+  query: string | undefined,
+  userId: string,
+  queryToken: string,
+  hubspotKey: string
+) => {
   if (!query) return
   const parabolPayload = await parabolFetch(query, userId, queryToken)
   if (!parabolPayload) return
@@ -214,8 +229,11 @@ const updateHubspot = async (query: string | undefined, userId: string, queryTok
 async function onTrack(payload: Payload, settings: Settings) {
   const {parabolToken, event, timestamp, userId} = payload
   const {hubspotKey, segmentFnKey} = settings
-  const signature = crypto.createHmac('sha256', segmentFnKey).update(parabolToken).digest('base64')
+  const signature = crypto
+    .createHmac('sha256', segmentFnKey)
+    .update(parabolToken)
+    .digest('base64')
   const queryToken = `${timestamp}.${signature}`
   const query = queries[event]
-  await updateHubspot(query, userId, queryToken, hubspotKey))
+  await updateHubspot(query, userId, queryToken, hubspotKey)
 }
