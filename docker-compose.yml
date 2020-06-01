@@ -15,7 +15,6 @@ services:
       - '6379:6379'
     volumes:
       - redis-data:/data
-    restart: always
 volumes:
   redis-data:
   rethink-data:
