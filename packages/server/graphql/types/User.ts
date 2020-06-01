@@ -244,6 +244,11 @@ const User = new GraphQLObjectType<any, GQLContext, any>({
         return suggestedActions
       }
     },
+    payLaterClickCount: {
+      type: GraphQLNonNull(GraphQLInt),
+      description: 'the number of times the user clicked pay later',
+      resolve: ({payLaterClickCount}) => payLaterClickCount || 0
+    },
     timeline: {
       type: new GraphQLNonNull(TimelineEventConnection),
       description: 'The timeline of important events for the viewer',

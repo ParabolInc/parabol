@@ -8,6 +8,7 @@ import {toEpochSeconds} from '../../utils/epochTime'
 import getActiveDomainForOrgId from '../../utils/getActiveDomainForOrgId'
 import getDomainFromEmail from '../../utils/getDomainFromEmail'
 import isCompanyDomain from '../../utils/isCompanyDomain'
+import segmentIo from '../../utils/segmentIo'
 import handleEnterpriseOrgQuantityChanges from './handleEnterpriseOrgQuantityChanges'
 import processInvoiceItemHook from './processInvoiceItemHook'
 
@@ -44,6 +45,10 @@ const maybeUpdateOrganizationActiveDomain = async (orgId: string, userId: string
 
 const changePause = (inactive: boolean) => async (_orgIds: string[], userId: string) => {
   const r = await getRethink()
+  segmentIo.track({
+    userId,
+    event: inactive ? 'Account Paused' : 'Account Unpaused',
+  })
   return r({
     user: r
       .table('User')

@@ -5,6 +5,7 @@ import getRethink from '../../database/rethinkDriver'
 import NotificationPromoteToBillingLeader from '../../database/types/NotificationPromoteToBillingLeader'
 import {getUserId, isUserBillingLeader} from '../../utils/authorization'
 import publish from '../../utils/publish'
+import segmentIo from '../../utils/segmentIo'
 import standardError from '../../utils/standardError'
 import SetOrgUserRolePayload from '../types/SetOrgUserRolePayload'
 
@@ -95,6 +96,11 @@ export default {
         data,
         subOptions
       )
+      segmentIo.track({
+        userId,
+        event: 'User Role Billing Leader Granted',
+        properties: {orgId}
+      })
       return data
     }
     if (role === null) {
@@ -113,6 +119,11 @@ export default {
         data,
         subOptions
       )
+      segmentIo.track({
+        userId,
+        event: 'User Role Billing Leader Revoked',
+        properties: {orgId}
+      })
       return data
     }
     return null

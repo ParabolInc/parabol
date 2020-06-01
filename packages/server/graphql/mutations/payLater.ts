@@ -64,14 +64,13 @@ export default {
       })
       .run()
 
-    const organization = await dataLoader.get('organizations').load(orgId)
+    await r.table('User').get(viewerId).update((user) => ({
+      payLaterClickCount: user('payLaterClickCount').default(0).add(1)
+    })).run()
+
     segmentIo.track({
       userId: viewerId,
       event: 'Conversion Modal Pay Later Clicked',
-      properties: {
-        payLaterOrgId: orgId,
-        payLaterClickCount: organization.payLaterClickCount
-      }
     })
     const data = {orgId, meetingId}
     publish(SubscriptionChannel.ORGANIZATION, orgId, 'PayLaterPayload', data, subOptions)

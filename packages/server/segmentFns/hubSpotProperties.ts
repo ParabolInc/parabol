@@ -1,6 +1,17 @@
 // import fetch from 'node-fetch'
 // const key = 'x'
 
+// const isUserRemoved = {
+//   name: 'is_user_removed',
+//   groupName: 'parabol_app_info',
+//   description: 'true if the user has been removed from the app',
+//   fieldType: 'booleancheckbox',
+//   type: 'string',
+//   formField: false,
+//   displayOrder: -1,
+//   label: 'Is User Removed?'
+// }
+
 // const lastMetAt = {
 //   name: 'last_met_at',
 //   groupName: 'parabol_app_info',
