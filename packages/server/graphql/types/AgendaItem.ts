@@ -5,20 +5,19 @@ import {
   GraphQLNonNull,
   GraphQLObjectType,
   GraphQLString,
-  GraphQLInt,
 } from 'graphql'
 import {GQLContext} from '../graphql'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import TeamMember from './TeamMember'
 import {IAgendaItem} from 'parabol-client/types/graphql'
-
-import {ThreadableConnection} from './Threadable'
-import resolveThread from '../resolvers/resolveThread'
+import ThreadSource, {threadSourceFields} from './ThreadSource'
 
 const AgendaItem = new GraphQLObjectType<IAgendaItem, GQLContext>({
   name: 'AgendaItem',
   description: 'A request placeholder that will likely turn into 1 or more tasks',
+  interfaces: () => [ThreadSource],
   fields: () => ({
+    ...threadSourceFields(),
     id: {
       type: new GraphQLNonNull(GraphQLID),
       description: 'The unique agenda item id teamId::shortid'
@@ -63,20 +62,6 @@ const AgendaItem = new GraphQLObjectType<IAgendaItem, GQLContext>({
         return dataLoader.get('teamMembers').load(teamMemberId)
       }
     },
-    thread: {
-      type: GraphQLNonNull(ThreadableConnection),
-      args: {
-        first: {
-          type: GraphQLNonNull(GraphQLInt)
-        },
-        after: {
-          type: GraphQLString,
-          description: 'the incrementing sort order in string format'
-        }
-      },
-      description: 'the comments and tasks created from the discussion',
-      resolve: resolveThread,
-    }
   })
 })
 

@@ -9,13 +9,14 @@ import RetroReflection from './RetroReflection'
 import RetrospectiveMeeting from './RetrospectiveMeeting'
 import Task from './Task'
 import Team from './Team'
-import {ThreadableConnection} from './Threadable'
-import resolveThread from '../resolvers/resolveThread'
+import ThreadSource, {threadSourceFields} from './ThreadSource'
 
 const RetroReflectionGroup = new GraphQLObjectType<any, GQLContext>({
   name: 'RetroReflectionGroup',
   description: 'A reflection created during the reflect phase of a retrospective',
+  interfaces: () => [ThreadSource],
   fields: () => ({
+    ...threadSourceFields(),
     id: {
       type: new GraphQLNonNull(GraphQLID),
       description: 'shortid'
@@ -96,20 +97,6 @@ const RetroReflectionGroup = new GraphQLObjectType<any, GQLContext>({
         const meeting = await dataLoader.get('newMeetings').load(meetingId)
         return dataLoader.get('teams').load(meeting.teamId)
       }
-    },
-    thread: {
-      type: GraphQLNonNull(ThreadableConnection),
-      args: {
-        first: {
-          type: GraphQLNonNull(GraphQLInt)
-        },
-        after: {
-          type: GraphQLString,
-          description: 'the incrementing sort order in string format'
-        }
-      },
-      description: 'the comments and tasks created from the discussion',
-      resolve: resolveThread,
     },
     title: {
       type: GraphQLString,
