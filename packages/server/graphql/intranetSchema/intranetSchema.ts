@@ -25,15 +25,18 @@ import stripeInvoiceFinalized from './mutations/stripeInvoiceFinalized'
 import stripeSucceedPayment from './mutations/stripeSucceedPayment'
 import stripeUpdateCreditCard from './mutations/stripeUpdateCreditCard'
 import stripeUpdateInvoiceItem from './mutations/stripeUpdateInvoiceItem'
+import company from './queries/company'
 import dailyPulse from './queries/dailyPulse'
 import logins from './queries/logins'
 import pingActionTick from './queries/pingActionTick'
 import signups from './queries/signups'
 import user from './queries/user'
+import users from './queries/users'
 
 const query = new GraphQLObjectType<any, GQLContext, any>({
   name: 'Query',
   fields: () => ({
+    company,
     dailyPulse,
     pingActionTick,
     suCountTiersForUser,
@@ -41,6 +44,7 @@ const query = new GraphQLObjectType<any, GQLContext, any>({
     suProOrgInfo,
     suOrgCount,
     user,
+    users,
     logins,
     signups
   })
