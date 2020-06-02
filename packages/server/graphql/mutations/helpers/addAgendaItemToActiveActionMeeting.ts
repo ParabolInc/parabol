@@ -31,14 +31,23 @@ const addAgendaItemToActiveActionMeeting = async (
   newStage.isNavigable = true
   newStage.isNavigableByFacilitator = true
   stages.push(newStage)
-  await r
-    .table('NewMeeting')
-    .get(meetingId)
-    .update({
-      phases,
-      updatedAt: now
-    })
-    .run()
+
+  await Promise.all([
+    r
+      .table('NewMeeting')
+      .get(meetingId)
+      .update({
+        phases,
+        updatedAt: now
+      })
+      .run(),
+    r
+      .table('AgendaItem')
+      .get(agendaItemId)
+      .update({meetingId: meetingId})
+      .run()
+  ])
+
   return meetingId
 }
 

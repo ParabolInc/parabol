@@ -13,7 +13,7 @@ const deleteComment = {
   args: {
     commentId: {
       type: GraphQLNonNull(GraphQLID)
-    }
+    },
   },
   resolve: async (
     _source,

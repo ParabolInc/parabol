@@ -1,8 +1,5 @@
 import {GraphQLBoolean, GraphQLFloat, GraphQLID, GraphQLInt, GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
 import isTaskPrivate from 'parabol-client/utils/isTaskPrivate'
-import Comment from '../../database/types/Comment'
-import TaskDB from '../../database/types/Task'
-import {Threadable} from '../../database/types/Threadable'
 import {getUserId} from '../../utils/authorization'
 import {GQLContext} from '../graphql'
 import {resolveForSU} from '../resolvers'
@@ -13,6 +10,7 @@ import RetrospectiveMeeting from './RetrospectiveMeeting'
 import Task from './Task'
 import Team from './Team'
 import {ThreadableConnection} from './Threadable'
+import resolveThread from '../resolvers/resolveThread'
 
 const RetroReflectionGroup = new GraphQLObjectType<any, GQLContext>({
   name: 'RetroReflectionGroup',
@@ -111,56 +109,7 @@ const RetroReflectionGroup = new GraphQLObjectType<any, GQLContext>({
         }
       },
       description: 'the comments and tasks created from the discussion',
-      resolve: async ({id: reflectionGroupId}, _args, {dataLoader}) => {
-        const [comments, tasks] = await Promise.all([
-          dataLoader.get('commentsByThreadId').load(reflectionGroupId),
-          dataLoader.get('tasksByThreadId').load(reflectionGroupId)
-        ])
-        // type Item = IThreadable & {threadSortOrder: NonNullable<number>}
-        const threadables = [...comments, ...tasks] as Threadable[]
-        const threadablesByParentId = {} as {[parentId: string]: Threadable[]}
-
-        const rootThreadables = [] as Threadable[]
-        const filteredThreadables = [] as Threadable[]
-
-        threadables.forEach((threadable) => {
-          const {threadParentId} = threadable
-          if (!threadParentId) {
-            rootThreadables.push(threadable)
-          } else if ((threadable as TaskDB).status || (threadable as Comment).isActive) {
-            // if it's a task or it's a non-deleted comment, add it
-            threadablesByParentId[threadParentId] = threadablesByParentId[threadParentId] || []
-            threadablesByParentId[threadParentId].push(threadable)
-          }
-        })
-
-        rootThreadables.sort((a, b) => (a.threadSortOrder < b.threadSortOrder ? -1 : 1))
-        rootThreadables.forEach((threadable) => {
-          const {id: threadableId} = threadable
-          const replies = threadablesByParentId[threadableId]
-          const isActive = (threadable as TaskDB).status || (threadable as Comment).isActive
-          if (!isActive && !replies) return
-          filteredThreadables.push(threadable)
-          if (replies) {
-            replies.sort((a, b) => (a.threadSortOrder < b.threadSortOrder ? -1 : 1))
-              ; (threadable as any).replies = replies
-          }
-        })
-
-        const edges = filteredThreadables.map((node) => ({
-          cursor: node.createdAt,
-          node
-        }))
-
-        const lastEdge = edges[edges.length - 1]
-        return {
-          edges,
-          pageInfo: {
-            endCursor: lastEdge?.cursor,
-            hasNextPage: false
-          }
-        }
-      }
+      resolve: resolveThread,
     },
     title: {
       type: GraphQLString,

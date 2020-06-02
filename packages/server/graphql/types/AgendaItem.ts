@@ -4,12 +4,16 @@ import {
   GraphQLID,
   GraphQLNonNull,
   GraphQLObjectType,
-  GraphQLString
+  GraphQLString,
+  GraphQLInt,
 } from 'graphql'
 import {GQLContext} from '../graphql'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import TeamMember from './TeamMember'
 import {IAgendaItem} from 'parabol-client/types/graphql'
+
+import {ThreadableConnection} from './Threadable'
+import resolveThread from '../resolvers/resolveThread'
 
 const AgendaItem = new GraphQLObjectType<IAgendaItem, GQLContext>({
   name: 'AgendaItem',
@@ -44,6 +48,10 @@ const AgendaItem = new GraphQLObjectType<IAgendaItem, GQLContext>({
       type: new GraphQLNonNull(GraphQLID),
       description: 'The teamMemberId that created this agenda item'
     },
+    meetingId: {
+      type: GraphQLID,
+      description: 'The meetingId of the agenda item',
+    },
     updatedAt: {
       type: GraphQLISO8601Type,
       description: 'The timestamp the agenda item was updated'
@@ -54,6 +62,20 @@ const AgendaItem = new GraphQLObjectType<IAgendaItem, GQLContext>({
       resolve: async ({teamMemberId}, _args, {dataLoader}) => {
         return dataLoader.get('teamMembers').load(teamMemberId)
       }
+    },
+    thread: {
+      type: GraphQLNonNull(ThreadableConnection),
+      args: {
+        first: {
+          type: GraphQLNonNull(GraphQLInt)
+        },
+        after: {
+          type: GraphQLString,
+          description: 'the incrementing sort order in string format'
+        }
+      },
+      description: 'the comments and tasks created from the discussion',
+      resolve: resolveThread,
     }
   })
 })

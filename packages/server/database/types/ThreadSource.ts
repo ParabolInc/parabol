@@ -1,3 +1,4 @@
 import ReflectionGroup from './ReflectionGroup'
+import AgendaItem from './AgendaItem'
 
-export type ThreadSource = ReflectionGroup // TODO add agenda item
+export type ThreadSource = ReflectionGroup | AgendaItem

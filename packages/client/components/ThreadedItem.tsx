@@ -10,7 +10,7 @@ import ThreadedTaskBase from './ThreadedTaskBase'
 interface Props {
   threadable: ThreadedItem_threadable
   meeting: ThreadedItem_meeting
-  reflectionGroupId: string
+  threadSourceId: string
   dataCy: string
 }
 
@@ -22,7 +22,7 @@ export type ReplyMention = {
 export type SetReplyMention = (replyMention: ReplyMention) => void
 
 export const ThreadedItem = (props: Props) => {
-  const {threadable, reflectionGroupId, meeting, dataCy} = props
+  const {threadable, threadSourceId, meeting, dataCy} = props
   const {__typename, replies} = threadable
   const [replyMention, setReplyMention] = useState<ReplyMention>(null)
   if (!replies) debugger
@@ -31,7 +31,7 @@ export const ThreadedItem = (props: Props) => {
       dataCy={`${dataCy}-child`}
       meeting={meeting}
       replies={replies}
-      reflectionGroupId={reflectionGroupId}
+      threadSourceId={threadSourceId}
       setReplyMention={setReplyMention}
     />
   )
@@ -41,7 +41,7 @@ export const ThreadedItem = (props: Props) => {
         dataCy={`${dataCy}-task`}
         task={threadable}
         meeting={meeting}
-        reflectionGroupId={reflectionGroupId}
+        threadSourceId={threadSourceId}
         replyMention={replyMention}
         setReplyMention={setReplyMention}
       >
@@ -54,7 +54,7 @@ export const ThreadedItem = (props: Props) => {
       dataCy={`${dataCy}-comment`}
       comment={threadable}
       meeting={meeting}
-      reflectionGroupId={reflectionGroupId}
+      threadSourceId={threadSourceId}
       replyMention={replyMention}
       setReplyMention={setReplyMention}
     >
@@ -65,7 +65,7 @@ export const ThreadedItem = (props: Props) => {
 
 export default createFragmentContainer(ThreadedItem, {
   meeting: graphql`
-    fragment ThreadedItem_meeting on RetrospectiveMeeting {
+    fragment ThreadedItem_meeting on NewMeeting {
       ...ThreadedCommentBase_meeting
       ...ThreadedTaskBase_meeting
       ...ThreadedRepliesList_meeting

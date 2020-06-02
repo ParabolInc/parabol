@@ -209,7 +209,7 @@ export default {
     const errors = await Promise.all([
       // threadParentId not validated because if it's invalid it simply won't appear
       validateTaskAgendaItemId(threadSource, threadId, teamId, dataLoader),
-      validateThreadableReflectionGroupId(threadSource, threadId, meetingId, dataLoader),
+      validateThreadableThreadSourceId(threadSource, threadId, meetingId, dataLoader),
       validateTaskMeetingId(meetingId, teamId, dataLoader),
       validateTaskUserId(userId, teamId, dataLoader)
     ])

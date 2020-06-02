@@ -37,22 +37,14 @@ interface Props {
   children?: ReactNode // the replies, listed here to avoid a circular reference
   meeting: ThreadedCommentBase_meeting
   isReply?: boolean // this comment is a reply & should be indented
-  reflectionGroupId: string
+  threadSourceId: string
   setReplyMention: SetReplyMention
   replyMention?: ReplyMention
   dataCy: string
 }
 
 const ThreadedCommentBase = (props: Props) => {
-  const {
-    children,
-    comment,
-    reflectionGroupId,
-    replyMention,
-    setReplyMention,
-    meeting,
-    dataCy
-  } = props
+  const {children, comment, threadSourceId, replyMention, setReplyMention, meeting, dataCy} = props
   const isReply = !!props.isReply
   const {id: meetingId, replyingToCommentId, teamId} = meeting
   const {id: commentId, content, createdByUser, isActive, reactjis, threadParentId} = comment
@@ -166,7 +158,7 @@ const ThreadedCommentBase = (props: Props) => {
         {children}
         <ThreadedItemReply
           dataCy={`${dataCy}-reply`}
-          reflectionGroupId={reflectionGroupId}
+          threadSourceId={threadSourceId}
           meeting={meeting}
           editorRef={replyEditorRef}
           replyMention={replyMention}
@@ -180,7 +172,7 @@ const ThreadedCommentBase = (props: Props) => {
 
 export default createFragmentContainer(ThreadedCommentBase, {
   meeting: graphql`
-    fragment ThreadedCommentBase_meeting on RetrospectiveMeeting {
+    fragment ThreadedCommentBase_meeting on NewMeeting {
       ...DiscussionThreadInput_meeting
       ...ThreadedItemReply_meeting
       id

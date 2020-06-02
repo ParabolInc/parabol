@@ -76,8 +76,9 @@ interface Props {
   commentSubmitState: CommentSubmitState
   getMaxSortOrder: () => number
   meeting: CommentSendOrAdd_meeting
-  reflectionGroupId: string
+  threadSourceId: string
   threadParentId?: string
+  threadSource: string
   onSubmit: () => void
   dataCy: string
 }
@@ -88,8 +89,9 @@ const CommentSendOrAdd = (props: Props) => {
     commentSubmitState,
     getMaxSortOrder,
     meeting,
-    reflectionGroupId,
+    threadSourceId,
     threadParentId,
+    threadSource,
     onSubmit,
     dataCy
   } = props
@@ -108,9 +110,9 @@ const CommentSendOrAdd = (props: Props) => {
       status: TaskStatusEnum.active,
       sortOrder: dndNoise(),
       meetingId,
-      threadId: reflectionGroupId,
+      threadId: threadSourceId,
       threadParentId,
-      threadSource: ThreadSourceEnum.REFLECTION_GROUP,
+      threadSource: threadSource as ThreadSourceEnum,
       threadSortOrder: getMaxSortOrder() + SORT_STEP + dndNoise(),
       userId: viewerId,
       teamId
@@ -134,7 +136,7 @@ const CommentSendOrAdd = (props: Props) => {
 
 export default createFragmentContainer(CommentSendOrAdd, {
   meeting: graphql`
-    fragment CommentSendOrAdd_meeting on RetrospectiveMeeting {
+    fragment CommentSendOrAdd_meeting on NewMeeting {
       id
       teamId
     }
