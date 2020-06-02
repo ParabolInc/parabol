@@ -1,7 +1,7 @@
 import {AuthTokenRole} from 'parabol-client/types/constEnums'
-import AuthIdentity from './AuthIdentity'
-import shortid from 'shortid'
 import {TierEnum} from 'parabol-client/types/graphql'
+import shortid from 'shortid'
+import AuthIdentity from './AuthIdentity'
 
 interface Input {
   id?: string
@@ -45,6 +45,7 @@ export default class User {
   tier: TierEnum
   tms: string[]
   rol?: AuthTokenRole.SUPER_USER
+  payLaterClickCount?: number
   constructor(input: Input) {
     const {
       tms,

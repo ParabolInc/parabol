@@ -5,7 +5,7 @@ import NotificationTeamArchived from '../../database/types/NotificationTeamArchi
 import safeArchiveTeam from '../../safeMutations/safeArchiveTeam'
 import {getUserId, isTeamLead} from '../../utils/authorization'
 import publish from '../../utils/publish'
-import sendSegmentEvent from '../../utils/sendSegmentEvent'
+import segmentIo from '../../utils/segmentIo'
 import standardError from '../../utils/standardError'
 import ArchiveTeamPayload from '../types/ArchiveTeamPayload'
 
@@ -29,7 +29,13 @@ export default {
     }
 
     // RESOLUTION
-    sendSegmentEvent('Archive Team', viewerId, {teamId}).catch()
+    segmentIo.track({
+      userId: viewerId,
+      event: 'Archive Team',
+      properties: {
+        teamId
+      }
+    })
     const {team, users, removedSuggestedActionIds} = await safeArchiveTeam(teamId)
 
     if (!team) {

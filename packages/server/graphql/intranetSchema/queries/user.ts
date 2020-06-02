@@ -1,7 +1,7 @@
 import {GraphQLID, GraphQLString} from 'graphql'
+import getRethink from '../../../database/rethinkDriver'
 import {requireSU} from '../../../utils/authorization'
 import User from '../../types/User'
-import getRethink from '../../../database/rethinkDriver'
 
 const user = {
   type: User,

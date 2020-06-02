@@ -6,6 +6,7 @@ import stripeWebhookHandler from './billing/stripeWebhookHandler'
 import createSSR from './createSSR'
 import httpGraphQLHandler from './graphql/httpGraphQLHandler'
 import intranetGraphQLHandler from './graphql/intranetGraphQLHandler'
+import webhookGraphQLHandler from './graphql/webhookGraphQLHandler'
 import ICSHandler from './ICSHandler'
 import './initSentry'
 import githubWebhookHandler from './integrations/githubWebhookHandler'
@@ -32,6 +33,7 @@ uws
   .get('/sse-ping', SSEPingHandler)
   .post('/stripe', stripeWebhookHandler)
   .post('/webhooks/github', githubWebhookHandler)
+  .post('/webhooks/graphql', webhookGraphQLHandler)
   .post('/graphql', httpGraphQLHandler)
   .post('/intranet-graphql', intranetGraphQLHandler)
   .post('/saml/:domain', SAMLHandler)

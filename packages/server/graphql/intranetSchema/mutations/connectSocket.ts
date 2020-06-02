@@ -4,7 +4,7 @@ import adjustUserCount from '../../../billing/helpers/adjustUserCount'
 import getRethink from '../../../database/rethinkDriver'
 import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
-import sendSegmentEvent from '../../../utils/sendSegmentEvent'
+import segmentIo from '../../../utils/segmentIo'
 import {GQLContext} from '../../graphql'
 import User from '../../types/User'
 
@@ -71,12 +71,15 @@ export default {
         publish(SubscriptionChannel.NOTIFICATION, onlineUserId, 'User', user, subOptions)
       })
     }
-
-    sendSegmentEvent('Connect WebSocket', userId, {
-      connectedSockets,
-      socketId,
-      tms
-    }).catch()
+    segmentIo.track({
+      userId,
+      event: 'Connect WebSocket',
+      properties: {
+        connectedSockets,
+        socketId,
+        tms
+      }
+    })
     return user
   }
 }

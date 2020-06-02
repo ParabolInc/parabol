@@ -1,5 +1,5 @@
 {
-  "extends": "../../tsconfig.base.json",
+  "extends": "./tsconfig.json",
   "compilerOptions": {
     "baseUrl": "../",
     "paths": {
@@ -32,9 +32,7 @@
     "**/node_modules",
   ],
   "include": [
-    // "**/*",
     "database/migrations/*",
-    // "./.eslintrc.js",
-    // "**/*.json",
+    "segmentFns/*"
   ]
 }

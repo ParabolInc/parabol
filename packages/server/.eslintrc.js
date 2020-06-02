@@ -3,7 +3,7 @@ module.exports = {
     '../../.eslintrc.js'
   ],
   parserOptions: {
-    project: './tsconfig.json',
+    project: 'tsconfig.eslint.json',
     ecmaVersion: 2020,
     sourceType: 'module'
   },

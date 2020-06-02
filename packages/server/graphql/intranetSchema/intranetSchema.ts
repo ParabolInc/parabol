@@ -1,35 +1,35 @@
 import {GraphQLObjectType, GraphQLSchema} from 'graphql'
-import autopauseUsers from './mutations/autopauseUsers'
-import endOldMeetings from './mutations/endOldMeetings'
-import sendBatchNotificationEmails from './mutations/sendBatchNotificationEmails'
-import pingActionTick from './queries/pingActionTick'
-import suCountTiersForUser from '../queries/suCountTiersForUser'
-import suUserCount from '../queries/suUserCount'
-import suProOrgInfo from '../queries/suProOrgInfo'
-import suOrgCount from '../queries/suOrgCount'
-import sendUpcomingInvoiceEmails from './mutations/sendUpcomingInvoiceEmails'
-import addNewFeature from './mutations/addNewFeature'
-import user from './queries/user'
-import flagOverLimit from './mutations/flagOverLimit'
-import runScheduledJobs from './mutations/runScheduledJobs'
 import {GQLContext} from '../graphql'
+import suCountTiersForUser from '../queries/suCountTiersForUser'
+import suOrgCount from '../queries/suOrgCount'
+import suProOrgInfo from '../queries/suProOrgInfo'
+import suUserCount from '../queries/suUserCount'
+import addNewFeature from './mutations/addNewFeature'
+import autopauseUsers from './mutations/autopauseUsers'
+import connectSocket from './mutations/connectSocket'
+import disconnectSocket from './mutations/disconnectSocket'
 import draftEnterpriseInvoice from './mutations/draftEnterpriseInvoice'
-// import githubAddAssignee from './mutations/g/ithubAddAssignee'
+import dumpHeap from './mutations/dumpHeap'
+import endOldMeetings from './mutations/endOldMeetings'
+import flagConversionModal from './mutations/flagConversionModal'
+import flagOverLimit from './mutations/flagOverLimit'
+import loginSAML from './mutations/loginSAML'
+import profileCPU from './mutations/profileCPU'
+import runScheduledJobs from './mutations/runScheduledJobs'
+import sendBatchNotificationEmails from './mutations/sendBatchNotificationEmails'
+import sendUpcomingInvoiceEmails from './mutations/sendUpcomingInvoiceEmails'
+import setOrganizationDomain from './mutations/setOrganizationDomain'
 import stripeCreateInvoice from './mutations/stripeCreateInvoice'
 import stripeFailPayment from './mutations/stripeFailPayment'
-import stripeSucceedPayment from './mutations/stripeSucceedPayment'
 import stripeInvoiceFinalized from './mutations/stripeInvoiceFinalized'
+import stripeSucceedPayment from './mutations/stripeSucceedPayment'
 import stripeUpdateCreditCard from './mutations/stripeUpdateCreditCard'
 import stripeUpdateInvoiceItem from './mutations/stripeUpdateInvoiceItem'
-import flagConversionModal from './mutations/flagConversionModal'
-import dumpHeap from './mutations/dumpHeap'
-import logins from './queries/logins'
-import signups from './queries/signups'
-import connectSocket from './mutations/connectSocket'
-import loginSAML from './mutations/loginSAML'
-import disconnectSocket from './mutations/disconnectSocket'
 import dailyPulse from './queries/dailyPulse'
-import profileCPU from './mutations/profileCPU'
+import logins from './queries/logins'
+import pingActionTick from './queries/pingActionTick'
+import signups from './queries/signups'
+import user from './queries/user'
 
 const query = new GraphQLObjectType<any, GQLContext, any>({
   name: 'Query',
@@ -59,11 +59,11 @@ const mutation = new GraphQLObjectType<any, GQLContext, any>({
     endOldMeetings,
     flagConversionModal,
     flagOverLimit,
-    // githubAddAssignee,
     loginSAML,
     runScheduledJobs,
     sendBatchNotificationEmails,
     sendUpcomingInvoiceEmails,
+    setOrganizationDomain,
     stripeCreateInvoice,
     stripeFailPayment,
     stripeSucceedPayment,

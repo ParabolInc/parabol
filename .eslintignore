@@ -1,3 +1,4 @@
 packages/client/__generated__/*
 packages/client/types/graphql.ts
 packages/client/serviceWorker/*
+packages/server/database

@@ -8,6 +8,7 @@ import TeamInvitation from '../database/types/TeamInvitation'
 import TeamMember from '../database/types/TeamMember'
 import getRethinkConfig from './getRethinkConfig'
 import {R} from './stricterR'
+import Comment from './types/Comment'
 import FailedAuthRequest from './types/FailedAuthRequest'
 import Invoice from './types/Invoice'
 import InvoiceItemHook from './types/InvoiceItemHook'
@@ -16,10 +17,13 @@ import MeetingAction from './types/MeetingAction'
 import MeetingRetrospective from './types/MeetingRetrospective'
 import MeetingSettingsAction from './types/MeetingSettingsAction'
 import MeetingSettingsRetrospective from './types/MeetingSettingsRetrospective'
+import NotificationKickedOut from './types/NotificationKickedOut'
 import NotificationMeetingStageTimeLimitEnd from './types/NotificationMeetingStageTimeLimitEnd'
 import NotificationPaymentRejected from './types/NotificationPaymentRejected'
+import NotificationPromoteToBillingLeader from './types/NotificationPromoteToBillingLeader'
 import NotificationTaskInvolves from './types/NotificationTaskInvolves'
 import NotificationTeamArchived from './types/NotificationTeamArchived'
+import NotificationTeamInvitation from './types/NotificationTeamInvitation'
 import OrganizationUser from './types/OrganizationUser'
 import PasswordResetRequest from './types/PasswordResetRequest'
 import PushInvitation from './types/PushInvitation'
@@ -36,10 +40,6 @@ import Task from './types/Task'
 import Team from './types/Team'
 import TimelineEvent from './types/TimelineEvent'
 import User from './types/User'
-import NotificationKickedOut from './types/NotificationKickedOut'
-import NotificationPromoteToBillingLeader from './types/NotificationPromoteToBillingLeader'
-import NotificationTeamInvitation from './types/NotificationTeamInvitation'
-import Comment from './types/Comment'
 
 export type RethinkTypes = {
   AgendaItem: {
@@ -111,7 +111,7 @@ export type RethinkTypes = {
   }
   Organization: {
     type: Organization
-    index: 'tier'
+    index: 'tier' | 'activeDomain'
   }
   OrganizationUser: {
     type: OrganizationUser

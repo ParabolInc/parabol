@@ -31,6 +31,9 @@ uws
   .post('/webhooks/github', (...args) =>
     require('./integrations/githubWebhookHandler').default(...args)
   )
+  .post('/webhooks/graphql', (...args) =>
+    require('./graphql/webhookGraphQLHandler').default(...args)
+  )
   .post('/graphql', (...args) => require('./graphql/httpGraphQLHandler').default(...args))
   .post('/intranet-graphql', (...args) =>
     require('./graphql/intranetGraphQLHandler').default(...args)
@@ -63,6 +66,7 @@ if (module.hot) {
     './sse/SSEPingHandler',
     './staticFileHandler',
     './utils/SAMLHandler',
+    './graphql/webhookGraphQLHandler',
     './graphql/httpGraphQLHandler',
     './graphql/intranetGraphQLHandler',
     './createSSR',

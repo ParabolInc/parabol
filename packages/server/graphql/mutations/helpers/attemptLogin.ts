@@ -1,14 +1,13 @@
-import User from '../../../database/types/User'
-import {AuthIdentityTypeEnum} from 'parabol-client/types/graphql'
-import AuthIdentityLocal from '../../../database/types/AuthIdentityLocal'
-import {AuthenticationError, Threshold} from 'parabol-client/types/constEnums'
-import {sendSegmentIdentify} from '../../../utils/sendSegmentEvent'
-import AuthToken from '../../../database/types/AuthToken'
-import getRethink from '../../../database/rethinkDriver'
 import bcrypt from 'bcrypt'
 import ms from 'ms'
-import FailedAuthRequest from '../../../database/types/FailedAuthRequest'
+import {AuthenticationError, Threshold} from 'parabol-client/types/constEnums'
+import {AuthIdentityTypeEnum} from 'parabol-client/types/graphql'
 import sleep from 'parabol-client/utils/sleep'
+import getRethink from '../../../database/rethinkDriver'
+import AuthIdentityLocal from '../../../database/types/AuthIdentityLocal'
+import AuthToken from '../../../database/types/AuthToken'
+import FailedAuthRequest from '../../../database/types/FailedAuthRequest'
+import User from '../../../database/types/User'
 
 const logFailedLogin = async (ip: string, email: string) => {
   const r = await getRethink()
@@ -75,8 +74,6 @@ const attemptLogin = async (denormEmail: string, password: string, ip = '') => {
   // check password
   const isCorrectPassword = await bcrypt.compare(password, hashedPassword)
   if (isCorrectPassword) {
-    // log them in
-    sendSegmentIdentify(viewerId).catch()
     return {
       userId: viewerId,
       // create a brand new auth token using the tms in our DB

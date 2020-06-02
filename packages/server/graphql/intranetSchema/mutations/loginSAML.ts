@@ -1,20 +1,19 @@
 import * as validator from '@authenio/samlify-node-xmllint'
 import base64url from 'base64url'
 import {GraphQLNonNull, GraphQLString} from 'graphql'
+import {TierEnum} from 'parabol-client/types/graphql'
 import getSSODomainFromEmail from 'parabol-client/utils/getSSODomainFromEmail'
 import querystring from 'querystring'
 import * as samlify from 'samlify'
 import shortid from 'shortid'
 import getRethink from '../../../database/rethinkDriver'
 import AuthToken from '../../../database/types/AuthToken'
+import SAML from '../../../database/types/SAML'
 import User from '../../../database/types/User'
 import encodeAuthToken from '../../../utils/encodeAuthToken'
-import {sendSegmentIdentify} from '../../../utils/sendSegmentEvent'
 import bootstrapNewUser from '../../mutations/helpers/bootstrapNewUser'
-import SAML from '../../../database/types/SAML'
 import {SSORelayState} from '../../queries/SAMLIdP'
 import LoginSAMLPayload from '../types/LoginSAMLPayload'
-import {TierEnum} from 'parabol-client/types/graphql'
 
 const serviceProvider = samlify.ServiceProvider({})
 samlify.setSchemaValidator(validator)
@@ -84,7 +83,6 @@ const loginSAML = {
       .default(null)
       .run()
     if (user) {
-      sendSegmentIdentify(user.id).catch()
       return {
         authToken: encodeAuthToken(new AuthToken({sub: user.id, tms: user.tms}))
       }

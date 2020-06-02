@@ -1,5 +1,5 @@
-import TimelineEventCheckinComplete from 'server/database/types/TimelineEventCheckinComplete'
-import TimelineEventRetroComplete from 'server/database/types/TimelineEventRetroComplete'
+import TimelineEventCheckinComplete from 'parabol-server/database/types/TimelineEventCheckinComplete'
+import TimelineEventRetroComplete from 'parabol-server/database/types/TimelineEventRetroComplete'
 import getRethink from '../database/rethinkDriver'
 import LoaderMakerForeign from './LoaderMakerForeign'
 
@@ -59,6 +59,24 @@ export const commentsByThreadId = new LoaderMakerForeign(
   }
 )
 
+export const completedMeetingsByTeamId = new LoaderMakerForeign(
+  'newMeetings',
+  'teamId',
+  async (teamIds) => {
+    const r = await getRethink()
+    return r
+      .table('NewMeeting')
+      .getAll(r.args(teamIds), {index: 'teamId'})
+      .filter((row) =>
+        row('endedAt')
+          .default(null)
+          .ne(null)
+      )
+      .orderBy(r.desc('endedAt'))
+      .run()
+  }
+)
+
 export const customPhaseItemsByTeamId = new LoaderMakerForeign(
   'customPhaseItems',
   'teamId',
@@ -96,6 +114,19 @@ export const meetingMembersByMeetingId = new LoaderMakerForeign(
   }
 )
 
+export const meetingMembersByUserId = new LoaderMakerForeign(
+  'meetingMembers',
+  'userId',
+  async (userIds) => {
+    const r = await getRethink()
+    return r
+      .table('MeetingMember')
+      .getAll(r.args(userIds), {index: 'userId'})
+
+      .run()
+  }
+)
+
 export const meetingSettingsByTeamId = new LoaderMakerForeign(
   'meetingSettings',
   'teamId',
@@ -108,6 +139,17 @@ export const meetingSettingsByTeamId = new LoaderMakerForeign(
   }
 )
 
+export const organizationsByActiveDomain = new LoaderMakerForeign(
+  'organizations',
+  'activeDomain',
+  async (activeDomains) => {
+    const r = await getRethink()
+    return r
+      .table('Organization')
+      .getAll(r.args(activeDomains), {index: 'activeDomain'})
+      .run()
+  }
+)
 export const organizationUsersByOrgId = new LoaderMakerForeign(
   'organizationUsers',
   'orgId',

@@ -1,15 +1,15 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
-import getRethink from '../../database/rethinkDriver'
-import UpgradeToProPayload from '../types/UpgradeToProPayload'
-import {getUserId} from '../../utils/authorization'
-import publish from '../../utils/publish'
-import sendSegmentEvent, {sendSegmentIdentify} from '../../utils/sendSegmentEvent'
-import standardError from '../../utils/standardError'
-import upgradeToPro from './helpers/upgradeToPro'
-import {GQLContext} from '../graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {OrgUserRole} from 'parabol-client/types/graphql'
+import getRethink from '../../database/rethinkDriver'
+import {getUserId} from '../../utils/authorization'
+import publish from '../../utils/publish'
+import segmentIo from '../../utils/segmentIo'
+import standardError from '../../utils/standardError'
+import {GQLContext} from '../graphql'
+import UpgradeToProPayload from '../types/UpgradeToProPayload'
 import hideConversionModal from './helpers/hideConversionModal'
+import upgradeToPro from './helpers/upgradeToPro'
 
 export default {
   type: UpgradeToProPayload,
@@ -68,8 +68,13 @@ export default {
 
     const teams = await dataLoader.get('teamsByOrgId').load(orgId)
     const teamIds = teams.map(({id}) => id)
-
-    sendSegmentEvent('Upgrade to Pro', viewerId, {orgId}).catch()
+    segmentIo.track({
+      userId: viewerId,
+      event: 'Upgrade to Pro',
+      properties: {
+        orgId
+      }
+    })
     const data = {orgId, teamIds, meetingIds}
     publish(SubscriptionChannel.ORGANIZATION, orgId, 'UpgradeToProPayload', data, subOptions)
 
@@ -79,8 +84,6 @@ export default {
       const teamData = {orgId, teamIds: [teamId]}
       publish(SubscriptionChannel.TEAM, teamId, 'UpgradeToProPayload', teamData, subOptions)
     })
-    // the count of this users tier stats just changed, update:
-    await sendSegmentIdentify(viewerId)
     return data
   }
 }

@@ -77,7 +77,7 @@ const signUpWithPassword = {
       const hashedPassword = await bcrypt.hash(password, Security.SALT_ROUNDS)
       const newUser = createNewLocalUser({email, hashedPassword, isEmailVerified: false, segmentId})
       // MUTATIVE
-      context.authToken = await bootstrapNewUser(newUser, isOrganic, segmentId)
+      context.authToken = await bootstrapNewUser(newUser, isOrganic)
       return {
         userId: newUser.id,
         authToken: encodeAuthToken(context.authToken)
