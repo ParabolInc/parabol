@@ -313,12 +313,14 @@ export default {
     const {facilitatorUserId} = completedMeeting
     const meetingTemplateName = await getMeetingTemplateName(meetingType, phases, dataLoader)
     presentMemberUserIds.forEach((userId) => {
+      const wasFacilitator = userId === facilitatorUserId
       segmentIo.track({
         userId,
         event: 'Meeting Completed',
         properties: {
           // include wasFacilitator as a flag to handle 1 per meeting
-          wasFacilitator: userId === facilitatorUserId,
+          wasFacilitator,
+          userIds: wasFacilitator ? presentMemberUserIds : undefined,
           meetingType,
           meetingTemplateName,
           meetingNumber,
