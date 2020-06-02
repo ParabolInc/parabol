@@ -1,6 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {ThreadSourceEnum} from '~/types/graphql'
 import makeEmptyStr from '~/utils/draftjs/makeEmptyStr'
 import createProxyRecord from '~/utils/relay/createProxyRecord'
 import {AddCommentMutation_meeting} from '~/__generated__/AddCommentMutation_meeting.graphql'
@@ -41,17 +40,12 @@ export const addCommentMeetingUpdater: SharedUpdater<AddCommentMutation_meeting>
 ) => {
   const comment = payload.getLinkedRecord('comment')
   if (!comment) return
-  const threadSource = comment.getValue('threadSource')
   const threadParentId = comment.getValue('threadParentId')
   if (threadParentId) {
     addNodeToArray(comment, store.get(threadParentId), 'replies', 'threadSortOrder')
     return
   }
-  const threadSourceId =
-    (threadSource === ThreadSourceEnum.REFLECTION_GROUP ||
-      threadSource === ThreadSourceEnum.AGENDA_ITEM) ?
-      comment.getValue('threadId') : undefined
-
+  const threadSourceId = comment.getValue('threadId')
   if (threadSourceId) {
     const threadSourceProxy = (threadSourceId && store.get(threadSourceId as string)) || null
     const threadSourceConn = getThreadSourceThreadConn(threadSourceProxy)

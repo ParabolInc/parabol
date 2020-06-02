@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {IComment, ThreadSourceEnum} from '~/types/graphql'
+import {IComment} from '~/types/graphql'
 import convertToTaskContent from '~/utils/draftjs/convertToTaskContent'
 import safeRemoveNodeFromConn from '~/utils/relay/safeRemoveNodeFromConn'
 import {DeleteCommentMutation_meeting} from '~/__generated__/DeleteCommentMutation_meeting.graphql'
@@ -65,11 +65,7 @@ const handleDeleteComment = (comment, store) => {
     comment.setValue(TOMBSTONE, 'content')
     comment.setValue(false, 'isActive')
   } else {
-    const threadSource = comment.getValue('threadSource')!
-    const threadSourceId =
-      (threadSource === ThreadSourceEnum.REFLECTION_GROUP ||
-        threadSource === ThreadSourceEnum.AGENDA_ITEM) ?
-        comment.getValue('threadId') : undefined
+    const threadSourceId = comment.getValue('threadId')
     if (threadSourceId) {
       const threadSourceProxy = (threadSourceId && store.get(threadSourceId as string)) || null
       const threadSourceConn = getThreadSourceThreadConn(threadSourceProxy)
