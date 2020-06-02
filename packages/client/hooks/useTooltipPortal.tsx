@@ -7,7 +7,8 @@ import {PortalStatus} from './usePortal'
 
 const TooltipBlock = styled('div')({
   position: 'absolute',
-  zIndex: ZIndex.TOOLTIP
+  zIndex: ZIndex.TOOLTIP,
+  pointerEvents: 'none'
 })
 
 const useTooltipPortal = (

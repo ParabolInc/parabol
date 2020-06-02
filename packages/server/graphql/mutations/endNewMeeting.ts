@@ -36,7 +36,6 @@ import {DataLoaderWorker, GQLContext} from '../graphql'
 import EndNewMeetingPayload from '../types/EndNewMeetingPayload'
 import sendNewMeetingSummary from './helpers/endMeeting/sendNewMeetingSummary'
 import {endSlackMeeting} from './helpers/notifySlack'
-import makeAgendaItemSchema from 'parabol-client/validation/makeAgendaItemSchema'
 import shortid from 'shortid'
 
 const timelineEventLookup = {
@@ -105,37 +104,29 @@ const getPinnedAgendaItems = async (teamId: string) => {
     .run()
 }
 
-const clonePinnedAgendaItem = async (agendaItem: IAgendaItem, viewerId: string) => {
+const clonePinnedAgendaItem = async (pinnedAgendaItems: IAgendaItem[]) => {
   const r = await getRethink()
-  const teamId = agendaItem.teamId
-
-  const clonedAgendaItem = {
-    content: agendaItem.content,
-    pinned: agendaItem.pinned,
-    sortOrder: agendaItem.sortOrder,
-    teamId,
-    teamMemberId: agendaItem.teamMemberId
-  }
-  const schema = makeAgendaItemSchema()
-  const {errors, data: validNewAgendaItem} = schema(clonedAgendaItem)
-  if (Object.keys(errors).length) {
-    return standardError(new Error('Failed input validation'), {userId: viewerId})
-  }
-
-  const agendaItemId = `${teamId}::${shortid.generate()}`
-  const now = new Date()
-  return r
-    .table('AgendaItem')
-    .insert({
+  const formattedPinnedAgendaItems = pinnedAgendaItems.map((agendaItem) => {
+    const agendaItemId = `${agendaItem.teamId}::${shortid.generate()}`
+    const now = new Date()
+    return {
       id: agendaItemId,
-      ...validNewAgendaItem,
-      pinnedParentId: agendaItem.pinnedParentId ? agendaItem.pinnedParentId : agendaItem.id,
+      content: agendaItem.content,
+      pinned: agendaItem.pinned,
+      pinnedParentId: agendaItem.pinnedParentId ? agendaItem.pinnedParentId : agendaItemId,
+      sortOrder: agendaItem.sortOrder,
+      teamId: agendaItem.teamId,
+      teamMemberId: agendaItem.teamMemberId,
       createdAt: now,
       updatedAt: now,
       isActive: true,
-      isComplete: false,
-      teamId
-    })
+      isComplete: false
+    }
+  })
+
+  await r
+    .table('AgendaItem')
+    .insert(formattedPinnedAgendaItems)
     .run()
 }
 
@@ -360,9 +351,7 @@ export default {
     const pinnedAgendaItems = await getPinnedAgendaItems(teamId)
     const result = await finishMeetingType(completedMeeting, dataLoader)
 
-    pinnedAgendaItems.map((agendaItem) => {
-      clonePinnedAgendaItem(agendaItem, viewerId)
-    })
+    clonePinnedAgendaItem(pinnedAgendaItems)
 
     await shuffleCheckInOrder(teamId)
     const updatedTaskIds = (result && result.updatedTaskIds) || []

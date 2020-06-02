@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {useEffect, useRef} from 'react'
+import React, {useEffect, useRef, useState} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {AgendaItem_activeMeetings} from '~/__generated__/AgendaItem_activeMeetings.graphql'
 import Avatar from '../../../../components/Avatar/Avatar'
@@ -11,7 +11,6 @@ import {MenuPosition} from '../../../../hooks/useCoords'
 import useGotoStageId from '../../../../hooks/useGotoStageId'
 import useScrollIntoView from '../../../../hooks/useScrollIntoVIew'
 import useTooltip from '../../../../hooks/useTooltip'
-import {PortalStatus} from '../../../../hooks/usePortal'
 import RemoveAgendaItemMutation from '../../../../mutations/RemoveAgendaItemMutation'
 import UpdateAgendaItemMutation from '../../../../mutations/UpdateAgendaItemMutation'
 import {ICON_SIZE} from '../../../../styles/typographyV2'
@@ -42,6 +41,9 @@ const DeleteIconButton = styled(IconButton)<{disabled?: boolean}>(({disabled}) =
 }))
 
 const IconBlock = styled('div')({
+  display: 'flex',
+  justifyContent: 'center',
+  marginRight: '4px',
   width: '2rem',
   '&:active': {
     opacity: 0.7
@@ -102,35 +104,21 @@ interface Props {
   activeMeetings: AgendaItem_activeMeetings
   agendaItem: AgendaItem_agendaItem
   gotoStageId: ReturnType<typeof useGotoStageId> | undefined
-  hoveringId: string | null
   isDragging: boolean
   meetingId?: string | null
-  updateHoveringId: (id: string | null) => void
 }
 
 const AgendaItem = (props: Props) => {
-  const {
-    activeMeetings,
-    agendaItem,
-    gotoStageId,
-    hoveringId,
-    isDragging,
-    meetingId,
-    updateHoveringId
-  } = props
+  const {activeMeetings, agendaItem, gotoStageId, isDragging, meetingId} = props
   const {id: agendaItemId, content, pinned, teamMember} = agendaItem
   const {picture} = teamMember
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
-  const isHovering = hoveringId === agendaItemId
   const ref = useRef<HTMLDivElement>(null)
-  const {
-    tooltipPortal,
-    openTooltip,
-    closeTooltip,
-    originRef,
-    portalStatus: tooltipStatus
-  } = useTooltip<HTMLDivElement>(MenuPosition.UPPER_CENTER)
+  const [isHovering, setIsHovering] = useState(false)
+  const {tooltipPortal, openTooltip, closeTooltip, originRef} = useTooltip<HTMLDivElement>(
+    MenuPosition.UPPER_CENTER
+  )
   const {
     isDisabled,
     onClick,
@@ -143,14 +131,6 @@ const AgendaItem = (props: Props) => {
   useEffect(() => {
     ref.current && ref.current.scrollIntoView({behavior: 'smooth'})
   }, [])
-
-  useEffect(() => {
-    // if the tooltip has closed and we're not hovering in a new item, remove hover
-    // this is required because onMouseLeave isn't triggered if the cursor leaves the sidebar through the tooltip
-    if (tooltipStatus === PortalStatus.Exited && isHovering) {
-      updateHoveringId(null)
-    }
-  }, [tooltipStatus])
 
   const handleIconClick = (e: React.MouseEvent) => {
     e.stopPropagation()
@@ -165,19 +145,6 @@ const AgendaItem = (props: Props) => {
     RemoveAgendaItemMutation(atmosphere, {agendaItemId})
   }
 
-  const handleMouseMoveItem = () => {
-    // onMouseEnter isn't triggered if the cursor quickly moves over tooltip so check onMouseMove
-    if (!isHovering) {
-      updateHoveringId(agendaItemId)
-    }
-  }
-
-  const handleMouseMoveIcon = () => {
-    if (isHovering && tooltipStatus === PortalStatus.Exited) {
-      openTooltip()
-    }
-  }
-
   const getIcon = () => {
     if (pinned && isHovering) return <SvgIcon alt='unpinIcon' src={unpinIcon} />
     else if (!pinned && !isHovering) return <Avatar hasBadge={false} picture={picture} size={24} />
@@ -186,13 +153,16 @@ const AgendaItem = (props: Props) => {
 
   return (
     <>
-      <AgendaItemStyles onMouseMove={handleMouseMoveItem}>
+      <AgendaItemStyles
+        onMouseEnter={() => setIsHovering(true)}
+        onMouseLeave={() => setIsHovering(false)}
+      >
         <MeetingSubnavItem
           label={content}
           metaContent={
             <IconBlock
               onClick={handleIconClick}
-              onMouseMove={handleMouseMoveIcon}
+              onMouseEnter={openTooltip}
               onMouseLeave={closeTooltip}
               ref={originRef}
             >
