@@ -1,5 +1,5 @@
 import {AgendaList_team} from '../../../../__generated__/AgendaList_team.graphql'
-import React, {useMemo, useState} from 'react'
+import React, {useMemo} from 'react'
 import {DragDropContext, Draggable, Droppable} from 'react-beautiful-dnd'
 // import SexyScrollbar from 'universal/components/Dashboard/SexyScrollbar'
 import styled from '@emotion/styled'
@@ -41,7 +41,6 @@ interface Props {
 const AgendaList = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {dashSearch, gotoStageId, meetingId, team} = props
-  const [hoveringId, setHoveringId] = useState<string | null>(null)
   const {activeMeetings, agendaItems} = team
   const filteredAgendaItems = useMemo(() => {
     return dashSearch
@@ -80,14 +79,6 @@ const AgendaList = (props: Props) => {
     )
   })
 
-  const handleMouseLeave = () => {
-    setHoveringId(null)
-  }
-
-  const updateHoveringId = (id: string | null) => {
-    setHoveringId(id)
-  }
-
   if (filteredAgendaItems.length === 0) {
     return <AgendaListEmptyState isDashboard={!meetingId} />
   }
@@ -97,7 +88,7 @@ const AgendaList = (props: Props) => {
       <Droppable droppableId={AGENDA_ITEM}>
         {(provided) => {
           return (
-            <AgendaListRoot onMouseLeave={handleMouseLeave} ref={provided.innerRef}>
+            <AgendaListRoot ref={provided.innerRef}>
               {filteredAgendaItems.map((item, idx) => {
                 return (
                   <Draggable key={item.id} draggableId={item.id} index={idx}>
@@ -114,10 +105,8 @@ const AgendaList = (props: Props) => {
                             activeMeetings={activeMeetings}
                             agendaItem={item}
                             gotoStageId={gotoStageId}
-                            hoveringId={hoveringId}
                             isDragging={dragSnapshot.isDragging}
                             meetingId={meetingId}
-                            updateHoveringId={updateHoveringId}
                           />
                         </DraggableAgendaItem>
                       )
