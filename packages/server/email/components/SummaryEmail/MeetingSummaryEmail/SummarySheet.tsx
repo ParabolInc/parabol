@@ -23,7 +23,6 @@ interface Props {
   referrer: MeetingSummaryReferrer
   referrerUrl?: string
   teamDashUrl: string
-  meetingUrl: string
   urlAction?: 'csv'
 }
 
@@ -79,11 +78,6 @@ export default createFragmentContainer(SummarySheet, {
       ...RetroTopics_meeting
       meetingType
       name
-      meetingNumber
-      team {
-        name
-      }
-      createdAt
     }
   `
 })
