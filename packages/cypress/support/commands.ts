@@ -97,13 +97,13 @@ const visitPhase = (phase: string, idx = '') => {
   })
   cy.get(`[data-cy=next-phase]`)
     .should('be.visible')
-    .click()
+    .dblclick()
 
   cy.url().should('be.eq', `http://localhost:3000/retrospective-demo/${phase}${idx}`)
 }
 
 // const click = ($el) => {
-// return $el.click()
+//   return $el.click()
 // }
 
 Cypress.Commands.add('visitReflect', visitReflect)

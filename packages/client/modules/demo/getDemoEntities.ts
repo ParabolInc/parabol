@@ -21,7 +21,7 @@ const demoLookup = (text) => {
 const getDemoEntities = async (text: string) => {
   if (!text || text.length <= 2) return []
   const remoteAtmosphere = new Atmosphere()
-  if (!(window as any).Cypress) {
+  if ((window as any).Cypress) {
     const lookupEntities = demoLookup(text)
     return lookupEntities || []
   }
