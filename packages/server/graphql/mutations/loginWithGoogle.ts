@@ -39,8 +39,8 @@ const loginWithGoogle = {
       if (!id) {
         return standardError(new Error('Invalid login code'))
       }
-      const {email, picture, name, email_verified, sub} = id
-
+      const {picture, name, email_verified, sub} = id
+      const email = id.email.toLowerCase()
       const existingUser = await r
         .table('User')
         .getAll(email, {index: 'email'})
