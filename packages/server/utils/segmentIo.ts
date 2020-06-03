@@ -17,7 +17,8 @@ segmentIo.track = (options) => {
     .createHmac('sha256', SERVER_SECRET!)
     .update(ts)
     .digest('base64')
-  return (SegmentIo as any)._track({
+
+  return (segmentIo as any)._track({
     ...options,
     timestamp: now,
     parabolToken: parabolToken as any

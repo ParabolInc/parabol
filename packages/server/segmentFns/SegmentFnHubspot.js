@@ -123,12 +123,20 @@ query ArchiveTeam($userId: ID!) {
 }`
 }
 
-const parabolFetch = async (query, variables, token) => {
-  const res = await fetch(`http://localhost:3000/webhooks/graphql`, {
+const parabolFetch = async (query, variables, payload, settings) => {
+  const {parabolToken, timestamp} = payload
+  const {segmentFnKey} = settings
+  const ts = Math.floor(new Date(timestamp).getTime() / 1000)
+  const signature = crypto
+    .createHmac('sha256', segmentFnKey)
+    .update(parabolToken)
+    .digest('base64')
+  const authToken = `${ts}.${signature}`
+  const res = await fetch(`https://47045251741a.ngrok.io/webhooks/graphql`, {
     // const res = await fetch(`https://action.parabol.co/webhooks/graphql`, {
     method: 'POST',
     headers: {
-      Authorization: `Bearer ${token}`,
+      Authorization: `Bearer ${authToken}`,
       Accept: 'application/json',
       'Content-Type': 'application/json'
     },
@@ -178,35 +186,30 @@ const updateHubspotContact = async (
   )
 }
 
-const updateHubspotBulkContact = async (
-  records,
-  hapiKey
-) => {
+const updateHubspotBulkContact = async (records, hapiKey) => {
   if (!records || Object.keys(records).length === 0) return
-  const body = JSON.stringify(records.map((record) => {
-    const {id, email, ...props} = record
-    return {
-      email,
-      properties: Object.keys(props).map((key) => ({
-        property: contactKeys[key],
-        value: normalize(props[key])
-      }))
-    }
-  }))
-  const res = await fetch(
-    `https://api.hubapi.com/contacts/v1/contact/batch/?hapikey=${hapiKey}`,
-    {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body
-    }
+  const body = JSON.stringify(
+    records.map((record) => {
+      const {id, email, ...props} = record
+      return {
+        email,
+        properties: Object.keys(props).map((key) => ({
+          property: contactKeys[key],
+          value: normalize(props[key])
+        }))
+      }
+    })
   )
+  const res = await fetch(`https://api.hubapi.com/contacts/v1/contact/batch/?hapikey=${hapiKey}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body
+  })
   if (!String(res.status).startsWith('2')) {
     throw new Error(`${res.status}: ${body}`)
   }
-
 }
 
 const updateHubspotCompany = async (
@@ -229,13 +232,16 @@ const updateHubspotCompany = async (
     }))
   })
   const companyId = contactResJSON['associated-company']['company-id']
-  const companyRes = await fetch(`https://api.hubapi.com/companies/v2/companies/${companyId}?hapikey=${hapiKey}`, {
-    method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body
-  })
+  const companyRes = await fetch(
+    `https://api.hubapi.com/companies/v2/companies/${companyId}?hapikey=${hapiKey}`,
+    {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body
+    }
+  )
   if (!String(companyRes.status).startsWith('2')) {
     throw new Error(`${companyRes.status}: ${body}`)
   }
@@ -244,14 +250,15 @@ const updateHubspotCompany = async (
 const updateHubspot = async (
   query,
   userId,
-  queryToken,
-  hubspotKey
+  payload,
+  settings
 ) => {
   if (!query) return
-  const parabolPayload = await parabolFetch(query, {userId}, queryToken)
+  const parabolPayload = await parabolFetch(query, {userId}, payload, settings)
   if (!parabolPayload) return
   const {user} = parabolPayload
   const {email, company, ...contact} = user
+  const {hubspotKey} = settings
   await Promise.all([
     updateHubspotContact(email, hubspotKey, contact),
     updateHubspotCompany(email, hubspotKey, company)
@@ -259,21 +266,14 @@ const updateHubspot = async (
 }
 
 async function onTrack(payload, settings) {
-  const {parabolToken, event, timestamp, userId, properties} = payload
-  const {hubspotKey, segmentFnKey} = settings
-  const signature = crypto
-    .createHmac('sha256', segmentFnKey)
-    .update(parabolToken)
-    .digest('base64')
-  const queryToken = `${timestamp}.${signature}`
+  const {event, userId, properties} = payload
+  const {hubspotKey} = settings
   const query = queries[event]
-  console.log("made")
   if (event === 'Meeting Completed') {
     const {userIds} = properties
-    if (!userIds) return
-    const parabolPayload = await parabolFetch(query, {userIds, userId}, queryToken)
-    console.log("pay", parabolPayload)
-    if (!parabolPayload) return
+    if (!userIds) throw new InvalidEventPayload('userIds not provided')
+    const parabolPayload = await parabolFetch(query, {userIds, userId}, payload, settings)
+    if (!parabolPayload) throw new InvalidEventPayload(`Null payload from parabol: ${userIds}, ${userId}, ${query}`)
     const {users, company} = parabolPayload
     const facilitator = users.find((user) => user.id === userId)
     const {email} = facilitator
@@ -283,6 +283,6 @@ async function onTrack(payload, settings) {
     ])
   } else {
     // standard handler
-    await updateHubspot(query, userId, queryToken, hubspotKey)
+    await updateHubspot(query, userId, payload, settings)
   }
 }
