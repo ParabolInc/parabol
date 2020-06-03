@@ -9,7 +9,8 @@ import emailVerificationEmailCreator from './components/emailVerificationEmailCr
 import getMailManager from './getMailManager'
 
 const createEmailVerification = async (props: ISignUpWithPasswordOnMutationArguments) => {
-  const {email, password, invitationToken, segmentId} = props
+  const {password, invitationToken, segmentId} = props
+  const email = props.email.toLowerCase()
   const tokenBuffer = crypto.randomBytes(48)
   const verifiedEmailToken = base64url.encode(tokenBuffer)
   const {subject, body, html} = emailVerificationEmailCreator({verifiedEmailToken, invitationToken})
