@@ -10,11 +10,14 @@ import {GQLContext} from '../graphql'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import TeamMember from './TeamMember'
 import {IAgendaItem} from 'parabol-client/types/graphql'
+import ThreadSource, {threadSourceFields} from './ThreadSource'
 
 const AgendaItem = new GraphQLObjectType<IAgendaItem, GQLContext>({
   name: 'AgendaItem',
   description: 'A request placeholder that will likely turn into 1 or more tasks',
+  interfaces: () => [ThreadSource],
   fields: () => ({
+    ...threadSourceFields(),
     id: {
       type: new GraphQLNonNull(GraphQLID),
       description: 'The unique agenda item id teamId::shortid'
@@ -43,6 +46,10 @@ const AgendaItem = new GraphQLObjectType<IAgendaItem, GQLContext>({
     teamMemberId: {
       type: new GraphQLNonNull(GraphQLID),
       description: 'The teamMemberId that created this agenda item'
+    },
+    meetingId: {
+      type: GraphQLID,
+      description: 'The meetingId of the agenda item'
     },
     updatedAt: {
       type: GraphQLISO8601Type,

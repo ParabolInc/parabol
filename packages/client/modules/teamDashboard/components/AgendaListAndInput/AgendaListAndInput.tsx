@@ -32,7 +32,7 @@ interface Props {
   gotoStageId?: ReturnType<typeof useGotoStageId>
   isDisabled?: boolean
   team: AgendaListAndInput_team
-  meetingId?: string | null
+  meetingId?: string
 }
 
 const AgendaListAndInput = (props: Props) => {

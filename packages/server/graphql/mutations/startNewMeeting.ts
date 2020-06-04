@@ -117,6 +117,8 @@ export default {
         .run()
       return {error: {message: 'Meeting already started'}}
     }
+    const agendaItems = await dataLoader.get('agendaItemsByTeamId').load(teamId)
+    const agendaItemIds = agendaItems.map(({id}) => id)
 
     await Promise.all([
       r
@@ -127,7 +129,12 @@ export default {
         .table('Team')
         .get(teamId)
         .update({lastMeetingType: meetingType})
-        .run()
+        .run(),
+      r
+        .table('AgendaItem')
+        .getAll(r.args(agendaItemIds))
+        .update({meetingId: meeting.id})
+        .run(),
     ])
 
     startSlackMeeting(meeting.id, teamId, dataLoader).catch(console.log)

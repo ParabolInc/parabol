@@ -1,6 +1,6 @@
+import extractTextFromDraftString from 'parabol-client/utils/draftjs/extractTextFromDraftString'
 import shortid from 'shortid'
 import GoogleAnalyzedEntity from './GoogleAnalyzedEntity'
-import extractTextFromDraftString from 'parabol-client/utils/draftjs/extractTextFromDraftString'
 import Reactji from './Reactji'
 
 export interface ReflectionInput {
@@ -8,7 +8,6 @@ export interface ReflectionInput {
   createdAt?: Date
   creatorId: string
   content: string
-  groupColor: string
   plaintextContent?: string // the plaintext version of content
   entities: GoogleAnalyzedEntity[]
   meetingId: string
@@ -25,7 +24,6 @@ export default class Reflection {
   createdAt: Date
   creatorId: string
   content: string
-  groupColor: string
   plaintextContent: string
   entities: GoogleAnalyzedEntity[]
   isActive: boolean
@@ -39,7 +37,6 @@ export default class Reflection {
     const {
       content,
       plaintextContent,
-      groupColor,
       createdAt,
       creatorId,
       entities,
@@ -57,7 +54,6 @@ export default class Reflection {
     this.creatorId = creatorId
     this.content = content
     this.plaintextContent = plaintextContent || extractTextFromDraftString(content)
-    this.groupColor = groupColor
     this.entities = entities
     this.isActive = true
     this.meetingId = meetingId

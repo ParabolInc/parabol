@@ -43,13 +43,13 @@ const Header = styled(LabelHeading)({
 interface Props {
   editorRef: RefObject<HTMLTextAreaElement>
   meeting: DiscussionThreadList_meeting
-  reflectionGroupId: string
+  threadSourceId: string
   threadables: DiscussionThreadList_threadables
   dataCy: string
 }
 
 const DiscussionThreadList = forwardRef((props: Props, ref: any) => {
-  const {editorRef, meeting, reflectionGroupId, threadables, dataCy} = props
+  const {editorRef, meeting, threadSourceId, threadables, dataCy} = props
   const isEmpty = threadables.length === 0
   useScrollThreadList(threadables, editorRef, ref)
   const HeaderBlock = () => <Header>{'Discussion & Takeaway Tasks'}</Header>
@@ -73,7 +73,7 @@ const DiscussionThreadList = forwardRef((props: Props, ref: any) => {
             key={id}
             threadable={threadable}
             meeting={meeting}
-            reflectionGroupId={reflectionGroupId}
+            threadSourceId={threadSourceId}
           />
         )
       })}
@@ -83,7 +83,7 @@ const DiscussionThreadList = forwardRef((props: Props, ref: any) => {
 
 export default createFragmentContainer(DiscussionThreadList, {
   meeting: graphql`
-    fragment DiscussionThreadList_meeting on RetrospectiveMeeting {
+    fragment DiscussionThreadList_meeting on NewMeeting {
       ...ThreadedItem_meeting
     }
   `,

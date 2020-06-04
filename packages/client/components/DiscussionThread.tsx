@@ -32,8 +32,8 @@ interface Props {
 const DiscussionThread = (props: Props) => {
   const {viewer} = props
   const meeting = viewer.meeting!
-  const {endedAt, replyingToCommentId, reflectionGroup} = meeting
-  const {id: reflectionGroupId, thread} = reflectionGroup!
+  const {endedAt, replyingToCommentId, threadSource} = meeting
+  const {id: threadSourceId, thread} = threadSource!
   const edges = thread?.edges ?? [] // should never happen, but Terry reported it in demo. likely relay error
   const threadables = edges.map(({node}) => node)
   const getMaxSortOrder = () => {
@@ -47,7 +47,7 @@ const DiscussionThread = (props: Props) => {
     <Wrapper isExpanded={isExpanded} ref={ref}>
       <DiscussionThreadList
         dataCy='discuss-thread-list'
-        reflectionGroupId={reflectionGroupId}
+        threadSourceId={threadSourceId}
         meeting={meeting}
         threadables={threadables}
         ref={listRef}
@@ -59,7 +59,7 @@ const DiscussionThread = (props: Props) => {
         isDisabled={!!replyingToCommentId}
         getMaxSortOrder={getMaxSortOrder}
         meeting={meeting}
-        reflectionGroupId={reflectionGroupId}
+        threadSourceId={threadSourceId}
       />
     </Wrapper>
   )
@@ -69,12 +69,31 @@ export default createFragmentContainer(DiscussionThread, {
   viewer: graphql`
     fragment DiscussionThread_viewer on User {
       meeting(meetingId: $meetingId) {
-        ... on RetrospectiveMeeting {
+        ... on NewMeeting {
           ...DiscussionThreadInput_meeting
           ...DiscussionThreadList_meeting
           endedAt
           replyingToCommentId
-          reflectionGroup(reflectionGroupId: $reflectionGroupId) {
+        }
+        ... on RetrospectiveMeeting {
+          threadSource: reflectionGroup(reflectionGroupId: $threadSourceId) {
+            id
+            thread(first: 1000) @connection(key: "DiscussionThread_thread") {
+              edges {
+                node {
+                  threadSortOrder
+                  threadId
+                  threadSource
+                  ...DiscussionThreadList_threadables
+                  threadSortOrder
+                }
+              }
+            }
+          }
+        }
+
+        ... on ActionMeeting {
+          threadSource: agendaItem(agendaItemId: $threadSourceId) {
             id
             thread(first: 1000) @connection(key: "DiscussionThread_thread") {
               edges {

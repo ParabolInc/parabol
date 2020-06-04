@@ -11,7 +11,7 @@ import segmentIo from '../../utils/segmentIo'
 import {GQLContext} from '../graphql'
 import AddCommentInput from '../types/AddCommentInput'
 import AddCommentPayload from '../types/AddCommentPayload'
-import validateThreadableReflectionGroupId from './validateThreadableReflectionGroupId'
+import validateThreadableThreadSourceId from './validateThreadableThreadSourceId'
 
 const addComment = {
   type: GraphQLNonNull(AddCommentPayload),
@@ -39,7 +39,7 @@ const addComment = {
     const [meeting, viewerMeetingMember, threadError] = await Promise.all([
       dataLoader.get('newMeetings').load(meetingId),
       dataLoader.get('meetingMembers').load(meetingMemberId),
-      validateThreadableReflectionGroupId(threadSource, threadId, meetingId, dataLoader)
+      validateThreadableThreadSourceId(threadSource, threadId, meetingId, dataLoader)
     ])
 
     if (!viewerMeetingMember) {
@@ -61,10 +61,11 @@ const addComment = {
 
     const data = {commentId}
     const {phases, teamId} = meeting!
-    const discussPhase = phases.find(
-      (phase) => phase.phaseType === NewMeetingPhaseTypeEnum.discuss
+    const containsThreadablePhase = phases.find(
+      (phase) => (phase.phaseType === NewMeetingPhaseTypeEnum.discuss ||
+        phase.phaseType === NewMeetingPhaseTypeEnum.agendaitems)
     )!
-    const {stages} = discussPhase
+    const {stages} = containsThreadablePhase
     const isAsync = stages.some((stage) => stage.isAsync)
     segmentIo.track({
       userId: viewerId,

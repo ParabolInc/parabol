@@ -29,6 +29,7 @@ const updateGQLSchema = (context: Context = {delay: 0}) => {
       if (context.oldSchema === nextSchema) return
       context.oldSchema = nextSchema
       await write(schemaPath, nextSchema)
+
       // console.log(`💥💥💥   GraphQL Schema Created    💥💥💥`)
       resolve(true)
     }, context.delay)

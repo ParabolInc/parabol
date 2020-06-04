@@ -1,14 +1,15 @@
 import {GraphQLNonNull} from 'graphql'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import makeAgendaItemSchema from 'parabol-client/validation/makeAgendaItemSchema'
+import shortid from 'shortid'
 import getRethink from '../../database/rethinkDriver'
+import AgendaItem from '../../database/types/AgendaItem'
+import {getUserId, isTeamMember} from '../../utils/authorization'
+import publish from '../../utils/publish'
+import standardError from '../../utils/standardError'
 import AddAgendaItemPayload from '../types/AddAgendaItemPayload'
 import CreateAgendaItemInput from '../types/CreateAgendaItemInput'
-import publish from '../../utils/publish'
-import shortid from 'shortid'
-import makeAgendaItemSchema from 'parabol-client/validation/makeAgendaItemSchema'
-import {getUserId, isTeamMember} from '../../utils/authorization'
-import standardError from '../../utils/standardError'
 import addAgendaItemToActiveActionMeeting from './helpers/addAgendaItemToActiveActionMeeting'
-import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 
 export default {
   type: AddAgendaItemPayload,
@@ -29,7 +30,6 @@ export default {
     if (!isTeamMember(authToken, teamId)) {
       return standardError(new Error('Team not found'), {userId: viewerId})
     }
-
     // VALIDATION
     const schema = makeAgendaItemSchema()
     const {errors, data: validNewAgendaItem} = schema(newAgendaItem)
@@ -38,19 +38,16 @@ export default {
     }
 
     // RESOLUTION
-    const now = new Date()
     const agendaItemId = `${teamId}::${shortid.generate()}`
     await r
       .table('AgendaItem')
-      .insert({
-        id: agendaItemId,
-        ...validNewAgendaItem,
-        createdAt: now,
-        updatedAt: now,
-        isActive: true,
-        isComplete: false,
-        teamId
-      })
+      .insert(
+        new AgendaItem({
+          ...validNewAgendaItem,
+          id: agendaItemId,
+          teamId
+        })
+      )
       .run()
 
     const meetingId = await addAgendaItemToActiveActionMeeting(agendaItemId, teamId, dataLoader)

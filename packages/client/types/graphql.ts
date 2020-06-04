@@ -101,6 +101,11 @@ export interface IUser {
   cacheExpiresAt: any | null
 
   /**
+   * The assumed company this organizaiton belongs to
+   */
+  company: ICompany | null
+
+  /**
    * The socketIds that the user is currently connected with
    */
   connectedSockets: Array<string | null> | null
@@ -144,14 +149,39 @@ export interface IUser {
   invoices: IInvoiceConnection | null
 
   /**
+   * true if the user is a billing leader on any organization, else false
+   */
+  isAnyBillingLeader: boolean
+
+  /**
    * true if the user is currently online
    */
   isConnected: boolean | null
 
   /**
+   * true if the user is the first to sign up from their domain, else false
+   */
+  isPatientZero: boolean
+
+  /**
+   * the endedAt timestamp of the most recent meeting they were a member of
+   */
+  lastMetAt: any | null
+
+  /**
    * The number of logins for this user
    */
   loginsCount: number | null
+
+  /**
+   * The largest number of consecutive months the user has checked into a meeting
+   */
+  monthlyStreakMax: number
+
+  /**
+   * The number of consecutive 30-day intervals that the user has checked into a meeting as of this moment
+   */
+  monthlyStreakCurrent: number
 
   /**
    * Name associated with the user
@@ -167,6 +197,11 @@ export interface IUser {
    * the most important actions for the user to perform
    */
   suggestedActions: Array<SuggestedAction>
+
+  /**
+   * the number of times the user clicked pay later
+   */
+  payLaterClickCount: number
 
   /**
    * The timeline of important events for the viewer
@@ -748,6 +783,11 @@ export interface IAgendaItem {
   id: string
 
   /**
+   * the comments and tasks created from the discussion
+   */
+  thread: IThreadableConnection
+
+  /**
    * The body of the agenda item
    */
   content: string
@@ -778,6 +818,11 @@ export interface IAgendaItem {
   teamMemberId: string
 
   /**
+   * The meetingId of the agenda item
+   */
+  meetingId: string | null
+
+  /**
    * The timestamp the agenda item was updated
    */
   updatedAt: any | null
@@ -786,6 +831,103 @@ export interface IAgendaItem {
    * The team member that created the agenda item
    */
   teamMember: ITeamMember
+}
+
+export interface IThreadOnAgendaItemArguments {
+  first: number
+
+  /**
+   * the incrementing sort order in string format
+   */
+  after?: string | null
+}
+
+/**
+ * The source of a discusson thread
+ */
+export type ThreadSource = IAgendaItem | IRetroReflectionGroup
+
+/**
+ * The source of a discusson thread
+ */
+export interface IThreadSource {
+  __typename: 'ThreadSource'
+
+  /**
+   * shortid
+   */
+  id: string
+
+  /**
+   * the comments and tasks created from the discussion
+   */
+  thread: IThreadableConnection
+}
+
+export interface IThreadOnThreadSourceArguments {
+  first: number
+
+  /**
+   * the incrementing sort order in string format
+   */
+  after?: string | null
+}
+
+/**
+ * A connection to a list of items.
+ */
+export interface IThreadableConnection {
+  __typename: 'ThreadableConnection'
+
+  /**
+   * Page info with strings (sortOrder) as cursors
+   */
+  pageInfo: IPageInfo | null
+
+  /**
+   * A list of edges.
+   */
+  edges: Array<IThreadableEdge>
+}
+
+/**
+ * Information about pagination in a connection.
+ */
+export interface IPageInfo {
+  __typename: 'PageInfo'
+
+  /**
+   * When paginating forwards, are there more items?
+   */
+  hasNextPage: boolean
+
+  /**
+   * When paginating backwards, are there more items?
+   */
+  hasPreviousPage: boolean
+
+  /**
+   * When paginating backwards, the cursor to continue.
+   */
+  startCursor: string | null
+
+  /**
+   * When paginating forwards, the cursor to continue.
+   */
+  endCursor: string | null
+}
+
+/**
+ * An edge in a connection.
+ */
+export interface IThreadableEdge {
+  __typename: 'ThreadableEdge'
+
+  /**
+   * The item at the end of the edge
+   */
+  node: Threadable
+  cursor: string | null
 }
 
 /**
@@ -1494,6 +1636,16 @@ export interface IOrganization {
   id: string
 
   /**
+   * The top level domain this organization is linked to, null if only generic emails used
+   */
+  activeDomain: string | null
+
+  /**
+   * false if the activeDomain is null or was set automatically via a heuristic, true if set manually
+   */
+  isActiveDomainTouched: boolean
+
+  /**
    * The datetime the organization was created
    */
   createdAt: any
@@ -1502,6 +1654,11 @@ export interface IOrganization {
    * The safe credit card details
    */
   creditCard: ICreditCard | null
+
+  /**
+   * The assumed company this organizaiton belongs to
+   */
+  company: ICompany | null
 
   /**
    * true if the viewer is the billing leader for the org
@@ -1615,6 +1772,38 @@ export interface ICreditCard {
 }
 
 /**
+ * A grouping of organizations. Automatically grouped by top level domain of each
+ */
+export interface ICompany {
+  __typename: 'Company'
+
+  /**
+   * the top level domain
+   */
+  id: string
+
+  /**
+   * the number of active teams across all organizations
+   */
+  activeTeamCount: number
+
+  /**
+   * the number of active users across all organizations
+   */
+  activeUserCount: number
+
+  /**
+   * the total number of meetings started across all teams on all organizations
+   */
+  meetingCount: number
+
+  /**
+   * the longest monthly streak for meeting at least once per month for any team in the company
+   */
+  monthlyTeamStreakMax: number
+}
+
+/**
  * The pay tier of the team
  */
 export const enum TierEnum {
@@ -1638,33 +1827,6 @@ export interface IOrganizationUserConnection {
    * A list of edges.
    */
   edges: Array<IOrganizationUserEdge>
-}
-
-/**
- * Information about pagination in a connection.
- */
-export interface IPageInfo {
-  __typename: 'PageInfo'
-
-  /**
-   * When paginating forwards, are there more items?
-   */
-  hasNextPage: boolean
-
-  /**
-   * When paginating backwards, are there more items?
-   */
-  hasPreviousPage: boolean
-
-  /**
-   * When paginating backwards, the cursor to continue.
-   */
-  startCursor: string | null
-
-  /**
-   * When paginating forwards, the cursor to continue.
-   */
-  endCursor: string | null
 }
 
 /**
@@ -3151,7 +3313,7 @@ export interface IMutation {
   setAppLocation: SetAppLocationPayload
 
   /**
-   * Enabled or disable the check-in round
+   * Enabled or disable the icebreaker round
    */
   setCheckInEnabled: ISetCheckInEnabledPayload
 
@@ -3212,7 +3374,7 @@ export interface IMutation {
   updateOrg: IUpdateOrgPayload
 
   /**
-   * Update a Team's Check-in question in a new meeting
+   * Update a Team's Icebreaker in a new meeting
    */
   updateNewCheckInQuestion: IUpdateNewCheckInQuestionPayload | null
 
@@ -3895,7 +4057,7 @@ export interface ISetCheckInEnabledOnMutationArguments {
   settingsId: string
 
   /**
-   * true to turn check-in phase on, false to turn it off
+   * true to turn icebreaker phase on, false to turn it off
    */
   isEnabled: boolean
 }
@@ -4025,12 +4187,12 @@ export interface IUpdateOrgOnMutationArguments {
 
 export interface IUpdateNewCheckInQuestionOnMutationArguments {
   /**
-   * ID of the Team which will have its Check-in question updated
+   * ID of the Team which will have its Icebreaker updated
    */
   meetingId: string
 
   /**
-   * The Team's new Check-in question
+   * The Team's new Icebreaker
    */
   checkInQuestion: string
 }
@@ -4241,6 +4403,11 @@ export interface ICreateAgendaItemInput {
    * The sort order of the agenda item in the list
    */
   sortOrder?: number | null
+
+  /**
+   * The meeting ID of the agenda item
+   */
+  meetingId?: string | null
 }
 
 export interface IAddAgendaItemPayload {
@@ -4485,11 +4652,6 @@ export interface IRetroReflection {
    * an array of all the socketIds that are currently editing the reflection
    */
   editorIds: Array<string>
-
-  /**
-   * The color used to visually group a phase item
-   */
-  groupColor: string
 
   /**
    * True if the reflection was not removed, else false
@@ -4775,6 +4937,11 @@ export interface IRetroReflectionGroup {
   id: string
 
   /**
+   * the comments and tasks created from the discussion
+   */
+  thread: IThreadableConnection
+
+  /**
    * The number of comments in this group’s thread, if any
    */
   commentCount: number
@@ -4825,11 +4992,6 @@ export interface IRetroReflectionGroup {
    * The team that is running the retro
    */
   team: ITeam | null
-
-  /**
-   * the comments and tasks created from the discussion
-   */
-  thread: IThreadableConnection
 
   /**
    * The title of the grouping of the retrospective reflections
@@ -4973,36 +5135,6 @@ export interface IReflectTemplate {
    */
   teamId: string
   updatedAt: any
-}
-
-/**
- * A connection to a list of items.
- */
-export interface IThreadableConnection {
-  __typename: 'ThreadableConnection'
-
-  /**
-   * Page info with strings (sortOrder) as cursors
-   */
-  pageInfo: IPageInfo | null
-
-  /**
-   * A list of edges.
-   */
-  edges: Array<IThreadableEdge>
-}
-
-/**
- * An edge in a connection.
- */
-export interface IThreadableEdge {
-  __typename: 'ThreadableEdge'
-
-  /**
-   * The item at the end of the edge
-   */
-  node: Threadable
-  cursor: string | null
 }
 
 /**
@@ -7298,6 +7430,15 @@ export interface IActionMeeting {
    * The tasks created within the meeting
    */
   tasks: Array<ITask>
+
+  /**
+   * A single agenda item
+   */
+  agendaItem: IAgendaItem | null
+}
+
+export interface IAgendaItemOnActionMeetingArguments {
+  agendaItemId: string
 }
 
 /**

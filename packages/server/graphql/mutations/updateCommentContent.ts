@@ -19,7 +19,7 @@ export default {
     content: {
       type: new GraphQLNonNull(GraphQLString),
       description: 'A stringified draft-js document containing thoughts'
-    }
+    },
   },
   async resolve(
     _source,
