@@ -21,6 +21,7 @@ graphql`
     agendaItem {
       id
       teamId
+      pinned
       sortOrder
     }
     meetingId

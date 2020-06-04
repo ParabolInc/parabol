@@ -16,7 +16,9 @@ import {
 import extractTextFromDraftString from 'parabol-client/utils/draftjs/extractTextFromDraftString'
 import getMeetingPhase from 'parabol-client/utils/getMeetingPhase'
 import findStageById from 'parabol-client/utils/meetings/findStageById'
+import shortid from 'shortid'
 import getRethink from '../../database/rethinkDriver'
+import AgendaItem from '../../database/types/AgendaItem'
 import GenericMeetingPhase from '../../database/types/GenericMeetingPhase'
 import Meeting from '../../database/types/Meeting'
 import MeetingAction from '../../database/types/MeetingAction'
@@ -83,12 +85,43 @@ const updateTaskSortOrders = async (userIds: string[], tasks: SortOrderTask[]) =
 
 const clearAgendaItems = async (teamId: string) => {
   const r = await getRethink()
+
   return r
     .table('AgendaItem')
     .getAll(teamId, {index: 'teamId'})
     .update({
       isActive: false
     })
+    .run()
+}
+
+const getPinnedAgendaItems = async (teamId: string) => {
+  const r = await getRethink()
+  return r
+    .table('AgendaItem')
+    .getAll(teamId, {index: 'teamId'})
+    .filter({isActive: true, pinned: true})
+    .run()
+}
+
+const clonePinnedAgendaItem = async (pinnedAgendaItems: AgendaItem[]) => {
+  const r = await getRethink()
+  const formattedPinnedAgendaItems = pinnedAgendaItems.map((agendaItem) => {
+    const agendaItemId = `${agendaItem.teamId}::${shortid.generate()}`
+    return new AgendaItem({
+      id: agendaItemId,
+      content: agendaItem.content,
+      pinned: agendaItem.pinned,
+      pinnedParentId: agendaItem.pinnedParentId ? agendaItem.pinnedParentId : agendaItemId,
+      sortOrder: agendaItem.sortOrder,
+      teamId: agendaItem.teamId,
+      teamMemberId: agendaItem.teamMemberId,
+    })
+  })
+
+  await r
+    .table('AgendaItem')
+    .insert(formattedPinnedAgendaItems)
     .run()
 }
 
@@ -159,6 +192,7 @@ const finishActionMeeting = async (meeting: MeetingAction, dataLoader: DataLoade
       .run()
   ])
   const userIds = meetingMembers.map(({userId}) => userId)
+
   await Promise.all([
     archiveTasksForDB(doneTasks, meetingId),
     updateTaskSortOrders(userIds, tasks),
@@ -169,6 +203,7 @@ const finishActionMeeting = async (meeting: MeetingAction, dataLoader: DataLoade
       .update({taskCount: tasks.length})
       .run()
   ])
+
   return {updatedTaskIds: [...tasks, ...doneTasks].map(({id}) => id)}
 }
 
@@ -257,6 +292,7 @@ export default {
     const subOptions = {mutatorId, operationId}
     const now = new Date()
     const viewerId = getUserId(authToken)
+
     // AUTH
     const meeting = (await r
       .table('NewMeeting')
@@ -307,7 +343,11 @@ export default {
     const presentMemberUserIds = presentMembers.map(({userId}) => userId)
     endSlackMeeting(meetingId, teamId, dataLoader).catch(console.log)
 
+    const pinnedAgendaItems = await getPinnedAgendaItems(teamId)
     const result = await finishMeetingType(completedMeeting, dataLoader)
+
+    clonePinnedAgendaItem(pinnedAgendaItems)
+
     await shuffleCheckInOrder(teamId)
     const updatedTaskIds = (result && result.updatedTaskIds) || []
     const {facilitatorUserId} = completedMeeting
@@ -377,6 +417,7 @@ export default {
       removedTaskIds
     }
     publish(SubscriptionChannel.TEAM, teamId, 'EndNewMeetingPayload', data, subOptions)
+
     return data
   }
 }

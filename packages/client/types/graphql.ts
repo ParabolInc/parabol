@@ -803,6 +803,16 @@ export interface IAgendaItem {
   isActive: boolean
 
   /**
+   * True if the agenda item has been pinned
+   */
+  pinned: boolean | null
+
+  /**
+   * If pinned, this is the unique id of the original agenda item
+   */
+  pinnedParentId: string | null
+
+  /**
    * The sort order of the agenda item in the list
    */
   sortOrder: number
@@ -4392,6 +4402,11 @@ export interface ICreateAgendaItemInput {
    * The content of the agenda item
    */
   content: string
+
+  /**
+   * True if the agenda item has been pinned
+   */
+  pinned: boolean
   teamId: string
 
   /**
@@ -6773,7 +6788,12 @@ export interface IUpdateAgendaItemInput {
   content?: string | null
 
   /**
-   * true if not processed or deleted
+   * True if agenda item has been pinned
+   */
+  pinned?: boolean | null
+
+  /**
+   * True if not processed or deleted
    */
   isActive?: boolean | null
 

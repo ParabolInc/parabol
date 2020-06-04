@@ -1,4 +1,5 @@
 import {
+  GraphQLBoolean,
   GraphQLFloat,
   GraphQLID,
   GraphQLInputObjectType,
@@ -12,6 +13,10 @@ const CreateAgendaItemInput = new GraphQLInputObjectType({
     content: {
       type: new GraphQLNonNull(GraphQLString),
       description: 'The content of the agenda item'
+    },
+    pinned: {
+      type: new GraphQLNonNull(GraphQLBoolean),
+      description: 'True if the agenda item has been pinned'
     },
     teamId: {
       type: new GraphQLNonNull(GraphQLID)

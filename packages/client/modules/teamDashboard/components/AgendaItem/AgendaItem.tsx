@@ -1,19 +1,32 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {useEffect, useRef} from 'react'
+import React, {useEffect, useRef, useState} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {AgendaItem_activeMeetings} from '~/__generated__/AgendaItem_activeMeetings.graphql'
 import Avatar from '../../../../components/Avatar/Avatar'
 import IconButton from '../../../../components/IconButton'
 import MeetingSubnavItem from '../../../../components/MeetingSubnavItem'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
+import {MenuPosition} from '../../../../hooks/useCoords'
 import useGotoStageId from '../../../../hooks/useGotoStageId'
 import useScrollIntoView from '../../../../hooks/useScrollIntoVIew'
+import useTooltip from '../../../../hooks/useTooltip'
 import RemoveAgendaItemMutation from '../../../../mutations/RemoveAgendaItemMutation'
+import UpdateAgendaItemMutation from '../../../../mutations/UpdateAgendaItemMutation'
+import pinIcon from '../../../../styles/theme/images/icons/pin.svg'
+import unpinIcon from '../../../../styles/theme/images/icons/unpin.svg'
 import {ICON_SIZE} from '../../../../styles/typographyV2'
 import {MeetingTypeEnum} from '../../../../types/graphql'
 import findStageById from '../../../../utils/meetings/findStageById'
 import {AgendaItem_agendaItem} from '../../../../__generated__/AgendaItem_agendaItem.graphql'
+
+const AgendaItemStyles = styled('div')({
+  position: 'relative',
+  // show the DeleteIconButton on hover
+  '&:hover > button': {
+    opacity: 1
+  }
+})
 
 const DeleteIconButton = styled(IconButton)<{disabled?: boolean}>(({disabled}) => ({
   display: 'block',
@@ -27,16 +40,21 @@ const DeleteIconButton = styled(IconButton)<{disabled?: boolean}>(({disabled}) =
   visibility: disabled ? 'hidden' : undefined
 }))
 
-const AvatarBlock = styled('div')({
-  width: '2rem'
+const IconBlock = styled('div')({
+  display: 'flex',
+  justifyContent: 'center',
+  marginRight: '4px',
+  width: '2rem',
+  '&:active': {
+    opacity: 0.7
+  },
+  '&:hover': {
+    cursor: 'pointer'
+  }
 })
 
-const AgendaItemStyles = styled('div')({
-  position: 'relative',
-  // show the DeleteIconButton on hover
-  '&:hover > button': {
-    opacity: 1
-  }
+const SvgIcon = styled('img')({
+  opacity: 0.7
 })
 
 const getItemProps = (
@@ -71,6 +89,7 @@ const getItemProps = (
   const isViewerFacilitator = viewerId === facilitatorUserId
   const isDisabled = isViewerFacilitator ? !isNavigableByFacilitator : !isNavigable
   const onClick = () => gotoStageId!(stageId)
+
   return {
     isUnsyncedFacilitatorStage,
     isComplete: !!isComplete,
@@ -82,20 +101,24 @@ const getItemProps = (
 }
 
 interface Props {
+  activeMeetings: AgendaItem_activeMeetings
   agendaItem: AgendaItem_agendaItem
   gotoStageId: ReturnType<typeof useGotoStageId> | undefined
-  idx: number
   isDragging: boolean
-  activeMeetings: AgendaItem_activeMeetings
+  meetingId?: string | null
 }
 
 const AgendaItem = (props: Props) => {
-  const {agendaItem, gotoStageId, isDragging, activeMeetings} = props
-  const {id: agendaItemId, content, teamMember} = agendaItem
+  const {activeMeetings, agendaItem, gotoStageId, isDragging, meetingId} = props
+  const {id: agendaItemId, content, pinned, teamMember} = agendaItem
   const {picture} = teamMember
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
   const ref = useRef<HTMLDivElement>(null)
+  const [isHovering, setIsHovering] = useState(false)
+  const {tooltipPortal, openTooltip, closeTooltip, originRef} = useTooltip<HTMLDivElement>(
+    MenuPosition.UPPER_CENTER
+  )
   const {
     isDisabled,
     onClick,
@@ -109,32 +132,61 @@ const AgendaItem = (props: Props) => {
     ref.current && ref.current.scrollIntoView({behavior: 'smooth'})
   }, [])
 
+  const handleIconClick = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    UpdateAgendaItemMutation(
+      atmosphere,
+      {updatedAgendaItem: {id: agendaItemId, pinned: !pinned}},
+      {meetingId}
+    )
+  }
+
   const handleRemove = () => {
     RemoveAgendaItemMutation(atmosphere, {agendaItemId})
   }
+
+  const getIcon = () => {
+    if (pinned && isHovering) return <SvgIcon alt='unpinIcon' src={unpinIcon} />
+    else if (!pinned && !isHovering) return <Avatar hasBadge={false} picture={picture} size={24} />
+    else return <SvgIcon alt='pinnedIcon' src={pinIcon} />
+  }
+
   return (
-    <AgendaItemStyles title={content}>
-      <MeetingSubnavItem
-        label={content}
-        metaContent={
-          <AvatarBlock>
-            <Avatar hasBadge={false} picture={picture} size={24} />
-          </AvatarBlock>
-        }
-        isDisabled={isDisabled}
-        onClick={onClick}
-        isActive={isActive}
-        isComplete={isComplete}
-        isDragging={isDragging}
-        isUnsyncedFacilitatorStage={isUnsyncedFacilitatorStage}
-      />
-      <DeleteIconButton
-        aria-label={'Remove this agenda topic'}
-        icon='cancel'
-        onClick={handleRemove}
-        palette='midGray'
-      />
-    </AgendaItemStyles>
+    <>
+      <AgendaItemStyles
+        onMouseOver={() => setIsHovering(true)}
+        onMouseLeave={() => setIsHovering(false)}
+      >
+        <MeetingSubnavItem
+          label={content}
+          metaContent={
+            <IconBlock
+              onClick={handleIconClick}
+              onMouseEnter={openTooltip}
+              onMouseLeave={closeTooltip}
+              ref={originRef}
+            >
+              {getIcon()}
+            </IconBlock>
+          }
+          isDisabled={isDisabled}
+          onClick={onClick}
+          isActive={isActive}
+          isComplete={isComplete}
+          isDragging={isDragging}
+          isUnsyncedFacilitatorStage={isUnsyncedFacilitatorStage}
+        />
+        <DeleteIconButton
+          aria-label={'Remove this agenda topic'}
+          icon='cancel'
+          onClick={handleRemove}
+          palette='midGray'
+        />
+      </AgendaItemStyles>
+      {tooltipPortal(
+        pinned ? `Unpin "${content}" from every check-in` : `Pin "${content}" to every check-in`
+      )}
+    </>
   )
 }
 
@@ -164,6 +216,7 @@ export default createFragmentContainer(AgendaItem, {
     fragment AgendaItem_agendaItem on AgendaItem {
       id
       content
+      pinned
       teamMember {
         picture
       }

@@ -146,10 +146,10 @@ const OrgMemberRow = (props: Props) => {
       })
     }
   }
-
   const {tooltipPortal, openTooltip, closeTooltip, originRef: tooltipRef} = useTooltip<
     HTMLDivElement
   >(MenuPosition.LOWER_RIGHT)
+
   return (
     <StyledRow>
       <AvatarBlock>
@@ -173,11 +173,9 @@ const OrgMemberRow = (props: Props) => {
       <RowActions>
         <ActionsBlock>
           {!isBillingLeader && viewerId === userId && (
-            <>
-              <StyledFlatButton onClick={toggleLeave} onMouseEnter={LeaveOrgModal.preload}>
-                Leave Organization
-              </StyledFlatButton>
-            </>
+            <StyledFlatButton onClick={toggleLeave} onMouseEnter={LeaveOrgModal.preload}>
+              Leave Organization
+            </StyledFlatButton>
           )}
           {isProTier && isViewerBillingLeader && (
             <ToggleBlock>
@@ -187,8 +185,8 @@ const OrgMemberRow = (props: Props) => {
           {isViewerLastBillingLeader && userId === viewerId && (
             <MenuToggleBlock
               onClick={closeTooltip}
-              onMouseEnter={openTooltip}
-              onMouseLeave={closeTooltip}
+              onMouseOver={openTooltip}
+              onMouseOut={closeTooltip}
               ref={tooltipRef}
             >
               {tooltipPortal(

@@ -114,6 +114,7 @@ const AgendaInput = (props: Props) => {
     submitMutation()
     const newAgendaItem = {
       content,
+      pinned: false,
       sortOrder: getNextSortOrder(agendaItems),
       teamId,
       teamMemberId: toTeamMemberId(teamId, atmosphere.viewerId)

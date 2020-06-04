@@ -43,7 +43,9 @@ const AgendaList = (props: Props) => {
   const {dashSearch, gotoStageId, meetingId, team} = props
   const {activeMeetings, agendaItems} = team
   const filteredAgendaItems = useMemo(() => {
-    return dashSearch ? agendaItems.filter(({content}) => content.match(dashSearch)) : agendaItems
+    return dashSearch
+      ? agendaItems.filter(({content}) => content && content.match(dashSearch))
+      : agendaItems.filter(({content}) => content)
   }, [dashSearch, agendaItems])
 
   const onDragEnd = useEventCallback((result) => {
@@ -100,11 +102,11 @@ const AgendaList = (props: Props) => {
                         >
                           <AgendaItem
                             key={item.id}
+                            activeMeetings={activeMeetings}
                             agendaItem={item}
                             gotoStageId={gotoStageId}
-                            idx={agendaItems.findIndex((agendaItem) => agendaItem === item)}
                             isDragging={dragSnapshot.isDragging}
-                            activeMeetings={activeMeetings}
+                            meetingId={meetingId}
                           />
                         </DraggableAgendaItem>
                       )
