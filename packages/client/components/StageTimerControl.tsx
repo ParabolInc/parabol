@@ -25,9 +25,9 @@ const StageTimerModal = lazyPreload(async () =>
 const StageTimerControl = (props: Props) => {
   const {cancelConfirm, defaultTimeLimit, meeting, status, onTransitionEnd} = props
   const {meetingMembers, localStage, facilitator, id: meetingId} = meeting
-  const {isAsync, scheduledEndTime} = localStage
+  const {isAsync} = localStage
   const connectedMemberCount = meetingMembers.filter((member) => member.user.isConnected).length
-  const color = scheduledEndTime ? 'green' : 'midGray'
+  const color = 'green'
   const icon = isAsync ? 'event' : 'timer'
   const label = isAsync ? MeetingLabels.TIME_LIMIT : MeetingLabels.TIMER
   const {menuProps, menuPortal, originRef, togglePortal} = useMenu<HTMLDivElement>(
@@ -65,7 +65,6 @@ const StageTimerControl = (props: Props) => {
 graphql`
   fragment StageTimerControlStage on NewMeetingStage {
     ...StageTimerModal_stage
-    scheduledEndTime
     isAsync
     isComplete
   }

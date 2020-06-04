@@ -31,13 +31,7 @@ interface Props {
 
 const CheckIcon = styled(Icon)<{progress: number; isNext: boolean; isViewerReady: boolean}>(
   ({isViewerReady, progress, isNext}) => ({
-    color: isNext
-      ? progress === 1
-        ? PALETTE.TEXT_BLUE
-        : PALETTE.TEXT_GRAY
-      : isViewerReady
-      ? PALETTE.TEXT_BLUE
-      : PALETTE.TEXT_GRAY,
+    color: isNext ? PALETTE.EMPHASIS_WARM : isViewerReady ? PALETTE.TEXT_GREEN : PALETTE.TEXT_GRAY,
     fontSize: 24,
     fontWeight: 600,
     height: 24,
@@ -134,7 +128,7 @@ const BottomControlBarReady = (props: Props) => {
         onKeyDown={onKeyDown}
         ref={ref}
       >
-        <BottomControlBarProgress progress={progress} />
+        <BottomControlBarProgress isNext={isFacilitating} progress={progress} />
         <BottomNavIconLabel label={label} ref={originRef}>
           <CheckIcon isViewerReady={isViewerReady} isNext={isFacilitating} progress={progress}>
             {icon}

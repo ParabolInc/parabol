@@ -16,25 +16,27 @@ const SVG = styled('svg')({
   transform: `translateY(-6px)`
 })
 
-const Circle = styled('circle')({
+const Circle = styled('circle')<{isNext: boolean}>(({isNext}) => ({
   fill: 'transparent',
-  stroke: PALETTE.TEXT_BLUE,
+  stroke: isNext ? PALETTE.EMPHASIS_WARM : PALETTE.TEXT_GREEN,
   strokeDasharray: CIRCUMFERENCE.toFixed(3),
   strokeWidth: THICKNESS,
   transform: 'rotate(-90deg)',
   transformOrigin: '50% 50%',
   transition: `stroke-dashoffset 300ms ${BezierCurve.DECELERATE}`
-})
+}))
 
 interface Props {
+  isNext: boolean
   progress: number
 }
 
 const BottomControlBarProgress = (props: Props) => {
-  const {progress} = props
+  const {isNext, progress} = props
   return (
     <SVG>
       <Circle
+        isNext={isNext}
         style={{
           strokeDashoffset: CIRCUMFERENCE - progress * CIRCUMFERENCE
         }}

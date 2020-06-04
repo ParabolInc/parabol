@@ -15,7 +15,7 @@ import BottomNavIconLabel from './BottomNavIconLabel'
 import Icon from './Icon'
 
 const FlagIcon = styled(Icon)({
-  color: PALETTE.TEXT_GRAY,
+  color: PALETTE.BACKGROUND_BLUE,
   height: 24
 })
 
