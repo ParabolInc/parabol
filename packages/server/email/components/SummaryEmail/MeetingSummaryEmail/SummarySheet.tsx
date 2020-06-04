@@ -6,7 +6,6 @@ import {SummarySheet_meeting} from 'parabol-client/__generated__/SummarySheet_me
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import ExportToCSV from '../ExportToCSV'
-import SummaryEmailScheduleCalendar from '../SummaryEmailScheduleCalendar'
 import ContactUsFooter from './ContactUsFooter'
 import LogoFooter from './LogoFooter'
 import MeetingMembersWithoutTasks from './MeetingMembersWithoutTasks'
@@ -24,7 +23,6 @@ interface Props {
   referrer: MeetingSummaryReferrer
   referrerUrl?: string
   teamDashUrl: string
-  meetingUrl: string
   urlAction?: 'csv'
 }
 
@@ -34,9 +32,8 @@ const sheetStyle = {
 }
 
 const SummarySheet = (props: Props) => {
-  const {emailCSVUrl, urlAction, meeting, meetingUrl, referrer, teamDashUrl} = props
-  const {id: meetingId, createdAt, meetingNumber, meetingType, team} = meeting
-  const {name: teamName} = team
+  const {emailCSVUrl, urlAction, meeting, referrer, teamDashUrl} = props
+  const {id: meetingId, meetingType} = meeting
   const isDemo = !!props.isDemo
   return (
     <table width='100%' height='100%' align='center' bgcolor='#FFFFFF' style={sheetStyle}>
@@ -58,15 +55,6 @@ const SummarySheet = (props: Props) => {
         <MeetingMembersWithTasks meeting={meeting} />
         <MeetingMembersWithoutTasks meeting={meeting} />
         <RetroTopics isDemo={isDemo} isEmail={referrer === 'email'} meeting={meeting} />
-        {meetingType === ACTION && (
-          <SummaryEmailScheduleCalendar
-            isDemo={isDemo}
-            createdAt={createdAt}
-            meetingUrl={meetingUrl}
-            meetingNumber={meetingNumber}
-            teamName={teamName}
-          />
-        )}
         <ContactUsFooter
           isDemo={isDemo}
           hasLearningLink={meetingType === ACTION}
@@ -90,11 +78,6 @@ export default createFragmentContainer(SummarySheet, {
       ...RetroTopics_meeting
       meetingType
       name
-      meetingNumber
-      team {
-        name
-      }
-      createdAt
     }
   `
 })

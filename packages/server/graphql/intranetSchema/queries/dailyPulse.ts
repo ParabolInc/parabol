@@ -2,6 +2,7 @@ import {GraphQLBoolean, GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import getRethink from '../../../database/rethinkDriver'
 import {requireSU} from '../../../utils/authorization'
 import {toEpochSeconds} from '../../../utils/epochTime'
+import isCompanyDomain from '../../../utils/isCompanyDomain'
 import SlackServerManager from '../../../utils/SlackServerManager'
 import GraphQLISO8601Type from '../../types/GraphQLISO8601Type'
 import authCountByDomain from './helpers/authCountByDomain'
@@ -20,15 +21,12 @@ interface DomainCount {
 // const MAX_FIELDS = 10
 // const MAX_BLOCKS = 50
 const TOP_X = 20
-const GENERIC_DOMAINS = ['gmail.com', 'yahoo.com', 'parabol.co']
 
 const getTotal = (domainCount: DomainCount[]) =>
   domainCount.reduce((sum, row) => sum + row.total, 0)
 
 const filterCounts = (domainCount: DomainCount[]) =>
-  domainCount
-    .filter(({domain, total}) => !GENERIC_DOMAINS.includes(domain) && total > 1)
-    .slice(0, TOP_X)
+  domainCount.filter(({domain, total}) => isCompanyDomain(domain) && total > 1).slice(0, TOP_X)
 
 const makeTopXSection = (domainCount: DomainCount[]) => {
   const filtered = filterCounts(domainCount)

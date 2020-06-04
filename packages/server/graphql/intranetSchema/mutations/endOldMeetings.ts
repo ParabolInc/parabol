@@ -32,7 +32,6 @@ const endOldMeetings = {
     //
     // await Promise.all(
     //   meetings.map((meeting) => {
-    //     sendSegmentEvent(`Longrunning ${meeting.meetingType} Meeting`, authToken.sub, {
     //       meetingId: meeting.id
     //     }).catch()
     //     if (meeting.meetingType === 'action') {

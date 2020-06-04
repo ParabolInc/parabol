@@ -3,7 +3,7 @@
   "description": "An open-source app for building smarter, more agile teams.",
   "author": "Parabol Inc. <love@parabol.com> (http://github.com/ParabolInc)",
   "license": "AGPL-3.0",
-  "version": "5.8.0",
+  "version": "5.9.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/ParabolInc/parabol"
@@ -13,6 +13,7 @@
     "url": "https://github.com/ParabolInc/parabol/issues"
   },
   "scripts": {
+    "build:segmentFn": "sucrase segmentFns -d segmentFns --transforms typescript",
     "debug:stripe": "node billing/debug.babel.js",
     "precommit": "lint-staged",
     "lint": "eslint --fix ./**/*.ts",
@@ -26,6 +27,7 @@
     "@cypress/webpack-preprocessor": "^4.0.3",
     "@mattkrick/fast-rtc-swarm": "^0.4.0",
     "@mattkrick/graphql-trebuchet-client": "^0.2.0",
+    "@types/analytics-node": "^3.1.3",
     "@types/dotenv": "^6.1.1",
     "@types/graphql": "^14.5.0",
     "@types/ioredis": "^4.0.10",
@@ -74,7 +76,7 @@
     "sucrase": "^3.12.1",
     "terser-webpack-plugin": "2.2.1",
     "ts-node": "^8.6.2",
-    "typescript": "^3.8.3",
+    "typescript": "^3.9.3",
     "url-loader": "2.2.0",
     "vscode-apollo-relay": "^1.5.0",
     "webpack": "^4.41.5",
@@ -119,7 +121,7 @@
     "node-env-flag": "0.1.0",
     "node-fetch": "^2.6.0",
     "nodemailer": "^6.4.6",
-    "parabol-client": "^5.8.0",
+    "parabol-client": "^5.9.0",
     "pm2": "^4.2.1",
     "react": "^16.12.0",
     "react-dom": "^16.12.0",

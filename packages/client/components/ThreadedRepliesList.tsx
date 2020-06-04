@@ -22,11 +22,11 @@ const ThreadedRepliesList = (props: Props) => {
   if (!replies) return null
   return (
     <>
-      {replies.map((reply, idx) => {
+      {replies.map((reply) => {
         const {__typename, id} = reply
         return __typename === 'Task' ? (
           <ThreadedTaskBase
-            dataCy={`${dataCy}-task-${idx}`}
+            dataCy={`${dataCy}-task`}
             key={id}
             isReply
             task={reply}
@@ -35,16 +35,16 @@ const ThreadedRepliesList = (props: Props) => {
             setReplyMention={setReplyMention}
           />
         ) : (
-          <ThreadedCommentBase
-            dataCy={`${dataCy}-comment-${idx}`}
-            key={id}
-            isReply
-            comment={reply}
-            meeting={meeting}
-            reflectionGroupId={reflectionGroupId}
-            setReplyMention={setReplyMention}
-          />
-        )
+            <ThreadedCommentBase
+              dataCy={`${dataCy}-comment`}
+              key={id}
+              isReply
+              comment={reply}
+              meeting={meeting}
+              reflectionGroupId={reflectionGroupId}
+              setReplyMention={setReplyMention}
+            />
+          )
       })}
     </>
   )

@@ -1,10 +1,10 @@
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getRethink from '../../../database/rethinkDriver'
 import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
-import DisconnectSocketPayload from '../../types/DisconnectSocketPayload'
-import sendSegmentEvent from '../../../utils/sendSegmentEvent'
+import segmentIo from '../../../utils/segmentIo'
 import {GQLContext} from '../../graphql'
-import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import DisconnectSocketPayload from '../../types/DisconnectSocketPayload'
 
 export default {
   name: 'DisconnectSocket',
@@ -60,11 +60,15 @@ export default {
         )
       })
     }
-    sendSegmentEvent('Disconnect WebSocket', userId, {
-      connectedSockets,
-      socketId,
-      tms
-    }).catch()
+    segmentIo.track({
+      userId,
+      event: 'Disconnect WebSocket',
+      properties: {
+        connectedSockets,
+        socketId,
+        tms
+      }
+    })
     return data
   }
 }

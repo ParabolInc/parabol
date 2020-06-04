@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 5.9.0 2020-Jun-02
+
+### Added
+
+- Company entity to group organizations (#3883)
+- Segment Destination functions (#3883)
+
 ## 5.8.0 2020-May-21
 
 ### Added

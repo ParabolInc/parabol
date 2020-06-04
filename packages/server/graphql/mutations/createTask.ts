@@ -1,28 +1,28 @@
 import {GraphQLNonNull} from 'graphql'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import {
+  ICreateTaskOnMutationArguments,
+  ITeamMember,
+  NewMeetingPhaseTypeEnum,
+  ThreadSourceEnum
+} from 'parabol-client/types/graphql'
+import getTypeFromEntityMap from 'parabol-client/utils/draftjs/getTypeFromEntityMap'
+import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
+import normalizeRawDraftJS from 'parabol-client/validation/normalizeRawDraftJS'
+import shortid from 'shortid'
 import getRethink from '../../database/rethinkDriver'
-import getUsersToIgnore from './helpers/getUsersToIgnore'
+import NotificationTaskInvolves from '../../database/types/NotificationTaskInvolves'
+import Task from '../../database/types/Task'
+import {getUserId, isTeamMember} from '../../utils/authorization'
+import publish, {SubOptions} from '../../utils/publish'
+import segmentIo from '../../utils/segmentIo'
+import standardError from '../../utils/standardError'
+import {DataLoaderWorker, GQLContext} from '../graphql'
 import AreaEnum from '../types/AreaEnum'
 import CreateTaskInput from '../types/CreateTaskInput'
 import CreateTaskPayload from '../types/CreateTaskPayload'
-import {getUserId, isTeamMember} from '../../utils/authorization'
-import publish, {SubOptions} from '../../utils/publish'
-import shortid from 'shortid'
-import getTypeFromEntityMap from 'parabol-client/utils/draftjs/getTypeFromEntityMap'
-import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
-import standardError from '../../utils/standardError'
-import Task from '../../database/types/Task'
-import {
-  ICreateTaskOnMutationArguments,
-  ThreadSourceEnum,
-  NewMeetingPhaseTypeEnum
-} from 'parabol-client/types/graphql'
-import {DataLoaderWorker, GQLContext} from '../graphql'
-import normalizeRawDraftJS from 'parabol-client/validation/normalizeRawDraftJS'
-import NotificationTaskInvolves from '../../database/types/NotificationTaskInvolves'
-import {ITeamMember} from 'parabol-client/types/graphql'
-import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import getUsersToIgnore from './helpers/getUsersToIgnore'
 import validateThreadableReflectionGroupId from './validateThreadableReflectionGroupId'
-import sendSegmentEvent from '../../utils/sendSegmentEvent'
 
 const validateTaskAgendaItemId = async (
   threadSource: ThreadSourceEnum | null,
@@ -87,12 +87,16 @@ const sendToSentryTaskCreated = async (
     }
   }
 
-  sendSegmentEvent('Task added', viewerId, {
-    meetingId,
-    teamId,
-    isAsync,
-    isReply
-  }).catch()
+  segmentIo.track({
+    userId: viewerId,
+    event: 'Task added',
+    properties: {
+      meetingId,
+      teamId,
+      isAsync,
+      isReply
+    }
+  })
 }
 
 const handleAddTaskNotifications = async (

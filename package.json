@@ -3,7 +3,7 @@
   "description": "An open-source app for building smarter, more agile teams.",
   "author": "Parabol Inc. <love@parabol.com> (http://github.com/ParabolInc)",
   "license": "AGPL-3.0",
-  "version": "5.8.0",
+  "version": "5.9.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/ParabolInc/parabol"
@@ -27,6 +27,7 @@
     "build": "node scripts/prod.js",
     "db:create": "node scripts/toolbox/createMigration.js",
     "db:migrate": "node scripts/toolbox/migrateDB.js up --all",
+    "db:migrate-down": "node scripts/toolbox/migrateDB.js down",
     "postdeploy": "node scripts/toolbox/postDeploy.js",
     "dev": "node scripts/dev.js",
     "lint": "lerna run --parallel lint",

@@ -1,17 +1,16 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
-import getRethink from '../../database/rethinkDriver'
-import LoginWithGooglePayload from '../types/LoginWithGooglePayload'
-import standardError from '../../utils/standardError'
-import User from '../../database/types/User'
-import {sendSegmentIdentify} from '../../utils/sendSegmentEvent'
-import encodeAuthToken from '../../utils/encodeAuthToken'
-import AuthToken from '../../database/types/AuthToken'
-import rateLimit from '../rateLimit'
 import {AuthIdentityTypeEnum} from 'parabol-client/types/graphql'
-import GoogleServerManager from '../../utils/GoogleServerManager'
+import getRethink from '../../database/rethinkDriver'
 import AuthIdentityGoogle from '../../database/types/AuthIdentityGoogle'
-import bootstrapNewUser from './helpers/bootstrapNewUser'
+import AuthToken from '../../database/types/AuthToken'
+import User from '../../database/types/User'
+import encodeAuthToken from '../../utils/encodeAuthToken'
+import GoogleServerManager from '../../utils/GoogleServerManager'
+import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
+import rateLimit from '../rateLimit'
+import LoginWithGooglePayload from '../types/LoginWithGooglePayload'
+import bootstrapNewUser from './helpers/bootstrapNewUser'
 
 const loginWithGoogle = {
   type: new GraphQLNonNull(LoginWithGooglePayload),
@@ -40,8 +39,8 @@ const loginWithGoogle = {
       if (!id) {
         return standardError(new Error('Invalid login code'))
       }
-      const {email, picture, name, email_verified, sub} = id
-
+      const {picture, name, email_verified, sub} = id
+      const email = id.email.toLowerCase()
       const existingUser = await r
         .table('User')
         .getAll(email, {index: 'email'})
@@ -83,8 +82,6 @@ const loginWithGoogle = {
             })
             .run()
         }
-        // log them in
-        sendSegmentIdentify(viewerId).catch()
         // MUTATIVE
         context.authToken = new AuthToken({sub: viewerId, rol, tms: existingUser.tms})
         return {
@@ -110,7 +107,7 @@ const loginWithGoogle = {
         identities: [identity],
         segmentId
       })
-      context.authToken = await bootstrapNewUser(newUser, !invitationToken, segmentId)
+      context.authToken = await bootstrapNewUser(newUser, !invitationToken)
       return {
         userId,
         authToken: encodeAuthToken(context.authToken)

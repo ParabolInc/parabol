@@ -1,16 +1,16 @@
 import {ContentState, convertFromRaw} from 'draft-js'
 import {stateToMarkdown} from 'draft-js-export-markdown'
 import {GraphQLID, GraphQLNonNull} from 'graphql'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import {ICreateJiraIssueOnMutationArguments} from 'parabol-client/types/graphql'
 import getRethink from '../../database/rethinkDriver'
-import {GQLContext} from '../graphql'
-import CreateJiraIssuePayload from '../types/CreateJiraIssuePayload'
 import AtlassianServerManager from '../../utils/AtlassianServerManager'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
+import segmentIo from '../../utils/segmentIo'
 import standardError from '../../utils/standardError'
-import {ICreateJiraIssueOnMutationArguments} from 'parabol-client/types/graphql'
-import sendSegmentEvent from '../../utils/sendSegmentEvent'
-import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import {GQLContext} from '../graphql'
+import CreateJiraIssuePayload from '../types/CreateJiraIssuePayload'
 
 export default {
   name: 'CreateJiraIssue',
@@ -165,7 +165,14 @@ export default {
     teamMembers.forEach(({userId}) => {
       publish(SubscriptionChannel.TASK, userId, 'CreateJiraIssuePayload', data, subOptions)
     })
-    sendSegmentEvent('Published Task to Jira', viewerId, {teamId, meetingId}).catch()
+    segmentIo.track({
+      userId: viewerId,
+      event: 'Published Task to Jira',
+      properties: {
+        teamId,
+        meetingId
+      }
+    })
     return data
   }
 }

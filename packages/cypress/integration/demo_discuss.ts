@@ -1,7 +1,6 @@
 // Adds the task in cypress and returns an index to use for editing and replying to the task
 async function addTask(text) {
-  cy.get('button')
-    .contains('Add a Task')
+  cy.get(`[data-cy=discuss-input-add]`)
     .click()
 
   cy.contains('.DraftEditor-root', 'Describe what')
@@ -22,27 +21,47 @@ function editTask(text: string, oldContent: string) {
     .should('have.text', text)
 }
 
-function replyComment(text, idx, child) {
-  cy.get(`[data-cy=thread-item-${idx}-task-reply-button]`).click()
+function replyComment(text: string, taskContent: string) {
+  cy.contains('.DraftEditor-root', taskContent)
+    .parents(`[data-cy=task-wrapper]`)
+    .as('task-to-reply')
 
-  cy.get(`[data-cy=thread-item-${idx}-task-reply-input-editor]`)
+  cy.get('@task-to-reply')
+    .find(`[data-cy=task-reply-button]`).click()
+
+  cy.get(`[data-cy=task-reply-input-editor]`).click()
     .type(`${text}`)
     .should('have.text', `${text}`)
 
-  cy.get(`[data-cy=thread-item-${idx}-task-reply-input-send]`).click()
+  cy.get(`[data-cy=task-reply-input-send]`).click()
 
-  cy.get(`[data-cy=thread-item-${idx}-child-comment-${child}-editor]`).should(
-    'have.text',
-    `${text}`
-  )
+  cy.get('@task-to-reply')
+    .children()
+    .children()
+    .last()
+    .get(`[data-cy=child-comment-editor]`).should(
+      'have.text',
+      `${text}`
+    )
 }
 
-function replyTask(text, idx, child) {
-  cy.get(`[data-cy=thread-item-${idx}-task-reply-button]`).click()
+function replyTask(text: string, taskContent: string) {
+  cy.contains('.DraftEditor-root', taskContent)
+    .parents(`[data-cy=task-wrapper]`)
+    .as('task-to-reply')
 
-  cy.get(`[data-cy=thread-item-${idx}-task-reply-input-add]`).click()
+  cy.get('@task-to-reply')
+    .find(`[data-cy=task-reply-button]`).click()
 
-  cy.get(`[data-cy=thread-item-${idx}-child-task-${child}-card-editor]`).as('reply-card-editor')
+  cy.get('@task-to-reply')
+    .find(`[data-cy=task-reply-input-add]`).click()
+
+  cy.get('@task-to-reply')
+    .children()
+    .children()
+    .last()
+    .get(`[data-cy=child-task-card-editor]`)
+    .as('reply-card-editor')
 
   cy.get('@reply-card-editor').should('be.visible')
 
@@ -57,35 +76,39 @@ function replyTask(text, idx, child) {
 
 function addComment(text) {
   cy.get('[data-cy=discuss-input-editor]')
-    .wait(50)
     .type(`${text}`)
     .should('have.text', `${text}`)
 
-  cy.get('[data-cy=discuss-input-editor]').type('{enter}')
+  cy.get('[data-cy=discuss-input-editor]')
+    .type('{enter}')
 
   cy.get(`[data-cy=discuss-thread-list]`)
     .children()
     .last()
     .as('add-discuss-comment')
 
-  return new Cypress.Promise((resolve) => {
-    cy.get('@add-discuss-comment')
-      .invoke('index')
-      .then((i) => {
-        i = i - 2
-        cy.get(`[data-cy=thread-item-${i}-comment-editor]`).should('have.text', `${text}`)
+  cy.get('@add-discuss-comment')
+    .find(`[data-cy=comment-editor]`)
+    .should('have.text', `${text}`)
 
-        resolve(i)
-      })
-  })
 }
 
-function editComment(text, idx) {
-  cy.get(`[data-cy=thread-item-${idx}-comment-editor]`).as('edit-discuss-comment')
+function editComment(text: string, oldContent: string) {
 
-  cy.get(`[data-cy=thread-item-${idx}-comment-dropdown-menu]`).click()
+  cy.contains('.DraftEditor-root', oldContent)
+    .parents(`[data-cy=comment-wrapper]`)
+    .as('comment-to-edit')
 
-  cy.get(`[data-cy='edit-comment']`).click()
+  cy.get('@comment-to-edit')
+    .find(`[data-cy=comment-editor]`)
+    .as('edit-discuss-comment')
+
+  cy.get('@comment-to-edit')
+    .find(`[data-cy=comment-dropdown-menu]`)
+    .click()
+
+  cy.get(`[data-cy='edit-comment']`)
+    .click()
 
   cy.get('@edit-discuss-comment')
     .type('{selectall}')
@@ -98,18 +121,34 @@ function editComment(text, idx) {
   cy.get('@edit-discuss-comment').should('have.text', text)
 }
 
-function deleteComment(idx) {
-  cy.get(`[data-cy=thread-item-${idx}-comment-dropdown-menu]`).click()
+function deleteComment(text: string) {
+  cy.contains('.DraftEditor-root', text)
+    .parents(`[data-cy=comment-wrapper]`)
+    .as('comment-to-delete')
 
-  cy.get(`[data-cy=delete-comment]`).click()
+  cy.get('@comment-to-delete')
+    .find(`[data-cy=comment-dropdown-menu]`)
+    .click()
+
+  cy.get(`[data-cy=delete-comment]`)
+    .click()
 }
 
-function publishToJira(idx) {
-  cy.get(`[data-cy=thread-item-${idx}-task-card-integration-button]`).click()
+function publishToJira(text: string) {
+
+  cy.contains('.DraftEditor-root', text)
+    .parents(`[data-cy=task-wrapper]`)
+    .as('task-to-publish')
+
+  cy.get('@task-to-publish')
+    .find(`[data-cy=task-card-integration-button]`)
+    .click()
 
   cy.get(`[data-cy=jira-integration]`).click()
 
-  cy.get(`[data-cy=thread-item-${idx}-task-card-jira-issue-link]`).should('include.text', 'Issue')
+  cy.get('@task-to-publish')
+    .find(`[data-cy=task-card-jira-issue-link]`)
+    .should('include.text', 'Issue')
 }
 
 function goToPreviousTopic(idx) {
@@ -120,12 +159,9 @@ function goToPreviousTopic(idx) {
   cy.get('[data-cy=sidebar-toggle]').click()
 }
 
-let taskIndex
-
-let commentIndex
 
 describe('Test Discuss page Demo', () => {
-  before(function() {
+  before(function () {
     // runs before all tests in the block
     cy.visitReflect()
       .visitPhase('group')
@@ -148,36 +184,37 @@ describe('Test Discuss page Demo', () => {
   })
 
   it('can reply to a created task', () => {
-    replyComment('Replied to task', taskIndex, 0)
+    replyComment('Replied to task', 'Edited the task')
   })
 
   it('can reply to a created task with a task', () => {
-    replyTask('Replied to task with task', taskIndex, 1)
+    replyTask('Replied to task with task', 'Edited the task')
   })
 
   it('can create a new comment in discussion board', () => {
-    addComment('New comment created').then((result) => {
-      commentIndex = result
-    })
+    addComment('New comment created')
   })
 
   it('can edit a created comment in discussion board', () => {
-    editComment('Edited the comment', commentIndex)
+    editComment('Edited the comment', 'New comment created')
   })
 
   it('can delete a created comment in discussion board', () => {
-    deleteComment(commentIndex)
+    deleteComment('Edited the comment')
   })
 
   it('can "publish" a task to "JIRA" (this is simulated)', () => {
-    addTask('Create task to test publish to JIRA').then((result) => {
-      publishToJira(result)
-    })
+    addTask('Create task to test publish to JIRA')
+
+    publishToJira('Create task to test publish to JIRA')
+
   })
 
   it('can advance to a new discussion item', () => {
-    cy.get(`[data-cy=next-phase]`).click()
-    cy.get(`[data-cy=next-phase]`).click()
+    cy.get(`[data-cy=next-phase]`).dblclick()
+    cy.get(`[data-cy=next-phase]`).dblclick()
+
+
   })
 
   it('can navigate back to a previous item', () => {
@@ -189,7 +226,8 @@ describe('Test Discuss page Demo', () => {
   })
 
   it('can end meeting', () => {
-    cy.get('[data-cy=end-button').click()
+    cy.get('[data-cy=end-button').dblclick()
+
   })
 
   it('can see a meeting summary', () => {

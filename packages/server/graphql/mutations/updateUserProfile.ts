@@ -1,19 +1,18 @@
+import sanitizeSVG from '@mattkrick/sanitize-svg'
 import {GraphQLNonNull} from 'graphql'
+import {JSDOM} from 'jsdom'
+import fetch from 'node-fetch'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import linkify from 'parabol-client/utils/linkify'
+import makeUserServerSchema from 'parabol-client/validation/makeUserServerSchema'
 import getRethink from '../../database/rethinkDriver'
+import TeamMember from '../../database/types/TeamMember'
+import {getUserId, isAuthenticated} from '../../utils/authorization'
+import publish from '../../utils/publish'
+import segmentIo from '../../utils/segmentIo'
+import standardError from '../../utils/standardError'
 import UpdateUserProfileInput from '../types/UpdateUserProfileInput'
 import UpdateUserProfilePayload from '../types/UpdateUserProfilePayload'
-import {getUserId, isAuthenticated} from '../../utils/authorization'
-import makeUserServerSchema from 'parabol-client/validation/makeUserServerSchema'
-import publish from '../../utils/publish'
-import {sendSegmentIdentify} from '../../utils/sendSegmentEvent'
-import {JSDOM} from 'jsdom'
-import sanitizeSVG from '@mattkrick/sanitize-svg'
-import fetch from 'node-fetch'
-import standardError from '../../utils/standardError'
-import linkify from 'parabol-client/utils/linkify'
-import User from '../../database/types/User'
-import {ITeamMember} from 'parabol-client/types/graphql'
-import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 
 const updateUserProfile = {
   type: UpdateUserProfilePayload,
@@ -65,17 +64,16 @@ const updateUserProfile = {
       updatedAt: now
     }
     // propagate denormalized changes to TeamMember
-    const {user, teamMembers} = await r({
+    const {teamMembers} = await r({
       teamMembers: (r
         .table('TeamMember')
         .getAll(userId, {index: 'userId'})
         .update(updates, {returnChanges: true})('changes')('new_val')
-        .default([]) as unknown) as ITeamMember[],
-      user: (r
+        .default([]) as unknown) as TeamMember[],
+      user: r
         .table('User')
         .get(userId)
-        .update(updates, {returnChanges: true})('changes')(0)('new_val')
-        .default(null) as unknown) as User
+        .update(updates)
     }).run()
     //
     // If we ever want to delete the previous profile images:
@@ -87,7 +85,15 @@ const updateUserProfile = {
     //   .catch(console.warn.bind(console));
     // }
     //
-    await sendSegmentIdentify(user.id)
+    if (validUpdatedUser.preferredName) {
+      segmentIo.identify({
+        userId,
+        traits: {
+          name: validUpdatedUser.preferredName
+        }
+      })
+    }
+
     const teamIds = teamMembers.map(({teamId}) => teamId)
     teamIds.forEach((teamId) => {
       const data = {userId, teamIds: [teamId]}

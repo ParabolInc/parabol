@@ -1,14 +1,14 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import {TierEnum} from 'parabol-client/types/graphql'
 import stripe from '../../billing/stripe'
 import getRethink from '../../database/rethinkDriver'
-import DowngradeToPersonalPayload from '../types/DowngradeToPersonalPayload'
 import {getUserId, isSuperUser, isUserBillingLeader} from '../../utils/authorization'
 import publish from '../../utils/publish'
-import sendSegmentEvent, {sendSegmentIdentify} from '../../utils/sendSegmentEvent'
-import standardError from '../../utils/standardError'
-import {TierEnum} from 'parabol-client/types/graphql'
-import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import segmentIo from '../../utils/segmentIo'
 import setUserTierForOrgId from '../../utils/setUserTierForOrgId'
+import standardError from '../../utils/standardError'
+import DowngradeToPersonalPayload from '../types/DowngradeToPersonalPayload'
 
 export default {
   type: DowngradeToPersonalPayload,
@@ -76,7 +76,13 @@ export default {
     }).run()
 
     await setUserTierForOrgId(orgId)
-    sendSegmentEvent('Downgrade to personal', viewerId, {orgId}).catch()
+    segmentIo.track({
+      userId: viewerId,
+      event: 'Downgrade to personal',
+      properties: {
+        orgId
+      }
+    })
     const data = {orgId, teamIds}
     publish(SubscriptionChannel.ORGANIZATION, orgId, 'DowngradeToPersonalPayload', data, subOptions)
 
@@ -85,15 +91,6 @@ export default {
       // This is probably a smelly piece of code telling me I should be sending this per-viewerId or per-org
       const teamData = {orgId, teamIds: [teamId]}
       publish(SubscriptionChannel.TEAM, teamId, 'DowngradeToPersonalPayload', teamData, subOptions)
-    })
-    // the count of this users tier stats just changed, update:
-    const allUserIds = await r
-      .table('OrganizationUser')
-      .getAll(orgId, {index: 'orgId'})
-      .filter({removedAt: null})('userId')
-      .run()
-    allUserIds.forEach((userId) => {
-      sendSegmentIdentify(userId).catch()
     })
     return data
   }

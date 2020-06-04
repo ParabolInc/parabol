@@ -26,7 +26,7 @@ const TimelineEventMenuItemLabel = styled('div')({
   width: '200px'
 })
 
-const TimelineEventFooterMenu = (props: Props) => {
+const TimelineEventHeaderMenu = (props: Props) => {
   const {menuProps, timelineEventId} = props
   const atmosphere = useAtmosphere()
   return (
@@ -45,4 +45,4 @@ const TimelineEventFooterMenu = (props: Props) => {
   )
 }
 
-export default TimelineEventFooterMenu
+export default TimelineEventHeaderMenu

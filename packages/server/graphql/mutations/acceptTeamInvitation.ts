@@ -1,12 +1,12 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
-import {SubscriptionChannel, InvitationTokenError} from 'parabol-client/types/constEnums'
+import {InvitationTokenError, SubscriptionChannel} from 'parabol-client/types/constEnums'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import AuthToken from '../../database/types/AuthToken'
 import acceptTeamInvitation from '../../safeMutations/acceptTeamInvitation'
 import {getUserId, isAuthenticated} from '../../utils/authorization'
 import encodeAuthToken from '../../utils/encodeAuthToken'
 import publish from '../../utils/publish'
-import sendSegmentEvent from '../../utils/sendSegmentEvent'
+import segmentIo from '../../utils/segmentIo'
 import rateLimit from '../rateLimit'
 import AcceptTeamInvitationPayload from '../types/AcceptTeamInvitationPayload'
 import handleInvitationToken from './helpers/handleInvitationToken'
@@ -121,7 +121,11 @@ export default {
           subOptions
         )
       }
-      sendSegmentEvent('Invite Accepted', viewerId, {teamId}).catch()
+      segmentIo.track({
+        userId: viewerId,
+        event: 'Invite Accepted',
+        properties: {teamId}
+      })
       return {
         ...data,
         authToken: encodedAuthToken

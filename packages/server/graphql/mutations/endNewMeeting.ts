@@ -30,7 +30,7 @@ import archiveTasksForDB from '../../safeMutations/archiveTasksForDB'
 import removeSuggestedAction from '../../safeMutations/removeSuggestedAction'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
-import sendSegmentEvent, {sendSegmentIdentify} from '../../utils/sendSegmentEvent'
+import segmentIo from '../../utils/segmentIo'
 import standardError from '../../utils/standardError'
 import {DataLoaderWorker, GQLContext} from '../graphql'
 import EndNewMeetingPayload from '../types/EndNewMeetingPayload'
@@ -356,21 +356,25 @@ export default {
     await shuffleCheckInOrder(teamId)
     const updatedTaskIds = (result && result.updatedTaskIds) || []
     const {facilitatorUserId} = completedMeeting
-    const nonFacilitators = presentMemberUserIds.filter((userId) => userId !== facilitatorUserId)
-    const traits = {
-      wasFacilitator: false,
-      teamMembersCount: meetingMembers.length,
-      teamMembersPresentCount: presentMembers.length,
-      teamId,
-      meetingNumber
-    }
     const meetingTemplateName = await getMeetingTemplateName(meetingType, phases, dataLoader)
-    const segmentData = {...traits, meetingType, meetingTemplateName, meetingNumber}
-    const facilitatorSegmentData = {...segmentData, wasFacilitator: true}
-    sendSegmentEvent('Meeting Completed', facilitatorUserId, facilitatorSegmentData).catch()
-    sendSegmentEvent('Meeting Completed', nonFacilitators, segmentData).catch()
-    sendSegmentIdentify(presentMemberUserIds).catch()
-
+    presentMemberUserIds.forEach((userId) => {
+      const wasFacilitator = userId === facilitatorUserId
+      segmentIo.track({
+        userId,
+        event: 'Meeting Completed',
+        properties: {
+          // include wasFacilitator as a flag to handle 1 per meeting
+          wasFacilitator,
+          userIds: wasFacilitator ? presentMemberUserIds : undefined,
+          meetingType,
+          meetingTemplateName,
+          meetingNumber,
+          teamMembersCount: meetingMembers.length,
+          teamMembersPresentCount: presentMembers.length,
+          teamId
+        }
+      })
+    })
     sendNewMeetingSummary(completedMeeting, context).catch(console.log)
     const TimelineEvent = timelineEventLookup[meetingType]
 

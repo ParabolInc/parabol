@@ -2,8 +2,9 @@ import {GraphQLID, GraphQLNonNull} from 'graphql'
 import getRethink from '../../database/rethinkDriver'
 import User from '../../database/types/User'
 import {getUserId, isSuperUser} from '../../utils/authorization'
-import DeleteUserPayload from '../types/DeleteUserPayload'
+import segmentIo from '../../utils/segmentIo'
 import {GQLContext} from '../graphql'
+import DeleteUserPayload from '../types/DeleteUserPayload'
 import removeFromOrg from './helpers/removeFromOrg'
 
 export default {
@@ -59,6 +60,10 @@ export default {
         email: 'DELETED'
       })
       .run()
+    segmentIo.track({
+      userId,
+      event: 'Account Removed'
+    })
     return {}
   }
 }
