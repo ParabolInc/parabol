@@ -86,6 +86,13 @@ const updateUserProfile = {
     // }
     //
     if (validUpdatedUser.preferredName) {
+      segmentIo.track({
+        userId,
+        event: 'Changed name',
+        properties: {
+          name: validUpdatedUser.preferredName
+        }
+      })
       segmentIo.identify({
         userId,
         traits: {

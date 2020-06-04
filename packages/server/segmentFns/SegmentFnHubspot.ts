@@ -25,9 +25,11 @@ const contactKeys = {
   isAnyBillingLeader: 'is_any_billing_leader',
   monthlyStreakCurrent: 'monthly_streak_current',
   monthlyStreakMax: 'monthly_streak_max',
-  joinedAt: 'joined_at',
+  createdAt: 'joined_at',
   isPatientZero: 'is_patient_zero',
-  isRemoved: 'is_user_removed'
+  isRemoved: 'is_user_removed',
+  id: 'parabol_id',
+  preferredName: 'parabol_preferred_name'
 }
 
 const companyKeys = {
@@ -39,6 +41,13 @@ const companyKeys = {
 }
 
 const queries = {
+  'Changed name': `
+query ChangedName($userId: ID!) {
+  user(userId: $userId) {
+    email
+    preferredName
+  }
+}`,
   'Meeting Completed': `
 query MeetingCompleted($userIds: [ID!]!, $userId: ID!) {
   company(userId: $userId) {
@@ -87,8 +96,10 @@ query BillingLeaderRevoked($userId: ID!) {
   'Account Created': `
 query AccountCreated($userId: ID!) {
   user(userId: $userId) {
+    id
+    preferredName
     email
-    joinedAt
+    createdAt
     isPatientZero
     company {
       userCount
@@ -190,14 +201,14 @@ const normalize = (value: string | number) => {
   return value
 }
 
-const updateHubspotContact = async (
+const upsertHubspotContact = async (
   email: string,
   hapiKey: string,
   propertiesObj: {[key: string]: string | number}
 ) => {
   if (!propertiesObj || Object.keys(propertiesObj).length === 0) return
-  await fetch(
-    `https://api.hubapi.com/contacts/v1/contact/email/${email}/profile?hapikey=${hapiKey}`,
+  const res = await fetch(
+    `https://api.hubapi.com/contacts/v1/contact/createOrUpdate/email/${email}/?hapikey=${hapiKey}`,
     {
       method: 'POST',
       headers: {
@@ -211,6 +222,9 @@ const updateHubspotContact = async (
       })
     }
   )
+  if (!String(res.status).startsWith('2')) {
+    throw new Error(`upsertFail: ${res.status}: ${email}`)
+  }
 }
 
 const updateHubspotBulkContact = async (records: BulkRecord[], hapiKey: string) => {
@@ -245,9 +259,10 @@ const updateHubspotCompany = async (
   propertiesObj: {[key: string]: string | number}
 ) => {
   if (!propertiesObj || Object.keys(propertiesObj).length === 0) return
-  const contactRes = await fetch(
-    `https://api.hubapi.com/contacts/v1/contact/email/${email}/profile?hapikey=${hapiKey}&property=associatedcompanyid&property_mode=value_only&formSubmissionMode=none&showListMemberships=false`
-  )
+  const url = `https://api.hubapi.com/contacts/v1/contact/email/${encodeURI(
+    email
+  )}/profile?hapikey=${hapiKey}&property=associatedcompanyid&property_mode=value_only&formSubmissionMode=none&showListMemberships=false`
+  const contactRes = await fetch(url)
   if (!String(contactRes.status).startsWith('2')) {
     throw new Error(`${contactRes.status}: ${email}`)
   }
@@ -287,7 +302,7 @@ const updateHubspot = async (
   const {email, company, ...contact} = user
   const {hubspotKey} = settings
   await Promise.all([
-    updateHubspotContact(email, hubspotKey, contact),
+    upsertHubspotContact(email, hubspotKey, contact),
     updateHubspotCompany(email, hubspotKey, company)
   ])
 }

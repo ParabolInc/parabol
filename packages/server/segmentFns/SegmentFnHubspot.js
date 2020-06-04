@@ -1,9 +1,31 @@
+const crypto = require('crypto')
+const fetch = require('node-fetch')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 const contactKeys = {
   lastMetAt: 'last_met_at',
   isAnyBillingLeader: 'is_any_billing_leader',
   monthlyStreakCurrent: 'monthly_streak_current',
   monthlyStreakMax: 'monthly_streak_max',
-  joinedAt: 'joined_at',
+  createdAt: 'joined_at',
   isPatientZero: 'is_patient_zero',
   isRemoved: 'is_user_removed'
 }
@@ -66,7 +88,7 @@ query BillingLeaderRevoked($userId: ID!) {
 query AccountCreated($userId: ID!) {
   user(userId: $userId) {
     email
-    joinedAt
+    createdAt
     isPatientZero
     company {
       userCount
@@ -123,16 +145,22 @@ query ArchiveTeam($userId: ID!) {
 }`
 }
 
-const parabolFetch = async (query, variables, payload, settings) => {
+const parabolFetch = async (
+  query,
+  variables,
+  payload,
+  settings
+) => {
   const {parabolToken, timestamp} = payload
   const {segmentFnKey} = settings
   const ts = Math.floor(new Date(timestamp).getTime() / 1000)
+  console.log({timestamp, ts})
   const signature = crypto
     .createHmac('sha256', segmentFnKey)
     .update(parabolToken)
     .digest('base64')
   const authToken = `${ts}.${signature}`
-  const res = await fetch(`https://47045251741a.ngrok.io/webhooks/graphql`, {
+  const res = await fetch(`https://action-staging.parabol.co/webhooks/graphql`, {
     // const res = await fetch(`https://action.parabol.co/webhooks/graphql`, {
     method: 'POST',
     headers: {
@@ -163,14 +191,14 @@ const normalize = (value) => {
   return value
 }
 
-const updateHubspotContact = async (
+const upsertHubspotContact = async (
   email,
   hapiKey,
   propertiesObj
 ) => {
   if (!propertiesObj || Object.keys(propertiesObj).length === 0) return
-  await fetch(
-    `https://api.hubapi.com/contacts/v1/contact/email/${email}/profile?hapikey=${hapiKey}`,
+  const res = await fetch(
+    `https://api.hubapi.com/contacts/v1/contact/createOrUpdate/email/${email}/?hapikey=${hapiKey}`,
     {
       method: 'POST',
       headers: {
@@ -184,6 +212,9 @@ const updateHubspotContact = async (
       })
     }
   )
+  if (!String(res.status).startsWith('2')) {
+    throw new Error(`upsertFail: ${res.status}: ${email}`)
+  }
 }
 
 const updateHubspotBulkContact = async (records, hapiKey) => {
@@ -218,9 +249,9 @@ const updateHubspotCompany = async (
   propertiesObj
 ) => {
   if (!propertiesObj || Object.keys(propertiesObj).length === 0) return
-  const contactRes = await fetch(
-    `https://api.hubapi.com/contacts/v1/contact/email/${email}/profile?hapikey=${hapiKey}&property=associatedcompanyid&property_mode=value_only&formSubmissionMode=none&showListMemberships=false`
-  )
+  const url = `https://api.hubapi.com/contacts/v1/contact/email/${encodeURI(email)}/profile?hapikey=${hapiKey}&property=associatedcompanyid&property_mode=value_only&formSubmissionMode=none&showListMemberships=false`
+  console.log({url})
+  const contactRes = await fetch(url)
   if (!String(contactRes.status).startsWith('2')) {
     throw new Error(`${contactRes.status}: ${email}`)
   }
@@ -257,11 +288,12 @@ const updateHubspot = async (
   const parabolPayload = await parabolFetch(query, {userId}, payload, settings)
   if (!parabolPayload) return
   const {user} = parabolPayload
+  console.log('pay', {parabolPayload})
   const {email, company, ...contact} = user
   const {hubspotKey} = settings
   await Promise.all([
-    updateHubspotContact(email, hubspotKey, contact),
-    updateHubspotCompany(email, hubspotKey, company)
+    upsertHubspotContact(email, hubspotKey, contact),
+    // updateHubspotCompany(email, hubspotKey, company)
   ])
 }
 
@@ -273,7 +305,8 @@ async function onTrack(payload, settings) {
     const {userIds} = properties
     if (!userIds) throw new InvalidEventPayload('userIds not provided')
     const parabolPayload = await parabolFetch(query, {userIds, userId}, payload, settings)
-    if (!parabolPayload) throw new InvalidEventPayload(`Null payload from parabol: ${userIds}, ${userId}, ${query}`)
+    if (!parabolPayload)
+      throw new InvalidEventPayload(`Null payload from parabol: ${userIds}, ${userId}, ${query}`)
     const {users, company} = parabolPayload
     const facilitator = users.find((user) => user.id === userId)
     const {email} = facilitator
@@ -286,3 +319,14 @@ async function onTrack(payload, settings) {
     await updateHubspot(query, userId, payload, settings)
   }
 }
+
+module.exports = onTrack
+
+
+// notes:
+// - hubspot responding 404 to contact
+//   - activeUser
+//   - userCount
+//   - lastMetAt for streak on company
+//   - parabolUserId sent on Account Created
+//   - parabolPreferredName sent onIdentify
