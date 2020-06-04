@@ -11,7 +11,6 @@ interface Props {
   threadable: ThreadedItem_threadable
   meeting: ThreadedItem_meeting
   threadSourceId: string
-  dataCy: string
 }
 
 export type ReplyMention = {
@@ -22,13 +21,13 @@ export type ReplyMention = {
 export type SetReplyMention = (replyMention: ReplyMention) => void
 
 export const ThreadedItem = (props: Props) => {
-  const {threadable, threadSourceId, meeting, dataCy} = props
+  const {threadable, threadSourceId, meeting} = props
   const {__typename, replies} = threadable
   const [replyMention, setReplyMention] = useState<ReplyMention>(null)
   if (!replies) debugger
   const child = (
     <ThreadedRepliesList
-      dataCy={`${dataCy}-child`}
+      dataCy={`child`}
       meeting={meeting}
       replies={replies}
       threadSourceId={threadSourceId}
@@ -38,7 +37,7 @@ export const ThreadedItem = (props: Props) => {
   if (__typename === 'Task') {
     return (
       <ThreadedTaskBase
-        dataCy={`${dataCy}-task`}
+        dataCy={`task`}
         task={threadable}
         meeting={meeting}
         threadSourceId={threadSourceId}
@@ -51,7 +50,7 @@ export const ThreadedItem = (props: Props) => {
   }
   return (
     <ThreadedCommentBase
-      dataCy={`${dataCy}-comment`}
+      dataCy={`comment`}
       comment={threadable}
       meeting={meeting}
       threadSourceId={threadSourceId}

@@ -46,10 +46,10 @@ const loginSAML = {
     const r = await getRethink()
     const now = new Date()
     const body = querystring.parse(queryString)
-
+    const normalizedDomain = domain.toLowerCase()
     const doc = (await r
       .table('SAML')
-      .getAll(domain, {index: 'domain'})
+      .getAll(normalizedDomain, {index: 'domain'})
       .nth(0)
       .default(null)
       .run()) as SAML | null
@@ -69,11 +69,11 @@ const loginSAML = {
     const {isInvited} = relayState
     const {extract} = loginResponse
     const {attributes, nameID: name} = extract
-    const {email} = attributes
+    const email = attributes.email.toLowerCase()
     const ssoDomain = getSSODomainFromEmail(email)
-    if (ssoDomain !== domain) {
+    if (ssoDomain !== normalizedDomain) {
       // don't blindly trust the IdP
-      return {error: {message: `Email domain must be ${domain}`}}
+      return {error: {message: `Email domain must be ${normalizedDomain}`}}
     }
 
     const user = await r
