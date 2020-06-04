@@ -23,7 +23,7 @@ export default class ReflectionGroup {
   voterIds: string[]
   title: string | null
   smartTitle: string | null
-  constructor (input: ReflectionGroupInput) {
+  constructor(input: ReflectionGroupInput) {
     const {createdAt, id, meetingId, retroPhaseItemId, sortOrder, updatedAt, voterIds, smartTitle, title} = input
     const now = new Date()
     this.id = id || shortid.generate()

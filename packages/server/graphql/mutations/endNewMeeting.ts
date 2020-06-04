@@ -3,8 +3,7 @@ import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {
   MeetingTypeEnum,
   NewMeetingPhaseTypeEnum,
-  SuggestedActionTypeEnum,
-  IAgendaItem
+  SuggestedActionTypeEnum
 } from 'parabol-client/types/graphql'
 import {
   ACTION,
@@ -17,7 +16,9 @@ import {
 import extractTextFromDraftString from 'parabol-client/utils/draftjs/extractTextFromDraftString'
 import getMeetingPhase from 'parabol-client/utils/getMeetingPhase'
 import findStageById from 'parabol-client/utils/meetings/findStageById'
+import shortid from 'shortid'
 import getRethink from '../../database/rethinkDriver'
+import AgendaItem from '../../database/types/AgendaItem'
 import GenericMeetingPhase from '../../database/types/GenericMeetingPhase'
 import Meeting from '../../database/types/Meeting'
 import MeetingAction from '../../database/types/MeetingAction'
@@ -36,7 +37,6 @@ import {DataLoaderWorker, GQLContext} from '../graphql'
 import EndNewMeetingPayload from '../types/EndNewMeetingPayload'
 import sendNewMeetingSummary from './helpers/endMeeting/sendNewMeetingSummary'
 import {endSlackMeeting} from './helpers/notifySlack'
-import shortid from 'shortid'
 
 const timelineEventLookup = {
   [RETROSPECTIVE]: TimelineEventRetroComplete,
@@ -104,12 +104,11 @@ const getPinnedAgendaItems = async (teamId: string) => {
     .run()
 }
 
-const clonePinnedAgendaItem = async (pinnedAgendaItems: IAgendaItem[]) => {
+const clonePinnedAgendaItem = async (pinnedAgendaItems: AgendaItem[]) => {
   const r = await getRethink()
   const formattedPinnedAgendaItems = pinnedAgendaItems.map((agendaItem) => {
     const agendaItemId = `${agendaItem.teamId}::${shortid.generate()}`
-    const now = new Date()
-    return {
+    return new AgendaItem({
       id: agendaItemId,
       content: agendaItem.content,
       pinned: agendaItem.pinned,
@@ -117,11 +116,7 @@ const clonePinnedAgendaItem = async (pinnedAgendaItems: IAgendaItem[]) => {
       sortOrder: agendaItem.sortOrder,
       teamId: agendaItem.teamId,
       teamMemberId: agendaItem.teamMemberId,
-      createdAt: now,
-      updatedAt: now,
-      isActive: true,
-      isComplete: false
-    }
+    })
   })
 
   await r

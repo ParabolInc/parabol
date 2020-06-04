@@ -39,14 +39,14 @@ interface Props {
   children?: ReactNode
   meeting: ThreadedTaskBase_meeting
   isReply?: boolean // this comment is a reply & should be indented
-  reflectionGroupId: string
+  threadSourceId: string
   setReplyMention: SetReplyMention
   replyMention?: ReplyMention
   dataCy: string
 }
 
 const ThreadedTaskBase = (props: Props) => {
-  const {children, meeting, reflectionGroupId, setReplyMention, replyMention, task, dataCy} = props
+  const {children, meeting, threadSourceId, setReplyMention, replyMention, task, dataCy} = props
   const isReply = !!props.isReply
   const {id: meetingId, replyingToCommentId} = meeting
   const {id: taskId, createdByUser, threadParentId} = task
@@ -74,7 +74,7 @@ const ThreadedTaskBase = (props: Props) => {
         {children}
         <ThreadedItemReply
           dataCy={`${dataCy}-reply`}
-          reflectionGroupId={reflectionGroupId}
+          threadSourceId={threadSourceId}
           meeting={meeting}
           threadable={task}
           editorRef={replyEditorRef}
@@ -88,7 +88,7 @@ const ThreadedTaskBase = (props: Props) => {
 
 export default createFragmentContainer(ThreadedTaskBase, {
   meeting: graphql`
-    fragment ThreadedTaskBase_meeting on RetrospectiveMeeting {
+    fragment ThreadedTaskBase_meeting on NewMeeting {
       ...ThreadedItemReply_meeting
       id
       replyingToCommentId

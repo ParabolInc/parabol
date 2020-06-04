@@ -9,6 +9,7 @@ import React, {forwardRef, RefObject, useState} from 'react'
 import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import {Elevation} from '~/styles/elevation'
 import {ThreadSourceEnum} from '~/types/graphql'
+import {MeetingTypeEnum} from '~/types/graphql'
 import {SORT_STEP} from '~/utils/constants'
 import dndNoise from '~/utils/dndNoise'
 import convertToTaskContent from '~/utils/draftjs/convertToTaskContent'
@@ -43,7 +44,7 @@ interface Props {
   getMaxSortOrder: () => number
   meeting: DiscussionThreadInput_meeting
   onSubmitCommentSuccess?: () => void
-  reflectionGroupId: string
+  threadSourceId: string
   threadParentId?: string
   isReply?: boolean
   isDisabled?: boolean
@@ -58,7 +59,7 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
     getMaxSortOrder,
     meeting,
     onSubmitCommentSuccess,
-    reflectionGroupId,
+    threadSourceId,
     threadParentId,
     replyMention,
     setReplyMention,
@@ -66,13 +67,20 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
   } = props
   const isReply = !!props.isReply
   const isDisabled = !!props.isDisabled
-  const {id: meetingId, isAnonymousComment, teamId, viewerMeetingMember} = meeting
+  const {id: meetingId, isAnonymousComment, teamId, viewerMeetingMember, meetingType} = meeting
   const {user} = viewerMeetingMember
   const {picture} = user
   const [editorState, setEditorState] = useReplyEditorState(replyMention, setReplyMention)
   const atmosphere = useAtmosphere()
   const {submitting, onError, onCompleted, submitMutation} = useMutationProps()
   const placeholder = isAnonymousComment ? 'Comment anonymously' : 'Comment publicly'
+
+  const threadSourceByMeetingType = {
+    [MeetingTypeEnum.retrospective]: ThreadSourceEnum.REFLECTION_GROUP,
+    [MeetingTypeEnum.action]: ThreadSourceEnum.AGENDA_ITEM
+  }
+  const threadSource = threadSourceByMeetingType[meetingType]
+
   const toggleAnonymous = () => {
     commitLocalUpdate(atmosphere, (store) => {
       const meeting = store.get(meetingId)
@@ -96,9 +104,9 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
       content: rawContent,
       isAnonymous: isAnonymousComment,
       meetingId,
-      threadId: reflectionGroupId,
+      threadId: threadSourceId,
       threadParentId,
-      threadSource: ThreadSourceEnum.REFLECTION_GROUP,
+      threadSource: threadSource,
       threadSortOrder: getMaxSortOrder() + SORT_STEP + dndNoise()
     }
     AddCommentMutation(atmosphere, {comment}, {onError, onCompleted})
@@ -145,8 +153,9 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
         getMaxSortOrder={getMaxSortOrder}
         commentSubmitState={commentSubmitState}
         meeting={meeting}
-        reflectionGroupId={reflectionGroupId}
+        threadSourceId={threadSourceId}
         threadParentId={threadParentId}
+        threadSource={threadSource}
         collapseAddTask={collapseAddTask}
         onSubmit={onSubmit}
       />
@@ -156,11 +165,12 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
 
 export default createFragmentContainer(DiscussionThreadInput, {
   meeting: graphql`
-    fragment DiscussionThreadInput_meeting on RetrospectiveMeeting {
+    fragment DiscussionThreadInput_meeting on NewMeeting {
       ...CommentSendOrAdd_meeting
       id
-      isAnonymousComment
       teamId
+      meetingType
+      isAnonymousComment
       viewerMeetingMember {
         user {
           picture

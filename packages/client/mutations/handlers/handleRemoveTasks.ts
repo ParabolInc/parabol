@@ -1,5 +1,5 @@
 import {RecordSourceSelectorProxy} from 'relay-runtime'
-import getReflectionGroupThreadConn from '~/mutations/connections/getReflectionGroupThreadConn'
+import getThreadSourceThreadConn from '~/mutations/connections/getThreadSourceThreadConn'
 import {handleRemoveReply} from '~/mutations/DeleteCommentMutation'
 import {ITask, IUser} from '../../types/graphql'
 import safeRemoveNodeFromArray from '../../utils/relay/safeRemoveNodeFromArray'
@@ -14,24 +14,24 @@ const handleRemoveTask = (taskId: string, store: RecordSourceSelectorProxy<any>)
   const task = store.get<ITask>(taskId)
   if (!task) return
   const teamId = task.getValue('teamId')
-  const reflectionGroupId = task.getValue('threadId')
+  const threadSourceId = task.getValue('threadId')
   const threadParentId = task.getValue('threadParentId')
   if (threadParentId) {
     handleRemoveReply(taskId, threadParentId, store)
     return
   }
-  const reflectionGroup = store.get(reflectionGroupId!)
+  const threadSourceProxy = store.get(threadSourceId!)
   const meetingId = task.getValue('meetingId')
   const meeting = store.get(meetingId!)
   const team = store.get(teamId)
   const archiveConn = getArchivedTasksConn(viewer, teamId)
   const teamConn = getTeamTasksConn(team)
   const userConn = getUserTasksConn(viewer)
-  const reflectionGroupConn = getReflectionGroupThreadConn(reflectionGroup)
+  const threadSourceConn = getThreadSourceThreadConn(threadSourceProxy)
   safeRemoveNodeFromConn(taskId, teamConn)
   safeRemoveNodeFromConn(taskId, userConn)
   safeRemoveNodeFromConn(taskId, archiveConn)
-  safeRemoveNodeFromConn(taskId, reflectionGroupConn)
+  safeRemoveNodeFromConn(taskId, threadSourceConn)
   safeRemoveNodeFromArray(taskId, meeting, 'tasks')
 }
 

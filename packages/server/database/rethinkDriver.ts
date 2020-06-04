@@ -1,4 +1,4 @@
-import {IAgendaItem, IAtlassianAuth, INewFeatureBroadcast} from 'parabol-client/types/graphql'
+import {IAtlassianAuth, INewFeatureBroadcast} from 'parabol-client/types/graphql'
 import {r} from 'rethinkdb-ts'
 import MeetingMember from '../database/types/MeetingMember'
 import Organization from '../database/types/Organization'
@@ -8,6 +8,7 @@ import TeamInvitation from '../database/types/TeamInvitation'
 import TeamMember from '../database/types/TeamMember'
 import getRethinkConfig from './getRethinkConfig'
 import {R} from './stricterR'
+import AgendaItem from './types/AgendaItem'
 import Comment from './types/Comment'
 import FailedAuthRequest from './types/FailedAuthRequest'
 import Invoice from './types/Invoice'
@@ -43,8 +44,8 @@ import User from './types/User'
 
 export type RethinkTypes = {
   AgendaItem: {
-    type: IAgendaItem
-    index: 'teamId'
+    type: AgendaItem
+    index: 'teamId' | 'meetingId'
   }
   AtlassianAuth: {
     type: IAtlassianAuth
@@ -100,13 +101,13 @@ export type RethinkTypes = {
   }
   Notification: {
     type:
-      | NotificationTaskInvolves
-      | NotificationTeamArchived
-      | NotificationMeetingStageTimeLimitEnd
-      | NotificationPaymentRejected
-      | NotificationKickedOut
-      | NotificationPromoteToBillingLeader
-      | NotificationTeamInvitation
+    | NotificationTaskInvolves
+    | NotificationTeamArchived
+    | NotificationMeetingStageTimeLimitEnd
+    | NotificationPaymentRejected
+    | NotificationKickedOut
+    | NotificationPromoteToBillingLeader
+    | NotificationTeamInvitation
     index: 'userId'
   }
   Organization: {

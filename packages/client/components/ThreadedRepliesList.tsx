@@ -9,14 +9,14 @@ import ThreadedTaskBase from './ThreadedTaskBase'
 
 interface Props {
   meeting: ThreadedRepliesList_meeting
-  reflectionGroupId: string
+  threadSourceId: string
   replies: ThreadedRepliesList_replies
   setReplyMention: SetReplyMention
   dataCy: string
 }
 
 const ThreadedRepliesList = (props: Props) => {
-  const {replies, setReplyMention, meeting, reflectionGroupId, dataCy} = props
+  const {replies, setReplyMention, meeting, threadSourceId, dataCy} = props
   // https://sentry.io/organizations/parabol/issues/1569570376/?project=107196&query=is%3Aunresolved
   // not sure why this is required addComment and createTask but request replies
   if (!replies) return null
@@ -31,20 +31,20 @@ const ThreadedRepliesList = (props: Props) => {
             isReply
             task={reply}
             meeting={meeting}
-            reflectionGroupId={reflectionGroupId}
+            threadSourceId={threadSourceId}
             setReplyMention={setReplyMention}
           />
         ) : (
-            <ThreadedCommentBase
-              dataCy={`${dataCy}-comment`}
-              key={id}
-              isReply
-              comment={reply}
-              meeting={meeting}
-              reflectionGroupId={reflectionGroupId}
-              setReplyMention={setReplyMention}
-            />
-          )
+          <ThreadedCommentBase
+            dataCy={`${dataCy}-comment`}
+            key={id}
+            isReply
+            comment={reply}
+            meeting={meeting}
+            threadSourceId={threadSourceId}
+            setReplyMention={setReplyMention}
+          />
+        )
       })}
     </>
   )
@@ -52,7 +52,7 @@ const ThreadedRepliesList = (props: Props) => {
 
 export default createFragmentContainer(ThreadedRepliesList, {
   meeting: graphql`
-    fragment ThreadedRepliesList_meeting on RetrospectiveMeeting {
+    fragment ThreadedRepliesList_meeting on NewMeeting {
       ...ThreadedCommentBase_meeting
       ...ThreadedTaskBase_meeting
     }

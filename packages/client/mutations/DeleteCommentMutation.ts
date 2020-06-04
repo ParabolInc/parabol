@@ -1,12 +1,12 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {IComment, ThreadSourceEnum} from '~/types/graphql'
+import {IComment} from '~/types/graphql'
 import convertToTaskContent from '~/utils/draftjs/convertToTaskContent'
 import safeRemoveNodeFromConn from '~/utils/relay/safeRemoveNodeFromConn'
 import {DeleteCommentMutation_meeting} from '~/__generated__/DeleteCommentMutation_meeting.graphql'
 import {SharedUpdater, SimpleMutation} from '../types/relayMutations'
 import {DeleteCommentMutation as TDeleteCommentMutation} from '../__generated__/DeleteCommentMutation.graphql'
-import getReflectionGroupThreadConn from './connections/getReflectionGroupThreadConn'
+import getThreadSourceThreadConn from './connections/getThreadSourceThreadConn'
 import safeRemoveNodeFromArray from '~/utils/relay/safeRemoveNodeFromArray'
 import {RecordSourceSelectorProxy} from 'relay-runtime'
 
@@ -65,12 +65,12 @@ const handleDeleteComment = (comment, store) => {
     comment.setValue(TOMBSTONE, 'content')
     comment.setValue(false, 'isActive')
   } else {
-    const threadId = comment.getValue('threadId')!
-    const threadSource = comment.getValue('threadSource')!
-    const reflectionGroupId = threadSource === ThreadSourceEnum.REFLECTION_GROUP ? threadId : ''
-    const reflectionGroup = store.get(reflectionGroupId)
-    const reflectionGroupConn = getReflectionGroupThreadConn(reflectionGroup)
-    safeRemoveNodeFromConn(commentId, reflectionGroupConn)
+    const threadSourceId = comment.getValue('threadId')
+    if (threadSourceId) {
+      const threadSourceProxy = (threadSourceId && store.get(threadSourceId as string)) || null
+      const threadSourceConn = getThreadSourceThreadConn(threadSourceProxy)
+      safeRemoveNodeFromConn(commentId, threadSourceConn)
+    }
   }
 }
 

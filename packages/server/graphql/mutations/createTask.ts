@@ -22,7 +22,7 @@ import AreaEnum from '../types/AreaEnum'
 import CreateTaskInput from '../types/CreateTaskInput'
 import CreateTaskPayload from '../types/CreateTaskPayload'
 import getUsersToIgnore from './helpers/getUsersToIgnore'
-import validateThreadableReflectionGroupId from './validateThreadableReflectionGroupId'
+import validateThreadableThreadSourceId from './validateThreadableThreadSourceId'
 
 const validateTaskAgendaItemId = async (
   threadSource: ThreadSourceEnum | null,
@@ -209,7 +209,7 @@ export default {
     const errors = await Promise.all([
       // threadParentId not validated because if it's invalid it simply won't appear
       validateTaskAgendaItemId(threadSource, threadId, teamId, dataLoader),
-      validateThreadableReflectionGroupId(threadSource, threadId, meetingId, dataLoader),
+      validateThreadableThreadSourceId(threadSource, threadId, meetingId, dataLoader),
       validateTaskMeetingId(meetingId, teamId, dataLoader),
       validateTaskUserId(userId, teamId, dataLoader)
     ])

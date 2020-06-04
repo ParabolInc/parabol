@@ -1,12 +1,11 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {ThreadSourceEnum} from '~/types/graphql'
 import makeEmptyStr from '~/utils/draftjs/makeEmptyStr'
 import createProxyRecord from '~/utils/relay/createProxyRecord'
 import {AddCommentMutation_meeting} from '~/__generated__/AddCommentMutation_meeting.graphql'
 import {SharedUpdater, StandardMutation} from '../types/relayMutations'
 import {AddCommentMutation as TAddCommentMutation} from '../__generated__/AddCommentMutation.graphql'
-import getReflectionGroupThreadConn from './connections/getReflectionGroupThreadConn'
+import getThreadSourceThreadConn from './connections/getThreadSourceThreadConn'
 import safePutNodeInConn from './handlers/safePutNodeInConn'
 import addNodeToArray from '~/utils/relay/addNodeToArray'
 
@@ -41,18 +40,16 @@ export const addCommentMeetingUpdater: SharedUpdater<AddCommentMutation_meeting>
 ) => {
   const comment = payload.getLinkedRecord('comment')
   if (!comment) return
-  const threadSource = comment.getValue('threadSource')
   const threadParentId = comment.getValue('threadParentId')
   if (threadParentId) {
     addNodeToArray(comment, store.get(threadParentId), 'replies', 'threadSortOrder')
     return
   }
-  const reflectionGroupId =
-    threadSource === ThreadSourceEnum.REFLECTION_GROUP ? comment.getValue('threadId') : undefined
-  if (reflectionGroupId) {
-    const reflectionGroup = (reflectionGroupId && store.get(reflectionGroupId as string)) || null
-    const reflectionGroupConn = getReflectionGroupThreadConn(reflectionGroup)
-    safePutNodeInConn(reflectionGroupConn, comment, store, 'threadSortOrder', true)
+  const threadSourceId = comment.getValue('threadId')
+  if (threadSourceId) {
+    const threadSourceProxy = (threadSourceId && store.get(threadSourceId as string)) || null
+    const threadSourceConn = getThreadSourceThreadConn(threadSourceProxy)
+    safePutNodeInConn(threadSourceConn, comment, store, 'threadSortOrder', true)
   }
 }
 
