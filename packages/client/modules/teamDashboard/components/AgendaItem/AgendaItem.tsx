@@ -13,9 +13,9 @@ import useScrollIntoView from '../../../../hooks/useScrollIntoVIew'
 import useTooltip from '../../../../hooks/useTooltip'
 import RemoveAgendaItemMutation from '../../../../mutations/RemoveAgendaItemMutation'
 import UpdateAgendaItemMutation from '../../../../mutations/UpdateAgendaItemMutation'
-import {ICON_SIZE} from '../../../../styles/typographyV2'
 import pinIcon from '../../../../styles/theme/images/icons/pin.svg'
 import unpinIcon from '../../../../styles/theme/images/icons/unpin.svg'
+import {ICON_SIZE} from '../../../../styles/typographyV2'
 import {MeetingTypeEnum} from '../../../../types/graphql'
 import findStageById from '../../../../utils/meetings/findStageById'
 import {AgendaItem_agendaItem} from '../../../../__generated__/AgendaItem_agendaItem.graphql'
@@ -154,7 +154,7 @@ const AgendaItem = (props: Props) => {
   return (
     <>
       <AgendaItemStyles
-        onMouseEnter={() => setIsHovering(true)}
+        onMouseOver={() => setIsHovering(true)}
         onMouseLeave={() => setIsHovering(false)}
       >
         <MeetingSubnavItem
