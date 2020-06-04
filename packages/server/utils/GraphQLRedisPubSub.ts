@@ -58,9 +58,9 @@ export default class GraphQLRedisPubSub {
     for (let i = 0; i < channels.length; i++) {
       const channel = channels[i]
       const listeners = this.listenersByChannel[channel]
-      if (!listeners) return
+      if (!listeners) continue
       const listenerIdx = listeners.indexOf(listener)
-      if (listenerIdx === -1) return
+      if (listenerIdx === -1) continue
       if (listeners.length === 1) {
         emptyChannels.push(channel)
         delete this.listenersByChannel[channel]
