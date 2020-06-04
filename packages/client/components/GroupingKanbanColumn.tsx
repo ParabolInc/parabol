@@ -88,6 +88,7 @@ const AddReflectionButton = styled(FlatButton)({
 })
 
 interface Props {
+  isAnyEditing: boolean
   isDesktop: boolean
   meeting: GroupingKanbanColumn_meeting
   phaseRef: RefObject<HTMLDivElement>
@@ -97,14 +98,15 @@ interface Props {
 }
 
 const GroupingKanbanColumn = (props: Props) => {
-  const {isDesktop, meeting, reflectionGroups, phaseRef, prompt, swipeColumn} = props
+  const {isAnyEditing, isDesktop, meeting, reflectionGroups, phaseRef, prompt, swipeColumn} = props
   const {question, id: promptId, groupColor} = prompt
   const {id: meetingId, endedAt, localStage} = meeting
   const {isComplete, phaseType} = localStage
   const {submitting, onError, submitMutation, onCompleted} = useMutationProps()
   const atmosphere = useAtmosphere()
   const onClick = () => {
-    if (submitting) return
+    if (submitting || isAnyEditing) return
+
     const input = {
       content: undefined,
       meetingId,
@@ -115,7 +117,7 @@ const GroupingKanbanColumn = (props: Props) => {
     CreateReflectionMutation(atmosphere, {input}, {onError, onCompleted})
   }
   const ref = useRef<HTMLDivElement>(null)
-  const canAdd = phaseType === NewMeetingPhaseTypeEnum.group && !isComplete
+  const canAdd = phaseType === NewMeetingPhaseTypeEnum.group && !isComplete && !isAnyEditing
   const isExpanded = useCoverable(promptId, ref, MeetingControlBarEnum.HEIGHT) || !!endedAt
   return (
     <Column isExpanded={isExpanded} data-cy={`group-column-${question}`} ref={ref}>
