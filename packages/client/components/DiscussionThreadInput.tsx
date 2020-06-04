@@ -75,15 +75,11 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
   const {submitting, onError, onCompleted, submitMutation} = useMutationProps()
   const placeholder = isAnonymousComment ? 'Comment anonymously' : 'Comment publicly'
 
-  let threadSource
-  switch (meetingType) {
-    case MeetingTypeEnum.retrospective:
-      threadSource = ThreadSourceEnum.REFLECTION_GROUP
-      break
-    case MeetingTypeEnum.action:
-      threadSource = ThreadSourceEnum.AGENDA_ITEM
-      break
+  const threadSourceByMeetingType = {
+    [MeetingTypeEnum.retrospective]: ThreadSourceEnum.REFLECTION_GROUP,
+    [MeetingTypeEnum.action]: ThreadSourceEnum.AGENDA_ITEM
   }
+  const threadSource = threadSourceByMeetingType[meetingType]
 
   const toggleAnonymous = () => {
     commitLocalUpdate(atmosphere, (store) => {

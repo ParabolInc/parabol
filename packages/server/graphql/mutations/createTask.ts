@@ -22,7 +22,7 @@ import AreaEnum from '../types/AreaEnum'
 import CreateTaskInput from '../types/CreateTaskInput'
 import CreateTaskPayload from '../types/CreateTaskPayload'
 import getUsersToIgnore from './helpers/getUsersToIgnore'
-import validateThreadableReflectionGroupId from './validateThreadableReflectionGroupId'
+import validateThreadableThreadSourceId from './validateThreadableThreadSourceId'
 
 const validateTaskAgendaItemId = async (
   threadSource: ThreadSourceEnum | null,

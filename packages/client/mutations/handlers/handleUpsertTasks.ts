@@ -1,6 +1,5 @@
 import {RecordProxy, RecordSourceSelectorProxy} from 'relay-runtime'
 import getThreadSourceThreadConn from '~/mutations/connections/getThreadSourceThreadConn'
-import {ThreadSourceEnum} from '~/types/graphql'
 import addNodeToArray from '../../utils/relay/addNodeToArray'
 import safeRemoveNodeFromConn from '../../utils/relay/safeRemoveNodeFromConn'
 import getArchivedTasksConn from '../connections/getArchivedTasksConn'
@@ -30,7 +29,6 @@ const handleUpsertTask = (task: Task | null, store: RecordSourceSelectorProxy<an
   const teamId = task.getValue('teamId')
   const taskId = task.getValue('id')
   const tags = task.getValue('tags')
-  const threadSource = task.getValue('threadSource')
   const threadParentId = task.getValue('threadParentId')
   if (threadParentId) {
     addNodeToArray(task, store.get(threadParentId), 'replies', 'threadSortOrder')
@@ -42,11 +40,7 @@ const handleUpsertTask = (task: Task | null, store: RecordSourceSelectorProxy<an
   const team = store.get(teamId)
   const teamConn = getTeamTasksConn(team)
   const userConn = getUserTasksConn(viewer)
-  const threadSourceId =
-    threadSource === ThreadSourceEnum.REFLECTION_GROUP ||
-    threadSource === ThreadSourceEnum.AGENDA_ITEM
-      ? task.getValue('threadId')
-      : undefined
+  const threadSourceId = task.getValue('threadId')
   const threadSourceProxy = (threadSourceId && store.get(threadSourceId as string)) || null
   const threadSourceConn = getThreadSourceThreadConn(threadSourceProxy)
   const meeting = meetingId ? store.get(meetingId) : null

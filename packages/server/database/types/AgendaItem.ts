@@ -9,20 +9,20 @@ export interface AgendaItemInput {
   teamId: string
   teamMemberId: string
   updatedAt?: Date
-  content?: string
+  content: string
   meetingId?: string
 }
 
 export default class AgendaItem {
-  id?: string
-  content?: string
-  createdAt?: Date
-  isActive?: boolean
-  isComplete?: boolean
-  sortOrder?: number
+  id: string
+  content: string
+  createdAt: Date
+  isActive: boolean
+  isComplete: boolean
+  sortOrder: number
   teamId: string
   teamMemberId: string
-  updatedAt?: Date
+  updatedAt: Date
   meetingId?: string
 
   constructor(input: AgendaItemInput) {
@@ -36,13 +36,13 @@ export default class AgendaItem {
       teamMemberId,
       updatedAt,
       content,
-      meetingId,
+      meetingId
     } = input
     const now = new Date()
     this.id = id || shortid.generate()
     this.createdAt = createdAt || now
-    this.isActive = isActive || true
-    this.isComplete = isComplete || false
+    this.isActive = isActive ?? true
+    this.isComplete = isComplete ?? false
     this.sortOrder = sortOrder || 0
     this.teamId = teamId
     this.teamMemberId = teamMemberId
