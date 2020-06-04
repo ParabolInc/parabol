@@ -17,12 +17,12 @@ const MAX_SNACKS = 1
 const query = graphql`
   query SnackbarQuery {
     viewer {
-      topOfFAB
+      snackbarOffset
     }
   }
 `
 
-const Modal = styled('div')<{topOfFAB: number | undefined | null}>(({topOfFAB}) => ({
+const Modal = styled('div')<{snackbarOffset: number | undefined | null}>(({snackbarOffset}) => ({
   alignItems: 'center',
   display: 'flex',
   flexDirection: 'column',
@@ -30,7 +30,7 @@ const Modal = styled('div')<{topOfFAB: number | undefined | null}>(({topOfFAB}) 
   justifyContent: 'flex-end',
   left: 0,
   padding: 8,
-  paddingBottom: topOfFAB || 8,
+  paddingBottom: snackbarOffset || 8,
   position: 'absolute',
   top: 0,
   width: '100vw',
@@ -65,7 +65,7 @@ const Snackbar = React.memo(() => {
   const transitionChildren = useTransition(activeSnacksRef.current)
   // const transitionChildrenRef = useRef(transitionChildren)
   const data = useLocalQuery<SnackbarQuery>(query)
-  const topOfFAB = data?.viewer?.topOfFAB
+  const snackbarOffset = data?.viewer?.snackbarOffset
   // used to ensure the snack isn't dismissed when the cursor is on it
   const hoveredSnackRef = useRef<Snack | null>(null)
   const dismissOnLeaveRef = useRef<Snack>()
@@ -160,7 +160,7 @@ const Snackbar = React.memo(() => {
   }, [showSnack, transitionChildren])
 
   return portal(
-    <Modal topOfFAB={topOfFAB}>
+    <Modal snackbarOffset={snackbarOffset}>
       {transitionChildren.map(({child, onTransitionEnd, status}) => {
         const dismiss = () => {
           if (child.noDismissOnClick) return

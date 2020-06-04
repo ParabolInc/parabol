@@ -16,6 +16,7 @@ import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
 import findStageAfterId from '~/utils/meetings/findStageAfterId'
 import {MeetingControlBar_meeting} from '~/__generated__/MeetingControlBar_meeting.graphql'
 import useClickConfirmation from '../hooks/useClickConfirmation'
+import useSnackbarPad from '../hooks/useSnackbarPad'
 import {bottomBarShadow, desktopBarShadow} from '../styles/elevation'
 import BottomControlBarReady from './BottomControlBarReady'
 import BottomControlBarRejoin from './BottomControlBarRejoin'
@@ -98,6 +99,7 @@ const MeetingControlBar = (props: Props) => {
   const tranChildren = useTransition(buttons)
   const {onMouseDown, onClickCapture} = useDraggableFixture()
   const ref = useRef<HTMLDivElement>(null)
+  useSnackbarPad(ref)
   useCovering(ref)
   const isInit = useInitialRender()
   if (endedAt) return null
