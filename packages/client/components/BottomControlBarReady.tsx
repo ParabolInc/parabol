@@ -3,22 +3,25 @@ import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
-import useClickConfirmation from '~/hooks/useClickConfirmation'
 import useGotoNext from '~/hooks/useGotoNext'
 import {TransitionStatus} from '~/hooks/useTransition'
 import FlagReadyToAdvanceMutation from '~/mutations/FlagReadyToAdvanceMutation'
 import {PALETTE} from '~/styles/paletteV2'
-import {BezierCurve} from '~/types/constEnums'
+import {BezierCurve, Times} from '~/types/constEnums'
 import {NewMeetingPhaseTypeEnum} from '~/types/graphql'
 import handleRightArrow from '~/utils/handleRightArrow'
 import {BottomControlBarReady_meeting} from '~/__generated__/BottomControlBarReady_meeting.graphql'
+import {MenuPosition} from '../hooks/useCoords'
+import useTooltip from '../hooks/useTooltip'
 import BottomControlBarProgress from './BottomControlBarProgress'
 import BottomNavControl from './BottomNavControl'
 import BottomNavIconLabel from './BottomNavIconLabel'
-import ConfirmingToggle from './ConfirmingToggle'
 import Icon from './Icon'
 
 interface Props {
+  cancelConfirm: undefined | (() => void)
+  isConfirming: boolean
+  setConfirmingButton: (button: string) => void
   isDemoStageComplete?: boolean
   meeting: BottomControlBarReady_meeting
   status: TransitionStatus
@@ -52,7 +55,15 @@ const PHASE_REQUIRES_CONFIRM = new Set<string>([
 ])
 
 const BottomControlBarReady = (props: Props) => {
-  const {handleGotoNext, meeting, onTransitionEnd, status} = props
+  const {
+    cancelConfirm,
+    isConfirming,
+    setConfirmingButton,
+    handleGotoNext,
+    meeting,
+    onTransitionEnd,
+    status
+  } = props
   const {
     id: meetingId,
     facilitatorUserId,
@@ -65,6 +76,13 @@ const BottomControlBarReady = (props: Props) => {
   const {id: stageId, isComplete, isViewerReady, phaseType} = localStage
   const {gotoNext, ref} = handleGotoNext
   const activeCount = meetingMembers.filter((member) => member.isCheckedIn).length
+  const {openTooltip, tooltipPortal, originRef} = useTooltip<HTMLDivElement>(
+    MenuPosition.UPPER_CENTER,
+    {
+      disabled: !isConfirming,
+      delay: Times.MEETING_CONFIRM_TOOLTIP_DELAY
+    }
+  )
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
   const isFacilitating = facilitatorUserId === viewerId
@@ -76,15 +94,17 @@ const BottomControlBarReady = (props: Props) => {
     PHASE_REQUIRES_CONFIRM.has(phaseType!) &&
     readyCount < activeCount - 1 &&
     activeCount > 1
-  const [isConfirming, setConfirming] = useClickConfirmation()
+
   const onClick = () => {
     if (!isFacilitating) {
       FlagReadyToAdvanceMutation(atmosphere, {isReady: !isViewerReady, meetingId, stageId})
     } else if (isComplete || !isConfirmRequired || isConfirming) {
-      setConfirming(false)
+      setConfirmingButton('')
       gotoNext()
     } else {
-      setConfirming(true)
+      setConfirmingButton('next')
+      // let the above flush so isConfirming is set before opejning
+      setTimeout(openTooltip)
     }
   }
   const onKeyDown = isFacilitating
@@ -93,7 +113,7 @@ const BottomControlBarReady = (props: Props) => {
       })
     : undefined
   const icon = isFacilitating ? 'arrow_forward' : 'check'
-  const label = isFacilitating ? (isConfirming ? 'Confirm' : 'Next') : 'Ready'
+  const label = isFacilitating ? 'Next' : 'Ready'
   const getDisabled = () => {
     if (!isFacilitating) return false
     if (phaseType === NewMeetingPhaseTypeEnum.reflect) {
@@ -103,24 +123,26 @@ const BottomControlBarReady = (props: Props) => {
   }
   const disabled = getDisabled()
   return (
-    <BottomNavControl
-      dataCy={`next-phase`}
-      disabled={disabled}
-      onClick={onClick}
-      status={status}
-      onTransitionEnd={onTransitionEnd}
-      onKeyDown={onKeyDown}
-      ref={ref}
-    >
-      <BottomControlBarProgress isConfirming={isConfirming} progress={progress} />
-      <BottomNavIconLabel label={label}>
-        <ConfirmingToggle isConfirming={isConfirming}>
+    <>
+      <BottomNavControl
+        dataCy={`next-phase`}
+        disabled={disabled}
+        confirming={!!cancelConfirm}
+        onClick={cancelConfirm || onClick}
+        status={status}
+        onTransitionEnd={onTransitionEnd}
+        onKeyDown={onKeyDown}
+        ref={ref}
+      >
+        <BottomControlBarProgress progress={progress} />
+        <BottomNavIconLabel label={label} ref={originRef}>
           <CheckIcon isViewerReady={isViewerReady} isNext={isFacilitating} progress={progress}>
             {icon}
           </CheckIcon>
-        </ConfirmingToggle>
-      </BottomNavIconLabel>
-    </BottomNavControl>
+        </BottomNavIconLabel>
+      </BottomNavControl>
+      {tooltipPortal(`Tap 'Next' again to Confirm`)}
+    </>
   )
 }
 

@@ -11,6 +11,7 @@ import BottomNavControl from './BottomNavControl'
 import BottomNavIconLabel from './BottomNavIconLabel'
 
 interface Props {
+  cancelConfirm: (() => void) | undefined
   defaultTimeLimit: number
   meeting: StageTimerControl_meeting
   onTransitionEnd: () => void
@@ -22,7 +23,7 @@ const StageTimerModal = lazyPreload(async () =>
 )
 
 const StageTimerControl = (props: Props) => {
-  const {defaultTimeLimit, meeting, status, onTransitionEnd} = props
+  const {cancelConfirm, defaultTimeLimit, meeting, status, onTransitionEnd} = props
   const {meetingMembers, localStage, facilitator, id: meetingId} = meeting
   const {isAsync, scheduledEndTime} = localStage
   const connectedMemberCount = meetingMembers.filter((member) => member.user.isConnected).length
@@ -39,8 +40,9 @@ const StageTimerControl = (props: Props) => {
   return (
     <>
       <BottomNavControl
+        confirming={!!cancelConfirm}
         onMouseEnter={StageTimerModal.preload}
-        onClick={togglePortal}
+        onClick={cancelConfirm || togglePortal}
         status={status}
         onTransitionEnd={onTransitionEnd}
       >

@@ -15,7 +15,15 @@ const useTooltip = <T extends HTMLElement = HTMLElement>(
   options: Options = {}
 ) => {
   const delay = options.delay || Duration.TOOLTIP_DELAY
-  const disabled = !!options.disabled
+  const isDisabled = !!options.disabled
+  const disabledRef = useRef(isDisabled)
+  useEffect(() => {
+    if (isDisabled && !disabledRef.current) {
+      closeTooltip()
+    }
+    disabledRef.current = isDisabled
+  }, [isDisabled])
+
   const {portal, openPortal, closePortal, portalStatus, setPortalStatus} = usePortal()
   const {targetRef, originRef, coords} = useCoords<T>(preferredMenuPosition, {portalStatus})
 
@@ -25,10 +33,10 @@ const useTooltip = <T extends HTMLElement = HTMLElement>(
     return () => {
       window.clearTimeout(openDelayRef.current)
     }
-  })
+  }, [])
 
   const openTooltip = useEventCallback(() => {
-    if (disabled) return
+    if (disabledRef.current) return
     window.clearTimeout(openDelayRef.current)
     openDelayRef.current = window.setTimeout(() => {
       openPortal()
