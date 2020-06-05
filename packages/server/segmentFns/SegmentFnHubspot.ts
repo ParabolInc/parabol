@@ -12,6 +12,7 @@ interface Payload {
 interface Settings {
   hubspotKey: string
   segmentFnKey: string
+  parabolEndpoint: string
 }
 
 interface BulkRecord {
@@ -25,12 +26,15 @@ const contactKeys = {
   isAnyBillingLeader: 'is_any_billing_leader',
   monthlyStreakCurrent: 'monthly_streak_current',
   monthlyStreakMax: 'monthly_streak_max',
-  joinedAt: 'joined_at',
+  createdAt: 'joined_at',
   isPatientZero: 'is_patient_zero',
-  isRemoved: 'is_user_removed'
+  isRemoved: 'is_user_removed',
+  id: 'parabol_id',
+  preferredName: 'parabol_preferred_name'
 }
 
 const companyKeys = {
+  lastMetAt: 'last_met_at',
   userCount: 'user_count',
   activeUserCount: 'active_user_count',
   activeTeamCount: 'active_team_count',
@@ -39,6 +43,13 @@ const companyKeys = {
 }
 
 const queries = {
+  'Changed name': `
+query ChangedName($userId: ID!) {
+  user(userId: $userId) {
+    email
+    preferredName
+  }
+}`,
   'Meeting Completed': `
 query MeetingCompleted($userIds: [ID!]!, $userId: ID!) {
   company(userId: $userId) {
@@ -66,7 +77,7 @@ query NewOrg($userId: ID!) {
     email
     isAnyBillingLeader
     company {
-      teamCount
+      activeTeamCount
     }
   }
 }`,
@@ -87,8 +98,10 @@ query BillingLeaderRevoked($userId: ID!) {
   'Account Created': `
 query AccountCreated($userId: ID!) {
   user(userId: $userId) {
+    id
+    preferredName
     email
-    joinedAt
+    createdAt
     isPatientZero
     company {
       userCount
@@ -152,15 +165,14 @@ const parabolFetch = async (
   settings: Settings
 ) => {
   const {parabolToken, timestamp} = payload
-  const {segmentFnKey} = settings
+  const {segmentFnKey, parabolEndpoint} = settings
   const ts = Math.floor(new Date(timestamp).getTime() / 1000)
   const signature = crypto
     .createHmac('sha256', segmentFnKey)
     .update(parabolToken)
     .digest('base64')
   const authToken = `${ts}.${signature}`
-  const res = await fetch(`http://localhost:3000/webhooks/graphql`, {
-    // const res = await fetch(`https://action.parabol.co/webhooks/graphql`, {
+  const res = await fetch(parabolEndpoint, {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${authToken}`,
@@ -173,7 +185,8 @@ const parabolFetch = async (
     })
   })
   if (!String(res.status).startsWith('2')) {
-    throw new Error(`${res.status}: ${query}, ${variables}`)
+    console.log({query, variables: JSON.stringify(variables)})
+    throw new Error(`ParabolFetch: ${res.status}`)
   }
   const resJSON = await res.json()
   const {data, errors} = resJSON
@@ -190,14 +203,14 @@ const normalize = (value: string | number) => {
   return value
 }
 
-const updateHubspotContact = async (
+const upsertHubspotContact = async (
   email: string,
   hapiKey: string,
   propertiesObj: {[key: string]: string | number}
 ) => {
   if (!propertiesObj || Object.keys(propertiesObj).length === 0) return
-  await fetch(
-    `https://api.hubapi.com/contacts/v1/contact/email/${email}/profile?hapikey=${hapiKey}`,
+  const res = await fetch(
+    `https://api.hubapi.com/contacts/v1/contact/createOrUpdate/email/${email}/?hapikey=${hapiKey}`,
     {
       method: 'POST',
       headers: {
@@ -211,6 +224,9 @@ const updateHubspotContact = async (
       })
     }
   )
+  if (!String(res.status).startsWith('2')) {
+    throw new Error(`upsertFail: ${res.status}: ${email}`)
+  }
 }
 
 const updateHubspotBulkContact = async (records: BulkRecord[], hapiKey: string) => {
@@ -245,9 +261,8 @@ const updateHubspotCompany = async (
   propertiesObj: {[key: string]: string | number}
 ) => {
   if (!propertiesObj || Object.keys(propertiesObj).length === 0) return
-  const contactRes = await fetch(
-    `https://api.hubapi.com/contacts/v1/contact/email/${email}/profile?hapikey=${hapiKey}&property=associatedcompanyid&property_mode=value_only&formSubmissionMode=none&showListMemberships=false`
-  )
+  const url = `https://api.hubapi.com/contacts/v1/contact/email/${email}/profile?hapikey=${hapiKey}&property=associatedcompanyid&property_mode=value_only&formSubmissionMode=none&showListMemberships=false`
+  const contactRes = await fetch(url)
   if (!String(contactRes.status).startsWith('2')) {
     throw new Error(`${contactRes.status}: ${email}`)
   }
@@ -258,7 +273,13 @@ const updateHubspotCompany = async (
       value: propertiesObj[key]
     }))
   })
-  const companyId = contactResJSON['associated-company']['company-id']
+  const associatedCompany = contactResJSON['associated-company']
+  const companyId = associatedCompany ? associatedCompany['company-id'] : undefined
+  if (!companyId) {
+    console.log({contact: JSON.stringify(contactResJSON)})
+    // force a timeout so segment retries this once hubspot associates a record
+    await new Promise((resolve) => setTimeout(resolve, 100000))
+  }
   const companyRes = await fetch(
     `https://api.hubapi.com/companies/v2/companies/${companyId}?hapikey=${hapiKey}`,
     {
@@ -287,7 +308,7 @@ const updateHubspot = async (
   const {email, company, ...contact} = user
   const {hubspotKey} = settings
   await Promise.all([
-    updateHubspotContact(email, hubspotKey, contact),
+    upsertHubspotContact(email, hubspotKey, contact),
     updateHubspotCompany(email, hubspotKey, company)
   ])
 }
@@ -309,10 +330,24 @@ async function onTrack(payload: Payload, settings: Settings) {
       updateHubspotBulkContact(users, hubspotKey),
       updateHubspotCompany(email, hubspotKey, company)
     ])
+  } else if (event === 'Account Created') {
+    const parabolPayload = await parabolFetch(query, {userId}, payload, settings)
+    if (!parabolPayload) return
+    const {user} = parabolPayload
+    const {email, company, ...contact} = user
+    const {hubspotKey} = settings
+    await upsertHubspotContact(email, hubspotKey, contact)
+    // wait for hubspot to associate the contact with the company, fn must run in 5 seconds
+    await new Promise((resolve) => setTimeout(resolve, 2000))
+    await updateHubspotCompany(email, hubspotKey, company)
   } else {
     // standard handler
     await updateHubspot(query, userId, payload, settings)
   }
+}
+
+async function onIdentify() {
+
 }
 
 module.exports = onTrack

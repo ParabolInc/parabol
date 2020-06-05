@@ -112,6 +112,15 @@
 //   label: 'Monthly Team Streak Max'
 // }
 
+// const companyLastMetAt = {
+//   name: 'last_met_at',
+//   groupName: 'parabol_app_information',
+//   description: 'The last time a team from the company started a meeting',
+//   fieldType: 'number',
+//   type: 'datetime',
+//   label: 'Last Met At'
+// }
+
 // const getContactProperty = async (propName: string) => {
 //   const url = `https://api.hubapi.com/properties/v1/contacts/properties/named/${propName}?hapikey=${key}`
 //   const res = await fetch(url)
@@ -149,7 +158,6 @@
 //   console.log({resJSON})
 // }
 
-
 // const getCompanyGroups = async () => {
 //   const url = `https://api.hubapi.com/properties/v1/companies/groups?hapikey=${key}`
 //   const res = await fetch(url)
@@ -170,3 +178,5 @@
 //   const resJSON = await res.json()
 //   console.log({resJSON})
 // }
+
+// // createCompanyProperty(companyLastMetAt)
