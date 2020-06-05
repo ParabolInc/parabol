@@ -5,6 +5,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 5.9.1 2020-Jun-05
+
+### Added
+* Added email to all segment track events for slack integration
+
 ## 5.9.0 2020-Jun-02
 
 ### Added
