@@ -26,7 +26,7 @@ interface Props {
 }
 
 export const meetingSummaryUrlParams = {
-  utm_source: 'summary email',
+  utm_source: 'summary emailz',
   utm_medium: 'email',
   utm_campaign: 'after-meeting'
 }

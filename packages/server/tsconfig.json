@@ -21,20 +21,12 @@
       "node"
     ],
   },
-  "files": [
-    "types/modules.d.ts",
-    "server.ts",
-    "email/components/SummaryEmail/MeetingSummaryEmail/MeetingSummaryEmail.tsx",
-    // "email/components/MeetingSummaryEmailRootSSR.tsx",
-    // "utils/updateGQLSchema.ts"
-  ],
   "exclude": [
     "**/node_modules",
   ],
-  "include": [
-    // "**/*",
-    "database/migrations/*",
-    // "./.eslintrc.js",
-    // "**/*.json",
-  ]
+  "files": [
+    "types/modules.d.ts",
+    "email/components/SummaryEmail/MeetingSummaryEmail/MeetingSummaryEmail.tsx",
+    "server.ts"
+  ],
 }
