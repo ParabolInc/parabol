@@ -4,7 +4,7 @@ const fetch = require('node-fetch')
 interface Payload {
   parabolToken: string
   event: string
-  timestamp: number
+  originalTimestamp: number
   userId: string
   properties: any
 }
@@ -53,6 +53,7 @@ query ChangedName($userId: ID!) {
   'Meeting Completed': `
 query MeetingCompleted($userIds: [ID!]!, $userId: ID!) {
   company(userId: $userId) {
+    lastMetAt
     meetingCount
     monthlyTeamStreakMax
   }
@@ -164,9 +165,9 @@ const parabolFetch = async (
   payload: Payload,
   settings: Settings
 ) => {
-  const {parabolToken, timestamp} = payload
+  const {parabolToken, originalTimestamp} = payload
   const {segmentFnKey, parabolEndpoint} = settings
-  const ts = Math.floor(new Date(timestamp).getTime() / 1000)
+  const ts = Math.floor(new Date(originalTimestamp).getTime() / 1000)
   const signature = crypto
     .createHmac('sha256', segmentFnKey)
     .update(parabolToken)
@@ -319,7 +320,8 @@ async function onTrack(payload: Payload, settings: Settings) {
   const query = queries[event]
   if (event === 'Meeting Completed') {
     const {userIds} = properties
-    if (!userIds) throw new InvalidEventPayload('userIds not provided')
+    // only the facilitator has userIds
+    if (!userIds) return
     const parabolPayload = await parabolFetch(query, {userIds, userId}, payload, settings)
     if (!parabolPayload)
       throw new InvalidEventPayload(`Null payload from parabol: ${userIds}, ${userId}, ${query}`)
@@ -347,7 +349,11 @@ async function onTrack(payload: Payload, settings: Settings) {
 }
 
 async function onIdentify() {
+  /* noop */
+}
 
+async function onPage() {
+  /* noop */
 }
 
 module.exports = onTrack

@@ -3,3 +3,4 @@ packages/client/types/graphql.ts
 packages/client/serviceWorker/*
 packages/client/types/graphql.ts
 packages/server/database
+packages/server/segmentFns/*
