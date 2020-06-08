@@ -30,7 +30,8 @@ const contactKeys = {
   isPatientZero: 'is_patient_zero',
   isRemoved: 'is_user_removed',
   id: 'parabol_id',
-  preferredName: 'parabol_preferred_name'
+  preferredName: 'parabol_preferred_name',
+  tier: 'highest_tier'
 }
 
 const companyKeys = {
@@ -39,7 +40,8 @@ const companyKeys = {
   activeUserCount: 'active_user_count',
   activeTeamCount: 'active_team_count',
   meetingCount: 'meeting_count',
-  monthlyTeamStreakMax: 'monthly_team_streak_max'
+  monthlyTeamStreakMax: 'monthly_team_streak_max',
+  tier: 'highest_tier'
 }
 
 const queries = {
@@ -156,8 +158,64 @@ query ArchiveTeam($userId: ID!) {
       activeTeamCount
     }
   }
-}`
+}`,
+  'Upgrade to Pro': `
+  query UpgradeToPro($userId: ID!) {
+    company(userId: $userId) {
+      tier
+      organizations {
+        organizationUsers {
+          edges {
+            node {
+              user {
+                email
+                tier
+              }
+            }
+          }
+        }
+      }
+    }
+  }`,
+  'Enterprise invoice drafted': `
+  query UpgradeToPro($userId: ID!) {
+    company(userId: $userId) {
+      tier
+      organizations {
+        organizationUsers {
+          edges {
+            node {
+              user {
+                email
+                tier
+              }
+            }
+          }
+        }
+      }
+    }
+  }`,
+  'Downgrade to personal': `
+  query UpgradeToPro($userId: ID!) {
+    company(userId: $userId) {
+      tier
+      organizations {
+        organizationUsers {
+          edges {
+            node {
+              user {
+                email
+                tier
+              }
+            }
+          }
+        }
+      }
+    }
+  }`
 }
+
+const tierChanges = ['Upgrade to Pro', 'Enterprise invoice drafted', 'Downgrade to personal']
 
 const parabolFetch = async (
   query,
@@ -342,14 +400,43 @@ async function onTrack(payload, settings) {
     // wait for hubspot to associate the contact with the company, fn must run in 5 seconds
     await new Promise((resolve) => setTimeout(resolve, 2000))
     await updateHubspotCompany(email, hubspotKey, company)
+  } else if (tierChanges.includes(event)) {
+    const {email} = properties
+    const parabolPayload = await parabolFetch(query, {userId}, payload, settings)
+    if (!parabolPayload) return
+    const {company} = parabolPayload
+    const {tier, organizations} = company
+    const users = []
+    const emails = new Set()
+    organizations.forEach((organization) => {
+      const {organizationUsers} = organization
+      const {edges} = organizationUsers
+      edges.forEach((edge) => {
+        const {node} = edge
+        const {user} = node
+        const {email} = user
+        if (emails.has(email)) return
+        emails.add(email)
+        users.push(user)
+      })
+    })
+    const {hubspotKey} = settings
+    await Promise.all([
+      updateHubspotBulkContact(users, hubspotKey),
+      updateHubspotCompany(email, hubspotKey, {tier})
+    ])
   } else {
     // standard handler
     await updateHubspot(query, userId, payload, settings)
   }
 }
 
-async function onIdentify() {}
+async function onIdentify() {
+  /* noop */
+}
 
-async function onPage() {}
+async function onPage() {
+  /* noop */
+}
 
 module.exports = onTrack

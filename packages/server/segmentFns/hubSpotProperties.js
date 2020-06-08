@@ -121,6 +121,15 @@
 //   label: 'Last Met At'
 // }
 
+// const companyHighestTier = {
+//   name: 'highest_tier',
+//   groupName: 'parabol_app_information',
+//   description: 'The highest tier an organization in the company achived',
+//   fieldType: 'text',
+//   type: 'string',
+//   label: 'Highest Tier'
+// }
+
 // const getContactProperty = async (propName: string) => {
 //   const url = `https://api.hubapi.com/properties/v1/contacts/properties/named/${propName}?hapikey=${key}`
 //   const res = await fetch(url)
@@ -179,4 +188,4 @@
 //   console.log({resJSON})
 // }
 
-// // createCompanyProperty(companyLastMetAt)
+// createCompanyProperty(companyHighestTier)
