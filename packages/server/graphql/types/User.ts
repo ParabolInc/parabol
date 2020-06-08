@@ -184,6 +184,10 @@ const User = new GraphQLObjectType<any, GQLContext, any>({
           .run()
       }
     },
+    reasonRemoved: {
+      type: GraphQLString,
+      description: 'the reason the user account was removed'
+    },
     isRemoved: {
       type: GraphQLNonNull(GraphQLBoolean),
       description: 'true if the user was removed from parabol, else false',

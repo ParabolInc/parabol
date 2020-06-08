@@ -1,4 +1,4 @@
-import {GraphQLID, GraphQLNonNull} from 'graphql'
+import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import getRethink from '../../database/rethinkDriver'
 import User from '../../database/types/User'
 import {getUserId, isSuperUser} from '../../utils/authorization'
@@ -18,9 +18,13 @@ export default {
     email: {
       type: GraphQLID,
       description: 'the user email'
+    },
+    reason: {
+      type: GraphQLString,
+      description: 'the reason why the user wants to delete their account'
     }
   },
-  resolve: async (_source, {userId, email}, {authToken, dataLoader}: GQLContext) => {
+  resolve: async (_source, {userId, email, reason}, {authToken, dataLoader}: GQLContext) => {
     const r = await getRethink()
     // AUTH
     if (userId && email) {
@@ -46,6 +50,7 @@ export default {
     } else if (!user) {
       return {error: {message: 'User not found'}}
     }
+    const validReason = reason.trim().slice(0, 2000)
     const {id: userIdToDelete} = user
     const orgUsers = await dataLoader.get('organizationUsersByUserId').load(userIdToDelete)
     const orgIds = orgUsers.map((orgUser) => orgUser.orgId)
@@ -57,12 +62,16 @@ export default {
       .get(userIdToDelete)
       .update({
         isRemoved: true,
-        email: 'DELETED'
+        email: 'DELETED',
+        reasonRemoved: validReason
       })
       .run()
     segmentIo.track({
       userId,
-      event: 'Account Removed'
+      event: 'Account Removed',
+      properties: {
+        reason: validReason
+      }
     })
     return {}
   }
