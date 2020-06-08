@@ -6,10 +6,10 @@ import {
   GraphQLObjectType,
   GraphQLString
 } from 'graphql'
+import {IAgendaItem} from 'parabol-client/types/graphql'
 import {GQLContext} from '../graphql'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import TeamMember from './TeamMember'
-import {IAgendaItem} from 'parabol-client/types/graphql'
 import ThreadSource, {threadSourceFields} from './ThreadSource'
 
 const AgendaItem = new GraphQLObjectType<IAgendaItem, GQLContext>({

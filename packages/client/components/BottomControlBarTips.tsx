@@ -88,12 +88,13 @@ const helps = {
 }
 
 interface Props {
+  cancelConfirm: (() => void) | undefined
   meeting: BottomControlBarTips_meeting
   status: TransitionStatus
   onTransitionEnd: () => void
 }
 const BottomControlBarTips = (props: Props) => {
-  const {meeting, status, onTransitionEnd} = props
+  const {cancelConfirm, meeting, status, onTransitionEnd} = props
   const {localPhase, meetingType} = meeting
   const {phaseType} = localPhase
   const {menuProps, menuPortal, originRef, togglePortal, openPortal} = useMenu(
@@ -121,7 +122,8 @@ const BottomControlBarTips = (props: Props) => {
   return (
     <BottomNavControl
       dataCy={`tip-menu-toggle`}
-      onClick={togglePortal}
+      confirming={!!cancelConfirm}
+      onClick={cancelConfirm || togglePortal}
       ref={originRef}
       status={status}
       onTransitionEnd={onTransitionEnd}

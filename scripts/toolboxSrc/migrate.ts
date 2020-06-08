@@ -4,8 +4,9 @@ import {parse} from 'url'
 import getProjectRoot from '../webpack/utils/getProjectRoot'
 
 const startMigration = async () => {
-  const [, , direction = 'up', count] = process.argv
-  const all = count === '--all'
+  const [, , direction = 'up'] = process.argv
+  // migrating up goes all the way, migrating down goes down by 1
+  const all = direction === 'up'
   if (process.env.NODE_ENV === 'test') {
     console.log('NODE_ENV is test, loading .env.test...')
   }

@@ -11,6 +11,7 @@ import BottomNavControl from './BottomNavControl'
 import BottomNavIconLabel from './BottomNavIconLabel'
 
 interface Props {
+  cancelConfirm: (() => void) | undefined
   defaultTimeLimit: number
   meeting: StageTimerControl_meeting
   onTransitionEnd: () => void
@@ -22,11 +23,11 @@ const StageTimerModal = lazyPreload(async () =>
 )
 
 const StageTimerControl = (props: Props) => {
-  const {defaultTimeLimit, meeting, status, onTransitionEnd} = props
+  const {cancelConfirm, defaultTimeLimit, meeting, status, onTransitionEnd} = props
   const {meetingMembers, localStage, facilitator, id: meetingId} = meeting
-  const {isAsync, scheduledEndTime} = localStage
+  const {isAsync} = localStage
   const connectedMemberCount = meetingMembers.filter((member) => member.user.isConnected).length
-  const color = scheduledEndTime ? 'green' : 'midGray'
+  const color = 'green'
   const icon = isAsync ? 'event' : 'timer'
   const label = isAsync ? MeetingLabels.TIME_LIMIT : MeetingLabels.TIMER
   const {menuProps, menuPortal, originRef, togglePortal} = useMenu<HTMLDivElement>(
@@ -39,8 +40,9 @@ const StageTimerControl = (props: Props) => {
   return (
     <>
       <BottomNavControl
+        confirming={!!cancelConfirm}
         onMouseEnter={StageTimerModal.preload}
-        onClick={togglePortal}
+        onClick={cancelConfirm || togglePortal}
         status={status}
         onTransitionEnd={onTransitionEnd}
       >
@@ -63,7 +65,6 @@ const StageTimerControl = (props: Props) => {
 graphql`
   fragment StageTimerControlStage on NewMeetingStage {
     ...StageTimerModal_stage
-    scheduledEndTime
     isAsync
     isComplete
   }

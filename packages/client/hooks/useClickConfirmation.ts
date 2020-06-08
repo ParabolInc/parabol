@@ -1,16 +1,15 @@
 import {useCallback, useEffect, useRef, useState} from 'react'
-
-const CONFIRMATION_DELAY = 3000
+import {Times} from '../types/constEnums'
 
 const useClickConfirmation = () => {
-  const [isConfirming, setIsConfirming] = useState(false)
+  const [confirmingButton, setConfirmingButton] = useState('')
   const timeoutRef = useRef<number>()
-  const setConfirming = useCallback((start: boolean) => {
-    setIsConfirming(start)
-    if (start) {
+  const setConfirming = useCallback((buttonName: string) => {
+    setConfirmingButton(buttonName)
+    if (buttonName) {
       timeoutRef.current = window.setTimeout(() => {
-        setIsConfirming(false)
-      }, CONFIRMATION_DELAY)
+        setConfirmingButton('')
+      }, Times.MEETING_CONFIRM_DURATION)
     } else {
       window.clearTimeout(timeoutRef.current)
     }
@@ -20,7 +19,7 @@ const useClickConfirmation = () => {
       window.clearTimeout(timeoutRef.current)
     }
   }, [])
-  return [isConfirming, setConfirming] as [typeof isConfirming, typeof setConfirming]
+  return [confirmingButton, setConfirming] as [typeof confirmingButton, typeof setConfirming]
 }
 
 export default useClickConfirmation

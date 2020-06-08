@@ -1,8 +1,7 @@
 import styled from '@emotion/styled'
-import React, {useEffect, useState} from 'react'
+import React from 'react'
 import {PALETTE} from '~/styles/paletteV2'
 import {BezierCurve} from '~/types/constEnums'
-import requestDoubleAnimationFrame from './RetroReflectPhase/requestDoubleAnimationFrame'
 
 const RADIUS = 12
 const THICKNESS = 2
@@ -17,45 +16,29 @@ const SVG = styled('svg')({
   transform: `translateY(-6px)`
 })
 
-const Circle = styled('circle')<{isConfirming: boolean; isInitConfirm: boolean}>(
-  ({isConfirming, isInitConfirm}) => ({
-    fill: 'transparent',
-    stroke: isConfirming ? PALETTE.EMPHASIS_WARM : PALETTE.TEXT_BLUE,
-    strokeDasharray: CIRCUMFERENCE.toFixed(3),
-    strokeWidth: THICKNESS,
-    transform: 'rotate(-90deg)',
-    transformOrigin: '50% 50%',
-    transition: `stroke-dashoffset ${isConfirming ? (isInitConfirm ? 0 : 3000) : 300}ms ${
-      BezierCurve.DECELERATE
-    }`
-  })
-)
+const Circle = styled('circle')<{isNext: boolean}>(({isNext}) => ({
+  fill: 'transparent',
+  stroke: isNext ? PALETTE.EMPHASIS_WARM : PALETTE.TEXT_GREEN,
+  strokeDasharray: CIRCUMFERENCE.toFixed(3),
+  strokeWidth: THICKNESS,
+  transform: 'rotate(-90deg)',
+  transformOrigin: '50% 50%',
+  transition: `stroke-dashoffset 300ms ${BezierCurve.DECELERATE}`
+}))
 
 interface Props {
-  isConfirming: boolean
+  isNext: boolean
   progress: number
 }
 
 const BottomControlBarProgress = (props: Props) => {
-  const {isConfirming, progress} = props
-  const [isInitConfirm, setIsInitConfirm] = useState(false)
-  const finalProgress = isConfirming ? (isInitConfirm ? 1 : 0) : progress
-  useEffect(() => {
-    if (isConfirming) {
-      setIsInitConfirm(true)
-      requestDoubleAnimationFrame(() => {
-        setIsInitConfirm(false)
-      })
-    }
-  }, [isConfirming])
-
+  const {isNext, progress} = props
   return (
     <SVG>
       <Circle
-        isConfirming={isConfirming}
-        isInitConfirm={isInitConfirm}
+        isNext={isNext}
         style={{
-          strokeDashoffset: CIRCUMFERENCE - finalProgress * CIRCUMFERENCE
+          strokeDashoffset: CIRCUMFERENCE - progress * CIRCUMFERENCE
         }}
         strokeWidth={THICKNESS}
         r={RADIUS_NORMALIZED}

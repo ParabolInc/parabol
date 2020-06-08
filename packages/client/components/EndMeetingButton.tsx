@@ -1,26 +1,28 @@
 import styled from '@emotion/styled'
 import React, {forwardRef, Ref} from 'react'
-import useClickConfirmation from '~/hooks/useClickConfirmation'
 import {TransitionStatus} from '~/hooks/useTransition'
 import {PALETTE} from '~/styles/paletteV2'
 import useAtmosphere from '../hooks/useAtmosphere'
+import {MenuPosition} from '../hooks/useCoords'
 import useMutationProps from '../hooks/useMutationProps'
 import useRouter from '../hooks/useRouter'
+import useTooltip from '../hooks/useTooltip'
 import EndNewMeetingMutation from '../mutations/EndNewMeetingMutation'
-import {ElementWidth} from '../types/constEnums'
+import {ElementWidth, Times} from '../types/constEnums'
 import isDemoRoute from '../utils/isDemoRoute'
-import BottomControlBarProgress from './BottomControlBarProgress'
 import BottomNavControl from './BottomNavControl'
 import BottomNavIconLabel from './BottomNavIconLabel'
-import ConfirmingToggle from './ConfirmingToggle'
 import Icon from './Icon'
 
 const FlagIcon = styled(Icon)({
-  color: PALETTE.TEXT_GRAY,
+  color: PALETTE.BACKGROUND_BLUE,
   height: 24
 })
 
 interface Props {
+  cancelConfirm: undefined | (() => void)
+  isConfirming: boolean
+  setConfirmingButton: (button: string) => void
   meetingId: string
   isEnded: boolean
   status: TransitionStatus
@@ -32,40 +34,56 @@ const EndMeetingButtonStyles = styled(BottomNavControl)({
 })
 
 const EndMeetingButton = forwardRef((props: Props, ref: Ref<HTMLButtonElement>) => {
-  const {isEnded, meetingId, status, onTransitionEnd} = props
+  const {
+    cancelConfirm,
+    isConfirming,
+    setConfirmingButton,
+    isEnded,
+    meetingId,
+    status,
+    onTransitionEnd
+  } = props
   const atmosphere = useAtmosphere()
   const {history} = useRouter()
   const {submitMutation, onCompleted, onError, submitting} = useMutationProps()
-  const [isConfirming, setConfirming] = useClickConfirmation()
+  const {openTooltip, tooltipPortal, originRef} = useTooltip<HTMLDivElement>(
+    MenuPosition.UPPER_CENTER,
+    {
+      disabled: !isConfirming,
+      delay: Times.MEETING_CONFIRM_TOOLTIP_DELAY
+    }
+  )
   const endMeeting = () => {
     if (submitting) return
     if (isConfirming) {
-      setConfirming(false)
+      setConfirmingButton('')
       submitMutation()
       EndNewMeetingMutation(atmosphere, {meetingId}, {history, onError, onCompleted})
     } else {
-      setConfirming(true)
+      setConfirmingButton('end')
+      setTimeout(openTooltip)
     }
   }
 
-  const label = isConfirming ? 'Confirm' : isDemoRoute() ? 'End Demo' : 'End Meeting'
+  const label = isDemoRoute() ? 'End Demo' : 'End Meeting'
   return (
-    <EndMeetingButtonStyles
-      dataCy='end-button'
-      onClick={endMeeting}
-      waiting={submitting}
-      ref={ref}
-      disabled={isEnded}
-      status={status}
-      onTransitionEnd={onTransitionEnd}
-    >
-      <BottomControlBarProgress isConfirming={isConfirming} progress={0} />
-      <BottomNavIconLabel label={label}>
-        <ConfirmingToggle isConfirming={isConfirming}>
+    <>
+      <EndMeetingButtonStyles
+        confirming={!!cancelConfirm}
+        dataCy='end-button'
+        onClick={cancelConfirm || endMeeting}
+        waiting={submitting}
+        ref={ref}
+        disabled={isEnded}
+        status={status}
+        onTransitionEnd={onTransitionEnd}
+      >
+        <BottomNavIconLabel label={label} ref={originRef}>
           <FlagIcon>{'flag'}</FlagIcon>
-        </ConfirmingToggle>
-      </BottomNavIconLabel>
-    </EndMeetingButtonStyles>
+        </BottomNavIconLabel>
+      </EndMeetingButtonStyles>
+      {tooltipPortal(`Tap '${label}' again to Confirm`)}
+    </>
   )
 })
 

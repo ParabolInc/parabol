@@ -43,18 +43,15 @@ if (module.hot) {
   // accepting here allows us to make errors in the schema childrem without requirimg a restart
   module.hot.accept(acceptChildren)
   // every time this module gets loaded, see if it's different from it's previous version.
-  //if so, update the schema.graphql
   if (!global.hmrSchema) {
-    // console.log('setting hmr')
     // relative to the build path
     const PROJECT_ROOT = path.join(__dirname, '../')
     const SCHEMA = path.join(PROJECT_ROOT, 'schema.graphql')
     global.hmrSchema = fs.readFileSync(SCHEMA).toString()
-    // console.log('set', global.hmrSchema.length)
-  } else {
-    const updateGQLSchema = require('../utils/updateGQLSchema').default
-    updateGQLSchema({delay: 3000, oldSchema: global.hmrSchema})
   }
+  // update on restart since schema might have changed
+  const updateGQLSchema = require('../utils/updateGQLSchema').default
+  updateGQLSchema({delay: 3000, oldSchema: global.hmrSchema})
 }
 
 export default new GraphQLSchema({

@@ -1,38 +1,9 @@
 {
   "extends": "./tsconfig.json",
-  "compilerOptions": {
-    "baseUrl": "../",
-    "paths": {
-      "server/*": [
-        ""
-      ],
-      "parabol-client/*": [
-        "client/*"
-      ],
-      "~/*": [
-        "client/*"
-      ]
-    },
-    "lib": [
-      "esnext",
-      "dom"
-    ],
-    "types": [
-      "node"
-    ],
-  },
-  "files": [
-    "types/modules.d.ts",
-    "server.ts",
-    "email/components/SummaryEmail/MeetingSummaryEmail/MeetingSummaryEmail.tsx",
-    // "email/components/MeetingSummaryEmailRootSSR.tsx",
-    // "utils/updateGQLSchema.ts"
-  ],
-  "exclude": [
-    "**/node_modules",
-  ],
   "include": [
     "database/migrations/*",
-    "segmentFns/*"
+    "email/**/*",
+    "segmentFns/*",
+    "utils/*"
   ]
 }

@@ -15,6 +15,8 @@ import {MeetingTypeEnum, NewMeetingPhaseTypeEnum} from '~/types/graphql'
 import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
 import findStageAfterId from '~/utils/meetings/findStageAfterId'
 import {MeetingControlBar_meeting} from '~/__generated__/MeetingControlBar_meeting.graphql'
+import useClickConfirmation from '../hooks/useClickConfirmation'
+import useSnackbarPad from '../hooks/useSnackbarPad'
 import {bottomBarShadow, desktopBarShadow} from '../styles/elevation'
 import BottomControlBarReady from './BottomControlBarReady'
 import BottomControlBarRejoin from './BottomControlBarRejoin'
@@ -92,9 +94,12 @@ const MeetingControlBar = (props: Props) => {
     return buttons.map((key) => ({key}))
   }
   const buttons = getPossibleButtons()
+  const [confirmingButton, setConfirmingButton] = useClickConfirmation()
+  const cancelConfirm = confirmingButton ? () => setConfirmingButton('') : undefined
   const tranChildren = useTransition(buttons)
   const {onMouseDown, onClickCapture} = useDraggableFixture()
   const ref = useRef<HTMLDivElement>(null)
+  useSnackbarPad(ref)
   useCovering(ref)
   const isInit = useInitialRender()
   if (endedAt) return null
@@ -116,12 +121,21 @@ const MeetingControlBar = (props: Props) => {
           }
           switch (key) {
             case 'tips':
-              return <BottomControlBarTips {...tranProps} meeting={meeting} />
+              return (
+                <BottomControlBarTips
+                  {...tranProps}
+                  meeting={meeting}
+                  cancelConfirm={cancelConfirm}
+                />
+              )
             case 'ready':
             case 'next':
               return (
                 <BottomControlBarReady
                   {...tranProps}
+                  cancelConfirm={confirmingButton === 'next' ? undefined : cancelConfirm}
+                  isConfirming={confirmingButton === 'next'}
+                  setConfirmingButton={setConfirmingButton}
                   isDemoStageComplete={isDemoStageComplete}
                   meeting={meeting}
                   handleGotoNext={handleGotoNext}
@@ -138,12 +152,22 @@ const MeetingControlBar = (props: Props) => {
               return (
                 <StageTimerControl
                   {...tranProps}
+                  cancelConfirm={cancelConfirm}
                   defaultTimeLimit={DEFAULT_TIME_LIMIT[phaseType]}
                   meeting={meeting}
                 />
               )
             case 'end':
-              return <EndMeetingButton {...tranProps} meetingId={meetingId} isEnded={!!endedAt} />
+              return (
+                <EndMeetingButton
+                  {...tranProps}
+                  cancelConfirm={confirmingButton === 'end' ? undefined : cancelConfirm}
+                  isConfirming={confirmingButton === 'end'}
+                  setConfirmingButton={setConfirmingButton}
+                  meetingId={meetingId}
+                  isEnded={!!endedAt}
+                />
+              )
             default:
               return null
           }

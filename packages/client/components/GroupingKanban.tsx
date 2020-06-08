@@ -39,15 +39,19 @@ const GroupingKanban = (props: Props) => {
   const reflectPhase = phases.find((phase) => phase.phaseType === NewMeetingPhaseTypeEnum.reflect)!
   const reflectPrompts = reflectPhase.reflectPrompts!
   useHideBodyScroll()
-  const groupsByPhaseItem = useMemo(() => {
+  const {groupsByPhaseItem, isAnyEditing} = useMemo(() => {
     const container = {} as {[phaseItemId: string]: typeof reflectionGroups[0][]}
+    let isEditing = false
     for (let i = 0; i < reflectionGroups.length; i++) {
       const group = reflectionGroups[i]
-      const {retroPhaseItemId} = group
+      const {reflections, retroPhaseItemId} = group
       container[retroPhaseItemId] = container[retroPhaseItemId] || []
       container[retroPhaseItemId].push(group)
+      if (!isEditing && reflections.some((reflection) => reflection.isEditing)) {
+        isEditing = true
+      }
     }
-    return container
+    return {groupsByPhaseItem: container, isAnyEditing: isEditing}
   }, [reflectionGroups])
   const isDesktop = useBreakpoint(Breakpoint.SINGLE_REFLECTION_COLUMN)
   const [activeIdx, setActiveIdx] = useState(0)
@@ -73,6 +77,7 @@ const GroupingKanban = (props: Props) => {
         >
           {reflectPrompts.map((prompt) => (
             <GroupingKanbanColumn
+              isAnyEditing={isAnyEditing}
               isDesktop={isDesktop}
               key={prompt.id}
               meeting={meeting}
@@ -107,6 +112,7 @@ export default createFragmentContainer(GroupingKanban, {
         retroPhaseItemId
         reflections {
           isViewerDragging
+          isEditing
         }
       }
     }

@@ -29,7 +29,7 @@ extend type User {
   clientClockOffset: Int
   dashSearch: String
   pageName: String
-  topOfFAB: Int
+  snackbarOffset: Int
   teamFilter: Team
 }
 
