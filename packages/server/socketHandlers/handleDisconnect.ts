@@ -20,7 +20,9 @@ mutation DisconnectSocket {
 
 const handleDisconnect = (connectionContext: ConnectionContext, options: Options = {}) => {
   const {exitCode = 1000, reason} = options
-  const {authToken, ip, cancelKeepAlive, id: socketId, socket} = connectionContext
+  const {authToken, ip, cancelKeepAlive, id: socketId, socket, isDisconnecting} = connectionContext
+  if (isDisconnecting) return
+  connectionContext.isDisconnecting = true
   // check if isClosing & if isClosing bail
   clearInterval(cancelKeepAlive!)
   relayUnsubscribeAll(connectionContext)

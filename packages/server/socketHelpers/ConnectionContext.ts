@@ -1,6 +1,6 @@
-import {WebSocket, HttpResponse} from 'uWebSockets.js'
 import {ExecutionResult} from 'graphql/execution/execute'
 import shortid from 'shortid'
+import {HttpResponse, WebSocket} from 'uWebSockets.js'
 import AuthToken from '../database/types/AuthToken'
 import WebSocketContext from '../wrtc/signalServer/WebSocketContext'
 import isHttpResponse from './isHttpResponse'
@@ -20,6 +20,7 @@ class ConnectionContext<T = WebSocket | HttpResponse> {
   ip: string
   id: string
   isAlive = true
+  isDisconnecting?: true
   socket: T
   subs: ConnectedSubs = {}
   isReady = false
