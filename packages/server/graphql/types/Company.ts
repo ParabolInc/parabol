@@ -1,9 +1,11 @@
 import {GraphQLID, GraphQLInt, GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
+import {TierEnum as TierEnumDB} from 'parabol-client/types/graphql'
 import getRethink from '../../database/rethinkDriver'
 import OrganizationUser from '../../database/types/OrganizationUser'
 import {GQLContext} from '../graphql'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import Organization from './Organization'
+import TierEnum from './TierEnum'
 
 const Company = new GraphQLObjectType<any, GQLContext, any>({
   name: 'Company',
@@ -152,6 +154,17 @@ const Company = new GraphQLObjectType<any, GQLContext, any>({
       async resolve({id: domain}, _args, {dataLoader}) {
         const organizations = await dataLoader.get('organizationsByActiveDomain').load(domain)
         return organizations
+      }
+    },
+    tier: {
+      description: 'The highest tier for any organization within the company',
+      type: GraphQLNonNull(TierEnum),
+      async resolve({id: domain}, _args, {dataLoader}) {
+        const organizations = await dataLoader.get('organizationsByActiveDomain').load(domain)
+        const tiers = organizations.map(({tier}) => tier)
+        if (tiers.includes(TierEnumDB.enterprise)) return TierEnumDB.enterprise
+        if (tiers.includes(TierEnumDB.pro)) return TierEnumDB.pro
+        return TierEnumDB.personal
       }
     },
     userCount: {

@@ -1,14 +1,15 @@
 import {GraphQLID, GraphQLInt, GraphQLNonNull} from 'graphql'
 import {OrgUserRole, TierEnum} from 'parabol-client/types/graphql'
-import {DataLoaderWorker, GQLContext} from '../../graphql'
 import getRethink from '../../../database/rethinkDriver'
-import {requireSU} from '../../../utils/authorization'
-import DraftEnterpriseInvoicePayload from '../types/DraftEnterpriseInvoicePayload'
-import StripeManager from '../../../utils/StripeManager'
-import {fromEpochSeconds} from '../../../utils/epochTime'
-import hideConversionModal from '../../mutations/helpers/hideConversionModal'
 import User from '../../../database/types/User'
+import {requireSU} from '../../../utils/authorization'
+import {fromEpochSeconds} from '../../../utils/epochTime'
+import segmentIo from '../../../utils/segmentIo'
 import setUserTierForOrgId from '../../../utils/setUserTierForOrgId'
+import StripeManager from '../../../utils/StripeManager'
+import {DataLoaderWorker, GQLContext} from '../../graphql'
+import hideConversionModal from '../../mutations/helpers/hideConversionModal'
+import DraftEnterpriseInvoicePayload from '../types/DraftEnterpriseInvoicePayload'
 
 const getBillingLeaderUser = async (
   email: string | null,
@@ -158,6 +159,11 @@ export default {
 
     await setUserTierForOrgId(orgId)
     await hideConversionModal(orgId, dataLoader)
+    segmentIo.track({
+      userId: user.id,
+      event: 'Enterprise invoice drafted',
+      properties: {orgId}
+    })
     dataLoader.get('organizations').clear(orgId)
     return {orgId}
   }
