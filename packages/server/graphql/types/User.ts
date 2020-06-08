@@ -184,6 +184,11 @@ const User = new GraphQLObjectType<any, GQLContext, any>({
           .run()
       }
     },
+    isRemoved: {
+      type: GraphQLNonNull(GraphQLBoolean),
+      description: 'true if the user was removed from parabol, else false',
+      resolve: ({isRemoved}) => !!isRemoved
+    },
     lastMetAt: {
       type: GraphQLISO8601Type,
       description: 'the endedAt timestamp of the most recent meeting they were a member of',
@@ -215,7 +220,8 @@ const User = new GraphQLObjectType<any, GQLContext, any>({
     },
     monthlyStreakCurrent: {
       type: GraphQLNonNull(GraphQLInt),
-      description: 'The number of consecutive 30-day intervals that the user has checked into a meeting as of this moment',
+      description:
+        'The number of consecutive 30-day intervals that the user has checked into a meeting as of this moment',
       resolve: async ({id: userId}, _args, {dataLoader}) => {
         const meetingMembers = await dataLoader.get('meetingMembersByUserId').load(userId)
         const meetingDates = meetingMembers
