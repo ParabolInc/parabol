@@ -1,5 +1,5 @@
-import Stripe from 'stripe'
 import {InvoiceItemType} from 'parabol-client/types/constEnums'
+import Stripe from 'stripe'
 import IInvoiceLineItemRetrievalOptions = Stripe.invoices.IInvoiceLineItemRetrievalOptions
 
 export default class StripeManager {
@@ -27,7 +27,7 @@ export default class StripeManager {
     })
   }
 
-  async createEnterpriseSubscription(customerId: string, orgId: string, quantity) {
+  async createEnterpriseSubscription(customerId: string, orgId: string, quantity, plan?: string) {
     return this.stripe.subscriptions.create({
       // @ts-ignore
       collection_method: 'send_invoice',
@@ -39,7 +39,7 @@ export default class StripeManager {
       prorate: false,
       items: [
         {
-          plan: StripeManager.PARABOL_ENTERPRISE_2019Q3,
+          plan: plan || StripeManager.PARABOL_ENTERPRISE_2019Q3,
           quantity
         }
       ]
