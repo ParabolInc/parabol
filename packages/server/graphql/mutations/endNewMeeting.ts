@@ -115,7 +115,7 @@ const clonePinnedAgendaItem = async (pinnedAgendaItems: AgendaItem[]) => {
       pinnedParentId: agendaItem.pinnedParentId ? agendaItem.pinnedParentId : agendaItemId,
       sortOrder: agendaItem.sortOrder,
       teamId: agendaItem.teamId,
-      teamMemberId: agendaItem.teamMemberId,
+      teamMemberId: agendaItem.teamMemberId
     })
   })
 
@@ -358,6 +358,7 @@ export default {
         userId,
         event: 'Meeting Completed',
         properties: {
+          hasIcebreaker: phases[0].phaseType === NewMeetingPhaseTypeEnum.checkin,
           // include wasFacilitator as a flag to handle 1 per meeting
           wasFacilitator,
           userIds: wasFacilitator ? presentMemberUserIds : undefined,

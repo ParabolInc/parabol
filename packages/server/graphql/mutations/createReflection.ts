@@ -12,6 +12,7 @@ import Reflection from '../../database/types/Reflection'
 import ReflectionGroup from '../../database/types/ReflectionGroup'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
+import segmentIo from '../../utils/segmentIo'
 import standardError from '../../utils/standardError'
 import CreateReflectionInput from '../types/CreateReflectionInput'
 import CreateReflectionPayload from '../types/CreateReflectionPayload'
@@ -110,6 +111,14 @@ export default {
         })
         .run()
     }
+    segmentIo.track({
+      event: 'Reflection Added',
+      userId: viewerId,
+      properties: {
+        teamId,
+        meetingId
+      }
+    })
     const data = {
       meetingId,
       reflectionId: reflection.id,
