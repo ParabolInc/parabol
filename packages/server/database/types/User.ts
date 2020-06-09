@@ -44,6 +44,7 @@ export default class User {
   segmentId?: string
   tier: TierEnum
   tms: string[]
+  reasonRemoved?: string
   rol?: AuthTokenRole.SUPER_USER
   payLaterClickCount?: number
   constructor(input: Input) {

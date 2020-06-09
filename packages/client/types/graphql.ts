@@ -164,6 +164,11 @@ export interface IUser {
   isPatientZero: boolean
 
   /**
+   * the reason the user account was removed
+   */
+  reasonRemoved: string | null
+
+  /**
    * true if the user was removed from parabol, else false
    */
   isRemoved: boolean
@@ -3750,6 +3755,11 @@ export interface IDeleteUserOnMutationArguments {
    * the user email
    */
   email?: string | null
+
+  /**
+   * the reason why the user wants to delete their account
+   */
+  reason?: string | null
 }
 
 export interface IDenyPushInvitationOnMutationArguments {
