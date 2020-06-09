@@ -164,6 +164,11 @@ export interface IUser {
   isPatientZero: boolean
 
   /**
+   * true if the user was removed from parabol, else false
+   */
+  isRemoved: boolean
+
+  /**
    * the endedAt timestamp of the most recent meeting they were a member of
    */
   lastMetAt: any | null
@@ -1803,6 +1808,11 @@ export interface ICompany {
   activeUserCount: number
 
   /**
+   * the last time any team in the organization started a meeting, null if no meetings were ever run
+   */
+  lastMetAt: any | null
+
+  /**
    * the total number of meetings started across all teams on all organizations
    */
   meetingCount: number
@@ -1811,6 +1821,21 @@ export interface ICompany {
    * the longest monthly streak for meeting at least once per month for any team in the company
    */
   monthlyTeamStreakMax: number
+
+  /**
+   * Get the list of all organizations that belong to the company
+   */
+  organizations: Array<IOrganization>
+
+  /**
+   * The highest tier for any organization within the company
+   */
+  tier: TierEnum
+
+  /**
+   * the total number of users across all organizations
+   */
+  userCount: number
 }
 
 /**
@@ -6534,6 +6559,7 @@ export interface ISegmentEventTrackOptions {
   teamId?: string | null
   orgId?: string | null
   phase?: NewMeetingPhaseTypeEnum | null
+  eventId?: number | null
 }
 
 export interface ISelectRetroTemplatePayload {
