@@ -33,9 +33,10 @@ function deleteCard(column) {
 }
 
 describe('Test Reflect page Demo', () => {
-  before(function() {
+  before(function () {
     // runs before all tests in the block
     cy.visitReflect()
+
   })
 
   it('Test help menu toggle', () => {
@@ -47,22 +48,40 @@ describe('Test Reflect page Demo', () => {
 
     cy.get('[data-cy=help-menu-close]')
       .should('be.visible')
+
+    cy.get('[data-cy=tip-menu-toggle]')
+      .should('be.visible')
       .click()
-      .should('not.exist')
+
   })
 
   it('Test adding, editing, and deleting reflections', () => {
-    addCard('Start', 'Start column reflection')
+    addCard('Start', 'Start testing code before merging')
 
-    addCard('Stop', 'Stop column reflection')
+    cy.wait(500)
+    cy.screenshot('add-start-column-reflection')
 
-    addCard('Continue', 'Continue column reflection')
+    addCard('Stop', 'Stop pushing directly to master')
 
-    editCard('Start', 'Start column reflection', 'Edit reflection')
+    cy.wait(500)
+    cy.screenshot('add-stop-column-reflection')
 
-    editCard('Stop', 'Stop column reflection', 'Edit reflection')
+    addCard('Continue', 'Continue using code linters')
 
-    editCard('Continue', 'Continue column reflection', 'Edit reflection')
+    cy.wait(500)
+    cy.screenshot('add-continue-column-reflection')
+
+    editCard('Start', 'Start testing code before merging', 'Start having daily standups')
+
+    cy.screenshot('edit-start-column-reflection')
+
+    editCard('Stop', 'Stop pushing directly to master', 'Stop creating merge conflicts')
+
+    cy.screenshot('edit-stop-column-reflection')
+
+    editCard('Continue', 'Continue using code linters', 'Continue using best practices')
+
+    cy.screenshot('edit-continue-column-reflection')
 
     deleteCard('Start')
 

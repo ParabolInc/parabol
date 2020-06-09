@@ -107,39 +107,53 @@ function editGroupTitle(column, newText) {
 }
 
 describe('Test Group page Demo', () => {
-  before(function() {
+  before(function () {
     // runs before all tests in the block
     cy.visitReflect().visitPhase('group')
+
+    cy.screenshot('visit-group')
+
   })
 
   it('Test adding a new reflection during grouping', () => {
-    addReflection('Start', 'Start reflection')
-    addReflection('Stop', 'Stop reflection')
-    addReflection('Continue', 'Continue reflection')
+    cy.screenshot('move-group-1')
+    cy.screenshot('move-group-2')
+    cy.screenshot('move-group-3')
+
+    addReflection('Start', 'Start testing code before merging')
+
+    cy.screenshot('move-group-4')
+
+    addReflection('Stop', 'Stop pushing directly to master')
+
+    cy.screenshot('move-group-5')
+
+    addReflection('Continue', 'Continue using best practices')
+
   })
 
   it('Test editing a new reflection during grouping', () => {
-    editReflection('Start', 'Start reflection', 'Edit reflection')
+    editReflection('Start', 'Start testing code before merging', 'Start having daily standups')
 
-    editReflection('Stop', 'Stop reflection', 'Edit reflection')
+    editReflection('Stop', 'Stop pushing directly to master', 'Stop creating merge conflicts')
 
-    editReflection('Continue', 'Continue reflection', 'Edit reflection')
+    editReflection('Continue', 'Continue using best practices', 'Continue using code linters')
   })
 
   it('Test renaming a group', () => {
-    editGroupTitle('Start', 'Edited Title')
+    editGroupTitle('Start', 'Meetings')
 
-    editGroupTitle('Stop', 'Edited Title')
+    editGroupTitle('Stop', 'Conflicts')
 
-    editGroupTitle('Continue', 'Edited Title')
+    editGroupTitle('Continue', 'Code Quality')
   })
 
   it('Test deleting a reflection after it has been created', () => {
-    deleteReflection('Start', 'Edit reflection')
+    deleteReflection('Start', 'Start having daily standups')
 
-    deleteReflection('Stop', 'Edit reflection')
+    deleteReflection('Stop', 'Stop creating merge conflicts')
 
-    deleteReflection('Continue', 'Edit reflection')
+    deleteReflection('Continue', 'Continue using code linters')
   })
 
   it('Test new group creation', () => {
@@ -148,6 +162,7 @@ describe('Test Group page Demo', () => {
     addReflection('Stop', 'New Group 2')
 
     createGroup('Start', 'Stop')
+
   })
 
   it('Verify that robots can group cards', () => {

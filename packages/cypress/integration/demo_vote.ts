@@ -47,7 +47,7 @@ function removeVote(column, cardIndex, sum) {
 }
 
 describe('Test Vote page Demo', () => {
-  before(function() {
+  before(function () {
     // runs before all tests in the block
     cy.visitReflect()
       .visitPhase('group')
@@ -61,19 +61,38 @@ describe('Test Vote page Demo', () => {
   })
 
   it('Test voting on cards (ensure they can be voted on multiple times)', () => {
+
+    cy.screenshot('before-voting')
+
     addVote('Start', 0, 0)
+
     addVote('Stop', 0, 0)
+
     addVote('Continue', 0, 0)
+
+    cy.screenshot('after-voting')
+
   })
 
   it('Test voting limit on cards', () => {
+
     addVote('Start', 0, 1)
+
     addVote('Start', 0, 2)
+
+    cy.screenshot('max-voting')
+
   })
 
   it('Test removing votes from cards', () => {
     removeVote('Start', 0, 3)
+
+    cy.screenshot('remove-voting-1')
+
     removeVote('Start', 0, 2)
+
+    cy.screenshot('remove-voting-2')
+
     removeVote('Start', 0, 1)
 
     removeVote('Stop', 0, 1)
