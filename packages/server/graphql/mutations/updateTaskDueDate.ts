@@ -1,12 +1,13 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
-import {getUserId, isTeamMember} from '../../utils/authorization'
-import publish from '../../utils/publish'
-import GraphQLISO8601Type from '../types/GraphQLISO8601Type'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import isValidDate from 'parabol-client/utils/isValidDate'
 import getRethink from '../../database/rethinkDriver'
-import UpdateTaskDueDatePayload from '../types/UpdateTaskDueDatePayload'
+import {getUserId, isTeamMember} from '../../utils/authorization'
+import publish from '../../utils/publish'
+import segmentIo from '../../utils/segmentIo'
 import standardError from '../../utils/standardError'
-import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import GraphQLISO8601Type from '../types/GraphQLISO8601Type'
+import UpdateTaskDueDatePayload from '../types/UpdateTaskDueDatePayload'
 
 export default {
   type: UpdateTaskDueDatePayload,
@@ -62,6 +63,14 @@ export default {
         publish(SubscriptionChannel.TASK, userId, 'UpdateTaskDueDatePayload', data, subOptions)
       })
     }
+    segmentIo.track({
+      userId: viewerId,
+      event: 'Task due date set',
+      properties: {
+        taskId,
+        teamId: task.teamId
+      }
+    })
     return data
   }
 }

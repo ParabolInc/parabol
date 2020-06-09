@@ -6,6 +6,7 @@ import getRethink from '../../database/rethinkDriver'
 import AgendaItem from '../../database/types/AgendaItem'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
+import segmentIo from '../../utils/segmentIo'
 import standardError from '../../utils/standardError'
 import AddAgendaItemPayload from '../types/AddAgendaItemPayload'
 import CreateAgendaItemInput from '../types/CreateAgendaItemInput'
@@ -51,6 +52,14 @@ export default {
       .run()
 
     const meetingId = await addAgendaItemToActiveActionMeeting(agendaItemId, teamId, dataLoader)
+    segmentIo.track({
+      userId: viewerId,
+      event: 'Added Agenda Item',
+      properties: {
+        teamId,
+        meetingId
+      }
+    })
     const data = {agendaItemId, meetingId}
     publish(SubscriptionChannel.TEAM, teamId, 'AddAgendaItemPayload', data, subOptions)
     return data
