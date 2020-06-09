@@ -77,9 +77,17 @@ export default {
       type: GraphQLID,
       description:
         'The email address for Accounts Payable. Use only if the invoice will be sent to a non-user!'
+    },
+    plan: {
+      type: GraphQLID,
+      description: 'the stripe id of the plan in stripe, if not using the default plan'
     }
   },
-  async resolve(_source, {orgId, quantity, email, apEmail}, {authToken, dataLoader}: GQLContext) {
+  async resolve(
+    _source,
+    {orgId, quantity, email, apEmail, plan},
+    {authToken, dataLoader}: GQLContext
+  ) {
     const r = await getRethink()
     const now = new Date()
     // const operationId = dataLoader.share()
@@ -134,7 +142,12 @@ export default {
       customerId = stripeId
     }
 
-    const subscription = await manager.createEnterpriseSubscription(customerId, orgId, quantity)
+    const subscription = await manager.createEnterpriseSubscription(
+      customerId,
+      orgId,
+      quantity,
+      plan
+    )
 
     await r({
       updatedOrg: r
