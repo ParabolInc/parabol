@@ -7,7 +7,6 @@ import DialogContainer from './DialogContainer'
 import DialogContent from './DialogContent'
 import DialogTitle from './DialogTitle'
 import BasicTextArea from './InputField/BasicTextArea'
-import LabelHeading from './LabelHeading/LabelHeading'
 import PrimaryButton from './PrimaryButton'
 
 const INVITE_DIALOG_BREAKPOINT = 864
@@ -47,7 +46,7 @@ const ButtonGroup = styled('div')({
   justifyContent: 'flex-end'
 })
 
-const StyledLabelHeading = styled(LabelHeading)({
+const StyledCopy = styled('p')({
   alignItems: 'center',
   display: 'flex',
   fontSize: 15,
@@ -76,12 +75,10 @@ const DeleteAccountModal = () => {
       <StyledDialogTitle>How could we do better?</StyledDialogTitle>
       <StyledDialogContent>
         <Fields>
-          <StyledLabelHeading>
+          <StyledCopy>
             {'We’re on a mission to make every meeting worth the time invested.'}
-          </StyledLabelHeading>
-          <StyledLabelHeading>
-            {'If there is anything we can do to improve, let us know below.'}
-          </StyledLabelHeading>
+          </StyledCopy>
+          <StyledCopy>{'If there is anything we can do to improve, let us know below.'}</StyledCopy>
           <BasicTextArea
             autoFocus
             name='reason'
