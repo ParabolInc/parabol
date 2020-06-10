@@ -93,7 +93,6 @@ const loginSAML = {
       id: userId,
       email,
       preferredName: name,
-      emailVerified: true,
       lastSeenAt: now,
       tier: TierEnum.enterprise
     })
