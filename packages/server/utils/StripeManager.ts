@@ -64,6 +64,10 @@ export default class StripeManager {
     })
   }
 
+  async deleteSubscription(stripeSubscriptionId: string) {
+    return this.stripe.subscriptions.del(stripeSubscriptionId)
+  }
+
   async updateSubscriptionQuantity(
     stripeSubscriptionId: string,
     quantity: number,
