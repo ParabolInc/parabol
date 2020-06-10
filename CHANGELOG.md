@@ -5,10 +5,34 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 5.10.0 2020-Jun-10
+
+### Added
+
+- Check-in meeting agenda has a discussion thread (#3891)
+- Agenda items can be pinned and persist across check-in meetings (#3892)
+- Users can delete the account and leave feedback (#3905)
+- Allows for custom plans in enterprise invoices (#3906)
+
+### Changed
+
+- Removes the tooltip on the timeline meeting event card menu (#3881)
+- Removes the calendar event CTA section from the check-in summary (#3877)
+
+### Fixed
+
+- Fixes breaking changes to the demo (#3908)
+- Fixes to Segment function (#3903)
+- Miscellaneous bug fixes (#3898)
+- Fixes for Cypress and demo tests (#3869)
+- Guarantees all emails are lowercase in the database (#3889)
+- Fixes graphql pubsub unsub (#3894)
+
 ## 5.9.1 2020-Jun-05
 
 ### Added
-* Added email to all segment track events for slack integration
+
+- Added email to all segment track events for slack integration
 
 ## 5.9.0 2020-Jun-02
 

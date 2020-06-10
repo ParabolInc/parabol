@@ -1,27 +1,28 @@
-import React, {lazy} from 'react'
 import styled from '@emotion/styled'
-import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
+import React, {lazy} from 'react'
+import {createFragmentContainer} from 'react-relay'
+import DeleteAccount from '../../../components/DeleteAccount'
 import EditableAvatar from '../../../components/EditableAvatar/EditableAvatar'
 import FieldLabel from '../../../components/FieldLabel/FieldLabel'
 import BasicInput from '../../../components/InputField/BasicInput'
 import Panel from '../../../components/Panel/Panel'
 import SecondaryButton from '../../../components/SecondaryButton'
-import UserSettingsWrapper from './UserSettingsWrapper/UserSettingsWrapper'
-import UpdateUserProfileMutation from '../../../mutations/UpdateUserProfileMutation'
-import defaultUserAvatar from '../../../styles/theme/images/avatar-user.svg'
-import {WithMutationProps} from '../../../utils/relay/withMutationProps'
 import {WithAtmosphereProps} from '../../../decorators/withAtmosphere/withAtmosphere'
+import useAtmosphere from '../../../hooks/useAtmosphere'
+import useDocumentTitle from '../../../hooks/useDocumentTitle'
+import useModal from '../../../hooks/useModal'
+import useMutationProps from '../../../hooks/useMutationProps'
+import UpdateUserProfileMutation from '../../../mutations/UpdateUserProfileMutation'
+import {PALETTE} from '../../../styles/paletteV2'
+import defaultUserAvatar from '../../../styles/theme/images/avatar-user.svg'
+import {Breakpoint, Layout} from '../../../types/constEnums'
 import withForm, {WithFormProps} from '../../../utils/relay/withForm'
+import {WithMutationProps} from '../../../utils/relay/withMutationProps'
 import Legitity from '../../../validation/Legitity'
 import {UserProfile_viewer} from '../../../__generated__/UserProfile_viewer.graphql'
-import {Breakpoint, Layout} from '../../../types/constEnums'
-import {PALETTE} from '../../../styles/paletteV2'
 import NotificationErrorMessage from '../../notifications/components/NotificationErrorMessage'
-import useModal from '../../../hooks/useModal'
-import useAtmosphere from '../../../hooks/useAtmosphere'
-import useMutationProps from '../../../hooks/useMutationProps'
-import useDocumentTitle from '../../../hooks/useDocumentTitle'
+import UserSettingsWrapper from './UserSettingsWrapper/UserSettingsWrapper'
 
 const SettingsBlock = styled('div')({
   width: '100%'
@@ -66,6 +67,12 @@ const ControlBlock = styled('div')({
 
 const StyledButton = styled(SecondaryButton)({
   width: 112
+})
+
+const PanelRow = styled('div')({
+  borderTop: `1px solid ${PALETTE.BORDER_LIGHTER}`,
+  padding: Layout.ROW_GUTTER,
+  textAlign: 'center'
 })
 
 const UserAvatarInput = lazy(() =>
@@ -126,6 +133,11 @@ const UserProfile = (props: Props) => {
               <NotificationErrorMessage error={error} />
             </InfoBlock>
           </SettingsForm>
+        </Panel>
+        <Panel label='Danger Zone'>
+          <PanelRow>
+            <DeleteAccount />
+          </PanelRow>
         </Panel>
       </SettingsBlock>
     </UserSettingsWrapper>

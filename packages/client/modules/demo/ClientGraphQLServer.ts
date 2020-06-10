@@ -229,14 +229,14 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         }
       }
     },
-    DiscussionThreadRootQuery: ({reflectionGroupId}) => {
+    DiscussionThreadRootQuery: ({threadSourceId}) => {
       return {
         viewer: {
           ...this.db.users[0],
           meeting: {
             ...this.db.newMeeting,
-            reflectionGroup: this.db.reflectionGroups.find(
-              (reflectionGroup) => reflectionGroup.id === reflectionGroupId
+            threadSource: this.db.reflectionGroups.find(
+              (reflectionGroup) => reflectionGroup.id === threadSourceId
             )
           }
         }

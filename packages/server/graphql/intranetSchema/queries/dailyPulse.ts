@@ -17,6 +17,10 @@ interface DomainCount {
   domain: string
 }
 
+interface DomainCountWithAllTime extends DomainCount {
+  allTimeTotal: number
+}
+
 // const MAX_CHARS_PER_FIELD = 2000
 // const MAX_FIELDS = 10
 // const MAX_BLOCKS = 50
@@ -28,18 +32,32 @@ const getTotal = (domainCount: DomainCount[]) =>
 const filterCounts = (domainCount: DomainCount[]) =>
   domainCount.filter(({domain, total}) => isCompanyDomain(domain) && total > 1).slice(0, TOP_X)
 
-const makeTopXSection = (domainCount: DomainCount[]) => {
+const addAllTimeTotals = async (domainCount: DomainCount[]) => {
+  const r = await getRethink()
+  const result = await r(domainCount)
+    .merge((item) => ({
+      allTimeTotal: r
+        .table('User')
+        .filter((row) => row('email').match(item('domain').add('$')) as any)
+        .count()
+    }))
+    .run()
+  return result as DomainCountWithAllTime[]
+}
+
+const makeTopXSection = async (domainCount: DomainCount[]) => {
   const filtered = filterCounts(domainCount)
+  const aggregated = await addAllTimeTotals(filtered)
   let curDomains = ''
   let curTotals = ''
   const fields = [] as TypeField[]
-  for (let i = 0; i < filtered.length; i++) {
-    const signup = filtered[i]
-    const {domain, total} = signup
+  for (let i = 0; i < aggregated.length; i++) {
+    const signup = aggregated[i]
+    const {domain, total, allTimeTotal} = signup
     curDomains += `*${domain}*\n`
-    curTotals += `*${total}*\n`
+    curTotals += `*${total}* (${allTimeTotal} total)\n`
   }
-  if (filtered.length === 0) {
+  if (aggregated.length === 0) {
     curDomains = 'No Data'
     curTotals = 'Sad Panda'
   }
@@ -105,10 +123,10 @@ const dailyPulse = {
       authCountByDomain(after, true, 'lastSeenAt')
     ])
     const totalSignups = getTotal(rawSignups)
-    const signupsList = makeTopXSection(rawSignups)
+    const signupsList = await makeTopXSection(rawSignups)
 
     const totalLogins = getTotal(rawLogins)
-    const loginsList = makeTopXSection(rawLogins)
+    const loginsList = await makeTopXSection(rawLogins)
 
     const start = toEpochSeconds(after)
 

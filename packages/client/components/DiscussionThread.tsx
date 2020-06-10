@@ -1,8 +1,8 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import {useCoverable} from '~/hooks/useControlBarCovers'
 import React, {useRef} from 'react'
 import {createFragmentContainer} from 'react-relay'
+import {useCoverable} from '~/hooks/useControlBarCovers'
 import {Breakpoint, DiscussionThreadEnum, MeetingControlBarEnum} from '~/types/constEnums'
 import {DiscussionThread_viewer} from '~/__generated__/DiscussionThread_viewer.graphql'
 import {Elevation} from '../styles/elevation'
@@ -33,7 +33,8 @@ const DiscussionThread = (props: Props) => {
   const {viewer} = props
   const meeting = viewer.meeting!
   const {endedAt, replyingToCommentId, threadSource} = meeting
-  const {id: threadSourceId, thread} = threadSource!
+  const {thread} = threadSource!
+  const threadSourceId = threadSource!.id!
   const edges = thread?.edges ?? [] // should never happen, but Terry reported it in demo. likely relay error
   const threadables = edges.map(({node}) => node)
   const getMaxSortOrder = () => {
@@ -65,6 +66,22 @@ const DiscussionThread = (props: Props) => {
   )
 }
 
+graphql`
+  fragment DiscussionThread_threadSource on ThreadSource {
+    id
+    thread(first: 1000) @connection(key: "DiscussionThread_thread") {
+      edges {
+        node {
+          threadSortOrder
+          threadId
+          threadSource
+          ...DiscussionThreadList_threadables
+          threadSortOrder
+        }
+      }
+    }
+  }
+`
 export default createFragmentContainer(DiscussionThread, {
   viewer: graphql`
     fragment DiscussionThread_viewer on User {
@@ -77,35 +94,12 @@ export default createFragmentContainer(DiscussionThread, {
         }
         ... on RetrospectiveMeeting {
           threadSource: reflectionGroup(reflectionGroupId: $threadSourceId) {
-            id
-            thread(first: 1000) @connection(key: "DiscussionThread_thread") {
-              edges {
-                node {
-                  threadSortOrder
-                  threadId
-                  threadSource
-                  ...DiscussionThreadList_threadables
-                  threadSortOrder
-                }
-              }
-            }
+            ...DiscussionThread_threadSource @relay(mask: false)
           }
         }
-
         ... on ActionMeeting {
           threadSource: agendaItem(agendaItemId: $threadSourceId) {
-            id
-            thread(first: 1000) @connection(key: "DiscussionThread_thread") {
-              edges {
-                node {
-                  threadSortOrder
-                  threadId
-                  threadSource
-                  ...DiscussionThreadList_threadables
-                  threadSortOrder
-                }
-              }
-            }
+            ...DiscussionThread_threadSource @relay(mask: false)
           }
         }
       }
