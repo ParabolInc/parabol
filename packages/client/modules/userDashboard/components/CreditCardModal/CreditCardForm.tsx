@@ -7,7 +7,7 @@ import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useForm from '../../../../hooks/useForm'
 import useMutationProps from '../../../../hooks/useMutationProps'
 import useScript from '../../../../hooks/useScript'
-import SendClientSegmentEventMutation from '../../../../mutations/SendClientSegmentEventMutation'
+import useSegmentTrack from '../../../../hooks/useSegmentTrack'
 import UpdateCreditCardMutation from '../../../../mutations/UpdateCreditCardMutation'
 import UpgradeToProMutation from '../../../../mutations/UpgradeToProMutation'
 import StripeClientManager, {StripeError} from '../../../../utils/StripeClientManager'
@@ -100,9 +100,7 @@ const CreditCardForm = (props: Props) => {
       validate: stripeClientManager.validateExpiry
     }
   })
-  useEffect(() => {
-    SendClientSegmentEventMutation(atmosphere, 'Credit Card Modal Opened', {actionType})
-  }, [])
+  useSegmentTrack('Credit Card Modal Opened', {actionType})
 
   useEffect(() => {
     if (isStripeLoaded) {
