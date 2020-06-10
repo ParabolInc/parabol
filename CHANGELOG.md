@@ -16,6 +16,8 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
 ### Changed
 
+- A tooltip prompts users to tap again to confirm advancing or ending the meeting
+- Updates the bottom bar control UI color usage
 - Removes the tooltip on the timeline meeting event card menu (#3881)
 - Removes the calendar event CTA section from the check-in summary (#3877)
 
