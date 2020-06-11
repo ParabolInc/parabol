@@ -45,7 +45,7 @@ $ git clone https://github.com/ParabolInc/parabol.git
 $ cd parabol
 $ cp .env.example .env # Add your own vars here
 $ rethinkdb & redis-server & # Or if you prefer docker: $ docker-compose up -d db
-$ yarn && yarn dev
+$ yarn && yarn dev -i # -i is only needed the first time you clone the repo
 ```
 
 Build for production and start application:
