@@ -17,7 +17,7 @@ export const up = async function(r: R) {
       .replace((row) => row.without('assigneeId'))
       .run()
   } catch (e) {
-    console.log(e)
+    // no log because Task doesn't typically have assigneeId
   }
 }
 
