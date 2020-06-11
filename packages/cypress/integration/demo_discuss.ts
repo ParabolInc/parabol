@@ -155,7 +155,7 @@ function goToPreviousTopic(idx) {
 }
 
 describe('Test Discuss page Demo', () => {
-  before(function() {
+  before(function () {
     // runs before all tests in the block
     cy.visitReflect()
       .visitPhase('group')
@@ -170,37 +170,47 @@ describe('Test Discuss page Demo', () => {
   })
 
   it('can create a new task', () => {
-    addTask('New Task created')
+    addTask('Have more one on ones instead of group meetings')
+    cy.screenshot('create-discuss-task')
   })
 
   it('can edit a created task', () => {
-    editTask('Edited the task', 'New Task created')
+    editTask('Have more 1-on-1s instead of group meetings', 'Have more one on ones instead of group meetings')
   })
 
   it('can reply to a created task', () => {
-    replyComment('Replied to task', 'Edited the task')
+    replyComment('This is a great idea!', 'Have more 1-on-1s instead of group meetings')
+    cy.screenshot('reply-comment-discuss-task')
+
   })
 
   it('can reply to a created task with a task', () => {
-    replyTask('Replied to task with task', 'Edited the task')
+    replyTask('Incorporate a stopwatch into meetings', 'Have more 1-on-1s instead of group meetings')
+    cy.screenshot('reply-task-discuss-task')
+
   })
 
   it('can create a new comment in discussion board', () => {
-    addComment('New comment created')
+    addComment('We should have meetings every other day.')
+    cy.screenshot('create-discuss-comment')
+
   })
 
   it('can edit a created comment in discussion board', () => {
-    editComment('Edited the comment', 'New comment created')
+    editComment('We should have meetings once a week.', 'We should have meetings every other day.')
   })
 
   it('can delete a created comment in discussion board', () => {
-    deleteComment('Edited the comment')
+    deleteComment('We should have meetings once a week.')
   })
 
   it('can "publish" a task to "JIRA" (this is simulated)', () => {
-    addTask('Create task to test publish to JIRA')
+    addTask('Design a system to limit unnecessary meetings')
 
-    publishToJira('Create task to test publish to JIRA')
+    publishToJira('Design a system to limit unnecessary meetings')
+
+    cy.screenshot('publish-to-jira')
+
   })
 
   it('can advance to a new discussion item', () => {
@@ -213,7 +223,7 @@ describe('Test Discuss page Demo', () => {
   })
 
   it('can still add a new task', () => {
-    addTask('Can still add a new task')
+    addTask('Intern progress meetings')
   })
 
   it('can end meeting', () => {
@@ -222,6 +232,7 @@ describe('Test Discuss page Demo', () => {
 
   it('can see a meeting summary', () => {
     cy.url().should('include', '/retrospective-demo-summary')
+    cy.screenshot('meeting-summary')
   })
 
   it('can click CTA', () => {
