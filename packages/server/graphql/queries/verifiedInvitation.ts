@@ -59,7 +59,10 @@ export default {
         teamId
       } = teamInvitation
       const [team, inviter] = await Promise.all([
-        r.table('Team').get(teamId),
+        r
+          .table('Team')
+          .get(teamId)
+          .run(),
         db.read('User', invitedBy)
       ])
       const bestMeeting = await getBestInvitationMeeting(teamId, maybeMeetingId, dataLoader)

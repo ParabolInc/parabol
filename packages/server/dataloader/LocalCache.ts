@@ -38,7 +38,7 @@ export default class LocalCache {
       cacheHits[i]()
     }
   }
-  private async dispatchBatch() {
+  private dispatchBatch = async () => {
     this.hasReadDispatched = true
     // grab a reference to them now because after await is called they may be overwritten when a new batch is created
     const {keys, callbacks, cacheHits} = this
@@ -97,6 +97,7 @@ export default class LocalCache {
       this.primeLocal(key, doc)
     })
     this.redisCache.prime(table, docs)
+    return this
   }
   async read<T extends keyof RethinkTypes>(table: T, id: string) {
     const key = `${table}:${id}`

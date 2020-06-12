@@ -52,7 +52,8 @@ const removeFromOrg = async (
         {removedAt: now},
         {returnChanges: true}
       )('changes')(0)('new_val')
-      .default(null) as unknown) as OrganizationUser,
+      .default(null)
+      .run() as unknown) as OrganizationUser,
     db.read('User', userId)
   ])
 

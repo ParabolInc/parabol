@@ -70,7 +70,8 @@ const updateUserProfile = {
         .table('TeamMember')
         .getAll(userId, {index: 'userId'})
         .update(updates, {returnChanges: true})('changes')('new_val')
-        .default([]) as unknown) as TeamMember[],
+        .default([])
+        .run() as unknown) as TeamMember[],
       db.write('User', userId, updates)
     ])
     //
