@@ -1,11 +1,10 @@
-import {GraphQLBoolean, GraphQLNonNull} from 'graphql'
+import {GraphQLBoolean, GraphQLNonNull, GraphQLString} from 'graphql'
 import {ISegmentEventTrackOnMutationArguments} from 'parabol-client/types/graphql'
 import getRethink from '../../database/rethinkDriver'
 import {getUserId, isTeamMember, isUserBillingLeader} from '../../utils/authorization'
 import segmentIo from '../../utils/segmentIo'
 import standardError from '../../utils/standardError'
 import {DataLoaderWorker} from '../graphql'
-import SegmentClientEventEnum from '../types/SegmentClientEventEnum'
 import SegmentEventTrackOptions from '../types/SegmentEventTrackOptions'
 
 const extraOptionsCreator = {
@@ -34,7 +33,7 @@ export default {
   type: GraphQLBoolean,
   args: {
     event: {
-      type: new GraphQLNonNull(SegmentClientEventEnum)
+      type: GraphQLNonNull(GraphQLString)
     },
     options: {
       type: SegmentEventTrackOptions

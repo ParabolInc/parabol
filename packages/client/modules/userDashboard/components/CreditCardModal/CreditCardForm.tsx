@@ -1,18 +1,19 @@
-import React, {useEffect, useState} from 'react'
 import styled from '@emotion/styled'
-import UpgradeToProMutation from '../../../../mutations/UpgradeToProMutation'
-import UpdateCreditCardMutation from '../../../../mutations/UpdateCreditCardMutation'
-import UpgradeCreditCardFormField from '../../../../components/UpgradeCreditCardFormField'
-import PrimaryButton from '../../../../components/PrimaryButton'
-import useForm from '../../../../hooks/useForm'
-import useScript from '../../../../hooks/useScript'
-import StripeClientManager, {StripeError} from '../../../../utils/StripeClientManager'
-import useMutationProps from '../../../../hooks/useMutationProps'
-import useAtmosphere from '../../../../hooks/useAtmosphere'
-import CreditCardErrorLine from './CreditCardErrorLine'
-import CreditCardPricingLine from './CreditCardPricingLine'
-import {CreditCardModalActionType} from './CreditCardModal'
+import React, {useEffect, useState} from 'react'
 import PlainButton from '../../../../components/PlainButton/PlainButton'
+import PrimaryButton from '../../../../components/PrimaryButton'
+import UpgradeCreditCardFormField from '../../../../components/UpgradeCreditCardFormField'
+import useAtmosphere from '../../../../hooks/useAtmosphere'
+import useForm from '../../../../hooks/useForm'
+import useMutationProps from '../../../../hooks/useMutationProps'
+import useScript from '../../../../hooks/useScript'
+import useSegmentTrack from '../../../../hooks/useSegmentTrack'
+import UpdateCreditCardMutation from '../../../../mutations/UpdateCreditCardMutation'
+import UpgradeToProMutation from '../../../../mutations/UpgradeToProMutation'
+import StripeClientManager, {StripeError} from '../../../../utils/StripeClientManager'
+import CreditCardErrorLine from './CreditCardErrorLine'
+import {CreditCardModalActionType} from './CreditCardModal'
+import CreditCardPricingLine from './CreditCardPricingLine'
 
 const Form = styled('form')({
   borderRadius: 2,
@@ -99,6 +100,7 @@ const CreditCardForm = (props: Props) => {
       validate: stripeClientManager.validateExpiry
     }
   })
+  useSegmentTrack('Credit Card Modal Opened', {actionType})
 
   useEffect(() => {
     if (isStripeLoaded) {

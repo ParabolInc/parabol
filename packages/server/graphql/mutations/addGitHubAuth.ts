@@ -1,11 +1,12 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
-import AddGitHubAuthPayload from '../types/AddGitHubAuthPayload'
-import {getUserId, isTeamMember} from '../../utils/authorization'
-import shortid from 'shortid'
 import {GITHUB} from 'parabol-client/utils/constants'
+import shortid from 'shortid'
 import getRethink from '../../database/rethinkDriver'
+import {getUserId, isTeamMember} from '../../utils/authorization'
 import GitHubServerManager from '../../utils/GitHubServerManager'
+import segmentIo from '../../utils/segmentIo'
 import standardError from '../../utils/standardError'
+import AddGitHubAuthPayload from '../types/AddGitHubAuthPayload'
 
 export default {
   name: 'AddGitHubAuth',
@@ -59,17 +60,17 @@ export default {
         return r.branch(
           providerId.eq(null),
           r.table('Provider').insert({
-            id: shortid.generate(),
-            accessToken,
-            createdAt: now,
-            isActive: true,
-            providerUserId: login,
-            providerUserName: login,
-            service: GITHUB,
-            teamId,
-            updatedAt: now,
-            userId: viewerId
-          }, {returnChanges: true})('changes')(0),
+              id: shortid.generate(),
+              accessToken,
+              createdAt: now,
+              isActive: true,
+              providerUserId: login,
+              providerUserName: login,
+              service: GITHUB,
+              teamId,
+              updatedAt: now,
+              userId: viewerId
+            }, {returnChanges: true})('changes')(0),
           r
             .table('Provider')
             .get(providerId)
@@ -86,6 +87,14 @@ export default {
         )
       })
       .run()
+    segmentIo.track({
+      userId: viewerId,
+      event: 'Added Integration',
+      properties: {
+        teamId,
+        service: 'GitHub'
+      }
+    })
     return {teamId, userId: viewerId}
   }
 }
