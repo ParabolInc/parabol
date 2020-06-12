@@ -1,13 +1,14 @@
 import {GraphQLID, GraphQLList, GraphQLNonNull, GraphQLString} from 'graphql'
+import {InvoiceItemType} from 'parabol-client/types/constEnums'
+import {ITeam, OrgUserRole} from 'parabol-client/types/graphql'
 import adjustUserCount from '../../billing/helpers/adjustUserCount'
 import getRethink from '../../database/rethinkDriver'
+import Notification from '../../database/types/Notification'
+import Organization from '../../database/types/Organization'
+import db from '../../db'
+import safeArchiveEmptyPersonalOrganization from '../../safeMutations/safeArchiveEmptyPersonalOrganization'
 import {getUserId, isSuperUser} from '../../utils/authorization'
 import standardError from '../../utils/standardError'
-import {ITeam, OrgUserRole} from 'parabol-client/types/graphql'
-import {InvoiceItemType} from 'parabol-client/types/constEnums'
-import safeArchiveEmptyPersonalOrganization from '../../safeMutations/safeArchiveEmptyPersonalOrganization'
-import Organization from '../../database/types/Organization'
-import Notification from '../../database/types/Notification'
 
 const moveToOrg = async (teamId: string, orgId: string, authToken: any) => {
   const r = await getRethink()
@@ -97,12 +98,9 @@ const moveToOrg = async (teamId: string, orgId: string, authToken: any) => {
     })
   )
 
-  const inactiveUserIds = await r
-    .table('User')
-    .getAll(r.args(newToOrgUserIds), {index: 'id'})
-    .filter({inactive: true})('id')
-    .run()
+  const newUsers = await db.readMany('User', newToOrgUserIds)
 
+  const inactiveUserIds = newUsers.filter((user) => user.inactive).map(({id}) => id)
   inactiveUserIds.map((newInactiveUserId) => {
     return adjustUserCount(newInactiveUserId, orgId, InvoiceItemType.AUTO_PAUSE_USER)
   })

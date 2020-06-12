@@ -1,12 +1,14 @@
 import getRethink from '../database/rethinkDriver'
+import db from '../db'
 
 const setUserTierForOrgId = async (orgId: string) => {
   const r = await getRethink()
-  await r
+  const userIds = await r
     .table('OrganizationUser')
     .getAll(orgId, {index: 'orgId'})
     .filter({removedAt: null})('userId')
-    .coerceTo('array')
+    .run()
+  await r(userIds)
     .do((userIds) => {
       return r
         .table('User')
@@ -40,6 +42,7 @@ const setUserTierForOrgId = async (orgId: string) => {
         )
     })
     .run()
+  await Promise.all(userIds.map((userId) => db.clear('User', userId)))
 }
 
 export default setUserTierForOrgId

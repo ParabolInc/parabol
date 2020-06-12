@@ -9,6 +9,7 @@ import getRethink from '../../database/rethinkDriver'
 import AuthIdentityLocal from '../../database/types/AuthIdentityLocal'
 import PasswordResetRequest from '../../database/types/PasswordResetRequest'
 import User from '../../database/types/User'
+import db from '../../db'
 import getMailManager from '../../email/getMailManager'
 import resetPasswordEmailCreator from '../../email/resetPasswordEmailCreator'
 import {GQLContext} from '../graphql'
@@ -70,11 +71,7 @@ const emailPasswordReset = {
       .insert(new PasswordResetRequest({ip, email, token: resetPasswordToken}))
       .run()
 
-    await r
-      .table('User')
-      .get(userId)
-      .update({identities})
-      .run()
+    await db.write('User', userId, {identities})
 
     const {subject, body, html} = resetPasswordEmailCreator({resetPasswordToken})
     const success = await getMailManager().sendEmail({

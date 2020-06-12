@@ -2,6 +2,7 @@ import {GraphQLID, GraphQLInt, GraphQLNonNull} from 'graphql'
 import {OrgUserRole, TierEnum} from 'parabol-client/types/graphql'
 import getRethink from '../../../database/rethinkDriver'
 import User from '../../../database/types/User'
+import db from '../../../db'
 import {requireSU} from '../../../utils/authorization'
 import {fromEpochSeconds} from '../../../utils/epochTime'
 import segmentIo from '../../../utils/segmentIo'
@@ -48,12 +49,8 @@ const getBillingLeaderUser = async (
     (organizationUser) => organizationUser.role === OrgUserRole.BILLING_LEADER
   )
   const billingLeaderUserIds = billingLeaders.map(({userId}) => userId)
-  return r
-    .table('User')
-    .getAll(r.args(billingLeaderUserIds))
-    .nth(0)
-    .default(null)
-    .run()
+  const billingLeaderUsers = await db.readMany('User', billingLeaderUserIds)
+  return billingLeaderUsers[0]
 }
 
 export default {

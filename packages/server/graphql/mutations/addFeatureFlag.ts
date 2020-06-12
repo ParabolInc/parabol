@@ -1,6 +1,7 @@
 import {GraphQLNonNull, GraphQLString} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getRethink from '../../database/rethinkDriver'
+import db from '../../db'
 import {getUserId, requireSU} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
@@ -31,24 +32,22 @@ export default {
     requireSU(authToken)
 
     // RESOLUTION
-    const userIds = await r
+    const users = await r
       .table('User')
-      .filter((doc) => (doc as any)('email').match(email))('id')
+      .filter((doc) => (doc as any)('email').match(email))
       .run()
-    if (userIds.length === 0) {
+    await db.prime('User', users)
+    if (users.length === 0) {
       return standardError(new Error('Team member not found'), {userId: viewerId})
     }
-
-    await r
-      .table('User')
-      .getAll(r.args(userIds), {index: 'id'})
-      .update((userRow) => ({
-        featureFlags: userRow('featureFlags')
-          .default([])
-          .append(flag)
-          .distinct()
-      }))
-      .run()
+    const reqlUpdater = (user) => ({
+      featureFlags: user('featureFlags')
+        .default([])
+        .append(flag)
+        .distinct()
+    })
+    const userIds = users.map(({id}) => id)
+    await db.writeMany('User', userIds, reqlUpdater)
     const result = `${email} has been given access to the ${flag} feature. If the app is open, it should magically appear.`
     userIds.forEach((userId) => {
       const data = {result, userId}

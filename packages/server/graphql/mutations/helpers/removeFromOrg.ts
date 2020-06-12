@@ -3,7 +3,7 @@ import {OrgUserRole, TierEnum} from '../../../../client/types/graphql'
 import adjustUserCount from '../../../billing/helpers/adjustUserCount'
 import getRethink from '../../../database/rethinkDriver'
 import OrganizationUser from '../../../database/types/OrganizationUser'
-import User from '../../../database/types/User'
+import db from '../../../db'
 import {DataLoaderWorker} from '../../graphql'
 import removeTeamMember from './removeTeamMember'
 import resolveDowngradeToPersonal from './resolveDowngradeToPersonal'
@@ -42,8 +42,8 @@ const removeFromOrg = async (
     return arr
   }, [])
 
-  const {user, organizationUser} = await r({
-    organizationUser: (r
+  const [organizationUser, user] = await Promise.all([
+    (r
       .table('OrganizationUser')
       .getAll(userId, {index: 'userId'})
       .filter({orgId, removedAt: null})
@@ -53,8 +53,8 @@ const removeFromOrg = async (
         {returnChanges: true}
       )('changes')(0)('new_val')
       .default(null) as unknown) as OrganizationUser,
-    user: (r.table('User').get(userId) as unknown) as User
-  }).run()
+    db.read('User', userId)
+  ])
 
   // need to make sure the org doc is updated before adjusting this
   const {joinedAt, newUserUntil, role} = organizationUser

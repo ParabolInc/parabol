@@ -1,7 +1,13 @@
 import DataLoader from 'dataloader'
+import getLoaderNameByTable from '../dataloader/getLoaderNameByTable'
 
 export interface DataLoaderBase {
   get: (loaderName: any) => DataLoader<any, any>
+  loaders: {
+    [key: string]: {
+      clear(id: string): void
+    }
+  }
 }
 
 export class CacheWorker<T extends DataLoaderBase> {
@@ -21,6 +27,10 @@ export class CacheWorker<T extends DataLoaderBase> {
     return this.dataLoaderBase.get(dataLoaderName)
   }
 
+  clear = (table: string, id: string) => {
+    const loaderName = getLoaderNameByTable(table)
+    this.dataLoaderBase.loaders[loaderName]?.clear(id)
+  }
   dispose(force?: boolean) {
     const ttl = force || !this.shared ? 0 : this.cache.ttl
     clearTimeout(this.disposeId!)

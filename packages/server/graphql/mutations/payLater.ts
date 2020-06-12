@@ -2,6 +2,7 @@ import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getRethink from '../../database/rethinkDriver'
 import Meeting from '../../database/types/Meeting'
+import db from '../../db'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import segmentIo from '../../utils/segmentIo'
@@ -64,13 +65,16 @@ export default {
       })
       .run()
 
-    await r.table('User').get(viewerId).update((user) => ({
-      payLaterClickCount: user('payLaterClickCount').default(0).add(1)
-    })).run()
+    const reqlUpdater = (user) => ({
+      payLaterClickCount: user('payLaterClickCount')
+        .default(0)
+        .add(1)
+    })
+    await db.write('User', viewerId, reqlUpdater)
 
     segmentIo.track({
       userId: viewerId,
-      event: 'Conversion Modal Pay Later Clicked',
+      event: 'Conversion Modal Pay Later Clicked'
     })
     const data = {orgId, meetingId}
     publish(SubscriptionChannel.ORGANIZATION, orgId, 'PayLaterPayload', data, subOptions)

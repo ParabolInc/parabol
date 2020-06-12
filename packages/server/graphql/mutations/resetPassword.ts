@@ -6,12 +6,13 @@ import getRethink from '../../database/rethinkDriver'
 import AuthIdentityLocal from '../../database/types/AuthIdentityLocal'
 import AuthToken from '../../database/types/AuthToken'
 import PasswordResetRequest from '../../database/types/PasswordResetRequest'
+import db from '../../db'
+import blacklistJWT from '../../utils/blacklistJWT'
 import encodeAuthToken from '../../utils/encodeAuthToken'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import rateLimit from '../rateLimit'
 import ResetPasswordPayload from '../types/ResetPasswordPayload'
-import blacklistJWT from '../../utils/blacklistJWT'
 
 const resetPassword = {
   type: new GraphQLNonNull(ResetPasswordPayload),
@@ -72,13 +73,7 @@ const resetPassword = {
       localIdentity.hashedPassword = await bcrypt.hash(newPassword, Security.SALT_ROUNDS)
       localIdentity.isEmailVerified = true
       await Promise.all([
-        r
-          .table('User')
-          .get(userId)
-          .update({
-            identities
-          })
-          .run(),
+        db.write('User', userId, {identities}),
         r
           .table('FailedAuthRequest')
           .getAll(email, {index: 'email'})
