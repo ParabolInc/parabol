@@ -1,19 +1,19 @@
 import React, {forwardRef} from 'react'
 import useSegmentTrack from '../../hooks/useSegmentTrack'
-import {NewMeetingPhaseTypeEnum, SegmentClientEventEnum} from '../../types/graphql'
-import {REFLECT} from '../../utils/constants'
-import HelpMenuContent from './HelpMenuContent'
-import HelpMenuHeader from './HelpMenuHeader'
-import HelpMenuCopy from './HelpMenuCopy'
-import {phaseLabelLookup} from '../../utils/meetings/lookups'
-import HelpMenuLink from './HelpMenuLink'
 import {ExternalLinks} from '../../types/constEnums'
+import {NewMeetingPhaseTypeEnum} from '../../types/graphql'
+import {REFLECT} from '../../utils/constants'
+import {phaseLabelLookup} from '../../utils/meetings/lookups'
+import HelpMenuContent from './HelpMenuContent'
+import HelpMenuCopy from './HelpMenuCopy'
+import HelpMenuHeader from './HelpMenuHeader'
+import HelpMenuLink from './HelpMenuLink'
 
 interface Props {}
 
 const ReflectHelpMenu = forwardRef((_props: Props, ref: any) => {
   const {closePortal} = ref
-  useSegmentTrack(SegmentClientEventEnum.HelpMenuOpen, {phase: NewMeetingPhaseTypeEnum.reflect})
+  useSegmentTrack('HelpMenuOpen', {phase: NewMeetingPhaseTypeEnum.reflect})
   return (
     <HelpMenuContent closePortal={closePortal}>
       <HelpMenuHeader>{phaseLabelLookup[REFLECT]}</HelpMenuHeader>

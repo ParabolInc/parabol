@@ -1,4 +1,4 @@
-import {GraphQLBoolean, GraphQLString} from 'graphql'
+import {GraphQLBoolean, GraphQLNonNull, GraphQLString} from 'graphql'
 import {ISegmentEventTrackOnMutationArguments} from 'parabol-client/types/graphql'
 import getRethink from '../../database/rethinkDriver'
 import {getUserId, isTeamMember, isUserBillingLeader} from '../../utils/authorization'
@@ -33,7 +33,7 @@ export default {
   type: GraphQLBoolean,
   args: {
     event: {
-      type: GraphQLString
+      type: GraphQLNonNull(GraphQLString)
     },
     options: {
       type: SegmentEventTrackOptions
