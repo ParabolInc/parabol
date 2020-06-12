@@ -80,8 +80,11 @@ export default class LocalCache {
     this.hasWriteDispatched = true
     const {writes} = this
     const results = await this.redisCache.write(writes)
-    writes.forEach(({resolve}, idx) => {
-      resolve(results[idx])
+    writes.forEach(({resolve, table, id}, idx) => {
+      const key = `${table}:${id}`
+      const result = results[idx]
+      this.primeLocal(key, result)
+      resolve(result)
     })
   }
   async clear<T extends keyof RethinkTypes>(table: T, id: string) {

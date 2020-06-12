@@ -47,7 +47,7 @@ export default class RethinkDBCache {
         .update(updater, {returnChanges: true})('changes')(0)('new_val')
         .default(null)
     })
-    return r(reqlParts).run()
+    return r(reqlParts).run() as Promise<RType<T>[]>
   }
   writeTable = async <T extends keyof RethinkTypes>(table: T, updater: Partial<RType<T>>) => {
     const r = await getRethink()

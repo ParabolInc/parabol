@@ -44,8 +44,9 @@ export default class RedisCache {
     const redisWrites = [] as string[][]
     results.map((result, idx) => {
       if (!result) return
-      const table = writes[idx]
-      const id = result
+      const write = writes[idx]
+      const {table} = write
+      const {id} = result
       const key = `${table}:${id}`
       redisWrites.push(msetpx(key, result))
     })

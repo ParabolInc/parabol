@@ -16,6 +16,10 @@
  *    Stage 1 updates the cached value if found, calls Stage 2, then returns when Stage 2 finishes
  *    Stage 2 queries the current value from redis. If found, updates the value in redis and calls Stage 3
  *    Stage 3 batches all updates and sends a single query to RethinkDB
+ *
+ * PROXIED CACHE:
+ *    The LocalCache is essentially a DataLoader that doesn't expire after the request completes
+ *    ProxiedCache maps the LocalCache to the DataLoader API so the dataloader worker can use it
  */
 
 import LocalCache from './dataloader/LocalCache'
