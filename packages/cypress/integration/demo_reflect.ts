@@ -1,11 +1,10 @@
 function addCard(column, text) {
-  cy.get(`[data-cy=phase-item-editor-${column}-wrapper]`).as('column-phase-item-editor')
-
-  cy.get('@column-phase-item-editor')
+  cy.get(`[data-cy=phase-item-editor-${column}-wrapper]`)
+    .type('{selectall}')
+    .type('{backspace}')
     .type(`${text}`)
     .should('have.text', `${text}`)
-
-  cy.get('@column-phase-item-editor').type('{enter}')
+    .type('{enter}')
 }
 
 function editCard(column, oldText, newText) {
@@ -32,6 +31,10 @@ function deleteCard(column) {
   cy.get('@reflection-card-delete').should('not.exist')
 }
 
+const click = ($el) => {
+  return $el.click()
+}
+
 describe('Test Reflect page Demo', () => {
   before(function () {
     // runs before all tests in the block
@@ -48,10 +51,8 @@ describe('Test Reflect page Demo', () => {
 
     cy.get('[data-cy=help-menu-close]')
       .should('be.visible')
-
-    cy.get('[data-cy=tip-menu-toggle]')
-      .should('be.visible')
-      .click()
+      .pipe(click)
+      .should('not.exist')
 
   })
 
