@@ -1,22 +1,31 @@
 import ms from 'ms'
-import {RethinkTypes} from '../database/rethinkDriver'
+import {DBType} from '../database/rethinkDriver'
 import RedisCache from './RedisCache'
-import {Doc, RType, RWrite, Updater} from './RethinkDBCache'
+import {Doc, RWrite, Updater} from './RethinkDBCache'
 
 const resolvedPromise = Promise.resolve()
 
-// every original read has 1 key, 1 callback and 1 entry in the cacheMap
-// every duplicate request has 1 cacheHit that, when called, resolves to the original promise in the cacheMap
-export default class LocalCache {
+type Thunk = () => void
+export default class LocalCache<T extends keyof DBType> {
   private cacheMap = {} as {[key: string]: {ts: number; promise: Promise<any>}}
   private hasReadDispatched = true
   private hasWriteDispatched = true
-  private keys = [] as string[]
-  private callbacks = [] as {resolve: (payload: any) => void; reject: (err: any) => void}[]
-  private cacheHits = [] as (() => void)[]
-  private writes = [] as (RWrite<any> & {resolve: (payload: any) => void})[]
+  private fetches = [] as {
+    table: T
+    id: string
+    resolve: (payload: any) => void
+    reject: (err: any) => void
+  }[]
+  private cacheHits = [] as Thunk[]
+  private writes = [] as {
+    table: T
+    id: string
+    resolve: (payload: any) => void
+    updater: Updater<DBType[T]>
+  }[]
   private ttl = ms('1h')
   private redisCache = new RedisCache()
+  // private redisCache = new RedisCache(this.clearLocal)
   constructor() {
     setInterval(this.gc, this.ttl).unref()
   }
@@ -32,34 +41,36 @@ export default class LocalCache {
       }
     }
   }
-  private resolveCacheHits(cacheHits: (() => void)[]) {
+  private resolveCacheHits(cacheHits: Thunk[]) {
     // cacheHits are possibly from the previous batch, hence the param
     for (let i = 0; i < cacheHits.length; i++) {
       cacheHits[i]()
     }
   }
-  private dispatchBatch = async () => {
+  private dispatchReadBatch = async () => {
     this.hasReadDispatched = true
     // grab a reference to them now because after await is called they may be overwritten when a new batch is created
-    const {keys, callbacks, cacheHits} = this
-    if (keys.length === 0) {
+    const {fetches, cacheHits} = this
+    if (fetches.length === 0) {
       this.resolveCacheHits(cacheHits)
       return
     }
     try {
-      const values = await this.redisCache.read(keys)
+      const values = await this.redisCache.read(fetches)
       this.resolveCacheHits(cacheHits)
-      for (let i = 0; i < callbacks.length; i++) {
-        const {resolve, reject} = callbacks[i]
+      for (let i = 0; i < fetches.length; i++) {
+        const {resolve, reject} = fetches[i]
         const value = values[i]
         const handle = value instanceof Error ? reject : resolve
         handle(value)
       }
     } catch (e) {
       this.resolveCacheHits(cacheHits)
-      for (let i = 0; i < callbacks.length; i++) {
-        this.clearLocal(keys[i])
-        const {reject} = callbacks[i]
+      for (let i = 0; i < fetches.length; i++) {
+        const fetch = fetches[i]
+        const {table, id, reject} = fetch
+        const key = `${table}:${id}`
+        this.clearLocal(key)
         reject(e)
       }
     }
@@ -76,10 +87,10 @@ export default class LocalCache {
     }
   }
 
-  private dispatchWrite = async () => {
+  private dispatchWriteBatch = async () => {
     this.hasWriteDispatched = true
     const {writes} = this
-    const results = await this.redisCache.write(writes)
+    const results = await this.redisCache.write(writes as any)
     writes.forEach(({resolve, table, id}, idx) => {
       const key = `${table}:${id}`
       const result = results[idx]
@@ -87,14 +98,14 @@ export default class LocalCache {
       resolve(result)
     })
   }
-  async clear<T extends keyof RethinkTypes>(table: T, id: string) {
+  async clear(table: T, id: string) {
     const key = `${table}:${id}`
     this.clearLocal(key)
     await this.redisCache.clear(key)
     return this
   }
 
-  async prime<T extends keyof RethinkTypes>(table: T, docs: RType<T>[]) {
+  async prime(table: T, docs: DBType[T][]) {
     docs.forEach((doc) => {
       const key = `${table}:${doc.id}`
       this.primeLocal(key, doc)
@@ -102,51 +113,47 @@ export default class LocalCache {
     this.redisCache.prime(table, docs)
     return this
   }
-  async read<T extends keyof RethinkTypes>(table: T, id: string) {
-    const key = `${table}:${id}`
+  async read(table: T, id: string) {
     if (this.hasReadDispatched) {
       this.hasReadDispatched = false
-      this.keys = []
-      this.callbacks = []
+      this.fetches = []
       this.cacheHits = []
       resolvedPromise.then(() => {
-        process.nextTick(this.dispatchBatch)
+        process.nextTick(this.dispatchReadBatch)
       })
     }
+    const key = `${table}:${id}`
     const cachedRecord = this.cacheMap[key]
     if (cachedRecord) {
       cachedRecord.ts = Date.now()
-      return new Promise<RType<T>>((resolve) => {
+      // there's marginal savings to be had by reusing promises instead of creating a new one for each cache hit
+      // not implemented for the sake of simplicity
+      return new Promise<DBType[T]>((resolve) => {
         this.cacheHits.push(() => {
           resolve(cachedRecord.promise)
         })
       })
     }
-    this.keys.push(key)
-    const promise = new Promise<RType<T>>((resolve, reject) => {
-      this.callbacks.push({resolve, reject})
+    const promise = new Promise<DBType[T]>((resolve, reject) => {
+      this.fetches.push({resolve, reject, table, id})
     })
     this.cacheMap[key] = {ts: Date.now(), promise}
     return promise
   }
 
-  async readMany<T extends keyof RethinkTypes>(table: T, ids: string[]) {
-    const loadPromises = [] as Promise<RType<T>>[]
+  async readMany(table: T, ids: string[]) {
+    const loadPromises = [] as Promise<DBType[T]>[]
     for (let i = 0; i < ids.length; i++) {
       loadPromises.push(this.read(table, ids[i]).catch((error) => error))
     }
     return Promise.all(loadPromises)
   }
-  async write<T extends keyof RethinkTypes, P extends RType<T>>(
-    table: T,
-    id: string,
-    updater: Updater<P>
-  ) {
+  async write<P extends DBType[T]>(table: T, id: string, updater: Updater<P>) {
     if (this.hasWriteDispatched) {
       this.hasWriteDispatched = false
       this.writes = [] as (RWrite<P> & {resolve: (payload: any) => void})[]
       resolvedPromise.then(() => {
-        process.nextTick(this.dispatchWrite)
+        process.nextTick(this.dispatchWriteBatch)
       })
     }
     return new Promise<P>((resolve) => {
@@ -154,19 +161,12 @@ export default class LocalCache {
     })
   }
 
-  async writeMany<T extends keyof RethinkTypes, P extends RType<T>>(
-    table: T,
-    ids: string[],
-    updater: Updater<P>
-  ) {
+  async writeMany<P extends DBType[T]>(table: T, ids: string[], updater: Updater<P>) {
     return Promise.all(ids.map((id) => this.write(table, id, updater)))
   }
 
   // currently doesn't support updater functions
-  async writeTable<T extends keyof RethinkTypes, P extends Partial<RType<T>>>(
-    table: T,
-    updater: P
-  ) {
+  async writeTable<P extends Partial<DBType[T]>>(table: T, updater: P) {
     Object.keys(this.cacheMap).forEach((key) => {
       if (!key.startsWith(`${table}:`)) return
       const doc = this.cacheMap[key]

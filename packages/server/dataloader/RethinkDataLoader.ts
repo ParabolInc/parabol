@@ -1,5 +1,5 @@
 import DataLoader from 'dataloader'
-import {RethinkTypes} from '../database/rethinkDriver'
+import {DBType} from '../database/rethinkDriver'
 import * as customLoaderMakers from './customLoaderMakers'
 import fkLoader from './fkLoader'
 import * as foreignLoaderMakers from './foreignLoaderMakers'
@@ -23,7 +23,7 @@ type Loaders = keyof LoaderMakers
 
 type PrimaryLoaderMakers = typeof primaryLoaderMakers
 type PrimaryLoaders = keyof PrimaryLoaderMakers
-type Unprimary<T> = T extends LoaderMakerPrimary<infer U> ? RethinkTypes[U]['type'] : never
+type Unprimary<T> = T extends LoaderMakerPrimary<infer U> ? DBType[U]['type'] : never
 type TypeFromPrimary<T extends PrimaryLoaders> = Unprimary<PrimaryLoaderMakers[T]>
 
 type ForeignLoaderMakers = typeof foreignLoaderMakers

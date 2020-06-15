@@ -1,4 +1,4 @@
-import getRethink, {RethinkTypes} from '../database/rethinkDriver'
+import getRethink, {DBType} from '../database/rethinkDriver'
 import {RDatum} from '../database/stricterR'
 
 export interface Doc {
@@ -6,7 +6,6 @@ export interface Doc {
   [key: string]: any
 }
 export type Updater<T> = Partial<T> | ((doc: RDatum<T>) => any)
-export type RType<T extends keyof RethinkTypes> = RethinkTypes[T]['type']
 export type RWrite<T> = {id: string; table: T; updater: Updater<T>}
 export default class RethinkDBCache {
   read = async (keys: string[]) => {
@@ -37,7 +36,7 @@ export default class RethinkDBCache {
     })
     return docsByKey
   }
-  write = async <T extends keyof RethinkTypes>(writes: RWrite<T>[]) => {
+  write = async <T extends keyof DBType>(writes: RWrite<T>[]) => {
     const r = await getRethink()
     const reqlParts = writes.map((update) => {
       const {table, id, updater} = update
@@ -47,9 +46,9 @@ export default class RethinkDBCache {
         .update(updater, {returnChanges: true})('changes')(0)('new_val')
         .default(null)
     })
-    return r(reqlParts).run() as Promise<RType<T>[]>
+    return r(reqlParts).run() as Promise<DBType[T][]>
   }
-  writeTable = async <T extends keyof RethinkTypes>(table: T, updater: Partial<RType<T>>) => {
+  writeTable = async <T extends keyof DBType>(table: T, updater: Partial<DBType[T]>) => {
     const r = await getRethink()
     return r
       .table(table)

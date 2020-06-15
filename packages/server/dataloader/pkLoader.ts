@@ -1,9 +1,9 @@
 import DataLoader from 'dataloader'
-import getRethink, {RethinkTypes} from '../database/rethinkDriver'
+import getRethink, {DBType} from '../database/rethinkDriver'
 import normalizeRethinkDbResults from './normalizeRethinkDbResults'
 
-const pkLoader = <T extends keyof RethinkTypes>(
-  options: DataLoader.Options<string, RethinkTypes[T]['type']>,
+const pkLoader = <T extends keyof DBType>(
+  options: DataLoader.Options<string, DBType[T]>,
   table: T
 ) => {
   // don't pass in a a filter here because they requested a specific ID, they know what they want
@@ -13,9 +13,9 @@ const pkLoader = <T extends keyof RethinkTypes>(
       .table(table)
       .getAll(r.args(keys), {index: 'id'})
       .run()) as any
-    return normalizeRethinkDbResults<RethinkTypes[T]['type']>(keys, docs)
+    return normalizeRethinkDbResults<DBType[T]>(keys, docs)
   }
-  return new DataLoader<string, RethinkTypes[T]['type']>(batchFn, options)
+  return new DataLoader<string, DBType[T]>(batchFn, options)
 }
 
 export default pkLoader

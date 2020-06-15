@@ -1,8 +1,8 @@
 import DataLoader from 'dataloader'
-import {RethinkTypes} from '../database/rethinkDriver'
+import {DBType} from '../database/rethinkDriver'
 import db from '../db'
 
-export default class ProxiedCache<T extends keyof RethinkTypes> implements DataLoader<string, T> {
+export default class ProxiedCache<T extends keyof DBType> implements DataLoader<string, T> {
   table: T
   constructor(table: T) {
     this.table = table
