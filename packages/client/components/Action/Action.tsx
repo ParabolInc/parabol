@@ -62,7 +62,7 @@ const Action = memo(() => {
               path='/retrospective-demo/:localPhaseSlug?/:stageIdxSlug?'
               component={DemoMeeting}
             />
-            <Route path='/retrospective-demo-summary' component={DemoSummary} />
+            <Route path='/retrospective-demo-summary/:urlAction?' component={DemoSummary} />
             <Route
               exact
               path={`/forgot-password`}
