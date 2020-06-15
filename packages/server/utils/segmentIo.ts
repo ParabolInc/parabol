@@ -20,14 +20,13 @@ segmentIo.track = async (options) => {
     .digest('base64')
   const {userId, event, properties} = options
   const user = await db.read('User', options.userId)
-  const {email, tier} = user
+  const {email} = user
   return (segmentIo as any)._track({
     userId,
     event,
     properties: {
       ...properties,
-      email,
-      tier
+      email
     },
     timestamp: now,
     parabolToken: parabolToken as any

@@ -72,11 +72,11 @@ export default class RedisCache<T extends keyof DBType> {
   write = async (writes: RWrite<T>[]) => {
     const results = await this.rethinkDBCache.write(writes)
     const redisWrites = [] as string[][]
-    results.map((result, idx) => {
+    results.forEach((result, idx) => {
+      // result will be null if the underlying document is not found
       if (!result) return
       const write = writes[idx]
-      const {table} = write
-      const {id} = result
+      const {table, id} = write
       const key = `${table}:${id}`
       redisWrites.push(msetpx(key, result))
     })

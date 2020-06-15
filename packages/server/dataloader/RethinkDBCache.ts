@@ -40,13 +40,16 @@ export default class RethinkDBCache {
     const r = await getRethink()
     const reqlParts = writes.map((update) => {
       const {table, id, updater} = update
-      return r
-        .table(table)
-        .get(id)
-        .update(updater, {returnChanges: true})('changes')(0)('new_val')
-        .default(null)
+      return (
+        r
+          .table(table)
+          .get(id)
+          // "always" will return the document whether it has changed or not
+          .update(updater, {returnChanges: 'always'})('changes')(0)('new_val')
+          .default(null)
+      )
     })
-    return r(reqlParts).run() as Promise<DBType[T][]>
+    return r(reqlParts).run() as Promise<(DBType[T] | null)[]>
   }
   writeTable = async <T extends keyof DBType>(table: T, updater: Partial<DBType[T]>) => {
     const r = await getRethink()
