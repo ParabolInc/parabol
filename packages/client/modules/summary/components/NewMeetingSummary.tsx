@@ -6,6 +6,7 @@ import useDocumentTitle from '../../../hooks/useDocumentTitle'
 import useRouter from '../../../hooks/useRouter'
 import {PALETTE} from '../../../styles/paletteV2'
 import {MEETING_SUMMARY_LABEL} from '../../../utils/constants'
+import isDemoRoute from '../../../utils/isDemoRoute'
 import makeHref from '../../../utils/makeHref'
 import {NewMeetingSummary_viewer} from '../../../__generated__/NewMeetingSummary_viewer.graphql'
 import {demoTeamId} from '../../demo/initDB'
@@ -36,7 +37,9 @@ const NewMeetingSummary = (props: Props) => {
   useDocumentTitle(title, 'Summary')
   const meetingUrl = makeHref(`/meet/${meetingId}`)
   const teamDashUrl = `/team/${teamId}`
-  const emailCSVUrl = `/new-summary/${meetingId}/csv`
+  const emailCSVUrl = isDemoRoute()
+    ? `/retrospective-demo-summary/csv`
+    : `/new-summary/${meetingId}/csv`
   return (
     <div style={{backgroundColor: PALETTE.BACKGROUND_MAIN, minHeight: '100vh'}}>
       <MeetingSummaryEmail
