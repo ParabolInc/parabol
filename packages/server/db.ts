@@ -8,7 +8,7 @@
  * Stage 2 listens for invalidations coming from other nodes and invalidates Stage 1 when necessary (WIP, stuck on Redis v6)
  *
  * READS:
- *    Stage 1 caches the record inside a Promise. if not found, it it queries Stage 2, caches the result, and returns
+ *    Stage 1 caches the record inside a Promise. if not found, it queries Stage 2, caches the result, and returns
  *    Stage 2 gets the missing items & looks them up in redis. If not found, it queries Stage 3, caches the result, and returns
  *    Stage 3 sends a single batched query to RethinkDB containing all items not present in Stage 2
  *
