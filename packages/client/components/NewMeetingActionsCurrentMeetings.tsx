@@ -38,17 +38,15 @@ interface Props {
 }
 
 const NewMeetingActionsCurrentMeetings = (props: Props) => {
-  const {meetingType, team} = props
+  const {team} = props
   const isDesktop = useBreakpoint(Breakpoint.NEW_MEETING_GRID)
   const {togglePortal, originRef, menuPortal, menuProps} = useMenu<HTMLButtonElement>(
     MenuPosition.LOWER_RIGHT,
     {isDropdown: true}
   )
   const {activeMeetings} = team
-  const activeMeetingsOfType = activeMeetings.filter(
-    (meeting) => meeting.meetingType === meetingType
-  )
-  const meetingCount = activeMeetingsOfType.length
+
+  const meetingCount = activeMeetings.length
   const label = `${meetingCount} Active ${plural(meetingCount, 'Meeting')}`
   if (meetingCount === 0 && !isDesktop) return null
   return (
@@ -62,7 +60,7 @@ const NewMeetingActionsCurrentMeetings = (props: Props) => {
         <ForumIcon>forum</ForumIcon>
         {label}
       </CurrentButton>
-      {menuPortal(<SelectMeetingDropdown menuProps={menuProps} meetings={activeMeetingsOfType!} />)}
+      {menuPortal(<SelectMeetingDropdown menuProps={menuProps} meetings={activeMeetings!} />)}
     </>
   )
 }
