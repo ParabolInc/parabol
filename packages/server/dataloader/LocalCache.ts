@@ -1,7 +1,6 @@
-import ms from 'ms'
 import {DBType} from '../database/rethinkDriver'
 import RedisCache from './RedisCache'
-import {Doc, RWrite, Updater} from './RethinkDBCache'
+import {RWrite, Updater} from './RethinkDBCache'
 
 const resolvedPromise = Promise.resolve()
 
@@ -23,10 +22,11 @@ export default class LocalCache<T extends keyof DBType> {
     resolve: (payload: any) => void
     updater: Updater<DBType[T]>
   }[]
-  private ttl = ms('1h')
+  private ttl: number
   private redisCache = new RedisCache()
   // private redisCache = new RedisCache(this.clearLocal)
-  constructor() {
+  constructor(ttl: number) {
+    this.ttl = ttl
     setInterval(this.gc, this.ttl).unref()
   }
 
@@ -80,7 +80,7 @@ export default class LocalCache<T extends keyof DBType> {
     delete this.cacheMap[key]
     return this
   }
-  private primeLocal(key: string, doc: Doc) {
+  private primeLocal(key: string, doc: DBType[keyof DBType]) {
     this.cacheMap[key] = {
       ts: Date.now(),
       promise: Promise.resolve(doc)

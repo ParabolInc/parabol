@@ -22,7 +22,8 @@
  *    ProxiedCache maps the LocalCache to the DataLoader API so the dataloader worker can use it
  */
 
+import ms from 'ms'
 import LocalCache from './dataloader/LocalCache'
 
-const db = new LocalCache()
+const db = new LocalCache(ms('1h'))
 export default db

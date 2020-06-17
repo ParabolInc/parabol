@@ -1,7 +1,7 @@
 import Redis from 'ioredis'
 import ms from 'ms'
 import {DBType} from '../database/rethinkDriver'
-import RethinkDBCache, {Doc, RWrite} from './RethinkDBCache'
+import RethinkDBCache, {RWrite} from './RethinkDBCache'
 
 const TTL = ms('3h')
 
@@ -42,19 +42,16 @@ export default class RedisCache<T extends keyof DBType> {
   // }
   read = async (fetches: {table: T; id: string}[]) => {
     // this.trackInvalidations(fetches)
-    const keys = fetches.map(({table, id}) => `${table}:${id}`)
-    const cachedDocs = await this.redis.mget(...keys)
+    const fetchKeys = fetches.map(({table, id}) => `${table}:${id}`)
+    const cachedDocs = await this.redis.mget(...fetchKeys)
     const missingKeys = [] as string[]
-    const parsedDocs = [] as {id: string}[]
     for (let i = 0; i < cachedDocs.length; i++) {
       const cachedDoc = cachedDocs[i]
       if (cachedDoc === null) {
-        missingKeys.push(keys[i])
-      } else {
-        parsedDocs.push(JSON.parse(cachedDoc))
+        missingKeys.push(fetchKeys[i])
       }
     }
-    if (missingKeys.length === 0) return parsedDocs
+    if (missingKeys.length === 0) return cachedDocs.map((doc) => JSON.parse(doc!))
     const docsByKey = await this.rethinkDBCache.read(missingKeys)
     const writes = [] as string[][]
     Object.keys(docsByKey).forEach((key) => {
@@ -62,10 +59,9 @@ export default class RedisCache<T extends keyof DBType> {
     })
     // don't wait for redis to populate the local cache
     this.redis.multi(writes).exec()
-    return keys.map((key, idx) => {
+    return fetchKeys.map((key, idx) => {
       const cachedDoc = cachedDocs[idx]
-      if (cachedDoc) return JSON.parse(cachedDoc)
-      return docsByKey[key]
+      return cachedDoc ? JSON.parse(cachedDoc) : docsByKey[key]
     })
   }
 
@@ -88,7 +84,7 @@ export default class RedisCache<T extends keyof DBType> {
   clear = async (key: string) => {
     return this.redis.del(key)
   }
-  prime = async (table: T, docs: Doc[]) => {
+  prime = async (table: T, docs: DBType[T][]) => {
     const writes = docs.map((doc) => {
       return msetpx(`${table}:${doc.id}`, doc)
     })

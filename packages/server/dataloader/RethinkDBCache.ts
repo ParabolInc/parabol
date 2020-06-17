@@ -1,14 +1,10 @@
 import getRethink, {DBType} from '../database/rethinkDriver'
 import {RDatum} from '../database/stricterR'
 
-export interface Doc {
-  id: string
-  [key: string]: any
-}
 export type Updater<T> = Partial<T> | ((doc: RDatum<T>) => any)
 export type RWrite<T> = {id: string; table: T; updater: Updater<T>}
 export default class RethinkDBCache {
-  read = async (keys: string[]) => {
+  read = async <T extends keyof DBType>(keys: string[]) => {
     const r = await getRethink()
     const idsByTable = {} as {[table: string]: string[]}
     keys.forEach((key) => {
@@ -16,17 +12,17 @@ export default class RethinkDBCache {
       idsByTable[table] = idsByTable[table] || []
       idsByTable[table].push(id)
     })
-    const reqlObj = {} as {[table: string]: Doc[]}
+    const reqlObj = {} as {[table: string]: DBType[T][]}
     Object.keys(idsByTable).forEach((table) => {
       const ids = idsByTable[table]
       reqlObj[table] = (r
         .table(table as any)
         .getAll(r.args(ids))
-        .coerceTo('array') as unknown) as Doc[]
+        .coerceTo('array') as unknown) as DBType[T][]
     })
 
     const dbDocsByTable = await r(reqlObj).run()
-    const docsByKey = {} as {[key: string]: Doc}
+    const docsByKey = {} as {[key: string]: DBType[T]}
     Object.keys(dbDocsByTable).forEach((table) => {
       const docs = dbDocsByTable[table]
       docs.forEach((doc) => {
