@@ -47,9 +47,18 @@ const AnalyticsPage = () => {
   /* eslint-disable */
   const {href, pathname} = location
   const pathnameRef = useRef(pathname)
+  useEffect(() => {
+    if (!window.analytics) {
+      // we dont use the segment snippet because we can guarantee no call will be made to segment before it's loaded
+      // internally, segment will call an initial page event unless parseFloat(version, 10) !== 0
+      // this knowledge comes from reading the minified analytics.js code
+      const mockSnippet = [] as any
+      mockSnippet.SNIPPET_VERSION = '4.1.0'
+      window.analytics = mockSnippet
+    }
+  }, [])
   const [isSegmentLoaded] = useScript(`https://cdn.segment.com/analytics.js/v1/${key}/analytics.min.js`, {crossOrigin: true})
   const atmosphere = useAtmosphere()
-
   useEffect(() => {
     if (!isSegmentLoaded || !window.analytics) return
     const token = window.localStorage.getItem(LocalStorageKey.APP_TOKEN_KEY)
@@ -78,6 +87,7 @@ const AnalyticsPage = () => {
       const title = document.title || ''
       // This is the magic. Ignore everything after hitting the pipe
       const [pageName] = title.split(' | ')
+      console.log('PAGE', pageName, pathname, href)
       window.analytics.page(pageName, {
         referrer: makeHref(prevPathname),
         title,
