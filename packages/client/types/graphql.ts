@@ -86,21 +86,6 @@ export interface IUser {
   atlassianAuth: IAtlassianAuth | null
 
   /**
-   * Array of identifier + ip pairs
-   */
-  blockedFor: Array<IBlockedUserType | null> | null
-
-  /**
-   * The timestamp of the user was cached
-   */
-  cachedAt: any | null
-
-  /**
-   * The timestamp when the cached user expires
-   */
-  cacheExpiresAt: any | null
-
-  /**
    * The assumed company this organizaiton belongs to
    */
   company: ICompany | null
@@ -119,11 +104,6 @@ export interface IUser {
    * The user email
    */
   email: any
-
-  /**
-   * true if email is verified, false otherwise
-   */
-  emailVerified: boolean | null
 
   /**
    * Any super power given to the user via a super user
@@ -179,11 +159,6 @@ export interface IUser {
   lastMetAt: any | null
 
   /**
-   * The number of logins for this user
-   */
-  loginsCount: number | null
-
-  /**
    * The largest number of consecutive months the user has checked into a meeting
    */
   monthlyStreakMax: number
@@ -192,16 +167,6 @@ export interface IUser {
    * The number of consecutive 30-day intervals that the user has checked into a meeting as of this moment
    */
   monthlyStreakCurrent: number
-
-  /**
-   * Name associated with the user
-   */
-  name: string | null
-
-  /**
-   * Nickname associated with the user
-   */
-  nickname: string | null
 
   /**
    * the most important actions for the user to perform
@@ -234,7 +199,7 @@ export interface IUser {
   picture: any
 
   /**
-   * The application-specific name, defaults to nickname
+   * The application-specific name, defaults to email before the tld
    */
   preferredName: string
 
@@ -2183,23 +2148,6 @@ export interface IAtlassianAuth {
    * The user that the access token is attached to
    */
   userId: string
-}
-
-/**
- * Identifier and IP address blocked
- */
-export interface IBlockedUserType {
-  __typename: 'BlockedUserType'
-
-  /**
-   * The identifier (usually email) of blocked user
-   */
-  identifier: string | null
-
-  /**
-   * The IP address of the blocked user
-   */
-  id: string | null
 }
 
 /**
