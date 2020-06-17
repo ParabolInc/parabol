@@ -3,6 +3,7 @@ import shortid from 'shortid'
 interface Input {
   name: string
   teamId: string
+  scope?: string
 }
 
 export default class ReflectTemplate {
@@ -13,9 +14,10 @@ export default class ReflectTemplate {
   name: string
   teamId: string
   lastUsedAt: Date | undefined
+  scope: string
 
   constructor(input: Input) {
-    const {name, teamId} = input
+    const {name, teamId, scope} = input
     const now = new Date()
     this.id = shortid.generate()
     this.createdAt = now
@@ -23,5 +25,6 @@ export default class ReflectTemplate {
     this.name = name
     this.teamId = teamId
     this.updatedAt = now
+    this.scope = scope || 'team'
   }
 }

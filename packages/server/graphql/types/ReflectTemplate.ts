@@ -6,9 +6,10 @@ import {
   GraphQLObjectType,
   GraphQLString
 } from 'graphql'
+import {GQLContext} from '../graphql'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import RetroPhaseItem from './RetroPhaseItem'
-import {GQLContext} from '../graphql'
+import SharingScopeEnum from './SharingScopeEnum'
 
 const ReflectTemplate = new GraphQLObjectType<any, GQLContext>({
   name: 'ReflectTemplate',
@@ -41,6 +42,10 @@ const ReflectTemplate = new GraphQLObjectType<any, GQLContext>({
         prompts.sort((a, b) => (a.sortOrder < b.sortOrder ? -1 : 1))
         return prompts
       }
+    },
+    scope: {
+      type: GraphQLNonNull(SharingScopeEnum),
+      description: 'Who can see this template'
     },
     teamId: {
       type: new GraphQLNonNull(GraphQLID),

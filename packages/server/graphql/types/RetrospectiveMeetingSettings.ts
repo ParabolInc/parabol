@@ -1,9 +1,9 @@
 import {GraphQLID, GraphQLInt, GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
-import CustomPhaseItem from './CustomPhaseItem'
-import TeamMeetingSettings, {teamMeetingSettingsFields} from './TeamMeetingSettings'
 import {RETRO_PHASE_ITEM} from 'parabol-client/utils/constants'
-import ReflectTemplate from './ReflectTemplate'
 import {GQLContext} from '../graphql'
+import CustomPhaseItem from './CustomPhaseItem'
+import ReflectTemplate from './ReflectTemplate'
+import TeamMeetingSettings, {teamMeetingSettingsFields} from './TeamMeetingSettings'
 
 const RetrospectiveMeetingSettings = new GraphQLObjectType<any, GQLContext>({
   name: 'RetrospectiveMeetingSettings',
@@ -23,6 +23,17 @@ const RetrospectiveMeetingSettings = new GraphQLObjectType<any, GQLContext>({
     totalVotes: {
       type: new GraphQLNonNull(GraphQLInt),
       description: 'The total number of votes each team member receives for the voting phase'
+    },
+    managedTemplateIds: {
+      type: GraphQLNonNull(GraphQLList(GraphQLNonNull(GraphQLID))),
+      description: 'The list of template ids that the team uses that are managed by other teams'
+    },
+    managedTemplates: {
+      type: GraphQLNonNull(GraphQLList(GraphQLNonNull(ReflectTemplate))),
+      description: 'The list of templates that the team uses that are managed by other teams',
+      resolve: ({managedTemplateIds}, _args, {dataLoader}) => {
+        return dataLoader.get('reflectTemplates').loadMany(managedTemplateIds)
+      }
     },
     maxVotesPerGroup: {
       type: new GraphQLNonNull(GraphQLInt),
