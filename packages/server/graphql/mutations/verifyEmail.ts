@@ -5,6 +5,7 @@ import AuthIdentityLocal from '../../database/types/AuthIdentityLocal'
 import AuthToken from '../../database/types/AuthToken'
 import EmailVerification from '../../database/types/EmailVerification'
 import User from '../../database/types/User'
+import db from '../../db'
 import createNewLocalUser from '../../utils/createNewLocalUser'
 import encodeAuthToken from '../../utils/encodeAuthToken'
 import rateLimit from '../rateLimit'
@@ -59,11 +60,7 @@ export default {
       if (!localIdentity.isEmailVerified) {
         // mutative
         localIdentity.isEmailVerified = true
-        await r
-          .table('User')
-          .get(userId)
-          .update({identities, updatedAt: now})
-          .run()
+        await db.write('User', userId, {identities, updatedAt: now})
       }
       return {authToken, userId}
     }

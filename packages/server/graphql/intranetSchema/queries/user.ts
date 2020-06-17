@@ -1,5 +1,6 @@
 import {GraphQLID, GraphQLString} from 'graphql'
 import getRethink from '../../../database/rethinkDriver'
+import db from '../../../db'
 import {requireSU} from '../../../utils/authorization'
 import User from '../../types/User'
 
@@ -27,11 +28,7 @@ const user = {
         .default(null)
         .run()
     }
-    return r
-      .table('User')
-      .get(userId)
-      .default(null)
-      .run()
+    return db.read('User', userId)
   }
 }
 

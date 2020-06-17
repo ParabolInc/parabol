@@ -9,6 +9,7 @@ import Task from '../database/types/Task'
 import {ThreadSource} from '../database/types/ThreadSource'
 import AtlassianServerManager from '../utils/AtlassianServerManager'
 import normalizeRethinkDbResults from './normalizeRethinkDbResults'
+import ProxiedCache from './ProxiedCache'
 import RethinkDataLoader from './RethinkDataLoader'
 
 type AccessTokenKey = {teamId: string; userId: string}
@@ -51,6 +52,10 @@ const threadableLoaders = [
 // export type LoaderMakerCustom<K, V, C = K> = (parent: RethinkDataLoader) => DataLoader<K, V, C>
 
 // TODO: refactor if the interface pattern is used a total of 3 times
+
+export const users = () => {
+  return new ProxiedCache('User')
+}
 
 export const commentCountByThreadId = (parent: RethinkDataLoader) => {
   return new DataLoader<string, number, string>(

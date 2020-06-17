@@ -9,7 +9,7 @@ import User from '../database/types/User'
 import {DataLoaderWorker} from '../graphql/graphql'
 import addTeamMemberToMeetings from '../graphql/mutations/helpers/addTeamMemberToMeetings'
 import getNewTeamLeadUserId from '../safeQueries/getNewTeamLeadUserId'
-import setUserTierForOrgId from '../utils/setUserTierForOrgId'
+import setUserTierForUserIds from '../utils/setUserTierForUserIds'
 import addTeamIdToTMS from './addTeamIdToTMS'
 import insertNewTeamMember from './insertNewTeamMember'
 
@@ -109,8 +109,7 @@ const acceptTeamInvitation = async (
     } catch (e) {
       console.log(e)
     }
-    // wildly inefficient, updating everyone on the org, but not a hot query
-    await setUserTierForOrgId(orgId)
+    await setUserTierForUserIds([userId])
   }
 
   // if a meeting is going on right now, add them

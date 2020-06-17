@@ -7,7 +7,6 @@ interface Input {
   id?: string
   preferredName: string
   email: string
-  emailVerified?: boolean
   featureFlags?: string[]
   lastSeenAt?: Date
   lastSeenAtURL?: string
@@ -29,7 +28,6 @@ export default class User {
   connectedSockets: string[]
   preferredName: string
   email: string
-  emailVerified: boolean
   featureFlags: string[]
   lastSeenAt: Date | null
   lastSeenAtURL: string | null
@@ -55,7 +53,6 @@ export default class User {
       createdAt,
       picture,
       updatedAt,
-      emailVerified,
       featureFlags,
       lastSeenAt,
       lastSeenAtURL,
@@ -80,7 +77,6 @@ export default class User {
     this.createdAt = createdAt || now
     this.picture = picture || `${AVATAR_BUCKET}/${avatarName}.png`
     this.updatedAt = updatedAt || now
-    this.emailVerified = emailVerified || false
     this.featureFlags = featureFlags || []
     this.identities = identities || []
     this.inactive = inactive || false

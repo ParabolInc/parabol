@@ -7,6 +7,7 @@ import linkify from 'parabol-client/utils/linkify'
 import makeUserServerSchema from 'parabol-client/validation/makeUserServerSchema'
 import getRethink from '../../database/rethinkDriver'
 import TeamMember from '../../database/types/TeamMember'
+import db from '../../db'
 import {getUserId, isAuthenticated} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import segmentIo from '../../utils/segmentIo'
@@ -64,17 +65,15 @@ const updateUserProfile = {
       updatedAt: now
     }
     // propagate denormalized changes to TeamMember
-    const {teamMembers} = await r({
-      teamMembers: (r
+    const [teamMembers] = await Promise.all([
+      (r
         .table('TeamMember')
         .getAll(userId, {index: 'userId'})
         .update(updates, {returnChanges: true})('changes')('new_val')
-        .default([]) as unknown) as TeamMember[],
-      user: r
-        .table('User')
-        .get(userId)
-        .update(updates)
-    }).run()
+        .default([])
+        .run() as unknown) as TeamMember[],
+      db.write('User', userId, updates)
+    ])
     //
     // If we ever want to delete the previous profile images:
     //

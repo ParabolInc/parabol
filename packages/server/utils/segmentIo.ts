@@ -1,30 +1,10 @@
 import SegmentIo from 'analytics-node'
 import crypto from 'crypto'
-import getRethink from '../database/rethinkDriver'
+import db from '../db'
 import PROD from '../PROD'
 import {toEpochSeconds} from './epochTime'
-import getRedis from './getRedis'
-import sendToSentry from './sendToSentry'
 
 const {SEGMENT_WRITE_KEY, SERVER_SECRET} = process.env
-
-const getEmail = async (userId: string) => {
-  const redis = getRedis()
-  const key = `email:${userId}`
-  const email = await redis.get(key)
-  if (email) return email
-  const r = await getRethink()
-  const dbEmail = await r
-    .table('User')
-    .get(userId)('email')
-    .run()
-  if (!dbEmail) {
-    sendToSentry(new Error('Email for user not found'), {userId})
-    return ''
-  }
-  await redis.set(key, dbEmail)
-  return dbEmail
-}
 
 const segmentIo = new SegmentIo(SEGMENT_WRITE_KEY || 'x', {
   flushAt: PROD ? 20 : 1,
@@ -39,7 +19,8 @@ segmentIo.track = async (options) => {
     .update(ts)
     .digest('base64')
   const {userId, event, properties} = options
-  const email = await getEmail(options.userId as string)
+  const user = await db.read('User', options.userId)
+  const {email} = user
   return (segmentIo as any)._track({
     userId,
     event,

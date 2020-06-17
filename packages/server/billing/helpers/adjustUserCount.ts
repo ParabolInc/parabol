@@ -4,6 +4,7 @@ import getRethink from '../../database/rethinkDriver'
 import InvoiceItemHook from '../../database/types/InvoiceItemHook'
 import Organization from '../../database/types/Organization'
 import OrganizationUser from '../../database/types/OrganizationUser'
+import db from '../../db'
 import {toEpochSeconds} from '../../utils/epochTime'
 import getActiveDomainForOrgId from '../../utils/getActiveDomainForOrgId'
 import getDomainFromEmail from '../../utils/getDomainFromEmail'
@@ -23,11 +24,9 @@ const maybeUpdateOrganizationActiveDomain = async (orgId: string, userId: string
   if (isActiveDomainTouched) return
 
   //don't modify if the user doesn't have a company tld or has the same tld as the active one
-  const newUserEmail = await r
-    .table('User')
-    .get(userId)('email')
-    .run()
-  const newUserDomain = getDomainFromEmail(newUserEmail)
+  const newUser = await db.read('User', userId)
+  const {email} = newUser
+  const newUserDomain = getDomainFromEmail(email)
   if (!isCompanyDomain(newUserDomain) || newUserDomain === activeDomain) return
 
   // don't modify if we can't guess the domain or the domain we guess is the current domain
@@ -47,19 +46,17 @@ const changePause = (inactive: boolean) => async (_orgIds: string[], userId: str
   const r = await getRethink()
   segmentIo.track({
     userId,
-    event: inactive ? 'Account Paused' : 'Account Unpaused',
+    event: inactive ? 'Account Paused' : 'Account Unpaused'
   })
-  return r({
-    user: r
-      .table('User')
-      .get(userId)
-      .update({inactive}),
-    organizationUser: r
+  return Promise.all([
+    db.write('User', userId, {inactive}),
+    r
       .table('OrganizationUser')
       .getAll(userId, {index: 'userId'})
       .filter({removedAt: null})
       .update({inactive})
-  }).run()
+      .run()
+  ])
 }
 
 const addUser = async (orgIds: string[], userId: string) => {
@@ -148,10 +145,7 @@ export default async function adjustUserCount(
   if (proOrgs.length === 0) return
   if (type === InvoiceItemType.REMOVE_USER) {
     // if the user is paused, they've already been removed from stripe
-    const user = await r
-      .table('User')
-      .get(userId)
-      .run()
+    const user = await db.read('User', userId)
     if (user.inactive) {
       return
     }

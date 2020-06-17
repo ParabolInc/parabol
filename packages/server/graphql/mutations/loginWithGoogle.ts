@@ -4,6 +4,7 @@ import getRethink from '../../database/rethinkDriver'
 import AuthIdentityGoogle from '../../database/types/AuthIdentityGoogle'
 import AuthToken from '../../database/types/AuthToken'
 import User from '../../database/types/User'
+import db from '../../db'
 import encodeAuthToken from '../../utils/encodeAuthToken'
 import GoogleServerManager from '../../utils/GoogleServerManager'
 import standardError from '../../utils/standardError'
@@ -74,13 +75,7 @@ const loginWithGoogle = {
             id: sub
           })
           identities.push(googleIdentity) // mutative
-          await r
-            .table('User')
-            .get(viewerId)
-            .update({
-              identities
-            })
-            .run()
+          await db.write('User', viewerId, {identities})
         }
         // MUTATIVE
         context.authToken = new AuthToken({sub: viewerId, rol, tms: existingUser.tms})

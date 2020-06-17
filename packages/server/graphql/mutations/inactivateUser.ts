@@ -1,14 +1,14 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
+import {InvoiceItemType, Threshold} from 'parabol-client/types/constEnums'
+import {TierEnum} from 'parabol-client/types/graphql'
 import adjustUserCount from '../../billing/helpers/adjustUserCount'
 import getRethink from '../../database/rethinkDriver'
+import Organization from '../../database/types/Organization'
+import db from '../../db'
 import {getUserId, isOrgLeaderOfUser} from '../../utils/authorization'
 import {toEpochSeconds} from '../../utils/epochTime'
-import InactivateUserPayload from '../types/InactivateUserPayload'
 import standardError from '../../utils/standardError'
-import {TierEnum} from 'parabol-client/types/graphql'
-import {InvoiceItemType, Threshold} from 'parabol-client/types/constEnums'
-import User from '../../database/types/User'
-import Organization from '../../database/types/Organization'
+import InactivateUserPayload from '../types/InactivateUserPayload'
 
 export default {
   type: InactivateUserPayload,
@@ -28,9 +28,9 @@ export default {
     }
 
     // VALIDATION
-    const {user, orgs} = await r({
-      user: (r.table('User').get(userId) as unknown) as User,
-      orgs: (r
+    const [user, orgs] = await Promise.all([
+      db.read('User', userId),
+      (r
         .table('OrganizationUser')
         .getAll(userId, {index: 'userId'})
         .filter({removedAt: null})('orgId')
@@ -40,8 +40,9 @@ export default {
             .table('Organization')
             .getAll(r.args(orgIds), {index: 'id'})
             .coerceTo('array')
-        }) as unknown) as Organization[]
-    }).run()
+        })
+        .run() as unknown) as Organization[]
+    ])
     if (user.inactive) {
       return standardError(new Error('User already inactivated'), {userId: viewerId})
     }

@@ -42,7 +42,7 @@ import Team from './types/Team'
 import TimelineEvent from './types/TimelineEvent'
 import User from './types/User'
 
-export type RethinkTypes = {
+export type RethinkSchema = {
   AgendaItem: {
     type: AgendaItem
     index: 'teamId' | 'meetingId'
@@ -101,13 +101,13 @@ export type RethinkTypes = {
   }
   Notification: {
     type:
-    | NotificationTaskInvolves
-    | NotificationTeamArchived
-    | NotificationMeetingStageTimeLimitEnd
-    | NotificationPaymentRejected
-    | NotificationKickedOut
-    | NotificationPromoteToBillingLeader
-    | NotificationTeamInvitation
+      | NotificationTaskInvolves
+      | NotificationTeamArchived
+      | NotificationMeetingStageTimeLimitEnd
+      | NotificationPaymentRejected
+      | NotificationKickedOut
+      | NotificationPromoteToBillingLeader
+      | NotificationTeamInvitation
     index: 'userId'
   }
   Organization: {
@@ -202,7 +202,11 @@ export type RethinkTypes = {
   }
 }
 
-type ParabolR = R<RethinkTypes>
+export type DBType = {
+  [P in keyof RethinkSchema]: RethinkSchema[P]['type']
+}
+
+type ParabolR = R<RethinkSchema>
 
 const config = getRethinkConfig()
 let isLoading = false

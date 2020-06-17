@@ -1,9 +1,9 @@
 import DataLoader from 'dataloader'
-import {RethinkTypes} from '../database/rethinkDriver'
+import {DBType} from '../database/rethinkDriver'
 
-const fkLoader = <T extends keyof RethinkTypes>(
-  standardLoader: DataLoader<string, RethinkTypes[T]['type']>,
-  options: DataLoader.Options<string, RethinkTypes[T]['type']>,
+const fkLoader = <T extends keyof DBType>(
+  standardLoader: DataLoader<string, DBType[T]>,
+  options: DataLoader.Options<string, DBType[T]>,
   field: string,
   fetchFn: (ids: string[]) => any[] | Promise<any[]>
 ) => {
@@ -14,7 +14,7 @@ const fkLoader = <T extends keyof RethinkTypes>(
     })
     return ids.map((id) => items.filter((item) => item[field] === id))
   }
-  return new DataLoader<string, RethinkTypes[T]['type']>(batchFn, options)
+  return new DataLoader<string, DBType[T]>(batchFn, options)
 }
 
 export default fkLoader

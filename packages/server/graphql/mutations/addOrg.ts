@@ -3,8 +3,8 @@ import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {SuggestedActionTypeEnum} from 'parabol-client/types/graphql'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import shortid from 'shortid'
-import getRethink from '../../database/rethinkDriver'
 import AuthToken from '../../database/types/AuthToken'
+import db from '../../db'
 import removeSuggestedAction from '../../safeMutations/removeSuggestedAction'
 import {getUserId} from '../../utils/authorization'
 import encodeAuthToken from '../../utils/encodeAuthToken'
@@ -33,7 +33,6 @@ export default {
   },
   resolve: rateLimit({perMinute: 2, perHour: 8})(
     async (_source, args, {authToken, dataLoader, socketId: mutatorId}) => {
-      const r = await getRethink()
       const operationId = dataLoader.share()
       const subOptions = {mutatorId, operationId}
 
@@ -52,10 +51,8 @@ export default {
       // RESOLUTION
       const orgId = shortid.generate()
       const teamId = shortid.generate()
-      const email = await r
-        .table('User')
-        .get(viewerId)('email')
-        .run()
+      const user = await db.read('User', viewerId)
+      const {email} = user
       await createNewOrg(orgId, orgName, viewerId, email)
       await createTeamAndLeader(viewerId, {id: teamId, orgId, isOnboardTeam: false, ...newTeam})
 

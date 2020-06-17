@@ -1,6 +1,7 @@
 import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import getRethink from '../../database/rethinkDriver'
 import User from '../../database/types/User'
+import db from '../../db'
 import {getUserId, isSuperUser} from '../../utils/authorization'
 import segmentIo from '../../utils/segmentIo'
 import {GQLContext} from '../graphql'
@@ -57,15 +58,11 @@ export default {
     await Promise.all(
       orgIds.map((orgId) => removeFromOrg(userIdToDelete, orgId, undefined, dataLoader))
     )
-    await r
-      .table('User')
-      .get(userIdToDelete)
-      .update({
-        isRemoved: true,
-        email: 'DELETED',
-        reasonRemoved: validReason
-      })
-      .run()
+    await db.write('User', userIdToDelete, {
+      isRemoved: true,
+      email: 'DELETED',
+      reasonRemoved: validReason
+    })
     segmentIo.track({
       userId,
       event: 'Account Removed',
