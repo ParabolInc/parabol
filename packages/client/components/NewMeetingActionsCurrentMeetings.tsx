@@ -14,6 +14,7 @@ import {MeetingTypeEnum} from '../types/graphql'
 import FlatButton from './FlatButton'
 import Icon from './Icon'
 import SelectMeetingDropdown from './SelectMeetingDropdown'
+import useSnacksForNewMeetings from '~/hooks/useSnacksForNewMeetings'
 
 const CurrentButton = styled(FlatButton)<{hasMeetings: boolean}>(({hasMeetings}) => ({
   color: PALETTE.BACKGROUND_PINK,
@@ -46,6 +47,8 @@ const NewMeetingActionsCurrentMeetings = (props: Props) => {
   )
   const {activeMeetings} = team
 
+  useSnacksForNewMeetings(activeMeetings)
+
   const meetingCount = activeMeetings.length
   const label = `${meetingCount} Active ${plural(meetingCount, 'Meeting')}`
   if (meetingCount === 0 && !isDesktop) return null
@@ -72,6 +75,17 @@ export default createFragmentContainer(NewMeetingActionsCurrentMeetings, {
       activeMeetings {
         ...SelectMeetingDropdown_meetings
         meetingType
+        id
+        createdAt
+        facilitator {
+          id
+          preferredName
+        }
+        meetingType
+        name
+        team {
+          name
+        }
       }
     }
   `
