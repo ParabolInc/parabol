@@ -12,7 +12,7 @@ const msetpx = (key: string, value: object) => {
 
 export default class RedisCache<T extends keyof DBType> {
   rethinkDBCache = new RethinkDBCache()
-  redis = new Redis(process.env.REDIS_URL)
+  redis?: Redis.Redis
   // remote invalidation is stuck on upgrading to Redis v6 in prod
   // invalidator = new Redis(process.env.REDIS_URL)
   cachedTypes = new Set<string>()
@@ -25,7 +25,7 @@ export default class RedisCache<T extends keyof DBType> {
   //   this.invalidator.on('message', (_channel, key) => {
   //     clearLocal(key)
   //   })
-  //   this.invalidatorClientId = await this.redis.client('id')
+  //   this.invalidatorClientId = await this.getRedis().client('id')
   // }
   // private trackInvalidations(fetches: {table: T}[]) {
   //   // This O(N) operation could be O(1), but that requires updating the prefixes as we cache more things
@@ -36,14 +36,20 @@ export default class RedisCache<T extends keyof DBType> {
   //       this.cachedTypes.add(table)
   //       // whenever any key starts with the ${table} prefix gets set, send an invalidation message to the invalidator
   //       // noloop is used to exclude sending the message to the client that called set
-  //       this.redis.client('TRACKING', 'ON', 'REDIRECT', this.invalidatorClientId, 'BCAST', 'NOLOOP', 'PREFIX', table)
+  //       this.getRedis().client('TRACKING', 'ON', 'REDIRECT', this.invalidatorClientId, 'BCAST', 'NOLOOP', 'PREFIX', table)
   //     }
   //   }
   // }
+  private getRedis() {
+    if (!this.redis) {
+      this.redis = new Redis(process.env.REDIS_URL)
+    }
+    return this.redis
+  }
   read = async (fetches: {table: T; id: string}[]) => {
     // this.trackInvalidations(fetches)
     const fetchKeys = fetches.map(({table, id}) => `${table}:${id}`)
-    const cachedDocs = await this.redis.mget(...fetchKeys)
+    const cachedDocs = await this.getRedis().mget(...fetchKeys)
     const missingKeys = [] as string[]
     for (let i = 0; i < cachedDocs.length; i++) {
       const cachedDoc = cachedDocs[i]
@@ -58,7 +64,9 @@ export default class RedisCache<T extends keyof DBType> {
       writes.push(msetpx(key, docsByKey[key]))
     })
     // don't wait for redis to populate the local cache
-    this.redis.multi(writes).exec()
+    this.getRedis()
+      .multi(writes)
+      .exec()
     return fetchKeys.map((key, idx) => {
       const cachedDoc = cachedDocs[idx]
       return cachedDoc ? JSON.parse(cachedDoc) : docsByKey[key]
@@ -77,33 +85,39 @@ export default class RedisCache<T extends keyof DBType> {
       redisWrites.push(msetpx(key, result))
     })
     // awaiting redis isn't strictly required, can get speedboost by removing the wait
-    await this.redis.multi(redisWrites).exec()
+    await this.getRedis()
+      .multi(redisWrites)
+      .exec()
     return results
   }
 
   clear = async (key: string) => {
-    return this.redis.del(key)
+    return this.getRedis().del(key)
   }
   prime = async (table: T, docs: DBType[T][]) => {
     const writes = docs.map((doc) => {
       return msetpx(`${table}:${doc.id}`, doc)
     })
-    await this.redis.multi(writes).exec()
+    await this.getRedis()
+      .multi(writes)
+      .exec()
   }
   writeTable = async (table: T, updater: Partial<DBType[T]>) => {
     // inefficient to not update rethink & redis in parallel, but writeTable is uncommon
     await this.rethinkDBCache.writeTable(table, updater)
     return new Promise((resolve) => {
-      const stream = this.redis.scanStream({match: `${table}:*`, count: 100})
+      const stream = this.getRedis().scanStream({match: `${table}:*`, count: 100})
       stream.on('data', async (keys) => {
         stream.pause()
-        const userStrs = await this.redis.mget(...keys)
+        const userStrs = await this.getRedis().mget(...keys)
         const writes = userStrs.map((userStr, idx) => {
           const user = JSON.parse(userStr!)
           Object.assign(user, updater)
           return msetpx(keys[idx], user)
         })
-        await this.redis.multi(writes).exec()
+        await this.getRedis()
+          .multi(writes)
+          .exec()
         stream.resume()
       })
       stream.on('end', () => {
