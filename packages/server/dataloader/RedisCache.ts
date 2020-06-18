@@ -108,6 +108,7 @@ export default class RedisCache<T extends keyof DBType> {
     return new Promise((resolve) => {
       const stream = this.getRedis().scanStream({match: `${table}:*`, count: 100})
       stream.on('data', async (keys) => {
+        if (!keys?.length) return
         stream.pause()
         const userStrs = await this.getRedis().mget(...keys)
         const writes = userStrs.map((userStr, idx) => {
