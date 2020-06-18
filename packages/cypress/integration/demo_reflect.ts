@@ -42,6 +42,10 @@ describe('Test Reflect page Demo', () => {
 
   })
 
+  beforeEach(() => {
+    cy.viewport(1280, 720)
+  })
+
   it('Test help menu toggle', () => {
     cy.get('[data-cy=help-menu-close]').should('not.exist')
 

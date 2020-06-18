@@ -52,11 +52,16 @@ describe('Test Vote page Demo', () => {
     cy.visitReflect()
       .visitPhase('group')
       .visitPhase('vote')
+    cy.wait(5000)
+  })
+
+  beforeEach(() => {
+    cy.viewport(1280, 720)
   })
 
   it('Check that all personal votes are remaining and no team votes have been used', () => {
     cy.get(`[data-cy=my-votes-remaining]`).should('have.text', '5')
-    cy.wait(3000)
+    cy.wait(5000)
     cy.get(`[data-cy=team-votes-remaining]`).should('have.text', '5')
   })
 

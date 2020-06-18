@@ -115,6 +115,10 @@ describe('Test Group page Demo', () => {
 
   })
 
+  beforeEach(() => {
+    cy.viewport(1280, 720)
+  })
+
   it('Test adding a new reflection during grouping', () => {
     cy.screenshot('move-group-1')
     cy.screenshot('move-group-2')
