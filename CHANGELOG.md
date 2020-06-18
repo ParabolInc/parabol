@@ -5,6 +5,20 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 5.11.0 2020-Jun-18
+
+### Added
+
+- More segment events for the marketing team (#3911)
+- Redis cache for the User object (#3924)
+
+### Fixed
+
+- Correctly get company based on orgId (#3919)
+- Demo Export to CSV feature (#3926)
+- Remove duplicate segment page event (#3941)
+- Early termination of Checkin Meeting doesn't archive tasks (#3941)
+
 ## 5.10.1 2020-Jun-15
 
 ### Fixed
