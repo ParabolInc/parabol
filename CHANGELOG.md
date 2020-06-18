@@ -5,6 +5,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 5.10.1 2020-Jun-15
+
+### Fixed
+- Email password reset is now case insensitive
+
 ## 5.10.0 2020-Jun-10
 
 ### Added
