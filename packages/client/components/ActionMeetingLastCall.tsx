@@ -101,11 +101,11 @@ const ActionMeetingLastCall = (props: Props) => {
             >
               End Check-in Meeting
             </PrimaryButton>
-          ) : (
+          ) : !endedAt ? (
             <MeetingFacilitationHint>
               {'Waiting for'} <b>{preferredName}</b> {`to end the meeting`}
             </MeetingFacilitationHint>
-          )}
+          ) : null}
         </LastCallWrapper>
       </ErrorBoundary>
     </MeetingContent>

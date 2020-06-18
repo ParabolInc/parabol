@@ -254,7 +254,8 @@ const finishMeetingType = async (
   return undefined
 }
 
-const getIsKill = (meetingType: MeetingTypeEnum, phase: GenericMeetingPhase) => {
+const getIsKill = (meetingType: MeetingTypeEnum, phase?: GenericMeetingPhase) => {
+  if (!phase) return false
   switch (meetingType) {
     case MeetingTypeEnum.action:
       return ![AGENDA_ITEMS, LAST_CALL].includes(phase.phaseType)
