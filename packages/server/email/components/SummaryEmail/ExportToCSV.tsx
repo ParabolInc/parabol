@@ -5,9 +5,7 @@ import withAtmosphere, {
 } from 'parabol-client/decorators/withAtmosphere/withAtmosphere'
 import {PALETTE} from 'parabol-client/styles/paletteV2'
 import extractTextFromDraftString from 'parabol-client/utils/draftjs/extractTextFromDraftString'
-import withMutationProps, {
-  WithMutationProps
-} from 'parabol-client/utils/relay/withMutationProps'
+import withMutationProps, {WithMutationProps} from 'parabol-client/utils/relay/withMutationProps'
 import {ExportToCSVQuery} from 'parabol-client/__generated__/ExportToCSVQuery.graphql'
 import React, {Component} from 'react'
 import {fetchQuery} from 'react-relay'
@@ -33,10 +31,34 @@ const query = graphql`
         }
         endedAt
         ... on ActionMeeting {
+          agendaItems {
+            id
+            content
+            thread(first: 1000) {
+              edges {
+                node {
+                  __typename
+                  content
+                  createdAt
+                  createdByUser {
+                    preferredName
+                  }
+                  replies {
+                    content
+                    createdAt
+                    createdByUser {
+                      preferredName
+                    }
+                  }
+                }
+              }
+            }
+          }
           meetingMembers {
             isCheckedIn
             tasks {
               content
+              createdAt
               agendaItem {
                 content
               }
@@ -48,14 +70,35 @@ const query = graphql`
         }
         ... on RetrospectiveMeeting {
           reflectionGroups(sortBy: stageOrder) {
+            id
+            thread(first: 1000) {
+              edges {
+                node {
+                  content
+                  createdAt
+                  createdByUser {
+                    preferredName
+                  }
+                  replies {
+                    content
+                    createdAt
+                    createdByUser {
+                      preferredName
+                    }
+                  }
+                }
+              }
+            }
             reflections {
               content
+              createdAt
               phaseItem {
                 question
               }
             }
             tasks {
               content
+              createdAt
             }
             title
             voteCount
@@ -72,7 +115,9 @@ interface CSVRetroRow {
   title: string
   votes: number
   prompt: string
-  type: 'Task' | 'Reflection'
+  type: 'Task' | 'Reflection' | 'Comment' | 'Reply'
+  createdAt: string
+  replyTo: string
   content: string
 }
 
@@ -80,7 +125,10 @@ interface CSVActionRow {
   user: string
   status: 'present' | 'absent'
   agendaItem: string
-  task: string
+  type: 'Task' | 'Comment' | 'Reply'
+  createdAt: string
+  replyTo: string
+  content: string
 }
 
 const label = 'Export to CSV'
@@ -116,12 +164,14 @@ class ExportToCSV extends Component<Props> {
 
     const rows = [] as CSVRetroRow[]
     reflectionGroups!.forEach((group) => {
-      const {reflections, tasks, title, voteCount: votes} = group
+      const {reflections, tasks, title, voteCount: votes, thread} = group
       tasks.forEach((task) => {
         rows.push({
           title: title!,
           votes,
           type: 'Task',
+          createdAt: task.createdAt,
+          replyTo: '',
           prompt: '',
           content: extractTextFromDraftString(task.content)
         })
@@ -131,8 +181,32 @@ class ExportToCSV extends Component<Props> {
           title: title!,
           votes,
           type: 'Reflection',
+          createdAt: reflection.createdAt!,
+          replyTo: '',
           prompt: reflection.phaseItem.question,
           content: extractTextFromDraftString(reflection.content)
+        })
+      })
+      thread.edges.forEach((edge) => {
+        rows.push({
+          title: title!,
+          votes,
+          type: 'Comment',
+          createdAt: edge.node.createdAt,
+          replyTo: '',
+          prompt: '',
+          content: extractTextFromDraftString(edge.node.content)
+        })
+        edge.node.replies.forEach((reply) => {
+          rows.push({
+            title: title!,
+            votes,
+            type: 'Reply',
+            createdAt: reply.createdAt,
+            replyTo: extractTextFromDraftString(edge.node.content),
+            prompt: '',
+            content: extractTextFromDraftString(reply.content)
+          })
         })
       })
     })
@@ -140,7 +214,7 @@ class ExportToCSV extends Component<Props> {
   }
 
   handleActionMeeting(newMeeting: Meeting) {
-    const {meetingMembers} = newMeeting
+    const {meetingMembers, agendaItems} = newMeeting
 
     const rows = [] as CSVActionRow[]
     meetingMembers!.forEach((meetingMember) => {
@@ -151,18 +225,50 @@ class ExportToCSV extends Component<Props> {
         rows.push({
           user: preferredName,
           status,
-          task: '',
-          agendaItem: ''
+          agendaItem: '',
+          type: 'Task',
+          createdAt: '',
+          replyTo: '',
+          content: ''
         })
         return
       }
       tasks.forEach((task) => {
-        const {content, agendaItem} = task
+        const {content, createdAt, agendaItem} = task
         rows.push({
           user: preferredName,
           status,
-          task: extractTextFromDraftString(content),
-          agendaItem: agendaItem ? agendaItem.content : ''
+          agendaItem: agendaItem ? agendaItem.content : '',
+          type: 'Task',
+          createdAt: createdAt,
+          replyTo: '',
+          content: extractTextFromDraftString(content)
+        })
+      })
+    })
+    agendaItems!.forEach((agendaItem) => {
+      const {thread} = agendaItem
+      thread.edges.forEach((edge) => {
+        if (edge.node.__typename !== 'Comment') return
+        rows.push({
+          user: edge!.node!.createdByUser!.preferredName,
+          status: 'present',
+          agendaItem: agendaItem ? agendaItem.content : '',
+          type: 'Comment',
+          createdAt: edge.node.createdAt,
+          replyTo: '',
+          content: extractTextFromDraftString(edge.node.content)
+        })
+        edge.node.replies.forEach((reply) => {
+          rows.push({
+            user: reply!.createdByUser!.preferredName,
+            status: 'present',
+            agendaItem: agendaItem ? agendaItem.content : '',
+            type: 'Reply',
+            createdAt: reply.createdAt,
+            replyTo: extractTextFromDraftString(edge.node.content),
+            content: extractTextFromDraftString(reply.content)
+          })
         })
       })
     })
