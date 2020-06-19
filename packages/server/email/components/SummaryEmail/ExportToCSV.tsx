@@ -99,6 +99,9 @@ const query = graphql`
             tasks {
               content
               createdAt
+              createdByUser {
+                preferredName
+              }
             }
             title
             voteCount
@@ -113,6 +116,7 @@ type Meeting = NonNullable<NonNullable<ExportToCSVQuery['response']['viewer']>['
 
 interface CSVRetroRow {
   title: string
+  author: string
   votes: number
   prompt: string
   type: 'Task' | 'Reflection' | 'Comment' | 'Reply'
@@ -122,7 +126,7 @@ interface CSVRetroRow {
 }
 
 interface CSVActionRow {
-  user: string
+  author: string
   status: 'present' | 'absent'
   agendaItem: string
   type: 'Task' | 'Comment' | 'Reply'
@@ -168,6 +172,7 @@ class ExportToCSV extends Component<Props> {
       tasks.forEach((task) => {
         rows.push({
           title: title!,
+          author: task!.createdByUser!.preferredName,
           votes,
           type: 'Task',
           createdAt: task.createdAt,
@@ -179,6 +184,7 @@ class ExportToCSV extends Component<Props> {
       reflections.forEach((reflection) => {
         rows.push({
           title: title!,
+          author: 'anonymous',
           votes,
           type: 'Reflection',
           createdAt: reflection.createdAt!,
@@ -190,6 +196,7 @@ class ExportToCSV extends Component<Props> {
       thread.edges.forEach((edge) => {
         rows.push({
           title: title!,
+          author: edge!.node!.createdByUser!.preferredName,
           votes,
           type: 'Comment',
           createdAt: edge.node.createdAt,
@@ -200,6 +207,7 @@ class ExportToCSV extends Component<Props> {
         edge.node.replies.forEach((reply) => {
           rows.push({
             title: title!,
+            author: reply!.createdByUser!.preferredName,
             votes,
             type: 'Reply',
             createdAt: reply.createdAt,
@@ -223,7 +231,7 @@ class ExportToCSV extends Component<Props> {
       const {preferredName} = user
       if (tasks.length === 0) {
         rows.push({
-          user: preferredName,
+          author: preferredName,
           status,
           agendaItem: '',
           type: 'Task',
@@ -236,7 +244,7 @@ class ExportToCSV extends Component<Props> {
       tasks.forEach((task) => {
         const {content, createdAt, agendaItem} = task
         rows.push({
-          user: preferredName,
+          author: preferredName,
           status,
           agendaItem: agendaItem ? agendaItem.content : '',
           type: 'Task',
@@ -251,7 +259,7 @@ class ExportToCSV extends Component<Props> {
       thread.edges.forEach((edge) => {
         if (edge.node.__typename !== 'Comment') return
         rows.push({
-          user: edge!.node!.createdByUser!.preferredName,
+          author: edge!.node!.createdByUser!.preferredName,
           status: 'present',
           agendaItem: agendaItem ? agendaItem.content : '',
           type: 'Comment',
@@ -261,7 +269,7 @@ class ExportToCSV extends Component<Props> {
         })
         edge.node.replies.forEach((reply) => {
           rows.push({
-            user: reply!.createdByUser!.preferredName,
+            author: reply!.createdByUser!.preferredName,
             status: 'present',
             agendaItem: agendaItem ? agendaItem.content : '',
             type: 'Reply',
