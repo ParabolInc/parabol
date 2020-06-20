@@ -74,6 +74,7 @@ const query = graphql`
             thread(first: 1000) {
               edges {
                 node {
+                  __typename
                   content
                   createdAt
                   createdByUser {
@@ -115,7 +116,7 @@ const query = graphql`
 type Meeting = NonNullable<NonNullable<ExportToCSVQuery['response']['viewer']>['newMeeting']>
 
 interface CSVRetroRow {
-  title: string
+  reflectionTitle: string
   author: string
   votes: number
   prompt: string
@@ -171,7 +172,7 @@ class ExportToCSV extends Component<Props> {
       const {reflections, tasks, title, voteCount: votes, thread} = group
       tasks.forEach((task) => {
         rows.push({
-          title: title!,
+          reflectionTitle: title!,
           author: task!.createdByUser!.preferredName,
           votes,
           type: 'Task',
@@ -183,7 +184,7 @@ class ExportToCSV extends Component<Props> {
       })
       reflections.forEach((reflection) => {
         rows.push({
-          title: title!,
+          reflectionTitle: title!,
           author: 'anonymous',
           votes,
           type: 'Reflection',
@@ -194,8 +195,9 @@ class ExportToCSV extends Component<Props> {
         })
       })
       thread.edges.forEach((edge) => {
+        if (edge!.node!.__typename !== 'Comment') return
         rows.push({
-          title: title!,
+          reflectionTitle: title!,
           author: edge!.node!.createdByUser!.preferredName,
           votes,
           type: 'Comment',
@@ -206,7 +208,7 @@ class ExportToCSV extends Component<Props> {
         })
         edge.node.replies.forEach((reply) => {
           rows.push({
-            title: title!,
+            reflectionTitle: title!,
             author: reply!.createdByUser!.preferredName,
             votes,
             type: 'Reply',
@@ -225,10 +227,12 @@ class ExportToCSV extends Component<Props> {
     const {meetingMembers, agendaItems} = newMeeting
 
     const rows = [] as CSVActionRow[]
+    const userStatus = {} as {[id: string]: 'present' | 'absent'}
     meetingMembers!.forEach((meetingMember) => {
       const {isCheckedIn, tasks, user} = meetingMember
       const status = isCheckedIn ? 'present' : 'absent'
       const {preferredName} = user
+      userStatus[preferredName] = status
       if (tasks.length === 0) {
         rows.push({
           author: preferredName,
@@ -258,9 +262,10 @@ class ExportToCSV extends Component<Props> {
       const {thread} = agendaItem
       thread.edges.forEach((edge) => {
         if (edge.node.__typename !== 'Comment') return
+        const authorName = edge!.node!.createdByUser!.preferredName
         rows.push({
-          author: edge!.node!.createdByUser!.preferredName,
-          status: 'present',
+          author: authorName,
+          status: userStatus[authorName],
           agendaItem: agendaItem ? agendaItem.content : '',
           type: 'Comment',
           createdAt: edge.node.createdAt,
@@ -269,8 +274,8 @@ class ExportToCSV extends Component<Props> {
         })
         edge.node.replies.forEach((reply) => {
           rows.push({
-            author: reply!.createdByUser!.preferredName,
-            status: 'present',
+            author: authorName,
+            status: userStatus[authorName],
             agendaItem: agendaItem ? agendaItem.content : '',
             type: 'Reply',
             createdAt: reply.createdAt,
