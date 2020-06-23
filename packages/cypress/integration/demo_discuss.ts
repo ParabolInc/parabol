@@ -156,6 +156,15 @@ function goToPreviousTopic(idx) {
 
 
 describe('Test Discuss page Demo', () => {
+
+  beforeEach(() => {
+    cy.restoreLocalStorageCache()
+  })
+
+  afterEach(() => {
+    cy.saveLocalStorageCache()
+  })
+
   before(function () {
     // runs before all tests in the block
     cy.visitReflect()
@@ -236,6 +245,7 @@ describe('Test Discuss page Demo', () => {
 
   it('can see a meeting summary', () => {
     cy.url().should('include', '/retrospective-demo-summary')
+    cy.reload()
     cy.get('[data-cy=create-account-section').then(($el) => {
       $el.hide()
     })
