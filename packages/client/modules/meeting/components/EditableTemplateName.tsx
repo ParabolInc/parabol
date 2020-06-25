@@ -1,18 +1,19 @@
-import {ReflectTemplateModal_retroMeetingSettings} from '../../../__generated__/ReflectTemplateModal_retroMeetingSettings.graphql'
+import styled from '@emotion/styled'
 import React, {Component} from 'react'
 import EditableText from '../../../components/EditableText'
 import withAtmosphere, {
   WithAtmosphereProps
 } from '../../../decorators/withAtmosphere/withAtmosphere'
-import withMutationProps, {WithMutationProps} from '../../../utils/relay/withMutationProps'
 import RenameReflectTemplateMutation from '../../../mutations/RenameReflectTemplateMutation'
+import withMutationProps, {WithMutationProps} from '../../../utils/relay/withMutationProps'
 import Legitity from '../../../validation/Legitity'
-import styled from '@emotion/styled'
+import {ReflectTemplateModal_retroMeetingSettings} from '../../../__generated__/ReflectTemplateModal_retroMeetingSettings.graphql'
 
 interface Props extends WithAtmosphereProps, WithMutationProps {
   name: string
   templateId: string
-  templates: ReflectTemplateModal_retroMeetingSettings['reflectTemplates']
+  templates: ReflectTemplateModal_retroMeetingSettings['teamTemplates']
+  isOwner: boolean
 }
 
 const InheritedStyles = styled('div')({
@@ -68,17 +69,21 @@ class EditableTemplateName extends Component<Props> {
   }
 
   render() {
-    const {dirty, error, name} = this.props
+    const {dirty, error, name, isOwner} = this.props
     return (
       <InheritedStyles>
-        <EditableText
-          error={dirty ? (error as string) : undefined}
-          handleSubmit={this.handleSubmit}
-          initialValue={name}
-          maxLength={100}
-          validate={this.validate}
-          placeholder={'*New Template'}
-        />
+        {isOwner ? (
+          <EditableText
+            error={dirty ? (error as string) : undefined}
+            handleSubmit={this.handleSubmit}
+            initialValue={name}
+            maxLength={100}
+            validate={this.validate}
+            placeholder={'*New Template'}
+          />
+        ) : (
+          <div>{name}</div>
+        )}
       </InheritedStyles>
     )
   }

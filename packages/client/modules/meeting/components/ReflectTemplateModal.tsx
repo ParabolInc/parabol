@@ -1,24 +1,22 @@
-import {ReflectTemplateModal_retroMeetingSettings} from '../../../__generated__/ReflectTemplateModal_retroMeetingSettings.graphql'
-import memoize from 'micro-memoize'
-import React, {Component} from 'react'
 import styled from '@emotion/styled'
-import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import {PALETTE} from '../../../styles/paletteV2'
+import React, {useEffect, useMemo} from 'react'
+import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import DialogContainer from '../../../components/DialogContainer'
 import Overflow from '../../../components/Overflow'
 import TextOverflow from '../../../components/TextOverflow'
-import withAtmosphere, {
-  WithAtmosphereProps
-} from '../../../decorators/withAtmosphere/withAtmosphere'
+import useAtmosphere from '../../../hooks/useAtmosphere'
+import {PALETTE} from '../../../styles/paletteV2'
 import {Radius} from '../../../types/constEnums'
+import {ReflectTemplateModal_retroMeetingSettings} from '../../../__generated__/ReflectTemplateModal_retroMeetingSettings.graphql'
 import AddNewReflectTemplate from './AddNewReflectTemplate'
 import AddTemplatePrompt from './AddTemplatePrompt'
 import EditableTemplateName from './EditableTemplateName'
 import RemoveTemplate from './RemoveTemplate'
 import TemplatePromptList from './TemplatePromptList'
+import TemplateSharing from './TemplateSharing'
 
-interface Props extends WithAtmosphereProps {
+interface Props {
   retroMeetingSettings: ReflectTemplateModal_retroMeetingSettings
 }
 
@@ -90,97 +88,91 @@ const PromptEditor = styled('div')({
   position: 'relative'
 })
 
-class ReflectTemplateModal extends Component<Props> {
-  constructor(props) {
-    super(props)
-    const {atmosphere, retroMeetingSettings} = props
-    const {settingsId, selectedTemplateId} = retroMeetingSettings
-    commitLocalUpdate(atmosphere, (store) => {
-      const settings = store.get(settingsId)
-      if (!settings) return
-      settings.setValue(selectedTemplateId, 'activeTemplateId')
-    })
-  }
-
-  editTemplate = (templateId: string) => () => {
-    const {atmosphere, retroMeetingSettings} = this.props
-    const {settingsId} = retroMeetingSettings
+const ReflectTemplateModal = (props: Props) => {
+  const {retroMeetingSettings} = props
+  const {
+    id: settingsId,
+    selectedTemplateId,
+    activeTemplateId,
+    teamTemplates,
+    teamId
+  } = retroMeetingSettings
+  const atmosphere = useAtmosphere()
+  const editTemplate = (templateId: string) => () => {
     commitLocalUpdate(atmosphere, (store) => {
       const settings = store.get(settingsId)
       if (!settings) return
       settings.setValue(templateId, 'activeTemplateId')
     })
   }
+  useEffect(() => {
+    editTemplate(selectedTemplateId)()
+  }, [])
 
-  sortedTemplates = memoize(
-    (reflectTemplates: ReflectTemplateModal_retroMeetingSettings['reflectTemplates']) => {
-      const templates = reflectTemplates.slice()
-      templates.sort((a, b) => (a.name < b.name ? -1 : 1))
-      return templates
-    }
+  const sortedTemplates = useMemo(() => {
+    return teamTemplates.slice().sort((a, b) => (a.name < b.name ? -1 : 1))
+  }, [teamTemplates])
+
+  const templateCount = teamTemplates.length
+  const activeTemplate = teamTemplates.find((template) => template.id === activeTemplateId)
+  if (!activeTemplate) return null
+  const isOwner = activeTemplate.teamId === teamId
+  return (
+    <StyledDialogContainer>
+      <TemplateSidebar>
+        <Label>My Templates</Label>
+        <ListAndAdd>
+          <Overflow>
+            <TemplateList>
+              {sortedTemplates.map((template) => {
+                return (
+                  <TemplateItem
+                    key={template.id}
+                    isActive={template.id === activeTemplate.id}
+                    onClick={editTemplate(template.id)}
+                  >
+                    <TextOverflow>{template.name}</TextOverflow>
+                  </TemplateItem>
+                )
+              })}
+            </TemplateList>
+          </Overflow>
+          {/* add a key to clear the error when they change */}
+          <AddNewReflectTemplate
+            key={activeTemplate.id}
+            teamId={teamId}
+            reflectTemplates={teamTemplates}
+          />
+        </ListAndAdd>
+      </TemplateSidebar>
+      <PromptEditor>
+        <TemplateHeader>
+          <EditableTemplateName
+            key={activeTemplate.id}
+            name={activeTemplate.name}
+            templateId={activeTemplate.id}
+            templates={sortedTemplates}
+            isOwner={isOwner}
+          />
+          <RemoveTemplate templateCount={templateCount} templateId={activeTemplate.id} />
+        </TemplateHeader>
+        <TemplateSharing teamId={teamId} template={activeTemplate} />
+        <TemplatePromptList prompts={activeTemplate.prompts} templateId={activeTemplate.id} />
+        <AddTemplatePrompt templateId={activeTemplate.id} prompts={activeTemplate.prompts} />
+      </PromptEditor>
+    </StyledDialogContainer>
   )
-
-  render() {
-    const {retroMeetingSettings} = this.props
-    const {activeTemplateId, reflectTemplates, teamId} = retroMeetingSettings
-    const templateCount = reflectTemplates.length
-    const sortedTemplates = this.sortedTemplates(reflectTemplates)
-    const activeTemplate = reflectTemplates.find((template) => template.id === activeTemplateId)
-    if (!activeTemplate) return null
-    return (
-      <StyledDialogContainer>
-        <TemplateSidebar>
-          <Label>Templates</Label>
-          <ListAndAdd>
-            <Overflow>
-              <TemplateList>
-                {sortedTemplates.map((template) => {
-                  return (
-                    <TemplateItem
-                      key={template.id}
-                      isActive={template.id === activeTemplate.id}
-                      onClick={this.editTemplate(template.id)}
-                    >
-                      <TextOverflow>{template.name}</TextOverflow>
-                    </TemplateItem>
-                  )
-                })}
-              </TemplateList>
-            </Overflow>
-            {/* add a key to clear the error when they change */}
-            <AddNewReflectTemplate
-              key={activeTemplate.id}
-              teamId={teamId}
-              reflectTemplates={reflectTemplates}
-            />
-          </ListAndAdd>
-        </TemplateSidebar>
-        <PromptEditor>
-          <TemplateHeader>
-            <EditableTemplateName
-              key={activeTemplate.id}
-              name={activeTemplate.name}
-              templateId={activeTemplate.id}
-              templates={sortedTemplates}
-            />
-            <RemoveTemplate templateCount={templateCount} templateId={activeTemplate.id} />
-          </TemplateHeader>
-          <TemplatePromptList prompts={activeTemplate.prompts} templateId={activeTemplate.id} />
-          <AddTemplatePrompt templateId={activeTemplate.id} prompts={activeTemplate.prompts} />
-        </PromptEditor>
-      </StyledDialogContainer>
-    )
-  }
 }
-
-export default createFragmentContainer(withAtmosphere(ReflectTemplateModal), {
+export default createFragmentContainer(ReflectTemplateModal, {
   retroMeetingSettings: graphql`
     fragment ReflectTemplateModal_retroMeetingSettings on RetrospectiveMeetingSettings {
-      settingsId: id
-      reflectTemplates {
+      id
+      teamTemplates {
         ...AddNewReflectTemplate_reflectTemplates
+        ...TemplateSharing_template
         id
         name
+        teamId
         prompts {
           ...TemplatePromptList_prompts
           ...AddTemplatePrompt_prompts

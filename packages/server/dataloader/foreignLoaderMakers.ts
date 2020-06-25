@@ -189,6 +189,18 @@ export const retroReflectionGroupsByMeetingId = new LoaderMakerForeign(
   }
 )
 
+export const reflectTemplatesByOrgId = new LoaderMakerForeign(
+  'reflectTemplates',
+  'orgId',
+  async (orgId) => {
+    const r = await getRethink()
+    return r
+      .table('ReflectTemplate')
+      .getAll(r.args(orgId), {index: 'orgId'})
+      .filter({isActive: true})
+      .run()
+  }
+)
 export const reflectTemplatesByTeamId = new LoaderMakerForeign(
   'reflectTemplates',
   'teamId',

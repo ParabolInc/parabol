@@ -5129,10 +5129,29 @@ export interface IReflectTemplate {
   prompts: Array<IRetroPhaseItem>
 
   /**
+   * *Foreign key. The organization that owns the team that created the template
+   */
+  orgId: string
+
+  /**
+   * Who can see this template
+   */
+  scope: SharingScopeEnum
+
+  /**
    * *Foreign key. The team this template belongs to
    */
   teamId: string
   updatedAt: any
+}
+
+/**
+ * The scope of a shareable item
+ */
+export const enum SharingScopeEnum {
+  team = 'team',
+  organization = 'organization',
+  public = 'public'
 }
 
 /**
@@ -5194,6 +5213,73 @@ export interface IRetrospectiveMeetingSettings {
    * The list of templates used to start a retrospective
    */
   reflectTemplates: Array<IReflectTemplate>
+
+  /**
+   * The list of templates used to start a retrospective
+   */
+  teamTemplates: Array<IReflectTemplate>
+
+  /**
+   * The list of templates shared across the organization to start a retrospective
+   */
+  organizationTemplates: IReflectTemplateConnection
+
+  /**
+   * The list of templates shared across the organization to start a retrospective
+   */
+  publicTemplates: IReflectTemplateConnection
+}
+
+export interface IOrganizationTemplatesOnRetrospectiveMeetingSettingsArguments {
+  first: number
+
+  /**
+   * The cursor, which is the templateId
+   */
+  after?: string | null
+}
+
+export interface IPublicTemplatesOnRetrospectiveMeetingSettingsArguments {
+  first: number
+
+  /**
+   * The cursor, which is the templateId
+   */
+  after?: string | null
+}
+
+/**
+ * A connection to a list of items.
+ */
+export interface IReflectTemplateConnection {
+  __typename: 'ReflectTemplateConnection'
+
+  /**
+   * Information to aid in pagination.
+   */
+  pageInfo: IPageInfo
+
+  /**
+   * A list of edges.
+   */
+  edges: Array<IReflectTemplateEdge>
+}
+
+/**
+ * An edge in a connection.
+ */
+export interface IReflectTemplateEdge {
+  __typename: 'ReflectTemplateEdge'
+
+  /**
+   * The item at the end of the edge
+   */
+  node: IReflectTemplate
+
+  /**
+   * A cursor for use in pagination
+   */
+  cursor: string
 }
 
 /**

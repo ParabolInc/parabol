@@ -6,7 +6,7 @@ const aGhostUser = {
   id: 'aGhostUser',
   preferredName: 'A Ghost',
   connectedSockets: [],
-  email: 'matt@parabol.co',
+  email: 'love@parabol.co',
   featureFlags: [],
   updatedAt: createdAt,
   picture:
@@ -19,7 +19,7 @@ const aGhostUser = {
 }
 const aGhostOrg = {
   id: 'aGhostOrg',
-  name: 'Ghost Org',
+  name: 'Parabol',
   picture:
     'https://action-files.parabol.co/production/build/v5.10.1/42342faa774f05b7626fa91ff8374e59.svg',
   tier: 'enterprise',
@@ -313,32 +313,69 @@ const phaseItems = [
 export const up = async function(r: R) {
   try {
     await r
+      .table('NewMeeting')
+      .filter({meetingType: 'retrospective'})
+      .update((row) => ({
+        templateId: row('phases')(
+          row('phases')
+            .offsetsOf((row) => row('phaseType').eq('reflect'))
+            .nth(0)
+        )('promptTemplateId').default(null)
+      }))
+      .run()
+    await r
+      .table('NewMeeting')
+      .indexCreate('templateId')
+      .run()
+  } catch (e) {
+    console.log(e)
+  }
+
+  try {
+    await r
       .table('ReflectTemplate')
-      .update({scope: 'team'})
+      .update((row) => ({
+        scope: 'team',
+        orgId: r
+          .table('Team')
+          .get(row('teamId'))('orgId')
+          .default(null)
+      }))
+      .run()
+    await r
+      .table('ReflectTemplate')
+      .indexCreate('orgId')
       .run()
   } catch (e) {
     console.log(e)
   }
   try {
     await Promise.all([
-      r.table('User').insert(aGhostUser),
-      r.table('OrganizationUser').insert(aGhostOrgMember),
-      r.table('Organization').insert(aGhostOrg),
-      r.table('Team').insert(aGhostTeam),
-      r.table('ReflectTemplate').insert(templates),
-      r.table('CustomPhaseItem').insert(phaseItems)
+      r
+        .table('User')
+        .insert(aGhostUser)
+        .run(),
+      r
+        .table('OrganizationUser')
+        .insert(aGhostOrgMember)
+        .run(),
+      r
+        .table('Organization')
+        .insert(aGhostOrg)
+        .run(),
+      r
+        .table('Team')
+        .insert(aGhostTeam)
+        .run(),
+      r
+        .table('ReflectTemplate')
+        .insert(templates)
+        .run(),
+      r
+        .table('CustomPhaseItem')
+        .insert(phaseItems)
+        .run()
     ])
-  } catch (e) {
-    console.log(e)
-  }
-  try {
-    await r
-      .table('MeetingSettings')
-      .filter({meetingType: 'retrospective'})
-      .update({
-        managedTemplateIds: []
-      })
-      .run()
   } catch (e) {
     console.log(e)
   }
@@ -347,8 +384,25 @@ export const up = async function(r: R) {
 export const down = async function(r: R) {
   try {
     await r
+      .table('NewMeeting')
+      .indexDrop('templateId')
+      .run()
+    await r
+      .table('NewMeeting')
+      .replace((row) => row.without('templateId'))
+      .run()
+  } catch (e) {
+    console.log(e)
+  }
+
+  try {
+    await r
       .table('ReflectTemplate')
-      .replace((row) => row.without('scope'))
+      .indexDrop('orgId')
+      .run()
+    await r
+      .table('ReflectTemplate')
+      .replace((row) => row.without('scope', 'orgId'))
       .run()
   } catch (e) {
     console.log(e)
@@ -360,37 +414,34 @@ export const down = async function(r: R) {
       r
         .table('User')
         .get(aGhostUser.id)
-        .delete(),
+        .delete()
+        .run(),
       r
         .table('OrganizationUser')
         .get(aGhostOrgMember.id)
-        .delete(),
+        .delete()
+        .run(),
       r
         .table('Organization')
         .get(aGhostOrg.id)
-        .delete(),
+        .delete()
+        .run(),
       r
         .table('Team')
         .get(aGhostTeam.id)
-        .delete(),
+        .delete()
+        .run(),
       r
         .table('ReflectTemplate')
         .getAll(r.args(templateIds))
-        .delete(),
+        .delete()
+        .run(),
       r
         .table('CustomPhaseItem')
         .getAll(r.args(promptIds))
         .delete()
+        .run()
     ])
-  } catch (e) {
-    console.log(e)
-  }
-  try {
-    await r
-      .table('MeetingSettings')
-      .filter({meetingType: 'retrospective'})
-      .replace((row) => row.without('managedTemplateIds'))
-      .run()
   } catch (e) {
     console.log(e)
   }

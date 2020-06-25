@@ -10,7 +10,7 @@ interface Props {}
 
 const ActionMeetingLobbyHelpMenu = forwardRef((_props: Props, ref: any) => {
   const {closePortal} = ref
-  useSegmentTrack('HelpMenuOpen', {phase: NewMeetingPhaseTypeEnum.lobby})
+  useSegmentTrack('Help Menu Open', {phase: NewMeetingPhaseTypeEnum.lobby})
   return (
     <HelpMenuContent closePortal={closePortal}>
       <HelpMenuCopy>{'To learn more about how to run a Check-in Meeting, see our '}</HelpMenuCopy>

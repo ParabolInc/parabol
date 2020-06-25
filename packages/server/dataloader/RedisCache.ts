@@ -1,6 +1,7 @@
 import Redis from 'ioredis'
 import ms from 'ms'
-import {DBType} from '../database/rethinkDriver'
+import {CacheType, DBType} from '../database/rethinkDriver'
+import customRedisQueries from './customRedisQueries'
 import RethinkDBCache, {RWrite} from './RethinkDBCache'
 
 const TTL = ms('3h')
@@ -10,7 +11,7 @@ const msetpx = (key: string, value: object) => {
 }
 // type ClearLocal = (key: string) => void
 
-export default class RedisCache<T extends keyof DBType> {
+export default class RedisCache<T extends keyof CacheType> {
   rethinkDBCache = new RethinkDBCache()
   redis = new Redis(process.env.REDIS_URL)
   // remote invalidation is stuck on upgrading to Redis v6 in prod
@@ -44,15 +45,47 @@ export default class RedisCache<T extends keyof DBType> {
     // this.trackInvalidations(fetches)
     const fetchKeys = fetches.map(({table, id}) => `${table}:${id}`)
     const cachedDocs = await this.redis.mget(...fetchKeys)
-    const missingKeys = [] as string[]
+    const missingKeysForRethinkDB = [] as {table: T; id: string}[]
+    const customQueriesByType = {} as {[type: string]: string[]}
+    const customQueries = [] as Promise<any[]>[]
+
     for (let i = 0; i < cachedDocs.length; i++) {
       const cachedDoc = cachedDocs[i]
       if (cachedDoc === null) {
-        missingKeys.push(fetchKeys[i])
+        const fetch = fetches[i]
+        const {table, id} = fetch
+        const customQuery = customRedisQueries[table as string]
+        if (customQuery) {
+          customQueriesByType[table] = customQueriesByType[table] || []
+          customQueriesByType[table].push(id)
+        } else {
+          missingKeysForRethinkDB.push(fetch)
+        }
       }
     }
-    if (missingKeys.length === 0) return cachedDocs.map((doc) => JSON.parse(doc!))
-    const docsByKey = await this.rethinkDBCache.read(missingKeys)
+    const customTypes = Object.keys(customQueriesByType)
+    if (missingKeysForRethinkDB.length + customTypes.length === 0)
+      return cachedDocs.map((doc) => JSON.parse(doc!))
+    customTypes.forEach((type) => {
+      const customQuery = customRedisQueries[type as keyof typeof customRedisQueries]
+      const ids = customQueriesByType[type]
+      customQueries.push(customQuery(ids))
+    })
+    const [docsByKey, ...customResults] = await Promise.all([
+      missingKeysForRethinkDB.length === 0
+        ? {}
+        : this.rethinkDBCache.read(missingKeysForRethinkDB as any),
+      ...customQueries
+    ])
+    customResults.forEach((resultByTypeIdx, idx) => {
+      const type = customTypes[idx]
+      const ids = customQueriesByType[type]
+      ids.forEach((id, idx) => {
+        const key = `${type}:${id}`
+        docsByKey[key] = resultByTypeIdx[idx]
+      })
+    })
+
     const writes = [] as string[][]
     Object.keys(docsByKey).forEach((key) => {
       writes.push(msetpx(key, docsByKey[key]))
@@ -66,7 +99,7 @@ export default class RedisCache<T extends keyof DBType> {
   }
 
   write = async (writes: RWrite<T>[]) => {
-    const results = await this.rethinkDBCache.write(writes)
+    const results = await this.rethinkDBCache.write(writes as any)
     const redisWrites = [] as string[][]
     results.forEach((result, idx) => {
       // result will be null if the underlying document is not found
@@ -84,13 +117,13 @@ export default class RedisCache<T extends keyof DBType> {
   clear = async (key: string) => {
     return this.redis.del(key)
   }
-  prime = async (table: T, docs: DBType[T][]) => {
+  prime = async (table: T, docs: CacheType[T][]) => {
     const writes = docs.map((doc) => {
       return msetpx(`${table}:${doc.id}`, doc)
     })
     await this.redis.multi(writes).exec()
   }
-  writeTable = async (table: T, updater: Partial<DBType[T]>) => {
+  writeTable = async <T extends keyof DBType>(table: T, updater: Partial<CacheType[T]>) => {
     // inefficient to not update rethink & redis in parallel, but writeTable is uncommon
     await this.rethinkDBCache.writeTable(table, updater)
     return new Promise((resolve) => {

@@ -21,6 +21,10 @@
       "node"
     ],
   },
+  "include": [
+    "utils",
+    "dataloader"
+  ],
   "exclude": [
     "**/node_modules"
   ],

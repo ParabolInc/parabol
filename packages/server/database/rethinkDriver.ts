@@ -93,7 +93,7 @@ export type RethinkSchema = {
   }
   NewMeeting: {
     type: MeetingRetrospective | MeetingAction
-    index: 'facilitatorUserId' | 'teamId'
+    index: 'facilitatorUserId' | 'teamId' | 'templateId'
   }
   NewFeature: {
     type: INewFeatureBroadcast
@@ -136,7 +136,7 @@ export type RethinkSchema = {
   }
   ReflectTemplate: {
     type: ReflectTemplate
-    index: 'teamId'
+    index: 'teamId' | 'orgId'
   }
   RetroReflectionGroup: {
     type: ReflectionGroup
@@ -202,12 +202,16 @@ export type RethinkSchema = {
   }
 }
 
+export type RedisType = {
+  endTimesByTemplateId: number[]
+}
+
 export type DBType = {
   [P in keyof RethinkSchema]: RethinkSchema[P]['type']
 }
 
+export type CacheType = RedisType & DBType
 type ParabolR = R<RethinkSchema>
-
 const config = getRethinkConfig()
 let isLoading = false
 let isLoaded = false

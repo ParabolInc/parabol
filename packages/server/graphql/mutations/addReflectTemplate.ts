@@ -1,12 +1,12 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import {PALETTE} from '../../../client/styles/paletteV2'
 import getRethink from '../../database/rethinkDriver'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import AddReflectTemplatePayload from '../types/AddReflectTemplatePayload'
 import makeRetroTemplates from './helpers/makeRetroTemplates'
-import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import {PALETTE} from '../../../client/styles/paletteV2'
 
 const addReflectTemplate = {
   description: 'Add a new template full of prompts',
@@ -40,7 +40,8 @@ const addReflectTemplate = {
     if (allTemplates.find((template) => template.name === '*New Template')) {
       return standardError(new Error('Template already created'), {userId: viewerId})
     }
-
+    const team = await dataLoader.get('teams').load(teamId)
+    const {orgId} = team
     // RESOLUTION
     const base = {
       '*New Template': [
@@ -51,7 +52,7 @@ const addReflectTemplate = {
         }
       ]
     }
-    const {phaseItems, templates} = makeRetroTemplates(teamId, base)
+    const {phaseItems, templates} = makeRetroTemplates(teamId, orgId, base)
 
     await r({
       newTemplate: r.table('ReflectTemplate').insert(templates),

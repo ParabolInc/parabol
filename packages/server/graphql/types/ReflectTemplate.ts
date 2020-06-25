@@ -6,6 +6,7 @@ import {
   GraphQLObjectType,
   GraphQLString
 } from 'graphql'
+import connectionDefinitions from '../connectionDefinitions'
 import {GQLContext} from '../graphql'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import RetroPhaseItem from './RetroPhaseItem'
@@ -43,6 +44,10 @@ const ReflectTemplate = new GraphQLObjectType<any, GQLContext>({
         return prompts
       }
     },
+    orgId: {
+      type: GraphQLNonNull(GraphQLID),
+      description: '*Foreign key. The organization that owns the team that created the template'
+    },
     scope: {
       type: GraphQLNonNull(SharingScopeEnum),
       description: 'Who can see this template'
@@ -57,4 +62,11 @@ const ReflectTemplate = new GraphQLObjectType<any, GQLContext>({
   })
 })
 
+const {connectionType, edgeType} = connectionDefinitions({
+  name: ReflectTemplate.name,
+  nodeType: ReflectTemplate
+})
+
+export const ReflectTemplateConnection = connectionType
+export const ReflectTemplateEdge = edgeType
 export default ReflectTemplate
