@@ -173,7 +173,7 @@ class ExportToCSV extends Component<Props> {
       tasks.forEach((task) => {
         rows.push({
           reflectionTitle: title!,
-          author: task!.createdByUser!.preferredName,
+          author: task?.createdByUser?.preferredName ?? 'Anonymous',
           votes,
           type: 'Task',
           createdAt: task.createdAt,
@@ -185,7 +185,7 @@ class ExportToCSV extends Component<Props> {
       reflections.forEach((reflection) => {
         rows.push({
           reflectionTitle: title!,
-          author: 'anonymous',
+          author: 'Anonymous',
           votes,
           type: 'Reflection',
           createdAt: reflection.createdAt!,
@@ -198,7 +198,7 @@ class ExportToCSV extends Component<Props> {
         if (edge!.node!.__typename !== 'Comment') return
         rows.push({
           reflectionTitle: title!,
-          author: edge!.node!.createdByUser!.preferredName,
+          author: edge!.node!.createdByUser?.preferredName ?? 'Anonymous',
           votes,
           type: 'Comment',
           createdAt: edge.node.createdAt,
@@ -209,7 +209,7 @@ class ExportToCSV extends Component<Props> {
         edge.node.replies.forEach((reply) => {
           rows.push({
             reflectionTitle: title!,
-            author: reply!.createdByUser!.preferredName,
+            author: reply!.createdByUser?.preferredName ?? 'Anonymous',
             votes,
             type: 'Reply',
             createdAt: reply.createdAt,
@@ -262,7 +262,7 @@ class ExportToCSV extends Component<Props> {
       const {thread} = agendaItem
       thread.edges.forEach((edge) => {
         if (edge.node.__typename !== 'Comment') return
-        const authorName = edge!.node!.createdByUser!.preferredName
+        const authorName = edge!.node!.createdByUser?.preferredName ?? 'Anonymous'
         rows.push({
           author: authorName,
           status: userStatus[authorName],
