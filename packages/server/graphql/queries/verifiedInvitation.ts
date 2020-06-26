@@ -1,15 +1,16 @@
 import dns, {MxRecord} from 'dns'
+import promisify from 'es6-promisify'
 import {GraphQLID, GraphQLNonNull} from 'graphql'
+import {InvitationTokenError} from 'parabol-client/types/constEnums'
+import {AuthIdentityTypeEnum} from 'parabol-client/types/graphql'
+import getRethink from '../../database/rethinkDriver'
+import User from '../../database/types/User'
+import db from '../../db'
+import getBestInvitationMeeting from '../../utils/getBestInvitationMeeting'
+import getSAMLURLFromEmail from '../../utils/getSAMLURLFromEmail'
+import {GQLContext} from '../graphql'
 import rateLimit from '../rateLimit'
 import VerifiedInvitationPayload from '../types/VerifiedInvitationPayload'
-import getRethink from '../../database/rethinkDriver'
-import promisify from 'es6-promisify'
-import getSAMLURLFromEmail from '../../utils/getSAMLURLFromEmail'
-import {AuthIdentityTypeEnum, ITeam} from 'parabol-client/types/graphql'
-import User from '../../database/types/User'
-import {GQLContext} from '../graphql'
-import {InvitationTokenError} from 'parabol-client/types/constEnums'
-import getBestInvitationMeeting from '../../utils/getBestInvitationMeeting'
 
 const resolveMx = promisify(dns.resolveMx, dns)
 
@@ -57,10 +58,13 @@ export default {
         meetingId: maybeMeetingId,
         teamId
       } = teamInvitation
-      const {team, inviter} = await r({
-        team: (r.table('Team').get(teamId) as unknown) as ITeam,
-        inviter: (r.table('User').get(invitedBy) as unknown) as User
-      }).run()
+      const [team, inviter] = await Promise.all([
+        r
+          .table('Team')
+          .get(teamId)
+          .run(),
+        db.read('User', invitedBy)
+      ])
       const bestMeeting = await getBestInvitationMeeting(teamId, maybeMeetingId, dataLoader)
       const meetingType = bestMeeting?.meetingType ?? null
       const meetingId = bestMeeting?.id ?? null

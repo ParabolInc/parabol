@@ -1,5 +1,5 @@
-import React, {forwardRef, Ref} from 'react'
 import styled from '@emotion/styled'
+import React, {forwardRef, Ref} from 'react'
 import {PALETTE} from '../../styles/paletteV2'
 import {Breakpoint, Card, ElementHeight, ElementWidth, Gutters} from '../../types/constEnums'
 
@@ -35,7 +35,7 @@ const placeholders = [
   'Your team activity is shown in the mini card grid below',
   'Collapse the sidebar if you need more room to work',
   'A highlighted column means your facilitator wants you to focus on that area',
-  'Click the ? in the bottom right for more tips'
+  'Click the ? in the bottom bar for more tips'
 ]
 
 const seed = Math.floor(Math.random() * placeholders.length)

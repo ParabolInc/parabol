@@ -1,4 +1,4 @@
-import {GraphQLInt, GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLID} from 'graphql'
+import {GraphQLID, GraphQLInt, GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import {IActionMeeting, MeetingTypeEnum} from 'parabol-client/types/graphql'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import {getUserId} from '../../utils/authorization'
@@ -6,9 +6,9 @@ import filterTasksByMeeting from '../../utils/filterTasksByMeeting'
 import {GQLContext} from '../graphql'
 import ActionMeetingMember from './ActionMeetingMember'
 import ActionMeetingSettings from './ActionMeetingSettings'
+import AgendaItem from './AgendaItem'
 import NewMeeting, {newMeetingFields} from './NewMeeting'
 import Task from './Task'
-import AgendaItem from './AgendaItem'
 
 const ActionMeeting = new GraphQLObjectType<IActionMeeting, GQLContext>({
   name: 'ActionMeeting',
@@ -34,13 +34,9 @@ const ActionMeeting = new GraphQLObjectType<IActionMeeting, GQLContext>({
     taskCount: {
       type: new GraphQLNonNull(GraphQLInt),
       description: 'The number of tasks generated in the meeting',
-      resolve: async ({id: meetingId, taskCount}, _args, {authToken, dataLoader}) => {
-        if (Number.isFinite(taskCount)) return taskCount
-        const viewerId = getUserId(authToken)
-        const meeting = await dataLoader.get('newMeetings').load(meetingId)
-        const {teamId} = meeting
-        const teamTasks = await dataLoader.get('tasksByTeamId').load(teamId)
-        return filterTasksByMeeting(teamTasks, meetingId, viewerId).length
+      resolve: async ({taskCount}) => {
+        // only populated after the meeting has been completed (not killed)
+        return taskCount || 0
       }
     },
     tasks: {

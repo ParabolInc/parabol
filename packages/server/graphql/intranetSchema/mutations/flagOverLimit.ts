@@ -1,8 +1,8 @@
 import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
-import getRethink from '../../../database/rethinkDriver'
+import db from '../../../db'
+import {requireSU} from '../../../utils/authorization'
 import {GQLContext} from '../../graphql'
 import FlagOverLimitPayload from '../../types/FlagOverLimitPayload'
-import {requireSU} from '../../../utils/authorization'
 
 const flagOverLimit = {
   type: FlagOverLimitPayload,
@@ -18,8 +18,6 @@ const flagOverLimit = {
     }
   },
   resolve: async (_source, {copy, orgId}, {authToken, dataLoader}: GQLContext) => {
-    const r = await getRethink()
-
     // AUTH
     requireSU(authToken)
 
@@ -30,13 +28,7 @@ const flagOverLimit = {
 
     // RESOLUTION
     const userIds = organizationUsers.map(({userId}) => userId)
-    await r
-      .table('User')
-      .getAll(r.args(userIds))
-      .update({
-        overLimitCopy: copy || null
-      })
-      .run()
+    await db.writeMany('User', userIds, {overLimitCopy: copy || null})
     return {userIds}
   }
 }

@@ -54,7 +54,10 @@ export const up = async function(r: R) {
       .table('OrganizationUser')
       .filter({removedAt: null})
       .merge((row) => ({
-        email: r.table('User').get(row('userId'))('email')
+        email: r
+          .table('User')
+          .get(row('userId'))('email')
+          .default('')
       }))
       .group('orgId')('email')
       .ungroup()

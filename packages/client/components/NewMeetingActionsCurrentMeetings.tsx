@@ -14,6 +14,7 @@ import {MeetingTypeEnum} from '../types/graphql'
 import FlatButton from './FlatButton'
 import Icon from './Icon'
 import SelectMeetingDropdown from './SelectMeetingDropdown'
+import useSnacksForNewMeetings from '~/hooks/useSnacksForNewMeetings'
 
 const CurrentButton = styled(FlatButton)<{hasMeetings: boolean}>(({hasMeetings}) => ({
   color: PALETTE.BACKGROUND_PINK,
@@ -38,17 +39,17 @@ interface Props {
 }
 
 const NewMeetingActionsCurrentMeetings = (props: Props) => {
-  const {meetingType, team} = props
+  const {team} = props
   const isDesktop = useBreakpoint(Breakpoint.NEW_MEETING_GRID)
   const {togglePortal, originRef, menuPortal, menuProps} = useMenu<HTMLButtonElement>(
     MenuPosition.LOWER_RIGHT,
     {isDropdown: true}
   )
   const {activeMeetings} = team
-  const activeMeetingsOfType = activeMeetings.filter(
-    (meeting) => meeting.meetingType === meetingType
-  )
-  const meetingCount = activeMeetingsOfType.length
+
+  useSnacksForNewMeetings(activeMeetings)
+
+  const meetingCount = activeMeetings.length
   const label = `${meetingCount} Active ${plural(meetingCount, 'Meeting')}`
   if (meetingCount === 0 && !isDesktop) return null
   return (
@@ -62,7 +63,7 @@ const NewMeetingActionsCurrentMeetings = (props: Props) => {
         <ForumIcon>forum</ForumIcon>
         {label}
       </CurrentButton>
-      {menuPortal(<SelectMeetingDropdown menuProps={menuProps} meetings={activeMeetingsOfType!} />)}
+      {menuPortal(<SelectMeetingDropdown menuProps={menuProps} meetings={activeMeetings!} />)}
     </>
   )
 }
@@ -74,6 +75,17 @@ export default createFragmentContainer(NewMeetingActionsCurrentMeetings, {
       activeMeetings {
         ...SelectMeetingDropdown_meetings
         meetingType
+        id
+        createdAt
+        facilitator {
+          id
+          preferredName
+        }
+        meetingType
+        name
+        team {
+          name
+        }
       }
     }
   `

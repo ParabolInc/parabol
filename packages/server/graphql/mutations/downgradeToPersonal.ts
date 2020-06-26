@@ -1,14 +1,12 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {TierEnum} from 'parabol-client/types/graphql'
-import stripe from '../../billing/stripe'
 import getRethink from '../../database/rethinkDriver'
 import {getUserId, isSuperUser, isUserBillingLeader} from '../../utils/authorization'
 import publish from '../../utils/publish'
-import segmentIo from '../../utils/segmentIo'
-import setUserTierForOrgId from '../../utils/setUserTierForOrgId'
 import standardError from '../../utils/standardError'
 import DowngradeToPersonalPayload from '../types/DowngradeToPersonalPayload'
+import resolveDowngradeToPersonal from './helpers/resolveDowngradeToPersonal'
 
 export default {
   type: DowngradeToPersonalPayload,
@@ -21,7 +19,6 @@ export default {
   },
   async resolve(_source, {orgId}, {authToken, dataLoader, socketId: mutatorId}) {
     const r = await getRethink()
-    const now = new Date()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
 
@@ -45,44 +42,7 @@ export default {
 
     // RESOLUTION
     // if they downgrade & are re-upgrading, they'll already have a stripeId
-    try {
-      await stripe.subscriptions.del(stripeSubscriptionId)
-    } catch (e) {
-      console.log(e)
-    }
-
-    const {teamIds} = await r({
-      org: r
-        .table('Organization')
-        .get(orgId)
-        .update({
-          tier: TierEnum.personal,
-          periodEnd: now,
-          stripeSubscriptionId: null,
-          updatedAt: now
-        }),
-      teamIds: (r
-        .table('Team')
-        .getAll(orgId, {index: 'orgId'})
-        .update(
-          {
-            tier: TierEnum.personal,
-            isPaid: true,
-            updatedAt: now
-          },
-          {returnChanges: true}
-        )('changes')('new_val')('id')
-        .default([]) as unknown) as string[]
-    }).run()
-
-    await setUserTierForOrgId(orgId)
-    segmentIo.track({
-      userId: viewerId,
-      event: 'Downgrade to personal',
-      properties: {
-        orgId
-      }
-    })
+    const {teamIds} = await resolveDowngradeToPersonal(orgId, stripeSubscriptionId!, viewerId)
     const data = {orgId, teamIds}
     publish(SubscriptionChannel.ORGANIZATION, orgId, 'DowngradeToPersonalPayload', data, subOptions)
 

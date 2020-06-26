@@ -24,9 +24,9 @@ const getActiveDomainForOrgId = async (orgId: string) => {
   const r = await getRethink()
   const emails = await r
     .table('OrganizationUser')
-    .get(orgId)
+    .getAll(orgId, {index: 'orgId'})
     .filter({removedAt: null})
-    .do((row) => r.table('User').get(row('userId'))('email'))
+    .map((row) => r.table('User').get(row('userId'))('email'))
     .run()
 
   const domains = emails.map(getDomainFromEmail)

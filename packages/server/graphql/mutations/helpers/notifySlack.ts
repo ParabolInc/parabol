@@ -5,9 +5,11 @@ import formatWeekday from 'parabol-client/utils/date/formatWeekday'
 import findStageById from 'parabol-client/utils/meetings/findStageById'
 import {phaseLabelLookup} from 'parabol-client/utils/meetings/lookups'
 import getRethink from '../../../database/rethinkDriver'
+import SlackAuth from '../../../database/types/SlackAuth'
 import SlackNotification, {SlackNotificationEvent} from '../../../database/types/SlackNotification'
 import {toEpochSeconds} from '../../../utils/epochTime'
 import makeAppLink from '../../../utils/makeAppLink'
+import segmentIo from '../../../utils/segmentIo'
 import sendToSentry from '../../../utils/sendToSentry'
 import SlackServerManager from '../../../utils/SlackServerManager'
 import {DataLoaderWorker} from '../../graphql'
@@ -31,7 +33,7 @@ const getSlackDetails = async (
   const notificationUserIds = distinctChannelNotifications.map(({userId}) => userId)
   const userSlackAuths = await dataLoader.get('slackAuthByUserId').loadMany(notificationUserIds)
   return userSlackAuths.map((userSlackAuthArr, idx) => {
-    const auth = userSlackAuthArr.find((val) => val.teamId === teamId)!
+    const auth = userSlackAuthArr.find((val) => val.teamId === teamId) as SlackAuth
     return {auth, notification: distinctChannelNotifications[idx]}
   })
 }
@@ -49,10 +51,17 @@ const notifySlack = async (
   for (let i = 0; i < slackDetails.length; i++) {
     const {notification, auth} = slackDetails[i]
     const {channelId} = notification
-    const {accessToken, botAccessToken} = auth
+    const {accessToken, botAccessToken, userId} = auth
     const manager = new SlackServerManager(botAccessToken || accessToken)
     const res = await manager.postMessage(channelId!, slackText)
-
+    segmentIo.track({
+      userId,
+      event: 'Slack notification sent',
+      properties: {
+        teamId,
+        notificationEvent: event
+      }
+    })
     if ('error' in res) {
       const {error} = res
       if (error === 'channel_not_found') {

@@ -4,7 +4,7 @@ import CheckInStage from '../../../database/types/CheckInStage'
 import NotificationKickedOut from '../../../database/types/NotificationKickedOut'
 import Task from '../../../database/types/Task'
 import UpdatesStage from '../../../database/types/UpdatesStage'
-import User from '../../../database/types/User'
+import db from '../../../db'
 import archiveTasksForDB from '../../../safeMutations/archiveTasksForDB'
 import {DataLoaderWorker} from '../../graphql'
 import removeStagesFromMeetings from './removeStagesFromMeetings'
@@ -60,7 +60,7 @@ const removeTeamMember = async (
   }
 
   // assign active tasks to the team lead
-  const {integratedTasksToArchive, reassignedTasks, user} = await r({
+  const {integratedTasksToArchive, reassignedTasks} = await r({
     teamMember: r
       .table('TeamMember')
       .get(teamMemberId)
@@ -104,16 +104,6 @@ const removeTeamMember = async (
         {returnChanges: true}
       )('changes')('new_val')
       .default([]) as unknown) as Task[],
-    user: (r
-      .table('User')
-      .get(userId)
-      .update(
-        (myUser) => ({
-          tms: myUser('tms').difference([teamId])
-        }),
-        {returnChanges: true}
-      )('changes')(0)('new_val')
-      .default(null) as unknown) as User,
     // not adjusting atlassian, if they join the team again, they'll be ready to go
     changedProviders: r
       .table('Provider')
@@ -128,6 +118,11 @@ const removeTeamMember = async (
       .default([])
   }).run()
 
+  const reqlUpdater = (user) => ({
+    tms: user('tms').difference([teamId])
+  })
+
+  const user = await db.write('User', userId, reqlUpdater)
   let notificationId
   if (evictorUserId) {
     const notification = new NotificationKickedOut({teamId, userId, evictorUserId})
