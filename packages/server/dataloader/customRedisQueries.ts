@@ -20,6 +20,16 @@ const customRedisQueries = {
       const group = meetings.find((meeting) => meeting.group === id)
       return group ? group.reduction.map((date) => date.getTime()) : []
     })
+  },
+  publicTemplates: async () => {
+    const r = await getRethink()
+    const publicTemplates = (await r
+      .table('ReflectTemplate')
+      .filter({scope: 'public', isActive: true})
+      .limit(1000)
+      .pluck('id', 'createdAt')
+      .run()) as {id: string; createdAt: Date}[]
+    return publicTemplates
   }
 } as const
 

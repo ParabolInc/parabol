@@ -4,9 +4,9 @@ const SharingScopeEnum = new GraphQLEnumType({
   name: 'SharingScopeEnum',
   description: 'The scope of a shareable item',
   values: {
-    team: {},
-    organization: {},
-    public: {}
+    TEAM: {},
+    ORGANIZATION: {},
+    PUBLIC: {}
   }
 })
 

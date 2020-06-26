@@ -3396,6 +3396,11 @@ export interface IMutation {
    */
   updateTaskDueDate: IUpdateTaskDueDatePayload | null
   updateTeamName: IUpdateTeamNamePayload | null
+
+  /**
+   * Change the scope of a template
+   */
+  updateTemplateScope: UpdateTemplateScopePayload
   updateUserProfile: IUpdateUserProfilePayload | null
 
   /**
@@ -4258,6 +4263,18 @@ export interface IUpdateTeamNameOnMutationArguments {
    * The input object containing the teamId and any modified fields
    */
   updatedTeam: IUpdatedTeamInput
+}
+
+export interface IUpdateTemplateScopeOnMutationArguments {
+  /**
+   * The id of the template
+   */
+  templateId: string
+
+  /**
+   * the new scope
+   */
+  scope: SharingScopeEnum
 }
 
 export interface IUpdateUserProfileOnMutationArguments {
@@ -5149,9 +5166,9 @@ export interface IReflectTemplate {
  * The scope of a shareable item
  */
 export const enum SharingScopeEnum {
-  team = 'team',
-  organization = 'organization',
-  public = 'public'
+  TEAM = 'TEAM',
+  ORGANIZATION = 'ORGANIZATION',
+  PUBLIC = 'PUBLIC'
 }
 
 /**
@@ -7059,6 +7076,20 @@ export interface IUpdateTeamNamePayload {
   team: ITeam | null
 }
 
+/**
+ * Return object for UpdateTemplateScopePayload
+ */
+export type UpdateTemplateScopePayload = IErrorPayload | IUpdateTemplateScopeSuccess
+
+export interface IUpdateTemplateScopeSuccess {
+  __typename: 'UpdateTemplateScopeSuccess'
+
+  /**
+   * The settings that contain the teamTemplates array that was modified
+   */
+  meetingSettings: IRetrospectiveMeetingSettings
+}
+
 export interface IUpdateUserProfileInput {
   /**
    * A link to the user’s profile image.
@@ -7400,6 +7431,7 @@ export type TeamSubscriptionPayload =
   | ISetCheckInEnabledPayload
   | ISetSlackNotificationPayload
   | IUpdateUserProfilePayload
+  | IUpdateTemplateScopeSuccess
 
 /**
  * An action meeting

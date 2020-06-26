@@ -1,5 +1,5 @@
-import {CacheType, DBType} from '../database/rethinkDriver'
-import RedisCache from './RedisCache'
+import {DBType} from '../database/rethinkDriver'
+import RedisCache, {CacheType} from './RedisCache'
 import {RWrite, Updater} from './RethinkDBCache'
 
 const resolvedPromise = Promise.resolve()

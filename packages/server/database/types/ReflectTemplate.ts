@@ -5,6 +5,7 @@ interface Input {
   teamId: string
   scope?: string
   orgId: string
+  parentTemplateId?: string
 }
 
 export default class ReflectTemplate {
@@ -17,9 +18,10 @@ export default class ReflectTemplate {
   lastUsedAt: Date | undefined
   scope: string
   orgId: string
+  parentTemplateId?: string
 
   constructor(input: Input) {
-    const {name, teamId, scope, orgId} = input
+    const {name, teamId, scope, orgId, parentTemplateId} = input
     const now = new Date()
     this.id = shortid.generate()
     this.createdAt = now
@@ -29,5 +31,6 @@ export default class ReflectTemplate {
     this.updatedAt = now
     this.scope = scope || 'team'
     this.orgId = orgId
+    this.parentTemplateId = parentTemplateId
   }
 }

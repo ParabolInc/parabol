@@ -35,6 +35,7 @@ import StartNewMeetingPayload from './StartNewMeetingPayload'
 import UpdateAgendaItemPayload from './UpdateAgendaItemPayload'
 import UpdateCreditCardPayload from './UpdateCreditCardPayload'
 import UpdateTeamNamePayload from './UpdateTeamNamePayload'
+import {UpdateTemplateScopeSuccess} from './UpdateTemplateScopePayload'
 import UpdateUserProfilePayload from './UpdateUserProfilePayload'
 import UpgradeToProPayload from './UpgradeToProPayload'
 
@@ -76,7 +77,8 @@ const types = [
   RenameReflectTemplatePromptPayload,
   SetCheckInEnabledPayload,
   SetSlackNotificationPayload,
-  UpdateUserProfilePayload
+  UpdateUserProfilePayload,
+  UpdateTemplateScopeSuccess
 ]
 
 export default graphQLSubscriptionType('TeamSubscriptionPayload', types)

@@ -1,6 +1,5 @@
 import {GraphQLID, GraphQLInt, GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import {RETRO_PHASE_ITEM} from 'parabol-client/utils/constants'
-import getRethink from '../../database/rethinkDriver'
 import db from '../../db'
 import getTemplateScore from '../../utils/getTemplateScore'
 import {GQLContext} from '../graphql'
@@ -129,13 +128,7 @@ const RetrospectiveMeetingSettings = new GraphQLObjectType<any, GQLContext>({
         }
       },
       resolve: async (_source, {first, after}) => {
-        const r = await getRethink()
-        // todo cache this query, it gonna get hot
-        const publicTemplates = (await r
-          .table('ReflectTemplate')
-          .filter({scope: 'public'})
-          .pluck('id', 'createdAt')
-          .run()) as {id: string; createdAt: Date}[]
+        const publicTemplates = await db.read('publicTemplates', 'all')
         const scoredTemplates = await getScoredTemplates(publicTemplates, 0.2)
         return connectionFromTemplateArray(scoredTemplates, first, after)
       }

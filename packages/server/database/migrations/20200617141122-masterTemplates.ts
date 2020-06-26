@@ -58,7 +58,7 @@ const templates = [
     name: 'Sailboat',
     teamId: 'aGhostTeam',
     updatedAt: createdAt,
-    scope: 'public'
+    scope: 'PUBLIC'
   },
   {
     createdAt: createdAt,
@@ -67,7 +67,7 @@ const templates = [
     name: 'Start Stop Continue',
     teamId: 'aGhostTeam',
     updatedAt: createdAt,
-    scope: 'public'
+    scope: 'PUBLIC'
   },
   {
     createdAt: createdAt,
@@ -76,7 +76,7 @@ const templates = [
     name: 'Working & Stuck',
     teamId: 'aGhostTeam',
     updatedAt: createdAt,
-    scope: 'public'
+    scope: 'PUBLIC'
   },
   {
     createdAt: createdAt,
@@ -85,7 +85,7 @@ const templates = [
     name: 'Liked, Learned, Lacked, Longed for',
     teamId: 'aGhostTeam',
     updatedAt: createdAt,
-    scope: 'public'
+    scope: 'PUBLIC'
   },
   {
     createdAt: createdAt,
@@ -94,7 +94,7 @@ const templates = [
     name: 'Glad, Sad, Mad',
     teamId: 'aGhostTeam',
     updatedAt: createdAt,
-    scope: 'public'
+    scope: 'PUBLIC'
   }
 ]
 
@@ -335,7 +335,7 @@ export const up = async function(r: R) {
     await r
       .table('ReflectTemplate')
       .update((row) => ({
-        scope: 'team',
+        scope: 'TEAM',
         orgId: r
           .table('Team')
           .get(row('teamId'))('orgId')

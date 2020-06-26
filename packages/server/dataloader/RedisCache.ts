@@ -1,13 +1,20 @@
 import Redis from 'ioredis'
 import ms from 'ms'
-import {CacheType, DBType} from '../database/rethinkDriver'
+import {DBType} from '../database/rethinkDriver'
 import customRedisQueries from './customRedisQueries'
 import RethinkDBCache, {RWrite} from './RethinkDBCache'
+
+export type RedisType = {
+  endTimesByTemplateId: number[]
+  publicTemplates: {id: string; createdAt: Date}[]
+}
+
+export type CacheType = RedisType & DBType
 
 const TTL = ms('3h')
 
 const msetpx = (key: string, value: object) => {
-  return ['set', key, JSON.stringify(value), 'PX', TTL] as string[]
+  return ['SET', key, JSON.stringify(value), 'PX', TTL] as string[]
 }
 // type ClearLocal = (key: string) => void
 

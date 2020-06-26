@@ -202,15 +202,10 @@ export type RethinkSchema = {
   }
 }
 
-export type RedisType = {
-  endTimesByTemplateId: number[]
-}
-
 export type DBType = {
   [P in keyof RethinkSchema]: RethinkSchema[P]['type']
 }
 
-export type CacheType = RedisType & DBType
 type ParabolR = R<RethinkSchema>
 const config = getRethinkConfig()
 let isLoading = false
