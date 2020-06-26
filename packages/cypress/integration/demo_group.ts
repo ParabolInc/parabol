@@ -106,33 +106,76 @@ function editGroupTitle(column, newText) {
     .should('have.value', `${column}-${newText}`)
 }
 
+const click = ($el) => {
+  return $el.click()
+}
+
 describe('Test Group page Demo', () => {
   before(function () {
     // runs before all tests in the block
     cy.visitReflect().visitPhase('group')
 
-    cy.screenshot('visit-group')
+    cy.get('[data-cy=help-menu-close]')
+      .should('be.visible')
+      .pipe(click)
+      .should('not.exist')
+
+    cy.screenshot('parabol-retrospective-visit-group-open-sidebar')
+    cy.get('[data-cy=sidebar-toggle]').should('be.visible').click({force: true})
+    cy.screenshot('parabol-retrospective-visit-group-closed-sidebar')
 
   })
 
-  beforeEach(() => {
-    cy.viewport(1280, 720)
+  it('Take screenshots of grouping cards', () => {
+
+    cy.wait(1000)
+
+    cy.screenshot('parabol-retrospective-move-group-1-closed-sidebar')
+    cy.get('[data-cy=topbar-toggle]').should('be.visible').click({force: true})
+
+    cy.wait(1000)
+
+    cy.screenshot('parabol-retrospective-move-group-1-open-sidebar')
+
+    cy.wait(1000)
+
+    cy.screenshot('parabol-retrospective-move-group-2-open-sidebar')
+    cy.get('[data-cy=sidebar-toggle]').should('be.visible').click({force: true})
+
+    cy.wait(1000)
+
+    cy.screenshot('parabol-retrospective-move-group-2-closed-sidebar')
+
+    cy.wait(1000)
+
+    cy.screenshot('parabol-retrospective-move-group-3-closed-sidebar')
+    cy.get('[data-cy=topbar-toggle]').should('be.visible').click({force: true})
+
+    cy.wait(1000)
+
+    cy.screenshot('parabol-retrospective-move-group-3-open-sidebar')
   })
 
   it('Test adding a new reflection during grouping', () => {
-    cy.screenshot('move-group-1')
-    cy.screenshot('move-group-2')
-    cy.screenshot('move-group-3')
 
     addReflection('Start', 'Start testing code before merging')
 
-    cy.screenshot('move-group-4')
+    cy.screenshot('parabol-retrospective-add-group-1-open-sidebar')
+    cy.get('[data-cy=sidebar-toggle]').should('be.visible').click({force: true})
+    cy.screenshot('parabol-retrospective-add-group-1-closed-sidebar')
+
 
     addReflection('Stop', 'Stop pushing directly to master')
 
-    cy.screenshot('move-group-5')
+    cy.screenshot('parabol-retrospective-add-group-2-closed-sidebar')
+    cy.get('[data-cy=topbar-toggle]').should('be.visible').click({force: true})
+    cy.screenshot('parabol-retrospective-add-group-2-open-sidebar')
 
     addReflection('Continue', 'Continue using best practices')
+
+    cy.screenshot('parabol-retrospective-add-group-3-open-sidebar')
+    cy.get('[data-cy=sidebar-toggle]').should('be.visible').click({force: true})
+    cy.screenshot('parabol-retrospective-add-group-3-closed-sidebar')
 
   })
 

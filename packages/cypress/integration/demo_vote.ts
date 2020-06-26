@@ -46,17 +46,17 @@ function removeVote(column, cardIndex, sum) {
     .should('have.text', `${sum - 1}`)
 }
 
+const click = ($el) => {
+  return $el.click()
+}
+
 describe('Test Vote page Demo', () => {
   before(function () {
-    // runs before all tests in the block
+
     cy.visitReflect()
       .visitPhase('group')
       .visitPhase('vote')
     cy.wait(5000)
-  })
-
-  beforeEach(() => {
-    cy.viewport(1280, 720)
   })
 
   it('Check that all personal votes are remaining and no team votes have been used', () => {
@@ -67,7 +67,10 @@ describe('Test Vote page Demo', () => {
 
   it('Test voting on cards (ensure they can be voted on multiple times)', () => {
 
-    cy.screenshot('before-voting')
+    cy.screenshot('parabol-retrospective-before-voting-open-sidebar')
+    cy.get('[data-cy=sidebar-toggle]').scrollIntoView().should('be.visible').click({force: true})
+    cy.screenshot('parabol-retrospective-before-voting-closed-sidebar')
+
 
     addVote('Start', 0, 0)
 
@@ -75,7 +78,10 @@ describe('Test Vote page Demo', () => {
 
     addVote('Continue', 0, 0)
 
-    cy.screenshot('after-voting')
+    cy.screenshot('parabol-retrospective-after-voting-closed-sidebar')
+    cy.get('[data-cy=topbar-toggle]').scrollIntoView().should('be.visible').click({force: true})
+    cy.screenshot('parabol-retrospective-after-voting-open-sidebar')
+
 
   })
 
@@ -85,18 +91,27 @@ describe('Test Vote page Demo', () => {
 
     addVote('Start', 0, 2)
 
-    cy.screenshot('max-voting')
+    cy.screenshot('parabol-retrospective-max-voting-open-sidebar')
+    cy.get('[data-cy=sidebar-toggle]').scrollIntoView().should('be.visible').click({force: true})
+    cy.screenshot('parabol-retrospective-max-voting-closed-sidebar')
+
 
   })
 
   it('Test removing votes from cards', () => {
     removeVote('Start', 0, 3)
 
-    cy.screenshot('remove-voting-1')
+    cy.screenshot('parabol-retrospective-remove-voting-1-closed-sidebar')
+    cy.get('[data-cy=topbar-toggle]').scrollIntoView().should('be.visible').click({force: true})
+    cy.screenshot('parabol-retrospective-remove-voting-1-open-sidebar')
+
 
     removeVote('Start', 0, 2)
 
-    cy.screenshot('remove-voting-2')
+    cy.screenshot('parabol-retrospective-remove-voting-2-open-sidebar')
+    cy.get('[data-cy=sidebar-toggle]').scrollIntoView().should('be.visible').click({force: true})
+    cy.screenshot('parabol-retrospective-remove-voting-2-closed-sidebar')
+
 
     removeVote('Start', 0, 1)
 

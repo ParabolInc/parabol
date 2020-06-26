@@ -80,7 +80,7 @@ const ActionMeetingAgendaItems = (props: Props) => {
             <StyledHeading>{content}</StyledHeading>
           </AgendaVerbatim>
           <StyledCopy>{`${preferredName}, what do you need?`}</StyledCopy>
-          <ThreadColumn data-cy='discuss-task-column' isDesktop={isDesktop}>
+          <ThreadColumn isDesktop={isDesktop}>
             <DiscussionThreadRoot meetingId={meetingId} threadSourceId={agendaItemId!} />
           </ThreadColumn>
           <EditorHelpModalContainer />

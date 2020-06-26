@@ -67,14 +67,11 @@ const resizeObserverLoopErrRe = /^ResizeObserver loop limit exceeded/
 const propertyErr = /^Cannot read property/
 
 const visitReflect = () => {
-  cy.viewport('macbook-15')
+  cy.viewport(1280, 720)
   cy.visit('/retrospective-demo/reflect')
   cy.get('[data-cy=start-demo-button]')
     .should('be.visible')
     .click({force: true})
-    .then(() => {
-      cy.get('[data-cy=sidebar-toggle]').click()
-    })
 }
 
 const visitPhase = (phase: string, idx = '') => {

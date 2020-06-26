@@ -7,5 +7,7 @@
   "supportFile": "support/index.js",
   "videosFolder": "videos",
   "projectId": "3wn18n",
-  "chromeWebSecurity": false
+  "chromeWebSecurity": false,
+  "viewportWidth": 1280,
+  "viewportHeight": 720
 }
