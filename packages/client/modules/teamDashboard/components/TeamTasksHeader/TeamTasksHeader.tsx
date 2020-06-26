@@ -10,20 +10,40 @@ import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
 import DashSectionControls from '../../../../components/Dashboard/DashSectionControls'
 import DashSectionHeader from '../../../../components/Dashboard/DashSectionHeader'
 import DashFilterToggle from '../../../../components/DashFilterToggle/DashFilterToggle'
-import DashNavControl from '../../../../components/DashNavControl/DashNavControl'
 import {MenuPosition} from '../../../../hooks/useCoords'
 import useMenu from '../../../../hooks/useMenu'
-import useRouter from '../../../../hooks/useRouter'
 import {PALETTE} from '../../../../styles/paletteV2'
 import {Breakpoint} from '../../../../types/constEnums'
 import lazyPreload from '../../../../utils/lazyPreload'
 import {TeamTasksHeader_team} from '../../../../__generated__/TeamTasksHeader_team.graphql'
 import {TeamTasksHeader_viewer} from '../../../../__generated__/TeamTasksHeader_viewer.graphql'
+import Checkbox from '../../../../components/Checkbox'
+import {ICON_SIZE} from '../../../../styles/typographyV2'
+import useAtmosphere from '~/hooks/useAtmosphere'
+import setArchivedTasksCheckbox from '~/utils/relay/setArchivedTasksCheckbox'
+import LinkButton from '~/components/LinkButton'
 
 const desktopBreakpoint = makeMinWidthMediaQuery(Breakpoint.SIDEBAR_LEFT)
 
 const TeamMeta = styled('div')({
   // define
+})
+
+const StyledLinkButton = styled(LinkButton)({
+  marginLeft: 8,
+  color: PALETTE.TEXT_GRAY,
+  fontWeight: 600,
+  ':hover, :focus, :active': {
+    color: PALETTE.TEXT_MAIN
+  }
+})
+
+const StyledCheckbox = styled(Checkbox)({
+  fontSize: ICON_SIZE.MD24,
+  marginRight: 8,
+  textAlign: 'center',
+  userSelect: 'none',
+  width: ICON_SIZE.MD24
 })
 
 const TeamLinks = styled('div')({
@@ -111,17 +131,24 @@ interface Props {
 }
 
 const TeamTasksHeader = (props: Props) => {
+  const atmosphere = useAtmosphere()
   const {team, viewer} = props
   const teamMember = viewer.teamMember!
   const {hideAgenda} = teamMember
-  const {history} = useRouter()
-  const {organization, id: teamId, name: teamName, teamMemberFilter} = team
+  const {
+    organization,
+    id: teamId,
+    name: teamName,
+    teamMemberFilter,
+    showArchivedTasksCheckbox
+  } = team
   const teamMemberFilterName =
     (teamMemberFilter && teamMemberFilter.preferredName) || 'All team members'
   const {name: orgName, id: orgId} = organization
   const {togglePortal, menuProps, originRef, menuPortal} = useMenu(MenuPosition.UPPER_RIGHT, {
     isDropdown: true
   })
+
   return (
     <DashSectionHeader>
       <TeamHeaderAndAvatars>
@@ -172,12 +199,13 @@ const TeamTasksHeader = (props: Props) => {
           value={teamMemberFilterName}
         />
         {menuPortal(<TeamDashTeamMemberMenu menuProps={menuProps} team={team} />)}
-        {/* Archive Link */}
-        <DashNavControl
-          icon='archive'
-          label='Archived Tasks'
-          onClick={() => history.push(`/team/${teamId}/archive`)}
-        />
+
+        <StyledLinkButton
+          onClick={() => setArchivedTasksCheckbox(atmosphere, teamId, !showArchivedTasksCheckbox)}
+        >
+          <StyledCheckbox active={showArchivedTasksCheckbox} />
+          {'Show Archived Tasks'}
+        </StyledLinkButton>
       </DashSectionControls>
     </DashSectionHeader>
   )
@@ -196,6 +224,7 @@ export default createFragmentContainer(TeamTasksHeader, {
       teamMemberFilter {
         preferredName
       }
+      showArchivedTasksCheckbox
       ...TeamDashTeamMemberMenu_team
     }
   `,

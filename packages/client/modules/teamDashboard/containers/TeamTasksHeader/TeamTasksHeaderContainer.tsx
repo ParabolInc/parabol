@@ -6,6 +6,7 @@ import {TeamTasksHeaderContainer_team} from '~/__generated__/TeamTasksHeaderCont
 import {TeamTasksHeaderContainer_viewer} from '~/__generated__/TeamTasksHeaderContainer_viewer.graphql'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import TeamTasksHeader from '../../components/TeamTasksHeader/TeamTasksHeader'
+import setArchivedTasksCheckbox from '~/utils/relay/setArchivedTasksCheckbox'
 
 interface Props {
   team: TeamTasksHeaderContainer_team
@@ -18,6 +19,9 @@ const TeamTasksHeaderContainer = (props: Props) => {
   const atmosphere = useAtmosphere()
   useEffect(() => {
     filterTeamMember(atmosphere, teamId, null)
+  }, [teamId])
+  useEffect(() => {
+    setArchivedTasksCheckbox(atmosphere, teamId, false)
   }, [teamId])
 
   return <TeamTasksHeader team={team} viewer={viewer} />

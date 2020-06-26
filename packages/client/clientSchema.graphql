@@ -22,6 +22,7 @@ extend type RetrospectiveMeeting {
 
 extend type Team {
   teamMemberFilter: TeamMember
+  showArchivedTasksCheckbox: Boolean!
 }
 
 extend type User {

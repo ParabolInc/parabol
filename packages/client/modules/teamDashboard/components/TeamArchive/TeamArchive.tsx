@@ -11,7 +11,6 @@ import {PALETTE} from '../../../../styles/paletteV2'
 import {MathEnum, NavSidebar} from '../../../../types/constEnums'
 import {AreaEnum} from '../../../../types/graphql'
 import getRallyLink from '../../../userDashboard/helpers/getRallyLink'
-import TeamArchiveHeader from '../TeamArchiveHeader/TeamArchiveHeader'
 
 const CARD_WIDTH = 256 + 32 // account for box model and horizontal padding
 const GRID_PADDING = 16
@@ -34,16 +33,6 @@ const Root = styled('div')({
   flexDirection: 'column',
   // hide the window scrollbar, the cardGrid scrollbar will mimic the window scrollbar
   overflow: 'hidden',
-  width: '100%'
-})
-
-const Header = styled('div')({
-  padding: `0 0 0 20px`
-})
-
-const Border = styled('div')({
-  borderTop: `.0625rem solid ${PALETTE.BORDER_LIGHTER}`,
-  height: 1,
   width: '100%'
 })
 
@@ -86,7 +75,7 @@ interface Props {
 }
 
 const TeamArchive = (props: Props) => {
-  const {viewer, relay, team, teamId} = props
+  const {viewer, relay, team} = props
   const {hasMore, isLoading, loadMore} = relay
   const {teamName} = team
   const {archivedTasks} = viewer
@@ -197,10 +186,6 @@ const TeamArchive = (props: Props) => {
 
   return (
     <Root>
-      <Header>
-        <TeamArchiveHeader teamId={teamId} />
-        <Border />
-      </Header>
       <Body>
         {edges.length ? (
           <CardGrid>
