@@ -128,32 +128,35 @@ describe('Test Group page Demo', () => {
 
   it('Take screenshots of grouping cards', () => {
 
-    cy.wait(1000)
+    cy.wait(790)
 
     cy.screenshot('parabol-retrospective-move-group-1-closed-sidebar')
     cy.get('[data-cy=topbar-toggle]').should('be.visible').click({force: true})
 
-    cy.wait(1000)
+    cy.wait(1300)
 
     cy.screenshot('parabol-retrospective-move-group-1-open-sidebar')
 
-    cy.wait(1000)
+    cy.wait(300)
 
     cy.screenshot('parabol-retrospective-move-group-2-open-sidebar')
     cy.get('[data-cy=sidebar-toggle]').should('be.visible').click({force: true})
 
-    cy.wait(1000)
+    cy.wait(1300)
 
     cy.screenshot('parabol-retrospective-move-group-2-closed-sidebar')
-
-    cy.wait(1000)
 
     cy.screenshot('parabol-retrospective-move-group-3-closed-sidebar')
     cy.get('[data-cy=topbar-toggle]').should('be.visible').click({force: true})
 
-    cy.wait(1000)
+    cy.wait(300)
 
     cy.screenshot('parabol-retrospective-move-group-3-open-sidebar')
+
+    cy.wait(500)
+    cy.screenshot('parabol-retrospective-move-group-4-open-sidebar')
+
+    cy.wait(1000)
   })
 
   it('Test adding a new reflection during grouping', () => {
