@@ -1,14 +1,15 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
-import AddSlackAuthPayload from '../types/AddSlackAuthPayload'
-import {getUserId, isTeamMember} from '../../utils/authorization'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getRethink from '../../database/rethinkDriver'
+import SlackAuth from '../../database/types/SlackAuth'
+import SlackNotification, {SlackNotificationEvent} from '../../database/types/SlackNotification'
+import {getUserId, isTeamMember} from '../../utils/authorization'
+import publish from '../../utils/publish'
+import segmentIo from '../../utils/segmentIo'
 import SlackServerManager from '../../utils/SlackServerManager'
 import standardError from '../../utils/standardError'
-import publish from '../../utils/publish'
 import {GQLContext} from '../graphql'
-import SlackNotification, {SlackNotificationEvent} from '../../database/types/SlackNotification'
-import SlackAuth from '../../database/types/SlackAuth'
-import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import AddSlackAuthPayload from '../types/AddSlackAuthPayload'
 
 const upsertNotifications = async (
   viewerId: string,
@@ -134,6 +135,14 @@ export default {
       upsertNotifications(viewerId, teamId, teamChannelId, botChannelId),
       upsertAuth(viewerId, teamId, teamChannelId, userInfoRes.user.profile.display_name, response)
     ])
+    segmentIo.track({
+      userId: viewerId,
+      event: 'Added Integration',
+      properties: {
+        teamId,
+        service: 'Slack'
+      }
+    })
     const data = {slackAuthId, userId: viewerId}
     publish(SubscriptionChannel.TEAM, teamId, 'AddSlackAuthPayload', data, subOptions)
     return data

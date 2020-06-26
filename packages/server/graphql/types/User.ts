@@ -23,7 +23,6 @@ import organization from '../queries/organization'
 import suggestedIntegrations from '../queries/suggestedIntegrations'
 import AtlassianAuth from './AtlassianAuth'
 import AuthIdentity from './AuthIdentity'
-import BlockedUserType from './BlockedUserType'
 import Company from './Company'
 import GitHubAuth from './GitHubAuth'
 import GraphQLEmailType from './GraphQLEmailType'
@@ -68,18 +67,6 @@ const User = new GraphQLObjectType<any, GQLContext, any>({
         return auths.find((auth) => auth.teamId === teamId)
       }
     },
-    blockedFor: {
-      type: new GraphQLList(BlockedUserType),
-      description: 'Array of identifier + ip pairs'
-    },
-    cachedAt: {
-      type: GraphQLISO8601Type,
-      description: 'The timestamp of the user was cached'
-    },
-    cacheExpiresAt: {
-      type: GraphQLISO8601Type,
-      description: 'The timestamp when the cached user expires'
-    },
     company: {
       type: Company,
       description: 'The assumed company this organizaiton belongs to',
@@ -100,10 +87,6 @@ const User = new GraphQLObjectType<any, GQLContext, any>({
     email: {
       type: new GraphQLNonNull(GraphQLEmailType),
       description: 'The user email'
-    },
-    emailVerified: {
-      type: GraphQLBoolean,
-      description: 'true if email is verified, false otherwise'
     },
     featureFlags: {
       type: new GraphQLNonNull(UserFeatureFlags),
@@ -205,10 +188,6 @@ const User = new GraphQLObjectType<any, GQLContext, any>({
         return lastMetAt ? new Date(lastMetAt) : null
       }
     },
-    loginsCount: {
-      type: GraphQLInt,
-      description: 'The number of logins for this user'
-    },
     monthlyStreakMax: {
       type: GraphQLNonNull(GraphQLInt),
       description: 'The largest number of consecutive months the user has checked into a meeting',
@@ -234,14 +213,6 @@ const User = new GraphQLObjectType<any, GQLContext, any>({
           .sort((a, b) => (a < b ? 1 : -1))
         return getMonthlyStreak(meetingDates, true)
       }
-    },
-    name: {
-      type: GraphQLString,
-      description: 'Name associated with the user'
-    },
-    nickname: {
-      type: GraphQLString,
-      description: 'Nickname associated with the user'
     },
     suggestedActions: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(SuggestedAction))),
@@ -319,7 +290,7 @@ const User = new GraphQLObjectType<any, GQLContext, any>({
     },
     preferredName: {
       type: new GraphQLNonNull(GraphQLString),
-      description: 'The application-specific name, defaults to nickname',
+      description: 'The application-specific name, defaults to email before the tld',
       resolve: ({preferredName, name}) => {
         return preferredName || name
       }

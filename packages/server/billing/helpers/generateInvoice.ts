@@ -1,22 +1,23 @@
-import getRethink from '../../database/rethinkDriver'
-import {fromEpochSeconds} from '../../utils/epochTime'
-import shortid from 'shortid'
-import Stripe from 'stripe'
-import Invoice from '../../database/types/Invoice'
+import {InvoiceItemType} from 'parabol-client/types/constEnums'
 import {
   InvoiceLineItemEnum,
   InvoiceStatusEnum,
   OrgUserRole,
   TierEnum
 } from 'parabol-client/types/graphql'
-import InvoiceLineItemDetail from '../../database/types/InvoiceLineItemDetail'
-import QuantityChangeLineItem from '../../database/types/QuantityChangeLineItem'
-import InvoiceLineItemOtherAdjustments from '../../database/types/InvoiceLineItemOtherAdjustments'
-import {InvoiceItemType} from 'parabol-client/types/constEnums'
-import StripeManager from '../../utils/StripeManager'
-import NextPeriodCharges from '../../database/types/NextPeriodCharges'
+import shortid from 'shortid'
+import Stripe from 'stripe'
+import getRethink from '../../database/rethinkDriver'
 import Coupon from '../../database/types/Coupon'
+import Invoice from '../../database/types/Invoice'
+import InvoiceLineItemDetail from '../../database/types/InvoiceLineItemDetail'
+import InvoiceLineItemOtherAdjustments from '../../database/types/InvoiceLineItemOtherAdjustments'
+import NextPeriodCharges from '../../database/types/NextPeriodCharges'
 import Organization from '../../database/types/Organization'
+import QuantityChangeLineItem from '../../database/types/QuantityChangeLineItem'
+import db from '../../db'
+import {fromEpochSeconds} from '../../utils/epochTime'
+import StripeManager from '../../utils/StripeManager'
 
 interface InvoicesByStartTime {
   [start: string]: {
@@ -73,12 +74,7 @@ interface DetailedLineItemDict {
 }
 
 const getEmailLookup = async (userIds: string[]) => {
-  const r = await getRethink()
-  const usersAndEmails = (await r
-    .table('User')
-    .getAll(r.args(userIds), {index: 'id'})
-    .pluck('id', 'email')
-    .run()) as {id: string; email: string}[]
+  const usersAndEmails = await db.readMany('User', userIds)
   return usersAndEmails.reduce((dict, doc) => {
     dict[doc.id] = doc.email
     return dict

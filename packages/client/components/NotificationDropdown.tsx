@@ -9,6 +9,7 @@ import SetNotificationStatusMutation from '~/mutations/SetNotificationStatusMuta
 import {NotificationStatusEnum} from '~/types/graphql'
 import {NotificationDropdown_viewer} from '~/__generated__/NotificationDropdown_viewer.graphql'
 import {MenuProps} from '../hooks/useMenu'
+import useSegmentTrack from '../hooks/useSegmentTrack'
 import Menu from './Menu'
 import MenuItem from './MenuItem'
 import NotificationPicker from './NotificationPicker'
@@ -44,6 +45,7 @@ const NotificationDropdown = (props: Props) => {
     rootMargin: '8px'
   })
   const atmosphere = useAtmosphere()
+  useSegmentTrack('Notification Menu Opened', {})
   return (
     <Menu ariaLabel={'Select a notification'} {...menuProps}>
       {!hasNotifications && (

@@ -1,8 +1,8 @@
+import db from '../../../db'
+import {DataLoaderWorker} from '../../graphql'
 import getIsMassInviteToken from './getIsMassInviteToken'
 import handleMassInviteToken from './handleMassInviteToken'
 import handleTeamInviteToken from './handleTeamInviteToken'
-import getRethink from '../../../database/rethinkDriver'
-import {DataLoaderWorker} from '../../graphql'
 
 const handleInvitationToken = async (
   invitationToken: string,
@@ -10,11 +10,7 @@ const handleInvitationToken = async (
   dataLoader: DataLoaderWorker,
   notificationId?: string
 ) => {
-  const r = await getRethink()
-  const viewer = await r
-    .table('User')
-    .get(viewerId)
-    .run()
+  const viewer = await db.read('User', viewerId)
   const {email, tms} = viewer
   const isMassInviteToken = getIsMassInviteToken(invitationToken)
   if (isMassInviteToken) return handleMassInviteToken(invitationToken, email, tms, dataLoader)

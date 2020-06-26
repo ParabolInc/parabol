@@ -1,6 +1,6 @@
 import {GraphQLNonNull, GraphQLString} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import getRethink from '../../database/rethinkDriver'
+import db from '../../db'
 import {getUserId} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import rateLimit from '../rateLimit'
@@ -22,7 +22,6 @@ export default {
   })(async (_source, {location}, {authToken, dataLoader, socketId: mutatorId}) => {
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
-    const r = await getRethink()
 
     // AUTH
     const viewerId = getUserId(authToken)
@@ -36,20 +35,12 @@ export default {
     const lastSeenAt = new Date()
     const data = {userId: viewerId}
     if (lastSeenAtURL !== location) {
-      await r
-        .table('User')
-        .get(viewerId)
-        .update({
-          lastSeenAt,
-          lastSeenAtURL: location
-        })
-        .run()
-
+      await db.write('User', viewerId, {lastSeenAt, lastSeenAtURL: location})
       const meetingId = lastSeenAtURL?.includes('/meet/')
         ? lastSeenAtURL.slice(6)
         : location?.includes('/meet/')
-          ? location.slice(6)
-          : null
+        ? location.slice(6)
+        : null
       viewer.lastSeenAtURL = location
       viewer.lastSeenAt
       if (meetingId) {

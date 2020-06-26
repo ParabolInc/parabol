@@ -2,6 +2,7 @@ import {GraphQLNonNull} from 'graphql'
 import {InvoiceItemType, SubscriptionChannel} from 'parabol-client/types/constEnums'
 import adjustUserCount from '../../../billing/helpers/adjustUserCount'
 import getRethink from '../../../database/rethinkDriver'
+import db from '../../../db'
 import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import segmentIo from '../../../utils/segmentIo'
@@ -23,27 +24,19 @@ export default {
     const userId = getUserId(authToken)
 
     // RESOLUTION
-    const userChanges = await r
-      .table('User')
-      .get(userId)
-      .update(
-        (user) => ({
-          inactive: false,
-          updatedAt: now,
-          lastSeenAt: now,
-          lastSeenAtURL: null,
-          connectedSockets: user('connectedSockets')
-            .default([])
-            .append(socketId)
-        }),
-        {returnChanges: true}
-      )('changes')(0)
-      .default({})
-      .run()
+    const user = await db.read('User', userId)
+    const reqlUpdater = (user) => ({
+      inactive: false,
+      updatedAt: now,
+      lastSeenAt: now,
+      lastSeenAtURL: null,
+      connectedSockets: user('connectedSockets')
+        .default([])
+        .append(socketId)
+    })
+    await db.write('User', userId, reqlUpdater)
 
-    const {old_val: oldUser, new_val: user} = userChanges
-    const {inactive} = oldUser
-    const {connectedSockets, tms} = user
+    const {inactive, connectedSockets, tms} = user
 
     // no need to wait for this, it's just for billing
     if (inactive) {
@@ -56,7 +49,7 @@ export default {
       // TODO: re-identify
     }
 
-    if (connectedSockets.length === 1) {
+    if (connectedSockets.length === 0) {
       const operationId = dataLoader.share()
       const subOptions = {mutatorId: socketId, operationId}
       const listeningUserIds = (await r

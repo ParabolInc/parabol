@@ -1,7 +1,7 @@
 import React, {forwardRef} from 'react'
 import useSegmentTrack from '../../hooks/useSegmentTrack'
 import {ExternalLinks} from '../../types/constEnums'
-import {MeetingTypeEnum, NewMeetingPhaseTypeEnum, SegmentClientEventEnum} from '../../types/graphql'
+import {MeetingTypeEnum, NewMeetingPhaseTypeEnum} from '../../types/graphql'
 import {CHECKIN} from '../../utils/constants'
 import {phaseLabelLookup} from '../../utils/meetings/lookups'
 import HelpMenuContent from './HelpMenuContent'
@@ -21,7 +21,7 @@ interface Props {
 const CheckInHelpMenu = forwardRef((props: Props, ref: any) => {
   const {closePortal} = ref
   const {meetingType} = props
-  useSegmentTrack(SegmentClientEventEnum.HelpMenuOpen, {phase: NewMeetingPhaseTypeEnum.checkin})
+  useSegmentTrack('HelpMenuOpen', {phase: NewMeetingPhaseTypeEnum.checkin})
   return (
     <HelpMenuContent closePortal={closePortal}>
       <HelpMenuHeader>{phaseLabelLookup[CHECKIN]}</HelpMenuHeader>

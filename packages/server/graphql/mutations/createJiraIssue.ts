@@ -4,6 +4,7 @@ import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {ICreateJiraIssueOnMutationArguments} from 'parabol-client/types/graphql'
 import getRethink from '../../database/rethinkDriver'
+import db from '../../db'
 import AtlassianServerManager from '../../utils/AtlassianServerManager'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
@@ -92,10 +93,8 @@ export default {
 
     const isViewerAllowed = viewerAuth ? viewerAuth.isActive : false
     if (!isViewerAllowed) {
-      const creatorName = await r
-        .table('User')
-        .get(viewerId)('preferredName')
-        .run()
+      const creator = await db.read('User', viewerId)
+      const creatorName = creator.preferredName
       markdown = `${markdown}\n\n_Added by ${creatorName}_`
     }
 

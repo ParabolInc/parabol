@@ -115,7 +115,7 @@ const clonePinnedAgendaItem = async (pinnedAgendaItems: AgendaItem[]) => {
       pinnedParentId: agendaItem.pinnedParentId ? agendaItem.pinnedParentId : agendaItemId,
       sortOrder: agendaItem.sortOrder,
       teamId: agendaItem.teamId,
-      teamMemberId: agendaItem.teamMemberId,
+      teamMemberId: agendaItem.teamMemberId
     })
   })
 
@@ -169,7 +169,7 @@ const removeEmptyTasks = async (teamId: string, meetingId: string) => {
 }
 
 const finishActionMeeting = async (meeting: MeetingAction, dataLoader: DataLoaderWorker) => {
-  const {id: meetingId, teamId} = meeting
+  const {id: meetingId, teamId, phases} = meeting
   const r = await getRethink()
   const [meetingMembers, tasks, doneTasks] = await Promise.all([
     dataLoader.get('meetingMembersByMeetingId').load(meetingId),
@@ -192,11 +192,12 @@ const finishActionMeeting = async (meeting: MeetingAction, dataLoader: DataLoade
       .run()
   ])
   const userIds = meetingMembers.map(({userId}) => userId)
-
+  const meetingPhase = getMeetingPhase(phases)
+  const isKill = getIsKill(MeetingTypeEnum.action, meetingPhase)
   await Promise.all([
-    archiveTasksForDB(doneTasks, meetingId),
+    isKill ? undefined : archiveTasksForDB(doneTasks, meetingId),
+    isKill ? undefined : clearAgendaItems(teamId),
     updateTaskSortOrders(userIds, tasks),
-    clearAgendaItems(teamId),
     r
       .table('NewMeeting')
       .get(meetingId)
@@ -253,7 +254,8 @@ const finishMeetingType = async (
   return undefined
 }
 
-const getIsKill = (meetingType: MeetingTypeEnum, phase: GenericMeetingPhase) => {
+const getIsKill = (meetingType: MeetingTypeEnum, phase?: GenericMeetingPhase) => {
+  if (!phase) return false
   switch (meetingType) {
     case MeetingTypeEnum.action:
       return ![AGENDA_ITEMS, LAST_CALL].includes(phase.phaseType)
@@ -358,6 +360,7 @@ export default {
         userId,
         event: 'Meeting Completed',
         properties: {
+          hasIcebreaker: phases[0].phaseType === NewMeetingPhaseTypeEnum.checkin,
           // include wasFacilitator as a flag to handle 1 per meeting
           wasFacilitator,
           userIds: wasFacilitator ? presentMemberUserIds : undefined,

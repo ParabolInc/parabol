@@ -24,6 +24,7 @@
   },
   "exclude": [
     "serviceWorker",
-    "**/node_modules"
+    "**/node_modules",
+    "types/graphql.ts"
   ]
 }

@@ -1,6 +1,5 @@
 import * as Sentry from '@sentry/node'
-import getRethink from '../database/rethinkDriver'
-import User from '../database/types/User'
+import db from '../db'
 
 export interface SentryOptions {
   sampleRate?: number
@@ -17,17 +16,10 @@ const sendToSentry = async (error: Error, options: SentryOptions = {}): void => 
   // if (!PROD) {
   console.error('SEND TO SENTRY', error, options.tags)
   // }
-  const r = await getRethink()
   const {sampleRate, tags, userId, ip} = options
   if (sampleRate && Math.random() > sampleRate) return
-  const user = userId
-    ? ((await r
-        .table('User')
-        .get(userId)
-        .default({})
-        .pluck('id', 'email')
-        .run()) as User | null)
-    : null
+  const fullUser = userId ? await db.read('User', userId) : null
+  const user = fullUser ? {id: fullUser.id, email: fullUser.email} : null
   if (user && ip) {
     ;(user as any).ip_address = ip
   }

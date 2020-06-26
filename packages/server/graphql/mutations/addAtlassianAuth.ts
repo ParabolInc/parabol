@@ -1,12 +1,13 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
-import AddAtlassianAuthPayload from '../types/AddAtlassianAuthPayload'
-import {getUserId, isTeamMember} from '../../utils/authorization'
-import publish from '../../utils/publish'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import shortid from 'shortid'
 import getRethink from '../../database/rethinkDriver'
 import AtlassianServerManager from '../../utils/AtlassianServerManager'
+import {getUserId, isTeamMember} from '../../utils/authorization'
+import publish from '../../utils/publish'
+import segmentIo from '../../utils/segmentIo'
 import standardError from '../../utils/standardError'
-import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import AddAtlassianAuthPayload from '../types/AddAtlassianAuthPayload'
 
 export default {
   name: 'AddAtlassianAuth',
@@ -82,6 +83,14 @@ export default {
         .run()
     }
 
+    segmentIo.track({
+      userId: viewerId,
+      event: 'Added Integration',
+      properties: {
+        teamId,
+        service: 'Atlassian'
+      }
+    })
     const data = {atlassianAuthId}
     publish(SubscriptionChannel.TEAM, teamId, 'AddAtlassianAuthPayload', data, subOptions)
     return data
