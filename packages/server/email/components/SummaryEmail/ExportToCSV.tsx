@@ -21,6 +21,31 @@ interface Props extends WithAtmosphereProps, WithMutationProps {
   referrer: MeetingSummaryReferrer
 }
 
+graphql`
+  fragment ExportToCSV_threadSource on ThreadSource {
+    id
+    thread(first: 1000) {
+      edges {
+        node {
+          __typename
+          content
+          createdAt
+          createdByUser {
+            preferredName
+          }
+          replies {
+            content
+            createdAt
+            createdByUser {
+              preferredName
+            }
+          }
+        }
+      }
+    }
+  }
+`
+
 const query = graphql`
   query ExportToCSVQuery($meetingId: ID!) {
     viewer {
@@ -32,27 +57,8 @@ const query = graphql`
         endedAt
         ... on ActionMeeting {
           agendaItems {
-            id
             content
-            thread(first: 1000) {
-              edges {
-                node {
-                  __typename
-                  content
-                  createdAt
-                  createdByUser {
-                    preferredName
-                  }
-                  replies {
-                    content
-                    createdAt
-                    createdByUser {
-                      preferredName
-                    }
-                  }
-                }
-              }
-            }
+            ...ExportToCSV_threadSource @relay(mask: false)
           }
           meetingMembers {
             isCheckedIn
@@ -70,26 +76,7 @@ const query = graphql`
         }
         ... on RetrospectiveMeeting {
           reflectionGroups(sortBy: stageOrder) {
-            id
-            thread(first: 1000) {
-              edges {
-                node {
-                  __typename
-                  content
-                  createdAt
-                  createdByUser {
-                    preferredName
-                  }
-                  replies {
-                    content
-                    createdAt
-                    createdByUser {
-                      preferredName
-                    }
-                  }
-                }
-              }
-            }
+            ...ExportToCSV_threadSource @relay(mask: false)
             reflections {
               content
               createdAt
@@ -194,7 +181,7 @@ class ExportToCSV extends Component<Props> {
           content: extractTextFromDraftString(reflection.content)
         })
       })
-      thread.edges.forEach((edge) => {
+      thread?.edges.forEach((edge) => {
         if (edge!.node!.__typename !== 'Comment') return
         rows.push({
           reflectionTitle: title!,
@@ -260,7 +247,7 @@ class ExportToCSV extends Component<Props> {
     })
     agendaItems!.forEach((agendaItem) => {
       const {thread} = agendaItem
-      thread.edges.forEach((edge) => {
+      thread?.edges.forEach((edge) => {
         if (edge.node.__typename !== 'Comment') return
         const authorName = edge!.node!.createdByUser?.preferredName ?? 'Anonymous'
         rows.push({
