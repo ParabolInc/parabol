@@ -54,6 +54,7 @@ const updateTemplateScope = {
       ? await r
           .table('NewMeeting')
           .getAll(templateId, {index: 'templateId'})
+          .filter((meeting) => meeting('teamId').ne(teamId))
           .nth(0)
           .default(null)
           .ne(null)

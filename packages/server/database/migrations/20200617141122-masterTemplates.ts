@@ -312,6 +312,7 @@ const phaseItems = [
 ]
 export const up = async function(r: R) {
   try {
+    // promote templateId to the root of the meeting document
     await r
       .table('NewMeeting')
       .filter({meetingType: 'retrospective'})
@@ -331,16 +332,38 @@ export const up = async function(r: R) {
     console.log(e)
   }
 
+  // delete unused templates, approx 90% of templates are unused!
+  try {
+    await (r
+      .table('NewMeeting')('templateId')
+      .distinct() as any)
+      .do((usedTemplateIds) => {
+        return r
+          .table('ReflectTemplate')
+          .filter((template) => {
+            return usedTemplateIds.contains(template('id')).not()
+          })
+          .delete()
+      })
+      .run()
+  } catch (e) {
+    console.log(e)
+  }
+
+  // add scope & orgId to templates
   try {
     await r
       .table('ReflectTemplate')
-      .update((row) => ({
-        scope: 'TEAM',
-        orgId: r
-          .table('Team')
-          .get(row('teamId'))('orgId')
-          .default(null)
-      }))
+      .update(
+        (row) => ({
+          scope: 'TEAM',
+          orgId: r
+            .table('Team')
+            .get(row('teamId'))('orgId')
+            .default(null)
+        }),
+        {nonAtomic: true}
+      )
       .run()
     await r
       .table('ReflectTemplate')
@@ -349,6 +372,8 @@ export const up = async function(r: R) {
   } catch (e) {
     console.log(e)
   }
+
+  // add initial public templates
   try {
     await Promise.all([
       r
