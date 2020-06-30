@@ -30,7 +30,7 @@ const DemoCreateAccountButton = (props: RouteComponentProps) => {
   return (
     <StyledButton palette='blue' onClick={handleClick}>
       <GiftSVG />
-      {isBreakpoint && <Label>{'Create Free Acount'}</Label>}
+      {isBreakpoint && <Label>{'Create Free Account'}</Label>}
     </StyledButton>
   )
 }
