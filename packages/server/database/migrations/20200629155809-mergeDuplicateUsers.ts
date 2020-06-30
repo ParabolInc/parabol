@@ -1,21 +1,87 @@
+import {R} from 'rethinkdb-ts'
 import User from '../types/User'
 
-export const up = async function(r) {
-  try {
-    const affectedEmails = await r
-      .table('User')
-      .filter((user) =>
-        user('email')
-          .match('^DELETED$')
-          .eq(null)
+export const up = async function(r: R) {
+  const updateTeamMember = async (goodUserId: string, badUserId: string) => {
+    // we don't want to delete the team member because the NewMeeting object
+    // references it in the TeamMemberStages (checkin & update stages)
+    // instead, we just inactivate
+    const {goodTeamMembers, badTeamMembers} = await r({
+      goodTeamMembers: r
+        .table('TeamMember')
+        .getAll(goodUserId, {index: 'userId'})
+        .coerceTo('array') as any,
+      badTeamMembers: r
+        .table('TeamMember')
+        .getAll(badUserId, {index: 'userId'})
+        .update(
+          {
+            userId: goodUserId,
+            isNotRemoved: false
+          },
+          {returnChanges: true}
+        )('changes')('new_val')
+        .default([]) as any
+    }).run()
+
+    // for each bad team member, see if a good one exists on that team
+    // if the good one does not exist, then create it since the old in now inactive
+    const teamMembersToInsert = [] as any[]
+    badTeamMembers.forEach((badTeamMember) => {
+      const goodTeamMember = goodTeamMembers.find(
+        (teamMember) => teamMember.id === badTeamMember.id
       )
+      if (!goodTeamMember) {
+        badTeamMember.id = `${goodUserId}::${badTeamMember.teamId}`
+        teamMembersToInsert.push(badTeamMember)
+      }
+    })
+    await r
+      .table('TeamMember')
+      .insert(badTeamMembers)
+      .run()
+    // update org user
+    // it's possible 2 user objects could exist on the same, that's OK for now
+    await r
+      .table('OrganizationUser')
+      .getAll(badUserId, {index: 'userId'})
+      .update({
+        userId: goodUserId
+      })
+      .run()
+
+    // replace meeting members with updated ones
+    const meetingMembers = await r
+      .table('MeetingMember')
+      .getAll(badUserId, {index: 'userId'})
+      .run()
+    const updatedMeetingMembers = meetingMembers.map((meetingMember) => ({
+      ...meetingMember,
+      id: `${goodUserId}::${meetingMember.meetingId}`,
+      userId: goodUserId
+    }))
+    await r
+      .table('MeetingMember')
+      .getAll(badUserId, {index: 'userId'})
+      .delete()
+      .run()
+    await r
+      .table('MeetingMember')
+      .insert(updatedMeetingMembers)
+      .run()
+  }
+
+  try {
+    const affectedEmails = (await r
+      .table('User')
       .group('email')
       .count()
       .ungroup()
       .filter((row) => row('reduction').gt(1))('group')
-      .run()
+      .filter((row) => row.ne('DELETED'))
+      .run()) as string[]
 
-    const allDuplicates = [] as User[][]
+    const allDuplicates = [] as Promise<User[]>[]
     affectedEmails.forEach((email) => {
       allDuplicates.push(
         r
@@ -29,21 +95,28 @@ export const up = async function(r) {
 
     const toUpdate = [] as User[]
     const toDeleteIds = [] as string[]
-
+    const teamMemberUpdates = [] as Promise<void>[]
     for await (const innerArr of allDuplicates) {
       const [old, ...newer] = innerArr
-
+      const {identities: oldIdentities} = old
       for (const dup of newer) {
-        old.identities = old.identities.concat(dup.identities)
+        const {identities} = dup
+        for (const identity of identities) {
+          const {type} = identity
+          const matchingOldIdentityIdx = oldIdentities.findIndex(
+            (identity) => identity.type === type
+          )
+          if (matchingOldIdentityIdx !== -1) {
+            oldIdentities[matchingOldIdentityIdx] = identity
+          }
+        }
         old.tms = old.tms.concat(dup.tms)
         old.email = dup.email ? dup.email : old.email
         old.picture = dup.picture ? dup.picture : old.picture
         toDeleteIds.push(dup.id)
+        teamMemberUpdates.push(updateTeamMember(old.id, dup.id))
       }
-
-      old.identities = Array.from(new Set(old.identities))
       old.tms = Array.from(new Set(old.tms))
-
       toUpdate.push(old)
     }
 
@@ -72,4 +145,8 @@ export const up = async function(r) {
   } catch (e) {
     console.log(e)
   }
+}
+
+export const down = async () => {
+  // noop
 }
