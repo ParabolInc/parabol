@@ -3,7 +3,6 @@ import User from '../types/User'
 export const up = async function(r) {
   try {
     const affectedEmails = await r
-      .db('actionProduction')
       .table('User')
       .filter((user) =>
         user('email')
@@ -20,7 +19,6 @@ export const up = async function(r) {
     affectedEmails.forEach((email) => {
       allDuplicates.push(
         r
-          .db('actionProduction')
           .table('User')
           .getAll(email, {index: 'email'})
           .orderBy('createdAt')
