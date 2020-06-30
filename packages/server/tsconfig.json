@@ -27,6 +27,7 @@
   "files": [
     "types/modules.d.ts",
     "email/components/SummaryEmail/MeetingSummaryEmail/MeetingSummaryEmail.tsx",
+    "graphql/queries/archivedTasks.ts",
     "server.ts"
   ],
 }

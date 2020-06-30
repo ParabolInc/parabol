@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {useEffect, useRef, useState} from 'react'
+import React, {useEffect, useRef, useState, useMemo} from 'react'
 import {createPaginationContainer, RelayPaginationProp} from 'react-relay'
 import {AutoSizer, CellMeasurer, CellMeasurerCache, Grid, InfiniteLoader} from 'react-virtualized'
 import {TeamArchive_team} from '~/__generated__/TeamArchive_team.graphql'
@@ -11,6 +11,9 @@ import {PALETTE} from '../../../../styles/paletteV2'
 import {MathEnum, NavSidebar} from '../../../../types/constEnums'
 import {AreaEnum} from '../../../../types/graphql'
 import getRallyLink from '../../../userDashboard/helpers/getRallyLink'
+import toTeamMemberId from '~/utils/relay/toTeamMemberId'
+import getSafeRegex from '~/utils/getSafeRegex'
+import extractTextFromDraftString from '~/utils/draftjs/extractTextFromDraftString'
 
 const CARD_WIDTH = 256 + 32 // account for box model and horizontal padding
 const GRID_PADDING = 16
@@ -77,9 +80,29 @@ interface Props {
 const TeamArchive = (props: Props) => {
   const {viewer, relay, team} = props
   const {hasMore, isLoading, loadMore} = relay
-  const {teamName} = team
-  const {archivedTasks} = viewer
-  const {edges} = archivedTasks!
+  const {teamName, teamMembers, teamMemberFilter} = team
+  const teamMemberFilterId = (teamMemberFilter && teamMemberFilter.id) || null
+  const {archivedTasks, dashSearch} = viewer
+
+  const teamMemberFilteredTasks = useMemo(() => {
+    const edges = teamMemberFilterId
+      ? archivedTasks?.edges.filter((edge) => {
+          return toTeamMemberId(edge.node.teamId, edge.node.userId) === teamMemberFilterId
+        })
+      : archivedTasks.edges
+    return {...archivedTasks, edges: edges}
+  }, [archivedTasks?.edges, teamMemberFilterId, teamMembers])
+
+  const filteredTasks = useMemo(() => {
+    if (!dashSearch) return teamMemberFilteredTasks
+    const dashSearchRegex = getSafeRegex(dashSearch, 'i')
+    const filteredEdges = teamMemberFilteredTasks.edges.filter((edge) =>
+      extractTextFromDraftString(edge.node.content).match(dashSearchRegex)
+    )
+    return {...teamMemberFilteredTasks, edges: filteredEdges}
+  }, [dashSearch, teamMemberFilteredTasks])
+
+  const {edges} = filteredTasks
   const [columnCount] = useState(getColumnCount)
   const _onRowsRenderedRef = useRef<
     ({startIndex, stopIndex}: {startIndex: number; stopIndex: number}) => void
@@ -248,12 +271,16 @@ export default createPaginationContainer(
   {
     viewer: graphql`
       fragment TeamArchive_viewer on User {
+        dashSearch
         archivedTasks(first: $first, teamId: $teamId, after: $after)
           @connection(key: "TeamArchive_archivedTasks") {
           edges {
             cursor
             node {
               id
+              teamId
+              userId
+              content
               ...NullableTask_task
             }
           }
@@ -268,6 +295,14 @@ export default createPaginationContainer(
       fragment TeamArchive_team on Team {
         teamName: name
         orgId
+        teamMemberFilter {
+          id
+        }
+        teamMembers(sortBy: "preferredName") {
+          id
+          picture
+          preferredName
+        }
       }
     `
   },

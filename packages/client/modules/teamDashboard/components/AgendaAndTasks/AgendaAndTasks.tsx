@@ -180,6 +180,9 @@ export default createFragmentContainer(AgendaAndTasks, {
         teamId: id
         teamName: name
         showArchivedTasksCheckbox
+        teamMemberFilter {
+          id
+        }
         ...AgendaListAndInput_team
         ...TeamTasksHeaderContainer_team
       }

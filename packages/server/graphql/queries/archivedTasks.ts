@@ -6,7 +6,7 @@ import GraphQLISO8601Type from '../types/GraphQLISO8601Type'
 import {TaskConnection} from '../types/Task'
 
 export default {
-  type: TaskConnection,
+  type: new GraphQLNonNull(TaskConnection),
   args: {
     first: {
       type: GraphQLInt
