@@ -62,7 +62,7 @@ describe('Test Reflect page Demo', () => {
 
   })
 
-  it('Test adding, editing, and deleting reflections', () => {
+  it('Test adding reflections', () => {
     cy.get('[data-cy=sidebar-toggle]').should('be.visible').click({force: true})
 
     addCard('Start', 'Start testing code before merging')

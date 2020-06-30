@@ -163,10 +163,9 @@ describe('Test Discuss page Demo', () => {
       .visitPhase('group')
       .wait(10000)
       .visitPhase('vote')
-      .wait(2000)
+      .wait(3000)
       .visitPhase('discuss', '/1')
-
-    cy.wait(2000)
+      .wait(2000)
 
   })
 
@@ -252,7 +251,7 @@ describe('Test Discuss page Demo', () => {
 
   it('can see a meeting summary', () => {
     cy.url().should('include', '/retrospective-demo-summary')
-    // cy.reload()
+    cy.reload()
     cy.get('[data-cy=create-account-section').then(($el) => {
       $el.hide()
     })
