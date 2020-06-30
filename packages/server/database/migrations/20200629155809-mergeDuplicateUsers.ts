@@ -69,6 +69,31 @@ export const up = async function(r: R) {
       .table('MeetingMember')
       .insert(updatedMeetingMembers)
       .run()
+
+    // replace team invitations
+    await r
+      .table('TeamInvitation')
+      .filter({invitedBy: badUserId})
+      .update({invitedBy: goodUserId})
+      .run()
+    await r
+      .table('Notification')
+      .filter({
+        evictorUserId: badUserId
+      })
+      .update({
+        evictorUserId: goodUserId
+      })
+      .run()
+    await r
+      .table('Notification')
+      .filter({
+        archivorUserId: badUserId
+      })
+      .update({
+        archivorUserId: goodUserId
+      })
+      .run()
   }
 
   try {
