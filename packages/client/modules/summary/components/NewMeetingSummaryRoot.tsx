@@ -29,7 +29,7 @@ const NewMeetingSummaryRoot = ({atmosphere, match}: Props) => {
       query={query}
       variables={{meetingId}}
       render={renderQuery(NewMeetingSummary, {props: {urlAction}, size: LoaderSize.WHOLE_PAGE})}
-      fetchPolicy={'store-or-network' as any}
+      fetchPolicy={'network-only' as any}
     />
   )
 }
