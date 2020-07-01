@@ -8,7 +8,7 @@ import {TeamArchive_viewer} from '~/__generated__/TeamArchive_viewer.graphql'
 import NullableTask from '../../../../components/NullableTask/NullableTask'
 import useDocumentTitle from '../../../../hooks/useDocumentTitle'
 import {PALETTE} from '../../../../styles/paletteV2'
-import {MathEnum, NavSidebar} from '../../../../types/constEnums'
+import {MathEnum, Layout} from '../../../../types/constEnums'
 import {AreaEnum} from '../../../../types/graphql'
 import getRallyLink from '../../../userDashboard/helpers/getRallyLink'
 import toTeamMemberId from '~/utils/relay/toTeamMemberId'
@@ -20,8 +20,8 @@ const GRID_PADDING = 16
 
 const getColumnCount = () => {
   if (typeof window === 'undefined') return 4
-  const {innerWidth} = window
-  return Math.floor((innerWidth - NavSidebar.WIDTH - GRID_PADDING) / CARD_WIDTH)
+
+  return Math.floor((Layout.TASK_COLUMNS_MAX_WIDTH - GRID_PADDING) / CARD_WIDTH)
 }
 
 const getGridIndex = (index: number, columnCount: number) => {
@@ -42,9 +42,14 @@ const Root = styled('div')({
 const Body = styled('div')({
   display: 'flex',
   flex: 1,
+  height: '100%',
+  margin: '0 auto',
   flexDirection: 'column',
   justifyContent: 'flex-start',
-  paddingLeft: '12',
+  maxWidth: Layout.TASK_COLUMNS_MAX_WIDTH,
+  overflow: 'auto',
+  padding: `0 10px`,
+  width: '100%',
   position: 'relative'
 })
 const CardGrid = styled('div')({
@@ -52,8 +57,7 @@ const CardGrid = styled('div')({
   display: 'flex',
   // grow to the largest height possible
   flex: 1,
-  outline: 0,
-  width: '100%'
+  outline: 0
 })
 
 const EmptyMsg = styled('div')({
