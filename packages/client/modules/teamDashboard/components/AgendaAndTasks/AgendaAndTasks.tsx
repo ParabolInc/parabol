@@ -1,28 +1,19 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createFragmentContainer, QueryRenderer} from 'react-relay'
+import {createFragmentContainer} from 'react-relay'
 import LabelHeading from '~/components/LabelHeading/LabelHeading'
 import useStoreQueryRetry from '~/hooks/useStoreQueryRetry'
 import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
 import {AgendaAndTasks_viewer} from '~/__generated__/AgendaAndTasks_viewer.graphql'
 import useDocumentTitle from '../../../../hooks/useDocumentTitle'
 import {desktopSidebarShadow, navDrawerShadow} from '../../../../styles/elevation'
-import {
-  AppBar,
-  Breakpoint,
-  NavSidebar,
-  RightSidebar,
-  ZIndex,
-  LoaderSize
-} from '../../../../types/constEnums'
+import {AppBar, Breakpoint, NavSidebar, RightSidebar, ZIndex} from '../../../../types/constEnums'
 import TeamColumnsContainer from '../../containers/TeamColumns/TeamColumnsContainer'
 import TeamTasksHeaderContainer from '../../containers/TeamTasksHeader/TeamTasksHeaderContainer'
 import AgendaListAndInput from '../AgendaListAndInput/AgendaListAndInput'
 import CloseAgenda from '../AgendaToggle/CloseAgenda'
-import useAtmosphere from '~/hooks/useAtmosphere'
-import renderQuery from '~/utils/relay/renderQuery'
-import TeamArchive from '../TeamArchive/TeamArchive'
+import TeamArchiveRoot from '../../containers/TeamArchive/TeamArchiveRoot'
 
 const desktopBreakpointMediaQuery = makeMinWidthMediaQuery(Breakpoint.SIDEBAR_LEFT)
 const desktopDashWidestMediaQuery = makeMinWidthMediaQuery(Breakpoint.DASH_BREAKPOINT_WIDEST)
@@ -112,17 +103,7 @@ interface Props {
   retry(): void
 }
 
-const query = graphql`
-  query AgendaAndTasksArchivedTasksQuery($teamId: ID!, $first: Int!, $after: DateTime) {
-    viewer {
-      ...TeamArchive_viewer
-    }
-  }
-`
-
 const AgendaAndTasks = (props: Props) => {
-  const atmosphere = useAtmosphere()
-  const {viewerId} = atmosphere
   const {viewer, retry} = props
   const {dashSearch} = viewer
   const team = viewer.team!
@@ -140,16 +121,7 @@ const AgendaAndTasks = (props: Props) => {
         </TasksHeader>
 
         {showArchivedTasksCheckbox ? (
-          <QueryRenderer
-            environment={atmosphere}
-            query={query}
-            variables={{teamId, first: 40}}
-            fetchPolicy={'store-or-network' as any}
-            render={renderQuery(TeamArchive, {
-              props: {teamId, team, userId: viewerId},
-              size: LoaderSize.PANEL
-            })}
-          />
+          <TeamArchiveRoot teamId={teamId} team={team} />
         ) : (
           <TasksContent>
             <TeamColumnsContainer viewer={viewer} />
@@ -183,8 +155,14 @@ export default createFragmentContainer(AgendaAndTasks, {
         teamMemberFilter {
           id
         }
+        teamMembers(sortBy: "preferredName") {
+          id
+          picture
+          preferredName
+        }
         ...AgendaListAndInput_team
         ...TeamTasksHeaderContainer_team
+        ...TeamArchive_team
       }
       teamMember(teamId: $teamId) {
         hideAgenda

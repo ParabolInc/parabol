@@ -1,6 +1,5 @@
 import React from 'react'
 import graphql from 'babel-plugin-relay/macro'
-import {RouteComponentProps} from 'react-router'
 import {QueryRenderer} from 'react-relay'
 import TeamArchive from '../../components/TeamArchive/TeamArchive'
 import {LoaderSize} from '../../../../types/constEnums'
@@ -15,16 +14,13 @@ const query = graphql`
   }
 `
 
-interface Props extends RouteComponentProps<{teamId: string}> {
+interface Props {
+  teamId: string
   team: any
 }
 
-const TeamArchiveRoot = ({match, team}: Props) => {
+const TeamArchiveRoot = ({teamId, team}: Props) => {
   const atmosphere = useAtmosphere()
-  const {
-    params: {teamId}
-  } = match
-  const {viewerId} = atmosphere
   return (
     <QueryRenderer
       environment={atmosphere}
@@ -32,7 +28,7 @@ const TeamArchiveRoot = ({match, team}: Props) => {
       variables={{teamId, first: 40}}
       fetchPolicy={'store-or-network' as any}
       render={renderQuery(TeamArchive, {
-        props: {teamId, team, userId: viewerId},
+        props: {team},
         size: LoaderSize.PANEL
       })}
     />

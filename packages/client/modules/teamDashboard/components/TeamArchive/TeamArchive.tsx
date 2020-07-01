@@ -73,7 +73,6 @@ const LinkSpan = styled('div')({
 interface Props {
   relay: RelayPaginationProp
   viewer: TeamArchive_viewer
-  teamId: string
   team: TeamArchive_team
 }
 
@@ -294,7 +293,6 @@ export default createPaginationContainer(
     team: graphql`
       fragment TeamArchive_team on Team {
         teamName: name
-        orgId
         teamMemberFilter {
           id
         }
