@@ -5,6 +5,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 5.11.1 2020-Jun-29
+
+### Fixed
+
+- Merge duplicate users together
+
 ## 5.11.0 2020-Jun-18
 
 ### Added
