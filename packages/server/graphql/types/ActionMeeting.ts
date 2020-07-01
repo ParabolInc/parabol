@@ -21,15 +21,16 @@ const ActionMeeting = new GraphQLObjectType<IActionMeeting, GQLContext>({
       description: 'The team members that were active during the time of the meeting',
       resolve: ({id: meetingId}, _args, {dataLoader}) => {
         return dataLoader.get('meetingMembersByMeetingId').load(meetingId)
-      }
+      },
     },
     settings: {
       type: new GraphQLNonNull(ActionMeetingSettings),
       description: 'The settings that govern the action meeting',
       resolve: async ({teamId}, _args, {dataLoader}) => {
-        const allSettings = await dataLoader.get('meetingSettingsByTeamId').load(teamId)
-        return allSettings.find((settings) => settings.meetingType === MeetingTypeEnum.action)
-      }
+        return await dataLoader
+          .get('meetingSettingsByType')
+          .load({teamId, meetingType: MeetingTypeEnum.action})
+      },
     },
     taskCount: {
       type: new GraphQLNonNull(GraphQLInt),
@@ -37,7 +38,7 @@ const ActionMeeting = new GraphQLObjectType<IActionMeeting, GQLContext>({
       resolve: async ({taskCount}) => {
         // only populated after the meeting has been completed (not killed)
         return taskCount || 0
-      }
+      },
     },
     tasks: {
       type: new GraphQLNonNull(GraphQLList(GraphQLNonNull(Task))),
@@ -48,7 +49,7 @@ const ActionMeeting = new GraphQLObjectType<IActionMeeting, GQLContext>({
         const {teamId} = meeting
         const teamTasks = await dataLoader.get('tasksByTeamId').load(teamId)
         return filterTasksByMeeting(teamTasks, meetingId, viewerId)
-      }
+      },
     },
     viewerMeetingMember: {
       type: new GraphQLNonNull(ActionMeetingMember),
@@ -57,23 +58,23 @@ const ActionMeeting = new GraphQLObjectType<IActionMeeting, GQLContext>({
         const viewerId = getUserId(authToken)
         const meetingMemberId = toTeamMemberId(meetingId, viewerId)
         return dataLoader.get('meetingMembers').load(meetingMemberId)
-      }
+      },
     },
     agendaItem: {
       type: AgendaItem,
       description: 'A single agenda item',
       args: {
         agendaItemId: {
-          type: GraphQLNonNull(GraphQLID)
-        }
+          type: GraphQLNonNull(GraphQLID),
+        },
       },
       resolve: async ({id: meetingId}, {agendaItemId}, {dataLoader}) => {
         const agendaItem = await dataLoader.get('agendaItems').load(agendaItemId)
         if (agendaItem.meetingId !== meetingId) return null
         return agendaItem
-      }
-    }
-  })
+      },
+    },
+  }),
 })
 
 export default ActionMeeting

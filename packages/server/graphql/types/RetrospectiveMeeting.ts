@@ -5,7 +5,7 @@ import {
   GraphQLInt,
   GraphQLList,
   GraphQLNonNull,
-  GraphQLObjectType
+  GraphQLObjectType,
 } from 'graphql'
 import {NewMeetingPhaseTypeEnum} from 'parabol-client/types/graphql'
 import {RETROSPECTIVE} from 'parabol-client/utils/constants'
@@ -26,8 +26,8 @@ const ReflectionGroupSortEnum = new GraphQLEnumType({
     'sorts for the reflection group. default is sortOrder. sorting by voteCount filters out items without votes.',
   values: {
     voteCount: {},
-    stageOrder: {}
-  }
+    stageOrder: {},
+  },
 })
 
 const RetrospectiveMeeting = new GraphQLObjectType<any, GQLContext>({
@@ -40,41 +40,41 @@ const RetrospectiveMeeting = new GraphQLObjectType<any, GQLContext>({
       type: GraphQLFloat,
       description:
         'the threshold used to achieve the autogroup. Useful for model tuning. Serves as a flag if autogroup was used.',
-      resolve: resolveForSU('autoGroupThreshold')
+      resolve: resolveForSU('autoGroupThreshold'),
     },
     commentCount: {
       type: new GraphQLNonNull(GraphQLInt),
       description: 'The number of comments generated in the meeting',
-      resolve: ({commentCount}) => commentCount || 0
+      resolve: ({commentCount}) => commentCount || 0,
     },
     maxVotesPerGroup: {
       type: GraphQLNonNull(GraphQLInt),
-      description: 'the number of votes allowed for each participant to cast on a single group'
+      description: 'the number of votes allowed for each participant to cast on a single group',
     },
     meetingMembers: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(RetrospectiveMeetingMember))),
       description: 'The team members that were active during the time of the meeting',
       resolve: ({id: meetingId}, _args, {dataLoader}) => {
         return dataLoader.get('meetingMembersByMeetingId').load(meetingId)
-      }
+      },
     },
     nextAutoGroupThreshold: {
       type: GraphQLFloat,
       description:
-        'the next smallest distance threshold to guarantee at least 1 more grouping will be achieved'
+        'the next smallest distance threshold to guarantee at least 1 more grouping will be achieved',
     },
     reflectionCount: {
       type: GraphQLNonNull(GraphQLInt),
       description: 'The number of reflections generated in the meeting',
-      resolve: ({reflectionCount}) => reflectionCount || 0
+      resolve: ({reflectionCount}) => reflectionCount || 0,
     },
     reflectionGroup: {
       type: RetroReflectionGroup,
       description: 'a single reflection group',
       args: {
         reflectionGroupId: {
-          type: GraphQLNonNull(GraphQLID)
-        }
+          type: GraphQLNonNull(GraphQLID),
+        },
       },
       resolve: async ({id: meetingId}, {reflectionGroupId}, {dataLoader}) => {
         const reflectionGroup = await dataLoader
@@ -82,15 +82,15 @@ const RetrospectiveMeeting = new GraphQLObjectType<any, GQLContext>({
           .load(reflectionGroupId)
         if (reflectionGroup.meetingId !== meetingId) return null
         return reflectionGroup
-      }
+      },
     },
     reflectionGroups: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(RetroReflectionGroup))),
       description: 'The grouped reflections',
       args: {
         sortBy: {
-          type: ReflectionGroupSortEnum
-        }
+          type: ReflectionGroupSortEnum,
+        },
       },
       resolve: async ({id: meetingId}, {sortBy}, {dataLoader}) => {
         const reflectionGroups = await dataLoader
@@ -115,7 +115,7 @@ const RetrospectiveMeeting = new GraphQLObjectType<any, GQLContext>({
         }
         reflectionGroups.sort((a, b) => (a.sortOrder < b.sortOrder ? -1 : 1))
         return reflectionGroups
-      }
+      },
     },
     settings: {
       type: new GraphQLNonNull(RetrospectiveMeetingSettings),
@@ -123,14 +123,16 @@ const RetrospectiveMeeting = new GraphQLObjectType<any, GQLContext>({
       resolve: async ({id: meetingId}, _args, {dataLoader}) => {
         const meeting = await dataLoader.get('newMeetings').load(meetingId)
         const {teamId} = meeting
-        const allSettings = await dataLoader.get('meetingSettingsByTeamId').load(teamId)
-        return allSettings.find((settings) => settings.meetingType === RETROSPECTIVE)
-      }
+
+        return await dataLoader
+          .get('meetingSettingsByType')
+          .load({teamId, meetingType: RETROSPECTIVE})
+      },
     },
     taskCount: {
       type: new GraphQLNonNull(GraphQLInt),
       description: 'The number of tasks generated in the meeting',
-      resolve: ({taskCount}) => taskCount || 0
+      resolve: ({taskCount}) => taskCount || 0,
     },
     tasks: {
       type: new GraphQLNonNull(GraphQLList(GraphQLNonNull(Task))),
@@ -141,16 +143,16 @@ const RetrospectiveMeeting = new GraphQLObjectType<any, GQLContext>({
         const {teamId} = meeting
         const teamTasks = await dataLoader.get('tasksByTeamId').load(teamId)
         return filterTasksByMeeting(teamTasks, meetingId, viewerId)
-      }
+      },
     },
     topicCount: {
       type: GraphQLNonNull(GraphQLInt),
       description: 'The number of topics generated in the meeting',
-      resolve: ({topicCount}) => topicCount || 0
+      resolve: ({topicCount}) => topicCount || 0,
     },
     totalVotes: {
       type: GraphQLNonNull(GraphQLInt),
-      description: 'the total number of votes allowed for each participant'
+      description: 'the total number of votes allowed for each participant',
     },
     votesRemaining: {
       type: new GraphQLNonNull(GraphQLInt),
@@ -162,7 +164,7 @@ const RetrospectiveMeeting = new GraphQLObjectType<any, GQLContext>({
           (sum, member) => (member.isCheckedIn ? sum + member.votesRemaining : sum),
           0
         )
-      }
+      },
     },
     viewerMeetingMember: {
       type: new GraphQLNonNull(RetrospectiveMeetingMember),
@@ -171,9 +173,9 @@ const RetrospectiveMeeting = new GraphQLObjectType<any, GQLContext>({
         const viewerId = getUserId(authToken)
         const meetingMemberId = toTeamMemberId(meetingId, viewerId)
         return dataLoader.get('meetingMembers').load(meetingMemberId)
-      }
-    }
-  })
+      },
+    },
+  }),
 })
 
 export default RetrospectiveMeeting
