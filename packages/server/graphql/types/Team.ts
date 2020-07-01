@@ -149,8 +149,7 @@ const Team = new GraphQLObjectType<ITeam, GQLContext>({
       },
       description: 'The team-specific settings for running all available types of meetings',
       resolve: async ({id: teamId}, {meetingType}, {dataLoader}) => {
-        const allSettings = await dataLoader.get('meetingSettingsByTeamId').load(teamId)
-        return allSettings.find((settings) => settings.meetingType === meetingType)
+        return await dataLoader.get('meetingSettingsByType').load({teamId, meetingType})
       }
     },
     activeMeetings: {
