@@ -30,29 +30,32 @@ export default {
     requireSU(authToken)
 
     // RESOLUTION
+    if (!ignoreEmailRegex)
+      return r
+        .table('OrganizationUser')
+        .filter((orgUser) => orgUser('tier').eq(tier))
+        .filter({removedAt: null})
+        .filter((orgUser) => orgUser('inactive').not())
+        .count()
+        .run()
+
     return r
-      .table('Organization')
-      .getAll(tier, {index: 'tier'})('id')
-      .coerceTo('array')
-      .do((orgIds) => {
-        return (r
-          .table('OrganizationUser')
-          .getAll(r.args(orgIds), {index: 'orgId'})
-          .filter({removedAt: null})
-          .eqJoin('userId', r.table('User'))
-          .zip() as any)
-          .filter((user) =>
-            r.branch(
-              r(ignoreEmailRegex).eq(''),
-              true,
-              user('email')
-                .match(ignoreEmailRegex)
-                .eq(null)
-            )
-          )
-          .filter((user) => r.branch(includeInactive, true, user('inactive').not()))
-          .count()
-      })
+      .table('OrganizationUser')
+      .filter((orgUser) => orgUser('tier').eq(tier))
+      .filter({removedAt: null})
+      .filter((orgUser) => orgUser('inactive').not())
+      .eqJoin('userId', r.table('User'))
+      .zip()
+      .filter((user) =>
+        r.branch(
+          r(ignoreEmailRegex).eq(''),
+          true,
+          user('email')
+            .match(ignoreEmailRegex)
+            .eq(null)
+        )
+      )
+      .count()
       .run()
   }
 }

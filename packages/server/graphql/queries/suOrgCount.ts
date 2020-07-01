@@ -35,29 +35,39 @@ export default {
     requireSU(authToken)
 
     // RESOLUTION
+    if (!ignoreEmailRegex)
+      return r
+        .table('OrganizationUser')
+        .filter((orgUser) => orgUser('inactive').not())
+        .filter({removedAt: null})
+        .filter((orgUser) => orgUser('tier').eq(tier))
+        .group('orgId')
+        .count()
+        .ungroup()
+        .filter((group) => group('reduction').ge(minOrgSize))
+        .count()
+        .run()
+
     return r
-      .table('Organization')
-      .getAll(tier, {index: 'tier'})
-      .merge((organization) => ({
-        users: (r
-          .table('OrganizationUser')
-          .getAll(organization('id'), {index: 'orgId'})
-          .filter({removedAt: null})
-          .eqJoin('userId', r.table('User'))
-          .zip() as any)
-          .filter((user) =>
-            r.branch(
-              r(ignoreEmailRegex).eq(''),
-              true,
-              user('email')
-                .match(ignoreEmailRegex)
-                .eq(null)
-            )
-          )
-          .filter((user) => r.branch(includeInactive, true, user('inactive').not()))
-          .count()
-      }))
-      .filter((org) => org('users').ge(minOrgSize))
+      .table('OrganizationUser')
+      .filter((orgUser) => orgUser('inactive').not())
+      .filter({removedAt: null})
+      .filter((orgUser) => orgUser('tier').eq(tier))
+      .eqJoin('userId', r.table('User'))
+      .zip()
+      .filter((user) =>
+        r.branch(
+          r(ignoreEmailRegex).eq(''),
+          true,
+          user('email')
+            .match(ignoreEmailRegex)
+            .eq(null)
+        )
+      )
+      .group('orgId')
+      .count()
+      .ungroup()
+      .filter((group) => group('reduction').ge(minOrgSize))
       .count()
       .run()
   }
