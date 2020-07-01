@@ -5,7 +5,7 @@ import {
   GraphQLList,
   GraphQLNonNull,
   GraphQLObjectType,
-  GraphQLString,
+  GraphQLString
 } from 'graphql'
 import isTaskPrivate from 'parabol-client/utils/isTaskPrivate'
 import {ITeam} from 'parabol-client/types/graphql'
@@ -36,32 +36,32 @@ const Team = new GraphQLObjectType<ITeam, GQLContext>({
   fields: () => ({
     id: {
       type: new GraphQLNonNull(GraphQLID),
-      description: 'A shortid for the team',
+      description: 'A shortid for the team'
     },
     createdAt: {
       type: new GraphQLNonNull(GraphQLISO8601Type),
-      description: 'The datetime the team was created',
+      description: 'The datetime the team was created'
     },
     createdBy: {
       type: GraphQLID,
-      description: 'The userId that created the team. Non-null at v2.22.0+',
+      description: 'The userId that created the team. Non-null at v2.22.0+'
     },
     isOnboardTeam: {
       type: new GraphQLNonNull(GraphQLBoolean),
       description: 'true if the team was created when the account was created, else false',
-      resolve: ({isOnboardTeam}) => !!isOnboardTeam,
+      resolve: ({isOnboardTeam}) => !!isOnboardTeam
     },
     lastMeetingType: {
       type: GraphQLNonNull(MeetingTypeEnum),
-      description: 'The type of the last meeting run',
+      description: 'The type of the last meeting run'
     },
     massInvitation: {
       type: MassInvitation,
       args: {
         meetingId: {
           type: GraphQLID,
-          description: 'the meetingId to optionally direct them to',
-        },
+          description: 'the meetingId to optionally direct them to'
+        }
       },
       description:
         'The hash and expiration for a token that allows anyone with it to join the team',
@@ -85,46 +85,49 @@ const Team = new GraphQLObjectType<ITeam, GQLContext>({
             .run()
         }
         const massInvitation = new MassInvitationDB({meetingId, teamMemberId})
-        await r.table('MassInvitation').insert(massInvitation, {conflict: 'replace'}).run()
+        await r
+          .table('MassInvitation')
+          .insert(massInvitation, {conflict: 'replace'})
+          .run()
         invitationTokens.length = 1
         invitationTokens[0] = massInvitation
         return massInvitation
-      },
+      }
     },
     isPaid: {
       type: GraphQLBoolean,
       description:
-        'true if the underlying org has a validUntil date greater than now. if false, subs do not work',
+        'true if the underlying org has a validUntil date greater than now. if false, subs do not work'
     },
     name: {
       type: new GraphQLNonNull(GraphQLString),
-      description: 'The name of the team',
+      description: 'The name of the team'
     },
     orgId: {
       type: new GraphQLNonNull(GraphQLID),
-      description: 'The organization to which the team belongs',
+      description: 'The organization to which the team belongs'
     },
     tags: {
       type: new GraphQLList(GraphQLString),
-      description: 'Arbitrary tags that the team uses',
+      description: 'Arbitrary tags that the team uses'
     },
     updatedAt: {
       type: GraphQLISO8601Type,
-      description: 'The datetime the team was last updated',
+      description: 'The datetime the team was last updated'
     },
     customPhaseItems: {
       type: new GraphQLList(CustomPhaseItem),
       resolve: ({id: teamId}, _args, {dataLoader}) => {
         // not useful for retros since there is no templateId filter
         return dataLoader.get('customPhaseItemsByTeamId').load(teamId)
-      },
+      }
     },
     teamInvitations: {
       type: new GraphQLList(new GraphQLNonNull(TeamInvitation)),
       description: 'The outstanding invitations to join the team',
       resolve: async ({id: teamId}, _args, {dataLoader}) => {
         return dataLoader.get('teamInvitationsByTeamId').load(teamId)
-      },
+      }
     },
     isLead: {
       type: new GraphQLNonNull(GraphQLBoolean),
@@ -134,20 +137,20 @@ const Team = new GraphQLObjectType<ITeam, GQLContext>({
         const teamMemberId = toTeamMemberId(teamId, viewerId)
         const teamMember = await dataLoader.get('teamMembers').load(teamMemberId)
         return !!teamMember.isLead
-      },
+      }
     },
     meetingSettings: {
       type: new GraphQLNonNull(TeamMeetingSettings),
       args: {
         meetingType: {
           type: new GraphQLNonNull(MeetingTypeEnum),
-          description: 'the type of meeting for the settings',
-        },
+          description: 'the type of meeting for the settings'
+        }
       },
       description: 'The team-specific settings for running all available types of meetings',
       resolve: async ({id: teamId}, {meetingType}, {dataLoader}) => {
         return await dataLoader.get('meetingSettingsByType').load({teamId, meetingType})
-      },
+      }
     },
     activeMeetings: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(NewMeeting))),
@@ -156,7 +159,7 @@ const Team = new GraphQLObjectType<ITeam, GQLContext>({
         // this is by team, not by meeting member, which caused an err in dev, not sure about prod
         // we need better perms for people to view/not view a meeting that happened before they joined the team
         return dataLoader.get('activeMeetingsByTeamId').load(teamId)
-      },
+      }
     },
     meeting: {
       type: NewMeeting,
@@ -164,40 +167,40 @@ const Team = new GraphQLObjectType<ITeam, GQLContext>({
       args: {
         meetingId: {
           type: new GraphQLNonNull(GraphQLID),
-          description: 'The unique meetingId',
-        },
+          description: 'The unique meetingId'
+        }
       },
       resolve: async ({id: teamId}, {meetingId}, {dataLoader}) => {
         const meeting = await dataLoader.get('newMeetings').load(meetingId)
         if (meeting && meeting.teamId === teamId) return meeting
         return null
-      },
+      }
     },
     tier: {
       type: GraphQLNonNull(TierEnum),
-      description: 'The level of access to features on the parabol site',
+      description: 'The level of access to features on the parabol site'
     },
     organization: {
       type: new GraphQLNonNull(Organization),
-      resolve: resolveOrganization,
+      resolve: resolveOrganization
     },
     agendaItems: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(AgendaItem))),
       description: 'The agenda items for the upcoming or current meeting',
       async resolve({id: teamId}, _args, {dataLoader}) {
         return dataLoader.get('agendaItemsByTeamId').load(teamId)
-      },
+      }
     },
     tasks: {
       type: new GraphQLNonNull(TaskConnection),
       args: {
         first: {
-          type: GraphQLInt,
+          type: GraphQLInt
         },
         after: {
           type: GraphQLISO8601Type,
-          description: 'the datetime cursor',
-        },
+          description: 'the datetime cursor'
+        }
       },
       description: 'All of the tasks for this team',
       async resolve({id: teamId}, _args, {authToken, dataLoader}) {
@@ -212,28 +215,28 @@ const Team = new GraphQLObjectType<ITeam, GQLContext>({
           return true
         })
         return connectionFromTasks(tasks)
-      },
+      }
     },
     teamMembers: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(TeamMember))),
       args: {
         sortBy: {
           type: GraphQLString,
-          description: 'the field to sort the teamMembers by',
-        },
+          description: 'the field to sort the teamMembers by'
+        }
       },
       description: 'All the team members actively associated with the team',
       async resolve({id: teamId}, {sortBy = 'preferredName'}, {dataLoader}) {
         const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)
         teamMembers.sort((a, b) => (a[sortBy] > b[sortBy] ? 1 : -1))
         return teamMembers
-      },
+      }
     },
     isArchived: {
       type: GraphQLBoolean,
-      description: 'true if the team has been archived',
-    },
-  }),
+      description: 'true if the team has been archived'
+    }
+  })
 })
 
 export default Team
