@@ -55,6 +55,7 @@ describe('Test Vote page Demo', () => {
 
     cy.visitReflect()
       .visitPhase('group')
+      .wait(5000)
       .visitPhase('vote')
     cy.wait(5000)
   })
