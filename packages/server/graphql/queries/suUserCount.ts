@@ -30,31 +30,36 @@ export default {
     requireSU(authToken)
 
     // RESOLUTION
-    if (!ignoreEmailRegex)
-      return r
+    if (!ignoreEmailRegex && !includeInactive)
+      return (r
         .table('OrganizationUser')
-        .filter((orgUser) => orgUser('tier').eq(tier))
+        .getAll([tier, false], {index: 'tierInactive'})
         .filter({removedAt: null})
-        .filter((orgUser) => orgUser('inactive').not())
+        .group('userId') as any)
+        .count()
+        .ungroup()
         .count()
         .run()
 
-    return r
+    return (r
       .table('OrganizationUser')
       .filter((orgUser) => orgUser('tier').eq(tier))
       .filter({removedAt: null})
-      .filter((orgUser) => orgUser('inactive').not())
+      .filter((orgUser) => r.branch(includeInactive, true, orgUser('inactive').not()))
       .eqJoin('userId', r.table('User'))
-      .zip()
-      .filter((user) =>
+      .zip() as any)
+      .filter((result) =>
         r.branch(
           r(ignoreEmailRegex).eq(''),
           true,
-          user('email')
+          result('email')
             .match(ignoreEmailRegex)
             .eq(null)
         )
       )
+      .group('userId')
+      .count()
+      .ungroup()
       .count()
       .run()
   }
