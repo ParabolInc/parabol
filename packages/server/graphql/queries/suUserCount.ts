@@ -31,18 +31,18 @@ export default {
 
     // RESOLUTION
     if (!ignoreEmailRegex && !includeInactive)
-      return (
-        (r
-          .table('OrganizationUser')
-          // @ts-ignore
-          .getAll([tier, false], {index: 'tierInactive'})
-          .filter({removedAt: null})
-          .group('userId') as any)
-          .count()
-          .ungroup()
-          .count()
-          .run()
-      )
+      return (r
+        .table('OrganizationUser')
+        .getAll(
+          ([tier, false] as unknown) as string,
+          ({index: 'tierInactive'} as unknown) as undefined
+        )
+        .filter({removedAt: null})
+        .group('userId') as any)
+        .count()
+        .ungroup()
+        .count()
+        .run()
 
     return (r
       .table('OrganizationUser')

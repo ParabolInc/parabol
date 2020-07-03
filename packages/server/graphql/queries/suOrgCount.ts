@@ -36,19 +36,19 @@ export default {
 
     // RESOLUTION
     if (!ignoreEmailRegex && !includeInactive)
-      return (
-        (r
-          .table('OrganizationUser')
-          // @ts-ignore
-          .getAll([tier, false], {index: 'tierInactive'})
-          .filter({removedAt: null})
-          .group('orgId') as any)
-          .count()
-          .ungroup()
-          .filter((group) => group('reduction').ge(minOrgSize))
-          .count()
-          .run()
-      )
+      return (r
+        .table('OrganizationUser')
+        .getAll(
+          ([tier, false] as unknown) as string,
+          ({index: 'tierInactive'} as unknown) as undefined
+        )
+        .filter({removedAt: null})
+        .group('orgId') as any)
+        .count()
+        .ungroup()
+        .filter((group) => group('reduction').ge(minOrgSize))
+        .count()
+        .run()
 
     return (r
       .table('OrganizationUser')
