@@ -1,5 +1,5 @@
 import shortid from 'shortid'
-import {OrgUserRole} from 'parabol-client/types/graphql'
+import {OrgUserRole, TierEnum} from 'parabol-client/types/graphql'
 
 interface Input {
   orgId: string
@@ -10,6 +10,7 @@ interface Input {
   joinedAt?: Date
   removedAt?: Date
   role?: OrgUserRole
+  tier?: TierEnum
 }
 
 export default class OrganizationUser {
@@ -21,9 +22,10 @@ export default class OrganizationUser {
   removedAt: Date | null
   role: OrgUserRole | null
   userId: string
+  tier: TierEnum | null
 
   constructor(input: Input) {
-    const {userId, id, removedAt, inactive, orgId, joinedAt, newUserUntil, role} = input
+    const {userId, id, removedAt, inactive, orgId, joinedAt, newUserUntil, role, tier} = input
     this.id = id || shortid.generate()
     this.inactive = inactive || false
     this.joinedAt = joinedAt || new Date()
@@ -32,5 +34,6 @@ export default class OrganizationUser {
     this.removedAt = removedAt || null
     this.role = role || null
     this.userId = userId
+    this.tier = tier || null
   }
 }

@@ -2,6 +2,7 @@ import {TierEnum} from 'parabol-client/types/graphql'
 import getRethink from '../../../database/rethinkDriver'
 import {fromEpochSeconds} from '../../../utils/epochTime'
 import setUserTierForOrgId from '../../../utils/setUserTierForOrgId'
+import setTierForOrgUsers from '../../../utils/setTierForOrgUsers'
 import StripeManager from '../../../utils/StripeManager'
 import getCCFromCustomer from './getCCFromCustomer'
 
@@ -58,7 +59,8 @@ const upgradeToPro = async (orgId: string, source: string, email: string) => {
         updatedAt: now
       })
   }).run()
-  await setUserTierForOrgId(orgId)
+
+  await Promise.all([setUserTierForOrgId(orgId), setTierForOrgUsers(orgId)])
 }
 
 export default upgradeToPro

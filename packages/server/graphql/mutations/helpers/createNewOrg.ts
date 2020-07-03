@@ -14,11 +14,17 @@ export default async function createNewOrg(
   const r = await getRethink()
   const userDomain = getDomainFromEmail(leaderEmail)
   const activeDomain = isCompanyDomain(userDomain) ? userDomain : undefined
-  const org = new Organization({id: orgId, tier: TierEnum.personal, name: orgName, activeDomain})
+  const org = new Organization({
+    id: orgId,
+    tier: TierEnum.personal,
+    name: orgName,
+    activeDomain
+  })
   const orgUser = new OrganizationUser({
     orgId,
     userId: leaderUserId,
-    role: OrgUserRole.BILLING_LEADER
+    role: OrgUserRole.BILLING_LEADER,
+    tier: org.tier
   })
   return r({
     org: r.table('Organization').insert(org),

@@ -6,6 +6,7 @@ import Organization from './Organization'
 import {resolveOrganization, resolveUser} from '../resolvers'
 import connectionDefinitions from '../connectionDefinitions'
 import {GQLContext} from '../graphql'
+import TierEnum from './TierEnum'
 
 const OrganizationUser = new GraphQLObjectType<any, GQLContext>({
   name: 'OrganizationUser',
@@ -54,6 +55,10 @@ const OrganizationUser = new GraphQLObjectType<any, GQLContext>({
       type: new GraphQLNonNull(User),
       description: 'The user attached to the organization',
       resolve: resolveUser
+    },
+    tier: {
+      type: TierEnum,
+      description: 'Their level of access to features on the parabol site'
     }
   })
 })

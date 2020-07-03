@@ -10,6 +10,7 @@ import setUserTierForOrgId from '../../../utils/setUserTierForOrgId'
 import StripeManager from '../../../utils/StripeManager'
 import {DataLoaderWorker, GQLContext} from '../../graphql'
 import hideConversionModal from '../../mutations/helpers/hideConversionModal'
+import setTierForOrgUsers from '../../../utils/setTierForOrgUsers'
 import DraftEnterpriseInvoicePayload from '../types/DraftEnterpriseInvoicePayload'
 
 const getBillingLeaderUser = async (
@@ -167,8 +168,11 @@ export default {
         })
     }).run()
 
-    await setUserTierForOrgId(orgId)
-    await hideConversionModal(orgId, dataLoader)
+    await Promise.all([
+      setUserTierForOrgId(orgId),
+      setTierForOrgUsers(orgId),
+      hideConversionModal(orgId, dataLoader)
+    ])
     segmentIo.track({
       userId: user.id,
       event: 'Enterprise invoice drafted',
