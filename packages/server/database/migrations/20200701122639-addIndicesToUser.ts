@@ -1,4 +1,6 @@
-export const up = async function(r) {
+import {R} from 'rethinkdb-ts'
+
+export const up = async function(r: R) {
   try {
     await Promise.all([
       r

@@ -6,6 +6,7 @@ const setTierForOrgUsers = async (orgId: string) => {
   await r
     .table('OrganizationUser')
     .getAll(orgId, {index: 'orgId'})
+    .filter({removedAt: null})
     .update(
       {
         tier: (r
