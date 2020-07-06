@@ -8,5 +8,6 @@
   "videosFolder": "videos",
   "projectId": "3wn18n",
   "chromeWebSecurity": false,
-  "ignoreTestFiles": "demo_reflect.ts"
+  "viewportWidth": 1280,
+  "viewportHeight": 720
 }

@@ -87,7 +87,7 @@ const makeFeatureRow = (featureIconFile, featureCopy, idx) => {
 }
 
 const CreateAccountSection = (props) => {
-  const {isDemo} = props
+  const {isDemo, dataCy} = props
   if (!isDemo) return null
   const isLoggedIn = localStorage.getItem(LocalStorageKey.APP_TOKEN_KEY)
   const primaryActionLabel = isLoggedIn ? 'Go to My Dashboard' : 'Create a Free Account'
@@ -100,28 +100,28 @@ const CreateAccountSection = (props) => {
       to run <b>a real retrospective</b> with your team.
     </span>
   ) : (
-    <span>
-      to run <b>unlimited retrospectives</b> with your team.
-    </span>
-  )
+      <span>
+        to run <b>unlimited retrospectives</b> with your team.
+      </span>
+    )
   return (
     <>
-      <tr>
+      <tr data-cy={dataCy}>
         <td style={headingStyle} align='center'>
           {'Thanks for playing!'}
         </td>
       </tr>
-      <tr>
+      <tr data-cy={dataCy}>
         <td align='center' style={copyStyle}>
           {copyLineOne}
         </td>
       </tr>
-      <tr>
+      <tr data-cy={dataCy}>
         <td align='center' style={copyStyle}>
           {copyLineTwo}
         </td>
       </tr>
-      <tr>
+      <tr data-cy={dataCy}>
         <td style={buttonCellStyle}>
           <a
             data-cy='create-account'
@@ -133,19 +133,19 @@ const CreateAccountSection = (props) => {
           </a>
         </td>
       </tr>
-      <tr>
+      <tr data-cy={dataCy}>
         <td align='center' style={subHeadingStyle}>
           {'The Parabol Difference'}
         </td>
       </tr>
-      <tr>
+      <tr data-cy={dataCy}>
         <td>
           <table style={featureTableStyle} width={featureWidth}>
             <tbody>{features.map(({icon, copy}, idx) => makeFeatureRow(icon, copy, idx))}</tbody>
           </table>
         </td>
       </tr>
-      <EmailBorderBottom />
+      <EmailBorderBottom dataCy={dataCy} />
     </>
   )
 }

@@ -51,7 +51,7 @@ const SummarySheet = (props: Props) => {
           urlAction={urlAction}
           referrer={referrer}
         />
-        <CreateAccountSection isDemo={isDemo} />
+        <CreateAccountSection dataCy='create-account-section' isDemo={isDemo} />
         <MeetingMembersWithTasks meeting={meeting} />
         <MeetingMembersWithoutTasks meeting={meeting} />
         <RetroTopics isDemo={isDemo} isEmail={referrer === 'email'} meeting={meeting} />
