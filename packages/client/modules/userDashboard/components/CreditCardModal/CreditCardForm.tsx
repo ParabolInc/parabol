@@ -14,8 +14,6 @@ import StripeClientManager, {StripeError} from '../../../../utils/StripeClientMa
 import CreditCardErrorLine from './CreditCardErrorLine'
 import {CreditCardModalActionType} from './CreditCardModal'
 import CreditCardPricingLine from './CreditCardPricingLine'
-import {createRefetchContainer} from 'react-relay'
-import graphql from 'babel-plugin-relay/macro'
 
 const Form = styled('form')({
   borderRadius: 2,
@@ -147,7 +145,6 @@ const CreditCardForm = (props: Props) => {
     const handleCompleted = (data) => {
       const [mutationName] = Object.keys(data)
       const {error} = data[mutationName]
-      console.log(data[mutationName])
       onCompleted()
       if (error) {
         handleError(error.message, error.message)
@@ -160,7 +157,6 @@ const CreditCardForm = (props: Props) => {
       }
 
       if (invoiceListRefetch) {
-        console.log('WE ARE REFETCHING')
         invoiceListRefetch(refetchVariables)
       }
 
