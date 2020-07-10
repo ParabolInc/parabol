@@ -35,7 +35,7 @@ export default {
 
     // AUTH
     const phaseItem = await r
-      .table('CustomPhaseItem')
+      .table('ReflectPrompt')
       .get(phaseItemId)
       .run()
     if (!phaseItem || !phaseItem.isActive) {

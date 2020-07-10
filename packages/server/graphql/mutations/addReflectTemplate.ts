@@ -55,7 +55,7 @@ const addReflectTemplate = {
 
     await r({
       newTemplate: r.table('ReflectTemplate').insert(templates),
-      newPhaseItem: r.table('CustomPhaseItem').insert(phaseItems)
+      newPhaseItem: r.table('ReflectPrompt').insert(phaseItems)
     }).run()
 
     const templateId = templates[0].id

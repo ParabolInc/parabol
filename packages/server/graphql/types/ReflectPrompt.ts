@@ -1,12 +1,12 @@
 import {GraphQLBoolean, GraphQLID, GraphQLInterfaceType, GraphQLNonNull} from 'graphql'
 import {RETRO_PHASE_ITEM} from 'parabol-client/utils/constants'
 import RetroPhaseItem from './RetroPhaseItem'
-import CustomPhaseItemTypeEnum from './CustomPhaseItemTypeEnum'
+import ReflectPromptTypeEnum from './ReflectPromptTypeEnum'
 import Team from './Team'
 import {resolveTeam} from '../resolvers'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 
-export const customPhaseItemFields = () => ({
+export const reflectPromptFields = () => ({
   id: {
     type: new GraphQLNonNull(GraphQLID),
     description: 'shortid'
@@ -14,9 +14,9 @@ export const customPhaseItemFields = () => ({
   createdAt: {
     type: new GraphQLNonNull(GraphQLISO8601Type)
   },
-  phaseItemType: {
-    type: CustomPhaseItemTypeEnum,
-    description: 'The type of phase item'
+  reflectPromptType: {
+    type: ReflectPromptTypeEnum,
+    description: 'The type of reflect prompt'
   },
   isActive: {
     type: GraphQLBoolean,
@@ -26,9 +26,13 @@ export const customPhaseItemFields = () => ({
     type: new GraphQLNonNull(GraphQLID),
     description: 'foreign key. use the team field'
   },
+  templateId: {
+    type: new GraphQLNonNull(GraphQLID),
+    description: 'foreign key. use the template field'
+  },
   team: {
     type: Team,
-    description: 'The team that owns this customPhaseItem',
+    description: 'The team that owns this reflectPrompt',
     resolve: resolveTeam
   },
   updatedAt: {
@@ -36,15 +40,15 @@ export const customPhaseItemFields = () => ({
   }
 })
 
-const CustomPhaseItem = new GraphQLInterfaceType({
-  name: 'CustomPhaseItem',
-  fields: customPhaseItemFields,
-  resolveType: ({phaseItemType}) => {
+const ReflectPrompt = new GraphQLInterfaceType({
+  name: 'ReflectPrompt',
+  fields: reflectPromptFields,
+  resolveType: ({promptType}) => {
     const resolveTypeLookup = {
       [RETRO_PHASE_ITEM]: RetroPhaseItem
     }
-    return resolveTypeLookup[phaseItemType]
+    return resolveTypeLookup[promptType]
   }
 })
 
-export default CustomPhaseItem
+export default ReflectPrompt

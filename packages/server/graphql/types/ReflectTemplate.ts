@@ -36,7 +36,7 @@ const ReflectTemplate = new GraphQLObjectType<any, GQLContext>({
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(RetroPhaseItem))),
       description: 'The prompts that are part of this template',
       resolve: async ({id: promptTemplateId, teamId}, _args, {dataLoader}) => {
-        const phaseItems = await dataLoader.get('customPhaseItemsByTeamId').load(teamId)
+        const phaseItems = await dataLoader.get('reflectPromptsByTemplateId').load(teamId)
         const prompts = phaseItems.filter(({templateId}) => templateId === promptTemplateId)
         prompts.sort((a, b) => (a.sortOrder < b.sortOrder ? -1 : 1))
         return prompts

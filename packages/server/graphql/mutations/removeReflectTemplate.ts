@@ -63,7 +63,7 @@ const removeReflectTemplate = {
         .get(templateId)
         .update({isActive: false, updatedAt: now}),
       phaseItems: r
-        .table('CustomPhaseItem')
+        .table('ReflectPrompt')
         .getAll(teamId, {index: 'teamId'})
         .filter({
           templateId

@@ -18,7 +18,7 @@ import {GQLContext} from '../graphql'
 import connectionFromTasks from '../queries/helpers/connectionFromTasks'
 import {resolveOrganization} from '../resolvers'
 import AgendaItem from './AgendaItem'
-import CustomPhaseItem from './CustomPhaseItem'
+import ReflectPrompt from './ReflectPrompt'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import MassInvitation from './MassInvitation'
 import MeetingTypeEnum from './MeetingTypeEnum'
@@ -115,11 +115,11 @@ const Team = new GraphQLObjectType<ITeam, GQLContext>({
       type: GraphQLISO8601Type,
       description: 'The datetime the team was last updated'
     },
-    customPhaseItems: {
-      type: new GraphQLList(CustomPhaseItem),
+    reflectPrompts: {
+      type: new GraphQLList(ReflectPrompt),
       resolve: ({id: teamId}, _args, {dataLoader}) => {
         // not useful for retros since there is no templateId filter
-        return dataLoader.get('customPhaseItemsByTeamId').load(teamId)
+        return dataLoader.get('reflectPromptsByTemplateId').load(teamId)
       }
     },
     teamInvitations: {

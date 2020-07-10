@@ -19,7 +19,7 @@ const ReflectPhase = new GraphQLObjectType<any, GQLContext>({
       type: RetroPhaseItem,
       description: 'the phase item that the facilitator wants the group to focus on',
       resolve: ({focusedPhaseItemId}, _args, {dataLoader}) => {
-        return dataLoader.get('customPhaseItems').load(focusedPhaseItemId)
+        return dataLoader.get('reflectPrompts').load(focusedPhaseItemId)
       }
     },
     promptTemplateId: {
@@ -30,7 +30,7 @@ const ReflectPhase = new GraphQLObjectType<any, GQLContext>({
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(RetroPhaseItem))),
       description: 'The prompts used during the reflect phase',
       resolve: async ({promptTemplateId, teamId}, _args, {dataLoader}) => {
-        const phaseItems = await dataLoader.get('customPhaseItemsByTeamId').load(teamId)
+        const phaseItems = await dataLoader.get('reflectPromptsByTemplateId').load(teamId)
         const prompts = phaseItems.filter(({templateId}) => templateId === promptTemplateId)
         prompts.sort((a, b) => (a.sortOrder < b.sortOrder ? -1 : 1))
         return prompts

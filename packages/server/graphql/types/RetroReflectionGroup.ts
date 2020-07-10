@@ -59,7 +59,7 @@ const RetroReflectionGroup = new GraphQLObjectType<any, GQLContext>({
     phaseItem: {
       type: new GraphQLNonNull(RetroPhaseItem),
       resolve: ({retroPhaseItemId}, _args, {dataLoader}) => {
-        return dataLoader.get('customPhaseItems').load(retroPhaseItemId)
+        return dataLoader.get('reflectPrompts').load(retroPhaseItemId)
       }
     },
     reflections: {

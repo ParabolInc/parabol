@@ -38,7 +38,7 @@ export default {
 
     // AUTH
     const viewerId = getUserId(authToken)
-    const phaseItem = await dataLoader.get('customPhaseItems').load(retroPhaseItemId)
+    const phaseItem = await dataLoader.get('reflectPrompts').load(retroPhaseItemId)
     if (!phaseItem) {
       return standardError(new Error('Category not found'), {userId: viewerId})
     }

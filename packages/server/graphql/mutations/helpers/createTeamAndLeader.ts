@@ -54,7 +54,7 @@ export default async function createTeamAndLeader(userId: string, newTeam: Valid
       .run(),
     // add customizable phase items for meetings
     r
-      .table('CustomPhaseItem')
+      .table('ReflectPrompt')
       .insert(phaseItems)
       .run(),
     r

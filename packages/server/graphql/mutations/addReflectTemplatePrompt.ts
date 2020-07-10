@@ -36,7 +36,7 @@ const addReflectTemplatePrompt = {
     // VALIDATION
     const {teamId} = template
     const activePrompts = await r
-      .table('CustomPhaseItem')
+      .table('ReflectPrompt')
       .getAll(teamId, {index: 'teamId'})
       .filter({
         templateId,
@@ -63,7 +63,7 @@ const addReflectTemplatePrompt = {
     })
 
     await r
-      .table('CustomPhaseItem')
+      .table('ReflectPrompt')
       .insert(phaseItem)
       .run()
 

@@ -13,7 +13,7 @@ const ReflectTemplatePromptUpdateDescriptionPayload = new GraphQLObjectType<any,
       type: RetroPhaseItem,
       resolve: ({promptId}, _args, {dataLoader}) => {
         if (!promptId) return null
-        return dataLoader.get('customPhaseItems').load(promptId)
+        return dataLoader.get('reflectPrompts').load(promptId)
       }
     }
   })

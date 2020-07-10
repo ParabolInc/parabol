@@ -55,9 +55,9 @@ export type RethinkSchema = {
     type: Comment
     index: 'threadId'
   }
-  CustomPhaseItem: {
+  ReflectPrompt: {
     type: RetrospectivePrompt
-    index: 'teamId'
+    index: 'teamId' | 'templateId'
   }
   EmailVerification: {
     type: any
@@ -101,13 +101,13 @@ export type RethinkSchema = {
   }
   Notification: {
     type:
-      | NotificationTaskInvolves
-      | NotificationTeamArchived
-      | NotificationMeetingStageTimeLimitEnd
-      | NotificationPaymentRejected
-      | NotificationKickedOut
-      | NotificationPromoteToBillingLeader
-      | NotificationTeamInvitation
+    | NotificationTaskInvolves
+    | NotificationTeamArchived
+    | NotificationMeetingStageTimeLimitEnd
+    | NotificationPaymentRejected
+    | NotificationKickedOut
+    | NotificationPromoteToBillingLeader
+    | NotificationTeamInvitation
     index: 'userId'
   }
   Organization: {
