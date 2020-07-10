@@ -14,7 +14,7 @@ const DOTENV = path.join(PROJECT_ROOT, 'scripts', 'webpack', 'utils', 'dotenv.js
 module.exports = {
   stats: 'minimal',
   watch: true,
-  devtool: 'eval',
+  devtool: 'eval-source-map',
   mode: 'development',
   node: {
     __dirname: false
