@@ -39,10 +39,11 @@ const StyledPrimaryButton = styled(PrimaryButton)({
 
 interface Props {
   organization: OrgBillingUpgrade_organization
+  invoiceListRefetch?: (refetchVariables: {}) => void
 }
 
 const OrgBillingUpgrade = (props: Props) => {
-  const {organization} = props
+  const {organization, invoiceListRefetch} = props
   const {id: orgId, tier, orgUserCount} = organization
   const {activeUserCount} = orgUserCount
   const {togglePortal, closePortal, modalPortal} = useModal()
@@ -50,6 +51,7 @@ const OrgBillingUpgrade = (props: Props) => {
     <>
       {modalPortal(
         <CreditCardModal
+          invoiceListRefetch={invoiceListRefetch}
           actionType={'upgrade'}
           closePortal={closePortal}
           orgId={orgId}

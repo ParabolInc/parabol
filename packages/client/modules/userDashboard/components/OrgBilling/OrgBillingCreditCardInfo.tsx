@@ -64,10 +64,11 @@ const CreditCardModal = lazyPreload(() =>
 
 interface Props {
   organization: OrgBillingCreditCardInfo_organization
+  invoiceListRefetch?: (refetchVariables: {}) => void
 }
 
 const OrgBillingCreditCardInfo = (props: Props) => {
-  const {organization} = props
+  const {organization, invoiceListRefetch} = props
   const {creditCard, id: orgId, orgUserCount} = organization
   const {modalPortal, closePortal, togglePortal} = useModal()
   if (!creditCard) return null
@@ -99,6 +100,7 @@ const OrgBillingCreditCardInfo = (props: Props) => {
           <CreditCardModal
             activeUserCount={activeUserCount}
             orgId={orgId}
+            invoiceListRefetch={invoiceListRefetch}
             actionType={'update'}
             closePortal={closePortal}
           />

@@ -1,5 +1,5 @@
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {createRefetchContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import {OrgBilling_viewer} from '../../../../__generated__/OrgBilling_viewer.graphql'
 import {OrgBilling_organization} from '../../../../__generated__/OrgBilling_organization.graphql'
@@ -11,21 +11,24 @@ import OrgBillingUpgrade from './OrgBillingUpgrade'
 interface Props {
   viewer: OrgBilling_viewer
   organization: OrgBilling_organization
+  relay: {
+    refetch?: (refetchVariables: {}) => void
+  }
 }
 
 const OrgBilling = (props: Props) => {
-  const {organization, viewer} = props
+  const {organization, viewer, relay} = props
   return (
     <div>
-      <OrgBillingUpgrade organization={organization} />
-      <OrgBillingCreditCardInfo organization={organization} />
+      <OrgBillingUpgrade organization={organization} invoiceListRefetch={relay && relay.refetch} />
+      <OrgBillingCreditCardInfo organization={organization} invoiceListRefetch={relay && relay.refetch} />
       <OrgBillingInvoices viewer={viewer} />
       <OrgBillingDangerZone organization={organization} />
     </div>
   )
 }
 
-export default createFragmentContainer(OrgBilling, {
+export default createRefetchContainer(OrgBilling, {
   viewer: graphql`
     fragment OrgBilling_viewer on User {
       ...OrgBillingInvoices_viewer
@@ -38,5 +41,13 @@ export default createFragmentContainer(OrgBilling, {
       ...OrgBillingDangerZone_organization
       id
     }
-  `
-})
+  `,
+},
+  graphql`
+      query OrgBillingQuery($first: Int!, $after: DateTime, $orgId: ID!) {
+        viewer {
+          ...OrgBillingInvoices_viewer
+        }
+      }
+`
+)

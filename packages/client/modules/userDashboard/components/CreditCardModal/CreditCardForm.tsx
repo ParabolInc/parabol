@@ -14,6 +14,8 @@ import StripeClientManager, {StripeError} from '../../../../utils/StripeClientMa
 import CreditCardErrorLine from './CreditCardErrorLine'
 import {CreditCardModalActionType} from './CreditCardModal'
 import CreditCardPricingLine from './CreditCardPricingLine'
+import {createRefetchContainer} from 'react-relay'
+import graphql from 'babel-plugin-relay/macro'
 
 const Form = styled('form')({
   borderRadius: 2,
@@ -75,10 +77,11 @@ interface Props {
   orgId: string
   onSuccess?: () => void
   onLater?: (e: React.FormEvent) => void
+  invoiceListRefetch?: (refetchVariables: {}) => void
 }
 
 const CreditCardForm = (props: Props) => {
-  const {activeUserCount, actionType, onSuccess, onLater, orgId} = props
+  const {activeUserCount, actionType, onSuccess, onLater, orgId, invoiceListRefetch} = props
   const atmosphere = useAtmosphere()
   const isStripeLoaded = useScript('https://js.stripe.com/v2/')
   const [stripeClientManager] = useState(() => new StripeClientManager())
@@ -144,11 +147,23 @@ const CreditCardForm = (props: Props) => {
     const handleCompleted = (data) => {
       const [mutationName] = Object.keys(data)
       const {error} = data[mutationName]
+      console.log(data[mutationName])
       onCompleted()
       if (error) {
         handleError(error.message, error.message)
         return
       }
+
+      const refetchVariables = {
+        orgId: orgId,
+        first: 3
+      }
+
+      if (invoiceListRefetch) {
+        console.log('WE ARE REFETCHING')
+        invoiceListRefetch(refetchVariables)
+      }
+
       if (onSuccess) {
         onSuccess()
       }
