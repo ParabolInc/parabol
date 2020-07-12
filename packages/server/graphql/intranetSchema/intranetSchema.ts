@@ -14,6 +14,7 @@ import endOldMeetings from './mutations/endOldMeetings'
 import flagConversionModal from './mutations/flagConversionModal'
 import flagOverLimit from './mutations/flagOverLimit'
 import loginSAML from './mutations/loginSAML'
+import enableSAMLForDomain from './mutations/enableSAMLForDomain'
 import profileCPU from './mutations/profileCPU'
 import runScheduledJobs from './mutations/runScheduledJobs'
 import sendBatchNotificationEmails from './mutations/sendBatchNotificationEmails'
@@ -64,6 +65,7 @@ const mutation = new GraphQLObjectType<any, GQLContext, any>({
     flagConversionModal,
     flagOverLimit,
     loginSAML,
+    enableSAMLForDomain,
     runScheduledJobs,
     sendBatchNotificationEmails,
     sendUpcomingInvoiceEmails,
