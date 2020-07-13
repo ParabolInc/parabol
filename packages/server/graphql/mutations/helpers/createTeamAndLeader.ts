@@ -74,7 +74,8 @@ export default async function createTeamAndLeader(userId: string, newTeam: Valid
         type: CREATED_TEAM,
         userId,
         teamId,
-        orgId
+        orgId,
+        isActive: true
       })
       .run(),
     addTeamIdToTMS(userId, teamId)
