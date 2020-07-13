@@ -186,7 +186,7 @@ const TeamArchive = (props: Props) => {
             // put styles here because aphrodite is async
             <div
               key={`cardBlockFor${task.id}`}
-              style={{...style, width: CARD_WIDTH, padding: '1rem 0.5rem 0'}}
+              style={{...style, width: CARD_WIDTH, padding: '1rem 0.5rem'}}
             >
               <NullableTask
                 dataCy={`archive-task`}
