@@ -151,16 +151,15 @@ const CreditCardForm = (props: Props) => {
         return
       }
 
-      const refetchVariables = {
-        orgId: orgId,
-        first: 3
-      }
-
-      if (invoiceListRefetch) {
-        invoiceListRefetch(refetchVariables)
-      }
-
       if (onSuccess) {
+        const refetchVariables = {
+          orgId: orgId,
+          first: 3
+        }
+
+        if (invoiceListRefetch) {
+          invoiceListRefetch(refetchVariables)
+        }
         onSuccess()
       }
     }
