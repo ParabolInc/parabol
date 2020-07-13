@@ -30,6 +30,8 @@ const enableSAMLForDomain = {
         cert: cert
       })
       .run()
+
+    return true
   }
 }
 
