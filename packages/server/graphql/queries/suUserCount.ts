@@ -21,16 +21,10 @@ export default {
     requireSU(authToken)
 
     // RESOLUTION
-    return (r
-      .table('OrganizationUser')
-      .getAll(
-        ([tier, false] as unknown) as string,
-        ({index: 'tierInactive'} as unknown) as undefined
-      )
-      .filter({removedAt: null})
-      .group('userId') as any)
-      .count()
-      .ungroup()
+    return r
+      .table('User')
+      .filter({tier: tier})
+      .filter({inactive: false})
       .count()
       .run()
   }
