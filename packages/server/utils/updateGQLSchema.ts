@@ -10,12 +10,27 @@ import {printSchema} from 'graphql'
 import path from 'path'
 import {promisify} from 'util'
 import getProjectRoot from '../../../scripts/webpack/utils/getProjectRoot'
+import {format as prettierFormat} from 'prettier'
 
 const write = promisify(fs.writeFile)
 // relative to the output file
 const PROJECT_ROOT = getProjectRoot()
 const schemaPath = path.join(PROJECT_ROOT, 'schema.graphql')
 const typesPath = path.join(PROJECT_ROOT, 'packages/client/types/graphql.ts')
+
+const format: (text: string) => string = (text) => {
+  // tslint:disable no-require-imports
+  const {format: formatter}: {format: typeof prettierFormat} = require('prettier')
+  return formatter(text, {
+    bracketSpacing: true,
+    parser: 'typescript',
+    semi: false,
+    singleQuote: true,
+    tabWidth: 2,
+    useTabs: false,
+    printWidth: 100
+  })
+}
 
 const typesOverrides = {
   generateNamespace: (_, interfaces) => `// AUTOMATICALLY GENERATED FILE - DO NOT EDIT
@@ -29,7 +44,8 @@ const typesOverrides = {
   interfaceBuilder: (name, body) => DEFAULT_EXPORT_FUNCTION(DEFAULT_INTERFACE_BUILDER(name, body)),
   typeBuilder: (name, body) => DEFAULT_EXPORT_FUNCTION(DEFAULT_TYPE_BUILDER(name, body)),
   enumTypeBuilder: (name, values) =>
-    DEFAULT_EXPORT_FUNCTION(DEFAULT_ENUM_TYPE_BUILDER(name, values))
+    DEFAULT_EXPORT_FUNCTION(DEFAULT_ENUM_TYPE_BUILDER(name, values)),
+  postProcessor: format
 }
 
 interface Context {
