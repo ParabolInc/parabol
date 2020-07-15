@@ -6,28 +6,25 @@ const enableSAMLForDomain = {
   description: 'Enable SAML for domain',
   args: {
     url: {
-      type: new GraphQLNonNull(GraphQLString),
+      type: new GraphQLNonNull(GraphQLString)
     },
     domain: {
-      type: GraphQLNonNull(GraphQLString),
+      type: GraphQLNonNull(GraphQLString)
     },
     metadata: {
-      type: GraphQLNonNull(GraphQLString),
-    },
-    cert: {
-      type: GraphQLNonNull(GraphQLString),
+      type: GraphQLNonNull(GraphQLString)
     }
   },
-  async resolve(_source, {url, domain, metadata, cert}) {
+  async resolve(_source, {url, domain, metadata}) {
     const r = await getRethink()
     const normalizedDomain = domain.toLowerCase()
+    const normalizedUrl = url.toLowerCase()
     await r
       .table('SAML')
       .insert({
         domain: normalizedDomain,
-        url: url,
-        metadata: metadata,
-        cert: cert
+        url: normalizedUrl,
+        metadata: metadata
       })
       .run()
 
