@@ -72,6 +72,13 @@ const ActionMeeting = new GraphQLObjectType<IActionMeeting, GQLContext>({
         if (agendaItem.meetingId !== meetingId) return null
         return agendaItem
       }
+    },
+    agendaItems: {
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(AgendaItem))),
+      description: 'All of the agenda items for the meeting',
+      resolve: async ({id: meetingId}, _args, {dataLoader}) => {
+        return await dataLoader.get('agendaItemsByMeetingId').load(meetingId)
+      }
     }
   })
 })

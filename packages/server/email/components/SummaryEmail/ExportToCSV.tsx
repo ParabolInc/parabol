@@ -5,9 +5,7 @@ import withAtmosphere, {
 } from 'parabol-client/decorators/withAtmosphere/withAtmosphere'
 import {PALETTE} from 'parabol-client/styles/paletteV2'
 import extractTextFromDraftString from 'parabol-client/utils/draftjs/extractTextFromDraftString'
-import withMutationProps, {
-  WithMutationProps
-} from 'parabol-client/utils/relay/withMutationProps'
+import withMutationProps, {WithMutationProps} from 'parabol-client/utils/relay/withMutationProps'
 import {ExportToCSVQuery} from 'parabol-client/__generated__/ExportToCSVQuery.graphql'
 import React, {Component} from 'react'
 import {fetchQuery} from 'react-relay'
@@ -23,6 +21,32 @@ interface Props extends WithAtmosphereProps, WithMutationProps {
   referrer: MeetingSummaryReferrer
 }
 
+graphql`
+  fragment ExportToCSV_threadSource on ThreadSource {
+    id
+    thread(first: 1000) {
+      edges {
+        node {
+          __typename
+          content
+          createdAt
+          createdByUser {
+            preferredName
+          }
+          replies {
+            __typename
+            content
+            createdAt
+            createdByUser {
+              preferredName
+            }
+          }
+        }
+      }
+    }
+  }
+`
+
 const query = graphql`
   query ExportToCSVQuery($meetingId: ID!) {
     viewer {
@@ -33,10 +57,15 @@ const query = graphql`
         }
         endedAt
         ... on ActionMeeting {
+          agendaItems {
+            content
+            ...ExportToCSV_threadSource @relay(mask: false)
+          }
           meetingMembers {
             isCheckedIn
             tasks {
               content
+              createdAt
               agendaItem {
                 content
               }
@@ -48,14 +77,20 @@ const query = graphql`
         }
         ... on RetrospectiveMeeting {
           reflectionGroups(sortBy: stageOrder) {
+            ...ExportToCSV_threadSource @relay(mask: false)
             reflections {
               content
+              createdAt
               phaseItem {
                 question
               }
             }
             tasks {
               content
+              createdAt
+              createdByUser {
+                preferredName
+              }
             }
             title
             voteCount
@@ -67,20 +102,27 @@ const query = graphql`
 `
 
 type Meeting = NonNullable<NonNullable<ExportToCSVQuery['response']['viewer']>['newMeeting']>
+type ExportableTypeName = 'Task' | 'Reflection' | 'Comment' | 'Reply'
 
 interface CSVRetroRow {
-  title: string
+  reflectionGroup: string
+  author: string
   votes: number
   prompt: string
-  type: 'Task' | 'Reflection'
+  type: ExportableTypeName
+  createdAt: string
+  discussionThread: string
   content: string
 }
 
 interface CSVActionRow {
-  user: string
+  author: string
   status: 'present' | 'absent'
   agendaItem: string
-  task: string
+  type: ExportableTypeName
+  createdAt: string
+  discussionThread: string
+  content: string
 }
 
 const label = 'Export to CSV'
@@ -116,23 +158,42 @@ class ExportToCSV extends Component<Props> {
 
     const rows = [] as CSVRetroRow[]
     reflectionGroups!.forEach((group) => {
-      const {reflections, tasks, title, voteCount: votes} = group
-      tasks.forEach((task) => {
-        rows.push({
-          title: title!,
-          votes,
-          type: 'Task',
-          prompt: '',
-          content: extractTextFromDraftString(task.content)
-        })
-      })
+      const {reflections, title, voteCount: votes, thread} = group
       reflections.forEach((reflection) => {
         rows.push({
-          title: title!,
+          reflectionGroup: title!,
+          author: 'Anonymous',
           votes,
           type: 'Reflection',
+          createdAt: reflection.createdAt!,
+          discussionThread: '',
           prompt: reflection.phaseItem.question,
           content: extractTextFromDraftString(reflection.content)
+        })
+      })
+      thread?.edges.forEach((edge) => {
+        const threadableContent = extractTextFromDraftString(edge.node.content)
+        rows.push({
+          reflectionGroup: title!,
+          author: edge!.node!.createdByUser?.preferredName ?? 'Anonymous',
+          votes,
+          type: edge.node.__typename as ExportableTypeName,
+          createdAt: edge.node.createdAt,
+          discussionThread: threadableContent,
+          prompt: '',
+          content: threadableContent
+        })
+        edge.node.replies.forEach((reply) => {
+          rows.push({
+            reflectionGroup: title!,
+            author: reply!.createdByUser?.preferredName ?? 'Anonymous',
+            votes,
+            type: reply.__typename === 'Task' ? 'Task' : 'Reply',
+            createdAt: reply.createdAt,
+            discussionThread: threadableContent,
+            prompt: '',
+            content: extractTextFromDraftString(reply.content)
+          })
         })
       })
     })
@@ -140,29 +201,53 @@ class ExportToCSV extends Component<Props> {
   }
 
   handleActionMeeting(newMeeting: Meeting) {
-    const {meetingMembers} = newMeeting
+    const {meetingMembers, agendaItems} = newMeeting
 
     const rows = [] as CSVActionRow[]
+    const userStatus = {} as {[id: string]: 'present' | 'absent'}
     meetingMembers!.forEach((meetingMember) => {
       const {isCheckedIn, tasks, user} = meetingMember
       const status = isCheckedIn ? 'present' : 'absent'
       const {preferredName} = user
+      userStatus[preferredName] = status
       if (tasks.length === 0) {
         rows.push({
-          user: preferredName,
+          author: preferredName,
           status,
-          task: '',
-          agendaItem: ''
+          agendaItem: '',
+          type: 'Task',
+          createdAt: '',
+          discussionThread: '',
+          content: ''
         })
         return
       }
-      tasks.forEach((task) => {
-        const {content, agendaItem} = task
+    })
+    agendaItems!.forEach((agendaItem) => {
+      const {thread} = agendaItem
+      thread?.edges.forEach((edge) => {
+        const commentContent = extractTextFromDraftString(edge.node.content)
+        const authorName = edge!.node!.createdByUser?.preferredName ?? 'Anonymous'
         rows.push({
-          user: preferredName,
-          status,
-          task: extractTextFromDraftString(content),
-          agendaItem: agendaItem ? agendaItem.content : ''
+          author: authorName,
+          status: userStatus[authorName],
+          agendaItem: agendaItem ? agendaItem.content : '',
+          type: edge.node.__typename as ExportableTypeName,
+          createdAt: edge.node.createdAt,
+          discussionThread: commentContent,
+          content: commentContent
+        })
+        edge.node.replies.forEach((reply) => {
+          const authorName = reply.createdByUser?.preferredName ?? 'Anonymous'
+          rows.push({
+            author: authorName,
+            status: userStatus[authorName],
+            agendaItem: agendaItem ? agendaItem.content : '',
+            type: reply.__typename === 'Task' ? 'Task' : 'Reply',
+            createdAt: reply.createdAt,
+            discussionThread: commentContent,
+            content: extractTextFromDraftString(reply.content)
+          })
         })
       })
     })
