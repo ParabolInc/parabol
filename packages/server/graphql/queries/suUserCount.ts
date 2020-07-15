@@ -23,8 +23,7 @@ export default {
     // RESOLUTION
     return r
       .table('User')
-      .filter({tier: tier})
-      .filter({inactive: false})
+      .filter({tier: tier, inactive: false})
       .count()
       .run()
   }
