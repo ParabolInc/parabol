@@ -5,6 +5,26 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 5.12.0 2020-Jul-15
+
+### Added
+
+- Added thread comments to the CSV export #3948
+- Added automated screenshots for Parabol demo #3907
+
+### Changed
+
+- Optimized metrics query to run faster #3978
+- Set up config to enable client code debugging in VS Code #3985
+- Deprecated `meetingSettingsByTeamId` in favor of `meetingSettingsByType` #3973
+
+### Fixed
+
+- Fixed source maps to enable debugging with breakpoints in VS Code #3982
+- Fixed a typo for `utm_source` in meeting summary URL parameters #3977
+- Fixed a typo in `DemoCreateAccountButton` #3972
+- Fixed duplicate agenda item pins #3996
+
 ## 5.11.1 2020-Jun-29
 
 ### Fixed
@@ -28,6 +48,7 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 ## 5.10.1 2020-Jun-15
 
 ### Fixed
+
 - Email password reset is now case insensitive
 
 ## 5.10.0 2020-Jun-10
