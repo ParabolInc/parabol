@@ -47,11 +47,12 @@ const OrgBillingUpgrade = (props: Props) => {
   const {id: orgId, tier, orgUserCount} = organization
   const {activeUserCount} = orgUserCount
   const {togglePortal, closePortal, modalPortal} = useModal()
+  const onUpgrade = () => invoiceListRefetch?.({orgId, first: 3})
   return (
     <>
       {modalPortal(
         <CreditCardModal
-          invoiceListRefetch={invoiceListRefetch}
+          onUpgrade={onUpgrade}
           actionType={'upgrade'}
           closePortal={closePortal}
           orgId={orgId}

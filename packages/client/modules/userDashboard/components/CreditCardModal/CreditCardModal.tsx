@@ -31,21 +31,22 @@ interface Props {
   closePortal: () => void
   orgId: string
   meetingId?: string
-  invoiceListRefetch?: (refetchVariables: {}) => void
+  onUpgrade?: () => void
 }
 
 type Status = 'success' | 'later' | 'init'
 
 const CreditCardModal = (props: Props) => {
-  const {actionType, activeUserCount, closePortal, orgId, meetingId, invoiceListRefetch} = props
+  const {actionType, activeUserCount, closePortal, orgId, meetingId, onUpgrade} = props
   const [status, setStatus] = useState<Status>('init')
   const atmosphere = useAtmosphere()
   const onSuccess =
     actionType === 'update'
       ? closePortal
       : () => {
-        setStatus('success')
-      }
+          onUpgrade?.()
+          setStatus('success')
+        }
   const onLater = (e: React.FormEvent) => {
     e.preventDefault()
     setStatus('later')
@@ -71,7 +72,6 @@ const CreditCardModal = (props: Props) => {
       </DialogTitle>
       <CreditCardReassurance actionType={actionType} />
       <CreditCardForm
-        invoiceListRefetch={invoiceListRefetch}
         actionType={actionType}
         activeUserCount={activeUserCount}
         orgId={orgId}

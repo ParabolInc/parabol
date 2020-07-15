@@ -71,6 +71,7 @@ const OrgBillingCreditCardInfo = (props: Props) => {
   const {organization, invoiceListRefetch} = props
   const {creditCard, id: orgId, orgUserCount} = organization
   const {modalPortal, closePortal, togglePortal} = useModal()
+  const onUpgrade = () => invoiceListRefetch?.({orgId, first: 3})
   if (!creditCard) return null
   const {activeUserCount} = orgUserCount
   const {brand, last4, expiry} = creditCard
@@ -100,7 +101,7 @@ const OrgBillingCreditCardInfo = (props: Props) => {
           <CreditCardModal
             activeUserCount={activeUserCount}
             orgId={orgId}
-            invoiceListRefetch={invoiceListRefetch}
+            onUpgrade={onUpgrade}
             actionType={'update'}
             closePortal={closePortal}
           />

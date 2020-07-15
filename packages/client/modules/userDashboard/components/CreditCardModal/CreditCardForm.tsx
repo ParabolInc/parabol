@@ -75,11 +75,10 @@ interface Props {
   orgId: string
   onSuccess?: () => void
   onLater?: (e: React.FormEvent) => void
-  invoiceListRefetch?: (refetchVariables: {}) => void
 }
 
 const CreditCardForm = (props: Props) => {
-  const {activeUserCount, actionType, onSuccess, onLater, orgId, invoiceListRefetch} = props
+  const {activeUserCount, actionType, onSuccess, onLater, orgId} = props
   const atmosphere = useAtmosphere()
   const isStripeLoaded = useScript('https://js.stripe.com/v2/')
   const [stripeClientManager] = useState(() => new StripeClientManager())
@@ -152,14 +151,6 @@ const CreditCardForm = (props: Props) => {
       }
 
       if (onSuccess) {
-        const refetchVariables = {
-          orgId: orgId,
-          first: 3
-        }
-
-        if (invoiceListRefetch) {
-          invoiceListRefetch(refetchVariables)
-        }
         onSuccess()
       }
     }
