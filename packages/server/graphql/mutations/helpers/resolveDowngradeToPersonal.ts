@@ -2,6 +2,7 @@ import {TierEnum} from 'parabol-client/types/graphql'
 import getRethink from '../../../database/rethinkDriver'
 import segmentIo from '../../../utils/segmentIo'
 import setUserTierForOrgId from '../../../utils/setUserTierForOrgId'
+import setTierForOrgUsers from '../../../utils/setTierForOrgUsers'
 import StripeManager from '../../../utils/StripeManager'
 
 const resolveDowngradeToPersonal = async (
@@ -42,7 +43,7 @@ const resolveDowngradeToPersonal = async (
       .default([]) as unknown) as string[]
   }).run()
 
-  await setUserTierForOrgId(orgId)
+  await Promise.all([setUserTierForOrgId(orgId), setTierForOrgUsers(orgId)])
   segmentIo.track({
     userId,
     event: 'Downgrade to personal',

@@ -82,7 +82,7 @@ const addUser = async (orgIds: string[], userId: string) => {
       (oldOrganizationUser && oldOrganizationUser.newUserUntil) ||
       organization.periodEnd ||
       new Date()
-    return new OrganizationUser({orgId, userId, newUserUntil})
+    return new OrganizationUser({orgId, userId, newUserUntil, tier: organization.tier})
   })
   await r
     .table('OrganizationUser')
