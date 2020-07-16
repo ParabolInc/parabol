@@ -65,7 +65,7 @@ const ReflectionCard = (props: Props) => {
 
   const handleEditorFocus = () => {
     if (isTempId(reflectionId)) return
-    EditReflectionMutation(atmosphere, {isEditing: true, meetingId, phaseItemId: retroPhaseItemId})
+    EditReflectionMutation(atmosphere, {isEditing: true, meetingId, promptId: retroPhaseItemId})
   }
 
   useEffect(() => {
@@ -127,7 +127,7 @@ const ReflectionCard = (props: Props) => {
   const handleEditorBlur = () => {
     if (isTempId(reflectionId)) return
     handleContentUpdate()
-    EditReflectionMutation(atmosphere, {isEditing: false, meetingId, phaseItemId: retroPhaseItemId})
+    EditReflectionMutation(atmosphere, {isEditing: false, meetingId, promptId: retroPhaseItemId})
   }
 
   const handleReturn = (e) => {
