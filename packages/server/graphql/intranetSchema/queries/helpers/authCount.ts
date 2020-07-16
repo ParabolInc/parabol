@@ -9,11 +9,10 @@ const authCount = async (
 ) => {
   const r = await getRethink()
   const activeFilter = isActive ? {inactive: false} : {}
-  const afterFilter = after ? (row) => row(filterField).ge(after) : {}
   return r
     .table('User')
+    .between(after || r.minval, r.maxval, {index: filterField})
     .filter(activeFilter)
-    .filter(afterFilter)
     .count()
     .run()
 }

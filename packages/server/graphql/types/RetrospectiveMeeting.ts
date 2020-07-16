@@ -123,8 +123,10 @@ const RetrospectiveMeeting = new GraphQLObjectType<any, GQLContext>({
       resolve: async ({id: meetingId}, _args, {dataLoader}) => {
         const meeting = await dataLoader.get('newMeetings').load(meetingId)
         const {teamId} = meeting
-        const allSettings = await dataLoader.get('meetingSettingsByTeamId').load(teamId)
-        return allSettings.find((settings) => settings.meetingType === RETROSPECTIVE)
+
+        return await dataLoader
+          .get('meetingSettingsByType')
+          .load({teamId, meetingType: RETROSPECTIVE})
       }
     },
     taskCount: {

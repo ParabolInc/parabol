@@ -104,7 +104,7 @@ const getPinnedAgendaItems = async (teamId: string) => {
     .run()
 }
 
-const clonePinnedAgendaItem = async (pinnedAgendaItems: AgendaItem[]) => {
+const clonePinnedAgendaItems = async (pinnedAgendaItems: AgendaItem[]) => {
   const r = await getRethink()
   const formattedPinnedAgendaItems = pinnedAgendaItems.map((agendaItem) => {
     const agendaItemId = `${agendaItem.teamId}::${shortid.generate()}`
@@ -169,6 +169,10 @@ const removeEmptyTasks = async (teamId: string, meetingId: string) => {
 }
 
 const finishActionMeeting = async (meeting: MeetingAction, dataLoader: DataLoaderWorker) => {
+  /* If isKill, no agenda items were processed so clear none of them.
+   * Similarly, don't clone pins. the original ones will show up again.
+   */
+
   const {id: meetingId, teamId, phases} = meeting
   const r = await getRethink()
   const [meetingMembers, tasks, doneTasks] = await Promise.all([
@@ -193,10 +197,12 @@ const finishActionMeeting = async (meeting: MeetingAction, dataLoader: DataLoade
   ])
   const userIds = meetingMembers.map(({userId}) => userId)
   const meetingPhase = getMeetingPhase(phases)
+  const pinnedAgendaItems = await getPinnedAgendaItems(teamId)
   const isKill = getIsKill(MeetingTypeEnum.action, meetingPhase)
   await Promise.all([
     isKill ? undefined : archiveTasksForDB(doneTasks, meetingId),
     isKill ? undefined : clearAgendaItems(teamId),
+    isKill ? undefined : clonePinnedAgendaItems(pinnedAgendaItems),
     updateTaskSortOrders(userIds, tasks),
     r
       .table('NewMeeting')
@@ -254,7 +260,8 @@ const finishMeetingType = async (
   return undefined
 }
 
-const getIsKill = (meetingType: MeetingTypeEnum, phase: GenericMeetingPhase) => {
+const getIsKill = (meetingType: MeetingTypeEnum, phase?: GenericMeetingPhase) => {
+  if (!phase) return false
   switch (meetingType) {
     case MeetingTypeEnum.action:
       return ![AGENDA_ITEMS, LAST_CALL].includes(phase.phaseType)
@@ -344,10 +351,7 @@ export default {
     const presentMemberUserIds = presentMembers.map(({userId}) => userId)
     endSlackMeeting(meetingId, teamId, dataLoader).catch(console.log)
 
-    const pinnedAgendaItems = await getPinnedAgendaItems(teamId)
     const result = await finishMeetingType(completedMeeting, dataLoader)
-
-    clonePinnedAgendaItem(pinnedAgendaItems)
 
     await shuffleCheckInOrder(teamId)
     const updatedTaskIds = (result && result.updatedTaskIds) || []

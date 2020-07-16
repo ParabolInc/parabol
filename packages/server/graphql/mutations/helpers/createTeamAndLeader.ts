@@ -1,13 +1,12 @@
 import {InvoiceItemType} from 'parabol-client/types/constEnums'
-import shortid from 'shortid'
 import adjustUserCount from '../../../billing/helpers/adjustUserCount'
 import getRethink from '../../../database/rethinkDriver'
 import MeetingSettingsAction from '../../../database/types/MeetingSettingsAction'
 import MeetingSettingsRetrospective from '../../../database/types/MeetingSettingsRetrospective'
 import Team from '../../../database/types/Team'
+import TimelineEventCreatedTeam from '../../../database/types/TimelineEventCreatedTeam'
 import addTeamIdToTMS from '../../../safeMutations/addTeamIdToTMS'
 import insertNewTeamMember from '../../../safeMutations/insertNewTeamMember'
-import {CREATED_TEAM} from '../../types/TimelineEventTypeEnum'
 
 interface ValidNewTeam {
   id: string
@@ -30,6 +29,12 @@ export default async function createTeamAndLeader(userId: string, newTeam: Valid
     new MeetingSettingsRetrospective({teamId}),
     new MeetingSettingsAction({teamId})
   ]
+  const timelineEvent = new TimelineEventCreatedTeam({
+    createdAt: new Date(Date.now() + 5),
+    userId,
+    teamId,
+    orgId
+  })
 
   const [organizationUser] = await Promise.all([
     r
@@ -54,17 +59,7 @@ export default async function createTeamAndLeader(userId: string, newTeam: Valid
     insertNewTeamMember(userId, teamId),
     r
       .table('TimelineEvent')
-      .insert({
-        id: shortid.generate(),
-        // + 5 to make sure it comes after parabol joined event
-        createdAt: new Date(Date.now() + 5),
-        interactionCount: 0,
-        seenCount: 0,
-        type: CREATED_TEAM,
-        userId,
-        teamId,
-        orgId
-      })
+      .insert(timelineEvent)
       .run(),
     addTeamIdToTMS(userId, teamId)
   ])

@@ -31,6 +31,19 @@ export const agendaItemsByTeamId = new LoaderMakerForeign(
   }
 )
 
+export const agendaItemsByMeetingId = new LoaderMakerForeign(
+  'agendaItems',
+  'meetingId',
+  async (meetingIds) => {
+    const r = await getRethink()
+    return r
+      .table('AgendaItem')
+      .getAll(r.args(meetingIds), {index: 'meetingId'})
+      .orderBy('sortOrder')
+      .run()
+  }
+)
+
 export const atlassianAuthByUserId = new LoaderMakerForeign(
   'atlassianAuths',
   'userId',
@@ -122,19 +135,6 @@ export const meetingMembersByUserId = new LoaderMakerForeign(
     return r
       .table('MeetingMember')
       .getAll(r.args(userIds), {index: 'userId'})
-
-      .run()
-  }
-)
-
-export const meetingSettingsByTeamId = new LoaderMakerForeign(
-  'meetingSettings',
-  'teamId',
-  async (teamIds) => {
-    const r = await getRethink()
-    return r
-      .table('MeetingSettings')
-      .getAll(r.args(teamIds), {index: 'teamId'})
       .run()
   }
 )

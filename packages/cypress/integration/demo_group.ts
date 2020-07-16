@@ -110,36 +110,105 @@ describe('Test Group page Demo', () => {
   before(function() {
     // runs before all tests in the block
     cy.visitReflect().visitPhase('group')
+
+    cy.get('[data-cy=help-menu-close]')
+      .should('be.visible')
+      .pipe(($el) => $el.click())
+      .should('not.exist')
+
+    cy.screenshot('parabol-retrospective-visit-group-open-sidebar')
+    cy.get('[data-cy=sidebar-toggle]')
+      .should('be.visible')
+      .click({force: true})
+    cy.screenshot('parabol-retrospective-visit-group-closed-sidebar')
+  })
+
+  it('Take screenshots of grouping cards', () => {
+    cy.wait(790)
+
+    cy.screenshot('parabol-retrospective-move-group-1-closed-sidebar')
+    cy.get('[data-cy=topbar-toggle]')
+      .should('be.visible')
+      .click({force: true})
+
+    cy.wait(1300)
+
+    cy.screenshot('parabol-retrospective-move-group-1-open-sidebar')
+
+    cy.wait(300)
+
+    cy.screenshot('parabol-retrospective-move-group-2-open-sidebar')
+    cy.get('[data-cy=sidebar-toggle]')
+      .should('be.visible')
+      .click({force: true})
+
+    cy.wait(1300)
+
+    cy.screenshot('parabol-retrospective-move-group-2-closed-sidebar')
+
+    cy.screenshot('parabol-retrospective-move-group-3-closed-sidebar')
+    cy.get('[data-cy=topbar-toggle]')
+      .should('be.visible')
+      .click({force: true})
+
+    cy.wait(300)
+
+    cy.screenshot('parabol-retrospective-move-group-3-open-sidebar')
+
+    cy.wait(500)
+    cy.screenshot('parabol-retrospective-move-group-4-open-sidebar')
+
+    cy.wait(1000)
   })
 
   it('Test adding a new reflection during grouping', () => {
-    addReflection('Start', 'Start reflection')
-    addReflection('Stop', 'Stop reflection')
-    addReflection('Continue', 'Continue reflection')
+    addReflection('Start', 'Start testing code before merging')
+
+    cy.screenshot('parabol-retrospective-add-group-1-open-sidebar')
+    cy.get('[data-cy=sidebar-toggle]')
+      .should('be.visible')
+      .click({force: true})
+    cy.screenshot('parabol-retrospective-add-group-1-closed-sidebar')
+
+    addReflection('Stop', 'Stop pushing directly to master')
+
+    cy.screenshot('parabol-retrospective-add-group-2-closed-sidebar')
+    cy.get('[data-cy=topbar-toggle]')
+      .should('be.visible')
+      .click({force: true})
+    cy.screenshot('parabol-retrospective-add-group-2-open-sidebar')
+
+    addReflection('Continue', 'Continue using best practices')
+
+    cy.screenshot('parabol-retrospective-add-group-3-open-sidebar')
+    cy.get('[data-cy=sidebar-toggle]')
+      .should('be.visible')
+      .click({force: true})
+    cy.screenshot('parabol-retrospective-add-group-3-closed-sidebar')
   })
 
   it('Test editing a new reflection during grouping', () => {
-    editReflection('Start', 'Start reflection', 'Edit reflection')
+    editReflection('Start', 'Start testing code before merging', 'Start having daily standups')
 
-    editReflection('Stop', 'Stop reflection', 'Edit reflection')
+    editReflection('Stop', 'Stop pushing directly to master', 'Stop creating merge conflicts')
 
-    editReflection('Continue', 'Continue reflection', 'Edit reflection')
+    editReflection('Continue', 'Continue using best practices', 'Continue using code linters')
   })
 
   it('Test renaming a group', () => {
-    editGroupTitle('Start', 'Edited Title')
+    editGroupTitle('Start', 'Meetings')
 
-    editGroupTitle('Stop', 'Edited Title')
+    editGroupTitle('Stop', 'Conflicts')
 
-    editGroupTitle('Continue', 'Edited Title')
+    editGroupTitle('Continue', 'Code Quality')
   })
 
   it('Test deleting a reflection after it has been created', () => {
-    deleteReflection('Start', 'Edit reflection')
+    deleteReflection('Start', 'Start having daily standups')
 
-    deleteReflection('Stop', 'Edit reflection')
+    deleteReflection('Stop', 'Stop creating merge conflicts')
 
-    deleteReflection('Continue', 'Edit reflection')
+    deleteReflection('Continue', 'Continue using code linters')
   })
 
   it('Test new group creation', () => {

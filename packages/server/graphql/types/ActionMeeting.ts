@@ -27,8 +27,9 @@ const ActionMeeting = new GraphQLObjectType<IActionMeeting, GQLContext>({
       type: new GraphQLNonNull(ActionMeetingSettings),
       description: 'The settings that govern the action meeting',
       resolve: async ({teamId}, _args, {dataLoader}) => {
-        const allSettings = await dataLoader.get('meetingSettingsByTeamId').load(teamId)
-        return allSettings.find((settings) => settings.meetingType === MeetingTypeEnum.action)
+        return await dataLoader
+          .get('meetingSettingsByType')
+          .load({teamId, meetingType: MeetingTypeEnum.action})
       }
     },
     taskCount: {
@@ -71,6 +72,13 @@ const ActionMeeting = new GraphQLObjectType<IActionMeeting, GQLContext>({
         const agendaItem = await dataLoader.get('agendaItems').load(agendaItemId)
         if (agendaItem.meetingId !== meetingId) return null
         return agendaItem
+      }
+    },
+    agendaItems: {
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(AgendaItem))),
+      description: 'All of the agenda items for the meeting',
+      resolve: async ({id: meetingId}, _args, {dataLoader}) => {
+        return await dataLoader.get('agendaItemsByMeetingId').load(meetingId)
       }
     }
   })
