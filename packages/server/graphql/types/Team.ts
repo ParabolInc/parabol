@@ -117,9 +117,10 @@ const Team = new GraphQLObjectType<ITeam, GQLContext>({
     },
     reflectPrompts: {
       type: new GraphQLList(ReflectPrompt),
-      resolve: ({id: teamId}, _args, {dataLoader}) => {
+      deprecationReason: 'Field no longer needs to exist for now',
+      resolve: ({}, _args, {}) => {
         // not useful for retros since there is no templateId filter
-        return dataLoader.get('reflectPromptsByTemplateId').load(teamId)
+        return []
       }
     },
     teamInvitations: {
