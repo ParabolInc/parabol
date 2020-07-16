@@ -1910,6 +1910,11 @@ export interface IOrganizationUser {
    * The user attached to the organization
    */
   user: IUser;
+
+  /**
+   * Their level of access to features on the parabol site
+   */
+  tier: TierEnum | null;
 }
 
 /**
@@ -7451,6 +7456,11 @@ export interface IActionMeeting {
    * A single agenda item
    */
   agendaItem: IAgendaItem | null;
+
+  /**
+   * All of the agenda items for the meeting
+   */
+  agendaItems: Array<IAgendaItem>;
 }
 
 export interface IAgendaItemOnActionMeetingArguments {
