@@ -13,7 +13,7 @@ export default {
   type: EditReflectionPayload,
   args: {
     isEditing: {
-      description: 'Whether a phaseItem is being edited or not',
+      description: 'Whether a reflectPrompt is being edited or not',
       type: new GraphQLNonNull(GraphQLBoolean)
     },
     meetingId: {
