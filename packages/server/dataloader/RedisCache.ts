@@ -14,7 +14,7 @@ export type CacheType = RedisType & DBType
 const TTL = ms('3h')
 
 const msetpx = (key: string, value: object) => {
-  return ['SET', key, JSON.stringify(value), 'PX', TTL] as string[]
+  return ['set', key, JSON.stringify(value), 'PX', TTL] as string[]
 }
 // type ClearLocal = (key: string) => void
 

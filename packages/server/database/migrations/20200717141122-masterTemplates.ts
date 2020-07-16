@@ -328,23 +328,26 @@ export const up = async function(r: R) {
       .table('NewMeeting')
       .indexCreate('templateId')
       .run()
+    await r
+      .table('NewMeeting')
+      .indexWait('templateId')
+      .run()
   } catch (e) {
     console.log(e)
   }
 
   // delete unused templates, approx 90% of templates are unused!
   try {
-    await (r
-      .table('NewMeeting')('templateId')
-      .distinct() as any)
-      .do((usedTemplateIds) => {
-        return r
-          .table('ReflectTemplate')
-          .filter((template) => {
-            return usedTemplateIds.contains(template('id')).not()
-          })
-          .delete()
-      })
+    await r
+      .table('ReflectTemplate')
+      .filter((row) =>
+        r
+          .table('NewMeeting')
+          .getAll(row('id'), {index: 'templateId'})
+          .count()
+          .eq(0)
+      )
+      .delete()
       .run()
   } catch (e) {
     console.log(e)
@@ -368,6 +371,10 @@ export const up = async function(r: R) {
     await r
       .table('ReflectTemplate')
       .indexCreate('orgId')
+      .run()
+    await r
+      .table('ReflectTemplate')
+      .indexWait('orgId')
       .run()
   } catch (e) {
     console.log(e)
