@@ -53,7 +53,7 @@ const addReflectTemplatePrompt = {
     const availableNewColor = palettePickerOptions.find(
       (color) => !pickedColors.includes(color.hex)
     )
-    const phaseItem = new RetrospectivePrompt({
+    const reflectPrompt = new RetrospectivePrompt({
       templateId: template.id,
       teamId: template.teamId,
       sortOrder,
@@ -64,10 +64,10 @@ const addReflectTemplatePrompt = {
 
     await r
       .table('ReflectPrompt')
-      .insert(phaseItem)
+      .insert(reflectPrompt)
       .run()
 
-    const promptId = phaseItem.id
+    const promptId = reflectPrompt.id
     const data = {promptId}
     publish(SubscriptionChannel.TEAM, teamId, 'AddReflectTemplatePromptPayload', data, subOptions)
     return data

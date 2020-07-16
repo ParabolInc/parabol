@@ -17,7 +17,7 @@ export default class RetrospectivePrompt {
   description: string
   groupColor: string
   isActive = true
-  phaseItemType: ReflectPromptTypeEnum
+  reflectPromptType: ReflectPromptTypeEnum
   sortOrder: number
   teamId: string
   templateId: string
@@ -28,7 +28,7 @@ export default class RetrospectivePrompt {
   constructor(input: Input) {
     const {teamId, templateId, sortOrder, question, description, groupColor, title} = input
     this.id = shortid.generate()
-    this.phaseItemType = ReflectPromptTypeEnum.retroPhaseItem
+    this.reflectPromptType = ReflectPromptTypeEnum.retroPhaseItem
     this.sortOrder = sortOrder
     this.teamId = teamId
     this.templateId = templateId

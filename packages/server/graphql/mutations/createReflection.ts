@@ -38,14 +38,14 @@ export default {
 
     // AUTH
     const viewerId = getUserId(authToken)
-    const phaseItem = await dataLoader.get('reflectPrompts').load(retroPhaseItemId)
-    if (!phaseItem) {
+    const reflectPrompt = await dataLoader.get('reflectPrompts').load(retroPhaseItemId)
+    if (!reflectPrompt) {
       return standardError(new Error('Category not found'), {userId: viewerId})
     }
-    if (!phaseItem.isActive) {
+    if (!reflectPrompt.isActive) {
       return standardError(new Error('Category not active'), {userId: viewerId})
     }
-    const {teamId} = phaseItem
+    const {teamId} = reflectPrompt
     if (!isTeamMember(authToken, teamId)) {
       return standardError(new Error('Team not found'), {userId: viewerId, tags: {teamId}})
     }

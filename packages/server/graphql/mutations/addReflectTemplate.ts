@@ -51,11 +51,11 @@ const addReflectTemplate = {
         }
       ]
     }
-    const {phaseItems, templates} = makeRetroTemplates(teamId, base)
+    const {reflectPrompts, templates} = makeRetroTemplates(teamId, base)
 
     await r({
       newTemplate: r.table('ReflectTemplate').insert(templates),
-      newPhaseItem: r.table('ReflectPrompt').insert(phaseItems)
+      newReflectPrompt: r.table('ReflectPrompt').insert(reflectPrompts)
     }).run()
 
     const templateId = templates[0].id
