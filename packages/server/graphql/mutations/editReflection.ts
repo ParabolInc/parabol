@@ -19,13 +19,13 @@ export default {
     meetingId: {
       type: new GraphQLNonNull(GraphQLID)
     },
-    phaseItemId: {
+    promptId: {
       type: new GraphQLNonNull(GraphQLID)
     }
   },
   async resolve(
     _source,
-    {isEditing, meetingId, phaseItemId},
+    {isEditing, meetingId, promptId},
     {authToken, dataLoader, socketId: mutatorId}
   ) {
     const r = await getRethink()
@@ -34,14 +34,14 @@ export default {
     const viewerId = getUserId(authToken)
 
     // AUTH
-    const phaseItem = await r
+    const reflectPrompt = await r
       .table('ReflectPrompt')
-      .get(phaseItemId)
+      .get(promptId)
       .run()
-    if (!phaseItem || !phaseItem.isActive) {
+    if (!reflectPrompt || !reflectPrompt.isActive) {
       return standardError(new Error('Category not found'), {userId: viewerId})
     }
-    const {teamId} = phaseItem
+    const {teamId} = reflectPrompt
     if (!isTeamMember(authToken, teamId)) {
       return standardError(new Error('Team not found'), {userId: viewerId, tags: {teamId}})
     }
@@ -55,7 +55,7 @@ export default {
     }
 
     // RESOLUTION
-    const data = {phaseItemId, editorId: mutatorId, isEditing}
+    const data = {promptId, editorId: mutatorId, isEditing}
     publish(SubscriptionChannel.MEETING, meetingId, 'EditReflectionPayload', data, subOptions)
     return data
   }

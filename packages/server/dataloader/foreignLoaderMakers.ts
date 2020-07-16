@@ -79,12 +79,12 @@ export const completedMeetingsByTeamId = new LoaderMakerForeign(
 
 export const reflectPromptsByTemplateId = new LoaderMakerForeign(
   'reflectPrompts',
-  'teamId',
-  async (teamIds) => {
+  'templateId',
+  async (templateIds) => {
     const r = await getRethink()
     return r
       .table('ReflectPrompt')
-      .getAll(r.args(teamIds), {index: 'teamId'})
+      .getAll(r.args(templateIds), {index: 'templateId'})
       .filter({isActive: true})
       .run()
   }

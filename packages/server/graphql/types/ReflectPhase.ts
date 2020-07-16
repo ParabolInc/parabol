@@ -29,11 +29,13 @@ const ReflectPhase = new GraphQLObjectType<any, GQLContext>({
     reflectPrompts: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(RetroPhaseItem))),
       description: 'The prompts used during the reflect phase',
-      resolve: async ({promptTemplateId, teamId}, _args, {dataLoader}) => {
-        const phaseItems = await dataLoader.get('reflectPromptsByTemplateId').load(teamId)
-        const prompts = phaseItems.filter(({templateId}) => templateId === promptTemplateId)
-        prompts.sort((a, b) => (a.sortOrder < b.sortOrder ? -1 : 1))
-        return prompts
+      resolve: async ({promptTemplateId, templateId}, _args, {dataLoader}) => {
+        if (templateId === promptTemplateId) {
+          const prompts = await dataLoader.get('reflectPromptsByTemplateId').load(templateId)
+          prompts.sort((a, b) => (a.sortOrder < b.sortOrder ? -1 : 1))
+          return prompts
+        }
+        return []
       }
     },
     stages: {
