@@ -28,7 +28,11 @@ const handleSegment = async (user: User, isInvited: boolean) => {
     userId,
     event: 'Account Created',
     properties: {
-      isInvited
+      isInvited,
+      // properties below required for Google Analytics destination
+      category: 'All',
+      label: 'isInvited',
+      value: isInvited ? 1 : 0
     }
   })
 }
