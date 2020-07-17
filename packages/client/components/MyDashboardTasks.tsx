@@ -8,6 +8,7 @@ import filterTeam from '../utils/relay/filterTeam'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useDocumentTitle from '~/hooks/useDocumentTitle'
 import useStoreQueryRetry from '~/hooks/useStoreQueryRetry'
+import TeamArchiveRoot from '~/modules/teamDashboard/containers/TeamArchive/TeamArchiveRoot'
 
 interface Props {
   viewer: MyDashboardTasks_viewer
@@ -16,6 +17,7 @@ interface Props {
 
 const MyDashboardTasks = (props: Props) => {
   const {retry, viewer} = props
+  const {showArchivedTasksCheckbox, teamFilter} = viewer
   const atmosphere = useAtmosphere()
   useStoreQueryRetry(retry)
   useDocumentTitle('My Tasks | Parabol', 'My Tasks')
@@ -25,7 +27,11 @@ const MyDashboardTasks = (props: Props) => {
   return (
     <>
       <UserTasksHeader viewer={viewer} />
-      <UserColumnsContainer viewer={viewer} />
+
+      {showArchivedTasksCheckbox ? (
+        <TeamArchiveRoot teamId={teamFilter?.id} team={teamFilter} />
+      ) : (
+          <UserColumnsContainer viewer={viewer} />)}
     </>
   )
 }
@@ -33,6 +39,12 @@ const MyDashboardTasks = (props: Props) => {
 export default createFragmentContainer(MyDashboardTasks, {
   viewer: graphql`
     fragment MyDashboardTasks_viewer on User {
+      showArchivedTasksCheckbox
+      teamFilter {
+        id
+        name
+        ...TeamArchive_team
+      }
       ...UserColumnsContainer_viewer
       ...UserTasksHeader_viewer
     }

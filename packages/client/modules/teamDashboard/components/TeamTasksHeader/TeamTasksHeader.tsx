@@ -10,10 +10,8 @@ import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
 import DashSectionControls from '../../../../components/Dashboard/DashSectionControls'
 import DashSectionHeader from '../../../../components/Dashboard/DashSectionHeader'
 import DashFilterToggle from '../../../../components/DashFilterToggle/DashFilterToggle'
-import DashNavControl from '../../../../components/DashNavControl/DashNavControl'
 import {MenuPosition} from '../../../../hooks/useCoords'
 import useMenu from '../../../../hooks/useMenu'
-import useRouter from '../../../../hooks/useRouter'
 import {PALETTE} from '../../../../styles/paletteV2'
 import {Breakpoint} from '../../../../types/constEnums'
 import lazyPreload from '../../../../utils/lazyPreload'
@@ -114,7 +112,6 @@ const TeamTasksHeader = (props: Props) => {
   const {team, viewer} = props
   const teamMember = viewer.teamMember!
   const {hideAgenda} = teamMember
-  const {history} = useRouter()
   const {organization, id: teamId, name: teamName, teamMemberFilter} = team
   const teamMemberFilterName =
     (teamMemberFilter && teamMemberFilter.preferredName) || 'All team members'
@@ -172,12 +169,6 @@ const TeamTasksHeader = (props: Props) => {
           value={teamMemberFilterName}
         />
         {menuPortal(<TeamDashTeamMemberMenu menuProps={menuProps} team={team} />)}
-        {/* Archive Link */}
-        <DashNavControl
-          icon='archive'
-          label='Archived Tasks'
-          onClick={() => history.push(`/team/${teamId}/archive`)}
-        />
       </DashSectionControls>
     </DashSectionHeader>
   )

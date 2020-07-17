@@ -9,57 +9,81 @@
       "request": "launch",
       "name": "Launch dev.js",
       "program": "${workspaceFolder}/scripts/dev.js",
-      "args": ["-d"],
-      "skipFiles": ["<node_internals>/**"]
+      "args": [
+        "-d"
+      ],
+      "skipFiles": [
+        "<node_internals>/**"
+      ]
     },
     {
       "type": "node",
       "request": "launch",
       "name": "Launch Webpack",
       "program": "${workspaceFolder}/node_modules/.bin/webpack",
-      "args": ["--config", "${workspaceFolder}/scripts/webpack/prod.client.config.js"],
-      "skipFiles": ["<node_internals>/**"]
+      "args": [
+        "--config",
+        "${workspaceFolder}/scripts/webpack/prod.client.config.js"
+      ],
+      "skipFiles": [
+        "<node_internals>/**"
+      ]
     },
     {
       "type": "node",
       "request": "attach",
       "name": "Attach by Process ID",
       "processId": "${command:PickProcess}",
-      "skipFiles": ["<node_internals>/**"]
+      "skipFiles": [
+        "<node_internals>/**"
+      ]
     },
     {
       "name": "Launch Chrome",
       "request": "launch",
       "type": "pwa-chrome",
       "url": "http://localhost:3000",
-      "webRoot": "${workspaceFolder}"
+      "webRoot": "${workspaceFolder}",
+      "timeout": 20000
     },
     {
       "type": "node",
       "request": "launch",
       "name": "Debug Executor",
       "runtimeExecutable": "yarn",
-      "runtimeArgs": ["debug:executor"],
+      "runtimeArgs": [
+        "debug:executor"
+      ],
       "port": 9229,
-      "skipFiles": ["<node_internals>/**"]
+      "skipFiles": [
+        "<node_internals>/**"
+      ]
     },
     {
       "type": "node",
       "request": "launch",
       "name": "Debug Prod",
       "runtimeExecutable": "yarn",
-      "runtimeArgs": ["debug:prod"],
+      "runtimeArgs": [
+        "debug:prod"
+      ],
       "port": 9229,
-      "skipFiles": ["<node_internals>/**"]
+      "skipFiles": [
+        "<node_internals>/**"
+      ]
     },
     {
       "type": "node",
       "request": "launch",
       "name": "Launch via Yarn",
       "runtimeExecutable": "yarn",
-      "runtimeArgs": ["debug"],
+      "runtimeArgs": [
+        "debug"
+      ],
       "port": 9229,
-      "skipFiles": ["<node_internals>/**"]
+      "skipFiles": [
+        "<node_internals>/**"
+      ]
     },
     {
       "type": "node",
@@ -67,7 +91,9 @@
       "name": "Debug relay compiler",
       "program": "${workspaceFolder}/node_modules/.bin/relay-compiler",
       "args": [],
-      "skipFiles": ["<node_internals>/**"]
+      "skipFiles": [
+        "<node_internals>/**"
+      ]
     },
     {
       "type": "node",
@@ -80,7 +106,9 @@
         "--config-file=${workspaceFolder}/packages/gql-executor/babel.config.json",
         "${workspaceFolder}/packages/gql-executor/client/utils/GitHubManager.js"
       ],
-      "skipFiles": ["<node_internals>/**"]
+      "skipFiles": [
+        "<node_internals>/**"
+      ]
     },
     {
       "type": "node",
@@ -93,7 +121,9 @@
         "--transform=${workspaceFolder}/scripts/codeshift/packageRefToRelative.ts",
         "${workspaceFolder}/packages/gql-executor/"
       ],
-      "skipFiles": ["<node_internals>/**"]
+      "skipFiles": [
+        "<node_internals>/**"
+      ]
     }
   ]
 }

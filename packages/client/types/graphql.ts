@@ -77,7 +77,7 @@ export interface IUser {
    * All the integrations that the user could possibly use
    */
   allAvailableIntegrations: Array<SuggestedIntegration>;
-  archivedTasks: ITaskConnection | null;
+  archivedTasks: ITaskConnection;
   archivedTasksCount: number | null;
 
   /**
@@ -324,7 +324,7 @@ export interface IArchivedTasksOnUserArguments {
   /**
    * The unique team ID
    */
-  teamId: string;
+  teamId?: string | null;
 }
 
 export interface IArchivedTasksCountOnUserArguments {

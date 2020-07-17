@@ -6,7 +6,7 @@ import GraphQLISO8601Type from '../types/GraphQLISO8601Type'
 import {TaskConnection} from '../types/Task'
 
 export default {
-  type: TaskConnection,
+  type: new GraphQLNonNull(TaskConnection),
   args: {
     first: {
       type: GraphQLInt
@@ -16,7 +16,7 @@ export default {
       description: 'the datetime cursor'
     },
     teamId: {
-      type: new GraphQLNonNull(GraphQLID),
+      type: GraphQLID,
       description: 'The unique team ID'
     }
   },
@@ -25,31 +25,49 @@ export default {
 
     // AUTH
     const userId = getUserId(authToken)
-    if (!isTeamMember(authToken, teamId)) {
+    if (teamId && !isTeamMember(authToken, teamId)) {
       standardError(new Error('Not organization lead'), {userId})
       return null
     }
 
-    // RESOLUTION
-    const teamMemberId = `${userId}::${teamId}`
-    const dbAfter = after ? new Date(after) : r.maxval
-    const tasks = await r
-      .table('Task')
-      // use a compound index so we can easily paginate later
-      .between([teamId, r.minval], [teamId, dbAfter], {
-        index: 'teamIdUpdatedAt'
-      })
-      .filter((task) =>
-        task('tags')
-          .contains('archived')
-          .and(
-            r.branch(task('tags').contains('private'), task('teamMemberId').eq(teamMemberId), true)
-          )
-      )
-      .orderBy(r.desc('updatedAt'))
-      .limit(first + 1)
+    const teams = await r
+      .table('TeamMember')
+      .filter({userId: userId})
+      .getField('teamId')
       .coerceTo('array')
       .run()
+
+    // RESOLUTION
+    const dbAfter = after ? new Date(after) : r.maxval
+
+    const tasks = teamId
+      ? await r
+          .table('Task')
+          // use a compound index so we can easily paginate later
+          .between([teamId, r.minval], [teamId, dbAfter], {
+            index: 'teamIdUpdatedAt'
+          })
+          .filter((task) =>
+            task('tags')
+              .contains('archived')
+              .and(r.branch(task('tags').contains('private'), task('createdBy').eq(userId), true))
+          )
+          .orderBy(r.desc('updatedAt'))
+          .limit(first + 1)
+          .coerceTo('array')
+          .run()
+      : await r
+          .table('Task')
+          .filter((task) =>
+            task('tags')
+              .contains('archived')
+              .and(r.branch(task('tags').contains('private'), task('createdBy').eq(userId), true))
+              .and(r.expr(teams).contains(task('teamId')))
+          )
+          .orderBy(r.desc('updatedAt'))
+          .limit(first + 1)
+          .coerceTo('array')
+          .run()
 
     const nodes = tasks.slice(0, first)
     const edges = nodes.map((node) => ({
