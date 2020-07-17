@@ -5,6 +5,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 5.12.1 2020-Jul-17
+- Internal metrics query fix
+- Team creation timeline event was left as inactive when created
+
 ## 5.12.0 2020-Jul-15
 
 ### Added
