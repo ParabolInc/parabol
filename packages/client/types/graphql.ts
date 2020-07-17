@@ -7115,6 +7115,11 @@ export interface IUpdateTemplateScopeSuccess {
    * the template that was just updated, if downscoped, does not provide whole story
    */
   template: IReflectTemplate;
+
+  /**
+   * The settings that contain the teamTemplates array that was modified
+   */
+  settings: IRetrospectiveMeetingSettings;
 }
 
 export interface IUpdateUserProfileInput {
