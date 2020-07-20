@@ -37,6 +37,7 @@ import Team from './Team'
 import TeamInvitationPayload from './TeamInvitationPayload'
 import TeamMember from './TeamMember'
 import TierEnum from './TierEnum'
+import {TierEnum as TierEnumType} from 'parabol-client/types/graphql'
 import {TimelineEventConnection} from './TimelineEvent'
 import UserFeatureFlags from './UserFeatureFlags'
 
@@ -399,7 +400,15 @@ const User = new GraphQLObjectType<any, GQLContext, any>({
     overLimitCopy: {
       description:
         'a string with message stating that the user is over the free tier limit, else null',
-      type: GraphQLString
+      type: GraphQLString,
+      resolve: async (source, _args, {dataLoader}) => {
+        const organizationUsers = await dataLoader.get('organizationUsersByUserId').load(source.id)
+        const isAnyMemberOfPaidOrg = organizationUsers.some(
+          (organizationUser) => organizationUser.tier !== TierEnumType.personal
+        )
+        if (isAnyMemberOfPaidOrg) return null
+        return source.overLimitCopy
+      }
     },
     suggestedIntegrations,
     tasks: require('../queries/tasks').default,
