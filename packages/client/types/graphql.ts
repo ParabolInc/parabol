@@ -7440,7 +7440,7 @@ export interface IActionMeeting {
   /**
    * The number of comments generated in the meeting
    */
-  commentCount: number | null;
+  commentCount: number;
 
   /**
    * The settings that govern the action meeting

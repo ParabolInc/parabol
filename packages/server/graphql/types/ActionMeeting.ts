@@ -18,11 +18,10 @@ const ActionMeeting = new GraphQLObjectType<IActionMeeting, GQLContext>({
   fields: () => ({
     ...newMeetingFields(),
     commentCount: {
-      type: GraphQLInt,
+      type: GraphQLNonNull(GraphQLInt),
       description: 'The number of comments generated in the meeting',
       resolve: async ({commentCount}) => {
-        console.log('commentCount', commentCount)
-        commentCount || 0
+        return commentCount || 0
       }
     },
     meetingMembers: {

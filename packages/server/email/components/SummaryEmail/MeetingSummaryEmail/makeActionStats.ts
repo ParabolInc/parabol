@@ -23,12 +23,9 @@ const makeActionStats = (meeting: Meeting) => {
   const {meetingMembers, phases} = meeting
   const agendaItemPhase = phases.find((phase) => phase.phaseType === AGENDA_ITEMS)!
   const {stages} = agendaItemPhase
-  console.log('makeActionStats -> stages', stages)
   const agendaItemsCompleted = stages.filter((stage) => stage.isComplete).length
   const newTaskCount = meetingMembers.reduce((sum, {tasks}) => sum + tasks.length, 0)
-  console.log('makeActionStats -> newTaskCount', newTaskCount)
   const doneTaskCount = meetingMembers.reduce((sum, {doneTasks}) => sum + doneTasks.length, 0)
-  console.log('makeActionStats -> doneTaskCount', doneTaskCount)
   const meetingMembersCount = meetingMembers.length
   const meetingMembersPresentCount = meetingMembers.filter((member) => member.isCheckedIn === true)
     .length
