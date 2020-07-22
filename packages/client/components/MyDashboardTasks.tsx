@@ -8,7 +8,7 @@ import filterTeam from '../utils/relay/filterTeam'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useDocumentTitle from '~/hooks/useDocumentTitle'
 import useStoreQueryRetry from '~/hooks/useStoreQueryRetry'
-import PersonalTaskArchiveRoot from '~/modules/teamDashboard/containers/TeamArchive/PersonalTaskArchiveRoot'
+import PersonalTaskArchiveRoot from './PersonalTaskArchiveRoot'
 
 interface Props {
   viewer: MyDashboardTasks_viewer
