@@ -1,19 +1,22 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {useMemo} from 'react'
-import {createFragmentContainer} from 'react-relay'
+import React, { useMemo } from 'react'
+import { createFragmentContainer } from 'react-relay'
+
+import styled from '@emotion/styled'
+
+import { ActionMeetingUpdates_meeting } from '../__generated__/ActionMeetingUpdates_meeting.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
-import {AreaEnum} from '../types/graphql'
+import { AreaEnum } from '../types/graphql'
 import isTaskPrivate from '../utils/isTaskPrivate'
 import toTeamMemberId from '../utils/relay/toTeamMemberId'
-import {ActionMeetingUpdates_meeting} from '../__generated__/ActionMeetingUpdates_meeting.graphql'
-import {ActionMeetingPhaseProps} from './ActionMeeting'
+import { ActionMeetingPhaseProps } from './ActionMeeting'
 import ActionMeetingUpdatesPrompt from './ActionMeetingUpdatesPrompt'
 import MeetingContent from './MeetingContent'
 import MeetingHeaderAndPhase from './MeetingHeaderAndPhase'
 import MeetingPhaseWrapper from './MeetingPhaseWrapper'
 import MeetingTopBar from './MeetingTopBar'
 import PhaseWrapper from './PhaseWrapper'
+import PhaseCompleteTag from './RetroReflectPhase/PhaseCompleteTag'
 import TaskColumns from './TaskColumns/TaskColumns'
 
 const StyledColumnsWrapper = styled(MeetingPhaseWrapper)({
@@ -40,7 +43,8 @@ const ActionMeetingUpdates = (props: Props) => {
   const {avatarGroup, toggleSidebar, meeting} = props
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
-  const {id: meetingId, endedAt, localStage, showSidebar, team} = meeting
+  const {id: meetingId, endedAt, localStage, showSidebar, team, phases} = meeting
+  console.log('ActionMeetingUpdates -> phases', phases)
   const {id: teamId, tasks} = team
   const {teamMember} = localStage!
   const {userId} = teamMember!
@@ -60,6 +64,7 @@ const ActionMeetingUpdates = (props: Props) => {
           <ActionMeetingUpdatesPrompt meeting={meeting} />
         </MeetingTopBar>
         <PhaseWrapper>
+          <PhaseCompleteTag isComplete />
           <StyledColumnsWrapper>
             <InnerColumnsWrapper>
               <TaskColumns
@@ -99,6 +104,7 @@ export default createFragmentContainer(ActionMeetingUpdates, {
       phases {
         stages {
           ...ActionMeetingUpdatesStage @relay(mask: false)
+          isComplete
         }
       }
       team {

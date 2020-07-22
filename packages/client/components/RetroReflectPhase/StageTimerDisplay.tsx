@@ -1,9 +1,11 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
-import {Breakpoint} from '~/types/constEnums'
-import {StageTimerDisplay_meeting} from '~/__generated__/StageTimerDisplay_meeting.graphql'
+import { createFragmentContainer } from 'react-relay'
+import { StageTimerDisplay_meeting } from '~/__generated__/StageTimerDisplay_meeting.graphql'
+import { Breakpoint } from '~/types/constEnums'
+
+import styled from '@emotion/styled'
+
 import PhaseCompleteTag from './PhaseCompleteTag'
 import StageTimerDisplayGauge from './StageTimerDisplayGauge'
 
