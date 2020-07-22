@@ -8,7 +8,7 @@ import filterTeam from '../utils/relay/filterTeam'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useDocumentTitle from '~/hooks/useDocumentTitle'
 import useStoreQueryRetry from '~/hooks/useStoreQueryRetry'
-import TeamArchiveRoot from '~/modules/teamDashboard/containers/TeamArchive/TeamArchiveRoot'
+import PersonalTaskArchiveRoot from '~/modules/teamDashboard/containers/TeamArchive/PersonalTaskArchiveRoot'
 
 interface Props {
   viewer: MyDashboardTasks_viewer
@@ -29,7 +29,7 @@ const MyDashboardTasks = (props: Props) => {
       <UserTasksHeader viewer={viewer} />
 
       {showArchivedTasksCheckbox ? (
-        <TeamArchiveRoot teamId={teamFilter?.id} team={teamFilter} />
+        <PersonalTaskArchiveRoot teamId={teamFilter?.id} team={teamFilter} />
       ) : (
           <UserColumnsContainer viewer={viewer} />)}
     </>

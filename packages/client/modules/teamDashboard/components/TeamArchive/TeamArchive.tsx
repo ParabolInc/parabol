@@ -13,6 +13,7 @@ import getRallyLink from '../../../userDashboard/helpers/getRallyLink'
 import toTeamMemberId from '~/utils/relay/toTeamMemberId'
 import getSafeRegex from '~/utils/getSafeRegex'
 import extractTextFromDraftString from '~/utils/draftjs/extractTextFromDraftString'
+import TeamArchiveHeader from '../TeamArchiveHeader/TeamArchiveHeader'
 
 const CARD_WIDTH = 256 + 32 // account for box model and horizontal padding
 const GRID_PADDING = 16
@@ -35,6 +36,16 @@ const Root = styled('div')({
   flexDirection: 'column',
   // hide the window scrollbar, the cardGrid scrollbar will mimic the window scrollbar
   overflow: 'hidden',
+  width: '100%'
+})
+
+const Header = styled('div')({
+  padding: `0 0 0 20px`
+})
+
+const Border = styled('div')({
+  borderTop: `.0625rem solid ${PALETTE.BORDER_LIGHTER}`,
+  height: 1,
   width: '100%'
 })
 
@@ -76,11 +87,13 @@ const LinkSpan = styled('div')({
 interface Props {
   relay: RelayPaginationProp
   viewer: TeamArchive_viewer
-  team: TeamArchive_team | null
+  teamId: string
+  team: TeamArchive_team | null | undefined
+  showHeader: boolean
 }
 
 const TeamArchive = (props: Props) => {
-  const {viewer, relay, team} = props
+  const {viewer, relay, team, teamId, showHeader} = props
   const {hasMore, isLoading, loadMore} = relay
   const {teamMembers, teamMemberFilter} = team || {}
   const teamMemberFilterId = (teamMemberFilter && teamMemberFilter.id) || null
@@ -210,6 +223,13 @@ const TeamArchive = (props: Props) => {
 
   return (
     <Root>
+      {
+        showHeader &&
+        <Header>
+          <TeamArchiveHeader teamId={teamId} />
+          <Border />
+        </Header>
+      }
       <Body>
         {edges.length ? (
           <CardGrid>
@@ -294,6 +314,7 @@ export default createPaginationContainer(
     `,
     team: graphql`
       fragment TeamArchive_team on Team {
+        id
         teamMemberFilter {
           id
         }

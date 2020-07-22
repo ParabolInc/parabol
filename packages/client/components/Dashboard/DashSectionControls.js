@@ -4,7 +4,7 @@ const DashSectionControls = styled('div')({
   alignItems: 'center',
   display: 'flex',
   flex: 1,
-  justifyContent: 'flex-start',
+  justifyContent: 'space-between',
   overflow: 'auto',
   maxWidth: '100%',
   width: '100%'

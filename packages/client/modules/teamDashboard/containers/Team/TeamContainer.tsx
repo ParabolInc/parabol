@@ -17,6 +17,10 @@ const TeamSettings = lazy(() =>
     /* webpackChunkName: 'TeamSettingsWrapper' */ '../../components/TeamSettingsWrapper/TeamSettingsWrapper'
   )
 )
+const ArchivedTasks = lazy(() =>
+  import(/* webpackChunkName: 'TeamArchiveRoot' */ '../TeamArchive/TeamArchiveRoot')
+)
+
 interface Props {
   teamId: string
   viewer: TeamContainer_viewer
@@ -54,6 +58,10 @@ const TeamContainer = (props: Props) => {
             {/* TODO: replace match.path with a relative when the time comes: https://github.com/ReactTraining/react-router/pull/4539 */}
             <Route exact path={match.path} component={AgendaTasks} />
             <Route path={`${match.path}/settings`} component={TeamSettings} />
+            <Route
+              path={`${match.path}/archive`}
+              render={(p) => <ArchivedTasks {...p} team={team} />}
+            />
           </Switch>
         </Suspense>
       </Team>
@@ -66,6 +74,7 @@ export default createFragmentContainer(TeamContainer, {
     fragment TeamContainer_viewer on User {
       team(teamId: $teamId) {
         ...Team_team
+        ...TeamArchive_team
       }
     }
   `
