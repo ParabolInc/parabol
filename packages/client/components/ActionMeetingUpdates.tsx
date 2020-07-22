@@ -43,8 +43,8 @@ const ActionMeetingUpdates = (props: Props) => {
   const {avatarGroup, toggleSidebar, meeting} = props
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
-  const {id: meetingId, endedAt, localStage, showSidebar, team, phases} = meeting
-  console.log('ActionMeetingUpdates -> phases', phases)
+  const {id: meetingId, endedAt, localStage, showSidebar, team} = meeting
+  console.log('ActionMeetingUpdates -> meeting', meeting)
   const {id: teamId, tasks} = team
   const {teamMember} = localStage!
   const {userId} = teamMember!
@@ -104,7 +104,6 @@ export default createFragmentContainer(ActionMeetingUpdates, {
       phases {
         stages {
           ...ActionMeetingUpdatesStage @relay(mask: false)
-          isComplete
         }
       }
       team {
