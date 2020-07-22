@@ -97,7 +97,7 @@ const TeamArchive = (props: Props) => {
   const {hasMore, isLoading, loadMore} = relay
   const {teamMembers, teamMemberFilter} = team || {}
   const teamMemberFilterId = (teamMemberFilter && teamMemberFilter.id) || null
-  const {archivedTasks, dashSearch} = viewer
+  const {tasks: archivedTasks, dashSearch} = viewer
 
   const teamMemberFilteredTasks = useMemo(() => {
     const edges = teamMemberFilterId
@@ -293,8 +293,8 @@ export default createPaginationContainer(
     viewer: graphql`
       fragment TeamArchive_viewer on User {
         dashSearch
-        archivedTasks(first: $first, teamId: $teamId, after: $after)
-          @connection(key: "TeamArchive_archivedTasks") {
+        tasks(first: $first, teamId: $teamId, after: $after, archived: true)
+          @connection(key: "TeamArchive_tasks") {
           edges {
             cursor
             node {
@@ -329,7 +329,7 @@ export default createPaginationContainer(
   {
     direction: 'forward',
     getConnectionFromProps(props) {
-      return props.viewer && props.viewer.archivedTasks
+      return props.viewer && props.viewer.tasks
     },
     getFragmentVariables(prevVars, totalCount) {
       return {

@@ -22,6 +22,7 @@ export interface JiraRemoteProjectKey {
 export interface UserTasksKey {
   userId: string
   teamIds: string[]
+  archived: boolean
 }
 
 export interface ReactablesKey {
@@ -127,15 +128,18 @@ export const userTasks = (parent: RethinkDataLoader) => {
       const r = await getRethink()
       const userIds = keys.map(({userId}) => userId)
       const teamIds = Array.from(new Set(keys.flatMap(({teamIds}) => teamIds)))
+      const archived = keys.map(({archived}) => archived).reduce((_, currVal) => currVal)
       const taskLoader = parent.get('tasks')
       const allUsersTasks = (await r
         .table('Task')
         .getAll(r.args(userIds), {index: 'userId'})
         .filter((task) => r(teamIds).contains(task('teamId')))
         .filter((task) =>
-          task('tags')
-            .contains('archived')
-            .not()
+          archived
+            ? task('tags').contains('archived')
+            : task('tags')
+                .contains('archived')
+                .not()
         )
         .run()) as Task[]
       allUsersTasks.forEach((task) => {

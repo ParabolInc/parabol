@@ -1,4 +1,4 @@
-import {GraphQLID, GraphQLInt, GraphQLNonNull} from 'graphql'
+import {GraphQLID, GraphQLInt, GraphQLNonNull, GraphQLBoolean} from 'graphql'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
@@ -19,9 +19,14 @@ export default {
     teamId: {
       type: GraphQLID,
       description: 'The unique team ID'
+    },
+    archived: {
+      type: GraphQLBoolean,
+      description: 'true if only archived tasks are returned; false otherwise',
+      defaultValue: false
     }
   },
-  async resolve(_source, {teamId}, {authToken, dataLoader}: GQLContext) {
+  async resolve(_source, {teamId, archived}, {authToken, dataLoader}: GQLContext) {
     // AUTH
     const viewerId = getUserId(authToken)
     if (teamId && !isTeamMember(authToken, teamId)) {
@@ -29,7 +34,7 @@ export default {
       return connectionFromTasks([])
     }
     const teamIds = teamId ? [teamId] : authToken.tms || []
-    const tasks = await dataLoader.get('userTasks').load({userId: viewerId, teamIds})
+    const tasks = await dataLoader.get('userTasks').load({userId: viewerId, teamIds, archived})
     return connectionFromTasks(tasks)
   }
 }
