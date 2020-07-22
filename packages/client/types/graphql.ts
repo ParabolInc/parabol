@@ -7438,6 +7438,11 @@ export interface IActionMeeting {
   viewerMeetingMember: IActionMeetingMember;
 
   /**
+   * The number of comments generated in the meeting
+   */
+  commentCount: number | null;
+
+  /**
    * The settings that govern the action meeting
    */
   settings: IActionMeetingSettings;

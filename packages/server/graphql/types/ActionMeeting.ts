@@ -1,13 +1,14 @@
-import {GraphQLID, GraphQLInt, GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
-import {IActionMeeting, MeetingTypeEnum} from 'parabol-client/types/graphql'
+import { GraphQLID, GraphQLInt, GraphQLList, GraphQLNonNull, GraphQLObjectType } from 'graphql'
+import { IActionMeeting, MeetingTypeEnum } from 'parabol-client/types/graphql'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
-import {getUserId} from '../../utils/authorization'
+
+import { getUserId } from '../../utils/authorization'
 import filterTasksByMeeting from '../../utils/filterTasksByMeeting'
-import {GQLContext} from '../graphql'
+import { GQLContext } from '../graphql'
 import ActionMeetingMember from './ActionMeetingMember'
 import ActionMeetingSettings from './ActionMeetingSettings'
 import AgendaItem from './AgendaItem'
-import NewMeeting, {newMeetingFields} from './NewMeeting'
+import NewMeeting, { newMeetingFields } from './NewMeeting'
 import Task from './Task'
 
 const ActionMeeting = new GraphQLObjectType<IActionMeeting, GQLContext>({
@@ -16,6 +17,14 @@ const ActionMeeting = new GraphQLObjectType<IActionMeeting, GQLContext>({
   description: 'An action meeting',
   fields: () => ({
     ...newMeetingFields(),
+    commentCount: {
+      type: GraphQLInt,
+      description: 'The number of comments generated in the meeting',
+      resolve: async ({commentCount}) => {
+        console.log('commentCount', commentCount)
+        commentCount || 0
+      }
+    },
     meetingMembers: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(ActionMeetingMember))),
       description: 'The team members that were active during the time of the meeting',
@@ -36,6 +45,7 @@ const ActionMeeting = new GraphQLObjectType<IActionMeeting, GQLContext>({
       type: new GraphQLNonNull(GraphQLInt),
       description: 'The number of tasks generated in the meeting',
       resolve: async ({taskCount}) => {
+        console.log('taskCount', taskCount)
         // only populated after the meeting has been completed (not killed)
         return taskCount || 0
       }

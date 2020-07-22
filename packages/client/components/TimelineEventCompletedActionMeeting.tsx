@@ -31,6 +31,7 @@ class TimelineEventCompletedActionMeeting extends Component<Props> {
   render() {
     const {timelineEvent} = this.props
     const {meeting, team} = timelineEvent
+    console.log('TimelineEventCompletedActionMeeting -> render -> meeting', meeting)
     const {id: meetingId, name: meetingName, createdAt, endedAt, taskCount} = meeting
     const {name: teamName} = team
     const meetingDuration = relativeDate(createdAt, {
@@ -73,6 +74,7 @@ export default createFragmentContainer(TimelineEventCompletedActionMeeting, {
         endedAt
         name
         taskCount
+        commentCount
       }
       team {
         id

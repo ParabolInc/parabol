@@ -1,22 +1,16 @@
-import {GraphQLID, GraphQLNonNull} from 'graphql'
-import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import { GraphQLID, GraphQLNonNull } from 'graphql'
+import { SubscriptionChannel } from 'parabol-client/types/constEnums'
 import {
-  MeetingTypeEnum,
-  NewMeetingPhaseTypeEnum,
-  SuggestedActionTypeEnum
+    MeetingTypeEnum, NewMeetingPhaseTypeEnum, SuggestedActionTypeEnum
 } from 'parabol-client/types/graphql'
 import {
-  ACTION,
-  AGENDA_ITEMS,
-  DISCUSS,
-  DONE,
-  LAST_CALL,
-  RETROSPECTIVE
+    ACTION, AGENDA_ITEMS, DISCUSS, DONE, LAST_CALL, RETROSPECTIVE
 } from 'parabol-client/utils/constants'
 import extractTextFromDraftString from 'parabol-client/utils/draftjs/extractTextFromDraftString'
 import getMeetingPhase from 'parabol-client/utils/getMeetingPhase'
 import findStageById from 'parabol-client/utils/meetings/findStageById'
 import shortid from 'shortid'
+
 import getRethink from '../../database/rethinkDriver'
 import AgendaItem from '../../database/types/AgendaItem'
 import GenericMeetingPhase from '../../database/types/GenericMeetingPhase'
@@ -29,14 +23,14 @@ import TimelineEventCheckinComplete from '../../database/types/TimelineEventChec
 import TimelineEventRetroComplete from '../../database/types/TimelineEventRetroComplete'
 import archiveTasksForDB from '../../safeMutations/archiveTasksForDB'
 import removeSuggestedAction from '../../safeMutations/removeSuggestedAction'
-import {getUserId, isTeamMember} from '../../utils/authorization'
+import { getUserId, isTeamMember } from '../../utils/authorization'
 import publish from '../../utils/publish'
 import segmentIo from '../../utils/segmentIo'
 import standardError from '../../utils/standardError'
-import {DataLoaderWorker, GQLContext} from '../graphql'
+import { DataLoaderWorker, GQLContext } from '../graphql'
 import EndNewMeetingPayload from '../types/EndNewMeetingPayload'
 import sendNewMeetingSummary from './helpers/endMeeting/sendNewMeetingSummary'
-import {endSlackMeeting} from './helpers/notifySlack'
+import { endSlackMeeting } from './helpers/notifySlack'
 
 const timelineEventLookup = {
   [RETROSPECTIVE]: TimelineEventRetroComplete,
@@ -195,10 +189,12 @@ const finishActionMeeting = async (meeting: MeetingAction, dataLoader: DataLoade
       )
       .run()
   ])
+
   const userIds = meetingMembers.map(({userId}) => userId)
   const meetingPhase = getMeetingPhase(phases)
   const pinnedAgendaItems = await getPinnedAgendaItems(teamId)
   const isKill = getIsKill(MeetingTypeEnum.action, meetingPhase)
+  console.log('Ending action meeting!')
   await Promise.all([
     isKill ? undefined : archiveTasksForDB(doneTasks, meetingId),
     isKill ? undefined : clearAgendaItems(teamId),
@@ -207,14 +203,15 @@ const finishActionMeeting = async (meeting: MeetingAction, dataLoader: DataLoade
     r
       .table('NewMeeting')
       .get(meetingId)
-      .update({taskCount: tasks.length})
+      .update({taskCount: 8, commentCount: 2})
       .run()
   ])
+  // .update({taskCount: tasks.length, commentCount: 2})
 
   return {updatedTaskIds: [...tasks, ...doneTasks].map(({id}) => id)}
 }
 
-const finishRetroMeting = async (meeting: MeetingRetrospective, dataLoader: DataLoaderWorker) => {
+const finishRetroMeeting = async (meeting: MeetingRetrospective, dataLoader: DataLoaderWorker) => {
   const {id: meetingId} = meeting
   const r = await getRethink()
   const [reflectionGroups, reflections] = await Promise.all([
@@ -255,7 +252,7 @@ const finishMeetingType = async (
     case MeetingTypeEnum.action:
       return finishActionMeeting(meeting, dataLoader)
     case MeetingTypeEnum.retrospective:
-      return finishRetroMeting(meeting as MeetingRetrospective, dataLoader)
+      return finishRetroMeeting(meeting as MeetingRetrospective, dataLoader)
   }
   return undefined
 }
