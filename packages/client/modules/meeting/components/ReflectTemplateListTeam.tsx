@@ -2,7 +2,8 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
-import {ReflectTemplateListTeam_viewer} from '../../../__generated__/ReflectTemplateListTeam_viewer.graphql'
+import {PALETTE} from '../../../styles/paletteV2'
+import {ReflectTemplateListTeam_teamTemplates} from '../../../__generated__/ReflectTemplateListTeam_teamTemplates.graphql'
 import ReflectTemplateItem from './ReflectTemplateItem'
 const TemplateList = styled('ul')({
   listStyle: 'none',
@@ -10,27 +11,41 @@ const TemplateList = styled('ul')({
   marginTop: 0
 })
 
+const Message = styled('div')({
+  border: `1px dashed ${PALETTE.BORDER_GRAY}`,
+  borderRadius: 4,
+  color: PALETTE.TEXT_GRAY,
+  fontSize: 14,
+  fontStyle: 'italic',
+  lineHeight: '20px',
+  margin: 'auto 40px',
+  padding: 8
+})
+
+const StyledLink = styled('span')({
+  color: PALETTE.LINK_BLUE,
+  cursor: 'pointer',
+  outline: 0,
+  ':hover, :focus, :active': {
+    color: PALETTE.LINK_BLUE_HOVER
+  }
+})
 
 interface Props {
   activeTemplateId: string
   setActiveTemplateId: (templateId: string) => void
   showPublicTemplates: () => void
-  viewer: ReflectTemplateListTeam_viewer
+  teamTemplates: ReflectTemplateListTeam_teamTemplates
 }
 
 const ReflectTemplateListTeam = (props: Props) => {
-  const {activeTemplateId, setActiveTemplateId, showPublicTemplates, viewer} = props
-  const {team} = viewer
-  if (!team) return null
-  const {meetingSettings} = team
-  const {teamTemplates} = meetingSettings
-  if (!teamTemplates) return null
+  const {activeTemplateId, setActiveTemplateId, showPublicTemplates, teamTemplates} = props
   if (teamTemplates.length === 0) {
     return (
-      <>
-        <div>Your custom templates will show up here. Get started with a</div>
-        <div onClick={showPublicTemplates}>Public Template</div>
-      </>
+      <Message>
+        <span>Your custom templates will show up here. Get started with a </span>
+        <StyledLink onClick={showPublicTemplates}>Public Template</StyledLink>
+      </Message>
     )
   }
   return (
@@ -52,19 +67,10 @@ const ReflectTemplateListTeam = (props: Props) => {
 export default createFragmentContainer(
   ReflectTemplateListTeam,
   {
-    viewer: graphql`
-      fragment ReflectTemplateListTeam_viewer on User {
+    teamTemplates: graphql`
+      fragment ReflectTemplateListTeam_teamTemplates on ReflectTemplate @relay(plural: true) {
         id
-        team(teamId: $teamId) {
-          meetingSettings(meetingType: retrospective) {
-            ...on RetrospectiveMeetingSettings {
-            teamTemplates {
-              id
-              ...ReflectTemplateItem_template
-            }
-          }
-          }
-        }
+        ...ReflectTemplateItem_template
       }
     `
   }

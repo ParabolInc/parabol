@@ -1,15 +1,15 @@
-import {AddNewReflectTemplate_reflectTemplates} from '../../../__generated__/AddNewReflectTemplate_reflectTemplates.graphql'
-import React, {Component} from 'react'
 import styled from '@emotion/styled'
-import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
+import React, {Component} from 'react'
+import {createFragmentContainer} from 'react-relay'
+import Icon from '../../../components/Icon'
 import RaisedButton from '../../../components/RaisedButton'
-import withAtmosphere, {
-  WithAtmosphereProps
-} from '../../../decorators/withAtmosphere/withAtmosphere'
+import withAtmosphere, {WithAtmosphereProps} from '../../../decorators/withAtmosphere/withAtmosphere'
 import AddReflectTemplateMutation from '../../../mutations/AddReflectTemplateMutation'
-import withMutationProps, {WithMutationProps} from '../../../utils/relay/withMutationProps'
 import {PALETTE} from '../../../styles/paletteV2'
+import {ICON_SIZE} from '../../../styles/typographyV2'
+import withMutationProps, {WithMutationProps} from '../../../utils/relay/withMutationProps'
+import {AddNewReflectTemplate_reflectTemplates} from '../../../__generated__/AddNewReflectTemplate_reflectTemplates.graphql'
 
 const Error = styled('span')({
   color: PALETTE.ERROR_MAIN,
@@ -18,9 +18,23 @@ const Error = styled('span')({
   margin: '0 0 8px'
 })
 
-const Button = styled(RaisedButton)({
-  display: 'block',
+const ButtonBlock = styled('div')({
+  alignItems: 'flex-end',
+  display: 'flex',
+  flexDirection: 'column',
+  justifyContent: 'flex-end',
+  margin: 8,
   width: '100%'
+})
+
+const Button = styled(RaisedButton)({
+  display: 'flex',
+  // width: '100%'
+})
+
+const StyledIcon = styled(Icon)({
+  fontSize: ICON_SIZE.MD18,
+  marginRight: 8,
 })
 
 interface Props extends WithAtmosphereProps, WithMutationProps {
@@ -55,12 +69,13 @@ class AddNewReflectTemplate extends Component<Props> {
   render() {
     const {error, submitting} = this.props
     return (
-      <React.Fragment>
+      <ButtonBlock>
         {error && <Error>{error}</Error>}
         <Button onClick={this.addNewTemplate} palette='blue' waiting={submitting}>
-          + Add new template
+          <StyledIcon>add</StyledIcon>
+          Add new template
         </Button>
-      </React.Fragment>
+      </ButtonBlock>
     )
   }
 }

@@ -28,7 +28,7 @@ const aGhostOrg = {
 }
 const aGhostTeam = {
   id: 'aGhostTeam',
-  name: 'Ghost Team',
+  name: 'Parabol',
   createdAt,
   createdBy: 'aGhostUser',
   isArchived: false,

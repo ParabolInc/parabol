@@ -29,7 +29,7 @@ export default class ReflectTemplate {
     this.name = name
     this.teamId = teamId
     this.updatedAt = now
-    this.scope = scope || 'team'
+    this.scope = scope || 'TEAM'
     this.orgId = orgId
     this.parentTemplateId = parentTemplateId
   }

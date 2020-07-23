@@ -4,12 +4,12 @@ import {QueryRenderer} from 'react-relay'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import renderQuery from '../../../utils/relay/renderQuery'
 import MockTemplateList from './MockTemplateList'
-import ReflectTemplateListTeam from './ReflectTemplateListTeam'
+import ReflectTemplateListPublic from './ReflectTemplateListPublic'
 
 const query = graphql`
-  query ReflectTemplateListTeamRootQuery($teamId: ID!) {
+  query ReflectTemplateListPublicRootQuery($teamId: ID!) {
     viewer {
-      ...ReflectTemplateListTeam_viewer
+      ...ReflectTemplateListPublic_viewer
     }
   }
 `
@@ -17,12 +17,11 @@ const query = graphql`
 interface Props {
   activeTemplateId: string
   setActiveTemplateId: (templateId: string) => void
-  showPublicTemplates: () => void
   teamId: string
 }
 
-const ReflectTemplateListTeamRoot = (props: Props) => {
-  const {activeTemplateId, setActiveTemplateId, showPublicTemplates, teamId} = props
+const ReflectTemplateListPublicRoot = (props: Props) => {
+  const {activeTemplateId, setActiveTemplateId, teamId} = props
   const atmosphere = useAtmosphere()
   return (
     <QueryRenderer
@@ -30,9 +29,9 @@ const ReflectTemplateListTeamRoot = (props: Props) => {
       query={query}
       variables={{teamId}}
       fetchPolicy={'store-or-network' as any}
-      render={renderQuery(ReflectTemplateListTeam, {props: {activeTemplateId, setActiveTemplateId, showPublicTemplates}, Loader: <MockTemplateList />})}
+      render={renderQuery(ReflectTemplateListPublic, {props: {activeTemplateId, setActiveTemplateId}, Loader: <MockTemplateList />})}
     />
   )
 }
 
-export default ReflectTemplateListTeamRoot
+export default ReflectTemplateListPublicRoot

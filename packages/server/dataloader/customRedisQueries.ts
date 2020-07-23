@@ -25,11 +25,10 @@ const customRedisQueries = {
     const r = await getRethink()
     const publicTemplates = (await r
       .table('ReflectTemplate')
-      .filter({scope: 'public', isActive: true})
+      .filter({scope: 'PUBLIC', isActive: true})
       .limit(1000)
-      .pluck('id', 'createdAt')
       .run()) as {id: string; createdAt: Date}[]
-    return publicTemplates
+    return [publicTemplates]
   }
 } as const
 

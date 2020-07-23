@@ -8,8 +8,10 @@ import Tab from '../../../components/Tab/Tab'
 import Tabs from '../../../components/Tabs/Tabs'
 import {PALETTE} from '../../../styles/paletteV2'
 import {ReflectTemplateList_settings} from '../../../__generated__/ReflectTemplateList_settings.graphql'
+import AddNewReflectTemplate from './AddNewReflectTemplate'
 import ReflectTemplateListOrgRoot from './ReflectTemplateListOrgRoot'
-import ReflectTemplateListTeamRoot from './ReflectTemplateListTeamRoot'
+import ReflectTemplateListPublicRoot from './ReflectTemplateListPublicRoot'
+import ReflectTemplateListTeam from './ReflectTemplateListTeam'
 
 const WIDTH = 360
 const TemplateSidebar = styled('div')({
@@ -59,7 +61,7 @@ interface Props {
 
 const ReflectTemplateList = (props: Props) => {
   const {settings} = props
-  const {teamId} = settings
+  const {teamId, teamTemplates} = settings
   const [activeIdx, setActiveIdx] = useState(0)
   const [activeTemplateId, setActiveTemplateId] = useState('')
   return (
@@ -78,21 +80,20 @@ const ReflectTemplateList = (props: Props) => {
         style={innerStyle}
       >
         <TabContents>
-          <ReflectTemplateListTeamRoot activeTemplateId={activeTemplateId} setActiveTemplateId={setActiveTemplateId} showPublicTemplates={() => setActiveIdx(2)} teamId={teamId} />
+          <ReflectTemplateListTeam activeTemplateId={activeTemplateId} setActiveTemplateId={setActiveTemplateId} showPublicTemplates={() => setActiveIdx(2)} teamTemplates={teamTemplates} />
         </TabContents>
         <TabContents>
           <ReflectTemplateListOrgRoot activeTemplateId={activeTemplateId} setActiveTemplateId={setActiveTemplateId} teamId={teamId} />
         </TabContents>
         <TabContents>
-          Public
+          <ReflectTemplateListPublicRoot activeTemplateId={activeTemplateId} setActiveTemplateId={setActiveTemplateId} teamId={teamId} />
         </TabContents>
       </SwipeableViews>
       {/* add a key to clear the error when they change */}
-      {/* <AddNewReflectTemplate
-        key={activeTemplate.id}
+      <AddNewReflectTemplate
         teamId={teamId}
         reflectTemplates={teamTemplates}
-      /> */}
+      />
     </TemplateSidebar >
   )
 }
@@ -106,6 +107,11 @@ export default createFragmentContainer(
         activeTemplateId
         selectedTemplateId
         teamId
+        teamTemplates {
+          ...ReflectTemplateListTeam_teamTemplates
+          ...AddNewReflectTemplate_reflectTemplates
+          id
+        }
       }
     `
   }
