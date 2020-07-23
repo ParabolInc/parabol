@@ -7438,6 +7438,16 @@ export interface IActionMeeting {
   viewerMeetingMember: IActionMeetingMember;
 
   /**
+   * A single agenda item
+   */
+  agendaItem: IAgendaItem | null;
+
+  /**
+   * All of the agenda items for the meeting
+   */
+  agendaItems: Array<IAgendaItem>;
+
+  /**
    * The number of comments generated in the meeting
    */
   commentCount: number;
@@ -7456,16 +7466,6 @@ export interface IActionMeeting {
    * The tasks created within the meeting
    */
   tasks: Array<ITask>;
-
-  /**
-   * A single agenda item
-   */
-  agendaItem: IAgendaItem | null;
-
-  /**
-   * All of the agenda items for the meeting
-   */
-  agendaItems: Array<IAgendaItem>;
 }
 
 export interface IAgendaItemOnActionMeetingArguments {

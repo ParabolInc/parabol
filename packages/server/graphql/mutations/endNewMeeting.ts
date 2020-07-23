@@ -168,6 +168,7 @@ const finishActionMeeting = async (meeting: MeetingAction, dataLoader: DataLoade
    */
 
   const {id: meetingId, teamId, phases} = meeting
+  console.log('finishActionMeeting -> phases', phases[3])
   const r = await getRethink()
   const [meetingMembers, tasks, doneTasks] = await Promise.all([
     dataLoader.get('meetingMembersByMeetingId').load(meetingId),
@@ -190,11 +191,33 @@ const finishActionMeeting = async (meeting: MeetingAction, dataLoader: DataLoade
       .run()
   ])
 
+  const activeAgendaItems = await r
+    .table('AgendaItem')
+    .getAll(teamId, {index: 'teamId'})
+    .filter({isActive: true})
+    .run()
+
+  const activeAgendaItemIds = activeAgendaItems.map(({id}) => id)
+  console.log('finishActionMeeting -> activeAgendaItemIds', activeAgendaItemIds)
+  console.log('finishActionMeeting -> activeAgendaItems', activeAgendaItems)
+
+  const comments = await r
+    .table('Comment')
+    .getAll(r.args(activeAgendaItemIds), {index: 'threadId'})
+    .run()
+  console.log('finishActionMeeting -> comments', comments)
+
+  const commentCountTest = await r
+    .table('Comment')
+    .getAll(r.args(activeAgendaItemIds), {index: 'threadId'})
+    .count()
+    .run()
+  console.log('finishActionMeeting -> commentCountTest', commentCountTest)
+
   const userIds = meetingMembers.map(({userId}) => userId)
   const meetingPhase = getMeetingPhase(phases)
   const pinnedAgendaItems = await getPinnedAgendaItems(teamId)
   const isKill = getIsKill(MeetingTypeEnum.action, meetingPhase)
-  console.log('Ending action meeting!')
   await Promise.all([
     isKill ? undefined : archiveTasksForDB(doneTasks, meetingId),
     isKill ? undefined : clearAgendaItems(teamId),
@@ -203,10 +226,20 @@ const finishActionMeeting = async (meeting: MeetingAction, dataLoader: DataLoade
     r
       .table('NewMeeting')
       .get(meetingId)
-      .update({taskCount: 8, commentCount: 2})
+      .update(
+        {
+          taskCount: tasks.length,
+          commentCount: (r
+            .table('Comment')
+            .getAll(r.args(activeAgendaItemIds), {index: 'threadId'})
+            .filter({isActive: true})
+            .count()
+            .default(0) as unknown) as number
+        },
+        {nonAtomic: true}
+      )
       .run()
   ])
-  // .update({taskCount: tasks.length, commentCount: 2})
 
   return {updatedTaskIds: [...tasks, ...doneTasks].map(({id}) => id)}
 }
@@ -219,6 +252,7 @@ const finishRetroMeeting = async (meeting: MeetingRetrospective, dataLoader: Dat
     dataLoader.get('retroReflectionsByMeetingId').load(meetingId)
   ])
   const reflectionGroupIds = reflectionGroups.map(({id}) => id)
+  console.log('finishRetroMeeting -> reflectionGroupIds', reflectionGroupIds)
 
   await r
     .table('NewMeeting')

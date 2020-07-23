@@ -52,9 +52,9 @@ class TimelineEventCompletedActionMeeting extends Component<Props> {
           {`It lasted ${meetingDuration} and generated `}
           <CountItem>{`${taskCount} ${plural(taskCount, 'task')}`}</CountItem>
           {','}
-          <CountItem>{`${taskCount} ${plural(commentCount, 'comments')}`}</CountItem>
+          <CountItem>{`${commentCount} ${plural(commentCount, 'comment')}`}</CountItem>
           {'and '}
-          <CountItem>{`${taskCount} ${plural(commentCount, 'comments')}`}</CountItem>
+          <CountItem>{`${commentCount} ${plural(commentCount, 'comment')}`}</CountItem>
           <br />
           <Link to={`/meet/${meetingId}/updates/1`}>See the discussion</Link>
           {' in your meeting or '}
@@ -78,6 +78,9 @@ export default createFragmentContainer(TimelineEventCompletedActionMeeting, {
         name
         taskCount
         commentCount
+        meetingMembers {
+          id
+        }
       }
       team {
         id
