@@ -1,10 +1,17 @@
-import { GraphQLID, GraphQLNonNull } from 'graphql'
-import { SubscriptionChannel } from 'parabol-client/types/constEnums'
+import {GraphQLID, GraphQLNonNull} from 'graphql'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {
-    MeetingTypeEnum, NewMeetingPhaseTypeEnum, SuggestedActionTypeEnum
+  MeetingTypeEnum,
+  NewMeetingPhaseTypeEnum,
+  SuggestedActionTypeEnum
 } from 'parabol-client/types/graphql'
 import {
-    ACTION, AGENDA_ITEMS, DISCUSS, DONE, LAST_CALL, RETROSPECTIVE
+  ACTION,
+  AGENDA_ITEMS,
+  DISCUSS,
+  DONE,
+  LAST_CALL,
+  RETROSPECTIVE
 } from 'parabol-client/utils/constants'
 import extractTextFromDraftString from 'parabol-client/utils/draftjs/extractTextFromDraftString'
 import getMeetingPhase from 'parabol-client/utils/getMeetingPhase'
@@ -23,14 +30,14 @@ import TimelineEventCheckinComplete from '../../database/types/TimelineEventChec
 import TimelineEventRetroComplete from '../../database/types/TimelineEventRetroComplete'
 import archiveTasksForDB from '../../safeMutations/archiveTasksForDB'
 import removeSuggestedAction from '../../safeMutations/removeSuggestedAction'
-import { getUserId, isTeamMember } from '../../utils/authorization'
+import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import segmentIo from '../../utils/segmentIo'
 import standardError from '../../utils/standardError'
-import { DataLoaderWorker, GQLContext } from '../graphql'
+import {DataLoaderWorker, GQLContext} from '../graphql'
 import EndNewMeetingPayload from '../types/EndNewMeetingPayload'
 import sendNewMeetingSummary from './helpers/endMeeting/sendNewMeetingSummary'
-import { endSlackMeeting } from './helpers/notifySlack'
+import {endSlackMeeting} from './helpers/notifySlack'
 
 const timelineEventLookup = {
   [RETROSPECTIVE]: TimelineEventRetroComplete,

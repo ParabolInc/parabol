@@ -1,13 +1,9 @@
-import graphql from 'babel-plugin-relay/macro'
-import React, { Component } from 'react'
-import { createFragmentContainer } from 'react-relay'
-
 import styled from '@emotion/styled'
-
-import {
-    TimelineEventCompletedRetroMeeting_timelineEvent
-} from '../__generated__/TimelineEventCompletedRetroMeeting_timelineEvent.graphql'
+import graphql from 'babel-plugin-relay/macro'
+import React, {Component} from 'react'
+import {createFragmentContainer} from 'react-relay'
 import plural from '../utils/plural'
+import {TimelineEventCompletedRetroMeeting_timelineEvent} from '../__generated__/TimelineEventCompletedRetroMeeting_timelineEvent.graphql'
 import StyledLink from './StyledLink'
 import TimelineEventBody from './TimelineEventBody'
 import TimelineEventCard from './TimelineEventCard'

@@ -1,4 +1,4 @@
-import { AGENDA_ITEM_LABEL, AGENDA_ITEMS } from 'parabol-client/utils/constants'
+import {AGENDA_ITEM_LABEL, AGENDA_ITEMS} from 'parabol-client/utils/constants'
 import plural from 'parabol-client/utils/plural'
 
 interface Meeting {

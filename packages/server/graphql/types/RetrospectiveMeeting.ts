@@ -1,16 +1,21 @@
 import {
-    GraphQLEnumType, GraphQLFloat, GraphQLID, GraphQLInt, GraphQLList, GraphQLNonNull,
-    GraphQLObjectType
+  GraphQLEnumType,
+  GraphQLFloat,
+  GraphQLID,
+  GraphQLInt,
+  GraphQLList,
+  GraphQLNonNull,
+  GraphQLObjectType
 } from 'graphql'
-import { NewMeetingPhaseTypeEnum } from 'parabol-client/types/graphql'
-import { RETROSPECTIVE } from 'parabol-client/utils/constants'
+import {NewMeetingPhaseTypeEnum} from 'parabol-client/types/graphql'
+import {RETROSPECTIVE} from 'parabol-client/utils/constants'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 
-import { getUserId } from '../../utils/authorization'
+import {getUserId} from '../../utils/authorization'
 import filterTasksByMeeting from '../../utils/filterTasksByMeeting'
-import { GQLContext } from '../graphql'
-import { resolveForSU } from '../resolvers'
-import NewMeeting, { newMeetingFields } from './NewMeeting'
+import {GQLContext} from '../graphql'
+import {resolveForSU} from '../resolvers'
+import NewMeeting, {newMeetingFields} from './NewMeeting'
 import RetroReflectionGroup from './RetroReflectionGroup'
 import RetrospectiveMeetingMember from './RetrospectiveMeetingMember'
 import RetrospectiveMeetingSettings from './RetrospectiveMeetingSettings'
