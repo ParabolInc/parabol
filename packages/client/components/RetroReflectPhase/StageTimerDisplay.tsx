@@ -6,7 +6,7 @@ import { Breakpoint } from '~/types/constEnums'
 
 import styled from '@emotion/styled'
 
-import PhaseCompleteTag from './PhaseCompleteTag'
+import PhaseCompleteTag from '../Tag/PhaseCompleteTag'
 import StageTimerDisplayGauge from './StageTimerDisplayGauge'
 
 interface Props {

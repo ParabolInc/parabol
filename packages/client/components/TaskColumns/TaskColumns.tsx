@@ -3,7 +3,6 @@ import React, { useMemo } from 'react'
 import { DragDropContext, DropResult } from 'react-beautiful-dnd'
 import { createFragmentContainer } from 'react-relay'
 import { TaskColumns_teams } from '~/__generated__/TaskColumns_teams.graphql'
-import { Breakpoint } from '~/types/constEnums'
 
 import styled from '@emotion/styled'
 
@@ -28,21 +27,6 @@ const ColumnsBlock = styled('div')({
   overflow: 'auto',
   padding: `0 10px`,
   width: '100%'
-})
-
-const DisplayRow = styled('div')({
-  display: 'flex',
-  justifyContent: 'center',
-  width: '100%',
-  height: 44,
-  border: '2px solid red',
-  // minHeight: 44,
-  [`@media screen and (min-height: 800px) and (min-width: ${Breakpoint.SINGLE_REFLECTION_COLUMN}px)`]: {
-    // for larger viewports: dont' want stuff to move when it turns on
-    // adding a min-height, we lose too much vertical real estate when the timer is not used
-    // todo: float over top bar when there’s room @ laptop+ breakpoint
-    minHeight: 44
-  }
 })
 
 interface Props {
