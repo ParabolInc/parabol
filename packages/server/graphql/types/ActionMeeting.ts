@@ -31,6 +31,15 @@ const ActionMeeting = new GraphQLObjectType<IActionMeeting, GQLContext>({
         return agendaItem
       }
     },
+    agendaItemCount: {
+      type: GraphQLNonNull(GraphQLInt),
+      description: 'The number of agenda items generated in the meeting',
+      resolve: async ({agendaItemCount}) => {
+        console.log('agendaItemCount ->', agendaItemCount)
+        // only populated after the meeting has been completed (not killed)
+        return agendaItemCount || 0
+      }
+    },
     agendaItems: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(AgendaItem))),
       description: 'All of the agenda items for the meeting',

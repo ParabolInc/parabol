@@ -7443,6 +7443,11 @@ export interface IActionMeeting {
   agendaItem: IAgendaItem | null;
 
   /**
+   * The number of agenda items generated in the meeting
+   */
+  agendaItemCount: number;
+
+  /**
    * All of the agenda items for the meeting
    */
   agendaItems: Array<IAgendaItem>;

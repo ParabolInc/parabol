@@ -197,23 +197,10 @@ const finishActionMeeting = async (meeting: MeetingAction, dataLoader: DataLoade
     .filter({isActive: true})
     .run()
 
-  const activeAgendaItemIds = activeAgendaItems.map(({id}) => id)
-  console.log('finishActionMeeting -> activeAgendaItemIds', activeAgendaItemIds)
   console.log('finishActionMeeting -> activeAgendaItems', activeAgendaItems)
+  console.log('finishActionMeeting -> activeAgendaItems.length', activeAgendaItems.length)
 
-  const comments = await r
-    .table('Comment')
-    .getAll(r.args(activeAgendaItemIds), {index: 'threadId'})
-    .run()
-  console.log('finishActionMeeting -> comments', comments)
-
-  const commentCountTest = await r
-    .table('Comment')
-    .getAll(r.args(activeAgendaItemIds), {index: 'threadId'})
-    .count()
-    .run()
-  console.log('finishActionMeeting -> commentCountTest', commentCountTest)
-
+  const activeAgendaItemIds = activeAgendaItems.map(({id}) => id)
   const userIds = meetingMembers.map(({userId}) => userId)
   const meetingPhase = getMeetingPhase(phases)
   const pinnedAgendaItems = await getPinnedAgendaItems(teamId)
@@ -228,13 +215,13 @@ const finishActionMeeting = async (meeting: MeetingAction, dataLoader: DataLoade
       .get(meetingId)
       .update(
         {
-          taskCount: tasks.length,
+          agendaItemCount: activeAgendaItems.length,
           commentCount: (r
             .table('Comment')
             .getAll(r.args(activeAgendaItemIds), {index: 'threadId'})
-            .filter({isActive: true})
             .count()
-            .default(0) as unknown) as number
+            .default(0) as unknown) as number,
+          taskCount: tasks.length
         },
         {nonAtomic: true}
       )

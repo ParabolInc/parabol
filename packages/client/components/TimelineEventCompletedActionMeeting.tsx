@@ -32,7 +32,15 @@ class TimelineEventCompletedActionMeeting extends Component<Props> {
     const {timelineEvent} = this.props
     const {meeting, team} = timelineEvent
     console.log('TimelineEventCompletedActionMeeting -> render -> meeting', meeting)
-    const {id: meetingId, name: meetingName, createdAt, endedAt, taskCount, commentCount} = meeting
+    const {
+      id: meetingId,
+      name: meetingName,
+      createdAt,
+      endedAt,
+      agendaItemCount,
+      commentCount,
+      taskCount
+    } = meeting
     const {name: teamName} = team
     const meetingDuration = relativeDate(createdAt, {
       now: endedAt,
@@ -51,10 +59,10 @@ class TimelineEventCompletedActionMeeting extends Component<Props> {
         <TimelineEventBody>
           {`It lasted ${meetingDuration} and generated `}
           <CountItem>{`${taskCount} ${plural(taskCount, 'task')}`}</CountItem>
-          {','}
-          <CountItem>{`${commentCount} ${plural(commentCount, 'comment')}`}</CountItem>
-          {'and '}
-          <CountItem>{`${commentCount} ${plural(commentCount, 'comment')}`}</CountItem>
+          {', '}
+          <CountItem>{`${agendaItemCount} ${plural(agendaItemCount, 'agenda item')}`}</CountItem>
+          {' and '}
+          <CountItem>{`${commentCount} ${plural(commentCount, 'comment')}.`}</CountItem>
           <br />
           <Link to={`/meet/${meetingId}/updates/1`}>See the discussion</Link>
           {' in your meeting or '}
@@ -78,9 +86,7 @@ export default createFragmentContainer(TimelineEventCompletedActionMeeting, {
         name
         taskCount
         commentCount
-        meetingMembers {
-          id
-        }
+        agendaItemCount
       }
       team {
         id
