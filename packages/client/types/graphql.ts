@@ -1252,7 +1252,7 @@ export interface ITeam {
   /**
    * The outstanding invitations to join the team
    */
-  teamInvitations: Array<ITeamInvitation> | null;
+  teamInvitations: Array<ITeamInvitation>;
 
   /**
    * true if the viewer is the team lead, else false
@@ -5170,6 +5170,11 @@ export interface IReflectTemplate {
    * *Foreign key. The team this template belongs to
    */
   teamId: string;
+
+  /**
+   * The team this template belongs to
+   */
+  team: ITeam;
   updatedAt: any;
 }
 

@@ -11,6 +11,7 @@ import {GQLContext} from '../graphql'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import RetroPhaseItem from './RetroPhaseItem'
 import SharingScopeEnum from './SharingScopeEnum'
+import Team from './Team'
 
 const ReflectTemplate = new GraphQLObjectType<any, GQLContext>({
   name: 'ReflectTemplate',
@@ -55,6 +56,14 @@ const ReflectTemplate = new GraphQLObjectType<any, GQLContext>({
     teamId: {
       type: new GraphQLNonNull(GraphQLID),
       description: '*Foreign key. The team this template belongs to'
+    },
+    team: {
+      type: new GraphQLNonNull(Team),
+      description: 'The team this template belongs to',
+      resolve: async ({teamId}, _args, {dataLoader}) => {
+        const team = await dataLoader.get('teams').load(teamId)
+        return team
+      }
     },
     updatedAt: {
       type: new GraphQLNonNull(GraphQLISO8601Type)

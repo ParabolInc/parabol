@@ -137,7 +137,7 @@ const RetrospectiveMeetingSettings = new GraphQLObjectType<any, GQLContext>({
         const team = await dataLoader.get('teams').load(teamId)
         const {orgId} = team
         const templates = await dataLoader.get('reflectTemplatesByOrgId').load(orgId)
-        const organizationTemplates = templates.filter(({scope}) => scope !== 'team')
+        const organizationTemplates = templates.filter(({scope}) => scope !== 'TEAM')
         const scoredTemplates = await getScoredTemplates(organizationTemplates, 0.8)
         return connectionFromTemplateArray(scoredTemplates, first, after)
       }
