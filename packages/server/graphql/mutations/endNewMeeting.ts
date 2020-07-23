@@ -168,9 +168,8 @@ const finishActionMeeting = async (meeting: MeetingAction, dataLoader: DataLoade
    */
 
   const {id: meetingId, teamId, phases} = meeting
-  console.log('finishActionMeeting -> phases', phases[3])
   const r = await getRethink()
-  const [meetingMembers, tasks, doneTasks] = await Promise.all([
+  const [meetingMembers, tasks, doneTasks, activeAgendaItems] = await Promise.all([
     dataLoader.get('meetingMembersByMeetingId').load(meetingId),
     r
       .table('Task')
@@ -188,17 +187,13 @@ const finishActionMeeting = async (meeting: MeetingAction, dataLoader: DataLoade
           .contains('archived')
           .not()
       )
+      .run(),
+    r
+      .table('AgendaItem')
+      .getAll(teamId, {index: 'teamId'})
+      .filter({isActive: true})
       .run()
   ])
-
-  const activeAgendaItems = await r
-    .table('AgendaItem')
-    .getAll(teamId, {index: 'teamId'})
-    .filter({isActive: true})
-    .run()
-
-  console.log('finishActionMeeting -> activeAgendaItems', activeAgendaItems)
-  console.log('finishActionMeeting -> activeAgendaItems.length', activeAgendaItems.length)
 
   const activeAgendaItemIds = activeAgendaItems.map(({id}) => id)
   const userIds = meetingMembers.map(({userId}) => userId)
@@ -239,7 +234,6 @@ const finishRetroMeeting = async (meeting: MeetingRetrospective, dataLoader: Dat
     dataLoader.get('retroReflectionsByMeetingId').load(meetingId)
   ])
   const reflectionGroupIds = reflectionGroups.map(({id}) => id)
-  console.log('finishRetroMeeting -> reflectionGroupIds', reflectionGroupIds)
 
   await r
     .table('NewMeeting')

@@ -43,8 +43,7 @@ const ActionMeetingUpdates = (props: Props) => {
   const {avatarGroup, toggleSidebar, meeting} = props
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
-  const {id: meetingId, endedAt, localStage, showSidebar, team} = meeting
-  console.log('ActionMeetingUpdates -> meeting', meeting)
+  const {id: meetingId, endedAt, localStage, showSidebar, team, localPhase} = meeting
   const {id: teamId, tasks} = team
   const {teamMember} = localStage!
   const {userId} = teamMember!
@@ -53,6 +52,9 @@ const ActionMeetingUpdates = (props: Props) => {
       .map(({node}) => node)
       .filter((task) => task.userId === userId && !isTaskPrivate(task.tags))
   }, [tasks, userId])
+  const {stages} = localPhase
+  const isPhaseComplete = stages.every((stage) => stage.isComplete)
+
   return (
     <MeetingContent>
       <MeetingHeaderAndPhase hideBottomBar={!!endedAt}>
@@ -64,7 +66,7 @@ const ActionMeetingUpdates = (props: Props) => {
           <ActionMeetingUpdatesPrompt meeting={meeting} />
         </MeetingTopBar>
         <PhaseWrapper>
-          <PhaseCompleteTag isComplete />
+          <PhaseCompleteTag isComplete={isPhaseComplete} />
           <StyledColumnsWrapper>
             <InnerColumnsWrapper>
               <TaskColumns
@@ -98,6 +100,11 @@ export default createFragmentContainer(ActionMeetingUpdates, {
       id
       endedAt
       showSidebar
+      localPhase {
+        stages {
+          isComplete
+        }
+      }
       localStage {
         ...ActionMeetingUpdatesStage @relay(mask: false)
       }

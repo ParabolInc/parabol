@@ -35,7 +35,6 @@ const ActionMeeting = new GraphQLObjectType<IActionMeeting, GQLContext>({
       type: GraphQLNonNull(GraphQLInt),
       description: 'The number of agenda items generated in the meeting',
       resolve: async ({agendaItemCount}) => {
-        console.log('agendaItemCount ->', agendaItemCount)
         // only populated after the meeting has been completed (not killed)
         return agendaItemCount || 0
       }
@@ -51,7 +50,6 @@ const ActionMeeting = new GraphQLObjectType<IActionMeeting, GQLContext>({
       type: GraphQLNonNull(GraphQLInt),
       description: 'The number of comments generated in the meeting',
       resolve: async ({commentCount}) => {
-        console.log('commentCount ->', commentCount)
         // only populated after the meeting has been completed (not killed)
         return commentCount || 0
       }
@@ -76,7 +74,6 @@ const ActionMeeting = new GraphQLObjectType<IActionMeeting, GQLContext>({
       type: new GraphQLNonNull(GraphQLInt),
       description: 'The number of tasks generated in the meeting',
       resolve: async ({taskCount}) => {
-        console.log('taskCount', taskCount)
         // only populated after the meeting has been completed (not killed)
         return taskCount || 0
       }
