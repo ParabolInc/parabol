@@ -1,43 +1,88 @@
+function testArchivedTasksTeamView(isTaskArchived: boolean) {
+  // shows sidebar and click the team name
+  cy.get('nav')
+    .contains('cypress')
+    .click()
+  cy.url().should('include', '/team')
+
+  // click the "Archived Tasks" button in the task header
+  cy.get('div')
+    .contains('Archived Tasks')
+    .click()
+  cy.url().should('include', 'archive')
+  isTaskArchived
+    ? cy.get('body').should('contain', 'This is a task card')
+    : cy.get('body').should('contain', 'There are zero archived tasks')
+
+  // click the "Back to Team Tasks" button in the header
+  cy.get('div')
+    .contains('Back to Team Tasks')
+    .click()
+  cy.url().should('not.include', 'archive')
+  isTaskArchived
+    ? cy.get('body').should('not.contain', 'This is a task card')
+    : cy.get('body').should('contain', 'This is a task card')
+}
+
+function testArchivedTasksTaskView(isTaskArchived: boolean) {
+  // shows sidebar and click "Tasks" in the menu
+  cy.get('nav')
+    .contains('Tasks')
+    .click()
+  cy.url().should('include', 'tasks')
+  cy.wait(1000)
+
+  // click "Show Archived Tasks" checkbox
+  cy.get('button')
+    .contains('Show Archived Tasks')
+    .click()
+  isTaskArchived
+    ? cy.get('body').should('contain', 'This is a task card')
+    : cy.get('body').should('contain', 'There are zero archived tasks')
+
+  // toggle "Show Archived Tasks" checkbox
+  cy.get('button')
+    .contains('Show Archived Tasks')
+    .click()
+  isTaskArchived
+    ? cy.get('body').should('not.contain', 'This is a task card')
+    : cy.get('body').should('contain', 'This is a task card')
+}
+
 describe('archivedTasks', () => {
-  it('goes to /archive in team view', () => {
+  it('Test showing archived tasks in Team View', () => {
     cy.login()
-
-    // shows sidebar
-    cy.get('nav')
-      .contains('cypress')
-      .click()
-    cy.url().should('include', '/team')
-
-    cy.get('div')
-      .contains('Archived Tasks')
-      .click()
-    cy.url().should('include', 'archive')
-    cy.get('body').should('contain', 'There are zero archived tasks')
-
-    cy.get('div')
-      .contains('Back to Team Tasks')
-      .click()
-    cy.url().should('not.include', 'archive')
-    cy.get('body').should('contain', 'This is a task card')
+    testArchivedTasksTeamView(false)
   })
-  it('goes to task view and click the archived task checkbox', () => {
+
+  it('Test archived task checkbox in Task View', () => {
+    cy.login()
+    testArchivedTasksTaskView(false)
+  })
+
+  it('Test archiving a task', () => {
     cy.login()
 
-    cy.get('nav')
-      .contains('Tasks')
+    // find the task card and archive it by clicking "Set as #archived"
+    cy.get('[data-cy=draggable-task-card-tag-button]').click()
+    cy.get('[role=menuitem]')
+      .contains('archived')
       .click()
-    cy.url().should('include', 'tasks')
 
+    testArchivedTasksTeamView(true)
+    testArchivedTasksTaskView(true)
+
+    // toggle the "Show Archived Tasks" checkbox again
+    cy.get('button')
+      .contains('Show Archived Tasks')
+      .click()
+    // unarchive the task
+    cy.get('button')
+      .contains('reply')
+      .click()
     cy.wait(1000)
 
-    cy.get('button')
-      .contains('Show Archived Tasks')
-      .click()
-    cy.get('body').should('contain', 'There are zero archived tasks')
-
-    cy.get('button')
-      .contains('Show Archived Tasks')
-      .click()
-    cy.get('body').should('contain', 'This is a task card')
+    testArchivedTasksTeamView(false)
+    testArchivedTasksTaskView(false)
   })
 })
