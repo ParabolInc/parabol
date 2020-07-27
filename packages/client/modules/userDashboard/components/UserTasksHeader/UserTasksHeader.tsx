@@ -55,7 +55,6 @@ const UserTasksHeader = (props: Props) => {
   return (
     <DashSectionHeader>
       <DashSectionControls>
-        {/* Filter by Team */}
         <DashFilterToggle
           label='Team'
           onClick={togglePortal}
