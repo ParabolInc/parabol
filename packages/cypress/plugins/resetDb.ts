@@ -1,7 +1,7 @@
 // importing cypress for typescript defs
 import 'cypress'
 
-const getRethink = require('parabol-server/database/rethinkDriver')
+const getRethink = require('../../server/database/rethinkDriver').default
 
 interface DBOptions {
   source: string
@@ -19,13 +19,23 @@ const resetDb = ({source, target}: DBOptions) => async () => {
         .table(t)
         .delete()
     )
+    .run()
   // add source docs to target db
-  return r.db(target).forEach((t: string) => {
-    return r
-      .db(target)
-      .table(t)
-      .insert(r.db(source).table(t))
-  })
+  return r
+    .db(target)
+    .tableList()
+    .forEach((t: string) => {
+      return r
+        .db(target)
+        .table(t)
+        .insert(
+          r
+            .db(source)
+            .table(t)
+            .coerceTo('array')
+        )
+    })
+    .run()
 }
 
 export default resetDb
