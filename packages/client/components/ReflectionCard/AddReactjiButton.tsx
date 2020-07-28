@@ -12,8 +12,8 @@ const Button = styled(PlainButton)({
   height: 24,
   lineHeight: '24px',
   opacity: 0.5,
-  padding: '2px 0 4px',
-  width: 28,
+  padding: '3px 0',
+  width: 24,
   ':hover, :focus': {
     opacity: 1
   }
