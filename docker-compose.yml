@@ -7,3 +7,43 @@ services:
       - '8080:8080'
       - '29015:29015'
       - '28015:28015'
+    volumes:
+      - rethink-data:/rethinkdb/data
+    networks:
+      - parabol-network
+  redis:
+    image: redis
+    ports:
+      - '6379:6379'
+    volumes:
+      - redis-data:/data
+    networks:
+      - parabol-network
+  app:
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile
+      target: dev
+    env_file: .env
+    ports:
+      - '3000:3000'
+    depends_on:
+      - db
+      - redis
+    networks:
+      - parabol-network
+    volumes:
+      - .:/parabol
+      - node-modules:/parabol/node_modules
+      - build:/parabol/build
+      - dev:/parabol/dev
+      - generated:/parabol/packages/client/__generated__
+networks:
+  parabol-network:
+volumes:
+  build:
+  dev:
+  generated:
+  node-modules:
+  redis-data:
+  rethink-data:
