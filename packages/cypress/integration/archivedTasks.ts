@@ -72,9 +72,11 @@ describe('archivedTasks', () => {
     testArchivedTasksTeamView(true)
     testArchivedTasksTaskView(true)
 
-    // toggle the "Show Archived Tasks" checkbox again
-    cy.get('button')
-      .contains('Show Archived Tasks')
+    cy.get('nav')
+      .contains('cypress')
+      .click()
+    cy.get('div')
+      .contains('Archived Tasks')
       .click()
     // unarchive the task
     cy.get('button')
