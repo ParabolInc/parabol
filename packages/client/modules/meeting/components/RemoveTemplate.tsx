@@ -1,68 +1,82 @@
-import React, {Component} from 'react'
 import styled from '@emotion/styled'
+import React from 'react'
 import FlatButton from '../../../components/FlatButton'
-import withAtmosphere, {
-  WithAtmosphereProps
-} from '../../../decorators/withAtmosphere/withAtmosphere'
-import RemoveReflectTemplateMutation from '../../../mutations/RemoveReflectTemplateMutation'
-import withMutationProps, {WithMutationProps} from '../../../utils/relay/withMutationProps'
-import {PALETTE} from '../../../styles/paletteV2'
 import Icon from '../../../components/Icon'
+import useAtmosphere from '../../../hooks/useAtmosphere'
+import useMutationProps from '../../../hooks/useMutationProps'
+import RemoveReflectTemplateMutation from '../../../mutations/RemoveReflectTemplateMutation'
+import {PALETTE} from '../../../styles/paletteV2'
 import {ICON_SIZE} from '../../../styles/typographyV2'
+import {Threshold} from '../../../types/constEnums'
 
-const Button = styled(FlatButton)<{canDelete: boolean}>(({canDelete}) => ({
-  alignItems: 'center',
-  display: !canDelete ? 'none' : 'flex',
+const Button = styled(FlatButton)<{isVisible: boolean}>(({isVisible}) => ({
+  alignItems: 'flex-end',
+  display: !isVisible ? 'none' : 'flex',
   color: PALETTE.TEXT_GRAY,
-  height: '2.125rem',
-  justifyContent: 'center',
-  paddingLeft: 0,
-  paddingRight: 0,
-  width: '2.125rem'
+  height: 32,
+  justifyContent: 'flex-end',
+  padding: 0,
+  width: 32
 }))
 
-const DeleteIcon = styled(Icon)({
+const ActionButton = styled(Icon)({
   fontSize: ICON_SIZE.MD18
 })
 
-interface Props extends WithAtmosphereProps, WithMutationProps {
+interface Props {
+  isOwner: boolean
   templateCount: number
   templateId
 }
 
-class RemoveTemplate extends Component<Props> {
-  removeTemplate = () => {
-    const {
-      onError,
-      onCompleted,
-      submitting,
-      submitMutation,
-      atmosphere,
-      templateCount,
-      templateId
-    } = this.props
+const CloneOrRemoveTemplate = (props: Props) => {
+  const {
+    templateCount,
+    templateId,
+    isOwner
+  } = props
+  const atmosphere = useAtmosphere()
+  const {onError, onCompleted, submitting, submitMutation} = useMutationProps()
+  const removeTemplate = () => {
     if (submitting) return
     if (templateCount <= 1) {
-      onError('You must have at least 1 template')
+      onError(new Error('You must have at least 1 template'))
       return
     }
     submitMutation()
     RemoveReflectTemplateMutation(atmosphere, {templateId}, {}, onError, onCompleted)
   }
 
-  render() {
-    const {submitting, templateCount} = this.props
+  const cloneTemplate = () => {
+    if (submitting) return
+    if (templateCount >= Threshold.MAX_RETRO_TEAM_TEMPLATES) {
+      onError(new Error('Please remove a template before cloning another'))
+      return
+    }
+  }
+
+  if (isOwner) {
     return (
       <Button
-        canDelete={templateCount > 1}
-        onClick={this.removeTemplate}
+        isVisible={templateCount > 1}
+        onClick={removeTemplate}
         size='small'
         waiting={submitting}
       >
-        <DeleteIcon>delete</DeleteIcon>
+        <ActionButton>delete</ActionButton>
       </Button>
     )
   }
-}
+  return (
+    <Button
+      isVisible={templateCount < Threshold.MAX_RETRO_TEAM_TEMPLATES}
+      onClick={cloneTemplate}
+      size='small'
+      waiting={submitting}
+    >
+      <ActionButton>content_copy</ActionButton>
+    </Button>
+  )
 
-export default withAtmosphere(withMutationProps(RemoveTemplate))
+}
+export default CloneOrRemoveTemplate

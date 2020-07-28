@@ -2,6 +2,7 @@ import Redis from 'ioredis'
 import ms from 'ms'
 import {DBType} from '../database/rethinkDriver'
 import customRedisQueries from './customRedisQueries'
+import hydrateRedisDoc from './hydrateRedisDoc'
 import RethinkDBCache, {RWrite} from './RethinkDBCache'
 
 export type RedisType = {
@@ -77,8 +78,10 @@ export default class RedisCache<T extends keyof CacheType> {
       }
     }
     const customTypes = Object.keys(customQueriesByType)
-    if (missingKeysForRethinkDB.length + customTypes.length === 0)
-      return cachedDocs.map((doc) => JSON.parse(doc!))
+    if (missingKeysForRethinkDB.length + customTypes.length === 0) {
+      return cachedDocs.map((doc, idx) => hydrateRedisDoc(doc!, fetches[idx].table))
+    }
+
     customTypes.forEach((type) => {
       const customQuery = customRedisQueries[type as keyof typeof customRedisQueries]
       const ids = customQueriesByType[type]
@@ -109,7 +112,7 @@ export default class RedisCache<T extends keyof CacheType> {
       .exec()
     return fetchKeys.map((key, idx) => {
       const cachedDoc = cachedDocs[idx]
-      return cachedDoc ? JSON.parse(cachedDoc) : docsByKey[key]
+      return cachedDoc ? hydrateRedisDoc(cachedDoc, fetches[idx].table) : docsByKey[key]
     })
   }
 

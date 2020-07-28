@@ -1,5 +1,6 @@
 import {GraphQLID, GraphQLInt, GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import {RETRO_PHASE_ITEM} from 'parabol-client/utils/constants'
+import getRethink from '../../database/rethinkDriver'
 import db from '../../db'
 import getTemplateScore from '../../utils/getTemplateScore'
 import {GQLContext} from '../graphql'
@@ -103,6 +104,25 @@ const RetrospectiveMeetingSettings = new GraphQLObjectType<any, GQLContext>({
     selectedTemplateId: {
       type: new GraphQLNonNull(GraphQLID),
       description: 'FK. The template that will be used to start the retrospective'
+    },
+    selectedTemplate: {
+      type: GraphQLNonNull(ReflectTemplate),
+      description: 'The template that will be used to start the retrospective',
+      resolve: async (source, _args, {dataLoader}) => {
+        const {id: settingsId, selectedTemplateId} = source
+        const template = await dataLoader.get('reflectTemplates').load(selectedTemplateId)
+        if (template) return template
+        // there may be holes in our template deletion or reselection logic, so doing this to be safe
+        const safeTemplateId = 'workingStuckTemplate'
+        source.selectedTemplateId = safeTemplateId
+        const r = await getRethink()
+        await r
+          .table('MeetingSettings')
+          .get(settingsId)
+          .update({selectedTemplateId: safeTemplateId})
+          .run()
+        return dataLoader.get('reflectTemplates').load(safeTemplateId)
+      }
     },
     reflectTemplates: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(ReflectTemplate))),

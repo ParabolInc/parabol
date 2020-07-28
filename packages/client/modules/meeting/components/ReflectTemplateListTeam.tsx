@@ -2,9 +2,12 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
+import useAtmosphere from '../../../hooks/useAtmosphere'
+import SelectRetroTemplateMutation from '../../../mutations/SelectRetroTemplateMutation'
 import {PALETTE} from '../../../styles/paletteV2'
 import {ReflectTemplateListTeam_teamTemplates} from '../../../__generated__/ReflectTemplateListTeam_teamTemplates.graphql'
 import ReflectTemplateItem from './ReflectTemplateItem'
+
 const TemplateList = styled('ul')({
   listStyle: 'none',
   paddingLeft: 0,
@@ -32,14 +35,15 @@ const StyledLink = styled('span')({
 })
 
 interface Props {
-  activeTemplateId: string
-  setActiveTemplateId: (templateId: string) => void
+  selectedTemplateId: string
   showPublicTemplates: () => void
+  teamId: string
   teamTemplates: ReflectTemplateListTeam_teamTemplates
 }
 
 const ReflectTemplateListTeam = (props: Props) => {
-  const {activeTemplateId, setActiveTemplateId, showPublicTemplates, teamTemplates} = props
+  const {selectedTemplateId, showPublicTemplates, teamId, teamTemplates} = props
+  const atmosphere = useAtmosphere()
   if (teamTemplates.length === 0) {
     return (
       <Message>
@@ -52,11 +56,15 @@ const ReflectTemplateListTeam = (props: Props) => {
     <TemplateList>
       {
         teamTemplates.map((template) => {
+          console.log('selectedTemplate', selectedTemplateId)
+          const selectTemplate = () => {
+            SelectRetroTemplateMutation(atmosphere, {selectedTemplateId: template.id, teamId})
+          }
           return <ReflectTemplateItem
             key={template.id}
             template={template}
-            isActive={template.id === activeTemplateId}
-            onClick={() => setActiveTemplateId(template.id)}
+            isActive={template.id === selectedTemplateId}
+            onClick={selectTemplate}
           />
         })
       }

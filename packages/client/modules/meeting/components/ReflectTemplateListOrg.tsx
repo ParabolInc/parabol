@@ -2,6 +2,8 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
+import useAtmosphere from '../../../hooks/useAtmosphere'
+import SelectRetroTemplateMutation from '../../../mutations/SelectRetroTemplateMutation'
 import {PALETTE} from '../../../styles/paletteV2'
 import {ReflectTemplateListOrg_viewer} from '../../../__generated__/ReflectTemplateListOrg_viewer.graphql'
 import ReflectTemplateItem from './ReflectTemplateItem'
@@ -22,17 +24,16 @@ const Message = styled('div')({
   padding: 8
 })
 interface Props {
-  activeTemplateId: string
-  setActiveTemplateId: (templateId: string) => void
   viewer: ReflectTemplateListOrg_viewer
 }
 
 const ReflectTemplateListOrg = (props: Props) => {
-  const {activeTemplateId, setActiveTemplateId, viewer} = props
+  const {viewer} = props
   const {team} = viewer
+  const atmosphere = useAtmosphere()
   if (!team) return null
-  const {meetingSettings} = team
-  const {organizationTemplates} = meetingSettings
+  const {id: teamId, meetingSettings} = team
+  const {organizationTemplates, selectedTemplateId} = meetingSettings
   if (!organizationTemplates) return null
   const {edges} = organizationTemplates
   if (edges.length === 0) {
@@ -46,11 +47,14 @@ const ReflectTemplateListOrg = (props: Props) => {
     <TemplateList>
       {
         edges.map(({node: template}) => {
+          const selectTemplate = () => {
+            SelectRetroTemplateMutation(atmosphere, {selectedTemplateId: template.id, teamId})
+          }
           return <ReflectTemplateItem
             key={template.id}
             template={template}
-            isActive={template.id === activeTemplateId}
-            onClick={() => setActiveTemplateId(template.id)}
+            isActive={template.id === selectedTemplateId}
+            onClick={selectTemplate}
           />
         })
       }
@@ -65,6 +69,7 @@ export default createFragmentContainer(
       fragment ReflectTemplateListOrg_viewer on User {
         id
         team(teamId: $teamId) {
+          id
           meetingSettings(meetingType: retrospective) {
             ...on RetrospectiveMeetingSettings {
               organizationTemplates(first: 20) {
@@ -75,6 +80,7 @@ export default createFragmentContainer(
                   }
                 }
               }
+              selectedTemplateId
             }
           }
         }

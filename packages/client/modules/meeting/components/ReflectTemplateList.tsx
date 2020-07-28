@@ -59,11 +59,13 @@ interface Props {
   settings: ReflectTemplateList_settings
 }
 
+const SCOPES = ['TEAM', 'ORGANIZATION', 'PUBLIC']
+
 const ReflectTemplateList = (props: Props) => {
   const {settings} = props
-  const {teamId, teamTemplates} = settings
-  const [activeIdx, setActiveIdx] = useState(0)
-  const [activeTemplateId, setActiveTemplateId] = useState('')
+  const {selectedTemplate, teamId, teamTemplates} = settings
+  const {id: selectedTemplateId, scope} = selectedTemplate
+  const [activeIdx, setActiveIdx] = useState(SCOPES.indexOf(scope))
   return (
     <TemplateSidebar>
       <Label>Retro Templates</Label>
@@ -80,13 +82,13 @@ const ReflectTemplateList = (props: Props) => {
         style={innerStyle}
       >
         <TabContents>
-          <ReflectTemplateListTeam activeTemplateId={activeTemplateId} setActiveTemplateId={setActiveTemplateId} showPublicTemplates={() => setActiveIdx(2)} teamTemplates={teamTemplates} />
+          <ReflectTemplateListTeam selectedTemplateId={selectedTemplateId} showPublicTemplates={() => setActiveIdx(2)} teamTemplates={teamTemplates} teamId={teamId} />
         </TabContents>
         <TabContents>
-          <ReflectTemplateListOrgRoot activeTemplateId={activeTemplateId} setActiveTemplateId={setActiveTemplateId} teamId={teamId} />
+          <ReflectTemplateListOrgRoot teamId={teamId} />
         </TabContents>
         <TabContents>
-          <ReflectTemplateListPublicRoot activeTemplateId={activeTemplateId} setActiveTemplateId={setActiveTemplateId} teamId={teamId} />
+          <ReflectTemplateListPublicRoot teamId={teamId} />
         </TabContents>
       </SwipeableViews>
       {/* add a key to clear the error when they change */}
@@ -105,8 +107,11 @@ export default createFragmentContainer(
       fragment ReflectTemplateList_settings on RetrospectiveMeetingSettings {
         id
         activeTemplateId
-        selectedTemplateId
         teamId
+        selectedTemplate {
+          id
+          scope
+        }
         teamTemplates {
           ...ReflectTemplateListTeam_teamTemplates
           ...AddNewReflectTemplate_reflectTemplates

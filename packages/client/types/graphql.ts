@@ -3499,6 +3499,7 @@ export interface IAddReactjiToReactableOnMutationArguments {
 }
 
 export interface IAddReflectTemplateOnMutationArguments {
+  parentTemplateId?: string | null;
   teamId: string;
 }
 
@@ -5241,6 +5242,11 @@ export interface IRetrospectiveMeetingSettings {
    * FK. The template that will be used to start the retrospective
    */
   selectedTemplateId: string;
+
+  /**
+   * The template that will be used to start the retrospective
+   */
+  selectedTemplate: IReflectTemplate;
 
   /**
    * The list of templates used to start a retrospective

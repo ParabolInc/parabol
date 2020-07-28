@@ -3,6 +3,7 @@ import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import Icon from '../../../components/Icon'
+import {DECELERATE} from '../../../styles/animation'
 import textOverflow from '../../../styles/helpers/textOverflow'
 import {PALETTE} from '../../../styles/paletteV2'
 import {ICON_SIZE} from '../../../styles/typographyV2'
@@ -21,6 +22,7 @@ const TemplateItem = styled('li')<{isActive: boolean}>(({isActive}) => ({
   paddingTop: 12,
   paddingBottom: 12,
   paddingLeft: 16,
+  transition: `background-color 300ms ${DECELERATE}`,
   width: '100%'
 }))
 
@@ -93,6 +95,8 @@ export default createFragmentContainer(
   {
     template: graphql`
       fragment ReflectTemplateItem_template on ReflectTemplate {
+        #get the details here so we can show them in the details view
+        ...ReflectTemplateDetails_template
         id
         name
         lastUsedAt
