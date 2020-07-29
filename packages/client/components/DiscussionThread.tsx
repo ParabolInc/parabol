@@ -16,11 +16,13 @@ const Wrapper = styled('div')<{isExpanded: boolean}>(({isExpanded}) => ({
   boxShadow: Elevation.DISCUSSION_THREAD,
   display: 'flex',
   flexDirection: 'column',
-  height: '100%',
+  // height: '100%',
+  height: 72,
   overflow: 'hidden',
   width: 'calc(100% - 16px)',
+  border: '2px solid green',
   [makeMinWidthMediaQuery(Breakpoint.SIDEBAR_LEFT)]: {
-    height: isExpanded ? '100%' : `calc(100% - ${MeetingControlBarEnum.HEIGHT}px)`,
+    // height: isExpanded ? '100%' : `calc(100% - ${MeetingControlBarEnum.HEIGHT}px)`,
     width: DiscussionThreadEnum.WIDTH
   }
 }))
@@ -34,6 +36,7 @@ const DiscussionThread = (props: Props) => {
   const meeting = viewer.meeting!
   const {endedAt, replyingToCommentId, threadSource} = meeting
   const {thread} = threadSource!
+
   const threadSourceId = threadSource!.id!
   const edges = thread?.edges ?? [] // should never happen, but Terry reported it in demo. likely relay error
   const threadables = edges.map(({node}) => node)
@@ -44,6 +47,10 @@ const DiscussionThread = (props: Props) => {
   const editorRef = useRef<HTMLTextAreaElement>(null)
   const ref = useRef<HTMLDivElement>(null)
   const isExpanded = useCoverable('threads', ref, MeetingControlBarEnum.HEIGHT) || !!endedAt
+
+  // const myFunc = () => useCoverable('threads', ref, MeetingControlBarEnum.HEIGHT) || !!endedAt
+
+  console.log('DiscussionThread -> isExpanded', isExpanded)
   return (
     <Wrapper isExpanded={isExpanded} ref={ref}>
       <DiscussionThreadList

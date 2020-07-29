@@ -1,4 +1,4 @@
-import {RefObject, useEffect} from 'react'
+import {RefObject, useCallback, useEffect} from 'react'
 import {BezierCurve, Breakpoint} from '~/types/constEnums'
 
 interface ControlBarCoverable {
@@ -35,13 +35,14 @@ const ensureCovering = (
 }
 
 export const useCoverable = (id: string, ref: RefObject<HTMLDivElement>, height: number) => {
-  useEffect(() => {
+  const memoizedCallback = useCallback(() => {
     const el = ref.current
     if (!el) return
     if (window.innerWidth < Breakpoint.SINGLE_REFLECTION_COLUMN) return
     const bbox = el.getBoundingClientRect()
     const {left, right} = bbox
     const oldCoverable = coverables[id]
+    console.log('useCoverable -> oldCoverable', oldCoverable)
     const BUFFER = 8
     const coverable = {
       id,
@@ -51,16 +52,24 @@ export const useCoverable = (id: string, ref: RefObject<HTMLDivElement>, height:
       right: right + BUFFER,
       isExpanded: oldCoverable?.isExpanded ?? false
     }
+    console.log('useCoverable -> coverable', coverable)
     if (covering.el) {
       cacheCoveringBBox()
       ensureCovering(coverable, covering.left, covering.right)
     }
     coverables[id] = coverable
+  }, [])
+
+  useEffect(() => {
+    memoizedCallback()
     return () => {
       const oldCoverable = coverables[id]
       ;(oldCoverable as any).el = null
     }
   }, [])
+
+  window.addEventListener('resize', () => memoizedCallback())
+
   return coverables[id]?.isExpanded ?? false
 }
 
