@@ -4,11 +4,12 @@ import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import CreateTemplate from '../../../../../static/images/illustrations/CreateTemplate.svg'
 import {PALETTE} from '../../../styles/paletteV2'
+import makeTemplateDescription from '../../../utils/makeTemplateDescription'
 import {ReflectTemplateDetails_teamTemplates} from '../../../__generated__/ReflectTemplateDetails_teamTemplates.graphql'
 import {ReflectTemplateDetails_template} from '../../../__generated__/ReflectTemplateDetails_template.graphql'
 import AddTemplatePrompt from './AddTemplatePrompt'
+import CloneOrRemoveTemplate from './CloneOrRemoveTemplate'
 import EditableTemplateName from './EditableTemplateName'
-import CloneOrRemoveTemplate from './RemoveTemplate'
 import TemplatePromptList from './TemplatePromptList'
 import TemplateSharing from './TemplateSharing'
 
@@ -42,8 +43,16 @@ const Description = styled('div')({
 })
 
 const FirstLine = styled('div')({
+  alignItems: 'center',
   display: 'flex'
 })
+
+const Scrollable = styled('div')({
+  display: 'flex',
+  flexDirection: 'column',
+  overflow: 'auto'
+})
+
 interface Props {
   template: ReflectTemplateDetails_template
   teamTemplates: ReflectTemplateDetails_teamTemplates
@@ -54,6 +63,7 @@ const ReflectTemplateDetails = (props: Props) => {
   const {template, teamId, teamTemplates} = props
   const {id: templateId, name: templateName, prompts} = template
   const isOwner = template.teamId === teamId
+  const description = makeTemplateDescription(template)
   return (
     <PromptEditor>
       <CreateTemplateImg src={CreateTemplate} />
@@ -68,11 +78,13 @@ const ReflectTemplateDetails = (props: Props) => {
           />
           <CloneOrRemoveTemplate isOwner={isOwner} templateCount={teamTemplates.length} templateId={templateId} />
         </FirstLine>
-        <Description>Dreated By Parabol</Description>
+        <Description>{description}</Description>
       </TemplateHeader>
+      <Scrollable>
+        <TemplatePromptList isOwner={isOwner} prompts={prompts} templateId={templateId} />
+        {isOwner && <AddTemplatePrompt templateId={templateId} prompts={prompts} />}
+      </Scrollable>
       <TemplateSharing teamId={teamId} template={template} />
-      <TemplatePromptList prompts={prompts} templateId={templateId} />
-      <AddTemplatePrompt templateId={templateId} prompts={prompts} />
     </PromptEditor>
   )
 }
@@ -88,6 +100,7 @@ export default createFragmentContainer(
     template: graphql`
       fragment ReflectTemplateDetails_template on ReflectTemplate {
         ...TemplateSharing_template
+        ...makeTemplateDescription_template
         id
         name
         prompts {

@@ -1,14 +1,13 @@
-import React, {Component} from 'react'
 import styled from '@emotion/styled'
+import React, {Component} from 'react'
 import EditableText from '../../../components/EditableText'
-import withAtmosphere, {
-  WithAtmosphereProps
-} from '../../../decorators/withAtmosphere/withAtmosphere'
+import withAtmosphere, {WithAtmosphereProps} from '../../../decorators/withAtmosphere/withAtmosphere'
 import ReflectTemplatePromptUpdateDescriptionMutation from '../../../mutations/ReflectTemplatePromptUpdateDescriptionMutation'
 import withMutationProps, {WithMutationProps} from '../../../utils/relay/withMutationProps'
 import Legitity from '../../../validation/Legitity'
 
 interface Props extends WithAtmosphereProps, WithMutationProps {
+  isOwner: boolean
   description: string
   promptId: string
   onEditingChange: (isEditing: boolean) => void
@@ -64,9 +63,10 @@ class EditableTemplateDescription extends Component<Props> {
   }
 
   render() {
-    const {error, description} = this.props
+    const {isOwner, error, description} = this.props
     return (
       <EditableSubText
+        disabled={!isOwner}
         error={error as string}
         hideIcon
         handleSubmit={this.handleSubmit}

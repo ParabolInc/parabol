@@ -3,18 +3,20 @@ import React from 'react'
 import FlatButton from '../../../components/FlatButton'
 import Icon from '../../../components/Icon'
 import useAtmosphere from '../../../hooks/useAtmosphere'
+import {MenuPosition} from '../../../hooks/useCoords'
 import useMutationProps from '../../../hooks/useMutationProps'
+import useTooltip from '../../../hooks/useTooltip'
 import RemoveReflectTemplateMutation from '../../../mutations/RemoveReflectTemplateMutation'
 import {PALETTE} from '../../../styles/paletteV2'
 import {ICON_SIZE} from '../../../styles/typographyV2'
 import {Threshold} from '../../../types/constEnums'
 
 const Button = styled(FlatButton)<{isVisible: boolean}>(({isVisible}) => ({
-  alignItems: 'flex-end',
+  alignItems: 'center',
   display: !isVisible ? 'none' : 'flex',
   color: PALETTE.TEXT_GRAY,
   height: 32,
-  justifyContent: 'flex-end',
+  justifyContent: 'center',
   padding: 0,
   width: 32
 }))
@@ -37,6 +39,9 @@ const CloneOrRemoveTemplate = (props: Props) => {
   } = props
   const atmosphere = useAtmosphere()
   const {onError, onCompleted, submitting, submitMutation} = useMutationProps()
+  const {tooltipPortal, openTooltip, closeTooltip, originRef} = useTooltip<HTMLButtonElement>(
+    MenuPosition.UPPER_CENTER
+  )
   const removeTemplate = () => {
     if (submitting) return
     if (templateCount <= 1) {
@@ -57,25 +62,37 @@ const CloneOrRemoveTemplate = (props: Props) => {
 
   if (isOwner) {
     return (
-      <Button
-        isVisible={templateCount > 1}
-        onClick={removeTemplate}
-        size='small'
-        waiting={submitting}
-      >
-        <ActionButton>delete</ActionButton>
-      </Button>
+      <>
+        <Button
+          ref={originRef}
+          isVisible={templateCount > 1}
+          onClick={removeTemplate}
+          size='small'
+          waiting={submitting}
+          onMouseEnter={openTooltip}
+          onMouseLeave={closeTooltip}
+        >
+          <ActionButton>delete</ActionButton>
+        </Button>
+        {tooltipPortal(<div>Delete template</div>)}
+      </>
     )
   }
   return (
-    <Button
-      isVisible={templateCount < Threshold.MAX_RETRO_TEAM_TEMPLATES}
-      onClick={cloneTemplate}
-      size='small'
-      waiting={submitting}
-    >
-      <ActionButton>content_copy</ActionButton>
-    </Button>
+    <>
+      <Button
+        ref={originRef}
+        isVisible={templateCount < Threshold.MAX_RETRO_TEAM_TEMPLATES}
+        onClick={cloneTemplate}
+        size='small'
+        waiting={submitting}
+        onMouseEnter={openTooltip}
+        onMouseLeave={closeTooltip}
+      >
+        <ActionButton>content_copy</ActionButton>
+      </Button>
+      {tooltipPortal(<div>Clone & Edit Template</div>)}
+    </>
   )
 
 }

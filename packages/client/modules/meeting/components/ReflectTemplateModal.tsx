@@ -13,8 +13,7 @@ interface Props {
 
 const StyledDialogContainer = styled(DialogContainer)({
   flexDirection: 'row',
-  height: 374,
-  width: 700
+  width: 960,
 })
 
 const ReflectTemplateModal = (props: Props) => {

@@ -14,20 +14,21 @@ import {PALETTE} from '../../../styles/paletteV2'
 import {ICON_SIZE} from '../../../styles/typographyV2'
 
 interface Props {
+  isOwner: boolean
   prompt: EditableTemplatePromptColor_prompt
   prompts: EditableTemplatePromptColor_prompts
 }
 
-const PromptColor = styled(PlainButton)({
+const PromptColor = styled(PlainButton)<{isOwner: boolean}>(({isOwner}) => ({
   display: 'flex',
   flex: 1,
-  padding: '14px 0 5px',
+  padding: '12px 0 6px',
   ':hover': {
     i: {
-      opacity: 1
+      opacity: isOwner ? 1 : undefined
     }
   }
-})
+}))
 
 const ColorBadge = styled('div')<{groupColor?: string}>(({groupColor}) => ({
   backgroundColor: groupColor,
@@ -45,14 +46,14 @@ const DropdownIcon = styled(Icon)({
 })
 
 const EditableTemplatePromptColor = (props: Props) => {
-  const {prompt, prompts} = props
+  const {isOwner, prompt, prompts} = props
   const {groupColor} = prompt
   const {menuProps, menuPortal, originRef, togglePortal} = useMenu<HTMLButtonElement>(
     MenuPosition.UPPER_LEFT,
     {parentId: 'portal'}
   )
   return (
-    <PromptColor ref={originRef} onClick={togglePortal}>
+    <PromptColor ref={originRef} isOwner={isOwner} onClick={togglePortal}>
       <ColorBadge groupColor={groupColor} />
       <DropdownIcon>arrow_drop_down</DropdownIcon>
       {menuPortal(<PalettePicker menuProps={menuProps} prompt={prompt} prompts={prompts} />)}

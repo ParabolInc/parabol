@@ -16,6 +16,7 @@ import EditableTemplatePrompt from './EditableTemplatePrompt'
 import EditableTemplatePromptColor from './EditableTemplatePromptColor'
 
 interface Props {
+  isOwner: boolean
   isDragging: boolean
   prompt: TemplatePromptItem_prompt
   prompts: TemplatePromptItem_prompts
@@ -27,15 +28,13 @@ interface StyledProps {
   isHover?: boolean
 }
 
-const lineHeight = '2.75rem'
-
 const PromptItem = styled('li')<StyledProps>(({isHover, isDragging}) => ({
   alignItems: 'flex-start',
   backgroundColor: isHover || isDragging ? PALETTE.BACKGROUND_MAIN_LIGHTENED : undefined,
   borderRadius: '.125rem',
   display: 'flex',
   fontSize: 18,
-  lineHeight,
+  lineHeight: '32px',
   padding: '0 .6875rem 0 1rem'
 }))
 
@@ -44,7 +43,6 @@ const RemovePromptIcon = styled(Icon)<StyledProps>(({isHover}) => ({
   cursor: 'pointer',
   display: 'block',
   fontSize: ICON_SIZE.MD18,
-  lineHeight,
   marginLeft: 'auto',
   opacity: isHover ? 1 : 0
 }))
@@ -56,13 +54,13 @@ const PromptAndDescription = styled('div')({
 })
 
 const TemplatePromptItem = (props: Props) => {
-  const {dragProvided, isDragging, prompt, prompts} = props
+  const {dragProvided, isDragging, isOwner, prompt, prompts} = props
   const {id: promptId, description, question} = prompt
   const [isHover, setIsHover] = useState(false)
   const [isEditingDescription, setIsEditingDescription] = useState(false)
   const {submitting, submitMutation, onError, onCompleted} = useMutationProps()
   const atmosphere = useAtmosphere()
-  const canRemove = prompts.length > 1
+  const canRemove = prompts.length > 1 && isOwner
   const onMouseEnter = () => {
     setIsHover(true)
   }
@@ -89,9 +87,10 @@ const TemplatePromptItem = (props: Props) => {
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
     >
-      <EditableTemplatePromptColor prompt={prompt} prompts={prompts} />
+      <EditableTemplatePromptColor isOwner={isOwner} prompt={prompt} prompts={prompts} />
       <PromptAndDescription>
         <EditableTemplatePrompt
+          isOwner={isOwner}
           isEditingDescription={isEditingDescription}
           isHover={isHover}
           question={question}
@@ -99,6 +98,7 @@ const TemplatePromptItem = (props: Props) => {
           prompts={prompts}
         />
         <EditableTemplateDescription
+          isOwner={isOwner}
           description={description}
           onEditingChange={setIsEditingDescription}
           promptId={promptId}

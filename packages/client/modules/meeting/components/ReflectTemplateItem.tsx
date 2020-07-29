@@ -7,7 +7,7 @@ import {DECELERATE} from '../../../styles/animation'
 import textOverflow from '../../../styles/helpers/textOverflow'
 import {PALETTE} from '../../../styles/paletteV2'
 import {ICON_SIZE} from '../../../styles/typographyV2'
-import relativeDate from '../../../utils/date/relativeDate'
+import makeTemplateDescription from '../../../utils/makeTemplateDescription'
 import {ReflectTemplateItem_template} from '../../../__generated__/ReflectTemplateItem_template.graphql'
 
 const TemplateItem = styled('li')<{isActive: boolean}>(({isActive}) => ({
@@ -57,12 +57,6 @@ const EditIcon = styled(Icon)({
   paddingRight: 16
 })
 
-const makeDescription = (template: ReflectTemplateItem_template) => {
-  const {lastUsedAt, scope, team} = template
-  const {name: teamName} = team
-  if (scope === 'TEAM') return lastUsedAt ? `Last used ${relativeDate(lastUsedAt)}` : 'Never used'
-  return `Created by ${teamName}`
-}
 
 interface Props {
   isActive: boolean
@@ -73,7 +67,7 @@ interface Props {
 const ReflectTemplateItem = (props: Props) => {
   const {isActive, onClick, template} = props
   const {name: templateName} = template
-  const description = makeDescription(template)
+  const description = makeTemplateDescription(template)
   return (
     <TemplateItem
       isActive={isActive}
@@ -97,6 +91,7 @@ export default createFragmentContainer(
       fragment ReflectTemplateItem_template on ReflectTemplate {
         #get the details here so we can show them in the details view
         ...ReflectTemplateDetails_template
+        ...makeTemplateDescription_template
         id
         name
         lastUsedAt

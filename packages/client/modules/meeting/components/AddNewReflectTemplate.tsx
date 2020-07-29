@@ -23,7 +23,7 @@ const ButtonBlock = styled('div')({
   display: 'flex',
   flexDirection: 'column',
   justifyContent: 'flex-end',
-  margin: 8,
+  padding: '8px 16px',
   width: '100%'
 })
 

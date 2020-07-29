@@ -20,9 +20,12 @@ const InheritedStyles = styled('div')({
   flex: 1,
   fontSize: 20,
   fontWeight: 600,
-  lineHeight: '24px'
+  lineHeight: '20px'
 })
 
+const StyledEditableText = styled(EditableText)({
+  lineHeight: '20px'
+})
 class EditableTemplateName extends Component<Props> {
   handleSubmit = (rawName) => {
     const {
@@ -72,18 +75,15 @@ class EditableTemplateName extends Component<Props> {
     const {dirty, error, name, isOwner} = this.props
     return (
       <InheritedStyles>
-        {isOwner ? (
-          <EditableText
-            error={dirty ? (error as string) : undefined}
-            handleSubmit={this.handleSubmit}
-            initialValue={name}
-            maxLength={100}
-            validate={this.validate}
-            placeholder={'*New Template'}
-          />
-        ) : (
-            <div>{name}</div>
-          )}
+        <StyledEditableText
+          disabled={!isOwner}
+          error={dirty ? (error as string) : undefined}
+          handleSubmit={this.handleSubmit}
+          initialValue={name}
+          maxLength={100}
+          validate={this.validate}
+          placeholder={'*New Template'}
+        />
       </InheritedStyles>
     )
   }

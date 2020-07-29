@@ -189,8 +189,15 @@ const Team = new GraphQLObjectType<ITeam, GQLContext>({
     organization: {
       type: new GraphQLNonNull(Organization),
       resolve: async ({id: teamId, orgId}, _args, {authToken, dataLoader}) => {
-        if (!isTeamMember(authToken, teamId)) return null
-        return dataLoader.get('organizations').load(orgId)
+        const organization = await dataLoader.get('organizations').load(orgId)
+        // TODO this is bad, we should probably just put the perms on each field in the org
+        if (!isTeamMember(authToken, teamId)) {
+          return {
+            id: orgId,
+            name: organization.name
+          }
+        }
+        return organization
       }
     },
     agendaItems: {

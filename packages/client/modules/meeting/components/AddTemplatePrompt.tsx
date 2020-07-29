@@ -5,9 +5,7 @@ import {createFragmentContainer} from 'react-relay'
 import {Threshold} from '~/types/constEnums'
 import Icon from '../../../components/Icon'
 import LinkButton from '../../../components/LinkButton'
-import withAtmosphere, {
-  WithAtmosphereProps
-} from '../../../decorators/withAtmosphere/withAtmosphere'
+import withAtmosphere, {WithAtmosphereProps} from '../../../decorators/withAtmosphere/withAtmosphere'
 import AddReflectTemplatePromptMutation from '../../../mutations/AddReflectTemplatePromptMutation'
 import {ICON_SIZE} from '../../../styles/typographyV2'
 import dndNoise from '../../../utils/dndNoise'
@@ -17,6 +15,7 @@ import {AddTemplatePrompt_prompts} from '../../../__generated__/AddTemplatePromp
 const AddPromptLink = styled(LinkButton)({
   alignItems: 'center',
   display: 'flex',
+  justifyContent: 'flex-start',
   fontSize: 18,
   margin: 0,
   marginBottom: 16,
