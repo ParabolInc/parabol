@@ -1,7 +1,7 @@
 import {ConnectionHandler} from 'relay-runtime'
 
 const getArchivedTasksConn = (viewer, teamId) => {
-  const connectionFilter = {archived: true}
+  const connectionFilter = {}
   if (teamId) connectionFilter['teamId'] = teamId
   return ConnectionHandler.getConnection(viewer, 'TeamArchive_archivedTasks', connectionFilter)
 }
