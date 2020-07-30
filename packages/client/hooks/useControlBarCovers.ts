@@ -42,8 +42,6 @@ export const useCoverable = (
   parentRef?: RefObject<HTMLDivElement>
 ) => {
   const updateCoverables = () => {
-    console.log('Resize!')
-
     const el = ref.current
     if (!el) return
     if (window.innerWidth < Breakpoint.SINGLE_REFLECTION_COLUMN) return

@@ -31,7 +31,6 @@ interface Props {
 }
 
 const DiscussionThread = (props: Props) => {
-  console.log('DiscussionThread -> props', props)
   const {meetingContentRef, viewer} = props
 
   const meeting = viewer.meeting!
