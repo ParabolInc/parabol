@@ -14,19 +14,15 @@ interface Props {
 const StyledDialogContainer = styled(DialogContainer)({
   flexDirection: 'row',
   width: 960,
+  maxHeight: 500
 })
 
 const ReflectTemplateModal = (props: Props) => {
   const {retroMeetingSettings} = props
-  const {
-    selectedTemplate,
-    teamTemplates,
-    teamId
-  } = retroMeetingSettings
   return (
     <StyledDialogContainer>
       <ReflectTemplateList settings={retroMeetingSettings} />
-      <ReflectTemplateDetails teamTemplates={teamTemplates} template={selectedTemplate} teamId={teamId} />
+      <ReflectTemplateDetails settings={retroMeetingSettings} />
     </StyledDialogContainer>
   )
 }
@@ -34,16 +30,13 @@ export default createFragmentContainer(ReflectTemplateModal, {
   retroMeetingSettings: graphql`
     fragment ReflectTemplateModal_retroMeetingSettings on RetrospectiveMeetingSettings {
       ...ReflectTemplateList_settings
+      ...ReflectTemplateDetails_settings
       id
-      selectedTemplate {
-        ...ReflectTemplateDetails_template
-      }
-      teamTemplates {
-        ...ReflectTemplateDetails_teamTemplates
-      }
-      activeTemplateId
       selectedTemplateId
-      teamId
+      team {
+        id
+        orgId
+      }
     }
   `
 })

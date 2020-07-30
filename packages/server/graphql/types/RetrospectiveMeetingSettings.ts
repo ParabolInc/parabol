@@ -157,7 +157,9 @@ const RetrospectiveMeetingSettings = new GraphQLObjectType<any, GQLContext>({
         const team = await dataLoader.get('teams').load(teamId)
         const {orgId} = team
         const templates = await dataLoader.get('reflectTemplatesByOrgId').load(orgId)
-        const organizationTemplates = templates.filter(({scope}) => scope !== 'TEAM')
+        const organizationTemplates = templates.filter(
+          (template) => template.scope !== 'TEAM' && template.teamId !== teamId
+        )
         const scoredTemplates = await getScoredTemplates(organizationTemplates, 0.8)
         return connectionFromTemplateArray(scoredTemplates, first, after)
       }
@@ -174,9 +176,14 @@ const RetrospectiveMeetingSettings = new GraphQLObjectType<any, GQLContext>({
           description: 'The cursor, which is the templateId'
         }
       },
-      resolve: async (_source, {first, after}) => {
-        const publicTemplates = await db.read('publicTemplates', 'all')
-        const scoredTemplates = await getPublicScoredTemplates(publicTemplates)
+      resolve: async ({teamId}, {first, after}, {dataLoader}) => {
+        const [publicTemplates, team] = await Promise.all([
+          db.read('publicTemplates', 'all'),
+          dataLoader.get('teams').load(teamId)
+        ])
+        const {orgId} = team
+        const unownedTemplates = publicTemplates.filter((template) => template.orgId !== orgId)
+        const scoredTemplates = await getPublicScoredTemplates(unownedTemplates)
         return connectionFromTemplateArray(scoredTemplates, first, after)
       }
     }

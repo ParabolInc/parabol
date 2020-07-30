@@ -1490,7 +1490,7 @@ export interface ITeamMeetingSettings {
   /**
    * The team these settings belong to
    */
-  team: ITeam | null;
+  team: ITeam;
 }
 
 /**
@@ -5221,7 +5221,7 @@ export interface IRetrospectiveMeetingSettings {
   /**
    * The team these settings belong to
    */
-  team: ITeam | null;
+  team: ITeam;
 
   /**
    * the team-specific questions to ask during a retro
@@ -7666,7 +7666,7 @@ export interface IActionMeetingSettings {
   /**
    * The team these settings belong to
    */
-  team: ITeam | null;
+  team: ITeam;
 }
 
 /**

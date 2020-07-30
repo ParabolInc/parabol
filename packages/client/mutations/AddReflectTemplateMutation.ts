@@ -52,7 +52,7 @@ export const addReflectTemplateTeamUpdater: SharedUpdater<AddReflectTemplateMuta
   if (!settingsRecord || Array.isArray(settingsRecord)) return
   const settings = store.get(settingsRecord.__id)
   if (!settings) return
-  settings.setValue(templateId, 'activeTemplateId')
+  settings.setValue(templateId, 'selectedTemplateId')
 }
 
 const AddReflectTemplateMutation = (

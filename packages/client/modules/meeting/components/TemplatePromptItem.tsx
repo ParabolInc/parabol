@@ -44,6 +44,7 @@ const RemovePromptIcon = styled(Icon)<StyledProps>(({isHover}) => ({
   display: 'block',
   fontSize: ICON_SIZE.MD18,
   marginLeft: 'auto',
+  paddingTop: 8,
   opacity: isHover ? 1 : 0
 }))
 

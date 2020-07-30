@@ -4,9 +4,9 @@ import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import CreateTemplate from '../../../../../static/images/illustrations/CreateTemplate.svg'
 import {PALETTE} from '../../../styles/paletteV2'
+import getTemplateList from '../../../utils/getTemplateList'
 import makeTemplateDescription from '../../../utils/makeTemplateDescription'
-import {ReflectTemplateDetails_teamTemplates} from '../../../__generated__/ReflectTemplateDetails_teamTemplates.graphql'
-import {ReflectTemplateDetails_template} from '../../../__generated__/ReflectTemplateDetails_template.graphql'
+import {ReflectTemplateDetails_settings} from '../../../__generated__/ReflectTemplateDetails_settings.graphql'
 import AddTemplatePrompt from './AddTemplatePrompt'
 import CloneOrRemoveTemplate from './CloneOrRemoveTemplate'
 import EditableTemplateName from './EditableTemplateName'
@@ -27,6 +27,7 @@ const PromptEditor = styled('div')({
   background: '#fff',
   display: 'flex',
   flexDirection: 'column',
+  overflow: 'hidden',
   minWidth: 600,
 })
 
@@ -53,17 +54,19 @@ const Scrollable = styled('div')({
   overflow: 'auto'
 })
 
+
 interface Props {
-  template: ReflectTemplateDetails_template
-  teamTemplates: ReflectTemplateDetails_teamTemplates
-  teamId: string
+  settings: ReflectTemplateDetails_settings
 }
 
 const ReflectTemplateDetails = (props: Props) => {
-  const {template, teamId, teamTemplates} = props
-  const {id: templateId, name: templateName, prompts} = template
-  const isOwner = template.teamId === teamId
-  const description = makeTemplateDescription(template)
+  const {settings} = props
+  const {teamTemplates, selectedTemplate, team} = settings
+  const {id: templateId, name: templateName, prompts} = selectedTemplate
+  const {id: teamId, orgId} = team
+  const lowestScope = getTemplateList(teamId, orgId, selectedTemplate)
+  const isOwner = selectedTemplate.teamId === teamId
+  const description = makeTemplateDescription(lowestScope, selectedTemplate)
   return (
     <PromptEditor>
       <CreateTemplateImg src={CreateTemplate} />
@@ -84,30 +87,40 @@ const ReflectTemplateDetails = (props: Props) => {
         <TemplatePromptList isOwner={isOwner} prompts={prompts} templateId={templateId} />
         {isOwner && <AddTemplatePrompt templateId={templateId} prompts={prompts} />}
       </Scrollable>
-      <TemplateSharing teamId={teamId} template={template} />
+      <TemplateSharing teamId={teamId} template={selectedTemplate} />
     </PromptEditor>
   )
 }
 
+graphql`
+  fragment ReflectTemplateDetailsTemplate on ReflectTemplate {
+    ...TemplateSharing_template
+    ...getTemplateList_template
+    ...makeTemplateDescription_template
+    id
+    name
+    prompts {
+      ...TemplatePromptList_prompts
+      ...AddTemplatePrompt_prompts
+    }
+    teamId
+  }
+`
 export default createFragmentContainer(
   ReflectTemplateDetails,
   {
-    teamTemplates: graphql`
-      fragment ReflectTemplateDetails_teamTemplates on ReflectTemplate @relay(plural: true) {
-        ...EditableTemplateName_teamTemplates
-      }
-    `,
-    template: graphql`
-      fragment ReflectTemplateDetails_template on ReflectTemplate {
-        ...TemplateSharing_template
-        ...makeTemplateDescription_template
-        id
-        name
-        prompts {
-          ...TemplatePromptList_prompts
-          ...AddTemplatePrompt_prompts
+    settings: graphql`
+      fragment ReflectTemplateDetails_settings on RetrospectiveMeetingSettings {
+        selectedTemplate {
+          ...ReflectTemplateDetailsTemplate @relay(mask: false)
         }
-        teamId
+        teamTemplates {
+          ...EditableTemplateName_teamTemplates
+        }
+        team {
+          id
+          orgId
+        }
       }
     `
   }

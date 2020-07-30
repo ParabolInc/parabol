@@ -3,6 +3,7 @@ const hydrators = {
     publicTemplates.forEach((template) => {
       template.createdAt = new Date(template.createdAt)
     })
+    return publicTemplates
   }
 }
 

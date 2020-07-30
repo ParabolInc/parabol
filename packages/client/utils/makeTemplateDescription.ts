@@ -3,7 +3,7 @@ import {readInlineData} from 'relay-runtime'
 import {makeTemplateDescription_template} from '../__generated__/makeTemplateDescription_template.graphql'
 import relativeDate from './date/relativeDate'
 
-const makeTemplateDescription = (templateRef: any) => {
+const makeTemplateDescription = (lowestScope: string, templateRef: any) => {
   const template = readInlineData<makeTemplateDescription_template>(
     graphql`
       fragment makeTemplateDescription_template on ReflectTemplate @inline {
@@ -16,9 +16,9 @@ const makeTemplateDescription = (templateRef: any) => {
     `,
     templateRef
   )
-  const {lastUsedAt, scope, team} = template
+  const {lastUsedAt, team} = template
   const {name: teamName} = team
-  if (scope === 'TEAM') return lastUsedAt ? `Last used ${relativeDate(lastUsedAt)}` : 'Never used'
+  if (lowestScope === 'TEAM') return lastUsedAt ? `Last used ${relativeDate(lastUsedAt)}` : 'Never used'
   return `Created by ${teamName}`
 }
 

@@ -6,7 +6,7 @@ import {MenuProps} from '../hooks/useMenu'
 import useMutationProps from '../hooks/useMutationProps'
 import UpdateTemplateScopeMutation from '../mutations/UpdateTemplateScopeMutation'
 import {SelectSharingScopeDropdown_template} from '../__generated__/SelectSharingScopeDropdown_template.graphql'
-import DropdownMenuItemLabel from './DropdownMenuItemLabel'
+import DropdownMenuIconItemLabel from './DropdownMenuIconItemLabel'
 import Menu from './Menu'
 import MenuItem from './MenuItem'
 
@@ -30,18 +30,22 @@ const SelectSharingScopeDropdown = (props: Props) => {
   return (
     <Menu ariaLabel={'Select the suitable scope for sharing'} {...menuProps}>
       {scope === 'TEAM' ? null : <MenuItem
-        label={<DropdownMenuItemLabel>{`Only visible to ${teamName}`}</DropdownMenuItemLabel>}
+        label={<DropdownMenuIconItemLabel label={`Share only with ${teamName}`} icon={'group'} />}
         onClick={setScope('TEAM')}
       />}
-      {scope === 'ORGANIZATION' ? null : <MenuItem
-        label={<DropdownMenuItemLabel>{`Share with all of ${orgName}`}</DropdownMenuItemLabel>}
-        onClick={setScope('ORGANIZATION')}
-      />}
-      {scope === 'PUBLIC' ? null : <MenuItem
-        label={<DropdownMenuItemLabel>{`Share with the world`}</DropdownMenuItemLabel>}
-        onClick={setScope('PUBLIC')}
-      />}
-    </Menu>
+      {
+        scope === 'ORGANIZATION' ? null : <MenuItem
+          label={<DropdownMenuIconItemLabel label={`Share with all of ${orgName}`} icon={'business'} />}
+          onClick={setScope('ORGANIZATION')}
+        />
+      }
+      {
+        scope === 'PUBLIC' ? null : <MenuItem
+          label={<DropdownMenuIconItemLabel label={`Share with the world`} icon={'public'} />}
+          onClick={setScope('PUBLIC')}
+        />
+      }
+    </Menu >
   )
 }
 

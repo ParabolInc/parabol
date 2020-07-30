@@ -11,7 +11,7 @@ import {EditableTemplatePrompt_prompts} from '../../../__generated__/EditableTem
 
 const StyledEditableText = styled(EditableText)({
   lineHeight: '20px',
-  paddingBottom: 8,
+  paddingBottom: 4,
   paddingTop: 8
 })
 

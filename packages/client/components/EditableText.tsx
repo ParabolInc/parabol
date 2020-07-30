@@ -226,7 +226,6 @@ class EditableText extends Component<Props, State> {
     const {className, disabled, error} = this.props
     const {autoFocus, isEditing} = this.state
     const showEditing = (error || isEditing || autoFocus) && !disabled
-    console.log('CNAM', className)
     return (
       <div className={className}>{showEditing ? this.renderEditing() : this.renderStatic()}</div>
     )

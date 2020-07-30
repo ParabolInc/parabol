@@ -38,6 +38,7 @@ const updateTemplateScope = {
       return {error: {message: `Template not found`}}
     }
     const {name, teamId, orgId, scope} = template
+    template.scope = newScope
     if (!isTeamMember(authToken, teamId)) {
       return {error: {message: `Not a member of the team`}}
     }
@@ -98,7 +99,8 @@ const updateTemplateScope = {
         })
         .run()
     }
-    const data = {teamId}
+
+    const data = {templateId, teamId}
     publish(SubscriptionChannel.TEAM, teamId, 'UpdateTemplateScopeSuccess', data, subOptions)
     return data
   }

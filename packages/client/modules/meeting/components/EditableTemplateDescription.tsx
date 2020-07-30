@@ -15,7 +15,7 @@ interface Props extends WithAtmosphereProps, WithMutationProps {
 
 const EditableSubText = styled(EditableText)({
   fontSize: 14,
-  lineHeight: 1,
+  lineHeight: '20px',
   marginBottom: 8
 })
 

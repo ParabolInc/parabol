@@ -39,6 +39,8 @@ const ReflectTemplateListPublic = (props: Props) => {
             template={template}
             isActive={template.id === selectedTemplateId}
             onClick={selectTemplate}
+            lowestScope={'PUBLIC'}
+            teamId={teamId}
           />
         })
       }

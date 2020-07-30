@@ -69,6 +69,7 @@ const addTemplateToScope = (template: RecordProxy, scope: SharingScopeEnum, meet
   }
 }
 
+const SCOPES = ['TEAM', 'ORGANIZATION', 'PUBLIC']
 const handleUpdateTemplateScope = (template: RecordProxy, newScope: SharingScopeEnum, store: RecordSourceSelectorProxy) => {
   const templateId = template.getValue('id') as string
   const teamId = template.getValue('teamId') as string
@@ -78,10 +79,13 @@ const handleUpdateTemplateScope = (template: RecordProxy, newScope: SharingScope
   if (!meetingSettings) return
 
   const oldTemplate = getBaseRecord(store, templateId)
-  const oldScope = oldTemplate.getValue('scope')
+  const {scope: oldScope} = oldTemplate
 
-  removeTemplateFromCurrentScope(templateId, oldScope, meetingSettings)
-  addTemplateToScope(template, newScope, meetingSettings, store)
+  const isDecreasing = SCOPES.indexOf(oldScope) > SCOPES.indexOf(newScope)
+  if (isDecreasing) {
+    removeTemplateFromCurrentScope(templateId, oldScope, meetingSettings)
+    addTemplateToScope(template, newScope, meetingSettings, store)
+  }
 }
 
 const updateTemplateScopeTeamUpdater: SharedUpdater<UpdateTemplateScopeMutation_team> = (payload: any, {store}) => {

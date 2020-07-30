@@ -17,6 +17,7 @@ const aGhostUser = {
   tier: 'enterprise',
   tms: 'aGhostTeam'
 }
+
 const aGhostOrg = {
   id: 'aGhostOrg',
   name: 'Parabol',
@@ -58,7 +59,8 @@ const templates = [
     name: 'Sailboat',
     teamId: 'aGhostTeam',
     updatedAt: createdAt,
-    scope: 'PUBLIC'
+    scope: 'PUBLIC',
+    orgId: 'aGhostOrg'
   },
   {
     createdAt: createdAt,
@@ -67,7 +69,8 @@ const templates = [
     name: 'Start Stop Continue',
     teamId: 'aGhostTeam',
     updatedAt: createdAt,
-    scope: 'PUBLIC'
+    scope: 'PUBLIC',
+    orgId: 'aGhostOrg'
   },
   {
     createdAt: createdAt,
@@ -76,7 +79,8 @@ const templates = [
     name: 'Working & Stuck',
     teamId: 'aGhostTeam',
     updatedAt: createdAt,
-    scope: 'PUBLIC'
+    scope: 'PUBLIC',
+    orgId: 'aGhostOrg'
   },
   {
     createdAt: createdAt,
@@ -85,7 +89,8 @@ const templates = [
     name: 'Liked, Learned, Lacked, Longed for',
     teamId: 'aGhostTeam',
     updatedAt: createdAt,
-    scope: 'PUBLIC'
+    scope: 'PUBLIC',
+    orgId: 'aGhostOrg'
   },
   {
     createdAt: createdAt,
@@ -94,7 +99,8 @@ const templates = [
     name: 'Glad, Sad, Mad',
     teamId: 'aGhostTeam',
     updatedAt: createdAt,
-    scope: 'PUBLIC'
+    scope: 'PUBLIC',
+    orgId: 'aGhostOrg'
   }
 ]
 

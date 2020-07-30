@@ -26,7 +26,7 @@ const RetroTemplatePicker = (props: Props) => {
   const {settings} = props
   const {selectedTemplate} = settings
   const {name: templateName} = selectedTemplate
-  const {togglePortal, modalPortal} = useModal()
+  const {togglePortal, modalPortal} = useModal({id: 'templateModal'})
   return (
     <>
       <Dropdown

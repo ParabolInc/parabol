@@ -55,6 +55,8 @@ const ReflectTemplateListOrg = (props: Props) => {
             template={template}
             isActive={template.id === selectedTemplateId}
             onClick={selectTemplate}
+            lowestScope={'ORGANIZATION'}
+            teamId={teamId}
           />
         })
       }

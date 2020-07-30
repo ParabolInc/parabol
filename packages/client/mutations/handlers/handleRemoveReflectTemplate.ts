@@ -1,7 +1,7 @@
 import {RecordSourceSelectorProxy} from 'relay-runtime'
-import pluralizeHandler from './pluralizeHandler'
-import safeRemoveNodeFromArray from '../../utils/relay/safeRemoveNodeFromArray'
 import getCachedRecord from '../../utils/relay/getCachedRecord'
+import safeRemoveNodeFromArray from '../../utils/relay/safeRemoveNodeFromArray'
+import pluralizeHandler from './pluralizeHandler'
 
 const handleRemoveReflectTemplate = (templateId: string, store: RecordSourceSelectorProxy<any>) => {
   const filterFn = (obj) => {
@@ -18,6 +18,7 @@ const handleRemoveReflectTemplate = (templateId: string, store: RecordSourceSele
   const settings = store.get(settingsRecord.__id)
   if (!settings) return
   const selectedTemplateId = settings.getValue('selectedTemplateId')
+  // TODO pick the next best
   const templates = settings.getLinkedRecords('reflectTemplates')
   if (!templates) return
   const nextTemplate = templates.find((template) =>
@@ -26,10 +27,6 @@ const handleRemoveReflectTemplate = (templateId: string, store: RecordSourceSele
   const nextTemplateId = nextTemplate.getValue('id')
   if (selectedTemplateId === templateId) {
     settings.setValue(nextTemplateId, 'selectedTemplateId')
-  }
-  const activeTemplateId = settings.getValue('activeTemplateId')
-  if (activeTemplateId === templateId) {
-    settings.setValue(nextTemplateId, 'activeTemplateId')
   }
   safeRemoveNodeFromArray(templateId, settings, 'reflectTemplates')
 }

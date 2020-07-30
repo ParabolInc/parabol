@@ -56,7 +56,6 @@ const ReflectTemplateListTeam = (props: Props) => {
     <TemplateList>
       {
         teamTemplates.map((template) => {
-          console.log('selectedTemplate', selectedTemplateId)
           const selectTemplate = () => {
             SelectRetroTemplateMutation(atmosphere, {selectedTemplateId: template.id, teamId})
           }
@@ -65,6 +64,8 @@ const ReflectTemplateListTeam = (props: Props) => {
             template={template}
             isActive={template.id === selectedTemplateId}
             onClick={selectTemplate}
+            lowestScope={'TEAM'}
+            teamId={teamId}
           />
         })
       }

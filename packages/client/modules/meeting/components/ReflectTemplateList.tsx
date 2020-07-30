@@ -7,6 +7,7 @@ import Icon from '../../../components/Icon'
 import Tab from '../../../components/Tab/Tab'
 import Tabs from '../../../components/Tabs/Tabs'
 import {PALETTE} from '../../../styles/paletteV2'
+import getTemplateList from '../../../utils/getTemplateList'
 import {ReflectTemplateList_settings} from '../../../__generated__/ReflectTemplateList_settings.graphql'
 import AddNewReflectTemplate from './AddNewReflectTemplate'
 import ReflectTemplateListOrgRoot from './ReflectTemplateListOrgRoot'
@@ -61,11 +62,15 @@ interface Props {
 
 const SCOPES = ['TEAM', 'ORGANIZATION', 'PUBLIC']
 
+
 const ReflectTemplateList = (props: Props) => {
   const {settings} = props
-  const {selectedTemplate, teamId, teamTemplates} = settings
-  const {id: selectedTemplateId, scope} = selectedTemplate
-  const [activeIdx, setActiveIdx] = useState(SCOPES.indexOf(scope))
+  const {selectedTemplate, team, teamTemplates} = settings
+  const {id: teamId, orgId} = team
+  const {id: selectedTemplateId} = selectedTemplate
+  const lowestScope = getTemplateList(teamId, orgId, selectedTemplate)
+  const listIdx = SCOPES.indexOf(lowestScope)
+  const [activeIdx, setActiveIdx] = useState(listIdx)
   return (
     <TemplateSidebar>
       <Label>Retro Templates</Label>
@@ -106,11 +111,15 @@ export default createFragmentContainer(
     settings: graphql`
       fragment ReflectTemplateList_settings on RetrospectiveMeetingSettings {
         id
-        activeTemplateId
-        teamId
-        selectedTemplate {
+        team {
           id
-          scope
+          orgId
+        }
+        selectedTemplate {
+          ...getTemplateList_template
+          id
+          teamId
+          orgId
         }
         teamTemplates {
           ...ReflectTemplateListTeam_teamTemplates

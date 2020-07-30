@@ -50,7 +50,7 @@ const TemplateItemAction = styled('div')({
 
 })
 
-const EditIcon = styled(Icon)({
+const EditOrCloneIcon = styled(Icon)({
   color: PALETTE.TEXT_GRAY,
   fontSize: ICON_SIZE.MD18,
   padding: 8,
@@ -60,14 +60,17 @@ const EditIcon = styled(Icon)({
 
 interface Props {
   isActive: boolean
+  teamId: string
   onClick: () => void
   template: ReflectTemplateItem_template
+  lowestScope: 'TEAM' | 'ORGANIZATION' | 'PUBLIC'
 }
 
 const ReflectTemplateItem = (props: Props) => {
-  const {isActive, onClick, template} = props
+  const {lowestScope, isActive, teamId, onClick, template} = props
   const {name: templateName} = template
-  const description = makeTemplateDescription(template)
+  const isOwner = template.teamId === teamId
+  const description = makeTemplateDescription(lowestScope, template)
   return (
     <TemplateItem
       isActive={isActive}
@@ -78,7 +81,7 @@ const ReflectTemplateItem = (props: Props) => {
         <TemplateDescription>{description}</TemplateDescription>
       </TemplateItemDetails>
       <TemplateItemAction>
-        <EditIcon>{'edit'}</EditIcon>
+        <EditOrCloneIcon>{isOwner ? 'edit' : 'content_copy'}</EditOrCloneIcon>
       </TemplateItemAction>
     </TemplateItem>
   )
@@ -90,15 +93,13 @@ export default createFragmentContainer(
     template: graphql`
       fragment ReflectTemplateItem_template on ReflectTemplate {
         #get the details here so we can show them in the details view
-        ...ReflectTemplateDetails_template
+        ...ReflectTemplateDetailsTemplate
         ...makeTemplateDescription_template
         id
         name
         lastUsedAt
         scope
-        team {
-          name
-        }
+        teamId
       }
     `
   }
