@@ -205,7 +205,7 @@ const useCoords = <
     options.portalStatus
   ])
 
-  useResizeObserver(targetRef.current, () => {
+  useResizeObserver(targetRef, () => {
     const targetBBox = targetRef.current?.getBoundingClientRect()
     const originBBox = originRef.current?.getBoundingClientRect()
     if (targetBBox && originBBox) {

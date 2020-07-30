@@ -1,5 +1,6 @@
 import {RefObject, useEffect} from 'react'
 import {BezierCurve, Breakpoint} from '~/types/constEnums'
+import useResizeObserver from './useResizeObserver'
 
 interface ControlBarCoverable {
   id: string
@@ -34,8 +35,15 @@ const ensureCovering = (
   coverable.isExpanded = willBeExpanded
 }
 
-export const useCoverable = (id: string, ref: RefObject<HTMLDivElement>, height: number) => {
+export const useCoverable = (
+  id: string,
+  ref: RefObject<HTMLDivElement>,
+  height: number,
+  meetingContentRef?: any
+) => {
   const updateCoverables = () => {
+    console.log('Resize!')
+
     const el = ref.current
     if (!el) return
     if (window.innerWidth < Breakpoint.SINGLE_REFLECTION_COLUMN) return
@@ -58,7 +66,7 @@ export const useCoverable = (id: string, ref: RefObject<HTMLDivElement>, height:
     coverables[id] = coverable
   }
 
-  window.addEventListener('resize', () => updateCoverables())
+  useResizeObserver(meetingContentRef, updateCoverables)
 
   useEffect(() => {
     updateCoverables()
