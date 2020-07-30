@@ -39,7 +39,7 @@ export const useCoverable = (
   id: string,
   ref: RefObject<HTMLDivElement>,
   height: number,
-  meetingContentRef?: any
+  parentRef?: RefObject<HTMLDivElement>
 ) => {
   const updateCoverables = () => {
     console.log('Resize!')
@@ -66,7 +66,7 @@ export const useCoverable = (
     coverables[id] = coverable
   }
 
-  useResizeObserver(meetingContentRef, updateCoverables)
+  useResizeObserver(updateCoverables, parentRef)
 
   useEffect(() => {
     updateCoverables()

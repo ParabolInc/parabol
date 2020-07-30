@@ -10,7 +10,10 @@ declare global {
 
 const ResizeObserver = window.ResizeObserver || (ResizeObserverPolyfill as {new (): ResizeObserver})
 
-const useResizeObserver = (ref: RefObject, cb: ResizeObserverCallback) => {
+const useResizeObserver = (
+  cb: ResizeObserverCallback,
+  ref?: RefObject<HTMLDivElement | HTMLElement>
+) => {
   const eventCb = useEventCallback(cb)
   useEffect(() => {
     if (!ref || !ref.current) return
