@@ -15,12 +15,14 @@ const query = graphql`
 `
 
 interface Props {
+  isActive: boolean
   teamId: string
 }
 
 const ReflectTemplateListPublicRoot = (props: Props) => {
-  const {teamId} = props
+  const {isActive, teamId} = props
   const atmosphere = useAtmosphere()
+  if (!isActive) return null
   return (
     <QueryRenderer
       environment={atmosphere}

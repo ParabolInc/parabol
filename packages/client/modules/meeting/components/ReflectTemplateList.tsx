@@ -90,10 +90,10 @@ const ReflectTemplateList = (props: Props) => {
           <ReflectTemplateListTeam selectedTemplateId={selectedTemplateId} showPublicTemplates={() => setActiveIdx(2)} teamTemplates={teamTemplates} teamId={teamId} />
         </TabContents>
         <TabContents>
-          <ReflectTemplateListOrgRoot teamId={teamId} />
+          <ReflectTemplateListOrgRoot teamId={teamId} isActive={activeIdx === 1} />
         </TabContents>
         <TabContents>
-          <ReflectTemplateListPublicRoot teamId={teamId} />
+          <ReflectTemplateListPublicRoot teamId={teamId} isActive={activeIdx === 2} />
         </TabContents>
       </SwipeableViews>
       {/* add a key to clear the error when they change */}

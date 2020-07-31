@@ -3,6 +3,7 @@ import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import useAtmosphere from '../../../hooks/useAtmosphere'
+import useSelectTopTemplate from '../../../hooks/useSelectTopTemplate'
 import SelectRetroTemplateMutation from '../../../mutations/SelectRetroTemplateMutation'
 import {ReflectTemplateListPublic_viewer} from '../../../__generated__/ReflectTemplateListPublic_viewer.graphql'
 import ReflectTemplateItem from './ReflectTemplateItem'
@@ -20,13 +21,13 @@ interface Props {
 
 const ReflectTemplateListPublic = (props: Props) => {
   const {viewer} = props
-  const {team} = viewer
+  const team = viewer.team!
   const atmosphere = useAtmosphere()
-  if (!team) return null
   const {id: teamId, meetingSettings} = team
-  const {publicTemplates, selectedTemplateId} = meetingSettings
-  if (!publicTemplates) return null
+  const publicTemplates = meetingSettings.publicTemplates!
+  const selectedTemplateId = meetingSettings.selectedTemplateId!
   const {edges} = publicTemplates
+  useSelectTopTemplate(edges, selectedTemplateId, teamId)
   return (
     <TemplateList>
       {
