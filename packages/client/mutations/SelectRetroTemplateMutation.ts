@@ -1,5 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
+import {IReflectTemplate} from '../types/graphql'
 import {SimpleMutation} from '../types/relayMutations'
 import {RETROSPECTIVE} from '../utils/constants'
 import {SelectRetroTemplateMutation as TSelectRetroTemplateMutation} from '../__generated__/SelectRetroTemplateMutation.graphql'
@@ -36,7 +37,9 @@ const SelectRetroTemplateMutation: SimpleMutation<TSelectRetroTemplateMutation> 
       if (!team) return
       const meetingSettings = team.getLinkedRecord('meetingSettings', {meetingType: RETROSPECTIVE})
       if (!meetingSettings) return
+      const selectedTemplate = store.get<IReflectTemplate>(selectedTemplateId)!
       meetingSettings.setValue(selectedTemplateId, 'selectedTemplateId')
+      meetingSettings.setLinkedRecord(selectedTemplate, 'selectedTemplate')
     }
   })
 }

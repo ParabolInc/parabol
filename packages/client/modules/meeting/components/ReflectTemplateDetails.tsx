@@ -4,12 +4,14 @@ import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import CreateTemplate from '../../../../../static/images/illustrations/CreateTemplate.svg'
 import {PALETTE} from '../../../styles/paletteV2'
+import {Threshold} from '../../../types/constEnums'
 import getTemplateList from '../../../utils/getTemplateList'
 import makeTemplateDescription from '../../../utils/makeTemplateDescription'
 import {ReflectTemplateDetails_settings} from '../../../__generated__/ReflectTemplateDetails_settings.graphql'
 import AddTemplatePrompt from './AddTemplatePrompt'
-import CloneOrRemoveTemplate from './CloneOrRemoveTemplate'
+import CloneTemplate from './CloneTemplate'
 import EditableTemplateName from './EditableTemplateName'
+import RemoveTemplate from './RemoveTemplate'
 import TemplatePromptList from './TemplatePromptList'
 import TemplateSharing from './TemplateSharing'
 
@@ -56,17 +58,19 @@ const Scrollable = styled('div')({
 
 
 interface Props {
+  gotoPublicTemplates: () => void
   settings: ReflectTemplateDetails_settings
 }
 
 const ReflectTemplateDetails = (props: Props) => {
-  const {settings} = props
+  const {gotoPublicTemplates, settings} = props
   const {teamTemplates, selectedTemplate, team} = settings
   const {id: templateId, name: templateName, prompts} = selectedTemplate
   const {id: teamId, orgId} = team
   const lowestScope = getTemplateList(teamId, orgId, selectedTemplate)
   const isOwner = selectedTemplate.teamId === teamId
   const description = makeTemplateDescription(lowestScope, selectedTemplate)
+  const templateCount = teamTemplates.length
   return (
     <PromptEditor>
       <CreateTemplateImg src={CreateTemplate} />
@@ -79,7 +83,8 @@ const ReflectTemplateDetails = (props: Props) => {
             teamTemplates={teamTemplates}
             isOwner={isOwner}
           />
-          <CloneOrRemoveTemplate isOwner={isOwner} templateCount={teamTemplates.length} templateId={templateId} />
+          {isOwner && templateCount > 1 && <RemoveTemplate templateId={templateId} teamId={teamId} teamTemplates={teamTemplates} gotoPublicTemplates={gotoPublicTemplates} />}
+          {!isOwner && templateCount < Threshold.MAX_RETRO_TEAM_TEMPLATES && <CloneTemplate teamId={teamId} templateId={templateId} />}
         </FirstLine>
         <Description>{description}</Description>
       </TemplateHeader>
@@ -116,6 +121,7 @@ export default createFragmentContainer(
         }
         teamTemplates {
           ...EditableTemplateName_teamTemplates
+          ...RemoveTemplate_teamTemplates
         }
         team {
           id

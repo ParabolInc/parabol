@@ -1,13 +1,12 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {useState} from 'react'
+import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import SwipeableViews from 'react-swipeable-views'
 import Icon from '../../../components/Icon'
 import Tab from '../../../components/Tab/Tab'
 import Tabs from '../../../components/Tabs/Tabs'
 import {PALETTE} from '../../../styles/paletteV2'
-import getTemplateList from '../../../utils/getTemplateList'
 import {ReflectTemplateList_settings} from '../../../__generated__/ReflectTemplateList_settings.graphql'
 import AddNewReflectTemplate from './AddNewReflectTemplate'
 import ReflectTemplateListOrgRoot from './ReflectTemplateListOrgRoot'
@@ -57,25 +56,27 @@ const TabLabel = styled('div')({
 const containerStyle = {height: '100%'}
 const innerStyle = {width: '100%', height: '100%'}
 interface Props {
+  activeIdx: number
+  setActiveIdx: (idx: number) => void
   settings: ReflectTemplateList_settings
 }
 
-const SCOPES = ['TEAM', 'ORGANIZATION', 'PUBLIC']
 
 
 const ReflectTemplateList = (props: Props) => {
-  const {settings} = props
+  const {activeIdx, setActiveIdx, settings} = props
   const {selectedTemplate, team, teamTemplates} = settings
-  const {id: teamId, orgId} = team
+  const {id: teamId} = team
   const {id: selectedTemplateId} = selectedTemplate
-  const lowestScope = getTemplateList(teamId, orgId, selectedTemplate)
-  const listIdx = SCOPES.indexOf(lowestScope)
-  const [activeIdx, setActiveIdx] = useState(listIdx)
+
+  const gotoTeamTemplates = () => {
+    setActiveIdx(0)
+  }
   return (
     <TemplateSidebar>
       <Label>Retro Templates</Label>
       <StyledTabsBar activeIdx={activeIdx}>
-        <FullTab label={<TabLabel><Icon>{'group'}</Icon> Team</TabLabel>} onClick={() => setActiveIdx(0)} />
+        <FullTab label={<TabLabel><Icon>{'group'}</Icon> Team</TabLabel>} onClick={gotoTeamTemplates} />
         <FullTab label={<TabLabel><Icon>{'business'}</Icon> Organization</TabLabel>} onClick={() => setActiveIdx(1)} />
         <FullTab label={<TabLabel><Icon>{'public'}</Icon> Public</TabLabel>} onClick={() => setActiveIdx(2)} />
       </StyledTabsBar>
@@ -87,13 +88,13 @@ const ReflectTemplateList = (props: Props) => {
         style={innerStyle}
       >
         <TabContents>
-          <ReflectTemplateListTeam selectedTemplateId={selectedTemplateId} showPublicTemplates={() => setActiveIdx(2)} teamTemplates={teamTemplates} teamId={teamId} />
+          <ReflectTemplateListTeam selectedTemplateId={selectedTemplateId} showPublicTemplates={() => setActiveIdx(2)} teamTemplates={teamTemplates} teamId={teamId} isActive={activeIdx === 0} />
         </TabContents>
         <TabContents>
-          <ReflectTemplateListOrgRoot teamId={teamId} isActive={activeIdx === 1} />
+          <ReflectTemplateListOrgRoot teamId={teamId} isActive={activeIdx === 1} gotoTeamTemplates={gotoTeamTemplates} />
         </TabContents>
         <TabContents>
-          <ReflectTemplateListPublicRoot teamId={teamId} isActive={activeIdx === 2} />
+          <ReflectTemplateListPublicRoot teamId={teamId} isActive={activeIdx === 2} gotoTeamTemplates={gotoTeamTemplates} />
         </TabContents>
       </SwipeableViews>
       {/* add a key to clear the error when they change */}
@@ -113,7 +114,6 @@ export default createFragmentContainer(
         id
         team {
           id
-          orgId
         }
         selectedTemplate {
           ...getTemplateList_template

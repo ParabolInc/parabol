@@ -3,6 +3,10 @@ import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import Icon from '../../../components/Icon'
+import useAtmosphere from '../../../hooks/useAtmosphere'
+import useMutationProps from '../../../hooks/useMutationProps'
+import AddReflectTemplateMutation from '../../../mutations/AddReflectTemplateMutation'
+import SelectRetroTemplateMutation from '../../../mutations/SelectRetroTemplateMutation'
 import {DECELERATE} from '../../../styles/animation'
 import textOverflow from '../../../styles/helpers/textOverflow'
 import {PALETTE} from '../../../styles/paletteV2'
@@ -23,6 +27,7 @@ const TemplateItem = styled('li')<{isActive: boolean}>(({isActive}) => ({
   paddingBottom: 12,
   paddingLeft: 16,
   transition: `background-color 300ms ${DECELERATE}`,
+  userSelect: 'none',
   width: '100%'
 }))
 
@@ -59,29 +64,41 @@ const EditOrCloneIcon = styled(Icon)({
 
 
 interface Props {
+  gotoTeamTemplates: () => void
   isActive: boolean
   teamId: string
-  onClick: () => void
   template: ReflectTemplateItem_template
   lowestScope: 'TEAM' | 'ORGANIZATION' | 'PUBLIC'
 }
 
 const ReflectTemplateItem = (props: Props) => {
-  const {lowestScope, isActive, teamId, onClick, template} = props
-  const {name: templateName} = template
+  const {gotoTeamTemplates, lowestScope, isActive, teamId, template} = props
+  const {id: templateId, name: templateName} = template
   const isOwner = template.teamId === teamId
   const description = makeTemplateDescription(lowestScope, template)
+  const atmosphere = useAtmosphere()
+  const {onCompleted, onError, submitMutation, submitting} = useMutationProps()
+  const selectTemplate = () => {
+    if (isActive) return
+    SelectRetroTemplateMutation(atmosphere, {selectedTemplateId: templateId, teamId})
+  }
+  const cloneTemplate = () => {
+    if (isOwner || submitting) return
+    submitMutation()
+    AddReflectTemplateMutation(atmosphere, {teamId, parentTemplateId: templateId}, {onError, onCompleted})
+    gotoTeamTemplates()
+  }
   return (
     <TemplateItem
       isActive={isActive}
-      onClick={onClick}
+      onClick={selectTemplate}
     >
       <TemplateItemDetails>
         <TemplateTitle>{templateName}</TemplateTitle>
         <TemplateDescription>{description}</TemplateDescription>
       </TemplateItemDetails>
       <TemplateItemAction>
-        <EditOrCloneIcon>{isOwner ? 'edit' : 'content_copy'}</EditOrCloneIcon>
+        <EditOrCloneIcon onClick={cloneTemplate}>{isOwner ? 'edit' : 'content_copy'}</EditOrCloneIcon>
       </TemplateItemAction>
     </TemplateItem>
   )

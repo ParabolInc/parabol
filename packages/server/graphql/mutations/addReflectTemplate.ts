@@ -60,7 +60,7 @@ const addReflectTemplate = {
         }
       }
       const newTemplate = new ReflectTemplate({
-        name: `${name} Clone`,
+        name: `${name} Copy`,
         teamId,
         orgId: viewerTeam.orgId,
         parentTemplateId
@@ -72,6 +72,7 @@ const addReflectTemplate = {
       const newTemplatePrompts = prompts.map((prompt) => {
         return new RetrospectivePrompt({
           ...prompt,
+          templateId: newTemplate.id,
           parentPromptId: prompt.id
         })
       })

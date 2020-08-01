@@ -2,9 +2,7 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
-import useAtmosphere from '../../../hooks/useAtmosphere'
 import useSelectTopTemplate from '../../../hooks/useSelectTopTemplate'
-import SelectRetroTemplateMutation from '../../../mutations/SelectRetroTemplateMutation'
 import {PALETTE} from '../../../styles/paletteV2'
 import {ReflectTemplateListOrg_viewer} from '../../../__generated__/ReflectTemplateListOrg_viewer.graphql'
 import ReflectTemplateItem from './ReflectTemplateItem'
@@ -25,18 +23,18 @@ const Message = styled('div')({
   padding: 8
 })
 interface Props {
+  gotoTeamTemplates: () => void
   viewer: ReflectTemplateListOrg_viewer
 }
 
 const ReflectTemplateListOrg = (props: Props) => {
-  const {viewer} = props
+  const {gotoTeamTemplates, viewer} = props
   const team = viewer.team!
-  const atmosphere = useAtmosphere()
   const {id: teamId, meetingSettings} = team
   const selectedTemplateId = meetingSettings.selectedTemplateId!
   const organizationTemplates = meetingSettings.organizationTemplates!
   const {edges} = organizationTemplates
-  useSelectTopTemplate(edges, selectedTemplateId, teamId)
+  useSelectTopTemplate(edges, selectedTemplateId, teamId, true)
 
   if (edges.length === 0) {
     return (
@@ -49,14 +47,11 @@ const ReflectTemplateListOrg = (props: Props) => {
     <TemplateList>
       {
         edges.map(({node: template}) => {
-          const selectTemplate = () => {
-            SelectRetroTemplateMutation(atmosphere, {selectedTemplateId: template.id, teamId})
-          }
           return <ReflectTemplateItem
             key={template.id}
+            gotoTeamTemplates={gotoTeamTemplates}
             template={template}
             isActive={template.id === selectedTemplateId}
-            onClick={selectTemplate}
             lowestScope={'ORGANIZATION'}
             teamId={teamId}
           />

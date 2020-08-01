@@ -63,7 +63,7 @@ class AddNewReflectTemplate extends Component<Props> {
       return
     }
     submitMutation()
-    AddReflectTemplateMutation(atmosphere, {teamId}, {}, onError, onCompleted)
+    AddReflectTemplateMutation(atmosphere, {teamId}, {onError, onCompleted})
   }
 
   render() {
