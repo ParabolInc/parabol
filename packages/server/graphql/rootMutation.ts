@@ -97,7 +97,7 @@ import updateCommentContent from './mutations/updateCommentContent'
 import updateRetroMaxVotes from './mutations/updateRetroMaxVotes'
 import flagReadyToAdvance from './mutations/flagReadyToAdvance'
 import archiveTimelineEvent from './mutations/archiveTimelineEvent'
-
+import editCommenting from './mutations/editCommenting'
 interface Context extends InternalContext, GQLContext {}
 
 export default new GraphQLObjectType<any, Context, any>({
@@ -139,9 +139,10 @@ export default new GraphQLObjectType<any, Context, any>({
     downgradeToPersonal,
     dragDiscussionTopic,
     emailPasswordReset,
-    endDraggingReflection,
+    editCommenting,
     editReflection,
     editTask,
+    endDraggingReflection,
     endNewMeeting,
     flagReadyToAdvance,
     inactivateUser,

@@ -3134,9 +3134,9 @@ export interface IMutation {
   emailPasswordReset: boolean;
 
   /**
-   * Broadcast that the viewer stopped dragging a reflection
+   * Track which users are commenting
    */
-  endDraggingReflection: IEndDraggingReflectionPayload | null;
+  editCommenting: IEditCommentingPayload | null;
 
   /**
    * Changes the editing state of a user for a phase item
@@ -3147,6 +3147,11 @@ export interface IMutation {
    * Announce to everyone that you are editing a task
    */
   editTask: IEditTaskPayload | null;
+
+  /**
+   * Broadcast that the viewer stopped dragging a reflection
+   */
+  endDraggingReflection: IEndDraggingReflectionPayload | null;
 
   /**
    * Finish a new meeting
@@ -3751,23 +3756,18 @@ export interface IEmailPasswordResetOnMutationArguments {
   email: string;
 }
 
-export interface IEndDraggingReflectionOnMutationArguments {
-  reflectionId: string;
+export interface IEditCommentingOnMutationArguments {
+  /**
+   * true if the person commenting should be anonymous
+   */
+  isAnonymous: boolean;
+  threadId: string;
+  threadSource: ThreadSourceEnum;
 
   /**
-   * if it was a drop (isDragging = false), the type of item it was dropped on. null if there was no valid drop target
+   * true if the user is commenting, false if the user has stopped commenting
    */
-  dropTargetType?: DragReflectionDropTargetTypeEnum | null;
-
-  /**
-   * if dropTargetType could refer to more than 1 component, this ID defines which one
-   */
-  dropTargetId?: string | null;
-
-  /**
-   * the ID of the drag to connect to the start drag event
-   */
-  dragId?: string | null;
+  isCommenting: boolean;
 }
 
 export interface IEditReflectionOnMutationArguments {
@@ -3789,6 +3789,25 @@ export interface IEditTaskOnMutationArguments {
    * true if the editing is starting, false if it is stopping
    */
   isEditing: boolean;
+}
+
+export interface IEndDraggingReflectionOnMutationArguments {
+  reflectionId: string;
+
+  /**
+   * if it was a drop (isDragging = false), the type of item it was dropped on. null if there was no valid drop target
+   */
+  dropTargetType?: DragReflectionDropTargetTypeEnum | null;
+
+  /**
+   * if dropTargetType could refer to more than 1 component, this ID defines which one
+   */
+  dropTargetId?: string | null;
+
+  /**
+   * the ID of the drag to connect to the start drag event
+   */
+  dragId?: string | null;
 }
 
 export interface IEndNewMeetingOnMutationArguments {
@@ -4951,6 +4970,11 @@ export interface IRetroReflectionGroup {
   thread: IThreadableConnection;
 
   /**
+   * The ids of the users that are commenting in the discuss phase
+   */
+  commentingIds: Array<string | null> | null;
+
+  /**
    * The number of comments in this group’s thread, if any
    */
   commentCount: number;
@@ -5868,6 +5892,50 @@ export interface IRetroDiscussStage {
   sortOrder: number;
 }
 
+export interface IEditCommentingPayload {
+  __typename: 'EditCommentingPayload';
+
+  /**
+   * true if the person commenting should be anonymous
+   */
+  isAnonymous: boolean;
+
+  /**
+   * true if the user is commenting, false if the user has stopped commenting
+   */
+  isCommenting: boolean;
+  threadId: string;
+  threadSource: ThreadSourceEnum;
+}
+
+export interface IEditReflectionPayload {
+  __typename: 'EditReflectionPayload';
+  error: IStandardMutationError | null;
+  phaseItemId: string | null;
+
+  /**
+   * The socketId of the client editing the card (uses socketId to maintain anonymity)
+   */
+  editorId: string | null;
+
+  /**
+   * true if the reflection is being edited, else false
+   */
+  isEditing: boolean | null;
+}
+
+export interface IEditTaskPayload {
+  __typename: 'EditTaskPayload';
+  error: IStandardMutationError | null;
+  task: ITask | null;
+  editor: IUser | null;
+
+  /**
+   * true if the editor is editing, false if they stopped editing
+   */
+  isEditing: boolean | null;
+}
+
 /**
  * The possible places a reflection can be dropped
  */
@@ -5965,34 +6033,6 @@ export interface IRemoteReflectionDrag {
    * the top of the source, relative to the client window
    */
   clientY: number | null;
-}
-
-export interface IEditReflectionPayload {
-  __typename: 'EditReflectionPayload';
-  error: IStandardMutationError | null;
-  phaseItemId: string | null;
-
-  /**
-   * The socketId of the client editing the card (uses socketId to maintain anonymity)
-   */
-  editorId: string | null;
-
-  /**
-   * true if the reflection is being edited, else false
-   */
-  isEditing: boolean | null;
-}
-
-export interface IEditTaskPayload {
-  __typename: 'EditTaskPayload';
-  error: IStandardMutationError | null;
-  task: ITask | null;
-  editor: IUser | null;
-
-  /**
-   * true if the editor is editing, false if they stopped editing
-   */
-  isEditing: boolean | null;
 }
 
 export interface IEndNewMeetingPayload {
@@ -7092,8 +7132,9 @@ export type MeetingSubscriptionPayload =
   | ICreateReflectionPayload
   | IDeleteCommentSuccess
   | IDragDiscussionTopicPayload
-  | IEndDraggingReflectionPayload
+  | IEditCommentingPayload
   | IEditReflectionPayload
+  | IEndDraggingReflectionPayload
   | IFlagReadyToAdvanceSuccess
   | INewMeetingCheckInPayload
   | IPromoteNewMeetingFacilitatorPayload
