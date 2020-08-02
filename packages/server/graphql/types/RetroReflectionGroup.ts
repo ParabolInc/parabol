@@ -30,10 +30,6 @@ const RetroReflectionGroup = new GraphQLObjectType<any, GQLContext>({
       type: new GraphQLNonNull(GraphQLID),
       description: 'shortid'
     },
-    commentingIds: {
-      type: new GraphQLList(GraphQLID),
-      description: 'The ids of the users that are commenting in the discuss phase'
-    },
     commentCount: {
       type: new GraphQLNonNull(GraphQLInt),
       description: 'The number of comments in this group’s thread, if any',

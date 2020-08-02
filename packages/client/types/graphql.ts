@@ -3761,13 +3761,13 @@ export interface IEditCommentingOnMutationArguments {
    * true if the person commenting should be anonymous
    */
   isAnonymous: boolean;
-  threadId: string;
-  threadSource: ThreadSourceEnum;
 
   /**
    * true if the user is commenting, false if the user has stopped commenting
    */
   isCommenting: boolean;
+  threadId: string;
+  threadSource: ThreadSourceEnum;
 }
 
 export interface IEditReflectionOnMutationArguments {
@@ -4667,6 +4667,11 @@ export interface IRetroReflection {
   autoReflectionGroupId: string | null;
 
   /**
+   * The ids of the users that are commenting in the discuss phase
+   */
+  commentingIds: Array<string | null> | null;
+
+  /**
    * The timestamp the meeting was created
    */
   createdAt: any | null;
@@ -4968,11 +4973,6 @@ export interface IRetroReflectionGroup {
    * the comments and tasks created from the discussion
    */
   thread: IThreadableConnection;
-
-  /**
-   * The ids of the users that are commenting in the discuss phase
-   */
-  commentingIds: Array<string | null> | null;
 
   /**
    * The number of comments in this group’s thread, if any

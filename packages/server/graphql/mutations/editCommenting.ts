@@ -23,15 +23,15 @@ export default {
       type: new GraphQLNonNull(GraphQLBoolean),
       description: 'true if the person commenting should be anonymous'
     },
+    isCommenting: {
+      type: new GraphQLNonNull(GraphQLBoolean),
+      description: 'true if the user is commenting, false if the user has stopped commenting'
+    },
     threadId: {
       type: GraphQLNonNull(GraphQLID)
     },
     threadSource: {
       type: GraphQLNonNull(ThreadSourceEnum)
-    },
-    isCommenting: {
-      type: new GraphQLNonNull(GraphQLBoolean),
-      description: 'true if the user is commenting, false if the user has stopped commenting'
     }
   },
   resolve: async (
@@ -39,6 +39,7 @@ export default {
     {isAnonymous, threadId, threadSource, isCommenting},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) => {
+    console.log('threadId', threadId)
     const r = await getRethink()
     const viewerId = getUserId(authToken)
     const operationId = dataLoader.share()
@@ -69,11 +70,19 @@ export default {
 
     // RESOLUTION
 
-    const currentMeeting = await r
-      .table('NewMeeting')
-      .get(threadId)
+    const thread = await r
+      .table('RetroReflection')
+      .getAll(threadId, {index: 'reflectionGroupId'})
       .run()
-    console.log('currentMeeting', currentMeeting)
+    console.log('thread', thread)
+    thread[0].commentingIds = [viewerId]
+    console.log('thread DOS', thread)
+
+    await r
+      .table('RetroReflection')
+      .getAll(threadId, {index: 'reflectionGroupId'})
+      .update({commentingIds: [viewerId], updatedAt: now})
+      .run()
 
     // const currentMeeting = await r
     //   .table('NewMeeting')

@@ -142,6 +142,7 @@ const RetroDiscussPhase = (props: Props) => {
   // reflection group will be null until the server overwrites the placeholder.
   if (!reflectionGroup) return null
   const {id: reflectionGroupId, title, voteCount} = reflectionGroup
+  console.log('RetroDiscussPhase -> reflectionGroup', reflectionGroup)
   const reflections = reflectionGroup.reflections ?? []
   if (!reflectionGroup.reflections) {
     // this shouldn't ever happen, yet
@@ -217,6 +218,7 @@ graphql`
         voteCount
         reflections {
           id
+          commentingIds
         }
       }
     }

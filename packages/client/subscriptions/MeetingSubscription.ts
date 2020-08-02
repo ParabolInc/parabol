@@ -26,6 +26,7 @@ const subscription = graphql`
       ...CreateReflectionMutation_meeting @relay(mask: false)
       ...DeleteCommentMutation_meeting @relay(mask: false)
       ...DragDiscussionTopicMutation_meeting @relay(mask: false)
+      ...EditCommentingMutation_meeting @relay(mask: false)
       ...EditReflectionMutation_meeting @relay(mask: false)
       ...EndDraggingReflectionMutation_meeting @relay(mask: false)
       ...FlagReadyToAdvanceMutation_meeting @relay(mask: false)

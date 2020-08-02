@@ -179,6 +179,7 @@ const CommentEditor = (props: Props) => {
             placeholder={placeholder}
             onBlur={onBlur}
             onKeyDown={onKeyDownFallback}
+            onFocus={onFocus}
             editorRef={editorRef}
           />
         </Suspense>

@@ -20,6 +20,7 @@ import Avatar from './Avatar/Avatar'
 import CommentSendOrAdd from './CommentSendOrAdd'
 import CommentEditor from './TaskEditor/CommentEditor'
 import {ReplyMention, SetReplyMention} from './ThreadedItem'
+import EditCommentingMutation from '~/mutations/EditCommentingMutation'
 
 const Wrapper = styled('div')<{isReply: boolean; isDisabled: boolean}>(({isDisabled, isReply}) => ({
   alignItems: 'center',
@@ -119,6 +120,25 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
     onSubmitCommentSuccess?.()
   }
 
+  const ensureCommenting = () => {
+    collapseAddTask()
+    EditCommentingMutation(atmosphere, {
+      isAnonymous: false,
+      isCommenting: true,
+      threadId: threadSourceId,
+      threadSource
+    })
+  }
+
+  const ensureNotCommenting = () => {
+    // EditCommentingMutation(atmosphere, {
+    //   isAnonymous: false,
+    //   isCommenting: false,
+    //   threadId: threadSourceId,
+    //   threadSource
+    // })
+  }
+
   const onSubmit = () => {
     if (submitting) return
     const editorEl = editorRef.current
@@ -140,13 +160,14 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
       <CommentAvatar size={32} picture={avatar} onClick={toggleAnonymous} />
       <CommentEditor
         dataCy={`${dataCy}`}
-        teamId={teamId}
         editorRef={editorRef}
         editorState={editorState}
+        onBlur={ensureNotCommenting}
+        onFocus={ensureCommenting}
         onSubmit={onSubmit}
-        setEditorState={setEditorState}
         placeholder={placeholder}
-        onFocus={collapseAddTask}
+        setEditorState={setEditorState}
+        teamId={teamId}
       />
       <CommentSendOrAdd
         dataCy={`${dataCy}`}
