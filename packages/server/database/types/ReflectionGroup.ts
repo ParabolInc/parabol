@@ -2,7 +2,6 @@ import shortid from 'shortid'
 
 export interface ReflectionGroupInput {
   id?: string
-
   commentingIds?: string[]
   createdAt?: Date
   meetingId: string
@@ -17,7 +16,6 @@ export interface ReflectionGroupInput {
 export default class ReflectionGroup {
   id: string
   commentingIds?: string[]
-
   createdAt: Date
   isActive: boolean
   meetingId: string

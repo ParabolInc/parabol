@@ -40,22 +40,19 @@ const EditCommentingMutation = (atmosphere, variables) => {
     mutation,
     variables,
     updater: (store) => {
-      const {threadId} = variables
+      const {viewerId} = atmosphere
+      const {isCommenting, threadId} = variables
       // if (!checkInQuestion) return
       const thread = store.get<IRetroReflectionGroup>(threadId)
       if (!thread) return
-      const reflections = thread.getLinkedRecords('reflections')
-      const test = reflections?.map((reflection) => {
-        console.log('EditCommentingMutation -> reflection', reflection)
-        const secondTest = reflection.getValue('commentingIds')
-        // const secondTest = reflection.getValue('id')
-        console.log('EditCommentingMutation -> secondTest', secondTest, threadId)
-        return secondTest
-      })
-      // const discussPhase = phases.find(
-      //   (phase) => phase.getValue('__typename') === 'DiscussPhase'
-      // ) as RecordProxy<IDiscussPhase>
-      // discussPhase.setValue('LALLALALA', 'commentingIds')
+      const oldCommentingIds = thread.getValue('commentingIds')
+      if (!oldCommentingIds && isCommenting) thread.setValue([viewerId], 'commentingIds')
+      else if (isCommenting) thread.setValue([...oldCommentingIds, viewerId], 'commentingIds')
+      else {
+        const filteredCommentingIds = oldCommentingIds?.filter((id) => id !== viewerId)
+        console.log('EditCommentingMutation -> filteredCommentingIds', filteredCommentingIds)
+        thread.setValue(filteredCommentingIds, 'commentingIds')
+      }
     }
   })
 }

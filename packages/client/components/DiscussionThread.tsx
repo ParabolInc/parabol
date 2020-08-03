@@ -31,10 +31,13 @@ interface Props {
 
 const DiscussionThread = (props: Props) => {
   const {viewer} = props
+  console.log('DiscussionThread -> props', props)
   const meeting = viewer.meeting!
-  const {endedAt, replyingToCommentId, threadSource} = meeting
+  const {endedAt, replyingToCommentId, threadSource, reflectionGroup} = meeting
   const {thread} = threadSource!
   const threadSourceId = threadSource!.id!
+  const {commentingIds} = reflectionGroup
+  console.log('DiscussionThread -> commentingIds', commentingIds)
   const edges = thread?.edges ?? [] // should never happen, but Terry reported it in demo. likely relay error
   const threadables = edges.map(({node}) => node)
   const getMaxSortOrder = () => {
@@ -54,6 +57,7 @@ const DiscussionThread = (props: Props) => {
         ref={listRef}
         editorRef={editorRef}
       />
+      {commentingIds}
       <DiscussionThreadInput
         dataCy='discuss-input'
         editorRef={editorRef}
@@ -82,6 +86,15 @@ graphql`
     }
   }
 `
+
+graphql`
+  fragment DiscussionThread_phase on RetrospectiveMeeting {
+    reflectionGroup(reflectionGroupId: $threadSourceId) {
+      commentingIds
+    }
+  }
+`
+
 export default createFragmentContainer(DiscussionThread, {
   viewer: graphql`
     fragment DiscussionThread_viewer on User {
@@ -97,6 +110,17 @@ export default createFragmentContainer(DiscussionThread, {
             ...DiscussionThread_threadSource @relay(mask: false)
           }
         }
+        ... on RetrospectiveMeeting {
+          ...DiscussionThread_phase @relay(mask: false)
+          # phases {
+          #   stages {
+          #     ...RetroDiscussPhase_stage @relay(mask: false)
+          #   }
+          # }
+        }
+        # ... on RetrospectiveMeeting {
+        #   ...DiscussionThread_phase @relay(mask: false)
+        # }
         ... on ActionMeeting {
           threadSource: agendaItem(agendaItemId: $threadSourceId) {
             ...DiscussionThread_threadSource @relay(mask: false)
@@ -106,3 +130,26 @@ export default createFragmentContainer(DiscussionThread, {
     }
   `
 })
+
+// export default createFragmentContainer(ThreadedTaskBase, {
+//   meeting: graphql`
+//     fragment ThreadedTaskBase_meeting on NewMeeting {
+//       ...ThreadedItemReply_meeting
+//       id
+//       replyingToCommentId
+//     }
+//   `,
+//   task: graphql`
+//     fragment ThreadedTaskBase_task on Task {
+//       ...NullableTask_task
+//       ...ThreadedItemReply_threadable
+//       id
+//       content
+//       createdByUser {
+//         picture
+//         preferredName
+//       }
+//       threadParentId
+//     }
+//   `
+// })

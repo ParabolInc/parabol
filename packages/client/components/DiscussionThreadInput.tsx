@@ -132,13 +132,13 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
   }
 
   const ensureNotCommenting = () => {
-    // EditCommentingMutation(atmosphere, {
-    //   isAnonymous: false,
-    //   isCommenting: false,
-    //   meetingId,
-    //   threadId: threadSourceId,
-    //   threadSource
-    // })
+    EditCommentingMutation(atmosphere, {
+      isAnonymous: false,
+      isCommenting: false,
+      meetingId,
+      threadId: threadSourceId,
+      threadSource
+    })
   }
 
   const onSubmit = () => {

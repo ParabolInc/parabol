@@ -138,11 +138,11 @@ const RetroDiscussPhase = (props: Props) => {
   const phaseRef = useRef<HTMLDivElement>(null)
   const {id: meetingId, endedAt, localStage, showSidebar, organization} = meeting
   const {reflectionGroup} = localStage
+  console.log('RetroDiscussPhase -> reflectionGroup', reflectionGroup)
   const isDesktop = useBreakpoint(Breakpoint.SINGLE_REFLECTION_COLUMN)
   // reflection group will be null until the server overwrites the placeholder.
   if (!reflectionGroup) return null
   const {id: reflectionGroupId, title, voteCount} = reflectionGroup
-  console.log('RetroDiscussPhase -> reflectionGroup', reflectionGroup)
   const reflections = reflectionGroup.reflections ?? []
   if (!reflectionGroup.reflections) {
     // this shouldn't ever happen, yet
