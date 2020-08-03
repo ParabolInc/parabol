@@ -50,31 +50,26 @@ export const editCommentingMeetingUpdater: SharedUpdater<EditCommentingMutation_
   // console.log('IN viewerId', viewerId)
   if (!payload) return
   // const test = payload.getLinkedRecord('reflectionGroup')
-  // console.log('test', test)
   const threadId = payload.getValue('threadId')
   const isCommenting = payload.getValue('isCommenting')
   // const threadId = store.getRootField('')
   console.log('threadId', threadId)
   const reflectionGroup = store.get<IRetroReflectionGroup>(threadId)
   // const test = reflectionGroup?.getLinkedRecords('commentingIds')
-  // console.log('test', test)
   console.log('reflectionGroup', reflectionGroup)
   if (!reflectionGroup) return
   const commentingIds = reflectionGroup.getValue('commentingIds')
   console.log('commentingIds', commentingIds)
   if (!isCommenting && !commentingIds) return
-  if (false) {
+  if (isCommenting) {
     // if (!commentingIds) reflectionGroup.setValue('DAVE', 'commentingIds')
     // else reflectionGroup.setValue([...commentingIds, 'LUCY'], 'commentingIds')
-    reflectionGroup.setValue('DAVE', 'commentingIds')
+    if (commentingIds) reflectionGroup.setValue([...commentingIds, 'JULIE'], 'commentingIds')
+    else reflectionGroup.setValue(['DAVE'], 'commentingIds')
   } else {
-    const filteredCommentingIds = commentingIds?.filter((id) => id !== 'DAVO')
-    console.log('filteredCommentingIds', filteredCommentingIds)
-    if (commentingIds) {
-      reflectionGroup.setValue(filteredCommentingIds, 'commentingIds')
-    } else {
-      reflectionGroup.setValue(['BAVIN', 'DAVO'], 'commentingIds')
-    }
+    const filteredCommentingIds = commentingIds?.filter((id) => id !== 'DAVE')
+    if (!filteredCommentingIds) reflectionGroup.setValue(null, 'commentingIds')
+    else reflectionGroup.setValue(filteredCommentingIds, 'commentingIds')
   }
   // const updatedCommentingIds = commentingIds ? [...commentingIds, viewerId] : [viewerId]
   // if (!oldCommentingIds && isCommenting) payload.setValue([viewerId], 'commentingIds')
@@ -114,16 +109,21 @@ const EditCommentingMutation: StandardMutation<TEditCommentingMutation> = (
 ) => {
   return commitMutation<TEditCommentingMutation>(atmosphere, {
     mutation,
-    variables
-    // updater: (store) => {
-    //   const {threadId} = variables
-    //   if (!threadId) return
-    //   const payload = store.getRootField('editCommenting')
-    //   // const payload = store.get<IRetroReflectionGroup>(threadId)
-    //   if (!payload) return
-    //   console.log('ABOUT')
-    //   editCommentingMeetingUpdater(variables as any, {atmosphere, store})
-    // }
+    variables,
+    updater: (store) => {
+      const {threadId} = variables
+      if (!threadId) return
+      // const payload = store.getRootField('editCommenting')
+      const payload = store.get<IRetroReflectionGroup>(threadId)
+      if (!payload) return
+      const {isCommenting} = variables
+      if (isCommenting) {
+        payload.setValue(['BRAVO'], 'commentingIds')
+      } else {
+        payload.setValue(null, 'commentingIds')
+      }
+      // editCommentingMeetingUpdater(variables as any, {atmosphere, store})
+    }
     // onCompleted,
     // onError
   })
