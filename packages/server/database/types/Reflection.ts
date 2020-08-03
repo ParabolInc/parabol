@@ -5,7 +5,6 @@ import Reactji from './Reactji'
 
 export interface ReflectionInput {
   id?: string
-  commentingIds?: string[]
   createdAt?: Date
   creatorId: string
   content: string
@@ -22,7 +21,6 @@ export interface ReflectionInput {
 export default class Reflection {
   id: string
   autoReflectionGroupId?: string
-  commentingIds?: string[]
   createdAt: Date
   creatorId: string
   content: string
@@ -37,7 +35,6 @@ export default class Reflection {
   updatedAt: Date
   constructor(input: ReflectionInput) {
     const {
-      commentingIds,
       content,
       plaintextContent,
       createdAt,
@@ -53,7 +50,6 @@ export default class Reflection {
     } = input
     const now = new Date()
     this.id = id || shortid.generate()
-    this.commentingIds = commentingIds
     this.createdAt = createdAt || now
     this.creatorId = creatorId
     this.content = content

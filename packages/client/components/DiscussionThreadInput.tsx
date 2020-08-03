@@ -125,6 +125,7 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
     EditCommentingMutation(atmosphere, {
       isAnonymous: false,
       isCommenting: true,
+      meetingId,
       threadId: threadSourceId,
       threadSource
     })
@@ -134,6 +135,7 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
     // EditCommentingMutation(atmosphere, {
     //   isAnonymous: false,
     //   isCommenting: false,
+    //   meetingId,
     //   threadId: threadSourceId,
     //   threadSource
     // })

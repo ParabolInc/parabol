@@ -13,6 +13,9 @@ const EditCommentingPayload = new GraphQLObjectType<any, GQLContext>({
       type: new GraphQLNonNull(GraphQLBoolean),
       description: 'true if the user is commenting, false if the user has stopped commenting'
     },
+    meetingId: {
+      type: GraphQLNonNull(GraphQLID)
+    },
     threadId: {
       type: GraphQLNonNull(GraphQLID)
     },

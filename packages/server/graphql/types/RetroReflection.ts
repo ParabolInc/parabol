@@ -36,10 +36,6 @@ const RetroReflection = new GraphQLObjectType<Reflection, GQLContext>({
         'The ID of the group that the autogrouper assigned the reflection. Error rate = Sum(autoId != Id) / autoId.count()',
       resolve: resolveForSU('autoReflectionGroupId')
     },
-    commentingIds: {
-      type: new GraphQLList(GraphQLID),
-      description: 'The ids of the users that are commenting in the discuss phase'
-    },
     createdAt: {
       type: GraphQLISO8601Type,
       description: 'The timestamp the meeting was created'

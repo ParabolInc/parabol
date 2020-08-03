@@ -3766,6 +3766,7 @@ export interface IEditCommentingOnMutationArguments {
    * true if the user is commenting, false if the user has stopped commenting
    */
   isCommenting: boolean;
+  meetingId: string;
   threadId: string;
   threadSource: ThreadSourceEnum;
 }
@@ -4667,11 +4668,6 @@ export interface IRetroReflection {
   autoReflectionGroupId: string | null;
 
   /**
-   * The ids of the users that are commenting in the discuss phase
-   */
-  commentingIds: Array<string | null> | null;
-
-  /**
    * The timestamp the meeting was created
    */
   createdAt: any | null;
@@ -4978,6 +4974,11 @@ export interface IRetroReflectionGroup {
    * The number of comments in this group’s thread, if any
    */
   commentCount: number;
+
+  /**
+   * The ids of the users that are commenting in the discuss phase
+   */
+  commentingIds: Array<string | null> | null;
 
   /**
    * The timestamp the meeting was created
@@ -5904,6 +5905,7 @@ export interface IEditCommentingPayload {
    * true if the user is commenting, false if the user has stopped commenting
    */
   isCommenting: boolean;
+  meetingId: string;
   threadId: string;
   threadSource: ThreadSourceEnum;
 }

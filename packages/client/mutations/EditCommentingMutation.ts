@@ -2,13 +2,14 @@ import {commitMutation} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import {EditCommentingMutation as TEditCommentingMutation} from '../__generated__/EditCommentingMutation.graphql'
 import {SimpleMutation} from '../types/relayMutations'
-import {IDiscussPhase} from '~/types/graphql'
+import {IDiscussPhase, IRetroReflection, IRetroReflectionGroup} from '~/types/graphql'
 import {RecordProxy} from 'relay-runtime'
 
 graphql`
   fragment EditCommentingMutation_meeting on EditCommentingPayload {
     isAnonymous
     isCommenting
+    meetingId
     threadId
     threadSource
   }
@@ -18,12 +19,14 @@ const mutation = graphql`
   mutation EditCommentingMutation(
     $isAnonymous: Boolean!
     $isCommenting: Boolean!
+    $meetingId: ID!
     $threadId: ID!
     $threadSource: ThreadSourceEnum!
   ) {
     editCommenting(
       isAnonymous: $isAnonymous
       isCommenting: $isCommenting
+      meetingId: $meetingId
       threadId: $threadId
       threadSource: $threadSource
     ) {
@@ -33,17 +36,22 @@ const mutation = graphql`
 `
 
 const EditCommentingMutation = (atmosphere, variables) => {
-  console.log('MUTATING')
   return commitMutation(atmosphere, {
     mutation,
     variables,
     updater: (store) => {
       const {threadId} = variables
-      console.log('EditCommentingMutation -> threadId', threadId)
       // if (!checkInQuestion) return
-      // const meeting = store.get<INewMeeting>(meetingId)
-      // // if (!meeting) return
-      // const phases = meeting.getLinkedRecords('phases')
+      const thread = store.get<IRetroReflectionGroup>(threadId)
+      if (!thread) return
+      const reflections = thread.getLinkedRecords('reflections')
+      const test = reflections?.map((reflection) => {
+        console.log('EditCommentingMutation -> reflection', reflection)
+        const secondTest = reflection.getValue('commentingIds')
+        // const secondTest = reflection.getValue('id')
+        console.log('EditCommentingMutation -> secondTest', secondTest, threadId)
+        return secondTest
+      })
       // const discussPhase = phases.find(
       //   (phase) => phase.getValue('__typename') === 'DiscussPhase'
       // ) as RecordProxy<IDiscussPhase>

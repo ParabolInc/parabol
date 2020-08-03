@@ -27,6 +27,9 @@ export default {
       type: new GraphQLNonNull(GraphQLBoolean),
       description: 'true if the user is commenting, false if the user has stopped commenting'
     },
+    meetingId: {
+      type: GraphQLNonNull(GraphQLID)
+    },
     threadId: {
       type: GraphQLNonNull(GraphQLID)
     },
@@ -36,10 +39,10 @@ export default {
   },
   resolve: async (
     _source,
-    {isAnonymous, threadId, threadSource, isCommenting},
+    {isAnonymous, isCommenting, meetingId, threadId, threadSource},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) => {
-    console.log('threadId', threadId)
+    console.log('threadId, isCommenting', threadId, isCommenting)
     const r = await getRethink()
     const viewerId = getUserId(authToken)
     const operationId = dataLoader.share()
@@ -70,48 +73,44 @@ export default {
 
     // RESOLUTION
 
+    // .getAll(threadId, {index: 'reflectionGroupId'})
     const thread = await r
-      .table('RetroReflection')
-      .getAll(threadId, {index: 'reflectionGroupId'})
+      .table('RetroReflectionGroup')
+      .get(threadId)
       .run()
     console.log('thread', thread)
-    thread[0].commentingIds = [viewerId]
-    console.log('thread DOS', thread)
+    // if (!thread) return
+    const commentingIds = thread.commentingIds
+    console.log('commentingIds ', commentingIds)
+
+    if (!isCommenting && !commentingIds)
+      return {error: {message: "Can't remove an id that doesn't exist!"}}
+
+    let updatedCommentingIds
+    if (isCommenting) {
+      if (!commentingIds) {
+        updatedCommentingIds = [viewerId]
+      } else {
+        updatedCommentingIds = [...commentingIds, viewerId]
+      }
+    } else {
+      if (commentingIds?.length === 1) {
+        updatedCommentingIds = null
+      } else {
+        updatedCommentingIds = commentingIds?.filter((id) => id !== viewerId)
+      }
+    }
+    console.log('updatedCommentingIds', updatedCommentingIds)
 
     await r
-      .table('RetroReflection')
-      .getAll(threadId, {index: 'reflectionGroupId'})
-      .update({commentingIds: [viewerId], updatedAt: now})
+      .table('RetroReflectionGroup')
+      .get(threadId)
+      .update({commentingIds: updatedCommentingIds, updatedAt: now})
       .run()
 
-    // const currentMeeting = await r
-    //   .table('NewMeeting')
-    //   .get(meetingId)
-    //   .run()
-    // const {phases} = currentMeeting
-    // const discussPhase = phases.find((phase) => phase.phaseType === DISCUSS) as DiscussPhase
-    // if (isCommenting) {
-    //   discussPhase.commentingIds = [...discussPhase.commentingIds, viewerId]
-    // } else {
-    //   console.log(' discussPhase.commentingIds', discussPhase.commentingIds)
-    //   const filteredCommentingIds = discussPhase.commentingIds.filter((id) => id !== viewerId)
-    //   console.log('filteredCommentingIds', filteredCommentingIds)
-    //   discussPhase.commentingIds = filteredCommentingIds
-    // }
-    // console.log('discussPhase.commentingIds', discussPhase.commentingIds)
-    // console.log('phases', phases)
-    // await r
-    //   .table('NewMeeting')
-    //   .get(meetingId)
-    //   .update({
-    //     phases,
-    //     updatedAt: now
-    //   })
-    //   .run()
+    const data = {isAnonymous, isCommenting, meetingId, threadId, threadSource}
+    publish(SubscriptionChannel.MEETING, meetingId, 'EditCommentingPayload', data, subOptions)
 
-    // const data = {commentingId: viewerId, isCommenting}
-    // publish(SubscriptionChannel.MEETING, meetingId, 'EditCommentingPayload', data, subOptions)
-
-    // return data
+    return data
   }
 }
