@@ -31,13 +31,11 @@ interface Props {
 
 const DiscussionThread = (props: Props) => {
   const {viewer} = props
-  console.log('DiscussionThread -> props', props)
   const meeting = viewer.meeting!
   const {endedAt, replyingToCommentId, threadSource, reflectionGroup} = meeting
   const {thread} = threadSource!
   const threadSourceId = threadSource!.id!
   const {commentingIds} = reflectionGroup
-  console.log('DiscussionThread -> commentingIds', commentingIds)
   const edges = thread?.edges ?? [] // should never happen, but Terry reported it in demo. likely relay error
   const threadables = edges.map(({node}) => node)
   const getMaxSortOrder = () => {

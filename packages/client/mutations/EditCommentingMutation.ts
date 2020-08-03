@@ -4,6 +4,11 @@ import {EditCommentingMutation as TEditCommentingMutation} from '../__generated_
 import {SimpleMutation} from '../types/relayMutations'
 import {IDiscussPhase, IRetroReflection, IRetroReflectionGroup} from '~/types/graphql'
 import {RecordProxy} from 'relay-runtime'
+import getThreadSourceThreadConn from './connections/getThreadSourceThreadConn'
+import safePutNodeInConn from './handlers/safePutNodeInConn'
+import {SharedUpdater, StandardMutation} from '../types/relayMutations'
+import {EditCommentingMutation_meeting} from '~/__generated__/EditCommentingMutation_meeting.graphql'
+import Atmosphere from '~/Atmosphere'
 
 graphql`
   fragment EditCommentingMutation_meeting on EditCommentingPayload {
@@ -35,25 +40,92 @@ const mutation = graphql`
   }
 `
 
-const EditCommentingMutation = (atmosphere, variables) => {
-  return commitMutation(atmosphere, {
-    mutation,
-    variables,
-    updater: (store) => {
-      const {viewerId} = atmosphere
-      const {isCommenting, threadId} = variables
-      // if (!checkInQuestion) return
-      const thread = store.get<IRetroReflectionGroup>(threadId)
-      if (!thread) return
-      const oldCommentingIds = thread.getValue('commentingIds')
-      if (!oldCommentingIds && isCommenting) thread.setValue([viewerId], 'commentingIds')
-      else if (isCommenting) thread.setValue([...oldCommentingIds, viewerId], 'commentingIds')
-      else {
-        const filteredCommentingIds = oldCommentingIds?.filter((id) => id !== viewerId)
-        console.log('EditCommentingMutation -> filteredCommentingIds', filteredCommentingIds)
-        thread.setValue(filteredCommentingIds, 'commentingIds')
-      }
+export const editCommentingMeetingUpdater: SharedUpdater<EditCommentingMutation_meeting> = (
+  payload,
+  {store}
+) => {
+  // const {viewerId} = atmosphere
+  // const {viewerId} = store.
+  // payload.getLinkedRecord('threadId')
+  // console.log('IN viewerId', viewerId)
+  if (!payload) return
+  // const test = payload.getLinkedRecord('reflectionGroup')
+  // console.log('test', test)
+  const threadId = payload.getValue('threadId')
+  const isCommenting = payload.getValue('isCommenting')
+  // const threadId = store.getRootField('')
+  console.log('threadId', threadId)
+  const reflectionGroup = store.get<IRetroReflectionGroup>(threadId)
+  // const test = reflectionGroup?.getLinkedRecords('commentingIds')
+  // console.log('test', test)
+  console.log('reflectionGroup', reflectionGroup)
+  if (!reflectionGroup) return
+  const commentingIds = reflectionGroup.getValue('commentingIds')
+  console.log('commentingIds', commentingIds)
+  if (!isCommenting && !commentingIds) return
+  if (false) {
+    // if (!commentingIds) reflectionGroup.setValue('DAVE', 'commentingIds')
+    // else reflectionGroup.setValue([...commentingIds, 'LUCY'], 'commentingIds')
+    reflectionGroup.setValue('DAVE', 'commentingIds')
+  } else {
+    const filteredCommentingIds = commentingIds?.filter((id) => id !== 'DAVO')
+    console.log('filteredCommentingIds', filteredCommentingIds)
+    if (commentingIds) {
+      reflectionGroup.setValue(filteredCommentingIds, 'commentingIds')
+    } else {
+      reflectionGroup.setValue(['BAVIN', 'DAVO'], 'commentingIds')
     }
+  }
+  // const updatedCommentingIds = commentingIds ? [...commentingIds, viewerId] : [viewerId]
+  // if (!oldCommentingIds && isCommenting) payload.setValue([viewerId], 'commentingIds')
+  // else if (isCommenting) payload.setValue([...oldCommentingIds, viewerId], 'commentingIds')
+  // else {
+  //   const filteredCommentingIds = oldCommentingIds?.filter((id) => id !== viewerId)
+  //   console.log('EditCommentingMutation -> filteredCommentingIds', filteredCommentingIds)
+  //   payload.setValue(filteredCommentingIds, 'commentingIds')
+  // }
+
+  // const threadSourceProxy = (threadId && store.get(threadId as string)) || null
+  // const threadSourceConn = getThreadSourceThreadConn(threadSourceProxy)
+  // console.log('threadSourceConn', threadSourceConn)
+  // safePutNodeInConn(threadSourceConn, payload, store, 'threadSortOrder', true)
+
+  // const comment = payload.getLinkedRecord('comment')
+  // if (!comment) return
+  // const threadParentId = comment.getValue('threadParentId')
+  // if (threadParentId) {
+  //   addNodeToArray(comment, store.get(threadParentId), 'replies', 'threadSortOrder')
+  //   return
+  // }
+  // const threadSourceId = comment.getValue('threadId')
+  // if (threadSourceId) {
+  //   const threadSourceProxy = (threadSourceId && store.get(threadSourceId as string)) || null
+  //   const threadSourceConn = getThreadSourceThreadConn(threadSourceProxy)
+  //   safePutNodeInConn(threadSourceConn, comment, store, 'threadSortOrder', true)
+  // }
+}
+
+// const EditCommentingMutation = (atmosphere, variables) => {
+// return commitMutation(atmosphere, {
+const EditCommentingMutation: StandardMutation<TEditCommentingMutation> = (
+  atmosphere,
+  variables
+  // {onError, onCompleted}
+) => {
+  return commitMutation<TEditCommentingMutation>(atmosphere, {
+    mutation,
+    variables
+    // updater: (store) => {
+    //   const {threadId} = variables
+    //   if (!threadId) return
+    //   const payload = store.getRootField('editCommenting')
+    //   // const payload = store.get<IRetroReflectionGroup>(threadId)
+    //   if (!payload) return
+    //   console.log('ABOUT')
+    //   editCommentingMeetingUpdater(variables as any, {atmosphere, store})
+    // }
+    // onCompleted,
+    // onError
   })
 }
 

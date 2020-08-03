@@ -16,6 +16,7 @@ import {startDraggingReflectionMeetingUpdater} from '../mutations/StartDraggingR
 import {MeetingSubscriptionResponse} from '~/__generated__/MeetingSubscription.graphql'
 import {addCommentMeetingUpdater} from '~/mutations/AddCommentMutation'
 import {deleteCommentMeetingUpdater} from '~/mutations/DeleteCommentMutation'
+import {editCommentingMeetingUpdater} from '~/mutations/EditCommentingMutation'
 
 const subscription = graphql`
   subscription MeetingSubscription($meetingId: ID!) {
@@ -58,6 +59,7 @@ const updateHandlers = {
   CreateReflectionPayload: createReflectionMeetingUpdater,
   DeleteCommentSuccess: deleteCommentMeetingUpdater,
   DragDiscussionTopicPayload: dragDiscussionTopicMeetingUpdater,
+  EditCommentingPayload: editCommentingMeetingUpdater,
   EditReflectionPayload: editReflectionMeetingUpdater,
   EndDraggingReflectionPayload: endDraggingReflectionMeetingUpdater,
   RemoveReflectionPayload: removeReflectionMeetingUpdater,
@@ -79,6 +81,7 @@ const MeetingSubscription = (
       const type = payload.getValue('__typename') as string
       const handler = updateHandlers[type]
       if (handler) {
+        console.log('atmosphere from SUB', atmosphere)
         handler(payload, {atmosphere, store})
       }
     },
