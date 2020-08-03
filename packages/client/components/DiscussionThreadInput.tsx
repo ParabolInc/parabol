@@ -70,7 +70,7 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
   const isDisabled = !!props.isDisabled
   const {id: meetingId, isAnonymousComment, teamId, viewerMeetingMember, meetingType} = meeting
   const {user} = viewerMeetingMember
-  const {picture} = user
+  const {picture, preferredName} = user
   const [editorState, setEditorState] = useReplyEditorState(replyMention, setReplyMention)
   const atmosphere = useAtmosphere()
   const {submitting, onError, onCompleted, submitMutation} = useMutationProps()
@@ -128,6 +128,7 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
         isAnonymous: false,
         isCommenting: true,
         meetingId,
+        preferredName,
         threadId: threadSourceId,
         threadSource
       },
@@ -142,6 +143,7 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
         isAnonymous: false,
         isCommenting: false,
         meetingId,
+        preferredName,
         threadId: threadSourceId,
         threadSource
       },
@@ -205,6 +207,7 @@ export default createFragmentContainer(DiscussionThreadInput, {
       viewerMeetingMember {
         user {
           picture
+          preferredName
         }
       }
     }

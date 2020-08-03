@@ -57,11 +57,11 @@ const ActionMeetingAgendaItems = (props: Props) => {
   const {agendaItems} = team
   const {agendaItemId} = localStage
   const agendaItem = agendaItems.find((item) => item.id === agendaItemId!)
+  const isDesktop = useBreakpoint(Breakpoint.SINGLE_REFLECTION_COLUMN)
   // optimistic updater could remove the agenda item
   if (!agendaItem) return null
   const {content, teamMember} = agendaItem
   const {picture, preferredName} = teamMember
-  const isDesktop = useBreakpoint(Breakpoint.SINGLE_REFLECTION_COLUMN)
   return (
     <MeetingContent>
       <MeetingHeaderAndPhase hideBottomBar={!!endedAt}>

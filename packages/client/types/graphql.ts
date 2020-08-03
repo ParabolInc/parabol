@@ -3767,6 +3767,7 @@ export interface IEditCommentingOnMutationArguments {
    */
   isCommenting: boolean;
   meetingId: string;
+  preferredName: string;
   threadId: string;
   threadSource: ThreadSourceEnum;
 }
@@ -5906,6 +5907,11 @@ export interface IEditCommentingPayload {
    */
   isCommenting: boolean;
   meetingId: string;
+
+  /**
+   * the preferred name of the user that is commenting or has stopped commenting
+   */
+  preferredName: string;
   threadId: string;
   threadSource: ThreadSourceEnum;
 }

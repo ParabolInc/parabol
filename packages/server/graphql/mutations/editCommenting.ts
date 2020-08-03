@@ -1,4 +1,4 @@
-import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql'
+import {GraphQLBoolean, GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {IAddCommentOnMutationArguments, NewMeetingPhaseTypeEnum} from 'parabol-client/types/graphql'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
@@ -30,6 +30,9 @@ export default {
     meetingId: {
       type: GraphQLNonNull(GraphQLID)
     },
+    preferredName: {
+      type: GraphQLNonNull(GraphQLString)
+    },
     threadId: {
       type: GraphQLNonNull(GraphQLID)
     },
@@ -39,10 +42,10 @@ export default {
   },
   resolve: async (
     _source,
-    {isAnonymous, isCommenting, meetingId, threadId, threadSource},
+    {isAnonymous, isCommenting, meetingId, preferredName, threadId, threadSource},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) => {
-    console.log('threadId, isCommenting', threadId, isCommenting)
+    console.log('preferredName', preferredName)
     const r = await getRethink()
     const viewerId = getUserId(authToken)
     const operationId = dataLoader.share()
@@ -78,7 +81,6 @@ export default {
       .table('RetroReflectionGroup')
       .get(threadId)
       .run()
-    console.log('thread', thread)
     // if (!thread) return
     const commentingIds = thread.commentingIds
     console.log('commentingIds ', commentingIds)
@@ -105,10 +107,10 @@ export default {
     await r
       .table('RetroReflectionGroup')
       .get(threadId)
-      .update({commentingIds: updatedCommentingIds, updatedAt: now})
+      .update({commentingIds: preferredName, updatedAt: now})
       .run()
 
-    const data = {isAnonymous, isCommenting, meetingId, threadId, threadSource}
+    const data = {isAnonymous, isCommenting, meetingId, preferredName, threadId, threadSource}
     publish(SubscriptionChannel.MEETING, meetingId, 'EditCommentingPayload', data, subOptions)
 
     return data

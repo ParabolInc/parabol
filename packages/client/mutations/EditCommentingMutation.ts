@@ -15,6 +15,7 @@ graphql`
     isAnonymous
     isCommenting
     meetingId
+    preferredName
     threadId
     threadSource
   }
@@ -25,6 +26,7 @@ const mutation = graphql`
     $isAnonymous: Boolean!
     $isCommenting: Boolean!
     $meetingId: ID!
+    $preferredName: String!
     $threadId: ID!
     $threadSource: ThreadSourceEnum!
   ) {
@@ -32,6 +34,7 @@ const mutation = graphql`
       isAnonymous: $isAnonymous
       isCommenting: $isCommenting
       meetingId: $meetingId
+      preferredName: $preferredName
       threadId: $threadId
       threadSource: $threadSource
     ) {
@@ -47,57 +50,29 @@ export const editCommentingMeetingUpdater: SharedUpdater<EditCommentingMutation_
   // const {viewerId} = atmosphere
   // const {viewerId} = store.
   // payload.getLinkedRecord('threadId')
-  // console.log('IN viewerId', viewerId)
   if (!payload) return
   // const test = payload.getLinkedRecord('reflectionGroup')
   const threadId = payload.getValue('threadId')
+  const preferredName = payload.getValue('preferredName')
   const isCommenting = payload.getValue('isCommenting')
   // const threadId = store.getRootField('')
-  console.log('threadId', threadId)
   const reflectionGroup = store.get<IRetroReflectionGroup>(threadId)
   // const test = reflectionGroup?.getLinkedRecords('commentingIds')
-  console.log('reflectionGroup', reflectionGroup)
   if (!reflectionGroup) return
   const commentingIds = reflectionGroup.getValue('commentingIds')
-  console.log('commentingIds', commentingIds)
+  console.log('preferredName', preferredName, isCommenting, commentingIds)
   if (!isCommenting && !commentingIds) return
   if (isCommenting) {
-    // if (!commentingIds) reflectionGroup.setValue('DAVE', 'commentingIds')
-    // else reflectionGroup.setValue([...commentingIds, 'LUCY'], 'commentingIds')
-    if (commentingIds) reflectionGroup.setValue([...commentingIds, 'JULIE'], 'commentingIds')
-    else reflectionGroup.setValue(['DAVE'], 'commentingIds')
+    if (!commentingIds) {
+      reflectionGroup.setValue(preferredName, 'commentingIds')
+    }
+    // reflectionGroup.setValue([...commentingIds, preferredName], 'commentingIds')
+    // } else reflectionGroup.setValue([preferredName], 'commentingIds')
   } else {
-    const filteredCommentingIds = commentingIds?.filter((id) => id !== 'DAVE')
+    const filteredCommentingIds = commentingIds?.filter((id) => id !== preferredName)
     if (!filteredCommentingIds) reflectionGroup.setValue(null, 'commentingIds')
     else reflectionGroup.setValue(filteredCommentingIds, 'commentingIds')
   }
-  // const updatedCommentingIds = commentingIds ? [...commentingIds, viewerId] : [viewerId]
-  // if (!oldCommentingIds && isCommenting) payload.setValue([viewerId], 'commentingIds')
-  // else if (isCommenting) payload.setValue([...oldCommentingIds, viewerId], 'commentingIds')
-  // else {
-  //   const filteredCommentingIds = oldCommentingIds?.filter((id) => id !== viewerId)
-  //   console.log('EditCommentingMutation -> filteredCommentingIds', filteredCommentingIds)
-  //   payload.setValue(filteredCommentingIds, 'commentingIds')
-  // }
-
-  // const threadSourceProxy = (threadId && store.get(threadId as string)) || null
-  // const threadSourceConn = getThreadSourceThreadConn(threadSourceProxy)
-  // console.log('threadSourceConn', threadSourceConn)
-  // safePutNodeInConn(threadSourceConn, payload, store, 'threadSortOrder', true)
-
-  // const comment = payload.getLinkedRecord('comment')
-  // if (!comment) return
-  // const threadParentId = comment.getValue('threadParentId')
-  // if (threadParentId) {
-  //   addNodeToArray(comment, store.get(threadParentId), 'replies', 'threadSortOrder')
-  //   return
-  // }
-  // const threadSourceId = comment.getValue('threadId')
-  // if (threadSourceId) {
-  //   const threadSourceProxy = (threadSourceId && store.get(threadSourceId as string)) || null
-  //   const threadSourceConn = getThreadSourceThreadConn(threadSourceProxy)
-  //   safePutNodeInConn(threadSourceConn, comment, store, 'threadSortOrder', true)
-  // }
 }
 
 // const EditCommentingMutation = (atmosphere, variables) => {
@@ -109,21 +84,19 @@ const EditCommentingMutation: StandardMutation<TEditCommentingMutation> = (
 ) => {
   return commitMutation<TEditCommentingMutation>(atmosphere, {
     mutation,
-    variables,
-    updater: (store) => {
-      const {threadId} = variables
-      if (!threadId) return
-      // const payload = store.getRootField('editCommenting')
-      const payload = store.get<IRetroReflectionGroup>(threadId)
-      if (!payload) return
-      const {isCommenting} = variables
-      if (isCommenting) {
-        payload.setValue(['BRAVO'], 'commentingIds')
-      } else {
-        payload.setValue(null, 'commentingIds')
-      }
-      // editCommentingMeetingUpdater(variables as any, {atmosphere, store})
-    }
+    variables
+
+    //   const {isCommenting, preferredName, threadId} = variables
+    //   if (!threadId) return
+    //   const payload = store.get<IRetroReflectionGroup>(threadId)
+    //   if (!payload) return
+    //   if (isCommenting) {
+    //     payload.setValue([preferredName], 'commentingIds')
+    //   } else {
+    //     payload.setValue(null, 'commentingIds')
+    //   }
+    //   // editCommentingMeetingUpdater(variables as any, {atmosphere, store})
+    // }
     // onCompleted,
     // onError
   })
