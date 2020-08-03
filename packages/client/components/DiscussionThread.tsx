@@ -112,15 +112,7 @@ export default createFragmentContainer(DiscussionThread, {
         }
         ... on RetrospectiveMeeting {
           ...DiscussionThread_phase @relay(mask: false)
-          # phases {
-          #   stages {
-          #     ...RetroDiscussPhase_stage @relay(mask: false)
-          #   }
-          # }
         }
-        # ... on RetrospectiveMeeting {
-        #   ...DiscussionThread_phase @relay(mask: false)
-        # }
         ... on ActionMeeting {
           threadSource: agendaItem(agendaItemId: $threadSourceId) {
             ...DiscussionThread_threadSource @relay(mask: false)
@@ -130,26 +122,3 @@ export default createFragmentContainer(DiscussionThread, {
     }
   `
 })
-
-// export default createFragmentContainer(ThreadedTaskBase, {
-//   meeting: graphql`
-//     fragment ThreadedTaskBase_meeting on NewMeeting {
-//       ...ThreadedItemReply_meeting
-//       id
-//       replyingToCommentId
-//     }
-//   `,
-//   task: graphql`
-//     fragment ThreadedTaskBase_task on Task {
-//       ...NullableTask_task
-//       ...ThreadedItemReply_threadable
-//       id
-//       content
-//       createdByUser {
-//         picture
-//         preferredName
-//       }
-//       threadParentId
-//     }
-//   `
-// })
