@@ -65,7 +65,7 @@ const UserTasksHeader = (props: Props) => {
         {menuPortal(<UserDashTeamMenu menuProps={menuProps} viewer={viewer} />)}
 
         <StyledLinkButton
-          onClick={() => setArchivedTasksCheckbox(atmosphere, viewer.id, !showArchivedTasksCheckbox)}
+          onClick={() => setArchivedTasksCheckbox(atmosphere, !showArchivedTasksCheckbox)}
         >
           <StyledCheckbox active={showArchivedTasksCheckbox} />
           {'Show Archived Tasks'}

@@ -1,14 +1,12 @@
 import {commitLocalUpdate} from 'react-relay'
-import {IUser} from '../../types/graphql'
 import Atmosphere from '../../Atmosphere'
 
 const setArchivedTasksCheckbox = (
   atmosphere: Atmosphere,
-  viewerId: string,
   showArchivedTasksCheckbox: boolean
 ) => {
   commitLocalUpdate(atmosphere, (store) => {
-    const viewer = store.get<IUser>(viewerId)
+    const viewer = store.getRoot().getLinkedRecord('viewer')
     if (!viewer) return
     viewer.setValue(showArchivedTasksCheckbox, 'showArchivedTasksCheckbox')
   })
