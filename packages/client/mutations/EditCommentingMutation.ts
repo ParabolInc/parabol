@@ -10,7 +10,7 @@ graphql`
     isCommenting
     meetingId
     preferredName
-    reflectionGroupId
+    threadId
   }
 `
 
@@ -19,13 +19,13 @@ const mutation = graphql`
     $isCommenting: Boolean!
     $meetingId: ID!
     $preferredName: String!
-    $reflectionGroupId: ID!
+    $threadId: ID!
   ) {
     editCommenting(
       isCommenting: $isCommenting
       meetingId: $meetingId
       preferredName: $preferredName
-      reflectionGroupId: $reflectionGroupId
+      threadId: $threadId
     ) {
       ...EditCommentingMutation_meeting @relay(mask: false)
     }
@@ -38,11 +38,12 @@ export const editCommentingMeetingUpdater: SharedUpdater<EditCommentingMutation_
 ) => {
   console.log('Updater!')
   if (!payload) return
-  const reflectionGroupId = payload.getValue('reflectionGroupId')
+  const threadId = payload.getValue('threadId')
   const preferredName = payload.getValue('preferredName')
   const isCommenting = payload.getValue('isCommenting')
-  const reflectionGroup = store.get<IRetroReflectionGroup>(reflectionGroupId)
-  const reflectionGroupDos = store.get<IAgendaItem>(reflectionGroupId)
+  const reflectionGroup = store.get<IRetroReflectionGroup>(threadId)
+  console.log('reflectionGroup', reflectionGroup)
+  const reflectionGroupDos = store.get<IAgendaItem>(threadId)
   console.log('reflectionGroupDos', reflectionGroupDos)
   if (!reflectionGroup) return
   const commentingNames = reflectionGroup.getValue('commentingNames')
@@ -68,7 +69,6 @@ const EditCommentingMutation: StandardMutation<TEditCommentingMutation> = (
   atmosphere,
   variables
 ) => {
-  console.log('in mutttttation')
   return commitMutation<TEditCommentingMutation>(atmosphere, {
     mutation,
     variables

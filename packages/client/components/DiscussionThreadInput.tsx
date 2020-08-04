@@ -125,32 +125,23 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
   const ensureCommenting = () => {
     collapseAddTask()
     if (isAnonymousComment || isCommenting) return
-    console.log('Comment !')
-    EditCommentingMutation(
-      atmosphere,
-      {
-        isCommenting: true,
-        meetingId,
-        preferredName,
-        reflectionGroupId: threadSourceId
-      },
-      {onError, onCompleted}
-    )
+    EditCommentingMutation(atmosphere, {
+      isCommenting: true,
+      meetingId,
+      preferredName,
+      threadId: threadSourceId
+    })
     setIsCommenting(true)
   }
 
   const ensureNotCommenting = () => {
     if (isAnonymousComment || !isCommenting) return
-    EditCommentingMutation(
-      atmosphere,
-      {
-        isCommenting: false,
-        meetingId,
-        preferredName,
-        reflectionGroupId: threadSourceId
-      },
-      {onError, onCompleted}
-    )
+    EditCommentingMutation(atmosphere, {
+      isCommenting: false,
+      meetingId,
+      preferredName,
+      threadId: threadSourceId
+    })
     setIsCommenting(false)
   }
 

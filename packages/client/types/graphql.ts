@@ -3768,7 +3768,7 @@ export interface IEditCommentingOnMutationArguments {
   isCommenting: boolean;
   meetingId: string;
   preferredName: string;
-  reflectionGroupId: string;
+  threadId: string;
 }
 
 export interface IEditReflectionOnMutationArguments {
@@ -5906,7 +5906,7 @@ export interface IEditCommentingPayload {
    * the preferred name of the user that is commenting or has stopped commenting
    */
   preferredName: string;
-  reflectionGroupId: string;
+  threadId: string;
 }
 
 export interface IEditReflectionPayload {
