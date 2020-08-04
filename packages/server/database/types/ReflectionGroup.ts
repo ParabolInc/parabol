@@ -2,7 +2,7 @@ import shortid from 'shortid'
 
 export interface ReflectionGroupInput {
   id?: string
-  commentingNames?: string[]
+  commentingNames?: string[] | null
   createdAt?: Date
   meetingId: string
   retroPhaseItemId: string
@@ -15,7 +15,7 @@ export interface ReflectionGroupInput {
 
 export default class ReflectionGroup {
   id: string
-  commentingNames?: string[]
+  commentingNames?: string[] | null
   createdAt: Date
   isActive: boolean
   meetingId: string

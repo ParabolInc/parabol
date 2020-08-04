@@ -7,6 +7,25 @@ import {GQLContext} from '../graphql'
 import EditCommentingPayload from '../types/EditCommentingPayload'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 
+const updateCommentingNames = (
+  commentingNames: string[] | undefined | null,
+  preferredName: string,
+  isCommenting: boolean
+) => {
+  if (isCommenting) {
+    if (!commentingNames) {
+      return [preferredName]
+    } else {
+      return [...commentingNames, preferredName]
+    }
+  } else {
+    if (!commentingNames || commentingNames.length <= 1) {
+      return null
+    } else {
+      return commentingNames.filter((name) => name !== preferredName)
+    }
+  }
+}
 export default {
   type: EditCommentingPayload,
   description: `Track which users are commenting`,
@@ -59,36 +78,51 @@ export default {
     }
 
     // RESOLUTION
-    const thread = await r
+    const reflectionGroup = await r
       .table('RetroReflectionGroup')
       .get(reflectionGroupId)
       .run()
-    const commentingNames = thread.commentingNames
+    console.log('reflectionGroup', reflectionGroup)
+    const agendaItem = await r
+      .table('AgendaItem')
+      .get(reflectionGroupId)
+      .run()
+    console.log('agendaItem', agendaItem)
+    if (reflectionGroup) {
+      const commentingNames = reflectionGroup.commentingNames
 
-    if (!isCommenting && !commentingNames)
-      return {error: {message: "Can't remove an id that doesn't exist!"}}
+      if (!isCommenting && !commentingNames)
+        return {error: {message: "Can't remove an id that doesn't exist!"}}
 
-    let updatedCommentingNames
-    if (isCommenting) {
-      if (!commentingNames) {
-        updatedCommentingNames = [preferredName]
-      } else {
-        updatedCommentingNames = [...commentingNames, preferredName]
-      }
-    } else {
-      if (!commentingNames || commentingNames?.length <= 1) {
-        updatedCommentingNames = null
-      } else {
-        updatedCommentingNames = commentingNames?.filter((name) => name !== preferredName)
-      }
+      const updatedCommentingNames = updateCommentingNames(
+        commentingNames,
+        preferredName,
+        isCommenting
+      )
+
+      await r
+        .table('RetroReflectionGroup')
+        .get(reflectionGroupId)
+        .update({commentingNames: updatedCommentingNames, updatedAt: now})
+        .run()
+    } else if (agendaItem) {
+      const commentingNames = agendaItem.commentingNames
+
+      if (!isCommenting && !commentingNames)
+        return {error: {message: "Can't remove an id that doesn't exist!"}}
+
+      const updatedCommentingNames = updateCommentingNames(
+        commentingNames,
+        preferredName,
+        isCommenting
+      )
+
+      await r
+        .table('AgendaItem')
+        .get(reflectionGroupId)
+        .update({commentingNames: updatedCommentingNames, updatedAt: now})
+        .run()
     }
-    console.log('updatedCommentingNames', updatedCommentingNames)
-
-    await r
-      .table('RetroReflectionGroup')
-      .get(reflectionGroupId)
-      .update({commentingNames: updatedCommentingNames, updatedAt: now})
-      .run()
 
     const data = {isCommenting, meetingId, preferredName, reflectionGroupId}
     publish(SubscriptionChannel.MEETING, meetingId, 'EditCommentingPayload', data, subOptions)

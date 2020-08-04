@@ -1,7 +1,7 @@
 import {commitMutation} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import {EditCommentingMutation as TEditCommentingMutation} from '../__generated__/EditCommentingMutation.graphql'
-import {IRetroReflectionGroup} from '~/types/graphql'
+import {IRetroReflectionGroup, IAgendaItem} from '~/types/graphql'
 import {SharedUpdater, StandardMutation} from '../types/relayMutations'
 import {EditCommentingMutation_meeting} from '~/__generated__/EditCommentingMutation_meeting.graphql'
 
@@ -36,11 +36,14 @@ export const editCommentingMeetingUpdater: SharedUpdater<EditCommentingMutation_
   payload,
   {store}
 ) => {
+  console.log('Updater!')
   if (!payload) return
   const reflectionGroupId = payload.getValue('reflectionGroupId')
   const preferredName = payload.getValue('preferredName')
   const isCommenting = payload.getValue('isCommenting')
   const reflectionGroup = store.get<IRetroReflectionGroup>(reflectionGroupId)
+  const reflectionGroupDos = store.get<IAgendaItem>(reflectionGroupId)
+  console.log('reflectionGroupDos', reflectionGroupDos)
   if (!reflectionGroup) return
   const commentingNames = reflectionGroup.getValue('commentingNames')
   if (!isCommenting && !commentingNames) return
@@ -65,6 +68,7 @@ const EditCommentingMutation: StandardMutation<TEditCommentingMutation> = (
   atmosphere,
   variables
 ) => {
+  console.log('in mutttttation')
   return commitMutation<TEditCommentingMutation>(atmosphere, {
     mutation,
     variables

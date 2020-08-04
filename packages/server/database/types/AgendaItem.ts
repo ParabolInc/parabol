@@ -18,7 +18,7 @@ export interface AgendaItemInput {
 
 export default class AgendaItem {
   id: string
-  commentingNames?: string[]
+  commentingNames?: string[] | null
   content: string
   createdAt: Date
   isActive: boolean
