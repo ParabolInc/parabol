@@ -6,8 +6,10 @@ import publish from '../../utils/publish'
 import {GQLContext} from '../graphql'
 import EditCommentingPayload from '../types/EditCommentingPayload'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
+import ThreadSourceEnum from '../types/ThreadSourceEnum'
+import {ThreadSourceEnum as ThreadSourceEnumType} from 'parabol-client/types/graphql'
 
-const updateCommentingNames = (
+const getNewCommentingNames = (
   commentingNames: string[] | undefined | null,
   preferredName: string,
   isCommenting: boolean
@@ -42,11 +44,14 @@ export default {
     },
     threadId: {
       type: GraphQLNonNull(GraphQLID)
+    },
+    threadSource: {
+      type: GraphQLNonNull(ThreadSourceEnum)
     }
   },
   resolve: async (
     _source,
-    {isCommenting, meetingId, preferredName, threadId},
+    {isCommenting, meetingId, preferredName, threadId, threadSource},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) => {
     const r = await getRethink()
@@ -78,51 +83,46 @@ export default {
     }
 
     // RESOLUTION
-    const reflectionGroup = await r
-      .table('RetroReflectionGroup')
-      .get(threadId)
-      .run()
-    const agendaItem = await r
-      .table('AgendaItem')
-      .get(threadId)
-      .run()
-    if (reflectionGroup) {
+
+    if (threadSource === ThreadSourceEnumType.REFLECTION_GROUP) {
+      const reflectionGroup = await r
+        .table('RetroReflectionGroup')
+        .get(threadId)
+        .run()
+      if (!reflectionGroup)
+        return {error: {message: "A reflection group with that ID doesn't exist"}}
       const commentingNames = reflectionGroup.commentingNames
 
       if (!isCommenting && !commentingNames)
         return {error: {message: "Can't remove an id that doesn't exist!"}}
 
-      const updatedCommentingNames = updateCommentingNames(
-        commentingNames,
-        preferredName,
-        isCommenting
-      )
+      const newCommentingNames = getNewCommentingNames(commentingNames, preferredName, isCommenting)
 
       await r
         .table('RetroReflectionGroup')
         .get(threadId)
-        .update({commentingNames: updatedCommentingNames, updatedAt: now})
+        .update({commentingNames: newCommentingNames, updatedAt: now})
         .run()
-    } else if (agendaItem) {
+    } else if (threadSource === ThreadSourceEnumType.AGENDA_ITEM) {
+      const agendaItem = await r
+        .table('AgendaItem')
+        .get(threadId)
+        .run()
       const commentingNames = agendaItem.commentingNames
 
       if (!isCommenting && !commentingNames)
         return {error: {message: "Can't remove an id that doesn't exist!"}}
 
-      const updatedCommentingNames = updateCommentingNames(
-        commentingNames,
-        preferredName,
-        isCommenting
-      )
+      const newCommentingNames = getNewCommentingNames(commentingNames, preferredName, isCommenting)
 
       await r
         .table('AgendaItem')
         .get(threadId)
-        .update({commentingNames: updatedCommentingNames, updatedAt: now})
+        .update({commentingNames: newCommentingNames, updatedAt: now})
         .run()
     }
 
-    const data = {isCommenting, meetingId, preferredName, threadId}
+    const data = {isCommenting, meetingId, preferredName, threadId, threadSource}
     publish(SubscriptionChannel.MEETING, meetingId, 'EditCommentingPayload', data, subOptions)
 
     return data

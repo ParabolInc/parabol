@@ -33,6 +33,7 @@ const DiscussionThread = (props: Props) => {
   const {viewer} = props
   const meeting = viewer.meeting!
   const {endedAt, replyingToCommentId, threadSource, reflectionGroup, agendaItem} = meeting
+  console.log('DiscussionThread -> threadSource', threadSource)
   console.log('DiscussionThread -> meeting', meeting)
   const {thread} = threadSource!
   const threadSourceId = threadSource!.id!

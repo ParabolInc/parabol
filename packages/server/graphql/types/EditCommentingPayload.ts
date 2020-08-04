@@ -1,5 +1,6 @@
 import {GraphQLBoolean, GraphQLObjectType, GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import {GQLContext} from '../graphql'
+import ThreadSourceEnum from './ThreadSourceEnum'
 
 const EditCommentingPayload = new GraphQLObjectType<any, GQLContext>({
   name: 'EditCommentingPayload',
@@ -17,6 +18,9 @@ const EditCommentingPayload = new GraphQLObjectType<any, GQLContext>({
     },
     threadId: {
       type: GraphQLNonNull(GraphQLID)
+    },
+    threadSource: {
+      type: GraphQLNonNull(ThreadSourceEnum)
     }
   })
 })

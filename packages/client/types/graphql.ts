@@ -3769,6 +3769,7 @@ export interface IEditCommentingOnMutationArguments {
   meetingId: string;
   preferredName: string;
   threadId: string;
+  threadSource: ThreadSourceEnum;
 }
 
 export interface IEditReflectionOnMutationArguments {
@@ -5907,6 +5908,7 @@ export interface IEditCommentingPayload {
    */
   preferredName: string;
   threadId: string;
+  threadSource: ThreadSourceEnum;
 }
 
 export interface IEditReflectionPayload {
