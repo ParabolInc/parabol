@@ -22,9 +22,6 @@ const EditCommentingPayload = new GraphQLObjectType<any, GQLContext>({
     },
     threadId: {
       type: GraphQLNonNull(GraphQLID)
-    },
-    threadSource: {
-      type: GraphQLNonNull(ThreadSourceEnum)
     }
   })
 })

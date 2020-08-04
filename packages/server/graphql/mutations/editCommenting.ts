@@ -35,17 +35,15 @@ export default {
     },
     threadId: {
       type: GraphQLNonNull(GraphQLID)
-    },
-    threadSource: {
-      type: GraphQLNonNull(ThreadSourceEnum)
     }
   },
   resolve: async (
     _source,
-    {isAnonymous, isCommenting, meetingId, preferredName, threadId, threadSource},
+    {isAnonymous, isCommenting, meetingId, preferredName, threadId},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) => {
     console.log('preferredName', preferredName)
+    console.log('isCommenting', isCommenting)
     const r = await getRethink()
     const viewerId = getUserId(authToken)
     const operationId = dataLoader.share()
@@ -82,35 +80,37 @@ export default {
       .get(threadId)
       .run()
     // if (!thread) return
-    const commentingIds = thread.commentingIds
-    console.log('commentingIds ', commentingIds)
+    const commentingNames = thread.commentingNames
+    console.log('commentingNames ', commentingNames)
 
-    if (!isCommenting && !commentingIds)
+    if (!isCommenting && !commentingNames)
       return {error: {message: "Can't remove an id that doesn't exist!"}}
 
-    let updatedCommentingIds
+    let updatedCommentingNames
     if (isCommenting) {
-      if (!commentingIds) {
-        updatedCommentingIds = [viewerId]
+      if (!commentingNames) {
+        updatedCommentingNames = [preferredName]
       } else {
-        updatedCommentingIds = [...commentingIds, viewerId]
+        updatedCommentingNames = [...commentingNames, preferredName]
       }
     } else {
-      if (commentingIds?.length === 1) {
-        updatedCommentingIds = null
+      if (!commentingNames || commentingNames?.length <= 1) {
+        updatedCommentingNames = null
       } else {
-        updatedCommentingIds = commentingIds?.filter((id) => id !== viewerId)
+        const test = commentingNames?.filter((id) => id !== preferredName)
+        console.log('test', test)
+        updatedCommentingNames = test
       }
     }
-    console.log('updatedCommentingIds', updatedCommentingIds)
+    console.log('updatedCommentingNames', updatedCommentingNames)
 
     await r
       .table('RetroReflectionGroup')
       .get(threadId)
-      .update({commentingIds: preferredName, updatedAt: now})
+      .update({commentingNames: updatedCommentingNames, updatedAt: now})
       .run()
 
-    const data = {isAnonymous, isCommenting, meetingId, preferredName, threadId, threadSource}
+    const data = {isAnonymous, isCommenting, meetingId, preferredName, threadId}
     publish(SubscriptionChannel.MEETING, meetingId, 'EditCommentingPayload', data, subOptions)
 
     return data

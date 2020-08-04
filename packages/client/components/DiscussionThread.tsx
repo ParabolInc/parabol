@@ -35,7 +35,7 @@ const DiscussionThread = (props: Props) => {
   const {endedAt, replyingToCommentId, threadSource, reflectionGroup} = meeting
   const {thread} = threadSource!
   const threadSourceId = threadSource!.id!
-  const {commentingIds} = reflectionGroup
+  const {commentingNames} = reflectionGroup
   const edges = thread?.edges ?? [] // should never happen, but Terry reported it in demo. likely relay error
   const threadables = edges.map(({node}) => node)
   const getMaxSortOrder = () => {
@@ -55,7 +55,7 @@ const DiscussionThread = (props: Props) => {
         ref={listRef}
         editorRef={editorRef}
       />
-      {commentingIds}
+      {commentingNames}
       <DiscussionThreadInput
         dataCy='discuss-input'
         editorRef={editorRef}
@@ -88,7 +88,7 @@ graphql`
 graphql`
   fragment DiscussionThread_phase on RetrospectiveMeeting {
     reflectionGroup(reflectionGroupId: $threadSourceId) {
-      commentingIds
+      commentingNames
     }
   }
 `

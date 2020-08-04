@@ -129,14 +129,14 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
         isCommenting: true,
         meetingId,
         preferredName,
-        threadId: threadSourceId,
-        threadSource
+        threadId: threadSourceId
       },
       {onError, onCompleted}
     )
   }
 
   const ensureNotCommenting = () => {
+    console.log('ensureNotCommenting -> ensureNotCommenting')
     EditCommentingMutation(
       atmosphere,
       {
@@ -144,8 +144,7 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
         isCommenting: false,
         meetingId,
         preferredName,
-        threadId: threadSourceId,
-        threadSource
+        threadId: threadSourceId
       },
       {onError, onCompleted}
     )

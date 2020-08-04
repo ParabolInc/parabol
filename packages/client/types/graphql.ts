@@ -3769,7 +3769,6 @@ export interface IEditCommentingOnMutationArguments {
   meetingId: string;
   preferredName: string;
   threadId: string;
-  threadSource: ThreadSourceEnum;
 }
 
 export interface IEditReflectionOnMutationArguments {
@@ -4977,9 +4976,9 @@ export interface IRetroReflectionGroup {
   commentCount: number;
 
   /**
-   * The ids of the users that are commenting in the discuss phase
+   * The preferred names of the users that are commenting in the discuss phase
    */
-  commentingIds: Array<string | null> | null;
+  commentingNames: Array<string | null> | null;
 
   /**
    * The timestamp the meeting was created
@@ -5913,7 +5912,6 @@ export interface IEditCommentingPayload {
    */
   preferredName: string;
   threadId: string;
-  threadSource: ThreadSourceEnum;
 }
 
 export interface IEditReflectionPayload {
