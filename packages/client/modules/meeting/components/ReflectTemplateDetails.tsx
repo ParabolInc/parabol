@@ -58,12 +58,13 @@ const Scrollable = styled('div')({
 
 
 interface Props {
+  gotoTeamTemplates: () => void
   gotoPublicTemplates: () => void
   settings: ReflectTemplateDetails_settings
 }
 
 const ReflectTemplateDetails = (props: Props) => {
-  const {gotoPublicTemplates, settings} = props
+  const {gotoTeamTemplates, gotoPublicTemplates, settings} = props
   const {teamTemplates, selectedTemplate, team} = settings
   const {id: templateId, name: templateName, prompts} = selectedTemplate
   const {id: teamId, orgId} = team
@@ -83,8 +84,8 @@ const ReflectTemplateDetails = (props: Props) => {
             teamTemplates={teamTemplates}
             isOwner={isOwner}
           />
-          {isOwner && templateCount > 1 && <RemoveTemplate templateId={templateId} teamId={teamId} teamTemplates={teamTemplates} gotoPublicTemplates={gotoPublicTemplates} />}
-          {!isOwner && templateCount < Threshold.MAX_RETRO_TEAM_TEMPLATES && <CloneTemplate teamId={teamId} templateId={templateId} />}
+          {isOwner && <RemoveTemplate templateId={templateId} teamId={teamId} teamTemplates={teamTemplates} gotoPublicTemplates={gotoPublicTemplates} />}
+          {!isOwner && templateCount < Threshold.MAX_RETRO_TEAM_TEMPLATES && <CloneTemplate gotoTeamTemplates={gotoTeamTemplates} teamId={teamId} templateId={templateId} />}
         </FirstLine>
         <Description>{description}</Description>
       </TemplateHeader>

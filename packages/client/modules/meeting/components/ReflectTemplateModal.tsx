@@ -28,13 +28,16 @@ const ReflectTemplateModal = (props: Props) => {
   const lowestScope = getTemplateList(teamId, orgId, selectedTemplate)
   const listIdx = SCOPES.indexOf(lowestScope)
   const [activeIdx, setActiveIdx] = useState(listIdx)
+  const gotoTeamTemplates = () => {
+    setActiveIdx(0)
+  }
   const gotoPublicTemplates = () => {
     setActiveIdx(2)
   }
   return (
     <StyledDialogContainer>
       <ReflectTemplateList settings={retroMeetingSettings} activeIdx={activeIdx} setActiveIdx={setActiveIdx} />
-      <ReflectTemplateDetails settings={retroMeetingSettings} gotoPublicTemplates={gotoPublicTemplates} />
+      <ReflectTemplateDetails settings={retroMeetingSettings} gotoTeamTemplates={gotoTeamTemplates} gotoPublicTemplates={gotoPublicTemplates} />
     </StyledDialogContainer>
   )
 }

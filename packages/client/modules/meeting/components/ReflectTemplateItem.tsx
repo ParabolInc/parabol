@@ -1,10 +1,11 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
+import React, {useRef} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import Icon from '../../../components/Icon'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
+import useScrollIntoView from '../../../hooks/useScrollIntoVIew'
 import AddReflectTemplateMutation from '../../../mutations/AddReflectTemplateMutation'
 import SelectRetroTemplateMutation from '../../../mutations/SelectRetroTemplateMutation'
 import {DECELERATE} from '../../../styles/animation'
@@ -78,6 +79,8 @@ const ReflectTemplateItem = (props: Props) => {
   const description = makeTemplateDescription(lowestScope, template)
   const atmosphere = useAtmosphere()
   const {onCompleted, onError, submitMutation, submitting} = useMutationProps()
+  const ref = useRef<HTMLLIElement>(null)
+  useScrollIntoView(ref, isActive)
   const selectTemplate = () => {
     if (isActive) return
     SelectRetroTemplateMutation(atmosphere, {selectedTemplateId: templateId, teamId})
@@ -90,6 +93,7 @@ const ReflectTemplateItem = (props: Props) => {
   }
   return (
     <TemplateItem
+      ref={ref}
       isActive={isActive}
       onClick={selectTemplate}
     >

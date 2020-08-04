@@ -72,6 +72,7 @@ const addReflectTemplate = {
       const newTemplatePrompts = prompts.map((prompt) => {
         return new RetrospectivePrompt({
           ...prompt,
+          teamId,
           templateId: newTemplate.id,
           parentPromptId: prompt.id
         })

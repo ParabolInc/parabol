@@ -25,15 +25,17 @@ const RemoveTemplate = (props: Props) => {
   } = props
   const atmosphere = useAtmosphere()
   const {onError, onCompleted, submitting, submitMutation} = useMutationProps()
-  const templateIdx = teamTemplates.findIndex((template) => template.id === templateId)
-  const nextTemplateIdx = templateIdx <= 0 ? 0 : templateIdx - 1
-  const nextTemplateId = teamTemplates[nextTemplateIdx]?.id ?? null
 
   const removeTemplate = () => {
     if (submitting) return
     submitMutation()
-    if (nextTemplateId) {
-      SelectRetroTemplateMutation(atmosphere, {selectedTemplateId: nextTemplateId, teamId})
+    const templateIds = teamTemplates.map(({id}) => id)
+    const templateIdx = templateIds.indexOf(templateId)
+    const nextTemplateIdx = Math.max(0, templateIdx - 1)
+    const nextTemplateId = teamTemplates[nextTemplateIdx]?.id ?? null
+    const nextNewTemplateId = nextTemplateId === templateId ? null : nextTemplateId
+    if (nextNewTemplateId) {
+      SelectRetroTemplateMutation(atmosphere, {selectedTemplateId: nextNewTemplateId, teamId})
     } else {
       gotoPublicTemplates()
     }
