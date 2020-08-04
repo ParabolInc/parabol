@@ -32,10 +32,11 @@ interface Props {
 const DiscussionThread = (props: Props) => {
   const {viewer} = props
   const meeting = viewer.meeting!
-  const {endedAt, replyingToCommentId, threadSource, reflectionGroup} = meeting
+  const {endedAt, replyingToCommentId, threadSource, reflectionGroup, agendaItem} = meeting
+  console.log('DiscussionThread -> meeting', meeting)
   const {thread} = threadSource!
   const threadSourceId = threadSource!.id!
-  const {commentingNames} = reflectionGroup
+  const {commentingNames} = reflectionGroup ? reflectionGroup : agendaItem
   const edges = thread?.edges ?? [] // should never happen, but Terry reported it in demo. likely relay error
   const threadables = edges.map(({node}) => node)
   const getMaxSortOrder = () => {
@@ -93,6 +94,14 @@ graphql`
   }
 `
 
+// graphql`
+//   fragment DiscussionThread_action on ActionMeeting {
+//     agendaItem(agendaItemId: $threadSourceId) {
+//       commentingNames
+//     }
+//   }
+// `
+
 export default createFragmentContainer(DiscussionThread, {
   viewer: graphql`
     fragment DiscussionThread_viewer on User {
@@ -110,6 +119,11 @@ export default createFragmentContainer(DiscussionThread, {
         }
         ... on RetrospectiveMeeting {
           ...DiscussionThread_phase @relay(mask: false)
+        }
+        ... on ActionMeeting {
+          agendaItem(agendaItemId: $threadSourceId) {
+            commentingNames
+          }
         }
         ... on ActionMeeting {
           threadSource: agendaItem(agendaItemId: $threadSourceId) {

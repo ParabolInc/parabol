@@ -4,7 +4,8 @@ import {
   GraphQLID,
   GraphQLNonNull,
   GraphQLObjectType,
-  GraphQLString
+  GraphQLString,
+  GraphQLList
 } from 'graphql'
 import {IAgendaItem} from 'parabol-client/types/graphql'
 import {GQLContext} from '../graphql'
@@ -21,6 +22,10 @@ const AgendaItem = new GraphQLObjectType<IAgendaItem, GQLContext>({
     id: {
       type: new GraphQLNonNull(GraphQLID),
       description: 'The unique agenda item id teamId::shortid'
+    },
+    commentingNames: {
+      type: new GraphQLList(GraphQLString),
+      description: 'The preferred names of the users that are commenting'
     },
     content: {
       type: new GraphQLNonNull(GraphQLString),

@@ -2,6 +2,7 @@ import shortid from 'shortid'
 
 export interface AgendaItemInput {
   id?: string
+  commentingNames?: string[]
   createdAt?: Date
   isActive?: boolean
   isComplete?: boolean
@@ -17,6 +18,7 @@ export interface AgendaItemInput {
 
 export default class AgendaItem {
   id: string
+  commentingNames?: string[]
   content: string
   createdAt: Date
   isActive: boolean
@@ -32,6 +34,7 @@ export default class AgendaItem {
   constructor(input: AgendaItemInput) {
     const {
       id,
+      commentingNames,
       createdAt,
       isActive,
       isComplete,
@@ -46,6 +49,7 @@ export default class AgendaItem {
     } = input
     const now = new Date()
     this.id = id || shortid.generate()
+    this.commentingNames = commentingNames
     this.createdAt = createdAt || now
     this.isActive = isActive ?? true
     this.isComplete = isComplete ?? false

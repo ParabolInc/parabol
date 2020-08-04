@@ -765,6 +765,11 @@ export interface IAgendaItem {
   thread: IThreadableConnection;
 
   /**
+   * The preferred names of the users that are commenting
+   */
+  commentingNames: Array<string | null> | null;
+
+  /**
    * The body of the agenda item
    */
   content: string;
@@ -3763,7 +3768,7 @@ export interface IEditCommentingOnMutationArguments {
   isCommenting: boolean;
   meetingId: string;
   preferredName: string;
-  threadId: string;
+  reflectionGroupId: string;
 }
 
 export interface IEditReflectionOnMutationArguments {
@@ -5901,7 +5906,7 @@ export interface IEditCommentingPayload {
    * the preferred name of the user that is commenting or has stopped commenting
    */
   preferredName: string;
-  threadId: string;
+  reflectionGroupId: string;
 }
 
 export interface IEditReflectionPayload {

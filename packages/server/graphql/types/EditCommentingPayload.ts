@@ -15,7 +15,7 @@ const EditCommentingPayload = new GraphQLObjectType<any, GQLContext>({
       type: GraphQLNonNull(GraphQLString),
       description: 'the preferred name of the user that is commenting or has stopped commenting'
     },
-    threadId: {
+    reflectionGroupId: {
       type: GraphQLNonNull(GraphQLID)
     }
   })

@@ -21,13 +21,13 @@ export default {
     preferredName: {
       type: GraphQLNonNull(GraphQLString)
     },
-    threadId: {
+    reflectionGroupId: {
       type: GraphQLNonNull(GraphQLID)
     }
   },
   resolve: async (
     _source,
-    {isCommenting, meetingId, preferredName, threadId},
+    {isCommenting, meetingId, preferredName, reflectionGroupId},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) => {
     const r = await getRethink()
@@ -61,7 +61,7 @@ export default {
     // RESOLUTION
     const thread = await r
       .table('RetroReflectionGroup')
-      .get(threadId)
+      .get(reflectionGroupId)
       .run()
     const commentingNames = thread.commentingNames
 
@@ -86,11 +86,11 @@ export default {
 
     await r
       .table('RetroReflectionGroup')
-      .get(threadId)
+      .get(reflectionGroupId)
       .update({commentingNames: updatedCommentingNames, updatedAt: now})
       .run()
 
-    const data = {isCommenting, meetingId, preferredName, threadId}
+    const data = {isCommenting, meetingId, preferredName, reflectionGroupId}
     publish(SubscriptionChannel.MEETING, meetingId, 'EditCommentingPayload', data, subOptions)
 
     return data

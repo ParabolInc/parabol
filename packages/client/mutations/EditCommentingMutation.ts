@@ -10,7 +10,7 @@ graphql`
     isCommenting
     meetingId
     preferredName
-    threadId
+    reflectionGroupId
   }
 `
 
@@ -19,13 +19,13 @@ const mutation = graphql`
     $isCommenting: Boolean!
     $meetingId: ID!
     $preferredName: String!
-    $threadId: ID!
+    $reflectionGroupId: ID!
   ) {
     editCommenting(
       isCommenting: $isCommenting
       meetingId: $meetingId
       preferredName: $preferredName
-      threadId: $threadId
+      reflectionGroupId: $reflectionGroupId
     ) {
       ...EditCommentingMutation_meeting @relay(mask: false)
     }
@@ -37,10 +37,10 @@ export const editCommentingMeetingUpdater: SharedUpdater<EditCommentingMutation_
   {store}
 ) => {
   if (!payload) return
-  const threadId = payload.getValue('threadId')
+  const reflectionGroupId = payload.getValue('reflectionGroupId')
   const preferredName = payload.getValue('preferredName')
   const isCommenting = payload.getValue('isCommenting')
-  const reflectionGroup = store.get<IRetroReflectionGroup>(threadId)
+  const reflectionGroup = store.get<IRetroReflectionGroup>(reflectionGroupId)
   if (!reflectionGroup) return
   const commentingNames = reflectionGroup.getValue('commentingNames')
   if (!isCommenting && !commentingNames) return
