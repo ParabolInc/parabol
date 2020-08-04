@@ -5,7 +5,7 @@ import useAtmosphere from '~/hooks/useAtmosphere'
 import useMutationProps from '~/hooks/useMutationProps'
 import useReplyEditorState from '~/hooks/useReplyEditorState'
 import AddCommentMutation from '~/mutations/AddCommentMutation'
-import React, {forwardRef, RefObject, useState} from 'react'
+import React, {forwardRef, RefObject, useState, useRef} from 'react'
 import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import {Elevation} from '~/styles/elevation'
 import {ThreadSourceEnum} from '~/types/graphql'
@@ -69,11 +69,13 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
   const isReply = !!props.isReply
   const isDisabled = !!props.isDisabled
   const {id: meetingId, isAnonymousComment, teamId, viewerMeetingMember, meetingType} = meeting
+  console.log('DiscussionThreadInput -> isAnonymousComment', isAnonymousComment)
   const {user} = viewerMeetingMember
   const {picture, preferredName} = user
   const [editorState, setEditorState] = useReplyEditorState(replyMention, setReplyMention)
   const atmosphere = useAtmosphere()
   const {submitting, onError, onCompleted, submitMutation} = useMutationProps()
+  const [isCommenting, setIsCommenting] = useState(false)
   const placeholder = isAnonymousComment ? 'Comment anonymously' : 'Comment publicly'
 
   const threadSourceByMeetingType = {
@@ -122,10 +124,10 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
 
   const ensureCommenting = () => {
     collapseAddTask()
+    if (isAnonymousComment || isCommenting) return
     EditCommentingMutation(
       atmosphere,
       {
-        isAnonymous: false,
         isCommenting: true,
         meetingId,
         preferredName,
@@ -133,14 +135,14 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
       },
       {onError, onCompleted}
     )
+    setIsCommenting(true)
   }
 
   const ensureNotCommenting = () => {
-    console.log('ensureNotCommenting -> ensureNotCommenting')
+    if (isAnonymousComment || !isCommenting) return
     EditCommentingMutation(
       atmosphere,
       {
-        isAnonymous: false,
         isCommenting: false,
         meetingId,
         preferredName,
@@ -148,6 +150,7 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
       },
       {onError, onCompleted}
     )
+    setIsCommenting(false)
   }
 
   const onSubmit = () => {
@@ -173,8 +176,8 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
         dataCy={`${dataCy}`}
         editorRef={editorRef}
         editorState={editorState}
+        ensureCommenting={ensureCommenting}
         onBlur={ensureNotCommenting}
-        onFocus={ensureCommenting}
         onSubmit={onSubmit}
         placeholder={placeholder}
         setEditorState={setEditorState}

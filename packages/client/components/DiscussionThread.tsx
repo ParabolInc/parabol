@@ -55,7 +55,7 @@ const DiscussionThread = (props: Props) => {
         ref={listRef}
         editorRef={editorRef}
       />
-      {commentingNames}
+      {commentingNames && `${commentingNames} is typing...`}
       <DiscussionThreadInput
         dataCy='discuss-input'
         editorRef={editorRef}

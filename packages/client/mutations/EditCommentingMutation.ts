@@ -7,7 +7,6 @@ import {EditCommentingMutation_meeting} from '~/__generated__/EditCommentingMuta
 
 graphql`
   fragment EditCommentingMutation_meeting on EditCommentingPayload {
-    isAnonymous
     isCommenting
     meetingId
     preferredName
@@ -17,14 +16,12 @@ graphql`
 
 const mutation = graphql`
   mutation EditCommentingMutation(
-    $isAnonymous: Boolean!
     $isCommenting: Boolean!
     $meetingId: ID!
     $preferredName: String!
     $threadId: ID!
   ) {
     editCommenting(
-      isAnonymous: $isAnonymous
       isCommenting: $isCommenting
       meetingId: $meetingId
       preferredName: $preferredName
@@ -55,7 +52,7 @@ export const editCommentingMeetingUpdater: SharedUpdater<EditCommentingMutation_
       reflectionGroup.setValue([...commentingNames, preferredName], 'commentingNames')
     }
   } else {
-    const filteredCommentingNames = commentingNames?.filter((id) => id !== preferredName)
+    const filteredCommentingNames = commentingNames?.filter((name) => name !== preferredName)
     if (filteredCommentingNames?.length) {
       reflectionGroup.setValue(filteredCommentingNames, 'commentingNames')
     } else {

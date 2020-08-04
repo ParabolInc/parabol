@@ -93,7 +93,7 @@ const ThreadedCommentBase = (props: Props) => {
   }
   const ensureCommenting = () => {
     collapseAddTask()
-    // EditCommentingMutation(isAnonymous: false, isCommenting: true, preferredName, threadId, threadSource: 'REFLECTION_GROUP')
+    // EditCommentingMutation(isCommenting: true, preferredName, threadId, threadSource: 'REFLECTION_GROUP')
   }
 
   const onSubmit = () => {

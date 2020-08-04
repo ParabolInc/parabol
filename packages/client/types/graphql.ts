@@ -3758,11 +3758,6 @@ export interface IEmailPasswordResetOnMutationArguments {
 
 export interface IEditCommentingOnMutationArguments {
   /**
-   * true if the person commenting should be anonymous
-   */
-  isAnonymous: boolean;
-
-  /**
    * true if the user is commenting, false if the user has stopped commenting
    */
   isCommenting: boolean;
@@ -5895,11 +5890,6 @@ export interface IRetroDiscussStage {
 
 export interface IEditCommentingPayload {
   __typename: 'EditCommentingPayload';
-
-  /**
-   * true if the person commenting should be anonymous
-   */
-  isAnonymous: boolean;
 
   /**
    * true if the user is commenting, false if the user has stopped commenting

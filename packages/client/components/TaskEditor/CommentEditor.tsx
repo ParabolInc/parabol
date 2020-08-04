@@ -47,6 +47,7 @@ type DraftProps = Pick<
 
 interface Props extends DraftProps {
   editorRef: RefObject<HTMLTextAreaElement>
+  ensureCommenting?: () => void
   placeholder: string
   setEditorState: (newEditorState: EditorState) => void
   onSubmit: () => void
@@ -58,10 +59,10 @@ const CommentEditor = (props: Props) => {
   const {
     editorRef,
     editorState,
+    ensureCommenting,
     placeholder,
     readOnly,
     setEditorState,
-    onFocus,
     onSubmit,
     onBlur,
     dataCy
@@ -125,6 +126,7 @@ const CommentEditor = (props: Props) => {
   }
 
   const onKeyBindingFn = (e) => {
+    ensureCommenting && ensureCommenting()
     if (keyBindingFn) {
       const result = keyBindingFn(e)
       if (result) {
@@ -163,6 +165,7 @@ const CommentEditor = (props: Props) => {
   }
 
   const onKeyDownFallback = (e: React.KeyboardEvent<Element>) => {
+    ensureCommenting && ensureCommenting()
     if (e.key !== 'Enter' || e.shiftKey) return
     e.preventDefault()
     onSubmit()
@@ -179,7 +182,6 @@ const CommentEditor = (props: Props) => {
             placeholder={placeholder}
             onBlur={onBlur}
             onKeyDown={onKeyDownFallback}
-            onFocus={onFocus}
             editorRef={editorRef}
           />
         </Suspense>
@@ -195,7 +197,6 @@ const CommentEditor = (props: Props) => {
           keyBindingFn={onKeyBindingFn}
           onBlur={onBlur}
           onChange={onChange}
-          onFocus={onFocus}
           placeholder={placeholder}
           readOnly={readOnly || (useFallback && !showFallback)}
           ref={editorRef as any}
