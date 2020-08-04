@@ -115,7 +115,7 @@ const Team = new GraphQLObjectType<ITeam, GQLContext>({
       type: GraphQLISO8601Type,
       description: 'The datetime the team was last updated'
     },
-    reflectPrompts: {
+    customPhaseItems: {
       type: new GraphQLList(ReflectPrompt),
       deprecationReason: 'Field no longer needs to exist for now',
       resolve: ({}, _args, {}) => {

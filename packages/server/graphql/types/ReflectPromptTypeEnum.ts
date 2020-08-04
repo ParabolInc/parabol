@@ -9,4 +9,12 @@ const ReflectPromptTypeEnum = new GraphQLEnumType({
   }
 })
 
+export const CustomPhaseItemTypeEnum = new GraphQLEnumType({
+  name: 'CustomPhaseItemTypeEnum',
+  description: 'The type of phase item',
+  values: {
+    [RETRO_PHASE_ITEM]: {}
+  }
+})
+
 export default ReflectPromptTypeEnum

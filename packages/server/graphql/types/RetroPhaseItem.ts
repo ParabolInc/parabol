@@ -1,5 +1,5 @@
 import {GraphQLFloat, GraphQLID, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
-import ReflectPrompt, {reflectPromptFields} from './ReflectPrompt'
+import ReflectPrompt, {reflectPromptFields, CustomPhaseItem} from './ReflectPrompt'
 import ReflectTemplate from './ReflectTemplate'
 import {GQLContext} from '../graphql'
 
@@ -7,7 +7,7 @@ const RetroPhaseItem = new GraphQLObjectType<any, GQLContext>({
   name: 'RetroPhaseItem',
   description:
     'A team-specific retro phase. Usually 3 or 4 exist per team, eg Good/Bad/Change, 4Ls, etc.',
-  interfaces: () => [ReflectPrompt],
+  interfaces: () => [ReflectPrompt, CustomPhaseItem],
   fields: () => ({
     ...reflectPromptFields(),
     sortOrder: {
