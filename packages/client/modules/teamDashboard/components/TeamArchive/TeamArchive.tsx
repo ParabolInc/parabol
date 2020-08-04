@@ -14,6 +14,7 @@ import toTeamMemberId from '~/utils/relay/toTeamMemberId'
 import getSafeRegex from '~/utils/getSafeRegex'
 import extractTextFromDraftString from '~/utils/draftjs/extractTextFromDraftString'
 import TeamArchiveHeader from '../TeamArchiveHeader/TeamArchiveHeader'
+import useDocumentTitle from '~/hooks/useDocumentTitle'
 
 const CARD_WIDTH = 256 + 32 // account for box model and horizontal padding
 const GRID_PADDING = 16
@@ -95,7 +96,7 @@ interface Props {
 const TeamArchive = (props: Props) => {
   const {viewer, relay, team, teamId, showHeader} = props
   const {hasMore, isLoading, loadMore} = relay
-  const {teamMembers, teamMemberFilter} = team || {}
+  const {teamMembers, teamMemberFilter, name: teamName} = team || {}
   const teamMemberFilterId = (teamMemberFilter && teamMemberFilter.id) || null
   const {archivedTasks, dashSearch} = viewer
 
@@ -178,6 +179,8 @@ const TeamArchive = (props: Props) => {
     invalidateOnAddRemove(oldEdges, edges)
     oldEdgesRef.current = edges
   }, [edges, oldEdgesRef])
+
+  showHeader && useDocumentTitle(`Team Archive | ${teamName}`, 'Archive')
 
   const rowRenderer = ({columnIndex, parent, rowIndex, key, style}) => {
     // TODO render a very inexpensive lo-fi card while scrolling. We should reuse that cheap card for drags, too
@@ -315,6 +318,7 @@ export default createPaginationContainer(
     team: graphql`
       fragment TeamArchive_team on Team {
         id
+        name
         teamMemberFilter {
           id
         }
