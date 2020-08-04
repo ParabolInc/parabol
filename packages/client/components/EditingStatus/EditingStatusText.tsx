@@ -9,6 +9,7 @@ interface Props {
   isEditing: boolean
   timestamp: string
   timestampType: TimestampType
+  disabled?: boolean
 }
 
 const useTimeFrom = (timestamp: string) => {
@@ -29,9 +30,12 @@ const useTimeFrom = (timestamp: string) => {
 }
 
 const EditingStatusText = (props: Props) => {
-  const {editors, isEditing, timestamp, timestampType} = props
+  const {editors, isEditing, timestamp, timestampType, disabled} = props
   const timestampLabel = timestampType === 'createdAt' ? 'Created ' : 'Updated '
   const timeFrom = useTimeFrom(timestamp)
+  if (disabled) {
+    return <span>{`${timestampLabel}${timeFrom}`}</span>
+  }
   if (editors.length === 0) {
     if (isEditing) {
       return (

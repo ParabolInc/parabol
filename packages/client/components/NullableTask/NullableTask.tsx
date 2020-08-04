@@ -17,10 +17,11 @@ interface Props {
   measure?: () => void
   task: NullableTask_task
   dataCy: string
+  disabled?: boolean
 }
 
 const NullableTask = (props: Props) => {
-  const {area, className, isAgenda, task, isDraggingOver, dataCy} = props
+  const {area, className, isAgenda, task, isDraggingOver, dataCy, disabled} = props
   const {content, createdBy, createdByUser} = task
   const {preferredName} = createdByUser
   const contentState = useMemo(() => {
@@ -51,6 +52,7 @@ const NullableTask = (props: Props) => {
   return showOutcome ? (
     <OutcomeCardContainer
       dataCy={`${dataCy}`}
+      disabled={disabled}
       area={area}
       className={className}
       contentState={contentState}
@@ -59,8 +61,8 @@ const NullableTask = (props: Props) => {
       task={task}
     />
   ) : (
-    <NullCard className={className} preferredName={preferredName} />
-  )
+      <NullCard className={className} preferredName={preferredName} />
+    )
 }
 
 export default createFragmentContainer(NullableTask, {

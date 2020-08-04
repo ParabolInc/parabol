@@ -34,10 +34,10 @@ const RootCard = styled('div')<{
   boxShadow: isDragging
     ? Elevation.CARD_DRAGGING
     : isTaskFocused
-    ? cardFocusShadow
-    : isTaskHovered
-    ? cardHoverShadow
-    : cardShadow
+      ? cardFocusShadow
+      : isTaskHovered
+        ? cardHoverShadow
+        : cardShadow
 }))
 
 const ContentBlock = styled('div')({
@@ -60,6 +60,7 @@ interface Props {
   setEditorState: (newEditorState: EditorState) => void
   useTaskChild: UseTaskChild
   dataCy: string
+  disabled?: boolean
 }
 
 const OutcomeCard = memo((props: Props) => {
@@ -74,7 +75,8 @@ const OutcomeCard = memo((props: Props) => {
     task,
     setEditorState,
     useTaskChild,
-    dataCy
+    dataCy,
+    disabled
   } = props
   const isPrivate = isTaskPrivate(task.tags)
   const isArchived = isTaskArchived(task.tags)
@@ -87,7 +89,7 @@ const OutcomeCard = memo((props: Props) => {
   const archivedTitle = ', set as #archived'
   const statusIndicatorTitle = `${statusTitle}${isPrivate ? privateTitle : ''}${
     isArchived ? archivedTitle : ''
-  }`
+    }`
   return (
     <RootCard
       isTaskHovered={isTaskHovered}
@@ -96,7 +98,7 @@ const OutcomeCard = memo((props: Props) => {
     >
       <TaskWatermark service={service} />
       <ContentBlock>
-        <EditingStatus isTaskHovered={isTaskHovered} task={task} useTaskChild={useTaskChild}>
+        <EditingStatus isTaskHovered={isTaskHovered} disabled={disabled} task={task} useTaskChild={useTaskChild}>
           <StatusIndicatorBlock data-cy={`${dataCy}-status`} title={statusIndicatorTitle}>
             <OutcomeCardStatusIndicator status={isDraggingOver || status} />
             {isPrivate && <OutcomeCardStatusIndicator status='private' />}

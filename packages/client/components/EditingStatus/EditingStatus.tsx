@@ -36,10 +36,11 @@ interface Props {
   isTaskHovered: boolean
   task: EditingStatus_task
   useTaskChild: UseTaskChild
+  disabled?: boolean
 }
 
 const EditingStatus = (props: Props) => {
-  const {children, isTaskHovered, task, useTaskChild} = props
+  const {children, isTaskHovered, task, useTaskChild, disabled} = props
   const {createdAt, updatedAt, editors} = task
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
@@ -69,6 +70,7 @@ const EditingStatus = (props: Props) => {
         >
           <EditingStatusText
             editors={otherEditors}
+            disabled={disabled}
             isEditing={isEditing}
             timestamp={timestamp}
             timestampType={timestampType}
@@ -78,6 +80,7 @@ const EditingStatus = (props: Props) => {
       </div>
       <DueDateToggle
         cardIsActive={isEditing || isTaskHovered}
+        disabled={disabled}
         task={task}
         useTaskChild={useTaskChild}
       />

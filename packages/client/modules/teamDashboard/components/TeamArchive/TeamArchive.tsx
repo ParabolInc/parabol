@@ -175,6 +175,7 @@ const TeamArchive = (props: Props) => {
             >
               <NullableTask
                 dataCy={`archive-task`}
+                disabled={true}
                 key={key}
                 area={AreaEnum.teamDash}
                 measure={measure}
@@ -244,15 +245,15 @@ const TeamArchive = (props: Props) => {
             </InfiniteLoader>
           </CardGrid>
         ) : (
-          <EmptyMsg>
-            <span>
-              {'🤓'}
-              {' Hi there! There are zero archived tasks. '}
-              {'Nothing to see here. How about a fun rally video? '}
-              <LinkSpan>{getRallyLink()}!</LinkSpan>
-            </span>
-          </EmptyMsg>
-        )}
+            <EmptyMsg>
+              <span>
+                {'🤓'}
+                {' Hi there! There are zero archived tasks. '}
+                {'Nothing to see here. How about a fun rally video? '}
+                <LinkSpan>{getRallyLink()}!</LinkSpan>
+              </span>
+            </EmptyMsg>
+          )}
       </Body>
     </Root>
   )
