@@ -37,25 +37,50 @@ const mutation = graphql`
     }
   }
 `
-const getNewCommentingIds = (
-  commentingIds: string[] | undefined | null,
-  commenterId: string,
-  isCommenting: boolean
-) => {
+// const getNewCommentingIds = (
+//   commentingIds: string[] | undefined | null,
+//   commenterId: string,
+//   isCommenting: boolean
+// ) => {
+//   if (isCommenting) {
+//     console.log('isCommenting', isCommenting)
+//     if (!commentingIds) {
+//       return [commenterId]
+//     } else {
+//       return [...commentingIds, commenterId]
+//     }
+//   } else {
+//     if (commentingIds && commentingIds.length > 1) {
+//       const newCommentingIds = commentingIds.filter((id) => id !== commenterId)
+//       return newCommentingIds
+//     }
+//   }
+//   return null
+// }
+
+const getNewCommenters = (commenters, {userId, preferredName}, isCommenting, store) => {
+  const newCommenters = []
   if (isCommenting) {
-    console.log('isCommenting', isCommenting)
-    if (!commentingIds) {
-      return [commenterId]
-    } else {
-      return [...commentingIds, commenterId]
+    // handle multiple socket connections
+    for (let ii = 0; ii < commenters.length; ii++) {
+      const commenter = commenters[ii]
+      if (commenter.getValue('userId') === userId) return
+      newCommenters.push(commenter)
     }
+    const newCommenter = createProxyRecord(store, 'CommenterDetails', {
+      userId,
+      preferredName
+    })
+    newCommenters.push(newCommenter)
   } else {
-    if (commentingIds && commentingIds.length > 1) {
-      const newCommentingIds = commentingIds.filter((id) => id !== commenterId)
-      return newCommentingIds
+    for (let ii = 0; ii < commenters.length; ii++) {
+      const commenter = commenters[ii]
+      if (commenter && commenter.getValue('userId') !== userId) {
+        newCommenters.push(commenter)
+      }
     }
   }
-  return null
+  return newCommenters
 }
 
 export const editCommentingMeetingUpdater = (payload, {store}) => {
@@ -75,13 +100,19 @@ export const editCommentingMeetingUpdater = (payload, {store}) => {
     console.log('editCommentingMeetingUpdater -> commenters', commenters)
     // if (!isCommenting && !commentingIds) return
     // const newCommentingIds = getNewCommentingIds(commentingIds, commenterId, isCommenting)
-    const newCommenter = createProxyRecord(store, 'CommenterDetails', {
-      // const newCommenter = [
-      userId: commenterId,
-      preferredName: preferredName
-    })
-    console.log('editCommentingMeetingUpdater -> newCommenter', newCommenter)
-    reflectionGroup.setLinkedRecords([newCommenter], 'commenters')
+    // const newCommenter = createProxyRecord(store, 'CommenterDetails', {
+    //   userId: commenterId,
+    //   preferredName: preferredName
+    // })
+    // console.log('editCommentingMeetingUpdater -> newCommenter', newCommenter)
+    const newCommenters = getNewCommenters(
+      commenters,
+      {userId: commenterId, preferredName},
+      isCommenting,
+      store
+    )
+    console.log('editCommentingMeetingUpdater -> newCommenters', newCommenters)
+    reflectionGroup.setLinkedRecords(newCommenters, 'commenters')
 
     console.log('AFTER ')
     // reflectionGroup.setValue(newCommentingIds, 'commentingIds')
