@@ -23,7 +23,7 @@ const AgendaItem = new GraphQLObjectType<IAgendaItem, GQLContext>({
       type: new GraphQLNonNull(GraphQLID),
       description: 'The unique agenda item id teamId::shortid'
     },
-    commentingNames: {
+    commentingIds: {
       type: new GraphQLList(GraphQLString),
       description: 'The preferred names of the users that are commenting'
     },

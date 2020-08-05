@@ -5,7 +5,7 @@ import useAtmosphere from '~/hooks/useAtmosphere'
 import useMutationProps from '~/hooks/useMutationProps'
 import useReplyEditorState from '~/hooks/useReplyEditorState'
 import AddCommentMutation from '~/mutations/AddCommentMutation'
-import React, {forwardRef, RefObject, useState, useRef} from 'react'
+import React, {forwardRef, RefObject, useState} from 'react'
 import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import {Elevation} from '~/styles/elevation'
 import {ThreadSourceEnum} from '~/types/graphql'
@@ -69,7 +69,6 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
   const isReply = !!props.isReply
   const isDisabled = !!props.isDisabled
   const {id: meetingId, isAnonymousComment, teamId, viewerMeetingMember, meetingType} = meeting
-  console.log('DiscussionThreadInput -> isAnonymousComment', isAnonymousComment)
   const {user} = viewerMeetingMember
   const {picture, preferredName} = user
   const [editorState, setEditorState] = useReplyEditorState(replyMention, setReplyMention)
@@ -124,7 +123,7 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
 
   const ensureCommenting = () => {
     collapseAddTask()
-    console.log('ensureCommenting -> threadSource', threadSource)
+    console.log('ENSURECommenting')
 
     if (isAnonymousComment || isCommenting) return
     EditCommentingMutation(
@@ -132,7 +131,6 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
       {
         isCommenting: true,
         meetingId,
-        preferredName,
         threadId: threadSourceId,
         threadSource
       },
@@ -143,12 +141,12 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
 
   const ensureNotCommenting = () => {
     if (isAnonymousComment || !isCommenting) return
+    console.log('ENSURE_NOT_Commenting')
     EditCommentingMutation(
       atmosphere,
       {
         isCommenting: false,
         meetingId,
-        preferredName,
         threadId: threadSourceId,
         threadSource
       },

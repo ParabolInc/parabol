@@ -37,8 +37,8 @@ const RetroReflectionGroup = new GraphQLObjectType<any, GQLContext>({
         return dataLoader.get('commentCountByThreadId').load(reflectionGroupId)
       }
     },
-    commentingNames: {
-      type: new GraphQLList(GraphQLID),
+    commentingIds: {
+      type: new GraphQLList(GraphQLNonNull(GraphQLString)),
       description: 'The preferred names of the users that are commenting in the discuss phase'
     },
     createdAt: {

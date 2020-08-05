@@ -81,7 +81,6 @@ const MeetingSubscription = (
       const type = payload.getValue('__typename') as string
       const handler = updateHandlers[type]
       if (handler) {
-        console.log('atmosphere from SUB', atmosphere)
         handler(payload, {atmosphere, store})
       }
     },

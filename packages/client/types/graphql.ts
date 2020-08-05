@@ -767,7 +767,7 @@ export interface IAgendaItem {
   /**
    * The preferred names of the users that are commenting
    */
-  commentingNames: Array<string | null> | null;
+  commentingIds: Array<string | null> | null;
 
   /**
    * The body of the agenda item
@@ -3767,7 +3767,6 @@ export interface IEditCommentingOnMutationArguments {
    */
   isCommenting: boolean;
   meetingId: string;
-  preferredName: string;
   threadId: string;
   threadSource: ThreadSourceEnum;
 }
@@ -4979,7 +4978,7 @@ export interface IRetroReflectionGroup {
   /**
    * The preferred names of the users that are commenting in the discuss phase
    */
-  commentingNames: Array<string | null> | null;
+  commentingIds: Array<string> | null;
 
   /**
    * The timestamp the meeting was created
@@ -5901,12 +5900,8 @@ export interface IEditCommentingPayload {
    * true if the user is commenting, false if the user has stopped commenting
    */
   isCommenting: boolean;
+  commentorId: string;
   meetingId: string;
-
-  /**
-   * the preferred name of the user that is commenting or has stopped commenting
-   */
-  preferredName: string;
   threadId: string;
   threadSource: ThreadSourceEnum;
 }

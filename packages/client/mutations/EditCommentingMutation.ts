@@ -9,8 +9,8 @@ import {ThreadSourceEnum} from '~/types/graphql'
 graphql`
   fragment EditCommentingMutation_meeting on EditCommentingPayload {
     isCommenting
+    commentorId
     meetingId
-    preferredName
     threadId
     threadSource
   }
@@ -23,14 +23,12 @@ const mutation = graphql`
   mutation EditCommentingMutation(
     $isCommenting: Boolean!
     $meetingId: ID!
-    $preferredName: String!
     $threadId: ID!
     $threadSource: ThreadSourceEnum!
   ) {
     editCommenting(
       isCommenting: $isCommenting
       meetingId: $meetingId
-      preferredName: $preferredName
       threadId: $threadId
       threadSource: $threadSource
     ) {
@@ -38,24 +36,29 @@ const mutation = graphql`
     }
   }
 `
-const getNewCommentingNames = (
-  commentingNames: string[] | undefined | null,
-  preferredName: string,
+const getNewCommentingIds = (
+  commentingIds: string[] | undefined | null,
+  viewerId: string,
   isCommenting: boolean
 ) => {
   if (isCommenting) {
-    if (!commentingNames) {
-      return [preferredName]
+    console.log('isCommenting', isCommenting)
+    if (!commentingIds) {
+      return [viewerId]
     } else {
-      return [...commentingNames, preferredName]
+      return [...commentingIds, viewerId]
     }
   } else {
-    if (!commentingNames || commentingNames.length <= 1) {
-      return null
-    } else {
-      return commentingNames.filter((name) => name !== preferredName)
+    if (commentingIds && commentingIds.length > 1) {
+      // remove first occurrance of name as two users could have same name
+      // const nameIndex = commentingIds.findIndex((name) => name === viewerId)
+      // const newCommentingIds = commentingIds.map((name) => name)
+      // newCommentingIds.splice(nameIndex, 1)
+      const newCommentingIds = commentingIds.filter((id) => id !== viewerId)
+      return newCommentingIds
     }
   }
+  return null
 }
 
 export const editCommentingMeetingUpdater: SharedUpdater<EditCommentingMutation_meeting> = (
@@ -65,26 +68,29 @@ export const editCommentingMeetingUpdater: SharedUpdater<EditCommentingMutation_
   console.log('Updater!')
   if (!payload) return
   const threadId = payload.getValue('threadId')
-  const preferredName = payload.getValue('preferredName')
+  const viewerId = payload.getValue('commentorId')
+  console.log('updater --> viewerId', viewerId)
   const isCommenting = payload.getValue('isCommenting')
   const threadSource = payload.getValue('threadSource')
-  console.log('threadSource', threadSource)
-  console.log('ThreadSourceEnum.AGENDA_ITEM', ThreadSourceEnum.AGENDA_ITEM)
+  const test = payload.getValue('test')
+  console.log('test', test)
 
   if (threadSource === ThreadSourceEnum.REFLECTION_GROUP) {
     const reflectionGroup = store.get<IRetroReflectionGroup>(threadId)
     if (!reflectionGroup) return
-    const commentingNames = reflectionGroup.getValue('commentingNames')
-    if (!isCommenting && !commentingNames) return
-    const newCommentingNames = getNewCommentingNames(commentingNames, preferredName, isCommenting)
-    reflectionGroup.setValue(newCommentingNames, 'commentingNames')
+    const commentingIds = reflectionGroup.getValue('commentingIds')
+    console.log('commentingIds', commentingIds)
+    if (!isCommenting && !commentingIds) return
+    const newCommentingIds = getNewCommentingIds(commentingIds, viewerId, isCommenting)
+    console.log('newCommentingIds', newCommentingIds)
+    reflectionGroup.setValue(newCommentingIds, 'commentingIds')
   } else if (threadSource === ThreadSourceEnum.AGENDA_ITEM) {
     const agendaItem = store.get<IAgendaItem>(threadId)
     if (!agendaItem) return
-    const commentingNames = agendaItem.getValue('commentingNames')
-    if (!isCommenting && !commentingNames) return
-    const newCommentingNames = getNewCommentingNames(commentingNames, preferredName, isCommenting)
-    agendaItem.setValue(newCommentingNames, 'commentingNames')
+    const commentingIds = agendaItem.getValue('commentingIds')
+    if (!isCommenting && !commentingIds) return
+    const newCommentingIds = getNewCommentingIds(commentingIds, viewerId, isCommenting)
+    agendaItem.setValue(newCommentingIds, 'commentingIds')
   }
 }
 
