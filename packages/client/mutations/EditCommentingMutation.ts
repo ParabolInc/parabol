@@ -2,13 +2,18 @@ import {commitMutation} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import {EditCommentingMutation as TEditCommentingMutation} from '../__generated__/EditCommentingMutation.graphql'
 import {IRetroReflectionGroup, IAgendaItem} from '~/types/graphql'
-import {SharedUpdater, StandardMutation} from '../types/relayMutations'
+import {StandardMutation} from '../types/relayMutations'
 import {ThreadSourceEnum} from '~/types/graphql'
+import createProxyRecord from '../utils/relay/createProxyRecord'
 
 graphql`
   fragment EditCommentingMutation_meeting on EditCommentingPayload {
     isCommenting
-    commentorId
+    # commenterId
+    commenter {
+      id
+      preferredName
+    }
     meetingId
     threadId
     threadSource
@@ -34,19 +39,19 @@ const mutation = graphql`
 `
 const getNewCommentingIds = (
   commentingIds: string[] | undefined | null,
-  viewerId: string,
+  commenterId: string,
   isCommenting: boolean
 ) => {
   if (isCommenting) {
     console.log('isCommenting', isCommenting)
     if (!commentingIds) {
-      return [viewerId]
+      return [commenterId]
     } else {
-      return [...commentingIds, viewerId]
+      return [...commentingIds, commenterId]
     }
   } else {
     if (commentingIds && commentingIds.length > 1) {
-      const newCommentingIds = commentingIds.filter((id) => id !== viewerId)
+      const newCommentingIds = commentingIds.filter((id) => id !== commenterId)
       return newCommentingIds
     }
   }
@@ -54,29 +59,38 @@ const getNewCommentingIds = (
 }
 
 export const editCommentingMeetingUpdater = (payload, {store}) => {
-  console.log('Updater!')
   if (!payload) return
   const threadId = payload.getValue('threadId')
-  const viewerId = payload.getValue('commentorId') as string
-  console.log('updater --> viewerId', viewerId)
+  const commenter = payload.getLinkedRecord('commenter')
+  const commenterId = commenter.getValue('id')
+  const preferredName = commenter.getValue('preferredName')
   const isCommenting = payload.getValue('isCommenting')
   const threadSource = payload.getValue('threadSource')
 
   if (threadSource === ThreadSourceEnum.REFLECTION_GROUP) {
     const reflectionGroup = store.get<IRetroReflectionGroup>(threadId)
+    console.log('editCommentingMeetingUpdater -> reflectionGroup', reflectionGroup)
     if (!reflectionGroup) return
-    const commentingIds = reflectionGroup.getValue('commentingIds')
-    console.log('commentingIds', commentingIds)
-    if (!isCommenting && !commentingIds) return
-    const newCommentingIds = getNewCommentingIds(commentingIds, viewerId, isCommenting)
-    console.log('newCommentingIds', newCommentingIds)
-    reflectionGroup.setValue(newCommentingIds, 'commentingIds')
+    const commenters = reflectionGroup.getLinkedRecords('commenters')
+    console.log('editCommentingMeetingUpdater -> commenters', commenters)
+    // if (!isCommenting && !commentingIds) return
+    // const newCommentingIds = getNewCommentingIds(commentingIds, commenterId, isCommenting)
+    const newCommenter = createProxyRecord(store, 'CommenterDetails', {
+      // const newCommenter = [
+      userId: commenterId,
+      preferredName: preferredName
+    })
+    console.log('editCommentingMeetingUpdater -> newCommenter', newCommenter)
+    reflectionGroup.setLinkedRecords([newCommenter], 'commenters')
+
+    console.log('AFTER ')
+    // reflectionGroup.setValue(newCommentingIds, 'commentingIds')
   } else if (threadSource === ThreadSourceEnum.AGENDA_ITEM) {
     const agendaItem = store.get<IAgendaItem>(threadId)
     if (!agendaItem) return
     const commentingIds = agendaItem.getValue('commentingIds')
     if (!isCommenting && !commentingIds) return
-    const newCommentingIds = getNewCommentingIds(commentingIds, viewerId, isCommenting)
+    const newCommentingIds = getNewCommentingIds(commentingIds, commenterId, isCommenting)
     agendaItem.setValue(newCommentingIds, 'commentingIds')
   }
 }

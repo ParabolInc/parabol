@@ -33,9 +33,11 @@ const DiscussionThread = (props: Props) => {
   const {viewer} = props
   const meeting = viewer.meeting!
   const {endedAt, replyingToCommentId, threadSource, reflectionGroup, agendaItem} = meeting
+  console.log('DiscussionThread -> meeting', meeting)
   const {thread} = threadSource!
   const threadSourceId = threadSource!.id!
-  const {commentingIds} = reflectionGroup ? reflectionGroup : agendaItem
+  const {commenters} = reflectionGroup ? reflectionGroup : agendaItem
+  console.log('DiscussionThread -> commenters', commenters)
   const edges = thread?.edges ?? [] // should never happen, but Terry reported it in demo. likely relay error
   const threadables = edges.map(({node}) => node)
   const getMaxSortOrder = () => {
@@ -55,7 +57,7 @@ const DiscussionThread = (props: Props) => {
         ref={listRef}
         editorRef={editorRef}
       />
-      {commentingIds && `${commentingIds} is typing...`}
+      {commenters ? `${commenters[0].preferredName} is typing...` : ''}
       <DiscussionThreadInput
         dataCy='discuss-input'
         editorRef={editorRef}
@@ -85,22 +87,6 @@ graphql`
   }
 `
 
-graphql`
-  fragment DiscussionThread_phase on RetrospectiveMeeting {
-    reflectionGroup(reflectionGroupId: $threadSourceId) {
-      commentingIds
-    }
-  }
-`
-
-// graphql`
-//   fragment DiscussionThread_action on ActionMeeting {
-//     agendaItem(agendaItemId: $threadSourceId) {
-//       commentingIds
-//     }
-//   }
-// `
-
 export default createFragmentContainer(DiscussionThread, {
   viewer: graphql`
     fragment DiscussionThread_viewer on User {
@@ -117,11 +103,19 @@ export default createFragmentContainer(DiscussionThread, {
           }
         }
         ... on RetrospectiveMeeting {
-          ...DiscussionThread_phase @relay(mask: false)
+          reflectionGroup(reflectionGroupId: $threadSourceId) {
+            commenters {
+              userId
+              preferredName
+            }
+          }
         }
         ... on ActionMeeting {
           agendaItem(agendaItemId: $threadSourceId) {
-            commentingIds
+            commenters {
+              userId
+              preferredName
+            }
           }
         }
         ... on ActionMeeting {

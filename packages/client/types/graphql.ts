@@ -765,9 +765,9 @@ export interface IAgendaItem {
   thread: IThreadableConnection;
 
   /**
-   * The preferred names of the users that are commenting
+   * A list of users currently commenting (fed by a subscription, so queries return null)
    */
-  commentingIds: Array<string | null> | null;
+  commenters: Array<ICommenterDetails>;
 
   /**
    * The body of the agenda item
@@ -920,6 +920,23 @@ export interface IThreadableEdge {
    */
   node: Threadable;
   cursor: string | null;
+}
+
+/**
+ * The user that is commenting
+ */
+export interface ICommenterDetails {
+  __typename: 'CommenterDetails';
+
+  /**
+   * The userId of the person commenting
+   */
+  userId: string;
+
+  /**
+   * The preferred name of the user commenting
+   */
+  preferredName: string;
 }
 
 /**
@@ -4976,9 +4993,9 @@ export interface IRetroReflectionGroup {
   commentCount: number;
 
   /**
-   * The preferred names of the users that are commenting in the discuss phase
+   * A list of users currently commenting (fed by a subscription, so queries return null)
    */
-  commentingIds: Array<string> | null;
+  commenters: Array<ICommenterDetails> | null;
 
   /**
    * The timestamp the meeting was created
@@ -5899,11 +5916,15 @@ export interface IEditCommentingPayload {
   /**
    * true if the user is commenting, false if the user has stopped commenting
    */
-  isCommenting: boolean;
-  commentorId: string;
-  meetingId: string;
-  threadId: string;
-  threadSource: ThreadSourceEnum;
+  isCommenting: boolean | null;
+
+  /**
+   * The user that is commenting or has stopped commenting
+   */
+  commenter: IUser | null;
+  meetingId: string | null;
+  threadId: string | null;
+  threadSource: ThreadSourceEnum | null;
 }
 
 export interface IEditReflectionPayload {

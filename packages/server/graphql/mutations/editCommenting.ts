@@ -1,4 +1,4 @@
-import {GraphQLBoolean, GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
+import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getRethink from '../../database/rethinkDriver'
 import {getUserId} from '../../utils/authorization'
@@ -62,7 +62,7 @@ export default {
     // RESOLUTION
     const data = {
       isCommenting,
-      commentorId: viewerId,
+      commenterId: viewerId,
       meetingId,
       threadId,
       threadSource

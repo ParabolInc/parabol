@@ -213,7 +213,10 @@ graphql`
       reflectionGroup {
         ...ReflectionGroup_reflectionGroup
         id
-        commentingIds
+        commenters {
+          userId
+          preferredName
+        }
         title
         voteCount
         reflections {

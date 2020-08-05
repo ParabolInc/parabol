@@ -12,6 +12,7 @@ import {GQLContext} from '../graphql'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import TeamMember from './TeamMember'
 import ThreadSource, {threadSourceFields} from './ThreadSource'
+import CommenterDetails from './CommenterDetails'
 
 const AgendaItem = new GraphQLObjectType<IAgendaItem, GQLContext>({
   name: 'AgendaItem',
@@ -23,9 +24,13 @@ const AgendaItem = new GraphQLObjectType<IAgendaItem, GQLContext>({
       type: new GraphQLNonNull(GraphQLID),
       description: 'The unique agenda item id teamId::shortid'
     },
-    commentingIds: {
-      type: new GraphQLList(GraphQLString),
-      description: 'The preferred names of the users that are commenting'
+    commenters: {
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(CommenterDetails))),
+      description:
+        'A list of users currently commenting (fed by a subscription, so queries return null)',
+      resolve: ({commenters = []}) => {
+        return commenters
+      }
     },
     content: {
       type: new GraphQLNonNull(GraphQLString),
