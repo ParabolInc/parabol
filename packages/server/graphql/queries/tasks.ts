@@ -10,7 +10,8 @@ export default {
   type: new GraphQLNonNull(TaskConnection),
   args: {
     first: {
-      type: GraphQLInt
+      type: new GraphQLNonNull(GraphQLInt),
+      description: 'the number of tasks to return'
     },
     after: {
       type: GraphQLISO8601Type,
@@ -26,7 +27,7 @@ export default {
       defaultValue: false
     }
   },
-  async resolve(_source, {teamId, archived}, {authToken, dataLoader}: GQLContext) {
+  async resolve(_source, {first, after, teamId, archived}, {authToken, dataLoader}: GQLContext) {
     // AUTH
     const viewerId = getUserId(authToken)
     if (teamId && !isTeamMember(authToken, teamId)) {
@@ -34,7 +35,13 @@ export default {
       return connectionFromTasks([])
     }
     const teamIds = teamId ? [teamId] : authToken.tms || []
-    const tasks = await dataLoader.get('userTasks').load({userId: viewerId, teamIds, archived})
+    const tasks = await dataLoader.get('userTasks').load({
+      first: first,
+      after: after,
+      userId: viewerId,
+      teamIds: teamIds,
+      archived: archived
+    })
     return connectionFromTasks(tasks)
   }
 }

@@ -414,7 +414,10 @@ export interface ISuggestedIntegrationsOnUserArguments {
 }
 
 export interface ITasksOnUserArguments {
-  first?: number | null;
+  /**
+   * the number of tasks to return
+   */
+  first: number;
 
   /**
    * the datetime cursor
