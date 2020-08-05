@@ -40,6 +40,10 @@ const StyledCheckbox = styled(Checkbox)({
   width: ICON_SIZE.MD24
 })
 
+const UserTasksHeaderDashSectionControls = styled(DashSectionControls)({
+  justifyContent: 'flex-start',
+})
+
 interface Props {
   viewer: UserTasksHeader_viewer
 }
@@ -54,13 +58,14 @@ const UserTasksHeader = (props: Props) => {
   const teamFilterName = (teamFilter && teamFilter.name) || 'All teams'
   return (
     <DashSectionHeader>
-      <DashSectionControls>
+      <UserTasksHeaderDashSectionControls>
         <DashFilterToggle
           label='Team'
           onClick={togglePortal}
           onMouseEnter={UserDashTeamMenu.preload}
           ref={originRef}
           value={teamFilterName}
+          iconText='group'
         />
         {menuPortal(<UserDashTeamMenu menuProps={menuProps} viewer={viewer} />)}
 
@@ -68,9 +73,9 @@ const UserTasksHeader = (props: Props) => {
           onClick={() => setArchivedTasksCheckbox(atmosphere, !showArchivedTasksCheckbox)}
         >
           <StyledCheckbox active={showArchivedTasksCheckbox} />
-          {'Show Archived Tasks'}
+          {'Archived'}
         </StyledLinkButton>
-      </DashSectionControls>
+      </UserTasksHeaderDashSectionControls>
     </DashSectionHeader>
   )
 }
