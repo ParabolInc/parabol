@@ -60,7 +60,6 @@ interface Props {
   setEditorState: (newEditorState: EditorState) => void
   useTaskChild: UseTaskChild
   dataCy: string
-  disabled?: boolean
 }
 
 const OutcomeCard = memo((props: Props) => {
@@ -76,7 +75,6 @@ const OutcomeCard = memo((props: Props) => {
     setEditorState,
     useTaskChild,
     dataCy,
-    disabled
   } = props
   const isPrivate = isTaskPrivate(task.tags)
   const isArchived = isTaskArchived(task.tags)
@@ -98,7 +96,7 @@ const OutcomeCard = memo((props: Props) => {
     >
       <TaskWatermark service={service} />
       <ContentBlock>
-        <EditingStatus isTaskHovered={isTaskHovered} disabled={disabled} task={task} useTaskChild={useTaskChild}>
+        <EditingStatus isTaskHovered={isTaskHovered} isArchived={isArchived} task={task} useTaskChild={useTaskChild}>
           <StatusIndicatorBlock data-cy={`${dataCy}-status`} title={statusIndicatorTitle}>
             <OutcomeCardStatusIndicator status={isDraggingOver || status} />
             {isPrivate && <OutcomeCardStatusIndicator status='private' />}

@@ -99,7 +99,7 @@ interface Props {
   cardIsActive: boolean
   task: DueDateToggle_task
   useTaskChild: UseTaskChild
-  disabled?: boolean
+  isArchived?: boolean
 }
 
 const formatDueDate = (dueDate) => {
@@ -130,7 +130,7 @@ const DueDatePicker = lazyPreload(() =>
 )
 
 const DueDateToggle = (props: Props) => {
-  const {cardIsActive, task, useTaskChild, disabled} = props
+  const {cardIsActive, task, useTaskChild, isArchived} = props
   const {dueDate} = task
   const {menuProps, menuPortal, originRef, togglePortal} = useMenu(MenuPosition.UPPER_RIGHT)
   const {tooltipPortal, openTooltip, closeTooltip, originRef: tipRef} = useTooltip<HTMLDivElement>(
@@ -139,7 +139,7 @@ const DueDateToggle = (props: Props) => {
   const {title, isPastDue, isDueSoon} = getDateInfo(dueDate)
   return (
     <>
-      {!disabled && <Toggle
+      {!isArchived && <Toggle
         cardIsActive={!dueDate && cardIsActive}
         dueDate={!!dueDate}
         isPastDue={isPastDue}

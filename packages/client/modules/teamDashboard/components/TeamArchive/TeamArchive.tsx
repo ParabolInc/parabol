@@ -175,7 +175,6 @@ const TeamArchive = (props: Props) => {
             >
               <NullableTask
                 dataCy={`archive-task`}
-                disabled={true}
                 key={key}
                 area={AreaEnum.teamDash}
                 measure={measure}
