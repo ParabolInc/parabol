@@ -37,9 +37,8 @@ const DiscussionThread = (props: Props) => {
   const {thread} = threadSource!
   const threadSourceId = threadSource!.id!
   const {commenters} = reflectionGroup ? reflectionGroup : agendaItem
-  console.log('DiscussionThread -> commenters', commenters)
-  const preferredNames = commenters ? commenters.map((commenter) => commenter.preferredName) : null
-  console.log('DiscussionThread -> preferredName', preferredNames)
+  const preferredNames = commenters && commenters.map((commenter) => commenter.preferredName)
+
   const edges = thread?.edges ?? [] // should never happen, but Terry reported it in demo. likely relay error
   const threadables = edges.map(({node}) => node)
   const getMaxSortOrder = () => {
@@ -59,7 +58,7 @@ const DiscussionThread = (props: Props) => {
         ref={listRef}
         editorRef={editorRef}
       />
-      {preferredNames.length ? `${preferredNames} is typing...` : ''}
+      {preferredNames && preferredNames.length ? `${preferredNames} is typing...` : ''}
       <DiscussionThreadInput
         dataCy='discuss-input'
         editorRef={editorRef}

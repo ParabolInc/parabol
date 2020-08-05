@@ -37,26 +37,6 @@ const mutation = graphql`
     }
   }
 `
-// const getNewCommentingIds = (
-//   commentingIds: string[] | undefined | null,
-//   commenterId: string,
-//   isCommenting: boolean
-// ) => {
-//   if (isCommenting) {
-//     console.log('isCommenting', isCommenting)
-//     if (!commentingIds) {
-//       return [commenterId]
-//     } else {
-//       return [...commentingIds, commenterId]
-//     }
-//   } else {
-//     if (commentingIds && commentingIds.length > 1) {
-//       const newCommentingIds = commentingIds.filter((id) => id !== commenterId)
-//       return newCommentingIds
-//     }
-//   }
-//   return null
-// }
 
 const getNewCommenters = (commenters, {userId, preferredName}, isCommenting, store) => {
   const newCommenters = []
@@ -94,17 +74,8 @@ export const editCommentingMeetingUpdater = (payload, {store}) => {
 
   if (threadSource === ThreadSourceEnum.REFLECTION_GROUP) {
     const reflectionGroup = store.get<IRetroReflectionGroup>(threadId)
-    console.log('editCommentingMeetingUpdater -> reflectionGroup', reflectionGroup)
     if (!reflectionGroup) return
     const commenters = reflectionGroup.getLinkedRecords('commenters')
-    console.log('editCommentingMeetingUpdater -> commenters', commenters)
-    // if (!isCommenting && !commentingIds) return
-    // const newCommentingIds = getNewCommentingIds(commentingIds, commenterId, isCommenting)
-    // const newCommenter = createProxyRecord(store, 'CommenterDetails', {
-    //   userId: commenterId,
-    //   preferredName: preferredName
-    // })
-    // console.log('editCommentingMeetingUpdater -> newCommenter', newCommenter)
     const newCommenters = getNewCommenters(
       commenters,
       {userId: commenterId, preferredName},
@@ -113,9 +84,6 @@ export const editCommentingMeetingUpdater = (payload, {store}) => {
     )
     console.log('editCommentingMeetingUpdater -> newCommenters', newCommenters)
     reflectionGroup.setLinkedRecords(newCommenters, 'commenters')
-
-    console.log('AFTER ')
-    // reflectionGroup.setValue(newCommentingIds, 'commentingIds')
   } else if (threadSource === ThreadSourceEnum.AGENDA_ITEM) {
     const agendaItem = store.get<IAgendaItem>(threadId)
     if (!agendaItem) return
