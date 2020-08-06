@@ -2,7 +2,6 @@ import shortid from 'shortid'
 
 export interface ReflectionGroupInput {
   id?: string
-  commenters?: any
   createdAt?: Date
   meetingId: string
   retroPhaseItemId: string

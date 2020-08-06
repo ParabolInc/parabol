@@ -39,35 +39,6 @@ const mutation = graphql`
   }
 `
 
-const getNewCommenters = (commenters, {userId, preferredName}, isCommenting, store) => {
-  console.log('getNewCommenters -> commenters', commenters)
-  if (!commenters) return null
-  const newCommenters = []
-  if (isCommenting) {
-    for (let ii = 0; ii < commenters.length; ii++) {
-      const commenter = commenters[ii]
-      if (commenter.getValue('userId') === userId) return
-      newCommenters.push(commenter)
-    }
-    const newCommenter = createProxyRecord(store, 'CommenterDetails', {
-      userId,
-      preferredName
-    })
-    newCommenters.push(newCommenter)
-  } else {
-    for (let ii = 0; ii < commenters.length; ii++) {
-      const commenter = commenters[ii]
-      console.log('getNewCommenters -> ELSE ', commenter)
-      console.log('getNewCommenters -> ELSE -> USERID', commenter.getValue('userId'), userId)
-      if (commenter && commenter.getValue('userId') !== userId) {
-        console.log('SHOULD NOT EXIST!')
-        newCommenters.push(commenter)
-      }
-    }
-  }
-  return newCommenters
-}
-
 export const editCommentingMeetingUpdater: SharedUpdater<EditCommentingMutation_meeting> = (
   payload,
   {store}

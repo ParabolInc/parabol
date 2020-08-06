@@ -8,25 +8,18 @@ import {IRetroReflectionGroup, IAgendaItem} from '~/types/graphql'
 const getNewCommenters = (commenters, {userId, preferredName}, isCommenting, store) => {
   if (!commenters || (commenters.length === 1 && !isCommenting)) return null
   const newCommenters = [] as any
-  if (isCommenting) {
-    for (let ii = 0; ii < commenters.length; ii++) {
-      const commenter = commenters[ii]
-      if (commenter.getValue('userId') !== userId) {
-        newCommenters.push(commenter)
-      }
+  for (let ii = 0; ii < commenters.length; ii++) {
+    const commenter = commenters[ii]
+    if (commenter.getValue('userId') !== userId) {
+      newCommenters.push(commenter)
     }
+  }
+  if (isCommenting) {
     const newCommenter = createProxyRecord(store, 'CommenterDetails', {
       userId,
       preferredName
     })
     newCommenters.push(newCommenter)
-  } else {
-    for (let ii = 0; ii < commenters.length; ii++) {
-      const commenter = commenters[ii]
-      if (commenter && commenter.getValue('userId') !== userId) {
-        newCommenters.push(commenter)
-      }
-    }
   }
   return newCommenters
 }
@@ -49,11 +42,25 @@ const handleEditTask = (payload, store) => {
       isCommenting,
       store
     )
-    console.log('RESULT -> newCommenters', newCommenters)
     if (newCommenters) {
       reflectionGroup.setLinkedRecords(newCommenters, 'commenters')
     } else {
       reflectionGroup.setValue(null, 'commenters')
+    }
+  } else if (threadSource === ThreadSourceEnum.AGENDA_ITEM) {
+    const agendaItem = store.get<IAgendaItem>(threadId)
+    if (!agendaItem) return
+    const commenters = agendaItem.getLinkedRecords('commenters') || []
+    const newCommenters = getNewCommenters(
+      commenters,
+      {userId: commenterId, preferredName},
+      isCommenting,
+      store
+    )
+    if (newCommenters) {
+      agendaItem.setLinkedRecords(newCommenters, 'commenters')
+    } else {
+      agendaItem.setValue(null, 'commenters')
     }
   }
 }
