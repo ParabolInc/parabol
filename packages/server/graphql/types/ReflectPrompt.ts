@@ -1,15 +1,45 @@
-import {GraphQLFloat, GraphQLID, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
+import {
+  GraphQLBoolean,
+  GraphQLFloat,
+  GraphQLID,
+  GraphQLNonNull,
+  GraphQLObjectType,
+  GraphQLString
+} from 'graphql'
 import {GQLContext} from '../graphql'
-import {CustomPhaseItem, customPhaseItemFields} from './CustomPhaseItem'
+import {resolveTeam} from '../resolvers'
+import GraphQLISO8601Type from './GraphQLISO8601Type'
 import ReflectTemplate from './ReflectTemplate'
+import Team from './Team'
 
-const RetroPhaseItem = new GraphQLObjectType<any, GQLContext>({
-  name: 'RetroPhaseItem',
+const ReflectPrompt = new GraphQLObjectType<any, GQLContext>({
+  name: 'ReflectPrompt',
   description:
-    'A team-specific retro phase. Usually 3 or 4 exist per team, eg Good/Bad/Change, 4Ls, etc.',
-  interfaces: () => [CustomPhaseItem],
+    'A team-specific reflection prompt. Usually 3 or 4 exist per team, eg Good/Bad/Change, 4Ls, etc.',
   fields: () => ({
-    ...customPhaseItemFields(),
+    id: {
+      type: new GraphQLNonNull(GraphQLID),
+      description: 'shortid'
+    },
+    createdAt: {
+      type: new GraphQLNonNull(GraphQLISO8601Type)
+    },
+    isActive: {
+      type: GraphQLBoolean,
+      description: 'true if the phase item is currently used by the team, else false'
+    },
+    teamId: {
+      type: new GraphQLNonNull(GraphQLID),
+      description: 'foreign key. use the team field'
+    },
+    team: {
+      type: Team,
+      description: 'The team that owns this reflectPrompt',
+      resolve: resolveTeam
+    },
+    updatedAt: {
+      type: new GraphQLNonNull(GraphQLISO8601Type)
+    },
     sortOrder: {
       type: new GraphQLNonNull(GraphQLFloat),
       description: 'the order of the items in the template'
@@ -49,4 +79,4 @@ const RetroPhaseItem = new GraphQLObjectType<any, GQLContext>({
   })
 })
 
-export default RetroPhaseItem
+export default ReflectPrompt

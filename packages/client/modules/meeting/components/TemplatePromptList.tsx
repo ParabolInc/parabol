@@ -3,9 +3,7 @@ import graphql from 'babel-plugin-relay/macro'
 import React, {Component} from 'react'
 import {DragDropContext, Draggable, Droppable} from 'react-beautiful-dnd'
 import {createFragmentContainer} from 'react-relay'
-import withAtmosphere, {
-  WithAtmosphereProps
-} from '../../../decorators/withAtmosphere/withAtmosphere'
+import withAtmosphere, {WithAtmosphereProps} from '../../../decorators/withAtmosphere/withAtmosphere'
 import MoveReflectTemplatePromptMutation from '../../../mutations/MoveReflectTemplatePromptMutation'
 import dndNoise from '../../../utils/dndNoise'
 import withMutationProps, {WithMutationProps} from '../../../utils/relay/withMutationProps'
@@ -102,7 +100,7 @@ class TemplatePromptList extends Component<Props, State> {
 
 export default createFragmentContainer(withAtmosphere(withMutationProps(TemplatePromptList)), {
   prompts: graphql`
-    fragment TemplatePromptList_prompts on RetroPhaseItem @relay(plural: true) {
+    fragment TemplatePromptList_prompts on ReflectPrompt @relay(plural: true) {
       id
       sortOrder
       question

@@ -110,7 +110,7 @@ const GroupingKanbanColumn = (props: Props) => {
     const input = {
       content: undefined,
       meetingId,
-      retroPhaseItemId: promptId,
+      promptId,
       sortOrder: getNextSortOrder(reflectionGroups)
     }
     submitMutation()
@@ -193,7 +193,7 @@ export default createFragmentContainer(GroupingKanbanColumn, {
     }
   `,
   prompt: graphql`
-    fragment GroupingKanbanColumn_prompt on RetroPhaseItem {
+    fragment GroupingKanbanColumn_prompt on ReflectPrompt {
       id
       question
       groupColor

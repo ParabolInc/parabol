@@ -1,9 +1,7 @@
 import {GraphQLID, GraphQLInt, GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
-import CustomPhaseItem from './CustomPhaseItem'
-import TeamMeetingSettings, {teamMeetingSettingsFields} from './TeamMeetingSettings'
-import {RETRO_PHASE_ITEM} from 'parabol-client/utils/constants'
-import ReflectTemplate from './ReflectTemplate'
 import {GQLContext} from '../graphql'
+import ReflectTemplate from './ReflectTemplate'
+import TeamMeetingSettings, {teamMeetingSettingsFields} from './TeamMeetingSettings'
 
 const RetrospectiveMeetingSettings = new GraphQLObjectType<any, GQLContext>({
   name: 'RetrospectiveMeetingSettings',
@@ -11,15 +9,6 @@ const RetrospectiveMeetingSettings = new GraphQLObjectType<any, GQLContext>({
   interfaces: () => [TeamMeetingSettings],
   fields: () => ({
     ...teamMeetingSettingsFields(),
-    phaseItems: {
-      type: new GraphQLList(new GraphQLNonNull(CustomPhaseItem)),
-      description: 'the team-specific questions to ask during a retro',
-      resolve: async ({teamId}, _args, {dataLoader}) => {
-        // this isn't too useful for retros since it isn't filtered by templateId
-        const customPhaseItems = await dataLoader.get('customPhaseItemsByTeamId').load(teamId)
-        return customPhaseItems.filter(({phaseItemType}) => phaseItemType === RETRO_PHASE_ITEM)
-      }
-    },
     totalVotes: {
       type: new GraphQLNonNull(GraphQLInt),
       description: 'The total number of votes each team member receives for the voting phase'
