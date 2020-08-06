@@ -19,15 +19,16 @@ interface Props {
 }
 
 const getStatusText = (preferredNames: string[]) => {
-  if (preferredNames.length === 1) {
+  if (preferredNames && preferredNames.length === 1) {
     return `${preferredNames[0]} is typing`
-  } else if (preferredNames.length === 2) {
+  } else if (preferredNames && preferredNames.length === 2) {
     return `${preferredNames[0]} and ${preferredNames[1]} are typing`
   } else return `Several people are typing`
 }
 
 const CommentingStatusText = (props: Props) => {
   const {preferredNames} = props
+
   if (!preferredNames || !preferredNames.length) return null
 
   return (

@@ -17,6 +17,7 @@ const Wrapper = styled('div')<{isExpanded: boolean}>(({isExpanded}) => ({
   boxShadow: Elevation.DISCUSSION_THREAD,
   display: 'flex',
   flexDirection: 'column',
+  justifyContent: 'space-between',
   height: '100%',
   overflow: 'hidden',
   width: 'calc(100% - 16px)',
@@ -56,15 +57,17 @@ const DiscussionThread = (props: Props) => {
         ref={listRef}
         editorRef={editorRef}
       />
-      <CommentingStatusText preferredNames={preferredNames} />
-      <DiscussionThreadInput
-        dataCy='discuss-input'
-        editorRef={editorRef}
-        isDisabled={!!replyingToCommentId}
-        getMaxSortOrder={getMaxSortOrder}
-        meeting={meeting}
-        threadSourceId={threadSourceId}
-      />
+      <div>
+        <CommentingStatusText preferredNames={preferredNames} />
+        <DiscussionThreadInput
+          dataCy='discuss-input'
+          editorRef={editorRef}
+          isDisabled={!!replyingToCommentId}
+          getMaxSortOrder={getMaxSortOrder}
+          meeting={meeting}
+          threadSourceId={threadSourceId}
+        />
+      </div>
     </Wrapper>
   )
 }

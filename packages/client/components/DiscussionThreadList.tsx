@@ -14,8 +14,8 @@ const EmptyWrapper = styled('div')({
   alignItems: 'center',
   display: 'flex',
   flexDirection: 'column',
-  height: '100%',
   justifyContent: 'center',
+  minHeight: 'calc(100% - 80px)', // this prevents the empty state from jumping when the user is commenting
   paddingTop: 8
 })
 
