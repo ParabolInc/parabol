@@ -1,13 +1,12 @@
 import {GraphQLBoolean, GraphQLObjectType, GraphQLID, GraphQLNonNull} from 'graphql'
 import {GQLContext} from '../graphql'
 import User from './User'
-import ThreadSourceEnum from './ThreadSourceEnum'
 
 const EditCommentingPayload = new GraphQLObjectType<any, GQLContext>({
   name: 'EditCommentingPayload',
   fields: () => ({
     isCommenting: {
-      type: GraphQLBoolean,
+      type: GraphQLNonNull(GraphQLBoolean),
       description: 'true if the user is commenting, false if the user has stopped commenting'
     },
     commenter: {
@@ -18,13 +17,10 @@ const EditCommentingPayload = new GraphQLObjectType<any, GQLContext>({
       }
     },
     meetingId: {
-      type: GraphQLID
+      type: GraphQLNonNull(GraphQLID)
     },
     threadId: {
-      type: GraphQLID
-    },
-    threadSource: {
-      type: ThreadSourceEnum
+      type: GraphQLNonNull(GraphQLID)
     }
   })
 })

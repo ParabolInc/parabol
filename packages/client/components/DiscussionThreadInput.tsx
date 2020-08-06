@@ -129,8 +129,7 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
       {
         isCommenting: true,
         meetingId,
-        threadId: threadSourceId,
-        threadSource
+        threadId: threadSourceId
       },
       {onError, onCompleted}
     )
@@ -144,8 +143,7 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
       {
         isCommenting: false,
         meetingId,
-        threadId: threadSourceId,
-        threadSource
+        threadId: threadSourceId
       },
       {onError, onCompleted}
     )

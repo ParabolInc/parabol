@@ -9,6 +9,7 @@ import {Elevation} from '../styles/elevation'
 import makeMinWidthMediaQuery from '../utils/makeMinWidthMediaQuery'
 import DiscussionThreadInput from './DiscussionThreadInput'
 import DiscussionThreadList from './DiscussionThreadList'
+import EditingStatusText from './EditingStatus/EditingStatusText'
 
 const Wrapper = styled('div')<{isExpanded: boolean}>(({isExpanded}) => ({
   background: '#fff',
@@ -34,11 +35,8 @@ const DiscussionThread = (props: Props) => {
   const meeting = viewer.meeting!
   const {endedAt, replyingToCommentId, threadSource} = meeting
   const {commenters, thread} = threadSource!
-  // console.log('DiscussionThread -> commenters', commenters)
   const threadSourceId = threadSource!.id!
-  // const {commenters} = reflectionGroup ? reflectionGroup : agendaItem
   const preferredNames = commenters && commenters.map((commenter) => commenter.preferredName)
-
   const edges = thread?.edges ?? [] // should never happen, but Terry reported it in demo. likely relay error
   const threadables = edges.map(({node}) => node)
   const getMaxSortOrder = () => {
@@ -58,6 +56,12 @@ const DiscussionThread = (props: Props) => {
         ref={listRef}
         editorRef={editorRef}
       />
+      {/* <EditingStatusText
+        editors={["Dave", "LALALA"]}
+        isEditing={true}
+        timestamp={timestamp}
+        timestampType={timestampType}
+      /> */}
       {preferredNames && preferredNames.length ? `${preferredNames} is typing...` : ''}
       <DiscussionThreadInput
         dataCy='discuss-input'

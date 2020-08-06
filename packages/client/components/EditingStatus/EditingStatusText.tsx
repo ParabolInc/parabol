@@ -7,8 +7,8 @@ import {TimestampType} from './EditingStatus'
 interface Props {
   editors: {preferredName: string}[]
   isEditing: boolean
-  timestamp: string
-  timestampType: TimestampType
+  timestamp?: string
+  timestampType?: TimestampType
 }
 
 const useTimeFrom = (timestamp: string) => {

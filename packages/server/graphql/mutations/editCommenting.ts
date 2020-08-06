@@ -6,7 +6,6 @@ import publish from '../../utils/publish'
 import {GQLContext} from '../graphql'
 import EditCommentingPayload from '../types/EditCommentingPayload'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
-import ThreadSourceEnum from '../types/ThreadSourceEnum'
 
 export default {
   type: EditCommentingPayload,
@@ -14,24 +13,20 @@ export default {
   args: {
     isCommenting: {
       type: GraphQLNonNull(GraphQLBoolean),
-      description: 'true if the user is commenting, false if the user has stopped commenting'
+      description: 'True if the user is commenting, false if the user has stopped commenting'
     },
     meetingId: {
       type: GraphQLNonNull(GraphQLID)
     },
     threadId: {
       type: GraphQLNonNull(GraphQLID)
-    },
-    threadSource: {
-      type: GraphQLNonNull(ThreadSourceEnum)
     }
   },
   resolve: async (
     _source,
-    {isCommenting, meetingId, threadId, threadSource},
+    {isCommenting, meetingId, threadId},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) => {
-    console.log('isCommenting', isCommenting)
     const r = await getRethink()
     const viewerId = getUserId(authToken)
     const operationId = dataLoader.share()
@@ -39,7 +34,6 @@ export default {
 
     //AUTH
     const meetingMemberId = toTeamMemberId(meetingId, viewerId)
-
     const [meeting, viewerMeetingMember] = await Promise.all([
       r
         .table('NewMeeting')
@@ -61,13 +55,11 @@ export default {
 
     // RESOLUTION
     const data = {
-      isCommenting,
       commenterId: viewerId,
+      isCommenting,
       meetingId,
-      threadId,
-      threadSource
+      threadId
     }
-    console.log('data', data)
     publish(SubscriptionChannel.MEETING, meetingId, 'EditCommentingPayload', data, subOptions)
 
     return data

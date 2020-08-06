@@ -3780,12 +3780,11 @@ export interface IEmailPasswordResetOnMutationArguments {
 
 export interface IEditCommentingOnMutationArguments {
   /**
-   * true if the user is commenting, false if the user has stopped commenting
+   * True if the user is commenting, false if the user has stopped commenting
    */
   isCommenting: boolean;
   meetingId: string;
   threadId: string;
-  threadSource: ThreadSourceEnum;
 }
 
 export interface IEditReflectionOnMutationArguments {
@@ -5916,15 +5915,14 @@ export interface IEditCommentingPayload {
   /**
    * true if the user is commenting, false if the user has stopped commenting
    */
-  isCommenting: boolean | null;
+  isCommenting: boolean;
 
   /**
    * The user that is commenting or has stopped commenting
    */
   commenter: IUser | null;
-  meetingId: string | null;
-  threadId: string | null;
-  threadSource: ThreadSourceEnum | null;
+  meetingId: string;
+  threadId: string;
 }
 
 export interface IEditReflectionPayload {
