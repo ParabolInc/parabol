@@ -9,7 +9,7 @@ import {Elevation} from '../styles/elevation'
 import makeMinWidthMediaQuery from '../utils/makeMinWidthMediaQuery'
 import DiscussionThreadInput from './DiscussionThreadInput'
 import DiscussionThreadList from './DiscussionThreadList'
-import EditingStatusText from './EditingStatus/EditingStatusText'
+import CommentingStatusText from './CommentingStatusText'
 
 const Wrapper = styled('div')<{isExpanded: boolean}>(({isExpanded}) => ({
   background: '#fff',
@@ -37,6 +37,7 @@ const DiscussionThread = (props: Props) => {
   const {commenters, thread} = threadSource!
   const threadSourceId = threadSource!.id!
   const preferredNames = commenters && commenters.map((commenter) => commenter.preferredName)
+  console.log('DiscussionThread -> preferredNames', preferredNames)
   const edges = thread?.edges ?? [] // should never happen, but Terry reported it in demo. likely relay error
   const threadables = edges.map(({node}) => node)
   const getMaxSortOrder = () => {
@@ -56,13 +57,7 @@ const DiscussionThread = (props: Props) => {
         ref={listRef}
         editorRef={editorRef}
       />
-      {/* <EditingStatusText
-        editors={["Dave", "LALALA"]}
-        isEditing={true}
-        timestamp={timestamp}
-        timestampType={timestampType}
-      /> */}
-      {preferredNames && preferredNames.length ? `${preferredNames} is typing...` : ''}
+      <CommentingStatusText preferredNames={preferredNames} />
       <DiscussionThreadInput
         dataCy='discuss-input'
         editorRef={editorRef}
