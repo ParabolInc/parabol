@@ -251,26 +251,26 @@ const initPhases = (teamMembers) => {
       __typename: 'ReflectPhase',
       id: 'reflectPhase',
       phaseType: REFLECT,
-      focusedPhaseItemId: null,
+      focusedPromptId: null,
       meetingId: RetroDemo.MEETING_ID,
       reflectPrompts: [
         {
           id: 'startId',
-          retroPhaseItemId: 'startId',
+          promptId: 'startId',
           question: 'Start',
           description: 'What new behaviors should we adopt?',
           groupColor: PALETTE.PROMPT_GREEN
         },
         {
           id: 'stopId',
-          retroPhaseItemId: 'stopId',
+          promptId: 'stopId',
           question: 'Stop',
           description: 'What existing behaviors should we cease doing?',
           groupColor: PALETTE.PROMPT_RED
         },
         {
           id: 'continueId',
-          retroPhaseItemId: 'continueId',
+          promptId: 'continueId',
           question: 'Continue',
           description: 'What current behaviors should we keep doing?',
           groupColor: PALETTE.PROMPT_BLUE
@@ -398,13 +398,13 @@ const initDB = (botScript) => {
     user: users[idx]
   }))
   users.forEach((user, idx) => {
-    ;(user as any).teamMember = teamMembers[idx]
+    ; (user as any).teamMember = teamMembers[idx]
   })
   const org = initDemoOrg()
   const newMeeting = initNewMeeting(org, teamMembers, meetingMembers)
   const team = initDemoTeam(org, teamMembers, newMeeting)
   teamMembers.forEach((teamMember) => {
-    ;(teamMember as any).team = team
+    ; (teamMember as any).team = team
   })
   team.meetingSettings.team = team as any
   newMeeting.team = team as any

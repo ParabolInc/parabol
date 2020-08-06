@@ -1,18 +1,18 @@
+import styled from '@emotion/styled'
 import {convertFromRaw, convertToRaw, EditorState} from 'draft-js'
 import React, {MutableRefObject, RefObject, useEffect, useRef, useState} from 'react'
-import ReflectionCardRoot from '../ReflectionCard/ReflectionCardRoot'
-import ReflectionEditorWrapper from '../ReflectionEditorWrapper'
-import CreateReflectionMutation from '../../mutations/CreateReflectionMutation'
-import EditReflectionMutation from '../../mutations/EditReflectionMutation'
-import convertToTaskContent from '../../utils/draftjs/convertToTaskContent'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import useMutationProps from '../../hooks/useMutationProps'
-import getBBox from './getBBox'
-import styled from '@emotion/styled'
-import {BezierCurve, ZIndex} from '../../types/constEnums'
-import {ReflectColumnCardInFlight} from './PhaseItemColumn'
-import {Elevation} from '../../styles/elevation'
 import usePortal from '../../hooks/usePortal'
+import CreateReflectionMutation from '../../mutations/CreateReflectionMutation'
+import EditReflectionMutation from '../../mutations/EditReflectionMutation'
+import {Elevation} from '../../styles/elevation'
+import {BezierCurve, ZIndex} from '../../types/constEnums'
+import convertToTaskContent from '../../utils/draftjs/convertToTaskContent'
+import ReflectionCardRoot from '../ReflectionCard/ReflectionCardRoot'
+import ReflectionEditorWrapper from '../ReflectionEditorWrapper'
+import getBBox from './getBBox'
+import {ReflectColumnCardInFlight} from './PhaseItemColumn'
 
 const FLIGHT_TIME = 500
 const CardInFlightStyles = styled(ReflectionCardRoot)<{transform: string; isStart: boolean}>(
@@ -32,7 +32,7 @@ interface Props {
   meetingId: string
   nextSortOrder: () => number
   phaseEditorRef: React.RefObject<HTMLDivElement>
-  retroPhaseItemId: string
+  promptId: string
   stackTopRef: RefObject<HTMLDivElement>
   dataCy: string
 }
@@ -42,7 +42,7 @@ const PhaseItemEditor = (props: Props) => {
     meetingId,
     nextSortOrder,
     phaseEditorRef,
-    retroPhaseItemId,
+    promptId,
     stackTopRef,
     cardsInFlightRef,
     setCardsInFlight,
@@ -65,7 +65,7 @@ const PhaseItemEditor = (props: Props) => {
     const input = {
       content,
       meetingId,
-      retroPhaseItemId,
+      promptId,
       sortOrder: nextSortOrder()
     }
     submitMutation()
@@ -118,7 +118,7 @@ const PhaseItemEditor = (props: Props) => {
     if (!isEditing) return
     window.clearTimeout(idleTimerIdRef.current)
     idleTimerIdRef.current = undefined
-    EditReflectionMutation(atmosphere, {isEditing: false, meetingId, phaseItemId: retroPhaseItemId})
+    EditReflectionMutation(atmosphere, {isEditing: false, meetingId, promptId})
     setIsEditing(false)
   }
 
@@ -127,7 +127,7 @@ const PhaseItemEditor = (props: Props) => {
       EditReflectionMutation(atmosphere, {
         isEditing: true,
         meetingId,
-        phaseItemId: retroPhaseItemId
+        promptId
       })
       setIsEditing(true)
     }
@@ -136,7 +136,7 @@ const PhaseItemEditor = (props: Props) => {
       EditReflectionMutation(atmosphere, {
         isEditing: false,
         meetingId,
-        phaseItemId: retroPhaseItemId
+        promptId
       })
       setIsEditing(false)
     }, 5000)

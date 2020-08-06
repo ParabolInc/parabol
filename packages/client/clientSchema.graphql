@@ -50,7 +50,7 @@ extend type RetroReflection {
   isEditing: Boolean
 }
 
-extend type RetroPhaseItem {
+extend type ReflectPrompt {
   editorIds: [ID!]
 }
 

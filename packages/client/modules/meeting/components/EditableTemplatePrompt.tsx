@@ -1,14 +1,12 @@
-import {EditableTemplatePrompt_prompts} from '../../../__generated__/EditableTemplatePrompt_prompts.graphql'
+import graphql from 'babel-plugin-relay/macro'
 import React, {Component} from 'react'
 import {createFragmentContainer} from 'react-relay'
-import graphql from 'babel-plugin-relay/macro'
 import EditableText from '../../../components/EditableText'
-import withAtmosphere, {
-  WithAtmosphereProps
-} from '../../../decorators/withAtmosphere/withAtmosphere'
+import withAtmosphere, {WithAtmosphereProps} from '../../../decorators/withAtmosphere/withAtmosphere'
+import RenameReflectTemplatePromptMutation from '../../../mutations/RenameReflectTemplatePromptMutation'
 import withMutationProps, {WithMutationProps} from '../../../utils/relay/withMutationProps'
 import Legitity from '../../../validation/Legitity'
-import RenameReflectTemplatePromptMutation from '../../../mutations/RenameReflectTemplatePromptMutation'
+import {EditableTemplatePrompt_prompts} from '../../../__generated__/EditableTemplatePrompt_prompts.graphql'
 
 interface Props extends WithAtmosphereProps, WithMutationProps {
   isEditingDescription: boolean
@@ -81,7 +79,7 @@ class EditableTemplatePrompt extends Component<Props> {
 
 export default createFragmentContainer(withAtmosphere(withMutationProps(EditableTemplatePrompt)), {
   prompts: graphql`
-    fragment EditableTemplatePrompt_prompts on RetroPhaseItem @relay(plural: true) {
+    fragment EditableTemplatePrompt_prompts on ReflectPrompt @relay(plural: true) {
       id
       question
     }

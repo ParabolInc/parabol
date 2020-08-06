@@ -1,10 +1,9 @@
 import {GraphQLBoolean, GraphQLID, GraphQLInterfaceType, GraphQLNonNull} from 'graphql'
-import {RETRO_PHASE_ITEM} from 'parabol-client/utils/constants'
-import RetroPhaseItem from './RetroPhaseItem'
-import CustomPhaseItemTypeEnum from './CustomPhaseItemTypeEnum'
-import Team from './Team'
 import {resolveTeam} from '../resolvers'
+import CustomPhaseItemTypeEnum from './CustomPhaseItemTypeEnum'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
+import ReflectPrompt from './ReflectPrompt'
+import Team from './Team'
 
 export const customPhaseItemFields = () => ({
   id: {
@@ -16,7 +15,7 @@ export const customPhaseItemFields = () => ({
   },
   phaseItemType: {
     type: CustomPhaseItemTypeEnum,
-    description: 'The type of phase item'
+    deprecationReason: 'Field has been deprecated because type is guranteed to be `retroPhaseItem`'
   },
   isActive: {
     type: GraphQLBoolean,
@@ -28,7 +27,7 @@ export const customPhaseItemFields = () => ({
   },
   team: {
     type: Team,
-    description: 'The team that owns this customPhaseItem',
+    description: 'The team that owns this reflectPrompt',
     resolve: resolveTeam
   },
   updatedAt: {
@@ -36,14 +35,12 @@ export const customPhaseItemFields = () => ({
   }
 })
 
-const CustomPhaseItem = new GraphQLInterfaceType({
+export const CustomPhaseItem = new GraphQLInterfaceType({
   name: 'CustomPhaseItem',
   fields: customPhaseItemFields,
-  resolveType: ({phaseItemType}) => {
-    const resolveTypeLookup = {
-      [RETRO_PHASE_ITEM]: RetroPhaseItem
-    }
-    return resolveTypeLookup[phaseItemType]
+  // deprecationReason: 'Refactored to deterministically be ReflectPrompt',
+  resolveType: () => {
+    return ReflectPrompt
   }
 })
 

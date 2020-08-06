@@ -23,7 +23,7 @@ const renameReflectTemplate = {
     const operationId = dataLoader.share()
     const subOptions = {operationId, mutatorId}
     const prompt = await r
-      .table('CustomPhaseItem')
+      .table('ReflectPrompt')
       .get(promptId)
       .run()
     const viewerId = getUserId(authToken)
@@ -39,7 +39,7 @@ const renameReflectTemplate = {
     const normalizedQuestion = trimmedQuestion || 'Unnamed Prompt'
 
     const allPrompts = await r
-      .table('CustomPhaseItem')
+      .table('ReflectPrompt')
       .getAll(teamId, {index: 'teamId'})
       .filter({
         isActive: true,
@@ -52,7 +52,7 @@ const renameReflectTemplate = {
 
     // RESOLUTION
     await r
-      .table('CustomPhaseItem')
+      .table('ReflectPrompt')
       .get(promptId)
       .update({
         question: normalizedQuestion,

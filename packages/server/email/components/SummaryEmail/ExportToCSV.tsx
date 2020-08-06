@@ -81,7 +81,7 @@ const query = graphql`
             reflections {
               content
               createdAt
-              phaseItem {
+              prompt {
                 question
               }
             }
@@ -167,7 +167,7 @@ class ExportToCSV extends Component<Props> {
           type: 'Reflection',
           createdAt: reflection.createdAt!,
           discussionThread: '',
-          prompt: reflection.phaseItem.question,
+          prompt: reflection.prompt.question,
           content: extractTextFromDraftString(reflection.content)
         })
       })

@@ -114,13 +114,13 @@ const TemplatePromptItem = (props: Props) => {
 }
 export default createFragmentContainer(TemplatePromptItem, {
   prompts: graphql`
-    fragment TemplatePromptItem_prompts on RetroPhaseItem @relay(plural: true) {
+    fragment TemplatePromptItem_prompts on ReflectPrompt @relay(plural: true) {
       ...EditableTemplatePromptColor_prompts
       ...EditableTemplatePrompt_prompts
     }
   `,
   prompt: graphql`
-    fragment TemplatePromptItem_prompt on RetroPhaseItem {
+    fragment TemplatePromptItem_prompt on ReflectPrompt {
       ...EditableTemplatePromptColor_prompt
       id
       question
