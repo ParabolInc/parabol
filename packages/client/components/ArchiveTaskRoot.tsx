@@ -5,6 +5,7 @@ import useAtmosphere from '~/hooks/useAtmosphere'
 import renderQuery from '~/utils/relay/renderQuery'
 import TeamArchive from '~/modules/teamDashboard/components/TeamArchive/TeamArchive'
 import {LoaderSize} from '~/types/constEnums'
+import useDocumentTitle from '~/hooks/useDocumentTitle'
 
 
 const query = graphql`
@@ -24,6 +25,8 @@ export interface ArchiveTaskRootProps {
 const ArchiveTaskRoot = ({teamId, team, showHeader}: ArchiveTaskRootProps) => {
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
+  showHeader && useDocumentTitle(`Team Archive | ${team.name}`, 'Archive')
+
   return (
     <QueryRenderer
       environment={atmosphere}

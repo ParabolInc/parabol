@@ -74,6 +74,7 @@ export default createFragmentContainer(TeamContainer, {
   viewer: graphql`
     fragment TeamContainer_viewer on User {
       team(teamId: $teamId) {
+        name
         ...Team_team
         ...TeamArchive_team
       }
