@@ -132,45 +132,35 @@ export const userTasks = (parent: RethinkDataLoader) => {
   return new DataLoader<UserTasksKey, Task[], string>(
     async (keys) => {
       const r = await getRethink()
-      const uniqKeys = keys.reduce((dedupedKeys, currKey) => {
-        const duplicateKey = dedupedKeys.find(
-          (key) => serializeUserTasksKey(key) === serializeUserTasksKey(currKey)
-        )
-        if (!duplicateKey) {
-          return dedupedKeys.concat([currKey])
-        } else {
-          return dedupedKeys
+      const uniqKeys = [] as UserTasksKey[]
+      const keySet = new Set()
+      keys.forEach((key) => {
+        const serializedKey = serializeUserTasksKey(key)
+        if (!keySet.has(serializedKey)) {
+          keySet.add(serializedKey)
+          uniqKeys.push(key)
         }
-      }, [] as UserTasksKey[])
+      })
       const taskLoader = parent.get('tasks')
 
       const entryArray = await Promise.all(
         uniqKeys.map(async (key) => {
           const {first, after, userId, teamIds, archived} = key
           const dbAfter = after ? new Date(after) : r.maxval
-          const sortedTeamIds = teamIds.sort()
 
           return {
             key: serializeUserTasksKey(key),
             data: await r
               .table('Task')
-              .between(
-                [sortedTeamIds[0], r.minval],
-                [sortedTeamIds[sortedTeamIds.length - 1], dbAfter],
-                {
-                  index: 'teamIdUpdatedAt'
-                }
-              )
+              .getAll(r.args(teamIds), {index: 'teamId'})
+              .filter({userId})
+              .filter((task) => task('createdAt').lt(dbAfter))
               .filter((task) =>
-                task('userId')
-                  .eq(userId)
-                  .and(
-                    archived
-                      ? task('tags').contains('archived')
-                      : task('tags')
-                          .contains('archived')
-                          .not()
-                  )
+                archived
+                  ? task('tags').contains('archived')
+                  : task('tags')
+                      .contains('archived')
+                      .not()
               )
               .orderBy(r.desc('updatedAt'))
               .limit(first + 1)
