@@ -32,11 +32,11 @@ interface Props {
 const DiscussionThread = (props: Props) => {
   const {viewer} = props
   const meeting = viewer.meeting!
-  const {endedAt, replyingToCommentId, threadSource, reflectionGroup, agendaItem} = meeting
-  console.log('DiscussionThread -> meeting', meeting)
-  const {thread} = threadSource!
+  const {endedAt, replyingToCommentId, threadSource} = meeting
+  const {commenters, thread} = threadSource!
+  // console.log('DiscussionThread -> commenters', commenters)
   const threadSourceId = threadSource!.id!
-  const {commenters} = reflectionGroup ? reflectionGroup : agendaItem
+  // const {commenters} = reflectionGroup ? reflectionGroup : agendaItem
   const preferredNames = commenters && commenters.map((commenter) => commenter.preferredName)
 
   const edges = thread?.edges ?? [] // should never happen, but Terry reported it in demo. likely relay error
@@ -101,18 +101,6 @@ export default createFragmentContainer(DiscussionThread, {
         ... on RetrospectiveMeeting {
           threadSource: reflectionGroup(reflectionGroupId: $threadSourceId) {
             ...DiscussionThread_threadSource @relay(mask: false)
-          }
-        }
-        ... on RetrospectiveMeeting {
-          reflectionGroup(reflectionGroupId: $threadSourceId) {
-            commenters {
-              userId
-              preferredName
-            }
-          }
-        }
-        ... on ActionMeeting {
-          agendaItem(agendaItemId: $threadSourceId) {
             commenters {
               userId
               preferredName
@@ -122,6 +110,10 @@ export default createFragmentContainer(DiscussionThread, {
         ... on ActionMeeting {
           threadSource: agendaItem(agendaItemId: $threadSourceId) {
             ...DiscussionThread_threadSource @relay(mask: false)
+            commenters {
+              userId
+              preferredName
+            }
           }
         }
       }

@@ -4995,7 +4995,7 @@ export interface IRetroReflectionGroup {
   /**
    * A list of users currently commenting (fed by a subscription, so queries return null)
    */
-  commenters: Array<ICommenterDetails> | null;
+  commenters: Array<ICommenterDetails>;
 
   /**
    * The timestamp the meeting was created

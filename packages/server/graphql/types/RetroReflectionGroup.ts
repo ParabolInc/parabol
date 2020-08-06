@@ -39,11 +39,12 @@ const RetroReflectionGroup = new GraphQLObjectType<any, GQLContext>({
       }
     },
     commenters: {
-      type: new GraphQLList(new GraphQLNonNull(CommenterDetails)),
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(CommenterDetails))),
       description:
         'A list of users currently commenting (fed by a subscription, so queries return null)',
       resolve: ({commenter = []}) => {
-        return commenter
+        // return commenter
+        return []
       }
     },
     createdAt: {

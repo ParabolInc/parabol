@@ -10,14 +10,11 @@ const EditCommentingPayload = new GraphQLObjectType<any, GQLContext>({
       type: GraphQLBoolean,
       description: 'true if the user is commenting, false if the user has stopped commenting'
     },
-    // commenterId: {
-    //   type: GraphQLNonNull(GraphQLID)
-    // },
     commenter: {
       type: User,
       description: 'The user that is commenting or has stopped commenting',
       resolve: ({commenterId}, _args, {dataLoader}) => {
-        return commenterId ? dataLoader.get('users').load(commenterId) : null
+        return dataLoader.get('users').load(commenterId)
       }
     },
     meetingId: {

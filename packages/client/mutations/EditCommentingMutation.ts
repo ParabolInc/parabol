@@ -2,14 +2,15 @@ import {commitMutation} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import {EditCommentingMutation as TEditCommentingMutation} from '../__generated__/EditCommentingMutation.graphql'
 import {IRetroReflectionGroup, IAgendaItem} from '~/types/graphql'
-import {StandardMutation} from '../types/relayMutations'
+import {StandardMutation, SharedUpdater} from '../types/relayMutations'
 import {ThreadSourceEnum} from '~/types/graphql'
 import createProxyRecord from '../utils/relay/createProxyRecord'
+import {EditCommentingMutation_meeting} from '~/__generated__/EditCommentingMutation_meeting.graphql'
+import handleEditCommenting from './handlers/handleEditCommenting'
 
 graphql`
   fragment EditCommentingMutation_meeting on EditCommentingPayload {
     isCommenting
-    # commenterId
     commenter {
       id
       preferredName
@@ -39,9 +40,10 @@ const mutation = graphql`
 `
 
 const getNewCommenters = (commenters, {userId, preferredName}, isCommenting, store) => {
+  console.log('getNewCommenters -> commenters', commenters)
+  if (!commenters) return null
   const newCommenters = []
   if (isCommenting) {
-    // handle multiple socket connections
     for (let ii = 0; ii < commenters.length; ii++) {
       const commenter = commenters[ii]
       if (commenter.getValue('userId') === userId) return
@@ -55,7 +57,10 @@ const getNewCommenters = (commenters, {userId, preferredName}, isCommenting, sto
   } else {
     for (let ii = 0; ii < commenters.length; ii++) {
       const commenter = commenters[ii]
+      console.log('getNewCommenters -> ELSE ', commenter)
+      console.log('getNewCommenters -> ELSE -> USERID', commenter.getValue('userId'), userId)
       if (commenter && commenter.getValue('userId') !== userId) {
+        console.log('SHOULD NOT EXIST!')
         newCommenters.push(commenter)
       }
     }
@@ -63,35 +68,11 @@ const getNewCommenters = (commenters, {userId, preferredName}, isCommenting, sto
   return newCommenters
 }
 
-export const editCommentingMeetingUpdater = (payload, {store}) => {
-  if (!payload) return
-  const threadId = payload.getValue('threadId')
-  const commenter = payload.getLinkedRecord('commenter')
-  const commenterId = commenter.getValue('id')
-  const preferredName = commenter.getValue('preferredName')
-  const isCommenting = payload.getValue('isCommenting')
-  const threadSource = payload.getValue('threadSource')
-
-  if (threadSource === ThreadSourceEnum.REFLECTION_GROUP) {
-    const reflectionGroup = store.get<IRetroReflectionGroup>(threadId)
-    if (!reflectionGroup) return
-    const commenters = reflectionGroup.getLinkedRecords('commenters')
-    const newCommenters = getNewCommenters(
-      commenters,
-      {userId: commenterId, preferredName},
-      isCommenting,
-      store
-    )
-    console.log('editCommentingMeetingUpdater -> newCommenters', newCommenters)
-    reflectionGroup.setLinkedRecords(newCommenters, 'commenters')
-  } else if (threadSource === ThreadSourceEnum.AGENDA_ITEM) {
-    const agendaItem = store.get<IAgendaItem>(threadId)
-    if (!agendaItem) return
-    const commentingIds = agendaItem.getValue('commentingIds')
-    if (!isCommenting && !commentingIds) return
-    const newCommentingIds = getNewCommentingIds(commentingIds, commenterId, isCommenting)
-    agendaItem.setValue(newCommentingIds, 'commentingIds')
-  }
+export const editCommentingMeetingUpdater: SharedUpdater<EditCommentingMutation_meeting> = (
+  payload,
+  {store}
+) => {
+  handleEditCommenting(payload, store)
 }
 
 const EditCommentingMutation: StandardMutation<TEditCommentingMutation> = (

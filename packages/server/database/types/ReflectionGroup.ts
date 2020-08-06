@@ -15,7 +15,6 @@ export interface ReflectionGroupInput {
 
 export default class ReflectionGroup {
   id: string
-  commenters?: any
   createdAt: Date
   isActive: boolean
   meetingId: string
@@ -27,7 +26,6 @@ export default class ReflectionGroup {
   smartTitle: string | null
   constructor(input: ReflectionGroupInput) {
     const {
-      commenters,
       createdAt,
       id,
       meetingId,
@@ -40,7 +38,6 @@ export default class ReflectionGroup {
     } = input
     const now = new Date()
     this.id = id || shortid.generate()
-    this.commenters = commenters
     this.createdAt = createdAt || now
     this.isActive = true
     this.meetingId = meetingId

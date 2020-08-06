@@ -123,8 +123,6 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
 
   const ensureCommenting = () => {
     collapseAddTask()
-    console.log('ENSURECommenting')
-
     if (isAnonymousComment || isCommenting) return
     EditCommentingMutation(
       atmosphere,
@@ -141,7 +139,6 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
 
   const ensureNotCommenting = () => {
     if (isAnonymousComment || !isCommenting) return
-    console.log('ENSURE_NOT_Commenting')
     EditCommentingMutation(
       atmosphere,
       {
