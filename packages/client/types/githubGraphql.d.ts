@@ -11668,7 +11668,7 @@ export interface ISuggestedReviewer {
   /**
    * Is this suggestion based on past review comments?
    */
-  isCommenter: boolean
+  isCommentor: boolean
 
   /**
    * Identifies the user suggested to review the pull request.

@@ -19,7 +19,7 @@ import RetrospectiveMeeting from './RetrospectiveMeeting'
 import Task from './Task'
 import Team from './Team'
 import ThreadSource, {threadSourceFields} from './ThreadSource'
-import CommenterDetails from './CommenterDetails'
+import CommentorDetails from './CommentorDetails'
 
 const RetroReflectionGroup = new GraphQLObjectType<any, GQLContext>({
   name: 'RetroReflectionGroup',
@@ -38,13 +38,13 @@ const RetroReflectionGroup = new GraphQLObjectType<any, GQLContext>({
         return dataLoader.get('commentCountByThreadId').load(reflectionGroupId)
       }
     },
-    commenters: {
-      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(CommenterDetails))),
+    commentors: {
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(CommentorDetails))),
       description:
         'A list of users currently commenting (fed by a subscription, so queries return null)',
-      resolve: ({commenter = []}) => {
+      resolve: ({commentor = []}) => {
         // return []
-        return commenter
+        return commentor
       }
     },
     createdAt: {

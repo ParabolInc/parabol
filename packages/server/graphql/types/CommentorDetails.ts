@@ -1,8 +1,8 @@
 import {GraphQLID, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
 import {GQLContext} from '../graphql'
 
-const CommenterDetails = new GraphQLObjectType<any, GQLContext>({
-  name: 'CommenterDetails',
+const CommentorDetails = new GraphQLObjectType<any, GQLContext>({
+  name: 'CommentorDetails',
   description: 'The user that is commenting',
   fields: () => ({
     userId: {
@@ -16,4 +16,4 @@ const CommenterDetails = new GraphQLObjectType<any, GQLContext>({
   })
 })
 
-export default CommenterDetails
+export default CommentorDetails

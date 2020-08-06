@@ -213,7 +213,7 @@ graphql`
       reflectionGroup {
         ...ReflectionGroup_reflectionGroup
         id
-        commenters {
+        commentors {
           userId
           preferredName
         }

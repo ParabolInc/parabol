@@ -34,10 +34,9 @@ const DiscussionThread = (props: Props) => {
   const {viewer} = props
   const meeting = viewer.meeting!
   const {endedAt, replyingToCommentId, threadSource} = meeting
-  const {commenters, thread} = threadSource!
+  const {commentors, thread} = threadSource!
   const threadSourceId = threadSource!.id!
-  const preferredNames = commenters && commenters.map((commenter) => commenter.preferredName)
-  console.log('DiscussionThread -> preferredNames', preferredNames)
+  const preferredNames = commentors && commentors.map((commentor) => commentor.preferredName)
   const edges = thread?.edges ?? [] // should never happen, but Terry reported it in demo. likely relay error
   const threadables = edges.map(({node}) => node)
   const getMaxSortOrder = () => {
@@ -100,7 +99,7 @@ export default createFragmentContainer(DiscussionThread, {
         ... on RetrospectiveMeeting {
           threadSource: reflectionGroup(reflectionGroupId: $threadSourceId) {
             ...DiscussionThread_threadSource @relay(mask: false)
-            commenters {
+            commentors {
               userId
               preferredName
             }
@@ -109,7 +108,7 @@ export default createFragmentContainer(DiscussionThread, {
         ... on ActionMeeting {
           threadSource: agendaItem(agendaItemId: $threadSourceId) {
             ...DiscussionThread_threadSource @relay(mask: false)
-            commenters {
+            commentors {
               userId
               preferredName
             }

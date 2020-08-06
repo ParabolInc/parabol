@@ -55,7 +55,7 @@ export default {
 
     // RESOLUTION
     const data = {
-      commenterId: viewerId,
+      commentorId: viewerId,
       isCommenting,
       meetingId,
       threadId

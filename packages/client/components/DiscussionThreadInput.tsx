@@ -70,7 +70,7 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
   const isDisabled = !!props.isDisabled
   const {id: meetingId, isAnonymousComment, teamId, viewerMeetingMember, meetingType} = meeting
   const {user} = viewerMeetingMember
-  const {picture, preferredName} = user
+  const {picture} = user
   const [editorState, setEditorState] = useReplyEditorState(replyMention, setReplyMention)
   const atmosphere = useAtmosphere()
   const {submitting, onError, onCompleted, submitMutation} = useMutationProps()
@@ -134,6 +134,18 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
       {onError, onCompleted}
     )
     setIsCommenting(true)
+    setTimeout(() => {
+      EditCommentingMutation(
+        atmosphere,
+        {
+          isCommenting: false,
+          meetingId,
+          threadId: threadSourceId
+        },
+        {onError, onCompleted}
+      )
+      setIsCommenting(false)
+    }, 5000)
   }
 
   const ensureNotCommenting = () => {
@@ -152,6 +164,7 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
 
   const onSubmit = () => {
     if (submitting) return
+    ensureNotCommenting()
     const editorEl = editorRef.current
     if (isAndroid) {
       if (!editorEl || editorEl.type !== 'textarea') return

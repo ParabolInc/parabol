@@ -2,38 +2,38 @@ import createProxyRecord from '../../utils/relay/createProxyRecord'
 
 const handleEditTask = (payload, store) => {
   const threadId = payload.getValue('threadId')
-  const commenter = payload.getLinkedRecord('commenter')
-  const commenterId = commenter.getValue('id')
-  const preferredName = commenter.getValue('preferredName')
+  const commentor = payload.getLinkedRecord('commentor')
+  const commentorId = commentor.getValue('id')
+  const preferredName = commentor.getValue('preferredName')
   const isCommenting = payload.getValue('isCommenting')
 
   const thread = store.get(threadId)
   if (!thread) return
-  const commenters = thread.getLinkedRecords('commenters') || []
-  if (!commenters || (commenters.length === 1 && !isCommenting)) {
-    thread.setValue(null, 'commenters')
+  const commentors = thread.getLinkedRecords('commentors') || []
+  if (!commentors || (commentors.length === 1 && !isCommenting)) {
+    thread.setValue(null, 'commentors')
     return
   }
 
-  const newCommenters = [] as any
-  for (let ii = 0; ii < commenters.length; ii++) {
-    const commenter = commenters[ii]
-    if (commenter.getValue('userId') !== commenterId) {
-      newCommenters.push(commenter)
+  const newCommentors = [] as any
+  for (let ii = 0; ii < commentors.length; ii++) {
+    const commentor = commentors[ii]
+    if (commentor.getValue('userId') !== commentorId) {
+      newCommentors.push(commentor)
     }
   }
   if (isCommenting) {
-    const newCommenter = createProxyRecord(store, 'CommenterDetails', {
-      userId: commenterId,
+    const newCommentor = createProxyRecord(store, 'CommentorDetails', {
+      userId: commentorId,
       preferredName
     })
-    newCommenters.push(newCommenter)
+    newCommentors.push(newCommentor)
   }
 
-  if (newCommenters) {
-    thread.setLinkedRecords(newCommenters, 'commenters')
+  if (newCommentors) {
+    thread.setLinkedRecords(newCommentors, 'commentors')
   } else {
-    thread.setValue(null, 'commenters')
+    thread.setValue(null, 'commentors')
   }
 }
 

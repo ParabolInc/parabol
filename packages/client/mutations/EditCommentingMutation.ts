@@ -7,7 +7,7 @@ import handleEditCommenting from './handlers/handleEditCommenting'
 
 graphql`
   fragment EditCommentingMutation_meeting on EditCommentingPayload {
-    commenter {
+    commentor {
       id
       preferredName
     }

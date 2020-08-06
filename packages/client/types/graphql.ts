@@ -767,7 +767,7 @@ export interface IAgendaItem {
   /**
    * A list of users currently commenting (fed by a subscription, so queries return null)
    */
-  commenters: Array<ICommenterDetails>;
+  commentors: Array<ICommentorDetails>;
 
   /**
    * The body of the agenda item
@@ -925,8 +925,8 @@ export interface IThreadableEdge {
 /**
  * The user that is commenting
  */
-export interface ICommenterDetails {
-  __typename: 'CommenterDetails';
+export interface ICommentorDetails {
+  __typename: 'CommentorDetails';
 
   /**
    * The userId of the person commenting
@@ -4994,7 +4994,7 @@ export interface IRetroReflectionGroup {
   /**
    * A list of users currently commenting (fed by a subscription, so queries return null)
    */
-  commenters: Array<ICommenterDetails>;
+  commentors: Array<ICommentorDetails>;
 
   /**
    * The timestamp the meeting was created
@@ -5920,7 +5920,7 @@ export interface IEditCommentingPayload {
   /**
    * The user that is commenting or has stopped commenting
    */
-  commenter: IUser | null;
+  commentor: IUser | null;
   meetingId: string;
   threadId: string;
 }
