@@ -1,6 +1,7 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel, Threshold} from 'parabol-client/types/constEnums'
 import {PALETTE} from '../../../client/styles/paletteV2'
+import {MeetingTypeEnum} from '../../../client/types/graphql'
 import getRethink from '../../database/rethinkDriver'
 import ReflectTemplate from '../../database/types/ReflectTemplate'
 import RetrospectivePrompt from '../../database/types/RetrospectivePrompt'
@@ -59,8 +60,17 @@ const addReflectTemplate = {
           return standardError(new Error('Template is scoped to organization'), {userId: viewerId})
         }
       }
+      const copyName = `${name} Copy`
+      const existingCopyCount = await r
+        .table('ReflectTemplate')
+        .getAll(teamId, {index: 'teamId'})
+        .filter({isActive: true})
+        .filter((row) => row('name').match(`^${copyName}`) as any)
+        .count()
+        .run()
+      const newName = existingCopyCount === 0 ? copyName : `${copyName} #${existingCopyCount + 1}`
       const newTemplate = new ReflectTemplate({
-        name: `${name} Copy`,
+        name: newName,
         teamId,
         orgId: viewerTeam.orgId,
         parentTemplateId
@@ -79,7 +89,16 @@ const addReflectTemplate = {
       })
       await r({
         newTemplate: r.table('ReflectTemplate').insert(newTemplate),
-        newTemplatePrompts: r.table('CustomPhaseItem').insert(newTemplatePrompts)
+        newTemplatePrompts: r.table('CustomPhaseItem').insert(newTemplatePrompts),
+        settings: r
+          .table('MeetingSettings')
+          .getAll(teamId, {index: 'teamId'})
+          .filter({
+            meetingType: MeetingTypeEnum.retrospective
+          })
+          .update({
+            selectedTemplateId: newTemplate.id
+          })
       }).run()
       data = {templateId: newTemplate.id}
     } else {
@@ -103,7 +122,16 @@ const addReflectTemplate = {
       const {id: templateId} = newTemplate
       await r({
         newTemplate: r.table('ReflectTemplate').insert(newTemplate),
-        newTemplatePrompts: r.table('CustomPhaseItem').insert(newTemplatePrompts)
+        newTemplatePrompts: r.table('CustomPhaseItem').insert(newTemplatePrompts),
+        settings: r
+          .table('MeetingSettings')
+          .getAll(teamId, {index: 'teamId'})
+          .filter({
+            meetingType: MeetingTypeEnum.retrospective
+          })
+          .update({
+            selectedTemplateId: templateId
+          })
       }).run()
       data = {templateId}
     }

@@ -72,23 +72,32 @@ const ReflectTemplateList = (props: Props) => {
   const gotoTeamTemplates = () => {
     setActiveIdx(0)
   }
+  const gotoPublicTemplates = () => {
+    setActiveIdx(2)
+  }
+  const onChangeIdx = (idx, _fromIdx, props: {reason: string}) => {
+    //very buggy behavior, probably linked to the vertical scrolling.
+    // to repro, go from team > org > team > org by clicking tabs & see this file
+    if (props.reason === 'focus') return
+    setActiveIdx(idx)
+  }
   return (
     <TemplateSidebar>
       <Label>Retro Templates</Label>
       <StyledTabsBar activeIdx={activeIdx}>
         <FullTab label={<TabLabel><Icon>{'group'}</Icon> Team</TabLabel>} onClick={gotoTeamTemplates} />
         <FullTab label={<TabLabel><Icon>{'business'}</Icon> Organization</TabLabel>} onClick={() => setActiveIdx(1)} />
-        <FullTab label={<TabLabel><Icon>{'public'}</Icon> Public</TabLabel>} onClick={() => setActiveIdx(2)} />
+        <FullTab label={<TabLabel><Icon>{'public'}</Icon> Public</TabLabel>} onClick={gotoPublicTemplates} />
       </StyledTabsBar>
       <SwipeableViews
         enableMouseEvents
         index={activeIdx}
-        onChangeIndex={(idx) => setActiveIdx(idx)}
+        onChangeIndex={onChangeIdx}
         containerStyle={containerStyle}
         style={innerStyle}
       >
         <TabContents>
-          <ReflectTemplateListTeam selectedTemplateId={selectedTemplateId} showPublicTemplates={() => setActiveIdx(2)} teamTemplates={teamTemplates} teamId={teamId} isActive={activeIdx === 0} />
+          <ReflectTemplateListTeam selectedTemplateId={selectedTemplateId} showPublicTemplates={gotoPublicTemplates} teamTemplates={teamTemplates} teamId={teamId} isActive={activeIdx === 0} />
         </TabContents>
         <TabContents>
           <ReflectTemplateListOrgRoot teamId={teamId} isActive={activeIdx === 1} gotoTeamTemplates={gotoTeamTemplates} />

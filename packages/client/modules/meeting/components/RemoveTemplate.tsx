@@ -31,11 +31,11 @@ const RemoveTemplate = (props: Props) => {
     submitMutation()
     const templateIds = teamTemplates.map(({id}) => id)
     const templateIdx = templateIds.indexOf(templateId)
-    const nextTemplateIdx = Math.max(0, templateIdx - 1)
-    const nextTemplateId = teamTemplates[nextTemplateIdx]?.id ?? null
-    const nextNewTemplateId = nextTemplateId === templateId ? null : nextTemplateId
-    if (nextNewTemplateId) {
-      SelectRetroTemplateMutation(atmosphere, {selectedTemplateId: nextNewTemplateId, teamId})
+    templateIds.splice(templateIdx, 1)
+    // use the same index as the previous item. if the item was last in the list, grab the new last
+    const nextTemplateId = templateIds[templateIdx] || templateIds[templateIds.length - 1]
+    if (nextTemplateId) {
+      SelectRetroTemplateMutation(atmosphere, {selectedTemplateId: nextTemplateId, teamId})
     } else {
       gotoPublicTemplates()
     }

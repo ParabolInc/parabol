@@ -15,6 +15,9 @@ graphql`
     }
     retroMeetingSettings {
       selectedTemplateId
+      selectedTemplate {
+        id
+      }
     }
   }
 `

@@ -85,8 +85,9 @@ const ReflectTemplateItem = (props: Props) => {
     if (isActive) return
     SelectRetroTemplateMutation(atmosphere, {selectedTemplateId: templateId, teamId})
   }
-  const cloneTemplate = () => {
+  const cloneTemplate = (e: React.MouseEvent) => {
     if (isOwner || submitting) return
+    e.stopPropagation()
     submitMutation()
     AddReflectTemplateMutation(atmosphere, {teamId, parentTemplateId: templateId}, {onError, onCompleted})
     gotoTeamTemplates()
