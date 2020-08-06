@@ -50,6 +50,7 @@ const User = new GraphQLObjectType<any, GQLContext, any>({
       description: 'The userId provided by us'
     },
     allAvailableIntegrations: require('../queries/allAvailableIntegrations').default,
+    archivedTasks: require('../queries/archivedTasks').default,
     archivedTasksCount: require('../queries/archivedTasksCount').default,
     atlassianAuth: {
       type: AtlassianAuth,

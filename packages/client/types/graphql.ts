@@ -77,6 +77,7 @@ export interface IUser {
    * All the integrations that the user could possibly use
    */
   allAvailableIntegrations: Array<SuggestedIntegration>;
+  archivedTasks: ITaskConnection | null;
   archivedTasksCount: number | null;
 
   /**
@@ -312,6 +313,20 @@ export interface IAllAvailableIntegrationsOnUserArguments {
   teamId: string;
 }
 
+export interface IArchivedTasksOnUserArguments {
+  first?: number | null;
+
+  /**
+   * the datetime cursor
+   */
+  after?: any | null;
+
+  /**
+   * The unique team ID
+   */
+  teamId: string;
+}
+
 export interface IArchivedTasksCountOnUserArguments {
   /**
    * The unique team ID
@@ -485,958 +500,6 @@ export interface ISuggestedIntegration {
 export const enum TaskServiceEnum {
   github = 'github',
   jira = 'jira'
-}
-
-/**
- * OAuth token for a team member
- */
-export interface IAtlassianAuth {
-  __typename: 'AtlassianAuth';
-
-  /**
-   * shortid
-   */
-  id: string;
-
-  /**
-   * true if the auth is valid, else false
-   */
-  isActive: boolean;
-
-  /**
-   * The access token to atlassian, useful for 1 hour. null if no access token available
-   */
-  accessToken: string | null;
-
-  /**
-   * *The atlassian account ID
-   */
-  accountId: string;
-
-  /**
-   * The atlassian cloud IDs that the user has granted
-   */
-  cloudIds: Array<string>;
-
-  /**
-   * The timestamp the provider was created
-   */
-  createdAt: any;
-
-  /**
-   * The refresh token to atlassian to receive a new 1-hour accessToken, always null since server secret is required
-   */
-  refreshToken: string | null;
-
-  /**
-   * *The team that the token is linked to
-   */
-  teamId: string;
-
-  /**
-   * The timestamp the token was updated at
-   */
-  updatedAt: any;
-
-  /**
-   * The user that the access token is attached to
-   */
-  userId: string;
-}
-
-/**
- * A grouping of organizations. Automatically grouped by top level domain of each
- */
-export interface ICompany {
-  __typename: 'Company';
-
-  /**
-   * the top level domain
-   */
-  id: string;
-
-  /**
-   * the number of active teams across all organizations
-   */
-  activeTeamCount: number;
-
-  /**
-   * the number of active users across all organizations
-   */
-  activeUserCount: number;
-
-  /**
-   * the last time any team in the organization started a meeting, null if no meetings were ever run
-   */
-  lastMetAt: any | null;
-
-  /**
-   * the total number of meetings started across all teams on all organizations
-   */
-  meetingCount: number;
-
-  /**
-   * the longest monthly streak for meeting at least once per month for any team in the company
-   */
-  monthlyTeamStreakMax: number;
-
-  /**
-   * Get the list of all organizations that belong to the company
-   */
-  organizations: Array<IOrganization>;
-
-  /**
-   * The highest tier for any organization within the company
-   */
-  tier: TierEnum;
-
-  /**
-   * the total number of users across all organizations
-   */
-  userCount: number;
-}
-
-/**
- * An organization
- */
-export interface IOrganization {
-  __typename: 'Organization';
-
-  /**
-   * The unique organization ID
-   */
-  id: string;
-
-  /**
-   * The top level domain this organization is linked to, null if only generic emails used
-   */
-  activeDomain: string | null;
-
-  /**
-   * false if the activeDomain is null or was set automatically via a heuristic, true if set manually
-   */
-  isActiveDomainTouched: boolean;
-
-  /**
-   * The datetime the organization was created
-   */
-  createdAt: any;
-
-  /**
-   * The safe credit card details
-   */
-  creditCard: ICreditCard | null;
-
-  /**
-   * The assumed company this organizaiton belongs to
-   */
-  company: ICompany | null;
-
-  /**
-   * true if the viewer is the billing leader for the org
-   */
-  isBillingLeader: boolean;
-
-  /**
-   * The name of the organization
-   */
-  name: string;
-
-  /**
-   * The org avatar
-   */
-  picture: any | null;
-
-  /**
-   * all the teams the viewer is on in the organization
-   */
-  teams: Array<ITeam>;
-
-  /**
-   * The level of access to features on the parabol site
-   */
-  tier: TierEnum;
-
-  /**
-   * THe datetime the current billing cycle ends
-   */
-  periodEnd: any | null;
-
-  /**
-   * The datetime the current billing cycle starts
-   */
-  periodStart: any | null;
-
-  /**
-   * The total number of retroMeetings given to the team
-   * @deprecated "Unlimited retros for all!"
-   */
-  retroMeetingsOffered: number;
-
-  /**
-   * Number of retro meetings that can be run (if not pro)
-   * @deprecated "Unlimited retros for all!"
-   */
-  retroMeetingsRemaining: number;
-
-  /**
-   * true if should show the org the conversion modal, else false
-   */
-  showConversionModal: boolean;
-
-  /**
-   * The customerId from stripe
-   */
-  stripeId: string | null;
-
-  /**
-   * The subscriptionId from stripe
-   */
-  stripeSubscriptionId: string | null;
-
-  /**
-   * The last upcoming invoice email that was sent, null if never sent
-   */
-  upcomingInvoiceEmailSentAt: any | null;
-
-  /**
-   * The datetime the organization was last updated
-   */
-  updatedAt: any | null;
-  organizationUsers: IOrganizationUserConnection;
-
-  /**
-   * The count of active & inactive users
-   */
-  orgUserCount: IOrgUserCount;
-
-  /**
-   * The leaders of the org
-   */
-  billingLeaders: Array<IUser>;
-}
-
-export interface IOrganizationUsersOnOrganizationArguments {
-  after?: string | null;
-  first?: number | null;
-}
-
-/**
- * A credit card
- */
-export interface ICreditCard {
-  __typename: 'CreditCard';
-
-  /**
-   * The brand of the credit card, as provided by stripe
-   */
-  brand: string;
-
-  /**
-   * The MM/YY string of the expiration date
-   */
-  expiry: string;
-
-  /**
-   * The last 4 digits of a credit card
-   */
-  last4: string;
-}
-
-/**
- * A team
- */
-export interface ITeam {
-  __typename: 'Team';
-
-  /**
-   * A shortid for the team
-   */
-  id: string;
-
-  /**
-   * The datetime the team was created
-   */
-  createdAt: any;
-
-  /**
-   * The userId that created the team. Non-null at v2.22.0+
-   */
-  createdBy: string | null;
-
-  /**
-   * true if the team was created when the account was created, else false
-   */
-  isOnboardTeam: boolean;
-
-  /**
-   * The type of the last meeting run
-   */
-  lastMeetingType: MeetingTypeEnum;
-
-  /**
-   * The hash and expiration for a token that allows anyone with it to join the team
-   */
-  massInvitation: IMassInvitation | null;
-
-  /**
-   * true if the underlying org has a validUntil date greater than now. if false, subs do not work
-   */
-  isPaid: boolean | null;
-
-  /**
-   * The name of the team
-   */
-  name: string;
-
-  /**
-   * The organization to which the team belongs
-   */
-  orgId: string;
-
-  /**
-   * Arbitrary tags that the team uses
-   */
-  tags: Array<string | null> | null;
-
-  /**
-   * The datetime the team was last updated
-   */
-  updatedAt: any | null;
-  customPhaseItems: Array<CustomPhaseItem | null> | null;
-
-  /**
-   * The outstanding invitations to join the team
-   */
-  teamInvitations: Array<ITeamInvitation> | null;
-
-  /**
-   * true if the viewer is the team lead, else false
-   */
-  isLead: boolean;
-
-  /**
-   * The team-specific settings for running all available types of meetings
-   */
-  meetingSettings: TeamMeetingSettings;
-
-  /**
-   * a list of meetings that are currently in progress
-   */
-  activeMeetings: Array<NewMeeting>;
-
-  /**
-   * The new meeting in progress, if any
-   */
-  meeting: NewMeeting | null;
-
-  /**
-   * The level of access to features on the parabol site
-   */
-  tier: TierEnum;
-  organization: IOrganization;
-
-  /**
-   * The agenda items for the upcoming or current meeting
-   */
-  agendaItems: Array<IAgendaItem>;
-
-  /**
-   * All of the tasks for this team
-   */
-  tasks: ITaskConnection;
-
-  /**
-   * All the team members actively associated with the team
-   */
-  teamMembers: Array<ITeamMember>;
-
-  /**
-   * true if the team has been archived
-   */
-  isArchived: boolean | null;
-}
-
-export interface IMassInvitationOnTeamArguments {
-  /**
-   * the meetingId to optionally direct them to
-   */
-  meetingId?: string | null;
-}
-
-export interface IMeetingSettingsOnTeamArguments {
-  /**
-   * the type of meeting for the settings
-   */
-  meetingType: MeetingTypeEnum;
-}
-
-export interface IMeetingOnTeamArguments {
-  /**
-   * The unique meetingId
-   */
-  meetingId: string;
-}
-
-export interface ITasksOnTeamArguments {
-  first?: number | null;
-
-  /**
-   * the datetime cursor
-   */
-  after?: any | null;
-}
-
-export interface ITeamMembersOnTeamArguments {
-  /**
-   * the field to sort the teamMembers by
-   */
-  sortBy?: string | null;
-}
-
-/**
- * The type of meeting
- */
-export const enum MeetingTypeEnum {
-  action = 'action',
-  retrospective = 'retrospective'
-}
-
-/**
- * An invitation and expiration
- */
-export interface IMassInvitation {
-  __typename: 'MassInvitation';
-
-  /**
-   * the invitation token
-   */
-  id: string;
-
-  /**
-   * the expiration for the token
-   */
-  expiration: any;
-  meetingId: string | null;
-}
-
-export type CustomPhaseItem = IRetroPhaseItem;
-
-export interface ICustomPhaseItem {
-  __typename: 'CustomPhaseItem';
-
-  /**
-   * shortid
-   */
-  id: string;
-  createdAt: any;
-
-  /**
-   * The type of phase item
-   */
-  phaseItemType: CustomPhaseItemTypeEnum | null;
-
-  /**
-   * true if the phase item is currently used by the team, else false
-   */
-  isActive: boolean | null;
-
-  /**
-   * foreign key. use the team field
-   */
-  teamId: string;
-
-  /**
-   * The team that owns this customPhaseItem
-   */
-  team: ITeam | null;
-  updatedAt: any;
-}
-
-/**
- * The type of phase item
- */
-export const enum CustomPhaseItemTypeEnum {
-  retroPhaseItem = 'retroPhaseItem'
-}
-
-/**
- * An invitation to become a team member
- */
-export interface ITeamInvitation {
-  __typename: 'TeamInvitation';
-
-  /**
-   * The unique invitation Id
-   */
-  id: string;
-
-  /**
-   * null if not accepted, else the datetime the invitation was accepted
-   */
-  acceptedAt: any | null;
-
-  /**
-   * null if not accepted, else the userId that accepted the invitation
-   */
-  acceptedBy: string | null;
-
-  /**
-   * The datetime the invitation was created
-   */
-  createdAt: any;
-
-  /**
-   * The email of the invitee
-   */
-  email: any;
-
-  /**
-   * The datetime the invitation expires. Changes when team is archived.
-   */
-  expiresAt: any;
-
-  /**
-   * The userId of the person that sent the invitation
-   */
-  invitedBy: string;
-
-  /**
-   * The userId of the person that sent the invitation
-   */
-  inviter: IUser;
-
-  /**
-   * the meetingId that the invite was generated for
-   */
-  meetingId: string | null;
-
-  /**
-   * The team invited to
-   */
-  teamId: string;
-
-  /**
-   * 48-byte hex encoded random string
-   */
-  token: string;
-}
-
-/**
- * The team settings for a specific type of meeting
- */
-export type TeamMeetingSettings =
-  | IRetrospectiveMeetingSettings
-  | IActionMeetingSettings;
-
-/**
- * The team settings for a specific type of meeting
- */
-export interface ITeamMeetingSettings {
-  __typename: 'TeamMeetingSettings';
-  id: string;
-
-  /**
-   * The type of meeting these settings apply to
-   */
-  meetingType: MeetingTypeEnum | null;
-
-  /**
-   * The broad phase types that will be addressed during the meeting
-   */
-  phaseTypes: Array<NewMeetingPhaseTypeEnum>;
-
-  /**
-   * FK
-   */
-  teamId: string;
-
-  /**
-   * The team these settings belong to
-   */
-  team: ITeam | null;
-}
-
-/**
- * The phase of the meeting
- */
-export const enum NewMeetingPhaseTypeEnum {
-  lobby = 'lobby',
-  checkin = 'checkin',
-  updates = 'updates',
-  firstcall = 'firstcall',
-  agendaitems = 'agendaitems',
-  lastcall = 'lastcall',
-  reflect = 'reflect',
-  group = 'group',
-  vote = 'vote',
-  discuss = 'discuss',
-  SUMMARY = 'SUMMARY'
-}
-
-/**
- * A team meeting history for all previous meetings
- */
-export type NewMeeting = IRetrospectiveMeeting | IActionMeeting;
-
-/**
- * A team meeting history for all previous meetings
- */
-export interface INewMeeting {
-  __typename: 'NewMeeting';
-
-  /**
-   * The unique meeting id. shortid.
-   */
-  id: string;
-
-  /**
-   * The timestamp the meeting was created
-   */
-  createdAt: any;
-
-  /**
-   * The userId of the desired facilitator (different form facilitatorUserId if disconnected)
-   */
-  defaultFacilitatorUserId: string;
-
-  /**
-   * The timestamp the meeting officially ended
-   */
-  endedAt: any | null;
-
-  /**
-   * The location of the facilitator in the meeting
-   */
-  facilitatorStageId: string;
-
-  /**
-   * The userId (or anonymousId) of the most recent facilitator
-   */
-  facilitatorUserId: string;
-
-  /**
-   * The facilitator team member
-   */
-  facilitator: ITeamMember;
-
-  /**
-   * The team members that were active during the time of the meeting
-   */
-  meetingMembers: Array<MeetingMember>;
-
-  /**
-   * The auto-incrementing meeting number for the team
-   */
-  meetingNumber: number;
-  meetingType: MeetingTypeEnum;
-
-  /**
-   * The name of the meeting
-   */
-  name: string;
-
-  /**
-   * The organization this meeting belongs to
-   */
-  organization: IOrganization;
-
-  /**
-   * The phases the meeting will go through, including all phase-specific state
-   */
-  phases: Array<NewMeetingPhase>;
-
-  /**
-   * true if should show the org the conversion modal, else false
-   */
-  showConversionModal: boolean;
-
-  /**
-   * The time the meeting summary was emailed to the team
-   */
-  summarySentAt: any | null;
-
-  /**
-   * foreign key for team
-   */
-  teamId: string;
-
-  /**
-   * The team that ran the meeting
-   */
-  team: ITeam;
-
-  /**
-   * The last time a meeting was updated (stage completed, finished, etc)
-   */
-  updatedAt: any | null;
-
-  /**
-   * The meeting member of the viewer
-   */
-  viewerMeetingMember: MeetingMember;
-}
-
-/**
- * A member of a team
- */
-export interface ITeamMember {
-  __typename: 'TeamMember';
-
-  /**
-   * An ID for the teamMember. userId::teamId
-   */
-  id: string;
-
-  /**
-   * The datetime the team member was created
-   */
-  createdAt: any;
-
-  /**
-   * true if the user is a part of the team, false if they no longer are
-   */
-  isNotRemoved: boolean | null;
-
-  /**
-   * Is user a team lead?
-   */
-  isLead: boolean | null;
-
-  /**
-   * hide the agenda list on the dashboard
-   */
-  hideAgenda: boolean;
-
-  /**
-   * The user email
-   */
-  email: any;
-
-  /**
-   * url of user’s profile picture
-   */
-  picture: any;
-
-  /**
-   * The place in line for checkIn, regenerated every meeting
-   */
-  checkInOrder: number;
-
-  /**
-   * true if this team member belongs to the user that queried it
-   */
-  isSelf: boolean;
-
-  /**
-   * The meeting specifics for the meeting the team member is currently in
-   */
-  meetingMember: MeetingMember | null;
-
-  /**
-   * The name of the assignee
-   */
-  preferredName: string;
-
-  /**
-   * The slack auth for the team member.
-   */
-  slackAuth: ISlackAuth | null;
-
-  /**
-   * A list of events and the slack channels they get posted to
-   */
-  slackNotifications: Array<ISlackNotification>;
-
-  /**
-   * Tasks owned by the team member
-   */
-  tasks: ITaskConnection | null;
-
-  /**
-   * The team this team member belongs to
-   */
-  team: ITeam | null;
-
-  /**
-   * foreign key to Team table
-   */
-  teamId: string;
-
-  /**
-   * The user for the team member
-   */
-  user: IUser;
-
-  /**
-   * foreign key to User table
-   */
-  userId: string;
-}
-
-export interface IMeetingMemberOnTeamMemberArguments {
-  meetingId: string;
-}
-
-export interface ITasksOnTeamMemberArguments {
-  first?: number | null;
-
-  /**
-   * the datetime cursor
-   */
-  after?: any | null;
-}
-
-/**
- * All the user details for a specific meeting
- */
-export type MeetingMember = IRetrospectiveMeetingMember | IActionMeetingMember;
-
-/**
- * All the user details for a specific meeting
- */
-export interface IMeetingMember {
-  __typename: 'MeetingMember';
-
-  /**
-   * A composite of userId::meetingId
-   */
-  id: string;
-
-  /**
-   * true if present, false if absent, else null
-   */
-  isCheckedIn: boolean | null;
-  meetingId: string;
-  meetingType: MeetingTypeEnum;
-  teamId: string;
-  teamMember: ITeamMember;
-  user: IUser;
-  userId: string;
-
-  /**
-   * The last time a meeting was updated (stage completed, finished, etc)
-   */
-  updatedAt: any;
-}
-
-/**
- * OAuth token for a team member
- */
-export interface ISlackAuth {
-  __typename: 'SlackAuth';
-
-  /**
-   * shortid
-   */
-  id: string;
-
-  /**
-   * true if the auth is updated & ready to use for all features, else false
-   */
-  isActive: boolean;
-
-  /**
-   * The access token to slack, only visible to the owner. Used as a fallback to botAccessToken
-   */
-  accessToken: string | null;
-
-  /**
-   * the parabol bot user id
-   */
-  botUserId: string | null;
-
-  /**
-   * the parabol bot access token, used as primary communication
-   */
-  botAccessToken: string | null;
-
-  /**
-   * The timestamp the provider was created
-   */
-  createdAt: any;
-
-  /**
-   * The default channel to assign to new team notifications
-   */
-  defaultTeamChannelId: string;
-
-  /**
-   * The id of the team in slack
-   */
-  slackTeamId: string | null;
-
-  /**
-   * The name of the team in slack
-   */
-  slackTeamName: string | null;
-
-  /**
-   * The userId in slack
-   */
-  slackUserId: string;
-
-  /**
-   * The name of the user in slack
-   */
-  slackUserName: string;
-
-  /**
-   * *The team that the token is linked to
-   */
-  teamId: string;
-
-  /**
-   * The timestamp the token was updated at
-   */
-  updatedAt: any;
-
-  /**
-   * The user that the access token is attached to
-   */
-  userId: string;
-}
-
-/**
- * an event trigger and slack channel to receive it
- */
-export interface ISlackNotification {
-  __typename: 'SlackNotification';
-  id: string;
-  event: SlackNotificationEventEnum;
-  eventType: SlackNotificationEventTypeEnum;
-
-  /**
-   * null if no notification is to be sent
-   */
-  channelId: string | null;
-  teamId: string;
-  userId: string;
-}
-
-/**
- * The event that triggers a slack notification
- */
-export const enum SlackNotificationEventEnum {
-  meetingStart = 'meetingStart',
-  meetingEnd = 'meetingEnd',
-  MEETING_STAGE_TIME_LIMIT_END = 'MEETING_STAGE_TIME_LIMIT_END',
-  MEETING_STAGE_TIME_LIMIT_START = 'MEETING_STAGE_TIME_LIMIT_START'
-}
-
-/**
- * The type of event for a slack notification
- */
-export const enum SlackNotificationEventTypeEnum {
-  /**
-   * notification that concerns the whole team
-   */
-  team = 'team',
-
-  /**
-   * notification that concerns a single member on the team
-   */
-  member = 'member'
 }
 
 /**
@@ -1863,36 +926,1025 @@ export interface IThreadableEdge {
   cursor: string | null;
 }
 
-export interface ITaskEditorDetails {
-  __typename: 'TaskEditorDetails';
+/**
+ * A member of a team
+ */
+export interface ITeamMember {
+  __typename: 'TeamMember';
 
   /**
-   * The userId of the person editing the task
+   * An ID for the teamMember. userId::teamId
+   */
+  id: string;
+
+  /**
+   * The datetime the team member was created
+   */
+  createdAt: any;
+
+  /**
+   * true if the user is a part of the team, false if they no longer are
+   */
+  isNotRemoved: boolean | null;
+
+  /**
+   * Is user a team lead?
+   */
+  isLead: boolean | null;
+
+  /**
+   * hide the agenda list on the dashboard
+   */
+  hideAgenda: boolean;
+
+  /**
+   * The user email
+   */
+  email: any;
+
+  /**
+   * url of user’s profile picture
+   */
+  picture: any;
+
+  /**
+   * The place in line for checkIn, regenerated every meeting
+   */
+  checkInOrder: number;
+
+  /**
+   * true if this team member belongs to the user that queried it
+   */
+  isSelf: boolean;
+
+  /**
+   * The meeting specifics for the meeting the team member is currently in
+   */
+  meetingMember: MeetingMember | null;
+
+  /**
+   * The name of the assignee
+   */
+  preferredName: string;
+
+  /**
+   * The slack auth for the team member.
+   */
+  slackAuth: ISlackAuth | null;
+
+  /**
+   * A list of events and the slack channels they get posted to
+   */
+  slackNotifications: Array<ISlackNotification>;
+
+  /**
+   * Tasks owned by the team member
+   */
+  tasks: ITaskConnection | null;
+
+  /**
+   * The team this team member belongs to
+   */
+  team: ITeam | null;
+
+  /**
+   * foreign key to Team table
+   */
+  teamId: string;
+
+  /**
+   * The user for the team member
+   */
+  user: IUser;
+
+  /**
+   * foreign key to User table
+   */
+  userId: string;
+}
+
+export interface IMeetingMemberOnTeamMemberArguments {
+  meetingId: string;
+}
+
+export interface ITasksOnTeamMemberArguments {
+  first?: number | null;
+
+  /**
+   * the datetime cursor
+   */
+  after?: any | null;
+}
+
+/**
+ * All the user details for a specific meeting
+ */
+export type MeetingMember = IRetrospectiveMeetingMember | IActionMeetingMember;
+
+/**
+ * All the user details for a specific meeting
+ */
+export interface IMeetingMember {
+  __typename: 'MeetingMember';
+
+  /**
+   * A composite of userId::meetingId
+   */
+  id: string;
+
+  /**
+   * true if present, false if absent, else null
+   */
+  isCheckedIn: boolean | null;
+  meetingId: string;
+  meetingType: MeetingTypeEnum;
+  teamId: string;
+  teamMember: ITeamMember;
+  user: IUser;
+  userId: string;
+
+  /**
+   * The last time a meeting was updated (stage completed, finished, etc)
+   */
+  updatedAt: any;
+}
+
+/**
+ * The type of meeting
+ */
+export const enum MeetingTypeEnum {
+  action = 'action',
+  retrospective = 'retrospective'
+}
+
+/**
+ * OAuth token for a team member
+ */
+export interface ISlackAuth {
+  __typename: 'SlackAuth';
+
+  /**
+   * shortid
+   */
+  id: string;
+
+  /**
+   * true if the auth is updated & ready to use for all features, else false
+   */
+  isActive: boolean;
+
+  /**
+   * The access token to slack, only visible to the owner. Used as a fallback to botAccessToken
+   */
+  accessToken: string | null;
+
+  /**
+   * the parabol bot user id
+   */
+  botUserId: string | null;
+
+  /**
+   * the parabol bot access token, used as primary communication
+   */
+  botAccessToken: string | null;
+
+  /**
+   * The timestamp the provider was created
+   */
+  createdAt: any;
+
+  /**
+   * The default channel to assign to new team notifications
+   */
+  defaultTeamChannelId: string;
+
+  /**
+   * The id of the team in slack
+   */
+  slackTeamId: string | null;
+
+  /**
+   * The name of the team in slack
+   */
+  slackTeamName: string | null;
+
+  /**
+   * The userId in slack
+   */
+  slackUserId: string;
+
+  /**
+   * The name of the user in slack
+   */
+  slackUserName: string;
+
+  /**
+   * *The team that the token is linked to
+   */
+  teamId: string;
+
+  /**
+   * The timestamp the token was updated at
+   */
+  updatedAt: any;
+
+  /**
+   * The user that the access token is attached to
+   */
+  userId: string;
+}
+
+/**
+ * an event trigger and slack channel to receive it
+ */
+export interface ISlackNotification {
+  __typename: 'SlackNotification';
+  id: string;
+  event: SlackNotificationEventEnum;
+  eventType: SlackNotificationEventTypeEnum;
+
+  /**
+   * null if no notification is to be sent
+   */
+  channelId: string | null;
+  teamId: string;
+  userId: string;
+}
+
+/**
+ * The event that triggers a slack notification
+ */
+export const enum SlackNotificationEventEnum {
+  meetingStart = 'meetingStart',
+  meetingEnd = 'meetingEnd',
+  MEETING_STAGE_TIME_LIMIT_END = 'MEETING_STAGE_TIME_LIMIT_END',
+  MEETING_STAGE_TIME_LIMIT_START = 'MEETING_STAGE_TIME_LIMIT_START'
+}
+
+/**
+ * The type of event for a slack notification
+ */
+export const enum SlackNotificationEventTypeEnum {
+  /**
+   * notification that concerns the whole team
+   */
+  team = 'team',
+
+  /**
+   * notification that concerns a single member on the team
+   */
+  member = 'member'
+}
+
+/**
+ * A team
+ */
+export interface ITeam {
+  __typename: 'Team';
+
+  /**
+   * A shortid for the team
+   */
+  id: string;
+
+  /**
+   * The datetime the team was created
+   */
+  createdAt: any;
+
+  /**
+   * The userId that created the team. Non-null at v2.22.0+
+   */
+  createdBy: string | null;
+
+  /**
+   * true if the team was created when the account was created, else false
+   */
+  isOnboardTeam: boolean;
+
+  /**
+   * The type of the last meeting run
+   */
+  lastMeetingType: MeetingTypeEnum;
+
+  /**
+   * The hash and expiration for a token that allows anyone with it to join the team
+   */
+  massInvitation: IMassInvitation | null;
+
+  /**
+   * true if the underlying org has a validUntil date greater than now. if false, subs do not work
+   */
+  isPaid: boolean | null;
+
+  /**
+   * The name of the team
+   */
+  name: string;
+
+  /**
+   * The organization to which the team belongs
+   */
+  orgId: string;
+
+  /**
+   * Arbitrary tags that the team uses
+   */
+  tags: Array<string | null> | null;
+
+  /**
+   * The datetime the team was last updated
+   */
+  updatedAt: any | null;
+  customPhaseItems: Array<CustomPhaseItem | null> | null;
+
+  /**
+   * The outstanding invitations to join the team
+   */
+  teamInvitations: Array<ITeamInvitation> | null;
+
+  /**
+   * true if the viewer is the team lead, else false
+   */
+  isLead: boolean;
+
+  /**
+   * The team-specific settings for running all available types of meetings
+   */
+  meetingSettings: TeamMeetingSettings;
+
+  /**
+   * a list of meetings that are currently in progress
+   */
+  activeMeetings: Array<NewMeeting>;
+
+  /**
+   * The new meeting in progress, if any
+   */
+  meeting: NewMeeting | null;
+
+  /**
+   * The level of access to features on the parabol site
+   */
+  tier: TierEnum;
+  organization: IOrganization;
+
+  /**
+   * The agenda items for the upcoming or current meeting
+   */
+  agendaItems: Array<IAgendaItem>;
+
+  /**
+   * All of the tasks for this team
+   */
+  tasks: ITaskConnection;
+
+  /**
+   * All the team members actively associated with the team
+   */
+  teamMembers: Array<ITeamMember>;
+
+  /**
+   * true if the team has been archived
+   */
+  isArchived: boolean | null;
+}
+
+export interface IMassInvitationOnTeamArguments {
+  /**
+   * the meetingId to optionally direct them to
+   */
+  meetingId?: string | null;
+}
+
+export interface IMeetingSettingsOnTeamArguments {
+  /**
+   * the type of meeting for the settings
+   */
+  meetingType: MeetingTypeEnum;
+}
+
+export interface IMeetingOnTeamArguments {
+  /**
+   * The unique meetingId
+   */
+  meetingId: string;
+}
+
+export interface ITasksOnTeamArguments {
+  first?: number | null;
+
+  /**
+   * the datetime cursor
+   */
+  after?: any | null;
+}
+
+export interface ITeamMembersOnTeamArguments {
+  /**
+   * the field to sort the teamMembers by
+   */
+  sortBy?: string | null;
+}
+
+/**
+ * An invitation and expiration
+ */
+export interface IMassInvitation {
+  __typename: 'MassInvitation';
+
+  /**
+   * the invitation token
+   */
+  id: string;
+
+  /**
+   * the expiration for the token
+   */
+  expiration: any;
+  meetingId: string | null;
+}
+
+export type CustomPhaseItem = IRetroPhaseItem;
+
+export interface ICustomPhaseItem {
+  __typename: 'CustomPhaseItem';
+
+  /**
+   * shortid
+   */
+  id: string;
+  createdAt: any;
+
+  /**
+   * The type of phase item
+   */
+  phaseItemType: CustomPhaseItemTypeEnum | null;
+
+  /**
+   * true if the phase item is currently used by the team, else false
+   */
+  isActive: boolean | null;
+
+  /**
+   * foreign key. use the team field
+   */
+  teamId: string;
+
+  /**
+   * The team that owns this customPhaseItem
+   */
+  team: ITeam | null;
+  updatedAt: any;
+}
+
+/**
+ * The type of phase item
+ */
+export const enum CustomPhaseItemTypeEnum {
+  retroPhaseItem = 'retroPhaseItem'
+}
+
+/**
+ * An invitation to become a team member
+ */
+export interface ITeamInvitation {
+  __typename: 'TeamInvitation';
+
+  /**
+   * The unique invitation Id
+   */
+  id: string;
+
+  /**
+   * null if not accepted, else the datetime the invitation was accepted
+   */
+  acceptedAt: any | null;
+
+  /**
+   * null if not accepted, else the userId that accepted the invitation
+   */
+  acceptedBy: string | null;
+
+  /**
+   * The datetime the invitation was created
+   */
+  createdAt: any;
+
+  /**
+   * The email of the invitee
+   */
+  email: any;
+
+  /**
+   * The datetime the invitation expires. Changes when team is archived.
+   */
+  expiresAt: any;
+
+  /**
+   * The userId of the person that sent the invitation
+   */
+  invitedBy: string;
+
+  /**
+   * The userId of the person that sent the invitation
+   */
+  inviter: IUser;
+
+  /**
+   * the meetingId that the invite was generated for
+   */
+  meetingId: string | null;
+
+  /**
+   * The team invited to
+   */
+  teamId: string;
+
+  /**
+   * 48-byte hex encoded random string
+   */
+  token: string;
+}
+
+/**
+ * The team settings for a specific type of meeting
+ */
+export type TeamMeetingSettings =
+  | IRetrospectiveMeetingSettings
+  | IActionMeetingSettings;
+
+/**
+ * The team settings for a specific type of meeting
+ */
+export interface ITeamMeetingSettings {
+  __typename: 'TeamMeetingSettings';
+  id: string;
+
+  /**
+   * The type of meeting these settings apply to
+   */
+  meetingType: MeetingTypeEnum | null;
+
+  /**
+   * The broad phase types that will be addressed during the meeting
+   */
+  phaseTypes: Array<NewMeetingPhaseTypeEnum>;
+
+  /**
+   * FK
+   */
+  teamId: string;
+
+  /**
+   * The team these settings belong to
+   */
+  team: ITeam | null;
+}
+
+/**
+ * The phase of the meeting
+ */
+export const enum NewMeetingPhaseTypeEnum {
+  lobby = 'lobby',
+  checkin = 'checkin',
+  updates = 'updates',
+  firstcall = 'firstcall',
+  agendaitems = 'agendaitems',
+  lastcall = 'lastcall',
+  reflect = 'reflect',
+  group = 'group',
+  vote = 'vote',
+  discuss = 'discuss',
+  SUMMARY = 'SUMMARY'
+}
+
+/**
+ * A team meeting history for all previous meetings
+ */
+export type NewMeeting = IRetrospectiveMeeting | IActionMeeting;
+
+/**
+ * A team meeting history for all previous meetings
+ */
+export interface INewMeeting {
+  __typename: 'NewMeeting';
+
+  /**
+   * The unique meeting id. shortid.
+   */
+  id: string;
+
+  /**
+   * The timestamp the meeting was created
+   */
+  createdAt: any;
+
+  /**
+   * The userId of the desired facilitator (different form facilitatorUserId if disconnected)
+   */
+  defaultFacilitatorUserId: string;
+
+  /**
+   * The timestamp the meeting officially ended
+   */
+  endedAt: any | null;
+
+  /**
+   * The location of the facilitator in the meeting
+   */
+  facilitatorStageId: string;
+
+  /**
+   * The userId (or anonymousId) of the most recent facilitator
+   */
+  facilitatorUserId: string;
+
+  /**
+   * The facilitator team member
+   */
+  facilitator: ITeamMember;
+
+  /**
+   * The team members that were active during the time of the meeting
+   */
+  meetingMembers: Array<MeetingMember>;
+
+  /**
+   * The auto-incrementing meeting number for the team
+   */
+  meetingNumber: number;
+  meetingType: MeetingTypeEnum;
+
+  /**
+   * The name of the meeting
+   */
+  name: string;
+
+  /**
+   * The organization this meeting belongs to
+   */
+  organization: IOrganization;
+
+  /**
+   * The phases the meeting will go through, including all phase-specific state
+   */
+  phases: Array<NewMeetingPhase>;
+
+  /**
+   * true if should show the org the conversion modal, else false
+   */
+  showConversionModal: boolean;
+
+  /**
+   * The time the meeting summary was emailed to the team
+   */
+  summarySentAt: any | null;
+
+  /**
+   * foreign key for team
+   */
+  teamId: string;
+
+  /**
+   * The team that ran the meeting
+   */
+  team: ITeam;
+
+  /**
+   * The last time a meeting was updated (stage completed, finished, etc)
+   */
+  updatedAt: any | null;
+
+  /**
+   * The meeting member of the viewer
+   */
+  viewerMeetingMember: MeetingMember;
+}
+
+/**
+ * An organization
+ */
+export interface IOrganization {
+  __typename: 'Organization';
+
+  /**
+   * The unique organization ID
+   */
+  id: string;
+
+  /**
+   * The top level domain this organization is linked to, null if only generic emails used
+   */
+  activeDomain: string | null;
+
+  /**
+   * false if the activeDomain is null or was set automatically via a heuristic, true if set manually
+   */
+  isActiveDomainTouched: boolean;
+
+  /**
+   * The datetime the organization was created
+   */
+  createdAt: any;
+
+  /**
+   * The safe credit card details
+   */
+  creditCard: ICreditCard | null;
+
+  /**
+   * The assumed company this organizaiton belongs to
+   */
+  company: ICompany | null;
+
+  /**
+   * true if the viewer is the billing leader for the org
+   */
+  isBillingLeader: boolean;
+
+  /**
+   * The name of the organization
+   */
+  name: string;
+
+  /**
+   * The org avatar
+   */
+  picture: any | null;
+
+  /**
+   * all the teams the viewer is on in the organization
+   */
+  teams: Array<ITeam>;
+
+  /**
+   * The level of access to features on the parabol site
+   */
+  tier: TierEnum;
+
+  /**
+   * THe datetime the current billing cycle ends
+   */
+  periodEnd: any | null;
+
+  /**
+   * The datetime the current billing cycle starts
+   */
+  periodStart: any | null;
+
+  /**
+   * The total number of retroMeetings given to the team
+   * @deprecated "Unlimited retros for all!"
+   */
+  retroMeetingsOffered: number;
+
+  /**
+   * Number of retro meetings that can be run (if not pro)
+   * @deprecated "Unlimited retros for all!"
+   */
+  retroMeetingsRemaining: number;
+
+  /**
+   * true if should show the org the conversion modal, else false
+   */
+  showConversionModal: boolean;
+
+  /**
+   * The customerId from stripe
+   */
+  stripeId: string | null;
+
+  /**
+   * The subscriptionId from stripe
+   */
+  stripeSubscriptionId: string | null;
+
+  /**
+   * The last upcoming invoice email that was sent, null if never sent
+   */
+  upcomingInvoiceEmailSentAt: any | null;
+
+  /**
+   * The datetime the organization was last updated
+   */
+  updatedAt: any | null;
+  organizationUsers: IOrganizationUserConnection;
+
+  /**
+   * The count of active & inactive users
+   */
+  orgUserCount: IOrgUserCount;
+
+  /**
+   * The leaders of the org
+   */
+  billingLeaders: Array<IUser>;
+}
+
+export interface IOrganizationUsersOnOrganizationArguments {
+  after?: string | null;
+  first?: number | null;
+}
+
+/**
+ * A credit card
+ */
+export interface ICreditCard {
+  __typename: 'CreditCard';
+
+  /**
+   * The brand of the credit card, as provided by stripe
+   */
+  brand: string;
+
+  /**
+   * The MM/YY string of the expiration date
+   */
+  expiry: string;
+
+  /**
+   * The last 4 digits of a credit card
+   */
+  last4: string;
+}
+
+/**
+ * A grouping of organizations. Automatically grouped by top level domain of each
+ */
+export interface ICompany {
+  __typename: 'Company';
+
+  /**
+   * the top level domain
+   */
+  id: string;
+
+  /**
+   * the number of active teams across all organizations
+   */
+  activeTeamCount: number;
+
+  /**
+   * the number of active users across all organizations
+   */
+  activeUserCount: number;
+
+  /**
+   * the last time any team in the organization started a meeting, null if no meetings were ever run
+   */
+  lastMetAt: any | null;
+
+  /**
+   * the total number of meetings started across all teams on all organizations
+   */
+  meetingCount: number;
+
+  /**
+   * the longest monthly streak for meeting at least once per month for any team in the company
+   */
+  monthlyTeamStreakMax: number;
+
+  /**
+   * Get the list of all organizations that belong to the company
+   */
+  organizations: Array<IOrganization>;
+
+  /**
+   * The highest tier for any organization within the company
+   */
+  tier: TierEnum;
+
+  /**
+   * the total number of users across all organizations
+   */
+  userCount: number;
+}
+
+/**
+ * The pay tier of the team
+ */
+export const enum TierEnum {
+  personal = 'personal',
+  pro = 'pro',
+  enterprise = 'enterprise'
+}
+
+/**
+ * A connection to a list of items.
+ */
+export interface IOrganizationUserConnection {
+  __typename: 'OrganizationUserConnection';
+
+  /**
+   * Information to aid in pagination.
+   */
+  pageInfo: IPageInfo;
+
+  /**
+   * A list of edges.
+   */
+  edges: Array<IOrganizationUserEdge>;
+}
+
+/**
+ * An edge in a connection.
+ */
+export interface IOrganizationUserEdge {
+  __typename: 'OrganizationUserEdge';
+
+  /**
+   * The item at the end of the edge
+   */
+  node: IOrganizationUser;
+
+  /**
+   * A cursor for use in pagination
+   */
+  cursor: string;
+}
+
+/**
+ * organization-specific details about a user
+ */
+export interface IOrganizationUser {
+  __typename: 'OrganizationUser';
+
+  /**
+   * orgId::userId
+   */
+  id: string;
+
+  /**
+   * true if the user is paused and the orgs are not being billed, else false
+   */
+  inactive: boolean;
+
+  /**
+   * the datetime the user first joined the org
+   */
+  joinedAt: any;
+
+  /**
+   * The last moment a billing leader can remove the user from the org & receive a refund. Set to the subscription periodEnd
+   */
+  newUserUntil: any;
+
+  /**
+   * FK
+   */
+  orgId: string;
+
+  /**
+   * The user attached to the organization
+   */
+  organization: IOrganization;
+
+  /**
+   * if not a member, the datetime the user was removed from the org
+   */
+  removedAt: any | null;
+
+  /**
+   * role of the user in the org
+   */
+  role: OrgUserRole | null;
+
+  /**
+   * FK
    */
   userId: string;
 
   /**
-   * The name of the userId editing the task
+   * The user attached to the organization
    */
-  preferredName: string;
-}
+  user: IUser;
 
-export type TaskIntegration = ITaskIntegrationGitHub | ITaskIntegrationJira;
-
-export interface ITaskIntegration {
-  __typename: 'TaskIntegration';
-  id: string;
-  service: TaskServiceEnum;
+  /**
+   * Their level of access to features on the parabol site
+   */
+  tier: TierEnum | null;
 }
 
 /**
- * The status of the task
+ * The role of the org user
  */
-export const enum TaskStatusEnum {
-  active = 'active',
-  stuck = 'stuck',
-  done = 'done',
-  future = 'future'
+export const enum OrgUserRole {
+  BILLING_LEADER = 'BILLING_LEADER'
+}
+
+export interface IOrgUserCount {
+  __typename: 'OrgUserCount';
+
+  /**
+   * The number of orgUsers who have an inactive flag
+   */
+  inactiveUserCount: number;
+
+  /**
+   * The number of orgUsers who do not have an inactive flag
+   */
+  activeUserCount: number;
 }
 
 export type NewMeetingPhase =
@@ -2027,130 +2079,93 @@ export interface INewMeetingStage {
   timeRemaining: number | null;
 }
 
-/**
- * The pay tier of the team
- */
-export const enum TierEnum {
-  personal = 'personal',
-  pro = 'pro',
-  enterprise = 'enterprise'
-}
-
-/**
- * A connection to a list of items.
- */
-export interface IOrganizationUserConnection {
-  __typename: 'OrganizationUserConnection';
+export interface ITaskEditorDetails {
+  __typename: 'TaskEditorDetails';
 
   /**
-   * Information to aid in pagination.
-   */
-  pageInfo: IPageInfo;
-
-  /**
-   * A list of edges.
-   */
-  edges: Array<IOrganizationUserEdge>;
-}
-
-/**
- * An edge in a connection.
- */
-export interface IOrganizationUserEdge {
-  __typename: 'OrganizationUserEdge';
-
-  /**
-   * The item at the end of the edge
-   */
-  node: IOrganizationUser;
-
-  /**
-   * A cursor for use in pagination
-   */
-  cursor: string;
-}
-
-/**
- * organization-specific details about a user
- */
-export interface IOrganizationUser {
-  __typename: 'OrganizationUser';
-
-  /**
-   * orgId::userId
-   */
-  id: string;
-
-  /**
-   * true if the user is paused and the orgs are not being billed, else false
-   */
-  inactive: boolean;
-
-  /**
-   * the datetime the user first joined the org
-   */
-  joinedAt: any;
-
-  /**
-   * The last moment a billing leader can remove the user from the org & receive a refund. Set to the subscription periodEnd
-   */
-  newUserUntil: any;
-
-  /**
-   * FK
-   */
-  orgId: string;
-
-  /**
-   * The user attached to the organization
-   */
-  organization: IOrganization;
-
-  /**
-   * if not a member, the datetime the user was removed from the org
-   */
-  removedAt: any | null;
-
-  /**
-   * role of the user in the org
-   */
-  role: OrgUserRole | null;
-
-  /**
-   * FK
+   * The userId of the person editing the task
    */
   userId: string;
 
   /**
-   * The user attached to the organization
+   * The name of the userId editing the task
    */
-  user: IUser;
+  preferredName: string;
+}
 
-  /**
-   * Their level of access to features on the parabol site
-   */
-  tier: TierEnum | null;
+export type TaskIntegration = ITaskIntegrationGitHub | ITaskIntegrationJira;
+
+export interface ITaskIntegration {
+  __typename: 'TaskIntegration';
+  id: string;
+  service: TaskServiceEnum;
 }
 
 /**
- * The role of the org user
+ * The status of the task
  */
-export const enum OrgUserRole {
-  BILLING_LEADER = 'BILLING_LEADER'
+export const enum TaskStatusEnum {
+  active = 'active',
+  stuck = 'stuck',
+  done = 'done',
+  future = 'future'
 }
 
-export interface IOrgUserCount {
-  __typename: 'OrgUserCount';
+/**
+ * OAuth token for a team member
+ */
+export interface IAtlassianAuth {
+  __typename: 'AtlassianAuth';
 
   /**
-   * The number of orgUsers who have an inactive flag
+   * shortid
    */
-  inactiveUserCount: number;
+  id: string;
 
   /**
-   * The number of orgUsers who do not have an inactive flag
+   * true if the auth is valid, else false
    */
-  activeUserCount: number;
+  isActive: boolean;
+
+  /**
+   * The access token to atlassian, useful for 1 hour. null if no access token available
+   */
+  accessToken: string | null;
+
+  /**
+   * *The atlassian account ID
+   */
+  accountId: string;
+
+  /**
+   * The atlassian cloud IDs that the user has granted
+   */
+  cloudIds: Array<string>;
+
+  /**
+   * The timestamp the provider was created
+   */
+  createdAt: any;
+
+  /**
+   * The refresh token to atlassian to receive a new 1-hour accessToken, always null since server secret is required
+   */
+  refreshToken: string | null;
+
+  /**
+   * *The team that the token is linked to
+   */
+  teamId: string;
+
+  /**
+   * The timestamp the token was updated at
+   */
+  updatedAt: any;
+
+  /**
+   * The user that the access token is attached to
+   */
+  userId: string;
 }
 
 /**
