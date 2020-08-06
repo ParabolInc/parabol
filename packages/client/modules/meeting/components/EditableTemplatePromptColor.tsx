@@ -50,7 +50,7 @@ const EditableTemplatePromptColor = (props: Props) => {
   const {groupColor} = prompt
   const {menuProps, menuPortal, originRef, togglePortal} = useMenu<HTMLButtonElement>(
     MenuPosition.UPPER_LEFT,
-    {parentId: 'portal'}
+    {parentId: 'templateModal'}
   )
   return (
     <PromptColor ref={originRef} isOwner={isOwner} onClick={togglePortal}>

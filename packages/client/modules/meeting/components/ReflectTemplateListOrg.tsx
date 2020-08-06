@@ -23,12 +23,11 @@ const Message = styled('div')({
   padding: 8
 })
 interface Props {
-  gotoTeamTemplates: () => void
   viewer: ReflectTemplateListOrg_viewer
 }
 
 const ReflectTemplateListOrg = (props: Props) => {
-  const {gotoTeamTemplates, viewer} = props
+  const {viewer} = props
   const team = viewer.team!
   const {id: teamId, meetingSettings} = team
   const selectedTemplateId = meetingSettings.selectedTemplateId!
@@ -49,7 +48,6 @@ const ReflectTemplateListOrg = (props: Props) => {
         edges.map(({node: template}) => {
           return <ReflectTemplateItem
             key={template.id}
-            gotoTeamTemplates={gotoTeamTemplates}
             template={template}
             isActive={template.id === selectedTemplateId}
             lowestScope={'ORGANIZATION'}

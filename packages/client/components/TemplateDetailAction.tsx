@@ -21,13 +21,14 @@ const ActionButton = styled(Icon)({
 })
 
 interface Props {
+  disabled?: boolean
   onClick: () => void
   tooltip: string
   icon: string
 }
 
 const TemplateDetailAction = (props: Props) => {
-  const {tooltip, icon, onClick} = props
+  const {disabled, tooltip, icon, onClick} = props
   const {tooltipPortal, openTooltip, closeTooltip, originRef} = useTooltip<HTMLButtonElement>(
     MenuPosition.UPPER_CENTER
   )
@@ -35,7 +36,7 @@ const TemplateDetailAction = (props: Props) => {
     <>
       <Button
         ref={originRef}
-        onClick={onClick}
+        onClick={disabled ? openTooltip : onClick}
         size='small'
         onMouseEnter={openTooltip}
         onMouseLeave={closeTooltip}

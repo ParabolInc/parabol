@@ -7,6 +7,7 @@ import Icon from '../../../components/Icon'
 import Tab from '../../../components/Tab/Tab'
 import Tabs from '../../../components/Tabs/Tabs'
 import {PALETTE} from '../../../styles/paletteV2'
+import {Threshold} from '../../../types/constEnums'
 import {ReflectTemplateList_settings} from '../../../__generated__/ReflectTemplateList_settings.graphql'
 import AddNewReflectTemplate from './AddNewReflectTemplate'
 import ReflectTemplateListOrgRoot from './ReflectTemplateListOrgRoot'
@@ -77,7 +78,7 @@ const ReflectTemplateList = (props: Props) => {
   }
   const onChangeIdx = (idx, _fromIdx, props: {reason: string}) => {
     //very buggy behavior, probably linked to the vertical scrolling.
-    // to repro, go from team > org > team > org by clicking tabs & see this file
+    // to repro, go from team > org > team > org by clicking tabs & see this this get called for who knows why
     if (props.reason === 'focus') return
     setActiveIdx(idx)
   }
@@ -100,17 +101,17 @@ const ReflectTemplateList = (props: Props) => {
           <ReflectTemplateListTeam selectedTemplateId={selectedTemplateId} showPublicTemplates={gotoPublicTemplates} teamTemplates={teamTemplates} teamId={teamId} isActive={activeIdx === 0} />
         </TabContents>
         <TabContents>
-          <ReflectTemplateListOrgRoot teamId={teamId} isActive={activeIdx === 1} gotoTeamTemplates={gotoTeamTemplates} />
+          <ReflectTemplateListOrgRoot teamId={teamId} isActive={activeIdx === 1} />
         </TabContents>
         <TabContents>
-          <ReflectTemplateListPublicRoot teamId={teamId} isActive={activeIdx === 2} gotoTeamTemplates={gotoTeamTemplates} />
+          <ReflectTemplateListPublicRoot teamId={teamId} isActive={activeIdx === 2} />
         </TabContents>
       </SwipeableViews>
       {/* add a key to clear the error when they change */}
-      <AddNewReflectTemplate
+      {teamTemplates.length < Threshold.MAX_RETRO_TEAM_TEMPLATES && <AddNewReflectTemplate
         teamId={teamId}
         reflectTemplates={teamTemplates}
-      />
+      />}
     </TemplateSidebar >
   )
 }

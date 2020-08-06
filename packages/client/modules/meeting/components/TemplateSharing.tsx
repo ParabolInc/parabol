@@ -6,6 +6,7 @@ import Icon from '../../../components/Icon'
 import MenuToggleV2Text from '../../../components/MenuToggleV2Text'
 import {MenuPosition} from '../../../hooks/useCoords'
 import useMenu from '../../../hooks/useMenu'
+import useTooltip from '../../../hooks/useTooltip'
 import {PALETTE} from '../../../styles/paletteV2'
 import {ICON_SIZE} from '../../../styles/typographyV2'
 import {NewMeeting} from '../../../types/constEnums'
@@ -36,11 +37,11 @@ const DropdownIcon = styled(Icon)({
   fontSize: ICON_SIZE.MD24
 })
 
-const DropdownBlock = styled('div')({
-  background: '#fff',
+const DropdownBlock = styled('div')<{disabled: boolean}>(({disabled}) => ({
+  background: disabled ? PALETTE.BACKGROUND_MAIN : '#fff',
   border: `1px solid ${PALETTE.BORDER_DROPDOWN}`,
   borderRadius: '50px',
-  cursor: 'pointer',
+  cursor: disabled ? 'not-allowed' : 'pointer',
   display: 'flex',
   fontSize: 16,
   lineHeight: '24px',
@@ -49,7 +50,7 @@ const DropdownBlock = styled('div')({
   marginBottom: 8,
   marginTop: 8,
   width: NewMeeting.CONTROLS_WIDTH,
-})
+}))
 
 interface Props {
   teamId: string
@@ -68,7 +69,7 @@ interface Props {
 const TemplateSharing = (props: Props) => {
   const {template, teamId} = props
   const {scope, team} = template
-  const {name: teamName, organization} = team
+  const {name: teamName, organization, isLead} = team
   const {name: orgName} = organization
   const isOwner = teamId === template.teamId
   const {togglePortal, menuPortal, originRef, menuProps} = useMenu<HTMLDivElement>(
@@ -79,6 +80,12 @@ const TemplateSharing = (props: Props) => {
       parentId: 'templateModal'
     }
   )
+  const {openTooltip, tooltipPortal, closeTooltip, originRef: tooltipRef} = useTooltip<HTMLDivElement>(
+    MenuPosition.LOWER_CENTER,
+    {
+      disabled: isLead,
+    }
+  )
   if (!isOwner) return null
   const label = scope === 'TEAM' ? `Only visible to ${teamName}` : scope === 'ORGANIZATION' ? `Sharing with ${orgName}` : 'Sharing publicly'
   return (
@@ -86,8 +93,11 @@ const TemplateSharing = (props: Props) => {
       <HR />
       <DropdownBlock
         onMouseEnter={SelectSharingScopeDropdown.preload}
-        onClick={togglePortal}
-        ref={originRef}
+        onClick={isLead ? togglePortal : undefined}
+        ref={isLead ? originRef : tooltipRef}
+        disabled={!isLead}
+        onMouseOver={openTooltip}
+        onMouseLeave={closeTooltip}
       >
         <MenuToggleV2Text icon={'share'} label={label} />
         <DropdownIcon>expand_more</DropdownIcon>
@@ -95,6 +105,7 @@ const TemplateSharing = (props: Props) => {
       {menuPortal(
         <SelectSharingScopeDropdown menuProps={menuProps} template={template} />
       )}
+      {tooltipPortal(<div>Must be Team Lead to change</div>)}
     </>
   )
 }
@@ -106,6 +117,7 @@ export default createFragmentContainer(TemplateSharing, {
       scope
       teamId
       team {
+        isLead
         name
         organization {
           name

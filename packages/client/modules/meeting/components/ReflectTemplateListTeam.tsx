@@ -58,7 +58,6 @@ const ReflectTemplateListTeam = (props: Props) => {
       {
         teamTemplates.map((template) => {
           return <ReflectTemplateItem
-            gotoTeamTemplates={() => {}}
             key={template.id}
             template={template}
             isActive={template.id === selectedTemplateId}

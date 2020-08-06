@@ -1,10 +1,11 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {SharingScopeEnum as ESharingScope} from 'parabol-client/types/graphql'
+import toTeamMemberId from '../../../client/utils/relay/toTeamMemberId'
 import getRethink from '../../database/rethinkDriver'
 import ReflectTemplate from '../../database/types/ReflectTemplate'
 import RetrospectivePrompt from '../../database/types/RetrospectivePrompt'
-import {isTeamMember} from '../../utils/authorization'
+import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import {GQLContext} from '../graphql'
 import SharingScopeEnum from '../types/SharingScopeEnum'
@@ -31,7 +32,7 @@ const updateTemplateScope = {
     const r = await getRethink()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
-
+    const viewerId = getUserId(authToken)
     //AUTH
     const template = await dataLoader.get('reflectTemplates').load(templateId)
     if (!template || !template.isActive) {
@@ -41,6 +42,11 @@ const updateTemplateScope = {
     template.scope = newScope
     if (!isTeamMember(authToken, teamId)) {
       return {error: {message: `Not a member of the team`}}
+    }
+    const teamMemberId = toTeamMemberId(teamId, viewerId)
+    const teamMember = await dataLoader.get('teamMembers').load(teamMemberId)
+    if (!teamMember.isLead) {
+      return {error: {message: `Not the team leader`}}
     }
 
     // VALIDATION

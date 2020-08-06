@@ -14,12 +14,11 @@ const TemplateList = styled('ul')({
 
 
 interface Props {
-  gotoTeamTemplates: () => void
   viewer: ReflectTemplateListPublic_viewer
 }
 
 const ReflectTemplateListPublic = (props: Props) => {
-  const {gotoTeamTemplates, viewer} = props
+  const {viewer} = props
   const team = viewer.team!
   const {id: teamId, meetingSettings} = team
   const publicTemplates = meetingSettings.publicTemplates!
@@ -32,7 +31,6 @@ const ReflectTemplateListPublic = (props: Props) => {
         edges.map(({node: template}) => {
           return <ReflectTemplateItem
             key={template.id}
-            gotoTeamTemplates={gotoTeamTemplates}
             template={template}
             isActive={template.id === selectedTemplateId}
             lowestScope={'PUBLIC'}

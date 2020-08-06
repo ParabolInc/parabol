@@ -15,13 +15,12 @@ const query = graphql`
 `
 
 interface Props {
-  gotoTeamTemplates: () => void
   isActive: boolean
   teamId: string
 }
 
 const ReflectTemplateListPublicRoot = (props: Props) => {
-  const {isActive, gotoTeamTemplates, teamId} = props
+  const {isActive, teamId} = props
   const atmosphere = useAtmosphere()
   if (!isActive) return null
   return (
@@ -30,7 +29,7 @@ const ReflectTemplateListPublicRoot = (props: Props) => {
       query={query}
       variables={{teamId}}
       fetchPolicy={'store-or-network' as any}
-      render={renderQuery(ReflectTemplateListPublic, {Loader: <MockTemplateList />, props: {gotoTeamTemplates}})}
+      render={renderQuery(ReflectTemplateListPublic, {Loader: <MockTemplateList />})}
     />
   )
 }

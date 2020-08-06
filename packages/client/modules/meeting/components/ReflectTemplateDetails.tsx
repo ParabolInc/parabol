@@ -4,7 +4,6 @@ import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import CreateTemplate from '../../../../../static/images/illustrations/CreateTemplate.svg'
 import {PALETTE} from '../../../styles/paletteV2'
-import {Threshold} from '../../../types/constEnums'
 import getTemplateList from '../../../utils/getTemplateList'
 import makeTemplateDescription from '../../../utils/makeTemplateDescription'
 import {ReflectTemplateDetails_settings} from '../../../__generated__/ReflectTemplateDetails_settings.graphql'
@@ -85,7 +84,7 @@ const ReflectTemplateDetails = (props: Props) => {
             isOwner={isOwner}
           />
           {isOwner && <RemoveTemplate templateId={templateId} teamId={teamId} teamTemplates={teamTemplates} gotoPublicTemplates={gotoPublicTemplates} />}
-          {!isOwner && templateCount < Threshold.MAX_RETRO_TEAM_TEMPLATES && <CloneTemplate gotoTeamTemplates={gotoTeamTemplates} teamId={teamId} templateId={templateId} />}
+          {!isOwner && <CloneTemplate gotoTeamTemplates={gotoTeamTemplates} teamId={teamId} templateId={templateId} templateCount={templateCount} />}
         </FirstLine>
         <Description>{description}</Description>
       </TemplateHeader>

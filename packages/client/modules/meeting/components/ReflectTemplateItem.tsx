@@ -2,16 +2,12 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useRef} from 'react'
 import {createFragmentContainer} from 'react-relay'
-import Icon from '../../../components/Icon'
 import useAtmosphere from '../../../hooks/useAtmosphere'
-import useMutationProps from '../../../hooks/useMutationProps'
 import useScrollIntoView from '../../../hooks/useScrollIntoVIew'
-import AddReflectTemplateMutation from '../../../mutations/AddReflectTemplateMutation'
 import SelectRetroTemplateMutation from '../../../mutations/SelectRetroTemplateMutation'
 import {DECELERATE} from '../../../styles/animation'
 import textOverflow from '../../../styles/helpers/textOverflow'
 import {PALETTE} from '../../../styles/paletteV2'
-import {ICON_SIZE} from '../../../styles/typographyV2'
 import makeTemplateDescription from '../../../utils/makeTemplateDescription'
 import {ReflectTemplateItem_template} from '../../../__generated__/ReflectTemplateItem_template.graphql'
 
@@ -56,16 +52,8 @@ const TemplateItemAction = styled('div')({
 
 })
 
-const EditOrCloneIcon = styled(Icon)({
-  color: PALETTE.TEXT_GRAY,
-  fontSize: ICON_SIZE.MD18,
-  padding: 8,
-  paddingRight: 16
-})
-
 
 interface Props {
-  gotoTeamTemplates: () => void
   isActive: boolean
   teamId: string
   template: ReflectTemplateItem_template
@@ -73,24 +61,15 @@ interface Props {
 }
 
 const ReflectTemplateItem = (props: Props) => {
-  const {gotoTeamTemplates, lowestScope, isActive, teamId, template} = props
+  const {lowestScope, isActive, teamId, template} = props
   const {id: templateId, name: templateName} = template
-  const isOwner = template.teamId === teamId
   const description = makeTemplateDescription(lowestScope, template)
   const atmosphere = useAtmosphere()
-  const {onCompleted, onError, submitMutation, submitting} = useMutationProps()
   const ref = useRef<HTMLLIElement>(null)
   useScrollIntoView(ref, isActive)
   const selectTemplate = () => {
     if (isActive) return
     SelectRetroTemplateMutation(atmosphere, {selectedTemplateId: templateId, teamId})
-  }
-  const cloneTemplate = (e: React.MouseEvent) => {
-    if (isOwner || submitting) return
-    e.stopPropagation()
-    submitMutation()
-    AddReflectTemplateMutation(atmosphere, {teamId, parentTemplateId: templateId}, {onError, onCompleted})
-    gotoTeamTemplates()
   }
   return (
     <TemplateItem
@@ -103,7 +82,6 @@ const ReflectTemplateItem = (props: Props) => {
         <TemplateDescription>{description}</TemplateDescription>
       </TemplateItemDetails>
       <TemplateItemAction>
-        <EditOrCloneIcon onClick={cloneTemplate}>{isOwner ? 'edit' : 'content_copy'}</EditOrCloneIcon>
       </TemplateItemAction>
     </TemplateItem>
   )
@@ -121,7 +99,6 @@ export default createFragmentContainer(
         name
         lastUsedAt
         scope
-        teamId
       }
     `
   }
