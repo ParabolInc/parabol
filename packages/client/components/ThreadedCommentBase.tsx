@@ -91,10 +91,6 @@ const ThreadedCommentBase = (props: Props) => {
       store.get(meetingId)?.setValue(ownerId, 'replyingToCommentId')
     })
   }
-  const ensureCommenting = () => {
-    collapseAddTask()
-    // EditCommentingMutation(isCommenting: true, preferredName, threadId, threadSource: 'REFLECTION_GROUP')
-  }
 
   const onSubmit = () => {
     if (submitting || isTempId(commentId)) return
@@ -147,7 +143,6 @@ const ThreadedCommentBase = (props: Props) => {
             editorState={editorState}
             setEditorState={setEditorState}
             onBlur={onSubmit}
-            onFocus={ensureCommenting}
             onSubmit={onSubmit}
             readOnly={!isEditing}
             placeholder={'Edit your comment'}

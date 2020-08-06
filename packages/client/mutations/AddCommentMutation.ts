@@ -39,7 +39,6 @@ export const addCommentMeetingUpdater: SharedUpdater<AddCommentMutation_meeting>
   {store}
 ) => {
   const comment = payload.getLinkedRecord('comment')
-  console.log('comment', comment)
   if (!comment) return
   const threadParentId = comment.getValue('threadParentId')
   if (threadParentId) {

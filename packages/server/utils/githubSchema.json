@@ -38564,7 +38564,7 @@
               "deprecationReason": null
             },
             {
-              "name": "isCommentor",
+              "name": "isCommenter",
               "description": "Is this suggestion based on past review comments?",
               "args": [],
               "type": {

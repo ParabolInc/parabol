@@ -57,7 +57,7 @@ const DiscussionThread = (props: Props) => {
         ref={listRef}
         editorRef={editorRef}
       />
-      <div>
+      <>
         <CommentingStatusText preferredNames={preferredNames} />
         <DiscussionThreadInput
           dataCy='discuss-input'
@@ -67,7 +67,7 @@ const DiscussionThread = (props: Props) => {
           meeting={meeting}
           threadSourceId={threadSourceId}
         />
-      </div>
+      </>
     </Wrapper>
   )
 }

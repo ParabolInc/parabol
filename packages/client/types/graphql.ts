@@ -765,9 +765,9 @@ export interface IAgendaItem {
   thread: IThreadableConnection;
 
   /**
-   * A list of users currently commenting (fed by a subscription, so queries return null)
+   * A list of users currently commenting
    */
-  commentors: Array<ICommentorDetails>;
+  commentors: Array<ICommentorDetails> | null;
 
   /**
    * The body of the agenda item
@@ -4992,9 +4992,9 @@ export interface IRetroReflectionGroup {
   commentCount: number;
 
   /**
-   * A list of users currently commenting (fed by a subscription, so queries return null)
+   * A list of users currently commenting
    */
-  commentors: Array<ICommentorDetails>;
+  commentors: Array<ICommentorDetails> | null;
 
   /**
    * The timestamp the meeting was created

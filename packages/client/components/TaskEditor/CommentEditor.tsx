@@ -65,6 +65,7 @@ const CommentEditor = (props: Props) => {
     setEditorState,
     onSubmit,
     onBlur,
+    onFocus,
     dataCy
   } = props
   const entityPasteStartRef = useRef<{anchorOffset: number; anchorKey: string} | undefined>()
@@ -126,7 +127,6 @@ const CommentEditor = (props: Props) => {
   }
 
   const onKeyBindingFn = (e) => {
-    ensureCommenting && ensureCommenting()
     if (keyBindingFn) {
       const result = keyBindingFn(e)
       if (result) {
@@ -196,6 +196,7 @@ const CommentEditor = (props: Props) => {
           handleReturn={onReturn}
           keyBindingFn={onKeyBindingFn}
           onBlur={onBlur}
+          onFocus={onFocus}
           onChange={onChange}
           placeholder={placeholder}
           readOnly={readOnly || (useFallback && !showFallback)}

@@ -25,9 +25,8 @@ const AgendaItem = new GraphQLObjectType<IAgendaItem, GQLContext>({
       description: 'The unique agenda item id teamId::shortid'
     },
     commentors: {
-      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(CommentorDetails))),
-      description:
-        'A list of users currently commenting (fed by a subscription, so queries return null)',
+      type: new GraphQLList(new GraphQLNonNull(CommentorDetails)),
+      description: 'A list of users currently commenting',
       resolve: ({commentors = []}) => {
         return commentors
       }

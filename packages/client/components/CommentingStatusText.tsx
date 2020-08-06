@@ -15,7 +15,7 @@ const CommentingStatus = styled('div')({
 })
 
 interface Props {
-  preferredNames: string[]
+  preferredNames: string[] | null
 }
 
 const getStatusText = (preferredNames: string[]) => {

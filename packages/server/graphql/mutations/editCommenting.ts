@@ -9,7 +9,7 @@ import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 
 export default {
   type: EditCommentingPayload,
-  description: `Track which users are commenting`,
+  description: 'Track which users are commenting',
   args: {
     isCommenting: {
       type: GraphQLNonNull(GraphQLBoolean),

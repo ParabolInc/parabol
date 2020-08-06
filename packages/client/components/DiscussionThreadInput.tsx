@@ -219,7 +219,6 @@ export default createFragmentContainer(DiscussionThreadInput, {
       viewerMeetingMember {
         user {
           picture
-          preferredName
         }
       }
     }

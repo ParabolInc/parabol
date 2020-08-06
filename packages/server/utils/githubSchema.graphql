@@ -17270,7 +17270,7 @@ type SuggestedReviewer {
   """
   Is this suggestion based on past review comments?
   """
-  isCommentor: Boolean!
+  isCommenter: Boolean!
 
   """
   Identifies the user suggested to review the pull request.
