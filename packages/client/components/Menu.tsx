@@ -52,7 +52,7 @@ const Menu = forwardRef((props: Props, ref: any) => {
     portalStatus,
     tabReturns
   } = props
-  const [activeIdx, setActiveIdx] = useState<number | undefined>(defaultActiveIdx || undefined)
+  const [activeIdx, setActiveIdx] = useState<number | null>(defaultActiveIdx || null)
   const menuRef = useRef<HTMLDivElement>(null)
   const itemHandles = useRef<{onClick: (e?: React.MouseEvent | React.KeyboardEvent) => void}[]>([])
 
@@ -81,7 +81,7 @@ const Menu = forwardRef((props: Props, ref: any) => {
   )
 
   const setSafeIdx = useCallback(
-    (idx: number | undefined) => {
+    (idx: number | null) => {
       const childArr = itemHandles.current
       const menuItemIdxs = [] as number[]
       childArr.forEach((item, index) => {
@@ -93,7 +93,7 @@ const Menu = forwardRef((props: Props, ref: any) => {
       const firstIndex = menuItemIdxs[0]
       const lastIndex = menuItemIdxs[menuItemIdxs.length - 1]
 
-      if (idx === undefined) setActiveIdx(firstIndex)
+      if (idx === null) setActiveIdx(firstIndex)
       else if (menuItemIdxs.includes(idx)) setActiveIdx(idx)
       else if (idx < firstIndex) setActiveIdx(lastIndex)
       else if (idx > lastIndex) setActiveIdx(firstIndex)
@@ -151,10 +151,10 @@ const Menu = forwardRef((props: Props, ref: any) => {
     (e: React.KeyboardEvent) => {
       if (e.key === 'ArrowDown') {
         e.preventDefault()
-        setSafeIdx(activeIdx === undefined ? undefined : activeIdx + 1)
+        setSafeIdx(activeIdx === null ? null : activeIdx + 1)
       } else if (e.key === 'ArrowUp') {
         e.preventDefault()
-        setSafeIdx(activeIdx === undefined ? undefined : activeIdx - 1)
+        setSafeIdx(activeIdx === null ? null : activeIdx - 1)
       } else if (e.key === 'Enter' || (tabReturns && e.key === 'Tab')) {
         e.preventDefault()
         if (activeIdx) {
