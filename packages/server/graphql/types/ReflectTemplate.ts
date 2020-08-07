@@ -9,7 +9,7 @@ import {
 import connectionDefinitions from '../connectionDefinitions'
 import {GQLContext} from '../graphql'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
-import RetroPhaseItem from './RetroPhaseItem'
+import ReflectPrompt from './ReflectPrompt'
 import SharingScopeEnum from './SharingScopeEnum'
 import Team from './Team'
 
@@ -36,13 +36,15 @@ const ReflectTemplate = new GraphQLObjectType<any, GQLContext>({
       description: 'The name of the template'
     },
     prompts: {
-      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(RetroPhaseItem))),
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(ReflectPrompt))),
       description: 'The prompts that are part of this template',
-      resolve: async ({id: promptTemplateId, teamId}, _args, {dataLoader}) => {
-        const phaseItems = await dataLoader.get('customPhaseItemsByTeamId').load(teamId)
-        const prompts = phaseItems.filter(({templateId}) => templateId === promptTemplateId)
-        prompts.sort((a, b) => (a.sortOrder < b.sortOrder ? -1 : 1))
-        return prompts
+      resolve: async ({id: promptTemplateId, templateId}, _args, {dataLoader}) => {
+        if (templateId === promptTemplateId) {
+          const prompts = await dataLoader.get('reflectPromptsByTemplateId').load(templateId)
+          prompts.sort((a, b) => (a.sortOrder < b.sortOrder ? -1 : 1))
+          return prompts
+        }
+        return []
       }
     },
     orgId: {

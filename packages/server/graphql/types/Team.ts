@@ -17,7 +17,7 @@ import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import connectionFromTasks from '../queries/helpers/connectionFromTasks'
 import AgendaItem from './AgendaItem'
-import CustomPhaseItem from './CustomPhaseItem'
+import ReflectPrompt from './ReflectPrompt'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import MassInvitation from './MassInvitation'
 import MeetingTypeEnum from './MeetingTypeEnum'
@@ -115,11 +115,11 @@ const Team = new GraphQLObjectType<ITeam, GQLContext>({
       description: 'The datetime the team was last updated'
     },
     customPhaseItems: {
-      type: new GraphQLList(CustomPhaseItem),
-      resolve: ({id: teamId}, _args, {authToken, dataLoader}) => {
-        if (!isTeamMember(authToken, teamId)) return []
+      type: new GraphQLList(ReflectPrompt),
+      deprecationReason: 'Field no longer needs to exist for now',
+      resolve: () => {
         // not useful for retros since there is no templateId filter
-        return dataLoader.get('customPhaseItemsByTeamId').load(teamId)
+        return []
       }
     },
     teamInvitations: {

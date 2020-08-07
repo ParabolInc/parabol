@@ -88,7 +88,7 @@ class EditableTemplatePrompt extends Component<Props> {
 
 export default createFragmentContainer(withAtmosphere(withMutationProps(EditableTemplatePrompt)), {
   prompts: graphql`
-    fragment EditableTemplatePrompt_prompts on RetroPhaseItem @relay(plural: true) {
+    fragment EditableTemplatePrompt_prompts on ReflectPrompt @relay(plural: true) {
       id
       question
     }

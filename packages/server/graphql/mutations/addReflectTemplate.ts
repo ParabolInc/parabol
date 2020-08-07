@@ -75,10 +75,7 @@ const addReflectTemplate = {
         orgId: viewerTeam.orgId,
         parentTemplateId
       })
-      const phaseItems = await dataLoader
-        .get('customPhaseItemsByTeamId')
-        .load(parentTemplate.teamId)
-      const prompts = phaseItems.filter(({templateId}) => templateId === parentTemplate.id)
+      const prompts = await dataLoader.get('reflectPromptsByTemplateId').load(parentTemplate.id)
       const newTemplatePrompts = prompts.map((prompt) => {
         return new RetrospectivePrompt({
           ...prompt,
@@ -89,7 +86,7 @@ const addReflectTemplate = {
       })
       await r({
         newTemplate: r.table('ReflectTemplate').insert(newTemplate),
-        newTemplatePrompts: r.table('CustomPhaseItem').insert(newTemplatePrompts),
+        newTemplatePrompts: r.table('ReflectPrompt').insert(newTemplatePrompts),
         settings: r
           .table('MeetingSettings')
           .getAll(teamId, {index: 'teamId'})
@@ -117,12 +114,16 @@ const addReflectTemplate = {
           }
         ]
       }
-      const {phaseItems: newTemplatePrompts, templates} = makeRetroTemplates(teamId, orgId, base)
+      const {reflectPrompts: newTemplatePrompts, templates} = makeRetroTemplates(
+        teamId,
+        orgId,
+        base
+      )
       const [newTemplate] = templates
       const {id: templateId} = newTemplate
       await r({
         newTemplate: r.table('ReflectTemplate').insert(newTemplate),
-        newTemplatePrompts: r.table('CustomPhaseItem').insert(newTemplatePrompts),
+        newTemplatePrompts: r.table('ReflectPrompt').insert(newTemplatePrompts),
         settings: r
           .table('MeetingSettings')
           .getAll(teamId, {index: 'teamId'})

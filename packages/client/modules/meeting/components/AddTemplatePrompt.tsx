@@ -78,7 +78,7 @@ class AddTemplatePrompt extends Component<Props> {
 
 export default createFragmentContainer(withMutationProps(withAtmosphere(AddTemplatePrompt)), {
   prompts: graphql`
-    fragment AddTemplatePrompt_prompts on RetroPhaseItem @relay(plural: true) {
+    fragment AddTemplatePrompt_prompts on ReflectPrompt @relay(plural: true) {
       sortOrder
     }
   `

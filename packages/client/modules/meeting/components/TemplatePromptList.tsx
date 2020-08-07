@@ -101,7 +101,7 @@ class TemplatePromptList extends Component<Props, State> {
 
 export default createFragmentContainer(withAtmosphere(withMutationProps(TemplatePromptList)), {
   prompts: graphql`
-    fragment TemplatePromptList_prompts on RetroPhaseItem @relay(plural: true) {
+    fragment TemplatePromptList_prompts on ReflectPrompt @relay(plural: true) {
       id
       sortOrder
       question

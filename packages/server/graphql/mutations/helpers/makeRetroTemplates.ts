@@ -14,7 +14,7 @@ interface TemplateObject {
 }
 
 const makeRetroTemplates = (teamId: string, orgId: string, templateObj: TemplateObject) => {
-  const phaseItems: RetrospectivePrompt[] = []
+  const reflectPrompts: RetrospectivePrompt[] = []
   const templates: ReflectTemplate[] = []
   const templateNames = Object.keys(templateObj)
   templateNames.forEach((templateName) => {
@@ -34,9 +34,9 @@ const makeRetroTemplates = (teamId: string, orgId: string, templateObj: Template
         })
     )
     templates.push(template)
-    phaseItems.push(...prompts)
+    reflectPrompts.push(...prompts)
   })
-  return {phaseItems, templates}
+  return {reflectPrompts, templates}
 }
 
 export default makeRetroTemplates

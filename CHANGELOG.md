@@ -5,6 +5,34 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 5.13.1 2020-Aug-06
+
+### Fixed
+
+- Update OrgBillingView when CC is updated/added #3983
+- Removed position sticky from timeline task header #4023
+
+### Changed
+
+- Various UI polishes #4026
+  - Remove color hack on agenda icon
+  - Yank punctuation on impertive tooltip copy
+  - Swap meeting and team name for hierarchy
+  - Fixes reaction button alignment in thread comments
+  - Change inner padding to prevent clipping of card box-shadow
+
+## 5.13.0 2020-Jul-23
+
+### Fixed
+
+- Don't show overlimit copy if user is a member of any paid org #3808
+- Added required properties to segment track call for GA destination #3974
+
+## 5.12.1 2020-Jul-17
+
+- Internal metrics query fix
+- Team creation timeline event was left as inactive when created
+
 ## 5.12.0 2020-Jul-15
 
 ### Added

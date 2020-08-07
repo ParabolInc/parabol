@@ -63,12 +63,12 @@ const EditableTemplatePromptColor = (props: Props) => {
 
 export default createFragmentContainer(EditableTemplatePromptColor, {
   prompts: graphql`
-    fragment EditableTemplatePromptColor_prompts on RetroPhaseItem @relay(plural: true) {
+    fragment EditableTemplatePromptColor_prompts on ReflectPrompt @relay(plural: true) {
       ...PalettePicker_prompts
     }
   `,
   prompt: graphql`
-    fragment EditableTemplatePromptColor_prompt on RetroPhaseItem {
+    fragment EditableTemplatePromptColor_prompt on ReflectPrompt {
       ...PalettePicker_prompt
       groupColor
     }

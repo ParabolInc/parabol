@@ -55,9 +55,9 @@ export type RethinkSchema = {
     type: Comment
     index: 'threadId'
   }
-  CustomPhaseItem: {
+  ReflectPrompt: {
     type: RetrospectivePrompt
-    index: 'teamId'
+    index: 'teamId' | 'templateId'
   }
   EmailVerification: {
     type: any

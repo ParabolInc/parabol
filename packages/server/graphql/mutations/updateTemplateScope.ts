@@ -75,8 +75,7 @@ const updateTemplateScope = {
         scope: newScope,
         parentTemplateId: templateId
       })
-      const phaseItems = await dataLoader.get('customPhaseItemsByTeamId').load(teamId)
-      const prompts = phaseItems.filter((phaseItem) => phaseItem.templateId === templateId)
+      const prompts = await dataLoader.get('reflectPromptsByTemplateId').load(templateId)
       const promptIds = prompts.map(({id}) => id)
       const clonedPrompts = prompts.map((prompt) => {
         return new RetrospectivePrompt({
@@ -86,13 +85,13 @@ const updateTemplateScope = {
       })
       await r({
         clonedTemplate: r.table('ReflectTemplate').insert(clonedTemplate),
-        clonedPrompts: r.table('CustomPhaseItem').insert(clonedPrompts),
+        clonedPrompts: r.table('ReflectPrompt').insert(clonedPrompts),
         inactivatedTemplate: r
           .table('ReflectTemplate')
           .get(templateId)
           .update({isActive: false}),
         inactivatedPrompts: r
-          .table('CustomPhaseItem')
+          .table('ReflectPrompt')
           .getAll(r.args(promptIds))
           .update({isActive: false})
       }).run()
