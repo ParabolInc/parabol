@@ -66,7 +66,6 @@ const Menu = forwardRef((props: Props, ref: any) => {
   useEffect(
     () => {
       if (defaultActiveIdx === undefined) {
-        const firstMenuItemIdx = itemHandles.current.findIndex(isMenuItem)
         if (!keepParentFocus) {
           menuRef.current && menuRef.current.focus()
         }
@@ -91,22 +90,15 @@ const Menu = forwardRef((props: Props, ref: any) => {
   const setSafeIdx = useCallback(
     (idx: number | undefined) => {
       const childArr = itemHandles.current
-      console.log('Menu -> childArr', childArr)
-
       const menuItemIdxs = [] as number[]
       childArr.forEach((item, index) => {
         if (isMenuItem(item)) {
           menuItemIdxs.push(index)
         }
       })
-      console.log('Menu -> menuItemIdxs', menuItemIdxs)
 
       const firstIndex = menuItemIdxs[0]
-      console.log('Menu -> firstIndex', firstIndex)
       const lastIndex = menuItemIdxs[menuItemIdxs.length - 1]
-      console.log('Menu -> lastIndex', lastIndex)
-      console.log('Menu -> idx', idx)
-      console.log('TEST', menuItemIdxs.includes(-1))
 
       if (idx === undefined) setActiveIdx(firstIndex)
       else if (menuItemIdxs.includes(idx)) setActiveIdx(idx)
@@ -129,45 +121,6 @@ const Menu = forwardRef((props: Props, ref: any) => {
           }
         }
       }
-
-      // let nextIdx
-      // if (activeIdx < idx) {
-      //   for (let ii = idx; ii < childArr.length; ii++) {
-      //     const nextChild = childArr[ii]
-      //     if (isMenuItem(nextChild)) {
-      //       nextIdx = ii
-      //       break
-      //     }
-      //   }
-      // } else if (activeIdx > idx) {
-      //   for (let ii = idx; ii >= 0; ii--) {
-      //     const nextChild = childArr[ii]
-      //     if (isMenuItem(nextChild)) {
-      //       nextIdx = ii
-      //       break
-      //     } else {
-      //       const {current} = menuRef
-      //       if (!current) return
-      //       const el = current.parentElement || current
-      //       // if we're at the top & there's a header, put the header into view
-      //       if (el.scrollTo) {
-      //         el.scrollTo(0, 0)
-      //       } else {
-      //         el.scrollTop = 0
-      //       }
-      //     }
-      //   }
-      // }
-      // if (
-      //   nextIdx === null ||
-      //   nextIdx === undefined ||
-      //   nextIdx === activeIdx ||
-      //   nextIdx < 0 ||
-      //   nextIdx >= childArr.length
-      // ) {
-      //   return
-      // }
-      // setActiveIdx(nextIdx)
     },
     [activeIdx]
   )
