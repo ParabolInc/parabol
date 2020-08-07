@@ -29,7 +29,6 @@ const PriorityTasksHeader = styled('div')({
   fontWeight: 600,
   paddingTop: 16,
   paddingBottom: 16,
-  position: 'sticky',
   top: 0,
   zIndex: 2
 })

@@ -25,7 +25,7 @@ const reflectTemplatePromptUpdateGroupColor = {
     const viewerId = getUserId(authToken)
 
     const prompt = await r
-      .table('CustomPhaseItem')
+      .table('ReflectPrompt')
       .get(promptId)
       .run()
 
@@ -39,7 +39,7 @@ const reflectTemplatePromptUpdateGroupColor = {
 
     // RESOLUTION
     await r
-      .table('CustomPhaseItem')
+      .table('ReflectPrompt')
       .get(promptId)
       .update({
         groupColor,

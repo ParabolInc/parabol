@@ -39,19 +39,19 @@ const GroupingKanban = (props: Props) => {
   const reflectPhase = phases.find((phase) => phase.phaseType === NewMeetingPhaseTypeEnum.reflect)!
   const reflectPrompts = reflectPhase.reflectPrompts!
   useHideBodyScroll()
-  const {groupsByPhaseItem, isAnyEditing} = useMemo(() => {
-    const container = {} as {[phaseItemId: string]: typeof reflectionGroups[0][]}
+  const {groupsByPrompt, isAnyEditing} = useMemo(() => {
+    const container = {} as {[promptId: string]: typeof reflectionGroups[0][]}
     let isEditing = false
     for (let i = 0; i < reflectionGroups.length; i++) {
       const group = reflectionGroups[i]
-      const {reflections, retroPhaseItemId} = group
-      container[retroPhaseItemId] = container[retroPhaseItemId] || []
-      container[retroPhaseItemId].push(group)
+      const {reflections, promptId} = group
+      container[promptId] = container[promptId] || []
+      container[promptId].push(group)
       if (!isEditing && reflections.some((reflection) => reflection.isEditing)) {
         isEditing = true
       }
     }
-    return {groupsByPhaseItem: container, isAnyEditing: isEditing}
+    return {groupsByPrompt: container, isAnyEditing: isEditing}
   }, [reflectionGroups])
   const isDesktop = useBreakpoint(Breakpoint.SINGLE_REFLECTION_COLUMN)
   const [activeIdx, setActiveIdx] = useState(0)
@@ -60,8 +60,8 @@ const GroupingKanban = (props: Props) => {
     return isDesktop
       ? false
       : !!reflectionGroups.find((group) =>
-          group.reflections.find((reflection) => reflection.isViewerDragging)
-        )
+        group.reflections.find((reflection) => reflection.isViewerDragging)
+      )
   }, [isDesktop, reflectionGroups])
   const swipeColumn: SwipeColumn = useThrottledEvent((offset: number) => {
     const nextIdx = Math.min(reflectPrompts.length - 1, Math.max(0, activeIdx + offset))
@@ -83,7 +83,7 @@ const GroupingKanban = (props: Props) => {
               meeting={meeting}
               phaseRef={phaseRef}
               prompt={prompt}
-              reflectionGroups={groupsByPhaseItem[prompt.id] || []}
+              reflectionGroups={groupsByPrompt[prompt.id] || []}
               swipeColumn={swipeColumn}
             />
           ))}
@@ -109,7 +109,7 @@ export default createFragmentContainer(GroupingKanban, {
       reflectionGroups {
         ...GroupingKanbanColumn_reflectionGroups
         id
-        retroPhaseItemId
+        promptId
         reflections {
           isViewerDragging
           isEditing

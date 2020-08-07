@@ -12,6 +12,7 @@ import ReflectionCard from './ReflectionCard/ReflectionCard'
 const GridWrapper = styled('div')<{isExpanded: boolean}>(({isExpanded}) => ({
   height: isExpanded ? '100%' : `calc(100% - ${MeetingControlBarEnum.HEIGHT + 16}px)`,
   overflow: 'auto',
+  padding: '8px 16px 0',
   marginBottom: 16
 }))
 

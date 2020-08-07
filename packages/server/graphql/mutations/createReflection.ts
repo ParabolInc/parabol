@@ -26,26 +26,24 @@ export default {
       type: new GraphQLNonNull(CreateReflectionInput)
     }
   },
-  async resolve(
-    _source,
-    {input: {content, retroPhaseItemId, sortOrder, meetingId}},
-    {authToken, dataLoader, socketId: mutatorId}
-  ) {
+  async resolve(_source, {input}, {authToken, dataLoader, socketId: mutatorId}) {
     const r = await getRethink()
     const operationId = dataLoader.share()
     const now = new Date()
     const subOptions = {operationId, mutatorId}
-
+    const {content, sortOrder, meetingId} = input
+    // can remove retroPhaseItemId after it's fully deprecated
+    const promptId = input.promptId || input.retroPhaseItemId
     // AUTH
     const viewerId = getUserId(authToken)
-    const phaseItem = await dataLoader.get('customPhaseItems').load(retroPhaseItemId)
-    if (!phaseItem) {
+    const reflectPrompt = await dataLoader.get('reflectPrompts').load(promptId)
+    if (!reflectPrompt) {
       return standardError(new Error('Category not found'), {userId: viewerId})
     }
-    if (!phaseItem.isActive) {
+    if (!reflectPrompt.isActive) {
       return standardError(new Error('Category not active'), {userId: viewerId})
     }
-    const {teamId} = phaseItem
+    const {teamId} = reflectPrompt
     if (!isTeamMember(authToken, teamId)) {
       return standardError(new Error('Team not found'), {userId: viewerId, tags: {teamId}})
     }
@@ -77,7 +75,7 @@ export default {
       plaintextContent,
       entities,
       meetingId,
-      retroPhaseItemId,
+      promptId,
       reflectionGroupId,
       updatedAt: now
     })
@@ -88,7 +86,7 @@ export default {
       smartTitle,
       title: smartTitle,
       meetingId,
-      retroPhaseItemId,
+      promptId,
       sortOrder
     })
 

@@ -57,7 +57,7 @@ const ReflectionCard = (props: Props) => {
   const {meetingId, reactjis} = reflection
   const phaseType = meeting ? meeting.localPhase.phaseType : null
   const phases = meeting ? meeting.phases : null
-  const {id: reflectionId, content, retroPhaseItemId, isViewerCreator} = reflection
+  const {id: reflectionId, content, promptId, isViewerCreator} = reflection
   const atmosphere = useAtmosphere()
   const {onCompleted, submitting, submitMutation, error, onError} = useMutationProps()
   const editorRef = useRef<HTMLTextAreaElement>(null)
@@ -65,7 +65,7 @@ const ReflectionCard = (props: Props) => {
 
   const handleEditorFocus = () => {
     if (isTempId(reflectionId)) return
-    EditReflectionMutation(atmosphere, {isEditing: true, meetingId, phaseItemId: retroPhaseItemId})
+    EditReflectionMutation(atmosphere, {isEditing: true, meetingId, promptId})
   }
 
   useEffect(() => {
@@ -127,7 +127,7 @@ const ReflectionCard = (props: Props) => {
   const handleEditorBlur = () => {
     if (isTempId(reflectionId)) return
     handleContentUpdate()
-    EditReflectionMutation(atmosphere, {isEditing: false, meetingId, phaseItemId: retroPhaseItemId})
+    EditReflectionMutation(atmosphere, {isEditing: false, meetingId, promptId})
   }
 
   const handleReturn = (e) => {
@@ -215,7 +215,7 @@ export default createFragmentContainer(ReflectionCard, {
       isEditing
       meetingId
       reflectionGroupId
-      retroPhaseItemId
+      promptId
       content
       reactjis {
         ...ReactjiSection_reactjis

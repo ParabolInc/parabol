@@ -23,7 +23,7 @@ const reflectTemplatePromptUpdateDescription = {
     const operationId = dataLoader.share()
     const subOptions = {operationId, mutatorId}
     const prompt = await r
-      .table('CustomPhaseItem')
+      .table('ReflectPrompt')
       .get(promptId)
       .run()
     const viewerId = getUserId(authToken)
@@ -39,7 +39,7 @@ const reflectTemplatePromptUpdateDescription = {
 
     // RESOLUTION
     await r
-      .table('CustomPhaseItem')
+      .table('ReflectPrompt')
       .get(promptId)
       .update({
         description: normalizedDescription,

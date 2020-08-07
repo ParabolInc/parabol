@@ -142,9 +142,9 @@ interface Props {
 
 const PhaseItemColumn = (props: Props) => {
   const {idx, meeting, phaseRef, prompt, isDesktop} = props
-  const {id: retroPhaseItemId, editorIds, question, groupColor, description} = prompt
+  const {id: promptId, editorIds, question, groupColor, description} = prompt
   const {id: meetingId, facilitatorUserId, localPhase, phases, reflectionGroups} = meeting
-  const {id: phaseId, focusedPhaseItemId} = localPhase
+  const {id: phaseId, focusedPromptId} = localPhase
   const groupPhase = phases.find((phase) => phase.phaseType === NewMeetingPhaseTypeEnum.group)!
   const {stages: groupStages} = groupPhase
   const [groupStage] = groupStages
@@ -160,20 +160,20 @@ const PhaseItemColumn = (props: Props) => {
   const isFacilitator = viewerId === facilitatorUserId
   useEffect(() => {
     hasFocusedRef.current = true
-  }, [focusedPhaseItemId])
+  }, [focusedPromptId])
 
   const setColumnFocus = () => {
     if (!isFacilitator || isComplete) return
     const variables = {
       meetingId,
-      focusedPhaseItemId: focusedPhaseItemId === retroPhaseItemId ? null : retroPhaseItemId
+      focusedPromptId: focusedPromptId === promptId ? null : promptId
     }
     SetPhaseFocusMutation(atmosphere, variables, {phaseId})
   }
 
   const nextSortOrder = () => getNextSortOrder(reflectionGroups)
 
-  const isFocused = focusedPhaseItemId === retroPhaseItemId
+  const isFocused = focusedPromptId === promptId
 
   const columnStack = useMemo(() => {
     return reflectionGroups
@@ -182,11 +182,11 @@ const PhaseItemColumn = (props: Props) => {
       .flatMap(({reflections}) => reflections || [])
       .filter((reflection) => {
         return (
-          reflection.retroPhaseItemId === retroPhaseItemId &&
+          reflection.promptId === promptId &&
           !cardsInFlightRef.current.find((card) => card.key === reflection.content)
         )
       })
-  }, [reflectionGroups, retroPhaseItemId, cardsInFlightRef.current])
+  }, [reflectionGroups, promptId, cardsInFlightRef.current])
 
   const reflectionStack = useMemo(() => {
     return columnStack.filter(({isViewerCreator}) => isViewerCreator)
@@ -226,7 +226,7 @@ const PhaseItemColumn = (props: Props) => {
                   phaseEditorRef={phaseEditorRef}
                   meetingId={meetingId}
                   nextSortOrder={nextSortOrder}
-                  retroPhaseItemId={retroPhaseItemId}
+                  promptId={promptId}
                   stackTopRef={stackTopRef}
                 />
               </EditorAndStatus>
@@ -257,7 +257,7 @@ const PhaseItemColumn = (props: Props) => {
 
 export default createFragmentContainer(PhaseItemColumn, {
   prompt: graphql`
-    fragment PhaseItemColumn_prompt on RetroPhaseItem {
+    fragment PhaseItemColumn_prompt on ReflectPrompt {
       id
       description
       editorIds
@@ -274,7 +274,7 @@ export default createFragmentContainer(PhaseItemColumn, {
         id
         phaseType
         ... on ReflectPhase {
-          focusedPhaseItemId
+          focusedPromptId
         }
       }
       localStage {
@@ -287,7 +287,7 @@ export default createFragmentContainer(PhaseItemColumn, {
           isComplete
         }
         ... on ReflectPhase {
-          focusedPhaseItemId
+          focusedPromptId
         }
       }
       reflectionGroups {
@@ -302,7 +302,7 @@ export default createFragmentContainer(PhaseItemColumn, {
           id
           isEditing
           isViewerCreator
-          retroPhaseItemId
+          promptId
           sortOrder
         }
       }
