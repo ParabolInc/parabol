@@ -13,6 +13,7 @@ import React, {
 import styled from '@emotion/styled'
 import MenuItemAnimation from './MenuItemAnimation'
 import {PortalStatus} from '../hooks/usePortal'
+import MenuToggleV2Text from './MenuToggleV2Text'
 
 const isMenuItem = (node: any) => node && node.onClick
 const REACT_ELEMENT = Symbol.for('react.element')
@@ -54,6 +55,7 @@ const Menu = forwardRef((props: Props, ref: any) => {
   } = props
   // const [activeIdx, setActiveIdx] = useState<number>(defaultActiveIdx || 0)
   const [activeIdx, setActiveIdx] = useState<number | undefined>(undefined)
+  console.log('Menu -> activeIdx', activeIdx)
   const menuRef = useRef<HTMLDivElement>(null)
   const itemHandles = useRef<{onClick: (e?: React.MouseEvent | React.KeyboardEvent) => void}[]>([])
 
@@ -65,7 +67,6 @@ const Menu = forwardRef((props: Props, ref: any) => {
     () => {
       if (defaultActiveIdx === undefined) {
         const firstMenuItemIdx = itemHandles.current.findIndex(isMenuItem)
-        setActiveIdx(Math.max(0, firstMenuItemIdx))
         if (!keepParentFocus) {
           menuRef.current && menuRef.current.focus()
         }
@@ -90,6 +91,7 @@ const Menu = forwardRef((props: Props, ref: any) => {
   const setSafeIdx = useCallback(
     (idx: number | undefined) => {
       const childArr = itemHandles.current
+      console.log('Menu -> childArr', childArr)
 
       const menuItemIdxs = [] as number[]
       childArr.forEach((item, index) => {
@@ -99,44 +101,73 @@ const Menu = forwardRef((props: Props, ref: any) => {
       })
       console.log('Menu -> menuItemIdxs', menuItemIdxs)
 
-      let nextIdx
-      if (activeIdx < idx) {
-        for (let ii = idx; ii < childArr.length; ii++) {
-          const nextChild = childArr[ii]
-          if (isMenuItem(nextChild)) {
-            nextIdx = ii
+      const firstIndex = menuItemIdxs[0]
+      console.log('Menu -> firstIndex', firstIndex)
+      const lastIndex = menuItemIdxs[menuItemIdxs.length - 1]
+      console.log('Menu -> lastIndex', lastIndex)
+      console.log('Menu -> idx', idx)
+      console.log('TEST', menuItemIdxs.includes(-1))
+
+      if (idx === undefined) setActiveIdx(firstIndex)
+      else if (menuItemIdxs.includes(idx)) setActiveIdx(idx)
+      else if (idx < firstIndex) setActiveIdx(lastIndex)
+      else if (idx > lastIndex) setActiveIdx(firstIndex)
+      else if (activeIdx && idx > activeIdx) {
+        for (let ii = idx; ii <= lastIndex; ii++) {
+          console.log('Menu -> ii', ii)
+          if (menuItemIdxs.includes(ii)) {
+            setActiveIdx(ii)
             break
           }
         }
-      } else if (activeIdx > idx) {
-        for (let ii = idx; ii >= 0; ii--) {
-          const nextChild = childArr[ii]
-          if (isMenuItem(nextChild)) {
-            nextIdx = ii
+      } else {
+        for (let ii = idx; ii >= firstIndex; ii--) {
+          console.log('Menu going up sir-> ii', ii)
+          if (menuItemIdxs.includes(ii)) {
+            setActiveIdx(ii)
             break
-          } else {
-            const {current} = menuRef
-            if (!current) return
-            const el = current.parentElement || current
-            // if we're at the top & there's a header, put the header into view
-            if (el.scrollTo) {
-              el.scrollTo(0, 0)
-            } else {
-              el.scrollTop = 0
-            }
           }
         }
       }
-      if (
-        nextIdx === null ||
-        nextIdx === undefined ||
-        nextIdx === activeIdx ||
-        nextIdx < 0 ||
-        nextIdx >= childArr.length
-      ) {
-        return
-      }
-      setActiveIdx(nextIdx)
+
+      // let nextIdx
+      // if (activeIdx < idx) {
+      //   for (let ii = idx; ii < childArr.length; ii++) {
+      //     const nextChild = childArr[ii]
+      //     if (isMenuItem(nextChild)) {
+      //       nextIdx = ii
+      //       break
+      //     }
+      //   }
+      // } else if (activeIdx > idx) {
+      //   for (let ii = idx; ii >= 0; ii--) {
+      //     const nextChild = childArr[ii]
+      //     if (isMenuItem(nextChild)) {
+      //       nextIdx = ii
+      //       break
+      //     } else {
+      //       const {current} = menuRef
+      //       if (!current) return
+      //       const el = current.parentElement || current
+      //       // if we're at the top & there's a header, put the header into view
+      //       if (el.scrollTo) {
+      //         el.scrollTo(0, 0)
+      //       } else {
+      //         el.scrollTop = 0
+      //       }
+      //     }
+      //   }
+      // }
+      // if (
+      //   nextIdx === null ||
+      //   nextIdx === undefined ||
+      //   nextIdx === activeIdx ||
+      //   nextIdx < 0 ||
+      //   nextIdx >= childArr.length
+      // ) {
+      //   return
+      // }
+      // setActiveIdx(nextIdx)
     },
     [activeIdx]
   )
