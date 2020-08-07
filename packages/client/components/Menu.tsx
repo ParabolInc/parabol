@@ -13,7 +13,6 @@ import React, {
 import styled from '@emotion/styled'
 import MenuItemAnimation from './MenuItemAnimation'
 import {PortalStatus} from '../hooks/usePortal'
-import MenuToggleV2Text from './MenuToggleV2Text'
 
 const isMenuItem = (node: any) => node && node.onClick
 const REACT_ELEMENT = Symbol.for('react.element')
@@ -55,6 +54,8 @@ const Menu = forwardRef((props: Props, ref: any) => {
   } = props
   // const [activeIdx, setActiveIdx] = useState<number>(defaultActiveIdx || 0)
   const [activeIdx, setActiveIdx] = useState<number | undefined>(defaultActiveIdx || undefined)
+  console.log('MENU -------- -> defaultActiveIdx', defaultActiveIdx)
+  console.log('IN MENU -> activeIdx', activeIdx)
   const menuRef = useRef<HTMLDivElement>(null)
   const itemHandles = useRef<{onClick: (e?: React.MouseEvent | React.KeyboardEvent) => void}[]>([])
 
@@ -64,11 +65,15 @@ const Menu = forwardRef((props: Props, ref: any) => {
 
   useEffect(
     () => {
-      if (defaultActiveIdx === undefined) {
-        if (!keepParentFocus) {
-          menuRef.current && menuRef.current.focus()
-        }
-      }
+      menuRef.current && menuRef.current.focus()
+      // if (defaultActiveIdx === undefined) {
+      //   if (!keepParentFocus) {
+      //     menuRef.current && menuRef.current.focus()
+      //   }
+      // } else {
+      //   // menuRef.current && menuRef.current.focus()
+      //   setActiveIdx(defaultActiveIdx)
+      // }
     },
     resetActiveOnChanges ||
       [
@@ -78,6 +83,7 @@ const Menu = forwardRef((props: Props, ref: any) => {
 
   const handleMouseDown = useCallback(
     (e: React.MouseEvent) => {
+      console.log('mouse down!')
       if (keepParentFocus) {
         // used for e.g. the emoji menu
         e.preventDefault()
@@ -89,8 +95,8 @@ const Menu = forwardRef((props: Props, ref: any) => {
   const setSafeIdx = useCallback(
     (idx: number | undefined) => {
       console.log('Menu -> idx', idx, activeIdx)
-      console.log('Menu -> childArr', childArr)
       const childArr = itemHandles.current
+      console.log('Menu -> childArr', childArr)
       const menuItemIdxs = [] as number[]
       childArr.forEach((item, index) => {
         if (isMenuItem(item)) {
@@ -158,6 +164,7 @@ const Menu = forwardRef((props: Props, ref: any) => {
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
+      console.log('Keydown!')
       if (e.key === 'ArrowDown') {
         e.preventDefault()
         setSafeIdx(activeIdx === undefined ? undefined : activeIdx + 1)
