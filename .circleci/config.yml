@@ -59,15 +59,15 @@ jobs:
               yarn build --deploy
             fi
       - run:
-        name: Migrate
-        command: |
-          if [ "${CIRCLE_BRANCH}" == "production" ] || [ "${CIRCLE_BRANCH}" == "staging" ] || [ "${CIRCLE_BRANCH}" == "development" ]; then
-            yarn db:migrate
+          name: Migrate
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "production" ] || [ "${CIRCLE_BRANCH}" == "staging" ] || [ "${CIRCLE_BRANCH}" == "development" ]; then
+              yarn db:migrate
       - run:
-        name: Postdeploy
-        command: |
-          if [ "${CIRCLE_BRANCH}" == "production" ] || [ "${CIRCLE_BRANCH}" == "staging" ] || [ "${CIRCLE_BRANCH}" == "development" ]; then
-            yarn postdeploy
+          name: Postdeploy
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "production" ] || [ "${CIRCLE_BRANCH}" == "staging" ] || [ "${CIRCLE_BRANCH}" == "development" ]; then
+              yarn postdeploy
       - run:
           name: Cypress Tests
           command: |
