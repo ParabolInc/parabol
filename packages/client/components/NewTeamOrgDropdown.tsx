@@ -19,13 +19,11 @@ interface Props {
 
 const NewTeamOrgDropdown = (props: Props) => {
   const {defaultActiveIdx, onChange, organizations, menuProps} = props
-  console.log('NewTeamOrgDropdown -> menuProps', menuProps)
-  console.log('NewTeamOrgDropdown -> defaultActiveIdx', defaultActiveIdx)
   return (
     <Menu
       ariaLabel={'Select the organization the new team belongs to'}
-      defaultActiveIdx={defaultActiveIdx + 1}
       {...menuProps}
+      defaultActiveIdx={defaultActiveIdx + 1}
     >
       <DropdownMenuLabel>Select Organization:</DropdownMenuLabel>
       {organizations.map((anOrg) => {
