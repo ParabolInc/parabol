@@ -154,7 +154,7 @@ export const userTasks = (parent: RethinkDataLoader) => {
               .table('Task')
               .getAll(r.args(teamIds), {index: 'teamId'})
               .filter({userId})
-              .filter((task) => task('createdAt').lt(dbAfter))
+              .filter((task) => task('updatedAt').lt(dbAfter))
               .filter((task) =>
                 archived
                   ? task('tags').contains('archived')
