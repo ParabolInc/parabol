@@ -127,6 +127,9 @@ const CommentEditor = (props: Props) => {
   }
 
   const onKeyBindingFn = (e) => {
+    if (ensureCommenting) {
+      ensureCommenting()
+    }
     if (keyBindingFn) {
       const result = keyBindingFn(e)
       if (result) {
@@ -165,14 +168,16 @@ const CommentEditor = (props: Props) => {
   }
 
   const onKeyDownFallback = (e: React.KeyboardEvent<Element>) => {
-    ensureCommenting && ensureCommenting()
+    if (ensureCommenting) {
+      ensureCommenting()
+    }
     if (e.key !== 'Enter' || e.shiftKey) return
     e.preventDefault()
     onSubmit()
   }
 
-  const useFallback = isAndroid && !readOnly
-  const showFallback = useFallback && !isRichDraft(editorState)
+  const useFallback = false //isAndroid && !readOnly
+  const showFallback = false // useFallback && !isRichDraft(editorState)
   return (
     <RootEditor data-cy={`${dataCy}-editor`}>
       {showFallback ? (
