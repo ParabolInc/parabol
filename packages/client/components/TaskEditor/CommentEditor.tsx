@@ -176,8 +176,8 @@ const CommentEditor = (props: Props) => {
     onSubmit()
   }
 
-  const useFallback = false //isAndroid && !readOnly
-  const showFallback = false // useFallback && !isRichDraft(editorState)
+  const useFallback = isAndroid && !readOnly
+  const showFallback = useFallback && !isRichDraft(editorState)
   return (
     <RootEditor data-cy={`${dataCy}-editor`}>
       {showFallback ? (
