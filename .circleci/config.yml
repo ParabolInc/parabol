@@ -54,9 +54,21 @@ jobs:
       - run:
           name: Build Assets
           command: |
-            if [ "${CIRCLE_BRANCH}" == "production" ] || [ "${CIRCLE_BRANCH}" == "staging" ]; then
+            if [ "${CIRCLE_BRANCH}" == "production" ] || [ "${CIRCLE_BRANCH}" == "staging" ] || [ "${CIRCLE_BRANCH}" == "development" ]; then
               cp $DEVOPS_WORKDIR/environments/$CIRCLE_BRANCH .env
               yarn build --deploy
+            fi
+      - run:
+          name: Migrate
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "production" ] || [ "${CIRCLE_BRANCH}" == "staging" ] || [ "${CIRCLE_BRANCH}" == "development" ]; then
+              yarn db:migrate
+            fi
+      - run:
+          name: Postdeploy
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "production" ] || [ "${CIRCLE_BRANCH}" == "staging" ] || [ "${CIRCLE_BRANCH}" == "development" ]; then
+              yarn postdeploy
             fi
       - run:
           name: Cypress Tests
@@ -70,8 +82,6 @@ jobs:
               sudo pip install rethinkdb==2.3.0
               rethinkdb-restore --force packages/cypress/fixtures/rdb_test.tar.gz
               node scripts/toolbox/softenDurability.js
-              yarn db:migrate
-              yarn postdeploy
               yarn test
             fi
       - deploy:
