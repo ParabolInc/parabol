@@ -60,7 +60,6 @@ const subscription = graphql`
       ...AddAgendaItemMutation_team @relay(mask: false)
       ...RemoveAgendaItemMutation_team @relay(mask: false)
       ...UpdateAgendaItemMutation_team @relay(mask: false)
-      ...UpdateTemplateScopeMutation_team @relay(mask: false)
     }
   }
 `

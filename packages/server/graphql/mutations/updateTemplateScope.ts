@@ -39,7 +39,6 @@ const updateTemplateScope = {
       return {error: {message: `Template not found`}}
     }
     const {name, teamId, orgId, scope} = template
-    template.scope = newScope
     if (!isTeamMember(authToken, teamId)) {
       return {error: {message: `Not a member of the team`}}
     }
@@ -67,19 +66,23 @@ const updateTemplateScope = {
           .ne(null)
           .run()
       : false
+    let clonedTemplateId: string | undefined
     if (shouldClone) {
       const clonedTemplate = new ReflectTemplate({
         name,
         teamId,
         orgId,
         scope: newScope,
-        parentTemplateId: templateId
+        parentTemplateId: templateId,
+        lastUsedAt: template.lastUsedAt
       })
+      clonedTemplateId = clonedTemplate.id
       const prompts = await dataLoader.get('reflectPromptsByTemplateId').load(templateId)
       const promptIds = prompts.map(({id}) => id)
       const clonedPrompts = prompts.map((prompt) => {
         return new RetrospectivePrompt({
           ...prompt,
+          templateId: clonedTemplateId,
           parentPromptId: prompt.id
         })
       })
@@ -96,6 +99,7 @@ const updateTemplateScope = {
           .update({isActive: false})
       }).run()
     } else {
+      template.scope = newScope
       await r
         .table('ReflectTemplate')
         .get(templateId)
@@ -104,9 +108,10 @@ const updateTemplateScope = {
         })
         .run()
     }
+    const data = {templateId, teamId, clonedTemplateId}
 
-    const data = {templateId, teamId}
-    publish(SubscriptionChannel.TEAM, teamId, 'UpdateTemplateScopeSuccess', data, subOptions)
+    // technically, this affects every connected client (public), or every team in the org (organization), but those are edge cases
+    publish(SubscriptionChannel.ORGANIZATION, orgId, 'UpdateTemplateScopeSuccess', data, subOptions)
     return data
   }
 }

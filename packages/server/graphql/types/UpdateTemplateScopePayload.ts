@@ -16,6 +16,13 @@ export const UpdateTemplateScopeSuccess = new GraphQLObjectType<any, GQLContext>
         return dataLoader.get('reflectTemplates').load(templateId)
       }
     },
+    clonedTemplate: {
+      type: ReflectTemplate,
+      description: 'if downscoping a previously used template, this will be the replacement',
+      resolve: async ({clonedTemplateId}, _args, {dataLoader}) => {
+        return clonedTemplateId ? dataLoader.get('reflectTemplates').load(clonedTemplateId) : null
+      }
+    },
     settings: {
       type: GraphQLNonNull(RetrospectiveMeetingSettings),
       description: 'The settings that contain the teamTemplates array that was modified',

@@ -53,7 +53,7 @@ const EditableTemplatePromptColor = (props: Props) => {
     {parentId: 'templateModal'}
   )
   return (
-    <PromptColor ref={originRef} isOwner={isOwner} onClick={togglePortal}>
+    <PromptColor ref={originRef} isOwner={isOwner} onClick={isOwner ? togglePortal : undefined}>
       <ColorBadge groupColor={groupColor} />
       <DropdownIcon>arrow_drop_down</DropdownIcon>
       {menuPortal(<PalettePicker menuProps={menuProps} prompt={prompt} prompts={prompts} />)}

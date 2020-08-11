@@ -73,7 +73,7 @@ class TemplatePromptList extends Component<Props, State> {
                 <div ref={provided.innerRef}>
                   {prompts.map((prompt, idx) => {
                     return (
-                      <Draggable key={prompt.id} draggableId={prompt.id} index={idx}>
+                      <Draggable key={prompt.id} draggableId={prompt.id} index={idx} isDragDisabled={!isOwner}>
                         {(dragProvided, dragSnapshot) => {
                           return (
                             <TemplatePromptItem

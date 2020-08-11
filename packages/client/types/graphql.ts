@@ -7121,6 +7121,11 @@ export interface IUpdateTemplateScopeSuccess {
   template: IReflectTemplate;
 
   /**
+   * if downscoping a previously used template, this will be the replacement
+   */
+  clonedTemplate: IReflectTemplate | null;
+
+  /**
    * The settings that contain the teamTemplates array that was modified
    */
   settings: IRetrospectiveMeetingSettings;
@@ -7395,7 +7400,8 @@ export type OrganizationSubscriptionPayload =
   | ISetOrgUserRoleRemovedPayload
   | IUpdateCreditCardPayload
   | IUpdateOrgPayload
-  | IUpgradeToProPayload;
+  | IUpgradeToProPayload
+  | IUpdateTemplateScopeSuccess;
 
 export interface ISetOrgUserRoleAddedPayload {
   __typename: 'SetOrgUserRoleAddedPayload';
@@ -7466,8 +7472,7 @@ export type TeamSubscriptionPayload =
   | IRenameReflectTemplatePromptPayload
   | ISetCheckInEnabledPayload
   | ISetSlackNotificationPayload
-  | IUpdateUserProfilePayload
-  | IUpdateTemplateScopeSuccess;
+  | IUpdateUserProfilePayload;
 
 /**
  * An action meeting

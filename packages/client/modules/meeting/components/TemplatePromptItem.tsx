@@ -28,9 +28,9 @@ interface StyledProps {
   isHover?: boolean
 }
 
-const PromptItem = styled('li')<StyledProps>(({isHover, isDragging}) => ({
+const PromptItem = styled('li')<StyledProps & {isOwner: boolean}>(({isOwner, isHover, isDragging}) => ({
   alignItems: 'flex-start',
-  backgroundColor: isHover || isDragging ? PALETTE.BACKGROUND_MAIN_LIGHTENED : undefined,
+  backgroundColor: isOwner && (isHover || isDragging) ? PALETTE.BACKGROUND_MAIN_LIGHTENED : undefined,
   borderRadius: '.125rem',
   display: 'flex',
   fontSize: 18,
@@ -85,6 +85,7 @@ const TemplatePromptItem = (props: Props) => {
       {...dragProvided.draggableProps}
       isDragging={isDragging}
       isHover={isHover}
+      isOwner={isOwner}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
     >

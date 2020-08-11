@@ -5,20 +5,31 @@ import {MeetingTypeEnum} from '../types/graphql'
 import {SharedUpdater, StandardMutation} from '../types/relayMutations'
 import addNodeToArray from '../utils/relay/addNodeToArray'
 import getBaseRecord from '../utils/relay/getBaseRecord'
+import getCachedRecord from '../utils/relay/getCachedRecord'
 import getNodeById from '../utils/relay/getNodeById'
 import {insertEdgeAfter} from '../utils/relay/insertEdge'
 import safeRemoveNodeFromArray from '../utils/relay/safeRemoveNodeFromArray'
 import safeRemoveNodeFromConn from '../utils/relay/safeRemoveNodeFromConn'
 import {UpdateTemplateScopeMutation as TUpdateTemplateScopeMutation} from '../__generated__/UpdateTemplateScopeMutation.graphql'
-import {SharingScopeEnum, UpdateTemplateScopeMutation_team} from '../__generated__/UpdateTemplateScopeMutation_team.graphql'
+import {SharingScopeEnum, UpdateTemplateScopeMutation_organization} from '../__generated__/UpdateTemplateScopeMutation_organization.graphql'
 import getReflectTemplateOrgConn from './connections/getReflectTemplateOrgConn'
 
 graphql`
-  fragment UpdateTemplateScopeMutation_team on UpdateTemplateScopeSuccess {
+  fragment UpdateTemplateScopeMutation_organization on UpdateTemplateScopeSuccess {
     template {
       id
       scope
       teamId
+      team {
+        orgId
+      }
+    }
+    clonedTemplate {
+      ...TemplateSharing_template
+      ...ReflectTemplateDetailsTemplate
+      team {
+        orgId
+      }
     }
   }
 `
@@ -31,21 +42,19 @@ const mutation = graphql`
           message
         }
       }
-      ...UpdateTemplateScopeMutation_team @relay(mask: false)
+      ...UpdateTemplateScopeMutation_organization @relay(mask: false)
     }
   }
 `
 
-const removeTemplateFromCurrentScope = (templateId: string, currentScope: SharingScopeEnum, meetingSettings: RecordProxy) => {
-  if (currentScope === 'TEAM') {
+const removeTemplateFromCurrentScope = (templateId: string, scopeList: SharingScopeEnum, meetingSettings: RecordProxy) => {
+  if (scopeList === 'TEAM') {
     safeRemoveNodeFromArray(templateId, meetingSettings, 'teamTemplates')
-  } else if (currentScope === 'ORGANIZATION') {
+  } else if (scopeList === 'ORGANIZATION') {
     const orgTemplatesConn = getReflectTemplateOrgConn(meetingSettings)
     safeRemoveNodeFromConn(templateId, orgTemplatesConn)
-  } else if (currentScope === 'PUBLIC') {
-    const publicTemplatesConn = getReflectTemplateOrgConn(meetingSettings)
-    safeRemoveNodeFromConn(templateId, publicTemplatesConn)
   }
+  // not possible for the public list to get mutated because this is an org subscription
 }
 
 const putTemplateInConnection = (template: RecordProxy, connection: RecordProxy | null | undefined, store: RecordSourceSelectorProxy) => {
@@ -63,36 +72,55 @@ const addTemplateToScope = (template: RecordProxy, scope: SharingScopeEnum, meet
   } else if (scope === 'ORGANIZATION') {
     const orgTemplatesConn = getReflectTemplateOrgConn(meetingSettings)
     putTemplateInConnection(template, orgTemplatesConn, store)
-  } else if (scope === 'PUBLIC') {
-    const publicTemplatesConn = getReflectTemplateOrgConn(meetingSettings)
-    putTemplateInConnection(template, publicTemplatesConn, store)
   }
 }
 
 const SCOPES = ['TEAM', 'ORGANIZATION', 'PUBLIC']
-const handleUpdateTemplateScope = (template: RecordProxy, newScope: SharingScopeEnum, store: RecordSourceSelectorProxy) => {
+const handleUpdateTemplateScope = (template: RecordProxy, newScope: SharingScopeEnum, store: RecordSourceSelectorProxy, clonedTemplate?: RecordProxy) => {
   const templateId = template.getValue('id') as string
   const teamId = template.getValue('teamId') as string
   const team = store.get(teamId)
   if (!team) return
   const meetingSettings = team.getLinkedRecord('meetingSettings', {meetingType: MeetingTypeEnum.retrospective})
   if (!meetingSettings) return
-
   const oldTemplate = getBaseRecord(store, templateId)
   const {scope: oldScope} = oldTemplate
-
+  const nextTemplate = clonedTemplate || template
+  const nextTemplateTeam = nextTemplate.getLinkedRecord('team')!
+  const nextTemplateOrgId = nextTemplateTeam.getValue('orgId')
   const isDecreasing = SCOPES.indexOf(oldScope) > SCOPES.indexOf(newScope)
-  if (isDecreasing) {
-    removeTemplateFromCurrentScope(templateId, oldScope, meetingSettings)
-    addTemplateToScope(template, newScope, meetingSettings, store)
-  }
+  const filterFn = (obj) => obj && obj.__typename === 'Team' && obj.orgId === nextTemplateOrgId
+  const teamRecords = getCachedRecord(store, filterFn, {isPlural: true})
+  const teamIds = teamRecords.map(({id}) => id)
+  teamIds.forEach((curTeamId) => {
+    const curTeam = store.get(curTeamId)
+    if (!curTeam) return
+    const meetingSettings = team.getLinkedRecord('meetingSettings', {meetingType: MeetingTypeEnum.retrospective})
+    if (!meetingSettings) return
+    // this is on the ORG subscription, so this won't affect anything on a PUBLIC list because they're at least on the same org
+    const scopeList = curTeamId === teamId ? 'TEAM' : 'ORGANIZATION'
+    if (scopeList === 'TEAM') {
+      if (clonedTemplate) {
+        removeTemplateFromCurrentScope(templateId, scopeList, meetingSettings)
+        addTemplateToScope(nextTemplate, scopeList, meetingSettings, store)
+      }
+    } else if (scopeList === 'ORGANIZATION') {
+      if (isDecreasing) {
+        removeTemplateFromCurrentScope(templateId, scopeList, meetingSettings)
+      } else {
+        addTemplateToScope(nextTemplate, scopeList, meetingSettings, store)
+      }
+    }
+  })
 }
 
-const updateTemplateScopeTeamUpdater: SharedUpdater<UpdateTemplateScopeMutation_team> = (payload: any, {store}) => {
+export const updateTemplateScopeOrganizationUpdater: SharedUpdater<UpdateTemplateScopeMutation_organization> = (payload: any, {store}) => {
   const template = payload.getLinkedRecord('template')
   if (!template) return
-  const newScope = template.getValue('scope')
-  handleUpdateTemplateScope(template, newScope, store)
+  const clonedTemplate = payload.getLinkedRecord('clonedTemplate')
+  const nextTemplate = clonedTemplate || template
+  const newScope = nextTemplate.getValue('scope')
+  handleUpdateTemplateScope(template, newScope, store, clonedTemplate)
 }
 
 const UpdateTemplateScopeMutation: StandardMutation<TUpdateTemplateScopeMutation> = (
@@ -106,12 +134,13 @@ const UpdateTemplateScopeMutation: StandardMutation<TUpdateTemplateScopeMutation
     updater: (store) => {
       const payload = store.getRootField('updateTemplateScope')
       if (!payload) return
-      updateTemplateScopeTeamUpdater(payload as any, {atmosphere, store})
+      updateTemplateScopeOrganizationUpdater(payload as any, {atmosphere, store})
     },
     optimisticUpdater: (store) => {
       const {scope, templateId} = variables
       const template = store.get(templateId)
       if (!template) return
+      template.setValue(scope, 'scope')
       handleUpdateTemplateScope(template, scope, store)
     },
     onCompleted,

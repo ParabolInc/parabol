@@ -38,13 +38,10 @@ const ReflectTemplate = new GraphQLObjectType<any, GQLContext>({
     prompts: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(ReflectPrompt))),
       description: 'The prompts that are part of this template',
-      resolve: async ({id: promptTemplateId, templateId}, _args, {dataLoader}) => {
-        if (templateId === promptTemplateId) {
-          const prompts = await dataLoader.get('reflectPromptsByTemplateId').load(templateId)
-          prompts.sort((a, b) => (a.sortOrder < b.sortOrder ? -1 : 1))
-          return prompts
-        }
-        return []
+      resolve: async ({id: templateId}, _args, {dataLoader}) => {
+        const prompts = await dataLoader.get('reflectPromptsByTemplateId').load(templateId)
+        prompts.sort((a, b) => (a.sortOrder < b.sortOrder ? -1 : 1))
+        return prompts
       }
     },
     orgId: {
