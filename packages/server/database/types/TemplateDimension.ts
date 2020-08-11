@@ -4,8 +4,8 @@ export interface TemplateDimensionInput {
   id?: string
   name: string
   teamId: string
-  templateId?: string
-  scaleId?: string
+  templateId: string
+  scaleId: string
   createdAt?: Date
   updatedAt?: Date
   deletedAt?: Date
@@ -15,8 +15,8 @@ export default class TemplateDimension {
   id: string
   name: string
   teamId: string
-  templateId: string | null
-  scaleId: string | null
+  templateId: string
+  scaleId: string
   createdAt: Date
   updatedAt: Date
   deletedAt: Date | null
@@ -27,8 +27,8 @@ export default class TemplateDimension {
     this.id = id || shortid.generate()
     this.name = name || ''
     this.teamId = teamId
-    this.templateId = templateId || null
-    this.scaleId = scaleId || null
+    this.templateId = templateId
+    this.scaleId = scaleId
     this.createdAt = createdAt || now
     this.updatedAt = updatedAt || now
     this.deletedAt = deletedAt || null
