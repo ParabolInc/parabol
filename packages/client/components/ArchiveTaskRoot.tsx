@@ -9,7 +9,7 @@ import useDocumentTitle from '~/hooks/useDocumentTitle'
 
 
 const query = graphql`
-  query ArchiveTaskRootQuery($teamId: ID, $first: Int!, $after: DateTime, $includeTeamMembers: Boolean) {
+  query ArchiveTaskRootQuery($first: Int!, $after: DateTime, $userIds: [ID!], $teamIds: [ID!]) {
     viewer {
       ...TeamArchive_viewer
     }
@@ -20,10 +20,9 @@ export interface ArchiveTaskRootProps {
   teamId?: string
   team?: any
   showHeader?: boolean
-  includeTeamMembers?: boolean
 }
 
-const ArchiveTaskRoot = ({teamId, team, showHeader, includeTeamMembers}: ArchiveTaskRootProps) => {
+const ArchiveTaskRoot = ({teamId, team, showHeader}: ArchiveTaskRootProps) => {
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
   showHeader && useDocumentTitle(`Team Archive | ${team.name}`, 'Archive')
@@ -32,7 +31,7 @@ const ArchiveTaskRoot = ({teamId, team, showHeader, includeTeamMembers}: Archive
     <QueryRenderer
       environment={atmosphere}
       query={query}
-      variables={{teamId, first: 40, includeTeamMembers}}
+      variables={{teamIds: teamId ? [teamId] : undefined, first: 40}}
       fetchPolicy={'store-or-network' as any}
       render={renderQuery(TeamArchive, {
         props: {teamId, team, userId: viewerId, showHeader: showHeader},

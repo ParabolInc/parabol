@@ -440,21 +440,20 @@ export interface ITasksOnUserArguments {
   after?: any | null;
 
   /**
-   * The unique team ID
+   * a list of user Ids
    */
-  teamId?: string | null;
+  userIds?: Array<string> | null;
 
   /**
-   * true if only archived tasks are returned; false otherwise
+   * a list of team Ids
+   */
+  teamIds?: Array<string> | null;
+
+  /**
+   * true to only return archived tasks; false to return active tasks
    * @default false
    */
   archived?: boolean | null;
-
-  /**
-   * true if tasks from user's team members are returned; false otherwise
-   * @default true
-   */
-  includeTeamMembers?: boolean | null;
 }
 
 export interface ITeamOnUserArguments {

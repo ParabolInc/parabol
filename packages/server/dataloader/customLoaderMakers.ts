@@ -11,7 +11,6 @@ import AtlassianServerManager from '../utils/AtlassianServerManager'
 import normalizeRethinkDbResults from './normalizeRethinkDbResults'
 import ProxiedCache from './ProxiedCache'
 import RethinkDataLoader from './RethinkDataLoader'
-import TeamMember from '../database/types/TeamMember'
 
 type AccessTokenKey = {teamId: string; userId: string}
 export interface JiraRemoteProjectKey {
@@ -23,10 +22,9 @@ export interface JiraRemoteProjectKey {
 export interface UserTasksKey {
   first: number
   after: number | string
-  userId: string
+  userIds: string[]
   teamIds: string[]
   archived: boolean
-  includeTeamMembers: boolean
 }
 
 export interface ReactablesKey {
@@ -63,9 +61,9 @@ export const users = () => {
 }
 
 export const serializeUserTasksKey = (key: UserTasksKey) => {
-  return `${key.userId}:${key.teamIds.sort().join(':')}:${key.first}:${key.after}:${key.archived}:${
-    key.includeTeamMembers
-  }`
+  return `${key.userIds.sort().join(':')}:${key.teamIds.sort().join(':')}:${key.first}:${
+    key.after
+  }:${key.archived}`
 }
 
 export const commentCountByThreadId = (parent: RethinkDataLoader) => {
@@ -149,22 +147,15 @@ export const userTasks = (parent: RethinkDataLoader) => {
 
       const entryArray = await Promise.all(
         uniqKeys.map(async (key) => {
-          const {first, after, userId, teamIds, archived, includeTeamMembers} = key
+          const {first, after, userIds, teamIds, archived} = key
           const dbAfter = after ? new Date(after) : r.maxval
-
-          let userIds = [userId]
-          if (includeTeamMembers) {
-            const teamMembersLoader = parent.get('teamMembersByTeamId')
-            const teamMembers = (await teamMembersLoader.loadMany(teamIds)).flat() as TeamMember[]
-            userIds = [...new Set(teamMembers.map((teamMember) => teamMember.userId))]
-          }
 
           return {
             key: serializeUserTasksKey(key),
             data: await r
               .table('Task')
-              .getAll(r.args(teamIds), {index: 'teamId'})
-              .filter((task) => r(userIds).contains(task('userId')))
+              .getAll(r.args(userIds), {index: 'userId'})
+              .filter((row) => r(teamIds).contains(row('teamId')))
               .filter((task) => task('createdAt').lt(dbAfter))
               .filter((task) =>
                 archived

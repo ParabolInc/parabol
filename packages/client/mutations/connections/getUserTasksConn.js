@@ -1,6 +1,6 @@
 import {ConnectionHandler} from 'relay-runtime'
 
 const getUserTasksConn = (viewer) =>
-  ConnectionHandler.getConnection(viewer, 'UserColumnsContainer_tasks', {includeTeamMembers: false})
+  ConnectionHandler.getConnection(viewer, 'UserColumnsContainer_tasks')
 
 export default getUserTasksConn

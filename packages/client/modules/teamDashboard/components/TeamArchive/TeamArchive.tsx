@@ -293,8 +293,8 @@ export default createPaginationContainer(
     viewer: graphql`
       fragment TeamArchive_viewer on User {
         dashSearch
-        tasks(first: $first, teamId: $teamId, after: $after, includeTeamMembers: $includeTeamMembers, archived: true)
-          @connection(key: "TeamArchive_tasks", filters: ["teamId"]) {
+        tasks(first: $first, after: $after, userIds: $userIds, teamIds: $teamIds, archived: true)
+          @connection(key: "TeamArchive_tasks", filters: ["teamIds"]) {
           edges {
             cursor
             node {
@@ -344,7 +344,7 @@ export default createPaginationContainer(
       }
     },
     query: graphql`
-      query TeamArchivePaginationQuery($first: Int!, $after: DateTime, $teamId: ID, $includeTeamMembers: Boolean) {
+      query TeamArchivePaginationQuery($first: Int!, $after: DateTime, $teamIds: [ID!], $userIds: [ID!]) {
         viewer {
           ...TeamArchive_viewer
         }
