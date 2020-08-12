@@ -40,9 +40,6 @@ export default {
     if (!reflectPrompt) {
       return standardError(new Error('Category not found'), {userId: viewerId})
     }
-    if (!reflectPrompt.isActive) {
-      return standardError(new Error('Category not active'), {userId: viewerId})
-    }
     const {teamId} = reflectPrompt
     if (!isTeamMember(authToken, teamId)) {
       return standardError(new Error('Team not found'), {userId: viewerId, tags: {teamId}})
