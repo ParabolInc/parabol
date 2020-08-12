@@ -21,12 +21,6 @@ const extraOptionsCreator = {
   }
 }
 
-const eventNameLookup = {
-  UserLogout: 'User Logout',
-  UserLogin: 'User Login',
-  HelpMenuOpen: 'Help Menu Open'
-}
-
 export default {
   name: 'SegmentEventTrack',
   description: 'track an event in segment, like when errors are hit',
@@ -65,10 +59,9 @@ export default {
     // RESOLUTION
     const getExtraOptions = extraOptionsCreator[event]
     const extraOptions = getExtraOptions ? await getExtraOptions(viewerId, dataLoader, options) : {}
-    const eventName = eventNameLookup[event]
     segmentIo.track({
       userId: viewerId,
-      event: eventName,
+      event,
       properties: {
         ...options,
         ...extraOptions

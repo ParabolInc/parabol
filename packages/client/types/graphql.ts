@@ -4921,10 +4921,6 @@ export interface IRetrospectiveMeeting {
    * The time the meeting summary was emailed to the team
    */
   summarySentAt: any | null;
-
-  /**
-   * foreign key for team
-   */
   teamId: string;
 
   /**

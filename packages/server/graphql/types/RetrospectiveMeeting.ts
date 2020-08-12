@@ -120,13 +120,8 @@ const RetrospectiveMeeting = new GraphQLObjectType<any, GQLContext>({
     settings: {
       type: new GraphQLNonNull(RetrospectiveMeetingSettings),
       description: 'The settings that govern the retrospective meeting',
-      resolve: async ({id: meetingId}, _args, {dataLoader}) => {
-        const meeting = await dataLoader.get('newMeetings').load(meetingId)
-        const {teamId} = meeting
-
-        return await dataLoader
-          .get('meetingSettingsByType')
-          .load({teamId, meetingType: RETROSPECTIVE})
+      resolve: async ({teamId}, _args, {dataLoader}) => {
+        return dataLoader.get('meetingSettingsByType').load({teamId, meetingType: RETROSPECTIVE})
       }
     },
     taskCount: {
@@ -144,6 +139,9 @@ const RetrospectiveMeeting = new GraphQLObjectType<any, GQLContext>({
         const teamTasks = await dataLoader.get('tasksByTeamId').load(teamId)
         return filterTasksByMeeting(teamTasks, meetingId, viewerId)
       }
+    },
+    teamId: {
+      type: GraphQLNonNull(GraphQLID)
     },
     topicCount: {
       type: GraphQLNonNull(GraphQLInt),
