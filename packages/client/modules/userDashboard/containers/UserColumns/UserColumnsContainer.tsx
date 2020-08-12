@@ -19,8 +19,8 @@ const UserColumnsContainer = (props: Props) => {
     const nodes = tasks.edges.map(({node}) => node)
     const dashSearchNodes = dashSearch
       ? nodes.filter((task) => {
-          return task.contentText && task.contentText.match(dashSearchRegex)
-        })
+        return task.contentText && task.contentText.match(dashSearchRegex)
+      })
       : nodes
 
     const teamFilteredNodes = teamFilterId
@@ -50,7 +50,7 @@ export default createFragmentContainer(UserColumnsContainer, {
       teams {
         ...TaskColumns_teams
       }
-      tasks(first: 1000) @connection(key: "UserColumnsContainer_tasks") {
+      tasks(first: 1000, includeTeamMembers: false) @connection(key: "UserColumnsContainer_tasks") {
         edges {
           node {
             ...TaskColumns_tasks

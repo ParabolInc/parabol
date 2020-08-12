@@ -6,7 +6,7 @@ interface Props extends ArchiveTaskRootProps {
 
 const PersonalTaskArchiveRoot = ({teamId, team}: Props) => {
   return (
-    <ArchiveTaskRoot teamId={teamId} team={team ?? null} showHeader={false} />
+    <ArchiveTaskRoot teamId={teamId} team={team ?? null} showHeader={false} includeTeamMembers={false} />
   )
 }
 

@@ -5,6 +5,7 @@ import {GQLContext} from '../graphql'
 import GraphQLISO8601Type from '../types/GraphQLISO8601Type'
 import {TaskConnection} from '../types/Task'
 import connectionFromTasks from './helpers/connectionFromTasks'
+import isTaskPrivate from 'parabol-client/utils/isTaskPrivate'
 
 export default {
   type: new GraphQLNonNull(TaskConnection),
@@ -25,9 +26,18 @@ export default {
       type: GraphQLBoolean,
       description: 'true if only archived tasks are returned; false otherwise',
       defaultValue: false
+    },
+    includeTeamMembers: {
+      type: GraphQLBoolean,
+      description: "true if tasks from user's team members are returned; false otherwise",
+      defaultValue: true
     }
   },
-  async resolve(_source, {first, after, teamId, archived}, {authToken, dataLoader}: GQLContext) {
+  async resolve(
+    _source,
+    {first, after, teamId, archived, includeTeamMembers},
+    {authToken, dataLoader}: GQLContext
+  ) {
     // AUTH
     const viewerId = getUserId(authToken)
     if (teamId && !isTeamMember(authToken, teamId)) {
@@ -40,8 +50,14 @@ export default {
       after: after,
       userId: viewerId,
       teamIds: teamIds,
-      archived: archived
+      archived: archived,
+      includeTeamMembers: includeTeamMembers
     })
-    return connectionFromTasks(tasks)
+
+    const filteredTasks = tasks.filter((task) => {
+      if (isTaskPrivate(task.tags) && task.userId !== viewerId) return false
+      return true
+    })
+    return connectionFromTasks(filteredTasks)
   }
 }

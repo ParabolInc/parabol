@@ -11,6 +11,7 @@ import AtlassianServerManager from '../utils/AtlassianServerManager'
 import normalizeRethinkDbResults from './normalizeRethinkDbResults'
 import ProxiedCache from './ProxiedCache'
 import RethinkDataLoader from './RethinkDataLoader'
+import TeamMember from '../database/types/TeamMember'
 
 type AccessTokenKey = {teamId: string; userId: string}
 export interface JiraRemoteProjectKey {
@@ -25,6 +26,7 @@ export interface UserTasksKey {
   userId: string
   teamIds: string[]
   archived: boolean
+  includeTeamMembers: boolean
 }
 
 export interface ReactablesKey {
@@ -61,7 +63,9 @@ export const users = () => {
 }
 
 export const serializeUserTasksKey = (key: UserTasksKey) => {
-  return `${key.userId}:${key.teamIds.sort().join(':')}:${key.first}:${key.after}:${key.archived}`
+  return `${key.userId}:${key.teamIds.sort().join(':')}:${key.first}:${key.after}:${key.archived}:${
+    key.includeTeamMembers
+  }`
 }
 
 export const commentCountByThreadId = (parent: RethinkDataLoader) => {
@@ -145,16 +149,23 @@ export const userTasks = (parent: RethinkDataLoader) => {
 
       const entryArray = await Promise.all(
         uniqKeys.map(async (key) => {
-          const {first, after, userId, teamIds, archived} = key
+          const {first, after, userId, teamIds, archived, includeTeamMembers} = key
           const dbAfter = after ? new Date(after) : r.maxval
+
+          let userIds = [userId]
+          if (includeTeamMembers) {
+            const teamMembersLoader = parent.get('teamMembersByTeamId')
+            const teamMembers = (await teamMembersLoader.loadMany(teamIds)).flat() as TeamMember[]
+            userIds = [...new Set(teamMembers.map((teamMember) => teamMember.userId))]
+          }
 
           return {
             key: serializeUserTasksKey(key),
             data: await r
               .table('Task')
               .getAll(r.args(teamIds), {index: 'teamId'})
-              .filter({userId})
-              .filter((task) => task('updatedAt').lt(dbAfter))
+              .filter((task) => r(userIds).contains(task('userId')))
+              .filter((task) => task('createdAt').lt(dbAfter))
               .filter((task) =>
                 archived
                   ? task('tags').contains('archived')

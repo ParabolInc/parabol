@@ -449,6 +449,12 @@ export interface ITasksOnUserArguments {
    * @default false
    */
   archived?: boolean | null;
+
+  /**
+   * true if tasks from user's team members are returned; false otherwise
+   * @default true
+   */
+  includeTeamMembers?: boolean | null;
 }
 
 export interface ITeamOnUserArguments {
