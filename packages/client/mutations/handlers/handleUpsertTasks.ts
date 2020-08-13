@@ -36,10 +36,10 @@ const handleUpsertTask = (task: Task | null, store: RecordSourceSelectorProxy<an
   }
   const meetingId = task.getValue('meetingId')
   const isNowArchived = tags.includes('archived')
-  const archiveConn = getArchivedTasksConn(viewer, teamId)
+  const archiveConns = [getArchivedTasksConn(viewer, teamId), getArchivedTasksConn(viewer)]
   const team = store.get(teamId)
   const teamConn = getTeamTasksConn(team)
-  const userConn = getUserTasksConn(viewer)
+  const userConn = getUserTasksConn(viewer, [viewerId], null)
   const threadSourceId = task.getValue('threadId')
   const threadSourceProxy = (threadSourceId && store.get(threadSourceId as string)) || null
   const threadSourceConn = getThreadSourceThreadConn(threadSourceProxy)
@@ -48,9 +48,9 @@ const handleUpsertTask = (task: Task | null, store: RecordSourceSelectorProxy<an
   if (isNowArchived) {
     safeRemoveNodeFromConn(taskId, teamConn)
     safeRemoveNodeFromConn(taskId, userConn)
-    safePutNodeInConn(archiveConn, task, store)
+    archiveConns.forEach((archiveConn) => safePutNodeInConn(archiveConn, task, store))
   } else {
-    safeRemoveNodeFromConn(taskId, archiveConn)
+    archiveConns.forEach((archiveConn) => safeRemoveNodeFromConn(taskId, archiveConn))
     safePutNodeInConn(teamConn, task, store)
     safePutNodeInConn(threadSourceConn, task, store, 'threadSortOrder', true)
     addNodeToArray(task, meeting, 'tasks', 'createdAt')

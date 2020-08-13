@@ -429,7 +429,10 @@ export interface ISuggestedIntegrationsOnUserArguments {
 }
 
 export interface ITasksOnUserArguments {
-  first?: number | null;
+  /**
+   * the number of tasks to return
+   */
+  first: number;
 
   /**
    * the datetime cursor
@@ -437,9 +440,20 @@ export interface ITasksOnUserArguments {
   after?: any | null;
 
   /**
-   * The unique team ID
+   * a list of user Ids that you want tasks for. if null, will return tasks for all possible team members
    */
-  teamId?: string | null;
+  userIds?: Array<string> | null;
+
+  /**
+   * a list of team Ids that you want tasks for. if null, will return tasks for all possible active teams
+   */
+  teamIds?: Array<string> | null;
+
+  /**
+   * true to only return archived tasks; false to return active tasks
+   * @default false
+   */
+  archived?: boolean | null;
 }
 
 export interface ITeamOnUserArguments {
