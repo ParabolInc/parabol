@@ -20,8 +20,8 @@ const Message = styled('div')({
   fontSize: 14,
   fontStyle: 'italic',
   lineHeight: '20px',
-  margin: 'auto 40px',
-  padding: 8
+  margin: 'auto 32px',
+  padding: '8px 16px'
 })
 
 const StyledLink = styled('span')({
@@ -55,29 +55,26 @@ const ReflectTemplateListTeam = (props: Props) => {
   }
   return (
     <TemplateList>
-      {
-        teamTemplates.map((template) => {
-          return <ReflectTemplateItem
+      {teamTemplates.map((template) => {
+        return (
+          <ReflectTemplateItem
             key={template.id}
             template={template}
             isActive={template.id === selectedTemplateId}
             lowestScope={'TEAM'}
             teamId={teamId}
           />
-        })
-      }
+        )
+      })}
     </TemplateList>
   )
 }
 
-export default createFragmentContainer(
-  ReflectTemplateListTeam,
-  {
-    teamTemplates: graphql`
-      fragment ReflectTemplateListTeam_teamTemplates on ReflectTemplate @relay(plural: true) {
-        id
-        ...ReflectTemplateItem_template
-      }
-    `
-  }
-)
+export default createFragmentContainer(ReflectTemplateListTeam, {
+  teamTemplates: graphql`
+    fragment ReflectTemplateListTeam_teamTemplates on ReflectTemplate @relay(plural: true) {
+      id
+      ...ReflectTemplateItem_template
+    }
+  `
+})

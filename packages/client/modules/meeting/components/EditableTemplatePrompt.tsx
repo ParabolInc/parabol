@@ -12,8 +12,8 @@ import Legitity from '../../../validation/Legitity'
 import {EditableTemplatePrompt_prompts} from '../../../__generated__/EditableTemplatePrompt_prompts.graphql'
 
 const StyledEditableText = styled(EditableText)({
+  fontSize: 16,
   lineHeight: '24px',
-  marginBottom: 4,
   padding: 0
 })
 

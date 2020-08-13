@@ -3,7 +3,9 @@ import graphql from 'babel-plugin-relay/macro'
 import React, {Component} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import EditableText from '../../../components/EditableText'
-import withAtmosphere, {WithAtmosphereProps} from '../../../decorators/withAtmosphere/withAtmosphere'
+import withAtmosphere, {
+  WithAtmosphereProps
+} from '../../../decorators/withAtmosphere/withAtmosphere'
 import RenameReflectTemplateMutation from '../../../mutations/RenameReflectTemplateMutation'
 import withMutationProps, {WithMutationProps} from '../../../utils/relay/withMutationProps'
 import Legitity from '../../../validation/Legitity'
@@ -20,11 +22,11 @@ const InheritedStyles = styled('div')({
   flex: 1,
   fontSize: 20,
   fontWeight: 600,
-  lineHeight: '20px'
+  lineHeight: '24px'
 })
 
 const StyledEditableText = styled(EditableText)({
-  lineHeight: '20px'
+  lineHeight: '24px'
 })
 class EditableTemplateName extends Component<Props> {
   handleSubmit = (rawName) => {
@@ -89,14 +91,11 @@ class EditableTemplateName extends Component<Props> {
   }
 }
 
-export default createFragmentContainer(
-  withAtmosphere(withMutationProps(EditableTemplateName)),
-  {
-    teamTemplates: graphql`
-      fragment EditableTemplateName_teamTemplates on ReflectTemplate @relay(plural: true) {
-        id
-        name
-      }
-    `
-  }
-)
+export default createFragmentContainer(withAtmosphere(withMutationProps(EditableTemplateName)), {
+  teamTemplates: graphql`
+    fragment EditableTemplateName_teamTemplates on ReflectTemplate @relay(plural: true) {
+      id
+      name
+    }
+  `
+})

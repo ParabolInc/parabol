@@ -1,7 +1,9 @@
 import styled from '@emotion/styled'
 import React, {Component} from 'react'
 import EditableText from '../../../components/EditableText'
-import withAtmosphere, {WithAtmosphereProps} from '../../../decorators/withAtmosphere/withAtmosphere'
+import withAtmosphere, {
+  WithAtmosphereProps
+} from '../../../decorators/withAtmosphere/withAtmosphere'
 import ReflectTemplatePromptUpdateDescriptionMutation from '../../../mutations/ReflectTemplatePromptUpdateDescriptionMutation'
 import withMutationProps, {WithMutationProps} from '../../../utils/relay/withMutationProps'
 import Legitity from '../../../validation/Legitity'
@@ -14,9 +16,8 @@ interface Props extends WithAtmosphereProps, WithMutationProps {
 }
 
 const EditableSubText = styled(EditableText)({
-  fontSize: 14,
-  lineHeight: '20px',
-  marginBottom: 8
+  fontSize: 12,
+  lineHeight: '24px'
 })
 
 class EditableTemplateDescription extends Component<Props> {

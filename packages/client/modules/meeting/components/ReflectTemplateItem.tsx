@@ -13,7 +13,6 @@ import {ReflectTemplateItem_template} from '../../../__generated__/ReflectTempla
 
 const TemplateItem = styled('li')<{isActive: boolean}>(({isActive}) => ({
   backgroundColor: isActive ? PALETTE.BACKGROUND_MAIN : undefined,
-  borderRadius: 2,
   cursor: 'pointer',
   display: 'flex',
   fontSize: 14,

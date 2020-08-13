@@ -19,8 +19,8 @@ const Message = styled('div')({
   fontSize: 14,
   fontStyle: 'italic',
   lineHeight: '20px',
-  margin: 'auto 40px',
-  padding: 8
+  margin: 'auto 32px',
+  padding: '8px 16px'
 })
 interface Props {
   viewer: ReflectTemplateListOrg_viewer
@@ -36,52 +36,45 @@ const ReflectTemplateListOrg = (props: Props) => {
   useSelectTopTemplate(edges, selectedTemplateId, teamId, true)
 
   if (edges.length === 0) {
-    return (
-      <Message>
-        No other teams in your organization are sharing a template
-      </Message>
-    )
+    return <Message>{'No other teams in your organization are sharing a template.'}</Message>
   }
   return (
     <TemplateList>
-      {
-        edges.map(({node: template}) => {
-          return <ReflectTemplateItem
+      {edges.map(({node: template}) => {
+        return (
+          <ReflectTemplateItem
             key={template.id}
             template={template}
             isActive={template.id === selectedTemplateId}
             lowestScope={'ORGANIZATION'}
             teamId={teamId}
           />
-        })
-      }
+        )
+      })}
     </TemplateList>
   )
 }
 
-export default createFragmentContainer(
-  ReflectTemplateListOrg,
-  {
-    viewer: graphql`
-      fragment ReflectTemplateListOrg_viewer on User {
+export default createFragmentContainer(ReflectTemplateListOrg, {
+  viewer: graphql`
+    fragment ReflectTemplateListOrg_viewer on User {
+      id
+      team(teamId: $teamId) {
         id
-        team(teamId: $teamId) {
-          id
-          meetingSettings(meetingType: retrospective) {
-            ...on RetrospectiveMeetingSettings {
-              organizationTemplates(first: 20) {
-                edges {
-                  node {
-                    ...ReflectTemplateItem_template
-                    id
-                  }
+        meetingSettings(meetingType: retrospective) {
+          ... on RetrospectiveMeetingSettings {
+            organizationTemplates(first: 20) {
+              edges {
+                node {
+                  ...ReflectTemplateItem_template
+                  id
                 }
               }
-              selectedTemplateId
             }
+            selectedTemplateId
           }
         }
       }
-    `
-  }
-)
+    }
+  `
+})

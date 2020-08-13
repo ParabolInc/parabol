@@ -30,14 +30,14 @@ const PromptEditor = styled('div')({
   display: 'flex',
   flexDirection: 'column',
   overflow: 'hidden',
-  maxWidth: 480,
+  maxWidth: 520,
   width: '100%'
 })
 
 const CreateTemplateImg = styled('img')({
   margin: '0 auto',
   padding: '24px 56px 0',
-  width: 360
+  width: 320
 })
 
 const Description = styled('div')({

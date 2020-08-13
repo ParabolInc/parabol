@@ -8,14 +8,11 @@ import withAtmosphere, {
   WithAtmosphereProps
 } from '../../../decorators/withAtmosphere/withAtmosphere'
 import AddReflectTemplateMutation from '../../../mutations/AddReflectTemplateMutation'
-import {PALETTE} from '../../../styles/paletteV2'
 import withMutationProps, {WithMutationProps} from '../../../utils/relay/withMutationProps'
 import {AddNewReflectTemplate_reflectTemplates} from '../../../__generated__/AddNewReflectTemplate_reflectTemplates.graphql'
+import TooltipStyled from '../../../components/TooltipStyled'
 
-const Error = styled('span')({
-  color: PALETTE.ERROR_MAIN,
-  display: 'block',
-  fontSize: 12,
+const Error = styled(TooltipStyled)({
   margin: '0 0 8px'
 })
 

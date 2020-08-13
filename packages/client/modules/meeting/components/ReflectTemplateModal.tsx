@@ -14,7 +14,7 @@ interface Props {
 
 const StyledDialogContainer = styled(DialogContainer)({
   flexDirection: 'row',
-  width: 840,
+  width: 880,
   maxHeight: 500,
   minHeight: 500
 })

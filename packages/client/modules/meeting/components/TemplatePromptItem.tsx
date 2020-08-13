@@ -33,11 +33,10 @@ const PromptItem = styled('div')<StyledProps & {isOwner: boolean}>(
     alignItems: 'flex-start',
     backgroundColor:
       isOwner && (isHover || isDragging) ? PALETTE.BACKGROUND_MAIN_LIGHTENED : undefined,
-    borderRadius: '.125rem',
     cursor: isOwner ? 'pointer' : undefined,
     display: 'flex',
-    fontSize: 18,
-    lineHeight: '32px',
+    fontSize: 14,
+    lineHeight: '24px',
     padding: '4px 16px',
     width: '100%'
   })
@@ -48,9 +47,13 @@ const RemovePromptIcon = styled(Icon)<StyledProps>(({isHover}) => ({
   cursor: 'pointer',
   display: 'block',
   fontSize: ICON_SIZE.MD18,
+  height: 24,
+  lineHeight: '24px',
   marginLeft: 'auto',
-  paddingTop: 8,
-  opacity: isHover ? 1 : 0
+  padding: 0,
+  opacity: isHover ? 1 : 0,
+  textAlign: 'center',
+  width: 24
 }))
 
 const PromptAndDescription = styled('div')({

@@ -37,8 +37,8 @@ const PromptColor = styled(PlainButton)<{isOwner: boolean}>(({isOwner}) => ({
 const ColorBadge = styled('div')<{groupColor?: string}>(({groupColor}) => ({
   backgroundColor: groupColor,
   borderRadius: '50%',
-  height: '16px',
-  width: '16px'
+  height: 14,
+  width: 14
 }))
 
 const DropdownIcon = styled(Icon)({
