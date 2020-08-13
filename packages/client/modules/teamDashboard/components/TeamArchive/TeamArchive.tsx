@@ -1,18 +1,18 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {useEffect, useRef, useState, useMemo} from 'react'
+import React, {useEffect, useMemo, useRef, useState} from 'react'
 import {createPaginationContainer, RelayPaginationProp} from 'react-relay'
 import {AutoSizer, CellMeasurer, CellMeasurerCache, Grid, InfiniteLoader} from 'react-virtualized'
+import extractTextFromDraftString from '~/utils/draftjs/extractTextFromDraftString'
+import getSafeRegex from '~/utils/getSafeRegex'
+import toTeamMemberId from '~/utils/relay/toTeamMemberId'
 import {TeamArchive_team} from '~/__generated__/TeamArchive_team.graphql'
 import {TeamArchive_viewer} from '~/__generated__/TeamArchive_viewer.graphql'
 import NullableTask from '../../../../components/NullableTask/NullableTask'
 import {PALETTE} from '../../../../styles/paletteV2'
-import {MathEnum, Layout} from '../../../../types/constEnums'
+import {Layout, MathEnum} from '../../../../types/constEnums'
 import {AreaEnum} from '../../../../types/graphql'
 import getRallyLink from '../../../userDashboard/helpers/getRallyLink'
-import toTeamMemberId from '~/utils/relay/toTeamMemberId'
-import getSafeRegex from '~/utils/getSafeRegex'
-import extractTextFromDraftString from '~/utils/draftjs/extractTextFromDraftString'
 import TeamArchiveHeader from '../TeamArchiveHeader/TeamArchiveHeader'
 
 const CARD_WIDTH = 256 + 32 // account for box model and horizontal padding
@@ -87,13 +87,12 @@ const LinkSpan = styled('div')({
 interface Props {
   relay: RelayPaginationProp
   viewer: TeamArchive_viewer
-  teamId: string
-  team: TeamArchive_team | null | undefined
-  showHeader: boolean
+  returnToTeamId?: string
+  team: TeamArchive_team | null
 }
 
 const TeamArchive = (props: Props) => {
-  const {viewer, relay, team, teamId, showHeader} = props
+  const {viewer, relay, team, returnToTeamId} = props
   const {hasMore, isLoading, loadMore} = relay
   const {teamMembers, teamMemberFilter} = team || {}
   const teamMemberFilterId = (teamMemberFilter && teamMemberFilter.id) || null
@@ -224,9 +223,9 @@ const TeamArchive = (props: Props) => {
   return (
     <Root>
       {
-        showHeader &&
+        returnToTeamId &&
         <Header>
-          <TeamArchiveHeader teamId={teamId} />
+          <TeamArchiveHeader teamId={returnToTeamId} />
           <Border />
         </Header>
       }

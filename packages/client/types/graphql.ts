@@ -440,12 +440,12 @@ export interface ITasksOnUserArguments {
   after?: any | null;
 
   /**
-   * a list of user Ids
+   * a list of user Ids that you want tasks for. if null, will return tasks for all possible team members
    */
   userIds?: Array<string> | null;
 
   /**
-   * a list of team Ids
+   * a list of team Ids that you want tasks for. if null, will return tasks for all possible active teams
    */
   teamIds?: Array<string> | null;
 

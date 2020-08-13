@@ -1,11 +1,37 @@
-import {GraphQLID, GraphQLInt, GraphQLNonNull, GraphQLBoolean, GraphQLList} from 'graphql'
-import {getUserId, isTeamMember} from '../../utils/authorization'
+import {GraphQLBoolean, GraphQLID, GraphQLInt, GraphQLList, GraphQLNonNull} from 'graphql'
+import isTaskPrivate from 'parabol-client/utils/isTaskPrivate'
+import {getUserId} from '../../utils/authorization'
 import standardError from '../../utils/standardError'
-import {GQLContext} from '../graphql'
+import {DataLoaderWorker, GQLContext} from '../graphql'
 import GraphQLISO8601Type from '../types/GraphQLISO8601Type'
 import {TaskConnection} from '../types/Task'
 import connectionFromTasks from './helpers/connectionFromTasks'
-import isTaskPrivate from 'parabol-client/utils/isTaskPrivate'
+
+const getValidTeamIds = (teamIds: null | string[], tms: string[]) => {
+  // the following comments can be removed pending #4070
+  // const viewerTeamMembers = await dataLoader.get('teamMembersByUserId').load(viewerId)
+  // const viewerTeamIds = viewerTeamMembers.map(({teamId}) => teamId)
+  if (!teamIds) return tms
+  // filter the teamIds array to only teams the user has a team member for
+  return teamIds.filter((teamId) => tms.includes(teamId))
+}
+
+const getValidUserIds = async (
+  userIds: null | string[],
+  viewerId: string,
+  validTeamIds: string[],
+  dataLoader: DataLoaderWorker
+) => {
+  if (!userIds) return null
+  if (userIds.length === 1 && userIds[0] === viewerId) return userIds
+  // NOTE: this will filter out ex-teammembers. if that's a problem, we should use a different dataloader
+  const teamMembersByUserIds = await dataLoader.get('teamMembersByUserId').loadMany(userIds)
+  const teamMembersOnValidTeams = teamMembersByUserIds
+    .flat()
+    .filter((teamMember) => validTeamIds.includes(teamMember.teamId))
+  const teamMemberUserIds = new Set(teamMembersOnValidTeams.map(({userId}) => userId))
+  return userIds.filter((userId) => teamMemberUserIds.has(userId))
+}
 
 export default {
   type: new GraphQLNonNull(TaskConnection),
@@ -20,11 +46,13 @@ export default {
     },
     userIds: {
       type: GraphQLList(GraphQLNonNull(GraphQLID)),
-      description: 'a list of user Ids'
+      description:
+        'a list of user Ids that you want tasks for. if null, will return tasks for all possible team members'
     },
     teamIds: {
       type: GraphQLList(GraphQLNonNull(GraphQLID)),
-      description: 'a list of team Ids'
+      description:
+        'a list of team Ids that you want tasks for. if null, will return tasks for all possible active teams'
     },
     archived: {
       type: GraphQLBoolean,
@@ -33,45 +61,41 @@ export default {
     }
   },
   async resolve(
-    {tms},
+    _source,
     {first, after, userIds, teamIds, archived},
     {authToken, dataLoader}: GQLContext
   ) {
     // AUTH
     const viewerId = getUserId(authToken)
-    if (teamIds) {
-      for (const teamId of teamIds) {
-        // cannot query tasks from teams the viewer is not in
-        if (!isTeamMember(authToken, teamId)) {
-          standardError(new Error('Team not found'), {userId: viewerId})
-          return connectionFromTasks([])
-        }
-      }
+
+    // VALIDATE
+    if (teamIds?.length > 100 || userIds?.length > 100) {
+      standardError(new Error('Task filter is too broad'), {
+        userId: viewerId,
+        tags: {userIds, teamIds}
+      })
+      return connectionFromTasks([])
     }
+    // common queries
+    // - give me all the tasks for a particular team (users: all, team: abc)
+    // - give me all the tasks for a particular user (users: 123, team: all)
+    // - give me all the tasks for a number of teams (users: all, team: [abc, def])
+    // - give me all the tasks for a number of users (users: [123, 456], team: all)
+    // - give me all the tasks for a set of users & teams (users: [123, 456], team: [abc, def])
+    // - give me all the tasks for all the users on all the teams (users: all, team: all)
 
-    let userIdsForQuery = userIds
-    let teamIdsForQuery = teamIds
+    // if archived is true & no userId filter is provided, it should include tasks for ex-team members
+    // under no condition should it show tasks for archived teams
 
-    if (!userIds && !teamIds) {
-      userIdsForQuery = [viewerId]
-      teamIdsForQuery = tms
-    } else if (userIds && !teamIds) {
-      const users = await dataLoader.get('users').loadMany(userIds)
-      teamIdsForQuery = users
-        .map(({tms}) => tms)
-        .flat()
-        .filter((teamId) => isTeamMember(authToken, teamId))
-    } else if (!userIds && teamIds) {
-      const loadedTeamMembers = await dataLoader.get('teamMembersByTeamId').loadMany(teamIds)
-      const userIdsForTeamIds = loadedTeamMembers.flat().map(({userId}) => userId)
-      userIdsForQuery = [...new Set(userIdsForTeamIds.flat())]
-    }
+    const validTeamIds = getValidTeamIds(teamIds, authToken.tms)
+    const validUserIds = await getValidUserIds(userIds, viewerId, validTeamIds, dataLoader)
 
+    // RESOLUTION
     const tasks = await dataLoader.get('userTasks').load({
       first: first,
       after: after,
-      userIds: userIdsForQuery,
-      teamIds: teamIdsForQuery,
+      userIds: validUserIds,
+      teamIds: validTeamIds,
       archived: archived
     })
 

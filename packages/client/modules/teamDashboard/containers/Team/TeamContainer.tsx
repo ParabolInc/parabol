@@ -61,7 +61,7 @@ const TeamContainer = (props: Props) => {
             <Route
               path={`${match.path}/archive`}
               // render={(p) => <ArchivedTasks {...p} team={team} />}
-              render={(p) => <ArchivedTasks {...p.match.params} team={team} showHeader={true} />}
+              render={(p) => <ArchivedTasks {...p} team={team} returnToTeamId={teamId} teamIds={[teamId]} />}
             />
           </Switch>
         </Suspense>

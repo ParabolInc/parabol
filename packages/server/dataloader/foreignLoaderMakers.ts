@@ -327,3 +327,17 @@ export const teamMembersByTeamId = new LoaderMakerForeign(
       .run()
   }
 )
+
+export const teamMembersByUserId = new LoaderMakerForeign(
+  'teamMembers',
+  'userId',
+  async (userIds) => {
+    // tasksByUserId is expensive since we have to look up each team to check the team archive status
+    const r = await getRethink()
+    return r
+      .table('TeamMember')
+      .getAll(r.args(userIds), {index: 'userId'})
+      .filter({isNotRemoved: true})
+      .run()
+  }
+)

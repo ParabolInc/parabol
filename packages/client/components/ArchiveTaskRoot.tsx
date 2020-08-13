@@ -1,11 +1,11 @@
-import React from 'react'
 import graphql from 'babel-plugin-relay/macro'
+import React from 'react'
 import {QueryRenderer} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
-import renderQuery from '~/utils/relay/renderQuery'
+import useDocumentTitle from '~/hooks/useDocumentTitle'
 import TeamArchive from '~/modules/teamDashboard/components/TeamArchive/TeamArchive'
 import {LoaderSize} from '~/types/constEnums'
-import useDocumentTitle from '~/hooks/useDocumentTitle'
+import renderQuery from '~/utils/relay/renderQuery'
 
 
 const query = graphql`
@@ -17,24 +17,24 @@ const query = graphql`
 `
 
 export interface ArchiveTaskRootProps {
-  teamId?: string
+  teamIds?: string[] | null
+  userIds?: string[] | null
   team?: any
-  showHeader?: boolean
+  returnToTeamId?: string
 }
 
-const ArchiveTaskRoot = ({teamId, team, showHeader}: ArchiveTaskRootProps) => {
+const ArchiveTaskRoot = ({teamIds, team, userIds, returnToTeamId}: ArchiveTaskRootProps) => {
   const atmosphere = useAtmosphere()
-  const {viewerId} = atmosphere
-  showHeader && useDocumentTitle(`Team Archive | ${team.name}`, 'Archive')
+  returnToTeamId && useDocumentTitle(`Team Archive | ${team.name}`, 'Archive')
 
   return (
     <QueryRenderer
       environment={atmosphere}
       query={query}
-      variables={{teamIds: teamId ? [teamId] : undefined, first: 40}}
+      variables={{teamIds, userIds, first: 40}}
       fetchPolicy={'store-or-network' as any}
       render={renderQuery(TeamArchive, {
-        props: {teamId, team, userId: viewerId, showHeader: showHeader},
+        props: {returnToTeamId, team},
         size: LoaderSize.PANEL
       })}
     />

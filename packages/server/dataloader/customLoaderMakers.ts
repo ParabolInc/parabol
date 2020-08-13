@@ -22,7 +22,7 @@ export interface JiraRemoteProjectKey {
 export interface UserTasksKey {
   first: number
   after: number | string
-  userIds: string[]
+  userIds: string[] | null
   teamIds: string[]
   archived: boolean
 }
@@ -61,9 +61,8 @@ export const users = () => {
 }
 
 export const serializeUserTasksKey = (key: UserTasksKey) => {
-  return `${key.userIds.sort().join(':')}:${key.teamIds.sort().join(':')}:${key.first}:${
-    key.after
-  }:${key.archived}`
+  const userIdKey = key.userIds ? key.userIds.sort().join(':') : '*'
+  return `${userIdKey}:${key.teamIds.sort().join(':')}:${key.first}:${key.after}:${key.archived}`
 }
 
 export const commentCountByThreadId = (parent: RethinkDataLoader) => {
@@ -150,13 +149,15 @@ export const userTasks = (parent: RethinkDataLoader) => {
           const {first, after, userIds, teamIds, archived} = key
           const dbAfter = after ? new Date(after) : r.maxval
 
+          let teamTaskPartial = r.table('Task').getAll(r.args(teamIds), {index: 'teamId'})
+          if (userIds) {
+            teamTaskPartial = teamTaskPartial.filter((row) => r(userIds).contains(row('userId')))
+          }
+
           return {
             key: serializeUserTasksKey(key),
-            data: await r
-              .table('Task')
-              .getAll(r.args(userIds), {index: 'userId'})
-              .filter((row) => r(teamIds).contains(row('teamId')))
-              .filter((task) => task('createdAt').lt(dbAfter))
+            data: await teamTaskPartial
+              .filter((task) => task('updatedAt').lt(dbAfter))
               .filter((task) =>
                 archived
                   ? task('tags').contains('archived')
