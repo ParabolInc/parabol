@@ -9,7 +9,6 @@ import useMenu from '../../../hooks/useMenu'
 import useTooltip from '../../../hooks/useTooltip'
 import {PALETTE} from '../../../styles/paletteV2'
 import {ICON_SIZE} from '../../../styles/typographyV2'
-import {NewMeeting} from '../../../types/constEnums'
 import lazyPreload from '../../../utils/lazyPreload'
 import {TemplateSharing_template} from '../../../__generated__/TemplateSharing_template.graphql'
 
@@ -24,9 +23,8 @@ const HR = styled('hr')({
   backgroundColor: PALETTE.BORDER_LIGHT,
   border: 'none',
   height: 1,
-  marginBottom: 8,
-  marginTop: 8,
-  marginLeft: 88,
+  margin: 0,
+  marginLeft: 56,
   padding: 0,
   width: '100%'
 })
@@ -45,11 +43,9 @@ const DropdownBlock = styled('div')<{disabled: boolean}>(({disabled}) => ({
   display: 'flex',
   fontSize: 16,
   lineHeight: '24px',
-  userSelect: 'none',
-  marginLeft: 88,
-  marginBottom: 8,
-  marginTop: 8,
-  width: NewMeeting.CONTROLS_WIDTH,
+  minWidth: 288,
+  margin: '16px 16px 16px 56px',
+  userSelect: 'none'
 }))
 
 interface Props {
@@ -80,14 +76,18 @@ const TemplateSharing = (props: Props) => {
       parentId: 'templateModal'
     }
   )
-  const {openTooltip, tooltipPortal, closeTooltip, originRef: tooltipRef} = useTooltip<HTMLDivElement>(
-    MenuPosition.LOWER_CENTER,
-    {
-      disabled: isLead,
-    }
-  )
+  const {openTooltip, tooltipPortal, closeTooltip, originRef: tooltipRef} = useTooltip<
+    HTMLDivElement
+  >(MenuPosition.LOWER_CENTER, {
+    disabled: isLead
+  })
   if (!isOwner) return null
-  const label = scope === 'TEAM' ? `Only visible to ${teamName}` : scope === 'ORGANIZATION' ? `Sharing with ${orgName}` : 'Sharing publicly'
+  const label =
+    scope === 'TEAM'
+      ? `Only visible to ${teamName}`
+      : scope === 'ORGANIZATION'
+      ? `Sharing with ${orgName}`
+      : 'Sharing publicly'
   return (
     <>
       <HR />
@@ -102,9 +102,7 @@ const TemplateSharing = (props: Props) => {
         <MenuToggleV2Text icon={'share'} label={label} />
         <DropdownIcon>expand_more</DropdownIcon>
       </DropdownBlock>
-      {menuPortal(
-        <SelectSharingScopeDropdown menuProps={menuProps} template={template} />
-      )}
+      {menuPortal(<SelectSharingScopeDropdown menuProps={menuProps} template={template} />)}
       {tooltipPortal(<div>Must be Team Lead to change</div>)}
     </>
   )

@@ -3,16 +3,18 @@ import graphql from 'babel-plugin-relay/macro'
 import React, {Component} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import EditableText from '../../../components/EditableText'
-import withAtmosphere, {WithAtmosphereProps} from '../../../decorators/withAtmosphere/withAtmosphere'
+import withAtmosphere, {
+  WithAtmosphereProps
+} from '../../../decorators/withAtmosphere/withAtmosphere'
 import RenameReflectTemplatePromptMutation from '../../../mutations/RenameReflectTemplatePromptMutation'
 import withMutationProps, {WithMutationProps} from '../../../utils/relay/withMutationProps'
 import Legitity from '../../../validation/Legitity'
 import {EditableTemplatePrompt_prompts} from '../../../__generated__/EditableTemplatePrompt_prompts.graphql'
 
 const StyledEditableText = styled(EditableText)({
-  lineHeight: '20px',
-  paddingBottom: 4,
-  paddingTop: 8
+  lineHeight: '24px',
+  marginBottom: 4,
+  padding: 0
 })
 
 interface Props extends WithAtmosphereProps, WithMutationProps {

@@ -14,7 +14,7 @@ interface Props {
 
 const StyledDialogContainer = styled(DialogContainer)({
   flexDirection: 'row',
-  width: 960,
+  width: 840,
   maxHeight: 500,
   minHeight: 500
 })
@@ -36,8 +36,16 @@ const ReflectTemplateModal = (props: Props) => {
   }
   return (
     <StyledDialogContainer>
-      <ReflectTemplateList settings={retroMeetingSettings} activeIdx={activeIdx} setActiveIdx={setActiveIdx} />
-      <ReflectTemplateDetails settings={retroMeetingSettings} gotoTeamTemplates={gotoTeamTemplates} gotoPublicTemplates={gotoPublicTemplates} />
+      <ReflectTemplateList
+        settings={retroMeetingSettings}
+        activeIdx={activeIdx}
+        setActiveIdx={setActiveIdx}
+      />
+      <ReflectTemplateDetails
+        settings={retroMeetingSettings}
+        gotoTeamTemplates={gotoTeamTemplates}
+        gotoPublicTemplates={gotoPublicTemplates}
+      />
     </StyledDialogContainer>
   )
 }

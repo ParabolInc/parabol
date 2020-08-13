@@ -8,12 +8,13 @@ import Icon from './Icon'
 
 const StaticBlock = styled('div')<{disabled: boolean | undefined}>(({disabled}) => ({
   alignItems: 'center',
-  cursor: 'pointer',
+  cursor: disabled ? 'default' : 'pointer',
   display: 'flex',
   fontFamily: FONT_FAMILY.SANS_SERIF,
   fontSize: 'inherit',
   fontWeight: 'inherit',
   lineHeight: 'inherit',
+  outline: disabled ? 'none' : undefined,
   width: '100%',
   ':hover': {
     opacity: disabled ? undefined : 0.5

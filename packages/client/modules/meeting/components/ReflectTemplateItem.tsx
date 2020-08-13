@@ -12,8 +12,7 @@ import makeTemplateDescription from '../../../utils/makeTemplateDescription'
 import {ReflectTemplateItem_template} from '../../../__generated__/ReflectTemplateItem_template.graphql'
 
 const TemplateItem = styled('li')<{isActive: boolean}>(({isActive}) => ({
-
-  backgroundColor: isActive ? PALETTE.BACKGROUND_MAIN_DARKENED : undefined,
+  backgroundColor: isActive ? PALETTE.BACKGROUND_MAIN : undefined,
   borderRadius: 2,
   cursor: 'pointer',
   display: 'flex',
@@ -30,7 +29,8 @@ const TemplateItem = styled('li')<{isActive: boolean}>(({isActive}) => ({
 
 const TemplateItemDetails = styled('div')({
   display: 'flex',
-  flexDirection: 'column'
+  flexDirection: 'column',
+  maxWidth: '100%'
 })
 
 const TemplateTitle = styled('div')({
@@ -48,10 +48,7 @@ const TemplateDescription = styled('div')({
   lineHeight: '16px'
 })
 
-const TemplateItemAction = styled('div')({
-
-})
-
+const TemplateItemAction = styled('div')({})
 
 interface Props {
   isActive: boolean
@@ -72,34 +69,26 @@ const ReflectTemplateItem = (props: Props) => {
     SelectRetroTemplateMutation(atmosphere, {selectedTemplateId: templateId, teamId})
   }
   return (
-    <TemplateItem
-      ref={ref}
-      isActive={isActive}
-      onClick={selectTemplate}
-    >
+    <TemplateItem ref={ref} isActive={isActive} onClick={selectTemplate}>
       <TemplateItemDetails>
         <TemplateTitle>{templateName}</TemplateTitle>
         <TemplateDescription>{description}</TemplateDescription>
       </TemplateItemDetails>
-      <TemplateItemAction>
-      </TemplateItemAction>
+      <TemplateItemAction></TemplateItemAction>
     </TemplateItem>
   )
 }
 
-export default createFragmentContainer(
-  ReflectTemplateItem,
-  {
-    template: graphql`
-      fragment ReflectTemplateItem_template on ReflectTemplate {
-        #get the details here so we can show them in the details view
-        ...ReflectTemplateDetailsTemplate
-        ...makeTemplateDescription_template
-        id
-        name
-        lastUsedAt
-        scope
-      }
-    `
-  }
-)
+export default createFragmentContainer(ReflectTemplateItem, {
+  template: graphql`
+    fragment ReflectTemplateItem_template on ReflectTemplate {
+      #get the details here so we can show them in the details view
+      ...ReflectTemplateDetailsTemplate
+      ...makeTemplateDescription_template
+      id
+      name
+      lastUsedAt
+      scope
+    }
+  `
+})

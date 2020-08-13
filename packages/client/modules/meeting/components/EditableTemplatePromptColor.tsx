@@ -20,9 +20,13 @@ interface Props {
 }
 
 const PromptColor = styled(PlainButton)<{isOwner: boolean}>(({isOwner}) => ({
-  display: 'flex',
+  cursor: isOwner ? 'pointer' : 'default',
+  display: 'block',
   flex: 1,
-  padding: '12px 0 6px',
+  height: 24,
+  padding: 4,
+  position: 'relative',
+  width: 24,
   ':hover': {
     i: {
       opacity: isOwner ? 1 : undefined
@@ -38,11 +42,16 @@ const ColorBadge = styled('div')<{groupColor?: string}>(({groupColor}) => ({
 }))
 
 const DropdownIcon = styled(Icon)({
+  bottom: 0,
   color: PALETTE.TEXT_GRAY,
   fontSize: ICON_SIZE.MD18,
-  marginRight: 8,
+  height: 24,
+  lineHeight: '24px',
   opacity: 0,
-  transition: `opacity 300ms ${BezierCurve.DECELERATE}`
+  position: 'absolute',
+  right: -6,
+  transition: `opacity 300ms ${BezierCurve.DECELERATE}`,
+  width: 12
 })
 
 const EditableTemplatePromptColor = (props: Props) => {

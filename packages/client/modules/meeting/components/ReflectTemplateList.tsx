@@ -7,6 +7,7 @@ import Icon from '../../../components/Icon'
 import Tab from '../../../components/Tab/Tab'
 import Tabs from '../../../components/Tabs/Tabs'
 import {PALETTE} from '../../../styles/paletteV2'
+import {desktopSidebarShadow} from '../../../styles/elevation'
 import {Threshold} from '../../../types/constEnums'
 import {ReflectTemplateList_settings} from '../../../__generated__/ReflectTemplateList_settings.graphql'
 import AddNewReflectTemplate from './AddNewReflectTemplate'
@@ -16,9 +17,12 @@ import ReflectTemplateListTeam from './ReflectTemplateListTeam'
 
 const WIDTH = 360
 const TemplateSidebar = styled('div')({
+  boxShadow: desktopSidebarShadow,
   display: 'flex',
   flexDirection: 'column',
-  width: WIDTH
+  position: 'relative',
+  width: WIDTH,
+  zIndex: 1 // show above template details to show box-shadow
 })
 
 const Label = styled('div')({
@@ -36,15 +40,17 @@ const StyledTabsBar = styled(Tabs)({
 })
 
 const FullTab = styled(Tab)({
-  // justifyContent: 'center',
   padding: '4px 0 8px',
-  width: WIDTH / 3
+  width: '30%'
+})
+
+const WideTab = styled(FullTab)({
+  width: '40%'
 })
 
 const TabContents = styled('div')({
   display: 'flex',
   flexDirection: 'column',
-  // justifyContent: 'center',
   height: '100%'
 })
 
@@ -54,6 +60,10 @@ const TabLabel = styled('div')({
   alignItems: 'center'
 })
 
+const TabIcon = styled(Icon)({
+  marginRight: 4
+})
+
 const containerStyle = {height: '100%'}
 const innerStyle = {width: '100%', height: '100%'}
 interface Props {
@@ -61,8 +71,6 @@ interface Props {
   setActiveIdx: (idx: number) => void
   settings: ReflectTemplateList_settings
 }
-
-
 
 const ReflectTemplateList = (props: Props) => {
   const {activeIdx, setActiveIdx, settings} = props
@@ -86,9 +94,30 @@ const ReflectTemplateList = (props: Props) => {
     <TemplateSidebar>
       <Label>Retro Templates</Label>
       <StyledTabsBar activeIdx={activeIdx}>
-        <FullTab label={<TabLabel><Icon>{'group'}</Icon> Team</TabLabel>} onClick={gotoTeamTemplates} />
-        <FullTab label={<TabLabel><Icon>{'business'}</Icon> Organization</TabLabel>} onClick={() => setActiveIdx(1)} />
-        <FullTab label={<TabLabel><Icon>{'public'}</Icon> Public</TabLabel>} onClick={gotoPublicTemplates} />
+        <FullTab
+          label={
+            <TabLabel>
+              <TabIcon>{'group'}</TabIcon> Team
+            </TabLabel>
+          }
+          onClick={gotoTeamTemplates}
+        />
+        <WideTab
+          label={
+            <TabLabel>
+              <TabIcon>{'business'}</TabIcon> Organization
+            </TabLabel>
+          }
+          onClick={() => setActiveIdx(1)}
+        />
+        <FullTab
+          label={
+            <TabLabel>
+              <TabIcon>{'public'}</TabIcon> Public
+            </TabLabel>
+          }
+          onClick={gotoPublicTemplates}
+        />
       </StyledTabsBar>
       <SwipeableViews
         enableMouseEvents
@@ -98,7 +127,13 @@ const ReflectTemplateList = (props: Props) => {
         style={innerStyle}
       >
         <TabContents>
-          <ReflectTemplateListTeam selectedTemplateId={selectedTemplateId} showPublicTemplates={gotoPublicTemplates} teamTemplates={teamTemplates} teamId={teamId} isActive={activeIdx === 0} />
+          <ReflectTemplateListTeam
+            selectedTemplateId={selectedTemplateId}
+            showPublicTemplates={gotoPublicTemplates}
+            teamTemplates={teamTemplates}
+            teamId={teamId}
+            isActive={activeIdx === 0}
+          />
         </TabContents>
         <TabContents>
           <ReflectTemplateListOrgRoot teamId={teamId} isActive={activeIdx === 1} />
@@ -108,35 +143,31 @@ const ReflectTemplateList = (props: Props) => {
         </TabContents>
       </SwipeableViews>
       {/* add a key to clear the error when they change */}
-      {teamTemplates.length < Threshold.MAX_RETRO_TEAM_TEMPLATES && <AddNewReflectTemplate
-        teamId={teamId}
-        reflectTemplates={teamTemplates}
-      />}
-    </TemplateSidebar >
+      {teamTemplates.length < Threshold.MAX_RETRO_TEAM_TEMPLATES && (
+        <AddNewReflectTemplate teamId={teamId} reflectTemplates={teamTemplates} />
+      )}
+    </TemplateSidebar>
   )
 }
 
-export default createFragmentContainer(
-  ReflectTemplateList,
-  {
-    settings: graphql`
-      fragment ReflectTemplateList_settings on RetrospectiveMeetingSettings {
+export default createFragmentContainer(ReflectTemplateList, {
+  settings: graphql`
+    fragment ReflectTemplateList_settings on RetrospectiveMeetingSettings {
+      id
+      team {
         id
-        team {
-          id
-        }
-        selectedTemplate {
-          ...getTemplateList_template
-          id
-          teamId
-          orgId
-        }
-        teamTemplates {
-          ...ReflectTemplateListTeam_teamTemplates
-          ...AddNewReflectTemplate_reflectTemplates
-          id
-        }
       }
-    `
-  }
-)
+      selectedTemplate {
+        ...getTemplateList_template
+        id
+        teamId
+        orgId
+      }
+      teamTemplates {
+        ...ReflectTemplateListTeam_teamTemplates
+        ...AddNewReflectTemplate_reflectTemplates
+        id
+      }
+    }
+  `
+})

@@ -28,15 +28,20 @@ interface StyledProps {
   isHover?: boolean
 }
 
-const PromptItem = styled('li')<StyledProps & {isOwner: boolean}>(({isOwner, isHover, isDragging}) => ({
-  alignItems: 'flex-start',
-  backgroundColor: isOwner && (isHover || isDragging) ? PALETTE.BACKGROUND_MAIN_LIGHTENED : undefined,
-  borderRadius: '.125rem',
-  display: 'flex',
-  fontSize: 18,
-  lineHeight: '32px',
-  padding: '0 .6875rem 0 1rem'
-}))
+const PromptItem = styled('div')<StyledProps & {isOwner: boolean}>(
+  ({isOwner, isHover, isDragging}) => ({
+    alignItems: 'flex-start',
+    backgroundColor:
+      isOwner && (isHover || isDragging) ? PALETTE.BACKGROUND_MAIN_LIGHTENED : undefined,
+    borderRadius: '.125rem',
+    cursor: isOwner ? 'pointer' : undefined,
+    display: 'flex',
+    fontSize: 18,
+    lineHeight: '32px',
+    padding: '4px 16px',
+    width: '100%'
+  })
+)
 
 const RemovePromptIcon = styled(Icon)<StyledProps>(({isHover}) => ({
   color: PALETTE.TEXT_GRAY,
@@ -51,7 +56,8 @@ const RemovePromptIcon = styled(Icon)<StyledProps>(({isHover}) => ({
 const PromptAndDescription = styled('div')({
   width: '100%',
   display: 'flex',
-  flexDirection: 'column'
+  flexDirection: 'column',
+  paddingLeft: 16
 })
 
 const TemplatePromptItem = (props: Props) => {

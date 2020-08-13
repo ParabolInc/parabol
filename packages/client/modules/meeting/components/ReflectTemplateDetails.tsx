@@ -18,30 +18,32 @@ const TemplateHeader = styled('div')({
   display: 'flex',
   flexDirection: 'column',
   margin: '16px 0',
-  paddingLeft: 48,
-  paddingRight: 32,
+  paddingLeft: 56,
+  paddingRight: 16,
   width: '100%'
 })
 
 const PromptEditor = styled('div')({
   alignItems: 'flex-start',
   background: '#fff',
+  borderRadius: 8,
   display: 'flex',
   flexDirection: 'column',
   overflow: 'hidden',
-  minWidth: 600,
+  maxWidth: 480,
+  width: '100%'
 })
 
 const CreateTemplateImg = styled('img')({
-  padding: 16,
-  width: 240
+  margin: '0 auto',
+  padding: '24px 56px 0',
+  width: 360
 })
 
 const Description = styled('div')({
   color: PALETTE.TEXT_MAIN,
   fontSize: 14,
-  lineHeight: '20px',
-
+  lineHeight: '20px'
 })
 
 const FirstLine = styled('div')({
@@ -52,9 +54,9 @@ const FirstLine = styled('div')({
 const Scrollable = styled('div')({
   display: 'flex',
   flexDirection: 'column',
-  overflow: 'auto'
+  overflow: 'auto',
+  width: '100%'
 })
-
 
 interface Props {
   gotoTeamTemplates: () => void
@@ -73,22 +75,36 @@ const ReflectTemplateDetails = (props: Props) => {
   const templateCount = teamTemplates.length
   return (
     <PromptEditor>
-      <CreateTemplateImg src={CreateTemplate} />
-      < TemplateHeader >
-        <FirstLine>
-          <EditableTemplateName
-            key={templateId}
-            name={templateName}
-            templateId={templateId}
-            teamTemplates={teamTemplates}
-            isOwner={isOwner}
-          />
-          {isOwner && <RemoveTemplate templateId={templateId} teamId={teamId} teamTemplates={teamTemplates} gotoPublicTemplates={gotoPublicTemplates} />}
-          {!isOwner && <CloneTemplate gotoTeamTemplates={gotoTeamTemplates} teamId={teamId} templateId={templateId} templateCount={templateCount} />}
-        </FirstLine>
-        <Description>{description}</Description>
-      </TemplateHeader>
       <Scrollable>
+        <CreateTemplateImg src={CreateTemplate} />
+        <TemplateHeader>
+          <FirstLine>
+            <EditableTemplateName
+              key={templateId}
+              name={templateName}
+              templateId={templateId}
+              teamTemplates={teamTemplates}
+              isOwner={isOwner}
+            />
+            {isOwner && (
+              <RemoveTemplate
+                templateId={templateId}
+                teamId={teamId}
+                teamTemplates={teamTemplates}
+                gotoPublicTemplates={gotoPublicTemplates}
+              />
+            )}
+            {!isOwner && (
+              <CloneTemplate
+                gotoTeamTemplates={gotoTeamTemplates}
+                teamId={teamId}
+                templateId={templateId}
+                templateCount={templateCount}
+              />
+            )}
+          </FirstLine>
+          <Description>{description}</Description>
+        </TemplateHeader>
         <TemplatePromptList isOwner={isOwner} prompts={prompts} templateId={templateId} />
         {isOwner && <AddTemplatePrompt templateId={templateId} prompts={prompts} />}
       </Scrollable>
@@ -111,23 +127,20 @@ graphql`
     teamId
   }
 `
-export default createFragmentContainer(
-  ReflectTemplateDetails,
-  {
-    settings: graphql`
-      fragment ReflectTemplateDetails_settings on RetrospectiveMeetingSettings {
-        selectedTemplate {
-          ...ReflectTemplateDetailsTemplate @relay(mask: false)
-        }
-        teamTemplates {
-          ...EditableTemplateName_teamTemplates
-          ...RemoveTemplate_teamTemplates
-        }
-        team {
-          id
-          orgId
-        }
+export default createFragmentContainer(ReflectTemplateDetails, {
+  settings: graphql`
+    fragment ReflectTemplateDetails_settings on RetrospectiveMeetingSettings {
+      selectedTemplate {
+        ...ReflectTemplateDetailsTemplate @relay(mask: false)
       }
-    `
-  }
-)
+      teamTemplates {
+        ...EditableTemplateName_teamTemplates
+        ...RemoveTemplate_teamTemplates
+      }
+      team {
+        id
+        orgId
+      }
+    }
+  `
+})

@@ -3,11 +3,12 @@ import graphql from 'babel-plugin-relay/macro'
 import React, {Component} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import Icon from '../../../components/Icon'
-import RaisedButton from '../../../components/RaisedButton'
-import withAtmosphere, {WithAtmosphereProps} from '../../../decorators/withAtmosphere/withAtmosphere'
+import FloatingActionButton from '../../../components/FloatingActionButton'
+import withAtmosphere, {
+  WithAtmosphereProps
+} from '../../../decorators/withAtmosphere/withAtmosphere'
 import AddReflectTemplateMutation from '../../../mutations/AddReflectTemplateMutation'
 import {PALETTE} from '../../../styles/paletteV2'
-import {ICON_SIZE} from '../../../styles/typographyV2'
 import withMutationProps, {WithMutationProps} from '../../../utils/relay/withMutationProps'
 import {AddNewReflectTemplate_reflectTemplates} from '../../../__generated__/AddNewReflectTemplate_reflectTemplates.graphql'
 
@@ -23,18 +24,15 @@ const ButtonBlock = styled('div')({
   display: 'flex',
   flexDirection: 'column',
   justifyContent: 'flex-end',
-  padding: '8px 16px',
+  padding: '8px 16px 16px 8px',
+  position: 'absolute',
+  right: 0,
+  bottom: 0,
   width: '100%'
 })
 
-const Button = styled(RaisedButton)({
-  display: 'flex',
-  // width: '100%'
-})
-
-const StyledIcon = styled(Icon)({
-  fontSize: ICON_SIZE.MD18,
-  marginRight: 8,
+const Button = styled(FloatingActionButton)({
+  padding: 15
 })
 
 interface Props extends WithAtmosphereProps, WithMutationProps {
@@ -72,8 +70,7 @@ class AddNewReflectTemplate extends Component<Props> {
       <ButtonBlock>
         {error && <Error>{error}</Error>}
         <Button onClick={this.addNewTemplate} palette='blue' waiting={submitting}>
-          <StyledIcon>add</StyledIcon>
-          Add new template
+          <Icon>add</Icon>
         </Button>
       </ButtonBlock>
     )

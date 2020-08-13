@@ -3,7 +3,9 @@ import graphql from 'babel-plugin-relay/macro'
 import React, {Component} from 'react'
 import {DragDropContext, Draggable, Droppable} from 'react-beautiful-dnd'
 import {createFragmentContainer} from 'react-relay'
-import withAtmosphere, {WithAtmosphereProps} from '../../../decorators/withAtmosphere/withAtmosphere'
+import withAtmosphere, {
+  WithAtmosphereProps
+} from '../../../decorators/withAtmosphere/withAtmosphere'
 import MoveReflectTemplatePromptMutation from '../../../mutations/MoveReflectTemplatePromptMutation'
 import dndNoise from '../../../utils/dndNoise'
 import withMutationProps, {WithMutationProps} from '../../../utils/relay/withMutationProps'
@@ -20,10 +22,9 @@ interface State {
   scrollOffset: number
 }
 
-const PromptList = styled('ul')({
+const PromptList = styled('div')({
   margin: 0,
-  marginBottom: 16,
-  padding: '0 32px',
+  padding: 0,
   width: '100%'
 })
 
@@ -73,7 +74,12 @@ class TemplatePromptList extends Component<Props, State> {
                 <div ref={provided.innerRef}>
                   {prompts.map((prompt, idx) => {
                     return (
-                      <Draggable key={prompt.id} draggableId={prompt.id} index={idx} isDragDisabled={!isOwner}>
+                      <Draggable
+                        key={prompt.id}
+                        draggableId={prompt.id}
+                        index={idx}
+                        isDragDisabled={!isOwner}
+                      >
                         {(dragProvided, dragSnapshot) => {
                           return (
                             <TemplatePromptItem
