@@ -122,7 +122,7 @@ const addStageToBotScript = (stageId, db, reflectionGroupId) => {
   ops.push({
     op: 'EditCommentingMutation',
     delay: 2000,
-    botId: 'bot1',
+    botId: 'bot2',
     variables: {
       isCommenting: false,
       meetingId,
