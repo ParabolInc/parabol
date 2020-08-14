@@ -76,10 +76,6 @@ const DiscussionThread = (props: Props) => {
 graphql`
   fragment DiscussionThread_threadSource on ThreadSource {
     id
-    commentors {
-      userId
-      preferredName
-    }
     thread(first: 1000) @connection(key: "DiscussionThread_thread") {
       edges {
         node {
@@ -107,11 +103,19 @@ export default createFragmentContainer(DiscussionThread, {
         ... on RetrospectiveMeeting {
           threadSource: reflectionGroup(reflectionGroupId: $threadSourceId) {
             ...DiscussionThread_threadSource @relay(mask: false)
+            commentors {
+              userId
+              preferredName
+            }
           }
         }
         ... on ActionMeeting {
           threadSource: agendaItem(agendaItemId: $threadSourceId) {
             ...DiscussionThread_threadSource @relay(mask: false)
+            commentors {
+              userId
+              preferredName
+            }
           }
         }
       }
