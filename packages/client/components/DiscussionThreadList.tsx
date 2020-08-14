@@ -43,15 +43,16 @@ const Header = styled(LabelHeading)({
 interface Props {
   editorRef: RefObject<HTMLTextAreaElement>
   meeting: DiscussionThreadList_meeting
+  preferredNames: string[] | null
   threadSourceId: string
   threadables: DiscussionThreadList_threadables
   dataCy: string
 }
 
 const DiscussionThreadList = forwardRef((props: Props, ref: any) => {
-  const {editorRef, meeting, threadSourceId, threadables, dataCy} = props
+  const {editorRef, meeting, threadSourceId, threadables, dataCy, preferredNames} = props
   const isEmpty = threadables.length === 0
-  useScrollThreadList(threadables, editorRef, ref)
+  useScrollThreadList(threadables, editorRef, ref, preferredNames)
   const HeaderBlock = () => <Header>{'Discussion & Takeaway Tasks'}</Header>
   if (isEmpty) {
     return (
@@ -87,6 +88,7 @@ export default createFragmentContainer(DiscussionThreadList, {
       ...ThreadedItem_meeting
     }
   `,
+
   threadables: graphql`
     fragment DiscussionThreadList_threadables on Threadable @relay(plural: true) {
       ...ThreadedItem_threadable

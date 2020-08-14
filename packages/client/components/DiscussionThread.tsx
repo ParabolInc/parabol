@@ -53,6 +53,7 @@ const DiscussionThread = (props: Props) => {
         dataCy='discuss-thread-list'
         threadSourceId={threadSourceId}
         meeting={meeting}
+        preferredNames={preferredNames}
         threadables={threadables}
         ref={listRef}
         editorRef={editorRef}

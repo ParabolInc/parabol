@@ -5,7 +5,7 @@ import useAtmosphere from '~/hooks/useAtmosphere'
 import useMutationProps from '~/hooks/useMutationProps'
 import useReplyEditorState from '~/hooks/useReplyEditorState'
 import AddCommentMutation from '~/mutations/AddCommentMutation'
-import React, {forwardRef, RefObject, useState} from 'react'
+import React, {forwardRef, RefObject, useEffect, useState} from 'react'
 import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import {Elevation} from '~/styles/elevation'
 import {ThreadSourceEnum} from '~/types/graphql'
@@ -76,12 +76,33 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
   const {submitting, onError, onCompleted, submitMutation} = useMutationProps()
   const [isCommenting, setIsCommenting] = useState(false)
   const placeholder = isAnonymousComment ? 'Comment anonymously' : 'Comment publicly'
+  const [lastTypedTimestamp, setLastTypedTimestamp] = useState<Date>()
 
   const threadSourceByMeetingType = {
     [MeetingTypeEnum.retrospective]: ThreadSourceEnum.REFLECTION_GROUP,
     [MeetingTypeEnum.action]: ThreadSourceEnum.AGENDA_ITEM
   }
   const threadSource = threadSourceByMeetingType[meetingType]
+
+  useEffect(() => {
+    const inactiveCommenting = setTimeout(() => {
+      if (isCommenting) {
+        EditCommentingMutation(
+          atmosphere,
+          {
+            isCommenting: false,
+            meetingId,
+            threadId: threadSourceId
+          },
+          {onError, onCompleted}
+        )
+        setIsCommenting(false)
+      }
+    }, 5000)
+    return () => {
+      clearTimeout(inactiveCommenting)
+    }
+  }, [lastTypedTimestamp])
 
   const toggleAnonymous = () => {
     commitLocalUpdate(atmosphere, (store) => {
@@ -122,6 +143,9 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
   }
 
   const ensureCommenting = () => {
+    const timestamp = new Date()
+    setLastTypedTimestamp(timestamp)
+
     collapseAddTask()
     if (isAnonymousComment || isCommenting) return
     EditCommentingMutation(
@@ -134,18 +158,6 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
       {onError, onCompleted}
     )
     setIsCommenting(true)
-    setTimeout(() => {
-      EditCommentingMutation(
-        atmosphere,
-        {
-          isCommenting: false,
-          meetingId,
-          threadId: threadSourceId
-        },
-        {onError, onCompleted}
-      )
-      setIsCommenting(false)
-    }, 5000)
   }
 
   const ensureNotCommenting = () => {

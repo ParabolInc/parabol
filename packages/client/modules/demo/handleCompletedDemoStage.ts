@@ -35,6 +35,8 @@ const removeEmptyReflections = (db) => {
 
 const addStageToBotScript = (stageId, db, reflectionGroupId) => {
   const reflectionGroup = db.reflectionGroups.find((group) => group.id === reflectionGroupId)
+  const meeting = db.newMeeting
+  const {id: meetingId} = meeting
   const {reflections} = reflectionGroup
   const stageTasks = [] as string[]
   const reactions = [] as {
@@ -106,6 +108,26 @@ const addStageToBotScript = (stageId, db, reflectionGroupId) => {
         }
       ]
     )
+  })
+  ops.push({
+    op: 'EditCommentingMutation',
+    delay: 1000,
+    botId: 'bot1',
+    variables: {
+      isCommenting: true,
+      meetingId,
+      threadId: reflectionGroupId
+    }
+  })
+  ops.push({
+    op: 'EditCommentingMutation',
+    delay: 2000,
+    botId: 'bot1',
+    variables: {
+      isCommenting: false,
+      meetingId,
+      threadId: reflectionGroupId
+    }
   })
   ops.push({
     op: 'FlagReadyToAdvanceMutation',
