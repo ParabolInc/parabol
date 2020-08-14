@@ -1,19 +1,19 @@
-import {commitLocalUpdate, commitMutation} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
+import {commitLocalUpdate, commitMutation} from 'react-relay'
 import {Disposable, RecordProxy, RecordSourceSelectorProxy} from 'relay-runtime'
-import getInProxy from '../utils/relay/getInProxy'
-import handleAddReflectionToGroup from './handlers/handleAddReflectionToGroup'
-import safeRemoveNodeFromArray from '../utils/relay/safeRemoveNodeFromArray'
-import handleRemoveEmptyReflectionGroup from './handlers/handleRemoveEmptyReflectionGroup'
-import createProxyRecord from '../utils/relay/createProxyRecord'
-import updateProxyRecord from '../utils/relay/updateProxyRecord'
+import {EndDraggingReflectionMutation_meeting} from '~/__generated__/EndDraggingReflectionMutation_meeting.graphql'
+import Atmosphere from '../Atmosphere'
+import {IEndDraggingReflectionOnMutationArguments} from '../types/graphql'
+import {LocalHandlers, SharedUpdater} from '../types/relayMutations'
 import dndNoise from '../utils/dndNoise'
 import addNodeToArray from '../utils/relay/addNodeToArray'
-import {LocalHandlers, SharedUpdater} from '../types/relayMutations'
-import {IEndDraggingReflectionOnMutationArguments} from '../types/graphql'
-import Atmosphere from '../Atmosphere'
 import clientTempId from '../utils/relay/clientTempId'
-import {EndDraggingReflectionMutation_meeting} from '~/__generated__/EndDraggingReflectionMutation_meeting.graphql'
+import createProxyRecord from '../utils/relay/createProxyRecord'
+import getInProxy from '../utils/relay/getInProxy'
+import safeRemoveNodeFromArray from '../utils/relay/safeRemoveNodeFromArray'
+import updateProxyRecord from '../utils/relay/updateProxyRecord'
+import handleAddReflectionToGroup from './handlers/handleAddReflectionToGroup'
+import handleRemoveEmptyReflectionGroup from './handlers/handleRemoveEmptyReflectionGroup'
 
 graphql`
   fragment EndDraggingReflectionMutation_meeting on EndDraggingReflectionPayload {
@@ -30,7 +30,7 @@ graphql`
       id
       meetingId
       sortOrder
-      retroPhaseItemId
+      promptId
       reflections {
         ...DraggableReflectionCard_reflection @relay(mask: false)
       }

@@ -11,11 +11,11 @@ const removeReflectionFromGroup = async (reflectionId, {dataLoader}) => {
     .get(reflectionId)
     .run()
   if (!reflection) throw new Error('Reflection not found')
-  const {reflectionGroupId: oldReflectionGroupId, meetingId, retroPhaseItemId} = reflection
+  const {reflectionGroupId: oldReflectionGroupId, meetingId, promptId} = reflection
   const meeting = await dataLoader.get('newMeetings').load(meetingId)
 
   // RESOLUTION
-  const reflectionGroup = new ReflectionGroup({meetingId, retroPhaseItemId})
+  const reflectionGroup = new ReflectionGroup({meetingId, promptId})
   await r
     .table('RetroReflectionGroup')
     .insert(reflectionGroup)

@@ -429,7 +429,10 @@ export interface ISuggestedIntegrationsOnUserArguments {
 }
 
 export interface ITasksOnUserArguments {
-  first?: number | null;
+  /**
+   * the number of tasks to return
+   */
+  first: number;
 
   /**
    * the datetime cursor
@@ -437,9 +440,20 @@ export interface ITasksOnUserArguments {
   after?: any | null;
 
   /**
-   * The unique team ID
+   * a list of user Ids that you want tasks for. if null, will return tasks for all possible team members
    */
-  teamId?: string | null;
+  userIds?: Array<string> | null;
+
+  /**
+   * a list of team Ids that you want tasks for. if null, will return tasks for all possible active teams
+   */
+  teamIds?: Array<string> | null;
+
+  /**
+   * true to only return archived tasks; false to return active tasks
+   * @default false
+   */
+  archived?: boolean | null;
 }
 
 export interface ITeamOnUserArguments {
@@ -1269,7 +1283,11 @@ export interface ITeam {
    * The datetime the team was last updated
    */
   updatedAt: any | null;
-  customPhaseItems: Array<CustomPhaseItem | null> | null;
+
+  /**
+   * @deprecated "Field no longer needs to exist for now"
+   */
+  customPhaseItems: Array<IReflectPrompt | null> | null;
 
   /**
    * The outstanding invitations to join the team
@@ -1378,21 +1396,17 @@ export interface IMassInvitation {
   meetingId: string | null;
 }
 
-export type CustomPhaseItem = IRetroPhaseItem;
-
-export interface ICustomPhaseItem {
-  __typename: 'CustomPhaseItem';
+/**
+ * A team-specific reflection prompt. Usually 3 or 4 exist per team, eg Good/Bad/Change, 4Ls, etc.
+ */
+export interface IReflectPrompt {
+  __typename: 'ReflectPrompt';
 
   /**
    * shortid
    */
   id: string;
   createdAt: any;
-
-  /**
-   * The type of phase item
-   */
-  phaseItemType: CustomPhaseItemTypeEnum | null;
 
   /**
    * true if the phase item is currently used by the team, else false
@@ -1405,17 +1419,80 @@ export interface ICustomPhaseItem {
   teamId: string;
 
   /**
-   * The team that owns this customPhaseItem
+   * The team that owns this reflectPrompt
    */
   team: ITeam | null;
   updatedAt: any;
+
+  /**
+   * the order of the items in the template
+   */
+  sortOrder: number;
+
+  /**
+   * FK for template
+   */
+  templateId: string;
+
+  /**
+   * The template that this prompt belongs to
+   */
+  template: IReflectTemplate;
+
+  /**
+   * The title of the phase of the retrospective. Often a short version of the question
+   */
+  title: string;
+
+  /**
+   * The question to answer during the phase of the retrospective (eg What went well?)
+   */
+  question: string;
+
+  /**
+   * The description to the question for further context. A long version of the question.
+   */
+  description: string;
+
+  /**
+   * The color used to visually group a phase item.
+   */
+  groupColor: string;
 }
 
 /**
- * The type of phase item
+ * The team-specific templates for the reflection prompts
  */
-export const enum CustomPhaseItemTypeEnum {
-  retroPhaseItem = 'retroPhaseItem'
+export interface IReflectTemplate {
+  __typename: 'ReflectTemplate';
+  id: string;
+  createdAt: any;
+
+  /**
+   * True if template can be used, else false
+   */
+  isActive: boolean;
+
+  /**
+   * The time of the meeting the template was last used
+   */
+  lastUsedAt: any | null;
+
+  /**
+   * The name of the template
+   */
+  name: string;
+
+  /**
+   * The prompts that are part of this template
+   */
+  prompts: Array<IReflectPrompt>;
+
+  /**
+   * *Foreign key. The team this template belongs to
+   */
+  teamId: string;
+  updatedAt: any;
 }
 
 /**
@@ -3789,11 +3866,11 @@ export interface IEditCommentingOnMutationArguments {
 
 export interface IEditReflectionOnMutationArguments {
   /**
-   * Whether a phaseItem is being edited or not
+   * Whether a reflectPrompt is being edited or not
    */
   isEditing: boolean;
   meetingId: string;
-  phaseItemId: string;
+  promptId: string;
 }
 
 export interface IEditTaskOnMutationArguments {
@@ -4123,7 +4200,7 @@ export interface ISetPhaseFocusOnMutationArguments {
   /**
    * The currently focused phase item
    */
-  focusedPhaseItemId?: string | null;
+  focusedPromptId?: string | null;
 }
 
 export interface ISetStageTimerOnMutationArguments {
@@ -4727,7 +4804,11 @@ export interface IRetroReflection {
    * The retrospective meeting this reflection was created in
    */
   meeting: IRetrospectiveMeeting;
-  phaseItem: IRetroPhaseItem;
+
+  /**
+   * @deprecated "use prompt"
+   */
+  phaseItem: IReflectPrompt;
 
   /**
    * The plaintext version of content
@@ -4736,6 +4817,13 @@ export interface IRetroReflection {
 
   /**
    * The foreign key to link a reflection to its phaseItem. Immutable. For sorting, use phase item on the group.
+   */
+  promptId: string;
+  prompt: IReflectPrompt;
+
+  /**
+   * The foreign key to link a reflection to its phaseItem. Immutable. For sorting, use phase item on the group.
+   * @deprecated "use promptId"
    */
   retroPhaseItemId: string;
 
@@ -5015,11 +5103,22 @@ export interface IRetroReflectionGroup {
    * The retrospective meeting this reflection was created in
    */
   meeting: IRetrospectiveMeeting;
-  phaseItem: IRetroPhaseItem;
+
+  /**
+   * @deprecated "use prompt"
+   */
+  phaseItem: IReflectPrompt;
+  prompt: IReflectPrompt;
+
+  /**
+   * The foreign key to link a reflection group to its prompt. Immutable.
+   */
+  promptId: string;
   reflections: Array<IRetroReflection>;
 
   /**
    * The foreign key to link a reflection group to its phaseItem. Immutable.
+   * @deprecated "use promptId"
    */
   retroPhaseItemId: string;
 
@@ -5084,110 +5183,6 @@ export interface IThreadOnRetroReflectionGroupArguments {
 }
 
 /**
- * A team-specific retro phase. Usually 3 or 4 exist per team, eg Good/Bad/Change, 4Ls, etc.
- */
-export interface IRetroPhaseItem {
-  __typename: 'RetroPhaseItem';
-
-  /**
-   * shortid
-   */
-  id: string;
-  createdAt: any;
-
-  /**
-   * The type of phase item
-   */
-  phaseItemType: CustomPhaseItemTypeEnum | null;
-
-  /**
-   * true if the phase item is currently used by the team, else false
-   */
-  isActive: boolean | null;
-
-  /**
-   * foreign key. use the team field
-   */
-  teamId: string;
-
-  /**
-   * The team that owns this customPhaseItem
-   */
-  team: ITeam | null;
-  updatedAt: any;
-
-  /**
-   * the order of the items in the template
-   */
-  sortOrder: number;
-
-  /**
-   * FK for template
-   */
-  templateId: string;
-
-  /**
-   * The template that this prompt belongs to
-   */
-  template: IReflectTemplate;
-
-  /**
-   * The title of the phase of the retrospective. Often a short version of the question
-   */
-  title: string;
-
-  /**
-   * The question to answer during the phase of the retrospective (eg What went well?)
-   */
-  question: string;
-
-  /**
-   * The description to the question for further context. A long version of the question.
-   */
-  description: string;
-
-  /**
-   * The color used to visually group a phase item.
-   */
-  groupColor: string;
-}
-
-/**
- * The team-specific templates for the reflection prompts
- */
-export interface IReflectTemplate {
-  __typename: 'ReflectTemplate';
-  id: string;
-  createdAt: any;
-
-  /**
-   * True if template can be used, else false
-   */
-  isActive: boolean;
-
-  /**
-   * The time of the meeting the template was last used
-   */
-  lastUsedAt: any | null;
-
-  /**
-   * The name of the template
-   */
-  name: string;
-
-  /**
-   * The prompts that are part of this template
-   */
-  prompts: Array<IRetroPhaseItem>;
-
-  /**
-   * *Foreign key. The team this template belongs to
-   */
-  teamId: string;
-  updatedAt: any;
-}
-
-/**
  * sorts for the reflection group. default is sortOrder. sorting by voteCount filters out items without votes.
  */
 export const enum ReflectionGroupSortEnum {
@@ -5221,11 +5216,6 @@ export interface IRetrospectiveMeetingSettings {
    * The team these settings belong to
    */
   team: ITeam | null;
-
-  /**
-   * the team-specific questions to ask during a retro
-   */
-  phaseItems: Array<CustomPhaseItem> | null;
 
   /**
    * The total number of votes each team member receives for the voting phase
@@ -5281,7 +5271,7 @@ export interface IAddReflectTemplatePayload {
 export interface IAddReflectTemplatePromptPayload {
   __typename: 'AddReflectTemplatePromptPayload';
   error: IStandardMutationError | null;
-  prompt: IRetroPhaseItem | null;
+  prompt: IReflectPrompt | null;
 }
 
 export interface IAddSlackAuthPayload {
@@ -5562,9 +5552,14 @@ export interface ICreateReflectionInput {
   meetingId: string;
 
   /**
+   * The prompt the reflection belongs to
+   */
+  promptId?: string | null;
+
+  /**
    * The phase item the reflection belongs to
    */
-  retroPhaseItemId: string;
+  retroPhaseItemId?: string | null;
   sortOrder: number;
 }
 
@@ -6052,6 +6047,34 @@ export interface IRemoteReflectionDrag {
   clientY: number | null;
 }
 
+export interface IEditReflectionPayload {
+  __typename: 'EditReflectionPayload';
+  error: IStandardMutationError | null;
+  promptId: string | null;
+
+  /**
+   * The socketId of the client editing the card (uses socketId to maintain anonymity)
+   */
+  editorId: string | null;
+
+  /**
+   * true if the reflection is being edited, else false
+   */
+  isEditing: boolean | null;
+}
+
+export interface IEditTaskPayload {
+  __typename: 'EditTaskPayload';
+  error: IStandardMutationError | null;
+  task: ITask | null;
+  editor: IUser | null;
+
+  /**
+   * true if the editor is editing, false if they stopped editing
+   */
+  isEditing: boolean | null;
+}
+
 export interface IEndNewMeetingPayload {
   __typename: 'EndNewMeetingPayload';
   error: IStandardMutationError | null;
@@ -6182,7 +6205,7 @@ export interface ILoginWithPasswordPayload {
 export interface IMoveReflectTemplatePromptPayload {
   __typename: 'MoveReflectTemplatePromptPayload';
   error: IStandardMutationError | null;
-  prompt: IRetroPhaseItem | null;
+  prompt: IReflectPrompt | null;
 }
 
 export interface INavigateMeetingPayload {
@@ -6324,13 +6347,13 @@ export interface IPromoteToTeamLeadPayload {
 export interface IReflectTemplatePromptUpdateDescriptionPayload {
   __typename: 'ReflectTemplatePromptUpdateDescriptionPayload';
   error: IStandardMutationError | null;
-  prompt: IRetroPhaseItem | null;
+  prompt: IReflectPrompt | null;
 }
 
 export interface IReflectTemplatePromptUpdateGroupColorPayload {
   __typename: 'ReflectTemplatePromptUpdateGroupColorPayload';
   error: IStandardMutationError | null;
-  prompt: IRetroPhaseItem | null;
+  prompt: IReflectPrompt | null;
 }
 
 export interface IRemoveAgendaItemPayload {
@@ -6503,7 +6526,7 @@ export interface IRenameReflectTemplatePayload {
 export interface IRenameReflectTemplatePromptPayload {
   __typename: 'RenameReflectTemplatePromptPayload';
   error: IStandardMutationError | null;
-  prompt: IRetroPhaseItem | null;
+  prompt: IReflectPrompt | null;
 }
 
 export interface IRemoveReflectionPayload {
@@ -6652,13 +6675,25 @@ export interface IReflectPhase {
 
   /**
    * foreign key. use focusedPhaseItem
+   * @deprecated "use focusedPromptId"
    */
   focusedPhaseItemId: string | null;
 
   /**
    * the phase item that the facilitator wants the group to focus on
+   * @deprecated "use focusedPrompt"
    */
-  focusedPhaseItem: IRetroPhaseItem | null;
+  focusedPhaseItem: IReflectPrompt | null;
+
+  /**
+   * foreign key. use focusedPrompt
+   */
+  focusedPromptId: string | null;
+
+  /**
+   * the Prompt that the facilitator wants the group to focus on
+   */
+  focusedPrompt: IReflectPrompt | null;
 
   /**
    * FK. The ID of the template used during the reflect phase
@@ -6668,7 +6703,7 @@ export interface IReflectPhase {
   /**
    * The prompts used during the reflect phase
    */
-  reflectPrompts: Array<IRetroPhaseItem>;
+  reflectPrompts: Array<IReflectPrompt>;
   teamId: string;
 }
 
@@ -7928,6 +7963,46 @@ export interface IMeetingGreeting {
   language: string;
 }
 
+export type CustomPhaseItem = IRetroPhaseItem;
+
+export interface ICustomPhaseItem {
+  __typename: 'CustomPhaseItem';
+
+  /**
+   * shortid
+   */
+  id: string;
+  createdAt: any;
+
+  /**
+   * @deprecated "Field has been deprecated because type is guranteed to be `retroPhaseItem`"
+   */
+  phaseItemType: CustomPhaseItemTypeEnum | null;
+
+  /**
+   * true if the phase item is currently used by the team, else false
+   */
+  isActive: boolean | null;
+
+  /**
+   * foreign key. use the team field
+   */
+  teamId: string;
+
+  /**
+   * The team that owns this reflectPrompt
+   */
+  team: ITeam | null;
+  updatedAt: any;
+}
+
+/**
+ * The type of phase item
+ */
+export const enum CustomPhaseItemTypeEnum {
+  retroPhaseItem = 'retroPhaseItem'
+}
+
 /**
  * The meeting phase where all team members discuss the topics with the most votes
  */
@@ -8030,6 +8105,75 @@ export interface INotifyPromoteToOrgLeader {
    * *The userId that should see this notification
    */
   userId: string;
+}
+
+/**
+ * A team-specific retro phase. Usually 3 or 4 exist per team, eg Good/Bad/Change, 4Ls, etc.
+ */
+export interface IRetroPhaseItem {
+  __typename: 'RetroPhaseItem';
+
+  /**
+   * shortid
+   */
+  id: string;
+  createdAt: any;
+
+  /**
+   * @deprecated "Field has been deprecated because type is guranteed to be `retroPhaseItem`"
+   */
+  phaseItemType: CustomPhaseItemTypeEnum | null;
+
+  /**
+   * true if the phase item is currently used by the team, else false
+   */
+  isActive: boolean | null;
+
+  /**
+   * foreign key. use the team field
+   */
+  teamId: string;
+
+  /**
+   * The team that owns this reflectPrompt
+   */
+  team: ITeam | null;
+  updatedAt: any;
+
+  /**
+   * the order of the items in the template
+   */
+  sortOrder: number;
+
+  /**
+   * FK for template
+   */
+  templateId: string;
+
+  /**
+   * The template that this prompt belongs to
+   */
+  template: IReflectTemplate;
+
+  /**
+   * The title of the phase of the retrospective. Often a short version of the question
+   */
+  title: string;
+
+  /**
+   * The question to answer during the phase of the retrospective (eg What went well?)
+   */
+  question: string;
+
+  /**
+   * The description to the question for further context. A long version of the question.
+   */
+  description: string;
+
+  /**
+   * The color used to visually group a phase item.
+   */
+  groupColor: string;
 }
 
 /**

@@ -41,8 +41,8 @@ const reflectionCardFooter = {
 
 const EmailReflectionCard = (props: Props) => {
   const {reflection} = props
-  const {content, phaseItem} = reflection
-  const {question} = phaseItem
+  const {content, prompt} = reflection
+  const {question} = prompt
   const contentState = useMemo(() => convertFromRaw(JSON.parse(content)), [content])
   const editorStateRef = useRef<EditorState>()
   const getEditorState = () => {
@@ -90,7 +90,7 @@ export default createFragmentContainer(EmailReflectionCard, {
   reflection: graphql`
     fragment EmailReflectionCard_reflection on RetroReflection {
       content
-      phaseItem {
+      prompt {
         question
       }
     }
