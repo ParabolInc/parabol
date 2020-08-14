@@ -1,11 +1,11 @@
 import {GraphQLID, GraphQLInterfaceType, GraphQLList, GraphQLNonNull} from 'graphql'
-import NewMeetingPhaseTypeEnum from './NewMeetingPhaseTypeEnum'
-import Team from './Team'
-import {resolveTeam} from '../resolvers'
-import MeetingTypeEnum from './MeetingTypeEnum'
 import {ACTION, RETROSPECTIVE} from 'parabol-client/utils/constants'
-import RetrospectiveMeetingSettings from './RetrospectiveMeetingSettings'
+import {resolveTeam} from '../resolvers'
 import ActionMeetingSettings from './ActionMeetingSettings'
+import MeetingTypeEnum from './MeetingTypeEnum'
+import NewMeetingPhaseTypeEnum from './NewMeetingPhaseTypeEnum'
+import RetrospectiveMeetingSettings from './RetrospectiveMeetingSettings'
+import Team from './Team'
 
 export const teamMeetingSettingsFields = () => ({
   id: {
@@ -25,7 +25,7 @@ export const teamMeetingSettingsFields = () => ({
   },
   team: {
     description: 'The team these settings belong to',
-    type: Team,
+    type: GraphQLNonNull(Team),
     resolve: resolveTeam
   }
 })

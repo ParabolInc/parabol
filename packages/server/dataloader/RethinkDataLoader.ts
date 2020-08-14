@@ -23,7 +23,7 @@ type Loaders = keyof LoaderMakers
 
 type PrimaryLoaderMakers = typeof primaryLoaderMakers
 type PrimaryLoaders = keyof PrimaryLoaderMakers
-type Unprimary<T> = T extends LoaderMakerPrimary<infer U> ? DBType[U]['type'] : never
+type Unprimary<T> = T extends LoaderMakerPrimary<infer U> ? DBType[U] : never
 type TypeFromPrimary<T extends PrimaryLoaders> = Unprimary<PrimaryLoaderMakers[T]>
 
 type ForeignLoaderMakers = typeof foreignLoaderMakers

@@ -1,68 +1,55 @@
-import React, {Component} from 'react'
-import styled from '@emotion/styled'
-import FlatButton from '../../../components/FlatButton'
-import withAtmosphere, {
-  WithAtmosphereProps
-} from '../../../decorators/withAtmosphere/withAtmosphere'
+import graphql from 'babel-plugin-relay/macro'
+import React from 'react'
+import {createFragmentContainer} from 'react-relay'
+import TemplateDetailAction from '../../../components/TemplateDetailAction'
+import useAtmosphere from '../../../hooks/useAtmosphere'
+import useMutationProps from '../../../hooks/useMutationProps'
 import RemoveReflectTemplateMutation from '../../../mutations/RemoveReflectTemplateMutation'
-import withMutationProps, {WithMutationProps} from '../../../utils/relay/withMutationProps'
-import {PALETTE} from '../../../styles/paletteV2'
-import Icon from '../../../components/Icon'
-import {ICON_SIZE} from '../../../styles/typographyV2'
+import SelectRetroTemplateMutation from '../../../mutations/SelectRetroTemplateMutation'
+import {RemoveTemplate_teamTemplates} from '../../../__generated__/RemoveTemplate_teamTemplates.graphql'
 
-const Button = styled(FlatButton)<{canDelete: boolean}>(({canDelete}) => ({
-  alignItems: 'center',
-  display: !canDelete ? 'none' : 'flex',
-  color: PALETTE.TEXT_GRAY,
-  height: '2.125rem',
-  justifyContent: 'center',
-  paddingLeft: 0,
-  paddingRight: 0,
-  width: '2.125rem'
-}))
 
-const DeleteIcon = styled(Icon)({
-  fontSize: ICON_SIZE.MD18
-})
-
-interface Props extends WithAtmosphereProps, WithMutationProps {
-  templateCount: number
-  templateId
+interface Props {
+  gotoPublicTemplates: () => void
+  teamTemplates: RemoveTemplate_teamTemplates
+  templateId: string
+  teamId: string
 }
 
-class RemoveTemplate extends Component<Props> {
-  removeTemplate = () => {
-    const {
-      onError,
-      onCompleted,
-      submitting,
-      submitMutation,
-      atmosphere,
-      templateCount,
-      templateId
-    } = this.props
+const RemoveTemplate = (props: Props) => {
+  const {
+    gotoPublicTemplates,
+    templateId,
+    teamId,
+    teamTemplates,
+  } = props
+  const atmosphere = useAtmosphere()
+  const {onError, onCompleted, submitting, submitMutation} = useMutationProps()
+
+  const removeTemplate = () => {
     if (submitting) return
-    if (templateCount <= 1) {
-      onError('You must have at least 1 template')
-      return
-    }
     submitMutation()
-    RemoveReflectTemplateMutation(atmosphere, {templateId}, {}, onError, onCompleted)
+    const templateIds = teamTemplates.map(({id}) => id)
+    const templateIdx = templateIds.indexOf(templateId)
+    templateIds.splice(templateIdx, 1)
+    // use the same index as the previous item. if the item was last in the list, grab the new last
+    const nextTemplateId = templateIds[templateIdx] || templateIds[templateIds.length - 1]
+    if (nextTemplateId) {
+      SelectRetroTemplateMutation(atmosphere, {selectedTemplateId: nextTemplateId, teamId})
+    } else {
+      gotoPublicTemplates()
+    }
+    RemoveReflectTemplateMutation(atmosphere, {templateId}, {onError, onCompleted})
   }
 
-  render() {
-    const {submitting, templateCount} = this.props
-    return (
-      <Button
-        canDelete={templateCount > 1}
-        onClick={this.removeTemplate}
-        size='small'
-        waiting={submitting}
-      >
-        <DeleteIcon>delete</DeleteIcon>
-      </Button>
-    )
-  }
+  return <TemplateDetailAction icon={'delete'} tooltip={'Delete template'} onClick={removeTemplate} />
 }
-
-export default withAtmosphere(withMutationProps(RemoveTemplate))
+export default createFragmentContainer(
+  RemoveTemplate,
+  {
+    teamTemplates: graphql`
+      fragment RemoveTemplate_teamTemplates on ReflectTemplate @relay(plural: true) {
+        id
+      }`
+  }
+)

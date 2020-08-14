@@ -1,47 +1,45 @@
-import {commitMutation} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import {Disposable} from 'relay-runtime'
-import Atmosphere from '../Atmosphere'
-import {CompletedHandler, ErrorHandler} from '../types/relayMutations'
-import {ISelectRetroTemplateOnMutationArguments} from '../types/graphql'
+import {commitMutation} from 'react-relay'
+import {IReflectTemplate} from '../types/graphql'
+import {SimpleMutation} from '../types/relayMutations'
 import {RETROSPECTIVE} from '../utils/constants'
+import {SelectRetroTemplateMutation as TSelectRetroTemplateMutation} from '../__generated__/SelectRetroTemplateMutation.graphql'
 
 graphql`
   fragment SelectRetroTemplateMutation_team on SelectRetroTemplatePayload {
     retroMeetingSettings {
-      id
       selectedTemplateId
+      selectedTemplate {
+        id
+      }
     }
   }
 `
 
 const mutation = graphql`
-  mutation SelectRetroTemplateMutation($teamId: ID!, $selectedTemplateId: ID!) {
-    selectRetroTemplate(teamId: $teamId, selectedTemplateId: $selectedTemplateId) {
+  mutation SelectRetroTemplateMutation($selectedTemplateId: ID!, $teamId: ID!) {
+    selectRetroTemplate(selectedTemplateId: $selectedTemplateId, teamId: $teamId) {
       ...SelectRetroTemplateMutation_team @relay(mask: false)
     }
   }
 `
 
-const SelectRetroTemplateMutation = (
-  atmosphere: Atmosphere,
-  variables: ISelectRetroTemplateOnMutationArguments,
-  _context: {},
-  onError: ErrorHandler,
-  onCompleted: CompletedHandler
-): Disposable => {
+const SelectRetroTemplateMutation: SimpleMutation<TSelectRetroTemplateMutation> = (
+  atmosphere,
+  variables,
+) => {
   return commitMutation(atmosphere, {
     mutation,
     variables,
-    onCompleted,
-    onError,
     optimisticUpdater: (store) => {
       const {selectedTemplateId, teamId} = variables
       const team = store.get(teamId)
       if (!team) return
       const meetingSettings = team.getLinkedRecord('meetingSettings', {meetingType: RETROSPECTIVE})
       if (!meetingSettings) return
+      const selectedTemplate = store.get<IReflectTemplate>(selectedTemplateId)!
       meetingSettings.setValue(selectedTemplateId, 'selectedTemplateId')
+      meetingSettings.setLinkedRecord(selectedTemplate, 'selectedTemplate')
     }
   })
 }

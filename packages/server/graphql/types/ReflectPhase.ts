@@ -45,7 +45,6 @@ const ReflectPhase = new GraphQLObjectType<any, GQLContext>({
       description: 'The prompts used during the reflect phase',
       resolve: async ({promptTemplateId}, _args, {dataLoader}) => {
         const prompts = await dataLoader.get('reflectPromptsByTemplateId').load(promptTemplateId)
-        prompts.sort((a, b) => (a.sortOrder < b.sortOrder ? -1 : 1))
         return prompts
       }
     },

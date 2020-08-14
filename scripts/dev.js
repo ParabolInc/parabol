@@ -6,6 +6,7 @@ const fs = require('fs')
 const {promisify} = require('util')
 const webpack = require('webpack')
 const getProjectRoot = require('./webpack/utils/getProjectRoot')
+const Redis = require('ioredis')
 
 const rmdir = promisify(fs.rmdir)
 const unlink = promisify(fs.unlink)
@@ -102,6 +103,9 @@ const dev = async (maybeInit, isDangerous) => {
   }
 
   fork(path.join(PROJECT_ROOT, 'dev/gqlExecutor.js'))
+  const redis = new Redis(process.env.REDIS_URL)
+  // it's nice to flush the cache, but can comment this out if you want to test cache hits between restarts
+  redis.flushall()
   require('../dev/web.js')
 
 }

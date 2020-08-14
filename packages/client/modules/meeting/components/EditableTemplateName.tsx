@@ -1,27 +1,33 @@
-import {ReflectTemplateModal_retroMeetingSettings} from '../../../__generated__/ReflectTemplateModal_retroMeetingSettings.graphql'
+import styled from '@emotion/styled'
+import graphql from 'babel-plugin-relay/macro'
 import React, {Component} from 'react'
+import {createFragmentContainer} from 'react-relay'
 import EditableText from '../../../components/EditableText'
 import withAtmosphere, {
   WithAtmosphereProps
 } from '../../../decorators/withAtmosphere/withAtmosphere'
-import withMutationProps, {WithMutationProps} from '../../../utils/relay/withMutationProps'
 import RenameReflectTemplateMutation from '../../../mutations/RenameReflectTemplateMutation'
+import withMutationProps, {WithMutationProps} from '../../../utils/relay/withMutationProps'
 import Legitity from '../../../validation/Legitity'
-import styled from '@emotion/styled'
+import {EditableTemplateName_teamTemplates} from '../../../__generated__/EditableTemplateName_teamTemplates.graphql'
 
 interface Props extends WithAtmosphereProps, WithMutationProps {
   name: string
   templateId: string
-  templates: ReflectTemplateModal_retroMeetingSettings['reflectTemplates']
+  teamTemplates: EditableTemplateName_teamTemplates
+  isOwner: boolean
 }
 
 const InheritedStyles = styled('div')({
   flex: 1,
-  fontSize: '1.5rem',
+  fontSize: 20,
   fontWeight: 600,
-  lineHeight: '2.125rem'
+  lineHeight: '24px'
 })
 
+const StyledEditableText = styled(EditableText)({
+  lineHeight: '24px'
+})
 class EditableTemplateName extends Component<Props> {
   handleSubmit = (rawName) => {
     const {
@@ -42,13 +48,13 @@ class EditableTemplateName extends Component<Props> {
   }
 
   legitify(value) {
-    const {templateId, templates} = this.props
+    const {templateId, teamTemplates} = this.props
     return new Legitity(value)
       .trim()
       .required('Please enter a template name')
       .max(100, 'That name is probably long enough')
       .test((mVal) => {
-        const isDupe = templates.find(
+        const isDupe = teamTemplates.find(
           (template) =>
             template.id !== templateId && template.name.toLowerCase() === mVal.toLowerCase()
         )
@@ -68,10 +74,11 @@ class EditableTemplateName extends Component<Props> {
   }
 
   render() {
-    const {dirty, error, name} = this.props
+    const {dirty, error, name, isOwner} = this.props
     return (
       <InheritedStyles>
-        <EditableText
+        <StyledEditableText
+          disabled={!isOwner}
           error={dirty ? (error as string) : undefined}
           handleSubmit={this.handleSubmit}
           initialValue={name}
@@ -84,4 +91,11 @@ class EditableTemplateName extends Component<Props> {
   }
 }
 
-export default withAtmosphere(withMutationProps(EditableTemplateName))
+export default createFragmentContainer(withAtmosphere(withMutationProps(EditableTemplateName)), {
+  teamTemplates: graphql`
+    fragment EditableTemplateName_teamTemplates on ReflectTemplate @relay(plural: true) {
+      id
+      name
+    }
+  `
+})

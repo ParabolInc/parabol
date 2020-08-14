@@ -58,6 +58,9 @@ declare global {
       login: () => Chainable
       visitReflect: () => Chainable
       visitPhase: (phase: string, idx?: string) => Chainable<ReturnType<typeof visitPhase>>
+      restoreLocalStorageCache: () => Chainable
+      saveLocalStorageCache: () => Chainable
+      pipe: (el: any) => Chainable
     }
   }
 }

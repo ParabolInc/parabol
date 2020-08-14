@@ -13,7 +13,7 @@ interface Props {}
 
 const DiscussHelpMenu = forwardRef((_props: Props, ref: any) => {
   const {closePortal} = ref
-  useSegmentTrack('HelpMenuOpen', {phase: NewMeetingPhaseTypeEnum.discuss})
+  useSegmentTrack('Help Menu Open', {phase: NewMeetingPhaseTypeEnum.discuss})
   return (
     <HelpMenuContent closePortal={closePortal}>
       <HelpMenuHeader>{phaseLabelLookup[DISCUSS]}</HelpMenuHeader>

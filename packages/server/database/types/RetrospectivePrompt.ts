@@ -8,6 +8,7 @@ interface Input {
   description: string
   groupColor: string
   title?: string
+  parentPromptId?: string
 }
 
 export default class RetrospectivePrompt {
@@ -22,9 +23,19 @@ export default class RetrospectivePrompt {
   question: string
   title: string
   updatedAt = new Date()
+  parentPromptId?: string
 
   constructor(input: Input) {
-    const {teamId, templateId, sortOrder, question, description, groupColor, title} = input
+    const {
+      teamId,
+      templateId,
+      sortOrder,
+      question,
+      description,
+      groupColor,
+      title,
+      parentPromptId
+    } = input
     this.id = shortid.generate()
     this.sortOrder = sortOrder
     this.teamId = teamId
@@ -33,5 +44,6 @@ export default class RetrospectivePrompt {
     this.description = description || ''
     this.groupColor = groupColor
     this.title = title || question
+    this.parentPromptId = parentPromptId
   }
 }

@@ -1,24 +1,25 @@
-import React, {Component} from 'react'
 import styled from '@emotion/styled'
-import Icon from './Icon'
-import {FONT_FAMILY, ICON_SIZE} from '../styles/typographyV2'
-import {PALETTE} from '../styles/paletteV2'
-import Legitity from '../validation/Legitity'
+import React, {Component} from 'react'
 import TextAreaAutoSize from 'react-textarea-autosize'
+import {PALETTE} from '../styles/paletteV2'
+import {FONT_FAMILY, ICON_SIZE} from '../styles/typographyV2'
+import Legitity from '../validation/Legitity'
+import Icon from './Icon'
 
-const StaticBlock = styled('div')({
+const StaticBlock = styled('div')<{disabled: boolean | undefined}>(({disabled}) => ({
   alignItems: 'center',
-  cursor: 'pointer',
+  cursor: disabled ? 'default' : 'pointer',
   display: 'flex',
   fontFamily: FONT_FAMILY.SANS_SERIF,
   fontSize: 'inherit',
   fontWeight: 'inherit',
   lineHeight: 'inherit',
+  outline: disabled ? 'none' : undefined,
   width: '100%',
   ':hover': {
-    opacity: 0.5
+    opacity: disabled ? undefined : 0.5
   }
-})
+}))
 
 const Placeholder = styled('div')({
   color: PALETTE.TEXT_GRAY
@@ -74,6 +75,7 @@ const Form = styled('form')({
 interface Props {
   autoFocus?: boolean
   className?: string
+  disabled?: boolean
   error: string | undefined
   validate: (value: string) => Legitity
   handleSubmit: (value: string) => void
@@ -204,26 +206,27 @@ class EditableText extends Component<Props, State> {
   }
 
   renderStatic = () => {
-    const {hideIcon, placeholder} = this.props
+    const {disabled, hideIcon, placeholder} = this.props
     const value = this.state.value || this.props.initialValue
     const showPlaceholder = !value && placeholder
     return (
       <StaticBlock
+        disabled={disabled}
         tabIndex={0}
         onFocus={() => this.setEditing(true)}
         onClick={() => this.setEditing(true)}
       >
         {showPlaceholder && <Placeholder>{placeholder}</Placeholder>}
         {value && <StaticValue>{value}</StaticValue>}
-        {!hideIcon && <StyledIcon>edit</StyledIcon>}
+        {!hideIcon && !disabled && <StyledIcon>edit</StyledIcon>}
       </StaticBlock>
     )
   }
 
   render() {
-    const {className, error} = this.props
+    const {className, disabled, error} = this.props
     const {autoFocus, isEditing} = this.state
-    const showEditing = error || isEditing || autoFocus
+    const showEditing = (error || isEditing || autoFocus) && !disabled
     return (
       <div className={className}>{showEditing ? this.renderEditing() : this.renderStatic()}</div>
     )
