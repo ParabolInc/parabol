@@ -5,8 +5,18 @@ const makeClientConfig = require('./webpack/prod.client.config')
 
 const compile = (config) => {
   return new Promise((resolve) => {
+    const cb = (err, stats) => {
+      if (err) {
+        console.log('Webpack error:', err)
+      }
+      const {errors} = stats.compilation
+      if (errors.length > 0) {
+        console.log('COMPILATION ERRORS:', errors)
+      }
+      resolve()
+    }
     const compiler = webpack(config)
-    compiler.run(resolve)
+    compiler.run(cb)
   })
 }
 

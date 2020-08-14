@@ -2,7 +2,7 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
-import CreateTemplate from '../../../../../static/images/illustrations/CreateTemplate.svg'
+import createTemplateHeader from '../../../../../static/images/illustrations/createTemplateHeader.svg'
 import {PALETTE} from '../../../styles/paletteV2'
 import getTemplateList from '../../../utils/getTemplateList'
 import makeTemplateDescription from '../../../utils/makeTemplateDescription'
@@ -76,7 +76,7 @@ const ReflectTemplateDetails = (props: Props) => {
   return (
     <PromptEditor>
       <Scrollable>
-        <CreateTemplateImg src={CreateTemplate} />
+        <CreateTemplateImg src={createTemplateHeader} />
         <TemplateHeader>
           <FirstLine>
             <EditableTemplateName
