@@ -7,6 +7,7 @@ import LinkButton from '../LinkButton'
 interface Props {
   label: string
   value: string
+  iconText?: string
   onClick: () => void
   onMouseEnter: () => void
 }
@@ -25,7 +26,7 @@ const StyledLinkButton = styled(LinkButton)({
 })
 
 const DashFilterToggle = forwardRef((props: Props, ref: Ref<HTMLButtonElement>) => {
-  const {label, value, onClick, onMouseEnter} = props
+  const {label, value, iconText, onClick, onMouseEnter} = props
   return (
     <StyledLinkButton
       aria-label={`Filter by ${label}`}
@@ -33,7 +34,7 @@ const DashFilterToggle = forwardRef((props: Props, ref: Ref<HTMLButtonElement>) 
       onMouseEnter={onMouseEnter}
       ref={ref}
     >
-      <StyledIcon>filter_list</StyledIcon>
+      <StyledIcon>{iconText || 'filter_list'}</StyledIcon>
       {value}
     </StyledLinkButton>
   )

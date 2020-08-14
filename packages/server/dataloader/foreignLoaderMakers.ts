@@ -90,14 +90,14 @@ export const completedMeetingsByTeamId = new LoaderMakerForeign(
   }
 )
 
-export const customPhaseItemsByTeamId = new LoaderMakerForeign(
-  'customPhaseItems',
-  'teamId',
-  async (teamIds) => {
+export const reflectPromptsByTemplateId = new LoaderMakerForeign(
+  'reflectPrompts',
+  'templateId',
+  async (templateIds) => {
     const r = await getRethink()
     return r
-      .table('CustomPhaseItem')
-      .getAll(r.args(teamIds), {index: 'teamId'})
+      .table('ReflectPrompt')
+      .getAll(r.args(templateIds), {index: 'templateId'})
       .filter({isActive: true})
       .run()
   }
@@ -323,6 +323,20 @@ export const teamMembersByTeamId = new LoaderMakerForeign(
     return r
       .table('TeamMember')
       .getAll(r.args(teamIds), {index: 'teamId'})
+      .filter({isNotRemoved: true})
+      .run()
+  }
+)
+
+export const teamMembersByUserId = new LoaderMakerForeign(
+  'teamMembers',
+  'userId',
+  async (userIds) => {
+    // tasksByUserId is expensive since we have to look up each team to check the team archive status
+    const r = await getRethink()
+    return r
+      .table('TeamMember')
+      .getAll(r.args(userIds), {index: 'userId'})
       .filter({isNotRemoved: true})
       .run()
   }

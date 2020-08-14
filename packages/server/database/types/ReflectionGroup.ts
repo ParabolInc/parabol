@@ -4,7 +4,7 @@ export interface ReflectionGroupInput {
   id?: string
   createdAt?: Date
   meetingId: string
-  retroPhaseItemId: string
+  promptId: string
   sortOrder?: number
   updatedAt?: Date
   voterIds?: string[]
@@ -17,7 +17,7 @@ export default class ReflectionGroup {
   createdAt: Date
   isActive: boolean
   meetingId: string
-  retroPhaseItemId: string
+  promptId: string
   sortOrder: number
   updatedAt: Date
   voterIds: string[]
@@ -28,7 +28,7 @@ export default class ReflectionGroup {
       createdAt,
       id,
       meetingId,
-      retroPhaseItemId,
+      promptId,
       sortOrder,
       updatedAt,
       voterIds,
@@ -40,7 +40,7 @@ export default class ReflectionGroup {
     this.createdAt = createdAt || now
     this.isActive = true
     this.meetingId = meetingId
-    this.retroPhaseItemId = retroPhaseItemId
+    this.promptId = promptId
     this.sortOrder = sortOrder || 0
     this.updatedAt = updatedAt || now
     this.voterIds = voterIds || []

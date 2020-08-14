@@ -5,9 +5,7 @@ import {createFragmentContainer} from 'react-relay'
 import {Threshold} from '~/types/constEnums'
 import Icon from '../../../components/Icon'
 import LinkButton from '../../../components/LinkButton'
-import withAtmosphere, {
-  WithAtmosphereProps
-} from '../../../decorators/withAtmosphere/withAtmosphere'
+import withAtmosphere, {WithAtmosphereProps} from '../../../decorators/withAtmosphere/withAtmosphere'
 import AddReflectTemplatePromptMutation from '../../../mutations/AddReflectTemplatePromptMutation'
 import {ICON_SIZE} from '../../../styles/typographyV2'
 import dndNoise from '../../../utils/dndNoise'
@@ -79,7 +77,7 @@ class AddTemplatePrompt extends Component<Props> {
 
 export default createFragmentContainer(withMutationProps(withAtmosphere(AddTemplatePrompt)), {
   prompts: graphql`
-    fragment AddTemplatePrompt_prompts on RetroPhaseItem @relay(plural: true) {
+    fragment AddTemplatePrompt_prompts on ReflectPrompt @relay(plural: true) {
       sortOrder
     }
   `
