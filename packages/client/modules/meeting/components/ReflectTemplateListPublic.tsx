@@ -52,7 +52,7 @@ export default createFragmentContainer(
           id
           meetingSettings(meetingType: retrospective) {
             ...on RetrospectiveMeetingSettings {
-              publicTemplates(first: 20) {
+              publicTemplates(first: 20) @connection(key: "ReflectTemplateListPublic_publicTemplates"){
                 edges {
                   node {
                     ...ReflectTemplateItem_template

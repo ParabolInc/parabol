@@ -54,6 +54,7 @@ const updateTemplateScope = {
     }
 
     // RESOLUTION
+    template.scope = newScope // mutate the cached record
     const SCOPES = [ESharingScope.TEAM, ESharingScope.ORGANIZATION, ESharingScope.PUBLIC]
     const isDownscope = SCOPES.indexOf(newScope) < SCOPES.indexOf(scope)
     const shouldClone = isDownscope
@@ -99,7 +100,6 @@ const updateTemplateScope = {
           .update({isActive: false})
       }).run()
     } else {
-      template.scope = newScope
       await r
         .table('ReflectTemplate')
         .get(templateId)

@@ -35,7 +35,7 @@ export default class MeetingSettingsRetrospective extends MeetingSettings {
       'startStopContinueTemplate',
       'workingStuckTemplate',
       'fourLsTemplate',
-      'GladSadMadTemplate'
+      'gladSadMadTemplate'
     ]
     this.selectedTemplateId = selectedTemplateId || 'workingStuckTemplate'
   }

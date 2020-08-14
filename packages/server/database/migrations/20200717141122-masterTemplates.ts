@@ -66,7 +66,7 @@ const templates = [
     createdAt: createdAt,
     id: 'startStopContinueTemplate',
     isActive: true,
-    name: 'Start Stop Continue',
+    name: 'Start, Stop, Continue',
     teamId: 'aGhostTeam',
     updatedAt: createdAt,
     scope: 'PUBLIC',
@@ -86,7 +86,7 @@ const templates = [
     createdAt: createdAt,
     id: 'fourLsTemplate',
     isActive: true,
-    name: 'Liked, Learned, Lacked, Longed for',
+    name: 'Four L’s',
     teamId: 'aGhostTeam',
     updatedAt: createdAt,
     scope: 'PUBLIC',
@@ -94,7 +94,7 @@ const templates = [
   },
   {
     createdAt: createdAt,
-    id: 'GladSadMadTemplate',
+    id: 'gladSadMadTemplate',
     isActive: true,
     name: 'Glad, Sad, Mad',
     teamId: 'aGhostTeam',
@@ -157,7 +157,7 @@ const phaseItems = [
     question: 'Glad',
     sortOrder: 0,
     teamId: 'aGhostTeam',
-    templateId: 'GladSadMadTemplate',
+    templateId: 'gladSadMadTemplate',
     title: 'Glad',
     updatedAt: createdAt
   },
@@ -171,7 +171,7 @@ const phaseItems = [
     question: 'Mad',
     sortOrder: 2,
     teamId: 'aGhostTeam',
-    templateId: 'GladSadMadTemplate',
+    templateId: 'gladSadMadTemplate',
     title: 'Mad',
     updatedAt: createdAt
   },
@@ -185,7 +185,7 @@ const phaseItems = [
     question: 'Sad',
     sortOrder: 1,
     teamId: 'aGhostTeam',
-    templateId: 'GladSadMadTemplate',
+    templateId: 'gladSadMadTemplate',
     title: 'Sad',
     updatedAt: createdAt
   },

@@ -2,7 +2,7 @@ import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {NewMeetingPhaseTypeEnum} from 'parabol-client/types/graphql'
 import isPhaseComplete from 'parabol-client/utils/meetings/isPhaseComplete'
-import {getUserId, isTeamMember} from '../../utils/authorization'
+import {getUserId} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import EditReflectionPayload from '../types/EditReflectionPayload'
@@ -36,11 +36,6 @@ export default {
     if (!reflectPrompt) {
       return standardError(new Error('Category not found'), {userId: viewerId})
     }
-    const {teamId} = reflectPrompt
-    if (!isTeamMember(authToken, teamId)) {
-      return standardError(new Error('Team not found'), {userId: viewerId, tags: {teamId}})
-    }
-
     const meeting = await dataLoader.get('newMeetings').load(meetingId)
     if (!meeting) return standardError(new Error('Meeting not found'), {userId: viewerId})
     const {endedAt, phases} = meeting

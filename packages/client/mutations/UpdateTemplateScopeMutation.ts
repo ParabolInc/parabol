@@ -17,19 +17,18 @@ import getReflectTemplateOrgConn from './connections/getReflectTemplateOrgConn'
 graphql`
   fragment UpdateTemplateScopeMutation_organization on UpdateTemplateScopeSuccess {
     template {
+      # these fragments are needed for listening org members
+      ...TemplateSharing_template
+      ...ReflectTemplateDetailsTemplate
       id
+      orgId
       scope
       teamId
-      team {
-        orgId
-      }
     }
     clonedTemplate {
       ...TemplateSharing_template
       ...ReflectTemplateDetailsTemplate
-      team {
-        orgId
-      }
+      orgId
     }
   }
 `
@@ -78,27 +77,23 @@ const addTemplateToScope = (template: RecordProxy, scope: SharingScopeEnum, meet
 const SCOPES = ['TEAM', 'ORGANIZATION', 'PUBLIC']
 const handleUpdateTemplateScope = (template: RecordProxy, newScope: SharingScopeEnum, store: RecordSourceSelectorProxy, clonedTemplate?: RecordProxy) => {
   const templateId = template.getValue('id') as string
-  const teamId = template.getValue('teamId') as string
-  const team = store.get(teamId)
-  if (!team) return
-  const meetingSettings = team.getLinkedRecord('meetingSettings', {meetingType: MeetingTypeEnum.retrospective})
-  if (!meetingSettings) return
-  const oldTemplate = getBaseRecord(store, templateId)
-  const {scope: oldScope} = oldTemplate
   const nextTemplate = clonedTemplate || template
-  const nextTemplateTeam = nextTemplate.getLinkedRecord('team')!
-  const nextTemplateOrgId = nextTemplateTeam.getValue('orgId')
+  const templateTeamId = nextTemplate.getValue('teamId')
+  const nextTemplateOrgId = nextTemplate.getValue('orgId')
+  const oldTemplate = getBaseRecord(store, templateId)
+  // default to TEAM in case the template belongs to another TEAM & therefore didn't exist before this upscope
+  const oldScope = oldTemplate?.scope ?? 'TEAM'
   const isDecreasing = SCOPES.indexOf(oldScope) > SCOPES.indexOf(newScope)
   const filterFn = (obj) => obj && obj.__typename === 'Team' && obj.orgId === nextTemplateOrgId
   const teamRecords = getCachedRecord(store, filterFn, {isPlural: true})
   const teamIds = teamRecords.map(({id}) => id)
-  teamIds.forEach((curTeamId) => {
-    const curTeam = store.get(curTeamId)
-    if (!curTeam) return
+  teamIds.forEach((teamId) => {
+    const team = store.get(teamId)
+    if (!team) return
     const meetingSettings = team.getLinkedRecord('meetingSettings', {meetingType: MeetingTypeEnum.retrospective})
     if (!meetingSettings) return
     // this is on the ORG subscription, so this won't affect anything on a PUBLIC list because they're at least on the same org
-    const scopeList = curTeamId === teamId ? 'TEAM' : 'ORGANIZATION'
+    const scopeList = teamId === templateTeamId ? 'TEAM' : 'ORGANIZATION'
     if (scopeList === 'TEAM') {
       if (clonedTemplate) {
         removeTemplateFromCurrentScope(templateId, scopeList, meetingSettings)

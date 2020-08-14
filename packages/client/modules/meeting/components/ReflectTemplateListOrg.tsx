@@ -63,7 +63,7 @@ export default createFragmentContainer(ReflectTemplateListOrg, {
         id
         meetingSettings(meetingType: retrospective) {
           ... on RetrospectiveMeetingSettings {
-            organizationTemplates(first: 20) {
+            organizationTemplates(first: 20) @connection(key: "ReflectTemplateListOrg_organizationTemplates") {
               edges {
                 node {
                   ...ReflectTemplateItem_template

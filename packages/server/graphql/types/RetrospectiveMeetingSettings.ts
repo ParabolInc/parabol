@@ -15,7 +15,7 @@ const getPublicScoredTemplates = async (templates: {createdAt: Date; id: string}
     'startStopContinueTemplate',
     'workingStuckTemplate',
     'fourLsTemplate',
-    'GladSadMadTemplate'
+    'gladSadMadTemplate'
   ])
   templates.forEach((template, idx) => {
     const {id: templateId, createdAt} = template

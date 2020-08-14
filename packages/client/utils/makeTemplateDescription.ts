@@ -19,7 +19,7 @@ const makeTemplateDescription = (lowestScope: string, templateRef: any) => {
   const {lastUsedAt, team} = template
   const {name: teamName} = team
   if (lowestScope === 'TEAM')
-    return lastUsedAt ? `Last used ${relativeDate(lastUsedAt)}` : 'Never used'
+    return lastUsedAt ? `Last used ${relativeDate(lastUsedAt, {smallDiff: 'just now'})}` : 'Never used'
   return `Created by ${teamName}`
 }
 

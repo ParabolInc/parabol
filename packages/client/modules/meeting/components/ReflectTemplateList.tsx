@@ -6,8 +6,8 @@ import SwipeableViews from 'react-swipeable-views'
 import Icon from '../../../components/Icon'
 import Tab from '../../../components/Tab/Tab'
 import Tabs from '../../../components/Tabs/Tabs'
-import {PALETTE} from '../../../styles/paletteV2'
 import {desktopSidebarShadow} from '../../../styles/elevation'
+import {PALETTE} from '../../../styles/paletteV2'
 import {Threshold} from '../../../types/constEnums'
 import {ReflectTemplateList_settings} from '../../../__generated__/ReflectTemplateList_settings.graphql'
 import AddNewReflectTemplate from './AddNewReflectTemplate'
@@ -144,7 +144,7 @@ const ReflectTemplateList = (props: Props) => {
       </SwipeableViews>
       {/* add a key to clear the error when they change */}
       {teamTemplates.length < Threshold.MAX_RETRO_TEAM_TEMPLATES && (
-        <AddNewReflectTemplate teamId={teamId} reflectTemplates={teamTemplates} />
+        <AddNewReflectTemplate teamId={teamId} reflectTemplates={teamTemplates} gotoTeamTemplates={gotoTeamTemplates} />
       )}
     </TemplateSidebar>
   )

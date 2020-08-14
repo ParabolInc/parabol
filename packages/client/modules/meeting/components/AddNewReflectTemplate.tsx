@@ -1,18 +1,17 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {Component} from 'react'
+import React from 'react'
 import {createFragmentContainer} from 'react-relay'
-import Icon from '../../../components/Icon'
 import FloatingActionButton from '../../../components/FloatingActionButton'
-import withAtmosphere, {
-  WithAtmosphereProps
-} from '../../../decorators/withAtmosphere/withAtmosphere'
-import AddReflectTemplateMutation from '../../../mutations/AddReflectTemplateMutation'
-import withMutationProps, {WithMutationProps} from '../../../utils/relay/withMutationProps'
-import {AddNewReflectTemplate_reflectTemplates} from '../../../__generated__/AddNewReflectTemplate_reflectTemplates.graphql'
+import Icon from '../../../components/Icon'
 import TooltipStyled from '../../../components/TooltipStyled'
+import useAtmosphere from '../../../hooks/useAtmosphere'
+import useMutationProps from '../../../hooks/useMutationProps'
+import AddReflectTemplateMutation from '../../../mutations/AddReflectTemplateMutation'
+import {Threshold} from '../../../types/constEnums'
+import {AddNewReflectTemplate_reflectTemplates} from '../../../__generated__/AddNewReflectTemplate_reflectTemplates.graphql'
 
-const Error = styled(TooltipStyled)({
+const ErrorLine = styled(TooltipStyled)({
   margin: '0 0 8px'
 })
 
@@ -32,49 +31,46 @@ const Button = styled(FloatingActionButton)({
   padding: 15
 })
 
-interface Props extends WithAtmosphereProps, WithMutationProps {
+interface Props {
+  gotoTeamTemplates: () => void
   reflectTemplates: AddNewReflectTemplate_reflectTemplates
   teamId: string
 }
 
-class AddNewReflectTemplate extends Component<Props> {
-  addNewTemplate = () => {
-    const {
-      atmosphere,
-      onError,
-      onCompleted,
-      submitMutation,
-      submitting,
-      teamId,
-      reflectTemplates
-    } = this.props
+const AddNewReflectTemplate = (props: Props) => {
+  const {
+    gotoTeamTemplates,
+    teamId,
+    reflectTemplates
+  } = props
+  const atmosphere = useAtmosphere()
+  const {onError, onCompleted, submitMutation, submitting, error} = useMutationProps()
+  const addNewTemplate = () => {
     if (submitting) return
-    if (reflectTemplates.length >= 20) {
-      onError('You may only have 20 templates per team. Please remove one first.')
+    if (reflectTemplates.length >= Threshold.MAX_RETRO_TEAM_TEMPLATES) {
+      onError(new Error('You may only have 20 templates per team. Please remove one first.'))
       return
     }
     if (reflectTemplates.find((template) => template.name === '*New Template')) {
-      onError('You already have a new template. Try renaming that one first.')
+      onError(new Error('You already have a new template. Try renaming that one first.'))
       return
     }
     submitMutation()
     AddReflectTemplateMutation(atmosphere, {teamId}, {onError, onCompleted})
+    gotoTeamTemplates()
   }
+  return (
+    <ButtonBlock>
+      {error && <ErrorLine>{error}</ErrorLine>}
+      <Button onClick={addNewTemplate} palette='blue' waiting={submitting}>
+        <Icon>add</Icon>
+      </Button>
+    </ButtonBlock>
+  )
 
-  render() {
-    const {error, submitting} = this.props
-    return (
-      <ButtonBlock>
-        {error && <Error>{error}</Error>}
-        <Button onClick={this.addNewTemplate} palette='blue' waiting={submitting}>
-          <Icon>add</Icon>
-        </Button>
-      </ButtonBlock>
-    )
-  }
 }
 
-export default createFragmentContainer(withMutationProps(withAtmosphere(AddNewReflectTemplate)), {
+export default createFragmentContainer(AddNewReflectTemplate, {
   reflectTemplates: graphql`
     fragment AddNewReflectTemplate_reflectTemplates on ReflectTemplate @relay(plural: true) {
       name
