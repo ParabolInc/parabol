@@ -17,12 +17,12 @@ import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import connectionFromTasks from '../queries/helpers/connectionFromTasks'
 import AgendaItem from './AgendaItem'
-import ReflectPrompt from './ReflectPrompt'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import MassInvitation from './MassInvitation'
 import MeetingTypeEnum from './MeetingTypeEnum'
 import NewMeeting from './NewMeeting'
 import Organization from './Organization'
+import ReflectPrompt from './ReflectPrompt'
 import {TaskConnection} from './Task'
 import TeamInvitation from './TeamInvitation'
 import TeamMeetingSettings from './TeamMeetingSettings'
@@ -160,7 +160,7 @@ const Team = new GraphQLObjectType<ITeam, GQLContext>({
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(NewMeeting))),
       description: 'a list of meetings that are currently in progress',
       resolve: async ({id: teamId}, _args, {authToken, dataLoader}) => {
-        if (!isTeamMember(authToken, teamId)) return null
+        if (!isTeamMember(authToken, teamId)) return []
         // this is by team, not by meeting member, which caused an err in dev, not sure about prod
         // we need better perms for people to view/not view a meeting that happened before they joined the team
         return dataLoader.get('activeMeetingsByTeamId').load(teamId)
