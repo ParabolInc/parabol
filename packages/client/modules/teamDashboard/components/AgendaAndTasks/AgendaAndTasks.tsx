@@ -104,14 +104,11 @@ interface Props {
 
 const AgendaAndTasks = (props: Props) => {
   const {viewer, retry} = props
-  console.log('AgendaAndTasks -> props', props)
   const {dashSearch} = viewer
   const team = viewer.team!
-  console.log('AgendaAndTasks -> team', team)
   const teamMember = viewer.teamMember!
   const {hideAgenda} = teamMember
   const {agendaItems, teamId, teamName} = team
-  console.log('AgendaAndTasks -> agendaItems', agendaItems)
   useStoreQueryRetry(retry)
   useDocumentTitle(`Team Dashboard | ${teamName}`, teamName)
   return (

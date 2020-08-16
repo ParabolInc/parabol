@@ -41,7 +41,6 @@ interface Props {
 const AgendaListAndInput = (props: Props) => {
   const {agendaItems, dashSearch, gotoStageId, isDisabled, team, meeting, meetingId} = props
   if (!agendaItems) return
-  console.log('AgendaListAndInput -> team', team)
   return (
     <RootStyles disabled={!!isDisabled} isMeeting={!!meetingId}>
       <AgendaList

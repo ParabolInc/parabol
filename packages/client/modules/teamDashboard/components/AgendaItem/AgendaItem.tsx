@@ -80,12 +80,17 @@ const getItemProps = (
   // }
   if (!meeting) return fallback
   // const {facilitatorUserId, facilitatorStageId, phases, localStage} = meeting
-  const {facilitatorUserId, facilitatorStageId, phases, localStage, localPhase} = meeting
+  const {facilitatorUserId, facilitatorStageId, localStage, localPhase} = meeting
   const localStageId = (localStage && localStage.id) || ''
-  const agendaItemStageRes = findStageById(localPhase, agendaItemId, 'agendaItemId')
-  const agendaItemStage = agendaItemStageRes?.stage
+  const {stages} = localPhase
+  if (!stages) return fallback
+
+  const agendaItemStage = stages.find((stage) => stage?.agendaItem?.id === agendaItemId)
+  // const agendaItemStageRes = findStageById(localPhase, agendaItemId, 'agendaItemId')
+  // const agendaItemStage = agendaItemStageRes?.stage
   if (!agendaItemStage) return fallback
   const {isComplete, isNavigable, isNavigableByFacilitator, id: stageId} = agendaItemStage
+  console.log('isNavigableByFacilitator', isNavigableByFacilitator)
   const isLocalStage = localStageId === stageId
   const isFacilitatorStage = facilitatorStageId === stageId
   const isUnsyncedFacilitatorStage = isFacilitatorStage !== isLocalStage && !isLocalStage
@@ -134,6 +139,7 @@ const AgendaItem = (props: Props) => {
     isFacilitatorStage
   } = getItemProps(meeting, agendaItemId, viewerId, gotoStageId)
   useScrollIntoView(ref, isFacilitatorStage)
+  console.log('AgendaItem -> isActive', isActive)
   useEffect(() => {
     ref.current && ref.current.scrollIntoView({behavior: 'smooth'})
   }, [])

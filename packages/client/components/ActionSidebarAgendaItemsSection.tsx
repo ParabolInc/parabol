@@ -16,7 +16,6 @@ interface Props {
 const ActionSidebarAgendaItemsSection = (props: Props) => {
   const {gotoStageId, handleMenuClick, meeting} = props
   const {id: meetingId, team} = meeting
-  console.log('ActionSidebarAgendaItemsSection -> meeting', meeting)
   const handleClick = async (stageId: string) => {
     gotoStageId(stageId).catch()
     handleMenuClick()

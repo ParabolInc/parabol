@@ -87,7 +87,7 @@ const MeetingControlBar = (props: Props) => {
   const getPossibleButtons = () => {
     const buttons = ['tips']
     if (!isFacilitating && !isCheckIn && !isComplete) buttons.push('ready')
-    if (!isFacilitating && localStageId !== facilitatorStageId) buttons.push('rejoin')
+    if (!isFacilitating && localStageId !== facilitatorStageId && !endedAt) buttons.push('rejoin')
     if (isFacilitating && isRetro && !isCheckIn && !isComplete) buttons.push('timer')
     if (isFacilitating && findStageAfterId(phases, localStageId)) buttons.push('next')
     if (isFacilitating) buttons.push('end')
