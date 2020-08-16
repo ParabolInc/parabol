@@ -104,11 +104,14 @@ interface Props {
 
 const AgendaAndTasks = (props: Props) => {
   const {viewer, retry} = props
+  console.log('AgendaAndTasks -> props', props)
   const {dashSearch} = viewer
   const team = viewer.team!
+  console.log('AgendaAndTasks -> team', team)
   const teamMember = viewer.teamMember!
   const {hideAgenda} = teamMember
-  const {teamId, teamName} = team
+  const {agendaItems, teamId, teamName} = team
+  console.log('AgendaAndTasks -> agendaItems', agendaItems)
   useStoreQueryRetry(retry)
   useDocumentTitle(`Team Dashboard | ${teamName}`, teamName)
   return (
@@ -130,7 +133,11 @@ const AgendaAndTasks = (props: Props) => {
               <StyledLabelHeading>{'Team Agenda'}</StyledLabelHeading>
               <CloseAgenda hideAgenda={hideAgenda} teamId={teamId} />
             </AgendaHeader>
-            <AgendaListAndInput dashSearch={dashSearch || ''} team={team!} />
+            <AgendaListAndInput
+              agendaItems={agendaItems}
+              dashSearch={dashSearch || ''}
+              team={team!}
+            />
           </AgendaContent>
         )}
       </AgendaMain>
@@ -145,6 +152,13 @@ export default createFragmentContainer(AgendaAndTasks, {
       team(teamId: $teamId) {
         teamId: id
         teamName: name
+        agendaItems {
+          id
+          content
+          # need this for the DnD
+          sortOrder
+          ...AgendaItem_agendaItem
+        }
         ...AgendaListAndInput_team
         ...TeamTasksHeaderContainer_team
       }

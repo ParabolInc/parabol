@@ -6,6 +6,7 @@ import graphql from 'babel-plugin-relay/macro'
 import AgendaInput from '../AgendaInput/AgendaInput'
 import AgendaList from '../AgendaList/AgendaList'
 import useGotoStageId from '../../../../hooks/useGotoStageId'
+import {IAgendaItem} from '~/types/graphql'
 
 const RootStyles = styled('div')<{isMeeting: boolean | undefined; disabled: boolean}>(
   ({disabled, isMeeting}) => ({
@@ -28,6 +29,8 @@ const StyledAgendaInput = styled(AgendaInput)<{isMeeting: boolean | undefined}>(
 }))
 
 interface Props {
+  agendaItems: IAgendaItem[]
+  meeting: any
   dashSearch?: string
   gotoStageId?: ReturnType<typeof useGotoStageId>
   isDisabled?: boolean
@@ -36,10 +39,14 @@ interface Props {
 }
 
 const AgendaListAndInput = (props: Props) => {
-  const {dashSearch, gotoStageId, isDisabled, team, meetingId} = props
+  const {agendaItems, dashSearch, gotoStageId, isDisabled, team, meeting, meetingId} = props
+  if (!agendaItems) return
+  console.log('AgendaListAndInput -> team', team)
   return (
     <RootStyles disabled={!!isDisabled} isMeeting={!!meetingId}>
       <AgendaList
+        agendaItems={agendaItems}
+        meeting={meeting}
         gotoStageId={gotoStageId}
         meetingId={meetingId}
         team={team}

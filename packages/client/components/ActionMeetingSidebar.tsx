@@ -31,7 +31,9 @@ const ActionMeetingSidebar = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
   const {team, settings} = meeting
+  console.log('ActionMeetingSidebar -> meeting', meeting)
   const {agendaItems} = team
+  console.log('ActionMeetingSidebar -> agendaItems', agendaItems)
   const {phaseTypes} = settings
   const {facilitatorUserId, facilitatorStageId, localPhase, localStage, phases} = meeting
   const localPhaseType = localPhase ? localPhase.phaseType : ''
@@ -61,7 +63,7 @@ const ActionMeetingSidebar = (props: Props) => {
             const phaseCount =
               phaseType === NewMeetingPhaseTypeEnum.agendaitems && agendaItems
                 ? agendaItems.length
-                : undefined
+                : 2
             return (
               <NewMeetingSidebarPhaseListItem
                 handleClick={canNavigate ? handleClick : undefined}

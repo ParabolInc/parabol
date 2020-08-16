@@ -14,6 +14,7 @@ import {AGENDA_ITEM, SORT_STEP} from '../../../../utils/constants'
 import dndNoise from '../../../../utils/dndNoise'
 import useEventCallback from '../../../../hooks/useEventCallback'
 import useGotoStageId from '../../../../hooks/useGotoStageId'
+import {IAgendaItem} from '~/types/graphql'
 
 const AgendaListRoot = styled('div')({
   display: 'flex',
@@ -32,6 +33,8 @@ const DraggableAgendaItem = styled('div')<{isDragging: boolean}>(({isDragging}) 
 }))
 
 interface Props {
+  agendaItems: IAgendaItem[]
+  meeting: any
   dashSearch?: string
   gotoStageId: ReturnType<typeof useGotoStageId> | undefined
   meetingId?: string | null
@@ -40,8 +43,9 @@ interface Props {
 
 const AgendaList = (props: Props) => {
   const atmosphere = useAtmosphere()
-  const {dashSearch, gotoStageId, meetingId, team} = props
-  const {activeMeetings, agendaItems} = team
+  const {agendaItems, meeting, dashSearch, gotoStageId, meetingId, team} = props
+  const {activeMeetings} = team
+  if (!agendaItems) return
   const filteredAgendaItems = useMemo(() => {
     return dashSearch
       ? agendaItems.filter(({content}) => content && content.match(dashSearch))
@@ -106,6 +110,7 @@ const AgendaList = (props: Props) => {
                             agendaItem={item}
                             gotoStageId={gotoStageId}
                             isDragging={dragSnapshot.isDragging}
+                            meeting={meeting}
                             meetingId={meetingId}
                           />
                         </DraggableAgendaItem>

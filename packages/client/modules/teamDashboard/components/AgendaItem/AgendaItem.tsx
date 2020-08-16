@@ -58,7 +58,8 @@ const SvgIcon = styled('img')({
 })
 
 const getItemProps = (
-  activeMeetings: AgendaItem_activeMeetings,
+  // activeMeetings: AgendaItem_activeMeetings,
+  meeting: any,
   agendaItemId: string,
   viewerId: string,
   gotoStageId: ReturnType<typeof useGotoStageId> | undefined
@@ -71,15 +72,17 @@ const getItemProps = (
     isComplete: false,
     isUnsyncedFacilitatorStage: false
   }
-  const actionMeeting = activeMeetings.find(
-    (activeMeeting) => activeMeeting.meetingType === MeetingTypeEnum.action
-  )
-  if (!actionMeeting) {
-    return fallback
-  }
-  const {facilitatorUserId, facilitatorStageId, phases, localStage} = actionMeeting
+  // const actionMeeting = activeMeetings.find(
+  //   (activeMeeting) => activeMeeting.meetingType === MeetingTypeEnum.action
+  // )
+  // if (!actionMeeting) {
+  //   return fallback
+  // }
+  if (!meeting) return fallback
+  // const {facilitatorUserId, facilitatorStageId, phases, localStage} = meeting
+  const {facilitatorUserId, facilitatorStageId, phases, localStage, localPhase} = meeting
   const localStageId = (localStage && localStage.id) || ''
-  const agendaItemStageRes = findStageById(phases, agendaItemId, 'agendaItemId')
+  const agendaItemStageRes = findStageById(localPhase, agendaItemId, 'agendaItemId')
   const agendaItemStage = agendaItemStageRes?.stage
   if (!agendaItemStage) return fallback
   const {isComplete, isNavigable, isNavigableByFacilitator, id: stageId} = agendaItemStage
@@ -88,7 +91,9 @@ const getItemProps = (
   const isUnsyncedFacilitatorStage = isFacilitatorStage !== isLocalStage && !isLocalStage
   const isViewerFacilitator = viewerId === facilitatorUserId
   const isDisabled = isViewerFacilitator ? !isNavigableByFacilitator : !isNavigable
-  const onClick = () => gotoStageId!(stageId)
+  const onClick = () => {
+    gotoStageId!(stageId)
+  }
 
   return {
     isUnsyncedFacilitatorStage,
@@ -106,10 +111,11 @@ interface Props {
   gotoStageId: ReturnType<typeof useGotoStageId> | undefined
   isDragging: boolean
   meetingId?: string | null
+  meeting: any
 }
 
 const AgendaItem = (props: Props) => {
-  const {activeMeetings, agendaItem, gotoStageId, isDragging, meetingId} = props
+  const {activeMeetings, agendaItem, gotoStageId, isDragging, meeting, meetingId} = props
   const {id: agendaItemId, content, pinned, teamMember} = agendaItem
   const {picture} = teamMember
   const atmosphere = useAtmosphere()
@@ -126,7 +132,7 @@ const AgendaItem = (props: Props) => {
     isComplete,
     isUnsyncedFacilitatorStage,
     isFacilitatorStage
-  } = getItemProps(activeMeetings, agendaItemId, viewerId, gotoStageId)
+  } = getItemProps(meeting, agendaItemId, viewerId, gotoStageId)
   useScrollIntoView(ref, isFacilitatorStage)
   useEffect(() => {
     ref.current && ref.current.scrollIntoView({behavior: 'smooth'})
@@ -212,6 +218,15 @@ export default createFragmentContainer(AgendaItem, {
       }
     }
   `,
+  // actionMeeting: graphql`
+  //   fragment AgendaItem_actionMeeting on ActionMeeting {
+  //     id
+  //     localStage {
+  //       id
+  //     }
+  //     facilitatorStageId
+  //   }
+  // `,
   agendaItem: graphql`
     fragment AgendaItem_agendaItem on AgendaItem {
       id

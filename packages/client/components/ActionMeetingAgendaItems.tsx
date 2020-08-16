@@ -54,14 +54,14 @@ const ThreadColumn = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
 const ActionMeetingAgendaItems = (props: Props) => {
   const {avatarGroup, toggleSidebar, meeting} = props
   const {showSidebar, team, id: meetingId, endedAt, localStage} = meeting
-  const {agendaItems} = team
-  const {agendaItemId} = localStage
-  const agendaItem = agendaItems.find((item) => item.id === agendaItemId!)
+  // const {agendaItems} = team
+  const {agendaItem, agendaItemId} = localStage
+  const isDesktop = useBreakpoint(Breakpoint.SINGLE_REFLECTION_COLUMN)
+  // const agendaItem = agendaItems.find((item) => item.id === agendaItemId!)
   // optimistic updater could remove the agenda item
   if (!agendaItem) return null
   const {content, teamMember} = agendaItem
   const {picture, preferredName} = teamMember
-  const isDesktop = useBreakpoint(Breakpoint.SINGLE_REFLECTION_COLUMN)
   return (
     <MeetingContent>
       <MeetingHeaderAndPhase hideBottomBar={!!endedAt}>
@@ -91,8 +91,18 @@ const ActionMeetingAgendaItems = (props: Props) => {
 }
 
 graphql`
-  fragment ActionMeetingAgendaItemsStage on AgendaItemsStage {
-    agendaItemId
+  fragment ActionMeetingAgendaItemsStage on NewMeetingStage {
+    ... on AgendaItemsStage {
+      agendaItemId
+      agendaItem {
+        id
+        content
+        teamMember {
+          picture
+          preferredName
+        }
+      }
+    }
   }
 `
 
@@ -103,24 +113,13 @@ export default createFragmentContainer(ActionMeetingAgendaItems, {
       showSidebar
       endedAt
       facilitatorUserId
-      localStage {
-        ...ActionMeetingAgendaItemsStage @relay(mask: false)
-      }
       phases {
         stages {
           ...ActionMeetingAgendaItemsStage @relay(mask: false)
         }
       }
-      team {
-        id
-        agendaItems {
-          id
-          content
-          teamMember {
-            picture
-            preferredName
-          }
-        }
+      localStage {
+        ...ActionMeetingAgendaItemsStage @relay(mask: false)
       }
     }
   `

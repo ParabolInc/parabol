@@ -59,7 +59,7 @@ class TimelineEventCompletedActionMeeting extends Component<Props> {
           {' and '}
           <CountItem>{`${commentCount} ${plural(commentCount, 'comment')}.`}</CountItem>
           <br />
-          <Link to={`/meet/${meetingId}/updates/1`}>See the discussion</Link>
+          <Link to={`/meet/${meetingId}/agendaitems/1`}>See the discussion</Link>
           {' in your meeting or '}
           <Link to={`/new-summary/${meetingId}`}>review a summary</Link>
         </TimelineEventBody>

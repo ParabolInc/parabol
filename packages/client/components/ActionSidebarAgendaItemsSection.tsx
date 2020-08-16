@@ -16,6 +16,7 @@ interface Props {
 const ActionSidebarAgendaItemsSection = (props: Props) => {
   const {gotoStageId, handleMenuClick, meeting} = props
   const {id: meetingId, team} = meeting
+  console.log('ActionSidebarAgendaItemsSection -> meeting', meeting)
   const handleClick = async (stageId: string) => {
     gotoStageId(stageId).catch()
     handleMenuClick()
@@ -26,9 +27,16 @@ const ActionSidebarAgendaItemsSection = (props: Props) => {
     (phase) => phase.phaseType === NewMeetingPhaseTypeEnum.updates
   )!
   const isUpdatesNavigable = updatesPhase && updatesPhase.stages![0].isNavigable
+  const agendaItemsPhase = meeting.phases!.find(
+    (phase) => phase.phaseType === NewMeetingPhaseTypeEnum.agendaitems
+  )!
+  const agendaItems =
+    agendaItemsPhase.stages && agendaItemsPhase.stages.map((stage) => stage.agendaItem)
   return (
     <MeetingSidebarPhaseItemChild>
       <AgendaListAndInput
+        agendaItems={agendaItems || []}
+        meeting={meeting}
         meetingId={meetingId}
         gotoStageId={handleClick}
         isDisabled={!isUpdatesNavigable}
@@ -40,6 +48,7 @@ const ActionSidebarAgendaItemsSection = (props: Props) => {
 
 graphql`
   fragment ActionSidebarAgendaItemsSectionAgendaItemPhase on NewMeetingPhase {
+    id
     phaseType
     ... on UpdatesPhase {
       stages {
@@ -53,6 +62,13 @@ graphql`
         id
         isComplete
         isNavigable
+        agendaItem {
+          id
+          content
+          # need this for the DnD
+          sortOrder
+          ...AgendaItem_agendaItem
+        }
       }
     }
   }
@@ -66,6 +82,8 @@ export default createFragmentContainer(ActionSidebarAgendaItemsSection, {
         id
       }
       facilitatorStageId
+      facilitatorUserId
+      meetingType
       # load up the localPhase
       phases {
         ...ActionSidebarAgendaItemsSectionAgendaItemPhase @relay(mask: false)

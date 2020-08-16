@@ -137,6 +137,7 @@ const RetroDiscussPhase = (props: Props) => {
   const {avatarGroup, toggleSidebar, meeting} = props
   const phaseRef = useRef<HTMLDivElement>(null)
   const {id: meetingId, endedAt, localStage, showSidebar, organization} = meeting
+  console.log('RetroDiscussPhase -> meeting', meeting)
   const {reflectionGroup} = localStage
   const isDesktop = useBreakpoint(Breakpoint.SINGLE_REFLECTION_COLUMN)
   // reflection group will be null until the server overwrites the placeholder.
@@ -187,12 +188,12 @@ const RetroDiscussPhase = (props: Props) => {
                   {isDesktop ? (
                     <DiscussPhaseReflectionGrid meeting={meeting} />
                   ) : (
-                      <ReflectionGroup
-                        meeting={meeting}
-                        phaseRef={phaseRef}
-                        reflectionGroup={reflectionGroup}
-                      />
-                    )}
+                    <ReflectionGroup
+                      meeting={meeting}
+                      phaseRef={phaseRef}
+                      reflectionGroup={reflectionGroup}
+                    />
+                  )}
                 </ColumnInner>
               </ReflectionColumn>
               <ThreadColumn isDesktop={isDesktop}>
@@ -242,7 +243,6 @@ export default createFragmentContainer(RetroDiscussPhase, {
           ...RetroDiscussPhase_stage @relay(mask: false)
         }
       }
-
       localStage {
         ...RetroDiscussPhase_stage @relay(mask: false)
       }
