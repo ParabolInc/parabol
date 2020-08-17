@@ -94,7 +94,8 @@ interface Props {
 const TeamArchive = (props: Props) => {
   const {viewer, relay, team, returnToTeamId} = props
   const {hasMore, isLoading, loadMore} = relay
-  const {teamMembers, teamMemberFilter} = team || {}
+  const {teamMemberFilter} = viewer || {}
+  const {teamMembers} = team || {}
   const teamMemberFilterId = (teamMemberFilter && teamMemberFilter.id) || null
   const {tasks: archivedTasks, dashSearch} = viewer
 
@@ -292,6 +293,9 @@ export default createPaginationContainer(
     viewer: graphql`
       fragment TeamArchive_viewer on User {
         dashSearch
+        teamMemberFilter {
+          id
+        }
         tasks(first: $first, after: $after, userIds: $userIds, teamIds: $teamIds, archived: true)
           @connection(key: "TeamArchive_tasks", filters: ["teamIds"]) {
           edges {
@@ -313,9 +317,6 @@ export default createPaginationContainer(
     `,
     team: graphql`
       fragment TeamArchive_team on Team {
-        teamMemberFilter {
-          id
-        }
         teamMembers(sortBy: "preferredName") {
           id
           picture

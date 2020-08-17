@@ -15,7 +15,8 @@ interface Props {
 const TeamColumnsContainer = (props: Props) => {
   const {viewer} = props
   const {dashSearch, team} = viewer
-  const {id: teamId, tasks, teamMembers, teamMemberFilter} = team!
+  const {teamMemberFilter} = viewer || {}
+  const {id: teamId, tasks, teamMembers} = team!
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
   const teamMemberFilterId = (teamMemberFilter && teamMemberFilter.id) || null
@@ -26,8 +27,8 @@ const TeamColumnsContainer = (props: Props) => {
     }))
     return teamMemberFilterId
       ? nodes.filter((node) => {
-          return toTeamMemberId(node.teamId, node.userId) === teamMemberFilterId
-        })
+        return toTeamMemberId(node.teamId, node.userId) === teamMemberFilterId
+      })
       : nodes
   }, [tasks.edges, teamMemberFilterId, teamMembers])
 
@@ -52,11 +53,11 @@ export default createFragmentContainer(TeamColumnsContainer, {
   viewer: graphql`
     fragment TeamColumnsContainer_viewer on User {
       dashSearch
+      teamMemberFilter {
+        id
+      }
       team(teamId: $teamId) {
         id
-        teamMemberFilter {
-          id
-        }
         teamMembers(sortBy: "preferredName") {
           id
           picture
