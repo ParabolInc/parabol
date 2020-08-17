@@ -74,17 +74,17 @@ Before you begin working on an issue, you size it. Most issues will have a
 *SWAG* sizing from one of the Parabol maintainers, but it’s up to you to
 adjust it to what you think is fair.
 
-| Points | Individual _or_ team effort required |
-| ------ | ------------------------------------ |
-| 11     | Less than a single day               |
-| 12     | One or two days                      |
-| 13     | Three or four days                   |
-| 15     | Five to seven days                   |
-| 18     | Less than two weeks                  |
-| 23     | Two to three weeks                   |
-| 30     | Three to four weeks                  |
-| 50     | Four to eight weeks                  |
-| 110    | Too big! Let’s break it down…        |
+|  Points  | Individual *or* team effort required |
+| -------- | ------------------------------------ |
+|    11    | Less than a single day               |
+|    12    | One or two days                      |
+|    13    | Three or four days                   |
+|    15    | Five to seven days                   |
+|    18    | Less than two weeks                  |
+|    23    | Two to three weeks                   |
+|    30    | Three to four weeks                  |
+|    50    | Four to eight weeks                  |
+|    110   | Too big! Let’s break it down…        |
 
 ## Conversion rate
 
