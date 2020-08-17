@@ -16,7 +16,6 @@ import pinIcon from '../../../../styles/theme/images/icons/pin.svg'
 import unpinIcon from '../../../../styles/theme/images/icons/unpin.svg'
 import {ICON_SIZE} from '../../../../styles/typographyV2'
 import {AgendaItem_agendaItem} from '../../../../__generated__/AgendaItem_agendaItem.graphql'
-import {AgendaItem_meeting} from '~/__generated__/AgendaItem_meeting.graphql'
 
 const AgendaItemStyles = styled('div')({
   position: 'relative',
@@ -71,7 +70,7 @@ const getItemProps = (
   }
 
   if (!meeting) return fallback
-  const {facilitatorUserId, facilitatorStageId, localStage, localPhase} = meeting
+  const {endedAt, facilitatorUserId, facilitatorStageId, localStage, localPhase} = meeting
   const localStageId = (localStage && localStage.id) || ''
   const {stages} = localPhase
   if (!stages) return fallback
@@ -82,7 +81,10 @@ const getItemProps = (
   const isFacilitatorStage = facilitatorStageId === stageId
   const isUnsyncedFacilitatorStage = isFacilitatorStage !== isLocalStage && !isLocalStage
   const isViewerFacilitator = viewerId === facilitatorUserId
-  const isDisabled = isViewerFacilitator ? !isNavigableByFacilitator : !isNavigable
+  let isDisabled
+  if (endedAt) isDisabled = false
+  else if (isViewerFacilitator) isDisabled = !isNavigableByFacilitator
+  else isDisabled = !isNavigable
   const onClick = () => {
     gotoStageId!(stageId)
   }
@@ -124,12 +126,12 @@ const AgendaItem = (props: Props) => {
     isUnsyncedFacilitatorStage,
     isFacilitatorStage
   } = getItemProps(meeting, agendaItemId, viewerId, gotoStageId)
+
   useScrollIntoView(ref, isFacilitatorStage)
   useEffect(() => {
     ref.current && ref.current.scrollIntoView({behavior: 'smooth'})
   }, [])
 
-  console.log('AgendaItem -> isComplete', isComplete, isDisabled)
   const handleIconClick = (e: React.MouseEvent) => {
     e.stopPropagation()
     UpdateAgendaItemMutation(

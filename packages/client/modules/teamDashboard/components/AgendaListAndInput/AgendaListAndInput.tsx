@@ -39,6 +39,7 @@ interface Props {
 
 const AgendaListAndInput = (props: Props) => {
   const {agendaItems, dashSearch, gotoStageId, isDisabled, team, meeting, meetingId} = props
+  const endedAt = meeting?.endedAt
 
   return (
     <RootStyles disabled={!!isDisabled} isMeeting={!!meetingId}>
@@ -49,7 +50,7 @@ const AgendaListAndInput = (props: Props) => {
         meeting={meeting}
         meetingId={meetingId}
       />
-      <StyledAgendaInput disabled={!!isDisabled} isMeeting={!!meetingId} team={team} />
+      <StyledAgendaInput disabled={!!isDisabled || endedAt} isMeeting={!!meetingId} team={team} />
     </RootStyles>
   )
 }

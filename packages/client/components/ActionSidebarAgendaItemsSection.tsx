@@ -1,5 +1,5 @@
 import {ActionSidebarAgendaItemsSection_meeting} from '../__generated__/ActionSidebarAgendaItemsSection_meeting.graphql'
-import React from 'react'
+import React, {useMemo} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import AgendaListAndInput from '../modules/teamDashboard/components/AgendaListAndInput/AgendaListAndInput'
@@ -29,8 +29,11 @@ const ActionSidebarAgendaItemsSection = (props: Props) => {
   const agendaItemsPhase = meeting.phases!.find(
     (phase) => phase.phaseType === NewMeetingPhaseTypeEnum.agendaitems
   )!
-  const agendaItems =
-    agendaItemsPhase.stages && agendaItemsPhase.stages.map((stage) => stage.agendaItem)
+  const agendaItems = useMemo(() => {
+    if (!agendaItemsPhase.stages) return null
+    return agendaItemsPhase.stages.map((stage) => stage.agendaItem)
+  }, [agendaItemsPhase])
+
   return (
     <MeetingSidebarPhaseItemChild>
       <AgendaListAndInput
@@ -77,6 +80,7 @@ export default createFragmentContainer(ActionSidebarAgendaItemsSection, {
   meeting: graphql`
     fragment ActionSidebarAgendaItemsSection_meeting on ActionMeeting {
       id
+      endedAt
       localStage {
         id
       }
