@@ -16,8 +16,6 @@ import UpdateAgendaItemMutation from '../../../../mutations/UpdateAgendaItemMuta
 import pinIcon from '../../../../styles/theme/images/icons/pin.svg'
 import unpinIcon from '../../../../styles/theme/images/icons/unpin.svg'
 import {ICON_SIZE} from '../../../../styles/typographyV2'
-import {MeetingTypeEnum} from '../../../../types/graphql'
-import findStageById from '../../../../utils/meetings/findStageById'
 import {AgendaItem_agendaItem} from '../../../../__generated__/AgendaItem_agendaItem.graphql'
 
 const AgendaItemStyles = styled('div')({
@@ -58,7 +56,6 @@ const SvgIcon = styled('img')({
 })
 
 const getItemProps = (
-  // activeMeetings: AgendaItem_activeMeetings,
   meeting: any,
   agendaItemId: string,
   viewerId: string,
@@ -72,25 +69,16 @@ const getItemProps = (
     isComplete: false,
     isUnsyncedFacilitatorStage: false
   }
-  // const actionMeeting = activeMeetings.find(
-  //   (activeMeeting) => activeMeeting.meetingType === MeetingTypeEnum.action
-  // )
-  // if (!actionMeeting) {
-  //   return fallback
-  // }
+
   if (!meeting) return fallback
-  // const {facilitatorUserId, facilitatorStageId, phases, localStage} = meeting
   const {facilitatorUserId, facilitatorStageId, localStage, localPhase} = meeting
   const localStageId = (localStage && localStage.id) || ''
   const {stages} = localPhase
   if (!stages) return fallback
 
   const agendaItemStage = stages.find((stage) => stage?.agendaItem?.id === agendaItemId)
-  // const agendaItemStageRes = findStageById(localPhase, agendaItemId, 'agendaItemId')
-  // const agendaItemStage = agendaItemStageRes?.stage
   if (!agendaItemStage) return fallback
   const {isComplete, isNavigable, isNavigableByFacilitator, id: stageId} = agendaItemStage
-  console.log('isNavigableByFacilitator', isNavigableByFacilitator)
   const isLocalStage = localStageId === stageId
   const isFacilitatorStage = facilitatorStageId === stageId
   const isUnsyncedFacilitatorStage = isFacilitatorStage !== isLocalStage && !isLocalStage
@@ -111,7 +99,6 @@ const getItemProps = (
 }
 
 interface Props {
-  activeMeetings: AgendaItem_activeMeetings
   agendaItem: AgendaItem_agendaItem
   gotoStageId: ReturnType<typeof useGotoStageId> | undefined
   isDragging: boolean
@@ -120,7 +107,7 @@ interface Props {
 }
 
 const AgendaItem = (props: Props) => {
-  const {activeMeetings, agendaItem, gotoStageId, isDragging, meeting, meetingId} = props
+  const {agendaItem, gotoStageId, isDragging, meeting, meetingId} = props
   const {id: agendaItemId, content, pinned, teamMember} = agendaItem
   const {picture} = teamMember
   const atmosphere = useAtmosphere()
@@ -139,7 +126,6 @@ const AgendaItem = (props: Props) => {
     isFacilitatorStage
   } = getItemProps(meeting, agendaItemId, viewerId, gotoStageId)
   useScrollIntoView(ref, isFacilitatorStage)
-  console.log('AgendaItem -> isActive', isActive)
   useEffect(() => {
     ref.current && ref.current.scrollIntoView({behavior: 'smooth'})
   }, [])
@@ -203,36 +189,6 @@ const AgendaItem = (props: Props) => {
 }
 
 export default createFragmentContainer(AgendaItem, {
-  activeMeetings: graphql`
-    fragment AgendaItem_activeMeetings on NewMeeting @relay(plural: true) {
-      facilitatorStageId
-      facilitatorUserId
-      meetingType
-      localStage {
-        id
-      }
-      phases {
-        stages {
-          id
-          ... on AgendaItemsStage {
-            agendaItemId
-            isComplete
-            isNavigable
-            isNavigableByFacilitator
-          }
-        }
-      }
-    }
-  `,
-  // actionMeeting: graphql`
-  //   fragment AgendaItem_actionMeeting on ActionMeeting {
-  //     id
-  //     localStage {
-  //       id
-  //     }
-  //     facilitatorStageId
-  //   }
-  // `,
   agendaItem: graphql`
     fragment AgendaItem_agendaItem on AgendaItem {
       id

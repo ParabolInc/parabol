@@ -3,8 +3,6 @@ import React, {useMemo} from 'react'
 import {DragDropContext, Draggable, Droppable} from 'react-beautiful-dnd'
 // import SexyScrollbar from 'universal/components/Dashboard/SexyScrollbar'
 import styled from '@emotion/styled'
-import {createFragmentContainer} from 'react-relay'
-import graphql from 'babel-plugin-relay/macro'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import AgendaItem from '../AgendaItem/AgendaItem'
 import AgendaListEmptyState from './AgendaListEmptyState'
@@ -43,10 +41,9 @@ interface Props {
 
 const AgendaList = (props: Props) => {
   const atmosphere = useAtmosphere()
-  const {agendaItems, meeting, dashSearch, gotoStageId, meetingId, team} = props
-  const {activeMeetings} = team
-  if (!agendaItems) return
+  const {agendaItems, meeting, dashSearch, gotoStageId, meetingId} = props
   const filteredAgendaItems = useMemo(() => {
+    if (!agendaItems) return null
     return dashSearch
       ? agendaItems.filter(({content}) => content && content.match(dashSearch))
       : agendaItems.filter(({content}) => content)
@@ -83,7 +80,7 @@ const AgendaList = (props: Props) => {
     )
   })
 
-  if (filteredAgendaItems.length === 0) {
+  if (!filteredAgendaItems || filteredAgendaItems.length === 0) {
     return <AgendaListEmptyState isDashboard={!meetingId} />
   }
 
@@ -106,7 +103,6 @@ const AgendaList = (props: Props) => {
                         >
                           <AgendaItem
                             key={item.id}
-                            activeMeetings={activeMeetings}
                             agendaItem={item}
                             gotoStageId={gotoStageId}
                             isDragging={dragSnapshot.isDragging}
@@ -128,23 +124,24 @@ const AgendaList = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(AgendaList, {
-  team: graphql`
-    fragment AgendaList_team on Team {
-      agendaItems {
-        id
-        content
-        # need this for the DnD
-        sortOrder
-        ...AgendaItem_agendaItem
-      }
-      activeMeetings {
-        ...AgendaItem_activeMeetings
-        id
-      }
-    }
-  `
-})
+export default AgendaList
+// export default createFragmentContainer(AgendaList, {
+//   team: graphql`
+//     fragment AgendaList_team on Team {
+//       agendaItems {
+//         id
+//         content
+//         # need this for the DnD
+//         sortOrder
+//         ...AgendaItem_agendaItem
+//       }
+//       # activeMeetings {
+//       #   ...AgendaItem_activeMeetings
+//       #   id
+//       # }
+//     }
+//   `
+// })
 
 // <SexyScrollbar color='rgba(0, 0, 0, 0.3)' activeColor='rgba(0, 0, 0, 0.5)'>
 //  {(scrollRef) => {

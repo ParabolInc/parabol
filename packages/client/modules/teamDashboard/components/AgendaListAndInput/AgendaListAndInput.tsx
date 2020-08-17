@@ -45,8 +45,8 @@ const AgendaListAndInput = (props: Props) => {
     <RootStyles disabled={!!isDisabled} isMeeting={!!meetingId}>
       <AgendaList
         agendaItems={agendaItems}
-        meeting={meeting}
         gotoStageId={gotoStageId}
+        meeting={meeting}
         meetingId={meetingId}
         team={team}
         dashSearch={dashSearch}

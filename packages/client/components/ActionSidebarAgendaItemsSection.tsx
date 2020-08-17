@@ -15,6 +15,7 @@ interface Props {
 
 const ActionSidebarAgendaItemsSection = (props: Props) => {
   const {gotoStageId, handleMenuClick, meeting} = props
+  console.log('ActionSidebarAgendaItemsSection --------&&*() -> meeting', meeting)
   const {id: meetingId, team} = meeting
   const handleClick = async (stageId: string) => {
     gotoStageId(stageId).catch()
@@ -56,6 +57,7 @@ graphql`
         isNavigable
       }
     }
+
     ... on AgendaItemsPhase {
       stages {
         id
