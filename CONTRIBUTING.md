@@ -40,6 +40,10 @@ To get started, simply follow these steps:
    with the agreed upon number of points. Once you accrue more than
    100 points we issue options for equity in Parabol, Inc.
 
+# Git Strategy
+
+`git pull --ff-only` is recommended git pull stratagey if possible to keep the history as clean as possible.
+
 # Compensation
 
 For giving us a hand and helping the broader Parabol community, your
@@ -70,17 +74,17 @@ Before you begin working on an issue, you size it. Most issues will have a
 *SWAG* sizing from one of the Parabol maintainers, but it’s up to you to
 adjust it to what you think is fair.
 
-|  Points  | Individual *or* team effort required |
-| -------- | ------------------------------------ |
-|    11    | Less than a single day               |
-|    12    | One or two days                      |
-|    13    | Three or four days                   |
-|    15    | Five to seven days                   |
-|    18    | Less than two weeks                  |
-|    23    | Two to three weeks                   |
-|    30    | Three to four weeks                  |
-|    50    | Four to eight weeks                  |
-|    110   | Too big! Let’s break it down…        |
+| Points | Individual _or_ team effort required |
+| ------ | ------------------------------------ |
+| 11     | Less than a single day               |
+| 12     | One or two days                      |
+| 13     | Three or four days                   |
+| 15     | Five to seven days                   |
+| 18     | Less than two weeks                  |
+| 23     | Two to three weeks                   |
+| 30     | Three to four weeks                  |
+| 50     | Four to eight weeks                  |
+| 110    | Too big! Let’s break it down…        |
 
 ## Conversion rate
 
