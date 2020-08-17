@@ -6,7 +6,6 @@ import graphql from 'babel-plugin-relay/macro'
 import AgendaInput from '../AgendaInput/AgendaInput'
 import AgendaList from '../AgendaList/AgendaList'
 import useGotoStageId from '../../../../hooks/useGotoStageId'
-import {AgendaListAndInput_meeting} from '~/__generated__/AgendaListAndInput_meeting.graphql'
 
 const RootStyles = styled('div')<{isMeeting: boolean | undefined; disabled: boolean}>(
   ({disabled, isMeeting}) => ({
@@ -34,7 +33,7 @@ interface Props {
   gotoStageId?: ReturnType<typeof useGotoStageId>
   isDisabled?: boolean
   team: AgendaListAndInput_team
-  meeting?: AgendaListAndInput_meeting
+  meeting?: any
   meetingId?: string
 }
 
@@ -60,11 +59,6 @@ export default createFragmentContainer(AgendaListAndInput, {
     fragment AgendaListAndInput_team on Team {
       ...AgendaInput_team
       ...AgendaList_team
-    }
-  `,
-  meeting: graphql`
-    fragment AgendaListAndInput_meeting on ActionMeeting {
-      ...AgendaList_meeting
     }
   `
 })

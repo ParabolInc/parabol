@@ -102,7 +102,7 @@ interface Props {
   gotoStageId: ReturnType<typeof useGotoStageId> | undefined
   isDragging: boolean
   meetingId?: string | null
-  meeting?: AgendaItem_meeting
+  meeting?: any
 }
 
 const AgendaItem = (props: Props) => {
@@ -129,6 +129,7 @@ const AgendaItem = (props: Props) => {
     ref.current && ref.current.scrollIntoView({behavior: 'smooth'})
   }, [])
 
+  console.log('AgendaItem -> isComplete', isComplete, isDisabled)
   const handleIconClick = (e: React.MouseEvent) => {
     e.stopPropagation()
     UpdateAgendaItemMutation(
@@ -187,34 +188,6 @@ const AgendaItem = (props: Props) => {
   )
 }
 
-graphql`
-  fragment AgendaItemAgendaItemPhase on NewMeetingPhase {
-    id
-    phaseType
-    ... on UpdatesPhase {
-      stages {
-        id
-        isComplete
-        isNavigable
-      }
-    }
-    ... on AgendaItemsPhase {
-      stages {
-        id
-        isComplete
-        isNavigable
-        agendaItem {
-          id
-          content
-          # need this for the DnD
-          sortOrder
-          ...AgendaItem_agendaItem
-        }
-      }
-    }
-  }
-`
-
 export default createFragmentContainer(AgendaItem, {
   agendaItem: graphql`
     fragment AgendaItem_agendaItem on AgendaItem {
@@ -224,21 +197,6 @@ export default createFragmentContainer(AgendaItem, {
       sortOrder
       teamMember {
         picture
-      }
-    }
-  `,
-  meeting: graphql`
-    fragment AgendaItem_meeting on ActionMeeting {
-      id
-      localStage {
-        id
-      }
-      # load up the localPhase
-      phases {
-        ...AgendaItemAgendaItemPhase @relay(mask: false)
-      }
-      localPhase {
-        ...AgendaItemAgendaItemPhase @relay(mask: false)
       }
     }
   `

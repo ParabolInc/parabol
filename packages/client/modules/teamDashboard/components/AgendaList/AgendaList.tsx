@@ -13,7 +13,6 @@ import useEventCallback from '../../../../hooks/useEventCallback'
 import useGotoStageId from '../../../../hooks/useGotoStageId'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import {AgendaList_meeting} from '~/__generated__/AgendaList_meeting.graphql'
 
 const AgendaListRoot = styled('div')({
   display: 'flex',
@@ -35,7 +34,7 @@ interface Props {
   agendaItems: any
   dashSearch?: string
   gotoStageId: ReturnType<typeof useGotoStageId> | undefined
-  meeting?: AgendaList_meeting
+  meeting?: any
   meetingId?: string | null
 }
 
@@ -134,11 +133,6 @@ export default createFragmentContainer(AgendaList, {
         sortOrder
         ...AgendaItem_agendaItem
       }
-    }
-  `,
-  meeting: graphql`
-    fragment AgendaList_meeting on ActionMeeting {
-      ...AgendaItem_meeting
     }
   `
 })

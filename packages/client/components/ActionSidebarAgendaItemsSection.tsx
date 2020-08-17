@@ -76,7 +76,6 @@ graphql`
 export default createFragmentContainer(ActionSidebarAgendaItemsSection, {
   meeting: graphql`
     fragment ActionSidebarAgendaItemsSection_meeting on ActionMeeting {
-      ...AgendaListAndInput_meeting
       id
       localStage {
         id
