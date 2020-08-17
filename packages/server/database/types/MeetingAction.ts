@@ -1,5 +1,4 @@
 import {MeetingTypeEnum} from 'parabol-client/types/graphql'
-
 import GenericMeetingPhase from './GenericMeetingPhase'
 import Meeting from './Meeting'
 

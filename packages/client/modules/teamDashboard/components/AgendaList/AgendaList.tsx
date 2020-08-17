@@ -135,6 +135,13 @@ export default createFragmentContainer(AgendaList, {
       }
     }
   `
+  // meeting: graphql`
+  //   fragment AgendaList_meeting on ActionMeeting {
+  //     localPhase {
+  //       phaseType
+  //     }
+  //   }
+  // `
 })
 
 // <SexyScrollbar color='rgba(0, 0, 0, 0.3)' activeColor='rgba(0, 0, 0, 0.5)'>

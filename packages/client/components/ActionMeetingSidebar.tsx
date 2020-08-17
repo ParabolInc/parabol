@@ -61,7 +61,7 @@ const ActionMeetingSidebar = (props: Props) => {
             const phaseCount =
               phaseType === NewMeetingPhaseTypeEnum.agendaitems && agendaItems
                 ? agendaItems.length
-                : 2
+                : undefined
             return (
               <NewMeetingSidebarPhaseListItem
                 handleClick={canNavigate ? handleClick : undefined}

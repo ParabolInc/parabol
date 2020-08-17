@@ -10,7 +10,6 @@ import {
 import {NewMeetingPhaseTypeEnum} from 'parabol-client/types/graphql'
 import {RETROSPECTIVE} from 'parabol-client/utils/constants'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
-
 import {getUserId} from '../../utils/authorization'
 import filterTasksByMeeting from '../../utils/filterTasksByMeeting'
 import {GQLContext} from '../graphql'

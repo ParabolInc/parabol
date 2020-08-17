@@ -116,7 +116,6 @@ const BottomControlBarReady = (props: Props) => {
     return false
   }
   const disabled = getDisabled()
-
   return (
     <>
       <BottomNavControl

@@ -28,13 +28,6 @@ export default createFragmentContainer(TeamTasksHeaderContainer, {
     fragment TeamTasksHeaderContainer_team on Team {
       id
       ...TeamTasksHeader_team
-      agendaItems {
-        id
-        content
-        # need this for the DnD
-        sortOrder
-        ...AgendaItem_agendaItem
-      }
     }
   `,
   viewer: graphql`

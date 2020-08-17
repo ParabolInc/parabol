@@ -2,7 +2,6 @@ import graphql from 'babel-plugin-relay/macro'
 import React, {ReactElement, useEffect} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {ActionMeeting_meeting} from '~/__generated__/ActionMeeting_meeting.graphql'
-
 import useMeeting from '../hooks/useMeeting'
 import NewMeetingAvatarGroup from '../modules/meeting/components/MeetingAvatarGroup/NewMeetingAvatarGroup'
 import {ValueOf} from '../types/generics'

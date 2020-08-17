@@ -38,7 +38,7 @@ const ActionSidebarAgendaItemsSection = (props: Props) => {
     <MeetingSidebarPhaseItemChild>
       <AgendaListAndInput
         agendaItems={agendaItems}
-        meeting={meeting as any}
+        meeting={meeting}
         meetingId={meetingId}
         gotoStageId={handleClick}
         isDisabled={!isUpdatesNavigable}
@@ -79,6 +79,7 @@ graphql`
 export default createFragmentContainer(ActionSidebarAgendaItemsSection, {
   meeting: graphql`
     fragment ActionSidebarAgendaItemsSection_meeting on ActionMeeting {
+      # ...AgendaListAndInput_meeting @relay(mask: false)
       id
       endedAt
       localStage {
