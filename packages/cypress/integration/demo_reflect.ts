@@ -1,5 +1,3 @@
-import click from '../support/commands'
-
 function addCard(column, text) {
   cy.wait(500)
   cy.get(`[data-cy=reflection-column-${column}]`)
