@@ -1,8 +1,7 @@
 import styled from '@emotion/styled'
-import graphql from 'babel-plugin-relay/macro'
 import React, {useEffect, useRef, useState} from 'react'
 import {createFragmentContainer} from 'react-relay'
-import {AgendaItem_activeMeetings} from '~/__generated__/AgendaItem_activeMeetings.graphql'
+import graphql from 'babel-plugin-relay/macro'
 import Avatar from '../../../../components/Avatar/Avatar'
 import IconButton from '../../../../components/IconButton'
 import MeetingSubnavItem from '../../../../components/MeetingSubnavItem'
@@ -17,6 +16,7 @@ import pinIcon from '../../../../styles/theme/images/icons/pin.svg'
 import unpinIcon from '../../../../styles/theme/images/icons/unpin.svg'
 import {ICON_SIZE} from '../../../../styles/typographyV2'
 import {AgendaItem_agendaItem} from '../../../../__generated__/AgendaItem_agendaItem.graphql'
+import {AgendaItem_meeting} from '~/__generated__/AgendaItem_meeting.graphql'
 
 const AgendaItemStyles = styled('div')({
   position: 'relative',
@@ -75,8 +75,7 @@ const getItemProps = (
   const localStageId = (localStage && localStage.id) || ''
   const {stages} = localPhase
   if (!stages) return fallback
-
-  const agendaItemStage = stages.find((stage) => stage?.agendaItem?.id === agendaItemId)
+  const agendaItemStage = stages.find((stage) => stage.agendaItem?.id === agendaItemId)
   if (!agendaItemStage) return fallback
   const {isComplete, isNavigable, isNavigableByFacilitator, id: stageId} = agendaItemStage
   const isLocalStage = localStageId === stageId
@@ -103,7 +102,7 @@ interface Props {
   gotoStageId: ReturnType<typeof useGotoStageId> | undefined
   isDragging: boolean
   meetingId?: string | null
-  meeting: any
+  meeting?: AgendaItem_meeting
 }
 
 const AgendaItem = (props: Props) => {
@@ -188,14 +187,58 @@ const AgendaItem = (props: Props) => {
   )
 }
 
+graphql`
+  fragment AgendaItemAgendaItemPhase on NewMeetingPhase {
+    id
+    phaseType
+    ... on UpdatesPhase {
+      stages {
+        id
+        isComplete
+        isNavigable
+      }
+    }
+    ... on AgendaItemsPhase {
+      stages {
+        id
+        isComplete
+        isNavigable
+        agendaItem {
+          id
+          content
+          # need this for the DnD
+          sortOrder
+          ...AgendaItem_agendaItem
+        }
+      }
+    }
+  }
+`
+
 export default createFragmentContainer(AgendaItem, {
   agendaItem: graphql`
     fragment AgendaItem_agendaItem on AgendaItem {
       id
       content
       pinned
+      sortOrder
       teamMember {
         picture
+      }
+    }
+  `,
+  meeting: graphql`
+    fragment AgendaItem_meeting on ActionMeeting {
+      id
+      localStage {
+        id
+      }
+      # load up the localPhase
+      phases {
+        ...AgendaItemAgendaItemPhase @relay(mask: false)
+      }
+      localPhase {
+        ...AgendaItemAgendaItemPhase @relay(mask: false)
       }
     }
   `

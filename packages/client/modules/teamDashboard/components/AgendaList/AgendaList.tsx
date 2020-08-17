@@ -1,4 +1,3 @@
-import {AgendaList_team} from '../../../../__generated__/AgendaList_team.graphql'
 import React, {useMemo} from 'react'
 import {DragDropContext, Draggable, Droppable} from 'react-beautiful-dnd'
 // import SexyScrollbar from 'universal/components/Dashboard/SexyScrollbar'
@@ -12,7 +11,9 @@ import {AGENDA_ITEM, SORT_STEP} from '../../../../utils/constants'
 import dndNoise from '../../../../utils/dndNoise'
 import useEventCallback from '../../../../hooks/useEventCallback'
 import useGotoStageId from '../../../../hooks/useGotoStageId'
-import {IAgendaItem} from '~/types/graphql'
+import {createFragmentContainer} from 'react-relay'
+import graphql from 'babel-plugin-relay/macro'
+import {AgendaList_meeting} from '~/__generated__/AgendaList_meeting.graphql'
 
 const AgendaListRoot = styled('div')({
   display: 'flex',
@@ -31,12 +32,11 @@ const DraggableAgendaItem = styled('div')<{isDragging: boolean}>(({isDragging}) 
 }))
 
 interface Props {
-  agendaItems: IAgendaItem[]
-  meeting: any
+  agendaItems: any
   dashSearch?: string
   gotoStageId: ReturnType<typeof useGotoStageId> | undefined
+  meeting?: AgendaList_meeting
   meetingId?: string | null
-  team: AgendaList_team
 }
 
 const AgendaList = (props: Props) => {
@@ -124,24 +124,24 @@ const AgendaList = (props: Props) => {
   )
 }
 
-export default AgendaList
-// export default createFragmentContainer(AgendaList, {
-//   team: graphql`
-//     fragment AgendaList_team on Team {
-//       agendaItems {
-//         id
-//         content
-//         # need this for the DnD
-//         sortOrder
-//         ...AgendaItem_agendaItem
-//       }
-//       # activeMeetings {
-//       #   ...AgendaItem_activeMeetings
-//       #   id
-//       # }
-//     }
-//   `
-// })
+export default createFragmentContainer(AgendaList, {
+  team: graphql`
+    fragment AgendaList_team on Team {
+      agendaItems {
+        id
+        content
+        # need this for the DnD
+        sortOrder
+        ...AgendaItem_agendaItem
+      }
+    }
+  `,
+  meeting: graphql`
+    fragment AgendaList_meeting on ActionMeeting {
+      ...AgendaItem_meeting
+    }
+  `
+})
 
 // <SexyScrollbar color='rgba(0, 0, 0, 0.3)' activeColor='rgba(0, 0, 0, 0.5)'>
 //  {(scrollRef) => {

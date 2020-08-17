@@ -53,11 +53,9 @@ const ThreadColumn = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
 
 const ActionMeetingAgendaItems = (props: Props) => {
   const {avatarGroup, toggleSidebar, meeting} = props
-  const {showSidebar, team, id: meetingId, endedAt, localStage} = meeting
-  // const {agendaItems} = team
+  const {showSidebar, id: meetingId, endedAt, localStage} = meeting
   const {agendaItem, agendaItemId} = localStage
   const isDesktop = useBreakpoint(Breakpoint.SINGLE_REFLECTION_COLUMN)
-  // const agendaItem = agendaItems.find((item) => item.id === agendaItemId!)
   // optimistic updater could remove the agenda item
   if (!agendaItem) return null
   const {content, teamMember} = agendaItem
