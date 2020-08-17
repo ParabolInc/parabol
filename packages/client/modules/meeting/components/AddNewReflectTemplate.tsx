@@ -61,7 +61,7 @@ const AddNewReflectTemplate = (props: Props) => {
   }
   return (
     <ButtonBlock>
-      {error && <ErrorLine>{error}</ErrorLine>}
+      {error && <ErrorLine>{error.message}</ErrorLine>}
       <Button onClick={addNewTemplate} palette='blue' waiting={submitting}>
         <Icon>add</Icon>
       </Button>
