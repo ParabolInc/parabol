@@ -5,6 +5,7 @@ import TaskColumns from '../../../../components/TaskColumns/TaskColumns'
 import {UserColumnsContainer_viewer} from '../../../../__generated__/UserColumnsContainer_viewer.graphql'
 import {AreaEnum} from '../../../../types/graphql'
 import getSafeRegex from '../../../../utils/getSafeRegex'
+import toTeamMemberId from '~/utils/relay/toTeamMemberId'
 
 interface Props {
   viewer: UserColumnsContainer_viewer
@@ -43,7 +44,12 @@ const UserColumnsContainer = (props: Props) => {
       viewer: {teams}
     } = props
 
-    return <TaskColumns area={AreaEnum.userDash} tasks={filteredTasks} teams={teams} />
+    // if user filter is selected, it's like User Dashboard: task footer shows team name
+    const areaForTaskCard = teamMemberFilter ? AreaEnum.userDash : AreaEnum.teamDash
+    const myTeamMemberId = teamFilter ? toTeamMemberId(teamFilter!.id, viewer.id) : undefined
+    const filteredTeams = teamFilter ? [teamFilter] : teams
+
+    return <TaskColumns area={areaForTaskCard} tasks={filteredTasks} myTeamMemberId={myTeamMemberId} teams={filteredTeams} />
   }
 }
 

@@ -38,12 +38,7 @@ const TaskColumnAddTask = (props: Props) => {
   const atmosphere = useAtmosphere()
   const label = taskStatusLabels[status]
   const sortOrder = getNextSortOrder(tasks, dndNoise())
-  if (area === AreaEnum.teamDash || isMyMeetingSection) {
-    const {userId, teamId} = fromTeamMemberId(teamMemberFilterId || myTeamMemberId!)
-    const handleAddTask = () =>
-      CreateTaskMutation(atmosphere, {newTask: {status, teamId, userId, sortOrder, meetingId}}, {})
-    return <AddTaskButton onClick={handleAddTask} label={label} />
-  } else if (area === AreaEnum.userDash && teams) {
+  if (teams) {
     if (teams.length === 1) {
       const {id: teamId} = teams[0]
       const {viewerId} = atmosphere
@@ -58,6 +53,11 @@ const TaskColumnAddTask = (props: Props) => {
       return <AddTaskButton onClick={handleAddTask} label={label} />
     }
     return <TaskColumnAddTaskSelectTeam sortOrder={sortOrder} status={status} teams={teams!} />
+  } else if (area === AreaEnum.teamDash || isMyMeetingSection) {
+    const {userId, teamId} = fromTeamMemberId(teamMemberFilterId || myTeamMemberId!)
+    const handleAddTask = () =>
+      CreateTaskMutation(atmosphere, {newTask: {status, teamId, userId, sortOrder, meetingId}}, {})
+    return <AddTaskButton onClick={handleAddTask} label={label} />
   }
   return null
 }
