@@ -18,7 +18,7 @@ import LabelHeading from './LabelHeading/LabelHeading'
 import MassInvitationTokenLinkRoot from './MassInvitationTokenLinkRoot'
 import PrimaryButton from './PrimaryButton'
 import StyledError from './StyledError'
-
+import StyledWarning from './StyledWarning'
 interface Props {
   closePortal: () => void
   meetingId?: string | undefined
@@ -79,6 +79,11 @@ const ErrorMessage = styled(StyledError)({
   marginTop: '.5rem'
 })
 
+const WarningMessage = styled(StyledWarning)({
+  fontSize: '.8125rem',
+  marginTop: '.5rem'
+})
+
 const StyledLabelHeading = styled(LabelHeading)({
   alignItems: 'center',
   display: 'flex',
@@ -98,18 +103,21 @@ const AddTeamMemberModal = (props: Props) => {
   const {closePortal, meetingId, teamMembers, teamId} = props
   const [pendingSuccessfulInvitations, setPendingSuccessfulInvitations] = useState([] as string[])
   const [successfulInvitations, setSuccessfulInvitations] = useState<string[] | null>(null)
+  const [isSubmitted, setIsSubmitted] = useState(false)
   const [rawInvitees, setRawInvitees] = useState('')
   const [invitees, setInvitees] = useState([] as string[])
   const {error, onCompleted, onError, submitMutation, submitting} = useMutationProps()
   const atmosphere = useAtmosphere()
   const onChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    if (isSubmitted) setIsSubmitted(false)
     const nextValue = e.target.value
-    if (rawInvitees === nextValue) return
     const parsedInvitees = parseEmailAddressList(nextValue)
+    console.log('onChange -> parsedInvitees', parsedInvitees)
     const allInvitees = parsedInvitees
       ? (parsedInvitees.map((invitee) => (invitee as any).address) as string[])
       : invitees
     const teamEmailSet = new Set(teamMembers.map(({email}) => email))
+    console.log('onChange -> teamEmailSet', teamEmailSet)
     const uniqueInvitees = Array.from(new Set(allInvitees))
     const offTeamInvitees = uniqueInvitees.filter((email) => !teamEmailSet.has(email))
     const alreadyInvitedEmail = uniqueInvitees.find((email) => teamEmailSet.has(email))
@@ -126,6 +134,7 @@ const AddTeamMemberModal = (props: Props) => {
     if (invitees.length === 0) return
     submitMutation()
     const handleCompleted = (res) => {
+      setIsSubmitted(true)
       onCompleted()
       if (res) {
         const {inviteToTeam} = res
@@ -134,8 +143,8 @@ const AddTeamMemberModal = (props: Props) => {
         } else {
           // there was a problem with at least 1 email
           const goodInvitees = invitees.filter((invitee) => inviteToTeam.invitees.includes(invitee))
-
           const badInvitees = invitees.filter((invitee) => !inviteToTeam.invitees.includes(invitee))
+
           onError(
             new Error(
               `Could not send an invitation to the above ${plural(badInvitees.length, 'email')}`
@@ -180,7 +189,8 @@ const AddTeamMemberModal = (props: Props) => {
             placeholder='email@example.co, another@example.co'
             value={rawInvitees}
           />
-          {error && <ErrorMessage>{error.message}</ErrorMessage>}
+          {error && isSubmitted && <ErrorMessage>{error.message}</ErrorMessage>}
+          {error && !isSubmitted && <WarningMessage>{error.message}</WarningMessage>}
           <ButtonGroup>
             <PrimaryButton
               onClick={sendInvitations}
