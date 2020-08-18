@@ -33,7 +33,7 @@ const ActionSidebarAgendaItemsSection = (props: Props) => {
     if (!agendaItemsPhase.stages) return null
     return agendaItemsPhase.stages.map((stage) => stage.agendaItem)
   }, [agendaItemsPhase])
-
+  if (!agendaItems) return null
   return (
     <MeetingSidebarPhaseItemChild>
       <AgendaListAndInput
@@ -60,6 +60,7 @@ graphql`
       }
     }
     ... on AgendaItemsPhase {
+      ...AgendaListAndInput_agendaItemsPhase
       stages {
         id
         isComplete
@@ -79,7 +80,7 @@ graphql`
 export default createFragmentContainer(ActionSidebarAgendaItemsSection, {
   meeting: graphql`
     fragment ActionSidebarAgendaItemsSection_meeting on ActionMeeting {
-      # ...AgendaListAndInput_meeting @relay(mask: false)
+      ...AgendaListAndInput_meeting
       id
       endedAt
       localStage {

@@ -16,6 +16,7 @@ import pinIcon from '../../../../styles/theme/images/icons/pin.svg'
 import unpinIcon from '../../../../styles/theme/images/icons/unpin.svg'
 import {ICON_SIZE} from '../../../../styles/typographyV2'
 import {AgendaItem_agendaItem} from '../../../../__generated__/AgendaItem_agendaItem.graphql'
+import {AgendaItem_meeting} from '~/__generated__/AgendaItem_meeting.graphql'
 
 const AgendaItemStyles = styled('div')({
   position: 'relative',
@@ -55,10 +56,10 @@ const SvgIcon = styled('img')({
 })
 
 const getItemProps = (
-  meeting: any,
   agendaItemId: string,
   viewerId: string,
-  gotoStageId: ReturnType<typeof useGotoStageId> | undefined
+  gotoStageId: ReturnType<typeof useGotoStageId> | undefined,
+  meeting?: AgendaItem_meeting
 ) => {
   const fallback = {
     isDisabled: false,
@@ -103,8 +104,8 @@ interface Props {
   agendaItem: AgendaItem_agendaItem
   gotoStageId: ReturnType<typeof useGotoStageId> | undefined
   isDragging: boolean
+  meeting?: AgendaItem_meeting
   meetingId?: string | null
-  meeting?: any
 }
 
 const AgendaItem = (props: Props) => {
@@ -125,7 +126,7 @@ const AgendaItem = (props: Props) => {
     isComplete,
     isUnsyncedFacilitatorStage,
     isFacilitatorStage
-  } = getItemProps(meeting, agendaItemId, viewerId, gotoStageId)
+  } = getItemProps(agendaItemId, viewerId, gotoStageId, meeting)
 
   useScrollIntoView(ref, isFacilitatorStage)
   useEffect(() => {
@@ -199,6 +200,28 @@ export default createFragmentContainer(AgendaItem, {
       sortOrder
       teamMember {
         picture
+      }
+    }
+  `,
+  meeting: graphql`
+    fragment AgendaItem_meeting on ActionMeeting {
+      endedAt
+      localPhase {
+        phaseType
+      }
+      localStage {
+        id
+      }
+      facilitatorStageId
+      facilitatorUserId
+      phases {
+        phaseType
+        stages {
+          id
+          isComplete
+          isNavigable
+          isNavigableByFacilitator
+        }
       }
     }
   `

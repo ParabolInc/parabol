@@ -13,6 +13,10 @@ import useEventCallback from '../../../../hooks/useEventCallback'
 import useGotoStageId from '../../../../hooks/useGotoStageId'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
+import {AgendaList_meeting} from '~/__generated__/AgendaList_meeting.graphql'
+import {AgendaList_agendaItem} from '~/__generated__/AgendaList_agendaItem.graphql'
+import {AgendaList_agendaItemsPhase} from '~/__generated__/AgendaList_agendaItemsPhase.graphql'
+import {AgendaItem_agendaItem} from '~/__generated__/AgendaItem_agendaItem.graphql'
 
 const AgendaListRoot = styled('div')({
   display: 'flex',
@@ -34,7 +38,7 @@ interface Props {
   agendaItems: any
   dashSearch?: string
   gotoStageId: ReturnType<typeof useGotoStageId> | undefined
-  meeting?: any
+  meeting?: AgendaList_meeting
   meetingId?: string | null
 }
 
@@ -124,24 +128,15 @@ const AgendaList = (props: Props) => {
 }
 
 export default createFragmentContainer(AgendaList, {
-  team: graphql`
-    fragment AgendaList_team on Team {
-      agendaItems {
-        id
-        content
-        # need this for the DnD
-        sortOrder
-        ...AgendaItem_agendaItem
+  meeting: graphql`
+    fragment AgendaList_meeting on ActionMeeting {
+      ...AgendaItem_meeting
+      endedAt
+      localPhase {
+        phaseType
       }
     }
   `
-  // meeting: graphql`
-  //   fragment AgendaList_meeting on ActionMeeting {
-  //     localPhase {
-  //       phaseType
-  //     }
-  //   }
-  // `
 })
 
 // <SexyScrollbar color='rgba(0, 0, 0, 0.3)' activeColor='rgba(0, 0, 0, 0.5)'>
