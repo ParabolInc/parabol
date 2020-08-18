@@ -33,7 +33,7 @@ const ActionSidebarAgendaItemsSection = (props: Props) => {
     if (!agendaItemsPhase.stages) return null
     return agendaItemsPhase.stages.map((stage) => stage.agendaItem)
   }, [agendaItemsPhase])
-  if (!agendaItems) return null
+
   return (
     <MeetingSidebarPhaseItemChild>
       <AgendaListAndInput
@@ -60,11 +60,11 @@ graphql`
       }
     }
     ... on AgendaItemsPhase {
-      ...AgendaListAndInput_agendaItemsPhase
       stages {
         id
         isComplete
         isNavigable
+        isNavigableByFacilitator
         agendaItem {
           id
           content

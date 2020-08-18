@@ -14,9 +14,6 @@ import useGotoStageId from '../../../../hooks/useGotoStageId'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import {AgendaList_meeting} from '~/__generated__/AgendaList_meeting.graphql'
-import {AgendaList_agendaItem} from '~/__generated__/AgendaList_agendaItem.graphql'
-import {AgendaList_agendaItemsPhase} from '~/__generated__/AgendaList_agendaItemsPhase.graphql'
-import {AgendaItem_agendaItem} from '~/__generated__/AgendaItem_agendaItem.graphql'
 
 const AgendaListRoot = styled('div')({
   display: 'flex',

@@ -208,21 +208,27 @@ export default createFragmentContainer(AgendaItem, {
       endedAt
       localPhase {
         phaseType
+        ... on AgendaItemsPhase {
+          stages {
+            id
+            isComplete
+            isNavigable
+            isNavigableByFacilitator
+            agendaItem {
+              id
+              content
+              # need this for the DnD
+              sortOrder
+              ...AgendaItem_agendaItem
+            }
+          }
+        }
       }
       localStage {
         id
       }
       facilitatorStageId
       facilitatorUserId
-      phases {
-        phaseType
-        stages {
-          id
-          isComplete
-          isNavigable
-          isNavigableByFacilitator
-        }
-      }
     }
   `
 })
