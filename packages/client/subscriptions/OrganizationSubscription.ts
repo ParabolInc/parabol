@@ -81,5 +81,5 @@ const OrganizationSubscription = (
     }
   })
 }
-
+OrganizationSubscription.key = 'organization'
 export default OrganizationSubscription
