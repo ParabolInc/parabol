@@ -287,7 +287,7 @@ export default class Atmosphere extends Environment {
     const {key} = subscription
     // runtime error in case relay changes
     if (!key) throw new Error(`Missing name for sub`)
-    const subKey = Atmosphere.getKey(name, variables)
+    const subKey = Atmosphere.getKey(key, variables)
     const isRequested = Boolean(this.querySubscriptions.find((qs) => qs.subKey === subKey))
     if (!isRequested) {
       subscription(this, variables, router)
