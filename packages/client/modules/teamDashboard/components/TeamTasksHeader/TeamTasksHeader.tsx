@@ -172,7 +172,7 @@ const TeamTasksHeader = (props: Props) => {
           ref={originRef}
           value={teamMemberFilterName}
         />
-        {menuPortal(<TeamDashTeamMemberMenu menuProps={menuProps} team={team} viewer={viewer} />)}
+        {menuPortal(<TeamDashTeamMemberMenu menuProps={menuProps} viewer={viewer} />)}
         {/* Archive Link */}
         <DashNavControl
           icon='archive'
@@ -194,7 +194,6 @@ export default createFragmentContainer(TeamTasksHeader, {
         id
         name
       }
-      ...TeamDashTeamMemberMenu_team
     }
   `,
   viewer: graphql`

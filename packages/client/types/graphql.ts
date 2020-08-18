@@ -290,6 +290,11 @@ export interface IUser {
   teamMember: ITeamMember | null;
 
   /**
+   * All the team members actively associated with the team
+   */
+  teamMembers: Array<IUser>;
+
+  /**
    * The highest tier of any org the user belongs to
    */
   tier: TierEnum;
@@ -480,6 +485,18 @@ export interface ITeamMemberOnUserArguments {
    * The team the user is on
    */
   teamId: string;
+}
+
+export interface ITeamMembersOnUserArguments {
+  /**
+   * The team the user is on
+   */
+  teamId?: string | null;
+
+  /**
+   * the field to sort the teamMembers by
+   */
+  sortBy?: string | null;
 }
 
 export interface IUserOnTeamOnUserArguments {

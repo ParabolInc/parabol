@@ -19,18 +19,18 @@ const TeamColumnsContainer = (props: Props) => {
   const {id: teamId, tasks, teamMembers} = team!
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
-  const teamMemberFilterId = (teamMemberFilter && teamMemberFilter.id) || null
+  const userFilterId = (teamMemberFilter && teamMemberFilter.id) || null
   const teamMemberFilteredTasks = useMemo(() => {
     const nodes = tasks.edges.map(({node}) => ({
       ...node,
       teamMembers
     }))
-    return teamMemberFilterId
+    return userFilterId
       ? nodes.filter((node) => {
-        return toTeamMemberId(node.teamId, node.userId) === teamMemberFilterId
+        return node.userId === userFilterId
       })
       : nodes
-  }, [tasks.edges, teamMemberFilterId, teamMembers])
+  }, [tasks.edges, userFilterId, teamMembers])
 
   const filteredTasks = useMemo(() => {
     if (!dashSearch) return teamMemberFilteredTasks
@@ -42,7 +42,7 @@ const TeamColumnsContainer = (props: Props) => {
     <TaskColumns
       myTeamMemberId={toTeamMemberId(teamId, viewerId)}
       tasks={filteredTasks}
-      teamMemberFilterId={teamMemberFilterId}
+      teamMemberFilterId={userFilterId}
       area={AreaEnum.teamDash}
       teams={null}
     />

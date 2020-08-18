@@ -8,7 +8,7 @@ import MyDashboardTasks from './MyDashboardTasks'
 
 // Changing the name here requires a change to getLastSeenAtURL.ts
 const query = graphql`
-  query MyDashboardTasksRootQuery($userIds: [ID!]) {
+  query MyDashboardTasksRootQuery($userIds: [ID!], $teamId: ID) {
     viewer {
       ...MyDashboardTasks_viewer
     }

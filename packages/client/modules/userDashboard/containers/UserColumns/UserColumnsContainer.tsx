@@ -1,10 +1,10 @@
-import graphql from 'babel-plugin-relay/macro'
 import React, {useMemo} from 'react'
 import {createFragmentContainer} from 'react-relay'
+import graphql from 'babel-plugin-relay/macro'
 import TaskColumns from '../../../../components/TaskColumns/TaskColumns'
+import {UserColumnsContainer_viewer} from '../../../../__generated__/UserColumnsContainer_viewer.graphql'
 import {AreaEnum} from '../../../../types/graphql'
 import getSafeRegex from '../../../../utils/getSafeRegex'
-import {UserColumnsContainer_viewer} from '../../../../__generated__/UserColumnsContainer_viewer.graphql'
 
 interface Props {
   viewer: UserColumnsContainer_viewer
@@ -12,8 +12,9 @@ interface Props {
 
 const UserColumnsContainer = (props: Props) => {
   const {viewer} = props
-  const {dashSearch, tasks, teamFilter} = viewer
+  const {dashSearch, tasks, teamFilter, teamMemberFilter} = viewer
   const teamFilterId = (teamFilter && teamFilter.id) || null
+  const userFilterId = (teamMemberFilter && teamMemberFilter.id) || null
   const filteredTasks = useMemo(() => {
     const dashSearchRegex = getSafeRegex(dashSearch, 'i')
     const nodes = tasks.edges.map(({node}) => node)
@@ -24,13 +25,19 @@ const UserColumnsContainer = (props: Props) => {
       : nodes
 
     const teamFilteredNodes = teamFilterId
-      ? dashSearchNodes.filter((node) => node.team.id === teamFilterId)
+      ? dashSearchNodes.filter((node) => node.teamId === teamFilterId)
       : dashSearchNodes
 
-    return teamFilteredNodes.map((node) => ({
+    const teamMemberFilteredNodes = userFilterId
+      ? teamFilteredNodes.filter((node) => {
+        return node.userId === userFilterId
+      })
+      : teamFilteredNodes
+
+    return teamMemberFilteredNodes.map((node) => ({
       ...node
     }))
-  }, [teamFilterId, tasks, dashSearch])
+  }, [teamFilterId, userFilterId, tasks, dashSearch])
   {
     const {
       viewer: {teams}
@@ -43,8 +50,13 @@ const UserColumnsContainer = (props: Props) => {
 export default createFragmentContainer(UserColumnsContainer, {
   viewer: graphql`
     fragment UserColumnsContainer_viewer on User {
+      id
       dashSearch
       teamFilter {
+        id
+        ...TaskColumns_teams
+      }
+      teamMemberFilter {
         id
       }
       teams {
@@ -60,9 +72,8 @@ export default createFragmentContainer(UserColumnsContainer, {
             contentText
             status
             sortOrder
-            team {
-              id
-            }
+            teamId
+            userId
           }
         }
       }
