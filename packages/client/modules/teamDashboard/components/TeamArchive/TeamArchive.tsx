@@ -5,7 +5,6 @@ import {createPaginationContainer, RelayPaginationProp} from 'react-relay'
 import {AutoSizer, CellMeasurer, CellMeasurerCache, Grid, InfiniteLoader} from 'react-virtualized'
 import extractTextFromDraftString from '~/utils/draftjs/extractTextFromDraftString'
 import getSafeRegex from '~/utils/getSafeRegex'
-import toTeamMemberId from '~/utils/relay/toTeamMemberId'
 import {TeamArchive_team} from '~/__generated__/TeamArchive_team.graphql'
 import {TeamArchive_viewer} from '~/__generated__/TeamArchive_viewer.graphql'
 import NullableTask from '../../../../components/NullableTask/NullableTask'
@@ -96,17 +95,17 @@ const TeamArchive = (props: Props) => {
   const {hasMore, isLoading, loadMore} = relay
   const {teamMemberFilter} = viewer || {}
   const {teamMembers} = team || {}
-  const teamMemberFilterId = (teamMemberFilter && teamMemberFilter.id) || null
+  const userFilterId = (teamMemberFilter && teamMemberFilter.id) || null
   const {tasks: archivedTasks, dashSearch} = viewer
 
   const teamMemberFilteredTasks = useMemo(() => {
-    const edges = teamMemberFilterId
+    const edges = userFilterId
       ? archivedTasks?.edges.filter((edge) => {
-        return toTeamMemberId(edge.node.teamId, edge.node.userId) === teamMemberFilterId
+        return edge.node.userId === userFilterId
       })
       : archivedTasks.edges
     return {...archivedTasks, edges: edges}
-  }, [archivedTasks?.edges, teamMemberFilterId, teamMembers])
+  }, [archivedTasks?.edges, userFilterId, teamMembers])
 
   const filteredTasks = useMemo(() => {
     if (!dashSearch) return teamMemberFilteredTasks
