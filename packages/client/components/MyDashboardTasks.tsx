@@ -17,10 +17,8 @@ interface Props {
 
 const MyDashboardTasks = (props: Props) => {
   const {retry, viewer} = props
-  const {showArchivedTasksCheckbox, teamFilter, teamMembers} = viewer
+  const {showArchivedTasksCheckbox, teamFilter, teamMemberFilter} = viewer
   const atmosphere = useAtmosphere()
-  const {viewerId} = atmosphere
-  const userIds = teamMembers.map(({id}) => id).concat(viewerId)
   useStoreQueryRetry(retry)
   useDocumentTitle('My Tasks | Parabol', 'My Tasks')
   useEffect(() => {
@@ -31,7 +29,7 @@ const MyDashboardTasks = (props: Props) => {
       <UserTasksHeader viewer={viewer} />
 
       {showArchivedTasksCheckbox ? (
-        <ArchiveTaskRoot teamIds={teamFilter ? [teamFilter.id] : null} userIds={userIds} team={teamFilter} />
+        <ArchiveTaskRoot teamIds={teamFilter ? [teamFilter.id] : null} userIds={teamMemberFilter ? [teamMemberFilter.id] : null} />
       ) : (
           <UserColumnsContainer viewer={viewer} />)}
     </>
@@ -47,10 +45,8 @@ export default createFragmentContainer(MyDashboardTasks, {
         name
         ...TeamArchive_team
       }
-      teamMembers(teamId: $teamId, sortBy: "preferredName") {
+      teamMemberFilter {
         id
-        preferredName
-        tms
       }
       ...UserColumnsContainer_viewer
       ...UserTasksHeader_viewer

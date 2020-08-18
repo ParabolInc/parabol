@@ -56,7 +56,7 @@ export default createFragmentContainer(TeamDashTeamMemberMenu, {
       teamMemberFilter {
         id
       }
-      teamMembers(teamId: $teamId, sortBy: "preferredName") {
+      teamMembers(sortBy: "preferredName") {
         id
         preferredName
         tms

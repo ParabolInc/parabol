@@ -1,7 +1,7 @@
 import {ConnectionHandler, RecordProxy} from 'relay-runtime'
 
-const getUserTasksConn = (viewer: RecordProxy, userIds: string[] | null, teamIds: string[] | null) =>
+const getUserTasksConn = (viewer: RecordProxy) =>
 
-  ConnectionHandler.getConnection(viewer, 'UserColumnsContainer_tasks', {userIds, teamIds})
+  ConnectionHandler.getConnection(viewer, 'UserColumnsContainer_tasks')
 
 export default getUserTasksConn
