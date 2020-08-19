@@ -19,6 +19,11 @@ import MassInvitationTokenLinkRoot from './MassInvitationTokenLinkRoot'
 import PrimaryButton from './PrimaryButton'
 import StyledError from './StyledError'
 import StyledWarning from './StyledWarning'
+import {PALETTE} from '~/styles/paletteV2'
+import {ICON_SIZE} from '~/styles/typographyV2'
+import {Breakpoint, NavSidebar} from '~/types/constEnums'
+import PlainButton from '~/components/PlainButton/PlainButton'
+import Icon from './Icon'
 interface Props {
   closePortal: () => void
   meetingId?: string | undefined
@@ -74,16 +79,6 @@ const ButtonGroup = styled('div')({
   justifyContent: 'flex-end'
 })
 
-const ErrorMessage = styled(StyledError)({
-  fontSize: '.8125rem',
-  marginTop: '.5rem'
-})
-
-const WarningMessage = styled(StyledWarning)({
-  fontSize: '.8125rem',
-  marginTop: '.5rem'
-})
-
 const StyledLabelHeading = styled(LabelHeading)({
   alignItems: 'center',
   display: 'flex',
@@ -91,6 +86,28 @@ const StyledLabelHeading = styled(LabelHeading)({
   lineHeight: '21px',
   padding: '0 0 16px',
   textTransform: 'none'
+})
+
+const NavItem = styled(PlainButton)<{isWarning: boolean}>(({isWarning}) => ({
+  alignItems: 'center',
+  color: isWarning ? PALETTE.PROMPT_ORANGE : PALETTE.ERROR_MAIN,
+  display: 'flex',
+  padding: '.5rem',
+  marginTop: '.5rem',
+  width: '100%'
+}))
+
+const StyledIcon = styled(Icon)<{isWarning: boolean}>(({isWarning}) => ({
+  color: isWarning ? PALETTE.PROMPT_ORANGE : PALETTE.ERROR_MAIN,
+  fontSize: ICON_SIZE.MD24,
+  marginRight: 8,
+  opacity: isWarning ? 0.75 : 1
+}))
+
+const Label = styled('div')({
+  flex: 1,
+  fontWeight: 600,
+  wordBreak: 'break-word'
 })
 
 const IllustrationBlock = () => {
@@ -112,19 +129,31 @@ const AddTeamMemberModal = (props: Props) => {
     if (isSubmitted) setIsSubmitted(false)
     const nextValue = e.target.value
     const parsedInvitees = parseEmailAddressList(nextValue)
-    console.log('onChange -> parsedInvitees', parsedInvitees)
     const allInvitees = parsedInvitees
       ? (parsedInvitees.map((invitee) => (invitee as any).address) as string[])
       : invitees
     const teamEmailSet = new Set(teamMembers.map(({email}) => email))
-    console.log('onChange -> teamEmailSet', teamEmailSet)
     const uniqueInvitees = Array.from(new Set(allInvitees))
     const offTeamInvitees = uniqueInvitees.filter((email) => !teamEmailSet.has(email))
-    const alreadyInvitedEmail = uniqueInvitees.find((email) => teamEmailSet.has(email))
+    const alreadyInvitedEmails = uniqueInvitees.filter((email) => teamEmailSet.has(email))
+    console.log('onChange -> alreadyInvitedEmails', alreadyInvitedEmails)
     setRawInvitees(nextValue)
     setInvitees(offTeamInvitees)
-    if (alreadyInvitedEmail) {
-      onError(new Error(`${alreadyInvitedEmail} is already on the team`))
+    if (alreadyInvitedEmails.length === 1) {
+      onError(new Error(`${alreadyInvitedEmails} is already on the team`))
+    } else if (alreadyInvitedEmails.length === 2) {
+      onError(
+        new Error(
+          `${alreadyInvitedEmails[0]} and ${alreadyInvitedEmails[1]} are already on the team`
+        )
+      )
+    } else if (alreadyInvitedEmails.length > 2) {
+      onError(
+        new Error(
+          `${alreadyInvitedEmails[0]} and ${alreadyInvitedEmails.length -
+            1} other emails are already on the team`
+        )
+      )
     } else if (error) {
       onCompleted()
     }
@@ -189,8 +218,14 @@ const AddTeamMemberModal = (props: Props) => {
             placeholder='email@example.co, another@example.co'
             value={rawInvitees}
           />
-          {error && isSubmitted && <ErrorMessage>{error.message}</ErrorMessage>}
-          {error && !isSubmitted && <WarningMessage>{error.message}</WarningMessage>}
+          {error && (
+            <NavItem isWarning={!isSubmitted}>
+              <StyledIcon isWarning={!isSubmitted}>
+                <Icon>{isSubmitted ? 'error' : 'warning'}</Icon>
+              </StyledIcon>
+              <Label>{error.message}</Label>
+            </NavItem>
+          )}
           <ButtonGroup>
             <PrimaryButton
               onClick={sendInvitations}

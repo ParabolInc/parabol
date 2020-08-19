@@ -24,8 +24,8 @@ const parseEmailAddressList = (rawStr = '') => {
     }
   })
 
-  const updatedCommaDelimStr = validAddresses.join(', ')
-  return emailAddresses.parseAddressList(updatedCommaDelimStr)
+  const validCommaDelimStr = validAddresses.join(', ')
+  return emailAddresses.parseAddressList(validCommaDelimStr)
 }
 
 export default parseEmailAddressList
