@@ -15,8 +15,8 @@ const parseEmailAddressList = (rawStr = '') => {
 
   const commaDelimArr = commaDelimStr.split(', ')
 
-  // check if the most recently added address is valid as parseAddressList
-  // returns null if it's not
+  // check if each address is valid as parseAddressList
+  // returns null if one is not
   const validAddresses = [] as string[]
   commaDelimArr.forEach((address) => {
     if (emailAddresses.parseOneAddress(address)) {

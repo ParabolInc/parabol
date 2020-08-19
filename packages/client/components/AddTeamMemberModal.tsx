@@ -17,12 +17,8 @@ import BasicTextArea from './InputField/BasicTextArea'
 import LabelHeading from './LabelHeading/LabelHeading'
 import MassInvitationTokenLinkRoot from './MassInvitationTokenLinkRoot'
 import PrimaryButton from './PrimaryButton'
-import StyledError from './StyledError'
-import StyledWarning from './StyledWarning'
 import {PALETTE} from '~/styles/paletteV2'
 import {ICON_SIZE} from '~/styles/typographyV2'
-import {Breakpoint, NavSidebar} from '~/types/constEnums'
-import PlainButton from '~/components/PlainButton/PlainButton'
 import Icon from './Icon'
 interface Props {
   closePortal: () => void
@@ -88,9 +84,9 @@ const StyledLabelHeading = styled(LabelHeading)({
   textTransform: 'none'
 })
 
-const NavItem = styled(PlainButton)<{isWarning: boolean}>(({isWarning}) => ({
+const ErrorWrapper = styled('div')<{isWarning: boolean}>(({isWarning}) => ({
   alignItems: 'center',
-  color: isWarning ? PALETTE.PROMPT_ORANGE : PALETTE.ERROR_MAIN,
+  color: isWarning ? PALETTE.WARNING_MAIN : PALETTE.ERROR_MAIN,
   display: 'flex',
   padding: '.5rem',
   marginTop: '.5rem',
@@ -98,16 +94,15 @@ const NavItem = styled(PlainButton)<{isWarning: boolean}>(({isWarning}) => ({
 }))
 
 const StyledIcon = styled(Icon)<{isWarning: boolean}>(({isWarning}) => ({
-  color: isWarning ? PALETTE.PROMPT_ORANGE : PALETTE.ERROR_MAIN,
+  color: isWarning ? PALETTE.WARNING_MAIN : PALETTE.ERROR_MAIN,
   fontSize: ICON_SIZE.MD24,
   marginRight: 8,
   opacity: isWarning ? 0.75 : 1
 }))
 
 const Label = styled('div')({
-  flex: 1,
-  fontWeight: 600,
-  wordBreak: 'break-word'
+  fontSize: '.8125rem',
+  fontWeight: 600
 })
 
 const IllustrationBlock = () => {
@@ -136,7 +131,6 @@ const AddTeamMemberModal = (props: Props) => {
     const uniqueInvitees = Array.from(new Set(allInvitees))
     const offTeamInvitees = uniqueInvitees.filter((email) => !teamEmailSet.has(email))
     const alreadyInvitedEmails = uniqueInvitees.filter((email) => teamEmailSet.has(email))
-    console.log('onChange -> alreadyInvitedEmails', alreadyInvitedEmails)
     setRawInvitees(nextValue)
     setInvitees(offTeamInvitees)
     if (alreadyInvitedEmails.length === 1) {
@@ -219,12 +213,12 @@ const AddTeamMemberModal = (props: Props) => {
             value={rawInvitees}
           />
           {error && (
-            <NavItem isWarning={!isSubmitted}>
+            <ErrorWrapper isWarning={!isSubmitted}>
               <StyledIcon isWarning={!isSubmitted}>
                 <Icon>{isSubmitted ? 'error' : 'warning'}</Icon>
               </StyledIcon>
               <Label>{error.message}</Label>
-            </NavItem>
+            </ErrorWrapper>
           )}
           <ButtonGroup>
             <PrimaryButton
