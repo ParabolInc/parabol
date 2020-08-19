@@ -115,8 +115,7 @@ const TeamTasksHeader = (props: Props) => {
   const teamMember = viewer.teamMember!
   const {hideAgenda} = teamMember
   const {history} = useRouter()
-  const {teamMemberFilter} = viewer || {}
-  const {organization, id: teamId, name: teamName} = team
+  const {organization, id: teamId, name: teamName, teamMemberFilter} = team
   const teamMemberFilterName =
     (teamMemberFilter && teamMemberFilter.preferredName) || 'All team members'
   const {name: orgName, id: orgId} = organization
@@ -172,7 +171,7 @@ const TeamTasksHeader = (props: Props) => {
           ref={originRef}
           value={teamMemberFilterName}
         />
-        {menuPortal(<TeamDashTeamMemberMenu menuProps={menuProps} viewer={viewer} />)}
+        {menuPortal(<TeamDashTeamMemberMenu menuProps={menuProps} team={team} />)}
         {/* Archive Link */}
         <DashNavControl
           icon='archive'
@@ -194,17 +193,17 @@ export default createFragmentContainer(TeamTasksHeader, {
         id
         name
       }
+      teamMemberFilter {
+        preferredName
+      }
+      ...TeamDashTeamMemberMenu_team
     }
   `,
   viewer: graphql`
     fragment TeamTasksHeader_viewer on User {
-      teamMemberFilter {
-        preferredName
-      }
       teamMember(teamId: $teamId) {
         hideAgenda
       }
-      ...TeamDashTeamMemberMenu_viewer
     }
   `
 })

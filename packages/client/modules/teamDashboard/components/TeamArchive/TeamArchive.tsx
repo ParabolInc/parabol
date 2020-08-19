@@ -5,6 +5,7 @@ import {createPaginationContainer, RelayPaginationProp} from 'react-relay'
 import {AutoSizer, CellMeasurer, CellMeasurerCache, Grid, InfiniteLoader} from 'react-virtualized'
 import extractTextFromDraftString from '~/utils/draftjs/extractTextFromDraftString'
 import getSafeRegex from '~/utils/getSafeRegex'
+import toTeamMemberId from '~/utils/relay/toTeamMemberId'
 import {TeamArchive_team} from '~/__generated__/TeamArchive_team.graphql'
 import {TeamArchive_viewer} from '~/__generated__/TeamArchive_viewer.graphql'
 import NullableTask from '../../../../components/NullableTask/NullableTask'
@@ -93,19 +94,18 @@ interface Props {
 const TeamArchive = (props: Props) => {
   const {viewer, relay, team, returnToTeamId} = props
   const {hasMore, isLoading, loadMore} = relay
-  const {teamMemberFilter} = viewer || {}
-  const {teamMembers} = team || {}
-  const userFilterId = (teamMemberFilter && teamMemberFilter.id) || null
+  const {teamMembers, teamMemberFilter} = team || {}
+  const teamMemberFilterId = (teamMemberFilter && teamMemberFilter.id) || null
   const {tasks: archivedTasks, dashSearch} = viewer
 
   const teamMemberFilteredTasks = useMemo(() => {
-    const edges = userFilterId
+    const edges = teamMemberFilterId
       ? archivedTasks?.edges.filter((edge) => {
-        return edge.node.userId === userFilterId
+        return toTeamMemberId(edge.node.teamId, edge.node.userId) === teamMemberFilterId
       })
       : archivedTasks.edges
     return {...archivedTasks, edges: edges}
-  }, [archivedTasks?.edges, userFilterId, teamMembers])
+  }, [archivedTasks?.edges, teamMemberFilterId, teamMembers])
 
   const filteredTasks = useMemo(() => {
     if (!dashSearch) return teamMemberFilteredTasks
@@ -292,9 +292,6 @@ export default createPaginationContainer(
     viewer: graphql`
       fragment TeamArchive_viewer on User {
         dashSearch
-        teamMemberFilter {
-          id
-        }
         tasks(first: $first, after: $after, userIds: $userIds, teamIds: $teamIds, archived: true)
           @connection(key: "TeamArchive_tasks", filters: ["teamIds"]) {
           edges {
@@ -316,6 +313,9 @@ export default createPaginationContainer(
     `,
     team: graphql`
       fragment TeamArchive_team on Team {
+        teamMemberFilter {
+          id
+        }
         teamMembers(sortBy: "preferredName") {
           id
           picture

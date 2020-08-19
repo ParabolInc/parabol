@@ -20,14 +20,16 @@ extend type RetrospectiveMeeting {
   showSidebar: Boolean!
 }
 
+extend type Team {
+  teamMemberFilter: TeamMember
+}
+
 extend type User {
   # If positive, client clock is ahead of server clock by this many ms
   clientClockOffset: Int
   dashSearch: String
   pageName: String
   snackbarOffset: Int
-  teamFilter: Team
-  teamMemberFilter: User
   showArchivedTasksCheckbox: Boolean!
 }
 

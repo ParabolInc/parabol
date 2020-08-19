@@ -15,22 +15,21 @@ interface Props {
 const TeamColumnsContainer = (props: Props) => {
   const {viewer} = props
   const {dashSearch, team} = viewer
-  const {teamMemberFilter} = viewer || {}
-  const {id: teamId, tasks, teamMembers} = team!
+  const {id: teamId, tasks, teamMembers, teamMemberFilter} = team!
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
-  const userFilterId = (teamMemberFilter && teamMemberFilter.id) || null
+  const teamMemberFilterId = (teamMemberFilter && teamMemberFilter.id) || null
   const teamMemberFilteredTasks = useMemo(() => {
     const nodes = tasks.edges.map(({node}) => ({
       ...node,
       teamMembers
     }))
-    return userFilterId
+    return teamMemberFilterId
       ? nodes.filter((node) => {
-        return node.userId === userFilterId
-      })
+          return toTeamMemberId(node.teamId, node.userId) === teamMemberFilterId
+        })
       : nodes
-  }, [tasks.edges, userFilterId, teamMembers])
+  }, [tasks.edges, teamMemberFilterId, teamMembers])
 
   const filteredTasks = useMemo(() => {
     if (!dashSearch) return teamMemberFilteredTasks
@@ -42,7 +41,7 @@ const TeamColumnsContainer = (props: Props) => {
     <TaskColumns
       myTeamMemberId={toTeamMemberId(teamId, viewerId)}
       tasks={filteredTasks}
-      teamMemberFilterId={userFilterId}
+      teamMemberFilterId={teamMemberFilterId}
       area={AreaEnum.teamDash}
       teams={null}
     />
@@ -53,11 +52,11 @@ export default createFragmentContainer(TeamColumnsContainer, {
   viewer: graphql`
     fragment TeamColumnsContainer_viewer on User {
       dashSearch
-      teamMemberFilter {
-        id
-      }
       team(teamId: $teamId) {
         id
+        teamMemberFilter {
+          id
+        }
         teamMembers(sortBy: "preferredName") {
           id
           picture

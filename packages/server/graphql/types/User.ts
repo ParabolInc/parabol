@@ -478,34 +478,6 @@ const User = new GraphQLObjectType<any, GQLContext, any>({
         return dataLoader.get('teamMembers').load(teamMemberId)
       }
     },
-    teamMembers: {
-      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(User))),
-      args: {
-        teamId: {
-          type: GraphQLID,
-          description: 'The team the user is on'
-        },
-        sortBy: {
-          type: GraphQLString,
-          description: 'the field to sort the teamMembers by'
-        }
-      },
-      description: 'All the team members actively associated with the team',
-      async resolve({tms}, {sortBy = 'preferredName', teamId}, {authToken, dataLoader}) {
-        const viewerId = getUserId(authToken)
-        if (teamId && !isTeamMember(authToken, teamId)) {
-          standardError(new Error('Team not found'), {userId: viewerId})
-          return []
-        }
-        const teamIds = teamId ? [teamId] : tms
-        const loadedTeamMembers = await dataLoader.get('teamMembersByTeamId').loadMany(teamIds)
-        const teamMembers = loadedTeamMembers.flat()
-        const userIds = [...new Set(teamMembers.map(({userId}) => userId))]
-        const users = await dataLoader.get('users').loadMany(userIds)
-        users.sort((a, b) => (a[sortBy] > b[sortBy] ? 1 : -1))
-        return users
-      }
-    },
     tier: {
       type: GraphQLNonNull(TierEnum),
       description: 'The highest tier of any org the user belongs to'

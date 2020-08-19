@@ -6,6 +6,7 @@ import {UserColumnsContainer_viewer} from '../../../../__generated__/UserColumns
 import {AreaEnum} from '../../../../types/graphql'
 import getSafeRegex from '../../../../utils/getSafeRegex'
 import toTeamMemberId from '~/utils/relay/toTeamMemberId'
+import parseUserTaskFilters from '~/utils/parseUserTaskFilters'
 
 interface Props {
   viewer: UserColumnsContainer_viewer
@@ -13,7 +14,10 @@ interface Props {
 
 const UserColumnsContainer = (props: Props) => {
   const {viewer} = props
-  const {dashSearch, tasks, teamFilter, teamMemberFilter} = viewer
+  const {userIds, teamIds} = parseUserTaskFilters()
+  const teamMemberFilter = userIds ? {id: userIds[0]} : undefined
+  const teamFilter = teamIds ? {id: teamIds[0]} : undefined
+  const {dashSearch, tasks} = viewer
   const teamFilterId = (teamFilter && teamFilter.id) || null
   const userFilterId = (teamMemberFilter && teamMemberFilter.id) || null
   const filteredTasks = useMemo(() => {
@@ -47,7 +51,7 @@ const UserColumnsContainer = (props: Props) => {
     // if user filter is selected, it's like User Dashboard: task footer shows team name
     const areaForTaskCard = teamMemberFilter ? AreaEnum.userDash : AreaEnum.teamDash
     const myTeamMemberId = teamFilter ? toTeamMemberId(teamFilter!.id, viewer.id) : undefined
-    const filteredTeams = teamFilter ? [teamFilter] : teams
+    const filteredTeams = teamFilter ? teams.filter(({id}) => id === teamFilter.id) : teams
 
     return <TaskColumns area={areaForTaskCard} tasks={filteredTasks} myTeamMemberId={myTeamMemberId} teams={filteredTeams} />
   }
@@ -58,14 +62,8 @@ export default createFragmentContainer(UserColumnsContainer, {
     fragment UserColumnsContainer_viewer on User {
       id
       dashSearch
-      teamFilter {
-        id
-        ...TaskColumns_teams
-      }
-      teamMemberFilter {
-        id
-      }
       teams {
+        id
         ...TaskColumns_teams
       }
       tasks(first: 1000, userIds: $userIds, teamIds: $teamIds) @connection(key: "UserColumnsContainer_tasks") {

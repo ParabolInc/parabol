@@ -5,25 +5,22 @@ import Menu from './Menu'
 import MenuItem from './MenuItem'
 import {MenuProps} from '../hooks/useMenu'
 import DropdownMenuLabel from './DropdownMenuLabel'
+import {TeamDashTeamMemberMenu_team} from '../__generated__/TeamDashTeamMemberMenu_team.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import filterTeamMember from '../utils/relay/filterTeamMember'
-import {TeamDashTeamMemberMenu_viewer} from '../__generated__/TeamDashTeamMemberMenu_viewer.graphql'
 
 interface Props {
   menuProps: MenuProps
-  viewer: TeamDashTeamMemberMenu_viewer
+  team: TeamDashTeamMemberMenu_team
 }
 
 const TeamDashTeamMemberMenu = (props: Props) => {
   const atmosphere = useAtmosphere()
-  const {menuProps, viewer} = props
-  const {teamMemberFilter, teamFilter} = viewer || {}
-  const {teamMembers} = viewer
-  const teamFilterId = teamFilter && teamFilter.id
+  const {menuProps, team} = props
+  const {id: teamId, teamMembers, teamMemberFilter} = team
   const teamMemberFilterId = teamMemberFilter && teamMemberFilter.id
-  const filteredTeamMembers = teamFilterId ? teamMembers.filter((teamMember) => teamMember.tms.includes(teamFilterId)) : teamMembers
   const defaultActiveIdx =
-    filteredTeamMembers.findIndex((teamMember) => teamMember.id === teamMemberFilterId) + 2
+    teamMembers.findIndex((teamMember) => teamMember.id === teamMemberFilterId) + 2
   return (
     <Menu
       ariaLabel={'Select the team member to filter by'}
@@ -34,13 +31,13 @@ const TeamDashTeamMemberMenu = (props: Props) => {
       <MenuItem
         key={'teamMemberFilterNULL'}
         label={'All team members'}
-        onClick={() => filterTeamMember(atmosphere, null)}
+        onClick={() => filterTeamMember(atmosphere, teamId, null)}
       />
-      {filteredTeamMembers.map((teamMember) => (
+      {teamMembers.map((teamMember) => (
         <MenuItem
           key={`teamMemberFilter${teamMember.id}`}
           label={teamMember.preferredName}
-          onClick={() => filterTeamMember(atmosphere, teamMember.id)}
+          onClick={() => filterTeamMember(atmosphere, teamId, teamMember.id)}
         />
       ))}
     </Menu>
@@ -48,18 +45,15 @@ const TeamDashTeamMemberMenu = (props: Props) => {
 }
 
 export default createFragmentContainer(TeamDashTeamMemberMenu, {
-  viewer: graphql`
-    fragment TeamDashTeamMemberMenu_viewer on User {
-      teamFilter {
-        id
-      }
+  team: graphql`
+    fragment TeamDashTeamMemberMenu_team on Team {
+      id
       teamMemberFilter {
         id
       }
       teamMembers(sortBy: "preferredName") {
         id
         preferredName
-        tms
       }
     }
   `

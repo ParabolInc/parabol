@@ -17,7 +17,7 @@ const TeamTasksHeaderContainer = (props: Props) => {
   const {id: teamId} = team
   const atmosphere = useAtmosphere()
   useEffect(() => {
-    filterTeamMember(atmosphere, null)
+    filterTeamMember(atmosphere, teamId, null)
   }, [teamId])
 
   return <TeamTasksHeader team={team} viewer={viewer} />

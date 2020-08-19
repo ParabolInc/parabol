@@ -6,7 +6,7 @@ import {LoaderSize} from '../types/constEnums'
 import renderQuery from '../utils/relay/renderQuery'
 import MyDashboardTasks from './MyDashboardTasks'
 import {RouteComponentProps} from 'react-router-dom'
-import * as queryString from "query-string"
+import parseUserTaskFilters from '~/utils/parseUserTaskFilters'
 
 // Changing the name here requires a change to getLastSeenAtURL.ts
 const query = graphql`
@@ -16,12 +16,10 @@ const query = graphql`
     }
   }
 `
-interface Props extends RouteComponentProps<{teamId: string}> {}
+interface Props extends RouteComponentProps<{}> {}
 
 const MyDashboardTasksRoot = ({location}: Props) => {
-  const parsed = queryString.parse(location.search)
-  const userIds = parsed.userId ? [parsed.userId] : undefined
-  const teamIds = parsed.teamId ? [parsed.teamId] : undefined
+  const {userIds, teamIds} = parseUserTaskFilters(location)
 
   const atmosphere = useAtmosphere()
 

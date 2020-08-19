@@ -1,16 +1,16 @@
 import {commitLocalUpdate} from 'react-relay'
-import {IUser} from '../../types/graphql'
+import {ITeam, ITeamMember} from '../../types/graphql'
 import Atmosphere from '../../Atmosphere'
 
-const filterTeamMember = (atmosphere: Atmosphere, filteredUserId: string | null) => {
+const filterTeamMember = (atmosphere: Atmosphere, teamId: string, teamMemberId: string | null) => {
   commitLocalUpdate(atmosphere, (store) => {
-    const viewer = store.getRoot().getLinkedRecord('viewer')
-    if (!viewer) return
-    const userFilter = filteredUserId ? store.get<IUser>(filteredUserId)! : null
-    if (userFilter) {
-      viewer.setLinkedRecord(userFilter, 'teamMemberFilter')
+    const team = store.get<ITeam>(teamId)
+    if (!team) return
+    const teamMemberFilter = teamMemberId ? store.get<ITeamMember>(teamMemberId)! : null
+    if (teamMemberFilter) {
+      team.setLinkedRecord(teamMemberFilter, 'teamMemberFilter')
     } else {
-      viewer.setValue(null, 'teamMemberFilter')
+      team.setValue(null, 'teamMemberFilter')
     }
   })
 }
