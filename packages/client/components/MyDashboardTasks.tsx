@@ -6,10 +6,10 @@ import useStoreQueryRetry from '~/hooks/useStoreQueryRetry'
 import useAtmosphere from '../hooks/useAtmosphere'
 import UserTasksHeader from '../modules/userDashboard/components/UserTasksHeader/UserTasksHeader'
 import UserColumnsContainer from '../modules/userDashboard/containers/UserColumns/UserColumnsContainer'
-import filterTeam from '../utils/relay/filterTeam'
 import {MyDashboardTasks_viewer} from '../__generated__/MyDashboardTasks_viewer.graphql'
 import ArchiveTaskRoot from './ArchiveTaskRoot'
 import parseUserTaskFilters from '~/utils/parseUserTaskFilters'
+import setArchivedTasksCheckbox from '~/utils/relay/setArchivedTasksCheckbox'
 
 interface Props {
   viewer: MyDashboardTasks_viewer
@@ -26,7 +26,7 @@ const MyDashboardTasks = (props: Props) => {
   useStoreQueryRetry(retry)
   useDocumentTitle('My Tasks | Parabol', 'My Tasks')
   useEffect(() => {
-    return () => filterTeam(atmosphere, null)
+    return () => setArchivedTasksCheckbox(atmosphere, false)
   }, [])
   return (
     <>

@@ -22,7 +22,9 @@ const UserDashTeamMenu = (props: Props) => {
   const {teamIds, userIds} = parseUserTaskFilters()
   const teamFilter = teamIds ? {id: teamIds[0]} : undefined
   const teamFilterId = (teamFilter && teamFilter.id) || undefined
-  const filteredTeams = teams
+  const filteredTeams = userIds ? teams.filter(({teamMembers}) =>
+    teamMembers.find(({userId}) => userIds.includes(userId)) != undefined
+  ) : teams
   const defaultActiveIdx = filteredTeams.findIndex((team) => team.id === teamFilterId) + 2
   return (
     <Menu
