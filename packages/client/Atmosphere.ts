@@ -29,7 +29,7 @@ import handleInvalidatedSession from './hooks/handleInvalidatedSession'
 import {LocalStorageKey, TrebuchetCloseReason} from './types/constEnums'
 import handlerProvider from './utils/relay/handlerProvider'
 import {InviteToTeamMutation_notification} from './__generated__/InviteToTeamMutation_notification.graphql'
-;(RelayFeatureFlags as any).ENABLE_RELAY_CONTAINERS_SUSPENSE = false
+(RelayFeatureFlags as any).ENABLE_RELAY_CONTAINERS_SUSPENSE = false
 
 interface QuerySubscription {
   subKey: string
@@ -41,11 +41,14 @@ interface Subscriptions {
   [subKey: string]: ReturnType<GQLTrebuchetClient['subscribe']>
 }
 
-export type SubscriptionRequestor = (
-  atmosphere: Atmosphere,
-  variables: Variables,
-  router: {history: RouterProps['history']}
-) => Disposable
+export type SubscriptionRequestor = {
+  (
+    atmosphere: Atmosphere,
+    variables: Variables,
+    router: {history: RouterProps['history']}
+  ): Disposable,
+  key: string
+}
 
 const noop = (): any => {
   /* noop */
@@ -281,10 +284,10 @@ export default class Atmosphere extends Environment {
     window.clearTimeout(this.queryTimeouts[queryKey])
     delete this.queryTimeouts[queryKey]
     await this.upgradeTransport()
-    const {name} = subscription
+    const {key} = subscription
     // runtime error in case relay changes
-    if (!name) throw new Error(`Missing name for sub`)
-    const subKey = Atmosphere.getKey(name, variables)
+    if (!key) throw new Error(`Missing name for sub`)
+    const subKey = Atmosphere.getKey(key, variables)
     const isRequested = Boolean(this.querySubscriptions.find((qs) => qs.subKey === subKey))
     if (!isRequested) {
       subscription(this, variables, router)
@@ -354,8 +357,8 @@ export default class Atmosphere extends Environment {
     this.querySubscriptions.forEach((querySub) => {
       this.unregisterQuery(querySub.queryKey)
     })
-    // remove all records
-    ;(this.getStore().getSource() as any).clear()
+      // remove all records
+      ; (this.getStore().getSource() as any).clear()
     this.upgradeTransportPromise = null
     this.authObj = null
     this.authToken = null

@@ -123,5 +123,5 @@ const TeamSubscription = (
     }
   })
 }
-
+TeamSubscription.key = 'team'
 export default TeamSubscription
