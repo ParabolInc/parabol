@@ -4,10 +4,11 @@ import {Location} from "history"
 
 const parseUserTaskFilters = (location?: Location) => {
   const locationToUse = location ? location : useRouter().location
-  const parsed = queryString.parse(locationToUse.search)
+  const parsed = queryString.parse(locationToUse.search, {parseBooleans: true})
   const userIds = parsed.userId ? [parsed.userId as string] : undefined
   const teamIds = parsed.teamId ? [parsed.teamId as string] : undefined
-  return {userIds, teamIds}
+  const showArchived = parsed.archived as boolean
+  return {userIds, teamIds, showArchived}
 }
 
 export default parseUserTaskFilters

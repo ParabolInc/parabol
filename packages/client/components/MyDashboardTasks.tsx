@@ -18,7 +18,7 @@ interface Props {
 
 const MyDashboardTasks = (props: Props) => {
   const {retry, viewer} = props
-  const {showArchivedTasksCheckbox} = viewer
+  const {showArchived} = parseUserTaskFilters()
   const atmosphere = useAtmosphere()
 
   const {userIds, teamIds} = parseUserTaskFilters()
@@ -32,7 +32,7 @@ const MyDashboardTasks = (props: Props) => {
     <>
       <UserTasksHeader viewer={viewer} />
 
-      {showArchivedTasksCheckbox ? (
+      {showArchived ? (
         <ArchiveTaskRoot teamIds={teamIds} userIds={userIds} />
       ) : (
           <UserColumnsContainer viewer={viewer} />)}
@@ -43,7 +43,6 @@ const MyDashboardTasks = (props: Props) => {
 export default createFragmentContainer(MyDashboardTasks, {
   viewer: graphql`
     fragment MyDashboardTasks_viewer on User {
-      showArchivedTasksCheckbox
       ...UserColumnsContainer_viewer
       ...UserTasksHeader_viewer
     }

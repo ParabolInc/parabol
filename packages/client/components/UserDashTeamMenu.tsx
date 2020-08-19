@@ -19,7 +19,7 @@ const UserDashTeamMenu = (props: Props) => {
   const {history} = useRouter()
   const {menuProps, viewer} = props
   const {teams} = viewer
-  const {teamIds, userIds} = parseUserTaskFilters()
+  const {teamIds, userIds, showArchived} = parseUserTaskFilters()
   const teamFilter = teamIds ? {id: teamIds[0]} : undefined
   const teamFilterId = (teamFilter && teamFilter.id) || undefined
   const filteredTeams = userIds ? teams.filter(({teamMembers}) =>
@@ -36,13 +36,13 @@ const UserDashTeamMenu = (props: Props) => {
       <MenuItem
         key={'teamFilterNULL'}
         label={'All teams'}
-        onClick={() => history.push(constructUserTaskFilterQueryParamURL(undefined, userIds))}
+        onClick={() => history.push(constructUserTaskFilterQueryParamURL(undefined, userIds, showArchived))}
       />
       {filteredTeams.map((team) => (
         <MenuItem
           key={`teamFilter${team.id}`}
           label={team.name}
-          onClick={() => history.push(constructUserTaskFilterQueryParamURL([team.id], userIds))}
+          onClick={() => history.push(constructUserTaskFilterQueryParamURL([team.id], userIds, showArchived))}
         />
       ))}
     </Menu>

@@ -13,9 +13,9 @@ import LinkButton from '~/components/LinkButton'
 import {PALETTE} from '~/styles/paletteV2'
 import Checkbox from '~/components/Checkbox'
 import {ICON_SIZE} from '~/styles/typographyV2'
-import setArchivedTasksCheckbox from '~/utils/relay/setArchivedTasksCheckbox'
-import useAtmosphere from '~/hooks/useAtmosphere'
 import parseUserTaskFilters from '~/utils/parseUserTaskFilters'
+import constructUserTaskFilterQueryParamURL from '~/utils/constructUserTaskFilterQueryParamURL'
+import useRouter from '~/hooks/useRouter'
 
 const UserDashTeamMenu = lazyPreload(() =>
   import(
@@ -57,7 +57,7 @@ interface Props {
 }
 
 const UserTasksHeader = (props: Props) => {
-  const atmosphere = useAtmosphere()
+  const {history} = useRouter()
   const {viewer} = props
   const {
     menuPortal: teamFilterMenuPortal,
@@ -75,10 +75,10 @@ const UserTasksHeader = (props: Props) => {
   } = useMenu(MenuPosition.UPPER_RIGHT, {
     isDropdown: true
   })
-  const {showArchivedTasksCheckbox, teams} = viewer
+  const {teams} = viewer
   const teamMembers = teams.map(({teamMembers}) => teamMembers).flat()
   const users = [...new Set(teamMembers.map(({user}) => user).flat())]
-  const {userIds, teamIds} = parseUserTaskFilters()
+  const {userIds, teamIds, showArchived} = parseUserTaskFilters()
   const teamFilter = teamIds ? teams.find(({id: teamId}) => teamIds.includes(teamId)) : undefined
   const teamMemberFilter = userIds ? users.find(({id: userId}) => userIds.includes(userId)) : undefined
   const teamFilterName = (teamFilter && teamFilter.name) || 'My teams'
@@ -114,9 +114,9 @@ const UserTasksHeader = (props: Props) => {
         {teamMemberFilterMenuPortal(<UserDashTeamMemberMenu menuProps={teamMemberFilterMenuProps} viewer={viewer} />)}
 
         <StyledLinkButton
-          onClick={() => setArchivedTasksCheckbox(atmosphere, !showArchivedTasksCheckbox)}
+          onClick={() => history.push(constructUserTaskFilterQueryParamURL(teamIds, userIds, !showArchived))}
         >
-          <StyledCheckbox active={showArchivedTasksCheckbox} />
+          <StyledCheckbox active={showArchived} />
           {'Archived'}
         </StyledLinkButton>
       </UserTasksHeaderDashSectionControls>
@@ -130,7 +130,6 @@ export default createFragmentContainer(UserTasksHeader, {
       id
       ...UserDashTeamMenu_viewer
       ...UserDashTeamMemberMenu_viewer
-      showArchivedTasksCheckbox
       teams {
         id
         name
