@@ -122,7 +122,8 @@ const makeDetailedPauseEvents = (
 ) => {
   const inactivityDetails: ReducedItem[] = []
   // if an unpause happened before a pause, we know they came into this period paused, so we don't want a start date
-  if (
+  // really this should be an if clause, but there are some errors cases where multiple unpause events were sent for the same user
+  while (
     unpausedItems.length > 0 &&
     (pausedItems.length === 0 || unpausedItems[0].endAt < pausedItems[0].startAt)
   ) {
