@@ -41,6 +41,7 @@ const UserDashTeamMenu = (props: Props) => {
       {filteredTeams.map((team) => (
         <MenuItem
           key={`teamFilter${team.id}`}
+          dataCy={`team_filter_${team.id}`}
           label={team.name}
           onClick={() => history.push(constructUserTaskFilterQueryParamURL([team.id], userIds, showArchived))}
         />

@@ -99,6 +99,7 @@ const UserTasksHeader = (props: Props) => {
           ref={teamFilterOriginRef}
           value={teamFilterName}
           iconText='group'
+          dataCy='team_filter'
         />
         {teamFilterMenuPortal(<UserDashTeamMenu menuProps={teamFilterMenuProps} viewer={viewer} />)}
 
@@ -110,11 +111,13 @@ const UserTasksHeader = (props: Props) => {
           ref={teamMemberFilterOriginRef}
           value={teamMemberFilterName}
           iconText='person'
+          dataCy='team_member_filter'
         />
         {teamMemberFilterMenuPortal(<UserDashTeamMemberMenu menuProps={teamMemberFilterMenuProps} viewer={viewer} />)}
 
         <StyledLinkButton
           onClick={() => history.push(constructUserTaskFilterQueryParamURL(teamIds, userIds, !showArchived))}
+          dataCy='archived_checkbox'
         >
           <StyledCheckbox active={showArchived} />
           {'Archived'}
