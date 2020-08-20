@@ -19,14 +19,31 @@ const enableSAMLForDomain = {
     const r = await getRethink()
     const normalizedDomain = domain.toLowerCase()
     const normalizedUrl = url.toLowerCase()
-    await r
+
+    const samlDomainExists = (await r
       .table('SAML')
-      .insert({
-        domain: normalizedDomain,
-        url: normalizedUrl,
-        metadata: metadata
-      })
-      .run()
+      .getAll(normalizedDomain, {index: 'domain'})
+      .count()
+      .run()) as number
+
+    if (samlDomainExists) {
+      await r
+        .table('SAML')
+        .update({
+          url: normalizedUrl,
+          metadata: metadata
+        })
+        .run()
+    } else {
+      await r
+        .table('SAML')
+        .insert({
+          domain: normalizedDomain,
+          url: normalizedUrl,
+          metadata: metadata
+        })
+        .run()
+    }
 
     return true
   }
