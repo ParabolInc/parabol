@@ -6,6 +6,7 @@ import makeDiscussionStage from '../../utils/makeDiscussionStage'
 import mapGroupsToStages from '../../utils/makeGroupsToStages'
 import reactjiLookup from './reactjiLookup'
 import taskLookup from './taskLookup'
+import commentLookup from './commentLookup'
 
 const removeEmptyReflections = (db) => {
   const reflections = db.reflections.filter((reflection) => reflection.isActive)
@@ -38,12 +39,15 @@ const addStageToBotScript = (stageId, db, reflectionGroupId) => {
   const meeting = db.newMeeting
   const {id: meetingId} = meeting
   const {reflections} = reflectionGroup
+  console.log('addStageToBotScript -> reflections', reflections)
   const stageTasks = [] as string[]
   const reactions = [] as {
     reactableType: ReactableEnum.REFLECTION
     reactableId: string
     reactji: string
   }[]
+  const commentContent = commentLookup.botRef4
+
   reflections.forEach((reflection) => {
     const tasks = taskLookup[reflection.id]
     if (tasks) {
@@ -75,8 +79,10 @@ const addStageToBotScript = (stageId, db, reflectionGroupId) => {
     }
   })
   stageTasks.forEach((taskContent, idx) => {
+    console.log('addStageToBotScript -> idx', idx)
     const taskId = `botTask${stageId}:${idx}`
     const botId = idx % 2 === 0 ? 'bot2' : 'bot1'
+
     ops.push(
       ...[
         {
@@ -121,12 +127,25 @@ const addStageToBotScript = (stageId, db, reflectionGroupId) => {
   })
   ops.push({
     op: 'EditCommentingMutation',
-    delay: 2000,
+    delay: 1000,
     botId: 'bot2',
     variables: {
       isCommenting: false,
       meetingId,
       threadId: reflectionGroupId
+    }
+  })
+  ops.push({
+    op: 'AddCommentMutation',
+    // delay: 1000,
+    botId: 'bot2',
+    variables: {
+      comment: {
+        content: commentContent,
+        threadId: reflectionGroupId,
+        threadSource: ThreadSourceEnum.REFLECTION_GROUP,
+        threadSortOrder: 1
+      }
     }
   })
   ops.push({

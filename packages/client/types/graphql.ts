@@ -5923,7 +5923,7 @@ export interface IEditCommentingPayload {
 export interface IEditReflectionPayload {
   __typename: 'EditReflectionPayload';
   error: IStandardMutationError | null;
-  phaseItemId: string | null;
+  promptId: string | null;
 
   /**
    * The socketId of the client editing the card (uses socketId to maintain anonymity)
@@ -6045,34 +6045,6 @@ export interface IRemoteReflectionDrag {
    * the top of the source, relative to the client window
    */
   clientY: number | null;
-}
-
-export interface IEditReflectionPayload {
-  __typename: 'EditReflectionPayload';
-  error: IStandardMutationError | null;
-  promptId: string | null;
-
-  /**
-   * The socketId of the client editing the card (uses socketId to maintain anonymity)
-   */
-  editorId: string | null;
-
-  /**
-   * true if the reflection is being edited, else false
-   */
-  isEditing: boolean | null;
-}
-
-export interface IEditTaskPayload {
-  __typename: 'EditTaskPayload';
-  error: IStandardMutationError | null;
-  task: ITask | null;
-  editor: IUser | null;
-
-  /**
-   * true if the editor is editing, false if they stopped editing
-   */
-  isEditing: boolean | null;
 }
 
 export interface IEndNewMeetingPayload {

@@ -54,7 +54,10 @@ export type DemoReflection = Omit<
   isHumanTouched: boolean
 }
 
-export type DemoReflectionGroup = Omit<IRetroReflectionGroup, 'team' | 'reflections' | 'retroPhaseItemId' | 'phaseItem'> & {
+export type DemoReflectionGroup = Omit<
+  IRetroReflectionGroup,
+  'team' | 'reflections' | 'retroPhaseItemId' | 'phaseItem'
+> & {
   reflectionGroupId: string
   reflections: DemoReflection[]
 }
@@ -486,6 +489,27 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         this.emit(SubscriptionChannel.MEETING, data)
       }
       return {createReflection: data}
+    },
+    EditCommentingMutation: (
+      {
+        isCommenting,
+        meetingId,
+        threadId
+      }: {isCommenting: boolean; meetingId: string; threadId: string},
+      userId
+    ) => {
+      const commentor = this.db.users.find((user) => user.id === userId)
+      const data = {
+        isCommenting,
+        commentor,
+        meetingId,
+        threadId,
+        __typename: 'EditCommentingPayload'
+      }
+      if (userId !== demoViewerId) {
+        this.emit(SubscriptionChannel.MEETING, data)
+      }
+      return {editCommenting: data}
     },
     EditReflectionMutation: (
       {promptId, isEditing}: {promptId: string; isEditing: boolean},
