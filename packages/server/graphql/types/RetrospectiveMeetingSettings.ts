@@ -27,13 +27,11 @@ const getPublicScoredTemplates = async (templates: {createdAt: Date; id: string}
       : getTemplateScore(createdAt, endTimes, 0.2) + starterBonus
   })
   // mutative, but doesn't matter if we change the sort oder
-  templates
+  return templates
     .sort((a, b) => {
       return scoreByTemplateId[a.id] > scoreByTemplateId[b.id] ? -1 : 1
     })
     .filter((template) => scoreByTemplateId[template.id] > 0)
-
-  return templates
 }
 
 const getScoredTemplates = async (
