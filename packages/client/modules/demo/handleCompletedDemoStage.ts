@@ -39,14 +39,13 @@ const addStageToBotScript = (stageId, db, reflectionGroupId) => {
   const meeting = db.newMeeting
   const {id: meetingId} = meeting
   const {reflections} = reflectionGroup
-  console.log('addStageToBotScript -> reflections', reflections)
   const stageTasks = [] as string[]
   const reactions = [] as {
     reactableType: ReactableEnum.REFLECTION
     reactableId: string
     reactji: string
   }[]
-  const commentContent = commentLookup.botRef4
+  const comments = [] as string[]
 
   reflections.forEach((reflection) => {
     const tasks = taskLookup[reflection.id]
@@ -62,6 +61,10 @@ const addStageToBotScript = (stageId, db, reflectionGroupId) => {
           reactji
         }))
       )
+    }
+    const comment = commentLookup[reflection.id]
+    if (comment) {
+      comments.push(comment)
     }
   })
   const ops = [] as any[]
@@ -79,7 +82,6 @@ const addStageToBotScript = (stageId, db, reflectionGroupId) => {
     }
   })
   stageTasks.forEach((taskContent, idx) => {
-    console.log('addStageToBotScript -> idx', idx)
     const taskId = `botTask${stageId}:${idx}`
     const botId = idx % 2 === 0 ? 'bot2' : 'bot1'
 
@@ -115,39 +117,42 @@ const addStageToBotScript = (stageId, db, reflectionGroupId) => {
       ]
     )
   })
-  ops.push({
-    op: 'EditCommentingMutation',
-    delay: 1000,
-    botId: 'bot1',
-    variables: {
-      isCommenting: true,
-      meetingId,
-      threadId: reflectionGroupId
-    }
-  })
-  ops.push({
-    op: 'EditCommentingMutation',
-    delay: 1000,
-    botId: 'bot2',
-    variables: {
-      isCommenting: false,
-      meetingId,
-      threadId: reflectionGroupId
-    }
-  })
-  ops.push({
-    op: 'AddCommentMutation',
-    // delay: 1000,
-    botId: 'bot2',
-    variables: {
-      comment: {
-        content: commentContent,
-        threadId: reflectionGroupId,
-        threadSource: ThreadSourceEnum.REFLECTION_GROUP,
-        threadSortOrder: 1
+  if (comments.length) {
+    ops.push({
+      op: 'EditCommentingMutation',
+      delay: 1000,
+      botId: 'bot1',
+      variables: {
+        isCommenting: true,
+        meetingId,
+        threadId: reflectionGroupId
       }
-    }
-  })
+    })
+    ops.push({
+      op: 'EditCommentingMutation',
+      delay: 1000,
+      botId: 'bot2',
+      variables: {
+        isCommenting: false,
+        meetingId,
+        threadId: reflectionGroupId
+      }
+    })
+
+    ops.push({
+      op: 'AddCommentMutation',
+      botId: 'bot2',
+      variables: {
+        comment: {
+          content: comments,
+          threadId: reflectionGroupId,
+          threadSource: ThreadSourceEnum.REFLECTION_GROUP,
+          threadSortOrder: 1
+        }
+      }
+    })
+  }
+
   ops.push({
     op: 'FlagReadyToAdvanceMutation',
     delay: 1000,
