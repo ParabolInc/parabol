@@ -24,7 +24,7 @@ const ButtonBlock = styled('div')({
   position: 'absolute',
   right: 0,
   bottom: 0,
-  width: '100%'
+  width: 'auto%'
 })
 
 const Button = styled(FloatingActionButton)({
@@ -38,11 +38,7 @@ interface Props {
 }
 
 const AddNewReflectTemplate = (props: Props) => {
-  const {
-    gotoTeamTemplates,
-    teamId,
-    reflectTemplates
-  } = props
+  const {gotoTeamTemplates, teamId, reflectTemplates} = props
   const atmosphere = useAtmosphere()
   const {onError, onCompleted, submitMutation, submitting, error} = useMutationProps()
   const addNewTemplate = () => {
@@ -67,7 +63,6 @@ const AddNewReflectTemplate = (props: Props) => {
       </Button>
     </ButtonBlock>
   )
-
 }
 
 export default createFragmentContainer(AddNewReflectTemplate, {
