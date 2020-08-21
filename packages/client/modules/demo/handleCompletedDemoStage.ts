@@ -117,7 +117,7 @@ const addStageToBotScript = (stageId, db, reflectionGroupId) => {
       ]
     )
   })
-  if (comments.length) {
+  comments.forEach((comment) => {
     ops.push({
       op: 'EditCommentingMutation',
       delay: 1000,
@@ -131,27 +131,26 @@ const addStageToBotScript = (stageId, db, reflectionGroupId) => {
     ops.push({
       op: 'EditCommentingMutation',
       delay: 1000,
-      botId: 'bot2',
+      botId: 'bot1',
       variables: {
         isCommenting: false,
         meetingId,
         threadId: reflectionGroupId
       }
     })
-
     ops.push({
       op: 'AddCommentMutation',
-      botId: 'bot2',
+      botId: 'bot1',
       variables: {
         comment: {
-          content: comments,
+          content: comment,
           threadId: reflectionGroupId,
           threadSource: ThreadSourceEnum.REFLECTION_GROUP,
           threadSortOrder: 1
         }
       }
     })
-  }
+  })
 
   ops.push({
     op: 'FlagReadyToAdvanceMutation',
