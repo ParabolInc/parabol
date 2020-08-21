@@ -1,4 +1,5 @@
 import Redis from 'ioredis'
+import sendToSentry from './sendToSentry'
 
 interface PubSubPromisePayload {
   jobId: string
@@ -46,6 +47,10 @@ export default class PubSubPromise<T extends PubSubPromisePayload> {
         delete this.jobs[jobId]
         reject(new Error('Redis took too long to respond'))
       }, MAX_TIMEOUT)
+      const previousJob = this.jobs[jobId]
+      if (previousJob) {
+        sendToSentry(new Error('REDIS JOB ALREADY EXISTS'), {tags: {jobId}})
+      }
       this.jobs[jobId] = {resolve, timeoutId}
       this.publisher.publish(this.pubChannel, JSON.stringify(payload))
     })
