@@ -118,7 +118,8 @@ const GroupingKanbanColumn = (props: Props) => {
   }
   const ref = useRef<HTMLDivElement>(null)
   const canAdd = phaseType === NewMeetingPhaseTypeEnum.group && !isComplete && !isAnyEditing
-  const isExpanded = useCoverable(promptId, ref, MeetingControlBarEnum.HEIGHT) || !!endedAt
+  const isExpanded =
+    useCoverable(promptId, ref, MeetingControlBarEnum.HEIGHT, phaseRef) || !!endedAt
   return (
     <Column isExpanded={isExpanded} data-cy={`group-column-${question}`} ref={ref}>
       <ColumnHeader>
