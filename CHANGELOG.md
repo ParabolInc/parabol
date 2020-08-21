@@ -5,6 +5,15 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 5.15.0 2020-Aug-21
+
+### Added
+- backupOrganization private schema query (#4089)
+- logging for redis timeout errors (#4095)
+
+### Fixed
+- More robust invoicing for multiple unpause on the same user (#4089)
+
 ## 5.14.0 2020-Aug-14
 
 ### Added
