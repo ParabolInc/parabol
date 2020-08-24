@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
+import React, {useEffect, useRef} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import FloatingActionButton from '../../../components/FloatingActionButton'
 import Icon from '../../../components/Icon'
@@ -22,13 +22,15 @@ const ButtonBlock = styled('div')({
   justifyContent: 'flex-end',
   padding: '8px 16px 16px 8px',
   position: 'absolute',
+  pointerEvents: 'none',
   right: 0,
   bottom: 0,
-  width: 'auto'
+  width: '100%'
 })
 
 const Button = styled(FloatingActionButton)({
-  padding: 15
+  padding: 15,
+  pointerEvents: 'all'
 })
 
 interface Props {
@@ -41,14 +43,26 @@ const AddNewReflectTemplate = (props: Props) => {
   const {gotoTeamTemplates, teamId, reflectTemplates} = props
   const atmosphere = useAtmosphere()
   const {onError, onCompleted, submitMutation, submitting, error} = useMutationProps()
+  const errorTimerId = useRef<undefined | number>()
+  useEffect(() => {
+    return () => {
+      window.clearTimeout(errorTimerId.current)
+    }
+  }, [])
   const addNewTemplate = () => {
     if (submitting) return
     if (reflectTemplates.length >= Threshold.MAX_RETRO_TEAM_TEMPLATES) {
       onError(new Error('You may only have 20 templates per team. Please remove one first.'))
+      errorTimerId.current = window.setTimeout(() => {
+        onCompleted()
+      }, 8000)
       return
     }
     if (reflectTemplates.find((template) => template.name === '*New Template')) {
       onError(new Error('You already have a new template. Try renaming that one first.'))
+      errorTimerId.current = window.setTimeout(() => {
+        onCompleted()
+      }, 8000)
       return
     }
     submitMutation()

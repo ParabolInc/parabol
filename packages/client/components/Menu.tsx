@@ -62,7 +62,7 @@ const Menu = forwardRef((props: Props, ref: any) => {
 
   useEffect(
     () => {
-      menuRef.current && menuRef.current.focus()
+      if (!keepParentFocus) menuRef.current && menuRef.current.focus()
     },
     resetActiveOnChanges ||
       [
