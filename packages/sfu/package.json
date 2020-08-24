@@ -1,0 +1,25 @@
+{
+  "name": "parabol-sfu",
+  "version": "5.15.1",
+  "description": "A signaling and relay server for forwarding media streams.",
+  "author": "Parabol Inc. <love@parabol.com> (http://github.com/ParabolInc)",
+  "homepage": "https://github.com/ParabolInc/parabol/tree/master/packages/gqlExecutor#readme",
+  "license": "AGPL-3.0-or-later",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ParabolInc/parabol"
+  },
+  "scripts": {},
+  "bugs": {
+    "url": "https://github.com/ParabolInc/parabol/issues"
+  },
+  "devDependencies": {
+    "ts-node": "^8.6.2",
+    "typescript": "^3.9.5"
+  },
+  "dependencies": {
+    "mediasoup": "3.6.16",
+    "protoo-server": "4.0.4",
+    "express": "^4.17.1"
+  }
+}
