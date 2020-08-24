@@ -80,6 +80,7 @@
     "oy-vey": "^0.11.0",
     "parabol-server": "^5.15.1",
     "prop-types": "^15.5.10",
+    "protoo-client": "4.0.4",
     "react": "^16.11.0",
     "react-beautiful-dnd": "12.0.0",
     "react-copy-to-clipboard": "^5.0.0",
