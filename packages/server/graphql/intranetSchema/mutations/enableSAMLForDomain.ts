@@ -1,4 +1,5 @@
-import {GraphQLNonNull, GraphQLString, GraphQLBoolean} from 'graphql'
+import {GraphQLBoolean, GraphQLNonNull, GraphQLString} from 'graphql'
+
 import getRethink from '../../../database/rethinkDriver'
 
 const enableSAMLForDomain = {
@@ -20,15 +21,17 @@ const enableSAMLForDomain = {
     const normalizedDomain = domain.toLowerCase()
     const normalizedUrl = url.toLowerCase()
 
-    const samlDomainExists = (await r
+    const samlId = await r
       .table('SAML')
       .getAll(normalizedDomain, {index: 'domain'})
-      .count()
-      .run()) as number
+      .nth(0)('id')
+      .default(null)
+      .run()
 
-    if (samlDomainExists) {
+    if (samlId) {
       await r
         .table('SAML')
+        .get(samlId)
         .update({
           url: normalizedUrl,
           metadata: metadata
