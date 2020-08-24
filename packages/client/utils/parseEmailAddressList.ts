@@ -15,12 +15,13 @@ const parseEmailAddressList = (rawStr = '') => {
 
   const commaDelimArr = commaDelimStr.split(', ')
 
-  // check if each address is valid as parseAddressList
+  //check if each address is valid as parseAddressList
   // returns null if one is not
   const validAddresses = [] as string[]
   commaDelimArr.forEach((address) => {
-    if (emailAddresses.parseOneAddress(address)) {
-      validAddresses.push(address)
+    const trimmedAddress = address.trim()
+    if (emailAddresses.parseOneAddress(trimmedAddress)) {
+      validAddresses.push(trimmedAddress)
     }
   })
 
