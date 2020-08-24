@@ -9,14 +9,6 @@ ADD package.json .
 ADD yarn.lock .
 COPY . .
 
-FROM base as dev
-RUN cp docker/entrypoint.dev.sh /bin/entrypoint
-RUN chmod +x /bin/entrypoint
-EXPOSE 3000
-ENTRYPOINT [ "entrypoint" ]
-
-CMD ["yarn", "dev", "-i"]
-
 FROM base as prod
 RUN cp docker/entrypoint.prod.sh /bin/entrypoint
 RUN chmod +x /bin/entrypoint
