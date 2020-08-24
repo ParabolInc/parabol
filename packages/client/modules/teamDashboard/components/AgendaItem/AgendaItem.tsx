@@ -1,12 +1,16 @@
-import styled from '@emotion/styled'
-import React, {useEffect, useRef, useState} from 'react'
-import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
+import React, { useEffect, useRef, useState } from 'react'
+import { createFragmentContainer } from 'react-relay'
+import { AgendaItem_meeting } from '~/__generated__/AgendaItem_meeting.graphql'
+
+import styled from '@emotion/styled'
+
+import { AgendaItem_agendaItem } from '../../../../__generated__/AgendaItem_agendaItem.graphql'
 import Avatar from '../../../../components/Avatar/Avatar'
 import IconButton from '../../../../components/IconButton'
 import MeetingSubnavItem from '../../../../components/MeetingSubnavItem'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
-import {MenuPosition} from '../../../../hooks/useCoords'
+import { MenuPosition } from '../../../../hooks/useCoords'
 import useGotoStageId from '../../../../hooks/useGotoStageId'
 import useScrollIntoView from '../../../../hooks/useScrollIntoVIew'
 import useTooltip from '../../../../hooks/useTooltip'
@@ -14,9 +18,7 @@ import RemoveAgendaItemMutation from '../../../../mutations/RemoveAgendaItemMuta
 import UpdateAgendaItemMutation from '../../../../mutations/UpdateAgendaItemMutation'
 import pinIcon from '../../../../styles/theme/images/icons/pin.svg'
 import unpinIcon from '../../../../styles/theme/images/icons/unpin.svg'
-import {ICON_SIZE} from '../../../../styles/typographyV2'
-import {AgendaItem_agendaItem} from '../../../../__generated__/AgendaItem_agendaItem.graphql'
-import {AgendaItem_meeting} from '~/__generated__/AgendaItem_meeting.graphql'
+import { ICON_SIZE } from '../../../../styles/typographyV2'
 
 const AgendaItemStyles = styled('div')({
   position: 'relative',
@@ -105,12 +107,14 @@ interface Props {
   gotoStageId: ReturnType<typeof useGotoStageId> | undefined
   isDragging: boolean
   meeting?: AgendaItem_meeting
-  meetingId?: string | null
+  // meetingId?: string | null
 }
 
 const AgendaItem = (props: Props) => {
-  const {agendaItem, gotoStageId, isDragging, meeting, meetingId} = props
+  // const {agendaItem, gotoStageId, isDragging, meeting, meetingId} = props
+  const {agendaItem, gotoStageId, isDragging, meeting} = props
   const {id: agendaItemId, content, pinned, teamMember} = agendaItem
+  const meetingId = meeting?.id
   const {picture} = teamMember
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
@@ -191,6 +195,35 @@ const AgendaItem = (props: Props) => {
   )
 }
 
+graphql`
+  fragment AgendaItemPhase on NewMeetingPhase {
+    id
+    # phaseType
+    ... on UpdatesPhase {
+      stages {
+        id
+        isComplete
+        isNavigable
+      }
+    }
+    ... on AgendaItemsPhase {
+      stages {
+        id
+        isComplete
+        isNavigable
+        isNavigableByFacilitator
+        agendaItem {
+          id
+          content
+          # need this for the DnD
+          sortOrder
+          # ...AgendaItem_agendaItem
+        }
+      }
+    }
+  }
+`
+
 export default createFragmentContainer(AgendaItem, {
   agendaItem: graphql`
     fragment AgendaItem_agendaItem on AgendaItem {
@@ -205,30 +238,21 @@ export default createFragmentContainer(AgendaItem, {
   `,
   meeting: graphql`
     fragment AgendaItem_meeting on ActionMeeting {
+      # ...AgendaListAndInput_meeting
+      id
       endedAt
-      localPhase {
-        phaseType
-        ... on AgendaItemsPhase {
-          stages {
-            id
-            isComplete
-            isNavigable
-            isNavigableByFacilitator
-            agendaItem {
-              id
-              content
-              # need this for the DnD
-              sortOrder
-              ...AgendaItem_agendaItem
-            }
-          }
-        }
-      }
       localStage {
         id
       }
       facilitatorStageId
       facilitatorUserId
+      # load up the localPhase
+      phases {
+        ...AgendaItemPhase @relay(mask: false)
+      }
+      localPhase {
+        ...AgendaItemPhase @relay(mask: false)
+      }
     }
   `
 })

@@ -1,12 +1,14 @@
-import {AgendaListAndInput_team} from '../../../../__generated__/AgendaListAndInput_team.graphql'
-import React from 'react'
-import styled from '@emotion/styled'
-import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
+import React from 'react'
+import { createFragmentContainer } from 'react-relay'
+import { AgendaListAndInput_meeting } from '~/__generated__/AgendaListAndInput_meeting.graphql'
+
+import styled from '@emotion/styled'
+
+import { AgendaListAndInput_team } from '../../../../__generated__/AgendaListAndInput_team.graphql'
+import useGotoStageId from '../../../../hooks/useGotoStageId'
 import AgendaInput from '../AgendaInput/AgendaInput'
 import AgendaList from '../AgendaList/AgendaList'
-import useGotoStageId from '../../../../hooks/useGotoStageId'
-import {AgendaListAndInput_meeting} from '~/__generated__/AgendaListAndInput_meeting.graphql'
 
 const RootStyles = styled('div')<{isMeeting: boolean | undefined; disabled: boolean}>(
   ({disabled, isMeeting}) => ({
@@ -35,23 +37,24 @@ interface Props {
   isDisabled?: boolean
   team: AgendaListAndInput_team
   meeting?: AgendaListAndInput_meeting
-  meetingId?: string
+  // meetingId?: string
 }
 
 const AgendaListAndInput = (props: Props) => {
-  const {agendaItems, dashSearch, gotoStageId, isDisabled, team, meeting, meetingId} = props
+  const {agendaItems, dashSearch, gotoStageId, isDisabled, team, meeting} = props
+  console.log('AgendaListAndInput -> props', props)
   const endedAt = meeting?.endedAt
 
   return (
-    <RootStyles disabled={!!isDisabled} isMeeting={!!meetingId}>
+    <RootStyles disabled={!!isDisabled} isMeeting={!!meeting}>
       <AgendaList
         agendaItems={agendaItems}
         dashSearch={dashSearch}
         gotoStageId={gotoStageId}
         meeting={meeting}
-        meetingId={meetingId}
+        // meetingId={meetingId}
       />
-      <StyledAgendaInput disabled={!!isDisabled || !!endedAt} isMeeting={!!meetingId} team={team} />
+      <StyledAgendaInput disabled={!!isDisabled || !!endedAt} isMeeting={!!meeting} team={team} />
     </RootStyles>
   )
 }
@@ -60,15 +63,37 @@ export default createFragmentContainer(AgendaListAndInput, {
   team: graphql`
     fragment AgendaListAndInput_team on Team {
       ...AgendaInput_team
+      agendaItems {
+        content
+        sortOrder
+      }
     }
   `,
   meeting: graphql`
     fragment AgendaListAndInput_meeting on ActionMeeting {
       ...AgendaList_meeting
       endedAt
-      localPhase {
-        phaseType
-      }
     }
   `
+  // agendaItems: graphql`
+  //   fragment AgendaListAndInput_agendaItems on AgendaItem @relay(plural: true) {
+  //     content
+  //     # ...AgendaList_meeting
+  //     # endedAt
+  //   }
+  // `
+  // agendaItemsPhase: graphql`
+  //   fragment AgendaListAndInput_agendaItemsPhase on AgendaItemsPhase {
+  //     stages {
+  //       isNavigable
+  //       agendaItem {
+  //         id
+  //         content
+  //         # need this for the DnD
+  //         sortOrder
+  //         ...AgendaItem_agendaItem
+  //       }
+  //     }
+  //   }
+  // `
 })

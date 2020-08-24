@@ -89,16 +89,14 @@ const ActionMeetingAgendaItems = (props: Props) => {
 }
 
 graphql`
-  fragment ActionMeetingAgendaItemsStage on NewMeetingStage {
-    ... on AgendaItemsStage {
-      agendaItemId
-      agendaItem {
-        id
-        content
-        teamMember {
-          picture
-          preferredName
-        }
+  fragment ActionMeetingAgendaItemsStage on AgendaItemsStage {
+    agendaItemId
+    agendaItem {
+      id
+      content
+      teamMember {
+        picture
+        preferredName
       }
     }
   }

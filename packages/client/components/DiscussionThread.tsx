@@ -83,16 +83,6 @@ graphql`
   }
 `
 
-graphql`
-  fragment DiscussionThread_agendaItems on NewMeetingStage {
-    ... on AgendaItemsStage {
-      agendaItemId
-      agendaItem {
-        content
-      }
-    }
-  }
-`
 export default createFragmentContainer(DiscussionThread, {
   viewer: graphql`
     fragment DiscussionThread_viewer on User {

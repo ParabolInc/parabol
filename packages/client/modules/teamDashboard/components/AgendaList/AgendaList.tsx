@@ -1,19 +1,21 @@
-import React, {useMemo} from 'react'
-import {DragDropContext, Draggable, Droppable} from 'react-beautiful-dnd'
+import graphql from 'babel-plugin-relay/macro'
+import React, { useMemo } from 'react'
+import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd'
+import { createFragmentContainer } from 'react-relay'
+import { AgendaList_meeting } from '~/__generated__/AgendaList_meeting.graphql'
+
 // import SexyScrollbar from 'universal/components/Dashboard/SexyScrollbar'
 import styled from '@emotion/styled'
+
 import useAtmosphere from '../../../../hooks/useAtmosphere'
-import AgendaItem from '../AgendaItem/AgendaItem'
-import AgendaListEmptyState from './AgendaListEmptyState'
-import UpdateAgendaItemMutation from '../../../../mutations/UpdateAgendaItemMutation'
-import {navItemRaised} from '../../../../styles/elevation'
-import {AGENDA_ITEM, SORT_STEP} from '../../../../utils/constants'
-import dndNoise from '../../../../utils/dndNoise'
 import useEventCallback from '../../../../hooks/useEventCallback'
 import useGotoStageId from '../../../../hooks/useGotoStageId'
-import {createFragmentContainer} from 'react-relay'
-import graphql from 'babel-plugin-relay/macro'
-import {AgendaList_meeting} from '~/__generated__/AgendaList_meeting.graphql'
+import UpdateAgendaItemMutation from '../../../../mutations/UpdateAgendaItemMutation'
+import { navItemRaised } from '../../../../styles/elevation'
+import { AGENDA_ITEM, SORT_STEP } from '../../../../utils/constants'
+import dndNoise from '../../../../utils/dndNoise'
+import AgendaItem from '../AgendaItem/AgendaItem'
+import AgendaListEmptyState from './AgendaListEmptyState'
 
 const AgendaListRoot = styled('div')({
   display: 'flex',
@@ -36,12 +38,14 @@ interface Props {
   dashSearch?: string
   gotoStageId: ReturnType<typeof useGotoStageId> | undefined
   meeting?: AgendaList_meeting
-  meetingId?: string | null
+  // meetingId?: string | null
 }
 
 const AgendaList = (props: Props) => {
   const atmosphere = useAtmosphere()
-  const {agendaItems, meeting, dashSearch, gotoStageId, meetingId} = props
+  // const {agendaItems, meeting, dashSearch, gotoStageId, meetingId} = props
+  const {agendaItems, meeting, dashSearch, gotoStageId} = props
+  const meetingId = meeting?.id
   const filteredAgendaItems = useMemo(() => {
     if (!agendaItems) return null
     return dashSearch
@@ -107,7 +111,7 @@ const AgendaList = (props: Props) => {
                             gotoStageId={gotoStageId}
                             isDragging={dragSnapshot.isDragging}
                             meeting={meeting}
-                            meetingId={meetingId}
+                            // meetingId={meetingId}
                           />
                         </DraggableAgendaItem>
                       )
@@ -127,11 +131,8 @@ const AgendaList = (props: Props) => {
 export default createFragmentContainer(AgendaList, {
   meeting: graphql`
     fragment AgendaList_meeting on ActionMeeting {
+      id
       ...AgendaItem_meeting
-      endedAt
-      localPhase {
-        phaseType
-      }
     }
   `
 })

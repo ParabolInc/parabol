@@ -104,6 +104,7 @@ interface Props {
 
 const AgendaAndTasks = (props: Props) => {
   const {viewer, retry} = props
+  console.log('AgendaAndTasks -> props', props)
   const {dashSearch} = viewer
   const team = viewer.team!
   const teamMember = viewer.teamMember!
@@ -141,7 +142,6 @@ const AgendaAndTasks = (props: Props) => {
     </RootBlock>
   )
 }
-
 export default createFragmentContainer(AgendaAndTasks, {
   viewer: graphql`
     fragment AgendaAndTasks_viewer on User {
