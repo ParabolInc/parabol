@@ -13,9 +13,9 @@ const parseEmailAddressList = (rawStr = '') => {
     // remove trailing commas
     .replace(/,$/g, '')
 
-  const commaDelimArr = commaDelimStr.split(', ')
+  const commaDelimArr = commaDelimStr.split(',')
 
-  //check if each address is valid as parseAddressList
+  // check if each address is valid as parseAddressList
   // returns null if one is not
   const validAddresses = [] as string[]
   commaDelimArr.forEach((address) => {
@@ -25,7 +25,7 @@ const parseEmailAddressList = (rawStr = '') => {
     }
   })
 
-  const validCommaDelimStr = validAddresses.join(', ')
+  const validCommaDelimStr = validAddresses.join(',')
   return emailAddresses.parseAddressList(validCommaDelimStr)
 }
 
