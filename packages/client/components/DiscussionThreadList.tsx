@@ -1,11 +1,15 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {forwardRef, RefObject} from 'react'
-import {createFragmentContainer} from 'react-relay'
+import React, { forwardRef, RefObject } from 'react'
+import { createFragmentContainer } from 'react-relay'
+import { DiscussionThreadList_meeting } from '~/__generated__/DiscussionThreadList_meeting.graphql'
+import {
+    DiscussionThreadList_threadables
+} from '~/__generated__/DiscussionThreadList_threadables.graphql'
 import useScrollThreadList from '~/hooks/useScrollThreadList'
-import {DiscussionThreadList_meeting} from '~/__generated__/DiscussionThreadList_meeting.graphql'
-import {DiscussionThreadList_threadables} from '~/__generated__/DiscussionThreadList_threadables.graphql'
-import {PALETTE} from '../styles/paletteV2'
+
+import styled from '@emotion/styled'
+
+import { PALETTE } from '../styles/paletteV2'
 import DiscussionThreadListEmptyState from './DiscussionThreadListEmptyState'
 import LabelHeading from './LabelHeading/LabelHeading'
 import ThreadedItem from './ThreadedItem'
@@ -15,7 +19,7 @@ const EmptyWrapper = styled('div')({
   display: 'flex',
   flexDirection: 'column',
   justifyContent: 'center',
-  minHeight: 'calc(100% - 80px)', // this prevents the empty state from jumping when the user is commenting
+  height: '100%',
   paddingTop: 8
 })
 
@@ -24,7 +28,7 @@ const Wrapper = styled('div')({
   display: 'flex',
   flexDirection: 'column',
   overflow: 'auto',
-  padding: '8px 0'
+  paddingTop: '8px'
 })
 
 // https://stackoverflow.com/questions/36130760/use-justify-content-flex-end-and-to-have-vertical-scrollbar

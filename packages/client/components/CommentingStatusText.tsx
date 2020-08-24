@@ -1,6 +1,8 @@
-import styled from '@emotion/styled'
 import React from 'react'
-import {PALETTE} from '../styles/paletteV2'
+
+import styled from '@emotion/styled'
+
+import { PALETTE } from '../styles/paletteV2'
 import Ellipsis from './Ellipsis/Ellipsis'
 
 const CommentingStatus = styled('div')({
@@ -8,9 +10,8 @@ const CommentingStatus = styled('div')({
   color: PALETTE.TEXT_GRAY,
   display: 'flex',
   fontSize: 12,
+  height: 28,
   marginLeft: 48,
-  paddingBottom: 12,
-  paddingTop: 4,
   width: '100%'
 })
 
@@ -29,7 +30,7 @@ const getStatusText = (preferredNames: string[]) => {
 const CommentingStatusText = (props: Props) => {
   const {preferredNames} = props
 
-  if (!preferredNames || !preferredNames.length) return null
+  if (!preferredNames || !preferredNames.length) return <CommentingStatus />
 
   return (
     <CommentingStatus>
