@@ -10,6 +10,8 @@ ADD yarn.lock .
 COPY . .
 
 FROM base as prod
+RUN yarn install
+RUN yarn build
 RUN cp docker/entrypoint.prod.sh /bin/entrypoint
 RUN chmod +x /bin/entrypoint
 EXPOSE 80

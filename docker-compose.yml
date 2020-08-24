@@ -8,7 +8,7 @@ services:
       - "29015:29015"
       - "28015:28015"
     volumes:
-      - rethink-data:/rethinkdb/data
+      - rethink-data:/data
     networks:
       - parabol-network
   redis:
@@ -32,18 +32,8 @@ services:
       - redis
     networks:
       - parabol-network
-    volumes:
-      - .:/parabol
-      - node-modules:/parabol/node_modules
-      - build:/parabol/build
-      - dev:/parabol/dev
-      - generated:/parabol/packages/client/__generated__
 networks:
   parabol-network:
 volumes:
-  build:
-  dev:
-  generated:
-  node-modules:
-  redis-data:
-  rethink-data:
+  redis-data: {}
+  rethink-data: {}
