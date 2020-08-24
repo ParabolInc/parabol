@@ -8,41 +8,24 @@ import resolveSelectedTemplate from '../queries/helpers/resolveSelectedTemplate'
 import ReflectTemplate, {ReflectTemplateConnection} from './ReflectTemplate'
 import TeamMeetingSettings, {teamMeetingSettingsFields} from './TeamMeetingSettings'
 
-const RetrospectiveMeetingSettings = new GraphQLObjectType<any, GQLContext>({
-  name: 'RetrospectiveMeetingSettings',
+const PokerMeetingSettings = new GraphQLObjectType<any, GQLContext>({
+  name: 'PokerMeetingSettings',
   description: 'The retro-specific meeting settings',
   interfaces: () => [TeamMeetingSettings],
   fields: () => ({
     ...teamMeetingSettingsFields(),
-    totalVotes: {
-      type: new GraphQLNonNull(GraphQLInt),
-      description: 'The total number of votes each team member receives for the voting phase'
-    },
-    maxVotesPerGroup: {
-      type: new GraphQLNonNull(GraphQLInt),
-      description:
-        'The maximum number of votes a team member can vote for a single reflection group'
-    },
     selectedTemplateId: {
       type: new GraphQLNonNull(GraphQLID),
-      description: 'FK. The template that will be used to start the retrospective'
+      description: 'FK. The template that will be used to start the poker meeting'
     },
     selectedTemplate: {
       type: GraphQLNonNull(ReflectTemplate),
-      description: 'The template that will be used to start the retrospective',
-      resolve: resolveSelectedTemplate('workingStuckTemplate')
-    },
-    reflectTemplates: {
-      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(ReflectTemplate))),
-      description: 'The list of templates used to start a retrospective',
-      deprecatedReason: 'renamed to teamTemplates',
-      resolve: ({teamId}, _args, {dataLoader}) => {
-        return dataLoader.get('meetingTemplatesByTeamId').load(teamId)
-      }
+      description: 'The template that will be used to start the Poker meeting',
+      resolve: resolveSelectedTemplate('estimatedEffortTemplate')
     },
     teamTemplates: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(ReflectTemplate))),
-      description: 'The list of templates used to start a retrospective',
+      description: 'The list of templates used to start a Poker meeting',
       resolve: async ({teamId}, _args, {dataLoader}) => {
         const templates = await dataLoader.get('meetingTemplatesByTeamId').load(teamId)
         const scoredTemplates = await getScoredTemplates(templates, 0.9)
@@ -60,7 +43,7 @@ const RetrospectiveMeetingSettings = new GraphQLObjectType<any, GQLContext>({
           description: 'The cursor, which is the templateId'
         }
       },
-      description: 'The list of templates shared across the organization to start a retrospective',
+      description: 'The list of templates shared across the organization to start a Poker meeting',
       resolve: async ({teamId}, {first, after}, {dataLoader}) => {
         const team = await dataLoader.get('teams').load(teamId)
         const {orgId} = team
@@ -74,7 +57,7 @@ const RetrospectiveMeetingSettings = new GraphQLObjectType<any, GQLContext>({
     },
     publicTemplates: {
       type: GraphQLNonNull(ReflectTemplateConnection),
-      description: 'The list of templates shared across the organization to start a retrospective',
+      description: 'The list of templates shared across the organization to start a Poker meeting',
       args: {
         first: {
           type: GraphQLNonNull(GraphQLInt)
@@ -86,7 +69,7 @@ const RetrospectiveMeetingSettings = new GraphQLObjectType<any, GQLContext>({
       },
       resolve: async ({teamId}, {first, after}, {dataLoader}) => {
         const [publicTemplates, team] = await Promise.all([
-          db.read('publicTemplates', 'retrospective'),
+          db.read('publicTemplates', 'poker'),
           dataLoader.get('teams').load(teamId)
         ])
         const {orgId} = team
@@ -98,4 +81,4 @@ const RetrospectiveMeetingSettings = new GraphQLObjectType<any, GQLContext>({
   })
 })
 
-export default RetrospectiveMeetingSettings
+export default PokerMeetingSettings

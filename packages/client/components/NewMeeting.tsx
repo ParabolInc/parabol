@@ -3,9 +3,9 @@ import graphql from 'babel-plugin-relay/macro'
 import React, {useEffect, useRef, useState} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {mod} from 'react-swipeable-views-core'
+import WaveSVG from 'static/images/wave.svg'
 import useStoreQueryRetry from '~/hooks/useStoreQueryRetry'
 import {NewMeeting_viewer} from '~/__generated__/NewMeeting_viewer.graphql'
-import WaveSVG from 'static/images/wave.svg'
 import useBreakpoint from '../hooks/useBreakpoint'
 import useRouter from '../hooks/useRouter'
 import {Breakpoint} from '../types/constEnums'
@@ -102,16 +102,19 @@ const useInnerWidth = () => {
   return innerWidth
 }
 
-export const NEW_MEETING_ORDER = [MeetingTypeEnum.retrospective, MeetingTypeEnum.action]
-
+const NEW_MEETING_ORDER = ['retrospective', 'action']
+const POKER_MEETING_ORDER = ['poker', 'retrospective', 'action']
 const NewMeeting = (props: Props) => {
   const {teamId, viewer, retry} = props
-  const {teams} = viewer
+  const {teams, featureFlags} = viewer
+  const {poker} = featureFlags
+  const newMeetingOrder = poker ? POKER_MEETING_ORDER : NEW_MEETING_ORDER
+
   useStoreQueryRetry(retry)
   const {history} = useRouter()
   const innerWidth = useInnerWidth()
   const [idx, setIdx] = useState(0)
-  const meetingType = NEW_MEETING_ORDER[mod(idx, NEW_MEETING_ORDER.length)]
+  const meetingType = newMeetingOrder[mod(idx, newMeetingOrder.length)] as MeetingTypeEnum
   const sendToMeRef = useRef(false)
   useEffect(() => {
     if (!teamId) {
@@ -126,7 +129,7 @@ const NewMeeting = (props: Props) => {
   useEffect(() => {
     if (!selectedTeam) return
     const {lastMeetingType} = selectedTeam
-    const meetingIdx = NEW_MEETING_ORDER.indexOf(lastMeetingType as MeetingTypeEnum)
+    const meetingIdx = newMeetingOrder.indexOf(lastMeetingType)
     setIdx(meetingIdx)
   }, [teamId])
   if (!teamId || !selectedTeam) return null
@@ -135,7 +138,7 @@ const NewMeeting = (props: Props) => {
       <NewMeetingBackButton teamId={teamId} sendToMe={sendToMeRef.current} />
       <NewMeetingInner isDesktop={isDesktop}>
         <IllustrationAndSelector>
-          <NewMeetingIllustration idx={idx} setIdx={setIdx} />
+          <NewMeetingIllustration idx={idx} setIdx={setIdx} newMeetingOrder={newMeetingOrder} />
           <NewMeetingMeetingSelector meetingType={meetingType} idx={idx} setIdx={setIdx} />
         </IllustrationAndSelector>
         <NewMeetingHowTo meetingType={meetingType} />
@@ -162,6 +165,9 @@ export default createFragmentContainer(NewMeeting, {
         lastMeetingType
         name
         tier
+      }
+      featureFlags {
+        poker
       }
     }
   `

@@ -21,14 +21,20 @@ const customRedisQueries = {
       return group ? group.reduction.map((date) => date.getTime()) : []
     })
   },
-  publicTemplates: async () => {
+  publicTemplates: async (meetingTypes: string[]) => {
     const r = await getRethink()
-    const publicTemplates = await r
-      .table('ReflectTemplate')
-      .filter({scope: 'PUBLIC', isActive: true})
-      .limit(1000)
-      .run()
-    return [publicTemplates]
+
+    const publicTemplatesByType = await Promise.all(
+      meetingTypes.map((type) => {
+        return r
+          .table('MeetingTemplate')
+          .filter({scope: 'PUBLIC', isActive: true, type})
+          .limit(1000)
+          .run()
+      })
+    )
+
+    return publicTemplatesByType
   }
 } as const
 

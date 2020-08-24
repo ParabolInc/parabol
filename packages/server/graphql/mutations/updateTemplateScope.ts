@@ -34,7 +34,7 @@ const updateTemplateScope = {
     const subOptions = {mutatorId, operationId}
     const viewerId = getUserId(authToken)
     //AUTH
-    const template = await dataLoader.get('reflectTemplates').load(templateId)
+    const template = await dataLoader.get('meetingTemplates').load(templateId)
     if (!template || !template.isActive) {
       return {error: {message: `Template not found`}}
     }
@@ -88,10 +88,10 @@ const updateTemplateScope = {
         })
       })
       await r({
-        clonedTemplate: r.table('ReflectTemplate').insert(clonedTemplate),
+        clonedTemplate: r.table('MeetingTemplate').insert(clonedTemplate),
         clonedPrompts: r.table('ReflectPrompt').insert(clonedPrompts),
         inactivatedTemplate: r
-          .table('ReflectTemplate')
+          .table('MeetingTemplate')
           .get(templateId)
           .update({isActive: false}),
         inactivatedPrompts: r
@@ -101,7 +101,7 @@ const updateTemplateScope = {
       }).run()
     } else {
       await r
-        .table('ReflectTemplate')
+        .table('MeetingTemplate')
         .get(templateId)
         .update({
           scope: newScope

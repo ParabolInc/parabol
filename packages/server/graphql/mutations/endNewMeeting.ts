@@ -267,6 +267,8 @@ const getIsKill = (meetingType: MeetingTypeEnum, phase?: GenericMeetingPhase) =>
       return ![AGENDA_ITEMS, LAST_CALL].includes(phase.phaseType)
     case MeetingTypeEnum.retrospective:
       return ![DISCUSS].includes(phase.phaseType)
+    case MeetingTypeEnum.poker:
+      return !['ESTIMATE'].includes(phase.phaseType)
   }
 }
 
@@ -280,7 +282,7 @@ const getMeetingTemplateName = async (
     (phase) => phase.phaseType === NewMeetingPhaseTypeEnum.reflect
   ) as ReflectPhase
   const {promptTemplateId} = reflectPhase
-  const template = await dataLoader.get('reflectTemplates').load(promptTemplateId)
+  const template = await dataLoader.get('meetingTemplates').load(promptTemplateId)
   return template.name
 }
 

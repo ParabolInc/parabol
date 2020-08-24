@@ -16,6 +16,7 @@ import DiscussPhase from './types/DiscussPhase'
 import GenericMeetingPhase from './types/GenericMeetingPhase'
 import NotificationTeamInvitation from './types/NotificationTeamInvitation'
 import NotifyPromoteToOrgLeader from './types/NotifyPromoteToOrgLeader'
+import PokerMeetingSettings from './types/PokerMeetingSettings'
 import ReflectPhase from './types/ReflectPhase'
 import RetroPhaseItem from './types/RetroPhaseItem'
 import RetrospectiveMeeting from './types/RetrospectiveMeeting'
@@ -72,6 +73,7 @@ export default new GraphQLSchema({
     RetroPhaseItem,
     ActionMeeting,
     ActionMeetingMember,
+    PokerMeetingSettings,
     RetrospectiveMeeting,
     RetrospectiveMeetingMember,
     RetrospectiveMeetingSettings,
