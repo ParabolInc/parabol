@@ -29,7 +29,7 @@ const BodyCol = styled('div')({
   display: 'flex',
   flexDirection: 'column',
   paddingBottom: 8,
-  width: 'calc(100% - 54px)'
+  width: 'calc(100% - 56px)'
 })
 
 const EditorWrapper = styled('div')({
