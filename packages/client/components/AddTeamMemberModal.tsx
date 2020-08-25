@@ -1,25 +1,30 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {useState} from 'react'
-import {createFragmentContainer} from 'react-relay'
+import React, { useState } from 'react'
+import { createFragmentContainer } from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useMutationProps from '~/hooks/useMutationProps'
+import { PALETTE } from '~/styles/paletteV2'
+import { ICON_SIZE } from '~/styles/typographyV2'
+
+import styled from '@emotion/styled'
+
+import {
+    AddTeamMemberModal_teamMembers
+} from '../__generated__/AddTeamMemberModal_teamMembers.graphql'
 import useBreakpoint from '../hooks/useBreakpoint'
 import InviteToTeamMutation from '../mutations/InviteToTeamMutation'
 import parseEmailAddressList from '../utils/parseEmailAddressList'
 import plural from '../utils/plural'
-import {AddTeamMemberModal_teamMembers} from '../__generated__/AddTeamMemberModal_teamMembers.graphql'
 import AddTeamMemberModalSuccess from './AddTeamMemberModalSuccess'
 import DialogContainer from './DialogContainer'
 import DialogContent from './DialogContent'
 import DialogTitle from './DialogTitle'
+import Icon from './Icon'
 import BasicTextArea from './InputField/BasicTextArea'
 import LabelHeading from './LabelHeading/LabelHeading'
 import MassInvitationTokenLinkRoot from './MassInvitationTokenLinkRoot'
 import PrimaryButton from './PrimaryButton'
-import {PALETTE} from '~/styles/paletteV2'
-import {ICON_SIZE} from '~/styles/typographyV2'
-import Icon from './Icon'
+
 interface Props {
   closePortal: () => void
   meetingId?: string | undefined
@@ -123,33 +128,43 @@ const AddTeamMemberModal = (props: Props) => {
   const onChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     if (isSubmitted) setIsSubmitted(false)
     const nextValue = e.target.value
-    const parsedInvitees = parseEmailAddressList(nextValue)
+    if (rawInvitees === nextValue) return
+    const {parsedInvitees, invalidEmailExists} = parseEmailAddressList(nextValue) as any
     const allInvitees = parsedInvitees
       ? (parsedInvitees.map((invitee) => (invitee as any).address) as string[])
       : invitees
     const teamEmailSet = new Set(teamMembers.map(({email}) => email))
     const uniqueInvitees = Array.from(new Set(allInvitees))
+    if (invalidEmailExists) {
+      const lastValidEmail = uniqueInvitees.pop()
+      lastValidEmail
+        ? onError(new Error(`Invalid email(s) after ${lastValidEmail}`))
+        : onError(new Error(`Invalid email(s)`))
+    } else if (!invalidEmailExists) {
+      onCompleted()
+    }
     const offTeamInvitees = uniqueInvitees.filter((email) => !teamEmailSet.has(email))
     const alreadyInvitedEmails = uniqueInvitees.filter((email) => teamEmailSet.has(email))
+
     setRawInvitees(nextValue)
     setInvitees(offTeamInvitees)
-    if (alreadyInvitedEmails.length === 1) {
-      onError(new Error(`${alreadyInvitedEmails} is already on the team`))
-    } else if (alreadyInvitedEmails.length === 2) {
-      onError(
-        new Error(
-          `${alreadyInvitedEmails[0]} and ${alreadyInvitedEmails[1]} are already on the team`
+    if (!invalidEmailExists) {
+      if (alreadyInvitedEmails.length === 1) {
+        onError(new Error(`${alreadyInvitedEmails} is already on the team`))
+      } else if (alreadyInvitedEmails.length === 2) {
+        onError(
+          new Error(
+            `${alreadyInvitedEmails[0]} and ${alreadyInvitedEmails[1]} are already on the team`
+          )
         )
-      )
-    } else if (alreadyInvitedEmails.length > 2) {
-      onError(
-        new Error(
-          `${alreadyInvitedEmails[0]} and ${alreadyInvitedEmails.length -
-            1} other emails are already on the team`
+      } else if (alreadyInvitedEmails.length > 2) {
+        onError(
+          new Error(
+            `${alreadyInvitedEmails[0]} and ${alreadyInvitedEmails.length -
+              1} other emails are already on the team`
+          )
         )
-      )
-    } else if (error) {
-      onCompleted()
+      }
     }
   }
 
