@@ -35,6 +35,7 @@ const CheckIcon = styled(Icon)<{progress: number; isNext: boolean; isViewerReady
     fontSize: 24,
     fontWeight: 600,
     height: 24,
+    opacity: isNext ? 1 : isViewerReady ? 1 : 0.5,
     transformOrigin: '0 0',
     // 20px to 16 = 0.75
     transform: progress > 0 ? `scale(0.75)translate(4px, 4px)` : undefined,
