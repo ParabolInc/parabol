@@ -51,7 +51,11 @@ const UserColumnsContainer = (props: Props) => {
     // if user filter is selected, it's like User Dashboard: task footer shows team name
     const areaForTaskCard = teamMemberFilter ? AreaEnum.userDash : AreaEnum.teamDash
     const myTeamMemberId = teamFilter ? toTeamMemberId(teamFilter!.id, viewer.id) : undefined
-    const filteredTeams = teamFilter ? teams.filter(({id}) => id === teamFilter.id) : teams
+    const filteredTeams = userIds ? teams.filter(({teamMembers, id: teamId}) => {
+      const inTeam = teamMembers.find(({userId}) => userIds.includes(userId)) != undefined
+      const teamFiltered = teamFilter ? teamFilter.id === teamId : true
+      return teamFiltered && inTeam
+    }) : teams
 
     return <TaskColumns area={areaForTaskCard} tasks={filteredTasks} myTeamMemberId={myTeamMemberId} teams={filteredTeams} />
   }
@@ -64,6 +68,10 @@ export default createFragmentContainer(UserColumnsContainer, {
       dashSearch
       teams {
         id
+        teamMembers(sortBy: "preferredName") {
+          userId
+          preferredName
+        }
         ...TaskColumns_teams
       }
       tasks(first: 1000, userIds: $userIds, teamIds: $teamIds) @connection(key: "UserColumnsContainer_tasks") {
