@@ -9,7 +9,6 @@ import {Elevation} from '../styles/elevation'
 import makeMinWidthMediaQuery from '../utils/makeMinWidthMediaQuery'
 import DiscussionThreadInput from './DiscussionThreadInput'
 import DiscussionThreadList from './DiscussionThreadList'
-import CommentingStatusText from './CommentingStatusText'
 
 const Wrapper = styled('div')<{isExpanded: boolean}>(({isExpanded}) => ({
   background: '#fff',
@@ -58,17 +57,14 @@ const DiscussionThread = (props: Props) => {
         ref={listRef}
         editorRef={editorRef}
       />
-      <>
-        <CommentingStatusText preferredNames={preferredNames} />
-        <DiscussionThreadInput
-          dataCy='discuss-input'
-          editorRef={editorRef}
-          isDisabled={!!replyingToCommentId}
-          getMaxSortOrder={getMaxSortOrder}
-          meeting={meeting}
-          threadSourceId={threadSourceId}
-        />
-      </>
+      <DiscussionThreadInput
+        dataCy='discuss-input'
+        editorRef={editorRef}
+        isDisabled={!!replyingToCommentId}
+        getMaxSortOrder={getMaxSortOrder}
+        meeting={meeting}
+        threadSourceId={threadSourceId}
+      />
     </Wrapper>
   )
 }

@@ -1,18 +1,17 @@
 import graphql from 'babel-plugin-relay/macro'
-import React, { forwardRef, RefObject } from 'react'
-import { createFragmentContainer } from 'react-relay'
-import { DiscussionThreadList_meeting } from '~/__generated__/DiscussionThreadList_meeting.graphql'
-import {
-    DiscussionThreadList_threadables
-} from '~/__generated__/DiscussionThreadList_threadables.graphql'
+import React, {forwardRef, RefObject} from 'react'
+import {createFragmentContainer} from 'react-relay'
+import {DiscussionThreadList_meeting} from '~/__generated__/DiscussionThreadList_meeting.graphql'
+import {DiscussionThreadList_threadables} from '~/__generated__/DiscussionThreadList_threadables.graphql'
 import useScrollThreadList from '~/hooks/useScrollThreadList'
 
 import styled from '@emotion/styled'
 
-import { PALETTE } from '../styles/paletteV2'
+import {PALETTE} from '../styles/paletteV2'
 import DiscussionThreadListEmptyState from './DiscussionThreadListEmptyState'
 import LabelHeading from './LabelHeading/LabelHeading'
 import ThreadedItem from './ThreadedItem'
+import CommentingStatusText from './CommentingStatusText'
 
 const EmptyWrapper = styled('div')({
   alignItems: 'center',
@@ -44,6 +43,11 @@ const Header = styled(LabelHeading)({
   width: '100%'
 })
 
+const CommentingStatusBlock = styled('div')({
+  height: 36,
+  width: '100%'
+})
+
 interface Props {
   editorRef: RefObject<HTMLTextAreaElement>
   meeting: DiscussionThreadList_meeting
@@ -63,6 +67,9 @@ const DiscussionThreadList = forwardRef((props: Props, ref: any) => {
       <EmptyWrapper>
         <HeaderBlock />
         <DiscussionThreadListEmptyState />
+        <CommentingStatusBlock>
+          <CommentingStatusText preferredNames={preferredNames} />
+        </CommentingStatusBlock>
       </EmptyWrapper>
     )
   }
@@ -82,6 +89,7 @@ const DiscussionThreadList = forwardRef((props: Props, ref: any) => {
           />
         )
       })}
+      <CommentingStatusText preferredNames={preferredNames} />
     </Wrapper>
   )
 })
