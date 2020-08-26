@@ -46,11 +46,12 @@ const UserDashTeamMemberMenu = (props: Props) => {
       defaultActiveIdx={defaultActiveIdx}
     >
       <DropdownMenuLabel>{'Filter by team member:'}</DropdownMenuLabel>
-      <MenuItem
-        key={'teamMemberFilterNULL'}
-        label={'All team members'}
-        onClick={() => history.push(constructUserTaskFilterQueryParamURL(teamIds, undefined, showArchived))}
-      />
+      {teamIds &&
+        <MenuItem
+          key={'teamMemberFilterNULL'}
+          label={'All team members'}
+          onClick={() => history.push(constructUserTaskFilterQueryParamURL(teamIds, undefined, showArchived))}
+        />}
       {filteredTeamMembers.map((teamMember) => (
         <MenuItem
           key={`teamMemberFilter${teamMember.userId}`}
