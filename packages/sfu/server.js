@@ -25,6 +25,7 @@ async function main() {
   console.log('Listening on localhost port 4443...')
   wss.on('connectionrequest', (info, accept, reject) => {
     console.log('Received request:', info.request.url)
+    const transport = accept()
   })
 }
 
