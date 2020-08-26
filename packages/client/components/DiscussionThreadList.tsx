@@ -1,15 +1,13 @@
 import graphql from 'babel-plugin-relay/macro'
-import React, { forwardRef, RefObject } from 'react'
-import { createFragmentContainer } from 'react-relay'
-import { DiscussionThreadList_meeting } from '~/__generated__/DiscussionThreadList_meeting.graphql'
-import {
-    DiscussionThreadList_threadables
-} from '~/__generated__/DiscussionThreadList_threadables.graphql'
+import React, {forwardRef, RefObject} from 'react'
+import {createFragmentContainer} from 'react-relay'
+import {DiscussionThreadList_meeting} from '~/__generated__/DiscussionThreadList_meeting.graphql'
+import {DiscussionThreadList_threadables} from '~/__generated__/DiscussionThreadList_threadables.graphql'
 import useScrollThreadList from '~/hooks/useScrollThreadList'
 
 import styled from '@emotion/styled'
 
-import { PALETTE } from '../styles/paletteV2'
+import {PALETTE} from '../styles/paletteV2'
 import CommentingStatusText from './CommentingStatusText'
 import DiscussionThreadListEmptyState from './DiscussionThreadListEmptyState'
 import LabelHeading from './LabelHeading/LabelHeading'
@@ -21,7 +19,7 @@ const EmptyWrapper = styled('div')({
   flexDirection: 'column',
   justifyContent: 'center',
   height: '100%',
-  paddingTop: 8
+  padding: '8px 0'
 })
 
 const Wrapper = styled('div')({
