@@ -27,18 +27,10 @@ const ActionSidebarAgendaItemsSection = (props: Props) => {
     (phase) => phase.phaseType === NewMeetingPhaseTypeEnum.updates
   )!
   const isUpdatesNavigable = updatesPhase && updatesPhase.stages![0].isNavigable
-  const agendaItemsPhase = meeting.phases!.find(
-    (phase) => phase.phaseType === NewMeetingPhaseTypeEnum.agendaitems
-  )!
-  const agendaItems = useMemo(() => {
-    if (!agendaItemsPhase.stages) return null
-    return agendaItemsPhase.stages.map((stage) => stage.agendaItem)
-  }, [agendaItemsPhase])
 
   return (
     <MeetingSidebarPhaseItemChild>
       <AgendaListAndInput
-        agendaItems={agendaItems}
         meeting={meeting}
         gotoStageId={handleClick}
         isDisabled={!isUpdatesNavigable}

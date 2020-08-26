@@ -110,7 +110,7 @@ const AgendaAndTasks = (props: Props) => {
   const team = viewer.team!
   const teamMember = viewer.teamMember!
   const {hideAgenda} = teamMember
-  const {agendaItems, teamId, teamName} = team
+  const {teamId, teamName} = team
   useStoreQueryRetry(retry)
   useDocumentTitle(`Team Dashboard | ${teamName}`, teamName)
   return (
@@ -132,11 +132,7 @@ const AgendaAndTasks = (props: Props) => {
               <StyledLabelHeading>{'Team Agenda'}</StyledLabelHeading>
               <CloseAgenda hideAgenda={hideAgenda} teamId={teamId} />
             </AgendaHeader>
-            <AgendaListAndInput
-              agendaItems={agendaItems}
-              dashSearch={dashSearch || ''}
-              team={team!}
-            />
+            <AgendaListAndInput dashSearch={dashSearch || ''} meeting={null} team={team!} />
           </AgendaContent>
         )}
       </AgendaMain>

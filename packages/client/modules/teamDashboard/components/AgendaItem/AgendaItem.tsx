@@ -108,7 +108,7 @@ interface Props {
   agendaItem: AgendaItem_agendaItem
   gotoStageId: ReturnType<typeof useGotoStageId> | undefined
   isDragging: boolean
-  meeting?: AgendaItem_meeting
+  meeting: AgendaList_meeting | null
 }
 
 const AgendaItem = (props: Props) => {

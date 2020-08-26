@@ -16,6 +16,7 @@ import {AGENDA_ITEM, SORT_STEP} from '../../../../utils/constants'
 import dndNoise from '../../../../utils/dndNoise'
 import AgendaItem from '../AgendaItem/AgendaItem'
 import AgendaListEmptyState from './AgendaListEmptyState'
+import {AgendaList_agendaItems} from '~/__generated__/AgendaList_agendaItems.graphql'
 
 const AgendaListRoot = styled('div')({
   display: 'flex',
@@ -34,10 +35,10 @@ const DraggableAgendaItem = styled('div')<{isDragging: boolean}>(({isDragging}) 
 }))
 
 interface Props {
-  agendaItems: any
+  agendaItems: AgendaList_agendaItems
   dashSearch?: string
   gotoStageId: ReturnType<typeof useGotoStageId> | undefined
-  meeting?: AgendaList_meeting
+  meeting: AgendaList_meeting | null
 }
 
 const AgendaList = (props: Props) => {
@@ -130,6 +131,14 @@ export default createFragmentContainer(AgendaList, {
     fragment AgendaList_meeting on ActionMeeting {
       id
       ...AgendaItem_meeting
+    }
+  `,
+  agendaItems: graphql`
+    fragment AgendaList_agendaItems on AgendaItem @relay(plural: true) {
+      id
+      content
+      sortOrder
+      ...AgendaItem_agendaItem
     }
   `
 })
