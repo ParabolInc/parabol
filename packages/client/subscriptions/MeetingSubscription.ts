@@ -1,7 +1,11 @@
 import graphql from 'babel-plugin-relay/macro'
-import Atmosphere from '../Atmosphere'
-import {requestSubscription, Variables} from 'relay-runtime'
 import {RouterProps} from 'react-router'
+import {requestSubscription, Variables} from 'relay-runtime'
+import {addCommentMeetingUpdater} from '~/mutations/AddCommentMutation'
+import {deleteCommentMeetingUpdater} from '~/mutations/DeleteCommentMutation'
+import {editCommentingMeetingUpdater} from '~/mutations/EditCommentingMutation'
+import {MeetingSubscriptionResponse} from '~/__generated__/MeetingSubscription.graphql'
+import Atmosphere from '../Atmosphere'
 import {createReflectionMeetingUpdater} from '../mutations/CreateReflectionMutation'
 import {dragDiscussionTopicMeetingUpdater} from '../mutations/DragDiscussionTopicMutation'
 import {editReflectionMeetingUpdater} from '../mutations/EditReflectionMutation'
@@ -13,10 +17,6 @@ import {promoteNewMeetingFacilitatorMeetingOnNext} from '../mutations/PromoteNew
 import {removeReflectionMeetingUpdater} from '../mutations/RemoveReflectionMutation'
 import {setStageTimerMeetingUpdater} from '../mutations/SetStageTimerMutation'
 import {startDraggingReflectionMeetingUpdater} from '../mutations/StartDraggingReflectionMutation'
-import {MeetingSubscriptionResponse} from '~/__generated__/MeetingSubscription.graphql'
-import {addCommentMeetingUpdater} from '~/mutations/AddCommentMutation'
-import {deleteCommentMeetingUpdater} from '~/mutations/DeleteCommentMutation'
-import {editCommentingMeetingUpdater} from '~/mutations/EditCommentingMutation'
 
 const subscription = graphql`
   subscription MeetingSubscription($meetingId: ID!) {
@@ -98,5 +98,5 @@ const MeetingSubscription = (
     }
   })
 }
-
+MeetingSubscription.key = 'meeting'
 export default MeetingSubscription

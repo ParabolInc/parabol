@@ -5,6 +5,39 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 5.15.1 2020-Aug-21
+
+### Fixed
+
+- Fix emoji pop up causing page lock up (#4096)
+
+## 5.15.0 2020-Aug-21
+
+### Added
+
+- backupOrganization private schema query (#4089)
+- logging for redis timeout errors (#4095)
+
+### Fixed
+
+- More robust invoicing for multiple unpause on the same user (#4089)
+
+## 5.14.0 2020-Aug-14
+
+### Added
+
+- Shared Templates (#3942)
+- DB tables for TemplateDimension and TemplateScale (#4042)
+- Archived Items Checkbox on Task View (#4035)
+
+### Fixed
+
+- Refactor CustomPhaseItem to ReflectPrmpt (#4053)
+- Disabled editing and due date slection on archived cards (#4047)
+- Segment client initated events (#3942)
+- Summaries show groups even if meeting was ended early (#3956)
+- Menu navigation keyboard shortcuts wrap around (#4056)
+
 ## 5.13.1 2020-Aug-06
 
 ### Fixed

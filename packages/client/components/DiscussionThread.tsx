@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {useRef} from 'react'
+import React, {useRef, RefObject} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {useCoverable} from '~/hooks/useControlBarCovers'
 import {Breakpoint, DiscussionThreadEnum, MeetingControlBarEnum} from '~/types/constEnums'
@@ -27,11 +27,12 @@ const Wrapper = styled('div')<{isExpanded: boolean}>(({isExpanded}) => ({
 }))
 
 interface Props {
+  meetingContentRef: RefObject<HTMLDivElement>
   viewer: DiscussionThread_viewer
 }
 
 const DiscussionThread = (props: Props) => {
-  const {viewer} = props
+  const {meetingContentRef, viewer} = props
   const meeting = viewer.meeting!
   const {endedAt, replyingToCommentId, threadSource} = meeting
   const {commentors, thread} = threadSource!
@@ -45,7 +46,9 @@ const DiscussionThread = (props: Props) => {
   const listRef = useRef<HTMLDivElement>(null)
   const editorRef = useRef<HTMLTextAreaElement>(null)
   const ref = useRef<HTMLDivElement>(null)
-  const isExpanded = useCoverable('threads', ref, MeetingControlBarEnum.HEIGHT) || !!endedAt
+  const isExpanded =
+    useCoverable('threads', ref, MeetingControlBarEnum.HEIGHT, meetingContentRef) || !!endedAt
+
   return (
     <Wrapper isExpanded={isExpanded} ref={ref}>
       <DiscussionThreadList

@@ -10,7 +10,7 @@ import shortid from 'shortid'
 import getRethink from '../../database/rethinkDriver'
 import Reflection from '../../database/types/Reflection'
 import ReflectionGroup from '../../database/types/ReflectionGroup'
-import {getUserId, isTeamMember} from '../../utils/authorization'
+import {getUserId} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import segmentIo from '../../utils/segmentIo'
 import standardError from '../../utils/standardError'
@@ -40,20 +40,13 @@ export default {
     if (!reflectPrompt) {
       return standardError(new Error('Category not found'), {userId: viewerId})
     }
-    if (!reflectPrompt.isActive) {
-      return standardError(new Error('Category not active'), {userId: viewerId})
-    }
-    const {teamId} = reflectPrompt
-    if (!isTeamMember(authToken, teamId)) {
-      return standardError(new Error('Team not found'), {userId: viewerId, tags: {teamId}})
-    }
     const meeting = await r
       .table('NewMeeting')
       .get(meetingId)
       .default(null)
       .run()
     if (!meeting) return standardError(new Error('Meeting not found'), {userId: viewerId})
-    const {endedAt, phases} = meeting
+    const {endedAt, phases, teamId} = meeting
     if (endedAt) {
       return {error: {message: 'Meeting already ended'}}
     }

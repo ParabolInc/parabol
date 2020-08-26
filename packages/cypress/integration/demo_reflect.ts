@@ -1,5 +1,3 @@
-import click from '../support/commands'
-
 function addCard(column, text) {
   cy.wait(500)
   cy.get(`[data-cy=reflection-column-${column}]`)
@@ -53,7 +51,7 @@ describe('Test Reflect page Demo', () => {
 
     cy.get('[data-cy=help-menu-close]')
       .should('be.visible')
-      .pipe(click)
+      .pipe(($el) => $el.click())
       .should('not.exist')
   })
 

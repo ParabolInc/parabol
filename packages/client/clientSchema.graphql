@@ -55,10 +55,6 @@ extend type ReflectPrompt {
   editorIds: [ID!]
 }
 
-extend type RetrospectiveMeetingSettings {
-  activeTemplateId: String
-}
-
 extend interface NewMeetingStage {
   localScheduledEndTime: String
 }

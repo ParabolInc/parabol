@@ -51,10 +51,6 @@ const removeReflectTemplate = {
         .nth(0) as unknown) as IRetrospectiveMeetingSettings
     }).run()
 
-    if (templates.length <= 1) {
-      return standardError(new Error('No templates'), {userId: viewerId})
-    }
-
     // RESOLUTION
     const {id: settingsId} = settings
     await r({
@@ -76,15 +72,14 @@ const removeReflectTemplate = {
 
     if (settings.selectedTemplateId === templateId) {
       const nextTemplate = templates.find((template) => template.id !== templateId)
-      if (nextTemplate) {
-        await r
-          .table('MeetingSettings')
-          .get(settingsId)
-          .update({
-            selectedTemplateId: nextTemplate.id
-          })
-          .run()
-      }
+      const nextTemplateId = nextTemplate?.id ?? 'workingStuckTemplate'
+      await r
+        .table('MeetingSettings')
+        .get(settingsId)
+        .update({
+          selectedTemplateId: nextTemplateId
+        })
+        .run()
     }
 
     const data = {templateId, settingsId}

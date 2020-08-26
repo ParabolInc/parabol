@@ -15,7 +15,7 @@ const selectRetroTemplate = {
       type: new GraphQLNonNull(GraphQLID)
     },
     teamId: {
-      type: new GraphQLNonNull(GraphQLID)
+      type: GraphQLNonNull(GraphQLID)
     }
   },
   async resolve(
@@ -29,17 +29,24 @@ const selectRetroTemplate = {
     const viewerId = getUserId(authToken)
 
     // AUTH
-    if (!isTeamMember(authToken, teamId)) {
-      return standardError(new Error('Team not found'), {userId: viewerId})
+    const template = await dataLoader.get('reflectTemplates').load(selectedTemplateId)
+
+    if (!template || !template.isActive) {
+      console.log('no template', selectedTemplateId, template)
+      return standardError(new Error('Template not found'), {userId: viewerId})
     }
 
-    // VALIDATION
-    const template = await r
-      .table('ReflectTemplate')
-      .get(selectedTemplateId)
-      .run()
-    if (!template || template.teamId !== teamId || !template.isActive) {
-      return standardError(new Error('Template not found'), {userId: viewerId})
+    const {scope} = template
+    if (scope === 'TEAM') {
+      if (!isTeamMember(authToken, template.teamId))
+        return standardError(new Error('Template is scoped to team'), {userId: viewerId})
+    } else if (scope === 'ORGANIZATION') {
+      const [viewerTeam, templateTeam] = await dataLoader
+        .get('teams')
+        .loadMany([teamId, template.teamId])
+      if (viewerTeam.orgId !== templateTeam.orgId) {
+        return standardError(new Error('Template is scoped to organization'), {userId: viewerId})
+      }
     }
 
     // RESOLUTION
@@ -54,12 +61,12 @@ const selectRetroTemplate = {
           selectedTemplateId
         },
         {returnChanges: true}
-      )('changes')(0)('new_val')('id')
+      )('changes')(0)('old_val')('id')
       .default(null)
       .run()
 
     if (!meetingSettingsId) {
-      return standardError(new Error('Template not found'), {userId: viewerId})
+      return standardError(new Error('Template already updated'), {userId: viewerId})
     }
 
     const data = {meetingSettingsId}

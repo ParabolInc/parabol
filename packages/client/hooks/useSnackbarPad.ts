@@ -8,7 +8,8 @@ const useSnackbarPad = (ref: RefObject<HTMLElement>) => {
   const el = ref.current
   useEffect(() => {
     const bbox = getBBox(el)
-    const snackbarOffset = bbox ? window.innerHeight - bbox.top : 48
+    const snackbarOffset = bbox ? Math.max(window.innerHeight - bbox.top, 96) : 48
+
     commitLocalUpdate(atmosphere, (store) => {
       const viewer = store.getRoot().getLinkedRecord('viewer')!
       viewer.setValue(snackbarOffset, 'snackbarOffset')

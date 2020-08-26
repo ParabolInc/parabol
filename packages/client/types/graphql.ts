@@ -1292,7 +1292,7 @@ export interface ITeam {
   /**
    * The outstanding invitations to join the team
    */
-  teamInvitations: Array<ITeamInvitation> | null;
+  teamInvitations: Array<ITeamInvitation>;
 
   /**
    * true if the viewer is the team lead, else false
@@ -1489,10 +1489,34 @@ export interface IReflectTemplate {
   prompts: Array<IReflectPrompt>;
 
   /**
+   * *Foreign key. The organization that owns the team that created the template
+   */
+  orgId: string;
+
+  /**
+   * Who can see this template
+   */
+  scope: SharingScopeEnum;
+
+  /**
    * *Foreign key. The team this template belongs to
    */
   teamId: string;
+
+  /**
+   * The team this template belongs to
+   */
+  team: ITeam;
   updatedAt: any;
+}
+
+/**
+ * The scope of a shareable item
+ */
+export const enum SharingScopeEnum {
+  TEAM = 'TEAM',
+  ORGANIZATION = 'ORGANIZATION',
+  PUBLIC = 'PUBLIC'
 }
 
 /**
@@ -1589,7 +1613,7 @@ export interface ITeamMeetingSettings {
   /**
    * The team these settings belong to
    */
-  team: ITeam | null;
+  team: ITeam;
 }
 
 /**
@@ -3509,6 +3533,11 @@ export interface IMutation {
    */
   updateTaskDueDate: IUpdateTaskDueDatePayload | null;
   updateTeamName: IUpdateTeamNamePayload | null;
+
+  /**
+   * Change the scope of a template
+   */
+  updateTemplateScope: UpdateTemplateScopePayload;
   updateUserProfile: IUpdateUserProfilePayload | null;
 
   /**
@@ -3598,6 +3627,7 @@ export interface IAddReactjiToReactableOnMutationArguments {
 }
 
 export interface IAddReflectTemplateOnMutationArguments {
+  parentTemplateId?: string | null;
   teamId: string;
 }
 
@@ -4382,6 +4412,18 @@ export interface IUpdateTeamNameOnMutationArguments {
   updatedTeam: IUpdatedTeamInput;
 }
 
+export interface IUpdateTemplateScopeOnMutationArguments {
+  /**
+   * The id of the template
+   */
+  templateId: string;
+
+  /**
+   * the new scope
+   */
+  scope: SharingScopeEnum;
+}
+
 export interface IUpdateUserProfileOnMutationArguments {
   /**
    * The input object containing the user profile fields that can be changed
@@ -4929,10 +4971,6 @@ export interface IRetrospectiveMeeting {
    * The time the meeting summary was emailed to the team
    */
   summarySentAt: any | null;
-
-  /**
-   * foreign key for team
-   */
   teamId: string;
 
   /**
@@ -5215,7 +5253,7 @@ export interface IRetrospectiveMeetingSettings {
   /**
    * The team these settings belong to
    */
-  team: ITeam | null;
+  team: ITeam;
 
   /**
    * The total number of votes each team member receives for the voting phase
@@ -5233,9 +5271,81 @@ export interface IRetrospectiveMeetingSettings {
   selectedTemplateId: string;
 
   /**
+   * The template that will be used to start the retrospective
+   */
+  selectedTemplate: IReflectTemplate;
+
+  /**
    * The list of templates used to start a retrospective
    */
   reflectTemplates: Array<IReflectTemplate>;
+
+  /**
+   * The list of templates used to start a retrospective
+   */
+  teamTemplates: Array<IReflectTemplate>;
+
+  /**
+   * The list of templates shared across the organization to start a retrospective
+   */
+  organizationTemplates: IReflectTemplateConnection;
+
+  /**
+   * The list of templates shared across the organization to start a retrospective
+   */
+  publicTemplates: IReflectTemplateConnection;
+}
+
+export interface IOrganizationTemplatesOnRetrospectiveMeetingSettingsArguments {
+  first: number;
+
+  /**
+   * The cursor, which is the templateId
+   */
+  after?: string | null;
+}
+
+export interface IPublicTemplatesOnRetrospectiveMeetingSettingsArguments {
+  first: number;
+
+  /**
+   * The cursor, which is the templateId
+   */
+  after?: string | null;
+}
+
+/**
+ * A connection to a list of items.
+ */
+export interface IReflectTemplateConnection {
+  __typename: 'ReflectTemplateConnection';
+
+  /**
+   * Information to aid in pagination.
+   */
+  pageInfo: IPageInfo;
+
+  /**
+   * A list of edges.
+   */
+  edges: Array<IReflectTemplateEdge>;
+}
+
+/**
+ * An edge in a connection.
+ */
+export interface IReflectTemplateEdge {
+  __typename: 'ReflectTemplateEdge';
+
+  /**
+   * The item at the end of the edge
+   */
+  node: IReflectTemplate;
+
+  /**
+   * A cursor for use in pagination
+   */
+  cursor: string;
 }
 
 /**
@@ -7062,6 +7172,32 @@ export interface IUpdateTeamNamePayload {
   team: ITeam | null;
 }
 
+/**
+ * Return object for UpdateTemplateScopePayload
+ */
+export type UpdateTemplateScopePayload =
+  | IErrorPayload
+  | IUpdateTemplateScopeSuccess;
+
+export interface IUpdateTemplateScopeSuccess {
+  __typename: 'UpdateTemplateScopeSuccess';
+
+  /**
+   * the template that was just updated, if downscoped, does not provide whole story
+   */
+  template: IReflectTemplate;
+
+  /**
+   * if downscoping a previously used template, this will be the replacement
+   */
+  clonedTemplate: IReflectTemplate | null;
+
+  /**
+   * The settings that contain the teamTemplates array that was modified
+   */
+  settings: IRetrospectiveMeetingSettings;
+}
+
 export interface IUpdateUserProfileInput {
   /**
    * A link to the user’s profile image.
@@ -7332,7 +7468,8 @@ export type OrganizationSubscriptionPayload =
   | ISetOrgUserRoleRemovedPayload
   | IUpdateCreditCardPayload
   | IUpdateOrgPayload
-  | IUpgradeToProPayload;
+  | IUpgradeToProPayload
+  | IUpdateTemplateScopeSuccess;
 
 export interface ISetOrgUserRoleAddedPayload {
   __typename: 'SetOrgUserRoleAddedPayload';
@@ -7595,7 +7732,7 @@ export interface IActionMeetingSettings {
   /**
    * The team these settings belong to
    */
-  team: ITeam | null;
+  team: ITeam;
 }
 
 /**

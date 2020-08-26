@@ -5,9 +5,10 @@ import {createFragmentContainer} from 'react-relay'
 import {Threshold} from '~/types/constEnums'
 import Icon from '../../../components/Icon'
 import LinkButton from '../../../components/LinkButton'
-import withAtmosphere, {WithAtmosphereProps} from '../../../decorators/withAtmosphere/withAtmosphere'
+import withAtmosphere, {
+  WithAtmosphereProps
+} from '../../../decorators/withAtmosphere/withAtmosphere'
 import AddReflectTemplatePromptMutation from '../../../mutations/AddReflectTemplatePromptMutation'
-import {ICON_SIZE} from '../../../styles/typographyV2'
 import dndNoise from '../../../utils/dndNoise'
 import withMutationProps, {WithMutationProps} from '../../../utils/relay/withMutationProps'
 import {AddTemplatePrompt_prompts} from '../../../__generated__/AddTemplatePrompt_prompts.graphql'
@@ -15,19 +16,19 @@ import {AddTemplatePrompt_prompts} from '../../../__generated__/AddTemplatePromp
 const AddPromptLink = styled(LinkButton)({
   alignItems: 'center',
   display: 'flex',
-  fontSize: 18,
+  justifyContent: 'flex-start',
+  fontSize: 16,
+  // fontWeight: 600,
+  lineHeight: '24px',
   margin: 0,
   marginBottom: 16,
   outline: 'none',
-  paddingLeft: 32
+  padding: '4px 0'
 })
 
 const AddPromptLinkPlus = styled(Icon)({
   display: 'block',
-  fontSize: ICON_SIZE.MD18,
-  lineHeight: ICON_SIZE.MD18,
-  margin: '0 24px 0 16px',
-  width: ICON_SIZE.MD18
+  margin: '0 16px 0 16px'
 })
 
 interface Props extends WithAtmosphereProps, WithMutationProps {

@@ -35,7 +35,7 @@ distributed organization. We publish our company's [history and business metrics
 - Node
 - Redis
 - RethinkDB
-- Watchman (for Relay)
+- [Watchman](https://github.com/facebook/watchman) (for Relay)
 - Yarn
 
 ### Installation

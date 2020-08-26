@@ -83,6 +83,7 @@ const createNewMeetingPhases = async (
           const teamMembers1 = await dataLoader.get('teamMembersByTeamId').load(teamId)
           return new CheckInPhase(teamId, meetingCount, teamMembers1)
         case REFLECT:
+          // TODO REMOVE ME AFTER v5.13.0
           await r
             .table('ReflectTemplate')
             .get(selectedTemplateId)

@@ -1,5 +1,3 @@
-import click from '../support/commands'
-
 function addReflection(column, text) {
   cy.get(`[data-cy=add-reflection-${column}]`).click()
 
@@ -115,7 +113,7 @@ describe('Test Group page Demo', () => {
 
     cy.get('[data-cy=help-menu-close]')
       .should('be.visible')
-      .pipe(click)
+      .pipe(($el) => $el.click())
       .should('not.exist')
 
     cy.screenshot('parabol-retrospective-visit-group-open-sidebar')

@@ -58,7 +58,7 @@ exports.down = async (r: R) => {
   }
   try {
     await r
-      .table('ReflectPrompt')
+      .table('CustomPhaseItem')
       .indexDrop('templateId')
       .run()
   } catch (e) {

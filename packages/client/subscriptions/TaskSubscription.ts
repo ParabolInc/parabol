@@ -87,5 +87,5 @@ const TaskSubscription = (
     }
   })
 }
-
+TaskSubscription.key = 'task'
 export default TaskSubscription

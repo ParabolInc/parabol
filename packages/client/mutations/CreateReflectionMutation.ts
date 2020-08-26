@@ -98,9 +98,9 @@ const CreateReflectionMutation: StandardMutation<TCreateReflectionMutation> = (
       }
       const meeting = store.get(meetingId)!
       const reflectionNode = createProxyRecord(store, 'RetroReflection', optimisticReflection)
-      const phaseItem = store.get(input.promptId!)!
+      const prompt = store.get(input.promptId!)!
       reflectionNode.setLinkedRecord(meeting, 'meeting')
-      reflectionNode.setLinkedRecord(phaseItem, 'phaseItem')
+      reflectionNode.setLinkedRecord(prompt, 'prompt')
       const reflectionGroupNode = createProxyRecord(store, 'RetroReflectionGroup', optimisticGroup)
       reflectionGroupNode.setLinkedRecords([reflectionNode], 'reflections')
       reflectionGroupNode.setLinkedRecord(meeting, 'meeting')

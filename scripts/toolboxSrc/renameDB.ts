@@ -1,28 +1,32 @@
-import getRethink from './rethinkDriver'
+import getRethink from '../../packages/server/database/rethinkDriver'
 
-export default async function cloneProdToDev() {
+async function renameDB() {
+  const FROM = process.argv[2] || 'orgBackup'
+  const TO = process.argv[3] || 'actionDevelopment'
   const r = await getRethink()
   try {
-    await r.dbDrop('actionDevelopment').run()
+    await r.dbDrop(TO).run()
   } catch (e) {
     // empty
   }
-  await r.dbCreate('actionDevelopment').run()
+  await r.dbCreate(TO).run()
   const list = await r
-    .db('actionProduction')
+    .db(FROM)
     .tableList()
     .run()
   const promises = list.map((table) =>
     r
-      .db('actionProduction')
+      .db(FROM)
       .table(table)
       .config()
       .update({
-        db: 'actionDevelopment'
-      })
+        db: TO
+      } as any)
       .run()
   )
   await Promise.all(promises)
   console.log('Move to actionDevelopment complete!')
   r.getPoolMaster().drain()
 }
+
+renameDB()
