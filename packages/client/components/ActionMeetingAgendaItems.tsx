@@ -1,23 +1,27 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
-import {ActionMeetingAgendaItems_meeting} from '~/__generated__/ActionMeetingAgendaItems_meeting.graphql'
+import { createFragmentContainer } from 'react-relay'
+import {
+    ActionMeetingAgendaItems_meeting
+} from '~/__generated__/ActionMeetingAgendaItems_meeting.graphql'
+import useBreakpoint from '~/hooks/useBreakpoint'
+
+import styled from '@emotion/styled'
+
 import EditorHelpModalContainer from '../containers/EditorHelpModalContainer/EditorHelpModalContainer'
 import MeetingCopy from '../modules/meeting/components/MeetingCopy/MeetingCopy'
 import MeetingPhaseHeading from '../modules/meeting/components/MeetingPhaseHeading/MeetingPhaseHeading'
-import {NewMeetingPhaseTypeEnum} from '../types/graphql'
-import {phaseLabelLookup} from '../utils/meetings/lookups'
-import {ActionMeetingPhaseProps} from './ActionMeeting'
+import { Breakpoint } from '../types/constEnums'
+import { NewMeetingPhaseTypeEnum } from '../types/graphql'
+import { phaseLabelLookup } from '../utils/meetings/lookups'
+import { ActionMeetingPhaseProps } from './ActionMeeting'
 import Avatar from './Avatar/Avatar'
+import DiscussionThreadRoot from './DiscussionThreadRoot'
 import MeetingContent from './MeetingContent'
 import MeetingHeaderAndPhase from './MeetingHeaderAndPhase'
 import MeetingTopBar from './MeetingTopBar'
 import PhaseHeaderTitle from './PhaseHeaderTitle'
 import PhaseWrapper from './PhaseWrapper'
-import useBreakpoint from '~/hooks/useBreakpoint'
-import {Breakpoint} from '../types/constEnums'
-import DiscussionThreadRoot from './DiscussionThreadRoot'
 
 interface Props extends ActionMeetingPhaseProps {
   meeting: ActionMeetingAgendaItems_meeting
@@ -92,7 +96,6 @@ graphql`
   fragment ActionMeetingAgendaItemsStage on AgendaItemsStage {
     agendaItemId
     agendaItem {
-      id
       content
       teamMember {
         picture

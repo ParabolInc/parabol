@@ -42,7 +42,6 @@ const ActionSidebarAgendaItemsSection = (props: Props) => {
       <AgendaListAndInput
         agendaItems={agendaItems}
         meeting={meeting}
-        // meetingId={meetingId}
         gotoStageId={handleClick}
         isDisabled={!isUpdatesNavigable}
         team={team!}
@@ -57,17 +56,12 @@ graphql`
     phaseType
     ... on UpdatesPhase {
       stages {
-        # id
-        # isComplete
         isNavigable
       }
     }
     ... on AgendaItemsPhase {
       stages {
-        # id
-        # isComplete
         isNavigable
-        # isNavigableByFacilitator
         agendaItem {
           id
           content

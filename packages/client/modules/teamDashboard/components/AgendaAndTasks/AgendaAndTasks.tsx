@@ -1,14 +1,16 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
+import { createFragmentContainer } from 'react-relay'
+import { AgendaAndTasks_viewer } from '~/__generated__/AgendaAndTasks_viewer.graphql'
 import LabelHeading from '~/components/LabelHeading/LabelHeading'
 import useStoreQueryRetry from '~/hooks/useStoreQueryRetry'
 import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
-import {AgendaAndTasks_viewer} from '~/__generated__/AgendaAndTasks_viewer.graphql'
+
+import styled from '@emotion/styled'
+
 import useDocumentTitle from '../../../../hooks/useDocumentTitle'
-import {desktopSidebarShadow, navDrawerShadow} from '../../../../styles/elevation'
-import {AppBar, Breakpoint, NavSidebar, RightSidebar, ZIndex} from '../../../../types/constEnums'
+import { desktopSidebarShadow, navDrawerShadow } from '../../../../styles/elevation'
+import { AppBar, Breakpoint, NavSidebar, RightSidebar, ZIndex } from '../../../../types/constEnums'
 import TeamColumnsContainer from '../../containers/TeamColumns/TeamColumnsContainer'
 import TeamTasksHeaderContainer from '../../containers/TeamTasksHeader/TeamTasksHeaderContainer'
 import AgendaListAndInput from '../AgendaListAndInput/AgendaListAndInput'
@@ -104,7 +106,6 @@ interface Props {
 
 const AgendaAndTasks = (props: Props) => {
   const {viewer, retry} = props
-  console.log('AgendaAndTasks -> props', props)
   const {dashSearch} = viewer
   const team = viewer.team!
   const teamMember = viewer.teamMember!

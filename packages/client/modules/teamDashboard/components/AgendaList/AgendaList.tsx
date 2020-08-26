@@ -38,12 +38,10 @@ interface Props {
   dashSearch?: string
   gotoStageId: ReturnType<typeof useGotoStageId> | undefined
   meeting?: AgendaList_meeting
-  // meetingId?: string | null
 }
 
 const AgendaList = (props: Props) => {
   const atmosphere = useAtmosphere()
-  // const {agendaItems, meeting, dashSearch, gotoStageId, meetingId} = props
   const {agendaItems, meeting, dashSearch, gotoStageId} = props
   const meetingId = meeting?.id
   const filteredAgendaItems = useMemo(() => {
@@ -111,7 +109,6 @@ const AgendaList = (props: Props) => {
                             gotoStageId={gotoStageId}
                             isDragging={dragSnapshot.isDragging}
                             meeting={meeting}
-                            // meetingId={meetingId}
                           />
                         </DraggableAgendaItem>
                       )

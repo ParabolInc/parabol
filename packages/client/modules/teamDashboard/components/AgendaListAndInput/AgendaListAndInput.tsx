@@ -35,14 +35,12 @@ interface Props {
   dashSearch?: string
   gotoStageId?: ReturnType<typeof useGotoStageId>
   isDisabled?: boolean
-  team: AgendaListAndInput_team
   meeting?: AgendaListAndInput_meeting
-  // meetingId?: string
+  team: AgendaListAndInput_team
 }
 
 const AgendaListAndInput = (props: Props) => {
   const {agendaItems, dashSearch, gotoStageId, isDisabled, team, meeting} = props
-  console.log('AgendaListAndInput -> props', props)
   const endedAt = meeting?.endedAt
 
   return (
@@ -52,7 +50,6 @@ const AgendaListAndInput = (props: Props) => {
         dashSearch={dashSearch}
         gotoStageId={gotoStageId}
         meeting={meeting}
-        // meetingId={meetingId}
       />
       <StyledAgendaInput disabled={!!isDisabled || !!endedAt} isMeeting={!!meeting} team={team} />
     </RootStyles>
@@ -75,25 +72,4 @@ export default createFragmentContainer(AgendaListAndInput, {
       endedAt
     }
   `
-  // agendaItems: graphql`
-  //   fragment AgendaListAndInput_agendaItems on AgendaItem @relay(plural: true) {
-  //     content
-  //     # ...AgendaList_meeting
-  //     # endedAt
-  //   }
-  // `
-  // agendaItemsPhase: graphql`
-  //   fragment AgendaListAndInput_agendaItemsPhase on AgendaItemsPhase {
-  //     stages {
-  //       isNavigable
-  //       agendaItem {
-  //         id
-  //         content
-  //         # need this for the DnD
-  //         sortOrder
-  //         ...AgendaItem_agendaItem
-  //       }
-  //     }
-  //   }
-  // `
 })

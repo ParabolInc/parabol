@@ -84,10 +84,12 @@ const getItemProps = (
   const isFacilitatorStage = facilitatorStageId === stageId
   const isUnsyncedFacilitatorStage = isFacilitatorStage !== isLocalStage && !isLocalStage
   const isViewerFacilitator = viewerId === facilitatorUserId
-  let isDisabled
-  if (endedAt) isDisabled = false
-  else if (isViewerFacilitator) isDisabled = !isNavigableByFacilitator
-  else isDisabled = !isNavigable
+  const checkIfDisabled = () => {
+    if (endedAt) return false
+    else if (isViewerFacilitator) return !isNavigableByFacilitator
+    else return !isNavigable
+  }
+  const isDisabled = checkIfDisabled()
   const onClick = () => {
     gotoStageId!(stageId)
   }
@@ -107,11 +109,9 @@ interface Props {
   gotoStageId: ReturnType<typeof useGotoStageId> | undefined
   isDragging: boolean
   meeting?: AgendaItem_meeting
-  // meetingId?: string | null
 }
 
 const AgendaItem = (props: Props) => {
-  // const {agendaItem, gotoStageId, isDragging, meeting, meetingId} = props
   const {agendaItem, gotoStageId, isDragging, meeting} = props
   const {id: agendaItemId, content, pinned, teamMember} = agendaItem
   const meetingId = meeting?.id
@@ -196,41 +196,24 @@ const AgendaItem = (props: Props) => {
 }
 
 graphql`
-  fragment AgendaItemPhase on NewMeetingPhase {
-    id
-    # phaseType
-    ... on UpdatesPhase {
-      stages {
+  fragment AgendaItemPhase on AgendaItemsPhase {
+    stages {
+      id
+      isComplete
+      isNavigable
+      isNavigableByFacilitator
+      agendaItem {
         id
-        isComplete
-        isNavigable
-      }
-    }
-    ... on AgendaItemsPhase {
-      stages {
-        id
-        isComplete
-        isNavigable
-        isNavigableByFacilitator
-        agendaItem {
-          id
-          content
-          # need this for the DnD
-          sortOrder
-          # ...AgendaItem_agendaItem
-        }
       }
     }
   }
 `
-
 export default createFragmentContainer(AgendaItem, {
   agendaItem: graphql`
     fragment AgendaItem_agendaItem on AgendaItem {
       id
       content
       pinned
-      sortOrder
       teamMember {
         picture
       }
@@ -238,7 +221,6 @@ export default createFragmentContainer(AgendaItem, {
   `,
   meeting: graphql`
     fragment AgendaItem_meeting on ActionMeeting {
-      # ...AgendaListAndInput_meeting
       id
       endedAt
       localStage {
@@ -246,10 +228,6 @@ export default createFragmentContainer(AgendaItem, {
       }
       facilitatorStageId
       facilitatorUserId
-      # load up the localPhase
-      phases {
-        ...AgendaItemPhase @relay(mask: false)
-      }
       localPhase {
         ...AgendaItemPhase @relay(mask: false)
       }

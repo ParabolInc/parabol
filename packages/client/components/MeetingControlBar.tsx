@@ -1,23 +1,25 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {useRef} from 'react'
-import {createFragmentContainer} from 'react-relay'
+import React, { useRef } from 'react'
+import { createFragmentContainer } from 'react-relay'
+import { MeetingControlBar_meeting } from '~/__generated__/MeetingControlBar_meeting.graphql'
 import useAtmosphere from '~/hooks/useAtmosphere'
-import {useCovering} from '~/hooks/useControlBarCovers'
+import { useCovering } from '~/hooks/useControlBarCovers'
 import useDraggableFixture from '~/hooks/useDraggableFixture'
 import useGotoNext from '~/hooks/useGotoNext'
 import useGotoStageId from '~/hooks/useGotoStageId'
 import useInitialRender from '~/hooks/useInitialRender'
-import useTransition, {TransitionStatus} from '~/hooks/useTransition'
-import {PALETTE} from '~/styles/paletteV2'
-import {Breakpoint, ZIndex} from '~/types/constEnums'
-import {MeetingTypeEnum, NewMeetingPhaseTypeEnum} from '~/types/graphql'
+import useTransition, { TransitionStatus } from '~/hooks/useTransition'
+import { PALETTE } from '~/styles/paletteV2'
+import { Breakpoint, ZIndex } from '~/types/constEnums'
+import { MeetingTypeEnum, NewMeetingPhaseTypeEnum } from '~/types/graphql'
 import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
 import findStageAfterId from '~/utils/meetings/findStageAfterId'
-import {MeetingControlBar_meeting} from '~/__generated__/MeetingControlBar_meeting.graphql'
+
+import styled from '@emotion/styled'
+
 import useClickConfirmation from '../hooks/useClickConfirmation'
 import useSnackbarPad from '../hooks/useSnackbarPad'
-import {bottomBarShadow, desktopBarShadow} from '../styles/elevation'
+import { bottomBarShadow, desktopBarShadow } from '../styles/elevation'
 import BottomControlBarReady from './BottomControlBarReady'
 import BottomControlBarRejoin from './BottomControlBarRejoin'
 import BottomControlBarTips from './BottomControlBarTips'
@@ -87,7 +89,7 @@ const MeetingControlBar = (props: Props) => {
   const getPossibleButtons = () => {
     const buttons = ['tips']
     if (!isFacilitating && !isCheckIn && !isComplete) buttons.push('ready')
-    if (!isFacilitating && localStageId !== facilitatorStageId && !endedAt) buttons.push('rejoin')
+    if (!isFacilitating && localStageId !== facilitatorStageId) buttons.push('rejoin')
     if (isFacilitating && isRetro && !isCheckIn && !isComplete) buttons.push('timer')
     if (isFacilitating && findStageAfterId(phases, localStageId)) buttons.push('next')
     if (isFacilitating) buttons.push('end')
