@@ -1,6 +1,8 @@
 import React from 'react'
+
 import styled from '@emotion/styled'
-import {PALETTE} from '../styles/paletteV2'
+
+import { PALETTE } from '../styles/paletteV2'
 import Ellipsis from './Ellipsis/Ellipsis'
 
 const CommentingStatus = styled('div')({
@@ -10,8 +12,8 @@ const CommentingStatus = styled('div')({
   fontSize: 12,
   height: 36,
   lineHeight: '20px',
-  marginLeft: 48,
-  padding: '8px 0',
+  paddingLeft: 48,
+  paddingTop: '8px',
   width: '100%'
 })
 

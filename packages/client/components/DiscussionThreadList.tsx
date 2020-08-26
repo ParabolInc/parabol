@@ -1,17 +1,19 @@
 import graphql from 'babel-plugin-relay/macro'
-import React, {forwardRef, RefObject} from 'react'
-import {createFragmentContainer} from 'react-relay'
-import {DiscussionThreadList_meeting} from '~/__generated__/DiscussionThreadList_meeting.graphql'
-import {DiscussionThreadList_threadables} from '~/__generated__/DiscussionThreadList_threadables.graphql'
+import React, { forwardRef, RefObject } from 'react'
+import { createFragmentContainer } from 'react-relay'
+import { DiscussionThreadList_meeting } from '~/__generated__/DiscussionThreadList_meeting.graphql'
+import {
+    DiscussionThreadList_threadables
+} from '~/__generated__/DiscussionThreadList_threadables.graphql'
 import useScrollThreadList from '~/hooks/useScrollThreadList'
 
 import styled from '@emotion/styled'
 
-import {PALETTE} from '../styles/paletteV2'
+import { PALETTE } from '../styles/paletteV2'
+import CommentingStatusText from './CommentingStatusText'
 import DiscussionThreadListEmptyState from './DiscussionThreadListEmptyState'
 import LabelHeading from './LabelHeading/LabelHeading'
 import ThreadedItem from './ThreadedItem'
-import CommentingStatusText from './CommentingStatusText'
 
 const EmptyWrapper = styled('div')({
   alignItems: 'center',
@@ -27,7 +29,7 @@ const Wrapper = styled('div')({
   display: 'flex',
   flexDirection: 'column',
   overflow: 'auto',
-  paddingTop: '8px'
+  padding: '8px 0'
 })
 
 // https://stackoverflow.com/questions/36130760/use-justify-content-flex-end-and-to-have-vertical-scrollbar
