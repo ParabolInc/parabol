@@ -1,5 +1,4 @@
 import shortid from 'shortid'
-import {CustomPhaseItemTypeEnum} from 'parabol-client/types/graphql'
 
 interface Input {
   teamId: string
@@ -9,6 +8,7 @@ interface Input {
   description: string
   groupColor: string
   title?: string
+  parentPromptId?: string
 }
 
 export default class RetrospectivePrompt {
@@ -17,18 +17,26 @@ export default class RetrospectivePrompt {
   description: string
   groupColor: string
   isActive = true
-  phaseItemType: CustomPhaseItemTypeEnum
   sortOrder: number
   teamId: string
   templateId: string
   question: string
   title: string
   updatedAt = new Date()
+  parentPromptId?: string
 
   constructor(input: Input) {
-    const {teamId, templateId, sortOrder, question, description, groupColor, title} = input
+    const {
+      teamId,
+      templateId,
+      sortOrder,
+      question,
+      description,
+      groupColor,
+      title,
+      parentPromptId
+    } = input
     this.id = shortid.generate()
-    this.phaseItemType = CustomPhaseItemTypeEnum.retroPhaseItem
     this.sortOrder = sortOrder
     this.teamId = teamId
     this.templateId = templateId
@@ -36,5 +44,6 @@ export default class RetrospectivePrompt {
     this.description = description || ''
     this.groupColor = groupColor
     this.title = title || question
+    this.parentPromptId = parentPromptId
   }
 }

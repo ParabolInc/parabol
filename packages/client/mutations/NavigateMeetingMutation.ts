@@ -138,8 +138,8 @@ export const navigateMeetingTeamUpdater: SharedUpdater<NavigateMeetingMutation_t
     if (!reflectPhase) return
     const prompts = reflectPhase.getLinkedRecords('reflectPrompts')
     if (!prompts) return
-    prompts.forEach((phaseItem) => {
-      phaseItem?.setValue([], 'editorIds')
+    prompts.forEach((reflectPrompt) => {
+      reflectPrompt?.setValue([], 'editorIds')
     })
   }
 }

@@ -10,6 +10,7 @@ import {
 import {NewMeetingPhaseTypeEnum} from 'parabol-client/types/graphql'
 import {RETROSPECTIVE} from 'parabol-client/utils/constants'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
+import DiscussPhase from '../../database/types/DiscussPhase'
 import {getUserId} from '../../utils/authorization'
 import filterTasksByMeeting from '../../utils/filterTasksByMeeting'
 import {GQLContext} from '../graphql'
@@ -105,13 +106,19 @@ const RetrospectiveMeeting = new GraphQLObjectType<any, GQLContext>({
           const {phases} = meeting
           const discussPhase = phases.find(
             (phase) => phase.phaseType === NewMeetingPhaseTypeEnum.discuss
-          )
+          ) as DiscussPhase
           if (!discussPhase) return reflectionGroups
           const {stages} = discussPhase
-          // boolean filter in case the meeting was terminated & there are no groups made yet
-          return stages
-            .map((stage) => reflectionGroups.find((group) => group.id === stage.reflectionGroupId))
-            .filter(Boolean)
+          // for early terminations the stages may not exist
+          const sortLookup = {} as {[reflectionGroupId: string]: number}
+          reflectionGroups.forEach((group) => {
+            const idx = stages.findIndex((stage) => stage.reflectionGroupId === group.id)
+            sortLookup[group.id] = idx
+          })
+          reflectionGroups.sort((a, b) => {
+            sortLookup[a.id] < sortLookup[b.id] ? -1 : 1
+          })
+          return reflectionGroups
         }
         reflectionGroups.sort((a, b) => (a.sortOrder < b.sortOrder ? -1 : 1))
         return reflectionGroups
@@ -120,13 +127,8 @@ const RetrospectiveMeeting = new GraphQLObjectType<any, GQLContext>({
     settings: {
       type: new GraphQLNonNull(RetrospectiveMeetingSettings),
       description: 'The settings that govern the retrospective meeting',
-      resolve: async ({id: meetingId}, _args, {dataLoader}) => {
-        const meeting = await dataLoader.get('newMeetings').load(meetingId)
-        const {teamId} = meeting
-
-        return await dataLoader
-          .get('meetingSettingsByType')
-          .load({teamId, meetingType: RETROSPECTIVE})
+      resolve: async ({teamId}, _args, {dataLoader}) => {
+        return dataLoader.get('meetingSettingsByType').load({teamId, meetingType: RETROSPECTIVE})
       }
     },
     taskCount: {
@@ -144,6 +146,9 @@ const RetrospectiveMeeting = new GraphQLObjectType<any, GQLContext>({
         const teamTasks = await dataLoader.get('tasksByTeamId').load(teamId)
         return filterTasksByMeeting(teamTasks, meetingId, viewerId)
       }
+    },
+    teamId: {
+      type: GraphQLNonNull(GraphQLID)
     },
     topicCount: {
       type: GraphQLNonNull(GraphQLInt),

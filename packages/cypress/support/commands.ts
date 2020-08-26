@@ -58,6 +58,8 @@ declare global {
       login: () => Chainable
       visitReflect: () => Chainable
       visitPhase: (phase: string, idx?: string) => Chainable<ReturnType<typeof visitPhase>>
+      restoreLocalStorageCache: () => Chainable<Element>
+      saveLocalStorageCache: () => Chainable<Element>
     }
   }
 }
@@ -99,20 +101,22 @@ const visitPhase = (phase: string, idx = '') => {
   cy.url().should('be.eq', `http://localhost:3000/retrospective-demo/${phase}${idx}`)
 }
 
-// const click = ($el) => {
-//   return $el.click()
-// }
+const click = ($el) => {
+  return $el.click()
+}
 
-let LOCAL_STORAGE_MEMORY = {}
+export default click
 
-Cypress.Commands.add("saveLocalStorageCache", () => {
-  Object.keys(localStorage).forEach(key => {
+const LOCAL_STORAGE_MEMORY = {}
+
+Cypress.Commands.add('saveLocalStorageCache', () => {
+  Object.keys(localStorage).forEach((key) => {
     LOCAL_STORAGE_MEMORY[key] = localStorage[key]
   })
 })
 
-Cypress.Commands.add("restoreLocalStorageCache", () => {
-  Object.keys(LOCAL_STORAGE_MEMORY).forEach(key => {
+Cypress.Commands.add('restoreLocalStorageCache', () => {
+  Object.keys(LOCAL_STORAGE_MEMORY).forEach((key) => {
     localStorage.setItem(key, LOCAL_STORAGE_MEMORY[key])
   })
 })

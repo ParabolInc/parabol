@@ -23,7 +23,7 @@ const moveReflectTemplate = {
     const operationId = dataLoader.share()
     const subOptions = {operationId, mutatorId}
     const prompt = await r
-      .table('CustomPhaseItem')
+      .table('ReflectPrompt')
       .get(promptId)
       .run()
     const viewerId = getUserId(authToken)
@@ -35,7 +35,7 @@ const moveReflectTemplate = {
 
     // RESOLUTION
     await r
-      .table('CustomPhaseItem')
+      .table('ReflectPrompt')
       .get(promptId)
       .update({
         sortOrder,

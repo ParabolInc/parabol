@@ -64,12 +64,12 @@ const SummaryHeader = (props: Props) => {
         </tr>
         <tr>
           <td align='center' style={teamNameLabel}>
-            {teamName}
+            {meetingName}
           </td>
         </tr>
         <tr>
           <td align='center' style={dateLabel}>
-            {isDemo ? meetingDate : `${meetingName} • ${meetingDate}`}
+            {isDemo ? meetingDate : `${teamName} • ${meetingDate}`}
           </td>
         </tr>
       </tbody>

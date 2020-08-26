@@ -10,7 +10,7 @@ import shortid from 'shortid'
 import getRethink from '../../database/rethinkDriver'
 import Reflection from '../../database/types/Reflection'
 import ReflectionGroup from '../../database/types/ReflectionGroup'
-import {getUserId, isTeamMember} from '../../utils/authorization'
+import {getUserId} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import segmentIo from '../../utils/segmentIo'
 import standardError from '../../utils/standardError'
@@ -26,28 +26,19 @@ export default {
       type: new GraphQLNonNull(CreateReflectionInput)
     }
   },
-  async resolve(
-    _source,
-    {input: {content, retroPhaseItemId, sortOrder, meetingId}},
-    {authToken, dataLoader, socketId: mutatorId}
-  ) {
+  async resolve(_source, {input}, {authToken, dataLoader, socketId: mutatorId}) {
     const r = await getRethink()
     const operationId = dataLoader.share()
     const now = new Date()
     const subOptions = {operationId, mutatorId}
-
+    const {content, sortOrder, meetingId} = input
+    // can remove retroPhaseItemId after it's fully deprecated
+    const promptId = input.promptId || input.retroPhaseItemId
     // AUTH
     const viewerId = getUserId(authToken)
-    const phaseItem = await dataLoader.get('customPhaseItems').load(retroPhaseItemId)
-    if (!phaseItem) {
+    const reflectPrompt = await dataLoader.get('reflectPrompts').load(promptId)
+    if (!reflectPrompt) {
       return standardError(new Error('Category not found'), {userId: viewerId})
-    }
-    if (!phaseItem.isActive) {
-      return standardError(new Error('Category not active'), {userId: viewerId})
-    }
-    const {teamId} = phaseItem
-    if (!isTeamMember(authToken, teamId)) {
-      return standardError(new Error('Team not found'), {userId: viewerId, tags: {teamId}})
     }
     const meeting = await r
       .table('NewMeeting')
@@ -55,7 +46,7 @@ export default {
       .default(null)
       .run()
     if (!meeting) return standardError(new Error('Meeting not found'), {userId: viewerId})
-    const {endedAt, phases} = meeting
+    const {endedAt, phases, teamId} = meeting
     if (endedAt) {
       return {error: {message: 'Meeting already ended'}}
     }
@@ -77,7 +68,7 @@ export default {
       plaintextContent,
       entities,
       meetingId,
-      retroPhaseItemId,
+      promptId,
       reflectionGroupId,
       updatedAt: now
     })
@@ -88,7 +79,7 @@ export default {
       smartTitle,
       title: smartTitle,
       meetingId,
-      retroPhaseItemId,
+      promptId,
       sortOrder
     })
 

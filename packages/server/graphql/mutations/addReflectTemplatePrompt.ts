@@ -36,7 +36,7 @@ const addReflectTemplatePrompt = {
     // VALIDATION
     const {teamId} = template
     const activePrompts = await r
-      .table('CustomPhaseItem')
+      .table('ReflectPrompt')
       .getAll(teamId, {index: 'teamId'})
       .filter({
         templateId,
@@ -53,7 +53,7 @@ const addReflectTemplatePrompt = {
     const availableNewColor = palettePickerOptions.find(
       (color) => !pickedColors.includes(color.hex)
     )
-    const phaseItem = new RetrospectivePrompt({
+    const reflectPrompt = new RetrospectivePrompt({
       templateId: template.id,
       teamId: template.teamId,
       sortOrder,
@@ -63,11 +63,11 @@ const addReflectTemplatePrompt = {
     })
 
     await r
-      .table('CustomPhaseItem')
-      .insert(phaseItem)
+      .table('ReflectPrompt')
+      .insert(reflectPrompt)
       .run()
 
-    const promptId = phaseItem.id
+    const promptId = reflectPrompt.id
     const data = {promptId}
     publish(SubscriptionChannel.TEAM, teamId, 'AddReflectTemplatePromptPayload', data, subOptions)
     return data

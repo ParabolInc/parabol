@@ -1,5 +1,5 @@
-import React, {Component} from 'react'
 import styled from '@emotion/styled'
+import React, {Component} from 'react'
 import EditableText from '../../../components/EditableText'
 import withAtmosphere, {
   WithAtmosphereProps
@@ -9,15 +9,15 @@ import withMutationProps, {WithMutationProps} from '../../../utils/relay/withMut
 import Legitity from '../../../validation/Legitity'
 
 interface Props extends WithAtmosphereProps, WithMutationProps {
+  isOwner: boolean
   description: string
   promptId: string
   onEditingChange: (isEditing: boolean) => void
 }
 
 const EditableSubText = styled(EditableText)({
-  fontSize: 14,
-  lineHeight: 1,
-  marginBottom: 8
+  fontSize: 12,
+  lineHeight: '24px'
 })
 
 class EditableTemplateDescription extends Component<Props> {
@@ -64,9 +64,10 @@ class EditableTemplateDescription extends Component<Props> {
   }
 
   render() {
-    const {error, description} = this.props
+    const {isOwner, error, description} = this.props
     return (
       <EditableSubText
+        disabled={!isOwner}
         error={error as string}
         hideIcon
         handleSubmit={this.handleSubmit}

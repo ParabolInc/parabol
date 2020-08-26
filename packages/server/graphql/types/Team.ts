@@ -7,8 +7,8 @@ import {
   GraphQLObjectType,
   GraphQLString
 } from 'graphql'
-import isTaskPrivate from 'parabol-client/utils/isTaskPrivate'
 import {ITeam} from 'parabol-client/types/graphql'
+import isTaskPrivate from 'parabol-client/utils/isTaskPrivate'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import getRethink from '../../database/rethinkDriver'
 import MassInvitationDB from '../../database/types/MassInvitation'
@@ -16,14 +16,13 @@ import {getUserId, isTeamMember} from '../../utils/authorization'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import connectionFromTasks from '../queries/helpers/connectionFromTasks'
-import {resolveOrganization} from '../resolvers'
 import AgendaItem from './AgendaItem'
-import CustomPhaseItem from './CustomPhaseItem'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import MassInvitation from './MassInvitation'
 import MeetingTypeEnum from './MeetingTypeEnum'
 import NewMeeting from './NewMeeting'
 import Organization from './Organization'
+import ReflectPrompt from './ReflectPrompt'
 import {TaskConnection} from './Task'
 import TeamInvitation from './TeamInvitation'
 import TeamMeetingSettings from './TeamMeetingSettings'
@@ -116,16 +115,18 @@ const Team = new GraphQLObjectType<ITeam, GQLContext>({
       description: 'The datetime the team was last updated'
     },
     customPhaseItems: {
-      type: new GraphQLList(CustomPhaseItem),
-      resolve: ({id: teamId}, _args, {dataLoader}) => {
+      type: new GraphQLList(ReflectPrompt),
+      deprecationReason: 'Field no longer needs to exist for now',
+      resolve: () => {
         // not useful for retros since there is no templateId filter
-        return dataLoader.get('customPhaseItemsByTeamId').load(teamId)
+        return []
       }
     },
     teamInvitations: {
-      type: new GraphQLList(new GraphQLNonNull(TeamInvitation)),
+      type: GraphQLNonNull(new GraphQLList(new GraphQLNonNull(TeamInvitation))),
       description: 'The outstanding invitations to join the team',
-      resolve: async ({id: teamId}, _args, {dataLoader}) => {
+      resolve: async ({id: teamId}, _args, {authToken, dataLoader}) => {
+        if (!isTeamMember(authToken, teamId)) return []
         return dataLoader.get('teamInvitationsByTeamId').load(teamId)
       }
     },
@@ -133,6 +134,7 @@ const Team = new GraphQLObjectType<ITeam, GQLContext>({
       type: new GraphQLNonNull(GraphQLBoolean),
       description: 'true if the viewer is the team lead, else false',
       resolve: async ({id: teamId}, _args, {authToken, dataLoader}) => {
+        if (!isTeamMember(authToken, teamId)) return false
         const viewerId = getUserId(authToken)
         const teamMemberId = toTeamMemberId(teamId, viewerId)
         const teamMember = await dataLoader.get('teamMembers').load(teamMemberId)
@@ -148,14 +150,17 @@ const Team = new GraphQLObjectType<ITeam, GQLContext>({
         }
       },
       description: 'The team-specific settings for running all available types of meetings',
-      resolve: async ({id: teamId}, {meetingType}, {dataLoader}) => {
+      resolve: async ({id: teamId}, {meetingType}, {authToken, dataLoader}) => {
+        // the implicit business logic says client will never request settings for a foregin team
+        if (!isTeamMember(authToken, teamId)) return null
         return await dataLoader.get('meetingSettingsByType').load({teamId, meetingType})
       }
     },
     activeMeetings: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(NewMeeting))),
       description: 'a list of meetings that are currently in progress',
-      resolve: async ({id: teamId}, _args, {dataLoader}) => {
+      resolve: async ({id: teamId}, _args, {authToken, dataLoader}) => {
+        if (!isTeamMember(authToken, teamId)) return []
         // this is by team, not by meeting member, which caused an err in dev, not sure about prod
         // we need better perms for people to view/not view a meeting that happened before they joined the team
         return dataLoader.get('activeMeetingsByTeamId').load(teamId)
@@ -170,7 +175,8 @@ const Team = new GraphQLObjectType<ITeam, GQLContext>({
           description: 'The unique meetingId'
         }
       },
-      resolve: async ({id: teamId}, {meetingId}, {dataLoader}) => {
+      resolve: async ({id: teamId}, {meetingId}, {authToken, dataLoader}) => {
+        if (!isTeamMember(authToken, teamId)) return null
         const meeting = await dataLoader.get('newMeetings').load(meetingId)
         if (meeting && meeting.teamId === teamId) return meeting
         return null
@@ -182,12 +188,23 @@ const Team = new GraphQLObjectType<ITeam, GQLContext>({
     },
     organization: {
       type: new GraphQLNonNull(Organization),
-      resolve: resolveOrganization
+      resolve: async ({id: teamId, orgId}, _args, {authToken, dataLoader}) => {
+        const organization = await dataLoader.get('organizations').load(orgId)
+        // TODO this is bad, we should probably just put the perms on each field in the org
+        if (!isTeamMember(authToken, teamId)) {
+          return {
+            id: orgId,
+            name: organization.name
+          }
+        }
+        return organization
+      }
     },
     agendaItems: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(AgendaItem))),
       description: 'The agenda items for the upcoming or current meeting',
-      async resolve({id: teamId}, _args, {dataLoader}) {
+      async resolve({id: teamId}, _args, {authToken, dataLoader}) {
+        if (!isTeamMember(authToken, teamId)) return null
         return dataLoader.get('agendaItemsByTeamId').load(teamId)
       }
     },
@@ -226,7 +243,8 @@ const Team = new GraphQLObjectType<ITeam, GQLContext>({
         }
       },
       description: 'All the team members actively associated with the team',
-      async resolve({id: teamId}, {sortBy = 'preferredName'}, {dataLoader}) {
+      async resolve({id: teamId}, {sortBy = 'preferredName'}, {authToken, dataLoader}) {
+        if (!isTeamMember(authToken, teamId)) return []
         const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)
         teamMembers.sort((a, b) => (a[sortBy] > b[sortBy] ? 1 : -1))
         return teamMembers

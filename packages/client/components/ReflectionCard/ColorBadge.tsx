@@ -38,8 +38,8 @@ interface Props {
 
 const ColorBadge = (props: Props) => {
   const {reflection, phaseType} = props
-  const {phaseItem} = reflection
-  const {question, groupColor} = phaseItem
+  const {prompt} = reflection
+  const {question, groupColor} = prompt
   const {tooltipPortal, openTooltip, closeTooltip, originRef} = useTooltip<HTMLDivElement>(
     MenuPosition.LOWER_LEFT,
     {
@@ -60,7 +60,7 @@ const ColorBadge = (props: Props) => {
 export default createFragmentContainer(ColorBadge, {
   reflection: graphql`
     fragment ColorBadge_reflection on RetroReflection {
-      phaseItem {
+      prompt {
         question
         groupColor
       }

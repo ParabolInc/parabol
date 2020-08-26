@@ -1,5 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
+import React, {useRef} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {ActionMeetingAgendaItems_meeting} from '~/__generated__/ActionMeetingAgendaItems_meeting.graphql'
 import useBreakpoint from '~/hooks/useBreakpoint'
@@ -58,12 +58,13 @@ const ActionMeetingAgendaItems = (props: Props) => {
   const {showSidebar, id: meetingId, endedAt, localStage} = meeting
   const {agendaItem, agendaItemId} = localStage
   const isDesktop = useBreakpoint(Breakpoint.SINGLE_REFLECTION_COLUMN)
+  const meetingContentRef = useRef<HTMLDivElement>(null)
   // optimistic updater could remove the agenda item
   if (!agendaItem) return null
   const {content, teamMember} = agendaItem
   const {picture, preferredName} = teamMember
   return (
-    <MeetingContent>
+    <MeetingContent ref={meetingContentRef}>
       <MeetingHeaderAndPhase hideBottomBar={!!endedAt}>
         <MeetingTopBar
           avatarGroup={avatarGroup}
@@ -81,7 +82,11 @@ const ActionMeetingAgendaItems = (props: Props) => {
           </AgendaVerbatim>
           <StyledCopy>{`${preferredName}, what do you need?`}</StyledCopy>
           <ThreadColumn isDesktop={isDesktop}>
-            <DiscussionThreadRoot meetingId={meetingId} threadSourceId={agendaItemId!} />
+            <DiscussionThreadRoot
+              meetingContentRef={meetingContentRef}
+              meetingId={meetingId}
+              threadSourceId={agendaItemId!}
+            />
           </ThreadColumn>
           <EditorHelpModalContainer />
         </PhaseWrapper>

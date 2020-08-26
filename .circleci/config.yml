@@ -9,20 +9,20 @@ jobs:
         environment:
           TERM: xterm
     environment:
-      DEVOPS_REPO: "git@github.com:ParabolInc/action-devops.git"
-      DEVOPS_WORKDIR: "~/action-devops"
-      GITHUB_REMOTE_DEVELOPMENT: "dokku@action-dev-nyc1-01.parabol.co:web"
-      GITHUB_REMOTE_PRODUCTION: "dokku@action-production.parabol.co:web"
-      GITHUB_REMOTE_STAGING: "dokku@action-staging.parabol.co:web"
-      PRODUCTION_BACKUP_LOCATION: "dokku@backups.action-production.parabol.co"
-      PRODUCTION_BACKUP_VOLUME: "/mnt/volume_nyc1_01/action-production-rethinkdb-nyc1-01"
-      SENTRY_ORG: "parabol"
-      SENTRY_PROJECT: "action-production"
+      DEVOPS_REPO: 'git@github.com:ParabolInc/action-devops.git'
+      DEVOPS_WORKDIR: '~/action-devops'
+      GITHUB_REMOTE_DEVELOPMENT: 'dokku@action-dev-nyc1-01.parabol.co:web'
+      GITHUB_REMOTE_PRODUCTION: 'dokku@action-production.parabol.co:web'
+      GITHUB_REMOTE_STAGING: 'dokku@action-staging.parabol.co:web'
+      PRODUCTION_BACKUP_LOCATION: 'dokku@backups.action-production.parabol.co'
+      PRODUCTION_BACKUP_VOLUME: '/mnt/volume_nyc1_01/action-production-rethinkdb-nyc1-01'
+      SENTRY_ORG: 'parabol'
+      SENTRY_PROJECT: 'action-production'
     working_directory: ~/action
     steps:
       - add_ssh_keys:
           fingerprints:
-            - "53:a8:37:35:c3:7e:54:f5:19:f6:8e:a1:e0:78:52:da"
+            - '53:a8:37:35:c3:7e:54:f5:19:f6:8e:a1:e0:78:52:da'
       - run:
           name: Slack setup
           command: |
@@ -46,7 +46,7 @@ jobs:
       - save_cache:
           key: yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}
           paths:
-          - ~/.cache/yarn
+            - ~/.cache/yarn
       - run:
           name: DevOps checkout
           command: |
@@ -54,7 +54,7 @@ jobs:
       - run:
           name: Build Assets
           command: |
-            if [ "${CIRCLE_BRANCH}" == "production" ] || [ "${CIRCLE_BRANCH}" == "staging" ]; then
+            if [ "${CIRCLE_BRANCH}" == "production" ] || [ "${CIRCLE_BRANCH}" == "staging" ] || [ "${CIRCLE_BRANCH}" == "development" ]; then
               cp $DEVOPS_WORKDIR/environments/$CIRCLE_BRANCH .env
               yarn build --deploy
             fi

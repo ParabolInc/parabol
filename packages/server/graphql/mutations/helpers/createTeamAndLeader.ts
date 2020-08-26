@@ -7,7 +7,6 @@ import Team from '../../../database/types/Team'
 import TimelineEventCreatedTeam from '../../../database/types/TimelineEventCreatedTeam'
 import addTeamIdToTMS from '../../../safeMutations/addTeamIdToTMS'
 import insertNewTeamMember from '../../../safeMutations/insertNewTeamMember'
-import makeRetroTemplates from './makeRetroTemplates'
 
 interface ValidNewTeam {
   id: string
@@ -26,9 +25,8 @@ export default async function createTeamAndLeader(userId: string, newTeam: Valid
     .run()
   const {tier} = organization
   const verifiedTeam = new Team({...newTeam, createdBy: userId, tier})
-  const {phaseItems, templates} = makeRetroTemplates(teamId)
   const meetingSettings = [
-    new MeetingSettingsRetrospective({teamId, selectedTemplateId: templates[0].id}),
+    new MeetingSettingsRetrospective({teamId}),
     new MeetingSettingsAction({teamId})
   ]
   const timelineEvent = new TimelineEventCreatedTeam({
@@ -56,15 +54,6 @@ export default async function createTeamAndLeader(userId: string, newTeam: Valid
     r
       .table('MeetingSettings')
       .insert(meetingSettings)
-      .run(),
-    // add customizable phase items for meetings
-    r
-      .table('CustomPhaseItem')
-      .insert(phaseItems)
-      .run(),
-    r
-      .table('ReflectTemplate')
-      .insert(templates)
       .run(),
     // denormalize common fields to team member
     insertNewTeamMember(userId, teamId),

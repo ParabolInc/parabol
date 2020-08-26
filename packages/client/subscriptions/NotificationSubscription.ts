@@ -285,5 +285,5 @@ const NotificationSubscription = (
     }
   })
 }
-
+NotificationSubscription.key = 'notification'
 export default NotificationSubscription

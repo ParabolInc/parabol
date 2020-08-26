@@ -20,7 +20,7 @@ const removeReflectTemplatePrompt = {
     const operationId = dataLoader.share()
     const subOptions = {operationId, mutatorId}
     const prompt = await r
-      .table('CustomPhaseItem')
+      .table('ReflectPrompt')
       .get(promptId)
       .run()
     const viewerId = getUserId(authToken)
@@ -33,7 +33,7 @@ const removeReflectTemplatePrompt = {
     // VALIDATION
     const {teamId, templateId} = prompt
     const promptCount = await r
-      .table('CustomPhaseItem')
+      .table('ReflectPrompt')
       .getAll(teamId, {index: 'teamId'})
       .filter({
         isActive: true,
@@ -49,7 +49,7 @@ const removeReflectTemplatePrompt = {
 
     // RESOLUTION
     await r
-      .table('CustomPhaseItem')
+      .table('ReflectPrompt')
       .get(promptId)
       .update({
         isActive: false,

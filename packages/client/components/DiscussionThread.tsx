@@ -1,5 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
-import React, {useRef} from 'react'
+import React, {useRef, RefObject} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {DiscussionThread_viewer} from '~/__generated__/DiscussionThread_viewer.graphql'
 import {useCoverable} from '~/hooks/useControlBarCovers'
@@ -28,14 +28,17 @@ const Wrapper = styled('div')<{isExpanded: boolean}>(({isExpanded}) => ({
 }))
 
 interface Props {
+  meetingContentRef: RefObject<HTMLDivElement>
   viewer: DiscussionThread_viewer
 }
 
 const DiscussionThread = (props: Props) => {
-  const {viewer} = props
+  const {meetingContentRef, viewer} = props
+
   const meeting = viewer.meeting!
   const {endedAt, replyingToCommentId, threadSource} = meeting
   const {thread} = threadSource!
+
   const threadSourceId = threadSource!.id!
   const edges = thread?.edges ?? [] // should never happen, but Terry reported it in demo. likely relay error
   const threadables = edges.map(({node}) => node)
@@ -45,7 +48,9 @@ const DiscussionThread = (props: Props) => {
   const listRef = useRef<HTMLDivElement>(null)
   const editorRef = useRef<HTMLTextAreaElement>(null)
   const ref = useRef<HTMLDivElement>(null)
-  const isExpanded = useCoverable('threads', ref, MeetingControlBarEnum.HEIGHT) || !!endedAt
+  const isExpanded =
+    useCoverable('threads', ref, MeetingControlBarEnum.HEIGHT, meetingContentRef) || !!endedAt
+
   return (
     <Wrapper isExpanded={isExpanded} ref={ref}>
       <DiscussionThreadList

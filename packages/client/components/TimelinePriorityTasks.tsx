@@ -29,7 +29,6 @@ const PriorityTasksHeader = styled('div')({
   fontWeight: 600,
   paddingTop: 16,
   paddingBottom: 16,
-  position: 'sticky',
   top: 0,
   zIndex: 2
 })
@@ -76,7 +75,7 @@ const TimelinePriorityTasks = (props: Props) => {
       sortOrder =
         (activeTasks[destination.index + offset].sortOrder +
           activeTasks[destination.index].sortOrder) /
-          2 +
+        2 +
         dndNoise()
     }
     const updatedTask = {id: draggableId, sortOrder}
@@ -109,7 +108,7 @@ const TimelinePriorityTasks = (props: Props) => {
 export default createFragmentContainer(withAtmosphere(TimelinePriorityTasks), {
   viewer: graphql`
     fragment TimelinePriorityTasks_viewer on User {
-      tasks(first: 1000) @connection(key: "UserColumnsContainer_tasks") {
+      tasks(first: 1000, userIds: $userIds) @connection(key: "UserColumnsContainer_tasks") {
         __typename
         edges {
           node {

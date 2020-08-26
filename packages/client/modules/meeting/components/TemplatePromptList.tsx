@@ -13,6 +13,7 @@ import {TemplatePromptList_prompts} from '../../../__generated__/TemplatePromptL
 import TemplatePromptItem from './TemplatePromptItem'
 
 interface Props extends WithAtmosphereProps, WithMutationProps {
+  isOwner: boolean
   prompts: TemplatePromptList_prompts
   templateId: string
 }
@@ -21,11 +22,9 @@ interface State {
   scrollOffset: number
 }
 
-const PromptList = styled('ul')({
+const PromptList = styled('div')({
   margin: 0,
-  marginBottom: 16,
-  overflowY: 'auto',
-  padding: '0 2rem',
+  padding: 0,
   width: '100%'
 })
 
@@ -65,20 +64,26 @@ class TemplatePromptList extends Component<Props, State> {
   }
 
   render() {
-    const {prompts} = this.props
+    const {isOwner, prompts} = this.props
     return (
       <DragDropContext onDragEnd={this.onDragEnd}>
         <PromptList>
-          <Droppable droppableId={TEMPLATE_PROMPT}>
+          <Droppable droppableId={TEMPLATE_PROMPT} isDropDisabled={!isOwner}>
             {(provided) => {
               return (
                 <div ref={provided.innerRef}>
                   {prompts.map((prompt, idx) => {
                     return (
-                      <Draggable key={prompt.id} draggableId={prompt.id} index={idx}>
+                      <Draggable
+                        key={prompt.id}
+                        draggableId={prompt.id}
+                        index={idx}
+                        isDragDisabled={!isOwner}
+                      >
                         {(dragProvided, dragSnapshot) => {
                           return (
                             <TemplatePromptItem
+                              isOwner={isOwner}
                               prompt={prompt}
                               prompts={prompts}
                               isDragging={dragSnapshot.isDragging}
@@ -102,7 +107,7 @@ class TemplatePromptList extends Component<Props, State> {
 
 export default createFragmentContainer(withAtmosphere(withMutationProps(TemplatePromptList)), {
   prompts: graphql`
-    fragment TemplatePromptList_prompts on RetroPhaseItem @relay(plural: true) {
+    fragment TemplatePromptList_prompts on ReflectPrompt @relay(plural: true) {
       id
       sortOrder
       question

@@ -23,7 +23,8 @@ module.exports = {
     migrateDB: [DOTENV, path.join(TOOLBOX_SRC, 'migrate.ts')],
     createMigration: [DOTENV, path.join(TOOLBOX_SRC, 'migrate-create.ts')],
     postDeploy: [DOTENV, path.join(TOOLBOX_SRC, 'postDeploy.ts')],
-    softenDurability: [DOTENV, path.join(TOOLBOX_SRC, 'softenDurability.ts')]
+    softenDurability: [DOTENV, path.join(TOOLBOX_SRC, 'softenDurability.ts')],
+    renameDB: [DOTENV, path.join(TOOLBOX_SRC, 'renameDB.ts')],
   },
   output: {
     filename: '[name].js',

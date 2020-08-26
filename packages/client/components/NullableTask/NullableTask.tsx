@@ -59,8 +59,8 @@ const NullableTask = (props: Props) => {
       task={task}
     />
   ) : (
-    <NullCard className={className} preferredName={preferredName} />
-  )
+      <NullCard className={className} preferredName={preferredName} />
+    )
 }
 
 export default createFragmentContainer(NullableTask, {

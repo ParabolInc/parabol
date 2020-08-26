@@ -30,7 +30,7 @@ const RetroReflectPhase = (props: Props) => {
   const {localPhase, endedAt, showSidebar} = meeting
   if (!localPhase || !localPhase.reflectPrompts) return null
   const reflectPrompts = localPhase!.reflectPrompts
-  const focusedPhaseItemId = localPhase!.focusedPhaseItemId
+  const focusedPromptId = localPhase!.focusedPromptId
   const ColumnWrapper = isDesktop ? ReflectWrapperDesktop : ReflectWrapperMobile
   return (
     <MeetingContent ref={phaseRef}>
@@ -50,7 +50,7 @@ const RetroReflectPhase = (props: Props) => {
           <ColumnWrapper
             setActiveIdx={setActiveIdx}
             activeIdx={activeIdx}
-            focusedIdx={reflectPrompts.findIndex(({id}) => id === focusedPhaseItemId)}
+            focusedIdx={reflectPrompts.findIndex(({id}) => id === focusedPromptId)}
           >
             {reflectPrompts.map((prompt, idx) => (
               <PhaseItemColumn
@@ -71,7 +71,7 @@ const RetroReflectPhase = (props: Props) => {
 
 graphql`
   fragment RetroReflectPhase_phase on ReflectPhase {
-    focusedPhaseItemId
+    focusedPromptId
     reflectPrompts {
       ...PhaseItemColumn_prompt
       id

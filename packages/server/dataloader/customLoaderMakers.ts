@@ -20,8 +20,11 @@ export interface JiraRemoteProjectKey {
 }
 
 export interface UserTasksKey {
-  userId: string
+  first: number
+  after: number | string
+  userIds: string[] | null
   teamIds: string[]
+  archived: boolean
 }
 
 export interface ReactablesKey {
@@ -55,6 +58,11 @@ const threadableLoaders = [
 
 export const users = () => {
   return new ProxiedCache('User')
+}
+
+export const serializeUserTasksKey = (key: UserTasksKey) => {
+  const userIdKey = key.userIds ? key.userIds.sort().join(':') : '*'
+  return `${userIdKey}:${key.teamIds.sort().join(':')}:${key.first}:${key.after}:${key.archived}`
 }
 
 export const commentCountByThreadId = (parent: RethinkDataLoader) => {
@@ -125,31 +133,59 @@ export const userTasks = (parent: RethinkDataLoader) => {
   return new DataLoader<UserTasksKey, Task[], string>(
     async (keys) => {
       const r = await getRethink()
-      const userIds = keys.map(({userId}) => userId)
-      const teamIds = Array.from(new Set(keys.flatMap(({teamIds}) => teamIds)))
+      const uniqKeys = [] as UserTasksKey[]
+      const keySet = new Set()
+      keys.forEach((key) => {
+        const serializedKey = serializeUserTasksKey(key)
+        if (!keySet.has(serializedKey)) {
+          keySet.add(serializedKey)
+          uniqKeys.push(key)
+        }
+      })
       const taskLoader = parent.get('tasks')
-      const allUsersTasks = (await r
-        .table('Task')
-        .getAll(r.args(userIds), {index: 'userId'})
-        .filter((task) => r(teamIds).contains(task('teamId')))
-        .filter((task) =>
-          task('tags')
-            .contains('archived')
-            .not()
-        )
-        .run()) as Task[]
-      allUsersTasks.forEach((task) => {
+
+      const entryArray = await Promise.all(
+        uniqKeys.map(async (key) => {
+          const {first, after, userIds, teamIds, archived} = key
+          const dbAfter = after ? new Date(after) : r.maxval
+
+          let teamTaskPartial = r.table('Task').getAll(r.args(teamIds), {index: 'teamId'})
+          if (userIds) {
+            teamTaskPartial = teamTaskPartial.filter((row) => r(userIds).contains(row('userId')))
+          }
+
+          return {
+            key: serializeUserTasksKey(key),
+            data: await teamTaskPartial
+              .filter((task) => task('updatedAt').lt(dbAfter))
+              .filter((task) =>
+                archived
+                  ? task('tags').contains('archived')
+                  : task('tags')
+                      .contains('archived')
+                      .not()
+              )
+              .orderBy(r.desc('updatedAt'))
+              .limit(first + 1)
+              .run()
+          }
+        })
+      )
+
+      const tasksByKey = Object.assign(
+        {},
+        ...entryArray.map((entry) => ({[entry.key]: entry.data}))
+      ) as {[key: string]: Task[]}
+      const tasks = Object.values(tasksByKey)
+      tasks.flat().forEach((task) => {
         taskLoader.clear(task.id).prime(task.id, task)
       })
-      return keys.map((key) =>
-        allUsersTasks.filter(
-          (task) => task.userId === key.userId && key.teamIds.includes(task.teamId)
-        )
-      )
+
+      return keys.map((key) => tasksByKey[serializeUserTasksKey(key)])
     },
     {
       ...parent.dataLoaderOptions,
-      cacheKeyFn: (key) => `${key.userId}:${key.teamIds.sort().join(':')}`
+      cacheKeyFn: serializeUserTasksKey
     }
   )
 }

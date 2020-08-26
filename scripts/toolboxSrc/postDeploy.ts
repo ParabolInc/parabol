@@ -13,9 +13,11 @@ const flushSocketConnections = async () => {
 const storePersistedQueries = async () => {
   const queryMap = JSON.parse(fs.readFileSync(path.join(PROJECT_ROOT, 'queryMap.json')).toString())
   const hashes = Object.keys(queryMap)
+  const now = new Date()
   const records = hashes.map((hash) => ({
     id: hash,
-    query: queryMap[hash]
+    query: queryMap[hash],
+    createdAt: now
   }))
 
   const r = await getRethink()

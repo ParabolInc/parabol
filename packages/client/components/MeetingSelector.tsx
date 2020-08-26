@@ -1,17 +1,17 @@
-import {MeetingTypeEnum} from '../types/graphql'
-import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useEffect} from 'react'
-import useRouter from '../hooks/useRouter'
+import {createFragmentContainer} from 'react-relay'
+import useStoreQueryRetry from '~/hooks/useStoreQueryRetry'
 import {MeetingSelector_viewer} from '~/__generated__/MeetingSelector_viewer.graphql'
-import lazyPreload from '../utils/lazyPreload'
+import useRouter from '../hooks/useRouter'
 import useSubscription from '../hooks/useSubscription'
+import MeetingSubscription from '../subscriptions/MeetingSubscription'
 import NotificationSubscription from '../subscriptions/NotificationSubscription'
 import OrganizationSubscription from '../subscriptions/OrganizationSubscription'
 import TaskSubscription from '../subscriptions/TaskSubscription'
 import TeamSubscription from '../subscriptions/TeamSubscription'
-import MeetingSubscription from '../subscriptions/MeetingSubscription'
-import useStoreQueryRetry from '~/hooks/useStoreQueryRetry'
+import {MeetingTypeEnum} from '../types/graphql'
+import lazyPreload from '../utils/lazyPreload'
 
 interface Props {
   meetingId: string
@@ -41,11 +41,11 @@ const MeetingSelector = (props: Props) => {
     }
   }, [])
   useStoreQueryRetry(retry)
-  useSubscription(MeetingSelector.name, NotificationSubscription)
-  useSubscription(MeetingSelector.name, OrganizationSubscription)
-  useSubscription(MeetingSelector.name, TaskSubscription)
-  useSubscription(MeetingSelector.name, TeamSubscription)
-  useSubscription(MeetingSelector.name, MeetingSubscription, {meetingId})
+  useSubscription('MeetingSelector', NotificationSubscription)
+  useSubscription('MeetingSelector', OrganizationSubscription)
+  useSubscription('MeetingSelector', TaskSubscription)
+  useSubscription('MeetingSelector', TeamSubscription)
+  useSubscription('MeetingSelector', MeetingSubscription, {meetingId})
   if (!meeting) return null
   const {meetingType} = meeting
   const Meeting = meetingLookup[meetingType]

@@ -123,7 +123,7 @@ export default createFragmentContainer(DraggableReflectionCard, {
       id
       isEditing
       reflectionGroupId
-      retroPhaseItemId
+      promptId
       isViewerDragging
       isViewerCreator
       isDropping

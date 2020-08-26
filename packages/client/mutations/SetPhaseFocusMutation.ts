@@ -1,20 +1,20 @@
-import {commitMutation} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
+import {commitMutation} from 'react-relay'
+import {IReflectPhase} from '../types/graphql'
 import {StandardMutation} from '../types/relayMutations'
 import {SetPhaseFocusMutation as TSetPhaseFocusMutation} from '../__generated__/SetPhaseFocusMutation.graphql'
-import {IReflectPhase} from '../types/graphql'
 
 graphql`
   fragment SetPhaseFocusMutation_meeting on SetPhaseFocusPayload {
     reflectPhase {
-      focusedPhaseItemId
+      focusedPromptId
     }
   }
 `
 
 const mutation = graphql`
-  mutation SetPhaseFocusMutation($meetingId: ID!, $focusedPhaseItemId: ID) {
-    setPhaseFocus(meetingId: $meetingId, focusedPhaseItemId: $focusedPhaseItemId) {
+  mutation SetPhaseFocusMutation($meetingId: ID!, $focusedPromptId: ID) {
+    setPhaseFocus(meetingId: $meetingId, focusedPromptId: $focusedPromptId) {
       ...SetPhaseFocusMutation_meeting @relay(mask: false)
     }
   }
@@ -32,10 +32,10 @@ const SetPhaseFocusMutation: StandardMutation<TSetPhaseFocusMutation, LocalHande
     mutation,
     variables,
     optimisticUpdater: (store) => {
-      const {focusedPhaseItemId} = variables
+      const {focusedPromptId} = variables
       const phase = store.get<IReflectPhase>(phaseId)
       if (!phase) return
-      phase.setValue(focusedPhaseItemId, 'focusedPhaseItemId')
+      phase.setValue(focusedPromptId, 'focusedPromptId')
     }
   })
 }

@@ -1,7 +1,7 @@
 import {GraphQLFloat, GraphQLID, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
-import CustomPhaseItem, {customPhaseItemFields} from './CustomPhaseItem'
-import ReflectTemplate from './ReflectTemplate'
 import {GQLContext} from '../graphql'
+import {CustomPhaseItem, customPhaseItemFields} from './CustomPhaseItem'
+import ReflectTemplate from './ReflectTemplate'
 
 const RetroPhaseItem = new GraphQLObjectType<any, GQLContext>({
   name: 'RetroPhaseItem',

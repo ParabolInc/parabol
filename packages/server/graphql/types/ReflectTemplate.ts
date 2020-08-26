@@ -6,9 +6,12 @@ import {
   GraphQLObjectType,
   GraphQLString
 } from 'graphql'
-import GraphQLISO8601Type from './GraphQLISO8601Type'
-import RetroPhaseItem from './RetroPhaseItem'
+import connectionDefinitions from '../connectionDefinitions'
 import {GQLContext} from '../graphql'
+import GraphQLISO8601Type from './GraphQLISO8601Type'
+import ReflectPrompt from './ReflectPrompt'
+import SharingScopeEnum from './SharingScopeEnum'
+import Team from './Team'
 
 const ReflectTemplate = new GraphQLObjectType<any, GQLContext>({
   name: 'ReflectTemplate',
@@ -33,18 +36,33 @@ const ReflectTemplate = new GraphQLObjectType<any, GQLContext>({
       description: 'The name of the template'
     },
     prompts: {
-      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(RetroPhaseItem))),
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(ReflectPrompt))),
       description: 'The prompts that are part of this template',
-      resolve: async ({id: promptTemplateId, teamId}, _args, {dataLoader}) => {
-        const phaseItems = await dataLoader.get('customPhaseItemsByTeamId').load(teamId)
-        const prompts = phaseItems.filter(({templateId}) => templateId === promptTemplateId)
+      resolve: async ({id: templateId}, _args, {dataLoader}) => {
+        const prompts = await dataLoader.get('reflectPromptsByTemplateId').load(templateId)
         prompts.sort((a, b) => (a.sortOrder < b.sortOrder ? -1 : 1))
         return prompts
       }
     },
+    orgId: {
+      type: GraphQLNonNull(GraphQLID),
+      description: '*Foreign key. The organization that owns the team that created the template'
+    },
+    scope: {
+      type: GraphQLNonNull(SharingScopeEnum),
+      description: 'Who can see this template'
+    },
     teamId: {
       type: new GraphQLNonNull(GraphQLID),
       description: '*Foreign key. The team this template belongs to'
+    },
+    team: {
+      type: new GraphQLNonNull(Team),
+      description: 'The team this template belongs to',
+      resolve: async ({teamId}, _args, {dataLoader}) => {
+        const team = await dataLoader.get('teams').load(teamId)
+        return team
+      }
     },
     updatedAt: {
       type: new GraphQLNonNull(GraphQLISO8601Type)
@@ -52,4 +70,11 @@ const ReflectTemplate = new GraphQLObjectType<any, GQLContext>({
   })
 })
 
+const {connectionType, edgeType} = connectionDefinitions({
+  name: ReflectTemplate.name,
+  nodeType: ReflectTemplate
+})
+
+export const ReflectTemplateConnection = connectionType
+export const ReflectTemplateEdge = edgeType
 export default ReflectTemplate

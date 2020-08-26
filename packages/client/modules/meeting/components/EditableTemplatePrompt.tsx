@@ -1,16 +1,24 @@
-import {EditableTemplatePrompt_prompts} from '../../../__generated__/EditableTemplatePrompt_prompts.graphql'
+import styled from '@emotion/styled'
+import graphql from 'babel-plugin-relay/macro'
 import React, {Component} from 'react'
 import {createFragmentContainer} from 'react-relay'
-import graphql from 'babel-plugin-relay/macro'
 import EditableText from '../../../components/EditableText'
 import withAtmosphere, {
   WithAtmosphereProps
 } from '../../../decorators/withAtmosphere/withAtmosphere'
+import RenameReflectTemplatePromptMutation from '../../../mutations/RenameReflectTemplatePromptMutation'
 import withMutationProps, {WithMutationProps} from '../../../utils/relay/withMutationProps'
 import Legitity from '../../../validation/Legitity'
-import RenameReflectTemplatePromptMutation from '../../../mutations/RenameReflectTemplatePromptMutation'
+import {EditableTemplatePrompt_prompts} from '../../../__generated__/EditableTemplatePrompt_prompts.graphql'
+
+const StyledEditableText = styled(EditableText)({
+  fontSize: 16,
+  lineHeight: '24px',
+  padding: 0
+})
 
 interface Props extends WithAtmosphereProps, WithMutationProps {
+  isOwner: boolean
   isEditingDescription: boolean
   isHover: boolean
   question: string
@@ -63,10 +71,11 @@ class EditableTemplatePrompt extends Component<Props> {
   }
 
   render() {
-    const {error, isHover, question, isEditingDescription} = this.props
+    const {isOwner, error, isHover, question, isEditingDescription} = this.props
     return (
-      <EditableText
+      <StyledEditableText
         autoFocus={question.startsWith('New prompt #')}
+        disabled={!isOwner}
         error={error as string}
         hideIcon={isEditingDescription ? true : !isHover}
         handleSubmit={this.handleSubmit}
@@ -81,7 +90,7 @@ class EditableTemplatePrompt extends Component<Props> {
 
 export default createFragmentContainer(withAtmosphere(withMutationProps(EditableTemplatePrompt)), {
   prompts: graphql`
-    fragment EditableTemplatePrompt_prompts on RetroPhaseItem @relay(plural: true) {
+    fragment EditableTemplatePrompt_prompts on ReflectPrompt @relay(plural: true) {
       id
       question
     }

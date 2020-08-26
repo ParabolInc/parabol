@@ -8,6 +8,7 @@ import {ExecutionResult, graphql} from 'graphql'
 import {ExecutionResultDataDefault} from 'graphql/execution/execute'
 import getRethink from '../database/rethinkDriver'
 import AuthToken from '../database/types/AuthToken'
+import PROD from '../PROD'
 import CompiledQueryCache from './CompiledQueryCache'
 import getDataLoader from './getDataLoader'
 import getRateLimiter from './getRateLimiter'
@@ -91,6 +92,9 @@ const executeGraphQL = async <T = ExecutionResultDataDefault>(req: GQLRequest) =
     } else {
       response = {errors: [new Error(`DocumentID not found: ${docId}`)] as any}
     }
+  }
+  if (!PROD && response.errors) {
+    console.trace({error: response.errors})
   }
   const end = Date.now()
   const duration = end - start

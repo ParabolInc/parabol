@@ -46,7 +46,7 @@ import LocalAtmosphere from './LocalAtmosphere'
 
 export type DemoReflection = Omit<
   IRetroReflection,
-  'autoReflectionGroupId' | 'team' | 'reactjis'
+  'autoReflectionGroupId' | 'team' | 'reactjis' | 'retroPhaseItemId' | 'phaseItem'
 > & {
   creatorId: string
   reactjis: any[]
@@ -54,7 +54,7 @@ export type DemoReflection = Omit<
   isHumanTouched: boolean
 }
 
-export type DemoReflectionGroup = Omit<IRetroReflectionGroup, 'team' | 'reflections'> & {
+export type DemoReflectionGroup = Omit<IRetroReflectionGroup, 'team' | 'reflections' | 'retroPhaseItemId' | 'phaseItem'> & {
   reflectionGroupId: string
   reflections: DemoReflection[]
 }
@@ -391,12 +391,12 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       return {createJiraIssue: data}
     },
     CreateReflectionMutation: async (
-      {input: {content, retroPhaseItemId, sortOrder, id, groupId}},
+      {input: {content, promptId, sortOrder, id, groupId}},
       userId: string
     ) => {
       const now = new Date().toJSON()
       const reflectPhase = this.db.newMeeting.phases![1] as IReflectPhase
-      const phaseItem = reflectPhase.reflectPrompts.find((prompt) => prompt.id === retroPhaseItemId)
+      const prompt = reflectPhase.reflectPrompts.find((prompt) => prompt.id === promptId)
       const reflectionGroupId = groupId || this.getTempId('refGroup')
       const reflectionId = id || this.getTempId('ref')
       const normalizedContent = normalizeRawDraftJS(content)
@@ -426,10 +426,10 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         entities,
         meetingId: RetroDemo.MEETING_ID,
         meeting: this.db.newMeeting,
-        phaseItem,
+        prompt,
+        promptId,
         reactjis: [] as any[],
         reflectionGroupId,
-        retroPhaseItemId,
         sortOrder: 0,
         updatedAt: now,
         retroReflectionGroup: undefined as any
@@ -450,8 +450,8 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         isActive: true,
         meetingId: RetroDemo.MEETING_ID,
         meeting: this.db.newMeeting,
-        phaseItem,
-        retroPhaseItemId,
+        prompt,
+        promptId,
         reflections: [reflection],
         sortOrder,
         tasks: [],
@@ -487,11 +487,11 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       return {createReflection: data}
     },
     EditReflectionMutation: (
-      {phaseItemId, isEditing}: {phaseItemId: string; isEditing: boolean},
+      {promptId, isEditing}: {promptId: string; isEditing: boolean},
       userId
     ) => {
       const data = {
-        phaseItemId,
+        promptId,
         editorId: userId,
         isEditing,
         __typename: 'EditReflectionPayload'
@@ -711,11 +711,11 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       }
       return {renameMeeting: data}
     },
-    SetPhaseFocusMutation: ({focusedPhaseItemId}, userId) => {
+    SetPhaseFocusMutation: ({focusedPromptId}, userId) => {
       const reflectPhase = this.db.newMeeting.phases!.find(
         (phase) => phase.phaseType === REFLECT
       ) as IReflectPhase
-      reflectPhase.focusedPhaseItemId = focusedPhaseItemId || null
+      reflectPhase.focusedPromptId = focusedPromptId || null
       const data = {
         meetingId: RetroDemo.MEETING_ID,
         meeting: this.db.newMeeting,
@@ -820,7 +820,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       const oldReflections = oldReflectionGroup.reflections!
       let failedDrop = false
       if (dropTargetType === DragReflectionDropTargetTypeEnum.REFLECTION_GRID) {
-        const {retroPhaseItemId} = reflection
+        const {promptId} = reflection
         newReflectionGroupId = this.getTempId('group')
         const newReflectionGroup = {
           __typename: 'RetroReflectionGroup',
@@ -833,8 +833,8 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
           isActive: true,
           meetingId: RetroDemo.MEETING_ID,
           meeting: this.db.newMeeting,
-          phaseItem: reflection.phaseItem,
-          retroPhaseItemId,
+          prompt: reflection.prompt,
+          promptId,
           reflections: [reflection],
           sortOrder: 0,
           tasks: [],

@@ -31,18 +31,20 @@ interface Props {
   closePortal: () => void
   orgId: string
   meetingId?: string
+  onUpgrade?: () => void
 }
 
 type Status = 'success' | 'later' | 'init'
 
 const CreditCardModal = (props: Props) => {
-  const {actionType, activeUserCount, closePortal, orgId, meetingId} = props
+  const {actionType, activeUserCount, closePortal, orgId, meetingId, onUpgrade} = props
   const [status, setStatus] = useState<Status>('init')
   const atmosphere = useAtmosphere()
   const onSuccess =
     actionType === 'update'
       ? closePortal
       : () => {
+          onUpgrade?.()
           setStatus('success')
         }
   const onLater = (e: React.FormEvent) => {

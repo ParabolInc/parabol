@@ -13,7 +13,7 @@ export interface ReflectionInput {
   meetingId: string
   reactjis?: Reactji[]
   reflectionGroupId?: string
-  retroPhaseItemId: string
+  promptId: string
   sortOrder?: number
   updatedAt?: Date
 }
@@ -30,7 +30,7 @@ export default class Reflection {
   meetingId: string
   reactjis: Reactji[]
   reflectionGroupId: string
-  retroPhaseItemId: string
+  promptId: string
   sortOrder: number
   updatedAt: Date
   constructor(input: ReflectionInput) {
@@ -44,7 +44,7 @@ export default class Reflection {
       meetingId,
       reactjis,
       reflectionGroupId,
-      retroPhaseItemId,
+      promptId,
       sortOrder,
       updatedAt
     } = input
@@ -59,7 +59,7 @@ export default class Reflection {
     this.meetingId = meetingId
     this.reactjis = reactjis || []
     this.reflectionGroupId = reflectionGroupId || shortid.generate()
-    this.retroPhaseItemId = retroPhaseItemId
+    this.promptId = promptId
     this.sortOrder = sortOrder || 0
     this.updatedAt = updatedAt || now
   }

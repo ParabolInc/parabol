@@ -84,7 +84,7 @@ const NewCheckInQuestion = (props: Props) => {
   }
   const {viewerId} = atmosphere
   const isFacilitating = facilitatorUserId === viewerId
-  const tip = 'Tap to customize the Icebreaker.'
+  const tip = 'Tap to customize the Icebreaker'
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const {tooltipPortal, openTooltip, closeTooltip, originRef} = useTooltip<HTMLButtonElement>(
     MenuPosition.UPPER_CENTER,

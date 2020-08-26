@@ -30,7 +30,7 @@ export const GROUP = 'group'
 export const VOTE = 'vote'
 export const DISCUSS = 'discuss'
 
-export const RETRO_PHASE_ITEM = 'retroPhaseItem'
+export const RETRO_PHASE_ITEM = 'retroPhaseItem' //deprecated!
 
 /* Columns */
 export const ACTIVE = 'active'

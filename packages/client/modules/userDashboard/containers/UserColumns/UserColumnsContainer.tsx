@@ -1,10 +1,10 @@
+import graphql from 'babel-plugin-relay/macro'
 import React, {useMemo} from 'react'
 import {createFragmentContainer} from 'react-relay'
-import graphql from 'babel-plugin-relay/macro'
 import TaskColumns from '../../../../components/TaskColumns/TaskColumns'
-import {UserColumnsContainer_viewer} from '../../../../__generated__/UserColumnsContainer_viewer.graphql'
 import {AreaEnum} from '../../../../types/graphql'
 import getSafeRegex from '../../../../utils/getSafeRegex'
+import {UserColumnsContainer_viewer} from '../../../../__generated__/UserColumnsContainer_viewer.graphql'
 
 interface Props {
   viewer: UserColumnsContainer_viewer
@@ -19,8 +19,8 @@ const UserColumnsContainer = (props: Props) => {
     const nodes = tasks.edges.map(({node}) => node)
     const dashSearchNodes = dashSearch
       ? nodes.filter((task) => {
-          return task.contentText && task.contentText.match(dashSearchRegex)
-        })
+        return task.contentText && task.contentText.match(dashSearchRegex)
+      })
       : nodes
 
     const teamFilteredNodes = teamFilterId
@@ -50,7 +50,7 @@ export default createFragmentContainer(UserColumnsContainer, {
       teams {
         ...TaskColumns_teams
       }
-      tasks(first: 1000) @connection(key: "UserColumnsContainer_tasks") {
+      tasks(first: 1000, userIds: $userIds) @connection(key: "UserColumnsContainer_tasks") {
         edges {
           node {
             ...TaskColumns_tasks

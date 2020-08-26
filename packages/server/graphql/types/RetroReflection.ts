@@ -15,7 +15,7 @@ import resolveReactjis from '../resolvers/resolveReactjis'
 import GoogleAnalyzedEntity from './GoogleAnalyzedEntity'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import Reactable, {reactableFields} from './Reactable'
-import RetroPhaseItem from './RetroPhaseItem'
+import ReflectPrompt from './ReflectPrompt'
 import RetroReflectionGroup from './RetroReflectionGroup'
 import RetrospectiveMeeting from './RetrospectiveMeeting'
 import Team from './Team'
@@ -85,14 +85,26 @@ const RetroReflection = new GraphQLObjectType<Reflection, GQLContext>({
       }
     },
     phaseItem: {
-      type: new GraphQLNonNull(RetroPhaseItem),
-      resolve: ({retroPhaseItemId}, _args, {dataLoader}) => {
-        return dataLoader.get('customPhaseItems').load(retroPhaseItemId)
+      type: new GraphQLNonNull(ReflectPrompt),
+      deprecationReason: 'use prompt',
+      resolve: ({promptId}, _args, {dataLoader}) => {
+        return dataLoader.get('reflectPrompts').load(promptId)
       }
     },
     plaintextContent: {
       description: 'The plaintext version of content',
       type: new GraphQLNonNull(GraphQLString)
+    },
+    promptId: {
+      type: new GraphQLNonNull(GraphQLID),
+      description:
+        'The foreign key to link a reflection to its phaseItem. Immutable. For sorting, use phase item on the group.'
+    },
+    prompt: {
+      type: new GraphQLNonNull(ReflectPrompt),
+      resolve: ({promptId}, _args, {dataLoader}) => {
+        return dataLoader.get('reflectPrompts').load(promptId)
+      }
     },
     reactjis: {
       type: GraphQLNonNull(GraphQLList(GraphQLNonNull(require('./Reactji').default))),
@@ -101,8 +113,10 @@ const RetroReflection = new GraphQLObjectType<Reflection, GQLContext>({
     },
     retroPhaseItemId: {
       type: new GraphQLNonNull(GraphQLID),
+      deprecationReason: 'use promptId',
       description:
-        'The foreign key to link a reflection to its phaseItem. Immutable. For sorting, use phase item on the group.'
+        'The foreign key to link a reflection to its phaseItem. Immutable. For sorting, use phase item on the group.',
+      resolve: ({promptId}) => promptId
     },
     reflectionGroupId: {
       type: new GraphQLNonNull(GraphQLID),

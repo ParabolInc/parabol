@@ -77,7 +77,7 @@ export default {
       const meetingSettings = (await dataLoader
         .get('meetingSettingsByType')
         .load({teamId, meetingType})) as MeetingSettingsRetrospective
-      const {totalVotes, maxVotesPerGroup} = meetingSettings
+      const {totalVotes, maxVotesPerGroup, selectedTemplateId} = meetingSettings
       meeting = new MeetingRetrospective({
         teamId,
         meetingCount,
@@ -85,7 +85,8 @@ export default {
         showConversionModal,
         facilitatorUserId: viewerId,
         totalVotes,
-        maxVotesPerGroup
+        maxVotesPerGroup,
+        templateId: selectedTemplateId
       })
     } else {
       meeting = new MeetingAction({
@@ -134,7 +135,7 @@ export default {
         .table('AgendaItem')
         .getAll(r.args(agendaItemIds))
         .update({meetingId: meeting.id})
-        .run(),
+        .run()
     ])
 
     startSlackMeeting(meeting.id, teamId, dataLoader).catch(console.log)

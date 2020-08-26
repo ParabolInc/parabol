@@ -13,7 +13,7 @@ import {getUserId} from '../../utils/authorization'
 import {GQLContext} from '../graphql'
 import {resolveForSU} from '../resolvers'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
-import RetroPhaseItem from './RetroPhaseItem'
+import ReflectPrompt from './ReflectPrompt'
 import RetroReflection from './RetroReflection'
 import RetrospectiveMeeting from './RetrospectiveMeeting'
 import Task from './Task'
@@ -57,10 +57,21 @@ const RetroReflectionGroup = new GraphQLObjectType<any, GQLContext>({
       }
     },
     phaseItem: {
-      type: new GraphQLNonNull(RetroPhaseItem),
-      resolve: ({retroPhaseItemId}, _args, {dataLoader}) => {
-        return dataLoader.get('customPhaseItems').load(retroPhaseItemId)
+      type: new GraphQLNonNull(ReflectPrompt),
+      deprecationReason: 'use prompt',
+      resolve: ({promptId}, _args, {dataLoader}) => {
+        return dataLoader.get('reflectPrompts').load(promptId)
       }
+    },
+    prompt: {
+      type: new GraphQLNonNull(ReflectPrompt),
+      resolve: ({promptId}, _args, {dataLoader}) => {
+        return dataLoader.get('reflectPrompts').load(promptId)
+      }
+    },
+    promptId: {
+      type: new GraphQLNonNull(GraphQLID),
+      description: 'The foreign key to link a reflection group to its prompt. Immutable.'
     },
     reflections: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(RetroReflection))),
@@ -76,7 +87,9 @@ const RetroReflectionGroup = new GraphQLObjectType<any, GQLContext>({
     },
     retroPhaseItemId: {
       type: new GraphQLNonNull(GraphQLID),
-      description: 'The foreign key to link a reflection group to its phaseItem. Immutable.'
+      deprecationReason: 'use promptId',
+      description: 'The foreign key to link a reflection group to its phaseItem. Immutable.',
+      resolve: ({promptId}) => promptId
     },
     smartTitle: {
       type: GraphQLString,

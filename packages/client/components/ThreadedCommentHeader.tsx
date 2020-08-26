@@ -19,7 +19,7 @@ const HeaderActions = styled('div')<{isViewerComment: boolean}>(({isViewerCommen
 
 const AddReactji = styled(AddReactjiButton)({
   display: 'flex',
-  padding: 0
+  marginRight: 4
 })
 
 interface Props {

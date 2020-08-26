@@ -225,7 +225,7 @@ export default createFragmentContainer(ReflectionGroup, {
   reflectionGroup: graphql`
     fragment ReflectionGroup_reflectionGroup on RetroReflectionGroup {
       ...ReflectionGroupHeader_reflectionGroup
-      retroPhaseItemId
+      promptId
       id
       sortOrder
       titleIsUserDefined
@@ -235,7 +235,7 @@ export default createFragmentContainer(ReflectionGroup, {
         ...DraggableReflectionCard_staticReflections
         ...ReflectionCard_reflection
         id
-        retroPhaseItemId
+        promptId
         sortOrder
         isViewerDragging
         isDropping

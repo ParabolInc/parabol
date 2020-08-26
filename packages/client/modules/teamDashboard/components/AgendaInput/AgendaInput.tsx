@@ -72,7 +72,6 @@ const StyledIcon = styled(Icon)({
   color: PALETTE.TEXT_BLUE,
   display: 'block',
   left: 16,
-  opacity: 0.7,
   pointerEvents: 'none',
   position: 'absolute',
   top: 9

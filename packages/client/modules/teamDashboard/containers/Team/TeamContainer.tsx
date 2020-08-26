@@ -18,7 +18,7 @@ const TeamSettings = lazy(() =>
   )
 )
 const ArchivedTasks = lazy(() =>
-  import(/* webpackChunkName: 'TeamArchiveRoot' */ '../TeamArchive/TeamArchiveRoot')
+  import(/* webpackChunkName: 'ArchiveTaskRoot' */ '../../../../components/ArchiveTaskRoot')
 )
 
 interface Props {
@@ -60,7 +60,8 @@ const TeamContainer = (props: Props) => {
             <Route path={`${match.path}/settings`} component={TeamSettings} />
             <Route
               path={`${match.path}/archive`}
-              render={(p) => <ArchivedTasks {...p} team={team} />}
+              // render={(p) => <ArchivedTasks {...p} team={team} />}
+              render={(p) => <ArchivedTasks {...p} team={team} returnToTeamId={teamId} teamIds={[teamId]} />}
             />
           </Switch>
         </Suspense>
@@ -73,6 +74,7 @@ export default createFragmentContainer(TeamContainer, {
   viewer: graphql`
     fragment TeamContainer_viewer on User {
       team(teamId: $teamId) {
+        name
         ...Team_team
         ...TeamArchive_team
       }
