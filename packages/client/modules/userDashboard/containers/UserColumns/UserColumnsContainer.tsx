@@ -14,7 +14,7 @@ interface Props {
 
 const UserColumnsContainer = (props: Props) => {
   const {viewer} = props
-  const {userIds, teamIds} = parseUserTaskFilters()
+  const {userIds, teamIds} = parseUserTaskFilters(viewer.id)
   const teamMemberFilter = userIds ? {id: userIds[0]} : undefined
   const teamFilter = teamIds ? {id: teamIds[0]} : undefined
   const {dashSearch, tasks} = viewer

@@ -19,7 +19,7 @@ const UserDashTeamMemberMenu = (props: Props) => {
   const {history} = useRouter()
   const {menuProps, viewer} = props
 
-  const {userIds, teamIds, showArchived} = parseUserTaskFilters()
+  const {userIds, teamIds, showArchived} = parseUserTaskFilters(viewer.id)
   const {teams} = viewer
   const filteredTeams = teamIds ? teams.filter(({id: teamId}) => teamIds.includes(teamId)) : teams
   const keySet = new Set()
@@ -67,6 +67,7 @@ const UserDashTeamMemberMenu = (props: Props) => {
 export default createFragmentContainer(UserDashTeamMemberMenu, {
   viewer: graphql`
     fragment UserDashTeamMemberMenu_viewer on User {
+      id
       teams {
         id
         name

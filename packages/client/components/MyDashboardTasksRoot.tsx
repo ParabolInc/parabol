@@ -19,9 +19,8 @@ const query = graphql`
 interface Props extends RouteComponentProps<{}> {}
 
 const MyDashboardTasksRoot = ({location}: Props) => {
-  const {userIds, teamIds} = parseUserTaskFilters(location)
-
   const atmosphere = useAtmosphere()
+  const {userIds, teamIds} = parseUserTaskFilters(atmosphere.viewerId, location)
 
   return (
     <QueryRenderer

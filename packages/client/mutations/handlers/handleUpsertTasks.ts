@@ -8,6 +8,7 @@ import getUserTasksConn from '../connections/getUserTasksConn'
 import pluralizeHandler from './pluralizeHandler'
 import safePutNodeInConn from './safePutNodeInConn'
 import isTaskPrivate from '~/utils/isTaskPrivate'
+import parseUserTaskFilters from '~/utils/parseUserTaskFilters'
 
 type Task = RecordProxy<{
   readonly id: string
@@ -40,7 +41,8 @@ const handleUpsertTask = (task: Task | null, store: RecordSourceSelectorProxy<an
   const archiveConns = [getArchivedTasksConn(viewer, teamId), getArchivedTasksConn(viewer)]
   const team = store.get(teamId)
   const teamConn = getTeamTasksConn(team)
-  const userConn = getUserTasksConn(viewer)
+  const {userIds, teamIds} = parseUserTaskFilters(viewerId)
+  const userConn = getUserTasksConn(viewer, userIds, teamIds)
   const threadSourceId = task.getValue('threadId')
   const threadSourceProxy = (threadSourceId && store.get(threadSourceId as string)) || null
   const threadSourceConn = getThreadSourceThreadConn(threadSourceProxy)

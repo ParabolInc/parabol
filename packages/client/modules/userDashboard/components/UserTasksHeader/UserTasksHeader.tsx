@@ -78,7 +78,7 @@ const UserTasksHeader = (props: Props) => {
   const {teams} = viewer
   const teamMembers = teams.map(({teamMembers}) => teamMembers).flat()
   const users = [...new Set(teamMembers.map(({user}) => user).flat())]
-  const {userIds, teamIds, showArchived} = parseUserTaskFilters()
+  const {userIds, teamIds, showArchived} = parseUserTaskFilters(viewer.id)
   const teamFilter = teamIds ? teams.find(({id: teamId}) => teamIds.includes(teamId)) : undefined
   const teamMemberFilter = userIds ? users.find(({id: userId}) => userIds.includes(userId)) : undefined
   const teamFilterName = (teamFilter && teamFilter.name) || 'My teams'

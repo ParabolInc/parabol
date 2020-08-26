@@ -18,10 +18,9 @@ interface Props {
 
 const MyDashboardTasks = (props: Props) => {
   const {retry, viewer} = props
-  const {showArchived} = parseUserTaskFilters()
   const atmosphere = useAtmosphere()
 
-  const {userIds, teamIds} = parseUserTaskFilters()
+  const {userIds, teamIds, showArchived} = parseUserTaskFilters(atmosphere.viewerId)
 
   useStoreQueryRetry(retry)
   useDocumentTitle('My Tasks | Parabol', 'My Tasks')
