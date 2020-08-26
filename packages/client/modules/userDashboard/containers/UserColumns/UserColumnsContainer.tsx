@@ -48,8 +48,8 @@ const UserColumnsContainer = (props: Props) => {
       viewer: {teams}
     } = props
 
-    // if user filter is selected, it's like User Dashboard: task footer shows team name
-    const areaForTaskCard = teamMemberFilter ? AreaEnum.userDash : AreaEnum.teamDash
+    // iff 1 user is selected, we show team names at the footer; otherwise we show task owner name
+    const areaForTaskCard = userIds && userIds.length === 1 ? AreaEnum.userDash : AreaEnum.teamDash
     const myTeamMemberId = teamFilter ? toTeamMemberId(teamFilter!.id, viewer.id) : undefined
     const filteredTeams = userIds ? teams.filter(({teamMembers, id: teamId}) => {
       const inTeam = teamMembers.find(({userId}) => userIds.includes(userId)) != undefined
