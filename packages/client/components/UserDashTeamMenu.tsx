@@ -25,7 +25,8 @@ const UserDashTeamMenu = (props: Props) => {
   const filteredTeams = userIds ? teams.filter(({teamMembers}) =>
     teamMembers.find(({userId}) => userIds.includes(userId)) != undefined
   ) : teams
-  const defaultActiveIdx = filteredTeams.findIndex((team) => team.id === teamFilterId) + 2
+  const showAllTeams = userIds ? true : false
+  const defaultActiveIdx = filteredTeams.findIndex((team) => team.id === teamFilterId) + (showAllTeams ? 2 : 1)
   return (
     <Menu
       ariaLabel={'Select the team to filter by'}
@@ -33,7 +34,7 @@ const UserDashTeamMenu = (props: Props) => {
       defaultActiveIdx={defaultActiveIdx}
     >
       <DropdownMenuLabel>{'Filter by team:'}</DropdownMenuLabel>
-      {userIds &&
+      {showAllTeams &&
         <MenuItem
           key={'teamFilterNULL'}
           label={'All teams'}
