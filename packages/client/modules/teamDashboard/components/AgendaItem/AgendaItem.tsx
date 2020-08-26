@@ -61,7 +61,7 @@ const getItemProps = (
   agendaItemId: string,
   viewerId: string,
   gotoStageId: ReturnType<typeof useGotoStageId> | undefined,
-  meeting?: AgendaItem_meeting
+  meeting: AgendaItem_meeting | null
 ) => {
   const fallback = {
     isDisabled: false,
@@ -108,7 +108,7 @@ interface Props {
   agendaItem: AgendaItem_agendaItem
   gotoStageId: ReturnType<typeof useGotoStageId> | undefined
   isDragging: boolean
-  meeting: AgendaList_meeting | null
+  meeting: AgendaItem_meeting | null
 }
 
 const AgendaItem = (props: Props) => {

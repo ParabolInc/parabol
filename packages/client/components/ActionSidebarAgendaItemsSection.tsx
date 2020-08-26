@@ -1,5 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
-import React, {useMemo} from 'react'
+import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 
 import {ActionSidebarAgendaItemsSection_meeting} from '../__generated__/ActionSidebarAgendaItemsSection_meeting.graphql'
@@ -16,6 +16,7 @@ interface Props {
 
 const ActionSidebarAgendaItemsSection = (props: Props) => {
   const {gotoStageId, handleMenuClick, meeting} = props
+  console.log('ActionSidebarAgendaItemsSection -> meeting', meeting)
   const {team} = meeting
   const handleClick = async (stageId: string) => {
     gotoStageId(stageId).catch()
@@ -42,23 +43,10 @@ const ActionSidebarAgendaItemsSection = (props: Props) => {
 
 graphql`
   fragment ActionSidebarAgendaItemsSectionAgendaItemPhase on NewMeetingPhase {
-    id
     phaseType
     ... on UpdatesPhase {
       stages {
         isNavigable
-      }
-    }
-    ... on AgendaItemsPhase {
-      stages {
-        isNavigable
-        agendaItem {
-          id
-          content
-          # need this for the DnD
-          sortOrder
-          ...AgendaItem_agendaItem
-        }
       }
     }
   }
@@ -68,21 +56,21 @@ export default createFragmentContainer(ActionSidebarAgendaItemsSection, {
   meeting: graphql`
     fragment ActionSidebarAgendaItemsSection_meeting on ActionMeeting {
       ...AgendaListAndInput_meeting
-      id
-      endedAt
-      localStage {
-        id
-      }
-      facilitatorStageId
-      facilitatorUserId
-      meetingType
+      # id
+      # endedAt
+      # localStage {
+      #   id
+      # }
+      # facilitatorStageId
+      # facilitatorUserId
+      # meetingType
       # load up the localPhase
       phases {
         ...ActionSidebarAgendaItemsSectionAgendaItemPhase @relay(mask: false)
       }
-      localPhase {
-        ...ActionSidebarAgendaItemsSectionAgendaItemPhase @relay(mask: false)
-      }
+      # localPhase {
+      #   ...ActionSidebarAgendaItemsSectionAgendaItemPhase @relay(mask: false)
+      # }
       team {
         ...AgendaListAndInput_team
       }

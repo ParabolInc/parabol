@@ -138,7 +138,7 @@ export default createFragmentContainer(AgendaList, {
       id
       content
       sortOrder
-      ...AgendaItem_agendaItem
+      ...AgendaItem_agendaItem @relay(mask: false)
     }
   `
 })

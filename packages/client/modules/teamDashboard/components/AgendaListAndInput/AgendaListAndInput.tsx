@@ -51,7 +51,6 @@ const getAgendaItems = (meeting) => {
 const AgendaListAndInput = (props: Props) => {
   const {dashSearch, gotoStageId, isDisabled, team, meeting} = props
   const endedAt = meeting?.endedAt
-
   const agendaItems = team.agendaItems ? team.agendaItems : getAgendaItems(meeting)
 
   return (
@@ -71,11 +70,6 @@ graphql`
   fragment AgendaListAndInputAgendaItemPhase on NewMeetingPhase {
     id
     phaseType
-    ... on UpdatesPhase {
-      stages {
-        isNavigable
-      }
-    }
     ... on AgendaItemsPhase {
       stages {
         isNavigable
@@ -85,6 +79,7 @@ graphql`
           # need this for the DnD
           sortOrder
           ...AgendaItem_agendaItem
+          ...AgendaList_agendaItems
         }
       }
     }
