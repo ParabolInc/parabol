@@ -21,32 +21,17 @@ const enableSAMLForDomain = {
     const normalizedDomain = domain.toLowerCase()
     const normalizedUrl = url.toLowerCase()
 
-    const samlId = await r
+    await r
       .table('SAML')
-      .getAll(normalizedDomain, {index: 'domain'})
-      .nth(0)('id')
-      .default(null)
+      .insert(
+        {
+          id: normalizedDomain,
+          url: normalizedUrl,
+          metadata: metadata
+        },
+        {conflict: 'replace'}
+      )
       .run()
-
-    if (samlId) {
-      await r
-        .table('SAML')
-        .get(samlId)
-        .update({
-          url: normalizedUrl,
-          metadata: metadata
-        })
-        .run()
-    } else {
-      await r
-        .table('SAML')
-        .insert({
-          domain: normalizedDomain,
-          url: normalizedUrl,
-          metadata: metadata
-        })
-        .run()
-    }
 
     return true
   }
