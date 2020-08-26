@@ -1,13 +1,11 @@
 import graphql from 'babel-plugin-relay/macro'
-import React, { useMemo } from 'react'
-import { createFragmentContainer } from 'react-relay'
+import React, {useMemo} from 'react'
+import {createFragmentContainer} from 'react-relay'
 
-import {
-    ActionSidebarAgendaItemsSection_meeting
-} from '../__generated__/ActionSidebarAgendaItemsSection_meeting.graphql'
+import {ActionSidebarAgendaItemsSection_meeting} from '../__generated__/ActionSidebarAgendaItemsSection_meeting.graphql'
 import useGotoStageId from '../hooks/useGotoStageId'
 import AgendaListAndInput from '../modules/teamDashboard/components/AgendaListAndInput/AgendaListAndInput'
-import { NewMeetingPhaseTypeEnum } from '../types/graphql'
+import {NewMeetingPhaseTypeEnum} from '../types/graphql'
 import MeetingSidebarPhaseItemChild from './MeetingSidebarPhaseItemChild'
 
 interface Props {

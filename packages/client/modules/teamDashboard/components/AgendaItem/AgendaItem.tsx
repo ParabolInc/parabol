@@ -1,16 +1,16 @@
 import graphql from 'babel-plugin-relay/macro'
-import React, { useEffect, useRef, useState } from 'react'
-import { createFragmentContainer } from 'react-relay'
-import { AgendaItem_meeting } from '~/__generated__/AgendaItem_meeting.graphql'
+import React, {useEffect, useRef, useState} from 'react'
+import {createFragmentContainer} from 'react-relay'
+import {AgendaItem_meeting} from '~/__generated__/AgendaItem_meeting.graphql'
 
 import styled from '@emotion/styled'
 
-import { AgendaItem_agendaItem } from '../../../../__generated__/AgendaItem_agendaItem.graphql'
+import {AgendaItem_agendaItem} from '../../../../__generated__/AgendaItem_agendaItem.graphql'
 import Avatar from '../../../../components/Avatar/Avatar'
 import IconButton from '../../../../components/IconButton'
 import MeetingSubnavItem from '../../../../components/MeetingSubnavItem'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
-import { MenuPosition } from '../../../../hooks/useCoords'
+import {MenuPosition} from '../../../../hooks/useCoords'
 import useGotoStageId from '../../../../hooks/useGotoStageId'
 import useScrollIntoView from '../../../../hooks/useScrollIntoVIew'
 import useTooltip from '../../../../hooks/useTooltip'
@@ -18,7 +18,7 @@ import RemoveAgendaItemMutation from '../../../../mutations/RemoveAgendaItemMuta
 import UpdateAgendaItemMutation from '../../../../mutations/UpdateAgendaItemMutation'
 import pinIcon from '../../../../styles/theme/images/icons/pin.svg'
 import unpinIcon from '../../../../styles/theme/images/icons/unpin.svg'
-import { ICON_SIZE } from '../../../../styles/typographyV2'
+import {ICON_SIZE} from '../../../../styles/typographyV2'
 
 const AgendaItemStyles = styled('div')({
   position: 'relative',
