@@ -22,8 +22,8 @@ services:
   app:
     build:
       context: .
-      dockerfile: ./docker/Dockerfile.dev
-      target: dev
+      dockerfile: ./docker/Dockerfile.prod
+      target: prod
     env_file: .env
     ports:
       - "3000:3000"
