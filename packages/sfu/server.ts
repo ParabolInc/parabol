@@ -2,8 +2,10 @@ import config from './config'
 import express from 'express'
 import https from 'https'
 import fs from 'fs'
+import url from 'url'
 import protoo from 'protoo-server'
 import {types as mediasoupTypes, createWorker} from 'mediasoup'
+import Room from './lib/Room'
 
 const tls = {
   cert: fs.readFileSync(config.https.tls.cert),
@@ -11,10 +13,15 @@ const tls = {
 }
 const mediasoupWorkers = []
 
+export function getMediaSoupWorker() {
+  return mediasoupWorkers[0] // hard coded for now
+}
+
 async function runMediasoupWorkers() {
   const {numWorkers} = config.mediasoup
   const {logLevel, logTags, rtcMinPort, rtcMaxPort} = config.mediasoup.workerSettings
-  for (let i = 0; i < numWorkers; i++) {
+  for (let i = 0; i < 1; i++) {
+    // hard code to 1 for now
     const worker = await createWorker({
       logLevel: logLevel as mediasoupTypes.WorkerLogLevel,
       logTags,
@@ -47,9 +54,19 @@ async function runWebSocketServer() {
     fragmentationThreshold: 960000
   })
   console.log(`\n🎥🎥🎥 Ready to Serve Media  🎥🎥🎥`)
-  wss.on('connectionrequest', (info, accept, reject) => {
-    console.log('Received request:', info.request.url)
+
+  wss.on('connectionrequest', async (info, accept, reject) => {
+    const requestUrl = url.parse(info.request.url, true)
+    const {roomId, peerId} = requestUrl.query
+    if (!roomId || !peerId) {
+      reject(400, 'Connection request without roomId or peerId')
+      return
+    }
+    const room = await Room.getCreate(roomId as string)
+    console.log('Received request params:', roomId, peerId)
+
     const transport = accept()
+    room.createPeer(peerId as string, transport)
   })
 }
 
