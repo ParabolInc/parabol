@@ -1,6 +1,6 @@
-const os = require('os')
+import os from 'os'
 
-module.exports = {
+export default {
   // Listening hostname (just for `gulp live` task).
   domain: process.env.DOMAIN || 'localhost',
   // Signaling settings (protoo WebSocket server and HTTP API server).
