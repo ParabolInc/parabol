@@ -28,7 +28,7 @@ const MyDashboardTasksRoot = ({location}: Props) => {
       query={query}
       variables={{userIds, teamIds}}
       fetchPolicy={'store-or-network' as any}
-      render={renderQuery(MyDashboardTasks, {size: LoaderSize.PANEL})}
+      render={renderQuery(MyDashboardTasks, {size: LoaderSize.PANEL, props: {location}})}
     />
   )
 }
