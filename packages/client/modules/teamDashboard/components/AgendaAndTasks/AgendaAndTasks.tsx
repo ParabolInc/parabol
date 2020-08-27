@@ -146,13 +146,6 @@ export default createFragmentContainer(AgendaAndTasks, {
       team(teamId: $teamId) {
         teamId: id
         teamName: name
-        agendaItems {
-          id
-          content
-          # need this for the DnD
-          sortOrder
-          ...AgendaItem_agendaItem
-        }
         ...AgendaListAndInput_team
         ...TeamTasksHeaderContainer_team
       }

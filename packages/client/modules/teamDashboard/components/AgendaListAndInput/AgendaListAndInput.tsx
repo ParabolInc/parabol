@@ -1,5 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
-import React, {useMemo} from 'react'
+import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {AgendaListAndInput_meeting} from '~/__generated__/AgendaListAndInput_meeting.graphql'
 
@@ -51,7 +51,7 @@ const getAgendaItems = (meeting) => {
 const AgendaListAndInput = (props: Props) => {
   const {dashSearch, gotoStageId, isDisabled, team, meeting} = props
   const endedAt = meeting?.endedAt
-  const agendaItems = team.agendaItems ? team.agendaItems : getAgendaItems(meeting)
+  const agendaItems = endedAt ? getAgendaItems(meeting) : team.agendaItems
 
   return (
     <RootStyles disabled={!!isDisabled} isMeeting={!!meeting}>
@@ -68,16 +68,10 @@ const AgendaListAndInput = (props: Props) => {
 
 graphql`
   fragment AgendaListAndInputAgendaItemPhase on NewMeetingPhase {
-    id
     phaseType
     ... on AgendaItemsPhase {
       stages {
-        isNavigable
         agendaItem {
-          id
-          content
-          # need this for the DnD
-          sortOrder
           ...AgendaItem_agendaItem
           ...AgendaList_agendaItems
         }
@@ -94,7 +88,7 @@ export default createFragmentContainer(AgendaListAndInput, {
         id
         content
         sortOrder
-        ...AgendaItem_agendaItem
+        ...AgendaList_agendaItems
       }
     }
   `,

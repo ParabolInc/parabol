@@ -16,7 +16,6 @@ interface Props {
 
 const ActionSidebarAgendaItemsSection = (props: Props) => {
   const {gotoStageId, handleMenuClick, meeting} = props
-  console.log('ActionSidebarAgendaItemsSection -> meeting', meeting)
   const {team} = meeting
   const handleClick = async (stageId: string) => {
     gotoStageId(stageId).catch()
@@ -32,9 +31,9 @@ const ActionSidebarAgendaItemsSection = (props: Props) => {
   return (
     <MeetingSidebarPhaseItemChild>
       <AgendaListAndInput
-        meeting={meeting}
         gotoStageId={handleClick}
         isDisabled={!isUpdatesNavigable}
+        meeting={meeting}
         team={team!}
       />
     </MeetingSidebarPhaseItemChild>
@@ -56,21 +55,9 @@ export default createFragmentContainer(ActionSidebarAgendaItemsSection, {
   meeting: graphql`
     fragment ActionSidebarAgendaItemsSection_meeting on ActionMeeting {
       ...AgendaListAndInput_meeting
-      # id
-      # endedAt
-      # localStage {
-      #   id
-      # }
-      # facilitatorStageId
-      # facilitatorUserId
-      # meetingType
-      # load up the localPhase
       phases {
         ...ActionSidebarAgendaItemsSectionAgendaItemPhase @relay(mask: false)
       }
-      # localPhase {
-      #   ...ActionSidebarAgendaItemsSectionAgendaItemPhase @relay(mask: false)
-      # }
       team {
         ...AgendaListAndInput_team
       }
