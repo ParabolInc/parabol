@@ -3,7 +3,7 @@ import express from 'express'
 import https from 'https'
 import fs from 'fs'
 import protoo from 'protoo-server'
-import mediasoup from 'mediasoup'
+import {types as mediasoupTypes, createWorker} from 'mediasoup'
 
 const tls = {
   cert: fs.readFileSync(config.https.tls.cert),
@@ -13,18 +13,27 @@ const mediasoupWorkers = []
 
 async function runMediasoupWorkers() {
   const {numWorkers} = config.mediasoup
+  const {logLevel, logTags, rtcMinPort, rtcMaxPort} = config.mediasoup.workerSettings
   for (let i = 0; i < numWorkers; i++) {
-    const worker = await mediasoup.createWorker({
-      logLevel: config.mediasoup.workerSettings.logLevel as mediasoup.types.WorkerLogLevel,
-      logTags: config.mediasoup.workerSettings.logTags as mediasoup.types.WorkerLogTag[],
-      rtcMinPort: Number(config.mediasoup.workerSettings.rtcMinPort),
-      rtcMaxPort: Number(config.mediasoup.workerSettings.rtcMaxPort)
+    const worker = await createWorker({
+      logLevel: logLevel as mediasoupTypes.WorkerLogLevel,
+      logTags,
+      rtcMinPort: Number(rtcMinPort),
+      rtcMaxPort: Number(rtcMaxPort)
+    })
+    worker.on('died', () => {
+      console.log('mediasoup Worker died, exiting  in 2 seconds... [pid:%d]', worker.pid)
+      setTimeout(() => process.exit(1), 2000)
     })
     mediasoupWorkers.push(worker)
+    setInterval(async () => {
+      const usage = await worker.getResourceUsage()
+      console.log('mediasoup Worker resource usage [pid:%d]: %o', worker.pid, usage)
+    }, 120000)
   }
 }
 
-async function main() {
+async function runWebSocketServer() {
   const expressApp = express()
   const httpsServer = https.createServer(tls, expressApp as any)
 
@@ -42,6 +51,11 @@ async function main() {
     console.log('Received request:', info.request.url)
     const transport = accept()
   })
+}
+
+async function main() {
+  await runMediasoupWorkers()
+  await runWebSocketServer()
 }
 
 main()
