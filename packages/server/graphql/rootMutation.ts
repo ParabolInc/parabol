@@ -80,6 +80,7 @@ import setStageTimer from './mutations/setStageTimer'
 import signUpWithPassword from './mutations/signUpWithPassword'
 import startDraggingReflection from './mutations/startDraggingReflection'
 import startNewMeeting from './mutations/startNewMeeting'
+import startSprintPoker from './mutations/startSprintPoker'
 import toggleAgendaList from './mutations/toggleAgendaList'
 import updateAgendaItem from './mutations/updateAgendaItem'
 import updateCommentContent from './mutations/updateCommentContent'
@@ -184,6 +185,7 @@ export default new GraphQLObjectType<any, Context, any>({
     signUpWithPassword,
     startDraggingReflection,
     startNewMeeting,
+    startSprintPoker,
     toggleAgendaList,
     updateAgendaItem,
     updateCommentContent,

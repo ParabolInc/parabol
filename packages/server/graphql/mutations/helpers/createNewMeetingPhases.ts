@@ -15,6 +15,7 @@ import AgendaItemsPhase from '../../../database/types/AgendaItemsPhase'
 import CheckInPhase from '../../../database/types/CheckInPhase'
 import DiscussPhase from '../../../database/types/DiscussPhase'
 import GenericMeetingPhase from '../../../database/types/GenericMeetingPhase'
+import MeetingSettingsPoker from '../../../database/types/MeetingSettingsPoker'
 import MeetingSettingsRetrospective from '../../../database/types/MeetingSettingsRetrospective'
 import ReflectPhase from '../../../database/types/ReflectPhase'
 import UpdatesPhase from '../../../database/types/UpdatesPhase'
@@ -69,10 +70,7 @@ const createNewMeetingPhases = async (
   const now = new Date()
   const meetingSettings = (await dataLoader
     .get('meetingSettingsByType')
-    .load({teamId, meetingType})) as MeetingSettingsRetrospective
-  if (!meetingSettings) {
-    throw new Error('No meeting setting found for team!')
-  }
+    .load({teamId, meetingType})) as MeetingSettingsRetrospective | MeetingSettingsPoker
   const {phaseTypes, selectedTemplateId} = meetingSettings
   const stageDurations = await getPastStageDurations(teamId)
   const phases = (await Promise.all(
@@ -105,6 +103,8 @@ const createNewMeetingPhases = async (
         case VOTE:
         case FIRST_CALL:
         case LAST_CALL:
+        case 'SCOPE':
+        case 'ESTIMATE':
           return new GenericMeetingPhase(phaseType, durations)
         default:
           throw new Error(`Unhandled phaseType: ${phaseType}`)

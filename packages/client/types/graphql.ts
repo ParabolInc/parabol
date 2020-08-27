@@ -1044,7 +1044,10 @@ export interface ITasksOnTeamMemberArguments {
 /**
  * All the user details for a specific meeting
  */
-export type MeetingMember = IRetrospectiveMeetingMember | IActionMeetingMember;
+export type MeetingMember =
+  | IRetrospectiveMeetingMember
+  | IPokerMeetingMember
+  | IActionMeetingMember;
 
 /**
  * All the user details for a specific meeting
@@ -1565,6 +1568,7 @@ export interface ITeamInvitation {
  */
 export type TeamMeetingSettings =
   | IRetrospectiveMeetingSettings
+  | IPokerMeetingSettings
   | IActionMeetingSettings;
 
 /**
@@ -1617,7 +1621,7 @@ export const enum NewMeetingPhaseTypeEnum {
 /**
  * A team meeting history for all previous meetings
  */
-export type NewMeeting = IRetrospectiveMeeting | IActionMeeting;
+export type NewMeeting = IRetrospectiveMeeting | IPokerMeeting | IActionMeeting;
 
 /**
  * A team meeting history for all previous meetings
@@ -3455,6 +3459,11 @@ export interface IMutation {
   startNewMeeting: IStartNewMeetingPayload;
 
   /**
+   * Start a new sprint poker meeting
+   */
+  startSprintPoker: StartSprintPokerPayload;
+
+  /**
    * Show/hide the agenda list
    */
   toggleAgendaList: ITeamMember | null;
@@ -4258,6 +4267,13 @@ export interface IStartNewMeetingOnMutationArguments {
    * The base type of the meeting (action, retro, etc)
    */
   meetingType: MeetingTypeEnum;
+}
+
+export interface IStartSprintPokerOnMutationArguments {
+  /**
+   * The team starting the meeting
+   */
+  teamId: string;
 }
 
 export interface IToggleAgendaListOnMutationArguments {
@@ -6899,6 +6915,225 @@ export interface IStartNewMeetingPayload {
   meeting: NewMeeting | null;
 }
 
+/**
+ * Return object for StartSprintPokerPayload
+ */
+export type StartSprintPokerPayload = IErrorPayload | IStartSprintPokerSuccess;
+
+export interface IStartSprintPokerSuccess {
+  __typename: 'StartSprintPokerSuccess';
+  meetingId: string;
+  meeting: IPokerMeeting;
+}
+
+/**
+ * A Poker meeting
+ */
+export interface IPokerMeeting {
+  __typename: 'PokerMeeting';
+
+  /**
+   * The unique meeting id. shortid.
+   */
+  id: string;
+
+  /**
+   * The timestamp the meeting was created
+   */
+  createdAt: any;
+
+  /**
+   * The userId of the desired facilitator (different form facilitatorUserId if disconnected)
+   */
+  defaultFacilitatorUserId: string;
+
+  /**
+   * The timestamp the meeting officially ended
+   */
+  endedAt: any | null;
+
+  /**
+   * The location of the facilitator in the meeting
+   */
+  facilitatorStageId: string;
+
+  /**
+   * The userId (or anonymousId) of the most recent facilitator
+   */
+  facilitatorUserId: string;
+
+  /**
+   * The facilitator team member
+   */
+  facilitator: ITeamMember;
+
+  /**
+   * The team members that were active during the time of the meeting
+   */
+  meetingMembers: Array<IPokerMeetingMember>;
+
+  /**
+   * The auto-incrementing meeting number for the team
+   */
+  meetingNumber: number;
+  meetingType: MeetingTypeEnum;
+
+  /**
+   * The name of the meeting
+   */
+  name: string;
+
+  /**
+   * The organization this meeting belongs to
+   */
+  organization: IOrganization;
+
+  /**
+   * The phases the meeting will go through, including all phase-specific state
+   */
+  phases: Array<NewMeetingPhase>;
+
+  /**
+   * true if should show the org the conversion modal, else false
+   */
+  showConversionModal: boolean;
+
+  /**
+   * The time the meeting summary was emailed to the team
+   */
+  summarySentAt: any | null;
+  teamId: string;
+
+  /**
+   * The team that ran the meeting
+   */
+  team: ITeam;
+
+  /**
+   * The last time a meeting was updated (stage completed, finished, etc)
+   */
+  updatedAt: any | null;
+
+  /**
+   * The Poker meeting member of the viewer
+   */
+  viewerMeetingMember: IPokerMeetingMember;
+
+  /**
+   * The number of comments generated in the meeting
+   */
+  commentCount: number;
+
+  /**
+   * The number of stories scored during a meeting
+   */
+  storyCount: number;
+
+  /**
+   * The settings that govern the Poker meeting
+   */
+  settings: IPokerMeetingSettings;
+}
+
+/**
+ * All the meeting specifics for a user in a poker meeting
+ */
+export interface IPokerMeetingMember {
+  __typename: 'PokerMeetingMember';
+
+  /**
+   * A composite of userId::meetingId
+   */
+  id: string;
+
+  /**
+   * true if present, false if absent, else null
+   */
+  isCheckedIn: boolean | null;
+  meetingId: string;
+  meetingType: MeetingTypeEnum;
+  teamId: string;
+  teamMember: ITeamMember;
+  user: IUser;
+  userId: string;
+
+  /**
+   * The last time a meeting was updated (stage completed, finished, etc)
+   */
+  updatedAt: any;
+}
+
+/**
+ * The retro-specific meeting settings
+ */
+export interface IPokerMeetingSettings {
+  __typename: 'PokerMeetingSettings';
+  id: string;
+
+  /**
+   * The type of meeting these settings apply to
+   */
+  meetingType: MeetingTypeEnum;
+
+  /**
+   * The broad phase types that will be addressed during the meeting
+   */
+  phaseTypes: Array<NewMeetingPhaseTypeEnum>;
+
+  /**
+   * FK
+   */
+  teamId: string;
+
+  /**
+   * The team these settings belong to
+   */
+  team: ITeam;
+
+  /**
+   * FK. The template that will be used to start the poker meeting
+   */
+  selectedTemplateId: string;
+
+  /**
+   * The template that will be used to start the Poker meeting
+   */
+  selectedTemplate: IReflectTemplate;
+
+  /**
+   * The list of templates used to start a Poker meeting
+   */
+  teamTemplates: Array<IReflectTemplate>;
+
+  /**
+   * The list of templates shared across the organization to start a Poker meeting
+   */
+  organizationTemplates: IReflectTemplateConnection;
+
+  /**
+   * The list of templates shared across the organization to start a Poker meeting
+   */
+  publicTemplates: IReflectTemplateConnection;
+}
+
+export interface IOrganizationTemplatesOnPokerMeetingSettingsArguments {
+  first: number;
+
+  /**
+   * The cursor, which is the templateId
+   */
+  after?: string | null;
+}
+
+export interface IPublicTemplatesOnPokerMeetingSettingsArguments {
+  first: number;
+
+  /**
+   * The cursor, which is the templateId
+   */
+  after?: string | null;
+}
+
 export interface IUpdateAgendaItemInput {
   /**
    * The unique agenda item ID, composed of a teamId::shortid
@@ -7473,6 +7708,7 @@ export type TeamSubscriptionPayload =
   | IRenameMeetingSuccess
   | ISelectRetroTemplatePayload
   | IStartNewMeetingPayload
+  | IStartSprintPokerSuccess
   | IUpdateAgendaItemPayload
   | IUpdateCreditCardPayload
   | IUpdateTeamNamePayload
