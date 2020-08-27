@@ -96,11 +96,7 @@ export default createFragmentContainer(AgendaListAndInput, {
     fragment AgendaListAndInput_meeting on ActionMeeting {
       ...AgendaList_meeting
       endedAt
-      # load up the localPhase
       phases {
-        ...AgendaListAndInputAgendaItemPhase @relay(mask: false)
-      }
-      localPhase {
         ...AgendaListAndInputAgendaItemPhase @relay(mask: false)
       }
     }
