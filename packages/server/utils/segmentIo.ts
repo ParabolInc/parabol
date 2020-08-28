@@ -37,8 +37,9 @@ segmentIo.track = async (options) => {
        * be tallied as "direct" rather than acquired through a known channel (e.g.
        * "Organic Search"), making it look like all these new users just dropped out of the
        * sky.
-       * 
-       * GA requires we specify which GA User ID to update. We can do this by passing in
+       *
+       * To work around this, we specify which a UUID Segment will consistently hash
+       * between our marketing site and app domains. We do this by passing in
        * additional Segment context, as seen here:
        */
       integrations: {
