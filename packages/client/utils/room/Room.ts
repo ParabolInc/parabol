@@ -48,15 +48,14 @@ export default class Room {
 
   async join() {
     console.log('joining...')
-    this.connectMedia()
-    this.enableMedia()
+    await this.connectMedia()
+    await this.enableMedia()
   }
 
   async connectMedia() {
     console.log('connecting media...')
     this.device = new Device()
-    const routerRtpCapabilities = this.peer.request('getRouterRtpCapabilities')
-    console.log(routerRtpCapabilities)
+    const routerRtpCapabilities = await this.peer.request('getRouterRtpCapabilities')
     await this.device.load({routerRtpCapabilities})
   }
 

@@ -33,10 +33,10 @@ async function runMediasoupWorkers() {
       setTimeout(() => process.exit(1), 2000)
     })
     mediasoupWorkers.push(worker)
-    setInterval(async () => {
-      const usage = await worker.getResourceUsage()
-      console.log('mediasoup Worker resource usage [pid:%d]: %o', worker.pid, usage)
-    }, 120000)
+    // setInterval(async () => {
+    //   const usage = await worker.getResourceUsage()
+    //   console.log('mediasoup Worker resource usage [pid:%d]: %o', worker.pid, usage)
+    // }, 120000)
   }
 }
 
@@ -62,9 +62,9 @@ async function runWebSocketServer() {
       reject(400, 'Connection request without roomId or peerId')
       return
     }
+    /* Should put in queue or otherwise avoid race conditions */
     const room = await Room.getCreate(roomId as string)
-    console.log('Received request params:', roomId, peerId)
-
+    console.log('Got room with room id:', room.roomId)
     const transport = accept()
     room.createPeer(peerId as string, transport)
   })
