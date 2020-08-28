@@ -13,6 +13,7 @@ import AuthIdentityLocal from './types/AuthIdentityLocal'
 import CheckInPhase from './types/CheckInPhase'
 import Comment from './types/Comment'
 import DiscussPhase from './types/DiscussPhase'
+import EstimatePhase from './types/EstimatePhase'
 import GenericMeetingPhase from './types/GenericMeetingPhase'
 import NotificationTeamInvitation from './types/NotificationTeamInvitation'
 import NotifyPromoteToOrgLeader from './types/NotifyPromoteToOrgLeader'
@@ -66,6 +67,7 @@ export default new GraphQLSchema({
     ReflectPhase,
     DiscussPhase,
     UpdatesPhase,
+    EstimatePhase,
     AgendaItemsPhase,
     GenericMeetingPhase,
     NotificationTeamInvitation,

@@ -10,7 +10,6 @@ import NotificationSubscription from '../subscriptions/NotificationSubscription'
 import OrganizationSubscription from '../subscriptions/OrganizationSubscription'
 import TaskSubscription from '../subscriptions/TaskSubscription'
 import TeamSubscription from '../subscriptions/TeamSubscription'
-import {MeetingTypeEnum} from '../types/graphql'
 import lazyPreload from '../utils/lazyPreload'
 
 interface Props {
@@ -20,10 +19,13 @@ interface Props {
 }
 
 const meetingLookup = {
-  [MeetingTypeEnum.action]: lazyPreload(() =>
+  action: lazyPreload(() =>
     import(/* webpackChunkName: 'ActionMeeting' */ './ActionMeeting')
   ),
-  [MeetingTypeEnum.retrospective]: lazyPreload(() =>
+  poker: lazyPreload(() =>
+    import(/* webpackChunkName: 'PokerMeeting' */ './PokerMeeting')
+  ),
+  retrospective: lazyPreload(() =>
     import(/* webpackChunkName: 'RetroMeeting' */ './RetroMeeting')
   )
 }
@@ -34,6 +36,7 @@ const MeetingSelector = (props: Props) => {
   const {history} = useRouter()
   useEffect(() => {
     if (!meeting) {
+      debugger
       history.replace({
         pathname: `/invitation-required`,
         search: `?redirectTo=${encodeURIComponent(window.location.pathname)}&meetingId=${meetingId}`
@@ -56,6 +59,7 @@ graphql`
   fragment MeetingSelector_meeting on NewMeeting {
     ...RetroMeeting_meeting
     ...ActionMeeting_meeting
+    ...PokerMeeting_meeting
     meetingType
   }
 `

@@ -1,11 +1,11 @@
-import React, {ReactNode} from 'react'
 import styled from '@emotion/styled'
+import React, {ReactNode} from 'react'
 import {PALETTE} from '../styles/paletteV2'
 import {NavSidebar} from '../types/constEnums'
-import {phaseIconLookup, phaseLabelLookup} from '../utils/meetings/lookups'
-import Icon from './Icon'
-import Badge from './Badge/Badge'
 import {NewMeetingPhaseTypeEnum} from '../types/graphql'
+import {phaseIconLookup, phaseImageLookup, phaseLabelLookup} from '../utils/meetings/lookups'
+import Badge from './Badge/Badge'
+import Icon from './Icon'
 
 const NavListItem = styled('li')<{phaseType: string}>(({phaseType}) => ({
   fontWeight: 600,
@@ -26,6 +26,17 @@ const NavItemIcon = styled(Icon)<{isUnsyncedFacilitatorPhase: boolean}>(
     color: isUnsyncedFacilitatorPhase ? PALETTE.EMPHASIS_WARM : undefined
   })
 )
+
+const NavItemSVG = styled('div')<{isUnsyncedFacilitatorPhase: boolean}>(({isUnsyncedFacilitatorPhase}) => ({
+  height: 24,
+  margin: '0 16px',
+  width: 24,
+  '& svg': {
+    '& path': {
+      fill: isUnsyncedFacilitatorPhase ? PALETTE.EMPHASIS_WARM : PALETTE.TEXT_GRAY
+    }
+  }
+}))
 
 const NavItemLabel = styled('span')({
   display: 'inline-block',
@@ -138,6 +149,7 @@ const NewMeetingSidebarPhaseListItem = (props: Props) => {
   } = props
   const label = phaseLabelLookup[phaseType]
   const icon = phaseIconLookup[phaseType]
+  const Image = phaseImageLookup[phaseType]
   const showPhaseCount = Boolean(phaseCount || phaseCount === 0)
   return (
     <NavListItem phaseType={phaseType}>
@@ -150,7 +162,11 @@ const NewMeetingSidebarPhaseListItem = (props: Props) => {
         onClick={handleClick}
         title={label}
       >
-        <NavItemIcon isUnsyncedFacilitatorPhase={isUnsyncedFacilitatorPhase}>{icon}</NavItemIcon>
+        {icon && <NavItemIcon isUnsyncedFacilitatorPhase={isUnsyncedFacilitatorPhase}>{icon}</NavItemIcon>}
+        {Image &&
+          <NavItemSVG isUnsyncedFacilitatorPhase={isUnsyncedFacilitatorPhase}>
+            <Image />
+          </NavItemSVG>}
         <NavItemLabel>{label}</NavItemLabel>
         {showPhaseCount && (
           <PhaseCountBlock>

@@ -14,6 +14,7 @@ import getRethink from '../../../database/rethinkDriver'
 import AgendaItemsPhase from '../../../database/types/AgendaItemsPhase'
 import CheckInPhase from '../../../database/types/CheckInPhase'
 import DiscussPhase from '../../../database/types/DiscussPhase'
+import EstimatePhase from '../../../database/types/EstimatePhase'
 import GenericMeetingPhase from '../../../database/types/GenericMeetingPhase'
 import MeetingSettingsPoker from '../../../database/types/MeetingSettingsPoker'
 import MeetingSettingsRetrospective from '../../../database/types/MeetingSettingsRetrospective'
@@ -99,12 +100,13 @@ const createNewMeetingPhases = async (
           const agendaItems = await dataLoader.get('agendaItemsByTeamId').load(teamId)
           const agendaItemIds = agendaItems.map(({id}) => id)
           return new AgendaItemsPhase(agendaItemIds, durations)
+        case 'ESTIMATE':
+          return new EstimatePhase()
         case GROUP:
         case VOTE:
         case FIRST_CALL:
         case LAST_CALL:
         case 'SCOPE':
-        case 'ESTIMATE':
           return new GenericMeetingPhase(phaseType, durations)
         default:
           throw new Error(`Unhandled phaseType: ${phaseType}`)

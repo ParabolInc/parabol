@@ -14,6 +14,7 @@ import {resolveGQLStagesFromPhase} from '../resolvers'
 import AgendaItemsPhase from './AgendaItemsPhase'
 import CheckInPhase from './CheckInPhase'
 import DiscussPhase from './DiscussPhase'
+import EstimatePhase from './EstimatePhase'
 import GenericMeetingPhase from './GenericMeetingPhase'
 import NewMeetingPhaseTypeEnum from './NewMeetingPhaseTypeEnum'
 import NewMeetingStage from './NewMeetingStage'
@@ -49,7 +50,7 @@ const resolveTypeLookup = {
   [AGENDA_ITEMS]: AgendaItemsPhase,
   [LAST_CALL]: GenericMeetingPhase,
   SCOPE: GenericMeetingPhase,
-  ESTIMATE: GenericMeetingPhase
+  ESTIMATE: EstimatePhase
 }
 
 const NewMeetingPhase = new GraphQLInterfaceType({

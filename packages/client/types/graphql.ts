@@ -2051,6 +2051,7 @@ export type NewMeetingPhase =
   | IAgendaItemsPhase
   | ICheckInPhase
   | IDiscussPhase
+  | IEstimatePhase
   | IGenericMeetingPhase
   | IUpdatesPhase;
 
@@ -2075,6 +2076,7 @@ export interface INewMeetingPhase {
  */
 export type NewMeetingStage =
   | IRetroDiscussStage
+  | IEstimateStage
   | IGenericMeetingStage
   | IAgendaItemsStage
   | ICheckInStage
@@ -3242,6 +3244,11 @@ export interface IMutation {
   dragDiscussionTopic: IDragDiscussionTopicPayload | null;
 
   /**
+   * Changes the priority of the estimating tasks
+   */
+  dragEstimatingTask: DragEstimatingTaskPayload;
+
+  /**
    * Send an email to reset a password
    */
   emailPasswordReset: boolean;
@@ -3863,6 +3870,12 @@ export interface IDowngradeToPersonalOnMutationArguments {
 }
 
 export interface IDragDiscussionTopicOnMutationArguments {
+  meetingId: string;
+  stageId: string;
+  sortOrder: number;
+}
+
+export interface IDragEstimatingTaskOnMutationArguments {
   meetingId: string;
   stageId: string;
   sortOrder: number;
@@ -5999,6 +6012,338 @@ export interface IRetroDiscussStage {
 }
 
 /**
+ * Return object for DragEstimatingTaskPayload
+ */
+export type DragEstimatingTaskPayload =
+  | IErrorPayload
+  | IDragEstimatingTaskSuccess;
+
+export interface IDragEstimatingTaskSuccess {
+  __typename: 'DragEstimatingTaskSuccess';
+  meetingId: string;
+  meeting: IPokerMeeting;
+  stageId: string;
+  stage: IEstimateStage;
+}
+
+/**
+ * A Poker meeting
+ */
+export interface IPokerMeeting {
+  __typename: 'PokerMeeting';
+
+  /**
+   * The unique meeting id. shortid.
+   */
+  id: string;
+
+  /**
+   * The timestamp the meeting was created
+   */
+  createdAt: any;
+
+  /**
+   * The userId of the desired facilitator (different form facilitatorUserId if disconnected)
+   */
+  defaultFacilitatorUserId: string;
+
+  /**
+   * The timestamp the meeting officially ended
+   */
+  endedAt: any | null;
+
+  /**
+   * The location of the facilitator in the meeting
+   */
+  facilitatorStageId: string;
+
+  /**
+   * The userId (or anonymousId) of the most recent facilitator
+   */
+  facilitatorUserId: string;
+
+  /**
+   * The facilitator team member
+   */
+  facilitator: ITeamMember;
+
+  /**
+   * The team members that were active during the time of the meeting
+   */
+  meetingMembers: Array<IPokerMeetingMember>;
+
+  /**
+   * The auto-incrementing meeting number for the team
+   */
+  meetingNumber: number;
+  meetingType: MeetingTypeEnum;
+
+  /**
+   * The name of the meeting
+   */
+  name: string;
+
+  /**
+   * The organization this meeting belongs to
+   */
+  organization: IOrganization;
+
+  /**
+   * The phases the meeting will go through, including all phase-specific state
+   */
+  phases: Array<NewMeetingPhase>;
+
+  /**
+   * true if should show the org the conversion modal, else false
+   */
+  showConversionModal: boolean;
+
+  /**
+   * The time the meeting summary was emailed to the team
+   */
+  summarySentAt: any | null;
+  teamId: string;
+
+  /**
+   * The team that ran the meeting
+   */
+  team: ITeam;
+
+  /**
+   * The last time a meeting was updated (stage completed, finished, etc)
+   */
+  updatedAt: any | null;
+
+  /**
+   * The Poker meeting member of the viewer
+   */
+  viewerMeetingMember: IPokerMeetingMember;
+
+  /**
+   * The number of comments generated in the meeting
+   */
+  commentCount: number;
+
+  /**
+   * The number of stories scored during a meeting
+   */
+  storyCount: number;
+
+  /**
+   * The settings that govern the Poker meeting
+   */
+  settings: IPokerMeetingSettings;
+}
+
+/**
+ * All the meeting specifics for a user in a poker meeting
+ */
+export interface IPokerMeetingMember {
+  __typename: 'PokerMeetingMember';
+
+  /**
+   * A composite of userId::meetingId
+   */
+  id: string;
+
+  /**
+   * true if present, false if absent, else null
+   */
+  isCheckedIn: boolean | null;
+  meetingId: string;
+  meetingType: MeetingTypeEnum;
+  teamId: string;
+  teamMember: ITeamMember;
+  user: IUser;
+  userId: string;
+
+  /**
+   * The last time a meeting was updated (stage completed, finished, etc)
+   */
+  updatedAt: any;
+}
+
+/**
+ * The retro-specific meeting settings
+ */
+export interface IPokerMeetingSettings {
+  __typename: 'PokerMeetingSettings';
+  id: string;
+
+  /**
+   * The type of meeting these settings apply to
+   */
+  meetingType: MeetingTypeEnum;
+
+  /**
+   * The broad phase types that will be addressed during the meeting
+   */
+  phaseTypes: Array<NewMeetingPhaseTypeEnum>;
+
+  /**
+   * FK
+   */
+  teamId: string;
+
+  /**
+   * The team these settings belong to
+   */
+  team: ITeam;
+
+  /**
+   * FK. The template that will be used to start the poker meeting
+   */
+  selectedTemplateId: string;
+
+  /**
+   * The template that will be used to start the Poker meeting
+   */
+  selectedTemplate: IReflectTemplate;
+
+  /**
+   * The list of templates used to start a Poker meeting
+   */
+  teamTemplates: Array<IReflectTemplate>;
+
+  /**
+   * The list of templates shared across the organization to start a Poker meeting
+   */
+  organizationTemplates: IReflectTemplateConnection;
+
+  /**
+   * The list of templates shared across the organization to start a Poker meeting
+   */
+  publicTemplates: IReflectTemplateConnection;
+}
+
+export interface IOrganizationTemplatesOnPokerMeetingSettingsArguments {
+  first: number;
+
+  /**
+   * The cursor, which is the templateId
+   */
+  after?: string | null;
+}
+
+export interface IPublicTemplatesOnPokerMeetingSettingsArguments {
+  first: number;
+
+  /**
+   * The cursor, which is the templateId
+   */
+  after?: string | null;
+}
+
+/**
+ * The stage where the team estimates & discusses a single task
+ */
+export interface IEstimateStage {
+  __typename: 'EstimateStage';
+
+  /**
+   * stageId, shortid
+   */
+  id: string;
+
+  /**
+   * The datetime the stage was completed
+   */
+  endAt: any | null;
+
+  /**
+   * foreign key. try using meeting
+   */
+  meetingId: string;
+
+  /**
+   * The meeting this stage belongs to
+   */
+  meeting: NewMeeting | null;
+
+  /**
+   * true if the facilitator has completed this stage, else false. Should be boolean(endAt)
+   */
+  isComplete: boolean;
+
+  /**
+   * true if any meeting participant can navigate to this stage
+   */
+  isNavigable: boolean;
+
+  /**
+   * true if the facilitator can navigate to this stage
+   */
+  isNavigableByFacilitator: boolean;
+
+  /**
+   * The phase this stage belongs to
+   */
+  phase: NewMeetingPhase | null;
+
+  /**
+   * The type of the phase
+   */
+  phaseType: NewMeetingPhaseTypeEnum | null;
+
+  /**
+   * The datetime the stage was started
+   */
+  startAt: any | null;
+
+  /**
+   * Number of times the facilitator has visited this stage
+   */
+  viewCount: number | null;
+
+  /**
+   * true if a time limit is set, false if end time is set, null if neither is set
+   */
+  isAsync: boolean | null;
+
+  /**
+   * true if the viewer is ready to advance, else false
+   */
+  isViewerReady: boolean;
+
+  /**
+   * the number of meeting members ready to advance, excluding the facilitator
+   */
+  readyCount: number;
+
+  /**
+   * The datetime the phase is scheduled to be finished, null if no time limit or end time is set
+   */
+  scheduledEndTime: any | null;
+
+  /**
+   * The suggested ending datetime for a phase to be completed async, null if not enough data to make a suggestion
+   */
+  suggestedEndTime: any | null;
+
+  /**
+   * The suggested time limit for a phase to be completed together, null if not enough data to make a suggestion
+   */
+  suggestedTimeLimit: number | null;
+
+  /**
+   * The number of milliseconds left before the scheduled end time. Useful for
+   * unsynced client clocks. null if scheduledEndTime is null
+   */
+  timeRemaining: number | null;
+  taskId: string;
+
+  /**
+   * the task that is being assigned story points
+   */
+  task: ITask;
+
+  /**
+   * The sort order for reprioritizing discussion topics
+   */
+  sortOrder: number;
+}
+
+/**
  * The possible places a reflection can be dropped
  */
 export const enum DragReflectionDropTargetTypeEnum {
@@ -6924,214 +7269,8 @@ export interface IStartSprintPokerSuccess {
   __typename: 'StartSprintPokerSuccess';
   meetingId: string;
   meeting: IPokerMeeting;
-}
-
-/**
- * A Poker meeting
- */
-export interface IPokerMeeting {
-  __typename: 'PokerMeeting';
-
-  /**
-   * The unique meeting id. shortid.
-   */
-  id: string;
-
-  /**
-   * The timestamp the meeting was created
-   */
-  createdAt: any;
-
-  /**
-   * The userId of the desired facilitator (different form facilitatorUserId if disconnected)
-   */
-  defaultFacilitatorUserId: string;
-
-  /**
-   * The timestamp the meeting officially ended
-   */
-  endedAt: any | null;
-
-  /**
-   * The location of the facilitator in the meeting
-   */
-  facilitatorStageId: string;
-
-  /**
-   * The userId (or anonymousId) of the most recent facilitator
-   */
-  facilitatorUserId: string;
-
-  /**
-   * The facilitator team member
-   */
-  facilitator: ITeamMember;
-
-  /**
-   * The team members that were active during the time of the meeting
-   */
-  meetingMembers: Array<IPokerMeetingMember>;
-
-  /**
-   * The auto-incrementing meeting number for the team
-   */
-  meetingNumber: number;
-  meetingType: MeetingTypeEnum;
-
-  /**
-   * The name of the meeting
-   */
-  name: string;
-
-  /**
-   * The organization this meeting belongs to
-   */
-  organization: IOrganization;
-
-  /**
-   * The phases the meeting will go through, including all phase-specific state
-   */
-  phases: Array<NewMeetingPhase>;
-
-  /**
-   * true if should show the org the conversion modal, else false
-   */
-  showConversionModal: boolean;
-
-  /**
-   * The time the meeting summary was emailed to the team
-   */
-  summarySentAt: any | null;
-  teamId: string;
-
-  /**
-   * The team that ran the meeting
-   */
   team: ITeam;
-
-  /**
-   * The last time a meeting was updated (stage completed, finished, etc)
-   */
-  updatedAt: any | null;
-
-  /**
-   * The Poker meeting member of the viewer
-   */
-  viewerMeetingMember: IPokerMeetingMember;
-
-  /**
-   * The number of comments generated in the meeting
-   */
-  commentCount: number;
-
-  /**
-   * The number of stories scored during a meeting
-   */
-  storyCount: number;
-
-  /**
-   * The settings that govern the Poker meeting
-   */
-  settings: IPokerMeetingSettings;
-}
-
-/**
- * All the meeting specifics for a user in a poker meeting
- */
-export interface IPokerMeetingMember {
-  __typename: 'PokerMeetingMember';
-
-  /**
-   * A composite of userId::meetingId
-   */
-  id: string;
-
-  /**
-   * true if present, false if absent, else null
-   */
-  isCheckedIn: boolean | null;
-  meetingId: string;
-  meetingType: MeetingTypeEnum;
   teamId: string;
-  teamMember: ITeamMember;
-  user: IUser;
-  userId: string;
-
-  /**
-   * The last time a meeting was updated (stage completed, finished, etc)
-   */
-  updatedAt: any;
-}
-
-/**
- * The retro-specific meeting settings
- */
-export interface IPokerMeetingSettings {
-  __typename: 'PokerMeetingSettings';
-  id: string;
-
-  /**
-   * The type of meeting these settings apply to
-   */
-  meetingType: MeetingTypeEnum;
-
-  /**
-   * The broad phase types that will be addressed during the meeting
-   */
-  phaseTypes: Array<NewMeetingPhaseTypeEnum>;
-
-  /**
-   * FK
-   */
-  teamId: string;
-
-  /**
-   * The team these settings belong to
-   */
-  team: ITeam;
-
-  /**
-   * FK. The template that will be used to start the poker meeting
-   */
-  selectedTemplateId: string;
-
-  /**
-   * The template that will be used to start the Poker meeting
-   */
-  selectedTemplate: IReflectTemplate;
-
-  /**
-   * The list of templates used to start a Poker meeting
-   */
-  teamTemplates: Array<IReflectTemplate>;
-
-  /**
-   * The list of templates shared across the organization to start a Poker meeting
-   */
-  organizationTemplates: IReflectTemplateConnection;
-
-  /**
-   * The list of templates shared across the organization to start a Poker meeting
-   */
-  publicTemplates: IReflectTemplateConnection;
-}
-
-export interface IOrganizationTemplatesOnPokerMeetingSettingsArguments {
-  first: number;
-
-  /**
-   * The cursor, which is the templateId
-   */
-  after?: string | null;
-}
-
-export interface IPublicTemplatesOnPokerMeetingSettingsArguments {
-  first: number;
-
-  /**
-   * The cursor, which is the templateId
-   */
-  after?: string | null;
 }
 
 export interface IUpdateAgendaItemInput {
@@ -7479,6 +7618,7 @@ export type MeetingSubscriptionPayload =
   | ICreateReflectionPayload
   | IDeleteCommentSuccess
   | IDragDiscussionTopicPayload
+  | IDragEstimatingTaskSuccess
   | IEndDraggingReflectionPayload
   | IEditReflectionPayload
   | IFlagReadyToAdvanceSuccess
@@ -8316,6 +8456,25 @@ export interface IDiscussPhase {
    */
   phaseType: NewMeetingPhaseTypeEnum;
   stages: Array<IRetroDiscussStage>;
+}
+
+/**
+ * The meeting phase where all team members estimate a the point value of a task
+ */
+export interface IEstimatePhase {
+  __typename: 'EstimatePhase';
+
+  /**
+   * shortid
+   */
+  id: string;
+  meetingId: string;
+
+  /**
+   * The type of phase
+   */
+  phaseType: NewMeetingPhaseTypeEnum;
+  stages: Array<IEstimateStage>;
 }
 
 /**
