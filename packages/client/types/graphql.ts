@@ -973,11 +973,6 @@ export interface ITeamMember {
   picture: any;
 
   /**
-   * The place in line for checkIn, regenerated every meeting
-   */
-  checkInOrder: number;
-
-  /**
    * true if this team member belongs to the user that queried it
    */
   isSelf: boolean;
@@ -2754,6 +2749,7 @@ export type TimelineEvent =
   | ITimelineEventCompletedActionMeeting
   | ITimelineEventCompletedRetroMeeting
   | ITimelineEventJoinedParabol
+  | ITimelineEventPokerComplete
   | ITimelineEventTeamCreated;
 
 /**
@@ -2830,7 +2826,8 @@ export const enum TimelineEventEnum {
   retroComplete = 'retroComplete',
   actionComplete = 'actionComplete',
   joinedParabol = 'joinedParabol',
-  createdTeam = 'createdTeam'
+  createdTeam = 'createdTeam',
+  POKER_COMPLETE = 'POKER_COMPLETE'
 }
 
 /**
@@ -3257,6 +3254,11 @@ export interface IMutation {
    * Broadcast that the viewer stopped dragging a reflection
    */
   endDraggingReflection: IEndDraggingReflectionPayload | null;
+
+  /**
+   * Finish a sprint poker meeting
+   */
+  endSprintPoker: EndSprintPokerPayload;
 
   /**
    * Changes the editing state of a user for a phase item
@@ -3905,6 +3907,13 @@ export interface IEndDraggingReflectionOnMutationArguments {
    * the ID of the drag to connect to the start drag event
    */
   dragId?: string | null;
+}
+
+export interface IEndSprintPokerOnMutationArguments {
+  /**
+   * The meeting to end
+   */
+  meetingId: string;
 }
 
 export interface IEditReflectionOnMutationArguments {
@@ -5038,6 +5047,11 @@ export interface IRetrospectiveMeeting {
    * The tasks created within the meeting
    */
   tasks: Array<ITask>;
+
+  /**
+   * The ID of the template used for the meeting
+   */
+  templateId: string;
 
   /**
    * The number of topics generated in the meeting
@@ -6442,6 +6456,25 @@ export interface IRemoteReflectionDrag {
   clientY: number | null;
 }
 
+/**
+ * Return object for EndSprintPokerPayload
+ */
+export type EndSprintPokerPayload = IErrorPayload | IEndSprintPokerSuccess;
+
+export interface IEndSprintPokerSuccess {
+  __typename: 'EndSprintPokerSuccess';
+
+  /**
+   * true if the meeting was killed (ended before reaching last stage)
+   */
+  isKill: boolean | null;
+  meetingId: string;
+  meeting: IPokerMeeting;
+  removedTaskIds: Array<string>;
+  team: ITeam;
+  teamId: string;
+}
+
 export interface IEditReflectionPayload {
   __typename: 'EditReflectionPayload';
   error: IStandardMutationError | null;
@@ -7839,6 +7872,7 @@ export type TeamSubscriptionPayload =
   | IDenyPushInvitationPayload
   | IDowngradeToPersonalPayload
   | IEndNewMeetingPayload
+  | IEndSprintPokerSuccess
   | INavigateMeetingPayload
   | IPushInvitationPayload
   | IPromoteToTeamLeadPayload
@@ -9183,6 +9217,83 @@ export interface ITimelineEventJoinedParabol {
    * true if the timeline event is active, false if arvhiced
    */
   isActive: boolean;
+}
+
+/**
+ * An event for a completed poker meeting
+ */
+export interface ITimelineEventPokerComplete {
+  __typename: 'TimelineEventPokerComplete';
+
+  /**
+   * shortid
+   */
+  id: string;
+
+  /**
+   * * The timestamp the event was created at
+   */
+  createdAt: any;
+
+  /**
+   * the number of times the user has interacted with (ie clicked) this event
+   */
+  interactionCount: number;
+
+  /**
+   * The orgId this event is associated with
+   */
+  orgId: string;
+
+  /**
+   * The organization this event is associated with
+   */
+  organization: IOrganization | null;
+
+  /**
+   * the number of times the user has seen this event
+   */
+  seenCount: number;
+
+  /**
+   * The teamId this event is associated with
+   */
+  teamId: string;
+
+  /**
+   * The team that can see this event
+   */
+  team: ITeam;
+
+  /**
+   * The specific type of event
+   */
+  type: TimelineEventEnum;
+
+  /**
+   * * The userId that can see this event
+   */
+  userId: string;
+
+  /**
+   * The user than can see this event
+   */
+  user: IUser;
+
+  /**
+   * true if the timeline event is active, false if arvhiced
+   */
+  isActive: boolean;
+
+  /**
+   * The meeting that was completed
+   */
+  meeting: IRetrospectiveMeeting;
+
+  /**
+   * The meetingId that was completed
+   */
+  meetingId: string;
 }
 
 /**

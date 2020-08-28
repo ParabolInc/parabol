@@ -35,6 +35,7 @@ import TaskIntegrationJira from './types/TaskIntegrationJira'
 import TimelineEventCompletedActionMeeting from './types/TimelineEventCompletedActionMeeting'
 import TimelineEventCompletedRetroMeeting from './types/TimelineEventCompletedRetroMeeting'
 import TimelineEventJoinedParabol from './types/TimelineEventJoinedParabol'
+import TimelineEventPokerComplete from './types/TimelineEventPokerComplete'
 import TimelineEventTeamCreated from './types/TimelineEventTeamCreated'
 import UpdatesPhase from './types/UpdatesPhase'
 
@@ -88,6 +89,7 @@ export default new GraphQLSchema({
     TimelineEventJoinedParabol,
     TimelineEventCompletedRetroMeeting,
     TimelineEventCompletedActionMeeting,
+    TimelineEventPokerComplete,
     ActionMeetingSettings,
     TaskIntegrationGitHub,
     TaskIntegrationJira,

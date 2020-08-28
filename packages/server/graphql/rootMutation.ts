@@ -40,6 +40,7 @@ import editTask from './mutations/editTask'
 import emailPasswordReset from './mutations/emailPasswordReset'
 import endDraggingReflection from './mutations/endDraggingReflection'
 import endNewMeeting from './mutations/endNewMeeting'
+import endSprintPoker from './mutations/endSprintPoker'
 import flagReadyToAdvance from './mutations/flagReadyToAdvance'
 import inactivateUser from './mutations/inactivateUser'
 import invalidateSessions from './mutations/invalidateSessions'
@@ -144,6 +145,7 @@ export default new GraphQLObjectType<any, Context, any>({
     dragEstimatingTask,
     emailPasswordReset,
     endDraggingReflection,
+    endSprintPoker,
     editReflection,
     editTask,
     endNewMeeting,

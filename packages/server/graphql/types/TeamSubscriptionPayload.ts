@@ -11,6 +11,7 @@ import ArchiveTeamPayload from './ArchiveTeamPayload'
 import DenyPushInvitationPayload from './DenyPushInvitationPayload'
 import DowngradeToPersonalPayload from './DowngradeToPersonalPayload'
 import EndNewMeetingPayload from './EndNewMeetingPayload'
+import {EndSprintPokerSuccess} from './EndSprintPokerPayload'
 import MoveReflectTemplatePromptPayload from './MoveReflectTemplatePromptPayload'
 import NavigateMeetingPayload from './NavigateMeetingPayload'
 import PromoteToTeamLeadPayload from './PromoteToTeamLeadPayload'
@@ -50,6 +51,7 @@ const types = [
   DenyPushInvitationPayload,
   DowngradeToPersonalPayload,
   EndNewMeetingPayload,
+  EndSprintPokerSuccess,
   NavigateMeetingPayload,
   PushInvitationPayload,
   PromoteToTeamLeadPayload,

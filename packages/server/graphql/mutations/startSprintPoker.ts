@@ -96,7 +96,6 @@ export default {
         .update({lastMeetingType: meetingType})
         .run()
     ])
-    console.log('inserted mm', meetingMembers)
     startSlackMeeting(meetingId, teamId, dataLoader).catch(console.log)
     const data = {teamId, meetingId: meetingId}
     publish(SubscriptionChannel.TEAM, teamId, 'StartSprintPokerSuccess', data, subOptions)
