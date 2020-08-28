@@ -11,7 +11,7 @@ const rooms = (new Map() as unknown) as {
 interface handlePeerRequestSignature {
   peer: protoo.Peer
   request: any
-  accept: (data: any) => typeof data
+  accept: (data?: any) => typeof data
   reject: any // todo: better typing for this
 }
 
@@ -113,7 +113,9 @@ export default class Room extends events.EventEmitter {
     Object.assign(requestHandlers, {
       getRouterRtpCapabilities: this.handleGetRouterRtpCapabilities,
       createWebRtcTransport: this.handleCreateWebRtcTransport,
-      join: this.handleJoin
+      join: this.handleJoin,
+      connectWebRtcTransport: this.handleConnectWebRtcTransport,
+      produce: this.handleProduce
     })
     const handler = requestHandlers[args.request.method]
     if (!handler) {
@@ -172,14 +174,44 @@ export default class Room extends events.EventEmitter {
       device,
       rtpCapabilities
     })
-    const peerInfos = this.getJoinedPeers()
-      .filter((joinedPeer) => joinedPeer.id !== args.peer.id)
-      .map((joinedPeer) => ({
-        id: joinedPeer.id,
-        device: joinedPeer.data.device
-      }))
+    const peerInfos = this.getJoinedPeers({excludePeer: args.peer}).map((joinedPeer) => ({
+      id: joinedPeer.id,
+      device: joinedPeer.data.device
+    }))
     args.accept({peers: peerInfos})
     this.consumeRoomSetUp()
     this.notifyRoomOfJoin(args.peer)
+  }
+
+  handleConnectWebRtcTransport = async (args: handlePeerRequestSignature) => {
+    console.log('connecting this transport...')
+    const {transportId, dtlsParameters} = args.request.data
+    const transport = args.peer.data.transports[transportId]
+    if (!transport) throw new Error(`transport with id "${transportId}" not found`)
+    await transport.connect({dtlsParameters})
+    args.accept()
+  }
+
+  handleProduce = async (args: handlePeerRequestSignature) => {
+    console.log('handling produce request...')
+    if (!args.peer.data.joined) throw new Error('Peer not joined yet')
+    const {transportId, kind, rtpParameters} = args.request.data
+    const transport = args.peer.data.transports[transportId]
+    if (!transport) throw new Error(`transport with id "${transportId}" not found`)
+
+    const appData = Object.assign(args.request.data, {
+      peerId: args.peer.id
+    })
+    const producer = await transport.produce({
+      kind,
+      rtpParameters,
+      appData
+    })
+    args.accept({id: producer.id})
+    args.peer.data.producers[producer.id] = producer
+    // todo: create a consumer for each peer
+    if (producer.kind === 'audio') {
+      this.audioLevelObserver.addProducer({producerId: producer.id}).catch(() => {})
+    }
   }
 }
