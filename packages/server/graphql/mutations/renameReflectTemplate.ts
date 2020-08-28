@@ -1,10 +1,10 @@
 import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getRethink from '../../database/rethinkDriver'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import RenameReflectTemplatePayload from '../types/RenameReflectTemplatePayload'
-import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 
 const renameReflectTemplatePrompt = {
   description: 'Rename a reflect template prompt',
@@ -23,7 +23,7 @@ const renameReflectTemplatePrompt = {
     const operationId = dataLoader.share()
     const subOptions = {operationId, mutatorId}
     const template = await r
-      .table('ReflectTemplate')
+      .table('MeetingTemplate')
       .get(templateId)
       .run()
     const viewerId = getUserId(authToken)
@@ -38,7 +38,7 @@ const renameReflectTemplatePrompt = {
     const trimmedName = name.trim().slice(0, 100)
     const normalizedName = trimmedName || 'Unnamed Template'
     const allTemplates = await r
-      .table('ReflectTemplate')
+      .table('MeetingTemplate')
       .getAll(teamId, {index: 'teamId'})
       .filter({isActive: true})
       .run()
@@ -48,7 +48,7 @@ const renameReflectTemplatePrompt = {
 
     // RESOLUTION
     await r
-      .table('ReflectTemplate')
+      .table('MeetingTemplate')
       .get(templateId)
       .update({name: normalizedName, updatedAt: now})
       .run()

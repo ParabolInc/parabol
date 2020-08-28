@@ -8,7 +8,6 @@ export interface TemplateDimensionInput {
   scaleId: string
   createdAt?: Date
   updatedAt?: Date
-  deletedAt?: Date
 }
 
 export default class TemplateDimension {
@@ -19,18 +18,17 @@ export default class TemplateDimension {
   scaleId: string
   createdAt: Date
   updatedAt: Date
-  deletedAt: Date | null
+  deletedAt?: Date
 
   constructor(input: TemplateDimensionInput) {
-    const {id, name, teamId, templateId, scaleId, createdAt, updatedAt, deletedAt} = input
+    const {id, name, teamId, templateId, scaleId, createdAt, updatedAt} = input
     const now = new Date()
     this.id = id || shortid.generate()
-    this.name = name || ''
+    this.name = name
     this.teamId = teamId
     this.templateId = templateId
     this.scaleId = scaleId
     this.createdAt = createdAt || now
     this.updatedAt = updatedAt || now
-    this.deletedAt = deletedAt || null
   }
 }

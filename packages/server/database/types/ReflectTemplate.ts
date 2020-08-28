@@ -1,4 +1,4 @@
-import shortid from 'shortid'
+import MeetingTemplate from './MeetingTemplate'
 
 interface Input {
   name: string
@@ -9,30 +9,8 @@ interface Input {
   lastUsedAt?: Date
 }
 
-export default class ReflectTemplate {
-  id: string
-  createdAt: Date
-  isActive: boolean
-  updatedAt: Date
-  name: string
-  teamId: string
-  lastUsedAt: Date | undefined
-  scope: string
-  orgId: string
-  parentTemplateId?: string
-
+export default class ReflectTemplate extends MeetingTemplate {
   constructor(input: Input) {
-    const {name, teamId, scope, orgId, parentTemplateId, lastUsedAt} = input
-    const now = new Date()
-    this.id = shortid.generate()
-    this.createdAt = now
-    this.isActive = true
-    this.name = name
-    this.teamId = teamId
-    this.updatedAt = now
-    this.scope = scope || 'TEAM'
-    this.orgId = orgId
-    this.parentTemplateId = parentTemplateId
-    this.lastUsedAt = lastUsedAt ?? undefined
+    super({...input, type: 'retrospective'})
   }
 }

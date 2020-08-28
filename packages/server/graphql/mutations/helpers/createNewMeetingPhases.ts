@@ -85,7 +85,7 @@ const createNewMeetingPhases = async (
         case REFLECT:
           // TODO REMOVE ME AFTER v5.13.0
           await r
-            .table('ReflectTemplate')
+            .table('MeetingTemplate')
             .get(selectedTemplateId)
             .update({
               lastUsedAt: now

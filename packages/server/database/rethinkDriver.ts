@@ -18,6 +18,7 @@ import MeetingAction from './types/MeetingAction'
 import MeetingRetrospective from './types/MeetingRetrospective'
 import MeetingSettingsAction from './types/MeetingSettingsAction'
 import MeetingSettingsRetrospective from './types/MeetingSettingsRetrospective'
+import MeetingTemplate from './types/MeetingTemplate'
 import NotificationKickedOut from './types/NotificationKickedOut'
 import NotificationMeetingStageTimeLimitEnd from './types/NotificationMeetingStageTimeLimitEnd'
 import NotificationPaymentRejected from './types/NotificationPaymentRejected'
@@ -30,7 +31,6 @@ import PasswordResetRequest from './types/PasswordResetRequest'
 import PushInvitation from './types/PushInvitation'
 import Reflection from './types/Reflection'
 import ReflectionGroup from './types/ReflectionGroup'
-import ReflectTemplate from './types/ReflectTemplate'
 import RetrospectivePrompt from './types/RetrospectivePrompt'
 import SAML from './types/SAML'
 import ScheduledJob from './types/ScheduledJob'
@@ -39,6 +39,8 @@ import SuggestedActionInviteYourTeam from './types/SuggestedActionInviteYourTeam
 import SuggestedActionTryTheDemo from './types/SuggestedActionTryTheDemo'
 import Task from './types/Task'
 import Team from './types/Team'
+import TemplateDimension from './types/TemplateDimension'
+import TemplateScale from './types/TemplateScale'
 import TimelineEvent from './types/TimelineEvent'
 import User from './types/User'
 
@@ -134,8 +136,8 @@ export type RethinkSchema = {
     type: any
     index: ''
   }
-  ReflectTemplate: {
-    type: ReflectTemplate
+  MeetingTemplate: {
+    type: MeetingTemplate
     index: 'teamId' | 'orgId'
   }
   RetroReflectionGroup: {
@@ -191,6 +193,14 @@ export type RethinkSchema = {
   TeamMember: {
     type: TeamMember
     index: 'teamId' | 'userId'
+  }
+  TemplateDimension: {
+    type: TemplateDimension
+    index: 'templateId'
+  }
+  TemplateScale: {
+    type: TemplateScale
+    index: 'id'
   }
   TimelineEvent: {
     type: TimelineEvent

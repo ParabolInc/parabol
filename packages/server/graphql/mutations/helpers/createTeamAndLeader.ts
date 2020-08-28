@@ -2,6 +2,7 @@ import {InvoiceItemType} from 'parabol-client/types/constEnums'
 import adjustUserCount from '../../../billing/helpers/adjustUserCount'
 import getRethink from '../../../database/rethinkDriver'
 import MeetingSettingsAction from '../../../database/types/MeetingSettingsAction'
+import MeetingSettingsPoker from '../../../database/types/MeetingSettingsPoker'
 import MeetingSettingsRetrospective from '../../../database/types/MeetingSettingsRetrospective'
 import Team from '../../../database/types/Team'
 import TimelineEventCreatedTeam from '../../../database/types/TimelineEventCreatedTeam'
@@ -27,7 +28,8 @@ export default async function createTeamAndLeader(userId: string, newTeam: Valid
   const verifiedTeam = new Team({...newTeam, createdBy: userId, tier})
   const meetingSettings = [
     new MeetingSettingsRetrospective({teamId}),
-    new MeetingSettingsAction({teamId})
+    new MeetingSettingsAction({teamId}),
+    new MeetingSettingsPoker({teamId})
   ]
   const timelineEvent = new TimelineEventCreatedTeam({
     createdAt: new Date(Date.now() + 5),

@@ -1101,7 +1101,8 @@ export interface IMeetingMember {
  */
 export const enum MeetingTypeEnum {
   action = 'action',
-  retrospective = 'retrospective'
+  retrospective = 'retrospective',
+  poker = 'poker'
 }
 
 /**
@@ -1598,7 +1599,7 @@ export interface ITeamMeetingSettings {
   /**
    * The type of meeting these settings apply to
    */
-  meetingType: MeetingTypeEnum | null;
+  meetingType: MeetingTypeEnum;
 
   /**
    * The broad phase types that will be addressed during the meeting
@@ -1630,7 +1631,9 @@ export const enum NewMeetingPhaseTypeEnum {
   group = 'group',
   vote = 'vote',
   discuss = 'discuss',
-  SUMMARY = 'SUMMARY'
+  SUMMARY = 'SUMMARY',
+  SCOPE = 'SCOPE',
+  ESTIMATE = 'ESTIMATE'
 }
 
 /**
@@ -2297,6 +2300,11 @@ export interface IUserFeatureFlags {
    * true if jira is allowed
    */
   jira: boolean;
+
+  /**
+   * true if jira is allowed
+   */
+  poker: boolean;
 }
 
 /**
@@ -5238,7 +5246,7 @@ export interface IRetrospectiveMeetingSettings {
   /**
    * The type of meeting these settings apply to
    */
-  meetingType: MeetingTypeEnum | null;
+  meetingType: MeetingTypeEnum;
 
   /**
    * The broad phase types that will be addressed during the meeting
@@ -5404,7 +5412,8 @@ export interface IAddSlackAuthPayload {
  */
 export const enum UserFlagEnum {
   video = 'video',
-  jira = 'jira'
+  jira = 'jira',
+  poker = 'poker'
 }
 
 export interface IAddFeatureFlagPayload {
@@ -7717,7 +7726,7 @@ export interface IActionMeetingSettings {
   /**
    * The type of meeting these settings apply to
    */
-  meetingType: MeetingTypeEnum | null;
+  meetingType: MeetingTypeEnum;
 
   /**
    * The broad phase types that will be addressed during the meeting

@@ -193,25 +193,25 @@ export const retroReflectionGroupsByMeetingId = new LoaderMakerForeign(
   }
 )
 
-export const reflectTemplatesByOrgId = new LoaderMakerForeign(
-  'reflectTemplates',
+export const meetingTemplatesByOrgId = new LoaderMakerForeign(
+  'meetingTemplates',
   'orgId',
   async (orgId) => {
     const r = await getRethink()
     return r
-      .table('ReflectTemplate')
+      .table('MeetingTemplate')
       .getAll(r.args(orgId), {index: 'orgId'})
       .filter({isActive: true})
       .run()
   }
 )
-export const reflectTemplatesByTeamId = new LoaderMakerForeign(
-  'reflectTemplates',
+export const meetingTemplatesByTeamId = new LoaderMakerForeign(
+  'meetingTemplates',
   'teamId',
   async (teamIds) => {
     const r = await getRethink()
     return r
-      .table('ReflectTemplate')
+      .table('MeetingTemplate')
       .getAll(r.args(teamIds), {index: 'teamId'})
       .filter({isActive: true})
       .run()

@@ -23,7 +23,7 @@ const addReflectTemplatePrompt = {
     const operationId = dataLoader.share()
     const subOptions = {operationId, mutatorId}
     const template = await r
-      .table('ReflectTemplate')
+      .table('MeetingTemplate')
       .get(templateId)
       .run()
     const viewerId = getUserId(authToken)
