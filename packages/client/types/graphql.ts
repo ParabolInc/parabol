@@ -1587,7 +1587,8 @@ export interface ITeamInvitation {
  */
 export type TeamMeetingSettings =
   | IRetrospectiveMeetingSettings
-  | IActionMeetingSettings;
+  | IActionMeetingSettings
+  | IPokerMeetingSettings;
 
 /**
  * The team settings for a specific type of meeting
@@ -8223,6 +8224,77 @@ export interface INotifyPromoteToOrgLeader {
    * *The userId that should see this notification
    */
   userId: string;
+}
+
+/**
+ * The retro-specific meeting settings
+ */
+export interface IPokerMeetingSettings {
+  __typename: 'PokerMeetingSettings';
+  id: string;
+
+  /**
+   * The type of meeting these settings apply to
+   */
+  meetingType: MeetingTypeEnum;
+
+  /**
+   * The broad phase types that will be addressed during the meeting
+   */
+  phaseTypes: Array<NewMeetingPhaseTypeEnum>;
+
+  /**
+   * FK
+   */
+  teamId: string;
+
+  /**
+   * The team these settings belong to
+   */
+  team: ITeam;
+
+  /**
+   * FK. The template that will be used to start the poker meeting
+   */
+  selectedTemplateId: string;
+
+  /**
+   * The template that will be used to start the Poker meeting
+   */
+  selectedTemplate: IReflectTemplate;
+
+  /**
+   * The list of templates used to start a Poker meeting
+   */
+  teamTemplates: Array<IReflectTemplate>;
+
+  /**
+   * The list of templates shared across the organization to start a Poker meeting
+   */
+  organizationTemplates: IReflectTemplateConnection;
+
+  /**
+   * The list of templates shared across the organization to start a Poker meeting
+   */
+  publicTemplates: IReflectTemplateConnection;
+}
+
+export interface IOrganizationTemplatesOnPokerMeetingSettingsArguments {
+  first: number;
+
+  /**
+   * The cursor, which is the templateId
+   */
+  after?: string | null;
+}
+
+export interface IPublicTemplatesOnPokerMeetingSettingsArguments {
+  first: number;
+
+  /**
+   * The cursor, which is the templateId
+   */
+  after?: string | null;
 }
 
 /**
