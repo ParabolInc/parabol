@@ -8,7 +8,7 @@ const joinRoom = async (
 ) => {
   const room = new Room({roomId, peerId})
   console.log('Created room:', room.roomId, room.peerId)
-  room.connectPeer()
+  room.connect()
   if (disposable.current === null) return
   disposable.current = room.close
   return room

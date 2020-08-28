@@ -10,7 +10,7 @@ const rooms = (new Map() as unknown) as {
 
 interface handlePeerRequestSignature {
   peer: protoo.Peer
-  request: Request
+  request: any
   accept: (data: any) => typeof data
   reject: any // todo: better typing for this
 }
@@ -28,6 +28,7 @@ export default class Room extends events.EventEmitter {
     threshold: -80,
     interval: 800
   }
+  static webRtcTransportOptions = config.mediasoup.webRtcTransportOptions
 
   static async create(roomId: string): Promise<Room> {
     /* Because constructors can't be async */
@@ -110,7 +111,8 @@ export default class Room extends events.EventEmitter {
       [method: string]: (handlePeerRequestSignature) => void
     }
     Object.assign(requestHandlers, {
-      getRouterRtpCapabilities: this.handleGetRouterRtpCapabilities
+      getRouterRtpCapabilities: this.handleGetRouterRtpCapabilities,
+      createWebRtcTransport: this.handleCreateWebRtcTransport
     })
     const handler = requestHandlers[args.request.method]
     if (!handler) {
@@ -120,7 +122,24 @@ export default class Room extends events.EventEmitter {
     handler(args)
   }
 
+  /* Peer Request Handlers */
   handleGetRouterRtpCapabilities = (args: handlePeerRequestSignature) => {
     args.accept(this.router.rtpCapabilities)
+  }
+
+  handleCreateWebRtcTransport = async (args: handlePeerRequestSignature) => {
+    const transport = await this.router.createWebRtcTransport({
+      ...Room.webRtcTransportOptions,
+      appData: args.request.data
+    })
+    const {id, iceParameters, iceCandidates, dtlsParameters, sctpParameters} = transport
+    args.accept({
+      id,
+      iceParameters,
+      iceCandidates,
+      dtlsParameters,
+      sctpParameters
+    })
+    args.peer.data.transports[transport.id] = transport
   }
 }

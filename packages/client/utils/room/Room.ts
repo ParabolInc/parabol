@@ -1,6 +1,10 @@
 import {getSignalingServerUrl} from './urlFactory'
 import protoo from 'protoo-client'
-import {Device} from 'mediasoup-client'
+import {Device, types as mediasoupTypes} from 'mediasoup-client'
+
+const PC_PROPRIETARY_CONSTRAINTS = {
+  optional: [{googDscp: true}]
+}
 
 interface RoomOptions {
   roomId: string
@@ -13,23 +17,27 @@ export default class Room {
   closed: boolean
   peer: protoo.Peer
   device: protoo.Device | null
+  sendTransport: protoo.Transport | null
+  receiveTransport: protoo.Transport | null
 
   constructor(opts: RoomOptions) {
     this.closed = false
     this.roomId = opts.roomId
     this.peerId = opts.peerId
     this.device = null
+    this.sendTransport = null
+    this.receiveTransport = null
   }
 
-  async connectPeer() {
+  async connect() {
     if (!(this.roomId || this.peerId)) throw new Error('Missing roomId or peerId')
     const endpoint = getSignalingServerUrl(this.roomId, this.peerId)
     console.log('Connecting...', endpoint)
     const transport = new protoo.WebSocketTransport(endpoint)
-    this.initPeer(transport)
+    this.createPeer(transport)
   }
 
-  initPeer(transport: protoo.WebSocketTransport) {
+  createPeer(transport: protoo.WebSocketTransport) {
     this.peer = new protoo.Peer(transport)
     this.handlePeerConnectionStates()
     this.handlePeerRequests()
@@ -47,16 +55,60 @@ export default class Room {
   handlePeerNotifications() {}
 
   async join() {
-    console.log('joining...')
-    await this.connectMedia()
+    await this.createDevice()
+    await this.createSendTransport()
+    await this.createReceiveTransport()
     await this.enableMedia()
   }
 
-  async connectMedia() {
-    console.log('connecting media...')
+  async createDevice() {
+    console.log('creating device')
     this.device = new Device()
     const routerRtpCapabilities = await this.peer.request('getRouterRtpCapabilities')
     await this.device.load({routerRtpCapabilities})
+  }
+
+  async createSendTransport() {
+    console.log('creating send transport')
+    const sendTransportInfo = await this.peer.request('createWebRtcTransport', {
+      producing: true,
+      consuming: false
+    })
+    this.sendTransport = this.device.createSendTransport({
+      ...sendTransportInfo,
+      iceServers: [],
+      proprietaryConstraints: PC_PROPRIETARY_CONSTRAINTS
+    })
+    this.handleTransport(this.sendTransport)
+  }
+
+  async createReceiveTransport() {
+    console.log('creating receive transport')
+    const receiveTransportInfo = await this.peer.request('createWebRtcTransport', {
+      producing: false,
+      consuming: true
+    })
+    this.receiveTransport = this.device.createRecvTransport({
+      ...receiveTransportInfo,
+      iceServers: []
+    })
+    this.handleTransport(this.receiveTransport)
+  }
+
+  handleTransport(transport: mediasoupTypes.Transport) {
+    console.log('putting event listeners on transport: ', transport.direction)
+    transport.on('connect', ({dtlsParameters}, cb, errback) => {
+      console.log('handling transport connect event')
+      this.peer
+        .request('connectWebRtcTransport', {
+          transportId: transport.id,
+          dtlsParameters
+        })
+        .then(cb)
+        .catch(errback)
+    })
+    if (transport.direction === 'recv') return
+    transport.on('produce', () => console.log('handling produce'))
   }
 
   async enableMedia() {
