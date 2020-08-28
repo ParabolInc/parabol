@@ -1,16 +1,14 @@
 import graphql from 'babel-plugin-relay/macro'
-import React, { useState } from 'react'
-import { createFragmentContainer } from 'react-relay'
+import React, {useState} from 'react'
+import {createFragmentContainer} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useMutationProps from '~/hooks/useMutationProps'
-import { PALETTE } from '~/styles/paletteV2'
-import { ICON_SIZE } from '~/styles/typographyV2'
+import {PALETTE} from '~/styles/paletteV2'
+import {ICON_SIZE} from '~/styles/typographyV2'
 
 import styled from '@emotion/styled'
 
-import {
-    AddTeamMemberModal_teamMembers
-} from '../__generated__/AddTeamMemberModal_teamMembers.graphql'
+import {AddTeamMemberModal_teamMembers} from '../__generated__/AddTeamMemberModal_teamMembers.graphql'
 import useBreakpoint from '../hooks/useBreakpoint'
 import InviteToTeamMutation from '../mutations/InviteToTeamMutation'
 import parseEmailAddressList from '../utils/parseEmailAddressList'
@@ -93,20 +91,19 @@ const ErrorWrapper = styled('div')<{isWarning: boolean}>(({isWarning}) => ({
   alignItems: 'center',
   color: isWarning ? PALETTE.WARNING_MAIN : PALETTE.ERROR_MAIN,
   display: 'flex',
-  padding: '.5rem',
-  marginTop: '.5rem',
+  padding: 8,
+  marginTop: 8,
   width: '100%'
 }))
 
 const StyledIcon = styled(Icon)<{isWarning: boolean}>(({isWarning}) => ({
   color: isWarning ? PALETTE.WARNING_MAIN : PALETTE.ERROR_MAIN,
   fontSize: ICON_SIZE.MD24,
-  marginRight: 8,
-  opacity: isWarning ? 0.75 : 1
+  marginRight: 8
 }))
 
 const Label = styled('div')({
-  fontSize: '.8125rem',
+  fontSize: 14,
   fontWeight: 600
 })
 
