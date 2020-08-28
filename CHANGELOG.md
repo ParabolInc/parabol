@@ -5,6 +5,19 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 5.16.0 2020-Aug-28
+### Added
+
+- Show who is commenting (#4050)
+- New integration test DB tarball (#4078)
+- Sprint Poker meeting type in new meeting carousel behind a feature flag (#4104)
+
+### Fixed
+
+- Bottom bar cover and floating snackbar (#4036)
+- Discussion styling thread with long URL link; Lightened up the grey "ready" checkmark in meeting control bar (#4094)
+- A couple of good fixes for invitation workflow (#4082)
+
 ## 5.15.1 2020-Aug-21
 
 ### Fixed
