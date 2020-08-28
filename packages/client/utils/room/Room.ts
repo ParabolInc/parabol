@@ -58,6 +58,7 @@ export default class Room {
     await this.createDevice()
     await this.createSendTransport()
     await this.createReceiveTransport()
+    await this.requestJoinRoom()
     await this.enableMedia()
   }
 
@@ -96,7 +97,6 @@ export default class Room {
   }
 
   handleTransport(transport: mediasoupTypes.Transport) {
-    console.log('putting event listeners on transport: ', transport.direction)
     transport.on('connect', ({dtlsParameters}, cb, errback) => {
       console.log('handling transport connect event')
       this.peer
@@ -109,6 +109,15 @@ export default class Room {
     })
     if (transport.direction === 'recv') return
     transport.on('produce', () => console.log('handling produce'))
+  }
+
+  async requestJoinRoom() {
+    console.log('sending request to join room...')
+    const {peers} = await this.peer.request('join', {
+      device: this.device,
+      rtpCapabilities: this.device.rtpCapabilities
+    })
+    return peers
   }
 
   async enableMedia() {

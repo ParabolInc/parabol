@@ -112,7 +112,8 @@ export default class Room extends events.EventEmitter {
     }
     Object.assign(requestHandlers, {
       getRouterRtpCapabilities: this.handleGetRouterRtpCapabilities,
-      createWebRtcTransport: this.handleCreateWebRtcTransport
+      createWebRtcTransport: this.handleCreateWebRtcTransport,
+      join: this.handleJoin
     })
     const handler = requestHandlers[args.request.method]
     if (!handler) {
@@ -120,6 +121,26 @@ export default class Room extends events.EventEmitter {
       return
     }
     handler(args)
+  }
+
+  getJoinedPeers(options: {excludePeer?: protoo.Peer} = {}) {
+    return this.protooRoom.peers
+      .filter((peer) => peer.data.joined)
+      .filter((peer) => peer !== options.excludePeer)
+  }
+
+  consumeRoomSetUp() {}
+
+  notifyRoomOfJoin(newPeer: protoo.Peer) {
+    for (const otherPeer of this.getJoinedPeers({excludePeer: newPeer})) {
+      console.log('notifying of new peer:', newPeer.id)
+      otherPeer
+        .notify('newPeer', {
+          id: newPeer.id,
+          device: newPeer.device
+        })
+        .catch(() => {})
+    }
   }
 
   /* Peer Request Handlers */
@@ -141,5 +162,24 @@ export default class Room extends events.EventEmitter {
       sctpParameters
     })
     args.peer.data.transports[transport.id] = transport
+  }
+
+  handleJoin = (args: handlePeerRequestSignature) => {
+    if (args.peer.data.join) throw new Error('Peer already joined')
+    const {device, rtpCapabilities} = args.request.data
+    Object.assign(args.peer.data, {
+      joined: true,
+      device,
+      rtpCapabilities
+    })
+    const peerInfos = this.getJoinedPeers()
+      .filter((joinedPeer) => joinedPeer.id !== args.peer.id)
+      .map((joinedPeer) => ({
+        id: joinedPeer.id,
+        device: joinedPeer.data.device
+      }))
+    args.accept({peers: peerInfos})
+    this.consumeRoomSetUp()
+    this.notifyRoomOfJoin(args.peer)
   }
 }
