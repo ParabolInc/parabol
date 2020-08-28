@@ -779,6 +779,11 @@ export interface IAgendaItem {
   thread: IThreadableConnection;
 
   /**
+   * A list of users currently commenting
+   */
+  commentors: Array<ICommentorDetails> | null;
+
+  /**
    * The body of the agenda item
    */
   content: string;
@@ -929,6 +934,23 @@ export interface IThreadableEdge {
    */
   node: Threadable;
   cursor: string | null;
+}
+
+/**
+ * The user that is commenting
+ */
+export interface ICommentorDetails {
+  __typename: 'CommentorDetails';
+
+  /**
+   * The userId of the person commenting
+   */
+  userId: string;
+
+  /**
+   * The preferred name of the user commenting
+   */
+  preferredName: string;
 }
 
 /**
@@ -3251,9 +3273,9 @@ export interface IMutation {
   emailPasswordReset: boolean;
 
   /**
-   * Broadcast that the viewer stopped dragging a reflection
+   * Track which users are commenting
    */
-  endDraggingReflection: IEndDraggingReflectionPayload | null;
+  editCommenting: IEditCommentingPayload | null;
 
   /**
    * Finish a sprint poker meeting
@@ -3269,6 +3291,11 @@ export interface IMutation {
    * Announce to everyone that you are editing a task
    */
   editTask: IEditTaskPayload | null;
+
+  /**
+   * Broadcast that the viewer stopped dragging a reflection
+   */
+  endDraggingReflection: IEndDraggingReflectionPayload | null;
 
   /**
    * Finish a new meeting
@@ -3890,23 +3917,13 @@ export interface IEmailPasswordResetOnMutationArguments {
   email: string;
 }
 
-export interface IEndDraggingReflectionOnMutationArguments {
-  reflectionId: string;
-
+export interface IEditCommentingOnMutationArguments {
   /**
-   * if it was a drop (isDragging = false), the type of item it was dropped on. null if there was no valid drop target
+   * True if the user is commenting, false if the user has stopped commenting
    */
-  dropTargetType?: DragReflectionDropTargetTypeEnum | null;
-
-  /**
-   * if dropTargetType could refer to more than 1 component, this ID defines which one
-   */
-  dropTargetId?: string | null;
-
-  /**
-   * the ID of the drag to connect to the start drag event
-   */
-  dragId?: string | null;
+  isCommenting: boolean;
+  meetingId: string;
+  threadId: string;
 }
 
 export interface IEndSprintPokerOnMutationArguments {
@@ -3935,6 +3952,25 @@ export interface IEditTaskOnMutationArguments {
    * true if the editing is starting, false if it is stopping
    */
   isEditing: boolean;
+}
+
+export interface IEndDraggingReflectionOnMutationArguments {
+  reflectionId: string;
+
+  /**
+   * if it was a drop (isDragging = false), the type of item it was dropped on. null if there was no valid drop target
+   */
+  dropTargetType?: DragReflectionDropTargetTypeEnum | null;
+
+  /**
+   * if dropTargetType could refer to more than 1 component, this ID defines which one
+   */
+  dropTargetId?: string | null;
+
+  /**
+   * the ID of the drag to connect to the start drag event
+   */
+  dragId?: string | null;
 }
 
 export interface IEndNewMeetingOnMutationArguments {
@@ -5131,6 +5167,11 @@ export interface IRetroReflectionGroup {
    * The number of comments in this group’s thread, if any
    */
   commentCount: number;
+
+  /**
+   * A list of users currently commenting
+   */
+  commentors: Array<ICommentorDetails> | null;
 
   /**
    * The timestamp the meeting was created
@@ -6357,6 +6398,69 @@ export interface IEstimateStage {
   sortOrder: number;
 }
 
+export interface IEditCommentingPayload {
+  __typename: 'EditCommentingPayload';
+
+  /**
+   * true if the user is commenting, false if the user has stopped commenting
+   */
+  isCommenting: boolean;
+
+  /**
+   * The user that is commenting or has stopped commenting
+   */
+  commentor: IUser | null;
+  meetingId: string;
+  threadId: string;
+}
+
+/**
+ * Return object for EndSprintPokerPayload
+ */
+export type EndSprintPokerPayload = IErrorPayload | IEndSprintPokerSuccess;
+
+export interface IEndSprintPokerSuccess {
+  __typename: 'EndSprintPokerSuccess';
+
+  /**
+   * true if the meeting was killed (ended before reaching last stage)
+   */
+  isKill: boolean | null;
+  meetingId: string;
+  meeting: IPokerMeeting;
+  removedTaskIds: Array<string>;
+  team: ITeam;
+  teamId: string;
+}
+
+export interface IEditReflectionPayload {
+  __typename: 'EditReflectionPayload';
+  error: IStandardMutationError | null;
+  promptId: string | null;
+
+  /**
+   * The socketId of the client editing the card (uses socketId to maintain anonymity)
+   */
+  editorId: string | null;
+
+  /**
+   * true if the reflection is being edited, else false
+   */
+  isEditing: boolean | null;
+}
+
+export interface IEditTaskPayload {
+  __typename: 'EditTaskPayload';
+  error: IStandardMutationError | null;
+  task: ITask | null;
+  editor: IUser | null;
+
+  /**
+   * true if the editor is editing, false if they stopped editing
+   */
+  isEditing: boolean | null;
+}
+
 /**
  * The possible places a reflection can be dropped
  */
@@ -6454,53 +6558,6 @@ export interface IRemoteReflectionDrag {
    * the top of the source, relative to the client window
    */
   clientY: number | null;
-}
-
-/**
- * Return object for EndSprintPokerPayload
- */
-export type EndSprintPokerPayload = IErrorPayload | IEndSprintPokerSuccess;
-
-export interface IEndSprintPokerSuccess {
-  __typename: 'EndSprintPokerSuccess';
-
-  /**
-   * true if the meeting was killed (ended before reaching last stage)
-   */
-  isKill: boolean | null;
-  meetingId: string;
-  meeting: IPokerMeeting;
-  removedTaskIds: Array<string>;
-  team: ITeam;
-  teamId: string;
-}
-
-export interface IEditReflectionPayload {
-  __typename: 'EditReflectionPayload';
-  error: IStandardMutationError | null;
-  promptId: string | null;
-
-  /**
-   * The socketId of the client editing the card (uses socketId to maintain anonymity)
-   */
-  editorId: string | null;
-
-  /**
-   * true if the reflection is being edited, else false
-   */
-  isEditing: boolean | null;
-}
-
-export interface IEditTaskPayload {
-  __typename: 'EditTaskPayload';
-  error: IStandardMutationError | null;
-  task: ITask | null;
-  editor: IUser | null;
-
-  /**
-   * true if the editor is editing, false if they stopped editing
-   */
-  isEditing: boolean | null;
 }
 
 export interface IEndNewMeetingPayload {
@@ -7653,7 +7710,9 @@ export type MeetingSubscriptionPayload =
   | IDragDiscussionTopicPayload
   | IDragEstimatingTaskSuccess
   | IEndDraggingReflectionPayload
+  | IEditCommentingPayload
   | IEditReflectionPayload
+  | IEndDraggingReflectionPayload
   | IFlagReadyToAdvanceSuccess
   | INewMeetingCheckInPayload
   | IPromoteNewMeetingFacilitatorPayload

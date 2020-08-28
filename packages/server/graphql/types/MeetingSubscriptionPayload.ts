@@ -23,6 +23,7 @@ import UpdateNewCheckInQuestionPayload from './UpdateNewCheckInQuestionPayload'
 import UpdateReflectionContentPayload from './UpdateReflectionContentPayload'
 import UpdateReflectionGroupTitlePayload from './UpdateReflectionGroupTitlePayload'
 import {UpdateRetroMaxVotesSuccess} from './UpdateRetroMaxVotesPayload'
+import EditCommentingPayload from './EditCommentingPayload'
 import VoteForReflectionGroupPayload from './VoteForReflectionGroupPayload'
 
 const types = [
@@ -35,7 +36,9 @@ const types = [
   DragDiscussionTopicPayload,
   DragEstimatingTaskSuccess,
   EndDraggingReflectionPayload,
+  EditCommentingPayload,
   EditReflectionPayload,
+  EndDraggingReflectionPayload,
   FlagReadyToAdvanceSuccess,
   NewMeetingCheckInPayload,
   PromoteNewMeetingFacilitatorPayload,
