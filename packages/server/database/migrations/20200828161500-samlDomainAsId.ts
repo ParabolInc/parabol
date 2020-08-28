@@ -1,5 +1,4 @@
 import {R} from 'rethinkdb-ts'
-
 export const up = async function(r: R) {
   try {
     await r
@@ -14,7 +13,8 @@ export const up = async function(r: R) {
   try {
     await r
       .table('SAML')
-      .filter((row) => row('id').eq(row('domain')))
+      .filter((row) => row('id').ne(row('domain')))
+      .delete()
       .run()
   } catch (e) {
     console.log(e)

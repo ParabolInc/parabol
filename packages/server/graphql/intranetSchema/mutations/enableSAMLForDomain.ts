@@ -1,5 +1,4 @@
 import {GraphQLBoolean, GraphQLNonNull, GraphQLString} from 'graphql'
-
 import getRethink from '../../../database/rethinkDriver'
 
 const enableSAMLForDomain = {
