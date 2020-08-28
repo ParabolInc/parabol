@@ -50,10 +50,6 @@ function testArchivedTasksTaskView(isTaskArchived: boolean) {
 }
 
 describe('archivedTasks', () => {
-  beforeEach(() => {
-    cy.task('resetDb')
-  })
-
   it('Test showing archived tasks in Team View', () => {
     cy.login()
     testArchivedTasksTeamView(false)
