@@ -2,6 +2,38 @@ import {getSignalingServerUrl} from './urlFactory'
 import protoo from 'protoo-client'
 import {Device, types as mediasoupTypes} from 'mediasoup-client'
 
+const VIDEO_CONSTRAINS = {
+  qvga: {
+    width: {ideal: 320},
+    height: {ideal: 240}
+  },
+  vga: {
+    width: {ideal: 640},
+    height: {ideal: 480}
+  },
+  hd: {
+    width: {ideal: 1280},
+    height: {ideal: 720}
+  }
+}
+
+const WEBCAM_SIMULCAST_ENCODINGS = [
+  {
+    scaleResolutionDownBy: 4,
+    maxBitrate: 500000
+  },
+  {
+    scaleResolutionDownBy: 2,
+    maxBitrate: 1000000
+  },
+  {
+    scaleResolutionDownBy: 1,
+    maxBitrate: 5000000
+  }
+]
+
+const VIDEO_CODEC_OPTIONS = {videoGoogleStartBitrate: 1000}
+
 const PC_PROPRIETARY_CONSTRAINTS = {
   optional: [{googDscp: true}]
 }
@@ -9,6 +41,11 @@ const PC_PROPRIETARY_CONSTRAINTS = {
 interface RoomOptions {
   roomId: string
   peerId: string
+}
+
+interface Webcam {
+  device: MediaDeviceInfo | null
+  resolution: 'qvga' | 'vga' | 'hd'
 }
 
 export default class Room {
@@ -20,6 +57,9 @@ export default class Room {
   sendTransport: protoo.Transport | null
   receiveTransport: protoo.Transport | null
   micProducer: mediasoupTypes.Producer | null
+  webcamProducer: mediasoupTypes.Producer | null
+  webcams: Map<string, MediaDeviceInfo>
+  webcam: Webcam
 
   static audioCodecOptions = {
     opusStereo: 1,
@@ -34,6 +74,12 @@ export default class Room {
     this.sendTransport = null
     this.receiveTransport = null
     this.micProducer = null
+    this.webcamProducer = null
+    this.webcams = new Map()
+    this.webcam = {
+      device: null,
+      resolution: 'hd'
+    }
   }
 
   async connect() {
@@ -169,6 +215,50 @@ export default class Room {
 
   async enableWebcam() {
     console.log('enabling webcam...')
+    if (this.webcamProducer) return
+    if (!this.device.canProduce('video')) return
+    await this.updateWebcams()
+    if (!this.webcam.device) throw new Error('no webcam devices')
+    const {device, resolution} = this.webcam
+    const stream = await navigator.mediaDevices.getUserMedia({
+      video: {
+        deviceId: {ideal: device.deviceId},
+        ...VIDEO_CONSTRAINS[resolution]
+      }
+    })
+    const track = stream.getVideoTracks()[0]
+    // hard code using simulcast
+    this.webcamProducer = await this.sendTransport.produce({
+      track,
+      encodings: WEBCAM_SIMULCAST_ENCODINGS,
+      codecOptions: VIDEO_CODEC_OPTIONS
+    })
+    this.handleWebcam()
+  }
+
+  handleWebcam() {
+    console.log('setting event listeners on webcam producer...')
+    this.webcamProducer!.on('transportclose', () => console.log('handle webcam transport close'))
+    this.webcamProducer!.on('trackended', () => this.disableWebcam().catch(() => {}))
+  }
+
+  async disableWebcam() {
+    console.log('disabling webcam...')
+  }
+
+  async updateWebcams() {
+    this.webcams = new Map()
+    const devices = await navigator.mediaDevices.enumerateDevices()
+    for (const device of devices) {
+      if (device.kind !== 'videoinput') continue
+      this.webcams.set(device.deviceId, device)
+    }
+    const currentWebcamId = this.webcam.device?.deviceId || undefined
+    if (this.webcams.size === 0) {
+      this.webcam.device = null
+    } else if (!this.webcams.has(currentWebcamId as string)) {
+      this.webcam.device = Array.from(this.webcams.values())[0]
+    }
   }
 
   close = () => {
