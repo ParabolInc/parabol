@@ -114,12 +114,10 @@ export default class Room {
   }
 
   handlePeerRequests() {
-    const requestHandlers = {} as {
-      [method: string]: (handlePeerRequestSignature) => void
-    }
-    Object.assign(requestHandlers, {
+    const requestHandlers = {
       newConsumer: this.handleNewConsumer
-    })
+    } as {[method: string]: (handlePeerRequestSignature) => void}
+
     this.peer.on('request', (request, accept, reject) => {
       const handler = requestHandlers[request.method]
       if (!handler) {
@@ -131,20 +129,18 @@ export default class Room {
     })
   }
 
-  handleNewConsumer(args: handlePeerRequestSignature) {
-    console.log('handling new consumer request!')
-    return args
-    // const {peer, request, accept, reject} = args
-    // const {
-    //   peerId,
-    //   producerId,
-    //   id,
-    //   kind,
-    //   rtpParameters,
-    //   type,
-    //   appData,
-    //   producerPaused
-    // } = request.data
+  handleNewConsumer = async ({request, accept}: handlePeerRequestSignature) => {
+    const {peerId, producerId, id, kind, appData, rtpParameters} = request.data
+    const consumer = await this.receiveTransport.consume({
+      id,
+      producerId,
+      kind,
+      rtpParameters,
+      appData: {...appData, peerId}
+    })
+    this.consumers.set(consumer.id, consumer)
+    consumer.on('transportclose', () => this.consumers.delete(consumer.id))
+    accept()
   }
 
   handlePeerNotifications() {}
