@@ -48,6 +48,13 @@ interface Webcam {
   resolution: 'qvga' | 'vga' | 'hd'
 }
 
+interface handlePeerRequestSignature {
+  peer: protoo.Peer
+  request: any
+  accept: (data?: any) => typeof data
+  reject: any // todo: better typing for this
+}
+
 export default class Room {
   roomId: string
   peerId: string
@@ -60,6 +67,7 @@ export default class Room {
   webcamProducer: mediasoupTypes.Producer | null
   webcams: Map<string, MediaDeviceInfo>
   webcam: Webcam
+  consumers: Map<string, mediasoupTypes.Consumer>
 
   static audioCodecOptions = {
     opusStereo: 1,
@@ -80,6 +88,7 @@ export default class Room {
       device: null,
       resolution: 'hd'
     }
+    this.consumers = new Map()
   }
 
   async connect() {
@@ -104,7 +113,40 @@ export default class Room {
     this.peer.on('close', () => this.close())
   }
 
-  handlePeerRequests() {}
+  handlePeerRequests() {
+    const requestHandlers = {} as {
+      [method: string]: (handlePeerRequestSignature) => void
+    }
+    Object.assign(requestHandlers, {
+      newConsumer: this.handleNewConsumer
+    })
+    this.peer.on('request', (request, accept, reject) => {
+      const handler = requestHandlers[request.method]
+      if (!handler) {
+        reject(500, `unknown request.method "${request.method}"`)
+        return
+      }
+      const peer = this.peer
+      handler({peer, request, accept, reject})
+    })
+  }
+
+  handleNewConsumer(args: handlePeerRequestSignature) {
+    console.log('handling new consumer request!')
+    return args
+    // const {peer, request, accept, reject} = args
+    // const {
+    //   peerId,
+    //   producerId,
+    //   id,
+    //   kind,
+    //   rtpParameters,
+    //   type,
+    //   appData,
+    //   producerPaused
+    // } = request.data
+  }
+
   handlePeerNotifications() {}
 
   async join() {
@@ -114,6 +156,10 @@ export default class Room {
     await this.requestJoinRoom()
     await this.enableMic()
     await this.enableWebcam()
+    console.log('Done joining!')
+    console.log('Mic Producer:', this.micProducer)
+    console.log('Webcam Producer:', this.webcamProducer)
+    console.log('Consumers:', this.consumers)
   }
 
   async createDevice() {
@@ -160,6 +206,7 @@ export default class Room {
         .then(cb)
         .catch(errback)
     })
+
     if (transport.direction === 'recv') return
 
     transport.on('produce', async ({kind, rtpParameters, appData}, cb, errback) => {
