@@ -55,6 +55,12 @@ interface handlePeerRequestSignature {
   reject: any // todo: better typing for this
 }
 
+interface protooNotification {
+  notification: true
+  method: string
+  data: {[key: string]: any}
+}
+
 export default class Room {
   roomId: string
   peerId: string
@@ -141,9 +147,30 @@ export default class Room {
     this.consumers.set(consumer.id, consumer)
     consumer.on('transportclose', () => this.consumers.delete(consumer.id))
     accept()
+    console.log('created new consumer:', consumer)
   }
 
-  handlePeerNotifications() {}
+  handlePeerNotifications() {
+    const notifyHandlers = {} as {
+      [method: string]: (protooNotification) => void
+    }
+    Object.assign(notifyHandlers, {
+      newPeer: this.notifyNewPeer
+    })
+    this.peer.on('notification', (notification) => {
+      const handler = notifyHandlers[notification.method]
+      if (!handler) {
+        console.log(`unknown notification.method "${notification.method}"`)
+        return
+      }
+      handler(notification)
+    })
+  }
+
+  notifyNewPeer = ({data}: protooNotification) => {
+    const peer = data
+    console.log('notified of new peer:', peer)
+  }
 
   async join() {
     await this.createDevice()

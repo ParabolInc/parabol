@@ -3,7 +3,6 @@ import {getMediaSoupWorker} from '../server'
 import protoo from 'protoo-server'
 import config from '../config'
 import events from 'events'
-import {Producer} from 'mediasoup/lib/types'
 
 const rooms = new Map<string, Room>()
 
@@ -106,29 +105,47 @@ export default class Room extends events.EventEmitter {
     })
   }
 
-  async handlePeerRequest(args: handlePeerRequestSignature) {
+  async handlePeerRequest({peer, request, accept, reject}: handlePeerRequestSignature) {
     const requestHandlers = {} as {
       [method: string]: (handlePeerRequestSignature) => void
     }
     Object.assign(requestHandlers, {
-      getRouterRtpCapabilities: this.handleGetRouterRtpCapabilities,
-      createWebRtcTransport: this.handleCreateWebRtcTransport,
-      join: this.handleJoin,
-      connectWebRtcTransport: this.handleConnectWebRtcTransport,
-      produce: this.handleProduce
+      getRouterRtpCapabilities: this.getRouterRtpCapabilities,
+      createWebRtcTransport: this.createWebRtcTransport,
+      join: this.join,
+      connectWebRtcTransport: this.connectWebRtcTransport,
+      produce: this.createProducer
     })
-    const handler = requestHandlers[args.request.method]
+    const handler = requestHandlers[request.method]
     if (!handler) {
-      args.reject(500, `unknown request.method "${args.request.method}"`)
+      reject(500, `unknown request.method "${request.method}"`)
       return
     }
-    handler(args)
+    handler({peer, request, accept, reject})
   }
 
-  getJoinedPeers(options: {excludePeer?: protoo.Peer} = {}) {
+  getJoinedPeers({excludePeer}: {excludePeer?: protoo.Peer} = {}) {
     return this.protooRoom.peers
       .filter((peer) => peer.data.joined)
-      .filter((peer) => peer !== options.excludePeer)
+      .filter((peer) => peer !== excludePeer)
+  }
+
+  letRoomConsumeProducer({
+    newPeer,
+    newProducer
+  }: {
+    newPeer: protoo.Peer
+    newProducer: mediasoupTypes.Producer
+  }) {
+    console.log('creating consumer for new producer...')
+    const existingPeers = this.getJoinedPeers({excludePeer: newPeer})
+    for (const existingPeer of existingPeers) {
+      this.createConsumer({
+        consumerPeer: existingPeer,
+        producerPeer: newPeer,
+        producer: newProducer
+      })
+    }
   }
 
   letPeerConsumeRoom(newPeer: protoo.Peer) {
@@ -146,12 +163,15 @@ export default class Room extends events.EventEmitter {
     }
   }
 
-  async createConsumer(options: {
+  async createConsumer({
+    consumerPeer,
+    producerPeer,
+    producer
+  }: {
     consumerPeer: protoo.Peer
     producerPeer: protoo.Peer
     producer: mediasoupTypes.Producer
   }) {
-    const {consumerPeer, producerPeer, producer} = options
     if (!consumerPeer.data.rtpCapabilities) return
     const canConsume = this.router.canConsume({
       producerId: producer.id,
@@ -175,17 +195,20 @@ export default class Room extends events.EventEmitter {
       consumer
     })
     await consumer.resume()
-    console.log('resumed consumer...')
   }
 
-  async requestNewConsumer(options: {
+  async requestNewConsumer({
+    producerPeer,
+    producer,
+    consumerPeer,
+    consumer
+  }: {
     producerPeer: protoo.Peer
     producer: mediasoupTypes.Producer
     consumerPeer: protoo.Peer
     consumer: mediasoupTypes.Consumer
   }) {
     console.log('requesting client to accept new consumer...')
-    const {producerPeer, producer, consumerPeer, consumer} = options
     await consumerPeer.request('newConsumer', {
       peerId: producerPeer.id,
       producerId: producer.id,
@@ -220,72 +243,74 @@ export default class Room extends events.EventEmitter {
   }
 
   /* Peer Request Handlers */
-  handleGetRouterRtpCapabilities = (args: handlePeerRequestSignature) => {
-    args.accept(this.router.rtpCapabilities)
+  getRouterRtpCapabilities = ({accept}: handlePeerRequestSignature) => {
+    accept(this.router.rtpCapabilities)
   }
 
-  handleCreateWebRtcTransport = async (args: handlePeerRequestSignature) => {
+  createWebRtcTransport = async ({peer, request, accept}: handlePeerRequestSignature) => {
     const transport = await this.router.createWebRtcTransport({
       ...Room.webRtcTransportOptions,
-      appData: args.request.data
+      appData: request.data
     })
     const {id, iceParameters, iceCandidates, dtlsParameters, sctpParameters} = transport
-    args.accept({
+    accept({
       id,
       iceParameters,
       iceCandidates,
       dtlsParameters,
       sctpParameters
     })
-    args.peer.data.transports.set(transport.id, transport)
+    peer.data.transports.set(transport.id, transport)
   }
 
-  handleJoin = (args: handlePeerRequestSignature) => {
-    if (args.peer.data.join) throw new Error('Peer already joined')
-    const {device, rtpCapabilities} = args.request.data
-    Object.assign(args.peer.data, {
+  join = ({peer, request, accept}: handlePeerRequestSignature) => {
+    if (peer.data.join) throw new Error('Peer already joined')
+    const {device, rtpCapabilities} = request.data
+    Object.assign(peer.data, {
       joined: true,
       device,
       rtpCapabilities
     })
-    const peerInfos = this.getJoinedPeers({excludePeer: args.peer}).map((joinedPeer) => ({
+    const peerInfos = this.getJoinedPeers({excludePeer: peer}).map((joinedPeer) => ({
       id: joinedPeer.id,
       device: joinedPeer.data.device
     }))
-    args.accept({peers: peerInfos})
-    this.letPeerConsumeRoom(args.peer)
-    this.notifyRoomOfNewPeer(args.peer)
+    accept({peers: peerInfos})
+    this.letPeerConsumeRoom(peer)
+    this.notifyRoomOfNewPeer(peer)
   }
 
-  handleConnectWebRtcTransport = async (args: handlePeerRequestSignature) => {
-    console.log('connecting this transport...')
-    const {transportId, dtlsParameters} = args.request.data
-    const transport = args.peer.data.transports.get(transportId)
+  connectWebRtcTransport = async ({peer, request, accept}: handlePeerRequestSignature) => {
+    console.log('accepting request to connect this transport...')
+    const {transportId, dtlsParameters} = request.data
+    const transport = peer.data.transports.get(transportId)
     if (!transport) throw new Error(`transport with id "${transportId}" not found`)
     await transport.connect({dtlsParameters})
-    args.accept()
+    accept()
   }
 
-  handleProduce = async (args: handlePeerRequestSignature) => {
-    console.log('handling produce request...')
-    if (!args.peer.data.joined) throw new Error('Peer not joined yet')
-    const {transportId, kind, rtpParameters} = args.request.data
-    const transport = args.peer.data.transports.get(transportId)
+  createProducer = async ({peer, request, accept}: handlePeerRequestSignature) => {
+    console.log('creating producer...')
+    if (!peer.data.joined) throw new Error('Peer not joined yet')
+    const {transportId, kind, rtpParameters} = request.data
+    const transport = peer.data.transports.get(transportId)
     if (!transport) throw new Error(`transport with id "${transportId}" not found`)
 
-    const appData = Object.assign(args.request.data, {
-      peerId: args.peer.id
+    const appData = Object.assign(request.data, {
+      peerId: peer.id
     })
     const producer = await transport.produce({
       kind,
       rtpParameters,
       appData
     })
-    args.accept({id: producer.id})
-    args.peer.data.producers.set(producer.id, producer)
-    // todo: create a consumer for each peer
-    if (producer.kind === 'audio') {
-      this.audioLevelObserver.addProducer({producerId: producer.id}).catch(() => {})
-    }
+    accept({id: producer.id})
+    this.letRoomConsumeProducer({
+      newPeer: peer,
+      newProducer: producer
+    })
+    peer.data.producers.set(producer.id, producer)
+    if (producer.kind !== 'audio') return
+    this.audioLevelObserver.addProducer({producerId: producer.id}).catch(() => {})
   }
 }
