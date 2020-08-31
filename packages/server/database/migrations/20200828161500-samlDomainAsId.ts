@@ -1,7 +1,7 @@
 import {R} from 'rethinkdb-ts'
 export const up = async function(r: R) {
   try {
-    const updatedSaml = await r
+    const samlWithId = await r
       .table('SAML')
       .map((row) => {
         return {
@@ -15,7 +15,7 @@ export const up = async function(r: R) {
 
     await r
       .table('SAML')
-      .insert(updatedSaml, {conflict: 'replace'})
+      .insert(samlWithId, {conflict: 'replace'})
       .run()
 
     await r
@@ -30,7 +30,7 @@ export const up = async function(r: R) {
 
 export const down = async function(r: R) {
   try {
-    const updatedSaml = await r
+    const samlWithoutId = await r
       .table('SAML')
       .map((row) => {
         return {
@@ -43,7 +43,7 @@ export const down = async function(r: R) {
 
     await r
       .table('SAML')
-      .insert(updatedSaml)
+      .insert(samlWithoutId)
       .run()
   } catch (e) {
     console.log(e)
