@@ -25,6 +25,7 @@ const enableSAMLForDomain = {
       .insert(
         {
           id: normalizedDomain,
+          domain: normalizedDomain,
           url: normalizedUrl,
           metadata: metadata
         },

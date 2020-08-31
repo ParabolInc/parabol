@@ -1,16 +1,23 @@
 import {R} from 'rethinkdb-ts'
 export const up = async function(r: R) {
   try {
+    const updatedSaml = await r
+      .table('SAML')
+      .map((row) => {
+        return {
+          id: row('domain'),
+          domain: row('domain'),
+          url: row('url'),
+          metadata: row('metadata')
+        }
+      })
+      .run()
+
     await r
       .table('SAML')
-      .update((row) => ({
-        id: row('domain')
-      }))
+      .insert(updatedSaml, {conflict: 'replace'})
       .run()
-  } catch (e) {
-    console.log(e)
-  }
-  try {
+
     await r
       .table('SAML')
       .filter((row) => row('id').ne(row('domain')))
@@ -21,6 +28,24 @@ export const up = async function(r: R) {
   }
 }
 
-export const down = async function() {
-  // noop
+export const down = async function(r: R) {
+  try {
+    const updatedSaml = await r
+      .table('SAML')
+      .map((row) => {
+        return {
+          domain: row('domain'),
+          url: row('url'),
+          metadata: row('metadata')
+        }
+      })
+      .run()
+
+    await r
+      .table('SAML')
+      .insert(updatedSaml)
+      .run()
+  } catch (e) {
+    console.log(e)
+  }
 }
