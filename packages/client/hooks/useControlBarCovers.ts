@@ -70,7 +70,9 @@ export const useCoverable = (
     updateCoverables()
     return () => {
       const oldCoverable = coverables[id]
-      ;(oldCoverable as any).el = null
+      if (oldCoverable) {
+        ;(oldCoverable as any).el = null
+      }
     }
   }, [])
 
