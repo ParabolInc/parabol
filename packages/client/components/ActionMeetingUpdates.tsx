@@ -109,6 +109,8 @@ export default createFragmentContainer(ActionMeetingUpdates, {
       phases {
         stages {
           ...ActionMeetingUpdatesStage @relay(mask: false)
+          # required so localPhase has access to isComplete
+          isComplete
         }
       }
       team {
