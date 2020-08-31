@@ -54,7 +54,7 @@ const UserColumnsContainer = (props: Props) => {
       const inTeam = teamMembers.find(({userId}) => userIds.includes(userId)) != undefined
       const teamFiltered = teamFilter ? teamFilter.id === teamId : true
       return teamFiltered && inTeam
-    }) : teams
+    }) : (teamIds ? teams.filter(({id}) => id === teamIds[0]) : teams)
     const myTeamMemberId = toTeamMemberId(filteredTeams[0].id, userIds ? userIds[0] : viewer.id)
 
     return <TaskColumns area={areaForTaskCard} tasks={filteredTasks} myTeamMemberId={myTeamMemberId} teams={filteredTeams} />

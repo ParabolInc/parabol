@@ -10,6 +10,7 @@ import useAtmosphere from '../../../../hooks/useAtmosphere'
 import {MenuProps} from '../../../../hooks/useMenu'
 import ChangeTaskTeamMutation from '../../../../mutations/ChangeTaskTeamMutation'
 import useMutationProps from '../../../../hooks/useMutationProps'
+import parseUserTaskFilters from '~/utils/parseUserTaskFilters'
 
 interface Props {
   menuProps: MenuProps
@@ -19,10 +20,14 @@ interface Props {
 
 const TaskFooterTeamAssigneeMenu = (props: Props) => {
   const {menuProps, task, viewer} = props
+  const {userIds, teamIds} = parseUserTaskFilters(viewer.id)
   const {team, id: taskId} = task
   const {id: teamId} = team
   const {teams} = viewer
-  const assignableTeams = useMemo(() => teams.filter((team) => team.id !== teamId), [teamId, teams])
+  const filteredTeams = userIds ? teams.filter(({teamMembers}) =>
+    teamMembers.find(({userId}) => userIds.includes(userId)) != undefined
+  ) : (teamIds ? teams.filter(({id}) => teamIds.includes(id)) : teams)
+  const assignableTeams = useMemo(() => filteredTeams.filter((team) => team.id !== teamId), [teamId, teams])
   const atmosphere = useAtmosphere()
   const {submitting, submitMutation, onError, onCompleted} = useMutationProps()
   const handleTaskUpdate = (newTeam) => () => {
@@ -45,9 +50,14 @@ const TaskFooterTeamAssigneeMenu = (props: Props) => {
 export default createFragmentContainer(TaskFooterTeamAssigneeMenu, {
   viewer: graphql`
     fragment TaskFooterTeamAssigneeMenu_viewer on User {
+      id
       teams {
         id
         name
+        teamMembers(sortBy: "preferredName") {
+          userId
+          preferredName
+        }
       }
     }
   `,

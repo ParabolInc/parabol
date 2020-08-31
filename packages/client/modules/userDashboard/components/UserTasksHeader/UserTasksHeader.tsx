@@ -49,7 +49,8 @@ const StyledCheckbox = styled(Checkbox)({
 })
 
 const UserTasksHeaderDashSectionControls = styled(DashSectionControls)({
-  width: '40%'
+  justifyContent: 'flex-start',
+  width: '100%'
 })
 
 interface Props {
