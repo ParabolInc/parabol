@@ -101,6 +101,7 @@ const dev = async (maybeInit, isDangerous) => {
     await require('./buildDll')()
     await compileServers()
   }
+
   fork(path.join(PROJECT_ROOT, 'dev/gqlExecutor.js'))
   const redis = new Redis(process.env.REDIS_URL)
   // it's nice to flush the cache, but can comment this out if you want to test cache hits between restarts
