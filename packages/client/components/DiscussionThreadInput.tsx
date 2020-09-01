@@ -34,10 +34,13 @@ const Wrapper = styled('div')<{isReply: boolean; isDisabled: boolean}>(({isDisab
   zIndex: 0
 }))
 
-const CommentAvatar = styled(Avatar)({
+const CommentAvatar = styled(Avatar)<{isEndedMeeting: boolean}>(({isEndedMeeting}) => ({
   margin: 8,
-  transition: 'all 150ms'
-})
+  transition: 'all 150ms',
+  '&:hover': {
+    cursor: isEndedMeeting ? 'default' : 'pointer'
+  }
+}))
 
 interface Props {
   editorRef: RefObject<HTMLTextAreaElement>
@@ -89,6 +92,7 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
   const threadSource = threadSourceByMeetingType[meetingType]
 
   const toggleAnonymous = () => {
+    if (endedAt) return
     commitLocalUpdate(atmosphere, (store) => {
       const meeting = store.get(meetingId)
       if (!meeting) return
@@ -144,7 +148,12 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
   const avatar = isAnonymousComment ? anonymousAvatar : picture
   return (
     <Wrapper data-cy={`${dataCy}-wrapper`} ref={ref} isReply={isReply} isDisabled={isDisabled}>
-      <CommentAvatar size={32} picture={avatar} onClick={toggleAnonymous} />
+      <CommentAvatar
+        isEndedMeeting={!!endedAt}
+        size={32}
+        picture={avatar}
+        onClick={toggleAnonymous}
+      />
       <CommentEditor
         dataCy={`${dataCy}`}
         teamId={teamId}
