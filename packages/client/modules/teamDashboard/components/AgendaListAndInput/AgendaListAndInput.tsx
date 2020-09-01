@@ -61,9 +61,7 @@ const AgendaListAndInput = (props: Props) => {
         gotoStageId={gotoStageId}
         meeting={meeting}
       />
-      {!endedAt && (
-        <StyledAgendaInput disabled={!!isDisabled || !!endedAt} isMeeting={!!meeting} team={team} />
-      )}
+      {!endedAt && <StyledAgendaInput disabled={!!isDisabled} isMeeting={!!meeting} team={team} />}
     </RootStyles>
   )
 }

@@ -44,7 +44,6 @@ interface Props {
 const AgendaList = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {agendaItems, meeting, dashSearch, gotoStageId} = props
-  console.log('AgendaList -> meeting', meeting)
   const meetingId = meeting?.id
   const endedAt = meeting?.endedAt
   const filteredAgendaItems = useMemo(() => {
@@ -97,7 +96,12 @@ const AgendaList = (props: Props) => {
             <AgendaListRoot ref={provided.innerRef}>
               {filteredAgendaItems.map((item, idx) => {
                 return (
-                  <Draggable key={item.id} draggableId={item.id} index={idx}>
+                  <Draggable
+                    key={item.id}
+                    draggableId={item.id}
+                    index={idx}
+                    isDragDisabled={!!endedAt}
+                  >
                     {(dragProvided, dragSnapshot) => {
                       return (
                         <DraggableAgendaItem

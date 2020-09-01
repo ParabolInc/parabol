@@ -115,6 +115,7 @@ const AgendaItem = (props: Props) => {
   const {agendaItem, gotoStageId, isDragging, meeting} = props
   const {id: agendaItemId, content, pinned, teamMember} = agendaItem
   const meetingId = meeting?.id
+  const endedAt = meeting?.endedAt
   const {picture} = teamMember
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
@@ -147,6 +148,7 @@ const AgendaItem = (props: Props) => {
   }
 
   const handleRemove = () => {
+    console.log('handleRemove -> agendaItemId', agendaItemId)
     RemoveAgendaItemMutation(atmosphere, {agendaItemId})
   }
 
@@ -183,6 +185,7 @@ const AgendaItem = (props: Props) => {
         />
         <DeleteIconButton
           aria-label={'Remove this agenda topic'}
+          disabled={!!endedAt}
           icon='cancel'
           onClick={handleRemove}
           palette='midGray'

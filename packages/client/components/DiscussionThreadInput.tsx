@@ -67,7 +67,14 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
   } = props
   const isReply = !!props.isReply
   const isDisabled = !!props.isDisabled
-  const {id: meetingId, isAnonymousComment, teamId, viewerMeetingMember, meetingType} = meeting
+  const {
+    id: meetingId,
+    endedAt,
+    isAnonymousComment,
+    teamId,
+    viewerMeetingMember,
+    meetingType
+  } = meeting
   const {user} = viewerMeetingMember
   const {picture} = user
   const [editorState, setEditorState] = useReplyEditorState(replyMention, setReplyMention)
@@ -144,6 +151,7 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
         editorRef={editorRef}
         editorState={editorState}
         onSubmit={onSubmit}
+        readOnly={!!endedAt}
         setEditorState={setEditorState}
         placeholder={placeholder}
         onFocus={collapseAddTask}
@@ -168,6 +176,7 @@ export default createFragmentContainer(DiscussionThreadInput, {
     fragment DiscussionThreadInput_meeting on NewMeeting {
       ...CommentSendOrAdd_meeting
       id
+      endedAt
       teamId
       meetingType
       isAnonymousComment

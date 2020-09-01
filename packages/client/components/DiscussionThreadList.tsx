@@ -50,6 +50,7 @@ interface Props {
 
 const DiscussionThreadList = forwardRef((props: Props, ref: any) => {
   const {editorRef, meeting, threadSourceId, threadables, dataCy} = props
+  const {endedAt} = meeting
   const isEmpty = threadables.length === 0
   useScrollThreadList(threadables, editorRef, ref)
   const HeaderBlock = () => <Header>{'Discussion & Takeaway Tasks'}</Header>
@@ -57,7 +58,7 @@ const DiscussionThreadList = forwardRef((props: Props, ref: any) => {
     return (
       <EmptyWrapper>
         <HeaderBlock />
-        <DiscussionThreadListEmptyState />
+        <DiscussionThreadListEmptyState isEndedMeeting={!!endedAt} />
       </EmptyWrapper>
     )
   }
@@ -85,6 +86,7 @@ export default createFragmentContainer(DiscussionThreadList, {
   meeting: graphql`
     fragment DiscussionThreadList_meeting on NewMeeting {
       ...ThreadedItem_meeting
+      endedAt
     }
   `,
   threadables: graphql`
