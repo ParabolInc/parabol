@@ -44,7 +44,9 @@ interface Props {
 const AgendaList = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {agendaItems, meeting, dashSearch, gotoStageId} = props
+  console.log('AgendaList -> meeting', meeting)
   const meetingId = meeting?.id
+  const endedAt = meeting?.endedAt
   const filteredAgendaItems = useMemo(() => {
     if (!agendaItems) return null
     return dashSearch
@@ -84,7 +86,7 @@ const AgendaList = (props: Props) => {
   })
 
   if (!filteredAgendaItems || filteredAgendaItems.length === 0) {
-    return <AgendaListEmptyState isDashboard={!meetingId} />
+    return <AgendaListEmptyState isComplete={!!endedAt} isDashboard={!meetingId} />
   }
 
   return (
@@ -130,6 +132,7 @@ export default createFragmentContainer(AgendaList, {
   meeting: graphql`
     fragment AgendaList_meeting on ActionMeeting {
       id
+      endedAt
       ...AgendaItem_meeting
     }
   `,
