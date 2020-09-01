@@ -3,6 +3,10 @@ import React, {forwardRef, Ref} from 'react'
 import {PALETTE} from '~/styles/paletteV2'
 import Icon from '../Icon'
 import LinkButton from '../LinkButton'
+import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
+import {Breakpoint} from '~/types/constEnums'
+
+const desktopBreakpoint = makeMinWidthMediaQuery(Breakpoint.SIDEBAR_LEFT)
 
 interface Props {
   label: string
@@ -21,8 +25,12 @@ const StyledIcon = styled(Icon)({
 const StyledLinkButton = styled(LinkButton)({
   color: PALETTE.TEXT_GRAY,
   fontWeight: 600,
+  marginRight: '16px',
   ':hover, :focus, :active': {
     color: PALETTE.TEXT_MAIN
+  },
+  [desktopBreakpoint]: {
+    marginRight: '24px',
   }
 })
 

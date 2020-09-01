@@ -50,6 +50,8 @@ const StyledCheckbox = styled(Checkbox)({
 
 const UserTasksHeaderDashSectionControls = styled(DashSectionControls)({
   justifyContent: 'flex-start',
+  flexWrap: 'wrap',
+  flexShrink: 0,
   width: '100%'
 })
 
