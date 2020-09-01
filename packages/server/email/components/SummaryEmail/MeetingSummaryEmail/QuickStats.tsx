@@ -50,6 +50,7 @@ const QuickStats = (props: Props) => {
   const {meeting} = props
   const {meetingType} = meeting
   const quickStatMaker = quickStatsLookup[meetingType]
+  if (!quickStatMaker) return null
   const stats = quickStatMaker(meeting as any)
   return (
     <table width='75%' align='center' style={tableStyle}>

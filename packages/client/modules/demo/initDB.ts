@@ -158,7 +158,6 @@ const initDemoTeamMember = ({id: userId, preferredName, picture}, idx) => {
     __typename: 'TeamMember',
     email: 'you@parabol.co',
     id: teamMemberId,
-    checkInOrder: idx,
     teamMemberId,
     isLead: idx === 0,
     isSelf: idx === 0,

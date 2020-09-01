@@ -53,11 +53,6 @@ const TeamMember = new GraphQLObjectType<any, GQLContext, any>({
       type: new GraphQLNonNull(GraphQLURLType),
       description: 'url of user’s profile picture'
     },
-    /* Ephemeral meeting state */
-    checkInOrder: {
-      type: new GraphQLNonNull(GraphQLInt),
-      description: 'The place in line for checkIn, regenerated every meeting'
-    },
     isSelf: {
       type: new GraphQLNonNull(GraphQLBoolean),
       description: 'true if this team member belongs to the user that queried it',

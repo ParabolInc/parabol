@@ -1,3 +1,4 @@
+import CardsSVG from '../../components/CardsSVG'
 import {NewMeetingPhaseTypeEnum} from '../../types/graphql'
 import {ACTION, RETROSPECTIVE} from '../constants'
 
@@ -14,7 +15,9 @@ export const phaseLabelLookup = {
   [NewMeetingPhaseTypeEnum.firstcall]: 'First Call',
   [NewMeetingPhaseTypeEnum.agendaitems]: 'Team Agenda',
   [NewMeetingPhaseTypeEnum.lastcall]: 'Last Call',
-  [NewMeetingPhaseTypeEnum.SUMMARY]: 'Summary'
+  [NewMeetingPhaseTypeEnum.SUMMARY]: 'Summary',
+  SCOPE: 'Scope',
+  ESTIMATE: 'Estimate'
 }
 
 export const phaseIconLookup = {
@@ -27,12 +30,18 @@ export const phaseIconLookup = {
   [NewMeetingPhaseTypeEnum.firstcall]: 'comment',
   [NewMeetingPhaseTypeEnum.agendaitems]: 'comment',
   [NewMeetingPhaseTypeEnum.lastcall]: 'comment',
-  [NewMeetingPhaseTypeEnum.SUMMARY]: 'receipt'
+  [NewMeetingPhaseTypeEnum.SUMMARY]: 'receipt',
+  SCOPE: 'playlist_add'
 }
 
+export const phaseImageLookup = {
+  ESTIMATE: CardsSVG
+}
 export const meetingTypeToIcon = {
   [RETROSPECTIVE]: 'history',
-  [ACTION]: 'change_history'
+  [ACTION]: 'change_history',
+  poker: 'style'
+
 } as const
 
 export const phaseTypeToSlug = {
@@ -45,5 +54,7 @@ export const phaseTypeToSlug = {
   [NewMeetingPhaseTypeEnum.firstcall]: 'firstcall',
   [NewMeetingPhaseTypeEnum.agendaitems]: 'agendaitems',
   [NewMeetingPhaseTypeEnum.lastcall]: 'lastcall',
-  [NewMeetingPhaseTypeEnum.SUMMARY]: 'summary'
+  [NewMeetingPhaseTypeEnum.SUMMARY]: 'summary',
+  SCOPE: 'scope',
+  ESTIMATE: 'estimate'
 }
