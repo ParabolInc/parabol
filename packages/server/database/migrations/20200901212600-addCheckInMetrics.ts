@@ -8,7 +8,8 @@ export const up = async function(r: R) {
         r
           .table('AgendaItem')
           .getAll(row('id'), {index: 'meetingId'})
-          .map((row) => row('id')) as any
+          .map((row) => row('id'))
+          .coerceTo('array') as any
       )
     await r
       .table('NewMeeting')

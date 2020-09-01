@@ -73,7 +73,7 @@ const getItemProps = (
   }
 
   if (!meeting) return fallback
-  const {endedAt, facilitatorUserId, facilitatorStageId, localStage, localPhase} = meeting
+  const {facilitatorUserId, facilitatorStageId, localStage, localPhase} = meeting
   const localStageId = (localStage && localStage.id) || ''
   const {stages} = localPhase
   if (!stages) return fallback
@@ -84,12 +84,7 @@ const getItemProps = (
   const isFacilitatorStage = facilitatorStageId === stageId
   const isUnsyncedFacilitatorStage = isFacilitatorStage !== isLocalStage && !isLocalStage
   const isViewerFacilitator = viewerId === facilitatorUserId
-  const checkIfDisabled = () => {
-    if (endedAt) return false
-    else if (isViewerFacilitator) return !isNavigableByFacilitator
-    else return !isNavigable
-  }
-  const isDisabled = checkIfDisabled()
+  const isDisabled = isViewerFacilitator ? !isNavigableByFacilitator : !isNavigable
   const onClick = () => {
     gotoStageId!(stageId)
   }
@@ -148,7 +143,6 @@ const AgendaItem = (props: Props) => {
   }
 
   const handleRemove = () => {
-    console.log('handleRemove -> agendaItemId', agendaItemId)
     RemoveAgendaItemMutation(atmosphere, {agendaItemId})
   }
 
