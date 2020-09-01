@@ -69,7 +69,10 @@ const loginSAML = {
     const {isInvited} = relayState
     const {extract} = loginResponse
     const {attributes, nameID: name} = extract
-    const email = attributes.email.toLowerCase()
+    const email = attributes.email?.toLowerCase()
+    if (!email) {
+      return {error: {message: 'Email attribute was not included in SAML response'}}
+    }
     const ssoDomain = getSSODomainFromEmail(email)
     if (ssoDomain !== normalizedDomain) {
       // don't blindly trust the IdP
@@ -84,7 +87,7 @@ const loginSAML = {
       .run()
     if (user) {
       return {
-        authToken: encodeAuthToken(new AuthToken({sub: user.id, tms: user.tms}))
+        authToken: encodeAuthToken(new AuthToken({sub: user.id, tms: user.tms, rol: user.rol}))
       }
     }
 
