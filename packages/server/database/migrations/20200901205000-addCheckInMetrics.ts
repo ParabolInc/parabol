@@ -8,8 +8,7 @@ export const up = async function(r: R) {
         r
           .table('AgendaItem')
           .getAll(row('id'), {index: 'meetingId'})
-          .filter({isActive: true})('id')
-          .coerceTo('array') as any
+          .map((row) => row('id')) as any
       )
     await r
       .table('NewMeeting')
@@ -24,12 +23,11 @@ export const up = async function(r: R) {
           commentCount: r
             .table('Comment')
             .getAll(getThreadIds(row), {index: 'threadId'})
-            .filter({isActive: true})
             .count()
             .default(0),
           agendaItemCount: r
             .table('AgendaItem')
-            .getAll(getThreadIds(row), {index: 'threadId'})
+            .getAll(row('id'), {index: 'meetingId'})
             .count()
             .default(0)
         }),
