@@ -7,15 +7,19 @@ import VideoControls from '../../../../components/VideoControls'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useBreakpoint from '../../../../hooks/useBreakpoint'
 import useInitialRender from '../../../../hooks/useInitialRender'
-import {StreamUserDict} from '../../../../hooks/useSwarm'
 import useTransition, {TransitionStatus} from '../../../../hooks/useTransition'
 import {DECELERATE} from '../../../../styles/animation'
 import {meetingAvatarMediaQueries} from '../../../../styles/meeting'
 import {PALETTE} from '../../../../styles/paletteV2'
 import {Breakpoint} from '../../../../types/constEnums'
-import MediaSwarm from '../../../../utils/swarm/MediaSwarm'
+import MediaRoom from '../../../../utils/mediaRoom/MediaRoom'
 import {NewMeetingAvatarGroup_meeting} from '../../../../__generated__/NewMeetingAvatarGroup_meeting.graphql'
 import NewMeetingAvatar from './NewMeetingAvatar'
+import {
+  PeersState,
+  ProducersState,
+  ConsumersState
+} from '../../../../utils/mediaRoom/reducerMediaRoom'
 
 const MeetingAvatarGroupRoot = styled('div')({
   alignItems: 'center',
@@ -76,9 +80,11 @@ const OverflowCount = styled('div')<{status: TransitionStatus}>(({status}) => ({
 
 interface Props {
   meeting: NewMeetingAvatarGroup_meeting
-  camStreams: StreamUserDict
-  swarm: MediaSwarm | null
+  mediaRoom: MediaRoom | null
   allowVideo: boolean
+  producers: ProducersState
+  consumers: ConsumersState
+  peers: PeersState
 }
 
 const MAX_AVATARS_DESKTOP = 7
@@ -87,7 +93,7 @@ const OVERFLOW_AVATAR = {key: 'overflow'}
 const NewMeetingAvatarGroup = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
-  const {swarm, meeting, camStreams, allowVideo} = props
+  const {mediaRoom, meeting, allowVideo, peers, producers, consumers} = props
   const {id: meetingId, team} = meeting
   const {id: teamId, teamMembers} = team
   const isDesktop = useBreakpoint(Breakpoint.SINGLE_REFLECTION_COLUMN)
@@ -121,11 +127,7 @@ const NewMeetingAvatarGroup = (props: Props) => {
   const isInit = useInitialRender()
   return (
     <MeetingAvatarGroupRoot>
-      <VideoControls
-        allowVideo={allowVideo}
-        swarm={swarm}
-        localStreamUI={camStreams[atmosphere.viewerId]}
-      />
+      <VideoControls allowVideo={allowVideo} mediaRoom={mediaRoom} producers={producers} />
 
       {tranChildren.map((teamMember) => {
         if (teamMember.child.key === 'overflow') {
@@ -144,8 +146,10 @@ const NewMeetingAvatarGroup = (props: Props) => {
               teamMember={teamMember.child}
               onTransitionEnd={teamMember.onTransitionEnd}
               status={isInit ? TransitionStatus.ENTERED : teamMember.status}
-              streamUI={camStreams[teamMember.child.userId]}
-              swarm={swarm}
+              peers={peers}
+              producers={producers}
+              consumers={consumers}
+              mediaRoom={mediaRoom}
             />
           </OverlappingBlock>
         )

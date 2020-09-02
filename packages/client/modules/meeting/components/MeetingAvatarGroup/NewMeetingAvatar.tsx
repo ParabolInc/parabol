@@ -5,8 +5,12 @@ import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import VideoAvatar from '../../../../components/Avatar/VideoAvatar'
 import ErrorBoundary from '../../../../components/ErrorBoundary'
-import {StreamUI} from '../../../../hooks/useSwarm'
-import MediaSwarm from '../../../../utils/swarm/MediaSwarm'
+import MediaRoom from '../../../../utils/mediaRoom/MediaRoom'
+import {
+  PeersState,
+  ProducersState,
+  ConsumersState
+} from '../../../../utils/mediaRoom/reducerMediaRoom'
 import {meetingAvatarMediaQueries} from '../../../../styles/meeting'
 import {TransitionStatus} from '../../../../hooks/useTransition'
 import {DECELERATE} from '../../../../styles/animation'
@@ -38,17 +42,25 @@ interface Props {
   onTransitionEnd: () => void
   status: TransitionStatus
   teamMember: NewMeetingAvatar_teamMember
-  streamUI: StreamUI | undefined
-  swarm: MediaSwarm | null
+  mediaRoom: MediaRoom | null
+  peers: PeersState
+  producers: ProducersState
+  consumers: ConsumersState
 }
 
 const NewMeetingAvatar = (props: Props) => {
-  const {teamMember, streamUI, swarm, onTransitionEnd, status} = props
+  const {teamMember, mediaRoom, onTransitionEnd, status, peers, producers, consumers} = props
   return (
     <ErrorBoundary>
       <Item>
         <AvatarBlock status={status} onTransitionEnd={onTransitionEnd}>
-          <VideoAvatar teamMember={teamMember} streamUI={streamUI} swarm={swarm} />
+          <VideoAvatar
+            teamMember={teamMember}
+            mediaRoom={mediaRoom}
+            peers={peers}
+            producers={producers}
+            consumers={consumers}
+          />
         </AvatarBlock>
       </Item>
     </ErrorBoundary>

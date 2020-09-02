@@ -16,8 +16,7 @@ import useHandleMenuClick from './useHandleMenuClick'
 import useMeetingLocalState from './useMeetingLocalState'
 import useMobileSidebarDefaultClosed from './useMobileSidebarDefaultClosed'
 import useResumeFacilitation from './useResumeFacilitation'
-import useSwarm from './useSwarm'
-import useRoom from './useRoom'
+import useMediaRoom from './useMediaRoom'
 import useToggleSidebar from './useToggleSidebar'
 
 const useMeeting = (meetingRef: any) => {
@@ -57,8 +56,7 @@ const useMeeting = (meetingRef: any) => {
   const toggleSidebar = useToggleSidebar(meetingId)
   const handleMenuClick = useHandleMenuClick(teamId, isDesktop)
   useMobileSidebarDefaultClosed(isDesktop, meetingId)
-  const {streams, swarm} = useSwarm(teamId)
-  useRoom(meetingId)
+  const {peers, consumers, producers, mediaRoom} = useMediaRoom(meetingId)
   useAutoCheckIn(meeting)
   return {
     demoPortal,
@@ -66,8 +64,10 @@ const useMeeting = (meetingRef: any) => {
     gotoStageId,
     safeRoute,
     toggleSidebar,
-    streams,
-    swarm,
+    peers,
+    consumers,
+    producers,
+    mediaRoom,
     isDesktop,
     handleMenuClick
   }

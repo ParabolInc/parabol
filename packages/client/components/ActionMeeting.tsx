@@ -47,8 +47,10 @@ const ActionMeeting = (props: Props) => {
   const {localPhase, showSidebar, viewerMeetingMember} = meeting
   const {
     toggleSidebar,
-    streams,
-    swarm,
+    peers,
+    producers,
+    consumers,
+    mediaRoom,
     handleGotoNext,
     gotoStageId,
     safeRoute,
@@ -80,8 +82,10 @@ const ActionMeeting = (props: Props) => {
           avatarGroup={
             <NewMeetingAvatarGroup
               allowVideo={allowVideo}
-              camStreams={streams.cam}
-              swarm={swarm}
+              peers={peers}
+              producers={producers}
+              consumers={consumers}
+              mediaRoom={mediaRoom}
               meeting={meeting}
             />
           }

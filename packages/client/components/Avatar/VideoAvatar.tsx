@@ -1,10 +1,11 @@
 import {VideoAvatar_teamMember} from '../../__generated__/VideoAvatar_teamMember.graphql'
-import React, {forwardRef, Ref, useEffect, useRef} from 'react'
+import React, {forwardRef, Ref, useRef} from 'react'
 import styled from '@emotion/styled'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import {StreamUI} from '../../hooks/useSwarm'
-import MediaSwarm from '../../utils/swarm/MediaSwarm'
+import MediaRoom from '../../utils/mediaRoom/MediaRoom'
+import {PeersState, ProducersState, ConsumersState} from '../../utils/mediaRoom/reducerMediaRoom'
+import useMedia from '~/hooks/useMedia'
 
 const AvatarStyle = styled('div')({
   height: '100%', // needed to not pancake in firefox
@@ -36,34 +37,29 @@ const Picture = styled('img')<StyleProps>(({isHidden}) => ({
 
 interface Props {
   teamMember: VideoAvatar_teamMember
-  streamUI: StreamUI | undefined
-  swarm: MediaSwarm | null
+  mediaRoom: MediaRoom | null
   onClick?: () => void
   onMouseEnter?: () => void
+  peers: PeersState
+  producers: ProducersState
+  consumers: ConsumersState
 }
 
 const VideoAvatar = forwardRef((props: Props, ref: Ref<HTMLDivElement>) => {
   const videoRef = useRef<HTMLVideoElement>(null)
-  const {streamUI, teamMember, swarm} = props
+  const audioRef = useRef<HTMLAudioElement>(null)
+  const {teamMember, /*mediaRoom,*/ peers, producers, consumers} = props
   const {isSelf, picture, userId} = teamMember
-  useEffect(() => {
-    if (!streamUI) return
-    const {hasVideo} = streamUI
-    if (hasVideo && swarm) {
-      const el = videoRef.current!
-      const stream = isSelf ? swarm.localStreams.cam.low : swarm.getStream('cam', userId)
-      console.log('hasVideo', stream, hasVideo)
-      if (el.srcObject !== stream) {
-        // conditional is required to remove flickering video on update
-        el.srcObject = stream
-      }
-    }
-  })
-  const showVideo = streamUI ? streamUI.hasVideo : false
+  const useMediaArgs = {isSelf, userId, peers, producers, consumers}
+  useMedia({kind: 'video', mediaRef: videoRef, ...useMediaArgs})
+  useMedia({kind: 'audio', mediaRef: audioRef, ...useMediaArgs})
+  const videoProducer = Object.values(producers).find((producer) => producer.track.kind === 'video')
+  const videoEnabled = !!(videoProducer && !videoProducer.paused)
   return (
     <AvatarStyle ref={ref}>
-      <Picture src={picture} isHidden={showVideo} />
-      <Video ref={videoRef} isHidden={!showVideo} autoPlay muted={isSelf} />
+      <Picture src={picture} isHidden={videoEnabled} />
+      <Video ref={videoRef} isHidden={!videoEnabled} autoPlay muted={isSelf} />
+      <audio ref={audioRef} autoPlay muted={isSelf} controls={false} />
     </AvatarStyle>
   )
 })

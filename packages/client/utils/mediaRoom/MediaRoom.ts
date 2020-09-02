@@ -1,6 +1,9 @@
 import {getSignalingServerUrl} from './urlFactory'
 import protoo from 'protoo-client'
-import {Device, types as mediasoupTypes} from 'mediasoup-client'
+import {Device, types as mediasoupTypes, parseScalabilityMode} from 'mediasoup-client'
+import {Dispatch, ReducerAction} from 'react'
+import reducerMediaRoom from './reducerMediaRoom'
+import {PeerState} from './reducerMediaRoom'
 
 const VIDEO_CONSTRAINS = {
   qvga: {
@@ -38,11 +41,6 @@ const PC_PROPRIETARY_CONSTRAINTS = {
   optional: [{googDscp: true}]
 }
 
-interface RoomOptions {
-  roomId: string
-  peerId: string
-}
-
 interface Webcam {
   device: MediaDeviceInfo | null
   resolution: 'qvga' | 'vga' | 'hd'
@@ -61,11 +59,19 @@ interface protooNotification {
   data: {[key: string]: any}
 }
 
-export default class Room {
+export interface DeviceInfo {
+  flag: string
+  name: string
+  version: string
+}
+
+export default class MediaRoom {
   roomId: string
   peerId: string
+  dispatch: Dispatch<ReducerAction<typeof reducerMediaRoom>>
   closed: boolean
   peer: protoo.Peer
+  deviceInfo: DeviceInfo | null
   device: protoo.Device | null
   sendTransport: protoo.Transport | null
   receiveTransport: protoo.Transport | null
@@ -80,10 +86,20 @@ export default class Room {
     opusDtx: 1
   }
 
-  constructor(opts: RoomOptions) {
+  constructor({
+    roomId,
+    peerId,
+    dispatch
+  }: {
+    roomId: string
+    peerId: string
+    dispatch: Dispatch<ReducerAction<typeof reducerMediaRoom>>
+  }) {
     this.closed = false
-    this.roomId = opts.roomId
-    this.peerId = opts.peerId
+    this.roomId = roomId
+    this.peerId = peerId
+    this.dispatch = dispatch
+    this.deviceInfo = null
     this.device = null
     this.sendTransport = null
     this.receiveTransport = null
@@ -95,6 +111,7 @@ export default class Room {
       resolution: 'hd'
     }
     this.consumers = new Map()
+    this.dispatch({type: 'initMediaRoom', mediaRoom: this})
   }
 
   async connect() {
@@ -148,6 +165,26 @@ export default class Room {
     consumer.on('transportclose', () => this.consumers.delete(consumer.id))
     accept()
     console.log('created new consumer:', consumer)
+    const {spatialLayers, temporalLayers} = parseScalabilityMode(
+      consumer.rtpParameters.encodings[0].scalabilityMode
+    )
+    this.dispatch({
+      type: 'addConsumer',
+      peerId,
+      consumer: {
+        id,
+        locallyPaused: false,
+        remotelyPaused: false,
+        rtpParameters,
+        priority: 1,
+        codec: rtpParameters.codecs[0].mimeType.split('/')[1],
+        track: consumer.track,
+        spatialLayers,
+        temporalLayers,
+        preferredSpatialLayer: spatialLayers - 1,
+        preferredTemporalLayer: temporalLayers - 1
+      }
+    })
   }
 
   handlePeerNotifications() {
@@ -168,8 +205,12 @@ export default class Room {
   }
 
   notifyNewPeer = ({data}: protooNotification) => {
-    const peer = data
+    const peer = data as PeerState
     console.log('notified of new peer:', peer)
+    this.dispatch({
+      type: 'addPeer',
+      peer: {...peer, consumers: []}
+    })
   }
 
   async join() {
@@ -253,10 +294,16 @@ export default class Room {
   async requestJoinRoom() {
     console.log('sending request to join room...')
     const {peers} = await this.peer.request('join', {
-      device: this.device,
+      device: this.deviceInfo,
       rtpCapabilities: this.device.rtpCapabilities
     })
     console.log('Peers resp:', peers)
+    for (const peer of peers) {
+      this.dispatch({
+        type: 'addPeer',
+        peer: {...peer, consumers: []}
+      })
+    }
     return peers
   }
 
@@ -268,8 +315,17 @@ export default class Room {
     let track = stream.getAudioTracks()[0]
     this.micProducer = await this.sendTransport.produce({
       track,
-      codecOptions: Room.audioCodecOptions
+      codecOptions: MediaRoom.audioCodecOptions
     })
+    const {id, paused, rtpParameters} = this.micProducer!
+    const producerForDispatch = {
+      id,
+      paused,
+      track,
+      rtpParameters,
+      codec: rtpParameters.codecs[0].mimeType.split('/')[1]
+    }
+    this.dispatch({type: 'addProducer', producer: producerForDispatch})
     this.handleMic()
   }
 
@@ -303,6 +359,15 @@ export default class Room {
       encodings: WEBCAM_SIMULCAST_ENCODINGS,
       codecOptions: VIDEO_CODEC_OPTIONS
     })
+    const {id, paused, rtpParameters} = this.webcamProducer!
+    const producerForDispatch = {
+      id,
+      paused,
+      track,
+      rtpParameters,
+      codec: rtpParameters.codecs[0].mimeType.split('/')[1]
+    }
+    this.dispatch({type: 'addProducer', producer: producerForDispatch})
     this.handleWebcam()
   }
 
