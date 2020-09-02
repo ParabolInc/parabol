@@ -34,6 +34,7 @@ import dismissNewFeature from './mutations/dismissNewFeature'
 import dismissSuggestedAction from './mutations/dismissSuggestedAction'
 import downgradeToPersonal from './mutations/downgradeToPersonal'
 import dragDiscussionTopic from './mutations/dragDiscussionTopic'
+import editCommenting from './mutations/editCommenting'
 import editReflection from './mutations/editReflection'
 import editTask from './mutations/editTask'
 import emailPasswordReset from './mutations/emailPasswordReset'
@@ -140,9 +141,10 @@ export default new GraphQLObjectType<any, Context, any>({
     downgradeToPersonal,
     dragDiscussionTopic,
     emailPasswordReset,
-    endDraggingReflection,
+    editCommenting,
     editReflection,
     editTask,
+    endDraggingReflection,
     endNewMeeting,
     flagReadyToAdvance,
     inactivateUser,

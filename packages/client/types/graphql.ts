@@ -779,6 +779,11 @@ export interface IAgendaItem {
   thread: IThreadableConnection;
 
   /**
+   * A list of users currently commenting
+   */
+  commentors: Array<ICommentorDetails> | null;
+
+  /**
    * The body of the agenda item
    */
   content: string;
@@ -932,6 +937,23 @@ export interface IThreadableEdge {
 }
 
 /**
+ * The user that is commenting
+ */
+export interface ICommentorDetails {
+  __typename: 'CommentorDetails';
+
+  /**
+   * The userId of the person commenting
+   */
+  userId: string;
+
+  /**
+   * The preferred name of the user commenting
+   */
+  preferredName: string;
+}
+
+/**
  * A member of a team
  */
 export interface ITeamMember {
@@ -1079,7 +1101,8 @@ export interface IMeetingMember {
  */
 export const enum MeetingTypeEnum {
   action = 'action',
-  retrospective = 'retrospective'
+  retrospective = 'retrospective',
+  poker = 'poker'
 }
 
 /**
@@ -1564,7 +1587,8 @@ export interface ITeamInvitation {
  */
 export type TeamMeetingSettings =
   | IRetrospectiveMeetingSettings
-  | IActionMeetingSettings;
+  | IActionMeetingSettings
+  | IPokerMeetingSettings;
 
 /**
  * The team settings for a specific type of meeting
@@ -1576,7 +1600,7 @@ export interface ITeamMeetingSettings {
   /**
    * The type of meeting these settings apply to
    */
-  meetingType: MeetingTypeEnum | null;
+  meetingType: MeetingTypeEnum;
 
   /**
    * The broad phase types that will be addressed during the meeting
@@ -1608,7 +1632,9 @@ export const enum NewMeetingPhaseTypeEnum {
   group = 'group',
   vote = 'vote',
   discuss = 'discuss',
-  SUMMARY = 'SUMMARY'
+  SUMMARY = 'SUMMARY',
+  SCOPE = 'SCOPE',
+  ESTIMATE = 'ESTIMATE'
 }
 
 /**
@@ -2275,6 +2301,11 @@ export interface IUserFeatureFlags {
    * true if jira is allowed
    */
   jira: boolean;
+
+  /**
+   * true if jira is allowed
+   */
+  poker: boolean;
 }
 
 /**
@@ -3235,9 +3266,9 @@ export interface IMutation {
   emailPasswordReset: boolean;
 
   /**
-   * Broadcast that the viewer stopped dragging a reflection
+   * Track which users are commenting
    */
-  endDraggingReflection: IEndDraggingReflectionPayload | null;
+  editCommenting: IEditCommentingPayload | null;
 
   /**
    * Changes the editing state of a user for a phase item
@@ -3248,6 +3279,11 @@ export interface IMutation {
    * Announce to everyone that you are editing a task
    */
   editTask: IEditTaskPayload | null;
+
+  /**
+   * Broadcast that the viewer stopped dragging a reflection
+   */
+  endDraggingReflection: IEndDraggingReflectionPayload | null;
 
   /**
    * Finish a new meeting
@@ -3858,23 +3894,13 @@ export interface IEmailPasswordResetOnMutationArguments {
   email: string;
 }
 
-export interface IEndDraggingReflectionOnMutationArguments {
-  reflectionId: string;
-
+export interface IEditCommentingOnMutationArguments {
   /**
-   * if it was a drop (isDragging = false), the type of item it was dropped on. null if there was no valid drop target
+   * True if the user is commenting, false if the user has stopped commenting
    */
-  dropTargetType?: DragReflectionDropTargetTypeEnum | null;
-
-  /**
-   * if dropTargetType could refer to more than 1 component, this ID defines which one
-   */
-  dropTargetId?: string | null;
-
-  /**
-   * the ID of the drag to connect to the start drag event
-   */
-  dragId?: string | null;
+  isCommenting: boolean;
+  meetingId: string;
+  threadId: string;
 }
 
 export interface IEditReflectionOnMutationArguments {
@@ -3896,6 +3922,25 @@ export interface IEditTaskOnMutationArguments {
    * true if the editing is starting, false if it is stopping
    */
   isEditing: boolean;
+}
+
+export interface IEndDraggingReflectionOnMutationArguments {
+  reflectionId: string;
+
+  /**
+   * if it was a drop (isDragging = false), the type of item it was dropped on. null if there was no valid drop target
+   */
+  dropTargetType?: DragReflectionDropTargetTypeEnum | null;
+
+  /**
+   * if dropTargetType could refer to more than 1 component, this ID defines which one
+   */
+  dropTargetId?: string | null;
+
+  /**
+   * the ID of the drag to connect to the start drag event
+   */
+  dragId?: string | null;
 }
 
 export interface IEndNewMeetingOnMutationArguments {
@@ -5082,6 +5127,11 @@ export interface IRetroReflectionGroup {
   commentCount: number;
 
   /**
+   * A list of users currently commenting
+   */
+  commentors: Array<ICommentorDetails> | null;
+
+  /**
    * The timestamp the meeting was created
    */
   createdAt: any;
@@ -5197,7 +5247,7 @@ export interface IRetrospectiveMeetingSettings {
   /**
    * The type of meeting these settings apply to
    */
-  meetingType: MeetingTypeEnum | null;
+  meetingType: MeetingTypeEnum;
 
   /**
    * The broad phase types that will be addressed during the meeting
@@ -5363,7 +5413,8 @@ export interface IAddSlackAuthPayload {
  */
 export const enum UserFlagEnum {
   video = 'video',
-  jira = 'jira'
+  jira = 'jira',
+  poker = 'poker'
 }
 
 export interface IAddFeatureFlagPayload {
@@ -5973,6 +6024,50 @@ export interface IRetroDiscussStage {
   sortOrder: number;
 }
 
+export interface IEditCommentingPayload {
+  __typename: 'EditCommentingPayload';
+
+  /**
+   * true if the user is commenting, false if the user has stopped commenting
+   */
+  isCommenting: boolean;
+
+  /**
+   * The user that is commenting or has stopped commenting
+   */
+  commentor: IUser | null;
+  meetingId: string;
+  threadId: string;
+}
+
+export interface IEditReflectionPayload {
+  __typename: 'EditReflectionPayload';
+  error: IStandardMutationError | null;
+  promptId: string | null;
+
+  /**
+   * The socketId of the client editing the card (uses socketId to maintain anonymity)
+   */
+  editorId: string | null;
+
+  /**
+   * true if the reflection is being edited, else false
+   */
+  isEditing: boolean | null;
+}
+
+export interface IEditTaskPayload {
+  __typename: 'EditTaskPayload';
+  error: IStandardMutationError | null;
+  task: ITask | null;
+  editor: IUser | null;
+
+  /**
+   * true if the editor is editing, false if they stopped editing
+   */
+  isEditing: boolean | null;
+}
+
 /**
  * The possible places a reflection can be dropped
  */
@@ -6070,34 +6165,6 @@ export interface IRemoteReflectionDrag {
    * the top of the source, relative to the client window
    */
   clientY: number | null;
-}
-
-export interface IEditReflectionPayload {
-  __typename: 'EditReflectionPayload';
-  error: IStandardMutationError | null;
-  promptId: string | null;
-
-  /**
-   * The socketId of the client editing the card (uses socketId to maintain anonymity)
-   */
-  editorId: string | null;
-
-  /**
-   * true if the reflection is being edited, else false
-   */
-  isEditing: boolean | null;
-}
-
-export interface IEditTaskPayload {
-  __typename: 'EditTaskPayload';
-  error: IStandardMutationError | null;
-  task: ITask | null;
-  editor: IUser | null;
-
-  /**
-   * true if the editor is editing, false if they stopped editing
-   */
-  isEditing: boolean | null;
 }
 
 export interface IEndNewMeetingPayload {
@@ -7235,8 +7302,9 @@ export type MeetingSubscriptionPayload =
   | ICreateReflectionPayload
   | IDeleteCommentSuccess
   | IDragDiscussionTopicPayload
-  | IEndDraggingReflectionPayload
+  | IEditCommentingPayload
   | IEditReflectionPayload
+  | IEndDraggingReflectionPayload
   | IFlagReadyToAdvanceSuccess
   | INewMeetingCheckInPayload
   | IPromoteNewMeetingFacilitatorPayload
@@ -7659,7 +7727,7 @@ export interface IActionMeetingSettings {
   /**
    * The type of meeting these settings apply to
    */
-  meetingType: MeetingTypeEnum | null;
+  meetingType: MeetingTypeEnum;
 
   /**
    * The broad phase types that will be addressed during the meeting
@@ -8156,6 +8224,77 @@ export interface INotifyPromoteToOrgLeader {
    * *The userId that should see this notification
    */
   userId: string;
+}
+
+/**
+ * The retro-specific meeting settings
+ */
+export interface IPokerMeetingSettings {
+  __typename: 'PokerMeetingSettings';
+  id: string;
+
+  /**
+   * The type of meeting these settings apply to
+   */
+  meetingType: MeetingTypeEnum;
+
+  /**
+   * The broad phase types that will be addressed during the meeting
+   */
+  phaseTypes: Array<NewMeetingPhaseTypeEnum>;
+
+  /**
+   * FK
+   */
+  teamId: string;
+
+  /**
+   * The team these settings belong to
+   */
+  team: ITeam;
+
+  /**
+   * FK. The template that will be used to start the poker meeting
+   */
+  selectedTemplateId: string;
+
+  /**
+   * The template that will be used to start the Poker meeting
+   */
+  selectedTemplate: IReflectTemplate;
+
+  /**
+   * The list of templates used to start a Poker meeting
+   */
+  teamTemplates: Array<IReflectTemplate>;
+
+  /**
+   * The list of templates shared across the organization to start a Poker meeting
+   */
+  organizationTemplates: IReflectTemplateConnection;
+
+  /**
+   * The list of templates shared across the organization to start a Poker meeting
+   */
+  publicTemplates: IReflectTemplateConnection;
+}
+
+export interface IOrganizationTemplatesOnPokerMeetingSettingsArguments {
+  first: number;
+
+  /**
+   * The cursor, which is the templateId
+   */
+  after?: string | null;
+}
+
+export interface IPublicTemplatesOnPokerMeetingSettingsArguments {
+  first: number;
+
+  /**
+   * The cursor, which is the templateId
+   */
+  after?: string | null;
 }
 
 /**

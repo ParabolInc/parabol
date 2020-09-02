@@ -29,7 +29,7 @@ const selectRetroTemplate = {
     const viewerId = getUserId(authToken)
 
     // AUTH
-    const template = await dataLoader.get('reflectTemplates').load(selectedTemplateId)
+    const template = await dataLoader.get('meetingTemplates').load(selectedTemplateId)
 
     if (!template || !template.isActive) {
       console.log('no template', selectedTemplateId, template)

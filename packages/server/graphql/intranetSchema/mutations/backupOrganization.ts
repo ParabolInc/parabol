@@ -162,14 +162,34 @@ const backupOrganization = {
             .table('ReflectPrompt')
             .insert(items)
         ),
-      reflectTemplate: (r
-        .table('ReflectTemplate')
+      meetingTemplate: (r
+        .table('MeetingTemplate')
         .getAll(r.args(teamIds), {index: 'teamId'}) as any)
         .coerceTo('array')
         .do((items) =>
           r
             .db(DESTINATION)
-            .table('ReflectTemplate')
+            .table('MeetingTemplate')
+            .insert(items)
+        ),
+      templateDimension: (r
+        .table('TemplateDimension')
+        .filter((row) => r(teamIds).contains(row('teamId'))) as any)
+        .coerceTo('array')
+        .do((items) =>
+          r
+            .db(DESTINATION)
+            .table('TemplateDimension')
+            .insert(items)
+        ),
+      templateScale: (r
+        .table('TemplateScale')
+        .filter((row) => r(teamIds).contains(row('teamId'))) as any)
+        .coerceTo('array')
+        .do((items) =>
+          r
+            .db(DESTINATION)
+            .table('TemplateScale')
             .insert(items)
         ),
       slackAuth: (r.table('SlackAuth').getAll(r.args(teamIds), {index: 'teamId'}) as any)

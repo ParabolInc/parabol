@@ -260,6 +260,9 @@ class ExportToCSV extends Component<Props> {
         return this.handleActionMeeting(newMeeting)
       case 'retrospective':
         return this.handleRetroMeeting(newMeeting)
+      case 'poker':
+        // TODO summary
+        return []
     }
   }
 

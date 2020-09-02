@@ -1,7 +1,7 @@
 import {GraphQLObjectType} from 'graphql'
-import StandardMutationError from './StandardMutationError'
-import ReflectTemplate from './ReflectTemplate'
 import {GQLContext} from '../graphql'
+import ReflectTemplate from './ReflectTemplate'
+import StandardMutationError from './StandardMutationError'
 
 const RenameReflectTemplatePayload = new GraphQLObjectType<any, GQLContext>({
   name: 'RenameReflectTemplatePayload',
@@ -13,7 +13,7 @@ const RenameReflectTemplatePayload = new GraphQLObjectType<any, GQLContext>({
       type: ReflectTemplate,
       resolve: ({templateId}, _args, {dataLoader}) => {
         if (!templateId) return null
-        return dataLoader.get('reflectTemplates').load(templateId)
+        return dataLoader.get('meetingTemplates').load(templateId)
       }
     }
   })

@@ -1,6 +1,7 @@
 {
   "extends": "./tsconfig.json",
   "include": [
+    "database/types/*",
     "database/migrations/*",
     "email/**/*",
     "segmentFns/*",

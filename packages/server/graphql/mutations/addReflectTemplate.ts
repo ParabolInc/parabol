@@ -35,7 +35,7 @@ const addReflectTemplate = {
 
     // VALIDATION
     const allTemplates = await r
-      .table('ReflectTemplate')
+      .table('MeetingTemplate')
       .getAll(teamId, {index: 'teamId'})
       .filter({isActive: true})
       .run()
@@ -46,7 +46,7 @@ const addReflectTemplate = {
     const viewerTeam = await dataLoader.get('teams').load(teamId)
     let data
     if (parentTemplateId) {
-      const parentTemplate = await dataLoader.get('reflectTemplates').load(parentTemplateId)
+      const parentTemplate = await dataLoader.get('meetingTemplates').load(parentTemplateId)
       if (!parentTemplate) {
         return standardError(new Error('Parent template not found'), {userId: viewerId})
       }
@@ -62,7 +62,7 @@ const addReflectTemplate = {
       }
       const copyName = `${name} Copy`
       const existingCopyCount = await r
-        .table('ReflectTemplate')
+        .table('MeetingTemplate')
         .getAll(teamId, {index: 'teamId'})
         .filter({isActive: true})
         .filter((row) => row('name').match(`^${copyName}`) as any)
@@ -85,7 +85,7 @@ const addReflectTemplate = {
         })
       })
       await r({
-        newTemplate: r.table('ReflectTemplate').insert(newTemplate),
+        newTemplate: r.table('MeetingTemplate').insert(newTemplate),
         newTemplatePrompts: r.table('ReflectPrompt').insert(newTemplatePrompts),
         settings: r
           .table('MeetingSettings')
@@ -122,7 +122,7 @@ const addReflectTemplate = {
       const [newTemplate] = templates
       const {id: templateId} = newTemplate
       await r({
-        newTemplate: r.table('ReflectTemplate').insert(newTemplate),
+        newTemplate: r.table('MeetingTemplate').insert(newTemplate),
         newTemplatePrompts: r.table('ReflectPrompt').insert(newTemplatePrompts),
         settings: r
           .table('MeetingSettings')
