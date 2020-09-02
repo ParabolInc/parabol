@@ -25,7 +25,7 @@ module.exports = {
       DOTENV,
       path.join(SERVER_ROOT, 'server.dev.ts')
     ],
-    gqlExecutor: [DOTENV, path.join(GQL_ROOT, 'gqlExecutor.ts')]
+    gqlExecutor: ['webpack/hot/poll?1000', DOTENV, path.join(GQL_ROOT, 'gqlExecutor.ts')]
   },
   output: {
     filename: '[name].js',

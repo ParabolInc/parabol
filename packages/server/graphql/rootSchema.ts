@@ -1,6 +1,4 @@
-import fs from 'fs'
 import {GraphQLSchema} from 'graphql'
-import path from 'path'
 import mutation from './rootMutation'
 import query from './rootQuery'
 import subscription from './rootSubscription'
@@ -37,24 +35,28 @@ import TimelineEventJoinedParabol from './types/TimelineEventJoinedParabol'
 import TimelineEventTeamCreated from './types/TimelineEventTeamCreated'
 import UpdatesPhase from './types/UpdatesPhase'
 
-if (module.hot) {
-  const acceptChildren = () => {
-    require.cache[module.id]!.hot.accept(acceptChildren)
-  }
-  // accepting here allows us to make errors in the schema childrem without requirimg a restart
-  module.hot.accept(acceptChildren)
-  // every time this module gets loaded, see if it's different from it's previous version.
-  if (!global.hmrSchema) {
-    // relative to the build path
-    const PROJECT_ROOT = path.join(__dirname, '../')
-    const SCHEMA = path.join(PROJECT_ROOT, 'schema.graphql')
-    global.hmrSchema = fs.readFileSync(SCHEMA).toString()
-  }
-  // update on restart since schema might have changed
-  const updateGQLSchema = require('../utils/updateGQLSchema').default
-  updateGQLSchema({delay: 3000, oldSchema: global.hmrSchema})
-}
+// Commenting out the below to get HMR working again. With this enabled, changing a graphql type or resolver
+// doesnt HMR correctly
+// A problem still exists with syntax errors in some files & without global.hmrSchema we'll have to manually restart the server if the schema changes
 
+
+// if (module.hot) {
+//   const acceptChildren = () => {
+//     require.cache[module.id]!.hot.accept(acceptChildren)
+//   }
+//   // accepting here allows us to make errors in the schema childrem without requirimg a restart
+//   module.hot.accept(acceptChildren)
+//   // every time this module gets loaded, see if it's different from it's previous version.
+//   if (!global.hmrSchema) {
+//     // relative to the build path
+//     const PROJECT_ROOT = path.join(__dirname, '../')
+//     const SCHEMA = path.join(PROJECT_ROOT, 'schema.graphql')
+//     global.hmrSchema = fs.readFileSync(SCHEMA).toString()
+//   }
+//   // update on restart since schema might have changed
+//   const updateGQLSchema = require('../utils/updateGQLSchema').default
+//   updateGQLSchema({delay: 3000, oldSchema: global.hmrSchema})
+// }
 export default new GraphQLSchema({
   query,
   mutation,
