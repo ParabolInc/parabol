@@ -5,6 +5,7 @@ import {getUserId} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import rateLimit from '../rateLimit'
 import SetAppLocationPayload from '../types/SetAppLocationPayload'
+import getRedis from '../../utils/getRedis'
 
 export default {
   type: new GraphQLNonNull(SetAppLocationPayload),
@@ -31,6 +32,25 @@ export default {
     }
 
     // RESOLUTION
+
+    // redis
+    // const redis = getRedis()
+    // const user = await redis.get(`presence:${viewerId}`)
+    // if (!user) return
+    // const parsedUser = JSON.parse(user)
+    // const connectedSocket = parsedUser.find((userData) => userData.socketId === mutatorId)
+    // if (!connectedSocket) return
+    // const lastSeenAtURLExists = connectedSocket.lastSeenAtURL
+    // if (!lastSeenAtURLExists) {
+    //   connectedSocket.lastSeenAtURL = location
+    // }
+    // const otherConnectedSockets =
+    //   parsedUser.filter((userData) => userData.socketId !== mutatorId) || []
+    // const updatedUser = otherConnectedSockets.push(connectedSocket)
+    // const stringifiedUser = JSON.stringify(updatedUser)
+    // await redis.set(`presence:${viewerId}`, stringifiedUser)
+    // redis
+
     const {lastSeenAtURL} = viewer
     const lastSeenAt = new Date()
     const data = {userId: viewerId}

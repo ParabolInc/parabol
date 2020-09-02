@@ -23,6 +23,7 @@ const authorize = async (connectionContext: ConnectionContext<WebSocket>) => {
     }
     return
   }
+
   const nextAuthToken = await handleConnect(connectionContext)
   sendEncodedMessage(socket, {version: APP_VERSION, authToken: nextAuthToken})
   keepAlive(connectionContext)
