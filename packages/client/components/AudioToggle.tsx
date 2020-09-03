@@ -18,16 +18,14 @@ interface Props {
 
 const AudioToggle = (props: Props) => {
   const {mediaRoom, producers} = props
-  const audioProducer = Object.values(producers).find(
-    (producer) => producer.track.kind === 'enabled'
-  )
+  const audioProducer = Object.values(producers).find((producer) => producer.track.kind === 'audio')
   const audioEnabled = audioProducer && !audioProducer.paused
   const onClick = async () => {
     if (audioEnabled) {
-      mediaRoom.disableMic()
+      mediaRoom.pauseProducer('audio')
     } else {
       try {
-        await mediaRoom.enableMic()
+        await mediaRoom.resumeProducer('audio')
       } catch (e) {
         /**/
       }

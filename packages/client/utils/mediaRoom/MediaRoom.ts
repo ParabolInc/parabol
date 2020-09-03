@@ -403,18 +403,20 @@ export default class MediaRoom {
     this.webcamProducer = null
   }
 
-  async pauseWebcam() {
-    if (!this.webcamProducer) return
-    this.webcamProducer.pause()
-    await this.peer.request('pauseProducer', {producerId: this.webcamProducer.id})
-    this.dispatch({type: 'pauseProducer', producerId: this.webcamProducer.id})
+  async pauseProducer(type: 'audio' | 'video') {
+    const producer = type === 'audio' ? this.micProducer : this.webcamProducer
+    if (!producer) return
+    producer.pause()
+    await this.peer.request('pauseProducer', {producerId: producer.id})
+    this.dispatch({type: 'pauseProducer', producerId: producer.id})
   }
 
-  async resumeWebcam() {
-    if (!this.webcamProducer) return
-    this.webcamProducer.resume()
-    await this.peer.request('resumeProducer', {producerId: this.webcamProducer.id})
-    this.dispatch({type: 'resumeProducer', producerId: this.webcamProducer.id})
+  async resumeProducer(type: 'audio' | 'video') {
+    const producer = type === 'audio' ? this.micProducer : this.webcamProducer
+    if (!producer) return
+    producer.resume()
+    await this.peer.request('resumeProducer', {producerId: producer.id})
+    this.dispatch({type: 'resumeProducer', producerId: producer.id})
   }
 
   async updateWebcams() {

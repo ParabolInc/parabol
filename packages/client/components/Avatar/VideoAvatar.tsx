@@ -65,7 +65,7 @@ const VideoAvatar = forwardRef((props: Props, ref: Ref<HTMLDivElement>) => {
     <AvatarStyle ref={ref}>
       <Picture src={picture} isHidden={videoEnabled} />
       <Video ref={videoRef} isHidden={!videoEnabled} autoPlay muted={isSelf} />
-      <audio ref={audioRef} autoPlay muted={isSelf} controls={false} />
+      <audio ref={audioRef} autoPlay muted={isSelf || audioEnabled} controls={false} />
     </AvatarStyle>
   )
 })

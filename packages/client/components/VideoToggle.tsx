@@ -22,10 +22,10 @@ const VideoToggle = (props: Props) => {
   const videoEnabled = videoProducer && !videoProducer.paused
   const onClick = async () => {
     if (videoEnabled) {
-      mediaRoom.pauseWebcam()
+      await mediaRoom.pauseProducer('video')
     } else {
       try {
-        await mediaRoom.resumeWebcam()
+        await mediaRoom.resumeProducer('video')
       } catch (e) {
         /**/
       }
