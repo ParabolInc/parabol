@@ -22,10 +22,10 @@ const AudioToggle = (props: Props) => {
   const audioEnabled = audioProducer && !audioProducer.paused
   const onClick = async () => {
     if (audioEnabled) {
-      mediaRoom.pauseProducer('audio')
+      mediaRoom.muteMic()
     } else {
       try {
-        await mediaRoom.resumeProducer('audio')
+        await mediaRoom.unmuteMic()
       } catch (e) {
         /**/
       }

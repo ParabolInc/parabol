@@ -14,6 +14,7 @@ type MediaRoomAction =
   | ResumeConsumer
   | SetRoomState
   | RemoveConsumer
+  | RemovePeer
 
 interface InitMediaRoom {
   type: 'initMediaRoom'
@@ -22,7 +23,8 @@ interface InitMediaRoom {
 
 export enum RoomStateEnum {
   new = 'new',
-  connected = 'connected'
+  connected = 'connected',
+  closed = 'closed'
 }
 
 interface SetRoomState {
@@ -33,6 +35,11 @@ interface SetRoomState {
 interface AddPeer {
   type: 'addPeer'
   peer: PeerState
+}
+
+interface RemovePeer {
+  type: 'removePeer'
+  peerId: string
 }
 
 interface AddConsumer {
@@ -161,6 +168,15 @@ const addPeerReducer = ({state, action}) => {
   })
 }
 
+const removePeerReducer = ({state, action}) => {
+  const {peerId} = action
+  const newPeers = {...state.peers}
+  delete newPeers[peerId]
+  const newState = Object.assign({}, state, {peers: newPeers})
+  if (peerId && peerId === state.room.activeSpeakerId) newState.room.activeSpeakerId = null
+  return newState
+}
+
 const addProducerReducer = ({state, action}) => {
   const {producer} = action
   return Object.assign({}, state, {
@@ -264,7 +280,8 @@ const reducerMediaRoom = (state: MediaRoomState, action: MediaRoomAction) => {
     resumeProducer: resumeProducerReducer,
     resumeConsumer: resumeConsumerReducer,
     setRoomState: setRoomStateReducer,
-    removeConsumer: removeConsumerReducer
+    removeConsumer: removeConsumerReducer,
+    removePeer: removePeerReducer
   } as {
     [actionType: string]: (ReducerArgs) => MediaRoomState
   }

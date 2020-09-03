@@ -3,8 +3,7 @@ import {getMediaSoupWorker} from '../server'
 import protoo from 'protoo-server'
 import config from '../config'
 import events from 'events'
-
-const rooms = new Map<string, Room>()
+import {RtpCodecCapability} from 'mediasoup/lib/types'
 
 interface handlePeerRequestSignature {
   peer: protoo.Peer
@@ -28,22 +27,15 @@ export default class Room extends events.EventEmitter {
   }
   static webRtcTransportOptions = config.mediasoup.webRtcTransportOptions
 
-  static async create(roomId: string): Promise<Room> {
+  static async create(roomId: string, worker: mediasoupTypes.Worker): Promise<Room> {
     /* Because constructors can't be async */
     console.log('creating a new room...')
     const protooRoom = new protoo.Room()
-    const worker = getMediaSoupWorker() // rethinking this, rather do dependency injection
-    const router = await worker.createRouter({mediaCodecs: Room.mediaCodecs})
+    const router = await worker.createRouter({
+      mediaCodecs: Room.mediaCodecs as RtpCodecCapability[]
+    })
     const audioLevelObserver = await router.createAudioLevelObserver(Room.audioLevelObserverOptions)
     return new Room(roomId, protooRoom, router, audioLevelObserver)
-  }
-
-  static async getCreate(roomId: string): Promise<Room> {
-    if (!rooms.get(roomId)) {
-      const room = await Room.create(roomId)
-      rooms.set(roomId, room)
-    }
-    return rooms.get(roomId)
   }
 
   constructor(
@@ -71,8 +63,12 @@ export default class Room extends events.EventEmitter {
   }
 
   handleAudioLevelObserver() {
-    this.audioLevelObserver.on('volumes', () => {})
-    this.audioLevelObserver.on('silence', () => {})
+    this.audioLevelObserver.on('volumes', (volumes) => {
+      console.log('handling volumes:', volumes)
+    })
+    this.audioLevelObserver.on('silence', () => {
+      console.log('handling silence')
+    })
   }
 
   createPeer(peerId: string, transport: mediasoupTypes.Transport) {
@@ -96,13 +92,26 @@ export default class Room extends events.EventEmitter {
       }
     )
 
-    peer.on('close', () => console.log('handling peer close'))
+    peer.on('close', () => this.closePeer(peer))
     peer.on('request', (request, accept, reject) => {
       this.handlePeerRequest({peer, request, accept, reject}).catch((error) => {
         console.log('peer req failed:', error)
         reject(error)
       })
     })
+  }
+
+  closePeer = (peer: protoo.Peer) => {
+    if (this.closed) return
+    if (peer.data.joined) {
+      for (const otherPeer of this.getJoinedPeers({excludePeer: peer})) {
+        otherPeer.notify('peerClosed', {peerId: peer.id}).catch(() => {})
+      }
+    }
+    for (const transport of peer.data.transports.values()) {
+      transport.close()
+    }
+    if (this.protooRoom.peers.length === 0) this.close()
   }
 
   async handlePeerRequest({peer, request, accept, reject}: handlePeerRequestSignature) {

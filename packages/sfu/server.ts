@@ -12,6 +12,17 @@ const tls = {
   key: fs.readFileSync(config.https.tls.key)
 }
 const mediasoupWorkers = []
+const rooms = new Map<string, Room>()
+
+async function getOrCreateRoom(roomId: string) {
+  if (!rooms.get(roomId)) {
+    const worker = getMediaSoupWorker()
+    const room = await Room.create(roomId, worker)
+    rooms.set(roomId, room)
+    room.on('close', () => rooms.delete(roomId))
+  }
+  return rooms.get(roomId)
+}
 
 export function getMediaSoupWorker() {
   return mediasoupWorkers[0] // hard coded for now
@@ -42,6 +53,7 @@ async function runMediasoupWorkers() {
 
 async function runWebSocketServer() {
   const expressApp = express()
+  // http if production
   const httpsServer = https.createServer(tls, expressApp as any)
 
   await new Promise((resolve) => {
@@ -54,7 +66,7 @@ async function runWebSocketServer() {
     fragmentationThreshold: 960000
   })
   console.log(`\n🎥🎥🎥 Ready to Serve Media  🎥🎥🎥`)
-
+  // validate auth token
   wss.on('connectionrequest', async (info, accept, reject) => {
     const requestUrl = url.parse(info.request.url, true)
     const {roomId, peerId} = requestUrl.query
@@ -63,7 +75,7 @@ async function runWebSocketServer() {
       return
     }
     /* Should put in queue or otherwise avoid race conditions */
-    const room = await Room.getCreate(roomId as string)
+    const room = await getOrCreateRoom(roomId as string)
     console.log('Got room with room id:', room.roomId)
     const transport = accept()
     room.createPeer(peerId as string, transport)

@@ -192,7 +192,8 @@ export default class MediaRoom {
       newPeer: this.notifyNewPeer,
       consumerPaused: this.pauseConsumer,
       consumerResumed: this.resumeConsumer,
-      consumerClosed: this.closeConsumer
+      consumerClosed: this.closeConsumer,
+      peerClosed: this.closePeer
     } as {
       [method: string]: (protooNotification) => void
     }
@@ -238,6 +239,11 @@ export default class MediaRoom {
     consumer.close()
     const {peerId} = consumer.appData
     this.dispatch({type: 'removeConsumer', consumerId, peerId})
+  }
+
+  closePeer = ({data}: protooNotification) => {
+    const {peerId} = data
+    this.dispatch({type: 'removePeer', peerId})
   }
 
   async join() {
@@ -366,10 +372,6 @@ export default class MediaRoom {
     this.micProducer!.on('trackended', () => this.disableMic().catch(() => {}))
   }
 
-  async disableMic() {
-    console.log('disabling mic...')
-  }
-
   async enableWebcam() {
     console.log('enabling webcam...')
     if (this.webcamProducer) return
@@ -408,30 +410,35 @@ export default class MediaRoom {
     this.webcamProducer!.on('trackended', () => this.disableWebcam().catch(() => {}))
   }
 
-  async disableWebcam() {
-    console.log('disabling webcam...')
-    if (!this.webcamProducer) return
-    this.webcamProducer.close()
-    this.dispatch({type: 'removeProducer', producerId: this.webcamProducer.id})
-    await this.peer.request('closeProducer', {producerId: this.webcamProducer.id})
-    this.webcamProducer = null
+  disableWebcam = async () => await this.closeProducer(this.webcamProducer!)
+  disableMic = async () => await this.closeProducer(this.micProducer!)
+
+  async closeProducer(producer: mediasoupTypes.Producer) {
+    if (!producer) return
+    console.log('disabling producer:', producer)
+    producer.close()
+    this.dispatch({type: 'removeProducer', producerId: producer.id})
+    await this.peer.request('closeProducer', {producerId: producer.id})
+    if (producer.kind === 'audio') this.micProducer = null
+    if (producer.kind === 'video') this.webcamProducer = null
   }
 
-  async pauseProducer(type: 'audio' | 'video') {
-    const producer = type === 'audio' ? this.micProducer : this.webcamProducer
+  async pauseProducer(producer: mediasoupTypes.Producer) {
     if (!producer) return
     producer.pause()
     await this.peer.request('pauseProducer', {producerId: producer.id})
     this.dispatch({type: 'pauseProducer', producerId: producer.id})
   }
 
-  async resumeProducer(type: 'audio' | 'video') {
-    const producer = type === 'audio' ? this.micProducer : this.webcamProducer
+  async resumeProducer(producer: mediasoupTypes.Producer) {
     if (!producer) return
     producer.resume()
     await this.peer.request('resumeProducer', {producerId: producer.id})
     this.dispatch({type: 'resumeProducer', producerId: producer.id})
   }
+
+  muteMic = async () => await this.pauseProducer(this.micProducer!)
+  unmuteMic = async () => await this.resumeProducer(this.micProducer!)
 
   async updateWebcams() {
     this.webcams = new Map()
@@ -453,5 +460,8 @@ export default class MediaRoom {
     if (this.closed) return
     this.closed = true
     this.peer.close()
+    if (this.sendTransport) this.sendTransport.close()
+    if (this.receiveTransport) this.receiveTransport.close()
+    this.dispatch({type: 'setRoomState', state: RoomStateEnum.closed})
   }
 }
