@@ -18,7 +18,8 @@ import NewMeetingAvatar from './NewMeetingAvatar'
 import {
   PeersState,
   ProducersState,
-  ConsumersState
+  ConsumersState,
+  RoomState
 } from '../../../../utils/mediaRoom/reducerMediaRoom'
 
 const MeetingAvatarGroupRoot = styled('div')({
@@ -85,6 +86,7 @@ interface Props {
   producers: ProducersState
   consumers: ConsumersState
   peers: PeersState
+  room: RoomState
 }
 
 const MAX_AVATARS_DESKTOP = 7
@@ -93,7 +95,7 @@ const OVERFLOW_AVATAR = {key: 'overflow'}
 const NewMeetingAvatarGroup = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
-  const {mediaRoom, meeting, allowVideo, peers, producers, consumers} = props
+  const {mediaRoom, meeting, allowVideo, peers, producers, consumers, room} = props
   const {id: meetingId, team} = meeting
   const {id: teamId, teamMembers} = team
   const isDesktop = useBreakpoint(Breakpoint.SINGLE_REFLECTION_COLUMN)
@@ -127,7 +129,12 @@ const NewMeetingAvatarGroup = (props: Props) => {
   const isInit = useInitialRender()
   return (
     <MeetingAvatarGroupRoot>
-      <VideoControls allowVideo={allowVideo} mediaRoom={mediaRoom} producers={producers} />
+      <VideoControls
+        room={room}
+        allowVideo={allowVideo}
+        mediaRoom={mediaRoom}
+        producers={producers}
+      />
 
       {tranChildren.map((teamMember) => {
         if (teamMember.child.key === 'overflow') {

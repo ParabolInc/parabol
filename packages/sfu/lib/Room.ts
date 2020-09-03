@@ -226,7 +226,9 @@ export default class Room extends events.EventEmitter {
 
   handleConsumer(consumer: mediasoupTypes.Consumer, consumerPeer: protoo.Peer) {
     consumer.on('transportclose', () => console.log('handling transportclose'))
-    consumer.on('producerclose', () => console.log('handling producerclose'))
+    consumer.on('producerclose', () => {
+      consumerPeer.notify('consumerClosed', {consumerId: consumer.id}).catch(() => {})
+    })
     consumer.on('producerpause', () => {
       consumerPeer.notify('consumerPaused', {consumerId: consumer.id}).catch(() => {})
     })

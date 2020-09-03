@@ -12,10 +12,22 @@ type MediaRoomAction =
   | PauseConsumer
   | ResumeProducer
   | ResumeConsumer
+  | SetRoomState
+  | RemoveConsumer
 
 interface InitMediaRoom {
   type: 'initMediaRoom'
   mediaRoom: MediaRoom
+}
+
+export enum RoomStateEnum {
+  new = 'new',
+  connected = 'connected'
+}
+
+interface SetRoomState {
+  type: 'setRoomState'
+  state: RoomStateEnum
 }
 
 interface AddPeer {
@@ -27,6 +39,12 @@ interface AddConsumer {
   type: 'addConsumer'
   peerId: string
   consumer: ConsumerState
+}
+
+interface RemoveConsumer {
+  type: 'removeConsumer'
+  peerId: string
+  consumerId: string
 }
 
 interface PauseConsumer {
@@ -102,11 +120,14 @@ export interface ConsumersState {
   [consumerId: string]: ConsumerState
 }
 
+export interface RoomState {
+  state: RoomStateEnum
+  activeSpeakerId: string | null
+}
+
 export interface MediaRoomState {
   mediaRoom: MediaRoom | null // needed?
-  room: {
-    activeSpeakerId: string | null
-  }
+  room: RoomState
   me: {
     id: string | null
     deviceInfo: DeviceInfo | null
@@ -124,6 +145,13 @@ interface ReducerArgs {
 const initMediaRoomReducer = ({state, action}) => {
   const {mediaRoom} = action
   return Object.assign({}, state, {mediaRoom})
+}
+
+const setRoomStateReducer = ({state, action}) => {
+  const {state: roomState} = action
+  return Object.assign({}, state, {
+    room: {...state.room, state: roomState}
+  })
 }
 
 const addPeerReducer = ({state, action}) => {
@@ -181,6 +209,25 @@ const addConsumerReducer = ({state, action}) => {
   })
 }
 
+const removeConsumerReducer = ({state, action}) => {
+  const {consumerId, peerId} = action
+  const newConsumers = {...state.consumers}
+  delete newConsumers[consumerId]
+  const newState = Object.assign({}, state, {
+    consumers: newConsumers
+  })
+  const peer = state.peers[peerId]
+  if (!peer) return newState
+  const idx = peer.consumers.indexOf(consumerId)
+  if (idx === -1) throw new Error('Consumer not found')
+  const newPeerConsumers = peer.consumers.slice()
+  newPeerConsumers.splice(idx, 1)
+  const newPeer = {...peer, consumers: newPeerConsumers}
+  return Object.assign(newState, {
+    peers: {...state.peers, [newPeer.id]: newPeer}
+  })
+}
+
 const pauseConsumerReducer = ({state, action}) => {
   const {consumerId, origin} = action
   const consumer = state.consumers[consumerId]
@@ -215,7 +262,9 @@ const reducerMediaRoom = (state: MediaRoomState, action: MediaRoomAction) => {
     pauseProducer: pauseProducerReducer,
     pauseConsumer: pauseConsumerReducer,
     resumeProducer: resumeProducerReducer,
-    resumeConsumer: resumeConsumerReducer
+    resumeConsumer: resumeConsumerReducer,
+    setRoomState: setRoomStateReducer,
+    removeConsumer: removeConsumerReducer
   } as {
     [actionType: string]: (ReducerArgs) => MediaRoomState
   }

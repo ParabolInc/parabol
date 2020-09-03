@@ -7,13 +7,14 @@ import AudioToggle from './AudioToggle'
 import VideoToggle from './VideoToggle'
 import useHotkey from '../hooks/useHotkey'
 import useModal from '../hooks/useModal'
-import {ProducersState} from '../utils/mediaRoom/reducerMediaRoom'
+import {ProducersState, RoomState} from '../utils/mediaRoom/reducerMediaRoom'
 
 interface Props {
   allowVideo: boolean
   bindHotkey: (key: string, cb: () => void) => void
   mediaRoom: MediaRoom
   producers: ProducersState
+  room: RoomState
 }
 
 const AddVideoButton = styled(PrimaryButton)({
@@ -33,7 +34,7 @@ const WebcamPermissionsModal = lazy(() =>
 )
 
 const VideoControls = (props: Props) => {
-  const {allowVideo, mediaRoom, producers} = props
+  const {allowVideo, mediaRoom, producers, room} = props
   const [showVideoButton, setShowVideoButton] = useState(allowVideo)
   const [deviceStatus, setDeviceStatus] = useState<PushPermissionState>('granted')
   const {openPortal, modalPortal, closePortal} = useModal({background: 'rgba(0,0,0, 0.9)'})
@@ -43,7 +44,7 @@ const VideoControls = (props: Props) => {
     setShowVideoButton(true)
   })
 
-  const addVideo = async () => {
+  const addMedia = async () => {
     const descriptors = ['camera', 'microphone'] as PermissionName[]
     // https://caniuse.com/#feat=permissions-api
     const permissions =
@@ -62,19 +63,18 @@ const VideoControls = (props: Props) => {
       openPortal()
       const onChange = () => {
         closePortal()
-        addVideo().catch()
+        addMedia().catch()
       }
       permissions.forEach((perm) => (perm.onchange = onChange))
       return
     }
   }
   if (!showVideoButton || !mediaRoom) return null
-
-  const hasVideo = !!Object.values(producers).find((producer) => producer.track.kind === 'video')
-  if (!hasVideo) {
+  // const hasVideo = !!Object.values(producers).find((producer) => producer.track.kind === 'video')
+  if (room.state !== 'connected') {
     return (
       <>
-        <AddVideoButton onClick={addVideo}>Add Video</AddVideoButton>
+        <AddVideoButton onClick={addMedia}>Add Video</AddVideoButton>
         {modalPortal(<WebcamPermissionsModal status={deviceStatus} />)}
       </>
     )

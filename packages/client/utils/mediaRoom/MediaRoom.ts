@@ -3,7 +3,7 @@ import protoo from 'protoo-client'
 import {Device, types as mediasoupTypes, parseScalabilityMode} from 'mediasoup-client'
 import {Dispatch, ReducerAction} from 'react'
 import reducerMediaRoom from './reducerMediaRoom'
-import {PeerState} from './reducerMediaRoom'
+import {PeerState, RoomStateEnum} from './reducerMediaRoom'
 
 const VIDEO_CONSTRAINS = {
   qvga: {
@@ -191,7 +191,8 @@ export default class MediaRoom {
     const notifyHandlers = {
       newPeer: this.notifyNewPeer,
       consumerPaused: this.pauseConsumer,
-      consumerResumed: this.resumeConsumer
+      consumerResumed: this.resumeConsumer,
+      consumerClosed: this.closeConsumer
     } as {
       [method: string]: (protooNotification) => void
     }
@@ -228,6 +229,15 @@ export default class MediaRoom {
     if (!consumer) return
     consumer.resume()
     this.dispatch({type: 'resumeConsumer', consumerId, origin: 'remote'})
+  }
+
+  closeConsumer = ({data}: protooNotification) => {
+    const {consumerId} = data
+    const consumer = this.consumers.get(consumerId)
+    if (!consumer) return
+    consumer.close()
+    const {peerId} = consumer.appData
+    this.dispatch({type: 'removeConsumer', consumerId, peerId})
   }
 
   async join() {
@@ -313,6 +323,10 @@ export default class MediaRoom {
     const {peers} = await this.peer.request('join', {
       device: this.deviceInfo,
       rtpCapabilities: this.device.rtpCapabilities
+    })
+    this.dispatch({
+      type: 'setRoomState',
+      state: RoomStateEnum.connected
     })
     console.log('Peers resp:', peers)
     for (const peer of peers) {

@@ -47,6 +47,7 @@ const ActionMeeting = (props: Props) => {
   const {localPhase, showSidebar, viewerMeetingMember} = meeting
   const {
     toggleSidebar,
+    room,
     peers,
     producers,
     consumers,
@@ -82,6 +83,7 @@ const ActionMeeting = (props: Props) => {
           avatarGroup={
             <NewMeetingAvatarGroup
               allowVideo={allowVideo}
+              room={room}
               peers={peers}
               producers={producers}
               consumers={consumers}

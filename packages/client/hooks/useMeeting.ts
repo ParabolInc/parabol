@@ -56,7 +56,7 @@ const useMeeting = (meetingRef: any) => {
   const toggleSidebar = useToggleSidebar(meetingId)
   const handleMenuClick = useHandleMenuClick(teamId, isDesktop)
   useMobileSidebarDefaultClosed(isDesktop, meetingId)
-  const {peers, consumers, producers, mediaRoom} = useMediaRoom(meetingId)
+  const {room, peers, consumers, producers, mediaRoom} = useMediaRoom(meetingId)
   useAutoCheckIn(meeting)
   return {
     demoPortal,
@@ -64,6 +64,7 @@ const useMeeting = (meetingRef: any) => {
     gotoStageId,
     safeRoute,
     toggleSidebar,
+    room,
     peers,
     consumers,
     producers,
