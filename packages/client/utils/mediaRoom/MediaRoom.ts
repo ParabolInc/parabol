@@ -188,12 +188,13 @@ export default class MediaRoom {
   }
 
   handlePeerNotifications() {
-    const notifyHandlers = {} as {
+    const notifyHandlers = {
+      newPeer: this.notifyNewPeer,
+      consumerPaused: this.pauseConsumer,
+      consumerResumed: this.resumeConsumer
+    } as {
       [method: string]: (protooNotification) => void
     }
-    Object.assign(notifyHandlers, {
-      newPeer: this.notifyNewPeer
-    })
     this.peer.on('notification', (notification) => {
       const handler = notifyHandlers[notification.method]
       if (!handler) {
@@ -211,6 +212,22 @@ export default class MediaRoom {
       type: 'addPeer',
       peer: {...peer, consumers: []}
     })
+  }
+
+  pauseConsumer = ({data}: protooNotification) => {
+    const {consumerId} = data
+    const consumer = this.consumers.get(consumerId)
+    if (!consumer) return
+    consumer.pause()
+    this.dispatch({type: 'pauseConsumer', consumerId, origin: 'remote'})
+  }
+
+  resumeConsumer = ({data}: protooNotification) => {
+    const {consumerId} = data
+    const consumer = this.consumers.get(consumerId)
+    if (!consumer) return
+    consumer.resume()
+    this.dispatch({type: 'resumeConsumer', consumerId, origin: 'remote'})
   }
 
   async join() {
@@ -379,6 +396,25 @@ export default class MediaRoom {
 
   async disableWebcam() {
     console.log('disabling webcam...')
+    if (!this.webcamProducer) return
+    this.webcamProducer.close()
+    this.dispatch({type: 'removeProducer', producerId: this.webcamProducer.id})
+    await this.peer.request('closeProducer', {producerId: this.webcamProducer.id})
+    this.webcamProducer = null
+  }
+
+  async pauseWebcam() {
+    if (!this.webcamProducer) return
+    this.webcamProducer.pause()
+    await this.peer.request('pauseProducer', {producerId: this.webcamProducer.id})
+    this.dispatch({type: 'pauseProducer', producerId: this.webcamProducer.id})
+  }
+
+  async resumeWebcam() {
+    if (!this.webcamProducer) return
+    this.webcamProducer.resume()
+    await this.peer.request('resumeProducer', {producerId: this.webcamProducer.id})
+    this.dispatch({type: 'resumeProducer', producerId: this.webcamProducer.id})
   }
 
   async updateWebcams() {

@@ -1,4 +1,10 @@
-import {PeersState, ProducersState, ConsumersState} from '../utils/mediaRoom/reducerMediaRoom'
+import {
+  PeersState,
+  ProducersState,
+  ConsumersState,
+  ConsumerState,
+  ProducerState
+} from '../utils/mediaRoom/reducerMediaRoom'
 import {useEffect} from 'react'
 
 interface useMediaSignature {
@@ -20,13 +26,13 @@ const useMedia = ({
   producers,
   consumers
 }: useMediaSignature) => {
-  useEffect(() => {
-    const mediaSource = isSelf
-      ? Object.values(producers).find((producer) => producer.track.kind === kind)
-      : peers[userId]?.consumers
-          .map((consumerId) => consumers[consumerId])
-          .find((consumer) => consumer.track.kind === kind)
+  const mediaSource = isSelf
+    ? Object.values(producers).find((producer) => producer.track.kind === kind)
+    : peers[userId]?.consumers
+        .map((consumerId) => consumers[consumerId])
+        .find((consumer) => consumer.track.kind === kind)
 
+  useEffect(() => {
     if (mediaSource?.track) {
       const stream = new MediaStream()
       stream.addTrack(mediaSource.track)
@@ -34,6 +40,12 @@ const useMedia = ({
       if (el.srcObject !== stream) el.srcObject = stream! // conditional is required to remove flickering video on update
     }
   })
+  if (isSelf) return Boolean(mediaSource) && !(mediaSource as ProducerState).paused
+  return (
+    Boolean(mediaSource) &&
+    !(mediaSource as ConsumerState).locallyPaused &&
+    !(mediaSource as ConsumerState).remotelyPaused
+  )
 }
 
 export default useMedia

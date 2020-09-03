@@ -114,7 +114,10 @@ export default class Room extends events.EventEmitter {
       createWebRtcTransport: this.createWebRtcTransport,
       join: this.join,
       connectWebRtcTransport: this.connectWebRtcTransport,
-      produce: this.createProducer
+      produce: this.createProducer,
+      closeProducer: this.closeProducer,
+      pauseProducer: this.pauseProducer,
+      resumeProducer: this.resumeProducer
     })
     const handler = requestHandlers[request.method]
     if (!handler) {
@@ -187,7 +190,7 @@ export default class Room extends events.EventEmitter {
       rtpCapabilities: consumerPeer.data.rtpCapabilities,
       paused: true
     })
-    this.handleConsumer(consumer)
+    this.handleConsumer(consumer, consumerPeer)
     await this.requestNewConsumer({
       producerPeer,
       producer,
@@ -221,11 +224,15 @@ export default class Room extends events.EventEmitter {
     })
   }
 
-  handleConsumer(consumer: mediasoupTypes.Consumer) {
+  handleConsumer(consumer: mediasoupTypes.Consumer, consumerPeer: protoo.Peer) {
     consumer.on('transportclose', () => console.log('handling transportclose'))
     consumer.on('producerclose', () => console.log('handling producerclose'))
-    consumer.on('producerpause', () => console.log('handling producerpause'))
-    consumer.on('producerresume', () => console.log('handling producerresume'))
+    consumer.on('producerpause', () => {
+      consumerPeer.notify('consumerPaused', {consumerId: consumer.id}).catch(() => {})
+    })
+    consumer.on('producerresume', () => {
+      consumerPeer.notify('consumerResumed', {consumerId: consumer.id}).catch(() => {})
+    })
     consumer.on('score', () => console.log('handling score'))
     consumer.on('layerschange', () => console.log('handling layerschange'))
   }
@@ -312,5 +319,33 @@ export default class Room extends events.EventEmitter {
     peer.data.producers.set(producer.id, producer)
     if (producer.kind !== 'audio') return
     this.audioLevelObserver.addProducer({producerId: producer.id}).catch(() => {})
+  }
+
+  closeProducer = ({peer, request, accept}: handlePeerRequestSignature) => {
+    if (!peer.data.joined) throw new Error('Peer not yet joined')
+    const {producerId} = request.data
+    const producer = peer.data.producers.get(producerId)
+    if (!producer) throw new Error(`producer with id "${producerId}" not found`)
+    producer.close()
+    peer.data.producers.delete(producer.id)
+    accept()
+  }
+
+  pauseProducer = ({peer, request, accept}: handlePeerRequestSignature) => {
+    if (!peer.data.joined) throw new Error('Peer not yet joined')
+    const {producerId} = request.data
+    const producer = peer.data.producers.get(producerId)
+    if (!producer) throw new Error(`producer with id "${producerId}" not found`)
+    producer.pause()
+    accept()
+  }
+
+  resumeProducer = ({peer, request, accept}: handlePeerRequestSignature) => {
+    if (!peer.data.joined) throw new Error('Peer not yet joined')
+    const {producerId} = request.data
+    const producer = peer.data.producers.get(producerId)
+    if (!producer) throw new Error(`producer with id "${producerId}" not found`)
+    producer.resume()
+    accept()
   }
 }

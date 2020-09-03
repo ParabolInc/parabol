@@ -51,10 +51,16 @@ const VideoAvatar = forwardRef((props: Props, ref: Ref<HTMLDivElement>) => {
   const {teamMember, /*mediaRoom,*/ peers, producers, consumers} = props
   const {isSelf, picture, userId} = teamMember
   const useMediaArgs = {isSelf, userId, peers, producers, consumers}
-  useMedia({kind: 'video', mediaRef: videoRef, ...useMediaArgs})
-  useMedia({kind: 'audio', mediaRef: audioRef, ...useMediaArgs})
-  const videoProducer = Object.values(producers).find((producer) => producer.track.kind === 'video')
-  const videoEnabled = !!(videoProducer && !videoProducer.paused)
+  const videoEnabled = useMedia({
+    kind: 'video',
+    mediaRef: videoRef,
+    ...useMediaArgs
+  })
+  const audioEnabled = useMedia({
+    kind: 'audio',
+    mediaRef: audioRef,
+    ...useMediaArgs
+  })
   return (
     <AvatarStyle ref={ref}>
       <Picture src={picture} isHidden={videoEnabled} />
