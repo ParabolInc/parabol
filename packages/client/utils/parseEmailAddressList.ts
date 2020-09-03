@@ -1,15 +1,7 @@
-import emailAddresses from 'email-addresses'
-
-const filterLastEmail = (commaDelimStr: string) => {
-  const trimmedStr = commaDelimStr.trim()
-  const lastEmailIndex = trimmedStr.lastIndexOf(' ' || ',')
-  // get everything up to the final email and remove trailing commas
-  return trimmedStr.slice(0, lastEmailIndex).replace(/,$/g, '')
-}
+import {parseAddressList, parseOneAddress} from 'email-addresses'
 
 const parseEmailAddressList = (rawStr = ''): {parsedInvitees: any; invalidEmailExists: boolean} => {
   // this breaks RFC5322 standards, but people are not standard :-(
-
   const commaDelimStr = rawStr
     // replace line breaks & semi colons with commas
     .replace(/(?:\r\n|\r|\n|;)/g, ',')
@@ -21,17 +13,27 @@ const parseEmailAddressList = (rawStr = ''): {parsedInvitees: any; invalidEmailE
     .replace(/,$/g, '')
 
   const emailCount = commaDelimStr.split(',').length
-  const lastChar = rawStr.charAt(rawStr.length - 1)
-  const isAddingNewEmail = lastChar !== ' ' && lastChar !== ','
+  const lastEmailIndex = commaDelimStr.lastIndexOf(' ' || ',')
+  const lastEmail = commaDelimStr.slice(lastEmailIndex, commaDelimStr.length)
+  const lastChar = commaDelimStr.charAt(commaDelimStr.length - 1)
+  const isAddingNewEmail = lastChar !== ' ' && lastChar !== ',' && !parseOneAddress(lastEmail)
 
   if (emailCount === 1 && isAddingNewEmail) {
     return {
-      parsedInvitees: emailAddresses.parseAddressList(commaDelimStr),
+      parsedInvitees: parseAddressList(commaDelimStr),
       invalidEmailExists: false
     }
   }
-  const filteredStr = isAddingNewEmail ? filterLastEmail(commaDelimStr) : commaDelimStr
-  const parsedFilteredInvitees = emailAddresses.parseAddressList(filteredStr)
+
+  // if adding new email, return everything except the final email, remove leading/trailing
+  // whitespace and remove trailing commas
+  const filteredStr = isAddingNewEmail
+    ? commaDelimStr
+        .slice(0, lastEmailIndex)
+        .trim()
+        .replace(/,$/g, '')
+    : commaDelimStr
+  const parsedFilteredInvitees = parseAddressList(filteredStr)
   if (parsedFilteredInvitees) {
     return {
       parsedInvitees: parsedFilteredInvitees,
@@ -40,7 +42,7 @@ const parseEmailAddressList = (rawStr = ''): {parsedInvitees: any; invalidEmailE
   } else {
     for (let i = filteredStr.length; i >= 0; i--) {
       const slicedStr = filteredStr.slice(0, i)
-      const parsedSlicedInvitees = emailAddresses.parseAddressList(slicedStr)
+      const parsedSlicedInvitees = parseAddressList(slicedStr)
       if (parsedSlicedInvitees) {
         return {
           parsedInvitees: parsedSlicedInvitees,

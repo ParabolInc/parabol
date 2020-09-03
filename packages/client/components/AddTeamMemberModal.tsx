@@ -129,11 +129,11 @@ const AddTeamMemberModal = (props: Props) => {
     const {parsedInvitees, invalidEmailExists} = parseEmailAddressList(nextValue)
     const allInvitees = parsedInvitees
       ? (parsedInvitees.map((invitee) => (invitee as any).address) as string[])
-      : invitees
+      : []
     const teamEmailSet = new Set(teamMembers.map(({email}) => email))
     const uniqueInvitees = Array.from(new Set(allInvitees))
     if (invalidEmailExists) {
-      const lastValidEmail = uniqueInvitees.pop()
+      const lastValidEmail = uniqueInvitees[uniqueInvitees.length - 1]
       lastValidEmail
         ? onError(new Error(`Invalid email(s) after ${lastValidEmail}`))
         : onError(new Error(`Invalid email(s)`))
