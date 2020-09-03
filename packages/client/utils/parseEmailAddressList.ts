@@ -7,7 +7,7 @@ const filterLastEmail = (commaDelimStr: string) => {
   return trimmedStr.slice(0, lastEmailIndex).replace(/,$/g, '')
 }
 
-const parseEmailAddressList = (rawStr = '') => {
+const parseEmailAddressList = (rawStr = ''): {parsedInvitees: any; invalidEmailExists: boolean} => {
   // this breaks RFC5322 standards, but people are not standard :-(
 
   const commaDelimStr = rawStr
@@ -31,23 +31,25 @@ const parseEmailAddressList = (rawStr = '') => {
     }
   }
   const filteredStr = isAddingNewEmail ? filterLastEmail(commaDelimStr) : commaDelimStr
-  if (emailAddresses.parseAddressList(filteredStr)) {
+  const parsedFilteredInvitees = emailAddresses.parseAddressList(filteredStr)
+  if (parsedFilteredInvitees) {
     return {
-      parsedInvitees: emailAddresses.parseAddressList(filteredStr),
+      parsedInvitees: parsedFilteredInvitees,
       invalidEmailExists: false
     }
   } else {
     for (let i = filteredStr.length; i >= 0; i--) {
       const slicedStr = filteredStr.slice(0, i)
-      if (emailAddresses.parseAddressList(slicedStr)) {
+      const parsedSlicedInvitees = emailAddresses.parseAddressList(slicedStr)
+      if (parsedSlicedInvitees) {
         return {
-          parsedInvitees: emailAddresses.parseAddressList(slicedStr),
+          parsedInvitees: parsedSlicedInvitees,
           invalidEmailExists: true
         }
       }
     }
     return {
-      parsedInvitees: emailAddresses.parseAddressList(filteredStr),
+      parsedInvitees: parsedFilteredInvitees,
       invalidEmailExists: true
     }
   }
