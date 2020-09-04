@@ -8,7 +8,7 @@ import publish from '../../../utils/publish'
 import segmentIo from '../../../utils/segmentIo'
 import {GQLContext} from '../../graphql'
 import User from '../../types/User'
-
+import getRedis from '../../../utils/getRedis'
 export default {
   name: 'ConnectSocket',
   description: 'a server-side mutation called when a client connects',
@@ -25,18 +25,40 @@ export default {
 
     // RESOLUTION
     const user = await db.read('User', userId)
+
     const reqlUpdater = (user) => ({
       inactive: false,
       updatedAt: now,
-      lastSeenAt: now,
-      lastSeenAtURL: null,
-      connectedSockets: user('connectedSockets')
-        .default([])
-        .append(socketId)
+      lastSeenAt: now
+      // lastSeenAtURL: null,
+      // connectedSockets: user('connectedSockets')
+      //   .default([])
+      //   .append(socketId)
     })
+
     await db.write('User', userId, reqlUpdater)
 
-    const {inactive, connectedSockets, tms} = user
+    // const {inactive, connectedSockets, tms} = user
+    const {inactive, tms} = user
+
+    // redis
+    const redis = getRedis()
+    // await redis.rpush(
+    //   `presence:${userId}`,
+    //   JSON.stringify({socketId, serverId: 'server1', lastSeenAtURL: null})
+    // )
+    const userPresence = await redis.lrange(`presence:${userId}`, 0, -1)
+    const connectedSockets = userPresence.map((value) => JSON.parse(value).socketId)
+    await redis.rpush(
+      `presence:${userId}`,
+      JSON.stringify({socketId, serverId: 'server1', lastSeenAtURL: null})
+    )
+    const userTest = await redis.lrange(`presence:${userId}`, 0, -1)
+    await redis.sadd(`team:${tms}`, userId)
+    const listeningUserIds = await redis.smembers(`team:${tms}`)
+    if (!listeningUserIds) return
+    delete user.connectedSockets
+    // redis
 
     // no need to wait for this, it's just for billing
     if (inactive) {
@@ -49,17 +71,23 @@ export default {
       // TODO: re-identify
     }
 
+    // if (connectedSockets.length === 0) {
     if (connectedSockets.length === 0) {
       const operationId = dataLoader.share()
       const subOptions = {mutatorId: socketId, operationId}
-      const listeningUserIds = (await r
-        .table('TeamMember')
-        .getAll(r.args(tms), {index: 'teamId'})
-        .filter({isNotRemoved: true})('userId')
-        .distinct()
-        .run()) as string[]
+
+      // remove below for redis
+      // const listeningUserIds = (await r
+      //   .table('TeamMember')
+      //   .getAll(r.args(tms), {index: 'teamId'})
+      //   .filter({isNotRemoved: true})('userId')
+      //   .distinct()
+      //   .run()) as string[]
 
       // Tell everyone this user is now online
+      // listeningUserIds.forEach((onlineUserId) => {
+      //   publish(SubscriptionChannel.NOTIFICATION, onlineUserId, 'User', user, subOptions)
+      // })
       listeningUserIds.forEach((onlineUserId) => {
         publish(SubscriptionChannel.NOTIFICATION, onlineUserId, 'User', user, subOptions)
       })
