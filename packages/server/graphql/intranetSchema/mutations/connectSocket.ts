@@ -9,6 +9,12 @@ import segmentIo from '../../../utils/segmentIo'
 import {GQLContext} from '../../graphql'
 import User from '../../types/User'
 import getRedis from '../../../utils/getRedis'
+
+interface UserPresence {
+  lastSeenAtURL: string | null
+  serverId: string
+  socketId: string
+}
 export default {
   name: 'ConnectSocket',
   description: 'a server-side mutation called when a client connects',
@@ -51,13 +57,16 @@ export default {
     const connectedSockets = userPresence.map((value) => JSON.parse(value).socketId)
     await redis.rpush(
       `presence:${userId}`,
-      JSON.stringify({socketId, serverId: 'server1', lastSeenAtURL: null})
+      JSON.stringify({lastSeenAtURL: null, serverId: 'server1', socketId} as UserPresence)
     )
-    const userTest = await redis.lrange(`presence:${userId}`, 0, -1)
+    const updatedUserPresence = await redis.lrange(`presence:${userId}`, 0, -1)
+    const updatedConnectedSockets = updatedUserPresence.map((value) => JSON.parse(value).socketId)
+    user.connectedSockets = updatedConnectedSockets
+
+    // update team
     await redis.sadd(`team:${tms}`, userId)
     const listeningUserIds = await redis.smembers(`team:${tms}`)
     if (!listeningUserIds) return
-    delete user.connectedSockets
     // redis
 
     // no need to wait for this, it's just for billing
@@ -77,18 +86,18 @@ export default {
       const subOptions = {mutatorId: socketId, operationId}
 
       // remove below for redis
-      // const listeningUserIds = (await r
-      //   .table('TeamMember')
-      //   .getAll(r.args(tms), {index: 'teamId'})
-      //   .filter({isNotRemoved: true})('userId')
-      //   .distinct()
-      //   .run()) as string[]
+      const listeningUserIdsOld = (await r
+        .table('TeamMember')
+        .getAll(r.args(tms), {index: 'teamId'})
+        .filter({isNotRemoved: true})('userId')
+        .distinct()
+        .run()) as string[]
 
       // Tell everyone this user is now online
       // listeningUserIds.forEach((onlineUserId) => {
       //   publish(SubscriptionChannel.NOTIFICATION, onlineUserId, 'User', user, subOptions)
       // })
-      listeningUserIds.forEach((onlineUserId) => {
+      listeningUserIdsOld.forEach((onlineUserId) => {
         publish(SubscriptionChannel.NOTIFICATION, onlineUserId, 'User', user, subOptions)
       })
     }

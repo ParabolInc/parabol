@@ -44,6 +44,7 @@ export default {
     await redis.lrem(`presence:${userId}`, 0, socketObj)
     const filteredUserPresence = await redis.lrange(`presence:${userId}`, 0, -1)
     const connectedSockets = filteredUserPresence.map((value) => JSON.parse(value).socketId) || []
+    user.connectedSockets = connectedSockets
     // REDIS
 
     const {tms} = user

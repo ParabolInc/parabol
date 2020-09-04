@@ -91,6 +91,12 @@ const NewMeetingAvatarGroup = (props: Props) => {
   const {id: meetingId, team} = meeting
   const {id: teamId, teamMembers} = team
   const isDesktop = useBreakpoint(Breakpoint.SINGLE_REFLECTION_COLUMN)
+  console.log('TEST -> isDesktop', isDesktop)
+
+  console.log(
+    'USER SOCK',
+    teamMembers.map((member) => member.user.connectedSockets)
+  )
 
   // all connected teamMembers except self
   // TODO: filter by team members who are actually viewing “this” meeting view
@@ -174,6 +180,7 @@ export default createFragmentContainer(NewMeetingAvatarGroup, {
             isConnected
             lastSeenAt
             lastSeenAtURL
+            connectedSockets
           }
           userId
           ...NewMeetingAvatar_teamMember
