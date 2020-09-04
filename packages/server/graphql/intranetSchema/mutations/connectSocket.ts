@@ -10,7 +10,7 @@ import {GQLContext} from '../../graphql'
 import User from '../../types/User'
 import getRedis from '../../../utils/getRedis'
 
-interface UserPresence {
+export interface UserPresence {
   lastSeenAtURL: string | null
   serverId: string
   socketId: string
@@ -60,6 +60,8 @@ export default {
       JSON.stringify({lastSeenAtURL: null, serverId: 'server1', socketId} as UserPresence)
     )
     const updatedUserPresence = await redis.lrange(`presence:${userId}`, 0, -1)
+    console.log('connect -> userId', userId)
+    console.log('connect -> updatedUserPresence', updatedUserPresence)
     const updatedConnectedSockets = updatedUserPresence.map((value) => JSON.parse(value).socketId)
     user.connectedSockets = updatedConnectedSockets
 
@@ -86,18 +88,18 @@ export default {
       const subOptions = {mutatorId: socketId, operationId}
 
       // remove below for redis
-      const listeningUserIdsOld = (await r
-        .table('TeamMember')
-        .getAll(r.args(tms), {index: 'teamId'})
-        .filter({isNotRemoved: true})('userId')
-        .distinct()
-        .run()) as string[]
+      // const listeningUserIdsOld = (await r
+      //   .table('TeamMember')
+      //   .getAll(r.args(tms), {index: 'teamId'})
+      //   .filter({isNotRemoved: true})('userId')
+      //   .distinct()
+      //   .run()) as string[]
 
       // Tell everyone this user is now online
       // listeningUserIds.forEach((onlineUserId) => {
       //   publish(SubscriptionChannel.NOTIFICATION, onlineUserId, 'User', user, subOptions)
       // })
-      listeningUserIdsOld.forEach((onlineUserId) => {
+      listeningUserIds.forEach((onlineUserId) => {
         publish(SubscriptionChannel.NOTIFICATION, onlineUserId, 'User', user, subOptions)
       })
     }

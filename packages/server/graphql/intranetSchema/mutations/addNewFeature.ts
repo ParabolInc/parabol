@@ -43,6 +43,7 @@ const addNewFeature = {
       db.writeTable('User', {newFeatureId})
     ])
 
+    // TODO: get from redis
     const onlineUserIds = await r
       .table('User')
       .filter((user) =>
@@ -51,6 +52,7 @@ const addNewFeature = {
           .ge(1)
       )('id')
       .run()
+    console.log('ADD NEW FEATURE onlineUserIds', onlineUserIds)
     onlineUserIds.forEach((userId) => {
       publish(
         SubscriptionChannel.NOTIFICATION,

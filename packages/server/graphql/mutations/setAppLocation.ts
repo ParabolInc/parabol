@@ -6,6 +6,7 @@ import publish from '../../utils/publish'
 import rateLimit from '../rateLimit'
 import SetAppLocationPayload from '../types/SetAppLocationPayload'
 import getRedis from '../../utils/getRedis'
+import {UserPresence} from '../intranetSchema/mutations/connectSocket'
 
 export default {
   type: new GraphQLNonNull(SetAppLocationPayload),
@@ -34,35 +35,43 @@ export default {
     // RESOLUTION
 
     // redis
-    // const redis = getRedis()
-    // const user = await redis.get(`presence:${viewerId}`)
-    // if (!user) return
-    // const parsedUser = JSON.parse(user)
-    // const connectedSocket = parsedUser.find((userData) => userData.socketId === mutatorId)
-    // if (!connectedSocket) return
-    // const lastSeenAtURLExists = connectedSocket.lastSeenAtURL
-    // if (!lastSeenAtURLExists) {
-    //   connectedSocket.lastSeenAtURL = location
-    // }
-    // const otherConnectedSockets =
-    //   parsedUser.filter((userData) => userData.socketId !== mutatorId) || []
-    // const updatedUser = otherConnectedSockets.push(connectedSocket)
-    // const stringifiedUser = JSON.stringify(updatedUser)
-    // await redis.set(`presence:${viewerId}`, stringifiedUser)
+    const redis = getRedis()
+    const userPresence = await redis.lrange(`presence:${viewerId}`, 0, -1)
+    const connectedSocket = userPresence.find((socket) => JSON.parse(socket).socketId === mutatorId)
+    if (!connectedSocket) return
+    const parsedConnectedSocket = JSON.parse(connectedSocket) as UserPresence
+    const {lastSeenAtURL} = parsedConnectedSocket
+    parsedConnectedSocket.lastSeenAtURL = location
+
     // redis
 
-    const {lastSeenAtURL} = viewer
-    const lastSeenAt = new Date()
+    // const {lastSeenAtURL} = viewer
+    const {lastSeenAt} = viewer
+    // const lastSeenAt = new Date()
+    const today = new Date()
+    const datesAreOnSameDay =
+      today.getFullYear() === lastSeenAt.getFullYear() &&
+      today.getMonth() === lastSeenAt.getMonth() &&
+      today.getDate() === lastSeenAt.getDate()
+    if (!datesAreOnSameDay) {
+      await db.write('User', viewerId, {lastSeenAt})
+    }
+
     const data = {userId: viewerId}
     if (lastSeenAtURL !== location) {
-      await db.write('User', viewerId, {lastSeenAt, lastSeenAtURL: location})
+      // await db.write('User', viewerId, {lastSeenAt, lastSeenAtURL: location})
+
+      await redis.lrem(`presence:${viewerId}`, 0, connectedSocket)
+      await redis.rpush(`presence:${viewerId}`, JSON.stringify(parsedConnectedSocket))
+      const userPresenceDos = await redis.lrange(`presence:${viewerId}`, 0, -1)
+
       const meetingId = lastSeenAtURL?.includes('/meet/')
         ? lastSeenAtURL.slice(6)
         : location?.includes('/meet/')
         ? location.slice(6)
         : null
-      viewer.lastSeenAtURL = location
-      viewer.lastSeenAt
+      // viewer.lastSeenAtURL = location
+      // viewer.lastSeenAt
       if (meetingId) {
         publish(SubscriptionChannel.MEETING, meetingId, 'SetAppLocationSuccess', data, subOptions)
       }

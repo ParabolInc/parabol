@@ -36,7 +36,6 @@ export default {
 
     // REDIS
     const user = await db.read('User', userId)
-    delete user.connectedSockets
     const redis = getRedis()
     const userPresence = await redis.lrange(`presence:${userId}`, 0, -1)
     const socketObj = userPresence.find((value) => JSON.parse(value).socketId === socketId)
@@ -67,7 +66,7 @@ export default {
       //redis
 
       const subOptions = {mutatorId: socketId}
-      listeningUserIds.forEach((onlineUserId) => {
+      teamTest.forEach((onlineUserId) => {
         publish(
           SubscriptionChannel.NOTIFICATION,
           onlineUserId,
