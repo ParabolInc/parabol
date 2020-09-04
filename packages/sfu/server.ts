@@ -6,6 +6,7 @@ import url from 'url'
 import protoo from 'protoo-server'
 import {types as mediasoupTypes, createWorker} from 'mediasoup'
 import Room from './lib/Room'
+import {AwaitQueue} from 'awaitqueue'
 
 const tls = {
   cert: fs.readFileSync(config.https.tls.cert),
@@ -13,6 +14,7 @@ const tls = {
 }
 const mediasoupWorkers = []
 const rooms = new Map<string, Room>()
+const queue = new AwaitQueue()
 
 async function getOrCreateRoom(roomId: string) {
   if (!rooms.get(roomId)) {
@@ -35,7 +37,7 @@ async function runMediasoupWorkers() {
     // hard code to 1 for now
     const worker = await createWorker({
       logLevel: logLevel as mediasoupTypes.WorkerLogLevel,
-      logTags,
+      logTags: logTags as mediasoupTypes.WorkerLogTag[],
       rtcMinPort: Number(rtcMinPort),
       rtcMaxPort: Number(rtcMaxPort)
     })
@@ -74,11 +76,13 @@ async function runWebSocketServer() {
       reject(400, 'Connection request without roomId or peerId')
       return
     }
-    /* Should put in queue or otherwise avoid race conditions */
-    const room = await getOrCreateRoom(roomId as string)
-    console.log('Got room with room id:', room.roomId)
-    const transport = accept()
-    room.createPeer(peerId as string, transport)
+    /* queue to avoid race condition where we create same room twice */
+    queue.push(async () => {
+      const room = await getOrCreateRoom(roomId as string)
+      console.log('Got room with room id:', room.roomId)
+      const transport = accept()
+      room.createPeer(peerId as string, transport)
+    })
   })
 }
 

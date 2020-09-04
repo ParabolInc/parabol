@@ -12362,7 +12362,7 @@ media-typer@0.3.0:
   resolved "https://registry.yarnpkg.com/media-typer/-/media-typer-0.3.0.tgz#8710d7af0aa626f8fffa1ce00168545263255748"
   integrity sha1-hxDXrwqmJvj/+hzgAWhUUmMlV0g=
 
-mediasoup-client@3.6.12:
+mediasoup-client@^3.6.12:
   version "3.6.12"
   resolved "https://registry.yarnpkg.com/mediasoup-client/-/mediasoup-client-3.6.12.tgz#3a865b69f6d1c93f33c4d03fc935d85b2be9edc5"
   integrity sha512-smpXv4foIEgnt7PZtVrppJIswVJrGnExg3kS2WsHb48ByG+KCiLAaYDYoECUlwpxUxupps164u+ZTEs1gmiF2w==
@@ -14763,7 +14763,7 @@ protoduck@^5.0.1:
   dependencies:
     genfun "^5.0.0"
 
-protoo-client@4.0.4:
+protoo-client@^4.0.4:
   version "4.0.4"
   resolved "https://registry.yarnpkg.com/protoo-client/-/protoo-client-4.0.4.tgz#597070eebe5dc13350d31260ea3c55c06031a0b8"
   integrity sha512-+WZUJJTlBSTWYeNu0Tv8SGI3kjettLvr2IUdBsAfioi0Szf8peeky79h6li7gThA3pIpNC+A+IuCUWaK7MlFfQ==
@@ -14774,7 +14774,7 @@ protoo-client@4.0.4:
   optionalDependencies:
     websocket "^1.0.31"
 
-protoo-server@4.0.4:
+protoo-server@^4.0.4:
   version "4.0.4"
   resolved "https://registry.yarnpkg.com/protoo-server/-/protoo-server-4.0.4.tgz#a44ca1c86c6d8d8c8a6d61c767c56d825409a74a"
   integrity sha512-jcW40w52sFP2VRwLi7GIYoU57ZWtokioWdf5snf5NVjsYWSeaYonlB8Z9pUQB4ezKv2BwXzpykK5+iX2mN8IjA==
