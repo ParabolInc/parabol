@@ -70,7 +70,6 @@ const VideoControls = (props: Props) => {
     }
   }
   if (!showVideoButton || !mediaRoom) return null
-  // const hasVideo = !!Object.values(producers).find((producer) => producer.track.kind === 'video')
   if (room.state !== 'connected') {
     return (
       <>

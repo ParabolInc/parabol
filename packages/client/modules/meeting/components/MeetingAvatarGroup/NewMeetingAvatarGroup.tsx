@@ -147,16 +147,23 @@ const NewMeetingAvatarGroup = (props: Props) => {
             </OverlappingBlock>
           )
         }
+        const userId = teamMember.child.userId
+        const isSelf = userId == viewerId
+        const peerProducers = isSelf ? Object.values(producers) : []
+        const peerConsumers = isSelf
+          ? []
+          : peers[userId]?.consumers.map((consumerId) => consumers[consumerId])
+
         return (
           <OverlappingBlock key={teamMember.child.id}>
             <NewMeetingAvatar
               teamMember={teamMember.child}
               onTransitionEnd={teamMember.onTransitionEnd}
               status={isInit ? TransitionStatus.ENTERED : teamMember.status}
-              peers={peers}
-              producers={producers}
-              consumers={consumers}
+              peerProducers={peerProducers || []}
+              peerConsumers={peerConsumers || []}
               mediaRoom={mediaRoom}
+              isSelf={isSelf}
             />
           </OverlappingBlock>
         )

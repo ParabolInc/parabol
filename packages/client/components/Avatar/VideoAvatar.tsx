@@ -4,8 +4,8 @@ import styled from '@emotion/styled'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import MediaRoom from '../../utils/mediaRoom/MediaRoom'
-import {PeersState, ProducersState, ConsumersState} from '../../utils/mediaRoom/reducerMediaRoom'
-import useMedia from '~/hooks/useMedia'
+import {ProducerState, ConsumerState} from '../../utils/mediaRoom/reducerMediaRoom'
+import useMedia from '../../hooks/useMedia'
 
 const AvatarStyle = styled('div')({
   height: '100%', // needed to not pancake in firefox
@@ -40,32 +40,21 @@ interface Props {
   mediaRoom: MediaRoom | null
   onClick?: () => void
   onMouseEnter?: () => void
-  peers: PeersState
-  producers: ProducersState
-  consumers: ConsumersState
+  videoSource: ProducerState | ConsumerState | undefined
 }
 
 const VideoAvatar = forwardRef((props: Props, ref: Ref<HTMLDivElement>) => {
   const videoRef = useRef<HTMLVideoElement>(null)
-  const audioRef = useRef<HTMLAudioElement>(null)
-  const {teamMember, /*mediaRoom,*/ peers, producers, consumers} = props
-  const {isSelf, picture, userId} = teamMember
-  const useMediaArgs = {isSelf, userId, peers, producers, consumers}
+  const {teamMember, /*mediaRoom,*/ videoSource} = props
+  const {isSelf, picture} = teamMember
   const videoEnabled = useMedia({
-    kind: 'video',
     mediaRef: videoRef,
-    ...useMediaArgs
-  })
-  const audioEnabled = useMedia({
-    kind: 'audio',
-    mediaRef: audioRef,
-    ...useMediaArgs
+    mediaSource: videoSource
   })
   return (
     <AvatarStyle ref={ref}>
       <Picture src={picture} isHidden={videoEnabled} />
       <Video ref={videoRef} isHidden={!videoEnabled} autoPlay muted={isSelf} />
-      <audio ref={audioRef} autoPlay muted={isSelf || audioEnabled} controls={false} />
     </AvatarStyle>
   )
 })

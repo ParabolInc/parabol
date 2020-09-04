@@ -459,7 +459,7 @@ export default class MediaRoom {
     console.log('closing room...')
     if (this.closed) return
     this.closed = true
-    this.peer.close()
+    if (this.peer) this.peer.close()
     if (this.sendTransport) this.sendTransport.close()
     if (this.receiveTransport) this.receiveTransport.close()
     this.dispatch({type: 'setRoomState', state: RoomStateEnum.closed})

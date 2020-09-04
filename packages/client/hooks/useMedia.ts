@@ -1,37 +1,12 @@
-import {
-  PeersState,
-  ProducersState,
-  ConsumersState,
-  ConsumerState,
-  ProducerState
-} from '../utils/mediaRoom/reducerMediaRoom'
+import {ProducerState, ConsumerState} from '../utils/mediaRoom/reducerMediaRoom'
 import {useEffect} from 'react'
 
 interface useMediaSignature {
-  kind: 'audio' | 'video'
   mediaRef: React.RefObject<HTMLVideoElement> | React.RefObject<HTMLAudioElement>
-  isSelf: boolean
-  userId: string
-  peers: PeersState
-  producers: ProducersState
-  consumers: ConsumersState
+  mediaSource: ProducerState | ConsumerState | undefined
 }
 
-const useMedia = ({
-  kind,
-  mediaRef,
-  isSelf,
-  userId,
-  peers,
-  producers,
-  consumers
-}: useMediaSignature) => {
-  const mediaSource = isSelf
-    ? Object.values(producers).find((producer) => producer.track.kind === kind)
-    : peers[userId]?.consumers
-        .map((consumerId) => consumers[consumerId])
-        .find((consumer) => consumer.track.kind === kind)
-
+const useMedia = ({mediaRef, mediaSource}: useMediaSignature) => {
   useEffect(() => {
     if (mediaSource?.track) {
       const stream = new MediaStream()
@@ -40,12 +15,11 @@ const useMedia = ({
       if (el.srcObject !== stream) el.srcObject = stream! // conditional is required to remove flickering video on update
     }
   })
-  if (isSelf) return Boolean(mediaSource) && !(mediaSource as ProducerState).paused
-  return (
-    Boolean(mediaSource) &&
-    !(mediaSource as ConsumerState).locallyPaused &&
-    !(mediaSource as ConsumerState).remotelyPaused
-  )
+  if (!mediaSource) return false
+  if ((mediaSource as ProducerState).paused) return false
+  if ((mediaSource as ConsumerState).locallyPaused) return false
+  if ((mediaSource as ConsumerState).remotelyPaused) return false
+  return true
 }
 
 export default useMedia

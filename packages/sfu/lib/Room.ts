@@ -1,5 +1,4 @@
 import {types as mediasoupTypes} from 'mediasoup'
-import {getMediaSoupWorker} from '../server'
 import protoo from 'protoo-server'
 import config from '../config'
 import events from 'events'

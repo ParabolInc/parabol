@@ -4,13 +4,10 @@ import styled from '@emotion/styled'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import VideoAvatar from '../../../../components/Avatar/VideoAvatar'
+import AudioAvatar from '../../../../components/Avatar/AudioAvatar'
 import ErrorBoundary from '../../../../components/ErrorBoundary'
 import MediaRoom from '../../../../utils/mediaRoom/MediaRoom'
-import {
-  PeersState,
-  ProducersState,
-  ConsumersState
-} from '../../../../utils/mediaRoom/reducerMediaRoom'
+import {ProducerState, ConsumerState} from '../../../../utils/mediaRoom/reducerMediaRoom'
 import {meetingAvatarMediaQueries} from '../../../../styles/meeting'
 import {TransitionStatus} from '../../../../hooks/useTransition'
 import {DECELERATE} from '../../../../styles/animation'
@@ -43,24 +40,33 @@ interface Props {
   status: TransitionStatus
   teamMember: NewMeetingAvatar_teamMember
   mediaRoom: MediaRoom | null
-  peers: PeersState
-  producers: ProducersState
-  consumers: ConsumersState
+  peerProducers: ProducerState[]
+  peerConsumers: ConsumerState[]
+  isSelf: boolean
 }
 
 const NewMeetingAvatar = (props: Props) => {
-  const {teamMember, mediaRoom, onTransitionEnd, status, peers, producers, consumers} = props
+  const {
+    teamMember,
+    mediaRoom,
+    onTransitionEnd,
+    status,
+    peerProducers,
+    peerConsumers,
+    isSelf
+  } = props
+  const videoSource = isSelf
+    ? peerProducers.find((producer) => producer.track.kind === 'video')
+    : peerConsumers.find((consumer) => consumer.track.kind === 'video')
+  const audioSource = isSelf
+    ? peerProducers.find((producer) => producer.track.kind === 'audio')
+    : peerConsumers.find((consumer) => consumer.track.kind === 'audio')
   return (
     <ErrorBoundary>
       <Item>
         <AvatarBlock status={status} onTransitionEnd={onTransitionEnd}>
-          <VideoAvatar
-            teamMember={teamMember}
-            mediaRoom={mediaRoom}
-            peers={peers}
-            producers={producers}
-            consumers={consumers}
-          />
+          <VideoAvatar teamMember={teamMember} mediaRoom={mediaRoom} videoSource={videoSource} />
+          <AudioAvatar isSelf={isSelf} mediaRoom={mediaRoom} audioSource={audioSource} />
         </AvatarBlock>
       </Item>
     </ErrorBoundary>
