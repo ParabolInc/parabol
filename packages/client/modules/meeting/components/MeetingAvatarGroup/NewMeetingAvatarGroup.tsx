@@ -102,6 +102,7 @@ const NewMeetingAvatarGroup = (props: Props) => {
   const connectedTeamMembers = useMemo(() => {
     return teamMembers
       .filter((teamMember) => {
+        console.log('connectedTeamMembers -> teamMember', teamMember.user)
         return (
           teamMember.userId === viewerId ||
           (teamMember.user.lastSeenAtURL === `/meet/${meetingId}` && teamMember.user.isConnected)

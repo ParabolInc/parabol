@@ -49,10 +49,7 @@ export default {
     const {lastSeenAt} = viewer
     // const lastSeenAt = new Date()
     const today = new Date()
-    const datesAreOnSameDay =
-      today.getFullYear() === lastSeenAt.getFullYear() &&
-      today.getMonth() === lastSeenAt.getMonth() &&
-      today.getDate() === lastSeenAt.getDate()
+    const datesAreOnSameDay = today.toDateString() === lastSeenAt.toDateString()
     if (!datesAreOnSameDay) {
       await db.write('User', viewerId, {lastSeenAt})
     }
@@ -63,13 +60,15 @@ export default {
 
       await redis.lrem(`presence:${viewerId}`, 0, connectedSocket)
       await redis.rpush(`presence:${viewerId}`, JSON.stringify(parsedConnectedSocket))
-      const userPresenceDos = await redis.lrange(`presence:${viewerId}`, 0, -1)
+      // const userPresenceDos = await redis.lrange(`presence:${viewerId}`, 0, -1)
 
       const meetingId = lastSeenAtURL?.includes('/meet/')
         ? lastSeenAtURL.slice(6)
         : location?.includes('/meet/')
         ? location.slice(6)
         : null
+
+      viewer.lastSeenAtURL = lastSeenAtURL
       // viewer.lastSeenAtURL = location
       // viewer.lastSeenAt
       if (meetingId) {
