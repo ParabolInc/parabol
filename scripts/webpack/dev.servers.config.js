@@ -20,8 +20,12 @@ module.exports = {
     __dirname: false
   },
   entry: {
-    web: ['webpack/hot/poll?1000', DOTENV, path.join(SERVER_ROOT, 'server.dev.ts')],
-    gqlExecutor: ['webpack/hot/poll?1000', DOTENV, path.join(GQL_ROOT, 'gqlExecutor.ts')]
+    web: [
+      'webpack/hot/poll?1000',
+      DOTENV,
+      path.join(SERVER_ROOT, 'server.dev.ts')
+    ],
+    gqlExecutor: [DOTENV, path.join(GQL_ROOT, 'gqlExecutor.ts')]
   },
   output: {
     filename: '[name].js',
@@ -34,7 +38,7 @@ module.exports = {
     alias: {
       '~': path.join(CLIENT_ROOT),
       'parabol-server': SERVER_ROOT,
-      'parabol-client': CLIENT_ROOT
+      'parabol-client': CLIENT_ROOT,
     },
     extensions: ['.js', '.json', '.ts', '.tsx'],
     unsafeCache: true,
@@ -50,7 +54,9 @@ module.exports = {
       whitelist: ['webpack/hot/poll?1000', /parabol-client/, /parabol-server/]
     })
   ],
-  plugins: [new webpack.HotModuleReplacementPlugin(), new webpack.NoEmitOnErrorsPlugin()],
+  plugins: [
+    new webpack.HotModuleReplacementPlugin()
+  ],
   module: {
     rules: [
       ...transformRules(PROJECT_ROOT),
