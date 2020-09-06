@@ -140,6 +140,7 @@ const DueDateToggle = (props: Props) => {
     <>
       <Toggle
         cardIsActive={!dueDate && cardIsActive}
+        tabIndex={0}
         dueDate={!!dueDate}
         isPastDue={isPastDue}
         isDueSoon={isDueSoon}
