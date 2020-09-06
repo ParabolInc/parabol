@@ -50,7 +50,7 @@ module.exports = {
       whitelist: ['webpack/hot/poll?1000', /parabol-client/, /parabol-server/]
     })
   ],
-  plugins: [new webpack.HotModuleReplacementPlugin(), new webpack.NoEmitOnErrorsPlugin()],
+  plugins: [new webpack.HotModuleReplacementPlugin()],
   module: {
     rules: [
       ...transformRules(PROJECT_ROOT),
@@ -71,5 +71,8 @@ module.exports = {
         use: ['ignore-loader']
       }
     ]
+  },
+  optimization: {
+    noEmitOnErrors: true
   }
 }
