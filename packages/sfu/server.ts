@@ -7,6 +7,8 @@ import protoo from 'protoo-server'
 import {types as mediasoupTypes, createWorker} from 'mediasoup'
 import Room from './lib/Room'
 import {AwaitQueue} from 'awaitqueue'
+import getVerifiedAuthToken from 'parabol-server/utils/getVerifiedAuthToken'
+import {isAuthenticated, isTeamMember} from 'parabol-server/utils/authorization'
 
 const tls = {
   cert: fs.readFileSync(config.https.tls.cert),
@@ -71,9 +73,23 @@ async function runWebSocketServer() {
   // validate auth token
   wss.on('connectionrequest', async (info, accept, reject) => {
     const requestUrl = url.parse(info.request.url, true)
-    const {roomId, peerId} = requestUrl.query
-    if (!roomId || !peerId) {
-      reject(400, 'Connection request without roomId or peerId')
+    const {roomId, peerId, authToken: encodedAuthToken, teamId} = requestUrl.query
+    const missingParams = [] as string[]
+    if (!roomId) missingParams.push('roomId')
+    if (!peerId) missingParams.push('peerId')
+    if (!teamId) missingParams.push('teamId')
+    if (!encodedAuthToken) missingParams.push('authToken')
+    if (missingParams.length > 0) {
+      reject(400, 'Connection request without required field(s):', missingParams)
+      return
+    }
+    const decodedAuthToken = getVerifiedAuthToken(encodedAuthToken as string)
+    if (!isAuthenticated(decodedAuthToken)) {
+      reject(401, 'No authentication credentials')
+      return
+    }
+    if (!isTeamMember(decodedAuthToken, teamId as string)) {
+      reject(403, "Oops! You're not authorized to be here")
       return
     }
     /* queue to avoid race condition where we create same room twice */

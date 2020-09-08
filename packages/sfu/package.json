@@ -28,6 +28,7 @@
     "awaitqueue": "^2.1.1",
     "express": "^4.17.1",
     "mediasoup": "3.4.12",
-    "protoo-server": "^4.0.4"
+    "protoo-server": "^4.0.4",
+    "parabol-server": "^5.16.1"
   }
 }
