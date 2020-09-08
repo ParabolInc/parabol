@@ -49,6 +49,7 @@ const RetroMeeting = (props: Props) => {
   const {meeting} = props
   const {
     toggleSidebar,
+    room,
     peers,
     producers,
     consumers,
@@ -91,6 +92,7 @@ const RetroMeeting = (props: Props) => {
           avatarGroup={
             <NewMeetingAvatarGroup
               allowVideo={allowVideo}
+              room={room}
               peers={peers}
               producers={producers}
               consumers={consumers}
