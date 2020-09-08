@@ -20,9 +20,9 @@ const phaseLookup = {
   [NewMeetingPhaseTypeEnum.checkin]: lazyPreload(() =>
     import(/* webpackChunkName: 'NewMeetingCheckIn' */ './NewMeetingCheckIn')
   ),
-  // SCOPE: lazyPreload(() =>
-  //   import(/* webpackChunkName: 'PokerScopePhase' */ './PokerScopePhase')
-  // ),
+  SCOPE: lazyPreload(() =>
+    import(/* webpackChunkName: 'ScopePhase' */ './ScopePhase')
+  ),
   // ESTIMATE: lazyPreload(() =>
   //   import(/* webpackChunkName: 'PokerEstimatePhase' */ './PokerEstimatePhase')
   // ),
@@ -96,6 +96,7 @@ export default createFragmentContainer(PokerMeeting, {
       ...NewMeetingCheckIn_meeting
       ...NewMeetingAvatarGroup_meeting
       ...MeetingControlBar_meeting
+      ...ScopePhase_meeting
       id
       showSidebar
       localPhase {

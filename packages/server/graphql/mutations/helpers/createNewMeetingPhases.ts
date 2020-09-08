@@ -30,7 +30,10 @@ const primePhases = (phases: GenericMeetingPhase[]) => {
     stage.isNavigable = true
     stage.isNavigableByFacilitator = true
   })
-  secondPhase.stages[0].isNavigableByFacilitator = true
+  const phaseTwoStageOne = secondPhase.stages[0]
+  if (phaseTwoStageOne) {
+    phaseTwoStageOne.isNavigableByFacilitator = true
+  }
 }
 
 const getPastStageDurations = async (teamId: string) => {

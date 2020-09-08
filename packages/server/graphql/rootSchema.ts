@@ -71,6 +71,7 @@ export default new GraphQLSchema({
     EstimatePhase,
     AgendaItemsPhase,
     GenericMeetingPhase,
+    EstimatePhase,
     NotificationTeamInvitation,
     NotifyPromoteToOrgLeader,
     RetroPhaseItem,
