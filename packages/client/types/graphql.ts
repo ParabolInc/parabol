@@ -214,7 +214,7 @@ export interface IUser {
   lastSeenAt: any | null;
 
   /**
-   * The paths that the user is currently visiting
+   * The paths that the user is currently visiting. This is null if the user is not currently online.
    */
   lastSeenAtURLs: Array<string> | null;
 

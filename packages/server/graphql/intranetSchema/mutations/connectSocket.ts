@@ -50,14 +50,16 @@ export default {
       await db.write('User', userId, {lastSeenAt: now})
     }
     const userPresence = await redis.lrange(`presence:${userId}`, 0, -1)
-    const connectedSockets = userPresence.map((socket) => JSON.parse(socket).socketId)
+    console.log('connect -- userPresence', userPresence)
+    // const connectedSockets = userPresence.map((socket) => JSON.parse(socket).socketId)
     await redis.rpush(
       `presence:${userId}`,
       JSON.stringify({lastSeenAtURL: null, serverId: 'server1', socketId} as UserPresence)
     )
-    const updatedUserPresence = await redis.lrange(`presence:${userId}`, 0, -1)
-    const updatedConnectedSockets = updatedUserPresence.map((socket) => JSON.parse(socket).socketId)
-    user.connectedSockets = updatedConnectedSockets
+    console.log('connect -- userId', userId)
+    // const updatedUserPresence = await redis.lrange(`presence:${userId}`, 0, -1)
+    // const updatedConnectedSockets = updatedUserPresence.map((socket) => JSON.parse(socket).socketId)
+    // user.connectedSockets = updatedConnectedSockets
 
     const listeningUserIds = new Set()
     for (const teamId of tms) {
@@ -67,12 +69,14 @@ export default {
         listeningUserIds.add(teamMemberId)
       }
     }
+    console.log('connect pre if listeningUserIds', listeningUserIds)
 
     // If this is the first socket, tell everyone they're online
-    if (connectedSockets.length === 0) {
+    if (!userPresence) {
       const operationId = dataLoader.share()
       const subOptions = {mutatorId: socketId, operationId}
       const listeningUserIdsArr = Array.from(listeningUserIds) as string[]
+      console.log('connect listeningUserIdsArr', listeningUserIdsArr)
       listeningUserIdsArr.forEach((onlineUserId) => {
         publish(SubscriptionChannel.NOTIFICATION, onlineUserId, 'User', user, subOptions)
       })
@@ -82,7 +86,7 @@ export default {
       userId,
       event: 'Connect WebSocket',
       properties: {
-        connectedSockets,
+        userPresence: userPresence.map((socket) => JSON.parse(socket).socketId),
         socketId,
         tms
       }

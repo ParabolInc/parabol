@@ -40,6 +40,7 @@ import TierEnum from './TierEnum'
 import {TierEnum as TierEnumType} from 'parabol-client/types/graphql'
 import {TimelineEventConnection} from './TimelineEvent'
 import UserFeatureFlags from './UserFeatureFlags'
+import getRedis from '../../utils/getRedis'
 
 const User = new GraphQLObjectType<any, GQLContext, any>({
   name: 'User',
@@ -310,7 +311,16 @@ const User = new GraphQLObjectType<any, GQLContext, any>({
     },
     lastSeenAtURLs: {
       type: new GraphQLList(new GraphQLNonNull(GraphQLString)),
-      description: 'The paths that the user is currently visiting'
+      description:
+        'The paths that the user is currently visiting. This is null if the user is not currently online.',
+      resolve: async ({id: userId}) => {
+        console.log('userId', userId)
+        const redis = getRedis()
+        const userPresence = await redis.lrange(`presence:${userId}`, 0, -1)
+        if (!userPresence) return null
+        const connectedSockets = userPresence.map((socket) => JSON.parse(socket))
+        return connectedSockets.map((socket) => socket.lastSeenAtURL)
+      }
     },
     meetingMember: {
       type: MeetingMember,
@@ -322,7 +332,7 @@ const User = new GraphQLObjectType<any, GQLContext, any>({
           description: 'The specific meeting ID'
         }
       },
-      resolve: async ({userId}, {meetingId}, {dataLoader}) => {
+      resolve: async ({id: userId}, {meetingId}, {dataLoader}) => {
         const meetingMemberId = toTeamMemberId(meetingId, userId)
         return meetingId ? dataLoader.get('meetingMembers').load(meetingMemberId) : undefined
       }
