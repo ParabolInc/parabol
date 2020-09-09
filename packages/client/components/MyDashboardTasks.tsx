@@ -8,7 +8,7 @@ import UserTasksHeader from '../modules/userDashboard/components/UserTasksHeader
 import UserColumnsContainer from '../modules/userDashboard/containers/UserColumns/UserColumnsContainer'
 import {MyDashboardTasks_viewer} from '../__generated__/MyDashboardTasks_viewer.graphql'
 import ArchiveTaskRoot from './ArchiveTaskRoot'
-import parseUserTaskFilters from '~/utils/parseUserTaskFilters'
+import useUserTaskFilters from '~/utils/useUserTaskFilters'
 
 interface Props {
   viewer: MyDashboardTasks_viewer
@@ -19,7 +19,7 @@ const MyDashboardTasks = (props: Props) => {
   const {retry, viewer} = props
   const atmosphere = useAtmosphere()
 
-  const {userIds, teamIds, showArchived} = parseUserTaskFilters(atmosphere.viewerId)
+  const {userIds, teamIds, showArchived} = useUserTaskFilters(atmosphere.viewerId)
 
   useStoreQueryRetry(retry)
   useDocumentTitle('My Tasks | Parabol', 'My Tasks')
@@ -28,7 +28,7 @@ const MyDashboardTasks = (props: Props) => {
       <UserTasksHeader viewer={viewer} />
 
       {showArchived ? (
-        <ArchiveTaskRoot teamIds={teamIds} userIds={userIds} />
+        <ArchiveTaskRoot teamIds={teamIds} userIds={userIds} team={null} />
       ) : (
           <UserColumnsContainer viewer={viewer} />)}
     </>

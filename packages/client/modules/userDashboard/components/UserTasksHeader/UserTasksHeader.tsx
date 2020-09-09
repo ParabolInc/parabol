@@ -13,7 +13,7 @@ import LinkButton from '~/components/LinkButton'
 import {PALETTE} from '~/styles/paletteV2'
 import Checkbox from '~/components/Checkbox'
 import {ICON_SIZE} from '~/styles/typographyV2'
-import parseUserTaskFilters from '~/utils/parseUserTaskFilters'
+import useUserTaskFilters from '~/utils/useUserTaskFilters'
 import constructUserTaskFilterQueryParamURL from '~/utils/constructUserTaskFilterQueryParamURL'
 import useRouter from '~/hooks/useRouter'
 import {Breakpoint} from '~/types/constEnums'
@@ -95,7 +95,7 @@ const UserTasksHeader = (props: Props) => {
   const {teams} = viewer
   const teamMembers = teams.map(({teamMembers}) => teamMembers).flat()
   const users = [...new Set(teamMembers.map(({user}) => user).flat())]
-  const {userIds, teamIds, showArchived} = parseUserTaskFilters(viewer.id)
+  const {userIds, teamIds, showArchived} = useUserTaskFilters(viewer.id)
   const teamFilter = teamIds ? teams.find(({id: teamId}) => teamIds.includes(teamId)) : undefined
   const teamMemberFilter = userIds
     ? users.find(({id: userId}) => userIds.includes(userId))
@@ -117,7 +117,7 @@ const UserTasksHeader = (props: Props) => {
           ref={teamFilterOriginRef}
           value={teamFilterName}
           iconText='group'
-          dataCy='team_filter'
+          dataCy='team-filter'
         />
         {teamFilterMenuPortal(<UserDashTeamMenu menuProps={teamFilterMenuProps} viewer={viewer} />)}
 
@@ -129,7 +129,7 @@ const UserTasksHeader = (props: Props) => {
           ref={teamMemberFilterOriginRef}
           value={teamMemberFilterName}
           iconText='person'
-          dataCy='team_member_filter'
+          dataCy='team-member-filter'
         />
         {teamMemberFilterMenuPortal(
           <UserDashTeamMemberMenu menuProps={teamMemberFilterMenuProps} viewer={viewer} />
@@ -139,7 +139,7 @@ const UserTasksHeader = (props: Props) => {
           onClick={() =>
             history.push(constructUserTaskFilterQueryParamURL(teamIds, userIds, !showArchived))
           }
-          dataCy='archived_checkbox'
+          dataCy='archived-checkbox'
         >
           <StyledCheckbox active={showArchived} />
           {'Archived'}

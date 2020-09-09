@@ -6,7 +6,7 @@ import MenuItem from './MenuItem'
 import {MenuProps} from '../hooks/useMenu'
 import DropdownMenuLabel from './DropdownMenuLabel'
 import {UserDashTeamMemberMenu_viewer} from '../__generated__/UserDashTeamMemberMenu_viewer.graphql'
-import parseUserTaskFilters from '~/utils/parseUserTaskFilters'
+import useUserTaskFilters from '~/utils/useUserTaskFilters'
 import useRouter from '~/hooks/useRouter'
 import constructUserTaskFilterQueryParamURL from '~/utils/constructUserTaskFilterQueryParamURL'
 
@@ -19,7 +19,7 @@ const UserDashTeamMemberMenu = (props: Props) => {
   const {history} = useRouter()
   const {menuProps, viewer} = props
 
-  const {userIds, teamIds, showArchived} = parseUserTaskFilters(viewer.id)
+  const {userIds, teamIds, showArchived} = useUserTaskFilters(viewer.id)
   const {teams} = viewer
   const filteredTeams = teamIds ? teams.filter(({id: teamId}) => teamIds.includes(teamId)) : teams
   const keySet = new Set()
@@ -56,7 +56,7 @@ const UserDashTeamMemberMenu = (props: Props) => {
       {filteredTeamMembers.map((teamMember) => (
         <MenuItem
           key={`teamMemberFilter${teamMember.userId}`}
-          dataCy={`team_member_filter_${teamMember.userId}`}
+          dataCy={`team-member-filter-${teamMember.userId}`}
           label={teamMember.preferredName}
           onClick={() => history.push(constructUserTaskFilterQueryParamURL(teamIds, [teamMember.userId], showArchived))}
         />

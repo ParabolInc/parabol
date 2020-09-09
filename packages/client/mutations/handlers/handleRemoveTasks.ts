@@ -8,7 +8,7 @@ import getArchivedTasksConn from '../connections/getArchivedTasksConn'
 import getTeamTasksConn from '../connections/getTeamTasksConn'
 import getUserTasksConn from '../connections/getUserTasksConn'
 import pluralizeHandler from './pluralizeHandler'
-import parseUserTaskFilters from '~/utils/parseUserTaskFilters'
+import useUserTaskFilters from '~/utils/useUserTaskFilters'
 
 const handleRemoveTask = (taskId: string, store: RecordSourceSelectorProxy<any>) => {
   const viewer = store.getRoot().getLinkedRecord<IUser>('viewer')
@@ -27,7 +27,7 @@ const handleRemoveTask = (taskId: string, store: RecordSourceSelectorProxy<any>)
   const team = store.get(teamId)
   const archiveConns = [getArchivedTasksConn(viewer, teamId), getArchivedTasksConn(viewer)]
   const teamConn = getTeamTasksConn(team)
-  const {userIds, teamIds} = parseUserTaskFilters(viewer.getDataID())
+  const {userIds, teamIds} = useUserTaskFilters(viewer.getDataID())
   const userConn = getUserTasksConn(viewer, userIds, teamIds)
   const threadSourceConn = getThreadSourceThreadConn(threadSourceProxy)
   safeRemoveNodeFromConn(taskId, teamConn)

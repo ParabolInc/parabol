@@ -6,7 +6,7 @@ import {UserColumnsContainer_viewer} from '../../../../__generated__/UserColumns
 import {AreaEnum} from '../../../../types/graphql'
 import getSafeRegex from '../../../../utils/getSafeRegex'
 import toTeamMemberId from '~/utils/relay/toTeamMemberId'
-import parseUserTaskFilters from '~/utils/parseUserTaskFilters'
+import useUserTaskFilters from '~/utils/useUserTaskFilters'
 
 interface Props {
   viewer: UserColumnsContainer_viewer
@@ -14,7 +14,7 @@ interface Props {
 
 const UserColumnsContainer = (props: Props) => {
   const {viewer} = props
-  const {userIds, teamIds} = parseUserTaskFilters(viewer.id)
+  const {userIds, teamIds} = useUserTaskFilters(viewer.id)
   const teamMemberFilter = userIds ? {id: userIds[0]} : undefined
   const teamFilter = teamIds ? {id: teamIds[0]} : undefined
   const {dashSearch, tasks} = viewer

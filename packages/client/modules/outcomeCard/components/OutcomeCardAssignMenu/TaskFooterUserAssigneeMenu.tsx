@@ -13,7 +13,7 @@ import {MenuProps} from '../../../../hooks/useMenu'
 import UpdateTaskMutation from '../../../../mutations/UpdateTaskMutation'
 import avatarUser from '../../../../styles/theme/images/avatar-user.svg'
 import {AreaEnum} from '../../../../types/graphql'
-import parseUserTaskFilters from '~/utils/parseUserTaskFilters'
+import useUserTaskFilters from '~/utils/useUserTaskFilters'
 
 interface Props {
   area: AreaEnum
@@ -24,7 +24,7 @@ interface Props {
 
 const TaskFooterUserAssigneeMenu = (props: Props) => {
   const {area, menuProps, task, viewer} = props
-  const {userIds} = parseUserTaskFilters(viewer.id)
+  const {userIds} = useUserTaskFilters(viewer.id)
   const {userId, id: taskId} = task
   const {team} = viewer
   const {teamMembers} = team || {teamMembers: []}

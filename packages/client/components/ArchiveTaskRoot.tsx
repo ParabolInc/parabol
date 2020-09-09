@@ -19,7 +19,7 @@ const query = graphql`
 export interface ArchiveTaskRootProps {
   teamIds?: string[] | null
   userIds?: string[] | null
-  team?: any
+  team?: any | null
   returnToTeamId?: string
 }
 

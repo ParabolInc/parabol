@@ -33,14 +33,14 @@ const testArchivedTasksTaskView = (isTaskArchived: boolean) => {
   cy.wait(1000)
 
   // click "Archived" checkbox
-  cy.get('[data-cy=archived_checkbox]').click()
+  cy.get('[data-cy=archived-checkbox]').click()
   cy.url().should('include', 'archived=true')
   isTaskArchived
     ? cy.get('body').should('contain', 'This is a task card')
     : cy.get('body').should('contain', 'There are zero archived tasks')
 
   // toggle "Archived" checkbox
-  cy.get('[data-cy=archived_checkbox]').click()
+  cy.get('[data-cy=archived-checkbox]').click()
   cy.url().should('not.include', 'archived=true')
   isTaskArchived
     ? cy.get('body').should('not.contain', 'This is a task card')
