@@ -6,6 +6,7 @@ import segmentIo from '../../../utils/segmentIo'
 import {GQLContext} from '../../graphql'
 import DisconnectSocketPayload from '../../types/DisconnectSocketPayload'
 import getRedis from '../../../utils/getRedis'
+import {UserPresence} from './connectSocket'
 export default {
   name: 'DisconnectSocket',
   description: 'a server-side mutation called when a client disconnects',
@@ -14,7 +15,6 @@ export default {
     // Note: no server secret means a client could call this themselves & appear disconnected when they aren't!
     const redis = getRedis()
 
-    console.log('DISCONNECT socketId', socketId)
     // AUTH
     if (!socketId) return undefined
     const userId = getUserId(authToken)
@@ -23,19 +23,18 @@ export default {
     const user = await db.read('User', userId)
     const {tms} = user
     const userPresence = await redis.lrange(`presence:${userId}`, 0, -1)
-    const disconnectingSocket = userPresence.find(
-      (socket) => JSON.parse(socket).socketId === socketId
-    )
+    const parsedUserPresence = userPresence.map((socket) => JSON.parse(socket)) as UserPresence[]
+    const disconnectingSocket = parsedUserPresence.find((socket) => socket.socketId === socketId)
     if (!disconnectingSocket) {
       throw new Error('Called disconnect without a valid socket')
     }
-    await redis.lrem(`presence:${userId}`, 0, disconnectingSocket)
+    await redis.lrem(`presence:${userId}`, 0, JSON.stringify(disconnectingSocket))
     const updatedUserPresence = await redis.lrange(`presence:${userId}`, 0, -1)
-    const connectedSockets = updatedUserPresence.map((socket) => JSON.parse(socket).socketId) || []
+    const connectedSockets =
+      updatedUserPresence.map((presence) => JSON.parse(presence).socketId) || []
     user.connectedSockets = connectedSockets
     user.lastSeenAtURLs =
-      user.lastSeenAtURLs?.filter((url) => url !== JSON.parse(disconnectingSocket).lastSeenAtURL) ||
-      []
+      user.lastSeenAtURLs?.filter((url) => url !== disconnectingSocket.lastSeenAtURL) || []
 
     // If this is the last socket, tell everyone they're offline
     if (connectedSockets.length === 0) {

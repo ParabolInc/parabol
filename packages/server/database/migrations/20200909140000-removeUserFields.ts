@@ -1,11 +1,11 @@
 import {R} from 'rethinkdb-ts'
 export const up = async function(r: R) {
   try {
-    const url = await r
+    await r
       .table('User')
       .replace(r.row.without('lastSeenAtURL'))
       .run()
-    const sockets = await r
+    await r
       .table('User')
       .replace(r.row.without('connectedSockets'))
       .run()
@@ -19,6 +19,11 @@ export const down = async function(r: R) {
     await r
       .table('User')
       .indexCreate('lastSeenAtURL')
+      .run()
+
+    await r
+      .table('User')
+      .indexCreate('connectedSockets')
       .run()
   } catch (e) {
     console.log(e)
