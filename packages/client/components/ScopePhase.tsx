@@ -1,29 +1,26 @@
 import graphql from 'babel-plugin-relay/macro'
 import React, {useRef} from 'react'
 import {createFragmentContainer} from 'react-relay'
-import {RetroVotePhase_meeting} from '~/__generated__/RetroVotePhase_meeting.graphql'
-import {NewMeetingPhaseTypeEnum} from '../types/graphql'
+import {ScopePhase_meeting} from '~/__generated__/ScopePhase_meeting.graphql'
 import {phaseLabelLookup} from '../utils/meetings/lookups'
-import GroupingKanban from './GroupingKanban'
 import MeetingContent from './MeetingContent'
 import MeetingHeaderAndPhase from './MeetingHeaderAndPhase'
-import MeetingPhaseWrapper from './MeetingPhaseWrapper'
 import MeetingTopBar from './MeetingTopBar'
 import PhaseHeaderDescription from './PhaseHeaderDescription'
 import PhaseHeaderTitle from './PhaseHeaderTitle'
 import PhaseWrapper from './PhaseWrapper'
-import {RetroMeetingPhaseProps} from './RetroMeeting'
-import RetroVoteMetaHeader from './RetroVoteMetaHeader'
+import {PokerMeetingPhaseProps} from './PokerMeeting'
+import ScopePhaseArea from './ScopePhaseArea'
 import StageTimerDisplay from './StageTimerDisplay'
-
-interface Props extends RetroMeetingPhaseProps {
-  meeting: RetroVotePhase_meeting
+interface Props extends PokerMeetingPhaseProps {
+  meeting: ScopePhase_meeting
 }
 
-const RetroVotePhase = (props: Props) => {
+const ScopePhase = (props: Props) => {
   const {avatarGroup, toggleSidebar, meeting} = props
   const phaseRef = useRef<HTMLDivElement>(null)
-  const {endedAt, showSidebar} = meeting
+  const {localPhase, endedAt, showSidebar} = meeting
+  if (!localPhase) return null
   return (
     <MeetingContent ref={phaseRef}>
       <MeetingHeaderAndPhase hideBottomBar={!!endedAt}>
@@ -32,31 +29,46 @@ const RetroVotePhase = (props: Props) => {
           isMeetingSidebarCollapsed={!showSidebar}
           toggleSidebar={toggleSidebar}
         >
-          <PhaseHeaderTitle>{phaseLabelLookup[NewMeetingPhaseTypeEnum.vote]}</PhaseHeaderTitle>
+          <PhaseHeaderTitle>{phaseLabelLookup.SCOPE}</PhaseHeaderTitle>
           <PhaseHeaderDescription>
-            {'Vote on the topics you want to discuss'}
+            {'Add tasks to be estimated'}
           </PhaseHeaderDescription>
         </MeetingTopBar>
         <PhaseWrapper>
-          <RetroVoteMetaHeader meeting={meeting} />
           <StageTimerDisplay meeting={meeting} />
-          <MeetingPhaseWrapper>
-            <GroupingKanban meeting={meeting} phaseRef={phaseRef} />
-          </MeetingPhaseWrapper>
+          <ScopePhaseArea meeting={meeting} />
         </PhaseWrapper>
       </MeetingHeaderAndPhase>
     </MeetingContent>
   )
 }
 
-export default createFragmentContainer(RetroVotePhase, {
+graphql`
+  fragment ScopePhase_phase on ReflectPhase {
+    focusedPromptId
+    reflectPrompts {
+      ...PhaseItemColumn_prompt
+      id
+    }
+  }
+`
+
+export default createFragmentContainer(ScopePhase, {
   meeting: graphql`
-    fragment RetroVotePhase_meeting on RetrospectiveMeeting {
-      ...StageTimerControl_meeting
+    fragment ScopePhase_meeting on PokerMeeting {
       ...StageTimerDisplay_meeting
-      ...GroupingKanban_meeting
-      ...RetroVoteMetaHeader_meeting
+      ...StageTimerControl_meeting
+      ...ScopePhaseArea_meeting
       endedAt
+      localPhase {
+        ...ScopePhase_phase @relay(mask: false)
+      }
+      localStage {
+        isComplete
+      }
+      phases {
+        ...ScopePhase_phase @relay(mask: false)
+      }
       showSidebar
     }
   `

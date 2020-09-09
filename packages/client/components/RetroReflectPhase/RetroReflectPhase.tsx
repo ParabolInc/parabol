@@ -13,10 +13,10 @@ import PhaseHeaderDescription from '../PhaseHeaderDescription'
 import PhaseHeaderTitle from '../PhaseHeaderTitle'
 import PhaseWrapper from '../PhaseWrapper'
 import {RetroMeetingPhaseProps} from '../RetroMeeting'
+import StageTimerDisplay from '../StageTimerDisplay'
 import PhaseItemColumn from './PhaseItemColumn'
 import ReflectWrapperMobile from './ReflectionWrapperMobile'
 import ReflectWrapperDesktop from './ReflectWrapperDesktop'
-import StageTimerDisplay from './StageTimerDisplay'
 
 interface Props extends RetroMeetingPhaseProps {
   meeting: RetroReflectPhase_meeting
