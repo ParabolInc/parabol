@@ -19,44 +19,23 @@ export default {
     const userId = getUserId(authToken)
 
     // RESOLUTION
-    // const reqlUpdater = (user) => ({
-    //   lastSeenAtURL: r.branch(
-    //     user('connectedSockets')
-    //       .count()
-    //       .eq(0),
-    //     null,
-    //     user('lastSeenAtURL')
-    //   ),
-    //   connectedSockets: user('connectedSockets')
-    //     .default([])
-    //     .difference([socketId])
-    // })
-    // const user = await db.write('User', userId, reqlUpdater)
-
-    // REDIS
     const user = await db.read('User', userId)
-    const userPresence = await redis.lrange(`presence:${userId}`, 0, -1)
-    const socketObj = userPresence.find((value) => JSON.parse(value).socketId === socketId)
-    if (!socketObj) return
-    await redis.lrem(`presence:${userId}`, 0, socketObj)
-    const filteredUserPresence = await redis.lrange(`presence:${userId}`, 0, -1)
-    const connectedSockets = filteredUserPresence.map((value) => JSON.parse(value).socketId) || []
-    user.connectedSockets = connectedSockets
-
-    // REDIS
     const {tms} = user
+    const userPresence = await redis.lrange(`presence:${userId}`, 0, -1)
+    const disconnectingSocket = userPresence.find(
+      (socket) => JSON.parse(socket).socketId === socketId
+    )
+    if (!disconnectingSocket) {
+      throw new Error('Called disconnect without a valid socket')
+    }
+    await redis.lrem(`presence:${userId}`, 0, disconnectingSocket)
+    const updatedUserPresence = await redis.lrange(`presence:${userId}`, 0, -1)
+    const connectedSockets = updatedUserPresence.map((socket) => JSON.parse(socket).socketId) || []
+    user.connectedSockets = connectedSockets
     const data = {user}
 
+    // If that was the last socket, tell everyone they went offline
     if (connectedSockets.length === 0) {
-      // if (connectedSockets.length === 0) {
-      // If that was the last socket, tell everyone they went offline
-      // const listeningUserIds = await r
-      //   .table('TeamMember')
-      //   .getAll(r.args(tms), {index: 'teamId'})
-      //   .filter({isNotRemoved: true})('userId')
-      //   .distinct()
-      //   .run()
-
       const listeningUserIds = new Set()
       for (const teamId of tms) {
         await redis.srem(`team:${teamId}`, userId)
@@ -66,9 +45,9 @@ export default {
         }
       }
 
-      //redis
       const subOptions = {mutatorId: socketId}
-      const listeningUserIdsArr = Array.from(new Set(listeningUserIds)) as string[]
+      const listeningUserIdsArr = Array.from(listeningUserIds) as string[]
+      // Tell everyone this user is now offline
       listeningUserIdsArr.forEach((onlineUserId) => {
         publish(
           SubscriptionChannel.NOTIFICATION,

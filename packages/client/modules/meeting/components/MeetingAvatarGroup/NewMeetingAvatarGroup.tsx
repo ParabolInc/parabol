@@ -92,17 +92,11 @@ const NewMeetingAvatarGroup = (props: Props) => {
   const {id: teamId, teamMembers} = team
   const isDesktop = useBreakpoint(Breakpoint.SINGLE_REFLECTION_COLUMN)
 
-  console.log(
-    'USER SOCK',
-    teamMembers.map((member) => member.user)
-  )
-
   // all connected teamMembers except self
   // TODO: filter by team members who are actually viewing “this” meeting view
   const connectedTeamMembers = useMemo(() => {
     return teamMembers
       .filter((teamMember) => {
-        console.log('connectedTeamMembers -> teamMember', teamMember.user)
         return (
           teamMember.userId === viewerId ||
           (teamMember.user.lastSeenAtURL === `/meet/${meetingId}` && teamMember.user.isConnected)

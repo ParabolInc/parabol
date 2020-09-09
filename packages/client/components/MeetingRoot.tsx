@@ -22,9 +22,12 @@ const MeetingRoot = () => {
   const {params} = match
   const {meetingId} = params
   useEffect(() => {
+    console.log('MeetingRoot -> meetingId', meetingId)
     if (!meetingId) return
-    const location = `/meet/${meetingId}`
-    SetAppLocationMutation(atmosphere, {location})
+    setTimeout(() => {
+      const location = `/meet/${meetingId}`
+      SetAppLocationMutation(atmosphere, {location})
+    }, 500)
     return () => {
       SetAppLocationMutation(atmosphere, {location: null})
     }
