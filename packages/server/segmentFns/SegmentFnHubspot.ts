@@ -253,11 +253,7 @@ const parabolFetch = async (
   const resJSON = await res.json()
   const {data, errors} = resJSON
   if (errors) {
-    if (!data) {
-      throw new Error(errors[0].message)
-    } else {
-      console.error(errors[0].message)
-    }
+    throw new Error(errors[0].message)
   }
   return data
 }

@@ -253,11 +253,7 @@ const parabolFetch = async (
   const resJSON = await res.json()
   const {data, errors} = resJSON
   if (errors) {
-    if (!data) {
-      throw new Error(errors[0].message)
-    } else {
-      console.error(errors[0].message)
-    }
+    throw new Error(errors[0].message)
   }
   return data
 }
@@ -328,7 +324,7 @@ const updateHubspotCompany = async (
 ) => {
   if (!propertiesObj || Object.keys(propertiesObj).length === 0) return
   const url = `https://api.hubapi.com/contacts/v1/contact/email/${email}/profile?hapikey=${hapiKey}&property=associatedcompanyid&property_mode=value_only&formSubmissionMode=none&showListMemberships=false`
-  let contactRes = await fetch(url)
+  const contactRes = await fetch(url)
   const contactStatus = String(contactRes.status)
   if (contactStatus === '404') {
     // the contact wasn't created yet, try again in a second
