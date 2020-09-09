@@ -35,6 +35,7 @@ const UserDashTeamMemberMenu = (props: Props) => {
       filteredTeamMembers.push(teamMember)
     }
   })
+  filteredTeamMembers.sort((a, b) => (a.preferredName > b.preferredName ? 1 : -1))
   const teamMemberFilterId = userIds ? userIds[0] : undefined
   const showAllTeamMembers = teamIds ? true : false
   const defaultActiveIdx =
