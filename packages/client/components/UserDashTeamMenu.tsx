@@ -20,13 +20,11 @@ const UserDashTeamMenu = (props: Props) => {
   const {menuProps, viewer} = props
   const {teams} = viewer
   const {teamIds, userIds, showArchived} = useUserTaskFilters(viewer.id)
-  const teamFilter = teamIds ? {id: teamIds[0]} : undefined
-  const teamFilterId = (teamFilter && teamFilter.id) || undefined
   const filteredTeams = userIds ? teams.filter(({teamMembers}) =>
     teamMembers.find(({userId}) => userIds.includes(userId)) != undefined
   ) : teams
-  const showAllTeams = userIds ? true : false
-  const defaultActiveIdx = filteredTeams.findIndex((team) => team.id === teamFilterId) + (showAllTeams ? 2 : 1)
+  const showAllTeams = !!userIds
+  const defaultActiveIdx = filteredTeams.findIndex((team) => teamIds?.includes(team.id)) + (showAllTeams ? 2 : 1)
   return (
     <Menu
       ariaLabel={'Select the team to filter by'}

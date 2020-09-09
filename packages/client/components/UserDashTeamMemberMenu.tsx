@@ -36,10 +36,9 @@ const UserDashTeamMemberMenu = (props: Props) => {
     }
   })
   filteredTeamMembers.sort((a, b) => (a.preferredName > b.preferredName ? 1 : -1))
-  const teamMemberFilterId = userIds ? userIds[0] : undefined
-  const showAllTeamMembers = teamIds ? true : false
+  const showAllTeamMembers = !!teamIds
   const defaultActiveIdx =
-    filteredTeamMembers.findIndex((teamMember) => teamMember.userId === teamMemberFilterId) + (showAllTeamMembers ? 2 : 1)
+    filteredTeamMembers.findIndex((teamMember) => userIds?.includes(teamMember.userId)) + (showAllTeamMembers ? 2 : 1)
 
   return (
     <Menu

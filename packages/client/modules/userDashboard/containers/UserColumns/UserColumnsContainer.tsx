@@ -15,11 +15,7 @@ interface Props {
 const UserColumnsContainer = (props: Props) => {
   const {viewer} = props
   const {userIds, teamIds} = useUserTaskFilters(viewer.id)
-  const teamMemberFilter = userIds ? {id: userIds[0]} : undefined
-  const teamFilter = teamIds ? {id: teamIds[0]} : undefined
   const {dashSearch, tasks} = viewer
-  const teamFilterId = (teamFilter && teamFilter.id) || null
-  const userFilterId = (teamMemberFilter && teamMemberFilter.id) || null
   const filteredTasks = useMemo(() => {
     const dashSearchRegex = getSafeRegex(dashSearch, 'i')
     const nodes = tasks.edges.map(({node}) => node)
@@ -29,20 +25,13 @@ const UserColumnsContainer = (props: Props) => {
       })
       : nodes
 
-    const teamFilteredNodes = teamFilterId
-      ? dashSearchNodes.filter((node) => node.teamId === teamFilterId)
-      : dashSearchNodes
-
-    const teamMemberFilteredNodes = userFilterId
-      ? teamFilteredNodes.filter((node) => {
-        return node.userId === userFilterId
-      })
-      : teamFilteredNodes
+    const teamFilteredNodes = dashSearchNodes.filter((node) => teamIds ? teamIds.includes(node.teamId) : true)
+    const teamMemberFilteredNodes = teamFilteredNodes.filter((node) => userIds ? userIds.includes(node.userId) : true)
 
     return teamMemberFilteredNodes.map((node) => ({
       ...node
     }))
-  }, [teamFilterId, userFilterId, tasks, dashSearch])
+  }, [teamIds, userIds, tasks, dashSearch])
   {
     const {
       viewer: {teams}
@@ -52,9 +41,9 @@ const UserColumnsContainer = (props: Props) => {
     const areaForTaskCard = userIds && userIds.length === 1 ? AreaEnum.userDash : AreaEnum.teamDash
     const filteredTeams = userIds ? teams.filter(({teamMembers, id: teamId}) => {
       const inTeam = teamMembers.find(({userId}) => userIds.includes(userId)) != undefined
-      const teamFiltered = teamFilter ? teamFilter.id === teamId : true
+      const teamFiltered = teamIds ? teamIds.includes(teamId) : true
       return teamFiltered && inTeam
-    }) : (teamIds ? teams.filter(({id}) => id === teamIds[0]) : teams)
+    }) : (teamIds ? teams.filter(({id}) => teamIds.includes(id)) : teams)
     const myTeamMemberId = toTeamMemberId(filteredTeams[0].id, userIds ? userIds[0] : viewer.id)
 
     return <TaskColumns area={areaForTaskCard} tasks={filteredTasks} myTeamMemberId={myTeamMemberId} teams={filteredTeams} />
