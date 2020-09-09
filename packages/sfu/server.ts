@@ -1,6 +1,5 @@
 import config from './config'
 import express from 'express'
-import https from 'https'
 import fs from 'fs'
 import url from 'url'
 import protoo from 'protoo-server'
@@ -10,10 +9,6 @@ import {AwaitQueue} from 'awaitqueue'
 import getVerifiedAuthToken from 'parabol-server/utils/getVerifiedAuthToken'
 import {isAuthenticated, isTeamMember} from 'parabol-server/utils/authorization'
 
-const tls = {
-  cert: fs.readFileSync(config.https.tls.cert),
-  key: fs.readFileSync(config.https.tls.key)
-}
 const mediasoupWorkers = []
 const rooms = new Map<string, Room>()
 const queue = new AwaitQueue()
@@ -56,9 +51,15 @@ async function runMediasoupWorkers() {
 }
 
 async function runWebSocketServer() {
-  const expressApp = express()
-  // http if production
-  const httpsServer = https.createServer(tls, expressApp as any)
+  const isProduction = process.env.NODE_ENV === 'production'
+  const httpModule = isProduction ? await import('http') : await import('https')
+  const options = isProduction
+    ? {}
+    : {
+        cert: fs.readFileSync(config.https.tls.cert),
+        key: fs.readFileSync(config.https.tls.key)
+      }
+  const httpsServer = httpModule.createServer(options, express() as any)
 
   await new Promise((resolve) => {
     httpsServer.listen(Number(config.https.listenPort), config.https.listenIp, resolve)
