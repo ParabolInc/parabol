@@ -40,7 +40,7 @@ const UserColumnsContainer = (props: Props) => {
     // iff 1 user is selected, we show team names at the footer; otherwise we show task owner name
     const areaForTaskCard = userIds && userIds.length === 1 ? AreaEnum.userDash : AreaEnum.teamDash
     const filteredTeams = userIds ? teams.filter(({teamMembers, id: teamId}) => {
-      const inTeam = teamMembers.find(({userId}) => userIds.includes(userId)) != undefined
+      const inTeam = !!teamMembers.find(({userId}) => userIds.includes(userId))
       const teamFiltered = teamIds ? teamIds.includes(teamId) : true
       return teamFiltered && inTeam
     }) : (teamIds ? teams.filter(({id}) => teamIds.includes(id)) : teams)

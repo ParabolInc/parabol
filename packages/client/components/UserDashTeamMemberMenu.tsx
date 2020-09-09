@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useMemo} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import Menu from './Menu'
@@ -19,26 +19,33 @@ const UserDashTeamMemberMenu = (props: Props) => {
   const {history} = useRouter()
   const {menuProps, viewer} = props
 
+
   const {userIds, teamIds, showArchived} = useUserTaskFilters(viewer.id)
-  const {teams} = viewer
-  const filteredTeams = teamIds ? teams.filter(({id: teamId}) => teamIds.includes(teamId)) : teams
-  const keySet = new Set()
-  const filteredTeamMembers = [] as {
-    userId: string
-    preferredName: string
-  }[]
-  const teamMembers = filteredTeams.map(({teamMembers}) => teamMembers.flat()).flat()
-  teamMembers.forEach((teamMember) => {
-    const userKey = teamMember.userId
-    if (!keySet.has(userKey)) {
-      keySet.add(userKey)
-      filteredTeamMembers.push(teamMember)
-    }
-  })
-  filteredTeamMembers.sort((a, b) => (a.preferredName > b.preferredName ? 1 : -1))
+
   const showAllTeamMembers = !!teamIds
-  const defaultActiveIdx =
-    filteredTeamMembers.findIndex((teamMember) => userIds?.includes(teamMember.userId)) + (showAllTeamMembers ? 2 : 1)
+  const {filteredTeamMembers, defaultActiveIdx} = useMemo(() => {
+    const {teams} = viewer
+    const filteredTeams = teamIds ? teams.filter(({id: teamId}) => teamIds.includes(teamId)) : teams
+    const keySet = new Set()
+    const filteredTeamMembers = [] as {
+      userId: string
+      preferredName: string
+    }[]
+    const teamMembers = filteredTeams.map(({teamMembers}) => teamMembers.flat()).flat()
+    teamMembers.forEach((teamMember) => {
+      const userKey = teamMember.userId
+      if (!keySet.has(userKey)) {
+        keySet.add(userKey)
+        filteredTeamMembers.push(teamMember)
+      }
+    })
+    filteredTeamMembers.sort((a, b) => (a.preferredName > b.preferredName ? 1 : -1))
+    return {
+      filteredTeamMembers,
+      defaultActiveIdx: filteredTeamMembers.findIndex((teamMember) => userIds?.includes(teamMember.userId))
+        + (showAllTeamMembers ? 2 : 1)
+    }
+  }, [teamIds, userIds])
 
   return (
     <Menu

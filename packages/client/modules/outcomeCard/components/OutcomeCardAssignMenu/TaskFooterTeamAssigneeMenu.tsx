@@ -23,11 +23,15 @@ const TaskFooterTeamAssigneeMenu = (props: Props) => {
   const {userIds, teamIds} = useUserTaskFilters(viewer.id)
   const {team, id: taskId} = task
   const {id: teamId} = team
-  const {teams} = viewer
-  const filteredTeams = userIds ? teams.filter(({teamMembers}) =>
-    teamMembers.find(({userId}) => userIds.includes(userId)) != undefined
-  ) : (teamIds ? teams.filter(({id}) => teamIds.includes(id)) : teams)
-  const assignableTeams = useMemo(() => filteredTeams.filter((team) => team.id !== teamId), [teamId, teams])
+
+  const assignableTeams = useMemo(() => {
+    const {teams} = viewer
+    const filteredTeams = userIds ? teams.filter(({teamMembers}) =>
+      teamMembers.find(({userId}) => userIds.includes(userId)) != undefined
+    ) : (teamIds ? teams.filter(({id}) => teamIds.includes(id)) : teams)
+    return filteredTeams.filter((team) => team.id !== teamId)
+  }, [teamIds, userIds])
+
   const atmosphere = useAtmosphere()
   const {submitting, submitMutation, onError, onCompleted} = useMutationProps()
   const handleTaskUpdate = (newTeam) => () => {
