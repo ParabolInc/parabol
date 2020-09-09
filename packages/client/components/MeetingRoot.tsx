@@ -22,7 +22,6 @@ const MeetingRoot = () => {
   const {params} = match
   const {meetingId} = params
   useEffect(() => {
-    console.log('MeetingRoot -> meetingId', meetingId)
     if (!meetingId) return
     setTimeout(() => {
       const location = `/meet/${meetingId}`

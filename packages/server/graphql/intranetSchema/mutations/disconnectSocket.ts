@@ -34,7 +34,7 @@ export default {
     user.connectedSockets = connectedSockets
     const data = {user}
 
-    // If that was the last socket, tell everyone they went offline
+    // If this is the last socket, tell everyone they're offline
     if (connectedSockets.length === 0) {
       const listeningUserIds = new Set()
       for (const teamId of tms) {
@@ -47,7 +47,6 @@ export default {
 
       const subOptions = {mutatorId: socketId}
       const listeningUserIdsArr = Array.from(listeningUserIds) as string[]
-      // Tell everyone this user is now offline
       listeningUserIdsArr.forEach((onlineUserId) => {
         publish(
           SubscriptionChannel.NOTIFICATION,
