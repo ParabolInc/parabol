@@ -71,9 +71,9 @@ export default class User {
         .join('') || 'pa'
     const now = new Date()
     this.id = id ?? `local|${shortid.generate()}`
-    this.connectedSockets = []
     this.tms = tms || []
     this.email = email
+    this.connectedSockets = []
     this.createdAt = createdAt || now
     this.picture = picture || `${AVATAR_BUCKET}/${avatarName}.png`
     this.updatedAt = updatedAt || now

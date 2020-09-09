@@ -209,12 +209,12 @@ export interface IUser {
   rasterPicture: any;
 
   /**
-   * The last time the user connected via websocket or navigated to a common area
+   * The last day the user connected via websocket or navigated to a common area
    */
   lastSeenAt: any | null;
 
   /**
-   * The path the user was last seen at (rough heuristic)
+   * The path the user was last seen at
    */
   lastSeenAtURL: string | null;
 

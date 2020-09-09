@@ -21,6 +21,7 @@ export default {
   type: GraphQLNonNull(User),
   resolve: async (_source, _args, {authToken, dataLoader, socketId}: GQLContext) => {
     const r = await getRethink()
+    const redis = getRedis()
     const now = new Date()
 
     // AUTH
@@ -32,27 +33,26 @@ export default {
     // RESOLUTION
     const user = await db.read('User', userId)
 
-    const reqlUpdater = (user) => ({
-      inactive: false,
-      updatedAt: now,
-      lastSeenAt: now
-      // lastSeenAtURL: null,
-      // connectedSockets: user('connectedSockets')
-      //   .default([])
-      //   .append(socketId)
-    })
+    // const reqlUpdater = (user) => ({
+    //   inactive: false,
+    //   updatedAt: now,
+    //   lastSeenAt: now
+    //   lastSeenAtURL: null,
+    //   connectedSockets: user('connectedSockets')
+    //     .default([])
+    //     .append(socketId)
+    // })
 
-    await db.write('User', userId, reqlUpdater)
+    // await db.write('User', userId, reqlUpdater)
 
     // const {inactive, connectedSockets, tms} = user
-    const {inactive, tms} = user
+    const {inactive, lastSeenAt, tms} = user
+    const datesAreOnSameDay = lastSeenAt && now.toDateString() === lastSeenAt.toDateString()
+    if (!datesAreOnSameDay) {
+      await db.write('User', userId, {lastSeenAt: now})
+    }
 
     // redis
-    const redis = getRedis()
-    // await redis.rpush(
-    //   `presence:${userId}`,
-    //   JSON.stringify({socketId, serverId: 'server1', lastSeenAtURL: null})
-    // )
     const userPresence = await redis.lrange(`presence:${userId}`, 0, -1)
     const connectedSockets = userPresence.map((value) => JSON.parse(value).socketId)
     await redis.rpush(
@@ -60,16 +60,8 @@ export default {
       JSON.stringify({lastSeenAtURL: null, serverId: 'server1', socketId} as UserPresence)
     )
     const updatedUserPresence = await redis.lrange(`presence:${userId}`, 0, -1)
-    console.log('connect -> userId', userId)
-    console.log('connect -> updatedUserPresence', updatedUserPresence)
     const updatedConnectedSockets = updatedUserPresence.map((value) => JSON.parse(value).socketId)
     user.connectedSockets = updatedConnectedSockets
-
-    // update team
-    await redis.sadd(`team:${tms}`, userId)
-    const listeningUserIds = await redis.smembers(`team:${tms}`)
-    if (!listeningUserIds) return
-    // redis
 
     // no need to wait for this, it's just for billing
     if (inactive) {
@@ -82,27 +74,28 @@ export default {
       // TODO: re-identify
     }
 
-    // if (connectedSockets.length === 0) {
+    const listeningUserIds = new Set()
+    for (const teamId of tms) {
+      await redis.sadd(`team:${teamId}`, userId)
+      const teamMembers = await redis.smembers(`team:${teamId}`)
+      for (const teamMemberId of teamMembers) {
+        listeningUserIds.add(teamMemberId)
+      }
+    }
+
     if (connectedSockets.length === 0) {
       const operationId = dataLoader.share()
       const subOptions = {mutatorId: socketId, operationId}
 
-      // remove below for redis
-      // const listeningUserIdsOld = (await r
-      //   .table('TeamMember')
-      //   .getAll(r.args(tms), {index: 'teamId'})
-      //   .filter({isNotRemoved: true})('userId')
-      //   .distinct()
-      //   .run()) as string[]
-
       // Tell everyone this user is now online
-      // listeningUserIds.forEach((onlineUserId) => {
-      //   publish(SubscriptionChannel.NOTIFICATION, onlineUserId, 'User', user, subOptions)
-      // })
-      listeningUserIds.forEach((onlineUserId) => {
+
+      // remove any repeated ids, e.g. if the user is in several teams, and flatten the array
+      const listeningUserIdsArr = Array.from(new Set(listeningUserIds)) as string[]
+      listeningUserIdsArr.forEach((onlineUserId) => {
         publish(SubscriptionChannel.NOTIFICATION, onlineUserId, 'User', user, subOptions)
       })
     }
+
     segmentIo.track({
       userId,
       event: 'Connect WebSocket',

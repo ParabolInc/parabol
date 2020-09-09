@@ -110,6 +110,7 @@ const handleAddTaskNotifications = async (
   const r = await getRethink()
   const {id: taskId, content, tags, userId} = task
   const usersIdsToIgnore = await getUsersToIgnore(viewerId, teamId, dataLoader)
+  console.log('CREATE usersIdsToIgnore', usersIdsToIgnore)
 
   // Handle notifications
   // Almost always you start out with a blank card assigned to you (except for filtered team dash)
