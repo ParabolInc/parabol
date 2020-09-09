@@ -94,7 +94,7 @@ const NewMeetingAvatarGroup = (props: Props) => {
 
   console.log(
     'USER SOCK',
-    teamMembers.map((member) => member.user.connectedSockets)
+    teamMembers.map((member) => member.user)
   )
 
   // all connected teamMembers except self

@@ -24,6 +24,7 @@ export default {
   })(async (_source, {location}, {authToken, dataLoader, socketId: mutatorId}) => {
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
+    const redis = getRedis()
 
     // AUTH
     const viewerId = getUserId(authToken)
@@ -31,38 +32,26 @@ export default {
     if (!viewer) {
       return {error: {message: 'Not a user'}}
     }
-
-    // RESOLUTION
-
-    // redis
-    const redis = getRedis()
     const userPresence = await redis.lrange(`presence:${viewerId}`, 0, -1)
-    console.log('app loc --- userPresence', userPresence)
     const connectedSocket = userPresence.find((socket) => JSON.parse(socket).socketId === mutatorId)
     if (!connectedSocket) {
       return {error: {message: "Socket doesn't exist"}}
     }
+
+    // RESOLUTION
     const parsedConnectedSocket = JSON.parse(connectedSocket) as UserPresence
     const {lastSeenAtURL} = parsedConnectedSocket
-    // redis
-
-    // const {lastSeenAtURL} = viewer
     const {lastSeenAt} = viewer
-    // const lastSeenAt = new Date()
     const now = new Date()
     const datesAreOnSameDay = now.toDateString() === lastSeenAt.toDateString()
     if (!datesAreOnSameDay) {
       await db.write('User', viewerId, {lastSeenAt: now})
     }
-
     const data = {userId: viewerId}
     if (lastSeenAtURL !== location) {
-      // await db.write('User', viewerId, {lastSeenAt, lastSeenAtURL: location})
       parsedConnectedSocket.lastSeenAtURL = location
       await redis.lrem(`presence:${viewerId}`, 0, connectedSocket)
       await redis.rpush(`presence:${viewerId}`, JSON.stringify(parsedConnectedSocket))
-      const userPresenceTest = await redis.lrange(`presence:${viewerId}`, 0, -1)
-      console.log('userPresenceTest', userPresenceTest)
 
       const meetingId = lastSeenAtURL?.includes('/meet/')
         ? lastSeenAtURL.slice(6)
@@ -71,8 +60,6 @@ export default {
         : null
 
       viewer.lastSeenAtURL = location
-      // viewer.lastSeenAtURL = location
-      // viewer.lastSeenAt // TODO: comment what does this do
       if (meetingId) {
         publish(SubscriptionChannel.MEETING, meetingId, 'SetAppLocationSuccess', data, subOptions)
       }
