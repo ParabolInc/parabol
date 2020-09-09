@@ -62,7 +62,6 @@ export default {
       userId,
       event: 'Account Removed',
       properties: {
-        deletedEmail: email,
         reason: validReason
       }
     })
