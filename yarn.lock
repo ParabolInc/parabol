@@ -13920,11 +13920,6 @@ package-json@^6.3.0:
     registry-url "^5.0.0"
     semver "^6.2.0"
 
-package@^1.0.1:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/package/-/package-1.0.1.tgz#d25a1f99e2506dcb27d6704b83dca8a312e4edcc"
-  integrity sha1-0lofmeJQbcsn1nBLg9yooxLk7cw=
-
 pacote@^9.2.3, pacote@^9.5.0:
   version "9.5.12"
   resolved "https://registry.yarnpkg.com/pacote/-/pacote-9.5.12.tgz#1e11dd7a8d736bcc36b375a9804d41bb0377bf66"
