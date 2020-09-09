@@ -88,7 +88,7 @@ interface Props {
   relay: RelayPaginationProp
   viewer: TeamArchive_viewer
   returnToTeamId?: string
-  team: TeamArchive_team | null
+  team?: TeamArchive_team
 }
 
 const TeamArchive = (props: Props) => {
@@ -292,7 +292,7 @@ export default createPaginationContainer(
     viewer: graphql`
       fragment TeamArchive_viewer on User {
         dashSearch
-        tasks(first: $first, after: $after, userIds: $userIds, teamIds: $teamIds, archived: true)
+        tasks(first: $first, after: $after, userIds: $userIds, teamIds: $teamIds, archived: $isArchived)
           @connection(key: "TeamArchive_tasks", filters: ["teamIds"]) {
           edges {
             cursor
@@ -343,7 +343,7 @@ export default createPaginationContainer(
       }
     },
     query: graphql`
-      query TeamArchivePaginationQuery($first: Int!, $after: DateTime, $teamIds: [ID!], $userIds: [ID!]) {
+      query TeamArchivePaginationQuery($first: Int!, $after: DateTime, $teamIds: [ID!], $userIds: [ID!], $isArchived: Boolean!) {
         viewer {
           ...TeamArchive_viewer
         }

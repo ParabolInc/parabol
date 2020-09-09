@@ -10,7 +10,7 @@ import useUserTaskFilters from '~/utils/useUserTaskFilters'
 
 // Changing the name here requires a change to getLastSeenAtURL.ts
 const query = graphql`
-  query MyDashboardTasksRootQuery($userIds: [ID!], $teamIds: [ID!]) {
+  query MyDashboardTasksRootQuery($first: Int!, $after: DateTime, $userIds: [ID!], $teamIds: [ID!], $isArchived: Boolean!) {
     viewer {
       ...MyDashboardTasks_viewer
     }
@@ -20,13 +20,12 @@ interface Props extends RouteComponentProps<{}> {}
 
 const MyDashboardTasksRoot = ({location}: Props) => {
   const atmosphere = useAtmosphere()
-  const {userIds, teamIds} = useUserTaskFilters(atmosphere.viewerId)
-
+  const {userIds, teamIds, showArchived} = useUserTaskFilters(atmosphere.viewerId)
   return (
     <QueryRenderer
       environment={atmosphere}
       query={query}
-      variables={{userIds, teamIds}}
+      variables={{userIds, teamIds, first: 40, isArchived: showArchived}}
       fetchPolicy={'store-or-network' as any}
       render={renderQuery(MyDashboardTasks, {size: LoaderSize.PANEL, props: {location}})}
     />

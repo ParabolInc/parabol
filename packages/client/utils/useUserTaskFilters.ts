@@ -9,7 +9,7 @@ const useUserTaskFilters = (viewerId: string) => {
     const teamIds = parsed.teamIds ? [parsed.teamIds as string] : undefined
     const userIdsArray = parsed.userIds ? (parsed.userIds as string).split(',') : undefined
     const userIds = userIdsArray || (teamIds ? undefined : [viewerId])
-    const showArchived = parsed.archived as boolean
+    const showArchived = !!parsed.archived
     return {userIds, teamIds, showArchived}
   }, [viewerId, location])
 }
