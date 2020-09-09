@@ -94,11 +94,24 @@ const UserTasksHeader = (props: Props) => {
   })
   const {teams} = viewer
   const teamMembers = teams.map(({teamMembers}) => teamMembers).flat()
-  const users = [...new Set(teamMembers.map(({user}) => user).flat())]
+  const users = teamMembers.map(({user}) => user).flat()
+  const keySet = new Set()
+  const dedupedUsers = [] as {
+    id: string
+    preferredName: string
+    tms: ReadonlyArray<string>
+  }[]
+  users.forEach((user) => {
+    const userKey = user.id
+    if (!keySet.has(userKey)) {
+      keySet.add(userKey)
+      dedupedUsers.push(user)
+    }
+  })
   const {userIds, teamIds, showArchived} = useUserTaskFilters(viewer.id)
   const teamFilter = teamIds ? teams.find(({id: teamId}) => teamIds.includes(teamId)) : undefined
   const teamMemberFilter = userIds
-    ? users.find(({id: userId}) => userIds.includes(userId))
+    ? dedupedUsers.find(({id: userId}) => userIds.includes(userId))
     : undefined
   const teamFilterName = (teamFilter && teamFilter.name) || 'My teams'
   const teamMemberFilterName =
