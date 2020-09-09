@@ -25,10 +25,10 @@ const handleRemoveTask = (taskId: string, store: RecordSourceSelectorProxy<any>)
   const meetingId = task.getValue('meetingId')
   const meeting = store.get(meetingId!)
   const team = store.get(teamId)
-  const archiveConns = [getArchivedTasksConn(viewer, teamId), getArchivedTasksConn(viewer)]
+  const {userIds, teamIds, showArchived} = useUserTaskFilters(viewer.getDataID())
+  const archiveConns = [getArchivedTasksConn(viewer, userIds, teamIds, showArchived)]
   const teamConn = getTeamTasksConn(team)
-  const {userIds, teamIds} = useUserTaskFilters(viewer.getDataID())
-  const userConn = getUserTasksConn(viewer, userIds, teamIds)
+  const userConn = getUserTasksConn(viewer, userIds, teamIds, showArchived)
   const threadSourceConn = getThreadSourceThreadConn(threadSourceProxy)
   safeRemoveNodeFromConn(taskId, teamConn)
   safeRemoveNodeFromConn(taskId, userConn)

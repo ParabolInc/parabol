@@ -23,7 +23,7 @@ const UserDashTeamMenu = (props: Props) => {
   const showAllTeams = !!userIds
   const {filteredTeams, defaultActiveIdx} = useMemo(() => {
     const filteredTeams = userIds ? teams.filter(({teamMembers}) =>
-      teamMembers.find(({userId}) => userIds.includes(userId)) != undefined
+      !!teamMembers.find(({userId}) => userIds.includes(userId))
     ) : teams
     return {
       filteredTeams,
@@ -41,7 +41,7 @@ const UserDashTeamMenu = (props: Props) => {
         <MenuItem
           key={'teamFilterNULL'}
           label={'All teams'}
-          onClick={() => history.push(constructUserTaskFilterQueryParamURL(undefined, userIds, showArchived))}
+          onClick={() => history.push(constructUserTaskFilterQueryParamURL(null, userIds, showArchived))}
         />}
       {filteredTeams.map((team) => (
         <MenuItem

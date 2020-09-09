@@ -58,7 +58,7 @@ const UserDashTeamMemberMenu = (props: Props) => {
         <MenuItem
           key={'teamMemberFilterNULL'}
           label={'All team members'}
-          onClick={() => history.push(constructUserTaskFilterQueryParamURL(teamIds, undefined, showArchived))}
+          onClick={() => history.push(constructUserTaskFilterQueryParamURL(teamIds, null, showArchived))}
         />}
       {filteredTeamMembers.map((teamMember) => (
         <MenuItem

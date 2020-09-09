@@ -293,7 +293,7 @@ export default createPaginationContainer(
       fragment TeamArchive_viewer on User {
         dashSearch
         tasks(first: $first, after: $after, userIds: $userIds, teamIds: $teamIds, archived: $isArchived)
-          @connection(key: "TeamArchive_tasks", filters: ["teamIds"]) {
+          @connection(key: "TeamArchive_tasks", filters: ["userIds", "teamIds", "archived"]) {
           edges {
             cursor
             node {

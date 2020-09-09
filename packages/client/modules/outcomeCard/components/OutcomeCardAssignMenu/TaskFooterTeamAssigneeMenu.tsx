@@ -27,7 +27,7 @@ const TaskFooterTeamAssigneeMenu = (props: Props) => {
   const assignableTeams = useMemo(() => {
     const {teams} = viewer
     const filteredTeams = userIds ? teams.filter(({teamMembers}) =>
-      teamMembers.find(({userId}) => userIds.includes(userId)) != undefined
+      !!teamMembers.find(({userId}) => userIds.includes(userId))
     ) : (teamIds ? teams.filter(({id}) => teamIds.includes(id)) : teams)
     return filteredTeams.filter((team) => team.id !== teamId)
   }, [teamIds, userIds])

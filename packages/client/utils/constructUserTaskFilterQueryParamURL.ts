@@ -1,4 +1,4 @@
-const constructUserTaskFilterQueryParamURL = (teamIds?: string[], userIds?: string[], showArchived?: boolean) => {
+const constructUserTaskFilterQueryParamURL = (teamIds: string[] | null, userIds: string[] | null, showArchived?: boolean) => {
   const filters = [] as string[]
   if (teamIds) {
     filters.push(`teamIds=${teamIds.join(',')}`)

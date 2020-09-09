@@ -38,11 +38,11 @@ const handleUpsertTask = (task: Task | null, store: RecordSourceSelectorProxy<an
   }
   const meetingId = task.getValue('meetingId')
   const isNowArchived = tags.includes('archived')
-  const archiveConns = [getArchivedTasksConn(viewer, teamId), getArchivedTasksConn(viewer)]
+  const {userIds, teamIds, showArchived} = useUserTaskFilters(viewerId)
+  const archiveConns = [getArchivedTasksConn(viewer, userIds, teamIds, showArchived)]
   const team = store.get(teamId)
   const teamConn = getTeamTasksConn(team)
-  const {userIds, teamIds} = useUserTaskFilters(viewerId)
-  const userConn = getUserTasksConn(viewer, userIds, teamIds)
+  const userConn = getUserTasksConn(viewer, userIds, teamIds, showArchived)
   const threadSourceId = task.getValue('threadId')
   const threadSourceProxy = (threadSourceId && store.get(threadSourceId as string)) || null
   const threadSourceConn = getThreadSourceThreadConn(threadSourceProxy)
