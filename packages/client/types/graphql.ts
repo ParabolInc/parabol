@@ -214,9 +214,9 @@ export interface IUser {
   lastSeenAt: any | null;
 
   /**
-   * The path the user was last seen at
+   * The paths that the user is currently visiting
    */
-  lastSeenAtURL: string | null;
+  lastSeenAtURLs: Array<string> | null;
 
   /**
    * The meeting member associated with this user, if a meeting is currently in progress

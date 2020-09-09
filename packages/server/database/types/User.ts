@@ -9,7 +9,7 @@ interface Input {
   email: string
   featureFlags?: string[]
   lastSeenAt?: Date
-  lastSeenAtURL?: string
+  lastSeenAtURLs?: string[]
   updatedAt?: Date
   picture?: string
   inactive?: boolean
@@ -30,7 +30,7 @@ export default class User {
   email: string
   featureFlags: string[]
   lastSeenAt: Date | null
-  lastSeenAtURL: string | null
+  lastSeenAtURLs: string[] | null
   updatedAt: Date
   newFeatureId?: string | null
   overLimitCopy?: string | null
@@ -55,7 +55,7 @@ export default class User {
       updatedAt,
       featureFlags,
       lastSeenAt,
-      lastSeenAtURL,
+      lastSeenAtURLs,
       identities,
       inactive,
       preferredName,
@@ -81,7 +81,7 @@ export default class User {
     this.identities = identities || []
     this.inactive = inactive || false
     this.lastSeenAt = lastSeenAt ?? null
-    this.lastSeenAtURL = lastSeenAtURL ?? null
+    this.lastSeenAtURLs = lastSeenAtURLs ?? null
     this.preferredName = preferredName
     this.segmentId = segmentId ?? undefined
     this.tier = tier ?? TierEnum.personal

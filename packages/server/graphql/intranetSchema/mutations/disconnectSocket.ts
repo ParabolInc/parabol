@@ -14,6 +14,7 @@ export default {
     // Note: no server secret means a client could call this themselves & appear disconnected when they aren't!
     const redis = getRedis()
 
+    console.log('DISCONNECT socketId', socketId)
     // AUTH
     if (!socketId) return undefined
     const userId = getUserId(authToken)
@@ -32,7 +33,9 @@ export default {
     const updatedUserPresence = await redis.lrange(`presence:${userId}`, 0, -1)
     const connectedSockets = updatedUserPresence.map((socket) => JSON.parse(socket).socketId) || []
     user.connectedSockets = connectedSockets
-    const data = {user}
+    user.lastSeenAtURLs =
+      user.lastSeenAtURLs?.filter((url) => url !== JSON.parse(disconnectingSocket).lastSeenAtURL) ||
+      []
 
     // If this is the last socket, tell everyone they're offline
     if (connectedSockets.length === 0) {
@@ -46,6 +49,8 @@ export default {
       }
 
       const subOptions = {mutatorId: socketId}
+      user.lastSeenAtURLs = null
+      const data = {user}
       const listeningUserIdsArr = Array.from(listeningUserIds) as string[]
       listeningUserIdsArr.forEach((onlineUserId) => {
         publish(
@@ -66,6 +71,6 @@ export default {
         tms
       }
     })
-    return data
+    return {user}
   }
 }

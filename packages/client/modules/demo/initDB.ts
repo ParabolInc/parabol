@@ -106,7 +106,7 @@ const initDemoUser = ({preferredName, email, picture}: BaseUser, idx: number) =>
     facilitatorName: preferredName,
     inactive: false,
     isConnected: true,
-    lastSeenAtURL: `/meet/${RetroDemo.MEETING_ID}`,
+    lastSeenAtURLs: [`/meet/${RetroDemo.MEETING_ID}`],
     lastSeenAt: now,
     rasterPicture: picture,
     picture: picture,
@@ -397,13 +397,13 @@ const initDB = (botScript) => {
     user: users[idx]
   }))
   users.forEach((user, idx) => {
-    ; (user as any).teamMember = teamMembers[idx]
+    ;(user as any).teamMember = teamMembers[idx]
   })
   const org = initDemoOrg()
   const newMeeting = initNewMeeting(org, teamMembers, meetingMembers)
   const team = initDemoTeam(org, teamMembers, newMeeting)
   teamMembers.forEach((teamMember) => {
-    ; (teamMember as any).team = team
+    ;(teamMember as any).team = team
   })
   team.meetingSettings.team = team as any
   newMeeting.team = team as any
