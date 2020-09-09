@@ -51,11 +51,11 @@ export default {
       .run()) as User
 
     if (user) {
-      const {id: userId, identities, tms} = user
+      const {id: userId, identities, rol, tms} = user
       const localIdentity = identities.find(
         (identity) => identity.type === AuthIdentityTypeEnum.LOCAL
       ) as AuthIdentityLocal
-      context.authToken = new AuthToken({sub: userId, tms})
+      context.authToken = new AuthToken({sub: userId, tms, rol})
       const authToken = encodeAuthToken(context.authToken)
       if (!localIdentity.isEmailVerified) {
         // mutative
