@@ -58,18 +58,22 @@ export default {
     await Promise.all(
       orgIds.map((orgId) => removeFromOrg(userIdToDelete, orgId, undefined, dataLoader))
     )
-    await db.write('User', userIdToDelete, {
-      isRemoved: true,
-      email: 'DELETED',
-      reasonRemoved: validReason
-    })
     segmentIo.track({
       userId,
       event: 'Account Removed',
       properties: {
+        deletedEmail: email,
         reason: validReason
       }
     })
+    // do this after 30 seconds so any segment API calls can still get the email
+    setTimeout(() => {
+      db.write('User', userIdToDelete, {
+        isRemoved: true,
+        email: 'DELETED',
+        reasonRemoved: validReason
+      })
+    }, 30000)
     return {}
   }
 }
