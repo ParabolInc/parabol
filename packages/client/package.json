@@ -104,8 +104,7 @@
     "tayden-clusterfck": "^0.7.0",
     "tlds": "^1.192.0",
     "tslib": "^1.11.1",
-    "unicode-substring": "^1.0.0",
-    "query-string": "^6.13.1"
+    "unicode-substring": "^1.0.0"
   },
   "jest": {
     "modulePaths": [
