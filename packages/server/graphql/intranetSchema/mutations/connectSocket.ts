@@ -50,36 +50,26 @@ export default {
       await db.write('User', userId, {lastSeenAt: now})
     }
     const userPresence = await redis.lrange(`presence:${userId}`, 0, -1)
-    console.log('connect -- userPresence', userPresence)
-    // const connectedSockets = userPresence.map((socket) => JSON.parse(socket).socketId)
     await redis.rpush(
       `presence:${userId}`,
       JSON.stringify({lastSeenAtURL: null, serverId: 'server1', socketId} as UserPresence)
     )
-    console.log('connect -- userId', userId)
-    // const updatedUserPresence = await redis.lrange(`presence:${userId}`, 0, -1)
-    // const updatedConnectedSockets = updatedUserPresence.map((socket) => JSON.parse(socket).socketId)
-    // user.connectedSockets = updatedConnectedSockets
-
     const listeningUserIds = new Set()
     for (const teamId of tms) {
       await redis.sadd(`team:${teamId}`, userId)
       const teamMembers = await redis.smembers(`team:${teamId}`)
       for (const teamMemberId of teamMembers) {
-        console.log('connect teamMemberId', teamMemberId)
         listeningUserIds.add(teamMemberId)
       }
     }
-    console.log('connect pre if listeningUserIds', listeningUserIds)
 
     // If this is the first socket, tell everyone they're online
     if (userPresence.length === 0) {
       const operationId = dataLoader.share()
       const subOptions = {mutatorId: socketId, operationId}
+      await redis.sadd('onlineUserIds', userId)
       const listeningUserIdsArr = Array.from(listeningUserIds) as string[]
-      console.log('connect listeningUserIdsArr', listeningUserIdsArr)
       listeningUserIdsArr.forEach((onlineUserId) => {
-        console.log('connect -- onlineUserId', onlineUserId)
         publish(SubscriptionChannel.NOTIFICATION, onlineUserId, 'User', user, subOptions)
       })
     }

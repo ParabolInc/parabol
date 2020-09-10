@@ -93,11 +93,6 @@ const NewMeetingAvatarGroup = (props: Props) => {
   const isDesktop = useBreakpoint(Breakpoint.SINGLE_REFLECTION_COLUMN)
 
   // all connected teamMembers except self
-
-  console.log(
-    'connectedTeamMembers -> teamMembers',
-    teamMembers.map((member) => member.user)
-  )
   const connectedTeamMembers = useMemo(() => {
     return teamMembers
       .filter((teamMember) => {

@@ -23,6 +23,8 @@ const MeetingRoot = () => {
   const {meetingId} = params
   useEffect(() => {
     if (!meetingId) return
+
+    // if socket hasn't connected, we can't set app location so wait a lil bit
     setTimeout(() => {
       const location = `/meet/${meetingId}`
       SetAppLocationMutation(atmosphere, {location})

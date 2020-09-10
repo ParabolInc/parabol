@@ -148,7 +148,6 @@ const User = new GraphQLObjectType<any, GQLContext, any>({
       resolve: async ({id: userId}) => {
         const redis = getRedis()
         const userPresence = await redis.lrange(`presence:${userId}`, 0, -1)
-        console.log('userPresence.length > 0', userPresence, userPresence.length > 0)
         return userPresence.length > 0
       }
     },

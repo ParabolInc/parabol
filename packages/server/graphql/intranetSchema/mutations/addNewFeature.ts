@@ -45,16 +45,7 @@ const addNewFeature = {
       db.writeTable('User', {newFeatureId})
     ])
 
-    // TODO: get from redis
-    const onlineUserIds = await r
-      .table('User')
-      .filter((user) =>
-        user('connectedSockets')
-          .count()
-          .ge(1)
-      )('id')
-      .run()
-    console.log('ADD NEW FEATURE onlineUserIds', onlineUserIds)
+    const onlineUserIds = await redis.smembers('onlineUserIds')
     onlineUserIds.forEach((userId) => {
       publish(
         SubscriptionChannel.NOTIFICATION,
