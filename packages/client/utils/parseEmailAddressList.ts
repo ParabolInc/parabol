@@ -13,7 +13,7 @@ const parseEmailAddressList = (rawStr = ''): {parsedInvitees: any; invalidEmailE
     .replace(/,$/g, '')
 
   const emailCount = commaDelimStr.split(',').length
-  const lastEmailIndex = Math.max(commaDelimStr.lastIndexOf(' '), commaDelimStr.lastIndexOf(','))
+  const lastEmailIndex = Math.max(commaDelimStr.lastIndexOf(' '), commaDelimStr.lastIndexOf(','), 0)
   const lastEmail = commaDelimStr.slice(lastEmailIndex, commaDelimStr.length)
   const lastChar = commaDelimStr.charAt(commaDelimStr.length - 1)
   const isAddingNewEmail = lastChar !== ' ' && lastChar !== ',' && !parseOneAddress(lastEmail)
