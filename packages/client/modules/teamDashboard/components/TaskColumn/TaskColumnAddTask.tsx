@@ -39,10 +39,10 @@ const TaskColumnAddTask = (props: Props) => {
   const label = taskStatusLabels[status]
   const sortOrder = getNextSortOrder(tasks, dndNoise())
   const {userId, teamId} = fromTeamMemberId(teamMemberFilterId || myTeamMemberId!)
+  const {viewerId} = atmosphere
   if (teams) {
     if (teams.length === 1) {
       const {id: teamId} = teams[0]
-      const {viewerId} = atmosphere
       const handleAddTask = () =>
         CreateTaskMutation(
           atmosphere,
@@ -53,7 +53,7 @@ const TaskColumnAddTask = (props: Props) => {
         )
       return <AddTaskButton onClick={handleAddTask} label={label} />
     }
-    return <TaskColumnAddTaskSelectTeam sortOrder={sortOrder} status={status} teams={teams!} />
+    return <TaskColumnAddTaskSelectTeam sortOrder={sortOrder} status={status} teams={teams!} userId={userId || viewerId} />
   } else if (area === AreaEnum.teamDash || isMyMeetingSection) {
     const handleAddTask = () =>
       CreateTaskMutation(atmosphere, {newTask: {status, teamId, userId, sortOrder, meetingId}}, {})
