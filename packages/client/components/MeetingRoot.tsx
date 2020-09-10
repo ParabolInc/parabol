@@ -7,7 +7,6 @@ import renderQuery from '../utils/relay/renderQuery'
 import MeetingSelector from './MeetingSelector'
 import SetAppLocationMutation from '~/mutations/SetAppLocationMutation'
 
-// Changing the name here requires a change to getLastSeenAtURL.ts
 const query = graphql`
   query MeetingRootQuery($meetingId: ID!) {
     viewer {

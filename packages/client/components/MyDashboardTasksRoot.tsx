@@ -6,7 +6,6 @@ import {LoaderSize} from '../types/constEnums'
 import renderQuery from '../utils/relay/renderQuery'
 import MyDashboardTasks from './MyDashboardTasks'
 
-// Changing the name here requires a change to getLastSeenAtURL.ts
 const query = graphql`
   query MyDashboardTasksRootQuery($userIds: [ID!]) {
     viewer {
