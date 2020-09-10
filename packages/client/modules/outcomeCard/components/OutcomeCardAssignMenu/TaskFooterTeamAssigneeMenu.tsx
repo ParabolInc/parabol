@@ -10,7 +10,7 @@ import useAtmosphere from '../../../../hooks/useAtmosphere'
 import {MenuProps} from '../../../../hooks/useMenu'
 import ChangeTaskTeamMutation from '../../../../mutations/ChangeTaskTeamMutation'
 import useMutationProps from '../../../../hooks/useMutationProps'
-import useUserTaskFilters from '~/utils/useUserTaskFilters'
+import {useUserTaskFilters} from '~/utils/useUserTaskFilters'
 
 interface Props {
   menuProps: MenuProps

@@ -13,7 +13,7 @@ import {MenuProps} from '../../../../hooks/useMenu'
 import UpdateTaskMutation from '../../../../mutations/UpdateTaskMutation'
 import avatarUser from '../../../../styles/theme/images/avatar-user.svg'
 import {AreaEnum} from '../../../../types/graphql'
-import useUserTaskFilters from '~/utils/useUserTaskFilters'
+import {useUserTaskFilters} from '~/utils/useUserTaskFilters'
 
 interface Props {
   area: AreaEnum

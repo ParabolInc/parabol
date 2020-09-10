@@ -8,7 +8,7 @@ import getUserTasksConn from '../connections/getUserTasksConn'
 import pluralizeHandler from './pluralizeHandler'
 import safePutNodeInConn from './safePutNodeInConn'
 import isTaskPrivate from '~/utils/isTaskPrivate'
-import useUserTaskFilters from '~/utils/useUserTaskFilters'
+import {parseUserTaskFilterQueryParams} from '~/utils/useUserTaskFilters'
 
 type Task = RecordProxy<{
   readonly id: string
@@ -38,7 +38,7 @@ const handleUpsertTask = (task: Task | null, store: RecordSourceSelectorProxy<an
   }
   const meetingId = task.getValue('meetingId')
   const isNowArchived = tags.includes('archived')
-  const {userIds, teamIds, showArchived} = useUserTaskFilters(viewerId)
+  const {userIds, teamIds, showArchived} = parseUserTaskFilterQueryParams(viewerId, window.location)
   const archiveConns = [getArchivedTasksConn(viewer, userIds, teamIds, showArchived)]
   const team = store.get(teamId)
   const teamConn = getTeamTasksConn(team)

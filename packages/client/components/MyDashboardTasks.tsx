@@ -7,7 +7,7 @@ import useAtmosphere from '../hooks/useAtmosphere'
 import UserTasksHeader from '../modules/userDashboard/components/UserTasksHeader/UserTasksHeader'
 import UserColumnsContainer from '../modules/userDashboard/containers/UserColumns/UserColumnsContainer'
 import {MyDashboardTasks_viewer} from '../__generated__/MyDashboardTasks_viewer.graphql'
-import useUserTaskFilters from '~/utils/useUserTaskFilters'
+import {useUserTaskFilters} from '~/utils/useUserTaskFilters'
 import TeamArchive from '~/modules/teamDashboard/components/TeamArchive/TeamArchive'
 
 interface Props {

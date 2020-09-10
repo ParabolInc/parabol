@@ -6,7 +6,7 @@ import MenuItem from './MenuItem'
 import {MenuProps} from '../hooks/useMenu'
 import DropdownMenuLabel from './DropdownMenuLabel'
 import {UserDashTeamMemberMenu_viewer} from '../__generated__/UserDashTeamMemberMenu_viewer.graphql'
-import useUserTaskFilters from '~/utils/useUserTaskFilters'
+import {useUserTaskFilters} from '~/utils/useUserTaskFilters'
 import useRouter from '~/hooks/useRouter'
 import constructUserTaskFilterQueryParamURL from '~/utils/constructUserTaskFilterQueryParamURL'
 

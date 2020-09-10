@@ -8,7 +8,7 @@ import getArchivedTasksConn from '../connections/getArchivedTasksConn'
 import getTeamTasksConn from '../connections/getTeamTasksConn'
 import getUserTasksConn from '../connections/getUserTasksConn'
 import pluralizeHandler from './pluralizeHandler'
-import useUserTaskFilters from '~/utils/useUserTaskFilters'
+import {parseUserTaskFilterQueryParams} from '~/utils/useUserTaskFilters'
 
 const handleRemoveTask = (taskId: string, store: RecordSourceSelectorProxy<any>) => {
   const viewer = store.getRoot().getLinkedRecord<IUser>('viewer')
@@ -25,7 +25,7 @@ const handleRemoveTask = (taskId: string, store: RecordSourceSelectorProxy<any>)
   const meetingId = task.getValue('meetingId')
   const meeting = store.get(meetingId!)
   const team = store.get(teamId)
-  const {userIds, teamIds, showArchived} = useUserTaskFilters(viewer.getDataID())
+  const {userIds, teamIds, showArchived} = parseUserTaskFilterQueryParams(viewer.getDataID(), window.location)
   const archiveConns = [getArchivedTasksConn(viewer, userIds, teamIds, showArchived)]
   const teamConn = getTeamTasksConn(team)
   const userConn = getUserTasksConn(viewer, userIds, teamIds, showArchived)

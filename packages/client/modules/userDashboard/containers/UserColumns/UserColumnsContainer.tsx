@@ -6,7 +6,7 @@ import {UserColumnsContainer_viewer} from '../../../../__generated__/UserColumns
 import {AreaEnum} from '../../../../types/graphql'
 import getSafeRegex from '../../../../utils/getSafeRegex'
 import toTeamMemberId from '~/utils/relay/toTeamMemberId'
-import useUserTaskFilters from '~/utils/useUserTaskFilters'
+import {useUserTaskFilters} from '~/utils/useUserTaskFilters'
 
 interface Props {
   viewer: UserColumnsContainer_viewer

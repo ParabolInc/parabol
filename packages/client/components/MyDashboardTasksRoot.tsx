@@ -6,7 +6,7 @@ import {LoaderSize} from '../types/constEnums'
 import renderQuery from '../utils/relay/renderQuery'
 import MyDashboardTasks from './MyDashboardTasks'
 import {RouteComponentProps} from 'react-router-dom'
-import useUserTaskFilters from '~/utils/useUserTaskFilters'
+import {useUserTaskFilters} from '~/utils/useUserTaskFilters'
 
 // Changing the name here requires a change to getLastSeenAtURL.ts
 const query = graphql`

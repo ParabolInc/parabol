@@ -6,7 +6,7 @@ import {MenuProps} from '../hooks/useMenu'
 import DropdownMenuLabel from './DropdownMenuLabel'
 import Menu from './Menu'
 import MenuItem from './MenuItem'
-import useUserTaskFilters from '~/utils/useUserTaskFilters'
+import {useUserTaskFilters} from '~/utils/useUserTaskFilters'
 import constructUserTaskFilterQueryParamURL from '~/utils/constructUserTaskFilterQueryParamURL'
 import useRouter from '~/hooks/useRouter'
 
