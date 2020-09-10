@@ -6,10 +6,6 @@ import getProjectRoot from '../webpack/utils/getProjectRoot'
 
 const PROJECT_ROOT = getProjectRoot()
 
-const flushSocketConnections = async () => {
-  return db.writeTable('User', {connectedSockets: []})
-}
-
 const storePersistedQueries = async () => {
   const queryMap = JSON.parse(fs.readFileSync(path.join(PROJECT_ROOT, 'queryMap.json')).toString())
   const hashes = Object.keys(queryMap)
@@ -31,7 +27,6 @@ const storePersistedQueries = async () => {
 const postDeploy = async () => {
   try {
     const r = await getRethink()
-    await flushSocketConnections()
     await storePersistedQueries()
     await r.getPoolMaster().drain()
   } catch (e) {

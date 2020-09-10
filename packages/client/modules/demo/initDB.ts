@@ -95,7 +95,6 @@ const initDemoUser = ({preferredName, email, picture}: BaseUser, idx: number) =>
     viewerId: id,
     atlassianAuth: {isActive: true, accessToken: '123'},
     githubAuth: {isActive: true, accessToken: '123'},
-    connectedSockets: [`socket${idx}`],
     createdAt: now,
     email,
     featureFlags: {

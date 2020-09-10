@@ -6,6 +6,7 @@ import db from '../../../db'
 import {requireSU} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import AddNewFeaturePayload from '../../types/addNewFeaturePayload'
+import getRedis from '../../../utils/getRedis'
 
 const addNewFeature = {
   type: AddNewFeaturePayload,
@@ -22,6 +23,7 @@ const addNewFeature = {
   },
   resolve: async (_source, {copy, url}, {authToken, dataLoader}) => {
     const r = await getRethink()
+    const redis = getRedis()
 
     // AUTH
     requireSU(authToken)

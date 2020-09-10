@@ -59,9 +59,6 @@ export default {
         ? location.slice(6)
         : null
 
-      viewer.lastSeenAtURLs = viewer.lastSeenAtURLs
-        ? [...viewer.lastSeenAtURLs, location]
-        : [location]
       if (meetingId) {
         publish(SubscriptionChannel.MEETING, meetingId, 'SetAppLocationSuccess', data, subOptions)
       }

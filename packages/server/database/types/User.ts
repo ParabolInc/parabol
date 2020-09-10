@@ -25,7 +25,6 @@ const AVATAR_BUCKET = `https://${process.env.AWS_S3_BUCKET}/static/avatars`
 
 export default class User {
   id: string
-  connectedSockets: string[]
   preferredName: string
   email: string
   featureFlags: string[]
@@ -73,7 +72,6 @@ export default class User {
     this.id = id ?? `local|${shortid.generate()}`
     this.tms = tms || []
     this.email = email
-    this.connectedSockets = []
     this.createdAt = createdAt || now
     this.picture = picture || `${AVATAR_BUCKET}/${avatarName}.png`
     this.updatedAt = updatedAt || now

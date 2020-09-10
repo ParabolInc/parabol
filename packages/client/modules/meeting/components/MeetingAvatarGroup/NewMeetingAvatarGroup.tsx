@@ -180,7 +180,6 @@ export default createFragmentContainer(NewMeetingAvatarGroup, {
             isConnected
             lastSeenAt
             lastSeenAtURLs
-            connectedSockets
           }
           userId
           ...NewMeetingAvatar_teamMember

@@ -66,18 +66,20 @@ export default {
       await redis.sadd(`team:${teamId}`, userId)
       const teamMembers = await redis.smembers(`team:${teamId}`)
       for (const teamMemberId of teamMembers) {
+        console.log('connect teamMemberId', teamMemberId)
         listeningUserIds.add(teamMemberId)
       }
     }
     console.log('connect pre if listeningUserIds', listeningUserIds)
 
     // If this is the first socket, tell everyone they're online
-    if (!userPresence) {
+    if (userPresence.length === 0) {
       const operationId = dataLoader.share()
       const subOptions = {mutatorId: socketId, operationId}
       const listeningUserIdsArr = Array.from(listeningUserIds) as string[]
       console.log('connect listeningUserIdsArr', listeningUserIdsArr)
       listeningUserIdsArr.forEach((onlineUserId) => {
+        console.log('connect -- onlineUserId', onlineUserId)
         publish(SubscriptionChannel.NOTIFICATION, onlineUserId, 'User', user, subOptions)
       })
     }

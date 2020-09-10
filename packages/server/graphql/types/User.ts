@@ -78,10 +78,6 @@ const User = new GraphQLObjectType<any, GQLContext, any>({
         return {id: domain}
       }
     },
-    connectedSockets: {
-      type: new GraphQLList(GraphQLID),
-      description: 'The socketIds that the user is currently connected with'
-    },
     createdAt: {
       type: GraphQLISO8601Type,
       description: 'The timestamp the user was created'
@@ -149,9 +145,11 @@ const User = new GraphQLObjectType<any, GQLContext, any>({
     isConnected: {
       type: GraphQLBoolean,
       description: 'true if the user is currently online',
-      resolve: (source) => {
-        const {connectedSockets} = source
-        return Array.isArray(connectedSockets) && connectedSockets.length > 0
+      resolve: async ({id: userId}) => {
+        const redis = getRedis()
+        const userPresence = await redis.lrange(`presence:${userId}`, 0, -1)
+        console.log('userPresence.length > 0', userPresence, userPresence.length > 0)
+        return userPresence.length > 0
       }
     },
     isPatientZero: {
@@ -310,14 +308,13 @@ const User = new GraphQLObjectType<any, GQLContext, any>({
       description: 'The last day the user connected via websocket or navigated to a common area'
     },
     lastSeenAtURLs: {
-      type: new GraphQLList(new GraphQLNonNull(GraphQLString)),
+      type: new GraphQLList(GraphQLString),
       description:
-        'The paths that the user is currently visiting. This is null if the user is not currently online.',
+        'The paths that the user is currently visiting. This is null if the user is not currently online and a URL can be null if it is not in a meeting, e.g. on the dashboard.',
       resolve: async ({id: userId}) => {
-        console.log('userId', userId)
         const redis = getRedis()
         const userPresence = await redis.lrange(`presence:${userId}`, 0, -1)
-        if (!userPresence) return null
+        if (!userPresence || userPresence.length === 0) return null
         const connectedSockets = userPresence.map((socket) => JSON.parse(socket))
         return connectedSockets.map((socket) => socket.lastSeenAtURL)
       }
