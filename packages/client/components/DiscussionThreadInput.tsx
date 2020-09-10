@@ -5,7 +5,7 @@ import useAtmosphere from '~/hooks/useAtmosphere'
 import useMutationProps from '~/hooks/useMutationProps'
 import useReplyEditorState from '~/hooks/useReplyEditorState'
 import AddCommentMutation from '~/mutations/AddCommentMutation'
-import React, {forwardRef, RefObject, useState} from 'react'
+import React, {forwardRef, RefObject, useEffect, useState} from 'react'
 import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import {Elevation} from '~/styles/elevation'
 import {ThreadSourceEnum} from '~/types/graphql'
@@ -20,6 +20,7 @@ import Avatar from './Avatar/Avatar'
 import CommentSendOrAdd from './CommentSendOrAdd'
 import CommentEditor from './TaskEditor/CommentEditor'
 import {ReplyMention, SetReplyMention} from './ThreadedItem'
+import EditCommentingMutation from '~/mutations/EditCommentingMutation'
 
 const Wrapper = styled('div')<{isReply: boolean; isDisabled: boolean}>(({isDisabled, isReply}) => ({
   alignItems: 'center',
@@ -83,13 +84,35 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
   const [editorState, setEditorState] = useReplyEditorState(replyMention, setReplyMention)
   const atmosphere = useAtmosphere()
   const {submitting, onError, onCompleted, submitMutation} = useMutationProps()
+  const [isCommenting, setIsCommenting] = useState(false)
   const placeholder = isAnonymousComment ? 'Comment anonymously' : 'Comment publicly'
+  const [lastTypedTimestamp, setLastTypedTimestamp] = useState<Date>()
 
   const threadSourceByMeetingType = {
     [MeetingTypeEnum.retrospective]: ThreadSourceEnum.REFLECTION_GROUP,
     [MeetingTypeEnum.action]: ThreadSourceEnum.AGENDA_ITEM
   }
   const threadSource = threadSourceByMeetingType[meetingType]
+
+  useEffect(() => {
+    const inactiveCommenting = setTimeout(() => {
+      if (isCommenting) {
+        EditCommentingMutation(
+          atmosphere,
+          {
+            isCommenting: false,
+            meetingId,
+            threadId: threadSourceId
+          },
+          {onError, onCompleted}
+        )
+        setIsCommenting(false)
+      }
+    }, 5000)
+    return () => {
+      clearTimeout(inactiveCommenting)
+    }
+  }, [lastTypedTimestamp])
 
   const toggleAnonymous = () => {
     if (endedAt) return
@@ -130,8 +153,41 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
     onSubmitCommentSuccess?.()
   }
 
+  const ensureCommenting = () => {
+    const timestamp = new Date()
+    setLastTypedTimestamp(timestamp)
+
+    collapseAddTask()
+    if (isAnonymousComment || isCommenting) return
+    EditCommentingMutation(
+      atmosphere,
+      {
+        isCommenting: true,
+        meetingId,
+        threadId: threadSourceId
+      },
+      {onError, onCompleted}
+    )
+    setIsCommenting(true)
+  }
+
+  const ensureNotCommenting = () => {
+    if (isAnonymousComment || !isCommenting) return
+    EditCommentingMutation(
+      atmosphere,
+      {
+        isCommenting: false,
+        meetingId,
+        threadId: threadSourceId
+      },
+      {onError, onCompleted}
+    )
+    setIsCommenting(false)
+  }
+
   const onSubmit = () => {
     if (submitting) return
+    ensureNotCommenting()
     const editorEl = editorRef.current
     if (isAndroid) {
       if (!editorEl || editorEl.type !== 'textarea') return
@@ -156,14 +212,15 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
       />
       <CommentEditor
         dataCy={`${dataCy}`}
-        teamId={teamId}
         editorRef={editorRef}
         editorState={editorState}
+        ensureCommenting={ensureCommenting}
+        onBlur={ensureNotCommenting}
         onSubmit={onSubmit}
         readOnly={!!endedAt}
-        setEditorState={setEditorState}
         placeholder={placeholder}
-        onFocus={collapseAddTask}
+        setEditorState={setEditorState}
+        teamId={teamId}
       />
       <CommentSendOrAdd
         dataCy={`${dataCy}`}

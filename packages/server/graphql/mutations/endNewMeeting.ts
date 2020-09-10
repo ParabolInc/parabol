@@ -13,7 +13,6 @@ import {
   LAST_CALL,
   RETROSPECTIVE
 } from 'parabol-client/utils/constants'
-import extractTextFromDraftString from 'parabol-client/utils/draftjs/extractTextFromDraftString'
 import getMeetingPhase from 'parabol-client/utils/getMeetingPhase'
 import findStageById from 'parabol-client/utils/meetings/findStageById'
 import shortid from 'shortid'
@@ -24,7 +23,6 @@ import GenericMeetingPhase from '../../database/types/GenericMeetingPhase'
 import Meeting from '../../database/types/Meeting'
 import MeetingAction from '../../database/types/MeetingAction'
 import MeetingRetrospective from '../../database/types/MeetingRetrospective'
-import ReflectPhase from '../../database/types/ReflectPhase'
 import Task from '../../database/types/Task'
 import TimelineEventCheckinComplete from '../../database/types/TimelineEventCheckinComplete'
 import TimelineEventRetroComplete from '../../database/types/TimelineEventRetroComplete'
@@ -38,6 +36,7 @@ import {DataLoaderWorker, GQLContext} from '../graphql'
 import EndNewMeetingPayload from '../types/EndNewMeetingPayload'
 import sendNewMeetingSummary from './helpers/endMeeting/sendNewMeetingSummary'
 import {endSlackMeeting} from './helpers/notifySlack'
+import removeEmptyTasks from './helpers/removeEmptyTasks'
 
 const timelineEventLookup = {
   [RETROSPECTIVE]: TimelineEventRetroComplete,
@@ -124,49 +123,6 @@ const clonePinnedAgendaItems = async (pinnedAgendaItems: AgendaItem[]) => {
     .table('AgendaItem')
     .insert(formattedPinnedAgendaItems)
     .run()
-}
-
-const shuffleCheckInOrder = async (teamId: string) => {
-  const r = await getRethink()
-  return r
-    .table('TeamMember')
-    .getAll(teamId, {index: 'teamId'})
-    .sample(100000)
-    .coerceTo('array')
-    .do((arr) =>
-      arr.forEach((doc) => {
-        return r
-          .table('TeamMember')
-          .get(doc('id'))
-          .update({
-            checkInOrder: arr.offsetsOf(doc).nth(0)
-          })
-      })
-    )
-    .run()
-}
-
-const removeEmptyTasks = async (teamId: string, meetingId: string) => {
-  const r = await getRethink()
-  const createdTasks = await r
-    .table('Task')
-    .getAll(teamId, {index: 'teamId'})
-    .filter({meetingId})
-    .run()
-
-  const removedTaskIds = createdTasks
-    .map((task) => ({
-      id: task.id,
-      plaintextContent: extractTextFromDraftString(task.content)
-    }))
-    .filter(({plaintextContent}) => plaintextContent.length === 0)
-    .map(({id}) => id)
-  await r
-    .table('Task')
-    .getAll(r.args(removedTaskIds))
-    .delete()
-    .run()
-  return removedTaskIds
 }
 
 const finishActionMeeting = async (meeting: MeetingAction, dataLoader: DataLoaderWorker) => {
@@ -286,21 +242,9 @@ const getIsKill = (meetingType: MeetingTypeEnum, phase?: GenericMeetingPhase) =>
       return ![AGENDA_ITEMS, LAST_CALL].includes(phase.phaseType)
     case MeetingTypeEnum.retrospective:
       return ![DISCUSS].includes(phase.phaseType)
+    case MeetingTypeEnum.poker:
+      return !['ESTIMATE'].includes(phase.phaseType)
   }
-}
-
-const getMeetingTemplateName = async (
-  meetingType: MeetingTypeEnum,
-  phases: any[],
-  dataLoader: DataLoaderWorker
-) => {
-  if (meetingType !== MeetingTypeEnum.retrospective) return undefined
-  const reflectPhase = phases.find(
-    (phase) => phase.phaseType === NewMeetingPhaseTypeEnum.reflect
-  ) as ReflectPhase
-  const {promptTemplateId} = reflectPhase
-  const template = await dataLoader.get('reflectTemplates').load(promptTemplateId)
-  return template.name
 }
 
 export default {
@@ -355,10 +299,10 @@ export default {
         },
         {returnChanges: true}
       )('changes')(0)('new_val')
-      .run()) as unknown) as Meeting
+      .run()) as unknown) as MeetingRetrospective | MeetingAction
 
     // remove any empty tasks
-    const removedTaskIds = await removeEmptyTasks(teamId, meetingId)
+    const removedTaskIds = await removeEmptyTasks(meetingId)
 
     const [meetingMembers, team] = await Promise.all([
       dataLoader.get('meetingMembersByMeetingId').load(meetingId),
@@ -372,10 +316,13 @@ export default {
 
     const result = await finishMeetingType(completedMeeting, dataLoader)
 
-    await shuffleCheckInOrder(teamId)
     const updatedTaskIds = (result && result.updatedTaskIds) || []
     const {facilitatorUserId} = completedMeeting
-    const meetingTemplateName = await getMeetingTemplateName(meetingType, phases, dataLoader)
+    const templateId = (completedMeeting as MeetingRetrospective).templateId || undefined
+    const template = templateId
+      ? await dataLoader.get('meetingTemplates').load(templateId)
+      : undefined
+    const meetingTemplateName = template?.name
     presentMemberUserIds.forEach((userId) => {
       const wasFacilitator = userId === facilitatorUserId
       segmentIo.track({

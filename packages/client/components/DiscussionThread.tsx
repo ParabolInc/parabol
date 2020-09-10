@@ -18,6 +18,7 @@ const Wrapper = styled('div')<{isExpanded: boolean}>(({isExpanded}) => ({
   boxShadow: Elevation.DISCUSSION_THREAD,
   display: 'flex',
   flexDirection: 'column',
+  justifyContent: 'space-between',
   height: '100%',
   overflow: 'hidden',
   width: 'calc(100% - 16px)',
@@ -34,12 +35,11 @@ interface Props {
 
 const DiscussionThread = (props: Props) => {
   const {meetingContentRef, viewer} = props
-
   const meeting = viewer.meeting!
   const {endedAt, replyingToCommentId, threadSource} = meeting
-  const {thread} = threadSource!
-
+  const {commentors, thread} = threadSource!
   const threadSourceId = threadSource!.id!
+  const preferredNames = commentors && commentors.map((commentor) => commentor.preferredName)
   const edges = thread?.edges ?? [] // should never happen, but Terry reported it in demo. likely relay error
   const threadables = edges.map(({node}) => node)
   const getMaxSortOrder = () => {
@@ -57,6 +57,7 @@ const DiscussionThread = (props: Props) => {
         dataCy='discuss-thread-list'
         threadSourceId={threadSourceId}
         meeting={meeting}
+        preferredNames={preferredNames}
         threadables={threadables}
         ref={listRef}
         editorRef={editorRef}
@@ -103,11 +104,19 @@ export default createFragmentContainer(DiscussionThread, {
         ... on RetrospectiveMeeting {
           threadSource: reflectionGroup(reflectionGroupId: $threadSourceId) {
             ...DiscussionThread_threadSource @relay(mask: false)
+            commentors {
+              userId
+              preferredName
+            }
           }
         }
         ... on ActionMeeting {
           threadSource: agendaItem(agendaItemId: $threadSourceId) {
             ...DiscussionThread_threadSource @relay(mask: false)
+            commentors {
+              userId
+              preferredName
+            }
           }
         }
       }

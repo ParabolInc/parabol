@@ -25,7 +25,7 @@ const removeReflectTemplate = {
     const operationId = dataLoader.share()
     const subOptions = {operationId, mutatorId}
     const template = await r
-      .table('ReflectTemplate')
+      .table('MeetingTemplate')
       .get(templateId)
       .run()
     const viewerId = getUserId(authToken)
@@ -39,7 +39,7 @@ const removeReflectTemplate = {
     const {teamId} = template
     const {templates, settings} = await r({
       templates: (r
-        .table('ReflectTemplate')
+        .table('MeetingTemplate')
         .getAll(teamId, {index: 'teamId'})
         .filter({isActive: true})
         .orderBy('name')
@@ -55,7 +55,7 @@ const removeReflectTemplate = {
     const {id: settingsId} = settings
     await r({
       template: r
-        .table('ReflectTemplate')
+        .table('MeetingTemplate')
         .get(templateId)
         .update({isActive: false, updatedAt: now}),
       reflectPrompts: r

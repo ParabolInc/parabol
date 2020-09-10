@@ -8,6 +8,7 @@ import useBreakpoint from '../hooks/useBreakpoint'
 import useMutationProps from '../hooks/useMutationProps'
 import useRouter from '../hooks/useRouter'
 import StartNewMeetingMutation from '../mutations/StartNewMeetingMutation'
+import StartSprintPokerMutation from '../mutations/StartSprintPokerMutation'
 import {Breakpoint} from '../types/constEnums'
 import {MeetingTypeEnum} from '../types/graphql'
 import Icon from './Icon'
@@ -63,7 +64,11 @@ const NewMeetingActions = (props: Props) => {
   const onStartMeetingClick = () => {
     if (submitting) return
     submitMutation()
-    StartNewMeetingMutation(atmosphere, {teamId, meetingType}, {history, onError, onCompleted})
+    if (meetingType === 'poker') {
+      StartSprintPokerMutation(atmosphere, {teamId}, {history, onError, onCompleted})
+    } else {
+      StartNewMeetingMutation(atmosphere, {teamId, meetingType}, {history, onError, onCompleted})
+    }
   }
 
   return (

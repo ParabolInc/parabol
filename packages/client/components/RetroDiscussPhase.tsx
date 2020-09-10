@@ -25,7 +25,7 @@ import PhaseHeaderTitle from './PhaseHeaderTitle'
 import PhaseWrapper from './PhaseWrapper'
 import ReflectionGroup from './ReflectionGroup/ReflectionGroup'
 import {RetroMeetingPhaseProps} from './RetroMeeting'
-import StageTimerDisplay from './RetroReflectPhase/StageTimerDisplay'
+import StageTimerDisplay from './StageTimerDisplay'
 
 interface Props extends RetroMeetingPhaseProps {
   meeting: RetroDiscussPhase_meeting
@@ -187,12 +187,12 @@ const RetroDiscussPhase = (props: Props) => {
                   {isDesktop ? (
                     <DiscussPhaseReflectionGrid meeting={meeting} />
                   ) : (
-                    <ReflectionGroup
-                      meeting={meeting}
-                      phaseRef={phaseRef}
-                      reflectionGroup={reflectionGroup}
-                    />
-                  )}
+                      <ReflectionGroup
+                        meeting={meeting}
+                        phaseRef={phaseRef}
+                        reflectionGroup={reflectionGroup}
+                      />
+                    )}
                 </ColumnInner>
               </ReflectionColumn>
               <ThreadColumn isDesktop={isDesktop}>
@@ -217,6 +217,10 @@ graphql`
       reflectionGroup {
         ...ReflectionGroup_reflectionGroup
         id
+        commentors {
+          userId
+          preferredName
+        }
         title
         voteCount
         reflections {

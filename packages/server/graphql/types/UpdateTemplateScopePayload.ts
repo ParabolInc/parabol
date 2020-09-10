@@ -13,14 +13,14 @@ export const UpdateTemplateScopeSuccess = new GraphQLObjectType<any, GQLContext>
       description:
         'the template that was just updated, if downscoped, does not provide whole story',
       resolve: async ({templateId}, _args, {dataLoader}) => {
-        return dataLoader.get('reflectTemplates').load(templateId)
+        return dataLoader.get('meetingTemplates').load(templateId)
       }
     },
     clonedTemplate: {
       type: ReflectTemplate,
       description: 'if downscoping a previously used template, this will be the replacement',
       resolve: async ({clonedTemplateId}, _args, {dataLoader}) => {
-        return clonedTemplateId ? dataLoader.get('reflectTemplates').load(clonedTemplateId) : null
+        return clonedTemplateId ? dataLoader.get('meetingTemplates').load(clonedTemplateId) : null
       }
     },
     settings: {

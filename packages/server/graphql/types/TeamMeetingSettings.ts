@@ -1,9 +1,9 @@
 import {GraphQLID, GraphQLInterfaceType, GraphQLList, GraphQLNonNull} from 'graphql'
-import {ACTION, RETROSPECTIVE} from 'parabol-client/utils/constants'
 import {resolveTeam} from '../resolvers'
 import ActionMeetingSettings from './ActionMeetingSettings'
 import MeetingTypeEnum from './MeetingTypeEnum'
 import NewMeetingPhaseTypeEnum from './NewMeetingPhaseTypeEnum'
+import PokerMeetingSettings from './PokerMeetingSettings'
 import RetrospectiveMeetingSettings from './RetrospectiveMeetingSettings'
 import Team from './Team'
 
@@ -13,7 +13,7 @@ export const teamMeetingSettingsFields = () => ({
   },
   meetingType: {
     description: 'The type of meeting these settings apply to',
-    type: MeetingTypeEnum
+    type: GraphQLNonNull(MeetingTypeEnum)
   },
   phaseTypes: {
     description: 'The broad phase types that will be addressed during the meeting',
@@ -36,8 +36,9 @@ const TeamMeetingSettings = new GraphQLInterfaceType({
   fields: teamMeetingSettingsFields,
   resolveType: ({meetingType}) => {
     const resolveTypeLookup = {
-      [ACTION]: ActionMeetingSettings,
-      [RETROSPECTIVE]: RetrospectiveMeetingSettings
+      action: ActionMeetingSettings,
+      retrospective: RetrospectiveMeetingSettings,
+      poker: PokerMeetingSettings
     }
     return resolveTypeLookup[meetingType]
   }

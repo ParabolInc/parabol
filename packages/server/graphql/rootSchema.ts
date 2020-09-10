@@ -13,9 +13,11 @@ import AuthIdentityLocal from './types/AuthIdentityLocal'
 import CheckInPhase from './types/CheckInPhase'
 import Comment from './types/Comment'
 import DiscussPhase from './types/DiscussPhase'
+import EstimatePhase from './types/EstimatePhase'
 import GenericMeetingPhase from './types/GenericMeetingPhase'
 import NotificationTeamInvitation from './types/NotificationTeamInvitation'
 import NotifyPromoteToOrgLeader from './types/NotifyPromoteToOrgLeader'
+import PokerMeetingSettings from './types/PokerMeetingSettings'
 import ReflectPhase from './types/ReflectPhase'
 import RetroPhaseItem from './types/RetroPhaseItem'
 import RetrospectiveMeeting from './types/RetrospectiveMeeting'
@@ -33,15 +35,11 @@ import TaskIntegrationJira from './types/TaskIntegrationJira'
 import TimelineEventCompletedActionMeeting from './types/TimelineEventCompletedActionMeeting'
 import TimelineEventCompletedRetroMeeting from './types/TimelineEventCompletedRetroMeeting'
 import TimelineEventJoinedParabol from './types/TimelineEventJoinedParabol'
+import TimelineEventPokerComplete from './types/TimelineEventPokerComplete'
 import TimelineEventTeamCreated from './types/TimelineEventTeamCreated'
 import UpdatesPhase from './types/UpdatesPhase'
 
 if (module.hot) {
-  const acceptChildren = () => {
-    require.cache[module.id]!.hot.accept(acceptChildren)
-  }
-  // accepting here allows us to make errors in the schema childrem without requirimg a restart
-  module.hot.accept(acceptChildren)
   // every time this module gets loaded, see if it's different from it's previous version.
   if (!global.hmrSchema) {
     // relative to the build path
@@ -65,13 +63,16 @@ export default new GraphQLSchema({
     ReflectPhase,
     DiscussPhase,
     UpdatesPhase,
+    EstimatePhase,
     AgendaItemsPhase,
     GenericMeetingPhase,
+    EstimatePhase,
     NotificationTeamInvitation,
     NotifyPromoteToOrgLeader,
     RetroPhaseItem,
     ActionMeeting,
     ActionMeetingMember,
+    PokerMeetingSettings,
     RetrospectiveMeeting,
     RetrospectiveMeetingMember,
     RetrospectiveMeetingSettings,
@@ -84,6 +85,7 @@ export default new GraphQLSchema({
     TimelineEventJoinedParabol,
     TimelineEventCompletedRetroMeeting,
     TimelineEventCompletedActionMeeting,
+    TimelineEventPokerComplete,
     ActionMeetingSettings,
     TaskIntegrationGitHub,
     TaskIntegrationJira,

@@ -7,7 +7,6 @@ interface Input {
   email: string
   picture: string
   preferredName: string
-  checkInOrder: number
   teamId: string
   userId: string
   updatedAt?: Date
@@ -21,25 +20,13 @@ export default class TeamMember {
   email: string
   picture: string
   preferredName: string
-  checkInOrder: number
   teamId: string
   userId: string
   createdAt: Date
   updatedAt: Date
   constructor(input: Input) {
-    const {
-      checkInOrder,
-      teamId,
-      email,
-      hideAgenda,
-      isLead,
-      isNotRemoved,
-      picture,
-      preferredName,
-      userId
-    } = input
+    const {teamId, email, hideAgenda, isLead, isNotRemoved, picture, preferredName, userId} = input
     this.id = toTeamMemberId(teamId, userId)
-    this.checkInOrder = checkInOrder
     this.teamId = teamId
     this.email = email
     this.hideAgenda = hideAgenda || false

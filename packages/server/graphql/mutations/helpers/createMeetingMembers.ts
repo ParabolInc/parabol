@@ -2,6 +2,7 @@ import {MeetingTypeEnum} from 'parabol-client/types/graphql'
 import ActionMeetingMember from '../../../database/types/ActionMeetingMember'
 import Meeting from '../../../database/types/Meeting'
 import MeetingRetrospective from '../../../database/types/MeetingRetrospective'
+import PokerMeetingMember from '../../../database/types/PokerMeetingMember'
 import RetroMeetingMember from '../../../database/types/RetroMeetingMember'
 import TeamMember from '../../../database/types/TeamMember'
 
@@ -26,6 +27,17 @@ const createMeetingMembers = (meeting: Meeting, teamMembers: TeamMember[]) => {
             isCheckedIn
           })
       )
+    case MeetingTypeEnum.poker:
+      return teamMembers.map(({teamId, userId}) => {
+        return new PokerMeetingMember({
+          teamId,
+          userId,
+          meetingId: meeting.id,
+          isCheckedIn
+        })
+      })
+    default:
+      throw new Error('Invalid meeting type')
   }
 }
 

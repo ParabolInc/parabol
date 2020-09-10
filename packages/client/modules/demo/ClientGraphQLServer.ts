@@ -54,7 +54,10 @@ export type DemoReflection = Omit<
   isHumanTouched: boolean
 }
 
-export type DemoReflectionGroup = Omit<IRetroReflectionGroup, 'team' | 'reflections' | 'retroPhaseItemId' | 'phaseItem'> & {
+export type DemoReflectionGroup = Omit<
+  IRetroReflectionGroup,
+  'team' | 'reflections' | 'retroPhaseItemId' | 'phaseItem'
+> & {
   reflectionGroupId: string
   reflections: DemoReflection[]
 }
@@ -76,7 +79,7 @@ interface DemoEvents {
 }
 
 interface GQLDemoEmitter {
-  new(): StrictEventEmitter<EventEmitter, DemoEvents>
+  new (): StrictEventEmitter<EventEmitter, DemoEvents>
 }
 
 const makeReflectionGroupThread = () => ({
@@ -120,7 +123,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
   getUnlockedStages(stageIds: string[]) {
     const unlockedStages = [] as INewMeetingStage[]
     this.db.newMeeting.phases!.forEach((phase) => {
-      ; (phase.stages as any).forEach((stage) => {
+      ;(phase.stages as any).forEach((stage) => {
         if (stageIds.includes(stage.id)) {
           unlockedStages.push(stage)
         }
@@ -440,6 +443,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       const reflectionGroup = {
         __typename: 'RetroReflectionGroup',
         commentCount: 0,
+        commentors: null,
         id: reflectionGroupId,
         reflectionGroupId,
         smartTitle,
@@ -485,6 +489,27 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         this.emit(SubscriptionChannel.MEETING, data)
       }
       return {createReflection: data}
+    },
+    EditCommentingMutation: (
+      {
+        isCommenting,
+        meetingId,
+        threadId
+      }: {isCommenting: boolean; meetingId: string; threadId: string},
+      userId
+    ) => {
+      const commentor = this.db.users.find((user) => user.id === userId)
+      const data = {
+        isCommenting,
+        commentor,
+        meetingId,
+        threadId,
+        __typename: 'EditCommentingPayload'
+      }
+      if (userId !== demoViewerId) {
+        this.emit(SubscriptionChannel.MEETING, data)
+      }
+      return {editCommenting: data}
     },
     EditReflectionMutation: (
       {promptId, isEditing}: {promptId: string; isEditing: boolean},
@@ -535,10 +560,10 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       const remainingReflections = this.db.reflections.filter((reflection) => reflection.isActive)
       const unlockedStageIds = remainingReflections.length
         ? unlockAllStagesForPhase(
-          this.db.newMeeting.phases as any,
-          NewMeetingPhaseTypeEnum.group,
-          true
-        )
+            this.db.newMeeting.phases as any,
+            NewMeetingPhaseTypeEnum.group,
+            true
+          )
         : []
 
       const unlockedStages = this.getUnlockedStages(unlockedStageIds)

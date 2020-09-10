@@ -167,10 +167,9 @@ export default createFragmentContainer(NewMeetingAvatarGroup, {
       id
       team {
         id
-        teamMembers(sortBy: "checkInOrder") {
+        teamMembers {
           ...AddTeamMemberAvatarButton_teamMembers
           id
-          checkInOrder
           user {
             isConnected
             lastSeenAt

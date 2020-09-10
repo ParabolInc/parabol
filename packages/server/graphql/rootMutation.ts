@@ -34,11 +34,14 @@ import dismissNewFeature from './mutations/dismissNewFeature'
 import dismissSuggestedAction from './mutations/dismissSuggestedAction'
 import downgradeToPersonal from './mutations/downgradeToPersonal'
 import dragDiscussionTopic from './mutations/dragDiscussionTopic'
+import dragEstimatingTask from './mutations/dragEstimatingTask'
+import editCommenting from './mutations/editCommenting'
 import editReflection from './mutations/editReflection'
 import editTask from './mutations/editTask'
 import emailPasswordReset from './mutations/emailPasswordReset'
 import endDraggingReflection from './mutations/endDraggingReflection'
 import endNewMeeting from './mutations/endNewMeeting'
+import endSprintPoker from './mutations/endSprintPoker'
 import flagReadyToAdvance from './mutations/flagReadyToAdvance'
 import inactivateUser from './mutations/inactivateUser'
 import invalidateSessions from './mutations/invalidateSessions'
@@ -80,6 +83,7 @@ import setStageTimer from './mutations/setStageTimer'
 import signUpWithPassword from './mutations/signUpWithPassword'
 import startDraggingReflection from './mutations/startDraggingReflection'
 import startNewMeeting from './mutations/startNewMeeting'
+import startSprintPoker from './mutations/startSprintPoker'
 import toggleAgendaList from './mutations/toggleAgendaList'
 import updateAgendaItem from './mutations/updateAgendaItem'
 import updateCommentContent from './mutations/updateCommentContent'
@@ -139,10 +143,13 @@ export default new GraphQLObjectType<any, Context, any>({
     dismissSuggestedAction,
     downgradeToPersonal,
     dragDiscussionTopic,
+    dragEstimatingTask,
     emailPasswordReset,
-    endDraggingReflection,
+    editCommenting,
+    endSprintPoker,
     editReflection,
     editTask,
+    endDraggingReflection,
     endNewMeeting,
     flagReadyToAdvance,
     inactivateUser,
@@ -184,6 +191,7 @@ export default new GraphQLObjectType<any, Context, any>({
     signUpWithPassword,
     startDraggingReflection,
     startNewMeeting,
+    startSprintPoker,
     toggleAgendaList,
     updateAgendaItem,
     updateCommentContent,

@@ -90,7 +90,7 @@ export default {
 
       return {
         ...data,
-        authToken: encodeAuthToken(new AuthToken({tms, sub: viewerId}))
+        authToken: encodeAuthToken(new AuthToken({tms, sub: viewerId, rol: authToken.rol}))
       }
     }
   )

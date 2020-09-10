@@ -143,6 +143,7 @@ const AgendaItem = (props: Props) => {
   }
 
   const handleRemove = () => {
+    console.log('REmove!', agendaItemId)
     RemoveAgendaItemMutation(atmosphere, {agendaItemId})
   }
 

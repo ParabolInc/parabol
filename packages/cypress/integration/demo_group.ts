@@ -1,3 +1,5 @@
+import click from '../support/commands'
+
 function addReflection(column, text) {
   cy.get(`[data-cy=add-reflection-${column}]`).click()
 

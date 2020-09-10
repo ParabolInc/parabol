@@ -30,6 +30,7 @@ const contactKeys = {
   isPatientZero: 'is_patient_zero',
   isRemoved: 'is_user_removed',
   id: 'parabol_id',
+  payLaterClickCount: 'pay_later_click_count',
   preferredName: 'parabol_preferred_name',
   tier: 'highest_tier'
 }
@@ -217,6 +218,8 @@ query ArchiveTeam($userId: ID!) {
 
 const tierChanges = ['Upgrade to Pro', 'Enterprise invoice drafted', 'Downgrade to personal']
 
+const sleep = async (ms) => new Promise((resolve) => setTimeout(resolve, ms))
+
 const parabolFetch = async (
   query,
   variables,
@@ -322,7 +325,13 @@ const updateHubspotCompany = async (
   if (!propertiesObj || Object.keys(propertiesObj).length === 0) return
   const url = `https://api.hubapi.com/contacts/v1/contact/email/${email}/profile?hapikey=${hapiKey}&property=associatedcompanyid&property_mode=value_only&formSubmissionMode=none&showListMemberships=false`
   const contactRes = await fetch(url)
-  if (!String(contactRes.status).startsWith('2')) {
+  const contactStatus = String(contactRes.status)
+  if (contactStatus === '404') {
+    // the contact wasn't created yet, try again in a second
+    await sleep(2000)
+    updateHubspotCompany(email, hapiKey, propertiesObj)
+    return
+  } else if (!contactStatus.startsWith('2')) {
     throw new Error(`${contactRes.status}: ${email}`)
   }
   const contactResJSON = await contactRes.json()
@@ -337,7 +346,7 @@ const updateHubspotCompany = async (
   if (!companyId) {
     console.log({contact: JSON.stringify(contactResJSON)})
     // force a timeout so segment retries this once hubspot associates a record
-    await new Promise((resolve) => setTimeout(resolve, 100000))
+    await sleep(10000)
   }
   const companyRes = await fetch(
     `https://api.hubapi.com/companies/v2/companies/${companyId}?hapikey=${hapiKey}`,
@@ -398,7 +407,7 @@ async function onTrack(payload, settings) {
     const {hubspotKey} = settings
     await upsertHubspotContact(email, hubspotKey, contact)
     // wait for hubspot to associate the contact with the company, fn must run in 5 seconds
-    await new Promise((resolve) => setTimeout(resolve, 2000))
+    await sleep(2000)
     await updateHubspotCompany(email, hubspotKey, company)
   } else if (tierChanges.includes(event)) {
     const {email} = properties
