@@ -35,8 +35,9 @@ export default {
         .append(socketId)
     })
     await db.write('User', userId, reqlUpdater)
-
-    const {inactive, connectedSockets, tms} = user
+    const {inactive, tms} = user
+    const connectedSockets = user.connectedSockets || []
+    connectedSockets.push(socketId)
 
     // no need to wait for this, it's just for billing
     if (inactive) {
@@ -49,7 +50,7 @@ export default {
       // TODO: re-identify
     }
 
-    if (connectedSockets.length === 0) {
+    if (connectedSockets.length === 1) {
       const operationId = dataLoader.share()
       const subOptions = {mutatorId: socketId, operationId}
       const listeningUserIds = (await r
