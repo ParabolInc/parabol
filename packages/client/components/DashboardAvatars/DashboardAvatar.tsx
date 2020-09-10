@@ -52,7 +52,6 @@ const DashboardAvatar = (props: Props) => {
     throw new Error(`User Avatar unavailable. ${JSON.stringify(teamMember)}`)
   }
   const {isConnected} = user
-  console.log('DashboardAvatar -> isConnected', isConnected)
   const {togglePortal, originRef, menuProps, menuPortal} = useMenu(MenuPosition.UPPER_RIGHT)
   const {
     closePortal: closePromote,

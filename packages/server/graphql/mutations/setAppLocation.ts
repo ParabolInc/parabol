@@ -52,13 +52,11 @@ export default {
       parsedConnectedSocket.lastSeenAtURL = location
       await redis.lrem(`presence:${viewerId}`, 0, connectedSocket)
       await redis.rpush(`presence:${viewerId}`, JSON.stringify(parsedConnectedSocket))
-
       const meetingId = lastSeenAtURL?.includes('/meet/')
         ? lastSeenAtURL.slice(6)
         : location?.includes('/meet/')
         ? location.slice(6)
         : null
-
       if (meetingId) {
         publish(SubscriptionChannel.MEETING, meetingId, 'SetAppLocationSuccess', data, subOptions)
       }
