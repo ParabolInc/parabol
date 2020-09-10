@@ -1,4 +1,4 @@
-import {GraphQLID, GraphQLInt, GraphQLInterfaceType, GraphQLNonNull, GraphQLBoolean} from 'graphql'
+import {GraphQLBoolean, GraphQLID, GraphQLInt, GraphQLInterfaceType, GraphQLNonNull} from 'graphql'
 import connectionDefinitions from '../connectionDefinitions'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import Organization from './Organization'

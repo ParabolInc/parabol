@@ -13,8 +13,8 @@ import PhaseHeaderDescription from './PhaseHeaderDescription'
 import PhaseHeaderTitle from './PhaseHeaderTitle'
 import PhaseWrapper from './PhaseWrapper'
 import {RetroMeetingPhaseProps} from './RetroMeeting'
-import StageTimerDisplay from './RetroReflectPhase/StageTimerDisplay'
 import RetroVoteMetaHeader from './RetroVoteMetaHeader'
+import StageTimerDisplay from './StageTimerDisplay'
 
 interface Props extends RetroMeetingPhaseProps {
   meeting: RetroVotePhase_meeting

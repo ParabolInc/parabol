@@ -8,6 +8,7 @@ import useMutationProps from '../hooks/useMutationProps'
 import useRouter from '../hooks/useRouter'
 import useTooltip from '../hooks/useTooltip'
 import EndNewMeetingMutation from '../mutations/EndNewMeetingMutation'
+import EndSprintPokerMutation from '../mutations/EndSprintPokerMutation'
 import {ElementWidth, Times} from '../types/constEnums'
 import isDemoRoute from '../utils/isDemoRoute'
 import BottomNavControl from './BottomNavControl'
@@ -24,6 +25,7 @@ interface Props {
   isConfirming: boolean
   setConfirmingButton: (button: string) => void
   meetingId: string
+  meetingType: string
   isEnded: boolean
   status: TransitionStatus
   onTransitionEnd: () => void
@@ -39,6 +41,7 @@ const EndMeetingButton = forwardRef((props: Props, ref: Ref<HTMLButtonElement>) 
     isConfirming,
     setConfirmingButton,
     isEnded,
+    meetingType,
     meetingId,
     status,
     onTransitionEnd
@@ -58,7 +61,11 @@ const EndMeetingButton = forwardRef((props: Props, ref: Ref<HTMLButtonElement>) 
     if (isConfirming) {
       setConfirmingButton('')
       submitMutation()
-      EndNewMeetingMutation(atmosphere, {meetingId}, {history, onError, onCompleted})
+      if (meetingType === 'poker') {
+        EndSprintPokerMutation(atmosphere, {meetingId}, {history, onError, onCompleted})
+      } else {
+        EndNewMeetingMutation(atmosphere, {meetingId}, {history, onError, onCompleted})
+      }
     } else {
       setConfirmingButton('end')
       setTimeout(openTooltip)

@@ -150,6 +150,10 @@ const RetrospectiveMeeting = new GraphQLObjectType<any, GQLContext>({
     teamId: {
       type: GraphQLNonNull(GraphQLID)
     },
+    templateId: {
+      type: GraphQLNonNull(GraphQLID),
+      description: 'The ID of the template used for the meeting'
+    },
     topicCount: {
       type: GraphQLNonNull(GraphQLInt),
       description: 'The number of topics generated in the meeting',

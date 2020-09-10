@@ -19,13 +19,18 @@ const enableSAMLForDomain = {
     const r = await getRethink()
     const normalizedDomain = domain.toLowerCase()
     const normalizedUrl = url.toLowerCase()
+
     await r
       .table('SAML')
-      .insert({
-        domain: normalizedDomain,
-        url: normalizedUrl,
-        metadata: metadata
-      })
+      .insert(
+        {
+          id: normalizedDomain,
+          domain: normalizedDomain,
+          url: normalizedUrl,
+          metadata: metadata
+        },
+        {conflict: 'replace'}
+      )
       .run()
 
     return true

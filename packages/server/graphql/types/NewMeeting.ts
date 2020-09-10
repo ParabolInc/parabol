@@ -7,20 +7,20 @@ import {
   GraphQLNonNull,
   GraphQLString
 } from 'graphql'
-import {GQLContext} from '../graphql'
-import ActionMeeting from './ActionMeeting'
-import GraphQLISO8601Type from './GraphQLISO8601Type'
-import {resolveTeam} from '../resolvers'
-import RetrospectiveMeeting from './RetrospectiveMeeting'
-import Team from './Team'
-import NewMeetingPhase from './NewMeetingPhase'
-import MeetingTypeEnum from './MeetingTypeEnum'
-import {ACTION, RETROSPECTIVE} from 'parabol-client/utils/constants'
-import MeetingMember from './MeetingMember'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import {getUserId} from '../../utils/authorization'
-import TeamMember from './TeamMember'
+import {GQLContext} from '../graphql'
+import {resolveTeam} from '../resolvers'
+import ActionMeeting from './ActionMeeting'
+import GraphQLISO8601Type from './GraphQLISO8601Type'
+import MeetingMember from './MeetingMember'
+import MeetingTypeEnum from './MeetingTypeEnum'
+import NewMeetingPhase from './NewMeetingPhase'
 import Organization from './Organization'
+import PokerMeeting from './PokerMeeting'
+import RetrospectiveMeeting from './RetrospectiveMeeting'
+import Team from './Team'
+import TeamMember from './TeamMember'
 
 export const newMeetingFields = () => ({
   id: {
@@ -132,8 +132,9 @@ const NewMeeting = new GraphQLInterfaceType({
   fields: newMeetingFields,
   resolveType: ({meetingType}) => {
     const resolveTypeLookup = {
-      [RETROSPECTIVE]: RetrospectiveMeeting,
-      [ACTION]: ActionMeeting
+      retrospective: RetrospectiveMeeting,
+      action: ActionMeeting,
+      poker: PokerMeeting
     }
     return resolveTypeLookup[meetingType]
   }

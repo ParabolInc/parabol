@@ -3,6 +3,7 @@ import {resolveTeam} from '../resolvers'
 import ActionMeetingSettings from './ActionMeetingSettings'
 import MeetingTypeEnum from './MeetingTypeEnum'
 import NewMeetingPhaseTypeEnum from './NewMeetingPhaseTypeEnum'
+import PokerMeetingSettings from './PokerMeetingSettings'
 import RetrospectiveMeetingSettings from './RetrospectiveMeetingSettings'
 import Team from './Team'
 
@@ -37,7 +38,7 @@ const TeamMeetingSettings = new GraphQLInterfaceType({
     const resolveTypeLookup = {
       action: ActionMeetingSettings,
       retrospective: RetrospectiveMeetingSettings,
-      poker: RetrospectiveMeetingSettings
+      poker: PokerMeetingSettings
     }
     return resolveTypeLookup[meetingType]
   }

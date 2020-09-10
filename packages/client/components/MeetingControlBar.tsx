@@ -165,6 +165,7 @@ const MeetingControlBar = (props: Props) => {
                   isConfirming={confirmingButton === 'end'}
                   setConfirmingButton={setConfirmingButton}
                   meetingId={meetingId}
+                  meetingType={meetingType}
                   isEnded={!!endedAt}
                 />
               )

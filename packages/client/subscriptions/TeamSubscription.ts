@@ -14,6 +14,7 @@ import {addTeamTeamUpdater} from '../mutations/AddTeamMutation'
 import {archiveTeamTeamOnNext, archiveTeamTeamUpdater} from '../mutations/ArchiveTeamMutation'
 import {denyPushInvitationTeamOnNext} from '../mutations/DenyPushInvitationMutation'
 import {endNewMeetingTeamOnNext, endNewMeetingTeamUpdater} from '../mutations/EndNewMeetingMutation'
+import {endSprintPokerTeamOnNext, endSprintPokerTeamUpdater} from '../mutations/EndSprintPokerMutation'
 import {moveReflectTemplatePromptTeamUpdater} from '../mutations/MoveReflectTemplatePromptMutation'
 import {pushInvitationTeamOnNext} from '../mutations/PushInvitationMutation'
 import {removeAgendaItemUpdater} from '../mutations/RemoveAgendaItemMutation'
@@ -38,6 +39,7 @@ const subscription = graphql`
       ...ArchiveTeamMutation_team @relay(mask: false)
       ...DenyPushInvitationMutation_team @relay(mask: false)
       ...EndNewMeetingMutation_team @relay(mask: false)
+      ...EndSprintPokerMutation_team @relay(mask: false)
       ...MoveReflectTemplatePromptMutation_team @relay(mask: false)
       ...NavigateMeetingMutation_team @relay(mask: false)
       ...PromoteToTeamLeadMutation_team @relay(mask: false)
@@ -69,6 +71,7 @@ const onNextHandlers = {
   ArchiveTeamPayload: archiveTeamTeamOnNext,
   DenyPushInvitationPayload: denyPushInvitationTeamOnNext,
   EndNewMeetingPayload: endNewMeetingTeamOnNext,
+  EndSprintPokerSuccess: endSprintPokerTeamOnNext,
   RemoveOrgUserPayload: removeOrgUserTeamOnNext,
   RemoveTeamMemberPayload: removeTeamMemberTeamOnNext,
   PushInvitationPayload: pushInvitationTeamOnNext
@@ -84,6 +87,7 @@ const updateHandlers = {
   AddTeamMutationPayload: addTeamTeamUpdater,
   ArchiveTeamPayload: archiveTeamTeamUpdater,
   EndNewMeetingPayload: endNewMeetingTeamUpdater,
+  EndSprintPokerSuccess: endSprintPokerTeamUpdater,
   MoveReflectTemplatePromptPayload: moveReflectTemplatePromptTeamUpdater,
   NavigateMeetingPayload: navigateMeetingTeamUpdater,
   RemoveOrgUserPayload: removeOrgUserTeamUpdater,

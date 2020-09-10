@@ -12,6 +12,12 @@ extend type ActionMeeting {
   showSidebar: Boolean!
 }
 
+extend type PokerMeeting {
+  localPhase: NewMeetingPhase!
+  localStage: NewMeetingStage!
+  showSidebar: Boolean!
+}
+
 extend type RetrospectiveMeeting {
   isAnonymousComment: Boolean
   isViewerDragInProgress: Boolean
