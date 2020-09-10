@@ -5,7 +5,23 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 5.17.0 2020-Sep-10
+
+## Added
+
+- Production Dockerfile (#4103)
+
+## Fixed
+
+-
+
+## Changed
+
+- Make enableSAMLForDomain an upsert (#4087)
+- Set Google Analytics clientId to Segment anonymous ID (#4117)
+
 ## 5.16.0 2020-Aug-28
+
 ### Added
 
 - Show who is commenting (#4050)
