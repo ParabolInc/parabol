@@ -7,6 +7,7 @@ import {ScopePhaseArea_meeting} from '~/__generated__/ScopePhaseArea_meeting.gra
 import {Elevation} from '../styles/elevation'
 import {PALETTE} from '../styles/paletteV2'
 import Icon from './Icon'
+import JiraSVG from './JiraSVG'
 import ScopePhaseAreaAddJira from './ScopePhaseAreaAddJira'
 import Tab from './Tab/Tab'
 import Tabs from './Tabs/Tabs'
@@ -36,13 +37,13 @@ const FullTab = styled(Tab)({
 })
 
 const TabIcon = styled(Icon)({
-  marginRight: 4
 })
 
 const TabLabel = styled('div')({
   display: 'flex',
   justifyContent: 'center',
-  alignItems: 'center'
+  alignItems: 'center',
+  whiteSpace: 'pre-wrap',
 })
 
 const TabContents = styled('div')({
@@ -75,7 +76,7 @@ const ScopePhaseArea = (props: Props) => {
         <FullTab
           label={
             <TabLabel>
-              <TabIcon>{'add'}</TabIcon> Jira Project
+              <JiraSVG />  Jira
             </TabLabel>
           }
           onClick={gotoAddJira}
@@ -83,7 +84,7 @@ const ScopePhaseArea = (props: Props) => {
         <FullTab
           label={
             <TabLabel>
-              <TabIcon>{'public'}</TabIcon> Parabol
+              <TabIcon>{'public'}</TabIcon>  Parabol
             </TabLabel>
           }
           onClick={gotoParabol}
