@@ -76,12 +76,12 @@ export default createFragmentContainer(TimelineEventCompletedActionMeeting, {
       type
       meeting {
         id
+        agendaItemCount
+        commentCount
         createdAt
         endedAt
         name
         taskCount
-        commentCount
-        agendaItemCount
       }
       team {
         id

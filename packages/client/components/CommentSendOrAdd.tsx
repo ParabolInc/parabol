@@ -95,7 +95,7 @@ const CommentSendOrAdd = (props: Props) => {
     onSubmit,
     dataCy
   } = props
-  const {endedAt, id: meetingId, teamId} = meeting
+  const {id: meetingId, teamId} = meeting
   const atmosphere = useAtmosphere()
   if (commentSubmitState === 'send') {
     return (
@@ -126,7 +126,7 @@ const CommentSendOrAdd = (props: Props) => {
   const isExpanded = commentSubmitState === 'addExpanded'
   return (
     <ButtonGroup data-cy={`${dataCy}-add`}>
-      <AddButton disabled={!!endedAt} onClick={addTask}>
+      <AddButton onClick={addTask}>
         <AddIcon isExpanded={isExpanded}>playlist_add_check</AddIcon>
         <ExpandedLabel isExpanded={isExpanded}>Add a Task</ExpandedLabel>
       </AddButton>
@@ -138,7 +138,6 @@ export default createFragmentContainer(CommentSendOrAdd, {
   meeting: graphql`
     fragment CommentSendOrAdd_meeting on NewMeeting {
       id
-      endedAt
       teamId
     }
   `

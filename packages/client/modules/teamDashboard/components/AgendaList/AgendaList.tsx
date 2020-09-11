@@ -3,10 +3,8 @@ import React, {useMemo} from 'react'
 import {DragDropContext, Draggable, Droppable} from 'react-beautiful-dnd'
 import {createFragmentContainer} from 'react-relay'
 import {AgendaList_meeting} from '~/__generated__/AgendaList_meeting.graphql'
-
 // import SexyScrollbar from 'universal/components/Dashboard/SexyScrollbar'
 import styled from '@emotion/styled'
-
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useEventCallback from '../../../../hooks/useEventCallback'
 import useGotoStageId from '../../../../hooks/useGotoStageId'
@@ -47,7 +45,6 @@ const AgendaList = (props: Props) => {
   const meetingId = meeting?.id
   const endedAt = meeting?.endedAt
   const filteredAgendaItems = useMemo(() => {
-    if (!agendaItems) return null
     return dashSearch
       ? agendaItems.filter(({content}) => content && content.match(dashSearch))
       : agendaItems.filter(({content}) => content)

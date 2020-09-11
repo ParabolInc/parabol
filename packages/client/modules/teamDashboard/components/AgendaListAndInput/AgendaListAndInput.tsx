@@ -2,9 +2,7 @@ import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {AgendaListAndInput_meeting} from '~/__generated__/AgendaListAndInput_meeting.graphql'
-
 import styled from '@emotion/styled'
-
 import {AgendaListAndInput_team} from '../../../../__generated__/AgendaListAndInput_team.graphql'
 import useGotoStageId from '../../../../hooks/useGotoStageId'
 import AgendaInput from '../AgendaInput/AgendaInput'
@@ -51,16 +49,18 @@ const getAgendaItems = (meeting: AgendaListAndInput_meeting | null) => {
 const AgendaListAndInput = (props: Props) => {
   const {dashSearch, gotoStageId, isDisabled, team, meeting} = props
   const endedAt = meeting?.endedAt
-  const agendaItems = getAgendaItems(meeting) || team.agendaItems
+  const agendaItems = endedAt ? getAgendaItems(meeting) : team.agendaItems
 
   return (
     <RootStyles disabled={!!isDisabled} isMeeting={!!meeting}>
-      <AgendaList
-        agendaItems={agendaItems}
-        dashSearch={dashSearch}
-        gotoStageId={gotoStageId}
-        meeting={meeting}
-      />
+      {agendaItems && (
+        <AgendaList
+          agendaItems={agendaItems}
+          dashSearch={dashSearch}
+          gotoStageId={gotoStageId}
+          meeting={meeting}
+        />
+      )}
       {!endedAt && <StyledAgendaInput disabled={!!isDisabled} isMeeting={!!meeting} team={team} />}
     </RootStyles>
   )

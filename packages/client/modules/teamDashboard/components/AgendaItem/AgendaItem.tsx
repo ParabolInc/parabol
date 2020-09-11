@@ -2,9 +2,7 @@ import graphql from 'babel-plugin-relay/macro'
 import React, {useEffect, useRef, useState} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {AgendaItem_meeting} from '~/__generated__/AgendaItem_meeting.graphql'
-
 import styled from '@emotion/styled'
-
 import {AgendaItem_agendaItem} from '../../../../__generated__/AgendaItem_agendaItem.graphql'
 import Avatar from '../../../../components/Avatar/Avatar'
 import IconButton from '../../../../components/IconButton'
@@ -143,7 +141,6 @@ const AgendaItem = (props: Props) => {
   }
 
   const handleRemove = () => {
-    console.log('REmove!', agendaItemId)
     RemoveAgendaItemMutation(atmosphere, {agendaItemId})
   }
 
@@ -197,12 +194,12 @@ graphql`
   fragment AgendaItemPhase on AgendaItemsPhase {
     stages {
       id
-      isComplete
-      isNavigable
-      isNavigableByFacilitator
       agendaItem {
         id
       }
+      isComplete
+      isNavigable
+      isNavigableByFacilitator
     }
   }
 `
@@ -221,13 +218,13 @@ export default createFragmentContainer(AgendaItem, {
     fragment AgendaItem_meeting on ActionMeeting {
       id
       endedAt
-      localStage {
-        id
-      }
       facilitatorStageId
       facilitatorUserId
       localPhase {
         ...AgendaItemPhase @relay(mask: false)
+      }
+      localStage {
+        id
       }
     }
   `

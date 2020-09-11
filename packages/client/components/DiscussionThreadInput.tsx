@@ -35,13 +35,10 @@ const Wrapper = styled('div')<{isReply: boolean; isDisabled: boolean}>(({isDisab
   zIndex: 0
 }))
 
-const CommentAvatar = styled(Avatar)<{isEndedMeeting: boolean}>(({isEndedMeeting}) => ({
+const CommentAvatar = styled(Avatar)({
   margin: 8,
-  transition: 'all 150ms',
-  '&:hover': {
-    cursor: isEndedMeeting ? 'default' : 'pointer'
-  }
-}))
+  transition: 'all 150ms'
+})
 
 interface Props {
   editorRef: RefObject<HTMLTextAreaElement>
@@ -71,14 +68,7 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
   } = props
   const isReply = !!props.isReply
   const isDisabled = !!props.isDisabled
-  const {
-    id: meetingId,
-    endedAt,
-    isAnonymousComment,
-    teamId,
-    viewerMeetingMember,
-    meetingType
-  } = meeting
+  const {id: meetingId, isAnonymousComment, teamId, viewerMeetingMember, meetingType} = meeting
   const {user} = viewerMeetingMember
   const {picture} = user
   const [editorState, setEditorState] = useReplyEditorState(replyMention, setReplyMention)
@@ -115,7 +105,6 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
   }, [lastTypedTimestamp])
 
   const toggleAnonymous = () => {
-    if (endedAt) return
     commitLocalUpdate(atmosphere, (store) => {
       const meeting = store.get(meetingId)
       if (!meeting) return
@@ -204,12 +193,7 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
   const avatar = isAnonymousComment ? anonymousAvatar : picture
   return (
     <Wrapper data-cy={`${dataCy}-wrapper`} ref={ref} isReply={isReply} isDisabled={isDisabled}>
-      <CommentAvatar
-        isEndedMeeting={!!endedAt}
-        size={32}
-        picture={avatar}
-        onClick={toggleAnonymous}
-      />
+      <CommentAvatar size={32} picture={avatar} onClick={toggleAnonymous} />
       <CommentEditor
         dataCy={`${dataCy}`}
         editorRef={editorRef}
@@ -217,7 +201,6 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
         ensureCommenting={ensureCommenting}
         onBlur={ensureNotCommenting}
         onSubmit={onSubmit}
-        readOnly={!!endedAt}
         placeholder={placeholder}
         setEditorState={setEditorState}
         teamId={teamId}
@@ -242,7 +225,6 @@ export default createFragmentContainer(DiscussionThreadInput, {
     fragment DiscussionThreadInput_meeting on NewMeeting {
       ...CommentSendOrAdd_meeting
       id
-      endedAt
       teamId
       meetingType
       isAnonymousComment

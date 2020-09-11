@@ -30,16 +30,18 @@ const Wrapper = styled('div')<{isExpanded: boolean}>(({isExpanded}) => ({
 
 interface Props {
   meetingContentRef: RefObject<HTMLDivElement>
+  threadSourceId: string
   viewer: DiscussionThread_viewer
 }
 
 const DiscussionThread = (props: Props) => {
-  const {meetingContentRef, viewer} = props
+  const {meetingContentRef, threadSourceId, viewer} = props
   const meeting = viewer.meeting!
   const {endedAt, replyingToCommentId, threadSource} = meeting
-  const {commentors, thread} = threadSource!
-  const threadSourceId = threadSource!.id!
-  const preferredNames = commentors && commentors.map((commentor) => commentor.preferredName)
+  const thread = threadSource?.thread
+  const commentors = threadSource?.commentors
+  const preferredNames =
+    (commentors && commentors.map((commentor) => commentor.preferredName)) || null
   const edges = thread?.edges ?? [] // should never happen, but Terry reported it in demo. likely relay error
   const threadables = edges.map(({node}) => node)
   const getMaxSortOrder = () => {
