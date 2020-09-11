@@ -42,7 +42,7 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            yarn --frozen-lockfile
+            MEDIASOUP_MAX_CORES=8 yarn --frozen-lockfile
       - save_cache:
           key: yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}
           paths:
