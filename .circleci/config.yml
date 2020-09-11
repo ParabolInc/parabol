@@ -2,7 +2,7 @@ version: 2.0
 jobs:
   build:
     docker:
-      - image: circleci/node:14.10.1
+      - image: circleci/node:14.10
       - image: rethinkdb:2.3.6
       - image: redis:3.2.8
       - image: cypress/base:10
