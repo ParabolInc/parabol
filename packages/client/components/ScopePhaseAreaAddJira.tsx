@@ -62,13 +62,11 @@ const ScopePhaseAreaAddJira = (props: Props) => {
 export default createFragmentContainer(ScopePhaseAreaAddJira, {
   meeting: graphql`
     fragment ScopePhaseAreaAddJira_meeting on PokerMeeting {
-      id
       teamId
       viewerMeetingMember {
         teamMember {
           atlassianAuth {
             isActive
-            accessToken
           }
         }
       }

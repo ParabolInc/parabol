@@ -8,7 +8,7 @@ import {Elevation} from '../styles/elevation'
 import {PALETTE} from '../styles/paletteV2'
 import Icon from './Icon'
 import JiraSVG from './JiraSVG'
-import ScopePhaseAreaAddJira from './ScopePhaseAreaAddJira'
+import ScopePhaseAreaJira from './ScopePhaseAreaJira'
 import Tab from './Tab/Tab'
 import Tabs from './Tabs/Tabs'
 
@@ -43,6 +43,7 @@ const TabLabel = styled('div')({
   display: 'flex',
   justifyContent: 'center',
   alignItems: 'center',
+  minWidth: 80,
   whiteSpace: 'pre-wrap',
 })
 
@@ -98,7 +99,7 @@ const ScopePhaseArea = (props: Props) => {
         style={innerStyle}
       >
         <TabContents>
-          <ScopePhaseAreaAddJira gotoParabol={gotoParabol} meeting={meeting} />
+          <ScopePhaseAreaJira gotoParabol={gotoParabol} meeting={meeting} />
         </TabContents>
         <TabContents>
         </TabContents>
@@ -118,7 +119,7 @@ export default createFragmentContainer(ScopePhaseArea, {
     fragment ScopePhaseArea_meeting on PokerMeeting {
       ...StageTimerDisplay_meeting
       ...StageTimerControl_meeting
-      ...ScopePhaseAreaAddJira_meeting
+      ...ScopePhaseAreaJira_meeting
       endedAt
       localPhase {
         ...ScopePhaseArea_phase @relay(mask: false)
