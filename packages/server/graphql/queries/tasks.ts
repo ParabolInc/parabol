@@ -45,9 +45,9 @@ export default {
       description: 'the datetime cursor'
     },
     userIds: {
-      type: GraphQLList(GraphQLNonNull(GraphQLID)),
+      type: GraphQLList(GraphQLID),
       description:
-        'a list of user Ids that you want tasks for. if null, will return tasks for all possible team members'
+        'a list of user Ids that you want tasks for. if null, will return tasks for all possible team members. An id is null if it is not assigned to anyone.'
     },
     teamIds: {
       type: GraphQLList(GraphQLNonNull(GraphQLID)),
@@ -67,6 +67,7 @@ export default {
   ) {
     // AUTH
     const viewerId = getUserId(authToken)
+    console.log('QUERY viewerId', viewerId)
 
     // VALIDATE
     if (teamIds?.length > 100 || userIds?.length > 100) {
@@ -88,7 +89,9 @@ export default {
     // under no condition should it show tasks for archived teams
 
     const validTeamIds = getValidTeamIds(teamIds, authToken.tms)
+    console.log('QUERY validTeamIds', validTeamIds)
     const validUserIds = await getValidUserIds(userIds, viewerId, validTeamIds, dataLoader)
+    console.log('QUERY validUserIds', validUserIds)
 
     // RESOLUTION
     const tasks = await dataLoader.get('userTasks').load({
@@ -98,11 +101,13 @@ export default {
       teamIds: validTeamIds,
       archived: archived
     })
+    console.log('QUERY tasks', tasks)
 
     const filteredTasks = tasks.filter((task) => {
       if (isTaskPrivate(task.tags) && task.userId !== viewerId) return false
       return true
     })
+    console.log('QUERY filteredTasks', filteredTasks)
     return connectionFromTasks(filteredTasks)
   }
 }

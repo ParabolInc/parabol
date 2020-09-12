@@ -1,4 +1,11 @@
-import {GraphQLFloat, GraphQLID, GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
+import {
+  GraphQLFloat,
+  GraphQLID,
+  GraphQLList,
+  GraphQLNonNull,
+  GraphQLObjectType,
+  GraphQLString
+} from 'graphql'
 import {ThreadSourceEnum} from 'parabol-client/types/graphql'
 import connectionDefinitions from '../connectionDefinitions'
 import {GQLContext} from '../graphql'
@@ -83,14 +90,15 @@ const Task = new GraphQLObjectType<any, GQLContext, any>({
       }
     },
     userId: {
-      type: new GraphQLNonNull(GraphQLID),
+      type: GraphQLID,
       description:
-        '* The userId, index useful for server-side methods getting all tasks under a user'
+        '* The userId, index useful for server-side methods getting all tasks under a user. This can be null if the task is not assigned to anyone.'
     },
     user: {
-      type: GraphQLNonNull(require('./User').default),
-      description: 'The user the task is assigned to',
+      type: require('./User').default,
+      description: 'The user the task is assigned to. Null if it is not assigned to anyone.',
       resolve: ({userId}, _args, {dataLoader}) => {
+        if (!userId) return null
         return dataLoader.get('users').load(userId)
       }
     }

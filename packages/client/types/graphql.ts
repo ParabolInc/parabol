@@ -440,9 +440,10 @@ export interface ITasksOnUserArguments {
   after?: any | null;
 
   /**
-   * a list of user Ids that you want tasks for. if null, will return tasks for all possible team members
+   * a list of user Ids that you want tasks for. if null, will return tasks for
+   * all possible team members. An id is null if it is not assigned to anyone.
    */
-  userIds?: Array<string> | null;
+  userIds?: Array<string | null> | null;
 
   /**
    * a list of team Ids that you want tasks for. if null, will return tasks for all possible active teams
@@ -677,14 +678,15 @@ export interface ITask {
   team: ITeam;
 
   /**
-   * * The userId, index useful for server-side methods getting all tasks under a user
+   * * The userId, index useful for server-side methods getting all tasks under a
+   * user. This can be null if the task is not assigned to anyone.
    */
-  userId: string;
+  userId: string | null;
 
   /**
-   * The user the task is assigned to
+   * The user the task is assigned to. Null if it is not assigned to anyone.
    */
-  user: IUser;
+  user: IUser | null;
 }
 
 /**
@@ -5767,9 +5769,9 @@ export interface ICreateTaskInput {
   teamId: string;
 
   /**
-   * userId, the owner of the task
+   * userId, the owner of the task. This can be null if the task is not assigned to anyone.
    */
-  userId: string;
+  userId?: string | null;
 }
 
 /**
