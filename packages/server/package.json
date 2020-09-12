@@ -121,7 +121,7 @@
     "node-fetch": "^2.6.0",
     "nodemailer": "^6.4.6",
     "parabol-client": "^5.17.0",
-    "pm2": "^4.2.1",
+    "pm2": "^4.4.1",
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
     "rethinkdb-ts": "^2.4.0",
