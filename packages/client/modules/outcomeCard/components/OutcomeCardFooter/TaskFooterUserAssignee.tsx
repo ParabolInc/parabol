@@ -75,6 +75,15 @@ const TooltipToggle = styled('div')({
   display: 'inline-flex'
 })
 
+const UnassignedWrapper = styled('div')({
+  bottom: -1,
+  height: 28,
+  marginLeft: -2,
+  padding: 1,
+  position: 'relative',
+  width: 28
+})
+
 interface Props {
   area: string
   canAssign: boolean
@@ -92,6 +101,9 @@ const TaskFooterUserAssigneeMenuRoot = lazyPreload(() =>
 const TaskFooterUserAssignee = (props: Props) => {
   const {area, canAssign, cardIsActive, task, useTaskChild} = props
   const {user} = task
+  // if (!user) return null
+  const image = user ? user.picture || avatarUser : '?'
+  const preferredName = user?.preferredName || 'Unassigned'
   const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_LEFT)
   const {tooltipPortal, openTooltip, closeTooltip, originRef: tipRef} = useTooltip<HTMLDivElement>(
     MenuPosition.UPPER_CENTER
@@ -110,10 +122,14 @@ const TaskFooterUserAssignee = (props: Props) => {
           onMouseEnter={TaskFooterUserAssigneeMenuRoot.preload}
           ref={originRef}
         >
-          <Avatar cardIsActive={cardIsActive}>
-            <AvatarImage alt={user.preferredName} src={user.picture || avatarUser} />
-          </Avatar>
-          <AvatarLabel>{user.preferredName}</AvatarLabel>
+          {user ? (
+            <Avatar cardIsActive={cardIsActive}>
+              <AvatarImage alt={preferredName} src={image} />
+            </Avatar>
+          ) : (
+            <UnassignedWrapper>?</UnassignedWrapper>
+          )}
+          <AvatarLabel>{preferredName}</AvatarLabel>
         </AvatarButton>
       </TooltipToggle>
       {tooltipPortal(<div>{'Reassign Responsibility'}</div>)}
