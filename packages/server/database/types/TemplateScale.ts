@@ -6,7 +6,7 @@ export interface TemplateScaleInput {
   name: string
   values: TemplateScaleValue[]
   teamId: string
-  unit?: string
+  templateId: string
   createdAt?: Date
   updatedAt?: Date
   deletedAt?: Date
@@ -17,13 +17,13 @@ export default class TemplateScale {
   name: string
   values: TemplateScaleValue[]
   teamId: string
-  unit?: string
+  templateId: string
   createdAt: Date
   updatedAt: Date
   deletedAt?: Date
 
   constructor(input: TemplateScaleInput) {
-    const {id, name, values, teamId, createdAt, updatedAt, deletedAt, unit} = input
+    const {id, name, values, teamId, templateId, createdAt, updatedAt, deletedAt} = input
     const now = new Date()
     this.id = id || shortid.generate()
     this.createdAt = createdAt || now
@@ -32,6 +32,6 @@ export default class TemplateScale {
     this.name = name
     this.values = values
     this.teamId = teamId
-    this.unit = unit ?? undefined
+    this.templateId = templateId
   }
 }

@@ -1,0 +1,67 @@
+import {
+  GraphQLBoolean,
+  GraphQLID,
+  GraphQLList,
+  GraphQLNonNull,
+  GraphQLObjectType,
+  GraphQLString
+} from 'graphql'
+import {GQLContext} from '../graphql'
+import {resolveTeam} from '../resolvers'
+import GraphQLISO8601Type from './GraphQLISO8601Type'
+import PokerTemplate from './PokerTemplate'
+import Team from './Team'
+import TemplateScaleValue from './TemplateScaleValue'
+
+const TemplateScale = new GraphQLObjectType<any, GQLContext>({
+  name: 'TemplateScale',
+  description:
+    'A team-specific template scale.',
+  fields: () => ({
+    id: {
+      type: new GraphQLNonNull(GraphQLID),
+      description: 'shortid'
+    },
+    createdAt: {
+      type: new GraphQLNonNull(GraphQLISO8601Type)
+    },
+    isActive: {
+      type: GraphQLBoolean,
+      description: 'true if the scale is currently used by the team, else false'
+    },
+    teamId: {
+      type: new GraphQLNonNull(GraphQLID),
+      description: 'foreign key. use the team field'
+    },
+    team: {
+      type: Team,
+      description: 'The team that owns this template scale',
+      resolve: resolveTeam
+    },
+    updatedAt: {
+      type: new GraphQLNonNull(GraphQLISO8601Type)
+    },
+    templateId: {
+      type: new GraphQLNonNull(GraphQLID),
+      description: 'FK for template'
+    },
+    template: {
+      type: new GraphQLNonNull(PokerTemplate),
+      description: 'The template that this scale belongs to',
+      resolve: ({templateId}, _args, {dataLoader}) => {
+        return dataLoader.get('meetingTemplates').load(templateId)
+      }
+    },
+    name: {
+      type: new GraphQLNonNull(GraphQLString),
+      description:
+        'The title of the scale used in the template'
+    },
+    values: {
+      type: new GraphQLList(new GraphQLNonNull(TemplateScaleValue)),
+      description: 'The values used in this scale'
+    }
+  })
+})
+
+export default TemplateScale
