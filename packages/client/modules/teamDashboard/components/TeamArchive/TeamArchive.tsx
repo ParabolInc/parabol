@@ -96,13 +96,17 @@ const TeamArchive = (props: Props) => {
   const {hasMore, isLoading, loadMore} = relay
   const {teamMembers, teamMemberFilter} = team || {}
   const teamMemberFilterId = (teamMemberFilter && teamMemberFilter.id) || null
+  console.log('TeamArchive -> teamMemberFilterId', teamMemberFilterId)
   const {tasks: archivedTasks, dashSearch} = viewer
 
   const teamMemberFilteredTasks = useMemo(() => {
     const edges = teamMemberFilterId
       ? archivedTasks?.edges.filter((edge) => {
-        return toTeamMemberId(edge.node.teamId, edge.node.userId) === teamMemberFilterId
-      })
+          return (
+            edge.node.userId &&
+            toTeamMemberId(edge.node.teamId, edge.node.userId) === teamMemberFilterId
+          )
+        })
       : archivedTasks.edges
     return {...archivedTasks, edges: edges}
   }, [archivedTasks?.edges, teamMemberFilterId, teamMembers])
@@ -222,13 +226,12 @@ const TeamArchive = (props: Props) => {
 
   return (
     <Root>
-      {
-        returnToTeamId &&
+      {returnToTeamId && (
         <Header>
           <TeamArchiveHeader teamId={returnToTeamId} />
           <Border />
         </Header>
-      }
+      )}
       <Body>
         {edges.length ? (
           <CardGrid>
@@ -272,15 +275,15 @@ const TeamArchive = (props: Props) => {
             </InfiniteLoader>
           </CardGrid>
         ) : (
-            <EmptyMsg>
-              <span>
-                {'🤓'}
-                {' Hi there! There are zero archived tasks. '}
-                {'Nothing to see here. How about a fun rally video? '}
-                <LinkSpan>{getRallyLink()}!</LinkSpan>
-              </span>
-            </EmptyMsg>
-          )}
+          <EmptyMsg>
+            <span>
+              {'🤓'}
+              {' Hi there! There are zero archived tasks. '}
+              {'Nothing to see here. How about a fun rally video? '}
+              <LinkSpan>{getRallyLink()}!</LinkSpan>
+            </span>
+          </EmptyMsg>
+        )}
       </Body>
     </Root>
   )
@@ -343,7 +346,12 @@ export default createPaginationContainer(
       }
     },
     query: graphql`
-      query TeamArchivePaginationQuery($first: Int!, $after: DateTime, $teamIds: [ID!], $userIds: [ID!]) {
+      query TeamArchivePaginationQuery(
+        $first: Int!
+        $after: DateTime
+        $teamIds: [ID!]
+        $userIds: [ID!]
+      ) {
         viewer {
           ...TeamArchive_viewer
         }

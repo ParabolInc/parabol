@@ -26,17 +26,17 @@ const TeamColumnsContainer = (props: Props) => {
     }))
     return teamMemberFilterId
       ? nodes.filter((node) => {
-          return toTeamMemberId(node.teamId, node.userId) === teamMemberFilterId
+          return node.userId && toTeamMemberId(node.teamId, node.userId) === teamMemberFilterId
         })
       : nodes
   }, [tasks.edges, teamMemberFilterId, teamMembers])
+  console.log('teamMemberFilteredTasks -> teamMemberFilteredTasks', teamMemberFilteredTasks)
 
   const filteredTasks = useMemo(() => {
     if (!dashSearch) return teamMemberFilteredTasks
     const dashSearchRegex = getSafeRegex(dashSearch, 'i')
     return teamMemberFilteredTasks.filter((task) => task.contentText?.match(dashSearchRegex))
   }, [dashSearch, teamMemberFilteredTasks])
-
   return (
     <TaskColumns
       myTeamMemberId={toTeamMemberId(teamId, viewerId)}

@@ -101,7 +101,6 @@ const TaskFooterUserAssigneeMenuRoot = lazyPreload(() =>
 const TaskFooterUserAssignee = (props: Props) => {
   const {area, canAssign, cardIsActive, task, useTaskChild} = props
   const {user} = task
-  console.log('TaskFooterUserAssignee -> task', task)
   const image = user ? user.picture || avatarUser : '?'
   const preferredName = user?.preferredName || 'Unassigned'
   const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_LEFT)
