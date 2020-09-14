@@ -16,8 +16,8 @@ interface Props {
   meeting: JiraScopingSearchFilterToggle_meeting
 }
 
-const JiraScopingSearchFilterToggle = (props: Props) => {
-  const {meeting} = props
+const JiraScopingSearchFilterToggle = (_props: Props) => {
+  // const {meeting} = props
   return (
     <PlainButton>
       <FilterIcon>filter_list</FilterIcon>

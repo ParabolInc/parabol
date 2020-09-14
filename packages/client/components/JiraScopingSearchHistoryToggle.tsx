@@ -29,8 +29,8 @@ interface Props {
   meeting: JiraScopingSearchHistoryToggle_meeting
 }
 
-const JiraScopingSearchHistoryToggle = (props: Props) => {
-  const {meeting} = props
+const JiraScopingSearchHistoryToggle = (_props: Props) => {
+  // const {meeting} = props
   return (
     <Toggle>
       <SearchIcon>search</SearchIcon>
