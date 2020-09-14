@@ -18,11 +18,14 @@ import GenericMeetingPhase from './types/GenericMeetingPhase'
 import NotificationTeamInvitation from './types/NotificationTeamInvitation'
 import NotifyPromoteToOrgLeader from './types/NotifyPromoteToOrgLeader'
 import PokerMeetingSettings from './types/PokerMeetingSettings'
+import PokerTemplate from './types/PokerTemplate'
 import ReflectPhase from './types/ReflectPhase'
 import RetroPhaseItem from './types/RetroPhaseItem'
 import RetrospectiveMeeting from './types/RetrospectiveMeeting'
 import RetrospectiveMeetingMember from './types/RetrospectiveMeetingMember'
 import RetrospectiveMeetingSettings from './types/RetrospectiveMeetingSettings'
+import SharableTemplate from './types/SharableTemplate'
+import SharableTemplateEnum from './types/SharableTemplateEnum'
 import SuggestedActionCreateNewTeam from './types/SuggestedActionCreateNewTeam'
 import SuggestedActionInviteYourTeam from './types/SuggestedActionInviteYourTeam'
 import SuggestedActionTryActionMeeting from './types/SuggestedActionTryActionMeeting'
@@ -61,6 +64,9 @@ export default new GraphQLSchema({
     AuthIdentityLocal,
     CheckInPhase,
     ReflectPhase,
+    PokerTemplate,
+    SharableTemplate,
+    SharableTemplateEnum,
     DiscussPhase,
     UpdatesPhase,
     EstimatePhase,
