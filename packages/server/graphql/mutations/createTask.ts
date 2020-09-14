@@ -116,7 +116,7 @@ const handleAddTaskNotifications = async (
   // Almost always you start out with a blank card assigned to you (except for filtered team dash)
   const changeAuthorId = toTeamMemberId(teamId, viewerId)
   const notificationsToAdd = [] as NotificationTaskInvolves[]
-  if (viewerId !== userId && !usersIdsToIgnore.includes(userId)) {
+  if (userId && viewerId !== userId && !usersIdsToIgnore.includes(userId)) {
     notificationsToAdd.push(
       new NotificationTaskInvolves({
         involvement: 'ASSIGNEE',
@@ -203,7 +203,6 @@ export default {
       userId
     } = newTask
     const threadSource = newTask.threadSource as ThreadSourceEnum | null
-    // const {teamId, userId, content} = validNewTask
     if (!isTeamMember(authToken, teamId)) {
       return standardError(new Error('Team not found'), {userId: viewerId})
     }

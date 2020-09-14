@@ -7549,6 +7549,10 @@ export interface IUpdateTaskInput {
   sortOrder?: number | null;
   status?: TaskStatusEnum | null;
   teamId?: string | null;
+
+  /**
+   * userId, the owner of the task. This can be null if the task is not assigned to anyone.
+   */
   userId?: string | null;
 }
 

@@ -61,8 +61,9 @@ export default {
     if (!task) {
       return {error: {message: 'Task not found'}}
     }
+
     const {teamId, userId} = task
-    const nextUserId = inputUserId || userId
+    const nextUserId = inputUserId !== undefined ? inputUserId : userId
     const nextTeamId = inputTeamId || teamId
     if (!isTeamMember(authToken, teamId) || !isTeamMember(authToken, nextTeamId)) {
       return standardError(new Error('Team not found'), {userId: viewerId})
@@ -118,6 +119,7 @@ export default {
           )
         })
     }
+
     const {newTask, teamMembers} = await r({
       newTask: (r
         .table('Task')

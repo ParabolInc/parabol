@@ -98,6 +98,7 @@ const Task = new GraphQLObjectType<any, GQLContext, any>({
       type: require('./User').default,
       description: 'The user the task is assigned to. Null if it is not assigned to anyone.',
       resolve: ({userId}, _args, {dataLoader}) => {
+        console.log('GQL TASK userId', userId)
         if (!userId) return null
         return dataLoader.get('users').load(userId)
       }

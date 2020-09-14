@@ -24,7 +24,7 @@ export interface TaskInput {
   threadSortOrder?: number | null
   threadSource?: ThreadSourceEnum | null
   updatedAt?: Date
-  userId: string | null
+  userId?: string | null
 }
 
 export default class Task {

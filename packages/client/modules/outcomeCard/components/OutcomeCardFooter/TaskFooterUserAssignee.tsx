@@ -101,7 +101,7 @@ const TaskFooterUserAssigneeMenuRoot = lazyPreload(() =>
 const TaskFooterUserAssignee = (props: Props) => {
   const {area, canAssign, cardIsActive, task, useTaskChild} = props
   const {user} = task
-  // if (!user) return null
+  console.log('TaskFooterUserAssignee -> task', task)
   const image = user ? user.picture || avatarUser : '?'
   const preferredName = user?.preferredName || 'Unassigned'
   const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_LEFT)
@@ -150,9 +150,11 @@ export default createFragmentContainer(TaskFooterUserAssignee, {
     fragment TaskFooterUserAssignee_task on Task {
       ...TaskFooterUserAssigneeMenuRoot_task
       user {
+        id
         picture
         preferredName
       }
+      content
       team {
         name
       }

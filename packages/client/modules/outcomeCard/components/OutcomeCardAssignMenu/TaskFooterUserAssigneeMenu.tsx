@@ -21,29 +21,39 @@ interface Props {
   task: TaskFooterUserAssigneeMenu_task
 }
 
+interface Assignee {
+  id: string
+  picture: string
+  preferredName: string
+}
+
 const TaskFooterUserAssigneeMenu = (props: Props) => {
   const {area, menuProps, task, viewer} = props
   const {userId, id: taskId} = task
-  console.log('TaskFooterUserAssigneeMenu -> userId', userId)
-  if (!userId) return
   const {team} = viewer
   const {teamMembers} = team || {teamMembers: []}
-  // const assignees = useMemo(
-  //   () => teamMembers.filter((teamMember) => teamMember.userId !== userId),
-  //   [userId, teamMembers]
-  // )
+  const assignees = useMemo(() => {
+    if (!userId) return teamMembers as Assignee[]
+    const taskAssignee = teamMembers.find((teamMember) => teamMember.userId === userId)
+    const otherTeamMembers = teamMembers.filter((teamMember) => teamMember.userId !== userId)
+
+    return [taskAssignee, ...otherTeamMembers] as Assignee[]
+  }, [userId, teamMembers])
   const atmosphere = useAtmosphere()
   if (!team) return null
   const handleTaskUpdate = (newAssignee) => () => {
-    if (userId !== newAssignee.userId) {
-      UpdateTaskMutation(atmosphere, {updatedTask: {id: taskId, userId: newAssignee.userId}, area})
-    }
+    const newUserId = newAssignee.userId === userId ? null : newAssignee.userId
+    UpdateTaskMutation(atmosphere, {updatedTask: {id: taskId, userId: newUserId}, area})
   }
 
   return (
-    <Menu ariaLabel={'Assign this task to a teammate'} defaultActiveIdx={1} {...menuProps}>
+    <Menu
+      ariaLabel={'Assign this task to a teammate'}
+      defaultActiveIdx={userId ? 1 : undefined}
+      {...menuProps}
+    >
       <DropdownMenuLabel>Assign to:</DropdownMenuLabel>
-      {teamMembers.map((teamMember) => {
+      {assignees.map((teamMember) => {
         return (
           <MenuItem
             key={teamMember.id}
