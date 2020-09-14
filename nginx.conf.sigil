@@ -39,6 +39,8 @@ server {
 }
 {{ end }}
 
+{{/* Hacky-but-necessary workaround since you can't escape $ in nginx string literals */}}
+{{/* See: https://stackoverflow.com/questions/57466554/how-do-i-escape-in-nginx-variables */}}
 geo $dollar {
   default "$";
 }
