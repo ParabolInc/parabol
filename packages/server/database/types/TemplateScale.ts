@@ -1,9 +1,10 @@
 import shortid from 'shortid'
+import TemplateScaleValue from './TemplateScaleValue'
 
 export interface TemplateScaleInput {
   id?: string
   name: string
-  values: string[]
+  values: TemplateScaleValue[]
   teamId: string
   unit?: string
   createdAt?: Date
@@ -14,7 +15,7 @@ export interface TemplateScaleInput {
 export default class TemplateScale {
   id: string
   name: string
-  values: string[]
+  values: TemplateScaleValue[]
   teamId: string
   unit?: string
   createdAt: Date
