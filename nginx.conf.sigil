@@ -90,7 +90,7 @@ server {
   }
   include {{ $.DOKKU_ROOT }}/{{ $.APP }}/nginx.conf.d/*.conf;
 
-  location /robots.txt {
+  location = /robots.txt {
     add_header Content-Type text/plain;
     return 200 "User-agent: *\nDisallow: /\nAllow: /$\nAllow: /create-account\nAllow: /signin\nAllow: /retrospective-demo\n";
   }
@@ -172,7 +172,7 @@ server {
   }
   include {{ $.DOKKU_ROOT }}/{{ $.APP }}/nginx.conf.d/*.conf;
 
-  location /robots.txt {
+  location = /robots.txt {
     add_header Content-Type text/plain;
     return 200 "User-agent: *\nDisallow: /\nAllow: /$\nAllow: /create-account\nAllow: /signin\nAllow: /retrospective-demo\n";
   }
