@@ -59,7 +59,7 @@ export const validateTaskUserId = async (
   teamId: string,
   dataLoader: DataLoaderWorker
 ) => {
-  if (!userId) return undefined // TODO: refactor this func
+  if (!userId) return undefined
   const teamMemberId = toTeamMemberId(teamId, userId)
   const teamMember = await dataLoader.get('teamMembers').load(teamMemberId)
   return teamMember ? undefined : 'Invalid user ID'

@@ -76,11 +76,11 @@ const TooltipToggle = styled('div')({
 })
 
 const UnassignedWrapper = styled('div')({
-  bottom: -1,
   height: 28,
   marginLeft: -2,
   padding: 1,
   position: 'relative',
+  top: 2,
   width: 28
 })
 

@@ -25,6 +25,7 @@ export interface UserTasksKey {
   userIds: string[] | null
   teamIds: string[]
   archived: boolean
+  includeUnassigned: boolean
 }
 
 export interface ReactablesKey {
@@ -146,7 +147,7 @@ export const userTasks = (parent: RethinkDataLoader) => {
 
       const entryArray = await Promise.all(
         uniqKeys.map(async (key) => {
-          const {first, after, userIds, teamIds, archived} = key
+          const {first, after, userIds, teamIds, archived, includeUnassigned} = key
           const dbAfter = after ? new Date(after) : r.maxval
 
           let teamTaskPartial = r.table('Task').getAll(r.args(teamIds), {index: 'teamId'})
@@ -165,6 +166,10 @@ export const userTasks = (parent: RethinkDataLoader) => {
                       .contains('archived')
                       .not()
               )
+              .filter((task) => {
+                if (includeUnassigned) return true
+                return task('userId').ne(null)
+              })
               .orderBy(r.desc('updatedAt'))
               .limit(first + 1)
               .run()

@@ -455,6 +455,12 @@ export interface ITasksOnUserArguments {
    * @default false
    */
   archived?: boolean | null;
+
+  /**
+   * if true, include unassigned tasks. If false, only return assigned tasks
+   * @default false
+   */
+  includeUnassigned?: boolean | null;
 }
 
 export interface ITeamOnUserArguments {
@@ -1325,10 +1331,6 @@ export interface ITeam {
    * The agenda items for the upcoming or current meeting
    */
   agendaItems: Array<IAgendaItem>;
-
-  /**
-   * All of the tasks for this team
-   */
   tasks: ITaskConnection;
 
   /**
@@ -1364,12 +1366,38 @@ export interface IMeetingOnTeamArguments {
 }
 
 export interface ITasksOnTeamArguments {
-  first?: number | null;
+  /**
+   * the number of tasks to return
+   */
+  first: number;
 
   /**
    * the datetime cursor
    */
   after?: any | null;
+
+  /**
+   * a list of user Ids that you want tasks for. if null, will return tasks for
+   * all possible team members. An id is null if it is not assigned to anyone.
+   */
+  userIds?: Array<string | null> | null;
+
+  /**
+   * a list of team Ids that you want tasks for. if null, will return tasks for all possible active teams
+   */
+  teamIds?: Array<string> | null;
+
+  /**
+   * true to only return archived tasks; false to return active tasks
+   * @default false
+   */
+  archived?: boolean | null;
+
+  /**
+   * if true, include unassigned tasks. If false, only return assigned tasks
+   * @default false
+   */
+  includeUnassigned?: boolean | null;
 }
 
 export interface ITeamMembersOnTeamArguments {

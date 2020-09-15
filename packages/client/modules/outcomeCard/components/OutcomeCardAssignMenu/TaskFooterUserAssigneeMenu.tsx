@@ -21,24 +21,15 @@ interface Props {
   task: TaskFooterUserAssigneeMenu_task
 }
 
-interface Assignee {
-  id: string
-  picture: string
-  preferredName: string
-}
-
 const TaskFooterUserAssigneeMenu = (props: Props) => {
   const {area, menuProps, task, viewer} = props
   const {userId, id: taskId} = task
   const {team} = viewer
-  const {teamMembers} = team || {teamMembers: []}
-  const assignees = useMemo(() => {
-    if (!userId) return teamMembers as Assignee[]
-    const taskAssignee = teamMembers.find((teamMember) => teamMember.userId === userId)
-    const otherTeamMembers = teamMembers.filter((teamMember) => teamMember.userId !== userId)
-
-    return [taskAssignee, ...otherTeamMembers] as Assignee[]
-  }, [userId, teamMembers])
+  const {teamMembers}: any = team || {teamMembers: []}
+  const taskUserIdx = useMemo(() => teamMembers.map(({userId}) => userId).indexOf(userId), [
+    userId,
+    teamMembers
+  ])
   const atmosphere = useAtmosphere()
   if (!team) return null
   const handleTaskUpdate = (newAssignee) => () => {
@@ -49,11 +40,11 @@ const TaskFooterUserAssigneeMenu = (props: Props) => {
   return (
     <Menu
       ariaLabel={'Assign this task to a teammate'}
-      defaultActiveIdx={userId ? 1 : undefined}
+      defaultActiveIdx={userId ? taskUserIdx + 1 : undefined}
       {...menuProps}
     >
       <DropdownMenuLabel>Assign to:</DropdownMenuLabel>
-      {assignees.map((teamMember) => {
+      {teamMembers.map((teamMember) => {
         return (
           <MenuItem
             key={teamMember.id}

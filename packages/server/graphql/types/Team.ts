@@ -1,21 +1,17 @@
 import {
   GraphQLBoolean,
   GraphQLID,
-  GraphQLInt,
   GraphQLList,
   GraphQLNonNull,
   GraphQLObjectType,
   GraphQLString
 } from 'graphql'
 import {ITeam} from 'parabol-client/types/graphql'
-import isTaskPrivate from 'parabol-client/utils/isTaskPrivate'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import getRethink from '../../database/rethinkDriver'
 import MassInvitationDB from '../../database/types/MassInvitation'
 import {getUserId, isTeamMember} from '../../utils/authorization'
-import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
-import connectionFromTasks from '../queries/helpers/connectionFromTasks'
 import AgendaItem from './AgendaItem'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import MassInvitation from './MassInvitation'
@@ -23,7 +19,6 @@ import MeetingTypeEnum from './MeetingTypeEnum'
 import NewMeeting from './NewMeeting'
 import Organization from './Organization'
 import ReflectPrompt from './ReflectPrompt'
-import {TaskConnection} from './Task'
 import TeamInvitation from './TeamInvitation'
 import TeamMeetingSettings from './TeamMeetingSettings'
 import TeamMember from './TeamMember'
@@ -208,32 +203,7 @@ const Team = new GraphQLObjectType<ITeam, GQLContext>({
         return dataLoader.get('agendaItemsByTeamId').load(teamId)
       }
     },
-    tasks: {
-      type: new GraphQLNonNull(TaskConnection),
-      args: {
-        first: {
-          type: GraphQLInt
-        },
-        after: {
-          type: GraphQLISO8601Type,
-          description: 'the datetime cursor'
-        }
-      },
-      description: 'All of the tasks for this team',
-      async resolve({id: teamId}, _args, {authToken, dataLoader}) {
-        if (!isTeamMember(authToken, teamId)) {
-          standardError(new Error('Team not found'), {tags: {teamId}})
-          return connectionFromTasks([])
-        }
-        const viewerId = getUserId(authToken)
-        const allTasks = await dataLoader.get('tasksByTeamId').load(teamId)
-        const tasks = allTasks.filter((task) => {
-          if (isTaskPrivate(task.tags) && task.userId !== viewerId) return false
-          return true
-        })
-        return connectionFromTasks(tasks)
-      }
-    },
+    tasks: require('../queries/tasks').default,
     teamMembers: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(TeamMember))),
       args: {

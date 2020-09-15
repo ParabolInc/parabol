@@ -63,7 +63,7 @@ export default {
     }
 
     const {teamId, userId} = task
-    const nextUserId = inputUserId !== undefined ? inputUserId : userId
+    const nextUserId = inputUserId === undefined ? userId : inputUserId
     const nextTeamId = inputTeamId || teamId
     if (!isTeamMember(authToken, teamId) || !isTeamMember(authToken, nextTeamId)) {
       return standardError(new Error('Team not found'), {userId: viewerId})

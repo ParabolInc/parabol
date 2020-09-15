@@ -92,6 +92,7 @@ export default createFragmentContainer(TaskFooterTeamAssignee, {
     fragment TaskFooterTeamAssignee_task on Task {
       ...TaskFooterTeamAssigneeMenu_task
       team {
+        id
         name
       }
     }

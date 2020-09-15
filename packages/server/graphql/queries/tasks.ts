@@ -58,16 +58,20 @@ export default {
       type: GraphQLBoolean,
       description: 'true to only return archived tasks; false to return active tasks',
       defaultValue: false
+    },
+    includeUnassigned: {
+      type: GraphQLBoolean,
+      description: 'if true, include unassigned tasks. If false, only return assigned tasks',
+      defaultValue: false
     }
   },
   async resolve(
     _source,
-    {first, after, userIds, teamIds, archived},
+    {first, after, userIds, teamIds, archived, includeUnassigned},
     {authToken, dataLoader}: GQLContext
   ) {
     // AUTH
     const viewerId = getUserId(authToken)
-    console.log('QUERY viewerId', viewerId)
 
     // VALIDATE
     if (teamIds?.length > 100 || userIds?.length > 100) {
@@ -89,25 +93,22 @@ export default {
     // under no condition should it show tasks for archived teams
 
     const validTeamIds = getValidTeamIds(teamIds, authToken.tms)
-    console.log('QUERY validTeamIds', validTeamIds)
     const validUserIds = await getValidUserIds(userIds, viewerId, validTeamIds, dataLoader)
-    console.log('QUERY validUserIds', validUserIds)
 
     // RESOLUTION
     const tasks = await dataLoader.get('userTasks').load({
-      first: first,
-      after: after,
+      first,
+      after,
       userIds: validUserIds,
       teamIds: validTeamIds,
-      archived: archived
+      archived,
+      includeUnassigned
     })
-    console.log('QUERY tasks', tasks)
 
     const filteredTasks = tasks.filter((task) => {
       if (isTaskPrivate(task.tags) && task.userId !== viewerId) return false
       return true
     })
-    console.log('QUERY filteredTasks', filteredTasks)
     return connectionFromTasks(filteredTasks)
   }
 }
