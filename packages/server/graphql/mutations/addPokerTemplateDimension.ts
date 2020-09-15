@@ -1,5 +1,6 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel, Threshold} from 'parabol-client/types/constEnums'
+import dndNoise from 'parabol-client/utils/dndNoise'
 import getRethink from '../../database/rethinkDriver'
 import TemplateDimension from '../../database/types/TemplateDimension'
 import {getUserId, isTeamMember} from '../../utils/authorization'
@@ -37,7 +38,8 @@ const addPokerTemplateDimension = {
       .table('TemplateDimension')
       .getAll(teamId, {index: 'teamId'})
       .filter({
-        templateId
+        templateId,
+        isActive: true
       })
       .run()
     if (activeDimensions.length >= Threshold.MAX_POKER_TEMPLDATE_DIMENSIONS) {
@@ -47,9 +49,12 @@ const addPokerTemplateDimension = {
     const newScale = makePokerTemplateDimensionScale(template.teamId, template.id)
 
     // RESOLUTION
+    const sortOrder =
+      Math.max(...activeDimensions.map((prompt) => prompt.sortOrder)) + 1 + dndNoise()
     const newDimension = new TemplateDimension({
       name: `New dimension #${activeDimensions.length + 1}`,
       teamId: template.teamId,
+      sortOrder,
       templateId: template.id,
       scaleId: newScale.id
     })

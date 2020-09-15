@@ -83,6 +83,12 @@ const newScales = [
 export const up = async function(r: R) {
   try {
     await r
+      .table('MeetingTemplate')
+      .filter({teamId: 'aGhostTeam'})
+      .filter(r.row.hasFields('type').not())
+      .update({type: 'poker'})
+      .run()
+    await r
       .table('TemplateScale')
       .delete()
       .run()

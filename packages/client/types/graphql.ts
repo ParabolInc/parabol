@@ -3401,6 +3401,11 @@ export interface IMutation {
   loginWithPassword: ILoginWithPasswordPayload;
 
   /**
+   * Move a template dimension
+   */
+  movePokerTemplateDimension: IMovePokerTemplateDimensionPayload | null;
+
+  /**
    * Move a reflect template
    */
   moveReflectTemplatePrompt: IMoveReflectTemplatePromptPayload | null;
@@ -4111,6 +4116,11 @@ export interface ILoginWithGoogleOnMutationArguments {
 export interface ILoginWithPasswordOnMutationArguments {
   email: string;
   password: string;
+}
+
+export interface IMovePokerTemplateDimensionOnMutationArguments {
+  dimensionId: string;
+  sortOrder: number;
 }
 
 export interface IMoveReflectTemplatePromptOnMutationArguments {
@@ -4975,6 +4985,11 @@ export interface ITemplateDimension {
    */
   team: ITeam | null;
   updatedAt: any;
+
+  /**
+   * the order of the dimensions in the template
+   */
+  sortOrder: number;
 
   /**
    * FK for template
@@ -6950,6 +6965,12 @@ export interface ILoginWithPasswordPayload {
   user: IUser | null;
 }
 
+export interface IMovePokerTemplateDimensionPayload {
+  __typename: 'MovePokerTemplateDimensionPayload';
+  error: IStandardMutationError | null;
+  dimension: ITemplateDimension | null;
+}
+
 export interface IMoveReflectTemplatePromptPayload {
   __typename: 'MoveReflectTemplatePromptPayload';
   error: IStandardMutationError | null;
@@ -8213,6 +8234,7 @@ export type TeamSubscriptionPayload =
   | IAddReflectTemplatePromptPayload
   | IAddPokerTemplateDimensionPayload
   | IMoveReflectTemplatePromptPayload
+  | IMovePokerTemplateDimensionPayload
   | IReflectTemplatePromptUpdateDescriptionPayload
   | IReflectTemplatePromptUpdateGroupColorPayload
   | IRemoveAtlassianAuthPayload

@@ -32,7 +32,7 @@ const makePokerTemplates = (teamId: string, orgId: string, templateObj: Template
     const dimensionBase = templateObj[templateName]
     const template = new PokerTemplate({name: templateName, teamId, orgId})
 
-    const dimensions = dimensionBase.map((dimensionName) => {
+    const dimensions = dimensionBase.map((dimensionName, idx) => {
       const newScale = makePokerTemplateDimensionScale(teamId, template.id)
       pokerScales.push()
 
@@ -40,6 +40,7 @@ const makePokerTemplates = (teamId: string, orgId: string, templateObj: Template
         name: dimensionName,
         teamId,
         templateId: template.id,
+        sortOrder: idx,
         scaleId: newScale.id
       })
 

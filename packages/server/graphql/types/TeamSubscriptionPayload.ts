@@ -15,6 +15,7 @@ import DowngradeToPersonalPayload from './DowngradeToPersonalPayload'
 import EndNewMeetingPayload from './EndNewMeetingPayload'
 import {EndSprintPokerSuccess} from './EndSprintPokerPayload'
 import MoveReflectTemplatePromptPayload from './MoveReflectTemplatePromptPayload'
+import MovePokerTemplateDimensionPayload from './MovePokerTemplateDimensionPayload'
 import NavigateMeetingPayload from './NavigateMeetingPayload'
 import PromoteToTeamLeadPayload from './PromoteToTeamLeadPayload'
 import PushInvitationPayload from './PushInvitationPayload'
@@ -73,6 +74,7 @@ const types = [
   AddReflectTemplatePromptPayload,
   AddPokerTemplateDimensionPayload,
   MoveReflectTemplatePromptPayload,
+  MovePokerTemplateDimensionPayload,
   ReflectTemplatePromptUpdateDescriptionPayload,
   ReflectTemplatePromptUpdateGroupColorPayload,
   RemoveAtlassianAuthPayload,

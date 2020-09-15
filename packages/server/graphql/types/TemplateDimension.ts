@@ -1,5 +1,6 @@
 import {
   GraphQLBoolean,
+  GraphQLFloat,
   GraphQLID,
   GraphQLNonNull,
   GraphQLObjectType,
@@ -14,8 +15,7 @@ import TemplateScale from './TemplateScale'
 
 const TemplateDimension = new GraphQLObjectType<any, GQLContext>({
   name: 'TemplateDimension',
-  description:
-    'A team-specific template dimension: e.g., effort, importance etc.',
+  description: 'A team-specific template dimension: e.g., effort, importance etc.',
   fields: () => ({
     id: {
       type: new GraphQLNonNull(GraphQLID),
@@ -40,6 +40,10 @@ const TemplateDimension = new GraphQLObjectType<any, GQLContext>({
     updatedAt: {
       type: new GraphQLNonNull(GraphQLISO8601Type)
     },
+    sortOrder: {
+      type: new GraphQLNonNull(GraphQLFloat),
+      description: 'the order of the dimensions in the template'
+    },
     templateId: {
       type: new GraphQLNonNull(GraphQLID),
       description: 'FK for template'
@@ -53,8 +57,7 @@ const TemplateDimension = new GraphQLObjectType<any, GQLContext>({
     },
     name: {
       type: new GraphQLNonNull(GraphQLString),
-      description:
-        'The name of the dimension'
+      description: 'The name of the dimension'
     },
     scale: {
       type: new GraphQLNonNull(TemplateScale),
