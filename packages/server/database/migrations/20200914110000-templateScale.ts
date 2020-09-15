@@ -80,7 +80,7 @@ const newScales = [
   }
 ]
 
-export const up = async function (r: R) {
+export const up = async function(r: R) {
   try {
     await r
       .table('TemplateScale')
@@ -90,12 +90,16 @@ export const up = async function (r: R) {
       .table('TemplateScale')
       .insert(newScales)
       .run()
+    await r
+      .table('TemplateDimension')
+      .indexCreate('teamId')
+      .run()
   } catch (e) {
     console.log(e)
   }
 }
 
-export const down = async function (r: R) {
+export const down = async function(r: R) {
   try {
     await r
       .table('TemplateScale')
@@ -104,6 +108,10 @@ export const down = async function (r: R) {
     await r
       .table('TemplateScale')
       .insert(oldScales)
+      .run()
+    await r
+      .table('TemplateDimension')
+      .indexDrop('teamId')
       .run()
   } catch (e) {
     console.log(e)

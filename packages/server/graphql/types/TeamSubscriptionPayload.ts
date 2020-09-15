@@ -6,6 +6,7 @@ import AddGitHubAuthPayload from './AddGitHubAuthPayload'
 import AddReflectTemplatePayload from './AddReflectTemplatePayload'
 import AddPokerTemplatePayload from './AddPokerTemplatePayload'
 import AddReflectTemplatePromptPayload from './AddReflectTemplatePromptPayload'
+import AddPokerTemplateDimensionPayload from './AddPokerTemplateDimensionPayload'
 import AddSlackAuthPayload from './AddSlackAuthPayload'
 import AddTeamPayload from './AddTeamPayload'
 import ArchiveTeamPayload from './ArchiveTeamPayload'
@@ -70,6 +71,7 @@ const types = [
   AddReflectTemplatePayload,
   AddPokerTemplatePayload,
   AddReflectTemplatePromptPayload,
+  AddPokerTemplateDimensionPayload,
   MoveReflectTemplatePromptPayload,
   ReflectTemplatePromptUpdateDescriptionPayload,
   ReflectTemplatePromptUpdateGroupColorPayload,

@@ -196,7 +196,7 @@ export type RethinkSchema = {
   }
   TemplateDimension: {
     type: TemplateDimension
-    index: 'templateId'
+    index: 'teamId' | 'templateId'
   }
   TemplateScale: {
     type: TemplateScale

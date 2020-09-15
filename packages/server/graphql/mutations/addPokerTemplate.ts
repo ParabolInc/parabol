@@ -8,7 +8,7 @@ import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import AddPokerTemplatePayload from '../types/AddPokerTemplatePayload'
-import makePokerTemplates from './helpers/makePokerTemplates'
+import {makePokerTemplates} from './helpers/makePokerTemplates'
 
 const addPokerTemplate = {
   description: 'Add a new template full of dimensions',

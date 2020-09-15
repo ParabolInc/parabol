@@ -7,6 +7,22 @@ interface TemplateObject {
   [templateName: string]: string[]
 }
 
+const makePokerTemplateDimensionScale = (teamId: string, templateId: string) => {
+  const newScaleValues = [
+    new TemplateScaleValue({color: '#5CA0E5', label: 'XS', value: 1}),
+    new TemplateScaleValue({color: '#5CA0E5', label: 'SM', value: 2}),
+    new TemplateScaleValue({color: '#45E595', label: 'M', value: 3}),
+    new TemplateScaleValue({color: '#E59545', label: 'L', value: 4}),
+    new TemplateScaleValue({color: '#E59545', label: 'XL', value: 5})
+  ]
+  return new TemplateScale({
+    name: 'T-Shirt Sizes',
+    values: newScaleValues,
+    teamId: teamId,
+    templateId: templateId
+  })
+}
+
 const makePokerTemplates = (teamId: string, orgId: string, templateObj: TemplateObject) => {
   const pokerScales: TemplateScale[] = []
   const pokerDimensions: TemplateDimension[] = []
@@ -17,20 +33,8 @@ const makePokerTemplates = (teamId: string, orgId: string, templateObj: Template
     const template = new PokerTemplate({name: templateName, teamId, orgId})
 
     const dimensions = dimensionBase.map((dimensionName) => {
-      const newScaleValues = [
-        new TemplateScaleValue({color: '#5CA0E5', label: 'XS', value: 1}),
-        new TemplateScaleValue({color: '#5CA0E5', label: 'SM', value: 2}),
-        new TemplateScaleValue({color: '#45E595', label: 'M', value: 3}),
-        new TemplateScaleValue({color: '#E59545', label: 'L', value: 4}),
-        new TemplateScaleValue({color: '#E59545', label: 'XL', value: 5})
-      ]
-      const newScale = new TemplateScale({
-        name: 'T-Shirt Sizes',
-        values: newScaleValues,
-        teamId: teamId,
-        templateId: template.id
-      })
-      pokerScales.push(newScale)
+      const newScale = makePokerTemplateDimensionScale(teamId, template.id)
+      pokerScales.push()
 
       const newDimension = new TemplateDimension({
         name: dimensionName,
@@ -47,4 +51,4 @@ const makePokerTemplates = (teamId: string, orgId: string, templateObj: Template
   return {pokerDimensions, pokerScales, templates}
 }
 
-export default makePokerTemplates
+export {makePokerTemplateDimensionScale, makePokerTemplates}
