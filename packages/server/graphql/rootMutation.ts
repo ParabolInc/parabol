@@ -7,6 +7,7 @@ import addComment from './mutations/addComment'
 import addFeatureFlag from './mutations/addFeatureFlag'
 import addGitHubAuth from './mutations/addGitHubAuth'
 import addOrg from './mutations/addOrg'
+import addPokerTemplate from './mutations/addPokerTemplate'
 import addReactjiToReactable from './mutations/addReactjiToReactable'
 import addReactjiToReflection from './mutations/addReactjiToReflection'
 import addReflectTemplate from './mutations/addReflectTemplate'
@@ -112,6 +113,7 @@ export default new GraphQLObjectType<any, Context, any>({
     addAgendaItem,
     addAtlassianAuth,
     addComment,
+    addPokerTemplate,
     addReactjiToReflection, // DEPRECATED, delete after 4.25.0
     addReactjiToReactable,
     addReflectTemplate,

@@ -3190,6 +3190,11 @@ export interface IMutation {
   addComment: AddCommentPayload;
 
   /**
+   * Add a new template full of dimensions
+   */
+  addPokerTemplate: IAddPokerTemplatePayload | null;
+
+  /**
    * Add or remove a reactji to a reflection
    */
   addReactjiToReflection: AddReactjiToReflectionPayload;
@@ -3669,6 +3674,11 @@ export interface IAddCommentOnMutationArguments {
    * A partial new comment
    */
   comment: IAddCommentInput;
+}
+
+export interface IAddPokerTemplateOnMutationArguments {
+  parentTemplateId?: string | null;
+  teamId: string;
 }
 
 export interface IAddReactjiToReflectionOnMutationArguments {
@@ -4867,6 +4877,186 @@ export interface IReactji {
    * true if the viewer is included in the count, else false
    */
   isViewerReactji: boolean;
+}
+
+export interface IAddPokerTemplatePayload {
+  __typename: 'AddPokerTemplatePayload';
+  error: IStandardMutationError | null;
+  pokerTemplate: IPokerTemplate | null;
+}
+
+/**
+ * The team-specific templates for sprint poker meeting
+ */
+export interface IPokerTemplate {
+  __typename: 'PokerTemplate';
+
+  /**
+   * shortid
+   */
+  id: string;
+  createdAt: any;
+
+  /**
+   * True if template can be used, else false
+   */
+  isActive: boolean;
+
+  /**
+   * The time of the meeting the template was last used
+   */
+  lastUsedAt: any | null;
+
+  /**
+   * The name of the template
+   */
+  name: string;
+
+  /**
+   * *Foreign key. The organization that owns the team that created the template
+   */
+  orgId: string;
+
+  /**
+   * Who can see this template
+   */
+  scope: SharingScopeEnum;
+
+  /**
+   * *Foreign key. The team this template belongs to
+   */
+  teamId: string;
+
+  /**
+   * The team this template belongs to
+   */
+  team: ITeam;
+  updatedAt: any;
+
+  /**
+   * The dimensions that are part of this template
+   */
+  dimensions: Array<ITemplateDimension>;
+}
+
+/**
+ * A team-specific template dimension: e.g., effort, importance etc.
+ */
+export interface ITemplateDimension {
+  __typename: 'TemplateDimension';
+
+  /**
+   * shortid
+   */
+  id: string;
+  createdAt: any;
+
+  /**
+   * true if the dimension is currently used by the team, else false
+   */
+  isActive: boolean | null;
+
+  /**
+   * foreign key. use the team field
+   */
+  teamId: string;
+
+  /**
+   * The team that owns this dimension
+   */
+  team: ITeam | null;
+  updatedAt: any;
+
+  /**
+   * FK for template
+   */
+  templateId: string;
+
+  /**
+   * The template that this dimension belongs to
+   */
+  template: IPokerTemplate;
+
+  /**
+   * The name of the dimension
+   */
+  name: string;
+
+  /**
+   * scale used in this dimension
+   */
+  scale: ITemplateScale;
+}
+
+/**
+ * A team-specific template scale.
+ */
+export interface ITemplateScale {
+  __typename: 'TemplateScale';
+
+  /**
+   * shortid
+   */
+  id: string;
+  createdAt: any;
+
+  /**
+   * true if the scale is currently used by the team, else false
+   */
+  isActive: boolean | null;
+
+  /**
+   * foreign key. use the team field
+   */
+  teamId: string;
+
+  /**
+   * The team that owns this template scale
+   */
+  team: ITeam | null;
+  updatedAt: any;
+
+  /**
+   * FK for template
+   */
+  templateId: string;
+
+  /**
+   * The template that this scale belongs to
+   */
+  template: IPokerTemplate;
+
+  /**
+   * The title of the scale used in the template
+   */
+  name: string;
+
+  /**
+   * The values used in this scale
+   */
+  values: Array<ITemplateScaleValue> | null;
+}
+
+/**
+ * A value for a scale.
+ */
+export interface ITemplateScaleValue {
+  __typename: 'TemplateScaleValue';
+
+  /**
+   * The color used to visually group a scale value
+   */
+  color: string;
+
+  /**
+   * The numerical value for this scale value
+   */
+  value: number;
+
+  /**
+   * The label for this value, e.g., XS, M, L
+   */
+  label: string;
 }
 
 /**
@@ -8004,6 +8194,7 @@ export type TeamSubscriptionPayload =
   | IUpdateTeamNamePayload
   | IUpgradeToProPayload
   | IAddReflectTemplatePayload
+  | IAddPokerTemplatePayload
   | IAddReflectTemplatePromptPayload
   | IMoveReflectTemplatePromptPayload
   | IReflectTemplatePromptUpdateDescriptionPayload
@@ -8710,180 +8901,6 @@ export interface INotifyPromoteToOrgLeader {
    * *The userId that should see this notification
    */
   userId: string;
-}
-
-/**
- * The team-specific templates for sprint poker meeting
- */
-export interface IPokerTemplate {
-  __typename: 'PokerTemplate';
-
-  /**
-   * shortid
-   */
-  id: string;
-  createdAt: any;
-
-  /**
-   * True if template can be used, else false
-   */
-  isActive: boolean;
-
-  /**
-   * The time of the meeting the template was last used
-   */
-  lastUsedAt: any | null;
-
-  /**
-   * The name of the template
-   */
-  name: string;
-
-  /**
-   * *Foreign key. The organization that owns the team that created the template
-   */
-  orgId: string;
-
-  /**
-   * Who can see this template
-   */
-  scope: SharingScopeEnum;
-
-  /**
-   * *Foreign key. The team this template belongs to
-   */
-  teamId: string;
-
-  /**
-   * The team this template belongs to
-   */
-  team: ITeam;
-  updatedAt: any;
-
-  /**
-   * The dimensions that are part of this template
-   */
-  dimensions: Array<ITemplateDimension>;
-}
-
-/**
- * A team-specific template dimension: e.g., effort, importance etc.
- */
-export interface ITemplateDimension {
-  __typename: 'TemplateDimension';
-
-  /**
-   * shortid
-   */
-  id: string;
-  createdAt: any;
-
-  /**
-   * true if the dimension is currently used by the team, else false
-   */
-  isActive: boolean | null;
-
-  /**
-   * foreign key. use the team field
-   */
-  teamId: string;
-
-  /**
-   * The team that owns this dimension
-   */
-  team: ITeam | null;
-  updatedAt: any;
-
-  /**
-   * FK for template
-   */
-  templateId: string;
-
-  /**
-   * The template that this dimension belongs to
-   */
-  template: IPokerTemplate;
-
-  /**
-   * The name of the dimension
-   */
-  name: string;
-
-  /**
-   * scale used in this dimension
-   */
-  scale: ITemplateScale;
-}
-
-/**
- * A team-specific template scale.
- */
-export interface ITemplateScale {
-  __typename: 'TemplateScale';
-
-  /**
-   * shortid
-   */
-  id: string;
-  createdAt: any;
-
-  /**
-   * true if the scale is currently used by the team, else false
-   */
-  isActive: boolean | null;
-
-  /**
-   * foreign key. use the team field
-   */
-  teamId: string;
-
-  /**
-   * The team that owns this template scale
-   */
-  team: ITeam | null;
-  updatedAt: any;
-
-  /**
-   * FK for template
-   */
-  templateId: string;
-
-  /**
-   * The template that this scale belongs to
-   */
-  template: IPokerTemplate;
-
-  /**
-   * The title of the scale used in the template
-   */
-  name: string;
-
-  /**
-   * The values used in this scale
-   */
-  values: Array<ITemplateScaleValue> | null;
-}
-
-/**
- * A value for a scale.
- */
-export interface ITemplateScaleValue {
-  __typename: 'TemplateScaleValue';
-
-  /**
-   * The color used to visually group a scale value
-   */
-  color: string;
-
-  /**
-   * The numerical value for this scale value
-   */
-  value: number;
-
-  /**
-   * The label for this value, e.g., XS, M, L
-   */
-  label: string;
 }
 
 /**

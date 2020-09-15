@@ -4,6 +4,7 @@ import AddAgendaItemPayload from './AddAgendaItemPayload'
 import AddAtlassianAuthPayload from './AddAtlassianAuthPayload'
 import AddGitHubAuthPayload from './AddGitHubAuthPayload'
 import AddReflectTemplatePayload from './AddReflectTemplatePayload'
+import AddPokerTemplatePayload from './AddPokerTemplatePayload'
 import AddReflectTemplatePromptPayload from './AddReflectTemplatePromptPayload'
 import AddSlackAuthPayload from './AddSlackAuthPayload'
 import AddTeamPayload from './AddTeamPayload'
@@ -67,6 +68,7 @@ const types = [
   UpdateTeamNamePayload,
   UpgradeToProPayload,
   AddReflectTemplatePayload,
+  AddPokerTemplatePayload,
   AddReflectTemplatePromptPayload,
   MoveReflectTemplatePromptPayload,
   ReflectTemplatePromptUpdateDescriptionPayload,
