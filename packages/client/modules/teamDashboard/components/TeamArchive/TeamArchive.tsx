@@ -96,7 +96,6 @@ const TeamArchive = (props: Props) => {
   const {hasMore, isLoading, loadMore} = relay
   const {teamMembers, teamMemberFilter} = team || {}
   const teamMemberFilterId = (teamMemberFilter && teamMemberFilter.id) || null
-  console.log('TeamArchive -> teamMemberFilterId', teamMemberFilterId)
   const {tasks: archivedTasks, dashSearch} = viewer
 
   const teamMemberFilteredTasks = useMemo(() => {

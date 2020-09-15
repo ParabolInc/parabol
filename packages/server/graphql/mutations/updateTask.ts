@@ -61,7 +61,6 @@ export default {
     if (!task) {
       return {error: {message: 'Task not found'}}
     }
-
     const {teamId, userId} = task
     const nextUserId = inputUserId === undefined ? userId : inputUserId
     const nextTeamId = inputTeamId || teamId
@@ -74,7 +73,6 @@ export default {
         return standardError(new Error('Invalid user ID'), {userId: viewerId})
       }
     }
-
     // RESOLUTION
     const isSortOrderUpdate =
       updatedTask.sortOrder !== undefined && Object.keys(updatedTask).length === 2
@@ -119,7 +117,6 @@ export default {
           )
         })
     }
-
     const {newTask, teamMembers} = await r({
       newTask: (r
         .table('Task')

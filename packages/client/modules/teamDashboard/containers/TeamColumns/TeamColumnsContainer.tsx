@@ -30,7 +30,6 @@ const TeamColumnsContainer = (props: Props) => {
         })
       : nodes
   }, [tasks.edges, teamMemberFilterId, teamMembers])
-  console.log('teamMemberFilteredTasks -> teamMemberFilteredTasks', teamMemberFilteredTasks)
 
   const filteredTasks = useMemo(() => {
     if (!dashSearch) return teamMemberFilteredTasks

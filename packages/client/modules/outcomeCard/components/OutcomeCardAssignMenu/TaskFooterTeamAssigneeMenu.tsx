@@ -22,7 +22,7 @@ const TaskFooterTeamAssigneeMenu = (props: Props) => {
   const {team, id: taskId} = task
   const {id: teamId} = team
   const {teams} = viewer
-  const taskTeamIdx = useMemo(() => teams.map(({id}) => id).indexOf(teamId), [teamId, teams])
+  const taskTeamIdx = useMemo(() => teams.map(({id}) => id).indexOf(teamId) + 1, [teamId, teams])
   const atmosphere = useAtmosphere()
   const {submitting, submitMutation, onError, onCompleted} = useMutationProps()
   const handleTaskUpdate = (newTeam) => () => {
@@ -35,7 +35,7 @@ const TaskFooterTeamAssigneeMenu = (props: Props) => {
   return (
     <Menu
       {...menuProps}
-      defaultActiveIdx={taskTeamIdx + 1}
+      defaultActiveIdx={taskTeamIdx}
       ariaLabel={'Assign this task to another team'}
     >
       <DropdownMenuLabel>Move to:</DropdownMenuLabel>

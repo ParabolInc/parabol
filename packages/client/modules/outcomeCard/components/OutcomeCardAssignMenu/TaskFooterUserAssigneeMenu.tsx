@@ -26,7 +26,7 @@ const TaskFooterUserAssigneeMenu = (props: Props) => {
   const {userId, id: taskId} = task
   const {team} = viewer
   const {teamMembers}: any = team || {teamMembers: []}
-  const taskUserIdx = useMemo(() => teamMembers.map(({userId}) => userId).indexOf(userId), [
+  const taskUserIdx = useMemo(() => teamMembers.map(({userId}) => userId).indexOf(userId) + 1, [
     userId,
     teamMembers
   ])
@@ -40,7 +40,7 @@ const TaskFooterUserAssigneeMenu = (props: Props) => {
   return (
     <Menu
       ariaLabel={'Assign this task to a teammate'}
-      defaultActiveIdx={userId ? taskUserIdx + 1 : undefined}
+      defaultActiveIdx={userId ? taskUserIdx : undefined}
       {...menuProps}
     >
       <DropdownMenuLabel>Assign to:</DropdownMenuLabel>
