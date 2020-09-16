@@ -35,6 +35,7 @@ const newScales = [
     createdAt,
     updatedAt: createdAt,
     name: 'Fibonacci',
+    isActive: true,
     values: [
       {color: '#5CA0E5', label: '1', value: 1},
       {color: '#5CA0E5', label: '2', value: 2},
@@ -53,6 +54,7 @@ const newScales = [
     createdAt,
     updatedAt: createdAt,
     name: 'T-Shirt Sizes',
+    isActive: true,
     values: [
       {color: '#5CA0E5', label: 'XS', value: 1},
       {color: '#5CA0E5', label: 'SM', value: 2},
@@ -68,6 +70,7 @@ const newScales = [
     createdAt,
     updatedAt: createdAt,
     name: 'Five Fingers',
+    isActive: true,
     values: [
       {color: '#5CA0E5', label: '1', value: 1},
       {color: '#5CA0E5', label: '2', value: 2},
@@ -100,6 +103,14 @@ export const up = async function(r: R) {
       .table('TemplateDimension')
       .indexCreate('teamId')
       .run()
+    await r
+      .table('TemplateScale')
+      .indexCreate('teamId')
+      .run()
+    await r
+      .table('TemplateScale')
+      .indexCreate('templateId')
+      .run()
   } catch (e) {
     console.log(e)
   }
@@ -118,6 +129,14 @@ export const down = async function(r: R) {
     await r
       .table('TemplateDimension')
       .indexDrop('teamId')
+      .run()
+    await r
+      .table('TemplateScale')
+      .indexDrop('teamId')
+      .run()
+    await r
+      .table('TemplateScale')
+      .indexDrop('templateId')
       .run()
   } catch (e) {
     console.log(e)

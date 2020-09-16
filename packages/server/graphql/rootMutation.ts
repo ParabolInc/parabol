@@ -65,6 +65,7 @@ import removeAgendaItem from './mutations/removeAgendaItem'
 import removeAtlassianAuth from './mutations/removeAtlassianAuth'
 import removeGitHubAuth from './mutations/removeGitHubAuth'
 import removeOrgUser from './mutations/removeOrgUser'
+import removePokerTemplate from './mutations/removePokerTemplate'
 import removeReflection from './mutations/removeReflection'
 import removeReflectTemplate from './mutations/removeReflectTemplate'
 import removeReflectTemplatePrompt from './mutations/removeReflectTemplatePrompt'
@@ -178,6 +179,7 @@ export default new GraphQLObjectType<any, Context, any>({
     removeAtlassianAuth,
     removeGitHubAuth,
     removeOrgUser,
+    removePokerTemplate,
     removeReflectTemplate,
     removeReflectTemplatePrompt,
     removePokerTemplateDimension,

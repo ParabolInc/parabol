@@ -15,6 +15,7 @@ export interface TemplateScaleInput {
 export default class TemplateScale {
   id: string
   name: string
+  isActive = true
   values: TemplateScaleValue[]
   teamId: string
   templateId: string

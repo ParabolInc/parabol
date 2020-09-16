@@ -3472,6 +3472,11 @@ export interface IMutation {
   removeOrgUser: IRemoveOrgUserPayload | null;
 
   /**
+   * Remove a poker meeting template
+   */
+  removePokerTemplate: IRemovePokerTemplatePayload | null;
+
+  /**
    * Remove a template full of prompts
    */
   removeReflectTemplate: IRemoveReflectTemplatePayload | null;
@@ -4250,6 +4255,10 @@ export interface IRemoveOrgUserOnMutationArguments {
    * the org that does not want them anymore
    */
   orgId: string;
+}
+
+export interface IRemovePokerTemplateOnMutationArguments {
+  templateId: string;
 }
 
 export interface IRemoveReflectTemplateOnMutationArguments {
@@ -7267,6 +7276,13 @@ export interface INotifyKickedOut {
   team: ITeam;
 }
 
+export interface IRemovePokerTemplatePayload {
+  __typename: 'RemovePokerTemplatePayload';
+  error: IStandardMutationError | null;
+  pokerTemplate: IPokerTemplate | null;
+  pokerMeetingSettings: IPokerMeetingSettings | null;
+}
+
 export interface IRemoveReflectTemplatePayload {
   __typename: 'RemoveReflectTemplatePayload';
   error: IStandardMutationError | null;
@@ -8257,6 +8273,7 @@ export type TeamSubscriptionPayload =
   | IRemoveGitHubAuthPayload
   | IRemoveSlackAuthPayload
   | IRemoveReflectTemplatePayload
+  | IRemovePokerTemplatePayload
   | IRemoveReflectTemplatePromptPayload
   | IRemovePokerTemplateDimensionPayload
   | IRenameReflectTemplatePayload

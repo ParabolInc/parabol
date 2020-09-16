@@ -26,6 +26,7 @@ import RemoveAtlassianAuthPayload from './RemoveAtlassianAuthPayload'
 import RemoveGitHubAuthPayload from './RemoveGitHubAuthPayload'
 import RemoveOrgUserPayload from './RemoveOrgUserPayload'
 import RemoveReflectTemplatePayload from './RemoveReflectTemplatePayload'
+import RemovePokerTemplatePayload from './RemovePokerTemplatePayload'
 import RemoveReflectTemplatePromptPayload from './RemoveReflectTemplatePromptPayload'
 import RemovePokerTemplateDimensionPayload from './RemovePokerTemplateDimensionPayload'
 import RemoveSlackAuthPayload from './RemoveSlackAuthPayload'
@@ -82,6 +83,7 @@ const types = [
   RemoveGitHubAuthPayload,
   RemoveSlackAuthPayload,
   RemoveReflectTemplatePayload,
+  RemovePokerTemplatePayload,
   RemoveReflectTemplatePromptPayload,
   RemovePokerTemplateDimensionPayload,
   RenameReflectTemplatePayload,
