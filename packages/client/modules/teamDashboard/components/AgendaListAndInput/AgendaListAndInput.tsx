@@ -38,10 +38,9 @@ interface Props {
 }
 
 const getAgendaItems = (
-  endedAt: string | null | undefined,
   meeting: AgendaListAndInput_meeting | null
 ) => {
-  if (!endedAt || !meeting) return null
+  if (!meeting) return null
   const agendaItemsPhase = meeting.phases!.find(
     (phase) => phase.phaseType === NewMeetingPhaseTypeEnum.agendaitems
   )!
@@ -52,7 +51,7 @@ const getAgendaItems = (
 const AgendaListAndInput = (props: Props) => {
   const {dashSearch, gotoStageId, isDisabled, team, meeting} = props
   const endedAt = meeting?.endedAt
-  const agendaItems = getAgendaItems(endedAt, meeting) || team.agendaItems
+  const agendaItems = getAgendaItems(meeting) || team.agendaItems
 
   return (
     <RootStyles disabled={!!isDisabled} isMeeting={!!meeting}>

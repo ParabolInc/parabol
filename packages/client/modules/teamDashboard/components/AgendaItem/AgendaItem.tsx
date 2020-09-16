@@ -141,7 +141,7 @@ const AgendaItem = (props: Props) => {
   }
 
   const handleRemove = () => {
-    RemoveAgendaItemMutation(atmosphere, {agendaItemId})
+    RemoveAgendaItemMutation(atmosphere, {agendaItemId}, {meetingId})
   }
 
   const getIcon = () => {
