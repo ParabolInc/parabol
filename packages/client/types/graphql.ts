@@ -3449,6 +3449,11 @@ export interface IMutation {
    * Update the description of a reflection prompt
    */
   reflectTemplatePromptUpdateDescription: IReflectTemplatePromptUpdateDescriptionPayload | null;
+
+  /**
+   * Update the description of a poker template dimension
+   */
+  pokerTemplateDimensionUpdateDescription: IPokerTemplateDimensionUpdateDescriptionPayload | null;
   reflectTemplatePromptUpdateGroupColor: IReflectTemplatePromptUpdateGroupColorPayload | null;
 
   /**
@@ -4226,6 +4231,11 @@ export interface IPromoteToTeamLeadOnMutationArguments {
 
 export interface IReflectTemplatePromptUpdateDescriptionOnMutationArguments {
   promptId: string;
+  description: string;
+}
+
+export interface IPokerTemplateDimensionUpdateDescriptionOnMutationArguments {
+  dimensionId: string;
   description: string;
 }
 
@@ -5043,6 +5053,11 @@ export interface ITemplateDimension {
    * The name of the dimension
    */
   name: string;
+
+  /**
+   * The description to the dimension name for further context. A long version of the dimension name.
+   */
+  description: string;
 
   /**
    * scale used in this dimension
@@ -7157,6 +7172,12 @@ export interface IReflectTemplatePromptUpdateDescriptionPayload {
   prompt: IReflectPrompt | null;
 }
 
+export interface IPokerTemplateDimensionUpdateDescriptionPayload {
+  __typename: 'PokerTemplateDimensionUpdateDescriptionPayload';
+  error: IStandardMutationError | null;
+  dimension: ITemplateDimension | null;
+}
+
 export interface IReflectTemplatePromptUpdateGroupColorPayload {
   __typename: 'ReflectTemplatePromptUpdateGroupColorPayload';
   error: IStandardMutationError | null;
@@ -8300,6 +8321,7 @@ export type TeamSubscriptionPayload =
   | IMoveReflectTemplatePromptPayload
   | IMovePokerTemplateDimensionPayload
   | IReflectTemplatePromptUpdateDescriptionPayload
+  | IPokerTemplateDimensionUpdateDescriptionPayload
   | IReflectTemplatePromptUpdateGroupColorPayload
   | IRemoveAtlassianAuthPayload
   | IRemoveGitHubAuthPayload

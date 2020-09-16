@@ -59,6 +59,12 @@ const TemplateDimension = new GraphQLObjectType<any, GQLContext>({
       type: new GraphQLNonNull(GraphQLString),
       description: 'The name of the dimension'
     },
+    description: {
+      description:
+        'The description to the dimension name for further context. A long version of the dimension name.',
+      type: new GraphQLNonNull(GraphQLString),
+      resolve: ({description}) => description || ''
+    },
     scale: {
       type: new GraphQLNonNull(TemplateScale),
       description: 'scale used in this dimension',

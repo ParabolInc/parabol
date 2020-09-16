@@ -53,6 +53,7 @@ const addPokerTemplateDimension = {
       Math.max(...activeDimensions.map((prompt) => prompt.sortOrder)) + 1 + dndNoise()
     const newDimension = new TemplateDimension({
       name: `New dimension #${activeDimensions.length + 1}`,
+      description: '',
       teamId: template.teamId,
       sortOrder,
       templateId: template.id,

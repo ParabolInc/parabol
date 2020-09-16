@@ -20,6 +20,7 @@ import NavigateMeetingPayload from './NavigateMeetingPayload'
 import PromoteToTeamLeadPayload from './PromoteToTeamLeadPayload'
 import PushInvitationPayload from './PushInvitationPayload'
 import ReflectTemplatePromptUpdateDescriptionPayload from './ReflectTemplatePromptUpdateDescriptionPayload'
+import PokerTemplateDimensionUpdateDescriptionPayload from './PokerTemplateDimensionUpdateDescriptionPayload'
 import ReflectTemplatePromptUpdateGroupColorPayload from './ReflectTemplatePromptUpdateGroupColorPayload'
 import RemoveAgendaItemPayload from './RemoveAgendaItemPayload'
 import RemoveAtlassianAuthPayload from './RemoveAtlassianAuthPayload'
@@ -80,6 +81,7 @@ const types = [
   MoveReflectTemplatePromptPayload,
   MovePokerTemplateDimensionPayload,
   ReflectTemplatePromptUpdateDescriptionPayload,
+  PokerTemplateDimensionUpdateDescriptionPayload,
   ReflectTemplatePromptUpdateGroupColorPayload,
   RemoveAtlassianAuthPayload,
   RemoveGitHubAuthPayload,

@@ -3,6 +3,7 @@ import shortid from 'shortid'
 export interface TemplateDimensionInput {
   id?: string
   name: string
+  description: string
   teamId: string
   templateId: string
   sortOrder: number
@@ -14,6 +15,7 @@ export interface TemplateDimensionInput {
 export default class TemplateDimension {
   id: string
   name: string
+  description: string
   teamId: string
   templateId: string
   isActive = true
@@ -24,10 +26,21 @@ export default class TemplateDimension {
   deletedAt?: Date
 
   constructor(input: TemplateDimensionInput) {
-    const {id, name, teamId, templateId, sortOrder, scaleId, createdAt, updatedAt} = input
+    const {
+      id,
+      name,
+      description,
+      teamId,
+      templateId,
+      sortOrder,
+      scaleId,
+      createdAt,
+      updatedAt
+    } = input
     const now = new Date()
     this.id = id || shortid.generate()
     this.name = name
+    this.description = description
     this.teamId = teamId
     this.templateId = templateId
     this.sortOrder = sortOrder

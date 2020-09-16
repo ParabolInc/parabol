@@ -38,6 +38,7 @@ const makePokerTemplates = (teamId: string, orgId: string, templateObj: Template
 
       const newDimension = new TemplateDimension({
         name: dimensionName,
+        description: '',
         teamId,
         templateId: template.id,
         sortOrder: idx,

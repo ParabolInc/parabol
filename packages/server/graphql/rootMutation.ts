@@ -60,6 +60,7 @@ import promoteNewMeetingFacilitator from './mutations/promoteNewMeetingFacilitat
 import promoteToTeamLead from './mutations/promoteToTeamLead'
 import pushInvitation from './mutations/pushInvitation'
 import reflectTemplatePromptUpdateDescription from './mutations/reflectTemplatePromptUpdateDescription'
+import pokerTemplateDimensionUpdateDescription from './mutations/pokerTemplateDimensionUpdateDescription'
 import reflectTemplatePromptUpdateGroupColor from './mutations/reflectTemplatePromptUpdateGroupColor'
 import removeAgendaItem from './mutations/removeAgendaItem'
 import removeAtlassianAuth from './mutations/removeAtlassianAuth'
@@ -176,6 +177,7 @@ export default new GraphQLObjectType<any, Context, any>({
     promoteNewMeetingFacilitator,
     promoteToTeamLead,
     reflectTemplatePromptUpdateDescription,
+    pokerTemplateDimensionUpdateDescription,
     reflectTemplatePromptUpdateGroupColor,
     removeAgendaItem,
     removeAtlassianAuth,
