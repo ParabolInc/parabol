@@ -5,6 +5,17 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 5.18.0 2020-Sep-16
+
+## Added
+- robots.txt to nginx (#4160)
+- Retro Template Illustations (#4172)
+- Revisit Check-in meetings (#4020)
+-
+## Fixed
+- Invite UI Copy (#4168)
+- Bump Node to v14 (#4154)
+
 ## 5.17.0 2020-Sep-10
 
 ## Added
