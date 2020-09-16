@@ -8,6 +8,7 @@ import Room from './lib/Room'
 import {AwaitQueue} from 'awaitqueue'
 import getVerifiedAuthToken from 'parabol-server/utils/getVerifiedAuthToken'
 import {isAuthenticated, isTeamMember} from 'parabol-server/utils/authorization'
+import checkBlacklistJWT from 'parabol-server/utils/checkBlacklistJWT'
 
 const mediasoupWorkers = []
 const rooms = new Map<string, Room>()
@@ -87,6 +88,13 @@ async function runWebSocketServer() {
     const decodedAuthToken = getVerifiedAuthToken(encodedAuthToken as string)
     if (!isAuthenticated(decodedAuthToken)) {
       reject(401, 'No authentication credentials')
+      return
+    }
+    const {sub: userId, iat} = decodedAuthToken
+    const isBlacklistedJWT = await checkBlacklistJWT(userId, iat)
+    console.log('Is blacklisted:', isBlacklistedJWT)
+    if (isBlacklistedJWT) {
+      reject(401, 'Your authentication has expired')
       return
     }
     if (!isTeamMember(decodedAuthToken, teamId as string)) {
