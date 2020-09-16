@@ -67,6 +67,14 @@ const UpdatesHelpMenu = lazyPreload(async () =>
   import(/* webpackChunkName: 'UpdatesHelpMenu' */ './MeetingHelp/UpdatesHelpMenu')
 )
 
+const ScopeHelpMenu = lazyPreload(async () =>
+  import(/* webpackChunkName: 'ScopeHelpMenu' */ './MeetingHelp/ScopeHelpMenu')
+)
+
+const EstimateHelpMenu = lazyPreload(async () =>
+  import(/* webpackChunkName: 'EstimateHelpMenu' */ './MeetingHelp/EstimateHelpMenu')
+)
+
 const demoHelps = {
   [NewMeetingPhaseTypeEnum.checkin]: DemoReflectHelpMenu,
   [NewMeetingPhaseTypeEnum.reflect]: DemoReflectHelpMenu,
@@ -84,7 +92,9 @@ const helps = {
   [NewMeetingPhaseTypeEnum.updates]: UpdatesHelpMenu,
   [NewMeetingPhaseTypeEnum.firstcall]: ActionMeetingFirstCallHelpMenu,
   [NewMeetingPhaseTypeEnum.agendaitems]: ActionMeetingAgendaItemsHelpMenu,
-  [NewMeetingPhaseTypeEnum.lastcall]: ActionMeetingLastCallHelpMenu
+  [NewMeetingPhaseTypeEnum.lastcall]: ActionMeetingLastCallHelpMenu,
+  SCOPE: ScopeHelpMenu,
+  ESTIMATE: EstimateHelpMenu
 }
 
 interface Props {

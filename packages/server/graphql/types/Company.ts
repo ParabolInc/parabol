@@ -55,6 +55,7 @@ const Company = new GraphQLObjectType<any, GQLContext, any>({
         const teamsByOrgId = await dataLoader.get('teamsByOrgId').loadMany(orgIds)
         const teams = teamsByOrgId.flat()
         const teamIds = teams.map(({id}) => id)
+        if (teamIds.length === 0) return 0
         const lastMetAt = await r
           .table('NewMeeting')
           .getAll(r.args(teamIds), {index: 'teamId'})
@@ -74,6 +75,7 @@ const Company = new GraphQLObjectType<any, GQLContext, any>({
         const teamsByOrgId = await dataLoader.get('teamsByOrgId').loadMany(orgIds)
         const teams = teamsByOrgId.flat()
         const teamIds = teams.map(({id}) => id)
+        if (teamIds.length === 0) return 0
         return r
           .table('NewMeeting')
           .getAll(r.args(teamIds), {index: 'teamId'})
@@ -93,6 +95,7 @@ const Company = new GraphQLObjectType<any, GQLContext, any>({
         const teamsByOrgId = await dataLoader.get('teamsByOrgId').loadMany(orgIds)
         const teams = teamsByOrgId.flat()
         const teamIds = teams.map(({id}) => id)
+        if (teamIds.length === 0) return 0
         return (
           r
             .table('NewMeeting')

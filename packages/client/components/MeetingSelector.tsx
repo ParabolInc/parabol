@@ -36,7 +36,6 @@ const MeetingSelector = (props: Props) => {
   const {history} = useRouter()
   useEffect(() => {
     if (!meeting) {
-      debugger
       history.replace({
         pathname: `/invitation-required`,
         search: `?redirectTo=${encodeURIComponent(window.location.pathname)}&meetingId=${meetingId}`

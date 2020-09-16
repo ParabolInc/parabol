@@ -91,7 +91,9 @@ export default {
         invitationNotificationIds
       }
 
-      const encodedAuthToken = encodeAuthToken(new AuthToken({tms, sub: viewerId}))
+      const encodedAuthToken = encodeAuthToken(
+        new AuthToken({tms, sub: viewerId, rol: authToken.rol})
+      )
 
       // Send the new team member a welcome & a new token
       publish(SubscriptionChannel.NOTIFICATION, viewerId, 'AuthTokenPayload', {tms})

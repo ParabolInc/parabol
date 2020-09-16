@@ -268,6 +268,7 @@ const backupOrganization = {
             timelineEvent: (r
               .table('TimelineEvent')
               .filter((row) => r(userIds).contains(row('userId'))) as any)
+              .filter((row) => r.branch(row('teamId'), r(teamIds).contains(row('teamId')), true))
               .coerceTo('array')
               .do((items) =>
                 r

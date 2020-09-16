@@ -7705,7 +7705,6 @@ export type MeetingSubscriptionPayload =
   | IDeleteCommentSuccess
   | IDragDiscussionTopicPayload
   | IDragEstimatingTaskSuccess
-  | IEndDraggingReflectionPayload
   | IEditCommentingPayload
   | IEditReflectionPayload
   | IEndDraggingReflectionPayload
