@@ -76,6 +76,7 @@ import renameMeeting from './mutations/renameMeeting'
 import renameReflectTemplate from './mutations/renameReflectTemplate'
 import renamePokerTemplate from './mutations/renamePokerTemplate'
 import renameReflectTemplatePrompt from './mutations/renameReflectTemplatePrompt'
+import renamePokerTemplateDimension from './mutations/renamePokerTemplateDimension'
 import resetPassword from './mutations/resetPassword'
 import segmentEventTrack from './mutations/segmentEventTrack'
 import selectRetroTemplate from './mutations/selectRetroTemplate'
@@ -188,6 +189,7 @@ export default new GraphQLObjectType<any, Context, any>({
     renamePokerTemplate,
     renameReflectTemplate,
     renameReflectTemplatePrompt,
+    renamePokerTemplateDimension,
     removeReflection,
     removeSlackAuth,
     removeTeamMember,

@@ -3512,6 +3512,11 @@ export interface IMutation {
   renameReflectTemplatePrompt: IRenameReflectTemplatePromptPayload | null;
 
   /**
+   * Rename a poker template dimension
+   */
+  renamePokerTemplateDimension: IRenamePokerTemplateDimensionPayload | null;
+
+  /**
    * Remove a reflection
    */
   removeReflection: IRemoveReflectionPayload | null;
@@ -4303,6 +4308,11 @@ export interface IRenameReflectTemplateOnMutationArguments {
 export interface IRenameReflectTemplatePromptOnMutationArguments {
   promptId: string;
   question: string;
+}
+
+export interface IRenamePokerTemplateDimensionOnMutationArguments {
+  dimensionId: string;
+  name: string;
 }
 
 export interface IRemoveReflectionOnMutationArguments {
@@ -7346,6 +7356,12 @@ export interface IRenameReflectTemplatePromptPayload {
   prompt: IReflectPrompt | null;
 }
 
+export interface IRenamePokerTemplateDimensionPayload {
+  __typename: 'RenamePokerTemplateDimensionPayload';
+  error: IStandardMutationError | null;
+  dimension: ITemplateDimension | null;
+}
+
 export interface IRemoveReflectionPayload {
   __typename: 'RemoveReflectionPayload';
   error: IStandardMutationError | null;
@@ -8295,6 +8311,7 @@ export type TeamSubscriptionPayload =
   | IRenameReflectTemplatePayload
   | IRenamePokerTemplatePayload
   | IRenameReflectTemplatePromptPayload
+  | IRenamePokerTemplateDimensionPayload
   | ISetCheckInEnabledPayload
   | ISetSlackNotificationPayload
   | IUpdateUserProfilePayload;
