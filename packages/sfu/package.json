@@ -25,6 +25,7 @@
     "typescript": "^3.9.5"
   },
   "dependencies": {
+    "debug": "^4.1.1",
     "awaitqueue": "^2.1.1",
     "express": "^4.17.1",
     "mediasoup": "https://github.com/mattkrick/mediasoup/tarball/835592be155e801195d80d3e94fb561bac79c09a",

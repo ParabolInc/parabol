@@ -9,7 +9,9 @@ import {AwaitQueue} from 'awaitqueue'
 import getVerifiedAuthToken from 'parabol-server/utils/getVerifiedAuthToken'
 import {isAuthenticated, isTeamMember} from 'parabol-server/utils/authorization'
 import checkBlacklistJWT from 'parabol-server/utils/checkBlacklistJWT'
+import Logger from './lib/Logger'
 
+const logger = new Logger()
 const mediasoupWorkers = []
 const rooms = new Map<string, Room>()
 const queue = new AwaitQueue()
@@ -40,13 +42,13 @@ async function runMediasoupWorkers() {
       rtcMaxPort: Number(rtcMaxPort)
     })
     worker.on('died', () => {
-      console.log('mediasoup Worker died, exiting  in 2 seconds... [pid:%d]', worker.pid)
+      logger.info('mediasoup Worker died, exiting  in 2 seconds... [pid:%d]', worker.pid)
       setTimeout(() => process.exit(1), 2000)
     })
     mediasoupWorkers.push(worker)
     // setInterval(async () => {
     //   const usage = await worker.getResourceUsage()
-    //   console.log('mediasoup Worker resource usage [pid:%d]: %o', worker.pid, usage)
+    //   logger.info('mediasoup Worker resource usage [pid:%d]: %o', worker.pid, usage)
     // }, 120000)
   }
 }
@@ -92,7 +94,7 @@ async function runWebSocketServer() {
     }
     const {sub: userId, iat} = decodedAuthToken
     const isBlacklistedJWT = await checkBlacklistJWT(userId, iat)
-    console.log('Is blacklisted:', isBlacklistedJWT)
+    logger.debug('Is blacklisted:', isBlacklistedJWT)
     if (isBlacklistedJWT) {
       reject(401, 'Your authentication has expired')
       return
@@ -104,7 +106,7 @@ async function runWebSocketServer() {
     /* queue to avoid race condition where we create same room twice */
     queue.push(async () => {
       const room = await getOrCreateRoom(roomId as string)
-      console.log('Got room with room id:', room.roomId)
+      logger.debug('Got room with room id:', room.roomId)
       const transport = accept()
       room.createPeer(peerId as string, transport)
     })

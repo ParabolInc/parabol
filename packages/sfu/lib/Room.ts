@@ -3,6 +3,9 @@ import protoo from 'protoo-server'
 import config from '../config'
 import events from 'events'
 import {RtpCodecCapability} from 'mediasoup/lib/types'
+import Logger from './Logger'
+
+const logger = new Logger('Room')
 
 interface handlePeerRequestSignature {
   peer: protoo.Peer
@@ -28,7 +31,7 @@ export default class Room extends events.EventEmitter {
 
   static async create(roomId: string, worker: mediasoupTypes.Worker): Promise<Room> {
     /* Because constructors can't be async */
-    console.log('creating a new room...')
+    logger.info('creating a new room...')
     const protooRoom = new protoo.Room()
     const router = await worker.createRouter({
       mediaCodecs: Room.mediaCodecs as RtpCodecCapability[]
@@ -54,7 +57,7 @@ export default class Room extends events.EventEmitter {
   }
 
   close() {
-    console.log('closing room...')
+    logger.info('closing room...')
     this.closed = true
     this.protooRoom.close()
     this.router.close()
@@ -63,10 +66,10 @@ export default class Room extends events.EventEmitter {
 
   handleAudioLevelObserver() {
     this.audioLevelObserver.on('volumes', (volumes) => {
-      console.log('handling volumes:', volumes)
+      logger.info('handling volumes:', volumes)
     })
     this.audioLevelObserver.on('silence', () => {
-      console.log('handling silence')
+      logger.info('handling silence')
     })
   }
 
@@ -94,7 +97,7 @@ export default class Room extends events.EventEmitter {
     peer.on('close', () => this.closePeer(peer))
     peer.on('request', (request, accept, reject) => {
       this.handlePeerRequest({peer, request, accept, reject}).catch((error) => {
-        console.log('peer req failed:', error)
+        logger.error('peer req failed:', error)
         reject(error)
       })
     })
@@ -148,7 +151,7 @@ export default class Room extends events.EventEmitter {
     newPeer: protoo.Peer
     newProducer: mediasoupTypes.Producer
   }) {
-    console.log('creating consumer for new producer...')
+    logger.info('creating consumer for new producer...')
     const existingPeers = this.getJoinedPeers({excludePeer: newPeer})
     for (const existingPeer of existingPeers) {
       this.createConsumer({
@@ -160,7 +163,7 @@ export default class Room extends events.EventEmitter {
   }
 
   letPeerConsumeRoom(newPeer: protoo.Peer) {
-    console.log('letting peer consume room...')
+    logger.info('letting peer consume room...')
     const existingPeers = this.getJoinedPeers({excludePeer: newPeer})
     for (const existingPeer of existingPeers) {
       const existingProducers = existingPeer.data.producers.values()
@@ -219,7 +222,7 @@ export default class Room extends events.EventEmitter {
     consumerPeer: protoo.Peer
     consumer: mediasoupTypes.Consumer
   }) {
-    console.log('requesting client to accept new consumer...')
+    logger.info('requesting client to accept new consumer...')
     await consumerPeer.request('newConsumer', {
       peerId: producerPeer.id,
       producerId: producer.id,
@@ -233,7 +236,7 @@ export default class Room extends events.EventEmitter {
   }
 
   handleConsumer(consumer: mediasoupTypes.Consumer, consumerPeer: protoo.Peer) {
-    consumer.on('transportclose', () => console.log('handling transportclose'))
+    consumer.on('transportclose', () => logger.info('handling transportclose'))
     consumer.on('producerclose', () => {
       consumerPeer.notify('consumerClosed', {consumerId: consumer.id}).catch(() => {})
     })
@@ -243,13 +246,13 @@ export default class Room extends events.EventEmitter {
     consumer.on('producerresume', () => {
       consumerPeer.notify('consumerResumed', {consumerId: consumer.id}).catch(() => {})
     })
-    consumer.on('score', () => console.log('handling score'))
-    consumer.on('layerschange', () => console.log('handling layerschange'))
+    consumer.on('score', () => logger.info('handling score'))
+    consumer.on('layerschange', () => logger.info('handling layerschange'))
   }
 
   notifyRoomOfNewPeer(newPeer: protoo.Peer) {
     for (const otherPeer of this.getJoinedPeers({excludePeer: newPeer})) {
-      console.log('notifying of new peer:', newPeer.id)
+      logger.info('notifying of new peer:', newPeer.id)
       otherPeer
         .notify('newPeer', {
           id: newPeer.id,
@@ -298,7 +301,7 @@ export default class Room extends events.EventEmitter {
   }
 
   connectWebRtcTransport = async ({peer, request, accept}: handlePeerRequestSignature) => {
-    console.log('accepting request to connect this transport...')
+    logger.info('accepting request to connect this transport...')
     const {transportId, dtlsParameters} = request.data
     const transport = peer.data.transports.get(transportId)
     if (!transport) throw new Error(`transport with id "${transportId}" not found`)
@@ -307,7 +310,7 @@ export default class Room extends events.EventEmitter {
   }
 
   createProducer = async ({peer, request, accept}: handlePeerRequestSignature) => {
-    console.log('creating producer...')
+    logger.info('creating producer...')
     if (!peer.data.joined) throw new Error('Peer not joined yet')
     const {transportId, kind, rtpParameters} = request.data
     const transport = peer.data.transports.get(transportId)
