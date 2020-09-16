@@ -6,8 +6,8 @@ import standardError from '../../utils/standardError'
 import RenameReflectTemplatePromptPayload from '../types/RenameReflectTemplatePromptPayload'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 
-const renameReflectTemplate = {
-  description: 'Rename a reflect template',
+const renameReflectTemplatePrompt = {
+  description: 'Rename a reflect template prompt',
   type: RenameReflectTemplatePromptPayload,
   args: {
     promptId: {
@@ -72,4 +72,4 @@ const renameReflectTemplate = {
   }
 }
 
-export default renameReflectTemplate
+export default renameReflectTemplatePrompt

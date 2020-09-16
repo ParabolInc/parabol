@@ -6,8 +6,8 @@ import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import RenameReflectTemplatePayload from '../types/RenameReflectTemplatePayload'
 
-const renameReflectTemplatePrompt = {
-  description: 'Rename a reflect template prompt',
+const renameReflectTemplate = {
+  description: 'Rename a reflect template',
   type: RenameReflectTemplatePayload,
   args: {
     templateId: {
@@ -59,4 +59,4 @@ const renameReflectTemplatePrompt = {
   }
 }
 
-export default renameReflectTemplatePrompt
+export default renameReflectTemplate
