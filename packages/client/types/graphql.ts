@@ -3497,12 +3497,17 @@ export interface IMutation {
   renameMeeting: RenameMeetingPayload;
 
   /**
-   * Rename a reflect template prompt
+   * Rename a Poker template
+   */
+  renamePokerTemplate: IRenamePokerTemplatePayload | null;
+
+  /**
+   * Rename a reflect template
    */
   renameReflectTemplate: IRenameReflectTemplatePayload | null;
 
   /**
-   * Rename a reflect template
+   * Rename a reflect template prompt
    */
   renameReflectTemplatePrompt: IRenameReflectTemplatePromptPayload | null;
 
@@ -4283,6 +4288,11 @@ export interface IRenameMeetingOnMutationArguments {
    * the meeting with the new name
    */
   meetingId: string;
+}
+
+export interface IRenamePokerTemplateOnMutationArguments {
+  templateId: string;
+  name: string;
 }
 
 export interface IRenameReflectTemplateOnMutationArguments {
@@ -7318,6 +7328,12 @@ export interface IRenameMeetingSuccess {
   meeting: NewMeeting;
 }
 
+export interface IRenamePokerTemplatePayload {
+  __typename: 'RenamePokerTemplatePayload';
+  error: IStandardMutationError | null;
+  pokerTemplate: IPokerTemplate | null;
+}
+
 export interface IRenameReflectTemplatePayload {
   __typename: 'RenameReflectTemplatePayload';
   error: IStandardMutationError | null;
@@ -8277,6 +8293,7 @@ export type TeamSubscriptionPayload =
   | IRemoveReflectTemplatePromptPayload
   | IRemovePokerTemplateDimensionPayload
   | IRenameReflectTemplatePayload
+  | IRenamePokerTemplatePayload
   | IRenameReflectTemplatePromptPayload
   | ISetCheckInEnabledPayload
   | ISetSlackNotificationPayload

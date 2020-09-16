@@ -33,6 +33,7 @@ import RemoveSlackAuthPayload from './RemoveSlackAuthPayload'
 import RemoveTeamMemberPayload from './RemoveTeamMemberPayload'
 import {RenameMeetingSuccess} from './RenameMeetingPayload'
 import RenameReflectTemplatePayload from './RenameReflectTemplatePayload'
+import RenamePokerTemplatePayload from './RenamePokerTemplatePayload'
 import RenameReflectTemplatePromptPayload from './RenameReflectTemplatePromptPayload'
 import SelectRetroTemplatePayload from './SelectRetroTemplatePayload'
 import SetCheckInEnabledPayload from './SetCheckInEnabledPayload'
@@ -87,6 +88,7 @@ const types = [
   RemoveReflectTemplatePromptPayload,
   RemovePokerTemplateDimensionPayload,
   RenameReflectTemplatePayload,
+  RenamePokerTemplatePayload,
   RenameReflectTemplatePromptPayload,
   SetCheckInEnabledPayload,
   SetSlackNotificationPayload,
