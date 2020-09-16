@@ -2,12 +2,11 @@ import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel, Threshold} from 'parabol-client/types/constEnums'
 import dndNoise from 'parabol-client/utils/dndNoise'
 import getRethink from '../../database/rethinkDriver'
-import TemplateDimension from '../../database/types/TemplateDimension'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import AddPokerTemplateDimensionPayload from '../types/AddPokerTemplateDimensionPayload'
-import {makePokerTemplateDimensionScale} from './helpers/makePokerTemplates'
+import makePokerTemplateDimension from './helpers/makePokerTemplateDimension'
 
 const addPokerTemplateDimension = {
   description: 'Add a new dimension for the poker template',
@@ -46,23 +45,17 @@ const addPokerTemplateDimension = {
       return standardError(new Error('Too many dimensions'), {userId: viewerId})
     }
 
-    const newScale = makePokerTemplateDimensionScale(template.teamId, template.id)
-
     // RESOLUTION
     const sortOrder =
       Math.max(...activeDimensions.map((prompt) => prompt.sortOrder)) + 1 + dndNoise()
-    const newDimension = new TemplateDimension({
-      name: `New dimension #${activeDimensions.length + 1}`,
-      description: '',
-      teamId: template.teamId,
-      sortOrder,
-      templateId: template.id,
-      scaleId: newScale.id
-    })
+    const newDimensionWithDefaultScales = makePokerTemplateDimension(teamId, template.id)
+    const {newDimension, newScales} = newDimensionWithDefaultScales
+    ;(newDimension.name = `New dimension #${activeDimensions.length + 1}`),
+      (newDimension.sortOrder = sortOrder)
 
     await r
       .table('TemplateScale')
-      .insert(newScale)
+      .insert(newScales)
       .run()
 
     await r

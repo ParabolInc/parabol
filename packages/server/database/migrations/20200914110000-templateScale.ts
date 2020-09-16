@@ -36,6 +36,7 @@ const newScales = [
     updatedAt: createdAt,
     name: 'Fibonacci',
     isActive: true,
+    sortOrder: 1,
     values: [
       {color: '#5CA0E5', label: '1', value: 1},
       {color: '#5CA0E5', label: '2', value: 2},
@@ -55,6 +56,7 @@ const newScales = [
     updatedAt: createdAt,
     name: 'T-Shirt Sizes',
     isActive: true,
+    sortOrder: 0,
     values: [
       {color: '#5CA0E5', label: 'XS', value: 1},
       {color: '#5CA0E5', label: 'SM', value: 2},
@@ -71,6 +73,7 @@ const newScales = [
     updatedAt: createdAt,
     name: 'Five Fingers',
     isActive: true,
+    sortOrder: 2,
     values: [
       {color: '#5CA0E5', label: '1', value: 1},
       {color: '#5CA0E5', label: '2', value: 2},

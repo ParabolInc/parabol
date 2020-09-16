@@ -1,26 +1,15 @@
-import TemplateScaleValue from '../../../database/types/TemplateScaleValue'
 import PokerTemplate from '../../../database/types/PokerTemplate'
 import TemplateDimension from '../../../database/types/TemplateDimension'
 import TemplateScale from '../../../database/types/TemplateScale'
+import makePokerTemplateDimension from './makePokerTemplateDimension'
 
-interface TemplateObject {
-  [templateName: string]: string[]
+interface DimensionObject {
+  name: string
+  description?: string
 }
 
-const makePokerTemplateDimensionScale = (teamId: string, templateId: string) => {
-  const newScaleValues = [
-    new TemplateScaleValue({color: '#5CA0E5', label: 'XS', value: 1}),
-    new TemplateScaleValue({color: '#5CA0E5', label: 'SM', value: 2}),
-    new TemplateScaleValue({color: '#45E595', label: 'M', value: 3}),
-    new TemplateScaleValue({color: '#E59545', label: 'L', value: 4}),
-    new TemplateScaleValue({color: '#E59545', label: 'XL', value: 5})
-  ]
-  return new TemplateScale({
-    name: 'T-Shirt Sizes',
-    values: newScaleValues,
-    teamId: teamId,
-    templateId: templateId
-  })
+interface TemplateObject {
+  [templateName: string]: DimensionObject[]
 }
 
 const makePokerTemplates = (teamId: string, orgId: string, templateObj: TemplateObject) => {
@@ -32,23 +21,18 @@ const makePokerTemplates = (teamId: string, orgId: string, templateObj: Template
     const dimensionBase = templateObj[templateName]
     const template = new PokerTemplate({name: templateName, teamId, orgId})
 
-    const dimensionAndScales = dimensionBase.map((dimensionName, idx) => {
-      const newScale = makePokerTemplateDimensionScale(teamId, template.id)
-      pokerScales.push()
+    const dimensionAndScales = dimensionBase.map((dimension, idx) => {
+      const newDimensionWithDefaultScales = makePokerTemplateDimension(teamId, template.id)
+      const {newDimension, newScales} = newDimensionWithDefaultScales
 
-      const newDimension = new TemplateDimension({
-        name: dimensionName,
-        description: '',
-        teamId,
-        templateId: template.id,
-        sortOrder: idx,
-        scaleId: newScale.id
-      })
+      newDimension.name = dimension.name
+      newDimension.sortOrder = idx
+      newDimension.description = dimension.description || ''
 
-      return {newDimension, newScale}
+      return {newDimension, newScales}
     })
     const dimensions = dimensionAndScales.map(({newDimension}) => newDimension)
-    const scales = dimensionAndScales.map(({newScale}) => newScale)
+    const scales = dimensionAndScales.map(({newScales}) => newScales).flat()
     templates.push(template)
     pokerDimensions.push(...dimensions)
     pokerScales.push(...scales)
@@ -56,4 +40,4 @@ const makePokerTemplates = (teamId: string, orgId: string, templateObj: Template
   return {pokerDimensions, pokerScales, templates}
 }
 
-export {makePokerTemplateDimensionScale, makePokerTemplates}
+export default makePokerTemplates
