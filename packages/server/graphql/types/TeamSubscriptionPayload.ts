@@ -27,6 +27,7 @@ import RemoveGitHubAuthPayload from './RemoveGitHubAuthPayload'
 import RemoveOrgUserPayload from './RemoveOrgUserPayload'
 import RemoveReflectTemplatePayload from './RemoveReflectTemplatePayload'
 import RemoveReflectTemplatePromptPayload from './RemoveReflectTemplatePromptPayload'
+import RemovePokerTemplateDimensionPayload from './RemovePokerTemplateDimensionPayload'
 import RemoveSlackAuthPayload from './RemoveSlackAuthPayload'
 import RemoveTeamMemberPayload from './RemoveTeamMemberPayload'
 import {RenameMeetingSuccess} from './RenameMeetingPayload'
@@ -82,6 +83,7 @@ const types = [
   RemoveSlackAuthPayload,
   RemoveReflectTemplatePayload,
   RemoveReflectTemplatePromptPayload,
+  RemovePokerTemplateDimensionPayload,
   RenameReflectTemplatePayload,
   RenameReflectTemplatePromptPayload,
   SetCheckInEnabledPayload,

@@ -3482,6 +3482,11 @@ export interface IMutation {
   removeReflectTemplatePrompt: IRemoveReflectTemplatePromptPayload | null;
 
   /**
+   * Remove a dimension from a template
+   */
+  removePokerTemplateDimension: IRemovePokerTemplateDimensionPayload | null;
+
+  /**
    * Rename a meeting
    */
   renameMeeting: RenameMeetingPayload;
@@ -4253,6 +4258,10 @@ export interface IRemoveReflectTemplateOnMutationArguments {
 
 export interface IRemoveReflectTemplatePromptOnMutationArguments {
   promptId: string;
+}
+
+export interface IRemovePokerTemplateDimensionOnMutationArguments {
+  dimensionId: string;
 }
 
 export interface IRenameMeetingOnMutationArguments {
@@ -7272,6 +7281,13 @@ export interface IRemoveReflectTemplatePromptPayload {
   prompt: IReflectTemplate | null;
 }
 
+export interface IRemovePokerTemplateDimensionPayload {
+  __typename: 'RemovePokerTemplateDimensionPayload';
+  error: IStandardMutationError | null;
+  pokerTemplate: IPokerTemplate | null;
+  dimension: ITemplateDimension | null;
+}
+
 /**
  * Return object for RenameMeetingPayload
  */
@@ -8242,6 +8258,7 @@ export type TeamSubscriptionPayload =
   | IRemoveSlackAuthPayload
   | IRemoveReflectTemplatePayload
   | IRemoveReflectTemplatePromptPayload
+  | IRemovePokerTemplateDimensionPayload
   | IRenameReflectTemplatePayload
   | IRenameReflectTemplatePromptPayload
   | ISetCheckInEnabledPayload
