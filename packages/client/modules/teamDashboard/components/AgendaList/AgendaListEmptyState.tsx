@@ -3,6 +3,7 @@ import styled from '@emotion/styled'
 import {PALETTE} from '../../../../styles/paletteV2'
 
 interface Props {
+  isComplete: boolean
   isDashboard: boolean
 }
 
@@ -22,8 +23,10 @@ const EmptyMessage = styled('div')({
 })
 
 const AgendaListEmptyState = (props: Props) => {
-  const {isDashboard} = props
+  const {isComplete, isDashboard} = props
   const meetingContext = isDashboard ? 'next meeting' : 'meeting'
+
+  if (isComplete) return null
   return (
     <EmptyBlock>
       <EmptyMessage>

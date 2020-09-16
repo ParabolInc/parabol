@@ -16,6 +16,7 @@ import {
 import getMeetingPhase from 'parabol-client/utils/getMeetingPhase'
 import findStageById from 'parabol-client/utils/meetings/findStageById'
 import shortid from 'shortid'
+
 import getRethink from '../../database/rethinkDriver'
 import AgendaItem from '../../database/types/AgendaItem'
 import GenericMeetingPhase from '../../database/types/GenericMeetingPhase'
@@ -131,7 +132,7 @@ const finishActionMeeting = async (meeting: MeetingAction, dataLoader: DataLoade
 
   const {id: meetingId, teamId, phases} = meeting
   const r = await getRethink()
-  const [meetingMembers, tasks, doneTasks] = await Promise.all([
+  const [meetingMembers, tasks, doneTasks, activeAgendaItems] = await Promise.all([
     dataLoader.get('meetingMembersByMeetingId').load(meetingId),
     r
       .table('Task')
@@ -149,8 +150,15 @@ const finishActionMeeting = async (meeting: MeetingAction, dataLoader: DataLoade
           .contains('archived')
           .not()
       )
+      .run(),
+    r
+      .table('AgendaItem')
+      .getAll(teamId, {index: 'teamId'})
+      .filter({isActive: true})
       .run()
   ])
+
+  const activeAgendaItemIds = activeAgendaItems.map(({id}) => id)
   const userIds = meetingMembers.map(({userId}) => userId)
   const meetingPhase = getMeetingPhase(phases)
   const pinnedAgendaItems = await getPinnedAgendaItems(teamId)
@@ -163,14 +171,25 @@ const finishActionMeeting = async (meeting: MeetingAction, dataLoader: DataLoade
     r
       .table('NewMeeting')
       .get(meetingId)
-      .update({taskCount: tasks.length})
+      .update(
+        {
+          agendaItemCount: activeAgendaItems.length,
+          commentCount: (r
+            .table('Comment')
+            .getAll(r.args(activeAgendaItemIds), {index: 'threadId'})
+            .count()
+            .default(0) as unknown) as number,
+          taskCount: tasks.length
+        },
+        {nonAtomic: true}
+      )
       .run()
   ])
 
   return {updatedTaskIds: [...tasks, ...doneTasks].map(({id}) => id)}
 }
 
-const finishRetroMeting = async (meeting: MeetingRetrospective, dataLoader: DataLoaderWorker) => {
+const finishRetroMeeting = async (meeting: MeetingRetrospective, dataLoader: DataLoaderWorker) => {
   const {id: meetingId} = meeting
   const r = await getRethink()
   const [reflectionGroups, reflections] = await Promise.all([
@@ -211,7 +230,7 @@ const finishMeetingType = async (
     case MeetingTypeEnum.action:
       return finishActionMeeting(meeting, dataLoader)
     case MeetingTypeEnum.retrospective:
-      return finishRetroMeting(meeting as MeetingRetrospective, dataLoader)
+      return finishRetroMeeting(meeting as MeetingRetrospective, dataLoader)
   }
   return undefined
 }

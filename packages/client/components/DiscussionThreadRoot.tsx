@@ -28,7 +28,7 @@ const DiscussionThreadRoot = (props: Props) => {
       query={query}
       variables={{meetingId, threadSourceId}}
       fetchPolicy={'store-or-network' as any}
-      render={renderQuery(DiscussionThread, {props: {meetingContentRef}})}
+      render={renderQuery(DiscussionThread, {props: {meetingContentRef, threadSourceId}})}
     />
   )
 }

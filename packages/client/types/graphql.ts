@@ -8059,6 +8059,26 @@ export interface IActionMeeting {
   viewerMeetingMember: IActionMeetingMember;
 
   /**
+   * A single agenda item
+   */
+  agendaItem: IAgendaItem | null;
+
+  /**
+   * The number of agenda items generated in the meeting
+   */
+  agendaItemCount: number;
+
+  /**
+   * All of the agenda items for the meeting
+   */
+  agendaItems: Array<IAgendaItem>;
+
+  /**
+   * The number of comments generated in the meeting
+   */
+  commentCount: number;
+
+  /**
    * The settings that govern the action meeting
    */
   settings: IActionMeetingSettings;
@@ -8072,16 +8092,6 @@ export interface IActionMeeting {
    * The tasks created within the meeting
    */
   tasks: Array<ITask>;
-
-  /**
-   * A single agenda item
-   */
-  agendaItem: IAgendaItem | null;
-
-  /**
-   * All of the agenda items for the meeting
-   */
-  agendaItems: Array<IAgendaItem>;
 }
 
 export interface IAgendaItemOnActionMeetingArguments {
