@@ -1,5 +1,5 @@
 const signalingServerPort = 4443
-const signalingServerHostname = 'localhost'
+const signalingServerHostname = window.location.hostname
 
 interface getSignalingServerUrlSignature {
   roomId: string
