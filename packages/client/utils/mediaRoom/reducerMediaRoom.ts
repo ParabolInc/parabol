@@ -1,6 +1,9 @@
 import MediaRoom from './MediaRoom'
 import {DeviceInfo} from './MediaRoom'
 import {types as mediasoupTypes} from 'mediasoup-client'
+import Logger from './Logger'
+
+const logger = new Logger('Reducer')
 
 type MediaRoomAction =
   | InitMediaRoom
@@ -214,7 +217,7 @@ const addConsumerReducer = ({state, action}) => {
   const {consumer, peerId} = action
   const peer = state.peers[peerId]
   if (!peer) {
-    console.log(peerId, state.peers)
+    logger.debug(peerId, state.peers)
     throw new Error('no peer found for new consumer')
   }
   const newConsumers = [...peer.consumers, consumer.id]
@@ -287,9 +290,9 @@ const reducerMediaRoom = (state: MediaRoomState, action: MediaRoomAction) => {
   }
   const reducerHandler = reducerHandlers[action.type]
   if (reducerHandler) {
-    console.log('state before ', action.type, ':', state)
+    logger.debug('state before ', action.type, ':', state)
     const reducedState = reducerHandler({state, action})
-    console.log('state after ', action.type, ':', reducedState)
+    logger.debug('state after ', action.type, ':', reducedState)
     return reducedState
   }
   return state

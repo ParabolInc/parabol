@@ -4,6 +4,9 @@ import {Device, types as mediasoupTypes, parseScalabilityMode} from 'mediasoup-c
 import {Dispatch, ReducerAction} from 'react'
 import reducerMediaRoom from './reducerMediaRoom'
 import {PeerState, RoomStateEnum} from './reducerMediaRoom'
+import Logger from './Logger'
+
+const logger = new Logger()
 
 const VIDEO_CONSTRAINS = {
   qvga: {
@@ -120,6 +123,7 @@ export default class MediaRoom {
     }
     this.consumers = new Map()
     this.dispatch({type: 'initMediaRoom', mediaRoom: this})
+    logger.info('Created room:', this.roomId, this.peerId)
   }
 
   async connect() {
@@ -132,7 +136,7 @@ export default class MediaRoom {
       authToken,
       teamId
     })
-    console.log('Connecting...', endpoint)
+    logger.info('Connecting...', endpoint)
     const transport = new protoo.WebSocketTransport(endpoint)
     this.createPeer(transport)
   }
@@ -146,8 +150,8 @@ export default class MediaRoom {
 
   handlePeerConnectionStates() {
     this.peer.on('open', () => this.join())
-    this.peer.on('failed', () => console.log('failed handler'))
-    this.peer.on('disconnected', () => console.log('disconnected handler'))
+    this.peer.on('failed', () => logger.info('failed handler'))
+    this.peer.on('disconnected', () => logger.info('disconnected handler'))
     this.peer.on('close', () => this.close())
   }
 
@@ -179,7 +183,7 @@ export default class MediaRoom {
     this.consumers.set(consumer.id, consumer)
     consumer.on('transportclose', () => this.consumers.delete(consumer.id))
     accept()
-    console.log('created new consumer:', consumer)
+    logger.info('created new consumer:', consumer)
     const {spatialLayers, temporalLayers} = parseScalabilityMode(
       consumer.rtpParameters.encodings[0].scalabilityMode
     )
@@ -215,7 +219,7 @@ export default class MediaRoom {
     this.peer.on('notification', (notification) => {
       const handler = notifyHandlers[notification.method]
       if (!handler) {
-        console.log(`unknown notification.method "${notification.method}"`)
+        logger.error(`unknown notification.method "${notification.method}"`)
         return
       }
       handler(notification)
@@ -224,7 +228,7 @@ export default class MediaRoom {
 
   notifyNewPeer = ({data}: protooNotification) => {
     const peer = data as PeerState
-    console.log('notified of new peer:', peer)
+    logger.info('notified of new peer:', peer)
     this.dispatch({
       type: 'addPeer',
       peer: {...peer, consumers: []}
@@ -268,21 +272,21 @@ export default class MediaRoom {
     await this.requestJoinRoom()
     await this.enableMic()
     await this.enableWebcam()
-    console.log('Done joining!')
-    console.log('Mic Producer:', this.micProducer)
-    console.log('Webcam Producer:', this.webcamProducer)
-    console.log('Consumers:', this.consumers)
+    logger.info('Done joining!')
+    logger.info('Mic Producer:', this.micProducer)
+    logger.info('Webcam Producer:', this.webcamProducer)
+    logger.info('Consumers:', this.consumers)
   }
 
   async createDevice() {
-    console.log('creating device')
+    logger.info('creating device')
     this.device = new Device()
     const routerRtpCapabilities = await this.peer.request('getRouterRtpCapabilities')
     await this.device.load({routerRtpCapabilities})
   }
 
   async createSendTransport() {
-    console.log('creating send transport')
+    logger.info('creating send transport')
     const sendTransportInfo = await this.peer.request('createWebRtcTransport', {
       producing: true,
       consuming: false
@@ -296,7 +300,7 @@ export default class MediaRoom {
   }
 
   async createReceiveTransport() {
-    console.log('creating receive transport')
+    logger.info('creating receive transport')
     const receiveTransportInfo = await this.peer.request('createWebRtcTransport', {
       producing: false,
       consuming: true
@@ -322,7 +326,7 @@ export default class MediaRoom {
     if (transport.direction === 'recv') return
 
     transport.on('produce', async ({kind, rtpParameters, appData}, cb, errback) => {
-      console.log('requesting to produce...')
+      logger.info('requesting to produce...')
       try {
         const {id} = await this.peer
           .request('produce', {
@@ -340,7 +344,7 @@ export default class MediaRoom {
   }
 
   async requestJoinRoom() {
-    console.log('sending request to join room...')
+    logger.info('sending request to join room...')
     const {peers} = await this.peer.request('join', {
       device: this.deviceInfo,
       rtpCapabilities: this.device.rtpCapabilities
@@ -349,7 +353,7 @@ export default class MediaRoom {
       type: 'setRoomState',
       state: RoomStateEnum.connected
     })
-    console.log('Peers resp:', peers)
+    logger.info('Peers resp:', peers)
     for (const peer of peers) {
       this.dispatch({
         type: 'addPeer',
@@ -360,7 +364,7 @@ export default class MediaRoom {
   }
 
   async enableMic() {
-    console.log('enabling mic...')
+    logger.info('enabling mic...')
     if (this.micProducer) return
     if (!this.device.canProduce('audio')) return
     const stream = await navigator.mediaDevices.getUserMedia({audio: true})
@@ -382,13 +386,13 @@ export default class MediaRoom {
   }
 
   handleMic() {
-    console.log('setting event listeners on mic producer...')
-    this.micProducer!.on('transportclose', () => console.log('handling mic transport close'))
+    logger.info('setting event listeners on mic producer...')
+    this.micProducer!.on('transportclose', () => logger.info('handling mic transport close'))
     this.micProducer!.on('trackended', () => this.disableMic().catch(() => {}))
   }
 
   async enableWebcam() {
-    console.log('enabling webcam...')
+    logger.info('enabling webcam...')
     if (this.webcamProducer) return
     if (!this.device.canProduce('video')) return
     await this.updateWebcams()
@@ -420,8 +424,8 @@ export default class MediaRoom {
   }
 
   handleWebcam() {
-    console.log('setting event listeners on webcam producer...')
-    this.webcamProducer!.on('transportclose', () => console.log('handle webcam transport close'))
+    logger.info('setting event listeners on webcam producer...')
+    this.webcamProducer!.on('transportclose', () => logger.info('handle webcam transport close'))
     this.webcamProducer!.on('trackended', () => this.disableWebcam().catch(() => {}))
   }
 
@@ -430,7 +434,7 @@ export default class MediaRoom {
 
   async closeProducer(producer: mediasoupTypes.Producer) {
     if (!producer) return
-    console.log('disabling producer:', producer)
+    logger.info('disabling producer:', producer)
     producer.close()
     this.dispatch({type: 'removeProducer', producerId: producer.id})
     await this.peer.request('closeProducer', {producerId: producer.id})
@@ -471,7 +475,7 @@ export default class MediaRoom {
   }
 
   close = () => {
-    console.log('closing room...')
+    logger.info('closing room...')
     if (this.closed) return
     this.closed = true
     if (this.peer) this.peer.close()

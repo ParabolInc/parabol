@@ -26,7 +26,7 @@ module.exports = {
       '~': CLIENT_ROOT,
       'parabol-server': SERVER_ROOT,
       'parabol-client': CLIENT_ROOT,
-      'static': STATIC_ROOT
+      static: STATIC_ROOT
     },
     extensions: ['.js', '.json', '.ts', '.tsx'],
     unsafeCache: true,
@@ -49,6 +49,7 @@ module.exports = {
       __PRODUCTION__: false,
       __APP_VERSION__: JSON.stringify(process.env.npm_package_version),
       'process.env.NODE_ENV': JSON.stringify('development'),
+      'process.env.DEBUG': JSON.stringify(process.env.DEBUG),
       __STATIC_IMAGES__: JSON.stringify(`/static/images`)
     }),
     new webpack.DllReferencePlugin({

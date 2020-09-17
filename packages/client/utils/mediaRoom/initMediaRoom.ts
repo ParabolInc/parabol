@@ -11,7 +11,6 @@ const initMediaRoom = async (
   dispatch: Dispatch<ReducerAction<typeof reducerMediaRoom>>
 ) => {
   const mediaRoom = new MediaRoom({roomId, peerId, dispatch, authToken, teamId})
-  console.log('Created room:', mediaRoom.roomId, mediaRoom.peerId)
   if (disposable.current === null) return
   disposable.current = mediaRoom.close
   return mediaRoom
