@@ -88,7 +88,7 @@ interface Props {
   relay: RelayPaginationProp
   viewer: TeamArchive_viewer
   returnToTeamId?: string
-  team?: TeamArchive_team
+  team: TeamArchive_team | null
 }
 
 const TeamArchive = (props: Props) => {

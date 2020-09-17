@@ -28,7 +28,7 @@ const MyDashboardTasks = (props: Props) => {
       <UserTasksHeader viewer={viewer} />
 
       {showArchived ? (
-        <TeamArchive viewer={viewer} />
+        <TeamArchive viewer={viewer} team={null} />
       ) : (
           <UserColumnsContainer viewer={viewer} />)}
     </>
