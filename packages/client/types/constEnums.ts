@@ -273,6 +273,7 @@ export const enum TierLabel {
 }
 
 export const enum Threshold {
+  MAX_NUMBER_OF_TASKS_TO_LOAD = 1000,
   AUTO_PAUSE = 2592000000, // 30 days
   EMAIL_VERIFICATION_LIFESPAN = 86400000, // 1 day
   JWT_LIFESPAN = 2592000000, // 30 days
