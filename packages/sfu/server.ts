@@ -62,20 +62,20 @@ async function runWebSocketServer() {
         cert: fs.readFileSync(config.https.tls.cert),
         key: fs.readFileSync(config.https.tls.key)
       }
-  const httpsServer = httpModule.createServer(options, express() as any)
+  const server = httpModule.createServer(options, express() as any)
 
   await new Promise((resolve) => {
-    httpsServer.listen(Number(config.https.listenPort), config.https.listenIp, resolve)
+    server.listen(Number(config.http.listenPort), config.http.listenIp, resolve)
   })
-  const wss = new protoo.WebSocketServer(httpsServer, {
+  const websocketServer = new protoo.WebSocketServer(server, {
     maxReceivedFrameSize: 960000, // 960 KBytes.
     maxReceivedMessageSize: 960000,
     fragmentOutgoingMessages: true,
     fragmentationThreshold: 960000
   })
-  console.log(`\n🎥🎥🎥 Ready to Serve Media  🎥🎥🎥`)
+  console.log(`\n🎥🎥🎥 Media Server Ready: Port ${config.http.listenPort}  🎥🎥🎥`)
   // validate auth token
-  wss.on('connectionrequest', async (info, accept, reject) => {
+  websocketServer.on('connectionrequest', async (info, accept, reject) => {
     const requestUrl = url.parse(info.request.url, true)
     const {roomId, peerId, authToken: encodedAuthToken, teamId} = requestUrl.query
     const missingParams = [] as string[]

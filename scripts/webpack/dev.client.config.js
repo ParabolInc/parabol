@@ -50,6 +50,7 @@ module.exports = {
       __APP_VERSION__: JSON.stringify(process.env.npm_package_version),
       'process.env.NODE_ENV': JSON.stringify('development'),
       'process.env.DEBUG': JSON.stringify(process.env.DEBUG),
+      'process.env.PROTOO_LISTEN_PORT': JSON.stringify(process.env.PROTOO_LISTEN_PORT || 4444),
       __STATIC_IMAGES__: JSON.stringify(`/static/images`)
     }),
     new webpack.DllReferencePlugin({

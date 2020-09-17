@@ -58,7 +58,7 @@ module.exports = ({isDeploy, isStats}) => ({
       '~': CLIENT_ROOT,
       'parabol-server': SERVER_ROOT,
       'parabol-client': CLIENT_ROOT,
-      'static': STATIC_ROOT
+      static: STATIC_ROOT
     },
     extensions: ['.js', '.json', '.ts', '.tsx', '.graphql'],
     modules: [
@@ -133,6 +133,9 @@ module.exports = ({isDeploy, isStats}) => ({
       __PRODUCTION__: true,
       __APP_VERSION__: JSON.stringify(process.env.npm_package_version),
       'process.env.NODE_ENV': JSON.stringify('production'),
+      'process.env.PROTOO_LISTEN_PORT': JSON.stringify(
+        (process.env.PROTOO_LISTEN_PORT || 4444) - 1
+      ),
       __STATIC_IMAGES__: JSON.stringify(`https://${process.env.AWS_S3_BUCKET}/static`)
     }),
     new webpack.SourceMapDevToolPlugin({
@@ -147,18 +150,18 @@ module.exports = ({isDeploy, isStats}) => ({
       exclude: [/GraphqlContainer/, /\.map$/, /^manifest.*\.js$/, /index.html$/]
     }),
     isDeploy &&
-    new S3Plugin({
-      s3Options: {
-        accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-        region: process.env.AWS_REGION
-      },
-      s3UploadOptions: {
-        Bucket: process.env.AWS_S3_BUCKET
-      },
-      basePath: getS3BasePath(),
-      directory: buildPath
-    }),
+      new S3Plugin({
+        s3Options: {
+          accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+          secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+          region: process.env.AWS_REGION
+        },
+        s3UploadOptions: {
+          Bucket: process.env.AWS_S3_BUCKET
+        },
+        basePath: getS3BasePath(),
+        directory: buildPath
+      }),
     isStats && new BundleAnalyzerPlugin({generateStatsFile: true})
   ].filter(Boolean),
   module: {
@@ -216,7 +219,8 @@ module.exports = ({isDeploy, isStats}) => ({
             options: {
               transforms: ['jsx', 'typescript']
             }
-          }]
+          }
+        ]
       },
       {
         test: /GitHubManager\.ts/,

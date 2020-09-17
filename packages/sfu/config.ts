@@ -4,11 +4,13 @@ export default {
   // Listening hostname (just for `gulp live` task).
   domain: process.env.DOMAIN || 'localhost',
   // Signaling settings (protoo WebSocket server and HTTP API server).
-  https: {
+  http: {
     listenIp: process.env.PROTOO_LISTEN_IP || '0.0.0.0',
     // NOTE: Don't change listenPort (client app assumes 4443).
-    listenPort: process.env.PROTOO_LISTEN_PORT || 4443,
+    listenPort: process.env.PROTOO_LISTEN_PORT || 4444
     // NOTE: Set your own valid certificate files.
+  },
+  https: {
     tls: {
       cert: process.env.HTTPS_CERT_FULLCHAIN || `${__dirname}/certs/server.crt`,
       key: process.env.HTTPS_CERT_PRIVKEY || `${__dirname}/certs/server.key`

@@ -1,4 +1,3 @@
-const signalingServerPort = 4443
 const signalingServerHostname = window.location.hostname
 
 interface getSignalingServerUrlSignature {
@@ -15,7 +14,7 @@ export function getSignalingServerUrl({
   teamId
 }: getSignalingServerUrlSignature) {
   const url = new URL(`wss://${signalingServerHostname}`)
-  url.port = String(signalingServerPort)
+  url.port = String(process.env.PROTOO_LISTEN_PORT)
   url.searchParams.append('roomId', roomId)
   url.searchParams.append('peerId', peerId)
   url.searchParams.append('authToken', authToken)
