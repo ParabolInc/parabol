@@ -63,8 +63,8 @@ export default createFragmentContainer(UserColumnsContainer, {
         }
         ...TaskColumns_teams
       }
-      tasks(first: $first, after: $after, userIds: $userIds, teamIds: $teamIds, archived: $isArchived)
-        @connection(key: "UserColumnsContainer_tasks", filters: ["userIds", "teamIds", "archived"]) {
+      tasks(first: $first, after: $after, userIds: $userIds, teamIds: $teamIds)
+        @connection(key: "UserColumnsContainer_tasks", filters: ["userIds", "teamIds"]) {
         edges {
           node {
             ...TaskColumns_tasks
