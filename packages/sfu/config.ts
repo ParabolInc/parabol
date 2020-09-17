@@ -1,16 +1,18 @@
 import os from 'os'
 
 export default {
-  // Listening hostname (just for `gulp live` task).
+  // No need to set this. Listening hostname (just for `gulp live` task).
   domain: process.env.DOMAIN || 'localhost',
   // Signaling settings (protoo WebSocket server and HTTP API server).
   http: {
-    listenIp: process.env.PROTOO_LISTEN_IP || '0.0.0.0',
-    // NOTE: Don't change listenPort (client app assumes 4443).
+    // server should listen on all IPs associated with this host
+    listenIp: '0.0.0.0',
+    // for local development, client should call here.
+    // for deployed env, client should call another https port which should redirect here.
     listenPort: process.env.PROTOO_LISTEN_PORT || 4444
-    // NOTE: Set your own valid certificate files.
   },
   https: {
+    // only needed for local development. set your own valid certificate files.
     tls: {
       cert: process.env.HTTPS_CERT_FULLCHAIN || `${__dirname}/certs/server.crt`,
       key: process.env.HTTPS_CERT_PRIVKEY || `${__dirname}/certs/server.key`
@@ -18,13 +20,14 @@ export default {
   },
   // mediasoup settings.
   mediasoup: {
-    // Number of mediasoup workers to launch.
+    // Number of mediasoup workers to launch. Careful of virtual env misleading info??
     numWorkers: Object.keys(os.cpus()).length,
     // mediasoup WorkerSettings.
     // See https://mediasoup.org/documentation/v3/mediasoup/api/#WorkerSettings
     workerSettings: {
       logLevel: 'warn',
       logTags: [
+        // give me all the infoes
         'info',
         'ice',
         'dtls',
@@ -98,7 +101,9 @@ export default {
     webRtcTransportOptions: {
       listenIps: [
         {
-          ip: process.env.MEDIASOUP_LISTEN_IP || '127.0.0.1',
+          // for docker, set this to '0.0.0.0'
+          ip: process.env.MEDIASOUP_LISTEN_IP || '0.0.0.0',
+          // for docker, set this to public ip address
           announcedIp: process.env.MEDIASOUP_ANNOUNCED_IP
         }
       ],
@@ -113,7 +118,9 @@ export default {
     // See https://mediasoup.org/documentation/v3/mediasoup/api/#PlainTransportOptions
     plainTransportOptions: {
       listenIp: {
-        ip: process.env.MEDIASOUP_LISTEN_IP || '127.0.0.1',
+        // for docker, set this to '0.0.0.0'
+        ip: process.env.MEDIASOUP_LISTEN_IP || '0.0.0.0',
+        // for docker, set this to public ip address
         announcedIp: process.env.MEDIASOUP_ANNOUNCED_IP
       },
       maxSctpMessageSize: 262144
