@@ -1,5 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
+import React, {useMemo} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {UserTasksHeader_viewer} from '~/__generated__/UserTasksHeader_viewer.graphql'
 import DashSectionControls from '../../../../components/Dashboard/DashSectionControls'
@@ -93,33 +93,40 @@ const UserTasksHeader = (props: Props) => {
     isDropdown: true
   })
   const {teams} = viewer
-  const teamMembers = teams.map(({teamMembers}) => teamMembers).flat()
-  const users = teamMembers.map(({user}) => user).flat()
-  const keySet = new Set()
-  const dedupedUsers = [] as {
-    id: string
-    preferredName: string
-    tms: ReadonlyArray<string>
-  }[]
-  users.forEach((user) => {
-    const userKey = user.id
-    if (!keySet.has(userKey)) {
-      keySet.add(userKey)
-      dedupedUsers.push(user)
-    }
-  })
   const {userIds, teamIds, showArchived} = useUserTaskFilters(viewer.id)
-  const teamFilter = teamIds ? teams.find(({id: teamId}) => teamIds.includes(teamId)) : undefined
-  const teamMemberFilter = userIds
-    ? dedupedUsers.find(({id: userId}) => userIds.includes(userId))
-    : undefined
+
+  const teamFilter = useMemo(() =>
+    teamIds ? teams.find(({id: teamId}) => teamIds.includes(teamId)) : undefined
+    , [teamIds, teams])
+
   const teamFilterName = (teamFilter && teamFilter.name) || 'My teams'
-  const teamMemberFilterName =
-    teamFilter && teamMemberFilter
+
+  const teamMemberFilterName = useMemo(() => {
+    const teamMembers = teams.map(({teamMembers}) => teamMembers).flat()
+    const users = teamMembers.map(({user}) => user).flat()
+    const keySet = new Set()
+    const dedupedUsers = [] as {
+      id: string
+      preferredName: string
+      tms: ReadonlyArray<string>
+    }[]
+    users.forEach((user) => {
+      const userKey = user.id
+      if (!keySet.has(userKey)) {
+        keySet.add(userKey)
+        dedupedUsers.push(user)
+      }
+    })
+    const teamMemberFilter = userIds
+      ? dedupedUsers.find(({id: userId}) => userIds.includes(userId))
+      : undefined
+    return teamFilter && teamMemberFilter
       ? teamMemberFilter.tms.includes(teamFilter.id)
         ? teamMemberFilter.preferredName
         : 'My team members'
       : (teamMemberFilter && teamMemberFilter.preferredName) || 'My team members'
+  }, [teamIds, userIds, teams])
+
   return (
     <DashSectionHeader>
       <UserTasksHeaderDashSectionControls>
