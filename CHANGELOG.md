@@ -5,6 +5,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 5.18.1 2020-Sep-18
+
+## Fixed
+- Remove trailing slash from intranet graphql url to fix graphiql
+
 ## 5.18.0 2020-Sep-16
 
 ## Added
