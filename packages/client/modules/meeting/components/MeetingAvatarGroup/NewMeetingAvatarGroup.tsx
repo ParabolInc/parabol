@@ -98,8 +98,7 @@ const NewMeetingAvatarGroup = (props: Props) => {
       .filter((teamMember) => {
         return (
           teamMember.userId === viewerId ||
-          (teamMember.user.lastSeenAtURLs &&
-            teamMember.user.lastSeenAtURLs.includes(`/meet/${meetingId}`) &&
+          (teamMember.user.lastSeenAtURLs?.includes(`/meet/${meetingId}`) &&
             teamMember.user.isConnected)
         )
       })

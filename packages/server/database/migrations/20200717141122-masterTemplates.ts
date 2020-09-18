@@ -5,6 +5,7 @@ const createdAt = new Date('2016-06-01')
 const aGhostUser = {
   id: 'aGhostUser',
   preferredName: 'A Ghost',
+  connectedSockets: [],
   email: 'love@parabol.co',
   featureFlags: [],
   updatedAt: createdAt,

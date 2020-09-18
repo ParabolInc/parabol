@@ -147,8 +147,8 @@ const User = new GraphQLObjectType<any, GQLContext, any>({
       description: 'true if the user is currently online',
       resolve: async ({id: userId}) => {
         const redis = getRedis()
-        const userPresence = await redis.lrange(`presence:${userId}`, 0, -1)
-        return userPresence.length > 0
+        const connectedSocketsCount = await redis.llen(`presence:${userId}`)
+        return connectedSocketsCount > 0
       }
     },
     isPatientZero: {

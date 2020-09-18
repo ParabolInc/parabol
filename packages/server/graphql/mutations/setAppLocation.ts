@@ -37,7 +37,6 @@ export default {
     if (!connectedSocket) {
       return {error: {message: "Socket doesn't exist"}}
     }
-
     // RESOLUTION
     const parsedConnectedSocket = JSON.parse(connectedSocket) as UserPresence
     const {lastSeenAtURL} = parsedConnectedSocket
@@ -50,8 +49,11 @@ export default {
     const data = {userId: viewerId}
     if (lastSeenAtURL !== location) {
       parsedConnectedSocket.lastSeenAtURL = location
-      await redis.lrem(`presence:${viewerId}`, 0, connectedSocket)
-      await redis.rpush(`presence:${viewerId}`, JSON.stringify(parsedConnectedSocket))
+      await redis
+        .multi()
+        .lrem(`presence:${viewerId}`, 0, connectedSocket)
+        .rpush(`presence:${viewerId}`, JSON.stringify(parsedConnectedSocket))
+        .exec()
       const meetingId = lastSeenAtURL?.includes('/meet/')
         ? lastSeenAtURL.slice(6)
         : location?.includes('/meet/')

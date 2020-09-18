@@ -7,6 +7,7 @@ import {GQLContext} from '../../graphql'
 import DisconnectSocketPayload from '../../types/DisconnectSocketPayload'
 import getRedis from '../../../utils/getRedis'
 import {UserPresence} from './connectSocket'
+import getListeningUserIds from '../../../utils/getListeningUserIds'
 export default {
   name: 'DisconnectSocket',
   description: 'a server-side mutation called when a client disconnects',
@@ -35,10 +36,27 @@ export default {
       const listeningUserIds = new Set()
       await redis.srem('onlineUserIds', userId)
       for (const teamId of tms) {
-        const teamMembers = await redis.smembers(`team:${teamId}`)
-        await redis.srem(`team:${teamId}`, userId)
-        for (const teamMemberId of teamMembers) {
-          listeningUserIds.add(teamMemberId)
+        let teamMembers
+        await redis
+          .multi()
+          .smembers(`team:${teamId}`)
+          .srem(`team:${teamId}`, userId)
+          .exec((execErr, results) => {
+            if (execErr) throw new Error('Failed to execute redis command in disconnectSocket')
+            results.forEach((res, index) => {
+              if (index === 0 && !res[0]) {
+                teamMembers = res[1]
+              }
+            })
+          })
+
+        // const teamMembers = await redis.smembers(`team:${teamId}`)
+        // await redis.srem(`team:${teamId}`, userId)
+        if ((await redis.llen(`team:${teamId}`)) === 0) {
+          await redis.srem(`onlineTeamIds`, teamId)
+        }
+        for (const teamMemberUserId of teamMembers) {
+          listeningUserIds.add(teamMemberUserId)
         }
       }
       const subOptions = {mutatorId: socketId}
