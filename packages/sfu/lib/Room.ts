@@ -151,9 +151,9 @@ export default class Room extends events.EventEmitter {
     newPeer: protoo.Peer
     newProducer: mediasoupTypes.Producer
   }) {
-    logger.info('creating consumer for new producer...')
     const existingPeers = this.getJoinedPeers({excludePeer: newPeer})
     for (const existingPeer of existingPeers) {
+      logger.info('creating consumer for new producer...')
       this.createConsumer({
         consumerPeer: existingPeer,
         producerPeer: newPeer,

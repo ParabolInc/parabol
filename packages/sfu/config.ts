@@ -101,8 +101,8 @@ export default {
     webRtcTransportOptions: {
       listenIps: [
         {
-          // for docker, set this to '0.0.0.0'
-          ip: process.env.MEDIASOUP_LISTEN_IP || '0.0.0.0',
+          // for docker, set this to '127.0.0.1'
+          ip: process.env.MEDIASOUP_LISTEN_IP || '127.0.0.1',
           // for docker, set this to public ip address
           announcedIp: process.env.MEDIASOUP_ANNOUNCED_IP
         }
