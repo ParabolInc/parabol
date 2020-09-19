@@ -45,16 +45,28 @@ const addNewFeature = {
       db.writeTable('User', {newFeatureId})
     ])
 
-    const onlineUserIds = await redis.smembers('onlineUserIds')
-    onlineUserIds.forEach((userId) => {
-      publish(
-        SubscriptionChannel.NOTIFICATION,
-        userId,
-        'AddNewFeaturePayload',
-        {newFeature},
-        subOptions
-      )
+    const onlineUserIds = new Set()
+    const stream = redis.scanStream({match: 'presence:*'})
+    stream.on('data', (keys) => {
+      console.log('keys', keys)
+      if (!keys?.length) return
+      for (const key of keys) {
+        onlineUserIds.add(key)
+      }
     })
+    stream.on('end', () => {
+      const onlineUserIdsArr = Array.from(onlineUserIds) as string[]
+      onlineUserIdsArr.forEach((userId) => {
+        publish(
+          SubscriptionChannel.NOTIFICATION,
+          userId,
+          'AddNewFeaturePayload',
+          {newFeature},
+          subOptions
+        )
+      })
+    })
+
     return {newFeature}
   }
 }

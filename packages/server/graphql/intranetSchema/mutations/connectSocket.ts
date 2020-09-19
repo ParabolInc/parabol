@@ -10,6 +10,7 @@ import {GQLContext} from '../../graphql'
 import User from '../../types/User'
 import getRedis from '../../../utils/getRedis'
 import hydrateRedisDoc from '../../../dataloader/hydrateRedisDoc'
+import getListeningUserIds, {RedisCommand} from '../../../utils/getListeningUserIds'
 
 export interface UserPresence {
   lastSeenAtURL: string | null
@@ -37,7 +38,6 @@ export default {
     // const testing = hydrateRedisDoc(test, 'lastSeenAt')
     const user = await db.read('User', userId)
     const {inactive, lastSeenAt, tms} = user
-
     // no need to wait for this, it's just for billing
     if (inactive) {
       const orgIds = await r
@@ -48,56 +48,23 @@ export default {
       adjustUserCount(userId, orgIds, InvoiceItemType.UNPAUSE_USER).catch(console.log)
       // TODO: re-identify
     }
-
     const datesAreOnSameDay = lastSeenAt && now.toDateString() === lastSeenAt.toDateString()
     if (!datesAreOnSameDay) {
       await db.write('User', userId, {inactive: false, lastSeenAt: now})
     }
-
-    let socketCount
-    await redis
-      .multi()
-      .sadd('onlineUserIds', userId)
-      .rpush(
-        `presence:${userId}`,
-        JSON.stringify({lastSeenAtURL: null, serverId: 'server1', socketId} as UserPresence)
-      )
-      .exec((execErr, results) => {
-        if (execErr) throw new Error('Failed to execute redis command in connectSocket')
-        results.forEach((res, index) => {
-          if (index === 1 && !res[0]) {
-            socketCount = res[1]
-          }
-        })
-      })
-    const listeningUserIds = new Set()
-
-    for (const teamId of tms) {
-      let teamMembers
-      await redis
-        .multi()
-        .sadd(`team:${teamId}`, userId)
-        .sadd('onlineTeamIds', teamId)
-        .smembers(`team:${teamId}`)
-        .exec((execErr, results) => {
-          if (execErr) throw new Error('Failed to execute redis command in connectSocket')
-          results.forEach((res, index) => {
-            if (index === 2 && !res[0]) {
-              teamMembers = res[1]
-            }
-          })
-        })
-      for (const teamMemberUserId of teamMembers) {
-        listeningUserIds.add(teamMemberUserId)
-      }
-    }
+    const socketCount = await redis.rpush(
+      `presence:${userId}`,
+      JSON.stringify({lastSeenAtURL: null, serverId: 'server1', socketId} as UserPresence)
+    )
 
     // If this is the first socket, tell everyone they're online
     if (socketCount === 1) {
+      const listeningUserIds = await getListeningUserIds(RedisCommand.ADD, tms, userId)
+      console.log('listeningUserIds ---', listeningUserIds)
       const operationId = dataLoader.share()
       const subOptions = {mutatorId: socketId, operationId}
-      const listeningUserIdsArr = Array.from(listeningUserIds) as string[]
-      listeningUserIdsArr.forEach((onlineUserId) => {
+      // const listeningUserIdsArr = Array.from(listeningUserIds) as string[]
+      listeningUserIds.forEach((onlineUserId) => {
         publish(SubscriptionChannel.NOTIFICATION, onlineUserId, 'User', user, subOptions)
       })
     }

@@ -7,7 +7,7 @@ import {GQLContext} from '../../graphql'
 import DisconnectSocketPayload from '../../types/DisconnectSocketPayload'
 import getRedis from '../../../utils/getRedis'
 import {UserPresence} from './connectSocket'
-import getListeningUserIds from '../../../utils/getListeningUserIds'
+import getListeningUserIds, {RedisCommand} from '../../../utils/getListeningUserIds'
 export default {
   name: 'DisconnectSocket',
   description: 'a server-side mutation called when a client disconnects',
@@ -33,36 +33,11 @@ export default {
 
     // If this is the last socket, tell everyone they're offline
     if (userPresence.length === 1) {
-      const listeningUserIds = new Set()
-      await redis.srem('onlineUserIds', userId)
-      for (const teamId of tms) {
-        let teamMembers
-        await redis
-          .multi()
-          .smembers(`team:${teamId}`)
-          .srem(`team:${teamId}`, userId)
-          .exec((execErr, results) => {
-            if (execErr) throw new Error('Failed to execute redis command in disconnectSocket')
-            results.forEach((res, index) => {
-              if (index === 0 && !res[0]) {
-                teamMembers = res[1]
-              }
-            })
-          })
-
-        // const teamMembers = await redis.smembers(`team:${teamId}`)
-        // await redis.srem(`team:${teamId}`, userId)
-        if ((await redis.llen(`team:${teamId}`)) === 0) {
-          await redis.srem(`onlineTeamIds`, teamId)
-        }
-        for (const teamMemberUserId of teamMembers) {
-          listeningUserIds.add(teamMemberUserId)
-        }
-      }
+      const listeningUserIds = await getListeningUserIds(RedisCommand.REMOVE, tms, userId)
+      console.log('DISCONNECT listeningUserIds ---', listeningUserIds)
       const subOptions = {mutatorId: socketId}
       const data = {user}
-      const listeningUserIdsArr = Array.from(listeningUserIds) as string[]
-      listeningUserIdsArr.forEach((onlineUserId) => {
+      listeningUserIds.forEach((onlineUserId) => {
         publish(
           SubscriptionChannel.NOTIFICATION,
           onlineUserId,

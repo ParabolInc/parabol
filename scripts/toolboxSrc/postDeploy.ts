@@ -8,16 +8,27 @@ const PROJECT_ROOT = getProjectRoot()
 const redis = getRedis()
 
 const flushSocketConnections = async () => {
-  const onlineUserIds = await redis.smembers('onlineUserIds')
-  for (const userId of onlineUserIds) {
-    await redis.del(`presence:${userId}`)
-  }
-  const onlineTeamIds = await redis.smembers('onlineTeamIds')
-  for (const teamId of onlineTeamIds) {
-    await redis.del(`team:${teamId}`)
-  }
-  await redis.del('onlineUserIds')
-  await redis.del('onlineTeamIds')
+  const userPresenceStream = redis.scanStream({match: 'presence:*'})
+  userPresenceStream.on('data', async (keys) => {
+    if (!keys?.length) return
+    userPresenceStream.pause()
+    const writes = keys.map((key) => {
+      return ['del', key]
+    })
+    await redis.multi(writes).exec((err, res) => console.log('RES', res))
+    userPresenceStream.resume()
+  })
+
+  const onlineTeamsStream = redis.scanStream({match: 'team:*'})
+  onlineTeamsStream.on('data', async (keys) => {
+    if (!keys?.length) return
+    onlineTeamsStream.pause()
+    const writes = keys.map((key) => {
+      return ['del', key]
+    })
+    await redis.multi(writes).exec((err, res) => console.log('RES', res))
+    onlineTeamsStream.resume()
+  })
 }
 
 const storePersistedQueries = async () => {
