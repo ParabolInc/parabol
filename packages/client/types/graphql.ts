@@ -3205,6 +3205,11 @@ export interface IMutation {
   addPokerTemplateScale: IAddPokerTemplateScalePayload | null;
 
   /**
+   * Add a new scale for the poker template
+   */
+  addPokerTemplateScaleValue: IAddPokerTemplateScaleValuePayload | null;
+
+  /**
    * Add or remove a reactji to a reflection
    */
   addReactjiToReflection: AddReactjiToReflectionPayload;
@@ -3737,6 +3742,13 @@ export interface IAddPokerTemplateDimensionOnMutationArguments {
 
 export interface IAddPokerTemplateScaleOnMutationArguments {
   templateId: string;
+}
+
+export interface IAddPokerTemplateScaleValueOnMutationArguments {
+  templateId: string;
+  scaleId: string;
+  scaleValue: ITemplateScaleInput;
+  index?: number | null;
 }
 
 export interface IAddReactjiToReflectionOnMutationArguments {
@@ -5172,6 +5184,32 @@ export interface IAddPokerTemplateDimensionPayload {
 
 export interface IAddPokerTemplateScalePayload {
   __typename: 'AddPokerTemplateScalePayload';
+  error: IStandardMutationError | null;
+  scale: ITemplateScale | null;
+}
+
+/**
+ * A value for a scale
+ */
+export interface ITemplateScaleInput {
+  /**
+   * The color used to visually group a scale value
+   */
+  color: string;
+
+  /**
+   * The numerical value for this scale value
+   */
+  value: number;
+
+  /**
+   * The label for this value, e.g., XS, M, L
+   */
+  label: string;
+}
+
+export interface IAddPokerTemplateScaleValuePayload {
+  __typename: 'AddPokerTemplateScaleValuePayload';
   error: IStandardMutationError | null;
   scale: ITemplateScale | null;
 }
@@ -8366,6 +8404,7 @@ export type TeamSubscriptionPayload =
   | IAddReflectTemplatePromptPayload
   | IAddPokerTemplateDimensionPayload
   | IAddPokerTemplateScalePayload
+  | IAddPokerTemplateScaleValuePayload
   | IMoveReflectTemplatePromptPayload
   | IMovePokerTemplateDimensionPayload
   | IReflectTemplatePromptUpdateDescriptionPayload

@@ -10,6 +10,7 @@ import addOrg from './mutations/addOrg'
 import addPokerTemplate from './mutations/addPokerTemplate'
 import addPokerTemplateDimension from './mutations/addPokerTemplateDimension'
 import addPokerTemplateScale from './mutations/addPokerTemplateScale'
+import addPokerTemplateScaleValue from './mutations/addPokerTemplateScaleValue'
 import addReactjiToReactable from './mutations/addReactjiToReactable'
 import addReactjiToReflection from './mutations/addReactjiToReflection'
 import addReflectTemplate from './mutations/addReflectTemplate'
@@ -126,6 +127,7 @@ export default new GraphQLObjectType<any, Context, any>({
     addPokerTemplate,
     addPokerTemplateDimension,
     addPokerTemplateScale,
+    addPokerTemplateScaleValue,
     addReactjiToReflection, // DEPRECATED, delete after 4.25.0
     addReactjiToReactable,
     addReflectTemplate,
