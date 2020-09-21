@@ -7,6 +7,7 @@ import AddReflectTemplatePayload from './AddReflectTemplatePayload'
 import AddPokerTemplatePayload from './AddPokerTemplatePayload'
 import AddReflectTemplatePromptPayload from './AddReflectTemplatePromptPayload'
 import AddPokerTemplateDimensionPayload from './AddPokerTemplateDimensionPayload'
+import AddPokerTemplateScalePayload from './AddPokerTemplateScalePayload'
 import AddSlackAuthPayload from './AddSlackAuthPayload'
 import AddTeamPayload from './AddTeamPayload'
 import ArchiveTeamPayload from './ArchiveTeamPayload'
@@ -78,6 +79,7 @@ const types = [
   AddPokerTemplatePayload,
   AddReflectTemplatePromptPayload,
   AddPokerTemplateDimensionPayload,
+  AddPokerTemplateScalePayload,
   MoveReflectTemplatePromptPayload,
   MovePokerTemplateDimensionPayload,
   ReflectTemplatePromptUpdateDescriptionPayload,

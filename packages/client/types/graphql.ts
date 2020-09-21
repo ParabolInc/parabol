@@ -3200,6 +3200,11 @@ export interface IMutation {
   addPokerTemplateDimension: IAddPokerTemplateDimensionPayload | null;
 
   /**
+   * Add a new scale for the poker template
+   */
+  addPokerTemplateScale: IAddPokerTemplateScalePayload | null;
+
+  /**
    * Add or remove a reactji to a reflection
    */
   addReactjiToReflection: AddReactjiToReflectionPayload;
@@ -3717,6 +3722,10 @@ export interface IAddPokerTemplateOnMutationArguments {
 }
 
 export interface IAddPokerTemplateDimensionOnMutationArguments {
+  templateId: string;
+}
+
+export interface IAddPokerTemplateScaleOnMutationArguments {
   templateId: string;
 }
 
@@ -5140,6 +5149,12 @@ export interface IAddPokerTemplateDimensionPayload {
   __typename: 'AddPokerTemplateDimensionPayload';
   error: IStandardMutationError | null;
   dimension: ITemplateDimension | null;
+}
+
+export interface IAddPokerTemplateScalePayload {
+  __typename: 'AddPokerTemplateScalePayload';
+  error: IStandardMutationError | null;
+  scale: ITemplateScale | null;
 }
 
 /**
@@ -8318,6 +8333,7 @@ export type TeamSubscriptionPayload =
   | IAddPokerTemplatePayload
   | IAddReflectTemplatePromptPayload
   | IAddPokerTemplateDimensionPayload
+  | IAddPokerTemplateScalePayload
   | IMoveReflectTemplatePromptPayload
   | IMovePokerTemplateDimensionPayload
   | IReflectTemplatePromptUpdateDescriptionPayload

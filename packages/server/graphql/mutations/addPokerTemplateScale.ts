@@ -2,15 +2,16 @@ import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel, Threshold} from 'parabol-client/types/constEnums'
 import dndNoise from 'parabol-client/utils/dndNoise'
 import getRethink from '../../database/rethinkDriver'
+import TemplateScale from '../../database/types/TemplateScale'
+import TemplateScaleValue from '../../database/types/TemplateScaleValue'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
-import AddPokerTemplateDimensionPayload from '../types/AddPokerTemplateDimensionPayload'
-import makePokerTemplateDimension from './helpers/makePokerTemplateDimension'
+import AddPokerTemplateScalePayload from '../types/AddPokerTemplateScalePayload'
 
-const addPokerTemplateDimension = {
-  description: 'Add a new dimension for the poker template',
-  type: AddPokerTemplateDimensionPayload,
+const addPokerTemplateScale = {
+  description: 'Add a new scale for the poker template',
+  type: AddPokerTemplateScalePayload,
   args: {
     templateId: {
       type: new GraphQLNonNull(GraphQLID)
@@ -33,41 +34,38 @@ const addPokerTemplateDimension = {
 
     // VALIDATION
     const {teamId} = template
-    const activeDimensions = await r
-      .table('TemplateDimension')
+    const activeScales = await r
+      .table('TemplateScale')
       .getAll(teamId, {index: 'teamId'})
       .filter({
         templateId,
         isActive: true
       })
       .run()
-    if (activeDimensions.length >= Threshold.MAX_POKER_TEMPLDATE_DIMENSIONS) {
-      return standardError(new Error('Too many dimensions'), {userId: viewerId})
+    if (activeScales.length >= Threshold.MAX_POKER_TEMPLDATE_SCALES) {
+      return standardError(new Error('Too many scales'), {userId: viewerId})
     }
 
     // RESOLUTION
-    const sortOrder =
-      Math.max(...activeDimensions.map((dimension) => dimension.sortOrder)) + 1 + dndNoise()
-    const newDimensionWithDefaultScales = makePokerTemplateDimension(teamId, template.id)
-    const {newDimension, newScales} = newDimensionWithDefaultScales
-    ;(newDimension.name = `New dimension #${activeDimensions.length + 1}`),
-      (newDimension.sortOrder = sortOrder)
+    const sortOrder = Math.max(...activeScales.map((scale) => scale.sortOrder)) + 1 + dndNoise()
+    const newScale = new TemplateScale({
+      sortOrder: sortOrder,
+      name: `New scale #${activeScales.length + 1}`,
+      values: [] as TemplateScaleValue[],
+      teamId,
+      templateId
+    })
 
     await r
       .table('TemplateScale')
-      .insert(newScales)
+      .insert(newScale)
       .run()
 
-    await r
-      .table('TemplateDimension')
-      .insert(newDimension)
-      .run()
-
-    const dimensionId = newDimension.id
-    const data = {dimensionId}
-    publish(SubscriptionChannel.TEAM, teamId, 'AddPokerTemplateDimensionPayload', data, subOptions)
+    const scaleId = newScale.id
+    const data = {scaleId}
+    publish(SubscriptionChannel.TEAM, teamId, 'AddPokerTemplateScalePayload', data, subOptions)
     return data
   }
 }
 
-export default addPokerTemplateDimension
+export default addPokerTemplateScale
