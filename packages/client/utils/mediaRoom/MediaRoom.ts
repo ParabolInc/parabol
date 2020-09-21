@@ -275,6 +275,11 @@ export default class MediaRoom {
     logger.info('Done joining!')
     logger.info('Mic Producer:', this.micProducer)
     logger.info('Webcam Producer:', this.webcamProducer)
+    if (process.env.DEBUG === 'mediasoup*') {
+      await new Promise((resolve) => setTimeout(resolve, 3000))
+      const currentReport = await this.webcamProducer!.getStats()
+      for (const value of (currentReport as any).values()) logger.info(value)
+    }
     logger.info('Consumers:', this.consumers)
   }
 
