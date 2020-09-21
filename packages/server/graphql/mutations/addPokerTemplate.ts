@@ -8,7 +8,7 @@ import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import AddPokerTemplatePayload from '../types/AddPokerTemplatePayload'
-import makePokerTemplates from './helpers/makePokerTemplates'
+import makePokerTemplateScales from './helpers/makePokerTemplateScales'
 
 const addPokerTemplate = {
   description: 'Add a new template full of dimensions',
@@ -104,24 +104,23 @@ const addPokerTemplate = {
       const team = await dataLoader.get('teams').load(teamId)
       const {orgId} = team
       // RESOLUTION
-      const base = {
-        '*New Template': [
-          {
-            name: '*New dimension'
-          }
-        ]
-      }
-      const {
-        pokerDimensions: newDimensions,
-        pokerScales: newScales,
-        templates
-      } = makePokerTemplates(teamId, orgId, base)
-      const [newTemplate] = templates
-      const {id: templateId} = newTemplate
+
+      const newTemplate = new PokerTemplate({name: '*New Template', teamId, orgId})
+      const templateId = newTemplate.id
+      const templateDefaultScales = makePokerTemplateScales(teamId, templateId)
+      const newDimension = new TemplateDimension({
+        scaleId: templateDefaultScales[0].id,
+        description: '',
+        sortOrder: 0,
+        name: '*New dimension',
+        teamId,
+        templateId
+      })
+
       await r({
         newTemplate: r.table('MeetingTemplate').insert(newTemplate),
-        newTemplateDimensions: r.table('TemplateDimension').insert(newDimensions),
-        newTemplateScales: r.table('TemplateScale').insert(newScales),
+        newTemplateDimension: r.table('TemplateDimension').insert(newDimension),
+        newTemplateScale: r.table('TemplateScale').insert(templateDefaultScales),
         settings: r
           .table('MeetingSettings')
           .getAll(teamId, {index: 'teamId'})
