@@ -33,10 +33,9 @@ export default {
 
     // RESOLUTION
     const user = await db.read('User', userId)
-    // hydrate lastSeenAt as it could be a string if we're getting it from Redis
-    user.lastSeenAt = user.lastSeenAt && new Date(user.lastSeenAt)
     const {inactive, lastSeenAt, tms} = user
-    console.log('lastSeenAt', lastSeenAt)
+    // lastSeenAt could be a string if we're getting it from Redis
+    const lastSeenAtDate = lastSeenAt && new Date(lastSeenAt)
 
     // no need to wait for this, it's just for billing
     if (inactive) {
@@ -48,7 +47,7 @@ export default {
       adjustUserCount(userId, orgIds, InvoiceItemType.UNPAUSE_USER).catch(console.log)
       // TODO: re-identify
     }
-    const datesAreOnSameDay = lastSeenAt && now.toDateString() === lastSeenAt.toDateString()
+    const datesAreOnSameDay = now.toDateString() === lastSeenAtDate?.toDateString()
     if (!datesAreOnSameDay) {
       await db.write('User', userId, {inactive: false, lastSeenAt: now})
     }

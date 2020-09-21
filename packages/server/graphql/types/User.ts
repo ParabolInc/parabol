@@ -309,13 +309,12 @@ const User = new GraphQLObjectType<any, GQLContext, any>({
     lastSeenAtURLs: {
       type: new GraphQLList(GraphQLString),
       description:
-        'The paths that the user is currently visiting. This is null if the user is not currently online and a URL can be null if it is not in a meeting, e.g. on the dashboard.',
+        'The paths that the user is currently visiting. This is null if the user is not currently online. A URL can also be null if the socket is not in a meeting, e.g. on the timeline.',
       resolve: async ({id: userId}) => {
         const redis = getRedis()
         const userPresence = await redis.lrange(`presence:${userId}`, 0, -1)
         if (!userPresence || userPresence.length === 0) return null
-        const connectedSockets = userPresence.map((socket) => JSON.parse(socket))
-        return connectedSockets.map((socket) => socket.lastSeenAtURL)
+        return userPresence.map((socket) => JSON.parse(socket).lastSeenAtURL)
       }
     },
     meetingMember: {

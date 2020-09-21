@@ -15,7 +15,7 @@ const flushSocketConnections = async () => {
     const writes = keys.map((key) => {
       return ['del', key]
     })
-    await redis.multi(writes).exec((err, res) => console.log('RES', res))
+    await redis.multi(writes).exec()
     userPresenceStream.resume()
   })
 
@@ -26,7 +26,7 @@ const flushSocketConnections = async () => {
     const writes = keys.map((key) => {
       return ['del', key]
     })
-    await redis.multi(writes).exec((err, res) => console.log('RES', res))
+    await redis.multi(writes).exec()
     onlineTeamsStream.resume()
   })
 }

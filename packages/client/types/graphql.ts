@@ -210,7 +210,8 @@ export interface IUser {
 
   /**
    * The paths that the user is currently visiting. This is null if the user is not
-   * currently online and a URL can be null if it is not in a meeting, e.g. on the dashboard.
+   * currently online. A URL can also be null if the socket is not in a meeting,
+   * e.g. on the timeline.
    */
   lastSeenAtURLs: Array<string | null> | null;
 

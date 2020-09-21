@@ -15,8 +15,7 @@ const getListeningUserIds = async (command: RedisCommand, tms: string[], userId:
     ]
     let teamMembers
     await redis.multi(commands).exec((execErr, results) => {
-      if (execErr)
-        throw new Error(`Failed to execute redis command in getListeningUserIds.ts: ${execErr}`)
+      if (execErr) throw new Error(`Failed to execute redis command: ${execErr}`)
       results.forEach((res, index) => {
         if (index === 1 && !res[0]) {
           teamMembers = res[1]
