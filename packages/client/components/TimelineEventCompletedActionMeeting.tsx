@@ -26,6 +26,7 @@ const CountItem = styled('span')({
 class TimelineEventCompletedActionMeeting extends Component<Props> {
   render() {
     const {timelineEvent} = this.props
+    console.log('TimelineEventCompletedActionMeeting -> render ->  this.props', this.props)
     const {meeting, team} = timelineEvent
     const {
       id: meetingId,

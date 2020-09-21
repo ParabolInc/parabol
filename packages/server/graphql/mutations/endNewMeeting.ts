@@ -16,7 +16,6 @@ import {
 import getMeetingPhase from 'parabol-client/utils/getMeetingPhase'
 import findStageById from 'parabol-client/utils/meetings/findStageById'
 import shortid from 'shortid'
-
 import getRethink from '../../database/rethinkDriver'
 import AgendaItem from '../../database/types/AgendaItem'
 import GenericMeetingPhase from '../../database/types/GenericMeetingPhase'
@@ -85,7 +84,6 @@ const updateTaskSortOrders = async (userIds: string[], tasks: SortOrderTask[]) =
 
 const clearAgendaItems = async (teamId: string) => {
   const r = await getRethink()
-
   return r
     .table('AgendaItem')
     .getAll(teamId, {index: 'teamId'})
@@ -315,7 +313,6 @@ export default {
     endSlackMeeting(meetingId, teamId, dataLoader).catch(console.log)
 
     const result = await finishMeetingType(completedMeeting, dataLoader)
-
     const updatedTaskIds = (result && result.updatedTaskIds) || []
     const {facilitatorUserId} = completedMeeting
     const templateId = (completedMeeting as MeetingRetrospective).templateId || undefined
@@ -344,6 +341,7 @@ export default {
     })
     sendNewMeetingSummary(completedMeeting, context).catch(console.log)
     const TimelineEvent = timelineEventLookup[meetingType]
+    console.log('resolve -> TimelineEvent', TimelineEvent)
 
     const events = meetingMembers.map(
       (meetingMember) =>
@@ -354,6 +352,17 @@ export default {
           meetingId
         })
     )
+    // const test = new TimelineEvent({
+    //   userId: viewerId,
+    //   teamId,
+    //   orgId: team.orgId,
+    //   meetingId
+    // })
+    // console.log('resolve -> test', test)
+    // console.log('resolve -> test ID', test.id)
+    const viewerTimelineEvent = events.find((event) => event.userId === viewerId)
+    console.log('resolve -> viewerTimelineEvent', viewerTimelineEvent)
+
     await r
       .table('TimelineEvent')
       .insert(events)
@@ -386,8 +395,10 @@ export default {
       teamId,
       isKill: getIsKill(meetingType, phase),
       updatedTaskIds,
-      removedTaskIds
+      removedTaskIds,
+      timelineEventId: viewerTimelineEvent.id
     }
+    console.log('resolve -> data', data)
     publish(SubscriptionChannel.TEAM, teamId, 'EndNewMeetingPayload', data, subOptions)
 
     return data

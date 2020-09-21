@@ -12,6 +12,7 @@ interface Props {
 
 const TimelineFeedList = (props: Props) => {
   const {relay, viewer} = props
+  console.log('TimelineFeedList -> viewer', viewer)
   const {timeline} = viewer
   const lastItem = useLoadMoreOnScrollBottom(relay)
   return (

@@ -7,6 +7,7 @@ import NewMeeting from './NewMeeting'
 import {GQLContext} from '../graphql'
 import {getUserId} from '../../utils/authorization'
 import isTaskPrivate from 'parabol-client/utils/isTaskPrivate'
+import TimelineEvent from './TimelineEvent'
 
 const EndNewMeetingPayload = new GraphQLObjectType<any, GQLContext>({
   name: 'EndNewMeetingPayload',
@@ -34,6 +35,17 @@ const EndNewMeetingPayload = new GraphQLObjectType<any, GQLContext>({
     },
     removedTaskIds: {
       type: new GraphQLList(new GraphQLNonNull(GraphQLID))
+    },
+    timelineEvent: {
+      type: TimelineEvent,
+      description: 'The event that has just ended',
+      resolve: async (source, _args, {dataLoader}) => {
+        // resolve: async({timelineEventId}, _args, {dataLoader})
+        const {meetingId, timelineEventId} = source
+        const test = await dataLoader.get('timelineEvents').load(timelineEventId)
+        // const meeting = await dataLoader.get('newMeetings').load(meetingId)
+        return test
+      }
     },
     updatedTaskIds: {
       type: new GraphQLList(new GraphQLNonNull(GraphQLID))

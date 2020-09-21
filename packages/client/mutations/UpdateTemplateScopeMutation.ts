@@ -11,7 +11,10 @@ import {insertEdgeAfter} from '../utils/relay/insertEdge'
 import safeRemoveNodeFromArray from '../utils/relay/safeRemoveNodeFromArray'
 import safeRemoveNodeFromConn from '../utils/relay/safeRemoveNodeFromConn'
 import {UpdateTemplateScopeMutation as TUpdateTemplateScopeMutation} from '../__generated__/UpdateTemplateScopeMutation.graphql'
-import {SharingScopeEnum, UpdateTemplateScopeMutation_organization} from '../__generated__/UpdateTemplateScopeMutation_organization.graphql'
+import {
+  SharingScopeEnum,
+  UpdateTemplateScopeMutation_organization
+} from '../__generated__/UpdateTemplateScopeMutation_organization.graphql'
 import getReflectTemplateOrgConn from './connections/getReflectTemplateOrgConn'
 
 graphql`
@@ -46,7 +49,11 @@ const mutation = graphql`
   }
 `
 
-const removeTemplateFromCurrentScope = (templateId: string, scopeList: SharingScopeEnum, meetingSettings: RecordProxy) => {
+const removeTemplateFromCurrentScope = (
+  templateId: string,
+  scopeList: SharingScopeEnum,
+  meetingSettings: RecordProxy
+) => {
   if (scopeList === 'TEAM') {
     safeRemoveNodeFromArray(templateId, meetingSettings, 'teamTemplates')
   } else if (scopeList === 'ORGANIZATION') {
@@ -56,7 +63,11 @@ const removeTemplateFromCurrentScope = (templateId: string, scopeList: SharingSc
   // not possible for the public list to get mutated because this is an org subscription
 }
 
-const putTemplateInConnection = (template: RecordProxy, connection: RecordProxy | null | undefined, store: RecordSourceSelectorProxy) => {
+const putTemplateInConnection = (
+  template: RecordProxy,
+  connection: RecordProxy | null | undefined,
+  store: RecordSourceSelectorProxy
+) => {
   const templateId = template.getValue('id')
   if (connection && !getNodeById(templateId as string, connection)) {
     const newEdge = ConnectionHandler.createEdge(store, connection, template, 'ReflectTemplateEdge')
@@ -65,7 +76,12 @@ const putTemplateInConnection = (template: RecordProxy, connection: RecordProxy 
   }
 }
 
-const addTemplateToScope = (template: RecordProxy, scope: SharingScopeEnum, meetingSettings: RecordProxy, store: RecordSourceSelectorProxy) => {
+const addTemplateToScope = (
+  template: RecordProxy,
+  scope: SharingScopeEnum,
+  meetingSettings: RecordProxy,
+  store: RecordSourceSelectorProxy
+) => {
   if (scope === 'TEAM') {
     addNodeToArray(template, meetingSettings, 'teamTemplates')
   } else if (scope === 'ORGANIZATION') {
@@ -75,7 +91,12 @@ const addTemplateToScope = (template: RecordProxy, scope: SharingScopeEnum, meet
 }
 
 const SCOPES = ['TEAM', 'ORGANIZATION', 'PUBLIC']
-const handleUpdateTemplateScope = (template: RecordProxy, newScope: SharingScopeEnum, store: RecordSourceSelectorProxy, clonedTemplate?: RecordProxy) => {
+const handleUpdateTemplateScope = (
+  template: RecordProxy,
+  newScope: SharingScopeEnum,
+  store: RecordSourceSelectorProxy,
+  clonedTemplate?: RecordProxy
+) => {
   const templateId = template.getValue('id') as string
   const nextTemplate = clonedTemplate || template
   const templateTeamId = nextTemplate.getValue('teamId')
@@ -90,7 +111,9 @@ const handleUpdateTemplateScope = (template: RecordProxy, newScope: SharingScope
   teamIds.forEach((teamId) => {
     const team = store.get(teamId)
     if (!team) return
-    const meetingSettings = team.getLinkedRecord('meetingSettings', {meetingType: MeetingTypeEnum.retrospective})
+    const meetingSettings = team.getLinkedRecord('meetingSettings', {
+      meetingType: MeetingTypeEnum.retrospective
+    })
     if (!meetingSettings) return
     // this is on the ORG subscription, so this won't affect anything on a PUBLIC list because they're at least on the same org
     const scopeList = teamId === templateTeamId ? 'TEAM' : 'ORGANIZATION'
@@ -109,7 +132,10 @@ const handleUpdateTemplateScope = (template: RecordProxy, newScope: SharingScope
   })
 }
 
-export const updateTemplateScopeOrganizationUpdater: SharedUpdater<UpdateTemplateScopeMutation_organization> = (payload: any, {store}) => {
+export const updateTemplateScopeOrganizationUpdater: SharedUpdater<UpdateTemplateScopeMutation_organization> = (
+  payload: any,
+  {store}
+) => {
   const template = payload.getLinkedRecord('template')
   if (!template) return
   const clonedTemplate = payload.getLinkedRecord('clonedTemplate')

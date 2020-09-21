@@ -16,6 +16,7 @@ import {EndNewMeetingMutation as TEndNewMeetingMutation} from '../__generated__/
 import handleRemoveSuggestedActions from './handlers/handleRemoveSuggestedActions'
 import handleRemoveTasks from './handlers/handleRemoveTasks'
 import handleUpsertTasks from './handlers/handleUpsertTasks'
+import {ConnectionHandler, RecordProxy} from 'relay-runtime'
 
 graphql`
   fragment EndNewMeetingMutation_team on EndNewMeetingPayload {
@@ -25,6 +26,7 @@ graphql`
       endedAt
       teamId
     }
+    removedTaskIds
     team {
       id
       activeMeetings {
@@ -34,7 +36,14 @@ graphql`
         id
       }
     }
-    removedTaskIds
+    timelineEvent {
+      id
+      team {
+        id
+        name
+      }
+      type
+    }
     updatedTasks {
       id
       content
@@ -48,6 +57,26 @@ graphql`
     }
   }
 `
+
+// graphql`
+//   fragment EndNewMeetingMutationDos_team on TimelineEventCompletedActionMeeting {
+//     id
+//     type
+//     meeting {
+//       id
+//       agendaItemCount
+//       commentCount
+//       createdAt
+//       endedAt
+//       name
+//       taskCount
+//     }
+//     team {
+//       id
+//       name
+//     }
+//   }
+// `
 
 graphql`
   fragment EndNewMeetingMutation_notification on EndNewMeetingPayload {
@@ -114,6 +143,25 @@ export const endNewMeetingTeamUpdater: SharedUpdater<EndNewMeetingMutation_team>
 ) => {
   const updatedTasks = payload.getLinkedRecords('updatedTasks')
   const removedTaskIds = payload.getValue('removedTaskIds')
+  const timelineEvent = payload.getLinkedRecord('timelineEvent')
+  const meeting = payload.getLinkedRecord('meeting') as any
+  const timelineEventId = timelineEvent.getValue('id')
+  const viewer = store.getRoot().getLinkedRecord('viewer') as RecordProxy
+  const timelineConnection = ConnectionHandler.getConnection(
+    viewer,
+    'TimelineFeedList_timeline'
+  ) as RecordProxy
+  timelineEvent.setLinkedRecord(meeting, 'meeting')
+  const newEdge = ConnectionHandler.createEdge(
+    store,
+    timelineConnection!,
+    timelineEvent,
+    'TimelineEventEdge'
+  )
+  const now = new Date()
+  newEdge.setValue(now.toISOString(), 'cursor')
+  // newEdge.setLinkedRecord(meeting, 'meeting')
+  ConnectionHandler.insertEdgeBefore(timelineConnection, newEdge)
   handleRemoveTasks(removedTaskIds as any, store)
   handleUpsertTasks(updatedTasks as any, store)
 }
@@ -127,6 +175,7 @@ const EndNewMeetingMutation: StandardMutation<TEndNewMeetingMutation, HistoryMay
     mutation,
     variables,
     updater: (store) => {
+      console.log('variables', variables)
       const payload = store.getRootField('endNewMeeting')
       if (!payload) return
       const context = {atmosphere, store: store as any}
