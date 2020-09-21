@@ -3527,6 +3527,11 @@ export interface IMutation {
   renamePokerTemplateDimension: IRenamePokerTemplateDimensionPayload | null;
 
   /**
+   * Rename a poker template scale
+   */
+  renamePokerTemplateScale: IRenamePokerTemplateScalePayload | null;
+
+  /**
    * Remove a scale from a template
    */
   removePokerTemplateScale: IRemovePokerTemplateScalePayload | null;
@@ -4336,6 +4341,11 @@ export interface IRenameReflectTemplatePromptOnMutationArguments {
 
 export interface IRenamePokerTemplateDimensionOnMutationArguments {
   dimensionId: string;
+  name: string;
+}
+
+export interface IRenamePokerTemplateScaleOnMutationArguments {
+  scaleId: string;
   name: string;
 }
 
@@ -7407,6 +7417,12 @@ export interface IRenamePokerTemplateDimensionPayload {
   dimension: ITemplateDimension | null;
 }
 
+export interface IRenamePokerTemplateScalePayload {
+  __typename: 'RenamePokerTemplateScalePayload';
+  error: IStandardMutationError | null;
+  scale: ITemplateScale | null;
+}
+
 export interface IRemovePokerTemplateScalePayload {
   __typename: 'RemovePokerTemplateScalePayload';
   error: IStandardMutationError | null;
@@ -8367,6 +8383,7 @@ export type TeamSubscriptionPayload =
   | IRenamePokerTemplatePayload
   | IRenameReflectTemplatePromptPayload
   | IRenamePokerTemplateDimensionPayload
+  | IRenamePokerTemplateScalePayload
   | ISetCheckInEnabledPayload
   | ISetSlackNotificationPayload
   | IUpdateUserProfilePayload;
