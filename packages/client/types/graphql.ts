@@ -3542,6 +3542,11 @@ export interface IMutation {
   removePokerTemplateScale: IRemovePokerTemplateScalePayload | null;
 
   /**
+   * Remove a scale value from the scale of a template
+   */
+  removePokerTemplateScaleValue: IRemovePokerTemplateScaleValuePayload | null;
+
+  /**
    * Remove a reflection
    */
   removeReflection: IRemoveReflectionPayload | null;
@@ -4363,6 +4368,16 @@ export interface IRenamePokerTemplateScaleOnMutationArguments {
 
 export interface IRemovePokerTemplateScaleOnMutationArguments {
   scaleId: string;
+}
+
+export interface IRemovePokerTemplateScaleValueOnMutationArguments {
+  templateId: string;
+  scaleId: string;
+
+  /**
+   * Index of the scale value to be deleted. Default to the last scale value.
+   */
+  index?: number | null;
 }
 
 export interface IRemoveReflectionOnMutationArguments {
@@ -7468,6 +7483,12 @@ export interface IRemovePokerTemplateScalePayload {
   scale: ITemplateScale | null;
 }
 
+export interface IRemovePokerTemplateScaleValuePayload {
+  __typename: 'RemovePokerTemplateScaleValuePayload';
+  error: IStandardMutationError | null;
+  scale: ITemplateScale | null;
+}
+
 export interface IRemoveReflectionPayload {
   __typename: 'RemoveReflectionPayload';
   error: IStandardMutationError | null;
@@ -8423,6 +8444,7 @@ export type TeamSubscriptionPayload =
   | IRenameReflectTemplatePromptPayload
   | IRenamePokerTemplateDimensionPayload
   | IRenamePokerTemplateScalePayload
+  | IRemovePokerTemplateScaleValuePayload
   | ISetCheckInEnabledPayload
   | ISetSlackNotificationPayload
   | IUpdateUserProfilePayload;
