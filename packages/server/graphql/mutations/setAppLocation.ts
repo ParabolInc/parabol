@@ -1,6 +1,5 @@
 import {GraphQLNonNull, GraphQLString} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import db from '../../db'
 import {getUserId} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import rateLimit from '../rateLimit'
@@ -40,12 +39,6 @@ export default {
     // RESOLUTION
     const parsedConnectedSocket = JSON.parse(connectedSocket) as UserPresence
     const {lastSeenAtURL} = parsedConnectedSocket
-    const {lastSeenAt} = viewer
-    const now = new Date()
-    const datesAreOnSameDay = now.toDateString() === lastSeenAt.toDateString()
-    if (!datesAreOnSameDay) {
-      await db.write('User', viewerId, {lastSeenAt: now})
-    }
     const data = {userId: viewerId}
     if (lastSeenAtURL !== location) {
       parsedConnectedSocket.lastSeenAtURL = location

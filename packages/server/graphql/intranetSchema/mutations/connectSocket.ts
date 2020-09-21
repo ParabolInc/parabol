@@ -9,7 +9,6 @@ import segmentIo from '../../../utils/segmentIo'
 import {GQLContext} from '../../graphql'
 import User from '../../types/User'
 import getRedis from '../../../utils/getRedis'
-import hydrateRedisDoc from '../../../dataloader/hydrateRedisDoc'
 import getListeningUserIds, {RedisCommand} from '../../../utils/getListeningUserIds'
 
 export interface UserPresence {
@@ -33,11 +32,12 @@ export default {
     const userId = getUserId(authToken)
 
     // RESOLUTION
-    // const test = await redis.get(`User:${userId}`)
-    // if (!test) return null
-    // const testing = hydrateRedisDoc(test, 'lastSeenAt')
     const user = await db.read('User', userId)
+    // hydrate lastSeenAt as it could be a string if we're getting it from Redis
+    user.lastSeenAt = user.lastSeenAt && new Date(user.lastSeenAt)
     const {inactive, lastSeenAt, tms} = user
+    console.log('lastSeenAt', lastSeenAt)
+
     // no need to wait for this, it's just for billing
     if (inactive) {
       const orgIds = await r
@@ -60,10 +60,8 @@ export default {
     // If this is the first socket, tell everyone they're online
     if (socketCount === 1) {
       const listeningUserIds = await getListeningUserIds(RedisCommand.ADD, tms, userId)
-      console.log('listeningUserIds ---', listeningUserIds)
       const operationId = dataLoader.share()
       const subOptions = {mutatorId: socketId, operationId}
-      // const listeningUserIdsArr = Array.from(listeningUserIds) as string[]
       listeningUserIds.forEach((onlineUserId) => {
         publish(SubscriptionChannel.NOTIFICATION, onlineUserId, 'User', user, subOptions)
       })

@@ -34,7 +34,6 @@ export default {
     // If this is the last socket, tell everyone they're offline
     if (userPresence.length === 1) {
       const listeningUserIds = await getListeningUserIds(RedisCommand.REMOVE, tms, userId)
-      console.log('DISCONNECT listeningUserIds ---', listeningUserIds)
       const subOptions = {mutatorId: socketId}
       const data = {user}
       listeningUserIds.forEach((onlineUserId) => {
@@ -51,7 +50,7 @@ export default {
       userId,
       event: 'Disconnect WebSocket',
       properties: {
-        connectedSockets: userPresence.map((socket) => JSON.parse(socket).socketId),
+        socketCount: userPresence.length,
         socketId,
         tms
       }
