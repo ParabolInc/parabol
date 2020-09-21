@@ -280,6 +280,9 @@ export default class Room extends events.EventEmitter {
       dtlsParameters,
       sctpParameters
     })
+    transport.on('icestatechange', (state) => logger.info(`Ice state changed to ${state}`))
+    transport.on('iceselectedtuplechange', (tuple) => logger.info(`New ice selected tuple:`, tuple))
+    transport.on('dtlsstatechange', (state) => `New dtls state: ${state}`)
     peer.data.transports.set(transport.id, transport)
   }
 
