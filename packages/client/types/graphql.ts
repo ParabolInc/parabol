@@ -3527,6 +3527,11 @@ export interface IMutation {
   renamePokerTemplateDimension: IRenamePokerTemplateDimensionPayload | null;
 
   /**
+   * Remove a scale from a template
+   */
+  removePokerTemplateScale: IRemovePokerTemplateScalePayload | null;
+
+  /**
    * Remove a reflection
    */
   removeReflection: IRemoveReflectionPayload | null;
@@ -4332,6 +4337,10 @@ export interface IRenameReflectTemplatePromptOnMutationArguments {
 export interface IRenamePokerTemplateDimensionOnMutationArguments {
   dimensionId: string;
   name: string;
+}
+
+export interface IRemovePokerTemplateScaleOnMutationArguments {
+  scaleId: string;
 }
 
 export interface IRemoveReflectionOnMutationArguments {
@@ -7398,6 +7407,13 @@ export interface IRenamePokerTemplateDimensionPayload {
   dimension: ITemplateDimension | null;
 }
 
+export interface IRemovePokerTemplateScalePayload {
+  __typename: 'RemovePokerTemplateScalePayload';
+  error: IStandardMutationError | null;
+  pokerTemplate: IPokerTemplate | null;
+  scale: ITemplateScale | null;
+}
+
 export interface IRemoveReflectionPayload {
   __typename: 'RemoveReflectionPayload';
   error: IStandardMutationError | null;
@@ -8346,6 +8362,7 @@ export type TeamSubscriptionPayload =
   | IRemovePokerTemplatePayload
   | IRemoveReflectTemplatePromptPayload
   | IRemovePokerTemplateDimensionPayload
+  | IRemovePokerTemplateScalePayload
   | IRenameReflectTemplatePayload
   | IRenamePokerTemplatePayload
   | IRenameReflectTemplatePromptPayload
