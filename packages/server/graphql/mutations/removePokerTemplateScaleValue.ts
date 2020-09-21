@@ -1,15 +1,14 @@
 import {GraphQLID, GraphQLInt, GraphQLNonNull} from 'graphql'
-import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getRethink from '../../database/rethinkDriver'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
-import TemplateScaleInput from '../types/TemplateScaleInput'
-import AddPokerTemplateScaleValuePayload from '../types/AddPokerTemplateScaleValuePayload'
+import RemovePokerTemplateScaleValuePayload from '../types/RemovePokerTemplateScaleValuePayload'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 
-const addPokerTemplateScaleValue = {
-  description: 'Add a new scale value for a scale in a poker template',
-  type: AddPokerTemplateScaleValuePayload,
+const removePokerTemplateScaleValue = {
+  description: 'Remove a scale value from the scale of a template',
+  type: RemovePokerTemplateScaleValuePayload,
   args: {
     templateId: {
       type: new GraphQLNonNull(GraphQLID)
@@ -17,16 +16,14 @@ const addPokerTemplateScaleValue = {
     scaleId: {
       type: new GraphQLNonNull(GraphQLID)
     },
-    scaleValue: {
-      type: new GraphQLNonNull(TemplateScaleInput)
-    },
     index: {
-      type: GraphQLInt
+      type: GraphQLInt,
+      description: 'Index of the scale value to be deleted. Default to the last scale value.'
     }
   },
   async resolve(
     _source,
-    {templateId, scaleId, scaleValue, index},
+    {templateId, scaleId, index},
     {authToken, dataLoader, socketId: mutatorId}
   ) {
     const r = await getRethink()
@@ -57,18 +54,19 @@ const addPokerTemplateScaleValue = {
       return standardError(new Error('Invalid index'), {userId: viewerId})
     }
 
+    // RESOLUTION
     await r
       .table('TemplateScale')
       .get(scaleId)
       .update((row) => ({
-        values: row('values').insertAt(index || endIndex + 1, scaleValue)
+        values: row('values').deleteAt(index || endIndex)
       }))
       .run()
 
-    const data = {scaleId}
-    publish(SubscriptionChannel.TEAM, teamId, 'AddPokerTemplateScaleValuePayload', data, subOptions)
+    const data = {scaleId, templateId}
+    publish(SubscriptionChannel.TEAM, teamId, 'RemovePokerTemplateScalePayload', data, subOptions)
     return data
   }
 }
 
-export default addPokerTemplateScaleValue
+export default removePokerTemplateScaleValue

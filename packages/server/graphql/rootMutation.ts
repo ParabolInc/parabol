@@ -104,6 +104,7 @@ import updateCreditCard from './mutations/updateCreditCard'
 import updateDragLocation from './mutations/updateDragLocation'
 import updateNewCheckInQuestion from './mutations/updateNewCheckInQuestion'
 import updateOrg from './mutations/updateOrg'
+import updatePokerTemplateScaleValue from './mutations/updatePokerTemplateScaleValue'
 import updateReflectionContent from './mutations/updateReflectionContent'
 import updateReflectionGroupTitle from './mutations/updateReflectionGroupTitle'
 import updateRetroMaxVotes from './mutations/updateRetroMaxVotes'
@@ -223,6 +224,7 @@ export default new GraphQLObjectType<any, Context, any>({
     updateCommentContent,
     updateCreditCard,
     updateOrg,
+    updatePokerTemplateScaleValue,
     updateNewCheckInQuestion,
     updateDragLocation,
     updateReflectionContent,

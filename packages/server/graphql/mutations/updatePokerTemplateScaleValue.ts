@@ -5,11 +5,11 @@ import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import TemplateScaleInput from '../types/TemplateScaleInput'
-import AddPokerTemplateScaleValuePayload from '../types/AddPokerTemplateScaleValuePayload'
+import UpdatePokerTemplateScaleValuePayload from '../types/UpdatePokerTemplateScaleValuePayload'
 
-const addPokerTemplateScaleValue = {
-  description: 'Add a new scale value for a scale in a poker template',
-  type: AddPokerTemplateScaleValuePayload,
+const updatePokerTemplateScaleValue = {
+  description: 'Update a scale value for a scale in a poker template',
+  type: UpdatePokerTemplateScaleValuePayload,
   args: {
     templateId: {
       type: new GraphQLNonNull(GraphQLID)
@@ -61,14 +61,20 @@ const addPokerTemplateScaleValue = {
       .table('TemplateScale')
       .get(scaleId)
       .update((row) => ({
-        values: row('values').insertAt(index || endIndex + 1, scaleValue)
+        values: row('values').changeAt(index || endIndex, scaleValue)
       }))
       .run()
 
     const data = {scaleId}
-    publish(SubscriptionChannel.TEAM, teamId, 'AddPokerTemplateScaleValuePayload', data, subOptions)
+    publish(
+      SubscriptionChannel.TEAM,
+      teamId,
+      'UpdatePokerTemplateScaleValuePayload',
+      data,
+      subOptions
+    )
     return data
   }
 }
 
-export default addPokerTemplateScaleValue
+export default updatePokerTemplateScaleValue

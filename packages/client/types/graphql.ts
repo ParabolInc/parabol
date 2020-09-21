@@ -3205,7 +3205,7 @@ export interface IMutation {
   addPokerTemplateScale: IAddPokerTemplateScalePayload | null;
 
   /**
-   * Add a new scale for the poker template
+   * Add a new scale value for a scale in a poker template
    */
   addPokerTemplateScaleValue: IAddPokerTemplateScaleValuePayload | null;
 
@@ -3646,6 +3646,11 @@ export interface IMutation {
    * Update an with a change in name, avatar
    */
   updateOrg: IUpdateOrgPayload;
+
+  /**
+   * Update a scale value for a scale in a poker template
+   */
+  updatePokerTemplateScaleValue: IUpdatePokerTemplateScaleValuePayload | null;
 
   /**
    * Update a Team's Icebreaker in a new meeting
@@ -4564,6 +4569,13 @@ export interface IUpdateOrgOnMutationArguments {
    * the updated org including the id, and at least one other field
    */
   updatedOrg: IUpdateOrgInput;
+}
+
+export interface IUpdatePokerTemplateScaleValueOnMutationArguments {
+  templateId: string;
+  scaleId: string;
+  scaleValue: ITemplateScaleInput;
+  index?: number | null;
 }
 
 export interface IUpdateNewCheckInQuestionOnMutationArguments {
@@ -7935,6 +7947,12 @@ export interface IUpdateOrgPayload {
   organization: IOrganization | null;
 }
 
+export interface IUpdatePokerTemplateScaleValuePayload {
+  __typename: 'UpdatePokerTemplateScaleValuePayload';
+  error: IStandardMutationError | null;
+  scale: ITemplateScale | null;
+}
+
 export interface IUpdateNewCheckInQuestionPayload {
   __typename: 'UpdateNewCheckInQuestionPayload';
   error: IStandardMutationError | null;
@@ -8447,6 +8465,7 @@ export type TeamSubscriptionPayload =
   | IRemovePokerTemplateScaleValuePayload
   | ISetCheckInEnabledPayload
   | ISetSlackNotificationPayload
+  | IUpdatePokerTemplateScaleValuePayload
   | IUpdateUserProfilePayload;
 
 /**
