@@ -22,7 +22,7 @@ export const timelineEventInterfaceFields = () => ({
   },
   isActive: {
     type: new GraphQLNonNull(GraphQLBoolean),
-    description: 'true if the timeline event is active, false if arvhiced'
+    description: 'true if the timeline event is active, false if archived'
   },
   orgId: {
     type: GraphQLID,

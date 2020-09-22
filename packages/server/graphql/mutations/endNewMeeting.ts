@@ -341,7 +341,6 @@ export default {
     })
     sendNewMeetingSummary(completedMeeting, context).catch(console.log)
     const TimelineEvent = timelineEventLookup[meetingType]
-
     const events = meetingMembers.map(
       (meetingMember) =>
         new TimelineEvent({
@@ -351,6 +350,7 @@ export default {
           meetingId
         })
     )
+    const timelineEventId = events[0].id as string
     await r
       .table('TimelineEvent')
       .insert(events)
@@ -384,7 +384,7 @@ export default {
       isKill: getIsKill(meetingType, phase),
       updatedTaskIds,
       removedTaskIds,
-      timelineEventId: events[0].id
+      timelineEventId
     }
     publish(SubscriptionChannel.TEAM, teamId, 'EndNewMeetingPayload', data, subOptions)
 

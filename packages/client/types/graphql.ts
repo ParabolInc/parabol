@@ -2796,7 +2796,7 @@ export interface ITimelineEvent {
   interactionCount: number;
 
   /**
-   * true if the timeline event is active, false if arvhiced
+   * true if the timeline event is active, false if archived
    */
   isActive: boolean;
 
@@ -9093,7 +9093,7 @@ export interface ITimelineEventCompletedActionMeeting {
   interactionCount: number;
 
   /**
-   * true if the timeline event is active, false if arvhiced
+   * true if the timeline event is active, false if archived
    */
   isActive: boolean;
 
@@ -9170,7 +9170,7 @@ export interface ITimelineEventCompletedRetroMeeting {
   interactionCount: number;
 
   /**
-   * true if the timeline event is active, false if arvhiced
+   * true if the timeline event is active, false if archived
    */
   isActive: boolean;
 
@@ -9247,7 +9247,7 @@ export interface ITimelineEventJoinedParabol {
   interactionCount: number;
 
   /**
-   * true if the timeline event is active, false if arvhiced
+   * true if the timeline event is active, false if archived
    */
   isActive: boolean;
 
@@ -9314,7 +9314,7 @@ export interface ITimelineEventPokerComplete {
   interactionCount: number;
 
   /**
-   * true if the timeline event is active, false if arvhiced
+   * true if the timeline event is active, false if archived
    */
   isActive: boolean;
 
@@ -9391,7 +9391,7 @@ export interface ITimelineEventTeamCreated {
   interactionCount: number;
 
   /**
-   * true if the timeline event is active, false if arvhiced
+   * true if the timeline event is active, false if archived
    */
   isActive: boolean;
 
