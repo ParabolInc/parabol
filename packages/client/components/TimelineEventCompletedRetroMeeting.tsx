@@ -24,6 +24,7 @@ const Link = styled(StyledLink)({
 class TimelineEventCompletedRetroMeeting extends Component<Props> {
   render() {
     const {timelineEvent} = this.props
+    console.log('TimelineEventCompletedRetroMeeting -> render -> timelineEvent', timelineEvent)
     const {meeting, team} = timelineEvent
     const {
       id: meetingId,

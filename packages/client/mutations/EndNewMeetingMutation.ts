@@ -16,7 +16,8 @@ import {EndNewMeetingMutation as TEndNewMeetingMutation} from '../__generated__/
 import handleRemoveSuggestedActions from './handlers/handleRemoveSuggestedActions'
 import handleRemoveTasks from './handlers/handleRemoveTasks'
 import handleUpsertTasks from './handlers/handleUpsertTasks'
-import {ConnectionHandler, RecordProxy} from 'relay-runtime'
+import {RecordProxy} from 'relay-runtime'
+import handleAddTimelineEvent from './handlers/handleAddTimelineEvent'
 
 graphql`
   fragment EndNewMeetingMutation_team on EndNewMeetingPayload {
@@ -29,6 +30,12 @@ graphql`
         agendaItemCount
         commentCount
         taskCount
+      }
+      ... on RetrospectiveMeeting {
+        commentCount
+        reflectionCount
+        taskCount
+        topicCount
       }
     }
     removedTaskIds
@@ -128,23 +135,9 @@ export const endNewMeetingTeamUpdater: SharedUpdater<EndNewMeetingMutation_team>
 ) => {
   const updatedTasks = payload.getLinkedRecords('updatedTasks')
   const removedTaskIds = payload.getValue('removedTaskIds')
-  const timelineEvent = payload.getLinkedRecord('timelineEvent')
+  const timelineEvent = payload.getLinkedRecord('timelineEvent') as RecordProxy
   const meeting = payload.getLinkedRecord('meeting') as RecordProxy
-  const viewer = store.getRoot().getLinkedRecord('viewer') as RecordProxy
-  const timelineConnection = ConnectionHandler.getConnection(
-    viewer,
-    'TimelineFeedList_timeline'
-  ) as RecordProxy
-  timelineEvent.setLinkedRecord(meeting, 'meeting')
-  const newEdge = ConnectionHandler.createEdge(
-    store,
-    timelineConnection!,
-    timelineEvent,
-    'TimelineEventEdge'
-  )
-  const now = new Date()
-  newEdge.setValue(now.toISOString(), 'cursor')
-  ConnectionHandler.insertEdgeBefore(timelineConnection, newEdge)
+  handleAddTimelineEvent(timelineEvent, meeting, store)
   handleRemoveTasks(removedTaskIds as any, store)
   handleUpsertTasks(updatedTasks as any, store)
 }
