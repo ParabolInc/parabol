@@ -3648,6 +3648,11 @@ export interface IMutation {
   updateOrg: IUpdateOrgPayload;
 
   /**
+   * Update the scale used for a dimension in a template
+   */
+  updatePokerTemplateDimensionScale: IAddPokerTemplateDimensionPayload | null;
+
+  /**
    * Update a scale value for a scale in a poker template
    */
   updatePokerTemplateScaleValue: IUpdatePokerTemplateScaleValuePayload | null;
@@ -4569,6 +4574,11 @@ export interface IUpdateOrgOnMutationArguments {
    * the updated org including the id, and at least one other field
    */
   updatedOrg: IUpdateOrgInput;
+}
+
+export interface IUpdatePokerTemplateDimensionScaleOnMutationArguments {
+  dimensionId: string;
+  scaleId: string;
 }
 
 export interface IUpdatePokerTemplateScaleValueOnMutationArguments {
@@ -8465,8 +8475,15 @@ export type TeamSubscriptionPayload =
   | IRemovePokerTemplateScaleValuePayload
   | ISetCheckInEnabledPayload
   | ISetSlackNotificationPayload
+  | IUpdatePokerTemplateDimensionScalePayload
   | IUpdatePokerTemplateScaleValuePayload
   | IUpdateUserProfilePayload;
+
+export interface IUpdatePokerTemplateDimensionScalePayload {
+  __typename: 'UpdatePokerTemplateDimensionScalePayload';
+  error: IStandardMutationError | null;
+  dimension: ITemplateDimension | null;
+}
 
 /**
  * An action meeting

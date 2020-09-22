@@ -50,6 +50,7 @@ import {StartSprintPokerSuccess} from './StartSprintPokerPayload'
 import UpdateAgendaItemPayload from './UpdateAgendaItemPayload'
 import UpdateCreditCardPayload from './UpdateCreditCardPayload'
 import UpdateTeamNamePayload from './UpdateTeamNamePayload'
+import UpdatePokerTemplateDimensionScalePayload from './UpdatePokerTemplateDimensionScalePayload'
 import UpdatePokerTemplateScaleValuePayload from './UpdatePokerTemplateScaleValuePayload'
 import UpdateUserProfilePayload from './UpdateUserProfilePayload'
 import UpgradeToProPayload from './UpgradeToProPayload'
@@ -107,6 +108,7 @@ const types = [
   RemovePokerTemplateScaleValuePayload,
   SetCheckInEnabledPayload,
   SetSlackNotificationPayload,
+  UpdatePokerTemplateDimensionScalePayload,
   UpdatePokerTemplateScaleValuePayload,
   UpdateUserProfilePayload
 ]
