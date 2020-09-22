@@ -14,6 +14,10 @@ export const timelineEventInterfaceFields = () => ({
     type: new GraphQLNonNull(GraphQLID),
     description: 'shortid'
   },
+  commentCount: {
+    type: new GraphQLNonNull(GraphQLInt),
+    description: 'test'
+  },
   createdAt: {
     type: new GraphQLNonNull(GraphQLISO8601Type),
     description: '* The timestamp the event was created at'
@@ -30,6 +34,11 @@ export const timelineEventInterfaceFields = () => ({
     type: NewMeeting,
     description: 'The meeting, if any',
     resolve: ({meetingId}, _args, {dataLoader}) => {
+      console.log('GQL meetingId', meetingId)
+      console.log(
+        "GQL ---- meetingId ? dataLoader.get('newMeetings').load(meetingId) : null",
+        meetingId ? dataLoader.get('newMeetings').load(meetingId) : null
+      )
       return meetingId ? dataLoader.get('newMeetings').load(meetingId) : null
     }
   },

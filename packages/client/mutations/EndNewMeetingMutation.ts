@@ -25,6 +25,11 @@ graphql`
       id
       endedAt
       teamId
+      ... on ActionMeeting {
+        agendaItemCount
+        commentCount
+        taskCount
+      }
     }
     removedTaskIds
     team {
@@ -57,26 +62,6 @@ graphql`
     }
   }
 `
-
-// graphql`
-//   fragment EndNewMeetingMutationDos_team on TimelineEventCompletedActionMeeting {
-//     id
-//     type
-//     meeting {
-//       id
-//       agendaItemCount
-//       commentCount
-//       createdAt
-//       endedAt
-//       name
-//       taskCount
-//     }
-//     team {
-//       id
-//       name
-//     }
-//   }
-// `
 
 graphql`
   fragment EndNewMeetingMutation_notification on EndNewMeetingPayload {
@@ -144,8 +129,7 @@ export const endNewMeetingTeamUpdater: SharedUpdater<EndNewMeetingMutation_team>
   const updatedTasks = payload.getLinkedRecords('updatedTasks')
   const removedTaskIds = payload.getValue('removedTaskIds')
   const timelineEvent = payload.getLinkedRecord('timelineEvent')
-  const meeting = payload.getLinkedRecord('meeting') as any
-  const timelineEventId = timelineEvent.getValue('id')
+  const meeting = payload.getLinkedRecord('meeting') as RecordProxy
   const viewer = store.getRoot().getLinkedRecord('viewer') as RecordProxy
   const timelineConnection = ConnectionHandler.getConnection(
     viewer,
@@ -160,7 +144,6 @@ export const endNewMeetingTeamUpdater: SharedUpdater<EndNewMeetingMutation_team>
   )
   const now = new Date()
   newEdge.setValue(now.toISOString(), 'cursor')
-  // newEdge.setLinkedRecord(meeting, 'meeting')
   ConnectionHandler.insertEdgeBefore(timelineConnection, newEdge)
   handleRemoveTasks(removedTaskIds as any, store)
   handleUpsertTasks(updatedTasks as any, store)

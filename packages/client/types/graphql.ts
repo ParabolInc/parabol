@@ -2786,6 +2786,11 @@ export interface ITimelineEvent {
   id: string;
 
   /**
+   * test
+   */
+  commentCount: number;
+
+  /**
    * * The timestamp the event was created at
    */
   createdAt: any;
@@ -9088,6 +9093,11 @@ export interface ITimelineEventCompletedActionMeeting {
   id: string;
 
   /**
+   * test
+   */
+  commentCount: number;
+
+  /**
    * * The timestamp the event was created at
    */
   createdAt: any;
@@ -9163,6 +9173,11 @@ export interface ITimelineEventCompletedRetroMeeting {
    * shortid
    */
   id: string;
+
+  /**
+   * test
+   */
+  commentCount: number;
 
   /**
    * * The timestamp the event was created at
@@ -9242,6 +9257,11 @@ export interface ITimelineEventJoinedParabol {
   id: string;
 
   /**
+   * test
+   */
+  commentCount: number;
+
+  /**
    * * The timestamp the event was created at
    */
   createdAt: any;
@@ -9312,6 +9332,11 @@ export interface ITimelineEventPokerComplete {
    * shortid
    */
   id: string;
+
+  /**
+   * test
+   */
+  commentCount: number;
 
   /**
    * * The timestamp the event was created at
@@ -9389,6 +9414,11 @@ export interface ITimelineEventTeamCreated {
    * shortid
    */
   id: string;
+
+  /**
+   * test
+   */
+  commentCount: number;
 
   /**
    * * The timestamp the event was created at

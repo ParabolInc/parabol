@@ -341,7 +341,6 @@ export default {
     })
     sendNewMeetingSummary(completedMeeting, context).catch(console.log)
     const TimelineEvent = timelineEventLookup[meetingType]
-    console.log('resolve -> TimelineEvent', TimelineEvent)
 
     const events = meetingMembers.map(
       (meetingMember) =>
@@ -352,16 +351,8 @@ export default {
           meetingId
         })
     )
-    // const test = new TimelineEvent({
-    //   userId: viewerId,
-    //   teamId,
-    //   orgId: team.orgId,
-    //   meetingId
-    // })
-    // console.log('resolve -> test', test)
-    // console.log('resolve -> test ID', test.id)
     const viewerTimelineEvent = events.find((event) => event.userId === viewerId)
-    console.log('resolve -> viewerTimelineEvent', viewerTimelineEvent)
+    console.log('endNewMeeting mutation -> viewerTimelineEvent', viewerTimelineEvent)
 
     await r
       .table('TimelineEvent')
@@ -398,7 +389,6 @@ export default {
       removedTaskIds,
       timelineEventId: viewerTimelineEvent.id
     }
-    console.log('resolve -> data', data)
     publish(SubscriptionChannel.TEAM, teamId, 'EndNewMeetingPayload', data, subOptions)
 
     return data

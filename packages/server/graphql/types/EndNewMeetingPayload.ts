@@ -39,12 +39,8 @@ const EndNewMeetingPayload = new GraphQLObjectType<any, GQLContext>({
     timelineEvent: {
       type: TimelineEvent,
       description: 'The event that has just ended',
-      resolve: async (source, _args, {dataLoader}) => {
-        // resolve: async({timelineEventId}, _args, {dataLoader})
-        const {meetingId, timelineEventId} = source
-        const test = await dataLoader.get('timelineEvents').load(timelineEventId)
-        // const meeting = await dataLoader.get('newMeetings').load(meetingId)
-        return test
+      resolve: async ({timelineEventId}, _args, {dataLoader}) => {
+        return await dataLoader.get('timelineEvents').load(timelineEventId)
       }
     },
     updatedTaskIds: {
