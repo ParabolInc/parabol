@@ -16,8 +16,8 @@ import {EndNewMeetingMutation as TEndNewMeetingMutation} from '../__generated__/
 import handleRemoveSuggestedActions from './handlers/handleRemoveSuggestedActions'
 import handleRemoveTasks from './handlers/handleRemoveTasks'
 import handleUpsertTasks from './handlers/handleUpsertTasks'
-import {RecordProxy} from 'relay-runtime'
 import handleAddTimelineEvent from './handlers/handleAddTimelineEvent'
+import {RecordProxy} from 'relay-runtime'
 
 graphql`
   fragment EndNewMeetingMutation_team on EndNewMeetingPayload {
@@ -135,9 +135,9 @@ export const endNewMeetingTeamUpdater: SharedUpdater<EndNewMeetingMutation_team>
 ) => {
   const updatedTasks = payload.getLinkedRecords('updatedTasks')
   const removedTaskIds = payload.getValue('removedTaskIds')
-  const timelineEvent = payload.getLinkedRecord('timelineEvent') as RecordProxy
   const meeting = payload.getLinkedRecord('meeting') as RecordProxy
-  handleAddTimelineEvent(timelineEvent, meeting, store)
+  const timelineEvent = payload.getLinkedRecord('timelineEvent') as RecordProxy
+  handleAddTimelineEvent(meeting, timelineEvent, store)
   handleRemoveTasks(removedTaskIds as any, store)
   handleUpsertTasks(updatedTasks as any, store)
 }
@@ -151,7 +151,6 @@ const EndNewMeetingMutation: StandardMutation<TEndNewMeetingMutation, HistoryMay
     mutation,
     variables,
     updater: (store) => {
-      console.log('variables', variables)
       const payload = store.getRootField('endNewMeeting')
       if (!payload) return
       const context = {atmosphere, store: store as any}

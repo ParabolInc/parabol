@@ -351,9 +351,6 @@ export default {
           meetingId
         })
     )
-    const viewerTimelineEvent = events.find((event) => event.userId === viewerId)
-    console.log('endNewMeeting mutation -> viewerTimelineEvent', viewerTimelineEvent)
-
     await r
       .table('TimelineEvent')
       .insert(events)
@@ -387,7 +384,7 @@ export default {
       isKill: getIsKill(meetingType, phase),
       updatedTaskIds,
       removedTaskIds,
-      timelineEventId: viewerTimelineEvent.id
+      timelineEventId: events[0].id
     }
     publish(SubscriptionChannel.TEAM, teamId, 'EndNewMeetingPayload', data, subOptions)
 

@@ -2786,11 +2786,6 @@ export interface ITimelineEvent {
   id: string;
 
   /**
-   * test
-   */
-  commentCount: number;
-
-  /**
    * * The timestamp the event was created at
    */
   createdAt: any;
@@ -2804,11 +2799,6 @@ export interface ITimelineEvent {
    * true if the timeline event is active, false if arvhiced
    */
   isActive: boolean;
-
-  /**
-   * The meeting, if any
-   */
-  meeting: NewMeeting | null;
 
   /**
    * The orgId this event is associated with. Null if not traceable to one org
@@ -6588,7 +6578,7 @@ export interface IEndNewMeetingPayload {
   removedTaskIds: Array<string> | null;
 
   /**
-   * The event that has just ended
+   * An event that is important to the viewer, e.g. an ended meeting
    */
   timelineEvent: TimelineEvent | null;
   updatedTaskIds: Array<string> | null;
@@ -9093,11 +9083,6 @@ export interface ITimelineEventCompletedActionMeeting {
   id: string;
 
   /**
-   * test
-   */
-  commentCount: number;
-
-  /**
    * * The timestamp the event was created at
    */
   createdAt: any;
@@ -9111,11 +9096,6 @@ export interface ITimelineEventCompletedActionMeeting {
    * true if the timeline event is active, false if arvhiced
    */
   isActive: boolean;
-
-  /**
-   * The meeting that was completed
-   */
-  meeting: IActionMeeting;
 
   /**
    * The orgId this event is associated with
@@ -9156,6 +9136,11 @@ export interface ITimelineEventCompletedActionMeeting {
    * The user than can see this event
    */
   user: IUser;
+
+  /**
+   * The meeting that was completed
+   */
+  meeting: IActionMeeting;
 
   /**
    * The meetingId that was completed, null if legacyMeetingId is present
@@ -9175,11 +9160,6 @@ export interface ITimelineEventCompletedRetroMeeting {
   id: string;
 
   /**
-   * test
-   */
-  commentCount: number;
-
-  /**
    * * The timestamp the event was created at
    */
   createdAt: any;
@@ -9193,11 +9173,6 @@ export interface ITimelineEventCompletedRetroMeeting {
    * true if the timeline event is active, false if arvhiced
    */
   isActive: boolean;
-
-  /**
-   * The meeting that was completed
-   */
-  meeting: IRetrospectiveMeeting;
 
   /**
    * The orgId this event is associated with
@@ -9240,6 +9215,11 @@ export interface ITimelineEventCompletedRetroMeeting {
   user: IUser;
 
   /**
+   * The meeting that was completed
+   */
+  meeting: IRetrospectiveMeeting;
+
+  /**
    * The meetingId that was completed
    */
   meetingId: string;
@@ -9257,11 +9237,6 @@ export interface ITimelineEventJoinedParabol {
   id: string;
 
   /**
-   * test
-   */
-  commentCount: number;
-
-  /**
    * * The timestamp the event was created at
    */
   createdAt: any;
@@ -9275,11 +9250,6 @@ export interface ITimelineEventJoinedParabol {
    * true if the timeline event is active, false if arvhiced
    */
   isActive: boolean;
-
-  /**
-   * The meeting, if any
-   */
-  meeting: NewMeeting | null;
 
   /**
    * The orgId this event is associated with. Null if not traceable to one org
@@ -9334,11 +9304,6 @@ export interface ITimelineEventPokerComplete {
   id: string;
 
   /**
-   * test
-   */
-  commentCount: number;
-
-  /**
    * * The timestamp the event was created at
    */
   createdAt: any;
@@ -9352,11 +9317,6 @@ export interface ITimelineEventPokerComplete {
    * true if the timeline event is active, false if arvhiced
    */
   isActive: boolean;
-
-  /**
-   * The meeting that was completed
-   */
-  meeting: IRetrospectiveMeeting;
 
   /**
    * The orgId this event is associated with
@@ -9399,6 +9359,11 @@ export interface ITimelineEventPokerComplete {
   user: IUser;
 
   /**
+   * The meeting that was completed
+   */
+  meeting: IRetrospectiveMeeting;
+
+  /**
    * The meetingId that was completed
    */
   meetingId: string;
@@ -9416,11 +9381,6 @@ export interface ITimelineEventTeamCreated {
   id: string;
 
   /**
-   * test
-   */
-  commentCount: number;
-
-  /**
    * * The timestamp the event was created at
    */
   createdAt: any;
@@ -9434,11 +9394,6 @@ export interface ITimelineEventTeamCreated {
    * true if the timeline event is active, false if arvhiced
    */
   isActive: boolean;
-
-  /**
-   * The meeting, if any
-   */
-  meeting: NewMeeting | null;
 
   /**
    * The orgId this event is associated with

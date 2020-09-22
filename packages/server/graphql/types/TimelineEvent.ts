@@ -1,7 +1,5 @@
 import {GraphQLBoolean, GraphQLID, GraphQLInt, GraphQLInterfaceType, GraphQLNonNull} from 'graphql'
-import NewMeeting from './NewMeeting'
 import connectionDefinitions from '../connectionDefinitions'
-import {resolveNewMeeting} from '../resolvers'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import Organization from './Organization'
 import PageInfoDateCursor from './PageInfoDateCursor'
@@ -14,10 +12,6 @@ export const timelineEventInterfaceFields = () => ({
     type: new GraphQLNonNull(GraphQLID),
     description: 'shortid'
   },
-  commentCount: {
-    type: new GraphQLNonNull(GraphQLInt),
-    description: 'test'
-  },
   createdAt: {
     type: new GraphQLNonNull(GraphQLISO8601Type),
     description: '* The timestamp the event was created at'
@@ -29,18 +23,6 @@ export const timelineEventInterfaceFields = () => ({
   isActive: {
     type: new GraphQLNonNull(GraphQLBoolean),
     description: 'true if the timeline event is active, false if arvhiced'
-  },
-  meeting: {
-    type: NewMeeting,
-    description: 'The meeting, if any',
-    resolve: ({meetingId}, _args, {dataLoader}) => {
-      console.log('GQL meetingId', meetingId)
-      console.log(
-        "GQL ---- meetingId ? dataLoader.get('newMeetings').load(meetingId) : null",
-        meetingId ? dataLoader.get('newMeetings').load(meetingId) : null
-      )
-      return meetingId ? dataLoader.get('newMeetings').load(meetingId) : null
-    }
   },
   orgId: {
     type: GraphQLID,

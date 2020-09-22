@@ -1,17 +1,14 @@
 import {ConnectionHandler, RecordProxy, RecordSourceSelectorProxy} from 'relay-runtime'
 
 const handleAddTimelineEvent = (
-  timelineEvent: RecordProxy,
   meeting: RecordProxy,
+  timelineEvent: RecordProxy,
   store: RecordSourceSelectorProxy
 ) => {
-  const viewer = store.getRoot().getLinkedRecord('viewer') as RecordProxy
+  const viewer = store.getRoot().getLinkedRecord('viewer')
   if (!viewer) return
   timelineEvent.setLinkedRecord(meeting, 'meeting')
-  const timelineConnection = ConnectionHandler.getConnection(
-    viewer,
-    'TimelineFeedList_timeline'
-  ) as RecordProxy
+  const timelineConnection = ConnectionHandler.getConnection(viewer, 'TimelineFeedList_timeline')
   if (timelineConnection) {
     const newEdge = ConnectionHandler.createEdge(
       store,

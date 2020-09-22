@@ -38,7 +38,7 @@ const EndNewMeetingPayload = new GraphQLObjectType<any, GQLContext>({
     },
     timelineEvent: {
       type: TimelineEvent,
-      description: 'The event that has just ended',
+      description: 'An event that is important to the viewer, e.g. an ended meeting',
       resolve: async ({timelineEventId}, _args, {dataLoader}) => {
         return await dataLoader.get('timelineEvents').load(timelineEventId)
       }
