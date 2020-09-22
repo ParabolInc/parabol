@@ -1,5 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
-import React, {useMemo} from 'react'
+import React, {useMemo, useRef} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {UserTasksHeader_viewer} from '~/__generated__/UserTasksHeader_viewer.graphql'
 import DashSectionControls from '../../../../components/Dashboard/DashSectionControls'
@@ -18,6 +18,7 @@ import constructUserTaskFilterQueryParamURL from '~/utils/constructUserTaskFilte
 import useRouter from '~/hooks/useRouter'
 import {Breakpoint} from '~/types/constEnums'
 import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
+import useAtmosphere from '../../../../hooks/useAtmosphere'
 
 const desktopBreakpoint = makeMinWidthMediaQuery(Breakpoint.SIDEBAR_LEFT)
 
@@ -70,11 +71,13 @@ const UserTasksHeaderDashSectionControls = styled(DashSectionControls)({
 })
 
 interface Props {
-  viewer: UserTasksHeader_viewer
+  viewer: UserTasksHeader_viewer | null
 }
 
 const UserTasksHeader = (props: Props) => {
   const {history} = useRouter()
+  const atmosphere = useAtmosphere()
+  const {viewerId} = atmosphere
   const {viewer} = props
   const {
     menuPortal: teamFilterMenuPortal,
@@ -92,8 +95,13 @@ const UserTasksHeader = (props: Props) => {
   } = useMenu(MenuPosition.UPPER_RIGHT, {
     isDropdown: true
   })
-  const {teams} = viewer
-  const {userIds, teamIds, showArchived} = useUserTaskFilters(viewer.id)
+  const oldTeamsRef = useRef<any>([])
+  const nextTeams = viewer?.teams ?? null
+  if (nextTeams) {
+    oldTeamsRef.current = nextTeams
+  }
+  const teams = oldTeamsRef.current
+  const {userIds, teamIds, showArchived} = useUserTaskFilters(viewerId)
 
   const teamFilter = useMemo(() =>
     teamIds ? teams.find(({id: teamId}) => teamIds.includes(teamId)) : undefined
@@ -139,7 +147,7 @@ const UserTasksHeader = (props: Props) => {
           iconText='group'
           dataCy='team-filter'
         />
-        {teamFilterMenuPortal(<UserDashTeamMenu menuProps={teamFilterMenuProps} viewer={viewer} />)}
+        {teamFilterMenuPortal(<UserDashTeamMenu menuProps={teamFilterMenuProps} viewer={viewer!} />)}
 
         {/* Filter by Owner */}
         <StyledDashFilterToggle
@@ -152,7 +160,7 @@ const UserTasksHeader = (props: Props) => {
           dataCy='team-member-filter'
         />
         {teamMemberFilterMenuPortal(
-          <UserDashTeamMemberMenu menuProps={teamMemberFilterMenuProps} viewer={viewer} />
+          <UserDashTeamMemberMenu menuProps={teamMemberFilterMenuProps} viewer={viewer!} />
         )}
 
         <StyledLinkButton

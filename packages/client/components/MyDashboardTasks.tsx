@@ -11,7 +11,7 @@ import {useUserTaskFilters} from '~/utils/useUserTaskFilters'
 import TeamArchive from '~/modules/teamDashboard/components/TeamArchive/TeamArchive'
 
 interface Props {
-  viewer: MyDashboardTasks_viewer
+  viewer: MyDashboardTasks_viewer | null
   retry(): void
 }
 
@@ -27,10 +27,13 @@ const MyDashboardTasks = (props: Props) => {
     <>
       <UserTasksHeader viewer={viewer} />
 
-      {showArchived ? (
+      {viewer ? showArchived ? (
         <TeamArchive viewer={viewer} team={null} />
       ) : (
-          <UserColumnsContainer viewer={viewer} />)}
+          <UserColumnsContainer viewer={viewer} />)
+        : null
+      }
+
     </>
   )
 }

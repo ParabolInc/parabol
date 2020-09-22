@@ -27,7 +27,10 @@ const MyDashboardTasksRoot = ({location}: Props) => {
       query={query}
       variables={{userIds, teamIds, first: 10}}
       fetchPolicy={'store-or-network' as any}
-      render={renderQuery(MyDashboardTasks, {size: LoaderSize.PANEL, props: {location}})}
+      render={(readyState) => {
+        const {props, retry} = readyState
+        return <MyDashboardTasks location={location} retry={retry} viewer={props?.viewer ?? null} />
+      }}
     />
   )
 }
