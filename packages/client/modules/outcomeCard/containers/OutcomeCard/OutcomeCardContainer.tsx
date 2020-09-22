@@ -45,7 +45,7 @@ const OutcomeCardContainer = memo((props: Props) => {
       editorDecorators(() => editorStateRef.current)
     )
   })
-  const {removeTaskChild, addTaskChild, useTaskChild, isTaskFocused} = useTaskChildFocus(taskId)
+  const {useTaskChild, isTaskFocused} = useTaskChildFocus(taskId)
 
   const handleCardUpdate = () => {
     const isFocused = isTaskFocused()
@@ -96,14 +96,6 @@ const OutcomeCardContainer = memo((props: Props) => {
     <Wrapper
       tabIndex={-1}
       className={className}
-      onFocus={() => {
-        // clicking into text requires this be triggered all the time
-        addTaskChild('root')
-      }}
-      onBlur={() => {
-        removeTaskChild('root')
-        setTimeout(handleCardUpdate)
-      }}
       onMouseEnter={() => setIsTaskHovered(true)}
       onMouseLeave={() => setIsTaskHovered(false)}
       ref={ref}
@@ -113,6 +105,7 @@ const OutcomeCardContainer = memo((props: Props) => {
         area={area}
         editorRef={editorRef}
         editorState={editorStateRef.current}
+        handleCardUpdate={handleCardUpdate}
         isTaskFocused={isTaskFocused()}
         isTaskHovered={isTaskHovered}
         isAgenda={!!isAgenda}
