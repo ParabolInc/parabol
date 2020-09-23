@@ -10,6 +10,7 @@ import {GQLContext} from '../../graphql'
 import User from '../../types/User'
 import getRedis from '../../../utils/getRedis'
 import getListeningUserIds, {RedisCommand} from '../../../utils/getListeningUserIds'
+import hydrateRedisDoc from '../../../dataloader/hydrateRedisDoc'
 
 export interface UserPresence {
   lastSeenAtURL: string | null
@@ -32,10 +33,10 @@ export default {
     const userId = getUserId(authToken)
 
     // RESOLUTION
-    const user = await db.read('User', userId)
+    const userDb = await db.read('User', userId)
+    // hydrate user as lastSeenAt could be a string if we're getting it from Redis
+    const user = hydrateRedisDoc(JSON.stringify(userDb), 'user')
     const {inactive, lastSeenAt, tms} = user
-    // lastSeenAt could be a string if we're getting it from Redis
-    const lastSeenAtDate = lastSeenAt && new Date(lastSeenAt)
 
     // no need to wait for this, it's just for billing
     if (inactive) {
@@ -47,7 +48,7 @@ export default {
       adjustUserCount(userId, orgIds, InvoiceItemType.UNPAUSE_USER).catch(console.log)
       // TODO: re-identify
     }
-    const datesAreOnSameDay = now.toDateString() === lastSeenAtDate?.toDateString()
+    const datesAreOnSameDay = now.toDateString() === lastSeenAt?.toDateString()
     if (!datesAreOnSameDay) {
       await db.write('User', userId, {inactive: false, lastSeenAt: now})
     }

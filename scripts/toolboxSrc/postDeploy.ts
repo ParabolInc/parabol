@@ -5,9 +5,9 @@ import getProjectRoot from '../webpack/utils/getProjectRoot'
 import getRedis from '../../packages/server/utils/getRedis'
 
 const PROJECT_ROOT = getProjectRoot()
-const redis = getRedis()
 
 const flushSocketConnections = async () => {
+  const redis = getRedis()
   const userPresenceStream = redis.scanStream({match: 'presence:*'})
   userPresenceStream.on('data', async (keys) => {
     if (!keys?.length) return

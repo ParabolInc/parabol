@@ -7,6 +7,7 @@ import {requireSU} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import AddNewFeaturePayload from '../../types/addNewFeaturePayload'
 import getRedis from '../../../utils/getRedis'
+import sendToSentry from '../../../utils/sendToSentry'
 
 const addNewFeature = {
   type: AddNewFeaturePayload,
@@ -48,26 +49,28 @@ const addNewFeature = {
     const onlineUserIds = new Set()
     const stream = redis.scanStream({match: 'presence:*'})
     stream.on('data', (keys) => {
-      console.log('keys', keys)
       if (!keys?.length) return
       for (const key of keys) {
-        onlineUserIds.add(key)
+        const userId = key.substring('presence:'.length)
+        if (!onlineUserIds.has(userId)) {
+          onlineUserIds.add(userId)
+          publish(
+            SubscriptionChannel.NOTIFICATION,
+            userId,
+            'AddNewFeaturePayload',
+            {newFeature},
+            subOptions
+          )
+        }
       }
     })
-    stream.on('end', () => {
-      const onlineUserIdsArr = Array.from(onlineUserIds) as string[]
-      onlineUserIdsArr.forEach((userId) => {
-        publish(
-          SubscriptionChannel.NOTIFICATION,
-          userId,
-          'AddNewFeaturePayload',
-          {newFeature},
-          subOptions
-        )
+    await new Promise((resolve, reject) => {
+      stream.on('end', resolve)
+      stream.on('error', (e) => {
+        sendToSentry(e)
+        reject(e)
       })
     })
-
-    return {newFeature}
   }
 }
 

@@ -8,23 +8,19 @@ export const enum RedisCommand {
 const getListeningUserIds = async (command: RedisCommand, tms: string[], userId: string) => {
   const redis = getRedis()
   const listeningUserIds = new Set()
+  const commands = [] as string[][]
   for (const teamId of tms) {
-    const commands = [
-      [command, `team:${teamId}`, userId],
-      ['smembers', `team:${teamId}`]
-    ]
-    let teamMembers
-    await redis.multi(commands).exec((execErr, results) => {
-      if (execErr) throw new Error(`Failed to execute redis command: ${execErr}`)
-      results.forEach((res, index) => {
-        if (index === 1 && !res[0]) {
-          teamMembers = res[1]
-        }
-      })
-    })
-    for (const teamMemberUserId of teamMembers) {
-      listeningUserIds.add(teamMemberUserId)
+    commands.push([command, `team:${teamId}`, userId], ['smembers', `team:${teamId}`])
+  }
+  const response = await redis.multi(commands).exec((execErr) => {
+    if (execErr) {
+      throw new Error(`Failed to execute redis command: ${execErr}`)
     }
+  })
+  const sMembersRes = response[1]
+  const teamMembers = sMembersRes[1]
+  for (const teamMemberUserId of teamMembers) {
+    listeningUserIds.add(teamMemberUserId)
   }
   return Array.from(listeningUserIds) as string[]
 }

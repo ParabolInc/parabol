@@ -4,38 +4,34 @@ import {UserPresence} from '../../intranetSchema/mutations/connectSocket'
 // finds all the users who are at the same url
 const getUsersToIgnore = async (viewerId: string, teamId: string) => {
   const redis = getRedis()
-  let userPresence
-  let activeTeamMemberIds
-  await redis
+  const [lrangeRes, sMembersRes] = await redis
     .multi()
     .lrange(`presence:${viewerId}`, 0, -1)
     .smembers(`team:${teamId}`)
-    .exec((execErr, results) => {
+    .exec((execErr) => {
       if (execErr) throw new Error(`Failed to execute redis command: ${execErr}`)
-      results.forEach((res, index) => {
-        if (index === 0 && !res[0]) {
-          userPresence = res[1]
-        } else if (index === 1 && !res[0]) {
-          activeTeamMemberIds = res[1]
-        }
-      })
     })
+  const userPresence = lrangeRes[1]
+  const activeTeamMemberIds = sMembersRes[1]
   const parsedUserPresence = userPresence.map((socket) => JSON.parse(socket)) as UserPresence[]
   const userLastSeenAtURLs = parsedUserPresence.map(({lastSeenAtURL}) => lastSeenAtURL)
+
   const usersAtSameURL = [] as string[]
-  for (const id of activeTeamMemberIds) {
-    const teamMemberPresence = await redis.lrange(`presence:${id}`, 0, -1)
-    const parsedTeamMemberPresence = teamMemberPresence.map((socket) =>
-      JSON.parse(socket)
-    ) as UserPresence[]
-    const teamMemberLastSeenAtURLs = parsedTeamMemberPresence.map(
-      ({lastSeenAtURL}) => lastSeenAtURL
-    )
-    const isAtSameURL = teamMemberLastSeenAtURLs.find((url) => userLastSeenAtURLs.includes(url))
-    if (isAtSameURL) {
-      usersAtSameURL.push(id)
-    }
-  }
+  const commands = activeTeamMemberIds.map((id) => ['lrange', `presence:${id}`, '0', '-1'])
+  await redis.multi(commands).exec((execErr, results) => {
+    if (execErr) throw new Error(`Failed to execute redis command: ${execErr}`)
+    results.forEach((result, index) => {
+      const teamMemberUserPresence = result[1] as string[]
+      const teamMemberLastSeenAtURLs = teamMemberUserPresence.map(
+        (socket) => JSON.parse(socket).lastSeenAtURL
+      )
+      const isAtSameURL = teamMemberLastSeenAtURLs.find((url) => userLastSeenAtURLs.includes(url))
+      if (isAtSameURL && activeTeamMemberIds) {
+        const userId = activeTeamMemberIds[index]
+        usersAtSameURL.push(userId)
+      }
+    })
+  })
   return usersAtSameURL
 }
 
