@@ -31,7 +31,7 @@ const ArchiveTaskRoot = ({teamIds, team, userIds, returnToTeamId}: ArchiveTaskRo
     <QueryRenderer
       environment={atmosphere}
       query={query}
-      variables={{teamIds, userIds, first: 40}}
+      variables={{teamIds, userIds, first: 10}}
       fetchPolicy={'store-or-network' as any}
       render={renderQuery(TeamArchive, {
         props: {returnToTeamId, team},
