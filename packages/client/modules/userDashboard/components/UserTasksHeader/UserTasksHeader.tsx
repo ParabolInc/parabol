@@ -147,7 +147,7 @@ const UserTasksHeader = (props: Props) => {
           iconText='group'
           dataCy='team-filter'
         />
-        {teamFilterMenuPortal(<UserDashTeamMenu menuProps={teamFilterMenuProps} viewer={viewer!} />)}
+        {teamFilterMenuPortal(<UserDashTeamMenu menuProps={teamFilterMenuProps} viewer={viewer} />)}
 
         {/* Filter by Owner */}
         <StyledDashFilterToggle
@@ -160,7 +160,7 @@ const UserTasksHeader = (props: Props) => {
           dataCy='team-member-filter'
         />
         {teamMemberFilterMenuPortal(
-          <UserDashTeamMemberMenu menuProps={teamMemberFilterMenuProps} viewer={viewer!} />
+          <UserDashTeamMemberMenu menuProps={teamMemberFilterMenuProps} viewer={viewer} />
         )}
 
         <StyledLinkButton

@@ -1,4 +1,4 @@
-import React, {useMemo} from 'react'
+import React, {useMemo, useRef} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import Menu from './Menu'
@@ -9,22 +9,29 @@ import {UserDashTeamMemberMenu_viewer} from '../__generated__/UserDashTeamMember
 import {useUserTaskFilters} from '~/utils/useUserTaskFilters'
 import useRouter from '~/hooks/useRouter'
 import constructUserTaskFilterQueryParamURL from '~/utils/constructUserTaskFilterQueryParamURL'
+import useAtmosphere from '~/hooks/useAtmosphere'
 
 interface Props {
   menuProps: MenuProps
-  viewer: UserDashTeamMemberMenu_viewer
+  viewer: UserDashTeamMemberMenu_viewer | null
 }
 
 const UserDashTeamMemberMenu = (props: Props) => {
   const {history} = useRouter()
   const {menuProps, viewer} = props
 
+  const atmosphere = useAtmosphere()
+  const {userIds, teamIds, showArchived} = useUserTaskFilters(atmosphere.viewerId)
 
-  const {userIds, teamIds, showArchived} = useUserTaskFilters(viewer.id)
+  const oldTeamsRef = useRef<any>([])
+  const nextTeams = viewer?.teams ?? null
+  if (nextTeams) {
+    oldTeamsRef.current = nextTeams
+  }
+  const teams = oldTeamsRef.current
 
   const showAllTeamMembers = !!teamIds
   const {filteredTeamMembers, defaultActiveIdx} = useMemo(() => {
-    const {teams} = viewer
     const filteredTeams = teamIds ? teams.filter(({id: teamId}) => teamIds.includes(teamId)) : teams
     const keySet = new Set()
     const filteredTeamMembers = [] as {

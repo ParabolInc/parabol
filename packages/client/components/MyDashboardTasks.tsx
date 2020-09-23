@@ -4,7 +4,6 @@ import {createFragmentContainer} from 'react-relay'
 import useDocumentTitle from '~/hooks/useDocumentTitle'
 import useStoreQueryRetry from '~/hooks/useStoreQueryRetry'
 import useAtmosphere from '../hooks/useAtmosphere'
-import UserTasksHeader from '../modules/userDashboard/components/UserTasksHeader/UserTasksHeader'
 import UserColumnsContainer from '../modules/userDashboard/containers/UserColumns/UserColumnsContainer'
 import {MyDashboardTasks_viewer} from '../__generated__/MyDashboardTasks_viewer.graphql'
 import {useUserTaskFilters} from '~/utils/useUserTaskFilters'
@@ -25,8 +24,6 @@ const MyDashboardTasks = (props: Props) => {
   useDocumentTitle('My Tasks | Parabol', 'My Tasks')
   return (
     <>
-      <UserTasksHeader viewer={viewer} />
-
       {viewer ? showArchived ? (
         <TeamArchive viewer={viewer} team={null} />
       ) : (
@@ -42,7 +39,6 @@ export default createFragmentContainer(MyDashboardTasks, {
   viewer: graphql`
     fragment MyDashboardTasks_viewer on User {
       ...UserColumnsContainer_viewer
-      ...UserTasksHeader_viewer
       ...TeamArchive_viewer
     }
   `
