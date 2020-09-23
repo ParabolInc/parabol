@@ -1,39 +1,110 @@
 import {R} from 'rethinkdb-ts'
 
-const createdAt = new Date('2020-09-14')
+const oldDataDate = new Date('2020-08-24')
+const newDataDate = new Date()
 
 const oldScales = [
   {
     id: 'fibonacciScale',
-    createdAt,
-    updatedAt: createdAt,
+    createdAt: oldDataDate,
+    updatedAt: oldDataDate,
     name: 'Fibonacci',
     values: ['1', '2', '3', '5', '8', '13', '21', '34'],
     teamId: 'aGhostTeam'
   },
   {
     id: 'tshirtSizeScale',
-    createdAt,
-    updatedAt: createdAt,
+    createdAt: oldDataDate,
+    updatedAt: oldDataDate,
     name: 'T-Shirt Sizes',
     values: ['XS', 'SM', 'M', 'L', 'XL'],
     teamId: 'aGhostTeam'
   },
   {
     id: 'fiveFingersScale',
-    createdAt,
-    updatedAt: createdAt,
+    createdAt: oldDataDate,
+    updatedAt: oldDataDate,
     name: 'Five Fingers',
     values: ['1', '2', '3', '4', '5'],
     teamId: 'aGhostTeam'
   }
 ]
 
+const oldDimensions = [
+  {
+    createdAt: oldDataDate,
+    id: 'wsjfStoryPointsDimension',
+    name: 'Story Points',
+    scaleId: 'fibonacciScale',
+    teamId: 'aGhostTeam',
+    templateId: 'wsjfTemplate',
+    updatedAt: oldDataDate
+  },
+  {
+    createdAt: oldDataDate,
+    id: 'eeStoryPointsDimension',
+    name: 'Story Points',
+    scaleId: 'fibonacciScale',
+    teamId: 'aGhostTeam',
+    templateId: 'estimatedEffortTemplate',
+    updatedAt: oldDataDate
+  },
+  {
+    createdAt: oldDataDate,
+    id: 'wsjfStoryValueDimension',
+    name: 'Story Value',
+    scaleId: 'fibonacciScale',
+    teamId: 'aGhostTeam',
+    templateId: 'wsjfTemplate',
+    updatedAt: oldDataDate
+  }
+]
+
+const oldPokerTemplates = [
+  {
+    createdAt: oldDataDate,
+    id: 'estimatedEffortTemplate',
+    isActive: true,
+    name: 'Estimated Effort',
+    orgId: 'aGhostOrg',
+    scope: 'PUBLIC',
+    teamId: 'aGhostTeam',
+    updatedAt: newDataDate
+  },
+  {
+    createdAt: oldDataDate,
+    id: 'wsjfTemplate',
+    isActive: true,
+    name: 'Weighted Shortest Job First',
+    orgId: 'aGhostOrg',
+    scope: 'PUBLIC',
+    teamId: 'aGhostTeam',
+    updatedAt: oldDataDate
+  }
+]
+
 const newScales = [
   {
+    id: 'tshirtSizeScale',
+    createdAt: newDataDate,
+    updatedAt: newDataDate,
+    name: 'T-Shirt Sizes',
+    isActive: true,
+    sortOrder: 0,
+    values: [
+      {color: '#5CA0E5', label: 'XS', value: 1},
+      {color: '#5CA0E5', label: 'SM', value: 2},
+      {color: '#45E595', label: 'M', value: 3},
+      {color: '#E59545', label: 'L', value: 4},
+      {color: '#E59545', label: 'XL', value: 5}
+    ],
+    teamId: 'aGhostTeam',
+    templateId: 'estimatedEffortTemplate'
+  },
+  {
     id: 'fibonacciScale',
-    createdAt,
-    updatedAt: createdAt,
+    createdAt: newDataDate,
+    updatedAt: newDataDate,
     name: 'Fibonacci',
     isActive: true,
     sortOrder: 1,
@@ -51,26 +122,9 @@ const newScales = [
     templateId: 'estimatedEffortTemplate'
   },
   {
-    id: 'tshirtSizeScale',
-    createdAt,
-    updatedAt: createdAt,
-    name: 'T-Shirt Sizes',
-    isActive: true,
-    sortOrder: 0,
-    values: [
-      {color: '#5CA0E5', label: 'XS', value: 1},
-      {color: '#5CA0E5', label: 'SM', value: 2},
-      {color: '#45E595', label: 'M', value: 3},
-      {color: '#E59545', label: 'L', value: 4},
-      {color: '#E59545', label: 'XL', value: 5}
-    ],
-    teamId: 'aGhostTeam',
-    templateId: 'estimatedEffortTemplate'
-  },
-  {
     id: 'fiveFingersScale',
-    createdAt,
-    updatedAt: createdAt,
+    createdAt: newDataDate,
+    updatedAt: newDataDate,
     name: 'Five Fingers',
     isActive: true,
     sortOrder: 2,
@@ -86,33 +140,100 @@ const newScales = [
   }
 ]
 
+const newDimensions = [
+  {
+    createdAt: newDataDate,
+    updatedAt: newDataDate,
+    id: 'eeStoryPointsDimension',
+    name: 'Story Points',
+    scaleId: 'tshirtSizeScale',
+    teamId: 'aGhostTeam',
+    templateId: 'estimatedEffortTemplate',
+    sortOrder: 0
+  },
+  {
+    createdAt: newDataDate,
+    updatedAt: newDataDate,
+    id: 'eeStoryValueDimension',
+    name: 'Story Value',
+    scaleId: 'fibonacciScale',
+    teamId: 'aGhostTeam',
+    templateId: 'estimatedEffortTemplate',
+    sortOrder: 1
+  }
+]
+
+const newPokerTemplates = [
+  {
+    createdAt: newDataDate,
+    id: 'estimatedEffortTemplate',
+    isActive: true,
+    name: 'Estimated Effort & Value',
+    orgId: 'aGhostOrg',
+    scope: 'PUBLIC',
+    teamId: 'aGhostTeam',
+    type: 'poker',
+    updatedAt: newDataDate
+  }
+]
+
 export const up = async function(r: R) {
   try {
+    // create index 'templateId' for table TemplateScale
     await r
-      .table('MeetingTemplate')
-      .filter({teamId: 'aGhostTeam'})
-      .filter(r.row.hasFields('type').not())
-      .update({type: 'poker'})
+      .table('TemplateScale')
+      .indexCreate('templateId')
       .run()
+
+    // create index 'teamId' for table TemplateScale
+    await r
+      .table('TemplateScale')
+      .indexCreate('teamId')
+      .run()
+
+    // clear TemplateScale table
     await r
       .table('TemplateScale')
       .delete()
       .run()
+
+    // insert new data to TemplateScale table
     await r
       .table('TemplateScale')
       .insert(newScales)
       .run()
+
+    // create index 'teamId' for TemplateDimension table
     await r
       .table('TemplateDimension')
       .indexCreate('teamId')
       .run()
+
+    // clear TemplateDimension table
     await r
-      .table('TemplateScale')
-      .indexCreate('teamId')
+      .table('TemplateDimension')
+      .delete()
       .run()
+
+    // insert new data to TemplateDimension table
     await r
-      .table('TemplateScale')
-      .indexCreate('templateId')
+      .table('TemplateDimension')
+      .insert(newDimensions)
+      .run()
+
+    // clear poker template data in MeetingTemplate table
+    await r
+      .table('MeetingTemplate')
+      .filter((template) =>
+        r.expr(['estimatedEffortTemplate', 'wsjfTemplate']).contains(template('id'))
+      )
+      .delete()
+      .run()
+
+    // insert new poker template data to MeetingTemplate table
+    await r
+      .table('MeetingTemplate')
+      .insert(newPokerTemplates)
       .run()
   } catch (e) {
     console.log(e)
@@ -121,25 +242,61 @@ export const up = async function(r: R) {
 
 export const down = async function(r: R) {
   try {
+    // drop index 'templateId' for table TemplateScale
+    await r
+      .table('TemplateScale')
+      .indexDrop('templateId')
+      .run()
+
+    // drop index 'teamId' for table TemplateScale
+    await r
+      .table('TemplateScale')
+      .indexDrop('teamId')
+      .run()
+
+    // clear TemplateScale table
     await r
       .table('TemplateScale')
       .delete()
       .run()
+
+    // insert old data to TemplateScale table
     await r
       .table('TemplateScale')
       .insert(oldScales)
       .run()
+
+    // drop index 'teamId' for TemplateDimension table
     await r
       .table('TemplateDimension')
       .indexDrop('teamId')
       .run()
+
+    // clear TemplateDimension table
     await r
-      .table('TemplateScale')
-      .indexDrop('teamId')
+      .table('TemplateDimension')
+      .delete()
       .run()
+
+    // insert old data to TemplateDimension table
     await r
-      .table('TemplateScale')
-      .indexDrop('templateId')
+      .table('TemplateDimension')
+      .insert(oldDimensions)
+      .run()
+
+    // clear poker template data in MeetingTemplate table
+    await r
+      .table('MeetingTemplate')
+      .filter((template) =>
+        r.expr(['estimatedEffortTemplate', 'wsjfTemplate']).contains(template('id'))
+      )
+      .delete()
+      .run()
+
+    // insert old poker template data to MeetingTemplate table
+    await r
+      .table('MeetingTemplate')
+      .insert(oldPokerTemplates)
       .run()
   } catch (e) {
     console.log(e)
