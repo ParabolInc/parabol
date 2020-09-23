@@ -5,6 +5,7 @@ import useAtmosphere from '../hooks/useAtmosphere'
 import MyDashboardTasks from './MyDashboardTasks'
 import {useUserTaskFilters} from '~/utils/useUserTaskFilters'
 import UserTasksHeader from '~/modules/userDashboard/components/UserTasksHeader/UserTasksHeader'
+import ErrorComponent from './ErrorComponent/ErrorComponent'
 
 // Changing the name here requires a change to getLastSeenAtURL.ts
 const query = graphql`
@@ -18,7 +19,7 @@ const query = graphql`
 
 const renderQuery = ({error, retry, props}) => {
   if (error) {
-    return <div>{error.message}</div>
+    return <ErrorComponent error={error} eventId={''} />
   }
   if (!props) {
     return <UserTasksHeader viewer={null} />

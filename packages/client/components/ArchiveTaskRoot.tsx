@@ -4,17 +4,33 @@ import {QueryRenderer} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useDocumentTitle from '~/hooks/useDocumentTitle'
 import TeamArchive from '~/modules/teamDashboard/components/TeamArchive/TeamArchive'
-import {LoaderSize} from '~/types/constEnums'
-import renderQuery from '~/utils/relay/renderQuery'
+import UserTasksHeader from '~/modules/userDashboard/components/UserTasksHeader/UserTasksHeader'
+import ErrorComponent from './ErrorComponent/ErrorComponent'
 
 
 const query = graphql`
   query ArchiveTaskRootQuery($first: Int!, $after: DateTime, $userIds: [ID!], $teamIds: [ID!]) {
     viewer {
+      ...UserTasksHeader_viewer
       ...TeamArchive_viewer
     }
   }
 `
+
+const renderQuery = ({error, props}) => {
+  if (error) {
+    return <ErrorComponent error={error} eventId={''} />
+  }
+  if (!props) {
+    return <UserTasksHeader viewer={null} />
+  }
+  return (
+    <>
+      <UserTasksHeader viewer={props.viewer} />
+      <TeamArchive viewer={props?.viewer ?? null} returnToTeamId={props?.returnToTeamId} team={props?.team} />
+    </>
+  )
+}
 
 export interface ArchiveTaskRootProps {
   teamIds?: string[] | null
@@ -33,10 +49,7 @@ const ArchiveTaskRoot = ({teamIds, team, userIds, returnToTeamId}: ArchiveTaskRo
       query={query}
       variables={{teamIds, userIds, first: 10}}
       fetchPolicy={'store-or-network' as any}
-      render={renderQuery(TeamArchive, {
-        props: {returnToTeamId, team},
-        size: LoaderSize.PANEL
-      })}
+      render={renderQuery}
     />
   )
 }

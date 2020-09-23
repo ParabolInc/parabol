@@ -20,7 +20,7 @@ const UserDashTeamMenu = (props: Props) => {
   const {history} = useRouter()
   const {menuProps, viewer} = props
   const oldTeamsRef = useRef<any>([])
-  const nextTeams = viewer?.teams ?? null
+  const nextTeams = viewer?.teams ?? oldTeamsRef.current
   if (nextTeams) {
     oldTeamsRef.current = nextTeams
   }
