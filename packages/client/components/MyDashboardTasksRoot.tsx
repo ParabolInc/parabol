@@ -8,7 +8,7 @@ import UserTasksHeader from '~/modules/userDashboard/components/UserTasksHeader/
 
 // Changing the name here requires a change to getLastSeenAtURL.ts
 const query = graphql`
-  query MyDashboardTasksRootQuery($first: Int!, $after: DateTime, $userIds: [ID!], $teamIds: [ID!]) {
+  query MyDashboardTasksRootQuery($first: Int!, $after: DateTime, $userIds: [ID!], $teamIds: [ID!], $isArchived: Boolean!) {
     viewer {
       ...UserTasksHeader_viewer
       ...MyDashboardTasks_viewer
@@ -33,12 +33,12 @@ const renderQuery = ({error, retry, props}) => {
 
 const MyDashboardTasksRoot = () => {
   const atmosphere = useAtmosphere()
-  const {userIds, teamIds} = useUserTaskFilters(atmosphere.viewerId)
+  const {userIds, teamIds, showArchived} = useUserTaskFilters(atmosphere.viewerId)
   return (
     <QueryRenderer
       environment={atmosphere}
       query={query}
-      variables={{userIds, teamIds, first: 10}}
+      variables={{userIds, teamIds, first: 40, isArchived: showArchived}}
       fetchPolicy={'store-or-network' as any}
       render={renderQuery}
     />

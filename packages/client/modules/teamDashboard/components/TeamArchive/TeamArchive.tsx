@@ -96,7 +96,7 @@ const TeamArchive = (props: Props) => {
   const {hasMore, isLoading, loadMore} = relay
   const {teamMembers, teamMemberFilter} = team || {}
   const teamMemberFilterId = (teamMemberFilter && teamMemberFilter.id) || null
-  const {archivedTasks, dashSearch} = viewer
+  const {tasks: archivedTasks, dashSearch} = viewer
 
   const teamMemberFilteredTasks = useMemo(() => {
     const edges = teamMemberFilterId
@@ -292,8 +292,8 @@ export default createPaginationContainer(
     viewer: graphql`
       fragment TeamArchive_viewer on User {
         dashSearch
-        archivedTasks: tasks(first: $first, after: $after, userIds: $userIds, teamIds: $teamIds, archived: true)
-          @connection(key: "TeamArchive_archivedTasks", filters: ["userIds", "teamIds"]) {
+        tasks(first: $first, after: $after, userIds: $userIds, teamIds: $teamIds, archived: $isArchived)
+          @connection(key: "TeamArchive_tasks", filters: ["userIds", "teamIds", "archived"]) {
           edges {
             cursor
             node {
@@ -327,20 +327,15 @@ export default createPaginationContainer(
   {
     direction: 'forward',
     getConnectionFromProps(props) {
-      return props.viewer && props.viewer.archivedTasks
+      return props.viewer && props.viewer.tasks
     },
     getFragmentVariables(prevVars, totalCount) {
-      console.log("in getFragmentVariables, prevVars = ")
-      console.log(prevVars)
-      console.log(`totalCount = ${totalCount}`)
       return {
         ...prevVars,
         first: totalCount
       }
     },
     getVariables(_props, {count, cursor}, fragmentVariables) {
-      console.log("in getVariables, fragmentVariables = ")
-      console.log(fragmentVariables)
       return {
         ...fragmentVariables,
         first: count,
@@ -348,7 +343,7 @@ export default createPaginationContainer(
       }
     },
     query: graphql`
-      query TeamArchivePaginationQuery($first: Int!, $after: DateTime, $teamIds: [ID!], $userIds: [ID!]) {
+      query TeamArchivePaginationQuery($first: Int!, $after: DateTime, $teamIds: [ID!], $userIds: [ID!], $isArchived: Boolean!) {
         viewer {
           ...TeamArchive_viewer
         }

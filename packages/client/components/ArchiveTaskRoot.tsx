@@ -9,7 +9,7 @@ import renderQuery from '~/utils/relay/renderQuery'
 
 
 const query = graphql`
-  query ArchiveTaskRootQuery($first: Int!, $after: DateTime, $userIds: [ID!], $teamIds: [ID!]) {
+  query ArchiveTaskRootQuery($first: Int!, $after: DateTime, $userIds: [ID!], $teamIds: [ID!], $isArchived: Boolean!) {
     viewer {
       ...TeamArchive_viewer
     }
@@ -31,7 +31,7 @@ const ArchiveTaskRoot = ({teamIds, team, userIds, returnToTeamId}: ArchiveTaskRo
     <QueryRenderer
       environment={atmosphere}
       query={query}
-      variables={{teamIds, userIds, first: 40}}
+      variables={{teamIds, userIds, first: 40, isArchived: true}}
       fetchPolicy={'store-or-network' as any}
       render={renderQuery(TeamArchive, {
         props: {returnToTeamId, team},
