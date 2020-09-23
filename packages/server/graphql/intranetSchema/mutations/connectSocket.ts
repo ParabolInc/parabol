@@ -10,8 +10,6 @@ import {GQLContext} from '../../graphql'
 import User from '../../types/User'
 import getRedis from '../../../utils/getRedis'
 import getListeningUserIds, {RedisCommand} from '../../../utils/getListeningUserIds'
-import hydrateRedisDoc from '../../../dataloader/hydrateRedisDoc'
-
 export interface UserPresence {
   lastSeenAtURL: string | null
   serverId: string
@@ -33,9 +31,7 @@ export default {
     const userId = getUserId(authToken)
 
     // RESOLUTION
-    const userDb = await db.read('User', userId)
-    // hydrate user as lastSeenAt could be a string if we're getting it from Redis
-    const user = hydrateRedisDoc(JSON.stringify(userDb), 'user')
+    const user = await db.read('User', userId)
     const {inactive, lastSeenAt, tms} = user
 
     // no need to wait for this, it's just for billing

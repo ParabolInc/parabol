@@ -3,31 +3,44 @@ import path from 'path'
 import getRethink from '../../packages/server/database/rethinkDriver'
 import getProjectRoot from '../webpack/utils/getProjectRoot'
 import getRedis from '../../packages/server/utils/getRedis'
+import sendToSentry from '../../packages/server/utils/sendToSentry'
 
 const PROJECT_ROOT = getProjectRoot()
 
 const flushSocketConnections = async () => {
   const redis = getRedis()
   const userPresenceStream = redis.scanStream({match: 'presence:*'})
-  userPresenceStream.on('data', async (keys) => {
+  userPresenceStream.on('data', (keys) => {
     if (!keys?.length) return
-    userPresenceStream.pause()
     const writes = keys.map((key) => {
       return ['del', key]
     })
-    await redis.multi(writes).exec()
-    userPresenceStream.resume()
+    redis.multi(writes).exec()
+  })
+  await new Promise((resolve, reject) => {
+    userPresenceStream.on('end', resolve)
+    userPresenceStream.on('error', (e) => {
+      sendToSentry(e)
+      reject(e)
+    })
   })
 
   const onlineTeamsStream = redis.scanStream({match: 'team:*'})
-  onlineTeamsStream.on('data', async (keys) => {
+  onlineTeamsStream.on('data', (keys) => {
     if (!keys?.length) return
-    onlineTeamsStream.pause()
     const writes = keys.map((key) => {
       return ['del', key]
     })
-    await redis.multi(writes).exec()
-    onlineTeamsStream.resume()
+    redis.multi(writes).exec()
+  })
+  await new Promise((resolve, reject) => {
+    onlineTeamsStream.on('end', () => {
+      resolve()
+    })
+    onlineTeamsStream.on('error', (e) => {
+      sendToSentry(e)
+      reject(e)
+    })
   })
 }
 

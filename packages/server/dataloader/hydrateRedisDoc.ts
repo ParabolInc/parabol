@@ -7,9 +7,9 @@ const hydrators = {
     })
     return publicTemplates
   },
-  user: (user: User) => {
+  User: (user: User) => {
     user.createdAt = new Date(user.createdAt)
-    user.lastSeenAt = user.lastSeenAt && new Date(user.lastSeenAt)
+    user.lastSeenAt = user.lastSeenAt ? new Date(user.lastSeenAt) : null
     user.updatedAt = new Date(user.updatedAt)
     return user
   }

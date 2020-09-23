@@ -17,14 +17,16 @@ const getListeningUserIds = async (command: RedisCommand, tms: string[], userId:
       throw new Error(`Failed to execute redis command: ${execErr}`)
     }
   })
-  const membersOfAllTeams = [] as string[][]
+  const membersOfAllTeams = [] as string[]
   responses.forEach((res, index) => {
+    // responses include both add/remove userId command and smembers command
+    // we only want to read smembers so check if index is odd
     if (index % 2 !== 0) {
       const teamMembers = res[1] as string[]
-      membersOfAllTeams.push(teamMembers)
+      membersOfAllTeams.push(...teamMembers)
     }
   })
-  for (const teamMemberUserId of membersOfAllTeams.flat()) {
+  for (const teamMemberUserId of membersOfAllTeams) {
     listeningUserIds.add(teamMemberUserId)
   }
   return Array.from(listeningUserIds) as string[]

@@ -6,6 +6,7 @@ import rateLimit from '../rateLimit'
 import SetAppLocationPayload from '../types/SetAppLocationPayload'
 import getRedis from '../../utils/getRedis'
 import {UserPresence} from '../intranetSchema/mutations/connectSocket'
+import sendToSentry from '../../utils/sendToSentry'
 
 export default {
   type: new GraphQLNonNull(SetAppLocationPayload),
@@ -24,6 +25,9 @@ export default {
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
     const redis = getRedis()
+    if (!mutatorId) {
+      sendToSentry(new Error('No mutator id in setAppLocation.ts'))
+    }
 
     // AUTH
     const viewerId = getUserId(authToken)
