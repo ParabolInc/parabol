@@ -14,7 +14,7 @@ describe('userTaskView', () => {
     cy.get('[data-cy=team-filter]').click()
     cy.get('[data-cy="team-filter-h-CdSRCnT"]').should('contain', 'cypress’s Team')
 
-    cy.get('[data-cy=team-member-filter]').should('contain', 'My team members')
+    cy.get('[data-cy=team-member-filter]').should('contain', 'cypress')
     cy.get('[data-cy=team-member-filter]').click()
     cy.get('[data-cy="team-member-filter-local|wnVeDjF-n"]').should('contain', 'cypress')
   })
@@ -22,11 +22,11 @@ describe('userTaskView', () => {
   it('updates URL when filters are selected', () => {
     cy.get('[data-cy=team-filter]').click()
     cy.get('[data-cy="team-filter-h-CdSRCnT"]').click()
-    cy.url().should('include', 'teamId=h-CdSRCnT')
+    cy.url().should('include', 'teamIds=h-CdSRCnT')
 
     cy.get('[data-cy=team-member-filter]').click()
     cy.get('[data-cy="team-member-filter-local|wnVeDjF-n"]').click()
-    cy.url().should('include', 'userId=local|wnVeDjF-n')
+    cy.url().should('include', 'userIds=local|wnVeDjF-n')
   })
 
   it('filters tasks by team filter', () => {
@@ -50,7 +50,7 @@ describe('userTaskView', () => {
     cy.url().then((url) => {
       const regex = /.+\/team\/(.+)/
       const newTeamId = url.replace(regex, '$1')
-      cy.visit(`/me/tasks?teamId=${newTeamId}`)
+      cy.visit(`/me/tasks?teamIds=${newTeamId}`)
 
       cy.get('[data-cy=team-filter]').should('contain', `cypress's own team`)
       cy.get('[data-cy=draggable-task-card-editor]').contains("New Task under cypress's own team")
