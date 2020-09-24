@@ -397,17 +397,21 @@ const initDB = (botScript) => {
     user: users[idx]
   }))
   users.forEach((user, idx) => {
-    ; (user as any).teamMember = teamMembers[idx]
+    ;(user as any).teamMember = teamMembers[idx]
   })
   const org = initDemoOrg()
   const newMeeting = initNewMeeting(org, teamMembers, meetingMembers)
   const team = initDemoTeam(org, teamMembers, newMeeting)
   teamMembers.forEach((teamMember) => {
-    ; (teamMember as any).team = team
+    ;(teamMember as any).team = team
   })
   team.meetingSettings.team = team as any
+  newMeeting.commentCount = 0
+  newMeeting.reflectionCount = 0
+  newMeeting.taskCount = 0
   newMeeting.team = team as any
   newMeeting.teamId = team.id
+  newMeeting.topicCount = 0
   newMeeting.settings = team.meetingSettings as any
   return {
     meetingMembers,

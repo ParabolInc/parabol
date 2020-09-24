@@ -6,7 +6,7 @@ const handleAddTimelineEvent = (
   store: RecordSourceSelectorProxy
 ) => {
   const viewer = store.getRoot().getLinkedRecord('viewer')
-  if (!viewer) return
+  if (!viewer || !meeting || !timelineEvent) return
   timelineEvent.setLinkedRecord(meeting, 'meeting')
   const timelineConnection = ConnectionHandler.getConnection(viewer, 'TimelineFeedList_timeline')
   if (timelineConnection) {
