@@ -33,13 +33,19 @@ const StageTimerDisplay = (props: Props) => {
       {localScheduledEndTime && !isComplete ? (
         <StageTimerDisplayGauge endTime={localScheduledEndTime} />
       ) : null}
-      <PhaseCompleted isComplete={isPhaseComplete} canUndo={true} />
+      <PhaseCompleted
+        isComplete={isPhaseComplete}
+        canUndo={true}
+        meetingId={meeting.id}
+        resetToStageId={localStage.id}
+      />
     </DisplayRow>
   )
 }
 
 graphql`
   fragment StageTimerDisplayStage on NewMeetingStage {
+    id
     isComplete
     scheduledEndTime @__clientField(handle: "localTime")
     timeRemaining
@@ -49,6 +55,7 @@ graphql`
 export default createFragmentContainer(StageTimerDisplay, {
   meeting: graphql`
     fragment StageTimerDisplay_meeting on NewMeeting {
+      id
       localPhase {
         stages {
           isComplete
