@@ -5,19 +5,33 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 5.19.0 2020-Sep-24
+
+## Added
+
+- Publish timeline event once a meeting ends (#4179)
+
+## Fixed
+
+- Toggle task timestamp w/o triggering editing (#4187)
+- Correct Segment Google Analytics schema (#4190)
+
 ## 5.18.1 2020-Sep-18
 
 ## Fixed
+
 - Remove trailing slash from intranet graphql url to fix graphiql
 
 ## 5.18.0 2020-Sep-16
 
 ## Added
+
 - robots.txt to nginx (#4160)
 - Retro Template Illustations (#4172)
 - Revisit Check-in meetings (#4020)
--
+
 ## Fixed
+
 - Invite UI Copy (#4168)
 - Bump Node to v14 (#4154)
 
