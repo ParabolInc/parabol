@@ -85,7 +85,3 @@ extend type UpdatesStage {
 extend type AgendaItemsStage {
   localScheduledEndTime: String
 }
-
-extend type EstimateStage {
-  localScheduledEndTime: String
-}

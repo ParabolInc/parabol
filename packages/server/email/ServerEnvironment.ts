@@ -1,16 +1,16 @@
-import {ExecutionResult} from 'graphql'
+import {FormattedExecutionResult} from 'graphql'
 import {Environment, FetchFunction, Network, RecordSource, Store} from 'relay-runtime'
+import shortid from 'shortid'
 import AuthToken from '../database/types/AuthToken'
 import executeGraphQL from '../graphql/executeGraphQL'
-import shortid from 'shortid'
 
 const noop = (): any => {
   /**/
 }
 
 export default class ServerEnvironment extends Environment {
-  requestCache: Promise<ExecutionResult>[] = []
-  results: ExecutionResult[] | undefined
+  requestCache: Promise<FormattedExecutionResult>[] = []
+  results: FormattedExecutionResult[] | undefined
   isFetched = false
   authToken: AuthToken
   dataLoaderId: string
