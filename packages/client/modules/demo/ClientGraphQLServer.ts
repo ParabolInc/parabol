@@ -1403,6 +1403,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         isKill: !currentStage,
         removedTaskIds: [],
         removedSuggestedActionId: null,
+        timelineEvent: null,
         updatedTasks: this.db.tasks,
         __typename: 'EndNewMeetingPayload'
       }
