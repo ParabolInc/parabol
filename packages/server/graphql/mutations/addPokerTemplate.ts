@@ -112,7 +112,7 @@ const addPokerTemplate = {
         scaleId: templateDefaultScales[0].id,
         description: '',
         sortOrder: 0,
-        name: '*New dimension',
+        name: '*New Dimension',
         teamId,
         templateId
       })

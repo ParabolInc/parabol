@@ -28,23 +28,25 @@ import {sign} from 'jsonwebtoken'
 import {toEpochSeconds} from '../../server/utils/epochTime'
 import {JWT_LIFESPAN} from '../../server/utils/serverConstants'
 
+const now = Date.now()
+const exp = toEpochSeconds(now + JWT_LIFESPAN)
+const iat = toEpochSeconds(now)
+const tokenObj = {
+  sub: 'local|wnVeDjF-n',
+  aud: 'action',
+  iss: window.location.origin,
+  exp,
+  iat,
+  tms: ['h-CdSRCnT']
+}
+const secret = Buffer.from(Cypress.env('SERVER_SECRET'), 'base64')
+const authToken = sign(tokenObj, secret)
+
 const login = (_overrides = {}) => {
   Cypress.log({
     name: 'login'
   })
-  const now = Date.now()
-  const exp = toEpochSeconds(now + JWT_LIFESPAN)
-  const iat = toEpochSeconds(now)
-  const tokenObj = {
-    sub: 'local|wnVeDjF-n',
-    aud: 'action',
-    iss: window.location.origin,
-    exp,
-    iat,
-    tms: []
-  }
-  const secret = Buffer.from(Cypress.env('SERVER_SECRET'), 'base64')
-  const authToken = sign(tokenObj, secret)
+
   window.localStorage.setItem('Action:token', authToken)
   cy.visit('/')
   cy.location('pathname').should('eq', '/me')
@@ -52,15 +54,31 @@ const login = (_overrides = {}) => {
 
 Cypress.Commands.add('login', login)
 
+const postGQL = (body: any) => {
+  return cy.request({
+    method: 'POST',
+    url: 'http://localhost:3000/graphql',
+    headers: {
+      accept: 'application/json',
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${authToken}`
+    },
+    body: body,
+    failOnStatusCode: false
+  })
+}
+
+Cypress.Commands.add('postGQL', postGQL)
+
 declare global {
   namespace Cypress {
     interface Chainable {
       login: () => Chainable
       visitReflect: () => Chainable
       visitPhase: (phase: string, idx?: string) => Chainable<ReturnType<typeof visitPhase>>
-      restoreLocalStorageCache: () => Chainable
-      saveLocalStorageCache: () => Chainable
-      pipe: (el: any) => Chainable
+      postGQL: (body: any) => ReturnType<typeof postGQL>
+      restoreLocalStorageCache: () => Chainable<Element>
+      saveLocalStorageCache: () => Chainable<Element>
     }
   }
 }
