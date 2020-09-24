@@ -15,6 +15,7 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
 - Toggle task timestamp w/o triggering editing (#4187)
 - Correct Segment Google Analytics schema (#4190)
+- Demo meeting timeline event bug (#4192)
 
 ## 5.18.1 2020-Sep-18
 
