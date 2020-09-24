@@ -5,7 +5,7 @@ import {createFragmentContainer} from 'react-relay'
 import {Breakpoint} from '~/types/constEnums'
 import {StageTimerDisplay_meeting} from '~/__generated__/StageTimerDisplay_meeting.graphql'
 import StageTimerDisplayGauge from './StageTimerDisplayGauge'
-import PhaseCompleteTag from './Tag/PhaseCompleteTag'
+import PhaseCompleted from './PhaseCompleted'
 
 interface Props {
   meeting: StageTimerDisplay_meeting
@@ -33,7 +33,7 @@ const StageTimerDisplay = (props: Props) => {
       {localScheduledEndTime && !isComplete ? (
         <StageTimerDisplayGauge endTime={localScheduledEndTime} />
       ) : null}
-      <PhaseCompleteTag isComplete={isPhaseComplete} />
+      <PhaseCompleted isComplete={isPhaseComplete} canUndo={true} />
     </DisplayRow>
   )
 }
