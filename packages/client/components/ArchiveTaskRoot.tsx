@@ -5,6 +5,8 @@ import useAtmosphere from '~/hooks/useAtmosphere'
 import useDocumentTitle from '~/hooks/useDocumentTitle'
 import TeamArchive from '~/modules/teamDashboard/components/TeamArchive/TeamArchive'
 import UserTasksHeader from '~/modules/userDashboard/components/UserTasksHeader/UserTasksHeader'
+import {LoaderSize} from '~/types/constEnums'
+import renderQuery from '~/utils/relay/renderQuery'
 import ErrorComponent from './ErrorComponent/ErrorComponent'
 
 
@@ -17,7 +19,7 @@ const query = graphql`
   }
 `
 
-const renderQuery = ({error, props}) => {
+const renderUserTaskArchiveView = ({error, props}) => {
   if (error) {
     return <ErrorComponent error={error} eventId={''} />
   }
@@ -27,7 +29,7 @@ const renderQuery = ({error, props}) => {
   return (
     <>
       <UserTasksHeader viewer={props.viewer} />
-      <TeamArchive viewer={props?.viewer ?? null} returnToTeamId={props?.returnToTeamId} team={props?.team} />
+      <TeamArchive viewer={props.viewer} />
     </>
   )
 }
@@ -49,7 +51,10 @@ const ArchiveTaskRoot = ({teamIds, team, userIds, returnToTeamId}: ArchiveTaskRo
       query={query}
       variables={{teamIds, userIds, first: 10}}
       fetchPolicy={'store-or-network' as any}
-      render={renderQuery}
+      render={returnToTeamId ? renderQuery(TeamArchive, {
+        props: {returnToTeamId, team},
+        size: LoaderSize.PANEL
+      }) : renderUserTaskArchiveView}
     />
   )
 }

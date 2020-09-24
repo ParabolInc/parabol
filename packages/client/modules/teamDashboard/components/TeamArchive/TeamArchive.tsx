@@ -88,7 +88,7 @@ interface Props {
   relay: RelayPaginationProp
   viewer: TeamArchive_viewer
   returnToTeamId?: string
-  team: TeamArchive_team | null
+  team?: TeamArchive_team
 }
 
 const TeamArchive = (props: Props) => {
@@ -330,17 +330,12 @@ export default createPaginationContainer(
       return props.viewer && props.viewer.archivedTasks
     },
     getFragmentVariables(prevVars, totalCount) {
-      console.log("in getFragmentVariables, prevVars = ")
-      console.log(prevVars)
-      console.log(`totalCount = ${totalCount}`)
       return {
         ...prevVars,
         first: totalCount
       }
     },
     getVariables(_props, {count, cursor}, fragmentVariables) {
-      console.log("in getVariables, fragmentVariables = ")
-      console.log(fragmentVariables)
       return {
         ...fragmentVariables,
         first: count,
