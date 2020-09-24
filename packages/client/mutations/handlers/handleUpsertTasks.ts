@@ -39,7 +39,8 @@ const handleUpsertTask = (task: Task | null, store: RecordSourceSelectorProxy<an
   const meetingId = task.getValue('meetingId')
   const isNowArchived = tags.includes('archived')
   const {userIds, teamIds} = parseUserTaskFilterQueryParams(viewerId, window.location)
-  const archiveConns = [getArchivedTasksConn(viewer, userIds, teamIds)]
+  const archiveConns = [ /* archived task conn in user dash*/ getArchivedTasksConn(viewer, userIds, teamIds),
+                         /* archived task conn in team dash*/ getArchivedTasksConn(viewer, null, [teamId])]
   const team = store.get(teamId)
   const teamConn = getTeamTasksConn(team)
   const userConn = getUserTasksConn(viewer, userIds, teamIds)

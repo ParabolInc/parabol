@@ -26,7 +26,8 @@ const handleRemoveTask = (taskId: string, store: RecordSourceSelectorProxy<any>)
   const meeting = store.get(meetingId!)
   const team = store.get(teamId)
   const {userIds, teamIds} = parseUserTaskFilterQueryParams(viewer.getDataID(), window.location)
-  const archiveConns = [getArchivedTasksConn(viewer, userIds, teamIds)]
+  const archiveConns = [ /* archived task conn in user dash*/ getArchivedTasksConn(viewer, userIds, teamIds),
+                         /* archived task conn in team dash*/ getArchivedTasksConn(viewer, null, [teamId])]
   const teamConn = getTeamTasksConn(team)
   const userConn = getUserTasksConn(viewer, userIds, teamIds)
   const threadSourceConn = getThreadSourceThreadConn(threadSourceProxy)
