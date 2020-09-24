@@ -3439,6 +3439,11 @@ export interface IMutation {
   removeTeamMember: IRemoveTeamMemberPayload | null;
 
   /**
+   * Reset meeting to a previously completed stage
+   */
+  resetMeetingToStage: boolean;
+
+  /**
    * Reset the password for an account
    */
   resetPassword: IResetPasswordPayload;
@@ -4206,6 +4211,11 @@ export interface IRemoveTeamMemberOnMutationArguments {
    * The teamMemberId of the person who is being removed
    */
   teamMemberId: string;
+}
+
+export interface IResetMeetingToStageOnMutationArguments {
+  meetingId: string;
+  stageId: string;
 }
 
 export interface IResetPasswordOnMutationArguments {

@@ -2,6 +2,8 @@ import React from 'react'
 import useHotkey from '~/hooks/useHotkey'
 import styled from '@emotion/styled'
 import {PALETTE} from '~/styles/paletteV2'
+import useAtmosphere from '~/hooks/useAtmosphere'
+import ResetMeetingToStageMutation from '~/mutations/ResetMeetingToStageMutation'
 
 const Wrapper = styled('div')({
   alignItems: 'center',
@@ -24,9 +26,11 @@ interface Props {
 
 const UndoablePhaseCompleted = (props: Props) => {
   const {meetingId, resetToStageId} = props
+  const atmosphere = useAtmosphere()
   useHotkey('i d i d n t m e a n t o', () => {
     console.log('meetingId:', meetingId)
     console.log('stage id:', resetToStageId)
+    ResetMeetingToStageMutation(atmosphere, {meetingId, stageId: resetToStageId})
   })
   return <Wrapper>Phase Completed</Wrapper>
 }
