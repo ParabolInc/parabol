@@ -6442,6 +6442,11 @@ export interface IMutation {
   payLater: IPayLaterPayload;
 
   /**
+   * Add or remove a task and its estimate phase from the meeting
+   */
+  persistJiraSearchQuery: PersistJiraSearchQueryPayload;
+
+  /**
    * Request to be invited to a team in real time
    */
   pushInvitation: IPushInvitationPayload | null;
@@ -7181,6 +7186,18 @@ export interface IPayLaterOnMutationArguments {
    * the org that has clicked pay later
    */
   meetingId: string;
+}
+
+export interface IPersistJiraSearchQueryOnMutationArguments {
+  /**
+   * the team witht the settings we add the query to
+   */
+  teamId: string;
+
+  /**
+   * the jira search query to persist (or remove, if isRemove is true)
+   */
+  input: IJiraSearchQueryInput;
 }
 
 export interface IPushInvitationOnMutationArguments {
@@ -8863,6 +8880,49 @@ export interface IPayLaterPayload {
   meeting: NewMeeting | null;
 }
 
+/**
+ * Return object for PersistJiraSearchQueryPayload
+ */
+export type PersistJiraSearchQueryPayload =
+  | IErrorPayload
+  | IPersistJiraSearchQuerySuccess;
+
+export interface IPersistJiraSearchQuerySuccess {
+  __typename: 'PersistJiraSearchQuerySuccess';
+
+  /**
+   * The meeting settings with the updated jira search history
+   */
+  settings: IPokerMeetingSettings;
+}
+
+export interface IJiraSearchQueryInput {
+  /**
+   * The query string, either simple or JQL depending on the isJQL flag
+   */
+  queryString: string;
+
+  /**
+   * true if the queryString is JQL, else false
+   */
+  isJQL: boolean;
+
+  /**
+   * The list of project keys selected as a filter. null if not set
+   */
+  projectKeyFilters?: Array<string> | null;
+
+  /**
+   * The list of issue types selected as a filter. null if not set
+   */
+  issueTypeFilters?: Array<string> | null;
+
+  /**
+   * true if this query should be deleted
+   */
+  isRemove?: boolean | null;
+}
+
 export interface IPushInvitationPayload {
   __typename: 'PushInvitationPayload';
   error: IStandardMutationError | null;
@@ -9927,14 +9987,5 @@ export type TeamSubscriptionPayload =
   | ISetSlackNotificationPayload
   | IUpdateUserProfilePayload
   | IPersistJiraSearchQuerySuccess;
-
-export interface IPersistJiraSearchQuerySuccess {
-  __typename: 'PersistJiraSearchQuerySuccess';
-
-  /**
-   * The meeting settings with the updated jira search history
-   */
-  settings: IPokerMeetingSettings;
-}
 
 // tslint:enable

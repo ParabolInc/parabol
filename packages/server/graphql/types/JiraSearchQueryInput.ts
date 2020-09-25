@@ -16,8 +16,7 @@ const JiraSearchQueryInput = new GraphQLInputObjectType({
     },
     isJQL: {
       type: GraphQLNonNull(GraphQLBoolean),
-      description: 'true if the queryString is JQL, else false',
-      resolve: ({isJQL}) => !!isJQL
+      description: 'true if the queryString is JQL, else false'
     },
     projectKeyFilters: {
       type: GraphQLList(GraphQLNonNull(GraphQLID)),
