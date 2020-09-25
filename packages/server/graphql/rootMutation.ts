@@ -103,6 +103,7 @@ import upgradeToPro from './mutations/upgradeToPro'
 import verifyEmail from './mutations/verifyEmail'
 import voteForReflectionGroup from './mutations/voteForReflectionGroup'
 import updatePokerScope from './mutations/updatePokerScope'
+import persistJiraSearchQuery from './mutations/persistJiraSearchQuery'
 
 interface Context extends InternalContext, GQLContext {}
 
@@ -164,6 +165,7 @@ export default new GraphQLObjectType<any, Context>({
       navigateMeeting,
       newMeetingCheckIn,
       payLater,
+      persistJiraSearchQuery,
       pushInvitation,
       promoteNewMeetingFacilitator,
       promoteToTeamLead,

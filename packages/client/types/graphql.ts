@@ -4807,6 +4807,11 @@ export interface IPokerMeetingSettings {
   team: ITeam;
 
   /**
+   * the list of suggested search queries, sorted by most recent. Guaranteed to be < 60 days old
+   */
+  jiraSearchQueries: Array<IJiraSearchQuery>;
+
+  /**
    * FK. The template that will be used to start the poker meeting
    */
   selectedTemplateId: string;
@@ -4848,6 +4853,43 @@ export interface IPublicTemplatesOnPokerMeetingSettingsArguments {
    * The cursor, which is the templateId
    */
   after?: string | null;
+}
+
+/**
+ * A jira search query including all filters selected when the query was executed
+ */
+export interface IJiraSearchQuery {
+  __typename: 'JiraSearchQuery';
+
+  /**
+   * shortid
+   */
+  id: string;
+
+  /**
+   * The query string, either simple or JQL depending on the isJQL flag
+   */
+  queryString: string;
+
+  /**
+   * true if the queryString is JQL, else false
+   */
+  isJQL: boolean;
+
+  /**
+   * The list of project keys selected as a filter. null if not set
+   */
+  projectKeyFilters: Array<string> | null;
+
+  /**
+   * The list of issue types selected as a filter. null if not set
+   */
+  issueTypeFilters: Array<string> | null;
+
+  /**
+   * the time the search query was last used. Used for sorting
+   */
+  lastUsedAt: any;
 }
 
 /**
@@ -9883,6 +9925,16 @@ export type TeamSubscriptionPayload =
   | IRenameReflectTemplatePromptPayload
   | ISetCheckInEnabledPayload
   | ISetSlackNotificationPayload
-  | IUpdateUserProfilePayload;
+  | IUpdateUserProfilePayload
+  | IPersistJiraSearchQuerySuccess;
+
+export interface IPersistJiraSearchQuerySuccess {
+  __typename: 'PersistJiraSearchQuerySuccess';
+
+  /**
+   * The meeting settings with the updated jira search history
+   */
+  settings: IPokerMeetingSettings;
+}
 
 // tslint:enable

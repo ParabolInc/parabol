@@ -7,6 +7,7 @@ import {PALETTE} from '../styles/paletteV2'
 import Icon from './Icon'
 import Atmosphere from '../Atmosphere'
 import useAtmosphere from '../hooks/useAtmosphere'
+import AtlassianClientManager from '../utils/AtlassianClientManager'
 
 const SearchInput = styled('input')({
   appearance: 'none',
@@ -47,7 +48,10 @@ interface Props {
 
 const JiraScopingSearchInput = (props: Props) => {
   const {meeting} = props
-  const {id: meetingId, jiraSearchQuery} = meeting
+  const {id: meetingId, jiraSearchQuery, viewerMeetingMember} = meeting
+  const {teamMember} = viewerMeetingMember
+  const {atlassianAuth} = teamMember
+  const accessToken = atlassianAuth?.accessToken
   const isEmpty = !jiraSearchQuery
   const atmosphere = useAtmosphere()
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -56,9 +60,18 @@ const JiraScopingSearchInput = (props: Props) => {
   const clearSearch = () => {
     setSearch(atmosphere, meetingId, '')
   }
+  const onKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key !== 'Enter' || e.shiftKey) return
+    onSubmit()
+
+  }
+  const onSubmit = () => {
+    const manager = new AtlassianClientManager(accessToken || '')
+    console.log('man', manager)
+  }
   return (
     <Wrapper>
-      <SearchInput value={jiraSearchQuery || ''} placeholder={'Search issues on Jira'} onChange={onChange} />
+      <SearchInput value={jiraSearchQuery || ''} placeholder={'Search issues on Jira'} onChange={onChange} onKeyPress={onKeyPress} />
       <ClearSearchIcon isEmpty={isEmpty} onClick={clearSearch}>close</ClearSearchIcon>
     </Wrapper>
   )
@@ -69,6 +82,13 @@ export default createFragmentContainer(JiraScopingSearchInput, {
     fragment JiraScopingSearchInput_meeting on PokerMeeting {
       id
       jiraSearchQuery
+      viewerMeetingMember {
+        teamMember {
+          atlassianAuth {
+            accessToken
+          }
+        }
+      }
     }
   `
 })
