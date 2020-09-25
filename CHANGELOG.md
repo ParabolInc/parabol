@@ -5,7 +5,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
-## 5.19.0 2020-Sep-25
+## 5.19.1 2020-Sep-25
 
 ## Added
 
