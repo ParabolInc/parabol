@@ -5081,6 +5081,11 @@ export interface IPokerTemplate {
    * The dimensions that are part of this template
    */
   dimensions: Array<ITemplateDimension>;
+
+  /**
+   * The scales that are part of this template
+   */
+  scales: Array<ITemplateScale>;
 }
 
 /**

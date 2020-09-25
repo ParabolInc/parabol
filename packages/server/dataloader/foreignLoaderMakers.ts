@@ -112,12 +112,22 @@ export const dimensionsByTemplateId = new LoaderMakerForeign(
   'templateId',
   async (templateIds) => {
     const r = await getRethink()
-    return (
-      r
-        .table('TemplateDimension')
-        .getAll(r.args(templateIds), {index: 'templateId'})
-        .run()
-    )
+    return r
+      .table('TemplateDimension')
+      .getAll(r.args(templateIds), {index: 'templateId'})
+      .run()
+  }
+)
+
+export const scalesByTemplateId = new LoaderMakerForeign(
+  'templateScales',
+  'templateId',
+  async (templateIds) => {
+    const r = await getRethink()
+    return r
+      .table('TemplateScale')
+      .getAll(r.args(templateIds), {index: 'templateId'})
+      .run()
   }
 )
 

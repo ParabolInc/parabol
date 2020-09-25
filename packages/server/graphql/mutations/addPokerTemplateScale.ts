@@ -50,7 +50,7 @@ const addPokerTemplateScale = {
     const sortOrder = Math.max(...activeScales.map((scale) => scale.sortOrder)) + 1 + dndNoise()
     const newScale = new TemplateScale({
       sortOrder: sortOrder,
-      name: `New scale #${activeScales.length + 1}`,
+      name: `*New Scale #${activeScales.length + 1}`,
       values: [] as TemplateScaleValue[],
       teamId,
       templateId
