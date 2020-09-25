@@ -1,5 +1,12 @@
 import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql'
+import {
+  MeetingTypeEnum,
+  NewMeetingPhase,
+  NewMeetingPhaseTypeEnum
+} from 'parabol-client/types/graphql'
 import getRethink from '../../database/rethinkDriver'
+import createNewMeetingPhases from './helpers/createNewMeetingPhases'
+import {phaseTypes as retroPhaseTypes} from '../../database/types/MeetingSettingsRetrospective'
 
 const resetMeetingToStage = {
   type: GraphQLNonNull(GraphQLBoolean),
@@ -39,6 +46,27 @@ const resetMeetingToStage = {
         .update({voterIds: []})
         .run()
     ])
+    const meeting = await dataLoader.get('newMeetings').load(meetingId)
+    // we should get this from stage id passed, instead of hardcoding group
+    const groupIdx = retroPhaseTypes.indexOf(NewMeetingPhaseTypeEnum.group)
+    const createdPhases = (
+      await createNewMeetingPhases(meeting.teamId, 0, MeetingTypeEnum.retrospective, dataLoader)
+    ).slice(groupIdx + 1)
+    const createdPhasesByType = {} as {NewMeetingPhaseTypeEnum: NewMeetingPhase}
+    for (const createdPhase of createdPhases) {
+      createdPhasesByType[createdPhase.phaseType] = createdPhase
+    }
+    const newPhases = meeting.phases.map((phase) => {
+      if (createdPhasesByType.hasOwnProperty(phase.phaseType)) {
+        return createdPhasesByType[phase.phaseType]
+      }
+      return phase
+    })
+    await r
+      .table('NewMeeting')
+      .get(meetingId)
+      .update({phases: newPhases})
+      .run()
 
     return true
   }
