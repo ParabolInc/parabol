@@ -67,7 +67,10 @@ const resetMeetingToStage = {
       .get(meetingId)
       .update({phases: newPhases})
       .run()
-
+    // TODO: reset votes remaining
+    await (r.table('MeetingMember').getAll(meetingId, {index: 'meetingId'}) as any)
+      .update({votesRemaining: 5})
+      .run()
     return true
   }
 }
