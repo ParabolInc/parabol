@@ -1,11 +1,12 @@
-import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql'
+import {GraphQLID, GraphQLNonNull} from 'graphql'
 import GenericMeetingPhase from '../../database/types/GenericMeetingPhase'
 import GenericMeetingStage from '../../database/types/GenericMeetingStage'
 import getRethink from '../../database/rethinkDriver'
 import createNewMeetingPhases, {primePhases} from './helpers/createNewMeetingPhases'
+import ResetMeetingToStagePayload from '../types/ResetMeetingToStagePayload'
 
 const resetMeetingToStage = {
-  type: GraphQLNonNull(GraphQLBoolean),
+  type: GraphQLNonNull(ResetMeetingToStagePayload),
   description: `Reset meeting to a previously completed stage`,
   args: {
     meetingId: {
@@ -78,9 +79,12 @@ const resetMeetingToStage = {
       .run()
     // TODO: reset votes remaining
     await (r.table('MeetingMember').getAll(meetingId, {index: 'meetingId'}) as any)
-      .update({votesRemaining: 5})
+      .update({votesRemaining: meeting.totalVotes})
       .run()
-    return true
+    const data = {
+      meetingId
+    }
+    return data
   }
 }
 

@@ -3441,7 +3441,7 @@ export interface IMutation {
   /**
    * Reset meeting to a previously completed stage
    */
-  resetMeetingToStage: boolean;
+  resetMeetingToStage: IResetMeetingToStagePayload;
 
   /**
    * Reset the password for an account
@@ -7080,6 +7080,12 @@ export interface IRemoveTeamMemberPayload {
    * A notification if you were kicked out by the team leader
    */
   kickOutNotification: INotifyKickedOut | null;
+}
+
+export interface IResetMeetingToStagePayload {
+  __typename: 'ResetMeetingToStagePayload';
+  error: IStandardMutationError | null;
+  meeting: NewMeeting | null;
 }
 
 export interface IResetPasswordPayload {
