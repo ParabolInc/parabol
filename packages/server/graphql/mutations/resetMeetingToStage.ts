@@ -1,12 +1,7 @@
 import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql'
-import {
-  MeetingTypeEnum,
-  NewMeetingPhase,
-  NewMeetingPhaseTypeEnum
-} from 'parabol-client/types/graphql'
+import {NewMeetingPhase, NewMeetingStage} from 'parabol-client/types/graphql'
 import getRethink from '../../database/rethinkDriver'
 import createNewMeetingPhases from './helpers/createNewMeetingPhases'
-import {phaseTypes as retroPhaseTypes} from '../../database/types/MeetingSettingsRetrospective'
 
 const resetMeetingToStage = {
   type: GraphQLNonNull(GraphQLBoolean),
@@ -25,9 +20,7 @@ const resetMeetingToStage = {
     const reflectionGroups = await dataLoader
       .get('retroReflectionGroupsByMeetingId')
       .load(meetingId)
-    console.log('reflection groups:', reflectionGroups)
     const reflectionGroupIds = reflectionGroups.map((rg) => rg.id)
-    console.log('reflection group ids:', reflectionGroupIds)
     const r = await getRethink()
     await Promise.all([
       r
@@ -47,25 +40,34 @@ const resetMeetingToStage = {
         .run()
     ])
     const meeting = await dataLoader.get('newMeetings').load(meetingId)
-    // we should get this from stage id passed, instead of hardcoding group
-    const groupIdx = retroPhaseTypes.indexOf(NewMeetingPhaseTypeEnum.group)
-    const createdPhases = (
-      await createNewMeetingPhases(meeting.teamId, 0, MeetingTypeEnum.retrospective, dataLoader)
-    ).slice(groupIdx + 1)
-    const createdPhasesByType = {} as {NewMeetingPhaseTypeEnum: NewMeetingPhase}
-    for (const createdPhase of createdPhases) {
-      createdPhasesByType[createdPhase.phaseType] = createdPhase
-    }
-    const newPhases = meeting.phases.map((phase) => {
-      if (createdPhasesByType.hasOwnProperty(phase.phaseType)) {
-        return createdPhasesByType[phase.phaseType]
+    const createdPhases = await createNewMeetingPhases(
+      meeting.teamId,
+      0, // todo: pass real meeting count
+      meeting.meetingType,
+      dataLoader
+    )
+    let shouldResetStage = false
+    const newPhases = [] as NewMeetingPhase[]
+    for (const [phaseIndex, phase] of meeting.phases.entries()) {
+      if (!phase.stages) continue
+      const newStages = [] as NewMeetingStage[]
+      for (const [stageIndex, stage] of phase.stages.entries()) {
+        if (stage.id === stageId) shouldResetStage = true
+        if (!shouldResetStage) {
+          newStages.push(stage as NewMeetingStage)
+          continue
+        }
+        const resettedStage = createdPhases[phaseIndex]?.stages[stageIndex]
+        if (!resettedStage) continue
+        newStages.push((Object.assign(resettedStage, {id: stage.id}) as unknown) as NewMeetingStage)
       }
-      return phase
-    })
+      phase.stages = newStages
+      newPhases.push(phase as NewMeetingPhase)
+    }
     await r
       .table('NewMeeting')
       .get(meetingId)
-      .update({phases: newPhases})
+      .update({phases: newPhases as any})
       .run()
     // TODO: reset votes remaining
     await (r.table('MeetingMember').getAll(meetingId, {index: 'meetingId'}) as any)
