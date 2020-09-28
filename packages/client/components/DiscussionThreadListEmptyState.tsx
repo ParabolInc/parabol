@@ -13,7 +13,13 @@ const Message = styled('div')({
   padding: 8
 })
 
-const DiscussionThreadListEmptyState = () => {
+interface Props {
+  isEndedMeeting: boolean
+}
+
+const DiscussionThreadListEmptyState = (props: Props) => {
+  const {isEndedMeeting} = props
+  if (isEndedMeeting) return <Message>{'No comments or tasks were added here'}</Message>
   return <Message>{'✍️ Be the first to add a comment or task'}</Message>
 }
 

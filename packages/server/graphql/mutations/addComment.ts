@@ -62,8 +62,9 @@ const addComment = {
     const data = {commentId}
     const {phases, teamId} = meeting!
     const containsThreadablePhase = phases.find(
-      (phase) => (phase.phaseType === NewMeetingPhaseTypeEnum.discuss ||
-        phase.phaseType === NewMeetingPhaseTypeEnum.agendaitems)
+      (phase) =>
+        phase.phaseType === NewMeetingPhaseTypeEnum.discuss ||
+        phase.phaseType === NewMeetingPhaseTypeEnum.agendaitems
     )!
     const {stages} = containsThreadablePhase
     const isAsync = stages.some((stage) => stage.isAsync)

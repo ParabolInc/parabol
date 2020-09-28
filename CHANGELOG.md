@@ -5,7 +5,48 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 5.18.1 2020-Sep-18
+
+## Fixed
+- Remove trailing slash from intranet graphql url to fix graphiql
+
+## 5.18.0 2020-Sep-16
+
+## Added
+- robots.txt to nginx (#4160)
+- Retro Template Illustations (#4172)
+- Revisit Check-in meetings (#4020)
+-
+## Fixed
+- Invite UI Copy (#4168)
+- Bump Node to v14 (#4154)
+
+## 5.17.0 2020-Sep-10
+
+## Added
+
+- Production Dockerfile (#4103)
+- Base scaffolding for new sprint poker meeting (#4113)
+- Beginnings of frontend scaffolding for new sprint poker meeting (#4141)
+- Enable fetching data from Parabol org for local development (#4089)
+
+## Fixed
+
+- Fix dev server hmr (#4134)
+- Fix various Hubspot Segment bugs (#4142)
+- Hotfix for on-premise deployment regarding SAML (#4126)
+- Improved UI via automatic parsing for bulk email invite (#4131)
+- Fix control bar undefined bug (#4121)
+- Fix connect presence logic (#4149)
+
+## Changed
+
+- Make enableSAMLForDomain an upsert (#4087)
+- Set Google Analytics clientId to Segment anonymous ID (#4117)
+- Exclude timeline events from uninteresting teams (#4132)
+
 ## 5.16.0 2020-Aug-28
+
 ### Added
 
 - Show who is commenting (#4050)

@@ -2675,6 +2675,11 @@ export interface ITimelineEvent {
   interactionCount: number;
 
   /**
+   * true if the timeline event is active, false if archived
+   */
+  isActive: boolean;
+
+  /**
    * The orgId this event is associated with. Null if not traceable to one org
    */
   orgId: string | null;
@@ -2713,11 +2718,6 @@ export interface ITimelineEvent {
    * The user than can see this event
    */
   user: IUser;
-
-  /**
-   * true if the timeline event is active, false if arvhiced
-   */
-  isActive: boolean;
 }
 
 /**
@@ -4712,6 +4712,26 @@ export interface IActionMeeting {
   viewerMeetingMember: IActionMeetingMember;
 
   /**
+   * A single agenda item
+   */
+  agendaItem: IAgendaItem | null;
+
+  /**
+   * The number of agenda items generated in the meeting
+   */
+  agendaItemCount: number;
+
+  /**
+   * All of the agenda items for the meeting
+   */
+  agendaItems: Array<IAgendaItem>;
+
+  /**
+   * The number of comments generated in the meeting
+   */
+  commentCount: number;
+
+  /**
    * The settings that govern the action meeting
    */
   settings: IActionMeetingSettings;
@@ -4725,16 +4745,6 @@ export interface IActionMeeting {
    * The tasks created within the meeting
    */
   tasks: Array<ITask>;
-
-  /**
-   * A single agenda item
-   */
-  agendaItem: IAgendaItem | null;
-
-  /**
-   * All of the agenda items for the meeting
-   */
-  agendaItems: Array<IAgendaItem>;
 }
 
 export interface IAgendaItemOnActionMeetingArguments {
@@ -5488,6 +5498,11 @@ export interface ITimelineEventTeamCreated {
   interactionCount: number;
 
   /**
+   * true if the timeline event is active, false if archived
+   */
+  isActive: boolean;
+
+  /**
    * The orgId this event is associated with
    */
   orgId: string;
@@ -5526,11 +5541,6 @@ export interface ITimelineEventTeamCreated {
    * The user than can see this event
    */
   user: IUser;
-
-  /**
-   * true if the timeline event is active, false if arvhiced
-   */
-  isActive: boolean;
 }
 
 /**
@@ -5553,6 +5563,11 @@ export interface ITimelineEventJoinedParabol {
    * the number of times the user has interacted with (ie clicked) this event
    */
   interactionCount: number;
+
+  /**
+   * true if the timeline event is active, false if archived
+   */
+  isActive: boolean;
 
   /**
    * The orgId this event is associated with. Null if not traceable to one org
@@ -5593,11 +5608,6 @@ export interface ITimelineEventJoinedParabol {
    * The user than can see this event
    */
   user: IUser;
-
-  /**
-   * true if the timeline event is active, false if arvhiced
-   */
-  isActive: boolean;
 }
 
 /**
@@ -5620,6 +5630,11 @@ export interface ITimelineEventCompletedRetroMeeting {
    * the number of times the user has interacted with (ie clicked) this event
    */
   interactionCount: number;
+
+  /**
+   * true if the timeline event is active, false if archived
+   */
+  isActive: boolean;
 
   /**
    * The orgId this event is associated with
@@ -5660,11 +5675,6 @@ export interface ITimelineEventCompletedRetroMeeting {
    * The user than can see this event
    */
   user: IUser;
-
-  /**
-   * true if the timeline event is active, false if arvhiced
-   */
-  isActive: boolean;
 
   /**
    * The meeting that was completed
@@ -5699,6 +5709,11 @@ export interface ITimelineEventCompletedActionMeeting {
   interactionCount: number;
 
   /**
+   * true if the timeline event is active, false if archived
+   */
+  isActive: boolean;
+
+  /**
    * The orgId this event is associated with
    */
   orgId: string;
@@ -5737,11 +5752,6 @@ export interface ITimelineEventCompletedActionMeeting {
    * The user than can see this event
    */
   user: IUser;
-
-  /**
-   * true if the timeline event is active, false if arvhiced
-   */
-  isActive: boolean;
 
   /**
    * The meeting that was completed
@@ -5776,6 +5786,11 @@ export interface ITimelineEventPokerComplete {
   interactionCount: number;
 
   /**
+   * true if the timeline event is active, false if archived
+   */
+  isActive: boolean;
+
+  /**
    * The orgId this event is associated with
    */
   orgId: string;
@@ -5814,11 +5829,6 @@ export interface ITimelineEventPokerComplete {
    * The user than can see this event
    */
   user: IUser;
-
-  /**
-   * true if the timeline event is active, false if arvhiced
-   */
-  isActive: boolean;
 
   /**
    * The meeting that was completed
@@ -8659,6 +8669,11 @@ export interface IEndNewMeetingPayload {
    */
   removedSuggestedActionId: string | null;
   removedTaskIds: Array<string> | null;
+
+  /**
+   * An event that is important to the viewer, e.g. an ended meeting
+   */
+  timelineEvent: TimelineEvent | null;
   updatedTaskIds: Array<string> | null;
 
   /**
