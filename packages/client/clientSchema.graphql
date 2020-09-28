@@ -37,8 +37,6 @@ extend type User {
   dashSearch: String
   pageName: String
   snackbarOffset: Int
-  teamFilter: Team
-  showArchivedTasksCheckbox: Boolean!
 }
 
 extend type Task {
