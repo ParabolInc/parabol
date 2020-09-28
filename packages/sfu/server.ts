@@ -118,4 +118,4 @@ async function main() {
   await runWebSocketServer()
 }
 
-main()
+if (process.env.ALLOW_VIDEO) main()
