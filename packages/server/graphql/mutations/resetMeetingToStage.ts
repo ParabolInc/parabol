@@ -51,6 +51,8 @@ const resetMeetingToStage = {
       return standardError(new Error('Resetting to this stage type is not supported'), {
         userId: viewerId
       })
+    if (meeting.endedAt)
+      return standardError(new Error('The meeting has already ended'), {userId: viewerId})
 
     // RESOLUTION
     const meetingCount = await r

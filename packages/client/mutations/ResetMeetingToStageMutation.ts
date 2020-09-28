@@ -87,45 +87,7 @@ const ResetMeetingToStageMutation: SimpleMutation<TResetMeetingToStageMutation> 
     updater: (store) => {
       const payload = store.getRootField('resetMeetingToStage')
       resetMeetingToStageUpdater(payload, {atmosphere, store})
-
-      // const payload = store.getRootField('resetMeetingToStage')
-      // console.log('payload:', payload)
-      // const viewer = store.getRoot().getLinkedRecord('viewer')
-      // if (!viewer) return
-      // const meetingMember = store.get(`${viewer.getValue('id')}::${meetingId}`)
-      // if (!meetingMember) return
-      // meetingMember.setValue(meeting.getValue('totalVotes'), 'votesRemaining')
     }
-    // optimisticUpdater: (store) => {
-    // console.log('optimistically updating undo')
-    // const {meetingId, stageId} = variables
-    // const viewer = store.getRoot().getLinkedRecord('viewer')
-    // if (!viewer) return
-    // const meetingMember = store.get(`${viewer.getValue('id')}::${meetingId}`)
-    // if (!meetingMember) return
-    // meetingMember.setValue(5, 'votesRemaining')
-    // console.log('total votes:', meetingMember.getValue('totalVotes'))
-
-    // const meeting = store.get(meetingId)
-    // if (!meeting) return
-    // meeting.setValue(meeting.getValue('totalVotes'), 'votesRemaining')
-    // const phases = meeting.getLinkedRecords('phases')
-    // if (!phases) return
-    // let shouldResetStage = false
-
-    // for (let i = 0; i < phases.length; i++) {
-    //   const phase = phases[i]
-    //   if (!phase) continue
-    //   const stages = phase.getLinkedRecords('stages')
-    //   if (!stages) continue
-
-    //   for (let j = 0; j < stages.length; j++) {
-    //     const stage = stages[j]
-    //     if (stage.getValue('id') === stageId) shouldResetStage = true
-    //     if (shouldResetStage) stage.setValue(false, 'isComplete')
-    //   }
-    // }
-    // }
   })
 }
 
