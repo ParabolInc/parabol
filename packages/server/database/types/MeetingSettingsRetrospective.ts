@@ -10,7 +10,7 @@ interface Input {
   selectedTemplateId?: string
 }
 
-export const phaseTypes = [
+const phaseTypes = [
   NewMeetingPhaseTypeEnum.checkin,
   NewMeetingPhaseTypeEnum.reflect,
   NewMeetingPhaseTypeEnum.group,
