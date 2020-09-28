@@ -28,8 +28,8 @@
     "awaitqueue": "^2.1.1",
     "debug": "^4.1.1",
     "express": "^4.17.1",
-    "mediasoup": "https://github.com/mattkrick/mediasoup/tarball/835592be155e801195d80d3e94fb561bac79c09a",
+    "mediasoup": "^3.6.21",
     "protoo-server": "^4.0.4",
-    "parabol-server": "^5.16.1"
+    "parabol-server": "^5.19.0"
   }
 }

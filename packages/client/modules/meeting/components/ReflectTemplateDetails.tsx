@@ -2,7 +2,12 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
-import createTemplateHeader from '../../../../../static/images/illustrations/createTemplateHeader.svg'
+import customTemplate from '../../../../../static/images/illustrations/customTemplate.svg'
+import sailboatTemplate from '../../../../../static/images/illustrations/sailboatTemplate.svg'
+import startStopContinueTemplate from '../../../../../static/images/illustrations/startStopContinueTemplate.svg'
+import workingStuckTemplate from '../../../../../static/images/illustrations/workingStuckTemplate.svg'
+import fourLsTemplate from '../../../../../static/images/illustrations/fourLsTemplate.svg'
+import gladSadMadTemplate from '../../../../../static/images/illustrations/gladSadMadTemplate.svg'
 import {PALETTE} from '../../../styles/paletteV2'
 import getTemplateList from '../../../utils/getTemplateList'
 import makeTemplateDescription from '../../../utils/makeTemplateDescription'
@@ -34,10 +39,11 @@ const PromptEditor = styled('div')({
   width: '100%'
 })
 
-const CreateTemplateImg = styled('img')({
+const TemplateImage = styled('img')({
   margin: '0 auto',
-  padding: '24px 56px 0',
-  width: 320
+  maxWidth: 360,
+  padding: '16px 0 0',
+  width: '100%'
 })
 
 const Description = styled('div')({
@@ -73,10 +79,18 @@ const ReflectTemplateDetails = (props: Props) => {
   const isOwner = selectedTemplate.teamId === teamId
   const description = makeTemplateDescription(lowestScope, selectedTemplate)
   const templateCount = teamTemplates.length
+  const defaultIllustrations = {
+    'sailboatTemplate': sailboatTemplate,
+    'startStopContinueTemplate': startStopContinueTemplate,
+    'workingStuckTemplate': workingStuckTemplate,
+    'fourLsTemplate': fourLsTemplate,
+    'gladSadMadTemplate': gladSadMadTemplate,
+  }
+  const headerImg = selectedTemplate.teamId === 'aGhostTeam' ? defaultIllustrations[templateId] : customTemplate
   return (
     <PromptEditor>
       <Scrollable>
-        <CreateTemplateImg src={createTemplateHeader} />
+        <TemplateImage src={headerImg} />
         <TemplateHeader>
           <FirstLine>
             <EditableTemplateName

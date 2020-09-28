@@ -4,8 +4,8 @@ import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {Breakpoint} from '~/types/constEnums'
 import {StageTimerDisplay_meeting} from '~/__generated__/StageTimerDisplay_meeting.graphql'
-import PhaseCompleteTag from './PhaseCompleteTag'
 import StageTimerDisplayGauge from './StageTimerDisplayGauge'
+import PhaseCompleteTag from './Tag/PhaseCompleteTag'
 
 interface Props {
   meeting: StageTimerDisplay_meeting

@@ -48,10 +48,6 @@ export default {
     if (!viewerMeetingMember) {
       return {error: {message: `Not a part of the meeting`}}
     }
-    const {endedAt} = meeting
-    if (endedAt) {
-      return {error: {message: 'Meeting already ended'}}
-    }
 
     // RESOLUTION
     const data = {

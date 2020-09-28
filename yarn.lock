@@ -3258,10 +3258,10 @@
   resolved "https://registry.yarnpkg.com/@types/node/-/node-10.17.20.tgz#e6d8b3631af1e59bbb4fda04926b078acdd3c2ef"
   integrity sha512-XgDgo6W10SeGEAM0k7FosJpvLCynOTYns4Xk3J5HGrA+UI/bKZ30PGMzOP5Lh2zs4259I71FSYLAtjnx3qhObw==
 
-"@types/node@^14.6.4":
-  version "14.10.1"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-14.10.1.tgz#cc323bad8e8a533d4822f45ce4e5326f36e42177"
-  integrity sha512-aYNbO+FZ/3KGeQCEkNhHFRIzBOUgc7QvcVNKXbfnhDkSfwUv91JsQQa10rDgKSTSLkXZ1UIyPe4FJJNVgw1xWQ==
+"@types/node@^14.10.1":
+  version "14.11.2"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-14.11.2.tgz#2de1ed6670439387da1c9f549a2ade2b0a799256"
+  integrity sha512-jiE3QIxJ8JLNcb1Ps6rDbysDhN4xa8DJJvuC9prr6w+1tIh+QAbYyNF3tyiZNLDBIuBCf4KEcV2UvQm/V60xfA==
 
 "@types/normalize-package-data@^2.4.0":
   version "2.4.0"
@@ -12368,11 +12368,12 @@ mediasoup-client@^3.6.12:
     sdp-transform "^2.14.0"
     supports-color "^7.1.0"
 
-"mediasoup@https://github.com/mattkrick/mediasoup/tarball/835592be155e801195d80d3e94fb561bac79c09a":
-  version "3.6.19"
-  resolved "https://github.com/mattkrick/mediasoup/tarball/835592be155e801195d80d3e94fb561bac79c09a#f1b8c24a5cdd03300b7be4cc7fc11816c558c2c5"
+mediasoup@^3.6.21:
+  version "3.6.21"
+  resolved "https://registry.yarnpkg.com/mediasoup/-/mediasoup-3.6.21.tgz#66297d9b14611cd453e6a119e824c37ada1f7f0b"
+  integrity sha512-5jNoIZfwT07Rze425lVSYBElxxlvOwkfaJ2xodot0qMrC9aaFztPmBbysa5/bWMwzRrtSoXJAKJBlfFDcOdDcA==
   dependencies:
-    "@types/node" "^14.6.4"
+    "@types/node" "^14.10.1"
     awaitqueue "^2.2.3"
     debug "^4.1.1"
     h264-profile-level-id "^1.0.1"
@@ -13054,9 +13055,9 @@ node-fetch@^1.0.1:
     is-stream "^1.0.1"
 
 node-fetch@^2.1.2, node-fetch@^2.2.0, node-fetch@^2.3.0, node-fetch@^2.5.0, node-fetch@^2.6.0:
-  version "2.6.0"
-  resolved "https://registry.yarnpkg.com/node-fetch/-/node-fetch-2.6.0.tgz#e633456386d4aa55863f676a7ab0daa8fdecb0fd"
-  integrity sha512-8dG4H5ujfvFiqDmVu9fQ5bOHUC15JMjMY/Zumv26oOvvVJjM67KF8koCWIabKQ1GJIa9r2mMZscBq/TbdOcmNA==
+  version "2.6.1"
+  resolved "https://registry.yarnpkg.com/node-fetch/-/node-fetch-2.6.1.tgz#045bd323631f76ed2e2b55573394416b639a0052"
+  integrity sha512-V4aYg89jEoVRxRb2fJdAg8FHvI7cEyYdVAh94HH0UIK8oJxUfkjlDQN9RbMx+bEjP7+ggMiFRprSti032Oipxw==
 
 node-forge@0.9.0:
   version "0.9.0"

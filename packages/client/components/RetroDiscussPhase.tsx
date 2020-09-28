@@ -250,7 +250,6 @@ export default createFragmentContainer(RetroDiscussPhase, {
           ...RetroDiscussPhase_stage @relay(mask: false)
         }
       }
-
       localStage {
         ...RetroDiscussPhase_stage @relay(mask: false)
       }
