@@ -38,6 +38,8 @@ import TimelineEventJoinedParabol from './types/TimelineEventJoinedParabol'
 import TimelineEventPokerComplete from './types/TimelineEventPokerComplete'
 import TimelineEventTeamCreated from './types/TimelineEventTeamCreated'
 import UpdatesPhase from './types/UpdatesPhase'
+import EstimateStageJira from './types/EstimateStageJira'
+import EstimateStageParabol from './types/EstimateStageParabol'
 
 if (module.hot) {
   // every time this module gets loaded, see if it's different from it's previous version.
@@ -64,6 +66,8 @@ export default new GraphQLSchema({
     DiscussPhase,
     UpdatesPhase,
     EstimatePhase,
+    EstimateStageJira,
+    EstimateStageParabol,
     AgendaItemsPhase,
     GenericMeetingPhase,
     EstimatePhase,

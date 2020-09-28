@@ -1,11 +1,12 @@
-import {ActionSidebarAgendaItemsSection_meeting} from '../__generated__/ActionSidebarAgendaItemsSection_meeting.graphql'
+import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
-import graphql from 'babel-plugin-relay/macro'
+
+import {ActionSidebarAgendaItemsSection_meeting} from '../__generated__/ActionSidebarAgendaItemsSection_meeting.graphql'
+import useGotoStageId from '../hooks/useGotoStageId'
 import AgendaListAndInput from '../modules/teamDashboard/components/AgendaListAndInput/AgendaListAndInput'
 import {NewMeetingPhaseTypeEnum} from '../types/graphql'
 import MeetingSidebarPhaseItemChild from './MeetingSidebarPhaseItemChild'
-import useGotoStageId from '../hooks/useGotoStageId'
 
 interface Props {
   gotoStageId: ReturnType<typeof useGotoStageId>
@@ -15,7 +16,7 @@ interface Props {
 
 const ActionSidebarAgendaItemsSection = (props: Props) => {
   const {gotoStageId, handleMenuClick, meeting} = props
-  const {id: meetingId, team} = meeting
+  const {team} = meeting
   const handleClick = async (stageId: string) => {
     gotoStageId(stageId).catch()
     handleMenuClick()
@@ -26,12 +27,13 @@ const ActionSidebarAgendaItemsSection = (props: Props) => {
     (phase) => phase.phaseType === NewMeetingPhaseTypeEnum.updates
   )!
   const isUpdatesNavigable = updatesPhase && updatesPhase.stages![0].isNavigable
+
   return (
     <MeetingSidebarPhaseItemChild>
       <AgendaListAndInput
-        meetingId={meetingId}
         gotoStageId={handleClick}
         isDisabled={!isUpdatesNavigable}
+        meeting={meeting}
         team={team!}
       />
     </MeetingSidebarPhaseItemChild>
@@ -43,15 +45,6 @@ graphql`
     phaseType
     ... on UpdatesPhase {
       stages {
-        id
-        isComplete
-        isNavigable
-      }
-    }
-    ... on AgendaItemsPhase {
-      stages {
-        id
-        isComplete
         isNavigable
       }
     }
@@ -61,16 +54,8 @@ graphql`
 export default createFragmentContainer(ActionSidebarAgendaItemsSection, {
   meeting: graphql`
     fragment ActionSidebarAgendaItemsSection_meeting on ActionMeeting {
-      id
-      localStage {
-        id
-      }
-      facilitatorStageId
-      # load up the localPhase
+      ...AgendaListAndInput_meeting
       phases {
-        ...ActionSidebarAgendaItemsSectionAgendaItemPhase @relay(mask: false)
-      }
-      localPhase {
         ...ActionSidebarAgendaItemsSectionAgendaItemPhase @relay(mask: false)
       }
       team {

@@ -79,7 +79,7 @@ interface DemoEvents {
 }
 
 interface GQLDemoEmitter {
-  new (): StrictEventEmitter<EventEmitter, DemoEvents>
+  new(): StrictEventEmitter<EventEmitter, DemoEvents>
 }
 
 const makeReflectionGroupThread = () => ({
@@ -123,7 +123,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
   getUnlockedStages(stageIds: string[]) {
     const unlockedStages = [] as INewMeetingStage[]
     this.db.newMeeting.phases!.forEach((phase) => {
-      ;(phase.stages as any).forEach((stage) => {
+      ; (phase.stages as any).forEach((stage) => {
         if (stageIds.includes(stage.id)) {
           unlockedStages.push(stage)
         }
@@ -220,7 +220,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       return {
         viewer: {
           ...this.db.users[0],
-          team: this.db.team
+          teamMember: this.db.teamMembers[0]
         }
       }
     },
@@ -560,10 +560,10 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       const remainingReflections = this.db.reflections.filter((reflection) => reflection.isActive)
       const unlockedStageIds = remainingReflections.length
         ? unlockAllStagesForPhase(
-            this.db.newMeeting.phases as any,
-            NewMeetingPhaseTypeEnum.group,
-            true
-          )
+          this.db.newMeeting.phases as any,
+          NewMeetingPhaseTypeEnum.group,
+          true
+        )
         : []
 
       const unlockedStages = this.getUnlockedStages(unlockedStageIds)
@@ -1403,6 +1403,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         isKill: !currentStage,
         removedTaskIds: [],
         removedSuggestedActionId: null,
+        timelineEvent: null,
         updatedTasks: this.db.tasks,
         __typename: 'EndNewMeetingPayload'
       }

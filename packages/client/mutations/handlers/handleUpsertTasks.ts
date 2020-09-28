@@ -7,6 +7,8 @@ import getTeamTasksConn from '../connections/getTeamTasksConn'
 import getUserTasksConn from '../connections/getUserTasksConn'
 import pluralizeHandler from './pluralizeHandler'
 import safePutNodeInConn from './safePutNodeInConn'
+import isTaskPrivate from '~/utils/isTaskPrivate'
+import {parseUserTaskFilterQueryParams} from '~/utils/useUserTaskFilters'
 
 type Task = RecordProxy<{
   readonly id: string
@@ -36,10 +38,12 @@ const handleUpsertTask = (task: Task | null, store: RecordSourceSelectorProxy<an
   }
   const meetingId = task.getValue('meetingId')
   const isNowArchived = tags.includes('archived')
-  const archiveConns = [getArchivedTasksConn(viewer, teamId), getArchivedTasksConn(viewer)]
+  const {userIds, teamIds} = parseUserTaskFilterQueryParams(viewerId, window.location)
+  const archiveConns = [ /* archived task conn in user dash*/ getArchivedTasksConn(viewer, userIds, teamIds),
+                         /* archived task conn in team dash*/ getArchivedTasksConn(viewer, null, [teamId])]
   const team = store.get(teamId)
   const teamConn = getTeamTasksConn(team)
-  const userConn = getUserTasksConn(viewer, [viewerId], null)
+  const userConn = getUserTasksConn(viewer, userIds, teamIds)
   const threadSourceId = task.getValue('threadId')
   const threadSourceProxy = (threadSourceId && store.get(threadSourceId as string)) || null
   const threadSourceConn = getThreadSourceThreadConn(threadSourceProxy)
@@ -55,11 +59,12 @@ const handleUpsertTask = (task: Task | null, store: RecordSourceSelectorProxy<an
     safePutNodeInConn(threadSourceConn, task, store, 'threadSortOrder', true)
     addNodeToArray(task, meeting, 'tasks', 'createdAt')
     if (userConn) {
+      const isPrivate = isTaskPrivate(tags)
       const ownedByViewer = task.getValue('userId') === viewerId
-      if (ownedByViewer) {
-        safePutNodeInConn(userConn, task, store)
-      } else {
+      if (isPrivate && !ownedByViewer) {
         safeRemoveNodeFromConn(taskId, userConn)
+      } else {
+        safePutNodeInConn(userConn, task, store)
       }
     }
   }

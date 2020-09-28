@@ -74,12 +74,12 @@ const TaskColumns = (props: Props) => {
       sortOrder =
         (destinationTasks[destination.index + offset].sortOrder +
           destinationTasks[destination.index].sortOrder) /
-          2 +
+        2 +
         dndNoise()
     }
     const updatedTask = {id: draggableId, sortOrder}
     if (!isSameColumn) {
-      ;(updatedTask as any).status = destination.droppableId
+      ; (updatedTask as any).status = destination.droppableId
     }
     UpdateTaskMutation(atmosphere, {updatedTask, area})
   })

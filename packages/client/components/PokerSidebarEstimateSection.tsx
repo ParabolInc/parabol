@@ -83,8 +83,8 @@ const PokerSidebarEstimateSection = (props: Props) => {
             return (
               <ScrollWrapper ref={provided.innerRef}>
                 {stages!.map((stage, idx) => {
-                  const {task} = stage
-                  const {content} = task
+                  const {task, issue} = stage
+                  const content = task?.content || issue?.summary
                   const title = content ? 'GARBAGE CONTENT' : 'EXTRA GARBAGE'
                   // the local user is at another stage than the facilitator stage
                   const isUnsyncedFacilitatorStage = !inSync && stage.id === facilitatorStageId
@@ -140,8 +140,15 @@ graphql`
       id
       isComplete
       isNavigable
-      task {
-        content
+      ... on EstimateStageJira {
+        issue {
+          summary
+        }
+      }
+      ... on EstimateStageParabol {
+        task {
+          content
+        }
       }
       sortOrder
     }

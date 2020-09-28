@@ -20,6 +20,10 @@ export const timelineEventInterfaceFields = () => ({
     type: new GraphQLNonNull(GraphQLInt),
     description: 'the number of times the user has interacted with (ie clicked) this event'
   },
+  isActive: {
+    type: new GraphQLNonNull(GraphQLBoolean),
+    description: 'true if the timeline event is active, false if archived'
+  },
   orgId: {
     type: GraphQLID,
     description: 'The orgId this event is associated with. Null if not traceable to one org'
@@ -60,10 +64,6 @@ export const timelineEventInterfaceFields = () => ({
     resolve: ({userId}, _args, {dataLoader}) => {
       return dataLoader.get('users').load(userId)
     }
-  },
-  isActive: {
-    type: new GraphQLNonNull(GraphQLBoolean),
-    description: 'true if the timeline event is active, false if arvhiced'
   }
 })
 
