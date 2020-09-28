@@ -6,6 +6,10 @@ import createNewMeetingPhases, {primePhases} from './helpers/createNewMeetingPha
 import ResetMeetingToStagePayload from '../types/ResetMeetingToStagePayload'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import publish from '../../utils/publish'
+import {getUserId} from '../../utils/authorization'
+import standardError from '../../utils/standardError'
+import findStageById from 'parabol-client/utils/meetings/findStageById'
+import {NewMeetingPhaseTypeEnum} from 'parabol-client/types/graphql'
 
 const resetMeetingToStage = {
   type: GraphQLNonNull(ResetMeetingToStagePayload),
@@ -18,47 +22,58 @@ const resetMeetingToStage = {
       type: GraphQLNonNull(GraphQLID)
     }
   },
-  resolve: async (_source, {meetingId, stageId}, {socketId: mutatorId, dataLoader}) => {
+  resolve: async (_source, {meetingId, stageId}, {authToken, socketId: mutatorId, dataLoader}) => {
+    const r = await getRethink()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
-    console.log('meetingId:', meetingId)
-    console.log('stageId:', stageId)
-    const reflectionGroups = await dataLoader
-      .get('retroReflectionGroupsByMeetingId')
-      .load(meetingId)
-    const reflectionGroupIds = reflectionGroups.map((rg) => rg.id)
-    const r = await getRethink()
-    await Promise.all([
-      r
-        .table('Comment')
-        .getAll(r.args(reflectionGroupIds), {index: 'threadId'})
-        .delete()
-        .run(),
-      r
-        .table('Task')
-        .getAll(r.args(reflectionGroupIds), {index: 'threadId'})
-        .delete()
-        .run(),
-      r
-        .table('RetroReflectionGroup')
-        .getAll(r.args(reflectionGroupIds))
-        .update({voterIds: []})
-        .run()
-    ])
+
+    // AUTH
+    const viewerId = getUserId(authToken)
     const meeting = await dataLoader.get('newMeetings').load(meetingId)
+    if (!meeting) return standardError(new Error('Meeting not found'), {userId: viewerId})
+    const {defaultFacilitatorUserId, facilitatorUserId, phases, teamId, meetingType} = meeting
+    if (viewerId !== facilitatorUserId) {
+      if (viewerId !== defaultFacilitatorUserId)
+        return standardError(new Error('Not meeting facilitator'), {userId: viewerId})
+      return standardError(new Error('Not meeting facilitator anymore'), {userId: viewerId})
+    }
+
+    // VALIDATION
+    const foundResponse = findStageById(phases, stageId)
+    if (!foundResponse)
+      return standardError(new Error('Meeting stage not found'), {userId: viewerId})
+    const {stage: resetToStage} = foundResponse!
+    if (!resetToStage.isNavigableByFacilitator)
+      return standardError(new Error('Stage has not started'), {userId: viewerId})
+    if (!resetToStage.isComplete)
+      return standardError(new Error('Stage has not finished'), {userId: viewerId})
+    if (resetToStage.phaseType !== NewMeetingPhaseTypeEnum.group)
+      return standardError(new Error('Resetting to this stage type is not supported'), {
+        userId: viewerId
+      })
+
+    // RESOLUTION
+    const meetingCount = await r
+      .table('NewMeeting')
+      .getAll(teamId, {index: 'teamId'})
+      .filter({meetingType})
+      .count()
+      .default(0)
+      .run()
     const createdPhases = await createNewMeetingPhases(
-      meeting.teamId,
-      0, // todo: pass real meeting count
-      meeting.meetingType,
+      teamId,
+      meetingCount,
+      meetingType,
       dataLoader
     )
     let shouldResetStage = false
     let resetToPhaseIndex = -1
     const newPhases = [] as GenericMeetingPhase[]
-    for (const [phaseIndex, phase] of meeting.phases.entries()) {
-      if (!phase.stages) continue
+    for (const [phaseIndex, phase] of phases.entries()) {
+      const {stages} = phase
+      if (!stages) continue
       const newStages = [] as GenericMeetingStage[]
-      for (const [stageIndex, stage] of phase.stages.entries()) {
+      for (const [stageIndex, stage] of stages.entries()) {
         if (stage.id === stageId) {
           shouldResetStage = true
           resetToPhaseIndex = phaseIndex
@@ -76,15 +91,36 @@ const resetMeetingToStage = {
     }
     primePhases(newPhases, resetToPhaseIndex)
 
-    await r
-      .table('NewMeeting')
-      .get(meetingId)
-      .update({phases: newPhases})
-      .run()
-    // TODO: reset votes remaining
-    await (r.table('MeetingMember').getAll(meetingId, {index: 'meetingId'}) as any)
-      .update({votesRemaining: meeting.totalVotes})
-      .run()
+    const reflectionGroups = await dataLoader
+      .get('retroReflectionGroupsByMeetingId')
+      .load(meetingId)
+    const reflectionGroupIds = reflectionGroups.map((rg) => rg.id)
+
+    await Promise.all([
+      r
+        .table('Comment')
+        .getAll(r.args(reflectionGroupIds), {index: 'threadId'})
+        .delete()
+        .run(),
+      r
+        .table('Task')
+        .getAll(r.args(reflectionGroupIds), {index: 'threadId'})
+        .delete()
+        .run(),
+      r
+        .table('RetroReflectionGroup')
+        .getAll(r.args(reflectionGroupIds))
+        .update({voterIds: []})
+        .run(),
+      r
+        .table('NewMeeting')
+        .get(meetingId)
+        .update({phases: newPhases})
+        .run(),
+      (r.table('MeetingMember').getAll(meetingId, {index: 'meetingId'}) as any)
+        .update({votesRemaining: meeting.totalVotes})
+        .run()
+    ])
     const data = {
       meetingId
     }
