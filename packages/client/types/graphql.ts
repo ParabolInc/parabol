@@ -5575,6 +5575,11 @@ export interface IArchiveTeamPayload {
    * all the suggested actions that never happened
    */
   removedSuggestedActionIds: Array<string | null> | null;
+
+  /**
+   * A list of the ids of templates created by a team
+   */
+  teamTemplateIds: Array<string>;
 }
 
 /**
