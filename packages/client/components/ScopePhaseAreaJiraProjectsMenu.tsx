@@ -8,27 +8,22 @@ import useFilteredItems from '../hooks/useFilteredItems'
 import useForm from '../hooks/useForm'
 import {MenuProps} from '../hooks/useMenu'
 import {MenuMutationProps} from '../hooks/useMutationProps'
-import CreateGitHubIssueMutation from '../mutations/CreateGitHubIssueMutation'
-import CreateJiraIssueMutation from '../mutations/CreateJiraIssueMutation'
 import {PALETTE} from '../styles/paletteV2'
 import {ICON_SIZE} from '../styles/typographyV2'
-import {TaskFooterIntegrateMenuList_suggestedIntegrations} from '../__generated__/TaskFooterIntegrateMenuList_suggestedIntegrations.graphql'
-import {TaskFooterIntegrateMenuList_task} from '../__generated__/TaskFooterIntegrateMenuList_task.graphql'
+import {ScopePhaseAreaJiraProjectsMenu_suggestedIntegrations} from '../__generated__/ScopePhaseAreaJiraProjectsMenu_suggestedIntegrations.graphql'
 import Icon from './Icon'
 import LoadingComponent from './LoadingComponent/LoadingComponent'
 import Menu from './Menu'
 import MenuItemComponentAvatar from './MenuItemComponentAvatar'
 import MenuItemLabel from './MenuItemLabel'
-import SuggestedIntegrationGitHubMenuItem from './SuggestedIntegrationGitHubMenuItem'
 import SuggestedIntegrationJiraMenuItem from './SuggestedIntegrationJiraMenuItem'
 import TaskFooterIntegrateMenuSearch from './TaskFooterIntegrateMenuSearch'
 
 interface Props {
   menuProps: MenuProps
   mutationProps: MenuMutationProps
-  placeholder: string
-  suggestedIntegrations: TaskFooterIntegrateMenuList_suggestedIntegrations
-  task: TaskFooterIntegrateMenuList_task
+  suggestedIntegrations: ScopePhaseAreaJiraProjectsMenu_suggestedIntegrations
+  teamId: string
 }
 
 const SearchIcon = styled(Icon)({
@@ -59,11 +54,11 @@ const StyledMenuItemIcon = styled(MenuItemComponentAvatar)({
   top: 4
 })
 
-const TaskFooterIntegrateMenu = (props: Props) => {
-  const {mutationProps, menuProps, placeholder, suggestedIntegrations, task} = props
+// TODO: adapt to be part of the jira project filter
+const ScopePhaseAreaJiraProjectsMenu = (props: Props) => {
+  const {menuProps, suggestedIntegrations, teamId} = props
   const {hasMore} = suggestedIntegrations
   const items = suggestedIntegrations.items || []
-  const {id: taskId, teamId, userId} = task
 
   const {fields, onChange} = useForm({
     search: {
@@ -74,6 +69,7 @@ const TaskFooterIntegrateMenu = (props: Props) => {
   const {value} = search
   const query = value.toLowerCase()
   const atmosphere = useAtmosphere()
+  const {viewerId} = atmosphere
   const filteredIntegrations = useFilteredItems(query, items)
   const {allItems, status} = useAllIntegrations(
     atmosphere,
@@ -81,12 +77,12 @@ const TaskFooterIntegrateMenu = (props: Props) => {
     filteredIntegrations,
     !!hasMore,
     teamId,
-    userId
+    viewerId
   )
   return (
     <Menu
       keepParentFocus
-      ariaLabel={'Export the task'}
+      ariaLabel={'Add a Project'}
       {...menuProps}
       resetActiveOnChanges={[allItems]}
     >
@@ -95,37 +91,27 @@ const TaskFooterIntegrateMenu = (props: Props) => {
           <SearchIcon>search</SearchIcon>
         </StyledMenuItemIcon>
         <TaskFooterIntegrateMenuSearch
-          placeholder={placeholder}
+          placeholder={'Search Jira'}
           value={value}
           onChange={onChange}
         />
       </SearchItem>
       {(query && allItems.length === 0 && status !== 'loading' && (
-        <NoResults key='no-results'>No integrations found!</NoResults>
+        <NoResults key='no-results'>No Jira Projects found!</NoResults>
       )) ||
         null}
       {allItems.slice(0, 10).map((suggestedIntegration) => {
-        const {id, service} = suggestedIntegration
-        const {submitMutation, onError, onCompleted} = mutationProps
-        if (service === 'jira') {
-          const {cloudId, projectKey} = suggestedIntegration
-          const onClick = () => {
-            const variables = {cloudId, projectKey, taskId}
-            submitMutation()
-            CreateJiraIssueMutation(atmosphere, variables, {onError, onCompleted})
-          }
-          return <SuggestedIntegrationJiraMenuItem key={id} query={query} suggestedIntegration={suggestedIntegration} onClick={onClick} />
-        }
-        if (service === 'github') {
-          const onClick = () => {
-            const {nameWithOwner} = suggestedIntegration
-            const variables = {nameWithOwner, taskId}
-            submitMutation()
-            CreateGitHubIssueMutation(atmosphere, variables, {onError, onCompleted})
-          }
-          return <SuggestedIntegrationGitHubMenuItem key={id} query={query} suggestedIntegration={suggestedIntegration} onClick={onClick} />
-        }
-        return null
+        if (!suggestedIntegration) return null
+        const {id} = suggestedIntegration
+        const onClick = () => {}
+        return (
+          <SuggestedIntegrationJiraMenuItem
+            key={id}
+            query={query}
+            suggestedIntegration={suggestedIntegration}
+            onClick={onClick}
+          />
+        )
       })}
       {status === 'loading' && (
         <LoadingComponent key='loading' spinnerSize={24} height={24} showAfter={0} />
@@ -135,36 +121,21 @@ const TaskFooterIntegrateMenu = (props: Props) => {
 }
 
 graphql`
-  fragment TaskFooterIntegrateMenuListItem on SuggestedIntegration {
+  fragment ScopePhaseAreaJiraProjectsMenuListItem on SuggestedIntegrationJira {
     id
     service
-    ... on SuggestedIntegrationJira {
-      projectName
-      projectKey
-      cloudId
-    }
-    ... on SuggestedIntegrationGitHub {
-      nameWithOwner
-    }
+    projectName
     ...SuggestedIntegrationJiraMenuItem_suggestedIntegration
-    ...SuggestedIntegrationGitHubMenuItem_suggestedIntegration
   }
 `
 
-export default createFragmentContainer(TaskFooterIntegrateMenu, {
+export default createFragmentContainer(ScopePhaseAreaJiraProjectsMenu, {
   suggestedIntegrations: graphql`
-    fragment TaskFooterIntegrateMenuList_suggestedIntegrations on SuggestedIntegrationQueryPayload {
+    fragment ScopePhaseAreaJiraProjectsMenu_suggestedIntegrations on SuggestedIntegrationQueryPayload {
       hasMore
       items {
-        ...TaskFooterIntegrateMenuListItem @relay(mask: false)
+        ...ScopePhaseAreaJiraProjectsMenuListItem @relay(mask: false)
       }
-    }
-  `,
-  task: graphql`
-    fragment TaskFooterIntegrateMenuList_task on Task {
-      id
-      teamId
-      userId
     }
   `
 })

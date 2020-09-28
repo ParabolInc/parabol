@@ -16,6 +16,7 @@ extend type PokerMeeting {
   localPhase: NewMeetingPhase!
   localStage: NewMeetingStage!
   showSidebar: Boolean!
+  jiraSearchQuery: String
 }
 
 extend type RetrospectiveMeeting {
@@ -82,5 +83,9 @@ extend type UpdatesStage {
 }
 
 extend type AgendaItemsStage {
+  localScheduledEndTime: String
+}
+
+extend type EstimateStage {
   localScheduledEndTime: String
 }

@@ -33,6 +33,7 @@ const subscription = graphql`
     teamSubscription {
       __typename
       ...AcceptTeamInvitationMutation_team @relay(mask: false)
+      ...AddAtlassianAuthMutation_team @relay(mask: false)
       ...AddReflectTemplateMutation_team @relay(mask: false)
       ...AddReflectTemplatePromptMutation_team @relay(mask: false)
       ...AddTeamMutation_team @relay(mask: false)

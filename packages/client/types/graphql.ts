@@ -72,18 +72,8 @@ export interface IUser {
    * The userId provided by us
    */
   id: string;
-
-  /**
-   * All the integrations that the user could possibly use
-   */
-  allAvailableIntegrations: Array<SuggestedIntegration>;
   archivedTasks: ITaskConnection | null;
   archivedTasksCount: number | null;
-
-  /**
-   * The auth for the user. access token is null if not viewer. Use isActive to check for presence
-   */
-  atlassianAuth: IAtlassianAuth | null;
 
   /**
    * The assumed company this organizaiton belongs to
@@ -109,11 +99,6 @@ export interface IUser {
    * Any super power given to the user via a super user
    */
   featureFlags: IUserFeatureFlags;
-
-  /**
-   * The auth for the user. access token is null if not viewer. Use isActive to check for presence
-   */
-  githubAuth: IGitHubAuth | null;
 
   /**
    * An array of objects with information about the user's identities.
@@ -262,11 +247,6 @@ export interface IUser {
    * a string with message stating that the user is over the free tier limit, else null
    */
   overLimitCopy: string | null;
-
-  /**
-   * The integrations that the user would probably like to use
-   */
-  suggestedIntegrations: ISuggestedIntegrationQueryPayload;
   tasks: ITaskConnection;
 
   /**
@@ -306,13 +286,6 @@ export interface IUser {
   userOnTeam: IUser | null;
 }
 
-export interface IAllAvailableIntegrationsOnUserArguments {
-  /**
-   * a teamId to use as a filter for the access tokens
-   */
-  teamId: string;
-}
-
 export interface IArchivedTasksOnUserArguments {
   first?: number | null;
 
@@ -330,20 +303,6 @@ export interface IArchivedTasksOnUserArguments {
 export interface IArchivedTasksCountOnUserArguments {
   /**
    * The unique team ID
-   */
-  teamId: string;
-}
-
-export interface IAtlassianAuthOnUserArguments {
-  /**
-   * The teamId for the atlassian auth token
-   */
-  teamId: string;
-}
-
-export interface IGithubAuthOnUserArguments {
-  /**
-   * The teamId for the auth object
    */
   teamId: string;
 }
@@ -421,13 +380,6 @@ export interface IOrganizationUserOnUserArguments {
   orgId: string;
 }
 
-export interface ISuggestedIntegrationsOnUserArguments {
-  /**
-   * a teamId to use as a filter to provide more accurate suggestions
-   */
-  teamId: string;
-}
-
 export interface ITasksOnUserArguments {
   /**
    * the number of tasks to return
@@ -480,6 +432,11 @@ export interface ITeamMemberOnUserArguments {
    * The team the user is on
    */
   teamId: string;
+
+  /**
+   * If null, defaults to the team member for this user. Else, will grab the team member. Returns null if not on team.
+   */
+  userId?: string | null;
 }
 
 export interface IUserOnTeamOnUserArguments {
@@ -487,24 +444,6 @@ export interface IUserOnTeamOnUserArguments {
    * The other user
    */
   userId: string;
-}
-
-export type SuggestedIntegration =
-  | ISuggestedIntegrationGitHub
-  | ISuggestedIntegrationJira;
-
-export interface ISuggestedIntegration {
-  __typename: 'SuggestedIntegration';
-  id: string;
-  service: TaskServiceEnum;
-}
-
-/**
- * The list of services for task integrations
- */
-export const enum TaskServiceEnum {
-  github = 'github',
-  jira = 'jira'
 }
 
 /**
@@ -965,9 +904,24 @@ export interface ITeamMember {
   id: string;
 
   /**
+   * All the integrations that the user could possibly use
+   */
+  allAvailableIntegrations: Array<SuggestedIntegration>;
+
+  /**
+   * The auth for the user. access token is null if not viewer. Use isActive to check for presence
+   */
+  atlassianAuth: IAtlassianAuth | null;
+
+  /**
    * The datetime the team member was created
    */
   createdAt: any;
+
+  /**
+   * The auth for the user. access token is null if not viewer. Use isActive to check for presence
+   */
+  githubAuth: IGitHubAuth | null;
 
   /**
    * true if the user is a part of the team, false if they no longer are
@@ -1020,6 +974,11 @@ export interface ITeamMember {
   slackNotifications: Array<ISlackNotification>;
 
   /**
+   * The integrations that the user would probably like to use
+   */
+  suggestedIntegrations: ISuggestedIntegrationQueryPayload;
+
+  /**
    * Tasks owned by the team member
    */
   tasks: ITaskConnection | null;
@@ -1056,6 +1015,128 @@ export interface ITasksOnTeamMemberArguments {
    * the datetime cursor
    */
   after?: any | null;
+}
+
+export type SuggestedIntegration =
+  | ISuggestedIntegrationGitHub
+  | ISuggestedIntegrationJira;
+
+export interface ISuggestedIntegration {
+  __typename: 'SuggestedIntegration';
+  id: string;
+  service: TaskServiceEnum;
+}
+
+/**
+ * The list of services for task integrations
+ */
+export const enum TaskServiceEnum {
+  github = 'github',
+  jira = 'jira'
+}
+
+/**
+ * OAuth token for a team member
+ */
+export interface IAtlassianAuth {
+  __typename: 'AtlassianAuth';
+
+  /**
+   * shortid
+   */
+  id: string;
+
+  /**
+   * true if the auth is valid, else false
+   */
+  isActive: boolean;
+
+  /**
+   * The access token to atlassian, useful for 1 hour. null if no access token available
+   */
+  accessToken: string | null;
+
+  /**
+   * *The atlassian account ID
+   */
+  accountId: string;
+
+  /**
+   * The atlassian cloud IDs that the user has granted
+   */
+  cloudIds: Array<string>;
+
+  /**
+   * The timestamp the provider was created
+   */
+  createdAt: any;
+
+  /**
+   * The refresh token to atlassian to receive a new 1-hour accessToken, always null since server secret is required
+   */
+  refreshToken: string | null;
+
+  /**
+   * *The team that the token is linked to
+   */
+  teamId: string;
+
+  /**
+   * The timestamp the token was updated at
+   */
+  updatedAt: any;
+
+  /**
+   * The user that the access token is attached to
+   */
+  userId: string;
+}
+
+/**
+ * OAuth token for a team member
+ */
+export interface IGitHubAuth {
+  __typename: 'GitHubAuth';
+
+  /**
+   * shortid
+   */
+  id: string;
+
+  /**
+   * true if an access token exists, else false
+   */
+  isActive: boolean;
+
+  /**
+   * The access token to github. good forever
+   */
+  accessToken: string | null;
+
+  /**
+   * *The GitHub login used for queries
+   */
+  login: string;
+
+  /**
+   * The timestamp the provider was created
+   */
+  createdAt: any;
+
+  /**
+   * *The team that the token is linked to
+   */
+  teamId: string;
+
+  /**
+   * The timestamp the token was updated at
+   */
+  updatedAt: any;
+
+  /**
+   * The user that the access token is attached to
+   */
+  userId: string;
 }
 
 /**
@@ -1220,6 +1301,38 @@ export const enum SlackNotificationEventTypeEnum {
    * notification that concerns a single member on the team
    */
   member = 'member'
+}
+
+/**
+ * The details associated with a task integrated with GitHub
+ */
+export interface ISuggestedIntegrationQueryPayload {
+  __typename: 'SuggestedIntegrationQueryPayload';
+  error: IStandardMutationError | null;
+
+  /**
+   * true if the items returned are a subset of all the possible integration, else false (all possible integrations)
+   */
+  hasMore: boolean | null;
+
+  /**
+   * All the integrations that are likely to be integrated
+   */
+  items: Array<SuggestedIntegration> | null;
+}
+
+export interface IStandardMutationError {
+  __typename: 'StandardMutationError';
+
+  /**
+   * The title of the error
+   */
+  title: string | null;
+
+  /**
+   * The full error
+   */
+  message: string;
 }
 
 /**
@@ -2230,63 +2343,6 @@ export const enum TaskStatusEnum {
 }
 
 /**
- * OAuth token for a team member
- */
-export interface IAtlassianAuth {
-  __typename: 'AtlassianAuth';
-
-  /**
-   * shortid
-   */
-  id: string;
-
-  /**
-   * true if the auth is valid, else false
-   */
-  isActive: boolean;
-
-  /**
-   * The access token to atlassian, useful for 1 hour. null if no access token available
-   */
-  accessToken: string | null;
-
-  /**
-   * *The atlassian account ID
-   */
-  accountId: string;
-
-  /**
-   * The atlassian cloud IDs that the user has granted
-   */
-  cloudIds: Array<string>;
-
-  /**
-   * The timestamp the provider was created
-   */
-  createdAt: any;
-
-  /**
-   * The refresh token to atlassian to receive a new 1-hour accessToken, always null since server secret is required
-   */
-  refreshToken: string | null;
-
-  /**
-   * *The team that the token is linked to
-   */
-  teamId: string;
-
-  /**
-   * The timestamp the token was updated at
-   */
-  updatedAt: any;
-
-  /**
-   * The user that the access token is attached to
-   */
-  userId: string;
-}
-
-/**
  * The user account profile
  */
 export interface IUserFeatureFlags {
@@ -2306,53 +2362,6 @@ export interface IUserFeatureFlags {
    * true if jira is allowed
    */
   poker: boolean;
-}
-
-/**
- * OAuth token for a team member
- */
-export interface IGitHubAuth {
-  __typename: 'GitHubAuth';
-
-  /**
-   * shortid
-   */
-  id: string;
-
-  /**
-   * true if an access token exists, else false
-   */
-  isActive: boolean;
-
-  /**
-   * The access token to github. good forever
-   */
-  accessToken: string | null;
-
-  /**
-   * *The GitHub login used for queries
-   */
-  login: string;
-
-  /**
-   * The timestamp the provider was created
-   */
-  createdAt: any;
-
-  /**
-   * *The team that the token is linked to
-   */
-  teamId: string;
-
-  /**
-   * The timestamp the token was updated at
-   */
-  updatedAt: any;
-
-  /**
-   * The user that the access token is attached to
-   */
-  userId: string;
 }
 
 /**
@@ -2954,38 +2963,6 @@ export const enum NotificationEnum {
   TEAM_ARCHIVED = 'TEAM_ARCHIVED',
   TASK_INVOLVES = 'TASK_INVOLVES',
   MEETING_STAGE_TIME_LIMIT_END = 'MEETING_STAGE_TIME_LIMIT_END'
-}
-
-/**
- * The details associated with a task integrated with GitHub
- */
-export interface ISuggestedIntegrationQueryPayload {
-  __typename: 'SuggestedIntegrationQueryPayload';
-  error: IStandardMutationError | null;
-
-  /**
-   * true if the items returned are a subset of all the possible integration, else false (all possible integrations)
-   */
-  hasMore: boolean | null;
-
-  /**
-   * All the integrations that are likely to be integrated
-   */
-  items: Array<SuggestedIntegration> | null;
-}
-
-export interface IStandardMutationError {
-  __typename: 'StandardMutationError';
-
-  /**
-   * The title of the error
-   */
-  title: string | null;
-
-  /**
-   * The full error
-   */
-  message: string;
 }
 
 /**
@@ -4638,6 +4615,12 @@ export interface IAddAtlassianAuthPayload {
    * The newly created auth
    */
   atlassianAuth: IAtlassianAuth | null;
+  teamId: string | null;
+
+  /**
+   * The team member with the updated atlassianAuth
+   */
+  teamMember: ITeamMember | null;
 
   /**
    * The user with updated atlassianAuth
@@ -5487,6 +5470,11 @@ export interface IAddGitHubAuthPayload {
    * The newly created auth
    */
   githubAuth: IGitHubAuth | null;
+
+  /**
+   * The team member with the updated auth
+   */
+  teamMember: ITeamMember | null;
 
   /**
    * The user with updated githubAuth
@@ -6869,6 +6857,11 @@ export interface IRemoveAtlassianAuthPayload {
   teamId: string | null;
 
   /**
+   * The team member with the updated auth
+   */
+  teamMember: ITeamMember | null;
+
+  /**
    * The user with updated atlassianAuth
    */
   user: IUser | null;
@@ -6883,6 +6876,11 @@ export interface IRemoveGitHubAuthPayload {
    */
   authId: string | null;
   teamId: string | null;
+
+  /**
+   * The team member with the updated auth
+   */
+  teamMember: ITeamMember | null;
 
   /**
    * The user with updated githubAuth
