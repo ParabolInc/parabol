@@ -4,6 +4,8 @@ import GenericMeetingStage from '../../database/types/GenericMeetingStage'
 import getRethink from '../../database/rethinkDriver'
 import createNewMeetingPhases, {primePhases} from './helpers/createNewMeetingPhases'
 import ResetMeetingToStagePayload from '../types/ResetMeetingToStagePayload'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import publish from '../../utils/publish'
 
 const resetMeetingToStage = {
   type: GraphQLNonNull(ResetMeetingToStagePayload),
@@ -16,7 +18,9 @@ const resetMeetingToStage = {
       type: GraphQLNonNull(GraphQLID)
     }
   },
-  resolve: async (_source, {meetingId, stageId}, {dataLoader}) => {
+  resolve: async (_source, {meetingId, stageId}, {socketId: mutatorId, dataLoader}) => {
+    const operationId = dataLoader.share()
+    const subOptions = {mutatorId, operationId}
     console.log('meetingId:', meetingId)
     console.log('stageId:', stageId)
     const reflectionGroups = await dataLoader
@@ -84,6 +88,7 @@ const resetMeetingToStage = {
     const data = {
       meetingId
     }
+    publish(SubscriptionChannel.MEETING, meetingId, 'ResetMeetingToStagePayload', data, subOptions)
     return data
   }
 }

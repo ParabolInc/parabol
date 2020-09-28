@@ -4,6 +4,7 @@ import {requestSubscription, Variables} from 'relay-runtime'
 import {addCommentMeetingUpdater} from '~/mutations/AddCommentMutation'
 import {deleteCommentMeetingUpdater} from '~/mutations/DeleteCommentMutation'
 import {editCommentingMeetingUpdater} from '~/mutations/EditCommentingMutation'
+import {resetMeetingToStageUpdater} from '~/mutations/ResetMeetingToStageMutation'
 import {MeetingSubscriptionResponse} from '~/__generated__/MeetingSubscription.graphql'
 import Atmosphere from '../Atmosphere'
 import {createReflectionMeetingUpdater} from '../mutations/CreateReflectionMutation'
@@ -34,6 +35,7 @@ const subscription = graphql`
       ...NewMeetingCheckInMutation_meeting @relay(mask: false)
       ...PromoteNewMeetingFacilitatorMutation_meeting @relay(mask: false)
       ...RemoveReflectionMutation_meeting @relay(mask: false)
+      ...ResetMeetingToStageMutation_meeting @relay(mask: false)
       ...SetAppLocationMutation_meeting @relay(mask: false)
       ...SetPhaseFocusMutation_meeting @relay(mask: false)
       ...SetStageTimerMutation_meeting @relay(mask: false)
@@ -63,6 +65,7 @@ const updateHandlers = {
   EditReflectionPayload: editReflectionMeetingUpdater,
   EndDraggingReflectionPayload: endDraggingReflectionMeetingUpdater,
   RemoveReflectionPayload: removeReflectionMeetingUpdater,
+  ResetMeetingToStagePayload: resetMeetingToStageUpdater,
   SetStageTimerPayload: setStageTimerMeetingUpdater,
   StartDraggingReflectionPayload: startDraggingReflectionMeetingUpdater
 }
