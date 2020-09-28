@@ -21,6 +21,11 @@ import handleRemoveReflectTemplate from './handlers/handleRemoveReflectTemplate'
 
 graphql`
   fragment ArchiveTeamMutation_team on ArchiveTeamPayload {
+    notification {
+      id
+      type
+      ...TeamArchived_notification
+    }
     team {
       id
       name
@@ -29,11 +34,6 @@ graphql`
       }
     }
     teamTemplateIds
-    notification {
-      id
-      type
-      ...TeamArchived_notification
-    }
   }
 `
 

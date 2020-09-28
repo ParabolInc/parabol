@@ -1,5 +1,4 @@
 import {GraphQLID, GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
-import ReflectTemplate from './ReflectTemplate'
 import {getUserId} from '../../utils/authorization'
 import {GQLContext} from '../graphql'
 import {resolveTeam} from '../resolvers'

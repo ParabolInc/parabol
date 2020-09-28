@@ -56,9 +56,6 @@ export default {
         .update({isActive: false, updatedAt: now})
     }).run()
 
-    // const templates = await dataLoader.get('meetingTemplatesByTeamId').load(teamId)
-    // const teamTemplateIds = templates.map(({id}) => id)
-
     const notifications = users
       .map(({id}) => id)
       .filter((userId) => userId !== viewerId)
@@ -77,8 +74,8 @@ export default {
     const data = {
       teamId,
       notificationIds: notifications.map(({id}) => id),
-      removedSuggestedActionIds,
-      teamTemplateIds
+      teamTemplateIds,
+      removedSuggestedActionIds
     }
     publish(SubscriptionChannel.TEAM, teamId, 'ArchiveTeamPayload', data, subOptions)
 
