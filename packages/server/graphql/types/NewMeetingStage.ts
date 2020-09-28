@@ -27,6 +27,7 @@ import NewMeetingPhase from './NewMeetingPhase'
 import NewMeetingPhaseTypeEnum from './NewMeetingPhaseTypeEnum'
 import RetroDiscussStage from './RetroDiscussStage'
 import UpdatesStage from './UpdatesStage'
+import EstimateStage from './EstimateStage'
 
 /*
  * Each meeting has many phases.
@@ -157,8 +158,11 @@ const NewMeetingStage = new GraphQLInterfaceType({
       [UPDATES]: UpdatesStage,
       [FIRST_CALL]: GenericMeetingStage,
       [AGENDA_ITEMS]: AgendaItemsStage,
-      [LAST_CALL]: GenericMeetingStage
+      [LAST_CALL]: GenericMeetingStage,
+      SCOPE: GenericMeetingStage,
+      ESTIMATE: EstimateStage
     }
+
     return resolveTypeLookup[phaseType]
   }
 })

@@ -67,7 +67,7 @@ const moveToOrg = async (teamId: string, orgId: string, authToken: any) => {
       )
       .update({orgId}) as unknown) as Notification[],
     templates: r
-      .table('ReflectTemplate')
+      .table('MeetingTemplate')
       .getAll(currentOrgId, {index: 'orgId'})
       .update({
         orgId

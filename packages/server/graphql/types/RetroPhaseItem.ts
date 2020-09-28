@@ -22,7 +22,7 @@ const RetroPhaseItem = new GraphQLObjectType<any, GQLContext>({
       type: new GraphQLNonNull(ReflectTemplate),
       description: 'The template that this prompt belongs to',
       resolve: ({templateId}, _args, {dataLoader}) => {
-        return dataLoader.get('reflectTemplates').load(templateId)
+        return dataLoader.get('meetingTemplates').load(templateId)
       }
     },
     title: {

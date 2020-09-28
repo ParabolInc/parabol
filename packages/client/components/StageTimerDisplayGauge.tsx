@@ -1,11 +1,11 @@
-import React from 'react'
 import styled from '@emotion/styled'
-import {countdown} from '../../utils/date/relativeDate'
-import {PALETTE} from '../../styles/paletteV2'
-import useRefreshInterval from '../../hooks/useRefreshInterval'
-import useBreakpoint from '../../hooks/useBreakpoint'
-import {DECELERATE, fadeIn} from '../../styles/animation'
-import {Breakpoint} from '../../types/constEnums'
+import React from 'react'
+import useBreakpoint from '../hooks/useBreakpoint'
+import useRefreshInterval from '../hooks/useRefreshInterval'
+import {DECELERATE, fadeIn} from '../styles/animation'
+import {PALETTE} from '../styles/paletteV2'
+import {Breakpoint} from '../types/constEnums'
+import {countdown} from '../utils/date/relativeDate'
 
 interface Props {
   endTime: string

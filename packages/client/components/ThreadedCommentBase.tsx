@@ -29,7 +29,11 @@ const BodyCol = styled('div')({
   display: 'flex',
   flexDirection: 'column',
   paddingBottom: 8,
-  width: '100%'
+  width: 'calc(100% - 56px)'
+})
+
+const EditorWrapper = styled('div')({
+  paddingRight: 16
 })
 
 interface Props {
@@ -136,17 +140,19 @@ const ThreadedCommentBase = (props: Props) => {
           onReply={onReply}
         />
         {isActive && (
-          <CommentEditor
-            dataCy={`${dataCy}`}
-            editorRef={editorRef}
-            teamId={teamId}
-            editorState={editorState}
-            setEditorState={setEditorState}
-            onBlur={onSubmit}
-            onSubmit={onSubmit}
-            readOnly={!isEditing}
-            placeholder={'Edit your comment'}
-          />
+          <EditorWrapper>
+            <CommentEditor
+              dataCy={`${dataCy}`}
+              editorRef={editorRef}
+              teamId={teamId}
+              editorState={editorState}
+              setEditorState={setEditorState}
+              onBlur={onSubmit}
+              onSubmit={onSubmit}
+              readOnly={!isEditing}
+              placeholder={'Edit your comment'}
+            />
+          </EditorWrapper>
         )}
         {isActive && (
           <ThreadedCommentFooter

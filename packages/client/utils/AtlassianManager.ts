@@ -114,6 +114,42 @@ interface JiraError {
   }
 }
 
+type JiraRenderedFields = any
+type JiraIssueProperties = any
+type JiraIssueNames = any
+type JiraIssueSchema = any
+type JiraIssueTransition = any
+type JiraOperations = any
+type JiraIssueUpdateMetadata = any
+type JiraPageOfChangelogs = any
+type JiraVersionedRepresentations = any
+type JiraIncludedFields = any
+interface JiraIssueFields {
+  description: any
+  summary: string
+  // assignee: string
+}
+
+
+interface JiraIssueBean {
+  expand: string
+  id: string
+  self: string
+  key: string
+  renderedFields: JiraRenderedFields
+  properties: JiraIssueProperties
+  names: JiraIssueNames
+  schema: JiraIssueSchema
+  transitions: JiraIssueTransition[]
+  operations: JiraOperations
+  editmeta: JiraIssueUpdateMetadata
+  changelog: JiraPageOfChangelogs
+  versionedRepresentations: JiraVersionedRepresentations
+  fieldsToInclude: JiraIncludedFields
+  fields: JiraIssueFields
+
+}
+
 export default abstract class AtlassianManager {
   abstract fetch: any
   static SCOPE = 'read:jira-user read:jira-work write:jira-work offline_access'
@@ -236,5 +272,8 @@ export default abstract class AtlassianManager {
       | JiraCreateIssueResponse
       | AtlassianError
       | JiraError
+  }
+  async getIssue(cloudId: string, issueKey: string) {
+    return this.get(`https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/issue/${issueKey}?fields=summary,description`) as AtlassianError | JiraError | JiraIssueBean
   }
 }

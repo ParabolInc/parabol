@@ -1,7 +1,9 @@
 {
   "extends": "./tsconfig.json",
   "include": [
+    "database/types/*",
     "database/migrations/*",
+    "graphql/queries",
     "email/**/*",
     "segmentFns/*",
     "utils/*"

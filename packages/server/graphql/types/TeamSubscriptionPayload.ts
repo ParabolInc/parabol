@@ -11,6 +11,7 @@ import ArchiveTeamPayload from './ArchiveTeamPayload'
 import DenyPushInvitationPayload from './DenyPushInvitationPayload'
 import DowngradeToPersonalPayload from './DowngradeToPersonalPayload'
 import EndNewMeetingPayload from './EndNewMeetingPayload'
+import {EndSprintPokerSuccess} from './EndSprintPokerPayload'
 import MoveReflectTemplatePromptPayload from './MoveReflectTemplatePromptPayload'
 import NavigateMeetingPayload from './NavigateMeetingPayload'
 import PromoteToTeamLeadPayload from './PromoteToTeamLeadPayload'
@@ -32,11 +33,13 @@ import SelectRetroTemplatePayload from './SelectRetroTemplatePayload'
 import SetCheckInEnabledPayload from './SetCheckInEnabledPayload'
 import SetSlackNotificationPayload from './SetSlackNotificationPayload'
 import StartNewMeetingPayload from './StartNewMeetingPayload'
+import {StartSprintPokerSuccess} from './StartSprintPokerPayload'
 import UpdateAgendaItemPayload from './UpdateAgendaItemPayload'
 import UpdateCreditCardPayload from './UpdateCreditCardPayload'
 import UpdateTeamNamePayload from './UpdateTeamNamePayload'
 import UpdateUserProfilePayload from './UpdateUserProfilePayload'
 import UpgradeToProPayload from './UpgradeToProPayload'
+import {PersistJiraSearchQuerySuccess} from './PersistJiraSearchQueryPayload'
 
 const types = [
   AcceptTeamInvitationPayload,
@@ -49,6 +52,7 @@ const types = [
   DenyPushInvitationPayload,
   DowngradeToPersonalPayload,
   EndNewMeetingPayload,
+  EndSprintPokerSuccess,
   NavigateMeetingPayload,
   PushInvitationPayload,
   PromoteToTeamLeadPayload,
@@ -58,6 +62,7 @@ const types = [
   RenameMeetingSuccess,
   SelectRetroTemplatePayload,
   StartNewMeetingPayload,
+  StartSprintPokerSuccess,
   UpdateAgendaItemPayload,
   UpdateCreditCardPayload,
   UpdateTeamNamePayload,
@@ -76,7 +81,8 @@ const types = [
   RenameReflectTemplatePromptPayload,
   SetCheckInEnabledPayload,
   SetSlackNotificationPayload,
-  UpdateUserProfilePayload
+  UpdateUserProfilePayload,
+  PersistJiraSearchQuerySuccess
 ]
 
 export default graphQLSubscriptionType('TeamSubscriptionPayload', types)

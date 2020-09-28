@@ -158,7 +158,6 @@ const initDemoTeamMember = ({id: userId, preferredName, picture}, idx) => {
     __typename: 'TeamMember',
     email: 'you@parabol.co',
     id: teamMemberId,
-    checkInOrder: idx,
     teamMemberId,
     isLead: idx === 0,
     isSelf: idx === 0,
@@ -253,6 +252,7 @@ const initPhases = (teamMembers) => {
       phaseType: REFLECT,
       focusedPromptId: null,
       meetingId: RetroDemo.MEETING_ID,
+      teamId: demoTeamId,
       reflectPrompts: [
         {
           id: 'startId',
@@ -371,7 +371,7 @@ const initNewMeeting = (organization, teamMembers, meetingMembers) => {
     viewerMeetingMember,
     reflectionGroups: [] as any[],
     votesRemaining: teamMembers.length * 5,
-    phases: initPhases(teamMembers),
+    phases: initPhases(teamMembers) as any[],
     summarySentAt: null,
     totalVotes: MeetingSettingsThreshold.RETROSPECTIVE_TOTAL_VOTES_DEFAULT,
     maxVotesPerGroup: MeetingSettingsThreshold.RETROSPECTIVE_MAX_VOTES_PER_GROUP_DEFAULT,
@@ -398,17 +398,21 @@ const initDB = (botScript) => {
     user: users[idx]
   }))
   users.forEach((user, idx) => {
-    ; (user as any).teamMember = teamMembers[idx]
+    ;(user as any).teamMember = teamMembers[idx]
   })
   const org = initDemoOrg()
   const newMeeting = initNewMeeting(org, teamMembers, meetingMembers)
   const team = initDemoTeam(org, teamMembers, newMeeting)
   teamMembers.forEach((teamMember) => {
-    ; (teamMember as any).team = team
+    ;(teamMember as any).team = team
   })
   team.meetingSettings.team = team as any
+  newMeeting.commentCount = 0
+  newMeeting.reflectionCount = 0
+  newMeeting.taskCount = 0
   newMeeting.team = team as any
   newMeeting.teamId = team.id
+  newMeeting.topicCount = 0
   newMeeting.settings = team.meetingSettings as any
   return {
     meetingMembers,

@@ -1,10 +1,12 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useRef, RefObject} from 'react'
 import {createFragmentContainer} from 'react-relay'
+import {DiscussionThread_viewer} from '~/__generated__/DiscussionThread_viewer.graphql'
 import {useCoverable} from '~/hooks/useControlBarCovers'
 import {Breakpoint, DiscussionThreadEnum, MeetingControlBarEnum} from '~/types/constEnums'
-import {DiscussionThread_viewer} from '~/__generated__/DiscussionThread_viewer.graphql'
+
+import styled from '@emotion/styled'
+
 import {Elevation} from '../styles/elevation'
 import makeMinWidthMediaQuery from '../utils/makeMinWidthMediaQuery'
 import DiscussionThreadInput from './DiscussionThreadInput'
@@ -16,6 +18,7 @@ const Wrapper = styled('div')<{isExpanded: boolean}>(({isExpanded}) => ({
   boxShadow: Elevation.DISCUSSION_THREAD,
   display: 'flex',
   flexDirection: 'column',
+  justifyContent: 'space-between',
   height: '100%',
   overflow: 'hidden',
   width: 'calc(100% - 16px)',
@@ -27,17 +30,18 @@ const Wrapper = styled('div')<{isExpanded: boolean}>(({isExpanded}) => ({
 
 interface Props {
   meetingContentRef: RefObject<HTMLDivElement>
+  threadSourceId: string
   viewer: DiscussionThread_viewer
 }
 
 const DiscussionThread = (props: Props) => {
-  const {meetingContentRef, viewer} = props
-
+  const {meetingContentRef, threadSourceId, viewer} = props
   const meeting = viewer.meeting!
   const {endedAt, replyingToCommentId, threadSource} = meeting
-  const {thread} = threadSource!
-
-  const threadSourceId = threadSource!.id!
+  const thread = threadSource?.thread
+  const commentors = threadSource?.commentors
+  const preferredNames =
+    (commentors && commentors.map((commentor) => commentor.preferredName)) || null
   const edges = thread?.edges ?? [] // should never happen, but Terry reported it in demo. likely relay error
   const threadables = edges.map(({node}) => node)
   const getMaxSortOrder = () => {
@@ -55,6 +59,7 @@ const DiscussionThread = (props: Props) => {
         dataCy='discuss-thread-list'
         threadSourceId={threadSourceId}
         meeting={meeting}
+        preferredNames={preferredNames}
         threadables={threadables}
         ref={listRef}
         editorRef={editorRef}
@@ -87,6 +92,7 @@ graphql`
     }
   }
 `
+
 export default createFragmentContainer(DiscussionThread, {
   viewer: graphql`
     fragment DiscussionThread_viewer on User {
@@ -100,11 +106,19 @@ export default createFragmentContainer(DiscussionThread, {
         ... on RetrospectiveMeeting {
           threadSource: reflectionGroup(reflectionGroupId: $threadSourceId) {
             ...DiscussionThread_threadSource @relay(mask: false)
+            commentors {
+              userId
+              preferredName
+            }
           }
         }
         ... on ActionMeeting {
           threadSource: agendaItem(agendaItemId: $threadSourceId) {
             ...DiscussionThread_threadSource @relay(mask: false)
+            commentors {
+              userId
+              preferredName
+            }
           }
         }
       }

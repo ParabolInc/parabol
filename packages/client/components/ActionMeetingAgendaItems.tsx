@@ -1,23 +1,25 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useRef} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {ActionMeetingAgendaItems_meeting} from '~/__generated__/ActionMeetingAgendaItems_meeting.graphql'
+import useBreakpoint from '~/hooks/useBreakpoint'
+
+import styled from '@emotion/styled'
+
 import EditorHelpModalContainer from '../containers/EditorHelpModalContainer/EditorHelpModalContainer'
 import MeetingCopy from '../modules/meeting/components/MeetingCopy/MeetingCopy'
 import MeetingPhaseHeading from '../modules/meeting/components/MeetingPhaseHeading/MeetingPhaseHeading'
+import {Breakpoint} from '../types/constEnums'
 import {NewMeetingPhaseTypeEnum} from '../types/graphql'
 import {phaseLabelLookup} from '../utils/meetings/lookups'
 import {ActionMeetingPhaseProps} from './ActionMeeting'
 import Avatar from './Avatar/Avatar'
+import DiscussionThreadRoot from './DiscussionThreadRoot'
 import MeetingContent from './MeetingContent'
 import MeetingHeaderAndPhase from './MeetingHeaderAndPhase'
 import MeetingTopBar from './MeetingTopBar'
 import PhaseHeaderTitle from './PhaseHeaderTitle'
 import PhaseWrapper from './PhaseWrapper'
-import useBreakpoint from '~/hooks/useBreakpoint'
-import {Breakpoint} from '../types/constEnums'
-import DiscussionThreadRoot from './DiscussionThreadRoot'
 
 interface Props extends ActionMeetingPhaseProps {
   meeting: ActionMeetingAgendaItems_meeting
@@ -53,17 +55,14 @@ const ThreadColumn = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
 
 const ActionMeetingAgendaItems = (props: Props) => {
   const {avatarGroup, toggleSidebar, meeting} = props
-  const {showSidebar, team, id: meetingId, endedAt, localStage} = meeting
-  const {agendaItems} = team
-  const {agendaItemId} = localStage
+  const {showSidebar, id: meetingId, endedAt, localStage} = meeting
+  const {agendaItem, agendaItemId} = localStage
   const isDesktop = useBreakpoint(Breakpoint.SINGLE_REFLECTION_COLUMN)
   const meetingContentRef = useRef<HTMLDivElement>(null)
-  const agendaItem = agendaItems.find((item) => item.id === agendaItemId!)
   // optimistic updater could remove the agenda item
   if (!agendaItem) return null
   const {content, teamMember} = agendaItem
   const {picture, preferredName} = teamMember
-
   return (
     <MeetingContent ref={meetingContentRef}>
       <MeetingHeaderAndPhase hideBottomBar={!!endedAt}>
@@ -99,6 +98,13 @@ const ActionMeetingAgendaItems = (props: Props) => {
 graphql`
   fragment ActionMeetingAgendaItemsStage on AgendaItemsStage {
     agendaItemId
+    agendaItem {
+      content
+      teamMember {
+        picture
+        preferredName
+      }
+    }
   }
 `
 
@@ -109,24 +115,13 @@ export default createFragmentContainer(ActionMeetingAgendaItems, {
       showSidebar
       endedAt
       facilitatorUserId
-      localStage {
-        ...ActionMeetingAgendaItemsStage @relay(mask: false)
-      }
       phases {
         stages {
           ...ActionMeetingAgendaItemsStage @relay(mask: false)
         }
       }
-      team {
-        id
-        agendaItems {
-          id
-          content
-          teamMember {
-            picture
-            preferredName
-          }
-        }
+      localStage {
+        ...ActionMeetingAgendaItemsStage @relay(mask: false)
       }
     }
   `

@@ -12,6 +12,13 @@ extend type ActionMeeting {
   showSidebar: Boolean!
 }
 
+extend type PokerMeeting {
+  localPhase: NewMeetingPhase!
+  localStage: NewMeetingStage!
+  showSidebar: Boolean!
+  jiraSearchQuery: String
+}
+
 extend type RetrospectiveMeeting {
   isAnonymousComment: Boolean
   isViewerDragInProgress: Boolean

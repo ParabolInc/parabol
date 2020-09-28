@@ -1,12 +1,12 @@
-import React from 'react'
 import styled from '@emotion/styled'
-import {MeetingTypeEnum} from '../types/graphql'
+import React from 'react'
+import useBreakpoint from '../hooks/useBreakpoint'
 import {PALETTE} from '../styles/paletteV2'
-import Icon from './Icon'
-import FloatingActionButton from './FloatingActionButton'
 import {ICON_SIZE} from '../styles/typographyV2'
 import {Breakpoint, NewMeeting} from '../types/constEnums'
-import useBreakpoint from '../hooks/useBreakpoint'
+import {MeetingTypeEnum} from '../types/graphql'
+import FloatingActionButton from './FloatingActionButton'
+import Icon from './Icon'
 
 interface Props {
   meetingType: MeetingTypeEnum
@@ -38,8 +38,9 @@ const MeetingTitle = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
 }))
 
 const TITLES = {
-  [MeetingTypeEnum.retrospective]: 'Retro Meeting',
-  [MeetingTypeEnum.action]: 'Check-in Meeting'
+  retrospective: 'Retro Meeting',
+  action: 'Check-in Meeting',
+  poker: 'Sprint Poker'
 }
 
 const NewMeetingMeetingSelector = (props: Props) => {

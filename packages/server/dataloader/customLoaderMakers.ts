@@ -12,7 +12,7 @@ import normalizeRethinkDbResults from './normalizeRethinkDbResults'
 import ProxiedCache from './ProxiedCache'
 import RethinkDataLoader from './RethinkDataLoader'
 
-type AccessTokenKey = {teamId: string; userId: string}
+type TeamUserKey = {teamId: string; userId: string}
 export interface JiraRemoteProjectKey {
   accessToken: string
   cloudId: string
@@ -192,7 +192,7 @@ export const userTasks = (parent: RethinkDataLoader) => {
 
 export const freshAtlassianAccessToken = (parent: RethinkDataLoader) => {
   const userAuthLoader = parent.get('atlassianAuthByUserId')
-  return new DataLoader<AccessTokenKey, string, string>(
+  return new DataLoader<TeamUserKey, string, string>(
     async (keys) => {
       return promiseAllPartial(
         keys.map(async ({userId, teamId}) => {

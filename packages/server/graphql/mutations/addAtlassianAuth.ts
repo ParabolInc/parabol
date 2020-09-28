@@ -91,7 +91,7 @@ export default {
         service: 'Atlassian'
       }
     })
-    const data = {atlassianAuthId}
+    const data = {atlassianAuthId, teamId, userId: viewerId}
     publish(SubscriptionChannel.TEAM, teamId, 'AddAtlassianAuthPayload', data, subOptions)
     return data
   }

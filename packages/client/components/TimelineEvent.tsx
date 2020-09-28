@@ -1,8 +1,8 @@
+import graphql from 'babel-plugin-relay/macro'
 import React, {lazy} from 'react'
 import {createFragmentContainer} from 'react-relay'
-import graphql from 'babel-plugin-relay/macro'
-import DelayUnmount from './DelayUnmount'
 import {TimelineEvent_timelineEvent} from '../__generated__/TimelineEvent_timelineEvent.graphql'
+import DelayUnmount from './DelayUnmount'
 
 interface Props {
   timelineEvent: TimelineEvent_timelineEvent
@@ -18,6 +18,11 @@ const lookup = {
   TimelineEventCompletedRetroMeeting: lazy(() =>
     import(
       /* webpackChunkName: 'TimelineEventCompletedRetroMeeting' */ './TimelineEventCompletedRetroMeeting'
+    )
+  ),
+  TimelineEventPokerComplete: lazy(() =>
+    import(
+      /* webpackChunkName: 'TimelineEventPokerComplete' */ './TimelineEventPokerComplete'
     )
   ),
   TimelineEventCompletedActionMeeting: lazy(() =>
@@ -47,6 +52,7 @@ export default createFragmentContainer(TimelineEvent, {
       ...TimelineEventTeamCreated_timelineEvent
       ...TimelineEventCompletedRetroMeeting_timelineEvent
       ...TimelineEventCompletedActionMeeting_timelineEvent
+      ...TimelineEventPokerComplete_timelineEvent
       __typename
     }
   `

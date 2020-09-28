@@ -12,6 +12,8 @@ interface Input {
 
 export default class MeetingAction extends Meeting {
   taskCount?: number
+  commentCount?: number
+  agendaItemCount?: number
   constructor(input: Input) {
     const {teamId, meetingCount, name, phases, facilitatorUserId} = input
     super({
