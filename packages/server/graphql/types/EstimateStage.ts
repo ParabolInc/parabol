@@ -1,28 +1,29 @@
-import {GraphQLFloat, GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql'
-import {GQLContext} from '../graphql'
+import {GraphQLFloat, GraphQLID, GraphQLInterfaceType, GraphQLNonNull} from 'graphql'
 import NewMeetingStage, {newMeetingStageFields} from './NewMeetingStage'
-import Task from './Task'
+import TaskServiceEnum from './TaskServiceEnum'
 
-const EstimateStage = new GraphQLObjectType<any, GQLContext, any>({
+export const estimateStageFields = () => ({
+  ...newMeetingStageFields(),
+  service: {
+    type: TaskServiceEnum,
+    description: 'The service the task is connected to. If null, it is parabol'
+  },
+  serviceTaskId: {
+    type: GraphQLNonNull(GraphQLID),
+    description: 'The stringified JSON used to fetch the task used by the service'
+  },
+  sortOrder: {
+    type: new GraphQLNonNull(GraphQLFloat),
+    description: 'The sort order for reprioritizing discussion topics'
+  }
+})
+
+const EstimateStage = new GraphQLInterfaceType({
   name: 'EstimateStage',
   description: 'The stage where the team estimates & discusses a single task',
   interfaces: () => [NewMeetingStage],
   fields: () => ({
-    ...newMeetingStageFields(),
-    taskId: {
-      type: GraphQLNonNull(GraphQLID)
-    },
-    task: {
-      type: GraphQLNonNull(Task),
-      description: 'the task that is being assigned story points',
-      resolve: ({taskId}, _args, {dataLoader}) => {
-        return dataLoader.get('tasks').load(taskId)
-      }
-    },
-    sortOrder: {
-      type: new GraphQLNonNull(GraphQLFloat),
-      description: 'The sort order for reprioritizing discussion topics'
-    }
+    ...estimateStageFields()
   })
 })
 

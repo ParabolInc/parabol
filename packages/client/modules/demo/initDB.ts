@@ -252,6 +252,7 @@ const initPhases = (teamMembers) => {
       phaseType: REFLECT,
       focusedPromptId: null,
       meetingId: RetroDemo.MEETING_ID,
+      teamId: demoTeamId,
       reflectPrompts: [
         {
           id: 'startId',
@@ -370,7 +371,7 @@ const initNewMeeting = (organization, teamMembers, meetingMembers) => {
     viewerMeetingMember,
     reflectionGroups: [] as any[],
     votesRemaining: teamMembers.length * 5,
-    phases: initPhases(teamMembers),
+    phases: initPhases(teamMembers) as any[],
     summarySentAt: null,
     totalVotes: MeetingSettingsThreshold.RETROSPECTIVE_TOTAL_VOTES_DEFAULT,
     maxVotesPerGroup: MeetingSettingsThreshold.RETROSPECTIVE_MAX_VOTES_PER_GROUP_DEFAULT,

@@ -27,7 +27,7 @@ import {TaskConnection} from './Task'
 import Team from './Team'
 import User from './User'
 
-const TeamMember = new GraphQLObjectType<any, GQLContext, any>({
+const TeamMember = new GraphQLObjectType<any, GQLContext>({
   name: 'TeamMember',
   description: 'A member of a team',
   fields: () => ({

@@ -37,7 +37,7 @@ import TierEnum from './TierEnum'
 import {TimelineEventConnection} from './TimelineEvent'
 import UserFeatureFlags from './UserFeatureFlags'
 
-const User = new GraphQLObjectType<any, GQLContext, any>({
+const User = new GraphQLObjectType<any, GQLContext>({
   name: 'User',
   description: 'The user account profile',
   fields: () => ({
