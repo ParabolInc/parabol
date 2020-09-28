@@ -26,6 +26,18 @@ graphql`
           id
           meetingId
           viewerVoteCount
+          tasks {
+            id
+          }
+          thread(first: 1000) @connection(key: "DiscussionThread_thread") {
+            edges {
+              node {
+                id
+                threadId
+                threadSource
+              }
+            }
+          }
         }
       }
     }
@@ -51,6 +63,8 @@ const ResetMeetingToStageMutation: SimpleMutation<TResetMeetingToStageMutation> 
     mutation,
     variables,
     updater: (store) => {
+      const payload = store.getRootField('resetMeetingToStage')
+      console.log('payload:', payload)
       const {meetingId} = variables
       const meeting = store.get(meetingId)
       if (!meeting) return
