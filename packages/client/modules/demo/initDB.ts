@@ -95,7 +95,6 @@ const initDemoUser = ({preferredName, email, picture}: BaseUser, idx: number) =>
     viewerId: id,
     atlassianAuth: {isActive: true, accessToken: '123'},
     githubAuth: {isActive: true, accessToken: '123'},
-    connectedSockets: [`socket${idx}`],
     createdAt: now,
     email,
     featureFlags: {
@@ -106,7 +105,7 @@ const initDemoUser = ({preferredName, email, picture}: BaseUser, idx: number) =>
     facilitatorName: preferredName,
     inactive: false,
     isConnected: true,
-    lastSeenAtURL: `/meet/${RetroDemo.MEETING_ID}`,
+    lastSeenAtURLs: [`/meet/${RetroDemo.MEETING_ID}`],
     lastSeenAt: now,
     rasterPicture: picture,
     picture: picture,

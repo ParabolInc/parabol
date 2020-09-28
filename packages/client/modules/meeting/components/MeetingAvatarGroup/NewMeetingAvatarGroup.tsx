@@ -93,13 +93,13 @@ const NewMeetingAvatarGroup = (props: Props) => {
   const isDesktop = useBreakpoint(Breakpoint.SINGLE_REFLECTION_COLUMN)
 
   // all connected teamMembers except self
-  // TODO: filter by team members who are actually viewing “this” meeting view
   const connectedTeamMembers = useMemo(() => {
     return teamMembers
       .filter((teamMember) => {
         return (
           teamMember.userId === viewerId ||
-          (teamMember.user.lastSeenAtURL === `/meet/${meetingId}` && teamMember.user.isConnected)
+          (teamMember.user.lastSeenAtURLs?.includes(`/meet/${meetingId}`) &&
+            teamMember.user.isConnected)
         )
       })
       .sort((a, b) =>
@@ -173,7 +173,7 @@ export default createFragmentContainer(NewMeetingAvatarGroup, {
           user {
             isConnected
             lastSeenAt
-            lastSeenAtURL
+            lastSeenAtURLs
           }
           userId
           ...NewMeetingAvatar_teamMember

@@ -7,7 +7,6 @@ import {useUserTaskFilters} from '~/utils/useUserTaskFilters'
 import UserTasksHeader from '~/modules/userDashboard/components/UserTasksHeader/UserTasksHeader'
 import ErrorComponent from './ErrorComponent/ErrorComponent'
 
-// Changing the name here requires a change to getLastSeenAtURL.ts
 const query = graphql`
   query MyDashboardTasksRootQuery($after: DateTime, $userIds: [ID!], $teamIds: [ID!]) {
     viewer {

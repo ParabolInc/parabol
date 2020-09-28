@@ -676,11 +676,6 @@ export interface IUser {
   company: ICompany | null;
 
   /**
-   * The socketIds that the user is currently connected with
-   */
-  connectedSockets: Array<string | null> | null;
-
-  /**
    * The timestamp the user was created
    */
   createdAt: any | null;
@@ -789,14 +784,14 @@ export interface IUser {
   rasterPicture: any;
 
   /**
-   * The last time the user connected via websocket or navigated to a common area
+   * The last day the user connected via websocket or navigated to a common area
    */
   lastSeenAt: any | null;
 
   /**
-   * The path the user was last seen at (rough heuristic)
+   * The paths that the user is currently visiting. This is null if the user is not currently online. A URL can also be null if the socket is not in a meeting, e.g. on the timeline.
    */
-  lastSeenAtURL: string | null;
+  lastSeenAtURLs: Array<string | null> | null;
 
   /**
    * The meeting member associated with this user, if a meeting is currently in progress
