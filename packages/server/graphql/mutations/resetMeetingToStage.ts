@@ -1,7 +1,8 @@
 import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql'
-import {NewMeetingPhase, NewMeetingStage} from 'parabol-client/types/graphql'
+import GenericMeetingPhase from '../../database/types/GenericMeetingPhase'
+import GenericMeetingStage from '../../database/types/GenericMeetingStage'
 import getRethink from '../../database/rethinkDriver'
-import createNewMeetingPhases from './helpers/createNewMeetingPhases'
+import createNewMeetingPhases, {primePhases} from './helpers/createNewMeetingPhases'
 
 const resetMeetingToStage = {
   type: GraphQLNonNull(GraphQLBoolean),
@@ -47,27 +48,33 @@ const resetMeetingToStage = {
       dataLoader
     )
     let shouldResetStage = false
-    const newPhases = [] as NewMeetingPhase[]
+    let resetToPhaseIndex = -1
+    const newPhases = [] as GenericMeetingPhase[]
     for (const [phaseIndex, phase] of meeting.phases.entries()) {
       if (!phase.stages) continue
-      const newStages = [] as NewMeetingStage[]
+      const newStages = [] as GenericMeetingStage[]
       for (const [stageIndex, stage] of phase.stages.entries()) {
-        if (stage.id === stageId) shouldResetStage = true
+        if (stage.id === stageId) {
+          shouldResetStage = true
+          resetToPhaseIndex = phaseIndex
+        }
         if (!shouldResetStage) {
-          newStages.push(stage as NewMeetingStage)
+          newStages.push(stage)
           continue
         }
         const resettedStage = createdPhases[phaseIndex]?.stages[stageIndex]
         if (!resettedStage) continue
-        newStages.push((Object.assign(resettedStage, {id: stage.id}) as unknown) as NewMeetingStage)
+        newStages.push(Object.assign(resettedStage, {id: stage.id}))
       }
       phase.stages = newStages
-      newPhases.push(phase as NewMeetingPhase)
+      newPhases.push(phase)
     }
+    primePhases(newPhases, resetToPhaseIndex)
+
     await r
       .table('NewMeeting')
       .get(meetingId)
-      .update({phases: newPhases as any})
+      .update({phases: newPhases})
       .run()
     // TODO: reset votes remaining
     await (r.table('MeetingMember').getAll(meetingId, {index: 'meetingId'}) as any)
