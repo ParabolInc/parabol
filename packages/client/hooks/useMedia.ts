@@ -14,7 +14,7 @@ const useMedia = ({mediaRef, mediaSource}: useMediaSignature) => {
       const el = mediaRef.current!
       if (el.srcObject !== stream) el.srcObject = stream! // conditional is required to remove flickering video on update
     }
-  })
+  }, [mediaRef, mediaSource])
   if (!mediaSource) return false
   if ((mediaSource as ProducerState).paused) return false
   if ((mediaSource as ConsumerState).locallyPaused) return false
