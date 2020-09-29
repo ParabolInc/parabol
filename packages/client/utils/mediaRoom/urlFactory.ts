@@ -12,7 +12,7 @@ export function getSignalingServerUrl({
   peerId,
   authToken,
   teamId
-}: getSignalingServerUrlSignature) {
+}: getSignalingServerUrlSignature): string {
   const url = new URL(`wss://${signalingServerHostname}`)
   url.port = String(process.env.PROTOO_LISTEN_PORT)
   url.searchParams.append('roomId', roomId)
