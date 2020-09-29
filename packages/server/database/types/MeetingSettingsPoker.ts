@@ -1,6 +1,6 @@
 import {MeetingTypeEnum, NewMeetingPhaseTypeEnum} from 'parabol-client/types/graphql'
 import MeetingSettings from './MeetingSettings'
-import JiraSearchQuery from './JiraSearchQuery2'
+import JiraSearchQuery from './JiraSearchQuery'
 
 interface Input {
   teamId: string

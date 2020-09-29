@@ -1,7 +1,7 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getRethink from '../../database/rethinkDriver'
-import JiraSearchQuery from '../../database/types/JiraSearchQuery2'
+import JiraSearchQuery from '../../database/types/JiraSearchQuery'
 import MeetingSettingsPoker from '../../database/types/MeetingSettingsPoker'
 import {isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
