@@ -33,13 +33,6 @@ const TaskFooterTeamAssigneeMenu = (props: Props) => {
       : teams
     return filteredTeams.filter((team) => team.id !== teamId)
   }, [teamIds, userIds])
-  console.log('assignableTeams -> teams', teams)
-  console.log('assignableTeams -> assignableTeams', assignableTeams)
-  const taskTeamIdx = useMemo(() => assignableTeams.map(({id}) => id).indexOf(teamId) + 1, [
-    teamId,
-    assignableTeams
-  ])
-  console.log('TaskFooterTeamAssigneeMenu -> taskTeamIdx', taskTeamIdx)
 
   const atmosphere = useAtmosphere()
   const {submitting, submitMutation, onError, onCompleted} = useMutationProps()
@@ -51,11 +44,7 @@ const TaskFooterTeamAssigneeMenu = (props: Props) => {
   }
 
   return (
-    <Menu
-      {...menuProps}
-      defaultActiveIdx={taskTeamIdx}
-      ariaLabel={'Assign this task to another team'}
-    >
+    <Menu {...menuProps} ariaLabel={'Assign this task to another team'}>
       <DropdownMenuLabel>Move to:</DropdownMenuLabel>
       {assignableTeams.map((team) => {
         return <MenuItem key={team.id} label={team.name} onClick={handleTaskUpdate(team)} />
