@@ -27,7 +27,7 @@ const useMediaRoom = (roomId: string, teamId: string) => {
   useEffect(() => {
     initMediaRoom(authToken, teamId, roomId, peerId, disposable, dispatch)
     return () => {
-      disposable.current && disposable.current()
+      disposable.current?.()
       disposable.current = null
     }
   }, [roomId, peerId])
