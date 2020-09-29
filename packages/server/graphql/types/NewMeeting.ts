@@ -86,10 +86,11 @@ export const newMeetingFields = () => ({
   phases: {
     type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(NewMeetingPhase))),
     description: 'The phases the meeting will go through, including all phase-specific state',
-    resolve: ({phases, id: meetingId}) => {
+    resolve: ({phases, id: meetingId, teamId}) => {
       return phases.map((phase) => ({
         ...phase,
-        meetingId
+        meetingId,
+        teamId
       }))
     }
   },

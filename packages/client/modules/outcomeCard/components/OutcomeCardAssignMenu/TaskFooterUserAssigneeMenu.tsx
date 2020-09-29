@@ -13,6 +13,7 @@ import {MenuProps} from '../../../../hooks/useMenu'
 import UpdateTaskMutation from '../../../../mutations/UpdateTaskMutation'
 import avatarUser from '../../../../styles/theme/images/avatar-user.svg'
 import {AreaEnum} from '../../../../types/graphql'
+import {useUserTaskFilters} from '~/utils/useUserTaskFilters'
 
 interface Props {
   area: AreaEnum
@@ -23,11 +24,12 @@ interface Props {
 
 const TaskFooterUserAssigneeMenu = (props: Props) => {
   const {area, menuProps, task, viewer} = props
+  const {userIds} = useUserTaskFilters(viewer.id)
   const {userId, id: taskId} = task
   const {team} = viewer
   const {teamMembers} = team || {teamMembers: []}
   const assignees = useMemo(
-    () => teamMembers.filter((teamMember) => teamMember.userId !== userId),
+    () => teamMembers.filter((teamMember) => teamMember.userId !== userId && (!userIds || !userIds.includes(teamMember.userId))),
     [userId, teamMembers]
   )
   const atmosphere = useAtmosphere()
@@ -62,6 +64,7 @@ const TaskFooterUserAssigneeMenu = (props: Props) => {
 export default createFragmentContainer(TaskFooterUserAssigneeMenu, {
   viewer: graphql`
     fragment TaskFooterUserAssigneeMenu_viewer on User {
+      id
       team(teamId: $teamId) {
         teamId: id
         teamMembers(sortBy: "preferredName") {

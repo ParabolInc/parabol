@@ -1,30 +1,28 @@
-import {GitHubProviderRow_viewer} from '../../../../__generated__/GitHubProviderRow_viewer.graphql'
-import React from 'react'
 import styled from '@emotion/styled'
-import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
+import React from 'react'
+import {createFragmentContainer} from 'react-relay'
 import {RouteComponentProps, withRouter} from 'react-router-dom'
 import FlatButton from '../../../../components/FlatButton'
 import GitHubConfigMenu from '../../../../components/GitHubConfigMenu'
 import GitHubProviderLogo from '../../../../components/GitHubProviderLogo'
 import GitHubSVG from '../../../../components/GitHubSVG'
 import Icon from '../../../../components/Icon'
-import ProviderCard from '../../../../components/ProviderCard'
 import ProviderActions from '../../../../components/ProviderActions'
+import ProviderCard from '../../../../components/ProviderCard'
 import RowInfo from '../../../../components/Row/RowInfo'
 import RowInfoCopy from '../../../../components/Row/RowInfoCopy'
-import withAtmosphere, {
-  WithAtmosphereProps
-} from '../../../../decorators/withAtmosphere/withAtmosphere'
+import withAtmosphere, {WithAtmosphereProps} from '../../../../decorators/withAtmosphere/withAtmosphere'
+import useBreakpoint from '../../../../hooks/useBreakpoint'
 import {MenuPosition} from '../../../../hooks/useCoords'
 import useMenu from '../../../../hooks/useMenu'
+import {MenuMutationProps} from '../../../../hooks/useMutationProps'
 import {PALETTE} from '../../../../styles/paletteV2'
 import {ICON_SIZE} from '../../../../styles/typographyV2'
 import {Breakpoint, Providers} from '../../../../types/constEnums'
-import withMutationProps, {WithMutationProps} from '../../../../utils/relay/withMutationProps'
-import {MenuMutationProps} from '../../../../hooks/useMutationProps'
 import GitHubClientManager from '../../../../utils/GitHubClientManager'
-import useBreakpoint from '../../../../hooks/useBreakpoint'
+import withMutationProps, {WithMutationProps} from '../../../../utils/relay/withMutationProps'
+import {GitHubProviderRow_viewer} from '../../../../__generated__/GitHubProviderRow_viewer.graphql'
 
 const StyledButton = styled(FlatButton)({
   borderColor: PALETTE.BORDER_LIGHT,
@@ -79,8 +77,9 @@ const ProviderName = styled('div')({
 const GitHubProviderRow = (props: Props) => {
   const {atmosphere, viewer, teamId, submitting, submitMutation, onError, onCompleted} = props
   const mutationProps = {submitting, submitMutation, onError, onCompleted} as MenuMutationProps
-  const {githubAuth} = viewer
-  const accessToken = (githubAuth && githubAuth.accessToken) || undefined
+  const {teamMember} = viewer
+  const githubAuth = teamMember?.githubAuth
+  const accessToken = githubAuth?.accessToken ?? undefined
   const openOAuth = () => {
     GitHubClientManager.openOAuth(atmosphere, teamId, mutationProps)
   }
@@ -118,8 +117,8 @@ const GitHubProviderRow = (props: Props) => {
 }
 
 graphql`
-  fragment GitHubProviderRowViewer on User {
-    githubAuth(teamId: $teamId) {
+  fragment GitHubProviderRowTeamMember on TeamMember {
+    githubAuth {
       accessToken
       login
     }
@@ -131,7 +130,9 @@ export default createFragmentContainer(
   {
     viewer: graphql`
       fragment GitHubProviderRow_viewer on User {
-        ...GitHubProviderRowViewer @relay(mask: false)
+        teamMember(teamId: $teamId) {
+          ...GitHubProviderRowTeamMember @relay(mask: false)
+        }
       }
     `
   }

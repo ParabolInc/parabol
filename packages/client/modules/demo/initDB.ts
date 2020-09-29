@@ -95,7 +95,6 @@ const initDemoUser = ({preferredName, email, picture}: BaseUser, idx: number) =>
     viewerId: id,
     atlassianAuth: {isActive: true, accessToken: '123'},
     githubAuth: {isActive: true, accessToken: '123'},
-    connectedSockets: [`socket${idx}`],
     createdAt: now,
     email,
     featureFlags: {
@@ -106,7 +105,7 @@ const initDemoUser = ({preferredName, email, picture}: BaseUser, idx: number) =>
     facilitatorName: preferredName,
     inactive: false,
     isConnected: true,
-    lastSeenAtURL: `/meet/${RetroDemo.MEETING_ID}`,
+    lastSeenAtURLs: [`/meet/${RetroDemo.MEETING_ID}`],
     lastSeenAt: now,
     rasterPicture: picture,
     picture: picture,
@@ -252,6 +251,7 @@ const initPhases = (teamMembers) => {
       phaseType: REFLECT,
       focusedPromptId: null,
       meetingId: RetroDemo.MEETING_ID,
+      teamId: demoTeamId,
       reflectPrompts: [
         {
           id: 'startId',
@@ -370,7 +370,7 @@ const initNewMeeting = (organization, teamMembers, meetingMembers) => {
     viewerMeetingMember,
     reflectionGroups: [] as any[],
     votesRemaining: teamMembers.length * 5,
-    phases: initPhases(teamMembers),
+    phases: initPhases(teamMembers) as any[],
     summarySentAt: null,
     totalVotes: MeetingSettingsThreshold.RETROSPECTIVE_TOTAL_VOTES_DEFAULT,
     maxVotesPerGroup: MeetingSettingsThreshold.RETROSPECTIVE_MAX_VOTES_PER_GROUP_DEFAULT,

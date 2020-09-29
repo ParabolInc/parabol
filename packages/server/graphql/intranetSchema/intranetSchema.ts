@@ -35,50 +35,52 @@ import signups from './queries/signups'
 import user from './queries/user'
 import users from './queries/users'
 
-const query = new GraphQLObjectType<any, GQLContext, any>({
+const query = new GraphQLObjectType<any, GQLContext>({
   name: 'Query',
-  fields: () => ({
-    company,
-    dailyPulse,
-    pingActionTick,
-    suCountTiersForUser,
-    suUserCount,
-    suProOrgInfo,
-    suOrgCount,
-    user,
-    users,
-    logins,
-    signups
-  })
+  fields: () =>
+    ({
+      company,
+      dailyPulse,
+      pingActionTick,
+      suCountTiersForUser,
+      suUserCount,
+      suProOrgInfo,
+      suOrgCount,
+      user,
+      users,
+      logins,
+      signups
+    } as any)
 })
 
-const mutation = new GraphQLObjectType<any, GQLContext, any>({
+const mutation = new GraphQLObjectType<any, GQLContext>({
   name: 'Mutation',
-  fields: () => ({
-    addNewFeature,
-    autopauseUsers,
-    backupOrganization,
-    connectSocket,
-    profileCPU,
-    disconnectSocket,
-    draftEnterpriseInvoice,
-    dumpHeap,
-    endOldMeetings,
-    flagConversionModal,
-    flagOverLimit,
-    loginSAML,
-    enableSAMLForDomain,
-    runScheduledJobs,
-    sendBatchNotificationEmails,
-    sendUpcomingInvoiceEmails,
-    setOrganizationDomain,
-    stripeCreateInvoice,
-    stripeFailPayment,
-    stripeSucceedPayment,
-    stripeUpdateCreditCard,
-    stripeUpdateInvoiceItem,
-    stripeInvoiceFinalized
-  })
+  fields: () =>
+    ({
+      addNewFeature,
+      autopauseUsers,
+      backupOrganization,
+      connectSocket,
+      profileCPU,
+      disconnectSocket,
+      draftEnterpriseInvoice,
+      dumpHeap,
+      endOldMeetings,
+      flagConversionModal,
+      flagOverLimit,
+      loginSAML,
+      enableSAMLForDomain,
+      runScheduledJobs,
+      sendBatchNotificationEmails,
+      sendUpcomingInvoiceEmails,
+      setOrganizationDomain,
+      stripeCreateInvoice,
+      stripeFailPayment,
+      stripeSucceedPayment,
+      stripeUpdateCreditCard,
+      stripeUpdateInvoiceItem,
+      stripeInvoiceFinalized
+    } as any)
 })
 
 export default new GraphQLSchema({query, mutation})

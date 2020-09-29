@@ -134,7 +134,7 @@ export default {
         .coerceTo('array') as unknown) as ITeamMember[]
     }).run()
     // TODO: get users in the same location
-    const usersToIgnore = await getUsersToIgnore(viewerId, teamId, dataLoader)
+    const usersToIgnore = await getUsersToIgnore(viewerId, teamId)
     if (!newTask) return standardError(new Error('Already updated task'), {userId: viewerId})
 
     // send task updated messages
