@@ -70,7 +70,6 @@ export interface DeviceInfo {
 
 export default class MediaRoom {
   authToken: string | null
-  teamId: string
   roomId: string
   peerId: string
   dispatch: Dispatch<ReducerAction<typeof reducerMediaRoom>>
@@ -93,20 +92,17 @@ export default class MediaRoom {
 
   constructor({
     authToken,
-    teamId,
     roomId,
     peerId,
     dispatch
   }: {
     authToken: string | null
-    teamId: string
     roomId: string
     peerId: string
     dispatch: Dispatch<ReducerAction<typeof reducerMediaRoom>>
   }) {
     this.closed = false
     this.authToken = authToken
-    this.teamId = teamId
     this.roomId = roomId
     this.peerId = peerId
     this.dispatch = dispatch
@@ -127,14 +123,13 @@ export default class MediaRoom {
   }
 
   async connect() {
-    const {roomId, peerId, authToken, teamId} = this
+    const {roomId, peerId, authToken} = this
     if (!authToken) throw new Error('Missing auth token')
-    if (!(roomId || peerId || teamId)) throw new Error('Missing roomId, peerId, or teamId')
+    if (!(roomId || peerId)) throw new Error('Missing roomId, peerId')
     const endpoint = getSignalingServerUrl({
       roomId,
       peerId,
-      authToken,
-      teamId
+      authToken
     })
     logger.info('Connecting...', endpoint)
     const transport = new protoo.WebSocketTransport(endpoint)

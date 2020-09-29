@@ -77,11 +77,10 @@ async function runWebSocketServer() {
   // validate auth token
   websocketServer.on('connectionrequest', async (info, accept, reject) => {
     const requestUrl = url.parse(info.request.url, true)
-    const {roomId, peerId, authToken: encodedAuthToken, teamId} = requestUrl.query
+    const {roomId, peerId, authToken: encodedAuthToken} = requestUrl.query
     const missingParams = [] as string[]
     if (!roomId) missingParams.push('roomId')
     if (!peerId) missingParams.push('peerId')
-    if (!teamId) missingParams.push('teamId')
     if (!encodedAuthToken) missingParams.push('authToken')
     if (missingParams.length > 0) {
       reject(400, 'Connection request without required field(s):', missingParams)
@@ -99,10 +98,12 @@ async function runWebSocketServer() {
       reject(401, 'Your authentication has expired')
       return
     }
+    const [teamId] = (roomId as string).split(':')
     if (!isTeamMember(decodedAuthToken, teamId as string)) {
       reject(403, "Oops! You're not authorized to be here")
       return
     }
+
     /* queue to avoid race condition where we create same room twice */
     queue.push(async () => {
       const room = await getOrCreateRoom(roomId as string)

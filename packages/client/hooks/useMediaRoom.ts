@@ -19,18 +19,18 @@ const initialState = {
   consumers: {}
 }
 
-const useMediaRoom = (roomId: string, teamId: string) => {
+const useMediaRoom = (meetingId: string, teamId: string) => {
   const atmosphere = useAtmosphere()
-  const {viewerId: peerId, authToken} = atmosphere
+  const {viewerId, authToken} = atmosphere
   const [state, dispatch] = useReducer(reducerMediaRoom, initialState)
   const disposable = useRef<(() => void) | null>()
   useEffect(() => {
-    initMediaRoom(authToken, teamId, roomId, peerId, disposable, dispatch)
+    initMediaRoom(authToken, teamId, meetingId, viewerId, disposable, dispatch)
     return () => {
       disposable.current?.()
       disposable.current = null
     }
-  }, [roomId, peerId])
+  }, [meetingId, teamId, viewerId])
   return state
 }
 
