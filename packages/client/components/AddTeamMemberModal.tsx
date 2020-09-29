@@ -5,9 +5,7 @@ import useAtmosphere from '~/hooks/useAtmosphere'
 import useMutationProps from '~/hooks/useMutationProps'
 import {PALETTE} from '~/styles/paletteV2'
 import {ICON_SIZE} from '~/styles/typographyV2'
-
 import styled from '@emotion/styled'
-
 import {AddTeamMemberModal_teamMembers} from '../__generated__/AddTeamMemberModal_teamMembers.graphql'
 import useBreakpoint from '../hooks/useBreakpoint'
 import InviteToTeamMutation from '../mutations/InviteToTeamMutation'
@@ -19,7 +17,6 @@ import DialogContent from './DialogContent'
 import DialogTitle from './DialogTitle'
 import Icon from './Icon'
 import BasicTextArea from './InputField/BasicTextArea'
-import LabelHeading from './LabelHeading/LabelHeading'
 import MassInvitationTokenLinkRoot from './MassInvitationTokenLinkRoot'
 import PrimaryButton from './PrimaryButton'
 
@@ -78,13 +75,20 @@ const ButtonGroup = styled('div')({
   justifyContent: 'flex-end'
 })
 
-const StyledLabelHeading = styled(LabelHeading)({
+const StyledHeading = styled('h2')({
   alignItems: 'center',
   display: 'flex',
   fontSize: 15,
   lineHeight: '21px',
-  padding: '0 0 16px',
-  textTransform: 'none'
+  margin: 0,
+  padding: '0 0 3px'
+})
+
+const StyledTip = styled('p')({
+  fontSize: 13,
+  lineHeight: '16px',
+  margin: 0,
+  padding: '0 0 16px'
 })
 
 const ErrorWrapper = styled('div')<{isWarning: boolean}>(({isWarning}) => ({
@@ -158,7 +162,7 @@ const AddTeamMemberModal = (props: Props) => {
         onError(
           new Error(
             `${alreadyInvitedEmails[0]} and ${alreadyInvitedEmails.length -
-              1} other emails are already on the team`
+            1} other emails are already on the team`
           )
         )
       }
@@ -210,13 +214,15 @@ const AddTeamMemberModal = (props: Props) => {
   const title = invitees.length <= 1 ? 'Send Invitation' : `Send ${invitees.length} Invitations`
   return (
     <StyledDialogContainer>
-      <StyledDialogTitle>Invite to Team</StyledDialogTitle>
+      <StyledDialogTitle>{'Invite to Team'}</StyledDialogTitle>
       <StyledDialogContent>
         <Fields>
-          <StyledLabelHeading>{'Share this link'}</StyledLabelHeading>
+          <StyledHeading>{'Share this link'}</StyledHeading>
+          <StyledTip>{'This link expires in 24 hours.'}</StyledTip>
           <MassInvitationTokenLinkRoot meetingId={meetingId} teamId={teamId} />
 
-          <StyledLabelHeading>{'Or, send invites by email'}</StyledLabelHeading>
+          <StyledHeading>{'Or, send invites by email'}</StyledHeading>
+          <StyledTip>{'Email invitations expire in 7 days.'}</StyledTip>
           <BasicTextArea
             autoFocus
             name='rawInvitees'

@@ -29,6 +29,9 @@ export const newMeetingPhaseFields = () => ({
   meetingId: {
     type: new GraphQLNonNull(GraphQLID)
   },
+  teamId: {
+    type: new GraphQLNonNull(GraphQLID)
+  },
   phaseType: {
     type: new GraphQLNonNull(NewMeetingPhaseTypeEnum),
     description: 'The type of phase'

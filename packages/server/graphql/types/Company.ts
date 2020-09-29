@@ -7,7 +7,7 @@ import GraphQLISO8601Type from './GraphQLISO8601Type'
 import Organization from './Organization'
 import TierEnum from './TierEnum'
 
-const Company = new GraphQLObjectType<any, GQLContext, any>({
+const Company = new GraphQLObjectType<any, GQLContext>({
   name: 'Company',
   description: 'A grouping of organizations. Automatically grouped by top level domain of each',
   fields: () => ({

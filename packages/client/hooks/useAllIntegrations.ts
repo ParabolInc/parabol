@@ -1,15 +1,15 @@
-import {useAllIntegrationsQueryResponse} from '../__generated__/useAllIntegrationsQuery.graphql'
-import {useEffect, useMemo, useRef, useState} from 'react'
 import graphql from 'babel-plugin-relay/macro'
-import Atmosphere from '../Atmosphere'
-import useFilteredItems from './useFilteredItems'
+import {useEffect, useMemo, useRef, useState} from 'react'
 import {fetchQuery} from 'relay-runtime'
+import Atmosphere from '../Atmosphere'
+import {useAllIntegrationsQueryResponse} from '../__generated__/useAllIntegrationsQuery.graphql'
+import useFilteredItems from './useFilteredItems'
 
 const gqlQuery = graphql`
   query useAllIntegrationsQuery($teamId: ID!, $userId: ID!) {
     viewer {
-      userOnTeam(userId: $userId) {
-        allAvailableIntegrations(teamId: $teamId) {
+      teamMember(userId: $userId, teamId: $teamId) {
+        allAvailableIntegrations {
           ...TaskFooterIntegrateMenuListItem @relay(mask: false)
         }
       }
@@ -37,14 +37,14 @@ const useAllIntegrations = (
         teamId,
         userId
       })) as useAllIntegrationsQueryResponse
-      if (!viewer || !viewer.userOnTeam) {
+      if (!viewer || !viewer.teamMember) {
         if (isMountedRef.current) {
           setStatus('error')
         }
         return
       }
-      const userOnTeam = viewer.userOnTeam
-      const {allAvailableIntegrations} = userOnTeam
+      const {teamMember} = viewer
+      const {allAvailableIntegrations} = teamMember
       if (isMountedRef.current) {
         setFetchedItems(allAvailableIntegrations)
         setStatus('loaded')

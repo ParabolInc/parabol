@@ -1,5 +1,6 @@
 import {MeetingTypeEnum, NewMeetingPhaseTypeEnum} from 'parabol-client/types/graphql'
 import MeetingSettings from './MeetingSettings'
+import JiraSearchQuery from './JiraSearchQuery'
 
 interface Input {
   teamId: string
@@ -17,6 +18,7 @@ const phaseTypes = [
 
 export default class MeetingSettingsPoker extends MeetingSettings {
   selectedTemplateId: string
+  jiraSearchQueries?: JiraSearchQuery[]
   constructor(input: Input) {
     const {teamId, id, selectedTemplateId} = input
     super({teamId, id, meetingType: MeetingTypeEnum.poker, phaseTypes})

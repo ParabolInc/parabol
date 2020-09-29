@@ -8,13 +8,20 @@ import publish from '../../../utils/publish'
 import segmentIo from '../../../utils/segmentIo'
 import {GQLContext} from '../../graphql'
 import User from '../../types/User'
-
+import getRedis from '../../../utils/getRedis'
+import getListeningUserIds, {RedisCommand} from '../../../utils/getListeningUserIds'
+export interface UserPresence {
+  lastSeenAtURL: string | null
+  serverId: string
+  socketId: string
+}
 export default {
   name: 'ConnectSocket',
   description: 'a server-side mutation called when a client connects',
   type: GraphQLNonNull(User),
   resolve: async (_source, _args, {authToken, dataLoader, socketId}: GQLContext) => {
     const r = await getRethink()
+    const redis = getRedis()
     const now = new Date()
 
     // AUTH
@@ -25,19 +32,7 @@ export default {
 
     // RESOLUTION
     const user = await db.read('User', userId)
-    const reqlUpdater = (user) => ({
-      inactive: false,
-      updatedAt: now,
-      lastSeenAt: now,
-      lastSeenAtURL: null,
-      connectedSockets: user('connectedSockets')
-        .default([])
-        .append(socketId)
-    })
-    await db.write('User', userId, reqlUpdater)
-    const {inactive, tms} = user
-    const connectedSockets = user.connectedSockets || []
-    connectedSockets.push(socketId)
+    const {inactive, lastSeenAt, tms} = user
 
     // no need to wait for this, it's just for billing
     if (inactive) {
@@ -49,27 +44,30 @@ export default {
       adjustUserCount(userId, orgIds, InvoiceItemType.UNPAUSE_USER).catch(console.log)
       // TODO: re-identify
     }
+    const datesAreOnSameDay = now.toDateString() === lastSeenAt?.toDateString()
+    if (!datesAreOnSameDay) {
+      await db.write('User', userId, {inactive: false, lastSeenAt: now})
+    }
+    const socketCount = await redis.rpush(
+      `presence:${userId}`,
+      JSON.stringify({lastSeenAtURL: null, serverId: 'server1', socketId} as UserPresence)
+    )
 
-    if (connectedSockets.length === 1) {
+    // If this is the first socket, tell everyone they're online
+    if (socketCount === 1) {
+      const listeningUserIds = await getListeningUserIds(RedisCommand.ADD, tms, userId)
       const operationId = dataLoader.share()
       const subOptions = {mutatorId: socketId, operationId}
-      const listeningUserIds = (await r
-        .table('TeamMember')
-        .getAll(r.args(tms), {index: 'teamId'})
-        .filter({isNotRemoved: true})('userId')
-        .distinct()
-        .run()) as string[]
-
-      // Tell everyone this user is now online
       listeningUserIds.forEach((onlineUserId) => {
         publish(SubscriptionChannel.NOTIFICATION, onlineUserId, 'User', user, subOptions)
       })
     }
+
     segmentIo.track({
       userId,
       event: 'Connect WebSocket',
       properties: {
-        connectedSockets,
+        socketCount,
         socketId,
         tms
       }

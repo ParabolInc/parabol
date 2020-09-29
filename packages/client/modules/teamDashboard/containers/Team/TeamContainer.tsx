@@ -60,7 +60,6 @@ const TeamContainer = (props: Props) => {
             <Route path={`${match.path}/settings`} component={TeamSettings} />
             <Route
               path={`${match.path}/archive`}
-              // render={(p) => <ArchivedTasks {...p} team={team} />}
               render={(p) => <ArchivedTasks {...p} team={team} returnToTeamId={teamId} teamIds={[teamId]} />}
             />
           </Switch>
