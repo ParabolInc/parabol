@@ -14,7 +14,7 @@
   },
   "main": "index.js",
   "scripts": {
-    "start": "cypress run",
+    "start": "cypress run --reporter junit --reporter-options mochaFile=results/test-output.xml",
     "precommit": "lint-staged"
   },
   "devDependencies": {
