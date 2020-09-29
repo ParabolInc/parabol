@@ -21,16 +21,12 @@ const UserColumnsContainer = (props: Props) => {
     const nodes = tasks.edges.map(({node}) => node)
     const dashSearchNodes = dashSearch
       ? nodes.filter((task) => {
-          return task.contentText && task.contentText.match(dashSearchRegex)
-        })
+        return task.contentText && task.contentText.match(dashSearchRegex)
+      })
       : nodes
 
-    const teamFilteredNodes = dashSearchNodes.filter((node) =>
-      teamIds ? teamIds.includes(node.teamId) : true
-    )
-    const teamMemberFilteredNodes = teamFilteredNodes.filter((node) =>
-      userIds && node.userId ? userIds.includes(node.userId) : true
-    )
+    const teamFilteredNodes = dashSearchNodes.filter((node) => teamIds ? teamIds.includes(node.teamId) : true)
+    const teamMemberFilteredNodes = teamFilteredNodes.filter((node) => userIds && node.userId ? userIds.includes(node.userId) : true)
 
     return teamMemberFilteredNodes.map((node) => ({
       ...node
@@ -43,25 +39,14 @@ const UserColumnsContainer = (props: Props) => {
 
     // iff 1 user is selected, we show team names at the footer; otherwise we show task owner name
     const areaForTaskCard = userIds && userIds.length === 1 ? AreaEnum.userDash : AreaEnum.teamDash
-    const filteredTeams = userIds
-      ? teams.filter(({teamMembers, id: teamId}) => {
-          const inTeam = !!teamMembers.find(({userId}) => userIds.includes(userId))
-          const teamFiltered = teamIds ? teamIds.includes(teamId) : true
-          return teamFiltered && inTeam
-        })
-      : teamIds
-      ? teams.filter(({id}) => teamIds.includes(id))
-      : teams
+    const filteredTeams = userIds ? teams.filter(({teamMembers, id: teamId}) => {
+      const inTeam = !!teamMembers.find(({userId}) => userIds.includes(userId))
+      const teamFiltered = teamIds ? teamIds.includes(teamId) : true
+      return teamFiltered && inTeam
+    }) : (teamIds ? teams.filter(({id}) => teamIds.includes(id)) : teams)
     const myTeamMemberId = toTeamMemberId(filteredTeams[0].id, userIds ? userIds[0] : viewer.id)
 
-    return (
-      <TaskColumns
-        area={areaForTaskCard}
-        tasks={filteredTasks}
-        myTeamMemberId={myTeamMemberId}
-        teams={filteredTeams}
-      />
-    )
+    return <TaskColumns area={areaForTaskCard} tasks={filteredTasks} myTeamMemberId={myTeamMemberId} teams={filteredTeams} />
   }
 }
 
