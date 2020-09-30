@@ -3,10 +3,12 @@ import protoo from 'protoo-server'
 import config from '../config'
 import events from 'events'
 import {RtpCodecCapability} from 'mediasoup/lib/types'
-import Logger from './Logger'
+import LoggerFactory from 'parabol-client/utils/mediaRoom/Logger'
 
-const logger = new Logger('Room')
-
+let logger
+;(async () => {
+  logger = await LoggerFactory()
+})()
 interface handlePeerRequestSignature {
   peer: protoo.Peer
   request: any

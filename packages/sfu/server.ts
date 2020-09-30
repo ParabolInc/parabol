@@ -9,10 +9,13 @@ import {AwaitQueue} from 'awaitqueue'
 import getVerifiedAuthToken from 'parabol-server/utils/getVerifiedAuthToken'
 import {isAuthenticated, isTeamMember} from 'parabol-server/utils/authorization'
 import checkBlacklistJWT from 'parabol-server/utils/checkBlacklistJWT'
-import Logger from './lib/Logger'
+import LoggerFactory from 'parabol-client/utils/mediaRoom/Logger'
 import {deStructureRoomId} from 'parabol-client/utils/mediaRoom/initMediaRoom'
 
-const logger = new Logger()
+let logger
+;(async () => {
+  logger = await LoggerFactory()
+})()
 const mediasoupWorkers = []
 const rooms = new Map<string, Room>()
 const queue = new AwaitQueue()

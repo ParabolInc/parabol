@@ -4,9 +4,12 @@ import {Device, types as mediasoupTypes, parseScalabilityMode} from 'mediasoup-c
 import {Dispatch, ReducerAction} from 'react'
 import reducerMediaRoom from './reducerMediaRoom'
 import {PeerState, RoomStateEnum} from './reducerMediaRoom'
-import Logger from './Logger'
+import LoggerFactory from './Logger'
 
-const logger = new Logger()
+let logger
+;(async () => {
+  logger = await LoggerFactory()
+})()
 
 const VIDEO_CONSTRAINS = {
   qvga: {

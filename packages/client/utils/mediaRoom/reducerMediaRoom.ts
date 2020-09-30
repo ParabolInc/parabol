@@ -1,10 +1,13 @@
 import MediaRoom from './MediaRoom'
 import {DeviceInfo} from './MediaRoom'
 import {types as mediasoupTypes} from 'mediasoup-client'
-import Logger from './Logger'
+import LoggerFactory from './Logger'
 import {deStructurePeerId} from './initMediaRoom'
 
-const logger = new Logger('Reducer')
+let logger
+;(async () => {
+  logger = await LoggerFactory()
+})()
 
 export const getConsumersForPeer = (
   userId: string,

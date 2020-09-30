@@ -26,7 +26,6 @@
   },
   "dependencies": {
     "awaitqueue": "^2.1.1",
-    "debug": "^4.1.1",
     "express": "^4.17.1",
     "mediasoup": "^3.6.21",
     "protoo-server": "^4.0.4",
