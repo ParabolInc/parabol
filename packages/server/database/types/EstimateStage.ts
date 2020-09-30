@@ -2,18 +2,21 @@ import {DISCUSS} from 'parabol-client/utils/constants'
 import GenericMeetingStage from './GenericMeetingStage'
 
 interface Input {
-  taskId: string
+  service: string
+  serviceTaskId: string
   sortOrder: number
   durations: number[] | undefined
 }
 
 export default class EstimateStage extends GenericMeetingStage {
-  taskId: string
+  service: string
+  serviceTaskId: string
   sortOrder: number
   constructor(input: Input) {
     super(DISCUSS, input.durations)
-    const {taskId, sortOrder} = input
-    this.taskId = taskId
+    const {service, serviceTaskId, sortOrder} = input
+    this.service = service
+    this.serviceTaskId = serviceTaskId
     this.sortOrder = sortOrder
   }
 }

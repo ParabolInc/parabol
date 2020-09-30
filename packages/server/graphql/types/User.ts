@@ -7,7 +7,7 @@ import {
   GraphQLObjectType,
   GraphQLString
 } from 'graphql'
-import {GITHUB} from 'parabol-client/utils/constants'
+import {TierEnum as TierEnumType} from 'parabol-client/types/graphql'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import {OrgUserRole} from '../../../client/types/graphql'
 import getRethink from '../../database/rethinkDriver'
@@ -20,11 +20,8 @@ import {GQLContext} from '../graphql'
 import invoiceDetails from '../queries/invoiceDetails'
 import invoices from '../queries/invoices'
 import organization from '../queries/organization'
-import suggestedIntegrations from '../queries/suggestedIntegrations'
-import AtlassianAuth from './AtlassianAuth'
 import AuthIdentity from './AuthIdentity'
 import Company from './Company'
-import GitHubAuth from './GitHubAuth'
 import GraphQLEmailType from './GraphQLEmailType'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import GraphQLURLType from './GraphQLURLType'
@@ -37,11 +34,11 @@ import Team from './Team'
 import TeamInvitationPayload from './TeamInvitationPayload'
 import TeamMember from './TeamMember'
 import TierEnum from './TierEnum'
-import {TierEnum as TierEnumType} from 'parabol-client/types/graphql'
 import {TimelineEventConnection} from './TimelineEvent'
 import UserFeatureFlags from './UserFeatureFlags'
+import getRedis from '../../utils/getRedis'
 
-const User = new GraphQLObjectType<any, GQLContext, any>({
+const User = new GraphQLObjectType<any, GQLContext>({
   name: 'User',
   description: 'The user account profile',
   fields: () => ({
@@ -49,25 +46,8 @@ const User = new GraphQLObjectType<any, GQLContext, any>({
       type: new GraphQLNonNull(GraphQLID),
       description: 'The userId provided by us'
     },
-    allAvailableIntegrations: require('../queries/allAvailableIntegrations').default,
     archivedTasks: require('../queries/archivedTasks').default,
     archivedTasksCount: require('../queries/archivedTasksCount').default,
-    atlassianAuth: {
-      type: AtlassianAuth,
-      description:
-        'The auth for the user. access token is null if not viewer. Use isActive to check for presence',
-      args: {
-        teamId: {
-          type: new GraphQLNonNull(GraphQLID),
-          description: 'The teamId for the atlassian auth token'
-        }
-      },
-      resolve: async ({id: userId}, {teamId}, {authToken, dataLoader}) => {
-        if (!isTeamMember(authToken, teamId)) return null
-        const auths = await dataLoader.get('atlassianAuthByUserId').load(userId)
-        return auths.find((auth) => auth.teamId === teamId)
-      }
-    },
     company: {
       type: Company,
       description: 'The assumed company this organizaiton belongs to',
@@ -76,10 +56,6 @@ const User = new GraphQLObjectType<any, GQLContext, any>({
         if (!domain || !isCompanyDomain(domain) || !isSuperUser(authToken)) return null
         return {id: domain}
       }
-    },
-    connectedSockets: {
-      type: new GraphQLList(GraphQLID),
-      description: 'The socketIds that the user is currently connected with'
     },
     createdAt: {
       type: GraphQLISO8601Type,
@@ -99,28 +75,6 @@ const User = new GraphQLObjectType<any, GQLContext, any>({
           flagObj[flag] = true
         })
         return flagObj
-      }
-    },
-    githubAuth: {
-      type: GitHubAuth,
-      description:
-        'The auth for the user. access token is null if not viewer. Use isActive to check for presence',
-      args: {
-        teamId: {
-          type: new GraphQLNonNull(GraphQLID),
-          description: 'The teamId for the auth object'
-        }
-      },
-      resolve: async ({id: userId}, {teamId}, {authToken}) => {
-        if (!isTeamMember(authToken, teamId)) return null
-        const r = await getRethink()
-        return r
-          .table('Provider')
-          .getAll(teamId, {index: 'teamId'})
-          .filter({service: GITHUB, isActive: true, userId})
-          .nth(0)
-          .default(null)
-          .run()
       }
     },
     identities: {
@@ -148,9 +102,10 @@ const User = new GraphQLObjectType<any, GQLContext, any>({
     isConnected: {
       type: GraphQLBoolean,
       description: 'true if the user is currently online',
-      resolve: (source) => {
-        const {connectedSockets} = source
-        return Array.isArray(connectedSockets) && connectedSockets.length > 0
+      resolve: async ({id: userId}) => {
+        const redis = getRedis()
+        const connectedSocketsCount = await redis.llen(`presence:${userId}`)
+        return connectedSocketsCount > 0
       }
     },
     isPatientZero: {
@@ -306,11 +261,18 @@ const User = new GraphQLObjectType<any, GQLContext, any>({
     },
     lastSeenAt: {
       type: GraphQLISO8601Type,
-      description: 'The last time the user connected via websocket or navigated to a common area'
+      description: 'The last day the user connected via websocket or navigated to a common area'
     },
-    lastSeenAtURL: {
-      type: GraphQLString,
-      description: 'The path the user was last seen at (rough heuristic)'
+    lastSeenAtURLs: {
+      type: new GraphQLList(GraphQLString),
+      description:
+        'The paths that the user is currently visiting. This is null if the user is not currently online. A URL can also be null if the socket is not in a meeting, e.g. on the timeline.',
+      resolve: async ({id: userId}) => {
+        const redis = getRedis()
+        const userPresence = await redis.lrange(`presence:${userId}`, 0, -1)
+        if (!userPresence || userPresence.length === 0) return null
+        return userPresence.map((socket) => JSON.parse(socket).lastSeenAtURL)
+      }
     },
     meetingMember: {
       type: MeetingMember,
@@ -322,7 +284,7 @@ const User = new GraphQLObjectType<any, GQLContext, any>({
           description: 'The specific meeting ID'
         }
       },
-      resolve: async ({userId}, {meetingId}, {dataLoader}) => {
+      resolve: async ({id: userId}, {meetingId}, {dataLoader}) => {
         const meetingMemberId = toTeamMemberId(meetingId, userId)
         return meetingId ? dataLoader.get('meetingMembers').load(meetingMemberId) : undefined
       }
@@ -410,7 +372,6 @@ const User = new GraphQLObjectType<any, GQLContext, any>({
         return source.overLimitCopy
       }
     },
-    suggestedIntegrations,
     tasks: require('../queries/tasks').default,
     team: require('../queries/team').default,
     teamInvitation: {
@@ -466,15 +427,20 @@ const User = new GraphQLObjectType<any, GQLContext, any>({
         teamId: {
           type: new GraphQLNonNull(GraphQLID),
           description: 'The team the user is on'
+        },
+        userId: {
+          type: GraphQLID,
+          description:
+            'If null, defaults to the team member for this user. Else, will grab the team member. Returns null if not on team.'
         }
       },
-      resolve: (_source, {teamId}, {authToken, dataLoader}) => {
-        const viewerId = getUserId(authToken)
+      resolve: ({id}, {teamId, userId}, {authToken, dataLoader}) => {
         if (!isTeamMember(authToken, teamId)) {
-          standardError(new Error('Team not found'), {userId: viewerId})
+          const viewerId = getUserId(authToken)
+          standardError(new Error('Not on team'), {userId: viewerId})
           return null
         }
-        const teamMemberId = toTeamMemberId(teamId, viewerId)
+        const teamMemberId = toTeamMemberId(teamId, userId || id)
         return dataLoader.get('teamMembers').load(teamMemberId)
       }
     },

@@ -6,6 +6,8 @@ import db from '../../../db'
 import {requireSU} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import AddNewFeaturePayload from '../../types/addNewFeaturePayload'
+import getRedis from '../../../utils/getRedis'
+import sendToSentry from '../../../utils/sendToSentry'
 
 const addNewFeature = {
   type: AddNewFeaturePayload,
@@ -22,6 +24,7 @@ const addNewFeature = {
   },
   resolve: async (_source, {copy, url}, {authToken, dataLoader}) => {
     const r = await getRethink()
+    const redis = getRedis()
 
     // AUTH
     requireSU(authToken)
@@ -43,24 +46,31 @@ const addNewFeature = {
       db.writeTable('User', {newFeatureId})
     ])
 
-    const onlineUserIds = await r
-      .table('User')
-      .filter((user) =>
-        user('connectedSockets')
-          .count()
-          .ge(1)
-      )('id')
-      .run()
-    onlineUserIds.forEach((userId) => {
-      publish(
-        SubscriptionChannel.NOTIFICATION,
-        userId,
-        'AddNewFeaturePayload',
-        {newFeature},
-        subOptions
-      )
+    const onlineUserIds = new Set()
+    const stream = redis.scanStream({match: 'presence:*'})
+    stream.on('data', (keys) => {
+      if (!keys?.length) return
+      for (const key of keys) {
+        const userId = key.substring('presence:'.length)
+        if (!onlineUserIds.has(userId)) {
+          onlineUserIds.add(userId)
+          publish(
+            SubscriptionChannel.NOTIFICATION,
+            userId,
+            'AddNewFeaturePayload',
+            {newFeature},
+            subOptions
+          )
+        }
+      }
     })
-    return {newFeature}
+    await new Promise((resolve, reject) => {
+      stream.on('end', resolve)
+      stream.on('error', (e) => {
+        sendToSentry(e)
+        reject(e)
+      })
+    })
   }
 }
 

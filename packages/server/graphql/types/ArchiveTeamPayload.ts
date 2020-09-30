@@ -1,4 +1,4 @@
-import {GraphQLID, GraphQLList, GraphQLObjectType} from 'graphql'
+import {GraphQLID, GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import {getUserId} from '../../utils/authorization'
 import {GQLContext} from '../graphql'
 import {resolveTeam} from '../resolvers'
@@ -29,6 +29,10 @@ const ArchiveTeamPayload = new GraphQLObjectType<any, GQLContext>({
     removedSuggestedActionIds: {
       type: new GraphQLList(GraphQLID),
       description: 'all the suggested actions that never happened'
+    },
+    teamTemplateIds: {
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLID))),
+      description: 'A list of the ids of templates created by a team'
     }
   })
 })

@@ -103,6 +103,6 @@ export default {
       if (isTaskPrivate(task.tags) && task.userId !== viewerId) return false
       return true
     })
-    return connectionFromTasks(filteredTasks)
+    return connectionFromTasks(filteredTasks, first)
   }
 }

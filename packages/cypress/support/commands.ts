@@ -36,7 +36,7 @@ const login = (_overrides = {}) => {
   const exp = toEpochSeconds(now + JWT_LIFESPAN)
   const iat = toEpochSeconds(now)
   const tokenObj = {
-    sub: 'local|wnVeDjF-n',
+    sub: 'local|CfKdrQVeo',
     aud: 'action',
     iss: window.location.origin,
     exp,
@@ -58,9 +58,8 @@ declare global {
       login: () => Chainable
       visitReflect: () => Chainable
       visitPhase: (phase: string, idx?: string) => Chainable<ReturnType<typeof visitPhase>>
-      restoreLocalStorageCache: () => Chainable
-      saveLocalStorageCache: () => Chainable
-      pipe: (el: any) => Chainable
+      restoreLocalStorageCache: () => Chainable<Element>
+      saveLocalStorageCache: () => Chainable<Element>
     }
   }
 }

@@ -1,14 +1,14 @@
-import {AddGitHubAuthMutation as TAddGitHubAuthMutation} from '../__generated__/AddGitHubAuthMutation.graphql'
-import {commitMutation} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
+import {commitMutation} from 'react-relay'
 import {Disposable} from 'relay-runtime'
 import {IAddGitHubAuthOnMutationArguments} from '../types/graphql'
 import {LocalHandlers} from '../types/relayMutations'
+import {AddGitHubAuthMutation as TAddGitHubAuthMutation} from '../__generated__/AddGitHubAuthMutation.graphql'
 
 graphql`
   fragment AddGitHubAuthMutation_team on AddGitHubAuthPayload {
-    user {
-      ...GitHubProviderRow_viewer
+    teamMember {
+      ...GitHubProviderRowTeamMember
       ...TaskFooterIntegrateMenuViewerGitHubAuth
       # after adding, check for new integrations (populates the menu)
       ...TaskFooterIntegrateMenuViewerSuggestedIntegrations

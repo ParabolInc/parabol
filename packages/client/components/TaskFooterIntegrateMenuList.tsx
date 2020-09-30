@@ -1,27 +1,27 @@
+import styled from '@emotion/styled'
+import graphql from 'babel-plugin-relay/macro'
+import React from 'react'
+import {createFragmentContainer} from 'react-relay'
+import useAllIntegrations from '../hooks/useAllIntegrations'
+import useAtmosphere from '../hooks/useAtmosphere'
+import useFilteredItems from '../hooks/useFilteredItems'
+import useForm from '../hooks/useForm'
+import {MenuProps} from '../hooks/useMenu'
+import {MenuMutationProps} from '../hooks/useMutationProps'
+import CreateGitHubIssueMutation from '../mutations/CreateGitHubIssueMutation'
+import CreateJiraIssueMutation from '../mutations/CreateJiraIssueMutation'
+import {PALETTE} from '../styles/paletteV2'
+import {ICON_SIZE} from '../styles/typographyV2'
 import {TaskFooterIntegrateMenuList_suggestedIntegrations} from '../__generated__/TaskFooterIntegrateMenuList_suggestedIntegrations.graphql'
 import {TaskFooterIntegrateMenuList_task} from '../__generated__/TaskFooterIntegrateMenuList_task.graphql'
-import React from 'react'
-import styled from '@emotion/styled'
-import {createFragmentContainer} from 'react-relay'
-import graphql from 'babel-plugin-relay/macro'
-import {ValueOf} from '../types/generics'
 import Icon from './Icon'
 import LoadingComponent from './LoadingComponent/LoadingComponent'
 import Menu from './Menu'
+import MenuItemComponentAvatar from './MenuItemComponentAvatar'
 import MenuItemLabel from './MenuItemLabel'
 import SuggestedIntegrationGitHubMenuItem from './SuggestedIntegrationGitHubMenuItem'
 import SuggestedIntegrationJiraMenuItem from './SuggestedIntegrationJiraMenuItem'
 import TaskFooterIntegrateMenuSearch from './TaskFooterIntegrateMenuSearch'
-import useAllIntegrations from '../hooks/useAllIntegrations'
-import useAtmosphere from '../hooks/useAtmosphere'
-import useFilteredItems from '../hooks/useFilteredItems'
-import {MenuProps} from '../hooks/useMenu'
-import {PALETTE} from '../styles/paletteV2'
-import {ICON_SIZE} from '../styles/typographyV2'
-import {TaskServiceEnum} from '../types/graphql'
-import useForm from '../hooks/useForm'
-import {MenuMutationProps} from '../hooks/useMutationProps'
-import MenuItemComponentAvatar from './MenuItemComponentAvatar'
 
 interface Props {
   menuProps: MenuProps
@@ -58,11 +58,6 @@ const StyledMenuItemIcon = styled(MenuItemComponentAvatar)({
   pointerEvents: 'none',
   top: 4
 })
-
-const serviceToMenuItemLookup = {
-  [TaskServiceEnum.jira]: SuggestedIntegrationJiraMenuItem,
-  [TaskServiceEnum.github]: SuggestedIntegrationGitHubMenuItem
-}
 
 const TaskFooterIntegrateMenu = (props: Props) => {
   const {mutationProps, menuProps, placeholder, suggestedIntegrations, task} = props
@@ -111,19 +106,26 @@ const TaskFooterIntegrateMenu = (props: Props) => {
         null}
       {allItems.slice(0, 10).map((suggestedIntegration) => {
         const {id, service} = suggestedIntegration
-        const ServiceMenuItem = serviceToMenuItemLookup[service] as ValueOf<
-          typeof serviceToMenuItemLookup
-        >
-        if (!ServiceMenuItem) return null
-        return (
-          <ServiceMenuItem
-            {...mutationProps}
-            key={id}
-            query={query}
-            suggestedIntegration={suggestedIntegration}
-            taskId={taskId}
-          />
-        )
+        const {submitMutation, onError, onCompleted} = mutationProps
+        if (service === 'jira') {
+          const {cloudId, projectKey} = suggestedIntegration
+          const onClick = () => {
+            const variables = {cloudId, projectKey, taskId}
+            submitMutation()
+            CreateJiraIssueMutation(atmosphere, variables, {onError, onCompleted})
+          }
+          return <SuggestedIntegrationJiraMenuItem key={id} query={query} suggestedIntegration={suggestedIntegration} onClick={onClick} />
+        }
+        if (service === 'github') {
+          const onClick = () => {
+            const {nameWithOwner} = suggestedIntegration
+            const variables = {nameWithOwner, taskId}
+            submitMutation()
+            CreateGitHubIssueMutation(atmosphere, variables, {onError, onCompleted})
+          }
+          return <SuggestedIntegrationGitHubMenuItem key={id} query={query} suggestedIntegration={suggestedIntegration} onClick={onClick} />
+        }
+        return null
       })}
       {status === 'loading' && (
         <LoadingComponent key='loading' spinnerSize={24} height={24} showAfter={0} />
@@ -138,6 +140,8 @@ graphql`
     service
     ... on SuggestedIntegrationJira {
       projectName
+      projectKey
+      cloudId
     }
     ... on SuggestedIntegrationGitHub {
       nameWithOwner
