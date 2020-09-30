@@ -1,6 +1,6 @@
 import {TaskFooterUserAssigneeMenu_task} from '../../../../__generated__/TaskFooterUserAssigneeMenu_task.graphql'
 import {TaskFooterUserAssigneeMenu_viewer} from '../../../../__generated__/TaskFooterUserAssigneeMenu_viewer.graphql'
-import React, {useMemo} from 'react'
+import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import DropdownMenuLabel from '../../../../components/DropdownMenuLabel'
@@ -13,7 +13,6 @@ import {MenuProps} from '../../../../hooks/useMenu'
 import UpdateTaskMutation from '../../../../mutations/UpdateTaskMutation'
 import avatarUser from '../../../../styles/theme/images/avatar-user.svg'
 import {AreaEnum} from '../../../../types/graphql'
-import {useUserTaskFilters} from '~/utils/useUserTaskFilters'
 
 interface Props {
   area: AreaEnum
@@ -24,14 +23,9 @@ interface Props {
 
 const TaskFooterUserAssigneeMenu = (props: Props) => {
   const {area, menuProps, task, viewer} = props
-  const {userIds} = useUserTaskFilters(viewer.id)
   const {userId, id: taskId} = task
   const {team} = viewer
-  const {teamMembers} = team || {teamMembers: []}
-  const assignees = useMemo(
-    () => teamMembers.filter((teamMember) => teamMember.userId !== userId && (!userIds || !userIds.includes(teamMember.userId))),
-    [userId, teamMembers]
-  )
+  const {teamMembers}: any = team || {teamMembers: []}
   const atmosphere = useAtmosphere()
   if (!team) return null
   const handleTaskUpdate = (newAssignee) => () => {
@@ -43,17 +37,17 @@ const TaskFooterUserAssigneeMenu = (props: Props) => {
   return (
     <Menu ariaLabel={'Assign this task to a teammate'} {...menuProps}>
       <DropdownMenuLabel>Assign to:</DropdownMenuLabel>
-      {assignees.map((assignee) => {
+      {teamMembers.map((teamMember) => {
         return (
           <MenuItem
-            key={assignee.id}
+            key={teamMember.id}
             label={
               <MenuItemLabel>
-                <MenuAvatar alt={assignee.preferredName} src={assignee.picture || avatarUser} />
-                {assignee.preferredName}
+                <MenuAvatar alt={teamMember.preferredName} src={teamMember.picture || avatarUser} />
+                {teamMember.preferredName}
               </MenuItemLabel>
             }
-            onClick={handleTaskUpdate(assignee)}
+            onClick={handleTaskUpdate(teamMember)}
           />
         )
       })}
