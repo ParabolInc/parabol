@@ -12,21 +12,21 @@ describe('userTaskView', () => {
   it('shows default team and team member filter on /me/tasks', () => {
     cy.get('[data-cy=team-filter]').should('contain', 'My teams')
     cy.get('[data-cy=team-filter]').click()
-    cy.get('[data-cy="team-filter-h-CdSRCnT"]').should('contain', 'cypress’s Team')
+    cy.get('[data-cy="team-filter-l6k4LyKnhP"]').should('contain', 'cypress’s Team')
 
     cy.get('[data-cy=team-member-filter]').should('contain', 'cypress')
     cy.get('[data-cy=team-member-filter]').click()
-    cy.get('[data-cy="team-member-filter-local|wnVeDjF-n"]').should('contain', 'cypress')
+    cy.get('[data-cy="team-member-filter-local|CfKdrQVeo"]').should('contain', 'cypress')
   })
 
   it('updates URL when filters are selected', () => {
     cy.get('[data-cy=team-filter]').click()
-    cy.get('[data-cy="team-filter-h-CdSRCnT"]').click()
-    cy.url().should('include', 'teamIds=h-CdSRCnT')
+    cy.get('[data-cy="team-filter-l6k4LyKnhP"]').click()
+    cy.url().should('include', 'teamIds=l6k4LyKnhP')
 
     cy.get('[data-cy=team-member-filter]').click()
-    cy.get('[data-cy="team-member-filter-local|wnVeDjF-n"]').click()
-    cy.url().should('include', 'userIds=local|wnVeDjF-n')
+    cy.get('[data-cy="team-member-filter-local|CfKdrQVeo"]').click()
+    cy.url().should('include', 'userIds=local|CfKdrQVeo')
   })
 
   it('filters tasks by team filter', () => {
@@ -41,19 +41,13 @@ describe('userTaskView', () => {
       cy.wait(1000)
     })
 
-    // Create a new task in the new team
-    cy.get('[data-cy=add-task-Future]').click()
-    cy.get('[data-cy=draggable-task-card-editor]')
-      .type("New Task under cypress's own team")
-      .type('{enter}')
-
     cy.url().then((url) => {
       const regex = /.+\/team\/(.+)/
       const newTeamId = url.replace(regex, '$1')
       cy.visit(`/me/tasks?teamIds=${newTeamId}`)
 
       cy.get('[data-cy=team-filter]').should('contain', `cypress's own team`)
-      cy.get('[data-cy=draggable-task-card-editor]').contains("New Task under cypress's own team")
+      cy.get('[data-cy=draggable-task-card-editor]').should('not.contain', 'This is a task card')
     })
   })
 })
