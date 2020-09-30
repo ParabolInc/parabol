@@ -39,7 +39,7 @@ const RetroGroupPhase = (props: Props) => {
           <PhaseHeaderDescription>{'Drag cards to group by common topics'}</PhaseHeaderDescription>
         </MeetingTopBar>
         <PhaseWrapper>
-          <StageTimerDisplay meeting={meeting} />
+          <StageTimerDisplay meeting={meeting} canUndo={true} />
           <MeetingPhaseWrapper>
             <GroupingKanban meeting={meeting} phaseRef={phaseRef} />
           </MeetingPhaseWrapper>
