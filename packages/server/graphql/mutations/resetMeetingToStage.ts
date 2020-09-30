@@ -97,6 +97,8 @@ const resetMeetingToStage = {
       .get('retroReflectionGroupsByMeetingId')
       .load(meetingId)
     const reflectionGroupIds = reflectionGroups.map((rg) => rg.id)
+    // bc we return the reflection groups cached by data loader in the fragment
+    reflectionGroups.forEach((rg) => (rg.voterIds = []))
 
     await Promise.all([
       r
