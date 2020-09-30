@@ -28,6 +28,7 @@ const UndoablePhaseCompleted = (props: Props) => {
   const {meetingId, resetToStageId} = props
   const atmosphere = useAtmosphere()
   useHotkey('i d i d n t m e a n t o', () => {
+    console.log('didntmean')
     ResetMeetingToStageMutation(atmosphere, {meetingId, stageId: resetToStageId})
   })
   return <Wrapper>Phase Completed</Wrapper>

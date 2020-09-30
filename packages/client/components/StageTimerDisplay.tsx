@@ -9,6 +9,7 @@ import PhaseCompleted from './PhaseCompleted'
 
 interface Props {
   meeting: StageTimerDisplay_meeting
+  canUndo?: boolean
 }
 
 const DisplayRow = styled('div')({
@@ -23,7 +24,7 @@ const DisplayRow = styled('div')({
 })
 
 const StageTimerDisplay = (props: Props) => {
-  const {meeting} = props
+  const {meeting, canUndo} = props
   const {localPhase, localStage} = meeting
   const {localScheduledEndTime, isComplete} = localStage
   const {stages} = localPhase
@@ -35,7 +36,7 @@ const StageTimerDisplay = (props: Props) => {
       ) : null}
       <PhaseCompleted
         isComplete={isPhaseComplete}
-        canUndo={true}
+        canUndo={canUndo}
         meetingId={meeting.id}
         resetToStageId={localStage.id}
       />
