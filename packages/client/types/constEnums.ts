@@ -167,6 +167,11 @@ export const enum MeetingLabels {
   TIMER = 'Timer'
 }
 
+export const enum UserTaskViewFilterLabels {
+  ALL_TEAMS = 'All Teams',
+  ALL_TEAM_MEMBERS = 'All Team Members'
+}
+
 export const enum MeetingSettingsThreshold {
   RETROSPECTIVE_TOTAL_VOTES_DEFAULT = 5,
   RETROSPECTIVE_MAX_VOTES_PER_GROUP_DEFAULT = 3,

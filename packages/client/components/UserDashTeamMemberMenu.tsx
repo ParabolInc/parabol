@@ -10,6 +10,7 @@ import {useUserTaskFilters} from '~/utils/useUserTaskFilters'
 import useRouter from '~/hooks/useRouter'
 import constructUserTaskFilterQueryParamURL from '~/utils/constructUserTaskFilterQueryParamURL'
 import useAtmosphere from '~/hooks/useAtmosphere'
+import {UserTaskViewFilterLabels} from '~/types/constEnums'
 
 interface Props {
   menuProps: MenuProps
@@ -64,7 +65,7 @@ const UserDashTeamMemberMenu = (props: Props) => {
       {showAllTeamMembers &&
         <MenuItem
           key={'teamMemberFilterNULL'}
-          label={'All team members'}
+          label={UserTaskViewFilterLabels.ALL_TEAM_MEMBERS}
           onClick={() => history.push(constructUserTaskFilterQueryParamURL(teamIds, null, showArchived))}
         />}
       {filteredTeamMembers.map((teamMember) => (
