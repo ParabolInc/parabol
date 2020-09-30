@@ -1,5 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
+import React, {useMemo, useRef} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {UserTasksHeader_viewer} from '~/__generated__/UserTasksHeader_viewer.graphql'
 import DashSectionControls from '../../../../components/Dashboard/DashSectionControls'
@@ -13,8 +13,14 @@ import LinkButton from '~/components/LinkButton'
 import {PALETTE} from '~/styles/paletteV2'
 import Checkbox from '~/components/Checkbox'
 import {ICON_SIZE} from '~/styles/typographyV2'
-import setArchivedTasksCheckbox from '~/utils/relay/setArchivedTasksCheckbox'
-import useAtmosphere from '~/hooks/useAtmosphere'
+import {useUserTaskFilters} from '~/utils/useUserTaskFilters'
+import constructUserTaskFilterQueryParamURL from '~/utils/constructUserTaskFilterQueryParamURL'
+import useRouter from '~/hooks/useRouter'
+import {Breakpoint} from '~/types/constEnums'
+import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
+import useAtmosphere from '../../../../hooks/useAtmosphere'
+
+const desktopBreakpoint = makeMinWidthMediaQuery(Breakpoint.SIDEBAR_LEFT)
 
 const UserDashTeamMenu = lazyPreload(() =>
   import(
@@ -23,12 +29,30 @@ const UserDashTeamMenu = lazyPreload(() =>
   )
 )
 
+const UserDashTeamMemberMenu = lazyPreload(() =>
+  import(
+    /* webpackChunkName: 'UserDashTeamMemberMenu' */
+    '../../../../components/UserDashTeamMemberMenu'
+  )
+)
+
+const StyledDashFilterToggle = styled(DashFilterToggle)({
+  margin: '4px 16px 4px 0',
+  [desktopBreakpoint]: {
+    margin: '0 24px 0 0'
+  }
+})
+
 const StyledLinkButton = styled(LinkButton)({
-  marginLeft: 8,
   color: PALETTE.TEXT_GRAY,
+  flexShrink: 0,
   fontWeight: 600,
+  margin: '4px 0',
   ':hover, :focus, :active': {
     color: PALETTE.TEXT_MAIN
+  },
+  [desktopBreakpoint]: {
+    margin: 0
   }
 })
 
@@ -42,37 +66,110 @@ const StyledCheckbox = styled(Checkbox)({
 
 const UserTasksHeaderDashSectionControls = styled(DashSectionControls)({
   justifyContent: 'flex-start',
+  flexWrap: 'wrap',
+  width: '100%'
 })
 
 interface Props {
-  viewer: UserTasksHeader_viewer
+  viewer: UserTasksHeader_viewer | null
 }
 
 const UserTasksHeader = (props: Props) => {
+  const {history} = useRouter()
   const atmosphere = useAtmosphere()
+  const {viewerId} = atmosphere
   const {viewer} = props
-  const {menuPortal, togglePortal, originRef, menuProps} = useMenu(MenuPosition.UPPER_RIGHT, {
+  const {
+    menuPortal: teamFilterMenuPortal,
+    togglePortal: teamFilterTogglePortal,
+    originRef: teamFilterOriginRef,
+    menuProps: teamFilterMenuProps
+  } = useMenu(MenuPosition.UPPER_RIGHT, {
     isDropdown: true
   })
-  const {teamFilter, showArchivedTasksCheckbox} = viewer
-  const teamFilterName = (teamFilter && teamFilter.name) || 'All teams'
+  const {
+    menuPortal: teamMemberFilterMenuPortal,
+    togglePortal: teamMemberFilterTogglePortal,
+    originRef: teamMemberFilterOriginRef,
+    menuProps: teamMemberFilterMenuProps
+  } = useMenu(MenuPosition.UPPER_RIGHT, {
+    isDropdown: true
+  })
+  const oldTeamsRef = useRef<any>([])
+  const nextTeams = viewer?.teams ?? oldTeamsRef.current
+  if (nextTeams) {
+    oldTeamsRef.current = nextTeams
+  }
+  const teams = oldTeamsRef.current
+  const {userIds, teamIds, showArchived} = useUserTaskFilters(viewerId)
+
+  const teamFilter = useMemo(() =>
+    teamIds ? teams.find(({id: teamId}) => teamIds.includes(teamId)) : undefined
+    , [teamIds, teams])
+
+  const teamFilterName = (teamFilter && teamFilter.name) || 'My teams'
+
+  const teamMemberFilterName = useMemo(() => {
+    const teamMembers = teams.map(({teamMembers}) => teamMembers).flat()
+    const users = teamMembers.map(({user}) => user).flat()
+    const keySet = new Set()
+    const dedupedUsers = [] as {
+      id: string
+      preferredName: string
+      tms: ReadonlyArray<string>
+    }[]
+    users.forEach((user) => {
+      const userKey = user.id
+      if (!keySet.has(userKey)) {
+        keySet.add(userKey)
+        dedupedUsers.push(user)
+      }
+    })
+    const teamMemberFilter = userIds
+      ? dedupedUsers.find(({id: userId}) => userIds.includes(userId))
+      : undefined
+    return teamFilter && teamMemberFilter
+      ? teamMemberFilter.tms.includes(teamFilter.id)
+        ? teamMemberFilter.preferredName
+        : 'My team members'
+      : teamMemberFilter?.preferredName ?? ''
+  }, [teamIds, userIds, teams])
+
   return (
     <DashSectionHeader>
       <UserTasksHeaderDashSectionControls>
-        <DashFilterToggle
+        <StyledDashFilterToggle
           label='Team'
-          onClick={togglePortal}
+          onClick={teamFilterTogglePortal}
           onMouseEnter={UserDashTeamMenu.preload}
-          ref={originRef}
+          ref={teamFilterOriginRef}
           value={teamFilterName}
           iconText='group'
+          dataCy='team-filter'
         />
-        {menuPortal(<UserDashTeamMenu menuProps={menuProps} viewer={viewer} />)}
+        {teamFilterMenuPortal(<UserDashTeamMenu menuProps={teamFilterMenuProps} viewer={viewer} />)}
+
+        {/* Filter by Owner */}
+        <StyledDashFilterToggle
+          label='Team Member'
+          onClick={teamMemberFilterTogglePortal}
+          onMouseEnter={UserDashTeamMemberMenu.preload}
+          ref={teamMemberFilterOriginRef}
+          value={teamMemberFilterName}
+          iconText='person'
+          dataCy='team-member-filter'
+        />
+        {teamMemberFilterMenuPortal(
+          <UserDashTeamMemberMenu menuProps={teamMemberFilterMenuProps} viewer={viewer} />
+        )}
 
         <StyledLinkButton
-          onClick={() => setArchivedTasksCheckbox(atmosphere, !showArchivedTasksCheckbox)}
+          onClick={() =>
+            history.push(constructUserTaskFilterQueryParamURL(teamIds, userIds, !showArchived))
+          }
+          dataCy='archived-checkbox'
         >
-          <StyledCheckbox active={showArchivedTasksCheckbox} />
+          <StyledCheckbox active={showArchived} />
           {'Archived'}
         </StyledLinkButton>
       </UserTasksHeaderDashSectionControls>
@@ -85,11 +182,18 @@ export default createFragmentContainer(UserTasksHeader, {
     fragment UserTasksHeader_viewer on User {
       id
       ...UserDashTeamMenu_viewer
-      teamFilter {
+      ...UserDashTeamMemberMenu_viewer
+      teams {
         id
         name
+        teamMembers(sortBy: "preferredName") {
+          user {
+            id
+            preferredName
+            tms
+          }
+        }
       }
-      showArchivedTasksCheckbox
     }
   `
 })

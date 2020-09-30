@@ -28,4 +28,4 @@ export default {
     )
     return viewerOrganizationUser ? organization : null
   }
-}
+} as any

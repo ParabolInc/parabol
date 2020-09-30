@@ -55,6 +55,17 @@ export const atlassianAuthByUserId = new LoaderMakerForeign(
       .run()
   }
 )
+export const atlassianAuthByTeamId = new LoaderMakerForeign(
+  'atlassianAuths',
+  'teamId',
+  async (teamIds) => {
+    const r = await getRethink()
+    return r
+      .table('AtlassianAuth')
+      .getAll(r.args(teamIds), {index: 'teamId'})
+      .run()
+  }
+)
 
 export const commentsByThreadId = new LoaderMakerForeign(
   'comments',

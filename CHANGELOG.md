@@ -5,16 +5,64 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 5.20.0 2020-Sep-30
+
+### Added
+- Remove shared templates by archived teams #4201
+- Added tab access for due date #4135
+- Poker Jira front-end (behind feature flag) #4158
+
+### Changed
+- New user task view #4105
+- Multi-connection user presence with Redis #4147
+- Bump GraphQL to v15 #4193
+
+### Fixed
+- Bug fix for first item in menu #4200
+- Filter out teamIds in backup organization #4221
+- Assign team task card to viewer #4223
+
+## 5.19.1 2020-Sep-25
+
+### Added
+
+- Publish timeline events when a meeting ends (#4179)
+
+### Fixed
+
+- Toggle timestamp bug in task casks (#4187)
+- Corrected Segment Google Analytics schema (#4190)
+- Demo end meeting bug (#4192)
+
+## 5.18.1 2020-Sep-18
+
+### Fixed
+
+- Remove trailing slash from intranet graphql url to fix graphiql
+
+## 5.18.0 2020-Sep-16
+
+### Added
+
+- robots.txt to nginx (#4160)
+- Retro Template Illustations (#4172)
+- Revisit Check-in meetings (#4020)
+
+### Fixed
+
+- Invite UI Copy (#4168)
+- Bump Node to v14 (#4154)
+
 ## 5.17.0 2020-Sep-10
 
-## Added
+### Added
 
 - Production Dockerfile (#4103)
 - Base scaffolding for new sprint poker meeting (#4113)
 - Beginnings of frontend scaffolding for new sprint poker meeting (#4141)
 - Enable fetching data from Parabol org for local development (#4089)
 
-## Fixed
+### Fixed
 
 - Fix dev server hmr (#4134)
 - Fix various Hubspot Segment bugs (#4142)
@@ -23,7 +71,7 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 - Fix control bar undefined bug (#4121)
 - Fix connect presence logic (#4149)
 
-## Changed
+### Changed
 
 - Make enableSAMLForDomain an upsert (#4087)
 - Set Google Analytics clientId to Segment anonymous ID (#4117)

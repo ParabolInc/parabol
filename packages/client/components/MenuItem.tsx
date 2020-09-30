@@ -19,6 +19,7 @@ export interface MenuItemProps {
 interface Props {
   isDisabled?: boolean
   label: ReactNode
+  dataCy?: string
   onClick?: (e: React.MouseEvent) => void
   onMouseEnter?: (e: React.MouseEvent) => void
   noCloseOnClick?: boolean
@@ -48,7 +49,7 @@ const getIsHidden = (el: HTMLElement, parent: HTMLElement) => {
   return parentBottom < isViewedThreshold
 }
 const MenuItem = forwardRef((props: Props, ref: any) => {
-  const {isDisabled, label, noCloseOnClick, onMouseEnter, onClick, onView, parentRef} = props
+  const {isDisabled, label, noCloseOnClick, onMouseEnter, onClick, onView, parentRef, dataCy} = props
   const itemRef = useRef<HTMLDivElement>(null)
   // we're doing something a little hacky here, overloading a callback ref with some props so we don't need to pass them explicitly
   const {activate, closePortal, isActive} = ref as MenuItemProps
@@ -113,7 +114,7 @@ const MenuItem = forwardRef((props: Props, ref: any) => {
       onClick={handleClick}
       onMouseEnter={onMouseEnter}
     >
-      {typeof label === 'string' ? <MenuItemLabel>{label}</MenuItemLabel> : label}
+      {typeof label === 'string' ? <MenuItemLabel data-cy={dataCy}>{label}</MenuItemLabel> : label}
     </MenuItemStyles>
   )
 })

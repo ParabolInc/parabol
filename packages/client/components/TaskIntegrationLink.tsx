@@ -1,11 +1,13 @@
-import {TaskIntegrationLink_integration} from '../__generated__/TaskIntegrationLink_integration.graphql'
-import React from 'react'
 import styled from '@emotion/styled'
-import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
+import React from 'react'
+import {createFragmentContainer} from 'react-relay'
 import {PALETTE} from '../styles/paletteV2'
 import {Card} from '../types/constEnums'
 import {TaskServiceEnum} from '../types/graphql'
+import {TaskIntegrationLinkIntegrationJira} from '../__generated__/TaskIntegrationLinkIntegrationJira.graphql'
+import {TaskIntegrationLink_integration} from '../__generated__/TaskIntegrationLink_integration.graphql'
+import JiraIssueLink from './JiraIssueLink'
 
 const StyledLink = styled('a')({
   color: PALETTE.TEXT_MAIN,
@@ -29,22 +31,8 @@ const TaskIntegrationLink = (props: Props) => {
   if (!integration) return null
   const {service} = integration
   if (service === TaskServiceEnum.jira) {
-    const {issueKey, projectKey, cloudName} = integration
-    const href =
-      cloudName === 'jira-demo'
-        ? 'https://www.parabol.co/features/integrations'
-        : `https://${cloudName}.atlassian.net/browse/${issueKey}`
-    return (
-      <StyledLink
-        data-cy={`${dataCy}-jira-issue-link`}
-        href={href}
-        rel='noopener noreferrer'
-        target='_blank'
-        title={`Jira Issue #${issueKey} on ${projectKey}`}
-      >
-        {`Issue #${issueKey}`}
-      </StyledLink>
-    )
+    const {issueKey, projectKey, cloudName} = integration as unknown as TaskIntegrationLinkIntegrationJira
+    return <JiraIssueLink dataCy={`${dataCy}-jira-issue-link`} issueKey={issueKey} projectKey={projectKey} cloudName={cloudName} />
   } else if (service === TaskServiceEnum.github) {
     const {nameWithOwner, issueNumber} = integration
     const href =

@@ -85,16 +85,19 @@ export const resolveGQLStageFromId = (stageId: string, meeting: Meeting) => {
 export const resolveGQLStagesFromPhase = ({
   meetingId,
   phaseType,
-  stages
+  stages,
+  teamId
 }: {
   meetingId: string
   phaseType: NewMeetingPhaseTypeEnum
   stages: GenericMeetingStage[]
+  teamId: string
 }) => {
   return stages.map((stage) => ({
     ...stage,
     meetingId,
-    phaseType
+    phaseType,
+    teamId
   }))
 }
 

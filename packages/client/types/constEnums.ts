@@ -130,7 +130,7 @@ export const enum Layout {
   LAYOUT_GRID = 8, // 1x
   ROW_GUTTER = 16, // 2x
   SETTINGS_MAX_WIDTH = 768,
-  TASK_COLUMNS_MAX_WIDTH = 1304 // (4 x 296 card max-width) + (5 x 24 - gutters around cols)
+  TASK_COLUMNS_MAX_WIDTH = 1360
 }
 
 export const enum LoaderSize {
@@ -274,6 +274,7 @@ export const enum TierLabel {
 }
 
 export const enum Threshold {
+  MAX_NUMBER_OF_TASKS_TO_LOAD = 1000,
   AUTO_PAUSE = 2592000000, // 30 days
   EMAIL_VERIFICATION_LIFESPAN = 86400000, // 1 day
   JWT_LIFESPAN = 2592000000, // 30 days

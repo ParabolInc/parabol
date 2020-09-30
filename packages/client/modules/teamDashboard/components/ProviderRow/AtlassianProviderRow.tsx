@@ -14,9 +14,7 @@ import ProviderActions from '../../../../components/ProviderActions'
 import ProviderCard from '../../../../components/ProviderCard'
 import RowInfo from '../../../../components/Row/RowInfo'
 import RowInfoCopy from '../../../../components/Row/RowInfoCopy'
-import withAtmosphere, {
-  WithAtmosphereProps
-} from '../../../../decorators/withAtmosphere/withAtmosphere'
+import withAtmosphere, {WithAtmosphereProps} from '../../../../decorators/withAtmosphere/withAtmosphere'
 import useAtlassianSites from '../../../../hooks/useAtlassianSites'
 import useBreakpoint from '../../../../hooks/useBreakpoint'
 import {MenuPosition} from '../../../../hooks/useCoords'
@@ -120,8 +118,8 @@ const AtlassianProviderRow = (props: Props) => {
     onCompleted
   } = props
   const mutationProps = {submitting, submitMutation, onError, onCompleted} as MenuMutationProps
-  const {atlassianAuth} = viewer
-  const accessToken = (atlassianAuth && atlassianAuth.accessToken) || undefined
+  const {teamMember} = viewer
+  const accessToken = teamMember?.atlassianAuth?.accessToken ?? undefined
   useFreshToken(accessToken, retry)
 
   const openOAuth = () => {
@@ -180,8 +178,8 @@ const AtlassianProviderRow = (props: Props) => {
 }
 
 graphql`
-  fragment AtlassianProviderRowViewer on User {
-    atlassianAuth(teamId: $teamId) {
+  fragment AtlassianProviderRowTeamMember on TeamMember {
+    atlassianAuth {
       accessToken
     }
   }
@@ -192,7 +190,9 @@ export default createFragmentContainer(
   {
     viewer: graphql`
       fragment AtlassianProviderRow_viewer on User {
-        ...AtlassianProviderRowViewer @relay(mask: false)
+        teamMember(teamId: $teamId) {
+          ...AtlassianProviderRowTeamMember @relay(mask: false)
+        }
       }
     `
   }

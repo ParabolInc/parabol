@@ -46,7 +46,19 @@ const login = (_overrides = {}) => {
   Cypress.log({
     name: 'login'
   })
-
+  const now = Date.now()
+  const exp = toEpochSeconds(now + JWT_LIFESPAN)
+  const iat = toEpochSeconds(now)
+  const tokenObj = {
+    sub: 'local|CfKdrQVeo',
+    aud: 'action',
+    iss: window.location.origin,
+    exp,
+    iat,
+    tms: []
+  }
+  const secret = Buffer.from(Cypress.env('SERVER_SECRET'), 'base64')
+  const authToken = sign(tokenObj, secret)
   window.localStorage.setItem('Action:token', authToken)
   cy.visit('/')
   cy.location('pathname').should('eq', '/me')

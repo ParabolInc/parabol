@@ -17,6 +17,7 @@ import MassInvitation from './types/MassInvitation'
 import MeetingAction from './types/MeetingAction'
 import MeetingRetrospective from './types/MeetingRetrospective'
 import MeetingSettingsAction from './types/MeetingSettingsAction'
+import MeetingSettingsPoker from './types/MeetingSettingsPoker'
 import MeetingSettingsRetrospective from './types/MeetingSettingsRetrospective'
 import MeetingTemplate from './types/MeetingTemplate'
 import NotificationKickedOut from './types/NotificationKickedOut'
@@ -86,7 +87,7 @@ export type RethinkSchema = {
     index: 'teamMemberId'
   }
   MeetingSettings: {
-    type: MeetingSettingsRetrospective | MeetingSettingsAction
+    type: MeetingSettingsRetrospective | MeetingSettingsAction | MeetingSettingsPoker
     index: 'teamId'
   }
   MeetingMember: {
