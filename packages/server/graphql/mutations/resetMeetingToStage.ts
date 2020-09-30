@@ -31,7 +31,14 @@ const resetMeetingToStage = {
     const viewerId = getUserId(authToken)
     const meeting = await dataLoader.get('newMeetings').load(meetingId)
     if (!meeting) return standardError(new Error('Meeting not found'), {userId: viewerId})
-    const {defaultFacilitatorUserId, facilitatorUserId, phases, teamId, meetingType} = meeting
+    const {
+      defaultFacilitatorUserId,
+      facilitatorUserId,
+      phases,
+      teamId,
+      meetingType,
+      meetingCount
+    } = meeting
     if (viewerId !== facilitatorUserId) {
       if (viewerId !== defaultFacilitatorUserId)
         return standardError(new Error('Not meeting facilitator'), {userId: viewerId})
@@ -42,7 +49,7 @@ const resetMeetingToStage = {
     const foundResponse = findStageById(phases, stageId)
     if (!foundResponse)
       return standardError(new Error('Meeting stage not found'), {userId: viewerId})
-    const {stage: resetToStage} = foundResponse!
+    const {stage: resetToStage} = foundResponse
     if (!resetToStage.isNavigableByFacilitator)
       return standardError(new Error('Stage has not started'), {userId: viewerId})
     if (!resetToStage.isComplete)
@@ -55,13 +62,6 @@ const resetMeetingToStage = {
       return standardError(new Error('The meeting has already ended'), {userId: viewerId})
 
     // RESOLUTION
-    const meetingCount = await r
-      .table('NewMeeting')
-      .getAll(teamId, {index: 'teamId'})
-      .filter({meetingType})
-      .count()
-      .default(0)
-      .run()
     const createdPhases = await createNewMeetingPhases(
       teamId,
       meetingCount,
