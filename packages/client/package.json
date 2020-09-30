@@ -3,7 +3,7 @@
   "description": "An open-source app for building smarter, more agile teams.",
   "author": "Parabol Inc. <love@parabol.com> (http://github.com/ParabolInc)",
   "license": "AGPL-3.0",
-  "version": "5.19.0",
+  "version": "5.20.0-rc.1",
   "repository": {
     "type": "git",
     "url": "https://github.com/ParabolInc/parabol"
@@ -20,7 +20,6 @@
     "typecheck": "yarn tsc --noEmit -p tsconfig.json"
   },
   "devDependencies": {
-    "relay-config": "^8.0.0",
     "@storybook/cli": "^5.3.17",
     "@storybook/core": "^5.3.17",
     "@storybook/react": "^5.3.17",
@@ -49,6 +48,7 @@
     "flow-bin": "^0.103.0",
     "lint-staged": "^10.1.7",
     "prettier": "^1.19.1",
+    "relay-config": "^8.0.0",
     "strict-event-emitter-types": "^2.0.0",
     "typescript": "^4.0.2",
     "webpack": "^4.41.5"
@@ -79,7 +79,7 @@
     "mousetrap": "^1.6.3",
     "ms": "^2.0.0",
     "oy-vey": "^0.11.0",
-    "parabol-server": "^5.19.0",
+    "parabol-server": "^5.20.0-rc.1",
     "prop-types": "^15.5.10",
     "react": "^16.11.0",
     "react-beautiful-dnd": "12.0.0",
