@@ -14,6 +14,7 @@ import {FlagReadyToAdvanceSuccess} from './FlagReadyToAdvancePayload'
 import NewMeetingCheckInPayload from './NewMeetingCheckInPayload'
 import PromoteNewMeetingFacilitatorPayload from './PromoteNewMeetingFacilitatorPayload'
 import RemoveReflectionPayload from './RemoveReflectionPayload'
+import ResetMeetingToStagePayload from './ResetMeetingToStagePayload'
 import {SetAppLocationSuccess} from './SetAppLocationPayload'
 import SetPhaseFocusPayload from './SetPhaseFocusPayload'
 import SetStageTimerPayload from './SetStageTimerPayload'
@@ -43,6 +44,7 @@ const types = [
   NewMeetingCheckInPayload,
   PromoteNewMeetingFacilitatorPayload,
   RemoveReflectionPayload,
+  ResetMeetingToStagePayload,
   SetAppLocationSuccess,
   SetPhaseFocusPayload,
   SetStageTimerPayload,

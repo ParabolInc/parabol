@@ -5,10 +5,11 @@ import {createFragmentContainer} from 'react-relay'
 import {Breakpoint} from '~/types/constEnums'
 import {StageTimerDisplay_meeting} from '~/__generated__/StageTimerDisplay_meeting.graphql'
 import StageTimerDisplayGauge from './StageTimerDisplayGauge'
-import PhaseCompleteTag from './Tag/PhaseCompleteTag'
+import PhaseCompleted from './PhaseCompleted'
 
 interface Props {
   meeting: StageTimerDisplay_meeting
+  canUndo?: boolean
 }
 
 const DisplayRow = styled('div')({
@@ -23,7 +24,7 @@ const DisplayRow = styled('div')({
 })
 
 const StageTimerDisplay = (props: Props) => {
-  const {meeting} = props
+  const {meeting, canUndo} = props
   const {localPhase, localStage} = meeting
   const {localScheduledEndTime, isComplete} = localStage
   const {stages} = localPhase
@@ -33,13 +34,19 @@ const StageTimerDisplay = (props: Props) => {
       {localScheduledEndTime && !isComplete ? (
         <StageTimerDisplayGauge endTime={localScheduledEndTime} />
       ) : null}
-      <PhaseCompleteTag isComplete={isPhaseComplete} />
+      <PhaseCompleted
+        isComplete={isPhaseComplete}
+        canUndo={canUndo}
+        meetingId={meeting.id}
+        resetToStageId={localStage.id}
+      />
     </DisplayRow>
   )
 }
 
 graphql`
   fragment StageTimerDisplayStage on NewMeetingStage {
+    id
     isComplete
     scheduledEndTime @__clientField(handle: "localTime")
     timeRemaining
@@ -49,6 +56,7 @@ graphql`
 export default createFragmentContainer(StageTimerDisplay, {
   meeting: graphql`
     fragment StageTimerDisplay_meeting on NewMeeting {
+      id
       localPhase {
         stages {
           isComplete
