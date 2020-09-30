@@ -1,5 +1,3 @@
-const signalingServerHostname = window.location.hostname
-
 interface getSignalingServerUrlSignature {
   roomId: string
   peerId: string
@@ -11,7 +9,7 @@ export function getSignalingServerUrl({
   peerId,
   authToken
 }: getSignalingServerUrlSignature): string {
-  const url = new URL(`wss://${signalingServerHostname}`)
+  const url = new URL(`wss://${window.location.hostname}`)
   url.port = String(process.env.PROTOO_LISTEN_PORT)
   url.searchParams.append('roomId', roomId)
   url.searchParams.append('peerId', peerId)

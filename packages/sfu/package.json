@@ -30,6 +30,7 @@
     "express": "^4.17.1",
     "mediasoup": "^3.6.21",
     "protoo-server": "^4.0.4",
-    "parabol-server": "^5.19.0"
+    "parabol-server": "^5.19.0",
+    "parabol-client": "^5.19.0"
   }
 }

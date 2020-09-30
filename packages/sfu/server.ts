@@ -10,6 +10,7 @@ import getVerifiedAuthToken from 'parabol-server/utils/getVerifiedAuthToken'
 import {isAuthenticated, isTeamMember} from 'parabol-server/utils/authorization'
 import checkBlacklistJWT from 'parabol-server/utils/checkBlacklistJWT'
 import Logger from './lib/Logger'
+import {deStructureRoomId} from 'parabol-client/utils/mediaRoom/initMediaRoom'
 
 const logger = new Logger()
 const mediasoupWorkers = []
@@ -98,7 +99,7 @@ async function runWebSocketServer() {
       reject(401, 'Your authentication has expired')
       return
     }
-    const [teamId] = (roomId as string).split(':')
+    const [teamId] = deStructureRoomId(roomId as string)
     if (!isTeamMember(decodedAuthToken, teamId as string)) {
       reject(403, "Oops! You're not authorized to be here")
       return

@@ -19,7 +19,8 @@ import {
   PeersState,
   ProducersState,
   ConsumersState,
-  RoomState
+  RoomState,
+  getConsumersForPeer
 } from '../../../../utils/mediaRoom/reducerMediaRoom'
 
 const MeetingAvatarGroupRoot = styled('div')({
@@ -150,9 +151,7 @@ const NewMeetingAvatarGroup = (props: Props) => {
         const userId = teamMember.child.userId
         const isSelf = userId == viewerId
         const peerProducers = isSelf ? Object.values(producers) : []
-        const peerConsumers = isSelf
-          ? []
-          : peers[userId]?.consumers.map((consumerId) => consumers[consumerId])
+        const peerConsumers = isSelf ? [] : getConsumersForPeer(userId, peers, consumers)
 
         return (
           <OverlappingBlock key={teamMember.child.id}>

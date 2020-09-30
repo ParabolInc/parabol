@@ -2,8 +2,23 @@ import MediaRoom from './MediaRoom'
 import {DeviceInfo} from './MediaRoom'
 import {types as mediasoupTypes} from 'mediasoup-client'
 import Logger from './Logger'
+import {deStructurePeerId} from './initMediaRoom'
 
 const logger = new Logger('Reducer')
+
+export const getConsumersForPeer = (
+  userId: string,
+  peers: PeersState,
+  consumers: ConsumersState
+): ConsumerState[] => {
+  const peerIds = Object.keys(peers)
+  for (const peerId of peerIds) {
+    const [, viewerId] = deStructurePeerId(peerId)
+    if (userId === viewerId)
+      return peers[peerId].consumers.map((consumerId) => consumers[consumerId])
+  }
+  return []
+}
 
 type MediaRoomAction =
   | InitMediaRoom
