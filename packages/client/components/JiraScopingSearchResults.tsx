@@ -1,42 +1,40 @@
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
-import MockScopingList from '../modules/meeting/components/MockScopingList'
-import {JiraScopingSearchResults_meeting} from '../__generated__/JiraScopingSearchResults_meeting.graphql'
+import {JiraScopingSearchResults_viewer} from '../__generated__/JiraScopingSearchResults_viewer.graphql'
 import JiraScopingNoResults from './JiraScopingNoResults'
 import JiraScopingSearchResultItem from './JiraScopingSearchResultItem'
 import JiraScopingSelectAllIssues from './JiraScopingSelectAllIssues'
 
 interface Props {
-  meeting: JiraScopingSearchResults_meeting
+  viewer: JiraScopingSearchResults_viewer
 }
 
-const JiraScopingSearchResults = (_props: Props) => {
-  // const {meeting} = props
-  const loading = false
-  if (loading) {
-    return (
-      <MockScopingList />
-    )
-  }
+const JiraScopingSearchResults = (props: Props) => {
+  const {viewer} = props
+  const {team} = viewer
+  const {jiraIssues} = team!
+  const {error, edges} = jiraIssues
+  const issueCount = edges.length
+  /*   const [showMock, setShowMock] = useState(false)
+    useHotkey('f', () => {
+      setShowMock(!showMock)
+    })
+    if (showMock) {
+      return (
+        <MockScopingList />
+      )
+    } */
 
-  const results = [{
-    isSelected: true,
-    title: 'Jira Issue 1',
-    issueKey: 'KEYFOO',
-    projectKey: 'PROJ_FOO',
-    cloudName: 'CLOUDFOOD',
-  }]
-
-  if (results.length === 0) {
-    return <JiraScopingNoResults />
+  if (issueCount === 0) {
+    return <JiraScopingNoResults error={error?.message} />
   }
 
   return (
     <>
-      <JiraScopingSelectAllIssues selected={false} issueCount={results.length} />
-      {results.map((result) => {
-        return <JiraScopingSearchResultItem {...result} />
+      <JiraScopingSelectAllIssues selected={false} issueCount={issueCount} />
+      {edges.map(({node}) => {
+        return <JiraScopingSearchResultItem key={node.id} issue={node} isSelected={false} />
       })}
     </>
 
@@ -44,8 +42,21 @@ const JiraScopingSearchResults = (_props: Props) => {
 }
 
 export default createFragmentContainer(JiraScopingSearchResults, {
-  meeting: graphql`
-    fragment JiraScopingSearchResults_meeting on PokerMeeting {
+  viewer: graphql`
+    fragment JiraScopingSearchResults_viewer on User {
+      team(teamId: $teamId) {
+        jiraIssues(first: $first, queryString: $queryString, isJQL: $isJQL, projectKeyFilters: $projectKeyFilters) @connection(key: "JiraScopingSearchResults_jiraIssues") {
+          error {
+            message
+          }
+          edges {
+            node {
+              ...JiraScopingSearchResultItem_issue
+              id
+            }
+          }
+        }
+      }
       id
     }
   `
