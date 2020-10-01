@@ -20,10 +20,7 @@ interface Props {
   meeting: PokerMeetingSidebar_meeting
 }
 
-const collapsiblePhases: string[] = [
-  NewMeetingPhaseTypeEnum.checkin,
-  'ESTIMATE'
-]
+const collapsiblePhases: string[] = [NewMeetingPhaseTypeEnum.checkin, 'ESTIMATE']
 
 const PokerMeetingSidebar = (props: Props) => {
   const atmosphere = useAtmosphere()
@@ -60,22 +57,22 @@ const PokerMeetingSidebar = (props: Props) => {
             itemStage || {}
           const canNavigate = isViewerFacilitator ? isNavigableByFacilitator : isNavigable
           const handleClick = () => {
+            console.log('handleClick -> itemStageId', itemStageId)
             gotoStageId(itemStageId).catch()
             handleMenuClick()
           }
           const estimatePhase = phases.find((phase) => {
             return phase.phaseType === 'ESTIMATE'
           })!
-          const phaseCount =
-            phaseType === 'ESTIMATE'
-              ? estimatePhase.stages.length
-              : undefined
+          const phaseCount = phaseType === 'ESTIMATE' ? estimatePhase.stages.length : undefined
           return (
             <NewMeetingSidebarPhaseListItem
-              handleClick={canNavigate ? handleClick : undefined}
-              isActive={
-                phaseType === 'ESTIMATE' ? false : localPhaseType === phaseType
-              }
+              // handleClick={canNavigate ? handleClick : undefined}
+              handleClick={handleClick}
+              // isActive={
+              //   phaseType === 'ESTIMATE' ? false : localPhaseType === phaseType
+              // }
+              isActive={localPhaseType === phaseType}
               isCollapsible={collapsiblePhases.includes(phaseType)}
               isFacilitatorPhase={phaseType === facilitatorPhaseType}
               isUnsyncedFacilitatorPhase={

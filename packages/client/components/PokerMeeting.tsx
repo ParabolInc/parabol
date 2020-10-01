@@ -20,12 +20,10 @@ const phaseLookup = {
   [NewMeetingPhaseTypeEnum.checkin]: lazyPreload(() =>
     import(/* webpackChunkName: 'NewMeetingCheckIn' */ './NewMeetingCheckIn')
   ),
-  SCOPE: lazyPreload(() =>
-    import(/* webpackChunkName: 'ScopePhase' */ './ScopePhase')
-  ),
-  // ESTIMATE: lazyPreload(() =>
-  //   import(/* webpackChunkName: 'PokerEstimatePhase' */ './PokerEstimatePhase')
-  // ),
+  SCOPE: lazyPreload(() => import(/* webpackChunkName: 'ScopePhase' */ './ScopePhase')),
+  ESTIMATE: lazyPreload(() =>
+    import(/* webpackChunkName: 'PokerEstimatePhase' */ './PokerEstimatePhase')
+  )
 }
 
 type PhaseComponent = ValueOf<typeof phaseLookup>
@@ -45,7 +43,7 @@ const PokerMeeting = (props: Props) => {
     handleGotoNext,
     gotoStageId,
     safeRoute,
-    handleMenuClick,
+    handleMenuClick
   } = useMeeting(meeting)
   if (!safeRoute) return null
   const {showSidebar, viewerMeetingMember, localPhase} = meeting
