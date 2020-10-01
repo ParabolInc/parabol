@@ -15,7 +15,7 @@ describe('Poker template related backend tests', () => {
 
     const query = `
       mutation {
-        addPokerTemplate(teamId: "h-CdSRCnT") {
+        addPokerTemplate(teamId: "l6k4LyKnhP") {
           pokerTemplate {
             id
             name

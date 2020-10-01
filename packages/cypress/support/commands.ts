@@ -37,7 +37,7 @@ const tokenObj = {
   iss: window.location.origin,
   exp,
   iat,
-  tms: ['h-CdSRCnT']
+  tms: ['l6k4LyKnhP']
 }
 const secret = Buffer.from(Cypress.env('SERVER_SECRET'), 'base64')
 const authToken = sign(tokenObj, secret)
