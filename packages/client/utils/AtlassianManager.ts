@@ -164,12 +164,30 @@ interface JiraSearchResponse<T = {summary: string, description: string}> {
   }[]
 }
 
+interface JiraField {
+  clauseNames: string[]
+  custom: boolean
+  id: string
+  key: string
+  name: string
+  navigable: boolean
+  orderable: boolean
+  schema: {
+    custom: string
+    customId: number
+    type: string
+  }
+  searchable: boolean
+  untranslatedName: string
+}
+
 export default abstract class AtlassianManager {
   abstract fetch: any
   static SCOPE = 'read:jira-user read:jira-work write:jira-work offline_access'
   accessToken: string
   private readonly get: (url: string) => any
   private readonly post: (url: string, payload: object) => any
+  private readonly put: (url: string, payload: object) => any
   // the any is for node until we can use tsc in nodeland
   cache: {[key: string]: {result: any; expiration: number | any}} = {}
   timeout = 5000
@@ -188,6 +206,16 @@ export default abstract class AtlassianManager {
         headers,
         body: JSON.stringify(payload)
       })
+      return res.json()
+    }
+
+    this.put = async (url, payload) => {
+      const res = await this.fetch(url, {
+        method: 'PUT',
+        headers,
+        body: JSON.stringify(payload)
+      })
+      if (res.status == 204) return null
       return res.json()
     }
 
@@ -341,5 +369,110 @@ export default abstract class AtlassianManager {
       })
     }
     return {error: firstError, issues: allIssues}
+  }
+
+  async getComments(cloudId: string, issueKey: string) {
+    return this.get(`https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/issue/${issueKey}/comment`) as any
+  }
+
+  async getFields(cloudId: string) {
+    return this.get(`https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/field`) as JiraField[]
+  }
+
+  async addComment(cloudId: string, issueKey: string, body: object) {
+    const payload = {
+      body
+    }
+    return this.post(`https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/issue/${issueKey}/comment`, payload) as any
+  }
+
+  async updateStoryPoints(cloudId: string, issueKey: string, storyPoints: string | number, dimensionName: string | null) {
+    // try to update the field by dimension name.
+    // if the dimension name is null, use the jira defaults
+    // if we can't trigger an update, then just write a comment
+    const fields = await this.getFields(cloudId)
+    const searchFields = fields.map((field) => ({
+      ...field,
+      searchName: field.name.toLowerCase().trim()
+    }))
+
+    let fieldsToTry = [] as JiraField[]
+    if (!dimensionName) {
+      const namesToTry = ['Story Points', 'Story point estimate'].map((val) => val.toLowerCase())
+      fieldsToTry = searchFields.filter((field) => namesToTry.includes(field.searchName))
+    } else {
+      const normalizedDimensionName = dimensionName.toLowerCase().trim()
+      fieldsToTry = searchFields.filter((field) => field.searchName === normalizedDimensionName)
+    }
+
+    let updatedFieldSuccess = false
+    if (fieldsToTry.length > 0) {
+      const res = await Promise.all(fieldsToTry.map((field) => {
+        const {id} = field
+        const payload = {
+          fields: {
+            [id]: storyPoints
+          }
+        }
+        return this.put(`https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/issue/${issueKey}`, payload)
+      }))
+      updatedFieldSuccess = res.indexOf(null) !== -1
+    }
+    if (!updatedFieldSuccess) {
+      await this.addComment(cloudId, issueKey, {
+        "version": 1,
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "This issue is worth "
+              },
+              {
+                "type": "text",
+                "text": `${storyPoints} story points`,
+                "marks": [
+                  {
+                    "type": "strong"
+                  }
+                ]
+              },
+              {
+                "type": "text",
+                "text": "."
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Visit the meeting where it happened at "
+              },
+              {
+                "type": "text",
+                "text": "Parabol",
+                "marks": [
+                  {
+                    "type": "link",
+                    "attrs": {
+                      "href": "http://action.parabol.co"
+                    }
+                  }
+                ]
+              },
+              {
+                "type": "text",
+                "text": "."
+              }
+            ]
+          }
+        ]
+      })
+    }
+    return true
   }
 }
