@@ -150,6 +150,20 @@ interface JiraIssueBean {
 
 }
 
+interface JiraSearchResponse<T = {summary: string, description: string}> {
+  expand: string,
+  startAt: number,
+  maxResults: number
+  total: number
+  issues: {
+    expand: string
+    id: string
+    self: string
+    key: string
+    fields: T
+  }[]
+}
+
 export default abstract class AtlassianManager {
   abstract fetch: any
   static SCOPE = 'read:jira-user read:jira-work write:jira-work offline_access'
@@ -273,7 +287,59 @@ export default abstract class AtlassianManager {
       | AtlassianError
       | JiraError
   }
+
   async getIssue(cloudId: string, issueKey: string) {
     return this.get(`https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/issue/${issueKey}?fields=summary,description`) as AtlassianError | JiraError | JiraIssueBean
+  }
+
+  async getIssues(queryString: string, isJQL: boolean, projectKeyFilters: {cloudId: string, projectId?: string}[]) {
+    const projectsByCloudId = {} as {[cloudId: string]: string[]}
+    projectKeyFilters.forEach((project) => {
+      const {cloudId, projectId} = project
+      projectsByCloudId[cloudId] = projectsByCloudId[cloudId] || []
+      if (projectId) {
+        projectsByCloudId[cloudId].push(projectId)
+      }
+    })
+    const cloudIds = Object.keys(projectsByCloudId)
+    const allIssues = [] as {id: number, key: string, summary: string, cloudId: string, cloudName: string}[]
+    let firstError: string | null = null
+    const sitesPromise = this.getAccessibleResources()
+    const reqs = cloudIds.map(async (cloudId) => {
+      // TODO add project filter
+      // const projects = projectsByCloudId[cloudId]
+      const order = 'order by lastViewed DESC'
+      const jql = queryString ? isJQL ? queryString : `text ~ \"${queryString}\" ${order}` : order
+      const url = `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/search`
+      const payload = {
+        jql,
+        maxResults: 100,
+        fields: ['summary', 'description']
+      }
+      // TODO add type
+      const res = await this.post(url, payload) as AtlassianError | JiraError | JiraSearchResponse
+      if ('issues' in res) {
+        const {issues} = res
+        issues.forEach((issue) => {
+          const {id, key, fields} = issue
+          const {summary} = fields
+          allIssues.push({key, summary, cloudId, id: Number(id), cloudName: ''})
+        })
+      }
+    })
+    await Promise.all(reqs)
+    const sites = await sitesPromise
+    if ('message' in sites) {
+      // no cloud name available
+    } else {
+      const cloudNameLookup = {} as {[cloudId: string]: string}
+      sites.forEach((site) => {
+        cloudNameLookup[site.id] = site.name
+      })
+      allIssues.forEach((issue) => {
+        issue.cloudName = cloudNameLookup[issue.cloudId]
+      })
+    }
+    return {error: firstError, issues: allIssues}
   }
 }

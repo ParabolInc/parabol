@@ -1,13 +1,12 @@
-import graphql from 'babel-plugin-relay/macro'
-import {createFragmentContainer, commitLocalUpdate} from 'react-relay'
-import {JiraScopingSearchInput_meeting} from '../__generated__/JiraScopingSearchInput_meeting.graphql'
-import React from 'react'
 import styled from '@emotion/styled'
-import {PALETTE} from '../styles/paletteV2'
-import Icon from './Icon'
+import graphql from 'babel-plugin-relay/macro'
+import React from 'react'
+import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import Atmosphere from '../Atmosphere'
 import useAtmosphere from '../hooks/useAtmosphere'
-import AtlassianClientManager from '../utils/AtlassianClientManager'
+import {PALETTE} from '../styles/paletteV2'
+import {JiraScopingSearchInput_meeting} from '../__generated__/JiraScopingSearchInput_meeting.graphql'
+import Icon from './Icon'
 
 const SearchInput = styled('input')({
   appearance: 'none',
@@ -48,10 +47,7 @@ interface Props {
 
 const JiraScopingSearchInput = (props: Props) => {
   const {meeting} = props
-  const {id: meetingId, jiraSearchQuery, viewerMeetingMember} = meeting
-  const {teamMember} = viewerMeetingMember
-  const {atlassianAuth} = teamMember
-  const accessToken = atlassianAuth?.accessToken
+  const {id: meetingId, jiraSearchQuery} = meeting
   const isEmpty = !jiraSearchQuery
   const atmosphere = useAtmosphere()
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -60,18 +56,9 @@ const JiraScopingSearchInput = (props: Props) => {
   const clearSearch = () => {
     setSearch(atmosphere, meetingId, '')
   }
-  const onKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key !== 'Enter' || e.shiftKey) return
-    onSubmit()
-
-  }
-  const onSubmit = () => {
-    const manager = new AtlassianClientManager(accessToken || '')
-    console.log('man', manager)
-  }
   return (
     <Wrapper>
-      <SearchInput value={jiraSearchQuery || ''} placeholder={'Search issues on Jira'} onChange={onChange} onKeyPress={onKeyPress} />
+      <SearchInput value={jiraSearchQuery || ''} placeholder={'Search issues on Jira'} onChange={onChange} />
       <ClearSearchIcon isEmpty={isEmpty} onClick={clearSearch}>close</ClearSearchIcon>
     </Wrapper>
   )
@@ -82,13 +69,6 @@ export default createFragmentContainer(JiraScopingSearchInput, {
     fragment JiraScopingSearchInput_meeting on PokerMeeting {
       id
       jiraSearchQuery
-      viewerMeetingMember {
-        teamMember {
-          atlassianAuth {
-            accessToken
-          }
-        }
-      }
     }
   `
 })

@@ -4,12 +4,12 @@ import Checkbox from './Checkbox'
 
 const Item = styled('div')({
   display: 'flex',
-  paddingLeft: 16
+  padding: '8px 16px'
 })
 
 const Title = styled('div')({
   paddingLeft: 16,
-  paddingBottom: 16,
+  paddingBottom: 20, // total height is 56
   fontWeight: 600
 })
 interface Props {

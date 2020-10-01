@@ -29,7 +29,7 @@ const EstimateStageJira = new GraphQLObjectType<any, GQLContext>({
         const {cloudId, issueKey} = JSON.parse(serviceTaskId)
         const manager = new AtlassianServerManager(accessToken)
         const issueRes = await manager.getIssue(cloudId, issueKey)
-        const data = {cloudId, issueKey, summary: '', description: ''}
+        const data = {cloudId, key: issueKey, summary: '', description: ''}
         if ('message' in issueRes) {
           sendToSentry(new Error(issueRes.message), {userId: viewerId})
           data.summary = issueRes.message

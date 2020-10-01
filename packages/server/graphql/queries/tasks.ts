@@ -70,11 +70,12 @@ export default {
 
     // VALIDATE
     if (teamIds?.length > 100 || userIds?.length > 100) {
-      standardError(new Error('Task filter is too broad'), {
+      const err = new Error('Task filter is too broad')
+      standardError(err, {
         userId: viewerId,
         tags: {userIds, teamIds}
       })
-      return connectionFromTasks([])
+      return connectionFromTasks([], 0, err)
     }
     // common queries
     // - give me all the tasks for a particular team (users: all, team: abc)

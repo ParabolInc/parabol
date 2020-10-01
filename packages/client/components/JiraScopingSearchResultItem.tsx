@@ -1,8 +1,10 @@
 import styled from '@emotion/styled'
+import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import Checkbox from './Checkbox'
-import JiraIssueLink from './JiraIssueLink'
+import {createFragmentContainer} from 'react-relay'
 import {PALETTE} from '../styles/paletteV2'
+import {JiraScopingSearchResultItem_issue} from '../__generated__/JiraScopingSearchResultItem_issue.graphql'
+import Checkbox from './Checkbox'
 
 const Item = styled('div')({
   display: 'flex',
@@ -21,32 +23,51 @@ const Title = styled('div')({
 
 })
 
-const Link = styled(JiraIssueLink)({
-  paddingLeft: 0,
+const StyledLink = styled('a')({
+  color: PALETTE.LINK_BLUE,
+  display: 'block',
   fontSize: 12,
+  lineHeight: '20px',
   textDecoration: 'none',
-  color: PALETTE.LINK_BLUE
+  '&:hover,:focus': {
+    textDecoration: 'underline'
+  }
 })
 
 interface Props {
   isSelected: boolean
-  title: string
-  issueKey: string
-  cloudName: string
-  projectKey: string
+  issue: JiraScopingSearchResultItem_issue
 }
 
 const JiraScopingSearchResultItem = (props: Props) => {
-  const {cloudName, isSelected, title, issueKey, projectKey} = props
+  const {isSelected, issue} = props
+  const {key, summary, url} = issue
   return (
     <Item>
       <Checkbox active={isSelected} onClick={() => console.log('click')} />
       <Issue>
-        <Title>{title}</Title>
-        <Link issueKey={issueKey} cloudName={cloudName} projectKey={projectKey} />
+        <Title>{summary}</Title>
+        <StyledLink
+          href={url}
+          rel='noopener noreferrer'
+          target='_blank'
+          title={`Jira Issue #${key}`}
+        >
+          {key}
+        </StyledLink>
       </Issue>
     </Item>
   )
 }
 
-export default JiraScopingSearchResultItem
+export default createFragmentContainer(
+  JiraScopingSearchResultItem,
+  {
+    issue: graphql`
+    fragment JiraScopingSearchResultItem_issue on JiraIssue {
+      summary
+      key
+      url
+    }`
+  }
+)

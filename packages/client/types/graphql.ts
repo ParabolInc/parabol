@@ -1617,6 +1617,11 @@ export interface ITeam {
   agendaItems: Array<IAgendaItem>;
 
   /**
+   * A list of issues coming straight from the integrated jira integration
+   */
+  jiraIssues: IJiraIssueConnection;
+
+  /**
    * All of the tasks for this team
    */
   tasks: ITaskConnection;
@@ -1651,6 +1656,29 @@ export interface IMeetingOnTeamArguments {
    * The unique meetingId
    */
   meetingId: string;
+}
+
+export interface IJiraIssuesOnTeamArguments {
+  /**
+   * @default 100
+   */
+  first?: number | null;
+
+  /**
+   * the datetime cursor
+   */
+  after?: any | null;
+
+  /**
+   * A string of text to search for, or JQL if isJQL is true
+   */
+  queryString?: string | null;
+
+  /**
+   * true if the queryString is JQL, else false
+   */
+  isJQL: boolean;
+  projectKeyFilters?: Array<string> | null;
 }
 
 export interface ITasksOnTeamArguments {
@@ -2231,6 +2259,97 @@ export interface IOrgUserCount {
    * The number of orgUsers who do not have an inactive flag
    */
   activeUserCount: number;
+}
+
+/**
+ * A connection to a list of items.
+ */
+export interface IJiraIssueConnection {
+  __typename: 'JiraIssueConnection';
+
+  /**
+   * Page info with cursors coerced to ISO8601 dates
+   */
+  pageInfo: IPageInfoDateCursor | null;
+
+  /**
+   * A list of edges.
+   */
+  edges: Array<IJiraIssueEdge>;
+
+  /**
+   * An error with the connection, if any
+   */
+  error: IStandardMutationError | null;
+}
+
+/**
+ * An edge in a connection.
+ */
+export interface IJiraIssueEdge {
+  __typename: 'JiraIssueEdge';
+
+  /**
+   * The item at the end of the edge
+   */
+  node: IJiraIssue;
+  cursor: any | null;
+}
+
+/**
+ * The Jira Issue that comes direct from Jira
+ */
+export interface IJiraIssue {
+  __typename: 'JiraIssue';
+
+  /**
+   * shortid
+   */
+  id: string;
+
+  /**
+   * The ID of the jira cloud where the issue lives
+   */
+  cloudId: string;
+
+  /**
+   * The name of the jira cloud where the issue lives
+   */
+  cloudName: string;
+
+  /**
+   * The url to access the issue
+   */
+  url: any;
+
+  /**
+   * The key of the issue as found in Jira
+   */
+  key: string;
+
+  /**
+   * The plaintext summary of the jira issue
+   */
+  summary: string;
+
+  /**
+   * The plaintext description of the jira issue
+   */
+  description: string;
+}
+
+export interface IStandardMutationError {
+  __typename: 'StandardMutationError';
+
+  /**
+   * The title of the error
+   */
+  title: string | null;
+
+  /**
+   * The full error
+   */
+  message: string;
 }
 
 /**
@@ -2987,20 +3106,6 @@ export interface ISuggestedIntegrationQueryPayload {
    * All the integrations that are likely to be integrated
    */
   items: Array<SuggestedIntegration> | null;
-}
-
-export interface IStandardMutationError {
-  __typename: 'StandardMutationError';
-
-  /**
-   * The title of the error
-   */
-  title: string | null;
-
-  /**
-   * The full error
-   */
-  message: string;
 }
 
 /**
@@ -4102,38 +4207,6 @@ export interface IEstimateStageJira {
    * the issue straight from Jira
    */
   issue: IJiraIssue;
-}
-
-/**
- * The Jira Issue that comes direct from Jira
- */
-export interface IJiraIssue {
-  __typename: 'JiraIssue';
-
-  /**
-   * shortid
-   */
-  id: string;
-
-  /**
-   * The ID of the jira cloud where the issue lives
-   */
-  cloudId: string;
-
-  /**
-   * The key of the issue as found in Jira
-   */
-  issueKey: string;
-
-  /**
-   * The plaintext summary of the jira issue
-   */
-  summary: string;
-
-  /**
-   * The plaintext description of the jira issue
-   */
-  description: string;
 }
 
 /**
