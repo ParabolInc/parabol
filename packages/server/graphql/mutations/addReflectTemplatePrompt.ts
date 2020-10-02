@@ -1,4 +1,4 @@
-import {GraphQLID, GraphQLNonNull} from 'graphql'
+import {GraphQLID, GraphQLNonNull, isNullableType} from 'graphql'
 import {SubscriptionChannel, Threshold} from 'parabol-client/types/constEnums'
 import dndNoise from 'parabol-client/utils/dndNoise'
 import palettePickerOptions from '../../../client/styles/palettePickerOptions'
@@ -40,7 +40,7 @@ const addReflectTemplatePrompt = {
       .getAll(teamId, {index: 'teamId'})
       .filter({
         templateId,
-        isActive: true
+        removedAt: null
       })
       .run()
     if (activePrompts.length >= Threshold.MAX_REFLECTION_PROMPTS) {
@@ -59,7 +59,8 @@ const addReflectTemplatePrompt = {
       sortOrder,
       question: `New prompt #${activePrompts.length + 1}`,
       description: '',
-      groupColor: availableNewColor?.hex ?? PALETTE.PROMPT_GREEN
+      groupColor: availableNewColor?.hex ?? PALETTE.PROMPT_GREEN,
+      removedAt: null
     })
 
     await r

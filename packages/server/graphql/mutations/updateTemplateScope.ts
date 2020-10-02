@@ -30,6 +30,7 @@ const updateTemplateScope = {
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) => {
     const r = await getRethink()
+    const now = new Date()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
     const viewerId = getUserId(authToken)
@@ -98,7 +99,7 @@ const updateTemplateScope = {
         inactivatedPrompts: r
           .table('ReflectPrompt')
           .getAll(r.args(promptIds))
-          .update({isActive: false})
+          .update({removedAt: now})
       }).run()
     } else {
       await r

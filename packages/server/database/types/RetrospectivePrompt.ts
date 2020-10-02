@@ -7,7 +7,7 @@ interface Input {
   question: string
   description: string
   groupColor: string
-  removedAt?: Date
+  removedAt: Date | null
   title?: string
   parentPromptId?: string
 }
@@ -21,7 +21,7 @@ export default class RetrospectivePrompt {
   teamId: string
   templateId: string
   question: string
-  removedAt?: Date
+  removedAt: Date | null
   title: string
   updatedAt = new Date()
   parentPromptId?: string
