@@ -75,6 +75,10 @@ const ReflectPrompt = new GraphQLObjectType<any, GQLContext>({
       description: 'The color used to visually group a phase item.',
       type: new GraphQLNonNull(GraphQLString),
       resolve: ({groupColor}) => groupColor || '#FFFFFF'
+    },
+    removedAt: {
+      type: GraphQLISO8601Type,
+      description: 'The datetime that the prompt was removed. Null if it has not been removed.'
     }
   })
 })

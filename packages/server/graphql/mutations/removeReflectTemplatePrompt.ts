@@ -53,6 +53,7 @@ const removeReflectTemplatePrompt = {
       .get(promptId)
       .update({
         isActive: false,
+        removedAt: now,
         updatedAt: now
       })
       .run()

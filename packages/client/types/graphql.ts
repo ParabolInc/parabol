@@ -1777,6 +1777,11 @@ export interface IReflectPrompt {
    * The color used to visually group a phase item.
    */
   groupColor: string;
+
+  /**
+   * The datetime that the prompt was removed. Null if it has not been removed.
+   */
+  removedAt: any | null;
 }
 
 /**
