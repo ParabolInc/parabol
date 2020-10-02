@@ -29,7 +29,7 @@ export const removeReflectTemplatePromptTeamUpdater: SharedUpdater<RemoveReflect
   payload,
   {store}
 ) => {
-  const promptId = payload.getLinkedRecord('prompt').getValue('id') // getInProxy(payload, 'prompt', 'id')
+  const promptId = payload.getLinkedRecord('prompt').getValue('id')
   const teamId = payload.getLinkedRecord('prompt').getValue('teamId') as string
   handleRemoveReflectTemplatePrompt(promptId, teamId, store)
 }
