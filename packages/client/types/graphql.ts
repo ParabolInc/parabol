@@ -6539,6 +6539,11 @@ export interface IMutation {
   removeTeamMember: IRemoveTeamMemberPayload | null;
 
   /**
+   * Reset meeting to a previously completed stage
+   */
+  resetMeetingToStage: IResetMeetingToStagePayload;
+
+  /**
    * Reset the password for an account
    */
   resetPassword: IResetPasswordPayload;
@@ -7325,6 +7330,11 @@ export interface IRemoveTeamMemberOnMutationArguments {
   teamMemberId: string;
 }
 
+export interface IResetMeetingToStageOnMutationArguments {
+  meetingId: string;
+  stageId: string;
+}
+
 export interface IResetPasswordOnMutationArguments {
   /**
    * the password reset token
@@ -7962,6 +7972,11 @@ export interface IArchiveTeamPayload {
    * all the suggested actions that never happened
    */
   removedSuggestedActionIds: Array<string | null> | null;
+
+  /**
+   * A list of the ids of templates created by a team
+   */
+  teamTemplateIds: Array<string>;
 }
 
 /**
@@ -9224,6 +9239,12 @@ export interface IRemoveTeamMemberPayload {
   kickOutNotification: INotifyKickedOut | null;
 }
 
+export interface IResetMeetingToStagePayload {
+  __typename: 'ResetMeetingToStagePayload';
+  error: IStandardMutationError | null;
+  meeting: NewMeeting | null;
+}
+
 export interface IResetPasswordPayload {
   __typename: 'ResetPasswordPayload';
   error: IStandardMutationError | null;
@@ -9761,6 +9782,7 @@ export type MeetingSubscriptionPayload =
   | INewMeetingCheckInPayload
   | IPromoteNewMeetingFacilitatorPayload
   | IRemoveReflectionPayload
+  | IResetMeetingToStagePayload
   | ISetAppLocationSuccess
   | ISetPhaseFocusPayload
   | ISetStageTimerPayload

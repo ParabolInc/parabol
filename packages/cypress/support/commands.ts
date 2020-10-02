@@ -36,7 +36,7 @@ const login = (_overrides = {}) => {
   const exp = toEpochSeconds(now + JWT_LIFESPAN)
   const iat = toEpochSeconds(now)
   const tokenObj = {
-    sub: 'local|wnVeDjF-n',
+    sub: 'local|CfKdrQVeo',
     aud: 'action',
     iss: window.location.origin,
     exp,
