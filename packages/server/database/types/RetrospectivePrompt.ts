@@ -17,7 +17,6 @@ export default class RetrospectivePrompt {
   createdAt = new Date()
   description: string
   groupColor: string
-  isActive = true
   sortOrder: number
   teamId: string
   templateId: string

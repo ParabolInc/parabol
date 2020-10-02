@@ -24,10 +24,6 @@ const ReflectPrompt = new GraphQLObjectType<any, GQLContext>({
     createdAt: {
       type: new GraphQLNonNull(GraphQLISO8601Type)
     },
-    isActive: {
-      type: GraphQLBoolean,
-      description: 'true if the phase item is currently used by the team, else false'
-    },
     teamId: {
       type: new GraphQLNonNull(GraphQLID),
       description: 'foreign key. use the team field'

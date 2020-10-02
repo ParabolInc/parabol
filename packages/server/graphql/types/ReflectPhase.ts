@@ -46,13 +46,13 @@ const ReflectPhase = new GraphQLObjectType<any, GQLContext>({
       resolve: async ({meetingId, promptTemplateId}, _args, {dataLoader}) => {
         const prompts = await dataLoader.get('reflectPromptsByTemplateId').load(promptTemplateId)
         const meeting = await dataLoader.get('newMeetings').load(meetingId)
-
-        const filteredPrompts = prompts.filter(
+        // only show prompts that were created before the meeting and
+        // either have not been removed or they were removed after the meeting was created
+        return prompts.filter(
           (prompt) =>
             prompt.createdAt < meeting.createdAt &&
             (!prompt.removedAt || meeting.createdAt < prompt.removedAt)
         )
-        return filteredPrompts
       }
     },
     stages: {

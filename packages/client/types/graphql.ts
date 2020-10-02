@@ -1728,11 +1728,6 @@ export interface IReflectPrompt {
   createdAt: any;
 
   /**
-   * true if the phase item is currently used by the team, else false
-   */
-  isActive: boolean | null;
-
-  /**
    * foreign key. use the team field
    */
   teamId: string;
