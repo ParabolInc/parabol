@@ -52,7 +52,6 @@ const ReflectPhase = new GraphQLObjectType<any, GQLContext>({
             prompt.createdAt < meeting.createdAt &&
             (!prompt.removedAt || meeting.createdAt < prompt.removedAt)
         )
-        // return prompts.filter(({isActive}) => isActive)
         return filteredPrompts
       }
     },

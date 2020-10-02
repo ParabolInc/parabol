@@ -1,10 +1,21 @@
 import {RecordSourceSelectorProxy} from 'relay-runtime'
 import pluralizeHandler from './pluralizeHandler'
-import removeFromRefs from '../../utils/relay/removeFromRefs'
+import {IRetrospectiveMeetingSettings, MeetingTypeEnum} from '~/types/graphql'
+import safeRemoveNodeFromArray from '~/utils/relay/safeRemoveNodeFromArray'
 
-const handleRemoveReflectTemplatePrompt = (promptId: string, store: RecordSourceSelectorProxy) => {
-  store.delete(promptId)
-  removeFromRefs(promptId, store, {ReflectTemplate: ['prompts']})
+const handleRemoveReflectTemplatePrompt = (
+  promptId: string,
+  teamId: string,
+  store: RecordSourceSelectorProxy
+) => {
+  const team = store.get(teamId)!
+  const settings = team.getLinkedRecord<IRetrospectiveMeetingSettings>('meetingSettings', {
+    meetingType: MeetingTypeEnum.retrospective
+  })
+  if (!settings) return
+  const template = settings.getLinkedRecord('selectedTemplate')
+  if (!template) return
+  safeRemoveNodeFromArray(promptId, template, 'prompts')
 }
 
 const handleRemoveReflectTemplatePrompts = pluralizeHandler(handleRemoveReflectTemplatePrompt)
