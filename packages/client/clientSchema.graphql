@@ -17,6 +17,7 @@ extend type PokerMeeting {
   localStage: NewMeetingStage!
   showSidebar: Boolean!
   jiraSearchQuery: String
+  parabolSearchQuery: String
 }
 
 extend type RetrospectiveMeeting {
