@@ -1,11 +1,4 @@
-import {
-  GraphQLBoolean,
-  GraphQLFloat,
-  GraphQLID,
-  GraphQLNonNull,
-  GraphQLObjectType,
-  GraphQLString
-} from 'graphql'
+import {GraphQLFloat, GraphQLID, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
 import {GQLContext} from '../graphql'
 import {resolveTeam} from '../resolvers'
 import GraphQLISO8601Type from './GraphQLISO8601Type'

@@ -1,4 +1,4 @@
-import {GraphQLID, GraphQLNonNull, isNullableType} from 'graphql'
+import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel, Threshold} from 'parabol-client/types/constEnums'
 import dndNoise from 'parabol-client/utils/dndNoise'
 import palettePickerOptions from '../../../client/styles/palettePickerOptions'
