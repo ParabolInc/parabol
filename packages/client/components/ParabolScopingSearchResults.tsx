@@ -10,19 +10,15 @@ interface Props {
 
 const ParabolScopingSearchResults = (props: Props) => {
   const {meeting} = props
-  console.log(meeting)
-  const results = [
-    {
-      isSelected: true,
-      title: 'Parabol Issue 1'
-    }
-  ]
+  const edges = meeting.team.tasks?.edges
+  const tasks = edges.map(({node}) => node)
 
+  // TODO: add total count returned to connection e.g. connection {count, pageInfo, edges}
   return (
     <>
-      <ParabolScopingSelectAllIssues selected={false} issueCount={results.length} />
-      {results.map((result) => {
-        return <ParabolScopingSearchResultItem {...result} />
+      <ParabolScopingSelectAllIssues selected={false} issueCount={5} />
+      {tasks.map((task) => {
+        return <ParabolScopingSearchResultItem key={task.id} item={task} />
       })}
     </>
   )
@@ -32,6 +28,18 @@ export default createFragmentContainer(ParabolScopingSearchResults, {
   meeting: graphql`
     fragment ParabolScopingSearchResults_meeting on PokerMeeting {
       id
+      team {
+        id
+        tasks(first: 50) @connection(key: "ParabolScopingSearchResults_tasks") {
+          edges {
+            node {
+              id
+              updatedAt
+              ...ParabolScopingSearchResultItem_item
+            }
+          }
+        }
+      }
     }
   `
 })
