@@ -86,7 +86,8 @@ const updateTemplateScope = {
         return new RetrospectivePrompt({
           ...prompt,
           templateId: clonedTemplateId,
-          parentPromptId: prompt.id
+          parentPromptId: prompt.id,
+          removedAt: null
         })
       })
       await r({
