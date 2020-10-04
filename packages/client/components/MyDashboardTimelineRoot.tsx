@@ -6,7 +6,6 @@ import {LoaderSize} from '../types/constEnums'
 import renderQuery from '../utils/relay/renderQuery'
 import MyDashboardTimeline from './MyDashboardTimeline'
 
-// Changing the name here requires a change to getLastSeenAtURL.ts
 const query = graphql`
   query MyDashboardTimelineRootQuery($first: Int!, $after: DateTime, $userIds: [ID!]) {
     viewer {

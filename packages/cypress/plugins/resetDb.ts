@@ -13,11 +13,13 @@ const resetDb = ({source, target}: DBOptions) => async () => {
   await r
     .db(target)
     .tableList()
-    .forEach((t: string) =>
-      r
-        .db(target)
-        .table(t)
-        .delete()
+    .forEach(
+      (t: string) =>
+        t !== 'QueryMap' &&
+        r
+          .db(target)
+          .table(t)
+          .delete()
     )
     .run()
   // add source docs to target db
@@ -25,15 +27,17 @@ const resetDb = ({source, target}: DBOptions) => async () => {
     .db(target)
     .tableList()
     .forEach((t: string) => {
-      return r
-        .db(target)
-        .table(t)
-        .insert(
-          r
-            .db(source)
-            .table(t)
-            .coerceTo('array')
-        )
+      if (t !== 'QueryMap') {
+        return r
+          .db(target)
+          .table(t)
+          .insert(
+            r
+              .db(source)
+              .table(t)
+              .coerceTo('array')
+          )
+      }
     })
     .run()
 }

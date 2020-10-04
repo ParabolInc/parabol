@@ -25,13 +25,13 @@ const TaskFooterUserAssigneeMenu = (props: Props) => {
   const {area, menuProps, task, viewer} = props
   const {userId, id: taskId} = task
   const {team} = viewer
-  const {teamMembers} = team || {teamMembers: []}
+  const {teamMembers}: any = team || {teamMembers: []}
+  const atmosphere = useAtmosphere()
+  if (!team) return null
   const assignees = useMemo(
     () => teamMembers.filter((teamMember) => teamMember.userId !== userId),
     [userId, teamMembers]
   )
-  const atmosphere = useAtmosphere()
-  if (!team) return null
   const handleTaskUpdate = (newAssignee) => () => {
     if (userId !== newAssignee.userId) {
       UpdateTaskMutation(atmosphere, {updatedTask: {id: taskId, userId: newAssignee.userId}, area})
@@ -62,6 +62,7 @@ const TaskFooterUserAssigneeMenu = (props: Props) => {
 export default createFragmentContainer(TaskFooterUserAssigneeMenu, {
   viewer: graphql`
     fragment TaskFooterUserAssigneeMenu_viewer on User {
+      id
       team(teamId: $teamId) {
         teamId: id
         teamMembers(sortBy: "preferredName") {

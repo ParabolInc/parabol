@@ -1,4 +1,4 @@
-function testArchivedTasksTeamView(isTaskArchived: boolean) {
+const testArchivedTasksTeamView = (isTaskArchived: boolean) => {
   // shows sidebar and click the team name
   cy.get('nav')
     .contains('cypress')
@@ -24,7 +24,7 @@ function testArchivedTasksTeamView(isTaskArchived: boolean) {
     : cy.get('body').should('contain', 'This is a task card')
 }
 
-function testArchivedTasksTaskView(isTaskArchived: boolean) {
+const testArchivedTasksTaskView = (isTaskArchived: boolean) => {
   // shows sidebar and click "Tasks" in the menu
   cy.get('nav')
     .contains('Tasks')
@@ -33,23 +33,25 @@ function testArchivedTasksTaskView(isTaskArchived: boolean) {
   cy.wait(1000)
 
   // click "Archived" checkbox
-  cy.get('button')
-    .contains('Archived')
-    .click()
+  cy.get('[data-cy=archived-checkbox]').click()
+  cy.url().should('include', 'archived=true')
   isTaskArchived
     ? cy.get('body').should('contain', 'This is a task card')
     : cy.get('body').should('contain', 'There are zero archived tasks')
 
   // toggle "Archived" checkbox
-  cy.get('button')
-    .contains('Archived')
-    .click()
+  cy.get('[data-cy=archived-checkbox]').click()
+  cy.url().should('not.include', 'archived=true')
   isTaskArchived
     ? cy.get('body').should('not.contain', 'This is a task card')
     : cy.get('body').should('contain', 'This is a task card')
 }
 
 describe('archivedTasks', () => {
+  beforeEach(() => {
+    cy.task('resetDb')
+  })
+
   it('Test showing archived tasks in Team View', () => {
     cy.login()
     testArchivedTasksTeamView(false)

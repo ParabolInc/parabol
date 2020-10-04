@@ -94,7 +94,6 @@ const dev = async (maybeInit, isDangerous) => {
     await require('./buildDll')()
     await compileServers()
   }
-
   fork(path.join(PROJECT_ROOT, 'dev/gqlExecutor.js'))
   fork(path.join(PROJECT_ROOT, 'dev/sfu.js'))
   const redis = new Redis(process.env.REDIS_URL)

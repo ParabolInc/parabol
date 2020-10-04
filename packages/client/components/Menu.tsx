@@ -157,7 +157,7 @@ const Menu = forwardRef((props: Props, ref: any) => {
         setSafeIdx(activeIdx === null ? null : activeIdx - 1)
       } else if (e.key === 'Enter' || (tabReturns && e.key === 'Tab')) {
         e.preventDefault()
-        if (activeIdx) {
+        if (activeIdx !== null) {
           const itemHandle = itemHandles.current[activeIdx]
           itemHandle?.onClick?.(e)
         }

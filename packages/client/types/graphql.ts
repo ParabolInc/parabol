@@ -20,46 +20,641 @@ export interface IGraphQLResponseErrorLocation {
   column: number;
 }
 
-export interface IQuery {
-  __typename: 'Query';
-  viewer: IUser | null;
-  getDemoEntities: IGetDemoEntitiesPayload;
-  massInvitation: IMassInvitationPayload;
-  verifiedInvitation: IVerifiedInvitationPayload;
-  SAMLIdP: string | null;
+/**
+ * An authentication strategy using Google
+ */
+export interface IAuthIdentityGoogle {
+  __typename: 'AuthIdentityGoogle';
+
+  /**
+   * true if the email address using this strategy is verified, else false
+   */
+  isEmailVerified: boolean;
+  type: AuthIdentityTypeEnum;
+
+  /**
+   * The googleID for this strategy
+   */
+  id: string;
 }
 
-export interface IGetDemoEntitiesOnQueryArguments {
+/**
+ * An authentication strategy to log in to Parabol
+ */
+export type AuthIdentity = IAuthIdentityGoogle | IAuthIdentityLocal;
+
+/**
+ * An authentication strategy to log in to Parabol
+ */
+export interface IAuthIdentity {
+  __typename: 'AuthIdentity';
+
   /**
-   * the reflection bodies to entitize
+   * true if the email address using this strategy is verified, else false
    */
-  text: string;
+  isEmailVerified: boolean;
+  type: AuthIdentityTypeEnum;
 }
 
-export interface IMassInvitationOnQueryArguments {
-  /**
-   * The mass invitation token
-   */
-  token: string;
+/**
+ * The types of authentication strategies
+ */
+export const enum AuthIdentityTypeEnum {
+  LOCAL = 'LOCAL',
+  GOOGLE = 'GOOGLE'
 }
 
-export interface IVerifiedInvitationOnQueryArguments {
+/**
+ * An authentication strategy using an email & password
+ */
+export interface IAuthIdentityLocal {
+  __typename: 'AuthIdentityLocal';
+
   /**
-   * The invitation token
+   * true if the email address using this strategy is verified, else false
    */
-  token: string;
+  isEmailVerified: boolean;
+  type: AuthIdentityTypeEnum;
 }
 
-export interface ISAMLIdPOnQueryArguments {
-  /**
-   * the email associated with a SAML login
-   */
-  email: string;
+/**
+ * The meeting phase where all team members check in one-by-one
+ */
+export interface ICheckInPhase {
+  __typename: 'CheckInPhase';
 
   /**
-   * true if the user was invited, else false
+   * shortid
    */
-  isInvited?: boolean | null;
+  id: string;
+  meetingId: string;
+  teamId: string;
+
+  /**
+   * The type of phase
+   */
+  phaseType: NewMeetingPhaseTypeEnum;
+  stages: Array<ICheckInStage>;
+
+  /**
+   * The checkIn greeting (fun language)
+   */
+  checkInGreeting: IMeetingGreeting;
+
+  /**
+   * The checkIn question of the week (draft-js format)
+   */
+  checkInQuestion: string;
+}
+
+export type NewMeetingPhase =
+  | ICheckInPhase
+  | IReflectPhase
+  | IDiscussPhase
+  | IUpdatesPhase
+  | IAgendaItemsPhase
+  | IGenericMeetingPhase
+  | IEstimatePhase;
+
+export interface INewMeetingPhase {
+  __typename: 'NewMeetingPhase';
+
+  /**
+   * shortid
+   */
+  id: string;
+  meetingId: string;
+  teamId: string;
+
+  /**
+   * The type of phase
+   */
+  phaseType: NewMeetingPhaseTypeEnum;
+  stages: Array<NewMeetingStage>;
+}
+
+/**
+ * The phase of the meeting
+ */
+export const enum NewMeetingPhaseTypeEnum {
+  lobby = 'lobby',
+  checkin = 'checkin',
+  updates = 'updates',
+  firstcall = 'firstcall',
+  agendaitems = 'agendaitems',
+  lastcall = 'lastcall',
+  reflect = 'reflect',
+  group = 'group',
+  vote = 'vote',
+  discuss = 'discuss',
+  SUMMARY = 'SUMMARY',
+  SCOPE = 'SCOPE',
+  ESTIMATE = 'ESTIMATE'
+}
+
+/**
+ * An instance of a meeting phase item. On the client, this usually represents a single view
+ */
+export type NewMeetingStage =
+  | ICheckInStage
+  | IGenericMeetingStage
+  | IRetroDiscussStage
+  | IUpdatesStage
+  | IEstimateStageJira
+  | IEstimateStageParabol
+  | IAgendaItemsStage;
+
+/**
+ * An instance of a meeting phase item. On the client, this usually represents a single view
+ */
+export interface INewMeetingStage {
+  __typename: 'NewMeetingStage';
+
+  /**
+   * stageId, shortid
+   */
+  id: string;
+
+  /**
+   * The datetime the stage was completed
+   */
+  endAt: any | null;
+
+  /**
+   * foreign key. try using meeting
+   */
+  meetingId: string;
+
+  /**
+   * The meeting this stage belongs to
+   */
+  meeting: NewMeeting | null;
+
+  /**
+   * true if the facilitator has completed this stage, else false. Should be boolean(endAt)
+   */
+  isComplete: boolean;
+
+  /**
+   * true if any meeting participant can navigate to this stage
+   */
+  isNavigable: boolean;
+
+  /**
+   * true if the facilitator can navigate to this stage
+   */
+  isNavigableByFacilitator: boolean;
+
+  /**
+   * The phase this stage belongs to
+   */
+  phase: NewMeetingPhase | null;
+
+  /**
+   * The type of the phase
+   */
+  phaseType: NewMeetingPhaseTypeEnum | null;
+
+  /**
+   * The datetime the stage was started
+   */
+  startAt: any | null;
+
+  /**
+   * Number of times the facilitator has visited this stage
+   */
+  viewCount: number | null;
+
+  /**
+   * true if a time limit is set, false if end time is set, null if neither is set
+   */
+  isAsync: boolean | null;
+
+  /**
+   * true if the viewer is ready to advance, else false
+   */
+  isViewerReady: boolean;
+
+  /**
+   * the number of meeting members ready to advance, excluding the facilitator
+   */
+  readyCount: number;
+
+  /**
+   * The datetime the phase is scheduled to be finished, null if no time limit or end time is set
+   */
+  scheduledEndTime: any | null;
+
+  /**
+   * The suggested ending datetime for a phase to be completed async, null if not enough data to make a suggestion
+   */
+  suggestedEndTime: any | null;
+
+  /**
+   * The suggested time limit for a phase to be completed together, null if not enough data to make a suggestion
+   */
+  suggestedTimeLimit: number | null;
+
+  /**
+   * The number of milliseconds left before the scheduled end time. Useful for unsynced client clocks. null if scheduledEndTime is null
+   */
+  timeRemaining: number | null;
+}
+
+/**
+ * A team meeting history for all previous meetings
+ */
+export type NewMeeting = IActionMeeting | IRetrospectiveMeeting | IPokerMeeting;
+
+/**
+ * A team meeting history for all previous meetings
+ */
+export interface INewMeeting {
+  __typename: 'NewMeeting';
+
+  /**
+   * The unique meeting id. shortid.
+   */
+  id: string;
+
+  /**
+   * The timestamp the meeting was created
+   */
+  createdAt: any;
+
+  /**
+   * The userId of the desired facilitator (different form facilitatorUserId if disconnected)
+   */
+  defaultFacilitatorUserId: string;
+
+  /**
+   * The timestamp the meeting officially ended
+   */
+  endedAt: any | null;
+
+  /**
+   * The location of the facilitator in the meeting
+   */
+  facilitatorStageId: string;
+
+  /**
+   * The userId (or anonymousId) of the most recent facilitator
+   */
+  facilitatorUserId: string;
+
+  /**
+   * The facilitator team member
+   */
+  facilitator: ITeamMember;
+
+  /**
+   * The team members that were active during the time of the meeting
+   */
+  meetingMembers: Array<MeetingMember>;
+
+  /**
+   * The auto-incrementing meeting number for the team
+   */
+  meetingNumber: number;
+  meetingType: MeetingTypeEnum;
+
+  /**
+   * The name of the meeting
+   */
+  name: string;
+
+  /**
+   * The organization this meeting belongs to
+   */
+  organization: IOrganization;
+
+  /**
+   * The phases the meeting will go through, including all phase-specific state
+   */
+  phases: Array<NewMeetingPhase>;
+
+  /**
+   * true if should show the org the conversion modal, else false
+   */
+  showConversionModal: boolean;
+
+  /**
+   * The time the meeting summary was emailed to the team
+   */
+  summarySentAt: any | null;
+
+  /**
+   * foreign key for team
+   */
+  teamId: string;
+
+  /**
+   * The team that ran the meeting
+   */
+  team: ITeam;
+
+  /**
+   * The last time a meeting was updated (stage completed, finished, etc)
+   */
+  updatedAt: any | null;
+
+  /**
+   * The meeting member of the viewer
+   */
+  viewerMeetingMember: MeetingMember;
+}
+
+/**
+ * A member of a team
+ */
+export interface ITeamMember {
+  __typename: 'TeamMember';
+
+  /**
+   * An ID for the teamMember. userId::teamId
+   */
+  id: string;
+
+  /**
+   * All the integrations that the user could possibly use
+   */
+  allAvailableIntegrations: Array<SuggestedIntegration>;
+
+  /**
+   * The auth for the user. access token is null if not viewer. Use isActive to check for presence
+   */
+  atlassianAuth: IAtlassianAuth | null;
+
+  /**
+   * The datetime the team member was created
+   */
+  createdAt: any;
+
+  /**
+   * The auth for the user. access token is null if not viewer. Use isActive to check for presence
+   */
+  githubAuth: IGitHubAuth | null;
+
+  /**
+   * true if the user is a part of the team, false if they no longer are
+   */
+  isNotRemoved: boolean | null;
+
+  /**
+   * Is user a team lead?
+   */
+  isLead: boolean | null;
+
+  /**
+   * hide the agenda list on the dashboard
+   */
+  hideAgenda: boolean;
+
+  /**
+   * The user email
+   */
+  email: any;
+
+  /**
+   * url of user’s profile picture
+   */
+  picture: any;
+
+  /**
+   * true if this team member belongs to the user that queried it
+   */
+  isSelf: boolean;
+
+  /**
+   * The meeting specifics for the meeting the team member is currently in
+   */
+  meetingMember: MeetingMember | null;
+
+  /**
+   * The name of the assignee
+   */
+  preferredName: string;
+
+  /**
+   * The slack auth for the team member.
+   */
+  slackAuth: ISlackAuth | null;
+
+  /**
+   * A list of events and the slack channels they get posted to
+   */
+  slackNotifications: Array<ISlackNotification>;
+
+  /**
+   * The integrations that the user would probably like to use
+   */
+  suggestedIntegrations: ISuggestedIntegrationQueryPayload;
+
+  /**
+   * Tasks owned by the team member
+   */
+  tasks: ITaskConnection | null;
+
+  /**
+   * The team this team member belongs to
+   */
+  team: ITeam | null;
+
+  /**
+   * foreign key to Team table
+   */
+  teamId: string;
+
+  /**
+   * The user for the team member
+   */
+  user: IUser;
+
+  /**
+   * foreign key to User table
+   */
+  userId: string;
+}
+
+export interface IMeetingMemberOnTeamMemberArguments {
+  meetingId: string;
+}
+
+export interface ITasksOnTeamMemberArguments {
+  first?: number | null;
+
+  /**
+   * the datetime cursor
+   */
+  after?: any | null;
+}
+
+export type SuggestedIntegration =
+  | ISuggestedIntegrationGitHub
+  | ISuggestedIntegrationJira;
+
+export interface ISuggestedIntegration {
+  __typename: 'SuggestedIntegration';
+  id: string;
+  service: TaskServiceEnum;
+}
+
+/**
+ * The list of services for task integrations
+ */
+export const enum TaskServiceEnum {
+  github = 'github',
+  jira = 'jira',
+  PARABOL = 'PARABOL'
+}
+
+/**
+ * OAuth token for a team member
+ */
+export interface IAtlassianAuth {
+  __typename: 'AtlassianAuth';
+
+  /**
+   * shortid
+   */
+  id: string;
+
+  /**
+   * true if the auth is valid, else false
+   */
+  isActive: boolean;
+
+  /**
+   * The access token to atlassian, useful for 1 hour. null if no access token available
+   */
+  accessToken: string | null;
+
+  /**
+   * *The atlassian account ID
+   */
+  accountId: string;
+
+  /**
+   * The atlassian cloud IDs that the user has granted
+   */
+  cloudIds: Array<string>;
+
+  /**
+   * The timestamp the provider was created
+   */
+  createdAt: any;
+
+  /**
+   * The refresh token to atlassian to receive a new 1-hour accessToken, always null since server secret is required
+   */
+  refreshToken: string | null;
+
+  /**
+   * *The team that the token is linked to
+   */
+  teamId: string;
+
+  /**
+   * The timestamp the token was updated at
+   */
+  updatedAt: any;
+
+  /**
+   * The user that the access token is attached to
+   */
+  userId: string;
+}
+
+/**
+ * OAuth token for a team member
+ */
+export interface IGitHubAuth {
+  __typename: 'GitHubAuth';
+
+  /**
+   * shortid
+   */
+  id: string;
+
+  /**
+   * true if an access token exists, else false
+   */
+  isActive: boolean;
+
+  /**
+   * The access token to github. good forever
+   */
+  accessToken: string | null;
+
+  /**
+   * *The GitHub login used for queries
+   */
+  login: string;
+
+  /**
+   * The timestamp the provider was created
+   */
+  createdAt: any;
+
+  /**
+   * *The team that the token is linked to
+   */
+  teamId: string;
+
+  /**
+   * The timestamp the token was updated at
+   */
+  updatedAt: any;
+
+  /**
+   * The user that the access token is attached to
+   */
+  userId: string;
+}
+
+/**
+ * All the user details for a specific meeting
+ */
+export type MeetingMember =
+  | IActionMeetingMember
+  | IRetrospectiveMeetingMember
+  | IPokerMeetingMember;
+
+/**
+ * All the user details for a specific meeting
+ */
+export interface IMeetingMember {
+  __typename: 'MeetingMember';
+
+  /**
+   * A composite of userId::meetingId
+   */
+  id: string;
+
+  /**
+   * true if present, false if absent, else null
+   */
+  isCheckedIn: boolean | null;
+  meetingId: string;
+  meetingType: MeetingTypeEnum;
+  teamId: string;
+  teamMember: ITeamMember;
+  user: IUser;
+  userId: string;
+
+  /**
+   * The last time a meeting was updated (stage completed, finished, etc)
+   */
+  updatedAt: any;
+}
+
+/**
+ * The type of meeting
+ */
+export const enum MeetingTypeEnum {
+  action = 'action',
+  retrospective = 'retrospective',
+  poker = 'poker'
 }
 
 /**
@@ -72,28 +667,13 @@ export interface IUser {
    * The userId provided by us
    */
   id: string;
-
-  /**
-   * All the integrations that the user could possibly use
-   */
-  allAvailableIntegrations: Array<SuggestedIntegration>;
   archivedTasks: ITaskConnection | null;
   archivedTasksCount: number | null;
-
-  /**
-   * The auth for the user. access token is null if not viewer. Use isActive to check for presence
-   */
-  atlassianAuth: IAtlassianAuth | null;
 
   /**
    * The assumed company this organizaiton belongs to
    */
   company: ICompany | null;
-
-  /**
-   * The socketIds that the user is currently connected with
-   */
-  connectedSockets: Array<string | null> | null;
 
   /**
    * The timestamp the user was created
@@ -109,11 +689,6 @@ export interface IUser {
    * Any super power given to the user via a super user
    */
   featureFlags: IUserFeatureFlags;
-
-  /**
-   * The auth for the user. access token is null if not viewer. Use isActive to check for presence
-   */
-  githubAuth: IGitHubAuth | null;
 
   /**
    * An array of objects with information about the user's identities.
@@ -209,14 +784,14 @@ export interface IUser {
   rasterPicture: any;
 
   /**
-   * The last time the user connected via websocket or navigated to a common area
+   * The last day the user connected via websocket or navigated to a common area
    */
   lastSeenAt: any | null;
 
   /**
-   * The path the user was last seen at (rough heuristic)
+   * The paths that the user is currently visiting. This is null if the user is not currently online. A URL can also be null if the socket is not in a meeting, e.g. on the timeline.
    */
-  lastSeenAtURL: string | null;
+  lastSeenAtURLs: Array<string | null> | null;
 
   /**
    * The meeting member associated with this user, if a meeting is currently in progress
@@ -262,11 +837,6 @@ export interface IUser {
    * a string with message stating that the user is over the free tier limit, else null
    */
   overLimitCopy: string | null;
-
-  /**
-   * The integrations that the user would probably like to use
-   */
-  suggestedIntegrations: ISuggestedIntegrationQueryPayload;
   tasks: ITaskConnection;
 
   /**
@@ -306,13 +876,6 @@ export interface IUser {
   userOnTeam: IUser | null;
 }
 
-export interface IAllAvailableIntegrationsOnUserArguments {
-  /**
-   * a teamId to use as a filter for the access tokens
-   */
-  teamId: string;
-}
-
 export interface IArchivedTasksOnUserArguments {
   first?: number | null;
 
@@ -330,20 +893,6 @@ export interface IArchivedTasksOnUserArguments {
 export interface IArchivedTasksCountOnUserArguments {
   /**
    * The unique team ID
-   */
-  teamId: string;
-}
-
-export interface IAtlassianAuthOnUserArguments {
-  /**
-   * The teamId for the atlassian auth token
-   */
-  teamId: string;
-}
-
-export interface IGithubAuthOnUserArguments {
-  /**
-   * The teamId for the auth object
    */
   teamId: string;
 }
@@ -421,13 +970,6 @@ export interface IOrganizationUserOnUserArguments {
   orgId: string;
 }
 
-export interface ISuggestedIntegrationsOnUserArguments {
-  /**
-   * a teamId to use as a filter to provide more accurate suggestions
-   */
-  teamId: string;
-}
-
 export interface ITasksOnUserArguments {
   /**
    * the number of tasks to return
@@ -480,6 +1022,11 @@ export interface ITeamMemberOnUserArguments {
    * The team the user is on
    */
   teamId: string;
+
+  /**
+   * If null, defaults to the team member for this user. Else, will grab the team member. Returns null if not on team.
+   */
+  userId?: string | null;
 }
 
 export interface IUserOnTeamOnUserArguments {
@@ -487,24 +1034,6 @@ export interface IUserOnTeamOnUserArguments {
    * The other user
    */
   userId: string;
-}
-
-export type SuggestedIntegration =
-  | ISuggestedIntegrationGitHub
-  | ISuggestedIntegrationJira;
-
-export interface ISuggestedIntegration {
-  __typename: 'SuggestedIntegration';
-  id: string;
-  service: TaskServiceEnum;
-}
-
-/**
- * The list of services for task integrations
- */
-export const enum TaskServiceEnum {
-  github = 'github',
-  jira = 'jira'
 }
 
 /**
@@ -953,273 +1482,36 @@ export interface ICommentorDetails {
   preferredName: string;
 }
 
-/**
- * A member of a team
- */
-export interface ITeamMember {
-  __typename: 'TeamMember';
+export interface ITaskEditorDetails {
+  __typename: 'TaskEditorDetails';
 
   /**
-   * An ID for the teamMember. userId::teamId
+   * The userId of the person editing the task
    */
-  id: string;
+  userId: string;
 
   /**
-   * The datetime the team member was created
-   */
-  createdAt: any;
-
-  /**
-   * true if the user is a part of the team, false if they no longer are
-   */
-  isNotRemoved: boolean | null;
-
-  /**
-   * Is user a team lead?
-   */
-  isLead: boolean | null;
-
-  /**
-   * hide the agenda list on the dashboard
-   */
-  hideAgenda: boolean;
-
-  /**
-   * The user email
-   */
-  email: any;
-
-  /**
-   * url of user’s profile picture
-   */
-  picture: any;
-
-  /**
-   * true if this team member belongs to the user that queried it
-   */
-  isSelf: boolean;
-
-  /**
-   * The meeting specifics for the meeting the team member is currently in
-   */
-  meetingMember: MeetingMember | null;
-
-  /**
-   * The name of the assignee
+   * The name of the userId editing the task
    */
   preferredName: string;
-
-  /**
-   * The slack auth for the team member.
-   */
-  slackAuth: ISlackAuth | null;
-
-  /**
-   * A list of events and the slack channels they get posted to
-   */
-  slackNotifications: Array<ISlackNotification>;
-
-  /**
-   * Tasks owned by the team member
-   */
-  tasks: ITaskConnection | null;
-
-  /**
-   * The team this team member belongs to
-   */
-  team: ITeam | null;
-
-  /**
-   * foreign key to Team table
-   */
-  teamId: string;
-
-  /**
-   * The user for the team member
-   */
-  user: IUser;
-
-  /**
-   * foreign key to User table
-   */
-  userId: string;
 }
 
-export interface IMeetingMemberOnTeamMemberArguments {
-  meetingId: string;
-}
+export type TaskIntegration = ITaskIntegrationGitHub | ITaskIntegrationJira;
 
-export interface ITasksOnTeamMemberArguments {
-  first?: number | null;
-
-  /**
-   * the datetime cursor
-   */
-  after?: any | null;
-}
-
-/**
- * All the user details for a specific meeting
- */
-export type MeetingMember =
-  | IRetrospectiveMeetingMember
-  | IPokerMeetingMember
-  | IActionMeetingMember;
-
-/**
- * All the user details for a specific meeting
- */
-export interface IMeetingMember {
-  __typename: 'MeetingMember';
-
-  /**
-   * A composite of userId::meetingId
-   */
+export interface ITaskIntegration {
+  __typename: 'TaskIntegration';
   id: string;
-
-  /**
-   * true if present, false if absent, else null
-   */
-  isCheckedIn: boolean | null;
-  meetingId: string;
-  meetingType: MeetingTypeEnum;
-  teamId: string;
-  teamMember: ITeamMember;
-  user: IUser;
-  userId: string;
-
-  /**
-   * The last time a meeting was updated (stage completed, finished, etc)
-   */
-  updatedAt: any;
+  service: TaskServiceEnum;
 }
 
 /**
- * The type of meeting
+ * The status of the task
  */
-export const enum MeetingTypeEnum {
-  action = 'action',
-  retrospective = 'retrospective',
-  poker = 'poker'
-}
-
-/**
- * OAuth token for a team member
- */
-export interface ISlackAuth {
-  __typename: 'SlackAuth';
-
-  /**
-   * shortid
-   */
-  id: string;
-
-  /**
-   * true if the auth is updated & ready to use for all features, else false
-   */
-  isActive: boolean;
-
-  /**
-   * The access token to slack, only visible to the owner. Used as a fallback to botAccessToken
-   */
-  accessToken: string | null;
-
-  /**
-   * the parabol bot user id
-   */
-  botUserId: string | null;
-
-  /**
-   * the parabol bot access token, used as primary communication
-   */
-  botAccessToken: string | null;
-
-  /**
-   * The timestamp the provider was created
-   */
-  createdAt: any;
-
-  /**
-   * The default channel to assign to new team notifications
-   */
-  defaultTeamChannelId: string;
-
-  /**
-   * The id of the team in slack
-   */
-  slackTeamId: string | null;
-
-  /**
-   * The name of the team in slack
-   */
-  slackTeamName: string | null;
-
-  /**
-   * The userId in slack
-   */
-  slackUserId: string;
-
-  /**
-   * The name of the user in slack
-   */
-  slackUserName: string;
-
-  /**
-   * *The team that the token is linked to
-   */
-  teamId: string;
-
-  /**
-   * The timestamp the token was updated at
-   */
-  updatedAt: any;
-
-  /**
-   * The user that the access token is attached to
-   */
-  userId: string;
-}
-
-/**
- * an event trigger and slack channel to receive it
- */
-export interface ISlackNotification {
-  __typename: 'SlackNotification';
-  id: string;
-  event: SlackNotificationEventEnum;
-  eventType: SlackNotificationEventTypeEnum;
-
-  /**
-   * null if no notification is to be sent
-   */
-  channelId: string | null;
-  teamId: string;
-  userId: string;
-}
-
-/**
- * The event that triggers a slack notification
- */
-export const enum SlackNotificationEventEnum {
-  meetingStart = 'meetingStart',
-  meetingEnd = 'meetingEnd',
-  MEETING_STAGE_TIME_LIMIT_END = 'MEETING_STAGE_TIME_LIMIT_END',
-  MEETING_STAGE_TIME_LIMIT_START = 'MEETING_STAGE_TIME_LIMIT_START'
-}
-
-/**
- * The type of event for a slack notification
- */
-export const enum SlackNotificationEventTypeEnum {
-  /**
-   * notification that concerns the whole team
-   */
-  team = 'team',
-
-  /**
-   * notification that concerns a single member on the team
-   */
-  member = 'member'
+export const enum TaskStatusEnum {
+  active = 'active',
+  stuck = 'stuck',
+  done = 'done',
+  future = 'future'
 }
 
 /**
@@ -1325,6 +1617,11 @@ export interface ITeam {
   agendaItems: Array<IAgendaItem>;
 
   /**
+   * A list of issues coming straight from the integrated jira integration
+   */
+  jiraIssues: IJiraIssueConnection;
+
+  /**
    * All of the tasks for this team
    */
   tasks: ITaskConnection;
@@ -1359,6 +1656,29 @@ export interface IMeetingOnTeamArguments {
    * The unique meetingId
    */
   meetingId: string;
+}
+
+export interface IJiraIssuesOnTeamArguments {
+  /**
+   * @default 100
+   */
+  first?: number | null;
+
+  /**
+   * the datetime cursor
+   */
+  after?: any | null;
+
+  /**
+   * A string of text to search for, or JQL if isJQL is true
+   */
+  queryString?: string | null;
+
+  /**
+   * true if the queryString is JQL, else false
+   */
+  isJQL: boolean;
+  projectKeyFilters?: Array<string> | null;
 }
 
 export interface ITasksOnTeamArguments {
@@ -1584,8 +1904,8 @@ export interface ITeamInvitation {
  * The team settings for a specific type of meeting
  */
 export type TeamMeetingSettings =
-  | IRetrospectiveMeetingSettings
   | IPokerMeetingSettings
+  | IRetrospectiveMeetingSettings
   | IActionMeetingSettings;
 
 /**
@@ -1617,125 +1937,12 @@ export interface ITeamMeetingSettings {
 }
 
 /**
- * The phase of the meeting
+ * The pay tier of the team
  */
-export const enum NewMeetingPhaseTypeEnum {
-  lobby = 'lobby',
-  checkin = 'checkin',
-  updates = 'updates',
-  firstcall = 'firstcall',
-  agendaitems = 'agendaitems',
-  lastcall = 'lastcall',
-  reflect = 'reflect',
-  group = 'group',
-  vote = 'vote',
-  discuss = 'discuss',
-  SUMMARY = 'SUMMARY',
-  SCOPE = 'SCOPE',
-  ESTIMATE = 'ESTIMATE'
-}
-
-/**
- * A team meeting history for all previous meetings
- */
-export type NewMeeting = IRetrospectiveMeeting | IPokerMeeting | IActionMeeting;
-
-/**
- * A team meeting history for all previous meetings
- */
-export interface INewMeeting {
-  __typename: 'NewMeeting';
-
-  /**
-   * The unique meeting id. shortid.
-   */
-  id: string;
-
-  /**
-   * The timestamp the meeting was created
-   */
-  createdAt: any;
-
-  /**
-   * The userId of the desired facilitator (different form facilitatorUserId if disconnected)
-   */
-  defaultFacilitatorUserId: string;
-
-  /**
-   * The timestamp the meeting officially ended
-   */
-  endedAt: any | null;
-
-  /**
-   * The location of the facilitator in the meeting
-   */
-  facilitatorStageId: string;
-
-  /**
-   * The userId (or anonymousId) of the most recent facilitator
-   */
-  facilitatorUserId: string;
-
-  /**
-   * The facilitator team member
-   */
-  facilitator: ITeamMember;
-
-  /**
-   * The team members that were active during the time of the meeting
-   */
-  meetingMembers: Array<MeetingMember>;
-
-  /**
-   * The auto-incrementing meeting number for the team
-   */
-  meetingNumber: number;
-  meetingType: MeetingTypeEnum;
-
-  /**
-   * The name of the meeting
-   */
-  name: string;
-
-  /**
-   * The organization this meeting belongs to
-   */
-  organization: IOrganization;
-
-  /**
-   * The phases the meeting will go through, including all phase-specific state
-   */
-  phases: Array<NewMeetingPhase>;
-
-  /**
-   * true if should show the org the conversion modal, else false
-   */
-  showConversionModal: boolean;
-
-  /**
-   * The time the meeting summary was emailed to the team
-   */
-  summarySentAt: any | null;
-
-  /**
-   * foreign key for team
-   */
-  teamId: string;
-
-  /**
-   * The team that ran the meeting
-   */
-  team: ITeam;
-
-  /**
-   * The last time a meeting was updated (stage completed, finished, etc)
-   */
-  updatedAt: any | null;
-
-  /**
-   * The meeting member of the viewer
-   */
-  viewerMeetingMember: MeetingMember;
+export const enum TierEnum {
+  personal = 'personal',
+  pro = 'pro',
+  enterprise = 'enterprise'
 }
 
 /**
@@ -1938,15 +2145,6 @@ export interface ICompany {
 }
 
 /**
- * The pay tier of the team
- */
-export const enum TierEnum {
-  personal = 'personal',
-  pro = 'pro',
-  enterprise = 'enterprise'
-}
-
-/**
  * A connection to a list of items.
  */
 export interface IOrganizationUserConnection {
@@ -2063,177 +2261,46 @@ export interface IOrgUserCount {
   activeUserCount: number;
 }
 
-export type NewMeetingPhase =
-  | IReflectPhase
-  | IAgendaItemsPhase
-  | ICheckInPhase
-  | IDiscussPhase
-  | IEstimatePhase
-  | IGenericMeetingPhase
-  | IUpdatesPhase;
-
-export interface INewMeetingPhase {
-  __typename: 'NewMeetingPhase';
+/**
+ * A connection to a list of items.
+ */
+export interface IJiraIssueConnection {
+  __typename: 'JiraIssueConnection';
 
   /**
-   * shortid
+   * Page info with cursors coerced to ISO8601 dates
    */
-  id: string;
-  meetingId: string;
+  pageInfo: IPageInfoDateCursor | null;
 
   /**
-   * The type of phase
+   * A list of edges.
    */
-  phaseType: NewMeetingPhaseTypeEnum;
-  stages: Array<NewMeetingStage>;
+  edges: Array<IJiraIssueEdge>;
+
+  /**
+   * An error with the connection, if any
+   */
+  error: IStandardMutationError | null;
 }
 
 /**
- * An instance of a meeting phase item. On the client, this usually represents a single view
+ * An edge in a connection.
  */
-export type NewMeetingStage =
-  | IRetroDiscussStage
-  | IEstimateStage
-  | IGenericMeetingStage
-  | IAgendaItemsStage
-  | ICheckInStage
-  | IUpdatesStage;
-
-/**
- * An instance of a meeting phase item. On the client, this usually represents a single view
- */
-export interface INewMeetingStage {
-  __typename: 'NewMeetingStage';
+export interface IJiraIssueEdge {
+  __typename: 'JiraIssueEdge';
 
   /**
-   * stageId, shortid
+   * The item at the end of the edge
    */
-  id: string;
-
-  /**
-   * The datetime the stage was completed
-   */
-  endAt: any | null;
-
-  /**
-   * foreign key. try using meeting
-   */
-  meetingId: string;
-
-  /**
-   * The meeting this stage belongs to
-   */
-  meeting: NewMeeting | null;
-
-  /**
-   * true if the facilitator has completed this stage, else false. Should be boolean(endAt)
-   */
-  isComplete: boolean;
-
-  /**
-   * true if any meeting participant can navigate to this stage
-   */
-  isNavigable: boolean;
-
-  /**
-   * true if the facilitator can navigate to this stage
-   */
-  isNavigableByFacilitator: boolean;
-
-  /**
-   * The phase this stage belongs to
-   */
-  phase: NewMeetingPhase | null;
-
-  /**
-   * The type of the phase
-   */
-  phaseType: NewMeetingPhaseTypeEnum | null;
-
-  /**
-   * The datetime the stage was started
-   */
-  startAt: any | null;
-
-  /**
-   * Number of times the facilitator has visited this stage
-   */
-  viewCount: number | null;
-
-  /**
-   * true if a time limit is set, false if end time is set, null if neither is set
-   */
-  isAsync: boolean | null;
-
-  /**
-   * true if the viewer is ready to advance, else false
-   */
-  isViewerReady: boolean;
-
-  /**
-   * the number of meeting members ready to advance, excluding the facilitator
-   */
-  readyCount: number;
-
-  /**
-   * The datetime the phase is scheduled to be finished, null if no time limit or end time is set
-   */
-  scheduledEndTime: any | null;
-
-  /**
-   * The suggested ending datetime for a phase to be completed async, null if not enough data to make a suggestion
-   */
-  suggestedEndTime: any | null;
-
-  /**
-   * The suggested time limit for a phase to be completed together, null if not enough data to make a suggestion
-   */
-  suggestedTimeLimit: number | null;
-
-  /**
-   * The number of milliseconds left before the scheduled end time. Useful for
-   * unsynced client clocks. null if scheduledEndTime is null
-   */
-  timeRemaining: number | null;
-}
-
-export interface ITaskEditorDetails {
-  __typename: 'TaskEditorDetails';
-
-  /**
-   * The userId of the person editing the task
-   */
-  userId: string;
-
-  /**
-   * The name of the userId editing the task
-   */
-  preferredName: string;
-}
-
-export type TaskIntegration = ITaskIntegrationGitHub | ITaskIntegrationJira;
-
-export interface ITaskIntegration {
-  __typename: 'TaskIntegration';
-  id: string;
-  service: TaskServiceEnum;
+  node: IJiraIssue;
+  cursor: any | null;
 }
 
 /**
- * The status of the task
+ * The Jira Issue that comes direct from Jira
  */
-export const enum TaskStatusEnum {
-  active = 'active',
-  stuck = 'stuck',
-  done = 'done',
-  future = 'future'
-}
-
-/**
- * OAuth token for a team member
- */
-export interface IAtlassianAuth {
-  __typename: 'AtlassianAuth';
+export interface IJiraIssue {
+  __typename: 'JiraIssue';
 
   /**
    * shortid
@@ -2241,49 +2308,48 @@ export interface IAtlassianAuth {
   id: string;
 
   /**
-   * true if the auth is valid, else false
+   * The ID of the jira cloud where the issue lives
    */
-  isActive: boolean;
+  cloudId: string;
 
   /**
-   * The access token to atlassian, useful for 1 hour. null if no access token available
+   * The name of the jira cloud where the issue lives
    */
-  accessToken: string | null;
+  cloudName: string;
 
   /**
-   * *The atlassian account ID
+   * The url to access the issue
    */
-  accountId: string;
+  url: any;
 
   /**
-   * The atlassian cloud IDs that the user has granted
+   * The key of the issue as found in Jira
    */
-  cloudIds: Array<string>;
+  key: string;
 
   /**
-   * The timestamp the provider was created
+   * The plaintext summary of the jira issue
    */
-  createdAt: any;
+  summary: string;
 
   /**
-   * The refresh token to atlassian to receive a new 1-hour accessToken, always null since server secret is required
+   * The plaintext description of the jira issue
    */
-  refreshToken: string | null;
+  description: string;
+}
+
+export interface IStandardMutationError {
+  __typename: 'StandardMutationError';
 
   /**
-   * *The team that the token is linked to
+   * The title of the error
    */
-  teamId: string;
+  title: string | null;
 
   /**
-   * The timestamp the token was updated at
+   * The full error
    */
-  updatedAt: any;
-
-  /**
-   * The user that the access token is attached to
-   */
-  userId: string;
+  message: string;
 }
 
 /**
@@ -2306,79 +2372,6 @@ export interface IUserFeatureFlags {
    * true if jira is allowed
    */
   poker: boolean;
-}
-
-/**
- * OAuth token for a team member
- */
-export interface IGitHubAuth {
-  __typename: 'GitHubAuth';
-
-  /**
-   * shortid
-   */
-  id: string;
-
-  /**
-   * true if an access token exists, else false
-   */
-  isActive: boolean;
-
-  /**
-   * The access token to github. good forever
-   */
-  accessToken: string | null;
-
-  /**
-   * *The GitHub login used for queries
-   */
-  login: string;
-
-  /**
-   * The timestamp the provider was created
-   */
-  createdAt: any;
-
-  /**
-   * *The team that the token is linked to
-   */
-  teamId: string;
-
-  /**
-   * The timestamp the token was updated at
-   */
-  updatedAt: any;
-
-  /**
-   * The user that the access token is attached to
-   */
-  userId: string;
-}
-
-/**
- * An authentication strategy to log in to Parabol
- */
-export type AuthIdentity = IAuthIdentityGoogle | IAuthIdentityLocal;
-
-/**
- * An authentication strategy to log in to Parabol
- */
-export interface IAuthIdentity {
-  __typename: 'AuthIdentity';
-
-  /**
-   * true if the email address using this strategy is verified, else false
-   */
-  isEmailVerified: boolean;
-  type: AuthIdentityTypeEnum;
-}
-
-/**
- * The types of authentication strategies
- */
-export const enum AuthIdentityTypeEnum {
-  LOCAL = 'LOCAL',
-  GOOGLE = 'GOOGLE'
 }
 
 /**
@@ -2675,10 +2668,10 @@ export interface IInvoiceEdge {
  * A past event that is important to the viewer
  */
 export type SuggestedAction =
-  | ISuggestedActionCreateNewTeam
   | ISuggestedActionInviteYourTeam
-  | ISuggestedActionTryActionMeeting
   | ISuggestedActionTryRetroMeeting
+  | ISuggestedActionTryActionMeeting
+  | ISuggestedActionCreateNewTeam
   | ISuggestedActionTryTheDemo;
 
 /**
@@ -2768,11 +2761,11 @@ export interface ITimelineEventEdge {
  * A past event that is important to the viewer
  */
 export type TimelineEvent =
-  | ITimelineEventCompletedActionMeeting
-  | ITimelineEventCompletedRetroMeeting
+  | ITimelineEventTeamCreated
   | ITimelineEventJoinedParabol
-  | ITimelineEventPokerComplete
-  | ITimelineEventTeamCreated;
+  | ITimelineEventCompletedRetroMeeting
+  | ITimelineEventCompletedActionMeeting
+  | ITimelineEventPokerComplete;
 
 /**
  * A past event that is important to the viewer
@@ -2902,12 +2895,12 @@ export interface INotificationEdge {
 
 export type Notification =
   | INotificationTeamInvitation
+  | INotifyPromoteToOrgLeader
   | INotifyTeamArchived
   | INotifyTaskInvolves
   | INotifyKickedOut
   | INotificationMeetingStageTimeLimitEnd
-  | INotifyPaymentRejected
-  | INotifyPromoteToOrgLeader;
+  | INotifyPaymentRejected;
 
 export interface INotification {
   __typename: 'Notification';
@@ -2957,38 +2950,6 @@ export const enum NotificationEnum {
 }
 
 /**
- * The details associated with a task integrated with GitHub
- */
-export interface ISuggestedIntegrationQueryPayload {
-  __typename: 'SuggestedIntegrationQueryPayload';
-  error: IStandardMutationError | null;
-
-  /**
-   * true if the items returned are a subset of all the possible integration, else false (all possible integrations)
-   */
-  hasMore: boolean | null;
-
-  /**
-   * All the integrations that are likely to be integrated
-   */
-  items: Array<SuggestedIntegration> | null;
-}
-
-export interface IStandardMutationError {
-  __typename: 'StandardMutationError';
-
-  /**
-   * The title of the error
-   */
-  title: string | null;
-
-  /**
-   * The full error
-   */
-  message: string;
-}
-
-/**
  * The response to a teamInvitation query
  */
 export interface ITeamInvitationPayload {
@@ -3010,10 +2971,857 @@ export interface ITeamInvitationPayload {
   meetingId: string | null;
 }
 
-export interface IGetDemoEntitiesPayload {
-  __typename: 'GetDemoEntitiesPayload';
+/**
+ * OAuth token for a team member
+ */
+export interface ISlackAuth {
+  __typename: 'SlackAuth';
+
+  /**
+   * shortid
+   */
+  id: string;
+
+  /**
+   * true if the auth is updated & ready to use for all features, else false
+   */
+  isActive: boolean;
+
+  /**
+   * The access token to slack, only visible to the owner. Used as a fallback to botAccessToken
+   */
+  accessToken: string | null;
+
+  /**
+   * the parabol bot user id
+   */
+  botUserId: string | null;
+
+  /**
+   * the parabol bot access token, used as primary communication
+   */
+  botAccessToken: string | null;
+
+  /**
+   * The timestamp the provider was created
+   */
+  createdAt: any;
+
+  /**
+   * The default channel to assign to new team notifications
+   */
+  defaultTeamChannelId: string;
+
+  /**
+   * The id of the team in slack
+   */
+  slackTeamId: string | null;
+
+  /**
+   * The name of the team in slack
+   */
+  slackTeamName: string | null;
+
+  /**
+   * The userId in slack
+   */
+  slackUserId: string;
+
+  /**
+   * The name of the user in slack
+   */
+  slackUserName: string;
+
+  /**
+   * *The team that the token is linked to
+   */
+  teamId: string;
+
+  /**
+   * The timestamp the token was updated at
+   */
+  updatedAt: any;
+
+  /**
+   * The user that the access token is attached to
+   */
+  userId: string;
+}
+
+/**
+ * an event trigger and slack channel to receive it
+ */
+export interface ISlackNotification {
+  __typename: 'SlackNotification';
+  id: string;
+  event: SlackNotificationEventEnum;
+  eventType: SlackNotificationEventTypeEnum;
+
+  /**
+   * null if no notification is to be sent
+   */
+  channelId: string | null;
+  teamId: string;
+  userId: string;
+}
+
+/**
+ * The event that triggers a slack notification
+ */
+export const enum SlackNotificationEventEnum {
+  meetingStart = 'meetingStart',
+  meetingEnd = 'meetingEnd',
+  MEETING_STAGE_TIME_LIMIT_END = 'MEETING_STAGE_TIME_LIMIT_END',
+  MEETING_STAGE_TIME_LIMIT_START = 'MEETING_STAGE_TIME_LIMIT_START'
+}
+
+/**
+ * The type of event for a slack notification
+ */
+export const enum SlackNotificationEventTypeEnum {
+  /**
+   * notification that concerns the whole team
+   */
+  team = 'team',
+
+  /**
+   * notification that concerns a single member on the team
+   */
+  member = 'member'
+}
+
+/**
+ * The details associated with a task integrated with GitHub
+ */
+export interface ISuggestedIntegrationQueryPayload {
+  __typename: 'SuggestedIntegrationQueryPayload';
   error: IStandardMutationError | null;
-  entities: Array<IGoogleAnalyzedEntity> | null;
+
+  /**
+   * true if the items returned are a subset of all the possible integration, else false (all possible integrations)
+   */
+  hasMore: boolean | null;
+
+  /**
+   * All the integrations that are likely to be integrated
+   */
+  items: Array<SuggestedIntegration> | null;
+}
+
+/**
+ * A stage that focuses on a single team member
+ */
+export interface ICheckInStage {
+  __typename: 'CheckInStage';
+
+  /**
+   * stageId, shortid
+   */
+  id: string;
+
+  /**
+   * The datetime the stage was completed
+   */
+  endAt: any | null;
+
+  /**
+   * foreign key. try using meeting
+   */
+  meetingId: string;
+
+  /**
+   * The meeting this stage belongs to
+   */
+  meeting: NewMeeting | null;
+
+  /**
+   * true if the facilitator has completed this stage, else false. Should be boolean(endAt)
+   */
+  isComplete: boolean;
+
+  /**
+   * true if any meeting participant can navigate to this stage
+   */
+  isNavigable: boolean;
+
+  /**
+   * true if the facilitator can navigate to this stage
+   */
+  isNavigableByFacilitator: boolean;
+
+  /**
+   * The phase this stage belongs to
+   */
+  phase: NewMeetingPhase | null;
+
+  /**
+   * The type of the phase
+   */
+  phaseType: NewMeetingPhaseTypeEnum | null;
+
+  /**
+   * The datetime the stage was started
+   */
+  startAt: any | null;
+
+  /**
+   * Number of times the facilitator has visited this stage
+   */
+  viewCount: number | null;
+
+  /**
+   * true if a time limit is set, false if end time is set, null if neither is set
+   */
+  isAsync: boolean | null;
+
+  /**
+   * true if the viewer is ready to advance, else false
+   */
+  isViewerReady: boolean;
+
+  /**
+   * the number of meeting members ready to advance, excluding the facilitator
+   */
+  readyCount: number;
+
+  /**
+   * The datetime the phase is scheduled to be finished, null if no time limit or end time is set
+   */
+  scheduledEndTime: any | null;
+
+  /**
+   * The suggested ending datetime for a phase to be completed async, null if not enough data to make a suggestion
+   */
+  suggestedEndTime: any | null;
+
+  /**
+   * The suggested time limit for a phase to be completed together, null if not enough data to make a suggestion
+   */
+  suggestedTimeLimit: number | null;
+
+  /**
+   * The number of milliseconds left before the scheduled end time. Useful for unsynced client clocks. null if scheduledEndTime is null
+   */
+  timeRemaining: number | null;
+
+  /**
+   * The meeting member that is the focus for this phase item
+   */
+  meetingMember: MeetingMember;
+
+  /**
+   * foreign key. use teamMember
+   */
+  teamMemberId: string;
+
+  /**
+   * The team member that is the focus for this phase item
+   */
+  teamMember: ITeamMember;
+}
+
+/**
+ * An instance of a meeting phase item. On the client, this usually represents a single view
+ */
+export type NewMeetingTeamMemberStage = ICheckInStage | IUpdatesStage;
+
+/**
+ * An instance of a meeting phase item. On the client, this usually represents a single view
+ */
+export interface INewMeetingTeamMemberStage {
+  __typename: 'NewMeetingTeamMemberStage';
+
+  /**
+   * The meeting member that is the focus for this phase item
+   */
+  meetingMember: MeetingMember;
+
+  /**
+   * foreign key. use teamMember
+   */
+  teamMemberId: string;
+
+  /**
+   * The team member that is the focus for this phase item
+   */
+  teamMember: ITeamMember;
+}
+
+export interface IMeetingGreeting {
+  __typename: 'MeetingGreeting';
+
+  /**
+   * The foreign-language greeting
+   */
+  content: string;
+
+  /**
+   * The source language for the greeting
+   */
+  language: string;
+}
+
+/**
+ * The meeting phase where all team members check in one-by-one
+ */
+export interface IReflectPhase {
+  __typename: 'ReflectPhase';
+
+  /**
+   * shortid
+   */
+  id: string;
+  meetingId: string;
+  teamId: string;
+
+  /**
+   * The type of phase
+   */
+  phaseType: NewMeetingPhaseTypeEnum;
+  stages: Array<IGenericMeetingStage>;
+
+  /**
+   * foreign key. use focusedPhaseItem
+   * @deprecated "use focusedPromptId"
+   */
+  focusedPhaseItemId: string | null;
+
+  /**
+   * the phase item that the facilitator wants the group to focus on
+   * @deprecated "use focusedPrompt"
+   */
+  focusedPhaseItem: IReflectPrompt | null;
+
+  /**
+   * foreign key. use focusedPrompt
+   */
+  focusedPromptId: string | null;
+
+  /**
+   * the Prompt that the facilitator wants the group to focus on
+   */
+  focusedPrompt: IReflectPrompt | null;
+
+  /**
+   * FK. The ID of the template used during the reflect phase
+   */
+  promptTemplateId: string;
+
+  /**
+   * The prompts used during the reflect phase
+   */
+  reflectPrompts: Array<IReflectPrompt>;
+}
+
+/**
+ * A stage of a meeting that has no extra state. Only used for single-stage phases
+ */
+export interface IGenericMeetingStage {
+  __typename: 'GenericMeetingStage';
+
+  /**
+   * stageId, shortid
+   */
+  id: string;
+
+  /**
+   * The datetime the stage was completed
+   */
+  endAt: any | null;
+
+  /**
+   * foreign key. try using meeting
+   */
+  meetingId: string;
+
+  /**
+   * The meeting this stage belongs to
+   */
+  meeting: NewMeeting | null;
+
+  /**
+   * true if the facilitator has completed this stage, else false. Should be boolean(endAt)
+   */
+  isComplete: boolean;
+
+  /**
+   * true if any meeting participant can navigate to this stage
+   */
+  isNavigable: boolean;
+
+  /**
+   * true if the facilitator can navigate to this stage
+   */
+  isNavigableByFacilitator: boolean;
+
+  /**
+   * The phase this stage belongs to
+   */
+  phase: NewMeetingPhase | null;
+
+  /**
+   * The type of the phase
+   */
+  phaseType: NewMeetingPhaseTypeEnum | null;
+
+  /**
+   * The datetime the stage was started
+   */
+  startAt: any | null;
+
+  /**
+   * Number of times the facilitator has visited this stage
+   */
+  viewCount: number | null;
+
+  /**
+   * true if a time limit is set, false if end time is set, null if neither is set
+   */
+  isAsync: boolean | null;
+
+  /**
+   * true if the viewer is ready to advance, else false
+   */
+  isViewerReady: boolean;
+
+  /**
+   * the number of meeting members ready to advance, excluding the facilitator
+   */
+  readyCount: number;
+
+  /**
+   * The datetime the phase is scheduled to be finished, null if no time limit or end time is set
+   */
+  scheduledEndTime: any | null;
+
+  /**
+   * The suggested ending datetime for a phase to be completed async, null if not enough data to make a suggestion
+   */
+  suggestedEndTime: any | null;
+
+  /**
+   * The suggested time limit for a phase to be completed together, null if not enough data to make a suggestion
+   */
+  suggestedTimeLimit: number | null;
+
+  /**
+   * The number of milliseconds left before the scheduled end time. Useful for unsynced client clocks. null if scheduledEndTime is null
+   */
+  timeRemaining: number | null;
+}
+
+/**
+ * The meeting phase where all team members discuss the topics with the most votes
+ */
+export interface IDiscussPhase {
+  __typename: 'DiscussPhase';
+
+  /**
+   * shortid
+   */
+  id: string;
+  meetingId: string;
+  teamId: string;
+
+  /**
+   * The type of phase
+   */
+  phaseType: NewMeetingPhaseTypeEnum;
+  stages: Array<IRetroDiscussStage>;
+}
+
+/**
+ * The stage where the team discusses a single theme
+ */
+export interface IRetroDiscussStage {
+  __typename: 'RetroDiscussStage';
+
+  /**
+   * stageId, shortid
+   */
+  id: string;
+
+  /**
+   * The datetime the stage was completed
+   */
+  endAt: any | null;
+
+  /**
+   * foreign key. try using meeting
+   */
+  meetingId: string;
+
+  /**
+   * The meeting this stage belongs to
+   */
+  meeting: NewMeeting | null;
+
+  /**
+   * true if the facilitator has completed this stage, else false. Should be boolean(endAt)
+   */
+  isComplete: boolean;
+
+  /**
+   * true if any meeting participant can navigate to this stage
+   */
+  isNavigable: boolean;
+
+  /**
+   * true if the facilitator can navigate to this stage
+   */
+  isNavigableByFacilitator: boolean;
+
+  /**
+   * The phase this stage belongs to
+   */
+  phase: NewMeetingPhase | null;
+
+  /**
+   * The type of the phase
+   */
+  phaseType: NewMeetingPhaseTypeEnum | null;
+
+  /**
+   * The datetime the stage was started
+   */
+  startAt: any | null;
+
+  /**
+   * Number of times the facilitator has visited this stage
+   */
+  viewCount: number | null;
+
+  /**
+   * true if a time limit is set, false if end time is set, null if neither is set
+   */
+  isAsync: boolean | null;
+
+  /**
+   * true if the viewer is ready to advance, else false
+   */
+  isViewerReady: boolean;
+
+  /**
+   * the number of meeting members ready to advance, excluding the facilitator
+   */
+  readyCount: number;
+
+  /**
+   * The datetime the phase is scheduled to be finished, null if no time limit or end time is set
+   */
+  scheduledEndTime: any | null;
+
+  /**
+   * The suggested ending datetime for a phase to be completed async, null if not enough data to make a suggestion
+   */
+  suggestedEndTime: any | null;
+
+  /**
+   * The suggested time limit for a phase to be completed together, null if not enough data to make a suggestion
+   */
+  suggestedTimeLimit: number | null;
+
+  /**
+   * The number of milliseconds left before the scheduled end time. Useful for unsynced client clocks. null if scheduledEndTime is null
+   */
+  timeRemaining: number | null;
+
+  /**
+   * foreign key. use reflectionGroup
+   */
+  reflectionGroupId: string | null;
+
+  /**
+   * the group that is the focal point of the discussion
+   */
+  reflectionGroup: IRetroReflectionGroup | null;
+
+  /**
+   * The sort order for reprioritizing discussion topics
+   */
+  sortOrder: number;
+}
+
+/**
+ * A reflection created during the reflect phase of a retrospective
+ */
+export interface IRetroReflectionGroup {
+  __typename: 'RetroReflectionGroup';
+
+  /**
+   * shortid
+   */
+  id: string;
+
+  /**
+   * the comments and tasks created from the discussion
+   */
+  thread: IThreadableConnection;
+
+  /**
+   * The number of comments in this group’s thread, if any
+   */
+  commentCount: number;
+
+  /**
+   * A list of users currently commenting
+   */
+  commentors: Array<ICommentorDetails> | null;
+
+  /**
+   * The timestamp the meeting was created
+   */
+  createdAt: any;
+
+  /**
+   * True if the group has not been removed, else false
+   */
+  isActive: boolean;
+
+  /**
+   * The foreign key to link a reflection group to its meeting
+   */
+  meetingId: string;
+
+  /**
+   * The retrospective meeting this reflection was created in
+   */
+  meeting: IRetrospectiveMeeting;
+
+  /**
+   * @deprecated "use prompt"
+   */
+  phaseItem: IReflectPrompt;
+  prompt: IReflectPrompt;
+
+  /**
+   * The foreign key to link a reflection group to its prompt. Immutable.
+   */
+  promptId: string;
+  reflections: Array<IRetroReflection>;
+
+  /**
+   * The foreign key to link a reflection group to its phaseItem. Immutable.
+   * @deprecated "use promptId"
+   */
+  retroPhaseItemId: string;
+
+  /**
+   * Our auto-suggested title, to be compared to the actual title for analytics
+   */
+  smartTitle: string | null;
+
+  /**
+   * The sort order of the reflection group in the phase item
+   */
+  sortOrder: number;
+
+  /**
+   * The tasks created for this group in the discussion phase
+   */
+  tasks: Array<ITask>;
+
+  /**
+   * The team that is running the retro
+   */
+  team: ITeam | null;
+
+  /**
+   * The title of the grouping of the retrospective reflections
+   */
+  title: string | null;
+
+  /**
+   * true if a user wrote the title, else false
+   */
+  titleIsUserDefined: boolean;
+
+  /**
+   * The timestamp the meeting was updated at
+   */
+  updatedAt: any | null;
+
+  /**
+   * A list of voterIds (userIds). Not available to team to preserve anonymity
+   */
+  voterIds: Array<string>;
+
+  /**
+   * The number of votes this group has received
+   */
+  voteCount: number;
+
+  /**
+   * The number of votes the viewer has given this group
+   */
+  viewerVoteCount: number | null;
+}
+
+export interface IThreadOnRetroReflectionGroupArguments {
+  first: number;
+
+  /**
+   * the incrementing sort order in string format
+   */
+  after?: string | null;
+}
+
+/**
+ * A reflection created during the reflect phase of a retrospective
+ */
+export interface IRetroReflection {
+  __typename: 'RetroReflection';
+
+  /**
+   * shortid
+   */
+  id: string;
+
+  /**
+   * All the reactjis for the given reflection
+   */
+  reactjis: Array<IReactji>;
+
+  /**
+   * The ID of the group that the autogrouper assigned the reflection. Error rate = Sum(autoId != Id) / autoId.count()
+   */
+  autoReflectionGroupId: string | null;
+
+  /**
+   * The timestamp the meeting was created
+   */
+  createdAt: any | null;
+
+  /**
+   * The userId that created the reflection (or unique Id if not a team member)
+   */
+  creatorId: string | null;
+
+  /**
+   * an array of all the socketIds that are currently editing the reflection
+   */
+  editorIds: Array<string>;
+
+  /**
+   * True if the reflection was not removed, else false
+   */
+  isActive: boolean;
+
+  /**
+   * true if the viewer (userId) is the creator of the retro reflection, else false
+   */
+  isViewerCreator: boolean;
+
+  /**
+   * The stringified draft-js content
+   */
+  content: string;
+
+  /**
+   * The entities (i.e. nouns) parsed from the content and their respective salience
+   */
+  entities: Array<IGoogleAnalyzedEntity>;
+
+  /**
+   * The foreign key to link a reflection to its meeting
+   */
+  meetingId: string;
+
+  /**
+   * The retrospective meeting this reflection was created in
+   */
+  meeting: IRetrospectiveMeeting;
+
+  /**
+   * @deprecated "use prompt"
+   */
+  phaseItem: IReflectPrompt;
+
+  /**
+   * The plaintext version of content
+   */
+  plaintextContent: string;
+
+  /**
+   * The foreign key to link a reflection to its phaseItem. Immutable. For sorting, use phase item on the group.
+   */
+  promptId: string;
+  prompt: IReflectPrompt;
+
+  /**
+   * The foreign key to link a reflection to its phaseItem. Immutable. For sorting, use phase item on the group.
+   * @deprecated "use promptId"
+   */
+  retroPhaseItemId: string;
+
+  /**
+   * The foreign key to link a reflection to its group
+   */
+  reflectionGroupId: string;
+
+  /**
+   * The group the reflection belongs to, if any
+   */
+  retroReflectionGroup: IRetroReflectionGroup | null;
+
+  /**
+   * The sort order of the reflection in the group (increments starting from 0)
+   */
+  sortOrder: number;
+
+  /**
+   * The team that is running the meeting that contains this reflection
+   */
+  team: ITeam;
+
+  /**
+   * The timestamp the meeting was updated. Used to determine how long it took to write a reflection
+   */
+  updatedAt: any | null;
+}
+
+/**
+ * An item that can have reactjis
+ */
+export type Reactable = IRetroReflection | IComment;
+
+/**
+ * An item that can have reactjis
+ */
+export interface IReactable {
+  __typename: 'Reactable';
+
+  /**
+   * shortid
+   */
+  id: string;
+
+  /**
+   * All the reactjis for the given reflection
+   */
+  reactjis: Array<IReactji>;
+}
+
+/**
+ * An aggregate of reactji metadata
+ */
+export interface IReactji {
+  __typename: 'Reactji';
+
+  /**
+   * composite of entity:reactjiId
+   */
+  id: string;
+
+  /**
+   * The number of users who have added this reactji
+   */
+  count: number;
+
+  /**
+   * true if the viewer is included in the count, else false
+   */
+  isViewerReactji: boolean;
 }
 
 export interface IGoogleAnalyzedEntity {
@@ -3033,6 +3841,2360 @@ export interface IGoogleAnalyzedEntity {
    * The salience of the entity in the provided text. The salience of all entities always sums to 1
    */
   salience: number;
+}
+
+/**
+ * The meeting phase where all team members give updates one-by-one
+ */
+export interface IUpdatesPhase {
+  __typename: 'UpdatesPhase';
+
+  /**
+   * shortid
+   */
+  id: string;
+  meetingId: string;
+  teamId: string;
+
+  /**
+   * The type of phase
+   */
+  phaseType: NewMeetingPhaseTypeEnum;
+  stages: Array<IUpdatesStage>;
+}
+
+/**
+ * A stage that focuses on a single team member
+ */
+export interface IUpdatesStage {
+  __typename: 'UpdatesStage';
+
+  /**
+   * stageId, shortid
+   */
+  id: string;
+
+  /**
+   * The datetime the stage was completed
+   */
+  endAt: any | null;
+
+  /**
+   * foreign key. try using meeting
+   */
+  meetingId: string;
+
+  /**
+   * The meeting this stage belongs to
+   */
+  meeting: NewMeeting | null;
+
+  /**
+   * true if the facilitator has completed this stage, else false. Should be boolean(endAt)
+   */
+  isComplete: boolean;
+
+  /**
+   * true if any meeting participant can navigate to this stage
+   */
+  isNavigable: boolean;
+
+  /**
+   * true if the facilitator can navigate to this stage
+   */
+  isNavigableByFacilitator: boolean;
+
+  /**
+   * The phase this stage belongs to
+   */
+  phase: NewMeetingPhase | null;
+
+  /**
+   * The type of the phase
+   */
+  phaseType: NewMeetingPhaseTypeEnum | null;
+
+  /**
+   * The datetime the stage was started
+   */
+  startAt: any | null;
+
+  /**
+   * Number of times the facilitator has visited this stage
+   */
+  viewCount: number | null;
+
+  /**
+   * true if a time limit is set, false if end time is set, null if neither is set
+   */
+  isAsync: boolean | null;
+
+  /**
+   * true if the viewer is ready to advance, else false
+   */
+  isViewerReady: boolean;
+
+  /**
+   * the number of meeting members ready to advance, excluding the facilitator
+   */
+  readyCount: number;
+
+  /**
+   * The datetime the phase is scheduled to be finished, null if no time limit or end time is set
+   */
+  scheduledEndTime: any | null;
+
+  /**
+   * The suggested ending datetime for a phase to be completed async, null if not enough data to make a suggestion
+   */
+  suggestedEndTime: any | null;
+
+  /**
+   * The suggested time limit for a phase to be completed together, null if not enough data to make a suggestion
+   */
+  suggestedTimeLimit: number | null;
+
+  /**
+   * The number of milliseconds left before the scheduled end time. Useful for unsynced client clocks. null if scheduledEndTime is null
+   */
+  timeRemaining: number | null;
+
+  /**
+   * The meeting member that is the focus for this phase item
+   */
+  meetingMember: MeetingMember;
+
+  /**
+   * foreign key. use teamMember
+   */
+  teamMemberId: string;
+
+  /**
+   * The team member that is the focus for this phase item
+   */
+  teamMember: ITeamMember;
+}
+
+/**
+ * The stage where the team estimates & discusses a single task
+ */
+export type EstimateStage = IEstimateStageJira | IEstimateStageParabol;
+
+/**
+ * The stage where the team estimates & discusses a single task
+ */
+export interface IEstimateStage {
+  __typename: 'EstimateStage';
+
+  /**
+   * stageId, shortid
+   */
+  id: string;
+
+  /**
+   * The datetime the stage was completed
+   */
+  endAt: any | null;
+
+  /**
+   * foreign key. try using meeting
+   */
+  meetingId: string;
+
+  /**
+   * The meeting this stage belongs to
+   */
+  meeting: NewMeeting | null;
+
+  /**
+   * true if the facilitator has completed this stage, else false. Should be boolean(endAt)
+   */
+  isComplete: boolean;
+
+  /**
+   * true if any meeting participant can navigate to this stage
+   */
+  isNavigable: boolean;
+
+  /**
+   * true if the facilitator can navigate to this stage
+   */
+  isNavigableByFacilitator: boolean;
+
+  /**
+   * The phase this stage belongs to
+   */
+  phase: NewMeetingPhase | null;
+
+  /**
+   * The type of the phase
+   */
+  phaseType: NewMeetingPhaseTypeEnum | null;
+
+  /**
+   * The datetime the stage was started
+   */
+  startAt: any | null;
+
+  /**
+   * Number of times the facilitator has visited this stage
+   */
+  viewCount: number | null;
+
+  /**
+   * true if a time limit is set, false if end time is set, null if neither is set
+   */
+  isAsync: boolean | null;
+
+  /**
+   * true if the viewer is ready to advance, else false
+   */
+  isViewerReady: boolean;
+
+  /**
+   * the number of meeting members ready to advance, excluding the facilitator
+   */
+  readyCount: number;
+
+  /**
+   * The datetime the phase is scheduled to be finished, null if no time limit or end time is set
+   */
+  scheduledEndTime: any | null;
+
+  /**
+   * The suggested ending datetime for a phase to be completed async, null if not enough data to make a suggestion
+   */
+  suggestedEndTime: any | null;
+
+  /**
+   * The suggested time limit for a phase to be completed together, null if not enough data to make a suggestion
+   */
+  suggestedTimeLimit: number | null;
+
+  /**
+   * The number of milliseconds left before the scheduled end time. Useful for unsynced client clocks. null if scheduledEndTime is null
+   */
+  timeRemaining: number | null;
+
+  /**
+   * The service the task is connected to. If null, it is parabol
+   */
+  service: TaskServiceEnum | null;
+
+  /**
+   * The stringified JSON used to fetch the task used by the service
+   */
+  serviceTaskId: string;
+
+  /**
+   * The sort order for reprioritizing discussion topics
+   */
+  sortOrder: number;
+}
+
+/**
+ * The stage where the team estimates & discusses a single jira issue
+ */
+export interface IEstimateStageJira {
+  __typename: 'EstimateStageJira';
+
+  /**
+   * stageId, shortid
+   */
+  id: string;
+
+  /**
+   * The datetime the stage was completed
+   */
+  endAt: any | null;
+
+  /**
+   * foreign key. try using meeting
+   */
+  meetingId: string;
+
+  /**
+   * The meeting this stage belongs to
+   */
+  meeting: NewMeeting | null;
+
+  /**
+   * true if the facilitator has completed this stage, else false. Should be boolean(endAt)
+   */
+  isComplete: boolean;
+
+  /**
+   * true if any meeting participant can navigate to this stage
+   */
+  isNavigable: boolean;
+
+  /**
+   * true if the facilitator can navigate to this stage
+   */
+  isNavigableByFacilitator: boolean;
+
+  /**
+   * The phase this stage belongs to
+   */
+  phase: NewMeetingPhase | null;
+
+  /**
+   * The type of the phase
+   */
+  phaseType: NewMeetingPhaseTypeEnum | null;
+
+  /**
+   * The datetime the stage was started
+   */
+  startAt: any | null;
+
+  /**
+   * Number of times the facilitator has visited this stage
+   */
+  viewCount: number | null;
+
+  /**
+   * true if a time limit is set, false if end time is set, null if neither is set
+   */
+  isAsync: boolean | null;
+
+  /**
+   * true if the viewer is ready to advance, else false
+   */
+  isViewerReady: boolean;
+
+  /**
+   * the number of meeting members ready to advance, excluding the facilitator
+   */
+  readyCount: number;
+
+  /**
+   * The datetime the phase is scheduled to be finished, null if no time limit or end time is set
+   */
+  scheduledEndTime: any | null;
+
+  /**
+   * The suggested ending datetime for a phase to be completed async, null if not enough data to make a suggestion
+   */
+  suggestedEndTime: any | null;
+
+  /**
+   * The suggested time limit for a phase to be completed together, null if not enough data to make a suggestion
+   */
+  suggestedTimeLimit: number | null;
+
+  /**
+   * The number of milliseconds left before the scheduled end time. Useful for unsynced client clocks. null if scheduledEndTime is null
+   */
+  timeRemaining: number | null;
+
+  /**
+   * The service the task is connected to. If null, it is parabol
+   */
+  service: TaskServiceEnum | null;
+
+  /**
+   * The stringified JSON used to fetch the task used by the service
+   */
+  serviceTaskId: string;
+
+  /**
+   * The sort order for reprioritizing discussion topics
+   */
+  sortOrder: number;
+
+  /**
+   * the issue straight from Jira
+   */
+  issue: IJiraIssue;
+}
+
+/**
+ * The stage where the team estimates & discusses a single jira issue
+ */
+export interface IEstimateStageParabol {
+  __typename: 'EstimateStageParabol';
+
+  /**
+   * stageId, shortid
+   */
+  id: string;
+
+  /**
+   * The datetime the stage was completed
+   */
+  endAt: any | null;
+
+  /**
+   * foreign key. try using meeting
+   */
+  meetingId: string;
+
+  /**
+   * The meeting this stage belongs to
+   */
+  meeting: NewMeeting | null;
+
+  /**
+   * true if the facilitator has completed this stage, else false. Should be boolean(endAt)
+   */
+  isComplete: boolean;
+
+  /**
+   * true if any meeting participant can navigate to this stage
+   */
+  isNavigable: boolean;
+
+  /**
+   * true if the facilitator can navigate to this stage
+   */
+  isNavigableByFacilitator: boolean;
+
+  /**
+   * The phase this stage belongs to
+   */
+  phase: NewMeetingPhase | null;
+
+  /**
+   * The type of the phase
+   */
+  phaseType: NewMeetingPhaseTypeEnum | null;
+
+  /**
+   * The datetime the stage was started
+   */
+  startAt: any | null;
+
+  /**
+   * Number of times the facilitator has visited this stage
+   */
+  viewCount: number | null;
+
+  /**
+   * true if a time limit is set, false if end time is set, null if neither is set
+   */
+  isAsync: boolean | null;
+
+  /**
+   * true if the viewer is ready to advance, else false
+   */
+  isViewerReady: boolean;
+
+  /**
+   * the number of meeting members ready to advance, excluding the facilitator
+   */
+  readyCount: number;
+
+  /**
+   * The datetime the phase is scheduled to be finished, null if no time limit or end time is set
+   */
+  scheduledEndTime: any | null;
+
+  /**
+   * The suggested ending datetime for a phase to be completed async, null if not enough data to make a suggestion
+   */
+  suggestedEndTime: any | null;
+
+  /**
+   * The suggested time limit for a phase to be completed together, null if not enough data to make a suggestion
+   */
+  suggestedTimeLimit: number | null;
+
+  /**
+   * The number of milliseconds left before the scheduled end time. Useful for unsynced client clocks. null if scheduledEndTime is null
+   */
+  timeRemaining: number | null;
+
+  /**
+   * The service the task is connected to. If null, it is parabol
+   */
+  service: TaskServiceEnum | null;
+
+  /**
+   * The stringified JSON used to fetch the task used by the service
+   */
+  serviceTaskId: string;
+
+  /**
+   * The sort order for reprioritizing discussion topics
+   */
+  sortOrder: number;
+
+  /**
+   * the Parabol task
+   */
+  task: ITask;
+}
+
+/**
+ * The meeting phase where all team members discuss the topics with the most votes
+ */
+export interface IAgendaItemsPhase {
+  __typename: 'AgendaItemsPhase';
+
+  /**
+   * shortid
+   */
+  id: string;
+  meetingId: string;
+  teamId: string;
+
+  /**
+   * The type of phase
+   */
+  phaseType: NewMeetingPhaseTypeEnum;
+  stages: Array<IAgendaItemsStage>;
+}
+
+/**
+ * The stage where the team discusses a single agenda item
+ */
+export interface IAgendaItemsStage {
+  __typename: 'AgendaItemsStage';
+
+  /**
+   * stageId, shortid
+   */
+  id: string;
+
+  /**
+   * The datetime the stage was completed
+   */
+  endAt: any | null;
+
+  /**
+   * foreign key. try using meeting
+   */
+  meetingId: string;
+
+  /**
+   * The meeting this stage belongs to
+   */
+  meeting: NewMeeting | null;
+
+  /**
+   * true if the facilitator has completed this stage, else false. Should be boolean(endAt)
+   */
+  isComplete: boolean;
+
+  /**
+   * true if any meeting participant can navigate to this stage
+   */
+  isNavigable: boolean;
+
+  /**
+   * true if the facilitator can navigate to this stage
+   */
+  isNavigableByFacilitator: boolean;
+
+  /**
+   * The phase this stage belongs to
+   */
+  phase: NewMeetingPhase | null;
+
+  /**
+   * The type of the phase
+   */
+  phaseType: NewMeetingPhaseTypeEnum | null;
+
+  /**
+   * The datetime the stage was started
+   */
+  startAt: any | null;
+
+  /**
+   * Number of times the facilitator has visited this stage
+   */
+  viewCount: number | null;
+
+  /**
+   * true if a time limit is set, false if end time is set, null if neither is set
+   */
+  isAsync: boolean | null;
+
+  /**
+   * true if the viewer is ready to advance, else false
+   */
+  isViewerReady: boolean;
+
+  /**
+   * the number of meeting members ready to advance, excluding the facilitator
+   */
+  readyCount: number;
+
+  /**
+   * The datetime the phase is scheduled to be finished, null if no time limit or end time is set
+   */
+  scheduledEndTime: any | null;
+
+  /**
+   * The suggested ending datetime for a phase to be completed async, null if not enough data to make a suggestion
+   */
+  suggestedEndTime: any | null;
+
+  /**
+   * The suggested time limit for a phase to be completed together, null if not enough data to make a suggestion
+   */
+  suggestedTimeLimit: number | null;
+
+  /**
+   * The number of milliseconds left before the scheduled end time. Useful for unsynced client clocks. null if scheduledEndTime is null
+   */
+  timeRemaining: number | null;
+
+  /**
+   * The id of the agenda item this relates to
+   */
+  agendaItemId: string;
+  agendaItem: IAgendaItem;
+}
+
+/**
+ * An all-purpose meeting phase with no extra state
+ */
+export interface IGenericMeetingPhase {
+  __typename: 'GenericMeetingPhase';
+
+  /**
+   * shortid
+   */
+  id: string;
+  meetingId: string;
+  teamId: string;
+
+  /**
+   * The type of phase
+   */
+  phaseType: NewMeetingPhaseTypeEnum;
+  stages: Array<IGenericMeetingStage>;
+}
+
+/**
+ * The meeting phase where all team members estimate a the point value of a task
+ */
+export interface IEstimatePhase {
+  __typename: 'EstimatePhase';
+
+  /**
+   * shortid
+   */
+  id: string;
+  meetingId: string;
+  teamId: string;
+
+  /**
+   * The type of phase
+   */
+  phaseType: NewMeetingPhaseTypeEnum;
+  stages: Array<EstimateStage>;
+}
+
+/**
+ * A notification sent to a user that was invited to a new team
+ */
+export interface INotificationTeamInvitation {
+  __typename: 'NotificationTeamInvitation';
+
+  /**
+   * FK
+   */
+  teamId: string;
+
+  /**
+   * FK
+   */
+  invitationId: string;
+
+  /**
+   * The invitation that triggered this notification
+   */
+  invitation: ITeamInvitation;
+  team: ITeam;
+
+  /**
+   * A shortid for the notification
+   */
+  id: string;
+
+  /**
+   * UNREAD if new, READ if viewer has seen it, CLICKED if viewed clicked it
+   */
+  status: NotificationStatusEnum;
+
+  /**
+   * The datetime to activate the notification & send it to the client
+   */
+  createdAt: any;
+  type: NotificationEnum;
+
+  /**
+   * *The userId that should see this notification
+   */
+  userId: string;
+}
+
+export type TeamNotification =
+  | INotificationTeamInvitation
+  | INotifyTaskInvolves
+  | INotificationMeetingStageTimeLimitEnd;
+
+export interface ITeamNotification {
+  __typename: 'TeamNotification';
+  id: string | null;
+  type: NotificationEnum | null;
+}
+
+/**
+ * A notification alerting the user that they have been promoted (to team or org leader)
+ */
+export interface INotifyPromoteToOrgLeader {
+  __typename: 'NotifyPromoteToOrgLeader';
+  organization: IOrganization;
+
+  /**
+   * A shortid for the notification
+   */
+  id: string;
+
+  /**
+   * UNREAD if new, READ if viewer has seen it, CLICKED if viewed clicked it
+   */
+  status: NotificationStatusEnum;
+
+  /**
+   * The datetime to activate the notification & send it to the client
+   */
+  createdAt: any;
+  type: NotificationEnum;
+
+  /**
+   * *The userId that should see this notification
+   */
+  userId: string;
+}
+
+/**
+ * A team-specific retro phase. Usually 3 or 4 exist per team, eg Good/Bad/Change, 4Ls, etc.
+ */
+export interface IRetroPhaseItem {
+  __typename: 'RetroPhaseItem';
+
+  /**
+   * shortid
+   */
+  id: string;
+  createdAt: any;
+
+  /**
+   * @deprecated "Field has been deprecated because type is guranteed to be `retroPhaseItem`"
+   */
+  phaseItemType: CustomPhaseItemTypeEnum | null;
+
+  /**
+   * true if the phase item is currently used by the team, else false
+   */
+  isActive: boolean | null;
+
+  /**
+   * foreign key. use the team field
+   */
+  teamId: string;
+
+  /**
+   * The team that owns this reflectPrompt
+   */
+  team: ITeam | null;
+  updatedAt: any;
+
+  /**
+   * the order of the items in the template
+   */
+  sortOrder: number;
+
+  /**
+   * FK for template
+   */
+  templateId: string;
+
+  /**
+   * The template that this prompt belongs to
+   */
+  template: IReflectTemplate;
+
+  /**
+   * The title of the phase of the retrospective. Often a short version of the question
+   */
+  title: string;
+
+  /**
+   * The question to answer during the phase of the retrospective (eg What went well?)
+   */
+  question: string;
+
+  /**
+   * The description to the question for further context. A long version of the question.
+   */
+  description: string;
+
+  /**
+   * The color used to visually group a phase item.
+   */
+  groupColor: string;
+}
+
+export type CustomPhaseItem = IRetroPhaseItem;
+
+export interface ICustomPhaseItem {
+  __typename: 'CustomPhaseItem';
+
+  /**
+   * shortid
+   */
+  id: string;
+  createdAt: any;
+
+  /**
+   * @deprecated "Field has been deprecated because type is guranteed to be `retroPhaseItem`"
+   */
+  phaseItemType: CustomPhaseItemTypeEnum | null;
+
+  /**
+   * true if the phase item is currently used by the team, else false
+   */
+  isActive: boolean | null;
+
+  /**
+   * foreign key. use the team field
+   */
+  teamId: string;
+
+  /**
+   * The team that owns this reflectPrompt
+   */
+  team: ITeam | null;
+  updatedAt: any;
+}
+
+/**
+ * The type of phase item
+ */
+export const enum CustomPhaseItemTypeEnum {
+  retroPhaseItem = 'retroPhaseItem'
+}
+
+/**
+ * An action meeting
+ */
+export interface IActionMeeting {
+  __typename: 'ActionMeeting';
+
+  /**
+   * The unique meeting id. shortid.
+   */
+  id: string;
+
+  /**
+   * The timestamp the meeting was created
+   */
+  createdAt: any;
+
+  /**
+   * The userId of the desired facilitator (different form facilitatorUserId if disconnected)
+   */
+  defaultFacilitatorUserId: string;
+
+  /**
+   * The timestamp the meeting officially ended
+   */
+  endedAt: any | null;
+
+  /**
+   * The location of the facilitator in the meeting
+   */
+  facilitatorStageId: string;
+
+  /**
+   * The userId (or anonymousId) of the most recent facilitator
+   */
+  facilitatorUserId: string;
+
+  /**
+   * The facilitator team member
+   */
+  facilitator: ITeamMember;
+
+  /**
+   * The team members that were active during the time of the meeting
+   */
+  meetingMembers: Array<IActionMeetingMember>;
+
+  /**
+   * The auto-incrementing meeting number for the team
+   */
+  meetingNumber: number;
+  meetingType: MeetingTypeEnum;
+
+  /**
+   * The name of the meeting
+   */
+  name: string;
+
+  /**
+   * The organization this meeting belongs to
+   */
+  organization: IOrganization;
+
+  /**
+   * The phases the meeting will go through, including all phase-specific state
+   */
+  phases: Array<NewMeetingPhase>;
+
+  /**
+   * true if should show the org the conversion modal, else false
+   */
+  showConversionModal: boolean;
+
+  /**
+   * The time the meeting summary was emailed to the team
+   */
+  summarySentAt: any | null;
+
+  /**
+   * foreign key for team
+   */
+  teamId: string;
+
+  /**
+   * The team that ran the meeting
+   */
+  team: ITeam;
+
+  /**
+   * The last time a meeting was updated (stage completed, finished, etc)
+   */
+  updatedAt: any | null;
+
+  /**
+   * The action meeting member of the viewer
+   */
+  viewerMeetingMember: IActionMeetingMember;
+
+  /**
+   * A single agenda item
+   */
+  agendaItem: IAgendaItem | null;
+
+  /**
+   * The number of agenda items generated in the meeting
+   */
+  agendaItemCount: number;
+
+  /**
+   * All of the agenda items for the meeting
+   */
+  agendaItems: Array<IAgendaItem>;
+
+  /**
+   * The number of comments generated in the meeting
+   */
+  commentCount: number;
+
+  /**
+   * The settings that govern the action meeting
+   */
+  settings: IActionMeetingSettings;
+
+  /**
+   * The number of tasks generated in the meeting
+   */
+  taskCount: number;
+
+  /**
+   * The tasks created within the meeting
+   */
+  tasks: Array<ITask>;
+}
+
+export interface IAgendaItemOnActionMeetingArguments {
+  agendaItemId: string;
+}
+
+/**
+ * All the meeting specifics for a user in a retro meeting
+ */
+export interface IActionMeetingMember {
+  __typename: 'ActionMeetingMember';
+
+  /**
+   * A composite of userId::meetingId
+   */
+  id: string;
+
+  /**
+   * true if present, false if absent, else null
+   */
+  isCheckedIn: boolean | null;
+  meetingId: string;
+  meetingType: MeetingTypeEnum;
+  teamId: string;
+  teamMember: ITeamMember;
+  user: IUser;
+  userId: string;
+
+  /**
+   * The last time a meeting was updated (stage completed, finished, etc)
+   */
+  updatedAt: any;
+
+  /**
+   * The tasks marked as done in the meeting
+   */
+  doneTasks: Array<ITask>;
+
+  /**
+   * The tasks assigned to members during the meeting
+   */
+  tasks: Array<ITask>;
+}
+
+/**
+ * The retro-specific meeting settings
+ */
+export interface IPokerMeetingSettings {
+  __typename: 'PokerMeetingSettings';
+  id: string;
+
+  /**
+   * The type of meeting these settings apply to
+   */
+  meetingType: MeetingTypeEnum;
+
+  /**
+   * The broad phase types that will be addressed during the meeting
+   */
+  phaseTypes: Array<NewMeetingPhaseTypeEnum>;
+
+  /**
+   * FK
+   */
+  teamId: string;
+
+  /**
+   * The team these settings belong to
+   */
+  team: ITeam;
+
+  /**
+   * the list of suggested search queries, sorted by most recent. Guaranteed to be < 60 days old
+   */
+  jiraSearchQueries: Array<IJiraSearchQuery>;
+
+  /**
+   * FK. The template that will be used to start the poker meeting
+   */
+  selectedTemplateId: string;
+
+  /**
+   * The template that will be used to start the Poker meeting
+   */
+  selectedTemplate: IReflectTemplate;
+
+  /**
+   * The list of templates used to start a Poker meeting
+   */
+  teamTemplates: Array<IReflectTemplate>;
+
+  /**
+   * The list of templates shared across the organization to start a Poker meeting
+   */
+  organizationTemplates: IReflectTemplateConnection;
+
+  /**
+   * The list of templates shared across the organization to start a Poker meeting
+   */
+  publicTemplates: IReflectTemplateConnection;
+}
+
+export interface IOrganizationTemplatesOnPokerMeetingSettingsArguments {
+  first: number;
+
+  /**
+   * The cursor, which is the templateId
+   */
+  after?: string | null;
+}
+
+export interface IPublicTemplatesOnPokerMeetingSettingsArguments {
+  first: number;
+
+  /**
+   * The cursor, which is the templateId
+   */
+  after?: string | null;
+}
+
+/**
+ * A jira search query including all filters selected when the query was executed
+ */
+export interface IJiraSearchQuery {
+  __typename: 'JiraSearchQuery';
+
+  /**
+   * shortid
+   */
+  id: string;
+
+  /**
+   * The query string, either simple or JQL depending on the isJQL flag
+   */
+  queryString: string;
+
+  /**
+   * true if the queryString is JQL, else false
+   */
+  isJQL: boolean;
+
+  /**
+   * The list of project keys selected as a filter. null if not set
+   */
+  projectKeyFilters: Array<string> | null;
+
+  /**
+   * The list of issue types selected as a filter. null if not set
+   */
+  issueTypeFilters: Array<string> | null;
+
+  /**
+   * the time the search query was last used. Used for sorting
+   */
+  lastUsedAt: any;
+}
+
+/**
+ * A connection to a list of items.
+ */
+export interface IReflectTemplateConnection {
+  __typename: 'ReflectTemplateConnection';
+
+  /**
+   * Information to aid in pagination.
+   */
+  pageInfo: IPageInfo;
+
+  /**
+   * A list of edges.
+   */
+  edges: Array<IReflectTemplateEdge>;
+}
+
+/**
+ * An edge in a connection.
+ */
+export interface IReflectTemplateEdge {
+  __typename: 'ReflectTemplateEdge';
+
+  /**
+   * The item at the end of the edge
+   */
+  node: IReflectTemplate;
+
+  /**
+   * A cursor for use in pagination
+   */
+  cursor: string;
+}
+
+/**
+ * A retrospective meeting
+ */
+export interface IRetrospectiveMeeting {
+  __typename: 'RetrospectiveMeeting';
+
+  /**
+   * The unique meeting id. shortid.
+   */
+  id: string;
+
+  /**
+   * The timestamp the meeting was created
+   */
+  createdAt: any;
+
+  /**
+   * The userId of the desired facilitator (different form facilitatorUserId if disconnected)
+   */
+  defaultFacilitatorUserId: string;
+
+  /**
+   * The timestamp the meeting officially ended
+   */
+  endedAt: any | null;
+
+  /**
+   * The location of the facilitator in the meeting
+   */
+  facilitatorStageId: string;
+
+  /**
+   * The userId (or anonymousId) of the most recent facilitator
+   */
+  facilitatorUserId: string;
+
+  /**
+   * The facilitator team member
+   */
+  facilitator: ITeamMember;
+
+  /**
+   * The team members that were active during the time of the meeting
+   */
+  meetingMembers: Array<IRetrospectiveMeetingMember>;
+
+  /**
+   * The auto-incrementing meeting number for the team
+   */
+  meetingNumber: number;
+  meetingType: MeetingTypeEnum;
+
+  /**
+   * The name of the meeting
+   */
+  name: string;
+
+  /**
+   * The organization this meeting belongs to
+   */
+  organization: IOrganization;
+
+  /**
+   * The phases the meeting will go through, including all phase-specific state
+   */
+  phases: Array<NewMeetingPhase>;
+
+  /**
+   * true if should show the org the conversion modal, else false
+   */
+  showConversionModal: boolean;
+
+  /**
+   * The time the meeting summary was emailed to the team
+   */
+  summarySentAt: any | null;
+  teamId: string;
+
+  /**
+   * The team that ran the meeting
+   */
+  team: ITeam;
+
+  /**
+   * The last time a meeting was updated (stage completed, finished, etc)
+   */
+  updatedAt: any | null;
+
+  /**
+   * The retrospective meeting member of the viewer
+   */
+  viewerMeetingMember: IRetrospectiveMeetingMember;
+
+  /**
+   * the threshold used to achieve the autogroup. Useful for model tuning. Serves as a flag if autogroup was used.
+   */
+  autoGroupThreshold: number | null;
+
+  /**
+   * The number of comments generated in the meeting
+   */
+  commentCount: number;
+
+  /**
+   * the number of votes allowed for each participant to cast on a single group
+   */
+  maxVotesPerGroup: number;
+
+  /**
+   * the next smallest distance threshold to guarantee at least 1 more grouping will be achieved
+   */
+  nextAutoGroupThreshold: number | null;
+
+  /**
+   * The number of reflections generated in the meeting
+   */
+  reflectionCount: number;
+
+  /**
+   * a single reflection group
+   */
+  reflectionGroup: IRetroReflectionGroup | null;
+
+  /**
+   * The grouped reflections
+   */
+  reflectionGroups: Array<IRetroReflectionGroup>;
+
+  /**
+   * The settings that govern the retrospective meeting
+   */
+  settings: IRetrospectiveMeetingSettings;
+
+  /**
+   * The number of tasks generated in the meeting
+   */
+  taskCount: number;
+
+  /**
+   * The tasks created within the meeting
+   */
+  tasks: Array<ITask>;
+
+  /**
+   * The ID of the template used for the meeting
+   */
+  templateId: string;
+
+  /**
+   * The number of topics generated in the meeting
+   */
+  topicCount: number;
+
+  /**
+   * the total number of votes allowed for each participant
+   */
+  totalVotes: number;
+
+  /**
+   * The sum total of the votes remaining for the meeting members that are present in the meeting
+   */
+  votesRemaining: number;
+}
+
+export interface IReflectionGroupOnRetrospectiveMeetingArguments {
+  reflectionGroupId: string;
+}
+
+export interface IReflectionGroupsOnRetrospectiveMeetingArguments {
+  sortBy?: ReflectionGroupSortEnum | null;
+}
+
+/**
+ * sorts for the reflection group. default is sortOrder. sorting by voteCount filters out items without votes.
+ */
+export const enum ReflectionGroupSortEnum {
+  voteCount = 'voteCount',
+  stageOrder = 'stageOrder'
+}
+
+/**
+ * All the meeting specifics for a user in a retro meeting
+ */
+export interface IRetrospectiveMeetingMember {
+  __typename: 'RetrospectiveMeetingMember';
+
+  /**
+   * A composite of userId::meetingId
+   */
+  id: string;
+
+  /**
+   * true if present, false if absent, else null
+   */
+  isCheckedIn: boolean | null;
+  meetingId: string;
+  meetingType: MeetingTypeEnum;
+  teamId: string;
+  teamMember: ITeamMember;
+  user: IUser;
+  userId: string;
+
+  /**
+   * The last time a meeting was updated (stage completed, finished, etc)
+   */
+  updatedAt: any;
+
+  /**
+   * The tasks assigned to members during the meeting
+   */
+  tasks: Array<ITask>;
+  votesRemaining: number;
+}
+
+/**
+ * The retro-specific meeting settings
+ */
+export interface IRetrospectiveMeetingSettings {
+  __typename: 'RetrospectiveMeetingSettings';
+  id: string;
+
+  /**
+   * The type of meeting these settings apply to
+   */
+  meetingType: MeetingTypeEnum;
+
+  /**
+   * The broad phase types that will be addressed during the meeting
+   */
+  phaseTypes: Array<NewMeetingPhaseTypeEnum>;
+
+  /**
+   * FK
+   */
+  teamId: string;
+
+  /**
+   * The team these settings belong to
+   */
+  team: ITeam;
+
+  /**
+   * The total number of votes each team member receives for the voting phase
+   */
+  totalVotes: number;
+
+  /**
+   * The maximum number of votes a team member can vote for a single reflection group
+   */
+  maxVotesPerGroup: number;
+
+  /**
+   * FK. The template that will be used to start the retrospective
+   */
+  selectedTemplateId: string;
+
+  /**
+   * The template that will be used to start the retrospective
+   */
+  selectedTemplate: IReflectTemplate;
+
+  /**
+   * The list of templates used to start a retrospective
+   */
+  reflectTemplates: Array<IReflectTemplate>;
+
+  /**
+   * The list of templates used to start a retrospective
+   */
+  teamTemplates: Array<IReflectTemplate>;
+
+  /**
+   * The list of templates shared across the organization to start a retrospective
+   */
+  organizationTemplates: IReflectTemplateConnection;
+
+  /**
+   * The list of templates shared across the organization to start a retrospective
+   */
+  publicTemplates: IReflectTemplateConnection;
+}
+
+export interface IOrganizationTemplatesOnRetrospectiveMeetingSettingsArguments {
+  first: number;
+
+  /**
+   * The cursor, which is the templateId
+   */
+  after?: string | null;
+}
+
+export interface IPublicTemplatesOnRetrospectiveMeetingSettingsArguments {
+  first: number;
+
+  /**
+   * The cursor, which is the templateId
+   */
+  after?: string | null;
+}
+
+/**
+ * a suggestion to invite others to your team
+ */
+export interface ISuggestedActionInviteYourTeam {
+  __typename: 'SuggestedActionInviteYourTeam';
+
+  /**
+   * shortid
+   */
+  id: string;
+
+  /**
+   * * The timestamp the action was created at
+   */
+  createdAt: any;
+
+  /**
+   * The priority of the suggested action compared to other suggested actions (smaller number is higher priority)
+   */
+  priority: number | null;
+
+  /**
+   * * The timestamp the action was removed at
+   */
+  removedAt: any;
+
+  /**
+   * The specific type of suggested action
+   */
+  type: SuggestedActionTypeEnum;
+
+  /**
+   * * The userId this action is for
+   */
+  userId: string;
+
+  /**
+   * The user than can see this event
+   */
+  user: IUser;
+
+  /**
+   * The teamId that we suggest you should invite people to
+   */
+  teamId: string;
+
+  /**
+   * The team you should invite people to
+   */
+  team: ITeam;
+}
+
+/**
+ * a suggestion to try a retro with your team
+ */
+export interface ISuggestedActionTryRetroMeeting {
+  __typename: 'SuggestedActionTryRetroMeeting';
+
+  /**
+   * shortid
+   */
+  id: string;
+
+  /**
+   * * The timestamp the action was created at
+   */
+  createdAt: any;
+
+  /**
+   * The priority of the suggested action compared to other suggested actions (smaller number is higher priority)
+   */
+  priority: number | null;
+
+  /**
+   * * The timestamp the action was removed at
+   */
+  removedAt: any;
+
+  /**
+   * The specific type of suggested action
+   */
+  type: SuggestedActionTypeEnum;
+
+  /**
+   * * The userId this action is for
+   */
+  userId: string;
+
+  /**
+   * The user than can see this event
+   */
+  user: IUser;
+
+  /**
+   * fk
+   */
+  teamId: string;
+
+  /**
+   * The team you should run a retro with
+   */
+  team: ITeam;
+}
+
+/**
+ * a suggestion to try a retro with your team
+ */
+export interface ISuggestedActionTryActionMeeting {
+  __typename: 'SuggestedActionTryActionMeeting';
+
+  /**
+   * shortid
+   */
+  id: string;
+
+  /**
+   * * The timestamp the action was created at
+   */
+  createdAt: any;
+
+  /**
+   * The priority of the suggested action compared to other suggested actions (smaller number is higher priority)
+   */
+  priority: number | null;
+
+  /**
+   * * The timestamp the action was removed at
+   */
+  removedAt: any;
+
+  /**
+   * The specific type of suggested action
+   */
+  type: SuggestedActionTypeEnum;
+
+  /**
+   * * The userId this action is for
+   */
+  userId: string;
+
+  /**
+   * The user than can see this event
+   */
+  user: IUser;
+
+  /**
+   * fk
+   */
+  teamId: string;
+
+  /**
+   * The team you should run an action meeting with
+   */
+  team: ITeam;
+}
+
+/**
+ * a suggestion to try a retro with your team
+ */
+export interface ISuggestedActionCreateNewTeam {
+  __typename: 'SuggestedActionCreateNewTeam';
+
+  /**
+   * shortid
+   */
+  id: string;
+
+  /**
+   * * The timestamp the action was created at
+   */
+  createdAt: any;
+
+  /**
+   * The priority of the suggested action compared to other suggested actions (smaller number is higher priority)
+   */
+  priority: number | null;
+
+  /**
+   * * The timestamp the action was removed at
+   */
+  removedAt: any;
+
+  /**
+   * The specific type of suggested action
+   */
+  type: SuggestedActionTypeEnum;
+
+  /**
+   * * The userId this action is for
+   */
+  userId: string;
+
+  /**
+   * The user than can see this event
+   */
+  user: IUser;
+}
+
+/**
+ * a suggestion to invite others to your team
+ */
+export interface ISuggestedActionTryTheDemo {
+  __typename: 'SuggestedActionTryTheDemo';
+
+  /**
+   * shortid
+   */
+  id: string;
+
+  /**
+   * * The timestamp the action was created at
+   */
+  createdAt: any;
+
+  /**
+   * The priority of the suggested action compared to other suggested actions (smaller number is higher priority)
+   */
+  priority: number | null;
+
+  /**
+   * * The timestamp the action was removed at
+   */
+  removedAt: any;
+
+  /**
+   * The specific type of suggested action
+   */
+  type: SuggestedActionTypeEnum;
+
+  /**
+   * * The userId this action is for
+   */
+  userId: string;
+
+  /**
+   * The user than can see this event
+   */
+  user: IUser;
+}
+
+/**
+ * An event triggered whenever a team is created
+ */
+export interface ITimelineEventTeamCreated {
+  __typename: 'TimelineEventTeamCreated';
+
+  /**
+   * shortid
+   */
+  id: string;
+
+  /**
+   * * The timestamp the event was created at
+   */
+  createdAt: any;
+
+  /**
+   * the number of times the user has interacted with (ie clicked) this event
+   */
+  interactionCount: number;
+
+  /**
+   * true if the timeline event is active, false if archived
+   */
+  isActive: boolean;
+
+  /**
+   * The orgId this event is associated with
+   */
+  orgId: string;
+
+  /**
+   * The organization this event is associated with
+   */
+  organization: IOrganization | null;
+
+  /**
+   * the number of times the user has seen this event
+   */
+  seenCount: number;
+
+  /**
+   * The teamId this event is associated with. Null if not traceable to one team
+   */
+  teamId: string;
+
+  /**
+   * The team that can see this event
+   */
+  team: ITeam;
+
+  /**
+   * The specific type of event
+   */
+  type: TimelineEventEnum;
+
+  /**
+   * * The userId that can see this event
+   */
+  userId: string;
+
+  /**
+   * The user than can see this event
+   */
+  user: IUser;
+}
+
+/**
+ * An event for joining the app
+ */
+export interface ITimelineEventJoinedParabol {
+  __typename: 'TimelineEventJoinedParabol';
+
+  /**
+   * shortid
+   */
+  id: string;
+
+  /**
+   * * The timestamp the event was created at
+   */
+  createdAt: any;
+
+  /**
+   * the number of times the user has interacted with (ie clicked) this event
+   */
+  interactionCount: number;
+
+  /**
+   * true if the timeline event is active, false if archived
+   */
+  isActive: boolean;
+
+  /**
+   * The orgId this event is associated with. Null if not traceable to one org
+   */
+  orgId: string | null;
+
+  /**
+   * The organization this event is associated with
+   */
+  organization: IOrganization | null;
+
+  /**
+   * the number of times the user has seen this event
+   */
+  seenCount: number;
+
+  /**
+   * The teamId this event is associated with. Null if not traceable to one team
+   */
+  teamId: string | null;
+
+  /**
+   * The team that can see this event
+   */
+  team: ITeam | null;
+
+  /**
+   * The specific type of event
+   */
+  type: TimelineEventEnum;
+
+  /**
+   * * The userId that can see this event
+   */
+  userId: string;
+
+  /**
+   * The user than can see this event
+   */
+  user: IUser;
+}
+
+/**
+ * An event for a completed retro meeting
+ */
+export interface ITimelineEventCompletedRetroMeeting {
+  __typename: 'TimelineEventCompletedRetroMeeting';
+
+  /**
+   * shortid
+   */
+  id: string;
+
+  /**
+   * * The timestamp the event was created at
+   */
+  createdAt: any;
+
+  /**
+   * the number of times the user has interacted with (ie clicked) this event
+   */
+  interactionCount: number;
+
+  /**
+   * true if the timeline event is active, false if archived
+   */
+  isActive: boolean;
+
+  /**
+   * The orgId this event is associated with
+   */
+  orgId: string;
+
+  /**
+   * The organization this event is associated with
+   */
+  organization: IOrganization | null;
+
+  /**
+   * the number of times the user has seen this event
+   */
+  seenCount: number;
+
+  /**
+   * The teamId this event is associated with
+   */
+  teamId: string;
+
+  /**
+   * The team that can see this event
+   */
+  team: ITeam;
+
+  /**
+   * The specific type of event
+   */
+  type: TimelineEventEnum;
+
+  /**
+   * * The userId that can see this event
+   */
+  userId: string;
+
+  /**
+   * The user than can see this event
+   */
+  user: IUser;
+
+  /**
+   * The meeting that was completed
+   */
+  meeting: IRetrospectiveMeeting;
+
+  /**
+   * The meetingId that was completed
+   */
+  meetingId: string;
+}
+
+/**
+ * An event for a completed action meeting
+ */
+export interface ITimelineEventCompletedActionMeeting {
+  __typename: 'TimelineEventCompletedActionMeeting';
+
+  /**
+   * shortid
+   */
+  id: string;
+
+  /**
+   * * The timestamp the event was created at
+   */
+  createdAt: any;
+
+  /**
+   * the number of times the user has interacted with (ie clicked) this event
+   */
+  interactionCount: number;
+
+  /**
+   * true if the timeline event is active, false if archived
+   */
+  isActive: boolean;
+
+  /**
+   * The orgId this event is associated with
+   */
+  orgId: string;
+
+  /**
+   * The organization this event is associated with
+   */
+  organization: IOrganization | null;
+
+  /**
+   * the number of times the user has seen this event
+   */
+  seenCount: number;
+
+  /**
+   * The teamId this event is associated with
+   */
+  teamId: string;
+
+  /**
+   * The team that can see this event
+   */
+  team: ITeam;
+
+  /**
+   * The specific type of event
+   */
+  type: TimelineEventEnum;
+
+  /**
+   * * The userId that can see this event
+   */
+  userId: string;
+
+  /**
+   * The user than can see this event
+   */
+  user: IUser;
+
+  /**
+   * The meeting that was completed
+   */
+  meeting: IActionMeeting;
+
+  /**
+   * The meetingId that was completed, null if legacyMeetingId is present
+   */
+  meetingId: string;
+}
+
+/**
+ * An event for a completed poker meeting
+ */
+export interface ITimelineEventPokerComplete {
+  __typename: 'TimelineEventPokerComplete';
+
+  /**
+   * shortid
+   */
+  id: string;
+
+  /**
+   * * The timestamp the event was created at
+   */
+  createdAt: any;
+
+  /**
+   * the number of times the user has interacted with (ie clicked) this event
+   */
+  interactionCount: number;
+
+  /**
+   * true if the timeline event is active, false if archived
+   */
+  isActive: boolean;
+
+  /**
+   * The orgId this event is associated with
+   */
+  orgId: string;
+
+  /**
+   * The organization this event is associated with
+   */
+  organization: IOrganization | null;
+
+  /**
+   * the number of times the user has seen this event
+   */
+  seenCount: number;
+
+  /**
+   * The teamId this event is associated with
+   */
+  teamId: string;
+
+  /**
+   * The team that can see this event
+   */
+  team: ITeam;
+
+  /**
+   * The specific type of event
+   */
+  type: TimelineEventEnum;
+
+  /**
+   * * The userId that can see this event
+   */
+  userId: string;
+
+  /**
+   * The user than can see this event
+   */
+  user: IUser;
+
+  /**
+   * The meeting that was completed
+   */
+  meeting: IRetrospectiveMeeting;
+
+  /**
+   * The meetingId that was completed
+   */
+  meetingId: string;
+}
+
+/**
+ * The action-specific meeting settings
+ */
+export interface IActionMeetingSettings {
+  __typename: 'ActionMeetingSettings';
+  id: string;
+
+  /**
+   * The type of meeting these settings apply to
+   */
+  meetingType: MeetingTypeEnum;
+
+  /**
+   * The broad phase types that will be addressed during the meeting
+   */
+  phaseTypes: Array<NewMeetingPhaseTypeEnum>;
+
+  /**
+   * FK
+   */
+  teamId: string;
+
+  /**
+   * The team these settings belong to
+   */
+  team: ITeam;
+}
+
+/**
+ * The details associated with a task integrated with GitHub
+ */
+export interface ITaskIntegrationGitHub {
+  __typename: 'TaskIntegrationGitHub';
+  id: string;
+  service: TaskServiceEnum;
+  nameWithOwner: string | null;
+  issueNumber: number | null;
+}
+
+/**
+ * The details associated with a task integrated with Jira
+ */
+export interface ITaskIntegrationJira {
+  __typename: 'TaskIntegrationJira';
+  id: string;
+  service: TaskServiceEnum;
+
+  /**
+   * The project key used by jira as a more human readable proxy for a projectId
+   */
+  projectKey: string;
+
+  /**
+   * The name of the project as defined by jira
+   */
+  projectName: string;
+
+  /**
+   * The cloud ID that the project lives on
+   */
+  cloudId: string;
+
+  /**
+   * The issue key used by jira as a more human readable proxy for the id field
+   */
+  issueKey: string;
+
+  /**
+   * The psuedo-domain to use to generate a base url
+   */
+  cloudName: string;
+}
+
+/**
+ * The details associated with a task integrated with GitHub
+ */
+export interface ISuggestedIntegrationGitHub {
+  __typename: 'SuggestedIntegrationGitHub';
+  id: string;
+  service: TaskServiceEnum;
+
+  /**
+   * The name of the repo. Follows format of OWNER/NAME
+   */
+  nameWithOwner: string;
+}
+
+/**
+ * The details associated with a task integrated with Jira
+ */
+export interface ISuggestedIntegrationJira {
+  __typename: 'SuggestedIntegrationJira';
+  id: string;
+  service: TaskServiceEnum;
+
+  /**
+   * URL to a 24x24 avatar icon
+   */
+  avatar: string;
+
+  /**
+   * The project key used by jira as a more human readable proxy for a projectId
+   */
+  projectKey: string;
+
+  /**
+   * The name of the project, prefixed with the cloud name if more than 1 cloudId exists
+   */
+  projectName: string;
+
+  /**
+   * The cloud ID that the project lives on
+   */
+  cloudId: string;
+
+  /**
+   * The full project document fetched from Jira
+   */
+  remoteProject: IJiraRemoteProject;
+}
+
+/**
+ * A project fetched from Jira in real time
+ */
+export interface IJiraRemoteProject {
+  __typename: 'JiraRemoteProject';
+  self: string;
+  id: string;
+  key: string;
+  name: string;
+  avatarUrls: IJiraRemoteAvatarUrls;
+  projectCategory: IJiraRemoteProjectCategory;
+  simplified: boolean;
+  style: string;
+}
+
+/**
+ * A project fetched from Jira in real time
+ */
+export interface IJiraRemoteAvatarUrls {
+  __typename: 'JiraRemoteAvatarUrls';
+  x48: string;
+  x24: string;
+  x16: string;
+  x32: string;
+}
+
+/**
+ * A project category fetched from a JiraRemoteProject
+ */
+export interface IJiraRemoteProjectCategory {
+  __typename: 'JiraRemoteProjectCategory';
+  self: string;
+  id: string;
+  name: string;
+  description: string;
+}
+
+/**
+ * A comment on a thread
+ */
+export interface IComment {
+  __typename: 'Comment';
+
+  /**
+   * shortid
+   */
+  id: string;
+
+  /**
+   * The rich text body of the item, if inactive, a tombstone text
+   */
+  content: string;
+
+  /**
+   * The timestamp the item was created
+   */
+  createdAt: any;
+
+  /**
+   * The userId that created the item, null if anonymous
+   */
+  createdBy: string | null;
+
+  /**
+   * The user that created the item, null if anonymous
+   */
+  createdByUser: IUser | null;
+
+  /**
+   * the replies to this threadable item
+   */
+  replies: Array<Threadable>;
+
+  /**
+   * The ID of the thread
+   */
+  threadId: string | null;
+
+  /**
+   * The item that spurred the threaded discussion
+   */
+  threadSource: ThreadSourceEnum | null;
+
+  /**
+   * the parent, if this threadable is a reply, else null
+   */
+  threadParentId: string | null;
+
+  /**
+   * the order of this threadable, relative to threadParentId
+   */
+  threadSortOrder: number | null;
+
+  /**
+   * The timestamp the item was updated
+   */
+  updatedAt: any;
+
+  /**
+   * All the reactjis for the given reflection
+   */
+  reactjis: Array<IReactji>;
+
+  /**
+   * true if the agenda item has not been processed or deleted
+   */
+  isActive: boolean;
+
+  /**
+   * true if the comment is anonymous, else false
+   */
+  isAnonymous: boolean;
+
+  /**
+   * true if the viewer wrote this comment, else false
+   */
+  isViewerComment: boolean;
+}
+
+export interface IQuery {
+  __typename: 'Query';
+  viewer: IUser | null;
+  getDemoEntities: IGetDemoEntitiesPayload;
+  massInvitation: IMassInvitationPayload;
+  verifiedInvitation: IVerifiedInvitationPayload;
+  SAMLIdP: string | null;
+}
+
+export interface IGetDemoEntitiesOnQueryArguments {
+  /**
+   * the reflection bodies to entitize
+   */
+  text: string;
+}
+
+export interface IMassInvitationOnQueryArguments {
+  /**
+   * The mass invitation token
+   */
+  token: string;
+}
+
+export interface IVerifiedInvitationOnQueryArguments {
+  /**
+   * The invitation token
+   */
+  token: string;
+}
+
+export interface ISAMLIdPOnQueryArguments {
+  /**
+   * the email associated with a SAML login
+   */
+  email: string;
+
+  /**
+   * true if the user was invited, else false
+   */
+  isInvited?: boolean | null;
+}
+
+export interface IGetDemoEntitiesPayload {
+  __typename: 'GetDemoEntitiesPayload';
+  error: IStandardMutationError | null;
+  entities: Array<IGoogleAnalyzedEntity> | null;
 }
 
 export interface IMassInvitationPayload {
@@ -3358,6 +6520,11 @@ export interface IMutation {
   payLater: IPayLaterPayload;
 
   /**
+   * Add or remove a task and its estimate phase from the meeting
+   */
+  persistJiraSearchQuery: PersistJiraSearchQueryPayload;
+
+  /**
    * Request to be invited to a team in real time
    */
   pushInvitation: IPushInvitationPayload | null;
@@ -3437,6 +6604,11 @@ export interface IMutation {
    * Remove a team member from the team
    */
   removeTeamMember: IRemoveTeamMemberPayload | null;
+
+  /**
+   * Reset meeting to a previously completed stage
+   */
+  resetMeetingToStage: IResetMeetingToStagePayload;
 
   /**
    * Reset the password for an account
@@ -3533,6 +6705,11 @@ export interface IMutation {
    * all the info required to provide an accurate display-specific location of where an item is
    */
   updateDragLocation: boolean | null;
+
+  /**
+   * Add or remove a task and its estimate phase from the meeting
+   */
+  updatePokerScope: UpdatePokerScopePayload;
 
   /**
    * Update the content of a reflection
@@ -4094,6 +7271,18 @@ export interface IPayLaterOnMutationArguments {
   meetingId: string;
 }
 
+export interface IPersistJiraSearchQueryOnMutationArguments {
+  /**
+   * the team witht the settings we add the query to
+   */
+  teamId: string;
+
+  /**
+   * the jira search query to persist (or remove, if isRemove is true)
+   */
+  input: IJiraSearchQueryInput;
+}
+
 export interface IPushInvitationOnMutationArguments {
   /**
    * the meeting ID the pusher would like to join
@@ -4206,6 +7395,11 @@ export interface IRemoveTeamMemberOnMutationArguments {
    * The teamMemberId of the person who is being removed
    */
   teamMemberId: string;
+}
+
+export interface IResetMeetingToStageOnMutationArguments {
+  meetingId: string;
+  stageId: string;
 }
 
 export interface IResetPasswordOnMutationArguments {
@@ -4392,6 +7586,18 @@ export interface IUpdateDragLocationOnMutationArguments {
   input: IUpdateDragLocationInput;
 }
 
+export interface IUpdatePokerScopeOnMutationArguments {
+  /**
+   * the meeting with the estimate phases to modify
+   */
+  meetingId: string;
+
+  /**
+   * The list of items to add/remove to the estimate phase
+   */
+  updates: Array<IUpdatePokerScopeItemInput>;
+}
+
 export interface IUpdateReflectionContentOnMutationArguments {
   reflectionId: string;
 
@@ -4535,59 +7741,16 @@ export interface IAcceptTeamInvitationPayload {
   teamLead: IUser | null;
 }
 
-/**
- * A notification sent to a user that was invited to a new team
- */
-export interface INotificationTeamInvitation {
-  __typename: 'NotificationTeamInvitation';
+export interface IAddAgendaItemPayload {
+  __typename: 'AddAgendaItemPayload';
+  error: IStandardMutationError | null;
+  agendaItem: IAgendaItem | null;
+  meetingId: string | null;
 
   /**
-   * FK
+   * The meeting with the updated agenda item, if any
    */
-  teamId: string;
-
-  /**
-   * FK
-   */
-  invitationId: string;
-
-  /**
-   * The invitation that triggered this notification
-   */
-  invitation: ITeamInvitation;
-  team: ITeam;
-
-  /**
-   * A shortid for the notification
-   */
-  id: string;
-
-  /**
-   * UNREAD if new, READ if viewer has seen it, CLICKED if viewed clicked it
-   */
-  status: NotificationStatusEnum;
-
-  /**
-   * The datetime to activate the notification & send it to the client
-   */
-  createdAt: any;
-  type: NotificationEnum;
-
-  /**
-   * *The userId that should see this notification
-   */
-  userId: string;
-}
-
-export type TeamNotification =
-  | INotificationTeamInvitation
-  | INotifyTaskInvolves
-  | INotificationMeetingStageTimeLimitEnd;
-
-export interface ITeamNotification {
-  __typename: 'TeamNotification';
-  id: string | null;
-  type: NotificationEnum | null;
+  meeting: NewMeeting | null;
 }
 
 export interface ICreateAgendaItemInput {
@@ -4618,18 +7781,6 @@ export interface ICreateAgendaItemInput {
   meetingId?: string | null;
 }
 
-export interface IAddAgendaItemPayload {
-  __typename: 'AddAgendaItemPayload';
-  error: IStandardMutationError | null;
-  agendaItem: IAgendaItem | null;
-  meetingId: string | null;
-
-  /**
-   * The meeting with the updated agenda item, if any
-   */
-  meeting: NewMeeting | null;
-}
-
 export interface IAddAtlassianAuthPayload {
   __typename: 'AddAtlassianAuthPayload';
   error: IStandardMutationError | null;
@@ -4638,11 +7789,36 @@ export interface IAddAtlassianAuthPayload {
    * The newly created auth
    */
   atlassianAuth: IAtlassianAuth | null;
+  teamId: string | null;
+
+  /**
+   * The team member with the updated atlassianAuth
+   */
+  teamMember: ITeamMember | null;
 
   /**
    * The user with updated atlassianAuth
    */
   user: IUser | null;
+}
+
+/**
+ * Return object for AddCommentPayload
+ */
+export type AddCommentPayload = IErrorPayload | IAddCommentSuccess;
+
+export interface IErrorPayload {
+  __typename: 'ErrorPayload';
+  error: IStandardMutationError;
+}
+
+export interface IAddCommentSuccess {
+  __typename: 'AddCommentSuccess';
+
+  /**
+   * the comment just created
+   */
+  comment: IComment;
 }
 
 export interface IAddCommentInput {
@@ -4667,151 +7843,6 @@ export interface IAddCommentInput {
 }
 
 /**
- * Return object for AddCommentPayload
- */
-export type AddCommentPayload = IErrorPayload | IAddCommentSuccess;
-
-export interface IErrorPayload {
-  __typename: 'ErrorPayload';
-  error: IStandardMutationError;
-}
-
-export interface IAddCommentSuccess {
-  __typename: 'AddCommentSuccess';
-
-  /**
-   * the comment just created
-   */
-  comment: IComment;
-}
-
-/**
- * A comment on a thread
- */
-export interface IComment {
-  __typename: 'Comment';
-
-  /**
-   * shortid
-   */
-  id: string;
-
-  /**
-   * The rich text body of the item, if inactive, a tombstone text
-   */
-  content: string;
-
-  /**
-   * The timestamp the item was created
-   */
-  createdAt: any;
-
-  /**
-   * The userId that created the item, null if anonymous
-   */
-  createdBy: string | null;
-
-  /**
-   * The user that created the item, null if anonymous
-   */
-  createdByUser: IUser | null;
-
-  /**
-   * the replies to this threadable item
-   */
-  replies: Array<Threadable>;
-
-  /**
-   * The ID of the thread
-   */
-  threadId: string | null;
-
-  /**
-   * The item that spurred the threaded discussion
-   */
-  threadSource: ThreadSourceEnum | null;
-
-  /**
-   * the parent, if this threadable is a reply, else null
-   */
-  threadParentId: string | null;
-
-  /**
-   * the order of this threadable, relative to threadParentId
-   */
-  threadSortOrder: number | null;
-
-  /**
-   * The timestamp the item was updated
-   */
-  updatedAt: any;
-
-  /**
-   * All the reactjis for the given reflection
-   */
-  reactjis: Array<IReactji>;
-
-  /**
-   * true if the agenda item has not been processed or deleted
-   */
-  isActive: boolean;
-
-  /**
-   * true if the comment is anonymous, else false
-   */
-  isAnonymous: boolean;
-
-  /**
-   * true if the viewer wrote this comment, else false
-   */
-  isViewerComment: boolean;
-}
-
-/**
- * An item that can have reactjis
- */
-export type Reactable = IComment | IRetroReflection;
-
-/**
- * An item that can have reactjis
- */
-export interface IReactable {
-  __typename: 'Reactable';
-
-  /**
-   * shortid
-   */
-  id: string;
-
-  /**
-   * All the reactjis for the given reflection
-   */
-  reactjis: Array<IReactji>;
-}
-
-/**
- * An aggregate of reactji metadata
- */
-export interface IReactji {
-  __typename: 'Reactji';
-
-  /**
-   * composite of entity:reactjiId
-   */
-  id: string;
-
-  /**
-   * The number of users who have added this reactji
-   */
-  count: number;
-
-  /**
-   * true if the viewer is included in the count, else false
-   */
-  isViewerReactji: boolean;
-}
-
-/**
  * Return object for AddReactjiToReflectionPayload
  */
 export type AddReactjiToReflectionPayload =
@@ -4828,586 +7859,6 @@ export interface IAddReactjiToReflectionSuccess {
 }
 
 /**
- * A reflection created during the reflect phase of a retrospective
- */
-export interface IRetroReflection {
-  __typename: 'RetroReflection';
-
-  /**
-   * shortid
-   */
-  id: string;
-
-  /**
-   * All the reactjis for the given reflection
-   */
-  reactjis: Array<IReactji>;
-
-  /**
-   * The ID of the group that the autogrouper assigned the reflection. Error rate = Sum(autoId != Id) / autoId.count()
-   */
-  autoReflectionGroupId: string | null;
-
-  /**
-   * The timestamp the meeting was created
-   */
-  createdAt: any | null;
-
-  /**
-   * The userId that created the reflection (or unique Id if not a team member)
-   */
-  creatorId: string | null;
-
-  /**
-   * an array of all the socketIds that are currently editing the reflection
-   */
-  editorIds: Array<string>;
-
-  /**
-   * True if the reflection was not removed, else false
-   */
-  isActive: boolean;
-
-  /**
-   * true if the viewer (userId) is the creator of the retro reflection, else false
-   */
-  isViewerCreator: boolean;
-
-  /**
-   * The stringified draft-js content
-   */
-  content: string;
-
-  /**
-   * The entities (i.e. nouns) parsed from the content and their respective salience
-   */
-  entities: Array<IGoogleAnalyzedEntity>;
-
-  /**
-   * The foreign key to link a reflection to its meeting
-   */
-  meetingId: string;
-
-  /**
-   * The retrospective meeting this reflection was created in
-   */
-  meeting: IRetrospectiveMeeting;
-
-  /**
-   * @deprecated "use prompt"
-   */
-  phaseItem: IReflectPrompt;
-
-  /**
-   * The plaintext version of content
-   */
-  plaintextContent: string;
-
-  /**
-   * The foreign key to link a reflection to its phaseItem. Immutable. For sorting, use phase item on the group.
-   */
-  promptId: string;
-  prompt: IReflectPrompt;
-
-  /**
-   * The foreign key to link a reflection to its phaseItem. Immutable. For sorting, use phase item on the group.
-   * @deprecated "use promptId"
-   */
-  retroPhaseItemId: string;
-
-  /**
-   * The foreign key to link a reflection to its group
-   */
-  reflectionGroupId: string;
-
-  /**
-   * The group the reflection belongs to, if any
-   */
-  retroReflectionGroup: IRetroReflectionGroup | null;
-
-  /**
-   * The sort order of the reflection in the group (increments starting from 0)
-   */
-  sortOrder: number;
-
-  /**
-   * The team that is running the meeting that contains this reflection
-   */
-  team: ITeam;
-
-  /**
-   * The timestamp the meeting was updated. Used to determine how long it took to write a reflection
-   */
-  updatedAt: any | null;
-}
-
-/**
- * A retrospective meeting
- */
-export interface IRetrospectiveMeeting {
-  __typename: 'RetrospectiveMeeting';
-
-  /**
-   * The unique meeting id. shortid.
-   */
-  id: string;
-
-  /**
-   * The timestamp the meeting was created
-   */
-  createdAt: any;
-
-  /**
-   * The userId of the desired facilitator (different form facilitatorUserId if disconnected)
-   */
-  defaultFacilitatorUserId: string;
-
-  /**
-   * The timestamp the meeting officially ended
-   */
-  endedAt: any | null;
-
-  /**
-   * The location of the facilitator in the meeting
-   */
-  facilitatorStageId: string;
-
-  /**
-   * The userId (or anonymousId) of the most recent facilitator
-   */
-  facilitatorUserId: string;
-
-  /**
-   * The facilitator team member
-   */
-  facilitator: ITeamMember;
-
-  /**
-   * The team members that were active during the time of the meeting
-   */
-  meetingMembers: Array<IRetrospectiveMeetingMember>;
-
-  /**
-   * The auto-incrementing meeting number for the team
-   */
-  meetingNumber: number;
-  meetingType: MeetingTypeEnum;
-
-  /**
-   * The name of the meeting
-   */
-  name: string;
-
-  /**
-   * The organization this meeting belongs to
-   */
-  organization: IOrganization;
-
-  /**
-   * The phases the meeting will go through, including all phase-specific state
-   */
-  phases: Array<NewMeetingPhase>;
-
-  /**
-   * true if should show the org the conversion modal, else false
-   */
-  showConversionModal: boolean;
-
-  /**
-   * The time the meeting summary was emailed to the team
-   */
-  summarySentAt: any | null;
-  teamId: string;
-
-  /**
-   * The team that ran the meeting
-   */
-  team: ITeam;
-
-  /**
-   * The last time a meeting was updated (stage completed, finished, etc)
-   */
-  updatedAt: any | null;
-
-  /**
-   * The retrospective meeting member of the viewer
-   */
-  viewerMeetingMember: IRetrospectiveMeetingMember;
-
-  /**
-   * the threshold used to achieve the autogroup. Useful for model tuning. Serves as a flag if autogroup was used.
-   */
-  autoGroupThreshold: number | null;
-
-  /**
-   * The number of comments generated in the meeting
-   */
-  commentCount: number;
-
-  /**
-   * the number of votes allowed for each participant to cast on a single group
-   */
-  maxVotesPerGroup: number;
-
-  /**
-   * the next smallest distance threshold to guarantee at least 1 more grouping will be achieved
-   */
-  nextAutoGroupThreshold: number | null;
-
-  /**
-   * The number of reflections generated in the meeting
-   */
-  reflectionCount: number;
-
-  /**
-   * a single reflection group
-   */
-  reflectionGroup: IRetroReflectionGroup | null;
-
-  /**
-   * The grouped reflections
-   */
-  reflectionGroups: Array<IRetroReflectionGroup>;
-
-  /**
-   * The settings that govern the retrospective meeting
-   */
-  settings: IRetrospectiveMeetingSettings;
-
-  /**
-   * The number of tasks generated in the meeting
-   */
-  taskCount: number;
-
-  /**
-   * The tasks created within the meeting
-   */
-  tasks: Array<ITask>;
-
-  /**
-   * The ID of the template used for the meeting
-   */
-  templateId: string;
-
-  /**
-   * The number of topics generated in the meeting
-   */
-  topicCount: number;
-
-  /**
-   * the total number of votes allowed for each participant
-   */
-  totalVotes: number;
-
-  /**
-   * The sum total of the votes remaining for the meeting members that are present in the meeting
-   */
-  votesRemaining: number;
-}
-
-export interface IReflectionGroupOnRetrospectiveMeetingArguments {
-  reflectionGroupId: string;
-}
-
-export interface IReflectionGroupsOnRetrospectiveMeetingArguments {
-  sortBy?: ReflectionGroupSortEnum | null;
-}
-
-/**
- * All the meeting specifics for a user in a retro meeting
- */
-export interface IRetrospectiveMeetingMember {
-  __typename: 'RetrospectiveMeetingMember';
-
-  /**
-   * A composite of userId::meetingId
-   */
-  id: string;
-
-  /**
-   * true if present, false if absent, else null
-   */
-  isCheckedIn: boolean | null;
-  meetingId: string;
-  meetingType: MeetingTypeEnum;
-  teamId: string;
-  teamMember: ITeamMember;
-  user: IUser;
-  userId: string;
-
-  /**
-   * The last time a meeting was updated (stage completed, finished, etc)
-   */
-  updatedAt: any;
-
-  /**
-   * The tasks assigned to members during the meeting
-   */
-  tasks: Array<ITask>;
-  votesRemaining: number;
-}
-
-/**
- * A reflection created during the reflect phase of a retrospective
- */
-export interface IRetroReflectionGroup {
-  __typename: 'RetroReflectionGroup';
-
-  /**
-   * shortid
-   */
-  id: string;
-
-  /**
-   * the comments and tasks created from the discussion
-   */
-  thread: IThreadableConnection;
-
-  /**
-   * The number of comments in this group’s thread, if any
-   */
-  commentCount: number;
-
-  /**
-   * A list of users currently commenting
-   */
-  commentors: Array<ICommentorDetails> | null;
-
-  /**
-   * The timestamp the meeting was created
-   */
-  createdAt: any;
-
-  /**
-   * True if the group has not been removed, else false
-   */
-  isActive: boolean;
-
-  /**
-   * The foreign key to link a reflection group to its meeting
-   */
-  meetingId: string;
-
-  /**
-   * The retrospective meeting this reflection was created in
-   */
-  meeting: IRetrospectiveMeeting;
-
-  /**
-   * @deprecated "use prompt"
-   */
-  phaseItem: IReflectPrompt;
-  prompt: IReflectPrompt;
-
-  /**
-   * The foreign key to link a reflection group to its prompt. Immutable.
-   */
-  promptId: string;
-  reflections: Array<IRetroReflection>;
-
-  /**
-   * The foreign key to link a reflection group to its phaseItem. Immutable.
-   * @deprecated "use promptId"
-   */
-  retroPhaseItemId: string;
-
-  /**
-   * Our auto-suggested title, to be compared to the actual title for analytics
-   */
-  smartTitle: string | null;
-
-  /**
-   * The sort order of the reflection group in the phase item
-   */
-  sortOrder: number;
-
-  /**
-   * The tasks created for this group in the discussion phase
-   */
-  tasks: Array<ITask>;
-
-  /**
-   * The team that is running the retro
-   */
-  team: ITeam | null;
-
-  /**
-   * The title of the grouping of the retrospective reflections
-   */
-  title: string | null;
-
-  /**
-   * true if a user wrote the title, else false
-   */
-  titleIsUserDefined: boolean;
-
-  /**
-   * The timestamp the meeting was updated at
-   */
-  updatedAt: any | null;
-
-  /**
-   * A list of voterIds (userIds). Not available to team to preserve anonymity
-   */
-  voterIds: Array<string>;
-
-  /**
-   * The number of votes this group has received
-   */
-  voteCount: number;
-
-  /**
-   * The number of votes the viewer has given this group
-   */
-  viewerVoteCount: number | null;
-}
-
-export interface IThreadOnRetroReflectionGroupArguments {
-  first: number;
-
-  /**
-   * the incrementing sort order in string format
-   */
-  after?: string | null;
-}
-
-/**
- * sorts for the reflection group. default is sortOrder. sorting by voteCount filters out items without votes.
- */
-export const enum ReflectionGroupSortEnum {
-  voteCount = 'voteCount',
-  stageOrder = 'stageOrder'
-}
-
-/**
- * The retro-specific meeting settings
- */
-export interface IRetrospectiveMeetingSettings {
-  __typename: 'RetrospectiveMeetingSettings';
-  id: string;
-
-  /**
-   * The type of meeting these settings apply to
-   */
-  meetingType: MeetingTypeEnum;
-
-  /**
-   * The broad phase types that will be addressed during the meeting
-   */
-  phaseTypes: Array<NewMeetingPhaseTypeEnum>;
-
-  /**
-   * FK
-   */
-  teamId: string;
-
-  /**
-   * The team these settings belong to
-   */
-  team: ITeam;
-
-  /**
-   * The total number of votes each team member receives for the voting phase
-   */
-  totalVotes: number;
-
-  /**
-   * The maximum number of votes a team member can vote for a single reflection group
-   */
-  maxVotesPerGroup: number;
-
-  /**
-   * FK. The template that will be used to start the retrospective
-   */
-  selectedTemplateId: string;
-
-  /**
-   * The template that will be used to start the retrospective
-   */
-  selectedTemplate: IReflectTemplate;
-
-  /**
-   * The list of templates used to start a retrospective
-   */
-  reflectTemplates: Array<IReflectTemplate>;
-
-  /**
-   * The list of templates used to start a retrospective
-   */
-  teamTemplates: Array<IReflectTemplate>;
-
-  /**
-   * The list of templates shared across the organization to start a retrospective
-   */
-  organizationTemplates: IReflectTemplateConnection;
-
-  /**
-   * The list of templates shared across the organization to start a retrospective
-   */
-  publicTemplates: IReflectTemplateConnection;
-}
-
-export interface IOrganizationTemplatesOnRetrospectiveMeetingSettingsArguments {
-  first: number;
-
-  /**
-   * The cursor, which is the templateId
-   */
-  after?: string | null;
-}
-
-export interface IPublicTemplatesOnRetrospectiveMeetingSettingsArguments {
-  first: number;
-
-  /**
-   * The cursor, which is the templateId
-   */
-  after?: string | null;
-}
-
-/**
- * A connection to a list of items.
- */
-export interface IReflectTemplateConnection {
-  __typename: 'ReflectTemplateConnection';
-
-  /**
-   * Information to aid in pagination.
-   */
-  pageInfo: IPageInfo;
-
-  /**
-   * A list of edges.
-   */
-  edges: Array<IReflectTemplateEdge>;
-}
-
-/**
- * An edge in a connection.
- */
-export interface IReflectTemplateEdge {
-  __typename: 'ReflectTemplateEdge';
-
-  /**
-   * The item at the end of the edge
-   */
-  node: IReflectTemplate;
-
-  /**
-   * A cursor for use in pagination
-   */
-  cursor: string;
-}
-
-/**
- * The type of reactable
- */
-export const enum ReactableEnum {
-  COMMENT = 'COMMENT',
-  REFLECTION = 'REFLECTION'
-}
-
-/**
  * Return object for AddReactjiToReactablePayload
  */
 export type AddReactjiToReactablePayload =
@@ -5421,6 +7872,14 @@ export interface IAddReactjiToReactableSuccess {
    * the Reactable with the updated list of reactjis
    */
   reactable: Reactable;
+}
+
+/**
+ * The type of reactable
+ */
+export const enum ReactableEnum {
+  COMMENT = 'COMMENT',
+  REFLECTION = 'REFLECTION'
 }
 
 export interface IAddReflectTemplatePayload {
@@ -5450,15 +7909,6 @@ export interface IAddSlackAuthPayload {
   user: IUser | null;
 }
 
-/**
- * A flag to give an individual user super powers
- */
-export const enum UserFlagEnum {
-  video = 'video',
-  jira = 'jira',
-  poker = 'poker'
-}
-
 export interface IAddFeatureFlagPayload {
   __typename: 'AddFeatureFlagPayload';
   error: IStandardMutationError | null;
@@ -5479,6 +7929,15 @@ export interface IAddFeatureFlagPayload {
   result: string | null;
 }
 
+/**
+ * A flag to give an individual user super powers
+ */
+export const enum UserFlagEnum {
+  video = 'video',
+  jira = 'jira',
+  poker = 'poker'
+}
+
 export interface IAddGitHubAuthPayload {
   __typename: 'AddGitHubAuthPayload';
   error: IStandardMutationError | null;
@@ -5489,21 +7948,14 @@ export interface IAddGitHubAuthPayload {
   githubAuth: IGitHubAuth | null;
 
   /**
+   * The team member with the updated auth
+   */
+  teamMember: ITeamMember | null;
+
+  /**
    * The user with updated githubAuth
    */
   user: IUser | null;
-}
-
-export interface INewTeamInput {
-  /**
-   * The name of the team
-   */
-  name?: string | null;
-
-  /**
-   * The unique orginization ID that pays for the team
-   */
-  orgId?: string | null;
 }
 
 export interface IAddOrgPayload {
@@ -5526,6 +7978,18 @@ export interface IAddOrgPayload {
    * The ID of the suggestion to create a new team
    */
   removedSuggestedActionId: string | null;
+}
+
+export interface INewTeamInput {
+  /**
+   * The name of the team
+   */
+  name?: string | null;
+
+  /**
+   * The unique orginization ID that pays for the team
+   */
+  orgId?: string | null;
 }
 
 export interface IAddTeamPayload {
@@ -5575,6 +8039,11 @@ export interface IArchiveTeamPayload {
    * all the suggested actions that never happened
    */
   removedSuggestedActionIds: Array<string | null> | null;
+
+  /**
+   * A list of the ids of templates created by a team
+   */
+  teamTemplateIds: Array<string>;
 }
 
 /**
@@ -5706,25 +8175,6 @@ export interface ICreatePicturePutUrlPayload {
   url: any | null;
 }
 
-export interface ICreateReflectionInput {
-  /**
-   * A stringified draft-js document containing thoughts
-   */
-  content?: string | null;
-  meetingId: string;
-
-  /**
-   * The prompt the reflection belongs to
-   */
-  promptId?: string | null;
-
-  /**
-   * The phase item the reflection belongs to
-   */
-  retroPhaseItemId?: string | null;
-  sortOrder: number;
-}
-
 export interface ICreateReflectionPayload {
   __typename: 'CreateReflectionPayload';
   error: IStandardMutationError | null;
@@ -5743,42 +8193,23 @@ export interface ICreateReflectionPayload {
   unlockedStages: Array<NewMeetingStage> | null;
 }
 
-export interface ICreateTaskInput {
+export interface ICreateReflectionInput {
+  /**
+   * A stringified draft-js document containing thoughts
+   */
   content?: string | null;
+  meetingId: string;
 
   /**
-   * foreign key for the meeting this was created in
+   * The prompt the reflection belongs to
    */
-  meetingId?: string | null;
+  promptId?: string | null;
 
   /**
-   * foreign key for the reflection group or agenda item this was created from
+   * The phase item the reflection belongs to
    */
-  threadId?: string | null;
-  threadSource?: ThreadSourceEnum | null;
-  threadSortOrder?: number | null;
-  threadParentId?: string | null;
-  sortOrder?: number | null;
-  status: TaskStatusEnum;
-
-  /**
-   * teamId, the team the task is on
-   */
-  teamId: string;
-
-  /**
-   * userId, the owner of the task
-   */
-  userId: string;
-}
-
-/**
- * The part of the site that is calling the mutation
- */
-export const enum AreaEnum {
-  meeting = 'meeting',
-  teamDash = 'teamDash',
-  userDash = 'userDash'
+  retroPhaseItemId?: string | null;
+  sortOrder: number;
 }
 
 export interface ICreateTaskPayload {
@@ -5855,6 +8286,51 @@ export const enum TaskInvolvementType {
   MENTIONEE = 'MENTIONEE'
 }
 
+export interface ICreateTaskInput {
+  content?: string | null;
+
+  /**
+   * foreign key for the meeting this was created in
+   */
+  meetingId?: string | null;
+
+  /**
+   * foreign key for the reflection group or agenda item this was created from
+   */
+  threadId?: string | null;
+  threadSource?: ThreadSourceEnum | null;
+  threadSortOrder?: number | null;
+  threadParentId?: string | null;
+  sortOrder?: number | null;
+  status: TaskStatusEnum;
+
+  /**
+   * teamId, the team the task is on
+   */
+  teamId: string;
+
+  /**
+   * userId, the owner of the task
+   */
+  userId: string;
+}
+
+/**
+ * The part of the site that is calling the mutation
+ */
+export const enum AreaEnum {
+  meeting = 'meeting',
+  teamDash = 'teamDash',
+  userDash = 'userDash'
+}
+
+export interface ICreateUserPicturePutUrlPayload {
+  __typename: 'CreateUserPicturePutUrlPayload';
+  error: IStandardMutationError | null;
+  url: any | null;
+  pngUrl: any | null;
+}
+
 export interface IImageMetadataInput {
   /**
    * user-supplied MIME content type
@@ -5865,13 +8341,6 @@ export interface IImageMetadataInput {
    * user-supplied file size
    */
   contentLength: number;
-}
-
-export interface ICreateUserPicturePutUrlPayload {
-  __typename: 'CreateUserPicturePutUrlPayload';
-  error: IStandardMutationError | null;
-  url: any | null;
-  pngUrl: any | null;
 }
 
 /**
@@ -5954,119 +8423,6 @@ export interface IDragDiscussionTopicPayload {
 }
 
 /**
- * The stage where the team discusses a single theme
- */
-export interface IRetroDiscussStage {
-  __typename: 'RetroDiscussStage';
-
-  /**
-   * stageId, shortid
-   */
-  id: string;
-
-  /**
-   * The datetime the stage was completed
-   */
-  endAt: any | null;
-
-  /**
-   * foreign key. try using meeting
-   */
-  meetingId: string;
-
-  /**
-   * The meeting this stage belongs to
-   */
-  meeting: NewMeeting | null;
-
-  /**
-   * true if the facilitator has completed this stage, else false. Should be boolean(endAt)
-   */
-  isComplete: boolean;
-
-  /**
-   * true if any meeting participant can navigate to this stage
-   */
-  isNavigable: boolean;
-
-  /**
-   * true if the facilitator can navigate to this stage
-   */
-  isNavigableByFacilitator: boolean;
-
-  /**
-   * The phase this stage belongs to
-   */
-  phase: NewMeetingPhase | null;
-
-  /**
-   * The type of the phase
-   */
-  phaseType: NewMeetingPhaseTypeEnum | null;
-
-  /**
-   * The datetime the stage was started
-   */
-  startAt: any | null;
-
-  /**
-   * Number of times the facilitator has visited this stage
-   */
-  viewCount: number | null;
-
-  /**
-   * true if a time limit is set, false if end time is set, null if neither is set
-   */
-  isAsync: boolean | null;
-
-  /**
-   * true if the viewer is ready to advance, else false
-   */
-  isViewerReady: boolean;
-
-  /**
-   * the number of meeting members ready to advance, excluding the facilitator
-   */
-  readyCount: number;
-
-  /**
-   * The datetime the phase is scheduled to be finished, null if no time limit or end time is set
-   */
-  scheduledEndTime: any | null;
-
-  /**
-   * The suggested ending datetime for a phase to be completed async, null if not enough data to make a suggestion
-   */
-  suggestedEndTime: any | null;
-
-  /**
-   * The suggested time limit for a phase to be completed together, null if not enough data to make a suggestion
-   */
-  suggestedTimeLimit: number | null;
-
-  /**
-   * The number of milliseconds left before the scheduled end time. Useful for
-   * unsynced client clocks. null if scheduledEndTime is null
-   */
-  timeRemaining: number | null;
-
-  /**
-   * foreign key. use reflectionGroup
-   */
-  reflectionGroupId: string | null;
-
-  /**
-   * the group that is the focal point of the discussion
-   */
-  reflectionGroup: IRetroReflectionGroup | null;
-
-  /**
-   * The sort order for reprioritizing discussion topics
-   */
-  sortOrder: number;
-}
-
-/**
  * Return object for DragEstimatingTaskPayload
  */
 export type DragEstimatingTaskPayload =
@@ -6078,7 +8434,7 @@ export interface IDragEstimatingTaskSuccess {
   meetingId: string;
   meeting: IPokerMeeting;
   stageId: string;
-  stage: IEstimateStage;
+  stage: EstimateStage;
 }
 
 /**
@@ -6218,186 +8574,6 @@ export interface IPokerMeetingMember {
   updatedAt: any;
 }
 
-/**
- * The retro-specific meeting settings
- */
-export interface IPokerMeetingSettings {
-  __typename: 'PokerMeetingSettings';
-  id: string;
-
-  /**
-   * The type of meeting these settings apply to
-   */
-  meetingType: MeetingTypeEnum;
-
-  /**
-   * The broad phase types that will be addressed during the meeting
-   */
-  phaseTypes: Array<NewMeetingPhaseTypeEnum>;
-
-  /**
-   * FK
-   */
-  teamId: string;
-
-  /**
-   * The team these settings belong to
-   */
-  team: ITeam;
-
-  /**
-   * FK. The template that will be used to start the poker meeting
-   */
-  selectedTemplateId: string;
-
-  /**
-   * The template that will be used to start the Poker meeting
-   */
-  selectedTemplate: IReflectTemplate;
-
-  /**
-   * The list of templates used to start a Poker meeting
-   */
-  teamTemplates: Array<IReflectTemplate>;
-
-  /**
-   * The list of templates shared across the organization to start a Poker meeting
-   */
-  organizationTemplates: IReflectTemplateConnection;
-
-  /**
-   * The list of templates shared across the organization to start a Poker meeting
-   */
-  publicTemplates: IReflectTemplateConnection;
-}
-
-export interface IOrganizationTemplatesOnPokerMeetingSettingsArguments {
-  first: number;
-
-  /**
-   * The cursor, which is the templateId
-   */
-  after?: string | null;
-}
-
-export interface IPublicTemplatesOnPokerMeetingSettingsArguments {
-  first: number;
-
-  /**
-   * The cursor, which is the templateId
-   */
-  after?: string | null;
-}
-
-/**
- * The stage where the team estimates & discusses a single task
- */
-export interface IEstimateStage {
-  __typename: 'EstimateStage';
-
-  /**
-   * stageId, shortid
-   */
-  id: string;
-
-  /**
-   * The datetime the stage was completed
-   */
-  endAt: any | null;
-
-  /**
-   * foreign key. try using meeting
-   */
-  meetingId: string;
-
-  /**
-   * The meeting this stage belongs to
-   */
-  meeting: NewMeeting | null;
-
-  /**
-   * true if the facilitator has completed this stage, else false. Should be boolean(endAt)
-   */
-  isComplete: boolean;
-
-  /**
-   * true if any meeting participant can navigate to this stage
-   */
-  isNavigable: boolean;
-
-  /**
-   * true if the facilitator can navigate to this stage
-   */
-  isNavigableByFacilitator: boolean;
-
-  /**
-   * The phase this stage belongs to
-   */
-  phase: NewMeetingPhase | null;
-
-  /**
-   * The type of the phase
-   */
-  phaseType: NewMeetingPhaseTypeEnum | null;
-
-  /**
-   * The datetime the stage was started
-   */
-  startAt: any | null;
-
-  /**
-   * Number of times the facilitator has visited this stage
-   */
-  viewCount: number | null;
-
-  /**
-   * true if a time limit is set, false if end time is set, null if neither is set
-   */
-  isAsync: boolean | null;
-
-  /**
-   * true if the viewer is ready to advance, else false
-   */
-  isViewerReady: boolean;
-
-  /**
-   * the number of meeting members ready to advance, excluding the facilitator
-   */
-  readyCount: number;
-
-  /**
-   * The datetime the phase is scheduled to be finished, null if no time limit or end time is set
-   */
-  scheduledEndTime: any | null;
-
-  /**
-   * The suggested ending datetime for a phase to be completed async, null if not enough data to make a suggestion
-   */
-  suggestedEndTime: any | null;
-
-  /**
-   * The suggested time limit for a phase to be completed together, null if not enough data to make a suggestion
-   */
-  suggestedTimeLimit: number | null;
-
-  /**
-   * The number of milliseconds left before the scheduled end time. Useful for
-   * unsynced client clocks. null if scheduledEndTime is null
-   */
-  timeRemaining: number | null;
-  taskId: string;
-
-  /**
-   * the task that is being assigned story points
-   */
-  task: ITask;
-
-  /**
-   * The sort order for reprioritizing discussion topics
-   */
-  sortOrder: number;
-}
-
 export interface IEditCommentingPayload {
   __typename: 'EditCommentingPayload';
 
@@ -6459,14 +8635,6 @@ export interface IEditTaskPayload {
    * true if the editor is editing, false if they stopped editing
    */
   isEditing: boolean | null;
-}
-
-/**
- * The possible places a reflection can be dropped
- */
-export const enum DragReflectionDropTargetTypeEnum {
-  REFLECTION_GROUP = 'REFLECTION_GROUP',
-  REFLECTION_GRID = 'REFLECTION_GRID'
 }
 
 export interface IEndDraggingReflectionPayload {
@@ -6558,6 +8726,14 @@ export interface IRemoteReflectionDrag {
    * the top of the source, relative to the client window
    */
   clientY: number | null;
+}
+
+/**
+ * The possible places a reflection can be dropped
+ */
+export const enum DragReflectionDropTargetTypeEnum {
+  REFLECTION_GROUP = 'REFLECTION_GROUP',
+  REFLECTION_GRID = 'REFLECTION_GRID'
 }
 
 export interface IEndNewMeetingPayload {
@@ -6802,6 +8978,49 @@ export interface IPayLaterPayload {
   meeting: NewMeeting | null;
 }
 
+/**
+ * Return object for PersistJiraSearchQueryPayload
+ */
+export type PersistJiraSearchQueryPayload =
+  | IErrorPayload
+  | IPersistJiraSearchQuerySuccess;
+
+export interface IPersistJiraSearchQuerySuccess {
+  __typename: 'PersistJiraSearchQuerySuccess';
+
+  /**
+   * The meeting settings with the updated jira search history
+   */
+  settings: IPokerMeetingSettings;
+}
+
+export interface IJiraSearchQueryInput {
+  /**
+   * The query string, either simple or JQL depending on the isJQL flag
+   */
+  queryString: string;
+
+  /**
+   * true if the queryString is JQL, else false
+   */
+  isJQL: boolean;
+
+  /**
+   * The list of project keys selected as a filter. null if not set
+   */
+  projectKeyFilters?: Array<string> | null;
+
+  /**
+   * The list of issue types selected as a filter. null if not set
+   */
+  issueTypeFilters?: Array<string> | null;
+
+  /**
+   * true if this query should be deleted
+   */
+  isRemove?: boolean | null;
+}
+
 export interface IPushInvitationPayload {
   __typename: 'PushInvitationPayload';
   error: IStandardMutationError | null;
@@ -6869,6 +9088,11 @@ export interface IRemoveAtlassianAuthPayload {
   teamId: string | null;
 
   /**
+   * The team member with the updated auth
+   */
+  teamMember: ITeamMember | null;
+
+  /**
    * The user with updated atlassianAuth
    */
   user: IUser | null;
@@ -6883,6 +9107,11 @@ export interface IRemoveGitHubAuthPayload {
    */
   authId: string | null;
   teamId: string | null;
+
+  /**
+   * The team member with the updated auth
+   */
+  teamMember: ITeamMember | null;
 
   /**
    * The user with updated githubAuth
@@ -7077,6 +9306,12 @@ export interface IRemoveTeamMemberPayload {
   kickOutNotification: INotifyKickedOut | null;
 }
 
+export interface IResetMeetingToStagePayload {
+  __typename: 'ResetMeetingToStagePayload';
+  error: IStandardMutationError | null;
+  meeting: NewMeeting | null;
+}
+
 export interface IResetPasswordPayload {
   __typename: 'ResetPasswordPayload';
   error: IStandardMutationError | null;
@@ -7143,156 +9378,6 @@ export interface ISetPhaseFocusPayload {
   error: IStandardMutationError | null;
   meeting: IRetrospectiveMeeting;
   reflectPhase: IReflectPhase;
-}
-
-/**
- * The meeting phase where all team members check in one-by-one
- */
-export interface IReflectPhase {
-  __typename: 'ReflectPhase';
-
-  /**
-   * shortid
-   */
-  id: string;
-  meetingId: string;
-
-  /**
-   * The type of phase
-   */
-  phaseType: NewMeetingPhaseTypeEnum;
-  stages: Array<IGenericMeetingStage>;
-
-  /**
-   * foreign key. use focusedPhaseItem
-   * @deprecated "use focusedPromptId"
-   */
-  focusedPhaseItemId: string | null;
-
-  /**
-   * the phase item that the facilitator wants the group to focus on
-   * @deprecated "use focusedPrompt"
-   */
-  focusedPhaseItem: IReflectPrompt | null;
-
-  /**
-   * foreign key. use focusedPrompt
-   */
-  focusedPromptId: string | null;
-
-  /**
-   * the Prompt that the facilitator wants the group to focus on
-   */
-  focusedPrompt: IReflectPrompt | null;
-
-  /**
-   * FK. The ID of the template used during the reflect phase
-   */
-  promptTemplateId: string;
-
-  /**
-   * The prompts used during the reflect phase
-   */
-  reflectPrompts: Array<IReflectPrompt>;
-  teamId: string;
-}
-
-/**
- * A stage of a meeting that has no extra state. Only used for single-stage phases
- */
-export interface IGenericMeetingStage {
-  __typename: 'GenericMeetingStage';
-
-  /**
-   * stageId, shortid
-   */
-  id: string;
-
-  /**
-   * The datetime the stage was completed
-   */
-  endAt: any | null;
-
-  /**
-   * foreign key. try using meeting
-   */
-  meetingId: string;
-
-  /**
-   * The meeting this stage belongs to
-   */
-  meeting: NewMeeting | null;
-
-  /**
-   * true if the facilitator has completed this stage, else false. Should be boolean(endAt)
-   */
-  isComplete: boolean;
-
-  /**
-   * true if any meeting participant can navigate to this stage
-   */
-  isNavigable: boolean;
-
-  /**
-   * true if the facilitator can navigate to this stage
-   */
-  isNavigableByFacilitator: boolean;
-
-  /**
-   * The phase this stage belongs to
-   */
-  phase: NewMeetingPhase | null;
-
-  /**
-   * The type of the phase
-   */
-  phaseType: NewMeetingPhaseTypeEnum | null;
-
-  /**
-   * The datetime the stage was started
-   */
-  startAt: any | null;
-
-  /**
-   * Number of times the facilitator has visited this stage
-   */
-  viewCount: number | null;
-
-  /**
-   * true if a time limit is set, false if end time is set, null if neither is set
-   */
-  isAsync: boolean | null;
-
-  /**
-   * true if the viewer is ready to advance, else false
-   */
-  isViewerReady: boolean;
-
-  /**
-   * the number of meeting members ready to advance, excluding the facilitator
-   */
-  readyCount: number;
-
-  /**
-   * The datetime the phase is scheduled to be finished, null if no time limit or end time is set
-   */
-  scheduledEndTime: any | null;
-
-  /**
-   * The suggested ending datetime for a phase to be completed async, null if not enough data to make a suggestion
-   */
-  suggestedEndTime: any | null;
-
-  /**
-   * The suggested time limit for a phase to be completed together, null if not enough data to make a suggestion
-   */
-  suggestedTimeLimit: number | null;
-
-  /**
-   * The number of milliseconds left before the scheduled end time. Useful for
-   * unsynced client clocks. null if scheduledEndTime is null
-   */
-  timeRemaining: number | null;
 }
 
 export interface ISetStageTimerPayload {
@@ -7368,6 +9453,18 @@ export interface IStartSprintPokerSuccess {
   teamId: string;
 }
 
+export interface IUpdateAgendaItemPayload {
+  __typename: 'UpdateAgendaItemPayload';
+  agendaItem: IAgendaItem | null;
+  meetingId: string | null;
+
+  /**
+   * The meeting with the updated agenda item, if any
+   */
+  meeting: NewMeeting | null;
+  error: IStandardMutationError | null;
+}
+
 export interface IUpdateAgendaItemInput {
   /**
    * The unique agenda item ID, composed of a teamId::shortid
@@ -7393,18 +9490,6 @@ export interface IUpdateAgendaItemInput {
    * The sort order of the agenda item in the list
    */
   sortOrder?: number | null;
-}
-
-export interface IUpdateAgendaItemPayload {
-  __typename: 'UpdateAgendaItemPayload';
-  agendaItem: IAgendaItem | null;
-  meetingId: string | null;
-
-  /**
-   * The meeting with the updated agenda item, if any
-   */
-  meeting: NewMeeting | null;
-  error: IStandardMutationError | null;
 }
 
 /**
@@ -7438,6 +9523,16 @@ export interface IUpdateCreditCardPayload {
   teamsUpdated: Array<ITeam | null> | null;
 }
 
+export interface IUpdateOrgPayload {
+  __typename: 'UpdateOrgPayload';
+  error: IStandardMutationError | null;
+
+  /**
+   * The updated org
+   */
+  organization: IOrganization | null;
+}
+
 export interface IUpdateOrgInput {
   /**
    * The unique action ID
@@ -7453,16 +9548,6 @@ export interface IUpdateOrgInput {
    * The org avatar
    */
   picture?: any | null;
-}
-
-export interface IUpdateOrgPayload {
-  __typename: 'UpdateOrgPayload';
-  error: IStandardMutationError | null;
-
-  /**
-   * The updated org
-   */
-  organization: IOrganization | null;
 }
 
 export interface IUpdateNewCheckInQuestionPayload {
@@ -7513,6 +9598,45 @@ export interface IUpdateDragLocationInput {
   clientY?: number | null;
 }
 
+/**
+ * Return object for UpdatePokerScopePayload
+ */
+export type UpdatePokerScopePayload = IErrorPayload | IUpdatePokerScopeSuccess;
+
+export interface IUpdatePokerScopeSuccess {
+  __typename: 'UpdatePokerScopeSuccess';
+
+  /**
+   * The meeting with the updated estimate phases
+   */
+  meeting: IPokerMeeting;
+}
+
+export interface IUpdatePokerScopeItemInput {
+  /**
+   * The service where the task comes from
+   */
+  service: TaskServiceEnum;
+
+  /**
+   * A JSON commposite key used to fetch the task from the service
+   */
+  serviceTaskId: string;
+
+  /**
+   * The action to perform
+   */
+  action: AddOrDeleteEnum;
+}
+
+/**
+ * Option to add or delete
+ */
+export const enum AddOrDeleteEnum {
+  ADD = 'ADD',
+  DELETE = 'DELETE'
+}
+
 export interface IUpdateReflectionContentPayload {
   __typename: 'UpdateReflectionContentPayload';
   error: IStandardMutationError | null;
@@ -7543,18 +9667,6 @@ export interface IUpdateRetroMaxVotesSuccess {
   meeting: IRetrospectiveMeeting;
 }
 
-export interface IUpdateTaskInput {
-  /**
-   * The task id
-   */
-  id: string;
-  content?: string | null;
-  sortOrder?: number | null;
-  status?: TaskStatusEnum | null;
-  teamId?: string | null;
-  userId?: string | null;
-}
-
 export interface IUpdateTaskPayload {
   __typename: 'UpdateTaskPayload';
   error: IStandardMutationError | null;
@@ -7567,10 +9679,28 @@ export interface IUpdateTaskPayload {
   addedNotification: INotifyTaskInvolves | null;
 }
 
+export interface IUpdateTaskInput {
+  /**
+   * The task id
+   */
+  id: string;
+  content?: string | null;
+  sortOrder?: number | null;
+  status?: TaskStatusEnum | null;
+  teamId?: string | null;
+  userId?: string | null;
+}
+
 export interface IUpdateTaskDueDatePayload {
   __typename: 'UpdateTaskDueDatePayload';
   error: IStandardMutationError | null;
   task: ITask | null;
+}
+
+export interface IUpdateTeamNamePayload {
+  __typename: 'UpdateTeamNamePayload';
+  error: IStandardMutationError | null;
+  team: ITeam | null;
 }
 
 export interface IUpdatedTeamInput {
@@ -7585,12 +9715,6 @@ export interface IUpdatedTeamInput {
    * A link to the team’s profile image.
    */
   picture?: any | null;
-}
-
-export interface IUpdateTeamNamePayload {
-  __typename: 'UpdateTeamNamePayload';
-  error: IStandardMutationError | null;
-  team: ITeam | null;
 }
 
 /**
@@ -7619,6 +9743,17 @@ export interface IUpdateTemplateScopeSuccess {
   settings: IRetrospectiveMeetingSettings;
 }
 
+export interface IUpdateUserProfilePayload {
+  __typename: 'UpdateUserProfilePayload';
+  error: IStandardMutationError | null;
+  user: IUser | null;
+
+  /**
+   * The updated team member
+   */
+  teamMembers: Array<ITeamMember> | null;
+}
+
 export interface IUpdateUserProfileInput {
   /**
    * A link to the user’s profile image.
@@ -7629,17 +9764,6 @@ export interface IUpdateUserProfileInput {
    * The name, as confirmed by the user
    */
   preferredName?: string | null;
-}
-
-export interface IUpdateUserProfilePayload {
-  __typename: 'UpdateUserProfilePayload';
-  error: IStandardMutationError | null;
-  user: IUser | null;
-
-  /**
-   * The updated team member
-   */
-  teamMembers: Array<ITeamMember> | null;
 }
 
 export interface IVerifyEmailPayload {
@@ -7721,6 +9845,7 @@ export type MeetingSubscriptionPayload =
   | INewMeetingCheckInPayload
   | IPromoteNewMeetingFacilitatorPayload
   | IRemoveReflectionPayload
+  | IResetMeetingToStagePayload
   | ISetAppLocationSuccess
   | ISetPhaseFocusPayload
   | ISetStageTimerPayload
@@ -7731,6 +9856,7 @@ export type MeetingSubscriptionPayload =
   | IUpdateReflectionContentPayload
   | IUpdateReflectionGroupTitlePayload
   | IUpdateRetroMaxVotesSuccess
+  | IUpdatePokerScopeSuccess
   | IVoteForReflectionGroupPayload;
 
 export interface IUpdateDragLocationPayload {
@@ -7964,1608 +10090,7 @@ export type TeamSubscriptionPayload =
   | IRenameReflectTemplatePromptPayload
   | ISetCheckInEnabledPayload
   | ISetSlackNotificationPayload
-  | IUpdateUserProfilePayload;
-
-/**
- * An action meeting
- */
-export interface IActionMeeting {
-  __typename: 'ActionMeeting';
-
-  /**
-   * The unique meeting id. shortid.
-   */
-  id: string;
-
-  /**
-   * The timestamp the meeting was created
-   */
-  createdAt: any;
-
-  /**
-   * The userId of the desired facilitator (different form facilitatorUserId if disconnected)
-   */
-  defaultFacilitatorUserId: string;
-
-  /**
-   * The timestamp the meeting officially ended
-   */
-  endedAt: any | null;
-
-  /**
-   * The location of the facilitator in the meeting
-   */
-  facilitatorStageId: string;
-
-  /**
-   * The userId (or anonymousId) of the most recent facilitator
-   */
-  facilitatorUserId: string;
-
-  /**
-   * The facilitator team member
-   */
-  facilitator: ITeamMember;
-
-  /**
-   * The team members that were active during the time of the meeting
-   */
-  meetingMembers: Array<IActionMeetingMember>;
-
-  /**
-   * The auto-incrementing meeting number for the team
-   */
-  meetingNumber: number;
-  meetingType: MeetingTypeEnum;
-
-  /**
-   * The name of the meeting
-   */
-  name: string;
-
-  /**
-   * The organization this meeting belongs to
-   */
-  organization: IOrganization;
-
-  /**
-   * The phases the meeting will go through, including all phase-specific state
-   */
-  phases: Array<NewMeetingPhase>;
-
-  /**
-   * true if should show the org the conversion modal, else false
-   */
-  showConversionModal: boolean;
-
-  /**
-   * The time the meeting summary was emailed to the team
-   */
-  summarySentAt: any | null;
-
-  /**
-   * foreign key for team
-   */
-  teamId: string;
-
-  /**
-   * The team that ran the meeting
-   */
-  team: ITeam;
-
-  /**
-   * The last time a meeting was updated (stage completed, finished, etc)
-   */
-  updatedAt: any | null;
-
-  /**
-   * The action meeting member of the viewer
-   */
-  viewerMeetingMember: IActionMeetingMember;
-
-  /**
-   * A single agenda item
-   */
-  agendaItem: IAgendaItem | null;
-
-  /**
-   * The number of agenda items generated in the meeting
-   */
-  agendaItemCount: number;
-
-  /**
-   * All of the agenda items for the meeting
-   */
-  agendaItems: Array<IAgendaItem>;
-
-  /**
-   * The number of comments generated in the meeting
-   */
-  commentCount: number;
-
-  /**
-   * The settings that govern the action meeting
-   */
-  settings: IActionMeetingSettings;
-
-  /**
-   * The number of tasks generated in the meeting
-   */
-  taskCount: number;
-
-  /**
-   * The tasks created within the meeting
-   */
-  tasks: Array<ITask>;
-}
-
-export interface IAgendaItemOnActionMeetingArguments {
-  agendaItemId: string;
-}
-
-/**
- * All the meeting specifics for a user in a retro meeting
- */
-export interface IActionMeetingMember {
-  __typename: 'ActionMeetingMember';
-
-  /**
-   * A composite of userId::meetingId
-   */
-  id: string;
-
-  /**
-   * true if present, false if absent, else null
-   */
-  isCheckedIn: boolean | null;
-  meetingId: string;
-  meetingType: MeetingTypeEnum;
-  teamId: string;
-  teamMember: ITeamMember;
-  user: IUser;
-  userId: string;
-
-  /**
-   * The last time a meeting was updated (stage completed, finished, etc)
-   */
-  updatedAt: any;
-
-  /**
-   * The tasks marked as done in the meeting
-   */
-  doneTasks: Array<ITask>;
-
-  /**
-   * The tasks assigned to members during the meeting
-   */
-  tasks: Array<ITask>;
-}
-
-/**
- * The action-specific meeting settings
- */
-export interface IActionMeetingSettings {
-  __typename: 'ActionMeetingSettings';
-  id: string;
-
-  /**
-   * The type of meeting these settings apply to
-   */
-  meetingType: MeetingTypeEnum;
-
-  /**
-   * The broad phase types that will be addressed during the meeting
-   */
-  phaseTypes: Array<NewMeetingPhaseTypeEnum>;
-
-  /**
-   * FK
-   */
-  teamId: string;
-
-  /**
-   * The team these settings belong to
-   */
-  team: ITeam;
-}
-
-/**
- * The meeting phase where all team members discuss the topics with the most votes
- */
-export interface IAgendaItemsPhase {
-  __typename: 'AgendaItemsPhase';
-
-  /**
-   * shortid
-   */
-  id: string;
-  meetingId: string;
-
-  /**
-   * The type of phase
-   */
-  phaseType: NewMeetingPhaseTypeEnum;
-  stages: Array<IAgendaItemsStage>;
-}
-
-/**
- * The stage where the team discusses a single agenda item
- */
-export interface IAgendaItemsStage {
-  __typename: 'AgendaItemsStage';
-
-  /**
-   * stageId, shortid
-   */
-  id: string;
-
-  /**
-   * The datetime the stage was completed
-   */
-  endAt: any | null;
-
-  /**
-   * foreign key. try using meeting
-   */
-  meetingId: string;
-
-  /**
-   * The meeting this stage belongs to
-   */
-  meeting: NewMeeting | null;
-
-  /**
-   * true if the facilitator has completed this stage, else false. Should be boolean(endAt)
-   */
-  isComplete: boolean;
-
-  /**
-   * true if any meeting participant can navigate to this stage
-   */
-  isNavigable: boolean;
-
-  /**
-   * true if the facilitator can navigate to this stage
-   */
-  isNavigableByFacilitator: boolean;
-
-  /**
-   * The phase this stage belongs to
-   */
-  phase: NewMeetingPhase | null;
-
-  /**
-   * The type of the phase
-   */
-  phaseType: NewMeetingPhaseTypeEnum | null;
-
-  /**
-   * The datetime the stage was started
-   */
-  startAt: any | null;
-
-  /**
-   * Number of times the facilitator has visited this stage
-   */
-  viewCount: number | null;
-
-  /**
-   * true if a time limit is set, false if end time is set, null if neither is set
-   */
-  isAsync: boolean | null;
-
-  /**
-   * true if the viewer is ready to advance, else false
-   */
-  isViewerReady: boolean;
-
-  /**
-   * the number of meeting members ready to advance, excluding the facilitator
-   */
-  readyCount: number;
-
-  /**
-   * The datetime the phase is scheduled to be finished, null if no time limit or end time is set
-   */
-  scheduledEndTime: any | null;
-
-  /**
-   * The suggested ending datetime for a phase to be completed async, null if not enough data to make a suggestion
-   */
-  suggestedEndTime: any | null;
-
-  /**
-   * The suggested time limit for a phase to be completed together, null if not enough data to make a suggestion
-   */
-  suggestedTimeLimit: number | null;
-
-  /**
-   * The number of milliseconds left before the scheduled end time. Useful for
-   * unsynced client clocks. null if scheduledEndTime is null
-   */
-  timeRemaining: number | null;
-
-  /**
-   * The id of the agenda item this relates to
-   */
-  agendaItemId: string;
-  agendaItem: IAgendaItem;
-}
-
-/**
- * An authentication strategy using Google
- */
-export interface IAuthIdentityGoogle {
-  __typename: 'AuthIdentityGoogle';
-
-  /**
-   * true if the email address using this strategy is verified, else false
-   */
-  isEmailVerified: boolean;
-  type: AuthIdentityTypeEnum;
-
-  /**
-   * The googleID for this strategy
-   */
-  id: string;
-}
-
-/**
- * An authentication strategy using an email & password
- */
-export interface IAuthIdentityLocal {
-  __typename: 'AuthIdentityLocal';
-
-  /**
-   * true if the email address using this strategy is verified, else false
-   */
-  isEmailVerified: boolean;
-  type: AuthIdentityTypeEnum;
-}
-
-/**
- * The meeting phase where all team members check in one-by-one
- */
-export interface ICheckInPhase {
-  __typename: 'CheckInPhase';
-
-  /**
-   * shortid
-   */
-  id: string;
-  meetingId: string;
-
-  /**
-   * The type of phase
-   */
-  phaseType: NewMeetingPhaseTypeEnum;
-  stages: Array<ICheckInStage>;
-
-  /**
-   * The checkIn greeting (fun language)
-   */
-  checkInGreeting: IMeetingGreeting;
-
-  /**
-   * The checkIn question of the week (draft-js format)
-   */
-  checkInQuestion: string;
-}
-
-/**
- * A stage that focuses on a single team member
- */
-export interface ICheckInStage {
-  __typename: 'CheckInStage';
-
-  /**
-   * stageId, shortid
-   */
-  id: string;
-
-  /**
-   * The datetime the stage was completed
-   */
-  endAt: any | null;
-
-  /**
-   * foreign key. try using meeting
-   */
-  meetingId: string;
-
-  /**
-   * The meeting this stage belongs to
-   */
-  meeting: NewMeeting | null;
-
-  /**
-   * true if the facilitator has completed this stage, else false. Should be boolean(endAt)
-   */
-  isComplete: boolean;
-
-  /**
-   * true if any meeting participant can navigate to this stage
-   */
-  isNavigable: boolean;
-
-  /**
-   * true if the facilitator can navigate to this stage
-   */
-  isNavigableByFacilitator: boolean;
-
-  /**
-   * The phase this stage belongs to
-   */
-  phase: NewMeetingPhase | null;
-
-  /**
-   * The type of the phase
-   */
-  phaseType: NewMeetingPhaseTypeEnum | null;
-
-  /**
-   * The datetime the stage was started
-   */
-  startAt: any | null;
-
-  /**
-   * Number of times the facilitator has visited this stage
-   */
-  viewCount: number | null;
-
-  /**
-   * true if a time limit is set, false if end time is set, null if neither is set
-   */
-  isAsync: boolean | null;
-
-  /**
-   * true if the viewer is ready to advance, else false
-   */
-  isViewerReady: boolean;
-
-  /**
-   * the number of meeting members ready to advance, excluding the facilitator
-   */
-  readyCount: number;
-
-  /**
-   * The datetime the phase is scheduled to be finished, null if no time limit or end time is set
-   */
-  scheduledEndTime: any | null;
-
-  /**
-   * The suggested ending datetime for a phase to be completed async, null if not enough data to make a suggestion
-   */
-  suggestedEndTime: any | null;
-
-  /**
-   * The suggested time limit for a phase to be completed together, null if not enough data to make a suggestion
-   */
-  suggestedTimeLimit: number | null;
-
-  /**
-   * The number of milliseconds left before the scheduled end time. Useful for
-   * unsynced client clocks. null if scheduledEndTime is null
-   */
-  timeRemaining: number | null;
-
-  /**
-   * The meeting member that is the focus for this phase item
-   */
-  meetingMember: MeetingMember;
-
-  /**
-   * foreign key. use teamMember
-   */
-  teamMemberId: string;
-
-  /**
-   * The team member that is the focus for this phase item
-   */
-  teamMember: ITeamMember;
-}
-
-/**
- * An instance of a meeting phase item. On the client, this usually represents a single view
- */
-export type NewMeetingTeamMemberStage = ICheckInStage | IUpdatesStage;
-
-/**
- * An instance of a meeting phase item. On the client, this usually represents a single view
- */
-export interface INewMeetingTeamMemberStage {
-  __typename: 'NewMeetingTeamMemberStage';
-
-  /**
-   * The meeting member that is the focus for this phase item
-   */
-  meetingMember: MeetingMember;
-
-  /**
-   * foreign key. use teamMember
-   */
-  teamMemberId: string;
-
-  /**
-   * The team member that is the focus for this phase item
-   */
-  teamMember: ITeamMember;
-}
-
-export interface IMeetingGreeting {
-  __typename: 'MeetingGreeting';
-
-  /**
-   * The foreign-language greeting
-   */
-  content: string;
-
-  /**
-   * The source language for the greeting
-   */
-  language: string;
-}
-
-export type CustomPhaseItem = IRetroPhaseItem;
-
-export interface ICustomPhaseItem {
-  __typename: 'CustomPhaseItem';
-
-  /**
-   * shortid
-   */
-  id: string;
-  createdAt: any;
-
-  /**
-   * @deprecated "Field has been deprecated because type is guranteed to be `retroPhaseItem`"
-   */
-  phaseItemType: CustomPhaseItemTypeEnum | null;
-
-  /**
-   * true if the phase item is currently used by the team, else false
-   */
-  isActive: boolean | null;
-
-  /**
-   * foreign key. use the team field
-   */
-  teamId: string;
-
-  /**
-   * The team that owns this reflectPrompt
-   */
-  team: ITeam | null;
-  updatedAt: any;
-}
-
-/**
- * The type of phase item
- */
-export const enum CustomPhaseItemTypeEnum {
-  retroPhaseItem = 'retroPhaseItem'
-}
-
-/**
- * The meeting phase where all team members discuss the topics with the most votes
- */
-export interface IDiscussPhase {
-  __typename: 'DiscussPhase';
-
-  /**
-   * shortid
-   */
-  id: string;
-  meetingId: string;
-
-  /**
-   * The type of phase
-   */
-  phaseType: NewMeetingPhaseTypeEnum;
-  stages: Array<IRetroDiscussStage>;
-}
-
-/**
- * The meeting phase where all team members estimate a the point value of a task
- */
-export interface IEstimatePhase {
-  __typename: 'EstimatePhase';
-
-  /**
-   * shortid
-   */
-  id: string;
-  meetingId: string;
-
-  /**
-   * The type of phase
-   */
-  phaseType: NewMeetingPhaseTypeEnum;
-  stages: Array<IEstimateStage>;
-}
-
-/**
- * An all-purpose meeting phase with no extra state
- */
-export interface IGenericMeetingPhase {
-  __typename: 'GenericMeetingPhase';
-
-  /**
-   * shortid
-   */
-  id: string;
-  meetingId: string;
-
-  /**
-   * The type of phase
-   */
-  phaseType: NewMeetingPhaseTypeEnum;
-  stages: Array<IGenericMeetingStage>;
-}
-
-/**
- * A project fetched from Jira in real time
- */
-export interface IJiraRemoteAvatarUrls {
-  __typename: 'JiraRemoteAvatarUrls';
-  x48: string;
-  x24: string;
-  x16: string;
-  x32: string;
-}
-
-/**
- * A project fetched from Jira in real time
- */
-export interface IJiraRemoteProject {
-  __typename: 'JiraRemoteProject';
-  self: string;
-  id: string;
-  key: string;
-  name: string;
-  avatarUrls: IJiraRemoteAvatarUrls;
-  projectCategory: IJiraRemoteProjectCategory;
-  simplified: boolean;
-  style: string;
-}
-
-/**
- * A project category fetched from a JiraRemoteProject
- */
-export interface IJiraRemoteProjectCategory {
-  __typename: 'JiraRemoteProjectCategory';
-  self: string;
-  id: string;
-  name: string;
-  description: string;
-}
-
-/**
- * A notification alerting the user that they have been promoted (to team or org leader)
- */
-export interface INotifyPromoteToOrgLeader {
-  __typename: 'NotifyPromoteToOrgLeader';
-  organization: IOrganization;
-
-  /**
-   * A shortid for the notification
-   */
-  id: string;
-
-  /**
-   * UNREAD if new, READ if viewer has seen it, CLICKED if viewed clicked it
-   */
-  status: NotificationStatusEnum;
-
-  /**
-   * The datetime to activate the notification & send it to the client
-   */
-  createdAt: any;
-  type: NotificationEnum;
-
-  /**
-   * *The userId that should see this notification
-   */
-  userId: string;
-}
-
-/**
- * A team-specific retro phase. Usually 3 or 4 exist per team, eg Good/Bad/Change, 4Ls, etc.
- */
-export interface IRetroPhaseItem {
-  __typename: 'RetroPhaseItem';
-
-  /**
-   * shortid
-   */
-  id: string;
-  createdAt: any;
-
-  /**
-   * @deprecated "Field has been deprecated because type is guranteed to be `retroPhaseItem`"
-   */
-  phaseItemType: CustomPhaseItemTypeEnum | null;
-
-  /**
-   * true if the phase item is currently used by the team, else false
-   */
-  isActive: boolean | null;
-
-  /**
-   * foreign key. use the team field
-   */
-  teamId: string;
-
-  /**
-   * The team that owns this reflectPrompt
-   */
-  team: ITeam | null;
-  updatedAt: any;
-
-  /**
-   * the order of the items in the template
-   */
-  sortOrder: number;
-
-  /**
-   * FK for template
-   */
-  templateId: string;
-
-  /**
-   * The template that this prompt belongs to
-   */
-  template: IReflectTemplate;
-
-  /**
-   * The title of the phase of the retrospective. Often a short version of the question
-   */
-  title: string;
-
-  /**
-   * The question to answer during the phase of the retrospective (eg What went well?)
-   */
-  question: string;
-
-  /**
-   * The description to the question for further context. A long version of the question.
-   */
-  description: string;
-
-  /**
-   * The color used to visually group a phase item.
-   */
-  groupColor: string;
-}
-
-/**
- * a suggestion to try a retro with your team
- */
-export interface ISuggestedActionCreateNewTeam {
-  __typename: 'SuggestedActionCreateNewTeam';
-
-  /**
-   * shortid
-   */
-  id: string;
-
-  /**
-   * * The timestamp the action was created at
-   */
-  createdAt: any;
-
-  /**
-   * The priority of the suggested action compared to other suggested actions (smaller number is higher priority)
-   */
-  priority: number | null;
-
-  /**
-   * * The timestamp the action was removed at
-   */
-  removedAt: any;
-
-  /**
-   * The specific type of suggested action
-   */
-  type: SuggestedActionTypeEnum;
-
-  /**
-   * * The userId this action is for
-   */
-  userId: string;
-
-  /**
-   * The user than can see this event
-   */
-  user: IUser;
-}
-
-/**
- * a suggestion to invite others to your team
- */
-export interface ISuggestedActionInviteYourTeam {
-  __typename: 'SuggestedActionInviteYourTeam';
-
-  /**
-   * shortid
-   */
-  id: string;
-
-  /**
-   * * The timestamp the action was created at
-   */
-  createdAt: any;
-
-  /**
-   * The priority of the suggested action compared to other suggested actions (smaller number is higher priority)
-   */
-  priority: number | null;
-
-  /**
-   * * The timestamp the action was removed at
-   */
-  removedAt: any;
-
-  /**
-   * The specific type of suggested action
-   */
-  type: SuggestedActionTypeEnum;
-
-  /**
-   * * The userId this action is for
-   */
-  userId: string;
-
-  /**
-   * The user than can see this event
-   */
-  user: IUser;
-
-  /**
-   * The teamId that we suggest you should invite people to
-   */
-  teamId: string;
-
-  /**
-   * The team you should invite people to
-   */
-  team: ITeam;
-}
-
-/**
- * a suggestion to try a retro with your team
- */
-export interface ISuggestedActionTryActionMeeting {
-  __typename: 'SuggestedActionTryActionMeeting';
-
-  /**
-   * shortid
-   */
-  id: string;
-
-  /**
-   * * The timestamp the action was created at
-   */
-  createdAt: any;
-
-  /**
-   * The priority of the suggested action compared to other suggested actions (smaller number is higher priority)
-   */
-  priority: number | null;
-
-  /**
-   * * The timestamp the action was removed at
-   */
-  removedAt: any;
-
-  /**
-   * The specific type of suggested action
-   */
-  type: SuggestedActionTypeEnum;
-
-  /**
-   * * The userId this action is for
-   */
-  userId: string;
-
-  /**
-   * The user than can see this event
-   */
-  user: IUser;
-
-  /**
-   * fk
-   */
-  teamId: string;
-
-  /**
-   * The team you should run an action meeting with
-   */
-  team: ITeam;
-}
-
-/**
- * a suggestion to try a retro with your team
- */
-export interface ISuggestedActionTryRetroMeeting {
-  __typename: 'SuggestedActionTryRetroMeeting';
-
-  /**
-   * shortid
-   */
-  id: string;
-
-  /**
-   * * The timestamp the action was created at
-   */
-  createdAt: any;
-
-  /**
-   * The priority of the suggested action compared to other suggested actions (smaller number is higher priority)
-   */
-  priority: number | null;
-
-  /**
-   * * The timestamp the action was removed at
-   */
-  removedAt: any;
-
-  /**
-   * The specific type of suggested action
-   */
-  type: SuggestedActionTypeEnum;
-
-  /**
-   * * The userId this action is for
-   */
-  userId: string;
-
-  /**
-   * The user than can see this event
-   */
-  user: IUser;
-
-  /**
-   * fk
-   */
-  teamId: string;
-
-  /**
-   * The team you should run a retro with
-   */
-  team: ITeam;
-}
-
-/**
- * a suggestion to invite others to your team
- */
-export interface ISuggestedActionTryTheDemo {
-  __typename: 'SuggestedActionTryTheDemo';
-
-  /**
-   * shortid
-   */
-  id: string;
-
-  /**
-   * * The timestamp the action was created at
-   */
-  createdAt: any;
-
-  /**
-   * The priority of the suggested action compared to other suggested actions (smaller number is higher priority)
-   */
-  priority: number | null;
-
-  /**
-   * * The timestamp the action was removed at
-   */
-  removedAt: any;
-
-  /**
-   * The specific type of suggested action
-   */
-  type: SuggestedActionTypeEnum;
-
-  /**
-   * * The userId this action is for
-   */
-  userId: string;
-
-  /**
-   * The user than can see this event
-   */
-  user: IUser;
-}
-
-/**
- * The details associated with a task integrated with GitHub
- */
-export interface ISuggestedIntegrationGitHub {
-  __typename: 'SuggestedIntegrationGitHub';
-  id: string;
-  service: TaskServiceEnum;
-
-  /**
-   * The name of the repo. Follows format of OWNER/NAME
-   */
-  nameWithOwner: string;
-}
-
-/**
- * The details associated with a task integrated with Jira
- */
-export interface ISuggestedIntegrationJira {
-  __typename: 'SuggestedIntegrationJira';
-  id: string;
-  service: TaskServiceEnum;
-
-  /**
-   * URL to a 24x24 avatar icon
-   */
-  avatar: string;
-
-  /**
-   * The project key used by jira as a more human readable proxy for a projectId
-   */
-  projectKey: string;
-
-  /**
-   * The name of the project, prefixed with the cloud name if more than 1 cloudId exists
-   */
-  projectName: string;
-
-  /**
-   * The cloud ID that the project lives on
-   */
-  cloudId: string;
-
-  /**
-   * The full project document fetched from Jira
-   */
-  remoteProject: IJiraRemoteProject;
-}
-
-/**
- * The details associated with a task integrated with GitHub
- */
-export interface ITaskIntegrationGitHub {
-  __typename: 'TaskIntegrationGitHub';
-  id: string;
-  service: TaskServiceEnum;
-  nameWithOwner: string | null;
-  issueNumber: number | null;
-}
-
-/**
- * The details associated with a task integrated with Jira
- */
-export interface ITaskIntegrationJira {
-  __typename: 'TaskIntegrationJira';
-  id: string;
-  service: TaskServiceEnum;
-
-  /**
-   * The project key used by jira as a more human readable proxy for a projectId
-   */
-  projectKey: string;
-
-  /**
-   * The name of the project as defined by jira
-   */
-  projectName: string;
-
-  /**
-   * The cloud ID that the project lives on
-   */
-  cloudId: string;
-
-  /**
-   * The issue key used by jira as a more human readable proxy for the id field
-   */
-  issueKey: string;
-
-  /**
-   * The psuedo-domain to use to generate a base url
-   */
-  cloudName: string;
-}
-
-/**
- * An event for a completed action meeting
- */
-export interface ITimelineEventCompletedActionMeeting {
-  __typename: 'TimelineEventCompletedActionMeeting';
-
-  /**
-   * shortid
-   */
-  id: string;
-
-  /**
-   * * The timestamp the event was created at
-   */
-  createdAt: any;
-
-  /**
-   * the number of times the user has interacted with (ie clicked) this event
-   */
-  interactionCount: number;
-
-  /**
-   * true if the timeline event is active, false if archived
-   */
-  isActive: boolean;
-
-  /**
-   * The orgId this event is associated with
-   */
-  orgId: string;
-
-  /**
-   * The organization this event is associated with
-   */
-  organization: IOrganization | null;
-
-  /**
-   * the number of times the user has seen this event
-   */
-  seenCount: number;
-
-  /**
-   * The teamId this event is associated with
-   */
-  teamId: string;
-
-  /**
-   * The team that can see this event
-   */
-  team: ITeam;
-
-  /**
-   * The specific type of event
-   */
-  type: TimelineEventEnum;
-
-  /**
-   * * The userId that can see this event
-   */
-  userId: string;
-
-  /**
-   * The user than can see this event
-   */
-  user: IUser;
-
-  /**
-   * The meeting that was completed
-   */
-  meeting: IActionMeeting;
-
-  /**
-   * The meetingId that was completed, null if legacyMeetingId is present
-   */
-  meetingId: string;
-}
-
-/**
- * An event for a completed retro meeting
- */
-export interface ITimelineEventCompletedRetroMeeting {
-  __typename: 'TimelineEventCompletedRetroMeeting';
-
-  /**
-   * shortid
-   */
-  id: string;
-
-  /**
-   * * The timestamp the event was created at
-   */
-  createdAt: any;
-
-  /**
-   * the number of times the user has interacted with (ie clicked) this event
-   */
-  interactionCount: number;
-
-  /**
-   * true if the timeline event is active, false if archived
-   */
-  isActive: boolean;
-
-  /**
-   * The orgId this event is associated with
-   */
-  orgId: string;
-
-  /**
-   * The organization this event is associated with
-   */
-  organization: IOrganization | null;
-
-  /**
-   * the number of times the user has seen this event
-   */
-  seenCount: number;
-
-  /**
-   * The teamId this event is associated with
-   */
-  teamId: string;
-
-  /**
-   * The team that can see this event
-   */
-  team: ITeam;
-
-  /**
-   * The specific type of event
-   */
-  type: TimelineEventEnum;
-
-  /**
-   * * The userId that can see this event
-   */
-  userId: string;
-
-  /**
-   * The user than can see this event
-   */
-  user: IUser;
-
-  /**
-   * The meeting that was completed
-   */
-  meeting: IRetrospectiveMeeting;
-
-  /**
-   * The meetingId that was completed
-   */
-  meetingId: string;
-}
-
-/**
- * An event for joining the app
- */
-export interface ITimelineEventJoinedParabol {
-  __typename: 'TimelineEventJoinedParabol';
-
-  /**
-   * shortid
-   */
-  id: string;
-
-  /**
-   * * The timestamp the event was created at
-   */
-  createdAt: any;
-
-  /**
-   * the number of times the user has interacted with (ie clicked) this event
-   */
-  interactionCount: number;
-
-  /**
-   * true if the timeline event is active, false if archived
-   */
-  isActive: boolean;
-
-  /**
-   * The orgId this event is associated with. Null if not traceable to one org
-   */
-  orgId: string | null;
-
-  /**
-   * The organization this event is associated with
-   */
-  organization: IOrganization | null;
-
-  /**
-   * the number of times the user has seen this event
-   */
-  seenCount: number;
-
-  /**
-   * The teamId this event is associated with. Null if not traceable to one team
-   */
-  teamId: string | null;
-
-  /**
-   * The team that can see this event
-   */
-  team: ITeam | null;
-
-  /**
-   * The specific type of event
-   */
-  type: TimelineEventEnum;
-
-  /**
-   * * The userId that can see this event
-   */
-  userId: string;
-
-  /**
-   * The user than can see this event
-   */
-  user: IUser;
-}
-
-/**
- * An event for a completed poker meeting
- */
-export interface ITimelineEventPokerComplete {
-  __typename: 'TimelineEventPokerComplete';
-
-  /**
-   * shortid
-   */
-  id: string;
-
-  /**
-   * * The timestamp the event was created at
-   */
-  createdAt: any;
-
-  /**
-   * the number of times the user has interacted with (ie clicked) this event
-   */
-  interactionCount: number;
-
-  /**
-   * true if the timeline event is active, false if archived
-   */
-  isActive: boolean;
-
-  /**
-   * The orgId this event is associated with
-   */
-  orgId: string;
-
-  /**
-   * The organization this event is associated with
-   */
-  organization: IOrganization | null;
-
-  /**
-   * the number of times the user has seen this event
-   */
-  seenCount: number;
-
-  /**
-   * The teamId this event is associated with
-   */
-  teamId: string;
-
-  /**
-   * The team that can see this event
-   */
-  team: ITeam;
-
-  /**
-   * The specific type of event
-   */
-  type: TimelineEventEnum;
-
-  /**
-   * * The userId that can see this event
-   */
-  userId: string;
-
-  /**
-   * The user than can see this event
-   */
-  user: IUser;
-
-  /**
-   * The meeting that was completed
-   */
-  meeting: IRetrospectiveMeeting;
-
-  /**
-   * The meetingId that was completed
-   */
-  meetingId: string;
-}
-
-/**
- * An event triggered whenever a team is created
- */
-export interface ITimelineEventTeamCreated {
-  __typename: 'TimelineEventTeamCreated';
-
-  /**
-   * shortid
-   */
-  id: string;
-
-  /**
-   * * The timestamp the event was created at
-   */
-  createdAt: any;
-
-  /**
-   * the number of times the user has interacted with (ie clicked) this event
-   */
-  interactionCount: number;
-
-  /**
-   * true if the timeline event is active, false if archived
-   */
-  isActive: boolean;
-
-  /**
-   * The orgId this event is associated with
-   */
-  orgId: string;
-
-  /**
-   * The organization this event is associated with
-   */
-  organization: IOrganization | null;
-
-  /**
-   * the number of times the user has seen this event
-   */
-  seenCount: number;
-
-  /**
-   * The teamId this event is associated with. Null if not traceable to one team
-   */
-  teamId: string;
-
-  /**
-   * The team that can see this event
-   */
-  team: ITeam;
-
-  /**
-   * The specific type of event
-   */
-  type: TimelineEventEnum;
-
-  /**
-   * * The userId that can see this event
-   */
-  userId: string;
-
-  /**
-   * The user than can see this event
-   */
-  user: IUser;
-}
-
-/**
- * The meeting phase where all team members give updates one-by-one
- */
-export interface IUpdatesPhase {
-  __typename: 'UpdatesPhase';
-
-  /**
-   * shortid
-   */
-  id: string;
-  meetingId: string;
-
-  /**
-   * The type of phase
-   */
-  phaseType: NewMeetingPhaseTypeEnum;
-  stages: Array<IUpdatesStage>;
-}
-
-/**
- * A stage that focuses on a single team member
- */
-export interface IUpdatesStage {
-  __typename: 'UpdatesStage';
-
-  /**
-   * stageId, shortid
-   */
-  id: string;
-
-  /**
-   * The datetime the stage was completed
-   */
-  endAt: any | null;
-
-  /**
-   * foreign key. try using meeting
-   */
-  meetingId: string;
-
-  /**
-   * The meeting this stage belongs to
-   */
-  meeting: NewMeeting | null;
-
-  /**
-   * true if the facilitator has completed this stage, else false. Should be boolean(endAt)
-   */
-  isComplete: boolean;
-
-  /**
-   * true if any meeting participant can navigate to this stage
-   */
-  isNavigable: boolean;
-
-  /**
-   * true if the facilitator can navigate to this stage
-   */
-  isNavigableByFacilitator: boolean;
-
-  /**
-   * The phase this stage belongs to
-   */
-  phase: NewMeetingPhase | null;
-
-  /**
-   * The type of the phase
-   */
-  phaseType: NewMeetingPhaseTypeEnum | null;
-
-  /**
-   * The datetime the stage was started
-   */
-  startAt: any | null;
-
-  /**
-   * Number of times the facilitator has visited this stage
-   */
-  viewCount: number | null;
-
-  /**
-   * true if a time limit is set, false if end time is set, null if neither is set
-   */
-  isAsync: boolean | null;
-
-  /**
-   * true if the viewer is ready to advance, else false
-   */
-  isViewerReady: boolean;
-
-  /**
-   * the number of meeting members ready to advance, excluding the facilitator
-   */
-  readyCount: number;
-
-  /**
-   * The datetime the phase is scheduled to be finished, null if no time limit or end time is set
-   */
-  scheduledEndTime: any | null;
-
-  /**
-   * The suggested ending datetime for a phase to be completed async, null if not enough data to make a suggestion
-   */
-  suggestedEndTime: any | null;
-
-  /**
-   * The suggested time limit for a phase to be completed together, null if not enough data to make a suggestion
-   */
-  suggestedTimeLimit: number | null;
-
-  /**
-   * The number of milliseconds left before the scheduled end time. Useful for
-   * unsynced client clocks. null if scheduledEndTime is null
-   */
-  timeRemaining: number | null;
-
-  /**
-   * The meeting member that is the focus for this phase item
-   */
-  meetingMember: MeetingMember;
-
-  /**
-   * foreign key. use teamMember
-   */
-  teamMemberId: string;
-
-  /**
-   * The team member that is the focus for this phase item
-   */
-  teamMember: ITeamMember;
-}
+  | IUpdateUserProfilePayload
+  | IPersistJiraSearchQuerySuccess;
 
 // tslint:enable

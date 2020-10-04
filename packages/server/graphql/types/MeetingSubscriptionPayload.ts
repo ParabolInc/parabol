@@ -14,6 +14,7 @@ import {FlagReadyToAdvanceSuccess} from './FlagReadyToAdvancePayload'
 import NewMeetingCheckInPayload from './NewMeetingCheckInPayload'
 import PromoteNewMeetingFacilitatorPayload from './PromoteNewMeetingFacilitatorPayload'
 import RemoveReflectionPayload from './RemoveReflectionPayload'
+import ResetMeetingToStagePayload from './ResetMeetingToStagePayload'
 import {SetAppLocationSuccess} from './SetAppLocationPayload'
 import SetPhaseFocusPayload from './SetPhaseFocusPayload'
 import SetStageTimerPayload from './SetStageTimerPayload'
@@ -25,6 +26,7 @@ import UpdateReflectionContentPayload from './UpdateReflectionContentPayload'
 import UpdateReflectionGroupTitlePayload from './UpdateReflectionGroupTitlePayload'
 import {UpdateRetroMaxVotesSuccess} from './UpdateRetroMaxVotesPayload'
 import VoteForReflectionGroupPayload from './VoteForReflectionGroupPayload'
+import {UpdatePokerScopeSuccess} from './UpdatePokerScopePayload'
 
 const types = [
   AddCommentSuccess,
@@ -42,6 +44,7 @@ const types = [
   NewMeetingCheckInPayload,
   PromoteNewMeetingFacilitatorPayload,
   RemoveReflectionPayload,
+  ResetMeetingToStagePayload,
   SetAppLocationSuccess,
   SetPhaseFocusPayload,
   SetStageTimerPayload,
@@ -52,6 +55,7 @@ const types = [
   UpdateReflectionContentPayload,
   UpdateReflectionGroupTitlePayload,
   UpdateRetroMaxVotesSuccess,
+  UpdatePokerScopeSuccess,
   VoteForReflectionGroupPayload
 ]
 

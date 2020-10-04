@@ -1,14 +1,14 @@
-import {AddAtlassianAuthMutation as TAddAtlassianAuthMutation} from '../__generated__/AddAtlassianAuthMutation.graphql'
-import {commitMutation} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
+import {commitMutation} from 'react-relay'
 import {Disposable} from 'relay-runtime'
 import {IAddAtlassianAuthOnMutationArguments} from '../types/graphql'
 import {LocalHandlers} from '../types/relayMutations'
+import {AddAtlassianAuthMutation as TAddAtlassianAuthMutation} from '../__generated__/AddAtlassianAuthMutation.graphql'
 
 graphql`
   fragment AddAtlassianAuthMutation_team on AddAtlassianAuthPayload {
-    user {
-      ...AtlassianProviderRow_viewer
+    teamMember {
+      ...AtlassianProviderRowTeamMember
       ...TaskFooterIntegrateMenuViewerAtlassianAuth
       # after adding, check for new integrations (populates the menu)
       ...TaskFooterIntegrateMenuViewerSuggestedIntegrations

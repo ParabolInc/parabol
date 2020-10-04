@@ -1,8 +1,6 @@
-import {ConnectionHandler} from 'relay-runtime'
+import {ConnectionHandler, RecordProxy} from 'relay-runtime'
 
-const getArchivedTasksConn = (viewer, teamId?) => {
-  const connectionFilter = {} as {teamIds?: [string]}
-  if (teamId) connectionFilter.teamIds = [teamId]
-  return ConnectionHandler.getConnection(viewer, 'TeamArchive_tasks', connectionFilter)
-}
+const getArchivedTasksConn = (viewer: RecordProxy, userIds: string[] | null, teamIds: string[] | null) =>
+  ConnectionHandler.getConnection(viewer, 'TeamArchive_archivedTasks', {userIds, teamIds})
+
 export default getArchivedTasksConn

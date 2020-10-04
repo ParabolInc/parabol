@@ -1,9 +1,10 @@
-import {GraphQLObjectType} from 'graphql'
-import StandardMutationError from './StandardMutationError'
-import {getUserId} from '../../utils/authorization'
-import AtlassianAuth from './AtlassianAuth'
-import User from './User'
+import {GraphQLID, GraphQLObjectType} from 'graphql'
+import toTeamMemberId from '../../../client/utils/relay/toTeamMemberId'
 import {GQLContext} from '../graphql'
+import AtlassianAuth from './AtlassianAuth'
+import StandardMutationError from './StandardMutationError'
+import TeamMember from './TeamMember'
+import User from './User'
 
 const AddAtlassianAuthPayload = new GraphQLObjectType<any, GQLContext>({
   name: 'AddAtlassianAuthPayload',
@@ -18,12 +19,22 @@ const AddAtlassianAuthPayload = new GraphQLObjectType<any, GQLContext>({
         return dataLoader.get('atlassianAuths').load(atlassianAuthId)
       }
     },
+    teamId: {
+      type: GraphQLID
+    },
+    teamMember: {
+      type: TeamMember,
+      description: 'The team member with the updated atlassianAuth',
+      resolve: ({teamId, userId}, _args, {dataLoader}) => {
+        const teamMemberId = toTeamMemberId(teamId, userId)
+        return dataLoader.get('teamMembers').load(teamMemberId)
+      }
+    },
     user: {
       type: User,
       description: 'The user with updated atlassianAuth',
-      resolve: (_source, _args, {authToken, dataLoader}) => {
-        const viewerId = getUserId(authToken)
-        return dataLoader.get('users').load(viewerId)
+      resolve: ({userId}, _args, {dataLoader}) => {
+        return dataLoader.get('users').load(userId)
       }
     }
   })

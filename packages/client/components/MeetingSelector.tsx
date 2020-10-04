@@ -1,7 +1,9 @@
 import graphql from 'babel-plugin-relay/macro'
 import React, {useEffect} from 'react'
 import {createFragmentContainer} from 'react-relay'
+import useAtmosphere from '~/hooks/useAtmosphere'
 import useStoreQueryRetry from '~/hooks/useStoreQueryRetry'
+import SetAppLocationMutation from '~/mutations/SetAppLocationMutation'
 import {MeetingSelector_viewer} from '~/__generated__/MeetingSelector_viewer.graphql'
 import useRouter from '../hooks/useRouter'
 import useSubscription from '../hooks/useSubscription'
@@ -19,21 +21,16 @@ interface Props {
 }
 
 const meetingLookup = {
-  action: lazyPreload(() =>
-    import(/* webpackChunkName: 'ActionMeeting' */ './ActionMeeting')
-  ),
-  poker: lazyPreload(() =>
-    import(/* webpackChunkName: 'PokerMeeting' */ './PokerMeeting')
-  ),
-  retrospective: lazyPreload(() =>
-    import(/* webpackChunkName: 'RetroMeeting' */ './RetroMeeting')
-  )
+  action: lazyPreload(() => import(/* webpackChunkName: 'ActionMeeting' */ './ActionMeeting')),
+  poker: lazyPreload(() => import(/* webpackChunkName: 'PokerMeeting' */ './PokerMeeting')),
+  retrospective: lazyPreload(() => import(/* webpackChunkName: 'RetroMeeting' */ './RetroMeeting'))
 }
 
 const MeetingSelector = (props: Props) => {
   const {meetingId, viewer, retry} = props
-  const {meeting} = viewer
+  const {isConnected, meeting} = viewer
   const {history} = useRouter()
+  const atmosphere = useAtmosphere()
   useEffect(() => {
     if (!meeting) {
       history.replace({
@@ -42,6 +39,14 @@ const MeetingSelector = (props: Props) => {
       })
     }
   }, [])
+  useEffect(() => {
+    if (!meetingId || !isConnected) return
+    const location = `/meet/${meetingId}`
+    SetAppLocationMutation(atmosphere, {location})
+    return () => {
+      SetAppLocationMutation(atmosphere, {location: null})
+    }
+  }, [isConnected])
   useStoreQueryRetry(retry)
   useSubscription('MeetingSelector', NotificationSubscription)
   useSubscription('MeetingSelector', OrganizationSubscription)
@@ -66,6 +71,7 @@ graphql`
 export default createFragmentContainer(MeetingSelector, {
   viewer: graphql`
     fragment MeetingSelector_viewer on User {
+      isConnected
       meeting(meetingId: $meetingId) {
         ...MeetingSelector_meeting @relay(mask: false)
       }
