@@ -13,6 +13,7 @@ import {ICON_SIZE} from '../styles/typographyV2'
 import CardButton from './CardButton'
 import IconLabel from './IconLabel'
 import PhaseWrapper from './PhaseWrapper'
+import EstimatePhaseArea from './EstimatePhaseArea'
 
 const HeaderCardWrapper = styled('div')({
   display: 'flex',
@@ -136,10 +137,10 @@ const PokerEstimatePhase = (props: any) => {
             return <StepperDot isFocused={idx === 1} key={idx} />
           })}
         </StepperDots>
+        <PhaseWrapper>
+          <EstimatePhaseArea />
+        </PhaseWrapper>
       </MeetingHeaderAndPhase>
-      <PhaseWrapper>
-        <></>
-      </PhaseWrapper>
     </MeetingContent>
   )
 }
