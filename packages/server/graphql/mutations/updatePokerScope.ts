@@ -68,7 +68,7 @@ const updatePokerScope = {
 
     // RESOLUTION
     const estimatePhase = phases.find((phase) => phase.phaseType === 'ESTIMATE') as EstimatePhase
-    const {stages} = estimatePhase
+    let stages = estimatePhase.stages
     const allDimensions = await dataLoader.get('templateDimensionsByTemplateId').load(templateId)
 
     const dimensions = allDimensions.filter((dimension) =>
@@ -99,6 +99,7 @@ const updatePokerScope = {
       } else if (action === 'DELETE') {
         // MUTATIVE
         estimatePhase.stages = stages.filter((stage) => stage.serviceTaskId !== serviceTaskId)
+        stages = estimatePhase.stages
       }
     })
 

@@ -1,5 +1,6 @@
+import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
+import React, {useMemo} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {NewMeetingPhaseTypeEnum} from '../types/graphql'
 import {JiraScopingSearchResults_meeting} from '../__generated__/JiraScopingSearchResults_meeting.graphql'
@@ -7,6 +8,10 @@ import {JiraScopingSearchResults_viewer} from '../__generated__/JiraScopingSearc
 import JiraScopingNoResults from './JiraScopingNoResults'
 import JiraScopingSearchResultItem from './JiraScopingSearchResultItem'
 import JiraScopingSelectAllIssues from './JiraScopingSelectAllIssues'
+
+const ResultScroller = styled('div')({
+  overflow: 'auto'
+})
 
 interface Props {
   viewer: JiraScopingSearchResults_viewer
@@ -22,11 +27,15 @@ const JiraScopingSearchResults = (props: Props) => {
   const {id: meetingId, phases} = meeting
   const estimatePhase = phases.find((phase) => phase.phaseType === NewMeetingPhaseTypeEnum.ESTIMATE)!
   const {stages} = estimatePhase
-  const jiraIssueIds = new Set<string>()
-  stages!.forEach((stage) => {
-    if (!stage.issue) return
-    jiraIssueIds.add(stage.issue.id)
-  })
+  const usedJiraIssueIds = useMemo(() => {
+    const usedJiraIssueIds = new Set<string>()
+    stages!.forEach((stage) => {
+      if (!stage.issue) return
+      usedJiraIssueIds.add(stage.issue.id)
+    })
+    return usedJiraIssueIds
+  }, [stages])
+  // Terry, you can use this in case you need to put some final touches on styles
   /*   const [showMock, setShowMock] = useState(false)
     useHotkey('f', () => {
       setShowMock(!showMock)
@@ -36,17 +45,18 @@ const JiraScopingSearchResults = (props: Props) => {
         <MockScopingList />
       )
     } */
-
   if (issueCount === 0) {
     return <JiraScopingNoResults error={error?.message} />
   }
 
   return (
     <>
-      <JiraScopingSelectAllIssues selected={false} issueCount={issueCount} />
-      {edges.map(({node}) => {
-        return <JiraScopingSearchResultItem key={node.id} issue={node} isSelected={jiraIssueIds.has(node.id)} meetingId={meetingId} />
-      })}
+      <JiraScopingSelectAllIssues usedJiraIssueIds={usedJiraIssueIds} issues={edges} meetingId={meetingId} />
+      <ResultScroller>
+        {edges.map(({node}) => {
+          return <JiraScopingSearchResultItem key={node.id} issue={node} isSelected={usedJiraIssueIds.has(node.id)} meetingId={meetingId} />
+        })}
+      </ResultScroller>
     </>
 
   )
@@ -78,6 +88,7 @@ export default createFragmentContainer(JiraScopingSearchResults, {
             message
           }
           edges {
+            ...JiraScopingSelectAllIssues_issues
             node {
               ...JiraScopingSearchResultItem_issue
               id
