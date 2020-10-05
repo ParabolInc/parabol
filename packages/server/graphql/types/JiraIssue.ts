@@ -14,7 +14,7 @@ const JiraIssue = new GraphQLObjectType<any, GQLContext>({
       type: GraphQLNonNull(GraphQLID),
       description: 'shortid',
       resolve: ({cloudId, key}) => {
-        return `JiraIssue:${cloudId}:${key}`
+        return `${cloudId}:${key}`
       }
     },
     cloudId: {

@@ -2,11 +2,16 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
+import useAtmosphere from '../hooks/useAtmosphere'
+import useMutationProps from '../hooks/useMutationProps'
+import UpdatePokerScopeMutation from '../mutations/UpdatePokerScopeMutation'
 import {PALETTE} from '../styles/paletteV2'
+import {AddOrDeleteEnum, TaskServiceEnum} from '../types/graphql'
 import {JiraScopingSearchResultItem_issue} from '../__generated__/JiraScopingSearchResultItem_issue.graphql'
 import Checkbox from './Checkbox'
 
 const Item = styled('div')({
+  cursor: 'pointer',
   display: 'flex',
   paddingLeft: 16,
   paddingTop: 8,
@@ -35,16 +40,34 @@ const StyledLink = styled('a')({
 })
 
 interface Props {
+  meetingId: string
   isSelected: boolean
   issue: JiraScopingSearchResultItem_issue
 }
 
 const JiraScopingSearchResultItem = (props: Props) => {
-  const {isSelected, issue} = props
-  const {key, summary, url} = issue
+  const {isSelected, issue, meetingId} = props
+  const {id: serviceTaskId, key, summary, url} = issue
+  const atmosphere = useAtmosphere()
+  const {onCompleted, onError, submitMutation, submitting} = useMutationProps()
+  const onClick = () => {
+    if (submitting) return
+    submitMutation()
+    const variables = {
+      meetingId,
+      updates: [
+        {
+          service: TaskServiceEnum.jira,
+          serviceTaskId,
+          action: isSelected ? AddOrDeleteEnum.DELETE : AddOrDeleteEnum.ADD
+        }
+      ]
+    }
+    UpdatePokerScopeMutation(atmosphere, variables, {onError, onCompleted})
+  }
   return (
-    <Item>
-      <Checkbox active={isSelected} onClick={() => console.log('click')} />
+    <Item onClick={onClick} >
+      <Checkbox active={isSelected} />
       <Issue>
         <Title>{summary}</Title>
         <StyledLink
@@ -65,6 +88,7 @@ export default createFragmentContainer(
   {
     issue: graphql`
     fragment JiraScopingSearchResultItem_issue on JiraIssue {
+      id
       summary
       key
       url

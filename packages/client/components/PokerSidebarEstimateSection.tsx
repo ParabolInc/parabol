@@ -85,7 +85,7 @@ const PokerSidebarEstimateSection = (props: Props) => {
                 {stages!.map((stage, idx) => {
                   const {task, issue} = stage
                   const content = task?.content || issue?.summary
-                  const title = content ? 'GARBAGE CONTENT' : 'EXTRA GARBAGE'
+                  const title = content || 'Unknown story'
                   // the local user is at another stage than the facilitator stage
                   const isUnsyncedFacilitatorStage = !inSync && stage.id === facilitatorStageId
                   const estimateMeta = (

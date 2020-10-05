@@ -15,8 +15,7 @@ const EstimateStageParabol = new GraphQLObjectType<any, GQLContext>({
       type: GraphQLNonNull(Task),
       description: 'the Parabol task',
       resolve: async ({serviceTaskId}, _args, {dataLoader}) => {
-        const {taskId} = JSON.parse(serviceTaskId)
-        const task = await dataLoader.get('tasks').load(taskId)
+        const task = await dataLoader.get('tasks').load(serviceTaskId)
         return task
       }
     }

@@ -1,4 +1,4 @@
-import {GraphQLNonNull, GraphQLObjectType} from 'graphql'
+import {GraphQLObjectType} from 'graphql'
 import AtlassianServerManager from '../../utils/AtlassianServerManager'
 import {getUserId} from '../../utils/authorization'
 import sendToSentry from '../../utils/sendToSentry'
@@ -15,31 +15,35 @@ const EstimateStageJira = new GraphQLObjectType<any, GQLContext>({
   fields: () => ({
     ...estimateStageFields(),
     issue: {
-      type: GraphQLNonNull(JiraIssue),
+      type: JiraIssue,
       description: 'the issue straight from Jira',
       resolve: async ({teamId, serviceTaskId}, _args, {authToken, dataLoader}) => {
         const viewerId = getUserId(authToken)
+        const [cloudId, issueKey] = serviceTaskId.split(':')
         // we need the access token of a person on this team
-        const teamAccessTokens = await dataLoader.get('atlassianAuthByTeamId').load(teamId)
-        const [accessToken] = teamAccessTokens
-        if (!accessToken) {
+        const teamAuths = await dataLoader.get('atlassianAuthByTeamId').load(teamId)
+        const [teamAuth] = teamAuths
+        if (!teamAuth) {
           sendToSentry(new Error('No atlassian access token exists for team'), {userId: viewerId})
-          return []
+          return null
         }
-        const {cloudId, issueKey} = JSON.parse(serviceTaskId)
+        const {userId} = teamAuth
+        const accessToken = await dataLoader.get('freshAtlassianAccessToken').load({teamId, userId})
         const manager = new AtlassianServerManager(accessToken)
         const issueRes = await manager.getIssue(cloudId, issueKey)
-        const data = {cloudId, key: issueKey, summary: '', description: ''}
         if ('message' in issueRes) {
           sendToSentry(new Error(issueRes.message), {userId: viewerId})
-          data.summary = issueRes.message
-          return data
+          return null
         }
         if ('errors' in issueRes) {
           const error = issueRes.errors[0]
           sendToSentry(new Error(error), {userId: viewerId})
-          data.summary = error
-          return data
+          return null
+        }
+        const data = {
+          ...issueRes.fields,
+          cloudId,
+          key: issueKey
         }
         Object.assign(data, issueRes.fields)
         return data
