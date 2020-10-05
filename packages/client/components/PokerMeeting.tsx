@@ -1,6 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import React, {ReactElement, Suspense} from 'react'
 import {createFragmentContainer} from 'react-relay'
+import useRouter from '~/hooks/useRouter'
 import {PokerMeeting_meeting} from '~/__generated__/PokerMeeting_meeting.graphql'
 import useMeeting from '../hooks/useMeeting'
 import NewMeetingAvatarGroup from '../modules/meeting/components/MeetingAvatarGroup/NewMeetingAvatarGroup'
@@ -14,14 +15,15 @@ import ResponsiveDashSidebar from './ResponsiveDashSidebar'
 
 interface Props {
   meeting: PokerMeeting_meeting
+  history: any
 }
 
 const phaseLookup = {
   [NewMeetingPhaseTypeEnum.checkin]: lazyPreload(() =>
     import(/* webpackChunkName: 'NewMeetingCheckIn' */ './NewMeetingCheckIn')
   ),
-  // SCOPE: lazyPreload(() => import(/* webpackChunkName: 'ScopePhase' */ './ScopePhase'))
-  SCOPE: lazyPreload(() =>
+  SCOPE: lazyPreload(() => import(/* webpackChunkName: 'ScopePhase' */ './ScopePhase')),
+  ESTIMATE: lazyPreload(() =>
     import(/* webpackChunkName: 'PokerEstimatePhase' */ './PokerEstimatePhase')
   )
 }
@@ -46,13 +48,23 @@ const PokerMeeting = (props: Props) => {
     handleMenuClick
   } = useMeeting(meeting)
   if (!safeRoute) return null
-  const {showSidebar, viewerMeetingMember, localPhase} = meeting
+  const {id: meetingId, showSidebar, viewerMeetingMember, localPhase} = meeting
   const {user} = viewerMeetingMember
   const {featureFlags} = user
   const {video: allowVideo} = featureFlags
   const localPhaseType = localPhase?.phaseType
+  console.log('PokerMeeting -> localPhaseType', localPhaseType)
 
-  const Phase = phaseLookup[localPhaseType] as PhaseComponent
+  // TODO: remove estimate logic here & in MeetingControlBar when backend is ready
+  const {history} = useRouter()
+  const Phase = history.location.pathname.includes('estimate')
+    ? phaseLookup.ESTIMATE
+    : (phaseLookup[localPhaseType] as PhaseComponent)
+  const goToEstimate = {
+    gotoNext: () => {
+      history.push(`/meet/${meetingId}/estimate`)
+    }
+  }
   return (
     <MeetingStyles>
       <ResponsiveDashSidebar isOpen={showSidebar} onToggle={toggleSidebar}>
@@ -79,7 +91,7 @@ const PokerMeeting = (props: Props) => {
       </Suspense>
       <MeetingControlBar
         meeting={meeting}
-        handleGotoNext={handleGotoNext}
+        handleGotoNext={localPhaseType === 'SCOPE' ? (goToEstimate as any) : handleGotoNext}
         gotoStageId={gotoStageId}
       />
     </MeetingStyles>

@@ -67,7 +67,7 @@ const EstimatePhaseArea = () => {
     <EstimateArea>
       <StepperDots>
         {[1, 2, 3].map((_, idx) => {
-          return <StepperDot isFocused={idx === activeIdx} key={idx} />
+          return <StepperDot key={`${idx}-${_}`} isFocused={idx === activeIdx} />
         })}
       </StepperDots>
       <SwipeableViews
@@ -78,8 +78,8 @@ const EstimatePhaseArea = () => {
         style={innerStyle}
       >
         {[1, 2, 3].map((_, idx) => (
-          <SwipableColumnWrapper>
-            <SwipableColumn key={`${_}-${idx}`}></SwipableColumn>
+          <SwipableColumnWrapper key={idx}>
+            <SwipableColumn></SwipableColumn>
           </SwipableColumnWrapper>
         ))}
       </SwipeableViews>
