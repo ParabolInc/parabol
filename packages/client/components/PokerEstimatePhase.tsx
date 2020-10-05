@@ -10,18 +10,24 @@ import {Elevation} from '~/styles/elevation'
 import {PALETTE} from '~/styles/paletteV2'
 import Icon from './Icon'
 import {ICON_SIZE} from '../styles/typographyV2'
+import CardButton from './CardButton'
+import IconLabel from './IconLabel'
+import PhaseWrapper from './PhaseWrapper'
+
+const HeaderCardWrapper = styled('div')({
+  display: 'flex',
+  padding: '4px 24px'
+})
 
 const HeaderCard = styled('div')({
   background: '#fff',
   borderRadius: '4px',
   boxShadow: Elevation.Z3,
-  display: 'flex',
   flexDirection: 'row',
   flexWrap: 'wrap',
   height: 86,
   padding: '12px 16px',
-  position: 'absolute',
-  marginTop: 12,
+  position: 'relative',
   width: 624
 })
 
@@ -34,8 +40,7 @@ const CardTitle = styled('h1')({
 })
 
 const CardIcons = styled('div')({
-  display: 'flex',
-  color: PALETTE.TEXT_GRAY
+  display: 'flex'
 })
 
 const CardTitleWrapper = styled('div')({
@@ -74,6 +79,22 @@ const StyledLabel = styled('span')({
   outline: 0
 })
 
+const StepperDots = styled('div')({
+  alignItems: 'center',
+  justifyContent: 'center',
+  display: 'flex',
+  padding: '8px 0'
+})
+
+const StepperDot = styled('div')<{isFocused: boolean}>(({isFocused}) => ({
+  backgroundColor: isFocused ? PALETTE.STATUS_ACTIVE : PALETTE.TEXT_GRAY,
+  borderRadius: '50%',
+  height: 8,
+  margin: '0 2px',
+  opacity: isFocused ? undefined : 0.35,
+  width: 8
+}))
+
 const PokerEstimatePhase = (props: any) => {
   const {avatarGroup, toggleSidebar, meeting} = props
   const phaseRef = useRef<HTMLDivElement>(null)
@@ -89,12 +110,18 @@ const PokerEstimatePhase = (props: any) => {
         >
           <PhaseHeaderTitle>{phaseLabelLookup.ESTIMATE}</PhaseHeaderTitle>
           <PhaseHeaderDescription>{'Estimate each story as a team'}</PhaseHeaderDescription>
+        </MeetingTopBar>
+        <HeaderCardWrapper>
           <HeaderCard>
             <CardTitleWrapper>
               <CardTitle>Video UX researched</CardTitle>
               <CardIcons>
-                <StyledIcon>publish</StyledIcon>
-                <StyledIcon>unfold_more</StyledIcon>
+                <CardButton>
+                  <IconLabel icon='publish' />
+                </CardButton>
+                <CardButton>
+                  <IconLabel icon='unfold_more' />
+                </CardButton>
               </CardIcons>
             </CardTitleWrapper>
             <CardDescription>This is the first line of acceptance...</CardDescription>
@@ -103,8 +130,16 @@ const PokerEstimatePhase = (props: any) => {
               <StyledIcon>launch</StyledIcon>
             </StyledLink>
           </HeaderCard>
-        </MeetingTopBar>
+        </HeaderCardWrapper>
+        <StepperDots>
+          {[1, 2, 3].map((_, idx) => {
+            return <StepperDot isFocused={idx === 1} key={idx} />
+          })}
+        </StepperDots>
       </MeetingHeaderAndPhase>
+      <PhaseWrapper>
+        <></>
+      </PhaseWrapper>
     </MeetingContent>
   )
 }
