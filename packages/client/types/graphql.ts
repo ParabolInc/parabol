@@ -4090,6 +4090,39 @@ export interface IEstimateStage {
    * The sort order for reprioritizing discussion topics
    */
   sortOrder: number;
+
+  /**
+   * the dimensionId that corresponds to this stage
+   */
+  dimensionId: string | null;
+  scores: Array<IEstimateUserScore>;
+}
+
+/**
+ * The user and number of points they estimated for dimension (where 1 stage has 1 dimension)
+ */
+export interface IEstimateUserScore {
+  __typename: 'EstimateUserScore';
+
+  /**
+   * shortid
+   */
+  id: string;
+
+  /**
+   * The stageId
+   */
+  stageId: string;
+
+  /**
+   * The userId that for this score
+   */
+  userId: string;
+
+  /**
+   * the value of the score. label is determined by this. note that if a template is modified, the corresponding label may no longer exists
+   */
+  score: number;
 }
 
 /**
@@ -4204,9 +4237,15 @@ export interface IEstimateStageJira {
   sortOrder: number;
 
   /**
+   * the dimensionId that corresponds to this stage
+   */
+  dimensionId: string | null;
+  scores: Array<IEstimateUserScore>;
+
+  /**
    * the issue straight from Jira
    */
-  issue: IJiraIssue;
+  issue: IJiraIssue | null;
 }
 
 /**
@@ -4319,6 +4358,12 @@ export interface IEstimateStageParabol {
    * The sort order for reprioritizing discussion topics
    */
   sortOrder: number;
+
+  /**
+   * the dimensionId that corresponds to this stage
+   */
+  dimensionId: string | null;
+  scores: Array<IEstimateUserScore>;
 
   /**
    * the Parabol task
