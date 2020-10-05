@@ -80,22 +80,6 @@ const StyledLabel = styled('span')({
   outline: 0
 })
 
-const StepperDots = styled('div')({
-  alignItems: 'center',
-  justifyContent: 'center',
-  display: 'flex',
-  padding: '8px 0'
-})
-
-const StepperDot = styled('div')<{isFocused: boolean}>(({isFocused}) => ({
-  backgroundColor: isFocused ? PALETTE.STATUS_ACTIVE : PALETTE.TEXT_GRAY,
-  borderRadius: '50%',
-  height: 8,
-  margin: '0 2px',
-  opacity: isFocused ? undefined : 0.35,
-  width: 8
-}))
-
 const PokerEstimatePhase = (props: any) => {
   const {avatarGroup, toggleSidebar, meeting} = props
   const phaseRef = useRef<HTMLDivElement>(null)
@@ -132,11 +116,6 @@ const PokerEstimatePhase = (props: any) => {
             </StyledLink>
           </HeaderCard>
         </HeaderCardWrapper>
-        <StepperDots>
-          {[1, 2, 3].map((_, idx) => {
-            return <StepperDot isFocused={idx === 1} key={idx} />
-          })}
-        </StepperDots>
         <PhaseWrapper>
           <EstimatePhaseArea />
         </PhaseWrapper>

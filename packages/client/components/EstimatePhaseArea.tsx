@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useState} from 'react'
 import styled from '@emotion/styled'
 import {Breakpoint, Gutters} from '~/types/constEnums'
 import useBreakpoint from '~/hooks/useBreakpoint'
@@ -16,10 +16,9 @@ const EstimateArea = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   minHeight: isDesktop ? undefined : '100%'
 }))
 
-const ColumnHighlight = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
+const SwipableColumn = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   backgroundColor: PALETTE.BACKGROUND_REFLECTION,
   borderRadius: 8,
-
   display: 'flex',
   // flex: 1,
   // flexDirection: 'row',
@@ -34,28 +33,57 @@ const ColumnHighlight = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   height: '100%'
 }))
 
-const containerStyle = {height: '100%', width: '60%'}
+const StepperDots = styled('div')({
+  alignItems: 'center',
+  justifyContent: 'center',
+  display: 'flex',
+  padding: '8px 0'
+})
+
+const StepperDot = styled('div')<{isFocused: boolean}>(({isFocused}) => ({
+  backgroundColor: isFocused ? PALETTE.STATUS_ACTIVE : PALETTE.TEXT_GRAY,
+  borderRadius: '50%',
+  height: 8,
+  margin: '0 2px',
+  opacity: isFocused ? undefined : 0.35,
+  width: 8
+}))
+
+const containerStyle = {height: '100%', width: '40%'}
 const innerStyle = {
   height: '100%',
   width: '100%',
-
   display: 'flex',
   justifyContent: 'center'
 }
 
 const EstimatePhaseArea = () => {
+  const [activeIdx, setActiveIdx] = useState(1)
   const isDesktop = useBreakpoint(Breakpoint.SINGLE_REFLECTION_COLUMN)
+
+  const onChangeIdx = (idx, _fromIdx, props: {reason: string}) => {
+    //very buggy behavior, probably linked to the vertical scrolling.
+    // to repro, go from team > org > team > org by clicking tabs & see this this get called for who knows why
+    if (props.reason === 'focus') return
+    setActiveIdx(idx)
+  }
 
   return (
     <EstimateArea isDesktop={isDesktop}>
+      <StepperDots>
+        {[1, 2, 3].map((_, idx) => {
+          return <StepperDot isFocused={idx === activeIdx} key={idx} />
+        })}
+      </StepperDots>
       <SwipeableViews
-        enableMouseEvents
-        index={1}
         containerStyle={containerStyle}
+        enableMouseEvents
+        index={activeIdx}
+        onChangeIndex={onChangeIdx}
         style={innerStyle}
       >
-        {[1, 2, 3].map((_) => (
-          <ColumnHighlight isDesktop={isDesktop}></ColumnHighlight>
+        {[1, 2, 3].map((_, idx) => (
+          <SwipableColumn key={`${_}-${idx}`} isDesktop={isDesktop}></SwipableColumn>
         ))}
       </SwipeableViews>
     </EstimateArea>
