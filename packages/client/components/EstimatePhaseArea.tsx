@@ -1,11 +1,9 @@
 import React, {useState} from 'react'
 import styled from '@emotion/styled'
-import {Breakpoint, Gutters} from '~/types/constEnums'
-import useBreakpoint from '~/hooks/useBreakpoint'
-import {DECELERATE} from '~/styles/animation'
 import {PALETTE} from '~/styles/paletteV2'
 import SwipeableViews from 'react-swipeable-views'
-const EstimateArea = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
+
+const EstimateArea = styled('div')({
   alignItems: 'center',
   display: 'flex',
   flexDirection: 'row',
@@ -13,25 +11,23 @@ const EstimateArea = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   flexWrap: 'wrap',
   justifyContent: 'center',
   width: '100%',
-  minHeight: isDesktop ? undefined : '100%'
-}))
+  minHeight: '100%'
+})
 
-const SwipableColumn = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
+const SwipableColumnWrapper = styled('div')({
+  display: 'flex',
+  padding: '0 16px',
+  height: '100%',
+  width: '100%'
+})
+
+const SwipableColumn = styled('div')({
   backgroundColor: PALETTE.BACKGROUND_REFLECTION,
   borderRadius: 8,
-  display: 'flex',
-  // flex: 1,
-  // flexDirection: 'row',
-  // flexShrink: 0,
-  // height: isDesktop ? undefined : '100%',
-  maxHeight: isDesktop ? 640 : undefined,
-  overflow: 'hidden',
   position: 'relative',
-  transition: `background 150ms ${DECELERATE}`,
-  width: '100%',
-  margin: '0 16px',
-  height: '100%'
-}))
+  height: '100%',
+  width: '100%'
+})
 
 const StepperDots = styled('div')({
   alignItems: 'center',
@@ -59,7 +55,6 @@ const innerStyle = {
 
 const EstimatePhaseArea = () => {
   const [activeIdx, setActiveIdx] = useState(1)
-  const isDesktop = useBreakpoint(Breakpoint.SINGLE_REFLECTION_COLUMN)
 
   const onChangeIdx = (idx, _fromIdx, props: {reason: string}) => {
     //very buggy behavior, probably linked to the vertical scrolling.
@@ -69,7 +64,7 @@ const EstimatePhaseArea = () => {
   }
 
   return (
-    <EstimateArea isDesktop={isDesktop}>
+    <EstimateArea>
       <StepperDots>
         {[1, 2, 3].map((_, idx) => {
           return <StepperDot isFocused={idx === activeIdx} key={idx} />
@@ -83,7 +78,9 @@ const EstimatePhaseArea = () => {
         style={innerStyle}
       >
         {[1, 2, 3].map((_, idx) => (
-          <SwipableColumn key={`${_}-${idx}`} isDesktop={isDesktop}></SwipableColumn>
+          <SwipableColumnWrapper>
+            <SwipableColumn key={`${_}-${idx}`}></SwipableColumn>
+          </SwipableColumnWrapper>
         ))}
       </SwipeableViews>
     </EstimateArea>
