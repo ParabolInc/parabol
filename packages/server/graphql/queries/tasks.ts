@@ -1,4 +1,11 @@
-import {GraphQLBoolean, GraphQLID, GraphQLInt, GraphQLList, GraphQLNonNull} from 'graphql'
+import {
+  GraphQLBoolean,
+  GraphQLID,
+  GraphQLInt,
+  GraphQLList,
+  GraphQLNonNull,
+  GraphQLString
+} from 'graphql'
 import isTaskPrivate from 'parabol-client/utils/isTaskPrivate'
 import {getUserId} from '../../utils/authorization'
 import standardError from '../../utils/standardError'
@@ -63,17 +70,21 @@ export default {
     },
     status: {
       type: TTaskStatusEnum,
-      description: 'only display tasks of the chosen status'
+      description: 'only return tasks of the chosen status'
+    },
+    filterQuery: {
+      type: GraphQLString,
+      description: 'only return tasks which match the given filter query'
     }
   },
   async resolve(
     _source,
-    {first, after, userIds, teamIds, archived, status},
+    {first, after, userIds, teamIds, archived, status, filterQuery},
     {authToken, dataLoader}: GQLContext
   ) {
     // AUTH
     const viewerId = getUserId(authToken)
-
+    console.log('filter query:', filterQuery, !!filterQuery)
     // VALIDATE
     if (teamIds?.length > 100 || userIds?.length > 100) {
       standardError(new Error('Task filter is too broad'), {

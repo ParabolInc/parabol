@@ -1,5 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
+import {default as React, Dispatch, SetStateAction} from 'react'
 import {createFragmentContainer, commitLocalUpdate} from 'react-relay'
 import {ParabolScopingSearchInput_meeting} from '../__generated__/ParabolScopingSearchInput_meeting.graphql'
 import styled from '@emotion/styled'
@@ -42,10 +42,11 @@ const setSearch = (atmosphere: Atmosphere, meetingId: string, value: string) => 
 
 interface Props {
   meeting: ParabolScopingSearchInput_meeting
+  setFilterQuery: Dispatch<SetStateAction<string>>
 }
 
 const ParabolScopingSearchInput = (props: Props) => {
-  const {meeting} = props
+  const {meeting, setFilterQuery} = props
   const {id: meetingId, parabolSearchQuery} = meeting
   const isEmpty = !parabolSearchQuery
   const atmosphere = useAtmosphere()
@@ -53,12 +54,22 @@ const ParabolScopingSearchInput = (props: Props) => {
     setSearch(atmosphere, meetingId, e.target.value)
   }
   const clearSearch = () => setSearch(atmosphere, meetingId, '')
+  const onKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key !== 'Enter' || e.shiftKey) return
+    onSubmit()
+  }
+  const onSubmit = () => {
+    const filterQuery = meeting.parabolSearchQuery
+    if (!filterQuery) return
+    setFilterQuery(filterQuery)
+  }
   return (
     <Wrapper>
       <SearchInput
         value={parabolSearchQuery || ''}
         placeholder={'Search Parabol tasks'}
         onChange={onChange}
+        onKeyPress={onKeyPress}
       />
       <ClearSearchIcon isEmpty={isEmpty} onClick={clearSearch}>
         close

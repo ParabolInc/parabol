@@ -1,5 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
+import {default as React, useState} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {ScopePhaseAreaParabolScoping_meeting} from '../__generated__/ScopePhaseAreaParabolScoping_meeting.graphql'
 import ParabolScopingSearchBar from './ParabolScopingSearchBar'
@@ -11,10 +11,11 @@ interface Props {
 
 const ScopePhaseAreaParabolScoping = (props: Props) => {
   const {meeting} = props
+  const [filterQuery, setFilterQuery] = useState('')
   return (
     <>
-      <ParabolScopingSearchBar meeting={meeting} />
-      <ParabolScopingSearchResultsRoot teamId={meeting.teamId} />
+      <ParabolScopingSearchBar meeting={meeting} setFilterQuery={setFilterQuery} />
+      <ParabolScopingSearchResultsRoot teamId={meeting.teamId} filterQuery={filterQuery} />
     </>
   )
 }

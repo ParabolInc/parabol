@@ -12,6 +12,7 @@ const query = graphql`
     $userIds: [ID!]
     $teamIds: [ID!]
     $status: TaskStatusEnum
+    $filterQuery: String
   ) {
     viewer {
       ...ParabolScopingSearchResults_viewer
@@ -27,11 +28,12 @@ const renderParabolScopingSearchResults = ({error, props}) => {
 
 interface Props {
   teamId: string
+  filterQuery: string
 }
 
 const ParabolScopingSearchResultsRoot = (props: Props) => {
   const atmosphere = useAtmosphere()
-  const {teamId} = props
+  const {teamId, filterQuery} = props
   return (
     <QueryRenderer
       environment={atmosphere}
@@ -40,7 +42,8 @@ const ParabolScopingSearchResultsRoot = (props: Props) => {
         first: 50,
         teamIds: [teamId],
         userIds: [],
-        status: TaskStatusEnum.active
+        status: TaskStatusEnum.active,
+        filterQuery
       }}
       render={renderParabolScopingSearchResults}
     />

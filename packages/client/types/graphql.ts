@@ -998,9 +998,14 @@ export interface ITasksOnUserArguments {
   archived?: boolean | null;
 
   /**
-   * only display tasks of the chosen status
+   * only return tasks of the chosen status
    */
   status?: TaskStatusEnum | null;
+
+  /**
+   * only return tasks which match the given filter query
+   */
+  filterQuery?: string | null;
 }
 
 export interface ITeamOnUserArguments {
