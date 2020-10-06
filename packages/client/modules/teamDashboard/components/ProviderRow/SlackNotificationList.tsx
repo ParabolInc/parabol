@@ -51,13 +51,14 @@ const USER_EVENTS = [SlackNotificationEventEnum.MEETING_STAGE_TIME_LIMIT_END]
 const SlackNotificationList = (props: Props) => {
   const {teamId, viewer} = props
   const {teamMember} = viewer
-  const {slackAuth, slackNotifications} = teamMember!
-  const channels = useSlackChannels(slackAuth)
+  const {integrations, slackNotifications} = teamMember!
+  const {slack} = integrations
+  const channels = useSlackChannels(slack)
   const {submitting, onError, onCompleted, submitMutation, error} = useMutationProps()
   const atmosphere = useAtmosphere()
   const localPrivateChannel = channels.find((channel) => channel.name === '@Parabol')
   const localPrivateChannelId = localPrivateChannel && localPrivateChannel.id
-  const {isActive, defaultTeamChannelId} = slackAuth!
+  const {isActive, defaultTeamChannelId} = slack!
 
   const changeTeamChannel: SlackChannelDropdownOnClick = useEventCallback(
     (slackChannelId) => () => {
@@ -137,12 +138,14 @@ export default createFragmentContainer(SlackNotificationList, {
     fragment SlackNotificationList_viewer on User {
       ...SlackNotificationRow_viewer
       teamMember(teamId: $teamId) {
-        slackAuth {
-          accessToken
-          botAccessToken
-          isActive
-          slackUserId
-          defaultTeamChannelId
+        integrations {
+          slack {
+            accessToken
+            botAccessToken
+            isActive
+            slackUserId
+            defaultTeamChannelId
+          }
         }
         slackNotifications {
           channelId

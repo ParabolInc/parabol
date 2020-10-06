@@ -3,8 +3,8 @@ import GraphQLISO8601Type from './GraphQLISO8601Type'
 import {getUserId} from '../../utils/authorization'
 import {GQLContext} from '../graphql'
 
-const SlackAuth = new GraphQLObjectType<any, GQLContext>({
-  name: 'SlackAuth',
+const SlackIntegration = new GraphQLObjectType<any, GQLContext>({
+  name: 'SlackIntegration',
   description: 'OAuth token for a team member',
   fields: () => ({
     id: {
@@ -76,4 +76,4 @@ const SlackAuth = new GraphQLObjectType<any, GQLContext>({
   })
 })
 
-export default SlackAuth
+export default SlackIntegration

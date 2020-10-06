@@ -8,8 +8,12 @@ import {AddAtlassianAuthMutation as TAddAtlassianAuthMutation} from '../__genera
 graphql`
   fragment AddAtlassianAuthMutation_team on AddAtlassianAuthPayload {
     teamMember {
-      ...AtlassianProviderRowTeamMember
-      ...TaskFooterIntegrateMenuViewerAtlassianAuth
+      integrations {
+        atlassian {
+          ...AtlassianProviderRowAtlassianIntegration
+          ...TaskFooterIntegrateMenuViewerAtlassianIntegration
+        }
+      }
       # after adding, check for new integrations (populates the menu)
       ...TaskFooterIntegrateMenuViewerSuggestedIntegrations
     }

@@ -49,7 +49,8 @@ const Block = styled('div')({
 
 const StageTimerModalEndTimeSlackToggle = (props: Props) => {
   const {facilitator} = props
-  const {slackAuth, slackNotifications, teamId} = facilitator
+  const {integrations, slackNotifications, teamId} = facilitator
+  const {slack} = integrations
   const timeLimitEvent = slackNotifications.find(
     (notification) =>
       notification.event === SlackNotificationEventEnum.MEETING_STAGE_TIME_LIMIT_START
@@ -60,9 +61,9 @@ const StageTimerModalEndTimeSlackToggle = (props: Props) => {
   const {onError, onCompleted, submitMutation, error, submitting} = mutationProps
 
   const onClick = () => {
-    if (slackAuth && slackAuth.isActive) {
+    if (slack?.isActive) {
       if (submitting) return
-      const {defaultTeamChannelId} = slackAuth
+      const {defaultTeamChannelId} = slack
       submitMutation()
       const variables = {
         slackChannelId: slackToggleActive ? null : defaultTeamChannelId,
@@ -89,9 +90,11 @@ export default createFragmentContainer(StageTimerModalEndTimeSlackToggle, {
   facilitator: graphql`
     fragment StageTimerModalEndTimeSlackToggle_facilitator on TeamMember {
       teamId
-      slackAuth {
-        isActive
-        defaultTeamChannelId
+      integrations {
+        slack {
+          isActive
+          defaultTeamChannelId
+        }
       }
       slackNotifications {
         channelId

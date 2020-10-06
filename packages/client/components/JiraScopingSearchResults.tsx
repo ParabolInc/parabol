@@ -20,9 +20,11 @@ interface Props {
 
 const JiraScopingSearchResults = (props: Props) => {
   const {viewer, meeting} = props
-  const {team} = viewer
-  const {jiraIssues} = team!
-  const {error, edges} = jiraIssues
+  const {teamMember} = viewer
+  const {integrations} = teamMember!
+  const {atlassian} = integrations
+  const {issues} = atlassian!
+  const {error, edges} = issues
   const issueCount = edges.length
   const {id: meetingId, phases} = meeting
   const estimatePhase = phases.find((phase) => phase.phaseType === NewMeetingPhaseTypeEnum.ESTIMATE)!
@@ -82,21 +84,24 @@ export default createFragmentContainer(JiraScopingSearchResults, {
   `,
   viewer: graphql`
     fragment JiraScopingSearchResults_viewer on User {
-      team(teamId: $teamId) {
-        jiraIssues(first: $first, queryString: $queryString, isJQL: $isJQL, projectKeyFilters: $projectKeyFilters) @connection(key: "JiraScopingSearchResults_jiraIssues") {
-          error {
-            message
-          }
-          edges {
-            ...JiraScopingSelectAllIssues_issues
-            node {
-              ...JiraScopingSearchResultItem_issue
-              id
+      teamMember(teamId: $teamId) {
+        integrations {
+          atlassian {
+            issues(first: $first, queryString: $queryString, isJQL: $isJQL, projectKeyFilters: $projectKeyFilters) @connection(key: "JiraScopingSearchResults_issues") {
+              error {
+                message
+              }
+              edges {
+                ...JiraScopingSelectAllIssues_issues
+                node {
+                  ...JiraScopingSearchResultItem_issue
+                  id
+                }
+              }
             }
           }
         }
       }
-      id
     }
   `
 })

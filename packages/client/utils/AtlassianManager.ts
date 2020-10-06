@@ -271,6 +271,27 @@ export default abstract class AtlassianManager {
     )
   }
 
+  async getAllProjects(cloudIds: string[]) {
+    const projects = [] as JiraProject[]
+    let error = null as null | string
+    const getProjectPage = async (url) => {
+      const res = await this.get(url) as JiraProjectResponse | AtlassianError
+      if ('message' in res) {
+        error = res.message
+      } else {
+        projects.push(...res.values)
+        if (res.nextPage) {
+          return getProjectPage(res.nextPage)
+        }
+      }
+    }
+    await Promise.all(cloudIds.map((cloudId) => getProjectPage(`https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/project/search?orderBy=name`)))
+    if (error) {
+      console.log('getAllProjects ERROR:', error)
+    }
+    return projects
+  }
+
   async getProject(cloudId: string, projectId: string) {
     return this.get(
       `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/project/${projectId}`

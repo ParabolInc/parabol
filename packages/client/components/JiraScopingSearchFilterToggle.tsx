@@ -7,34 +7,53 @@ import Icon from './Icon'
 import {PALETTE} from '../styles/paletteV2'
 import {ICON_SIZE} from '../styles/typographyV2'
 import PlainButton from './PlainButton/PlainButton'
+import useMenu from '../hooks/useMenu'
+import {MenuPosition} from '../hooks/useCoords'
+import lazyPreload from '../utils/lazyPreload'
 
 const FilterIcon = styled(Icon)({
   color: PALETTE.TEXT_GRAY,
   fontSize: ICON_SIZE.MD24
 })
+
+const JiraScopingSearchFilterMenuRoot = lazyPreload(() =>
+  import(
+    /* webpackChunkName: 'JiraScopingSearchFilterMenuRoot' */ './JiraScopingSearchFilterMenuRoot'
+  )
+)
 interface Props {
   meeting: JiraScopingSearchFilterToggle_meeting
 }
 
-const JiraScopingSearchFilterToggle = (_props: Props) => {
-  // const {meeting} = props
+const JiraScopingSearchFilterToggle = (props: Props) => {
+  const {meeting} = props
+  const {teamId} = meeting
+  const {togglePortal, originRef, menuPortal, menuProps} = useMenu(
+    MenuPosition.UPPER_RIGHT,
+    {
+      loadingWidth: 200
+    }
+  )
   return (
-    <PlainButton>
-      <FilterIcon>filter_list</FilterIcon>
-    </PlainButton>
+    <>
+      <PlainButton onClick={togglePortal} ref={originRef}>
+        <FilterIcon>filter_list</FilterIcon>
+      </PlainButton>
+      {menuPortal(
+        <JiraScopingSearchFilterMenuRoot
+          teamId={teamId}
+          menuProps={menuProps}
+        />
+      )}
+    </>
   )
 }
 
 export default createFragmentContainer(JiraScopingSearchFilterToggle, {
   meeting: graphql`
     fragment JiraScopingSearchFilterToggle_meeting on PokerMeeting {
-      viewerMeetingMember {
-        teamMember {
-          atlassianAuth {
-            isActive
-          }
-        }
-      }
+      id
+      teamId
     }
   `
 })

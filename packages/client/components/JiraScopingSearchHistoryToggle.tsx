@@ -42,13 +42,7 @@ const JiraScopingSearchHistoryToggle = (_props: Props) => {
 export default createFragmentContainer(JiraScopingSearchHistoryToggle, {
   meeting: graphql`
     fragment JiraScopingSearchHistoryToggle_meeting on PokerMeeting {
-      viewerMeetingMember {
-        teamMember {
-          atlassianAuth {
-            isActive
-          }
-        }
-      }
+      id
     }
   `
 })

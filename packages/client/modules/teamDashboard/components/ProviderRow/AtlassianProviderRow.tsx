@@ -119,7 +119,9 @@ const AtlassianProviderRow = (props: Props) => {
   } = props
   const mutationProps = {submitting, submitMutation, onError, onCompleted} as MenuMutationProps
   const {teamMember} = viewer
-  const accessToken = teamMember?.atlassianAuth?.accessToken ?? undefined
+  const {integrations} = teamMember!
+  const {atlassian} = integrations
+  const accessToken = atlassian?.accessToken ?? undefined
   useFreshToken(accessToken, retry)
 
   const openOAuth = () => {
@@ -178,10 +180,8 @@ const AtlassianProviderRow = (props: Props) => {
 }
 
 graphql`
-  fragment AtlassianProviderRowTeamMember on TeamMember {
-    atlassianAuth {
-      accessToken
-    }
+  fragment AtlassianProviderRowAtlassianIntegration on AtlassianIntegration {
+    accessToken
   }
 `
 
@@ -191,7 +191,11 @@ export default createFragmentContainer(
     viewer: graphql`
       fragment AtlassianProviderRow_viewer on User {
         teamMember(teamId: $teamId) {
-          ...AtlassianProviderRowTeamMember @relay(mask: false)
+          integrations {
+            atlassian {
+              ...AtlassianProviderRowAtlassianIntegration @relay(mask: false)
+            }
+          }
         }
       }
     `

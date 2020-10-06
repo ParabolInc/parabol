@@ -43,8 +43,8 @@ const ScopePhaseAreaAddJira = (props: Props) => {
   const {gotoParabol, meeting} = props
   const {teamId, viewerMeetingMember} = meeting
   const {teamMember} = viewerMeetingMember
-  const {atlassianAuth} = teamMember
-  const hasAuth = atlassianAuth?.isActive ?? false
+  const {integrations} = teamMember
+  const hasAuth = integrations.atlassian?.isActive ?? false
 
   const importStories = () => {
     if (!hasAuth) {
@@ -65,8 +65,10 @@ export default createFragmentContainer(ScopePhaseAreaAddJira, {
       teamId
       viewerMeetingMember {
         teamMember {
-          atlassianAuth {
-            isActive
+          integrations {
+            atlassian {
+                isActive
+            }
           }
         }
       }
