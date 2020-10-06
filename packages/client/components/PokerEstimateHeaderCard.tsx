@@ -13,22 +13,18 @@ const HeaderCardWrapper = styled('div')({
 })
 
 const HeaderCard = styled('div')({
-  background: '#fff',
+  background: PALETTE.CONTROL_LIGHT,
   borderRadius: '4px',
   boxShadow: Elevation.Z3,
-  flexDirection: 'row',
-  flexWrap: 'wrap',
   padding: '12px 16px',
-  position: 'relative',
-  width: 624
+  maxWidth: 1000,
+  width: '70%'
 })
 
 const CardTitle = styled('h1')({
   fontSize: 16,
   lineHeight: '24px',
-  margin: 0,
-  padding: 0,
-  fontWeight: 600
+  margin: 0
 })
 
 const CardIcons = styled('div')({
@@ -47,8 +43,7 @@ const CardDescription = styled('h2')({
   fontWeight: 'normal',
   lineHeight: '20px',
   fontSize: 14,
-  margin: 0,
-  width: '100%'
+  margin: 0
 })
 
 const StyledIcon = styled(Icon)({
@@ -67,8 +62,7 @@ const StyledLink = styled('span')({
 })
 
 const StyledLabel = styled('span')({
-  fontSize: 12,
-  outline: 0
+  fontSize: 12
 })
 
 const PokerEstimateHeaderCard = () => {

@@ -2,6 +2,8 @@ import React, {useState} from 'react'
 import styled from '@emotion/styled'
 import {PALETTE} from '~/styles/paletteV2'
 import SwipeableViews from 'react-swipeable-views'
+import useBreakpoint from '~/hooks/useBreakpoint'
+import {Breakpoint} from '~/types/constEnums'
 
 const EstimateArea = styled('div')({
   display: 'flex',
@@ -11,44 +13,38 @@ const EstimateArea = styled('div')({
 })
 
 const StepperDots = styled('div')({
-  justifyContent: 'center',
-  position: 'relative',
   display: 'flex',
-  padding: '8px 0'
+  justifyContent: 'center',
+  padding: '16px 0'
 })
 
-const StepperDot = styled('div')<{isFocused: boolean}>(({isFocused}) => ({
-  backgroundColor: isFocused ? PALETTE.STATUS_ACTIVE : PALETTE.TEXT_GRAY,
+const StepperDot = styled('div')<{isActive: boolean}>(({isActive}) => ({
+  backgroundColor: isActive ? PALETTE.STATUS_ACTIVE : PALETTE.TEXT_GRAY,
   borderRadius: '50%',
   height: 8,
   margin: '0 2px',
-  opacity: isFocused ? undefined : 0.35,
+  opacity: isActive ? undefined : 0.35,
   width: 8
 }))
 
-const SwipableColumnWrapper = styled('div')({
-  display: 'flex',
-  height: '100%',
-  borderRadius: '8px',
+const SwipableEstimateItem = styled('div')({
+  borderRadius: '8px 8px 0 0',
   background: PALETTE.BACKGROUND_REFLECTION,
-  width: '100%',
-  justifyContent: 'center',
-  padding: 32
+  height: '100%'
 })
 
-const styles = {
-  root: {
-    display: 'flex',
+const innerStyle = (isDesktop: boolean) => {
+  return {
     height: '100%',
-    padding: '0 10%',
-    flexDirection: 'column',
-    justifyContent: 'center',
-    width: '60%',
+    padding: isDesktop ? '0 10%' : '0 24px',
+    width: isDesktop ? '75%' : '100%',
     overflow: 'visible'
-  },
-  slideContainer: {
-    height: '100%',
-    padding: '0 5%'
+  }
+}
+
+const slideContainer = (isDesktop: boolean) => {
+  return {
+    padding: isDesktop ? '0 5%' : '0 2%'
   }
 }
 
@@ -58,13 +54,9 @@ const containerStyle = {
 
 const EstimatePhaseArea = () => {
   const [activeIdx, setActiveIdx] = useState(1)
-  console.log('EstimatePhaseArea -> activeIdx', activeIdx)
+  const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
 
-  const onChangeIdx = (idx, _fromIdx, props: {reason: string}) => {
-    console.log('Hey!')
-    //very buggy behavior, probably linked to the vertical scrolling.
-    // to repro, go from team > org > team > org by clicking tabs & see this this get called for who knows why
-    if (props.reason === 'focus') return
+  const onChangeIdx = (idx) => {
     setActiveIdx(idx)
   }
 
@@ -74,19 +66,19 @@ const EstimatePhaseArea = () => {
     <EstimateArea>
       <StepperDots>
         {dummyEstimateItems.map((_, idx) => {
-          return <StepperDot key={`${idx}-${_}`} isFocused={idx === activeIdx} />
+          return <StepperDot key={idx} isActive={idx === activeIdx} />
         })}
       </StepperDots>
       <SwipeableViews
+        containerStyle={containerStyle}
         enableMouseEvents
         index={activeIdx}
         onChangeIndex={onChangeIdx}
-        style={styles.root}
-        containerStyle={containerStyle}
-        slideStyle={styles.slideContainer}
+        slideStyle={slideContainer(isDesktop)}
+        style={innerStyle(isDesktop)}
       >
         {dummyEstimateItems.map((_, idx) => (
-          <SwipableColumnWrapper key={idx} />
+          <SwipableEstimateItem key={idx} />
         ))}
       </SwipeableViews>
     </EstimateArea>

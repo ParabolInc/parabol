@@ -4,31 +4,22 @@ import MeetingPhaseHeading from '~/modules/meeting/components/MeetingPhaseHeadin
 import MeetingCopy from '~/modules/meeting/components/MeetingCopy/MeetingCopy'
 import StyledLink from './StyledLink'
 
-const EmptyStateContainer = styled('div')({
-  display: 'flex',
-  flexWrap: 'wrap',
-  alignContent: 'center',
-  justifyContent: 'center',
-  width: '100%',
-  height: '100%'
-})
-
 const StyledHeading = styled(MeetingPhaseHeading)({
-  paddingBottom: '16px'
+  paddingBottom: '16px',
+  textAlign: 'center'
 })
 
 const StyledCopy = styled(MeetingCopy)({
   margin: 0,
   padding: '12px 0',
-  textAlign: 'center',
-  width: '100%'
+  textAlign: 'center'
 })
 
 const Link = styled(StyledLink)({
   fontWeight: 600
 })
 
-const FirstCallWrapper = styled('div')({
+const EmptyStateContainer = styled('div')({
   display: 'flex',
   flexDirection: 'column',
   alignItems: 'center',
@@ -43,14 +34,14 @@ interface Props {
 const EstimatePhaseEmptyState = (props: Props) => {
   const {teamId} = props
   return (
-    <FirstCallWrapper>
+    <EmptyStateContainer>
       <StyledHeading>No items to estimate?</StyledHeading>
-      <StyledCopy>It looks like you haven't added any tasks to be estimated yet.</StyledCopy>
+      <StyledCopy>It looks like you haven't added any items yet.</StyledCopy>
       <StyledCopy>
         Try adding them
         <Link to={`/meet/${teamId}/scope`}>{' here.'}</Link>
       </StyledCopy>
-    </FirstCallWrapper>
+    </EmptyStateContainer>
   )
 }
 

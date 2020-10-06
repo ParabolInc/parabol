@@ -15,15 +15,14 @@ import ResponsiveDashSidebar from './ResponsiveDashSidebar'
 
 interface Props {
   meeting: PokerMeeting_meeting
-  history: any
 }
 
 const phaseLookup = {
   [NewMeetingPhaseTypeEnum.checkin]: lazyPreload(() =>
     import(/* webpackChunkName: 'NewMeetingCheckIn' */ './NewMeetingCheckIn')
   ),
-  // SCOPE: lazyPreload(() => import(/* webpackChunkName: 'ScopePhase' */ './ScopePhase')),
-  SCOPE: lazyPreload(() =>
+  SCOPE: lazyPreload(() => import(/* webpackChunkName: 'ScopePhase' */ './ScopePhase')),
+  ESTIMATE: lazyPreload(() =>
     import(/* webpackChunkName: 'PokerEstimatePhase' */ './PokerEstimatePhase')
   )
 }
@@ -53,7 +52,6 @@ const PokerMeeting = (props: Props) => {
   const {featureFlags} = user
   const {video: allowVideo} = featureFlags
   const localPhaseType = localPhase?.phaseType
-  console.log('PokerMeeting -> localPhaseType', localPhaseType)
 
   // TODO: remove estimate logic here & in MeetingControlBar when backend is ready
   const {history} = useRouter()

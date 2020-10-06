@@ -57,7 +57,6 @@ const PokerMeetingSidebar = (props: Props) => {
             itemStage || {}
           const canNavigate = isViewerFacilitator ? isNavigableByFacilitator : isNavigable
           const handleClick = () => {
-            console.log('handleClick -> itemStageId', itemStageId)
             gotoStageId(itemStageId).catch()
             handleMenuClick()
           }
@@ -67,12 +66,8 @@ const PokerMeetingSidebar = (props: Props) => {
           const phaseCount = phaseType === 'ESTIMATE' ? estimatePhase.stages.length : undefined
           return (
             <NewMeetingSidebarPhaseListItem
-              // handleClick={canNavigate ? handleClick : undefined}
-              handleClick={handleClick}
-              // isActive={
-              //   phaseType === 'ESTIMATE' ? false : localPhaseType === phaseType
-              // }
-              isActive={localPhaseType === phaseType}
+              handleClick={canNavigate ? handleClick : undefined}
+              isActive={phaseType === 'ESTIMATE' ? false : localPhaseType === phaseType}
               isCollapsible={collapsiblePhases.includes(phaseType)}
               isFacilitatorPhase={phaseType === facilitatorPhaseType}
               isUnsyncedFacilitatorPhase={
