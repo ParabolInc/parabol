@@ -4,34 +4,15 @@ import {PALETTE} from '~/styles/paletteV2'
 import SwipeableViews from 'react-swipeable-views'
 
 const EstimateArea = styled('div')({
-  alignItems: 'center',
   display: 'flex',
-  flexDirection: 'row',
+  flexDirection: 'column',
   flex: 1,
-  flexWrap: 'wrap',
-  justifyContent: 'center',
-  width: '100%',
-  minHeight: '100%'
-})
-
-const SwipableColumnWrapper = styled('div')({
-  display: 'flex',
-  padding: '0 16px',
-  height: '100%',
-  width: '100%'
-})
-
-const SwipableColumn = styled('div')({
-  backgroundColor: PALETTE.BACKGROUND_REFLECTION,
-  borderRadius: 8,
-  position: 'relative',
-  height: '100%',
   width: '100%'
 })
 
 const StepperDots = styled('div')({
-  alignItems: 'center',
   justifyContent: 'center',
+  position: 'relative',
   display: 'flex',
   padding: '8px 0'
 })
@@ -45,42 +26,67 @@ const StepperDot = styled('div')<{isFocused: boolean}>(({isFocused}) => ({
   width: 8
 }))
 
-const containerStyle = {height: '100%', width: '40%'}
-const innerStyle = {
-  height: '100%',
-  width: '100%',
+const SwipableColumnWrapper = styled('div')({
   display: 'flex',
-  justifyContent: 'center'
+  height: '100%',
+  borderRadius: '8px',
+  background: PALETTE.BACKGROUND_REFLECTION,
+  width: '100%',
+  justifyContent: 'center',
+  padding: 32
+})
+
+const styles = {
+  root: {
+    display: 'flex',
+    height: '100%',
+    padding: '0 10%',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    width: '60%',
+    overflow: 'visible'
+  },
+  slideContainer: {
+    height: '100%',
+    padding: '0 5%'
+  }
+}
+
+const containerStyle = {
+  height: '100%'
 }
 
 const EstimatePhaseArea = () => {
   const [activeIdx, setActiveIdx] = useState(1)
+  console.log('EstimatePhaseArea -> activeIdx', activeIdx)
 
   const onChangeIdx = (idx, _fromIdx, props: {reason: string}) => {
+    console.log('Hey!')
     //very buggy behavior, probably linked to the vertical scrolling.
     // to repro, go from team > org > team > org by clicking tabs & see this this get called for who knows why
     if (props.reason === 'focus') return
     setActiveIdx(idx)
   }
 
+  const dummyEstimateItems = [1, 2, 3]
+
   return (
     <EstimateArea>
       <StepperDots>
-        {[1, 2, 3].map((_, idx) => {
+        {dummyEstimateItems.map((_, idx) => {
           return <StepperDot key={`${idx}-${_}`} isFocused={idx === activeIdx} />
         })}
       </StepperDots>
       <SwipeableViews
-        containerStyle={containerStyle}
         enableMouseEvents
         index={activeIdx}
         onChangeIndex={onChangeIdx}
-        style={innerStyle}
+        style={styles.root}
+        containerStyle={containerStyle}
+        slideStyle={styles.slideContainer}
       >
-        {[1, 2, 3].map((_, idx) => (
-          <SwipableColumnWrapper key={idx}>
-            <SwipableColumn></SwipableColumn>
-          </SwipableColumnWrapper>
+        {dummyEstimateItems.map((_, idx) => (
+          <SwipableColumnWrapper key={idx} />
         ))}
       </SwipeableViews>
     </EstimateArea>

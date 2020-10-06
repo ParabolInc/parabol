@@ -22,8 +22,8 @@ const phaseLookup = {
   [NewMeetingPhaseTypeEnum.checkin]: lazyPreload(() =>
     import(/* webpackChunkName: 'NewMeetingCheckIn' */ './NewMeetingCheckIn')
   ),
-  SCOPE: lazyPreload(() => import(/* webpackChunkName: 'ScopePhase' */ './ScopePhase')),
-  ESTIMATE: lazyPreload(() =>
+  // SCOPE: lazyPreload(() => import(/* webpackChunkName: 'ScopePhase' */ './ScopePhase')),
+  SCOPE: lazyPreload(() =>
     import(/* webpackChunkName: 'PokerEstimatePhase' */ './PokerEstimatePhase')
   )
 }
