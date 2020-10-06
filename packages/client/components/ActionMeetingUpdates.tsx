@@ -64,7 +64,7 @@ const ActionMeetingUpdates = (props: Props) => {
           <ActionMeetingUpdatesPrompt meeting={meeting} />
         </MeetingTopBar>
         <PhaseWrapper>
-          {isPhaseComplete ? <PhaseCompleteTag>{'Phase Completed'}</PhaseCompleteTag> : null}
+          <PhaseCompleteTag isComplete={isPhaseComplete} />
           <StyledColumnsWrapper>
             <InnerColumnsWrapper>
               <TaskColumns

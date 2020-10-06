@@ -5,8 +5,8 @@ import {createFragmentContainer} from 'react-relay'
 import {Breakpoint} from '~/types/constEnums'
 import {StageTimerDisplay_meeting} from '~/__generated__/StageTimerDisplay_meeting.graphql'
 import StageTimerDisplayGauge from './StageTimerDisplayGauge'
-import PhaseCompletedTag from '~/components/Tag/PhaseCompleteTag'
-import UndoableGroupPhaseTag from '~/components/UndoableGroupPhaseTag'
+import PhaseCompleteTag from '~/components/Tag/PhaseCompleteTag'
+import UndoableGroupPhaseControl from '~/components/UndoableGroupPhaseControl'
 import useAtmosphere from '~/hooks/useAtmosphere'
 
 interface Props {
@@ -25,6 +25,11 @@ const DisplayRow = styled('div')({
   }
 })
 
+const PhaseCompleteWrapper = styled('div')({
+  alignItems: 'flex-start',
+  display: 'flex'
+})
+
 const StageTimerDisplay = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {meeting, canUndo} = props
@@ -41,9 +46,10 @@ const StageTimerDisplay = (props: Props) => {
         <StageTimerDisplayGauge endTime={localScheduledEndTime} />
       ) : null}
       {isPhaseComplete
-        ? canUndoGroupPhase
-          ? (<UndoableGroupPhaseTag meetingId={meeting.id} resetToStageId={localStage.id} />)
-          : (<PhaseCompletedTag>{'Phase Completed'}</PhaseCompletedTag>)
+        ? <PhaseCompleteWrapper>
+          <PhaseCompleteTag isComplete={isPhaseComplete} />
+          {canUndoGroupPhase ? <UndoableGroupPhaseControl meetingId={meeting.id} resetToStageId={localStage.id} /> : null}
+        </PhaseCompleteWrapper>
         : null}
     </DisplayRow>
   )
