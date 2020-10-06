@@ -18,7 +18,6 @@ const HeaderCard = styled('div')({
   boxShadow: Elevation.Z3,
   flexDirection: 'row',
   flexWrap: 'wrap',
-  height: 86,
   padding: '12px 16px',
   position: 'relative',
   width: 624

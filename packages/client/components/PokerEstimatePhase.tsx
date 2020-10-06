@@ -8,11 +8,13 @@ import PhaseHeaderTitle from './PhaseHeaderTitle'
 import PhaseWrapper from './PhaseWrapper'
 import EstimatePhaseArea from './EstimatePhaseArea'
 import PokerEstimateHeaderCard from './PokerEstimateHeaderCard'
+import EstimatePhaseEmptyState from './EstimatePhaseEmptyState'
 
 const PokerEstimatePhase = (props: any) => {
   const {avatarGroup, toggleSidebar, meeting} = props
   const phaseRef = useRef<HTMLDivElement>(null)
   const {localPhase, endedAt, showSidebar} = meeting
+  const isEmpty = false
   if (!localPhase) return null
   return (
     <MeetingContent ref={phaseRef}>
@@ -25,10 +27,16 @@ const PokerEstimatePhase = (props: any) => {
           <PhaseHeaderTitle>{phaseLabelLookup.ESTIMATE}</PhaseHeaderTitle>
           <PhaseHeaderDescription>{'Estimate each story as a team'}</PhaseHeaderDescription>
         </MeetingTopBar>
-        <PokerEstimateHeaderCard />
-        <PhaseWrapper>
-          <EstimatePhaseArea />
-        </PhaseWrapper>
+        {isEmpty ? (
+          <EstimatePhaseEmptyState teamId={'dummyId'} />
+        ) : (
+          <>
+            <PokerEstimateHeaderCard />
+            <PhaseWrapper>
+              <EstimatePhaseArea />
+            </PhaseWrapper>
+          </>
+        )}
       </MeetingHeaderAndPhase>
     </MeetingContent>
   )
