@@ -1,16 +1,17 @@
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
-import {ParabolScopingSearchResults_meeting} from '../__generated__/ParabolScopingSearchResults_meeting.graphql'
+import {createPaginationContainer, RelayPaginationProp} from 'react-relay'
+import {ParabolScopingSearchResults_viewer} from '../__generated__/ParabolScopingSearchResults_viewer.graphql'
 import ParabolScopingSelectAllIssues from './ParabolScopingSelectAllIssues'
 import ParabolScopingSearchResultItem from './ParabolScopingSearchResultItem'
 interface Props {
-  meeting: ParabolScopingSearchResults_meeting
+  relay: RelayPaginationProp
+  viewer: ParabolScopingSearchResults_viewer
 }
 
 const ParabolScopingSearchResults = (props: Props) => {
-  const {meeting} = props
-  const edges = meeting.team.tasks?.edges
+  const {viewer} = props
+  const edges = viewer.tasks.edges
   const tasks = edges.map(({node}) => node)
 
   // TODO: add total count returned to connection e.g. connection {count, pageInfo, edges}
@@ -24,22 +25,58 @@ const ParabolScopingSearchResults = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(ParabolScopingSearchResults, {
-  meeting: graphql`
-    fragment ParabolScopingSearchResults_meeting on PokerMeeting {
-      id
-      team {
-        id
-        tasks(first: 50) @connection(key: "ParabolScopingSearchResults_tasks") {
+export default createPaginationContainer(
+  ParabolScopingSearchResults,
+  {
+    viewer: graphql`
+      fragment ParabolScopingSearchResults_viewer on User {
+        tasks(first: $first, after: $after, userIds: $userIds, teamIds: $teamIds, archived: false)
+          @connection(key: "ParabolScopingSearchResults_tasks") {
           edges {
+            cursor
             node {
-              id
-              updatedAt
               ...ParabolScopingSearchResultItem_item
+              __typename
+              id
             }
+          }
+          pageInfo {
+            hasNextPage
+            endCursor
           }
         }
       }
-    }
-  `
-})
+    `
+  },
+  {
+    direction: 'forward',
+    getConnectionFromProps(props) {
+      return props.viewer && props.viewer.tasks
+    },
+    getFragmentVariables(prevVars, totalCount) {
+      return {
+        ...prevVars,
+        first: totalCount
+      }
+    },
+    getVariables(_, {count, cursor}, fragmentVariables) {
+      return {
+        ...fragmentVariables,
+        first: count,
+        after: cursor
+      }
+    },
+    query: graphql`
+      query ParabolScopingSearchResultsPaginationQuery(
+        $first: Int!
+        $after: DateTime
+        $teamIds: [ID!]
+        $userIds: [ID!]
+      ) {
+        viewer {
+          ...ParabolScopingSearchResults_viewer
+        }
+      }
+    `
+  }
+)

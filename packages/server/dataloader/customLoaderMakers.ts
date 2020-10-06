@@ -150,7 +150,7 @@ export const userTasks = (parent: RethinkDataLoader) => {
           const dbAfter = after ? new Date(after) : r.maxval
 
           let teamTaskPartial = r.table('Task').getAll(r.args(teamIds), {index: 'teamId'})
-          if (userIds) {
+          if (Array.isArray(userIds) && userIds.length) {
             teamTaskPartial = teamTaskPartial.filter((row) => r(userIds).contains(row('userId')))
           }
 

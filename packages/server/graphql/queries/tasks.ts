@@ -11,9 +11,10 @@ const getValidTeamIds = (teamIds: null | string[], tms: string[]) => {
   // the following comments can be removed pending #4070
   // const viewerTeamMembers = await dataLoader.get('teamMembersByUserId').load(viewerId)
   // const viewerTeamIds = viewerTeamMembers.map(({teamId}) => teamId)
-  if (!teamIds) return tms
+  if (Array.isArray(teamIds) && teamIds.length)
+    return teamIds.filter((teamId) => tms.includes(teamId))
   // filter the teamIds array to only teams the user has a team member for
-  return teamIds.filter((teamId) => tms.includes(teamId))
+  return tms
 }
 
 const getValidUserIds = async (
@@ -86,10 +87,8 @@ export default {
 
     // if archived is true & no userId filter is provided, it should include tasks for ex-team members
     // under no condition should it show tasks for archived teams
-
     const validTeamIds = getValidTeamIds(teamIds, authToken.tms)
     const validUserIds = await getValidUserIds(userIds, viewerId, validTeamIds, dataLoader)
-
     // RESOLUTION
     const tasks = await dataLoader.get('userTasks').load({
       first: first,
@@ -98,7 +97,6 @@ export default {
       teamIds: validTeamIds,
       archived: archived
     })
-
     const filteredTasks = tasks.filter((task) => {
       if (isTaskPrivate(task.tags) && task.userId !== viewerId) return false
       return true
