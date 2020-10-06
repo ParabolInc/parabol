@@ -45,9 +45,9 @@ export default {
       description: 'the datetime cursor'
     },
     userIds: {
-      type: GraphQLList(GraphQLNonNull(GraphQLID)),
+      type: GraphQLList(GraphQLID),
       description:
-        'a list of user Ids that you want tasks for. if null, will return tasks for all possible team members'
+        'a list of user Ids that you want tasks for. if null, will return tasks for all possible team members. An id is null if it is not assigned to anyone.'
     },
     teamIds: {
       type: GraphQLList(GraphQLNonNull(GraphQLID)),
@@ -58,11 +58,16 @@ export default {
       type: GraphQLBoolean,
       description: 'true to only return archived tasks; false to return active tasks',
       defaultValue: false
+    },
+    includeUnassigned: {
+      type: GraphQLBoolean,
+      description: 'if true, include unassigned tasks. If false, only return assigned tasks',
+      defaultValue: false
     }
   },
   async resolve(
     _source,
-    {first, after, userIds, teamIds, archived},
+    {first, after, userIds, teamIds, archived, includeUnassigned},
     {authToken, dataLoader}: GQLContext
   ) {
     // AUTH
@@ -93,11 +98,12 @@ export default {
 
     // RESOLUTION
     const tasks = await dataLoader.get('userTasks').load({
-      first: first,
-      after: after,
+      first,
+      after,
       userIds: validUserIds,
       teamIds: validTeamIds,
-      archived: archived
+      archived,
+      includeUnassigned
     })
 
     const filteredTasks = tasks.filter((task) => {

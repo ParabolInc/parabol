@@ -23,7 +23,7 @@ const useAllIntegrations = (
   suggestedItems: readonly any[],
   hasMore: boolean,
   teamId: string,
-  userId: string
+  userId: string | null
 ) => {
   const [fetchedItems, setFetchedItems] = useState<readonly any[]>([])
   const [status, setStatus] = useState<null | 'loading' | 'loaded' | 'error'>(null)

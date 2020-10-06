@@ -59,6 +59,7 @@ const CreateJiraIssueMutation = (
       const userId = task.getValue('userId')
       const teamId = task.getValue('teamId')
       const integration = task.getLinkedRecord('integration')
+      if (!userId) return
       const user = store.get(userId)
       if (!user || !integration) return
       const suggestedIntegrations = user.getLinkedRecord<ISuggestedIntegrationQueryPayload>(

@@ -26,7 +26,7 @@ const UserColumnsContainer = (props: Props) => {
       : nodes
 
     const teamFilteredNodes = dashSearchNodes.filter((node) => teamIds ? teamIds.includes(node.teamId) : true)
-    const teamMemberFilteredNodes = teamFilteredNodes.filter((node) => userIds ? userIds.includes(node.userId) : true)
+    const teamMemberFilteredNodes = teamFilteredNodes.filter((node) => userIds && node.userId ? userIds.includes(node.userId) : true)
 
     return teamMemberFilteredNodes.map((node) => ({
       ...node

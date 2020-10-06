@@ -23,14 +23,19 @@ const TaskFooterTeamAssigneeMenu = (props: Props) => {
   const {userIds, teamIds} = useUserTaskFilters(viewer.id)
   const {team, id: taskId} = task
   const {id: teamId} = team
-
+  const {teams} = viewer
   const assignableTeams = useMemo(() => {
-    const {teams} = viewer
-    const filteredTeams = userIds ? teams.filter(({teamMembers}) =>
-      !!teamMembers.find(({userId}) => userIds.includes(userId))
-    ) : (teamIds ? teams.filter(({id}) => teamIds.includes(id)) : teams)
-    return filteredTeams.filter((team) => team.id !== teamId)
+    const filteredTeams = userIds
+      ? teams.filter(({teamMembers}) => !!teamMembers.find(({userId}) => userIds.includes(userId)))
+      : teamIds
+      ? teams.filter(({id}) => teamIds.includes(id))
+      : teams
+    return filteredTeams
   }, [teamIds, userIds])
+  const taskTeamIdx = useMemo(() => assignableTeams.map(({id}) => id).indexOf(teamId) + 1, [
+    teamId,
+    assignableTeams
+  ])
 
   const atmosphere = useAtmosphere()
   const {submitting, submitMutation, onError, onCompleted} = useMutationProps()
@@ -42,7 +47,11 @@ const TaskFooterTeamAssigneeMenu = (props: Props) => {
   }
 
   return (
-    <Menu {...menuProps} ariaLabel={'Assign this task to another team'}>
+    <Menu
+      {...menuProps}
+      defaultActiveIdx={taskTeamIdx}
+      ariaLabel={'Assign this task to another team'}
+    >
       <DropdownMenuLabel>Move to:</DropdownMenuLabel>
       {assignableTeams.map((team) => {
         return <MenuItem key={team.id} label={team.name} onClick={handleTaskUpdate(team)} />
