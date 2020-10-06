@@ -36,16 +36,14 @@ const SwipableEstimateItem = styled('div')({
 const innerStyle = (isDesktop: boolean) => {
   return {
     height: '100%',
-    padding: isDesktop ? '0 10%' : '0 24px',
+    padding: isDesktop ? '0 10%' : '0 40px',
     width: isDesktop ? '75%' : '100%',
     overflow: 'visible'
   }
 }
 
-const slideContainer = (isDesktop: boolean) => {
-  return {
-    padding: isDesktop ? '0 5%' : '0 2%'
-  }
+const slideContainer = {
+  padding: '0 16px'
 }
 
 const containerStyle = {
@@ -74,7 +72,7 @@ const EstimatePhaseArea = () => {
         enableMouseEvents
         index={activeIdx}
         onChangeIndex={onChangeIdx}
-        slideStyle={slideContainer(isDesktop)}
+        slideStyle={slideContainer}
         style={innerStyle(isDesktop)}
       >
         {dummyEstimateItems.map((_, idx) => (

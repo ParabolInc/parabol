@@ -49,12 +49,10 @@ export default {
       .run()
 
     const phases = await createNewMeetingPhases(teamId, meetingCount, meetingType, dataLoader)
-    console.log('phases -->', phases)
     const meetingSettings = (await dataLoader
       .get('meetingSettingsByType')
       .load({teamId, meetingType: 'poker'})) as MeetingSettingsPoker
     const {selectedTemplateId} = meetingSettings
-    console.log('meetingSettings', meetingSettings)
 
     const meeting = new MeetingPoker({
       teamId,
