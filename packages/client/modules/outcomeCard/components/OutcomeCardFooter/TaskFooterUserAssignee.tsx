@@ -41,7 +41,7 @@ const AvatarButton = styled(BaseButton)({
   },
   ':hover > div,:focus > div': {
     borderColor: PALETTE.BORDER_DARK,
-    color: PALETTE.TEXT_MAIN_HOVER
+    color: PALETTE.TEXT_MAIN
   }
 })
 
@@ -71,6 +71,7 @@ const AvatarImage = styled('img')({
 
 const AvatarLabel = styled('div')({
   ...label,
+  color: PALETTE.TEXT_GRAY,
   flex: 1,
   minWidth: 0
 })
