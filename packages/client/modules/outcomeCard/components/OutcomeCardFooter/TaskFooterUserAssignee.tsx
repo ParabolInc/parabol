@@ -12,6 +12,7 @@ import {PALETTE} from '../../../../styles/paletteV2'
 import avatarUser from '../../../../styles/theme/images/avatar-user.svg'
 import lazyPreload from '../../../../utils/lazyPreload'
 import {TaskFooterUserAssignee_task} from '../../../../__generated__/TaskFooterUserAssignee_task.graphql'
+import Icon from '../../../../components/Icon'
 
 const label = {
   ...textOverflow,
@@ -44,19 +45,22 @@ const AvatarButton = styled(BaseButton)({
   }
 })
 
-const Avatar = styled('div')<{cardIsActive: boolean}>(({cardIsActive}) => ({
-  backgroundColor: 'transparent',
-  border: '1px solid transparent',
-  borderColor: cardIsActive ? PALETTE.BORDER_MAIN_50 : undefined,
-  borderRadius: '100%',
-  height: 28,
-  marginLeft: -2,
-  marginRight: 4,
-  padding: 1,
-  position: 'relative',
-  top: -2,
-  width: 28
-}))
+const Avatar = styled('div')<{cardIsActive: boolean; isAssigned: boolean}>(
+  ({cardIsActive, isAssigned}) => ({
+    backgroundColor: isAssigned ? 'transparent' : PALETTE.TEXT_GRAY,
+    color: isAssigned ? 'transparent' : undefined,
+    border: '1px solid transparent',
+    borderColor: cardIsActive ? PALETTE.BORDER_MAIN_50 : undefined,
+    borderRadius: '100%',
+    height: 28,
+    marginLeft: -2,
+    marginRight: 4,
+    padding: 1,
+    position: 'relative',
+    top: -2,
+    width: 28
+  })
+)
 
 const AvatarImage = styled('img')({
   borderRadius: '100%',
@@ -75,13 +79,16 @@ const TooltipToggle = styled('div')({
   display: 'inline-flex'
 })
 
-const UnassignedWrapper = styled('div')({
-  height: 28,
-  marginLeft: -2,
-  padding: 1,
+const StyledIcon = styled(Icon)({
+  alignContent: 'center',
+  alignItems: 'center',
+  color: PALETTE.CONTROL_LIGHT,
+  cursor: 'pointer',
+  display: 'flex',
+  fontSize: 22,
+  justifyContent: 'center',
   position: 'relative',
-  top: 2,
-  width: 28
+  top: 1
 })
 
 interface Props {
@@ -101,7 +108,7 @@ const TaskFooterUserAssigneeMenuRoot = lazyPreload(() =>
 const TaskFooterUserAssignee = (props: Props) => {
   const {area, canAssign, cardIsActive, task, useTaskChild} = props
   const {user} = task
-  const userImage = user ? user.picture || avatarUser : '?'
+  const userImage = user?.picture || avatarUser
   const preferredName = user?.preferredName || 'Unassigned'
   const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_LEFT)
   const {tooltipPortal, openTooltip, closeTooltip, originRef: tipRef} = useTooltip<HTMLDivElement>(
@@ -121,13 +128,13 @@ const TaskFooterUserAssignee = (props: Props) => {
           onMouseEnter={TaskFooterUserAssigneeMenuRoot.preload}
           ref={originRef}
         >
-          {user ? (
-            <Avatar cardIsActive={cardIsActive}>
+          <Avatar cardIsActive={cardIsActive} isAssigned={!!user}>
+            {user ? (
               <AvatarImage alt={preferredName} src={userImage} />
-            </Avatar>
-          ) : (
-            <UnassignedWrapper>?</UnassignedWrapper>
-          )}
+            ) : (
+              <StyledIcon>{'assignment_ind'}</StyledIcon>
+            )}
+          </Avatar>
           <AvatarLabel>{preferredName}</AvatarLabel>
         </AvatarButton>
       </TooltipToggle>
