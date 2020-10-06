@@ -12,13 +12,14 @@ interface Props {
 
 const ParabolScopingSearchResults = (props: Props) => {
   const {viewer, relay} = props
+  const issueCount = viewer.tasks.pageInfo?.edgesReturned!
   const tasks = viewer.tasks.edges.map(({node}) => node)
   const lastItem = useLoadMoreOnScrollBottom(relay, {}, 50)
 
   // TODO: add total count returned to connection e.g. connection {count, pageInfo, edges}
   return (
     <>
-      <ParabolScopingSelectAllIssues selected={false} issueCount={5} />
+      <ParabolScopingSelectAllIssues selected={false} issueCount={issueCount} />
       {tasks.map((task) => {
         return <ParabolScopingSearchResultItem key={task.id} item={task} />
       })}
@@ -51,6 +52,7 @@ export default createPaginationContainer(
           pageInfo {
             hasNextPage
             endCursor
+            edgesReturned
           }
         }
       }

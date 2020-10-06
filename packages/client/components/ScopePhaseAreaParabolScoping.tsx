@@ -14,7 +14,7 @@ const ScopePhaseAreaParabolScoping = (props: Props) => {
   return (
     <>
       <ParabolScopingSearchBar meeting={meeting} />
-      <ParabolScopingSearchResultsRoot />
+      <ParabolScopingSearchResultsRoot teamId={meeting.teamId} />
     </>
   )
 }
@@ -23,6 +23,7 @@ export default createFragmentContainer(ScopePhaseAreaParabolScoping, {
   meeting: graphql`
     fragment ScopePhaseAreaParabolScoping_meeting on PokerMeeting {
       ...ParabolScopingSearchBar_meeting
+      teamId
     }
   `
 })

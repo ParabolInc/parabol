@@ -26,21 +26,20 @@ const renderParabolScopingSearchResults = ({error, props}) => {
 }
 
 interface Props {
-  teamIds?: string[] | null
-  userIds?: string[] | null
+  teamId: string
 }
 
 const ParabolScopingSearchResultsRoot = (props: Props) => {
   const atmosphere = useAtmosphere()
-  const {teamIds, userIds} = props
+  const {teamId} = props
   return (
     <QueryRenderer
       environment={atmosphere}
       query={query}
       variables={{
-        first: 10,
-        teamIds: teamIds || [],
-        userIds: userIds || [],
+        first: 50,
+        teamIds: [teamId],
+        userIds: [],
         status: TaskStatusEnum.active
       }}
       render={renderParabolScopingSearchResults}
