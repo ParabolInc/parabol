@@ -2,6 +2,7 @@ import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {QueryRenderer} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
+import {TaskStatusEnum} from '~/types/graphql'
 import ParabolScopingSearchResults from './ParabolScopingSearchResults'
 
 const query = graphql`
@@ -10,6 +11,7 @@ const query = graphql`
     $after: DateTime
     $userIds: [ID!]
     $teamIds: [ID!]
+    $status: TaskStatusEnum
   ) {
     viewer {
       ...ParabolScopingSearchResults_viewer
@@ -38,7 +40,8 @@ const ParabolScopingSearchResultsRoot = (props: Props) => {
       variables={{
         first: 10,
         teamIds: teamIds || [],
-        userIds: userIds || []
+        userIds: userIds || [],
+        status: TaskStatusEnum.active
       }}
       render={renderParabolScopingSearchResults}
     />

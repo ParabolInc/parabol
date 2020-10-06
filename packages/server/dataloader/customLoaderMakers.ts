@@ -2,6 +2,7 @@ import DataLoader from 'dataloader'
 import {decode} from 'jsonwebtoken'
 import {MeetingTypeEnum, ReactableEnum, ThreadSourceEnum} from 'parabol-client/types/graphql'
 import promiseAllPartial from 'parabol-client/utils/promiseAllPartial'
+import {TaskStatusEnum} from 'parabol-client/types/graphql'
 import getRethink from '../database/rethinkDriver'
 import MeetingSettings from '../database/types/MeetingSettings'
 import {Reactable} from '../database/types/Reactable'
@@ -25,6 +26,7 @@ export interface UserTasksKey {
   userIds: string[] | null
   teamIds: string[]
   archived: boolean
+  status?: TaskStatusEnum
 }
 
 export interface ReactablesKey {
@@ -61,8 +63,16 @@ export const users = () => {
 }
 
 export const serializeUserTasksKey = (key: UserTasksKey) => {
-  const userIdKey = key.userIds ? key.userIds.sort().join(':') : '*'
-  return `${userIdKey}:${key.teamIds.sort().join(':')}:${key.first}:${key.after}:${key.archived}`
+  const {userIds, teamIds, first, after, archived, status} = key
+  const parts = [
+    Array.isArray(userIds) && userIds.length ? userIds.sort().join(':') : '*',
+    teamIds.sort().join(':'),
+    first,
+    after || '*',
+    archived,
+    status || '*'
+  ]
+  return parts.join(':')
 }
 
 export const commentCountByThreadId = (parent: RethinkDataLoader) => {
@@ -146,13 +156,13 @@ export const userTasks = (parent: RethinkDataLoader) => {
 
       const entryArray = await Promise.all(
         uniqKeys.map(async (key) => {
-          const {first, after, userIds, teamIds, archived} = key
+          const {first, after, userIds, teamIds, archived, status} = key
           const dbAfter = after ? new Date(after) : r.maxval
 
           let teamTaskPartial = r.table('Task').getAll(r.args(teamIds), {index: 'teamId'})
-          if (Array.isArray(userIds) && userIds.length) {
+          if (Array.isArray(userIds) && userIds.length)
             teamTaskPartial = teamTaskPartial.filter((row) => r(userIds).contains(row('userId')))
-          }
+          if (status) teamTaskPartial = teamTaskPartial.filter({status})
 
           return {
             key: serializeUserTasksKey(key),
@@ -180,7 +190,6 @@ export const userTasks = (parent: RethinkDataLoader) => {
       tasks.flat().forEach((task) => {
         taskLoader.clear(task.id).prime(task.id, task)
       })
-
       return keys.map((key) => tasksByKey[serializeUserTasksKey(key)])
     },
     {

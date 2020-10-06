@@ -4,15 +4,16 @@ import {createPaginationContainer, RelayPaginationProp} from 'react-relay'
 import {ParabolScopingSearchResults_viewer} from '../__generated__/ParabolScopingSearchResults_viewer.graphql'
 import ParabolScopingSelectAllIssues from './ParabolScopingSelectAllIssues'
 import ParabolScopingSearchResultItem from './ParabolScopingSearchResultItem'
+import useLoadMoreOnScrollBottom from '~/hooks/useLoadMoreOnScrollBottom'
 interface Props {
   relay: RelayPaginationProp
   viewer: ParabolScopingSearchResults_viewer
 }
 
 const ParabolScopingSearchResults = (props: Props) => {
-  const {viewer} = props
-  const edges = viewer.tasks.edges
-  const tasks = edges.map(({node}) => node)
+  const {viewer, relay} = props
+  const tasks = viewer.tasks.edges.map(({node}) => node)
+  const lastItem = useLoadMoreOnScrollBottom(relay, {}, 50)
 
   // TODO: add total count returned to connection e.g. connection {count, pageInfo, edges}
   return (
@@ -21,6 +22,7 @@ const ParabolScopingSearchResults = (props: Props) => {
       {tasks.map((task) => {
         return <ParabolScopingSearchResultItem key={task.id} item={task} />
       })}
+      {lastItem}
     </>
   )
 }
@@ -30,8 +32,14 @@ export default createPaginationContainer(
   {
     viewer: graphql`
       fragment ParabolScopingSearchResults_viewer on User {
-        tasks(first: $first, after: $after, userIds: $userIds, teamIds: $teamIds, archived: false)
-          @connection(key: "ParabolScopingSearchResults_tasks") {
+        tasks(
+          first: $first
+          after: $after
+          userIds: $userIds
+          teamIds: $teamIds
+          archived: false
+          status: $status
+        ) @connection(key: "ParabolScopingSearchResults_tasks") {
           edges {
             cursor
             node {
@@ -72,6 +80,7 @@ export default createPaginationContainer(
         $after: DateTime
         $teamIds: [ID!]
         $userIds: [ID!]
+        $status: TaskStatusEnum
       ) {
         viewer {
           ...ParabolScopingSearchResults_viewer

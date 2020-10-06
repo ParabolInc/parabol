@@ -5,6 +5,7 @@ import standardError from '../../utils/standardError'
 import {DataLoaderWorker, GQLContext} from '../graphql'
 import GraphQLISO8601Type from '../types/GraphQLISO8601Type'
 import {TaskConnection} from '../types/Task'
+import {default as TTaskStatusEnum} from '../types/TaskStatusEnum'
 import connectionFromTasks from './helpers/connectionFromTasks'
 
 const getValidTeamIds = (teamIds: null | string[], tms: string[]) => {
@@ -59,11 +60,15 @@ export default {
       type: GraphQLBoolean,
       description: 'true to only return archived tasks; false to return active tasks',
       defaultValue: false
+    },
+    status: {
+      type: TTaskStatusEnum,
+      description: 'only display tasks of the chosen status'
     }
   },
   async resolve(
     _source,
-    {first, after, userIds, teamIds, archived},
+    {first, after, userIds, teamIds, archived, status},
     {authToken, dataLoader}: GQLContext
   ) {
     // AUTH
@@ -91,11 +96,12 @@ export default {
     const validUserIds = await getValidUserIds(userIds, viewerId, validTeamIds, dataLoader)
     // RESOLUTION
     const tasks = await dataLoader.get('userTasks').load({
-      first: first,
-      after: after,
+      first,
+      after,
       userIds: validUserIds,
       teamIds: validTeamIds,
-      archived: archived
+      archived,
+      status
     })
     const filteredTasks = tasks.filter((task) => {
       if (isTaskPrivate(task.tags) && task.userId !== viewerId) return false
