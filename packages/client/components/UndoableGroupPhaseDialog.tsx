@@ -1,5 +1,4 @@
 import React from 'react'
-import useHotkey from '~/hooks/useHotkey'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import ResetMeetingToStageMutation from '~/mutations/ResetMeetingToStageMutation'
 import DialogContainer from '~/components/DialogContainer'
@@ -32,10 +31,6 @@ const StyledButton = styled(FlatButton)({
 const UndoableGroupPhaseDialog = (props: Props) => {
   const {closePortal, meetingId, resetToStageId} = props
   const atmosphere = useAtmosphere()
-  useHotkey('i d i d n t m e a n t o', () => {
-    console.log('didntmean')
-    ResetMeetingToStageMutation(atmosphere, {meetingId, stageId: resetToStageId})
-  })
   const handleConfirm = () => {
     ResetMeetingToStageMutation(atmosphere, {meetingId, stageId: resetToStageId}) && closePortal()
   }

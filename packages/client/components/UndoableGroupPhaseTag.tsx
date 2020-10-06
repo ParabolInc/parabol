@@ -1,5 +1,8 @@
 import React from 'react'
 import PhaseCompletedTag from '~/components/Tag/PhaseCompleteTag'
+import ResetMeetingToStageMutation from '~/mutations/ResetMeetingToStageMutation'
+import useAtmosphere from '~/hooks/useAtmosphere'
+import useHotkey from '~/hooks/useHotkey'
 import useModal from '~/hooks/useModal'
 import lazyPreload from '~/utils/lazyPreload'
 import styled from '@emotion/styled'
@@ -34,6 +37,11 @@ const UndoableGroupPhaseDialog = lazyPreload(() =>
 const UndoableGroupPhaseTag = (props: Props) => {
   const {meetingId, resetToStageId} = props
   const {togglePortal: toggleModal, closePortal: closeModal, modalPortal} = useModal()
+  const atmosphere = useAtmosphere()
+  useHotkey('i d i d n t m e a n t o', () => {
+    console.log('didntmean')
+    ResetMeetingToStageMutation(atmosphere, {meetingId, stageId: resetToStageId})
+  })
   return (
     <Wrapper>
       <PhaseCompletedTag>Phase Completed</PhaseCompletedTag>
