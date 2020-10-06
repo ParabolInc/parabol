@@ -5,6 +5,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 5.20.1 2020-Sep-30
+
+### Fixed
+- SegmentIo client page call signature for Google Analytics
+
+
 ## 5.20.0 2020-Sep-30
 
 ### Added
