@@ -38,7 +38,7 @@ const UndoableGroupPhaseDialog = (props: Props) => {
     <DialogContainer>
       <DialogTitle>Reset meeting and edit groups?</DialogTitle>
       <DialogContent>
-        <p><b>Danger zone</b>: editing groups will reset the meeting to this point.</p>
+        <p><b>Danger zone</b>: to edit groups you must reset the meeting to this point.</p>
         <p>All votes and discussion will be lost.</p>
         <ButtonGroup>
           <StyledButton onClick={closePortal}>Cancel</StyledButton>
