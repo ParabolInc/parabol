@@ -112,7 +112,8 @@ export default {
       userIds: validUserIds,
       teamIds: validTeamIds,
       archived,
-      status
+      status,
+      filterQuery
     })
     const filteredTasks = tasks.filter((task) => {
       if (isTaskPrivate(task.tags) && task.userId !== viewerId) return false

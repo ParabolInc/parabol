@@ -27,6 +27,7 @@ export interface UserTasksKey {
   teamIds: string[]
   archived: boolean
   status?: TaskStatusEnum
+  filterQuery?: string
 }
 
 export interface ReactablesKey {
@@ -63,14 +64,15 @@ export const users = () => {
 }
 
 export const serializeUserTasksKey = (key: UserTasksKey) => {
-  const {userIds, teamIds, first, after, archived, status} = key
+  const {userIds, teamIds, first, after, archived, status, filterQuery} = key
   const parts = [
     Array.isArray(userIds) && userIds.length ? userIds.sort().join(':') : '*',
     teamIds.sort().join(':'),
     first,
     after || '*',
     archived,
-    status || '*'
+    status || '*',
+    filterQuery || '*'
   ]
   return parts.join(':')
 }
@@ -156,13 +158,18 @@ export const userTasks = (parent: RethinkDataLoader) => {
 
       const entryArray = await Promise.all(
         uniqKeys.map(async (key) => {
-          const {first, after, userIds, teamIds, archived, status} = key
+          const {first, after, userIds, teamIds, archived, status, filterQuery} = key
           const dbAfter = after ? new Date(after) : r.maxval
 
           let teamTaskPartial = r.table('Task').getAll(r.args(teamIds), {index: 'teamId'})
           if (Array.isArray(userIds) && userIds.length)
             teamTaskPartial = teamTaskPartial.filter((row) => r(userIds).contains(row('userId')))
           if (status) teamTaskPartial = teamTaskPartial.filter({status})
+          if (filterQuery)
+            // TODO: only match "text" field
+            teamTaskPartial = teamTaskPartial.filter(
+              (row) => row('content').match(filterQuery) as any
+            )
 
           return {
             key: serializeUserTasksKey(key),
