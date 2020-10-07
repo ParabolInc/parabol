@@ -11,6 +11,9 @@ import JiraScopingSelectAllIssues from './JiraScopingSelectAllIssues'
 import FloatingActionButton from './FloatingActionButton'
 import {ZIndex} from '~/types/constEnums'
 import Icon from './Icon'
+import JiraCreateIssueMutation from '~/mutations/JiraCreateIssueMutation'
+import useAtmosphere from '~/hooks/useAtmosphere'
+import useMutationProps from '~/hooks/useMutationProps'
 
 const Button = styled(FloatingActionButton)({
   color: '#fff',
@@ -43,10 +46,13 @@ interface Props {
 const JiraScopingSearchResults = (props: Props) => {
   const {viewer, meeting} = props
   const {team} = viewer
-  const {jiraIssues} = team!
+  const {id: teamId, jiraIssues} = team!
   const {error, edges} = jiraIssues
+  const [cloudId, projectKey] = edges[0].node.id.split(':')
   const issueCount = edges.length
   const {id: meetingId, phases} = meeting
+  const atmosphere = useAtmosphere()
+  const {onCompleted, onError} = useMutationProps()
   const estimatePhase = phases.find(
     (phase) => phase.phaseType === NewMeetingPhaseTypeEnum.ESTIMATE
   )!
@@ -61,7 +67,14 @@ const JiraScopingSearchResults = (props: Props) => {
   }, [stages])
 
   const handleCreateNewIssue = () => {
-    // JiraCreateIssueMutation('Testeroo')
+    const variables = {
+      content: 'Testeroo',
+      cloudId,
+      projectKey,
+      teamId,
+      meetingId
+    }
+    JiraCreateIssueMutation(atmosphere, variables, {onError, onCompleted})
   }
 
   // Terry, you can use this in case you need to put some final touches on styles
@@ -123,21 +136,10 @@ export default createFragmentContainer(JiraScopingSearchResults, {
       }
     }
   `,
-  // suggestedIntegrations: graphql`
-  //   fragment JiraScopingSearchResults_suggestedIntegrations on SuggestedIntegrationQueryPayload {
-  //     hasMore
-  //     items {
-  //       ... on SuggestedIntegrationJira {
-  //         projectName
-  //         projectKey
-  //         cloudId
-  //       }
-  //     }
-  //   }
-  // `,
   viewer: graphql`
     fragment JiraScopingSearchResults_viewer on User {
       team(teamId: $teamId) {
+        id
         jiraIssues(
           first: $first
           queryString: $queryString
