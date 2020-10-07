@@ -8,6 +8,28 @@ import {JiraScopingSearchResults_viewer} from '../__generated__/JiraScopingSearc
 import JiraScopingNoResults from './JiraScopingNoResults'
 import JiraScopingSearchResultItem from './JiraScopingSearchResultItem'
 import JiraScopingSelectAllIssues from './JiraScopingSelectAllIssues'
+import FloatingActionButton from './FloatingActionButton'
+import {ZIndex} from '~/types/constEnums'
+import Icon from './Icon'
+
+const Button = styled(FloatingActionButton)({
+  color: '#fff',
+  padding: '10px 12px',
+  width: '150px',
+  top: '85%',
+  left: '74%',
+  position: 'absolute',
+  zIndex: ZIndex.FAB
+})
+
+const StyledIcon = styled(Icon)({
+  paddingRight: 8
+})
+
+const StyledLabel = styled('div')({
+  fontSize: 16,
+  fontWeight: 600
+})
 
 const ResultScroller = styled('div')({
   overflow: 'auto'
@@ -25,7 +47,9 @@ const JiraScopingSearchResults = (props: Props) => {
   const {error, edges} = jiraIssues
   const issueCount = edges.length
   const {id: meetingId, phases} = meeting
-  const estimatePhase = phases.find((phase) => phase.phaseType === NewMeetingPhaseTypeEnum.ESTIMATE)!
+  const estimatePhase = phases.find(
+    (phase) => phase.phaseType === NewMeetingPhaseTypeEnum.ESTIMATE
+  )!
   const {stages} = estimatePhase
   const usedJiraIssueIds = useMemo(() => {
     const usedJiraIssueIds = new Set<string>()
@@ -51,14 +75,28 @@ const JiraScopingSearchResults = (props: Props) => {
 
   return (
     <>
-      <JiraScopingSelectAllIssues usedJiraIssueIds={usedJiraIssueIds} issues={edges} meetingId={meetingId} />
+      <JiraScopingSelectAllIssues
+        usedJiraIssueIds={usedJiraIssueIds}
+        issues={edges}
+        meetingId={meetingId}
+      />
       <ResultScroller>
         {edges.map(({node}) => {
-          return <JiraScopingSearchResultItem key={node.id} issue={node} isSelected={usedJiraIssueIds.has(node.id)} meetingId={meetingId} />
+          return (
+            <JiraScopingSearchResultItem
+              key={node.id}
+              issue={node}
+              isSelected={usedJiraIssueIds.has(node.id)}
+              meetingId={meetingId}
+            />
+          )
         })}
       </ResultScroller>
+      <Button palette='blue'>
+        <StyledIcon>{'add'}</StyledIcon>
+        <StyledLabel>{'New Issue'}</StyledLabel>
+      </Button>
     </>
-
   )
 }
 
@@ -68,9 +106,9 @@ export default createFragmentContainer(JiraScopingSearchResults, {
       id
       phases {
         phaseType
-        ...on EstimatePhase {
+        ... on EstimatePhase {
           stages {
-            ...on EstimateStageJira {
+            ... on EstimateStageJira {
               issue {
                 id
               }
@@ -83,7 +121,12 @@ export default createFragmentContainer(JiraScopingSearchResults, {
   viewer: graphql`
     fragment JiraScopingSearchResults_viewer on User {
       team(teamId: $teamId) {
-        jiraIssues(first: $first, queryString: $queryString, isJQL: $isJQL, projectKeyFilters: $projectKeyFilters) @connection(key: "JiraScopingSearchResults_jiraIssues") {
+        jiraIssues(
+          first: $first
+          queryString: $queryString
+          isJQL: $isJQL
+          projectKeyFilters: $projectKeyFilters
+        ) @connection(key: "JiraScopingSearchResults_jiraIssues") {
           error {
             message
           }
