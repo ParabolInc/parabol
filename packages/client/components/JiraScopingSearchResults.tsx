@@ -59,6 +59,11 @@ const JiraScopingSearchResults = (props: Props) => {
     })
     return usedJiraIssueIds
   }, [stages])
+
+  const handleCreateNewIssue = () => {
+    // JiraCreateIssueMutation('Testeroo')
+  }
+
   // Terry, you can use this in case you need to put some final touches on styles
   /*   const [showMock, setShowMock] = useState(false)
     useHotkey('f', () => {
@@ -92,7 +97,7 @@ const JiraScopingSearchResults = (props: Props) => {
           )
         })}
       </ResultScroller>
-      <Button palette='blue'>
+      <Button onClick={handleCreateNewIssue} palette='blue'>
         <StyledIcon>{'add'}</StyledIcon>
         <StyledLabel>{'New Issue'}</StyledLabel>
       </Button>
@@ -118,6 +123,18 @@ export default createFragmentContainer(JiraScopingSearchResults, {
       }
     }
   `,
+  // suggestedIntegrations: graphql`
+  //   fragment JiraScopingSearchResults_suggestedIntegrations on SuggestedIntegrationQueryPayload {
+  //     hasMore
+  //     items {
+  //       ... on SuggestedIntegrationJira {
+  //         projectName
+  //         projectKey
+  //         cloudId
+  //       }
+  //     }
+  //   }
+  // `,
   viewer: graphql`
     fragment JiraScopingSearchResults_viewer on User {
       team(teamId: $teamId) {

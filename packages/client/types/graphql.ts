@@ -6534,6 +6534,7 @@ export interface IMutation {
    * Send a team invitation to an email address
    */
   inviteToTeam: IInviteToTeamPayload;
+  jiraCreateIssue: IJiraCreateIssuePayload | null;
 
   /**
    * Sign up or login using Google
@@ -7240,6 +7241,33 @@ export interface IInviteToTeamOnMutationArguments {
    */
   teamId: string;
   invitees: Array<any>;
+}
+
+export interface IJiraCreateIssueOnMutationArguments {
+  /**
+   * The rich text body of the Jira issue
+   */
+  content: string;
+
+  /**
+   * The atlassian cloudId for the site
+   */
+  cloudId: string;
+
+  /**
+   * The atlassian key of the project to put the issue in
+   */
+  projectKey: string;
+
+  /**
+   * The id of the team that is creating the issue
+   */
+  teamId: string;
+
+  /**
+   * The id of the meeting where the Jira issue is being created. Null if it is not being created in a meeting.
+   */
+  meetingId?: string | null;
 }
 
 export interface ILoginWithGoogleOnMutationArguments {
@@ -8887,6 +8915,16 @@ export interface IInviteToTeamPayload {
   removedSuggestedActionId: string | null;
 }
 
+export interface IJiraCreateIssuePayload {
+  __typename: 'JiraCreateIssuePayload';
+  error: IStandardMutationError | null;
+
+  /**
+   * The Jira issue that has been created
+   */
+  jiraIssue: IJiraIssue | null;
+}
+
 export interface ILoginWithGooglePayload {
   __typename: 'LoginWithGooglePayload';
   error: IStandardMutationError | null;
@@ -9897,6 +9935,7 @@ export type MeetingSubscriptionPayload =
   | IEditReflectionPayload
   | IEndDraggingReflectionPayload
   | IFlagReadyToAdvanceSuccess
+  | IJiraCreateIssuePayload
   | INewMeetingCheckInPayload
   | IPromoteNewMeetingFacilitatorPayload
   | IRemoveReflectionPayload

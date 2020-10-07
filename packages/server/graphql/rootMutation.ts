@@ -46,6 +46,7 @@ import flagReadyToAdvance from './mutations/flagReadyToAdvance'
 import inactivateUser from './mutations/inactivateUser'
 import invalidateSessions from './mutations/invalidateSessions'
 import inviteToTeam from './mutations/inviteToTeam'
+import jiraCreateIssue from './mutations/jiraCreateIssue'
 import loginWithGoogle from './mutations/loginWithGoogle'
 import loginWithPassword from './mutations/loginWithPassword'
 import moveReflectTemplatePrompt from './mutations/moveReflectTemplatePrompt'
@@ -159,6 +160,7 @@ export default new GraphQLObjectType<any, Context>({
       inactivateUser,
       invalidateSessions,
       inviteToTeam,
+      jiraCreateIssue,
       loginWithGoogle,
       loginWithPassword,
       moveReflectTemplatePrompt,
