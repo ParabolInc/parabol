@@ -5,7 +5,9 @@ import {createFragmentContainer} from 'react-relay'
 import {Breakpoint} from '~/types/constEnums'
 import {StageTimerDisplay_meeting} from '~/__generated__/StageTimerDisplay_meeting.graphql'
 import StageTimerDisplayGauge from './StageTimerDisplayGauge'
-import PhaseCompleted from './PhaseCompleted'
+import PhaseCompleteTag from '~/components/Tag/PhaseCompleteTag'
+import UndoableGroupPhaseControl from '~/components/UndoableGroupPhaseControl'
+import useAtmosphere from '~/hooks/useAtmosphere'
 
 interface Props {
   meeting: StageTimerDisplay_meeting
@@ -23,23 +25,32 @@ const DisplayRow = styled('div')({
   }
 })
 
+const PhaseCompleteWrapper = styled('div')({
+  alignItems: 'flex-start',
+  display: 'flex'
+})
+
 const StageTimerDisplay = (props: Props) => {
+  const atmosphere = useAtmosphere()
   const {meeting, canUndo} = props
-  const {localPhase, localStage} = meeting
+  const {localPhase, localStage, facilitatorUserId} = meeting
   const {localScheduledEndTime, isComplete} = localStage
-  const {stages} = localPhase
+  const {stages, phaseType} = localPhase
   const isPhaseComplete = stages.every((stage) => stage.isComplete)
+  const {viewerId} = atmosphere
+  // scoping this to the group phase
+  const canUndoGroupPhase = canUndo && viewerId === facilitatorUserId && phaseType === 'group'
   return (
     <DisplayRow>
       {localScheduledEndTime && !isComplete ? (
         <StageTimerDisplayGauge endTime={localScheduledEndTime} />
       ) : null}
-      <PhaseCompleted
-        isComplete={isPhaseComplete}
-        canUndo={canUndo}
-        meetingId={meeting.id}
-        resetToStageId={localStage.id}
-      />
+      {isPhaseComplete
+        ? <PhaseCompleteWrapper>
+          <PhaseCompleteTag isComplete={isPhaseComplete} />
+          {canUndoGroupPhase ? <UndoableGroupPhaseControl meetingId={meeting.id} resetToStageId={localStage.id} /> : null}
+        </PhaseCompleteWrapper>
+        : null}
     </DisplayRow>
   )
 }
@@ -56,8 +67,10 @@ graphql`
 export default createFragmentContainer(StageTimerDisplay, {
   meeting: graphql`
     fragment StageTimerDisplay_meeting on NewMeeting {
+      facilitatorUserId
       id
       localPhase {
+        phaseType
         stages {
           isComplete
         }
