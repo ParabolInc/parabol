@@ -11,10 +11,11 @@ interface Props {
 const ScopePhaseAreaJiraScoping = (props: Props) => {
   const {meeting} = props
   const {teamId, jiraSearchQuery} = meeting
+  const {queryString} = jiraSearchQuery
   return (
     <>
       <JiraScopingSearchBar meeting={meeting} />
-      <JiraScopingSearchResultsRoot teamId={teamId} queryString={jiraSearchQuery} isJQL={false} meeting={meeting} />
+      <JiraScopingSearchResultsRoot teamId={teamId} queryString={queryString} isJQL={false} meeting={meeting} />
     </>
   )
 }
@@ -25,7 +26,9 @@ export default createFragmentContainer(ScopePhaseAreaJiraScoping, {
       ...JiraScopingSearchBar_meeting
       ...JiraScopingSearchResults_meeting
       teamId
-      jiraSearchQuery
+      jiraSearchQuery {
+        queryString
+      }
     }
   `
 })

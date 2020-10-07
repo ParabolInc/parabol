@@ -1,12 +1,16 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
+import useAtmosphere from '../hooks/useAtmosphere'
+import useFilteredItems from '../hooks/useFilteredItems'
 import useForm from '../hooks/useForm'
 import {MenuProps} from '../hooks/useMenu'
 import {PALETTE} from '../styles/paletteV2'
 import {ICON_SIZE} from '../styles/typographyV2'
+import {IJiraSearchQuery} from '../types/graphql'
 import {JiraScopingSearchFilterMenu_viewer} from '../__generated__/JiraScopingSearchFilterMenu_viewer.graphql'
+import Checkbox from './Checkbox'
 import Icon from './Icon'
 import LoadingComponent from './LoadingComponent/LoadingComponent'
 import Menu from './Menu'
@@ -48,6 +52,10 @@ const StyledMenuItemIcon = styled(MenuItemComponentAvatar)({
 const ProjectAvatar = styled('img')({
   height: 24,
   width: 24,
+  marginRight: 8
+})
+
+const StyledCheckBox = styled(Checkbox)({
   marginLeft: -8,
   marginRight: 8
 })
@@ -58,9 +66,17 @@ interface Props {
   error: Error | null
 }
 
+const getValue = (item: {name: string}) => item.name.toLowerCase()
+
+const MAX_PROJECTS = 10
 const JiraScopingSearchFilterMenu = (props: Props) => {
   const {menuProps, viewer} = props
+  const isLoading = viewer === null
   const projects = viewer?.teamMember?.integrations.atlassian?.projects ?? []
+  const meeting = viewer?.meeting ?? null
+  const meetingId = meeting?.id ?? ''
+  const projectKeyFilters = meeting?.jiraSearchQuery?.projectKeyFilters ?? []
+  console.log({foo: viewer?.meeting?.jiraSearchQuery})
   const {fields, onChange} = useForm({
     search: {
       getDefault: () => ''
@@ -69,14 +85,19 @@ const JiraScopingSearchFilterMenu = (props: Props) => {
   const {search} = fields
   const {value} = search
   const query = value.toLowerCase()
+  const showSearch = projects.length > MAX_PROJECTS
+  const filteredProjects = useFilteredItems(query, projects, getValue)
+  const atmosphere = useAtmosphere()
+  const {portalStatus, isDropdown} = menuProps
   return (
     <Menu
       keepParentFocus
       ariaLabel={'Define the Jira search query'}
-      {...menuProps}
-      resetActiveOnChanges={[projects]}
+      portalStatus={portalStatus}
+      isDropdown={isDropdown}
+      resetActiveOnChanges={[filteredProjects]}
     >
-      <SearchItem key='search'>
+      {showSearch && <SearchItem key='search'>
         <StyledMenuItemIcon>
           <SearchIcon>search</SearchIcon>
         </StyledMenuItemIcon>
@@ -85,28 +106,43 @@ const JiraScopingSearchFilterMenu = (props: Props) => {
           value={value}
           onChange={onChange}
         />
-      </SearchItem>
-      {(query && projects.length === 0 && status !== 'loading' && (
-        <NoResults key='no-results'>No integrations found!</NoResults>
+      </SearchItem>}
+      {(query && filteredProjects.length === 0 && !isLoading && (
+        <NoResults key='no-results'>No Jira Projects found!</NoResults>
       )) ||
         null}
-      {projects.map((project) => {
-        const {avatarUrls, name} = project
+      {filteredProjects.slice(0, MAX_PROJECTS).map((project) => {
+        const {id, avatarUrls, name, key} = project
         const {x24} = avatarUrls
+        const toggleProjectKeyFilter = () => {
+          commitLocalUpdate(atmosphere, (store) => {
+            const id = `jiraSearchQuery:${meetingId}`
+            const jiraSearchQuery = store.get<IJiraSearchQuery>(id)!
+            const projectKeyFiltersProxy = jiraSearchQuery.getValue('projectKeyFilters')!.slice()
+            const keyIdx = projectKeyFiltersProxy.indexOf(key)
+            if (keyIdx !== -1) {
+              projectKeyFiltersProxy.splice(keyIdx, 1)
+            } else {
+              projectKeyFiltersProxy.push(key)
+            }
+            jiraSearchQuery.setValue(projectKeyFiltersProxy, 'projectKeyFilters')
+          })
+        }
         return (
           <MenuItem
+            key={id}
             label={
               <MenuItemLabel>
+                <StyledCheckBox active={projectKeyFilters.includes(key)} />
                 <ProjectAvatar src={x24} />
                 <TypeAheadLabel query={query} label={name} />
               </MenuItemLabel>
             }
-            onClick={() => {}}
+            onClick={toggleProjectKeyFilter}
           />
         )
       })}
-
-      {status === 'loading' && (
+      {isLoading && (
         <LoadingComponent key='loading' spinnerSize={24} height={24} showAfter={0} />
       )}
     </Menu>
@@ -117,10 +153,20 @@ const JiraScopingSearchFilterMenu = (props: Props) => {
 export default createFragmentContainer(JiraScopingSearchFilterMenu, {
   viewer: graphql`
     fragment JiraScopingSearchFilterMenu_viewer on User {
+      meeting(meetingId: $meetingId) {
+        id
+        ...on PokerMeeting {
+          jiraSearchQuery {
+            queryString
+            projectKeyFilters
+          }
+        }
+      }
       teamMember(teamId: $teamId) {
         integrations {
           atlassian {
             projects {
+              id
               name
               key
               avatarUrls {

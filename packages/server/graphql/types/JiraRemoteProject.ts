@@ -10,8 +10,13 @@ const JiraRemoteProject = new GraphQLObjectType<any, GQLContext>({
     self: {
       type: new GraphQLNonNull(GraphQLID)
     },
+    cloudId: {
+      type: new GraphQLNonNull(GraphQLID),
+      description: 'The cloud ID that the project lives on. Does not exist on the Jira object!'
+    },
     id: {
-      type: new GraphQLNonNull(GraphQLID)
+      type: new GraphQLNonNull(GraphQLID),
+      resolve: ({cloudId, key}) => `${cloudId}:${key}`
     },
     key: {
       type: new GraphQLNonNull(GraphQLString)

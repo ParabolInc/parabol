@@ -734,6 +734,11 @@ export interface IStandardMutationError {
 export interface IJiraRemoteProject {
   __typename: 'JiraRemoteProject';
   self: string;
+
+  /**
+   * The cloud ID that the project lives on. Does not exist on the Jira object!
+   */
+  cloudId: string;
   id: string;
   key: string;
   name: string;

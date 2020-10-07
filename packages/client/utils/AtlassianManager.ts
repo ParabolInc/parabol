@@ -272,20 +272,23 @@ export default abstract class AtlassianManager {
   }
 
   async getAllProjects(cloudIds: string[]) {
-    const projects = [] as JiraProject[]
+    const projects = [] as (JiraProject & {cloudId: string})[]
     let error = null as null | string
-    const getProjectPage = async (url) => {
+    const getProjectPage = async (cloudId: string) => {
+      const url = `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/project/search?orderBy=name`
       const res = await this.get(url) as JiraProjectResponse | AtlassianError
       if ('message' in res) {
         error = res.message
       } else {
-        projects.push(...res.values)
+        res.values.forEach((project) => {
+          projects.push({...project, cloudId})
+        })
         if (res.nextPage) {
           return getProjectPage(res.nextPage)
         }
       }
     }
-    await Promise.all(cloudIds.map((cloudId) => getProjectPage(`https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/project/search?orderBy=name`)))
+    await Promise.all(cloudIds.map(getProjectPage))
     if (error) {
       console.log('getAllProjects ERROR:', error)
     }
@@ -293,9 +296,10 @@ export default abstract class AtlassianManager {
   }
 
   async getProject(cloudId: string, projectId: string) {
-    return this.get(
+    const project = await this.get(
       `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/project/${projectId}`
     ) as JiraProject | AtlassianError
+    return ('id' in project) ? {...project, cloudId} : project
   }
 
   async convertMarkdownToADF(markdown: string) {

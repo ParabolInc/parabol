@@ -27,11 +27,12 @@ interface Props {
 
 const JiraScopingSearchFilterToggle = (props: Props) => {
   const {meeting} = props
-  const {teamId} = meeting
+  const {id: meetingId, teamId} = meeting
   const {togglePortal, originRef, menuPortal, menuProps} = useMenu(
     MenuPosition.UPPER_RIGHT,
     {
-      loadingWidth: 200
+      loadingWidth: 200,
+      noClose: true
     }
   )
   return (
@@ -42,6 +43,7 @@ const JiraScopingSearchFilterToggle = (props: Props) => {
       {menuPortal(
         <JiraScopingSearchFilterMenuRoot
           teamId={teamId}
+          meetingId={meetingId}
           menuProps={menuProps}
         />
       )}

@@ -1,8 +1,10 @@
 import {ConnectionHandler} from 'relay-runtime'
 import ContentTextHandler from './ContentFilterHandler'
+import LocalPokerHandler from './LocalPokerHandler'
 import LocalTimeHandler from './LocalTimeHandler'
 
 const handlerProvider = (handle) => {
+  console.log('handle', handle)
   switch (handle) {
     case 'connection':
       return ConnectionHandler
@@ -10,6 +12,8 @@ const handlerProvider = (handle) => {
       return ContentTextHandler
     case 'localTime':
       return LocalTimeHandler
+    case 'localPoker':
+      return LocalPokerHandler
     default:
       throw new Error(`Unknown handle ${handle}`)
   }

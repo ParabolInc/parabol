@@ -6,7 +6,7 @@ import {MenuProps} from '../hooks/useMenu'
 import JiraScopingSearchFilterMenu from './JiraScopingSearchFilterMenu'
 
 const query = graphql`
-  query JiraScopingSearchFilterMenuRootQuery($teamId: ID!) {
+  query JiraScopingSearchFilterMenuRootQuery($teamId: ID!, $meetingId: ID!) {
     viewer {
       ...JiraScopingSearchFilterMenu_viewer
     }
@@ -16,14 +16,15 @@ const query = graphql`
 interface Props {
   menuProps: MenuProps
   teamId: string
+  meetingId: string
 }
 
 const JiraScopingSearchFilterMenuRoot = (props: Props) => {
-  const {menuProps, teamId} = props
+  const {menuProps, teamId, meetingId} = props
   const atmosphere = useAtmosphere()
   return (
     <QueryRenderer
-      variables={{teamId}}
+      variables={{teamId, meetingId}}
       environment={atmosphere}
       query={query}
       fetchPolicy={'store-or-network' as any}
