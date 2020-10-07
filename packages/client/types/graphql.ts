@@ -9219,7 +9219,7 @@ export interface IRemoveReflectTemplatePromptPayload {
   __typename: 'RemoveReflectTemplatePromptPayload';
   error: IStandardMutationError | null;
   reflectTemplate: IReflectTemplate | null;
-  prompt: IReflectTemplate | null;
+  prompt: IReflectPrompt | null;
 }
 
 /**
