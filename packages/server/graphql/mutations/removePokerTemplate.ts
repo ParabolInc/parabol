@@ -37,7 +37,7 @@ const removePokerTemplate = {
       templates: (r
         .table('MeetingTemplate')
         .getAll(teamId, {index: 'teamId'})
-        .filter({isActive: true})
+        .filter({isActive: true, type: MeetingTypeEnum.poker})
         .orderBy('name')
         .coerceTo('array') as unknown) as IPokerTemplate[],
       settings: (r

@@ -41,7 +41,7 @@ const removeReflectTemplate = {
       templates: (r
         .table('MeetingTemplate')
         .getAll(teamId, {index: 'teamId'})
-        .filter({isActive: true})
+        .filter({isActive: true, type: MeetingTypeEnum.retrospective})
         .orderBy('name')
         .coerceTo('array') as unknown) as IReflectTemplate[],
       settings: (r
