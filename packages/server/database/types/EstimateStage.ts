@@ -25,5 +25,7 @@ export default class EstimateStage extends GenericMeetingStage {
     this.sortOrder = sortOrder
     this.dimensionId = dimensionId
     this.scores = scores || []
+    this.isNavigable = true
+    this.isNavigableByFacilitator = true
   }
 }

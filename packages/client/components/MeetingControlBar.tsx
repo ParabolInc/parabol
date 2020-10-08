@@ -91,9 +91,7 @@ const MeetingControlBar = (props: Props) => {
     if (!isFacilitating && !isCheckIn && !isComplete) buttons.push('ready')
     if (!isFacilitating && localStageId !== facilitatorStageId) buttons.push('rejoin')
     if (isFacilitating && isRetro && !isCheckIn && !isComplete) buttons.push('timer')
-    // TODO: remove phaseType check below when estimate backend is up and running
-    if (isFacilitating && (findStageAfterId(phases, localStageId) || phaseType === 'SCOPE'))
-      buttons.push('next')
+    if (isFacilitating && findStageAfterId(phases, localStageId)) buttons.push('next')
     if (isFacilitating) buttons.push('end')
     return buttons.map((key) => ({key}))
   }
