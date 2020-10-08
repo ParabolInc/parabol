@@ -10,12 +10,10 @@ interface Props {
 
 const ScopePhaseAreaJiraScoping = (props: Props) => {
   const {meeting} = props
-  const {teamId, jiraSearchQuery} = meeting
-  const {queryString} = jiraSearchQuery
   return (
     <>
       <JiraScopingSearchBar meeting={meeting} />
-      <JiraScopingSearchResultsRoot teamId={teamId} queryString={queryString} isJQL={false} meeting={meeting} />
+      <JiraScopingSearchResultsRoot meeting={meeting} />
     </>
   )
 }
@@ -24,11 +22,7 @@ export default createFragmentContainer(ScopePhaseAreaJiraScoping, {
   meeting: graphql`
     fragment ScopePhaseAreaJiraScoping_meeting on PokerMeeting {
       ...JiraScopingSearchBar_meeting
-      ...JiraScopingSearchResults_meeting
-      teamId
-      jiraSearchQuery {
-        queryString
-      }
+      ...JiraScopingSearchResultsRoot_meeting
     }
   `
 })

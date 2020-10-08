@@ -733,13 +733,13 @@ export interface IStandardMutationError {
  */
 export interface IJiraRemoteProject {
   __typename: 'JiraRemoteProject';
+  id: string;
   self: string;
 
   /**
    * The cloud ID that the project lives on. Does not exist on the Jira object!
    */
   cloudId: string;
-  id: string;
   key: string;
   name: string;
   avatarUrls: IJiraRemoteAvatarUrls;
@@ -5061,12 +5061,7 @@ export interface IJiraSearchQuery {
   /**
    * The list of project keys selected as a filter. null if not set
    */
-  projectKeyFilters: Array<string> | null;
-
-  /**
-   * The list of issue types selected as a filter. null if not set
-   */
-  issueTypeFilters: Array<string> | null;
+  projectKeyFilters: Array<string>;
 
   /**
    * the time the search query was last used. Used for sorting
@@ -9076,11 +9071,6 @@ export interface IJiraSearchQueryInput {
    * The list of project keys selected as a filter. null if not set
    */
   projectKeyFilters?: Array<string> | null;
-
-  /**
-   * The list of issue types selected as a filter. null if not set
-   */
-  issueTypeFilters?: Array<string> | null;
 
   /**
    * true if this query should be deleted

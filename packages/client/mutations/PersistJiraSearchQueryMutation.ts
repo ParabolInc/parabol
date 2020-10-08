@@ -11,7 +11,6 @@ graphql`
         queryString
         isJQL
         projectKeyFilters
-        issueTypeFilters
         lastUsedAt
       }
     }

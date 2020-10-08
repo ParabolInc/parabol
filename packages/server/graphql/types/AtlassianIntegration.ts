@@ -85,12 +85,13 @@ const AtlassianIntegration = new GraphQLObjectType<any, GQLContext>({
         },
         projectKeyFilters: {
           type: GraphQLList(GraphQLNonNull(GraphQLID)),
-          descrption: 'A list of projects to restrict the search to. If null, will search all'
+          descrption:
+            'A list of projects to restrict the search to. format is cloudId:projectKey. If null, will search all'
         }
       },
       resolve: async (
         {teamId, userId, accessToken, cloudIds},
-        {first, queryString, isJQL},
+        {first, queryString, isJQL, projectKeyFilters},
         {authToken}
       ) => {
         const viewerId = getUserId(authToken)
@@ -105,8 +106,20 @@ const AtlassianIntegration = new GraphQLObjectType<any, GQLContext>({
           return connectionFromTasks([], 0, err)
         }
         const manager = new AtlassianServerManager(accessToken)
-        const projects = cloudIds.map((cloudId) => ({cloudId}))
-        const issueRes = await manager.getIssues(queryString, isJQL, projects)
+        const projectKeyFiltersByCloudId = {}
+        if (projectKeyFilters?.length > 0) {
+          projectKeyFilters.forEach((globalProjectKey) => {
+            const [cloudId, projectKey] = globalProjectKey.split(':')
+            projectKeyFiltersByCloudId[cloudId] = projectKeyFiltersByCloudId[cloudId] || []
+            projectKeyFiltersByCloudId[cloudId].push(projectKey)
+          })
+        } else {
+          cloudIds.forEach((cloudId) => {
+            projectKeyFiltersByCloudId[cloudId] = []
+          })
+        }
+
+        const issueRes = await manager.getIssues(queryString, isJQL, projectKeyFiltersByCloudId)
         const {error, issues} = issueRes
         const mappedIssues = issues.map((issue) => ({
           ...issue,

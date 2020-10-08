@@ -112,28 +112,28 @@ const JiraScopingSearchFilterMenu = (props: Props) => {
       )) ||
         null}
       {filteredProjects.slice(0, MAX_PROJECTS).map((project) => {
-        const {id, avatarUrls, name, key} = project
+        const {id: globalProjectKey, avatarUrls, name} = project
         const {x24} = avatarUrls
         const toggleProjectKeyFilter = () => {
           commitLocalUpdate(atmosphere, (store) => {
-            const id = `jiraSearchQuery:${meetingId}`
-            const jiraSearchQuery = store.get<IJiraSearchQuery>(id)!
+            const searchQueryId = `jiraSearchQuery:${meetingId}`
+            const jiraSearchQuery = store.get<IJiraSearchQuery>(searchQueryId)!
             const projectKeyFiltersProxy = jiraSearchQuery.getValue('projectKeyFilters')!.slice()
-            const keyIdx = projectKeyFiltersProxy.indexOf(key)
+            const keyIdx = projectKeyFiltersProxy.indexOf(globalProjectKey)
             if (keyIdx !== -1) {
               projectKeyFiltersProxy.splice(keyIdx, 1)
             } else {
-              projectKeyFiltersProxy.push(key)
+              projectKeyFiltersProxy.push(globalProjectKey)
             }
             jiraSearchQuery.setValue(projectKeyFiltersProxy, 'projectKeyFilters')
           })
         }
         return (
           <MenuItem
-            key={id}
+            key={globalProjectKey}
             label={
               <MenuItemLabel>
-                <StyledCheckBox active={projectKeyFilters.includes(key)} />
+                <StyledCheckBox active={projectKeyFilters.includes(globalProjectKey)} />
                 <ProjectAvatar src={x24} />
                 <TypeAheadLabel query={query} label={name} />
               </MenuItemLabel>
@@ -168,7 +168,6 @@ export default createFragmentContainer(JiraScopingSearchFilterMenu, {
             projects {
               id
               name
-              key
               avatarUrls {
                 x24
               }

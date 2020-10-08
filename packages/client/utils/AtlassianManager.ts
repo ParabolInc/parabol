@@ -359,25 +359,23 @@ export default abstract class AtlassianManager {
     return issueRes as AtlassianError | JiraError | JiraIssueBean<{description: any, summary: string, cloudName: string}>
   }
 
-  async getIssues(queryString: string, isJQL: boolean, projectKeyFilters: {cloudId: string, projectId?: string}[]) {
-    const projectsByCloudId = {} as {[cloudId: string]: string[]}
-    projectKeyFilters.forEach((project) => {
-      const {cloudId, projectId} = project
-      projectsByCloudId[cloudId] = projectsByCloudId[cloudId] || []
-      if (projectId) {
-        projectsByCloudId[cloudId].push(projectId)
-      }
-    })
-    const cloudIds = Object.keys(projectsByCloudId)
+  async getIssues(queryString: string, isJQL: boolean, projectFiltersByCloudId: {[cloudId: string]: string[]}) {
+    const cloudIds = Object.keys(projectFiltersByCloudId)
     const allIssues = [] as {id: number, key: string, summary: string, cloudId: string, cloudName: string}[]
     let firstError: string | null = null
-
+    const composeJQL = (queryString: string | null, isJQL: boolean, projectKeys: string[]) => {
+      if (isJQL) return queryString
+      const projectFilter = projectKeys.length ? `project in (${projectKeys.map(val => `\"${val}\"`).join(', ')})` : ''
+      const textFilter = queryString ? `text ~ \"${queryString}\"` : ''
+      const orderBy = 'order by lastViewed DESC'
+      const and = projectFilter && textFilter ? ' AND ' : ''
+      return `${projectFilter}${and}${textFilter} ${orderBy}`
+    }
     const reqs = cloudIds.map(async (cloudId) => {
-      // TODO add project filter
-      // const projects = projectsByCloudId[cloudId]
-      const order = 'order by lastViewed DESC'
-      const jql = queryString ? isJQL ? queryString : `text ~ \"${queryString}\" ${order}` : order
+      const projectKeys = projectFiltersByCloudId[cloudId]
       const url = `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/search`
+      const jql = composeJQL(queryString, isJQL, projectKeys)
+      console.log({jql})
       const payload = {
         jql,
         maxResults: 100,

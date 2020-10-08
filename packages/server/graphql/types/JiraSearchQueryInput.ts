@@ -22,10 +22,6 @@ const JiraSearchQueryInput = new GraphQLInputObjectType({
       type: GraphQLList(GraphQLNonNull(GraphQLID)),
       description: 'The list of project keys selected as a filter. null if not set'
     },
-    issueTypeFilters: {
-      type: GraphQLList(GraphQLNonNull(GraphQLID)),
-      description: 'The list of issue types selected as a filter. null if not set'
-    },
     isRemove: {
       type: GraphQLBoolean,
       description: 'true if this query should be deleted'

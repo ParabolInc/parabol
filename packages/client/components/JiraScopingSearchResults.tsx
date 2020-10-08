@@ -1,7 +1,8 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {useMemo} from 'react'
+import React, {useEffect, useMemo, useState} from 'react'
 import {createFragmentContainer} from 'react-relay'
+import MockScopingList from '../modules/meeting/components/MockScopingList'
 import {NewMeetingPhaseTypeEnum} from '../types/graphql'
 import {JiraScopingSearchResults_meeting} from '../__generated__/JiraScopingSearchResults_meeting.graphql'
 import {JiraScopingSearchResults_viewer} from '../__generated__/JiraScopingSearchResults_viewer.graphql'
@@ -14,18 +15,21 @@ const ResultScroller = styled('div')({
 })
 
 interface Props {
-  viewer: JiraScopingSearchResults_viewer
+  viewer: JiraScopingSearchResults_viewer | null
   meeting: JiraScopingSearchResults_meeting
 }
 
 const JiraScopingSearchResults = (props: Props) => {
   const {viewer, meeting} = props
-  const {teamMember} = viewer
-  const {integrations} = teamMember!
-  const {atlassian} = integrations
-  const {issues} = atlassian!
-  const {error, edges} = issues
-  const issueCount = edges.length
+  const issues = viewer?.teamMember!.integrations.atlassian?.issues! ?? null
+  const incomingEdges = issues?.edges ?? null
+  const error = issues?.error ?? null
+  const [edges, setEdges] = useState([] as readonly any[])
+  useEffect(() => {
+    if (incomingEdges) {
+      setEdges(incomingEdges)
+    }
+  }, [incomingEdges])
   const {id: meetingId, phases} = meeting
   const estimatePhase = phases.find((phase) => phase.phaseType === NewMeetingPhaseTypeEnum.ESTIMATE)!
   const {stages} = estimatePhase
@@ -37,6 +41,7 @@ const JiraScopingSearchResults = (props: Props) => {
     })
     return usedJiraIssueIds
   }, [stages])
+
   // Terry, you can use this in case you need to put some final touches on styles
   /*   const [showMock, setShowMock] = useState(false)
     useHotkey('f', () => {
@@ -47,8 +52,9 @@ const JiraScopingSearchResults = (props: Props) => {
         <MockScopingList />
       )
     } */
-  if (issueCount === 0) {
-    return <JiraScopingNoResults error={error?.message} />
+  if (edges.length === 0) {
+    // only show the mock on the initial load or if the last query returned no results
+    return viewer ? <JiraScopingNoResults error={error?.message} /> : <MockScopingList />
   }
 
   return (

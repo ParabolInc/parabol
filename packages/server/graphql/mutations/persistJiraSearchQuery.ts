@@ -44,12 +44,12 @@ const persistJiraSearchQuery = {
 
     // MUTATIVE
     settings.jiraSearchQueries = settings.jiraSearchQueries || []
-    const {queryString, isJQL, projectKeyFilters, issueTypeFilters, isRemove} = input
+    const {queryString, isJQL, projectKeyFilters, isRemove} = input
+    projectKeyFilters.sort()
     const {id: settingsId, jiraSearchQueries} = settings
-    const lookupKey = JSON.stringify({queryString, projectKeyFilters, issueTypeFilters})
-    const searchQueryStrings = jiraSearchQueries.map(
-      ({queryString, projectKeyFilters, issueTypeFilters}) =>
-        JSON.stringify({queryString, projectKeyFilters, issueTypeFilters})
+    const lookupKey = JSON.stringify({queryString, projectKeyFilters})
+    const searchQueryStrings = jiraSearchQueries.map(({queryString, projectKeyFilters}) =>
+      JSON.stringify({queryString, projectKeyFilters})
     )
     const existingIdx = searchQueryStrings.indexOf(lookupKey)
     if (existingIdx !== -1) {
@@ -69,8 +69,7 @@ const persistJiraSearchQuery = {
       const newQuery = new JiraSearchQuery({
         queryString,
         isJQL,
-        projectKeyFilters,
-        issueTypeFilters
+        projectKeyFilters
       })
       // MUTATIVE
       jiraSearchQueries.unshift(newQuery)

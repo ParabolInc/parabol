@@ -4,7 +4,6 @@ import LocalPokerHandler from './LocalPokerHandler'
 import LocalTimeHandler from './LocalTimeHandler'
 
 const handlerProvider = (handle) => {
-  console.log('handle', handle)
   switch (handle) {
     case 'connection':
       return ConnectionHandler
