@@ -16,6 +16,7 @@ import MeetingStageTimeLimitPayload from './MeetingStageTimeLimitPayload'
 import RemoveOrgUserPayload from './RemoveOrgUserPayload'
 import SetNotificationStatusPayload from './SetNotificationStatusPayload'
 import StripeFailPaymentPayload from './StripeFailPaymentPayload'
+import {PersistJiraSearchQuerySuccess} from './PersistJiraSearchQueryPayload'
 import User from './User'
 
 const types = [
@@ -35,6 +36,7 @@ const types = [
   MeetingStageTimeLimitPayload,
   RemoveOrgUserPayload,
   StripeFailPaymentPayload,
+  PersistJiraSearchQuerySuccess,
   // User doesn't have an error field, either make an exception & add it (because it's the Viewer) or use a payload here
   User,
   // a one off used so the server can sniff it & update its connection context

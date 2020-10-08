@@ -17,6 +17,8 @@ const gqlQuery = graphql`
   }
 `
 
+const getValue = (item: any) => (item.projectName || item.nameWithOwner).toLowerCase()
+
 const useAllIntegrations = (
   atmosphere: Atmosphere,
   query: string,
@@ -59,7 +61,7 @@ const useAllIntegrations = (
     }
   }, [atmosphere, hasMore, status, teamId, userId, query])
 
-  const dupedItems = useFilteredItems(query, fetchedItems)
+  const dupedItems = useFilteredItems(query, fetchedItems, getValue)
   const allItems = useMemo(() => {
     const idSet = new Set(suggestedItems.map((item) => item.id))
     const uniqueItems = dupedItems.filter((item) => !idSet.has(item.id))

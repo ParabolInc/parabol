@@ -30,7 +30,7 @@ interface Props {
   ariaLabel: string
   children: ReactNode
   className?: string
-  closePortal: () => void
+  closePortal?: () => void
   defaultActiveIdx?: number
   keepParentFocus?: boolean
   resetActiveOnChanges?: any[]
@@ -65,9 +65,9 @@ const Menu = forwardRef((props: Props, ref: any) => {
       if (!keepParentFocus) menuRef.current && menuRef.current.focus()
     },
     resetActiveOnChanges ||
-      [
-        /* eslint-disable-line react-hooks/exhaustive-deps*/
-      ]
+    [
+      /* eslint-disable-line react-hooks/exhaustive-deps*/
+    ]
   )
 
   const handleMouseDown = useCallback(
@@ -163,7 +163,7 @@ const Menu = forwardRef((props: Props, ref: any) => {
         }
       } else if (e.key === 'Tab') {
         e.preventDefault()
-        closePortal()
+        closePortal?.()
       }
       return e.defaultPrevented
     },

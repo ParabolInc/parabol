@@ -14,8 +14,9 @@ const ScopePhaseAreaJira = (props: Props) => {
   const {gotoParabol, meeting} = props
   const {viewerMeetingMember} = meeting
   const {teamMember} = viewerMeetingMember
-  const {atlassianAuth} = teamMember
-  const hasAuth = atlassianAuth?.isActive ?? false
+  const {integrations} = teamMember
+  const {atlassian} = integrations
+  const hasAuth = atlassian?.isActive ?? false
   if (!hasAuth) return <ScopePhaseAreaAddJira gotoParabol={gotoParabol} meeting={meeting} />
   return <ScopePhaseAreaJiraScoping meeting={meeting} />
 }
@@ -27,8 +28,10 @@ export default createFragmentContainer(ScopePhaseAreaJira, {
       ...ScopePhaseAreaJiraScoping_meeting
       viewerMeetingMember {
         teamMember {
-          atlassianAuth {
-            isActive
+          integrations {
+            atlassian {
+              isActive
+            }
           }
         }
       }

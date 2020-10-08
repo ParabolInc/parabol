@@ -29,11 +29,12 @@ const TaskFooterIntegrateMenu = (props: Props) => {
   // not 100% sure how this could be, maybe if we manually deleted a user?
   // https://github.com/ParabolInc/parabol/issues/2980
   if (!teamMember) return null
-  const {atlassianAuth, githubAuth, preferredName, suggestedIntegrations} = teamMember
+  const {integrations, preferredName, suggestedIntegrations} = teamMember
+  const {atlassian, github} = integrations
   const {teamId, userId} = task
   const isViewerAssignee = viewerId === userId
-  const hasAtlassian = !!(atlassianAuth && atlassianAuth.isActive)
-  const hasGitHub = !!(githubAuth && githubAuth.isActive)
+  const hasAtlassian = atlassian?.isActive ?? false
+  const hasGitHub = github?.isActive ?? false
   const isAssigneeIntegrated = hasAtlassian || hasGitHub
   if (!isAssigneeIntegrated) {
     return isViewerAssignee ? (
@@ -59,18 +60,14 @@ const TaskFooterIntegrateMenu = (props: Props) => {
 }
 
 graphql`
-  fragment TaskFooterIntegrateMenuViewerAtlassianAuth on TeamMember {
-    atlassianAuth {
-      isActive
-    }
+  fragment TaskFooterIntegrateMenuViewerAtlassianIntegration on AtlassianIntegration {
+    isActive
   }
 `
 
 graphql`
-  fragment TaskFooterIntegrateMenuViewerGitHubAuth on TeamMember {
-      githubAuth {
-        isActive
-      }
+  fragment TaskFooterIntegrateMenuViewerGitHubIntegration on GitHubIntegration {
+    isActive
   }
 `
 
@@ -88,9 +85,15 @@ export default createFragmentContainer(TaskFooterIntegrateMenu, {
       id
       teamMember(userId: $userId, teamId: $teamId) {
         preferredName
-        ...TaskFooterIntegrateMenuViewerAtlassianAuth @relay(mask: false)
+        integrations {
+          atlassian {
+            ...TaskFooterIntegrateMenuViewerAtlassianIntegration @relay(mask: false)
+          }
+          github {
+            ...TaskFooterIntegrateMenuViewerGitHubIntegration @relay(mask: false)
+          }
+        }
         ...TaskFooterIntegrateMenuViewerSuggestedIntegrations @relay(mask: false)
-        ...TaskFooterIntegrateMenuViewerGitHubAuth @relay(mask: false)
       }
     }
   `,

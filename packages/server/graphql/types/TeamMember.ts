@@ -2,29 +2,23 @@ import {
   GraphQLBoolean,
   GraphQLID,
   GraphQLInt,
-  GraphQLList,
   GraphQLNonNull,
   GraphQLObjectType,
   GraphQLString
 } from 'graphql'
-import {GITHUB} from 'parabol-client/utils/constants'
 import isTaskPrivate from 'parabol-client/utils/isTaskPrivate'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
-import getRethink from '../../database/rethinkDriver'
-import {getUserId, isTeamMember} from '../../utils/authorization'
+import {getUserId} from '../../utils/authorization'
 import {GQLContext} from '../graphql'
 import connectionFromTasks from '../queries/helpers/connectionFromTasks'
 import suggestedIntegrations from '../queries/suggestedIntegrations'
 import {resolveTeam} from '../resolvers'
-import AtlassianAuth from './AtlassianAuth'
-import GitHubAuth from './GitHubAuth'
 import GraphQLEmailType from './GraphQLEmailType'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import GraphQLURLType from './GraphQLURLType'
-import SlackAuth from './SlackAuth'
-import SlackNotification from './SlackNotification'
 import {TaskConnection} from './Task'
 import Team from './Team'
+import TeamMemberIntegrations from './TeamMemberIntegrations'
 import User from './User'
 
 const TeamMember = new GraphQLObjectType<any, GQLContext>({
@@ -36,35 +30,10 @@ const TeamMember = new GraphQLObjectType<any, GQLContext>({
       description: 'An ID for the teamMember. userId::teamId'
     },
     allAvailableIntegrations: require('../queries/allAvailableIntegrations').default,
-    atlassianAuth: {
-      type: AtlassianAuth,
-      description:
-        'The auth for the user. access token is null if not viewer. Use isActive to check for presence',
-      resolve: async ({userId, teamId}, _args, {authToken, dataLoader}) => {
-        if (!isTeamMember(authToken, teamId)) return null
-        const auths = await dataLoader.get('atlassianAuthByUserId').load(userId)
-        return auths.find((auth) => auth.teamId === teamId)
-      }
-    },
+
     createdAt: {
       type: new GraphQLNonNull(GraphQLISO8601Type),
       description: 'The datetime the team member was created'
-    },
-    githubAuth: {
-      type: GitHubAuth,
-      description:
-        'The auth for the user. access token is null if not viewer. Use isActive to check for presence',
-      resolve: async ({userId, teamId}, _args, {authToken}) => {
-        if (!isTeamMember(authToken, teamId)) return null
-        const r = await getRethink()
-        return r
-          .table('Provider')
-          .getAll(teamId, {index: 'teamId'})
-          .filter({service: GITHUB, isActive: true, userId})
-          .nth(0)
-          .default(null)
-          .run()
-      }
     },
     isNotRemoved: {
       type: GraphQLBoolean,
@@ -93,6 +62,13 @@ const TeamMember = new GraphQLObjectType<any, GQLContext>({
         return source.userId === userId
       }
     },
+    integrations: {
+      type: GraphQLNonNull(TeamMemberIntegrations),
+      description: 'The integrations that the team member has authorized. accessible by all',
+      resolve: ({teamId, userId}) => {
+        return {teamId, userId}
+      }
+    },
     meetingMember: {
       type: require('./MeetingMember').default,
       description: 'The meeting specifics for the meeting the team member is currently in',
@@ -109,22 +85,6 @@ const TeamMember = new GraphQLObjectType<any, GQLContext>({
     preferredName: {
       type: new GraphQLNonNull(GraphQLString),
       description: 'The name of the assignee'
-    },
-    slackAuth: {
-      type: SlackAuth,
-      description: 'The slack auth for the team member.',
-      resolve: async ({userId, teamId}, _args, {dataLoader}) => {
-        const auths = await dataLoader.get('slackAuthByUserId').load(userId)
-        return auths.find((auth) => auth.teamId === teamId)
-      }
-    },
-    slackNotifications: {
-      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(SlackNotification))),
-      description: 'A list of events and the slack channels they get posted to',
-      resolve: async ({userId, teamId}, _args, {dataLoader}) => {
-        const slackNotifications = await dataLoader.get('slackNotificationsByTeamId').load(teamId)
-        return slackNotifications.filter((notification) => notification.userId === userId)
-      }
     },
     suggestedIntegrations,
     tasks: {
