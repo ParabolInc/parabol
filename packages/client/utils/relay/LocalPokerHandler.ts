@@ -6,13 +6,17 @@ const LocalPokerHandler: Handler = {
   update(store, payload) {
     const meetingId = payload.dataID
     const meeting = store.get(meetingId)!
-    const jiraSearchQuery = createProxyRecord(store, 'JiraSearchQuery', {
-      id: `jiraSearchQuery:${meetingId}`,
-      queryString: '',
-      projectKeyFilters: [],
-      isJQL: false
-    })
-    meeting.setLinkedRecord(jiraSearchQuery, 'jiraSearchQuery')
+    const queryId = `jiraSearchQuery:${meetingId}`
+    const existingQuery = store.get(queryId)
+    if (!existingQuery) {
+      const jiraSearchQuery = createProxyRecord(store, 'JiraSearchQuery', {
+        id: queryId,
+        queryString: '',
+        projectKeyFilters: [],
+        isJQL: false
+      })
+      meeting.setLinkedRecord(jiraSearchQuery, 'jiraSearchQuery')
+    }
   }
 }
 
