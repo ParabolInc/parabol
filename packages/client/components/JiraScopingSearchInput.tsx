@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {useState} from 'react'
+import React from 'react'
 import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import Atmosphere from '../Atmosphere'
 import useAtmosphere from '../hooks/useAtmosphere'
@@ -37,11 +37,7 @@ const setSearch = (atmosphere: Atmosphere, meetingId: string, value: string) => 
     const meeting = store.get(meetingId)
     if (!meeting) return
     const jiraSearchQuery = meeting.getLinkedRecord('jiraSearchQuery')!
-    const oldQueryString = jiraSearchQuery.getValue('queryString')
-    const nextQueryString = value.trim()
-    if (oldQueryString !== nextQueryString) {
-      jiraSearchQuery.setValue(value, 'queryString')
-    }
+    jiraSearchQuery.setValue(value, 'queryString')
   })
 }
 
@@ -53,22 +49,18 @@ const JiraScopingSearchInput = (props: Props) => {
   const {meeting} = props
   const {id: meetingId, jiraSearchQuery} = meeting
   const {queryString} = jiraSearchQuery
-  const [searchValue, setSearchValue] = useState(queryString)
-  const isEmpty = !searchValue
+  const isEmpty = !queryString
   const atmosphere = useAtmosphere()
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const {value} = e.target
-    // queryString = searchValue.trim()
-    setSearchValue(value)
     setSearch(atmosphere, meetingId, value)
   }
   const clearSearch = () => {
-    setSearchValue('')
     setSearch(atmosphere, meetingId, '')
   }
   return (
     <Wrapper>
-      <SearchInput value={searchValue} placeholder={'Search issues on Jira'} onChange={onChange} />
+      <SearchInput value={queryString} placeholder={'Search issues on Jira'} onChange={onChange} />
       <ClearSearchIcon isEmpty={isEmpty} onClick={clearSearch}>close</ClearSearchIcon>
     </Wrapper>
   )

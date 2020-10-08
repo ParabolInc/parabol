@@ -11,6 +11,7 @@ import {ICON_SIZE} from '../styles/typographyV2'
 import {IJiraSearchQuery} from '../types/graphql'
 import {JiraScopingSearchFilterMenu_viewer} from '../__generated__/JiraScopingSearchFilterMenu_viewer.graphql'
 import Checkbox from './Checkbox'
+import DropdownMenuLabel from './DropdownMenuLabel'
 import Icon from './Icon'
 import Menu from './Menu'
 import MenuItem from './MenuItem'
@@ -68,6 +69,10 @@ const StyledMenuItemLabel = styled(MenuItemLabel)<{isDisabled: boolean}>(({isDis
   opacity: isDisabled ? 0.5 : undefined
 }))
 
+const FilterLabel = styled(DropdownMenuLabel)({
+  borderBottom: 0
+})
+
 interface Props {
   menuProps: MenuProps
   viewer: JiraScopingSearchFilterMenu_viewer | null
@@ -124,6 +129,7 @@ const JiraScopingSearchFilterMenu = (props: Props) => {
         onClick={toggleJQL}
       />
       <MenuItemHR />
+      {filteredProjects.length > 0 && <FilterLabel>Filter by project:</FilterLabel>}
       {showSearch && <SearchItem key='search'>
         <StyledMenuItemIcon>
           <SearchIcon>search</SearchIcon>

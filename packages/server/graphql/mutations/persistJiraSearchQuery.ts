@@ -2,8 +2,7 @@ import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getRethink from '../../database/rethinkDriver'
 import JiraSearchQuery from '../../database/types/JiraSearchQuery'
-import MeetingSettingsPoker from '../../database/types/MeetingSettingsPoker'
-import {isTeamMember} from '../../utils/authorization'
+import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import {GQLContext} from '../graphql'
 import JiraSearchQueryInput from '../types/JiraSearchQueryInput'
@@ -27,6 +26,7 @@ const persistJiraSearchQuery = {
     {teamId, input},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) => {
+    const viewerId = getUserId(authToken)
     const r = await getRethink()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
@@ -35,23 +35,23 @@ const persistJiraSearchQuery = {
     if (!isTeamMember(authToken, teamId)) {
       return {error: {message: `Not on team`}}
     }
-    const settings = (await dataLoader
-      .get('meetingSettingsByType')
-      .load({meetingType: 'poker', teamId})) as MeetingSettingsPoker
-    if (!settings) {
-      return {error: {message: `Team settings not found`}}
+    const atlassianAuth = await dataLoader
+      .get('freshAtlassianAuth')
+      .load({teamId, userId: viewerId})
+    if (!atlassianAuth) {
+      return {error: {message: 'Not integrated with Jira'}}
     }
-
     // MUTATIVE
-    settings.jiraSearchQueries = settings.jiraSearchQueries || []
+    atlassianAuth.jiraSearchQueries = atlassianAuth.jiraSearchQueries || []
     const {queryString, isJQL, projectKeyFilters, isRemove} = input
     projectKeyFilters.sort()
-    const {id: settingsId, jiraSearchQueries} = settings
+    const {id: atlassianAuthId, jiraSearchQueries} = atlassianAuth
     const lookupKey = JSON.stringify({queryString, projectKeyFilters})
     const searchQueryStrings = jiraSearchQueries.map(({queryString, projectKeyFilters}) =>
       JSON.stringify({queryString, projectKeyFilters})
     )
     const existingIdx = searchQueryStrings.indexOf(lookupKey)
+    let isChange = true
     if (existingIdx !== -1) {
       // the search query already exists
       // if remove, then delete it
@@ -64,6 +64,9 @@ const persistJiraSearchQuery = {
         // MUTATIVE
         queryToUpdate.lastUsedAt = new Date()
         jiraSearchQueries.sort((a, b) => (a.lastUsedAt > b.lastUsedAt ? -1 : 1))
+        if (jiraSearchQueries[existingIdx] === queryToUpdate) {
+          isChange = false
+        }
       }
     } else if (!isRemove) {
       const newQuery = new JiraSearchQuery({
@@ -75,17 +78,23 @@ const persistJiraSearchQuery = {
       jiraSearchQueries.unshift(newQuery)
       jiraSearchQueries.slice(0, MAX_QUERIES)
     }
-
-    await r
-      .table('MeetingSettings')
-      .get(settingsId)
-      .update({
-        jiraSearchQueries
-      })
-      .run()
-
-    const data = {settingsId}
-    publish(SubscriptionChannel.TEAM, teamId, 'PersistJiraSearchQuerySuccess', data, subOptions)
+    const data = {atlassianAuthId}
+    if (isChange) {
+      await r
+        .table('AtlassianAuth')
+        .get(atlassianAuthId)
+        .update({
+          jiraSearchQueries
+        })
+        .run()
+      publish(
+        SubscriptionChannel.NOTIFICATION,
+        viewerId,
+        'PersistJiraSearchQuerySuccess',
+        data,
+        subOptions
+      )
+    }
     return data
   }
 }

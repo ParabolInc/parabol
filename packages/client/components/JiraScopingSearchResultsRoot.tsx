@@ -24,12 +24,13 @@ const JiraScopingSearchResultsRoot = (props: Props) => {
   const {meeting} = props
   const {teamId, jiraSearchQuery} = meeting
   const {queryString, projectKeyFilters, isJQL} = jiraSearchQuery
-  // return <MockScopingList />
+  const normalizedQueryString = queryString.trim()
+
   return (
     <QueryRenderer<JiraScopingSearchResultsRootQuery>
       environment={atmosphere}
       query={query}
-      variables={{teamId, queryString, isJQL, projectKeyFilters: projectKeyFilters as string[], first: 100}}
+      variables={{teamId, queryString: normalizedQueryString, isJQL, projectKeyFilters: projectKeyFilters as string[], first: 100}}
       fetchPolicy={'store-or-network' as any}
       render={({props, error}) => {
         const viewer = props?.viewer ?? null

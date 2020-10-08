@@ -1,11 +1,11 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {StandardMutation} from '../types/relayMutations'
+import {SimpleMutation} from '../types/relayMutations'
 import {PersistJiraSearchQueryMutation as TPersistJiraSearchQueryMutation} from '../__generated__/PersistJiraSearchQueryMutation.graphql'
 
 graphql`
-  fragment PersistJiraSearchQueryMutation_team on PersistJiraSearchQuerySuccess {
-    settings {
+  fragment PersistJiraSearchQueryMutation_notification on PersistJiraSearchQuerySuccess {
+    atlassianIntegration {
       jiraSearchQueries {
         id
         queryString
@@ -25,15 +25,14 @@ const mutation = graphql`
           message
         }
       }
-      ...PersistJiraSearchQueryMutation_team @relay(mask: false)
+      ...PersistJiraSearchQueryMutation_notification @relay(mask: false)
     }
   }
 `
 
-const PersistJiraSearchQueryMutation: StandardMutation<TPersistJiraSearchQueryMutation> = (
+const PersistJiraSearchQueryMutation: SimpleMutation<TPersistJiraSearchQueryMutation> = (
   atmosphere,
   variables,
-  {onError, onCompleted}
 ) => {
   return commitMutation<TPersistJiraSearchQueryMutation>(atmosphere, {
     mutation,
@@ -41,8 +40,6 @@ const PersistJiraSearchQueryMutation: StandardMutation<TPersistJiraSearchQueryMu
     // TODO: Add optimistic updater
     // optimisticUpdater: (store) => {
     // },
-    onCompleted,
-    onError
   })
 }
 
