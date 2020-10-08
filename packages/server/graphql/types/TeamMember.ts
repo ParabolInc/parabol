@@ -2,7 +2,6 @@ import {
   GraphQLBoolean,
   GraphQLID,
   GraphQLInt,
-  GraphQLList,
   GraphQLNonNull,
   GraphQLObjectType,
   GraphQLString
@@ -17,7 +16,6 @@ import {resolveTeam} from '../resolvers'
 import GraphQLEmailType from './GraphQLEmailType'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import GraphQLURLType from './GraphQLURLType'
-import SlackNotification from './SlackNotification'
 import {TaskConnection} from './Task'
 import Team from './Team'
 import TeamMemberIntegrations from './TeamMemberIntegrations'
@@ -87,14 +85,6 @@ const TeamMember = new GraphQLObjectType<any, GQLContext>({
     preferredName: {
       type: new GraphQLNonNull(GraphQLString),
       description: 'The name of the assignee'
-    },
-    slackNotifications: {
-      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(SlackNotification))),
-      description: 'A list of events and the slack channels they get posted to',
-      resolve: async ({userId, teamId}, _args, {dataLoader}) => {
-        const slackNotifications = await dataLoader.get('slackNotificationsByTeamId').load(teamId)
-        return slackNotifications.filter((notification) => notification.userId === userId)
-      }
     },
     suggestedIntegrations,
     tasks: {

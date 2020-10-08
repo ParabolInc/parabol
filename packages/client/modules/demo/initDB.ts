@@ -146,7 +146,8 @@ const initSlackAuth = (userId) => ({
   slackTeamName: 'demoTeam',
   slackUserId: 'demoUserId',
   slackUserName: 'Demo Slack User',
-  id: 'demoSlackUser'
+  id: 'demoSlackUser',
+  notifications: [initSlackNotification(userId)]
 })
 
 const initDemoTeamMember = ({id: userId, preferredName, picture}, idx) => {
@@ -165,7 +166,6 @@ const initDemoTeamMember = ({id: userId, preferredName, picture}, idx) => {
       github: {isActive: true, accessToken: '123'},
       slack: initSlackAuth(userId),
     },
-    slackNotifications: [initSlackNotification(userId)],
     teamId: demoTeamId,
     userId
   }

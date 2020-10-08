@@ -1,7 +1,15 @@
-import {GraphQLBoolean, GraphQLID, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
+import {
+  GraphQLBoolean,
+  GraphQLID,
+  GraphQLList,
+  GraphQLNonNull,
+  GraphQLObjectType,
+  GraphQLString
+} from 'graphql'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import {getUserId} from '../../utils/authorization'
 import {GQLContext} from '../graphql'
+import SlackNotification from './SlackNotification'
 
 const SlackIntegration = new GraphQLObjectType<any, GQLContext>({
   name: 'SlackIntegration',
@@ -72,6 +80,14 @@ const SlackIntegration = new GraphQLObjectType<any, GQLContext>({
     userId: {
       type: new GraphQLNonNull(GraphQLID),
       description: 'The user that the access token is attached to'
+    },
+    notifications: {
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(SlackNotification))),
+      description: 'A list of events and the slack channels they get posted to',
+      resolve: async ({userId, teamId}, _args, {dataLoader}) => {
+        const slackNotifications = await dataLoader.get('slackNotificationsByTeamId').load(teamId)
+        return slackNotifications.filter((notification) => notification.userId === userId)
+      }
     }
   })
 })

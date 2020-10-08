@@ -51,8 +51,9 @@ const USER_EVENTS = [SlackNotificationEventEnum.MEETING_STAGE_TIME_LIMIT_END]
 const SlackNotificationList = (props: Props) => {
   const {teamId, viewer} = props
   const {teamMember} = viewer
-  const {integrations, slackNotifications} = teamMember!
+  const {integrations} = teamMember!
   const {slack} = integrations
+  const notifications = slack?.notifications ?? []
   const channels = useSlackChannels(slack)
   const {submitting, onError, onCompleted, submitMutation, error} = useMutationProps()
   const atmosphere = useAtmosphere()
@@ -63,7 +64,7 @@ const SlackNotificationList = (props: Props) => {
   const changeTeamChannel: SlackChannelDropdownOnClick = useEventCallback(
     (slackChannelId) => () => {
       // only change the active events
-      const slackNotificationEvents = slackNotifications
+      const slackNotificationEvents = notifications
         .filter(
           (notification) =>
             notification.channelId && notification.eventType === SlackNotificationEventTypeEnum.team
@@ -145,12 +146,12 @@ export default createFragmentContainer(SlackNotificationList, {
             isActive
             slackUserId
             defaultTeamChannelId
+            notifications {
+              channelId
+              event
+              eventType
+            }
           }
-        }
-        slackNotifications {
-          channelId
-          event
-          eventType
         }
       }
     }

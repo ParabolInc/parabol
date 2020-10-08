@@ -49,9 +49,10 @@ const Block = styled('div')({
 
 const StageTimerModalEndTimeSlackToggle = (props: Props) => {
   const {facilitator} = props
-  const {integrations, slackNotifications, teamId} = facilitator
+  const {integrations, teamId} = facilitator
   const {slack} = integrations
-  const timeLimitEvent = slackNotifications.find(
+  const notifications = slack?.notifications ?? []
+  const timeLimitEvent = notifications.find(
     (notification) =>
       notification.event === SlackNotificationEventEnum.MEETING_STAGE_TIME_LIMIT_START
   )
@@ -94,11 +95,11 @@ export default createFragmentContainer(StageTimerModalEndTimeSlackToggle, {
         slack {
           isActive
           defaultTeamChannelId
+          notifications {
+            channelId
+            event
+          }
         }
-      }
-      slackNotifications {
-        channelId
-        event
       }
     }
   `

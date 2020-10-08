@@ -13,7 +13,6 @@ const LocalPokerHandler: Handler = {
       isJQL: false
     })
     meeting.setLinkedRecord(jiraSearchQuery, 'jiraSearchQuery')
-    meeting.setValue(true, 'showSidebar')
   }
 }
 
