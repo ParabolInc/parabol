@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {useMemo} from 'react'
+import React, {useMemo, useState} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {NewMeetingPhaseTypeEnum} from '../types/graphql'
 import {JiraScopingSearchResults_meeting} from '../__generated__/JiraScopingSearchResults_meeting.graphql'
@@ -14,6 +14,7 @@ import Icon from './Icon'
 import JiraCreateIssueMutation from '~/mutations/JiraCreateIssueMutation'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useMutationProps from '~/hooks/useMutationProps'
+import NewIssueInput from './NewIssueInput'
 
 const Button = styled(FloatingActionButton)({
   color: '#fff',
@@ -51,6 +52,7 @@ const JiraScopingSearchResults = (props: Props) => {
   const [cloudId, projectKey] = edges[0].node.id.split(':') // TODO: up until the -
   const issueCount = edges.length
   const {id: meetingId, phases} = meeting
+  const [isEditing, setIsEditing] = useState(false)
   const atmosphere = useAtmosphere()
   const {onCompleted, onError} = useMutationProps()
   const estimatePhase = phases.find(
@@ -99,6 +101,7 @@ const JiraScopingSearchResults = (props: Props) => {
         meetingId={meetingId}
       />
       <ResultScroller>
+        <NewIssueInput isEditing={isEditing} projectKey={projectKey} />
         {edges.map(({node}) => {
           return (
             <JiraScopingSearchResultItem
@@ -110,7 +113,7 @@ const JiraScopingSearchResults = (props: Props) => {
           )
         })}
       </ResultScroller>
-      <Button onClick={handleCreateNewIssue} palette='blue'>
+      <Button onClick={() => setIsEditing(true)} palette='blue'>
         <StyledIcon>{'add'}</StyledIcon>
         <StyledLabel>{'New Issue'}</StyledLabel>
       </Button>
