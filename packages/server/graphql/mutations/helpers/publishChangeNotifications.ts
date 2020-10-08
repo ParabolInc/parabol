@@ -56,8 +56,8 @@ const publishChangeNotifications = async (
     })
   })
   // add in the assignee changes
-  if (oldTask.userId !== task.userId) {
-    if (task.userId !== changeUserId && !usersToIgnore.includes(task.userId)) {
+  if (oldTask.userId && oldTask.userId !== task.userId) {
+    if (task.userId && task.userId !== changeUserId && !usersToIgnore.includes(task.userId)) {
       notificationsToAdd.push(
         new NotificationTaskInvolves({
           userId: task.userId,
@@ -75,7 +75,7 @@ const publishChangeNotifications = async (
   const oldContentLen = oldBlocks[0] ? oldBlocks[0].text.length : 0
   if (oldContentLen < 3) {
     const contentLen = blocks[0] ? blocks[0].text.length : 0
-    if (contentLen > oldContentLen) {
+    if (contentLen > oldContentLen && task.userId) {
       const maybeInvolvedUserIds = mentions.concat(task.userId)
       const existingTaskNotifications = (await r
         .table('Notification')

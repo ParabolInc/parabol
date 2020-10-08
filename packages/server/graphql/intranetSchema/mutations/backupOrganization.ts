@@ -258,6 +258,14 @@ const backupOrganization = {
             suggestedAction: (r
               .table('SuggestedAction')
               .getAll(r.args(userIds), {index: 'userId'}) as any)
+              .filter((row) =>
+                r.or(
+                  row('teamId')
+                    .default(null)
+                    .eq(null),
+                  r(teamIds).contains(row('teamId'))
+                )
+              )
               .coerceTo('array')
               .do((items) =>
                 r

@@ -14,7 +14,10 @@ import {addTeamTeamUpdater} from '../mutations/AddTeamMutation'
 import {archiveTeamTeamOnNext, archiveTeamTeamUpdater} from '../mutations/ArchiveTeamMutation'
 import {denyPushInvitationTeamOnNext} from '../mutations/DenyPushInvitationMutation'
 import {endNewMeetingTeamOnNext, endNewMeetingTeamUpdater} from '../mutations/EndNewMeetingMutation'
-import {endSprintPokerTeamOnNext, endSprintPokerTeamUpdater} from '../mutations/EndSprintPokerMutation'
+import {
+  endSprintPokerTeamOnNext,
+  endSprintPokerTeamUpdater
+} from '../mutations/EndSprintPokerMutation'
 import {moveReflectTemplatePromptTeamUpdater} from '../mutations/MoveReflectTemplatePromptMutation'
 import {pushInvitationTeamOnNext} from '../mutations/PushInvitationMutation'
 import {removeAgendaItemUpdater} from '../mutations/RemoveAgendaItemMutation'
@@ -43,7 +46,6 @@ const subscription = graphql`
       ...EndSprintPokerMutation_team @relay(mask: false)
       ...MoveReflectTemplatePromptMutation_team @relay(mask: false)
       ...NavigateMeetingMutation_team @relay(mask: false)
-      ...PersistJiraSearchQueryMutation_team @relay(mask: false)
       ...PromoteToTeamLeadMutation_team @relay(mask: false)
       ...PushInvitationMutation_team @relay(mask: false)
       ...ReflectTemplatePromptUpdateGroupColorMutation_team @relay(mask: false)

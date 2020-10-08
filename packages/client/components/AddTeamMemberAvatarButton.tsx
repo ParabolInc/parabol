@@ -88,13 +88,13 @@ const AddTeamMemberAvatarButton = (props: Props) => {
   const modal = isDemoRoute() ? (
     <AddTeamMemberModalDemo />
   ) : (
-    <AddTeamMemberModal
-      closePortal={closeModal}
-      meetingId={meetingId}
-      teamId={teamId}
-      teamMembers={teamMembers}
-    />
-  )
+      <AddTeamMemberModal
+        closePortal={closeModal}
+        meetingId={meetingId}
+        teamId={teamId}
+        teamMembers={teamMembers}
+      />
+    )
   return (
     <>
       <AddButton

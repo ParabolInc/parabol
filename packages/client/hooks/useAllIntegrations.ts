@@ -17,13 +17,15 @@ const gqlQuery = graphql`
   }
 `
 
+const getValue = (item: any) => (item.projectName || item.nameWithOwner).toLowerCase()
+
 const useAllIntegrations = (
   atmosphere: Atmosphere,
   query: string,
   suggestedItems: readonly any[],
   hasMore: boolean,
   teamId: string,
-  userId: string
+  userId: string | null
 ) => {
   const [fetchedItems, setFetchedItems] = useState<readonly any[]>([])
   const [status, setStatus] = useState<null | 'loading' | 'loaded' | 'error'>(null)
@@ -59,7 +61,7 @@ const useAllIntegrations = (
     }
   }, [atmosphere, hasMore, status, teamId, userId, query])
 
-  const dupedItems = useFilteredItems(query, fetchedItems)
+  const dupedItems = useFilteredItems(query, fetchedItems, getValue)
   const allItems = useMemo(() => {
     const idSet = new Set(suggestedItems.map((item) => item.id))
     const uniqueItems = dupedItems.filter((item) => !idSet.has(item.id))

@@ -94,9 +94,10 @@ const AnalyticsPage = () => {
         title,
         path: pathname,
         url: href,
+      },
         // See: segmentIo.ts:28 for more information on the next line
-        context: {integrations: {'Google Analytics': {clientId: getAnonymousId()}}}
-      })
+        {integrations: {'Google Analytics': {clientId: getAnonymousId()}}}
+      )
     }, TIME_TO_RENDER_TREE)
   }, [isSegmentLoaded, pathname])
   return null

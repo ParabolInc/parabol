@@ -13,8 +13,6 @@ import {MenuProps} from '../../../../hooks/useMenu'
 import UpdateTaskMutation from '../../../../mutations/UpdateTaskMutation'
 import avatarUser from '../../../../styles/theme/images/avatar-user.svg'
 import {AreaEnum} from '../../../../types/graphql'
-import {useUserTaskFilters} from '~/utils/useUserTaskFilters'
-
 interface Props {
   area: AreaEnum
   menuProps: MenuProps
@@ -24,24 +22,30 @@ interface Props {
 
 const TaskFooterUserAssigneeMenu = (props: Props) => {
   const {area, menuProps, task, viewer} = props
-  const {userIds} = useUserTaskFilters(viewer.id)
   const {userId, id: taskId} = task
   const {team} = viewer
-  const {teamMembers} = team || {teamMembers: []}
-  const assignees = useMemo(
-    () => teamMembers.filter((teamMember) => teamMember.userId !== userId && (!userIds || !userIds.includes(teamMember.userId))),
-    [userId, teamMembers]
-  )
+  const {teamMembers}: any = team || {teamMembers: []}
+  const taskUserIdx = useMemo(() => teamMembers.map(({userId}) => userId).indexOf(userId) + 1, [
+    userId,
+    teamMembers
+  ])
   const atmosphere = useAtmosphere()
   if (!team) return null
+  const assignees = useMemo(
+    () => teamMembers.filter((teamMember) => teamMember.userId !== userId),
+    [userId, teamMembers]
+  )
   const handleTaskUpdate = (newAssignee) => () => {
-    if (userId !== newAssignee.userId) {
-      UpdateTaskMutation(atmosphere, {updatedTask: {id: taskId, userId: newAssignee.userId}, area})
-    }
+    const newUserId = newAssignee.userId === userId ? null : newAssignee.userId
+    UpdateTaskMutation(atmosphere, {updatedTask: {id: taskId, userId: newUserId}, area})
   }
 
   return (
-    <Menu ariaLabel={'Assign this task to a teammate'} {...menuProps}>
+    <Menu
+      ariaLabel={'Assign this task to a teammate'}
+      defaultActiveIdx={userId ? taskUserIdx : undefined}
+      {...menuProps}
+    >
       <DropdownMenuLabel>Assign to:</DropdownMenuLabel>
       {assignees.map((assignee) => {
         return (

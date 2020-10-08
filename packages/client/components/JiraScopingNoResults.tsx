@@ -21,11 +21,15 @@ const Info = styled(Icon)({
   paddingRight: 16
 })
 
-const JiraScopingNoResults = () => {
+interface Props {
+  error?: string | null
+}
+const JiraScopingNoResults = (props: Props) => {
+  const {error} = props
   return (
     <Message>
-      <Info>info</Info>
-      No issues match that query
+      <Info>{error ? 'warn' : 'info'}</Info>
+      {error || 'No issues match that query'}
     </Message>
   )
 }

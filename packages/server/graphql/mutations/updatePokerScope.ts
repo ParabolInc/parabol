@@ -9,6 +9,7 @@ import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import UpdatePokerScopeItemInput from '../types/UpdatePokerScopeItemInput'
 import UpdatePokerScopePayload from '../types/UpdatePokerScopePayload'
+import isRecordActiveForMeeting from '../../utils/isRecordActiveForMeeting'
 
 const updatePokerScope = {
   type: GraphQLNonNull(UpdatePokerScopePayload),
@@ -45,7 +46,8 @@ const updatePokerScope = {
       facilitatorUserId,
       defaultFacilitatorUserId,
       phases,
-      meetingType
+      meetingType,
+      templateId
     } = meeting
     if (endedAt) {
       return {error: {message: `Meeting already ended`}}
@@ -66,26 +68,38 @@ const updatePokerScope = {
 
     // RESOLUTION
     const estimatePhase = phases.find((phase) => phase.phaseType === 'ESTIMATE') as EstimatePhase
-    const {stages} = estimatePhase
+    let stages = estimatePhase.stages
+    const allDimensions = await dataLoader.get('templateDimensionsByTemplateId').load(templateId)
+
+    const dimensions = allDimensions.filter((dimension) =>
+      isRecordActiveForMeeting(dimension, meeting.createdAt)
+    )
+
     updates.forEach((update) => {
       const {service, serviceTaskId, action} = update
-      const existingStageIdx = stages.findIndex((stage) => stage.serviceTaskId === serviceTaskId)
+
       if (action === 'ADD') {
+        const stageExists = !!stages.find((stage) => stage.serviceTaskId === serviceTaskId)
         // see if it already exists. If so, do nothing.
-        if (existingStageIdx !== -1) return
+        if (stageExists) return
         const lastSortOrder = stages[stages.length - 1]?.sortOrder ?? -1
-        const newStage = new EstimateStage({
-          service,
-          serviceTaskId,
-          sortOrder: lastSortOrder + 1,
-          durations: undefined
-        })
+
+        const newStages = dimensions.map(
+          (dimension) =>
+            new EstimateStage({
+              service,
+              serviceTaskId,
+              sortOrder: lastSortOrder + 1,
+              durations: undefined,
+              dimensionId: dimension.id
+            })
+        )
         // MUTATIVE
-        stages.push(newStage)
+        stages.push(...newStages)
       } else if (action === 'DELETE') {
-        if (existingStageIdx === -1) return
         // MUTATIVE
-        stages.splice(existingStageIdx, -1)
+        estimatePhase.stages = stages.filter((stage) => stage.serviceTaskId !== serviceTaskId)
+        stages = estimatePhase.stages
       }
     })
 

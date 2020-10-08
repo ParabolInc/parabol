@@ -23,8 +23,8 @@ import UpdatesPhase from '../../../database/types/UpdatesPhase'
 import getShuffledArr from '../../../utils/getShuffledArr'
 import {DataLoaderWorker} from '../../graphql'
 
-const primePhases = (phases: GenericMeetingPhase[]) => {
-  const [firstPhase, secondPhase] = phases
+export const primePhases = (phases: GenericMeetingPhase[], startIndex = 0) => {
+  const [firstPhase, secondPhase] = [phases[startIndex], phases[startIndex + 1]]
   firstPhase.stages[0].startAt = new Date()
   firstPhase.stages.forEach((stage) => {
     stage.isNavigable = true

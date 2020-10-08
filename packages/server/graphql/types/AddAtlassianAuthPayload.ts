@@ -1,7 +1,7 @@
 import {GraphQLID, GraphQLObjectType} from 'graphql'
 import toTeamMemberId from '../../../client/utils/relay/toTeamMemberId'
 import {GQLContext} from '../graphql'
-import AtlassianAuth from './AtlassianAuth'
+import AtlassianIntegration from './AtlassianIntegration'
 import StandardMutationError from './StandardMutationError'
 import TeamMember from './TeamMember'
 import User from './User'
@@ -12,8 +12,8 @@ const AddAtlassianAuthPayload = new GraphQLObjectType<any, GQLContext>({
     error: {
       type: StandardMutationError
     },
-    atlassianAuth: {
-      type: AtlassianAuth,
+    atlassianIntegration: {
+      type: AtlassianIntegration,
       description: 'The newly created auth',
       resolve: async ({atlassianAuthId}, _args, {dataLoader}) => {
         return dataLoader.get('atlassianAuths').load(atlassianAuthId)

@@ -3,8 +3,8 @@ import GraphQLISO8601Type from './GraphQLISO8601Type'
 import {getUserId} from '../../utils/authorization'
 import {GQLContext} from '../graphql'
 
-const GitHubAuth = new GraphQLObjectType<any, GQLContext>({
-  name: 'GitHubAuth',
+const GitHubIntegration = new GraphQLObjectType<any, GQLContext>({
+  name: 'GitHubIntegration',
   description: 'OAuth token for a team member',
   fields: () => ({
     id: {
@@ -48,4 +48,4 @@ const GitHubAuth = new GraphQLObjectType<any, GQLContext>({
   })
 })
 
-export default GitHubAuth
+export default GitHubIntegration

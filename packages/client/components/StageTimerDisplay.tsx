@@ -5,10 +5,13 @@ import {createFragmentContainer} from 'react-relay'
 import {Breakpoint} from '~/types/constEnums'
 import {StageTimerDisplay_meeting} from '~/__generated__/StageTimerDisplay_meeting.graphql'
 import StageTimerDisplayGauge from './StageTimerDisplayGauge'
-import PhaseCompleteTag from './Tag/PhaseCompleteTag'
+import PhaseCompleteTag from '~/components/Tag/PhaseCompleteTag'
+import UndoableGroupPhaseControl from '~/components/UndoableGroupPhaseControl'
+import useAtmosphere from '~/hooks/useAtmosphere'
 
 interface Props {
   meeting: StageTimerDisplay_meeting
+  canUndo?: boolean
 }
 
 const DisplayRow = styled('div')({
@@ -22,24 +25,39 @@ const DisplayRow = styled('div')({
   }
 })
 
+const PhaseCompleteWrapper = styled('div')({
+  alignItems: 'flex-start',
+  display: 'flex'
+})
+
 const StageTimerDisplay = (props: Props) => {
-  const {meeting} = props
-  const {localPhase, localStage} = meeting
+  const atmosphere = useAtmosphere()
+  const {meeting, canUndo} = props
+  const {localPhase, localStage, facilitatorUserId} = meeting
   const {localScheduledEndTime, isComplete} = localStage
-  const {stages} = localPhase
+  const {stages, phaseType} = localPhase
   const isPhaseComplete = stages.every((stage) => stage.isComplete)
+  const {viewerId} = atmosphere
+  // scoping this to the group phase
+  const canUndoGroupPhase = canUndo && viewerId === facilitatorUserId && phaseType === 'group'
   return (
     <DisplayRow>
       {localScheduledEndTime && !isComplete ? (
         <StageTimerDisplayGauge endTime={localScheduledEndTime} />
       ) : null}
-      <PhaseCompleteTag isComplete={isPhaseComplete} />
+      {isPhaseComplete
+        ? <PhaseCompleteWrapper>
+          <PhaseCompleteTag isComplete={isPhaseComplete} />
+          {canUndoGroupPhase ? <UndoableGroupPhaseControl meetingId={meeting.id} resetToStageId={localStage.id} /> : null}
+        </PhaseCompleteWrapper>
+        : null}
     </DisplayRow>
   )
 }
 
 graphql`
   fragment StageTimerDisplayStage on NewMeetingStage {
+    id
     isComplete
     scheduledEndTime @__clientField(handle: "localTime")
     timeRemaining
@@ -49,7 +67,10 @@ graphql`
 export default createFragmentContainer(StageTimerDisplay, {
   meeting: graphql`
     fragment StageTimerDisplay_meeting on NewMeeting {
+      facilitatorUserId
+      id
       localPhase {
+        phaseType
         stages {
           isComplete
         }
