@@ -49,8 +49,11 @@ const RetroMeeting = (props: Props) => {
   const {meeting} = props
   const {
     toggleSidebar,
-    streams,
-    swarm,
+    room,
+    peers,
+    producers,
+    consumers,
+    mediaRoom,
     handleGotoNext,
     gotoStageId,
     safeRoute,
@@ -89,8 +92,11 @@ const RetroMeeting = (props: Props) => {
           avatarGroup={
             <NewMeetingAvatarGroup
               allowVideo={allowVideo}
-              camStreams={streams.cam}
-              swarm={swarm}
+              room={room}
+              peers={peers}
+              producers={producers}
+              consumers={consumers}
+              mediaRoom={mediaRoom}
               meeting={meeting}
             />
           }

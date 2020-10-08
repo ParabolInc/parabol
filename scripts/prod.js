@@ -27,10 +27,7 @@ const prod = async (isDeploy) => {
   await require('./compileRelay')()
   const serversConfig = makeServersConfig({isDeploy})
   const clientConfig = makeClientConfig({isDeploy})
-  await Promise.all([
-    compile(serversConfig),
-    compile(clientConfig)
-  ])
+  await Promise.all([compile(serversConfig), compile(clientConfig)])
   if (!isDeploy) {
     require('./toolbox/postDeploy.js')
   }

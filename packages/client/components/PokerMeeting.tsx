@@ -20,9 +20,7 @@ const phaseLookup = {
   [NewMeetingPhaseTypeEnum.checkin]: lazyPreload(() =>
     import(/* webpackChunkName: 'NewMeetingCheckIn' */ './NewMeetingCheckIn')
   ),
-  SCOPE: lazyPreload(() =>
-    import(/* webpackChunkName: 'ScopePhase' */ './ScopePhase')
-  ),
+  SCOPE: lazyPreload(() => import(/* webpackChunkName: 'ScopePhase' */ './ScopePhase'))
   // ESTIMATE: lazyPreload(() =>
   //   import(/* webpackChunkName: 'PokerEstimatePhase' */ './PokerEstimatePhase')
   // ),
@@ -40,12 +38,15 @@ const PokerMeeting = (props: Props) => {
   const {meeting} = props
   const {
     toggleSidebar,
-    streams,
-    swarm,
+    room,
+    peers,
+    producers,
+    consumers,
+    mediaRoom,
     handleGotoNext,
     gotoStageId,
     safeRoute,
-    handleMenuClick,
+    handleMenuClick
   } = useMeeting(meeting)
   if (!safeRoute) return null
   const {showSidebar, viewerMeetingMember, localPhase} = meeting
@@ -72,8 +73,11 @@ const PokerMeeting = (props: Props) => {
           avatarGroup={
             <NewMeetingAvatarGroup
               allowVideo={allowVideo}
-              camStreams={streams.cam}
-              swarm={swarm}
+              room={room}
+              peers={peers}
+              producers={producers}
+              consumers={consumers}
+              mediaRoom={mediaRoom}
               meeting={meeting}
             />
           }

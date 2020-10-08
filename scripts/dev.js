@@ -74,11 +74,7 @@ const removeArtifacts = async () => {
   const generated = path.join(PROJECT_ROOT, 'packages/client/__generated__')
   const queryMap = path.join(PROJECT_ROOT, 'queryMap.json')
   try {
-    await Promise.all([
-      rmdir(generated, {recursive: true}),
-      unlink(schemaPath),
-      unlink(queryMap)
-    ])
+    await Promise.all([rmdir(generated, {recursive: true}), unlink(schemaPath), unlink(queryMap)])
   } catch (_) {
     // probably didn't exist, noop
   }
@@ -88,10 +84,7 @@ const dev = async (maybeInit, isDangerous) => {
   const isInit = !fs.existsSync(path.join(TOOLBOX_ROOT, 'migrateDB.js')) || maybeInit
   if (isInit) {
     console.log('👋👋👋      Welcome to Parabol!      👋👋👋')
-    await Promise.all([
-      removeArtifacts(),
-      compileToolbox()
-    ])
+    await Promise.all([removeArtifacts(), compileToolbox()])
   }
   await require('./toolbox/updateSchema.js').default()
   await compileGraphQL()
@@ -102,11 +95,11 @@ const dev = async (maybeInit, isDangerous) => {
     await compileServers()
   }
   fork(path.join(PROJECT_ROOT, 'dev/gqlExecutor.js'))
+  fork(path.join(PROJECT_ROOT, 'dev/sfu.js'))
   const redis = new Redis(process.env.REDIS_URL)
   // it's nice to flush the cache, but can comment this out if you want to test cache hits between restarts
   redis.flushall()
   require('../dev/web.js')
-
 }
 
 const args = process.argv.slice(2)
