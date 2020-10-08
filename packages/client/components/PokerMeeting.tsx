@@ -90,7 +90,7 @@ const PokerMeeting = (props: Props) => {
 
 export default createFragmentContainer(PokerMeeting, {
   meeting: graphql`
-    fragment PokerMeeting_meeting on PokerMeeting {
+    fragment PokerMeeting_meeting on PokerMeeting  {
       ...useMeeting_meeting
       ...PokerMeetingSidebar_meeting
       ...NewMeetingCheckIn_meeting
@@ -98,6 +98,8 @@ export default createFragmentContainer(PokerMeeting, {
       ...MeetingControlBar_meeting
       ...ScopePhase_meeting
       id
+      # hack to initialize local state (clientField needs to be on non-id domain state. thx relay)
+      init: id @__clientField(handle: "localPoker")
       showSidebar
       localPhase {
         phaseType

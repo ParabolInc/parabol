@@ -7,29 +7,34 @@ const JiraRemoteProject = new GraphQLObjectType<any, GQLContext>({
   name: 'JiraRemoteProject',
   description: 'A project fetched from Jira in real time',
   fields: () => ({
-    self: {
-      type: new GraphQLNonNull(GraphQLID)
-    },
     id: {
-      type: new GraphQLNonNull(GraphQLID)
+      type: GraphQLNonNull(GraphQLID),
+      resolve: ({cloudId, key}) => `${cloudId}:${key}`
+    },
+    self: {
+      type: GraphQLNonNull(GraphQLID)
+    },
+    cloudId: {
+      type: GraphQLNonNull(GraphQLID),
+      description: 'The cloud ID that the project lives on. Does not exist on the Jira object!'
     },
     key: {
-      type: new GraphQLNonNull(GraphQLString)
+      type: GraphQLNonNull(GraphQLString)
     },
     name: {
-      type: new GraphQLNonNull(GraphQLString)
+      type: GraphQLNonNull(GraphQLString)
     },
     avatarUrls: {
-      type: new GraphQLNonNull(JiraRemoteAvatarUrls)
+      type: GraphQLNonNull(JiraRemoteAvatarUrls)
     },
     projectCategory: {
-      type: new GraphQLNonNull(JiraRemoteProjectCategory)
+      type: GraphQLNonNull(JiraRemoteProjectCategory)
     },
     simplified: {
-      type: new GraphQLNonNull(GraphQLBoolean)
+      type: GraphQLNonNull(GraphQLBoolean)
     },
     style: {
-      type: new GraphQLNonNull(GraphQLString)
+      type: GraphQLNonNull(GraphQLString)
     }
   })
 })

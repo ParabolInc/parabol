@@ -90,8 +90,9 @@ const SlackProviderRow = (props: Props) => {
   const {submitting, submitMutation, onError, onCompleted} = useMutationProps()
   const mutationProps = {submitting, submitMutation, onError, onCompleted} as MenuMutationProps
   const {teamMember} = viewer
-  const {slackAuth} = teamMember!
-  const accessToken = (slackAuth && slackAuth.accessToken) || undefined
+  const {integrations} = teamMember!
+  const {slack} = integrations
+  const accessToken = slack?.accessToken ?? undefined
   const openOAuth = () => {
     SlackClientManager.openOAuth(atmosphere, teamId, mutationProps)
   }
@@ -114,7 +115,7 @@ const SlackProviderRow = (props: Props) => {
         )}
         {accessToken && (
           <ListAndMenu>
-            <SlackLogin title={slackAuth!.slackTeamName || 'Slack'}>
+            <SlackLogin title={slack!.slackTeamName || 'Slack'}>
               <SlackSVG />
             </SlackLogin>
             <MenuButton onClick={togglePortal} ref={originRef}>
@@ -139,10 +140,12 @@ graphql`
   fragment SlackProviderRowViewer on User {
     ...SlackNotificationList_viewer
     teamMember(teamId: $teamId) {
-      slackAuth {
-        accessToken
-        slackTeamName
-        slackUserName
+      integrations {
+        slack {
+          accessToken
+          slackTeamName
+          slackUserName
+        }
       }
     }
   }
