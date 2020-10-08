@@ -1,11 +1,4 @@
-import {
-  GraphQLBoolean,
-  GraphQLFloat,
-  GraphQLID,
-  GraphQLNonNull,
-  GraphQLObjectType,
-  GraphQLString
-} from 'graphql'
+import {GraphQLFloat, GraphQLID, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
 import {GQLContext} from '../graphql'
 import {resolveTeam} from '../resolvers'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
@@ -23,10 +16,6 @@ const ReflectPrompt = new GraphQLObjectType<any, GQLContext>({
     },
     createdAt: {
       type: new GraphQLNonNull(GraphQLISO8601Type)
-    },
-    isActive: {
-      type: GraphQLBoolean,
-      description: 'true if the phase item is currently used by the team, else false'
     },
     teamId: {
       type: new GraphQLNonNull(GraphQLID),
@@ -75,6 +64,10 @@ const ReflectPrompt = new GraphQLObjectType<any, GQLContext>({
       description: 'The color used to visually group a phase item.',
       type: new GraphQLNonNull(GraphQLString),
       resolve: ({groupColor}) => groupColor || '#FFFFFF'
+    },
+    removedAt: {
+      type: GraphQLISO8601Type,
+      description: 'The datetime that the prompt was removed. Null if it has not been removed.'
     }
   })
 })

@@ -1734,11 +1734,6 @@ export interface IReflectPrompt {
   createdAt: any;
 
   /**
-   * true if the phase item is currently used by the team, else false
-   */
-  isActive: boolean | null;
-
-  /**
    * foreign key. use the team field
    */
   teamId: string;
@@ -1783,6 +1778,11 @@ export interface IReflectPrompt {
    * The color used to visually group a phase item.
    */
   groupColor: string;
+
+  /**
+   * The datetime that the prompt was removed. Null if it has not been removed.
+   */
+  removedAt: any | null;
 }
 
 /**
@@ -9270,7 +9270,7 @@ export interface IRemoveReflectTemplatePromptPayload {
   __typename: 'RemoveReflectTemplatePromptPayload';
   error: IStandardMutationError | null;
   reflectTemplate: IReflectTemplate | null;
-  prompt: IReflectTemplate | null;
+  prompt: IReflectPrompt | null;
 }
 
 /**
