@@ -48,7 +48,7 @@ const JiraScopingSearchResults = (props: Props) => {
   const {team} = viewer
   const {id: teamId, jiraIssues} = team!
   const {error, edges} = jiraIssues
-  const [cloudId, projectKey] = edges[0].node.id.split(':')
+  const [cloudId, projectKey] = edges[0].node.id.split(':') // TODO: up until the -
   const issueCount = edges.length
   const {id: meetingId, phases} = meeting
   const atmosphere = useAtmosphere()
@@ -70,7 +70,7 @@ const JiraScopingSearchResults = (props: Props) => {
     const variables = {
       content: 'Testeroo',
       cloudId,
-      projectKey,
+      projectKey: 'TES',
       teamId,
       meetingId
     }

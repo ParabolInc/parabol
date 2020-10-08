@@ -55,45 +55,18 @@ export default {
     }
 
     // VALIDATION
-    const userAuths = await Promise.all([dataLoader.get('atlassianAuthByUserId').load(viewerId)])
-    console.log('userAuths', userAuths)
-    const [viewerAuth, assigneeAuth] = userAuths.map((auths) =>
-      auths.find((auth) => auth.teamId === teamId)
-    )
-    console.log('viewerAuth, assigneeAuth', viewerAuth, assigneeAuth)
+    const viewerAuth = await Promise.all([
+      dataLoader.get('atlassianAuthByUserId').load(viewerId)
+    ])[0][0]
 
     // TODO: prob change assignee
-    if (!assigneeAuth || !assigneeAuth.isActive) {
-      return standardError(new Error('The assignee does not have access to Jira'), {
+    if (!viewerAuth || !viewerAuth.isActive) {
+      return standardError(new Error('The viewer does not have access to Jira'), {
         userId: viewerId
       })
     }
 
     // RESOLUTION
-    const rawContent = JSON.parse(content)
-    const {blocks} = rawContent
-    let {text: summary} = blocks[0]
-    // if the summary exceeds 256, repeat it in the body because it probably has entities in it
-    if (summary.length <= 256) {
-      blocks.shift()
-    } else {
-      summary = summary.slice(0, 256)
-    }
-
-    const contentState =
-      blocks.length === 0 ? ContentState.createFromText('') : convertFromRaw(rawContent)
-    console.log('contentState', contentState)
-    let markdown = stateToMarkdown(contentState)
-
-    const isViewerAllowed = viewerAuth ? viewerAuth.isActive : false
-    if (!isViewerAllowed) {
-      const creator = await db.read('User', viewerId)
-      const creatorName = creator.preferredName
-      markdown = `${markdown}\n\n_Added by ${creatorName}_`
-    }
-    console.log('markdown', markdown)
-
-    // const tokenUserId = isViewerAllowed ? viewerId : userId
     const accessToken = await dataLoader
       .get('freshAtlassianAccessToken')
       .load({teamId, userId: viewerId})
@@ -102,7 +75,7 @@ export default {
     const [sites, issueMetaRes, description] = await Promise.all([
       manager.getAccessibleResources(),
       manager.getCreateMeta(cloudId, [projectKey]),
-      manager.convertMarkdownToADF(markdown)
+      manager.convertMarkdownToADF(content)
     ] as const)
     if ('message' in sites) {
       return standardError(new Error(sites.message), {userId: viewerId})
@@ -116,14 +89,15 @@ export default {
     const {projects} = issueMetaRes
     // should always be the first and only item in the project arr
     const project = projects.find((project) => project.key === projectKey)!
-    const {issuetypes, name: projectName} = project
+    // const {issuetypes, name: projectName} = project
+    const {issuetypes} = project
     const bestType = issuetypes.find((type) => type.name === 'Task') || issuetypes[0]
     const payload = {
-      summary,
+      summary: content,
       description,
       // ERROR: Field 'reporter' cannot be set. It is not on the appropriate screen, or unknown.
       assignee: {
-        id: assigneeAuth.accountId
+        id: viewerAuth.accountId
       },
       issuetype: {
         id: bestType.id
