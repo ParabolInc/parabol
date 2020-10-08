@@ -106,15 +106,11 @@ export const reflectPromptsByTemplateId = new LoaderMakerForeign(
   'templateId',
   async (templateIds) => {
     const r = await getRethink()
-    return (
-      r
-        .table('ReflectPrompt')
-        .getAll(r.args(templateIds), {index: 'templateId'})
-        // NOTE: isActive must be false so we can see meetings in the past that use a now-inactive template
-        // .filter({isActive: true})
-        .orderBy('sortOrder')
-        .run()
-    )
+    return r
+      .table('ReflectPrompt')
+      .getAll(r.args(templateIds), {index: 'templateId'})
+      .orderBy('sortOrder')
+      .run()
   }
 )
 
@@ -239,6 +235,23 @@ export const retroReflectionsByMeetingId = new LoaderMakerForeign(
       .getAll(r.args(meetingIds), {index: 'meetingId'})
       .filter({isActive: true})
       .run()
+  }
+)
+
+export const templateDimensionsByTemplateId = new LoaderMakerForeign(
+  'templateDimensions',
+  'templateId',
+  async (templateIds) => {
+    const r = await getRethink()
+    return (
+      r
+        .table('TemplateDimension')
+        .getAll(r.args(templateIds), {index: 'templateId'})
+        // NOTE: isActive must be false so we can see meetings in the past that use a now-inactive template
+        // .filter({isActive: true})
+        .orderBy('sortOrder')
+        .run()
+    )
   }
 )
 

@@ -1,5 +1,6 @@
 import {GraphQLObjectType} from 'graphql'
 import {GQLContext} from '../graphql'
+import ReflectPrompt from './ReflectPrompt'
 import ReflectTemplate from './ReflectTemplate'
 import StandardMutationError from './StandardMutationError'
 
@@ -17,7 +18,7 @@ const RemoveReflectTemplatePromptPayload = new GraphQLObjectType<any, GQLContext
       }
     },
     prompt: {
-      type: ReflectTemplate,
+      type: ReflectPrompt,
       resolve: ({promptId}, _args, {dataLoader}) => {
         if (!promptId) return null
         return dataLoader.get('reflectPrompts').load(promptId)

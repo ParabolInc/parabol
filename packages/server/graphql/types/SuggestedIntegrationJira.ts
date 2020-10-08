@@ -35,7 +35,10 @@ const SuggestedIntegrationJira = new GraphQLObjectType<any, GQLContext>({
         const accessToken = await dataLoader
           .get('freshAtlassianAccessToken')
           .load({teamId, userId: viewerId})
-        return dataLoader.get('jiraRemoteProject').load({accessToken, cloudId, projectId})
+        const project = await dataLoader
+          .get('jiraRemoteProject')
+          .load({accessToken, cloudId, projectId})
+        return project
       }
     }
   })

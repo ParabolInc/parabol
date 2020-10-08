@@ -1,6 +1,7 @@
-import {GraphQLFloat, GraphQLID, GraphQLInterfaceType, GraphQLNonNull} from 'graphql'
+import {GraphQLFloat, GraphQLID, GraphQLInterfaceType, GraphQLList, GraphQLNonNull} from 'graphql'
 import NewMeetingStage, {newMeetingStageFields} from './NewMeetingStage'
 import TaskServiceEnum from './TaskServiceEnum'
+import EstimateUserScore from './EstimateUserScore'
 
 export const estimateStageFields = () => ({
   ...newMeetingStageFields(),
@@ -15,6 +16,19 @@ export const estimateStageFields = () => ({
   sortOrder: {
     type: new GraphQLNonNull(GraphQLFloat),
     description: 'The sort order for reprioritizing discussion topics'
+  },
+  dimensionId: {
+    type: GraphQLID,
+    description: 'the dimensionId that corresponds to this stage'
+  },
+  scores: {
+    type: GraphQLNonNull(GraphQLList(GraphQLNonNull(EstimateUserScore))),
+    resolve: ({id: stageId, scores}) => {
+      return scores.map((score) => ({
+        ...score,
+        stageId
+      }))
+    }
   }
 })
 

@@ -70,6 +70,8 @@ const subscription = graphql`
       ...InviteToTeamMutation_notification @relay(mask: false)
       ...RemoveOrgUserMutation_notification @relay(mask: false)
       ...InvalidateSessionsMutation_notification @relay(mask: false)
+      ...PersistJiraSearchQueryMutation_notification @relay(mask: false)
+
       ... on AuthTokenPayload {
         id
       }

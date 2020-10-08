@@ -15,12 +15,12 @@ const ScopeHelpMenu = forwardRef((_props: Props, ref: any) => {
   return (
     <HelpMenuContent closePortal={closePortal}>
       <HelpMenuHeader>{phaseLabelLookup.SCOPE}</HelpMenuHeader>
-      <HelpMenuCopy>The goal of this phase is to select all the tasks you'd to estimate.</HelpMenuCopy>
+      <HelpMenuCopy>The goal here is to select the tasks you‘d like to estimate.</HelpMenuCopy>
       <HelpMenuCopy>
         As a group, you can vote on the value of each task across dimensions (effort, value, etc.)
       </HelpMenuCopy>
       <HelpMenuCopy>
-        To save time, you can complete this phase asynchronously, before the meeting begins.
+        To save time, you can complete this phase asynchronously, before inviting others
       </HelpMenuCopy>
       <HelpMenuLink copy='Learn More' href={`${ExternalLinks.GETTING_STARTED_SPRINT_POKER}#scope`} />
     </HelpMenuContent>

@@ -12,14 +12,12 @@ import isTaskPrivate from 'parabol-client/utils/isTaskPrivate'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import getRethink from '../../database/rethinkDriver'
 import MassInvitationDB from '../../database/types/MassInvitation'
-import AtlassianServerManager from '../../utils/AtlassianServerManager'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import connectionFromTasks from '../queries/helpers/connectionFromTasks'
 import AgendaItem from './AgendaItem'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
-import {JiraIssueConnection} from './JiraIssue'
 import MassInvitation from './MassInvitation'
 import MeetingTypeEnum from './MeetingTypeEnum'
 import NewMeeting from './NewMeeting'
@@ -210,65 +208,6 @@ const Team = new GraphQLObjectType<ITeam, GQLContext>({
         return dataLoader.get('agendaItemsByTeamId').load(teamId)
       }
     },
-    jiraIssues: {
-      type: new GraphQLNonNull(JiraIssueConnection),
-      description: 'A list of issues coming straight from the integrated jira integration',
-      args: {
-        first: {
-          type: GraphQLInt,
-          defaultValue: 100
-        },
-        after: {
-          type: GraphQLISO8601Type,
-          description: 'the datetime cursor'
-        },
-        queryString: {
-          type: GraphQLString,
-          description: 'A string of text to search for, or JQL if isJQL is true'
-        },
-        isJQL: {
-          type: GraphQLNonNull(GraphQLBoolean),
-          description: 'true if the queryString is JQL, else false'
-        },
-        projectKeyFilters: {
-          type: GraphQLList(GraphQLNonNull(GraphQLID)),
-          descrption: 'A list of projects to restrict the search to. If null, will search all'
-        }
-      },
-      resolve: async ({id: teamId}, {first, queryString, isJQL}, {authToken, dataLoader}) => {
-        const viewerId = getUserId(authToken)
-        if (!isTeamMember(authToken, teamId)) {
-          const err = new Error('Not on team')
-          standardError(err, {tags: {teamId}})
-          return connectionFromTasks([], 0, err)
-        }
-        const accessToken = await dataLoader
-          .get('freshAtlassianAccessToken')
-          .load({teamId, userId: viewerId})
-        if (!accessToken) {
-          const err = new Error('Not integrated with Jira')
-          standardError(err, {tags: {teamId}})
-          return connectionFromTasks([], 0, err)
-        }
-        const atlassianAuths = await dataLoader.get('atlassianAuthByUserId').load(viewerId)
-        const teamMemberAuth = atlassianAuths.find((auth) => auth.teamId === teamId)
-        if (!accessToken) {
-          const err = new Error('Atlassian auth not found')
-          standardError(err, {tags: {teamId}})
-          return connectionFromTasks([], 0, err)
-        }
-        const {cloudIds} = teamMemberAuth
-        const manager = new AtlassianServerManager(accessToken)
-        const projects = cloudIds.map((cloudId) => ({cloudId}))
-        const issueRes = await manager.getIssues(queryString, isJQL, projects)
-        const {error, issues} = issueRes
-        const mappedIssues = issues.map((issue) => ({
-          ...issue,
-          updatedAt: new Date()
-        }))
-        return connectionFromTasks(mappedIssues, first, error || undefined)
-      }
-    },
     tasks: {
       type: new GraphQLNonNull(TaskConnection),
       args: {
@@ -290,7 +229,7 @@ const Team = new GraphQLObjectType<ITeam, GQLContext>({
         const viewerId = getUserId(authToken)
         const allTasks = await dataLoader.get('tasksByTeamId').load(teamId)
         const tasks = allTasks.filter((task) => {
-          if (isTaskPrivate(task.tags) && task.userId !== viewerId) return false
+          if (!task.userId || (isTaskPrivate(task.tags) && task.userId !== viewerId)) return false
           return true
         })
         return connectionFromTasks(tasks)

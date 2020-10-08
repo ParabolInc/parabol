@@ -1,9 +1,10 @@
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {QueryRenderer} from 'react-relay'
+import {createFragmentContainer, QueryRenderer} from 'react-relay'
+import {JiraScopingSearchResultsRootQuery} from '~/__generated__/JiraScopingSearchResultsRootQuery.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
-import MockScopingList from '../modules/meeting/components/MockScopingList'
-import renderQuery from '../utils/relay/renderQuery'
+import {JiraScopingSearchResultsRoot_meeting} from '../__generated__/JiraScopingSearchResultsRoot_meeting.graphql'
+import ErrorComponent from './ErrorComponent/ErrorComponent'
 import JiraScopingSearchResults from './JiraScopingSearchResults'
 
 const query = graphql`
@@ -15,24 +16,41 @@ const query = graphql`
 `
 
 interface Props {
-  queryString: string | null | undefined,
-  isJQL: boolean,
-  projectKeyFilters?: string[]
-  teamId: string
+  meeting: JiraScopingSearchResultsRoot_meeting
 }
 
 const JiraScopingSearchResultsRoot = (props: Props) => {
   const atmosphere = useAtmosphere()
-  const {queryString, isJQL, projectKeyFilters, teamId} = props
+  const {meeting} = props
+  const {teamId, jiraSearchQuery} = meeting
+  const {queryString, projectKeyFilters, isJQL} = jiraSearchQuery
+  const normalizedQueryString = queryString.trim()
+
   return (
-    <QueryRenderer
+    <QueryRenderer<JiraScopingSearchResultsRootQuery>
       environment={atmosphere}
       query={query}
-      variables={{teamId, queryString, isJQL, projectKeyFilters, first: 100}}
+      variables={{teamId, queryString: normalizedQueryString, isJQL, projectKeyFilters: projectKeyFilters as string[], first: 100}}
       fetchPolicy={'store-or-network' as any}
-      render={renderQuery(JiraScopingSearchResults, {Loader: <MockScopingList />})}
+      render={({props, error}) => {
+        const viewer = props?.viewer ?? null
+        if (error) return <ErrorComponent error={error} eventId={''} />
+        return <JiraScopingSearchResults viewer={viewer} meeting={meeting} />
+      }}
     />
   )
 }
 
-export default JiraScopingSearchResultsRoot
+export default createFragmentContainer(JiraScopingSearchResultsRoot, {
+  meeting: graphql`
+    fragment JiraScopingSearchResultsRoot_meeting on PokerMeeting {
+      ...JiraScopingSearchResults_meeting
+      teamId
+      jiraSearchQuery {
+        queryString
+        projectKeyFilters
+        isJQL
+      }
+    }
+  `
+})
