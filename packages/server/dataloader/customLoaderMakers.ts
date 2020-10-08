@@ -166,9 +166,9 @@ export const userTasks = (parent: RethinkDataLoader) => {
             teamTaskPartial = teamTaskPartial.filter((row) => r(userIds).contains(row('userId')))
           if (status) teamTaskPartial = teamTaskPartial.filter({status})
           if (filterQuery)
-            // TODO: only match "text" field
+            // TODO: deal with tags like #archived and #private. should strip out of plaintextContent??
             teamTaskPartial = teamTaskPartial.filter(
-              (row) => row('content').match(filterQuery) as any
+              (row) => row('plaintextContent').match(filterQuery) as any
             )
 
           return {

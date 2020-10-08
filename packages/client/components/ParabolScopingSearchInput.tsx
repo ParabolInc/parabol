@@ -60,9 +60,10 @@ const ParabolScopingSearchInput = (props: Props) => {
   }
   const onSubmit = () => {
     const filterQuery = meeting.parabolSearchQuery
-    if (!filterQuery) return
+    if (filterQuery === null) return
     setFilterQuery(filterQuery)
   }
+  // TODO: fix unintuitive input UI behavior
   return (
     <Wrapper>
       <SearchInput
