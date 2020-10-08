@@ -76,6 +76,7 @@ jobs:
               node scripts/toolbox/softenDurability.js
               yarn db:migrate
               yarn postdeploy
+              yarn test
             fi
       - run:
           name: Alert Failed Tests
