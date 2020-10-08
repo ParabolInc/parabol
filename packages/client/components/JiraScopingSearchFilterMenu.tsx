@@ -12,10 +12,10 @@ import {IJiraSearchQuery} from '../types/graphql'
 import {JiraScopingSearchFilterMenu_viewer} from '../__generated__/JiraScopingSearchFilterMenu_viewer.graphql'
 import Checkbox from './Checkbox'
 import Icon from './Icon'
-import LoadingComponent from './LoadingComponent/LoadingComponent'
 import Menu from './Menu'
 import MenuItem from './MenuItem'
 import MenuItemComponentAvatar from './MenuItemComponentAvatar'
+import MenuItemHR from './MenuItemHR'
 import MenuItemLabel from './MenuItemLabel'
 import TaskFooterIntegrateMenuSearch from './TaskFooterIntegrateMenuSearch'
 import TypeAheadLabel from './TypeAheadLabel'
@@ -60,6 +60,14 @@ const StyledCheckBox = styled(Checkbox)({
   marginRight: 8
 })
 
+const UseJQLLabel = styled('span')({
+  fontWeight: 600
+})
+
+const StyledMenuItemLabel = styled(MenuItemLabel)<{isDisabled: boolean}>(({isDisabled}) => ({
+  opacity: isDisabled ? 0.5 : undefined
+}))
+
 interface Props {
   menuProps: MenuProps
   viewer: JiraScopingSearchFilterMenu_viewer | null
@@ -75,8 +83,9 @@ const JiraScopingSearchFilterMenu = (props: Props) => {
   const projects = viewer?.teamMember?.integrations.atlassian?.projects ?? []
   const meeting = viewer?.meeting ?? null
   const meetingId = meeting?.id ?? ''
-  const projectKeyFilters = meeting?.jiraSearchQuery?.projectKeyFilters ?? []
-  console.log({foo: viewer?.meeting?.jiraSearchQuery})
+  const jiraSearchQuery = meeting?.jiraSearchQuery ?? null
+  const projectKeyFilters = jiraSearchQuery?.projectKeyFilters ?? []
+  const isJQL = jiraSearchQuery?.isJQL ?? false
   const {fields, onChange} = useForm({
     search: {
       getDefault: () => ''
@@ -89,6 +98,13 @@ const JiraScopingSearchFilterMenu = (props: Props) => {
   const filteredProjects = useFilteredItems(query, projects, getValue)
   const atmosphere = useAtmosphere()
   const {portalStatus, isDropdown} = menuProps
+  const toggleJQL = () => {
+    commitLocalUpdate(atmosphere, (store) => {
+      const searchQueryId = `jiraSearchQuery:${meetingId}`
+      const jiraSearchQuery = store.get<IJiraSearchQuery>(searchQueryId)!
+      jiraSearchQuery.setValue(!isJQL, 'isJQL')
+    })
+  }
   return (
     <Menu
       keepParentFocus
@@ -97,6 +113,17 @@ const JiraScopingSearchFilterMenu = (props: Props) => {
       isDropdown={isDropdown}
       resetActiveOnChanges={[filteredProjects]}
     >
+      <MenuItem
+        key={'isJQL'}
+        label={
+          <MenuItemLabel>
+            <StyledCheckBox active={isJQL} />
+            <UseJQLLabel>{'Use JQL'}</UseJQLLabel>
+          </MenuItemLabel>
+        }
+        onClick={toggleJQL}
+      />
+      <MenuItemHR />
       {showSearch && <SearchItem key='search'>
         <StyledMenuItemIcon>
           <SearchIcon>search</SearchIcon>
@@ -132,19 +159,17 @@ const JiraScopingSearchFilterMenu = (props: Props) => {
           <MenuItem
             key={globalProjectKey}
             label={
-              <MenuItemLabel>
-                <StyledCheckBox active={projectKeyFilters.includes(globalProjectKey)} />
+              <StyledMenuItemLabel isDisabled={isJQL}>
+                <StyledCheckBox active={projectKeyFilters.includes(globalProjectKey)} disabled={isJQL} />
                 <ProjectAvatar src={x24} />
                 <TypeAheadLabel query={query} label={name} />
-              </MenuItemLabel>
+              </StyledMenuItemLabel>
             }
             onClick={toggleProjectKeyFilter}
+            isDisabled={isJQL}
           />
         )
       })}
-      {isLoading && (
-        <LoadingComponent key='loading' spinnerSize={24} height={24} showAfter={0} />
-      )}
     </Menu>
   )
 }
@@ -157,8 +182,8 @@ export default createFragmentContainer(JiraScopingSearchFilterMenu, {
         id
         ...on PokerMeeting {
           jiraSearchQuery {
-            queryString
             projectKeyFilters
+            isJQL
           }
         }
       }

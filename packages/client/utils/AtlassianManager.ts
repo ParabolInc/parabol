@@ -364,10 +364,10 @@ export default abstract class AtlassianManager {
     const allIssues = [] as {id: number, key: string, summary: string, cloudId: string, cloudName: string}[]
     let firstError: string | null = null
     const composeJQL = (queryString: string | null, isJQL: boolean, projectKeys: string[]) => {
-      if (isJQL) return queryString
+      const orderBy = 'order by lastViewed DESC'
+      if (isJQL) return queryString || orderBy
       const projectFilter = projectKeys.length ? `project in (${projectKeys.map(val => `\"${val}\"`).join(', ')})` : ''
       const textFilter = queryString ? `text ~ \"${queryString}\"` : ''
-      const orderBy = 'order by lastViewed DESC'
       const and = projectFilter && textFilter ? ' AND ' : ''
       return `${projectFilter}${and}${textFilter} ${orderBy}`
     }
@@ -375,7 +375,6 @@ export default abstract class AtlassianManager {
       const projectKeys = projectFiltersByCloudId[cloudId]
       const url = `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/search`
       const jql = composeJQL(queryString, isJQL, projectKeys)
-      console.log({jql})
       const payload = {
         jql,
         maxResults: 100,
