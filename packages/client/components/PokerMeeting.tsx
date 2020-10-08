@@ -38,8 +38,11 @@ const PokerMeeting = (props: Props) => {
   const {meeting} = props
   const {
     toggleSidebar,
-    streams,
-    swarm,
+    room,
+    peers,
+    producers,
+    consumers,
+    mediaRoom,
     handleGotoNext,
     gotoStageId,
     safeRoute,
@@ -69,8 +72,11 @@ const PokerMeeting = (props: Props) => {
           avatarGroup={
             <NewMeetingAvatarGroup
               allowVideo={allowVideo}
-              camStreams={streams.cam}
-              swarm={swarm}
+              room={room}
+              peers={peers}
+              producers={producers}
+              consumers={consumers}
+              mediaRoom={mediaRoom}
               meeting={meeting}
             />
           }

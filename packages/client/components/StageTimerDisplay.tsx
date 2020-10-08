@@ -8,6 +8,7 @@ import StageTimerDisplayGauge from './StageTimerDisplayGauge'
 import PhaseCompleteTag from '~/components/Tag/PhaseCompleteTag'
 import UndoableGroupPhaseControl from '~/components/UndoableGroupPhaseControl'
 import useAtmosphere from '~/hooks/useAtmosphere'
+import isDemoRoute from '~/utils/isDemoRoute'
 
 interface Props {
   meeting: StageTimerDisplay_meeting
@@ -38,8 +39,9 @@ const StageTimerDisplay = (props: Props) => {
   const {stages, phaseType} = localPhase
   const isPhaseComplete = stages.every((stage) => stage.isComplete)
   const {viewerId} = atmosphere
-  // scoping this to the group phase
-  const canUndoGroupPhase = canUndo && viewerId === facilitatorUserId && phaseType === 'group'
+  // scoping this to the group phase for a real retro
+  const isDemo = isDemoRoute()
+  const canUndoGroupPhase = !isDemo && canUndo && viewerId === facilitatorUserId && phaseType === 'group'
   return (
     <DisplayRow>
       {localScheduledEndTime && !isComplete ? (

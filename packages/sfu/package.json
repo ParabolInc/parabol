@@ -1,17 +1,15 @@
 {
-  "name": "gql-executor",
-  "version": "5.21.0",
-  "description": "A Stateless GraphQL Executor",
-  "author": "Matt Krick <matt.krick@gmail.com>",
+  "name": "parabol-sfu",
+  "version": "5.15.1",
+  "description": "A signaling and relay server for forwarding media streams.",
+  "author": "Parabol Inc. <love@parabol.com> (http://github.com/ParabolInc)",
   "homepage": "https://github.com/ParabolInc/parabol/tree/master/packages/gqlExecutor#readme",
   "license": "AGPL-3.0-or-later",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ParabolInc/parabol.git"
+    "url": "https://github.com/ParabolInc/parabol"
   },
-  "scripts": {
-    "typecheck": "yarn tsc --noEmit -p tsconfig.json"
-  },
+  "scripts": {},
   "bugs": {
     "url": "https://github.com/ParabolInc/parabol/issues"
   },
@@ -23,11 +21,15 @@
     "babel-plugin-module-resolver": "^4.0.0",
     "chokidar": "^3.3.1",
     "sucrase": "^3.13.0",
-    "ts-node-dev": "^1.0.0-pre.44",
-    "typescript": "^3.8.3"
+    "ts-node": "^8.6.2",
+    "typescript": "^3.9.5"
   },
   "dependencies": {
-    "parabol-client": "^5.21.0",
-    "parabol-server": "^5.21.0"
+    "awaitqueue": "^2.1.1",
+    "express": "^4.17.1",
+    "mediasoup": "^3.6.21",
+    "protoo-server": "^4.0.4",
+    "parabol-server": "^5.19.0",
+    "parabol-client": "^5.19.0"
   }
 }
