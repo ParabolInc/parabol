@@ -334,3 +334,7 @@ export const enum ZIndex {
 export const enum AuthTokenRole {
   SUPER_USER = 'su'
 }
+
+export const enum SprintPokerDefaults {
+  DEFAULT_SCALE_ID = 'tshirtSizeScale'
+}

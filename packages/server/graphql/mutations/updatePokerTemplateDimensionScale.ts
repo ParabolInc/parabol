@@ -29,8 +29,11 @@ const updatePokerTemplateDimensionScale = {
     const teamId = dimension.teamId
 
     // AUTH
-    if (!dimension || !isTeamMember(authToken, teamId) || !dimension.isActive) {
+    if (!isTeamMember(authToken, dimension.teamId)) {
       return standardError(new Error('Team not found'), {userId: viewerId})
+    }
+    if (!dimension || !dimension.isActive) {
+      return standardError(new Error('Dimension not found'), {userId: viewerId})
     }
 
     // VALIDATION
@@ -41,7 +44,6 @@ const updatePokerTemplateDimensionScale = {
     if (
       !scale ||
       !scale.isActive ||
-      scale.templateId !== dimension.templateId ||
       scale.teamId !== teamId
     ) {
       return standardError(new Error('Scale not found'), {userId: viewerId})
