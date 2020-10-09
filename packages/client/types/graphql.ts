@@ -3456,16 +3456,6 @@ export interface ITemplateScale {
   updatedAt: any;
 
   /**
-   * FK for template
-   */
-  templateId: string;
-
-  /**
-   * The template that this scale belongs to
-   */
-  template: IPokerTemplate;
-
-  /**
    * The title of the scale used in the template
    */
   name: string;
@@ -7057,11 +7047,11 @@ export interface IAddPokerTemplateDimensionOnMutationArguments {
 }
 
 export interface IAddPokerTemplateScaleOnMutationArguments {
-  templateId: string;
+  parentScaleId?: string | null;
+  teamId: string;
 }
 
 export interface IAddPokerTemplateScaleValueOnMutationArguments {
-  templateId: string;
   scaleId: string;
   scaleValue: ITemplateScaleInput;
   index?: number | null;
@@ -7694,7 +7684,6 @@ export interface IRemovePokerTemplateScaleOnMutationArguments {
 }
 
 export interface IRemovePokerTemplateScaleValueOnMutationArguments {
-  templateId: string;
   scaleId: string;
 
   /**
@@ -7900,7 +7889,6 @@ export interface IUpdatePokerTemplateDimensionScaleOnMutationArguments {
 }
 
 export interface IUpdatePokerTemplateScaleValueOnMutationArguments {
-  templateId: string;
   scaleId: string;
   scaleValue: ITemplateScaleInput;
   index?: number | null;

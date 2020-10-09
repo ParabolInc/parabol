@@ -99,7 +99,6 @@ const newScales = [
       {color: '#E59545', label: 'XL', value: 5}
     ],
     teamId: 'aGhostTeam',
-    templateId: 'estimatedEffortTemplate'
   },
   {
     id: 'fibonacciScale',
@@ -119,7 +118,6 @@ const newScales = [
       {color: '#E59545', label: '34', value: 34}
     ],
     teamId: 'aGhostTeam',
-    templateId: 'estimatedEffortTemplate'
   },
   {
     id: 'fiveFingersScale',
@@ -136,7 +134,6 @@ const newScales = [
       {color: '#E59545', label: '5', value: 5}
     ],
     teamId: 'aGhostTeam',
-    templateId: 'estimatedEffortTemplate'
   }
 ]
 
@@ -177,14 +174,8 @@ const newPokerTemplates = [
   }
 ]
 
-export const up = async function(r: R) {
+export const up = async function (r: R) {
   try {
-    // create index 'templateId' for table TemplateScale
-    await r
-      .table('TemplateScale')
-      .indexCreate('templateId')
-      .run()
-
     // create index 'teamId' for table TemplateScale
     await r
       .table('TemplateScale')
@@ -240,14 +231,8 @@ export const up = async function(r: R) {
   }
 }
 
-export const down = async function(r: R) {
+export const down = async function (r: R) {
   try {
-    // drop index 'templateId' for table TemplateScale
-    await r
-      .table('TemplateScale')
-      .indexDrop('templateId')
-      .run()
-
     // drop index 'teamId' for table TemplateScale
     await r
       .table('TemplateScale')

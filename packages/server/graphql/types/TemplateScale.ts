@@ -9,7 +9,6 @@ import {
 import {GQLContext} from '../graphql'
 import {resolveTeam} from '../resolvers'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
-import PokerTemplate from './PokerTemplate'
 import Team from './Team'
 import TemplateScaleValue from './TemplateScaleValue'
 
@@ -40,17 +39,6 @@ const TemplateScale = new GraphQLObjectType<any, GQLContext>({
     },
     updatedAt: {
       type: new GraphQLNonNull(GraphQLISO8601Type)
-    },
-    templateId: {
-      type: new GraphQLNonNull(GraphQLID),
-      description: 'FK for template'
-    },
-    template: {
-      type: new GraphQLNonNull(PokerTemplate),
-      description: 'The template that this scale belongs to',
-      resolve: ({templateId}, _args, {dataLoader}) => {
-        return dataLoader.get('meetingTemplates').load(templateId)
-      }
     },
     name: {
       type: new GraphQLNonNull(GraphQLString),

@@ -13,48 +13,68 @@ const addPokerTemplateScale = {
   description: 'Add a new scale for the poker template',
   type: AddPokerTemplateScalePayload,
   args: {
-    templateId: {
+    parentScaleId: {
+      type: GraphQLID
+    },
+    teamId: {
       type: new GraphQLNonNull(GraphQLID)
     }
   },
-  async resolve(_source, {templateId}, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve(_source, {parentScaleId, teamId}, {authToken, dataLoader, socketId: mutatorId}) {
     const r = await getRethink()
     const operationId = dataLoader.share()
     const subOptions = {operationId, mutatorId}
-    const template = await r
-      .table('MeetingTemplate')
-      .get(templateId)
-      .run()
     const viewerId = getUserId(authToken)
 
     // AUTH
-    if (!template || !isTeamMember(authToken, template.teamId) || !template.isActive) {
+    if (!isTeamMember(authToken, teamId)) {
       return standardError(new Error('Team not found'), {userId: viewerId})
     }
 
     // VALIDATION
-    const {teamId} = template
     const activeScales = await r
       .table('TemplateScale')
       .getAll(teamId, {index: 'teamId'})
-      .filter({
-        templateId,
-        isActive: true
-      })
+      .filter({isActive: true})
       .run()
     if (activeScales.length >= Threshold.MAX_POKER_TEMPLDATE_SCALES) {
       return standardError(new Error('Too many scales'), {userId: viewerId})
     }
 
     // RESOLUTION
-    const sortOrder = Math.max(...activeScales.map((scale) => scale.sortOrder)) + 1 + dndNoise()
-    const newScale = new TemplateScale({
-      sortOrder: sortOrder,
-      name: `*New Scale #${activeScales.length + 1}`,
-      values: [] as TemplateScaleValue[],
-      teamId,
-      templateId
-    })
+    let newScale
+    const sortOrder = activeScales.length > 0 ?
+      Math.max(...activeScales.map((scale) => scale.sortOrder)) + 1 + dndNoise() : 0
+    if (parentScaleId) {
+      const parentScale = await dataLoader.get('TemplateScales').load(parentScaleId)
+      if (!parentScale) {
+        return standardError(new Error('Parent scale not found'), {userId: viewerId})
+      }
+      const {name} = parentScale
+      const copyName = `${name} Copy`
+      const existingCopyCount = await r
+        .table('TemplateScale')
+        .getAll(teamId, {index: 'teamId'})
+        .filter({isActive: true})
+        .filter((row) => row('name').match(`^${copyName}`) as any)
+        .count()
+        .run()
+      const newName = existingCopyCount === 0 ? copyName : `${copyName} #${existingCopyCount + 1}`
+      newScale = new TemplateScale({
+        sortOrder,
+        name: newName,
+        values: [] as TemplateScaleValue[],
+        teamId,
+        parentScaleId
+      })
+    } else {
+      newScale = new TemplateScale({
+        sortOrder,
+        name: `*New Scale #${activeScales.length + 1}`,
+        values: [] as TemplateScaleValue[],
+        teamId,
+      })
+    }
 
     await r
       .table('TemplateScale')

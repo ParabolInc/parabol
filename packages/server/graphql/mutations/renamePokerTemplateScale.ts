@@ -34,17 +34,14 @@ const renamePokerTemplateScale = {
     }
 
     // VALIDATION
-    const {teamId, templateId} = scale
+    const {teamId} = scale
     const trimmedName = name.trim().slice(0, 100)
     const normalizedName = trimmedName || 'Unnamed Scale'
 
     const allScales = await r
       .table('TemplateScale')
       .getAll(teamId, {index: 'teamId'})
-      .filter({
-        isActive: true,
-        templateId
-      })
+      .filter({isActive: true})
       .run()
     if (allScales.find((scale) => scale.name === normalizedName)) {
       return standardError(new Error('Duplicate name scale'), {userId: viewerId})

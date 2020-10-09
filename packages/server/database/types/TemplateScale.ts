@@ -3,10 +3,10 @@ import TemplateScaleValue from './TemplateScaleValue'
 
 export interface TemplateScaleInput {
   teamId: string
-  templateId: string
   sortOrder: number
   name: string
   values: TemplateScaleValue[]
+  parentScaleId?: string
 }
 
 export default class TemplateScale {
@@ -17,16 +17,16 @@ export default class TemplateScale {
   sortOrder: number
   values: TemplateScaleValue[]
   teamId: string
-  templateId: string
   updatedAt = new Date()
+  parentScaleId?: string
 
   constructor(input: TemplateScaleInput) {
-    const {name, sortOrder, values, teamId, templateId} = input
+    const {name, sortOrder, values, teamId, parentScaleId} = input
     this.id = shortid.generate()
     this.sortOrder = sortOrder
     this.name = name
     this.values = values
     this.teamId = teamId
-    this.templateId = templateId
+    this.parentScaleId = parentScaleId
   }
 }

@@ -10,9 +10,6 @@ const removePokerTemplateScaleValue = {
   description: 'Remove a scale value from the scale of a template',
   type: RemovePokerTemplateScaleValuePayload,
   args: {
-    templateId: {
-      type: new GraphQLNonNull(GraphQLID)
-    },
     scaleId: {
       type: new GraphQLNonNull(GraphQLID)
     },
@@ -46,7 +43,7 @@ const removePokerTemplateScaleValue = {
       .table('TemplateScale')
       .get(scaleId)
       .run()
-    if (!scale || scale.templateId != templateId || scale.teamId != template.teamId) {
+    if (!scale || scale.teamId != template.teamId) {
       return standardError(new Error('Did not find an active scale'), {userId: viewerId})
     }
     const endIndex = scale.values.length - 1

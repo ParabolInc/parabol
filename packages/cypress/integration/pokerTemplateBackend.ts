@@ -10,12 +10,14 @@ describe('Poker template related backend tests', () => {
     }
   }
 
+  const teamId = 'l6k4LyKnhP'
+
   beforeEach(() => {
     cy.task('resetDb')
 
     const query = `
       mutation {
-        addPokerTemplate(teamId: "l6k4LyKnhP") {
+        addPokerTemplate(teamId: \"${teamId}\") {
           pokerTemplate {
             id
             name
@@ -39,6 +41,33 @@ describe('Poker template related backend tests', () => {
 
   afterEach(() => {
     cy.task('resetDb')
+  })
+
+  it('Add a new scale', () => {
+    const query = `
+      mutation {
+        addPokerTemplateScale(teamId: \"${teamId}\") {
+          scale {
+            name
+            isActive
+            values {
+              label
+            }
+          }
+        }
+      }
+    `
+    cy.postGQL(constructGraphQLQueryBody(query)).then((res) => {
+      const responseData = res.body.payload.data
+      const newScale = responseData.addPokerTemplateScale.scale
+      assert.strictEqual('*New Scale #1', newScale.name, 'Scale name')
+      assert.strictEqual(true, newScale.isActive, 'IsActive of scale')
+      assert.strictEqual(
+        0,
+        newScale.values.length,
+        'Values of the newly created scale should be empty'
+      )
+    })
   })
 
   it('Add a new poker template', () => {
@@ -124,38 +153,7 @@ describe('Poker template related backend tests', () => {
     })
   })
 
-  it('Add a new scale', () => {
-    const query = `
-      mutation {
-        addPokerTemplateScale(templateId: "${pokerTemplate.id}") {
-          scale {
-            templateId
-            name
-            isActive
-            values {
-              label
-            }
-          }
-        }
-      }
-    `
-    cy.postGQL(constructGraphQLQueryBody(query)).then((res) => {
-      const responseData = res.body.payload.data
-      const newScale = responseData.addPokerTemplateScale.scale
-      assert.strictEqual(
-        pokerTemplate.id,
-        newScale.templateId,
-        'Template id of the newly created scale'
-      )
-      assert.strictEqual('*New Scale #4', newScale.name, 'Scale name')
-      assert.strictEqual(true, newScale.isActive, 'IsActive of scale')
-      assert.strictEqual(
-        0,
-        newScale.values.length,
-        'Values of the newly created scale should be empty'
-      )
-    })
-  })
+
 
   it('Add a new scale value', () => {
     const addNewScaleQuery = `
@@ -163,7 +161,6 @@ describe('Poker template related backend tests', () => {
         addPokerTemplateScale(templateId: "${pokerTemplate.id}") {
           scale {
             id
-            templateId
             name
             isActive
             values {

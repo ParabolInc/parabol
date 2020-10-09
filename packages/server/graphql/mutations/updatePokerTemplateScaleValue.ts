@@ -11,9 +11,6 @@ const updatePokerTemplateScaleValue = {
   description: 'Update a scale value for a scale in a poker template',
   type: UpdatePokerTemplateScaleValuePayload,
   args: {
-    templateId: {
-      type: new GraphQLNonNull(GraphQLID)
-    },
     scaleId: {
       type: new GraphQLNonNull(GraphQLID)
     },
@@ -49,7 +46,7 @@ const updatePokerTemplateScaleValue = {
       .table('TemplateScale')
       .get(scaleId)
       .run()
-    if (!scale || scale.templateId != templateId || scale.teamId != template.teamId) {
+    if (!scale || scale.teamId != template.teamId) {
       return standardError(new Error('Did not find an active scale'), {userId: viewerId})
     }
     const endIndex = scale.values.length - 1

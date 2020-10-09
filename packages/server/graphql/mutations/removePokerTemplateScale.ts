@@ -26,25 +26,9 @@ const removePokerTemplateScale = {
     const viewerId = getUserId(authToken)
 
     // AUTH
-    if (!scale || !isTeamMember(authToken, scale.teamId) || !scale.isActive) {
+    const {teamId} = scale
+    if (!scale || !isTeamMember(authToken, teamId) || !scale.isActive) {
       return standardError(new Error('Team not found'), {userId: viewerId})
-    }
-
-    // VALIDATION
-    const {teamId, templateId} = scale
-    const scaleCount = await r
-      .table('TemplateScale')
-      .getAll(teamId, {index: 'teamId'})
-      .filter({
-        isActive: true,
-        templateId: templateId
-      })
-      .count()
-      .default(0)
-      .run()
-
-    if (scaleCount <= 1) {
-      return standardError(new Error('No scales remain'), {userId: viewerId})
     }
 
     // RESOLUTION
@@ -57,7 +41,7 @@ const removePokerTemplateScale = {
       })
       .run()
 
-    const data = {scaleId, templateId}
+    const data = {scaleId}
     publish(SubscriptionChannel.TEAM, teamId, 'RemovePokerTemplateScalePayload', data, subOptions)
     return data
   }
