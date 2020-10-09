@@ -10539,4 +10539,10 @@ export type TeamSubscriptionPayload =
   | IUpdateUserProfilePayload
   | IPersistJiraSearchQuerySuccess;
 
+export interface IUpdatePokerTemplateDimensionScalePayload {
+  __typename: 'UpdatePokerTemplateDimensionScalePayload';
+  error: IStandardMutationError | null;
+  dimension: ITemplateDimension | null;
+}
+
 // tslint:enable

@@ -1,5 +1,5 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
-import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import {SprintPokerDefaults, SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {IPokerTemplate, IPokerMeetingSettings, MeetingTypeEnum} from 'parabol-client/types/graphql'
 import getRethink from '../../database/rethinkDriver'
 import {getUserId, isTeamMember} from '../../utils/authorization'
@@ -71,7 +71,7 @@ const removePokerTemplate = {
 
     if (settings.selectedTemplateId === templateId) {
       const nextTemplate = templates.find((template) => template.id !== templateId)
-      const nextTemplateId = nextTemplate?.id ?? 'workingStuckTemplate'
+      const nextTemplateId = nextTemplate?.id ?? SprintPokerDefaults.DEFAULT_SCALE_ID
       await r
         .table('MeetingSettings')
         .get(settingsId)

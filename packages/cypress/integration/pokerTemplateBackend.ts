@@ -153,8 +153,6 @@ describe('Poker template related backend tests', () => {
     })
   })
 
-
-
   it('Add a new scale value', () => {
     const addNewScaleQuery = `
       mutation {
@@ -174,7 +172,7 @@ describe('Poker template related backend tests', () => {
       const responseData = res.body.payload.data
       const newScale = responseData.addPokerTemplateScale.scale
       const newScaleValue = {
-        color: 'ABC',
+        color: '#5CA0E5',
         value: 1,
         label: '1'
       }

@@ -3,7 +3,6 @@ import {SubscriptionChannel, Threshold} from 'parabol-client/types/constEnums'
 import dndNoise from 'parabol-client/utils/dndNoise'
 import getRethink from '../../database/rethinkDriver'
 import TemplateScale from '../../database/types/TemplateScale'
-import TemplateScaleValue from '../../database/types/TemplateScaleValue'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
@@ -43,8 +42,10 @@ const addPokerTemplateScale = {
 
     // RESOLUTION
     let newScale
-    const sortOrder = activeScales.length > 0 ?
-      Math.max(...activeScales.map((scale) => scale.sortOrder)) + 1 + dndNoise() : 0
+    const sortOrder =
+      activeScales.length > 0
+        ? Math.max(...activeScales.map((scale) => scale.sortOrder)) + 1 + dndNoise()
+        : 0
     if (parentScaleId) {
       const parentScale = await dataLoader.get('TemplateScales').load(parentScaleId)
       if (!parentScale) {
@@ -70,7 +71,7 @@ const addPokerTemplateScale = {
       newScale = new TemplateScale({
         sortOrder,
         name: `*New Scale #${activeScales.length + 1}`,
-        teamId,
+        teamId
       })
     }
 
