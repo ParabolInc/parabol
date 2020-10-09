@@ -336,5 +336,5 @@ export const enum AuthTokenRole {
 }
 
 export const enum SprintPokerDefaults {
-  DEFAULT_SCALE_ID = 'tshirtSizeScale'
+  DEFAULT_SCALE_ID = 'fibonacciScale'
 }

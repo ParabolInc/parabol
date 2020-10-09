@@ -63,7 +63,6 @@ const addPokerTemplateScale = {
       newScale = new TemplateScale({
         sortOrder,
         name: newName,
-        values: [] as TemplateScaleValue[],
         teamId,
         parentScaleId
       })
@@ -71,7 +70,6 @@ const addPokerTemplateScale = {
       newScale = new TemplateScale({
         sortOrder,
         name: `*New Scale #${activeScales.length + 1}`,
-        values: [] as TemplateScaleValue[],
         teamId,
       })
     }

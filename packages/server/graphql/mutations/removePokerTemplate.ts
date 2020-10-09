@@ -27,8 +27,11 @@ const removePokerTemplate = {
     const viewerId = getUserId(authToken)
 
     // AUTH
-    if (!template || !isTeamMember(authToken, template.teamId) || !template.isActive) {
+    if (!isTeamMember(authToken, template.teamId)) {
       return standardError(new Error('Team not found'), {userId: viewerId})
+    }
+    if (!template || !template.isActive) {
+      return standardError(new Error('Template not found'), {userId: viewerId})
     }
 
     // VALIDATION
@@ -56,16 +59,6 @@ const removePokerTemplate = {
         .update({isActive: false, updatedAt: now}),
       dimensions: r
         .table('TemplateDimension')
-        .getAll(teamId, {index: 'teamId'})
-        .filter({
-          templateId
-        })
-        .update({
-          isActive: false,
-          updatedAt: now
-        }),
-      scales: r
-        .table('TemplateScale')
         .getAll(teamId, {index: 'teamId'})
         .filter({
           templateId

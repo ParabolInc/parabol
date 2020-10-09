@@ -85,28 +85,13 @@ const oldPokerTemplates = [
 
 const newScales = [
   {
-    id: 'tshirtSizeScale',
-    createdAt: newDataDate,
-    updatedAt: newDataDate,
-    name: 'T-Shirt Sizes',
-    isActive: true,
-    sortOrder: 0,
-    values: [
-      {color: '#5CA0E5', label: 'XS', value: 1},
-      {color: '#5CA0E5', label: 'SM', value: 2},
-      {color: '#45E595', label: 'M', value: 3},
-      {color: '#E59545', label: 'L', value: 4},
-      {color: '#E59545', label: 'XL', value: 5}
-    ],
-    teamId: 'aGhostTeam',
-  },
-  {
     id: 'fibonacciScale',
     createdAt: newDataDate,
     updatedAt: newDataDate,
     name: 'Fibonacci',
     isActive: true,
-    sortOrder: 1,
+    isStarter: true,
+    sortOrder: 0,
     values: [
       {color: '#5CA0E5', label: '1', value: 1},
       {color: '#5CA0E5', label: '2', value: 2},
@@ -120,11 +105,29 @@ const newScales = [
     teamId: 'aGhostTeam',
   },
   {
+    id: 'tshirtSizeScale',
+    createdAt: newDataDate,
+    updatedAt: newDataDate,
+    name: 'T-Shirt Sizes',
+    isActive: true,
+    isStarter: true,
+    sortOrder: 1,
+    values: [
+      {color: '#5CA0E5', label: 'XS', value: 1},
+      {color: '#5CA0E5', label: 'SM', value: 2},
+      {color: '#45E595', label: 'M', value: 3},
+      {color: '#E59545', label: 'L', value: 4},
+      {color: '#E59545', label: 'XL', value: 5}
+    ],
+    teamId: 'aGhostTeam',
+  },
+  {
     id: 'fiveFingersScale',
     createdAt: newDataDate,
     updatedAt: newDataDate,
     name: 'Five Fingers',
     isActive: true,
+    isStarter: true,
     sortOrder: 2,
     values: [
       {color: '#5CA0E5', label: '1', value: 1},
@@ -165,6 +168,7 @@ const newPokerTemplates = [
     createdAt: newDataDate,
     id: 'estimatedEffortTemplate',
     isActive: true,
+    isStarter: true,
     name: 'Estimated Effort & Value',
     orgId: 'aGhostOrg',
     scope: 'PUBLIC',

@@ -20,32 +20,27 @@ const removePokerTemplateScaleValue = {
   },
   async resolve(
     _source,
-    {templateId, scaleId, index},
+    {scaleId, index},
     {authToken, dataLoader, socketId: mutatorId}
   ) {
     const r = await getRethink()
     const operationId = dataLoader.share()
     const subOptions = {operationId, mutatorId}
-    const template = await r
-      .table('MeetingTemplate')
-      .get(templateId)
-      .run()
     const viewerId = getUserId(authToken)
 
     // AUTH
-    if (!template || !isTeamMember(authToken, template.teamId) || !template.isActive) {
-      return standardError(new Error('Team not found'), {userId: viewerId})
-    }
-
-    // VALIDATION
-    const {teamId} = template
     const scale = await r
       .table('TemplateScale')
       .get(scaleId)
       .run()
-    if (!scale || scale.teamId != template.teamId) {
+    if (!scale || !scale.isActive) {
       return standardError(new Error('Did not find an active scale'), {userId: viewerId})
     }
+    if (!isTeamMember(authToken, scale.teamId)) {
+      return standardError(new Error('Team not found'), {userId: viewerId})
+    }
+
+    // VALIDATION
     const endIndex = scale.values.length - 1
     if (index > endIndex || index < 0) {
       return standardError(new Error('Invalid index'), {userId: viewerId})
@@ -60,8 +55,8 @@ const removePokerTemplateScaleValue = {
       }))
       .run()
 
-    const data = {scaleId, templateId}
-    publish(SubscriptionChannel.TEAM, teamId, 'RemovePokerTemplateScalePayload', data, subOptions)
+    const data = {scaleId}
+    publish(SubscriptionChannel.TEAM, scale.teamId, 'RemovePokerTemplateScalePayload', data, subOptions)
     return data
   }
 }

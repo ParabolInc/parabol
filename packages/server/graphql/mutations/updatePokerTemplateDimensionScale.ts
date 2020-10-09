@@ -41,11 +41,7 @@ const updatePokerTemplateDimensionScale = {
       .table('TemplateScale')
       .get(scaleId)
       .run()
-    if (
-      !scale ||
-      !scale.isActive ||
-      scale.teamId !== teamId
-    ) {
+    if (!scale || !scale.isActive || (!scale.isStarter && scale.teamId !== teamId)) {
       return standardError(new Error('Scale not found'), {userId: viewerId})
     }
 

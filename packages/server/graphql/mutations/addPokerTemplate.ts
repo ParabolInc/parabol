@@ -1,5 +1,5 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
-import {SubscriptionChannel, Threshold} from 'parabol-client/types/constEnums'
+import {SprintPokerDefaults, SubscriptionChannel, Threshold} from 'parabol-client/types/constEnums'
 import {MeetingTypeEnum} from '../../../client/types/graphql'
 import getRethink from '../../database/rethinkDriver'
 import PokerTemplate from '../../database/types/PokerTemplate'
@@ -8,7 +8,6 @@ import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import AddPokerTemplatePayload from '../types/AddPokerTemplatePayload'
-import makePokerTemplateScales from './helpers/makePokerTemplateScales'
 
 const addPokerTemplate = {
   description: 'Add a new template full of dimensions',
@@ -37,12 +36,13 @@ const addPokerTemplate = {
       .table('MeetingTemplate')
       .getAll(teamId, {index: 'teamId'})
       .filter({isActive: true})
-      .filter({type: 'poker'})
+      .filter({type: MeetingTypeEnum.poker})
       .run()
 
     if (allTemplates.length >= Threshold.MAX_RETRO_TEAM_TEMPLATES) {
       return standardError(new Error('Too many templates'), {userId: viewerId})
     }
+
     const viewerTeam = await dataLoader.get('teams').load(teamId)
     let data
     if (parentTemplateId) {
@@ -65,6 +65,7 @@ const addPokerTemplate = {
         .table('MeetingTemplate')
         .getAll(teamId, {index: 'teamId'})
         .filter({isActive: true})
+        .filter({type: MeetingTypeEnum.poker})
         .filter((row) => row('name').match(`^${copyName}`) as any)
         .count()
         .run()
@@ -75,6 +76,7 @@ const addPokerTemplate = {
         orgId: viewerTeam.orgId,
         parentTemplateId
       })
+
       const dimensions = await dataLoader.get('dimensionsByTemplateId').load(parentTemplate.id)
       const newTemplateDimensions = dimensions.map((dimension) => {
         return new TemplateDimension({
@@ -83,6 +85,7 @@ const addPokerTemplate = {
           templateId: newTemplate.id
         })
       })
+
       await r({
         newTemplate: r.table('MeetingTemplate').insert(newTemplate),
         newTemplateDimensions: r.table('TemplateDimension').insert(newTemplateDimensions),
@@ -103,13 +106,11 @@ const addPokerTemplate = {
       }
       const team = await dataLoader.get('teams').load(teamId)
       const {orgId} = team
-      // RESOLUTION
 
       const newTemplate = new PokerTemplate({name: '*New Template', teamId, orgId})
       const templateId = newTemplate.id
-      const templateDefaultScales = makePokerTemplateScales(teamId, templateId)
       const newDimension = new TemplateDimension({
-        scaleId: templateDefaultScales[0].id,
+        scaleId: SprintPokerDefaults.DEFAULT_SCALE_ID,
         description: '',
         sortOrder: 0,
         name: '*New Dimension',
@@ -120,7 +121,6 @@ const addPokerTemplate = {
       await r({
         newTemplate: r.table('MeetingTemplate').insert(newTemplate),
         newTemplateDimension: r.table('TemplateDimension').insert(newDimension),
-        newTemplateScale: r.table('TemplateScale').insert(templateDefaultScales),
         settings: r
           .table('MeetingSettings')
           .getAll(teamId, {index: 'teamId'})
