@@ -1,9 +1,5 @@
-import {ContentState, convertFromRaw} from 'draft-js'
-import {stateToMarkdown} from 'draft-js-export-markdown'
 import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import getRethink from '../../database/rethinkDriver'
-import db from '../../db'
 import AtlassianServerManager from '../../utils/AtlassianServerManager'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
@@ -43,8 +39,6 @@ export default {
     {content, cloudId, projectKey, teamId, meetingId}: any, // TODO: use correct type
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) => {
-    const r = await getRethink()
-    const now = new Date()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
     const viewerId = getUserId(authToken)
@@ -55,9 +49,11 @@ export default {
     }
 
     // VALIDATION
-    const viewerAuth = await Promise.all([
+    const viewerAuthRes = await Promise.all([
       dataLoader.get('atlassianAuthByUserId').load(viewerId)
-    ])[0][0]
+    ])
+    const viewerAuth = viewerAuthRes[0][0]
+    console.log('viewerAuth', viewerAuth)
 
     // TODO: prob change assignee
     if (!viewerAuth || !viewerAuth.isActive) {
@@ -80,12 +76,14 @@ export default {
     if ('message' in sites) {
       return standardError(new Error(sites.message), {userId: viewerId})
     }
+    console.log('sites', sites)
     if ('message' in issueMetaRes) {
       return standardError(new Error(issueMetaRes.message), {userId: viewerId})
     }
     if ('errors' in issueMetaRes) {
       return standardError(new Error(Object.values(issueMetaRes.errors)[0]), {userId: viewerId})
     }
+    console.log('issueMetaRes', issueMetaRes)
     const {projects} = issueMetaRes
     // should always be the first and only item in the project arr
     const project = projects.find((project) => project.key === projectKey)!
@@ -104,18 +102,28 @@ export default {
       }
     }
     const res = await manager.createIssue(cloudId, projectKey, payload)
+    console.log('res', res)
     if ('message' in res) {
       return standardError(new Error(res.message), {userId: viewerId})
     }
     if ('errors' in res) {
       return standardError(new Error(Object.values(res.errors)[0]), {userId: viewerId})
     }
-
-    // const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)
-    const data = payload
-    // teamMembers.forEach(({userId}) => {
-    //   publish(SubscriptionChannel.TASK, userId, 'JiraCreateIssuePayload', data, subOptions)
-    // })
+    const cloud = sites.find((site) => site.id === cloudId)!
+    console.log('cloud', cloud)
+    // const data = {
+    //   teamId,
+    //   cloudId,
+    //   issueKey: res.key,
+    //   url: cloud.url
+    // }
+    const data = {
+      cloudId,
+      key: projectKey,
+      summary: content,
+      url: cloud.url
+    }
+    console.log('data', data)
     if (meetingId) {
       publish(SubscriptionChannel.MEETING, meetingId, 'JiraCreateIssuePayload', data, subOptions)
     }
@@ -127,6 +135,7 @@ export default {
         meetingId
       }
     })
+    // console.log('{jiraIssueDescription: content}', {jiraIssueDescription: content})
     return data
   }
 }

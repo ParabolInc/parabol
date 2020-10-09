@@ -1,9 +1,6 @@
-import {GraphQLObjectType} from 'graphql'
-import {resolveTask} from '../resolvers'
-import Task from './Task'
+import {GraphQLID, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
 import StandardMutationError from './StandardMutationError'
 import {GQLContext} from '../graphql'
-import JiraIssue from './JiraIssue'
 
 const JiraCreateIssuePayload = new GraphQLObjectType<any, GQLContext>({
   name: 'JiraCreateIssuePayload',
@@ -11,9 +8,21 @@ const JiraCreateIssuePayload = new GraphQLObjectType<any, GQLContext>({
     error: {
       type: StandardMutationError
     },
-    jiraIssue: {
-      type: JiraIssue,
-      description: 'The Jira issue that has been created'
+    id: {
+      type: GraphQLNonNull(GraphQLID),
+      description: 'shortid',
+      resolve: ({cloudId, key}) => {
+        return `${cloudId}:${key}`
+      }
+    },
+    summary: {
+      type: GraphQLNonNull(GraphQLString),
+      description: 'The content of the Jira issue'
+    },
+    url: {
+      // TODO: change this to same format as JiraIssue type
+      type: GraphQLNonNull(GraphQLString),
+      description: 'The url of the issue that lives in Jira'
     }
   })
 })

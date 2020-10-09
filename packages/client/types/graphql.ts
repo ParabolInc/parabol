@@ -8920,9 +8920,19 @@ export interface IJiraCreateIssuePayload {
   error: IStandardMutationError | null;
 
   /**
-   * The Jira issue that has been created
+   * shortid
    */
-  jiraIssue: IJiraIssue | null;
+  id: string;
+
+  /**
+   * The content of the Jira issue
+   */
+  summary: string;
+
+  /**
+   * The url of the issue that lives in Jira
+   */
+  url: string;
 }
 
 export interface ILoginWithGooglePayload {
