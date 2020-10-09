@@ -220,7 +220,8 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       return {
         viewer: {
           ...this.db.users[0],
-          teamMember: this.db.teamMembers[0]
+          teamMember: this.db.teamMembers[0],
+          team: this.db.team
         }
       }
     },
@@ -754,8 +755,10 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
     },
     SetSlackNotificationMutation: ({slackChannelId, slackNotificationEvents}, userId) => {
       const teamMember = this.db.teamMembers.find((teamMember) => teamMember.userId === userId)!
-      const {slackNotifications} = teamMember
-      const filteredNotifications = slackNotifications.filter((notification) =>
+      const {integrations} = teamMember
+      const {slack} = integrations
+      const {notifications} = slack
+      const filteredNotifications = notifications.filter((notification) =>
         slackNotificationEvents.includes(notification.event)
       )
       filteredNotifications.forEach((notification) => {

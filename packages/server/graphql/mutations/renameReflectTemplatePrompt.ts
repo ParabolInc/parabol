@@ -29,7 +29,7 @@ const renameReflectTemplate = {
     const viewerId = getUserId(authToken)
 
     // AUTH
-    if (!prompt || !isTeamMember(authToken, prompt.teamId) || !prompt.isActive) {
+    if (!prompt || !isTeamMember(authToken, prompt.teamId) || prompt.removedAt) {
       return standardError(new Error('Team not found'), {userId: viewerId})
     }
 
@@ -42,7 +42,7 @@ const renameReflectTemplate = {
       .table('ReflectPrompt')
       .getAll(teamId, {index: 'teamId'})
       .filter({
-        isActive: true,
+        removedAt: null,
         templateId
       })
       .run()

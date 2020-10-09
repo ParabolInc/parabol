@@ -20,10 +20,7 @@ interface Props {
   meeting: PokerMeetingSidebar_meeting
 }
 
-const collapsiblePhases: string[] = [
-  NewMeetingPhaseTypeEnum.checkin,
-  'ESTIMATE'
-]
+const collapsiblePhases: string[] = [NewMeetingPhaseTypeEnum.checkin, 'ESTIMATE']
 
 const PokerMeetingSidebar = (props: Props) => {
   const atmosphere = useAtmosphere()
@@ -66,16 +63,11 @@ const PokerMeetingSidebar = (props: Props) => {
           const estimatePhase = phases.find((phase) => {
             return phase.phaseType === 'ESTIMATE'
           })!
-          const phaseCount =
-            phaseType === 'ESTIMATE'
-              ? estimatePhase.stages.length
-              : undefined
+          const phaseCount = phaseType === 'ESTIMATE' ? estimatePhase.stages.length : undefined
           return (
             <NewMeetingSidebarPhaseListItem
               handleClick={canNavigate ? handleClick : undefined}
-              isActive={
-                phaseType === 'ESTIMATE' ? false : localPhaseType === phaseType
-              }
+              isActive={phaseType === 'ESTIMATE' ? false : localPhaseType === phaseType}
               isCollapsible={collapsiblePhases.includes(phaseType)}
               isFacilitatorPhase={phaseType === facilitatorPhaseType}
               isUnsyncedFacilitatorPhase={

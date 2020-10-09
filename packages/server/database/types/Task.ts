@@ -26,7 +26,7 @@ export interface TaskInput {
   threadSortOrder?: number | null
   threadSource?: ThreadSourceEnum | null
   updatedAt?: Date
-  userId: string
+  userId?: string | null
 }
 
 export default class Task {
@@ -48,7 +48,7 @@ export default class Task {
   threadSortOrder?: number | null
   threadSource?: ThreadSourceEnum
   updatedAt: Date
-  userId: string
+  userId: string | null
 
   constructor(input: TaskInput) {
     const {
@@ -89,6 +89,6 @@ export default class Task {
     this.threadSortOrder = threadSortOrder || undefined
     this.threadParentId = threadParentId || undefined
     this.updatedAt = updatedAt || new Date()
-    this.userId = userId
+    this.userId = userId || null
   }
 }

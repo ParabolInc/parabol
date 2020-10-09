@@ -10,7 +10,7 @@ describe('userTaskView', () => {
   })
 
   it('shows default team and team member filter on /me/tasks', () => {
-    cy.get('[data-cy=team-filter]').should('contain', 'My teams')
+    cy.get('[data-cy=team-filter]').should('contain', 'All Teams')
     cy.get('[data-cy=team-filter]').click()
     cy.get('[data-cy="team-filter-l6k4LyKnhP"]').should('contain', 'cypress’s Team')
 

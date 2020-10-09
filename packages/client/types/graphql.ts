@@ -381,19 +381,9 @@ export interface ITeamMember {
   allAvailableIntegrations: Array<SuggestedIntegration>;
 
   /**
-   * The auth for the user. access token is null if not viewer. Use isActive to check for presence
-   */
-  atlassianAuth: IAtlassianAuth | null;
-
-  /**
    * The datetime the team member was created
    */
   createdAt: any;
-
-  /**
-   * The auth for the user. access token is null if not viewer. Use isActive to check for presence
-   */
-  githubAuth: IGitHubAuth | null;
 
   /**
    * true if the user is a part of the team, false if they no longer are
@@ -426,6 +416,11 @@ export interface ITeamMember {
   isSelf: boolean;
 
   /**
+   * The integrations that the team member has authorized. accessible by all
+   */
+  integrations: ITeamMemberIntegrations;
+
+  /**
    * The meeting specifics for the meeting the team member is currently in
    */
   meetingMember: MeetingMember | null;
@@ -434,16 +429,6 @@ export interface ITeamMember {
    * The name of the assignee
    */
   preferredName: string;
-
-  /**
-   * The slack auth for the team member.
-   */
-  slackAuth: ISlackAuth | null;
-
-  /**
-   * A list of events and the slack channels they get posted to
-   */
-  slackNotifications: Array<ISlackNotification>;
 
   /**
    * The integrations that the user would probably like to use
@@ -509,10 +494,37 @@ export const enum TaskServiceEnum {
 }
 
 /**
- * OAuth token for a team member
+ * All the available integrations available for this team member
  */
-export interface IAtlassianAuth {
-  __typename: 'AtlassianAuth';
+export interface ITeamMemberIntegrations {
+  __typename: 'TeamMemberIntegrations';
+
+  /**
+   * composite
+   */
+  id: string;
+
+  /**
+   * All things associated with an atlassian integration for a team member
+   */
+  atlassian: IAtlassianIntegration | null;
+
+  /**
+   * All things associated with a GitHub integration for a team member
+   */
+  github: IGitHubIntegration | null;
+
+  /**
+   * All things associated with a slack integration for a team member
+   */
+  slack: ISlackIntegration | null;
+}
+
+/**
+ * The atlassian auth + integration helpers for a specific team member
+ */
+export interface IAtlassianIntegration {
+  __typename: 'AtlassianIntegration';
 
   /**
    * shortid
@@ -525,7 +537,7 @@ export interface IAtlassianAuth {
   isActive: boolean;
 
   /**
-   * The access token to atlassian, useful for 1 hour. null if no access token available
+   * The access token to atlassian, useful for 1 hour. null if no access token available or the viewer is not the user
    */
   accessToken: string | null;
 
@@ -545,11 +557,6 @@ export interface IAtlassianAuth {
   createdAt: any;
 
   /**
-   * The refresh token to atlassian to receive a new 1-hour accessToken, always null since server secret is required
-   */
-  refreshToken: string | null;
-
-  /**
    * *The team that the token is linked to
    */
   teamId: string;
@@ -563,13 +570,248 @@ export interface IAtlassianAuth {
    * The user that the access token is attached to
    */
   userId: string;
+
+  /**
+   * A list of issues coming straight from the jira integration for a specific team member
+   */
+  issues: IJiraIssueConnection;
+
+  /**
+   * A list of projects accessible by this team member. empty if viewer is not the user
+   */
+  projects: Array<IJiraRemoteProject>;
+
+  /**
+   * the list of suggested search queries, sorted by most recent. Guaranteed to be < 60 days old
+   */
+  jiraSearchQueries: Array<IJiraSearchQuery>;
+}
+
+export interface IIssuesOnAtlassianIntegrationArguments {
+  /**
+   * @default 100
+   */
+  first?: number | null;
+
+  /**
+   * the datetime cursor
+   */
+  after?: any | null;
+
+  /**
+   * A string of text to search for, or JQL if isJQL is true
+   */
+  queryString?: string | null;
+
+  /**
+   * true if the queryString is JQL, else false
+   */
+  isJQL: boolean;
+  projectKeyFilters?: Array<string> | null;
+}
+
+/**
+ * A connection to a list of items.
+ */
+export interface IJiraIssueConnection {
+  __typename: 'JiraIssueConnection';
+
+  /**
+   * Page info with cursors coerced to ISO8601 dates
+   */
+  pageInfo: IPageInfoDateCursor | null;
+
+  /**
+   * A list of edges.
+   */
+  edges: Array<IJiraIssueEdge>;
+
+  /**
+   * An error with the connection, if any
+   */
+  error: IStandardMutationError | null;
+}
+
+/**
+ * Information about pagination in a connection.
+ */
+export interface IPageInfoDateCursor {
+  __typename: 'PageInfoDateCursor';
+
+  /**
+   * When paginating forwards, are there more items?
+   */
+  hasNextPage: boolean;
+
+  /**
+   * When paginating backwards, are there more items?
+   */
+  hasPreviousPage: boolean;
+
+  /**
+   * When paginating backwards, the cursor to continue.
+   */
+  startCursor: any | null;
+
+  /**
+   * When paginating forwards, the cursor to continue.
+   */
+  endCursor: any | null;
+
+  /**
+   * The number of edges returned in this page
+   */
+  edgesReturned: number | null;
+}
+
+/**
+ * An edge in a connection.
+ */
+export interface IJiraIssueEdge {
+  __typename: 'JiraIssueEdge';
+
+  /**
+   * The item at the end of the edge
+   */
+  node: IJiraIssue;
+  cursor: any | null;
+}
+
+/**
+ * The Jira Issue that comes direct from Jira
+ */
+export interface IJiraIssue {
+  __typename: 'JiraIssue';
+
+  /**
+   * shortid
+   */
+  id: string;
+
+  /**
+   * The ID of the jira cloud where the issue lives
+   */
+  cloudId: string;
+
+  /**
+   * The name of the jira cloud where the issue lives
+   */
+  cloudName: string;
+
+  /**
+   * The url to access the issue
+   */
+  url: any;
+
+  /**
+   * The key of the issue as found in Jira
+   */
+  key: string;
+
+  /**
+   * The plaintext summary of the jira issue
+   */
+  summary: string;
+
+  /**
+   * The plaintext description of the jira issue
+   */
+  description: string;
+}
+
+export interface IStandardMutationError {
+  __typename: 'StandardMutationError';
+
+  /**
+   * The title of the error
+   */
+  title: string | null;
+
+  /**
+   * The full error
+   */
+  message: string;
+}
+
+/**
+ * A project fetched from Jira in real time
+ */
+export interface IJiraRemoteProject {
+  __typename: 'JiraRemoteProject';
+  id: string;
+  self: string;
+
+  /**
+   * The cloud ID that the project lives on. Does not exist on the Jira object!
+   */
+  cloudId: string;
+  key: string;
+  name: string;
+  avatarUrls: IJiraRemoteAvatarUrls;
+  projectCategory: IJiraRemoteProjectCategory;
+  simplified: boolean;
+  style: string;
+}
+
+/**
+ * A project fetched from Jira in real time
+ */
+export interface IJiraRemoteAvatarUrls {
+  __typename: 'JiraRemoteAvatarUrls';
+  x48: string;
+  x24: string;
+  x16: string;
+  x32: string;
+}
+
+/**
+ * A project category fetched from a JiraRemoteProject
+ */
+export interface IJiraRemoteProjectCategory {
+  __typename: 'JiraRemoteProjectCategory';
+  self: string;
+  id: string;
+  name: string;
+  description: string;
+}
+
+/**
+ * A jira search query including all filters selected when the query was executed
+ */
+export interface IJiraSearchQuery {
+  __typename: 'JiraSearchQuery';
+
+  /**
+   * shortid
+   */
+  id: string;
+
+  /**
+   * The query string, either simple or JQL depending on the isJQL flag
+   */
+  queryString: string;
+
+  /**
+   * true if the queryString is JQL, else false
+   */
+  isJQL: boolean;
+
+  /**
+   * The list of project keys selected as a filter. null if not set
+   */
+  projectKeyFilters: Array<string>;
+
+  /**
+   * the time the search query was last used. Used for sorting
+   */
+  lastUsedAt: any;
 }
 
 /**
  * OAuth token for a team member
  */
-export interface IGitHubAuth {
-  __typename: 'GitHubAuth';
+export interface IGitHubIntegration {
+  __typename: 'GitHubIntegration';
 
   /**
    * shortid
@@ -610,6 +852,130 @@ export interface IGitHubAuth {
    * The user that the access token is attached to
    */
   userId: string;
+}
+
+/**
+ * OAuth token for a team member
+ */
+export interface ISlackIntegration {
+  __typename: 'SlackIntegration';
+
+  /**
+   * shortid
+   */
+  id: string;
+
+  /**
+   * true if the auth is updated & ready to use for all features, else false
+   */
+  isActive: boolean;
+
+  /**
+   * The access token to slack, only visible to the owner. Used as a fallback to botAccessToken
+   */
+  accessToken: string | null;
+
+  /**
+   * the parabol bot user id
+   */
+  botUserId: string | null;
+
+  /**
+   * the parabol bot access token, used as primary communication
+   */
+  botAccessToken: string | null;
+
+  /**
+   * The timestamp the provider was created
+   */
+  createdAt: any;
+
+  /**
+   * The default channel to assign to new team notifications
+   */
+  defaultTeamChannelId: string;
+
+  /**
+   * The id of the team in slack
+   */
+  slackTeamId: string | null;
+
+  /**
+   * The name of the team in slack
+   */
+  slackTeamName: string | null;
+
+  /**
+   * The userId in slack
+   */
+  slackUserId: string;
+
+  /**
+   * The name of the user in slack
+   */
+  slackUserName: string;
+
+  /**
+   * *The team that the token is linked to
+   */
+  teamId: string;
+
+  /**
+   * The timestamp the token was updated at
+   */
+  updatedAt: any;
+
+  /**
+   * The user that the access token is attached to
+   */
+  userId: string;
+
+  /**
+   * A list of events and the slack channels they get posted to
+   */
+  notifications: Array<ISlackNotification>;
+}
+
+/**
+ * an event trigger and slack channel to receive it
+ */
+export interface ISlackNotification {
+  __typename: 'SlackNotification';
+  id: string;
+  event: SlackNotificationEventEnum;
+  eventType: SlackNotificationEventTypeEnum;
+
+  /**
+   * null if no notification is to be sent
+   */
+  channelId: string | null;
+  teamId: string;
+  userId: string;
+}
+
+/**
+ * The event that triggers a slack notification
+ */
+export const enum SlackNotificationEventEnum {
+  meetingStart = 'meetingStart',
+  meetingEnd = 'meetingEnd',
+  MEETING_STAGE_TIME_LIMIT_END = 'MEETING_STAGE_TIME_LIMIT_END',
+  MEETING_STAGE_TIME_LIMIT_START = 'MEETING_STAGE_TIME_LIMIT_START'
+}
+
+/**
+ * The type of event for a slack notification
+ */
+export const enum SlackNotificationEventTypeEnum {
+  /**
+   * notification that concerns the whole team
+   */
+  team = 'team',
+
+  /**
+   * notification that concerns a single member on the team
+   */
+  member = 'member'
 }
 
 /**
@@ -732,6 +1098,11 @@ export interface IUser {
    * the endedAt timestamp of the most recent meeting they were a member of
    */
   lastMetAt: any | null;
+
+  /**
+   * The number of meetings the user has attended
+   */
+  meetingCount: number;
 
   /**
    * The largest number of consecutive months the user has checked into a meeting
@@ -982,9 +1353,9 @@ export interface ITasksOnUserArguments {
   after?: any | null;
 
   /**
-   * a list of user Ids that you want tasks for. if null, will return tasks for all possible team members
+   * a list of user Ids that you want tasks for. if null, will return tasks for all possible team members. An id is null if it is not assigned to anyone.
    */
-  userIds?: Array<string> | null;
+  userIds?: Array<string | null> | null;
 
   /**
    * a list of team Ids that you want tasks for. if null, will return tasks for all possible active teams
@@ -1006,6 +1377,12 @@ export interface ITasksOnUserArguments {
    * only return tasks which match the given filter query
    */
   filterQuery?: string | null;
+
+  /**
+   * if true, include unassigned tasks. If false, only return assigned tasks
+   * @default false
+   */
+  includeUnassigned?: boolean | null;
 }
 
 export interface ITeamOnUserArguments {
@@ -1061,38 +1438,6 @@ export interface ITaskConnection {
    * A list of edges.
    */
   edges: Array<ITaskEdge>;
-}
-
-/**
- * Information about pagination in a connection.
- */
-export interface IPageInfoDateCursor {
-  __typename: 'PageInfoDateCursor';
-
-  /**
-   * When paginating forwards, are there more items?
-   */
-  hasNextPage: boolean;
-
-  /**
-   * When paginating backwards, are there more items?
-   */
-  hasPreviousPage: boolean;
-
-  /**
-   * When paginating backwards, the cursor to continue.
-   */
-  startCursor: any | null;
-
-  /**
-   * When paginating forwards, the cursor to continue.
-   */
-  endCursor: any | null;
-
-  /**
-   * The number of edges returned in this page
-   */
-  edgesReturned: number | null;
 }
 
 /**
@@ -1221,14 +1566,14 @@ export interface ITask {
   team: ITeam;
 
   /**
-   * * The userId, index useful for server-side methods getting all tasks under a user
+   * * The userId, index useful for server-side methods getting all tasks under a user. This can be null if the task is not assigned to anyone.
    */
-  userId: string;
+  userId: string | null;
 
   /**
-   * The user the task is assigned to
+   * The user the task is assigned to. Null if it is not assigned to anyone.
    */
-  user: IUser;
+  user: IUser | null;
 }
 
 /**
@@ -1715,11 +2060,6 @@ export interface IReflectPrompt {
   createdAt: any;
 
   /**
-   * true if the phase item is currently used by the team, else false
-   */
-  isActive: boolean | null;
-
-  /**
    * foreign key. use the team field
    */
   teamId: string;
@@ -1764,6 +2104,11 @@ export interface IReflectPrompt {
    * The color used to visually group a phase item.
    */
   groupColor: string;
+
+  /**
+   * The datetime that the prompt was removed. Null if it has not been removed.
+   */
+  removedAt: any | null;
 }
 
 /**
@@ -2868,125 +3213,6 @@ export interface ITeamInvitationPayload {
 }
 
 /**
- * OAuth token for a team member
- */
-export interface ISlackAuth {
-  __typename: 'SlackAuth';
-
-  /**
-   * shortid
-   */
-  id: string;
-
-  /**
-   * true if the auth is updated & ready to use for all features, else false
-   */
-  isActive: boolean;
-
-  /**
-   * The access token to slack, only visible to the owner. Used as a fallback to botAccessToken
-   */
-  accessToken: string | null;
-
-  /**
-   * the parabol bot user id
-   */
-  botUserId: string | null;
-
-  /**
-   * the parabol bot access token, used as primary communication
-   */
-  botAccessToken: string | null;
-
-  /**
-   * The timestamp the provider was created
-   */
-  createdAt: any;
-
-  /**
-   * The default channel to assign to new team notifications
-   */
-  defaultTeamChannelId: string;
-
-  /**
-   * The id of the team in slack
-   */
-  slackTeamId: string | null;
-
-  /**
-   * The name of the team in slack
-   */
-  slackTeamName: string | null;
-
-  /**
-   * The userId in slack
-   */
-  slackUserId: string;
-
-  /**
-   * The name of the user in slack
-   */
-  slackUserName: string;
-
-  /**
-   * *The team that the token is linked to
-   */
-  teamId: string;
-
-  /**
-   * The timestamp the token was updated at
-   */
-  updatedAt: any;
-
-  /**
-   * The user that the access token is attached to
-   */
-  userId: string;
-}
-
-/**
- * an event trigger and slack channel to receive it
- */
-export interface ISlackNotification {
-  __typename: 'SlackNotification';
-  id: string;
-  event: SlackNotificationEventEnum;
-  eventType: SlackNotificationEventTypeEnum;
-
-  /**
-   * null if no notification is to be sent
-   */
-  channelId: string | null;
-  teamId: string;
-  userId: string;
-}
-
-/**
- * The event that triggers a slack notification
- */
-export const enum SlackNotificationEventEnum {
-  meetingStart = 'meetingStart',
-  meetingEnd = 'meetingEnd',
-  MEETING_STAGE_TIME_LIMIT_END = 'MEETING_STAGE_TIME_LIMIT_END',
-  MEETING_STAGE_TIME_LIMIT_START = 'MEETING_STAGE_TIME_LIMIT_START'
-}
-
-/**
- * The type of event for a slack notification
- */
-export const enum SlackNotificationEventTypeEnum {
-  /**
-   * notification that concerns the whole team
-   */
-  team = 'team',
-
-  /**
-   * notification that concerns a single member on the team
-   */
-  member = 'member'
-}
-
-/**
  * The details associated with a task integrated with GitHub
  */
 export interface ISuggestedIntegrationQueryPayload {
@@ -3002,20 +3228,6 @@ export interface ISuggestedIntegrationQueryPayload {
    * All the integrations that are likely to be integrated
    */
   items: Array<SuggestedIntegration> | null;
-}
-
-export interface IStandardMutationError {
-  __typename: 'StandardMutationError';
-
-  /**
-   * The title of the error
-   */
-  title: string | null;
-
-  /**
-   * The full error
-   */
-  message: string;
 }
 
 /**
@@ -4000,6 +4212,39 @@ export interface IEstimateStage {
    * The sort order for reprioritizing discussion topics
    */
   sortOrder: number;
+
+  /**
+   * the dimensionId that corresponds to this stage
+   */
+  dimensionId: string | null;
+  scores: Array<IEstimateUserScore>;
+}
+
+/**
+ * The user and number of points they estimated for dimension (where 1 stage has 1 dimension)
+ */
+export interface IEstimateUserScore {
+  __typename: 'EstimateUserScore';
+
+  /**
+   * shortid
+   */
+  id: string;
+
+  /**
+   * The stageId
+   */
+  stageId: string;
+
+  /**
+   * The userId that for this score
+   */
+  userId: string;
+
+  /**
+   * the value of the score. label is determined by this. note that if a template is modified, the corresponding label may no longer exists
+   */
+  score: number;
 }
 
 /**
@@ -4114,41 +4359,15 @@ export interface IEstimateStageJira {
   sortOrder: number;
 
   /**
+   * the dimensionId that corresponds to this stage
+   */
+  dimensionId: string | null;
+  scores: Array<IEstimateUserScore>;
+
+  /**
    * the issue straight from Jira
    */
-  issue: IJiraIssue;
-}
-
-/**
- * The Jira Issue that comes direct from Jira
- */
-export interface IJiraIssue {
-  __typename: 'JiraIssue';
-
-  /**
-   * shortid
-   */
-  id: string;
-
-  /**
-   * The ID of the jira cloud where the issue lives
-   */
-  cloudId: string;
-
-  /**
-   * The key of the issue as found in Jira
-   */
-  issueKey: string;
-
-  /**
-   * The plaintext summary of the jira issue
-   */
-  summary: string;
-
-  /**
-   * The plaintext description of the jira issue
-   */
-  description: string;
+  issue: IJiraIssue | null;
 }
 
 /**
@@ -4261,6 +4480,12 @@ export interface IEstimateStageParabol {
    * The sort order for reprioritizing discussion topics
    */
   sortOrder: number;
+
+  /**
+   * the dimensionId that corresponds to this stage
+   */
+  dimensionId: string | null;
+  scores: Array<IEstimateUserScore>;
 
   /**
    * the Parabol task
@@ -4827,11 +5052,6 @@ export interface IPokerMeetingSettings {
   team: ITeam;
 
   /**
-   * the list of suggested search queries, sorted by most recent. Guaranteed to be < 60 days old
-   */
-  jiraSearchQueries: Array<IJiraSearchQuery>;
-
-  /**
    * FK. The template that will be used to start the poker meeting
    */
   selectedTemplateId: string;
@@ -4873,43 +5093,6 @@ export interface IPublicTemplatesOnPokerMeetingSettingsArguments {
    * The cursor, which is the templateId
    */
   after?: string | null;
-}
-
-/**
- * A jira search query including all filters selected when the query was executed
- */
-export interface IJiraSearchQuery {
-  __typename: 'JiraSearchQuery';
-
-  /**
-   * shortid
-   */
-  id: string;
-
-  /**
-   * The query string, either simple or JQL depending on the isJQL flag
-   */
-  queryString: string;
-
-  /**
-   * true if the queryString is JQL, else false
-   */
-  isJQL: boolean;
-
-  /**
-   * The list of project keys selected as a filter. null if not set
-   */
-  projectKeyFilters: Array<string> | null;
-
-  /**
-   * The list of issue types selected as a filter. null if not set
-   */
-  issueTypeFilters: Array<string> | null;
-
-  /**
-   * the time the search query was last used. Used for sorting
-   */
-  lastUsedAt: any;
 }
 
 /**
@@ -5970,43 +6153,6 @@ export interface ISuggestedIntegrationJira {
    * The full project document fetched from Jira
    */
   remoteProject: IJiraRemoteProject;
-}
-
-/**
- * A project fetched from Jira in real time
- */
-export interface IJiraRemoteProject {
-  __typename: 'JiraRemoteProject';
-  self: string;
-  id: string;
-  key: string;
-  name: string;
-  avatarUrls: IJiraRemoteAvatarUrls;
-  projectCategory: IJiraRemoteProjectCategory;
-  simplified: boolean;
-  style: string;
-}
-
-/**
- * A project fetched from Jira in real time
- */
-export interface IJiraRemoteAvatarUrls {
-  __typename: 'JiraRemoteAvatarUrls';
-  x48: string;
-  x24: string;
-  x16: string;
-  x32: string;
-}
-
-/**
- * A project category fetched from a JiraRemoteProject
- */
-export interface IJiraRemoteProjectCategory {
-  __typename: 'JiraRemoteProjectCategory';
-  self: string;
-  id: string;
-  name: string;
-  description: string;
 }
 
 /**
@@ -7730,7 +7876,7 @@ export interface IAddAtlassianAuthPayload {
   /**
    * The newly created auth
    */
-  atlassianAuth: IAtlassianAuth | null;
+  atlassianIntegration: IAtlassianIntegration | null;
   teamId: string | null;
 
   /**
@@ -7843,7 +7989,7 @@ export interface IAddSlackAuthPayload {
   /**
    * The newly created auth
    */
-  slackAuth: ISlackAuth | null;
+  slackIntegration: ISlackIntegration | null;
 
   /**
    * The user with updated slackAuth
@@ -7887,7 +8033,7 @@ export interface IAddGitHubAuthPayload {
   /**
    * The newly created auth
    */
-  githubAuth: IGitHubAuth | null;
+  githubIntegration: IGitHubIntegration | null;
 
   /**
    * The team member with the updated auth
@@ -8252,9 +8398,9 @@ export interface ICreateTaskInput {
   teamId: string;
 
   /**
-   * userId, the owner of the task
+   * userId, the owner of the task. This can be null if the task is not assigned to anyone.
    */
-  userId: string;
+  userId?: string | null;
 }
 
 /**
@@ -8931,9 +9077,9 @@ export interface IPersistJiraSearchQuerySuccess {
   __typename: 'PersistJiraSearchQuerySuccess';
 
   /**
-   * The meeting settings with the updated jira search history
+   * The newly created auth
    */
-  settings: IPokerMeetingSettings;
+  atlassianIntegration: IAtlassianIntegration | null;
 }
 
 export interface IJiraSearchQueryInput {
@@ -8951,11 +9097,6 @@ export interface IJiraSearchQueryInput {
    * The list of project keys selected as a filter. null if not set
    */
   projectKeyFilters?: Array<string> | null;
-
-  /**
-   * The list of issue types selected as a filter. null if not set
-   */
-  issueTypeFilters?: Array<string> | null;
 
   /**
    * true if this query should be deleted
@@ -9161,7 +9302,7 @@ export interface IRemoveReflectTemplatePromptPayload {
   __typename: 'RemoveReflectTemplatePromptPayload';
   error: IStandardMutationError | null;
   reflectTemplate: IReflectTemplate | null;
-  prompt: IReflectTemplate | null;
+  prompt: IReflectPrompt | null;
 }
 
 /**
@@ -9630,6 +9771,10 @@ export interface IUpdateTaskInput {
   sortOrder?: number | null;
   status?: TaskStatusEnum | null;
   teamId?: string | null;
+
+  /**
+   * userId, the owner of the task. This can be null if the task is not assigned to anyone.
+   */
   userId?: string | null;
 }
 
@@ -9828,6 +9973,7 @@ export type NotificationSubscriptionPayload =
   | IMeetingStageTimeLimitPayload
   | IRemoveOrgUserPayload
   | IStripeFailPaymentPayload
+  | IPersistJiraSearchQuerySuccess
   | IUser
   | IAuthTokenPayload;
 
@@ -10032,7 +10178,6 @@ export type TeamSubscriptionPayload =
   | IRenameReflectTemplatePromptPayload
   | ISetCheckInEnabledPayload
   | ISetSlackNotificationPayload
-  | IUpdateUserProfilePayload
-  | IPersistJiraSearchQuerySuccess;
+  | IUpdateUserProfilePayload;
 
 // tslint:enable

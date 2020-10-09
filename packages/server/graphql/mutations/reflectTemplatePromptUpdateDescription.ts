@@ -29,7 +29,7 @@ const reflectTemplatePromptUpdateDescription = {
     const viewerId = getUserId(authToken)
 
     // AUTH
-    if (!prompt || !isTeamMember(authToken, prompt.teamId) || !prompt.isActive) {
+    if (!prompt || !isTeamMember(authToken, prompt.teamId) || prompt.removedAt) {
       return standardError(new Error('Team not found'), {userId: viewerId})
     }
 

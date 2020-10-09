@@ -11,19 +11,20 @@ graphql`
         ...on EstimatePhase {
           stages {
             id
+            isNavigableByFacilitator
             service
             serviceTaskId
             sortOrder
             ...on EstimateStageJira {
               issue {
-                # TODO link to component
                 id
+                summary
               }
             }
             ... on EstimateStageParabol {
               task {
-                # TODO link to component
                 id
+                content
               }
             }
           }

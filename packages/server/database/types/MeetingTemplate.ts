@@ -8,6 +8,7 @@ interface Input {
   parentTemplateId?: string
   lastUsedAt?: Date
   type: string
+  isStarter?: boolean
 }
 
 export default class MeetingTemplate {
@@ -22,9 +23,10 @@ export default class MeetingTemplate {
   orgId: string
   parentTemplateId?: string
   type: string
+  isStarter?: boolean
 
   constructor(input: Input) {
-    const {name, teamId, scope, orgId, parentTemplateId, lastUsedAt, type} = input
+    const {name, teamId, scope, orgId, parentTemplateId, lastUsedAt, type, isStarter} = input
     const now = new Date()
     this.id = shortid.generate()
     this.createdAt = now
@@ -37,5 +39,6 @@ export default class MeetingTemplate {
     this.parentTemplateId = parentTemplateId
     this.lastUsedAt = lastUsedAt ?? undefined
     this.type = type
+    this.isStarter = isStarter
   }
 }

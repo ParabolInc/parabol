@@ -54,9 +54,9 @@ export default {
       description: 'the datetime cursor'
     },
     userIds: {
-      type: GraphQLList(GraphQLNonNull(GraphQLID)),
+      type: GraphQLList(GraphQLID),
       description:
-        'a list of user Ids that you want tasks for. if null, will return tasks for all possible team members'
+        'a list of user Ids that you want tasks for. if null, will return tasks for all possible team members. An id is null if it is not assigned to anyone.'
     },
     teamIds: {
       type: GraphQLList(GraphQLNonNull(GraphQLID)),
@@ -75,11 +75,16 @@ export default {
     filterQuery: {
       type: GraphQLString,
       description: 'only return tasks which match the given filter query'
+    },
+    includeUnassigned: {
+      type: GraphQLBoolean,
+      description: 'if true, include unassigned tasks. If false, only return assigned tasks',
+      defaultValue: false
     }
   },
   async resolve(
     _source,
-    {first, after, userIds, teamIds, archived, status, filterQuery},
+    {first, after, userIds, teamIds, archived, status, filterQuery, includeUnassigned},
     {authToken, dataLoader}: GQLContext
   ) {
     // AUTH
@@ -87,11 +92,12 @@ export default {
     console.log('filter query:', filterQuery, !!filterQuery)
     // VALIDATE
     if (teamIds?.length > 100 || userIds?.length > 100) {
-      standardError(new Error('Task filter is too broad'), {
+      const err = new Error('Task filter is too broad')
+      standardError(err, {
         userId: viewerId,
         tags: {userIds, teamIds}
       })
-      return connectionFromTasks([])
+      return connectionFromTasks([], 0, err)
     }
     // common queries
     // - give me all the tasks for a particular team (users: all, team: abc)
@@ -113,7 +119,8 @@ export default {
       teamIds: validTeamIds,
       archived,
       status,
-      filterQuery
+      filterQuery,
+      includeUnassigned
     })
     const filteredTasks = tasks.filter((task) => {
       if (isTaskPrivate(task.tags) && task.userId !== viewerId) return false

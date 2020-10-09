@@ -222,13 +222,14 @@ const Team = new GraphQLObjectType<ITeam, GQLContext>({
       description: 'All of the tasks for this team',
       async resolve({id: teamId}, _args, {authToken, dataLoader}) {
         if (!isTeamMember(authToken, teamId)) {
-          standardError(new Error('Team not found'), {tags: {teamId}})
-          return connectionFromTasks([])
+          const err = new Error('Team not found')
+          standardError(err, {tags: {teamId}})
+          return connectionFromTasks([], 0, err)
         }
         const viewerId = getUserId(authToken)
         const allTasks = await dataLoader.get('tasksByTeamId').load(teamId)
         const tasks = allTasks.filter((task) => {
-          if (isTaskPrivate(task.tags) && task.userId !== viewerId) return false
+          if (!task.userId || (isTaskPrivate(task.tags) && task.userId !== viewerId)) return false
           return true
         })
         return connectionFromTasks(tasks)

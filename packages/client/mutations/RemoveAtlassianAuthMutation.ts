@@ -9,7 +9,11 @@ import {RemoveAtlassianAuthMutation as TRemoveAtlassianAuthMutation} from '../__
 graphql`
   fragment RemoveAtlassianAuthMutation_team on RemoveAtlassianAuthPayload {
     teamMember {
-      ...AtlassianProviderRowTeamMember @relay(mask: false)
+      integrations {
+        atlassian {
+          ...AtlassianProviderRowAtlassianIntegration @relay(mask: false)
+        }
+      }
     }
   }
 `

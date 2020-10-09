@@ -16,7 +16,7 @@ import {ICON_SIZE} from '~/styles/typographyV2'
 import {useUserTaskFilters} from '~/utils/useUserTaskFilters'
 import constructUserTaskFilterQueryParamURL from '~/utils/constructUserTaskFilterQueryParamURL'
 import useRouter from '~/hooks/useRouter'
-import {Breakpoint} from '~/types/constEnums'
+import {Breakpoint, UserTaskViewFilterLabels} from '~/types/constEnums'
 import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 
@@ -107,7 +107,7 @@ const UserTasksHeader = (props: Props) => {
     teamIds ? teams.find(({id: teamId}) => teamIds.includes(teamId)) : undefined
     , [teamIds, teams])
 
-  const teamFilterName = (teamFilter && teamFilter.name) || 'My teams'
+  const teamFilterName = (teamFilter && teamFilter.name) || UserTaskViewFilterLabels.ALL_TEAMS
 
   const teamMemberFilterName = useMemo(() => {
     const teamMembers = teams.map(({teamMembers}) => teamMembers).flat()
@@ -131,8 +131,8 @@ const UserTasksHeader = (props: Props) => {
     return teamFilter && teamMemberFilter
       ? teamMemberFilter.tms.includes(teamFilter.id)
         ? teamMemberFilter.preferredName
-        : 'My team members'
-      : teamMemberFilter?.preferredName ?? ''
+        : UserTaskViewFilterLabels.ALL_TEAM_MEMBERS
+      : teamMemberFilter?.preferredName ?? UserTaskViewFilterLabels.ALL_TEAM_MEMBERS
   }, [teamIds, userIds, teams])
 
   return (

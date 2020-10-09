@@ -7,6 +7,7 @@ interface Input {
   question: string
   description: string
   groupColor: string
+  removedAt: Date | null
   title?: string
   parentPromptId?: string
 }
@@ -16,11 +17,11 @@ export default class RetrospectivePrompt {
   createdAt = new Date()
   description: string
   groupColor: string
-  isActive = true
   sortOrder: number
   teamId: string
   templateId: string
   question: string
+  removedAt: Date | null
   title: string
   updatedAt = new Date()
   parentPromptId?: string
@@ -33,6 +34,7 @@ export default class RetrospectivePrompt {
       question,
       description,
       groupColor,
+      removedAt,
       title,
       parentPromptId
     } = input
@@ -43,6 +45,7 @@ export default class RetrospectivePrompt {
     this.question = question
     this.description = description || ''
     this.groupColor = groupColor
+    this.removedAt = removedAt
     this.title = title || question
     this.parentPromptId = parentPromptId
   }

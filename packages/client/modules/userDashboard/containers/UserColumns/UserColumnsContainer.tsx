@@ -26,7 +26,7 @@ const UserColumnsContainer = (props: Props) => {
       : nodes
 
     const teamFilteredNodes = dashSearchNodes.filter((node) => teamIds ? teamIds.includes(node.teamId) : true)
-    const teamMemberFilteredNodes = teamFilteredNodes.filter((node) => userIds ? userIds.includes(node.userId) : true)
+    const teamMemberFilteredNodes = teamFilteredNodes.filter((node) => userIds && node.userId ? userIds.includes(node.userId) : true)
 
     return teamMemberFilteredNodes.map((node) => ({
       ...node
@@ -44,9 +44,12 @@ const UserColumnsContainer = (props: Props) => {
       const teamFiltered = teamIds ? teamIds.includes(teamId) : true
       return teamFiltered && inTeam
     }) : (teamIds ? teams.filter(({id}) => teamIds.includes(id)) : teams)
-    const myTeamMemberId = toTeamMemberId(filteredTeams[0].id, userIds ? userIds[0] : viewer.id)
 
-    return <TaskColumns area={areaForTaskCard} tasks={filteredTasks} myTeamMemberId={myTeamMemberId} teams={filteredTeams} />
+    if (filteredTeams.length) {
+      return <TaskColumns area={areaForTaskCard} tasks={filteredTasks} myTeamMemberId={toTeamMemberId(filteredTeams[0].id, userIds ? userIds[0] : viewer.id)} teams={filteredTeams} />
+    } else {
+      return null
+    }
   }
 }
 

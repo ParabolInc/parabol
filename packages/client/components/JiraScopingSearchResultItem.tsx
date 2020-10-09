@@ -1,10 +1,17 @@
 import styled from '@emotion/styled'
+import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import Checkbox from './Checkbox'
-import JiraIssueLink from './JiraIssueLink'
+import {createFragmentContainer} from 'react-relay'
+import useAtmosphere from '../hooks/useAtmosphere'
+import useMutationProps from '../hooks/useMutationProps'
+import UpdatePokerScopeMutation from '../mutations/UpdatePokerScopeMutation'
 import {PALETTE} from '../styles/paletteV2'
+import {AddOrDeleteEnum, TaskServiceEnum} from '../types/graphql'
+import {JiraScopingSearchResultItem_issue} from '../__generated__/JiraScopingSearchResultItem_issue.graphql'
+import Checkbox from './Checkbox'
 
 const Item = styled('div')({
+  cursor: 'pointer',
   display: 'flex',
   paddingLeft: 16,
   paddingTop: 8,
@@ -21,32 +28,75 @@ const Title = styled('div')({
 
 })
 
-const Link = styled(JiraIssueLink)({
-  paddingLeft: 0,
+const StyledLink = styled('a')({
+  color: PALETTE.LINK_BLUE,
+  display: 'block',
   fontSize: 12,
+  lineHeight: '20px',
   textDecoration: 'none',
-  color: PALETTE.LINK_BLUE
+  '&:hover,:focus': {
+    textDecoration: 'underline'
+  }
 })
 
 interface Props {
+  meetingId: string
   isSelected: boolean
-  title: string
-  issueKey: string
-  cloudName: string
-  projectKey: string
+  issue: JiraScopingSearchResultItem_issue
+  persistQuery: () => void
 }
 
 const JiraScopingSearchResultItem = (props: Props) => {
-  const {cloudName, isSelected, title, issueKey, projectKey} = props
+  const {isSelected, issue, meetingId, persistQuery} = props
+  const {id: serviceTaskId, key, summary, url} = issue
+  const atmosphere = useAtmosphere()
+  const {onCompleted, onError, submitMutation, submitting} = useMutationProps()
+  const onClick = () => {
+    if (submitting) return
+    submitMutation()
+    const variables = {
+      meetingId,
+      updates: [
+        {
+          service: TaskServiceEnum.jira,
+          serviceTaskId,
+          action: isSelected ? AddOrDeleteEnum.DELETE : AddOrDeleteEnum.ADD
+        }
+      ]
+    }
+    UpdatePokerScopeMutation(atmosphere, variables, {onError, onCompleted})
+    if (!isSelected) {
+      // if they are adding an item, then their search criteria must be good, so persist it
+      persistQuery()
+    }
+  }
   return (
-    <Item>
-      <Checkbox active={isSelected} onClick={() => console.log('click')} />
+    <Item onClick={onClick} >
+      <Checkbox active={isSelected} />
       <Issue>
-        <Title>{title}</Title>
-        <Link issueKey={issueKey} cloudName={cloudName} projectKey={projectKey} />
+        <Title>{summary}</Title>
+        <StyledLink
+          href={url}
+          rel='noopener noreferrer'
+          target='_blank'
+          title={`Jira Issue #${key}`}
+        >
+          {key}
+        </StyledLink>
       </Issue>
     </Item>
   )
 }
 
-export default JiraScopingSearchResultItem
+export default createFragmentContainer(
+  JiraScopingSearchResultItem,
+  {
+    issue: graphql`
+    fragment JiraScopingSearchResultItem_issue on JiraIssue {
+      id
+      summary
+      key
+      url
+    }`
+  }
+)
