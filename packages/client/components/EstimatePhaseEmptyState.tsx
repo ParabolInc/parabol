@@ -28,18 +28,18 @@ const EmptyStateContainer = styled('div')({
 })
 
 interface Props {
-  teamId: string
+  meetingId: string
 }
 
 const EstimatePhaseEmptyState = (props: Props) => {
-  const {teamId} = props
+  const {meetingId} = props
   return (
     <EmptyStateContainer>
       <StyledHeading>No items to estimate?</StyledHeading>
       <StyledCopy>It looks like you haven't added any items yet.</StyledCopy>
       <StyledCopy>
         Try adding them
-        <Link to={`/meet/${teamId}/scope`}>{' here.'}</Link>
+        <Link to={`/meet/${meetingId}/scope`}>{' here.'}</Link>
       </StyledCopy>
     </EmptyStateContainer>
   )

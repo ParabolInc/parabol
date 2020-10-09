@@ -42,7 +42,12 @@ const JiraIssue = new GraphQLObjectType<any, GQLContext>({
     },
     description: {
       type: GraphQLNonNull(GraphQLString),
-      description: 'The plaintext description of the jira issue'
+      description: 'The stringified ADF of the jira issue description',
+      resolve: ({description}) => (description ? JSON.stringify(description) : '')
+    },
+    descriptionHTML: {
+      type: GraphQLNonNull(GraphQLString),
+      description: 'The description converted into raw HTML'
     }
   })
 })

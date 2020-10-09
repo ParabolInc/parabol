@@ -9,6 +9,7 @@ interface Input {
   durations: number[] | undefined
   dimensionId: string
   scores?: EstimateUserScore[]
+  finalScore?: number
 }
 
 export default class EstimateStage extends GenericMeetingStage {
@@ -16,7 +17,9 @@ export default class EstimateStage extends GenericMeetingStage {
   serviceTaskId: string
   sortOrder: number
   dimensionId: string
+  finalScore?: number
   scores: EstimateUserScore[]
+  isVoting: boolean
   constructor(input: Input) {
     super(DISCUSS, input.durations)
     const {service, serviceTaskId, sortOrder, dimensionId, scores} = input
@@ -27,5 +30,6 @@ export default class EstimateStage extends GenericMeetingStage {
     this.scores = scores || []
     this.isNavigable = true
     this.isNavigableByFacilitator = true
+    this.isVoting = true
   }
 }
