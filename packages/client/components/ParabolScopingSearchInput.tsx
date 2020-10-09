@@ -53,15 +53,6 @@ const ParabolScopingSearchInput = (props: Props) => {
     setSearch(atmosphere, meetingId, e.target.value)
   }
   const clearSearch = () => setSearch(atmosphere, meetingId, '')
-  // const onKeyPress = (e: React.KeyboardEvent) => {
-  //   if (e.key !== 'Enter' || e.shiftKey) return
-  //   onSubmit()
-  // }
-  // const onSubmit = () => {
-  //   const filterQuery = meeting.parabolSearchQuery
-  //   if (filterQuery === null) return
-  // }
-  // TODO: fix unintuitive input UI behavior
   return (
     <Wrapper>
       <SearchInput

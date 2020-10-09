@@ -31,10 +31,8 @@ interface Props {
 
 const ParabolScopingSearchResultItem = (props: Props) => {
   const {task, meetingId, isSelected} = props
-  const {id: serviceTaskId, content} = task
-  const rawContent = JSON.parse(content)
-  const {blocks} = rawContent
-  const text = blocks[0]?.text
+  const {id: serviceTaskId, plaintextContent} = task
+  const snippet = plaintextContent.split('\n')[0]
   const atmosphere = useAtmosphere()
   const {onCompleted, onError, submitMutation, submitting} = useMutationProps()
   const onClick = () => {
@@ -56,7 +54,7 @@ const ParabolScopingSearchResultItem = (props: Props) => {
     <Item onClick={onClick}>
       <Checkbox active={isSelected} />
       <Issue>
-        <Title>{text}</Title>
+        <Title>{snippet}</Title>
       </Issue>
     </Item>
   )
