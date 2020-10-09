@@ -1,23 +1,29 @@
-import React, {useRef} from 'react'
+import graphql from 'babel-plugin-relay/macro'
+import React from 'react'
+import {createFragmentContainer} from 'react-relay'
 import {phaseLabelLookup} from '../utils/meetings/lookups'
+import {PokerEstimatePhase_meeting} from '../__generated__/PokerEstimatePhase_meeting.graphql'
+import EstimatePhaseArea from './EstimatePhaseArea'
 import MeetingContent from './MeetingContent'
 import MeetingHeaderAndPhase from './MeetingHeaderAndPhase'
 import MeetingTopBar from './MeetingTopBar'
 import PhaseHeaderDescription from './PhaseHeaderDescription'
 import PhaseHeaderTitle from './PhaseHeaderTitle'
 import PhaseWrapper from './PhaseWrapper'
-import EstimatePhaseArea from './EstimatePhaseArea'
-import PokerEstimateHeaderCard from './PokerEstimateHeaderCard'
-import EstimatePhaseEmptyState from './EstimatePhaseEmptyState'
+import PokerEstimateHeaderCardJira from './PokerEstimateHeaderCardJira'
+import {PokerMeetingPhaseProps} from './PokerMeeting'
 
-const PokerEstimatePhase = (props: any) => {
+interface Props extends PokerMeetingPhaseProps {
+  meeting: PokerEstimatePhase_meeting
+}
+
+const PokerEstimatePhase = (props: Props) => {
   const {avatarGroup, toggleSidebar, meeting} = props
-  const phaseRef = useRef<HTMLDivElement>(null)
-  const {localPhase, endedAt, showSidebar} = meeting
-  const isEmpty = false
-  if (!localPhase) return null
+  const {localStage, endedAt, showSidebar} = meeting
+  if (!localStage) return null
+  const {__typename} = localStage
   return (
-    <MeetingContent ref={phaseRef}>
+    <MeetingContent>
       <MeetingHeaderAndPhase hideBottomBar={!!endedAt}>
         <MeetingTopBar
           avatarGroup={avatarGroup}
@@ -27,19 +33,41 @@ const PokerEstimatePhase = (props: any) => {
           <PhaseHeaderTitle>{phaseLabelLookup.ESTIMATE}</PhaseHeaderTitle>
           <PhaseHeaderDescription>{'Estimate each story as a team'}</PhaseHeaderDescription>
         </MeetingTopBar>
-        {isEmpty ? (
-          <EstimatePhaseEmptyState teamId={'dummyId'} />
-        ) : (
-          <>
-            <PokerEstimateHeaderCard />
-            <PhaseWrapper>
-              <EstimatePhaseArea />
-            </PhaseWrapper>
-          </>
-        )}
+        {__typename === 'EstimateStageJira' && <PokerEstimateHeaderCardJira stage={localStage as any} />}
+        <PhaseWrapper>
+          <EstimatePhaseArea />
+        </PhaseWrapper>
       </MeetingHeaderAndPhase>
     </MeetingContent>
   )
 }
 
-export default PokerEstimatePhase
+graphql`
+  fragment PokerEstimatePhaseStage on EstimateStage {
+    ...on EstimateStageJira {
+      __typename
+      ...PokerEstimateHeaderCardJira_stage
+    }
+  }
+`
+export default createFragmentContainer(
+  PokerEstimatePhase,
+  {
+    meeting: graphql`
+    fragment PokerEstimatePhase_meeting on PokerMeeting {
+      id
+      endedAt
+      showSidebar
+      localStage {
+        ...PokerEstimatePhaseStage @relay(mask: false)
+      }
+      phases {
+        ...on EstimatePhase {
+          stages {
+            ...PokerEstimatePhaseStage @relay(mask: false)
+          }
+        }
+      }
+    }`
+  }
+)

@@ -100,6 +100,7 @@ export default createFragmentContainer(PokerMeeting, {
       ...NewMeetingAvatarGroup_meeting
       ...MeetingControlBar_meeting
       ...ScopePhase_meeting
+      ...PokerEstimatePhase_meeting
       id
       # hack to initialize local state (clientField needs to be on non-id domain state. thx relay)
       init: id @__clientField(handle: "localPoker")

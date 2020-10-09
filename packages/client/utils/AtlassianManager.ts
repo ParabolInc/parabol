@@ -114,7 +114,6 @@ interface JiraError {
   }
 }
 
-type JiraRenderedFields = any
 type JiraIssueProperties = any
 type JiraIssueNames = any
 type JiraIssueSchema = any
@@ -126,12 +125,12 @@ type JiraVersionedRepresentations = any
 type JiraIncludedFields = any
 
 
-interface JiraIssueBean<F = {description: any, summary: string}> {
+interface JiraIssueBean<F = {description: any, summary: string}, R = unknown> {
   expand: string
   id: string
   self: string
   key: string
-  renderedFields: JiraRenderedFields
+  renderedFields: R
   properties: JiraIssueProperties
   names: JiraIssueNames
   schema: JiraIssueSchema
@@ -351,12 +350,13 @@ export default abstract class AtlassianManager {
   async getIssue(cloudId: string, issueKey: string) {
     const [cloudNameLookup, issueRes] = await Promise.all([
       this.getCloudNameLookup(),
-      this.get(`https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/issue/${issueKey}?fields=summary,description`) as AtlassianError | JiraError | JiraIssueBean
+      this.get(`https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/issue/${issueKey}?fields=summary,description&expand=renderedFields`) as AtlassianError | JiraError | JiraIssueBean
     ])
     if ('fields' in issueRes) {
       (issueRes.fields as any).cloudName = cloudNameLookup[cloudId]
+        ; (issueRes.fields as any).descriptionHTML = (issueRes as any).renderedFields.description
     }
-    return issueRes as AtlassianError | JiraError | JiraIssueBean<{description: any, summary: string, cloudName: string}>
+    return issueRes as AtlassianError | JiraError | JiraIssueBean<{description: any, summary: string, cloudName: string, descriptionHTML: string}>
   }
 
   async getIssues(queryString: string, isJQL: boolean, projectFiltersByCloudId: {[cloudId: string]: string[]}) {
