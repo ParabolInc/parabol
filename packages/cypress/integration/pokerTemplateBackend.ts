@@ -24,10 +24,9 @@ describe('Poker template related backend tests', () => {
             dimensions {
               name
               templateId
-            }
-            scales {
-              id
-              templateId
+              scale {
+                id
+              }
             }
           }
         }
@@ -43,43 +42,14 @@ describe('Poker template related backend tests', () => {
     cy.task('resetDb')
   })
 
-  it('Add a new scale', () => {
-    const query = `
-      mutation {
-        addPokerTemplateScale(teamId: \"${teamId}\") {
-          scale {
-            name
-            isActive
-            values {
-              label
-            }
-          }
-        }
-      }
-    `
-    cy.postGQL(constructGraphQLQueryBody(query)).then((res) => {
-      const responseData = res.body.payload.data
-      const newScale = responseData.addPokerTemplateScale.scale
-      assert.strictEqual('*New Scale #1', newScale.name, 'Scale name')
-      assert.strictEqual(true, newScale.isActive, 'IsActive of scale')
-      assert.strictEqual(
-        0,
-        newScale.values.length,
-        'Values of the newly created scale should be empty'
-      )
-    })
-  })
-
   it('Add a new poker template', () => {
-    assert.strictEqual('*New Template', pokerTemplate.name, 'Poker template name')
+    assert.strictEqual(pokerTemplate.name, '*New Template', 'Poker template name')
     const dimensions = pokerTemplate.dimensions
-    assert.strictEqual(1, dimensions.length, 'Number of new dimension created')
+    assert.strictEqual(dimensions.length, 1, 'Number of new dimension created')
     const dimension = dimensions[0]
-    assert.strictEqual('*New Dimension', dimension.name, 'Dimension name')
-    assert.strictEqual(pokerTemplate.id, dimension.templateId, "Dimension's templateId")
-    pokerTemplate.scales.forEach(({templateId}) =>
-      assert.strictEqual(pokerTemplate.id, templateId, "Scale's templateId")
-    )
+    assert.strictEqual(dimension.name, '*New Dimension', 'Dimension name')
+    assert.strictEqual(dimension.scale.id, 'fibonacciScale', 'Dimension default scaleId')
+    assert.strictEqual(dimension.templateId, pokerTemplate.id, "Dimension's templateId")
   })
 
   it('Renames a poker template', () => {
@@ -96,8 +66,8 @@ describe('Poker template related backend tests', () => {
     cy.postGQL(constructGraphQLQueryBody(query)).then((res) => {
       const responseData = res.body.payload.data
       const newPokerTemplate = responseData.renamePokerTemplate.pokerTemplate
-      assert.strictEqual(pokerTemplate.id, newPokerTemplate.id, 'Poker template id')
-      assert.strictEqual('Renamed', newPokerTemplate.name, 'Poker template name')
+      assert.strictEqual(newPokerTemplate.id, pokerTemplate.id, 'Poker template id')
+      assert.strictEqual(newPokerTemplate.name, 'Renamed', 'Poker template name')
     })
   })
 
@@ -115,8 +85,8 @@ describe('Poker template related backend tests', () => {
     cy.postGQL(constructGraphQLQueryBody(query)).then((res) => {
       const responseData = res.body.payload.data
       const removedPokerTemplate = responseData.removePokerTemplate.pokerTemplate
-      assert.strictEqual(pokerTemplate.id, removedPokerTemplate.id, 'Poker template id')
-      assert.strictEqual(false, removedPokerTemplate.isActive)
+      assert.strictEqual(removedPokerTemplate.id, pokerTemplate.id, 'Poker template id')
+      assert.strictEqual(removedPokerTemplate.isActive, false)
     })
   })
 
@@ -143,12 +113,35 @@ describe('Poker template related backend tests', () => {
         newDimension.templateId,
         'Template id of the newly created dimension'
       )
-      assert.strictEqual('*New Dimension #2', newDimension.name, 'Dimension name')
-      assert.strictEqual(true, newDimension.isActive, 'IsActive of dimension')
-      const scaleIdsForTemplate = pokerTemplate.scales.map(({id}) => id)
-      assert.isTrue(
-        scaleIdsForTemplate.includes(newDimension.scale.id),
-        'Scale of the newly created dimension should default to one exist in the template'
+      assert.strictEqual(newDimension.name, '*New Dimension #2', 'Dimension name')
+      assert.strictEqual(newDimension.scale.id, 'fibonacciScale', "Dimension's defaultScaleId")
+      assert.strictEqual(newDimension.isActive, true, 'IsActive of dimension')
+    })
+  })
+
+  it('Add a new scale', () => {
+    const query = `
+      mutation {
+        addPokerTemplateScale(teamId: \"${teamId}\") {
+          scale {
+            name
+            isActive
+            values {
+              label
+            }
+          }
+        }
+      }
+    `
+    cy.postGQL(constructGraphQLQueryBody(query)).then((res) => {
+      const responseData = res.body.payload.data
+      const newScale = responseData.addPokerTemplateScale.scale
+      assert.strictEqual(newScale.name, '*New Scale #1', 'Scale name')
+      assert.strictEqual(newScale.isActive, true, 'IsActive of scale')
+      assert.strictEqual(
+        newScale.values.length,
+        0,
+        'Values of the newly created scale should be empty'
       )
     })
   })
@@ -156,7 +149,7 @@ describe('Poker template related backend tests', () => {
   it('Add a new scale value', () => {
     const addNewScaleQuery = `
       mutation {
-        addPokerTemplateScale(templateId: "${pokerTemplate.id}") {
+        addPokerTemplateScale(teamId: \"${teamId}\") {
           scale {
             id
             name
@@ -178,7 +171,7 @@ describe('Poker template related backend tests', () => {
       }
       const addNewScaleValueQuery = `
         mutation($scaleValue: TemplateScaleInput!) {
-          addPokerTemplateScaleValue(templateId: "${pokerTemplate.id}", scaleId: "${newScale.id}", scaleValue: $scaleValue) {
+          addPokerTemplateScaleValue(scaleId: "${newScale.id}", scaleValue: $scaleValue) {
             scale {
               values {
                 label
@@ -202,11 +195,11 @@ describe('Poker template related backend tests', () => {
         const responseData = res.body.payload.data
         const updatedScale = responseData.addPokerTemplateScaleValue.scale
         const updatedValues = updatedScale.values
-        assert.strictEqual(1, updatedValues.length, 'Number of values in the scale')
+        assert.strictEqual(updatedValues.length, 1, 'Number of values in the scale')
         const updatedValue = updatedValues[0]
-        assert.strictEqual('ABC', updatedValue.color, 'Color of the newly added scale value')
-        assert.strictEqual(1, updatedValue.value, 'Numerical value of the newly added scale value')
-        assert.strictEqual('1', updatedValue.label, 'Label of the newly added scale value')
+        assert.strictEqual(updatedValue.color, '#5CA0E5', 'Color of the newly added scale value')
+        assert.strictEqual(updatedValue.value, 1, 'Numerical value of the newly added scale value')
+        assert.strictEqual(updatedValue.label, '1', 'Label of the newly added scale value')
       })
     })
   })
