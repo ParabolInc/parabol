@@ -1,4 +1,4 @@
-import {GraphQLBoolean, GraphQLInt, GraphQLNonNull, GraphQLObjectType} from 'graphql'
+import {GraphQLBoolean, GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import {GQLContext} from '../graphql'
 
@@ -21,10 +21,6 @@ const PageInfoDateCursor = new GraphQLObjectType<any, GQLContext>({
     endCursor: {
       type: GraphQLISO8601Type,
       description: 'When paginating forwards, the cursor to continue.'
-    },
-    edgesReturned: {
-      type: GraphQLInt,
-      description: 'The number of edges returned in this page'
     }
   })
 })

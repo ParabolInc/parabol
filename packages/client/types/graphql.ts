@@ -657,11 +657,6 @@ export interface IPageInfoDateCursor {
    * When paginating forwards, the cursor to continue.
    */
   endCursor: any | null;
-
-  /**
-   * The number of edges returned in this page
-   */
-  edgesReturned: number | null;
 }
 
 /**

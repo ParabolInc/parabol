@@ -18,8 +18,7 @@ const connectionFromTasks = <T extends {updatedAt: Date} = Task>(
     pageInfo: {
       startCursor: firstEdge && firstEdge.cursor,
       endCursor: firstEdge ? edges[edges.length - 1].cursor : new Date(),
-      hasNextPage: tasks.length > nodes.length,
-      edgesReturned: edges.length
+      hasNextPage: tasks.length > nodes.length
     }
   }
 }

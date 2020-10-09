@@ -3,7 +3,7 @@ import React, {useEffect, useMemo, useState} from 'react'
 import {createPaginationContainer, RelayPaginationProp} from 'react-relay'
 import {ParabolScopingSearchResults_viewer} from '../__generated__/ParabolScopingSearchResults_viewer.graphql'
 import {ParabolScopingSearchResults_meeting} from '../__generated__/ParabolScopingSearchResults_meeting.graphql'
-import ParabolScopingSelectAllIssues from './ParabolScopingSelectAllIssues'
+import ParabolScopingSelectAllTasks from './ParabolScopingSelectAllTasks'
 import ParabolScopingSearchResultItem from './ParabolScopingSearchResultItem'
 import useLoadMoreOnScrollBottom from '~/hooks/useLoadMoreOnScrollBottom'
 import {NewMeetingPhaseTypeEnum} from '~/types/graphql'
@@ -15,15 +15,14 @@ interface Props {
 
 const ParabolScopingSearchResults = (props: Props) => {
   const {viewer, meeting, relay} = props
-  // const issueCount = viewer?.tasks.pageInfo!.edgesReturned!
-  const issueCount = 50
-  const incomingEdges = viewer?.tasks?.edges ?? null
+  const tasks = viewer?.tasks ?? null
+  const incomingEdges = tasks?.edges ?? null
   const [edges, setEdges] = useState([] as readonly any[])
   const lastItem = useLoadMoreOnScrollBottom(relay, {}, 50)
   useEffect(() => {
     if (incomingEdges) setEdges(incomingEdges)
   }, [incomingEdges])
-  const {phases} = meeting
+  const {id: meetingId, phases} = meeting
   const estimatePhase = phases.find(
     (phase) => phase.phaseType === NewMeetingPhaseTypeEnum.ESTIMATE
   )!
@@ -36,9 +35,16 @@ const ParabolScopingSearchResults = (props: Props) => {
     })
     return usedParabolTaskIds
   }, [stages])
+
+  if (edges.length === 0) return null
+
   return (
     <>
-      <ParabolScopingSelectAllIssues selected={false} issueCount={issueCount} />
+      <ParabolScopingSelectAllTasks
+        usedParabolTaskIds={usedParabolTaskIds}
+        tasks={edges}
+        meetingId={meetingId}
+      />
       {edges.map(({node}) => {
         return (
           <ParabolScopingSearchResultItem
@@ -96,7 +102,6 @@ export default createPaginationContainer(
           pageInfo {
             hasNextPage
             endCursor
-            edgesReturned
           }
         }
       }
