@@ -1,25 +1,53 @@
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
+import React, {useEffect, useMemo, useState} from 'react'
 import {createPaginationContainer, RelayPaginationProp} from 'react-relay'
 import {ParabolScopingSearchResults_viewer} from '../__generated__/ParabolScopingSearchResults_viewer.graphql'
+import {ParabolScopingSearchResults_meeting} from '../__generated__/ParabolScopingSearchResults_meeting.graphql'
 import ParabolScopingSelectAllIssues from './ParabolScopingSelectAllIssues'
 import ParabolScopingSearchResultItem from './ParabolScopingSearchResultItem'
 import useLoadMoreOnScrollBottom from '~/hooks/useLoadMoreOnScrollBottom'
+import {NewMeetingPhaseTypeEnum} from '~/types/graphql'
 interface Props {
   relay: RelayPaginationProp
-  viewer: ParabolScopingSearchResults_viewer
+  viewer: ParabolScopingSearchResults_viewer | null
+  meeting: ParabolScopingSearchResults_meeting
 }
 
 const ParabolScopingSearchResults = (props: Props) => {
-  const {viewer, relay} = props
-  const issueCount = viewer.tasks.pageInfo!.edgesReturned!
-  const tasks = viewer.tasks.edges.map(({node}) => node)
+  const {viewer, meeting, relay} = props
+  // const issueCount = viewer?.tasks.pageInfo!.edgesReturned!
+  const issueCount = 50
+  const incomingEdges = viewer?.tasks?.edges ?? null
+  const [edges, setEdges] = useState([] as readonly any[])
   const lastItem = useLoadMoreOnScrollBottom(relay, {}, 50)
+  useEffect(() => {
+    if (incomingEdges) setEdges(incomingEdges)
+  }, [incomingEdges])
+  const {phases} = meeting
+  const estimatePhase = phases.find(
+    (phase) => phase.phaseType === NewMeetingPhaseTypeEnum.ESTIMATE
+  )!
+  const {stages} = estimatePhase
+  const usedParabolTaskIds = useMemo(() => {
+    const usedParabolTaskIds = new Set<string>()
+    stages!.forEach((stage) => {
+      if (!stage.task) return
+      usedParabolTaskIds.add(stage.task.id)
+    })
+    return usedParabolTaskIds
+  }, [stages])
   return (
     <>
       <ParabolScopingSelectAllIssues selected={false} issueCount={issueCount} />
-      {tasks.map((task) => {
-        return <ParabolScopingSearchResultItem key={task.id} item={task} />
+      {edges.map(({node}) => {
+        return (
+          <ParabolScopingSearchResultItem
+            key={node.id}
+            task={node}
+            meetingId={meeting.id}
+            isSelected={usedParabolTaskIds.has(node.id)}
+          />
+        )
       })}
       {lastItem}
     </>
@@ -29,6 +57,23 @@ const ParabolScopingSearchResults = (props: Props) => {
 export default createPaginationContainer(
   ParabolScopingSearchResults,
   {
+    meeting: graphql`
+      fragment ParabolScopingSearchResults_meeting on PokerMeeting {
+        id
+        phases {
+          phaseType
+          ... on EstimatePhase {
+            stages {
+              ... on EstimateStageParabol {
+                task {
+                  id
+                }
+              }
+            }
+          }
+        }
+      }
+    `,
     viewer: graphql`
       fragment ParabolScopingSearchResults_viewer on User {
         tasks(
@@ -43,7 +88,7 @@ export default createPaginationContainer(
           edges {
             cursor
             node {
-              ...ParabolScopingSearchResultItem_item
+              ...ParabolScopingSearchResultItem_task
               __typename
               id
             }

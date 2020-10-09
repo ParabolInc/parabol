@@ -89,7 +89,6 @@ export default {
   ) {
     // AUTH
     const viewerId = getUserId(authToken)
-    console.log('filter query:', filterQuery, !!filterQuery)
     // VALIDATE
     if (teamIds?.length > 100 || userIds?.length > 100) {
       const err = new Error('Task filter is too broad')

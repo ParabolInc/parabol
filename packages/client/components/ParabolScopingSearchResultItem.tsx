@@ -2,8 +2,13 @@ import graphql from 'babel-plugin-relay/macro'
 import styled from '@emotion/styled'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
-import {ParabolScopingSearchResultItem_item} from '../__generated__/ParabolScopingSearchResultItem_item.graphql'
+import {ParabolScopingSearchResultItem_task} from '../__generated__/ParabolScopingSearchResultItem_task.graphql'
 import Checkbox from './Checkbox'
+import useAtmosphere from '~/hooks/useAtmosphere'
+import UpdatePokerScopeMutation from '~/mutations/UpdatePokerScopeMutation'
+import {TaskServiceEnum} from '~/types/graphql'
+import {AddOrDeleteEnum} from '~/types/graphql'
+import useMutationProps from '~/hooks/useMutationProps'
 
 const Item = styled('div')({
   display: 'flex',
@@ -19,19 +24,37 @@ const Issue = styled('div')({
 const Title = styled('div')({})
 
 interface Props {
-  item: ParabolScopingSearchResultItem_item
+  task: ParabolScopingSearchResultItem_task
+  meetingId: string
+  isSelected: boolean
 }
 
 const ParabolScopingSearchResultItem = (props: Props) => {
-  const {item} = props
-  const {isSelected, content} = item
+  const {task, meetingId, isSelected} = props
+  const {id: serviceTaskId, content} = task
   const rawContent = JSON.parse(content)
   const {blocks} = rawContent
   const text = blocks[0]?.text
-
+  const atmosphere = useAtmosphere()
+  const {onCompleted, onError, submitMutation, submitting} = useMutationProps()
+  const onClick = () => {
+    if (submitting) return
+    submitMutation()
+    const variables = {
+      meetingId,
+      updates: [
+        {
+          service: TaskServiceEnum.PARABOL,
+          serviceTaskId,
+          action: isSelected ? AddOrDeleteEnum.DELETE : AddOrDeleteEnum.ADD
+        }
+      ]
+    }
+    UpdatePokerScopeMutation(atmosphere, variables, {onError, onCompleted})
+  }
   return (
-    <Item>
-      <Checkbox active={!!isSelected} />
+    <Item onClick={onClick}>
+      <Checkbox active={isSelected} />
       <Issue>
         <Title>{text}</Title>
       </Issue>
@@ -40,10 +63,11 @@ const ParabolScopingSearchResultItem = (props: Props) => {
 }
 
 export default createFragmentContainer(ParabolScopingSearchResultItem, {
-  item: graphql`
-    fragment ParabolScopingSearchResultItem_item on Task {
+  task: graphql`
+    fragment ParabolScopingSearchResultItem_task on Task {
+      id
       content
-      isSelected
+      plaintextContent
     }
   `
 })

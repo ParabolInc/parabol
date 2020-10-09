@@ -43,7 +43,6 @@ extend type User {
 extend type Task {
   error: String
   contentText: String
-  isSelected: Boolean
 }
 
 extend type RetroReflectionGroup {

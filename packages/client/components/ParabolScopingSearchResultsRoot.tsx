@@ -1,9 +1,11 @@
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {QueryRenderer} from 'react-relay'
+import {createFragmentContainer, QueryRenderer} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import {TaskStatusEnum} from '~/types/graphql'
 import ParabolScopingSearchResults from './ParabolScopingSearchResults'
+import {ParabolScopingSearchResultsRoot_meeting} from '../__generated__/ParabolScopingSearchResultsRoot_meeting.graphql'
+import ErrorComponent from './ErrorComponent/ErrorComponent'
 
 const query = graphql`
   query ParabolScopingSearchResultsRootQuery(
@@ -20,20 +22,14 @@ const query = graphql`
   }
 `
 
-const renderParabolScopingSearchResults = ({error, props}) => {
-  if (error) return <div>error</div>
-  if (!props) return <div>no props</div>
-  return <ParabolScopingSearchResults viewer={props.viewer} />
-}
-
 interface Props {
-  teamId: string
-  filterQuery: string
+  meeting: ParabolScopingSearchResultsRoot_meeting
 }
 
 const ParabolScopingSearchResultsRoot = (props: Props) => {
   const atmosphere = useAtmosphere()
-  const {teamId, filterQuery} = props
+  const {meeting} = props
+  const {teamId, parabolSearchQuery: filterQuery} = meeting
   return (
     <QueryRenderer
       environment={atmosphere}
@@ -45,9 +41,22 @@ const ParabolScopingSearchResultsRoot = (props: Props) => {
         status: TaskStatusEnum.active,
         filterQuery
       }}
-      render={renderParabolScopingSearchResults}
+      fetchPolicy={'store-or-network' as any}
+      render={({props, error}) => {
+        const viewer = (props as any)?.viewer ?? null
+        if (error) return <ErrorComponent error={error} eventId={''} />
+        return <ParabolScopingSearchResults viewer={viewer} meeting={meeting} />
+      }}
     />
   )
 }
 
-export default ParabolScopingSearchResultsRoot
+export default createFragmentContainer(ParabolScopingSearchResultsRoot, {
+  meeting: graphql`
+    fragment ParabolScopingSearchResultsRoot_meeting on PokerMeeting {
+      ...ParabolScopingSearchResults_meeting
+      parabolSearchQuery
+      teamId
+    }
+  `
+})

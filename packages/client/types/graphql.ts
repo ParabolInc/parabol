@@ -1541,6 +1541,11 @@ export interface ITask {
   doneMeetingId: string | null;
 
   /**
+   * the plain text content of the task
+   */
+  plaintextContent: string;
+
+  /**
    * the shared sort order for tasks on the team dash & user dash
    */
   sortOrder: number;

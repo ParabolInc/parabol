@@ -1,5 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
-import {default as React, Dispatch, SetStateAction} from 'react'
+import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {ParabolScopingSearchBar_meeting} from '../__generated__/ParabolScopingSearchBar_meeting.graphql'
 import ParabolScopingSearchHistoryToggle from './ParabolScopingSearchHistoryToggle'
@@ -15,15 +15,14 @@ const SearchBar = styled('div')({
 
 interface Props {
   meeting: ParabolScopingSearchBar_meeting
-  setFilterQuery: Dispatch<SetStateAction<string>>
 }
 
 const ParabolScopingSearchBar = (props: Props) => {
-  const {meeting, setFilterQuery} = props
+  const {meeting} = props
   return (
     <SearchBar>
       <ParabolScopingSearchHistoryToggle meeting={meeting} />
-      <ParabolScopingSearchInput meeting={meeting} setFilterQuery={setFilterQuery} />
+      <ParabolScopingSearchInput meeting={meeting} />
       <ParabolScopingSearchFilterToggle meeting={meeting} />
     </SearchBar>
   )
