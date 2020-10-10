@@ -1,6 +1,6 @@
 /* Copy and pasted from `./JiraScopingSelectAllIssues.tsx` */
 import styled from '@emotion/styled'
-import React, {useMemo} from 'react'
+import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import useMutationProps from '~/hooks/useMutationProps'
 import UpdatePokerScopeMutation from '~/mutations/UpdatePokerScopeMutation'
@@ -9,6 +9,7 @@ import Checkbox from './Checkbox'
 import useAtmosphere from '../hooks/useAtmosphere'
 import graphql from 'babel-plugin-relay/macro'
 import {ParabolScopingSelectAllTasks_tasks} from '../__generated__/ParabolScopingSelectAllTasks_tasks.graphql'
+import useUnusedRecords from '~/hooks/useUnusedRecords'
 
 const Item = styled('div')({
   display: 'flex',
@@ -29,21 +30,13 @@ interface Props {
 const ParabolScopingSelectAllTasks = (props: Props) => {
   const {meetingId, usedParabolTaskIds, tasks} = props
   const atmosphere = useAtmosphere()
-  const unusedTasks = useMemo(() => {
-    const unusedTasks = [] as string[]
-    tasks.forEach(({node}) => {
-      if (!usedParabolTaskIds.has(node.id)) unusedTasks.push(node.id)
-    })
-    return unusedTasks
-  }, [usedParabolTaskIds, tasks])
-  const selectAll =
-    unusedTasks.length === 0 ? true : unusedTasks.length === tasks.length ? false : null
+  const [unusedTasks, selectAll] = useUnusedRecords(tasks, usedParabolTaskIds)
   const {submitting, submitMutation, onCompleted, onError} = useMutationProps()
   const onClick = () => {
     if (submitting) return
     submitMutation()
-    const updateArr = selectAll === true ? Array.from(usedParabolTaskIds) : unusedTasks
-    const action = selectAll === true ? AddOrDeleteEnum.DELETE : AddOrDeleteEnum.ADD
+    const updateArr = selectAll ? Array.from(usedParabolTaskIds) : unusedTasks
+    const action = selectAll ? AddOrDeleteEnum.DELETE : AddOrDeleteEnum.ADD
     const updates = updateArr.map((serviceTaskId) => ({
       service: TaskServiceEnum.PARABOL,
       serviceTaskId,
@@ -59,7 +52,7 @@ const ParabolScopingSelectAllTasks = (props: Props) => {
   return (
     <Item onClick={onClick}>
       <Checkbox active={selectAll} onClick={() => console.log('click')} />
-      <Title>{`Select all ${tasks.length} issues`}</Title>
+      <Title>{`Select all ${tasks.length} tasks`}</Title>
     </Item>
   )
 }

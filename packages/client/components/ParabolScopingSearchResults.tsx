@@ -7,6 +7,7 @@ import ParabolScopingSelectAllTasks from './ParabolScopingSelectAllTasks'
 import ParabolScopingSearchResultItem from './ParabolScopingSearchResultItem'
 import useLoadMoreOnScrollBottom from '~/hooks/useLoadMoreOnScrollBottom'
 import {NewMeetingPhaseTypeEnum} from '~/types/graphql'
+import IntegrationScopingNoResults from './IntegrationScopingNoResults'
 interface Props {
   relay: RelayPaginationProp
   viewer: ParabolScopingSearchResults_viewer | null
@@ -36,7 +37,8 @@ const ParabolScopingSearchResults = (props: Props) => {
     return usedParabolTaskIds
   }, [stages])
 
-  if (edges.length === 0) return null
+  if (edges.length === 0)
+    return viewer ? <IntegrationScopingNoResults msg={'No tasks match that query'} /> : null
 
   return (
     <>
@@ -92,10 +94,10 @@ export default createPaginationContainer(
           filterQuery: $filterQuery
         ) @connection(key: "ParabolScopingSearchResults_tasks") {
           edges {
+            ...ParabolScopingSelectAllTasks_tasks
             cursor
             node {
               ...ParabolScopingSearchResultItem_task
-              __typename
               id
             }
           }

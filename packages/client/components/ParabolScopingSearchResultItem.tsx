@@ -24,9 +24,9 @@ const Issue = styled('div')({
 const Title = styled('div')({})
 
 interface Props {
-  task: ParabolScopingSearchResultItem_task
   meetingId: string
   isSelected: boolean
+  task: ParabolScopingSearchResultItem_task
 }
 
 const ParabolScopingSearchResultItem = (props: Props) => {

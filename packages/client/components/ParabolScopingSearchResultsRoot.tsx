@@ -6,6 +6,7 @@ import {TaskStatusEnum} from '~/types/graphql'
 import ParabolScopingSearchResults from './ParabolScopingSearchResults'
 import {ParabolScopingSearchResultsRoot_meeting} from '../__generated__/ParabolScopingSearchResultsRoot_meeting.graphql'
 import ErrorComponent from './ErrorComponent/ErrorComponent'
+import {ParabolScopingSearchResultsRootQuery} from '../__generated__/ParabolScopingSearchResultsRootQuery.graphql'
 
 const query = graphql`
   query ParabolScopingSearchResultsRootQuery(
@@ -31,7 +32,7 @@ const ParabolScopingSearchResultsRoot = (props: Props) => {
   const {meeting} = props
   const {teamId, parabolSearchQuery: filterQuery} = meeting
   return (
-    <QueryRenderer
+    <QueryRenderer<ParabolScopingSearchResultsRootQuery>
       environment={atmosphere}
       query={query}
       variables={{
@@ -39,7 +40,7 @@ const ParabolScopingSearchResultsRoot = (props: Props) => {
         teamIds: [teamId],
         userIds: [],
         status: TaskStatusEnum.active,
-        filterQuery
+        filterQuery: filterQuery?.trim()
       }}
       fetchPolicy={'store-or-network' as any}
       render={({props, error}) => {

@@ -8,7 +8,7 @@ import PersistJiraSearchQueryMutation from '../mutations/PersistJiraSearchQueryM
 import {NewMeetingPhaseTypeEnum} from '../types/graphql'
 import {JiraScopingSearchResults_meeting} from '../__generated__/JiraScopingSearchResults_meeting.graphql'
 import {JiraScopingSearchResults_viewer} from '../__generated__/JiraScopingSearchResults_viewer.graphql'
-import JiraScopingNoResults from './JiraScopingNoResults'
+import IntegrationScopingNoResults from './IntegrationScopingNoResults'
 import JiraScopingSearchResultItem from './JiraScopingSearchResultItem'
 import JiraScopingSelectAllIssues from './JiraScopingSelectAllIssues'
 
@@ -35,7 +35,9 @@ const JiraScopingSearchResults = (props: Props) => {
     }
   }, [incomingEdges])
   const {id: meetingId, teamId, phases, jiraSearchQuery} = meeting
-  const estimatePhase = phases.find((phase) => phase.phaseType === NewMeetingPhaseTypeEnum.ESTIMATE)!
+  const estimatePhase = phases.find(
+    (phase) => phase.phaseType === NewMeetingPhaseTypeEnum.ESTIMATE
+  )!
   const {stages} = estimatePhase
   const usedJiraIssueIds = useMemo(() => {
     const usedJiraIssueIds = new Set<string>()
@@ -58,7 +60,11 @@ const JiraScopingSearchResults = (props: Props) => {
     } */
   if (edges.length === 0) {
     // only show the mock on the initial load or if the last query returned no results
-    return viewer ? <JiraScopingNoResults error={error?.message} /> : <MockScopingList />
+    return viewer ? (
+      <IntegrationScopingNoResults error={error?.message} msg={'No issues match that query'} />
+    ) : (
+      <MockScopingList />
+    )
   }
 
   const persistQuery = () => {
@@ -72,19 +78,33 @@ const JiraScopingSearchResults = (props: Props) => {
     })
     const isQueryNew = !searchHashes.includes(lookupKey)
     if (isQueryNew) {
-      PersistJiraSearchQueryMutation(atmosphere, {teamId, input: {queryString, isJQL, projectKeyFilters: projectKeyFilters as string[]}})
+      PersistJiraSearchQueryMutation(atmosphere, {
+        teamId,
+        input: {queryString, isJQL, projectKeyFilters: projectKeyFilters as string[]}
+      })
     }
   }
   return (
     <>
-      <JiraScopingSelectAllIssues usedJiraIssueIds={usedJiraIssueIds} issues={edges} meetingId={meetingId} />
+      <JiraScopingSelectAllIssues
+        usedJiraIssueIds={usedJiraIssueIds}
+        issues={edges}
+        meetingId={meetingId}
+      />
       <ResultScroller>
         {edges.map(({node}) => {
-          return <JiraScopingSearchResultItem key={node.id} issue={node} isSelected={usedJiraIssueIds.has(node.id)} meetingId={meetingId} persistQuery={persistQuery} />
+          return (
+            <JiraScopingSearchResultItem
+              key={node.id}
+              issue={node}
+              isSelected={usedJiraIssueIds.has(node.id)}
+              meetingId={meetingId}
+              persistQuery={persistQuery}
+            />
+          )
         })}
       </ResultScroller>
     </>
-
   )
 }
 
@@ -100,9 +120,9 @@ export default createFragmentContainer(JiraScopingSearchResults, {
       }
       phases {
         phaseType
-        ...on EstimatePhase {
+        ... on EstimatePhase {
           stages {
-            ...on EstimateStageJira {
+            ... on EstimateStageJira {
               issue {
                 id
               }
@@ -122,7 +142,12 @@ export default createFragmentContainer(JiraScopingSearchResults, {
               queryString
               projectKeyFilters
             }
-            issues(first: $first, queryString: $queryString, isJQL: $isJQL, projectKeyFilters: $projectKeyFilters) @connection(key: "JiraScopingSearchResults_issues") {
+            issues(
+              first: $first
+              queryString: $queryString
+              isJQL: $isJQL
+              projectKeyFilters: $projectKeyFilters
+            ) @connection(key: "JiraScopingSearchResults_issues") {
               error {
                 message
               }
