@@ -1,13 +1,15 @@
 import graphql from 'babel-plugin-relay/macro'
-import React, {useEffect, useMemo, useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import {createPaginationContainer, RelayPaginationProp} from 'react-relay'
 import {ParabolScopingSearchResults_viewer} from '../__generated__/ParabolScopingSearchResults_viewer.graphql'
 import {ParabolScopingSearchResults_meeting} from '../__generated__/ParabolScopingSearchResults_meeting.graphql'
 import ParabolScopingSelectAllTasks from './ParabolScopingSelectAllTasks'
 import ParabolScopingSearchResultItem from './ParabolScopingSearchResultItem'
 import useLoadMoreOnScrollBottom from '~/hooks/useLoadMoreOnScrollBottom'
-import {NewMeetingPhaseTypeEnum} from '~/types/graphql'
 import IntegrationScopingNoResults from './IntegrationScopingNoResults'
+import useRecordIdsWithStages from '~/hooks/useRecordIdsWithStages'
+import {NewMeetingPhaseTypeEnum} from '~/types/graphql'
+
 interface Props {
   relay: RelayPaginationProp
   viewer: ParabolScopingSearchResults_viewer | null
@@ -24,18 +26,11 @@ const ParabolScopingSearchResults = (props: Props) => {
     if (incomingEdges) setEdges(incomingEdges)
   }, [incomingEdges])
   const {id: meetingId, phases} = meeting
-  const estimatePhase = phases.find(
-    (phase) => phase.phaseType === NewMeetingPhaseTypeEnum.ESTIMATE
-  )!
-  const {stages} = estimatePhase
-  const usedParabolTaskIds = useMemo(() => {
-    const usedParabolTaskIds = new Set<string>()
-    stages!.forEach((stage) => {
-      if (!stage.task) return
-      usedParabolTaskIds.add(stage.task.id)
-    })
-    return usedParabolTaskIds
-  }, [stages])
+  const usedParabolTaskIds = useRecordIdsWithStages(
+    phases,
+    NewMeetingPhaseTypeEnum.ESTIMATE,
+    'task'
+  )
 
   if (edges.length === 0)
     return viewer ? <IntegrationScopingNoResults msg={'No tasks match that query'} /> : null

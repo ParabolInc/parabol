@@ -1,7 +1,8 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {useEffect, useMemo, useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import {createFragmentContainer} from 'react-relay'
+import useRecordIdsWithStages from '~/hooks/useRecordIdsWithStages'
 import useAtmosphere from '../hooks/useAtmosphere'
 import MockScopingList from '../modules/meeting/components/MockScopingList'
 import PersistJiraSearchQueryMutation from '../mutations/PersistJiraSearchQueryMutation'
@@ -35,18 +36,7 @@ const JiraScopingSearchResults = (props: Props) => {
     }
   }, [incomingEdges])
   const {id: meetingId, teamId, phases, jiraSearchQuery} = meeting
-  const estimatePhase = phases.find(
-    (phase) => phase.phaseType === NewMeetingPhaseTypeEnum.ESTIMATE
-  )!
-  const {stages} = estimatePhase
-  const usedJiraIssueIds = useMemo(() => {
-    const usedJiraIssueIds = new Set<string>()
-    stages!.forEach((stage) => {
-      if (!stage.issue) return
-      usedJiraIssueIds.add(stage.issue.id)
-    })
-    return usedJiraIssueIds
-  }, [stages])
+  const usedJiraIssueIds = useRecordIdsWithStages(phases, NewMeetingPhaseTypeEnum.ESTIMATE, 'issue')
 
   // Terry, you can use this in case you need to put some final touches on styles
   /*   const [showMock, setShowMock] = useState(false)
