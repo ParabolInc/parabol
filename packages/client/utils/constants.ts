@@ -40,6 +40,9 @@ export const FUTURE = 'future'
 export const columnArray = [FUTURE, STUCK, ACTIVE, DONE] as TaskStatusEnum[]
 export const meetingColumnArray = [DONE, ACTIVE, STUCK, FUTURE] as TaskStatusEnum[]
 
+/* Task Search Filter */
+export const taskStatusFilterBuckets = [FUTURE, STUCK, ACTIVE, DONE] as TaskStatusEnum[]
+
 /* Drag-n-Drop Items */
 export const TASK = 'task'
 export const AGENDA_ITEM = 'agendaItem'

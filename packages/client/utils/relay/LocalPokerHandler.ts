@@ -1,5 +1,6 @@
 import {Handler} from 'relay-runtime/lib/store/RelayStoreTypes'
 import {TaskStatusEnum, TaskServiceEnum} from '~/types/graphql'
+import upperFirst from '../upperFirst'
 import createProxyRecord from './createProxyRecord'
 
 const lookup = {
@@ -26,13 +27,10 @@ const initializeDefaultSearchQueries = (store, payload): void => {
 
   for (const [_, data] of Object.entries(lookup)) {
     const {meetingPropertyName, defaultQuery} = data
-    const SearchQueryTypeName = `
-      ${meetingPropertyName.charAt(0)}${meetingPropertyName.slice(1)}
-    `
-    const queryId = `${meetingPropertyName}:${meetingId}`
-    const existingQuery = store.get(queryId)
+    const existingQuery = meeting.getLinkedRecord(meetingPropertyName)
     if (!existingQuery) {
-      const newQuery = createProxyRecord(store, SearchQueryTypeName, defaultQuery)
+      const newQuery = createProxyRecord(
+        store, upperFirst(meetingPropertyName), defaultQuery)
       meeting.setLinkedRecord(newQuery, meetingPropertyName)
     }
   }

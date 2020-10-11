@@ -1366,7 +1366,7 @@ export interface ITasksOnUserArguments {
   /**
    * only return tasks of the chosen status
    */
-  status?: TaskStatusEnum | null;
+  statusFilters?: Array<TaskStatusEnum> | null;
 
   /**
    * only return tasks which match the given filter query

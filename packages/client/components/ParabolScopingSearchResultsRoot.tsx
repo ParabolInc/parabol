@@ -2,11 +2,11 @@ import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer, QueryRenderer} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
-import {TaskStatusEnum} from '~/types/graphql'
 import ParabolScopingSearchResults from './ParabolScopingSearchResults'
 import {ParabolScopingSearchResultsRoot_meeting} from '../__generated__/ParabolScopingSearchResultsRoot_meeting.graphql'
 import ErrorComponent from './ErrorComponent/ErrorComponent'
 import {ParabolScopingSearchResultsRootQuery} from '../__generated__/ParabolScopingSearchResultsRootQuery.graphql'
+import {ParabolSearchQuery} from '~/types/clientSchema'
 
 const query = graphql`
   query ParabolScopingSearchResultsRootQuery(
@@ -14,7 +14,7 @@ const query = graphql`
     $after: DateTime
     $userIds: [ID!]
     $teamIds: [ID!]
-    $status: TaskStatusEnum
+    $statusFilters: [TaskStatusEnum!]
     $filterQuery: String
   ) {
     viewer {
@@ -31,7 +31,7 @@ const ParabolScopingSearchResultsRoot = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {meeting} = props
   const {teamId, parabolSearchQuery} = meeting
-  const {queryString} = parabolSearchQuery
+  const {queryString, statusFilters} = parabolSearchQuery as unknown as ParabolSearchQuery
   return (
     <QueryRenderer<ParabolScopingSearchResultsRootQuery>
       environment={atmosphere}
@@ -40,7 +40,7 @@ const ParabolScopingSearchResultsRoot = (props: Props) => {
         first: 50,
         teamIds: [teamId],
         userIds: [],
-        status: TaskStatusEnum.active,
+        statusFilters,
         filterQuery: queryString!.trim()
       }}
       fetchPolicy={'store-or-network' as any}

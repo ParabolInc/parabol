@@ -85,7 +85,7 @@ export default createPaginationContainer(
           userIds: $userIds
           teamIds: $teamIds
           archived: false
-          status: $status
+          statusFilters: $statusFilters
           filterQuery: $filterQuery
         ) @connection(key: "ParabolScopingSearchResults_tasks") {
           edges {
@@ -128,7 +128,7 @@ export default createPaginationContainer(
         $after: DateTime
         $teamIds: [ID!]
         $userIds: [ID!]
-        $status: TaskStatusEnum
+        $statusFilters: [TaskStatusEnum!]
         $filterQuery: String
       ) {
         viewer {

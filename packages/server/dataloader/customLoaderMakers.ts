@@ -12,6 +12,7 @@ import AtlassianServerManager from '../utils/AtlassianServerManager'
 import normalizeRethinkDbResults from './normalizeRethinkDbResults'
 import ProxiedCache from './ProxiedCache'
 import RethinkDataLoader from './RethinkDataLoader'
+import isNonEmptyArray from 'parabol-client/utils/isNonEmptyArray'
 
 type TeamUserKey = {teamId: string; userId: string}
 export interface JiraRemoteProjectKey {
@@ -27,7 +28,7 @@ export interface UserTasksKey {
   teamIds: string[]
   archived: boolean
   includeUnassigned: boolean
-  status?: TaskStatusEnum
+  statusFilters?: TaskStatusEnum[]
   filterQuery?: string
 }
 
@@ -65,14 +66,14 @@ export const users = () => {
 }
 
 export const serializeUserTasksKey = (key: UserTasksKey) => {
-  const {userIds, teamIds, first, after, archived, status, filterQuery} = key
+  const {userIds, teamIds, first, after, archived, statusFilters, filterQuery} = key
   const parts = [
-    Array.isArray(userIds) && userIds.length ? userIds.sort().join(':') : '*',
+    isNonEmptyArray(userIds) ? userIds!.sort().join(':') : '*',
     teamIds.sort().join(':'),
     first,
     after || '*',
     archived,
-    status || '*',
+    isNonEmptyArray(statusFilters) ? statusFilters!.sort().join(':') : '*',
     filterQuery || '*'
   ]
   return parts.join(':')
@@ -165,21 +166,27 @@ export const userTasks = (parent: RethinkDataLoader) => {
             userIds,
             teamIds,
             archived,
-            status,
+            statusFilters,
             filterQuery,
             includeUnassigned
           } = key
           const dbAfter = after ? new Date(after) : r.maxval
 
           let teamTaskPartial = r.table('Task').getAll(r.args(teamIds), {index: 'teamId'})
-          if (Array.isArray(userIds) && userIds.length)
+          if (isNonEmptyArray(userIds)) {
             teamTaskPartial = teamTaskPartial.filter((row) => r(userIds).contains(row('userId')))
-          if (status) teamTaskPartial = teamTaskPartial.filter({status})
-          if (filterQuery)
+          }
+          if (isNonEmptyArray(statusFilters)) {
+            teamTaskPartial = teamTaskPartial.filter((row) =>
+              r(statusFilters).contains(row('status'))
+            )
+          }
+          if (filterQuery) {
             // TODO: deal with tags like #archived and #private. should strip out of plaintextContent??
             teamTaskPartial = teamTaskPartial.filter(
               (row) => row('plaintextContent').match(filterQuery) as any
             )
+          }
 
           return {
             key: serializeUserTasksKey(key),
