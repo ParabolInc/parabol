@@ -7,6 +7,9 @@ import styled from '@emotion/styled'
 import Icon from './Icon'
 import {PALETTE} from '~/styles/paletteV2'
 import {ICON_SIZE} from '~/styles/typographyV2'
+import useMenu from '~/hooks/useMenu'
+import {MenuPosition} from '~/hooks/useCoords'
+import ParabolScopingSearchFilterMenu from './ParabolScopingSearchFilterMenu'
 
 const FilterIcon = styled(Icon)({
   color: PALETTE.TEXT_GRAY,
@@ -19,11 +22,17 @@ interface Props {
 
 const ParabolScopingSearchFilterToggle = (props: Props) => {
   const {meeting} = props
-  console.log(meeting.id)
+  const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT, {
+    loadingWidth: 200,
+    noClose: true
+  })
   return (
-    <PlainButton>
-      <FilterIcon>filter_list</FilterIcon>
-    </PlainButton>
+    <>
+      <PlainButton onClick={togglePortal} ref={originRef}>
+        <FilterIcon>filter_list</FilterIcon>
+      </PlainButton>
+      {menuPortal(<ParabolScopingSearchFilterMenu meeting={meeting} menuProps={menuProps} />)}
+    </>
   )
 }
 
@@ -31,6 +40,7 @@ export default createFragmentContainer(ParabolScopingSearchFilterToggle, {
   meeting: graphql`
     fragment ParabolScopingSearchFilterToggle_meeting on PokerMeeting {
       id
+      ...ParabolScopingSearchFilterMenu_meeting
     }
   `
 })

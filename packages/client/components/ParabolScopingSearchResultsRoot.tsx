@@ -30,7 +30,8 @@ interface Props {
 const ParabolScopingSearchResultsRoot = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {meeting} = props
-  const {teamId, parabolSearchQuery: filterQuery} = meeting
+  const {teamId, parabolSearchQuery} = meeting
+  const {queryString} = parabolSearchQuery
   return (
     <QueryRenderer<ParabolScopingSearchResultsRootQuery>
       environment={atmosphere}
@@ -40,7 +41,7 @@ const ParabolScopingSearchResultsRoot = (props: Props) => {
         teamIds: [teamId],
         userIds: [],
         status: TaskStatusEnum.active,
-        filterQuery: filterQuery?.trim()
+        filterQuery: queryString!.trim()
       }}
       fetchPolicy={'store-or-network' as any}
       render={({props, error}) => {
@@ -56,7 +57,10 @@ export default createFragmentContainer(ParabolScopingSearchResultsRoot, {
   meeting: graphql`
     fragment ParabolScopingSearchResultsRoot_meeting on PokerMeeting {
       ...ParabolScopingSearchResults_meeting
-      parabolSearchQuery
+      parabolSearchQuery {
+        queryString
+        statusFilters
+      }
       teamId
     }
   `

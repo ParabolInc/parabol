@@ -36,7 +36,8 @@ const setSearch = (atmosphere: Atmosphere, meetingId: string, value: string) => 
   commitLocalUpdate(atmosphere, (store) => {
     const meeting = store.get(meetingId)
     if (!meeting) return
-    meeting.setValue(value, 'parabolSearchQuery')
+    const parabolSearchQuery = meeting.getLinkedRecord('parabolSearchQuery')!
+    parabolSearchQuery.setValue(value, 'queryString')
   })
 }
 
@@ -47,7 +48,8 @@ interface Props {
 const ParabolScopingSearchInput = (props: Props) => {
   const {meeting} = props
   const {id: meetingId, parabolSearchQuery} = meeting
-  const isEmpty = !parabolSearchQuery
+  const {queryString} = parabolSearchQuery
+  const isEmpty = !queryString
   const atmosphere = useAtmosphere()
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearch(atmosphere, meetingId, e.target.value)
@@ -55,11 +57,7 @@ const ParabolScopingSearchInput = (props: Props) => {
   const clearSearch = () => setSearch(atmosphere, meetingId, '')
   return (
     <Wrapper>
-      <SearchInput
-        value={parabolSearchQuery || ''}
-        placeholder={'Search Parabol tasks'}
-        onChange={onChange}
-      />
+      <SearchInput value={queryString!} placeholder={'Search Parabol tasks'} onChange={onChange} />
       <ClearSearchIcon isEmpty={isEmpty} onClick={clearSearch}>
         close
       </ClearSearchIcon>
@@ -71,7 +69,9 @@ export default createFragmentContainer(ParabolScopingSearchInput, {
   meeting: graphql`
     fragment ParabolScopingSearchInput_meeting on PokerMeeting {
       id
-      parabolSearchQuery
+      parabolSearchQuery {
+        queryString
+      }
     }
   `
 })
