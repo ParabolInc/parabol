@@ -3,12 +3,13 @@ import graphql from 'babel-plugin-relay/macro'
 import {IJiraCreateIssueOnMutationArguments} from '../types/graphql'
 import createProxyRecord from '../utils/relay/createProxyRecord'
 import Atmosphere from '../Atmosphere'
-import {LocalHandlers} from '../types/relayMutations'
+import {LocalHandlers, SharedUpdater} from '../types/relayMutations'
 import getJiraIssuesConn from './connections/getJiraIssuesConn'
 import {ConnectionHandler} from 'relay-runtime'
+import {JiraCreateIssueMutation_meeting} from '~/__generated__/JiraCreateIssueMutation_meeting.graphql'
 
 graphql`
-  fragment JiraCreateIssueMutation_task on JiraCreateIssuePayload {
+  fragment JiraCreateIssueMutation_meeting on JiraCreateIssuePayload {
     key
     summary
     teamId
@@ -34,10 +35,44 @@ const mutation = graphql`
       error {
         message
       }
-      ...JiraCreateIssueMutation_task @relay(mask: false)
+      ...JiraCreateIssueMutation_meeting @relay(mask: false)
     }
   }
 `
+
+const handleJiraCreateIssue = (teamId, key, url, summary, store) => {
+  const team = store.get(teamId)
+  const jiraIssuesConn = getJiraIssuesConn(team)
+  const newJiraIssue = {
+    key,
+    summary,
+    url
+  }
+  console.log('my Test obj -->', newJiraIssue)
+  const jiraIssueProxy = createProxyRecord(store, 'JiraIssue', newJiraIssue)
+  console.log('jiraIssueProxy', jiraIssueProxy)
+  const now = new Date().toISOString()
+  if (!jiraIssuesConn) return
+  const newEdge = ConnectionHandler.createEdge(
+    store,
+    jiraIssuesConn,
+    jiraIssueProxy,
+    'JiraIssueEdge'
+  )
+  newEdge.setValue(now, 'cursor')
+  ConnectionHandler.insertEdgeBefore(jiraIssuesConn, newEdge)
+}
+
+export const jiraCreateIssueUpdater: SharedUpdater<JiraCreateIssueMutation_meeting> = (
+  payload,
+  {store}
+) => {
+  const teamId = payload.getValue('teamId')
+  const key = payload.getValue('key')
+  const url = payload.getValue('url')
+  const summary = payload.getValue('summary')
+  handleJiraCreateIssue(teamId, key, url, summary, store)
+}
 
 const JiraCreateIssueMutation = (
   atmosphere: Atmosphere,
@@ -50,30 +85,13 @@ const JiraCreateIssueMutation = (
     variables,
     updater: (store) => {
       const payload = store.getRootField('jiraCreateIssue')
-      const teamId = payload.getValue('teamId')
-      const team = store.get(teamId)
-      const key = payload.getValue('key')
-      const url = payload.getValue('url')
-      const summary = payload.getValue('summary')
-      const jiraIssuesConn = getJiraIssuesConn(team)
-      const newJiraIssue = {
-        key,
-        summary,
-        url
-      }
-      console.log('my Test obj -->', newJiraIssue)
-      const jiraIssueProxy = createProxyRecord(store, 'JiraIssue', newJiraIssue)
-      console.log('jiraIssueProxy', jiraIssueProxy)
-      const now = new Date().toISOString()
-      if (!jiraIssuesConn) return
-      const newEdge = ConnectionHandler.createEdge(
-        store,
-        jiraIssuesConn,
-        jiraIssueProxy,
-        'JiraIssueEdge'
-      )
-      newEdge.setValue(now, 'cursor')
-      ConnectionHandler.insertEdgeBefore(jiraIssuesConn, newEdge)
+      if (!payload) return
+      const context = {atmosphere, store}
+      jiraCreateIssueUpdater(payload, context)
+    },
+    optimisticUpdater: (store) => {
+      const {teamId, projectKey, content} = variables
+      handleJiraCreateIssue(teamId, projectKey, 'test.com', content, store)
     },
     onCompleted,
     onError
