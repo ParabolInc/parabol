@@ -9,8 +9,9 @@ import {ConnectionHandler} from 'relay-runtime'
 
 graphql`
   fragment JiraCreateIssueMutation_task on JiraCreateIssuePayload {
-    id
+    key
     summary
+    teamId
     url
   }
 `
@@ -49,65 +50,30 @@ const JiraCreateIssueMutation = (
     variables,
     updater: (store) => {
       const payload = store.getRootField('jiraCreateIssue')
-      // const testId = payload.getValue('testId')
-      // console.log('testId', testId)
-      // const viewer = store.getRoot().getLinkedRecord('viewer')
-      // console.log('viewer', viewer)
-      const teamId = 'yffSRFTZ_j'
-      // console.log('team', team)
+      const teamId = payload.getValue('teamId')
       const team = store.get(teamId)
-      // console.log('payload', payload)
-      // const jiraIssueDescription = payload.getValue('jiraIssueDescription')
-      // console.log('jiraIssueDescription', jiraIssueDescription)
-      // const id = payload.getValue('id')
-      // console.log('id ', id)
-      const jiraIssueId = payload.getDataID()
-      // console.log('id -->', jiraIssueId)
-      const key = jiraIssueId.split(':')[1]
-      // console.log('key', key)
-      console.log(' key', key)
+      const key = payload.getValue('key')
       const url = payload.getValue('url')
-      console.log('url', url)
-      // const key = payload.getValue('key')
       const summary = payload.getValue('summary')
-      console.log('summary', summary)
-      const jiraIssuesConn = getJiraIssuesConn(team as any)
-      console.log('jiraIssuesConn', jiraIssuesConn)
-      const test = {
-        id: jiraIssueId,
+      const jiraIssuesConn = getJiraIssuesConn(team)
+      const newJiraIssue = {
         key,
         summary,
         url
       }
-      console.log('my Test obj -->', test)
-      // const test = {
-      //   id: testId,
-      //   url: 'dksjds.com',
-      //   key: '12309',
-      //   summary: jiraIssueDescription
-      // }
-      const jiraIssueTest = createProxyRecord(store, 'JiraIssue', test)
-      console.log('jiraIssueTest', jiraIssueTest)
-      // console.log('jiraIssueTest --->', jiraIssueTest)
-      // // console.log('jiraIssueTest', jiraIssueTest)
+      console.log('my Test obj -->', newJiraIssue)
+      const jiraIssueProxy = createProxyRecord(store, 'JiraIssue', newJiraIssue)
+      console.log('jiraIssueProxy', jiraIssueProxy)
       const now = new Date().toISOString()
-      // jiraIssueTest.setValue(now, 'cursor')
-      // safePutNodeInConn(jiraIssuesConn, jiraIssueTest, store)
       if (!jiraIssuesConn) return
       const newEdge = ConnectionHandler.createEdge(
         store,
         jiraIssuesConn,
-        jiraIssueTest,
-        'TimelineEventEdge'
+        jiraIssueProxy,
+        'JiraIssueEdge'
       )
       newEdge.setValue(now, 'cursor')
-      console.log('newEdge', newEdge)
       ConnectionHandler.insertEdgeBefore(jiraIssuesConn, newEdge)
-
-      // const viewer = store.getRoot().getLinkedRecord<IUser>('viewer')
-      // const payload = store.getRootField('jiraCreateIssue')
-      // const teamId = payload.getValue('teamId')
-      // console.log("teamId", teamId)
     },
     onCompleted,
     onError

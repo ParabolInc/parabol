@@ -8920,14 +8920,19 @@ export interface IJiraCreateIssuePayload {
   error: IStandardMutationError | null;
 
   /**
-   * shortid
+   * The key used to identify the issue in Jira
    */
-  id: string;
+  key: string;
 
   /**
    * The content of the Jira issue
    */
   summary: string;
+
+  /**
+   * The id of the team that is creating the Jira issue
+   */
+  teamId: string;
 
   /**
    * The url of the issue that lives in Jira

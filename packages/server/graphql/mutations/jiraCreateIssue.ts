@@ -53,9 +53,7 @@ export default {
       dataLoader.get('atlassianAuthByUserId').load(viewerId)
     ])
     const viewerAuth = viewerAuthRes[0][0]
-    console.log('viewerAuth', viewerAuth)
 
-    // TODO: prob change assignee
     if (!viewerAuth || !viewerAuth.isActive) {
       return standardError(new Error('The viewer does not have access to Jira'), {
         userId: viewerId
@@ -111,16 +109,11 @@ export default {
     }
     const cloud = sites.find((site) => site.id === cloudId)!
     console.log('cloud', cloud)
-    // const data = {
-    //   teamId,
-    //   cloudId,
-    //   issueKey: res.key,
-    //   url: cloud.url
-    // }
     const data = {
-      cloudId,
-      key: projectKey,
+      cloudName: cloud.name,
+      key: res.key,
       summary: content,
+      teamId,
       url: cloud.url
     }
     console.log('data', data)
@@ -135,7 +128,6 @@ export default {
         meetingId
       }
     })
-    // console.log('{jiraIssueDescription: content}', {jiraIssueDescription: content})
     return data
   }
 }

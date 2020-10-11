@@ -8,21 +8,24 @@ const JiraCreateIssuePayload = new GraphQLObjectType<any, GQLContext>({
     error: {
       type: StandardMutationError
     },
-    id: {
+    key: {
       type: GraphQLNonNull(GraphQLID),
-      description: 'shortid',
-      resolve: ({cloudId, key}) => {
-        return `${cloudId}:${key}`
-      }
+      description: 'The key used to identify the issue in Jira'
     },
     summary: {
       type: GraphQLNonNull(GraphQLString),
       description: 'The content of the Jira issue'
     },
+    teamId: {
+      type: GraphQLNonNull(GraphQLID),
+      description: 'The id of the team that is creating the Jira issue'
+    },
     url: {
-      // TODO: change this to same format as JiraIssue type
       type: GraphQLNonNull(GraphQLString),
-      description: 'The url of the issue that lives in Jira'
+      description: 'The url of the issue that lives in Jira',
+      resolve: ({cloudName, key}) => {
+        return `https://${cloudName}.atlassian.net/browse/${key}`
+      }
     }
   })
 })
