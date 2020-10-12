@@ -41,7 +41,7 @@ const ReflectTemplate = new GraphQLObjectType<any, GQLContext>({
       resolve: async ({id: templateId}, _args, {dataLoader}) => {
         const prompts = await dataLoader.get('reflectPromptsByTemplateId').load(templateId)
         return prompts
-          .filter((prompt) => prompt.isActive)
+          .filter((prompt) => !prompt.removedAt)
           .sort((a, b) => (a.sortOrder < b.sortOrder ? -1 : 1))
       }
     },

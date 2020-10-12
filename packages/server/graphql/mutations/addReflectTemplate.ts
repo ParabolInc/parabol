@@ -82,7 +82,8 @@ const addReflectTemplate = {
           ...prompt,
           teamId,
           templateId: newTemplate.id,
-          parentPromptId: prompt.id
+          parentPromptId: prompt.id,
+          removedAt: null
         })
       })
       await r({

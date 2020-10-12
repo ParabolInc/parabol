@@ -3,7 +3,7 @@ import {GITHUB} from 'parabol-client/utils/constants'
 import toTeamMemberId from '../../../client/utils/relay/toTeamMemberId'
 import getRethink from '../../database/rethinkDriver'
 import {GQLContext} from '../graphql'
-import GitHubAuth from './GitHubAuth'
+import GitHubIntegration from './GitHubIntegration'
 import StandardMutationError from './StandardMutationError'
 import TeamMember from './TeamMember'
 import User from './User'
@@ -14,8 +14,8 @@ const AddGitHubAuthPayload = new GraphQLObjectType<any, GQLContext>({
     error: {
       type: StandardMutationError
     },
-    githubAuth: {
-      type: GitHubAuth,
+    githubIntegration: {
+      type: GitHubIntegration,
       description: 'The newly created auth',
       resolve: async ({teamId, userId}) => {
         const r = await getRethink()

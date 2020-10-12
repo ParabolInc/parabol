@@ -114,7 +114,6 @@ interface JiraError {
   }
 }
 
-type JiraRenderedFields = any
 type JiraIssueProperties = any
 type JiraIssueNames = any
 type JiraIssueSchema = any
@@ -126,12 +125,12 @@ type JiraVersionedRepresentations = any
 type JiraIncludedFields = any
 
 
-interface JiraIssueBean<F = {description: any, summary: string}> {
+interface JiraIssueBean<F = {description: any, summary: string}, R = unknown> {
   expand: string
   id: string
   self: string
   key: string
-  renderedFields: JiraRenderedFields
+  renderedFields: R
   properties: JiraIssueProperties
   names: JiraIssueNames
   schema: JiraIssueSchema
@@ -271,10 +270,35 @@ export default abstract class AtlassianManager {
     )
   }
 
+  async getAllProjects(cloudIds: string[]) {
+    const projects = [] as (JiraProject & {cloudId: string})[]
+    let error = null as null | string
+    const getProjectPage = async (cloudId: string) => {
+      const url = `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/project/search?orderBy=name`
+      const res = await this.get(url) as JiraProjectResponse | AtlassianError
+      if ('message' in res) {
+        error = res.message
+      } else {
+        res.values.forEach((project) => {
+          projects.push({...project, cloudId})
+        })
+        if (res.nextPage) {
+          return getProjectPage(res.nextPage)
+        }
+      }
+    }
+    await Promise.all(cloudIds.map(getProjectPage))
+    if (error) {
+      console.log('getAllProjects ERROR:', error)
+    }
+    return projects
+  }
+
   async getProject(cloudId: string, projectId: string) {
-    return this.get(
+    const project = await this.get(
       `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/project/${projectId}`
     ) as JiraProject | AtlassianError
+    return ('id' in project) ? {...project, cloudId} : project
   }
 
   async convertMarkdownToADF(markdown: string) {
@@ -326,33 +350,31 @@ export default abstract class AtlassianManager {
   async getIssue(cloudId: string, issueKey: string) {
     const [cloudNameLookup, issueRes] = await Promise.all([
       this.getCloudNameLookup(),
-      this.get(`https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/issue/${issueKey}?fields=summary,description`) as AtlassianError | JiraError | JiraIssueBean
+      this.get(`https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/issue/${issueKey}?fields=summary,description&expand=renderedFields`) as AtlassianError | JiraError | JiraIssueBean
     ])
     if ('fields' in issueRes) {
       (issueRes.fields as any).cloudName = cloudNameLookup[cloudId]
+        ; (issueRes.fields as any).descriptionHTML = (issueRes as any).renderedFields.description
     }
-    return issueRes as AtlassianError | JiraError | JiraIssueBean<{description: any, summary: string, cloudName: string}>
+    return issueRes as AtlassianError | JiraError | JiraIssueBean<{description: any, summary: string, cloudName: string, descriptionHTML: string}>
   }
 
-  async getIssues(queryString: string, isJQL: boolean, projectKeyFilters: {cloudId: string, projectId?: string}[]) {
-    const projectsByCloudId = {} as {[cloudId: string]: string[]}
-    projectKeyFilters.forEach((project) => {
-      const {cloudId, projectId} = project
-      projectsByCloudId[cloudId] = projectsByCloudId[cloudId] || []
-      if (projectId) {
-        projectsByCloudId[cloudId].push(projectId)
-      }
-    })
-    const cloudIds = Object.keys(projectsByCloudId)
+  async getIssues(queryString: string, isJQL: boolean, projectFiltersByCloudId: {[cloudId: string]: string[]}) {
+    const cloudIds = Object.keys(projectFiltersByCloudId)
     const allIssues = [] as {id: number, key: string, summary: string, cloudId: string, cloudName: string}[]
     let firstError: string | null = null
-
+    const composeJQL = (queryString: string | null, isJQL: boolean, projectKeys: string[]) => {
+      const orderBy = 'order by lastViewed DESC'
+      if (isJQL) return queryString || orderBy
+      const projectFilter = projectKeys.length ? `project in (${projectKeys.map(val => `\"${val}\"`).join(', ')})` : ''
+      const textFilter = queryString ? `text ~ \"${queryString}\"` : ''
+      const and = projectFilter && textFilter ? ' AND ' : ''
+      return `${projectFilter}${and}${textFilter} ${orderBy}`
+    }
     const reqs = cloudIds.map(async (cloudId) => {
-      // TODO add project filter
-      // const projects = projectsByCloudId[cloudId]
-      const order = 'order by lastViewed DESC'
-      const jql = queryString ? isJQL ? queryString : `text ~ \"${queryString}\" ${order}` : order
+      const projectKeys = projectFiltersByCloudId[cloudId]
       const url = `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/search`
+      const jql = composeJQL(queryString, isJQL, projectKeys)
       const payload = {
         jql,
         maxResults: 100,

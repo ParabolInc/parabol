@@ -1,5 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
-import React, {useRef} from 'react'
+import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {ScopePhase_meeting} from '~/__generated__/ScopePhase_meeting.graphql'
 import {phaseLabelLookup} from '../utils/meetings/lookups'
@@ -18,11 +18,9 @@ interface Props extends PokerMeetingPhaseProps {
 
 const ScopePhase = (props: Props) => {
   const {avatarGroup, toggleSidebar, meeting} = props
-  const phaseRef = useRef<HTMLDivElement>(null)
-  const {localPhase, endedAt, showSidebar} = meeting
-  if (!localPhase) return null
+  const {endedAt, showSidebar} = meeting
   return (
-    <MeetingContent ref={phaseRef}>
+    <MeetingContent>
       <MeetingHeaderAndPhase hideBottomBar={!!endedAt}>
         <MeetingTopBar
           avatarGroup={avatarGroup}
@@ -60,14 +58,13 @@ export default createFragmentContainer(ScopePhase, {
       ...StageTimerControl_meeting
       ...ScopePhaseArea_meeting
       endedAt
-      localPhase {
-        ...ScopePhase_phase @relay(mask: false)
-      }
       localStage {
         isComplete
       }
       phases {
-        ...ScopePhase_phase @relay(mask: false)
+        stages {
+          isComplete
+        }
       }
       showSidebar
     }

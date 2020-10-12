@@ -51,18 +51,20 @@ const USER_EVENTS = [SlackNotificationEventEnum.MEETING_STAGE_TIME_LIMIT_END]
 const SlackNotificationList = (props: Props) => {
   const {teamId, viewer} = props
   const {teamMember} = viewer
-  const {slackAuth, slackNotifications} = teamMember!
-  const channels = useSlackChannels(slackAuth)
+  const {integrations} = teamMember!
+  const {slack} = integrations
+  const notifications = slack?.notifications ?? []
+  const channels = useSlackChannels(slack)
   const {submitting, onError, onCompleted, submitMutation, error} = useMutationProps()
   const atmosphere = useAtmosphere()
   const localPrivateChannel = channels.find((channel) => channel.name === '@Parabol')
   const localPrivateChannelId = localPrivateChannel && localPrivateChannel.id
-  const {isActive, defaultTeamChannelId} = slackAuth!
+  const {isActive, defaultTeamChannelId} = slack!
 
   const changeTeamChannel: SlackChannelDropdownOnClick = useEventCallback(
     (slackChannelId) => () => {
       // only change the active events
-      const slackNotificationEvents = slackNotifications
+      const slackNotificationEvents = notifications
         .filter(
           (notification) =>
             notification.channelId && notification.eventType === SlackNotificationEventTypeEnum.team
@@ -137,17 +139,19 @@ export default createFragmentContainer(SlackNotificationList, {
     fragment SlackNotificationList_viewer on User {
       ...SlackNotificationRow_viewer
       teamMember(teamId: $teamId) {
-        slackAuth {
-          accessToken
-          botAccessToken
-          isActive
-          slackUserId
-          defaultTeamChannelId
-        }
-        slackNotifications {
-          channelId
-          event
-          eventType
+        integrations {
+          slack {
+            accessToken
+            botAccessToken
+            isActive
+            slackUserId
+            defaultTeamChannelId
+            notifications {
+              channelId
+              event
+              eventType
+            }
+          }
         }
       }
     }

@@ -43,10 +43,11 @@ interface Props {
   meetingId: string
   isSelected: boolean
   issue: JiraScopingSearchResultItem_issue
+  persistQuery: () => void
 }
 
 const JiraScopingSearchResultItem = (props: Props) => {
-  const {isSelected, issue, meetingId} = props
+  const {isSelected, issue, meetingId, persistQuery} = props
   const {id: serviceTaskId, key, summary, url} = issue
   const atmosphere = useAtmosphere()
   const {onCompleted, onError, submitMutation, submitting} = useMutationProps()
@@ -64,6 +65,10 @@ const JiraScopingSearchResultItem = (props: Props) => {
       ]
     }
     UpdatePokerScopeMutation(atmosphere, variables, {onError, onCompleted})
+    if (!isSelected) {
+      // if they are adding an item, then their search criteria must be good, so persist it
+      persistQuery()
+    }
   }
   return (
     <Item onClick={onClick} >

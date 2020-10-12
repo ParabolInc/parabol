@@ -5,25 +5,44 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
-## 5.20.1 2020-Sep-30
+## 5.21.0 2020-Oct-07
+
+### Added
+
+- Added undo grouping button to completed gouping phase #4253
+- Sprint Poker: Jira integration, search, and scoping implemented #4241, #4231
+- Added new starter templates for retro meetings #4220
+
+### Changed
+
+- Friendlier UI for tasks without assignees #4164
 
 ### Fixed
-- SegmentIo client page call signature for Google Analytics
 
+- Remove link to offensive rally song
+
+## 5.20.1 2020-Oct-06
+
+### Fixed
+
+- SegmentIo client page call signature for Google Analytics
 
 ## 5.20.0 2020-Sep-30
 
 ### Added
+
 - Remove shared templates by archived teams #4201
 - Added tab access for due date #4135
 - Poker Jira front-end (behind feature flag) #4158
 
 ### Changed
+
 - New user task view #4105
 - Multi-connection user presence with Redis #4147
 - Bump GraphQL to v15 #4193
 
 ### Fixed
+
 - Bug fix for first item in menu #4200
 - Filter out teamIds in backup organization #4221
 - Assign team task card to viewer #4223
