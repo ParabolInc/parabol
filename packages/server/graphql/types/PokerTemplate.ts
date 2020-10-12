@@ -3,11 +3,13 @@ import connectionDefinitions from '../connectionDefinitions'
 import {GQLContext} from '../graphql'
 import TemplateDimension from './TemplateDimension'
 import SharableTemplate, {sharableTemplateFields} from './SharableTemplate'
+import {MeetingTypeEnum} from 'parabol-client/types/graphql'
 
 const PokerTemplate = new GraphQLObjectType<any, GQLContext>({
   name: 'PokerTemplate',
   description: 'The team-specific templates for sprint poker meeting',
   interfaces: () => [SharableTemplate],
+  isTypeOf: ({type}) => type === MeetingTypeEnum.poker,
   fields: () => ({
     ...sharableTemplateFields(),
     dimensions: {

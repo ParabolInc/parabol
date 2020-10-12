@@ -1,10 +1,13 @@
-import {GraphQLID, GraphQLNonNull, GraphQLString, GraphQLInterfaceType, GraphQLBoolean} from 'graphql'
+import {
+  GraphQLID,
+  GraphQLNonNull,
+  GraphQLString,
+  GraphQLInterfaceType,
+  GraphQLBoolean
+} from 'graphql'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import SharingScopeEnum from './SharingScopeEnum'
 import Team from './Team'
-import {SharableTemplateEnum} from 'parabol-client/types/graphql'
-import ReflectTemplate from './ReflectTemplate'
-import PokerTemplate from './PokerTemplate'
 
 export const sharableTemplateFields = () => ({
   id: {
@@ -46,6 +49,10 @@ export const sharableTemplateFields = () => ({
       return team
     }
   },
+  type: {
+    type: new GraphQLNonNull(GraphQLString),
+    description: 'The type of the template'
+  },
   updatedAt: {
     type: new GraphQLNonNull(GraphQLISO8601Type)
   }
@@ -54,15 +61,7 @@ export const sharableTemplateFields = () => ({
 const SharableTemplate = new GraphQLInterfaceType({
   name: 'SharableTemplate',
   description: 'A meeting template that can be shared across team, orgnization and public',
-  fields: sharableTemplateFields,
-  resolveType: (type) => {
-    const templateType = type.prompts ? SharableTemplateEnum.RETROSPECTIVE : SharableTemplateEnum.SPRINT_POKER
-    const lookup = {
-      [SharableTemplateEnum.RETROSPECTIVE]: ReflectTemplate,
-      [SharableTemplateEnum.SPRINT_POKER]: PokerTemplate
-    }
-    return lookup[templateType]
-  }
+  fields: sharableTemplateFields
 })
 
 export default SharableTemplate

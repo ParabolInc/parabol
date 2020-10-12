@@ -1797,6 +1797,11 @@ export interface IReflectTemplate {
    * The team this template belongs to
    */
   team: ITeam;
+
+  /**
+   * The type of the template
+   */
+  type: string;
   updatedAt: any;
 
   /**
@@ -3355,6 +3360,11 @@ export interface IPokerTemplate {
    * The team this template belongs to
    */
   team: ITeam;
+
+  /**
+   * The type of the template
+   */
+  type: string;
   updatedAt: any;
 
   /**
@@ -3536,6 +3546,11 @@ export interface ISharableTemplate {
    * The team this template belongs to
    */
   team: ITeam;
+
+  /**
+   * The type of the template
+   */
+  type: string;
   updatedAt: any;
 }
 
@@ -5066,7 +5081,7 @@ export interface IPokerMeetingSettings {
   /**
    * The template that will be used to start the Poker meeting
    */
-  selectedTemplate: IReflectTemplate;
+  selectedTemplate: IPokerTemplate;
 
   /**
    * The list of scales belong to this team
@@ -5076,12 +5091,12 @@ export interface IPokerMeetingSettings {
   /**
    * The list of templates used to start a Poker meeting
    */
-  teamTemplates: Array<IReflectTemplate>;
+  teamTemplates: Array<IPokerTemplate>;
 
   /**
    * The list of templates shared across the organization to start a Poker meeting
    */
-  organizationTemplates: IReflectTemplateConnection;
+  organizationTemplates: IPokerTemplateConnection;
 
   /**
    * The list of starter scales
@@ -5091,7 +5106,7 @@ export interface IPokerMeetingSettings {
   /**
    * The list of templates shared across the organization to start a Poker meeting
    */
-  publicTemplates: IReflectTemplateConnection;
+  publicTemplates: IPokerTemplateConnection;
 }
 
 export interface IOrganizationTemplatesOnPokerMeetingSettingsArguments {
@@ -5152,8 +5167,8 @@ export interface IJiraSearchQuery {
 /**
  * A connection to a list of items.
  */
-export interface IReflectTemplateConnection {
-  __typename: 'ReflectTemplateConnection';
+export interface IPokerTemplateConnection {
+  __typename: 'PokerTemplateConnection';
 
   /**
    * Information to aid in pagination.
@@ -5163,19 +5178,19 @@ export interface IReflectTemplateConnection {
   /**
    * A list of edges.
    */
-  edges: Array<IReflectTemplateEdge>;
+  edges: Array<IPokerTemplateEdge>;
 }
 
 /**
  * An edge in a connection.
  */
-export interface IReflectTemplateEdge {
-  __typename: 'ReflectTemplateEdge';
+export interface IPokerTemplateEdge {
+  __typename: 'PokerTemplateEdge';
 
   /**
    * The item at the end of the edge
    */
-  node: IReflectTemplate;
+  node: IPokerTemplate;
 
   /**
    * A cursor for use in pagination
@@ -5481,6 +5496,40 @@ export interface IPublicTemplatesOnRetrospectiveMeetingSettingsArguments {
    * The cursor, which is the templateId
    */
   after?: string | null;
+}
+
+/**
+ * A connection to a list of items.
+ */
+export interface IReflectTemplateConnection {
+  __typename: 'ReflectTemplateConnection';
+
+  /**
+   * Information to aid in pagination.
+   */
+  pageInfo: IPageInfo;
+
+  /**
+   * A list of edges.
+   */
+  edges: Array<IReflectTemplateEdge>;
+}
+
+/**
+ * An edge in a connection.
+ */
+export interface IReflectTemplateEdge {
+  __typename: 'ReflectTemplateEdge';
+
+  /**
+   * The item at the end of the edge
+   */
+  node: IReflectTemplate;
+
+  /**
+   * A cursor for use in pagination
+   */
+  cursor: string;
 }
 
 /**

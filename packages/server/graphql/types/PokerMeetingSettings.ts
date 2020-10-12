@@ -5,12 +5,12 @@ import connectionFromTemplateArray from '../queries/helpers/connectionFromTempla
 import getPublicScoredTemplates from '../queries/helpers/getPublicScoredTemplates'
 import getScoredTemplates from '../queries/helpers/getScoredTemplates'
 import resolveSelectedTemplate from '../queries/helpers/resolveSelectedTemplate'
-import ReflectTemplate, {ReflectTemplateConnection} from './ReflectTemplate'
 import TeamMeetingSettings, {teamMeetingSettingsFields} from './TeamMeetingSettings'
 import JiraSearchQuery from './JiraSearchQuery'
 import ms from 'ms'
 import getRethink from '../../database/rethinkDriver'
 import TemplateScale from './TemplateScale'
+import PokerTemplate, {PokerTemplateConnection} from './PokerTemplate'
 
 const PokerMeetingSettings = new GraphQLObjectType<any, GQLContext>({
   name: 'PokerMeetingSettings',
@@ -45,7 +45,7 @@ const PokerMeetingSettings = new GraphQLObjectType<any, GQLContext>({
       description: 'FK. The template that will be used to start the poker meeting'
     },
     selectedTemplate: {
-      type: GraphQLNonNull(ReflectTemplate),
+      type: GraphQLNonNull(PokerTemplate),
       description: 'The template that will be used to start the Poker meeting',
       resolve: resolveSelectedTemplate('estimatedEffortTemplate')
     },
@@ -60,7 +60,7 @@ const PokerMeetingSettings = new GraphQLObjectType<any, GQLContext>({
       }
     },
     teamTemplates: {
-      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(ReflectTemplate))),
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(PokerTemplate))),
       description: 'The list of templates used to start a Poker meeting',
       resolve: async ({teamId}, _args, {dataLoader}) => {
         const templates = await dataLoader.get('meetingTemplatesByTeamId').load(teamId)
@@ -69,7 +69,7 @@ const PokerMeetingSettings = new GraphQLObjectType<any, GQLContext>({
       }
     },
     organizationTemplates: {
-      type: GraphQLNonNull(ReflectTemplateConnection),
+      type: GraphQLNonNull(PokerTemplateConnection),
       args: {
         first: {
           type: GraphQLNonNull(GraphQLInt)
@@ -99,7 +99,7 @@ const PokerMeetingSettings = new GraphQLObjectType<any, GQLContext>({
       }
     },
     publicTemplates: {
-      type: GraphQLNonNull(ReflectTemplateConnection),
+      type: GraphQLNonNull(PokerTemplateConnection),
       description: 'The list of templates shared across the organization to start a Poker meeting',
       args: {
         first: {
