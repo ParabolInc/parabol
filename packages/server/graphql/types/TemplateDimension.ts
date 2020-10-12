@@ -25,7 +25,8 @@ const TemplateDimension = new GraphQLObjectType<any, GQLContext>({
       type: new GraphQLNonNull(GraphQLISO8601Type)
     },
     isActive: {
-      type: GraphQLBoolean,
+      type: new GraphQLNonNull(GraphQLBoolean),
+      resolve: ({isActive}) => !!isActive,
       description: 'true if the dimension is currently used by the team, else false'
     },
     teamId: {
@@ -33,7 +34,7 @@ const TemplateDimension = new GraphQLObjectType<any, GQLContext>({
       description: 'foreign key. use the team field'
     },
     team: {
-      type: Team,
+      type: new GraphQLNonNull(Team),
       description: 'The team that owns this dimension',
       resolve: resolveTeam
     },

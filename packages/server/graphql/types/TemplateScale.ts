@@ -14,8 +14,7 @@ import TemplateScaleValue from './TemplateScaleValue'
 
 const TemplateScale = new GraphQLObjectType<any, GQLContext>({
   name: 'TemplateScale',
-  description:
-    'A team-specific template scale.',
+  description: 'A team-specific template scale.',
   fields: () => ({
     id: {
       type: new GraphQLNonNull(GraphQLID),
@@ -25,7 +24,8 @@ const TemplateScale = new GraphQLObjectType<any, GQLContext>({
       type: new GraphQLNonNull(GraphQLISO8601Type)
     },
     isActive: {
-      type: GraphQLBoolean,
+      type: new GraphQLNonNull(GraphQLBoolean),
+      resolve: ({isActive}) => !!isActive,
       description: 'true if the scale is currently used by the team, else false'
     },
     teamId: {
@@ -33,7 +33,7 @@ const TemplateScale = new GraphQLObjectType<any, GQLContext>({
       description: 'foreign key. use the team field'
     },
     team: {
-      type: Team,
+      type: new GraphQLNonNull(Team),
       description: 'The team that owns this template scale',
       resolve: resolveTeam
     },
@@ -42,8 +42,7 @@ const TemplateScale = new GraphQLObjectType<any, GQLContext>({
     },
     name: {
       type: new GraphQLNonNull(GraphQLString),
-      description:
-        'The title of the scale used in the template'
+      description: 'The title of the scale used in the template'
     },
     values: {
       type: new GraphQLList(new GraphQLNonNull(TemplateScaleValue)),
