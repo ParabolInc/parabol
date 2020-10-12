@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, {useMemo, useState} from 'react'
 import graphql from 'babel-plugin-relay/macro'
 import styled from '@emotion/styled'
 import Checkbox from './Checkbox'
@@ -66,19 +66,38 @@ const NewJiraIssueInput = (props: Props) => {
   const {team} = viewer
   const {id: teamId, jiraIssues} = team!
   const {error, edges} = jiraIssues
-  const [cloudId, projectKey] = edges[0].node.id.split(':') // TODO: up until the -
   const [newIssueText, setNewIssueText] = useState('')
   const atmosphere = useAtmosphere()
   const {onCompleted, onError} = useMutationProps()
 
+  const jiraIssueTopOfList = edges[0].node
+  const {cloudName} = jiraIssueTopOfList
+  const [cloudId, projectKey] = jiraIssueTopOfList.id.split(':')
+  const jiraIssueKeyTopOfList = projectKey?.split('-')[0]
+
+  const newProjectKey = useMemo(() => {
+    if (!projectKey) return null
+    const splitKey = projectKey.split('-')
+    if (splitKey.length <= 1) return projectKey
+    let largestKeyCount = splitKey[1]
+
+    edges.forEach(({node}) => {
+      const [key, keyCount] = node.key.split('-')
+      if (key === jiraIssueKeyTopOfList && parseInt(keyCount) > parseInt(largestKeyCount)) {
+        largestKeyCount = keyCount
+      }
+    })
+    return `${jiraIssueKeyTopOfList}-${parseInt(largestKeyCount) + 1}`
+  }, [edges])
+
   const handleCreateNewIssue = (event) => {
     event.preventDefault()
     setIsEditing(false)
-    if (!newIssueText.length) return
+    if (!newIssueText.length || !newProjectKey) return
     const variables = {
       content: newIssueText,
       cloudId,
-      projectKey: 'TES',
+      projectKey: newProjectKey,
       teamId,
       meetingId
     }
@@ -99,7 +118,7 @@ const NewJiraIssueInput = (props: Props) => {
             type='text'
           />
         </Form>
-        <StyledLink>{projectKey}</StyledLink>
+        <StyledLink>{newProjectKey}</StyledLink>
       </Issue>
     </Item>
   )
@@ -128,6 +147,8 @@ export default createFragmentContainer(NewJiraIssueInput, {
             node {
               id
               cloudId
+              cloudName
+              key
             }
           }
         }

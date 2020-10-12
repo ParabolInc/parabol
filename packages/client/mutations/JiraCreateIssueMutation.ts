@@ -1,16 +1,21 @@
 import {commitMutation} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import {IJiraCreateIssueOnMutationArguments} from '../types/graphql'
+import {
+  AddOrDeleteEnum,
+  IJiraCreateIssueOnMutationArguments,
+  TaskServiceEnum
+} from '../types/graphql'
 import createProxyRecord from '../utils/relay/createProxyRecord'
 import Atmosphere from '../Atmosphere'
 import {LocalHandlers, SharedUpdater} from '../types/relayMutations'
 import getJiraIssuesConn from './connections/getJiraIssuesConn'
 import {ConnectionHandler} from 'relay-runtime'
 import {JiraCreateIssueMutation_meeting} from '~/__generated__/JiraCreateIssueMutation_meeting.graphql'
+import UpdatePokerScopeMutation from './UpdatePokerScopeMutation'
 
 graphql`
   fragment JiraCreateIssueMutation_meeting on JiraCreateIssuePayload {
-    key
+    id
     summary
     teamId
     url
@@ -40,17 +45,32 @@ const mutation = graphql`
   }
 `
 
-const handleJiraCreateIssue = (teamId, key, url, summary, store) => {
+interface HandleJiraCreateVariables {
+  jiraIssueId: string
+  summary: string
+  teamId: string
+  url: string
+}
+
+const getJiraIssueId = (cloudId: string, projectKey: string) => {
+  return `${cloudId}:${projectKey}`
+}
+
+const handleJiraCreateIssue = (
+  {jiraIssueId, teamId, summary, url}: HandleJiraCreateVariables,
+  store
+) => {
   const team = store.get(teamId)
+  if (!team) return
   const jiraIssuesConn = getJiraIssuesConn(team)
+  const key = jiraIssueId.split(':')[1] || ''
   const newJiraIssue = {
+    id: jiraIssueId,
     key,
     summary,
     url
   }
-  console.log('my Test obj -->', newJiraIssue)
   const jiraIssueProxy = createProxyRecord(store, 'JiraIssue', newJiraIssue)
-  console.log('jiraIssueProxy', jiraIssueProxy)
   const now = new Date().toISOString()
   if (!jiraIssuesConn) return
   const newEdge = ConnectionHandler.createEdge(
@@ -67,11 +87,17 @@ export const jiraCreateIssueUpdater: SharedUpdater<JiraCreateIssueMutation_meeti
   payload,
   {store}
 ) => {
-  const teamId = payload.getValue('teamId')
-  const key = payload.getValue('key')
-  const url = payload.getValue('url')
+  const jiraIssueId = payload.getValue('id') as string
   const summary = payload.getValue('summary')
-  handleJiraCreateIssue(teamId, key, url, summary, store)
+  const teamId = payload.getValue('teamId')
+  const url = payload.getValue('url')
+  const jiraIssueVariables = {
+    jiraIssueId,
+    summary,
+    teamId,
+    url
+  }
+  handleJiraCreateIssue(jiraIssueVariables, store)
 }
 
 const JiraCreateIssueMutation = (
@@ -90,10 +116,33 @@ const JiraCreateIssueMutation = (
       jiraCreateIssueUpdater(payload, context)
     },
     optimisticUpdater: (store) => {
-      const {teamId, projectKey, content} = variables
-      handleJiraCreateIssue(teamId, projectKey, 'test.com', content, store)
+      const {cloudId, teamId, projectKey, content} = variables
+      const emptyUrl = ''
+      const jiraIssueId = getJiraIssueId(cloudId, projectKey)
+      const jiraIssueVariables = {
+        jiraIssueId,
+        summary: content,
+        url: emptyUrl,
+        teamId
+      }
+      handleJiraCreateIssue(jiraIssueVariables, store)
     },
-    onCompleted,
+    onCompleted: (res, errors) => {
+      const {cloudId, meetingId, projectKey} = variables
+      if (!meetingId || !onCompleted || !onError) return
+      onCompleted(res, errors)
+      const pokerScopeVariables = {
+        meetingId,
+        updates: [
+          {
+            service: TaskServiceEnum.jira,
+            serviceTaskId: getJiraIssueId(cloudId, projectKey),
+            action: AddOrDeleteEnum.ADD
+          }
+        ]
+      }
+      // UpdatePokerScopeMutation(atmosphere, pokerScopeVariables, {onError, onCompleted})
+    },
     onError
   })
 }

@@ -44,15 +44,11 @@ interface Props {
 const JiraScopingSearchResults = (props: Props) => {
   const {viewer, meeting} = props
   const {team} = viewer
-  const {id: teamId, jiraIssues} = team!
+  const {jiraIssues} = team!
   const {error, edges} = jiraIssues
-  const [cloudId, projectKey] = edges[0].node.id.split(':') // TODO: up until the -
   const issueCount = edges.length
-  console.log('JiraScopingSearchResults -> edges', edges)
   const {id: meetingId, phases} = meeting
   const [isEditing, setIsEditing] = useState(false)
-  // const atmosphere = useAtmosphere()
-  // const {onCompleted, onError} = useMutationProps()
   const estimatePhase = phases.find(
     (phase) => phase.phaseType === NewMeetingPhaseTypeEnum.ESTIMATE
   )!
@@ -65,19 +61,6 @@ const JiraScopingSearchResults = (props: Props) => {
     })
     return usedJiraIssueIds
   }, [stages])
-
-  // const handleCreateNewIssue = (newIssueText: any) => {
-  //   console.log('handleCreateNewIssue -> newIssueText', newIssueText)
-  //   if (!newIssueText.length) return
-  //   const variables = {
-  //     content: newIssueText,
-  //     cloudId,
-  //     projectKey: 'TES',
-  //     teamId,
-  //     meetingId
-  //   }
-  //   // JiraCreateIssueMutation(atmosphere, variables, {onError, onCompleted})
-  // }
 
   // Terry, you can use this in case you need to put some final touches on styles
   /*   const [showMock, setShowMock] = useState(false)
@@ -149,7 +132,6 @@ export default createFragmentContainer(JiraScopingSearchResults, {
     fragment JiraScopingSearchResults_viewer on User {
       ...NewJiraIssueInput_viewer
       team(teamId: $teamId) {
-        id
         jiraIssues(
           first: $first
           queryString: $queryString

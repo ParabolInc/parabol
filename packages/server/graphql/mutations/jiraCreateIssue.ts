@@ -65,26 +65,24 @@ export default {
       .get('freshAtlassianAccessToken')
       .load({teamId, userId: viewerId})
     const manager = new AtlassianServerManager(accessToken)
-
+    const key = projectKey.split('-')[0]
     const [sites, issueMetaRes, description] = await Promise.all([
       manager.getAccessibleResources(),
-      manager.getCreateMeta(cloudId, [projectKey]),
+      manager.getCreateMeta(cloudId, [key]),
       manager.convertMarkdownToADF(content)
     ] as const)
     if ('message' in sites) {
       return standardError(new Error(sites.message), {userId: viewerId})
     }
-    console.log('sites', sites)
     if ('message' in issueMetaRes) {
       return standardError(new Error(issueMetaRes.message), {userId: viewerId})
     }
     if ('errors' in issueMetaRes) {
       return standardError(new Error(Object.values(issueMetaRes.errors)[0]), {userId: viewerId})
     }
-    console.log('issueMetaRes', issueMetaRes)
     const {projects} = issueMetaRes
     // should always be the first and only item in the project arr
-    const project = projects.find((project) => project.key === projectKey)!
+    const project = projects.find((project) => project.key === key)!
     // const {issuetypes, name: projectName} = project
     const {issuetypes} = project
     const bestType = issuetypes.find((type) => type.name === 'Task') || issuetypes[0]
@@ -99,8 +97,7 @@ export default {
         id: bestType.id
       }
     }
-    const res = await manager.createIssue(cloudId, projectKey, payload)
-    console.log('res', res)
+    const res = await manager.createIssue(cloudId, key, payload)
     if ('message' in res) {
       return standardError(new Error(res.message), {userId: viewerId})
     }
@@ -108,15 +105,13 @@ export default {
       return standardError(new Error(Object.values(res.errors)[0]), {userId: viewerId})
     }
     const cloud = sites.find((site) => site.id === cloudId)!
-    console.log('cloud', cloud)
     const data = {
+      cloudId,
       cloudName: cloud.name,
       key: res.key,
       summary: content,
-      teamId,
-      url: cloud.url
+      teamId
     }
-    console.log('data', data)
     if (meetingId) {
       publish(SubscriptionChannel.MEETING, meetingId, 'JiraCreateIssuePayload', data, subOptions)
     }

@@ -15,6 +15,7 @@ export interface AccessibleResource {
   name: string
   scopes: string[]
   avatarUrl: string
+  url: string
 }
 
 export interface JiraProject {
@@ -125,8 +126,7 @@ type JiraPageOfChangelogs = any
 type JiraVersionedRepresentations = any
 type JiraIncludedFields = any
 
-
-interface JiraIssueBean<F = {description: any, summary: string}> {
+interface JiraIssueBean<F = {description: any; summary: string}> {
   expand: string
   id: string
   self: string
@@ -142,12 +142,11 @@ interface JiraIssueBean<F = {description: any, summary: string}> {
   versionedRepresentations: JiraVersionedRepresentations
   fieldsToInclude: JiraIncludedFields
   fields: F
-
 }
 
-interface JiraSearchResponse<T = {summary: string, description: string}> {
-  expand: string,
-  startAt: number,
+interface JiraSearchResponse<T = {summary: string; description: string}> {
+  expand: string
+  startAt: number
   maxResults: number
   total: number
   issues: {
@@ -326,15 +325,24 @@ export default abstract class AtlassianManager {
   async getIssue(cloudId: string, issueKey: string) {
     const [cloudNameLookup, issueRes] = await Promise.all([
       this.getCloudNameLookup(),
-      this.get(`https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/issue/${issueKey}?fields=summary,description`) as AtlassianError | JiraError | JiraIssueBean
+      this.get(
+        `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/issue/${issueKey}?fields=summary,description`
+      ) as AtlassianError | JiraError | JiraIssueBean
     ])
     if ('fields' in issueRes) {
-      (issueRes.fields as any).cloudName = cloudNameLookup[cloudId]
+      ;(issueRes.fields as any).cloudName = cloudNameLookup[cloudId]
     }
-    return issueRes as AtlassianError | JiraError | JiraIssueBean<{description: any, summary: string, cloudName: string}>
+    return issueRes as
+      | AtlassianError
+      | JiraError
+      | JiraIssueBean<{description: any; summary: string; cloudName: string}>
   }
 
-  async getIssues(queryString: string, isJQL: boolean, projectKeyFilters: {cloudId: string, projectId?: string}[]) {
+  async getIssues(
+    queryString: string,
+    isJQL: boolean,
+    projectKeyFilters: {cloudId: string; projectId?: string}[]
+  ) {
     const projectsByCloudId = {} as {[cloudId: string]: string[]}
     projectKeyFilters.forEach((project) => {
       const {cloudId, projectId} = project
@@ -344,14 +352,20 @@ export default abstract class AtlassianManager {
       }
     })
     const cloudIds = Object.keys(projectsByCloudId)
-    const allIssues = [] as {id: number, key: string, summary: string, cloudId: string, cloudName: string}[]
+    const allIssues = [] as {
+      id: number
+      key: string
+      summary: string
+      cloudId: string
+      cloudName: string
+    }[]
     let firstError: string | null = null
 
     const reqs = cloudIds.map(async (cloudId) => {
       // TODO add project filter
       // const projects = projectsByCloudId[cloudId]
       const order = 'order by lastViewed DESC'
-      const jql = queryString ? isJQL ? queryString : `text ~ \"${queryString}\" ${order}` : order
+      const jql = queryString ? (isJQL ? queryString : `text ~ \"${queryString}\" ${order}`) : order
       const url = `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/search`
       const payload = {
         jql,
@@ -359,7 +373,7 @@ export default abstract class AtlassianManager {
         fields: ['summary', 'description']
       }
       // TODO add type
-      const res = await this.post(url, payload) as AtlassianError | JiraError | JiraSearchResponse
+      const res = (await this.post(url, payload)) as AtlassianError | JiraError | JiraSearchResponse
       if ('issues' in res) {
         const {issues} = res
         issues.forEach((issue) => {
@@ -369,10 +383,7 @@ export default abstract class AtlassianManager {
         })
       }
     })
-    const [cloudNameLookup] = await Promise.all([
-      this.getCloudNameLookup() as any,
-      ...reqs
-    ])
+    const [cloudNameLookup] = await Promise.all([this.getCloudNameLookup() as any, ...reqs])
     allIssues.forEach((issue) => {
       issue.cloudName = cloudNameLookup[issue.cloudId]
     })
@@ -380,7 +391,9 @@ export default abstract class AtlassianManager {
   }
 
   async getComments(cloudId: string, issueKey: string) {
-    return this.get(`https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/issue/${issueKey}/comment`) as any
+    return this.get(
+      `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/issue/${issueKey}/comment`
+    ) as any
   }
 
   async getFields(cloudId: string) {
@@ -391,10 +404,18 @@ export default abstract class AtlassianManager {
     const payload = {
       body
     }
-    return this.post(`https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/issue/${issueKey}/comment`, payload) as any
+    return this.post(
+      `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/issue/${issueKey}/comment`,
+      payload
+    ) as any
   }
 
-  async updateStoryPoints(cloudId: string, issueKey: string, storyPoints: string | number, dimensionName: string | null) {
+  async updateStoryPoints(
+    cloudId: string,
+    issueKey: string,
+    storyPoints: string | number,
+    dimensionName: string | null
+  ) {
     // try to update the field by dimension name.
     // if the dimension name is null, use the jira defaults
     // if we can't trigger an update, then just write a comment
@@ -415,66 +436,71 @@ export default abstract class AtlassianManager {
 
     let updatedFieldSuccess = false
     if (fieldsToTry.length > 0) {
-      const res = await Promise.all(fieldsToTry.map((field) => {
-        const {id} = field
-        const payload = {
-          fields: {
-            [id]: storyPoints
+      const res = await Promise.all(
+        fieldsToTry.map((field) => {
+          const {id} = field
+          const payload = {
+            fields: {
+              [id]: storyPoints
+            }
           }
-        }
-        return this.put(`https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/issue/${issueKey}`, payload)
-      }))
+          return this.put(
+            `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/issue/${issueKey}`,
+            payload
+          )
+        })
+      )
       updatedFieldSuccess = res.indexOf(null) !== -1
     }
     if (!updatedFieldSuccess) {
       await this.addComment(cloudId, issueKey, {
-        "version": 1,
-        "type": "doc",
-        "content": [
+        version: 1,
+        type: 'doc',
+        content: [
           {
-            "type": "paragraph",
-            "content": [
+            type: 'paragraph',
+            content: [
               {
-                "type": "text",
-                "text": "This issue is worth "
+                type: 'text',
+                text: 'This issue is worth '
               },
               {
-                "type": "text",
-                "text": `${storyPoints} story points`,
-                "marks": [
+                type: 'text',
+                text: `${storyPoints} story points`,
+                marks: [
                   {
-                    "type": "strong"
+                    type: 'strong'
                   }
                 ]
               },
               {
-                "type": "text",
-                "text": "."
+                type: 'text',
+                text: '.'
               }
             ]
           },
           {
-            "type": "paragraph",
-            "content": [
+            type: 'paragraph',
+            content: [
               {
-                "type": "text",
-                "text": "Visit the meeting where it happened at "
+                type: 'text',
+                text: 'Visit the meeting where it happened at '
               },
               {
-                "type": "text",
-                "text": "Parabol",
-                "marks": [
+                type: 'text',
+                text: 'Parabol',
+                marks: [
                   {
-                    "type": "link",
-                    "attrs": {
-                      "href": "http://action.parabol.co"
+                    type: 'link',
+                    attrs: {
+                      href: 'http://action.parabol.co'
                     }
                   }
                 ]
               },
               {
-                "type": "text",
-                "text": "."
+                type: 'text',
+                text: '.'
               }
             ]
           }
