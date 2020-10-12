@@ -5,7 +5,7 @@ import {PALETTE} from '../styles/paletteV2'
 import {ICON_SIZE} from '../styles/typographyV2'
 
 const DropdownIcon = styled(Icon)({
-  padding: 12,
+  padding: '8px 0 8px 4px',
   fontSize: ICON_SIZE.MD24
 })
 
@@ -14,6 +14,7 @@ const Label = styled('div')({
   color: PALETTE.LINK_BLUE,
   cursor: 'pointer',
   display: 'flex',
+  fontSize: 14,
   fontWeight: 600,
   justifyContent: 'center'
 })
@@ -29,7 +30,7 @@ const ExpansionPanelSummary = (props: Props) => {
   return (
     <Label onClick={onClick}>
       {label}
-      <DropdownIcon>{isExpanded ? 'expand_less' : 'expand_more'}</DropdownIcon>
+      <DropdownIcon>{isExpanded ? 'unfold_less' : 'unfold_more'}</DropdownIcon>
     </Label>
   )
 }
