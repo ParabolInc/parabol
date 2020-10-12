@@ -11,13 +11,6 @@ const JiraCreateIssuePayload = new GraphQLObjectType<any, GQLContext>({
     error: {
       type: StandardMutationError
     },
-    id: {
-      type: GraphQLNonNull(GraphQLID),
-      description: 'shortid',
-      resolve: ({cloudId, key}) => {
-        return `${cloudId}:${key}`
-      }
-    },
     // jiraIssue: {
     //   type: JiraIssue,
     //   resolve: async ({cloudId, key, teamId}, _args, {authToken, dataLoader}) => {
@@ -31,6 +24,10 @@ const JiraCreateIssuePayload = new GraphQLObjectType<any, GQLContext>({
     //     return issueRes
     //   }
     // },
+    key: {
+      type: GraphQLNonNull(GraphQLString),
+      description: 'The key of the issue as found in Jira'
+    },
     summary: {
       type: GraphQLNonNull(GraphQLString),
       description: 'The content of the Jira issue'

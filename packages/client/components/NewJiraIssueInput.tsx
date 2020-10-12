@@ -73,23 +73,22 @@ const NewJiraIssueInput = (props: Props) => {
   const {onCompleted, onError} = useMutationProps()
 
   const jiraIssueTopOfList = edges[0].node
-  const {cloudName} = jiraIssueTopOfList
-  const [cloudId, projectKey] = jiraIssueTopOfList.id.split(':')
-  const jiraIssueKeyTopOfList = projectKey?.split('-')[0]
-
+  const {cloudName, key} = jiraIssueTopOfList
+  const cloudId = jiraIssueTopOfList.id.split(':')[0]
   const newProjectKey = useMemo(() => {
-    if (!projectKey) return null
-    const splitKey = projectKey.split('-')
-    if (splitKey.length <= 1) return projectKey
+    if (!key) return null
+    const splitKey = key.split('-')
+    if (splitKey.length <= 1) return key
+    const keyName = splitKey[0]
     let largestKeyCount = splitKey[1]
 
     edges.forEach(({node}) => {
-      const [key, keyCount] = node.key.split('-')
-      if (key === jiraIssueKeyTopOfList && parseInt(keyCount) > parseInt(largestKeyCount)) {
-        largestKeyCount = keyCount
+      const [nodeKeyName, nodeKeyCount] = node.key.split('-')
+      if (nodeKeyName === keyName && parseInt(nodeKeyCount) > parseInt(largestKeyCount)) {
+        largestKeyCount = nodeKeyCount
       }
     })
-    return `${jiraIssueKeyTopOfList}-${parseInt(largestKeyCount) + 1}`
+    return `${keyName}-${parseInt(largestKeyCount) + 1}`
   }, [edges])
 
   const handleCreateNewIssue = (event) => {

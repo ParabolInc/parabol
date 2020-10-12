@@ -16,7 +16,7 @@ import AtlassianManager from '~/utils/AtlassianManager'
 
 graphql`
   fragment JiraCreateIssueMutation_meeting on JiraCreateIssuePayload {
-    id
+    key
     summary
     teamId
     url
@@ -49,7 +49,7 @@ const mutation = graphql`
 `
 
 interface HandleJiraCreateVariables {
-  jiraIssueId: string
+  key: string
   summary: string
   teamId: string
   url: string
@@ -59,16 +59,13 @@ const getJiraIssueId = (cloudId: string, projectKey: string) => {
   return `${cloudId}:${projectKey}`
 }
 
-const handleJiraCreateIssue = (
-  {jiraIssueId, teamId, summary, url}: HandleJiraCreateVariables,
-  store
-) => {
+const handleJiraCreateIssue = ({key, teamId, summary, url}: HandleJiraCreateVariables, store) => {
   const team = store.get(teamId)
   if (!team) return
   const jiraIssuesConn = getJiraIssuesConn(team)
-  const key = jiraIssueId.split(':')[1] || ''
+  // const key = jiraIssueId.split(':')[1] || ''
   const newJiraIssue = {
-    id: jiraIssueId,
+    // id: jiraIssueId,
     key,
     summary,
     url
@@ -90,12 +87,12 @@ export const jiraCreateIssueUpdater: SharedUpdater<JiraCreateIssueMutation_meeti
   payload,
   {store}
 ) => {
-  const jiraIssueId = payload.getValue('id') as string
+  const key = payload.getValue('key') as string
   const summary = payload.getValue('summary')
   const teamId = payload.getValue('teamId')
   const url = payload.getValue('url')
   const jiraIssueVariables = {
-    jiraIssueId,
+    key,
     summary,
     teamId,
     url
@@ -119,11 +116,10 @@ const JiraCreateIssueMutation = (
       jiraCreateIssueUpdater(payload, context)
     },
     optimisticUpdater: (store) => {
-      const {cloudId, cloudName, teamId, projectKey, content} = variables
+      const {cloudName, teamId, projectKey, content} = variables
       const url = `https://${cloudName}.atlassian.net/browse/${projectKey}`
-      const jiraIssueId = getJiraIssueId(cloudId, projectKey)
       const jiraIssueVariables = {
-        jiraIssueId,
+        key: projectKey,
         summary: content,
         url,
         teamId

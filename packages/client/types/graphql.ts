@@ -6408,7 +6408,7 @@ export interface IMutation {
    */
   createImposterToken: ICreateImposterTokenPayload;
   createGitHubIssue: ICreateGitHubIssuePayload | null;
-  createJiraIssue: ICreateJiraIssuePayload | null;
+  createJiraIssueAndTask: ICreateJiraIssueAndTaskPayload | null;
 
   /**
    * Create a new mass inivtation and optionally void old ones
@@ -7001,7 +7001,7 @@ export interface ICreateGitHubIssueOnMutationArguments {
   nameWithOwner: string;
 }
 
-export interface ICreateJiraIssueOnMutationArguments {
+export interface ICreateJiraIssueAndTaskOnMutationArguments {
   /**
    * The atlassian cloudId for the site
    */
@@ -8231,8 +8231,8 @@ export interface ICreateGitHubIssuePayload {
   task: ITask | null;
 }
 
-export interface ICreateJiraIssuePayload {
-  __typename: 'CreateJiraIssuePayload';
+export interface ICreateJiraIssueAndTaskPayload {
+  __typename: 'CreateJiraIssueAndTaskPayload';
   error: IStandardMutationError | null;
   task: ITask | null;
 }
@@ -8925,9 +8925,9 @@ export interface IJiraCreateIssuePayload {
   error: IStandardMutationError | null;
 
   /**
-   * shortid
+   * The key of the issue as found in Jira
    */
-  id: string;
+  key: string;
 
   /**
    * The content of the Jira issue
@@ -10155,7 +10155,7 @@ export interface ISetOrgUserRoleRemovedPayload {
 export type TaskSubscriptionPayload =
   | IChangeTaskTeamPayload
   | ICreateGitHubIssuePayload
-  | ICreateJiraIssuePayload
+  | ICreateJiraIssueAndTaskPayload
   | ICreateTaskPayload
   | IDeleteTaskPayload
   | IEditTaskPayload
