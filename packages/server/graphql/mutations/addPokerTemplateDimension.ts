@@ -58,6 +58,7 @@ const addPokerTemplateDimension = {
         teamId,
         isActive: true
       })
+      .orderBy(r.desc('updatedAt'))
       .run()
     const defaultScaleId =
       teamScales.length > 0
