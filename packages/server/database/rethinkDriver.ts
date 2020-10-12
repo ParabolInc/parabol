@@ -201,7 +201,7 @@ export type RethinkSchema = {
   }
   TemplateScale: {
     type: TemplateScale
-    index: 'teamId' | 'templateId'
+    index: 'teamId'
   }
   TimelineEvent: {
     type: TimelineEvent

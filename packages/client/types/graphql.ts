@@ -3361,11 +3361,6 @@ export interface IPokerTemplate {
    * The dimensions that are part of this template
    */
   dimensions: Array<ITemplateDimension>;
-
-  /**
-   * The scales that are part of this template
-   */
-  scales: Array<ITemplateScale>;
 }
 
 /**
@@ -5072,6 +5067,11 @@ export interface IPokerMeetingSettings {
   selectedTemplate: IReflectTemplate;
 
   /**
+   * The list of scales belong to this team
+   */
+  teamScales: Array<ITemplateScale>;
+
+  /**
    * The list of templates used to start a Poker meeting
    */
   teamTemplates: Array<IReflectTemplate>;
@@ -5080,6 +5080,11 @@ export interface IPokerMeetingSettings {
    * The list of templates shared across the organization to start a Poker meeting
    */
   organizationTemplates: IReflectTemplateConnection;
+
+  /**
+   * The list of starter scales
+   */
+  starterScales: Array<ITemplateScale>;
 
   /**
    * The list of templates shared across the organization to start a Poker meeting

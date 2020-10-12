@@ -56,7 +56,10 @@ const addPokerTemplateDimension = {
         isActive: true
       })
       .run()
-    const defaultScaleId = teamScales.length > 0 ? teamScales.map((teamScale) => teamScale.id)[0] : SprintPokerDefaults.DEFAULT_SCALE_ID
+    const defaultScaleId =
+      teamScales.length > 0
+        ? teamScales.map((teamScale) => teamScale.id)[0]
+        : SprintPokerDefaults.DEFAULT_SCALE_ID
 
     const newDimension = new TemplateDimension({
       scaleId: defaultScaleId,

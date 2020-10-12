@@ -35,6 +35,20 @@ const customRedisQueries = {
     )
 
     return publicTemplatesByType
+  },
+  starterScales: async (teamIds: string[]) => {
+    const r = await getRethink()
+
+    const starterScales = await Promise.all(
+      teamIds.map(() => {
+        return r
+          .table('TemplateScale')
+          .filter({isActive: true, isStarter: true})
+          .run()
+      })
+    )
+
+    return starterScales
   }
 } as const
 

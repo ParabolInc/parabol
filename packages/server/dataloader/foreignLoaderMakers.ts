@@ -130,18 +130,6 @@ export const dimensionsByTemplateId = new LoaderMakerForeign(
   }
 )
 
-export const scalesByTemplateId = new LoaderMakerForeign(
-  'templateScales',
-  'templateId',
-  async (templateIds) => {
-    const r = await getRethink()
-    return r
-      .table('TemplateScale')
-      .getAll(r.args(templateIds), {index: 'templateId'})
-      .run()
-  }
-)
-
 export const massInvitationsByTeamMemberId = new LoaderMakerForeign(
   'massInvitations',
   'teamMemberId',
@@ -247,6 +235,19 @@ export const meetingTemplatesByTeamId = new LoaderMakerForeign(
     const r = await getRethink()
     return r
       .table('MeetingTemplate')
+      .getAll(r.args(teamIds), {index: 'teamId'})
+      .filter({isActive: true})
+      .run()
+  }
+)
+
+export const scalesByTeamId = new LoaderMakerForeign(
+  'templateScales',
+  'teamId',
+  async (teamIds) => {
+    const r = await getRethink()
+    return r
+      .table('TemplateScale')
       .getAll(r.args(teamIds), {index: 'teamId'})
       .filter({isActive: true})
       .run()

@@ -10,6 +10,7 @@ import TeamMeetingSettings, {teamMeetingSettingsFields} from './TeamMeetingSetti
 import JiraSearchQuery from './JiraSearchQuery'
 import ms from 'ms'
 import getRethink from '../../database/rethinkDriver'
+import TemplateScale from './TemplateScale'
 
 const PokerMeetingSettings = new GraphQLObjectType<any, GQLContext>({
   name: 'PokerMeetingSettings',
@@ -48,6 +49,16 @@ const PokerMeetingSettings = new GraphQLObjectType<any, GQLContext>({
       description: 'The template that will be used to start the Poker meeting',
       resolve: resolveSelectedTemplate('estimatedEffortTemplate')
     },
+    teamScales: {
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(TemplateScale))),
+      description: 'The list of scales belong to this team',
+      resolve: async ({teamId}, _args, {dataLoader}) => {
+        const scales = await dataLoader.get('scalesByTeamId').load(teamId)
+        const activeScales = scales.filter((scale) => scale.isActive)
+        activeScales.sort((a, b) => (a.sortOrder < b.sortOrder ? -1 : 1))
+        return activeScales
+      }
+    },
     teamTemplates: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(ReflectTemplate))),
       description: 'The list of templates used to start a Poker meeting',
@@ -78,6 +89,13 @@ const PokerMeetingSettings = new GraphQLObjectType<any, GQLContext>({
         )
         const scoredTemplates = await getScoredTemplates(organizationTemplates, 0.8)
         return connectionFromTemplateArray(scoredTemplates, first, after)
+      }
+    },
+    starterScales: {
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(TemplateScale))),
+      description: 'The list of starter scales',
+      resolve: async (_srouce, _args, _context) => {
+        return await db.read('starterScales', 'aGhostTeam')
       }
     },
     publicTemplates: {
