@@ -29,8 +29,11 @@ const movePokerTemplateDimension = {
     const viewerId = getUserId(authToken)
 
     // AUTH
-    if (!dimension || !isTeamMember(authToken, dimension.teamId) || !dimension.isActive) {
+    if (!isTeamMember(authToken, dimension.teamId)) {
       return standardError(new Error('Team not found'), {userId: viewerId})
+    }
+    if (!dimension || !dimension.isActive) {
+      return standardError(new Error('Dimension not found'), {userId: viewerId})
     }
 
     // RESOLUTION

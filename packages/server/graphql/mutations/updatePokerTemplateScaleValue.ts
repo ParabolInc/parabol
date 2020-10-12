@@ -6,6 +6,11 @@ import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import TemplateScaleInput from '../types/TemplateScaleInput'
 import UpdatePokerTemplateScaleValuePayload from '../types/UpdatePokerTemplateScaleValuePayload'
+import {
+  validateColorValue,
+  validateScaleLabel,
+  validateScaleValue
+} from './helpers/validateScaleValue'
 
 const updatePokerTemplateScaleValue = {
   description: 'Update a scale value for a scale in a poker template',
@@ -47,6 +52,16 @@ const updatePokerTemplateScaleValue = {
     const endIndex = scale.values.length - 1
     if (index > endIndex || index < 0) {
       return standardError(new Error('Invalid index'), {userId: viewerId})
+    }
+    const {color, label, value} = scaleValue
+    if (!validateColorValue(color)) {
+      return standardError(new Error('Invalid scale color'), {userId: viewerId})
+    }
+    if (!validateScaleLabel(label)) {
+      return standardError(new Error('Invalid scale label'), {userId: viewerId})
+    }
+    if (!validateScaleValue(value)) {
+      return standardError(new Error('Invalid scale value'), {userId: viewerId})
     }
 
     await r

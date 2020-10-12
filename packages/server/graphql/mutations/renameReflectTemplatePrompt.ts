@@ -29,8 +29,11 @@ const renameReflectTemplatePrompt = {
     const viewerId = getUserId(authToken)
 
     // AUTH
-    if (!prompt || !isTeamMember(authToken, prompt.teamId) || !prompt.isActive) {
+    if (!isTeamMember(authToken, prompt.teamId)) {
       return standardError(new Error('Team not found'), {userId: viewerId})
+    }
+    if (!prompt || !prompt.isActive) {
+      return standardError(new Error('Prompt not found'), {userId: viewerId})
     }
 
     // VALIDATION

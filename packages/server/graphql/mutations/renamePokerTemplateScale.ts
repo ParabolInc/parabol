@@ -29,8 +29,11 @@ const renamePokerTemplateScale = {
     const viewerId = getUserId(authToken)
 
     // AUTH
-    if (!scale || !isTeamMember(authToken, scale.teamId) || !scale.isActive) {
+    if (!isTeamMember(authToken, scale.teamId)) {
       return standardError(new Error('Team not found'), {userId: viewerId})
+    }
+    if (!scale || !scale.isActive) {
+      return standardError(new Error('Scale not found'), {userId: viewerId})
     }
 
     // VALIDATION
