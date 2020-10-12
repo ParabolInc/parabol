@@ -36,7 +36,8 @@ const Label = styled('div')({
 })
 
 const StyledTabsBar = styled(Tabs)({
-  boxShadow: `inset 0 -1px 0 ${PALETTE.BORDER_LIGHTER}`
+  boxShadow: `inset 0 -1px 0 ${PALETTE.BORDER_LIGHTER}`,
+  flexShrink: 0
 })
 
 const FullTab = styled(Tab)({
@@ -144,7 +145,11 @@ const ReflectTemplateList = (props: Props) => {
       </SwipeableViews>
       {/* add a key to clear the error when they change */}
       {teamTemplates.length < Threshold.MAX_RETRO_TEAM_TEMPLATES && (
-        <AddNewReflectTemplate teamId={teamId} reflectTemplates={teamTemplates} gotoTeamTemplates={gotoTeamTemplates} />
+        <AddNewReflectTemplate
+          teamId={teamId}
+          reflectTemplates={teamTemplates}
+          gotoTeamTemplates={gotoTeamTemplates}
+        />
       )}
     </TemplateSidebar>
   )

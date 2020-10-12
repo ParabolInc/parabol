@@ -17,7 +17,7 @@ import {PALETTE} from '../../../../styles/paletteV2'
 import {ICON_SIZE} from '../../../../styles/typographyV2'
 import {ICheckInPhase} from '../../../../types/graphql'
 
-const CogIcon = styled(Icon)<{isEditing: boolean}>(({isEditing}) => ({
+const CogIcon = styled(Icon)({
   color: PALETTE.TEXT_MAIN,
   cursor: 'pointer',
   display: 'block',
@@ -26,16 +26,26 @@ const CogIcon = styled(Icon)<{isEditing: boolean}>(({isEditing}) => ({
   marginLeft: 8,
   paddingTop: 3,
   textAlign: 'center',
-  visibility: isEditing ? 'hidden' : 'visible',
   width: 24
-}))
+})
 
 const QuestionBlock = styled('div')({
   alignContent: 'center',
   display: 'flex',
   fontSize: 24,
   lineHeight: 1.25,
-  padding: '16px 0'
+  padding: '16px 0',
+  '.DraftEditor-root': {
+    flexGrow: 1,
+    padding: '16px',
+    borderRadius: '4px',
+    '&:hover': {
+      backgroundColor: 'rgba(255,255,255,0.2)'
+    },
+    '&:focus-within': {
+      backgroundColor: 'rgba(255,255,255,0.6)'
+    }
+  }
 })
 
 interface Props {
@@ -68,18 +78,16 @@ const NewCheckInQuestion = (props: Props) => {
     setEditorState(nextEditorState)
   }
 
-  const selectAllQuestion = () => {
+  const focusQuestion = () => {
     closeTooltip()
     editorRef.current && editorRef.current.focus()
     const selection = editorState.getSelection()
     const contentState = editorState.getCurrentContent()
-    const fullSelection = (selection as any).merge({
-      anchorKey: contentState.getFirstBlock().getKey(),
-      focusKey: contentState.getLastBlock().getKey(),
-      anchorOffset: 0,
+    const jumpToEnd = (selection as any).merge({
+      anchorOffset: contentState.getLastBlock().getLength(),
       focusOffset: contentState.getLastBlock().getLength()
     }) as SelectionState
-    const nextEditorState = EditorState.forceSelection(editorState, fullSelection)
+    const nextEditorState = EditorState.forceSelection(editorState, jumpToEnd)
     setEditorState(nextEditorState)
   }
   const {viewerId} = atmosphere
@@ -114,15 +122,15 @@ const NewCheckInQuestion = (props: Props) => {
         <>
           <PlainButton
             aria-label={tip}
-            onClick={selectAllQuestion}
+            onClick={focusQuestion}
             onMouseEnter={openTooltip}
             onMouseLeave={closeTooltip}
             ref={originRef}
           >
-            <CogIcon isEditing={isEditing}>settings</CogIcon>
+            <CogIcon>create</CogIcon>
           </PlainButton>
           <PlainButton aria-label={'Refresh'} onClick={refresh}>
-            <CogIcon isEditing={isEditing}>refresh</CogIcon>
+            <CogIcon>refresh</CogIcon>
           </PlainButton>
         </>
       )}
