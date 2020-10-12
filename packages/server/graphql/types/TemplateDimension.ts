@@ -26,8 +26,11 @@ const TemplateDimension = new GraphQLObjectType<any, GQLContext>({
     },
     isActive: {
       type: new GraphQLNonNull(GraphQLBoolean),
-      resolve: ({isActive}) => !!isActive,
+      resolve: ({removedAt}) => !removedAt,
       description: 'true if the dimension is currently used by the team, else false'
+    },
+    removedAt: {
+      type: new GraphQLNonNull(GraphQLISO8601Type)
     },
     teamId: {
       type: new GraphQLNonNull(GraphQLID),

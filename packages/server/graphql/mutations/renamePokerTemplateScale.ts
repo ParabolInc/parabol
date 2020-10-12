@@ -32,7 +32,7 @@ const renamePokerTemplateScale = {
     if (!isTeamMember(authToken, scale.teamId)) {
       return standardError(new Error('Team not found'), {userId: viewerId})
     }
-    if (!scale || !scale.isActive) {
+    if (!scale || scale.removedAt) {
       return standardError(new Error('Scale not found'), {userId: viewerId})
     }
 
@@ -44,7 +44,7 @@ const renamePokerTemplateScale = {
     const allScales = await r
       .table('TemplateScale')
       .getAll(teamId, {index: 'teamId'})
-      .filter({isActive: true})
+      .filter((row) => row.hasFields('removedAt').not())
       .run()
     if (allScales.find((scale) => scale.name === normalizedName)) {
       return standardError(new Error('Duplicate name scale'), {userId: viewerId})

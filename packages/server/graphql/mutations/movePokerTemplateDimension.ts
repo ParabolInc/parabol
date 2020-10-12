@@ -32,7 +32,7 @@ const movePokerTemplateDimension = {
     if (!isTeamMember(authToken, dimension.teamId)) {
       return standardError(new Error('Team not found'), {userId: viewerId})
     }
-    if (!dimension || !dimension.isActive) {
+    if (!dimension || dimension.removedAt) {
       return standardError(new Error('Dimension not found'), {userId: viewerId})
     }
 

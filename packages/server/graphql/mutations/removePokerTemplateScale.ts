@@ -30,7 +30,7 @@ const removePokerTemplateScale = {
     if (!isTeamMember(authToken, teamId)) {
       return standardError(new Error('Team not found'), {userId: viewerId})
     }
-    if (!scale || !scale.isActive) {
+    if (!scale || scale.removedAt) {
       return standardError(new Error('Scale not found'), {userId: viewerId})
     }
 
@@ -38,10 +38,7 @@ const removePokerTemplateScale = {
     await r
       .table('TemplateScale')
       .get(scaleId)
-      .update({
-        isActive: false,
-        updatedAt: now
-      })
+      .update({removedAt: now})
       .run()
 
     const data = {scaleId}

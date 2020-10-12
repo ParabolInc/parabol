@@ -3378,7 +3378,8 @@ export interface ITemplateDimension {
   /**
    * true if the dimension is currently used by the team, else false
    */
-  isActive: boolean | null;
+  isActive: boolean;
+  removedAt: any;
 
   /**
    * foreign key. use the team field
@@ -3388,7 +3389,7 @@ export interface ITemplateDimension {
   /**
    * The team that owns this dimension
    */
-  team: ITeam | null;
+  team: ITeam;
   updatedAt: any;
 
   /**
@@ -3437,7 +3438,8 @@ export interface ITemplateScale {
   /**
    * true if the scale is currently used by the team, else false
    */
-  isActive: boolean | null;
+  isActive: boolean;
+  removedAt: any;
 
   /**
    * foreign key. use the team field
@@ -3447,7 +3449,7 @@ export interface ITemplateScale {
   /**
    * The team that owns this template scale
    */
-  team: ITeam | null;
+  team: ITeam;
   updatedAt: any;
 
   /**

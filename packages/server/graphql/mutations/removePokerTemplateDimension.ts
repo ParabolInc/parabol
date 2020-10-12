@@ -29,7 +29,7 @@ const removePokerTemplateDimension = {
     if (!isTeamMember(authToken, dimension.teamId)) {
       return standardError(new Error('Team not found'), {userId: viewerId})
     }
-    if (!dimension || !dimension.isActive) {
+    if (!dimension || dimension.removedAt) {
       return standardError(new Error('Dimension not found'), {userId: viewerId})
     }
 
@@ -38,10 +38,8 @@ const removePokerTemplateDimension = {
     const dimensionCount = await r
       .table('TemplateDimension')
       .getAll(teamId, {index: 'teamId'})
-      .filter({
-        isActive: true,
-        templateId: templateId
-      })
+      .filter({templateId})
+      .filter((row) => row.hasFields('removedAt').not())
       .count()
       .default(0)
       .run()
@@ -54,10 +52,7 @@ const removePokerTemplateDimension = {
     await r
       .table('TemplateDimension')
       .get(dimensionId)
-      .update({
-        isActive: false,
-        updatedAt: now
-      })
+      .update({removedAt: now})
       .run()
 
     const data = {dimensionId, templateId}

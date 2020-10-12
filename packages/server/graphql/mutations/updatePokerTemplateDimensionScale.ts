@@ -19,6 +19,7 @@ const updatePokerTemplateDimensionScale = {
   },
   async resolve(_source, {dimensionId, scaleId}, {authToken, dataLoader, socketId: mutatorId}) {
     const r = await getRethink()
+    const now = new Date()
     const operationId = dataLoader.share()
     const subOptions = {operationId, mutatorId}
     const dimension = await r
@@ -32,7 +33,7 @@ const updatePokerTemplateDimensionScale = {
     if (!isTeamMember(authToken, dimension.teamId)) {
       return standardError(new Error('Team not found'), {userId: viewerId})
     }
-    if (!dimension || !dimension.isActive) {
+    if (!dimension || dimension.removedAt) {
       return standardError(new Error('Dimension not found'), {userId: viewerId})
     }
 
@@ -41,14 +42,14 @@ const updatePokerTemplateDimensionScale = {
       .table('TemplateScale')
       .get(scaleId)
       .run()
-    if (!scale || !scale.isActive || (!scale.isStarter && scale.teamId !== teamId)) {
+    if (!scale || scale.removedAt || (!scale.isStarter && scale.teamId !== teamId)) {
       return standardError(new Error('Scale not found'), {userId: viewerId})
     }
 
     await r
       .table('TemplateDimension')
       .get(dimensionId)
-      .update({scaleId})
+      .update({scaleId, updatedAt: now})
       .run()
 
     const data = {dimensionId}

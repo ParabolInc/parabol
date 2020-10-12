@@ -32,6 +32,7 @@ const addPokerTemplateScaleValue = {
     {authToken, dataLoader, socketId: mutatorId}
   ) {
     const r = await getRethink()
+    const now = new Date()
     const operationId = dataLoader.share()
     const subOptions = {operationId, mutatorId}
     const viewerId = getUserId(authToken)
@@ -41,7 +42,7 @@ const addPokerTemplateScaleValue = {
       .table('TemplateScale')
       .get(scaleId)
       .run()
-    if (!scale || !scale.isActive) {
+    if (!scale || scale.removedAt) {
       return standardError(new Error('Did not find an active scale'), {userId: viewerId})
     }
     if (!isTeamMember(authToken, scale.teamId)) {
@@ -68,7 +69,8 @@ const addPokerTemplateScaleValue = {
       .table('TemplateScale')
       .get(scaleId)
       .update((row) => ({
-        values: row('values').insertAt(index || endIndex, scaleValue)
+        values: row('values').insertAt(index || endIndex, scaleValue),
+        updatedAt: now
       }))
       .run()
 

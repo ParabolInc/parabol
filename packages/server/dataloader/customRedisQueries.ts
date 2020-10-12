@@ -43,7 +43,8 @@ const customRedisQueries = {
       teamIds.map(() => {
         return r
           .table('TemplateScale')
-          .filter({isActive: true, isStarter: true})
+          .filter({isStarter: true})
+          .filter((row) => row.hasFields('removedAt').not())
           .run()
       })
     )

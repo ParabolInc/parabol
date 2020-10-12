@@ -18,12 +18,9 @@ const removePokerTemplateScaleValue = {
       description: 'Index of the scale value to be deleted. Default to the last scale value.'
     }
   },
-  async resolve(
-    _source,
-    {scaleId, index},
-    {authToken, dataLoader, socketId: mutatorId}
-  ) {
+  async resolve(_source, {scaleId, index}, {authToken, dataLoader, socketId: mutatorId}) {
     const r = await getRethink()
+    const now = new Date()
     const operationId = dataLoader.share()
     const subOptions = {operationId, mutatorId}
     const viewerId = getUserId(authToken)
@@ -33,7 +30,7 @@ const removePokerTemplateScaleValue = {
       .table('TemplateScale')
       .get(scaleId)
       .run()
-    if (!scale || !scale.isActive) {
+    if (!scale || scale.removedAt) {
       return standardError(new Error('Did not find an active scale'), {userId: viewerId})
     }
     if (!isTeamMember(authToken, scale.teamId)) {
@@ -51,12 +48,19 @@ const removePokerTemplateScaleValue = {
       .table('TemplateScale')
       .get(scaleId)
       .update((row) => ({
-        values: row('values').deleteAt(index || endIndex)
+        values: row('values').deleteAt(index || endIndex),
+        updatedAt: now
       }))
       .run()
 
     const data = {scaleId}
-    publish(SubscriptionChannel.TEAM, scale.teamId, 'RemovePokerTemplateScalePayload', data, subOptions)
+    publish(
+      SubscriptionChannel.TEAM,
+      scale.teamId,
+      'RemovePokerTemplateScalePayload',
+      data,
+      subOptions
+    )
     return data
   }
 }

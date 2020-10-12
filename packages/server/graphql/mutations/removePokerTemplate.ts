@@ -63,10 +63,7 @@ const removePokerTemplate = {
         .filter({
           templateId
         })
-        .update({
-          isActive: false,
-          updatedAt: now
-        })
+        .update({removedAt: now})
     }).run()
 
     if (settings.selectedTemplateId === templateId) {

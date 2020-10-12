@@ -32,7 +32,7 @@ const renamePokerTemplateDimension = {
     if (!isTeamMember(authToken, dimension.teamId)) {
       return standardError(new Error('Team not found'), {userId: viewerId})
     }
-    if (!dimension || !dimension.isActive) {
+    if (!dimension || dimension.removedAt) {
       return standardError(new Error('Dimension not found'), {userId: viewerId})
     }
 
@@ -44,10 +44,8 @@ const renamePokerTemplateDimension = {
     const allDimensions = await r
       .table('TemplateDimension')
       .getAll(teamId, {index: 'teamId'})
-      .filter({
-        isActive: true,
-        templateId
-      })
+      .filter({templateId})
+      .filter((row) => row.hasFields('removedAt').not())
       .run()
     if (allDimensions.find((dimension) => dimension.name === normalizedName)) {
       return standardError(new Error('Duplicate name dimension'), {userId: viewerId})
