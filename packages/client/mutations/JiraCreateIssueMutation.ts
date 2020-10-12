@@ -12,6 +12,7 @@ import getJiraIssuesConn from './connections/getJiraIssuesConn'
 import {ConnectionHandler} from 'relay-runtime'
 import {JiraCreateIssueMutation_meeting} from '~/__generated__/JiraCreateIssueMutation_meeting.graphql'
 import UpdatePokerScopeMutation from './UpdatePokerScopeMutation'
+import AtlassianManager from '~/utils/AtlassianManager'
 
 graphql`
   fragment JiraCreateIssueMutation_meeting on JiraCreateIssuePayload {
@@ -26,6 +27,7 @@ const mutation = graphql`
   mutation JiraCreateIssueMutation(
     $content: String!
     $cloudId: ID!
+    $cloudName: String!
     $projectKey: ID!
     $teamId: ID!
     $meetingId: ID
@@ -33,6 +35,7 @@ const mutation = graphql`
     jiraCreateIssue(
       content: $content
       cloudId: $cloudId
+      cloudName: $cloudName
       projectKey: $projectKey
       teamId: $teamId
       meetingId: $meetingId
@@ -116,33 +119,18 @@ const JiraCreateIssueMutation = (
       jiraCreateIssueUpdater(payload, context)
     },
     optimisticUpdater: (store) => {
-      const {cloudId, teamId, projectKey, content} = variables
-      const emptyUrl = ''
+      const {cloudId, cloudName, teamId, projectKey, content} = variables
+      const url = `https://${cloudName}.atlassian.net/browse/${projectKey}`
       const jiraIssueId = getJiraIssueId(cloudId, projectKey)
       const jiraIssueVariables = {
         jiraIssueId,
         summary: content,
-        url: emptyUrl,
+        url,
         teamId
       }
       handleJiraCreateIssue(jiraIssueVariables, store)
     },
-    onCompleted: (res, errors) => {
-      const {cloudId, meetingId, projectKey} = variables
-      if (!meetingId || !onCompleted || !onError) return
-      onCompleted(res, errors)
-      const pokerScopeVariables = {
-        meetingId,
-        updates: [
-          {
-            service: TaskServiceEnum.jira,
-            serviceTaskId: getJiraIssueId(cloudId, projectKey),
-            action: AddOrDeleteEnum.ADD
-          }
-        ]
-      }
-      // UpdatePokerScopeMutation(atmosphere, pokerScopeVariables, {onError, onCompleted})
-    },
+    onCompleted,
     onError
   })
 }

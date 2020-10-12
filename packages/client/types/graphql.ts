@@ -7245,7 +7245,7 @@ export interface IInviteToTeamOnMutationArguments {
 
 export interface IJiraCreateIssueOnMutationArguments {
   /**
-   * The rich text body of the Jira issue
+   * The text content of the Jira issue
    */
   content: string;
 
@@ -7253,6 +7253,11 @@ export interface IJiraCreateIssueOnMutationArguments {
    * The atlassian cloudId for the site
    */
   cloudId: string;
+
+  /**
+   * The name of the jira cloud where the issue lives
+   */
+  cloudName: string;
 
   /**
    * The atlassian key of the project to put the issue in

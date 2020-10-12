@@ -14,11 +14,15 @@ export default {
   args: {
     content: {
       type: new GraphQLNonNull(GraphQLString),
-      description: 'The rich text body of the Jira issue'
+      description: 'The text content of the Jira issue'
     },
     cloudId: {
       type: new GraphQLNonNull(GraphQLID),
       description: 'The atlassian cloudId for the site'
+    },
+    cloudName: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: 'The name of the jira cloud where the issue lives'
     },
     projectKey: {
       type: new GraphQLNonNull(GraphQLID),

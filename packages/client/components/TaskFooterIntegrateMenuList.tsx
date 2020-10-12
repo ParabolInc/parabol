@@ -9,7 +9,7 @@ import useForm from '../hooks/useForm'
 import {MenuProps} from '../hooks/useMenu'
 import {MenuMutationProps} from '../hooks/useMutationProps'
 import CreateGitHubIssueMutation from '../mutations/CreateGitHubIssueMutation'
-import CreateJiraIssueMutation from '../mutations/CreateJiraIssueMutation'
+import CreateJiraIssueAndTaskMutation from '../mutations/CreateJiraIssueAndTaskMutation'
 import {PALETTE} from '../styles/paletteV2'
 import {ICON_SIZE} from '../styles/typographyV2'
 import {TaskFooterIntegrateMenuList_suggestedIntegrations} from '../__generated__/TaskFooterIntegrateMenuList_suggestedIntegrations.graphql'
@@ -112,9 +112,16 @@ const TaskFooterIntegrateMenu = (props: Props) => {
           const onClick = () => {
             const variables = {cloudId, projectKey, taskId}
             submitMutation()
-            CreateJiraIssueMutation(atmosphere, variables, {onError, onCompleted})
+            CreateJiraIssueAndTaskMutation(atmosphere, variables, {onError, onCompleted})
           }
-          return <SuggestedIntegrationJiraMenuItem key={id} query={query} suggestedIntegration={suggestedIntegration} onClick={onClick} />
+          return (
+            <SuggestedIntegrationJiraMenuItem
+              key={id}
+              query={query}
+              suggestedIntegration={suggestedIntegration}
+              onClick={onClick}
+            />
+          )
         }
         if (service === 'github') {
           const onClick = () => {
@@ -123,7 +130,14 @@ const TaskFooterIntegrateMenu = (props: Props) => {
             submitMutation()
             CreateGitHubIssueMutation(atmosphere, variables, {onError, onCompleted})
           }
-          return <SuggestedIntegrationGitHubMenuItem key={id} query={query} suggestedIntegration={suggestedIntegration} onClick={onClick} />
+          return (
+            <SuggestedIntegrationGitHubMenuItem
+              key={id}
+              query={query}
+              suggestedIntegration={suggestedIntegration}
+              onClick={onClick}
+            />
+          )
         }
         return null
       })}

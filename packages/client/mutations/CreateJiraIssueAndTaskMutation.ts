@@ -1,7 +1,7 @@
 import {commitMutation} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import {
-  ICreateJiraIssueOnMutationArguments,
+  ICreateJiraIssueAndTaskOnMutationArguments,
   ISuggestedIntegrationJira,
   ISuggestedIntegrationQueryPayload,
   TaskServiceEnum
@@ -10,10 +10,10 @@ import makeSuggestedIntegrationId from '../utils/makeSuggestedIntegrationId'
 import createProxyRecord from '../utils/relay/createProxyRecord'
 import Atmosphere from '../Atmosphere'
 import {LocalHandlers} from '../types/relayMutations'
-import {CreateJiraIssueMutation as TCreateJiraIssueMutation} from '../__generated__/CreateJiraIssueMutation.graphql'
+import {CreateJiraIssueAndTaskMutation as TCreateJiraIssueAndTaskMutation} from '../__generated__/CreateJiraIssueAndTaskMutation.graphql'
 
 graphql`
-  fragment CreateJiraIssueMutation_task on CreateJiraIssuePayload {
+  fragment CreateJiraIssueAndTaskMutation_task on CreateJiraIssueAndTaskPayload {
     task {
       integration {
         service
@@ -32,27 +32,27 @@ graphql`
 `
 
 const mutation = graphql`
-  mutation CreateJiraIssueMutation($cloudId: ID!, $taskId: ID!, $projectKey: ID!) {
-    createJiraIssue(cloudId: $cloudId, taskId: $taskId, projectKey: $projectKey) {
+  mutation CreateJiraIssueAndTaskMutation($cloudId: ID!, $taskId: ID!, $projectKey: ID!) {
+    createJiraIssueAndTask(cloudId: $cloudId, taskId: $taskId, projectKey: $projectKey) {
       error {
         message
       }
-      ...CreateJiraIssueMutation_task @relay(mask: false)
+      ...CreateJiraIssueAndTaskMutation_task @relay(mask: false)
     }
   }
 `
 
-const CreateJiraIssueMutation = (
+const CreateJiraIssueAndTaskMutation = (
   atmosphere: Atmosphere,
-  variables: ICreateJiraIssueOnMutationArguments,
+  variables: ICreateJiraIssueAndTaskOnMutationArguments,
   {onCompleted, onError}: LocalHandlers
 ) => {
-  return commitMutation<TCreateJiraIssueMutation>(atmosphere, {
+  return commitMutation<TCreateJiraIssueAndTaskMutation>(atmosphere, {
     mutation,
     variables,
     updater: (store) => {
       // TODO break out into subscription & also reorder suggested items (put newest on top if exists)
-      const payload = store.getRootField('createJiraIssue')
+      const payload = store.getRootField('createJiraIssueAndTask')
       if (!payload) return
       const task = payload.getLinkedRecord('task')
       if (!task) return
@@ -120,4 +120,4 @@ const CreateJiraIssueMutation = (
   })
 }
 
-export default CreateJiraIssueMutation
+export default CreateJiraIssueAndTaskMutation

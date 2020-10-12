@@ -9,6 +9,8 @@ import useAtmosphere from '~/hooks/useAtmosphere'
 import {NewJiraIssueInput_meeting} from '~/__generated__/NewJiraIssueInput_meeting.graphql'
 import {NewJiraIssueInput_viewer} from '~/__generated__/NewJiraIssueInput_viewer.graphql'
 import JiraCreateIssueMutation from '~/mutations/JiraCreateIssueMutation'
+import {AddOrDeleteEnum, TaskServiceEnum} from '~/types/graphql'
+import UpdatePokerScopeMutation from '~/mutations/UpdatePokerScopeMutation'
 
 const Form = styled('form')({
   display: 'flex',
@@ -65,7 +67,7 @@ const NewJiraIssueInput = (props: Props) => {
   const {id: meetingId} = meeting
   const {team} = viewer
   const {id: teamId, jiraIssues} = team!
-  const {error, edges} = jiraIssues
+  const {edges} = jiraIssues
   const [newIssueText, setNewIssueText] = useState('')
   const atmosphere = useAtmosphere()
   const {onCompleted, onError} = useMutationProps()
@@ -97,11 +99,23 @@ const NewJiraIssueInput = (props: Props) => {
     const variables = {
       content: newIssueText,
       cloudId,
+      cloudName,
       projectKey: newProjectKey,
       teamId,
       meetingId
     }
     JiraCreateIssueMutation(atmosphere, variables, {onError, onCompleted})
+    const pokerScopeVariables = {
+      meetingId,
+      updates: [
+        {
+          service: TaskServiceEnum.jira,
+          serviceTaskId: `${cloudId}:${newProjectKey}`,
+          action: AddOrDeleteEnum.ADD
+        }
+      ]
+    }
+    UpdatePokerScopeMutation(atmosphere, pokerScopeVariables, {onError, onCompleted})
   }
 
   if (!isEditing) return null

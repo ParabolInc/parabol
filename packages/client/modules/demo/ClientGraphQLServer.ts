@@ -79,7 +79,7 @@ interface DemoEvents {
 }
 
 interface GQLDemoEmitter {
-  new(): StrictEventEmitter<EventEmitter, DemoEvents>
+  new (): StrictEventEmitter<EventEmitter, DemoEvents>
 }
 
 const makeReflectionGroupThread = () => ({
@@ -123,7 +123,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
   getUnlockedStages(stageIds: string[]) {
     const unlockedStages = [] as INewMeetingStage[]
     this.db.newMeeting.phases!.forEach((phase) => {
-      ; (phase.stages as any).forEach((stage) => {
+      ;(phase.stages as any).forEach((stage) => {
         if (stageIds.includes(stage.id)) {
           unlockedStages.push(stage)
         }
@@ -370,7 +370,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       }
       return {createGitHubIssue: data}
     },
-    CreateJiraIssueMutation: ({projectKey, taskId}, userId) => {
+    CreateJiraIssueAndTaskMutation: ({projectKey, taskId}, userId) => {
       const task = this.db.tasks.find((task) => task.id === taskId)
       // if the human deleted the task, exit fast
       if (!task) return null
@@ -385,14 +385,14 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       })
 
       const data = {
-        __typename: 'CreateJiraIssuePayload',
+        __typename: 'CreateJiraIssueAndTaskPayload',
         error: null,
         task
       }
       if (userId !== demoViewerId) {
         this.emit(TASK, data)
       }
-      return {createJiraIssue: data}
+      return {createJiraIssueAndTask: data}
     },
     CreateReflectionMutation: async (
       {input: {content, promptId, sortOrder, id, groupId}},
@@ -561,10 +561,10 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       const remainingReflections = this.db.reflections.filter((reflection) => reflection.isActive)
       const unlockedStageIds = remainingReflections.length
         ? unlockAllStagesForPhase(
-          this.db.newMeeting.phases as any,
-          NewMeetingPhaseTypeEnum.group,
-          true
-        )
+            this.db.newMeeting.phases as any,
+            NewMeetingPhaseTypeEnum.group,
+            true
+          )
         : []
 
       const unlockedStages = this.getUnlockedStages(unlockedStageIds)
