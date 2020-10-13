@@ -70,7 +70,7 @@ export default {
     },
     statusFilters: {
       type: GraphQLList(GraphQLNonNull(TaskStatusEnum)),
-      description: 'only return tasks of the chosen status'
+      description: 'filter tasks by the chosen statuses'
     },
     filterQuery: {
       type: GraphQLString,

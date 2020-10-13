@@ -1364,7 +1364,7 @@ export interface ITasksOnUserArguments {
   archived?: boolean | null;
 
   /**
-   * only return tasks of the chosen status
+   * filter tasks by the chosen statuses
    */
   statusFilters?: Array<TaskStatusEnum> | null;
 
