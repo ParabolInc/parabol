@@ -13,11 +13,11 @@ const DropdownIcon = styled(Icon)<{hasCustomIcon: boolean}>(({hasCustomIcon}) =>
 
 const DropdownBlock = styled('div')<{disabled: boolean | undefined}>(({disabled}) => ({
   background: '#fff',
-  border: `2px solid ${PALETTE.BORDER_DROPDOWN}`,
+  border: `1px solid ${PALETTE.BORDER_DROPDOWN}`,
   borderRadius: '4px',
   cursor: disabled ? 'not-allowed' : 'pointer',
   display: 'flex',
-  fontSize: 16,
+  fontSize: 14,
   lineHeight: '24px',
   fontWeight: 600,
   userSelect: 'none',

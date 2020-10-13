@@ -11,10 +11,9 @@ const MenuToggleInner = styled('div')({
   minWidth: 0
 })
 
-const GroupIcon = styled(Icon)({
+const MenuToggleIcon = styled(Icon)({
   color: PALETTE.TEXT_GRAY,
-  paddingLeft: 12,
-  paddingRight: 12
+  padding: '0 16px'
 })
 
 const MenuToggleLabel = styled('div')({
@@ -32,7 +31,7 @@ const MenuToggleV2Text = forwardRef((props: Props, ref: any) => {
   const {icon, label} = props
   return (
     <MenuToggleInner ref={ref}>
-      <GroupIcon>{icon}</GroupIcon>
+      <MenuToggleIcon>{icon}</MenuToggleIcon>
       <MenuToggleLabel>{label}</MenuToggleLabel>
     </MenuToggleInner>
   )
