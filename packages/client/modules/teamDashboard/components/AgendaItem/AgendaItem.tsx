@@ -72,7 +72,7 @@ const getItemProps = (
   }
   if (!meeting) return fallback
   const {facilitatorUserId, facilitatorStageId, localStage, localPhase, phases} = meeting
-  const agendaItemsPhase = phases!.find(
+  const agendaItemsPhase = phases.find(
     (phase) => phase.phaseType === NewMeetingPhaseTypeEnum.agendaitems
   )!
   const localStageId = (localStage && localStage.id) || ''
@@ -208,22 +208,6 @@ graphql`
   }
 `
 
-graphql`
-  fragment AgendaItemAllMeetingPhases on NewMeetingPhase {
-    ... on AgendaItemsPhase {
-      stages {
-        id
-        agendaItem {
-          id
-        }
-        isComplete
-        isNavigable
-        isNavigableByFacilitator
-      }
-    }
-  }
-`
-
 export default createFragmentContainer(AgendaItem, {
   agendaItem: graphql`
     fragment AgendaItem_agendaItem on AgendaItem {
@@ -243,7 +227,7 @@ export default createFragmentContainer(AgendaItem, {
       facilitatorUserId
       phases {
         phaseType
-        ...AgendaItemAllMeetingPhases @relay(mask: false)
+        ...AgendaItemPhase @relay(mask: false)
       }
       localPhase {
         phaseType
