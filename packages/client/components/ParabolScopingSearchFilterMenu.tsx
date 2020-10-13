@@ -4,7 +4,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {ParabolScopingSearchFilterMenu_meeting} from '../__generated__/ParabolScopingSearchFilterMenu_meeting.graphql'
 import {MenuProps} from '../hooks/useMenu'
 import Menu from './Menu'
-import {taskStatusFilterBuckets} from '~/utils/constants'
+import {taskScopingStatusFilters} from '~/utils/constants'
 import MenuItem from './MenuItem'
 import MenuItemLabel from './MenuItemLabel'
 import Checkbox from './Checkbox'
@@ -41,7 +41,7 @@ const ParabolScopingSearchFilterMenu = (props: Props) => {
       isDropdown={isDropdown}
     >
       <FilterLabel>Filter by status:</FilterLabel>
-      {taskStatusFilterBuckets.map(status => {
+      {taskScopingStatusFilters.map(status => {
         const toggleStatusFilter = () => {
           commitLocalUpdate(atmosphere, (store) => {
             const meeting = store.get(meetingId)!
