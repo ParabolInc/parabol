@@ -19,18 +19,18 @@ graphql`
 
 const mutation = graphql`
   mutation JiraCreateIssueMutation(
-    $content: String!
     $cloudId: ID!
     $cloudName: String!
     $projectKey: ID!
+    $summary: String!
     $teamId: ID!
     $meetingId: ID
   ) {
     jiraCreateIssue(
-      content: $content
       cloudId: $cloudId
       cloudName: $cloudName
       projectKey: $projectKey
+      summary: $summary
       teamId: $teamId
       meetingId: $meetingId
     ) {
@@ -76,12 +76,12 @@ const JiraCreateIssueMutation = (
       jiraCreateIssueUpdater(payload, context)
     },
     optimisticUpdater: (store) => {
-      const {cloudName, teamId, projectKey, content} = variables
+      const {cloudName, teamId, projectKey, summary} = variables
       const url = `https://${cloudName}.atlassian.net/browse/${projectKey}`
       const jiraIssueVariables = {
         cloudName,
         key: projectKey,
-        summary: content,
+        summary,
         url,
         teamId
       }

@@ -4,8 +4,8 @@ import Task from './Task'
 import StandardMutationError from './StandardMutationError'
 import {GQLContext} from '../graphql'
 
-const CreateJiraIssueAndTaskPayload = new GraphQLObjectType<any, GQLContext>({
-  name: 'CreateJiraIssueAndTaskPayload',
+const CreateJiraTaskIntegrationPayload = new GraphQLObjectType<any, GQLContext>({
+  name: 'CreateJiraTaskIntegrationPayload',
   fields: () => ({
     error: {
       type: StandardMutationError
@@ -17,4 +17,4 @@ const CreateJiraIssueAndTaskPayload = new GraphQLObjectType<any, GQLContext>({
   })
 })
 
-export default CreateJiraIssueAndTaskPayload
+export default CreateJiraTaskIntegrationPayload

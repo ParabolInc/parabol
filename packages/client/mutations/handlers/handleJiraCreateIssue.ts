@@ -1,4 +1,4 @@
-import {ConnectionHandler, RecordProxy, RecordSourceSelectorProxy} from 'relay-runtime'
+import {ConnectionHandler, RecordSourceSelectorProxy} from 'relay-runtime'
 import createProxyRecord from '~/utils/relay/createProxyRecord'
 import getJiraIssuesConn from '../connections/getJiraIssuesConn'
 
@@ -17,7 +17,6 @@ const handleJiraCreateIssue = (
 ) => {
   const team = store.get(teamId)
   if (!team) return
-
   const newJiraIssue = {
     cloudName,
     key,

@@ -6408,7 +6408,7 @@ export interface IMutation {
    */
   createImposterToken: ICreateImposterTokenPayload;
   createGitHubIssue: ICreateGitHubIssuePayload | null;
-  createJiraIssueAndTask: ICreateJiraIssueAndTaskPayload | null;
+  createJiraTaskIntegration: ICreateJiraTaskIntegrationPayload | null;
 
   /**
    * Create a new mass inivtation and optionally void old ones
@@ -7001,7 +7001,7 @@ export interface ICreateGitHubIssueOnMutationArguments {
   nameWithOwner: string;
 }
 
-export interface ICreateJiraIssueAndTaskOnMutationArguments {
+export interface ICreateJiraTaskIntegrationOnMutationArguments {
   /**
    * The atlassian cloudId for the site
    */
@@ -7245,11 +7245,6 @@ export interface IInviteToTeamOnMutationArguments {
 
 export interface IJiraCreateIssueOnMutationArguments {
   /**
-   * The text content of the Jira issue
-   */
-  content: string;
-
-  /**
    * The atlassian cloudId for the site
    */
   cloudId: string;
@@ -7260,19 +7255,24 @@ export interface IJiraCreateIssueOnMutationArguments {
   cloudName: string;
 
   /**
+   * The id of the meeting where the Jira issue is being created. Null if it is not being created in a meeting.
+   */
+  meetingId?: string | null;
+
+  /**
    * The atlassian key of the project to put the issue in
    */
   projectKey: string;
 
   /**
+   * The text content of the Jira issue
+   */
+  summary: string;
+
+  /**
    * The id of the team that is creating the issue
    */
   teamId: string;
-
-  /**
-   * The id of the meeting where the Jira issue is being created. Null if it is not being created in a meeting.
-   */
-  meetingId?: string | null;
 }
 
 export interface ILoginWithGoogleOnMutationArguments {
@@ -8231,8 +8231,8 @@ export interface ICreateGitHubIssuePayload {
   task: ITask | null;
 }
 
-export interface ICreateJiraIssueAndTaskPayload {
-  __typename: 'CreateJiraIssueAndTaskPayload';
+export interface ICreateJiraTaskIntegrationPayload {
+  __typename: 'CreateJiraTaskIntegrationPayload';
   error: IStandardMutationError | null;
   task: ITask | null;
 }
@@ -10160,7 +10160,7 @@ export interface ISetOrgUserRoleRemovedPayload {
 export type TaskSubscriptionPayload =
   | IChangeTaskTeamPayload
   | ICreateGitHubIssuePayload
-  | ICreateJiraIssueAndTaskPayload
+  | ICreateJiraTaskIntegrationPayload
   | ICreateTaskPayload
   | IDeleteTaskPayload
   | IEditTaskPayload

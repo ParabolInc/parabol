@@ -1,5 +1,6 @@
 import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import {IJiraCreateIssueOnMutationArguments} from 'parabol-client/types/graphql'
 import AtlassianServerManager from '../../utils/AtlassianServerManager'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
@@ -12,10 +13,6 @@ export default {
   name: 'JiraCreateIssue',
   type: JiraCreateIssuePayload,
   args: {
-    content: {
-      type: new GraphQLNonNull(GraphQLString),
-      description: 'The text content of the Jira issue'
-    },
     cloudId: {
       type: new GraphQLNonNull(GraphQLID),
       description: 'The atlassian cloudId for the site'
@@ -24,28 +21,33 @@ export default {
       type: new GraphQLNonNull(GraphQLString),
       description: 'The name of the jira cloud where the issue lives'
     },
-    projectKey: {
-      type: new GraphQLNonNull(GraphQLID),
-      description: 'The atlassian key of the project to put the issue in'
-    },
-    teamId: {
-      type: new GraphQLNonNull(GraphQLID),
-      description: 'The id of the team that is creating the issue'
-    },
     meetingId: {
       type: GraphQLID,
       description:
         'The id of the meeting where the Jira issue is being created. Null if it is not being created in a meeting.'
+    },
+    projectKey: {
+      type: new GraphQLNonNull(GraphQLID),
+      description: 'The atlassian key of the project to put the issue in'
+    },
+    summary: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: 'The text content of the Jira issue'
+    },
+    teamId: {
+      type: new GraphQLNonNull(GraphQLID),
+      description: 'The id of the team that is creating the issue'
     }
   },
   resolve: async (
     _source: object,
-    {content, cloudId, projectKey, teamId, meetingId}: any, // TODO: use correct type
+    {cloudId, meetingId, projectKey, teamId, summary}: IJiraCreateIssueOnMutationArguments,
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) => {
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
     const viewerId = getUserId(authToken)
+    console.log('teamId', teamId)
 
     // AUTH
     if (!isTeamMember(authToken, teamId)) {
@@ -53,10 +55,8 @@ export default {
     }
 
     // VALIDATION
-    const viewerAuthRes = await Promise.all([
-      dataLoader.get('atlassianAuthByUserId').load(viewerId)
-    ])
-    const viewerAuth = viewerAuthRes[0][0]
+    const viewerAuthRes = await dataLoader.get('atlassianAuthByUserId').load(viewerId)
+    const viewerAuth = viewerAuthRes.find((auth) => auth.teamId === teamId)
 
     if (!viewerAuth || !viewerAuth.isActive) {
       return standardError(new Error('The viewer does not have access to Jira'), {
@@ -69,11 +69,11 @@ export default {
       .get('freshAtlassianAccessToken')
       .load({teamId, userId: viewerId})
     const manager = new AtlassianServerManager(accessToken)
-    const key = projectKey.split('-')[0]
+    const keyName = projectKey.split('-')[0]
     const [sites, issueMetaRes, description] = await Promise.all([
       manager.getAccessibleResources(),
-      manager.getCreateMeta(cloudId, [key]),
-      manager.convertMarkdownToADF(content)
+      manager.getCreateMeta(cloudId, [keyName]),
+      manager.convertMarkdownToADF(summary)
     ] as const)
     if ('message' in sites) {
       return standardError(new Error(sites.message), {userId: viewerId})
@@ -86,12 +86,11 @@ export default {
     }
     const {projects} = issueMetaRes
     // should always be the first and only item in the project arr
-    const project = projects.find((project) => project.key === key)!
-    // const {issuetypes, name: projectName} = project
+    const project = projects.find((project) => project.key === keyName)!
     const {issuetypes} = project
     const bestType = issuetypes.find((type) => type.name === 'Task') || issuetypes[0]
     const payload = {
-      summary: content,
+      summary,
       description,
       // ERROR: Field 'reporter' cannot be set. It is not on the appropriate screen, or unknown.
       assignee: {
@@ -101,7 +100,7 @@ export default {
         id: bestType.id
       }
     }
-    const res = await manager.createIssue(cloudId, key, payload)
+    const res = await manager.createIssue(cloudId, keyName, payload)
     if ('message' in res) {
       return standardError(new Error(res.message), {userId: viewerId})
     }
@@ -113,7 +112,7 @@ export default {
       cloudId,
       cloudName: cloud.name,
       key: res.key,
-      summary: content,
+      summary,
       teamId
     }
     if (meetingId) {

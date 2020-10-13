@@ -76,12 +76,10 @@ const NewJiraIssueInput = (props: Props) => {
   const jiraIssueTopOfList = edges[0].node
   const {cloudName, key} = jiraIssueTopOfList
   const keyName = key.split('-')[0]
-
   // curently, all suggestedIntegrations have the same cloudId so using cloudName instead
   const suggestedIntegration = suggestedIntegrations.find(
     (integration) => integration.projectKey === keyName
   )
-  // const cloudId = jiraIssueTopOfList.id.split(':')[0]
   const {cloudId} = suggestedIntegration
   const newProjectKey = useMemo(() => {
     if (!key) return null
@@ -104,10 +102,10 @@ const NewJiraIssueInput = (props: Props) => {
     setIsEditing(false)
     if (!newIssueText.length || !newProjectKey) return
     const variables = {
-      content: newIssueText,
-      cloudId: suggestedIntegration.cloudId,
+      cloudId,
       cloudName,
       projectKey: newProjectKey,
+      summary: newIssueText,
       teamId,
       meetingId
     }
@@ -122,7 +120,7 @@ const NewJiraIssueInput = (props: Props) => {
         }
       ]
     }
-    // UpdatePokerScopeMutation(atmosphere, pokerScopeVariables, {onError, onCompleted})
+    UpdatePokerScopeMutation(atmosphere, pokerScopeVariables, {onError, onCompleted})
   }
 
   if (!isEditing) return null

@@ -370,7 +370,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       }
       return {createGitHubIssue: data}
     },
-    CreateJiraIssueAndTaskMutation: ({projectKey, taskId}, userId) => {
+    CreateJiraTaskIntegrationMutation: ({projectKey, taskId}, userId) => {
       const task = this.db.tasks.find((task) => task.id === taskId)
       // if the human deleted the task, exit fast
       if (!task) return null
@@ -385,14 +385,14 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       })
 
       const data = {
-        __typename: 'CreateJiraIssueAndTaskPayload',
+        __typename: 'CreateJiraTaskIntegrationPayload',
         error: null,
         task
       }
       if (userId !== demoViewerId) {
         this.emit(TASK, data)
       }
-      return {createJiraIssueAndTask: data}
+      return {createJiraTaskIntegration: data}
     },
     CreateReflectionMutation: async (
       {input: {content, promptId, sortOrder, id, groupId}},

@@ -17,7 +17,7 @@ const subscription = graphql`
       ...RemoveTeamMemberMutation_task @relay(mask: false)
       ...ChangeTaskTeamMutation_task @relay(mask: false)
       ...CreateGitHubIssueMutation_task @relay(mask: false)
-      ...CreateJiraIssueAndTaskMutation_task @relay(mask: false)
+      ...CreateJiraTaskIntegrationMutation_task @relay(mask: false)
       ...CreateTaskMutation_task @relay(mask: false)
       ...DeleteTaskMutation_task @relay(mask: false)
       ...EditTaskMutation_task @relay(mask: false)

@@ -1,7 +1,7 @@
 import {commitMutation} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import {
-  ICreateJiraIssueAndTaskOnMutationArguments,
+  ICreateJiraTaskIntegrationOnMutationArguments,
   ISuggestedIntegrationJira,
   ISuggestedIntegrationQueryPayload,
   TaskServiceEnum
@@ -10,10 +10,10 @@ import makeSuggestedIntegrationId from '../utils/makeSuggestedIntegrationId'
 import createProxyRecord from '../utils/relay/createProxyRecord'
 import Atmosphere from '../Atmosphere'
 import {LocalHandlers} from '../types/relayMutations'
-import {CreateJiraIssueAndTaskMutation as TCreateJiraIssueAndTaskMutation} from '../__generated__/CreateJiraIssueAndTaskMutation.graphql'
+import {CreateJiraTaskIntegrationMutation as TCreateJiraTaskIntegrationMutation} from '../__generated__/CreateJiraTaskIntegrationMutation.graphql'
 
 graphql`
-  fragment CreateJiraIssueAndTaskMutation_task on CreateJiraIssueAndTaskPayload {
+  fragment CreateJiraTaskIntegrationMutation_task on CreateJiraTaskIntegrationPayload {
     task {
       integration {
         service
@@ -32,27 +32,27 @@ graphql`
 `
 
 const mutation = graphql`
-  mutation CreateJiraIssueAndTaskMutation($cloudId: ID!, $taskId: ID!, $projectKey: ID!) {
-    createJiraIssueAndTask(cloudId: $cloudId, taskId: $taskId, projectKey: $projectKey) {
+  mutation CreateJiraTaskIntegrationMutation($cloudId: ID!, $taskId: ID!, $projectKey: ID!) {
+    createJiraTaskIntegration(cloudId: $cloudId, taskId: $taskId, projectKey: $projectKey) {
       error {
         message
       }
-      ...CreateJiraIssueAndTaskMutation_task @relay(mask: false)
+      ...CreateJiraTaskIntegrationMutation_task @relay(mask: false)
     }
   }
 `
 
-const CreateJiraIssueAndTaskMutation = (
+const CreateJiraTaskIntegrationMutation = (
   atmosphere: Atmosphere,
-  variables: ICreateJiraIssueAndTaskOnMutationArguments,
+  variables: ICreateJiraTaskIntegrationOnMutationArguments,
   {onCompleted, onError}: LocalHandlers
 ) => {
-  return commitMutation<TCreateJiraIssueAndTaskMutation>(atmosphere, {
+  return commitMutation<TCreateJiraTaskIntegrationMutation>(atmosphere, {
     mutation,
     variables,
     updater: (store) => {
       // TODO break out into subscription & also reorder suggested items (put newest on top if exists)
-      const payload = store.getRootField('createJiraIssueAndTask')
+      const payload = store.getRootField('createJiraTaskIntegration')
       if (!payload) return
       const task = payload.getLinkedRecord('task')
       if (!task) return
@@ -120,4 +120,4 @@ const CreateJiraIssueAndTaskMutation = (
   })
 }
 
-export default CreateJiraIssueAndTaskMutation
+export default CreateJiraTaskIntegrationMutation

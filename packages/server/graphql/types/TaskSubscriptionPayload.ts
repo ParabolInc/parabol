@@ -8,12 +8,12 @@ import UpdateTaskPayload from './UpdateTaskPayload'
 import RemoveTeamMemberPayload from './RemoveTeamMemberPayload'
 import RemoveOrgUserPayload from './RemoveOrgUserPayload'
 import UpdateTaskDueDatePayload from './UpdateTaskDueDatePayload'
-import CreateJiraIssueAndTaskPayload from './CreateJiraIssueAndTaskPayload'
+import CreateJiraTaskIntegrationPayload from './CreateJiraTaskIntegrationPayload'
 
 const types = [
   ChangeTaskTeamPayload,
   CreateGitHubIssuePayload,
-  CreateJiraIssueAndTaskPayload,
+  CreateJiraTaskIntegrationPayload,
   CreateTaskPayload,
   DeleteTaskPayload,
   EditTaskPayload,
