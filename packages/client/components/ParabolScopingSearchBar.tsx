@@ -21,7 +21,7 @@ const ParabolScopingSearchBar = (props: Props) => {
   const {meeting} = props
   return (
     <SearchBar>
-      <ParabolScopingSearchHistoryToggle meeting={meeting} />
+      <ParabolScopingSearchHistoryToggle />
       <ParabolScopingSearchInput meeting={meeting} />
       <ParabolScopingSearchFilterToggle meeting={meeting} />
     </SearchBar>
@@ -31,7 +31,6 @@ const ParabolScopingSearchBar = (props: Props) => {
 export default createFragmentContainer(ParabolScopingSearchBar, {
   meeting: graphql`
     fragment ParabolScopingSearchBar_meeting on PokerMeeting {
-      ...ParabolScopingSearchHistoryToggle_meeting
       ...ParabolScopingSearchInput_meeting
       ...ParabolScopingSearchFilterToggle_meeting
     }
