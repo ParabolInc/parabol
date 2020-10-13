@@ -19,7 +19,8 @@ const ReflectTemplateModal = lazyPreload(() =>
 )
 
 const Dropdown = styled(NewMeetingDropdown)({
-  marginTop: 16
+  borderWidth: '0 1px 1px',
+  borderRadius: 0
 })
 
 const RetroTemplatePicker = (props: Props) => {
@@ -31,6 +32,7 @@ const RetroTemplatePicker = (props: Props) => {
     <>
       <Dropdown
         icon={'question_answer'}
+        dropdownIcon={'edit'}
         label={templateName}
         onClick={togglePortal}
         onMouseEnter={ReflectTemplateModal.preload}
