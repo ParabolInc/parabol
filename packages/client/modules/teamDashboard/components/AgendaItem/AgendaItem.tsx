@@ -17,6 +17,7 @@ import UpdateAgendaItemMutation from '../../../../mutations/UpdateAgendaItemMuta
 import pinIcon from '../../../../styles/theme/images/icons/pin.svg'
 import unpinIcon from '../../../../styles/theme/images/icons/unpin.svg'
 import {ICON_SIZE} from '../../../../styles/typographyV2'
+import {NewMeetingPhaseTypeEnum} from '~/types/graphql'
 
 const AgendaItemStyles = styled('div')({
   position: 'relative',
@@ -69,11 +70,14 @@ const getItemProps = (
     isComplete: false,
     isUnsyncedFacilitatorStage: false
   }
-
   if (!meeting) return fallback
-  const {facilitatorUserId, facilitatorStageId, localStage, localPhase} = meeting
+  const {facilitatorUserId, facilitatorStageId, localStage, localPhase, phases} = meeting
+  const agendaItemsPhase = phases.find(
+    (phase) => phase.phaseType === NewMeetingPhaseTypeEnum.agendaitems
+  )!
   const localStageId = (localStage && localStage.id) || ''
-  const {stages} = localPhase
+  const {phaseType} = localPhase
+  const {stages} = phaseType === NewMeetingPhaseTypeEnum.agendaitems ? localPhase : agendaItemsPhase
   if (!stages) return fallback
   const agendaItemStage = stages.find((stage) => stage.agendaItem?.id === agendaItemId)
   if (!agendaItemStage) return fallback
@@ -203,6 +207,7 @@ graphql`
     }
   }
 `
+
 export default createFragmentContainer(AgendaItem, {
   agendaItem: graphql`
     fragment AgendaItem_agendaItem on AgendaItem {
@@ -220,7 +225,12 @@ export default createFragmentContainer(AgendaItem, {
       endedAt
       facilitatorStageId
       facilitatorUserId
+      phases {
+        phaseType
+        ...AgendaItemPhase @relay(mask: false)
+      }
       localPhase {
+        phaseType
         ...AgendaItemPhase @relay(mask: false)
       }
       localStage {

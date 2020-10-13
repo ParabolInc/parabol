@@ -5,6 +5,23 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 5.22.0 2020-Oct-13
+
+### Added
+
+- CLI to create new mutations (#4270)
+- Jira Issue card in Poker Estimate Phase (#4262, #4245)
+- meetingCount to User for HubSpot (#4259)
+- Search Menu and Persisted Query Menu for Jira Scope Phase (#4256)
+- MediaSoup package (#4204)
+
+## Fixed
+
+- Icebreaker Editing & flexbox issue for Safari (#4254)
+- Check-in Agenda State (#4242)
+- Removing template prompt bug (#4236)
+
+
 ## 5.21.0 2020-Oct-07
 
 ### Added

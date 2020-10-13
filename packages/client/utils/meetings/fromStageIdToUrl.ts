@@ -16,7 +16,9 @@ const phaseIsMultiStage = {
   [NewMeetingPhaseTypeEnum.updates]: true,
   [NewMeetingPhaseTypeEnum.firstcall]: false,
   [NewMeetingPhaseTypeEnum.agendaitems]: true,
-  [NewMeetingPhaseTypeEnum.lastcall]: false
+  [NewMeetingPhaseTypeEnum.lastcall]: false,
+  'SCOPE': false,
+  'ESTIMATE': true
 }
 
 // I think there's a TS bug where when i make a readonly array of an omit it returns the vals

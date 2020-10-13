@@ -709,9 +709,14 @@ export interface IJiraIssue {
   summary: string;
 
   /**
-   * The plaintext description of the jira issue
+   * The stringified ADF of the jira issue description
    */
   description: string;
+
+  /**
+   * The description converted into raw HTML
+   */
+  descriptionHTML: string;
 }
 
 export interface IStandardMutationError {
@@ -4216,7 +4221,16 @@ export interface IEstimateStage {
   /**
    * the dimensionId that corresponds to this stage
    */
-  dimensionId: string | null;
+  dimensionId: string;
+
+  /**
+   * the final score, as defined by the facilitator
+   */
+  finalScore: number | null;
+
+  /**
+   * all the estimates, 1 per user
+   */
   scores: Array<IEstimateUserScore>;
 }
 
@@ -4361,7 +4375,16 @@ export interface IEstimateStageJira {
   /**
    * the dimensionId that corresponds to this stage
    */
-  dimensionId: string | null;
+  dimensionId: string;
+
+  /**
+   * the final score, as defined by the facilitator
+   */
+  finalScore: number | null;
+
+  /**
+   * all the estimates, 1 per user
+   */
   scores: Array<IEstimateUserScore>;
 
   /**
@@ -4484,7 +4507,16 @@ export interface IEstimateStageParabol {
   /**
    * the dimensionId that corresponds to this stage
    */
-  dimensionId: string | null;
+  dimensionId: string;
+
+  /**
+   * the final score, as defined by the facilitator
+   */
+  finalScore: number | null;
+
+  /**
+   * all the estimates, 1 per user
+   */
   scores: Array<IEstimateUserScore>;
 
   /**
