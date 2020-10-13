@@ -78,8 +78,9 @@ const GitHubProviderRow = (props: Props) => {
   const {atmosphere, viewer, teamId, submitting, submitMutation, onError, onCompleted} = props
   const mutationProps = {submitting, submitMutation, onError, onCompleted} as MenuMutationProps
   const {teamMember} = viewer
-  const githubAuth = teamMember?.githubAuth
-  const accessToken = githubAuth?.accessToken ?? undefined
+  const {integrations} = teamMember!
+  const {github} = integrations
+  const accessToken = github?.accessToken ?? undefined
   const openOAuth = () => {
     GitHubClientManager.openOAuth(atmosphere, teamId, mutationProps)
   }
@@ -101,7 +102,7 @@ const GitHubProviderRow = (props: Props) => {
       )}
       {accessToken && (
         <ListAndMenu>
-          <GitHubLogin title={githubAuth!.login}>
+          <GitHubLogin title={github!.login}>
             <GitHubSVG />
           </GitHubLogin>
           <MenuButton onClick={togglePortal} ref={originRef}>
@@ -117,11 +118,9 @@ const GitHubProviderRow = (props: Props) => {
 }
 
 graphql`
-  fragment GitHubProviderRowTeamMember on TeamMember {
-    githubAuth {
-      accessToken
-      login
-    }
+  fragment GitHubProviderRowGitHubIntegration on GitHubIntegration {
+    accessToken
+    login
   }
 `
 
@@ -131,7 +130,11 @@ export default createFragmentContainer(
     viewer: graphql`
       fragment GitHubProviderRow_viewer on User {
         teamMember(teamId: $teamId) {
-          ...GitHubProviderRowTeamMember @relay(mask: false)
+          integrations {
+            github {
+              ...GitHubProviderRowGitHubIntegration @relay(mask: false)
+            }
+          }
         }
       }
     `

@@ -45,7 +45,7 @@ const renameReflectTemplatePrompt = {
       .table('ReflectPrompt')
       .getAll(teamId, {index: 'teamId'})
       .filter({
-        isActive: true,
+        removedAt: null,
         templateId
       })
       .run()

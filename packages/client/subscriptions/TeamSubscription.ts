@@ -46,7 +46,6 @@ const subscription = graphql`
       ...EndSprintPokerMutation_team @relay(mask: false)
       ...MoveReflectTemplatePromptMutation_team @relay(mask: false)
       ...NavigateMeetingMutation_team @relay(mask: false)
-      ...PersistJiraSearchQueryMutation_team @relay(mask: false)
       ...PromoteToTeamLeadMutation_team @relay(mask: false)
       ...PushInvitationMutation_team @relay(mask: false)
       ...ReflectTemplatePromptUpdateGroupColorMutation_team @relay(mask: false)

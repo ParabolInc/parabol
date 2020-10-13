@@ -40,10 +40,12 @@ const Label = styled('span')({
 const SlackNotificationRow = (props: Props) => {
   const {event, localChannelId, teamId, viewer} = props
   const {teamMember} = viewer
-  const {slackNotifications} = teamMember!
+  const {integrations} = teamMember!
+  const {slack} = integrations
+  const notifications = slack?.notifications ?? []
   const label = labelLookup[event]
   const atmosphere = useAtmosphere()
-  const existingNotification = slackNotifications.find(
+  const existingNotification = notifications.find(
     (notification) => notification.event === event
   )
   const active = !!(existingNotification && existingNotification.channelId)
@@ -78,9 +80,13 @@ export default createFragmentContainer(SlackNotificationRow, {
   viewer: graphql`
     fragment SlackNotificationRow_viewer on User {
       teamMember(teamId: $teamId) {
-        slackNotifications {
-          channelId
-          event
+        integrations {
+          slack {
+            notifications {
+              channelId
+              event
+            }
+          }
         }
       }
     }

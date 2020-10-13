@@ -43,7 +43,7 @@ const addReflectTemplatePrompt = {
       .getAll(teamId, {index: 'teamId'})
       .filter({
         templateId,
-        isActive: true
+        removedAt: null
       })
       .run()
     if (activePrompts.length >= Threshold.MAX_REFLECTION_PROMPTS) {
@@ -62,7 +62,8 @@ const addReflectTemplatePrompt = {
       sortOrder,
       question: `New prompt #${activePrompts.length + 1}`,
       description: '',
-      groupColor: availableNewColor?.hex ?? PALETTE.PROMPT_GREEN
+      groupColor: availableNewColor?.hex ?? PALETTE.PROMPT_GREEN,
+      removedAt: null
     })
 
     await r

@@ -1,13 +1,12 @@
-import graphql from 'babel-plugin-relay/macro'
-import {createFragmentContainer, commitLocalUpdate} from 'react-relay'
-import {JiraScopingSearchInput_meeting} from '../__generated__/JiraScopingSearchInput_meeting.graphql'
-import React from 'react'
 import styled from '@emotion/styled'
-import {PALETTE} from '../styles/paletteV2'
-import Icon from './Icon'
+import graphql from 'babel-plugin-relay/macro'
+import React from 'react'
+import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import Atmosphere from '../Atmosphere'
 import useAtmosphere from '../hooks/useAtmosphere'
-import AtlassianClientManager from '../utils/AtlassianClientManager'
+import {PALETTE} from '../styles/paletteV2'
+import {JiraScopingSearchInput_meeting} from '../__generated__/JiraScopingSearchInput_meeting.graphql'
+import Icon from './Icon'
 
 const SearchInput = styled('input')({
   appearance: 'none',
@@ -36,9 +35,9 @@ const ClearSearchIcon = styled(Icon)<{isEmpty: boolean}>(({isEmpty}) => ({
 const setSearch = (atmosphere: Atmosphere, meetingId: string, value: string) => {
   commitLocalUpdate(atmosphere, (store) => {
     const meeting = store.get(meetingId)
-    console.log('meet', meeting)
     if (!meeting) return
-    meeting.setValue(value, 'jiraSearchQuery')
+    const jiraSearchQuery = meeting.getLinkedRecord('jiraSearchQuery')!
+    jiraSearchQuery.setValue(value, 'queryString')
   })
 }
 
@@ -48,30 +47,20 @@ interface Props {
 
 const JiraScopingSearchInput = (props: Props) => {
   const {meeting} = props
-  const {id: meetingId, jiraSearchQuery, viewerMeetingMember} = meeting
-  const {teamMember} = viewerMeetingMember
-  const {atlassianAuth} = teamMember
-  const accessToken = atlassianAuth?.accessToken
-  const isEmpty = !jiraSearchQuery
+  const {id: meetingId, jiraSearchQuery} = meeting
+  const {queryString} = jiraSearchQuery
+  const isEmpty = !queryString
   const atmosphere = useAtmosphere()
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearch(atmosphere, meetingId, e.target.value)
+    const {value} = e.target
+    setSearch(atmosphere, meetingId, value)
   }
   const clearSearch = () => {
     setSearch(atmosphere, meetingId, '')
   }
-  const onKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key !== 'Enter' || e.shiftKey) return
-    onSubmit()
-
-  }
-  const onSubmit = () => {
-    const manager = new AtlassianClientManager(accessToken || '')
-    console.log('man', manager)
-  }
   return (
     <Wrapper>
-      <SearchInput value={jiraSearchQuery || ''} placeholder={'Search issues on Jira'} onChange={onChange} onKeyPress={onKeyPress} />
+      <SearchInput value={queryString} placeholder={'Search issues on Jira'} onChange={onChange} />
       <ClearSearchIcon isEmpty={isEmpty} onClick={clearSearch}>close</ClearSearchIcon>
     </Wrapper>
   )
@@ -81,13 +70,8 @@ export default createFragmentContainer(JiraScopingSearchInput, {
   meeting: graphql`
     fragment JiraScopingSearchInput_meeting on PokerMeeting {
       id
-      jiraSearchQuery
-      viewerMeetingMember {
-        teamMember {
-          atlassianAuth {
-            accessToken
-          }
-        }
+      jiraSearchQuery {
+        queryString
       }
     }
   `

@@ -54,7 +54,6 @@ import UpdatePokerTemplateDimensionScalePayload from './UpdatePokerTemplateDimen
 import UpdatePokerTemplateScaleValuePayload from './UpdatePokerTemplateScaleValuePayload'
 import UpdateUserProfilePayload from './UpdateUserProfilePayload'
 import UpgradeToProPayload from './UpgradeToProPayload'
-import {PersistJiraSearchQuerySuccess} from './PersistJiraSearchQueryPayload'
 
 const types = [
   AcceptTeamInvitationPayload,

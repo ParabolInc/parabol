@@ -39,7 +39,7 @@ const removeReflectTemplatePrompt = {
       .table('ReflectPrompt')
       .getAll(teamId, {index: 'teamId'})
       .filter({
-        isActive: true,
+        removedAt: null,
         templateId: templateId
       })
       .count()
@@ -55,7 +55,7 @@ const removeReflectTemplatePrompt = {
       .table('ReflectPrompt')
       .get(promptId)
       .update({
-        isActive: false,
+        removedAt: now,
         updatedAt: now
       })
       .run()

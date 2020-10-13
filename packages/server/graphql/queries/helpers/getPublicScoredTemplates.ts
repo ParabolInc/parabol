@@ -1,21 +1,16 @@
 import db from '../../../db'
 import getTemplateScore from '../../../utils/getTemplateScore'
 
-const getPublicScoredTemplates = async (templates: {createdAt: Date; id: string}[]) => {
+const getPublicScoredTemplates = async (
+  templates: {createdAt: Date; id: string; isStarter?: boolean}[]
+) => {
   const sharedTemplateIds = templates.map(({id}) => id)
   const sharedTemplateEndTimes = await db.readMany('endTimesByTemplateId', sharedTemplateIds)
   const scoreByTemplateId = {} as {[templateId: string]: number}
-  const starterTemplates = new Set([
-    'sailboatTemplate',
-    'startStopContinueTemplate',
-    'workingStuckTemplate',
-    'fourLsTemplate',
-    'gladSadMadTemplate'
-  ])
   templates.forEach((template, idx) => {
-    const {id: templateId, createdAt} = template
+    const {id: templateId, createdAt, isStarter} = template
     const endTimes = sharedTemplateEndTimes[idx]
-    const starterBonus = starterTemplates.has(templateId) ? 100 : 0
+    const starterBonus = isStarter ? 100 : 0
     const minUsagePenalty = sharedTemplateEndTimes.length < 10 && !starterBonus
     scoreByTemplateId[templateId] = minUsagePenalty
       ? -1

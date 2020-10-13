@@ -25,6 +25,7 @@ export interface UserTasksKey {
   userIds: string[] | null
   teamIds: string[]
   archived: boolean
+  includeUnassigned: boolean
 }
 
 export interface ReactablesKey {
@@ -146,7 +147,7 @@ export const userTasks = (parent: RethinkDataLoader) => {
 
       const entryArray = await Promise.all(
         uniqKeys.map(async (key) => {
-          const {first, after, userIds, teamIds, archived} = key
+          const {first, after, userIds, teamIds, archived, includeUnassigned} = key
           const dbAfter = after ? new Date(after) : r.maxval
 
           let teamTaskPartial = r.table('Task').getAll(r.args(teamIds), {index: 'teamId'})
@@ -165,6 +166,10 @@ export const userTasks = (parent: RethinkDataLoader) => {
                       .contains('archived')
                       .not()
               )
+              .filter((task) => {
+                if (includeUnassigned) return true
+                return task('userId').ne(null)
+              })
               .orderBy(r.desc('updatedAt'))
               .limit(first + 1)
               .run()
@@ -208,6 +213,7 @@ export const freshAtlassianAccessToken = (parent: RethinkDataLoader) => {
           // fetch a new one
           const manager = await AtlassianServerManager.refresh(refreshToken)
           const {accessToken} = manager
+          teamAuth.accessToken = accessToken
           const r = await getRethink()
           await r
             .table('AtlassianAuth')
@@ -216,6 +222,47 @@ export const freshAtlassianAccessToken = (parent: RethinkDataLoader) => {
             .update({accessToken, updatedAt: now})
             .run()
           return accessToken
+        })
+      )
+    },
+    {
+      ...parent.dataLoaderOptions,
+      cacheKeyFn: (key) => `${key.userId}:${key.teamId}`
+    }
+  )
+}
+
+export const freshAtlassianAuth = (parent: RethinkDataLoader) => {
+  return new DataLoader<TeamUserKey, string, string>(
+    async (keys) => {
+      return promiseAllPartial(
+        keys.map(async ({userId, teamId}) => {
+          const r = await getRethink()
+          const atlassianAuth = await r
+            .table('AtlassianAuth')
+            .getAll(userId, {index: 'userId'})
+            .filter({teamId})
+            .nth(0)
+            .run()
+
+          if (!atlassianAuth?.refreshToken) return null
+          const {accessToken: existingAccessToken, refreshToken} = atlassianAuth
+          const decodedToken = existingAccessToken && (decode(existingAccessToken) as any)
+          const now = new Date()
+          const inAMinute = Math.floor((now.getTime() + 60000) / 1000)
+          if (!decodedToken || decodedToken.exp < inAMinute) {
+            const manager = await AtlassianServerManager.refresh(refreshToken)
+            const {accessToken} = manager
+            atlassianAuth.accessToken = accessToken
+            atlassianAuth.updatedAt = now
+            await r
+              .table('AtlassianAuth')
+              .getAll(userId, {index: 'userId'})
+              .filter({teamId})
+              .update({accessToken, updatedAt: now})
+              .run()
+          }
+          return atlassianAuth
         })
       )
     },

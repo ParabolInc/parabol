@@ -30,6 +30,7 @@ const updateTemplateScope = {
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) => {
     const r = await getRethink()
+    const now = new Date()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
     const viewerId = getUserId(authToken)
@@ -79,12 +80,14 @@ const updateTemplateScope = {
       })
       clonedTemplateId = clonedTemplate.id
       const prompts = await dataLoader.get('reflectPromptsByTemplateId').load(templateId)
-      const promptIds = prompts.map(({id}) => id)
-      const clonedPrompts = prompts.map((prompt) => {
+      const activePrompts = prompts.filter(({isActive}) => isActive)
+      const promptIds = activePrompts.map(({id}) => id)
+      const clonedPrompts = activePrompts.map((prompt) => {
         return new RetrospectivePrompt({
           ...prompt,
           templateId: clonedTemplateId,
-          parentPromptId: prompt.id
+          parentPromptId: prompt.id,
+          removedAt: null
         })
       })
       await r({
@@ -97,7 +100,7 @@ const updateTemplateScope = {
         inactivatedPrompts: r
           .table('ReflectPrompt')
           .getAll(r.args(promptIds))
-          .update({isActive: false})
+          .update({removedAt: now})
       }).run()
     } else {
       await r

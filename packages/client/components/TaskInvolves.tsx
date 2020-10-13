@@ -114,8 +114,8 @@ const TaskInvolves = (props: Props) => {
           }}
         />
         <Owner>
-          <OwnerAvatar alt='Avatar' src={user.picture || changeAuthorPicture} />
-          <OwnerName>{user.preferredName || changeAuthorName}</OwnerName>
+          <OwnerAvatar alt='Avatar' src={user?.picture || changeAuthorPicture} />
+          <OwnerName>{user?.preferredName || changeAuthorName}</OwnerName>
         </Owner>
       </TaskListView>
     </NotificationTemplate>

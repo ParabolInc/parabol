@@ -19,7 +19,7 @@ type Task = RecordProxy<{
   readonly threadParentId: string | null
   readonly meetingId: string | null
   readonly updatedAt: string | null
-  readonly userId: string
+  readonly userId: string | null
 }>
 
 const handleUpsertTask = (task: Task | null, store: RecordSourceSelectorProxy<any>) => {

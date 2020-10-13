@@ -68,7 +68,7 @@ const removeReflectTemplate = {
           templateId
         })
         .update({
-          isActive: false,
+          removedAt: now,
           updatedAt: now
         })
     }).run()

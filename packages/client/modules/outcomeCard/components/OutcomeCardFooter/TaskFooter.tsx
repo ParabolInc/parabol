@@ -82,7 +82,7 @@ const TaskFooter = (props: Props) => {
   }
   const atmosphere = useAtmosphere()
   const showTeam = area === USER_DASH
-  const {content, id: taskId, error, integration, tags} = task
+  const {content, id: taskId, error, integration, tags, userId} = task
   const isArchived = isTaskArchived(tags)
   const canAssign = !integration && !isArchived
   return (
@@ -102,7 +102,7 @@ const TaskFooter = (props: Props) => {
           )}
         </AvatarBlock>
         <ButtonGroup cardIsActive={cardIsActive}>
-          {integration || isArchived ? (
+          {integration || isArchived || !userId ? (
             <ButtonSpacer />
           ) : (
             <TaskFooterIntegrateToggle
@@ -149,6 +149,7 @@ export default createFragmentContainer(TaskFooter, {
       team {
         id
       }
+      userId
       ...TaskFooterTeamAssignee_task
       ...TaskFooterUserAssignee_task
       ...TaskFooterTagMenu_task

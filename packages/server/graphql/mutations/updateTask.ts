@@ -62,7 +62,7 @@ export default {
       return {error: {message: 'Task not found'}}
     }
     const {teamId, userId} = task
-    const nextUserId = inputUserId || userId
+    const nextUserId = inputUserId === undefined ? userId : inputUserId
     const nextTeamId = inputTeamId || teamId
     if (!isTeamMember(authToken, teamId) || !isTeamMember(authToken, nextTeamId)) {
       return standardError(new Error('Team not found'), {userId: viewerId})
@@ -73,7 +73,6 @@ export default {
         return standardError(new Error('Invalid user ID'), {userId: viewerId})
       }
     }
-
     // RESOLUTION
     const isSortOrderUpdate =
       updatedTask.sortOrder !== undefined && Object.keys(updatedTask).length === 2

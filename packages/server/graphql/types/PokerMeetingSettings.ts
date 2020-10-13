@@ -18,28 +18,6 @@ const PokerMeetingSettings = new GraphQLObjectType<any, GQLContext>({
   interfaces: () => [TeamMeetingSettings],
   fields: () => ({
     ...teamMeetingSettingsFields(),
-    jiraSearchQueries: {
-      type: GraphQLNonNull(GraphQLList(GraphQLNonNull(JiraSearchQuery))),
-      description:
-        'the list of suggested search queries, sorted by most recent. Guaranteed to be < 60 days old',
-      resolve: async ({id: settingsId, jiraSearchQueries}) => {
-        const expirationThresh = ms('60d')
-        const thresh = Date.now() - expirationThresh
-        const searchQueries = jiraSearchQueries || []
-        const unexpiredQueries = searchQueries.filter((query) => query.lastUsedAt > thresh)
-        if (unexpiredQueries.length < searchQueries) {
-          const r = await getRethink()
-          await r
-            .table('MeetingSettings')
-            .get(settingsId)
-            .update({
-              jiraSearchQueries: unexpiredQueries
-            })
-            .run()
-        }
-        return unexpiredQueries
-      }
-    },
     selectedTemplateId: {
       type: new GraphQLNonNull(GraphQLID),
       description: 'FK. The template that will be used to start the poker meeting'
