@@ -5,11 +5,11 @@ import useMenu from '../hooks/useMenu'
 import {PALETTE} from '../styles/paletteV2'
 import {ICON_SIZE} from '../styles/typographyV2'
 
-const DropdownIcon = styled(Icon)({
+const DropdownIcon = styled(Icon)<{hasCustomIcon: boolean}>(({hasCustomIcon}) => ({
   color: PALETTE.TEXT_MAIN,
-  padding: 12,
-  fontSize: ICON_SIZE.MD24
-})
+  padding: hasCustomIcon ? 15 : 12,
+  fontSize: hasCustomIcon ? ICON_SIZE.MD18 : ICON_SIZE.MD24
+}))
 
 const DropdownBlock = styled('div')<{disabled: boolean | undefined}>(({disabled}) => ({
   background: '#fff',
@@ -27,13 +27,14 @@ const DropdownBlock = styled('div')<{disabled: boolean | undefined}>(({disabled}
 interface Props {
   className?: string
   disabled?: boolean
+  icon?: string
   onClick: ReturnType<typeof useMenu>['togglePortal']
   onMouseEnter?: () => void
   children: ReactNode
 }
 
 const DropdownToggleV2 = forwardRef((props: Props, ref: Ref<HTMLDivElement>) => {
-  const {className, children, onClick, onMouseEnter, disabled} = props
+  const {className, children, icon, onClick, onMouseEnter, disabled} = props
   return (
     <DropdownBlock
       className={className}
@@ -43,7 +44,7 @@ const DropdownToggleV2 = forwardRef((props: Props, ref: Ref<HTMLDivElement>) => 
       onClick={disabled ? undefined : onClick}
     >
       {children}
-      {!disabled && <DropdownIcon>expand_more</DropdownIcon>}
+      {!disabled && <DropdownIcon hasCustomIcon={Boolean(icon)}>{icon || 'expand_more'}</DropdownIcon>}
     </DropdownBlock>
   )
 })

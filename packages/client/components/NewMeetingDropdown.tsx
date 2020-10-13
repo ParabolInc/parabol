@@ -8,6 +8,7 @@ import {NewMeeting} from '../types/constEnums'
 interface Props {
   className?: string
   icon: string
+  dropdownIcon?: string
   label: string
   disabled?: boolean
   onClick: ReturnType<typeof useMenu>['togglePortal']
@@ -19,10 +20,11 @@ const Dropdown = styled(DropdownToggleV2)({
 })
 
 const NewMeetingDropdown = forwardRef((props: Props, ref: any) => {
-  const {className, icon, label, disabled, onClick, onMouseEnter} = props
+  const {className, icon, dropdownIcon, label, disabled, onClick, onMouseEnter} = props
   return (
     <Dropdown
       className={className}
+      icon={dropdownIcon}
       onMouseEnter={onMouseEnter}
       onClick={onClick}
       disabled={disabled}

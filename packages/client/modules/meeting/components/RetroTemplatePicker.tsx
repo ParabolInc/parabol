@@ -31,6 +31,7 @@ const RetroTemplatePicker = (props: Props) => {
     <>
       <Dropdown
         icon={'question_answer'}
+        dropdownIcon={'edit'}
         label={templateName}
         onClick={togglePortal}
         onMouseEnter={ReflectTemplateModal.preload}
