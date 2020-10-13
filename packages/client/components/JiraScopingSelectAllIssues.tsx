@@ -29,13 +29,14 @@ interface Props {
 
 const JiraScopingSelectAllIssues = (props: Props) => {
   const {meetingId, usedJiraIssueIds, issues} = props
+  const issueIds = issues.map(issueEdge => issueEdge.node.id)
   const atmosphere = useAtmosphere()
   const {onCompleted, onError, submitMutation, submitting} = useMutationProps()
   const [unusedIssues, selectAll] = useUnusedRecords(issues, usedJiraIssueIds)
   const onClick = () => {
     if (submitting) return
     submitMutation()
-    const updateArr = selectAll === true ? Array.from(usedJiraIssueIds) : unusedIssues
+    const updateArr = selectAll === true ? issueIds : unusedIssues
     const action = selectAll === true ? AddOrDeleteEnum.DELETE : AddOrDeleteEnum.ADD
     const updates = updateArr.map((serviceTaskId) => ({
       service: TaskServiceEnum.jira,
