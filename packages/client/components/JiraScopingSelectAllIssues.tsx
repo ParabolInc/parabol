@@ -32,12 +32,12 @@ const JiraScopingSelectAllIssues = (props: Props) => {
   const issueIds = issues.map(issueEdge => issueEdge.node.id)
   const atmosphere = useAtmosphere()
   const {onCompleted, onError, submitMutation, submitting} = useMutationProps()
-  const [unusedIssues, selectAll] = useUnusedRecords(issues, usedJiraIssueIds)
+  const [unusedIssues, allSelected] = useUnusedRecords(issues, usedJiraIssueIds)
   const onClick = () => {
     if (submitting) return
     submitMutation()
-    const updateArr = selectAll === true ? issueIds : unusedIssues
-    const action = selectAll === true ? AddOrDeleteEnum.DELETE : AddOrDeleteEnum.ADD
+    const updateArr = allSelected === true ? issueIds : unusedIssues
+    const action = allSelected === true ? AddOrDeleteEnum.DELETE : AddOrDeleteEnum.ADD
     const updates = updateArr.map((serviceTaskId) => ({
       service: TaskServiceEnum.jira,
       serviceTaskId,
@@ -53,7 +53,7 @@ const JiraScopingSelectAllIssues = (props: Props) => {
   if (issues.length < 2) return null
   return (
     <Item onClick={onClick}>
-      <Checkbox active={selectAll} onClick={() => console.log('click')} />
+      <Checkbox active={allSelected} onClick={() => console.log('click')} />
       <Title>{`Select all ${issues.length} issues`}</Title>
     </Item>
   )
