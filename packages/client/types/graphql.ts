@@ -3493,6 +3493,11 @@ export interface ITemplateScaleValue {
    * The label for this value, e.g., XS, M, L
    */
   label: string;
+
+  /**
+   * true if the value of this scale is a special value, e.g., ? or X
+   */
+  isSpecial: boolean;
 }
 
 /**
@@ -8258,12 +8263,18 @@ export interface ITemplateScaleInput {
   /**
    * The numerical value for this scale value
    */
-  value: number;
+  value?: number | null;
 
   /**
    * The label for this value, e.g., XS, M, L
    */
-  label: string;
+  label?: string | null;
+
+  /**
+   * true if the value of this scale is a special value, e.g., ? or X
+   * @default false
+   */
+  isSpecial?: boolean | null;
 }
 
 /**

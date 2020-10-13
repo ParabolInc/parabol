@@ -11,6 +11,19 @@ export interface TemplateScaleInput {
   removedAt?: Date
 }
 
+const questionMarkCard = new TemplateScaleValue({
+  color: '#E55CA0',
+  label: '?',
+  value: -1,
+  isSpecial: true
+})
+const passCard = new TemplateScaleValue({
+  color: '#AC72E5',
+  label: 'X',
+  value: Math.pow(2, 31) - 1,
+  isSpecial: true
+})
+
 export default class TemplateScale {
   id: string
   createdAt = new Date()
@@ -28,7 +41,7 @@ export default class TemplateScale {
     this.id = shortid.generate()
     this.sortOrder = sortOrder
     this.name = name
-    this.values = values || ([] as TemplateScaleValue[])
+    this.values = values || ([questionMarkCard, passCard] as TemplateScaleValue[])
     this.teamId = teamId
     this.parentScaleId = parentScaleId
     this.isStarter = isStarter

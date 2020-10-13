@@ -54,14 +54,17 @@ const addPokerTemplateScaleValue = {
     if (index > endIndex + 1 || index < 0) {
       return standardError(new Error('Invalid index'), {userId: viewerId})
     }
-    const {color, label, value} = scaleValue
+    const {color, label, value, isSpecial} = scaleValue
+    if (isSpecial) {
+      return standardError(new Error('Cannot add a special scale'), {userId: viewerId})
+    }
     if (!validateColorValue(color)) {
       return standardError(new Error('Invalid scale color'), {userId: viewerId})
     }
-    if (!validateScaleLabel(label)) {
+    if (label && !validateScaleLabel(label)) {
       return standardError(new Error('Invalid scale label'), {userId: viewerId})
     }
-    if (!validateScaleValue(value)) {
+    if (value && !validateScaleValue(value)) {
       return standardError(new Error('Invalid scale value'), {userId: viewerId})
     }
 
