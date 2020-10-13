@@ -31,6 +31,7 @@
     "dev": "node scripts/dev.js",
     "lint": "lerna run --parallel lint",
     "test": "start-server-and-test start http://localhost:3000 cypress",
+    "newMutation": "yarn sucrase-node scripts/codeshift/newMutation.ts",
     "cypress": "yarn workspace parabol-cypress start",
     "typecheck": "lerna run --parallel typecheck",
     "ultrahook": "export $(grep ^ULTRAHOOK_API_KEY .env | tr -d \"'\") && ultrahook -k $ULTRAHOOK_API_KEY dev 3000"
@@ -53,6 +54,7 @@
     "husky": "^3.0.1",
     "jscodeshift": "^0.7.0",
     "lerna": "^3.19.0",
+    "minimist": "^1.2.5",
     "prettier": "^1.19.1",
     "relay-compiler": "^8.0.0",
     "relay-config": "^8.0.0",
