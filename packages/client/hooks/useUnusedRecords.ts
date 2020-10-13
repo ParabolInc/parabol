@@ -9,9 +9,9 @@ const useUnusedRecords = (
     records.forEach(({node}) => {
       if (!usedRecordIds.has(node.id)) unusedRecords.push(node.id)
     })
-    const selectAll =
+    const allSelected =
       unusedRecords.length === 0 ? true : unusedRecords.length === records.length ? false : null
-    return [unusedRecords, selectAll]
+    return [unusedRecords, allSelected]
   }, [records, usedRecordIds])
 }
 

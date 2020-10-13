@@ -29,14 +29,15 @@ interface Props {
 
 const ParabolScopingSelectAllTasks = (props: Props) => {
   const {meetingId, usedParabolTaskIds, tasks} = props
+  const taskIds = tasks.map(taskEdge => taskEdge.node.id) 
   const atmosphere = useAtmosphere()
-  const [unusedTasks, selectAll] = useUnusedRecords(tasks, usedParabolTaskIds)
+  const [unusedTasks, allSelected] = useUnusedRecords(tasks, usedParabolTaskIds)
   const {submitting, submitMutation, onCompleted, onError} = useMutationProps()
   const onClick = () => {
     if (submitting) return
     submitMutation()
-    const updateArr = selectAll ? Array.from(usedParabolTaskIds) : unusedTasks
-    const action = selectAll ? AddOrDeleteEnum.DELETE : AddOrDeleteEnum.ADD
+    const updateArr = allSelected ? Array.from(taskIds) : unusedTasks
+    const action = allSelected ? AddOrDeleteEnum.DELETE : AddOrDeleteEnum.ADD
     const updates = updateArr.map((serviceTaskId) => ({
       service: TaskServiceEnum.PARABOL,
       serviceTaskId,
@@ -51,7 +52,7 @@ const ParabolScopingSelectAllTasks = (props: Props) => {
   if (tasks.length < 2) return null
   return (
     <Item onClick={onClick}>
-      <Checkbox active={selectAll} onClick={() => console.log('click')} />
+      <Checkbox active={allSelected} />
       <Title>{`Select all ${tasks.length} tasks`}</Title>
     </Item>
   )
