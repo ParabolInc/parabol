@@ -17,12 +17,12 @@ const ButtonRow = styled(PlainButton)({
   alignItems: 'center',
   display: 'flex',
   paddingTop: 12,
-  paddingLeft: 12,
+  paddingLeft: 14,
   width: NewMeeting.CONTROLS_WIDTH
 })
 
 const Label = styled('div')({
-  color: PALETTE.TEXT_GRAY,
+  color: PALETTE.TEXT_MAIN,
   cursor: 'pointer',
   fontSize: 14,
   fontWeight: 600,
@@ -31,13 +31,14 @@ const Label = styled('div')({
   userSelect: 'none'
 })
 
-const StyledCheckbox = styled(Checkbox)({
+const StyledCheckbox = styled(Checkbox)<{active: boolean}>(({active}) => ({
+  color: active ? PALETTE.LINK_BLUE : PALETTE.TEXT_MAIN,
   fontSize: ICON_SIZE.MD24,
-  marginRight: 8,
+  marginRight: 4,
   textAlign: 'center',
   userSelect: 'none',
   width: ICON_SIZE.MD24
-})
+}))
 
 interface Props {
   settings: NewMeetingSettingsToggleCheckIn_settings
