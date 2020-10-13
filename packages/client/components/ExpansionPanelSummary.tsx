@@ -16,7 +16,10 @@ const Label = styled('div')({
   display: 'flex',
   fontSize: 14,
   fontWeight: 600,
-  justifyContent: 'center'
+  justifyContent: 'center',
+  ':hover': {
+    color: PALETTE.LINK_BLUE_HOVER
+  }
 })
 
 interface Props {
