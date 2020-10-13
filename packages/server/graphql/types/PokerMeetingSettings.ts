@@ -6,9 +6,6 @@ import getPublicScoredTemplates from '../queries/helpers/getPublicScoredTemplate
 import getScoredTemplates from '../queries/helpers/getScoredTemplates'
 import resolveSelectedTemplate from '../queries/helpers/resolveSelectedTemplate'
 import TeamMeetingSettings, {teamMeetingSettingsFields} from './TeamMeetingSettings'
-import JiraSearchQuery from './JiraSearchQuery'
-import ms from 'ms'
-import getRethink from '../../database/rethinkDriver'
 import TemplateScale from './TemplateScale'
 import PokerTemplate, {PokerTemplateConnection} from './PokerTemplate'
 
