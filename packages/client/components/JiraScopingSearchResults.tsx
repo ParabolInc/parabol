@@ -43,7 +43,9 @@ interface Props {
 
 const JiraScopingSearchResults = (props: Props) => {
   const {viewer, meeting} = props
-  const {team} = viewer
+  const {team, teamMember} = viewer
+  const {suggestedIntegrations} = teamMember
+  const {items} = suggestedIntegrations
   const {jiraIssues} = team!
   const {error, edges} = jiraIssues
   const issueCount = edges.length
@@ -88,6 +90,7 @@ const JiraScopingSearchResults = (props: Props) => {
           isEditing={isEditing}
           meeting={meeting}
           setIsEditing={setIsEditing}
+          suggestedIntegrations={items}
           viewer={viewer}
         />
         {edges.map(({node}) => {
@@ -147,6 +150,24 @@ export default createFragmentContainer(JiraScopingSearchResults, {
               ...JiraScopingSearchResultItem_issue
               id
             }
+          }
+        }
+      }
+      # teamMember(teamId: $teamId) {
+      #   preferredName
+      #   ...JiraScopingSearchResultItem_suggestedIntegrations
+      # }
+
+      teamMember(teamId: $teamId) {
+        preferredName
+        suggestedIntegrations {
+          items {
+            ... on SuggestedIntegrationJira {
+              projectName
+              projectKey
+              cloudId
+            }
+            # ...JiraScopingSearchResultItem_suggestedIntegrations @relay(mask: false)
           }
         }
       }

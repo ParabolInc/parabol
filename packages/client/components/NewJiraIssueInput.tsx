@@ -59,11 +59,12 @@ interface Props {
   isEditing: boolean
   meeting: NewJiraIssueInput_meeting
   setIsEditing: (isEditing: boolean) => void
+  suggestedIntegrations: any
   viewer: NewJiraIssueInput_viewer
 }
 
 const NewJiraIssueInput = (props: Props) => {
-  const {isEditing, meeting, setIsEditing, viewer} = props
+  const {isEditing, meeting, setIsEditing, suggestedIntegrations, viewer} = props
   const {id: meetingId} = meeting
   const {team} = viewer
   const {id: teamId, jiraIssues} = team!
@@ -74,7 +75,14 @@ const NewJiraIssueInput = (props: Props) => {
 
   const jiraIssueTopOfList = edges[0].node
   const {cloudName, key} = jiraIssueTopOfList
-  const cloudId = jiraIssueTopOfList.id.split(':')[0]
+  const keyName = key.split('-')[0]
+
+  // curently, all suggestedIntegrations have the same cloudId so using cloudName instead
+  const suggestedIntegration = suggestedIntegrations.find(
+    (integration) => integration.projectKey === keyName
+  )
+  // const cloudId = jiraIssueTopOfList.id.split(':')[0]
+  const {cloudId} = suggestedIntegration
   const newProjectKey = useMemo(() => {
     if (!key) return null
     const splitKey = key.split('-')
@@ -97,7 +105,7 @@ const NewJiraIssueInput = (props: Props) => {
     if (!newIssueText.length || !newProjectKey) return
     const variables = {
       content: newIssueText,
-      cloudId,
+      cloudId: suggestedIntegration.cloudId,
       cloudName,
       projectKey: newProjectKey,
       teamId,
@@ -114,7 +122,7 @@ const NewJiraIssueInput = (props: Props) => {
         }
       ]
     }
-    UpdatePokerScopeMutation(atmosphere, pokerScopeVariables, {onError, onCompleted})
+    // UpdatePokerScopeMutation(atmosphere, pokerScopeVariables, {onError, onCompleted})
   }
 
   if (!isEditing) return null

@@ -8925,6 +8925,11 @@ export interface IJiraCreateIssuePayload {
   error: IStandardMutationError | null;
 
   /**
+   * The name of the jira cloud where the issue lives
+   */
+  cloudName: string;
+
+  /**
    * The key of the issue as found in Jira
    */
   key: string;

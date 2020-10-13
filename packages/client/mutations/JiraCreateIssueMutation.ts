@@ -1,21 +1,15 @@
 import {commitMutation} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import {
-  AddOrDeleteEnum,
-  IJiraCreateIssueOnMutationArguments,
-  TaskServiceEnum
-} from '../types/graphql'
-import createProxyRecord from '../utils/relay/createProxyRecord'
+import {IJiraCreateIssueOnMutationArguments} from '../types/graphql'
 import Atmosphere from '../Atmosphere'
 import {LocalHandlers, SharedUpdater} from '../types/relayMutations'
-import getJiraIssuesConn from './connections/getJiraIssuesConn'
-import {ConnectionHandler} from 'relay-runtime'
 import {JiraCreateIssueMutation_meeting} from '~/__generated__/JiraCreateIssueMutation_meeting.graphql'
-import UpdatePokerScopeMutation from './UpdatePokerScopeMutation'
-import AtlassianManager from '~/utils/AtlassianManager'
+import handleJiraCreateIssue from './handlers/handleJiraCreateIssue'
+import createProxyRecord from '~/utils/relay/createProxyRecord'
 
 graphql`
   fragment JiraCreateIssueMutation_meeting on JiraCreateIssuePayload {
+    cloudName
     key
     summary
     teamId
@@ -47,51 +41,17 @@ const mutation = graphql`
     }
   }
 `
-
-interface HandleJiraCreateVariables {
-  key: string
-  summary: string
-  teamId: string
-  url: string
-}
-
-const getJiraIssueId = (cloudId: string, projectKey: string) => {
-  return `${cloudId}:${projectKey}`
-}
-
-const handleJiraCreateIssue = ({key, teamId, summary, url}: HandleJiraCreateVariables, store) => {
-  const team = store.get(teamId)
-  if (!team) return
-  const jiraIssuesConn = getJiraIssuesConn(team)
-  // const key = jiraIssueId.split(':')[1] || ''
-  const newJiraIssue = {
-    // id: jiraIssueId,
-    key,
-    summary,
-    url
-  }
-  const jiraIssueProxy = createProxyRecord(store, 'JiraIssue', newJiraIssue)
-  const now = new Date().toISOString()
-  if (!jiraIssuesConn) return
-  const newEdge = ConnectionHandler.createEdge(
-    store,
-    jiraIssuesConn,
-    jiraIssueProxy,
-    'JiraIssueEdge'
-  )
-  newEdge.setValue(now, 'cursor')
-  ConnectionHandler.insertEdgeBefore(jiraIssuesConn, newEdge)
-}
-
 export const jiraCreateIssueUpdater: SharedUpdater<JiraCreateIssueMutation_meeting> = (
   payload,
   {store}
 ) => {
-  const key = payload.getValue('key') as string
+  const cloudName = payload.getValue('cloudName')
+  const key = payload.getValue('key')
   const summary = payload.getValue('summary')
   const teamId = payload.getValue('teamId')
   const url = payload.getValue('url')
   const jiraIssueVariables = {
+    cloudName,
     key,
     summary,
     teamId,
@@ -119,6 +79,7 @@ const JiraCreateIssueMutation = (
       const {cloudName, teamId, projectKey, content} = variables
       const url = `https://${cloudName}.atlassian.net/browse/${projectKey}`
       const jiraIssueVariables = {
+        cloudName,
         key: projectKey,
         summary: content,
         url,
