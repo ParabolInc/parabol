@@ -25,7 +25,7 @@ const initializeDefaultSearchQueries = (store, payload): void => {
   const meetingId = payload.dataID
   const meeting = store.get(meetingId)!
 
-  for (const [_, data] of Object.entries(lookup)) {
+  for (const [, data] of Object.entries(lookup)) {
     const {meetingPropertyName, defaultQuery} = data
     const existingQuery = meeting.getLinkedRecord(meetingPropertyName)
     if (!existingQuery) {
