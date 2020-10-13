@@ -2,10 +2,18 @@ import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {ParabolScopingSearchBar_meeting} from '../__generated__/ParabolScopingSearchBar_meeting.graphql'
-import ParabolScopingSearchHistoryToggle from './ParabolScopingSearchHistoryToggle'
 import ParabolScopingSearchInput from './ParabolScopingSearchInput'
 import ParabolScopingSearchFilterToggle from './ParabolScopingSearchFilterToggle'
 import styled from '@emotion/styled'
+import Icon from './Icon'
+import {PALETTE} from '../styles/paletteV2'
+import {ICON_SIZE} from '../styles/typographyV2'
+
+const SearchIcon = styled(Icon)({
+  color: PALETTE.TEXT_GRAY,
+  fontSize: ICON_SIZE.MD24,
+  marginRight: 12,
+})
 
 const SearchBar = styled('div')({
   alignItems: 'center',
@@ -21,7 +29,7 @@ const ParabolScopingSearchBar = (props: Props) => {
   const {meeting} = props
   return (
     <SearchBar>
-      <ParabolScopingSearchHistoryToggle />
+      <SearchIcon>search</SearchIcon>
       <ParabolScopingSearchInput meeting={meeting} />
       <ParabolScopingSearchFilterToggle meeting={meeting} />
     </SearchBar>
