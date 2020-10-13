@@ -8,6 +8,10 @@ const JiraCreateIssuePayload = new GraphQLObjectType<any, GQLContext>({
     error: {
       type: StandardMutationError
     },
+    cloudId: {
+      type: GraphQLNonNull(GraphQLID),
+      description: 'The ID of the jira cloud where the issue lives'
+    },
     cloudName: {
       type: GraphQLNonNull(GraphQLString),
       description: 'The name of the jira cloud where the issue lives'
@@ -15,6 +19,10 @@ const JiraCreateIssuePayload = new GraphQLObjectType<any, GQLContext>({
     key: {
       type: GraphQLNonNull(GraphQLString),
       description: 'The key of the issue as found in Jira'
+    },
+    meetingId: {
+      type: GraphQLID,
+      description: 'The id of the meeting where the Jira issue is being created'
     },
     summary: {
       type: GraphQLNonNull(GraphQLString),

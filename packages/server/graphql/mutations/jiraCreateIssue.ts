@@ -47,7 +47,6 @@ export default {
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
     const viewerId = getUserId(authToken)
-    console.log('teamId', teamId)
 
     // AUTH
     if (!isTeamMember(authToken, teamId)) {
@@ -69,10 +68,9 @@ export default {
       .get('freshAtlassianAccessToken')
       .load({teamId, userId: viewerId})
     const manager = new AtlassianServerManager(accessToken)
-    const keyName = projectKey.split('-')[0]
     const [sites, issueMetaRes, description] = await Promise.all([
       manager.getAccessibleResources(),
-      manager.getCreateMeta(cloudId, [keyName]),
+      manager.getCreateMeta(cloudId, [projectKey]),
       manager.convertMarkdownToADF(summary)
     ] as const)
     if ('message' in sites) {
@@ -86,7 +84,7 @@ export default {
     }
     const {projects} = issueMetaRes
     // should always be the first and only item in the project arr
-    const project = projects.find((project) => project.key === keyName)!
+    const project = projects.find((project) => project.key === projectKey)!
     const {issuetypes} = project
     const bestType = issuetypes.find((type) => type.name === 'Task') || issuetypes[0]
     const payload = {
@@ -100,7 +98,7 @@ export default {
         id: bestType.id
       }
     }
-    const res = await manager.createIssue(cloudId, keyName, payload)
+    const res = await manager.createIssue(cloudId, projectKey, payload)
     if ('message' in res) {
       return standardError(new Error(res.message), {userId: viewerId})
     }
@@ -112,6 +110,7 @@ export default {
       cloudId,
       cloudName: cloud.name,
       key: res.key,
+      meetingId,
       summary,
       teamId
     }

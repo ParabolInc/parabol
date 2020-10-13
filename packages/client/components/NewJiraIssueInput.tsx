@@ -75,52 +75,41 @@ const NewJiraIssueInput = (props: Props) => {
 
   const jiraIssueTopOfList = edges[0].node
   const {cloudName, key} = jiraIssueTopOfList
+  console.log('NewJiraIssueInput -> jiraIssueTopOfList', jiraIssueTopOfList)
   const keyName = key.split('-')[0]
   // curently, all suggestedIntegrations have the same cloudId so using cloudName instead
-  const suggestedIntegration = suggestedIntegrations.find(
-    (integration) => integration.projectKey === keyName
-  )
-  const {cloudId} = suggestedIntegration
-  const newProjectKey = useMemo(() => {
-    if (!key) return null
-    const splitKey = key.split('-')
-    if (splitKey.length <= 1) return key
-    const keyName = splitKey[0]
-    let largestKeyCount = splitKey[1]
+  const suggestedIntegration = suggestedIntegrations.find(({projectKey}) => projectKey === keyName)
+  const {cloudId, projectKey} = suggestedIntegration
+  // const newProjectKey = useMemo(() => {
+  //   if (!key) return null
+  //   const splitKey = key.split('-')
+  //   if (splitKey.length <= 1) return key
+  //   const keyName = splitKey[0]
+  //   let largestKeyCount = splitKey[1]
 
-    edges.forEach(({node}) => {
-      const [nodeKeyName, nodeKeyCount] = node.key.split('-')
-      if (nodeKeyName === keyName && parseInt(nodeKeyCount) > parseInt(largestKeyCount)) {
-        largestKeyCount = nodeKeyCount
-      }
-    })
-    return `${keyName}-${parseInt(largestKeyCount) + 1}`
-  }, [edges])
+  //   edges.forEach(({node}) => {
+  //     const [nodeKeyName, nodeKeyCount] = node.key.split('-')
+  //     if (nodeKeyName === keyName && parseInt(nodeKeyCount) > parseInt(largestKeyCount)) {
+  //       largestKeyCount = nodeKeyCount
+  //     }
+  //   })
+  //   return `${keyName}-${parseInt(largestKeyCount) + 1}`
+  // }, [edges])
 
   const handleCreateNewIssue = (event) => {
     event.preventDefault()
     setIsEditing(false)
-    if (!newIssueText.length || !newProjectKey) return
+    if (!newIssueText.length || !projectKey) return
     const variables = {
       cloudId,
       cloudName,
-      projectKey: newProjectKey,
+      projectKey,
       summary: newIssueText,
       teamId,
       meetingId
     }
     JiraCreateIssueMutation(atmosphere, variables, {onError, onCompleted})
-    const pokerScopeVariables = {
-      meetingId,
-      updates: [
-        {
-          service: TaskServiceEnum.jira,
-          serviceTaskId: `${cloudId}:${newProjectKey}`,
-          action: AddOrDeleteEnum.ADD
-        }
-      ]
-    }
-    UpdatePokerScopeMutation(atmosphere, pokerScopeVariables, {onError, onCompleted})
+    setNewIssueText('')
   }
 
   if (!isEditing) return null
@@ -137,7 +126,7 @@ const NewJiraIssueInput = (props: Props) => {
             type='text'
           />
         </Form>
-        <StyledLink>{newProjectKey}</StyledLink>
+        <StyledLink>{projectKey}</StyledLink>
       </Issue>
     </Item>
   )

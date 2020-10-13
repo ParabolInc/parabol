@@ -23,7 +23,7 @@ const handleJiraCreateIssue = (
     summary,
     url
   }
-  const jiraIssueProxy = createProxyRecord(store, 'jiraIssue', newJiraIssue)
+  const jiraIssueProxy = createProxyRecord(store, 'JiraIssue', newJiraIssue)
   const jiraIssuesConn = getJiraIssuesConn(team)
   const now = new Date().toISOString()
   if (!jiraIssuesConn) return

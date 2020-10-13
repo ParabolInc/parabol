@@ -1,16 +1,23 @@
 import {commitMutation} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import {IJiraCreateIssueOnMutationArguments} from '../types/graphql'
+import {
+  AddOrDeleteEnum,
+  IJiraCreateIssueOnMutationArguments,
+  TaskServiceEnum
+} from '../types/graphql'
 import Atmosphere from '../Atmosphere'
 import {LocalHandlers, SharedUpdater} from '../types/relayMutations'
 import {JiraCreateIssueMutation_meeting} from '~/__generated__/JiraCreateIssueMutation_meeting.graphql'
 import handleJiraCreateIssue from './handlers/handleJiraCreateIssue'
-import createProxyRecord from '~/utils/relay/createProxyRecord'
+import {JiraCreateIssueMutation as TJiraCreateIssueMutation} from '~/__generated__/JiraCreateIssueMutation.graphql'
+import UpdatePokerScopeMutation from './UpdatePokerScopeMutation'
 
 graphql`
   fragment JiraCreateIssueMutation_meeting on JiraCreateIssuePayload {
+    cloudId
     cloudName
     key
+    meetingId
     summary
     teamId
     url
@@ -65,8 +72,7 @@ const JiraCreateIssueMutation = (
   variables: IJiraCreateIssueOnMutationArguments,
   {onCompleted, onError}: LocalHandlers
 ) => {
-  return commitMutation<any>(atmosphere, {
-    // TJiraCreateIssueMutation
+  return commitMutation<TJiraCreateIssueMutation>(atmosphere, {
     mutation,
     variables,
     updater: (store) => {
@@ -78,16 +84,53 @@ const JiraCreateIssueMutation = (
     optimisticUpdater: (store) => {
       const {cloudName, teamId, projectKey, summary} = variables
       const url = `https://${cloudName}.atlassian.net/browse/${projectKey}`
+      const team = store.get(teamId)
+      const jiraIssues = team?.getLinkedRecord('jiraIssues', {
+        first: 100,
+        isJQL: false
+      })
+      const edges = jiraIssues?.getLinkedRecords('edges')
+
+      let largestKeyCount = 1
+      edges?.forEach((edge) => {
+        const jiraIssue = edge.getLinkedRecord('node')
+        const key = jiraIssue?.getValue('key') as string
+        const keyCountStr = key.split('-')[1]
+        const keyCount = parseInt(keyCountStr)
+        if (keyCount > largestKeyCount) {
+          largestKeyCount = keyCount
+        }
+      })
       const jiraIssueVariables = {
         cloudName,
-        key: projectKey,
+        key: `TES-${largestKeyCount + 1}`,
         summary,
         url,
         teamId
       }
       handleJiraCreateIssue(jiraIssueVariables, store)
     },
-    onCompleted,
+    onCompleted: (res, errors) => {
+      if (onCompleted) {
+        onCompleted(res, errors)
+      }
+      const payload = res.jiraCreateIssue
+      if (payload && onCompleted && onError) {
+        const {cloudId, key, meetingId} = payload
+        const pokerScopeVariables = {
+          meetingId,
+          updates: [
+            {
+              service: TaskServiceEnum.jira,
+              serviceTaskId: `${cloudId}:${key}`,
+              action: AddOrDeleteEnum.ADD
+            }
+          ]
+        }
+        console.log('pokerScopeVariables', pokerScopeVariables)
+        UpdatePokerScopeMutation(atmosphere, pokerScopeVariables, {onError, onCompleted})
+      }
+    },
     onError
   })
 }
