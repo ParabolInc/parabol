@@ -5,7 +5,7 @@ import {PASCAL_MUTATIONMutation as TPASCAL_MUTATIONMutation} from '../__generate
 
 graphql`
   fragment PASCAL_MUTATIONMutation_meeting on PASCAL_MUTATIONSuccess {
-    <<ADD FIELDS>>
+
   }
 `
 

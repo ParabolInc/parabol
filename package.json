@@ -31,6 +31,7 @@
     "dev": "node scripts/dev.js",
     "lint": "lerna run --parallel lint",
     "test": "start-server-and-test start http://localhost:3000 cypress",
+    "newMutation": "yarn sucrase-node scripts/codeshift/newMutation.ts",
     "cypress": "yarn workspace parabol-cypress start",
     "typecheck": "lerna run --parallel typecheck",
     "ultrahook": "export $(grep ^ULTRAHOOK_API_KEY .env | tr -d \"'\") && ultrahook -k $ULTRAHOOK_API_KEY dev 3000"

@@ -148,7 +148,7 @@ const addToClientSubscription = (mutationName: string, subscription?: string) =>
   const subStr = fs.readFileSync(subPath, 'utf-8')
   const typename = '__typename'
   const nextStr = subStr.replace(typename, typename + '\n' + fragment)
-  console.log(nextStr)
+  fs.writeFileSync(subPath, nextStr)
 }
 const newMutation = () => {
   const argv = parseArgs(process.argv.slice(2), {
