@@ -17,6 +17,6 @@
   "ignoreTestFiles": [
     "archivedTasks*",
     "userTaskView*",
-    "me.ts"
+    "me*"
   ]
 }
