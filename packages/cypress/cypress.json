@@ -13,5 +13,9 @@
   "reporter": "junit",
   "reporterOptions": {
     "mochaFile": "results/test-result-[hash].xml"
-  }
+  },
+  "ignoreTestFiles": [
+    "archivedTasks*",
+    "userTaskView*"
+  ]
 }
