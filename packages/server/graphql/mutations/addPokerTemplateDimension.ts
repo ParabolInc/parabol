@@ -10,7 +10,7 @@ import AddPokerTemplateDimensionPayload from '../types/AddPokerTemplateDimension
 
 const addPokerTemplateDimension = {
   description: 'Add a new dimension for the poker template',
-  type: AddPokerTemplateDimensionPayload,
+  type: new GraphQLNonNull(AddPokerTemplateDimensionPayload),
   args: {
     templateId: {
       type: new GraphQLNonNull(GraphQLID)

@@ -9,7 +9,7 @@ import RenamePokerTemplatePayload from '../types/RenamePokerTemplatePayload'
 
 const renamePokerTemplate = {
   description: 'Rename a Poker template',
-  type: RenamePokerTemplatePayload,
+  type: new GraphQLNonNull(RenamePokerTemplatePayload),
   args: {
     templateId: {
       type: new GraphQLNonNull(GraphQLID)

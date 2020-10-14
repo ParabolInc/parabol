@@ -14,7 +14,7 @@ import {
 
 const updatePokerTemplateScaleValue = {
   description: 'Update a scale value for a scale in a poker template',
-  type: UpdatePokerTemplateScaleValuePayload,
+  type: new GraphQLNonNull(UpdatePokerTemplateScaleValuePayload),
   args: {
     scaleId: {
       type: new GraphQLNonNull(GraphQLID)

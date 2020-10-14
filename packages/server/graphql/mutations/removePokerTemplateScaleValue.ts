@@ -8,7 +8,7 @@ import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 
 const removePokerTemplateScaleValue = {
   description: 'Remove a scale value from the scale of a template',
-  type: RemovePokerTemplateScaleValuePayload,
+  type: new GraphQLNonNull(RemovePokerTemplateScaleValuePayload),
   args: {
     scaleId: {
       type: new GraphQLNonNull(GraphQLID)

@@ -14,7 +14,7 @@ import {
 
 const addPokerTemplateScaleValue = {
   description: 'Add a new scale value for a scale in a poker template',
-  type: AddPokerTemplateScaleValuePayload,
+  type: new GraphQLNonNull(AddPokerTemplateScaleValuePayload),
   args: {
     scaleId: {
       type: new GraphQLNonNull(GraphQLID)

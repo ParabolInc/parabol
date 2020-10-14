@@ -10,8 +10,8 @@ import standardError from '../../utils/standardError'
 import AddPokerTemplatePayload from '../types/AddPokerTemplatePayload'
 
 const addPokerTemplate = {
-  description: 'Add a new template full of dimensions',
-  type: AddPokerTemplatePayload,
+  description: 'Add a new poker template with a default dimension created',
+  type: new GraphQLNonNull(AddPokerTemplatePayload),
   args: {
     parentTemplateId: {
       type: GraphQLID

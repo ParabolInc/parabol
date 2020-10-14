@@ -8,7 +8,7 @@ import AddPokerTemplateDimensionPayload from '../types/AddPokerTemplateDimension
 
 const updatePokerTemplateDimensionScale = {
   description: 'Update the scale used for a dimension in a template',
-  type: AddPokerTemplateDimensionPayload,
+  type: new GraphQLNonNull(AddPokerTemplateDimensionPayload),
   args: {
     dimensionId: {
       type: new GraphQLNonNull(GraphQLID)

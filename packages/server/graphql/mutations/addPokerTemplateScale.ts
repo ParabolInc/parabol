@@ -10,7 +10,7 @@ import AddPokerTemplateScalePayload from '../types/AddPokerTemplateScalePayload'
 
 const addPokerTemplateScale = {
   description: 'Add a new scale for the poker template',
-  type: AddPokerTemplateScalePayload,
+  type: new GraphQLNonNull(AddPokerTemplateScalePayload),
   args: {
     parentScaleId: {
       type: GraphQLID

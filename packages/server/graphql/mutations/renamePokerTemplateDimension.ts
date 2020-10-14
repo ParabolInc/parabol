@@ -8,7 +8,7 @@ import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 
 const renamePokerTemplateDimension = {
   description: 'Rename a poker template dimension',
-  type: RenamePokerTemplateDimensionPayload,
+  type: new GraphQLNonNull(RenamePokerTemplateDimensionPayload),
   args: {
     dimensionId: {
       type: new GraphQLNonNull(GraphQLID)

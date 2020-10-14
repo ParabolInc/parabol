@@ -8,7 +8,7 @@ import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 
 const removePokerTemplateDimension = {
   description: 'Remove a dimension from a template',
-  type: RemovePokerTemplateDimensionPayload,
+  type: new GraphQLNonNull(RemovePokerTemplateDimensionPayload),
   args: {
     dimensionId: {
       type: new GraphQLNonNull(GraphQLID)

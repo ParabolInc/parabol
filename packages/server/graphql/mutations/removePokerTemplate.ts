@@ -9,7 +9,7 @@ import RemovePokerTemplatePayload from '../types/RemovePokerTemplatePayload'
 
 const removePokerTemplate = {
   description: 'Remove a poker meeting template',
-  type: RemovePokerTemplatePayload,
+  type: new GraphQLNonNull(RemovePokerTemplatePayload),
   args: {
     templateId: {
       type: new GraphQLNonNull(GraphQLID)

@@ -6705,24 +6705,24 @@ export interface IMutation {
   addComment: AddCommentPayload;
 
   /**
-   * Add a new template full of dimensions
+   * Add a new poker template with a default dimension created
    */
-  addPokerTemplate: IAddPokerTemplatePayload | null;
+  addPokerTemplate: IAddPokerTemplatePayload;
 
   /**
    * Add a new dimension for the poker template
    */
-  addPokerTemplateDimension: IAddPokerTemplateDimensionPayload | null;
+  addPokerTemplateDimension: IAddPokerTemplateDimensionPayload;
 
   /**
    * Add a new scale for the poker template
    */
-  addPokerTemplateScale: IAddPokerTemplateScalePayload | null;
+  addPokerTemplateScale: IAddPokerTemplateScalePayload;
 
   /**
    * Add a new scale value for a scale in a poker template
    */
-  addPokerTemplateScaleValue: IAddPokerTemplateScaleValuePayload | null;
+  addPokerTemplateScaleValue: IAddPokerTemplateScaleValuePayload;
 
   /**
    * Add or remove a reactji to a reflection
@@ -6928,7 +6928,7 @@ export interface IMutation {
   /**
    * Move a template dimension
    */
-  movePokerTemplateDimension: IMovePokerTemplateDimensionPayload | null;
+  movePokerTemplateDimension: IMovePokerTemplateDimensionPayload;
 
   /**
    * Move a reflect template
@@ -7009,7 +7009,7 @@ export interface IMutation {
   /**
    * Remove a poker meeting template
    */
-  removePokerTemplate: IRemovePokerTemplatePayload | null;
+  removePokerTemplate: IRemovePokerTemplatePayload;
 
   /**
    * Remove a template full of prompts
@@ -7024,7 +7024,7 @@ export interface IMutation {
   /**
    * Remove a dimension from a template
    */
-  removePokerTemplateDimension: IRemovePokerTemplateDimensionPayload | null;
+  removePokerTemplateDimension: IRemovePokerTemplateDimensionPayload;
 
   /**
    * Rename a meeting
@@ -7034,7 +7034,7 @@ export interface IMutation {
   /**
    * Rename a Poker template
    */
-  renamePokerTemplate: IRenamePokerTemplatePayload | null;
+  renamePokerTemplate: IRenamePokerTemplatePayload;
 
   /**
    * Rename a reflect template
@@ -7049,22 +7049,22 @@ export interface IMutation {
   /**
    * Rename a poker template dimension
    */
-  renamePokerTemplateDimension: IRenamePokerTemplateDimensionPayload | null;
+  renamePokerTemplateDimension: IRenamePokerTemplateDimensionPayload;
 
   /**
    * Rename a poker template scale
    */
-  renamePokerTemplateScale: IRenamePokerTemplateScalePayload | null;
+  renamePokerTemplateScale: IRenamePokerTemplateScalePayload;
 
   /**
    * Remove a scale from a template
    */
-  removePokerTemplateScale: IRemovePokerTemplateScalePayload | null;
+  removePokerTemplateScale: IRemovePokerTemplateScalePayload;
 
   /**
    * Remove a scale value from the scale of a template
    */
-  removePokerTemplateScaleValue: IRemovePokerTemplateScaleValuePayload | null;
+  removePokerTemplateScaleValue: IRemovePokerTemplateScaleValuePayload;
 
   /**
    * Remove a reflection
@@ -7175,12 +7175,12 @@ export interface IMutation {
   /**
    * Update the scale used for a dimension in a template
    */
-  updatePokerTemplateDimensionScale: IAddPokerTemplateDimensionPayload | null;
+  updatePokerTemplateDimensionScale: IAddPokerTemplateDimensionPayload;
 
   /**
    * Update a scale value for a scale in a poker template
    */
-  updatePokerTemplateScaleValue: IUpdatePokerTemplateScaleValuePayload | null;
+  updatePokerTemplateScaleValue: IUpdatePokerTemplateScaleValuePayload;
 
   /**
    * Update a Team's Icebreaker in a new meeting

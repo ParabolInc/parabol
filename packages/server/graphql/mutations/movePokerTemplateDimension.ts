@@ -8,7 +8,7 @@ import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 
 const movePokerTemplateDimension = {
   description: 'Move a template dimension',
-  type: MovePokerTemplateDimensionPayload,
+  type: new GraphQLNonNull(MovePokerTemplateDimensionPayload),
   args: {
     dimensionId: {
       type: new GraphQLNonNull(GraphQLID)

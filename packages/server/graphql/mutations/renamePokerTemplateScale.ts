@@ -8,7 +8,7 @@ import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 
 const renamePokerTemplateScale = {
   description: 'Rename a poker template scale',
-  type: RenamePokerTemplateScalePayload,
+  type: new GraphQLNonNull(RenamePokerTemplateScalePayload),
   args: {
     scaleId: {
       type: new GraphQLNonNull(GraphQLID)
