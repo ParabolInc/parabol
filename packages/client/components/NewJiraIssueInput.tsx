@@ -1,4 +1,13 @@
-import React, {forwardRef, Ref, useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import React, {
+  FormEvent,
+  forwardRef,
+  Ref,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState
+} from 'react'
 import graphql from 'babel-plugin-relay/macro'
 import styled from '@emotion/styled'
 import Checkbox from './Checkbox'
@@ -65,15 +74,15 @@ interface Props {
   isEditing: boolean
   meeting: NewJiraIssueInput_meeting
   setIsEditing: (isEditing: boolean) => void
-  suggestedIntegrations: any
   viewer: NewJiraIssueInput_viewer
 }
 
 const NewJiraIssueInput = (props: Props) => {
-  const {isEditing, meeting, setIsEditing, suggestedIntegrations, viewer} = props
+  const {isEditing, meeting, setIsEditing, viewer} = props
   const {id: meetingId} = meeting
-  const {id: userId, team} = viewer
+  const {id: userId, team, teamMember} = viewer
   const {id: teamId, jiraIssues} = team!
+  const {suggestedIntegrations} = teamMember
   const {edges} = jiraIssues
   const [newIssueText, setNewIssueText] = useState('')
   const atmosphere = useAtmosphere()
@@ -91,6 +100,7 @@ const NewJiraIssueInput = (props: Props) => {
 
   const projectKey = suggestedIntegration?.projectKey
   const [selectedProjectKey, setSelectedProjectKey] = useState(projectKey)
+  const {originRef, menuPortal, menuProps, openPortal} = useMenu(MenuPosition.UPPER_RIGHT)
   // const newProjectKey = useMemo(() => {
   //   if (!key) return null
   //   const splitKey = key.split('-')
@@ -107,8 +117,8 @@ const NewJiraIssueInput = (props: Props) => {
   //   return `${keyName}-${parseInt(largestKeyCount) + 1}`
   // }, [edges])
 
-  const handleCreateNewIssue = (event) => {
-    event.preventDefault()
+  const handleCreateNewIssue = (e: FormEvent) => {
+    e.preventDefault()
     setIsEditing(false)
     if (!newIssueText.length || !projectKey) return
     const variables = {
@@ -127,14 +137,13 @@ const NewJiraIssueInput = (props: Props) => {
     setSelectedProjectKey(projectKey)
   }
 
-  const {originRef, menuPortal, menuProps, openPortal} = useMenu(MenuPosition.UPPER_RIGHT)
-
   if (!isEditing) return null
 
   return (
     <>
       <Item>
         <Checkbox active />
+
         <Issue>
           <Form onSubmit={handleCreateNewIssue}>
             <SearchInput
@@ -190,6 +199,18 @@ export default createFragmentContainer(NewJiraIssueInput, {
               cloudId
               cloudName
               key
+            }
+          }
+        }
+      }
+      teamMember(teamId: $teamId) {
+        suggestedIntegrations {
+          ...NewJiraIssueMenu_suggestedIntegrations
+          items {
+            ... on SuggestedIntegrationJira {
+              projectKey
+              cloudId
+              id
             }
           }
         }

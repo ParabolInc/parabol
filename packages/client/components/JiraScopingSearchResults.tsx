@@ -44,7 +44,7 @@ interface Props {
 const JiraScopingSearchResults = (props: Props) => {
   const {viewer, meeting} = props
   const {team, teamMember} = viewer
-  const {suggestedIntegrations} = teamMember
+  // const {suggestedIntegrations} = teamMember
   const {jiraIssues} = team!
   const {error, edges} = jiraIssues
   const issueCount = edges.length
@@ -89,7 +89,6 @@ const JiraScopingSearchResults = (props: Props) => {
           isEditing={isEditing}
           meeting={meeting}
           setIsEditing={setIsEditing}
-          suggestedIntegrations={suggestedIntegrations}
           viewer={viewer}
         />
         {edges.map(({node}) => {
@@ -132,6 +131,7 @@ export default createFragmentContainer(JiraScopingSearchResults, {
   `,
   viewer: graphql`
     fragment JiraScopingSearchResults_viewer on User {
+      id
       ...NewJiraIssueInput_viewer
       team(teamId: $teamId) {
         jiraIssues(
@@ -157,23 +157,22 @@ export default createFragmentContainer(JiraScopingSearchResults, {
       #   ...JiraScopingSearchResultItem_suggestedIntegrations
       # }
 
-      teamMember(teamId: $teamId) {
-        preferredName
-        suggestedIntegrations {
-          hasMore
-          items {
-            ... on SuggestedIntegrationJira {
-              projectName
-              projectKey
-              cloudId
-              id
-              service
-            }
-            # ...JiraScopingSearchResultItem_suggestedIntegrations @relay(mask: false)
-          }
-        }
-      }
-      id
+      # teamMember(teamId: $teamId) {
+      #   preferredName
+      #   suggestedIntegrations {
+      #     hasMore
+      #     items {
+      #       ... on SuggestedIntegrationJira {
+      #         projectName
+      #         projectKey
+      #         cloudId
+      #         id
+      #         service
+      #       }
+      #       # ...JiraScopingSearchResultItem_suggestedIntegrations @relay(mask: false)
+      #     }
+      #   }
+      # }
     }
   `
 })

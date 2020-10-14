@@ -12,6 +12,9 @@ import useForm from '~/hooks/useForm'
 import useAllIntegrations from '~/hooks/useAllIntegrations'
 import useFilteredItems from '~/hooks/useFilteredItems'
 import useAtmosphere from '~/hooks/useAtmosphere'
+import graphql from 'babel-plugin-relay/macro'
+import {createFragmentContainer} from 'react-relay'
+import {NewJiraIssueMenu_suggestedIntegrations} from '~/__generated__/NewJiraIssueMenu_suggestedIntegrations.graphql'
 
 const NoResults = styled(MenuItemLabel)({
   color: PALETTE.TEXT_GRAY,
@@ -61,12 +64,13 @@ const Input = styled('input')({
 interface Props {
   handleSelectProjectKey: (key: string) => void
   menuProps: MenuProps
-  suggestedIntegrations: any
+  suggestedIntegrations: NewJiraIssueMenu_suggestedIntegrations
   teamId: string
   userId: string
 }
 
 const NewJiraIssueMenu = (props: Props) => {
+  console.log('NewJiraIssueMenu -> props', props)
   const {handleSelectProjectKey, menuProps, suggestedIntegrations, teamId, userId} = props
   const {hasMore, items} = suggestedIntegrations
   const {fields, onChange} = useForm({
@@ -137,4 +141,18 @@ const NewJiraIssueMenu = (props: Props) => {
   )
 }
 
-export default NewJiraIssueMenu
+export default createFragmentContainer(NewJiraIssueMenu, {
+  suggestedIntegrations: graphql`
+    fragment NewJiraIssueMenu_suggestedIntegrations on SuggestedIntegrationQueryPayload {
+      hasMore
+      items {
+        ... on SuggestedIntegrationJira {
+          id
+          projectName
+          service
+        }
+        ...SuggestedIntegrationJiraMenuItem_suggestedIntegration
+      }
+    }
+  `
+})
