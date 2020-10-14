@@ -70,7 +70,6 @@ interface Props {
 }
 
 const NewJiraIssueMenu = (props: Props) => {
-  console.log('NewJiraIssueMenu -> props', props)
   const {handleSelectProjectKey, menuProps, suggestedIntegrations, teamId, userId} = props
   const {hasMore, items} = suggestedIntegrations
   const {fields, onChange} = useForm({
@@ -149,6 +148,7 @@ export default createFragmentContainer(NewJiraIssueMenu, {
         ... on SuggestedIntegrationJira {
           id
           projectName
+          projectKey
           service
         }
         ...SuggestedIntegrationJiraMenuItem_suggestedIntegration

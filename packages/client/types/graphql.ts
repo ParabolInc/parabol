@@ -7250,11 +7250,6 @@ export interface IJiraCreateIssueOnMutationArguments {
   cloudId: string;
 
   /**
-   * The name of the jira cloud where the issue lives
-   */
-  cloudName: string;
-
-  /**
    * The id of the meeting where the Jira issue is being created. Null if it is not being created in a meeting.
    */
   meetingId?: string | null;
@@ -8925,19 +8920,9 @@ export interface IJiraCreateIssuePayload {
   error: IStandardMutationError | null;
 
   /**
-   * The ID of the jira cloud where the issue lives
+   * The issue straight from Jira
    */
-  cloudId: string;
-
-  /**
-   * The name of the jira cloud where the issue lives
-   */
-  cloudName: string;
-
-  /**
-   * The key of the issue as found in Jira
-   */
-  key: string;
+  issue: IJiraIssue | null;
 
   /**
    * The id of the meeting where the Jira issue is being created
@@ -8945,19 +8930,9 @@ export interface IJiraCreateIssuePayload {
   meetingId: string | null;
 
   /**
-   * The content of the Jira issue
-   */
-  summary: string;
-
-  /**
    * The id of the team that is creating the Jira issue
    */
   teamId: string;
-
-  /**
-   * The url of the issue that lives in Jira
-   */
-  url: string;
 }
 
 export interface ILoginWithGooglePayload {

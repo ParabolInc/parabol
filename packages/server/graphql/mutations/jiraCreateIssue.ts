@@ -17,10 +17,6 @@ export default {
       type: new GraphQLNonNull(GraphQLID),
       description: 'The atlassian cloudId for the site'
     },
-    cloudName: {
-      type: new GraphQLNonNull(GraphQLString),
-      description: 'The name of the jira cloud where the issue lives'
-    },
     meetingId: {
       type: GraphQLID,
       description:
@@ -41,7 +37,7 @@ export default {
   },
   resolve: async (
     _source: object,
-    {cloudId, meetingId, projectKey, teamId, summary}: IJiraCreateIssueOnMutationArguments,
+    {cloudId, meetingId, projectKey, summary, teamId}: IJiraCreateIssueOnMutationArguments,
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) => {
     const operationId = dataLoader.share()

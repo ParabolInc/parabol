@@ -1,13 +1,4 @@
-import React, {
-  FormEvent,
-  forwardRef,
-  Ref,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState
-} from 'react'
+import React, {FormEvent, useState} from 'react'
 import graphql from 'babel-plugin-relay/macro'
 import styled from '@emotion/styled'
 import Checkbox from './Checkbox'
@@ -20,11 +11,7 @@ import {NewJiraIssueInput_viewer} from '~/__generated__/NewJiraIssueInput_viewer
 import JiraCreateIssueMutation from '~/mutations/JiraCreateIssueMutation'
 import useMenu from '~/hooks/useMenu'
 import {MenuPosition} from '~/hooks/useCoords'
-import CardButton from './CardButton'
 import NewJiraIssueMenu from './NewJiraIssueMenu'
-import FlatButton, {FlatButtonProps} from './FlatButton'
-import IconLabel from './IconLabel'
-import lazyPreload from '~/utils/lazyPreload'
 import PlainButton from './PlainButton/PlainButton'
 
 const Form = styled('form')({
@@ -89,7 +76,7 @@ const NewJiraIssueInput = (props: Props) => {
   const {onCompleted, onError} = useMutationProps()
 
   const jiraIssueTopOfList = edges[0].node
-  const {cloudName, key} = jiraIssueTopOfList
+  const {key} = jiraIssueTopOfList
   const keyName = key.split('-')[0]
 
   // curently, all suggestedIntegrations have the same cloudId so using cloudName instead
@@ -101,21 +88,6 @@ const NewJiraIssueInput = (props: Props) => {
   const projectKey = suggestedIntegration?.projectKey
   const [selectedProjectKey, setSelectedProjectKey] = useState(projectKey)
   const {originRef, menuPortal, menuProps, openPortal} = useMenu(MenuPosition.UPPER_RIGHT)
-  // const newProjectKey = useMemo(() => {
-  //   if (!key) return null
-  //   const splitKey = key.split('-')
-  //   if (splitKey.length <= 1) return key
-  //   const keyName = splitKey[0]
-  //   let largestKeyCount = splitKey[1]
-
-  //   edges.forEach(({node}) => {
-  //     const [nodeKeyName, nodeKeyCount] = node.key.split('-')
-  //     if (nodeKeyName === keyName && parseInt(nodeKeyCount) > parseInt(largestKeyCount)) {
-  //       largestKeyCount = nodeKeyCount
-  //     }
-  //   })
-  //   return `${keyName}-${parseInt(largestKeyCount) + 1}`
-  // }, [edges])
 
   const handleCreateNewIssue = (e: FormEvent) => {
     e.preventDefault()
@@ -123,8 +95,7 @@ const NewJiraIssueInput = (props: Props) => {
     if (!newIssueText.length || !projectKey) return
     const variables = {
       cloudId,
-      cloudName,
-      projectKey,
+      projectKey: selectedProjectKey,
       summary: newIssueText,
       teamId,
       meetingId

@@ -11,23 +11,24 @@ import {JiraCreateIssueMutation_meeting} from '~/__generated__/JiraCreateIssueMu
 import handleJiraCreateIssue from './handlers/handleJiraCreateIssue'
 import {JiraCreateIssueMutation as TJiraCreateIssueMutation} from '~/__generated__/JiraCreateIssueMutation.graphql'
 import UpdatePokerScopeMutation from './UpdatePokerScopeMutation'
+import createProxyRecord from '~/utils/relay/createProxyRecord'
 
 graphql`
   fragment JiraCreateIssueMutation_meeting on JiraCreateIssuePayload {
-    cloudId
-    cloudName
-    key
+    issue {
+      cloudId
+      key
+      summary
+      url
+    }
     meetingId
-    summary
     teamId
-    url
   }
 `
 
 const mutation = graphql`
   mutation JiraCreateIssueMutation(
     $cloudId: ID!
-    $cloudName: String!
     $projectKey: ID!
     $summary: String!
     $teamId: ID!
@@ -35,7 +36,6 @@ const mutation = graphql`
   ) {
     jiraCreateIssue(
       cloudId: $cloudId
-      cloudName: $cloudName
       projectKey: $projectKey
       summary: $summary
       teamId: $teamId
@@ -52,19 +52,7 @@ export const jiraCreateIssueUpdater: SharedUpdater<JiraCreateIssueMutation_meeti
   payload,
   {store}
 ) => {
-  const cloudName = payload.getValue('cloudName')
-  const key = payload.getValue('key')
-  const summary = payload.getValue('summary')
-  const teamId = payload.getValue('teamId')
-  const url = payload.getValue('url')
-  const jiraIssueVariables = {
-    cloudName,
-    key,
-    summary,
-    teamId,
-    url
-  }
-  handleJiraCreateIssue(jiraIssueVariables, store)
+  handleJiraCreateIssue(payload, store)
 }
 
 const JiraCreateIssueMutation = (
@@ -82,33 +70,16 @@ const JiraCreateIssueMutation = (
       jiraCreateIssueUpdater(payload, context)
     },
     optimisticUpdater: (store) => {
-      const {cloudName, teamId, projectKey, summary} = variables
-      const url = `https://${cloudName}.atlassian.net/browse/${projectKey}`
-      const team = store.get(teamId)
-      const jiraIssues = team?.getLinkedRecord('jiraIssues', {
-        first: 100,
-        isJQL: false
-      })
-      const edges = jiraIssues?.getLinkedRecords('edges')
-
-      let largestKeyCount = 1
-      edges?.forEach((edge) => {
-        const jiraIssue = edge.getLinkedRecord('node')
-        const key = jiraIssue?.getValue('key') as string
-        const keyCountStr = key.split('-')[1]
-        const keyCount = parseInt(keyCountStr)
-        if (keyCount > largestKeyCount) {
-          largestKeyCount = keyCount
-        }
-      })
-      const jiraIssueVariables = {
-        cloudName,
-        key: `TES-${largestKeyCount + 1}`,
+      const {teamId, projectKey, summary} = variables
+      const optimisticJiraIssue = createProxyRecord(store, 'JiraIssue', {
+        key: `${projectKey}-?`,
         summary,
-        url,
-        teamId
-      }
-      handleJiraCreateIssue(jiraIssueVariables, store)
+        url: ''
+      })
+      const payload = createProxyRecord(store, 'payload', {})
+      payload.setLinkedRecord(optimisticJiraIssue, 'issue')
+      payload.setValue(teamId, 'teamId')
+      handleJiraCreateIssue(payload, store)
     },
     onCompleted: (res, errors) => {
       if (onCompleted) {

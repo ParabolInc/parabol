@@ -43,8 +43,7 @@ interface Props {
 
 const JiraScopingSearchResults = (props: Props) => {
   const {viewer, meeting} = props
-  const {team, teamMember} = viewer
-  // const {suggestedIntegrations} = teamMember
+  const {team} = viewer
   const {jiraIssues} = team!
   const {error, edges} = jiraIssues
   const issueCount = edges.length
@@ -152,27 +151,6 @@ export default createFragmentContainer(JiraScopingSearchResults, {
           }
         }
       }
-      # teamMember(teamId: $teamId) {
-      #   preferredName
-      #   ...JiraScopingSearchResultItem_suggestedIntegrations
-      # }
-
-      # teamMember(teamId: $teamId) {
-      #   preferredName
-      #   suggestedIntegrations {
-      #     hasMore
-      #     items {
-      #       ... on SuggestedIntegrationJira {
-      #         projectName
-      #         projectKey
-      #         cloudId
-      #         id
-      #         service
-      #       }
-      #       # ...JiraScopingSearchResultItem_suggestedIntegrations @relay(mask: false)
-      #     }
-      #   }
-      # }
     }
   `
 })

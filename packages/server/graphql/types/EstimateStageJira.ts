@@ -45,7 +45,6 @@ const EstimateStageJira = new GraphQLObjectType<any, GQLContext>({
           cloudId,
           key: issueKey
         }
-        Object.assign(data, issueRes.fields)
         return data
       }
     }

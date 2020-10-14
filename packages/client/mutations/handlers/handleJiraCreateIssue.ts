@@ -8,25 +8,26 @@ export interface HandleJiraCreateVariables {
   summary: string
   teamId: string
   url: string
+  jiraIssueId?: string
 }
 
-const handleJiraCreateIssue = (
-  {cloudName, key, summary, teamId, url}: HandleJiraCreateVariables,
-  // newNode: RecordProxy | null,
-  store: RecordSourceSelectorProxy
-) => {
+const handleJiraCreateIssue = (payload, store: RecordSourceSelectorProxy) => {
+  const teamId = payload.getValue('teamId')
   const team = store.get(teamId)
   if (!team) return
+  const issue = payload.getLinkedRecord('issue')
+  const key = issue.getValue('key')
+  const summary = issue.getValue('summary')
+  const url = issue.getValue('url')
   const newJiraIssue = {
-    cloudName,
     key,
     summary,
     url
   }
   const jiraIssueProxy = createProxyRecord(store, 'JiraIssue', newJiraIssue)
   const jiraIssuesConn = getJiraIssuesConn(team)
-  const now = new Date().toISOString()
   if (!jiraIssuesConn) return
+  const now = new Date().toISOString()
   const newEdge = ConnectionHandler.createEdge(
     store,
     jiraIssuesConn,
