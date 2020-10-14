@@ -36,12 +36,12 @@ const login = (_overrides = {}) => {
   const exp = toEpochSeconds(now + JWT_LIFESPAN)
   const iat = toEpochSeconds(now)
   const tokenObj = {
-    sub: 'local|CfKdrQVeo',
+    sub: 'local|bZgjbfchN',
     aud: 'action',
     iss: window.location.origin,
     exp,
     iat,
-    tms: []
+    tms: ['ViwycU1zVK']
   }
   const secret = Buffer.from(Cypress.env('SERVER_SECRET'), 'base64')
   const authToken = sign(tokenObj, secret)

@@ -108,17 +108,6 @@ const initDemoUser = ({preferredName, email, picture}: BaseUser, idx: number) =>
     rasterPicture: picture,
     picture: picture,
     preferredName,
-    suggestedIntegrations: {
-      hasMore: true,
-      items: [
-        makeSuggestedIntegrationJira(JiraDemoKey),
-        makeSuggestedIntegrationGitHub(GitHubDemoKey)
-      ]
-    },
-    allAvailableIntegrations: [
-      makeSuggestedIntegrationJira(JiraDemoKey),
-      makeSuggestedIntegrationJira(JiraSecretKey)
-    ],
     tms: [demoTeamId]
   }
 }
@@ -166,6 +155,17 @@ const initDemoTeamMember = ({id: userId, preferredName, picture}, idx) => {
       github: {isActive: true, accessToken: '123'},
       slack: initSlackAuth(userId),
     },
+    suggestedIntegrations: {
+      hasMore: true,
+      items: [
+        makeSuggestedIntegrationJira(JiraDemoKey),
+        makeSuggestedIntegrationGitHub(GitHubDemoKey)
+      ]
+    },
+    allAvailableIntegrations: [
+      makeSuggestedIntegrationJira(JiraDemoKey),
+      makeSuggestedIntegrationJira(JiraSecretKey)
+    ],
     teamId: demoTeamId,
     userId
   }

@@ -32,7 +32,7 @@ const JiraIssueLink = (props: Props) => {
   return (
     <StyledLink
       className={className}
-      data-cy={`${dataCy}-jira-issue-link`}
+      data-cy={dataCy}
       href={href}
       rel='noopener noreferrer'
       target='_blank'
