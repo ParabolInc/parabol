@@ -9,30 +9,14 @@ import useAtmosphere from '~/hooks/useAtmosphere'
 import {NewJiraIssueInput_meeting} from '~/__generated__/NewJiraIssueInput_meeting.graphql'
 import {NewJiraIssueInput_viewer} from '~/__generated__/NewJiraIssueInput_viewer.graphql'
 import JiraCreateIssueMutation from '~/mutations/JiraCreateIssueMutation'
-import {AddOrDeleteEnum, TaskServiceEnum} from '~/types/graphql'
-import UpdatePokerScopeMutation from '~/mutations/UpdatePokerScopeMutation'
-import SuggestedIntegrationJiraMenuItem from './SuggestedIntegrationJiraMenuItem'
-import useFilteredItems from '~/hooks/useFilteredItems'
-import useAllIntegrations from '~/hooks/useAllIntegrations'
 import useMenu from '~/hooks/useMenu'
-import Menu from './Menu'
-import MenuItemLabel from './MenuItemLabel'
-import MenuItemComponentAvatar from './MenuItemComponentAvatar'
-import {ICON_SIZE} from '~/styles/typographyV2'
-import Icon from './Icon'
-import useForm from '~/hooks/useForm'
-import TaskFooterIntegrateMenuSearch from './TaskFooterIntegrateMenuSearch'
 import {MenuPosition} from '~/hooks/useCoords'
 import CardButton from './CardButton'
-// import NewJiraIssueMenu from './NewJiraIssueMenu'
+import NewJiraIssueMenu from './NewJiraIssueMenu'
 import FlatButton, {FlatButtonProps} from './FlatButton'
 import IconLabel from './IconLabel'
 import lazyPreload from '~/utils/lazyPreload'
 import PlainButton from './PlainButton/PlainButton'
-
-const NewJiraIssueMenu = lazyPreload(() =>
-  import(/* webpackChunkName: 'NewJiraIssueMenu' */ './NewJiraIssueMenu')
-)
 
 const Form = styled('form')({
   display: 'flex',
@@ -99,33 +83,14 @@ const NewJiraIssueInput = (props: Props) => {
   const {cloudName, key} = jiraIssueTopOfList
   const keyName = key.split('-')[0]
 
-  useEffect(() => {
-    togglePortal()
-  }, [])
-
-  // const items = suggestedIntegrations.items || []
-  const {fields, onChange} = useForm({
-    search: {
-      getDefault: () => ''
-    }
-  })
-  const {search} = fields
-  const {value} = search
-  const query = value.toLowerCase()
-  const filteredIntegrations = useFilteredItems(query, suggestedIntegrations)
-  const {allItems, status} = useAllIntegrations(
-    atmosphere,
-    query,
-    filteredIntegrations,
-    false,
-    teamId,
-    userId
-  )
-
   // curently, all suggestedIntegrations have the same cloudId so using cloudName instead
-  const suggestedIntegration = suggestedIntegrations.find(({projectKey}) => projectKey === keyName)
+  const suggestedIntegration = suggestedIntegrations.items.find(
+    ({projectKey}) => projectKey === keyName
+  )
   const cloudId = suggestedIntegration?.cloudId
+
   const projectKey = suggestedIntegration?.projectKey
+  const [selectedProjectKey, setSelectedProjectKey] = useState(projectKey)
   // const newProjectKey = useMemo(() => {
   //   if (!key) return null
   //   const splitKey = key.split('-')
@@ -158,9 +123,11 @@ const NewJiraIssueInput = (props: Props) => {
     setNewIssueText('')
   }
 
-  const {togglePortal, originRef, menuPortal, menuProps, openPortal} = useMenu(
-    MenuPosition.UPPER_RIGHT
-  )
+  const handleSelectProjectKey = (projectKey: string) => {
+    setSelectedProjectKey(projectKey)
+  }
+
+  const {originRef, menuPortal, menuProps, openPortal} = useMenu(MenuPosition.UPPER_RIGHT)
 
   if (!isEditing) return null
 
@@ -179,11 +146,19 @@ const NewJiraIssueInput = (props: Props) => {
             />
           </Form>
           <PlainButton onClick={openPortal} ref={originRef}>
-            <StyledLink>{projectKey}</StyledLink>
+            <StyledLink>{selectedProjectKey}</StyledLink>
           </PlainButton>
         </Issue>
 
-        {menuPortal(<NewJiraIssueMenu allItems={allItems} menuProps={menuProps} />)}
+        {menuPortal(
+          <NewJiraIssueMenu
+            handleSelectProjectKey={handleSelectProjectKey}
+            menuProps={menuProps}
+            suggestedIntegrations={suggestedIntegrations}
+            teamId={teamId}
+            userId={userId}
+          />
+        )}
       </Item>
     </>
   )

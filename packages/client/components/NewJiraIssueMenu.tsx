@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import React, {RefObject} from 'react'
+import React, {useCallback, useRef} from 'react'
 import {PALETTE} from '~/styles/paletteV2'
 import {ICON_SIZE} from '~/styles/typographyV2'
 import Icon from './Icon'
@@ -7,8 +7,19 @@ import MenuItemComponentAvatar from './MenuItemComponentAvatar'
 import MenuItemLabel from './MenuItemLabel'
 import Menu from './Menu'
 import SuggestedIntegrationJiraMenuItem from './SuggestedIntegrationJiraMenuItem'
-import MenuItem from './MenuItem'
 import {MenuProps} from '~/hooks/useMenu'
+import useForm from '~/hooks/useForm'
+import useAllIntegrations from '~/hooks/useAllIntegrations'
+import useFilteredItems from '~/hooks/useFilteredItems'
+import useAtmosphere from '~/hooks/useAtmosphere'
+
+const NoResults = styled(MenuItemLabel)({
+  color: PALETTE.TEXT_GRAY,
+  justifyContent: 'center',
+  paddingLeft: 8,
+  paddingRight: 8,
+  fontStyle: 'italic'
+})
 
 const SearchItem = styled(MenuItemLabel)({
   margin: '0 8px 8px',
@@ -48,58 +59,73 @@ const Input = styled('input')({
 })
 
 interface Props {
+  handleSelectProjectKey: (key: string) => void
   menuProps: MenuProps
-  allItems: any
+  suggestedIntegrations: any
+  teamId: string
+  userId: string
 }
 
 const NewJiraIssueMenu = (props: Props) => {
-  const {menuProps, allItems} = props
+  const {handleSelectProjectKey, menuProps, suggestedIntegrations, teamId, userId} = props
+  const {hasMore, items} = suggestedIntegrations
+  const {fields, onChange} = useForm({
+    search: {
+      getDefault: () => ''
+    }
+  })
+  const atmosphere = useAtmosphere()
+  const {search} = fields
+  const {value} = search
+  const query = value.toLowerCase()
+  const filteredIntegrations = useFilteredItems(query, items)
+  const {allItems, status} = useAllIntegrations(
+    atmosphere,
+    query,
+    filteredIntegrations,
+    !!hasMore,
+    teamId,
+    userId
+  )
+
+  const ref = useRef<HTMLInputElement>(null)
+  const onBlur = useCallback(() => {
+    ref.current && ref.current.focus()
+  }, [])
+
   return (
-    <Menu
-      keepParentFocus
-      ariaLabel={'Export the task'}
-      {...menuProps}
-      resetActiveOnChanges={[allItems]}
-    >
-      <SearchItem key='search'>
+    <Menu ariaLabel='Select Jira project' {...menuProps} resetActiveOnChanges={[allItems]}>
+      <SearchItem>
         <StyledMenuItemIcon>
           <SearchIcon>search</SearchIcon>
         </StyledMenuItemIcon>
-        {/* <TaskFooterIntegrateMenuSearch
-        placeholder={'swaaa'}
-        value={value}
-        onChange={onChange}
-      /> */}
         <Input
-          // autoFocus
-          // ref={ref}
-          // name='search'
-          // onBlur={onBlur}
-          // onChange={onChange}
-          placeholder={'swa'}
-          value={'daa'}
+          autoFocus
+          autoComplete='off'
+          name='search'
+          onBlur={onBlur}
+          onChange={onChange}
+          placeholder='Search Jira'
+          ref={ref}
+          type='text'
         />
       </SearchItem>
-      {/* {(query && allItems.length === 0 && status !== 'loading' && (
-      <NoResults key='no-results'>No integrations found!</NoResults>
-    )) ||
-      null} */}
+      {(query && allItems.length === 0 && status !== 'loading' && (
+        <NoResults key='no-results'>No integrations found!</NoResults>
+      )) ||
+        null}
 
       {allItems.slice(0, 10).map((suggestedIntegration) => {
-        console.log('onClick -> suggestedIntegration', suggestedIntegration)
         const {id, service} = suggestedIntegration
-        // const {submitMutation, onError, onCompleted} = mutationProps
         if (service === 'jira') {
-          const {cloudId, projectKey} = suggestedIntegration
+          const {projectKey} = suggestedIntegration
           const onClick = () => {
-            // const variables = {cloudId, projectKey, taskId}
-            // submitMutation()
-            // CreateJiraTaskIntegrationMutation(atmosphere, variables, {onError, onCompleted})
+            handleSelectProjectKey(projectKey)
           }
           return (
             <SuggestedIntegrationJiraMenuItem
               key={id}
-              query={''}
+              query={query}
               suggestedIntegration={suggestedIntegration}
               onClick={onClick}
             />
