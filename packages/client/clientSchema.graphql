@@ -15,7 +15,7 @@ extend type ActionMeeting {
 type ParabolSearchQuery {
   id: String!
   queryString: String
-  statusFilters: [TaskStatusEnum]
+  statusFilters: [TaskStatusEnum!]
 }
 
 extend type PokerMeeting {

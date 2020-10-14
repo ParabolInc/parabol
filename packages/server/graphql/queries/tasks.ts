@@ -7,7 +7,6 @@ import {
   GraphQLString
 } from 'graphql'
 import isTaskPrivate from 'parabol-client/utils/isTaskPrivate'
-import isNonEmptyArray from 'parabol-client/utils/isNonEmptyArray'
 import {getUserId} from '../../utils/authorization'
 import standardError from '../../utils/standardError'
 import {DataLoaderWorker, GQLContext} from '../graphql'
@@ -20,7 +19,7 @@ const getValidTeamIds = (teamIds: null | string[], tms: string[]) => {
   // the following comments can be removed pending #4070
   // const viewerTeamMembers = await dataLoader.get('teamMembersByUserId').load(viewerId)
   // const viewerTeamIds = viewerTeamMembers.map(({teamId}) => teamId)
-  if (isNonEmptyArray(teamIds)) return teamIds!.filter((teamId) => tms.includes(teamId))
+  if (teamIds?.length) return teamIds!.filter((teamId) => tms.includes(teamId))
   // filter the teamIds array to only teams the user has a team member for
   return tms
 }

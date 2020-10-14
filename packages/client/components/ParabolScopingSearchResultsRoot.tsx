@@ -7,7 +7,6 @@ import {ParabolScopingSearchResultsRoot_meeting} from '../__generated__/ParabolS
 import ErrorComponent from './ErrorComponent/ErrorComponent'
 import {ParabolScopingSearchResultsRootQuery} from '../__generated__/ParabolScopingSearchResultsRootQuery.graphql'
 import {ParabolSearchQuery} from '~/types/clientSchema'
-import isNonEmptyArray from '~/utils/isNonEmptyArray'
 import {taskScopingStatusFilters} from '~/utils/constants'
 
 const query = graphql`
@@ -42,7 +41,7 @@ const ParabolScopingSearchResultsRoot = (props: Props) => {
         first: 50,
         teamIds: [teamId],
         userIds: [],
-        statusFilters: isNonEmptyArray(statusFilters) ? statusFilters : taskScopingStatusFilters,
+        statusFilters: (statusFilters?.length && statusFilters) || taskScopingStatusFilters,
         filterQuery: queryString!.trim()
       }}
       fetchPolicy={'store-or-network' as any}

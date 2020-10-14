@@ -35,5 +35,5 @@ export interface ClientRetroReflection extends IRetroReflection {
 export interface ParabolSearchQuery {
   id: String!
   queryString: String
-  statusFilters: [TaskStatusEnum]
+  statusFilters: [TaskStatusEnum!]
 }

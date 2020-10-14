@@ -12,7 +12,6 @@ import AtlassianServerManager from '../utils/AtlassianServerManager'
 import normalizeRethinkDbResults from './normalizeRethinkDbResults'
 import ProxiedCache from './ProxiedCache'
 import RethinkDataLoader from './RethinkDataLoader'
-import isNonEmptyArray from 'parabol-client/utils/isNonEmptyArray'
 
 type TeamUserKey = {teamId: string; userId: string}
 export interface JiraRemoteProjectKey {
@@ -68,12 +67,12 @@ export const users = () => {
 export const serializeUserTasksKey = (key: UserTasksKey) => {
   const {userIds, teamIds, first, after, archived, statusFilters, filterQuery} = key
   const parts = [
-    isNonEmptyArray(userIds) ? userIds!.sort().join(':') : '*',
+    (userIds?.length && userIds.sort().join(':')) || '*',
     teamIds.sort().join(':'),
     first,
     after || '*',
     archived,
-    isNonEmptyArray(statusFilters) ? statusFilters!.sort().join(':') : '*',
+    (statusFilters?.length && statusFilters.sort().join(':')) || '*',
     filterQuery || '*'
   ]
   return parts.join(':')
@@ -173,10 +172,10 @@ export const userTasks = (parent: RethinkDataLoader) => {
           const dbAfter = after ? new Date(after) : r.maxval
 
           let teamTaskPartial = r.table('Task').getAll(r.args(teamIds), {index: 'teamId'})
-          if (isNonEmptyArray(userIds)) {
+          if (userIds?.length) {
             teamTaskPartial = teamTaskPartial.filter((row) => r(userIds).contains(row('userId')))
           }
-          if (isNonEmptyArray(statusFilters)) {
+          if (statusFilters?.length) {
             teamTaskPartial = teamTaskPartial.filter((row) =>
               r(statusFilters).contains(row('status'))
             )
