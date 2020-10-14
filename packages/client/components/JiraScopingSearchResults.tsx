@@ -166,6 +166,8 @@ export default createFragmentContainer(JiraScopingSearchResults, {
               projectName
               projectKey
               cloudId
+              id
+              service
             }
             # ...JiraScopingSearchResultItem_suggestedIntegrations @relay(mask: false)
           }

@@ -1,4 +1,4 @@
-import React, {useMemo, useState} from 'react'
+import React, {forwardRef, Ref, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import graphql from 'babel-plugin-relay/macro'
 import styled from '@emotion/styled'
 import Checkbox from './Checkbox'
@@ -11,6 +11,28 @@ import {NewJiraIssueInput_viewer} from '~/__generated__/NewJiraIssueInput_viewer
 import JiraCreateIssueMutation from '~/mutations/JiraCreateIssueMutation'
 import {AddOrDeleteEnum, TaskServiceEnum} from '~/types/graphql'
 import UpdatePokerScopeMutation from '~/mutations/UpdatePokerScopeMutation'
+import SuggestedIntegrationJiraMenuItem from './SuggestedIntegrationJiraMenuItem'
+import useFilteredItems from '~/hooks/useFilteredItems'
+import useAllIntegrations from '~/hooks/useAllIntegrations'
+import useMenu from '~/hooks/useMenu'
+import Menu from './Menu'
+import MenuItemLabel from './MenuItemLabel'
+import MenuItemComponentAvatar from './MenuItemComponentAvatar'
+import {ICON_SIZE} from '~/styles/typographyV2'
+import Icon from './Icon'
+import useForm from '~/hooks/useForm'
+import TaskFooterIntegrateMenuSearch from './TaskFooterIntegrateMenuSearch'
+import {MenuPosition} from '~/hooks/useCoords'
+import CardButton from './CardButton'
+// import NewJiraIssueMenu from './NewJiraIssueMenu'
+import FlatButton, {FlatButtonProps} from './FlatButton'
+import IconLabel from './IconLabel'
+import lazyPreload from '~/utils/lazyPreload'
+import PlainButton from './PlainButton/PlainButton'
+
+const NewJiraIssueMenu = lazyPreload(() =>
+  import(/* webpackChunkName: 'NewJiraIssueMenu' */ './NewJiraIssueMenu')
+)
 
 const Form = styled('form')({
   display: 'flex',
@@ -66,7 +88,7 @@ interface Props {
 const NewJiraIssueInput = (props: Props) => {
   const {isEditing, meeting, setIsEditing, suggestedIntegrations, viewer} = props
   const {id: meetingId} = meeting
-  const {team} = viewer
+  const {id: userId, team} = viewer
   const {id: teamId, jiraIssues} = team!
   const {edges} = jiraIssues
   const [newIssueText, setNewIssueText] = useState('')
@@ -75,11 +97,35 @@ const NewJiraIssueInput = (props: Props) => {
 
   const jiraIssueTopOfList = edges[0].node
   const {cloudName, key} = jiraIssueTopOfList
-  console.log('NewJiraIssueInput -> jiraIssueTopOfList', jiraIssueTopOfList)
   const keyName = key.split('-')[0]
+
+  useEffect(() => {
+    togglePortal()
+  }, [])
+
+  // const items = suggestedIntegrations.items || []
+  const {fields, onChange} = useForm({
+    search: {
+      getDefault: () => ''
+    }
+  })
+  const {search} = fields
+  const {value} = search
+  const query = value.toLowerCase()
+  const filteredIntegrations = useFilteredItems(query, suggestedIntegrations)
+  const {allItems, status} = useAllIntegrations(
+    atmosphere,
+    query,
+    filteredIntegrations,
+    false,
+    teamId,
+    userId
+  )
+
   // curently, all suggestedIntegrations have the same cloudId so using cloudName instead
   const suggestedIntegration = suggestedIntegrations.find(({projectKey}) => projectKey === keyName)
-  const {cloudId, projectKey} = suggestedIntegration
+  const cloudId = suggestedIntegration?.cloudId
+  const projectKey = suggestedIntegration?.projectKey
   // const newProjectKey = useMemo(() => {
   //   if (!key) return null
   //   const splitKey = key.split('-')
@@ -112,23 +158,34 @@ const NewJiraIssueInput = (props: Props) => {
     setNewIssueText('')
   }
 
+  const {togglePortal, originRef, menuPortal, menuProps, openPortal} = useMenu(
+    MenuPosition.UPPER_RIGHT
+  )
+
   if (!isEditing) return null
+
   return (
-    <Item>
-      <Checkbox active={true} />
-      <Issue>
-        <Form onSubmit={handleCreateNewIssue}>
-          <SearchInput
-            autoFocus
-            onBlur={handleCreateNewIssue}
-            onChange={(e) => setNewIssueText(e.target.value)}
-            placeholder='New issue summary'
-            type='text'
-          />
-        </Form>
-        <StyledLink>{projectKey}</StyledLink>
-      </Issue>
-    </Item>
+    <>
+      <Item>
+        <Checkbox active />
+        <Issue>
+          <Form onSubmit={handleCreateNewIssue}>
+            <SearchInput
+              autoFocus
+              // onBlur={handleCreateNewIssue}
+              onChange={(e) => setNewIssueText(e.target.value)}
+              placeholder='New issue summary'
+              type='text'
+            />
+          </Form>
+          <PlainButton onClick={openPortal} ref={originRef}>
+            <StyledLink>{projectKey}</StyledLink>
+          </PlainButton>
+        </Issue>
+
+        {menuPortal(<NewJiraIssueMenu allItems={allItems} menuProps={menuProps} />)}
+      </Item>
+    </>
   )
 }
 
@@ -140,6 +197,7 @@ export default createFragmentContainer(NewJiraIssueInput, {
   `,
   viewer: graphql`
     fragment NewJiraIssueInput_viewer on User {
+      id
       team(teamId: $teamId) {
         id
         jiraIssues(

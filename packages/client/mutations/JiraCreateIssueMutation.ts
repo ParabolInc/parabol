@@ -114,7 +114,7 @@ const JiraCreateIssueMutation = (
       if (onCompleted) {
         onCompleted(res, errors)
       }
-      const payload = res.jiraCreateIssue
+      const payload = res.jiraCreateIssue as any
       if (payload && onCompleted && onError) {
         const {cloudId, key, meetingId} = payload
         const pokerScopeVariables = {
@@ -127,7 +127,6 @@ const JiraCreateIssueMutation = (
             }
           ]
         }
-        console.log('pokerScopeVariables', pokerScopeVariables)
         UpdatePokerScopeMutation(atmosphere, pokerScopeVariables, {onError, onCompleted})
       }
     },
