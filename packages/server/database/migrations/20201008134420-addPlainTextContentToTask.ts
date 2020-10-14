@@ -1,9 +1,9 @@
 import {R} from 'rethinkdb-ts'
 import extractTextFromDraftString from 'parabol-client/utils/draftjs/extractTextFromDraftString'
+import Task from '../types/Task'
 
 export const up = async function(r: R) {
-  try {
-    const tasks = await r.table('Task').run()
+  const updateBatch = async (tasks: Task[]) => {
     const updates = [] as {
       taskId: string
       plaintextContent: string
@@ -24,6 +24,22 @@ export const up = async function(r: R) {
           })
       })
       .run()
+  }
+
+  try {
+    let i = 0
+    const batchSize = 10000
+    while (true) {
+      const tasks = await r
+        .table('Task')
+        .orderBy('createdAt')
+        .skip(batchSize * i)
+        .limit(batchSize)
+        .run()
+      if (!tasks?.length) break
+      updateBatch(tasks)
+      i++
+    }
   } catch (e) {
     console.log(e)
   }
