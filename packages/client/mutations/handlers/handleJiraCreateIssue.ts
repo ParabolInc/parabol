@@ -2,23 +2,14 @@ import {ConnectionHandler, RecordSourceSelectorProxy} from 'relay-runtime'
 import createProxyRecord from '~/utils/relay/createProxyRecord'
 import getJiraIssuesConn from '../connections/getJiraIssuesConn'
 
-export interface HandleJiraCreateVariables {
-  cloudName: string
-  key: string
-  summary: string
-  teamId: string
-  url: string
-  jiraIssueId?: string
-}
-
 const handleJiraCreateIssue = (payload, store: RecordSourceSelectorProxy) => {
   const teamId = payload.getValue('teamId')
   const team = store.get(teamId)
   if (!team) return
-  const issue = payload.getLinkedRecord('issue')
-  const key = issue.getValue('key')
-  const summary = issue.getValue('summary')
-  const url = issue.getValue('url')
+  const jiraIssue = payload.getLinkedRecord('jiraIssue')
+  const key = jiraIssue.getValue('key')
+  const summary = jiraIssue.getValue('summary')
+  const url = jiraIssue.getValue('url')
   const newJiraIssue = {
     key,
     summary,
@@ -35,6 +26,9 @@ const handleJiraCreateIssue = (payload, store: RecordSourceSelectorProxy) => {
     'JiraIssueEdge'
   )
   newEdge.setValue(now, 'cursor')
+  const node = newEdge.getLinkedRecord('node')
+  const newJiraIssueId = jiraIssue.getValue('id')
+  node?.setValue(newJiraIssueId, 'id')
   ConnectionHandler.insertEdgeBefore(jiraIssuesConn, newEdge)
 }
 

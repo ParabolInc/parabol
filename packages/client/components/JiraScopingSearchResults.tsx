@@ -46,6 +46,7 @@ const JiraScopingSearchResults = (props: Props) => {
   const {team} = viewer
   const {jiraIssues} = team!
   const {error, edges} = jiraIssues
+  console.log('JiraScopingSearchResults -> USER  edges', edges)
   const issueCount = edges.length
   const {id: meetingId, phases} = meeting
   const [isEditing, setIsEditing] = useState(false)
@@ -53,6 +54,8 @@ const JiraScopingSearchResults = (props: Props) => {
     (phase) => phase.phaseType === NewMeetingPhaseTypeEnum.ESTIMATE
   )!
   const {stages} = estimatePhase
+  console.log('JiraScopingSearchResults -> MEETING stages', stages)
+  // console.log('JiraScopingSearchResults -> stages', stages)
   const usedJiraIssueIds = useMemo(() => {
     const usedJiraIssueIds = new Set<string>()
     stages!.forEach((stage) => {
@@ -61,6 +64,8 @@ const JiraScopingSearchResults = (props: Props) => {
     })
     return usedJiraIssueIds
   }, [stages])
+  console.log('usedJiraIssueIds -> MEETING usedJiraIssueIds', usedJiraIssueIds)
+  // console.log('usedJiraIssueIds -> usedJiraIssueIds', usedJiraIssueIds)
 
   // Terry, you can use this in case you need to put some final touches on styles
   /*   const [showMock, setShowMock] = useState(false)
@@ -91,11 +96,12 @@ const JiraScopingSearchResults = (props: Props) => {
           viewer={viewer}
         />
         {edges.map(({node}) => {
+          const isSelected = usedJiraIssueIds.has(node.id)
           return (
             <JiraScopingSearchResultItem
               key={node.id}
               issue={node}
-              isSelected={usedJiraIssueIds.has(node.id)}
+              isSelected={isSelected}
               meetingId={meetingId}
             />
           )
@@ -147,6 +153,7 @@ export default createFragmentContainer(JiraScopingSearchResults, {
             node {
               ...JiraScopingSearchResultItem_issue
               id
+              summary
             }
           }
         }

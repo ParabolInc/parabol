@@ -13,6 +13,36 @@ import useMenu from '~/hooks/useMenu'
 import {MenuPosition} from '~/hooks/useCoords'
 import NewJiraIssueMenu from './NewJiraIssueMenu'
 import PlainButton from './PlainButton/PlainButton'
+import Icon from './Icon'
+
+const StyledButton = styled(PlainButton)({
+  backgroundColor: 'transparent',
+  display: 'flex',
+  opacity: 1,
+  justifyContent: 'flex-start',
+  alignItems: 'center',
+  margin: 0,
+  ':hover, :focus': {
+    backgroundColor: 'transparent'
+  }
+})
+
+const StyledIcon = styled(Icon)({
+  color: PALETTE.LINK_BLUE,
+  padding: 0,
+  alignContent: 'center'
+})
+
+const StyledLink = styled('a')({
+  color: PALETTE.LINK_BLUE,
+  display: 'block',
+  fontSize: 12,
+  lineHeight: '20px',
+  textDecoration: 'none',
+  '&:hover,:focus': {
+    textDecoration: 'underline'
+  }
+})
 
 const Form = styled('form')({
   display: 'flex',
@@ -25,7 +55,7 @@ const Item = styled('div')({
   display: 'flex',
   paddingLeft: 16,
   paddingTop: 8,
-  paddingBottom: 8
+  paddingBottom: 4
 })
 
 const Issue = styled('div')({
@@ -44,17 +74,6 @@ const SearchInput = styled('input')({
   paddingLeft: 0,
   outline: 0,
   width: '100%'
-})
-
-const StyledLink = styled('a')({
-  color: PALETTE.LINK_BLUE,
-  display: 'block',
-  fontSize: 12,
-  lineHeight: '20px',
-  textDecoration: 'none',
-  '&:hover,:focus': {
-    textDecoration: 'underline'
-  }
 })
 
 interface Props {
@@ -87,7 +106,7 @@ const NewJiraIssueInput = (props: Props) => {
 
   const projectKey = suggestedIntegration?.projectKey
   const [selectedProjectKey, setSelectedProjectKey] = useState(projectKey)
-  const {originRef, menuPortal, menuProps, openPortal} = useMenu(MenuPosition.UPPER_RIGHT)
+  const {originRef, menuPortal, menuProps, togglePortal} = useMenu(MenuPosition.UPPER_RIGHT)
 
   const handleCreateNewIssue = (e: FormEvent) => {
     e.preventDefault()
@@ -114,7 +133,6 @@ const NewJiraIssueInput = (props: Props) => {
     <>
       <Item>
         <Checkbox active />
-
         <Issue>
           <Form onSubmit={handleCreateNewIssue}>
             <SearchInput
@@ -125,9 +143,21 @@ const NewJiraIssueInput = (props: Props) => {
               type='text'
             />
           </Form>
-          <PlainButton onClick={openPortal} ref={originRef}>
+          {/* <PlainButton onClick={openPortal} ref={originRef}>
             <StyledLink>{selectedProjectKey}</StyledLink>
-          </PlainButton>
+          </PlainButton> */}
+          {/* <ButtonRow onClick={openPortal} ref={originRef}>
+            <DropdownIcon>{'expand_more'}</DropdownIcon>
+          </ButtonRow> */}
+          {/* <StyledButton ref={originRef} onClick={openPortal}>
+            <StyledLink>{selectedProjectKey}</StyledLink>
+            <StyledIcon>{'expand_more'}</StyledIcon>
+          </StyledButton> */}
+
+          <StyledButton ref={originRef} onClick={togglePortal}>
+            <StyledLink>{selectedProjectKey}</StyledLink>
+            <StyledIcon>expand_more</StyledIcon>
+          </StyledButton>
         </Issue>
 
         {menuPortal(

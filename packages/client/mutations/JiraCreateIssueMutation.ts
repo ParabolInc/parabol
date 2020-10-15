@@ -15,8 +15,8 @@ import createProxyRecord from '~/utils/relay/createProxyRecord'
 
 graphql`
   fragment JiraCreateIssueMutation_meeting on JiraCreateIssuePayload {
-    issue {
-      cloudId
+    jiraIssue {
+      id
       key
       summary
       url
@@ -77,7 +77,7 @@ const JiraCreateIssueMutation = (
         url: ''
       })
       const payload = createProxyRecord(store, 'payload', {})
-      payload.setLinkedRecord(optimisticJiraIssue, 'issue')
+      payload.setLinkedRecord(optimisticJiraIssue, 'jiraIssue')
       payload.setValue(teamId, 'teamId')
       handleJiraCreateIssue(payload, store)
     },
@@ -85,15 +85,17 @@ const JiraCreateIssueMutation = (
       if (onCompleted) {
         onCompleted(res, errors)
       }
-      const payload = res.jiraCreateIssue as any
+      const payload = res.jiraCreateIssue
       if (payload && onCompleted && onError) {
-        const {cloudId, key, meetingId} = payload
+        const {meetingId, jiraIssue} = payload as any
+        const {id: jiraIssueId} = jiraIssue
+        console.log('jiraIssueId', jiraIssueId)
         const pokerScopeVariables = {
           meetingId,
           updates: [
             {
               service: TaskServiceEnum.jira,
-              serviceTaskId: `${cloudId}:${key}`,
+              serviceTaskId: jiraIssueId,
               action: AddOrDeleteEnum.ADD
             }
           ]

@@ -8922,7 +8922,7 @@ export interface IJiraCreateIssuePayload {
   /**
    * The issue straight from Jira
    */
-  issue: IJiraIssue | null;
+  jiraIssue: IJiraIssue | null;
 
   /**
    * The id of the meeting where the Jira issue is being created

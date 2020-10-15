@@ -12,7 +12,7 @@ const JiraCreateIssuePayload = new GraphQLObjectType<any, GQLContext>({
     error: {
       type: StandardMutationError
     },
-    issue: {
+    jiraIssue: {
       type: JiraIssue,
       description: 'The issue straight from Jira',
       resolve: async ({teamId, cloudId, key}, _args, {authToken, dataLoader}) => {
