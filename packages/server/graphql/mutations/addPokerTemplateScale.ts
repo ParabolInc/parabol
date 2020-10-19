@@ -51,9 +51,16 @@ const addPokerTemplateScale = {
         ? Math.max(...activeScales.map((scale) => scale.sortOrder)) + 1 + dndNoise()
         : 0
     if (parentScaleId) {
-      const parentScale = await dataLoader.get('TemplateScales').load(parentScaleId)
+      const parentScale = (await dataLoader
+        .get('TemplateScales')
+        .load(parentScaleId)) as TemplateScale
       if (!parentScale) {
         return standardError(new Error('Parent scale not found'), {userId: viewerId})
+      }
+      if (!!parentScale.isStarter && parentScale.teamId !== teamId) {
+        return standardError(new Error('Cannot copy from a scale not owned by the team'), {
+          userId: viewerId
+        })
       }
       const {name} = parentScale
       const copyName = `${name} Copy`
