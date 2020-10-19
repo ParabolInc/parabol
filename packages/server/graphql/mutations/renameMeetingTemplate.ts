@@ -1,6 +1,6 @@
 import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import {MeetingTypeEnum} from 'parabol-client/types/graphql'
+import MeetingTemplate from '../../database/types/MeetingTemplate'
 import getRethink from '../../database/rethinkDriver'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
@@ -23,7 +23,7 @@ const renameMeetingTemplate = {
     const now = new Date()
     const operationId = dataLoader.share()
     const subOptions = {operationId, mutatorId}
-    const template = await dataLoader.get('meetingTemplates').load(templateId)
+    const template = (await dataLoader.get('meetingTemplates').load(templateId)) as MeetingTemplate
     const viewerId = getUserId(authToken)
 
     // AUTH
@@ -41,7 +41,7 @@ const renameMeetingTemplate = {
     const allTemplates = await r
       .table('MeetingTemplate')
       .getAll(teamId, {index: 'teamId'})
-      .filter({isActive: true, type: MeetingTypeEnum.retrospective})
+      .filter({isActive: true, type: template.type})
       .run()
     if (allTemplates.find((template) => template.name === normalizedName)) {
       return standardError(new Error('Duplicate template name'), {userId: viewerId})
