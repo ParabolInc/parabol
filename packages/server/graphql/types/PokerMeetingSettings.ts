@@ -28,9 +28,8 @@ const PokerMeetingSettings = new GraphQLObjectType<any, GQLContext>({
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(TemplateScale))),
       description: 'The list of scales belong to this team',
       resolve: async ({teamId}, _args, {dataLoader}) => {
-        const scales = await dataLoader.get('scalesByTeamId').load(teamId)
-        const activeScales = scales.filter((scale) => scale.isActive)
-        activeScales.sort((a, b) => (a.sortOrder < b.sortOrder ? -1 : 1))
+        const activeScales = await dataLoader.get('scalesByTeamId').load(teamId)
+        activeScales.slice().sort((a, b) => (a.sortOrder < b.sortOrder ? -1 : 1))
         return activeScales
       }
     },
