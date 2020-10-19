@@ -24,7 +24,7 @@ import RetroPhaseItem from './types/RetroPhaseItem'
 import RetrospectiveMeeting from './types/RetrospectiveMeeting'
 import RetrospectiveMeetingMember from './types/RetrospectiveMeetingMember'
 import RetrospectiveMeetingSettings from './types/RetrospectiveMeetingSettings'
-import SharableTemplate from './types/SharableTemplate'
+import MeetingTemplate from './types/MeetingTemplate'
 import SharableTemplateEnum from './types/SharableTemplateEnum'
 import SuggestedActionCreateNewTeam from './types/SuggestedActionCreateNewTeam'
 import SuggestedActionInviteYourTeam from './types/SuggestedActionInviteYourTeam'
@@ -67,7 +67,7 @@ export default new GraphQLSchema({
     CheckInPhase,
     ReflectPhase,
     PokerTemplate,
-    SharableTemplate,
+    MeetingTemplate,
     SharableTemplateEnum,
     DiscussPhase,
     UpdatesPhase,
