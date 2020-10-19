@@ -55,8 +55,8 @@ describe('Poker template related backend tests', () => {
   it('Renames a poker template', () => {
     const query = `
       mutation {
-        renamePokerTemplate(templateId: "${pokerTemplate.id}", name: "Renamed") {
-          pokerTemplate {
+        renameMeetingTemplate(templateId: "${pokerTemplate.id}", name: "Renamed") {
+          meetingTemplate {
             id
             name
           }
@@ -65,7 +65,7 @@ describe('Poker template related backend tests', () => {
     `
     cy.postGQL(constructGraphQLQueryBody(query)).then((res) => {
       const responseData = res.body.payload.data
-      const newPokerTemplate = responseData.renamePokerTemplate.pokerTemplate
+      const newPokerTemplate = responseData.renameMeetingTemplate.meetingTemplate
       assert.strictEqual(pokerTemplate.id, newPokerTemplate.id, 'Poker template id')
       assert.strictEqual('Renamed', newPokerTemplate.name, 'Poker template name')
     })

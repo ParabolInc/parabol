@@ -5,11 +5,11 @@ import getRethink from '../../database/rethinkDriver'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
-import RenamePokerTemplatePayload from '../types/RenamePokerTemplatePayload'
+import RenameMeetingTemplatePayload from '../types/RenameMeetingTemplatePayload'
 
-const renamePokerTemplate = {
-  description: 'Rename a Poker template',
-  type: new GraphQLNonNull(RenamePokerTemplatePayload),
+const renameMeetingTemplate = {
+  description: 'Rename a meeting template',
+  type: RenameMeetingTemplatePayload,
   args: {
     templateId: {
       type: new GraphQLNonNull(GraphQLID)
@@ -41,7 +41,7 @@ const renamePokerTemplate = {
     const allTemplates = await r
       .table('MeetingTemplate')
       .getAll(teamId, {index: 'teamId'})
-      .filter({isActive: true, type: MeetingTypeEnum.poker})
+      .filter({isActive: true, type: MeetingTypeEnum.retrospective})
       .run()
     if (allTemplates.find((template) => template.name === normalizedName)) {
       return standardError(new Error('Duplicate template name'), {userId: viewerId})
@@ -55,9 +55,9 @@ const renamePokerTemplate = {
       .run()
 
     const data = {templateId}
-    publish(SubscriptionChannel.TEAM, teamId, 'RenamePokerTemplatePayload', data, subOptions)
+    publish(SubscriptionChannel.TEAM, teamId, 'RenameMeetingTemplatePayload', data, subOptions)
     return data
   }
 }
 
-export default renamePokerTemplate
+export default renameMeetingTemplate

@@ -3606,7 +3606,11 @@ export interface ITemplateDimension {
    * true if the dimension is currently used by the team, else false
    */
   isActive: boolean;
-  removedAt: any;
+
+  /**
+   * The datetime that the dimension was removed. Null if it has not been removed.
+   */
+  removedAt: any | null;
 
   /**
    * foreign key. use the team field
@@ -3666,7 +3670,11 @@ export interface ITemplateScale {
    * true if the scale is currently used by the team, else false
    */
   isActive: boolean;
-  removedAt: any;
+
+  /**
+   * The datetime that the scale was removed. Null if it has not been removed.
+   */
+  removedAt: any | null;
 
   /**
    * foreign key. use the team field
@@ -7032,14 +7040,9 @@ export interface IMutation {
   renameMeeting: RenameMeetingPayload;
 
   /**
-   * Rename a Poker template
+   * Rename a meeting template
    */
-  renamePokerTemplate: IRenamePokerTemplatePayload;
-
-  /**
-   * Rename a reflect template
-   */
-  renameReflectTemplate: IRenameReflectTemplatePayload | null;
+  renameMeetingTemplate: IRenameMeetingTemplatePayload | null;
 
   /**
    * Rename a reflect template prompt
@@ -7893,12 +7896,7 @@ export interface IRenameMeetingOnMutationArguments {
   meetingId: string;
 }
 
-export interface IRenamePokerTemplateOnMutationArguments {
-  templateId: string;
-  name: string;
-}
-
-export interface IRenameReflectTemplateOnMutationArguments {
+export interface IRenameMeetingTemplateOnMutationArguments {
   templateId: string;
   name: string;
 }
@@ -9870,16 +9868,10 @@ export interface IRenameMeetingSuccess {
   meeting: NewMeeting;
 }
 
-export interface IRenamePokerTemplatePayload {
-  __typename: 'RenamePokerTemplatePayload';
+export interface IRenameMeetingTemplatePayload {
+  __typename: 'RenameMeetingTemplatePayload';
   error: IStandardMutationError | null;
-  pokerTemplate: IPokerTemplate | null;
-}
-
-export interface IRenameReflectTemplatePayload {
-  __typename: 'RenameReflectTemplatePayload';
-  error: IStandardMutationError | null;
-  reflectTemplate: IReflectTemplate | null;
+  meetingTemplate: SharableTemplate | null;
 }
 
 export interface IRenameReflectTemplatePromptPayload {
@@ -10771,7 +10763,7 @@ export type TeamSubscriptionPayload =
   | IRemoveReflectTemplatePromptPayload
   | IRemovePokerTemplateDimensionPayload
   | IRemovePokerTemplateScalePayload
-  | IRenameReflectTemplatePayload
+  | IRenameMeetingTemplatePayload
   | IRenamePokerTemplatePayload
   | IRenameReflectTemplatePromptPayload
   | IRenamePokerTemplateDimensionPayload
@@ -10783,6 +10775,12 @@ export type TeamSubscriptionPayload =
   | IUpdatePokerTemplateScaleValuePayload
   | IUpdateUserProfilePayload
   | IPersistJiraSearchQuerySuccess;
+
+export interface IRenamePokerTemplatePayload {
+  __typename: 'RenamePokerTemplatePayload';
+  error: IStandardMutationError | null;
+  pokerTemplate: IPokerTemplate | null;
+}
 
 export interface IUpdatePokerTemplateDimensionScalePayload {
   __typename: 'UpdatePokerTemplateDimensionScalePayload';
