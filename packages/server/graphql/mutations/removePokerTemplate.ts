@@ -65,7 +65,7 @@ const removePokerTemplate = {
 
     if (settings.selectedTemplateId === templateId) {
       const nextTemplate = templates.find((template) => template.id !== templateId)
-      const nextTemplateId = nextTemplate?.id ?? SprintPokerDefaults.DEFAULT_SCALE_ID
+      const nextTemplateId = nextTemplate?.id ?? SprintPokerDefaults.DEFAULT_TEMPLATE_ID
       await r
         .table('MeetingSettings')
         .get(settingsId)

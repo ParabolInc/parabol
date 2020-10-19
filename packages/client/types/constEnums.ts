@@ -341,5 +341,6 @@ export const enum AuthTokenRole {
 }
 
 export const enum SprintPokerDefaults {
+  DEFAULT_TEMPLATE_ID = 'estimatedEffortTemplate',
   DEFAULT_SCALE_ID = 'fibonacciScale'
 }
