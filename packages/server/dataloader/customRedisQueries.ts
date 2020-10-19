@@ -40,9 +40,10 @@ const customRedisQueries = {
     const r = await getRethink()
 
     const starterScales = await Promise.all(
-      teamIds.map(() => {
+      teamIds.map((teamId) => {
         return r
           .table('TemplateScale')
+          .getAll(teamId, {index: 'teamId'})
           .filter({isStarter: true})
           .filter((row) => row.hasFields('removedAt').not())
           .run()
