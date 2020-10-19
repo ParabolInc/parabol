@@ -37,7 +37,11 @@ const addPokerTemplateDimension = {
       .table('TemplateDimension')
       .getAll(teamId, {index: 'teamId'})
       .filter({templateId})
-      .filter((row) => row.hasFields('removedAt').not())
+      .filter((row) =>
+        row('removedAt')
+          .default(null)
+          .ne(null)
+      )
       .run()
     if (activeDimensions.length >= Threshold.MAX_POKER_TEMPLDATE_DIMENSIONS) {
       return standardError(new Error('Too many dimensions'), {userId: viewerId})
@@ -50,7 +54,11 @@ const addPokerTemplateDimension = {
     const teamScales = await r
       .table('TemplateScale')
       .filter({teamId})
-      .filter((row) => row.hasFields('removedAt').not())
+      .filter((row) =>
+        row('removedAt')
+          .default(null)
+          .ne(null)
+      )
       .orderBy(r.desc('updatedAt'))
       .run()
     const defaultScaleId =

@@ -39,7 +39,11 @@ const removePokerTemplateDimension = {
       .table('TemplateDimension')
       .getAll(teamId, {index: 'teamId'})
       .filter({templateId})
-      .filter((row) => row.hasFields('removedAt').not())
+      .filter((row) =>
+        row('removedAt')
+          .default(null)
+          .ne(null)
+      )
       .count()
       .default(0)
       .run()

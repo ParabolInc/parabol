@@ -44,7 +44,11 @@ const renamePokerTemplateScale = {
     const allScales = await r
       .table('TemplateScale')
       .getAll(teamId, {index: 'teamId'})
-      .filter((row) => row.hasFields('removedAt').not())
+      .filter((row) =>
+        row('removedAt')
+          .default(null)
+          .ne(null)
+      )
       .run()
     if (allScales.find((scale) => scale.name === normalizedName)) {
       return standardError(new Error('Duplicate name scale'), {userId: viewerId})

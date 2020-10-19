@@ -45,7 +45,11 @@ const customRedisQueries = {
           .table('TemplateScale')
           .getAll(teamId, {index: 'teamId'})
           .filter({isStarter: true})
-          .filter((row) => row.hasFields('removedAt').not())
+          .filter((row) =>
+            row('removedAt')
+              .default(null)
+              .ne(null)
+          )
           .run()
       })
     )

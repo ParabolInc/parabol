@@ -45,7 +45,11 @@ const renamePokerTemplateDimension = {
       .table('TemplateDimension')
       .getAll(teamId, {index: 'teamId'})
       .filter({templateId})
-      .filter((row) => row.hasFields('removedAt').not())
+      .filter((row) =>
+        row('removedAt')
+          .default(null)
+          .ne(null)
+      )
       .run()
     if (allDimensions.find((dimension) => dimension.name === normalizedName)) {
       return standardError(new Error('Duplicate name dimension'), {userId: viewerId})

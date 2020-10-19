@@ -245,7 +245,11 @@ export const scalesByTeamId = new LoaderMakerForeign(
     return r
       .table('TemplateScale')
       .getAll(r.args(teamIds), {index: 'teamId'})
-      .filter((row) => row.hasFields('removedAt').not())
+      .filter((row) =>
+        row('removedAt')
+          .default(null)
+          .ne(null)
+      )
       .run()
   }
 )
