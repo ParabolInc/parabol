@@ -49,7 +49,7 @@ const addPokerTemplateDimension = {
 
     // RESOLUTION
     const sortOrder =
-      Math.max(...activeDimensions.map((dimension) => dimension.sortOrder)) + 1 + dndNoise()
+      Math.max(0, ...activeDimensions.map((dimension) => dimension.sortOrder)) + 1 + dndNoise()
 
     const teamScales = await r
       .table('TemplateScale')

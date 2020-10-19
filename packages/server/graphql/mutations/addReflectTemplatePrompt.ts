@@ -48,7 +48,8 @@ const addReflectTemplatePrompt = {
     }
 
     // RESOLUTION
-    const sortOrder = Math.max(...activePrompts.map((prompt) => prompt.sortOrder)) + 1 + dndNoise()
+    const sortOrder =
+      Math.max(0, ...activePrompts.map((prompt) => prompt.sortOrder)) + 1 + dndNoise()
     const pickedColors = activePrompts.map((prompt) => prompt.groupColor)
     const availableNewColor = palettePickerOptions.find(
       (color) => !pickedColors.includes(color.hex)

@@ -46,10 +46,7 @@ const addPokerTemplateScale = {
 
     // RESOLUTION
     let newScale
-    const sortOrder =
-      activeScales.length > 0
-        ? Math.max(...activeScales.map((scale) => scale.sortOrder)) + 1 + dndNoise()
-        : 0
+    const sortOrder = Math.max(0, ...activeScales.map((scale) => scale.sortOrder)) + 1 + dndNoise()
     if (parentScaleId) {
       const parentScale = (await dataLoader
         .get('TemplateScales')
