@@ -46,7 +46,6 @@ const JiraScopingSearchResults = (props: Props) => {
   const {team} = viewer
   const {jiraIssues} = team!
   const {error, edges} = jiraIssues
-  console.log('JiraScopingSearchResults -> USER  edges', edges)
   const issueCount = edges.length
   const {id: meetingId, phases} = meeting
   const [isEditing, setIsEditing] = useState(false)
@@ -54,8 +53,7 @@ const JiraScopingSearchResults = (props: Props) => {
     (phase) => phase.phaseType === NewMeetingPhaseTypeEnum.ESTIMATE
   )!
   const {stages} = estimatePhase
-  console.log('JiraScopingSearchResults -> MEETING stages', stages)
-  // console.log('JiraScopingSearchResults -> stages', stages)
+
   const usedJiraIssueIds = useMemo(() => {
     const usedJiraIssueIds = new Set<string>()
     stages!.forEach((stage) => {
@@ -64,8 +62,6 @@ const JiraScopingSearchResults = (props: Props) => {
     })
     return usedJiraIssueIds
   }, [stages])
-  console.log('usedJiraIssueIds -> MEETING usedJiraIssueIds', usedJiraIssueIds)
-  // console.log('usedJiraIssueIds -> usedJiraIssueIds', usedJiraIssueIds)
 
   // Terry, you can use this in case you need to put some final touches on styles
   /*   const [showMock, setShowMock] = useState(false)
@@ -77,36 +73,38 @@ const JiraScopingSearchResults = (props: Props) => {
         <MockScopingList />
       )
     } */
-  if (issueCount === 0) {
-    return <JiraScopingNoResults error={error?.message} />
-  }
 
   return (
     <>
-      <JiraScopingSelectAllIssues
-        usedJiraIssueIds={usedJiraIssueIds}
-        issues={edges}
-        meetingId={meetingId}
-      />
-      <ResultScroller>
-        <NewJiraIssueInput
-          isEditing={isEditing}
-          meeting={meeting}
-          setIsEditing={setIsEditing}
-          viewer={viewer}
-        />
-        {edges.map(({node}) => {
-          const isSelected = usedJiraIssueIds.has(node.id)
-          return (
-            <JiraScopingSearchResultItem
-              key={node.id}
-              issue={node}
-              isSelected={isSelected}
-              meetingId={meetingId}
+      {issueCount === 0 && !isEditing ? (
+        <JiraScopingNoResults error={error?.message} />
+      ) : (
+        <>
+          <JiraScopingSelectAllIssues
+            usedJiraIssueIds={usedJiraIssueIds}
+            issues={edges}
+            meetingId={meetingId}
+          />
+          <ResultScroller>
+            <NewJiraIssueInput
+              isEditing={isEditing}
+              meeting={meeting}
+              setIsEditing={setIsEditing}
+              viewer={viewer}
             />
-          )
-        })}
-      </ResultScroller>
+            {edges.map(({node}) => {
+              return (
+                <JiraScopingSearchResultItem
+                  key={node.id}
+                  issue={node}
+                  isSelected={usedJiraIssueIds.has(node.id)}
+                  meetingId={meetingId}
+                />
+              )
+            })}
+          </ResultScroller>
+        </>
+      )}
       <Button onClick={() => setIsEditing(true)} palette='blue'>
         <StyledIcon>{'add'}</StyledIcon>
         <StyledLabel>{'New Issue'}</StyledLabel>

@@ -2,7 +2,7 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
-import Atmosphere from '../Atmosphere'
+import Atmosphere from '~/Atmosphere'
 import useAtmosphere from '../hooks/useAtmosphere'
 import {PALETTE} from '../styles/paletteV2'
 import {JiraScopingSearchInput_meeting} from '../__generated__/JiraScopingSearchInput_meeting.graphql'
@@ -35,7 +35,6 @@ const ClearSearchIcon = styled(Icon)<{isEmpty: boolean}>(({isEmpty}) => ({
 const setSearch = (atmosphere: Atmosphere, meetingId: string, value: string) => {
   commitLocalUpdate(atmosphere, (store) => {
     const meeting = store.get(meetingId)
-    console.log('meet', meeting)
     if (!meeting) return
     meeting.setValue(value, 'jiraSearchQuery')
   })
@@ -58,8 +57,14 @@ const JiraScopingSearchInput = (props: Props) => {
   }
   return (
     <Wrapper>
-      <SearchInput value={jiraSearchQuery || ''} placeholder={'Search issues on Jira'} onChange={onChange} />
-      <ClearSearchIcon isEmpty={isEmpty} onClick={clearSearch}>close</ClearSearchIcon>
+      <SearchInput
+        value={jiraSearchQuery || ''}
+        placeholder={'Search issues on Jira'}
+        onChange={onChange}
+      />
+      <ClearSearchIcon isEmpty={isEmpty} onClick={clearSearch}>
+        close
+      </ClearSearchIcon>
     </Wrapper>
   )
 }

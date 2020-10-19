@@ -1,10 +1,8 @@
-import {GraphQLID, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
+import {GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import StandardMutationError from './StandardMutationError'
 import {GQLContext} from '../graphql'
 import JiraIssue from './JiraIssue'
-import {getUserId} from '../../utils/authorization'
-import sendToSentry from '../../utils/sendToSentry'
-import AtlassianServerManager from '../../utils/AtlassianServerManager'
+import {resolveJiraIssue} from '../resolvers'
 
 const JiraCreateIssuePayload = new GraphQLObjectType<any, GQLContext>({
   name: 'JiraCreateIssuePayload',
@@ -15,35 +13,7 @@ const JiraCreateIssuePayload = new GraphQLObjectType<any, GQLContext>({
     jiraIssue: {
       type: JiraIssue,
       description: 'The issue straight from Jira',
-      resolve: async ({teamId, cloudId, key}, _args, {authToken, dataLoader}) => {
-        const viewerId = getUserId(authToken)
-        // we need the access token of a person on this team
-        const teamAuths = await dataLoader.get('atlassianAuthByTeamId').load(teamId)
-        const [teamAuth] = teamAuths
-        if (!teamAuth) {
-          sendToSentry(new Error('No atlassian access token exists for team'), {userId: viewerId})
-          return null
-        }
-        const {userId} = teamAuth
-        const accessToken = await dataLoader.get('freshAtlassianAccessToken').load({teamId, userId})
-        const manager = new AtlassianServerManager(accessToken)
-        const issueRes = await manager.getIssue(cloudId, key)
-        if ('message' in issueRes) {
-          sendToSentry(new Error(issueRes.message), {userId: viewerId})
-          return null
-        }
-        if ('errors' in issueRes) {
-          const error = issueRes.errors[0]
-          sendToSentry(new Error(error), {userId: viewerId})
-          return null
-        }
-        const data = {
-          ...issueRes.fields,
-          cloudId,
-          key
-        }
-        return data
-      }
+      resolve: resolveJiraIssue
     },
     meetingId: {
       type: GraphQLID,

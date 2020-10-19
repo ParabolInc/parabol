@@ -86,22 +86,21 @@ const JiraCreateIssueMutation = (
         onCompleted(res, errors)
       }
       const payload = res.jiraCreateIssue
-      if (payload && onCompleted && onError) {
-        const {meetingId, jiraIssue} = payload as any
-        const {id: jiraIssueId} = jiraIssue
-        console.log('jiraIssueId', jiraIssueId)
-        const pokerScopeVariables = {
-          meetingId,
-          updates: [
-            {
-              service: TaskServiceEnum.jira,
-              serviceTaskId: jiraIssueId,
-              action: AddOrDeleteEnum.ADD
-            }
-          ]
-        }
-        UpdatePokerScopeMutation(atmosphere, pokerScopeVariables, {onError, onCompleted})
+      if (!payload || !onCompleted || !onError) return
+      const {meetingId, jiraIssue} = payload
+      if (!meetingId) return
+      const {id: jiraIssueId} = jiraIssue!
+      const pokerScopeVariables = {
+        meetingId,
+        updates: [
+          {
+            service: TaskServiceEnum.jira,
+            serviceTaskId: jiraIssueId,
+            action: AddOrDeleteEnum.ADD
+          }
+        ]
       }
+      UpdatePokerScopeMutation(atmosphere, pokerScopeVariables, {onError, onCompleted})
     },
     onError
   })

@@ -101,13 +101,10 @@ export default {
     if ('errors' in res) {
       return standardError(new Error(Object.values(res.errors)[0]), {userId: viewerId})
     }
-    const cloud = sites.find((site) => site.id === cloudId)!
     const data = {
       cloudId,
-      cloudName: cloud.name,
       key: res.key,
       meetingId,
-      summary,
       teamId
     }
     if (meetingId) {

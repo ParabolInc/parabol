@@ -4,6 +4,7 @@ import getJiraIssuesConn from '../connections/getJiraIssuesConn'
 
 const handleJiraCreateIssue = (payload, store: RecordSourceSelectorProxy) => {
   const teamId = payload.getValue('teamId')
+  const meetingId = payload.getValue('meetingId')
   const team = store.get(teamId)
   if (!team) return
   const jiraIssue = payload.getLinkedRecord('jiraIssue')
@@ -16,7 +17,9 @@ const handleJiraCreateIssue = (payload, store: RecordSourceSelectorProxy) => {
     url
   }
   const jiraIssueProxy = createProxyRecord(store, 'JiraIssue', newJiraIssue)
-  const jiraIssuesConn = getJiraIssuesConn(team)
+  const meeting = store.get(meetingId)
+  const jiraSearchQuery = meeting?.getValue('jiraSearchQuery') as string | undefined
+  const jiraIssuesConn = getJiraIssuesConn(team, jiraSearchQuery)
   if (!jiraIssuesConn) return
   const now = new Date().toISOString()
   const newEdge = ConnectionHandler.createEdge(

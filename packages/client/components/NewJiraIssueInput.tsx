@@ -1,4 +1,4 @@
-import React, {FormEvent, useState} from 'react'
+import React, {FormEvent, useEffect, useRef, useState} from 'react'
 import graphql from 'babel-plugin-relay/macro'
 import styled from '@emotion/styled'
 import Checkbox from './Checkbox'
@@ -14,6 +14,7 @@ import {MenuPosition} from '~/hooks/useCoords'
 import NewJiraIssueMenu from './NewJiraIssueMenu'
 import PlainButton from './PlainButton/PlainButton'
 import Icon from './Icon'
+import {PortalStatus} from '../hooks/usePortal'
 
 const StyledButton = styled(PlainButton)({
   backgroundColor: 'transparent',
@@ -87,31 +88,31 @@ const NewJiraIssueInput = (props: Props) => {
   const {isEditing, meeting, setIsEditing, viewer} = props
   const {id: meetingId} = meeting
   const {id: userId, team, teamMember} = viewer
-  const {id: teamId, jiraIssues} = team!
-  const {suggestedIntegrations} = teamMember
-  const {edges} = jiraIssues
+  const {id: teamId} = team!
+  const {suggestedIntegrations} = teamMember!
   const [newIssueText, setNewIssueText] = useState('')
   const atmosphere = useAtmosphere()
   const {onCompleted, onError} = useMutationProps()
-
-  const jiraIssueTopOfList = edges[0].node
-  const {key} = jiraIssueTopOfList
-  const keyName = key.split('-')[0]
-
-  // curently, all suggestedIntegrations have the same cloudId so using cloudName instead
-  const suggestedIntegration = suggestedIntegrations.items.find(
-    ({projectKey}) => projectKey === keyName
-  )
+  const {items} = suggestedIntegrations
+  const suggestedIntegration = items && items[0]
   const cloudId = suggestedIntegration?.cloudId
-
   const projectKey = suggestedIntegration?.projectKey
   const [selectedProjectKey, setSelectedProjectKey] = useState(projectKey)
-  const {originRef, menuPortal, menuProps, togglePortal} = useMenu(MenuPosition.UPPER_RIGHT)
+  const {originRef, menuPortal, menuProps, togglePortal, portalStatus} = useMenu(
+    MenuPosition.UPPER_RIGHT
+  )
+  const ref = useRef<HTMLInputElement>(null)
+  useEffect(() => {
+    if (portalStatus === PortalStatus.Exited) {
+      ref.current && ref.current.focus()
+    }
+  }, [portalStatus])
 
   const handleCreateNewIssue = (e: FormEvent) => {
     e.preventDefault()
+    if (portalStatus !== PortalStatus.Exited) return
     setIsEditing(false)
-    if (!newIssueText.length || !projectKey) return
+    if (!newIssueText.length || !selectedProjectKey || !cloudId) return
     const variables = {
       cloudId,
       projectKey: selectedProjectKey,
@@ -128,7 +129,6 @@ const NewJiraIssueInput = (props: Props) => {
   }
 
   if (!isEditing) return null
-
   return (
     <>
       <Item>
@@ -137,39 +137,28 @@ const NewJiraIssueInput = (props: Props) => {
           <Form onSubmit={handleCreateNewIssue}>
             <SearchInput
               autoFocus
-              // onBlur={handleCreateNewIssue}
+              onBlur={handleCreateNewIssue}
               onChange={(e) => setNewIssueText(e.target.value)}
               placeholder='New issue summary'
+              ref={ref}
               type='text'
             />
           </Form>
-          {/* <PlainButton onClick={openPortal} ref={originRef}>
-            <StyledLink>{selectedProjectKey}</StyledLink>
-          </PlainButton> */}
-          {/* <ButtonRow onClick={openPortal} ref={originRef}>
-            <DropdownIcon>{'expand_more'}</DropdownIcon>
-          </ButtonRow> */}
-          {/* <StyledButton ref={originRef} onClick={openPortal}>
-            <StyledLink>{selectedProjectKey}</StyledLink>
-            <StyledIcon>{'expand_more'}</StyledIcon>
-          </StyledButton> */}
-
-          <StyledButton ref={originRef} onClick={togglePortal}>
+          <StyledButton ref={originRef} onMouseDown={togglePortal}>
             <StyledLink>{selectedProjectKey}</StyledLink>
             <StyledIcon>expand_more</StyledIcon>
           </StyledButton>
         </Issue>
-
-        {menuPortal(
-          <NewJiraIssueMenu
-            handleSelectProjectKey={handleSelectProjectKey}
-            menuProps={menuProps}
-            suggestedIntegrations={suggestedIntegrations}
-            teamId={teamId}
-            userId={userId}
-          />
-        )}
       </Item>
+      {menuPortal(
+        <NewJiraIssueMenu
+          handleSelectProjectKey={handleSelectProjectKey}
+          menuProps={menuProps}
+          suggestedIntegrations={suggestedIntegrations}
+          teamId={teamId}
+          userId={userId}
+        />
+      )}
     </>
   )
 }
@@ -185,33 +174,17 @@ export default createFragmentContainer(NewJiraIssueInput, {
       id
       team(teamId: $teamId) {
         id
-        jiraIssues(
-          first: $first
-          queryString: $queryString
-          isJQL: $isJQL
-          projectKeyFilters: $projectKeyFilters
-        ) @connection(key: "JiraScopingSearchResults_jiraIssues") {
-          error {
-            message
-          }
-          edges {
-            node {
-              id
-              cloudId
-              cloudName
-              key
-            }
-          }
-        }
       }
       teamMember(teamId: $teamId) {
-        suggestedIntegrations {
-          ...NewJiraIssueMenu_suggestedIntegrations
-          items {
-            ... on SuggestedIntegrationJira {
-              projectKey
-              cloudId
-              id
+        ... on TeamMember {
+          suggestedIntegrations {
+            ...NewJiraIssueMenu_suggestedIntegrations
+            items {
+              ... on SuggestedIntegrationJira {
+                projectKey
+                cloudId
+                id
+              }
             }
           }
         }

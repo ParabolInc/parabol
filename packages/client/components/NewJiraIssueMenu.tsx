@@ -97,7 +97,12 @@ const NewJiraIssueMenu = (props: Props) => {
   }, [])
 
   return (
-    <Menu ariaLabel='Select Jira project' {...menuProps} resetActiveOnChanges={[allItems]}>
+    <Menu
+      ariaLabel='Select Jira project'
+      keepParentFocus
+      {...menuProps}
+      resetActiveOnChanges={[allItems]}
+    >
       <SearchItem>
         <StyledMenuItemIcon>
           <SearchIcon>search</SearchIcon>
