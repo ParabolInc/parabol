@@ -20,10 +20,7 @@ const addPokerTemplateDimension = {
     const r = await getRethink()
     const operationId = dataLoader.share()
     const subOptions = {operationId, mutatorId}
-    const template = await r
-      .table('MeetingTemplate')
-      .get(templateId)
-      .run()
+    const template = await dataLoader.get('meetingTemplates').load(templateId)
     const viewerId = getUserId(authToken)
 
     // AUTH
