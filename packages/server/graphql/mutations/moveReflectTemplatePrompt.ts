@@ -29,11 +29,11 @@ const moveReflectTemplate = {
     const viewerId = getUserId(authToken)
 
     // AUTH
-    if (!isTeamMember(authToken, prompt.teamId)) {
-      return standardError(new Error('Team not found'), {userId: viewerId})
-    }
     if (!prompt || prompt.removedAt) {
       return standardError(new Error('Prompt not found'), {userId: viewerId})
+    }
+    if (!isTeamMember(authToken, prompt.teamId)) {
+      return standardError(new Error('Team not found'), {userId: viewerId})
     }
 
     // RESOLUTION

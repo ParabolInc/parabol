@@ -26,12 +26,12 @@ const removePokerTemplateScale = {
     const viewerId = getUserId(authToken)
 
     // AUTH
+    if (!scale || scale.removedAt) {
+      return standardError(new Error('Scale not found'), {userId: viewerId})
+    }
     const {teamId} = scale
     if (!isTeamMember(authToken, teamId)) {
       return standardError(new Error('Team not found'), {userId: viewerId})
-    }
-    if (!scale || scale.removedAt) {
-      return standardError(new Error('Scale not found'), {userId: viewerId})
     }
 
     // RESOLUTION

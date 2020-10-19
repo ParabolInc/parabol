@@ -29,11 +29,11 @@ const pokerTemplateDimensionUpdateDescription = {
     const viewerId = getUserId(authToken)
 
     // AUTH
-    if (!isTeamMember(authToken, dimension.teamId)) {
-      return standardError(new Error('Team not found'), {userId: viewerId})
-    }
     if (!dimension || dimension.removedAt) {
       return standardError(new Error('Dimension not found'), {userId: viewerId})
+    }
+    if (!isTeamMember(authToken, dimension.teamId)) {
+      return standardError(new Error('Team not found'), {userId: viewerId})
     }
 
     // VALIDATION

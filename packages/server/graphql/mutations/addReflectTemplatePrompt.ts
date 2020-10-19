@@ -26,11 +26,11 @@ const addReflectTemplatePrompt = {
     const viewerId = getUserId(authToken)
 
     // AUTH
-    if (!isTeamMember(authToken, template.teamId)) {
-      return standardError(new Error('Team not found'), {userId: viewerId})
-    }
     if (!template || !template.isActive) {
       return standardError(new Error('Template not found'), {userId: viewerId})
+    }
+    if (!isTeamMember(authToken, template.teamId)) {
+      return standardError(new Error('Team not found'), {userId: viewerId})
     }
 
     // VALIDATION
