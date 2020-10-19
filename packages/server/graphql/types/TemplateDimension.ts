@@ -30,7 +30,8 @@ const TemplateDimension = new GraphQLObjectType<any, GQLContext>({
       description: 'true if the dimension is currently used by the team, else false'
     },
     removedAt: {
-      type: new GraphQLNonNull(GraphQLISO8601Type)
+      type: GraphQLISO8601Type,
+      description: 'The datetime that the dimension was removed. Null if it has not been removed.'
     },
     teamId: {
       type: new GraphQLNonNull(GraphQLID),
