@@ -1,8 +1,8 @@
-import {ConnectionHandler, RecordSourceSelectorProxy} from 'relay-runtime'
+import {ConnectionHandler, RecordProxy, RecordSourceSelectorProxy} from 'relay-runtime'
 import createProxyRecord from '~/utils/relay/createProxyRecord'
 import getJiraIssuesConn from '../connections/getJiraIssuesConn'
 
-const handleJiraCreateIssue = (payload, store: RecordSourceSelectorProxy) => {
+const handleJiraCreateIssue = (payload: RecordProxy<any>, store: RecordSourceSelectorProxy) => {
   const teamId = payload.getValue('teamId')
   const meetingId = payload.getValue('meetingId')
   const team = store.get(teamId)

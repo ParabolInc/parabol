@@ -81,7 +81,7 @@ const NewJiraIssueMenu = (props: Props) => {
   const {search} = fields
   const {value} = search
   const query = value.toLowerCase()
-  const filteredIntegrations = useFilteredItems(query, items)
+  const filteredIntegrations = useFilteredItems(query, items!)
   const {allItems, status} = useAllIntegrations(
     atmosphere,
     query,
