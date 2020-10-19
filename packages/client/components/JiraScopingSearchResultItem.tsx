@@ -21,10 +21,12 @@ const Item = styled('div')({
 const Issue = styled('div')({
   display: 'flex',
   flexDirection: 'column',
-  paddingLeft: 16
+  paddingLeft: 16,
 })
 
-const Title = styled('div')({})
+const Title = styled('div')({
+
+})
 
 const StyledLink = styled('a')({
   color: PALETTE.LINK_BLUE,
@@ -64,7 +66,7 @@ const JiraScopingSearchResultItem = (props: Props) => {
     UpdatePokerScopeMutation(atmosphere, variables, {onError, onCompleted})
   }
   return (
-    <Item onClick={onClick}>
+    <Item onClick={onClick} >
       <Checkbox active={isSelected} />
       <Issue>
         <Title>{summary}</Title>
@@ -81,13 +83,15 @@ const JiraScopingSearchResultItem = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(JiraScopingSearchResultItem, {
-  issue: graphql`
+export default createFragmentContainer(
+  JiraScopingSearchResultItem,
+  {
+    issue: graphql`
     fragment JiraScopingSearchResultItem_issue on JiraIssue {
       id
       summary
       key
       url
-    }
-  `
-})
+    }`
+  }
+)
