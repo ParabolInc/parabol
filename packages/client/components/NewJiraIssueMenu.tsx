@@ -69,6 +69,8 @@ interface Props {
   userId: string
 }
 
+const getValue = (item: any) => (item.projectName || item.nameWithOwner).toLowerCase()
+
 const NewJiraIssueMenu = (props: Props) => {
   const {handleSelectProjectKey, menuProps, suggestedIntegrations, teamId, userId} = props
   const {hasMore, items} = suggestedIntegrations
@@ -81,7 +83,7 @@ const NewJiraIssueMenu = (props: Props) => {
   const {search} = fields
   const {value} = search
   const query = value.toLowerCase()
-  const filteredIntegrations = useFilteredItems(query, items!)
+  const filteredIntegrations = useFilteredItems(query, items!, getValue)
   const {allItems, status} = useAllIntegrations(
     atmosphere,
     query,

@@ -25,7 +25,8 @@ const TemplateHeader = styled('div')({
   margin: '16px 0',
   paddingLeft: 56,
   paddingRight: 16,
-  width: '100%'
+  width: '100%',
+  flexShrink: 0
 })
 
 const PromptEditor = styled('div')({
@@ -80,13 +81,14 @@ const ReflectTemplateDetails = (props: Props) => {
   const description = makeTemplateDescription(lowestScope, selectedTemplate)
   const templateCount = teamTemplates.length
   const defaultIllustrations = {
-    'sailboatTemplate': sailboatTemplate,
-    'startStopContinueTemplate': startStopContinueTemplate,
-    'workingStuckTemplate': workingStuckTemplate,
-    'fourLsTemplate': fourLsTemplate,
-    'gladSadMadTemplate': gladSadMadTemplate,
+    sailboatTemplate: sailboatTemplate,
+    startStopContinueTemplate: startStopContinueTemplate,
+    workingStuckTemplate: workingStuckTemplate,
+    fourLsTemplate: fourLsTemplate,
+    gladSadMadTemplate: gladSadMadTemplate
   }
-  const headerImg = selectedTemplate.teamId === 'aGhostTeam' ? defaultIllustrations[templateId] : customTemplate
+  const headerImg =
+    selectedTemplate.teamId === 'aGhostTeam' ? defaultIllustrations[templateId] : customTemplate
   return (
     <PromptEditor>
       <Scrollable>

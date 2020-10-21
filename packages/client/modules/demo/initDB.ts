@@ -93,8 +93,6 @@ const initDemoUser = ({preferredName, email, picture}: BaseUser, idx: number) =>
   return {
     id,
     viewerId: id,
-    atlassianAuth: {isActive: true, accessToken: '123'},
-    githubAuth: {isActive: true, accessToken: '123'},
     createdAt: now,
     email,
     featureFlags: {
@@ -110,17 +108,6 @@ const initDemoUser = ({preferredName, email, picture}: BaseUser, idx: number) =>
     rasterPicture: picture,
     picture: picture,
     preferredName,
-    suggestedIntegrations: {
-      hasMore: true,
-      items: [
-        makeSuggestedIntegrationJira(JiraDemoKey),
-        makeSuggestedIntegrationGitHub(GitHubDemoKey)
-      ]
-    },
-    allAvailableIntegrations: [
-      makeSuggestedIntegrationJira(JiraDemoKey),
-      makeSuggestedIntegrationJira(JiraSecretKey)
-    ],
     tms: [demoTeamId]
   }
 }
@@ -148,7 +135,8 @@ const initSlackAuth = (userId) => ({
   slackTeamName: 'demoTeam',
   slackUserId: 'demoUserId',
   slackUserName: 'Demo Slack User',
-  id: 'demoSlackUser'
+  id: 'demoSlackUser',
+  notifications: [initSlackNotification(userId)]
 })
 
 const initDemoTeamMember = ({id: userId, preferredName, picture}, idx) => {
@@ -162,8 +150,22 @@ const initDemoTeamMember = ({id: userId, preferredName, picture}, idx) => {
     isSelf: idx === 0,
     picture: picture,
     preferredName,
-    slackAuth: initSlackAuth(userId),
-    slackNotifications: [initSlackNotification(userId)],
+    integrations: {
+      atlassian: {isActive: true, accessToken: '123'},
+      github: {isActive: true, accessToken: '123'},
+      slack: initSlackAuth(userId),
+    },
+    suggestedIntegrations: {
+      hasMore: true,
+      items: [
+        makeSuggestedIntegrationJira(JiraDemoKey),
+        makeSuggestedIntegrationGitHub(GitHubDemoKey)
+      ]
+    },
+    allAvailableIntegrations: [
+      makeSuggestedIntegrationJira(JiraDemoKey),
+      makeSuggestedIntegrationJira(JiraSecretKey)
+    ],
     teamId: demoTeamId,
     userId
   }
@@ -397,13 +399,13 @@ const initDB = (botScript) => {
     user: users[idx]
   }))
   users.forEach((user, idx) => {
-    ;(user as any).teamMember = teamMembers[idx]
+    ; (user as any).teamMember = teamMembers[idx]
   })
   const org = initDemoOrg()
   const newMeeting = initNewMeeting(org, teamMembers, meetingMembers)
   const team = initDemoTeam(org, teamMembers, newMeeting)
   teamMembers.forEach((teamMember) => {
-    ;(teamMember as any).team = team
+    ; (teamMember as any).team = team
   })
   team.meetingSettings.team = team as any
   newMeeting.commentCount = 0

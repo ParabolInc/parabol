@@ -39,7 +39,6 @@ import UpdateCreditCardPayload from './UpdateCreditCardPayload'
 import UpdateTeamNamePayload from './UpdateTeamNamePayload'
 import UpdateUserProfilePayload from './UpdateUserProfilePayload'
 import UpgradeToProPayload from './UpgradeToProPayload'
-import {PersistJiraSearchQuerySuccess} from './PersistJiraSearchQueryPayload'
 
 const types = [
   AcceptTeamInvitationPayload,
@@ -81,8 +80,7 @@ const types = [
   RenameReflectTemplatePromptPayload,
   SetCheckInEnabledPayload,
   SetSlackNotificationPayload,
-  UpdateUserProfilePayload,
-  PersistJiraSearchQuerySuccess
+  UpdateUserProfilePayload
 ]
 
 export default graphQLSubscriptionType('TeamSubscriptionPayload', types)

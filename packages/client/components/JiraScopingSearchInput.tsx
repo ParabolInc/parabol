@@ -36,7 +36,8 @@ const setSearch = (atmosphere: Atmosphere, meetingId: string, value: string) => 
   commitLocalUpdate(atmosphere, (store) => {
     const meeting = store.get(meetingId)
     if (!meeting) return
-    meeting.setValue(value, 'jiraSearchQuery')
+    const jiraSearchQuery = meeting.getLinkedRecord('jiraSearchQuery')!
+    jiraSearchQuery.setValue(value, 'queryString')
   })
 }
 
@@ -47,21 +48,19 @@ interface Props {
 const JiraScopingSearchInput = (props: Props) => {
   const {meeting} = props
   const {id: meetingId, jiraSearchQuery} = meeting
-  const isEmpty = !jiraSearchQuery
+  const {queryString} = jiraSearchQuery
+  const isEmpty = !queryString
   const atmosphere = useAtmosphere()
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearch(atmosphere, meetingId, e.target.value)
+    const {value} = e.target
+    setSearch(atmosphere, meetingId, value)
   }
   const clearSearch = () => {
     setSearch(atmosphere, meetingId, '')
   }
   return (
     <Wrapper>
-      <SearchInput
-        value={jiraSearchQuery || ''}
-        placeholder={'Search issues on Jira'}
-        onChange={onChange}
-      />
+      <SearchInput value={queryString} placeholder={'Search issues on Jira'} onChange={onChange} />
       <ClearSearchIcon isEmpty={isEmpty} onClick={clearSearch}>
         close
       </ClearSearchIcon>
@@ -73,7 +72,9 @@ export default createFragmentContainer(JiraScopingSearchInput, {
   meeting: graphql`
     fragment JiraScopingSearchInput_meeting on PokerMeeting {
       id
-      jiraSearchQuery
+      jiraSearchQuery {
+        queryString
+      }
     }
   `
 })

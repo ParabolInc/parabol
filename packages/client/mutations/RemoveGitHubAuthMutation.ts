@@ -9,7 +9,12 @@ import {RemoveGitHubAuthMutation as TRemoveGitHubAuthMutation} from '../__genera
 graphql`
   fragment RemoveGitHubAuthMutation_team on RemoveGitHubAuthPayload {
     teamMember {
-      ...GitHubProviderRowTeamMember @relay(mask: false)
+      integrations {
+        github {
+          ...GitHubProviderRowGitHubIntegration @relay(mask: false)
+        }
+      }
+
     }
   }
 `

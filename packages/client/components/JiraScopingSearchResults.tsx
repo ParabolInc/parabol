@@ -1,7 +1,9 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {useMemo, useState} from 'react'
+import React, {useEffect, useMemo, useState} from 'react'
 import {createFragmentContainer} from 'react-relay'
+import useAtmosphere from '../hooks/useAtmosphere'
+import PersistJiraSearchQueryMutation from '../mutations/PersistJiraSearchQueryMutation'
 import {NewMeetingPhaseTypeEnum} from '../types/graphql'
 import {JiraScopingSearchResults_meeting} from '../__generated__/JiraScopingSearchResults_meeting.graphql'
 import {JiraScopingSearchResults_viewer} from '../__generated__/JiraScopingSearchResults_viewer.graphql'
@@ -37,23 +39,29 @@ const ResultScroller = styled('div')({
 })
 
 interface Props {
-  viewer: JiraScopingSearchResults_viewer
+  viewer: JiraScopingSearchResults_viewer | null
   meeting: JiraScopingSearchResults_meeting
 }
 
 const JiraScopingSearchResults = (props: Props) => {
   const {viewer, meeting} = props
-  const {team} = viewer
-  const {jiraIssues} = team!
-  const {error, edges} = jiraIssues
-  const issueCount = edges.length
-  const {id: meetingId, phases} = meeting
+  const atlassian = viewer?.teamMember!.integrations.atlassian ?? null
+  const issues = atlassian?.issues! ?? null
+  const incomingEdges = issues?.edges ?? null
+  const error = issues?.error ?? null
   const [isEditing, setIsEditing] = useState(false)
+  const [edges, setEdges] = useState([] as readonly any[])
+  const atmosphere = useAtmosphere()
+  useEffect(() => {
+    if (incomingEdges) {
+      setEdges(incomingEdges)
+    }
+  }, [incomingEdges])
+  const {id: meetingId, teamId, phases, jiraSearchQuery} = meeting
   const estimatePhase = phases.find(
     (phase) => phase.phaseType === NewMeetingPhaseTypeEnum.ESTIMATE
   )!
   const {stages} = estimatePhase
-
   const usedJiraIssueIds = useMemo(() => {
     const usedJiraIssueIds = new Set<string>()
     stages!.forEach((stage) => {
@@ -74,9 +82,26 @@ const JiraScopingSearchResults = (props: Props) => {
       )
     } */
 
+  const persistQuery = () => {
+    const {queryString, isJQL} = jiraSearchQuery
+    const projectKeyFilters = jiraSearchQuery.projectKeyFilters as string[]
+    projectKeyFilters.sort()
+    const lookupKey = JSON.stringify({queryString, projectKeyFilters})
+    const {jiraSearchQueries} = atlassian!
+    const searchHashes = jiraSearchQueries.map(({queryString, projectKeyFilters}) => {
+      return JSON.stringify({queryString, projectKeyFilters})
+    })
+    const isQueryNew = !searchHashes.includes(lookupKey)
+    if (isQueryNew) {
+      PersistJiraSearchQueryMutation(atmosphere, {
+        teamId,
+        input: {queryString, isJQL, projectKeyFilters: projectKeyFilters as string[]}
+      })
+    }
+  }
   return (
     <>
-      {issueCount === 0 && !isEditing ? (
+      {edges.length === 0 && !isEditing ? (
         <JiraScopingNoResults error={error?.message} />
       ) : (
         <>
@@ -99,6 +124,7 @@ const JiraScopingSearchResults = (props: Props) => {
                   issue={node}
                   isSelected={usedJiraIssueIds.has(node.id)}
                   meetingId={meetingId}
+                  persistQuery={persistQuery}
                 />
               )
             })}
@@ -118,6 +144,12 @@ export default createFragmentContainer(JiraScopingSearchResults, {
     fragment JiraScopingSearchResults_meeting on PokerMeeting {
       ...NewJiraIssueInput_meeting
       id
+      teamId
+      jiraSearchQuery {
+        isJQL
+        projectKeyFilters
+        queryString
+      }
       phases {
         phaseType
         ... on EstimatePhase {
@@ -134,24 +166,32 @@ export default createFragmentContainer(JiraScopingSearchResults, {
   `,
   viewer: graphql`
     fragment JiraScopingSearchResults_viewer on User {
-      id
       ...NewJiraIssueInput_viewer
-      team(teamId: $teamId) {
-        jiraIssues(
-          first: $first
-          queryString: $queryString
-          isJQL: $isJQL
-          projectKeyFilters: $projectKeyFilters
-        ) @connection(key: "JiraScopingSearchResults_jiraIssues") {
-          error {
-            message
-          }
-          edges {
-            ...JiraScopingSelectAllIssues_issues
-            node {
-              ...JiraScopingSearchResultItem_issue
-              id
-              summary
+      teamMember(teamId: $teamId) {
+        integrations {
+          atlassian {
+            jiraSearchQueries {
+              isJQL
+              queryString
+              projectKeyFilters
+            }
+            issues(
+              first: $first
+              queryString: $queryString
+              isJQL: $isJQL
+              projectKeyFilters: $projectKeyFilters
+            ) @connection(key: "JiraScopingSearchResults_issues") {
+              error {
+                message
+              }
+              edges {
+                ...JiraScopingSelectAllIssues_issues
+                node {
+                  ...JiraScopingSearchResultItem_issue
+                  id
+                  summary
+                }
+              }
             }
           }
         }

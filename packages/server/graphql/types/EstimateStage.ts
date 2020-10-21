@@ -18,11 +18,16 @@ export const estimateStageFields = () => ({
     description: 'The sort order for reprioritizing discussion topics'
   },
   dimensionId: {
-    type: GraphQLID,
+    type: GraphQLNonNull(GraphQLID),
     description: 'the dimensionId that corresponds to this stage'
+  },
+  finalScore: {
+    type: GraphQLFloat,
+    description: 'the final score, as defined by the facilitator'
   },
   scores: {
     type: GraphQLNonNull(GraphQLList(GraphQLNonNull(EstimateUserScore))),
+    description: 'all the estimates, 1 per user',
     resolve: ({id: stageId, scores}) => {
       return scores.map((score) => ({
         ...score,

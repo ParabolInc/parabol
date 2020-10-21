@@ -70,7 +70,7 @@ const JiraCreateIssueMutation = (
       jiraCreateIssueUpdater(payload, context)
     },
     optimisticUpdater: (store) => {
-      const {teamId, projectKey, summary} = variables
+      const {teamId, meetingId, projectKey, summary} = variables
       const optimisticJiraIssue = createProxyRecord(store, 'JiraIssue', {
         key: `${projectKey}-?`,
         summary,
@@ -79,6 +79,7 @@ const JiraCreateIssueMutation = (
       const payload = createProxyRecord(store, 'payload', {})
       payload.setLinkedRecord(optimisticJiraIssue, 'jiraIssue')
       payload.setValue(teamId, 'teamId')
+      payload.setValue(meetingId, 'meetingId')
       handleJiraCreateIssue(payload, store)
     },
     onCompleted: (res, errors) => {

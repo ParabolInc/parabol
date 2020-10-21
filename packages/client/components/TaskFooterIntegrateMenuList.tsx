@@ -59,6 +59,8 @@ const StyledMenuItemIcon = styled(MenuItemComponentAvatar)({
   top: 4
 })
 
+const getValue = (item: any) => (item.projectName || item.nameWithOwner).toLowerCase()
+
 const TaskFooterIntegrateMenu = (props: Props) => {
   const {mutationProps, menuProps, placeholder, suggestedIntegrations, task} = props
   const {hasMore} = suggestedIntegrations
@@ -74,7 +76,7 @@ const TaskFooterIntegrateMenu = (props: Props) => {
   const {value} = search
   const query = value.toLowerCase()
   const atmosphere = useAtmosphere()
-  const filteredIntegrations = useFilteredItems(query, items)
+  const filteredIntegrations = useFilteredItems(query, items, getValue)
   const {allItems, status} = useAllIntegrations(
     atmosphere,
     query,

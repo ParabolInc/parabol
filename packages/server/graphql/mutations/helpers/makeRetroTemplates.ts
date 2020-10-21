@@ -30,7 +30,8 @@ const makeRetroTemplates = (teamId: string, orgId: string, templateObj: Template
           question: prompt.question,
           description: prompt.description,
           groupColor: prompt.groupColor,
-          title: prompt.title
+          title: prompt.title,
+          removedAt: null
         })
     )
     templates.push(template)

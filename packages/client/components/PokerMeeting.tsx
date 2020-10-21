@@ -20,12 +20,10 @@ const phaseLookup = {
   [NewMeetingPhaseTypeEnum.checkin]: lazyPreload(() =>
     import(/* webpackChunkName: 'NewMeetingCheckIn' */ './NewMeetingCheckIn')
   ),
-  SCOPE: lazyPreload(() =>
-    import(/* webpackChunkName: 'ScopePhase' */ './ScopePhase')
-  ),
-  // ESTIMATE: lazyPreload(() =>
-  //   import(/* webpackChunkName: 'PokerEstimatePhase' */ './PokerEstimatePhase')
-  // ),
+  SCOPE: lazyPreload(() => import(/* webpackChunkName: 'ScopePhase' */ './ScopePhase')),
+  ESTIMATE: lazyPreload(() =>
+    import(/* webpackChunkName: 'PokerEstimatePhase' */ './PokerEstimatePhase')
+  )
 }
 
 type PhaseComponent = ValueOf<typeof phaseLookup>
@@ -40,12 +38,15 @@ const PokerMeeting = (props: Props) => {
   const {meeting} = props
   const {
     toggleSidebar,
-    streams,
-    swarm,
+    room,
+    peers,
+    producers,
+    consumers,
+    mediaRoom,
     handleGotoNext,
     gotoStageId,
     safeRoute,
-    handleMenuClick,
+    handleMenuClick
   } = useMeeting(meeting)
   if (!safeRoute) return null
   const {showSidebar, viewerMeetingMember, localPhase} = meeting
@@ -53,7 +54,6 @@ const PokerMeeting = (props: Props) => {
   const {featureFlags} = user
   const {video: allowVideo} = featureFlags
   const localPhaseType = localPhase?.phaseType
-
   const Phase = phaseLookup[localPhaseType] as PhaseComponent
   return (
     <MeetingStyles>
@@ -72,8 +72,11 @@ const PokerMeeting = (props: Props) => {
           avatarGroup={
             <NewMeetingAvatarGroup
               allowVideo={allowVideo}
-              camStreams={streams.cam}
-              swarm={swarm}
+              room={room}
+              peers={peers}
+              producers={producers}
+              consumers={consumers}
+              mediaRoom={mediaRoom}
               meeting={meeting}
             />
           }
@@ -90,14 +93,17 @@ const PokerMeeting = (props: Props) => {
 
 export default createFragmentContainer(PokerMeeting, {
   meeting: graphql`
-    fragment PokerMeeting_meeting on PokerMeeting {
+    fragment PokerMeeting_meeting on PokerMeeting  {
       ...useMeeting_meeting
       ...PokerMeetingSidebar_meeting
       ...NewMeetingCheckIn_meeting
       ...NewMeetingAvatarGroup_meeting
       ...MeetingControlBar_meeting
       ...ScopePhase_meeting
+      ...PokerEstimatePhase_meeting
       id
+      # hack to initialize local state (clientField needs to be on non-id domain state. thx relay)
+      init: id @__clientField(handle: "localPoker")
       showSidebar
       localPhase {
         phaseType

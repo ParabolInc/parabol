@@ -144,6 +144,14 @@ const User = new GraphQLObjectType<any, GQLContext>({
         return lastMetAt ? new Date(lastMetAt) : null
       }
     },
+    meetingCount: {
+      type: GraphQLNonNull(GraphQLInt),
+      description: 'The number of meetings the user has attended',
+      resolve: async ({id: userId}, _args, {dataLoader}) => {
+        const meetingMembers = await dataLoader.get('meetingMembersByUserId').load(userId)
+        return meetingMembers.length
+      }
+    },
     monthlyStreakMax: {
       type: GraphQLNonNull(GraphQLInt),
       description: 'The largest number of consecutive months the user has checked into a meeting',
