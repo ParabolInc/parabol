@@ -55,6 +55,7 @@ const JiraScopingSearchResults = (props: Props) => {
   useEffect(() => {
     if (incomingEdges) {
       setEdges(incomingEdges)
+      setIsEditing(false)
     }
   }, [incomingEdges])
   const {id: meetingId, teamId, phases, jiraSearchQuery} = meeting
@@ -111,12 +112,7 @@ const JiraScopingSearchResults = (props: Props) => {
             meetingId={meetingId}
           />
           <ResultScroller>
-            <NewJiraIssueInput
-              isEditing={isEditing}
-              meeting={meeting}
-              setIsEditing={setIsEditing}
-              viewer={viewer}
-            />
+            <NewJiraIssueInput isEditing={isEditing} meeting={meeting} viewer={viewer} />
             {edges.map(({node}) => {
               return (
                 <JiraScopingSearchResultItem

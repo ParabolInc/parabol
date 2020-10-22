@@ -80,12 +80,11 @@ const SearchInput = styled('input')({
 interface Props {
   isEditing: boolean
   meeting: NewJiraIssueInput_meeting
-  setIsEditing: (isEditing: boolean) => void
   viewer: NewJiraIssueInput_viewer | null
 }
 
 const NewJiraIssueInput = (props: Props) => {
-  const {isEditing, meeting, setIsEditing, viewer} = props
+  const {isEditing, meeting, viewer} = props
   const {id: meetingId} = meeting
   if (!viewer) return null
   const {id: userId, team, teamMember} = viewer
@@ -111,9 +110,13 @@ const NewJiraIssueInput = (props: Props) => {
 
   const handleCreateNewIssue = (e: FormEvent) => {
     e.preventDefault()
-    if (portalStatus !== PortalStatus.Exited) return
-    setIsEditing(false)
-    if (!newIssueText.length || !selectedProjectKey || !cloudId) return
+    if (
+      portalStatus !== PortalStatus.Exited ||
+      !newIssueText.length ||
+      !selectedProjectKey ||
+      !cloudId
+    )
+      return
     const variables = {
       cloudId,
       projectKey: selectedProjectKey,
