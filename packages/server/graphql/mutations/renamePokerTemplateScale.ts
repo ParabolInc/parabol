@@ -47,7 +47,7 @@ const renamePokerTemplateScale = {
       .filter((row) =>
         row('removedAt')
           .default(null)
-          .ne(null)
+          .eq(null)
       )
       .run()
     if (allScales.find((scale) => scale.name === normalizedName)) {

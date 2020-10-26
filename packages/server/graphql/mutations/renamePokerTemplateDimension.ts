@@ -48,7 +48,7 @@ const renamePokerTemplateDimension = {
       .filter((row) =>
         row('removedAt')
           .default(null)
-          .ne(null)
+          .eq(null)
       )
       .run()
     if (allDimensions.find((dimension) => dimension.name === normalizedName)) {

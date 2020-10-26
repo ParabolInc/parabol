@@ -40,7 +40,7 @@ const addPokerTemplateDimension = {
       .filter((row) =>
         row('removedAt')
           .default(null)
-          .ne(null)
+          .eq(null)
       )
       .run()
     if (activeDimensions.length >= Threshold.MAX_POKER_TEMPLDATE_DIMENSIONS) {
@@ -57,7 +57,7 @@ const addPokerTemplateDimension = {
       .filter((row) =>
         row('removedAt')
           .default(null)
-          .ne(null)
+          .eq(null)
       )
       .orderBy(r.desc('updatedAt'))
       .run()

@@ -248,7 +248,7 @@ export const scalesByTeamId = new LoaderMakerForeign(
       .filter((row) =>
         row('removedAt')
           .default(null)
-          .ne(null)
+          .eq(null)
       )
       .run()
   }

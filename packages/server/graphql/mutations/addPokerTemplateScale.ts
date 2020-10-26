@@ -37,7 +37,7 @@ const addPokerTemplateScale = {
       .filter((row) =>
         row('removedAt')
           .default(null)
-          .ne(null)
+          .eq(null)
       )
       .run()
     if (activeScales.length >= Threshold.MAX_POKER_TEMPLDATE_SCALES) {

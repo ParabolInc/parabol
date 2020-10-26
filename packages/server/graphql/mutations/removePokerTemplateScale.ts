@@ -38,7 +38,7 @@ const removePokerTemplateScale = {
     await r
       .table('TemplateScale')
       .get(scaleId)
-      .update({removedAt: now})
+      .update({removedAt: now, updatedAt: now})
       .run()
 
     const data = {scaleId}
