@@ -1,10 +1,4 @@
-import {
-  GraphQLBoolean,
-  GraphQLInputObjectType,
-  GraphQLInt,
-  GraphQLNonNull,
-  GraphQLString
-} from 'graphql'
+import {GraphQLInputObjectType, GraphQLInt, GraphQLNonNull, GraphQLString} from 'graphql'
 
 const TemplateScaleInput = new GraphQLInputObjectType({
   name: 'TemplateScaleInput',
@@ -16,16 +10,11 @@ const TemplateScaleInput = new GraphQLInputObjectType({
     },
     value: {
       description: 'The numerical value for this scale value',
-      type: GraphQLInt
+      type: new GraphQLNonNull(GraphQLInt)
     },
     label: {
       description: 'The label for this value, e.g., XS, M, L',
-      type: GraphQLString
-    },
-    isSpecial: {
-      description: 'true if the value of this scale is a special value, e.g., ? or X',
-      type: GraphQLBoolean,
-      defaultValue: false
+      type: new GraphQLNonNull(GraphQLString)
     }
   })
 })

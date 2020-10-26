@@ -1,15 +1,16 @@
-import {GraphQLID, GraphQLInt, GraphQLNonNull} from 'graphql'
+import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getRethink from '../../database/rethinkDriver'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
-import TemplateScaleInput from '../types/TemplateScaleInput'
+import AddTemplateScaleInput from '../types/AddTemplateScaleInput'
 import AddPokerTemplateScaleValuePayload from '../types/AddPokerTemplateScaleValuePayload'
 import {
   validateColorValue,
   validateScaleLabel,
-  validateScaleValue
+  validateScaleValue,
+  validateScaleLabelValueUniqueness
 } from './helpers/validateScaleValue'
 
 const addPokerTemplateScaleValue = {
@@ -20,17 +21,10 @@ const addPokerTemplateScaleValue = {
       type: new GraphQLNonNull(GraphQLID)
     },
     scaleValue: {
-      type: new GraphQLNonNull(TemplateScaleInput)
-    },
-    index: {
-      type: GraphQLInt
+      type: new GraphQLNonNull(AddTemplateScaleInput)
     }
   },
-  async resolve(
-    _source,
-    {scaleId, scaleValue, index},
-    {authToken, dataLoader, socketId: mutatorId}
-  ) {
+  async resolve(_source, {scaleId, scaleValue}, {authToken, dataLoader, socketId: mutatorId}) {
     const r = await getRethink()
     const now = new Date()
     const operationId = dataLoader.share()
@@ -38,49 +32,64 @@ const addPokerTemplateScaleValue = {
     const viewerId = getUserId(authToken)
 
     // AUTH
-    const scale = await r
+    const existingScale = await r
       .table('TemplateScale')
       .get(scaleId)
       .run()
-    if (!scale || scale.removedAt) {
+    if (!existingScale || existingScale.removedAt) {
       return standardError(new Error('Did not find an active scale'), {userId: viewerId})
     }
-    if (!isTeamMember(authToken, scale.teamId)) {
+    if (!isTeamMember(authToken, existingScale.teamId)) {
       return standardError(new Error('Team not found'), {userId: viewerId})
     }
 
     // VALIDATION
-    const endIndex = scale.values.length - 1
-    if (index > endIndex + 1 || index < 0) {
-      return standardError(new Error('Invalid index'), {userId: viewerId})
-    }
     const {color, label, value, isSpecial} = scaleValue
-    if (isSpecial) {
-      return standardError(new Error('Cannot add a special scale'), {userId: viewerId})
-    }
     if (!validateColorValue(color)) {
       return standardError(new Error('Invalid scale color'), {userId: viewerId})
     }
-    if (label && !validateScaleLabel(label)) {
+    if (!validateScaleLabel(label)) {
       return standardError(new Error('Invalid scale label'), {userId: viewerId})
     }
-    if (value && !validateScaleValue(value)) {
+    if (!validateScaleValue(value, !!isSpecial)) {
       return standardError(new Error('Invalid scale value'), {userId: viewerId})
     }
 
     await r
       .table('TemplateScale')
       .get(scaleId)
-      .update((row) => ({
-        values: row('values').insertAt(index || endIndex, scaleValue),
-        updatedAt: now
-      }))
+      .update(
+        (row) => ({
+          values: row('values').append(scaleValue),
+          updatedAt: now
+        }),
+        {returnChanges: true}
+      )
       .run()
+    const updatedScale = await r
+      .table('TemplateScale')
+      .get(scaleId)
+      .run()
+
+    if (validateScaleLabelValueUniqueness(updatedScale.values)) {
+      // updated values and/or labels are not unique, rolling back
+      await r
+        .table('TemplateScale')
+        .get(scaleId)
+        .update({
+          values: existingScale.values,
+          updatedAt: existingScale.updatedAt
+        })
+        .run()
+      return standardError(new Error('Scale labels and/or numerical values are not unique'), {
+        userId: viewerId
+      })
+    }
 
     const data = {scaleId}
     publish(
       SubscriptionChannel.TEAM,
-      scale.teamId,
+      existingScale.teamId,
       'AddPokerTemplateScaleValuePayload',
       data,
       subOptions

@@ -1,4 +1,4 @@
-import {GraphQLID, GraphQLInt, GraphQLNonNull} from 'graphql'
+import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getRethink from '../../database/rethinkDriver'
 import {getUserId, isTeamMember} from '../../utils/authorization'
@@ -9,26 +9,26 @@ import UpdatePokerTemplateScaleValuePayload from '../types/UpdatePokerTemplateSc
 import {
   validateColorValue,
   validateScaleLabel,
-  validateScaleValue
+  validateScaleLabelValueUniqueness
 } from './helpers/validateScaleValue'
 
 const updatePokerTemplateScaleValue = {
-  description: 'Update a scale value for a scale in a poker template',
+  description: 'Update the label, numerical value or color of a scale value in a scale',
   type: new GraphQLNonNull(UpdatePokerTemplateScaleValuePayload),
   args: {
     scaleId: {
       type: new GraphQLNonNull(GraphQLID)
     },
-    scaleValue: {
+    oldScaleValue: {
       type: new GraphQLNonNull(TemplateScaleInput)
     },
-    index: {
-      type: GraphQLInt
+    newScaleValue: {
+      type: new GraphQLNonNull(TemplateScaleInput)
     }
   },
   async resolve(
     _source,
-    {scaleId, scaleValue, index},
+    {scaleId, oldScaleValue, newScaleValue},
     {authToken, dataLoader, socketId: mutatorId}
   ) {
     const r = await getRethink()
@@ -38,51 +38,77 @@ const updatePokerTemplateScaleValue = {
     const viewerId = getUserId(authToken)
 
     // AUTH
-    const scale = await r
+    const existingScale = await r
       .table('TemplateScale')
       .get(scaleId)
       .run()
-    if (!scale || scale.removedAt) {
+    if (!existingScale || existingScale.removedAt) {
       return standardError(new Error('Did not find an active scale'), {userId: viewerId})
     }
-    if (!isTeamMember(authToken, scale.teamId)) {
+    if (!isTeamMember(authToken, existingScale.teamId)) {
       return standardError(new Error('Team not found'), {userId: viewerId})
     }
+    const {values: oldScaleValues} = existingScale
+    const oldScaleValueIndex = oldScaleValues.findIndex(
+      (scaleValue) =>
+        scaleValue.value === oldScaleValue.value && scaleValue.label === oldScaleValue.label
+    )
+    if (oldScaleValueIndex === -1) {
+      return standardError(new Error('Did not find an existing scale value to update'), {
+        userId: viewerId
+      })
+    }
+    const isExistingScaleValueSpecial = !!oldScaleValues[oldScaleValueIndex].isSpecial
 
     // VALIDATION
-    const endIndex = scale.values.length - 1
-    if (index > endIndex || index < 0) {
-      return standardError(new Error('Invalid index'), {userId: viewerId})
-    }
-    const {color, label, value, isSpecial} = scaleValue
-    if (isSpecial && (label || value)) {
-      return standardError(new Error('Cannot update the label or value for a special scale'), {
+    const {color, label, value} = newScaleValue
+    if (isExistingScaleValueSpecial && value !== oldScaleValue.value) {
+      return standardError(new Error('Cannot update the value for a special scale'), {
         userId: viewerId
       })
     }
     if (!validateColorValue(color)) {
       return standardError(new Error('Invalid scale color'), {userId: viewerId})
     }
-    if (label && !validateScaleLabel(label)) {
+    if (!validateScaleLabel(label)) {
       return standardError(new Error('Invalid scale label'), {userId: viewerId})
-    }
-    if (value && !validateScaleValue(value)) {
-      return standardError(new Error('Invalid scale value'), {userId: viewerId})
     }
 
     await r
       .table('TemplateScale')
       .get(scaleId)
       .update((row) => ({
-        values: row('values').changeAt(index || endIndex, scaleValue),
+        values: row('values').changeAt(oldScaleValueIndex, {
+          ...newScaleValue,
+          isSpecial: isExistingScaleValueSpecial
+        }),
         updatedAt: now
       }))
       .run()
+    const updatedScale = await r
+      .table('TemplateScale')
+      .get(scaleId)
+      .run()
+
+    if (validateScaleLabelValueUniqueness(updatedScale.values)) {
+      // updated values or labels are not unique, rolling back
+      await r
+        .table('TemplateScale')
+        .get(scaleId)
+        .update({
+          values: existingScale.values,
+          updatedAt: existingScale.updatedAt
+        })
+        .run()
+      return standardError(new Error('Scale labels and/or numerical values are not unique'), {
+        userId: viewerId
+      })
+    }
 
     const data = {scaleId}
     publish(
       SubscriptionChannel.TEAM,
-      scale.teamId,
+      existingScale.teamId,
       'UpdatePokerTemplateScaleValuePayload',
       data,
       subOptions

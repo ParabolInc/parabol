@@ -7181,7 +7181,7 @@ export interface IMutation {
   updatePokerTemplateDimensionScale: IAddPokerTemplateDimensionPayload;
 
   /**
-   * Update a scale value for a scale in a poker template
+   * Update the label, numerical value or color of a scale value in a scale
    */
   updatePokerTemplateScaleValue: IUpdatePokerTemplateScaleValuePayload;
 
@@ -7295,8 +7295,7 @@ export interface IAddPokerTemplateScaleOnMutationArguments {
 
 export interface IAddPokerTemplateScaleValueOnMutationArguments {
   scaleId: string;
-  scaleValue: ITemplateScaleInput;
-  index?: number | null;
+  scaleValue: IAddTemplateScaleInput;
 }
 
 export interface IAddReactjiToReflectionOnMutationArguments {
@@ -7922,11 +7921,7 @@ export interface IRemovePokerTemplateScaleOnMutationArguments {
 
 export interface IRemovePokerTemplateScaleValueOnMutationArguments {
   scaleId: string;
-
-  /**
-   * Index of the scale value to be deleted. Default to the last scale value.
-   */
-  index?: number | null;
+  scaleValue: ITemplateScaleInput;
 }
 
 export interface IRemoveReflectionOnMutationArguments {
@@ -8127,8 +8122,8 @@ export interface IUpdatePokerTemplateDimensionScaleOnMutationArguments {
 
 export interface IUpdatePokerTemplateScaleValueOnMutationArguments {
   scaleId: string;
-  scaleValue: ITemplateScaleInput;
-  index?: number | null;
+  oldScaleValue: ITemplateScaleInput;
+  newScaleValue: ITemplateScaleInput;
 }
 
 export interface IUpdateNewCheckInQuestionOnMutationArguments {
@@ -8428,9 +8423,9 @@ export interface IAddPokerTemplateScaleValuePayload {
 }
 
 /**
- * A value for a scale
+ * Input for adding a new scale
  */
-export interface ITemplateScaleInput {
+export interface IAddTemplateScaleInput {
   /**
    * The color used to visually group a scale value
    */
@@ -8439,16 +8434,15 @@ export interface ITemplateScaleInput {
   /**
    * The numerical value for this scale value
    */
-  value?: number | null;
+  value: number;
 
   /**
    * The label for this value, e.g., XS, M, L
    */
-  label?: string | null;
+  label: string;
 
   /**
-   * true if the value of this scale is a special value, e.g., ? or X
-   * @default false
+   * True if this is a special scale value; false/null otherwise
    */
   isSpecial?: boolean | null;
 }
@@ -9903,6 +9897,26 @@ export interface IRemovePokerTemplateScaleValuePayload {
   __typename: 'RemovePokerTemplateScaleValuePayload';
   error: IStandardMutationError | null;
   scale: ITemplateScale | null;
+}
+
+/**
+ * A value for a scale
+ */
+export interface ITemplateScaleInput {
+  /**
+   * The color used to visually group a scale value
+   */
+  color: string;
+
+  /**
+   * The numerical value for this scale value
+   */
+  value: number;
+
+  /**
+   * The label for this value, e.g., XS, M, L
+   */
+  label: string;
 }
 
 export interface IRemoveReflectionPayload {

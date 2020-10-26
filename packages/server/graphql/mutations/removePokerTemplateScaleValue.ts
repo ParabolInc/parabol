@@ -1,10 +1,11 @@
-import {GraphQLID, GraphQLInt, GraphQLNonNull} from 'graphql'
+import {GraphQLID, GraphQLNonNull} from 'graphql'
 import getRethink from '../../database/rethinkDriver'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import RemovePokerTemplateScaleValuePayload from '../types/RemovePokerTemplateScaleValuePayload'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import TemplateScaleInput from '../types/TemplateScaleInput'
 
 const removePokerTemplateScaleValue = {
   description: 'Remove a scale value from the scale of a template',
@@ -13,12 +14,11 @@ const removePokerTemplateScaleValue = {
     scaleId: {
       type: new GraphQLNonNull(GraphQLID)
     },
-    index: {
-      type: GraphQLInt,
-      description: 'Index of the scale value to be deleted. Default to the last scale value.'
+    scaleValue: {
+      type: new GraphQLNonNull(TemplateScaleInput)
     }
   },
-  async resolve(_source, {scaleId, index}, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve(_source, {scaleId, scaleValue}, {authToken, dataLoader, socketId: mutatorId}) {
     const r = await getRethink()
     const now = new Date()
     const operationId = dataLoader.share()
@@ -36,11 +36,17 @@ const removePokerTemplateScaleValue = {
     if (!isTeamMember(authToken, scale.teamId)) {
       return standardError(new Error('Team not found'), {userId: viewerId})
     }
+    const {values: oldScaleValues} = scale
+    const oldScaleValueIndex = oldScaleValues.findIndex(
+      (oldScaleValue) =>
+        oldScaleValue.value === scaleValue.value && oldScaleValue.label === scaleValue.label
+    )
 
     // VALIDATION
-    const endIndex = scale.values.length - 1
-    if (index > endIndex || index < 0) {
-      return standardError(new Error('Invalid index'), {userId: viewerId})
+    if (oldScaleValueIndex === -1) {
+      return standardError(new Error('Did not find an old scale value to remove'), {
+        userId: viewerId
+      })
     }
 
     // RESOLUTION
@@ -48,7 +54,7 @@ const removePokerTemplateScaleValue = {
       .table('TemplateScale')
       .get(scaleId)
       .update((row) => ({
-        values: row('values').deleteAt(index || endIndex),
+        values: row('values').deleteAt(oldScaleValueIndex),
         updatedAt: now
       }))
       .run()
