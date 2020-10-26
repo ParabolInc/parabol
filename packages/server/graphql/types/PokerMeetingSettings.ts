@@ -8,6 +8,7 @@ import resolveSelectedTemplate from '../queries/helpers/resolveSelectedTemplate'
 import TeamMeetingSettings, {teamMeetingSettingsFields} from './TeamMeetingSettings'
 import TemplateScale from './TemplateScale'
 import PokerTemplate, {PokerTemplateConnection} from './PokerTemplate'
+import {MeetingTypeEnum} from 'parabol-client/types/graphql'
 
 const PokerMeetingSettings = new GraphQLObjectType<any, GQLContext>({
   name: 'PokerMeetingSettings',
@@ -37,7 +38,9 @@ const PokerMeetingSettings = new GraphQLObjectType<any, GQLContext>({
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(PokerTemplate))),
       description: 'The list of templates used to start a Poker meeting',
       resolve: async ({teamId}, _args, {dataLoader}) => {
-        const templates = await dataLoader.get('meetingTemplatesByTeamId').load(teamId)
+        const templates = await dataLoader
+          .get('meetingTemplatesByType')
+          .load({teamId, meetingType: MeetingTypeEnum.poker})
         const scoredTemplates = await getScoredTemplates(templates, 0.9)
         return scoredTemplates
       }
@@ -59,7 +62,10 @@ const PokerMeetingSettings = new GraphQLObjectType<any, GQLContext>({
         const {orgId} = team
         const templates = await dataLoader.get('meetingTemplatesByOrgId').load(orgId)
         const organizationTemplates = templates.filter(
-          (template) => template.scope !== 'TEAM' && template.teamId !== teamId
+          (template) =>
+            template.scope !== 'TEAM' &&
+            template.teamId !== teamId &&
+            template.type === MeetingTypeEnum.poker
         )
         const scoredTemplates = await getScoredTemplates(organizationTemplates, 0.8)
         return connectionFromTemplateArray(scoredTemplates, first, after)
@@ -86,7 +92,7 @@ const PokerMeetingSettings = new GraphQLObjectType<any, GQLContext>({
       },
       resolve: async ({teamId}, {first, after}, {dataLoader}) => {
         const [publicTemplates, team] = await Promise.all([
-          db.read('publicTemplates', 'poker'),
+          db.read('publicTemplates', MeetingTypeEnum.poker),
           dataLoader.get('teams').load(teamId)
         ])
         const {orgId} = team
