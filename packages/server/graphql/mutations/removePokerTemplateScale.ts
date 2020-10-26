@@ -4,7 +4,7 @@ import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import RemovePokerTemplateScalePayload from '../types/RemovePokerTemplateScalePayload'
-import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import {SprintPokerDefaults, SubscriptionChannel} from 'parabol-client/types/constEnums'
 
 const removePokerTemplateScale = {
   description: 'Remove a scale from a template',
@@ -39,6 +39,34 @@ const removePokerTemplateScale = {
       .table('TemplateScale')
       .get(scaleId)
       .update({removedAt: now, updatedAt: now})
+      .run()
+
+    const activeTeamScales = await r
+      .table('TemplateScale')
+      .getAll(teamId, {index: 'teamId'})
+      .filter((row) =>
+        row('removedAt')
+          .default(null)
+          .eq(null)
+      )
+      .run()
+    const nextDefaultScaleId =
+      activeTeamScales.length > 0
+        ? activeTeamScales.map((teamScale) => teamScale.id)[0]
+        : SprintPokerDefaults.DEFAULT_SCALE_ID
+    await r
+      .table('TemplateDimension')
+      .getAll(teamId, {index: 'teamId'})
+      .filter((row) =>
+        row('removedAt')
+          .default(null)
+          .eq(null)
+          .and(row('scaleId').eq(scaleId))
+      )
+      .update({
+        scaleId: nextDefaultScaleId,
+        updatedAt: now
+      })
       .run()
 
     const data = {scaleId}
