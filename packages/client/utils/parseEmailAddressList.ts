@@ -1,32 +1,37 @@
 import {parseAddressList, parseOneAddress} from 'email-addresses'
 
-const getFilteredStr = (
+const getLastEmailIndex = (str: string) => Math.max(str.lastIndexOf(' '), str.lastIndexOf(','), 0)
+
+const removeLastEmail = (str: string) => {
+  const lastEmailIndex = getLastEmailIndex(str)
+  return (
+    str
+      .slice(0, lastEmailIndex)
+      // remove trailing commas
+      .replace(/,$/g, '')
+  )
+}
+
+const getFormattedStr = (
   commaDelimStr: string,
   isAddingNewEmail: boolean,
-  isOutlookList: boolean,
-  lastEmailIndex: number
+  isOutlookFormat: boolean
 ) => {
-  if (isAddingNewEmail) {
-    return commaDelimStr
-      .slice(0, lastEmailIndex)
-      .trim()
-      .replace(/,$/g, '')
-  } else if (isOutlookList) {
-    const outlookEmails = [] as string[]
-    for (let i = 0; i < commaDelimStr.length; i++) {
-      const letter = commaDelimStr[i]
-      if (letter === '<' && i !== commaDelimStr.length - 1) {
-        const newEmail = [] as string[]
-        for (let j = i + 1; j < commaDelimStr.length; j++) {
-          if (commaDelimStr[j] === '>') {
-            outlookEmails.push(newEmail.join(''))
-            break
-          }
-          newEmail.push(commaDelimStr[j])
-        }
-      }
+  if (isOutlookFormat) {
+    const commaDelimArr = commaDelimStr.split(',')
+    const outlookStr = commaDelimArr
+      // remove everything that's not an email, e.g. names
+      // keep the last item as removeLastEmail handles this if isAddingNewEmail is true
+      .filter((str, idx) => {
+        return idx === commaDelimArr.length - 1 || str.includes('@')
+      })
+      .join(',')
+    if (isAddingNewEmail) {
+      return removeLastEmail(outlookStr)
     }
-    return outlookEmails.join(',')
+    return outlookStr
+  } else if (isAddingNewEmail) {
+    return removeLastEmail(commaDelimStr)
   }
   return commaDelimStr
 }
@@ -34,8 +39,8 @@ const getFilteredStr = (
 const parseEmailAddressList = (rawStr = ''): {parsedInvitees: any; invalidEmailExists: boolean} => {
   // this breaks RFC5322 standards, but people are not standard :-(
   const commaDelimStr = rawStr
-    // replace line breaks & semi colons with commas
-    .replace(/(?:\r\n|\r|\n|;)/g, ',')
+    // replace line breaks, semi colons, greater than and less than signs with commas
+    .replace(/(?:\r\n|\r|\n|;|<|>)/g, ',')
     // if the above created 2 commas (like a , + linebreak), remove dupes
     .replace(/,+/g, ',')
     // remove leading/trailing whitespace
@@ -44,15 +49,10 @@ const parseEmailAddressList = (rawStr = ''): {parsedInvitees: any; invalidEmailE
     .replace(/,$/g, '')
 
   const emailCount = commaDelimStr.split(',').length
-  const lastEmailIndex = Math.max(commaDelimStr.lastIndexOf(' '), commaDelimStr.lastIndexOf(','), 0)
+  const lastEmailIndex = getLastEmailIndex(commaDelimStr)
   const lastEmail = commaDelimStr.slice(lastEmailIndex, commaDelimStr.length)
   const lastChar = rawStr.charAt(rawStr.length - 1)
-
   const isAddingNewEmail = lastChar !== ' ' && lastChar !== ',' && !parseOneAddress(lastEmail)
-  const isOutlookList =
-    0 < commaDelimStr.indexOf('<') &&
-    commaDelimStr.indexOf('<') < commaDelimStr.indexOf('@') &&
-    commaDelimStr.indexOf('@') < commaDelimStr.indexOf('>')
 
   if (emailCount === 1 && isAddingNewEmail) {
     return {
@@ -61,28 +61,25 @@ const parseEmailAddressList = (rawStr = ''): {parsedInvitees: any; invalidEmailE
     }
   }
 
-  // if adding a new email, return everything except the final email, remove
-  // leading/trailing whitespace and remove trailing commas
-  const filteredStr = getFilteredStr(commaDelimStr, isAddingNewEmail, isOutlookList, lastEmailIndex)
-  // const filteredStr = isAddingNewEmail
-  //   ? commaDelimStr
-  //       .slice(0, lastEmailIndex)
-  //       .trim()
-  //       .replace(/,$/g, '')
-  //   : commaDelimStr
-  const parsedFilteredInvitees = parseAddressList(filteredStr)
+  const lessThanIndex = rawStr.indexOf('<')
+  const greaterThanIndex = rawStr.indexOf('>')
+  const isOutlookFormat =
+    0 <= lessThanIndex &&
+    lessThanIndex < greaterThanIndex &&
+    rawStr.substring(lessThanIndex + 1, greaterThanIndex).includes('@') // if includes email in format <dave@email.com>
+  const formattedStr = getFormattedStr(commaDelimStr, isAddingNewEmail, isOutlookFormat)
+  const parsedInvitees = parseAddressList(formattedStr) // returns null if list is invalid
 
-  if (parsedFilteredInvitees) {
+  if (parsedInvitees) {
     return {
-      parsedInvitees: parsedFilteredInvitees,
+      parsedInvitees,
       invalidEmailExists: false
     }
   }
-  // if parsedFilteredInvitees is invalid, it'll be null. Check if
-  // there's a valid email in the invalid list
+  // check if there's a valid email in the invalid list
   else {
-    for (let i = filteredStr.length; i >= 0; i--) {
-      const slicedStr = filteredStr.slice(0, i)
+    for (let i = formattedStr.length; i >= 0; i--) {
+      const slicedStr = formattedStr.slice(0, i)
       const parsedSlicedInvitees = parseAddressList(slicedStr)
       if (parsedSlicedInvitees) {
         return {
@@ -92,7 +89,7 @@ const parseEmailAddressList = (rawStr = ''): {parsedInvitees: any; invalidEmailE
       }
     }
     return {
-      parsedInvitees: parsedFilteredInvitees,
+      parsedInvitees,
       invalidEmailExists: true
     }
   }
