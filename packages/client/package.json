@@ -76,7 +76,7 @@
     "json2csv": "^4.2.1",
     "jwt-decode": "^2.1.0",
     "linkify-it": "^2.0.3",
-    "mediasoup-client": "^3.6.12",
+    "mediasoup-client": "^3.6.21",
     "micro-memoize": "^2.0.3",
     "mousetrap": "^1.6.3",
     "ms": "^2.0.0",
