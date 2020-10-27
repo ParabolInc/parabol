@@ -1,6 +1,8 @@
 import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {IJiraCreateIssueOnMutationArguments} from 'parabol-client/types/graphql'
+import getRethink from '../../database/rethinkDriver'
+import Meeting from '../../database/types/Meeting'
 import AtlassianServerManager from '../../utils/AtlassianServerManager'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
@@ -40,6 +42,7 @@ export default {
     {cloudId, meetingId, projectKey, summary, teamId}: IJiraCreateIssueOnMutationArguments,
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) => {
+    const r = await getRethink()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
     const viewerId = getUserId(authToken)
@@ -52,11 +55,31 @@ export default {
     // VALIDATION
     const viewerAuthRes = await dataLoader.get('atlassianAuthByUserId').load(viewerId)
     const viewerAuth = viewerAuthRes.find((auth) => auth.teamId === teamId)
-
     if (!viewerAuth || !viewerAuth.isActive) {
       return standardError(new Error('The viewer does not have access to Jira'), {
         userId: viewerId
       })
+    }
+
+    if (meetingId) {
+      const meeting = (await r
+        .table('NewMeeting')
+        .get(meetingId)
+        .default(null)
+        .run()) as Meeting | null
+      if (!meeting) return standardError(new Error('Meeting not found'), {userId: viewerId})
+      if (meeting.teamId !== teamId)
+        return standardError(new Error('Meeting is not owned by the same team'), {userId: viewerId})
+      const meetingMember = await r
+        .table('MeetingMember')
+        .getAll(meetingId, {index: 'meetingId'})
+        .filter({userId: viewerId})
+        .nth(0)
+        .default(null)
+        .run()
+      if (!meetingMember) {
+        return standardError(new Error('Meeting member not found'), {userId: viewerId})
+      }
     }
 
     // RESOLUTION

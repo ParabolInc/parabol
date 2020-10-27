@@ -112,7 +112,12 @@ const JiraScopingSearchResults = (props: Props) => {
             meetingId={meetingId}
           />
           <ResultScroller>
-            <NewJiraIssueInput isEditing={isEditing} meeting={meeting} viewer={viewer} />
+            <NewJiraIssueInput
+              isEditing={isEditing}
+              meeting={meeting}
+              setIsEditing={setIsEditing}
+              viewer={viewer}
+            />
             {edges.map(({node}) => {
               return (
                 <JiraScopingSearchResultItem
@@ -127,10 +132,12 @@ const JiraScopingSearchResults = (props: Props) => {
           </ResultScroller>
         </>
       )}
-      <Button onClick={() => setIsEditing(true)} palette='blue'>
-        <StyledIcon>{'add'}</StyledIcon>
-        <StyledLabel>{'New Issue'}</StyledLabel>
-      </Button>
+      {!isEditing && (
+        <Button onClick={() => setIsEditing(true)} palette='blue'>
+          <StyledIcon>{'add'}</StyledIcon>
+          <StyledLabel>{'New Issue'}</StyledLabel>
+        </Button>
+      )}
     </>
   )
 }

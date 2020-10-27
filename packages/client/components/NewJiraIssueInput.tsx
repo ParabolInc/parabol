@@ -17,12 +17,13 @@ import Icon from './Icon'
 import {PortalStatus} from '../hooks/usePortal'
 
 const StyledButton = styled(PlainButton)({
+  alignItems: 'center',
   backgroundColor: 'transparent',
   display: 'flex',
-  opacity: 1,
+  height: '20px',
   justifyContent: 'flex-start',
-  alignItems: 'center',
   margin: 0,
+  opacity: 1,
   ':hover, :focus': {
     backgroundColor: 'transparent'
   }
@@ -30,6 +31,7 @@ const StyledButton = styled(PlainButton)({
 
 const StyledIcon = styled(Icon)({
   color: PALETTE.LINK_BLUE,
+  fontSize: 20,
   padding: 0,
   alignContent: 'center'
 })
@@ -56,7 +58,7 @@ const Item = styled('div')({
   display: 'flex',
   paddingLeft: 16,
   paddingTop: 8,
-  paddingBottom: 4
+  paddingBottom: 8
 })
 
 const Issue = styled('div')({
@@ -72,7 +74,7 @@ const SearchInput = styled('input')({
   color: PALETTE.TEXT_MAIN,
   fontSize: 16,
   margin: 0,
-  paddingLeft: 0,
+  padding: 0,
   outline: 0,
   width: '100%'
 })
@@ -80,11 +82,12 @@ const SearchInput = styled('input')({
 interface Props {
   isEditing: boolean
   meeting: NewJiraIssueInput_meeting
+  setIsEditing: (isEditing: boolean) => void
   viewer: NewJiraIssueInput_viewer | null
 }
 
 const NewJiraIssueInput = (props: Props) => {
-  const {isEditing, meeting, viewer} = props
+  const {isEditing, meeting, setIsEditing, viewer} = props
   const {id: meetingId} = meeting
   if (!viewer) return null
   const {id: userId, team, teamMember} = viewer
@@ -110,13 +113,11 @@ const NewJiraIssueInput = (props: Props) => {
 
   const handleCreateNewIssue = (e: FormEvent) => {
     e.preventDefault()
-    if (
-      portalStatus !== PortalStatus.Exited ||
-      !newIssueText.length ||
-      !selectedProjectKey ||
-      !cloudId
-    )
+    if (portalStatus !== PortalStatus.Exited || !selectedProjectKey || !cloudId) return
+    if (!newIssueText.length) {
+      setIsEditing(false)
       return
+    }
     const variables = {
       cloudId,
       projectKey: selectedProjectKey,

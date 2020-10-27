@@ -1,5 +1,4 @@
 import {ConnectionHandler, RecordProxy, RecordSourceSelectorProxy} from 'relay-runtime'
-import createProxyRecord from '~/utils/relay/createProxyRecord'
 import toJiraSearchQueryId from '~/utils/relay/toJiraSearchQueryId'
 import toTeamMemberId from '~/utils/relay/toTeamMemberId'
 import getJiraIssuesConn from '../connections/getJiraIssuesConn'
@@ -21,28 +20,11 @@ const handleJiraCreateIssue = (payload: RecordProxy<any>, store: RecordSourceSel
   const projectKeyFilters = jiraSearchQuery?.getValue('projectKeyFilters') as string[] | undefined
 
   const jiraIssue = payload.getLinkedRecord('jiraIssue')
-  const key = jiraIssue.getValue('key')
-  const summary = jiraIssue.getValue('summary')
-  const url = jiraIssue.getValue('url')
-  const newJiraIssue = {
-    key,
-    summary,
-    url
-  }
-  const jiraIssueProxy = createProxyRecord(store, 'JiraIssue', newJiraIssue)
   const jiraIssuesConn = getJiraIssuesConn(atlassian, isJql, queryString, projectKeyFilters)
   if (!jiraIssuesConn) return
   const now = new Date().toISOString()
-  const newEdge = ConnectionHandler.createEdge(
-    store,
-    jiraIssuesConn,
-    jiraIssueProxy,
-    'JiraIssueEdge'
-  )
+  const newEdge = ConnectionHandler.createEdge(store, jiraIssuesConn, jiraIssue, 'JiraIssueEdge')
   newEdge.setValue(now, 'cursor')
-  const node = newEdge.getLinkedRecord('node')
-  const newJiraIssueId = jiraIssue.getValue('id')
-  node?.setValue(newJiraIssueId, 'id')
   ConnectionHandler.insertEdgeBefore(jiraIssuesConn, newEdge)
 }
 
