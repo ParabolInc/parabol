@@ -32,7 +32,7 @@ export const up = async function(r: R) {
     while (true) {
       const tasks = await r
         .table('Task')
-        .orderBy('createdAt')
+        .orderBy('id', {index: 'id'})
         .skip(batchSize * i)
         .limit(batchSize)
         .run()
@@ -40,6 +40,12 @@ export const up = async function(r: R) {
       updateBatch(tasks)
       i++
     }
+    /* process any new tasks that may have come in during first iteration */
+    const missedTasks = await r
+      .table('Task')
+      .filter((row) => row.hasFields('plaintextContent').not())
+      .run()
+    updateBatch(missedTasks)
   } catch (e) {
     console.log(e)
   }
