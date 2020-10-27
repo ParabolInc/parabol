@@ -18,6 +18,7 @@ import NewMeetingIllustration from './NewMeetingIllustration'
 import NewMeetingMeetingSelector from './NewMeetingMeetingSelector'
 import NewMeetingSettings from './NewMeetingSettings'
 import NewMeetingTeamPicker from './NewMeetingTeamPicker'
+import {Elevation} from '../styles/elevation'
 
 interface Props {
   retry(): void
@@ -37,11 +38,16 @@ const TeamAndSettings = styled('div')<{isDesktop}>(({isDesktop}) => ({
   display: 'flex',
   flexDirection: 'column',
   gridArea: 'settings',
-  paddingTop: isDesktop ? 32 : undefined,
+  marginTop: isDesktop ? 32 : undefined,
   [MEDIA_QUERY_VERTICAL_CENTERING]: {
     minHeight: isDesktop ? undefined : 166
   }
 }))
+
+const TeamAndSettingsInner = styled('div')({
+  borderRadius: '4px',
+  boxShadow: Elevation.Z1,
+})
 
 const NewMeetingBlock = styled('div')<{innerWidth: number; isDesktop: boolean}>(
   {
@@ -143,8 +149,10 @@ const NewMeeting = (props: Props) => {
         </IllustrationAndSelector>
         <NewMeetingHowTo meetingType={meetingType} />
         <TeamAndSettings isDesktop={isDesktop}>
-          <NewMeetingTeamPicker selectedTeam={selectedTeam} teams={teams} />
-          <NewMeetingSettings selectedTeam={selectedTeam} meetingType={meetingType} />
+          <TeamAndSettingsInner>
+            <NewMeetingTeamPicker selectedTeam={selectedTeam} teams={teams} />
+            <NewMeetingSettings selectedTeam={selectedTeam} meetingType={meetingType} />
+          </TeamAndSettingsInner>
         </TeamAndSettings>
         <NewMeetingActions team={selectedTeam} meetingType={meetingType} />
       </NewMeetingInner>
