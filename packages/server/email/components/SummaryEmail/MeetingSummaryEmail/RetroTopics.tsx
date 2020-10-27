@@ -60,7 +60,7 @@ export default createFragmentContainer(RetroTopics, {
   meeting: graphql`
     fragment RetroTopics_meeting on RetrospectiveMeeting {
       id
-      reflectionGroups(sortBy: stageOrder) {
+      reflectionGroups(sortBy: voteCount) {
         id
         ...RetroTopic_topic
       }
