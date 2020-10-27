@@ -78,9 +78,10 @@ const parseEmailAddressList = (rawStr = ''): {parsedInvitees: any; invalidEmailE
   }
   // check if there's a valid email in the invalid list
   else {
-    for (let i = formattedStr.length; i >= 0; i--) {
-      const slicedStr = formattedStr.slice(0, i)
-      const parsedSlicedInvitees = parseAddressList(slicedStr)
+    const invalidEmailsArr = formattedStr.split(',')
+    for (let i = invalidEmailsArr.length - 1; i >= 0; i--) {
+      const slicedEmails = invalidEmailsArr.slice(0, i).join(',')
+      const parsedSlicedInvitees = parseAddressList(slicedEmails)
       if (parsedSlicedInvitees) {
         return {
           parsedInvitees: parsedSlicedInvitees,
