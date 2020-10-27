@@ -51,6 +51,7 @@ const removePokerTemplate = {
 
     // RESOLUTION
     const {id: settingsId} = settings
+    template.isActive = false
     await r({
       template: r
         .table('MeetingTemplate')

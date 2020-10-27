@@ -48,6 +48,7 @@ const renameMeetingTemplate = {
     }
 
     // RESOLUTION
+    template.name = normalizedName
     await r
       .table('MeetingTemplate')
       .get(templateId)
