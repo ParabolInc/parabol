@@ -199,7 +199,7 @@ describe('Poker template related backend tests', () => {
         const updatedScale = responseData.addPokerTemplateScaleValue.scale
         const updatedValues = updatedScale.values
         assert.strictEqual(3, updatedValues.length, 'Number of values in the scale')
-        const updatedValue = updatedValues[1]
+        const updatedValue = updatedValues[2] // last element
         assert.strictEqual('#5CA0E5', updatedValue.color, 'Color of the newly added scale value')
         assert.strictEqual(1, updatedValue.value, 'Numerical value of the newly added scale value')
         assert.strictEqual('1', updatedValue.label, 'Label of the newly added scale value')
