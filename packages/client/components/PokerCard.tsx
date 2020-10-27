@@ -1,37 +1,67 @@
 import styled from '@emotion/styled'
-import React from 'react'
+import React, {RefObject, useEffect, useRef} from 'react'
+import usePokerZIndexOverride from '../hooks/usePokerZIndexOverride'
 import logoMarkWhite from '../styles/theme/images/brand/mark-white.svg'
-import {BezierCurve} from '../types/constEnums'
+import {BezierCurve, PokerCards} from '../types/constEnums'
+import getColorLuminance from '../utils/getColorLuminance'
+import getBezierTimePercentGivenDistancePercent from '../utils/getBezierTimePercentGivenDistancePercent'
 
+const COLLAPSED_X = window.innerWidth - PokerCards.WIDTH - 16
+const COLLAPSE_DUR = 1000
+const EASE = BezierCurve.DECELERATE
 
-const colorLuminance = (rawHex: string, lum: number) => {
-  const hex = rawHex.slice(1)
-  let rgb = "#"
-  for (let i = 0; i < 3; i++) {
-    const partial = parseInt(hex.substr(i * 2, 2), 16)
-    const color = Math.round(Math.min(Math.max(0, partial + (partial * lum)), 255)).toString(16)
-    rgb += ("00" + color).substr(color.length)
-  }
-  return rgb
-}
-
-const getYPos = (isSelected: boolean, totalCards: number, idx: number) => {
+const getYPos = (isSelected: boolean, totalCards: number, idx: number, isCollapsed: boolean) => {
+  if (isCollapsed) return 0
   if (isSelected) return -48
   const totalSteps = Math.floor(totalCards / 2)
-  const stepIdx = idx <= totalSteps ? idx : totalSteps - (idx - totalSteps)
+  // the +1 is to even out the middle 2 cards if the deck is even number of cards
+  const stepIdx = idx < totalSteps ? idx : totalSteps - (idx + 1 - totalSteps)
   const STEP_VAL = -4
   return STEP_VAL * stepIdx
 }
-const CardBase = styled('div')<{color: string, idx: number, isSelected: boolean, totalCards: number}>(({color, idx, isSelected, totalCards}) => ({
-  background: `radial-gradient(50% 50% at 50% 50%, ${color} 0%, ${colorLuminance(color, -.12)} 100%)`,
+
+const getXPos = (idx: number, isCollapsed: boolean, cardRef: RefObject<HTMLDivElement>) => {
+  const x = cardRef.current?.getBoundingClientRect().x ?? null
+  const STEP_VAL = -PokerCards.OVERLAP
+  if (!isCollapsed || x === null) return STEP_VAL * idx
+  const delta = COLLAPSED_X - x
+  return delta + (STEP_VAL * idx)
+}
+
+const getShuffleToTopDelay = (cardRef: RefObject<HTMLDivElement>, deckRef: RefObject<HTMLDivElement>, isMoving: boolean, isSelected: boolean, idx: number, totalCards: number) => {
+  if (!isMoving || !isSelected || idx === totalCards - 1) return 0
+  const deckX = deckRef.current?.getBoundingClientRect().x ?? null
+  const cardRefX = cardRef.current?.getBoundingClientRect().x ?? null
+  if (deckX === null || cardRefX === null) return 0
+  const isExpanding = cardRefX === COLLAPSED_X
+  const distanceToWait = isExpanding ? PokerCards.WIDTH : idx === 0 ? PokerCards.OVERLAP : cardRefX + PokerCards.WIDTH - deckX
+  const distaneTheFirstCardMustTravel = COLLAPSED_X - deckX
+  const distancePercent = (distanceToWait + 48) / distaneTheFirstCardMustTravel
+  const timePercent = getBezierTimePercentGivenDistancePercent(distancePercent, EASE)
+  return timePercent * COLLAPSE_DUR
+}
+
+interface CardBaseProps {
+  cardRef: RefObject<HTMLDivElement>,
+  color: string,
+  delay: number
+  idx: number,
+  isCollapsed: boolean,
+  isSelected: boolean,
+  totalCards: number
+}
+const CardBase = styled('div')<CardBaseProps>(({cardRef, color, idx, isCollapsed, isSelected, totalCards, delay}) => ({
+  background: `radial-gradient(50% 50% at 50% 50%, ${color} 0%, ${getColorLuminance(color, -.12)} 100%)`,
   borderRadius: 6,
   display: 'flex',
-  height: 175,
+  height: PokerCards.HEIGHT,
   justifyContent: 'center',
   position: 'relative',
-  transform: `translate(${-96 * idx}px, ${getYPos(isSelected, totalCards, idx)}px)`,
-  transition: `transform 100ms ${BezierCurve.DECELERATE}`,
-  width: 125
+  transform: `translate(${getXPos(idx, isCollapsed, cardRef)}px, ${getYPos(isSelected, totalCards, idx, isCollapsed)}px)`,
+  transition: `transform ${isCollapsed ? COLLAPSE_DUR : 100}ms ${EASE} ${delay}ms`,
+  userSelect: 'none',
+  width: PokerCards.WIDTH,
+  zIndex: isSelected && isCollapsed ? 1 : undefined
 }))
 
 const UpperLeftCardValue = styled('div')({
@@ -47,23 +77,36 @@ const UpperLeftCardValue = styled('div')({
 const Logo = styled('img')({
   // set min & max to accomodate custom logos here
   minWidth: 64,
-  maxWidth: 96,
+  maxWidth: PokerCards.OVERLAP,
   opacity: 0.5
 
 })
 interface Props {
   card: any
+  deckRef: RefObject<HTMLDivElement>
   idx: number
+  isCollapsed: boolean
   isSelected: boolean
   onClick: () => void
   totalCards: number
 }
 
+
 const PokerCard = (props: Props) => {
-  const {card, idx, isSelected, onClick, totalCards} = props
+  const {card, idx, isCollapsed, isSelected, onClick, totalCards, deckRef} = props
   const {color, label} = card
+  const wasCollapsedRef = useRef(isCollapsed)
+  const cardRef = useRef<HTMLDivElement>(null)
+  const isMoving = wasCollapsedRef.current !== isCollapsed
+  const isExpanding = isMoving && !isCollapsed
+  useEffect(() => {
+    wasCollapsedRef.current = isCollapsed
+  }, [isCollapsed])
+  const ref = idx === 0 ? deckRef : cardRef
+  const delay = getShuffleToTopDelay(ref, deckRef, isMoving, isSelected, idx, totalCards)
+  usePokerZIndexOverride(delay, cardRef, isExpanding, COLLAPSE_DUR)
   return (
-    <CardBase color={color} idx={idx} isSelected={isSelected} totalCards={totalCards} onClick={onClick}>
+    <CardBase ref={cardRef} delay={delay} cardRef={ref} color={color} idx={idx} isCollapsed={isCollapsed} isSelected={isSelected} totalCards={totalCards} onClick={onClick}>
       <UpperLeftCardValue>{label}</UpperLeftCardValue>
       <Logo src={logoMarkWhite} />
     </CardBase>
