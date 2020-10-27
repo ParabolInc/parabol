@@ -28,24 +28,23 @@ import {sign} from 'jsonwebtoken'
 import {toEpochSeconds} from '../../server/utils/epochTime'
 import {JWT_LIFESPAN} from '../../server/utils/serverConstants'
 
-const now = Date.now()
-const exp = toEpochSeconds(now + JWT_LIFESPAN)
-const iat = toEpochSeconds(now)
-const tokenObj = {
-  sub: 'local|CfKdrQVeo',
-  aud: 'action',
-  iss: window.location.origin,
-  exp,
-  iat,
-  tms: ['l6k4LyKnhP']
-}
-const secret = Buffer.from(Cypress.env('SERVER_SECRET'), 'base64')
-const authToken = sign(tokenObj, secret)
-
 const login = (_overrides = {}) => {
   Cypress.log({
     name: 'login'
   })
+  const now = Date.now()
+  const exp = toEpochSeconds(now + JWT_LIFESPAN)
+  const iat = toEpochSeconds(now)
+  const tokenObj = {
+    sub: 'local|CfKdrQVeo',
+    aud: 'action',
+    iss: window.location.origin,
+    exp,
+    iat,
+    tms: ['l6k4LyKnhP']
+  }
+  const secret = Buffer.from(Cypress.env('SERVER_SECRET'), 'base64')
+  const authToken = sign(tokenObj, secret)
   window.localStorage.setItem('Action:token', authToken)
   cy.visit('/')
   cy.location('pathname').should('eq', '/me')
@@ -60,7 +59,7 @@ const postGQL = (body: any) => {
     headers: {
       accept: 'application/json',
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${authToken}`
+      Authorization: `Bearer ${window.localStorage.getItem('Action:token')}`
     },
     body: body,
     failOnStatusCode: false

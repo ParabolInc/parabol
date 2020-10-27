@@ -14,6 +14,7 @@ describe('Poker template related backend tests', () => {
 
   beforeEach(() => {
     cy.task('resetDb')
+    cy.login()
 
     const query = `
       mutation {
