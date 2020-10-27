@@ -6,7 +6,7 @@ import {BezierCurve, PokerCards} from '../types/constEnums'
 import getColorLuminance from '../utils/getColorLuminance'
 import getBezierTimePercentGivenDistancePercent from '../utils/getBezierTimePercentGivenDistancePercent'
 
-const COLLAPSED_X = window.innerWidth - PokerCards.WIDTH - 16
+const getCollapsedX = () => window.innerWidth - PokerCards.WIDTH - 16
 const COLLAPSE_DUR = 1000
 const EASE = BezierCurve.DECELERATE
 
@@ -24,7 +24,7 @@ const getXPos = (idx: number, isCollapsed: boolean, cardRef: RefObject<HTMLDivEl
   const x = cardRef.current?.getBoundingClientRect().x ?? null
   const STEP_VAL = -PokerCards.OVERLAP
   if (!isCollapsed || x === null) return STEP_VAL * idx
-  const delta = COLLAPSED_X - x
+  const delta = getCollapsedX() - x
   return delta + (STEP_VAL * idx)
 }
 
@@ -33,9 +33,10 @@ const getShuffleToTopDelay = (cardRef: RefObject<HTMLDivElement>, deckRef: RefOb
   const deckX = deckRef.current?.getBoundingClientRect().x ?? null
   const cardRefX = cardRef.current?.getBoundingClientRect().x ?? null
   if (deckX === null || cardRefX === null) return 0
-  const isExpanding = cardRefX === COLLAPSED_X
+  const collapsedX = getCollapsedX()
+  const isExpanding = cardRefX === collapsedX
   const distanceToWait = isExpanding ? PokerCards.WIDTH : idx === 0 ? PokerCards.OVERLAP : cardRefX + PokerCards.WIDTH - deckX
-  const distaneTheFirstCardMustTravel = COLLAPSED_X - deckX
+  const distaneTheFirstCardMustTravel = collapsedX - deckX
   const distancePercent = (distanceToWait + 48) / distaneTheFirstCardMustTravel
   const timePercent = getBezierTimePercentGivenDistancePercent(distancePercent, EASE)
   return timePercent * COLLAPSE_DUR
