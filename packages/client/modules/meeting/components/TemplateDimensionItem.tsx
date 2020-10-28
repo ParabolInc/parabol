@@ -63,7 +63,7 @@ const DimensionAndDescription = styled('div')({
 
 const TemplateDimensionItem = (props: Props) => {
   const {dragProvided, isDragging, isOwner, dimension, dimensions} = props
-  const {id: dimensionId, scale} = dimension
+  const {id: dimensionId, name: dimensionName} = dimension
   const [isHover, setIsHover] = useState(false)
   const [isEditingDescription] = useState(false)
   const {submitting, submitMutation, onError} = useMutationProps()
@@ -95,29 +95,22 @@ const TemplateDimensionItem = (props: Props) => {
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
     >
-      {/* <EditableTemplateDimensionColor isOwner={isOwner} dimension={dimension} dimensions={dimensions} /> */}
-      <DimensionAndDescription>
-        <EditableTemplateDimension
-          isOwner={isOwner}
-          isEditingDescription={isEditingDescription}
-          isHover={isHover}
-          scaleName={scale.name}
-          dimensionId={dimensionId}
-          dimensions={dimensions}
-        />
-        {/* <EditableTemplateDescription
-          isOwner={isOwner}
-          description={description}
-          onEditingChange={setIsEditingDescription}
-          dimensionId={dimensionId}
-        /> */}
-      </DimensionAndDescription>
       {canRemove && (
         <RemoveDimensionIcon isHover={isHover} onClick={removeDimension}>
           cancel
         </RemoveDimensionIcon>
       )}
-    </DimensionItem>
+      < DimensionAndDescription >
+        <EditableTemplateDimension
+          isOwner={isOwner}
+          isEditingDescription={isEditingDescription}
+          isHover={isHover}
+          dimensionName={dimensionName}
+          dimensionId={dimensionId}
+          dimensions={dimensions}
+        />
+      </DimensionAndDescription>
+    </DimensionItem >
   )
 }
 export default createFragmentContainer(TemplateDimensionItem, {
@@ -131,9 +124,8 @@ export default createFragmentContainer(TemplateDimensionItem, {
     fragment TemplateDimensionItem_dimension on TemplateDimension {
       #...EditableTemplateDimensionColor_dimension
       id
-      scale {
-        name
-      }
+      name
+      description
     }
   `
 })

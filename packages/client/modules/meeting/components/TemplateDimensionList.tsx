@@ -28,7 +28,7 @@ const DimensionList = styled('div')({
   width: '100%'
 })
 
-const TEMPLATE_PROMPT = 'TEMPLATE_PROMPT'
+const TEMPLATE_DIMENSION = 'TEMPLATE_DIMENSION'
 
 class TemplateDimensionList extends Component<Props, State> {
   onDragEnd = (result) => {
@@ -36,8 +36,8 @@ class TemplateDimensionList extends Component<Props, State> {
     const {dimensions} = this.props
     if (
       !destination ||
-      destination.droppableId !== TEMPLATE_PROMPT ||
-      source.droppableId !== TEMPLATE_PROMPT ||
+      destination.droppableId !== TEMPLATE_DIMENSION ||
+      source.droppableId !== TEMPLATE_DIMENSION ||
       destination.index === source.index
     ) {
       return
@@ -66,7 +66,7 @@ class TemplateDimensionList extends Component<Props, State> {
     return (
       <DragDropContext onDragEnd={this.onDragEnd}>
         <DimensionList>
-          <Droppable droppableId={TEMPLATE_PROMPT} isDropDisabled={!isOwner}>
+          <Droppable droppableId={TEMPLATE_DIMENSION} isDropDisabled={!isOwner}>
             {(provided) => {
               return (
                 <div ref={provided.innerRef}>
@@ -107,6 +107,7 @@ export default createFragmentContainer(withAtmosphere(withMutationProps(Template
   dimensions: graphql`
     fragment TemplateDimensionList_dimensions on TemplateDimension @relay(plural: true) {
       id
+      sortOrder
       scale {
         name
       }

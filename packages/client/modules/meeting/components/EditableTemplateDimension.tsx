@@ -20,7 +20,7 @@ interface Props extends WithAtmosphereProps, WithMutationProps {
   isOwner: boolean
   isEditingDescription: boolean
   isHover: boolean
-  scaleName: string
+  dimensionName: string
   dimensionId: string
   dimensions: EditableTemplateDimension_dimensions
 }
@@ -48,7 +48,7 @@ class EditableTemplateDimension extends Component<Props> {
       .max(100, 'That sacle name is probably long enough')
       .test((mVal) => {
         const isDupe = dimensions.find(
-          (dimension) => dimension.id !== dimensionId && dimension.scale.name.toLowerCase() === mVal.toLowerCase()
+          (dimension) => dimension.id !== dimensionId && dimension.name.toLowerCase() === mVal.toLowerCase()
         )
         return isDupe ? 'That question was already asked' : undefined
       })
@@ -66,15 +66,15 @@ class EditableTemplateDimension extends Component<Props> {
   }
 
   render() {
-    const {isOwner, error, isHover, scaleName, isEditingDescription} = this.props
+    const {isOwner, error, isHover, isEditingDescription, dimensionName} = this.props
     return (
       <StyledEditableText
-        autoFocus={scaleName.startsWith('New dimension #')}
+        autoFocus={dimensionName.startsWith('New dimension #')}
         disabled={!isOwner}
         error={error as string}
         hideIcon={isEditingDescription ? true : !isHover}
         handleSubmit={this.handleSubmit}
-        initialValue={scaleName}
+        initialValue={dimensionName}
         maxLength={100}
         validate={this.validate}
         placeholder={'New Dimension'}
@@ -87,9 +87,7 @@ export default createFragmentContainer(withAtmosphere(withMutationProps(Editable
   dimensions: graphql`
     fragment EditableTemplateDimension_dimensions on TemplateDimension @relay(plural: true) {
       id
-      scale {
-        name
-      }
+      name
     }
   `
 })
