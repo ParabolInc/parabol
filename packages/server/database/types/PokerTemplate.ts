@@ -1,3 +1,4 @@
+import {MeetingTypeEnum} from 'parabol-client/types/graphql'
 import MeetingTemplate from './MeetingTemplate'
 
 interface Input {
@@ -11,6 +12,6 @@ interface Input {
 
 export default class PokerTemplate extends MeetingTemplate {
   constructor(input: Input) {
-    super({...input, type: 'poker'})
+    super({...input, type: MeetingTypeEnum.poker})
   }
 }

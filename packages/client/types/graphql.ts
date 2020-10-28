@@ -7114,7 +7114,7 @@ export interface IMutation {
   /**
    * Set the selected template for the upcoming retro meeting
    */
-  selectRetroTemplate: ISelectRetroTemplatePayload | null;
+  selectTemplate: ISelectTemplatePayload | null;
 
   /**
    * Share where in the app the viewer is
@@ -7976,7 +7976,7 @@ export interface ISegmentEventTrackOnMutationArguments {
   options?: ISegmentEventTrackOptions | null;
 }
 
-export interface ISelectRetroTemplateOnMutationArguments {
+export interface ISelectTemplateOnMutationArguments {
   selectedTemplateId: string;
   teamId: string;
 }
@@ -10019,10 +10019,10 @@ export interface ISegmentEventTrackOptions {
   actionType?: string | null;
 }
 
-export interface ISelectRetroTemplatePayload {
-  __typename: 'SelectRetroTemplatePayload';
+export interface ISelectTemplatePayload {
+  __typename: 'SelectTemplatePayload';
   error: IStandardMutationError | null;
-  retroMeetingSettings: IRetrospectiveMeetingSettings | null;
+  meetingSettings: TeamMeetingSettings | null;
 }
 
 /**
@@ -10763,7 +10763,7 @@ export type TeamSubscriptionPayload =
   | IRemoveOrgUserPayload
   | IRemoveTeamMemberPayload
   | IRenameMeetingSuccess
-  | ISelectRetroTemplatePayload
+  | ISelectTemplatePayload
   | IStartNewMeetingPayload
   | IStartSprintPokerSuccess
   | IUpdateAgendaItemPayload

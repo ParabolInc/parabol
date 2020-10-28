@@ -4,7 +4,7 @@ import React, {useRef} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useScrollIntoView from '../../../hooks/useScrollIntoVIew'
-import SelectRetroTemplateMutation from '../../../mutations/SelectRetroTemplateMutation'
+import SelectTemplate from '../../../mutations/SelectTemplateMutation'
 import {DECELERATE} from '../../../styles/animation'
 import textOverflow from '../../../styles/helpers/textOverflow'
 import {PALETTE} from '../../../styles/paletteV2'
@@ -65,7 +65,7 @@ const PokerTemplateItem = (props: Props) => {
   useScrollIntoView(ref, isActive)
   const selectTemplate = () => {
     if (isActive) return
-    SelectRetroTemplateMutation(atmosphere, {selectedTemplateId: templateId, teamId})
+    SelectTemplate(atmosphere, {selectedTemplateId: templateId, teamId})
   }
   return (
     <TemplateItem ref={ref} isActive={isActive} onClick={selectTemplate}>

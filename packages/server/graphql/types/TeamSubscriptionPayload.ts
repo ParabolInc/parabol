@@ -42,7 +42,7 @@ import RenamePokerTemplatePayload from './RenamePokerTemplatePayload'
 import RenameReflectTemplatePromptPayload from './RenameReflectTemplatePromptPayload'
 import RenamePokerTemplateDimensionPayload from './RenamePokerTemplateDimensionPayload'
 import RenamePokerTemplateScalePayload from './RenamePokerTemplateScalePayload'
-import SelectRetroTemplatePayload from './SelectRetroTemplatePayload'
+import SelectTemplatePayload from './SelectTemplatePayload'
 import SetCheckInEnabledPayload from './SetCheckInEnabledPayload'
 import SetSlackNotificationPayload from './SetSlackNotificationPayload'
 import StartNewMeetingPayload from './StartNewMeetingPayload'
@@ -75,7 +75,7 @@ const types = [
   RemoveOrgUserPayload,
   RemoveTeamMemberPayload,
   RenameMeetingSuccess,
-  SelectRetroTemplatePayload,
+  SelectTemplatePayload,
   StartNewMeetingPayload,
   StartSprintPokerSuccess,
   UpdateAgendaItemPayload,

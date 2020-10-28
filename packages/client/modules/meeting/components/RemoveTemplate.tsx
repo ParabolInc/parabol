@@ -5,7 +5,7 @@ import TemplateDetailAction from '../../../components/TemplateDetailAction'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
 import RemoveReflectTemplateMutation from '../../../mutations/RemoveReflectTemplateMutation'
-import SelectRetroTemplateMutation from '../../../mutations/SelectRetroTemplateMutation'
+import SelectTemplateMutation from '../../../mutations/SelectTemplateMutation'
 import {RemoveTemplate_teamTemplates} from '../../../__generated__/RemoveTemplate_teamTemplates.graphql'
 
 
@@ -35,7 +35,7 @@ const RemoveTemplate = (props: Props) => {
     // use the same index as the previous item. if the item was last in the list, grab the new last
     const nextTemplateId = templateIds[templateIdx] || templateIds[templateIds.length - 1]
     if (nextTemplateId) {
-      SelectRetroTemplateMutation(atmosphere, {selectedTemplateId: nextTemplateId, teamId})
+      SelectTemplateMutation(atmosphere, {selectedTemplateId: nextTemplateId, teamId})
     } else {
       gotoPublicTemplates()
     }
