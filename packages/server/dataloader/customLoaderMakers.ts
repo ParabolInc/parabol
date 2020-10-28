@@ -347,12 +347,7 @@ export const meetingTemplatesByType = (parent: RethinkDataLoader) => {
           return r
             .table('MeetingTemplate')
             .getAll(r.args(teamIds), {index: 'teamId'})
-            .filter({type: meetingType as MeetingTypeEnum})
-            .filter((row) =>
-              row('removedAt')
-                .default(null)
-                .eq(null)
-            )
+            .filter({type: meetingType as MeetingTypeEnum, isActive: true})
             .run()
         })
       )
