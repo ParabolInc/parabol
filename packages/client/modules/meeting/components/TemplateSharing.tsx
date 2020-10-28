@@ -109,7 +109,7 @@ const TemplateSharing = (props: Props) => {
 }
 export default createFragmentContainer(TemplateSharing, {
   template: graphql`
-    fragment TemplateSharing_template on SharableTemplate {
+    fragment TemplateSharing_template on MeetingTemplate {
       ...SelectSharingScopeDropdown_template
       id
       scope

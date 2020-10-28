@@ -59,7 +59,7 @@ export const sharableTemplateFields = () => ({
 })
 
 const MeetingTemplate = new GraphQLInterfaceType({
-  name: 'SharableTemplate',
+  name: 'MeetingTemplate',
   description: 'A meeting template that can be shared across team, orgnization and public',
   fields: sharableTemplateFields
 })

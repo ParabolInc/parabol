@@ -51,7 +51,7 @@ const SelectSharingScopeDropdown = (props: Props) => {
 
 export default createFragmentContainer(SelectSharingScopeDropdown, {
   template: graphql`
-    fragment SelectSharingScopeDropdown_template on SharableTemplate {
+    fragment SelectSharingScopeDropdown_template on MeetingTemplate {
       id
       scope
       team {

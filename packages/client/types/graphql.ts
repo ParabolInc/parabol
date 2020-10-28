@@ -3728,13 +3728,13 @@ export interface ITemplateScaleValue {
 /**
  * A meeting template that can be shared across team, orgnization and public
  */
-export type SharableTemplate = IReflectTemplate | IPokerTemplate;
+export type MeetingTemplate = IReflectTemplate | IPokerTemplate;
 
 /**
  * A meeting template that can be shared across team, orgnization and public
  */
-export interface ISharableTemplate {
-  __typename: 'SharableTemplate';
+export interface IMeetingTemplate {
+  __typename: 'MeetingTemplate';
 
   /**
    * shortid
@@ -9865,7 +9865,7 @@ export interface IRenameMeetingSuccess {
 export interface IRenameMeetingTemplatePayload {
   __typename: 'RenameMeetingTemplatePayload';
   error: IStandardMutationError | null;
-  meetingTemplate: SharableTemplate | null;
+  meetingTemplate: MeetingTemplate | null;
 }
 
 export interface IRenameReflectTemplatePromptPayload {
@@ -10411,12 +10411,12 @@ export interface IUpdateTemplateScopeSuccess {
   /**
    * the template that was just updated, if downscoped, does not provide whole story
    */
-  template: SharableTemplate;
+  template: MeetingTemplate;
 
   /**
    * if downscoping a previously used template, this will be the replacement
    */
-  clonedTemplate: SharableTemplate | null;
+  clonedTemplate: MeetingTemplate | null;
 
   /**
    * The settings that contain the teamTemplates array that was modified
