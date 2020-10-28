@@ -5,8 +5,10 @@ import TemplateDetailAction from '../../../components/TemplateDetailAction'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
 import RemoveReflectTemplateMutation from '../../../mutations/RemoveReflectTemplateMutation'
+import RemovePokerTemplateMutation from '../../../mutations/RemovePokerTemplateMutation'
 import SelectTemplateMutation from '../../../mutations/SelectTemplateMutation'
 import {RemoveTemplate_teamTemplates} from '../../../__generated__/RemoveTemplate_teamTemplates.graphql'
+import {MeetingTypeEnum} from '~/types/graphql'
 
 
 interface Props {
@@ -30,6 +32,7 @@ const RemoveTemplate = (props: Props) => {
     if (submitting) return
     submitMutation()
     const templateIds = teamTemplates.map(({id}) => id)
+    const type = teamTemplates.map(({type}) => type).shift()
     const templateIdx = templateIds.indexOf(templateId)
     templateIds.splice(templateIdx, 1)
     // use the same index as the previous item. if the item was last in the list, grab the new last
@@ -39,7 +42,11 @@ const RemoveTemplate = (props: Props) => {
     } else {
       gotoPublicTemplates()
     }
-    RemoveReflectTemplateMutation(atmosphere, {templateId}, {onError, onCompleted})
+    if (type === MeetingTypeEnum.retrospective) {
+      RemoveReflectTemplateMutation(atmosphere, {templateId}, {onError, onCompleted})
+    } else if (type === MeetingTypeEnum.poker) {
+      RemovePokerTemplateMutation(atmosphere, {templateId}, {onError, onCompleted})
+    }
   }
 
   return <TemplateDetailAction icon={'delete'} tooltip={'Delete template'} onClick={removeTemplate} />
@@ -50,6 +57,7 @@ export default createFragmentContainer(
     teamTemplates: graphql`
       fragment RemoveTemplate_teamTemplates on MeetingTemplate @relay(plural: true) {
         id
+        type
       }`
   }
 )
