@@ -80,7 +80,7 @@ const updateTemplateScope = {
       })
       clonedTemplateId = clonedTemplate.id
       const prompts = await dataLoader.get('reflectPromptsByTemplateId').load(templateId)
-      const activePrompts = prompts.filter(({isActive}) => isActive)
+      const activePrompts = prompts.filter(({removedAt}) => !removedAt)
       const promptIds = activePrompts.map(({id}) => id)
       const clonedPrompts = activePrompts.map((prompt) => {
         return new RetrospectivePrompt({
