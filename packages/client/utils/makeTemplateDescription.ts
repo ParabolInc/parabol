@@ -6,7 +6,7 @@ import relativeDate from './date/relativeDate'
 const makeTemplateDescription = (lowestScope: string, templateRef: any) => {
   const template = readInlineData<makeTemplateDescription_template>(
     graphql`
-      fragment makeTemplateDescription_template on ReflectTemplate @inline {
+      fragment makeTemplateDescription_template on MeetingTemplate @inline {
         lastUsedAt
         scope
         team {

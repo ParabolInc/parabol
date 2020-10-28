@@ -48,7 +48,7 @@ export default createFragmentContainer(
   RemoveTemplate,
   {
     teamTemplates: graphql`
-      fragment RemoveTemplate_teamTemplates on ReflectTemplate @relay(plural: true) {
+      fragment RemoveTemplate_teamTemplates on MeetingTemplate @relay(plural: true) {
         id
       }`
   }

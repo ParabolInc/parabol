@@ -93,7 +93,7 @@ class EditableTemplateName extends Component<Props> {
 
 export default createFragmentContainer(withAtmosphere(withMutationProps(EditableTemplateName)), {
   teamTemplates: graphql`
-    fragment EditableTemplateName_teamTemplates on ReflectTemplate @relay(plural: true) {
+    fragment EditableTemplateName_teamTemplates on MeetingTemplate @relay(plural: true) {
       id
       name
     }
