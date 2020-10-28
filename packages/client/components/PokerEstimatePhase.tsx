@@ -4,6 +4,7 @@ import {createFragmentContainer} from 'react-relay'
 import {phaseLabelLookup} from '../utils/meetings/lookups'
 import {PokerEstimatePhase_meeting} from '../__generated__/PokerEstimatePhase_meeting.graphql'
 import EstimatePhaseArea from './EstimatePhaseArea'
+import EstimatePhaseDiscussionDrawer from './EstimatePhaseDiscussionDrawer'
 import MeetingContent from './MeetingContent'
 import MeetingHeaderAndPhase from './MeetingHeaderAndPhase'
 import MeetingTopBar from './MeetingTopBar'
@@ -33,27 +34,28 @@ const PokerEstimatePhase = (props: Props) => {
           <PhaseHeaderTitle>{phaseLabelLookup.ESTIMATE}</PhaseHeaderTitle>
           <PhaseHeaderDescription>{'Estimate each story as a team'}</PhaseHeaderDescription>
         </MeetingTopBar>
-        {__typename === 'EstimateStageJira' && <PokerEstimateHeaderCardJira stage={localStage as any} />}
+        {__typename === 'EstimateStageJira' && (
+          <PokerEstimateHeaderCardJira stage={localStage as any} />
+        )}
         <PhaseWrapper>
           <EstimatePhaseArea />
         </PhaseWrapper>
       </MeetingHeaderAndPhase>
+      <EstimatePhaseDiscussionDrawer isOpen={true} />
     </MeetingContent>
   )
 }
 
 graphql`
   fragment PokerEstimatePhaseStage on EstimateStage {
-    ...on EstimateStageJira {
+    ... on EstimateStageJira {
       __typename
       ...PokerEstimateHeaderCardJira_stage
     }
   }
 `
-export default createFragmentContainer(
-  PokerEstimatePhase,
-  {
-    meeting: graphql`
+export default createFragmentContainer(PokerEstimatePhase, {
+  meeting: graphql`
     fragment PokerEstimatePhase_meeting on PokerMeeting {
       id
       endedAt
@@ -62,12 +64,12 @@ export default createFragmentContainer(
         ...PokerEstimatePhaseStage @relay(mask: false)
       }
       phases {
-        ...on EstimatePhase {
+        ... on EstimatePhase {
           stages {
             ...PokerEstimatePhaseStage @relay(mask: false)
           }
         }
       }
-    }`
-  }
-)
+    }
+  `
+})

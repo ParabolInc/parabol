@@ -122,7 +122,8 @@ const SwipeableDashSidebar = (props: Props) => {
   )
 
   const hideSidebar = useCallback(() => {
-    setX(0)
+    // setX(0)
+    setX(1000)
     swipe.showBodyScroll && swipe.showBodyScroll()
   }, [setX])
 
@@ -187,7 +188,8 @@ const SwipeableDashSidebar = (props: Props) => {
     const minWidth = swipe.isOpen ? 0 : PEEK_WIDTH
     const nextX = Math.min(NavSidebar.WIDTH, Math.max(minWidth, xRef.current + movementX))
     updateSpeed(clientX)
-    setX(nextX)
+    setX(1000)
+    // setX(nextX)
   })
 
   const onMouseDown = useEventCallback((e: React.MouseEvent | React.TouchEvent) => {
