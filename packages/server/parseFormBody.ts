@@ -21,15 +21,29 @@ const reqHeaders = (req: HttpRequest) => {
 }
 
 const parseFormBody = (res: HttpResponse, req: HttpRequest) => {
-  const busboy = new Busboy({headers: reqHeaders(req)})
-  bodyStream(res).pipe(busboy)
-  busboy.on('file', (fieldname, file, filename, encoding, mimetype) => {
-    console.log('file found!!')
-    console.log('file args:', fieldname, filename, encoding, mimetype)
-    console.log('file:', file)
-    file.pipe(fs.createWriteStream('./upload.jpg'))
+  // todo: better typing, validation, etc.
+  return new Promise<[any, any]>((resolve) => {
+    let foundFile, foundBody
+    const busboy = new Busboy({headers: reqHeaders(req)})
+    bodyStream(res).pipe(busboy)
+    busboy.on('file', (fieldname, file, filename, encoding, mimetype) => {
+      console.log('file found!!')
+      console.log('file args:', fieldname, filename, encoding, mimetype)
+      console.log('file:', file)
+      file.pipe(fs.createWriteStream('./upload.jpg'))
+      foundFile = file
+    })
+    busboy.on('field', async (fieldname, val) => {
+      if (fieldname !== 'body') return
+      const body = await JSON.parse(val)
+      foundBody = body
+      console.log('body:', body)
+    })
+    busboy.on('finish', () => {
+      console.log('busboy finished!')
+      resolve([foundFile, foundBody])
+    })
   })
-  busboy.on('finish', () => console.log('busboy finished!'))
 }
 
 export default parseFormBody

@@ -9,7 +9,11 @@ export default {
       description: 'test test'
     }
   },
-  resolve: (_, {}, {authToken}) => {
-    console.log('upload mutation callled:', authToken)
+  resolve: (source, variables, context) => {
+    console.log('upload mutation callled!')
+    console.log('source:', source)
+    console.log('variables:', variables)
+    console.log('context:', context)
+    // todo: get file from context here
   }
 }

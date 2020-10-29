@@ -134,14 +134,11 @@ export default class Atmosphere extends Environment {
       },
     }
     const uploadables = body.payload.variables?.uploadables
-    console.log('uploadables:', uploadables)
+    delete body.payload.variables?.uploadables
     if (uploadables) {
       if (!window.FormData) throw new Error('Uploading files without `FormData` not supported')
       const formData = new FormData()
-      const {documentId, query, variables} = body.payload
-      if (query) formData.append('query', query)
-      if (documentId) formData.append('documentId', documentId)
-      if (variables) formData.append('variables', JSON.stringify(variables))
+      formData.append('body', JSON.stringify(body))
       Object.keys(uploadables).forEach(key => {
         if (!Object.prototype.hasOwnProperty.call(uploadables, key)) return
         formData.append(key, uploadables[key])
@@ -153,16 +150,6 @@ export default class Atmosphere extends Environment {
     }
     console.log('heres the req:', req)
     const res = await fetch('/graphql', req)
-    // const res = await fetch('/graphql', {
-    //   method: 'POST',
-    //   headers: {
-    //     accept: 'application/json',
-    //     Authorization: this.authToken ? `Bearer ${this.authToken}` : '',
-    //     'content-type': 'application/json',
-    //     'x-correlation-id': connectionId || ''
-    //   },
-    //   body: JSON.stringify(body)
-    // })
     const contentTypeHeader = res.headers.get('content-type') || ''
     if (contentTypeHeader.toLowerCase().startsWith('application/json')) {
       const resJson = await res.json()

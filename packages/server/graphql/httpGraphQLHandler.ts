@@ -64,24 +64,39 @@ const httpGraphQLBodyHandler = async (
     }
   })
 }
+const getSupportedContentType = (
+  ct: string
+): 'application/json' | 'multipart/form-data' | null => {
+  if (ct.startsWith('application/json')) return 'application/json'
+  if (ct.startsWith('multipart/form-data')) return 'multipart/form-data'
+  return null
+}
 
 const httpGraphQLHandler = uWSAsyncHandler(async (res: HttpResponse, req: HttpRequest) => {
-  const contentType = req.getHeader('content-type')
+  let body, file
   const connectionId = req.getHeader('x-correlation-id')
   const authToken = getReqAuth(req)
   const ip = uwsGetIP(res, req)
-  if (contentType.startsWith('application/json')) {
-    const body = await parseBody(res)
-    if (!body) {
-      res.writeStatus('422').end()
+  const contentType = req.getHeader('content-type')
+  const supportedContentType = getSupportedContentType(contentType)
+  switch (supportedContentType) {
+    case null:
+      res.writeStatus('415').end()
       return
-    }
-    await httpGraphQLBodyHandler(res, body, authToken, connectionId, ip)
+    case 'application/json':
+      body = await parseBody(res)
+      break
+    case 'multipart/form-data':
+      [file, body] = await parseFormBody(res, req)
+      break
   }
-  if (contentType.startsWith('multipart/form-data')) {
-    await parseFormBody(res, req)
+  if (!body) {
+    res.writeStatus('422').end()
+    return
   }
-  res.writeStatus('415').end()
+  console.log('file:', file)
+  // todo: pass file into context here
+  await httpGraphQLBodyHandler(res, body, authToken, connectionId, ip)
 })
 
 export default httpGraphQLHandler
