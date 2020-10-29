@@ -2,10 +2,12 @@ import {
   GraphQLBoolean,
   GraphQLFloat,
   GraphQLID,
+  GraphQLList,
   GraphQLNonNull,
   GraphQLObjectType,
   GraphQLString
 } from 'graphql'
+import db from '../../db'
 import {GQLContext} from '../graphql'
 import {resolveTeam} from '../resolvers'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
@@ -70,11 +72,22 @@ const TemplateDimension = new GraphQLObjectType<any, GQLContext>({
       type: new GraphQLNonNull(GraphQLString),
       resolve: ({description}) => description || ''
     },
-    scale: {
+    selectedScale: {
       type: new GraphQLNonNull(TemplateScale),
       description: 'scale used in this dimension',
       resolve: ({scaleId}, _args, {dataLoader}) => {
         return dataLoader.get('templateScales').load(scaleId)
+      }
+    },
+    availableScales: {
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(TemplateScale))),
+      description: 'The list of scales can be set for this dimension',
+      resolve: async ({teamId}, _args, {dataLoader}) => {
+        const activeTeamScales = await dataLoader.get('scalesByTeamId').load(teamId)
+        const publicScales = await db.read('starterScales', 'aGhostTeam')
+        const activeScales = [...activeTeamScales, ...publicScales]
+        activeScales.slice().sort((a, b) => (a.sortOrder < b.sortOrder ? -1 : 1))
+        return activeScales
       }
     }
   })

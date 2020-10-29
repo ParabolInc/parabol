@@ -3651,7 +3651,12 @@ export interface ITemplateDimension {
   /**
    * scale used in this dimension
    */
-  scale: ITemplateScale;
+  selectedScale: ITemplateScale;
+
+  /**
+   * The list of scales can be set for this dimension
+   */
+  availableScales: Array<ITemplateScale>;
 }
 
 /**

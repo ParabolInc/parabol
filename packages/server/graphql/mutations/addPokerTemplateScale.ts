@@ -67,7 +67,7 @@ const addPokerTemplateScale = {
         .filter((row) =>
           row('removedAt')
             .default(null)
-            .ne(null)
+            .eq(null)
         )
         .filter((row) => row('name').match(`^${copyName}`) as any)
         .count()
