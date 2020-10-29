@@ -55,7 +55,7 @@ const addPokerTemplateScaleValue = {
       return standardError(new Error('Invalid scale value'), {userId: viewerId})
     }
 
-    await r
+    const updatedScale = await r
       .table('TemplateScale')
       .get(scaleId)
       .update(
@@ -64,14 +64,11 @@ const addPokerTemplateScaleValue = {
           updatedAt: now
         }),
         {returnChanges: true}
-      )
-      .run()
-    const updatedScale = await r
-      .table('TemplateScale')
-      .get(scaleId)
+      )('changes')(0)('new_val')
+      .default(null)
       .run()
 
-    if (validateScaleLabelValueUniqueness(updatedScale.values)) {
+    if (updatedScale && !validateScaleLabelValueUniqueness(updatedScale.values)) {
       // updated values and/or labels are not unique, rolling back
       await r
         .table('TemplateScale')

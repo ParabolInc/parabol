@@ -49,6 +49,7 @@ const removePokerTemplateScale = {
           .default(null)
           .eq(null)
       )
+      .orderBy('sortOrder')
       .run()
     const nextDefaultScaleId =
       activeTeamScales.length > 0

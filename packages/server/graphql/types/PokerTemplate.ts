@@ -2,7 +2,7 @@ import {GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import connectionDefinitions from '../connectionDefinitions'
 import {GQLContext} from '../graphql'
 import TemplateDimension from './TemplateDimension'
-import MeetingTemplate, {sharableTemplateFields} from './MeetingTemplate'
+import MeetingTemplate, {meetingTemplateFields} from './MeetingTemplate'
 import {MeetingTypeEnum} from 'parabol-client/types/graphql'
 
 const PokerTemplate = new GraphQLObjectType<any, GQLContext>({
@@ -11,7 +11,7 @@ const PokerTemplate = new GraphQLObjectType<any, GQLContext>({
   interfaces: () => [MeetingTemplate],
   isTypeOf: ({type}) => type === MeetingTypeEnum.poker,
   fields: () => ({
-    ...sharableTemplateFields(),
+    ...meetingTemplateFields(),
     dimensions: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(TemplateDimension))),
       description: 'The dimensions that are part of this template',

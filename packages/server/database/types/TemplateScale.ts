@@ -41,7 +41,7 @@ export default class TemplateScale {
     this.id = shortid.generate()
     this.sortOrder = sortOrder
     this.name = name
-    this.values = values || ([questionMarkCard, passCard] as TemplateScaleValue[])
+    this.values = values || [questionMarkCard, passCard]
     this.teamId = teamId
     this.parentScaleId = parentScaleId
     this.isStarter = isStarter

@@ -9,7 +9,7 @@ const validateScaleLabel = (label: string) => {
 }
 
 const validateScaleValue = (value: number, isSpecial: boolean) => {
-  return isSpecial ? -1 <= value && value <= Math.pow(2, 31) - 1 : 0 <= value && value <= 99
+  return isSpecial ? value === -1 || value === Math.pow(2, 31) - 1 : 0 <= value && value <= 99
 }
 
 const validateScaleLabelValueUniqueness = (scaleValues: TemplateScaleValue[]) => {
@@ -17,8 +17,8 @@ const validateScaleLabelValueUniqueness = (scaleValues: TemplateScaleValue[]) =>
   const labelList = scaleValues.map((scaleValue) => scaleValue.label)
 
   return (
-    new Set(numericalValueList).size !== numericalValueList.length ||
-    new Set(labelList).size !== labelList.length
+    new Set(numericalValueList).size === numericalValueList.length &&
+    new Set(labelList).size === labelList.length
   )
 }
 

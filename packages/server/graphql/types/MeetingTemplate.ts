@@ -9,7 +9,7 @@ import GraphQLISO8601Type from './GraphQLISO8601Type'
 import SharingScopeEnum from './SharingScopeEnum'
 import Team from './Team'
 
-export const sharableTemplateFields = () => ({
+export const meetingTemplateFields = () => ({
   id: {
     type: GraphQLNonNull(GraphQLID),
     description: 'shortid'
@@ -61,7 +61,7 @@ export const sharableTemplateFields = () => ({
 const MeetingTemplate = new GraphQLInterfaceType({
   name: 'MeetingTemplate',
   description: 'A meeting template that can be shared across team, orgnization and public',
-  fields: sharableTemplateFields
+  fields: meetingTemplateFields
 })
 
 export default MeetingTemplate

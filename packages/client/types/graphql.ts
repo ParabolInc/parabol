@@ -3790,14 +3790,6 @@ export interface IMeetingTemplate {
 }
 
 /**
- * The type of the template
- */
-export const enum SharableTemplateEnum {
-  RETROSPECTIVE = 'RETROSPECTIVE',
-  SPRINT_POKER = 'SPRINT_POKER'
-}
-
-/**
  * The meeting phase where all team members discuss the topics with the most votes
  */
 export interface IDiscussPhase {
