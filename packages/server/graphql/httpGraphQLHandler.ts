@@ -69,6 +69,7 @@ const httpGraphQLHandler = uWSAsyncHandler(async (res: HttpResponse, req: HttpRe
   const connectionId = req.getHeader('x-correlation-id')
   const authToken = getReqAuth(req)
   const ip = uwsGetIP(res, req)
+  console.log('contenttype:', contentType)
   if (contentType.startsWith('application/json')) {
     const body = await parseBody(res)
     if (!body) {
@@ -77,6 +78,8 @@ const httpGraphQLHandler = uWSAsyncHandler(async (res: HttpResponse, req: HttpRe
     }
     await httpGraphQLBodyHandler(res, body, authToken, connectionId, ip)
   } else {
+    const body = await parseBody(res)
+    console.log('in 415 block!', body)
     res.writeStatus('415').end()
   }
 })

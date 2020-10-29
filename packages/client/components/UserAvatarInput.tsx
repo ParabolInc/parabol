@@ -3,14 +3,12 @@ import sanitizeSVG from '@mattkrick/sanitize-svg'
 import React, {Component} from 'react'
 import jpgWithoutEXIF from '~/utils/jpgWithoutEXIF'
 import withAtmosphere, {WithAtmosphereProps} from '../decorators/withAtmosphere/withAtmosphere'
-import CreateUserPicturePutUrlMutation from '../mutations/CreateUserPicturePutUrlMutation'
-import UpdateUserProfileMutation from '../mutations/UpdateUserProfileMutation'
 import withMutationProps, {WithMutationProps} from '../utils/relay/withMutationProps'
-import sendAssetToS3 from '../utils/sendAssetToS3'
 import svgToPng from '../utils/svgToPng'
 import Avatar from './Avatar/Avatar'
 import AvatarInput from './AvatarInput'
 import DialogTitle from './DialogTitle'
+import UploadUserImageMutation from '../mutations/UploadUserImageMutation'
 
 interface Props extends WithAtmosphereProps, WithMutationProps {
   picture: string
@@ -78,17 +76,19 @@ class UserAvatarInput extends Component<Props> {
     }
 
     submitMutation()
-    const handleCompleted = async (res) => {
-      const {
-        createUserPicturePutUrl: {url, pngUrl}
-      } = res
-      const pictureUrl = await sendAssetToS3(file, url)
-      if (pngUrl) {
-        await sendAssetToS3(pngFile, pngUrl)
-      }
-      UpdateUserProfileMutation(atmosphere, {picture: pictureUrl}, {onError, onCompleted})
-    }
-    CreateUserPicturePutUrlMutation(atmosphere, variables, onError, handleCompleted)
+    // const handleCompleted = async (res) => {
+    //   const {
+    //     createUserPicturePutUrl: {url, pngUrl}
+    //   } = res
+    //   const pictureUrl = await sendAssetToS3(file, url)
+    //   if (pngUrl) {
+    //     await sendAssetToS3(pngFile, pngUrl)
+    //   }
+    //   UpdateUserProfileMutation(atmosphere, {picture: pictureUrl}, {onError, onCompleted})
+    // }
+    console.log('file in component:', file)
+    UploadUserImageMutation(atmosphere, {file}, {onCompleted, onError})
+    // CreateUserPicturePutUrlMutation(atmosphere, variables, onError, handleCompleted)
   }
 
   render() {

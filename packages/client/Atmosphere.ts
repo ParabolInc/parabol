@@ -1,6 +1,6 @@
 import GQLTrebuchetClient, {
   GQLHTTPClient,
-  OperationPayload
+  OperationPayload,
 } from '@mattkrick/graphql-trebuchet-client'
 import getTrebuchet, {SocketTrebuchet, SSETrebuchet} from '@mattkrick/trebuchet-client'
 import EventEmitter from 'eventemitter3'
@@ -19,6 +19,7 @@ import {
   RequestParameters,
   Store,
   SubscribeFunction,
+  UploadableMap,
   Variables
 } from 'relay-runtime'
 import {Sink} from 'relay-runtime/lib/network/RelayObservable'
@@ -48,6 +49,12 @@ export type SubscriptionRequestor = {
     router: {history: RouterProps['history']}
   ): Disposable,
   key: string
+}
+
+interface FetchHTTPData {
+  type: 'start' | 'stop'
+  payload: OperationPayload
+  uploadables?: UploadableMap
 }
 
 const noop = (): any => {
@@ -81,6 +88,7 @@ export default class Atmosphere extends Environment {
   }
   _network: typeof Network
 
+  baseHTTPTransport: GQLHTTPClient
   transport!: GQLHTTPClient | GQLTrebuchetClient
   authToken: string | null = null
   authObj: AuthToken | null = null
@@ -103,7 +111,7 @@ export default class Atmosphere extends Environment {
       network: Network.create(noop)
     })
     this._network = Network.create(this.handleFetch, this.handleSubscribe) as any
-    this.transport = new GQLHTTPClient(this.fetchHTTP)
+    this.baseHTTPTransport = this.transport = new GQLHTTPClient(this.fetchHTTP)
   }
 
   fetchPing = async (connectionId?: string) => {
@@ -115,17 +123,46 @@ export default class Atmosphere extends Environment {
     })
   }
 
-  fetchHTTP = async (body: object, connectionId?: string) => {
-    const res = await fetch('/graphql', {
+  fetchHTTP = async (body: FetchHTTPData, connectionId?: string) => {
+    console.log('fetchHTTp called!', body, connectionId)
+    const req = {
       method: 'POST',
       headers: {
         accept: 'application/json',
         Authorization: this.authToken ? `Bearer ${this.authToken}` : '',
-        'content-type': 'application/json',
         'x-correlation-id': connectionId || ''
       },
-      body: JSON.stringify(body)
-    })
+    }
+    const uploadables = body.payload.variables?.uploadables
+    console.log('uploadables:', uploadables)
+    if (uploadables) {
+      if (!window.FormData) throw new Error('Uploading files without `FormData` not supported')
+      const formData = new FormData()
+      const {documentId, query, variables} = body.payload
+      if (query) formData.append('query', query)
+      if (documentId) formData.append('documentId', documentId)
+      if (variables) formData.append('variables', JSON.stringify(variables))
+      Object.keys(uploadables).forEach(key => {
+        if (!Object.prototype.hasOwnProperty.call(uploadables, key)) return
+        formData.append(key, uploadables[key])
+      })
+      Object.assign(req, {body: formData})
+    } else {
+      Object.assign(req.headers, {'content-type': 'application/json'})
+      Object.assign(req, {body: JSON.stringify(body)})
+    }
+    console.log('heres the req:', req)
+    const res = await fetch('/graphql', req)
+    // const res = await fetch('/graphql', {
+    //   method: 'POST',
+    //   headers: {
+    //     accept: 'application/json',
+    //     Authorization: this.authToken ? `Bearer ${this.authToken}` : '',
+    //     'content-type': 'application/json',
+    //     'x-correlation-id': connectionId || ''
+    //   },
+    //   body: JSON.stringify(body)
+    // })
     const contentTypeHeader = res.headers.get('content-type') || ''
     if (contentTypeHeader.toLowerCase().startsWith('application/json')) {
       const resJson = await res.json()
@@ -223,8 +260,10 @@ export default class Atmosphere extends Environment {
   handleFetchPromise = async (
     request: RequestParameters,
     variables: Variables,
+    uploadables?: UploadableMap | null,
     sink?: Sink<any>
   ) => {
+    console.log('in handle fetch promise:', request, variables, uploadables)
     // await sleep(1000)
     const field = __PRODUCTION__ ? 'documentId' : 'query'
     let data = request.id
@@ -232,12 +271,20 @@ export default class Atmosphere extends Environment {
       const queryMap = await import('../../queryMap.json')
       data = queryMap[request.id!]
     }
-    return this.transport.fetch({[field]: data, variables}, sink || noopSink)
+    const transport = uploadables ? this.baseHTTPTransport : this.transport
+    console.log('in handleFetch promise, uploadables:', uploadables)
+    return transport.fetch({
+      [field]: data,
+      variables: uploadables ? 
+        Object.assign({}, variables, {uploadables})
+        : 
+        variables
+    }, sink || noopSink)
   }
 
-  handleFetch: FetchFunction = (request, variables) => {
+  handleFetch: FetchFunction = (request, variables, _, uploadables) => {
     return Observable.create((sink) => {
-      this.handleFetchPromise(request, variables, sink)
+      this.handleFetchPromise(request, variables, uploadables, sink)
     })
   }
 

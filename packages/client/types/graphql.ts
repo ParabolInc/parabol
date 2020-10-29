@@ -6849,6 +6849,16 @@ export interface IMutation {
   updateUserProfile: IUpdateUserProfilePayload | null;
 
   /**
+   * Upgrade an account to the paid service
+   */
+  upgradeToPro: IUpgradeToProPayload | null;
+
+  /**
+   * Upload an image for a user avatar
+   */
+  uploadUserImage: boolean | null;
+
+  /**
    * Verify an email address and sign in if not already a user
    */
   verifyEmail: IVerifyEmailPayload;
@@ -6857,11 +6867,6 @@ export interface IMutation {
    * Cast your vote for a reflection group
    */
   voteForReflectionGroup: IVoteForReflectionGroupPayload | null;
-
-  /**
-   * Upgrade an account to the paid service
-   */
-  upgradeToPro: IUpgradeToProPayload | null;
 }
 
 export interface IAcceptTeamInvitationOnMutationArguments {
@@ -7788,6 +7793,25 @@ export interface IUpdateUserProfileOnMutationArguments {
   updatedUser: IUpdateUserProfileInput;
 }
 
+export interface IUpgradeToProOnMutationArguments {
+  /**
+   * the org requesting the upgrade
+   */
+  orgId: string;
+
+  /**
+   * The token that came back from stripe
+   */
+  stripeToken: string;
+}
+
+export interface IUploadUserImageOnMutationArguments {
+  /**
+   * test test
+   */
+  dummy?: number | null;
+}
+
 export interface IVerifyEmailOnMutationArguments {
   /**
    * The 48-byte url-safe base64 encoded verification token
@@ -7801,18 +7825,6 @@ export interface IVoteForReflectionGroupOnMutationArguments {
    */
   isUnvote?: boolean | null;
   reflectionGroupId: string;
-}
-
-export interface IUpgradeToProOnMutationArguments {
-  /**
-   * the org requesting the upgrade
-   */
-  orgId: string;
-
-  /**
-   * The token that came back from stripe
-   */
-  stripeToken: string;
 }
 
 export interface IAcceptTeamInvitationPayload {
@@ -9870,31 +9882,6 @@ export interface IUpdateUserProfileInput {
   preferredName?: string | null;
 }
 
-export interface IVerifyEmailPayload {
-  __typename: 'VerifyEmailPayload';
-  error: IStandardMutationError | null;
-
-  /**
-   * The new auth token sent to the mutator
-   */
-  authToken: string | null;
-  userId: string | null;
-  user: IUser | null;
-}
-
-export interface IVoteForReflectionGroupPayload {
-  __typename: 'VoteForReflectionGroupPayload';
-  error: IStandardMutationError | null;
-  meeting: IRetrospectiveMeeting | null;
-  meetingMember: IRetrospectiveMeetingMember | null;
-  reflectionGroup: IRetroReflectionGroup | null;
-
-  /**
-   * The stages that were locked or unlocked by having at least 1 vote
-   */
-  unlockedStages: Array<NewMeetingStage> | null;
-}
-
 export interface IUpgradeToProPayload {
   __typename: 'UpgradeToProPayload';
   error: IStandardMutationError | null;
@@ -9918,6 +9905,31 @@ export interface IUpgradeToProPayload {
    * the meetings that were showing conversion modals
    */
   meetings: Array<NewMeeting> | null;
+}
+
+export interface IVerifyEmailPayload {
+  __typename: 'VerifyEmailPayload';
+  error: IStandardMutationError | null;
+
+  /**
+   * The new auth token sent to the mutator
+   */
+  authToken: string | null;
+  userId: string | null;
+  user: IUser | null;
+}
+
+export interface IVoteForReflectionGroupPayload {
+  __typename: 'VoteForReflectionGroupPayload';
+  error: IStandardMutationError | null;
+  meeting: IRetrospectiveMeeting | null;
+  meetingMember: IRetrospectiveMeetingMember | null;
+  reflectionGroup: IRetroReflectionGroup | null;
+
+  /**
+   * The stages that were locked or unlocked by having at least 1 vote
+   */
+  unlockedStages: Array<NewMeetingStage> | null;
 }
 
 export interface ISubscription {
