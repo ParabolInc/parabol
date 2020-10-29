@@ -1,18 +1,21 @@
 import styled from '@emotion/styled'
 import React, {useState} from 'react'
 import useBreakpoint from '~/hooks/useBreakpoint'
+import useSidebar from '~/hooks/useSidebar'
 import {desktopSidebarShadow} from '~/styles/elevation'
 import {Breakpoint, DiscussionThreadEnum, ZIndex} from '../types/constEnums'
 import SwipeableDashSidebar from './SwipeableDashSidebar'
 
 interface Props {
-  isOpen: boolean
+  isDesktop: boolean
+  isDrawerOpen: boolean
+  toggleDrawer: () => void
 }
 
-const Drawer = styled('div')<{hideAgenda: boolean | null}>(({hideAgenda}) => ({
+const Drawer = styled('div')({
   backgroundColor: '#FFFFFF',
   boxShadow: desktopSidebarShadow,
-  display: hideAgenda ? 'none' : 'flex',
+  display: 'flex',
   flex: 1,
   flexDirection: 'column',
   height: '100vh',
@@ -31,17 +34,17 @@ const Drawer = styled('div')<{hideAgenda: boolean | null}>(({hideAgenda}) => ({
   //   position: 'fixed',
   //   top: AppBar.HEIGHT
   // }
-}))
+})
 
-const MobileSidebar = styled('div')<{hideAgenda: boolean | null}>(({hideAgenda}) => ({
+const MobileSidebar = styled('div')<{hideDrawer: boolean | null}>(({hideDrawer}) => ({
   boxShadow: desktopSidebarShadow,
-  display: hideAgenda ? 'none' : 'flex',
+  display: hideDrawer ? 'none' : 'flex',
   flex: 1,
   height: '100vh',
   overflow: 'hidden',
   right: 0,
   bottom: 0,
-  minWidth: '100vw',
+  width: '100vw',
   justifyContent: 'flex-end'
 }))
 
@@ -65,12 +68,11 @@ const Content = styled('div')({
 })
 
 const EstimatePhaseDiscussionDrawer = (props: Props) => {
-  const [openSidebar, setOpenSidebar] = useState(true)
-  const isDesktop = useBreakpoint(Breakpoint.NEW_MEETING_GRID)
+  const {isDesktop, isDrawerOpen, toggleDrawer} = props
 
   if (isDesktop) {
     return (
-      <Drawer hideAgenda={false}>
+      <Drawer>
         <VideoContainer hideVideo={false}>
           <h1>Desktop</h1>
         </VideoContainer>
@@ -78,13 +80,8 @@ const EstimatePhaseDiscussionDrawer = (props: Props) => {
     )
   }
   return (
-    <SwipeableDashSidebar
-      isOpen={openSidebar}
-      onToggle={() => {
-        setOpenSidebar(!openSidebar)
-      }}
-    >
-      <MobileSidebar hideAgenda={false}>
+    <SwipeableDashSidebar isOpen={isDrawerOpen} isRightSidebar onToggle={toggleDrawer}>
+      <MobileSidebar hideDrawer={!isDrawerOpen}>
         <Content>
           <h1>Mobile</h1>
         </Content>

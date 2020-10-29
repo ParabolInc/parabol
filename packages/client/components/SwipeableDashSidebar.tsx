@@ -63,7 +63,7 @@ const updateSpeed = (clientX: number) => {
   swipe.lastX = clientX
 }
 
-const updateIsSwipe = (clientX: number, clientY: number) => {
+const updateIsSwipe = (clientX: number, clientY: number, isRightSidebar: boolean | undefined) => {
   const movementX = swipe.startX - clientX
   const movementY = swipe.startY - clientY
   const dx = Math.abs(movementX)
@@ -71,7 +71,11 @@ const updateIsSwipe = (clientX: number, clientY: number) => {
   const rads = -Math.atan(movementX / dy)
   if (dx > UNCERTAINTY_THRESHOLD || dy > UNCERTAINTY_THRESHOLD) {
     // if it's open & it's a swipe to the left || it's closed & it's a swipe to the right
-    swipe.isSwipe = swipe.isOpen ? rads <= -MIN_ARC_RADS : rads >= MIN_ARC_RADS
+    const swipingLeft = rads <= -MIN_ARC_RADS
+    const swipingRight = rads >= MIN_ARC_RADS
+
+    // swipe.isSwipe = swipe.isOpen ? rads <= -MIN_ARC_RADS : rads >= MIN_ARC_RADS
+    swipe.isSwipe = swipe.isOpen ? (isRightSidebar ? swipingRight : swipingLeft) : swipingRight
   }
 }
 
@@ -98,11 +102,12 @@ const swipe = {
 interface Props {
   children: ReactNode
   isOpen: boolean
+  isRightSidebar?: boolean
   onToggle: () => void
 }
 
 const SwipeableDashSidebar = (props: Props) => {
-  const {children, isOpen, onToggle} = props
+  const {children, isOpen, isRightSidebar, onToggle} = props
   const {portal, openPortal} = usePortal({
     allowScroll: true,
     noClose: true
@@ -122,8 +127,8 @@ const SwipeableDashSidebar = (props: Props) => {
   )
 
   const hideSidebar = useCallback(() => {
-    // setX(0)
-    setX(1000)
+    // isRightSidebar ? setX(1000) : setX(0)
+    setX(0)
     swipe.showBodyScroll && swipe.showBodyScroll()
   }, [setX])
 
@@ -133,42 +138,52 @@ const SwipeableDashSidebar = (props: Props) => {
   }, [setX])
 
   useEffect(() => {
+    // showSidebar()
     if (isOpen !== swipe.isOpen) {
       swipe.isOpen = isOpen
       isOpen ? showSidebar() : hideSidebar()
     }
   }, [isOpen, hideSidebar, showSidebar])
 
-  const onMouseUp = useEventCallback((e: MouseEvent | TouchEvent) => {
-    window.clearTimeout(swipe.peekTimeout)
-    const eventType = e.type === 'mouseup' ? 'mousemove' : 'touchmove'
-    document.removeEventListener(eventType, onMouseMove)
-    const movementX = swipe.lastX - swipe.startX
-    const {isOpen: nextIsOpen} = swipe
-    const isOpening = movementX > 0 !== nextIsOpen
-    const isFling = swipe.speed >= MIN_SPEED && isOpening
-    if (isFling) {
-      onToggle()
-    } else if (xRef.current > HYSTERESIS_THRESH) {
-      if (!nextIsOpen) {
+  const onMouseUp = useEventCallback(
+    (e: MouseEvent | TouchEvent, isRightSidebar: boolean | undefined) => {
+      window.clearTimeout(swipe.peekTimeout)
+      const eventType = e.type === 'mouseup' ? 'mousemove' : 'touchmove'
+      document.removeEventListener(eventType, onMouseMove)
+      const movementX = swipe.lastX - swipe.startX
+      const {isOpen: nextIsOpen} = swipe
+      const isOpening = movementX > 0 !== nextIsOpen
+      const isFling = swipe.speed >= MIN_SPEED && isOpening
+      console.log('onMouseUp -> xRef.current', xRef.current)
+      console.log('onMouseUp -> isFling', isFling)
+      if (isFling) {
         onToggle()
+      } else if (
+        isRightSidebar ? xRef.current < 256 + HYSTERESIS_THRESH : xRef.current > HYSTERESIS_THRESH
+      ) {
+        console.log('onMouseUp -> HYSTERESIS_THRESH', HYSTERESIS_THRESH)
+        console.log('nextIsOpen', nextIsOpen)
+        if (!nextIsOpen) {
+          onToggle()
+        } else {
+          showSidebar()
+        }
       } else {
-        showSidebar()
+        console.log('ELSE  ------- onMouseUp -> nextIsOpen', nextIsOpen)
+        if (nextIsOpen) {
+          onToggle()
+        } else {
+          hideSidebar()
+        }
       }
-    } else {
-      if (nextIsOpen) {
-        onToggle()
-      } else {
-        hideSidebar()
-      }
+      swipe.downCaptured = false
+      // TODO can remove?
+      // setTimeout(() => {
+      swipe.isSwipe = null
+      swipe.speed = 0
+      // })
     }
-    swipe.downCaptured = false
-    // TODO can remove?
-    // setTimeout(() => {
-    swipe.isSwipe = null
-    swipe.speed = 0
-    // })
-  })
+  )
 
   const onMouseMove = useEventCallback((e: MouseEvent | TouchEvent) => {
     const event = e.type === 'touchmove' ? (e as TouchEvent).touches[0] : (e as MouseEvent)
@@ -176,7 +191,7 @@ const SwipeableDashSidebar = (props: Props) => {
     if (swipe.isSwipe === null) {
       // they don't want a peek
       window.clearTimeout(swipe.peekTimeout)
-      updateIsSwipe(clientX, clientY)
+      updateIsSwipe(clientX, clientY, isRightSidebar)
       if (!swipe.isSwipe) {
         if (swipe.isSwipe === false) {
           onMouseUp(e)
@@ -184,12 +199,17 @@ const SwipeableDashSidebar = (props: Props) => {
         return
       }
     }
+
     const movementX = clientX - swipe.lastX
+    // const movementX = isRightSidebar ? swipe.lastX - clientX : clientX - swipe.lastX
     const minWidth = swipe.isOpen ? 0 : PEEK_WIDTH
-    const nextX = Math.min(NavSidebar.WIDTH, Math.max(minWidth, xRef.current + movementX))
+    // const nextX = Math.min(NavSidebar.WIDTH, Math.max(minWidth, xRef.current + movementX))
+    const nextX = Math.max(minWidth, xRef.current + movementX)
     updateSpeed(clientX)
-    setX(1000)
-    // setX(nextX)
+    // isRightSidebar ? setX(1000) : setX(nextX)
+    // setX(nextX * 1.2)
+    setX(nextX)
+    // setX(1000)
   })
 
   const onMouseDown = useEventCallback((e: React.MouseEvent | React.TouchEvent) => {
@@ -199,11 +219,11 @@ const SwipeableDashSidebar = (props: Props) => {
     const isTouchStart = e.type === 'touchstart'
     let event: {clientX: number; clientY: number}
     if (isTouchStart) {
-      document.addEventListener('touchend', onMouseUp, {once: true})
+      document.addEventListener('touchend', (e) => onMouseUp(e, isRightSidebar), {once: true})
       document.addEventListener('touchmove', onMouseMove)
       event = (e as React.TouchEvent).touches[0]
     } else {
-      document.addEventListener('mouseup', onMouseUp, {once: true})
+      document.addEventListener('mouseup', (e) => onMouseUp(e, isRightSidebar), {once: true})
       document.addEventListener('mousemove', onMouseMove)
       event = e as React.MouseEvent
     }

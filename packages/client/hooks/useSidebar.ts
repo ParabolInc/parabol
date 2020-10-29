@@ -4,9 +4,11 @@ import useRefState from './useRefState'
 import useBreakpoint from './useBreakpoint'
 import {Breakpoint} from '../types/constEnums'
 
+const testToRemove = false
+
 const useSidebar = () => {
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
-  const [isOpen, setIsOpen] = useRefState(isDesktop)
+  const [isOpen, setIsOpen] = useRefState(testToRemove)
   const open = useCallback(() => {
     setIsOpen(true)
   }, [setIsOpen])
