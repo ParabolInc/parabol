@@ -16,6 +16,7 @@ interface Props {
   teamTemplates: RemoveTemplate_teamTemplates
   templateId: string
   teamId: string
+  type: string
 }
 
 const RemoveTemplate = (props: Props) => {
@@ -24,6 +25,7 @@ const RemoveTemplate = (props: Props) => {
     templateId,
     teamId,
     teamTemplates,
+    type
   } = props
   const atmosphere = useAtmosphere()
   const {onError, onCompleted, submitting, submitMutation} = useMutationProps()
@@ -32,7 +34,6 @@ const RemoveTemplate = (props: Props) => {
     if (submitting) return
     submitMutation()
     const templateIds = teamTemplates.map(({id}) => id)
-    const type = teamTemplates.map(({type}) => type).shift()
     const templateIdx = templateIds.indexOf(templateId)
     templateIds.splice(templateIdx, 1)
     // use the same index as the previous item. if the item was last in the list, grab the new last

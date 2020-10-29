@@ -18,6 +18,7 @@ import EditableTemplateName from './EditableTemplateName'
 import RemoveTemplate from './RemoveTemplate'
 import TemplatePromptList from './TemplatePromptList'
 import TemplateSharing from './TemplateSharing'
+import {MeetingTypeEnum} from '../../../types/graphql'
 
 const TemplateHeader = styled('div')({
   display: 'flex',
@@ -108,6 +109,7 @@ const ReflectTemplateDetails = (props: Props) => {
                 teamId={teamId}
                 teamTemplates={teamTemplates}
                 gotoPublicTemplates={gotoPublicTemplates}
+                type={MeetingTypeEnum.retrospective}
               />
             )}
             {!isOwner && (
@@ -116,6 +118,7 @@ const ReflectTemplateDetails = (props: Props) => {
                 teamId={teamId}
                 templateId={templateId}
                 templateCount={templateCount}
+                type={MeetingTypeEnum.retrospective}
               />
             )}
           </FirstLine>

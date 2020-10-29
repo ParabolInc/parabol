@@ -3,6 +3,7 @@ import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import SwipeableViews from 'react-swipeable-views'
+import {Threshold} from '../../../types/constEnums'
 import Icon from '../../../components/Icon'
 import Tab from '../../../components/Tab/Tab'
 import Tabs from '../../../components/Tabs/Tabs'
@@ -12,6 +13,7 @@ import {PokerTemplateList_settings} from '../../../__generated__/PokerTemplateLi
 import PokerTemplateListOrgRoot from './PokerTemplateListOrgRoot'
 import PokerTemplateListPublicRoot from './PokerTemplateListPublicRoot'
 import PokerTemplateListTeam from './PokerTemplateListTeam'
+import AddNewPokerTemplate from './AddNewPokerTemplate'
 
 const WIDTH = 360
 const TemplateSidebar = styled('div')({
@@ -141,9 +143,9 @@ const PokerTemplateList = (props: Props) => {
         </TabContents>
       </SwipeableViews>
       {/* add a key to clear the error when they change */}
-      {/* {teamTemplates.length < Threshold.MAX_RETRO_TEAM_TEMPLATES && (
-        <AddNewPokerTemplate teamId={teamId} PokerTemplates={teamTemplates} gotoTeamTemplates={gotoTeamTemplates} />
-      )} */}
+      {teamTemplates.length < Threshold.MAX_POKER_TEAM_TEMPLATES && (
+        <AddNewPokerTemplate teamId={teamId} pokerTemplates={teamTemplates} gotoTeamTemplates={gotoTeamTemplates} />
+      )}
     </TemplateSidebar>
   )
 }
@@ -163,7 +165,7 @@ export default createFragmentContainer(PokerTemplateList, {
       }
       teamTemplates {
         ...PokerTemplateListTeam_teamTemplates
-        #...AddNewPokerTemplate_PokerTemplates
+        ...AddNewPokerTemplate_pokerTemplates
         id
       }
     }

@@ -12,6 +12,7 @@ import EditableTemplateName from './EditableTemplateName'
 import RemoveTemplate from './RemoveTemplate'
 import TemplateSharing from './TemplateSharing'
 import TemplateDimensionList from './TemplateDimensionList'
+import {MeetingTypeEnum} from '../../../types/graphql'
 
 const TemplateHeader = styled('div')({
   display: 'flex',
@@ -91,6 +92,7 @@ const PokerTemplateDetails = (props: Props) => {
                 teamId={teamId}
                 teamTemplates={teamTemplates}
                 gotoPublicTemplates={gotoPublicTemplates}
+                type={MeetingTypeEnum.poker}
               />
             )}
             {!isOwner && (
@@ -99,6 +101,7 @@ const PokerTemplateDetails = (props: Props) => {
                 teamId={teamId}
                 templateId={templateId}
                 templateCount={templateCount}
+                type={MeetingTypeEnum.poker}
               />
             )}
           </FirstLine>
