@@ -66,6 +66,10 @@ const Task = new GraphQLObjectType<any, GQLContext>({
       type: GraphQLID,
       description: 'the foreign key for the meeting the task was marked as complete'
     },
+    plaintextContent: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: 'the plain text content of the task'
+    },
     sortOrder: {
       type: new GraphQLNonNull(GraphQLFloat),
       description: 'the shared sort order for tasks on the team dash & user dash'

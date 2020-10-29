@@ -17,6 +17,7 @@ import normalizeRawDraftJS from 'parabol-client/validation/normalizeRawDraftJS'
 import {ITeamMember} from 'parabol-client/types/graphql'
 import getUsersToIgnore from './helpers/getUsersToIgnore'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import extractTextFromDraftString from 'parabol-client/utils/draftjs/extractTextFromDraftString'
 
 const DEBOUNCE_TIME = ms('5m')
 
@@ -83,6 +84,7 @@ export default {
       status: status || task.status,
       sortOrder: sortOrder || task.sortOrder,
       content: content ? validContent : task.content,
+      plaintextContent: content ? extractTextFromDraftString(validContent) : task.plaintextContent,
       updatedAt: isSortOrderUpdate ? task.updatedAt : now
     })
 

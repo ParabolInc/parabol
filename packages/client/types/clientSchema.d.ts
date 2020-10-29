@@ -31,3 +31,9 @@ export interface ClientRetroReflection extends IRetroReflection {
   ignoreDragStarts: string[]
   isEditing: boolean
 }
+
+export interface ParabolSearchQuery {
+  id: String!
+  queryString: String
+  statusFilters: [TaskStatusEnum!]
+}

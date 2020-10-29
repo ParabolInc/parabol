@@ -4,6 +4,7 @@ import getTagsFromEntityMap from 'parabol-client/utils/draftjs/getTagsFromEntity
 import TaskIntegrationJira from './TaskIntegrationJira'
 import TaskIntegrationGitHub from './TaskIntegrationGitHub'
 import {ThreadSourceEnum} from 'parabol-client/types/graphql'
+import extractTextFromDraftString from 'parabol-client/utils/draftjs/extractTextFromDraftString'
 
 export type TaskStatus = 'active' | 'stuck' | 'done' | 'future'
 export type TaskTag = 'private' | 'archived'
@@ -16,6 +17,7 @@ export interface TaskInput {
   doneMeetingId?: string
   dueDate?: Date | null
   meetingId?: string | null
+  plaintextContent?: string
   sortOrder?: number | null
   status: TaskStatus
   teamId: string
@@ -36,6 +38,7 @@ export default class Task {
   dueDate?: Date | null
   integration?: TaskIntegrationJira | TaskIntegrationGitHub
   meetingId?: string
+  plaintextContent: string
   sortOrder: number
   status: TaskStatus
   tags: TaskTag[]
@@ -58,6 +61,7 @@ export default class Task {
       createdBy,
       doneMeetingId,
       dueDate,
+      plaintextContent,
       sortOrder,
       status,
       threadParentId,
@@ -77,6 +81,7 @@ export default class Task {
     this.doneMeetingId = doneMeetingId
     this.dueDate = dueDate || undefined
     this.meetingId = meetingId || undefined
+    this.plaintextContent = plaintextContent || extractTextFromDraftString(content)
     this.sortOrder = sortOrder || dndNoise()
     this.status = status
     this.tags = tags
