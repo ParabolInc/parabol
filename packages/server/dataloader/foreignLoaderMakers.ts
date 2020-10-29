@@ -122,6 +122,7 @@ export const dimensionsByTemplateId = new LoaderMakerForeign(
     return r
       .table('TemplateDimension')
       .getAll(r.args(templateIds), {index: 'templateId'})
+      .orderBy('sortOrder')
       .run()
   }
 )
