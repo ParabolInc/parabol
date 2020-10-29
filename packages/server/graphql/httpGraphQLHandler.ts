@@ -2,6 +2,7 @@ import {TrebuchetCloseReason} from 'parabol-client/types/constEnums'
 import {HttpRequest, HttpResponse} from 'uWebSockets.js'
 import AuthToken from '../database/types/AuthToken'
 import parseBody from '../parseBody'
+import parseFormBody from '../parseFormBody'
 import StatelessContext from '../socketHelpers/StatelessContext'
 import sseClients from '../sseClients'
 import {getUserId} from '../utils/authorization'
@@ -69,7 +70,6 @@ const httpGraphQLHandler = uWSAsyncHandler(async (res: HttpResponse, req: HttpRe
   const connectionId = req.getHeader('x-correlation-id')
   const authToken = getReqAuth(req)
   const ip = uwsGetIP(res, req)
-  console.log('contenttype:', contentType)
   if (contentType.startsWith('application/json')) {
     const body = await parseBody(res)
     if (!body) {
@@ -77,11 +77,11 @@ const httpGraphQLHandler = uWSAsyncHandler(async (res: HttpResponse, req: HttpRe
       return
     }
     await httpGraphQLBodyHandler(res, body, authToken, connectionId, ip)
-  } else {
-    const body = await parseBody(res)
-    console.log('in 415 block!', body)
-    res.writeStatus('415').end()
   }
+  if (contentType.startsWith('multipart/form-data')) {
+    await parseFormBody(res, req)
+  }
+  res.writeStatus('415').end()
 })
 
 export default httpGraphQLHandler
