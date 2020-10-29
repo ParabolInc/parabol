@@ -3,7 +3,9 @@ import React, {useState} from 'react'
 import useBreakpoint from '~/hooks/useBreakpoint'
 import useSidebar from '~/hooks/useSidebar'
 import {desktopSidebarShadow} from '~/styles/elevation'
-import {Breakpoint, DiscussionThreadEnum, ZIndex} from '../types/constEnums'
+import {PALETTE} from '~/styles/paletteV2'
+import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
+import {AppBar, Breakpoint, DiscussionThreadEnum, NavSidebar, ZIndex} from '../types/constEnums'
 import SwipeableDashSidebar from './SwipeableDashSidebar'
 
 interface Props {
@@ -37,15 +39,18 @@ const Drawer = styled('div')({
 })
 
 const MobileSidebar = styled('div')<{hideDrawer: boolean | null}>(({hideDrawer}) => ({
-  boxShadow: desktopSidebarShadow,
+  bottom: 0,
+  color: 'none',
   display: hideDrawer ? 'none' : 'flex',
   flex: 1,
   height: '100vh',
+  justifyContent: 'flex-end',
   overflow: 'hidden',
+  position: 'fixed',
   right: 0,
-  bottom: 0,
-  width: '100vw',
-  justifyContent: 'flex-end'
+  top: 0,
+  userSelect: 'none',
+  width: DiscussionThreadEnum.WIDTH
 }))
 
 const VideoContainer = styled('div')<{hideVideo: boolean | null}>(({hideVideo}) => ({
@@ -56,15 +61,16 @@ const VideoContainer = styled('div')<{hideVideo: boolean | null}>(({hideVideo}) 
 }))
 
 const Content = styled('div')({
+  boxShadow: desktopSidebarShadow,
   backgroundColor: '#FFFFFF',
   display: 'flex',
   overflow: 'hidden',
   // padding-bottom makes space for the Start New Meeting FAB
-  padding: '0 0 80px',
+  // padding: '0 0 80px',
   height: '100%',
   flexDirection: 'column',
-  border: '2px solid yellow',
-  width: '35%'
+  // width: '35%'
+  width: '100%'
 })
 
 const EstimatePhaseDiscussionDrawer = (props: Props) => {
