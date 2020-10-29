@@ -3,7 +3,9 @@ import graphql from 'babel-plugin-relay/macro'
 import React, {useState} from 'react'
 import {DraggableProvided} from 'react-beautiful-dnd'
 import {createFragmentContainer} from 'react-relay'
+import useAtmosphere from '~/hooks/useAtmosphere'
 import useMutationProps from '~/hooks/useMutationProps'
+import RemovePokerTemplateDimensionMutation from '~/mutations/RemovePokerTemplateDimensionMutation'
 import {TemplateDimensionItem_dimensions} from '~/__generated__/TemplateDimensionItem_dimensions.graphql'
 import Icon from '../../../components/Icon'
 import {PALETTE} from '../../../styles/paletteV2'
@@ -66,7 +68,8 @@ const TemplateDimensionItem = (props: Props) => {
   const {id: dimensionId, name: dimensionName} = dimension
   const [isHover, setIsHover] = useState(false)
   const [isEditingDescription] = useState(false)
-  const {submitting, submitMutation, onError} = useMutationProps()
+  const {submitting, submitMutation, onError, onCompleted} = useMutationProps()
+  const atmosphere = useAtmosphere()
   const canRemove = dimensions.length > 1 && isOwner
   const onMouseEnter = () => {
     setIsHover(true)
@@ -81,7 +84,7 @@ const TemplateDimensionItem = (props: Props) => {
       return
     }
     submitMutation()
-    //RemoveReflectTemplateDimensionMutation(atmosphere, {dimensionId}, {}, onError, onCompleted)
+    RemovePokerTemplateDimensionMutation(atmosphere, {dimensionId}, {}, onError, onCompleted)
   }
 
   return (
