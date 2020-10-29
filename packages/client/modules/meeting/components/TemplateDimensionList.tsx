@@ -6,7 +6,7 @@ import {createFragmentContainer} from 'react-relay'
 import withAtmosphere, {
   WithAtmosphereProps
 } from '../../../decorators/withAtmosphere/withAtmosphere'
-//import MoveReflectTemplateDimensionMutation from '../../../mutations/MoveReflectTemplateDimensionMutation'
+import MovePokerTemplateDimensionMutation from '../../../mutations/MovePokerTemplateDimensionMutation'
 import dndNoise from '../../../utils/dndNoise'
 import withMutationProps, {WithMutationProps} from '../../../utils/relay/withMutationProps'
 import {TemplateDimensionList_dimensions} from '../../../__generated__/TemplateDimensionList_dimensions.graphql'
@@ -33,7 +33,7 @@ const TEMPLATE_DIMENSION = 'TEMPLATE_DIMENSION'
 class TemplateDimensionList extends Component<Props, State> {
   onDragEnd = (result) => {
     const {source, destination} = result
-    const {dimensions} = this.props
+    const {atmosphere, dimensions, templateId} = this.props
     if (
       !destination ||
       destination.droppableId !== TEMPLATE_DIMENSION ||
@@ -43,6 +43,7 @@ class TemplateDimensionList extends Component<Props, State> {
       return
     }
 
+    const sourceDimension = dimensions[source.index]
     const destinationDimension = dimensions[destination.index]
 
     let sortOrder
@@ -57,8 +58,9 @@ class TemplateDimensionList extends Component<Props, State> {
         dndNoise()
     }
 
-    console.log(`sortOrder = ${sortOrder}`)
-    //MoveReflectTemplateDimensionMutation(atmosphere, variables, {templateId})
+    const {id: dimensionId} = sourceDimension
+    const variables = {dimensionId, sortOrder}
+    MovePokerTemplateDimensionMutation(atmosphere, variables, {templateId})
   }
 
   render() {
