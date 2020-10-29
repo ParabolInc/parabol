@@ -6,12 +6,10 @@ import {createFragmentContainer} from 'react-relay'
 import useMutationProps from '~/hooks/useMutationProps'
 import {TemplateDimensionItem_dimensions} from '~/__generated__/TemplateDimensionItem_dimensions.graphql'
 import Icon from '../../../components/Icon'
-//import RemoveReflectTemplateDimensionMutation from '../../../mutations/RemoveReflectTemplateDimensionMutation'
 import {PALETTE} from '../../../styles/paletteV2'
 import {ICON_SIZE} from '../../../styles/typographyV2'
 import {TemplateDimensionItem_dimension} from '../../../__generated__/TemplateDimensionItem_dimension.graphql'
 import EditableTemplateDimension from './EditableTemplateDimension'
-//import EditableTemplateDimensionColor from './EditableTemplateDimensionColor'
 
 interface Props {
   isOwner: boolean
@@ -24,6 +22,7 @@ interface Props {
 interface StyledProps {
   isDragging?: boolean
   isHover?: boolean
+  enabled?: boolean
 }
 
 const DimensionItem = styled('div')<StyledProps & {isOwner: boolean}>(
@@ -40,7 +39,7 @@ const DimensionItem = styled('div')<StyledProps & {isOwner: boolean}>(
   })
 )
 
-const RemoveDimensionIcon = styled(Icon)<StyledProps>(({isHover}) => ({
+const RemoveDimensionIcon = styled(Icon)<StyledProps>(({isHover, enabled}) => ({
   color: PALETTE.TEXT_GRAY,
   cursor: 'pointer',
   display: 'block',
@@ -51,7 +50,8 @@ const RemoveDimensionIcon = styled(Icon)<StyledProps>(({isHover}) => ({
   padding: 0,
   opacity: isHover ? 1 : 0,
   textAlign: 'center',
-  width: 24
+  width: 24,
+  visibility: enabled ? 'visible' : 'hidden'
 }))
 
 const DimensionAndDescription = styled('div')({
@@ -95,12 +95,10 @@ const TemplateDimensionItem = (props: Props) => {
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
     >
-      {canRemove && (
-        <RemoveDimensionIcon isHover={isHover} onClick={removeDimension}>
-          cancel
-        </RemoveDimensionIcon>
-      )}
-      < DimensionAndDescription >
+      <RemoveDimensionIcon isHover={isHover} onClick={removeDimension} enabled={canRemove}>
+        cancel
+      </RemoveDimensionIcon>
+      <DimensionAndDescription>
         <EditableTemplateDimension
           isOwner={isOwner}
           isEditingDescription={isEditingDescription}

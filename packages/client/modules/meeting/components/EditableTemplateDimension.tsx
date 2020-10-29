@@ -2,6 +2,7 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {Component} from 'react'
 import {createFragmentContainer} from 'react-relay'
+import RenamePokerTemplateDimensionMutation from '../../../mutations/RenamePokerTemplateDimensionMutation'
 import EditableText from '../../../components/EditableText'
 import withAtmosphere, {
   WithAtmosphereProps
@@ -26,31 +27,35 @@ interface Props extends WithAtmosphereProps, WithMutationProps {
 }
 
 class EditableTemplateDimension extends Component<Props> {
-  handleSubmit = (rawQuestion) => {
+  handleSubmit = (rawDimensionName) => {
     const {
+      atmosphere,
+      dimensionId,
+      onError,
+      onCompleted,
       setDirty,
       submitMutation,
       submitting
     } = this.props
     if (submitting) return
     setDirty()
-    const {error} = this.validate(rawQuestion)
+    const {error, value: name} = this.validate(rawDimensionName)
     if (error) return
     submitMutation()
-    // RenameReflectTemplateDimensionMutation(atmosphere, {dimensionId, question}, {}, onError, onCompleted)
+    RenamePokerTemplateDimensionMutation(atmosphere, {dimensionId, name}, {}, onError, onCompleted)
   }
 
   legitify(value: string) {
     const {dimensionId, dimensions} = this.props
     return new Legitity(value)
       .trim()
-      .required('Please enter a dimension scale name')
-      .max(100, 'That sacle name is probably long enough')
+      .required('Please enter a dimension name')
+      .max(100, 'That dimension name is probably long enough')
       .test((mVal) => {
         const isDupe = dimensions.find(
           (dimension) => dimension.id !== dimensionId && dimension.name.toLowerCase() === mVal.toLowerCase()
         )
-        return isDupe ? 'That question was already asked' : undefined
+        return isDupe ? 'That dimension already exists' : undefined
       })
   }
 
