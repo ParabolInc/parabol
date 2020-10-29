@@ -13,6 +13,7 @@ import RemoveTemplate from './RemoveTemplate'
 import TemplateSharing from './TemplateSharing'
 import TemplateDimensionList from './TemplateDimensionList'
 import {MeetingTypeEnum} from '../../../types/graphql'
+import AddPokerTemplateDimension from './AddPokerTemplateDimension'
 
 const TemplateHeader = styled('div')({
   display: 'flex',
@@ -108,7 +109,7 @@ const PokerTemplateDetails = (props: Props) => {
           <Description>{description}</Description>
         </TemplateHeader>
         <TemplateDimensionList isOwner={isOwner} dimensions={dimensions} templateId={templateId} />
-        {/* {isOwner && <AddTemplatePrompt templateId={templateId} prompts={prompts} />} */}
+        {isOwner && <AddPokerTemplateDimension templateId={templateId} dimensions={dimensions} />}
       </Scrollable>
       <TemplateSharing teamId={teamId} template={selectedTemplate} />
     </PromptEditor>
@@ -124,6 +125,7 @@ graphql`
     name
     dimensions {
       ...TemplateDimensionList_dimensions
+      ...AddPokerTemplateDimension_dimensions
     }
     teamId
   }
