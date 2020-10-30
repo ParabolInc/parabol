@@ -20,63 +20,56 @@ const SidebarAndScrim = styled('div')<{isRightSidebar: boolean | undefined}>(
     right: isRightSidebar ? -DiscussionThreadEnum.WIDTH : undefined,
     top: 0,
     height: '100%'
-    // border: '2px solid pink'
   })
 )
 
 interface StyleProps {
   x: number
   isRightSidebar?: boolean | undefined
-  hysteresisThresh?: number
+  hysteresisThresh?: number | undefined
+  sidebarWidth?: number
 }
 
-const Scrim = styled('div')<StyleProps>(({x}) => ({
+const Scrim = styled('div')<{x: number; sidebarWidth: number}>(({x, sidebarWidth}) => ({
   background: PALETTE.BACKGROUND_FORCED_BACKDROP,
   height: '100%',
   left: 0,
-  opacity: x / DiscussionThreadEnum.WIDTH,
+  opacity: x / sidebarWidth,
   position: 'fixed',
   pointerEvents: x > 0 ? undefined : 'none',
   transition: `opacity 200ms ${DECELERATE}`,
   width: '100%',
-  zIndex: ZIndex.SIDEBAR,
-  border: '2px solid yellow'
+  zIndex: ZIndex.SIDEBAR
+  // border: '2px solid yellow'
 }))
 
 const SidebarAndHandle = styled('div')<StyleProps>(({x, isRightSidebar}) => ({
   display: 'flex',
   position: 'fixed',
-  background: 'green',
   transform: `translateX(${isRightSidebar ? -x : x}px)`,
   // transform: `translateX(${x}px)`,
   transition: `transform 200ms ${DECELERATE}`,
   // zIndex: ZIndex.SIDEBAR,
   zIndex: 1000,
-  height: '100vw',
+  height: '100vw'
   // minWidth: PEEK_WIDTH,
   // top: 0,
   // right: 0,
   // right: x < 256 ? 0 : undefined,
-  // width: '100%',
-  border: '2px solid navy'
+  // width: DiscussionThreadEnum.WIDTH,
+  // border: '2px solid navy'
 }))
 
 const Sidebar = styled('div')<StyleProps>(({x, isRightSidebar, hysteresisThresh}) => ({
   boxShadow: x > 0 ? navDrawerShadow : undefined,
-  pointerEvents: x > hysteresisThresh ? undefined : 'none',
+  pointerEvents: hysteresisThresh && x > hysteresisThresh ? undefined : 'none',
   height: '100vw',
-  // minWidth: PEEK_WIDTH,
-  border: '2px solid pink',
-  // display: 'flex',
-  // position: 'absolute',
-  // top: 0,
-  // right: 0,
   zIndex: 999
 }))
 
 const RightSwipeHandle = styled(PlainButton)({
   width: PEEK_WIDTH,
-  background: 'silver',
+  // background: 'silver',
   display: 'flex',
   position: 'fixed',
   right: 0,
@@ -154,7 +147,7 @@ interface Props {
 
 const SwipeableDashSidebar = (props: Props) => {
   const {children, isOpen, isRightSidebar, onToggle} = props
-  const sidebarWidth = isRightSidebar ? DiscussionThreadEnum.WIDTH : NavSidebar.WIDTH
+  const sidebarWidth: number = isRightSidebar ? DiscussionThreadEnum.WIDTH : NavSidebar.WIDTH
   const {portal, openPortal} = usePortal({
     allowScroll: true,
     noClose: true
@@ -234,7 +227,6 @@ const SwipeableDashSidebar = (props: Props) => {
       window.clearTimeout(swipe.peekTimeout)
       updateIsSwipe(clientX, clientY, isRightSidebar)
       if (!swipe.isSwipe) {
-        // TODO: Remove ^
         if (swipe.isSwipe === false) {
           onMouseUp(e)
         }
@@ -284,7 +276,7 @@ const SwipeableDashSidebar = (props: Props) => {
 
   return portal(
     <SidebarAndScrim isRightSidebar={isRightSidebar}>
-      <Scrim x={x} onClick={onToggle} />
+      <Scrim x={x} sidebarWidth={sidebarWidth} onClick={onToggle} />
       <RightSwipeHandle onMouseDown={onMouseDown} onTouchStart={onMouseDown} />
       <SidebarAndHandle
         x={x}
@@ -292,6 +284,7 @@ const SwipeableDashSidebar = (props: Props) => {
         onTouchStart={onMouseDown}
         isRightSidebar={isRightSidebar}
       >
+        {/* <RightSwipeHandle onMouseDown={onMouseDown} onTouchStart={onMouseDown} /> */}
         <Sidebar
           x={x}
           isRightSidebar={isRightSidebar}

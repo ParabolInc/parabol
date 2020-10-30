@@ -37,11 +37,12 @@ const AvatarBlock = styled('div')({
 
 const PokerEstimatePhase = (props: Props) => {
   const {avatarGroup, toggleSidebar, meeting} = props
-  const {localStage, endedAt, showSidebar} = meeting
+  const {id: meetingId, localStage, endedAt, showSidebar} = meeting
   const isDesktop = useBreakpoint(Breakpoint.NEW_MEETING_GRID)
   const {isOpen: isDrawerOpen, toggle: toggleDrawer} = useSidebar()
   if (!localStage) return null
   const {__typename} = localStage
+  const storyId = localStage.__id!
   return (
     <MeetingContent>
       <MeetingHeaderAndPhase hideBottomBar={!!endedAt}>
@@ -73,6 +74,8 @@ const PokerEstimatePhase = (props: Props) => {
         isDesktop={isDesktop}
         isDrawerOpen={isDrawerOpen}
         toggleDrawer={toggleDrawer}
+        storyId={storyId}
+        meetingId={meetingId}
       />
     </MeetingContent>
   )

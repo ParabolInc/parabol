@@ -1,11 +1,13 @@
 import styled from '@emotion/styled'
-import React, {useState} from 'react'
+import React, {useRef, useState} from 'react'
+import {createFragmentContainer, graphql} from 'react-relay'
 import useBreakpoint from '~/hooks/useBreakpoint'
 import useSidebar from '~/hooks/useSidebar'
 import {desktopSidebarShadow} from '~/styles/elevation'
 import {PALETTE} from '~/styles/paletteV2'
 import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
 import {AppBar, Breakpoint, DiscussionThreadEnum, NavSidebar, ZIndex} from '../types/constEnums'
+import DiscussionThreadRoot from './DiscussionThreadRoot'
 import ResponsiveDashSidebar from './ResponsiveDashSidebar'
 import SwipeableDashSidebar from './SwipeableDashSidebar'
 
@@ -13,6 +15,8 @@ interface Props {
   isDesktop: boolean
   isDrawerOpen: boolean
   toggleDrawer: () => void
+  meetingId: string
+  storyId: string
 }
 
 const Drawer = styled('div')({
@@ -39,35 +43,17 @@ const Drawer = styled('div')({
   // }
 })
 
-const DashSidebarStyles = styled('div')({
-  backgroundColor: '#fff',
-  color: PALETTE.TEXT_GRAY,
-  display: 'flex',
-  flexDirection: 'column',
-  height: '100vh',
-  maxWidth: NavSidebar.WIDTH,
-  minWidth: NavSidebar.WIDTH,
-  overflow: 'hidden',
-  userSelect: 'none',
-  position: 'fixed',
-  right: 0,
-  top: 0
-})
-
 const MobileSidebar = styled('div')<{hideDrawer: boolean | null}>(({hideDrawer}) => ({
   bottom: 0,
-  // display: hideDrawer ? 'none' : 'flex',
   display: 'flex',
   flex: 1,
   height: '100vh',
   justifyContent: 'flex-end',
-  // overflow: 'hidden',
+  overflow: 'hidden',
   position: 'fixed',
   right: 0,
   top: 0,
   userSelect: 'none',
-  // zIndex: 999,
-  // zIndex: ZIndex.SIDE_SHEET, // make sure shadow is above cards
   minWidth: DiscussionThreadEnum.WIDTH,
   maxWidth: DiscussionThreadEnum.WIDTH
 }))
@@ -99,10 +85,24 @@ const MeetingNavList = styled('ul')({
   minHeight: 0, // very important! allows children to collapse for overflow
   padding: 0
 })
+const ThreadColumn = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
+  alignItems: 'center',
+  display: 'flex',
+  flex: 1,
+  flexDirection: 'column',
+  height: '100%',
+  overflow: 'auto',
+  paddingTop: 4,
+  paddingBottom: isDesktop ? 16 : 8,
+  width: '100%',
+  maxWidth: 700
+}))
 
 const EstimatePhaseDiscussionDrawer = (props: Props) => {
-  const {isDesktop, isDrawerOpen, toggleDrawer} = props
+  const {isDesktop, isDrawerOpen, toggleDrawer, meetingId, storyId} = props
+  console.log('EstimatePhaseDiscussionDrawer -> props', props)
   console.log('EstimatePhaseDiscussionDrawer -> isDrawerOpen', isDrawerOpen)
+  const meetingContentRef = useRef<HTMLDivElement>(null)
 
   if (isDesktop) {
     return (
@@ -110,6 +110,13 @@ const EstimatePhaseDiscussionDrawer = (props: Props) => {
         <VideoContainer hideVideo={false}>
           <h1>Desktop</h1>
         </VideoContainer>
+        <ThreadColumn isDesktop={isDesktop}>
+          <DiscussionThreadRoot
+            meetingContentRef={meetingContentRef}
+            meetingId={meetingId}
+            threadSourceId={storyId}
+          />
+        </ThreadColumn>
       </Drawer>
     )
   }
@@ -125,3 +132,10 @@ const EstimatePhaseDiscussionDrawer = (props: Props) => {
 }
 
 export default EstimatePhaseDiscussionDrawer
+// export default createFragmentContainer(EstimatePhaseDiscussionDrawer, {
+//   meeting: graphql`
+//     fragment EstimatePhaseDiscussionDrawer_meeting on PokerMeeting {
+//       id
+//     }
+//   `
+// })
