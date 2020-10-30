@@ -74,21 +74,12 @@ class UserAvatarInput extends Component<Props> {
         }
       }
     }
-
     submitMutation()
-    // const handleCompleted = async (res) => {
-    //   const {
-    //     createUserPicturePutUrl: {url, pngUrl}
-    //   } = res
-    //   const pictureUrl = await sendAssetToS3(file, url)
-    //   if (pngUrl) {
-    //     await sendAssetToS3(pngFile, pngUrl)
-    //   }
-    //   UpdateUserProfileMutation(atmosphere, {picture: pictureUrl}, {onError, onCompleted})
-    // }
-    console.log('file in component:', file)
-    UploadUserImageMutation(atmosphere, {file}, {onCompleted, onError})
-    // CreateUserPicturePutUrlMutation(atmosphere, variables, onError, handleCompleted)
+    UploadUserImageMutation(
+      atmosphere,
+      {file, dummy: 5},
+      {onCompleted, onError}
+    )
   }
 
   render() {

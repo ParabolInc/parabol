@@ -13,6 +13,15 @@ import uwsGetIP from '../utils/uwsGetIP'
 import handleGraphQLTrebuchetRequest from './handleGraphQLTrebuchetRequest'
 import uWSAsyncHandler from './uWSAsyncHandler'
 
+interface ContentTypeBodyParserMap {
+  [contentType: string]: (HttpResponse, HttpRequest?) => Promise<JSON | null>
+}
+
+const contentTypeBodyParserMap = {
+  'application/json': parseBody,
+  'multipart/form-data': parseFormBody
+} as ContentTypeBodyParserMap
+
 const SSE_PROBLEM_USERS = [] as string[]
 
 const httpGraphQLBodyHandler = async (
@@ -64,38 +73,23 @@ const httpGraphQLBodyHandler = async (
     }
   })
 }
-const getSupportedContentType = (
-  ct: string
-): 'application/json' | 'multipart/form-data' | null => {
-  if (ct.startsWith('application/json')) return 'application/json'
-  if (ct.startsWith('multipart/form-data')) return 'multipart/form-data'
-  return null
-}
 
 const httpGraphQLHandler = uWSAsyncHandler(async (res: HttpResponse, req: HttpRequest) => {
-  let body, file
   const connectionId = req.getHeader('x-correlation-id')
   const authToken = getReqAuth(req)
   const ip = uwsGetIP(res, req)
-  const contentType = req.getHeader('content-type')
-  const supportedContentType = getSupportedContentType(contentType)
-  switch (supportedContentType) {
-    case null:
-      res.writeStatus('415').end()
-      return
-    case 'application/json':
-      body = await parseBody(res)
-      break
-    case 'multipart/form-data':
-      [file, body] = await parseFormBody(res, req)
-      break
+  const contentTypeHeader = req.getHeader('content-type')
+  const ct = Object.keys(contentTypeBodyParserMap).find((key) => contentTypeHeader.startsWith(key))
+  if (!ct) {
+    res.writeStatus('415').end()
+    return
   }
+  const parseFn = contentTypeBodyParserMap[ct]
+  const body = await parseFn(res, req)
   if (!body) {
     res.writeStatus('422').end()
     return
   }
-  console.log('file:', file)
-  // todo: pass file into context here
   await httpGraphQLBodyHandler(res, body, authToken, connectionId, ip)
 })
 

@@ -1,4 +1,5 @@
 import {GraphQLBoolean, GraphQLInt} from 'graphql'
+import GraphQLFileStreamType from '../types/GraphQLFileStreamType'
 
 export default {
   type: GraphQLBoolean, // todo: return payload
@@ -7,6 +8,14 @@ export default {
     dummy: {
       type: GraphQLInt,
       description: 'test test'
+    },
+    file: {
+      type: GraphQLFileStreamType,
+      description: 'the file'
+    },
+    test: {
+      type: GraphQLInt,
+      description: 'testtest '
     }
   },
   resolve: (source, variables, context) => {

@@ -7810,6 +7810,16 @@ export interface IUploadUserImageOnMutationArguments {
    * test test
    */
   dummy?: number | null;
+
+  /**
+   * the file
+   */
+  file?: any | null;
+
+  /**
+   * testtest
+   */
+  test?: number | null;
 }
 
 export interface IVerifyEmailOnMutationArguments {

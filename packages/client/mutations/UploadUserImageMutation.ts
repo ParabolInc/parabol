@@ -2,8 +2,8 @@ import {commitMutation} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 
 const mutation = graphql`
-  mutation UploadUserImageMutation($dummy: Int) {
-    uploadUserImage(dummy: $dummy)
+  mutation UploadUserImageMutation($dummy: Int, $test: Int, $file: FileStream) {
+    uploadUserImage(dummy: $dummy, test: $test, file: $file)
   }
 `
 
