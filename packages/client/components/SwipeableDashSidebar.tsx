@@ -17,7 +17,7 @@ const SidebarAndScrim = styled('div')<{isRightSidebar: boolean | undefined}>(
     position: 'absolute',
     left: isRightSidebar ? undefined : -NavSidebar.WIDTH,
     // left: isRightSidebar ? NavSidebar.WIDTH : -NavSidebar.WIDTH,
-    right: isRightSidebar ? -NavSidebar.WIDTH : undefined,
+    right: isRightSidebar ? -DiscussionThreadEnum.WIDTH : undefined,
     top: 0,
     height: '100%'
     // border: '2px solid pink'
@@ -27,13 +27,14 @@ const SidebarAndScrim = styled('div')<{isRightSidebar: boolean | undefined}>(
 interface StyleProps {
   x: number
   isRightSidebar?: boolean | undefined
+  hysteresisThresh?: number
 }
 
 const Scrim = styled('div')<StyleProps>(({x}) => ({
   background: PALETTE.BACKGROUND_FORCED_BACKDROP,
   height: '100%',
   left: 0,
-  opacity: x / NavSidebar.WIDTH,
+  opacity: x / DiscussionThreadEnum.WIDTH,
   position: 'fixed',
   pointerEvents: x > 0 ? undefined : 'none',
   transition: `opacity 200ms ${DECELERATE}`,
@@ -50,31 +51,36 @@ const SidebarAndHandle = styled('div')<StyleProps>(({x, isRightSidebar}) => ({
   // transform: `translateX(${x}px)`,
   transition: `transform 200ms ${DECELERATE}`,
   // zIndex: ZIndex.SIDEBAR,
-  zIndex: 997,
+  zIndex: 1000,
   height: '100vw',
   // minWidth: PEEK_WIDTH,
   // top: 0,
   // right: 0,
+  // right: x < 256 ? 0 : undefined,
+  // width: '100%',
   border: '2px solid navy'
 }))
 
-const Sidebar = styled('div')<StyleProps>(({x, isRightSidebar}) => ({
+const Sidebar = styled('div')<StyleProps>(({x, isRightSidebar, hysteresisThresh}) => ({
   boxShadow: x > 0 ? navDrawerShadow : undefined,
-  pointerEvents: x > HYSTERESIS_THRESH ? undefined : 'none',
+  pointerEvents: x > hysteresisThresh ? undefined : 'none',
   height: '100vw',
-  minWidth: PEEK_WIDTH,
+  // minWidth: PEEK_WIDTH,
+  border: '2px solid pink',
+  // display: 'flex',
+  // position: 'absolute',
   // top: 0,
   // right: 0,
-  zIndex: 998
+  zIndex: 999
 }))
 
 const RightSwipeHandle = styled(PlainButton)({
   width: PEEK_WIDTH,
+  background: 'silver',
+  display: 'flex',
   position: 'fixed',
   right: 0,
-  background: 'yellow',
-  height: '100vh',
-  zIndex: 999
+  height: '100vh'
 })
 
 const SwipeHandle = styled(PlainButton)({
@@ -101,7 +107,9 @@ const updateIsSwipe = (clientX: number, clientY: number, isRightSidebar: boolean
   if (dx > UNCERTAINTY_THRESHOLD || dy > UNCERTAINTY_THRESHOLD) {
     // if it's open & it's a swipe to the left || it's closed & it's a swipe to the right
     const swipingLeft = rads <= -MIN_ARC_RADS
+    console.log('updateIsSwipe -> swipingLeft', swipingLeft)
     const swipingRight = rads >= MIN_ARC_RADS
+    console.log('updateIsSwipe -> swipingRight', swipingRight)
 
     // swipe.isSwipe = swipe.isOpen ? rads <= -MIN_ARC_RADS : rads >= MIN_ARC_RADS
     swipe.isSwipe = swipe.isOpen
@@ -111,11 +119,14 @@ const updateIsSwipe = (clientX: number, clientY: number, isRightSidebar: boolean
       : isRightSidebar
       ? swipingLeft
       : swipingRight
+    console.log('SWIPE ---->>> updateIsSwipe -> swipe.isSwipe', swipe.isSwipe)
   }
 }
 
+const getHysteresisThresh = (sidebarWidth: number) => HYSTERESIS * sidebarWidth
+
 const HYSTERESIS = 0.55 // how far must it be pulled out to stay out (0 -1)
-const HYSTERESIS_THRESH = HYSTERESIS * NavSidebar.WIDTH
+// const HYSTERESIS_THRESH = HYSTERESIS * NavSidebar.WIDTH
 const MIN_ARC_ANGLE = 30 // how sloppy can the pull be. 0 means everything is a swipe, 90 degrees means only perfectly horizontal drags are a swipe (0 - 90)
 const MIN_ARC_RADS = (MIN_ARC_ANGLE / 180) * Math.PI
 const MIN_SPEED = 0.3 // faster than this and it's a fling (0 - 5+)
@@ -143,11 +154,11 @@ interface Props {
 
 const SwipeableDashSidebar = (props: Props) => {
   const {children, isOpen, isRightSidebar, onToggle} = props
+  const sidebarWidth = isRightSidebar ? DiscussionThreadEnum.WIDTH : NavSidebar.WIDTH
   const {portal, openPortal} = usePortal({
     allowScroll: true,
     noClose: true
   })
-  // const [xRef, setX] = useRefState(isRightSidebar ? 1000 : 0)
   const [xRef, setX] = useRefState(0)
   useEffect(
     () => {
@@ -163,13 +174,12 @@ const SwipeableDashSidebar = (props: Props) => {
   )
 
   const hideSidebar = useCallback(() => {
-    // isRightSidebar ? setX(1000) : setX(0)
     setX(0)
     swipe.showBodyScroll && swipe.showBodyScroll()
   }, [setX])
 
   const showSidebar = useCallback(() => {
-    setX(NavSidebar.WIDTH)
+    setX(sidebarWidth)
     swipe.showBodyScroll = hideBodyScroll()
   }, [setX])
 
@@ -190,9 +200,10 @@ const SwipeableDashSidebar = (props: Props) => {
       const {isOpen: nextIsOpen} = swipe
       const isOpening = movementX > 0 !== nextIsOpen
       const isFling = swipe.speed >= MIN_SPEED && isOpening
+      console.log('xRef.current', xRef.current)
       if (isFling) {
         onToggle()
-      } else if (xRef.current > HYSTERESIS_THRESH) {
+      } else if (xRef.current > getHysteresisThresh(sidebarWidth)) {
         if (!nextIsOpen) {
           onToggle()
         } else {
@@ -217,11 +228,13 @@ const SwipeableDashSidebar = (props: Props) => {
   const onMouseMove = useEventCallback((e: MouseEvent | TouchEvent) => {
     const event = e.type === 'touchmove' ? (e as TouchEvent).touches[0] : (e as MouseEvent)
     const {clientX, clientY} = event
+    console.log('MOVE onMouseMove -> swipe.isSwipe', swipe.isSwipe)
     if (swipe.isSwipe === null) {
       // they don't want a peek
       window.clearTimeout(swipe.peekTimeout)
       updateIsSwipe(clientX, clientY, isRightSidebar)
       if (!swipe.isSwipe) {
+        // TODO: Remove ^
         if (swipe.isSwipe === false) {
           onMouseUp(e)
         }
@@ -232,7 +245,7 @@ const SwipeableDashSidebar = (props: Props) => {
     // const movementX = clientX - swipe.lastX
     const movementX = isRightSidebar ? swipe.lastX - clientX : clientX - swipe.lastX
     const minWidth = swipe.isOpen ? 0 : PEEK_WIDTH
-    const nextX = Math.min(NavSidebar.WIDTH, Math.max(minWidth, xRef.current + movementX))
+    const nextX = Math.min(sidebarWidth, Math.max(minWidth, xRef.current + movementX))
     updateSpeed(clientX)
     setX(nextX)
   })
@@ -240,7 +253,7 @@ const SwipeableDashSidebar = (props: Props) => {
   const onMouseDown = useEventCallback((e: React.MouseEvent | React.TouchEvent) => {
     if (swipe.downCaptured) return
     const {current: x} = xRef
-    if (x !== 0 && x !== NavSidebar.WIDTH) return
+    if (x !== 0 && x !== sidebarWidth) return
     const isTouchStart = e.type === 'touchstart'
     let event: {clientX: number; clientY: number}
     if (isTouchStart) {
@@ -268,27 +281,25 @@ const SwipeableDashSidebar = (props: Props) => {
   })
 
   const {current: x} = xRef
-  console.log('x', x)
 
-  // if (!isRightSidebar) return null
   return portal(
     <SidebarAndScrim isRightSidebar={isRightSidebar}>
       <Scrim x={x} onClick={onToggle} />
-      {/* <SwipeHandle onMouseDown={onMouseDown} onTouchStart={onMouseDown} /> */}
-      {isRightSidebar && <RightSwipeHandle onMouseDown={onMouseDown} onTouchStart={onMouseDown} />}
+      <RightSwipeHandle onMouseDown={onMouseDown} onTouchStart={onMouseDown} />
       <SidebarAndHandle
         x={x}
         onMouseDown={onMouseDown}
         onTouchStart={onMouseDown}
         isRightSidebar={isRightSidebar}
       >
-        {/* <SwipeHandle onMouseDown={onMouseDown} onTouchStart={onMouseDown} /> */}
-        {/* {isRightSidebar && <SwipeHandle />} */}
-        <Sidebar x={x} isRightSidebar={isRightSidebar}>
+        <Sidebar
+          x={x}
+          isRightSidebar={isRightSidebar}
+          hysteresisThresh={getHysteresisThresh(sidebarWidth)}
+        >
           {children}
         </Sidebar>
-        {!isRightSidebar && <SwipeHandle />}
-        {/* <SwipeHandle /> */}
+        <SwipeHandle />
       </SidebarAndHandle>
     </SidebarAndScrim>
   )

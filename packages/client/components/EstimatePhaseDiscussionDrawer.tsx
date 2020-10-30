@@ -56,8 +56,8 @@ const DashSidebarStyles = styled('div')({
 
 const MobileSidebar = styled('div')<{hideDrawer: boolean | null}>(({hideDrawer}) => ({
   bottom: 0,
-  display: hideDrawer ? 'none' : 'flex',
-  // display: 'flex',
+  // display: hideDrawer ? 'none' : 'flex',
+  display: 'flex',
   flex: 1,
   height: '100vh',
   justifyContent: 'flex-end',
