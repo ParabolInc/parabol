@@ -167,6 +167,12 @@ export const enum MeetingLabels {
   TIMER = 'Timer'
 }
 
+export const enum PokerCards {
+  HEIGHT = 175,
+  WIDTH = 125,
+  OVERLAP = 96
+
+}
 export const enum UserTaskViewFilterLabels {
   ALL_TEAMS = 'All Teams',
   ALL_TEAM_MEMBERS = 'All Team Members'

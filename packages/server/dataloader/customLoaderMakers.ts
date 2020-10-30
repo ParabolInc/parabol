@@ -3,6 +3,7 @@ import {decode} from 'jsonwebtoken'
 import {MeetingTypeEnum, ReactableEnum, ThreadSourceEnum} from 'parabol-client/types/graphql'
 import promiseAllPartial from 'parabol-client/utils/promiseAllPartial'
 import MeetingTemplate from '../database/types/MeetingTemplate'
+import {TaskStatusEnum} from 'parabol-client/types/graphql'
 import getRethink from '../database/rethinkDriver'
 import MeetingSettings from '../database/types/MeetingSettings'
 import {Reactable} from '../database/types/Reactable'
@@ -27,6 +28,8 @@ export interface UserTasksKey {
   teamIds: string[]
   archived: boolean
   includeUnassigned: boolean
+  statusFilters?: TaskStatusEnum[]
+  filterQuery?: string
 }
 
 export interface ReactablesKey {
@@ -68,8 +71,17 @@ export const users = () => {
 }
 
 export const serializeUserTasksKey = (key: UserTasksKey) => {
-  const userIdKey = key.userIds ? key.userIds.sort().join(':') : '*'
-  return `${userIdKey}:${key.teamIds.sort().join(':')}:${key.first}:${key.after}:${key.archived}`
+  const {userIds, teamIds, first, after, archived, statusFilters, filterQuery} = key
+  const parts = [
+    (userIds?.length && userIds.sort().join(':')) || '*',
+    teamIds.sort().join(':'),
+    first,
+    after || '*',
+    archived,
+    (statusFilters?.length && statusFilters.sort().join(':')) || '*',
+    filterQuery || '*'
+  ]
+  return parts.join(':')
 }
 
 export const commentCountByThreadId = (parent: RethinkDataLoader) => {
@@ -153,12 +165,32 @@ export const userTasks = (parent: RethinkDataLoader) => {
 
       const entryArray = await Promise.all(
         uniqKeys.map(async (key) => {
-          const {first, after, userIds, teamIds, archived, includeUnassigned} = key
+          const {
+            first,
+            after,
+            userIds,
+            teamIds,
+            archived,
+            statusFilters,
+            filterQuery,
+            includeUnassigned
+          } = key
           const dbAfter = after ? new Date(after) : r.maxval
 
           let teamTaskPartial = r.table('Task').getAll(r.args(teamIds), {index: 'teamId'})
-          if (userIds) {
+          if (userIds?.length) {
             teamTaskPartial = teamTaskPartial.filter((row) => r(userIds).contains(row('userId')))
+          }
+          if (statusFilters?.length) {
+            teamTaskPartial = teamTaskPartial.filter((row) =>
+              r(statusFilters).contains(row('status'))
+            )
+          }
+          if (filterQuery) {
+            // TODO: deal with tags like #archived and #private. should strip out of plaintextContent??
+            teamTaskPartial = teamTaskPartial.filter(
+              (row) => row('plaintextContent').match(filterQuery) as any
+            )
           }
 
           return {
@@ -191,7 +223,6 @@ export const userTasks = (parent: RethinkDataLoader) => {
       tasks.flat().forEach((task) => {
         taskLoader.clear(task.id).prime(task.id, task)
       })
-
       return keys.map((key) => tasksByKey[serializeUserTasksKey(key)])
     },
     {

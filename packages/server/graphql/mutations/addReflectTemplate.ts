@@ -78,7 +78,7 @@ const addReflectTemplate = {
         parentTemplateId
       })
       const prompts = await dataLoader.get('reflectPromptsByTemplateId').load(parentTemplate.id)
-      const activePrompts = prompts.filter(({isActive}) => isActive)
+      const activePrompts = prompts.filter(({removedAt}) => !removedAt)
       const newTemplatePrompts = activePrompts.map((prompt) => {
         return new RetrospectivePrompt({
           ...prompt,

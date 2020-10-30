@@ -4,6 +4,7 @@ import {PALETTE} from '~/styles/paletteV2'
 import SwipeableViews from 'react-swipeable-views'
 import useBreakpoint from '~/hooks/useBreakpoint'
 import {Breakpoint} from '~/types/constEnums'
+import PokerCardDeck from './PokerCardDeck'
 
 const EstimateArea = styled('div')({
   display: 'flex',
@@ -67,6 +68,7 @@ const EstimatePhaseArea = () => {
           return <StepperDot key={idx} isActive={idx === activeIdx} />
         })}
       </StepperDots>
+      <PokerCardDeck />
       <SwipeableViews
         containerStyle={containerStyle}
         enableMouseEvents
@@ -79,6 +81,7 @@ const EstimatePhaseArea = () => {
           <SwipableEstimateItem key={idx} />
         ))}
       </SwipeableViews>
+
     </EstimateArea>
   )
 }

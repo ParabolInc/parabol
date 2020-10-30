@@ -1369,6 +1369,16 @@ export interface ITasksOnUserArguments {
   archived?: boolean | null;
 
   /**
+   * filter tasks by the chosen statuses
+   */
+  statusFilters?: Array<TaskStatusEnum> | null;
+
+  /**
+   * only return tasks which match the given filter query
+   */
+  filterQuery?: string | null;
+
+  /**
    * if true, include unassigned tasks. If false, only return assigned tasks
    * @default false
    */
@@ -1529,6 +1539,11 @@ export interface ITask {
    * the foreign key for the meeting the task was marked as complete
    */
   doneMeetingId: string | null;
+
+  /**
+   * the plain text content of the task
+   */
+  plaintextContent: string;
 
   /**
    * the shared sort order for tasks on the team dash & user dash
