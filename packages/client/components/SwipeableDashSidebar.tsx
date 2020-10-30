@@ -20,6 +20,7 @@ const SidebarAndScrim = styled('div')<{isRightSidebar: boolean | undefined}>(
     right: isRightSidebar ? -NavSidebar.WIDTH : undefined,
     top: 0,
     height: '100%'
+    // border: '2px solid pink'
   })
 )
 
@@ -37,22 +38,44 @@ const Scrim = styled('div')<StyleProps>(({x}) => ({
   pointerEvents: x > 0 ? undefined : 'none',
   transition: `opacity 200ms ${DECELERATE}`,
   width: '100%',
-  zIndex: ZIndex.SIDEBAR
+  zIndex: ZIndex.SIDEBAR,
+  border: '2px solid yellow'
 }))
 
 const SidebarAndHandle = styled('div')<StyleProps>(({x, isRightSidebar}) => ({
   display: 'flex',
   position: 'fixed',
+  background: 'green',
   transform: `translateX(${isRightSidebar ? -x : x}px)`,
   // transform: `translateX(${x}px)`,
   transition: `transform 200ms ${DECELERATE}`,
-  zIndex: ZIndex.SIDEBAR
+  // zIndex: ZIndex.SIDEBAR,
+  zIndex: 997,
+  height: '100vw',
+  // minWidth: PEEK_WIDTH,
+  // top: 0,
+  // right: 0,
+  border: '2px solid navy'
 }))
 
 const Sidebar = styled('div')<StyleProps>(({x, isRightSidebar}) => ({
   boxShadow: x > 0 ? navDrawerShadow : undefined,
-  pointerEvents: x > HYSTERESIS_THRESH ? undefined : 'none'
+  pointerEvents: x > HYSTERESIS_THRESH ? undefined : 'none',
+  height: '100vw',
+  minWidth: PEEK_WIDTH,
+  // top: 0,
+  // right: 0,
+  zIndex: 998
 }))
+
+const RightSwipeHandle = styled(PlainButton)({
+  width: PEEK_WIDTH,
+  position: 'fixed',
+  right: 0,
+  background: 'yellow',
+  height: '100vh',
+  zIndex: 999
+})
 
 const SwipeHandle = styled(PlainButton)({
   width: PEEK_WIDTH
@@ -246,19 +269,26 @@ const SwipeableDashSidebar = (props: Props) => {
 
   const {current: x} = xRef
   console.log('x', x)
+
+  // if (!isRightSidebar) return null
   return portal(
     <SidebarAndScrim isRightSidebar={isRightSidebar}>
       <Scrim x={x} onClick={onToggle} />
+      {/* <SwipeHandle onMouseDown={onMouseDown} onTouchStart={onMouseDown} /> */}
+      {isRightSidebar && <RightSwipeHandle onMouseDown={onMouseDown} onTouchStart={onMouseDown} />}
       <SidebarAndHandle
         x={x}
         onMouseDown={onMouseDown}
         onTouchStart={onMouseDown}
         isRightSidebar={isRightSidebar}
       >
+        {/* <SwipeHandle onMouseDown={onMouseDown} onTouchStart={onMouseDown} /> */}
+        {/* {isRightSidebar && <SwipeHandle />} */}
         <Sidebar x={x} isRightSidebar={isRightSidebar}>
           {children}
         </Sidebar>
-        <SwipeHandle />
+        {!isRightSidebar && <SwipeHandle />}
+        {/* <SwipeHandle /> */}
       </SidebarAndHandle>
     </SidebarAndScrim>
   )

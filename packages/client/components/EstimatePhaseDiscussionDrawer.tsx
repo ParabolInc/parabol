@@ -6,6 +6,7 @@ import {desktopSidebarShadow} from '~/styles/elevation'
 import {PALETTE} from '~/styles/paletteV2'
 import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
 import {AppBar, Breakpoint, DiscussionThreadEnum, NavSidebar, ZIndex} from '../types/constEnums'
+import ResponsiveDashSidebar from './ResponsiveDashSidebar'
 import SwipeableDashSidebar from './SwipeableDashSidebar'
 
 interface Props {
@@ -38,19 +39,37 @@ const Drawer = styled('div')({
   // }
 })
 
+const DashSidebarStyles = styled('div')({
+  backgroundColor: '#fff',
+  color: PALETTE.TEXT_GRAY,
+  display: 'flex',
+  flexDirection: 'column',
+  height: '100vh',
+  maxWidth: NavSidebar.WIDTH,
+  minWidth: NavSidebar.WIDTH,
+  overflow: 'hidden',
+  userSelect: 'none',
+  position: 'fixed',
+  right: 0,
+  top: 0
+})
+
 const MobileSidebar = styled('div')<{hideDrawer: boolean | null}>(({hideDrawer}) => ({
   bottom: 0,
-  color: 'none',
   display: hideDrawer ? 'none' : 'flex',
+  // display: 'flex',
   flex: 1,
   height: '100vh',
   justifyContent: 'flex-end',
-  overflow: 'hidden',
+  // overflow: 'hidden',
   position: 'fixed',
   right: 0,
   top: 0,
   userSelect: 'none',
-  width: DiscussionThreadEnum.WIDTH
+  // zIndex: 999,
+  // zIndex: ZIndex.SIDE_SHEET, // make sure shadow is above cards
+  minWidth: DiscussionThreadEnum.WIDTH,
+  maxWidth: DiscussionThreadEnum.WIDTH
 }))
 
 const VideoContainer = styled('div')<{hideVideo: boolean | null}>(({hideVideo}) => ({
@@ -65,16 +84,25 @@ const Content = styled('div')({
   backgroundColor: '#FFFFFF',
   display: 'flex',
   overflow: 'hidden',
-  // padding-bottom makes space for the Start New Meeting FAB
-  // padding: '0 0 80px',
   height: '100%',
   flexDirection: 'column',
   // width: '35%'
   width: '100%'
 })
 
+const MeetingNavList = styled('ul')({
+  display: 'flex',
+  flex: 1,
+  flexDirection: 'column',
+  listStyle: 'none',
+  margin: 0,
+  minHeight: 0, // very important! allows children to collapse for overflow
+  padding: 0
+})
+
 const EstimatePhaseDiscussionDrawer = (props: Props) => {
   const {isDesktop, isDrawerOpen, toggleDrawer} = props
+  console.log('EstimatePhaseDiscussionDrawer -> isDrawerOpen', isDrawerOpen)
 
   if (isDesktop) {
     return (
