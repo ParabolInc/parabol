@@ -1,6 +1,7 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {IStartNewMeetingOnMutationArguments, MeetingTypeEnum} from 'parabol-client/types/graphql'
+import DimensionScaleMapping from '../../database/types/DimensionScaleMapping'
 import getRethink from '../../database/rethinkDriver'
 import MeetingPoker from '../../database/types/MeetingPoker'
 import MeetingSettingsPoker from '../../database/types/MeetingSettingsPoker'
@@ -53,13 +54,22 @@ export default {
       .get('meetingSettingsByType')
       .load({teamId, meetingType: 'poker'})) as MeetingSettingsPoker
     const {selectedTemplateId} = meetingSettings
+    const dimensions = await dataLoader.get('dimensionsByTemplateId').load(selectedTemplateId)
+    const dimensionScaleMapping = dimensions.map(
+      (dimension) =>
+        new DimensionScaleMapping({
+          dimensionId: dimension.id,
+          scaleId: dimension.scaleId
+        })
+    )
 
     const meeting = new MeetingPoker({
       teamId,
       meetingCount,
       phases,
       facilitatorUserId: viewerId,
-      templateId: selectedTemplateId
+      templateId: selectedTemplateId,
+      dimensionScaleMapping
     })
     const meetingId = meeting.id
     const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)

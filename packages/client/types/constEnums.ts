@@ -297,6 +297,8 @@ export const enum Threshold {
   MAX_DAILY_PASSWORD_RESETS = 5,
   MAX_DAILY_PASSWORD_ATTEMPTS = 100,
   MAX_REFLECTION_PROMPTS = 12,
+  MAX_POKER_TEMPLDATE_DIMENSIONS = 12,
+  MAX_POKER_TEMPLDATE_SCALES = 12,
   MAX_RETRO_TEAM_TEMPLATES = 20,
   MAX_REACTJIS = 12,
   REFRESH_JWT_AFTER = 1296000000, // 15 days
@@ -342,4 +344,9 @@ export const enum ZIndex {
 
 export const enum AuthTokenRole {
   SUPER_USER = 'su'
+}
+
+export const enum SprintPokerDefaults {
+  DEFAULT_TEMPLATE_ID = 'estimatedEffortTemplate',
+  DEFAULT_SCALE_ID = 'fibonacciScale'
 }
