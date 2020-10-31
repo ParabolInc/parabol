@@ -37,31 +37,17 @@ const PusherDowner = styled('div')({
   margin: '0 0 auto'
 })
 
-// const Header = styled(LabelHeading)<{isPokerMeeting: boolean | undefined}>(({isPokerMeeting}) => ({
-//   borderBottom: `1px solid ${PALETTE.BORDER_LIGHTER}`,
-//   margin: '0 0 8px',
-//   padding: isPokerMeeting ? '6px 12px 12px' : '6px 12px 12px',
-//   textTransform: 'none',
-//   width: '100%'
-// }))
-
-const Header = styled(LabelHeading)<{isPokerMeeting?: boolean}>(({isPokerMeeting}) => ({
+const Header = styled(LabelHeading)({
   borderBottom: `1px solid ${PALETTE.BORDER_LIGHTER}`,
-  display: 'flex',
-  // margin: '0 0 8px',
-  padding: isPokerMeeting ? '3px 6px' : '6px 12px 12px',
+  margin: '0 0 8px',
+  padding: '6px 12px 12px',
   textTransform: 'none',
   width: '100%'
-}))
+})
 
 const CommentingStatusBlock = styled('div')({
   height: 36,
   width: '100%'
-})
-
-const CommentAvatar = styled(Avatar)({
-  margin: '8px 4px',
-  transition: 'all 150ms'
 })
 
 interface Props {
@@ -75,23 +61,12 @@ interface Props {
 
 const DiscussionThreadList = forwardRef((props: Props, ref: any) => {
   const {editorRef, meeting, threadSourceId, threadables, dataCy, preferredNames} = props
-  const {endedAt, meetingType, viewerMeetingMember} = meeting
-  const {user} = viewerMeetingMember
-  const {picture} = user
-  console.log('DiscussionThreadList -> meeting', meeting)
+  const {endedAt, meetingType} = meeting
   const isPokerMeeting = meetingType === MeetingTypeEnum.poker
   const isEmpty = threadables.length === 0
   useScrollThreadList(threadables, editorRef, ref, preferredNames)
   const HeaderBlock = () => {
-    if (isPokerMeeting) {
-      return (
-        <Header isPokerMeeting>
-          {[1, 2, 3, 4].map((__example, idx) => {
-            return <CommentAvatar key={idx} size={32} picture={picture} />
-          })}
-        </Header>
-      )
-    }
+    if (isPokerMeeting) return null
     return <Header>{'Discussion & Takeaway Tasks'}</Header>
   }
   if (isEmpty) {
@@ -132,11 +107,6 @@ export default createFragmentContainer(DiscussionThreadList, {
       ...ThreadedItem_meeting
       endedAt
       meetingType
-      viewerMeetingMember {
-        user {
-          picture
-        }
-      }
     }
   `,
 

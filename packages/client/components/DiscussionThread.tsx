@@ -25,7 +25,8 @@ const Wrapper = styled('div')<{isExpanded: boolean; isPokerMeeting?: boolean}>(
     overflow: 'hidden',
     width: isPokerMeeting ? '100%' : 'calc(100% - 16px)',
     [makeMinWidthMediaQuery(Breakpoint.SIDEBAR_LEFT)]: {
-      height: isExpanded ? '100%' : `calc(100% - ${MeetingControlBarEnum.HEIGHT}px)`,
+      height:
+        isExpanded || isPokerMeeting ? '100%' : `calc(100% - ${MeetingControlBarEnum.HEIGHT}px)`,
       width: DiscussionThreadEnum.WIDTH
     }
   })
