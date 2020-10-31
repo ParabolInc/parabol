@@ -1638,7 +1638,8 @@ export interface IThreadable {
  */
 export const enum ThreadSourceEnum {
   AGENDA_ITEM = 'AGENDA_ITEM',
-  REFLECTION_GROUP = 'REFLECTION_GROUP'
+  REFLECTION_GROUP = 'REFLECTION_GROUP',
+  POKER_STORY = 'POKER_STORY'
 }
 
 /**

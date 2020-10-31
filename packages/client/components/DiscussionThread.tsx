@@ -11,25 +11,28 @@ import {Elevation} from '../styles/elevation'
 import makeMinWidthMediaQuery from '../utils/makeMinWidthMediaQuery'
 import DiscussionThreadInput from './DiscussionThreadInput'
 import DiscussionThreadList from './DiscussionThreadList'
+import {MeetingTypeEnum} from '~/types/graphql'
 
-const Wrapper = styled('div')<{isExpanded: boolean}>(({isExpanded}) => ({
-  background: '#fff',
-  borderRadius: 4,
-  boxShadow: Elevation.DISCUSSION_THREAD,
-  display: 'flex',
-  flexDirection: 'column',
-  justifyContent: 'space-between',
-  height: '100%',
-  overflow: 'hidden',
-  width: 'calc(100% - 16px)',
-  [makeMinWidthMediaQuery(Breakpoint.SIDEBAR_LEFT)]: {
-    height: isExpanded ? '100%' : `calc(100% - ${MeetingControlBarEnum.HEIGHT}px)`,
-    width: DiscussionThreadEnum.WIDTH
-  }
-}))
+const Wrapper = styled('div')<{isExpanded: boolean; isPokerMeeting?: boolean}>(
+  ({isExpanded, isPokerMeeting}) => ({
+    background: '#fff',
+    borderRadius: 4,
+    boxShadow: Elevation.DISCUSSION_THREAD,
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'space-between',
+    height: '100%',
+    overflow: 'hidden',
+    width: isPokerMeeting ? '100%' : 'calc(100% - 16px)',
+    [makeMinWidthMediaQuery(Breakpoint.SIDEBAR_LEFT)]: {
+      height: isExpanded ? '100%' : `calc(100% - ${MeetingControlBarEnum.HEIGHT}px)`,
+      width: DiscussionThreadEnum.WIDTH
+    }
+  })
+)
 
 interface Props {
-  meetingContentRef: RefObject<HTMLDivElement>
+  meetingContentRef?: RefObject<HTMLDivElement>
   threadSourceId: string
   viewer: DiscussionThread_viewer
 }
@@ -37,7 +40,7 @@ interface Props {
 const DiscussionThread = (props: Props) => {
   const {meetingContentRef, threadSourceId, viewer} = props
   const meeting = viewer.meeting!
-  const {endedAt, replyingToCommentId, threadSource} = meeting
+  const {endedAt, meetingType, replyingToCommentId, threadSource} = meeting
   const thread = threadSource?.thread
   const commentors = threadSource?.commentors
   const preferredNames =
@@ -52,9 +55,14 @@ const DiscussionThread = (props: Props) => {
   const ref = useRef<HTMLDivElement>(null)
   const isExpanded =
     useCoverable('threads', ref, MeetingControlBarEnum.HEIGHT, meetingContentRef) || !!endedAt
+  const isPokerMeeting = meetingType === MeetingTypeEnum.poker
 
   return (
-    <Wrapper isExpanded={isExpanded} ref={ref}>
+    <Wrapper
+      isExpanded={!isPokerMeeting && isExpanded}
+      isPokerMeeting={isPokerMeeting}
+      ref={isPokerMeeting ? undefined : ref}
+    >
       <DiscussionThreadList
         dataCy='discuss-thread-list'
         threadSourceId={threadSourceId}
@@ -101,6 +109,7 @@ export default createFragmentContainer(DiscussionThread, {
           ...DiscussionThreadInput_meeting
           ...DiscussionThreadList_meeting
           endedAt
+          meetingType
           replyingToCommentId
         }
         ... on RetrospectiveMeeting {

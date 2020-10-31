@@ -1,37 +1,40 @@
 import styled from '@emotion/styled'
-import React, {useRef, useState} from 'react'
-import {createFragmentContainer, graphql} from 'react-relay'
-import useBreakpoint from '~/hooks/useBreakpoint'
-import useSidebar from '~/hooks/useSidebar'
+import React, {useRef} from 'react'
+import graphql from 'babel-plugin-relay/macro'
+import {createFragmentContainer} from 'react-relay'
+import {useCoverable} from '~/hooks/useControlBarCovers'
 import {desktopSidebarShadow} from '~/styles/elevation'
-import {PALETTE} from '~/styles/paletteV2'
 import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
-import {AppBar, Breakpoint, DiscussionThreadEnum, NavSidebar, ZIndex} from '../types/constEnums'
+import {EstimatePhaseDiscussionDrawer_meeting} from '~/__generated__/EstimatePhaseDiscussionDrawer_meeting.graphql'
+import {Breakpoint, DiscussionThreadEnum, MeetingControlBarEnum, ZIndex} from '../types/constEnums'
 import DiscussionThreadRoot from './DiscussionThreadRoot'
-import ResponsiveDashSidebar from './ResponsiveDashSidebar'
 import SwipeableDashSidebar from './SwipeableDashSidebar'
 
 interface Props {
   isDesktop: boolean
   isDrawerOpen: boolean
   toggleDrawer: () => void
-  meetingId: string
-  storyId: string
+  meeting: EstimatePhaseDiscussionDrawer_meeting
 }
 
-const Drawer = styled('div')({
+const Drawer = styled('div')<{isExpanded: boolean}>(({isExpanded}) => ({
   backgroundColor: '#FFFFFF',
   boxShadow: desktopSidebarShadow,
   display: 'flex',
   flex: 1,
   flexDirection: 'column',
-  height: '100vh',
+  height: '100%',
   overflow: 'hidden',
   position: 'fixed',
+  justifyContent: 'space-between',
   right: 0,
-  bottom: 0,
+  padding: 0,
   width: DiscussionThreadEnum.WIDTH,
-  zIndex: ZIndex.SIDE_SHEET // make sure shadow is above cards
+  zIndex: ZIndex.SIDE_SHEET, // make sure shadow is above cards
+  [makeMinWidthMediaQuery(Breakpoint.SIDEBAR_LEFT)]: {
+    height: isExpanded ? '100%' : `calc(100% - ${MeetingControlBarEnum.HEIGHT}px)`,
+    width: DiscussionThreadEnum.WIDTH
+  }
   // [desktopBreakpointMediaQuery]: {
   //   boxShadow: desktopSidebarShadow,
   //   position: 'relative',
@@ -41,7 +44,7 @@ const Drawer = styled('div')({
   //   position: 'fixed',
   //   top: AppBar.HEIGHT
   // }
-})
+}))
 
 const MobileSidebar = styled('div')<{hideDrawer: boolean | null}>(({hideDrawer}) => ({
   bottom: 0,
@@ -60,13 +63,13 @@ const MobileSidebar = styled('div')<{hideDrawer: boolean | null}>(({hideDrawer})
 
 const VideoContainer = styled('div')<{hideVideo: boolean | null}>(({hideVideo}) => ({
   display: hideVideo ? 'none' : 'flex',
-  height: '35%',
-  width: '100%',
-  border: '2px solid red'
+  // height: '30%',
+  backgroundColor: '#FFFFFF',
+  height: '160px',
+  width: '100%'
 }))
 
 const Content = styled('div')({
-  boxShadow: desktopSidebarShadow,
   backgroundColor: '#FFFFFF',
   display: 'flex',
   overflow: 'hidden',
@@ -76,15 +79,6 @@ const Content = styled('div')({
   width: '100%'
 })
 
-const MeetingNavList = styled('ul')({
-  display: 'flex',
-  flex: 1,
-  flexDirection: 'column',
-  listStyle: 'none',
-  margin: 0,
-  minHeight: 0, // very important! allows children to collapse for overflow
-  padding: 0
-})
 const ThreadColumn = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   alignItems: 'center',
   display: 'flex',
@@ -93,29 +87,29 @@ const ThreadColumn = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   height: '100%',
   overflow: 'auto',
   paddingTop: 4,
-  paddingBottom: isDesktop ? 16 : 8,
+  justifyContent: 'flex-end',
+  bottom: 0,
+  position: 'relative',
+  // paddingBottom: isDesktop ? 16 : 8,
   width: '100%',
   maxWidth: 700
 }))
 
 const EstimatePhaseDiscussionDrawer = (props: Props) => {
-  const {isDesktop, isDrawerOpen, toggleDrawer, meetingId, storyId} = props
-  console.log('EstimatePhaseDiscussionDrawer -> props', props)
-  console.log('EstimatePhaseDiscussionDrawer -> isDrawerOpen', isDrawerOpen)
-  const meetingContentRef = useRef<HTMLDivElement>(null)
+  const {isDesktop, isDrawerOpen, toggleDrawer, meeting} = props
+  const {id: meetingId, endedAt, localStage} = meeting
+  const {__id: storyId} = localStage
+  const ref = useRef<HTMLDivElement>(null)
+  const isExpanded = useCoverable('drawer', ref, MeetingControlBarEnum.HEIGHT) || !!endedAt
 
-  if (isDesktop) {
+  if (true) {
     return (
-      <Drawer>
+      <Drawer isExpanded={isExpanded} ref={ref}>
         <VideoContainer hideVideo={false}>
           <h1>Desktop</h1>
         </VideoContainer>
         <ThreadColumn isDesktop={isDesktop}>
-          <DiscussionThreadRoot
-            meetingContentRef={meetingContentRef}
-            meetingId={meetingId}
-            threadSourceId={storyId}
-          />
+          <DiscussionThreadRoot meetingId={meetingId} threadSourceId={storyId} />
         </ThreadColumn>
       </Drawer>
     )
@@ -131,11 +125,21 @@ const EstimatePhaseDiscussionDrawer = (props: Props) => {
   )
 }
 
-export default EstimatePhaseDiscussionDrawer
-// export default createFragmentContainer(EstimatePhaseDiscussionDrawer, {
-//   meeting: graphql`
-//     fragment EstimatePhaseDiscussionDrawer_meeting on PokerMeeting {
-//       id
-//     }
-//   `
-// })
+graphql`
+  fragment EstimatePhaseDiscussionDrawerStage on EstimateStage {
+    ... on EstimateStageJira {
+      __id
+    }
+  }
+`
+export default createFragmentContainer(EstimatePhaseDiscussionDrawer, {
+  meeting: graphql`
+    fragment EstimatePhaseDiscussionDrawer_meeting on PokerMeeting {
+      id
+      endedAt
+      localStage {
+        ...EstimatePhaseDiscussionDrawerStage @relay(mask: false)
+      }
+    }
+  `
+})

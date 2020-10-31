@@ -205,17 +205,19 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
         setEditorState={setEditorState}
         teamId={teamId}
       />
-      <CommentSendOrAdd
-        dataCy={`${dataCy}`}
-        getMaxSortOrder={getMaxSortOrder}
-        commentSubmitState={commentSubmitState}
-        meeting={meeting}
-        threadSourceId={threadSourceId}
-        threadParentId={threadParentId}
-        threadSource={threadSource}
-        collapseAddTask={collapseAddTask}
-        onSubmit={onSubmit}
-      />
+      {meetingType !== MeetingTypeEnum.poker && (
+        <CommentSendOrAdd
+          dataCy={`${dataCy}`}
+          getMaxSortOrder={getMaxSortOrder}
+          commentSubmitState={commentSubmitState}
+          meeting={meeting}
+          threadSourceId={threadSourceId}
+          threadParentId={threadParentId}
+          threadSource={threadSource}
+          collapseAddTask={collapseAddTask}
+          onSubmit={onSubmit}
+        />
+      )}
     </Wrapper>
   )
 })
