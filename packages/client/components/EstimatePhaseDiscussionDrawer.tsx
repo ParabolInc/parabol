@@ -4,9 +4,8 @@ import graphql from 'babel-plugin-relay/macro'
 import {createFragmentContainer} from 'react-relay'
 import {useCoverable} from '~/hooks/useControlBarCovers'
 import {desktopSidebarShadow} from '~/styles/elevation'
-import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
 import {EstimatePhaseDiscussionDrawer_meeting} from '~/__generated__/EstimatePhaseDiscussionDrawer_meeting.graphql'
-import {Breakpoint, DiscussionThreadEnum, MeetingControlBarEnum, ZIndex} from '../types/constEnums'
+import {DiscussionThreadEnum, MeetingControlBarEnum, ZIndex} from '../types/constEnums'
 import DiscussionThreadRoot from './DiscussionThreadRoot'
 import {PALETTE} from '~/styles/paletteV2'
 import Icon from './Icon'
@@ -15,24 +14,18 @@ import PlainButton from './PlainButton/PlainButton'
 import LabelHeading from './LabelHeading/LabelHeading'
 import Avatar from './Avatar/Avatar'
 
-const Drawer = styled('div')<{isExpanded: boolean}>(({isExpanded}) => ({
-  bottom: 0,
-  boxShadow: desktopSidebarShadow,
+const Drawer = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
+  // bottom: 0,
+  boxShadow: isDesktop ? desktopSidebarShadow : undefined,
   display: 'flex',
-  minHeight: '100%',
   height: '100vh',
   justifyContent: 'flex-start',
   overflow: 'hidden',
-  position: 'fixed',
-  right: 0,
-  top: 0,
+  position: isDesktop ? 'fixed' : 'static',
+  right: isDesktop ? 0 : undefined,
+  // top: 0,
   userSelect: 'none',
-  minWidth: DiscussionThreadEnum.WIDTH,
-  maxWidth: DiscussionThreadEnum.WIDTH,
-  [makeMinWidthMediaQuery(Breakpoint.SIDEBAR_LEFT)]: {
-    height: isExpanded ? '100%' : `calc(100% - ${MeetingControlBarEnum.HEIGHT}px)`,
-    width: DiscussionThreadEnum.WIDTH
-  }
+  width: DiscussionThreadEnum.WIDTH
 }))
 
 const VideoContainer = styled('div')<{showVideo: boolean | null}>(({showVideo}) => ({
@@ -55,7 +48,6 @@ const ThreadColumn = styled('div')({
   display: 'flex',
   flex: 1,
   flexDirection: 'column',
-  // height: '100%',
   overflow: 'auto',
   justifyContent: 'flex-end',
   bottom: 0,
@@ -82,7 +74,6 @@ const StyledIcon = styled(Icon)({
 
 const AvatarGroup = styled(LabelHeading)({
   display: 'flex',
-  // margin: '0 0 8px',
   padding: '3px 6px',
   alignItems: 'center',
   textTransform: 'none',
@@ -121,23 +112,22 @@ const ShowVideoButton = styled(PlainButton)<{showVideo: boolean | null}>(({showV
 
 interface Props {
   isDesktop: boolean
-  isDrawerOpen: boolean
-  toggleDrawer: () => void
   meeting: EstimatePhaseDiscussionDrawer_meeting
 }
 
 const EstimatePhaseDiscussionDrawer = (props: Props) => {
-  const {meeting} = props
+  const {isDesktop, meeting} = props
   const {id: meetingId, endedAt, localStage, viewerMeetingMember} = meeting
   const {user} = viewerMeetingMember
   const {picture} = user
   const {__id: storyId} = localStage
   const [showVideo, setShowVideo] = useState(true)
   const ref = useRef<HTMLDivElement>(null)
-  const isExpanded = useCoverable('drawer', ref, MeetingControlBarEnum.HEIGHT) || !!endedAt
+  const meetingControlBarPadding = 16
+  useCoverable('drawer', ref, MeetingControlBarEnum.HEIGHT + meetingControlBarPadding) || !!endedAt
 
   return (
-    <Drawer isExpanded={isExpanded} ref={ref}>
+    <Drawer isDesktop={isDesktop} ref={ref}>
       <Content>
         <VideoContainer showVideo={showVideo}>
           <ButtonGroup>

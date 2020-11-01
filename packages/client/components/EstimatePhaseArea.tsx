@@ -3,7 +3,7 @@ import styled from '@emotion/styled'
 import {PALETTE} from '~/styles/paletteV2'
 import SwipeableViews from 'react-swipeable-views'
 import useBreakpoint from '~/hooks/useBreakpoint'
-import {Breakpoint} from '~/types/constEnums'
+import {Breakpoint, DiscussionThreadEnum} from '~/types/constEnums'
 
 const EstimateArea = styled('div')({
   display: 'flex',
@@ -15,7 +15,8 @@ const EstimateArea = styled('div')({
 const StepperDots = styled('div')({
   display: 'flex',
   justifyContent: 'center',
-  padding: '16px 0'
+  padding: '16px 0',
+  width: `calc(100% - ${DiscussionThreadEnum.WIDTH}px)`
 })
 
 const StepperDot = styled('div')<{isActive: boolean}>(({isActive}) => ({

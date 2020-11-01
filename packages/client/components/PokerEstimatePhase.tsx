@@ -48,16 +48,14 @@ const PokerEstimatePhase = (props: Props) => {
     <MeetingContent>
       <MeetingHeaderAndPhase hideBottomBar={!!endedAt}>
         <MeetingTopBarWrapper>
-          <div style={{width: '100%'}}>
-            <MeetingTopBar
-              avatarGroup={avatarGroup}
-              isMeetingSidebarCollapsed={!showSidebar}
-              toggleSidebar={toggleSidebar}
-            >
-              <PhaseHeaderTitle>{phaseLabelLookup.ESTIMATE}</PhaseHeaderTitle>
-              <PhaseHeaderDescription>{'Estimate each story as a team'}</PhaseHeaderDescription>
-            </MeetingTopBar>
-          </div>
+          <MeetingTopBar
+            avatarGroup={avatarGroup}
+            isMeetingSidebarCollapsed={!showSidebar}
+            toggleSidebar={toggleSidebar}
+          >
+            <PhaseHeaderTitle>{phaseLabelLookup.ESTIMATE}</PhaseHeaderTitle>
+            <PhaseHeaderDescription>{'Estimate each story as a team'}</PhaseHeaderDescription>
+          </MeetingTopBar>
           {!isDesktop && (
             <AvatarBlock onClick={toggleDrawer}>
               <Avatar hasBadge={false} picture={defaultUserAvatar} size={48} />
@@ -72,10 +70,10 @@ const PokerEstimatePhase = (props: Props) => {
         </PhaseWrapper>
       </MeetingHeaderAndPhase>
       {isDesktop ? (
-        <EstimatePhaseDiscussionDrawer meeting={meeting} />
+        <EstimatePhaseDiscussionDrawer isDesktop={isDesktop} meeting={meeting} />
       ) : (
         <SwipeableDashSidebar isOpen={isDrawerOpen} isRightSidebar onToggle={toggleDrawer}>
-          <EstimatePhaseDiscussionDrawer meeting={meeting} />
+          <EstimatePhaseDiscussionDrawer isDesktop={isDesktop} meeting={meeting} />
         </SwipeableDashSidebar>
       )}
     </MeetingContent>
