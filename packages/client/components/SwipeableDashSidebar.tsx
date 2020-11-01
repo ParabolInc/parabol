@@ -16,7 +16,6 @@ const SidebarAndScrim = styled('div')<{isRightSidebar: boolean | undefined}>(
   ({isRightSidebar}) => ({
     position: 'absolute',
     left: isRightSidebar ? undefined : -NavSidebar.WIDTH,
-    // left: isRightSidebar ? NavSidebar.WIDTH : -NavSidebar.WIDTH,
     right: isRightSidebar ? -DiscussionThreadEnum.WIDTH : undefined,
     top: 0,
     height: '100%'
@@ -40,36 +39,25 @@ const Scrim = styled('div')<{x: number; sidebarWidth: number}>(({x, sidebarWidth
   transition: `opacity 200ms ${DECELERATE}`,
   width: '100%',
   zIndex: ZIndex.SIDEBAR
-  // border: '2px solid yellow'
 }))
 
 const SidebarAndHandle = styled('div')<StyleProps>(({x, isRightSidebar}) => ({
   display: 'flex',
   position: 'fixed',
   transform: `translateX(${isRightSidebar ? -x : x}px)`,
-  // transform: `translateX(${x}px)`,
   transition: `transform 200ms ${DECELERATE}`,
-  // zIndex: ZIndex.SIDEBAR,
-  zIndex: 1000,
-  height: '100vw'
-  // minWidth: PEEK_WIDTH,
-  // top: 0,
-  // right: 0,
-  // right: x < 256 ? 0 : undefined,
-  // width: DiscussionThreadEnum.WIDTH,
-  // border: '2px solid navy'
+  zIndex: ZIndex.SIDEBAR
 }))
 
 const Sidebar = styled('div')<StyleProps>(({x, isRightSidebar, hysteresisThresh}) => ({
   boxShadow: x > 0 ? navDrawerShadow : undefined,
   pointerEvents: hysteresisThresh && x > hysteresisThresh ? undefined : 'none',
-  height: '100vw',
+  height: '100vh',
   zIndex: 999
 }))
 
 const RightSwipeHandle = styled(PlainButton)({
   width: PEEK_WIDTH,
-  // background: 'silver',
   display: 'flex',
   position: 'fixed',
   right: 0,
@@ -100,9 +88,7 @@ const updateIsSwipe = (clientX: number, clientY: number, isRightSidebar: boolean
   if (dx > UNCERTAINTY_THRESHOLD || dy > UNCERTAINTY_THRESHOLD) {
     // if it's open & it's a swipe to the left || it's closed & it's a swipe to the right
     const swipingLeft = rads <= -MIN_ARC_RADS
-    console.log('updateIsSwipe -> swipingLeft', swipingLeft)
     const swipingRight = rads >= MIN_ARC_RADS
-    console.log('updateIsSwipe -> swipingRight', swipingRight)
 
     // swipe.isSwipe = swipe.isOpen ? rads <= -MIN_ARC_RADS : rads >= MIN_ARC_RADS
     swipe.isSwipe = swipe.isOpen
@@ -112,7 +98,6 @@ const updateIsSwipe = (clientX: number, clientY: number, isRightSidebar: boolean
       : isRightSidebar
       ? swipingLeft
       : swipingRight
-    console.log('SWIPE ---->>> updateIsSwipe -> swipe.isSwipe', swipe.isSwipe)
   }
 }
 
@@ -177,7 +162,6 @@ const SwipeableDashSidebar = (props: Props) => {
   }, [setX])
 
   useEffect(() => {
-    // showSidebar()
     if (isOpen !== swipe.isOpen) {
       swipe.isOpen = isOpen
       isOpen ? showSidebar() : hideSidebar()
@@ -193,7 +177,6 @@ const SwipeableDashSidebar = (props: Props) => {
       const {isOpen: nextIsOpen} = swipe
       const isOpening = movementX > 0 !== nextIsOpen
       const isFling = swipe.speed >= MIN_SPEED && isOpening
-      console.log('xRef.current', xRef.current)
       if (isFling) {
         onToggle()
       } else if (xRef.current > getHysteresisThresh(sidebarWidth)) {
@@ -221,7 +204,6 @@ const SwipeableDashSidebar = (props: Props) => {
   const onMouseMove = useEventCallback((e: MouseEvent | TouchEvent) => {
     const event = e.type === 'touchmove' ? (e as TouchEvent).touches[0] : (e as MouseEvent)
     const {clientX, clientY} = event
-    console.log('MOVE onMouseMove -> swipe.isSwipe', swipe.isSwipe)
     if (swipe.isSwipe === null) {
       // they don't want a peek
       window.clearTimeout(swipe.peekTimeout)
@@ -284,7 +266,6 @@ const SwipeableDashSidebar = (props: Props) => {
         onTouchStart={onMouseDown}
         isRightSidebar={isRightSidebar}
       >
-        {/* <RightSwipeHandle onMouseDown={onMouseDown} onTouchStart={onMouseDown} /> */}
         <Sidebar
           x={x}
           isRightSidebar={isRightSidebar}

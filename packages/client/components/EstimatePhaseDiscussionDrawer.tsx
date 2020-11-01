@@ -19,7 +19,7 @@ const Drawer = styled('div')<{isExpanded: boolean}>(({isExpanded}) => ({
   bottom: 0,
   boxShadow: desktopSidebarShadow,
   display: 'flex',
-  flex: 1,
+  minHeight: '100%',
   height: '100vh',
   justifyContent: 'flex-start',
   overflow: 'hidden',
@@ -46,7 +46,6 @@ const Content = styled('div')({
   backgroundColor: '#FFFFFF',
   display: 'flex',
   overflow: 'hidden',
-  height: '100%',
   flexDirection: 'column',
   width: '100%'
 })
@@ -56,7 +55,7 @@ const ThreadColumn = styled('div')({
   display: 'flex',
   flex: 1,
   flexDirection: 'column',
-  height: '100%',
+  // height: '100%',
   overflow: 'auto',
   justifyContent: 'flex-end',
   bottom: 0,
