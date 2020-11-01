@@ -8,7 +8,6 @@ import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
 import {EstimatePhaseDiscussionDrawer_meeting} from '~/__generated__/EstimatePhaseDiscussionDrawer_meeting.graphql'
 import {Breakpoint, DiscussionThreadEnum, MeetingControlBarEnum, ZIndex} from '../types/constEnums'
 import DiscussionThreadRoot from './DiscussionThreadRoot'
-import SwipeableDashSidebar from './SwipeableDashSidebar'
 import {PALETTE} from '~/styles/paletteV2'
 import Icon from './Icon'
 import {ICON_SIZE} from '~/styles/typographyV2'
@@ -17,52 +16,27 @@ import LabelHeading from './LabelHeading/LabelHeading'
 import Avatar from './Avatar/Avatar'
 
 const Drawer = styled('div')<{isExpanded: boolean}>(({isExpanded}) => ({
-  backgroundColor: '#FFFFFF',
+  bottom: 0,
   boxShadow: desktopSidebarShadow,
   display: 'flex',
   flex: 1,
-  flexDirection: 'column',
-  height: '100%',
-  overflow: 'hidden',
-  position: 'fixed',
-  justifyContent: 'space-between',
-  top: 0,
-  right: 0,
-  width: DiscussionThreadEnum.WIDTH,
-  zIndex: ZIndex.SIDE_SHEET, // make sure shadow is above cards
-  [makeMinWidthMediaQuery(Breakpoint.SIDEBAR_LEFT)]: {
-    height: isExpanded ? '100%' : `calc(100% - ${MeetingControlBarEnum.HEIGHT}px)`,
-    width: DiscussionThreadEnum.WIDTH
-  }
-  // [desktopBreakpointMediaQuery]: {
-  //   boxShadow: desktopSidebarShadow,
-  //   position: 'relative',
-  //   top: 0
-  // },
-  // [desktopDashWidestMediaQuery]: {
-  //   position: 'fixed',
-  //   top: AppBar.HEIGHT
-  // }
-}))
-
-const MobileSidebar = styled('div')<{hideDrawer: boolean | null}>(({hideDrawer}) => ({
-  bottom: 0,
-  display: 'flex',
-  flex: 1,
   height: '100vh',
-  justifyContent: 'flex-end',
+  justifyContent: 'flex-start',
   overflow: 'hidden',
   position: 'fixed',
   right: 0,
   top: 0,
   userSelect: 'none',
   minWidth: DiscussionThreadEnum.WIDTH,
-  maxWidth: DiscussionThreadEnum.WIDTH
+  maxWidth: DiscussionThreadEnum.WIDTH,
+  [makeMinWidthMediaQuery(Breakpoint.SIDEBAR_LEFT)]: {
+    height: isExpanded ? '100%' : `calc(100% - ${MeetingControlBarEnum.HEIGHT}px)`,
+    width: DiscussionThreadEnum.WIDTH
+  }
 }))
 
 const VideoContainer = styled('div')<{showVideo: boolean | null}>(({showVideo}) => ({
   display: showVideo ? 'flex' : 'none',
-  // height: '30%',
   backgroundColor: '#FFFFFF',
   height: '200px',
   width: '100%'
@@ -74,7 +48,6 @@ const Content = styled('div')({
   overflow: 'hidden',
   height: '100%',
   flexDirection: 'column',
-  // width: '35%'
   width: '100%'
 })
 
@@ -133,16 +106,17 @@ const StyledAvatar = styled(Avatar)({
 
 const CommentIcon = styled(Icon)({
   color: '#FFFF',
-  fontSize: ICON_SIZE.MD36
+  fontSize: ICON_SIZE.MD36,
+  transform: 'scaleX(-1)'
 })
 
 const ShowVideoButton = styled(PlainButton)<{showVideo: boolean | null}>(({showVideo}) => ({
+  alignItems: 'center',
   backgroundColor: PALETTE.TEXT_PURPLE,
   borderRadius: '50%',
-  height: 56,
   display: showVideo ? 'none' : 'flex',
+  height: 56,
   justifyContent: 'center',
-  alignItems: 'center',
   width: 64
 }))
 
@@ -154,19 +128,18 @@ interface Props {
 }
 
 const EstimatePhaseDiscussionDrawer = (props: Props) => {
-  const {isDesktop, isDrawerOpen, toggleDrawer, meeting} = props
+  const {meeting} = props
   const {id: meetingId, endedAt, localStage, viewerMeetingMember} = meeting
   const {user} = viewerMeetingMember
   const {picture} = user
   const {__id: storyId} = localStage
   const [showVideo, setShowVideo] = useState(true)
-  console.log('EstimatePhaseDiscussionDrawer -> showVideo', showVideo)
   const ref = useRef<HTMLDivElement>(null)
   const isExpanded = useCoverable('drawer', ref, MeetingControlBarEnum.HEIGHT) || !!endedAt
 
-  if (true) {
-    return (
-      <Drawer isExpanded={isExpanded} ref={ref}>
+  return (
+    <Drawer isExpanded={isExpanded} ref={ref}>
+      <Content>
         <VideoContainer showVideo={showVideo}>
           <ButtonGroup>
             <PlainButton onClick={() => setShowVideo(false)}>
@@ -184,20 +157,11 @@ const EstimatePhaseDiscussionDrawer = (props: Props) => {
             <CommentIcon>comment</CommentIcon>
           </ShowVideoButton>
         </DiscussingGroup>
-        <ThreadColumn isDesktop={isDesktop}>
+        <ThreadColumn>
           <DiscussionThreadRoot meetingId={meetingId} threadSourceId={storyId} />
         </ThreadColumn>
-      </Drawer>
-    )
-  }
-  return (
-    <SwipeableDashSidebar isOpen={isDrawerOpen} isRightSidebar onToggle={toggleDrawer}>
-      <MobileSidebar hideDrawer={!isDrawerOpen}>
-        <Content>
-          <h1>Mobile</h1>
-        </Content>
-      </MobileSidebar>
-    </SwipeableDashSidebar>
+      </Content>
+    </Drawer>
   )
 }
 

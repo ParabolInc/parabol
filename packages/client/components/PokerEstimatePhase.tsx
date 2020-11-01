@@ -19,6 +19,7 @@ import Avatar from './Avatar/Avatar'
 import {Breakpoint} from '~/types/constEnums'
 import useBreakpoint from '~/hooks/useBreakpoint'
 import useSidebar from '~/hooks/useSidebar'
+import SwipeableDashSidebar from './SwipeableDashSidebar'
 interface Props extends PokerMeetingPhaseProps {
   meeting: PokerEstimatePhase_meeting
 }
@@ -70,12 +71,13 @@ const PokerEstimatePhase = (props: Props) => {
           <EstimatePhaseArea />
         </PhaseWrapper>
       </MeetingHeaderAndPhase>
-      <EstimatePhaseDiscussionDrawer
-        isDesktop={isDesktop}
-        isDrawerOpen={isDrawerOpen}
-        toggleDrawer={toggleDrawer}
-        meeting={meeting}
-      />
+      {isDesktop ? (
+        <EstimatePhaseDiscussionDrawer meeting={meeting} />
+      ) : (
+        <SwipeableDashSidebar isOpen={isDrawerOpen} isRightSidebar onToggle={toggleDrawer}>
+          <EstimatePhaseDiscussionDrawer meeting={meeting} />
+        </SwipeableDashSidebar>
+      )}
     </MeetingContent>
   )
 }

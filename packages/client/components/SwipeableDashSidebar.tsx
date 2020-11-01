@@ -277,7 +277,7 @@ const SwipeableDashSidebar = (props: Props) => {
   return portal(
     <SidebarAndScrim isRightSidebar={isRightSidebar}>
       <Scrim x={x} sidebarWidth={sidebarWidth} onClick={onToggle} />
-      <RightSwipeHandle onMouseDown={onMouseDown} onTouchStart={onMouseDown} />
+      {isRightSidebar && <RightSwipeHandle onMouseDown={onMouseDown} onTouchStart={onMouseDown} />}
       <SidebarAndHandle
         x={x}
         onMouseDown={onMouseDown}
@@ -292,7 +292,7 @@ const SwipeableDashSidebar = (props: Props) => {
         >
           {children}
         </Sidebar>
-        <SwipeHandle />
+        {!isRightSidebar && <SwipeHandle />}
       </SidebarAndHandle>
     </SidebarAndScrim>
   )
