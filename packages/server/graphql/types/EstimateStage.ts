@@ -9,6 +9,9 @@ import {
 import NewMeetingStage, {newMeetingStageFields} from './NewMeetingStage'
 import TaskServiceEnum from './TaskServiceEnum'
 import EstimateUserScore from './EstimateUserScore'
+import getRedis from '../../utils/getRedis'
+import db from '../../db'
+import User from './User'
 
 export const estimateStageFields = () => ({
   ...newMeetingStageFields(),
@@ -31,6 +34,26 @@ export const estimateStageFields = () => ({
   finalScore: {
     type: GraphQLFloat,
     description: 'the final score, as defined by the facilitator'
+  },
+  hoveringUserIds: {
+    type: GraphQLNonNull(GraphQLList(GraphQLNonNull(GraphQLID))),
+    description: 'the userIds of the team members hovering the deck',
+    resolve: async ({id: stageId}) => {
+      const redis = getRedis()
+      const userIds = await redis.smembers(`pokerHover:${stageId}`)
+      return userIds
+    }
+  },
+  hoveringUsers: {
+    type: GraphQLNonNull(GraphQLList(GraphQLNonNull(User))),
+    description: 'the users of the team members hovering the deck',
+    resolve: async ({id: stageId}) => {
+      const redis = getRedis()
+      const userIds = await redis.smembers(`pokerHover:${stageId}`)
+      if (userIds.length === 0) return []
+      const users = await db.readMany('User', userIds)
+      return users
+    }
   },
   scores: {
     type: GraphQLNonNull(GraphQLList(GraphQLNonNull(EstimateUserScore))),

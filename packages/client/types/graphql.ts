@@ -4497,6 +4497,16 @@ export interface IEstimateStage {
   finalScore: number | null;
 
   /**
+   * the userIds of the team members hovering the deck
+   */
+  hoveringUserIds: Array<string>;
+
+  /**
+   * the users of the team members hovering the deck
+   */
+  hoveringUsers: Array<IUser>;
+
+  /**
    * all the estimates, 1 per user
    */
   scores: Array<IEstimateUserScore>;
@@ -4661,6 +4671,16 @@ export interface IEstimateStageJira {
   finalScore: number | null;
 
   /**
+   * the userIds of the team members hovering the deck
+   */
+  hoveringUserIds: Array<string>;
+
+  /**
+   * the users of the team members hovering the deck
+   */
+  hoveringUsers: Array<IUser>;
+
+  /**
    * all the estimates, 1 per user
    */
   scores: Array<IEstimateUserScore>;
@@ -4796,6 +4816,16 @@ export interface IEstimateStageParabol {
    * the final score, as defined by the facilitator
    */
   finalScore: number | null;
+
+  /**
+   * the userIds of the team members hovering the deck
+   */
+  hoveringUserIds: Array<string>;
+
+  /**
+   * the users of the team members hovering the deck
+   */
+  hoveringUsers: Array<IUser>;
 
   /**
    * all the estimates, 1 per user
@@ -7295,6 +7325,7 @@ export interface IMutation {
    * Remove all votes, the final vote, and reset the stage
    */
   pokerResetDimension: PokerResetDimensionPayload;
+  pokerAnnounceDeckHover: PokerAnnounceDeckHoverPayload;
 }
 
 export interface IAcceptTeamInvitationOnMutationArguments {
@@ -8364,6 +8395,16 @@ export interface IPokerRevealVotesOnMutationArguments {
 export interface IPokerResetDimensionOnMutationArguments {
   meetingId: string;
   stageId: string;
+}
+
+export interface IPokerAnnounceDeckHoverOnMutationArguments {
+  meetingId: string;
+  stageId: string;
+
+  /**
+   * true if the viewer has started hovering the deck, else false
+   */
+  isHover: boolean;
 }
 
 export interface IAcceptTeamInvitationPayload {
@@ -10668,6 +10709,22 @@ export interface IPokerResetDimensionSuccess {
   stage: EstimateStage;
 }
 
+/**
+ * Return object for PokerAnnounceDeckHoverPayload
+ */
+export type PokerAnnounceDeckHoverPayload =
+  | IErrorPayload
+  | IPokerAnnounceDeckHoverSuccess;
+
+export interface IPokerAnnounceDeckHoverSuccess {
+  __typename: 'PokerAnnounceDeckHoverSuccess';
+
+  /**
+   * The stage that holds the updated scores
+   */
+  stage: EstimateStage;
+}
+
 export interface ISubscription {
   __typename: 'Subscription';
   meetingSubscription: MeetingSubscriptionPayload;
@@ -10713,7 +10770,8 @@ export type MeetingSubscriptionPayload =
   | IVoteForReflectionGroupPayload
   | IVoteForPokerStorySuccess
   | IPokerRevealVotesSuccess
-  | IPokerResetDimensionSuccess;
+  | IPokerResetDimensionSuccess
+  | IPokerAnnounceDeckHoverSuccess;
 
 export interface IUpdateDragLocationPayload {
   __typename: 'UpdateDragLocationPayload';

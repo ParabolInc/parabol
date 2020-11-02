@@ -10,6 +10,7 @@ import {GQLContext} from '../graphql'
 import UpdatePokerScopeItemInput from '../types/UpdatePokerScopeItemInput'
 import UpdatePokerScopePayload from '../types/UpdatePokerScopePayload'
 import isRecordActiveForMeeting from '../../utils/isRecordActiveForMeeting'
+import getRedis from '../../utils/getRedis'
 
 const updatePokerScope = {
   type: GraphQLNonNull(UpdatePokerScopePayload),
@@ -30,6 +31,7 @@ const updatePokerScope = {
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) => {
     const r = await getRethink()
+    const redis = getRedis()
     const viewerId = getUserId(authToken)
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
@@ -97,9 +99,13 @@ const updatePokerScope = {
         // MUTATIVE
         stages.push(...newStages)
       } else if (action === 'DELETE') {
-        // MUTATIVE
-        estimatePhase.stages = stages.filter((stage) => stage.serviceTaskId !== serviceTaskId)
-        stages = estimatePhase.stages
+        const stageToRemove = stages.find((stage) => stage.serviceTaskId === serviceTaskId)
+        if (stageToRemove) {
+          redis.del(`pokerHover:${stageToRemove.id}`)
+          // MUTATIVE
+          estimatePhase.stages = stages.filter((stage) => stage !== stageToRemove)
+          stages = estimatePhase.stages
+        }
       }
     })
 

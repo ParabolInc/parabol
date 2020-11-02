@@ -23,6 +23,7 @@ const subscription = graphql`
   subscription MeetingSubscription($meetingId: ID!) {
     meetingSubscription(meetingId: $meetingId) {
       __typename
+      ...PokerAnnounceDeckHoverMutation_meeting @relay(mask: false)
       ...PokerResetDimensionMutation_meeting @relay(mask: false)
       ...PokerRevealVotesMutation_meeting @relay(mask: false)
       ...VoteForPokerStoryMutation_meeting @relay(mask: false)
