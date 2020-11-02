@@ -4,7 +4,7 @@ import {createFragmentContainer} from 'react-relay'
 import useAtmosphere from '../hooks/useAtmosphere'
 import {MenuProps} from '../hooks/useMenu'
 import useMutationProps from '../hooks/useMutationProps'
-import UpdateTemplateScopeMutation from '../mutations/UpdateTemplateScopeMutation'
+import UpdateReflectTemplateScopeMutation from '../mutations/UpdateReflectTemplateScopeMutation'
 import {SelectSharingScopeDropdown_template} from '../__generated__/SelectSharingScopeDropdown_template.graphql'
 import DropdownMenuIconItemLabel from './DropdownMenuIconItemLabel'
 import Menu from './Menu'
@@ -25,7 +25,7 @@ const SelectSharingScopeDropdown = (props: Props) => {
   const setScope = (newScope: any) => () => {
     if (submitting) return
     submitMutation()
-    UpdateTemplateScopeMutation(atmosphere, {scope: newScope, templateId}, {onError, onCompleted})
+    UpdateReflectTemplateScopeMutation(atmosphere, {scope: newScope, templateId}, {onError, onCompleted})
   }
   return (
     <Menu ariaLabel={'Select the suitable scope for sharing'} {...menuProps}>
