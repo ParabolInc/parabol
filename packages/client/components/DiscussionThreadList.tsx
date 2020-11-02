@@ -4,33 +4,30 @@ import {createFragmentContainer} from 'react-relay'
 import {DiscussionThreadList_meeting} from '~/__generated__/DiscussionThreadList_meeting.graphql'
 import {DiscussionThreadList_threadables} from '~/__generated__/DiscussionThreadList_threadables.graphql'
 import useScrollThreadList from '~/hooks/useScrollThreadList'
-
 import styled from '@emotion/styled'
-
 import {PALETTE} from '../styles/paletteV2'
 import CommentingStatusText from './CommentingStatusText'
 import DiscussionThreadListEmptyState from './DiscussionThreadListEmptyState'
 import LabelHeading from './LabelHeading/LabelHeading'
 import ThreadedItem from './ThreadedItem'
 import {MeetingTypeEnum} from '~/types/graphql'
-import Avatar from './Avatar/Avatar'
 
-const EmptyWrapper = styled('div')<{isPokerMeeting?: boolean}>(({isPokerMeeting}) => ({
+const EmptyWrapper = styled('div')({
   alignItems: 'center',
   display: 'flex',
   flexDirection: 'column',
   justifyContent: 'center',
   height: '100%',
-  padding: isPokerMeeting ? '0' : '8px 0'
-}))
+  padding: '8px 0'
+})
 
-const Wrapper = styled('div')<{isPokerMeeting?: boolean}>(({isPokerMeeting}) => ({
+const Wrapper = styled('div')({
   flex: 1,
   display: 'flex',
   flexDirection: 'column',
   overflow: 'auto',
-  padding: isPokerMeeting ? '0' : '8px 0'
-}))
+  padding: '8px 0'
+})
 
 // https://stackoverflow.com/questions/36130760/use-justify-content-flex-end-and-to-have-vertical-scrollbar
 const PusherDowner = styled('div')({
@@ -62,16 +59,15 @@ interface Props {
 const DiscussionThreadList = forwardRef((props: Props, ref: any) => {
   const {editorRef, meeting, threadSourceId, threadables, dataCy, preferredNames} = props
   const {endedAt, meetingType} = meeting
-  const isPokerMeeting = meetingType === MeetingTypeEnum.poker
   const isEmpty = threadables.length === 0
   useScrollThreadList(threadables, editorRef, ref, preferredNames)
   const HeaderBlock = () => {
-    if (isPokerMeeting) return null
+    if (meetingType === MeetingTypeEnum.poker) return null
     return <Header>{'Discussion & Takeaway Tasks'}</Header>
   }
   if (isEmpty) {
     return (
-      <EmptyWrapper isPokerMeeting={isPokerMeeting}>
+      <EmptyWrapper>
         <HeaderBlock />
         <DiscussionThreadListEmptyState isEndedMeeting={!!endedAt} />
         <CommentingStatusBlock>
@@ -82,7 +78,7 @@ const DiscussionThreadList = forwardRef((props: Props, ref: any) => {
   }
 
   return (
-    <Wrapper data-cy={`${dataCy}`} isPokerMeeting={isPokerMeeting} ref={ref}>
+    <Wrapper data-cy={`${dataCy}`} ref={ref}>
       <HeaderBlock />
       <PusherDowner />
       {threadables.map((threadable) => {

@@ -16,9 +16,8 @@ const SidebarAndScrim = styled('div')<{isRightSidebar: boolean; sidebarWidth: nu
   ({isRightSidebar, sidebarWidth}) => ({
     position: 'absolute',
     left: isRightSidebar ? undefined : -sidebarWidth,
-    right: isRightSidebar ? -sidebarWidth : undefined,
-    top: 0,
-    height: '100%'
+    right: isRightSidebar ? PEEK_WIDTH : undefined,
+    top: 0
   })
 )
 const Scrim = styled('div')<{x: number; sidebarWidth: number}>(({x, sidebarWidth}) => ({
@@ -35,29 +34,19 @@ const Scrim = styled('div')<{x: number; sidebarWidth: number}>(({x, sidebarWidth
 
 const SidebarAndHandle = styled('div')<{x: number; isRightSidebar: boolean}>(
   ({x, isRightSidebar}) => ({
+    display: 'flex',
+    flexDirection: isRightSidebar ? 'row-reverse' : 'row',
     position: 'fixed',
     transform: `translateX(${isRightSidebar ? -x : x}px)`,
     transition: `transform 200ms ${DECELERATE}`,
     zIndex: ZIndex.SIDEBAR
   })
 )
-
-const Sidebar = styled('div')<{x: number; hysteresisThresh: number; isRightSidebar: boolean}>(
-  ({x, hysteresisThresh, isRightSidebar}) => ({
-    boxShadow: x > 0 ? navDrawerShadow : undefined,
-    pointerEvents: hysteresisThresh !== undefined && x > hysteresisThresh ? undefined : 'none',
-    height: '100vh',
-    position: isRightSidebar ? 'fixed' : 'static',
-    right: 0
-  })
-)
-
-const RightSwipeHandle = styled(PlainButton)({
+const Sidebar = styled('div')<{x: number; hysteresisThresh: number}>(({x, hysteresisThresh}) => ({
+  boxShadow: x > 0 ? navDrawerShadow : undefined,
   height: '100vh',
-  position: 'fixed',
-  right: 0,
-  width: PEEK_WIDTH
-})
+  pointerEvents: hysteresisThresh !== undefined && x > hysteresisThresh ? undefined : 'none'
+}))
 
 const SwipeHandle = styled(PlainButton)({
   width: PEEK_WIDTH
@@ -249,17 +238,16 @@ const SwipeableDashSidebar = (props: Props) => {
   return portal(
     <SidebarAndScrim isRightSidebar={isRightSidebar} sidebarWidth={sidebarWidth}>
       <Scrim x={x} sidebarWidth={sidebarWidth} onClick={onToggle} />
-      {isRightSidebar && <RightSwipeHandle onMouseDown={onMouseDown} onTouchStart={onMouseDown} />}
       <SidebarAndHandle
         x={x}
         onMouseDown={onMouseDown}
         onTouchStart={onMouseDown}
         isRightSidebar={isRightSidebar}
       >
-        <Sidebar x={x} hysteresisThresh={HYSTERESIS_THRESH} isRightSidebar={isRightSidebar}>
+        <Sidebar x={x} hysteresisThresh={HYSTERESIS_THRESH}>
           {children}
         </Sidebar>
-        {!isRightSidebar && <SwipeHandle />}
+        <SwipeHandle />
       </SidebarAndHandle>
     </SidebarAndScrim>
   )

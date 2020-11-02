@@ -12,12 +12,12 @@ const EstimateArea = styled('div')({
   width: '100%'
 })
 
-const StepperDots = styled('div')({
+const StepperDots = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   display: 'flex',
   justifyContent: 'center',
   padding: '16px 0',
-  width: `calc(100% - ${DiscussionThreadEnum.WIDTH}px)`
-})
+  width: isDesktop ? `calc(100% - ${DiscussionThreadEnum.WIDTH}px)` : '100%'
+}))
 
 const StepperDot = styled('div')<{isActive: boolean}>(({isActive}) => ({
   backgroundColor: isActive ? PALETTE.STATUS_ACTIVE : PALETTE.TEXT_GRAY,
@@ -55,7 +55,7 @@ const EstimatePhaseArea = () => {
   const [activeIdx, setActiveIdx] = useState(1)
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
 
-  const onChangeIdx = (idx) => {
+  const onChangeIdx = (idx: number) => {
     setActiveIdx(idx)
   }
 
@@ -63,7 +63,7 @@ const EstimatePhaseArea = () => {
 
   return (
     <EstimateArea>
-      <StepperDots>
+      <StepperDots isDesktop={isDesktop}>
         {dummyEstimateItems.map((_, idx) => {
           return <StepperDot key={idx} isActive={idx === activeIdx} />
         })}

@@ -5,7 +5,7 @@ import {createFragmentContainer} from 'react-relay'
 import {useCoverable} from '~/hooks/useControlBarCovers'
 import {desktopSidebarShadow} from '~/styles/elevation'
 import {EstimatePhaseDiscussionDrawer_meeting} from '~/__generated__/EstimatePhaseDiscussionDrawer_meeting.graphql'
-import {DiscussionThreadEnum, MeetingControlBarEnum, ZIndex} from '../types/constEnums'
+import {DiscussionThreadEnum, MeetingControlBarEnum} from '../types/constEnums'
 import DiscussionThreadRoot from './DiscussionThreadRoot'
 import {PALETTE} from '~/styles/paletteV2'
 import Icon from './Icon'
@@ -15,53 +15,41 @@ import LabelHeading from './LabelHeading/LabelHeading'
 import Avatar from './Avatar/Avatar'
 
 const Drawer = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
-  // bottom: 0,
   boxShadow: isDesktop ? desktopSidebarShadow : undefined,
+  backgroundColor: '#FFFFFF',
   display: 'flex',
+  flexDirection: 'column',
   height: '100vh',
   justifyContent: 'flex-start',
   overflow: 'hidden',
   position: isDesktop ? 'fixed' : 'static',
   right: isDesktop ? 0 : undefined,
-  // top: 0,
   userSelect: 'none',
   width: DiscussionThreadEnum.WIDTH
 }))
 
-const VideoContainer = styled('div')<{showVideo: boolean | null}>(({showVideo}) => ({
-  display: showVideo ? 'flex' : 'none',
-  backgroundColor: '#FFFFFF',
+const VideoContainer = styled('div')<{isShowingVideo: boolean}>(({isShowingVideo}) => ({
+  display: isShowingVideo ? 'flex' : 'none',
   height: '200px',
-  width: '100%'
+  padding: 6
 }))
-
-const Content = styled('div')({
-  backgroundColor: '#FFFFFF',
-  display: 'flex',
-  overflow: 'hidden',
-  flexDirection: 'column',
-  width: '100%'
-})
 
 const ThreadColumn = styled('div')({
   alignItems: 'center',
+  bottom: 0,
   display: 'flex',
   flex: 1,
   flexDirection: 'column',
-  overflow: 'auto',
   justifyContent: 'flex-end',
-  bottom: 0,
+  maxWidth: 700,
+  overflow: 'auto',
   position: 'relative',
-  // paddingBottom: isDesktop ? 16 : 8,
-  width: '100%',
-  maxWidth: 700
+  width: '100%'
 })
 
 const ButtonGroup = styled('div')({
-  borderLeft: `1px solid ${PALETTE.BORDER_GRAY} `,
   display: 'flex',
   justifyContent: 'flex-end',
-  padding: 8,
   height: 16,
   userSelect: 'none',
   width: '100%'
@@ -73,41 +61,37 @@ const StyledIcon = styled(Icon)({
 })
 
 const AvatarGroup = styled(LabelHeading)({
-  display: 'flex',
-  padding: '3px 6px',
   alignItems: 'center',
+  display: 'flex',
   textTransform: 'none',
   width: '100%'
 })
 
 const DiscussingGroup = styled('div')({
-  border: `1px solid ${PALETTE.BORDER_LIGHTER}`,
-  display: 'flex',
-  padding: '6px',
   alignItems: 'center',
-  textTransform: 'none',
+  borderTop: `1px solid ${PALETTE.BORDER_LIGHTER}`,
+  borderBottom: `1px solid ${PALETTE.BORDER_LIGHTER}`,
+  display: 'flex',
+  padding: '3px 6px',
   width: '100%'
 })
 
 const StyledAvatar = styled(Avatar)({
-  margin: '8px 4px',
+  margin: '6px 3px',
   transition: 'all 150ms'
 })
 
-const CommentIcon = styled(Icon)({
+const ShowVideoIcon = styled(Icon)({
   color: '#FFFF',
-  fontSize: ICON_SIZE.MD36,
-  transform: 'scaleX(-1)'
+  fontSize: ICON_SIZE.MD24
 })
 
-const ShowVideoButton = styled(PlainButton)<{showVideo: boolean | null}>(({showVideo}) => ({
-  alignItems: 'center',
+const ShowVideoButton = styled(PlainButton)<{isShowingVideo: boolean}>(({isShowingVideo}) => ({
   backgroundColor: PALETTE.TEXT_PURPLE,
   borderRadius: '50%',
-  display: showVideo ? 'none' : 'flex',
-  height: 56,
-  justifyContent: 'center',
-  width: 64
+  display: isShowingVideo ? 'none' : 'flex',
+  margin: '0px 3px',
+  padding: 8
 }))
 
 interface Props {
@@ -121,35 +105,36 @@ const EstimatePhaseDiscussionDrawer = (props: Props) => {
   const {user} = viewerMeetingMember
   const {picture} = user
   const {__id: storyId} = localStage
-  const [showVideo, setShowVideo] = useState(true)
+  const [isShowingVideo, setIsShowingVideo] = useState(true)
   const ref = useRef<HTMLDivElement>(null)
-  const meetingControlBarPadding = 16
-  useCoverable('drawer', ref, MeetingControlBarEnum.HEIGHT + meetingControlBarPadding) || !!endedAt
+  const meetingControlBarBottom = 16
+  useCoverable('drawer', ref, MeetingControlBarEnum.HEIGHT + meetingControlBarBottom) || !!endedAt
 
   return (
     <Drawer isDesktop={isDesktop} ref={ref}>
-      <Content>
-        <VideoContainer showVideo={showVideo}>
-          <ButtonGroup>
-            <PlainButton onClick={() => setShowVideo(false)}>
-              <StyledIcon>close</StyledIcon>
-            </PlainButton>
-          </ButtonGroup>
-        </VideoContainer>
-        <DiscussingGroup>
-          <AvatarGroup>
-            {[1, 2, 3, 4].map((__example, idx) => {
-              return <StyledAvatar key={idx} size={32} picture={picture} />
-            })}
-          </AvatarGroup>
-          <ShowVideoButton showVideo={showVideo} onClick={() => setShowVideo(true)}>
-            <CommentIcon>comment</CommentIcon>
-          </ShowVideoButton>
-        </DiscussingGroup>
-        <ThreadColumn>
-          <DiscussionThreadRoot meetingId={meetingId} threadSourceId={storyId} />
-        </ThreadColumn>
-      </Content>
+      <VideoContainer isShowingVideo={isShowingVideo}>
+        <ButtonGroup>
+          <PlainButton>
+            <StyledIcon>fullscreen</StyledIcon>
+          </PlainButton>
+          <PlainButton onClick={() => setIsShowingVideo(false)}>
+            <StyledIcon>close</StyledIcon>
+          </PlainButton>
+        </ButtonGroup>
+      </VideoContainer>
+      <DiscussingGroup>
+        <AvatarGroup>
+          {[1, 2, 3, 4].map((__example, idx) => {
+            return <StyledAvatar key={idx} size={32} picture={picture} />
+          })}
+        </AvatarGroup>
+        <ShowVideoButton isShowingVideo={isShowingVideo} onClick={() => setIsShowingVideo(true)}>
+          <ShowVideoIcon>videocam</ShowVideoIcon>
+        </ShowVideoButton>
+      </DiscussingGroup>
+      <ThreadColumn>
+        <DiscussionThreadRoot meetingId={meetingId} threadSourceId={storyId!} />
+      </ThreadColumn>
     </Drawer>
   )
 }

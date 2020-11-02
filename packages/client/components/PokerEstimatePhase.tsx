@@ -13,27 +13,48 @@ import PhaseHeaderDescription from './PhaseHeaderDescription'
 import PhaseHeaderTitle from './PhaseHeaderTitle'
 import PhaseWrapper from './PhaseWrapper'
 import PokerEstimateHeaderCardJira from './PokerEstimateHeaderCardJira'
-import defaultUserAvatar from '../styles/theme/images/avatar-user.svg'
 import {PokerMeetingPhaseProps} from './PokerMeeting'
-import Avatar from './Avatar/Avatar'
 import {Breakpoint} from '~/types/constEnums'
 import useBreakpoint from '~/hooks/useBreakpoint'
 import useSidebar from '~/hooks/useSidebar'
 import SwipeableDashSidebar from './SwipeableDashSidebar'
+import Icon from './Icon'
+import PlainButton from './PlainButton/PlainButton'
+import {PALETTE} from '~/styles/paletteV2'
 interface Props extends PokerMeetingPhaseProps {
   meeting: PokerEstimatePhase_meeting
 }
 
-const MeetingTopBarWrapper = styled('div')({
+const Header = styled('div')({
   display: 'flex',
-  justifyContent: 'space-between'
+  width: '100%'
 })
 
-const AvatarBlock = styled('div')({
+const MeetingTopBarWrapper = styled('div')({
   display: 'flex',
+  justifyContent: 'space-between',
+  width: '100%'
+})
+
+const StyledIcon = styled(Icon)({
+  color: '#FFFF',
+  fontSize: 30,
+  transform: 'scaleX(-1)'
+})
+
+const ButtonContainer = styled('div')({
+  padding: '8px 0',
+  left: -8,
+  position: 'relative'
+})
+
+const ShowDiscussionButton = styled(PlainButton)({
   alignItems: 'center',
-  justifyContent: 'center',
-  padding: '8px 8px 8px 0'
+  backgroundColor: PALETTE.TEXT_PURPLE,
+  borderRadius: '50%',
+  display: 'flex',
+  height: 48,
+  padding: 8
 })
 
 const PokerEstimatePhase = (props: Props) => {
@@ -47,21 +68,25 @@ const PokerEstimatePhase = (props: Props) => {
   return (
     <MeetingContent>
       <MeetingHeaderAndPhase hideBottomBar={!!endedAt}>
-        <MeetingTopBarWrapper>
-          <MeetingTopBar
-            avatarGroup={avatarGroup}
-            isMeetingSidebarCollapsed={!showSidebar}
-            toggleSidebar={toggleSidebar}
-          >
-            <PhaseHeaderTitle>{phaseLabelLookup.ESTIMATE}</PhaseHeaderTitle>
-            <PhaseHeaderDescription>{'Estimate each story as a team'}</PhaseHeaderDescription>
-          </MeetingTopBar>
+        <Header>
+          <MeetingTopBarWrapper>
+            <MeetingTopBar
+              avatarGroup={avatarGroup}
+              isMeetingSidebarCollapsed={!showSidebar}
+              toggleSidebar={toggleSidebar}
+            >
+              <PhaseHeaderTitle>{phaseLabelLookup.ESTIMATE}</PhaseHeaderTitle>
+              <PhaseHeaderDescription>{'Estimate each story as a team'}</PhaseHeaderDescription>
+            </MeetingTopBar>
+          </MeetingTopBarWrapper>
           {!isDesktop && (
-            <AvatarBlock onClick={toggleDrawer}>
-              <Avatar hasBadge={false} picture={defaultUserAvatar} size={48} />
-            </AvatarBlock>
+            <ButtonContainer>
+              <ShowDiscussionButton onClick={toggleDrawer}>
+                <StyledIcon>comment</StyledIcon>
+              </ShowDiscussionButton>
+            </ButtonContainer>
           )}
-        </MeetingTopBarWrapper>
+        </Header>
         {__typename === 'EstimateStageJira' && (
           <PokerEstimateHeaderCardJira stage={localStage as any} />
         )}
