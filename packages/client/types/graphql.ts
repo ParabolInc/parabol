@@ -6808,7 +6808,7 @@ export interface IMutation {
    */
   createImposterToken: ICreateImposterTokenPayload;
   createGitHubIssue: ICreateGitHubIssuePayload | null;
-  createJiraIssue: ICreateJiraIssuePayload | null;
+  createJiraTaskIntegration: ICreateJiraTaskIntegrationPayload | null;
 
   /**
    * Create a new mass inivtation and optionally void old ones
@@ -6934,6 +6934,7 @@ export interface IMutation {
    * Send a team invitation to an email address
    */
   inviteToTeam: IInviteToTeamPayload;
+  jiraCreateIssue: IJiraCreateIssuePayload | null;
 
   /**
    * Sign up or login using Google
@@ -7469,7 +7470,7 @@ export interface ICreateGitHubIssueOnMutationArguments {
   nameWithOwner: string;
 }
 
-export interface ICreateJiraIssueOnMutationArguments {
+export interface ICreateJiraTaskIntegrationOnMutationArguments {
   /**
    * The atlassian cloudId for the site
    */
@@ -7709,6 +7710,33 @@ export interface IInviteToTeamOnMutationArguments {
    */
   teamId: string;
   invitees: Array<any>;
+}
+
+export interface IJiraCreateIssueOnMutationArguments {
+  /**
+   * The atlassian cloudId for the site
+   */
+  cloudId: string;
+
+  /**
+   * The id of the meeting where the Jira issue is being created. Null if it is not being created in a meeting.
+   */
+  meetingId?: string | null;
+
+  /**
+   * The atlassian key of the project to put the issue in
+   */
+  projectKey: string;
+
+  /**
+   * The text content of the Jira issue
+   */
+  summary: string;
+
+  /**
+   * The id of the team that is creating the issue
+   */
+  teamId: string;
 }
 
 export interface ILoginWithGoogleOnMutationArguments {
@@ -8764,8 +8792,8 @@ export interface ICreateGitHubIssuePayload {
   task: ITask | null;
 }
 
-export interface ICreateJiraIssuePayload {
-  __typename: 'CreateJiraIssuePayload';
+export interface ICreateJiraTaskIntegrationPayload {
+  __typename: 'CreateJiraTaskIntegrationPayload';
   error: IStandardMutationError | null;
   task: ITask | null;
 }
@@ -9451,6 +9479,26 @@ export interface IInviteToTeamPayload {
    * the `invite your team` suggested action that was removed, if any
    */
   removedSuggestedActionId: string | null;
+}
+
+export interface IJiraCreateIssuePayload {
+  __typename: 'JiraCreateIssuePayload';
+  error: IStandardMutationError | null;
+
+  /**
+   * The issue straight from Jira
+   */
+  jiraIssue: IJiraIssue | null;
+
+  /**
+   * The id of the meeting where the Jira issue is being created
+   */
+  meetingId: string | null;
+
+  /**
+   * The id of the team that is creating the Jira issue
+   */
+  teamId: string;
 }
 
 export interface ILoginWithGooglePayload {
@@ -10535,6 +10583,7 @@ export type MeetingSubscriptionPayload =
   | IEditReflectionPayload
   | IEndDraggingReflectionPayload
   | IFlagReadyToAdvanceSuccess
+  | IJiraCreateIssuePayload
   | INewMeetingCheckInPayload
   | IPromoteNewMeetingFacilitatorPayload
   | IRemoveReflectionPayload
@@ -10735,7 +10784,7 @@ export interface ISetOrgUserRoleRemovedPayload {
 export type TaskSubscriptionPayload =
   | IChangeTaskTeamPayload
   | ICreateGitHubIssuePayload
-  | ICreateJiraIssuePayload
+  | ICreateJiraTaskIntegrationPayload
   | ICreateTaskPayload
   | IDeleteTaskPayload
   | IEditTaskPayload

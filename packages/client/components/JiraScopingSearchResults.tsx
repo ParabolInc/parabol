@@ -4,7 +4,6 @@ import React, {useEffect, useState} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import useRecordIdsWithStages from '~/hooks/useRecordIdsWithStages'
 import useAtmosphere from '../hooks/useAtmosphere'
-import MockScopingList from '../modules/meeting/components/MockScopingList'
 import PersistJiraSearchQueryMutation from '../mutations/PersistJiraSearchQueryMutation'
 import {NewMeetingPhaseTypeEnum} from '../types/graphql'
 import {JiraScopingSearchResults_meeting} from '../__generated__/JiraScopingSearchResults_meeting.graphql'
@@ -12,6 +11,9 @@ import {JiraScopingSearchResults_viewer} from '../__generated__/JiraScopingSearc
 import IntegrationScopingNoResults from './IntegrationScopingNoResults'
 import JiraScopingSearchResultItem from './JiraScopingSearchResultItem'
 import JiraScopingSelectAllIssues from './JiraScopingSelectAllIssues'
+import NewJiraIssueInput from './NewJiraIssueInput'
+import MockScopingList from '~/modules/meeting/components/MockScopingList'
+import NewJiraIssueButton from './NewJiraIssueButton'
 
 const ResultScroller = styled('div')({
   overflow: 'auto'
@@ -28,11 +30,13 @@ const JiraScopingSearchResults = (props: Props) => {
   const issues = atlassian?.issues! ?? null
   const incomingEdges = issues?.edges ?? null
   const error = issues?.error ?? null
+  const [isEditing, setIsEditing] = useState(false)
   const [edges, setEdges] = useState([] as readonly any[])
   const atmosphere = useAtmosphere()
   useEffect(() => {
     if (incomingEdges) {
       setEdges(incomingEdges)
+      setIsEditing(false)
     }
   }, [incomingEdges])
   const {id: meetingId, teamId, phases, jiraSearchQuery} = meeting
@@ -48,10 +52,15 @@ const JiraScopingSearchResults = (props: Props) => {
         <MockScopingList />
       )
     } */
-  if (edges.length === 0) {
-    // only show the mock on the initial load or if the last query returned no results
+
+  if (edges.length === 0 && !isEditing) {
+    // only show the mock on the initial load or if the last query returned no results and
+    // the user isn't adding a new jira issue
     return viewer ? (
-      <IntegrationScopingNoResults error={error?.message} msg={'No issues match that query'} />
+      <>
+        <IntegrationScopingNoResults error={error?.message} msg={'No issues match that query'} />
+        <NewJiraIssueButton setIsEditing={setIsEditing} />
+      </>
     ) : (
       <MockScopingList />
     )
@@ -82,6 +91,12 @@ const JiraScopingSearchResults = (props: Props) => {
         meetingId={meetingId}
       />
       <ResultScroller>
+        <NewJiraIssueInput
+          isEditing={isEditing}
+          meeting={meeting}
+          setIsEditing={setIsEditing}
+          viewer={viewer}
+        />
         {edges.map(({node}) => {
           return (
             <JiraScopingSearchResultItem
@@ -94,6 +109,7 @@ const JiraScopingSearchResults = (props: Props) => {
           )
         })}
       </ResultScroller>
+      {!isEditing && <NewJiraIssueButton setIsEditing={setIsEditing} />}
     </>
   )
 }
@@ -101,6 +117,7 @@ const JiraScopingSearchResults = (props: Props) => {
 export default createFragmentContainer(JiraScopingSearchResults, {
   meeting: graphql`
     fragment JiraScopingSearchResults_meeting on PokerMeeting {
+      ...NewJiraIssueInput_meeting
       id
       teamId
       jiraSearchQuery {
@@ -124,6 +141,7 @@ export default createFragmentContainer(JiraScopingSearchResults, {
   `,
   viewer: graphql`
     fragment JiraScopingSearchResults_viewer on User {
+      ...NewJiraIssueInput_viewer
       teamMember(teamId: $teamId) {
         integrations {
           atlassian {
@@ -146,6 +164,7 @@ export default createFragmentContainer(JiraScopingSearchResults, {
                 node {
                   ...JiraScopingSearchResultItem_issue
                   id
+                  summary
                 }
               }
             }

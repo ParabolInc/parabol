@@ -2,6 +2,8 @@ import {NewMeetingPhaseTypeEnum} from 'parabol-client/types/graphql'
 import findStageById from 'parabol-client/utils/meetings/findStageById'
 import nullIfEmpty from 'parabol-client/utils/nullIfEmpty'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
+import AtlassianServerManager from '../utils/AtlassianServerManager'
+import sendToSentry from '../utils/sendToSentry'
 import GenericMeetingStage from '../database/types/GenericMeetingStage'
 import Meeting from '../database/types/Meeting'
 import {getUserId, isSuperUser, isUserBillingLeader} from '../utils/authorization'
@@ -144,4 +146,38 @@ export const resolveForBillingLeaders = (fieldName) => async (
   const viewerId = getUserId(authToken)
   const isBillingLeader = await isUserBillingLeader(viewerId, orgId, dataLoader)
   return isBillingLeader || isSuperUser(authToken) ? source[fieldName] : undefined
+}
+
+export const resolveJiraIssue = async (source, _args, {authToken, dataLoader}) => {
+  const {teamId, serviceTaskId} = source
+  const [cloudId, issueKey] = serviceTaskId
+    ? serviceTaskId.split(':')
+    : [source.cloudId, source.key]
+  const viewerId = getUserId(authToken)
+  // we need the access token of a person on this team
+  const teamAuths = await dataLoader.get('atlassianAuthByTeamId').load(teamId)
+  const [teamAuth] = teamAuths
+  if (!teamAuth) {
+    sendToSentry(new Error('No atlassian access token exists for team'), {userId: viewerId})
+    return null
+  }
+  const {userId} = teamAuth
+  const accessToken = await dataLoader.get('freshAtlassianAccessToken').load({teamId, userId})
+  const manager = new AtlassianServerManager(accessToken)
+  const issueRes = await manager.getIssue(cloudId, issueKey)
+  if ('message' in issueRes) {
+    sendToSentry(new Error(issueRes.message), {userId: viewerId})
+    return null
+  }
+  if ('errors' in issueRes) {
+    const error = issueRes.errors[0]
+    sendToSentry(new Error(error), {userId: viewerId})
+    return null
+  }
+  const data = {
+    ...issueRes.fields,
+    cloudId,
+    key: issueKey
+  }
+  return data
 }

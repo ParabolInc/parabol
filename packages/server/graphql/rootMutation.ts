@@ -24,7 +24,7 @@ import autoGroupReflections from './mutations/autoGroupReflections'
 import changeTaskTeam from './mutations/changeTaskTeam'
 import createGitHubIssue from './mutations/createGitHubIssue'
 import createImposterToken from './mutations/createImposterToken'
-import createJiraIssue from './mutations/createJiraIssue'
+import createJiraTaskIntegration from './mutations/createJiraTaskIntegration'
 import createMassInvitation from './mutations/createMassInvitation'
 import createOrgPicturePutUrl from './mutations/createOrgPicturePutUrl'
 import createReflection from './mutations/createReflection'
@@ -50,6 +50,7 @@ import flagReadyToAdvance from './mutations/flagReadyToAdvance'
 import inactivateUser from './mutations/inactivateUser'
 import invalidateSessions from './mutations/invalidateSessions'
 import inviteToTeam from './mutations/inviteToTeam'
+import jiraCreateIssue from './mutations/jiraCreateIssue'
 import loginWithGoogle from './mutations/loginWithGoogle'
 import loginWithPassword from './mutations/loginWithPassword'
 import movePokerTemplateDimension from './mutations/movePokerTemplateDimension'
@@ -151,7 +152,7 @@ export default new GraphQLObjectType<any, Context>({
       setNotificationStatus,
       createImposterToken,
       createGitHubIssue,
-      createJiraIssue,
+      createJiraTaskIntegration,
       createMassInvitation,
       createOrgPicturePutUrl,
       createReflection,
@@ -177,6 +178,7 @@ export default new GraphQLObjectType<any, Context>({
       inactivateUser,
       invalidateSessions,
       inviteToTeam,
+      jiraCreateIssue,
       loginWithGoogle,
       loginWithPassword,
       movePokerTemplateDimension,
