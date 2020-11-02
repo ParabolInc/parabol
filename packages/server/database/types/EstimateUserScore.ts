@@ -1,14 +1,18 @@
 interface Input {
   userId: string
-  score: number
+  value: number
+  label: string
 }
 
 export default class EstimateUserScore {
   userId: string
-  score: number
+  value: number
+  // label is included here because the TemplateScaleValue is mutable & we want to preserve history
+  label: string
   constructor(input: Input) {
-    const {userId, score} = input
+    const {userId, value, label} = input
     this.userId = userId
-    this.score = score
+    this.value = value
+    this.label = label
   }
 }

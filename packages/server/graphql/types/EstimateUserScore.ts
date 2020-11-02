@@ -1,4 +1,4 @@
-import {GraphQLFloat, GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql'
+import {GraphQLFloat, GraphQLID, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
 import {GQLContext} from '../graphql'
 
 const EstimateUserScore = new GraphQLObjectType<any, GQLContext>({
@@ -21,10 +21,14 @@ const EstimateUserScore = new GraphQLObjectType<any, GQLContext>({
       type: GraphQLNonNull(GraphQLID),
       description: 'The userId that for this score'
     },
-    score: {
+    value: {
       type: GraphQLNonNull(GraphQLFloat),
       description:
-        'the value of the score. label is determined by this. note that if a template is modified, the corresponding label may no longer exists'
+        'the value that existed in the scale at the time of the vote. note that this value may no longer exist on the scale'
+    },
+    label: {
+      type: GraphQLNonNull(GraphQLString),
+      description: 'The label that was associated with the score at the time of the vote'
     }
   })
 })

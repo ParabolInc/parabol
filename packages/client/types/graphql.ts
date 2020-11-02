@@ -3723,6 +3723,7 @@ export interface ITemplateScale {
  */
 export interface ITemplateScaleValue {
   __typename: 'TemplateScaleValue';
+  id: string;
 
   /**
    * The color used to visually group a scale value
@@ -4523,9 +4524,14 @@ export interface IEstimateUserScore {
   userId: string;
 
   /**
-   * the value of the score. label is determined by this. note that if a template is modified, the corresponding label may no longer exists
+   * the value that existed in the scale at the time of the vote. note that this value may no longer exist on the scale
    */
-  score: number;
+  value: number;
+
+  /**
+   * The label that was associated with the score at the time of the vote
+   */
+  label: string;
 }
 
 /**
@@ -7258,6 +7264,11 @@ export interface IMutation {
    * Upgrade an account to the paid service
    */
   upgradeToPro: IUpgradeToProPayload | null;
+
+  /**
+   * Cast a vote for the estimated points for a given dimension
+   */
+  voteForPokerStory: VoteForPokerStoryPayload;
 }
 
 export interface IAcceptTeamInvitationOnMutationArguments {
@@ -7933,7 +7944,7 @@ export interface IRemovePokerTemplateScaleOnMutationArguments {
 
 export interface IRemovePokerTemplateScaleValueOnMutationArguments {
   scaleId: string;
-  scaleValue: ITemplateScaleInput;
+  scaleValue: number;
 }
 
 export interface IRemoveReflectionOnMutationArguments {
@@ -8276,6 +8287,20 @@ export interface IUpgradeToProOnMutationArguments {
    * The token that came back from stripe
    */
   stripeToken: string;
+}
+
+export interface IVoteForPokerStoryOnMutationArguments {
+  meetingId: string;
+
+  /**
+   * The stage that contains the dimension to vote for
+   */
+  stageId: string;
+
+  /**
+   * The value of the scaleValue to vote for. If null, remove the vote
+   */
+  score?: number | null;
 }
 
 export interface IAcceptTeamInvitationPayload {
@@ -9161,6 +9186,11 @@ export interface IPokerMeeting {
    * The settings that govern the Poker meeting
    */
   settings: IPokerMeetingSettings;
+
+  /**
+   * The ID of the template used for the meeting
+   */
+  templateId: string;
 }
 
 /**
@@ -9911,26 +9941,6 @@ export interface IRemovePokerTemplateScaleValuePayload {
   scale: ITemplateScale | null;
 }
 
-/**
- * A value for a scale
- */
-export interface ITemplateScaleInput {
-  /**
-   * The color used to visually group a scale value
-   */
-  color: string;
-
-  /**
-   * The numerical value for this scale value
-   */
-  value: number;
-
-  /**
-   * The label for this value, e.g., XS, M, L
-   */
-  label: string;
-}
-
 export interface IRemoveReflectionPayload {
   __typename: 'RemoveReflectionPayload';
   error: IStandardMutationError | null;
@@ -10239,6 +10249,26 @@ export interface IUpdatePokerTemplateScaleValuePayload {
   scale: ITemplateScale | null;
 }
 
+/**
+ * A value for a scale
+ */
+export interface ITemplateScaleInput {
+  /**
+   * The color used to visually group a scale value
+   */
+  color: string;
+
+  /**
+   * The numerical value for this scale value
+   */
+  value: number;
+
+  /**
+   * The label for this value, e.g., XS, M, L
+   */
+  label: string;
+}
+
 export interface IUpdateNewCheckInQuestionPayload {
   __typename: 'UpdateNewCheckInQuestionPayload';
   error: IStandardMutationError | null;
@@ -10509,6 +10539,22 @@ export interface IUpgradeToProPayload {
   meetings: Array<NewMeeting> | null;
 }
 
+/**
+ * Return object for VoteForPokerStoryPayload
+ */
+export type VoteForPokerStoryPayload =
+  | IErrorPayload
+  | IVoteForPokerStorySuccess;
+
+export interface IVoteForPokerStorySuccess {
+  __typename: 'VoteForPokerStorySuccess';
+
+  /**
+   * The stage that holds the updated scores
+   */
+  stage: EstimateStage;
+}
+
 export interface ISubscription {
   __typename: 'Subscription';
   meetingSubscription: MeetingSubscriptionPayload;
@@ -10550,7 +10596,8 @@ export type MeetingSubscriptionPayload =
   | IUpdateReflectionGroupTitlePayload
   | IUpdateRetroMaxVotesSuccess
   | IUpdatePokerScopeSuccess
-  | IVoteForReflectionGroupPayload;
+  | IVoteForReflectionGroupPayload
+  | IVoteForPokerStorySuccess;
 
 export interface IUpdateDragLocationPayload {
   __typename: 'UpdateDragLocationPayload';

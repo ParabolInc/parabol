@@ -1,10 +1,23 @@
-import {GraphQLBoolean, GraphQLInt, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
+import {
+  GraphQLBoolean,
+  GraphQLID,
+  GraphQLInt,
+  GraphQLNonNull,
+  GraphQLObjectType,
+  GraphQLString
+} from 'graphql'
 import {GQLContext} from '../graphql'
 
 const TemplateScaleValue = new GraphQLObjectType<any, GQLContext>({
   name: 'TemplateScaleValue',
   description: 'A value for a scale.',
   fields: () => ({
+    id: {
+      type: GraphQLNonNull(GraphQLID),
+      resolve: ({scaleId, value}) => {
+        return `${scaleId}:${value}`
+      }
+    },
     color: {
       description: 'The color used to visually group a scale value',
       type: new GraphQLNonNull(GraphQLString)
