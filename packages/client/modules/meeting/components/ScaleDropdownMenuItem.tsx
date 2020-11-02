@@ -37,7 +37,16 @@ const ScaleDropdownMenuItem = (props: Props) => {
   return (
     <ScaleDetails>
       <ScaleName>{scale.name}</ScaleName>
-      <ScaleValues>{values.map(({label}) => label).join(", ")}</ScaleValues>
+      <ScaleValues>
+        {
+          values.map(
+            ({label, isSpecial}) => {
+              return isSpecial && label === 'X' ? "Pass" : label
+            }
+          )
+            .join(", ")
+        }
+      </ScaleValues>
     </ScaleDetails>
   )
 }
@@ -49,6 +58,7 @@ export default createFragmentContainer(ScaleDropdownMenuItem, {
       name
       values {
         label
+        isSpecial
       }
     }
   `
