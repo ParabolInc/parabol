@@ -12,6 +12,7 @@ import {PALETTE} from '../../../styles/paletteV2'
 import {ICON_SIZE} from '../../../styles/typographyV2'
 import {TemplateDimensionItem_dimension} from '../../../__generated__/TemplateDimensionItem_dimension.graphql'
 import EditableTemplateDimension from './EditableTemplateDimension'
+import PokerTemplateScalePicker from './PokerTemplateScalePicker'
 
 interface Props {
   isOwner: boolean
@@ -29,7 +30,7 @@ interface StyledProps {
 
 const DimensionItem = styled('div')<StyledProps & {isOwner: boolean}>(
   ({isOwner, isHover, isDragging}) => ({
-    alignItems: 'flex-start',
+    alignItems: 'center',
     backgroundColor:
       isOwner && (isHover || isDragging) ? PALETTE.BACKGROUND_MAIN_LIGHTENED : undefined,
     cursor: isOwner ? 'pointer' : undefined,
@@ -45,14 +46,12 @@ const RemoveDimensionIcon = styled(Icon)<StyledProps>(({isHover, enabled}) => ({
   color: PALETTE.TEXT_GRAY,
   cursor: 'pointer',
   display: 'block',
-  fontSize: ICON_SIZE.MD18,
-  height: 24,
+  fontSize: ICON_SIZE.MD24,
   lineHeight: '24px',
   marginLeft: 'auto',
   padding: 0,
   opacity: isHover ? 1 : 0,
   textAlign: 'center',
-  width: 24,
   visibility: enabled ? 'visible' : 'hidden'
 }))
 
@@ -111,19 +110,19 @@ const TemplateDimensionItem = (props: Props) => {
           dimensions={dimensions}
         />
       </DimensionAndDescription>
+      <PokerTemplateScalePicker dimension={dimension} />
     </DimensionItem >
   )
 }
 export default createFragmentContainer(TemplateDimensionItem, {
   dimensions: graphql`
     fragment TemplateDimensionItem_dimensions on TemplateDimension @relay(plural: true) {
-      #...EditableTemplateDimensionColor_dimensions
       ...EditableTemplateDimension_dimensions
     }
   `,
   dimension: graphql`
     fragment TemplateDimensionItem_dimension on TemplateDimension {
-      #...EditableTemplateDimensionColor_dimension
+      ...PokerTemplateScalePicker_dimension
       id
       name
       description

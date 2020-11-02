@@ -3715,7 +3715,7 @@ export interface ITemplateScale {
   /**
    * The values used in this scale
    */
-  values: Array<ITemplateScaleValue> | null;
+  values: Array<ITemplateScaleValue>;
 }
 
 /**
@@ -7190,7 +7190,7 @@ export interface IMutation {
   /**
    * Update the scale used for a dimension in a template
    */
-  updatePokerTemplateDimensionScale: IAddPokerTemplateDimensionPayload;
+  updatePokerTemplateDimensionScale: IUpdatePokerTemplateDimensionScalePayload;
 
   /**
    * Update the label, numerical value or color of a scale value in a scale
@@ -10233,6 +10233,12 @@ export interface IUpdateOrgInput {
   picture?: any | null;
 }
 
+export interface IUpdatePokerTemplateDimensionScalePayload {
+  __typename: 'UpdatePokerTemplateDimensionScalePayload';
+  error: IStandardMutationError | null;
+  dimension: ITemplateDimension | null;
+}
+
 export interface IUpdatePokerTemplateScaleValuePayload {
   __typename: 'UpdatePokerTemplateScaleValuePayload';
   error: IStandardMutationError | null;
@@ -10806,12 +10812,6 @@ export interface IRenamePokerTemplatePayload {
   __typename: 'RenamePokerTemplatePayload';
   error: IStandardMutationError | null;
   pokerTemplate: IPokerTemplate | null;
-}
-
-export interface IUpdatePokerTemplateDimensionScalePayload {
-  __typename: 'UpdatePokerTemplateDimensionScalePayload';
-  error: IStandardMutationError | null;
-  dimension: ITemplateDimension | null;
 }
 
 // tslint:enable

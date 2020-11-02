@@ -10,9 +10,11 @@ import withAtmosphere, {
 import withMutationProps, {WithMutationProps} from '../../../utils/relay/withMutationProps'
 import Legitity from '../../../validation/Legitity'
 import {EditableTemplateDimension_dimensions} from '../../../__generated__/EditableTemplateDimension_dimensions.graphql'
+import {PALETTE} from '~/styles/paletteV2'
 
 const StyledEditableText = styled(EditableText)({
-  fontSize: 16,
+  fontFamily: PALETTE.TEXT_MAIN,
+  fontSize: 14,
   lineHeight: '24px',
   padding: 0
 })

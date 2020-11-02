@@ -6,7 +6,7 @@ import {CompletedHandler, ErrorHandler} from '../types/relayMutations'
 import {IRenamePokerTemplateDimensionOnMutationArguments} from '../types/graphql'
 
 graphql`
-  fragment RenamePokerTemplateDimensionMutation_team on RenamePokerTemplateDimensionPayload {
+  fragment RenamePokerTemplateDimensionMutation_dimension on RenamePokerTemplateDimensionPayload {
     dimension {
       name
     }
@@ -19,7 +19,7 @@ const mutation = graphql`
       error {
         message
       }
-      ...RenamePokerTemplateDimensionMutation_team @relay(mask: false)
+      ...RenamePokerTemplateDimensionMutation_dimension @relay(mask: false)
     }
   }
 `

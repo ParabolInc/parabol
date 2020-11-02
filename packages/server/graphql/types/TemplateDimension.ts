@@ -85,7 +85,7 @@ const TemplateDimension = new GraphQLObjectType<any, GQLContext>({
       resolve: async ({teamId}, _args, {dataLoader}) => {
         const activeTeamScales = await dataLoader.get('scalesByTeamId').load(teamId)
         const publicScales = await db.read('starterScales', 'aGhostTeam')
-        const activeScales = [...activeTeamScales, ...publicScales]
+        const activeScales = [...new Set([...activeTeamScales, ...publicScales])]
         return activeScales.sort((a, b) => (a.sortOrder < b.sortOrder ? -1 : 1))
       }
     }

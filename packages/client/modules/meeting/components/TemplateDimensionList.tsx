@@ -110,10 +110,6 @@ export default createFragmentContainer(withAtmosphere(withMutationProps(Template
     fragment TemplateDimensionList_dimensions on TemplateDimension @relay(plural: true) {
       id
       sortOrder
-      scale {
-        name
-      }
-      sortOrder
       ...TemplateDimensionItem_dimension
       ...TemplateDimensionItem_dimensions
     }

@@ -17,6 +17,7 @@ graphql`
     dimension {
       ...AddPokerTemplateDimension_dimensions @relay(mask: false)
       ...TemplateDimensionList_dimensions @relay(mask: false)
+      ...PokerTemplateScalePicker_dimension @relay(mask: false)
       id
       name
       sortOrder
@@ -59,6 +60,7 @@ const AddPokerTemplateDimensionMutation: StandardMutation<
     optimisticUpdater: (store) => {
       const {templateId} = variables
       const nowISO = new Date().toJSON()
+      const defaultScale = store.get(SprintPokerDefaults.DEFAULT_SCALE_ID)
       const proxyTemplateDimension = createProxyRecord(store, 'PokerTemplateDimension', {
         scaleId: SprintPokerDefaults.DEFAULT_SCALE_ID,
         description: '',
@@ -66,6 +68,7 @@ const AddPokerTemplateDimensionMutation: StandardMutation<
         name: `*New Dimension #${dimensionCount + 1}`,
         createdAt: nowISO,
         templateId,
+        scale: defaultScale
       })
       handleAddPokerTemplateDimension(proxyTemplateDimension, store)
     }
