@@ -37,7 +37,7 @@ const DimensionItem = styled('div')<StyledProps & {isOwner: boolean}>(
     display: 'flex',
     fontSize: 14,
     lineHeight: '24px',
-    padding: '4px 16px',
+    padding: '8px 16px',
     width: '100%'
   })
 )

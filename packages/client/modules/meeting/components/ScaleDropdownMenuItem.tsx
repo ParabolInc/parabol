@@ -4,6 +4,7 @@ import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import textOverflow from '~/styles/helpers/textOverflow'
 import {PALETTE} from '~/styles/paletteV2'
+import {FONT_FAMILY} from '~/styles/typographyV2'
 import {ScaleDropdownMenuItem_scale} from '../../../__generated__/ScaleDropdownMenuItem_scale.graphql'
 
 interface Props {
@@ -13,12 +14,14 @@ interface Props {
 const ScaleDetails = styled('div')({
   display: 'flex',
   flexDirection: 'column',
-  maxWidth: '100%'
+  maxWidth: '100%',
+  padding: "12px 16px"
 })
 
 const ScaleName = styled('div')({
   ...textOverflow,
   color: PALETTE.TEXT_MAIN,
+  fontFamily: FONT_FAMILY.SANS_SERIF,
   fontSize: 16,
   fontWeight: 600,
   lineHeight: '24px'
@@ -27,6 +30,7 @@ const ScaleName = styled('div')({
 const ScaleValues = styled('div')({
   ...textOverflow,
   color: PALETTE.TEXT_GRAY,
+  fontFamily: FONT_FAMILY.SANS_SERIF,
   fontSize: 12,
   lineHeight: '16px'
 })
