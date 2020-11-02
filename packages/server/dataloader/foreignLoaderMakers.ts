@@ -114,6 +114,19 @@ export const reflectPromptsByTemplateId = new LoaderMakerForeign(
   }
 )
 
+export const dimensionsByTemplateId = new LoaderMakerForeign(
+  'templateDimensions',
+  'templateId',
+  async (templateIds) => {
+    const r = await getRethink()
+    return r
+      .table('TemplateDimension')
+      .getAll(r.args(templateIds), {index: 'templateId'})
+      .orderBy('sortOrder')
+      .run()
+  }
+)
+
 export const massInvitationsByTeamMemberId = new LoaderMakerForeign(
   'massInvitations',
   'teamMemberId',
@@ -221,6 +234,23 @@ export const meetingTemplatesByTeamId = new LoaderMakerForeign(
       .table('MeetingTemplate')
       .getAll(r.args(teamIds), {index: 'teamId'})
       .filter({isActive: true})
+      .run()
+  }
+)
+
+export const scalesByTeamId = new LoaderMakerForeign(
+  'templateScales',
+  'teamId',
+  async (teamIds) => {
+    const r = await getRethink()
+    return r
+      .table('TemplateScale')
+      .getAll(r.args(teamIds), {index: 'teamId'})
+      .filter((row) =>
+        row('removedAt')
+          .default(null)
+          .eq(null)
+      )
       .run()
   }
 )

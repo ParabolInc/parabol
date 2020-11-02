@@ -41,7 +41,7 @@ const login = (_overrides = {}) => {
     iss: window.location.origin,
     exp,
     iat,
-    tms: ['ViwycU1zVK']
+    tms: ['l6k4LyKnhP']
   }
   const secret = Buffer.from(Cypress.env('SERVER_SECRET'), 'base64')
   const authToken = sign(tokenObj, secret)
@@ -52,12 +52,29 @@ const login = (_overrides = {}) => {
 
 Cypress.Commands.add('login', login)
 
+const postGQL = (body: any) => {
+  return cy.request({
+    method: 'POST',
+    url: 'http://localhost:3000/graphql',
+    headers: {
+      accept: 'application/json',
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${window.localStorage.getItem('Action:token')}`
+    },
+    body: body,
+    failOnStatusCode: false
+  })
+}
+
+Cypress.Commands.add('postGQL', postGQL)
+
 declare global {
   namespace Cypress {
     interface Chainable {
       login: () => Chainable
       visitReflect: () => Chainable
       visitPhase: (phase: string, idx?: string) => Chainable<ReturnType<typeof visitPhase>>
+      postGQL: (body: any) => ReturnType<typeof postGQL>
       restoreLocalStorageCache: () => Chainable<Element>
       saveLocalStorageCache: () => Chainable<Element>
     }

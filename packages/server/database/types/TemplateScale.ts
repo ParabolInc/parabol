@@ -1,36 +1,50 @@
 import shortid from 'shortid'
+import TemplateScaleValue from './TemplateScaleValue'
 
 export interface TemplateScaleInput {
-  id?: string
-  name: string
-  values: string[]
   teamId: string
-  unit?: string
-  createdAt?: Date
-  updatedAt?: Date
-  deletedAt?: Date
+  sortOrder: number
+  name: string
+  values?: TemplateScaleValue[]
+  parentScaleId?: string
+  isStarter?: boolean
+  removedAt?: Date
 }
+
+const questionMarkCard = new TemplateScaleValue({
+  color: '#E55CA0',
+  label: '?',
+  value: -1,
+  isSpecial: true
+})
+const passCard = new TemplateScaleValue({
+  color: '#AC72E5',
+  label: 'X',
+  value: Math.pow(2, 31) - 1,
+  isSpecial: true
+})
 
 export default class TemplateScale {
   id: string
+  createdAt = new Date()
   name: string
-  values: string[]
+  sortOrder: number
+  values: TemplateScaleValue[]
   teamId: string
-  unit?: string
-  createdAt: Date
-  updatedAt: Date
-  deletedAt?: Date
+  updatedAt = new Date()
+  parentScaleId?: string
+  isStarter?: boolean
+  removedAt?: Date
 
   constructor(input: TemplateScaleInput) {
-    const {id, name, values, teamId, createdAt, updatedAt, deletedAt, unit} = input
-    const now = new Date()
-    this.id = id || shortid.generate()
-    this.createdAt = createdAt || now
-    this.updatedAt = updatedAt || now
-    this.deletedAt = deletedAt ?? undefined
+    const {name, sortOrder, values, teamId, parentScaleId, isStarter, removedAt} = input
+    this.id = shortid.generate()
+    this.sortOrder = sortOrder
     this.name = name
-    this.values = values
+    this.values = values || [questionMarkCard, passCard]
     this.teamId = teamId
-    this.unit = unit ?? undefined
+    this.parentScaleId = parentScaleId
+    this.isStarter = isStarter
+    this.removedAt = removedAt
   }
 }

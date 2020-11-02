@@ -2,6 +2,7 @@
 import 'cypress'
 
 const getRethink = require('../../server/database/rethinkDriver').default
+const db = require('../../server/db').default
 
 interface DBOptions {
   source: string
@@ -15,16 +16,17 @@ const resetDb = ({source, target}: DBOptions) => async () => {
     .tableList()
     .run()
   const filteredTableList: string[] = tableList.filter((tableName) => tableName !== 'QueryMap')
-  filteredTableList.forEach((tableName) =>
+  const tableDeletionPromises = filteredTableList.map((tableName) =>
     r
       .db(target)
       .table(tableName)
       .delete()
       .run()
   )
+  await Promise.all(tableDeletionPromises)
 
   // add source docs to target db
-  return Promise.all(
+  const results = await Promise.all(
     filteredTableList.map((t: any) =>
       r
         .db(target)
@@ -38,6 +40,15 @@ const resetDb = ({source, target}: DBOptions) => async () => {
         .run()
     )
   )
+
+  // prime user table
+  const users = await r
+    .db(target)
+    .table('User')
+    .run()
+  await db.prime('User', users)
+
+  return results
 }
 
 export default resetDb

@@ -1369,6 +1369,16 @@ export interface ITasksOnUserArguments {
   archived?: boolean | null;
 
   /**
+   * filter tasks by the chosen statuses
+   */
+  statusFilters?: Array<TaskStatusEnum> | null;
+
+  /**
+   * only return tasks which match the given filter query
+   */
+  filterQuery?: string | null;
+
+  /**
    * if true, include unassigned tasks. If false, only return assigned tasks
    * @default false
    */
@@ -1529,6 +1539,11 @@ export interface ITask {
    * the foreign key for the meeting the task was marked as complete
    */
   doneMeetingId: string | null;
+
+  /**
+   * the plain text content of the task
+   */
+  plaintextContent: string;
 
   /**
    * the shared sort order for tasks on the team dash & user dash
@@ -2106,6 +2121,10 @@ export interface IReflectPrompt {
  */
 export interface IReflectTemplate {
   __typename: 'ReflectTemplate';
+
+  /**
+   * shortid
+   */
   id: string;
   createdAt: any;
 
@@ -2123,11 +2142,6 @@ export interface IReflectTemplate {
    * The name of the template
    */
   name: string;
-
-  /**
-   * The prompts that are part of this template
-   */
-  prompts: Array<IReflectPrompt>;
 
   /**
    * *Foreign key. The organization that owns the team that created the template
@@ -2148,7 +2162,17 @@ export interface IReflectTemplate {
    * The team this template belongs to
    */
   team: ITeam;
+
+  /**
+   * The type of the template
+   */
+  type: string;
   updatedAt: any;
+
+  /**
+   * The prompts that are part of this template
+   */
+  prompts: Array<IReflectPrompt>;
 }
 
 /**
@@ -3520,6 +3544,264 @@ export interface IGenericMeetingStage {
    * The number of milliseconds left before the scheduled end time. Useful for unsynced client clocks. null if scheduledEndTime is null
    */
   timeRemaining: number | null;
+}
+
+/**
+ * The team-specific templates for sprint poker meeting
+ */
+export interface IPokerTemplate {
+  __typename: 'PokerTemplate';
+
+  /**
+   * shortid
+   */
+  id: string;
+  createdAt: any;
+
+  /**
+   * True if template can be used, else false
+   */
+  isActive: boolean;
+
+  /**
+   * The time of the meeting the template was last used
+   */
+  lastUsedAt: any | null;
+
+  /**
+   * The name of the template
+   */
+  name: string;
+
+  /**
+   * *Foreign key. The organization that owns the team that created the template
+   */
+  orgId: string;
+
+  /**
+   * Who can see this template
+   */
+  scope: SharingScopeEnum;
+
+  /**
+   * *Foreign key. The team this template belongs to
+   */
+  teamId: string;
+
+  /**
+   * The team this template belongs to
+   */
+  team: ITeam;
+
+  /**
+   * The type of the template
+   */
+  type: string;
+  updatedAt: any;
+
+  /**
+   * The dimensions that are part of this template
+   */
+  dimensions: Array<ITemplateDimension>;
+}
+
+/**
+ * A team-specific template dimension: e.g., effort, importance etc.
+ */
+export interface ITemplateDimension {
+  __typename: 'TemplateDimension';
+
+  /**
+   * shortid
+   */
+  id: string;
+  createdAt: any;
+
+  /**
+   * true if the dimension is currently used by the team, else false
+   */
+  isActive: boolean;
+
+  /**
+   * The datetime that the dimension was removed. Null if it has not been removed.
+   */
+  removedAt: any | null;
+
+  /**
+   * foreign key. use the team field
+   */
+  teamId: string;
+
+  /**
+   * The team that owns this dimension
+   */
+  team: ITeam;
+  updatedAt: any;
+
+  /**
+   * the order of the dimensions in the template
+   */
+  sortOrder: number;
+
+  /**
+   * FK for template
+   */
+  templateId: string;
+
+  /**
+   * The template that this dimension belongs to
+   */
+  template: IPokerTemplate;
+
+  /**
+   * The name of the dimension
+   */
+  name: string;
+
+  /**
+   * The description to the dimension name for further context. A long version of the dimension name.
+   */
+  description: string;
+
+  /**
+   * scale used in this dimension
+   */
+  selectedScale: ITemplateScale;
+
+  /**
+   * The list of scales can be set for this dimension
+   */
+  availableScales: Array<ITemplateScale>;
+}
+
+/**
+ * A team-specific template scale.
+ */
+export interface ITemplateScale {
+  __typename: 'TemplateScale';
+
+  /**
+   * shortid
+   */
+  id: string;
+  createdAt: any;
+
+  /**
+   * true if the scale is currently used by the team, else false
+   */
+  isActive: boolean;
+
+  /**
+   * The datetime that the scale was removed. Null if it has not been removed.
+   */
+  removedAt: any | null;
+
+  /**
+   * foreign key. use the team field
+   */
+  teamId: string;
+
+  /**
+   * The team that owns this template scale
+   */
+  team: ITeam;
+  updatedAt: any;
+
+  /**
+   * The title of the scale used in the template
+   */
+  name: string;
+
+  /**
+   * The values used in this scale
+   */
+  values: Array<ITemplateScaleValue> | null;
+}
+
+/**
+ * A value for a scale.
+ */
+export interface ITemplateScaleValue {
+  __typename: 'TemplateScaleValue';
+
+  /**
+   * The color used to visually group a scale value
+   */
+  color: string;
+
+  /**
+   * The numerical value for this scale value
+   */
+  value: number;
+
+  /**
+   * The label for this value, e.g., XS, M, L
+   */
+  label: string;
+
+  /**
+   * true if the value of this scale is a special value, e.g., ? or X
+   */
+  isSpecial: boolean;
+}
+
+/**
+ * A meeting template that can be shared across team, orgnization and public
+ */
+export type MeetingTemplate = IReflectTemplate | IPokerTemplate;
+
+/**
+ * A meeting template that can be shared across team, orgnization and public
+ */
+export interface IMeetingTemplate {
+  __typename: 'MeetingTemplate';
+
+  /**
+   * shortid
+   */
+  id: string;
+  createdAt: any;
+
+  /**
+   * True if template can be used, else false
+   */
+  isActive: boolean;
+
+  /**
+   * The time of the meeting the template was last used
+   */
+  lastUsedAt: any | null;
+
+  /**
+   * The name of the template
+   */
+  name: string;
+
+  /**
+   * *Foreign key. The organization that owns the team that created the template
+   */
+  orgId: string;
+
+  /**
+   * Who can see this template
+   */
+  scope: SharingScopeEnum;
+
+  /**
+   * *Foreign key. The team this template belongs to
+   */
+  teamId: string;
+
+  /**
+   * The team this template belongs to
+   */
+  team: ITeam;
+
+  /**
+   * The type of the template
+   */
+  type: string;
+  updatedAt: any;
 }
 
 /**
@@ -5076,22 +5358,32 @@ export interface IPokerMeetingSettings {
   /**
    * The template that will be used to start the Poker meeting
    */
-  selectedTemplate: IReflectTemplate;
+  selectedTemplate: IPokerTemplate;
+
+  /**
+   * The list of scales belong to this team
+   */
+  teamScales: Array<ITemplateScale>;
 
   /**
    * The list of templates used to start a Poker meeting
    */
-  teamTemplates: Array<IReflectTemplate>;
+  teamTemplates: Array<IPokerTemplate>;
 
   /**
    * The list of templates shared across the organization to start a Poker meeting
    */
-  organizationTemplates: IReflectTemplateConnection;
+  organizationTemplates: IPokerTemplateConnection;
+
+  /**
+   * The list of starter scales
+   */
+  starterScales: Array<ITemplateScale>;
 
   /**
    * The list of templates shared across the organization to start a Poker meeting
    */
-  publicTemplates: IReflectTemplateConnection;
+  publicTemplates: IPokerTemplateConnection;
 }
 
 export interface IOrganizationTemplatesOnPokerMeetingSettingsArguments {
@@ -5115,8 +5407,8 @@ export interface IPublicTemplatesOnPokerMeetingSettingsArguments {
 /**
  * A connection to a list of items.
  */
-export interface IReflectTemplateConnection {
-  __typename: 'ReflectTemplateConnection';
+export interface IPokerTemplateConnection {
+  __typename: 'PokerTemplateConnection';
 
   /**
    * Information to aid in pagination.
@@ -5126,19 +5418,19 @@ export interface IReflectTemplateConnection {
   /**
    * A list of edges.
    */
-  edges: Array<IReflectTemplateEdge>;
+  edges: Array<IPokerTemplateEdge>;
 }
 
 /**
  * An edge in a connection.
  */
-export interface IReflectTemplateEdge {
-  __typename: 'ReflectTemplateEdge';
+export interface IPokerTemplateEdge {
+  __typename: 'PokerTemplateEdge';
 
   /**
    * The item at the end of the edge
    */
-  node: IReflectTemplate;
+  node: IPokerTemplate;
 
   /**
    * A cursor for use in pagination
@@ -5444,6 +5736,40 @@ export interface IPublicTemplatesOnRetrospectiveMeetingSettingsArguments {
    * The cursor, which is the templateId
    */
   after?: string | null;
+}
+
+/**
+ * A connection to a list of items.
+ */
+export interface IReflectTemplateConnection {
+  __typename: 'ReflectTemplateConnection';
+
+  /**
+   * Information to aid in pagination.
+   */
+  pageInfo: IPageInfo;
+
+  /**
+   * A list of edges.
+   */
+  edges: Array<IReflectTemplateEdge>;
+}
+
+/**
+ * An edge in a connection.
+ */
+export interface IReflectTemplateEdge {
+  __typename: 'ReflectTemplateEdge';
+
+  /**
+   * The item at the end of the edge
+   */
+  node: IReflectTemplate;
+
+  /**
+   * A cursor for use in pagination
+   */
+  cursor: string;
 }
 
 /**
@@ -6399,6 +6725,26 @@ export interface IMutation {
   addComment: AddCommentPayload;
 
   /**
+   * Add a new poker template with a default dimension created
+   */
+  addPokerTemplate: IAddPokerTemplatePayload;
+
+  /**
+   * Add a new dimension for the poker template
+   */
+  addPokerTemplateDimension: IAddPokerTemplateDimensionPayload;
+
+  /**
+   * Add a new scale for the poker template
+   */
+  addPokerTemplateScale: IAddPokerTemplateScalePayload;
+
+  /**
+   * Add a new scale value for a scale in a poker template
+   */
+  addPokerTemplateScaleValue: IAddPokerTemplateScaleValuePayload;
+
+  /**
    * Add or remove a reactji to a reflection
    */
   addReactjiToReflection: AddReactjiToReflectionPayload;
@@ -6601,6 +6947,11 @@ export interface IMutation {
   loginWithPassword: ILoginWithPasswordPayload;
 
   /**
+   * Move a template dimension
+   */
+  movePokerTemplateDimension: IMovePokerTemplateDimensionPayload;
+
+  /**
    * Move a reflect template
    */
   moveReflectTemplatePrompt: IMoveReflectTemplatePromptPayload | null;
@@ -6649,6 +7000,11 @@ export interface IMutation {
    * Update the description of a reflection prompt
    */
   reflectTemplatePromptUpdateDescription: IReflectTemplatePromptUpdateDescriptionPayload | null;
+
+  /**
+   * Update the description of a poker template dimension
+   */
+  pokerTemplateDimensionUpdateDescription: IPokerTemplateDimensionUpdateDescriptionPayload | null;
   reflectTemplatePromptUpdateGroupColor: IReflectTemplatePromptUpdateGroupColorPayload | null;
 
   /**
@@ -6672,6 +7028,11 @@ export interface IMutation {
   removeOrgUser: IRemoveOrgUserPayload | null;
 
   /**
+   * Remove a poker meeting template
+   */
+  removePokerTemplate: IRemovePokerTemplatePayload;
+
+  /**
    * Remove a template full of prompts
    */
   removeReflectTemplate: IRemoveReflectTemplatePayload | null;
@@ -6682,19 +7043,44 @@ export interface IMutation {
   removeReflectTemplatePrompt: IRemoveReflectTemplatePromptPayload | null;
 
   /**
+   * Remove a dimension from a template
+   */
+  removePokerTemplateDimension: IRemovePokerTemplateDimensionPayload;
+
+  /**
    * Rename a meeting
    */
   renameMeeting: RenameMeetingPayload;
 
   /**
-   * Rename a reflect template prompt
+   * Rename a meeting template
    */
-  renameReflectTemplate: IRenameReflectTemplatePayload | null;
+  renameMeetingTemplate: IRenameMeetingTemplatePayload | null;
 
   /**
-   * Rename a reflect template
+   * Rename a reflect template prompt
    */
   renameReflectTemplatePrompt: IRenameReflectTemplatePromptPayload | null;
+
+  /**
+   * Rename a poker template dimension
+   */
+  renamePokerTemplateDimension: IRenamePokerTemplateDimensionPayload;
+
+  /**
+   * Rename a poker template scale
+   */
+  renamePokerTemplateScale: IRenamePokerTemplateScalePayload;
+
+  /**
+   * Remove a scale from a template
+   */
+  removePokerTemplateScale: IRemovePokerTemplateScalePayload;
+
+  /**
+   * Remove a scale value from the scale of a template
+   */
+  removePokerTemplateScaleValue: IRemovePokerTemplateScaleValuePayload;
 
   /**
    * Remove a reflection
@@ -6803,6 +7189,16 @@ export interface IMutation {
   updateOrg: IUpdateOrgPayload;
 
   /**
+   * Update the scale used for a dimension in a template
+   */
+  updatePokerTemplateDimensionScale: IAddPokerTemplateDimensionPayload;
+
+  /**
+   * Update the label, numerical value or color of a scale value in a scale
+   */
+  updatePokerTemplateScaleValue: IUpdatePokerTemplateScaleValuePayload;
+
+  /**
    * Update a Team's Icebreaker in a new meeting
    */
   updateNewCheckInQuestion: IUpdateNewCheckInQuestionPayload | null;
@@ -6894,6 +7290,25 @@ export interface IAddCommentOnMutationArguments {
    * A partial new comment
    */
   comment: IAddCommentInput;
+}
+
+export interface IAddPokerTemplateOnMutationArguments {
+  parentTemplateId?: string | null;
+  teamId: string;
+}
+
+export interface IAddPokerTemplateDimensionOnMutationArguments {
+  templateId: string;
+}
+
+export interface IAddPokerTemplateScaleOnMutationArguments {
+  parentScaleId?: string | null;
+  teamId: string;
+}
+
+export interface IAddPokerTemplateScaleValueOnMutationArguments {
+  scaleId: string;
+  scaleValue: IAddTemplateScaleInput;
 }
 
 export interface IAddReactjiToReflectionOnMutationArguments {
@@ -7346,6 +7761,11 @@ export interface ILoginWithPasswordOnMutationArguments {
   password: string;
 }
 
+export interface IMovePokerTemplateDimensionOnMutationArguments {
+  dimensionId: string;
+  sortOrder: number;
+}
+
 export interface IMoveReflectTemplatePromptOnMutationArguments {
   promptId: string;
   sortOrder: number;
@@ -7444,6 +7864,11 @@ export interface IReflectTemplatePromptUpdateDescriptionOnMutationArguments {
   description: string;
 }
 
+export interface IPokerTemplateDimensionUpdateDescriptionOnMutationArguments {
+  dimensionId: string;
+  description: string;
+}
+
 export interface IReflectTemplatePromptUpdateGroupColorOnMutationArguments {
   promptId: string;
   groupColor: string;
@@ -7482,12 +7907,20 @@ export interface IRemoveOrgUserOnMutationArguments {
   orgId: string;
 }
 
+export interface IRemovePokerTemplateOnMutationArguments {
+  templateId: string;
+}
+
 export interface IRemoveReflectTemplateOnMutationArguments {
   templateId: string;
 }
 
 export interface IRemoveReflectTemplatePromptOnMutationArguments {
   promptId: string;
+}
+
+export interface IRemovePokerTemplateDimensionOnMutationArguments {
+  dimensionId: string;
 }
 
 export interface IRenameMeetingOnMutationArguments {
@@ -7502,7 +7935,7 @@ export interface IRenameMeetingOnMutationArguments {
   meetingId: string;
 }
 
-export interface IRenameReflectTemplateOnMutationArguments {
+export interface IRenameMeetingTemplateOnMutationArguments {
   templateId: string;
   name: string;
 }
@@ -7510,6 +7943,25 @@ export interface IRenameReflectTemplateOnMutationArguments {
 export interface IRenameReflectTemplatePromptOnMutationArguments {
   promptId: string;
   question: string;
+}
+
+export interface IRenamePokerTemplateDimensionOnMutationArguments {
+  dimensionId: string;
+  name: string;
+}
+
+export interface IRenamePokerTemplateScaleOnMutationArguments {
+  scaleId: string;
+  name: string;
+}
+
+export interface IRemovePokerTemplateScaleOnMutationArguments {
+  scaleId: string;
+}
+
+export interface IRemovePokerTemplateScaleValueOnMutationArguments {
+  scaleId: string;
+  scaleValue: ITemplateScaleInput;
 }
 
 export interface IRemoveReflectionOnMutationArguments {
@@ -7701,6 +8153,17 @@ export interface IUpdateOrgOnMutationArguments {
    * the updated org including the id, and at least one other field
    */
   updatedOrg: IUpdateOrgInput;
+}
+
+export interface IUpdatePokerTemplateDimensionScaleOnMutationArguments {
+  dimensionId: string;
+  scaleId: string;
+}
+
+export interface IUpdatePokerTemplateScaleValueOnMutationArguments {
+  scaleId: string;
+  oldScaleValue: ITemplateScaleInput;
+  newScaleValue: ITemplateScaleInput;
 }
 
 export interface IUpdateNewCheckInQuestionOnMutationArguments {
@@ -7973,6 +8436,55 @@ export interface IAddCommentInput {
   threadSource: ThreadSourceEnum;
   threadSortOrder: number;
   threadParentId?: string | null;
+}
+
+export interface IAddPokerTemplatePayload {
+  __typename: 'AddPokerTemplatePayload';
+  error: IStandardMutationError | null;
+  pokerTemplate: IPokerTemplate | null;
+}
+
+export interface IAddPokerTemplateDimensionPayload {
+  __typename: 'AddPokerTemplateDimensionPayload';
+  error: IStandardMutationError | null;
+  dimension: ITemplateDimension | null;
+}
+
+export interface IAddPokerTemplateScalePayload {
+  __typename: 'AddPokerTemplateScalePayload';
+  error: IStandardMutationError | null;
+  scale: ITemplateScale | null;
+}
+
+export interface IAddPokerTemplateScaleValuePayload {
+  __typename: 'AddPokerTemplateScaleValuePayload';
+  error: IStandardMutationError | null;
+  scale: ITemplateScale | null;
+}
+
+/**
+ * Input for adding a new scale
+ */
+export interface IAddTemplateScaleInput {
+  /**
+   * The color used to visually group a scale value
+   */
+  color: string;
+
+  /**
+   * The numerical value for this scale value
+   */
+  value: number;
+
+  /**
+   * The label for this value, e.g., XS, M, L
+   */
+  label: string;
+
+  /**
+   * True if this is a special scale value; false/null otherwise
+   */
+  isSpecial?: boolean | null;
 }
 
 /**
@@ -9021,6 +9533,12 @@ export interface ILoginWithPasswordPayload {
   user: IUser | null;
 }
 
+export interface IMovePokerTemplateDimensionPayload {
+  __typename: 'MovePokerTemplateDimensionPayload';
+  error: IStandardMutationError | null;
+  dimension: ITemplateDimension | null;
+}
+
 export interface IMoveReflectTemplatePromptPayload {
   __typename: 'MoveReflectTemplatePromptPayload';
   error: IStandardMutationError | null;
@@ -9207,6 +9725,12 @@ export interface IReflectTemplatePromptUpdateDescriptionPayload {
   prompt: IReflectPrompt | null;
 }
 
+export interface IPokerTemplateDimensionUpdateDescriptionPayload {
+  __typename: 'PokerTemplateDimensionUpdateDescriptionPayload';
+  error: IStandardMutationError | null;
+  dimension: ITemplateDimension | null;
+}
+
 export interface IReflectTemplatePromptUpdateGroupColorPayload {
   __typename: 'ReflectTemplatePromptUpdateGroupColorPayload';
   error: IStandardMutationError | null;
@@ -9356,6 +9880,13 @@ export interface INotifyKickedOut {
   team: ITeam;
 }
 
+export interface IRemovePokerTemplatePayload {
+  __typename: 'RemovePokerTemplatePayload';
+  error: IStandardMutationError | null;
+  pokerTemplate: IPokerTemplate | null;
+  pokerMeetingSettings: IPokerMeetingSettings | null;
+}
+
 export interface IRemoveReflectTemplatePayload {
   __typename: 'RemoveReflectTemplatePayload';
   error: IStandardMutationError | null;
@@ -9368,6 +9899,13 @@ export interface IRemoveReflectTemplatePromptPayload {
   error: IStandardMutationError | null;
   reflectTemplate: IReflectTemplate | null;
   prompt: IReflectPrompt | null;
+}
+
+export interface IRemovePokerTemplateDimensionPayload {
+  __typename: 'RemovePokerTemplateDimensionPayload';
+  error: IStandardMutationError | null;
+  pokerTemplate: IPokerTemplate | null;
+  dimension: ITemplateDimension | null;
 }
 
 /**
@@ -9384,16 +9922,61 @@ export interface IRenameMeetingSuccess {
   meeting: NewMeeting;
 }
 
-export interface IRenameReflectTemplatePayload {
-  __typename: 'RenameReflectTemplatePayload';
+export interface IRenameMeetingTemplatePayload {
+  __typename: 'RenameMeetingTemplatePayload';
   error: IStandardMutationError | null;
-  reflectTemplate: IReflectTemplate | null;
+  meetingTemplate: MeetingTemplate | null;
 }
 
 export interface IRenameReflectTemplatePromptPayload {
   __typename: 'RenameReflectTemplatePromptPayload';
   error: IStandardMutationError | null;
   prompt: IReflectPrompt | null;
+}
+
+export interface IRenamePokerTemplateDimensionPayload {
+  __typename: 'RenamePokerTemplateDimensionPayload';
+  error: IStandardMutationError | null;
+  dimension: ITemplateDimension | null;
+}
+
+export interface IRenamePokerTemplateScalePayload {
+  __typename: 'RenamePokerTemplateScalePayload';
+  error: IStandardMutationError | null;
+  scale: ITemplateScale | null;
+}
+
+export interface IRemovePokerTemplateScalePayload {
+  __typename: 'RemovePokerTemplateScalePayload';
+  error: IStandardMutationError | null;
+  pokerTemplate: IPokerTemplate | null;
+  scale: ITemplateScale | null;
+}
+
+export interface IRemovePokerTemplateScaleValuePayload {
+  __typename: 'RemovePokerTemplateScaleValuePayload';
+  error: IStandardMutationError | null;
+  scale: ITemplateScale | null;
+}
+
+/**
+ * A value for a scale
+ */
+export interface ITemplateScaleInput {
+  /**
+   * The color used to visually group a scale value
+   */
+  color: string;
+
+  /**
+   * The numerical value for this scale value
+   */
+  value: number;
+
+  /**
+   * The label for this value, e.g., XS, M, L
+   */
+  label: string;
 }
 
 export interface IRemoveReflectionPayload {
@@ -9698,6 +10281,12 @@ export interface IUpdateOrgInput {
   picture?: any | null;
 }
 
+export interface IUpdatePokerTemplateScaleValuePayload {
+  __typename: 'UpdatePokerTemplateScaleValuePayload';
+  error: IStandardMutationError | null;
+  scale: ITemplateScale | null;
+}
+
 export interface IUpdateNewCheckInQuestionPayload {
   __typename: 'UpdateNewCheckInQuestionPayload';
   error: IStandardMutationError | null;
@@ -9882,17 +10471,17 @@ export interface IUpdateTemplateScopeSuccess {
   /**
    * the template that was just updated, if downscoped, does not provide whole story
    */
-  template: IReflectTemplate;
+  template: MeetingTemplate;
 
   /**
    * if downscoping a previously used template, this will be the replacement
    */
-  clonedTemplate: IReflectTemplate | null;
+  clonedTemplate: MeetingTemplate | null;
 
   /**
    * The settings that contain the teamTemplates array that was modified
    */
-  settings: IRetrospectiveMeetingSettings;
+  settings: TeamMeetingSettings;
 }
 
 export interface IUpdateUserProfilePayload {
@@ -10231,19 +10820,47 @@ export type TeamSubscriptionPayload =
   | IUpdateTeamNamePayload
   | IUpgradeToProPayload
   | IAddReflectTemplatePayload
+  | IAddPokerTemplatePayload
   | IAddReflectTemplatePromptPayload
+  | IAddPokerTemplateDimensionPayload
+  | IAddPokerTemplateScalePayload
+  | IAddPokerTemplateScaleValuePayload
   | IMoveReflectTemplatePromptPayload
+  | IMovePokerTemplateDimensionPayload
   | IReflectTemplatePromptUpdateDescriptionPayload
+  | IPokerTemplateDimensionUpdateDescriptionPayload
   | IReflectTemplatePromptUpdateGroupColorPayload
   | IRemoveAtlassianAuthPayload
   | IRemoveGitHubAuthPayload
   | IRemoveSlackAuthPayload
   | IRemoveReflectTemplatePayload
+  | IRemovePokerTemplatePayload
   | IRemoveReflectTemplatePromptPayload
-  | IRenameReflectTemplatePayload
+  | IRemovePokerTemplateDimensionPayload
+  | IRemovePokerTemplateScalePayload
+  | IRenameMeetingTemplatePayload
+  | IRenamePokerTemplatePayload
   | IRenameReflectTemplatePromptPayload
+  | IRenamePokerTemplateDimensionPayload
+  | IRenamePokerTemplateScalePayload
+  | IRemovePokerTemplateScaleValuePayload
   | ISetCheckInEnabledPayload
   | ISetSlackNotificationPayload
-  | IUpdateUserProfilePayload;
+  | IUpdatePokerTemplateDimensionScalePayload
+  | IUpdatePokerTemplateScaleValuePayload
+  | IUpdateUserProfilePayload
+  | IPersistJiraSearchQuerySuccess;
+
+export interface IRenamePokerTemplatePayload {
+  __typename: 'RenamePokerTemplatePayload';
+  error: IStandardMutationError | null;
+  pokerTemplate: IPokerTemplate | null;
+}
+
+export interface IUpdatePokerTemplateDimensionScalePayload {
+  __typename: 'UpdatePokerTemplateDimensionScalePayload';
+  error: IStandardMutationError | null;
+  dimension: ITemplateDimension | null;
+}
 
 // tslint:enable

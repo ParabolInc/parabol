@@ -54,7 +54,7 @@ const subscription = graphql`
       ...RemoveTeamMemberMutation_team @relay(mask: false)
       ...RemoveOrgUserMutation_team @relay(mask: false)
       ...RenameMeetingMutation_team @relay(mask: false)
-      ...RenameReflectTemplateMutation_team @relay(mask: false)
+      ...RenameMeetingTemplateMutation_meetingTemplate @relay(mask: false)
       ...RenameReflectTemplatePromptMutation_team @relay(mask: false)
       ...SelectRetroTemplateMutation_team @relay(mask: false)
       ...SetCheckInEnabledMutation_team @relay(mask: false)

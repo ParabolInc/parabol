@@ -6,8 +6,8 @@ import standardError from '../../utils/standardError'
 import RenameReflectTemplatePromptPayload from '../types/RenameReflectTemplatePromptPayload'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 
-const renameReflectTemplate = {
-  description: 'Rename a reflect template',
+const renameReflectTemplatePrompt = {
+  description: 'Rename a reflect template prompt',
   type: RenameReflectTemplatePromptPayload,
   args: {
     promptId: {
@@ -29,7 +29,10 @@ const renameReflectTemplate = {
     const viewerId = getUserId(authToken)
 
     // AUTH
-    if (!prompt || !isTeamMember(authToken, prompt.teamId) || prompt.removedAt) {
+    if (!prompt || prompt.removedAt) {
+      return standardError(new Error('Prompt not found'), {userId: viewerId})
+    }
+    if (!isTeamMember(authToken, prompt.teamId)) {
       return standardError(new Error('Team not found'), {userId: viewerId})
     }
 
@@ -72,4 +75,4 @@ const renameReflectTemplate = {
   }
 }
 
-export default renameReflectTemplate
+export default renameReflectTemplatePrompt

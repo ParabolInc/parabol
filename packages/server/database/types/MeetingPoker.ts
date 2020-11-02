@@ -1,5 +1,6 @@
 import {MeetingTypeEnum} from 'parabol-client/types/graphql'
 import GenericMeetingPhase from './GenericMeetingPhase'
+import DimensionScaleMapping, {DimensionScaleMappingInput} from './DimensionScaleMapping'
 import Meeting from './Meeting'
 
 interface Input {
@@ -9,13 +10,23 @@ interface Input {
   phases: GenericMeetingPhase[]
   facilitatorUserId: string
   templateId: string
+  dimensionScaleMapping: DimensionScaleMapping[]
 }
 
 export default class MeetingPoker extends Meeting {
   templateId: string
   storyCount?: number
+  dimensionScaleMapping: DimensionScaleMappingInput[]
   constructor(input: Input) {
-    const {teamId, meetingCount, name, phases, facilitatorUserId, templateId} = input
+    const {
+      teamId,
+      meetingCount,
+      name,
+      phases,
+      facilitatorUserId,
+      templateId,
+      dimensionScaleMapping
+    } = input
     super({
       teamId,
       meetingCount,
@@ -25,5 +36,6 @@ export default class MeetingPoker extends Meeting {
       name: name ?? `Sprint Poker #${meetingCount + 1}`
     })
     this.templateId = templateId
+    this.dimensionScaleMapping = dimensionScaleMapping
   }
 }

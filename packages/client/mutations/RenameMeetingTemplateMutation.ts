@@ -3,27 +3,27 @@ import graphql from 'babel-plugin-relay/macro'
 import {Disposable} from 'relay-runtime'
 import Atmosphere from '../Atmosphere'
 import {CompletedHandler, ErrorHandler} from '../types/relayMutations'
-import {IRenameReflectTemplateOnMutationArguments} from '../types/graphql'
+import {IRenameMeetingTemplateOnMutationArguments} from '../types/graphql'
 
 graphql`
-  fragment RenameReflectTemplateMutation_team on RenameReflectTemplatePayload {
-    reflectTemplate {
+  fragment RenameMeetingTemplateMutation_meetingTemplate on RenameMeetingTemplatePayload {
+    meetingTemplate {
       name
     }
   }
 `
 
 const mutation = graphql`
-  mutation RenameReflectTemplateMutation($templateId: ID!, $name: String!) {
-    renameReflectTemplate(templateId: $templateId, name: $name) {
-      ...RenameReflectTemplateMutation_team @relay(mask: false)
+  mutation RenameMeetingTemplateMutation($templateId: ID!, $name: String!) {
+    renameMeetingTemplate(templateId: $templateId, name: $name) {
+      ...RenameMeetingTemplateMutation_meetingTemplate @relay(mask: false)
     }
   }
 `
 
-const RenameReflectTemplateMutation = (
+const RenameMeetingTemplateMutation = (
   atmosphere: Atmosphere,
-  variables: IRenameReflectTemplateOnMutationArguments,
+  variables: IRenameMeetingTemplateOnMutationArguments,
   _context: {},
   onError: ErrorHandler,
   onCompleted: CompletedHandler
@@ -42,4 +42,4 @@ const RenameReflectTemplateMutation = (
   })
 }
 
-export default RenameReflectTemplateMutation
+export default RenameMeetingTemplateMutation

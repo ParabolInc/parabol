@@ -98,9 +98,8 @@ const RetrospectiveMeeting = new GraphQLObjectType<any, GQLContext>({
           .get('retroReflectionGroupsByMeetingId')
           .load(meetingId)
         if (sortBy === 'voteCount') {
-          const groupsWithVotes = reflectionGroups.filter(({voterIds}) => voterIds.length > 0)
-          groupsWithVotes.sort((a, b) => (a.voterIds.length < b.voterIds.length ? 1 : -1))
-          return groupsWithVotes
+          reflectionGroups.sort((a, b) => (a.voterIds.length < b.voterIds.length ? 1 : -1))
+          return reflectionGroups
         } else if (sortBy === 'stageOrder') {
           const meeting = await dataLoader.get('newMeetings').load(meetingId)
           const {phases} = meeting

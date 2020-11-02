@@ -17,6 +17,7 @@
   "ignoreTestFiles": [
     "archivedTasks*",
     "userTaskView*",
-    "me*"
+    "me*",
+    "poker*"
   ]
 }

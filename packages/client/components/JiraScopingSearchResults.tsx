@@ -1,38 +1,19 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {useEffect, useMemo, useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import {createFragmentContainer} from 'react-relay'
+import useRecordIdsWithStages from '~/hooks/useRecordIdsWithStages'
 import useAtmosphere from '../hooks/useAtmosphere'
 import PersistJiraSearchQueryMutation from '../mutations/PersistJiraSearchQueryMutation'
 import {NewMeetingPhaseTypeEnum} from '../types/graphql'
 import {JiraScopingSearchResults_meeting} from '../__generated__/JiraScopingSearchResults_meeting.graphql'
 import {JiraScopingSearchResults_viewer} from '../__generated__/JiraScopingSearchResults_viewer.graphql'
-import JiraScopingNoResults from './JiraScopingNoResults'
+import IntegrationScopingNoResults from './IntegrationScopingNoResults'
 import JiraScopingSearchResultItem from './JiraScopingSearchResultItem'
 import JiraScopingSelectAllIssues from './JiraScopingSelectAllIssues'
-import FloatingActionButton from './FloatingActionButton'
-import {ZIndex} from '~/types/constEnums'
-import Icon from './Icon'
 import NewJiraIssueInput from './NewJiraIssueInput'
-
-const Button = styled(FloatingActionButton)({
-  color: '#fff',
-  padding: '10px 12px',
-  width: '150px',
-  top: '85%',
-  left: '74%',
-  position: 'absolute',
-  zIndex: ZIndex.FAB
-})
-
-const StyledIcon = styled(Icon)({
-  paddingRight: 8
-})
-
-const StyledLabel = styled('div')({
-  fontSize: 16,
-  fontWeight: 600
-})
+import MockScopingList from '~/modules/meeting/components/MockScopingList'
+import NewJiraIssueButton from './NewJiraIssueButton'
 
 const ResultScroller = styled('div')({
   overflow: 'auto'
@@ -59,18 +40,7 @@ const JiraScopingSearchResults = (props: Props) => {
     }
   }, [incomingEdges])
   const {id: meetingId, teamId, phases, jiraSearchQuery} = meeting
-  const estimatePhase = phases.find(
-    (phase) => phase.phaseType === NewMeetingPhaseTypeEnum.ESTIMATE
-  )!
-  const {stages} = estimatePhase
-  const usedJiraIssueIds = useMemo(() => {
-    const usedJiraIssueIds = new Set<string>()
-    stages!.forEach((stage) => {
-      if (!stage.issue) return
-      usedJiraIssueIds.add(stage.issue.id)
-    })
-    return usedJiraIssueIds
-  }, [stages])
+  const usedJiraIssueIds = useRecordIdsWithStages(phases, NewMeetingPhaseTypeEnum.ESTIMATE, 'issue')
 
   // Terry, you can use this in case you need to put some final touches on styles
   /*   const [showMock, setShowMock] = useState(false)
@@ -82,6 +52,19 @@ const JiraScopingSearchResults = (props: Props) => {
         <MockScopingList />
       )
     } */
+
+  if (edges.length === 0 && !isEditing) {
+    // only show the mock on the initial load or if the last query returned no results and
+    // the user isn't adding a new jira issue
+    return viewer ? (
+      <>
+        <IntegrationScopingNoResults error={error?.message} msg={'No issues match that query'} />
+        <NewJiraIssueButton setIsEditing={setIsEditing} />
+      </>
+    ) : (
+      <MockScopingList />
+    )
+  }
 
   const persistQuery = () => {
     const {queryString, isJQL} = jiraSearchQuery
@@ -102,42 +85,31 @@ const JiraScopingSearchResults = (props: Props) => {
   }
   return (
     <>
-      {edges.length === 0 && !isEditing ? (
-        <JiraScopingNoResults error={error?.message} />
-      ) : (
-        <>
-          <JiraScopingSelectAllIssues
-            usedJiraIssueIds={usedJiraIssueIds}
-            issues={edges}
-            meetingId={meetingId}
-          />
-          <ResultScroller>
-            <NewJiraIssueInput
-              isEditing={isEditing}
-              meeting={meeting}
-              setIsEditing={setIsEditing}
-              viewer={viewer}
+      <JiraScopingSelectAllIssues
+        usedJiraIssueIds={usedJiraIssueIds}
+        issues={edges}
+        meetingId={meetingId}
+      />
+      <ResultScroller>
+        <NewJiraIssueInput
+          isEditing={isEditing}
+          meeting={meeting}
+          setIsEditing={setIsEditing}
+          viewer={viewer}
+        />
+        {edges.map(({node}) => {
+          return (
+            <JiraScopingSearchResultItem
+              key={node.id}
+              issue={node}
+              isSelected={usedJiraIssueIds.has(node.id)}
+              meetingId={meetingId}
+              persistQuery={persistQuery}
             />
-            {edges.map(({node}) => {
-              return (
-                <JiraScopingSearchResultItem
-                  key={node.id}
-                  issue={node}
-                  isSelected={usedJiraIssueIds.has(node.id)}
-                  meetingId={meetingId}
-                  persistQuery={persistQuery}
-                />
-              )
-            })}
-          </ResultScroller>
-        </>
-      )}
-      {!isEditing && (
-        <Button onClick={() => setIsEditing(true)} palette='blue'>
-          <StyledIcon>{'add'}</StyledIcon>
-          <StyledLabel>{'New Issue'}</StyledLabel>
-        </Button>
-      )}
+          )
+        })}
+      </ResultScroller>
+      {!isEditing && <NewJiraIssueButton setIsEditing={setIsEditing} />}
     </>
   )
 }

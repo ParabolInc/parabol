@@ -38,6 +38,7 @@ const addReflectTemplate = {
       .table('MeetingTemplate')
       .getAll(teamId, {index: 'teamId'})
       .filter({isActive: true})
+      .filter({type: MeetingTypeEnum.retrospective})
       .run()
 
     if (allTemplates.length >= Threshold.MAX_RETRO_TEAM_TEMPLATES) {
@@ -65,6 +66,7 @@ const addReflectTemplate = {
         .table('MeetingTemplate')
         .getAll(teamId, {index: 'teamId'})
         .filter({isActive: true})
+        .filter({type: MeetingTypeEnum.retrospective})
         .filter((row) => row('name').match(`^${copyName}`) as any)
         .count()
         .run()
@@ -76,7 +78,7 @@ const addReflectTemplate = {
         parentTemplateId
       })
       const prompts = await dataLoader.get('reflectPromptsByTemplateId').load(parentTemplate.id)
-      const activePrompts = prompts.filter(({isActive}) => isActive)
+      const activePrompts = prompts.filter(({removedAt}) => !removedAt)
       const newTemplatePrompts = activePrompts.map((prompt) => {
         return new RetrospectivePrompt({
           ...prompt,
