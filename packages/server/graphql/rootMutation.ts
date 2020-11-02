@@ -121,6 +121,7 @@ import voteForReflectionGroup from './mutations/voteForReflectionGroup'
 import updatePokerScope from './mutations/updatePokerScope'
 import voteForPokerStory from './mutations/voteForPokerStory'
 import pokerRevealVotes from './mutations/pokerRevealVotes'
+import pokerResetDimension from './mutations/pokerResetDimension'
 import persistJiraSearchQuery from './mutations/persistJiraSearchQuery'
 
 interface Context extends InternalContext, GQLContext {}
@@ -253,6 +254,7 @@ export default new GraphQLObjectType<any, Context>({
       voteForReflectionGroup,
       upgradeToPro,
       voteForPokerStory,
-      pokerRevealVotes
+      pokerRevealVotes,
+      pokerResetDimension
     } as any)
 })

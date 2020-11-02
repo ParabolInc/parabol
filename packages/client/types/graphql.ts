@@ -7290,6 +7290,11 @@ export interface IMutation {
    * Progresses the stage dimension to the reveal & discuss step
    */
   pokerRevealVotes: PokerRevealVotesPayload;
+
+  /**
+   * Remove all votes, the final vote, and reset the stage
+   */
+  pokerResetDimension: PokerResetDimensionPayload;
 }
 
 export interface IAcceptTeamInvitationOnMutationArguments {
@@ -8352,6 +8357,11 @@ export interface IVoteForPokerStoryOnMutationArguments {
 }
 
 export interface IPokerRevealVotesOnMutationArguments {
+  meetingId: string;
+  stageId: string;
+}
+
+export interface IPokerResetDimensionOnMutationArguments {
   meetingId: string;
   stageId: string;
 }
@@ -10642,6 +10652,22 @@ export interface IPokerRevealVotesSuccess {
   stage: EstimateStage;
 }
 
+/**
+ * Return object for PokerResetDimensionPayload
+ */
+export type PokerResetDimensionPayload =
+  | IErrorPayload
+  | IPokerResetDimensionSuccess;
+
+export interface IPokerResetDimensionSuccess {
+  __typename: 'PokerResetDimensionSuccess';
+
+  /**
+   * The stage that holds the updated isVoting step
+   */
+  stage: EstimateStage;
+}
+
 export interface ISubscription {
   __typename: 'Subscription';
   meetingSubscription: MeetingSubscriptionPayload;
@@ -10686,7 +10712,8 @@ export type MeetingSubscriptionPayload =
   | IUpdatePokerScopeSuccess
   | IVoteForReflectionGroupPayload
   | IVoteForPokerStorySuccess
-  | IPokerRevealVotesSuccess;
+  | IPokerRevealVotesSuccess
+  | IPokerResetDimensionSuccess;
 
 export interface IUpdateDragLocationPayload {
   __typename: 'UpdateDragLocationPayload';

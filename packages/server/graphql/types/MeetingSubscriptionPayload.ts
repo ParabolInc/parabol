@@ -29,6 +29,7 @@ import {UpdateRetroMaxVotesSuccess} from './UpdateRetroMaxVotesPayload'
 import VoteForReflectionGroupPayload from './VoteForReflectionGroupPayload'
 import {VoteForPokerStorySuccess} from './VoteForPokerStoryPayload'
 import {PokerRevealVotesSuccess} from './PokerRevealVotesPayload'
+import {PokerResetDimensionSuccess} from './PokerResetDimensionPayload'
 import {UpdatePokerScopeSuccess} from './UpdatePokerScopePayload'
 
 const types = [
@@ -63,7 +64,8 @@ const types = [
   UpdatePokerScopeSuccess,
   VoteForReflectionGroupPayload,
   VoteForPokerStorySuccess,
-  PokerRevealVotesSuccess
+  PokerRevealVotesSuccess,
+  PokerResetDimensionSuccess
 ]
 
 export default graphQLSubscriptionType('MeetingSubscriptionPayload', types)
