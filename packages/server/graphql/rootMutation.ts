@@ -120,6 +120,7 @@ import verifyEmail from './mutations/verifyEmail'
 import voteForReflectionGroup from './mutations/voteForReflectionGroup'
 import updatePokerScope from './mutations/updatePokerScope'
 import voteForPokerStory from './mutations/voteForPokerStory'
+import pokerRevealVotes from './mutations/pokerRevealVotes'
 import persistJiraSearchQuery from './mutations/persistJiraSearchQuery'
 
 interface Context extends InternalContext, GQLContext {}
@@ -251,6 +252,7 @@ export default new GraphQLObjectType<any, Context>({
       verifyEmail,
       voteForReflectionGroup,
       upgradeToPro,
-      voteForPokerStory
+      voteForPokerStory,
+      pokerRevealVotes
     } as any)
 })

@@ -100,7 +100,7 @@ const voteForPokerStory = {
     const {stages} = estimatePhase
     const stage = stages.find((stage) => stage.id === stageId)
     if (!stage) {
-      return {error: {message: 'Invalid scaleId provided'}}
+      return {error: {message: 'Invalid stageId provided'}}
     }
 
     // RESOLUTION

@@ -28,10 +28,12 @@ import UpdateReflectionGroupTitlePayload from './UpdateReflectionGroupTitlePaylo
 import {UpdateRetroMaxVotesSuccess} from './UpdateRetroMaxVotesPayload'
 import VoteForReflectionGroupPayload from './VoteForReflectionGroupPayload'
 import {VoteForPokerStorySuccess} from './VoteForPokerStoryPayload'
+import {PokerRevealVotesSuccess} from './PokerRevealVotesPayload'
 import {UpdatePokerScopeSuccess} from './UpdatePokerScopePayload'
 
 const types = [
-  AddCommentSuccess, // DEPRECATED
+  // DEPRECATED
+  AddCommentSuccess,
   AddReactjiToReflectionSuccess,
   AddReactjiToReactableSuccess,
   AutoGroupReflectionsPayload,
@@ -60,7 +62,8 @@ const types = [
   UpdateRetroMaxVotesSuccess,
   UpdatePokerScopeSuccess,
   VoteForReflectionGroupPayload,
-  VoteForPokerStorySuccess
+  VoteForPokerStorySuccess,
+  PokerRevealVotesSuccess
 ]
 
 export default graphQLSubscriptionType('MeetingSubscriptionPayload', types)

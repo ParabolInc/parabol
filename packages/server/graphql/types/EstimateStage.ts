@@ -1,4 +1,11 @@
-import {GraphQLFloat, GraphQLID, GraphQLInterfaceType, GraphQLList, GraphQLNonNull} from 'graphql'
+import {
+  GraphQLBoolean,
+  GraphQLFloat,
+  GraphQLID,
+  GraphQLInterfaceType,
+  GraphQLList,
+  GraphQLNonNull
+} from 'graphql'
 import NewMeetingStage, {newMeetingStageFields} from './NewMeetingStage'
 import TaskServiceEnum from './TaskServiceEnum'
 import EstimateUserScore from './EstimateUserScore'
@@ -34,6 +41,11 @@ export const estimateStageFields = () => ({
         stageId
       }))
     }
+  },
+  isVoting: {
+    type: GraphQLNonNull(GraphQLBoolean),
+    description:
+      'true when the participants are still voting and results are hidden. false when votes are revealed'
   }
 })
 

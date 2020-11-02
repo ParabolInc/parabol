@@ -4500,6 +4500,11 @@ export interface IEstimateStage {
    * all the estimates, 1 per user
    */
   scores: Array<IEstimateUserScore>;
+
+  /**
+   * true when the participants are still voting and results are hidden. false when votes are revealed
+   */
+  isVoting: boolean;
 }
 
 /**
@@ -4661,6 +4666,11 @@ export interface IEstimateStageJira {
   scores: Array<IEstimateUserScore>;
 
   /**
+   * true when the participants are still voting and results are hidden. false when votes are revealed
+   */
+  isVoting: boolean;
+
+  /**
    * the issue straight from Jira
    */
   issue: IJiraIssue | null;
@@ -4791,6 +4801,11 @@ export interface IEstimateStageParabol {
    * all the estimates, 1 per user
    */
   scores: Array<IEstimateUserScore>;
+
+  /**
+   * true when the participants are still voting and results are hidden. false when votes are revealed
+   */
+  isVoting: boolean;
 
   /**
    * the Parabol task
@@ -7270,6 +7285,11 @@ export interface IMutation {
    * Cast a vote for the estimated points for a given dimension
    */
   voteForPokerStory: VoteForPokerStoryPayload;
+
+  /**
+   * Progresses the stage dimension to the reveal & discuss step
+   */
+  pokerRevealVotes: PokerRevealVotesPayload;
 }
 
 export interface IAcceptTeamInvitationOnMutationArguments {
@@ -8329,6 +8349,11 @@ export interface IVoteForPokerStoryOnMutationArguments {
    * The value of the scaleValue to vote for. If null, remove the vote
    */
   score?: number | null;
+}
+
+export interface IPokerRevealVotesOnMutationArguments {
+  meetingId: string;
+  stageId: string;
 }
 
 export interface IAcceptTeamInvitationPayload {
@@ -10603,6 +10628,20 @@ export interface IVoteForPokerStorySuccess {
   stage: EstimateStage;
 }
 
+/**
+ * Return object for PokerRevealVotesPayload
+ */
+export type PokerRevealVotesPayload = IErrorPayload | IPokerRevealVotesSuccess;
+
+export interface IPokerRevealVotesSuccess {
+  __typename: 'PokerRevealVotesSuccess';
+
+  /**
+   * The stage that holds the updated isVoting step
+   */
+  stage: EstimateStage;
+}
+
 export interface ISubscription {
   __typename: 'Subscription';
   meetingSubscription: MeetingSubscriptionPayload;
@@ -10646,7 +10685,8 @@ export type MeetingSubscriptionPayload =
   | IUpdateRetroMaxVotesSuccess
   | IUpdatePokerScopeSuccess
   | IVoteForReflectionGroupPayload
-  | IVoteForPokerStorySuccess;
+  | IVoteForPokerStorySuccess
+  | IPokerRevealVotesSuccess;
 
 export interface IUpdateDragLocationPayload {
   __typename: 'UpdateDragLocationPayload';
