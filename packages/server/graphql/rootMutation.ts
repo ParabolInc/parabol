@@ -119,6 +119,7 @@ import upgradeToPro from './mutations/upgradeToPro'
 import verifyEmail from './mutations/verifyEmail'
 import voteForReflectionGroup from './mutations/voteForReflectionGroup'
 import updatePokerScope from './mutations/updatePokerScope'
+import voteForPokerStory from './mutations/voteForPokerStory'
 import persistJiraSearchQuery from './mutations/persistJiraSearchQuery'
 
 interface Context extends InternalContext, GQLContext {}
@@ -135,7 +136,10 @@ export default new GraphQLObjectType<any, Context>({
       addPokerTemplateDimension,
       addPokerTemplateScale,
       addPokerTemplateScaleValue,
-      addReactjiToReflection, // DEPRECATED, delete after 4.25.0
+
+      // DEPRECATED, delete after 4.25.0
+      addReactjiToReflection,
+
       addReactjiToReactable,
       addReflectTemplate,
       addReflectTemplatePrompt,
@@ -246,6 +250,7 @@ export default new GraphQLObjectType<any, Context>({
       updateUserProfile,
       verifyEmail,
       voteForReflectionGroup,
-      upgradeToPro
+      upgradeToPro,
+      voteForPokerStory
     } as any)
 })

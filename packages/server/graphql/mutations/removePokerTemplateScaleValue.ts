@@ -1,11 +1,10 @@
-import {GraphQLID, GraphQLNonNull} from 'graphql'
+import {GraphQLFloat, GraphQLID, GraphQLNonNull} from 'graphql'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getRethink from '../../database/rethinkDriver'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import RemovePokerTemplateScaleValuePayload from '../types/RemovePokerTemplateScaleValuePayload'
-import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import TemplateScaleInput from '../types/TemplateScaleInput'
 
 const removePokerTemplateScaleValue = {
   description: 'Remove a scale value from the scale of a template',
@@ -15,7 +14,7 @@ const removePokerTemplateScaleValue = {
       type: new GraphQLNonNull(GraphQLID)
     },
     scaleValue: {
-      type: new GraphQLNonNull(TemplateScaleInput)
+      type: new GraphQLNonNull(GraphQLFloat)
     }
   },
   async resolve(_source, {scaleId, scaleValue}, {authToken, dataLoader, socketId: mutatorId}) {
@@ -37,13 +36,10 @@ const removePokerTemplateScaleValue = {
       return standardError(new Error('Team not found'), {userId: viewerId})
     }
     const {values: oldScaleValues} = scale
-    const oldScaleValueIndex = oldScaleValues.findIndex(
-      (oldScaleValue) =>
-        oldScaleValue.value === scaleValue.value && oldScaleValue.label === scaleValue.label
-    )
+    const oldScaleValue = oldScaleValues.find((oldScaleValue) => oldScaleValue.value === scaleValue)
 
     // VALIDATION
-    if (oldScaleValueIndex === -1) {
+    if (!oldScaleValue) {
       return standardError(new Error('Did not find an old scale value to remove'), {
         userId: viewerId
       })
@@ -54,7 +50,11 @@ const removePokerTemplateScaleValue = {
       .table('TemplateScale')
       .get(scaleId)
       .update((row) => ({
-        values: row('values').deleteAt(oldScaleValueIndex),
+        values: row('values').deleteAt(
+          row('values')
+            .offsetsOf(oldScaleValue)
+            .nth(0)
+        ),
         updatedAt: now
       }))
       .run()
