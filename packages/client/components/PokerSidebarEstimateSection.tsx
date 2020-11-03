@@ -84,13 +84,11 @@ const PokerSidebarEstimateSection = (props: Props) => {
               <ScrollWrapper ref={provided.innerRef}>
                 {stages!.map((stage, idx) => {
                   const {task, issue} = stage
-                  const content = task?.content || issue?.summary
+                  const content = task?.plaintextContent.split('\n')[0] || issue?.summary
                   const title = content || 'Unknown story'
                   // the local user is at another stage than the facilitator stage
                   const isUnsyncedFacilitatorStage = !inSync && stage.id === facilitatorStageId
-                  const estimateMeta = (
-                    <div>-</div>
-                  )
+                  const estimateMeta = <div>-</div>
                   return (
                     <Draggable
                       key={stage.id}
@@ -148,6 +146,7 @@ graphql`
       ... on EstimateStageParabol {
         task {
           content
+          plaintextContent
         }
       }
       sortOrder

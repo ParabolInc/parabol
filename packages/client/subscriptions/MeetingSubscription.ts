@@ -4,6 +4,7 @@ import {requestSubscription, Variables} from 'relay-runtime'
 import {addCommentMeetingUpdater} from '~/mutations/AddCommentMutation'
 import {deleteCommentMeetingUpdater} from '~/mutations/DeleteCommentMutation'
 import {editCommentingMeetingUpdater} from '~/mutations/EditCommentingMutation'
+import {jiraCreateIssueUpdater} from '~/mutations/JiraCreateIssueMutation'
 import {MeetingSubscriptionResponse} from '~/__generated__/MeetingSubscription.graphql'
 import Atmosphere from '../Atmosphere'
 import {createReflectionMeetingUpdater} from '../mutations/CreateReflectionMutation'
@@ -22,6 +23,7 @@ const subscription = graphql`
   subscription MeetingSubscription($meetingId: ID!) {
     meetingSubscription(meetingId: $meetingId) {
       __typename
+      ...VoteForPokerStoryMutation_meeting @relay(mask: false)
       ...AddReactjiToReactableMutation_meeting @relay(mask: false)
       ...AddCommentMutation_meeting @relay(mask: false)
       ...CreateReflectionMutation_meeting @relay(mask: false)
@@ -31,6 +33,7 @@ const subscription = graphql`
       ...EditReflectionMutation_meeting @relay(mask: false)
       ...EndDraggingReflectionMutation_meeting @relay(mask: false)
       ...FlagReadyToAdvanceMutation_meeting @relay(mask: false)
+      ...JiraCreateIssueMutation_meeting @relay(mask: false)
       ...NewMeetingCheckInMutation_meeting @relay(mask: false)
       ...PromoteNewMeetingFacilitatorMutation_meeting @relay(mask: false)
       ...RemoveReflectionMutation_meeting @relay(mask: false)
@@ -64,6 +67,7 @@ const updateHandlers = {
   EditCommentingPayload: editCommentingMeetingUpdater,
   EditReflectionPayload: editReflectionMeetingUpdater,
   EndDraggingReflectionPayload: endDraggingReflectionMeetingUpdater,
+  JiraCreateIssuePayload: jiraCreateIssueUpdater,
   RemoveReflectionPayload: removeReflectionMeetingUpdater,
   SetStageTimerPayload: setStageTimerMeetingUpdater,
   StartDraggingReflectionPayload: startDraggingReflectionMeetingUpdater

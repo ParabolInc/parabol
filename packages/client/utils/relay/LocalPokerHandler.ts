@@ -1,22 +1,44 @@
-
 import {Handler} from 'relay-runtime/lib/store/RelayStoreTypes'
+import {TaskStatusEnum, TaskServiceEnum} from '~/types/graphql'
+import upperFirst from '../upperFirst'
 import createProxyRecord from './createProxyRecord'
+
+const lookup = {
+  [TaskServiceEnum.jira]: {
+    meetingPropertyName: 'jiraSearchQuery',
+    defaultQuery: {
+      queryString: '',
+      projectKeyFilters: [],
+      isJQL: false
+    }
+  },
+  [TaskServiceEnum.PARABOL]: {
+    meetingPropertyName: 'parabolSearchQuery',
+    defaultQuery: {
+      queryString: '',
+      statusFilters: [TaskStatusEnum.active]
+    }
+  }
+}
+
+const initializeDefaultSearchQueries = (store, payload): void => {
+  const meetingId = payload.dataID
+  const meeting = store.get(meetingId)!
+
+  for (const data of Object.values(lookup)) {
+    const {meetingPropertyName, defaultQuery} = data
+    const existingQuery = meeting.getLinkedRecord(meetingPropertyName)
+    if (!existingQuery) {
+      const newQuery = createProxyRecord(
+        store, upperFirst(meetingPropertyName), defaultQuery)
+      meeting.setLinkedRecord(newQuery, meetingPropertyName)
+    }
+  }
+}
 
 const LocalPokerHandler: Handler = {
   update(store, payload) {
-    const meetingId = payload.dataID
-    const meeting = store.get(meetingId)!
-    const queryId = `jiraSearchQuery:${meetingId}`
-    const existingQuery = store.get(queryId)
-    if (!existingQuery) {
-      const jiraSearchQuery = createProxyRecord(store, 'JiraSearchQuery', {
-        id: queryId,
-        queryString: '',
-        projectKeyFilters: [],
-        isJQL: false
-      })
-      meeting.setLinkedRecord(jiraSearchQuery, 'jiraSearchQuery')
-    }
+    initializeDefaultSearchQueries(store, payload)
   }
 }
 

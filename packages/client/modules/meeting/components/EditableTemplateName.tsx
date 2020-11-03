@@ -6,7 +6,7 @@ import EditableText from '../../../components/EditableText'
 import withAtmosphere, {
   WithAtmosphereProps
 } from '../../../decorators/withAtmosphere/withAtmosphere'
-import RenameReflectTemplateMutation from '../../../mutations/RenameReflectTemplateMutation'
+import RenameMeetingTemplateMutation from '../../../mutations/RenameMeetingTemplateMutation'
 import withMutationProps, {WithMutationProps} from '../../../utils/relay/withMutationProps'
 import Legitity from '../../../validation/Legitity'
 import {EditableTemplateName_teamTemplates} from '../../../__generated__/EditableTemplateName_teamTemplates.graphql'
@@ -44,7 +44,7 @@ class EditableTemplateName extends Component<Props> {
     const {error, value: name} = this.validate(rawName)
     if (error) return
     submitMutation()
-    RenameReflectTemplateMutation(atmosphere, {templateId, name}, {}, onError, onCompleted)
+    RenameMeetingTemplateMutation(atmosphere, {templateId, name}, {}, onError, onCompleted)
   }
 
   legitify(value) {

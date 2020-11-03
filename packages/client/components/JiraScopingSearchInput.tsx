@@ -2,7 +2,7 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
-import Atmosphere from '../Atmosphere'
+import Atmosphere from '~/Atmosphere'
 import useAtmosphere from '../hooks/useAtmosphere'
 import {PALETTE} from '../styles/paletteV2'
 import {JiraScopingSearchInput_meeting} from '../__generated__/JiraScopingSearchInput_meeting.graphql'
@@ -61,7 +61,9 @@ const JiraScopingSearchInput = (props: Props) => {
   return (
     <Wrapper>
       <SearchInput value={queryString} placeholder={'Search issues on Jira'} onChange={onChange} />
-      <ClearSearchIcon isEmpty={isEmpty} onClick={clearSearch}>close</ClearSearchIcon>
+      <ClearSearchIcon isEmpty={isEmpty} onClick={clearSearch}>
+        close
+      </ClearSearchIcon>
     </Wrapper>
   )
 }

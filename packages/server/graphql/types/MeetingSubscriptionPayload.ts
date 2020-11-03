@@ -11,6 +11,7 @@ import EditCommentingPayload from './EditCommentingPayload'
 import EditReflectionPayload from './EditReflectionPayload'
 import EndDraggingReflectionPayload from './EndDraggingReflectionPayload'
 import {FlagReadyToAdvanceSuccess} from './FlagReadyToAdvancePayload'
+import JiraCreateIssuePayload from './JiraCreateIssuePayload'
 import NewMeetingCheckInPayload from './NewMeetingCheckInPayload'
 import PromoteNewMeetingFacilitatorPayload from './PromoteNewMeetingFacilitatorPayload'
 import RemoveReflectionPayload from './RemoveReflectionPayload'
@@ -26,11 +27,12 @@ import UpdateReflectionContentPayload from './UpdateReflectionContentPayload'
 import UpdateReflectionGroupTitlePayload from './UpdateReflectionGroupTitlePayload'
 import {UpdateRetroMaxVotesSuccess} from './UpdateRetroMaxVotesPayload'
 import VoteForReflectionGroupPayload from './VoteForReflectionGroupPayload'
+import {VoteForPokerStorySuccess} from './VoteForPokerStoryPayload'
 import {UpdatePokerScopeSuccess} from './UpdatePokerScopePayload'
 
 const types = [
-  AddCommentSuccess,
-  AddReactjiToReflectionSuccess, // DEPRECATED
+  AddCommentSuccess, // DEPRECATED
+  AddReactjiToReflectionSuccess,
   AddReactjiToReactableSuccess,
   AutoGroupReflectionsPayload,
   CreateReflectionPayload,
@@ -41,6 +43,7 @@ const types = [
   EditReflectionPayload,
   EndDraggingReflectionPayload,
   FlagReadyToAdvanceSuccess,
+  JiraCreateIssuePayload,
   NewMeetingCheckInPayload,
   PromoteNewMeetingFacilitatorPayload,
   RemoveReflectionPayload,
@@ -56,7 +59,8 @@ const types = [
   UpdateReflectionGroupTitlePayload,
   UpdateRetroMaxVotesSuccess,
   UpdatePokerScopeSuccess,
-  VoteForReflectionGroupPayload
+  VoteForReflectionGroupPayload,
+  VoteForPokerStorySuccess
 ]
 
 export default graphQLSubscriptionType('MeetingSubscriptionPayload', types)

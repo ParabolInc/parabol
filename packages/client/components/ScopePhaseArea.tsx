@@ -9,6 +9,7 @@ import {PALETTE} from '../styles/paletteV2'
 import Icon from './Icon'
 import JiraSVG from './JiraSVG'
 import ScopePhaseAreaJira from './ScopePhaseAreaJira'
+import ScopePhaseAreaParabolScoping from './ScopePhaseAreaParabolScoping'
 import Tab from './Tab/Tab'
 import Tabs from './Tabs/Tabs'
 
@@ -102,6 +103,7 @@ const ScopePhaseArea = (props: Props) => {
           <ScopePhaseAreaJira gotoParabol={gotoParabol} meeting={meeting} />
         </TabContents>
         <TabContents>
+          <ScopePhaseAreaParabolScoping meeting={meeting} />
         </TabContents>
       </SwipeableViews>
     </ScopingArea>
@@ -120,6 +122,7 @@ export default createFragmentContainer(ScopePhaseArea, {
       ...StageTimerDisplay_meeting
       ...StageTimerControl_meeting
       ...ScopePhaseAreaJira_meeting
+      ...ScopePhaseAreaParabolScoping_meeting
       endedAt
       localPhase {
         ...ScopePhaseArea_phase @relay(mask: false)
