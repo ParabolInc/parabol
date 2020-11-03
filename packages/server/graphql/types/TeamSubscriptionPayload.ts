@@ -47,6 +47,7 @@ import SetCheckInEnabledPayload from './SetCheckInEnabledPayload'
 import SetSlackNotificationPayload from './SetSlackNotificationPayload'
 import {StartCheckInSuccess} from './StartCheckInPayload'
 import StartNewMeetingPayload from './StartNewMeetingPayload'
+import {StartRetrospectiveSuccess} from './StartRetrospectivePayload'
 import {StartSprintPokerSuccess} from './StartSprintPokerPayload'
 import UpdateAgendaItemPayload from './UpdateAgendaItemPayload'
 import UpdateCreditCardPayload from './UpdateCreditCardPayload'
@@ -79,6 +80,7 @@ const types = [
   SelectRetroTemplatePayload,
   StartCheckInSuccess,
   StartNewMeetingPayload,
+  StartRetrospectiveSuccess,
   StartSprintPokerSuccess,
   UpdateAgendaItemPayload,
   UpdateCreditCardPayload,

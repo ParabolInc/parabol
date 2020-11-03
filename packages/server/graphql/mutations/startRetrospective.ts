@@ -1,19 +1,21 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import {IStartCheckInOnMutationArguments, MeetingTypeEnum} from 'parabol-client/types/graphql'
+import {IStartRetrospectiveOnMutationArguments, MeetingTypeEnum} from 'parabol-client/types/graphql'
 import getRethink from '../../database/rethinkDriver'
-import MeetingAction from '../../database/types/MeetingAction'
+import MeetingRetrospective from '../../database/types/MeetingRetrospective'
+import MeetingSettingsRetrospective from '../../database/types/MeetingSettingsRetrospective'
+import Organization from '../../database/types/Organization'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
-import StartCheckInPayload from '../types/StartCheckInPayload'
+import StartRetrospectivePayload from '../types/StartRetrospectivePayload'
 import createMeetingMembers from './helpers/createMeetingMembers'
 import createNewMeetingPhases from './helpers/createNewMeetingPhases'
 import {startSlackMeeting} from './helpers/notifySlack'
 
 export default {
-  type: new GraphQLNonNull(StartCheckInPayload),
+  type: new GraphQLNonNull(StartRetrospectivePayload),
   description: 'Start a new meeting',
   args: {
     teamId: {
@@ -23,7 +25,7 @@ export default {
   },
   async resolve(
     _source,
-    {teamId}: IStartCheckInOnMutationArguments,
+    {teamId}: IStartRetrospectiveOnMutationArguments,
     {authToken, socketId: mutatorId, dataLoader}: GQLContext
   ) {
     const r = await getRethink()
@@ -36,7 +38,7 @@ export default {
       return standardError(new Error('Team not found'), {userId: viewerId})
     }
 
-    const meetingType = 'action' as MeetingTypeEnum
+    const meetingType = 'retrospective' as MeetingTypeEnum
 
     // RESOLUTION
     const meetingCount = await r
@@ -48,13 +50,28 @@ export default {
       .run()
 
     const phases = await createNewMeetingPhases(teamId, meetingCount, meetingType, dataLoader)
+    const organization = (await r
+      .table('Team')
+      .get(teamId)('orgId')
+      .do((orgId) => r.table('Organization').get(orgId))
+      .run()) as Organization
+    const {showConversionModal} = organization
 
-    const meeting = new MeetingAction({
+    const meetingSettings = (await dataLoader
+      .get('meetingSettingsByType')
+      .load({teamId, meetingType})) as MeetingSettingsRetrospective
+    const {totalVotes, maxVotesPerGroup, selectedTemplateId} = meetingSettings
+    const meeting = new MeetingRetrospective({
       teamId,
       meetingCount,
       phases,
-      facilitatorUserId: viewerId
+      showConversionModal,
+      facilitatorUserId: viewerId,
+      totalVotes,
+      maxVotesPerGroup,
+      templateId: selectedTemplateId
     })
+
     const meetingId = meeting.id
     const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)
     const meetingMembers = createMeetingMembers(meeting, teamMembers)
@@ -78,8 +95,6 @@ export default {
         .run()
       return {error: {message: 'Meeting already started'}}
     }
-    const agendaItems = await dataLoader.get('agendaItemsByTeamId').load(teamId)
-    const agendaItemIds = agendaItems.map(({id}) => id)
 
     await Promise.all([
       r
@@ -90,17 +105,12 @@ export default {
         .table('Team')
         .get(teamId)
         .update({lastMeetingType: meetingType})
-        .run(),
-      r
-        .table('AgendaItem')
-        .getAll(r.args(agendaItemIds))
-        .update({meetingId: meetingId})
         .run()
     ])
 
     startSlackMeeting(meetingId, teamId, dataLoader).catch(console.log)
     const data = {teamId, meetingId}
-    publish(SubscriptionChannel.TEAM, teamId, 'StartCheckInSuccess', data, subOptions)
+    publish(SubscriptionChannel.TEAM, teamId, 'StartRetrospectiveSuccess', data, subOptions)
     return data
   }
 }

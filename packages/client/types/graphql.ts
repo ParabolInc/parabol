@@ -7170,6 +7170,11 @@ export interface IMutation {
   startNewMeeting: IStartNewMeetingPayload;
 
   /**
+   * Start a new meeting
+   */
+  startRetrospective: StartRetrospectivePayload;
+
+  /**
    * Start a new sprint poker meeting
    */
   startSprintPoker: StartSprintPokerPayload;
@@ -8127,6 +8132,13 @@ export interface IStartNewMeetingOnMutationArguments {
    * The base type of the meeting (action, retro, etc)
    */
   meetingType: MeetingTypeEnum;
+}
+
+export interface IStartRetrospectiveOnMutationArguments {
+  /**
+   * The team starting the meeting
+   */
+  teamId: string;
 }
 
 export interface IStartSprintPokerOnMutationArguments {
@@ -10206,6 +10218,20 @@ export interface IStartNewMeetingPayload {
 }
 
 /**
+ * Return object for StartRetrospectivePayload
+ */
+export type StartRetrospectivePayload =
+  | IErrorPayload
+  | IStartRetrospectiveSuccess;
+
+export interface IStartRetrospectiveSuccess {
+  __typename: 'StartRetrospectiveSuccess';
+  team: ITeam | null;
+  meetingId: string | null;
+  meeting: NewMeeting | null;
+}
+
+/**
  * Return object for StartSprintPokerPayload
  */
 export type StartSprintPokerPayload = IErrorPayload | IStartSprintPokerSuccess;
@@ -10886,6 +10912,7 @@ export type TeamSubscriptionPayload =
   | ISelectRetroTemplatePayload
   | IStartCheckInSuccess
   | IStartNewMeetingPayload
+  | IStartRetrospectiveSuccess
   | IStartSprintPokerSuccess
   | IUpdateAgendaItemPayload
   | IUpdateCreditCardPayload

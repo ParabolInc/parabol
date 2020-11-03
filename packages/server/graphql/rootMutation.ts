@@ -98,6 +98,7 @@ import signUpWithPassword from './mutations/signUpWithPassword'
 import startDraggingReflection from './mutations/startDraggingReflection'
 import startCheckIn from './mutations/startCheckIn'
 import startNewMeeting from './mutations/startNewMeeting'
+import startRetrospective from './mutations/startRetrospective'
 import startSprintPoker from './mutations/startSprintPoker'
 import toggleAgendaList from './mutations/toggleAgendaList'
 import updateAgendaItem from './mutations/updateAgendaItem'
@@ -231,6 +232,7 @@ export default new GraphQLObjectType<any, Context>({
       startDraggingReflection,
       startCheckIn,
       startNewMeeting,
+      startRetrospective,
       startSprintPoker,
       toggleAgendaList,
       updateAgendaItem,
