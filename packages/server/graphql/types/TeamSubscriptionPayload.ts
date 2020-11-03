@@ -45,6 +45,7 @@ import RenamePokerTemplateScalePayload from './RenamePokerTemplateScalePayload'
 import SelectRetroTemplatePayload from './SelectRetroTemplatePayload'
 import SetCheckInEnabledPayload from './SetCheckInEnabledPayload'
 import SetSlackNotificationPayload from './SetSlackNotificationPayload'
+import {StartCheckInSuccess} from './StartCheckInPayload'
 import StartNewMeetingPayload from './StartNewMeetingPayload'
 import {StartSprintPokerSuccess} from './StartSprintPokerPayload'
 import UpdateAgendaItemPayload from './UpdateAgendaItemPayload'
@@ -76,6 +77,7 @@ const types = [
   RemoveTeamMemberPayload,
   RenameMeetingSuccess,
   SelectRetroTemplatePayload,
+  StartCheckInSuccess,
   StartNewMeetingPayload,
   StartSprintPokerSuccess,
   UpdateAgendaItemPayload,

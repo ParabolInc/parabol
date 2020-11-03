@@ -96,6 +96,7 @@ import setSlackNotification from './mutations/setSlackNotification'
 import setStageTimer from './mutations/setStageTimer'
 import signUpWithPassword from './mutations/signUpWithPassword'
 import startDraggingReflection from './mutations/startDraggingReflection'
+import startCheckIn from './mutations/startCheckIn'
 import startNewMeeting from './mutations/startNewMeeting'
 import startSprintPoker from './mutations/startSprintPoker'
 import toggleAgendaList from './mutations/toggleAgendaList'
@@ -228,6 +229,7 @@ export default new GraphQLObjectType<any, Context>({
       setSlackNotification,
       signUpWithPassword,
       startDraggingReflection,
+      startCheckIn,
       startNewMeeting,
       startSprintPoker,
       toggleAgendaList,

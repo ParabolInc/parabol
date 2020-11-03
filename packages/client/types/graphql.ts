@@ -7162,6 +7162,11 @@ export interface IMutation {
   /**
    * Start a new meeting
    */
+  startCheckIn: StartCheckInPayload;
+
+  /**
+   * Start a new meeting
+   */
   startNewMeeting: IStartNewMeetingPayload;
 
   /**
@@ -8103,6 +8108,13 @@ export interface ISignUpWithPasswordOnMutationArguments {
 export interface IStartDraggingReflectionOnMutationArguments {
   reflectionId: string;
   dragId: string;
+}
+
+export interface IStartCheckInOnMutationArguments {
+  /**
+   * The team starting the meeting
+   */
+  teamId: string;
 }
 
 export interface IStartNewMeetingOnMutationArguments {
@@ -10173,6 +10185,18 @@ export interface IStartDraggingReflectionPayload {
   teamId: string | null;
 }
 
+/**
+ * Return object for StartCheckInPayload
+ */
+export type StartCheckInPayload = IErrorPayload | IStartCheckInSuccess;
+
+export interface IStartCheckInSuccess {
+  __typename: 'StartCheckInSuccess';
+  team: ITeam | null;
+  meetingId: string | null;
+  meeting: NewMeeting | null;
+}
+
 export interface IStartNewMeetingPayload {
   __typename: 'StartNewMeetingPayload';
   error: IStandardMutationError | null;
@@ -10860,6 +10884,7 @@ export type TeamSubscriptionPayload =
   | IRemoveTeamMemberPayload
   | IRenameMeetingSuccess
   | ISelectRetroTemplatePayload
+  | IStartCheckInSuccess
   | IStartNewMeetingPayload
   | IStartSprintPokerSuccess
   | IUpdateAgendaItemPayload

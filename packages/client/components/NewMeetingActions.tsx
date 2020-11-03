@@ -2,6 +2,7 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
+import StartCheckInMutation from '~/mutations/StartCheckInMutation'
 import {NewMeetingActions_team} from '~/__generated__/NewMeetingActions_team.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useBreakpoint from '../hooks/useBreakpoint'
@@ -66,6 +67,8 @@ const NewMeetingActions = (props: Props) => {
     submitMutation()
     if (meetingType === 'poker') {
       StartSprintPokerMutation(atmosphere, {teamId}, {history, onError, onCompleted})
+    } else if (meetingType === 'action') {
+      StartCheckInMutation(atmosphere, {teamId}, {history, onError, onCompleted})
     } else {
       StartNewMeetingMutation(atmosphere, {teamId, meetingType}, {history, onError, onCompleted})
     }
