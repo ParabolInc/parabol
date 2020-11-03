@@ -1,7 +1,8 @@
 import {HttpResponse, HttpRequest} from 'uWebSockets.js'
 import Busboy from 'busboy'
 import {Readable} from 'stream'
-import fs from 'fs'
+import {OutgoingMessage} from '@mattkrick/graphql-trebuchet-client'
+import {ResolvedFile} from './graphql/types/GraphQLFileType'
 
 type ParseFormBodySignature = (res: HttpResponse, req: HttpRequest) => Promise<JSON | null>
 
@@ -22,33 +23,46 @@ const reqHeaders = (req: HttpRequest) => {
   return headers
 }
 
+const mergeFileIntoBody = (file, body) => {
+  if (body && file) {
+    body.payload.variables = {
+      ...body.payload.variables,
+      file
+    }
+  }
+  return body
+}
+
+const tryToResolve = (file, body, resolve) => {
+  if (file && body) {
+    mergeFileIntoBody(file, body)
+    resolve(body)
+  }
+}
+
 const parseFormBody: ParseFormBodySignature = (res, req) => {
   // todo: better typing, validation, etc.
+  let parsedBody, file
   return new Promise((resolve) => {
-    let parsedBody, fileStream
-    const busboy = new Busboy({headers: reqHeaders(req)})
-    bodyStream(res).pipe(busboy)
-    busboy.on('file', (fieldname, file, filename, encoding, mimetype) => {
-      console.log('file found!!')
-      console.log('file args:', fieldname, filename, encoding, mimetype)
-      console.log('file:', file)
-      file.pipe(fs.createWriteStream('./upload.jpg'))
-      fileStream = file
+    const busboy = new Busboy({
+      headers: reqHeaders(req)
+    })
+    let buffer
+    busboy.on('file', (_0, fileStream, _1, _2, mimeType) => {
+      fileStream.on('data', (curBuf) => {
+        buffer = buffer ? Buffer.concat([buffer, curBuf]) : Buffer.concat([curBuf])
+      })
+      fileStream.on('end', () => {
+        file = {fileBuffer: buffer, contentType: mimeType} as ResolvedFile
+        tryToResolve(file, parsedBody, resolve)
+      })
     })
     busboy.on('field', async (fieldname, val) => {
       if (fieldname !== 'body') return
-      parsedBody = await JSON.parse(val)
+      parsedBody = (await JSON.parse(val)) as OutgoingMessage
+      tryToResolve(file, parsedBody, resolve)
     })
-    busboy.on('finish', () => {
-      if (parsedBody && fileStream) {
-        parsedBody.payload.variables = {
-          ...parsedBody.payload.variables,
-          file: fileStream,
-          test: 5
-        }
-      }
-      resolve(parsedBody)
-    })
+    bodyStream(res).pipe(busboy)
   })
 }
 
