@@ -1,10 +1,12 @@
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
+import {MeetingTypeEnum} from '~/types/graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import {MenuProps} from '../hooks/useMenu'
 import useMutationProps from '../hooks/useMutationProps'
 import UpdateReflectTemplateScopeMutation from '../mutations/UpdateReflectTemplateScopeMutation'
+import UpdatePokerTemplateScopeMutation from '../mutations/UpdatePokerTemplateScopeMutation'
 import {SelectSharingScopeDropdown_template} from '../__generated__/SelectSharingScopeDropdown_template.graphql'
 import DropdownMenuIconItemLabel from './DropdownMenuIconItemLabel'
 import Menu from './Menu'
@@ -19,13 +21,17 @@ const SelectSharingScopeDropdown = (props: Props) => {
   const {menuProps, template} = props
   const atmosphere = useAtmosphere()
   const {submitting, submitMutation, onError, onCompleted} = useMutationProps()
-  const {id: templateId, scope, team} = template
+  const {id: templateId, scope, team, type} = template
   const {name: teamName, organization} = team
   const {name: orgName} = organization
   const setScope = (newScope: any) => () => {
     if (submitting) return
     submitMutation()
-    UpdateReflectTemplateScopeMutation(atmosphere, {scope: newScope, templateId}, {onError, onCompleted})
+    if (type === MeetingTypeEnum.retrospective) {
+      UpdateReflectTemplateScopeMutation(atmosphere, {scope: newScope, templateId}, {onError, onCompleted})
+    } else if (type === MeetingTypeEnum.poker) {
+      UpdatePokerTemplateScopeMutation(atmosphere, {scope: newScope, templateId}, {onError, onCompleted})
+    }
   }
   return (
     <Menu ariaLabel={'Select the suitable scope for sharing'} {...menuProps}>
@@ -54,6 +60,7 @@ export default createFragmentContainer(SelectSharingScopeDropdown, {
     fragment SelectSharingScopeDropdown_template on MeetingTemplate {
       id
       scope
+      type
       team {
         name
         organization {

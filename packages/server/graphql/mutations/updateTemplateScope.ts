@@ -1,6 +1,8 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import {SharingScopeEnum as ESharingScope} from 'parabol-client/types/graphql'
+import {MeetingTypeEnum, SharingScopeEnum as ESharingScope} from 'parabol-client/types/graphql'
+import PokerTemplate from '../../database/types/PokerTemplate'
+import TemplateDimension from '../../database/types/TemplateDimension'
 import toTeamMemberId from '../../../client/utils/relay/toTeamMemberId'
 import getRethink from '../../database/rethinkDriver'
 import ReflectTemplate from '../../database/types/ReflectTemplate'
@@ -69,7 +71,8 @@ const updateTemplateScope = {
           .run()
       : false
     let clonedTemplateId: string | undefined
-    if (shouldClone) {
+
+    const cloneReflectTemplate = async () => {
       const clonedTemplate = new ReflectTemplate({
         name,
         teamId,
@@ -102,6 +105,48 @@ const updateTemplateScope = {
           .getAll(r.args(promptIds))
           .update({removedAt: now})
       }).run()
+    }
+
+    const clonePokerTemplate = async () => {
+      const clonedTemplate = new PokerTemplate({
+        name,
+        teamId,
+        orgId,
+        scope: newScope,
+        parentTemplateId: templateId,
+        lastUsedAt: template.lastUsedAt
+      })
+      clonedTemplateId = clonedTemplate.id
+      const dimensions = await dataLoader.get('templateDimensionsByTemplateId').load(templateId)
+      const activeDimensions = dimensions.filter(({removedAt}) => !removedAt)
+      const dimensionIds = activeDimensions.map(({id}) => id)
+      const clonedDimensions = activeDimensions.map((dimension) => {
+        return new TemplateDimension({
+          ...dimension,
+          templateId: clonedTemplateId,
+          removedAt: null
+        })
+      })
+      await r({
+        clonedTemplate: r.table('MeetingTemplate').insert(clonedTemplate),
+        clonedDimensions: r.table('TemplateDimension').insert(clonedDimensions),
+        inactivatedTemplate: r
+          .table('MeetingTemplate')
+          .get(templateId)
+          .update({isActive: false}),
+        inactivatedDimensions: r
+          .table('TemplateDimension')
+          .getAll(r.args(dimensionIds))
+          .update({removedAt: now})
+      }).run()
+    }
+
+    if (shouldClone) {
+      if (template.type === MeetingTypeEnum.retrospective) {
+        cloneReflectTemplate()
+      } else if (template.type === MeetingTypeEnum.poker) {
+        clonePokerTemplate()
+      }
     } else {
       await r
         .table('MeetingTemplate')
