@@ -7,10 +7,10 @@ import {
   GraphQLNonNull,
   GraphQLObjectType
 } from 'graphql'
-import {NewMeetingPhaseTypeEnum} from 'parabol-client/types/graphql'
-import {RETROSPECTIVE} from 'parabol-client/utils/constants'
+import {MeetingTypeEnum, NewMeetingPhaseTypeEnum} from 'parabol-client/types/graphql'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import DiscussPhase from '../../database/types/DiscussPhase'
+import RetroMeetingMember from '../../database/types/RetroMeetingMember'
 import {getUserId} from '../../utils/authorization'
 import filterTasksByMeeting from '../../utils/filterTasksByMeeting'
 import {GQLContext} from '../graphql'
@@ -115,7 +115,7 @@ const RetrospectiveMeeting = new GraphQLObjectType<any, GQLContext>({
             sortLookup[group.id] = idx
           })
           reflectionGroups.sort((a, b) => {
-            sortLookup[a.id] < sortLookup[b.id] ? -1 : 1
+            return sortLookup[a.id] < sortLookup[b.id] ? -1 : 1
           })
           return reflectionGroups
         }
@@ -127,7 +127,9 @@ const RetrospectiveMeeting = new GraphQLObjectType<any, GQLContext>({
       type: new GraphQLNonNull(RetrospectiveMeetingSettings),
       description: 'The settings that govern the retrospective meeting',
       resolve: async ({teamId}, _args, {dataLoader}) => {
-        return dataLoader.get('meetingSettingsByType').load({teamId, meetingType: RETROSPECTIVE})
+        return dataLoader
+          .get('meetingSettingsByType')
+          .load({teamId, meetingType: MeetingTypeEnum.retrospective})
       }
     },
     taskCount: {
@@ -167,7 +169,9 @@ const RetrospectiveMeeting = new GraphQLObjectType<any, GQLContext>({
       description:
         'The sum total of the votes remaining for the meeting members that are present in the meeting',
       resolve: async ({id: meetingId}, _args, {dataLoader}) => {
-        const meetingMembers = await dataLoader.get('meetingMembersByMeetingId').load(meetingId)
+        const meetingMembers = (await dataLoader
+          .get('meetingMembersByMeetingId')
+          .load(meetingId)) as RetroMeetingMember[]
         return meetingMembers.reduce(
           (sum, member) => (member.isCheckedIn ? sum + member.votesRemaining : sum),
           0

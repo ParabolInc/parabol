@@ -1,11 +1,15 @@
 import DataLoader from 'dataloader'
 import {decode} from 'jsonwebtoken'
-import {MeetingTypeEnum, ReactableEnum, ThreadSourceEnum} from 'parabol-client/types/graphql'
+import {
+  MeetingTypeEnum,
+  ReactableEnum,
+  TaskStatusEnum,
+  ThreadSourceEnum
+} from 'parabol-client/types/graphql'
 import promiseAllPartial from 'parabol-client/utils/promiseAllPartial'
+import getRethink, {RethinkSchema} from '../database/rethinkDriver'
+import AtlassianAuth from '../database/types/AtlassianAuth'
 import MeetingTemplate from '../database/types/MeetingTemplate'
-import {TaskStatusEnum} from 'parabol-client/types/graphql'
-import getRethink from '../database/rethinkDriver'
-import MeetingSettings from '../database/types/MeetingSettings'
 import {Reactable} from '../database/types/Reactable'
 import Task from '../database/types/Task'
 import {ThreadSource} from '../database/types/ThreadSource'
@@ -111,7 +115,7 @@ export const reactables = (parent: RethinkDataLoader) => {
   return new DataLoader<ReactablesKey, Reactable, string>(
     async (keys) => {
       const reactableResults = (await Promise.all(
-        reactableLoaders.map((val) => {
+        reactableLoaders.map(async (val) => {
           const ids = keys.filter((key) => key.type === val.type).map(({id}) => id)
           return parent.get(val.loader).loadMany(ids)
         })
@@ -132,7 +136,7 @@ export const threadSources = (parent: RethinkDataLoader) => {
   return new DataLoader<ThreadSourceKey, ThreadSource, string>(
     async (keys) => {
       const threadableResults = (await Promise.all(
-        threadableLoaders.map((val) => {
+        threadableLoaders.map(async (val) => {
           const ids = keys.filter((key) => key.type === val.type).map(({sourceId}) => sourceId)
           return parent.get(val.loader).loadMany(ids)
         })
@@ -232,45 +236,11 @@ export const userTasks = (parent: RethinkDataLoader) => {
   )
 }
 
-export const freshAtlassianAccessToken = (parent: RethinkDataLoader) => {
-  const userAuthLoader = parent.get('atlassianAuthByUserId')
-  return new DataLoader<TeamUserKey, string, string>(
-    async (keys) => {
-      return promiseAllPartial(
-        keys.map(async ({userId, teamId}) => {
-          const userAuths = await userAuthLoader.load(userId)
-          const teamAuth = userAuths.find((auth) => auth.teamId === teamId)
-          if (!teamAuth || !teamAuth.refreshToken) return null
-          const {accessToken: existingAccessToken, refreshToken} = teamAuth
-          const decodedToken = existingAccessToken && (decode(existingAccessToken) as any)
-          const now = new Date()
-          if (decodedToken && decodedToken.exp >= Math.floor(now.getTime() / 1000)) {
-            return existingAccessToken
-          }
-          // fetch a new one
-          const manager = await AtlassianServerManager.refresh(refreshToken)
-          const {accessToken} = manager
-          teamAuth.accessToken = accessToken
-          const r = await getRethink()
-          await r
-            .table('AtlassianAuth')
-            .getAll(userId, {index: 'userId'})
-            .filter({teamId})
-            .update({accessToken, updatedAt: now})
-            .run()
-          return accessToken
-        })
-      )
-    },
-    {
-      ...parent.dataLoaderOptions,
-      cacheKeyFn: (key) => `${key.userId}:${key.teamId}`
-    }
-  )
+interface FreshAtlassianAuth extends AtlassianAuth {
+  accessToken: string
 }
-
 export const freshAtlassianAuth = (parent: RethinkDataLoader) => {
-  return new DataLoader<TeamUserKey, string, string>(
+  return new DataLoader<TeamUserKey, FreshAtlassianAuth | null, string>(
     async (keys) => {
       return promiseAllPartial(
         keys.map(async ({userId, teamId}) => {
@@ -328,7 +298,7 @@ export const jiraRemoteProject = (parent: RethinkDataLoader) => {
 }
 
 export const meetingSettingsByType = (parent: RethinkDataLoader) => {
-  return new DataLoader<MeetingSettingsKey, MeetingSettings, string>(
+  return new DataLoader<MeetingSettingsKey, RethinkSchema['MeetingSettings']['type'], string>(
     async (keys) => {
       const r = await getRethink()
       const types = {} as {[meetingType: string]: string[]}

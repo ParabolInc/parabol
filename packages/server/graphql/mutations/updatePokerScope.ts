@@ -11,6 +11,7 @@ import UpdatePokerScopeItemInput from '../types/UpdatePokerScopeItemInput'
 import UpdatePokerScopePayload from '../types/UpdatePokerScopePayload'
 import isRecordActiveForMeeting from '../../utils/isRecordActiveForMeeting'
 import getRedis from '../../utils/getRedis'
+import MeetingPoker from '../../database/types/MeetingPoker'
 
 const updatePokerScope = {
   type: GraphQLNonNull(UpdatePokerScopePayload),
@@ -37,7 +38,7 @@ const updatePokerScope = {
     const subOptions = {mutatorId, operationId}
 
     //AUTH
-    const meeting = await dataLoader.get('newMeetings').load(meetingId)
+    const meeting = (await dataLoader.get('newMeetings').load(meetingId)) as MeetingPoker
     if (!meeting) {
       return {error: {message: `Meeting not found`}}
     }
