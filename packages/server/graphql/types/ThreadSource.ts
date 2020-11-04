@@ -4,6 +4,7 @@ import resolveThread from '../resolvers/resolveThread'
 import {ThreadSourceEnum} from 'parabol-client/types/graphql'
 import RetroReflectionGroup from './RetroReflectionGroup'
 import AgendaItem from './AgendaItem'
+import Story from './Story'
 import getThreadSourceType from './getThreadSourceType'
 
 export const threadSourceFields = () => ({
@@ -32,10 +33,12 @@ const ThreadSource = new GraphQLInterfaceType({
   description: 'The source of a discusson thread',
   fields: threadSourceFields,
   resolveType: (type) => {
+    // TODO: add type type
     const threadSourceType = getThreadSourceType(type)
     const lookup = {
       [ThreadSourceEnum.REFLECTION_GROUP]: RetroReflectionGroup,
-      [ThreadSourceEnum.AGENDA_ITEM]: AgendaItem
+      [ThreadSourceEnum.AGENDA_ITEM]: AgendaItem,
+      [ThreadSourceEnum.STORY]: Story
     }
     return lookup[threadSourceType]
   }

@@ -1638,7 +1638,8 @@ export interface IThreadable {
  */
 export const enum ThreadSourceEnum {
   AGENDA_ITEM = 'AGENDA_ITEM',
-  REFLECTION_GROUP = 'REFLECTION_GROUP'
+  REFLECTION_GROUP = 'REFLECTION_GROUP',
+  STORY = 'STORY'
 }
 
 /**
@@ -1730,7 +1731,7 @@ export interface IThreadOnAgendaItemArguments {
 /**
  * The source of a discusson thread
  */
-export type ThreadSource = IAgendaItem | IRetroReflectionGroup;
+export type ThreadSource = IAgendaItem | IRetroReflectionGroup | IStory;
 
 /**
  * The source of a discusson thread
@@ -8649,6 +8650,15 @@ export interface IPokerMeeting {
    * The settings that govern the Poker meeting
    */
   settings: IPokerMeetingSettings;
+
+  /**
+   * A single story created in a Sprint Poker meeting
+   */
+  story: IStory | null;
+}
+
+export interface IStoryOnPokerMeetingArguments {
+  storyId: string;
 }
 
 /**
@@ -8677,6 +8687,87 @@ export interface IPokerMeetingMember {
    * The last time a meeting was updated (stage completed, finished, etc)
    */
   updatedAt: any;
+}
+
+/**
+ * A single story created in Sprint Poker
+ */
+export interface IStory {
+  __typename: 'Story';
+
+  /**
+   * The unique story id teamId::shortid
+   */
+  id: string;
+
+  /**
+   * the comments and tasks created from the discussion
+   */
+  thread: IThreadableConnection;
+
+  /**
+   * A list of users currently commenting
+   */
+  commentors: Array<ICommentorDetails> | null;
+
+  /**
+   * The body of the story
+   */
+  content: string;
+
+  /**
+   * The timestamp the story was created
+   */
+  createdAt: any | null;
+
+  /**
+   * true if the story has not been processed or deleted
+   */
+  isActive: boolean;
+
+  /**
+   * The sort order of the story in the list
+   */
+  sortOrder: number;
+
+  /**
+   * *The team for this story
+   */
+  teamId: string;
+
+  /**
+   * The teamMemberId that created this story
+   */
+  teamMemberId: string;
+
+  /**
+   * The meetingId of the story
+   */
+  meetingId: string | null;
+
+  /**
+   * The stringified JSON used to fetch the task used by the service
+   */
+  serviceTaskId: string;
+
+  /**
+   * The timestamp the story was updated
+   */
+  updatedAt: any | null;
+
+  /**
+   * The team member that created the story
+   */
+  teamMember: ITeamMember;
+}
+
+export interface IThreadOnStoryArguments {
+  first: number;
+
+  /**
+   * the incrementing sort order in string format
+   */
+  after?: string | null;
 }
 
 export interface IEditCommentingPayload {

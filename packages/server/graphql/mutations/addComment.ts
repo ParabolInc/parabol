@@ -36,24 +36,29 @@ const addComment = {
     const {meetingId, threadId, threadSource} = comment
     const meetingMemberId = toTeamMemberId(meetingId, viewerId)
 
-    const [meeting, viewerMeetingMember, threadError] = await Promise.all([
+    // const [meeting, viewerMeetingMember, threadError] = await Promise.all([
+    //   dataLoader.get('newMeetings').load(meetingId),
+    //   dataLoader.get('meetingMembers').load(meetingMemberId),
+    //   validateThreadableThreadSourceId(threadSource, threadId, meetingId, dataLoader)
+    // ])
+    const [meeting, viewerMeetingMember] = await Promise.all([
       dataLoader.get('newMeetings').load(meetingId),
-      dataLoader.get('meetingMembers').load(meetingMemberId),
-      validateThreadableThreadSourceId(threadSource, threadId, meetingId, dataLoader)
+      dataLoader.get('meetingMembers').load(meetingMemberId)
     ])
 
     if (!viewerMeetingMember) {
       return {error: {message: 'Not a member of the meeting'}}
     }
-    if (threadError) {
-      return {error: {message: threadError}}
-    }
+    // if (threadError) {
+    //   return {error: {message: threadError}}
+    // }
 
     // VALIDATION
     const content = normalizeRawDraftJS(comment.content)
 
     const dbComment = new Comment({...comment, content, createdBy: viewerId})
     const {id: commentId, isAnonymous, threadParentId} = dbComment
+    console.log('dbComment', dbComment)
     await r
       .table('Comment')
       .insert(dbComment)
@@ -64,8 +69,10 @@ const addComment = {
     const containsThreadablePhase = phases.find(
       (phase) =>
         phase.phaseType === NewMeetingPhaseTypeEnum.discuss ||
-        phase.phaseType === NewMeetingPhaseTypeEnum.agendaitems
+        phase.phaseType === NewMeetingPhaseTypeEnum.agendaitems ||
+        phase.phaseType === NewMeetingPhaseTypeEnum.ESTIMATE
     )!
+    console.log('containsThreadablePhase', containsThreadablePhase)
     const {stages} = containsThreadablePhase
     const isAsync = stages.some((stage) => stage.isAsync)
     segmentIo.track({

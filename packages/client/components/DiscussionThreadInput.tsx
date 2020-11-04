@@ -80,7 +80,8 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
 
   const threadSourceByMeetingType = {
     [MeetingTypeEnum.retrospective]: ThreadSourceEnum.REFLECTION_GROUP,
-    [MeetingTypeEnum.action]: ThreadSourceEnum.AGENDA_ITEM
+    [MeetingTypeEnum.action]: ThreadSourceEnum.AGENDA_ITEM,
+    [MeetingTypeEnum.poker]: ThreadSourceEnum.STORY
   }
   const threadSource = threadSourceByMeetingType[meetingType]
 
@@ -132,6 +133,7 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
       threadSource: threadSource,
       threadSortOrder: getMaxSortOrder() + SORT_STEP + dndNoise()
     }
+    console.log('addComment -> comment', comment)
     AddCommentMutation(atmosphere, {comment}, {onError, onCompleted})
     // move focus to end is very important! otherwise ghost chars appear
     setEditorState(

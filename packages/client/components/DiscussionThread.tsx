@@ -131,6 +131,15 @@ export default createFragmentContainer(DiscussionThread, {
             }
           }
         }
+        ... on PokerMeeting {
+          threadSource: story(storyId: $threadSourceId) {
+            ...DiscussionThread_threadSource @relay(mask: false)
+            commentors {
+              userId
+              preferredName
+            }
+          }
+        }
       }
     }
   `

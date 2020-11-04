@@ -5,6 +5,7 @@ import {GQLContext} from '../graphql'
 import NewMeeting, {newMeetingFields} from './NewMeeting'
 import PokerMeetingMember from './PokerMeetingMember'
 import PokerMeetingSettings from './PokerMeetingSettings'
+import Story from './Story'
 
 const PokerMeeting = new GraphQLObjectType<any, GQLContext>({
   name: 'PokerMeeting',
@@ -34,6 +35,20 @@ const PokerMeeting = new GraphQLObjectType<any, GQLContext>({
       description: 'The settings that govern the Poker meeting',
       resolve: async ({teamId}, _args, {dataLoader}) => {
         return dataLoader.get('meetingSettingsByType').load({teamId, meetingType: 'poker'})
+      }
+    },
+    story: {
+      type: Story,
+      description: 'A single story created in a Sprint Poker meeting',
+      args: {
+        storyId: {
+          type: GraphQLNonNull(GraphQLID)
+        }
+      },
+      resolve: async (__source, {storyId}) => {
+        return {
+          id: storyId
+        }
       }
     },
     // tasks: {

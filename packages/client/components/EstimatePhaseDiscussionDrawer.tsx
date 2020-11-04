@@ -101,7 +101,7 @@ interface Props {
 
 const EstimatePhaseDiscussionDrawer = (props: Props) => {
   const {isDesktop, meeting} = props
-  const {id: meetingId, endedAt, localStage, viewerMeetingMember} = meeting
+  const {id: meetingId, endedAt, localStage, teamId, viewerMeetingMember} = meeting
   const {user} = viewerMeetingMember
   const {picture} = user
   const {__id: storyId} = localStage
@@ -133,7 +133,7 @@ const EstimatePhaseDiscussionDrawer = (props: Props) => {
         </ShowVideoButton>
       </DiscussingGroup>
       <ThreadColumn>
-        <DiscussionThreadRoot meetingId={meetingId} threadSourceId={storyId!} />
+        <DiscussionThreadRoot meetingId={meetingId} threadSourceId={`${teamId}::${storyId}`} />
       </ThreadColumn>
     </Drawer>
   )
@@ -154,6 +154,7 @@ export default createFragmentContainer(EstimatePhaseDiscussionDrawer, {
       localStage {
         ...EstimatePhaseDiscussionDrawerStage @relay(mask: false)
       }
+      teamId
       viewerMeetingMember {
         user {
           picture
