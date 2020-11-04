@@ -1,10 +1,25 @@
-import {GraphQLFloat, GraphQLID, GraphQLInterfaceType, GraphQLList, GraphQLNonNull} from 'graphql'
+import {
+  GraphQLBoolean,
+  GraphQLFloat,
+  GraphQLID,
+  GraphQLInterfaceType,
+  GraphQLList,
+  GraphQLNonNull
+} from 'graphql'
 import NewMeetingStage, {newMeetingStageFields} from './NewMeetingStage'
 import TaskServiceEnum from './TaskServiceEnum'
 import EstimateUserScore from './EstimateUserScore'
+import getRedis from '../../utils/getRedis'
+import db from '../../db'
+import User from './User'
 
 export const estimateStageFields = () => ({
   ...newMeetingStageFields(),
+  creatorUserId: {
+    type: GraphQLNonNull(GraphQLID),
+    description:
+      'The id of the user that added this stage. Useful for knowing which access key to use to get the underlying issue'
+  },
   service: {
     type: TaskServiceEnum,
     description: 'The service the task is connected to. If null, it is parabol'
@@ -25,6 +40,26 @@ export const estimateStageFields = () => ({
     type: GraphQLFloat,
     description: 'the final score, as defined by the facilitator'
   },
+  hoveringUserIds: {
+    type: GraphQLNonNull(GraphQLList(GraphQLNonNull(GraphQLID))),
+    description: 'the userIds of the team members hovering the deck',
+    resolve: async ({id: stageId}) => {
+      const redis = getRedis()
+      const userIds = await redis.smembers(`pokerHover:${stageId}`)
+      return userIds
+    }
+  },
+  hoveringUsers: {
+    type: GraphQLNonNull(GraphQLList(GraphQLNonNull(User))),
+    description: 'the users of the team members hovering the deck',
+    resolve: async ({id: stageId}) => {
+      const redis = getRedis()
+      const userIds = await redis.smembers(`pokerHover:${stageId}`)
+      if (userIds.length === 0) return []
+      const users = await db.readMany('User', userIds)
+      return users
+    }
+  },
   scores: {
     type: GraphQLNonNull(GraphQLList(GraphQLNonNull(EstimateUserScore))),
     description: 'all the estimates, 1 per user',
@@ -34,6 +69,11 @@ export const estimateStageFields = () => ({
         stageId
       }))
     }
+  },
+  isVoting: {
+    type: GraphQLNonNull(GraphQLBoolean),
+    description:
+      'true when the participants are still voting and results are hidden. false when votes are revealed'
   }
 })
 
