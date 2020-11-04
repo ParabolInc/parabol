@@ -78,7 +78,13 @@ const ThreadedCommentBase = (props: Props) => {
     submitMutation()
     AddReactjiToReactableMutation(
       atmosphere,
-      {reactableType: ReactableEnum.COMMENT, reactableId: commentId, isRemove, reactji: emojiId},
+      {
+        reactableType: ReactableEnum.COMMENT,
+        reactableId: commentId,
+        isRemove,
+        reactji: emojiId,
+        meetingId
+      },
       {onCompleted, onError}
     )
     // when the reactjis move to the bottom & increase the height, make sure they're visible

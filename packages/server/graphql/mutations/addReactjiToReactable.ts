@@ -7,34 +7,15 @@ import {getUserId} from '../../utils/authorization'
 import emojiIds from '../../utils/emojiIds'
 import getGroupedReactjis from '../../utils/getGroupedReactjis'
 import publish from '../../utils/publish'
-import {GQLContext, DataLoaderWorker} from '../graphql'
+import {GQLContext} from '../graphql'
 import AddReactjiToReactablePayload from '../types/AddReactjiToReactablePayload'
 import ReactableEnum from '../types/ReactableEnum'
 import {Reactable} from '../../database/types/Reactable'
 import getReactableType from '../types/getReactableType'
-import Comment from '../../database/types/Comment'
-import Reflection from '../../database/types/Reflection'
 
 const tableLookup = {
   [EReactableEnum.COMMENT]: 'Comment',
   [EReactableEnum.REFLECTION]: 'RetroReflection'
-}
-
-const getMeetingIdFromReactable = async (
-  reactable: Reactable,
-  reactableType: EReactableEnum,
-  dataLoader: DataLoaderWorker
-) => {
-  switch (reactableType) {
-    case EReactableEnum.COMMENT:
-      const {threadId, threadSource} = reactable as Comment
-      const source = await dataLoader
-        .get('threadSources')
-        .load({sourceId: threadId, type: threadSource})
-      return source.meetingId
-    case EReactableEnum.REFLECTION:
-      return (reactable as Reflection).meetingId
-  }
 }
 
 const addReactjiToReactable = {
@@ -56,11 +37,15 @@ const addReactjiToReactable = {
     isRemove: {
       type: GraphQLBoolean,
       description: 'If true, remove the reaction, else add it'
+    },
+    meetingId: {
+      type: GraphQLNonNull(GraphQLID),
+      description: 'The id of the meeting'
     }
   },
   resolve: async (
     _source,
-    {reactableId, reactableType, reactji, isRemove},
+    {reactableId, reactableType, reactji, isRemove, meetingId},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) => {
     const r = await getRethink()
@@ -83,7 +68,6 @@ const addReactjiToReactable = {
     if (verifiedType !== reactableType) {
       return {error: {message: `Unknown item`}}
     }
-    const meetingId = await getMeetingIdFromReactable(reactable, reactableType, dataLoader)
     const meetingMemberId = toTeamMemberId(meetingId, viewerId)
     const viewerMeetingMember = await dataLoader.get('meetingMembers').load(meetingMemberId)
     if (!viewerMeetingMember) {

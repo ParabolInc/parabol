@@ -6933,6 +6933,11 @@ export interface IAddReactjiToReactableOnMutationArguments {
    * If true, remove the reaction, else add it
    */
   isRemove?: boolean | null;
+
+  /**
+   * The id of the meeting
+   */
+  meetingId: string;
 }
 
 export interface IAddReflectTemplateOnMutationArguments {
