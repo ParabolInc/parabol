@@ -9,6 +9,7 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
 ### Added
 
+- Poker estimate mutations #4306
 - Added `voteForPokerStory` mutation #4304
 - Add new Jira issues in poker scope phase #4282
 - Outlook email parser #4288
