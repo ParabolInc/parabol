@@ -2,7 +2,7 @@ import {ContentState, convertFromRaw} from 'draft-js'
 import {stateToMarkdown} from 'draft-js-export-markdown'
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import {ICreateJiraIssueOnMutationArguments} from 'parabol-client/types/graphql'
+import {ICreateJiraTaskIntegrationOnMutationArguments} from 'parabol-client/types/graphql'
 import getRethink from '../../database/rethinkDriver'
 import db from '../../db'
 import AtlassianServerManager from '../../utils/AtlassianServerManager'
@@ -11,11 +11,11 @@ import publish from '../../utils/publish'
 import segmentIo from '../../utils/segmentIo'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
-import CreateJiraIssuePayload from '../types/CreateJiraIssuePayload'
+import CreateJiraTaskIntegrationPayload from '../types/CreateJiraTaskIntegrationPayload'
 
 export default {
-  name: 'CreateJiraIssue',
-  type: CreateJiraIssuePayload,
+  name: 'CreateJiraTaskIntegration',
+  type: CreateJiraTaskIntegrationPayload,
   args: {
     cloudId: {
       type: new GraphQLNonNull(GraphQLID),
@@ -32,7 +32,7 @@ export default {
   },
   resolve: async (
     _source: object,
-    {cloudId, projectKey, taskId}: ICreateJiraIssueOnMutationArguments,
+    {cloudId, projectKey, taskId}: ICreateJiraTaskIntegrationOnMutationArguments,
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) => {
     const r = await getRethink()
@@ -162,7 +162,13 @@ export default {
     const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)
     const data = {taskId}
     teamMembers.forEach(({userId}) => {
-      publish(SubscriptionChannel.TASK, userId, 'CreateJiraIssuePayload', data, subOptions)
+      publish(
+        SubscriptionChannel.TASK,
+        userId,
+        'CreateJiraTaskIntegrationPayload',
+        data,
+        subOptions
+      )
     })
     segmentIo.track({
       userId: viewerId,

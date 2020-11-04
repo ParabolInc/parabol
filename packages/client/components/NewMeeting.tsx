@@ -46,7 +46,7 @@ const TeamAndSettings = styled('div')<{isDesktop}>(({isDesktop}) => ({
 
 const TeamAndSettingsInner = styled('div')({
   borderRadius: '4px',
-  boxShadow: Elevation.Z1,
+  boxShadow: Elevation.Z1
 })
 
 const NewMeetingBlock = styled('div')<{innerWidth: number; isDesktop: boolean}>(

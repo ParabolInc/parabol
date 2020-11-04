@@ -1,8 +1,9 @@
-import {DISCUSS} from 'parabol-client/utils/constants'
+import {NewMeetingPhaseTypeEnum} from '../../../client/types/graphql'
 import EstimateUserScore from './EstimateUserScore'
 import GenericMeetingStage from './GenericMeetingStage'
 
 interface Input {
+  creatorUserId: string
   service: string
   serviceTaskId: string
   sortOrder: number
@@ -13,6 +14,7 @@ interface Input {
 }
 
 export default class EstimateStage extends GenericMeetingStage {
+  creatorUserId: string
   service: string
   serviceTaskId: string
   sortOrder: number
@@ -21,8 +23,9 @@ export default class EstimateStage extends GenericMeetingStage {
   scores: EstimateUserScore[]
   isVoting: boolean
   constructor(input: Input) {
-    super(DISCUSS, input.durations)
-    const {service, serviceTaskId, sortOrder, dimensionId, scores} = input
+    super(NewMeetingPhaseTypeEnum.ESTIMATE, input.durations)
+    const {creatorUserId, service, serviceTaskId, sortOrder, dimensionId, scores} = input
+    this.creatorUserId = creatorUserId
     this.service = service
     this.serviceTaskId = serviceTaskId
     this.sortOrder = sortOrder

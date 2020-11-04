@@ -14,15 +14,20 @@ export const up = async function(r: R) {
         plaintextContent: extractTextFromDraftString(task.content)
       })
     }
-    await r(updates)
-      .forEach((update) => {
+    return await r(updates)
+      .forEach((updateObj) => {
         return r
           .table('Task')
-          .get(update('taskId'))
-          .update({
-            plaintextContent: update('plaintextContent')
-          })
-      })
+          .get(updateObj('taskId'))
+          .update(
+            {
+              plaintextContent: updateObj('plaintextContent')
+            },
+            {
+              returnChanges: true
+            }
+          )
+      })('changes')
       .run()
   }
 
@@ -37,7 +42,7 @@ export const up = async function(r: R) {
         .limit(batchSize)
         .run()
       if (!tasks?.length) break
-      updateBatch(tasks)
+      await updateBatch(tasks)
       i++
     }
     /* process any new tasks that may have come in during first iteration */
@@ -45,7 +50,7 @@ export const up = async function(r: R) {
       .table('Task')
       .filter((row) => row.hasFields('plaintextContent').not())
       .run()
-    updateBatch(missedTasks)
+    if (missedTasks.length) updateBatch(missedTasks)
   } catch (e) {
     console.log(e)
   }

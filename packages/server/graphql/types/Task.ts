@@ -16,6 +16,7 @@ import TaskEditorDetails from './TaskEditorDetails'
 import TaskIntegration from './TaskIntegration'
 import TaskStatusEnum from './TaskStatusEnum'
 import Team from './Team'
+import TaskEstimate from './TaskEstimate'
 import Threadable, {threadableFields} from './Threadable'
 
 const Task = new GraphQLObjectType<any, GQLContext>({
@@ -46,6 +47,11 @@ const Task = new GraphQLObjectType<any, GQLContext>({
     dueDate: {
       type: GraphQLISO8601Type,
       description: 'a user-defined due date'
+    },
+    estimates: {
+      type: GraphQLNonNull(GraphQLList(GraphQLNonNull(TaskEstimate))),
+      description: 'A list of estimates for the story, created in a poker meeting',
+      resolve: ({estimates}) => estimates || []
     },
     editors: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(TaskEditorDetails))),

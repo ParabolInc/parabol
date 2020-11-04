@@ -50,6 +50,10 @@ const PokerMeeting = new GraphQLObjectType<any, GQLContext>({
     teamId: {
       type: GraphQLNonNull(GraphQLID)
     },
+    templateId: {
+      type: GraphQLNonNull(GraphQLID),
+      description: 'The ID of the template used for the meeting'
+    },
     viewerMeetingMember: {
       type: GraphQLNonNull(PokerMeetingMember),
       description: 'The Poker meeting member of the viewer',

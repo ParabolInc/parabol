@@ -24,7 +24,7 @@ import autoGroupReflections from './mutations/autoGroupReflections'
 import changeTaskTeam from './mutations/changeTaskTeam'
 import createGitHubIssue from './mutations/createGitHubIssue'
 import createImposterToken from './mutations/createImposterToken'
-import createJiraIssue from './mutations/createJiraIssue'
+import createJiraTaskIntegration from './mutations/createJiraTaskIntegration'
 import createMassInvitation from './mutations/createMassInvitation'
 import createOrgPicturePutUrl from './mutations/createOrgPicturePutUrl'
 import createReflection from './mutations/createReflection'
@@ -50,6 +50,7 @@ import flagReadyToAdvance from './mutations/flagReadyToAdvance'
 import inactivateUser from './mutations/inactivateUser'
 import invalidateSessions from './mutations/invalidateSessions'
 import inviteToTeam from './mutations/inviteToTeam'
+import jiraCreateIssue from './mutations/jiraCreateIssue'
 import loginWithGoogle from './mutations/loginWithGoogle'
 import loginWithPassword from './mutations/loginWithPassword'
 import movePokerTemplateDimension from './mutations/movePokerTemplateDimension'
@@ -118,6 +119,11 @@ import upgradeToPro from './mutations/upgradeToPro'
 import verifyEmail from './mutations/verifyEmail'
 import voteForReflectionGroup from './mutations/voteForReflectionGroup'
 import updatePokerScope from './mutations/updatePokerScope'
+import voteForPokerStory from './mutations/voteForPokerStory'
+import pokerRevealVotes from './mutations/pokerRevealVotes'
+import pokerResetDimension from './mutations/pokerResetDimension'
+import pokerAnnounceDeckHover from './mutations/pokerAnnounceDeckHover'
+import pokerSetFinalScore from './mutations/pokerSetFinalScore'
 import persistJiraSearchQuery from './mutations/persistJiraSearchQuery'
 
 interface Context extends InternalContext, GQLContext {}
@@ -134,7 +140,10 @@ export default new GraphQLObjectType<any, Context>({
       addPokerTemplateDimension,
       addPokerTemplateScale,
       addPokerTemplateScaleValue,
-      addReactjiToReflection, // DEPRECATED, delete after 4.25.0
+
+      // DEPRECATED, delete after 4.25.0
+      addReactjiToReflection,
+
       addReactjiToReactable,
       addReflectTemplate,
       addReflectTemplatePrompt,
@@ -151,7 +160,7 @@ export default new GraphQLObjectType<any, Context>({
       setNotificationStatus,
       createImposterToken,
       createGitHubIssue,
-      createJiraIssue,
+      createJiraTaskIntegration,
       createMassInvitation,
       createOrgPicturePutUrl,
       createReflection,
@@ -177,6 +186,7 @@ export default new GraphQLObjectType<any, Context>({
       inactivateUser,
       invalidateSessions,
       inviteToTeam,
+      jiraCreateIssue,
       loginWithGoogle,
       loginWithPassword,
       movePokerTemplateDimension,
@@ -244,6 +254,11 @@ export default new GraphQLObjectType<any, Context>({
       updateUserProfile,
       verifyEmail,
       voteForReflectionGroup,
-      upgradeToPro
+      upgradeToPro,
+      voteForPokerStory,
+      pokerRevealVotes,
+      pokerResetDimension,
+      pokerAnnounceDeckHover,
+      pokerSetFinalScore
     } as any)
 })

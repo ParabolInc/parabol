@@ -1525,6 +1525,11 @@ export interface ITask {
   dueDate: any | null;
 
   /**
+   * A list of estimates for the story, created in a poker meeting
+   */
+  estimates: Array<ITaskEstimate>;
+
+  /**
    * a list of users currently editing the task (fed by a subscription, so queries return null)
    */
   editors: Array<ITaskEditorDetails>;
@@ -1845,6 +1850,28 @@ export interface ICommentorDetails {
    * The preferred name of the user commenting
    */
   preferredName: string;
+}
+
+/**
+ * An estimate for a Task that was voted on and scored in a poker meeting
+ */
+export interface ITaskEstimate {
+  __typename: 'TaskEstimate';
+
+  /**
+   * The name of the estimate dimension
+   */
+  name: string;
+
+  /**
+   * The human-readable label for the estimate
+   */
+  label: string;
+
+  /**
+   * The numeric value representing the label. If the label was not a value in the TemplateScale, this is null
+   */
+  value: number | null;
 }
 
 export interface ITaskEditorDetails {
@@ -3664,6 +3691,11 @@ export interface ITemplateDimension {
   description: string;
 
   /**
+   * The scaleId to resolve the selected scale
+   */
+  scaleId: string;
+
+  /**
    * scale used in this dimension
    */
   selectedScale: ITemplateScale;
@@ -3723,6 +3755,7 @@ export interface ITemplateScale {
  */
 export interface ITemplateScaleValue {
   __typename: 'TemplateScaleValue';
+  id: string;
 
   /**
    * The color used to visually group a scale value
@@ -4471,6 +4504,11 @@ export interface IEstimateStage {
   timeRemaining: number | null;
 
   /**
+   * The id of the user that added this stage. Useful for knowing which access key to use to get the underlying issue
+   */
+  creatorUserId: string;
+
+  /**
    * The service the task is connected to. If null, it is parabol
    */
   service: TaskServiceEnum | null;
@@ -4496,9 +4534,24 @@ export interface IEstimateStage {
   finalScore: number | null;
 
   /**
+   * the userIds of the team members hovering the deck
+   */
+  hoveringUserIds: Array<string>;
+
+  /**
+   * the users of the team members hovering the deck
+   */
+  hoveringUsers: Array<IUser>;
+
+  /**
    * all the estimates, 1 per user
    */
   scores: Array<IEstimateUserScore>;
+
+  /**
+   * true when the participants are still voting and results are hidden. false when votes are revealed
+   */
+  isVoting: boolean;
 }
 
 /**
@@ -4523,9 +4576,14 @@ export interface IEstimateUserScore {
   userId: string;
 
   /**
-   * the value of the score. label is determined by this. note that if a template is modified, the corresponding label may no longer exists
+   * the value that existed in the scale at the time of the vote. note that this value may no longer exist on the scale
    */
-  score: number;
+  value: number;
+
+  /**
+   * The label that was associated with the score at the time of the vote
+   */
+  label: string;
 }
 
 /**
@@ -4625,6 +4683,11 @@ export interface IEstimateStageJira {
   timeRemaining: number | null;
 
   /**
+   * The id of the user that added this stage. Useful for knowing which access key to use to get the underlying issue
+   */
+  creatorUserId: string;
+
+  /**
    * The service the task is connected to. If null, it is parabol
    */
   service: TaskServiceEnum | null;
@@ -4650,9 +4713,24 @@ export interface IEstimateStageJira {
   finalScore: number | null;
 
   /**
+   * the userIds of the team members hovering the deck
+   */
+  hoveringUserIds: Array<string>;
+
+  /**
+   * the users of the team members hovering the deck
+   */
+  hoveringUsers: Array<IUser>;
+
+  /**
    * all the estimates, 1 per user
    */
   scores: Array<IEstimateUserScore>;
+
+  /**
+   * true when the participants are still voting and results are hidden. false when votes are revealed
+   */
+  isVoting: boolean;
 
   /**
    * the issue straight from Jira
@@ -4757,6 +4835,11 @@ export interface IEstimateStageParabol {
   timeRemaining: number | null;
 
   /**
+   * The id of the user that added this stage. Useful for knowing which access key to use to get the underlying issue
+   */
+  creatorUserId: string;
+
+  /**
    * The service the task is connected to. If null, it is parabol
    */
   service: TaskServiceEnum | null;
@@ -4782,9 +4865,24 @@ export interface IEstimateStageParabol {
   finalScore: number | null;
 
   /**
+   * the userIds of the team members hovering the deck
+   */
+  hoveringUserIds: Array<string>;
+
+  /**
+   * the users of the team members hovering the deck
+   */
+  hoveringUsers: Array<IUser>;
+
+  /**
    * all the estimates, 1 per user
    */
   scores: Array<IEstimateUserScore>;
+
+  /**
+   * true when the participants are still voting and results are hidden. false when votes are revealed
+   */
+  isVoting: boolean;
 
   /**
    * the Parabol task
@@ -6808,7 +6906,7 @@ export interface IMutation {
    */
   createImposterToken: ICreateImposterTokenPayload;
   createGitHubIssue: ICreateGitHubIssuePayload | null;
-  createJiraIssue: ICreateJiraIssuePayload | null;
+  createJiraTaskIntegration: ICreateJiraTaskIntegrationPayload | null;
 
   /**
    * Create a new mass inivtation and optionally void old ones
@@ -6934,6 +7032,7 @@ export interface IMutation {
    * Send a team invitation to an email address
    */
   inviteToTeam: IInviteToTeamPayload;
+  jiraCreateIssue: IJiraCreateIssuePayload | null;
 
   /**
    * Sign up or login using Google
@@ -7258,6 +7357,27 @@ export interface IMutation {
    * Upgrade an account to the paid service
    */
   upgradeToPro: IUpgradeToProPayload | null;
+
+  /**
+   * Cast a vote for the estimated points for a given dimension
+   */
+  voteForPokerStory: VoteForPokerStoryPayload;
+
+  /**
+   * Progresses the stage dimension to the reveal & discuss step
+   */
+  pokerRevealVotes: PokerRevealVotesPayload;
+
+  /**
+   * Remove all votes, the final vote, and reset the stage
+   */
+  pokerResetDimension: PokerResetDimensionPayload;
+  pokerAnnounceDeckHover: PokerAnnounceDeckHoverPayload;
+
+  /**
+   * Update the final score field & push to the associated integration
+   */
+  pokerSetFinalScore: PokerSetFinalScorePayload;
 }
 
 export interface IAcceptTeamInvitationOnMutationArguments {
@@ -7469,7 +7589,7 @@ export interface ICreateGitHubIssueOnMutationArguments {
   nameWithOwner: string;
 }
 
-export interface ICreateJiraIssueOnMutationArguments {
+export interface ICreateJiraTaskIntegrationOnMutationArguments {
   /**
    * The atlassian cloudId for the site
    */
@@ -7711,6 +7831,33 @@ export interface IInviteToTeamOnMutationArguments {
   invitees: Array<any>;
 }
 
+export interface IJiraCreateIssueOnMutationArguments {
+  /**
+   * The atlassian cloudId for the site
+   */
+  cloudId: string;
+
+  /**
+   * The id of the meeting where the Jira issue is being created. Null if it is not being created in a meeting.
+   */
+  meetingId?: string | null;
+
+  /**
+   * The atlassian key of the project to put the issue in
+   */
+  projectKey: string;
+
+  /**
+   * The text content of the Jira issue
+   */
+  summary: string;
+
+  /**
+   * The id of the team that is creating the issue
+   */
+  teamId: string;
+}
+
 export interface ILoginWithGoogleOnMutationArguments {
   /**
    * The code provided from the OAuth2 flow
@@ -7933,7 +8080,7 @@ export interface IRemovePokerTemplateScaleOnMutationArguments {
 
 export interface IRemovePokerTemplateScaleValueOnMutationArguments {
   scaleId: string;
-  scaleValue: ITemplateScaleInput;
+  scaleValue: number;
 }
 
 export interface IRemoveReflectionOnMutationArguments {
@@ -8276,6 +8423,50 @@ export interface IUpgradeToProOnMutationArguments {
    * The token that came back from stripe
    */
   stripeToken: string;
+}
+
+export interface IVoteForPokerStoryOnMutationArguments {
+  meetingId: string;
+
+  /**
+   * The stage that contains the dimension to vote for
+   */
+  stageId: string;
+
+  /**
+   * The value of the scaleValue to vote for. If null, remove the vote
+   */
+  score?: number | null;
+}
+
+export interface IPokerRevealVotesOnMutationArguments {
+  meetingId: string;
+  stageId: string;
+}
+
+export interface IPokerResetDimensionOnMutationArguments {
+  meetingId: string;
+  stageId: string;
+}
+
+export interface IPokerAnnounceDeckHoverOnMutationArguments {
+  meetingId: string;
+  stageId: string;
+
+  /**
+   * true if the viewer has started hovering the deck, else false
+   */
+  isHover: boolean;
+}
+
+export interface IPokerSetFinalScoreOnMutationArguments {
+  meetingId: string;
+  stageId: string;
+
+  /**
+   * A string representation of the final score. It may not have an associated value in the scale
+   */
+  finalScore: string;
 }
 
 export interface IAcceptTeamInvitationPayload {
@@ -8764,8 +8955,8 @@ export interface ICreateGitHubIssuePayload {
   task: ITask | null;
 }
 
-export interface ICreateJiraIssuePayload {
-  __typename: 'CreateJiraIssuePayload';
+export interface ICreateJiraTaskIntegrationPayload {
+  __typename: 'CreateJiraTaskIntegrationPayload';
   error: IStandardMutationError | null;
   task: ITask | null;
 }
@@ -9161,6 +9352,11 @@ export interface IPokerMeeting {
    * The settings that govern the Poker meeting
    */
   settings: IPokerMeetingSettings;
+
+  /**
+   * The ID of the template used for the meeting
+   */
+  templateId: string;
 }
 
 /**
@@ -9451,6 +9647,26 @@ export interface IInviteToTeamPayload {
    * the `invite your team` suggested action that was removed, if any
    */
   removedSuggestedActionId: string | null;
+}
+
+export interface IJiraCreateIssuePayload {
+  __typename: 'JiraCreateIssuePayload';
+  error: IStandardMutationError | null;
+
+  /**
+   * The issue straight from Jira
+   */
+  jiraIssue: IJiraIssue | null;
+
+  /**
+   * The id of the meeting where the Jira issue is being created
+   */
+  meetingId: string | null;
+
+  /**
+   * The id of the team that is creating the Jira issue
+   */
+  teamId: string;
 }
 
 export interface ILoginWithGooglePayload {
@@ -9911,26 +10127,6 @@ export interface IRemovePokerTemplateScaleValuePayload {
   scale: ITemplateScale | null;
 }
 
-/**
- * A value for a scale
- */
-export interface ITemplateScaleInput {
-  /**
-   * The color used to visually group a scale value
-   */
-  color: string;
-
-  /**
-   * The numerical value for this scale value
-   */
-  value: number;
-
-  /**
-   * The label for this value, e.g., XS, M, L
-   */
-  label: string;
-}
-
 export interface IRemoveReflectionPayload {
   __typename: 'RemoveReflectionPayload';
   error: IStandardMutationError | null;
@@ -10245,6 +10441,26 @@ export interface IUpdatePokerTemplateScaleValuePayload {
   scale: ITemplateScale | null;
 }
 
+/**
+ * A value for a scale
+ */
+export interface ITemplateScaleInput {
+  /**
+   * The color used to visually group a scale value
+   */
+  color: string;
+
+  /**
+   * The numerical value for this scale value
+   */
+  value: number;
+
+  /**
+   * The label for this value, e.g., XS, M, L
+   */
+  label: string;
+}
+
 export interface IUpdateNewCheckInQuestionPayload {
   __typename: 'UpdateNewCheckInQuestionPayload';
   error: IStandardMutationError | null;
@@ -10515,6 +10731,84 @@ export interface IUpgradeToProPayload {
   meetings: Array<NewMeeting> | null;
 }
 
+/**
+ * Return object for VoteForPokerStoryPayload
+ */
+export type VoteForPokerStoryPayload =
+  | IErrorPayload
+  | IVoteForPokerStorySuccess;
+
+export interface IVoteForPokerStorySuccess {
+  __typename: 'VoteForPokerStorySuccess';
+
+  /**
+   * The stage that holds the updated scores
+   */
+  stage: EstimateStage;
+}
+
+/**
+ * Return object for PokerRevealVotesPayload
+ */
+export type PokerRevealVotesPayload = IErrorPayload | IPokerRevealVotesSuccess;
+
+export interface IPokerRevealVotesSuccess {
+  __typename: 'PokerRevealVotesSuccess';
+
+  /**
+   * The stage that holds the updated isVoting step
+   */
+  stage: EstimateStage;
+}
+
+/**
+ * Return object for PokerResetDimensionPayload
+ */
+export type PokerResetDimensionPayload =
+  | IErrorPayload
+  | IPokerResetDimensionSuccess;
+
+export interface IPokerResetDimensionSuccess {
+  __typename: 'PokerResetDimensionSuccess';
+
+  /**
+   * The stage that holds the updated isVoting step
+   */
+  stage: EstimateStage;
+}
+
+/**
+ * Return object for PokerAnnounceDeckHoverPayload
+ */
+export type PokerAnnounceDeckHoverPayload =
+  | IErrorPayload
+  | IPokerAnnounceDeckHoverSuccess;
+
+export interface IPokerAnnounceDeckHoverSuccess {
+  __typename: 'PokerAnnounceDeckHoverSuccess';
+
+  /**
+   * The stage that holds the updated scores
+   */
+  stage: EstimateStage;
+}
+
+/**
+ * Return object for PokerSetFinalScorePayload
+ */
+export type PokerSetFinalScorePayload =
+  | IErrorPayload
+  | IPokerSetFinalScoreSuccess;
+
+export interface IPokerSetFinalScoreSuccess {
+  __typename: 'PokerSetFinalScoreSuccess';
+
+  /**
+   * The stage that holds the updated finalScore
+   */
+  stage: EstimateStage;
+}
+
 export interface ISubscription {
   __typename: 'Subscription';
   meetingSubscription: MeetingSubscriptionPayload;
@@ -10541,6 +10835,7 @@ export type MeetingSubscriptionPayload =
   | IEditReflectionPayload
   | IEndDraggingReflectionPayload
   | IFlagReadyToAdvanceSuccess
+  | IJiraCreateIssuePayload
   | INewMeetingCheckInPayload
   | IPromoteNewMeetingFacilitatorPayload
   | IRemoveReflectionPayload
@@ -10556,7 +10851,12 @@ export type MeetingSubscriptionPayload =
   | IUpdateReflectionGroupTitlePayload
   | IUpdateRetroMaxVotesSuccess
   | IUpdatePokerScopeSuccess
-  | IVoteForReflectionGroupPayload;
+  | IVoteForReflectionGroupPayload
+  | IVoteForPokerStorySuccess
+  | IPokerRevealVotesSuccess
+  | IPokerResetDimensionSuccess
+  | IPokerAnnounceDeckHoverSuccess
+  | IPokerSetFinalScoreSuccess;
 
 export interface IUpdateDragLocationPayload {
   __typename: 'UpdateDragLocationPayload';
@@ -10741,7 +11041,7 @@ export interface ISetOrgUserRoleRemovedPayload {
 export type TaskSubscriptionPayload =
   | IChangeTaskTeamPayload
   | ICreateGitHubIssuePayload
-  | ICreateJiraIssuePayload
+  | ICreateJiraTaskIntegrationPayload
   | ICreateTaskPayload
   | IDeleteTaskPayload
   | IEditTaskPayload
