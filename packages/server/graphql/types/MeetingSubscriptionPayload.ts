@@ -31,6 +31,7 @@ import {VoteForPokerStorySuccess} from './VoteForPokerStoryPayload'
 import {PokerRevealVotesSuccess} from './PokerRevealVotesPayload'
 import {PokerResetDimensionSuccess} from './PokerResetDimensionPayload'
 import {PokerAnnounceDeckHoverSuccess} from './PokerAnnounceDeckHoverPayload'
+import {PokerSetFinalScoreSuccess} from './PokerSetFinalScorePayload'
 import {UpdatePokerScopeSuccess} from './UpdatePokerScopePayload'
 
 const types = [
@@ -67,7 +68,8 @@ const types = [
   VoteForPokerStorySuccess,
   PokerRevealVotesSuccess,
   PokerResetDimensionSuccess,
-  PokerAnnounceDeckHoverSuccess
+  PokerAnnounceDeckHoverSuccess,
+  PokerSetFinalScoreSuccess
 ]
 
 export default graphQLSubscriptionType('MeetingSubscriptionPayload', types)

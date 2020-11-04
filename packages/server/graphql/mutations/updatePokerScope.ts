@@ -89,6 +89,7 @@ const updatePokerScope = {
         const newStages = dimensions.map(
           (dimension) =>
             new EstimateStage({
+              creatorUserId: viewerId,
               service,
               serviceTaskId,
               sortOrder: lastSortOrder + 1,

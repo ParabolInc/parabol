@@ -1525,6 +1525,11 @@ export interface ITask {
   dueDate: any | null;
 
   /**
+   * A list of estimates for the story, created in a poker meeting
+   */
+  estimates: Array<ITaskEstimate>;
+
+  /**
    * a list of users currently editing the task (fed by a subscription, so queries return null)
    */
   editors: Array<ITaskEditorDetails>;
@@ -1845,6 +1850,28 @@ export interface ICommentorDetails {
    * The preferred name of the user commenting
    */
   preferredName: string;
+}
+
+/**
+ * An estimate for a Task that was voted on and scored in a poker meeting
+ */
+export interface ITaskEstimate {
+  __typename: 'TaskEstimate';
+
+  /**
+   * The name of the estimate dimension
+   */
+  name: string;
+
+  /**
+   * The human-readable label for the estimate
+   */
+  label: string;
+
+  /**
+   * The numeric value representing the label. If the label was not a value in the TemplateScale, this is null
+   */
+  value: number | null;
 }
 
 export interface ITaskEditorDetails {
@@ -3664,6 +3691,11 @@ export interface ITemplateDimension {
   description: string;
 
   /**
+   * The scaleId to resolve the selected scale
+   */
+  scaleId: string;
+
+  /**
    * scale used in this dimension
    */
   selectedScale: ITemplateScale;
@@ -4472,6 +4504,11 @@ export interface IEstimateStage {
   timeRemaining: number | null;
 
   /**
+   * The id of the user that added this stage. Useful for knowing which access key to use to get the underlying issue
+   */
+  creatorUserId: string;
+
+  /**
    * The service the task is connected to. If null, it is parabol
    */
   service: TaskServiceEnum | null;
@@ -4646,6 +4683,11 @@ export interface IEstimateStageJira {
   timeRemaining: number | null;
 
   /**
+   * The id of the user that added this stage. Useful for knowing which access key to use to get the underlying issue
+   */
+  creatorUserId: string;
+
+  /**
    * The service the task is connected to. If null, it is parabol
    */
   service: TaskServiceEnum | null;
@@ -4791,6 +4833,11 @@ export interface IEstimateStageParabol {
    * The number of milliseconds left before the scheduled end time. Useful for unsynced client clocks. null if scheduledEndTime is null
    */
   timeRemaining: number | null;
+
+  /**
+   * The id of the user that added this stage. Useful for knowing which access key to use to get the underlying issue
+   */
+  creatorUserId: string;
 
   /**
    * The service the task is connected to. If null, it is parabol
@@ -7326,6 +7373,11 @@ export interface IMutation {
    */
   pokerResetDimension: PokerResetDimensionPayload;
   pokerAnnounceDeckHover: PokerAnnounceDeckHoverPayload;
+
+  /**
+   * Update the final score field & push to the associated integration
+   */
+  pokerSetFinalScore: PokerSetFinalScorePayload;
 }
 
 export interface IAcceptTeamInvitationOnMutationArguments {
@@ -8405,6 +8457,16 @@ export interface IPokerAnnounceDeckHoverOnMutationArguments {
    * true if the viewer has started hovering the deck, else false
    */
   isHover: boolean;
+}
+
+export interface IPokerSetFinalScoreOnMutationArguments {
+  meetingId: string;
+  stageId: string;
+
+  /**
+   * A string representation of the final score. It may not have an associated value in the scale
+   */
+  finalScore: string;
 }
 
 export interface IAcceptTeamInvitationPayload {
@@ -10725,6 +10787,22 @@ export interface IPokerAnnounceDeckHoverSuccess {
   stage: EstimateStage;
 }
 
+/**
+ * Return object for PokerSetFinalScorePayload
+ */
+export type PokerSetFinalScorePayload =
+  | IErrorPayload
+  | IPokerSetFinalScoreSuccess;
+
+export interface IPokerSetFinalScoreSuccess {
+  __typename: 'PokerSetFinalScoreSuccess';
+
+  /**
+   * The stage that holds the updated finalScore
+   */
+  stage: EstimateStage;
+}
+
 export interface ISubscription {
   __typename: 'Subscription';
   meetingSubscription: MeetingSubscriptionPayload;
@@ -10771,7 +10849,8 @@ export type MeetingSubscriptionPayload =
   | IVoteForPokerStorySuccess
   | IPokerRevealVotesSuccess
   | IPokerResetDimensionSuccess
-  | IPokerAnnounceDeckHoverSuccess;
+  | IPokerAnnounceDeckHoverSuccess
+  | IPokerSetFinalScoreSuccess;
 
 export interface IUpdateDragLocationPayload {
   __typename: 'UpdateDragLocationPayload';

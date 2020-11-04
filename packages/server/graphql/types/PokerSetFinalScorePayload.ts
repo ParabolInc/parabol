@@ -1,23 +1,24 @@
 import {GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import {NewMeetingPhaseTypeEnum} from '../../../client/types/graphql'
 import {GQLContext} from '../graphql'
+import resolveStage from '../resolvers/resolveStage'
 import EstimateStage from './EstimateStage'
 import makeMutationPayload from './makeMutationPayload'
-import resolveStage from '../resolvers/resolveStage'
-export const PokerRevealVotesSuccess = new GraphQLObjectType<any, GQLContext>({
-  name: 'PokerRevealVotesSuccess',
+
+export const PokerSetFinalScoreSuccess = new GraphQLObjectType<any, GQLContext>({
+  name: 'PokerSetFinalScoreSuccess',
   fields: () => ({
     stage: {
       type: GraphQLNonNull(EstimateStage),
-      description: 'The stage that holds the updated isVoting step',
+      description: 'The stage that holds the updated finalScore',
       resolve: resolveStage(NewMeetingPhaseTypeEnum.ESTIMATE)
     }
   })
 })
 
-const PokerRevealVotesPayload = makeMutationPayload(
-  'PokerRevealVotesPayload',
-  PokerRevealVotesSuccess
+const PokerSetFinalScorePayload = makeMutationPayload(
+  'PokerSetFinalScorePayload',
+  PokerSetFinalScoreSuccess
 )
 
-export default PokerRevealVotesPayload
+export default PokerSetFinalScorePayload

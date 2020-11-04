@@ -15,6 +15,11 @@ import User from './User'
 
 export const estimateStageFields = () => ({
   ...newMeetingStageFields(),
+  creatorUserId: {
+    type: GraphQLNonNull(GraphQLID),
+    description:
+      'The id of the user that added this stage. Useful for knowing which access key to use to get the underlying issue'
+  },
   service: {
     type: TaskServiceEnum,
     description: 'The service the task is connected to. If null, it is parabol'
