@@ -1,22 +1,26 @@
 import React from 'react'
+import graphql from 'babel-plugin-relay/macro'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import DeleteCommentMutation from '~/mutations/DeleteCommentMutation'
 import {MenuProps} from '../hooks/useMenu'
 import Menu from './Menu'
 import MenuItem from './MenuItem'
 import MenuItemWithIcon from './MenuItemWithIcon'
+import {createFragmentContainer} from 'react-relay'
+import {CommentAuthorOptionsDropdown_meeting} from '~/__generated__/CommentAuthorOptionsDropdown_meeting.graphql'
 
 interface Props {
   menuProps: MenuProps
   commentId: string
   editComment: () => void
+  meetingId: string
 }
 
 const CommentAuthorOptionsDropdown = (props: Props) => {
-  const {commentId, editComment, menuProps} = props
+  const {commentId, editComment, meetingId, menuProps} = props
   const atmosphere = useAtmosphere()
   const deleteComment = () => {
-    DeleteCommentMutation(atmosphere, {commentId})
+    DeleteCommentMutation(atmosphere, {commentId, meetingId})
   }
   return (
     <Menu ariaLabel={'Select the action for your comment'} {...menuProps}>

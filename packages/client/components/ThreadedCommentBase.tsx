@@ -110,7 +110,7 @@ const ThreadedCommentBase = (props: Props) => {
       submitMutation()
       UpdateCommentContentMutation(
         atmosphere,
-        {commentId, content: convertToTaskContent(value)},
+        {commentId, content: convertToTaskContent(value), meetingId},
         {onError, onCompleted}
       )
       return
@@ -123,7 +123,7 @@ const ThreadedCommentBase = (props: Props) => {
     submitMutation()
     UpdateCommentContentMutation(
       atmosphere,
-      {commentId, content: nextContent},
+      {commentId, content: nextContent, meetingId},
       {onError, onCompleted}
     )
   }
@@ -136,6 +136,7 @@ const ThreadedCommentBase = (props: Props) => {
           dataCy={dataCy}
           comment={comment}
           editComment={editComment}
+          meetingId={meetingId}
           onToggleReactji={onToggleReactji}
           onReply={onReply}
         />

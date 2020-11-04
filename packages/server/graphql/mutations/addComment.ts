@@ -58,7 +58,6 @@ const addComment = {
 
     const dbComment = new Comment({...comment, content, createdBy: viewerId})
     const {id: commentId, isAnonymous, threadParentId} = dbComment
-    console.log('dbComment', dbComment)
     await r
       .table('Comment')
       .insert(dbComment)
@@ -72,7 +71,6 @@ const addComment = {
         phase.phaseType === NewMeetingPhaseTypeEnum.agendaitems ||
         phase.phaseType === NewMeetingPhaseTypeEnum.ESTIMATE
     )!
-    console.log('containsThreadablePhase', containsThreadablePhase)
     const {stages} = containsThreadablePhase
     const isAsync = stages.some((stage) => stage.isAsync)
     segmentIo.track({

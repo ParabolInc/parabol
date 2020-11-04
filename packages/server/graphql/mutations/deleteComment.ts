@@ -14,10 +14,13 @@ const deleteComment = {
     commentId: {
       type: GraphQLNonNull(GraphQLID)
     },
+    meetingId: {
+      type: new GraphQLNonNull(GraphQLID)
+    }
   },
   resolve: async (
     _source,
-    {commentId}: IDeleteCommentOnMutationArguments,
+    {commentId, meetingId}: IDeleteCommentOnMutationArguments,
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) => {
     const r = await getRethink()
@@ -39,10 +42,10 @@ const deleteComment = {
       return {error: {message: 'Can only delete your own comment'}}
     }
 
-    const thread = await dataLoader
-      .get('threadSources')
-      .load({sourceId: threadId, type: threadSource})
-    const {meetingId} = thread
+    // const thread = await dataLoader
+    //   .get('threadSources')
+    //   .load({sourceId: threadId, type: threadSource})
+    // const {meetingId} = thread
 
     await r
       .table('Comment')

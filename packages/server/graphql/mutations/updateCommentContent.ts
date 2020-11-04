@@ -20,10 +20,13 @@ export default {
       type: new GraphQLNonNull(GraphQLString),
       description: 'A stringified draft-js document containing thoughts'
     },
+    meetingId: {
+      type: new GraphQLNonNull(GraphQLID)
+    }
   },
   async resolve(
     _source,
-    {commentId, content},
+    {commentId, content, meetingId},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) {
     const r = await getRethink()
@@ -41,15 +44,15 @@ export default {
       return standardError(new Error('comment not found'), {userId: viewerId})
     }
 
-    const {createdBy, threadId, threadSource} = comment
+    const {createdBy} = comment
     if (createdBy !== viewerId) {
       return {error: {message: 'Can only update your own comment'}}
     }
 
-    const thread = await dataLoader
-      .get('threadSources')
-      .load({sourceId: threadId, type: threadSource})
-    const {meetingId} = thread
+    // const thread = await dataLoader
+    //   .get('threadSources')
+    //   .load({sourceId: threadId, type: threadSource})
+    // const {meetingId} = thread
 
     // VALIDATION
     const normalizedContent = normalizeRawDraftJS(content)

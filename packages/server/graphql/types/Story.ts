@@ -1,15 +1,6 @@
-import {
-  GraphQLBoolean,
-  GraphQLFloat,
-  GraphQLID,
-  GraphQLNonNull,
-  GraphQLObjectType,
-  GraphQLString,
-  GraphQLList
-} from 'graphql'
+import {GraphQLID, GraphQLNonNull, GraphQLObjectType, GraphQLList} from 'graphql'
 import {GQLContext} from '../graphql'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
-import TeamMember from './TeamMember'
 import ThreadSource, {threadSourceFields} from './ThreadSource'
 import CommentorDetails from './CommentorDetails'
 
@@ -30,49 +21,21 @@ const Story = new GraphQLObjectType<any, GQLContext>({
         return commentors
       }
     },
-    content: {
-      type: new GraphQLNonNull(GraphQLString),
-      description: 'The body of the story'
-    },
-    createdAt: {
-      type: GraphQLISO8601Type,
-      description: 'The timestamp the story was created'
-    },
-    isActive: {
-      type: new GraphQLNonNull(GraphQLBoolean),
-      description: 'true if the story has not been processed or deleted',
-      resolve: ({isActive}) => !!isActive
-    },
-    sortOrder: {
-      type: new GraphQLNonNull(GraphQLFloat),
-      description: 'The sort order of the story in the list'
-    },
-    teamId: {
-      type: new GraphQLNonNull(GraphQLID),
-      description: '*The team for this story'
-    },
-    teamMemberId: {
-      type: new GraphQLNonNull(GraphQLID),
-      description: 'The teamMemberId that created this story'
-    },
     meetingId: {
       type: GraphQLID,
-      description: 'The meetingId of the story'
+      description: 'The meetingId of the agenda item'
     },
     serviceTaskId: {
       type: new GraphQLNonNull(GraphQLID),
       description: 'The stringified JSON used to fetch the task used by the service'
     },
+    teamId: {
+      type: new GraphQLNonNull(GraphQLID),
+      description: '*The team for this agenda item'
+    },
     updatedAt: {
       type: GraphQLISO8601Type,
       description: 'The timestamp the story was updated'
-    },
-    teamMember: {
-      type: new GraphQLNonNull(TeamMember),
-      description: 'The team member that created the story',
-      resolve: async ({teamMemberId}, _args, {dataLoader}) => {
-        return dataLoader.get('teamMembers').load(teamMemberId)
-      }
     }
   })
 })

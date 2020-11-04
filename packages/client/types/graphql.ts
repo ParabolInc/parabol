@@ -7136,6 +7136,7 @@ export interface ICreateUserPicturePutUrlOnMutationArguments {
 
 export interface IDeleteCommentOnMutationArguments {
   commentId: string;
+  meetingId: string;
 }
 
 export interface IDeleteTaskOnMutationArguments {
@@ -7655,6 +7656,7 @@ export interface IUpdateCommentContentOnMutationArguments {
    * A stringified draft-js document containing thoughts
    */
   content: string;
+  meetingId: string;
 }
 
 export interface IUpdateCreditCardOnMutationArguments {
@@ -8711,37 +8713,7 @@ export interface IStory {
   commentors: Array<ICommentorDetails> | null;
 
   /**
-   * The body of the story
-   */
-  content: string;
-
-  /**
-   * The timestamp the story was created
-   */
-  createdAt: any | null;
-
-  /**
-   * true if the story has not been processed or deleted
-   */
-  isActive: boolean;
-
-  /**
-   * The sort order of the story in the list
-   */
-  sortOrder: number;
-
-  /**
-   * *The team for this story
-   */
-  teamId: string;
-
-  /**
-   * The teamMemberId that created this story
-   */
-  teamMemberId: string;
-
-  /**
-   * The meetingId of the story
+   * The meetingId of the agenda item
    */
   meetingId: string | null;
 
@@ -8751,14 +8723,14 @@ export interface IStory {
   serviceTaskId: string;
 
   /**
+   * *The team for this agenda item
+   */
+  teamId: string;
+
+  /**
    * The timestamp the story was updated
    */
   updatedAt: any | null;
-
-  /**
-   * The team member that created the story
-   */
-  teamMember: ITeamMember;
 }
 
 export interface IThreadOnStoryArguments {

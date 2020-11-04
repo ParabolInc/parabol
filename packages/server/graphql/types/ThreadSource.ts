@@ -33,7 +33,6 @@ const ThreadSource = new GraphQLInterfaceType({
   description: 'The source of a discusson thread',
   fields: threadSourceFields,
   resolveType: (type) => {
-    // TODO: add type type
     const threadSourceType = getThreadSourceType(type)
     const lookup = {
       [ThreadSourceEnum.REFLECTION_GROUP]: RetroReflectionGroup,

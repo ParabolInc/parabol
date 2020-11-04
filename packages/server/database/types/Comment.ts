@@ -14,7 +14,7 @@ export interface CommentInput {
   content: string
   createdBy: string
   plaintextContent?: string // the plaintext version of content
-  threadId: string // reflectionGroupId or agendaItemId
+  threadId: string // reflectionGroupId or agendaItemId or storyId
   threadSortOrder: number
   threadSource: ThreadSourceEnum
 }
@@ -30,7 +30,7 @@ export default class Comment {
   content: string
   createdBy: string
   plaintextContent: string
-  threadId: string // reflectionGroupId or agendaItemId
+  threadId: string // reflectionGroupId or agendaItemId or storyId
   threadSortOrder: number
   threadSource: ThreadSourceEnum
 
