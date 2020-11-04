@@ -5,6 +5,28 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 5.23.0 2020-Nov-04
+
+### Added
+
+- Added `voteForPokerStory` mutation #4304
+- Add new Jira issues in poker scope phase #4282
+- Outlook email parser #4288
+- Added Sprint Poker template scale backend #4232
+- Parabol scope search #4274
+- Adds poker card deck #4278
+
+### Changed
+
+- Bumped `mediasoup-client` package to `^3.6.21` #4292
+- New meeting view UI controls updated #4275
+
+### Fixed
+
+- Fixed bug when copying retro templates #4294
+- Task migration hotfix #4302
+- Fixed summary topic order #4206
+
 ## 5.22.0 2020-Oct-13
 
 ### Added
@@ -15,12 +37,11 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 - Search Menu and Persisted Query Menu for Jira Scope Phase (#4256)
 - MediaSoup package (#4204)
 
-## Fixed
+### Fixed
 
 - Icebreaker Editing & flexbox issue for Safari (#4254)
 - Check-in Agenda State (#4242)
 - Removing template prompt bug (#4236)
-
 
 ## 5.21.0 2020-Oct-07
 
