@@ -28,54 +28,54 @@ const reqHeaders = (req: HttpRequest) => {
   return headers
 }
 
-const mergeFileIntoBody = (file, body) => {
-  if (body && file) {
-    body.payload.variables = {
-      ...body.payload.variables,
-      file
-    }
-  }
-  return body
-}
-
-const tryToResolve = (file, body, resolve) => {
-  if (file && body) {
-    mergeFileIntoBody(file, body)
-    resolve(body)
-  }
+const parseFile = (fileStream, contentType) => {
+  return new Promise((resolve, reject) => {
+    let buffer: Buffer
+    fileStream.on('data', (curBuf) => {
+      buffer = buffer ? Buffer.concat([buffer, curBuf]) : Buffer.concat([curBuf])
+    })
+    fileStream.on('end', () => {
+      const parsedFile = {
+        buffer,
+        contentType
+      } as FileUpload
+      resolve(parsedFile)
+    })
+    fileStream.on('limit', () => {
+      reject(new Error('File size too large'))
+    })
+  })
 }
 
 const parseFormBody: ParseFormBodySignature = (res, req) => {
-  // todo: better typing, validation, etc.
-  let parsedBody, file
-  return new Promise((resolve, reject) => {
-    const parser = new Busboy({
-      headers: reqHeaders(req),
-      limits: {
-        fields: 1,
-        files: 1,
-        fileSize: APP_MAX_AVATAR_FILE_SIZE
-      }
-    })
-    let buffer: Buffer
-    parser.on('file', (_0, fileStream, _1, _2, contentType) => {
-      fileStream.on('data', (curBuf) => {
-        buffer = buffer ? Buffer.concat([buffer, curBuf]) : Buffer.concat([curBuf])
-      })
-      fileStream.on('end', () => {
-        file = {
-          buffer,
-          contentType
-        } as FileUpload
-        tryToResolve(file, parsedBody, resolve)
-      })
-      fileStream.on('limit', () => { reject(new Error('File size too large')) })
-    })
-    parser.on('field', async (fieldname, val) => {
-      console.log('fieldname found!', fieldname)
+  const parser = new Busboy({
+    headers: reqHeaders(req),
+    limits: {
+      fields: 1,
+      files: 1,
+      fileSize: APP_MAX_AVATAR_FILE_SIZE
+    }
+  })
+  return new Promise((resolve) => {
+    let foundMessage, foundFile
+    parser.on('field', async (fieldname, value) => {
       if (fieldname !== 'body') return
-      parsedBody = (await JSON.parse(val)) as OutgoingMessage
-      tryToResolve(file, parsedBody, resolve)
+      foundMessage = JSON.parse(value) as Promise<OutgoingMessage>
+    })
+    parser.on('file', async (_0, fileStream, _1, _2, contentType) => {
+      foundFile = parseFile(fileStream, contentType)
+    })
+    parser.on('finish', async () => {
+      try {
+        const [parsedMessage, parsedFile] = await Promise.all([foundMessage, foundFile])
+        parsedMessage.payload.variables = {
+          ...parsedMessage.payload.variables,
+          file: parsedFile
+        }
+        resolve(parsedMessage)
+      } catch (e) {
+        resolve(null)
+      }
     })
     bodyStream(res).pipe(parser)
   })

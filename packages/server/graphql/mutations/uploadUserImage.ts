@@ -9,9 +9,9 @@ import getS3PutUrl from '../../utils/getS3PutUrl'
 import {s3PutObject} from '../../utils/s3'
 
 interface JsonifiedFile {
-  contentType: string,
+  contentType: string
   buffer: {
-    type: "Buffer",
+    type: 'Buffer'
     data: Array<number>
   }
 }
@@ -34,7 +34,6 @@ export default {
     }
   },
   resolve: async (_, {file}: {file: JsonifiedFile}, {authToken}) => {
-    console.log('in mutation resolver')
     // AUTH
     if (!isAuthenticated(authToken)) return standardError(new Error('Not authenticated'))
     const userId = getUserId(authToken)
