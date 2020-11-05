@@ -2,7 +2,12 @@ import {HttpResponse, HttpRequest} from 'uWebSockets.js'
 import Busboy from 'busboy'
 import {Readable} from 'stream'
 import {OutgoingMessage} from '@mattkrick/graphql-trebuchet-client'
-import {ResolvedFile} from './graphql/types/GraphQLFileType'
+import {APP_MAX_AVATAR_FILE_SIZE} from 'parabol-client/utils/constants'
+
+interface FileUpload {
+  contentType: string
+  buffer: Buffer
+}
 
 type ParseFormBodySignature = (res: HttpResponse, req: HttpRequest) => Promise<JSON | null>
 
@@ -43,26 +48,36 @@ const tryToResolve = (file, body, resolve) => {
 const parseFormBody: ParseFormBodySignature = (res, req) => {
   // todo: better typing, validation, etc.
   let parsedBody, file
-  return new Promise((resolve) => {
-    const busboy = new Busboy({
-      headers: reqHeaders(req)
+  return new Promise((resolve, reject) => {
+    const parser = new Busboy({
+      headers: reqHeaders(req),
+      limits: {
+        fields: 1,
+        files: 1,
+        fileSize: APP_MAX_AVATAR_FILE_SIZE
+      }
     })
-    let buffer
-    busboy.on('file', (_0, fileStream, _1, _2, mimeType) => {
+    let buffer: Buffer
+    parser.on('file', (_0, fileStream, _1, _2, contentType) => {
       fileStream.on('data', (curBuf) => {
         buffer = buffer ? Buffer.concat([buffer, curBuf]) : Buffer.concat([curBuf])
       })
       fileStream.on('end', () => {
-        file = {fileBuffer: buffer, contentType: mimeType} as ResolvedFile
+        file = {
+          buffer,
+          contentType
+        } as FileUpload
         tryToResolve(file, parsedBody, resolve)
       })
+      fileStream.on('limit', () => { reject(new Error('File size too large')) })
     })
-    busboy.on('field', async (fieldname, val) => {
+    parser.on('field', async (fieldname, val) => {
+      console.log('fieldname found!', fieldname)
       if (fieldname !== 'body') return
       parsedBody = (await JSON.parse(val)) as OutgoingMessage
       tryToResolve(file, parsedBody, resolve)
     })
-    bodyStream(res).pipe(busboy)
+    bodyStream(res).pipe(parser)
   })
 }
 

@@ -39,8 +39,9 @@ export function s3PutObject(
   acl = 'authenticated-read'
 ) {
   /*
-    https://action-files.parabol.co/development/store/User/google-oauth2|112359752147405816064/picture/yGb19Lzk9.png
+    https://action-files.parabol.co/development/store/User/google-oauth2|112359752147405816064/picture/Tgr-pXoyW.svg
    */
+  console.log('s3 putting object:', `https://action-files.parabol.co${url}`)
   s3CheckInitialized()
   contentType = contentType || mime.lookup(url) || 'application/octet-stream'
   const s3Params = {
