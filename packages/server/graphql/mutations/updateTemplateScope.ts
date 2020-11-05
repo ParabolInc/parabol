@@ -123,8 +123,7 @@ const updateTemplateScope = {
       const clonedDimensions = activeDimensions.map((dimension) => {
         return new TemplateDimension({
           ...dimension,
-          templateId: clonedTemplateId,
-          removedAt: null
+          templateId: clonedTemplateId!
         })
       })
       await r({
