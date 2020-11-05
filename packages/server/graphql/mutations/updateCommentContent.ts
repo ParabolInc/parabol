@@ -1,6 +1,7 @@
 import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import extractTextFromDraftString from 'parabol-client/utils/draftjs/extractTextFromDraftString'
+import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import normalizeRawDraftJS from 'parabol-client/validation/normalizeRawDraftJS'
 import getRethink from '../../database/rethinkDriver'
 import {getUserId} from '../../utils/authorization'
@@ -43,16 +44,15 @@ export default {
     if (!comment || !comment.isActive) {
       return standardError(new Error('comment not found'), {userId: viewerId})
     }
-
+    const meetingMemberId = toTeamMemberId(meetingId, viewerId)
+    const viewerMeetingMember = await dataLoader.get('meetingMembers').load(meetingMemberId)
+    if (!viewerMeetingMember) {
+      return {error: {message: `Not a member of the meeting`}}
+    }
     const {createdBy} = comment
     if (createdBy !== viewerId) {
       return {error: {message: 'Can only update your own comment'}}
     }
-
-    // const thread = await dataLoader
-    //   .get('threadSources')
-    //   .load({sourceId: threadId, type: threadSource})
-    // const {meetingId} = thread
 
     // VALIDATION
     const normalizedContent = normalizeRawDraftJS(content)

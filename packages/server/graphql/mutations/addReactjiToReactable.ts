@@ -71,7 +71,7 @@ const addReactjiToReactable = {
     const meetingMemberId = toTeamMemberId(meetingId, viewerId)
     const viewerMeetingMember = await dataLoader.get('meetingMembers').load(meetingMemberId)
     if (!viewerMeetingMember) {
-      return {error: {message: `Not a part of the meeting`}}
+      return {error: {message: `Not a member of the meeting`}}
     }
 
     // VALIDATION

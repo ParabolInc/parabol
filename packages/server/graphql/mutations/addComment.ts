@@ -1,4 +1,4 @@
-import {GraphQLNonNull} from 'graphql'
+import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {IAddCommentOnMutationArguments, NewMeetingPhaseTypeEnum} from 'parabol-client/types/graphql'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
@@ -20,11 +20,15 @@ const addComment = {
     comment: {
       type: GraphQLNonNull(AddCommentInput),
       description: 'A partial new comment'
+    },
+    meetingId: {
+      type: new GraphQLNonNull(GraphQLID),
+      description: 'The id of the meeting'
     }
   },
   resolve: async (
     _source,
-    {comment}: IAddCommentOnMutationArguments,
+    {comment, meetingId}: IAddCommentOnMutationArguments,
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) => {
     const r = await getRethink()
@@ -33,25 +37,20 @@ const addComment = {
     const subOptions = {mutatorId, operationId}
 
     //AUTH
-    const {meetingId, threadId, threadSource} = comment
+    const {threadId, threadSource} = comment
     const meetingMemberId = toTeamMemberId(meetingId, viewerId)
-
-    // const [meeting, viewerMeetingMember, threadError] = await Promise.all([
-    //   dataLoader.get('newMeetings').load(meetingId),
-    //   dataLoader.get('meetingMembers').load(meetingMemberId),
-    //   validateThreadableThreadSourceId(threadSource, threadId, meetingId, dataLoader)
-    // ])
-    const [meeting, viewerMeetingMember] = await Promise.all([
+    const [meeting, viewerMeetingMember, threadError] = await Promise.all([
       dataLoader.get('newMeetings').load(meetingId),
-      dataLoader.get('meetingMembers').load(meetingMemberId)
+      dataLoader.get('meetingMembers').load(meetingMemberId),
+      validateThreadableThreadSourceId(threadSource, threadId, meetingId, dataLoader)
     ])
 
     if (!viewerMeetingMember) {
       return {error: {message: 'Not a member of the meeting'}}
     }
-    // if (threadError) {
-    //   return {error: {message: threadError}}
-    // }
+    if (threadError) {
+      return {error: {message: threadError}}
+    }
 
     // VALIDATION
     const content = normalizeRawDraftJS(comment.content)

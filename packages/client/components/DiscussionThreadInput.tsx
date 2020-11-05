@@ -127,13 +127,12 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
     const comment = {
       content: rawContent,
       isAnonymous: isAnonymousComment,
-      meetingId,
       threadId: threadSourceId,
       threadParentId,
       threadSource: threadSource,
       threadSortOrder: getMaxSortOrder() + SORT_STEP + dndNoise()
     }
-    AddCommentMutation(atmosphere, {comment}, {onError, onCompleted})
+    AddCommentMutation(atmosphere, {comment, meetingId}, {onError, onCompleted})
     // move focus to end is very important! otherwise ghost chars appear
     setEditorState(
       EditorState.moveFocusToEnd(

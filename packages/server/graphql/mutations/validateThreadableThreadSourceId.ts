@@ -7,7 +7,7 @@ const validateThreadableThreadSourceId = async (
   meetingId: string | null | undefined,
   dataLoader: DataLoaderWorker
 ) => {
-  if (threadId) {
+  if (threadId && threadSource !== ThreadSourceEnum.STORY) {
     const thread = await dataLoader
       .get('threadSources')
       .load({sourceId: threadId, type: threadSource})

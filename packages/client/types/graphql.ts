@@ -6894,6 +6894,11 @@ export interface IAddCommentOnMutationArguments {
    * A partial new comment
    */
   comment: IAddCommentInput;
+
+  /**
+   * The id of the meeting
+   */
+  meetingId: string;
 }
 
 export interface IAddReactjiToReflectionOnMutationArguments {
@@ -7944,7 +7949,6 @@ export interface IAddCommentInput {
    * true if the comment should be anonymous
    */
   isAnonymous?: boolean | null;
-  meetingId: string;
 
   /**
    * foreign key for the reflection group or agenda item this was created from
