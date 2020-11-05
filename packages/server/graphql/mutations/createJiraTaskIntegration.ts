@@ -54,6 +54,11 @@ export default {
       return standardError(new Error('Team not found'), {userId: viewerId})
     }
 
+    if (!userId) {
+      // we should probably remove this constraint in the future
+      return {error: {message: 'Task must have assignee before it can be integrated with Jira'}}
+    }
+
     // VALIDATION
     if (task.integration) {
       return standardError(
@@ -62,15 +67,17 @@ export default {
       )
     }
 
-    const userAuths = await Promise.all([
-      dataLoader.get('atlassianAuthByUserId').load(viewerId),
-      dataLoader.get('atlassianAuthByUserId').load(userId)
+    const [viewerAuth, assigneeAuth] = await dataLoader.get('freshAtlassianAuth').loadMany([
+      {teamId, userId: viewerId},
+      {teamId, userId}
     ])
-    const [viewerAuth, assigneeAuth] = userAuths.map((auths) =>
-      auths.find((auth) => auth.teamId === teamId)
-    )
 
-    if (!assigneeAuth || !assigneeAuth.isActive) {
+    const validAssigneeAuth =
+      !(assigneeAuth instanceof Error) && assigneeAuth?.isActive ? assigneeAuth : null
+    const validViewerAuth =
+      !(viewerAuth instanceof Error) && viewerAuth?.isActive ? viewerAuth : null
+
+    if (!validAssigneeAuth) {
       return standardError(new Error('The assignee does not have access to Jira'), {
         userId: viewerId
       })
@@ -91,17 +98,14 @@ export default {
       blocks.length === 0 ? ContentState.createFromText('') : convertFromRaw(rawContent)
     let markdown = stateToMarkdown(contentState)
 
-    const isViewerAllowed = viewerAuth ? viewerAuth.isActive : false
-    if (!isViewerAllowed) {
+    // const isViewerAllowed = viewerAuth && !(viewerAuth instanceof Error) ? viewerAuth.isActive : false
+    if (!validViewerAuth) {
       const creator = await db.read('User', viewerId)
       const creatorName = creator.preferredName
       markdown = `${markdown}\n\n_Added by ${creatorName}_`
     }
 
-    const tokenUserId = isViewerAllowed ? viewerId : userId
-    const accessToken = await dataLoader
-      .get('freshAtlassianAccessToken')
-      .load({teamId, userId: tokenUserId})
+    const {accessToken} = validViewerAuth || validAssigneeAuth
     const manager = new AtlassianServerManager(accessToken)
 
     const [sites, issueMetaRes, description] = await Promise.all([
@@ -128,7 +132,7 @@ export default {
       description,
       // ERROR: Field 'reporter' cannot be set. It is not on the appropriate screen, or unknown.
       assignee: {
-        id: assigneeAuth.accountId
+        id: validAssigneeAuth.accountId
       },
       issuetype: {
         id: bestType.id

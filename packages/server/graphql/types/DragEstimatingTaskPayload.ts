@@ -1,5 +1,7 @@
 import {GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql'
+import {NewMeetingPhaseTypeEnum} from '../../../client/types/graphql'
 import {GQLContext} from '../graphql'
+import resolveStage from '../resolvers/resolveStage'
 import EstimateStage from './EstimateStage'
 import makeMutationPayload from './makeMutationPayload'
 import PokerMeeting from './PokerMeeting'
@@ -21,13 +23,7 @@ export const DragEstimatingTaskSuccess = new GraphQLObjectType<any, GQLContext>(
     },
     stage: {
       type: GraphQLNonNull(EstimateStage),
-      resolve: async ({meetingId, stageId}, _args, {dataLoader}) => {
-        const meeting = await dataLoader.get('newMeetings').load(meetingId)
-        const {phases} = meeting
-        const estimatePhase = phases.find((phase) => phase.phaseType === 'ESTIMATE')
-        const {stages} = estimatePhase
-        return stages.find((stage) => stage.id === stageId)
-      }
+      resolve: resolveStage(NewMeetingPhaseTypeEnum.ESTIMATE)
     }
   })
 })

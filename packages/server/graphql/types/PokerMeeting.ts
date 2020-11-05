@@ -1,5 +1,6 @@
 import {GraphQLID, GraphQLInt, GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
+import {MeetingTypeEnum} from '../../../client/types/graphql'
 import {getUserId} from '../../utils/authorization'
 import {GQLContext} from '../graphql'
 import NewMeeting, {newMeetingFields} from './NewMeeting'
@@ -33,7 +34,9 @@ const PokerMeeting = new GraphQLObjectType<any, GQLContext>({
       type: GraphQLNonNull(PokerMeetingSettings),
       description: 'The settings that govern the Poker meeting',
       resolve: async ({teamId}, _args, {dataLoader}) => {
-        return dataLoader.get('meetingSettingsByType').load({teamId, meetingType: 'poker'})
+        return dataLoader
+          .get('meetingSettingsByType')
+          .load({teamId, meetingType: MeetingTypeEnum.poker})
       }
     },
     // tasks: {

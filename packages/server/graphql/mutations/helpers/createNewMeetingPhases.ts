@@ -16,7 +16,6 @@ import CheckInPhase from '../../../database/types/CheckInPhase'
 import DiscussPhase from '../../../database/types/DiscussPhase'
 import EstimatePhase from '../../../database/types/EstimatePhase'
 import GenericMeetingPhase from '../../../database/types/GenericMeetingPhase'
-import MeetingSettingsPoker from '../../../database/types/MeetingSettingsPoker'
 import MeetingSettingsRetrospective from '../../../database/types/MeetingSettingsRetrospective'
 import ReflectPhase from '../../../database/types/ReflectPhase'
 import UpdatesPhase from '../../../database/types/UpdatesPhase'
@@ -74,14 +73,12 @@ const createNewMeetingPhases = async (
   const r = await getRethink()
   const now = new Date()
   const [meetingSettings, stageDurations, teamMembers] = await Promise.all([
-    dataLoader.get('meetingSettingsByType').load({teamId, meetingType}) as
-      | MeetingSettingsRetrospective
-      | MeetingSettingsPoker,
+    dataLoader.get('meetingSettingsByType').load({teamId, meetingType}),
     getPastStageDurations(teamId),
     dataLoader.get('teamMembersByTeamId').load(teamId)
   ])
   const teamMemberIds = getShuffledArr(teamMembers.map(({id}) => id))
-  const {phaseTypes, selectedTemplateId} = meetingSettings
+  const {phaseTypes} = meetingSettings
   const phases = (await Promise.all(
     phaseTypes.map(async (phaseType) => {
       const durations = stageDurations[phaseType]
@@ -89,7 +86,7 @@ const createNewMeetingPhases = async (
         case CHECKIN:
           return new CheckInPhase(teamId, meetingCount, teamMemberIds)
         case REFLECT:
-          // TODO REMOVE ME AFTER v5.13.0
+          const {selectedTemplateId} = meetingSettings as MeetingSettingsRetrospective
           await r
             .table('MeetingTemplate')
             .get(selectedTemplateId)

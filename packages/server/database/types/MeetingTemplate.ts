@@ -1,9 +1,10 @@
 import shortid from 'shortid'
+import {SharingScopeEnum} from '../../../client/types/graphql'
 
 interface Input {
   name: string
   teamId: string
-  scope?: string
+  scope?: SharingScopeEnum
   orgId: string
   parentTemplateId?: string
   lastUsedAt?: Date
@@ -19,7 +20,7 @@ export default class MeetingTemplate {
   name: string
   teamId: string
   lastUsedAt: Date | undefined
-  scope: string
+  scope: SharingScopeEnum
   orgId: string
   parentTemplateId?: string
   type: string
@@ -34,7 +35,7 @@ export default class MeetingTemplate {
     this.name = name
     this.teamId = teamId
     this.updatedAt = now
-    this.scope = scope || 'TEAM'
+    this.scope = scope || SharingScopeEnum.TEAM
     this.orgId = orgId
     this.parentTemplateId = parentTemplateId
     this.lastUsedAt = lastUsedAt ?? undefined
