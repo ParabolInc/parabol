@@ -3,6 +3,7 @@
 
 import ms from 'ms'
 import {MeetingTypeEnum} from 'parabol-client/types/graphql'
+import {SharingScopeEnum} from '../../client/types/graphql'
 import getRethink from '../database/rethinkDriver'
 
 const customRedisQueries = {
@@ -31,7 +32,7 @@ const customRedisQueries = {
           type === MeetingTypeEnum.poker ? MeetingTypeEnum.poker : MeetingTypeEnum.retrospective
         return r
           .table('MeetingTemplate')
-          .filter({scope: 'PUBLIC', isActive: true, type: templateType})
+          .filter({scope: SharingScopeEnum.PUBLIC, isActive: true, type: templateType})
           .limit(1000)
           .run()
       })

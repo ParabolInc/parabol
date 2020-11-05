@@ -52,7 +52,7 @@ export default {
     const phases = await createNewMeetingPhases(teamId, meetingCount, meetingType, dataLoader)
     const meetingSettings = (await dataLoader
       .get('meetingSettingsByType')
-      .load({teamId, meetingType: 'poker'})) as MeetingSettingsPoker
+      .load({teamId, meetingType: MeetingTypeEnum.poker})) as MeetingSettingsPoker
     const {selectedTemplateId} = meetingSettings
     const dimensions = await dataLoader.get('dimensionsByTemplateId').load(selectedTemplateId)
     const dimensionScaleMapping = dimensions.map(
@@ -84,7 +84,7 @@ export default {
     const otherActiveMeeting = newActiveMeetings.find((activeMeeting) => {
       const {createdAt, id} = activeMeeting
       if (id === meetingId || activeMeeting.meetingType !== 'poker') return false
-      return createdAt > Date.now() - DUPLICATE_THRESHOLD
+      return createdAt.getTime() > Date.now() - DUPLICATE_THRESHOLD
     })
     if (otherActiveMeeting) {
       await r

@@ -9,6 +9,7 @@ import {
 } from 'graphql'
 import ms from 'ms'
 import getRethink from '../../database/rethinkDriver'
+import AtlassianAuth from '../../database/types/AtlassianAuth'
 import AtlassianServerManager from '../../utils/AtlassianServerManager'
 import {getUserId} from '../../utils/authorization'
 import standardError from '../../utils/standardError'
@@ -148,12 +149,12 @@ const AtlassianIntegration = new GraphQLObjectType<any, GQLContext>({
       type: GraphQLNonNull(GraphQLList(GraphQLNonNull(JiraSearchQuery))),
       description:
         'the list of suggested search queries, sorted by most recent. Guaranteed to be < 60 days old',
-      resolve: async ({id: atlassianAuthId, jiraSearchQueries}) => {
+      resolve: async ({id: atlassianAuthId, jiraSearchQueries}: AtlassianAuth) => {
         const expirationThresh = ms('60d')
-        const thresh = Date.now() - expirationThresh
+        const thresh = new Date(Date.now() - expirationThresh)
         const searchQueries = jiraSearchQueries || []
         const unexpiredQueries = searchQueries.filter((query) => query.lastUsedAt > thresh)
-        if (unexpiredQueries.length < searchQueries) {
+        if (unexpiredQueries.length < searchQueries.length) {
           const r = await getRethink()
           await r
             .table('AtlassianAuth')

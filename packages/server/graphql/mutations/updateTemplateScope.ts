@@ -88,7 +88,7 @@ const updateTemplateScope = {
       const clonedPrompts = activePrompts.map((prompt) => {
         return new RetrospectivePrompt({
           ...prompt,
-          templateId: clonedTemplateId,
+          templateId: clonedTemplateId!,
           parentPromptId: prompt.id,
           removedAt: null
         })

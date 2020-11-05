@@ -6593,7 +6593,7 @@ export interface ISuggestedIntegrationJira {
   /**
    * The full project document fetched from Jira
    */
-  remoteProject: IJiraRemoteProject;
+  remoteProject: IJiraRemoteProject | null;
 }
 
 /**

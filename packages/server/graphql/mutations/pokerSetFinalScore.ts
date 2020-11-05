@@ -102,12 +102,11 @@ const pokerSetFinalScore = {
     const dimension = await dataLoader.get('templateDimensions').load(dimensionId)
     const {name: dimensionName, scaleId} = dimension
     if (service === TaskServiceEnum.jira) {
-      const accessToken = await dataLoader
-        .get('freshAtlassianAuth')
-        .load({teamId, userId: creatorUserId})
-      if (!accessToken) {
+      const auth = await dataLoader.get('freshAtlassianAuth').load({teamId, userId: creatorUserId})
+      if (!auth) {
         return {error: {message: 'User no longer has access to Atlassian'}}
       }
+      const {accessToken} = auth
       const [cloudId, issueKey] = serviceTaskId.split(':')
       const manager = new AtlassianServerManager(accessToken)
       await manager.updateStoryPoints(cloudId, issueKey, finalScore, dimensionName)

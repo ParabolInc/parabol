@@ -154,15 +154,12 @@ export const resolveJiraIssue = async (source, _args, {authToken, dataLoader}) =
     ? serviceTaskId.split(':')
     : [source.cloudId, source.key]
   const viewerId = getUserId(authToken)
-  // we need the access token of a person on this team
-  const teamAuths = await dataLoader.get('atlassianAuthByTeamId').load(teamId)
-  const [teamAuth] = teamAuths
-  if (!teamAuth) {
-    sendToSentry(new Error('No atlassian access token exists for team'), {userId: viewerId})
+  const auth = await dataLoader.get('freshAtlassianAuth').load({teamId, userId: viewerId})
+  if (!auth) {
+    sendToSentry(new Error('No atlassian access token exists for team member'), {userId: viewerId})
     return null
   }
-  const {userId} = teamAuth
-  const accessToken = await dataLoader.get('freshAtlassianAccessToken').load({teamId, userId})
+  const {accessToken} = auth
   const manager = new AtlassianServerManager(accessToken)
   const issueRes = await manager.getIssue(cloudId, issueKey)
   if ('message' in issueRes) {
