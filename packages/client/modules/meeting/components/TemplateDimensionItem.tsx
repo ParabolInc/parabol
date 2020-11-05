@@ -46,13 +46,15 @@ const RemoveDimensionIcon = styled(Icon)<StyledProps>(({isHover, enabled}) => ({
   color: PALETTE.TEXT_GRAY,
   cursor: 'pointer',
   display: 'block',
-  fontSize: ICON_SIZE.MD24,
+  fontSize: ICON_SIZE.MD18,
+  height: ICON_SIZE.MD24,
   lineHeight: '24px',
   marginLeft: 'auto',
   padding: 0,
   opacity: isHover ? 1 : 0,
   textAlign: 'center',
-  visibility: enabled ? 'visible' : 'hidden'
+  visibility: enabled ? 'visible' : 'hidden',
+  width: ICON_SIZE.MD24
 }))
 
 const DimensionAndDescription = styled('div')({
