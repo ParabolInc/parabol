@@ -1,15 +1,20 @@
 import {GraphQLID, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
+import {getHandleStorageKey} from 'relay-runtime/lib/store/RelayStoreUtils'
 import connectionDefinitions from '../connectionDefinitions'
 import {GQLContext} from '../graphql'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import GraphQLURLType from './GraphQLURLType'
 import PageInfoDateCursor from './PageInfoDateCursor'
 import StandardMutationError from './StandardMutationError'
+import Story, {storyFields} from './Story'
+import ThreadSource, {threadSourceFields} from './ThreadSource'
 
 const JiraIssue = new GraphQLObjectType<any, GQLContext>({
   name: 'JiraIssue',
   description: 'The Jira Issue that comes direct from Jira',
+  interfaces: () => [Story, ThreadSource],
   fields: () => ({
+    ...storyFields(),
     id: {
       type: GraphQLNonNull(GraphQLID),
       description: 'shortid',

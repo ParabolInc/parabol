@@ -6,6 +6,8 @@ import RetroReflectionGroup from './RetroReflectionGroup'
 import AgendaItem from './AgendaItem'
 import Story from './Story'
 import getThreadSourceType from './getThreadSourceType'
+import JiraIssue from './JiraIssue'
+import Task from './Task'
 
 export const threadSourceFields = () => ({
   id: {
@@ -33,11 +35,14 @@ const ThreadSource = new GraphQLInterfaceType({
   description: 'The source of a discusson thread',
   fields: threadSourceFields,
   resolveType: (type) => {
+    console.log('TS -=-=-=- type', type)
     const threadSourceType = getThreadSourceType(type)
     const lookup = {
       [ThreadSourceEnum.REFLECTION_GROUP]: RetroReflectionGroup,
       [ThreadSourceEnum.AGENDA_ITEM]: AgendaItem,
       [ThreadSourceEnum.STORY]: Story
+      // [ThreadSourceEnum.TASK]: Task,
+      // [ThreadSourceEnum.JIRA_ISSUE]: JiraIssue
     }
     return lookup[threadSourceType]
   }

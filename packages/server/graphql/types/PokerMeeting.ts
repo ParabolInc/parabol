@@ -1,5 +1,7 @@
 import {GraphQLID, GraphQLInt, GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
+import AtlassianServerManager from '../../utils/AtlassianServerManager'
+import sendToSentry from '../../utils/sendToSentry'
 import {getUserId} from '../../utils/authorization'
 import {GQLContext} from '../graphql'
 import NewMeeting, {newMeetingFields} from './NewMeeting'
@@ -45,9 +47,13 @@ const PokerMeeting = new GraphQLObjectType<any, GQLContext>({
           type: GraphQLNonNull(GraphQLID)
         }
       },
-      resolve: async (__source, {storyId}) => {
+      resolve: async (_source, {storyId}) => {
+        const test = storyId.split(':')
+        const [cloudId, key] = test
         return {
-          id: storyId
+          id: storyId,
+          cloudId,
+          key
         }
       }
     },

@@ -12,18 +12,21 @@ import {GQLContext} from '../graphql'
 import AgendaItem from './AgendaItem'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import PageInfoDateCursor from './PageInfoDateCursor'
+import Story, {storyFields} from './Story'
 import TaskEditorDetails from './TaskEditorDetails'
 import TaskIntegration from './TaskIntegration'
 import TaskStatusEnum from './TaskStatusEnum'
 import Team from './Team'
 import Threadable, {threadableFields} from './Threadable'
+import ThreadSource, {threadSourceFields} from './ThreadSource'
 
 const Task = new GraphQLObjectType<any, GQLContext>({
   name: 'Task',
   description: 'A long-term task shared across the team, assigned to a single user ',
-  interfaces: () => [Threadable],
+  interfaces: () => [Threadable, Story],
   fields: () => ({
     ...threadableFields(),
+    ...storyFields(),
     agendaItem: {
       type: AgendaItem,
       description: 'The agenda item that the task was created in, if any',

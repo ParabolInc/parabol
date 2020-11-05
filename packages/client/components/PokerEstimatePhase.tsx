@@ -109,6 +109,7 @@ graphql`
   fragment PokerEstimatePhaseStage on EstimateStage {
     ... on EstimateStageJira {
       __typename
+      serviceTaskId
       ...PokerEstimateHeaderCardJira_stage
     }
   }

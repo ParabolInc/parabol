@@ -34,7 +34,7 @@ const resovleThread = async ({id: threadSourceId}, _args, {dataLoader}) => {
     filteredThreadables.push(threadable)
     if (replies) {
       replies.sort((a, b) => (a.threadSortOrder < b.threadSortOrder ? -1 : 1))
-        ; (threadable as any).replies = replies
+      ;(threadable as any).replies = replies
     }
   })
 
@@ -44,6 +44,14 @@ const resovleThread = async ({id: threadSourceId}, _args, {dataLoader}) => {
   }))
 
   const lastEdge = edges[edges.length - 1]
+
+  const test = {
+    edges,
+    pageInfo: {
+      endCursor: lastEdge?.cursor,
+      hasNextPage: false
+    }
+  }
   return {
     edges,
     pageInfo: {
