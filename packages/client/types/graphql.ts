@@ -687,7 +687,6 @@ export interface IJiraIssue {
    * the comments and tasks created from the discussion
    */
   thread: IThreadableConnection;
-  teamId: string;
 
   /**
    * A list of users currently commenting
@@ -759,7 +758,6 @@ export interface IStory {
    * the comments and tasks created from the discussion
    */
   thread: IThreadableConnection;
-  teamId: string;
 
   /**
    * A list of users currently commenting
@@ -1418,11 +1416,6 @@ export interface ITask {
   thread: IThreadableConnection;
 
   /**
-   * The id of the team (indexed). Needed for subscribing to archived tasks
-   */
-  teamId: string;
-
-  /**
    * A list of users currently commenting
    */
   commentors: Array<ICommentorDetails> | null;
@@ -1469,6 +1462,11 @@ export interface ITask {
   tags: Array<string>;
 
   /**
+   * The id of the team (indexed). Needed for subscribing to archived tasks
+   */
+  teamId: string;
+
+  /**
    * The team this task belongs to
    */
   team: ITeam;
@@ -1499,8 +1497,6 @@ export interface IThreadOnTaskArguments {
 export const enum ThreadSourceEnum {
   AGENDA_ITEM = 'AGENDA_ITEM',
   REFLECTION_GROUP = 'REFLECTION_GROUP',
-  TASK = 'TASK',
-  JIRA_ISSUE = 'JIRA_ISSUE',
   STORY = 'STORY'
 }
 

@@ -6,6 +6,7 @@ import {GQLContext} from '../graphql'
 import EstimateStage, {estimateStageFields} from './EstimateStage'
 import JiraIssue from './JiraIssue'
 import NewMeetingStage from './NewMeetingStage'
+import getJiraCloudIdAndKey from '../../utils/getJiraCloudIdAndKey'
 
 const EstimateStageJira = new GraphQLObjectType<any, GQLContext>({
   name: 'EstimateStageJira',
@@ -19,7 +20,7 @@ const EstimateStageJira = new GraphQLObjectType<any, GQLContext>({
       description: 'the issue straight from Jira',
       resolve: async ({teamId, serviceTaskId}, _args, {authToken, dataLoader}) => {
         const viewerId = getUserId(authToken)
-        const [cloudId, issueKey] = serviceTaskId.split(':')
+        const [cloudId, issueKey] = getJiraCloudIdAndKey(serviceTaskId)
         // we need the access token of a person on this team
         const teamAuths = await dataLoader.get('atlassianAuthByTeamId').load(teamId)
         const [teamAuth] = teamAuths

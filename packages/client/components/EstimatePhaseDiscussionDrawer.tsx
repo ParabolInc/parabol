@@ -101,10 +101,10 @@ interface Props {
 
 const EstimatePhaseDiscussionDrawer = (props: Props) => {
   const {isDesktop, meeting} = props
-  const {id: meetingId, endedAt, localStage, teamId, viewerMeetingMember} = meeting
+  const {id: meetingId, endedAt, localStage, viewerMeetingMember} = meeting
   const {user} = viewerMeetingMember
   const {picture} = user
-  const {__id: storyId, serviceTaskId} = localStage
+  const {serviceTaskId} = localStage
   const [isShowingVideo, setIsShowingVideo] = useState(true)
   const ref = useRef<HTMLDivElement>(null)
   const meetingControlBarBottom = 16
@@ -133,7 +133,7 @@ const EstimatePhaseDiscussionDrawer = (props: Props) => {
         </ShowVideoButton>
       </DiscussingGroup>
       <ThreadColumn>
-        <DiscussionThreadRoot meetingId={meetingId} threadSourceId={serviceTaskId} />
+        <DiscussionThreadRoot meetingId={meetingId} threadSourceId={serviceTaskId!} />
       </ThreadColumn>
     </Drawer>
   )
@@ -142,7 +142,6 @@ const EstimatePhaseDiscussionDrawer = (props: Props) => {
 graphql`
   fragment EstimatePhaseDiscussionDrawerStage on EstimateStage {
     ... on EstimateStageJira {
-      __id
       serviceTaskId
     }
   }
@@ -155,7 +154,6 @@ export default createFragmentContainer(EstimatePhaseDiscussionDrawer, {
       localStage {
         ...EstimatePhaseDiscussionDrawerStage @relay(mask: false)
       }
-      teamId
       viewerMeetingMember {
         user {
           picture

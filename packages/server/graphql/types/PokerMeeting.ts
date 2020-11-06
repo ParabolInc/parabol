@@ -1,13 +1,14 @@
 import {GraphQLID, GraphQLInt, GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
-import AtlassianServerManager from '../../utils/AtlassianServerManager'
-import sendToSentry from '../../utils/sendToSentry'
 import {getUserId} from '../../utils/authorization'
 import {GQLContext} from '../graphql'
 import NewMeeting, {newMeetingFields} from './NewMeeting'
 import PokerMeetingMember from './PokerMeetingMember'
 import PokerMeetingSettings from './PokerMeetingSettings'
 import Story from './Story'
+import verifyJiraId from '../../utils/verifyJiraId'
+import {StoryTypeEnum} from './StoryTypeEnum'
+import getJiraCloudIdAndKey from '../../utils/getJiraCloudIdAndKey'
 
 const PokerMeeting = new GraphQLObjectType<any, GQLContext>({
   name: 'PokerMeeting',
@@ -47,13 +48,20 @@ const PokerMeeting = new GraphQLObjectType<any, GQLContext>({
           type: GraphQLNonNull(GraphQLID)
         }
       },
-      resolve: async (_source, {storyId}) => {
-        const test = storyId.split(':')
-        const [cloudId, key] = test
+      resolve: async ({teamId, facilitatorUserId}, {storyId}, {dataLoader}) => {
+        const isValidJiraId = await verifyJiraId(storyId, teamId, facilitatorUserId, dataLoader)
+        if (isValidJiraId) {
+          const [cloudId, key] = getJiraCloudIdAndKey(storyId)
+          return {
+            id: storyId,
+            cloudId,
+            key,
+            type: StoryTypeEnum.JIRA_ISSUE
+          }
+        }
         return {
           id: storyId,
-          cloudId,
-          key
+          type: StoryTypeEnum.TASK
         }
       }
     },
