@@ -52,6 +52,11 @@ const makePathnames = (dirname: string, pathnames: PathNames, prefix: string) =>
     }
   })
 }
+
+export const getPathnamesKeyForStaticFile = (fullPath: string): string => {
+  return fullPath.slice('/static/'.length)
+}
+
 export default class StaticServer {
   pathnames: PathNames = {}
   cachedFileSet: Set<string>
@@ -71,7 +76,15 @@ export default class StaticServer {
       }
     })
   }
+  whiteListStaticFile(fullPath: string): void {
+    console.log('white listing!')
+    const key = getPathnamesKeyForStaticFile(fullPath)
+    if (key in this.pathnames) return
+    const fsAbsLocation = path.join(process.cwd(), fullPath)
+    this.pathnames[key] = fsAbsLocation
+  }
   getMeta(filename: string) {
+    filename = decodeURI(filename)
     const existingMeta = this.meta[filename]
     if (existingMeta) return existingMeta
     const pathname = this.pathnames[filename]

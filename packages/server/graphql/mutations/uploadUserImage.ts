@@ -6,6 +6,7 @@ import GraphQLFileType from '../types/GraphQLFileType'
 import validateAvatarUpload from '../../utils/validateAvatarUpload'
 import shortid from 'shortid'
 import getFileStoreManager from '../../fileStorage/getFileStoreManager'
+import FileStoreManager from '../../fileStorage/FileStoreManager'
 
 export default {
   type: GraphQLBoolean, // todo: return payload
@@ -50,13 +51,16 @@ export default {
 
     // RESOLUTION
     const fileName = shortid.generate()
-    const location = await getFileStoreManager().putFile({
+    const userAvatarPath = FileStoreManager.getUserAvatarPath({
+      userId,
       fileName,
-      ext,
-      buffer: validBuffer,
-      userId
+      ext
     })
-    console.log('file location:', location)
+    const publicLocation = await getFileStoreManager().putFile({
+      partialPath: userAvatarPath,
+      buffer: validBuffer
+    })
+    console.log('file location:', publicLocation)
     /*
     todos: 
       - create abstract fileStorage sendFile handler

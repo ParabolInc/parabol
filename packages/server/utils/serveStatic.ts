@@ -23,7 +23,7 @@ const staticPaths = {
   [path.join(PROJECT_ROOT, 'dev', 'dll')]: !PROD
 }
 const filesToCache = ['sw.js', 'favicon.ico', 'manifest.json']
-const staticServer = new StaticServer({staticPaths, filesToCache})
+export const staticServer = new StaticServer({staticPaths, filesToCache})
 
 const serveStatic = (res: HttpResponse, fileName: string, sendCompressed?: boolean) => {
   const meta = staticServer.getMeta(fileName)
