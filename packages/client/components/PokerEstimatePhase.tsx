@@ -60,8 +60,8 @@ const ShowDiscussionButton = styled(PlainButton)({
 const PokerEstimatePhase = (props: Props) => {
   const {avatarGroup, toggleSidebar, meeting} = props
   const {localStage, endedAt, showSidebar} = meeting
-  const isDesktop = useBreakpoint(Breakpoint.NEW_MEETING_GRID)
-  const {isOpen: isDrawerOpen, toggle: toggleDrawer} = useSidebar()
+  const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
+  const {isOpen, toggle: toggleDrawer} = useSidebar(showSidebar)
   if (!localStage) return null
   const {__typename} = localStage
 
@@ -97,7 +97,7 @@ const PokerEstimatePhase = (props: Props) => {
       {isDesktop ? (
         <EstimatePhaseDiscussionDrawer isDesktop={isDesktop} meeting={meeting} />
       ) : (
-        <SwipeableDashSidebar isOpen={isDrawerOpen} isRightSidebar onToggle={toggleDrawer}>
+        <SwipeableDashSidebar isOpen={isOpen} isRightSidebar onToggle={toggleDrawer}>
           <EstimatePhaseDiscussionDrawer isDesktop={isDesktop} meeting={meeting} />
         </SwipeableDashSidebar>
       )}

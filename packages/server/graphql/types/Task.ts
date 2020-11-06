@@ -18,7 +18,6 @@ import TaskIntegration from './TaskIntegration'
 import TaskStatusEnum from './TaskStatusEnum'
 import Team from './Team'
 import Threadable, {threadableFields} from './Threadable'
-import ThreadSource, {threadSourceFields} from './ThreadSource'
 
 const Task = new GraphQLObjectType<any, GQLContext>({
   name: 'Task',

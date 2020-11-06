@@ -114,8 +114,7 @@ const NewMeeting = (props: Props) => {
   const {teamId, viewer, retry} = props
   const {teams, featureFlags} = viewer
   const {poker} = featureFlags
-  // const newMeetingOrder = poker ? POKER_MEETING_ORDER : NEW_MEETING_ORDER
-  const newMeetingOrder = true ? POKER_MEETING_ORDER : NEW_MEETING_ORDER
+  const newMeetingOrder = poker ? POKER_MEETING_ORDER : NEW_MEETING_ORDER
 
   useStoreQueryRetry(retry)
   const {history} = useRouter()

@@ -1,13 +1,10 @@
 import React from 'react'
-import graphql from 'babel-plugin-relay/macro'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import DeleteCommentMutation from '~/mutations/DeleteCommentMutation'
 import {MenuProps} from '../hooks/useMenu'
 import Menu from './Menu'
 import MenuItem from './MenuItem'
 import MenuItemWithIcon from './MenuItemWithIcon'
-import {createFragmentContainer} from 'react-relay'
-import {CommentAuthorOptionsDropdown_meeting} from '~/__generated__/CommentAuthorOptionsDropdown_meeting.graphql'
 
 interface Props {
   menuProps: MenuProps

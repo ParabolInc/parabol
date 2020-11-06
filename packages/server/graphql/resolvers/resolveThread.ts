@@ -44,14 +44,6 @@ const resovleThread = async ({id: threadSourceId}, _args, {dataLoader}) => {
   }))
 
   const lastEdge = edges[edges.length - 1]
-
-  const test = {
-    edges,
-    pageInfo: {
-      endCursor: lastEdge?.cursor,
-      hasNextPage: false
-    }
-  }
   return {
     edges,
     pageInfo: {
