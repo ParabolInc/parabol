@@ -5,6 +5,7 @@ import SwipeableViews from 'react-swipeable-views'
 import useBreakpoint from '~/hooks/useBreakpoint'
 import {Breakpoint} from '~/types/constEnums'
 import PokerCardDeck from './PokerCardDeck'
+import EstimatePhaseDimensionColumn from './EstimatePhaseDimensionColumn'
 
 const EstimateArea = styled('div')({
   display: 'flex',
@@ -20,7 +21,7 @@ const StepperDots = styled('div')({
 })
 
 const StepperDot = styled('div')<{isActive: boolean}>(({isActive}) => ({
-  backgroundColor: isActive ? PALETTE.STATUS_ACTIVE : PALETTE.TEXT_GRAY,
+  backgroundColor: isActive ? PALETTE.TEXT_PURPLE : PALETTE.TEXT_GRAY,
   borderRadius: '50%',
   height: 8,
   margin: '0 2px',
@@ -78,7 +79,9 @@ const EstimatePhaseArea = () => {
         style={innerStyle(isDesktop)}
       >
         {dummyEstimateItems.map((_, idx) => (
-          <SwipableEstimateItem key={idx} />
+          <SwipableEstimateItem key={idx}>
+            <EstimatePhaseDimensionColumn />
+          </SwipableEstimateItem>
         ))}
       </SwipeableViews>
 

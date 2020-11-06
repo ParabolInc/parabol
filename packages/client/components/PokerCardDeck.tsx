@@ -22,10 +22,11 @@ interface Props {
 const PokerCardDeck = (props: Props) => {
   const {} = props
   const cards = [
-    {label: '1', value: 1, color: PALETTE.BACKGROUND_RED},
-    {label: '2', value: 2, color: PALETTE.BACKGROUND_BLUE},
-    {label: '3', value: 3, color: PALETTE.BACKGROUND_GREEN},
-    {label: '4', value: 4, color: PALETTE.BACKGROUND_YELLOW},
+    {label: '1', value: 1, color: PALETTE.PROMPT_BLUE},
+    {label: '2', value: 2, color: PALETTE.PROMPT_BLUE},
+    {label: '3', value: 3, color: PALETTE.PROMPT_BLUE},
+    {label: '4', value: 4, color: PALETTE.PROMPT_BLUE},
+    {label: '5', value: 5, color: PALETTE.PROMPT_BLUE}
   ]
   const totalCards = cards.length
   const [selectedIdx, setSelectedIdx] = useState<number | undefined>()
