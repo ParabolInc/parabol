@@ -6,7 +6,7 @@ import NewMeeting, {newMeetingFields} from './NewMeeting'
 import PokerMeetingMember from './PokerMeetingMember'
 import PokerMeetingSettings from './PokerMeetingSettings'
 import Story from './Story'
-import verifyJiraId from '../../utils/verifyJiraId'
+import isValidJiraId from '../../utils/isValidJiraId'
 import {StoryTypeEnum} from './StoryTypeEnum'
 import getJiraCloudIdAndKey from '../../utils/getJiraCloudIdAndKey'
 
@@ -49,8 +49,9 @@ const PokerMeeting = new GraphQLObjectType<any, GQLContext>({
         }
       },
       resolve: async ({teamId, facilitatorUserId}, {storyId}, {dataLoader}) => {
-        const isValidJiraId = await verifyJiraId(storyId, teamId, facilitatorUserId, dataLoader)
-        if (isValidJiraId) {
+        const isJiraId = await isValidJiraId(storyId, teamId, facilitatorUserId, dataLoader)
+
+        if (isJiraId) {
           const [cloudId, key] = getJiraCloudIdAndKey(storyId)
           return {
             id: storyId,

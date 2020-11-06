@@ -2,7 +2,7 @@ import AtlassianServerManager from './AtlassianServerManager'
 import getJiraCloudIdAndKey from './getJiraCloudIdAndKey'
 import {DataLoaderWorker} from '../graphql/graphql'
 
-const verifyJiraId = async (
+const isValidJiraId = async (
   jiraId: string,
   teamId: string,
   userId: string,
@@ -17,4 +17,4 @@ const verifyJiraId = async (
   return true
 }
 
-export default verifyJiraId
+export default isValidJiraId
