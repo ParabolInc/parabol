@@ -19,7 +19,7 @@ const Drawer = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   backgroundColor: '#FFFFFF',
   display: 'flex',
   flexDirection: 'column',
-  height: '100vh',
+  height: '100%',
   justifyContent: 'flex-start',
   overflow: 'hidden',
   position: isDesktop ? 'fixed' : 'static',
@@ -40,6 +40,7 @@ const ThreadColumn = styled('div')({
   display: 'flex',
   flex: 1,
   flexDirection: 'column',
+  height: '100%',
   justifyContent: 'flex-end',
   maxWidth: 700,
   overflow: 'auto',
@@ -108,7 +109,8 @@ const EstimatePhaseDiscussionDrawer = (props: Props) => {
   const [isShowingVideo, setIsShowingVideo] = useState(true)
   const ref = useRef<HTMLDivElement>(null)
   const meetingControlBarBottom = 16
-  useCoverable('drawer', ref, MeetingControlBarEnum.HEIGHT + meetingControlBarBottom) || !!endedAt
+  const coverableHeight = isDesktop ? MeetingControlBarEnum.HEIGHT + meetingControlBarBottom : 0
+  useCoverable('drawer', ref, coverableHeight) || !!endedAt
 
   return (
     <Drawer isDesktop={isDesktop} ref={ref}>
@@ -133,7 +135,11 @@ const EstimatePhaseDiscussionDrawer = (props: Props) => {
         </ShowVideoButton>
       </DiscussingGroup>
       <ThreadColumn>
-        <DiscussionThreadRoot meetingId={meetingId} threadSourceId={serviceTaskId!} />
+        <DiscussionThreadRoot
+          meetingId={meetingId}
+          threadSourceId={serviceTaskId!}
+          meetingContentRef={ref}
+        />
       </ThreadColumn>
     </Drawer>
   )

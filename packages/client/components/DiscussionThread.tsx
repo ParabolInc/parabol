@@ -54,16 +54,13 @@ const DiscussionThread = (props: Props) => {
   const listRef = useRef<HTMLDivElement>(null)
   const editorRef = useRef<HTMLTextAreaElement>(null)
   const ref = useRef<HTMLDivElement>(null)
-  const isExpanded =
-    useCoverable('threads', ref, MeetingControlBarEnum.HEIGHT, meetingContentRef) || !!endedAt
   const isPokerMeeting = meetingType === MeetingTypeEnum.poker
+  // don't resize in a poker meeting as we do this in the parent
+  const coverableHeight = isPokerMeeting ? 0 : MeetingControlBarEnum.HEIGHT
+  const isExpanded = useCoverable('threads', ref, coverableHeight, meetingContentRef) || !!endedAt
 
   return (
-    <Wrapper
-      isExpanded={!isPokerMeeting && isExpanded}
-      isPokerMeeting={isPokerMeeting}
-      ref={isPokerMeeting ? undefined : ref}
-    >
+    <Wrapper isExpanded={isExpanded} isPokerMeeting={isPokerMeeting} ref={ref}>
       <DiscussionThreadList
         dataCy='discuss-thread-list'
         threadSourceId={threadSourceId}
