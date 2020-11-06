@@ -777,7 +777,11 @@ export interface IThreadOnStoryArguments {
 /**
  * The source of a discusson thread
  */
-export type ThreadSource = IJiraIssue | IAgendaItem | IRetroReflectionGroup;
+export type ThreadSource =
+  | IJiraIssue
+  | ITask
+  | IAgendaItem
+  | IRetroReflectionGroup;
 
 /**
  * The source of a discusson thread

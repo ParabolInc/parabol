@@ -84,7 +84,6 @@ const addComment = {
       }
     })
     publish(SubscriptionChannel.MEETING, meetingId, 'AddCommentSuccess', data, subOptions)
-    console.log('data', data)
     return data
   }
 }
