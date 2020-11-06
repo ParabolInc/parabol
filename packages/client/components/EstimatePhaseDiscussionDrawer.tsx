@@ -5,7 +5,7 @@ import {createFragmentContainer} from 'react-relay'
 import {useCoverable} from '~/hooks/useControlBarCovers'
 import {desktopSidebarShadow} from '~/styles/elevation'
 import {EstimatePhaseDiscussionDrawer_meeting} from '~/__generated__/EstimatePhaseDiscussionDrawer_meeting.graphql'
-import {DiscussionThreadEnum, MeetingControlBarEnum} from '../types/constEnums'
+import {DiscussionThreadEnum, MeetingControlBarEnum, ZIndex} from '../types/constEnums'
 import DiscussionThreadRoot from './DiscussionThreadRoot'
 import {PALETTE} from '~/styles/paletteV2'
 import Icon from './Icon'
@@ -25,7 +25,8 @@ const Drawer = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   position: isDesktop ? 'fixed' : 'static',
   right: isDesktop ? 0 : undefined,
   userSelect: 'none',
-  width: DiscussionThreadEnum.WIDTH
+  width: DiscussionThreadEnum.WIDTH,
+  zIndex: ZIndex.SIDEBAR
 }))
 
 const VideoContainer = styled('div')<{isShowingVideo: boolean}>(({isShowingVideo}) => ({

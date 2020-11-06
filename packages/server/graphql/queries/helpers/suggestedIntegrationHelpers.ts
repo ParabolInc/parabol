@@ -91,8 +91,8 @@ export const getPermsByTaskService = async (
 ) => {
   const r = await getRethink()
   // we need to see which team integrations the user has access to
-  const [atlassianAuths, githubAuthForTeam] = await Promise.all([
-    dataLoader.get('atlassianAuthByUserId').load(userId),
+  const [atlassianAuth, githubAuthForTeam] = await Promise.all([
+    dataLoader.get('freshAtlassianAuth').load({teamId, userId}),
     r
       .table('Provider')
       .getAll(teamId, {index: 'teamId'})
@@ -107,7 +107,7 @@ export const getPermsByTaskService = async (
   ])
 
   return {
-    jira: !!atlassianAuths.find((auth) => auth.teamId === teamId),
+    jira: !!atlassianAuth,
     github: !!githubAuthForTeam
   }
 }

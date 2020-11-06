@@ -7,6 +7,10 @@ import addComment from './mutations/addComment'
 import addFeatureFlag from './mutations/addFeatureFlag'
 import addGitHubAuth from './mutations/addGitHubAuth'
 import addOrg from './mutations/addOrg'
+import addPokerTemplate from './mutations/addPokerTemplate'
+import addPokerTemplateDimension from './mutations/addPokerTemplateDimension'
+import addPokerTemplateScale from './mutations/addPokerTemplateScale'
+import addPokerTemplateScaleValue from './mutations/addPokerTemplateScaleValue'
 import addReactjiToReactable from './mutations/addReactjiToReactable'
 import addReactjiToReflection from './mutations/addReactjiToReflection'
 import addReflectTemplate from './mutations/addReflectTemplate'
@@ -20,7 +24,7 @@ import autoGroupReflections from './mutations/autoGroupReflections'
 import changeTaskTeam from './mutations/changeTaskTeam'
 import createGitHubIssue from './mutations/createGitHubIssue'
 import createImposterToken from './mutations/createImposterToken'
-import createJiraIssue from './mutations/createJiraIssue'
+import createJiraTaskIntegration from './mutations/createJiraTaskIntegration'
 import createMassInvitation from './mutations/createMassInvitation'
 import createOrgPicturePutUrl from './mutations/createOrgPicturePutUrl'
 import createReflection from './mutations/createReflection'
@@ -46,8 +50,10 @@ import flagReadyToAdvance from './mutations/flagReadyToAdvance'
 import inactivateUser from './mutations/inactivateUser'
 import invalidateSessions from './mutations/invalidateSessions'
 import inviteToTeam from './mutations/inviteToTeam'
+import jiraCreateIssue from './mutations/jiraCreateIssue'
 import loginWithGoogle from './mutations/loginWithGoogle'
 import loginWithPassword from './mutations/loginWithPassword'
+import movePokerTemplateDimension from './mutations/movePokerTemplateDimension'
 import moveReflectTemplatePrompt from './mutations/moveReflectTemplatePrompt'
 import moveTeamToOrg from './mutations/moveTeamToOrg'
 import navigateMeeting from './mutations/navigateMeeting'
@@ -57,19 +63,26 @@ import promoteNewMeetingFacilitator from './mutations/promoteNewMeetingFacilitat
 import promoteToTeamLead from './mutations/promoteToTeamLead'
 import pushInvitation from './mutations/pushInvitation'
 import reflectTemplatePromptUpdateDescription from './mutations/reflectTemplatePromptUpdateDescription'
+import pokerTemplateDimensionUpdateDescription from './mutations/pokerTemplateDimensionUpdateDescription'
 import reflectTemplatePromptUpdateGroupColor from './mutations/reflectTemplatePromptUpdateGroupColor'
 import removeAgendaItem from './mutations/removeAgendaItem'
 import removeAtlassianAuth from './mutations/removeAtlassianAuth'
 import removeGitHubAuth from './mutations/removeGitHubAuth'
 import removeOrgUser from './mutations/removeOrgUser'
+import removePokerTemplate from './mutations/removePokerTemplate'
 import removeReflection from './mutations/removeReflection'
 import removeReflectTemplate from './mutations/removeReflectTemplate'
 import removeReflectTemplatePrompt from './mutations/removeReflectTemplatePrompt'
+import removePokerTemplateDimension from './mutations/removePokerTemplateDimension'
 import removeSlackAuth from './mutations/removeSlackAuth'
 import removeTeamMember from './mutations/removeTeamMember'
 import renameMeeting from './mutations/renameMeeting'
-import renameReflectTemplate from './mutations/renameReflectTemplate'
+import renameMeetingTemplate from './mutations/renameMeetingTemplate'
 import renameReflectTemplatePrompt from './mutations/renameReflectTemplatePrompt'
+import renamePokerTemplateDimension from './mutations/renamePokerTemplateDimension'
+import renamePokerTemplateScale from './mutations/renamePokerTemplateScale'
+import removePokerTemplateScale from './mutations/removePokerTemplateScale'
+import removePokerTemplateScaleValue from './mutations/removePokerTemplateScaleValue'
 import resetMeetingToStage from './mutations/resetMeetingToStage'
 import resetPassword from './mutations/resetPassword'
 import segmentEventTrack from './mutations/segmentEventTrack'
@@ -92,6 +105,8 @@ import updateCreditCard from './mutations/updateCreditCard'
 import updateDragLocation from './mutations/updateDragLocation'
 import updateNewCheckInQuestion from './mutations/updateNewCheckInQuestion'
 import updateOrg from './mutations/updateOrg'
+import updatePokerTemplateDimensionScale from './mutations/updatePokerTemplateDimensionScale'
+import updatePokerTemplateScaleValue from './mutations/updatePokerTemplateScaleValue'
 import updateReflectionContent from './mutations/updateReflectionContent'
 import updateReflectionGroupTitle from './mutations/updateReflectionGroupTitle'
 import updateRetroMaxVotes from './mutations/updateRetroMaxVotes'
@@ -104,6 +119,11 @@ import upgradeToPro from './mutations/upgradeToPro'
 import verifyEmail from './mutations/verifyEmail'
 import voteForReflectionGroup from './mutations/voteForReflectionGroup'
 import updatePokerScope from './mutations/updatePokerScope'
+import voteForPokerStory from './mutations/voteForPokerStory'
+import pokerRevealVotes from './mutations/pokerRevealVotes'
+import pokerResetDimension from './mutations/pokerResetDimension'
+import pokerAnnounceDeckHover from './mutations/pokerAnnounceDeckHover'
+import pokerSetFinalScore from './mutations/pokerSetFinalScore'
 import persistJiraSearchQuery from './mutations/persistJiraSearchQuery'
 
 interface Context extends InternalContext, GQLContext {}
@@ -116,7 +136,14 @@ export default new GraphQLObjectType<any, Context>({
       addAgendaItem,
       addAtlassianAuth,
       addComment,
-      addReactjiToReflection, // DEPRECATED, delete after 4.25.0
+      addPokerTemplate,
+      addPokerTemplateDimension,
+      addPokerTemplateScale,
+      addPokerTemplateScaleValue,
+
+      // DEPRECATED, delete after 4.25.0
+      addReactjiToReflection,
+
       addReactjiToReactable,
       addReflectTemplate,
       addReflectTemplatePrompt,
@@ -133,7 +160,7 @@ export default new GraphQLObjectType<any, Context>({
       setNotificationStatus,
       createImposterToken,
       createGitHubIssue,
-      createJiraIssue,
+      createJiraTaskIntegration,
       createMassInvitation,
       createOrgPicturePutUrl,
       createReflection,
@@ -159,8 +186,10 @@ export default new GraphQLObjectType<any, Context>({
       inactivateUser,
       invalidateSessions,
       inviteToTeam,
+      jiraCreateIssue,
       loginWithGoogle,
       loginWithPassword,
+      movePokerTemplateDimension,
       moveReflectTemplatePrompt,
       moveTeamToOrg,
       navigateMeeting,
@@ -171,16 +200,23 @@ export default new GraphQLObjectType<any, Context>({
       promoteNewMeetingFacilitator,
       promoteToTeamLead,
       reflectTemplatePromptUpdateDescription,
+      pokerTemplateDimensionUpdateDescription,
       reflectTemplatePromptUpdateGroupColor,
       removeAgendaItem,
       removeAtlassianAuth,
       removeGitHubAuth,
       removeOrgUser,
+      removePokerTemplate,
       removeReflectTemplate,
       removeReflectTemplatePrompt,
+      removePokerTemplateDimension,
       renameMeeting,
-      renameReflectTemplate,
+      renameMeetingTemplate,
       renameReflectTemplatePrompt,
+      renamePokerTemplateDimension,
+      renamePokerTemplateScale,
+      removePokerTemplateScale,
+      removePokerTemplateScaleValue,
       removeReflection,
       removeSlackAuth,
       removeTeamMember,
@@ -203,6 +239,8 @@ export default new GraphQLObjectType<any, Context>({
       updateCommentContent,
       updateCreditCard,
       updateOrg,
+      updatePokerTemplateDimensionScale,
+      updatePokerTemplateScaleValue,
       updateNewCheckInQuestion,
       updateDragLocation,
       updatePokerScope,
@@ -216,6 +254,11 @@ export default new GraphQLObjectType<any, Context>({
       updateUserProfile,
       verifyEmail,
       voteForReflectionGroup,
-      upgradeToPro
+      upgradeToPro,
+      voteForPokerStory,
+      pokerRevealVotes,
+      pokerResetDimension,
+      pokerAnnounceDeckHover,
+      pokerSetFinalScore
     } as any)
 })

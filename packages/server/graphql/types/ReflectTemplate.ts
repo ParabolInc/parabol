@@ -1,40 +1,17 @@
-import {
-  GraphQLBoolean,
-  GraphQLID,
-  GraphQLList,
-  GraphQLNonNull,
-  GraphQLObjectType,
-  GraphQLString
-} from 'graphql'
+import {GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
+import {MeetingTypeEnum} from 'parabol-client/types/graphql'
 import connectionDefinitions from '../connectionDefinitions'
 import {GQLContext} from '../graphql'
-import GraphQLISO8601Type from './GraphQLISO8601Type'
 import ReflectPrompt from './ReflectPrompt'
-import SharingScopeEnum from './SharingScopeEnum'
-import Team from './Team'
+import MeetingTemplate, {meetingTemplateFields} from './MeetingTemplate'
 
 const ReflectTemplate = new GraphQLObjectType<any, GQLContext>({
   name: 'ReflectTemplate',
   description: 'The team-specific templates for the reflection prompts',
+  interfaces: () => [MeetingTemplate],
+  isTypeOf: ({type}) => type === MeetingTypeEnum.retrospective,
   fields: () => ({
-    id: {
-      type: new GraphQLNonNull(GraphQLID)
-    },
-    createdAt: {
-      type: new GraphQLNonNull(GraphQLISO8601Type)
-    },
-    isActive: {
-      type: new GraphQLNonNull(GraphQLBoolean),
-      description: 'True if template can be used, else false'
-    },
-    lastUsedAt: {
-      type: GraphQLISO8601Type,
-      description: 'The time of the meeting the template was last used'
-    },
-    name: {
-      type: new GraphQLNonNull(GraphQLString),
-      description: 'The name of the template'
-    },
+    ...meetingTemplateFields(),
     prompts: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(ReflectPrompt))),
       description: 'The prompts that are part of this template',
@@ -44,29 +21,6 @@ const ReflectTemplate = new GraphQLObjectType<any, GQLContext>({
           .filter((prompt) => !prompt.removedAt)
           .sort((a, b) => (a.sortOrder < b.sortOrder ? -1 : 1))
       }
-    },
-    orgId: {
-      type: GraphQLNonNull(GraphQLID),
-      description: '*Foreign key. The organization that owns the team that created the template'
-    },
-    scope: {
-      type: GraphQLNonNull(SharingScopeEnum),
-      description: 'Who can see this template'
-    },
-    teamId: {
-      type: new GraphQLNonNull(GraphQLID),
-      description: '*Foreign key. The team this template belongs to'
-    },
-    team: {
-      type: new GraphQLNonNull(Team),
-      description: 'The team this template belongs to',
-      resolve: async ({teamId}, _args, {dataLoader}) => {
-        const team = await dataLoader.get('teams').load(teamId)
-        return team
-      }
-    },
-    updatedAt: {
-      type: new GraphQLNonNull(GraphQLISO8601Type)
     }
   })
 })

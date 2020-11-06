@@ -1279,6 +1279,16 @@ export interface ITasksOnUserArguments {
   archived?: boolean | null;
 
   /**
+   * filter tasks by the chosen statuses
+   */
+  statusFilters?: Array<TaskStatusEnum> | null;
+
+  /**
+   * only return tasks which match the given filter query
+   */
+  filterQuery?: string | null;
+
+  /**
    * if true, include unassigned tasks. If false, only return assigned tasks
    * @default false
    */
@@ -1435,6 +1445,11 @@ export interface ITask {
   dueDate: any | null;
 
   /**
+   * A list of estimates for the story, created in a poker meeting
+   */
+  estimates: Array<ITaskEstimate>;
+
+  /**
    * a list of users currently editing the task (fed by a subscription, so queries return null)
    */
   editors: Array<ITaskEditorDetails>;
@@ -1449,6 +1464,11 @@ export interface ITask {
    * the foreign key for the meeting the task was marked as complete
    */
   doneMeetingId: string | null;
+
+  /**
+   * the plain text content of the task
+   */
+  plaintextContent: string;
 
   /**
    * the shared sort order for tasks on the team dash & user dash
@@ -1605,6 +1625,28 @@ export interface IThreadOnAgendaItemArguments {
    * the incrementing sort order in string format
    */
   after?: string | null;
+}
+
+/**
+ * An estimate for a Task that was voted on and scored in a poker meeting
+ */
+export interface ITaskEstimate {
+  __typename: 'TaskEstimate';
+
+  /**
+   * The name of the estimate dimension
+   */
+  name: string;
+
+  /**
+   * The human-readable label for the estimate
+   */
+  label: string;
+
+  /**
+   * The numeric value representing the label. If the label was not a value in the TemplateScale, this is null
+   */
+  value: number | null;
 }
 
 export interface ITaskEditorDetails {
@@ -1890,6 +1932,10 @@ export interface IReflectPrompt {
  */
 export interface IReflectTemplate {
   __typename: 'ReflectTemplate';
+
+  /**
+   * shortid
+   */
   id: string;
   createdAt: any;
 
@@ -1907,11 +1953,6 @@ export interface IReflectTemplate {
    * The name of the template
    */
   name: string;
-
-  /**
-   * The prompts that are part of this template
-   */
-  prompts: Array<IReflectPrompt>;
 
   /**
    * *Foreign key. The organization that owns the team that created the template
@@ -1932,7 +1973,17 @@ export interface IReflectTemplate {
    * The team this template belongs to
    */
   team: ITeam;
+
+  /**
+   * The type of the template
+   */
+  type: string;
   updatedAt: any;
+
+  /**
+   * The prompts that are part of this template
+   */
+  prompts: Array<IReflectPrompt>;
 }
 
 /**
@@ -3602,6 +3653,270 @@ export interface IGenericMeetingStage {
 }
 
 /**
+ * The team-specific templates for sprint poker meeting
+ */
+export interface IPokerTemplate {
+  __typename: 'PokerTemplate';
+
+  /**
+   * shortid
+   */
+  id: string;
+  createdAt: any;
+
+  /**
+   * True if template can be used, else false
+   */
+  isActive: boolean;
+
+  /**
+   * The time of the meeting the template was last used
+   */
+  lastUsedAt: any | null;
+
+  /**
+   * The name of the template
+   */
+  name: string;
+
+  /**
+   * *Foreign key. The organization that owns the team that created the template
+   */
+  orgId: string;
+
+  /**
+   * Who can see this template
+   */
+  scope: SharingScopeEnum;
+
+  /**
+   * *Foreign key. The team this template belongs to
+   */
+  teamId: string;
+
+  /**
+   * The team this template belongs to
+   */
+  team: ITeam;
+
+  /**
+   * The type of the template
+   */
+  type: string;
+  updatedAt: any;
+
+  /**
+   * The dimensions that are part of this template
+   */
+  dimensions: Array<ITemplateDimension>;
+}
+
+/**
+ * A team-specific template dimension: e.g., effort, importance etc.
+ */
+export interface ITemplateDimension {
+  __typename: 'TemplateDimension';
+
+  /**
+   * shortid
+   */
+  id: string;
+  createdAt: any;
+
+  /**
+   * true if the dimension is currently used by the team, else false
+   */
+  isActive: boolean;
+
+  /**
+   * The datetime that the dimension was removed. Null if it has not been removed.
+   */
+  removedAt: any | null;
+
+  /**
+   * foreign key. use the team field
+   */
+  teamId: string;
+
+  /**
+   * The team that owns this dimension
+   */
+  team: ITeam;
+  updatedAt: any;
+
+  /**
+   * the order of the dimensions in the template
+   */
+  sortOrder: number;
+
+  /**
+   * FK for template
+   */
+  templateId: string;
+
+  /**
+   * The template that this dimension belongs to
+   */
+  template: IPokerTemplate;
+
+  /**
+   * The name of the dimension
+   */
+  name: string;
+
+  /**
+   * The description to the dimension name for further context. A long version of the dimension name.
+   */
+  description: string;
+
+  /**
+   * The scaleId to resolve the selected scale
+   */
+  scaleId: string;
+
+  /**
+   * scale used in this dimension
+   */
+  selectedScale: ITemplateScale;
+
+  /**
+   * The list of scales can be set for this dimension
+   */
+  availableScales: Array<ITemplateScale>;
+}
+
+/**
+ * A team-specific template scale.
+ */
+export interface ITemplateScale {
+  __typename: 'TemplateScale';
+
+  /**
+   * shortid
+   */
+  id: string;
+  createdAt: any;
+
+  /**
+   * true if the scale is currently used by the team, else false
+   */
+  isActive: boolean;
+
+  /**
+   * The datetime that the scale was removed. Null if it has not been removed.
+   */
+  removedAt: any | null;
+
+  /**
+   * foreign key. use the team field
+   */
+  teamId: string;
+
+  /**
+   * The team that owns this template scale
+   */
+  team: ITeam;
+  updatedAt: any;
+
+  /**
+   * The title of the scale used in the template
+   */
+  name: string;
+
+  /**
+   * The values used in this scale
+   */
+  values: Array<ITemplateScaleValue> | null;
+}
+
+/**
+ * A value for a scale.
+ */
+export interface ITemplateScaleValue {
+  __typename: 'TemplateScaleValue';
+  id: string;
+
+  /**
+   * The color used to visually group a scale value
+   */
+  color: string;
+
+  /**
+   * The numerical value for this scale value
+   */
+  value: number;
+
+  /**
+   * The label for this value, e.g., XS, M, L
+   */
+  label: string;
+
+  /**
+   * true if the value of this scale is a special value, e.g., ? or X
+   */
+  isSpecial: boolean;
+}
+
+/**
+ * A meeting template that can be shared across team, orgnization and public
+ */
+export type MeetingTemplate = IReflectTemplate | IPokerTemplate;
+
+/**
+ * A meeting template that can be shared across team, orgnization and public
+ */
+export interface IMeetingTemplate {
+  __typename: 'MeetingTemplate';
+
+  /**
+   * shortid
+   */
+  id: string;
+  createdAt: any;
+
+  /**
+   * True if template can be used, else false
+   */
+  isActive: boolean;
+
+  /**
+   * The time of the meeting the template was last used
+   */
+  lastUsedAt: any | null;
+
+  /**
+   * The name of the template
+   */
+  name: string;
+
+  /**
+   * *Foreign key. The organization that owns the team that created the template
+   */
+  orgId: string;
+
+  /**
+   * Who can see this template
+   */
+  scope: SharingScopeEnum;
+
+  /**
+   * *Foreign key. The team this template belongs to
+   */
+  teamId: string;
+
+  /**
+   * The team this template belongs to
+   */
+  team: ITeam;
+
+  /**
+   * The type of the template
+   */
+  type: string;
+  updatedAt: any;
+}
+
+/**
  * The meeting phase where all team members discuss the topics with the most votes
  */
 export interface IDiscussPhase {
@@ -4268,6 +4583,11 @@ export interface IEstimateStage {
   timeRemaining: number | null;
 
   /**
+   * The id of the user that added this stage. Useful for knowing which access key to use to get the underlying issue
+   */
+  creatorUserId: string;
+
+  /**
    * The service the task is connected to. If null, it is parabol
    */
   service: TaskServiceEnum | null;
@@ -4293,9 +4613,24 @@ export interface IEstimateStage {
   finalScore: number | null;
 
   /**
+   * the userIds of the team members hovering the deck
+   */
+  hoveringUserIds: Array<string>;
+
+  /**
+   * the users of the team members hovering the deck
+   */
+  hoveringUsers: Array<IUser>;
+
+  /**
    * all the estimates, 1 per user
    */
   scores: Array<IEstimateUserScore>;
+
+  /**
+   * true when the participants are still voting and results are hidden. false when votes are revealed
+   */
+  isVoting: boolean;
 }
 
 /**
@@ -4320,9 +4655,14 @@ export interface IEstimateUserScore {
   userId: string;
 
   /**
-   * the value of the score. label is determined by this. note that if a template is modified, the corresponding label may no longer exists
+   * the value that existed in the scale at the time of the vote. note that this value may no longer exist on the scale
    */
-  score: number;
+  value: number;
+
+  /**
+   * The label that was associated with the score at the time of the vote
+   */
+  label: string;
 }
 
 /**
@@ -4422,6 +4762,11 @@ export interface IEstimateStageJira {
   timeRemaining: number | null;
 
   /**
+   * The id of the user that added this stage. Useful for knowing which access key to use to get the underlying issue
+   */
+  creatorUserId: string;
+
+  /**
    * The service the task is connected to. If null, it is parabol
    */
   service: TaskServiceEnum | null;
@@ -4447,9 +4792,24 @@ export interface IEstimateStageJira {
   finalScore: number | null;
 
   /**
+   * the userIds of the team members hovering the deck
+   */
+  hoveringUserIds: Array<string>;
+
+  /**
+   * the users of the team members hovering the deck
+   */
+  hoveringUsers: Array<IUser>;
+
+  /**
    * all the estimates, 1 per user
    */
   scores: Array<IEstimateUserScore>;
+
+  /**
+   * true when the participants are still voting and results are hidden. false when votes are revealed
+   */
+  isVoting: boolean;
 
   /**
    * the issue straight from Jira
@@ -4554,6 +4914,11 @@ export interface IEstimateStageParabol {
   timeRemaining: number | null;
 
   /**
+   * The id of the user that added this stage. Useful for knowing which access key to use to get the underlying issue
+   */
+  creatorUserId: string;
+
+  /**
    * The service the task is connected to. If null, it is parabol
    */
   service: TaskServiceEnum | null;
@@ -4579,9 +4944,24 @@ export interface IEstimateStageParabol {
   finalScore: number | null;
 
   /**
+   * the userIds of the team members hovering the deck
+   */
+  hoveringUserIds: Array<string>;
+
+  /**
+   * the users of the team members hovering the deck
+   */
+  hoveringUsers: Array<IUser>;
+
+  /**
    * all the estimates, 1 per user
    */
   scores: Array<IEstimateUserScore>;
+
+  /**
+   * true when the participants are still voting and results are hidden. false when votes are revealed
+   */
+  isVoting: boolean;
 
   /**
    * the Parabol task
@@ -5155,22 +5535,32 @@ export interface IPokerMeetingSettings {
   /**
    * The template that will be used to start the Poker meeting
    */
-  selectedTemplate: IReflectTemplate;
+  selectedTemplate: IPokerTemplate;
+
+  /**
+   * The list of scales belong to this team
+   */
+  teamScales: Array<ITemplateScale>;
 
   /**
    * The list of templates used to start a Poker meeting
    */
-  teamTemplates: Array<IReflectTemplate>;
+  teamTemplates: Array<IPokerTemplate>;
 
   /**
    * The list of templates shared across the organization to start a Poker meeting
    */
-  organizationTemplates: IReflectTemplateConnection;
+  organizationTemplates: IPokerTemplateConnection;
+
+  /**
+   * The list of starter scales
+   */
+  starterScales: Array<ITemplateScale>;
 
   /**
    * The list of templates shared across the organization to start a Poker meeting
    */
-  publicTemplates: IReflectTemplateConnection;
+  publicTemplates: IPokerTemplateConnection;
 }
 
 export interface IOrganizationTemplatesOnPokerMeetingSettingsArguments {
@@ -5194,8 +5584,8 @@ export interface IPublicTemplatesOnPokerMeetingSettingsArguments {
 /**
  * A connection to a list of items.
  */
-export interface IReflectTemplateConnection {
-  __typename: 'ReflectTemplateConnection';
+export interface IPokerTemplateConnection {
+  __typename: 'PokerTemplateConnection';
 
   /**
    * Information to aid in pagination.
@@ -5205,19 +5595,19 @@ export interface IReflectTemplateConnection {
   /**
    * A list of edges.
    */
-  edges: Array<IReflectTemplateEdge>;
+  edges: Array<IPokerTemplateEdge>;
 }
 
 /**
  * An edge in a connection.
  */
-export interface IReflectTemplateEdge {
-  __typename: 'ReflectTemplateEdge';
+export interface IPokerTemplateEdge {
+  __typename: 'PokerTemplateEdge';
 
   /**
    * The item at the end of the edge
    */
-  node: IReflectTemplate;
+  node: IPokerTemplate;
 
   /**
    * A cursor for use in pagination
@@ -5523,6 +5913,40 @@ export interface IPublicTemplatesOnRetrospectiveMeetingSettingsArguments {
    * The cursor, which is the templateId
    */
   after?: string | null;
+}
+
+/**
+ * A connection to a list of items.
+ */
+export interface IReflectTemplateConnection {
+  __typename: 'ReflectTemplateConnection';
+
+  /**
+   * Information to aid in pagination.
+   */
+  pageInfo: IPageInfo;
+
+  /**
+   * A list of edges.
+   */
+  edges: Array<IReflectTemplateEdge>;
+}
+
+/**
+ * An edge in a connection.
+ */
+export interface IReflectTemplateEdge {
+  __typename: 'ReflectTemplateEdge';
+
+  /**
+   * The item at the end of the edge
+   */
+  node: IReflectTemplate;
+
+  /**
+   * A cursor for use in pagination
+   */
+  cursor: string;
 }
 
 /**
@@ -6248,7 +6672,7 @@ export interface ISuggestedIntegrationJira {
   /**
    * The full project document fetched from Jira
    */
-  remoteProject: IJiraRemoteProject;
+  remoteProject: IJiraRemoteProject | null;
 }
 
 /**
@@ -6478,6 +6902,26 @@ export interface IMutation {
   addComment: AddCommentPayload;
 
   /**
+   * Add a new poker template with a default dimension created
+   */
+  addPokerTemplate: IAddPokerTemplatePayload;
+
+  /**
+   * Add a new dimension for the poker template
+   */
+  addPokerTemplateDimension: IAddPokerTemplateDimensionPayload;
+
+  /**
+   * Add a new scale for the poker template
+   */
+  addPokerTemplateScale: IAddPokerTemplateScalePayload;
+
+  /**
+   * Add a new scale value for a scale in a poker template
+   */
+  addPokerTemplateScaleValue: IAddPokerTemplateScaleValuePayload;
+
+  /**
    * Add or remove a reactji to a reflection
    */
   addReactjiToReflection: AddReactjiToReflectionPayload;
@@ -6541,7 +6985,7 @@ export interface IMutation {
    */
   createImposterToken: ICreateImposterTokenPayload;
   createGitHubIssue: ICreateGitHubIssuePayload | null;
-  createJiraIssue: ICreateJiraIssuePayload | null;
+  createJiraTaskIntegration: ICreateJiraTaskIntegrationPayload | null;
 
   /**
    * Create a new mass inivtation and optionally void old ones
@@ -6667,6 +7111,7 @@ export interface IMutation {
    * Send a team invitation to an email address
    */
   inviteToTeam: IInviteToTeamPayload;
+  jiraCreateIssue: IJiraCreateIssuePayload | null;
 
   /**
    * Sign up or login using Google
@@ -6677,6 +7122,11 @@ export interface IMutation {
    * Login using an email address and password
    */
   loginWithPassword: ILoginWithPasswordPayload;
+
+  /**
+   * Move a template dimension
+   */
+  movePokerTemplateDimension: IMovePokerTemplateDimensionPayload;
 
   /**
    * Move a reflect template
@@ -6727,6 +7177,11 @@ export interface IMutation {
    * Update the description of a reflection prompt
    */
   reflectTemplatePromptUpdateDescription: IReflectTemplatePromptUpdateDescriptionPayload | null;
+
+  /**
+   * Update the description of a poker template dimension
+   */
+  pokerTemplateDimensionUpdateDescription: IPokerTemplateDimensionUpdateDescriptionPayload | null;
   reflectTemplatePromptUpdateGroupColor: IReflectTemplatePromptUpdateGroupColorPayload | null;
 
   /**
@@ -6750,6 +7205,11 @@ export interface IMutation {
   removeOrgUser: IRemoveOrgUserPayload | null;
 
   /**
+   * Remove a poker meeting template
+   */
+  removePokerTemplate: IRemovePokerTemplatePayload;
+
+  /**
    * Remove a template full of prompts
    */
   removeReflectTemplate: IRemoveReflectTemplatePayload | null;
@@ -6760,19 +7220,44 @@ export interface IMutation {
   removeReflectTemplatePrompt: IRemoveReflectTemplatePromptPayload | null;
 
   /**
+   * Remove a dimension from a template
+   */
+  removePokerTemplateDimension: IRemovePokerTemplateDimensionPayload;
+
+  /**
    * Rename a meeting
    */
   renameMeeting: RenameMeetingPayload;
 
   /**
-   * Rename a reflect template prompt
+   * Rename a meeting template
    */
-  renameReflectTemplate: IRenameReflectTemplatePayload | null;
+  renameMeetingTemplate: IRenameMeetingTemplatePayload | null;
 
   /**
-   * Rename a reflect template
+   * Rename a reflect template prompt
    */
   renameReflectTemplatePrompt: IRenameReflectTemplatePromptPayload | null;
+
+  /**
+   * Rename a poker template dimension
+   */
+  renamePokerTemplateDimension: IRenamePokerTemplateDimensionPayload;
+
+  /**
+   * Rename a poker template scale
+   */
+  renamePokerTemplateScale: IRenamePokerTemplateScalePayload;
+
+  /**
+   * Remove a scale from a template
+   */
+  removePokerTemplateScale: IRemovePokerTemplateScalePayload;
+
+  /**
+   * Remove a scale value from the scale of a template
+   */
+  removePokerTemplateScaleValue: IRemovePokerTemplateScaleValuePayload;
 
   /**
    * Remove a reflection
@@ -6881,6 +7366,16 @@ export interface IMutation {
   updateOrg: IUpdateOrgPayload;
 
   /**
+   * Update the scale used for a dimension in a template
+   */
+  updatePokerTemplateDimensionScale: IAddPokerTemplateDimensionPayload;
+
+  /**
+   * Update the label, numerical value or color of a scale value in a scale
+   */
+  updatePokerTemplateScaleValue: IUpdatePokerTemplateScaleValuePayload;
+
+  /**
    * Update a Team's Icebreaker in a new meeting
    */
   updateNewCheckInQuestion: IUpdateNewCheckInQuestionPayload | null;
@@ -6941,6 +7436,27 @@ export interface IMutation {
    * Upgrade an account to the paid service
    */
   upgradeToPro: IUpgradeToProPayload | null;
+
+  /**
+   * Cast a vote for the estimated points for a given dimension
+   */
+  voteForPokerStory: VoteForPokerStoryPayload;
+
+  /**
+   * Progresses the stage dimension to the reveal & discuss step
+   */
+  pokerRevealVotes: PokerRevealVotesPayload;
+
+  /**
+   * Remove all votes, the final vote, and reset the stage
+   */
+  pokerResetDimension: PokerResetDimensionPayload;
+  pokerAnnounceDeckHover: PokerAnnounceDeckHoverPayload;
+
+  /**
+   * Update the final score field & push to the associated integration
+   */
+  pokerSetFinalScore: PokerSetFinalScorePayload;
 }
 
 export interface IAcceptTeamInvitationOnMutationArguments {
@@ -6977,6 +7493,25 @@ export interface IAddCommentOnMutationArguments {
    * The id of the meeting
    */
   meetingId: string;
+}
+
+export interface IAddPokerTemplateOnMutationArguments {
+  parentTemplateId?: string | null;
+  teamId: string;
+}
+
+export interface IAddPokerTemplateDimensionOnMutationArguments {
+  templateId: string;
+}
+
+export interface IAddPokerTemplateScaleOnMutationArguments {
+  parentScaleId?: string | null;
+  teamId: string;
+}
+
+export interface IAddPokerTemplateScaleValueOnMutationArguments {
+  scaleId: string;
+  scaleValue: IAddTemplateScaleInput;
 }
 
 export interface IAddReactjiToReflectionOnMutationArguments {
@@ -7143,7 +7678,7 @@ export interface ICreateGitHubIssueOnMutationArguments {
   nameWithOwner: string;
 }
 
-export interface ICreateJiraIssueOnMutationArguments {
+export interface ICreateJiraTaskIntegrationOnMutationArguments {
   /**
    * The atlassian cloudId for the site
    */
@@ -7386,6 +7921,33 @@ export interface IInviteToTeamOnMutationArguments {
   invitees: Array<any>;
 }
 
+export interface IJiraCreateIssueOnMutationArguments {
+  /**
+   * The atlassian cloudId for the site
+   */
+  cloudId: string;
+
+  /**
+   * The id of the meeting where the Jira issue is being created. Null if it is not being created in a meeting.
+   */
+  meetingId?: string | null;
+
+  /**
+   * The atlassian key of the project to put the issue in
+   */
+  projectKey: string;
+
+  /**
+   * The text content of the Jira issue
+   */
+  summary: string;
+
+  /**
+   * The id of the team that is creating the issue
+   */
+  teamId: string;
+}
+
 export interface ILoginWithGoogleOnMutationArguments {
   /**
    * The code provided from the OAuth2 flow
@@ -7406,6 +7968,11 @@ export interface ILoginWithGoogleOnMutationArguments {
 export interface ILoginWithPasswordOnMutationArguments {
   email: string;
   password: string;
+}
+
+export interface IMovePokerTemplateDimensionOnMutationArguments {
+  dimensionId: string;
+  sortOrder: number;
 }
 
 export interface IMoveReflectTemplatePromptOnMutationArguments {
@@ -7506,6 +8073,11 @@ export interface IReflectTemplatePromptUpdateDescriptionOnMutationArguments {
   description: string;
 }
 
+export interface IPokerTemplateDimensionUpdateDescriptionOnMutationArguments {
+  dimensionId: string;
+  description: string;
+}
+
 export interface IReflectTemplatePromptUpdateGroupColorOnMutationArguments {
   promptId: string;
   groupColor: string;
@@ -7544,12 +8116,20 @@ export interface IRemoveOrgUserOnMutationArguments {
   orgId: string;
 }
 
+export interface IRemovePokerTemplateOnMutationArguments {
+  templateId: string;
+}
+
 export interface IRemoveReflectTemplateOnMutationArguments {
   templateId: string;
 }
 
 export interface IRemoveReflectTemplatePromptOnMutationArguments {
   promptId: string;
+}
+
+export interface IRemovePokerTemplateDimensionOnMutationArguments {
+  dimensionId: string;
 }
 
 export interface IRenameMeetingOnMutationArguments {
@@ -7564,7 +8144,7 @@ export interface IRenameMeetingOnMutationArguments {
   meetingId: string;
 }
 
-export interface IRenameReflectTemplateOnMutationArguments {
+export interface IRenameMeetingTemplateOnMutationArguments {
   templateId: string;
   name: string;
 }
@@ -7572,6 +8152,25 @@ export interface IRenameReflectTemplateOnMutationArguments {
 export interface IRenameReflectTemplatePromptOnMutationArguments {
   promptId: string;
   question: string;
+}
+
+export interface IRenamePokerTemplateDimensionOnMutationArguments {
+  dimensionId: string;
+  name: string;
+}
+
+export interface IRenamePokerTemplateScaleOnMutationArguments {
+  scaleId: string;
+  name: string;
+}
+
+export interface IRemovePokerTemplateScaleOnMutationArguments {
+  scaleId: string;
+}
+
+export interface IRemovePokerTemplateScaleValueOnMutationArguments {
+  scaleId: string;
+  scaleValue: number;
 }
 
 export interface IRemoveReflectionOnMutationArguments {
@@ -7766,6 +8365,17 @@ export interface IUpdateOrgOnMutationArguments {
   updatedOrg: IUpdateOrgInput;
 }
 
+export interface IUpdatePokerTemplateDimensionScaleOnMutationArguments {
+  dimensionId: string;
+  scaleId: string;
+}
+
+export interface IUpdatePokerTemplateScaleValueOnMutationArguments {
+  scaleId: string;
+  oldScaleValue: ITemplateScaleInput;
+  newScaleValue: ITemplateScaleInput;
+}
+
 export interface IUpdateNewCheckInQuestionOnMutationArguments {
   /**
    * ID of the Team which will have its Icebreaker updated
@@ -7906,6 +8516,50 @@ export interface IUpgradeToProOnMutationArguments {
   stripeToken: string;
 }
 
+export interface IVoteForPokerStoryOnMutationArguments {
+  meetingId: string;
+
+  /**
+   * The stage that contains the dimension to vote for
+   */
+  stageId: string;
+
+  /**
+   * The value of the scaleValue to vote for. If null, remove the vote
+   */
+  score?: number | null;
+}
+
+export interface IPokerRevealVotesOnMutationArguments {
+  meetingId: string;
+  stageId: string;
+}
+
+export interface IPokerResetDimensionOnMutationArguments {
+  meetingId: string;
+  stageId: string;
+}
+
+export interface IPokerAnnounceDeckHoverOnMutationArguments {
+  meetingId: string;
+  stageId: string;
+
+  /**
+   * true if the viewer has started hovering the deck, else false
+   */
+  isHover: boolean;
+}
+
+export interface IPokerSetFinalScoreOnMutationArguments {
+  meetingId: string;
+  stageId: string;
+
+  /**
+   * A string representation of the final score. It may not have an associated value in the scale
+   */
+  finalScore: string;
+}
+
 export interface IAcceptTeamInvitationPayload {
   __typename: 'AcceptTeamInvitationPayload';
   error: IStandardMutationError | null;
@@ -8035,6 +8689,55 @@ export interface IAddCommentInput {
   threadSource: ThreadSourceEnum;
   threadSortOrder: number;
   threadParentId?: string | null;
+}
+
+export interface IAddPokerTemplatePayload {
+  __typename: 'AddPokerTemplatePayload';
+  error: IStandardMutationError | null;
+  pokerTemplate: IPokerTemplate | null;
+}
+
+export interface IAddPokerTemplateDimensionPayload {
+  __typename: 'AddPokerTemplateDimensionPayload';
+  error: IStandardMutationError | null;
+  dimension: ITemplateDimension | null;
+}
+
+export interface IAddPokerTemplateScalePayload {
+  __typename: 'AddPokerTemplateScalePayload';
+  error: IStandardMutationError | null;
+  scale: ITemplateScale | null;
+}
+
+export interface IAddPokerTemplateScaleValuePayload {
+  __typename: 'AddPokerTemplateScaleValuePayload';
+  error: IStandardMutationError | null;
+  scale: ITemplateScale | null;
+}
+
+/**
+ * Input for adding a new scale
+ */
+export interface IAddTemplateScaleInput {
+  /**
+   * The color used to visually group a scale value
+   */
+  color: string;
+
+  /**
+   * The numerical value for this scale value
+   */
+  value: number;
+
+  /**
+   * The label for this value, e.g., XS, M, L
+   */
+  label: string;
+
+  /**
+   * True if this is a special scale value; false/null otherwise
+   */
+  isSpecial?: boolean | null;
 }
 
 /**
@@ -8342,8 +9045,8 @@ export interface ICreateGitHubIssuePayload {
   task: ITask | null;
 }
 
-export interface ICreateJiraIssuePayload {
-  __typename: 'CreateJiraIssuePayload';
+export interface ICreateJiraTaskIntegrationPayload {
+  __typename: 'CreateJiraTaskIntegrationPayload';
   error: IStandardMutationError | null;
   task: ITask | null;
 }
@@ -8744,6 +9447,11 @@ export interface IPokerMeeting {
    * A single story created in a Sprint Poker meeting
    */
   story: Story | null;
+
+  /**
+   * The ID of the template used for the meeting
+   */
+  templateId: string;
 }
 
 export interface IStoryOnPokerMeetingArguments {
@@ -9040,6 +9748,26 @@ export interface IInviteToTeamPayload {
   removedSuggestedActionId: string | null;
 }
 
+export interface IJiraCreateIssuePayload {
+  __typename: 'JiraCreateIssuePayload';
+  error: IStandardMutationError | null;
+
+  /**
+   * The issue straight from Jira
+   */
+  jiraIssue: IJiraIssue | null;
+
+  /**
+   * The id of the meeting where the Jira issue is being created
+   */
+  meetingId: string | null;
+
+  /**
+   * The id of the team that is creating the Jira issue
+   */
+  teamId: string;
+}
+
 export interface ILoginWithGooglePayload {
   __typename: 'LoginWithGooglePayload';
   error: IStandardMutationError | null;
@@ -9070,6 +9798,12 @@ export interface ILoginWithPasswordPayload {
    * the newly created user
    */
   user: IUser | null;
+}
+
+export interface IMovePokerTemplateDimensionPayload {
+  __typename: 'MovePokerTemplateDimensionPayload';
+  error: IStandardMutationError | null;
+  dimension: ITemplateDimension | null;
 }
 
 export interface IMoveReflectTemplatePromptPayload {
@@ -9258,6 +9992,12 @@ export interface IReflectTemplatePromptUpdateDescriptionPayload {
   prompt: IReflectPrompt | null;
 }
 
+export interface IPokerTemplateDimensionUpdateDescriptionPayload {
+  __typename: 'PokerTemplateDimensionUpdateDescriptionPayload';
+  error: IStandardMutationError | null;
+  dimension: ITemplateDimension | null;
+}
+
 export interface IReflectTemplatePromptUpdateGroupColorPayload {
   __typename: 'ReflectTemplatePromptUpdateGroupColorPayload';
   error: IStandardMutationError | null;
@@ -9407,6 +10147,13 @@ export interface INotifyKickedOut {
   team: ITeam;
 }
 
+export interface IRemovePokerTemplatePayload {
+  __typename: 'RemovePokerTemplatePayload';
+  error: IStandardMutationError | null;
+  pokerTemplate: IPokerTemplate | null;
+  pokerMeetingSettings: IPokerMeetingSettings | null;
+}
+
 export interface IRemoveReflectTemplatePayload {
   __typename: 'RemoveReflectTemplatePayload';
   error: IStandardMutationError | null;
@@ -9419,6 +10166,13 @@ export interface IRemoveReflectTemplatePromptPayload {
   error: IStandardMutationError | null;
   reflectTemplate: IReflectTemplate | null;
   prompt: IReflectPrompt | null;
+}
+
+export interface IRemovePokerTemplateDimensionPayload {
+  __typename: 'RemovePokerTemplateDimensionPayload';
+  error: IStandardMutationError | null;
+  pokerTemplate: IPokerTemplate | null;
+  dimension: ITemplateDimension | null;
 }
 
 /**
@@ -9435,16 +10189,41 @@ export interface IRenameMeetingSuccess {
   meeting: NewMeeting;
 }
 
-export interface IRenameReflectTemplatePayload {
-  __typename: 'RenameReflectTemplatePayload';
+export interface IRenameMeetingTemplatePayload {
+  __typename: 'RenameMeetingTemplatePayload';
   error: IStandardMutationError | null;
-  reflectTemplate: IReflectTemplate | null;
+  meetingTemplate: MeetingTemplate | null;
 }
 
 export interface IRenameReflectTemplatePromptPayload {
   __typename: 'RenameReflectTemplatePromptPayload';
   error: IStandardMutationError | null;
   prompt: IReflectPrompt | null;
+}
+
+export interface IRenamePokerTemplateDimensionPayload {
+  __typename: 'RenamePokerTemplateDimensionPayload';
+  error: IStandardMutationError | null;
+  dimension: ITemplateDimension | null;
+}
+
+export interface IRenamePokerTemplateScalePayload {
+  __typename: 'RenamePokerTemplateScalePayload';
+  error: IStandardMutationError | null;
+  scale: ITemplateScale | null;
+}
+
+export interface IRemovePokerTemplateScalePayload {
+  __typename: 'RemovePokerTemplateScalePayload';
+  error: IStandardMutationError | null;
+  pokerTemplate: IPokerTemplate | null;
+  scale: ITemplateScale | null;
+}
+
+export interface IRemovePokerTemplateScaleValuePayload {
+  __typename: 'RemovePokerTemplateScaleValuePayload';
+  error: IStandardMutationError | null;
+  scale: ITemplateScale | null;
 }
 
 export interface IRemoveReflectionPayload {
@@ -9749,6 +10528,32 @@ export interface IUpdateOrgInput {
   picture?: any | null;
 }
 
+export interface IUpdatePokerTemplateScaleValuePayload {
+  __typename: 'UpdatePokerTemplateScaleValuePayload';
+  error: IStandardMutationError | null;
+  scale: ITemplateScale | null;
+}
+
+/**
+ * A value for a scale
+ */
+export interface ITemplateScaleInput {
+  /**
+   * The color used to visually group a scale value
+   */
+  color: string;
+
+  /**
+   * The numerical value for this scale value
+   */
+  value: number;
+
+  /**
+   * The label for this value, e.g., XS, M, L
+   */
+  label: string;
+}
+
 export interface IUpdateNewCheckInQuestionPayload {
   __typename: 'UpdateNewCheckInQuestionPayload';
   error: IStandardMutationError | null;
@@ -9933,17 +10738,17 @@ export interface IUpdateTemplateScopeSuccess {
   /**
    * the template that was just updated, if downscoped, does not provide whole story
    */
-  template: IReflectTemplate;
+  template: MeetingTemplate;
 
   /**
    * if downscoping a previously used template, this will be the replacement
    */
-  clonedTemplate: IReflectTemplate | null;
+  clonedTemplate: MeetingTemplate | null;
 
   /**
    * The settings that contain the teamTemplates array that was modified
    */
-  settings: IRetrospectiveMeetingSettings;
+  settings: TeamMeetingSettings;
 }
 
 export interface IUpdateUserProfilePayload {
@@ -10019,6 +10824,84 @@ export interface IUpgradeToProPayload {
   meetings: Array<NewMeeting> | null;
 }
 
+/**
+ * Return object for VoteForPokerStoryPayload
+ */
+export type VoteForPokerStoryPayload =
+  | IErrorPayload
+  | IVoteForPokerStorySuccess;
+
+export interface IVoteForPokerStorySuccess {
+  __typename: 'VoteForPokerStorySuccess';
+
+  /**
+   * The stage that holds the updated scores
+   */
+  stage: EstimateStage;
+}
+
+/**
+ * Return object for PokerRevealVotesPayload
+ */
+export type PokerRevealVotesPayload = IErrorPayload | IPokerRevealVotesSuccess;
+
+export interface IPokerRevealVotesSuccess {
+  __typename: 'PokerRevealVotesSuccess';
+
+  /**
+   * The stage that holds the updated isVoting step
+   */
+  stage: EstimateStage;
+}
+
+/**
+ * Return object for PokerResetDimensionPayload
+ */
+export type PokerResetDimensionPayload =
+  | IErrorPayload
+  | IPokerResetDimensionSuccess;
+
+export interface IPokerResetDimensionSuccess {
+  __typename: 'PokerResetDimensionSuccess';
+
+  /**
+   * The stage that holds the updated isVoting step
+   */
+  stage: EstimateStage;
+}
+
+/**
+ * Return object for PokerAnnounceDeckHoverPayload
+ */
+export type PokerAnnounceDeckHoverPayload =
+  | IErrorPayload
+  | IPokerAnnounceDeckHoverSuccess;
+
+export interface IPokerAnnounceDeckHoverSuccess {
+  __typename: 'PokerAnnounceDeckHoverSuccess';
+
+  /**
+   * The stage that holds the updated scores
+   */
+  stage: EstimateStage;
+}
+
+/**
+ * Return object for PokerSetFinalScorePayload
+ */
+export type PokerSetFinalScorePayload =
+  | IErrorPayload
+  | IPokerSetFinalScoreSuccess;
+
+export interface IPokerSetFinalScoreSuccess {
+  __typename: 'PokerSetFinalScoreSuccess';
+
+  /**
+   * The stage that holds the updated finalScore
+   */
+  stage: EstimateStage;
+}
+
 export interface ISubscription {
   __typename: 'Subscription';
   meetingSubscription: MeetingSubscriptionPayload;
@@ -10045,6 +10928,7 @@ export type MeetingSubscriptionPayload =
   | IEditReflectionPayload
   | IEndDraggingReflectionPayload
   | IFlagReadyToAdvanceSuccess
+  | IJiraCreateIssuePayload
   | INewMeetingCheckInPayload
   | IPromoteNewMeetingFacilitatorPayload
   | IRemoveReflectionPayload
@@ -10060,7 +10944,12 @@ export type MeetingSubscriptionPayload =
   | IUpdateReflectionGroupTitlePayload
   | IUpdateRetroMaxVotesSuccess
   | IUpdatePokerScopeSuccess
-  | IVoteForReflectionGroupPayload;
+  | IVoteForReflectionGroupPayload
+  | IVoteForPokerStorySuccess
+  | IPokerRevealVotesSuccess
+  | IPokerResetDimensionSuccess
+  | IPokerAnnounceDeckHoverSuccess
+  | IPokerSetFinalScoreSuccess;
 
 export interface IUpdateDragLocationPayload {
   __typename: 'UpdateDragLocationPayload';
@@ -10245,7 +11134,7 @@ export interface ISetOrgUserRoleRemovedPayload {
 export type TaskSubscriptionPayload =
   | IChangeTaskTeamPayload
   | ICreateGitHubIssuePayload
-  | ICreateJiraIssuePayload
+  | ICreateJiraTaskIntegrationPayload
   | ICreateTaskPayload
   | IDeleteTaskPayload
   | IEditTaskPayload
@@ -10281,19 +11170,47 @@ export type TeamSubscriptionPayload =
   | IUpdateTeamNamePayload
   | IUpgradeToProPayload
   | IAddReflectTemplatePayload
+  | IAddPokerTemplatePayload
   | IAddReflectTemplatePromptPayload
+  | IAddPokerTemplateDimensionPayload
+  | IAddPokerTemplateScalePayload
+  | IAddPokerTemplateScaleValuePayload
   | IMoveReflectTemplatePromptPayload
+  | IMovePokerTemplateDimensionPayload
   | IReflectTemplatePromptUpdateDescriptionPayload
+  | IPokerTemplateDimensionUpdateDescriptionPayload
   | IReflectTemplatePromptUpdateGroupColorPayload
   | IRemoveAtlassianAuthPayload
   | IRemoveGitHubAuthPayload
   | IRemoveSlackAuthPayload
   | IRemoveReflectTemplatePayload
+  | IRemovePokerTemplatePayload
   | IRemoveReflectTemplatePromptPayload
-  | IRenameReflectTemplatePayload
+  | IRemovePokerTemplateDimensionPayload
+  | IRemovePokerTemplateScalePayload
+  | IRenameMeetingTemplatePayload
+  | IRenamePokerTemplatePayload
   | IRenameReflectTemplatePromptPayload
+  | IRenamePokerTemplateDimensionPayload
+  | IRenamePokerTemplateScalePayload
+  | IRemovePokerTemplateScaleValuePayload
   | ISetCheckInEnabledPayload
   | ISetSlackNotificationPayload
-  | IUpdateUserProfilePayload;
+  | IUpdatePokerTemplateDimensionScalePayload
+  | IUpdatePokerTemplateScaleValuePayload
+  | IUpdateUserProfilePayload
+  | IPersistJiraSearchQuerySuccess;
+
+export interface IRenamePokerTemplatePayload {
+  __typename: 'RenamePokerTemplatePayload';
+  error: IStandardMutationError | null;
+  pokerTemplate: IPokerTemplate | null;
+}
+
+export interface IUpdatePokerTemplateDimensionScalePayload {
+  __typename: 'UpdatePokerTemplateDimensionScalePayload';
+  error: IStandardMutationError | null;
+  dimension: ITemplateDimension | null;
+}
 
 // tslint:enable

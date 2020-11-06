@@ -1,9 +1,15 @@
 import DataLoader from 'dataloader'
 import {decode} from 'jsonwebtoken'
-import {MeetingTypeEnum, ReactableEnum, ThreadSourceEnum} from 'parabol-client/types/graphql'
+import {
+  MeetingTypeEnum,
+  ReactableEnum,
+  TaskStatusEnum,
+  ThreadSourceEnum
+} from 'parabol-client/types/graphql'
 import promiseAllPartial from 'parabol-client/utils/promiseAllPartial'
-import getRethink from '../database/rethinkDriver'
-import MeetingSettings from '../database/types/MeetingSettings'
+import getRethink, {RethinkSchema} from '../database/rethinkDriver'
+import AtlassianAuth from '../database/types/AtlassianAuth'
+import MeetingTemplate from '../database/types/MeetingTemplate'
 import {Reactable} from '../database/types/Reactable'
 import Task from '../database/types/Task'
 import {ThreadSource} from '../database/types/ThreadSource'
@@ -26,6 +32,8 @@ export interface UserTasksKey {
   teamIds: string[]
   archived: boolean
   includeUnassigned: boolean
+  statusFilters?: TaskStatusEnum[]
+  filterQuery?: string
 }
 
 export interface ReactablesKey {
@@ -39,6 +47,11 @@ export interface ThreadSourceKey {
 }
 
 export interface MeetingSettingsKey {
+  teamId: string
+  meetingType: MeetingTypeEnum
+}
+
+export interface MeetingTemplateKey {
   teamId: string
   meetingType: MeetingTypeEnum
 }
@@ -62,8 +75,17 @@ export const users = () => {
 }
 
 export const serializeUserTasksKey = (key: UserTasksKey) => {
-  const userIdKey = key.userIds ? key.userIds.sort().join(':') : '*'
-  return `${userIdKey}:${key.teamIds.sort().join(':')}:${key.first}:${key.after}:${key.archived}`
+  const {userIds, teamIds, first, after, archived, statusFilters, filterQuery} = key
+  const parts = [
+    (userIds?.length && userIds.sort().join(':')) || '*',
+    teamIds.sort().join(':'),
+    first,
+    after || '*',
+    archived,
+    (statusFilters?.length && statusFilters.sort().join(':')) || '*',
+    filterQuery || '*'
+  ]
+  return parts.join(':')
 }
 
 export const commentCountByThreadId = (parent: RethinkDataLoader) => {
@@ -93,7 +115,7 @@ export const reactables = (parent: RethinkDataLoader) => {
   return new DataLoader<ReactablesKey, Reactable, string>(
     async (keys) => {
       const reactableResults = (await Promise.all(
-        reactableLoaders.map((val) => {
+        reactableLoaders.map(async (val) => {
           const ids = keys.filter((key) => key.type === val.type).map(({id}) => id)
           return parent.get(val.loader).loadMany(ids)
         })
@@ -114,7 +136,7 @@ export const threadSources = (parent: RethinkDataLoader) => {
   return new DataLoader<ThreadSourceKey, ThreadSource, string>(
     async (keys) => {
       const threadableResults = (await Promise.all(
-        threadableLoaders.map((val) => {
+        threadableLoaders.map(async (val) => {
           const ids = keys.filter((key) => key.type === val.type).map(({sourceId}) => sourceId)
           return parent.get(val.loader).loadMany(ids)
         })
@@ -147,12 +169,32 @@ export const userTasks = (parent: RethinkDataLoader) => {
 
       const entryArray = await Promise.all(
         uniqKeys.map(async (key) => {
-          const {first, after, userIds, teamIds, archived, includeUnassigned} = key
+          const {
+            first,
+            after,
+            userIds,
+            teamIds,
+            archived,
+            statusFilters,
+            filterQuery,
+            includeUnassigned
+          } = key
           const dbAfter = after ? new Date(after) : r.maxval
 
           let teamTaskPartial = r.table('Task').getAll(r.args(teamIds), {index: 'teamId'})
-          if (userIds) {
+          if (userIds?.length) {
             teamTaskPartial = teamTaskPartial.filter((row) => r(userIds).contains(row('userId')))
+          }
+          if (statusFilters?.length) {
+            teamTaskPartial = teamTaskPartial.filter((row) =>
+              r(statusFilters).contains(row('status'))
+            )
+          }
+          if (filterQuery) {
+            // TODO: deal with tags like #archived and #private. should strip out of plaintextContent??
+            teamTaskPartial = teamTaskPartial.filter(
+              (row) => row('plaintextContent').match(filterQuery) as any
+            )
           }
 
           return {
@@ -185,7 +227,6 @@ export const userTasks = (parent: RethinkDataLoader) => {
       tasks.flat().forEach((task) => {
         taskLoader.clear(task.id).prime(task.id, task)
       })
-
       return keys.map((key) => tasksByKey[serializeUserTasksKey(key)])
     },
     {
@@ -195,45 +236,11 @@ export const userTasks = (parent: RethinkDataLoader) => {
   )
 }
 
-export const freshAtlassianAccessToken = (parent: RethinkDataLoader) => {
-  const userAuthLoader = parent.get('atlassianAuthByUserId')
-  return new DataLoader<TeamUserKey, string, string>(
-    async (keys) => {
-      return promiseAllPartial(
-        keys.map(async ({userId, teamId}) => {
-          const userAuths = await userAuthLoader.load(userId)
-          const teamAuth = userAuths.find((auth) => auth.teamId === teamId)
-          if (!teamAuth || !teamAuth.refreshToken) return null
-          const {accessToken: existingAccessToken, refreshToken} = teamAuth
-          const decodedToken = existingAccessToken && (decode(existingAccessToken) as any)
-          const now = new Date()
-          if (decodedToken && decodedToken.exp >= Math.floor(now.getTime() / 1000)) {
-            return existingAccessToken
-          }
-          // fetch a new one
-          const manager = await AtlassianServerManager.refresh(refreshToken)
-          const {accessToken} = manager
-          teamAuth.accessToken = accessToken
-          const r = await getRethink()
-          await r
-            .table('AtlassianAuth')
-            .getAll(userId, {index: 'userId'})
-            .filter({teamId})
-            .update({accessToken, updatedAt: now})
-            .run()
-          return accessToken
-        })
-      )
-    },
-    {
-      ...parent.dataLoaderOptions,
-      cacheKeyFn: (key) => `${key.userId}:${key.teamId}`
-    }
-  )
+interface FreshAtlassianAuth extends AtlassianAuth {
+  accessToken: string
 }
-
 export const freshAtlassianAuth = (parent: RethinkDataLoader) => {
-  return new DataLoader<TeamUserKey, string, string>(
+  return new DataLoader<TeamUserKey, FreshAtlassianAuth | null, string>(
     async (keys) => {
       return promiseAllPartial(
         keys.map(async ({userId, teamId}) => {
@@ -291,7 +298,7 @@ export const jiraRemoteProject = (parent: RethinkDataLoader) => {
 }
 
 export const meetingSettingsByType = (parent: RethinkDataLoader) => {
-  return new DataLoader<MeetingSettingsKey, MeetingSettings, string>(
+  return new DataLoader<MeetingSettingsKey, RethinkSchema['MeetingSettings']['type'], string>(
     async (keys) => {
       const r = await getRethink()
       const types = {} as {[meetingType: string]: string[]}
@@ -315,6 +322,40 @@ export const meetingSettingsByType = (parent: RethinkDataLoader) => {
       return keys.map((key) => {
         const {teamId, meetingType} = key
         return docs.find((doc) => doc.teamId === teamId && doc.meetingType === meetingType)!
+      })
+    },
+    {
+      ...parent.dataLoaderOptions,
+      cacheKeyFn: (key) => `${key.teamId}:${key.meetingType}`
+    }
+  )
+}
+
+export const meetingTemplatesByType = (parent: RethinkDataLoader) => {
+  return new DataLoader<MeetingTemplateKey, MeetingTemplate[], string>(
+    async (keys) => {
+      const r = await getRethink()
+      const types = {} as {[meetingType: string]: string[]}
+      keys.forEach((key) => {
+        const {meetingType} = key
+        types[meetingType] = types[meetingType] || []
+        types[meetingType].push(key.teamId)
+      })
+      const entries = Object.entries(types)
+      const resultsByType = await Promise.all(
+        entries.map((entry) => {
+          const [meetingType, teamIds] = entry
+          return r
+            .table('MeetingTemplate')
+            .getAll(r.args(teamIds), {index: 'teamId'})
+            .filter({type: meetingType as MeetingTypeEnum, isActive: true})
+            .run()
+        })
+      )
+      const docs = resultsByType.flat()
+      return keys.map((key) => {
+        const {teamId, meetingType} = key
+        return docs.filter((doc) => doc.teamId === teamId && doc.type === meetingType)!
       })
     },
     {

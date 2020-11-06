@@ -43,7 +43,6 @@ export const agendaItemsByMeetingId = new LoaderMakerForeign(
       .run()
   }
 )
-
 export const atlassianAuthByUserId = new LoaderMakerForeign(
   'atlassianAuths',
   'userId',
@@ -66,7 +65,6 @@ export const atlassianAuthByTeamId = new LoaderMakerForeign(
       .run()
   }
 )
-
 export const commentsByThreadId = new LoaderMakerForeign(
   'comments',
   'threadId',
@@ -108,6 +106,19 @@ export const reflectPromptsByTemplateId = new LoaderMakerForeign(
     const r = await getRethink()
     return r
       .table('ReflectPrompt')
+      .getAll(r.args(templateIds), {index: 'templateId'})
+      .orderBy('sortOrder')
+      .run()
+  }
+)
+
+export const dimensionsByTemplateId = new LoaderMakerForeign(
+  'templateDimensions',
+  'templateId',
+  async (templateIds) => {
+    const r = await getRethink()
+    return r
+      .table('TemplateDimension')
       .getAll(r.args(templateIds), {index: 'templateId'})
       .orderBy('sortOrder')
       .run()
@@ -221,6 +232,23 @@ export const meetingTemplatesByTeamId = new LoaderMakerForeign(
       .table('MeetingTemplate')
       .getAll(r.args(teamIds), {index: 'teamId'})
       .filter({isActive: true})
+      .run()
+  }
+)
+
+export const scalesByTeamId = new LoaderMakerForeign(
+  'templateScales',
+  'teamId',
+  async (teamIds) => {
+    const r = await getRethink()
+    return r
+      .table('TemplateScale')
+      .getAll(r.args(teamIds), {index: 'teamId'})
+      .filter((row) =>
+        row('removedAt')
+          .default(null)
+          .eq(null)
+      )
       .run()
   }
 )

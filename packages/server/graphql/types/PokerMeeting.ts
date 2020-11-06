@@ -1,5 +1,6 @@
 import {GraphQLID, GraphQLInt, GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
+import {MeetingTypeEnum} from '../../../client/types/graphql'
 import {getUserId} from '../../utils/authorization'
 import {GQLContext} from '../graphql'
 import NewMeeting, {newMeetingFields} from './NewMeeting'
@@ -37,7 +38,9 @@ const PokerMeeting = new GraphQLObjectType<any, GQLContext>({
       type: GraphQLNonNull(PokerMeetingSettings),
       description: 'The settings that govern the Poker meeting',
       resolve: async ({teamId}, _args, {dataLoader}) => {
-        return dataLoader.get('meetingSettingsByType').load({teamId, meetingType: 'poker'})
+        return dataLoader
+          .get('meetingSettingsByType')
+          .load({teamId, meetingType: MeetingTypeEnum.poker})
       }
     },
     story: {
@@ -48,9 +51,8 @@ const PokerMeeting = new GraphQLObjectType<any, GQLContext>({
           type: GraphQLNonNull(GraphQLID)
         }
       },
-      resolve: async ({teamId, facilitatorUserId}, {storyId}, {dataLoader}) => {
-        const isJiraId = await isValidJiraId(storyId, teamId, facilitatorUserId, dataLoader)
-
+      resolve: async ({teamId}, {storyId}, {authToken, dataLoader}) => {
+        const isJiraId = await isValidJiraId(storyId, teamId, {authToken, dataLoader})
         if (isJiraId) {
           const [cloudId, key] = getJiraCloudIdAndKey(storyId)
           return {
@@ -79,6 +81,10 @@ const PokerMeeting = new GraphQLObjectType<any, GQLContext>({
     // },
     teamId: {
       type: GraphQLNonNull(GraphQLID)
+    },
+    templateId: {
+      type: GraphQLNonNull(GraphQLID),
+      description: 'The ID of the template used for the meeting'
     },
     viewerMeetingMember: {
       type: GraphQLNonNull(PokerMeetingMember),

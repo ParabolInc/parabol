@@ -2,6 +2,7 @@
 // this allows redis to cache the results of arbitrarily complex rethinkdb queries
 
 import ms from 'ms'
+import {SharingScopeEnum} from '../../client/types/graphql'
 import getRethink from '../database/rethinkDriver'
 
 const customRedisQueries = {
@@ -28,13 +29,33 @@ const customRedisQueries = {
       meetingTypes.map((type) => {
         return r
           .table('MeetingTemplate')
-          .filter({scope: 'PUBLIC', isActive: true, type})
+          .filter({scope: SharingScopeEnum.PUBLIC, isActive: true, type})
           .limit(1000)
           .run()
       })
     )
 
     return publicTemplatesByType
+  },
+  starterScales: async (teamIds: string[]) => {
+    const r = await getRethink()
+
+    const starterScales = await Promise.all(
+      teamIds.map((teamId) => {
+        return r
+          .table('TemplateScale')
+          .getAll(teamId, {index: 'teamId'})
+          .filter({isStarter: true})
+          .filter((row) =>
+            row('removedAt')
+              .default(null)
+              .eq(null)
+          )
+          .run()
+      })
+    )
+
+    return starterScales
   }
 } as const
 

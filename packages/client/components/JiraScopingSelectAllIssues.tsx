@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import React, {useMemo} from 'react'
+import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
@@ -8,6 +8,7 @@ import {AddOrDeleteEnum, TaskServiceEnum} from '../types/graphql'
 import Checkbox from './Checkbox'
 import graphql from 'babel-plugin-relay/macro'
 import {JiraScopingSelectAllIssues_issues} from '../__generated__/JiraScopingSelectAllIssues_issues.graphql'
+import useUnusedRecords from '~/hooks/useUnusedRecords'
 
 const Item = styled('div')({
   display: 'flex',
@@ -24,29 +25,19 @@ interface Props {
   meetingId: string
   issues: JiraScopingSelectAllIssues_issues
   usedJiraIssueIds: Set<string>
-
 }
 
 const JiraScopingSelectAllIssues = (props: Props) => {
   const {meetingId, usedJiraIssueIds, issues} = props
+  const issueIds = issues.map(issueEdge => issueEdge.node.id)
   const atmosphere = useAtmosphere()
   const {onCompleted, onError, submitMutation, submitting} = useMutationProps()
-  const unusedIssues = useMemo(() => {
-    const unusedIssues = [] as string[]
-    issues.forEach(({node}) => {
-      if (!usedJiraIssueIds.has(node.id)) {
-        unusedIssues.push(node.id)
-      }
-    })
-    return unusedIssues
-  }, [usedJiraIssueIds, issues])
-  const selectAll = unusedIssues.length === 0 ? true : unusedIssues.length === issues.length ? false : null
-
+  const [unusedIssues, allSelected] = useUnusedRecords(issues, usedJiraIssueIds)
   const onClick = () => {
     if (submitting) return
     submitMutation()
-    const updateArr = selectAll === true ? Array.from(usedJiraIssueIds) : unusedIssues
-    const action = selectAll === true ? AddOrDeleteEnum.DELETE : AddOrDeleteEnum.ADD
+    const updateArr = allSelected === true ? issueIds : unusedIssues
+    const action = allSelected === true ? AddOrDeleteEnum.DELETE : AddOrDeleteEnum.ADD
     const updates = updateArr.map((serviceTaskId) => ({
       service: TaskServiceEnum.jira,
       serviceTaskId,
@@ -62,7 +53,7 @@ const JiraScopingSelectAllIssues = (props: Props) => {
   if (issues.length < 2) return null
   return (
     <Item onClick={onClick}>
-      <Checkbox active={selectAll} onClick={() => console.log('click')} />
+      <Checkbox active={allSelected} onClick={() => console.log('click')} />
       <Title>{`Select all ${issues.length} issues`}</Title>
     </Item>
   )

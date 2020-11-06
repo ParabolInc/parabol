@@ -12,11 +12,18 @@ extend type ActionMeeting {
   showSidebar: Boolean!
 }
 
+type ParabolSearchQuery {
+  id: String!
+  queryString: String
+  statusFilters: [TaskStatusEnum!]
+}
+
 extend type PokerMeeting {
   localPhase: NewMeetingPhase!
   localStage: NewMeetingStage!
   showSidebar: Boolean!
   jiraSearchQuery: JiraSearchQuery!
+  parabolSearchQuery: ParabolSearchQuery!
 }
 
 extend type RetrospectiveMeeting {

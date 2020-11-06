@@ -56,7 +56,9 @@ const deleteComment = {
 
     const data = {commentId}
 
-    publish(SubscriptionChannel.MEETING, meetingId, 'DeleteCommentSuccess', data, subOptions)
+    if (meetingId) {
+      publish(SubscriptionChannel.MEETING, meetingId, 'DeleteCommentSuccess', data, subOptions)
+    }
     return data
   }
 }

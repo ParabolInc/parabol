@@ -11,6 +11,7 @@ import EditCommentingPayload from './EditCommentingPayload'
 import EditReflectionPayload from './EditReflectionPayload'
 import EndDraggingReflectionPayload from './EndDraggingReflectionPayload'
 import {FlagReadyToAdvanceSuccess} from './FlagReadyToAdvancePayload'
+import JiraCreateIssuePayload from './JiraCreateIssuePayload'
 import NewMeetingCheckInPayload from './NewMeetingCheckInPayload'
 import PromoteNewMeetingFacilitatorPayload from './PromoteNewMeetingFacilitatorPayload'
 import RemoveReflectionPayload from './RemoveReflectionPayload'
@@ -26,11 +27,17 @@ import UpdateReflectionContentPayload from './UpdateReflectionContentPayload'
 import UpdateReflectionGroupTitlePayload from './UpdateReflectionGroupTitlePayload'
 import {UpdateRetroMaxVotesSuccess} from './UpdateRetroMaxVotesPayload'
 import VoteForReflectionGroupPayload from './VoteForReflectionGroupPayload'
+import {VoteForPokerStorySuccess} from './VoteForPokerStoryPayload'
+import {PokerRevealVotesSuccess} from './PokerRevealVotesPayload'
+import {PokerResetDimensionSuccess} from './PokerResetDimensionPayload'
+import {PokerAnnounceDeckHoverSuccess} from './PokerAnnounceDeckHoverPayload'
+import {PokerSetFinalScoreSuccess} from './PokerSetFinalScorePayload'
 import {UpdatePokerScopeSuccess} from './UpdatePokerScopePayload'
 
 const types = [
+  // DEPRECATED
   AddCommentSuccess,
-  AddReactjiToReflectionSuccess, // DEPRECATED
+  AddReactjiToReflectionSuccess,
   AddReactjiToReactableSuccess,
   AutoGroupReflectionsPayload,
   CreateReflectionPayload,
@@ -41,6 +48,7 @@ const types = [
   EditReflectionPayload,
   EndDraggingReflectionPayload,
   FlagReadyToAdvanceSuccess,
+  JiraCreateIssuePayload,
   NewMeetingCheckInPayload,
   PromoteNewMeetingFacilitatorPayload,
   RemoveReflectionPayload,
@@ -56,7 +64,12 @@ const types = [
   UpdateReflectionGroupTitlePayload,
   UpdateRetroMaxVotesSuccess,
   UpdatePokerScopeSuccess,
-  VoteForReflectionGroupPayload
+  VoteForReflectionGroupPayload,
+  VoteForPokerStorySuccess,
+  PokerRevealVotesSuccess,
+  PokerResetDimensionSuccess,
+  PokerAnnounceDeckHoverSuccess,
+  PokerSetFinalScoreSuccess
 ]
 
 export default graphQLSubscriptionType('MeetingSubscriptionPayload', types)

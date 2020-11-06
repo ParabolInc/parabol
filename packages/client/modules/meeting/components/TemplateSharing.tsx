@@ -86,8 +86,8 @@ const TemplateSharing = (props: Props) => {
     scope === 'TEAM'
       ? `Only visible to ${teamName}`
       : scope === 'ORGANIZATION'
-      ? `Sharing with ${orgName}`
-      : 'Sharing publicly'
+        ? `Sharing with ${orgName}`
+        : 'Sharing publicly'
   return (
     <>
       <HR />
@@ -109,7 +109,7 @@ const TemplateSharing = (props: Props) => {
 }
 export default createFragmentContainer(TemplateSharing, {
   template: graphql`
-    fragment TemplateSharing_template on ReflectTemplate {
+    fragment TemplateSharing_template on MeetingTemplate {
       ...SelectSharingScopeDropdown_template
       id
       scope

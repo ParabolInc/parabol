@@ -3,15 +3,15 @@ import {SubscriptionChannel, Threshold} from 'parabol-client/types/constEnums'
 import {ReactableEnum as EReactableEnum} from 'parabol-client/types/graphql'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import getRethink from '../../database/rethinkDriver'
+import {Reactable} from '../../database/types/Reactable'
 import {getUserId} from '../../utils/authorization'
 import emojiIds from '../../utils/emojiIds'
 import getGroupedReactjis from '../../utils/getGroupedReactjis'
 import publish from '../../utils/publish'
 import {GQLContext} from '../graphql'
 import AddReactjiToReactablePayload from '../types/AddReactjiToReactablePayload'
-import ReactableEnum from '../types/ReactableEnum'
-import {Reactable} from '../../database/types/Reactable'
 import getReactableType from '../types/getReactableType'
+import ReactableEnum from '../types/ReactableEnum'
 
 const tableLookup = {
   [EReactableEnum.COMMENT]: 'Comment',
@@ -117,13 +117,15 @@ const addReactjiToReactable = {
     }
 
     const data = {reactableId, reactableType}
-    publish(
-      SubscriptionChannel.MEETING,
-      meetingId,
-      'AddReactjiToReactableSuccess',
-      data,
-      subOptions
-    )
+    if (meetingId) {
+      publish(
+        SubscriptionChannel.MEETING,
+        meetingId,
+        'AddReactjiToReactableSuccess',
+        data,
+        subOptions
+      )
+    }
     return data
   }
 }

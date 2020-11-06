@@ -9,12 +9,14 @@ import TeamMember from '../database/types/TeamMember'
 import getRethinkConfig from './getRethinkConfig'
 import {R} from './stricterR'
 import AgendaItem from './types/AgendaItem'
+import AtlassianAuth from './types/AtlassianAuth'
 import Comment from './types/Comment'
 import FailedAuthRequest from './types/FailedAuthRequest'
 import Invoice from './types/Invoice'
 import InvoiceItemHook from './types/InvoiceItemHook'
 import MassInvitation from './types/MassInvitation'
 import MeetingAction from './types/MeetingAction'
+import MeetingPoker from './types/MeetingPoker'
 import MeetingRetrospective from './types/MeetingRetrospective'
 import MeetingSettingsAction from './types/MeetingSettingsAction'
 import MeetingSettingsPoker from './types/MeetingSettingsPoker'
@@ -51,7 +53,7 @@ export type RethinkSchema = {
     index: 'teamId' | 'meetingId'
   }
   AtlassianAuth: {
-    type: any
+    type: AtlassianAuth
     index: 'atlassianUserId' | 'userId' | 'teamId'
   }
   Comment: {
@@ -95,7 +97,7 @@ export type RethinkSchema = {
     index: 'meetingId' | 'teamId' | 'userId'
   }
   NewMeeting: {
-    type: MeetingRetrospective | MeetingAction
+    type: MeetingRetrospective | MeetingAction | MeetingPoker
     index: 'facilitatorUserId' | 'teamId' | 'templateId'
   }
   NewFeature: {
@@ -197,11 +199,11 @@ export type RethinkSchema = {
   }
   TemplateDimension: {
     type: TemplateDimension
-    index: 'templateId'
+    index: 'teamId' | 'templateId'
   }
   TemplateScale: {
     type: TemplateScale
-    index: 'id'
+    index: 'teamId'
   }
   TimelineEvent: {
     type: TimelineEvent

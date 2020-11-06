@@ -1,6 +1,7 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {IStartNewMeetingOnMutationArguments, MeetingTypeEnum} from 'parabol-client/types/graphql'
+import DimensionScaleMapping from '../../database/types/DimensionScaleMapping'
 import getRethink from '../../database/rethinkDriver'
 import MeetingPoker from '../../database/types/MeetingPoker'
 import MeetingSettingsPoker from '../../database/types/MeetingSettingsPoker'
@@ -51,15 +52,24 @@ export default {
     const phases = await createNewMeetingPhases(teamId, meetingCount, meetingType, dataLoader)
     const meetingSettings = (await dataLoader
       .get('meetingSettingsByType')
-      .load({teamId, meetingType: 'poker'})) as MeetingSettingsPoker
+      .load({teamId, meetingType: MeetingTypeEnum.poker})) as MeetingSettingsPoker
     const {selectedTemplateId} = meetingSettings
+    const dimensions = await dataLoader.get('dimensionsByTemplateId').load(selectedTemplateId)
+    const dimensionScaleMapping = dimensions.map(
+      (dimension) =>
+        new DimensionScaleMapping({
+          dimensionId: dimension.id,
+          scaleId: dimension.scaleId
+        })
+    )
 
     const meeting = new MeetingPoker({
       teamId,
       meetingCount,
       phases,
       facilitatorUserId: viewerId,
-      templateId: selectedTemplateId
+      templateId: selectedTemplateId,
+      dimensionScaleMapping
     })
     const meetingId = meeting.id
     const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)
@@ -74,7 +84,7 @@ export default {
     const otherActiveMeeting = newActiveMeetings.find((activeMeeting) => {
       const {createdAt, id} = activeMeeting
       if (id === meetingId || activeMeeting.meetingType !== 'poker') return false
-      return createdAt > Date.now() - DUPLICATE_THRESHOLD
+      return createdAt.getTime() > Date.now() - DUPLICATE_THRESHOLD
     })
     if (otherActiveMeeting) {
       await r

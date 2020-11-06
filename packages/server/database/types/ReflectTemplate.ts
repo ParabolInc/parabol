@@ -1,9 +1,10 @@
+import {SharingScopeEnum} from '../../../client/types/graphql'
 import MeetingTemplate from './MeetingTemplate'
 
 interface Input {
   name: string
   teamId: string
-  scope?: string
+  scope?: SharingScopeEnum
   orgId: string
   parentTemplateId?: string
   lastUsedAt?: Date

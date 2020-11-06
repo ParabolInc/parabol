@@ -23,15 +23,17 @@ const Info = styled(Icon)({
 
 interface Props {
   error?: string | null
+  msg?: string | null
 }
-const JiraScopingNoResults = (props: Props) => {
-  const {error} = props
+
+const IntegrationScopingNoResults = (props: Props) => {
+  const {error, msg} = props
   return (
     <Message>
       <Info>{error ? 'warn' : 'info'}</Info>
-      {error || 'No issues match that query'}
+      {error || msg || 'No records found'}
     </Message>
   )
 }
 
-export default JiraScopingNoResults
+export default IntegrationScopingNoResults

@@ -5,16 +5,14 @@ import {ISuggestedIntegrationJira} from 'parabol-client/types/graphql'
 import makeJiraProjectName from 'parabol-client/utils/makeJiraProjectName'
 import makeSuggestedIntegrationId from 'parabol-client/utils/makeSuggestedIntegrationId'
 
-const fetchAtlassianProjects = async (dataLoader: DataLoaderWorker, teamId, userId) => {
-  const [accessToken, auths] = await Promise.all([
-    dataLoader.get('freshAtlassianAccessToken').load({teamId, userId}),
-    dataLoader.get('atlassianAuthByUserId').load(userId)
-  ])
-  const auth = auths.find((auth) => auth.teamId === teamId)
+const fetchAtlassianProjects = async (
+  dataLoader: DataLoaderWorker,
+  teamId: string,
+  userId: string
+) => {
+  const auth = await dataLoader.get('freshAtlassianAuth').load({teamId, userId})
   if (!auth) return []
-  // mutate the cache to ensure accessToken is always the same
-  auth.accessToken = accessToken
-
+  const {accessToken} = auth
   const manager = new AtlassianServerManager(accessToken)
   const sites = await manager.getAccessibleResources()
 

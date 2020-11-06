@@ -66,8 +66,15 @@ export default {
       .run()
 
     const data = {commentId}
-
-    publish(SubscriptionChannel.MEETING, meetingId, 'UpdateCommentContentSuccess', data, subOptions)
+    if (meetingId) {
+      publish(
+        SubscriptionChannel.MEETING,
+        meetingId,
+        'UpdateCommentContentSuccess',
+        data,
+        subOptions
+      )
+    }
     return data
   }
 }

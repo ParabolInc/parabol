@@ -2,7 +2,7 @@ import {ContentState, convertFromRaw} from 'draft-js'
 import {stateToMarkdown} from 'draft-js-export-markdown'
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import {ICreateJiraIssueOnMutationArguments} from 'parabol-client/types/graphql'
+import {ICreateJiraTaskIntegrationOnMutationArguments} from 'parabol-client/types/graphql'
 import getRethink from '../../database/rethinkDriver'
 import db from '../../db'
 import AtlassianServerManager from '../../utils/AtlassianServerManager'
@@ -11,11 +11,11 @@ import publish from '../../utils/publish'
 import segmentIo from '../../utils/segmentIo'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
-import CreateJiraIssuePayload from '../types/CreateJiraIssuePayload'
+import CreateJiraTaskIntegrationPayload from '../types/CreateJiraTaskIntegrationPayload'
 
 export default {
-  name: 'CreateJiraIssue',
-  type: CreateJiraIssuePayload,
+  name: 'CreateJiraTaskIntegration',
+  type: CreateJiraTaskIntegrationPayload,
   args: {
     cloudId: {
       type: new GraphQLNonNull(GraphQLID),
@@ -32,7 +32,7 @@ export default {
   },
   resolve: async (
     _source: object,
-    {cloudId, projectKey, taskId}: ICreateJiraIssueOnMutationArguments,
+    {cloudId, projectKey, taskId}: ICreateJiraTaskIntegrationOnMutationArguments,
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) => {
     const r = await getRethink()
@@ -54,6 +54,11 @@ export default {
       return standardError(new Error('Team not found'), {userId: viewerId})
     }
 
+    if (!userId) {
+      // we should probably remove this constraint in the future
+      return {error: {message: 'Task must have assignee before it can be integrated with Jira'}}
+    }
+
     // VALIDATION
     if (task.integration) {
       return standardError(
@@ -62,15 +67,17 @@ export default {
       )
     }
 
-    const userAuths = await Promise.all([
-      dataLoader.get('atlassianAuthByUserId').load(viewerId),
-      dataLoader.get('atlassianAuthByUserId').load(userId)
+    const [viewerAuth, assigneeAuth] = await dataLoader.get('freshAtlassianAuth').loadMany([
+      {teamId, userId: viewerId},
+      {teamId, userId}
     ])
-    const [viewerAuth, assigneeAuth] = userAuths.map((auths) =>
-      auths.find((auth) => auth.teamId === teamId)
-    )
 
-    if (!assigneeAuth || !assigneeAuth.isActive) {
+    const validAssigneeAuth =
+      !(assigneeAuth instanceof Error) && assigneeAuth?.isActive ? assigneeAuth : null
+    const validViewerAuth =
+      !(viewerAuth instanceof Error) && viewerAuth?.isActive ? viewerAuth : null
+
+    if (!validAssigneeAuth) {
       return standardError(new Error('The assignee does not have access to Jira'), {
         userId: viewerId
       })
@@ -91,17 +98,14 @@ export default {
       blocks.length === 0 ? ContentState.createFromText('') : convertFromRaw(rawContent)
     let markdown = stateToMarkdown(contentState)
 
-    const isViewerAllowed = viewerAuth ? viewerAuth.isActive : false
-    if (!isViewerAllowed) {
+    // const isViewerAllowed = viewerAuth && !(viewerAuth instanceof Error) ? viewerAuth.isActive : false
+    if (!validViewerAuth) {
       const creator = await db.read('User', viewerId)
       const creatorName = creator.preferredName
       markdown = `${markdown}\n\n_Added by ${creatorName}_`
     }
 
-    const tokenUserId = isViewerAllowed ? viewerId : userId
-    const accessToken = await dataLoader
-      .get('freshAtlassianAccessToken')
-      .load({teamId, userId: tokenUserId})
+    const {accessToken} = validViewerAuth || validAssigneeAuth
     const manager = new AtlassianServerManager(accessToken)
 
     const [sites, issueMetaRes, description] = await Promise.all([
@@ -128,7 +132,7 @@ export default {
       description,
       // ERROR: Field 'reporter' cannot be set. It is not on the appropriate screen, or unknown.
       assignee: {
-        id: assigneeAuth.accountId
+        id: validAssigneeAuth.accountId
       },
       issuetype: {
         id: bestType.id
@@ -162,7 +166,13 @@ export default {
     const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)
     const data = {taskId}
     teamMembers.forEach(({userId}) => {
-      publish(SubscriptionChannel.TASK, userId, 'CreateJiraIssuePayload', data, subOptions)
+      publish(
+        SubscriptionChannel.TASK,
+        userId,
+        'CreateJiraTaskIntegrationPayload',
+        data,
+        subOptions
+      )
     })
     segmentIo.track({
       userId: viewerId,
