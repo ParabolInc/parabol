@@ -5,10 +5,13 @@ import GraphQLISO8601Type from './GraphQLISO8601Type'
 import GraphQLURLType from './GraphQLURLType'
 import PageInfoDateCursor from './PageInfoDateCursor'
 import StandardMutationError from './StandardMutationError'
+import Story from './Story'
 
 const JiraIssue = new GraphQLObjectType<any, GQLContext>({
   name: 'JiraIssue',
   description: 'The Jira Issue that comes direct from Jira',
+  interfaces: () => [Story],
+  isTypeOf: ({cloudId, key}) => !!(cloudId && key),
   fields: () => ({
     id: {
       type: GraphQLNonNull(GraphQLID),

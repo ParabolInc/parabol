@@ -9,6 +9,7 @@ import {ICON_SIZE} from '../styles/typographyV2'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import {PokerEstimateHeaderCardJira_stage} from '../__generated__/PokerEstimateHeaderCardJira_stage.graphql'
+import {IJiraIssue} from '../types/graphql'
 
 const HeaderCardWrapper = styled('div')({
   display: 'flex',
@@ -76,8 +77,8 @@ interface Props {
 }
 const PokerEstimateHeaderCardJira = (props: Props) => {
   const {stage} = props
-  const {issue} = stage
-  const {key, summary, descriptionHTML, url} = issue!
+  const {story} = stage
+  const {key, summary, descriptionHTML, url} = story as IJiraIssue
   const [isExpanded, setIsExpanded] = useState(false)
   const descriptionRef = useRef<HTMLDivElement>(null)
   const maxHeight = descriptionRef.current?.scrollHeight ?? 1000
@@ -114,12 +115,14 @@ export default createFragmentContainer(
   PokerEstimateHeaderCardJira,
   {
     stage: graphql`
-    fragment PokerEstimateHeaderCardJira_stage on EstimateStageJira {
-      issue {
-        key
-        summary
-        descriptionHTML
-        url
+    fragment PokerEstimateHeaderCardJira_stage on EstimateStage {
+      story {
+        ...on JiraIssue {
+          key
+          summary
+          descriptionHTML
+          url
+        }
       }
     }`
   }
