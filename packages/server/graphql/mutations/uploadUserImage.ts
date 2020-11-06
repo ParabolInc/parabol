@@ -5,16 +5,7 @@ import standardError from '../../utils/standardError'
 import GraphQLFileType from '../types/GraphQLFileType'
 import validateAvatarUpload from '../../utils/validateAvatarUpload'
 import shortid from 'shortid'
-import getS3PutUrl from '../../utils/getS3PutUrl'
-import {s3PutObject} from '../../utils/s3'
-
-interface JsonifiedFile {
-  contentType: string
-  buffer: {
-    type: 'Buffer'
-    data: Array<number>
-  }
-}
+import getFileStoreManager from '../../fileStorage/getFileStoreManager'
 
 export default {
   type: GraphQLBoolean, // todo: return payload
@@ -33,7 +24,21 @@ export default {
       description: 'testtest '
     }
   },
-  resolve: async (_, {file}: {file: JsonifiedFile}, {authToken}) => {
+  resolve: async (
+    _,
+    {
+      file
+    }: {
+      file: {
+        contentType: string
+        buffer: {
+          type: 'Buffer'
+          data: Array<number>
+        }
+      }
+    },
+    {authToken}
+  ) => {
     // AUTH
     if (!isAuthenticated(authToken)) return standardError(new Error('Not authenticated'))
     const userId = getUserId(authToken)
@@ -45,9 +50,21 @@ export default {
 
     // RESOLUTION
     const fileName = shortid.generate()
-    const partialPath = `User/${userId}/picture/${fileName}.${ext}`
-    const fullPath = getS3PutUrl(partialPath)
-    await s3PutObject(fullPath, validBuffer)
+    const location = await getFileStoreManager().putFile({
+      fileName,
+      ext,
+      buffer: validBuffer,
+      userId
+    })
+    console.log('file location:', location)
+    /*
+    todos: 
+      - create abstract fileStorage sendFile handler
+      - PR trebuchet client package to really expect uploadables
+      - normalize image size to min necessary for avatar
+      - mutation for org avatar
+      - update user picture field after put success
+    */
 
     return true
   }

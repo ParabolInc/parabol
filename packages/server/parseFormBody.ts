@@ -4,11 +4,6 @@ import {Readable} from 'stream'
 import {OutgoingMessage} from '@mattkrick/graphql-trebuchet-client'
 import {APP_MAX_AVATAR_FILE_SIZE} from 'parabol-client/utils/constants'
 
-interface FileUpload {
-  contentType: string
-  buffer: Buffer
-}
-
 type ParseFormBodySignature = (res: HttpResponse, req: HttpRequest) => Promise<JSON | null>
 
 const bodyStream = (res: HttpResponse) => {
@@ -38,7 +33,10 @@ const parseFile = (fileStream, contentType) => {
       const parsedFile = {
         buffer,
         contentType
-      } as FileUpload
+      } as {
+        contentType: string
+        buffer: Buffer
+      }
       resolve(parsedFile)
     })
     fileStream.on('limit', () => {
