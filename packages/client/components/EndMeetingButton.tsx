@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import React, {forwardRef, Ref} from 'react'
 import {TransitionStatus} from '~/hooks/useTransition'
+import EndCheckInMutation from '~/mutations/EndCheckInMutation'
 import {PALETTE} from '~/styles/paletteV2'
 import useAtmosphere from '../hooks/useAtmosphere'
 import {MenuPosition} from '../hooks/useCoords'
@@ -63,6 +64,8 @@ const EndMeetingButton = forwardRef((props: Props, ref: Ref<HTMLButtonElement>) 
       submitMutation()
       if (meetingType === 'poker') {
         EndSprintPokerMutation(atmosphere, {meetingId}, {history, onError, onCompleted})
+      } else if (meetingType === 'action') {
+        EndCheckInMutation(atmosphere, {meetingId}, {history, onError, onCompleted})
       } else {
         EndNewMeetingMutation(atmosphere, {meetingId}, {history, onError, onCompleted})
       }

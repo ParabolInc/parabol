@@ -2,6 +2,7 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
+import EndCheckInMutation from '~/mutations/EndCheckInMutation'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
 import useRouter from '../hooks/useRouter'
@@ -9,7 +10,6 @@ import AgendaShortcutHint from '../modules/meeting/components/AgendaShortcutHint
 import MeetingCopy from '../modules/meeting/components/MeetingCopy/MeetingCopy'
 import MeetingFacilitationHint from '../modules/meeting/components/MeetingFacilitationHint/MeetingFacilitationHint'
 import MeetingPhaseHeading from '../modules/meeting/components/MeetingPhaseHeading/MeetingPhaseHeading'
-import EndNewMeetingMutation from '../mutations/EndNewMeetingMutation'
 import {NewMeetingPhaseTypeEnum} from '../types/graphql'
 import {AGENDA_ITEM_LABEL} from '../utils/constants'
 import {phaseLabelLookup} from '../utils/meetings/lookups'
@@ -53,7 +53,7 @@ const ActionMeetingLastCall = (props: Props) => {
   const endMeeting = () => {
     if (submitting) return
     submitMutation()
-    EndNewMeetingMutation(atmosphere, {meetingId}, {history, onError, onCompleted})
+    EndCheckInMutation(atmosphere, {meetingId}, {history, onError, onCompleted})
   }
 
   const getHeadingText = () => {

@@ -66,6 +66,7 @@ const subscription = graphql`
       ...ArchiveTimelineEventMutation_notification @relay(mask: false)
       ...SetNotificationStatusMutation_notification @relay(mask: false)
       ...CreateTaskMutation_notification @relay(mask: false)
+      ...EndCheckInMutation_notification @relay(mask: false)
       ...EndNewMeetingMutation_notification @relay(mask: false)
       ...InviteToTeamMutation_notification @relay(mask: false)
       ...RemoveOrgUserMutation_notification @relay(mask: false)

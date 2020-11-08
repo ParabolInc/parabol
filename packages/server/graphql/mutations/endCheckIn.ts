@@ -5,14 +5,7 @@ import {
   NewMeetingPhaseTypeEnum,
   SuggestedActionTypeEnum
 } from 'parabol-client/types/graphql'
-import {
-  ACTION,
-  AGENDA_ITEMS,
-  DISCUSS,
-  DONE,
-  LAST_CALL,
-  RETROSPECTIVE
-} from 'parabol-client/utils/constants'
+import {AGENDA_ITEMS, DISCUSS, DONE, LAST_CALL} from 'parabol-client/utils/constants'
 import getMeetingPhase from 'parabol-client/utils/getMeetingPhase'
 import findStageById from 'parabol-client/utils/meetings/findStageById'
 import shortid from 'shortid'
@@ -21,10 +14,8 @@ import AgendaItem from '../../database/types/AgendaItem'
 import GenericMeetingPhase from '../../database/types/GenericMeetingPhase'
 import Meeting from '../../database/types/Meeting'
 import MeetingAction from '../../database/types/MeetingAction'
-import MeetingRetrospective from '../../database/types/MeetingRetrospective'
 import Task from '../../database/types/Task'
 import TimelineEventCheckinComplete from '../../database/types/TimelineEventCheckinComplete'
-import TimelineEventRetroComplete from '../../database/types/TimelineEventRetroComplete'
 import archiveTasksForDB from '../../safeMutations/archiveTasksForDB'
 import removeSuggestedAction from '../../safeMutations/removeSuggestedAction'
 import {getUserId, isTeamMember} from '../../utils/authorization'
@@ -32,20 +23,10 @@ import publish from '../../utils/publish'
 import segmentIo from '../../utils/segmentIo'
 import standardError from '../../utils/standardError'
 import {DataLoaderWorker, GQLContext} from '../graphql'
-import EndNewMeetingPayload from '../types/EndNewMeetingPayload'
+import EndCheckInPayload from '../types/EndCheckInPayload'
 import sendNewMeetingSummary from './helpers/endMeeting/sendNewMeetingSummary'
 import {endSlackMeeting} from './helpers/notifySlack'
 import removeEmptyTasks from './helpers/removeEmptyTasks'
-
-const timelineEventLookup = {
-  [RETROSPECTIVE]: TimelineEventRetroComplete,
-  [ACTION]: TimelineEventCheckinComplete
-} as const
-
-const suggestedActionLookup = {
-  [MeetingTypeEnum.retrospective]: SuggestedActionTypeEnum.tryRetroMeeting,
-  [MeetingTypeEnum.action]: SuggestedActionTypeEnum.tryActionMeeting
-} as const
 
 type SortOrderTask = Pick<Task, 'id' | 'sortOrder'>
 const updateTaskSortOrders = async (userIds: string[], tasks: SortOrderTask[]) => {
@@ -187,52 +168,6 @@ const finishActionMeeting = async (meeting: MeetingAction, dataLoader: DataLoade
   return {updatedTaskIds: [...tasks, ...doneTasks].map(({id}) => id)}
 }
 
-const finishRetroMeeting = async (meeting: MeetingRetrospective, dataLoader: DataLoaderWorker) => {
-  const {id: meetingId} = meeting
-  const r = await getRethink()
-  const [reflectionGroups, reflections] = await Promise.all([
-    dataLoader.get('retroReflectionGroupsByMeetingId').load(meetingId),
-    dataLoader.get('retroReflectionsByMeetingId').load(meetingId)
-  ])
-  const reflectionGroupIds = reflectionGroups.map(({id}) => id)
-
-  await r
-    .table('NewMeeting')
-    .get(meetingId)
-    .update(
-      {
-        commentCount: (r
-          .table('Comment')
-          .getAll(r.args(reflectionGroupIds), {index: 'threadId'})
-          .filter({isActive: true})
-          .count()
-          .default(0) as unknown) as number,
-        taskCount: (r
-          .table('Task')
-          .getAll(r.args(reflectionGroupIds), {index: 'threadId'})
-          .count()
-          .default(0) as unknown) as number,
-        topicCount: reflectionGroupIds.length,
-        reflectionCount: reflections.length
-      },
-      {nonAtomic: true}
-    )
-    .run()
-}
-
-const finishMeetingType = async (
-  meeting: MeetingRetrospective | MeetingAction,
-  dataLoader: DataLoaderWorker
-) => {
-  switch (meeting.meetingType) {
-    case MeetingTypeEnum.action:
-      return finishActionMeeting(meeting, dataLoader)
-    case MeetingTypeEnum.retrospective:
-      return finishRetroMeeting(meeting as MeetingRetrospective, dataLoader)
-  }
-  return undefined
-}
-
 const getIsKill = (meetingType: MeetingTypeEnum, phase?: GenericMeetingPhase) => {
   if (!phase) return false
   switch (meetingType) {
@@ -246,7 +181,7 @@ const getIsKill = (meetingType: MeetingTypeEnum, phase?: GenericMeetingPhase) =>
 }
 
 export default {
-  type: new GraphQLNonNull(EndNewMeetingPayload),
+  type: new GraphQLNonNull(EndCheckInPayload),
   description: 'Finish a new meeting',
   deprecationReason: 'Using more specfic end[meetingType] instead',
   args: {
@@ -298,7 +233,7 @@ export default {
         },
         {returnChanges: true}
       )('changes')(0)('new_val')
-      .run()) as unknown) as MeetingRetrospective | MeetingAction
+      .run()) as unknown) as MeetingAction
 
     // remove any empty tasks
     const removedTaskIds = await removeEmptyTasks(meetingId)
@@ -313,14 +248,9 @@ export default {
     const presentMemberUserIds = presentMembers.map(({userId}) => userId)
     endSlackMeeting(meetingId, teamId, dataLoader).catch(console.log)
 
-    const result = await finishMeetingType(completedMeeting, dataLoader)
+    const result = await finishActionMeeting(completedMeeting, dataLoader)
     const updatedTaskIds = (result && result.updatedTaskIds) || []
     const {facilitatorUserId} = completedMeeting
-    const templateId = (completedMeeting as MeetingRetrospective).templateId || undefined
-    const template = templateId
-      ? await dataLoader.get('meetingTemplates').load(templateId)
-      : undefined
-    const meetingTemplateName = template?.name
     presentMemberUserIds.forEach((userId) => {
       const wasFacilitator = userId === facilitatorUserId
       segmentIo.track({
@@ -332,7 +262,6 @@ export default {
           wasFacilitator,
           userIds: wasFacilitator ? presentMemberUserIds : undefined,
           meetingType,
-          meetingTemplateName,
           meetingNumber,
           teamMembersCount: meetingMembers.length,
           teamMembersPresentCount: presentMembers.length,
@@ -341,10 +270,9 @@ export default {
       })
     })
     sendNewMeetingSummary(completedMeeting, context).catch(console.log)
-    const TimelineEvent = timelineEventLookup[meetingType]
     const events = meetingMembers.map(
       (meetingMember) =>
-        new TimelineEvent({
+        new TimelineEventCheckinComplete({
           userId: meetingMember.userId,
           teamId,
           orgId: team.orgId,
@@ -366,13 +294,13 @@ export default {
 
       const removedSuggestedActionId = await removeSuggestedAction(
         teamLeadUserId,
-        suggestedActionLookup[meetingType]
+        SuggestedActionTypeEnum.tryActionMeeting
       )
       if (removedSuggestedActionId) {
         publish(
           SubscriptionChannel.NOTIFICATION,
           teamLeadUserId,
-          'EndNewMeetingPayload',
+          'EndCheckInPayload',
           {removedSuggestedActionId},
           subOptions
         )
@@ -387,7 +315,7 @@ export default {
       removedTaskIds,
       timelineEventId
     }
-    publish(SubscriptionChannel.TEAM, teamId, 'EndNewMeetingPayload', data, subOptions)
+    publish(SubscriptionChannel.TEAM, teamId, 'EndCheckInPayload', data, subOptions)
 
     return data
   }

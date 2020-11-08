@@ -6912,12 +6912,19 @@ export interface IMutation {
   editTask: IEditTaskPayload | null;
 
   /**
+   * Finish a new meeting
+   * @deprecated "Using more specfic end[meetingType] instead"
+   */
+  endCheckIn: IEndCheckInPayload;
+
+  /**
    * Broadcast that the viewer stopped dragging a reflection
    */
   endDraggingReflection: IEndDraggingReflectionPayload | null;
 
   /**
    * Finish a new meeting
+   * @deprecated "Using more specfic end[meetingType] instead"
    */
   endNewMeeting: IEndNewMeetingPayload;
 
@@ -7166,6 +7173,7 @@ export interface IMutation {
 
   /**
    * Start a new meeting
+   * @deprecated "Using more specfic start[meetingType] instead"
    */
   startNewMeeting: IStartNewMeetingPayload;
 
@@ -7671,6 +7679,13 @@ export interface IEditTaskOnMutationArguments {
    * true if the editing is starting, false if it is stopping
    */
   isEditing: boolean;
+}
+
+export interface IEndCheckInOnMutationArguments {
+  /**
+   * The meeting to end
+   */
+  meetingId: string;
 }
 
 export interface IEndDraggingReflectionOnMutationArguments {
@@ -9336,6 +9351,35 @@ export interface IEditTaskPayload {
   isEditing: boolean | null;
 }
 
+export interface IEndCheckInPayload {
+  __typename: 'EndCheckInPayload';
+  error: IStandardMutationError | null;
+
+  /**
+   * true if the meeting was killed (ended before reaching last stage)
+   */
+  isKill: boolean | null;
+  team: ITeam | null;
+  meeting: NewMeeting | null;
+
+  /**
+   * The ID of the suggestion to try a check-in meeting, if tried
+   */
+  removedSuggestedActionId: string | null;
+  removedTaskIds: Array<string> | null;
+
+  /**
+   * An event that is important to the viewer, e.g. an ended meeting
+   */
+  timelineEvent: TimelineEvent | null;
+  updatedTaskIds: Array<string> | null;
+
+  /**
+   * Any tasks that were updated during the meeting
+   */
+  updatedTasks: Array<ITask> | null;
+}
+
 export interface IEndDraggingReflectionPayload {
   __typename: 'EndDraggingReflectionPayload';
   error: IStandardMutationError | null;
@@ -10719,6 +10763,7 @@ export type NotificationSubscriptionPayload =
   | ICreateTaskPayload
   | IDeleteTaskPayload
   | IDisconnectSocketPayload
+  | IEndCheckInPayload
   | IEndNewMeetingPayload
   | IInvalidateSessionsPayload
   | IInviteToTeamPayload
@@ -10900,6 +10945,7 @@ export type TeamSubscriptionPayload =
   | IArchiveTeamPayload
   | IDenyPushInvitationPayload
   | IDowngradeToPersonalPayload
+  | IEndCheckInPayload
   | IEndNewMeetingPayload
   | IEndSprintPokerSuccess
   | INavigateMeetingPayload
