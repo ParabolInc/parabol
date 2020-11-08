@@ -6912,8 +6912,7 @@ export interface IMutation {
   editTask: IEditTaskPayload | null;
 
   /**
-   * Finish a new meeting
-   * @deprecated "Using more specfic end[meetingType] instead"
+   * Finish a check-in meeting
    */
   endCheckIn: IEndCheckInPayload;
 
@@ -6927,6 +6926,11 @@ export interface IMutation {
    * @deprecated "Using more specfic end[meetingType] instead"
    */
   endNewMeeting: IEndNewMeetingPayload;
+
+  /**
+   * Finish a retrospective meeting
+   */
+  endRetrospective: EndRetrospectivePayload;
 
   /**
    * flag a viewer as ready to advance to the next stage of a meeting
@@ -7708,6 +7712,13 @@ export interface IEndDraggingReflectionOnMutationArguments {
 }
 
 export interface IEndNewMeetingOnMutationArguments {
+  /**
+   * The meeting to end
+   */
+  meetingId: string;
+}
+
+export interface IEndRetrospectiveOnMutationArguments {
   /**
    * The meeting to end
    */
@@ -9509,6 +9520,33 @@ export interface IEndNewMeetingPayload {
 }
 
 /**
+ * Return object for EndRetrospectivePayload
+ */
+export type EndRetrospectivePayload = IErrorPayload | IEndRetrospectiveSuccess;
+
+export interface IEndRetrospectiveSuccess {
+  __typename: 'EndRetrospectiveSuccess';
+
+  /**
+   * true if the meeting was killed (ended before reaching last stage)
+   */
+  isKill: boolean | null;
+  team: ITeam;
+  meeting: NewMeeting;
+
+  /**
+   * The ID of the suggestion to try a retro meeting, if tried
+   */
+  removedSuggestedActionId: string;
+  removedTaskIds: Array<string>;
+
+  /**
+   * An event that is important to the viewer, e.g. an ended meeting
+   */
+  timelineEvent: TimelineEvent;
+}
+
+/**
  * Return object for FlagReadyToAdvancePayload
  */
 export type FlagReadyToAdvancePayload =
@@ -10248,9 +10286,9 @@ export type StartCheckInPayload = IErrorPayload | IStartCheckInSuccess;
 
 export interface IStartCheckInSuccess {
   __typename: 'StartCheckInSuccess';
-  team: ITeam | null;
-  meetingId: string | null;
-  meeting: NewMeeting | null;
+  meeting: IActionMeeting;
+  meetingId: string;
+  team: ITeam;
 }
 
 export interface IStartNewMeetingPayload {
@@ -10270,9 +10308,9 @@ export type StartRetrospectivePayload =
 
 export interface IStartRetrospectiveSuccess {
   __typename: 'StartRetrospectiveSuccess';
-  team: ITeam | null;
-  meetingId: string | null;
-  meeting: NewMeeting | null;
+  meeting: IRetrospectiveMeeting;
+  meetingId: string;
+  team: ITeam;
 }
 
 /**
@@ -10947,6 +10985,7 @@ export type TeamSubscriptionPayload =
   | IDowngradeToPersonalPayload
   | IEndCheckInPayload
   | IEndNewMeetingPayload
+  | IEndRetrospectiveSuccess
   | IEndSprintPokerSuccess
   | INavigateMeetingPayload
   | IPushInvitationPayload

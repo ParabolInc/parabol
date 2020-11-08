@@ -1,18 +1,12 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import {
-  MeetingTypeEnum,
-  NewMeetingPhaseTypeEnum,
-  SuggestedActionTypeEnum
-} from 'parabol-client/types/graphql'
-import {AGENDA_ITEMS, DISCUSS, DONE, LAST_CALL} from 'parabol-client/utils/constants'
+import {NewMeetingPhaseTypeEnum, SuggestedActionTypeEnum} from 'parabol-client/types/graphql'
+import {AGENDA_ITEMS, DONE, LAST_CALL} from 'parabol-client/utils/constants'
 import getMeetingPhase from 'parabol-client/utils/getMeetingPhase'
 import findStageById from 'parabol-client/utils/meetings/findStageById'
 import shortid from 'shortid'
 import getRethink from '../../database/rethinkDriver'
 import AgendaItem from '../../database/types/AgendaItem'
-import GenericMeetingPhase from '../../database/types/GenericMeetingPhase'
-import Meeting from '../../database/types/Meeting'
 import MeetingAction from '../../database/types/MeetingAction'
 import Task from '../../database/types/Task'
 import TimelineEventCheckinComplete from '../../database/types/TimelineEventCheckinComplete'
@@ -104,7 +98,7 @@ const clonePinnedAgendaItems = async (pinnedAgendaItems: AgendaItem[]) => {
     .run()
 }
 
-const finishActionMeeting = async (meeting: MeetingAction, dataLoader: DataLoaderWorker) => {
+const finishCheckInMeeting = async (meeting: MeetingAction, dataLoader: DataLoaderWorker) => {
   /* If isKill, no agenda items were processed so clear none of them.
    * Similarly, don't clone pins. the original ones will show up again.
    */
@@ -141,7 +135,7 @@ const finishActionMeeting = async (meeting: MeetingAction, dataLoader: DataLoade
   const userIds = meetingMembers.map(({userId}) => userId)
   const meetingPhase = getMeetingPhase(phases)
   const pinnedAgendaItems = await getPinnedAgendaItems(teamId)
-  const isKill = getIsKill(MeetingTypeEnum.action, meetingPhase)
+  const isKill = ![AGENDA_ITEMS, LAST_CALL].includes(meetingPhase.phaseType)
   await Promise.all([
     isKill ? undefined : archiveTasksForDB(doneTasks, meetingId),
     isKill ? undefined : clearAgendaItems(teamId),
@@ -168,22 +162,9 @@ const finishActionMeeting = async (meeting: MeetingAction, dataLoader: DataLoade
   return {updatedTaskIds: [...tasks, ...doneTasks].map(({id}) => id)}
 }
 
-const getIsKill = (meetingType: MeetingTypeEnum, phase?: GenericMeetingPhase) => {
-  if (!phase) return false
-  switch (meetingType) {
-    case MeetingTypeEnum.action:
-      return ![AGENDA_ITEMS, LAST_CALL].includes(phase.phaseType)
-    case MeetingTypeEnum.retrospective:
-      return ![DISCUSS].includes(phase.phaseType)
-    case MeetingTypeEnum.poker:
-      return !['ESTIMATE'].includes(phase.phaseType)
-  }
-}
-
 export default {
   type: new GraphQLNonNull(EndCheckInPayload),
-  description: 'Finish a new meeting',
-  deprecationReason: 'Using more specfic end[meetingType] instead',
+  description: 'Finish a check-in meeting',
   args: {
     meetingId: {
       type: new GraphQLNonNull(GraphQLID),
@@ -203,7 +184,7 @@ export default {
       .table('NewMeeting')
       .get(meetingId)
       .default(null)
-      .run()) as Meeting | null
+      .run()) as MeetingAction | null
     if (!meeting) return standardError(new Error('Meeting not found'), {userId: viewerId})
     const {endedAt, facilitatorStageId, meetingNumber, phases, teamId, meetingType} = meeting
 
@@ -223,7 +204,7 @@ export default {
     stage.isComplete = true
     stage.endAt = now
 
-    const completedMeeting = ((await r
+    const completedCheckIn = ((await r
       .table('NewMeeting')
       .get(meetingId)
       .update(
@@ -248,9 +229,9 @@ export default {
     const presentMemberUserIds = presentMembers.map(({userId}) => userId)
     endSlackMeeting(meetingId, teamId, dataLoader).catch(console.log)
 
-    const result = await finishActionMeeting(completedMeeting, dataLoader)
+    const result = await finishCheckInMeeting(completedCheckIn, dataLoader)
     const updatedTaskIds = (result && result.updatedTaskIds) || []
-    const {facilitatorUserId} = completedMeeting
+    const {facilitatorUserId} = completedCheckIn
     presentMemberUserIds.forEach((userId) => {
       const wasFacilitator = userId === facilitatorUserId
       segmentIo.track({
@@ -269,7 +250,7 @@ export default {
         }
       })
     })
-    sendNewMeetingSummary(completedMeeting, context).catch(console.log)
+    sendNewMeetingSummary(completedCheckIn, context).catch(console.log)
     const events = meetingMembers.map(
       (meetingMember) =>
         new TimelineEventCheckinComplete({
@@ -310,7 +291,7 @@ export default {
     const data = {
       meetingId,
       teamId,
-      isKill: getIsKill(meetingType, phase),
+      isKill: ![AGENDA_ITEMS, LAST_CALL].includes(phase.phaseType),
       updatedTaskIds,
       removedTaskIds,
       timelineEventId

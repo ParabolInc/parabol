@@ -1,23 +1,26 @@
-import {GraphQLID, GraphQLObjectType} from 'graphql'
-import {resolveNewMeeting, resolveTeam} from '../resolvers'
+import {GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import Team from './Team'
-import NewMeeting from './NewMeeting'
 import {GQLContext} from '../graphql'
 import makeMutationPayload from './makeMutationPayload'
+import RetrospectiveMeeting from './RetrospectiveMeeting'
 
 export const StartRetrospectiveSuccess = new GraphQLObjectType<any, GQLContext>({
   name: 'StartRetrospectiveSuccess',
   fields: () => ({
-    team: {
-      type: Team,
-      resolve: resolveTeam
+    meeting: {
+      type: GraphQLNonNull(RetrospectiveMeeting),
+      resolve: ({meetingId}, _args, {dataLoader}) => {
+        return dataLoader.get('newMeetings').load(meetingId)
+      }
     },
     meetingId: {
-      type: GraphQLID
+      type: GraphQLNonNull(GraphQLID)
     },
-    meeting: {
-      type: NewMeeting,
-      resolve: resolveNewMeeting
+    team: {
+      type: GraphQLNonNull(Team),
+      resolve: ({teamId}, _args, {dataLoader}) => {
+        return dataLoader.get('teams').load(teamId)
+      }
     }
   })
 })

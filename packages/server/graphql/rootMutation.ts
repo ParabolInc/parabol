@@ -123,6 +123,7 @@ import voteForReflectionGroup from './mutations/voteForReflectionGroup'
 import updatePokerScope from './mutations/updatePokerScope'
 import voteForPokerStory from './mutations/voteForPokerStory'
 import endCheckIn from './mutations/endCheckIn'
+import endRetrospective from './mutations/endRetrospective'
 import persistJiraSearchQuery from './mutations/persistJiraSearchQuery'
 
 interface Context extends InternalContext, GQLContext {}
@@ -182,6 +183,7 @@ export default new GraphQLObjectType<any, Context>({
       endCheckIn,
       endDraggingReflection,
       endNewMeeting,
+      endRetrospective,
       flagReadyToAdvance,
       inactivateUser,
       invalidateSessions,

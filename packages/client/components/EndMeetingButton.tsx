@@ -2,13 +2,13 @@ import styled from '@emotion/styled'
 import React, {forwardRef, Ref} from 'react'
 import {TransitionStatus} from '~/hooks/useTransition'
 import EndCheckInMutation from '~/mutations/EndCheckInMutation'
+import EndRetrospectiveMutation from '~/mutations/EndRetrospectiveMutation'
 import {PALETTE} from '~/styles/paletteV2'
 import useAtmosphere from '../hooks/useAtmosphere'
 import {MenuPosition} from '../hooks/useCoords'
 import useMutationProps from '../hooks/useMutationProps'
 import useRouter from '../hooks/useRouter'
 import useTooltip from '../hooks/useTooltip'
-import EndNewMeetingMutation from '../mutations/EndNewMeetingMutation'
 import EndSprintPokerMutation from '../mutations/EndSprintPokerMutation'
 import {ElementWidth, Times} from '../types/constEnums'
 import isDemoRoute from '../utils/isDemoRoute'
@@ -67,7 +67,7 @@ const EndMeetingButton = forwardRef((props: Props, ref: Ref<HTMLButtonElement>) 
       } else if (meetingType === 'action') {
         EndCheckInMutation(atmosphere, {meetingId}, {history, onError, onCompleted})
       } else {
-        EndNewMeetingMutation(atmosphere, {meetingId}, {history, onError, onCompleted})
+        EndRetrospectiveMutation(atmosphere, {meetingId}, {history, onError, onCompleted})
       }
     } else {
       setConfirmingButton('end')

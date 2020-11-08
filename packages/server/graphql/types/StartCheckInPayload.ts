@@ -1,23 +1,26 @@
-import {GraphQLID, GraphQLObjectType} from 'graphql'
-import {resolveNewMeeting, resolveTeam} from '../resolvers'
+import {GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import Team from './Team'
-import NewMeeting from './NewMeeting'
 import {GQLContext} from '../graphql'
 import makeMutationPayload from './makeMutationPayload'
+import ActionMeeting from './ActionMeeting'
 
 export const StartCheckInSuccess = new GraphQLObjectType<any, GQLContext>({
   name: 'StartCheckInSuccess',
   fields: () => ({
-    team: {
-      type: Team,
-      resolve: resolveTeam
+    meeting: {
+      type: GraphQLNonNull(ActionMeeting),
+      resolve: ({meetingId}, _args, {dataLoader}) => {
+        return dataLoader.get('newMeetings').load(meetingId)
+      }
     },
     meetingId: {
-      type: GraphQLID
+      type: GraphQLNonNull(GraphQLID)
     },
-    meeting: {
-      type: NewMeeting,
-      resolve: resolveNewMeeting
+    team: {
+      type: GraphQLNonNull(Team),
+      resolve: ({teamId}, _args, {dataLoader}) => {
+        return dataLoader.get('teams').load(teamId)
+      }
     }
   })
 })

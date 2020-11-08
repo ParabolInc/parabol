@@ -2,6 +2,10 @@ import graphql from 'babel-plugin-relay/macro'
 import {RouterProps} from 'react-router'
 import {requestSubscription, Variables} from 'relay-runtime'
 import {endCheckInTeamOnNext, endCheckInTeamUpdater} from '~/mutations/EndCheckInMutation'
+import {
+  endRetrospectiveTeamOnNext,
+  endRetrospectiveTeamUpdater
+} from '~/mutations/EndRetrospectiveMutation'
 import {navigateMeetingTeamUpdater} from '~/mutations/NavigateMeetingMutation'
 import Atmosphere from '../Atmosphere'
 import {
@@ -45,6 +49,7 @@ const subscription = graphql`
       ...DenyPushInvitationMutation_team @relay(mask: false)
       ...EndCheckInMutation_team @relay(mask: false)
       ...EndNewMeetingMutation_team @relay(mask: false)
+      ...EndRetrospectiveMutation_team @relay(mask: false)
       ...EndSprintPokerMutation_team @relay(mask: false)
       ...MoveReflectTemplatePromptMutation_team @relay(mask: false)
       ...NavigateMeetingMutation_team @relay(mask: false)
@@ -79,6 +84,7 @@ const onNextHandlers = {
   DenyPushInvitationPayload: denyPushInvitationTeamOnNext,
   EndCheckInPayload: endCheckInTeamOnNext,
   EndNewMeetingPayload: endNewMeetingTeamOnNext,
+  EndRetrospectiveSuccess: endRetrospectiveTeamOnNext,
   EndSprintPokerSuccess: endSprintPokerTeamOnNext,
   RemoveOrgUserPayload: removeOrgUserTeamOnNext,
   RemoveTeamMemberPayload: removeTeamMemberTeamOnNext,
@@ -96,6 +102,7 @@ const updateHandlers = {
   ArchiveTeamPayload: archiveTeamTeamUpdater,
   EndCheckInPayload: endCheckInTeamUpdater,
   EndNewMeetingPayload: endNewMeetingTeamUpdater,
+  EndRetrospectiveSuccess: endRetrospectiveTeamUpdater,
   EndSprintPokerSuccess: endSprintPokerTeamUpdater,
   MoveReflectTemplatePromptPayload: moveReflectTemplatePromptTeamUpdater,
   NavigateMeetingPayload: navigateMeetingTeamUpdater,
