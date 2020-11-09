@@ -90,7 +90,7 @@ const updatePokerTemplateScaleValue = {
       .get(scaleId)
       .run()
 
-    if (validateScaleLabelValueUniqueness(updatedScale.values)) {
+    if (!validateScaleLabelValueUniqueness(updatedScale.values)) {
       // updated values or labels are not unique, rolling back
       await r
         .table('TemplateScale')

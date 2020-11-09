@@ -4,11 +4,13 @@ import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import Menu from '~/components/Menu'
 import PaletteColor from '~/components/PaletteColor/PaletteColor'
-import useAtmosphere from '~/hooks/useAtmosphere'
-import {MenuProps} from '~/hooks/useMenu'
+import UpdatePokerTemplateScaleValueMutation from '~/mutations/UpdatePokerTemplateScaleValueMutation'
 import palettePickerOptions from '~/styles/palettePickerOptions'
 import {ScaleValuePalettePicker_scaleValue} from '../../../__generated__/ScaleValuePalettePicker_scaleValue.graphql'
 import {ScaleValuePalettePicker_scaleValues} from '../../../__generated__/ScaleValuePalettePicker_scaleValues.graphql'
+import useAtmosphere from '../../../hooks/useAtmosphere'
+import {MenuProps} from '../../../hooks/useMenu'
+import useMutationProps from '../../../hooks/useMutationProps'
 
 interface Props {
   scaleValue: ScaleValuePalettePicker_scaleValue
@@ -33,13 +35,19 @@ const ScaleValuePaletteList = styled('ul')({
 
 const ScaleValuePalettePicker = (props: Props) => {
   const {scaleValue, scaleValues, menuProps} = props
+  const {submitting, submitMutation, onError, onCompleted} = useMutationProps()
   const {closePortal} = menuProps
   const {id: scaleValueId, color: scaleValueColor} = scaleValue
   const atmosphere = useAtmosphere()
   const allTakenColors = scaleValues.map((scaleValue) => scaleValue.color)
-  const handleClick = (color: string) => {
-    //ReflectTemplatescaleValueUpdatecolorMutation(atmosphere, {scaleValueId, color: color})
-    console.log(`scaleValueId = ${scaleValueId}, color = ${color}, atmosphere = ${atmosphere}`)
+  const handleClick = (newColor: string) => {
+    if (submitting) return
+    submitMutation()
+    const scaleId = scaleValueId.split(":")[0]
+    const oldScaleValue = scaleValue
+    const newScaleValue = {...scaleValue, color: newColor}
+
+    UpdatePokerTemplateScaleValueMutation(atmosphere, {scaleId, oldScaleValue, newScaleValue}, {}, onError, onCompleted)
     closePortal()
   }
 
@@ -65,13 +73,16 @@ const ScaleValuePalettePicker = (props: Props) => {
 export default createFragmentContainer(ScaleValuePalettePicker, {
   scaleValues: graphql`
     fragment ScaleValuePalettePicker_scaleValues on TemplateScaleValue @relay(plural: true) {
-      id
+      label
+      value
       color
     }
   `,
   scaleValue: graphql`
     fragment ScaleValuePalettePicker_scaleValue on TemplateScaleValue {
       id
+      label
+      value
       color
     }
   `

@@ -3,17 +3,16 @@ import graphql from 'babel-plugin-relay/macro'
 import React, {Component} from 'react'
 import {DragDropContext, Draggable, Droppable} from 'react-beautiful-dnd'
 import {createFragmentContainer} from 'react-relay'
+import {TemplateScaleValueList_scale} from '~/__generated__/TemplateScaleValueList_scale.graphql'
 import withAtmosphere, {
   WithAtmosphereProps
 } from '../../../decorators/withAtmosphere/withAtmosphere'
 import dndNoise from '../../../utils/dndNoise'
 import withMutationProps, {WithMutationProps} from '../../../utils/relay/withMutationProps'
-import {TemplateScaleValueList_scaleValues} from '../../../__generated__/TemplateScaleValueList_scaleValues.graphql'
 import TemplateScaleValueItem from './TemplateScaleValueItem'
 
 interface Props extends WithAtmosphereProps, WithMutationProps {
-  isOwner: boolean
-  scaleValues: TemplateScaleValueList_scaleValues
+  scale: TemplateScaleValueList_scale
 }
 
 interface State {
@@ -62,28 +61,28 @@ class TemplateScaleValueList extends Component<Props, State> {
   }
 
   render() {
-    const {isOwner, scaleValues} = this.props
+    const {scale} = this.props
     return (
       <DragDropContext onDragEnd={this.onDragEnd}>
         <ScaleList>
-          <Droppable droppableId={TEMPLATE_DIMENSION} isDropDisabled={!isOwner}>
+          <Droppable droppableId={TEMPLATE_DIMENSION} isDropDisabled={false}>
             {(provided) => {
               return (
                 <div ref={provided.innerRef}>
-                  {scaleValues.map((scale, idx) => {
+                  {scale.values.map((scaleValue, idx) => {
                     return (
                       <Draggable
-                        key={scale.id}
-                        draggableId={scale.id}
+                        key={scaleValue.id}
+                        draggableId={scaleValue.id}
                         index={idx}
-                        isDragDisabled={!isOwner}
+                        isDragDisabled={scaleValue.isSpecial}
                       >
                         {(dragProvided, dragSnapshot) => {
                           return (
                             <TemplateScaleValueItem
-                              isOwner={isOwner}
-                              scaleValue={scale}
-                              scaleValues={scaleValues}
+                              isOwner={!scaleValue.isSpecial}
+                              scale={scale}
+                              scaleValue={scaleValue}
                               isDragging={dragSnapshot.isDragging}
                               dragProvided={dragProvided}
                             />
@@ -104,11 +103,14 @@ class TemplateScaleValueList extends Component<Props, State> {
 }
 
 export default createFragmentContainer(withAtmosphere(withMutationProps(TemplateScaleValueList)), {
-  scaleValues: graphql`
-    fragment TemplateScaleValueList_scaleValues on TemplateScaleValue @relay(plural: true) {
-      id
-      ...TemplateScaleValueItem_scaleValue
-      ...TemplateScaleValueItem_scaleValues
+  scale: graphql`
+    fragment TemplateScaleValueList_scale on TemplateScale {
+      ...TemplateScaleValueItem_scale
+      values {
+        id
+        isSpecial
+        ...TemplateScaleValueItem_scaleValue
+      }
     }
   `
 })

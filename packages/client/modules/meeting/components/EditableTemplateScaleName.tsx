@@ -14,7 +14,7 @@ import Legitity from '../../../validation/Legitity'
 interface Props extends WithAtmosphereProps, WithMutationProps {
   name: string
   scaleId: string
-  scales: EditableTemplateScaleName_scales
+  scales: EditableTemplateScaleName_scales | undefined
   isOwner: boolean
 }
 
@@ -52,13 +52,13 @@ class EditableTemplateScaleName extends Component<Props> {
     return new Legitity(value)
       .trim()
       .required('Please enter a scale name')
-      .max(100, 'That name is probably long enough')
+      .max(100, 'That scale name is probably long enough')
       .test((mVal) => {
-        const isDupe = scales.find(
+        const isDupe = !scales ? undefined : scales.find(
           (scale) =>
             scale.id !== scaleId && scale.name.toLowerCase() === mVal.toLowerCase()
         )
-        return isDupe ? 'That name is taken' : undefined
+        return isDupe ? 'That scale name is already taken' : undefined
       })
   }
 

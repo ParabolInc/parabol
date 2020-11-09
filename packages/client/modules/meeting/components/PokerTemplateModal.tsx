@@ -7,6 +7,8 @@ import getTemplateList from '../../../utils/getTemplateList'
 import {PokerTemplateModal_pokerMeetingSettings} from '../../../__generated__/PokerTemplateModal_pokerMeetingSettings.graphql'
 import PokerTemplateDetails from './PokerTemplateDetails'
 import PokerTemplateList from './PokerTemplateList'
+import SwipeableViews from 'react-swipeable-views'
+import PokerTemplateScaleDetailsRoot from './PokerTemplateScaleDetailsRoot'
 
 interface Props {
   pokerMeetingSettings: PokerTemplateModal_pokerMeetingSettings
@@ -20,6 +22,13 @@ const StyledDialogContainer = styled(DialogContainer)({
 })
 
 const SCOPES = ['TEAM', 'ORGANIZATION', 'PUBLIC']
+const containerStyle = {height: '100%'}
+const innerStyle = {width: '100%', height: '100%'}
+const TabContents = styled('div')({
+  display: 'flex',
+  flexDirection: 'column',
+  height: '100%'
+})
 
 const PokerTemplateModal = (props: Props) => {
   const {pokerMeetingSettings} = props
@@ -28,12 +37,14 @@ const PokerTemplateModal = (props: Props) => {
   const lowestScope = getTemplateList(teamId, orgId, selectedTemplate)
   const listIdx = SCOPES.indexOf(lowestScope)
   const [activeIdx, setActiveIdx] = useState(listIdx)
+  const [scaleId] = useState("Pi8StrPy8")
   const gotoTeamTemplates = () => {
     setActiveIdx(0)
   }
   const gotoPublicTemplates = () => {
     setActiveIdx(2)
   }
+
   return (
     <StyledDialogContainer>
       <PokerTemplateList
@@ -41,12 +52,27 @@ const PokerTemplateModal = (props: Props) => {
         activeIdx={activeIdx}
         setActiveIdx={setActiveIdx}
       />
-      <PokerTemplateDetails
-        settings={pokerMeetingSettings}
-        gotoTeamTemplates={gotoTeamTemplates}
-        gotoPublicTemplates={gotoPublicTemplates}
-      />
-    </StyledDialogContainer>
+
+      <SwipeableViews
+        enableMouseEvents
+        index={scaleId ? 0 : 1}
+        containerStyle={containerStyle}
+        style={innerStyle}
+      >
+        <TabContents>
+          <PokerTemplateDetails
+            settings={pokerMeetingSettings}
+            gotoTeamTemplates={gotoTeamTemplates}
+            gotoPublicTemplates={gotoPublicTemplates}
+          />
+        </TabContents>
+        <TabContents>
+          <PokerTemplateScaleDetailsRoot teamId={teamId} scaleId={scaleId} isActive={scaleId != undefined} />
+        </TabContents>
+      </SwipeableViews>
+
+
+    </StyledDialogContainer >
   )
 }
 export default createFragmentContainer(PokerTemplateModal, {

@@ -6,18 +6,18 @@ import {createFragmentContainer} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useMutationProps from '~/hooks/useMutationProps'
 import {TemplateScaleValueItem_scaleValue} from '../../../__generated__/TemplateScaleValueItem_scaleValue.graphql'
-import {TemplateScaleValueItem_scaleValues} from '../../../__generated__/TemplateScaleValueItem_scaleValues.graphql'
 import Icon from '../../../components/Icon'
 import {PALETTE} from '../../../styles/paletteV2'
 import {ICON_SIZE} from '../../../styles/typographyV2'
-import EditableTemplateScaleValue from './EditableTemplateScaleValue'
+import EditableTemplateScaleLabel from './EditableTemplateScaleLabel'
 import EditableTemplateScaleValueColor from './EditableTemplateScaleValueColor'
+import {TemplateScaleValueItem_scale} from '~/__generated__/TemplateScaleValueItem_scale.graphql'
 
 interface Props {
   isOwner: boolean
   isDragging: boolean
+  scale: TemplateScaleValueItem_scale
   scaleValue: TemplateScaleValueItem_scaleValue
-  scaleValues: TemplateScaleValueItem_scaleValues
   dragProvided: DraggableProvided
 }
 
@@ -62,13 +62,13 @@ const ScaleAndDescription = styled('div')({
 })
 
 const TemplateScaleValueItem = (props: Props) => {
-  const {dragProvided, isDragging, isOwner, scaleValue, scaleValues} = props
-  const {id: scaleValueId, label: scaleValueLabel} = scaleValue
+  const {dragProvided, isDragging, isOwner, scale, scaleValue} = props
+  const {id: scaleValueId} = scaleValue
   const [isHover, setIsHover] = useState(false)
   const [isEditingDescription] = useState(false)
   const {submitting, submitMutation, onError, onCompleted} = useMutationProps()
   const atmosphere = useAtmosphere()
-  const canRemove = scaleValues.length > 1 && isOwner
+  const canRemove = scale.values.length > 1 && isOwner
   const onMouseEnter = () => {
     setIsHover(true)
   }
@@ -82,7 +82,7 @@ const TemplateScaleValueItem = (props: Props) => {
       return
     }
     submitMutation()
-    //RemovePokerTemplateScaleMutation(atmosphere, {scaleValueId}, {}, onError, onCompleted)
+    //RemovePokerTemplateScaleValueMutation(atmosphere, {scaleValueId}, {}, onError, onCompleted)
     console.log(`scaleValueId = ${scaleValueId}; onCompleted = ${onCompleted}; atmosphere = ${atmosphere}`)
   }
 
@@ -97,15 +97,14 @@ const TemplateScaleValueItem = (props: Props) => {
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
     >
-      <EditableTemplateScaleValueColor isOwner={isOwner} scaleValue={scaleValue} scaleValues={scaleValues} />
+      <EditableTemplateScaleValueColor isOwner={isOwner} scaleValue={scaleValue} scaleValues={scale.values} />
       <ScaleAndDescription>
-        <EditableTemplateScaleValue
+        <EditableTemplateScaleLabel
           isOwner={isOwner}
           isEditingDescription={isEditingDescription}
           isHover={isHover}
-          scaleValueLabel={scaleValueLabel}
-          scaleValueId={scaleValueId}
-          scaleValues={scaleValues}
+          scale={scale}
+          scaleValue={scaleValue}
         />
       </ScaleAndDescription>
       <RemoveScaleIcon isHover={isHover} onClick={removeScale} enabled={canRemove}>
@@ -115,14 +114,17 @@ const TemplateScaleValueItem = (props: Props) => {
   )
 }
 export default createFragmentContainer(TemplateScaleValueItem, {
-  scaleValues: graphql`
-    fragment TemplateScaleValueItem_scaleValues on TemplateScaleValue @relay(plural: true) {
-      ...EditableTemplateScaleValueColor_scaleValues
-      ...EditableTemplateScaleValue_scaleValues
+  scale: graphql`
+    fragment TemplateScaleValueItem_scale on TemplateScale {
+      ...EditableTemplateScaleLabel_scale
+      values {
+        ...EditableTemplateScaleValueColor_scaleValues
+      }
     }
   `,
   scaleValue: graphql`
     fragment TemplateScaleValueItem_scaleValue on TemplateScaleValue {
+      ...EditableTemplateScaleLabel_scaleValue
       ...EditableTemplateScaleValueColor_scaleValue
       id
       value
