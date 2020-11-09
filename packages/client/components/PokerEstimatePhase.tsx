@@ -21,7 +21,8 @@ const PokerEstimatePhase = (props: Props) => {
   const {avatarGroup, toggleSidebar, meeting} = props
   const {localStage, endedAt, showSidebar} = meeting
   if (!localStage) return null
-  const {__typename} = localStage
+  const {story} = localStage
+  const {__typename} = story!
   return (
     <MeetingContent>
       <MeetingHeaderAndPhase hideBottomBar={!!endedAt}>
@@ -33,7 +34,7 @@ const PokerEstimatePhase = (props: Props) => {
           <PhaseHeaderTitle>{phaseLabelLookup.ESTIMATE}</PhaseHeaderTitle>
           <PhaseHeaderDescription>{'Estimate each story as a team'}</PhaseHeaderDescription>
         </MeetingTopBar>
-        {__typename === 'EstimateStageJira' && <PokerEstimateHeaderCardJira stage={localStage as any} />}
+        {__typename === 'JiraIssue' && <PokerEstimateHeaderCardJira stage={localStage as any} />}
         <PhaseWrapper>
           <EstimatePhaseArea />
         </PhaseWrapper>
@@ -44,9 +45,9 @@ const PokerEstimatePhase = (props: Props) => {
 
 graphql`
   fragment PokerEstimatePhaseStage on EstimateStage {
-    ...on EstimateStageJira {
+    ...PokerEstimateHeaderCardJira_stage
+    story {
       __typename
-      ...PokerEstimateHeaderCardJira_stage
     }
   }
 `

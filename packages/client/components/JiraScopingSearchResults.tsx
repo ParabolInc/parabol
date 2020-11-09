@@ -40,7 +40,8 @@ const JiraScopingSearchResults = (props: Props) => {
     }
   }, [incomingEdges])
   const {id: meetingId, teamId, phases, jiraSearchQuery} = meeting
-  const usedJiraIssueIds = useRecordIdsWithStages(phases, NewMeetingPhaseTypeEnum.ESTIMATE, 'issue')
+  const estimatePhase = phases.find(({phaseType}) => phaseType === NewMeetingPhaseTypeEnum.ESTIMATE)
+  const usedJiraIssueIds = useRecordIdsWithStages(estimatePhase)
 
   // Terry, you can use this in case you need to put some final touches on styles
   /*   const [showMock, setShowMock] = useState(false)
@@ -62,8 +63,8 @@ const JiraScopingSearchResults = (props: Props) => {
         <NewJiraIssueButton setIsEditing={setIsEditing} />
       </>
     ) : (
-      <MockScopingList />
-    )
+        <MockScopingList />
+      )
   }
 
   const persistQuery = () => {
@@ -127,15 +128,7 @@ export default createFragmentContainer(JiraScopingSearchResults, {
       }
       phases {
         phaseType
-        ... on EstimatePhase {
-          stages {
-            ... on EstimateStageJira {
-              issue {
-                id
-              }
-            }
-          }
-        }
+        ...useRecordIdsWithStages_phase
       }
     }
   `,
