@@ -41,6 +41,7 @@ const subscription = graphql`
     teamSubscription {
       __typename
       ...AcceptTeamInvitationMutation_team @relay(mask: false)
+      ...AddAgendaItemMutation_team @relay(mask: false)
       ...AddAtlassianAuthMutation_team @relay(mask: false)
       ...AddReflectTemplateMutation_team @relay(mask: false)
       ...AddReflectTemplatePromptMutation_team @relay(mask: false)
@@ -56,10 +57,11 @@ const subscription = graphql`
       ...PromoteToTeamLeadMutation_team @relay(mask: false)
       ...PushInvitationMutation_team @relay(mask: false)
       ...ReflectTemplatePromptUpdateGroupColorMutation_team @relay(mask: false)
+      ...RemoveAgendaItemMutation_team @relay(mask: false)
+      ...RemoveOrgUserMutation_team @relay(mask: false)
       ...RemoveReflectTemplateMutation_team @relay(mask: false)
       ...RemoveReflectTemplatePromptMutation_team @relay(mask: false)
       ...RemoveTeamMemberMutation_team @relay(mask: false)
-      ...RemoveOrgUserMutation_team @relay(mask: false)
       ...RenameMeetingMutation_team @relay(mask: false)
       ...RenameMeetingTemplateMutation_meetingTemplate @relay(mask: false)
       ...RenameReflectTemplatePromptMutation_team @relay(mask: false)
@@ -67,13 +69,12 @@ const subscription = graphql`
       ...SetCheckInEnabledMutation_team @relay(mask: false)
       ...StartCheckInMutation_team @relay(mask: false)
       ...StartNewMeetingMutation_team @relay(mask: false)
-      ...UpdateCreditCardMutation_team @relay(mask: false)
-      ...UpdateUserProfileMutation_team @relay(mask: false)
-      ...UpdateTeamNameMutation_team @relay(mask: false)
-      ...UpgradeToProMutation_team @relay(mask: false)
-      ...AddAgendaItemMutation_team @relay(mask: false)
-      ...RemoveAgendaItemMutation_team @relay(mask: false)
+      ...StartRetrospectiveMutation_team @relay(mask: false)
       ...UpdateAgendaItemMutation_team @relay(mask: false)
+      ...UpdateCreditCardMutation_team @relay(mask: false)
+      ...UpdateTeamNameMutation_team @relay(mask: false)
+      ...UpdateUserProfileMutation_team @relay(mask: false)
+      ...UpgradeToProMutation_team @relay(mask: false)
     }
   }
 `

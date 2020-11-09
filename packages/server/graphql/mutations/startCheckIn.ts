@@ -29,7 +29,6 @@ export default {
     const r = await getRethink()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
-    const DUPLICATE_THRESHOLD = 3000
     // AUTH
     const viewerId = getUserId(authToken)
     if (!isTeamMember(authToken, teamId)) {
@@ -48,7 +47,6 @@ export default {
       .run()
 
     const phases = await createNewMeetingPhases(teamId, meetingCount, meetingType, dataLoader)
-
     const meeting = new MeetingAction({
       teamId,
       meetingCount,
@@ -66,9 +64,9 @@ export default {
     // Disallow accidental starts (2 meetings within 2 seconds)
     const newActiveMeetings = await dataLoader.get('activeMeetingsByTeamId').load(teamId)
     const otherActiveMeeting = newActiveMeetings.find((activeMeeting) => {
-      const {createdAt, id} = activeMeeting
+      const {id} = activeMeeting
       if (id === meetingId || activeMeeting.meetingType !== meetingType) return false
-      return createdAt > Date.now() - DUPLICATE_THRESHOLD
+      return true
     })
     if (otherActiveMeeting) {
       await r

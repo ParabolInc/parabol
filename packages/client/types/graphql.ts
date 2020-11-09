@@ -9380,7 +9380,7 @@ export interface IEndCheckInSuccess {
   /**
    * The ID of the suggestion to try a check-in meeting, if tried
    */
-  removedSuggestedActionId: string;
+  removedSuggestedActionId: string | null;
   removedTaskIds: Array<string> | null;
 
   /**
@@ -9541,7 +9541,7 @@ export interface IEndRetrospectiveSuccess {
   /**
    * The ID of the suggestion to try a retro meeting, if tried
    */
-  removedSuggestedActionId: string;
+  removedSuggestedActionId: string | null;
   removedTaskIds: Array<string>;
 
   /**

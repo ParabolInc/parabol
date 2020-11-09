@@ -167,7 +167,6 @@ export default {
         teamLeadUserId,
         SuggestedActionTypeEnum.tryRetroMeeting
       )
-      console.log('resolve -> removedSuggestedActionId', removedSuggestedActionId)
       if (removedSuggestedActionId) {
         publish(
           SubscriptionChannel.NOTIFICATION,

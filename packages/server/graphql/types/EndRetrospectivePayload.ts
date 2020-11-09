@@ -24,7 +24,7 @@ export const EndRetrospectiveSuccess = new GraphQLObjectType<any, GQLContext>({
       resolve: resolveNewMeeting
     },
     removedSuggestedActionId: {
-      type: GraphQLNonNull(GraphQLID),
+      type: GraphQLID,
       description: 'The ID of the suggestion to try a retro meeting, if tried'
     },
     removedTaskIds: {

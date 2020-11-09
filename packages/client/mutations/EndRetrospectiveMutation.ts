@@ -16,8 +16,6 @@ import {EndRetrospectiveMutation as TEndRetrospectiveMutation} from '../__genera
 import handleRemoveSuggestedActions from './handlers/handleRemoveSuggestedActions'
 import handleAddTimelineEvent from './handlers/handleAddTimelineEvent'
 import {RecordProxy} from 'relay-runtime'
-import handleRemoveTasks from './handlers/handleRemoveTasks'
-import handleUpsertTasks from './handlers/handleUpsertTasks'
 
 graphql`
   fragment EndRetrospectiveMutation_team on EndRetrospectiveSuccess {
@@ -33,7 +31,6 @@ graphql`
         topicCount
       }
     }
-    removedTaskIds
     team {
       id
       activeMeetings {
@@ -116,13 +113,9 @@ export const endRetrospectiveTeamUpdater: SharedUpdater<EndRetrospectiveMutation
   payload,
   {store}
 ) => {
-  const updatedTasks = payload.getLinkedRecords('updatedTasks')
-  const removedTaskIds = payload.getValue('removedTaskIds')
   const meeting = payload.getLinkedRecord('meeting') as RecordProxy
   const timelineEvent = payload.getLinkedRecord('timelineEvent') as RecordProxy
   handleAddTimelineEvent(meeting, timelineEvent, store)
-  handleRemoveTasks(removedTaskIds as any, store)
-  handleUpsertTasks(updatedTasks as any, store)
 }
 
 const EndRetrospectiveMutation: StandardMutation<

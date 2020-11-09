@@ -27,7 +27,7 @@ export const EndCheckInSuccess = new GraphQLObjectType<any, GQLContext>({
       resolve: resolveNewMeeting
     },
     removedSuggestedActionId: {
-      type: GraphQLNonNull(GraphQLID),
+      type: GraphQLID,
       description: 'The ID of the suggestion to try a check-in meeting, if tried'
     },
     removedTaskIds: {
