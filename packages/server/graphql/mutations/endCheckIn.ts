@@ -281,7 +281,7 @@ export default {
         publish(
           SubscriptionChannel.NOTIFICATION,
           teamLeadUserId,
-          'EndCheckInPayload',
+          'EndCheckInSuccess',
           {removedSuggestedActionId},
           subOptions
         )
@@ -296,7 +296,7 @@ export default {
       removedTaskIds,
       timelineEventId
     }
-    publish(SubscriptionChannel.TEAM, teamId, 'EndCheckInPayload', data, subOptions)
+    publish(SubscriptionChannel.TEAM, teamId, 'EndCheckInSuccess', data, subOptions)
 
     return data
   }

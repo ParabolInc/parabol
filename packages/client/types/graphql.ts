@@ -6914,7 +6914,7 @@ export interface IMutation {
   /**
    * Finish a check-in meeting
    */
-  endCheckIn: IEndCheckInPayload;
+  endCheckIn: EndCheckInPayload;
 
   /**
    * Broadcast that the viewer stopped dragging a reflection
@@ -9362,27 +9362,31 @@ export interface IEditTaskPayload {
   isEditing: boolean | null;
 }
 
-export interface IEndCheckInPayload {
-  __typename: 'EndCheckInPayload';
-  error: IStandardMutationError | null;
+/**
+ * Return object for EndCheckInPayload
+ */
+export type EndCheckInPayload = IErrorPayload | IEndCheckInSuccess;
+
+export interface IEndCheckInSuccess {
+  __typename: 'EndCheckInSuccess';
 
   /**
    * true if the meeting was killed (ended before reaching last stage)
    */
   isKill: boolean | null;
-  team: ITeam | null;
-  meeting: NewMeeting | null;
+  team: ITeam;
+  meeting: IActionMeeting;
 
   /**
    * The ID of the suggestion to try a check-in meeting, if tried
    */
-  removedSuggestedActionId: string | null;
+  removedSuggestedActionId: string;
   removedTaskIds: Array<string> | null;
 
   /**
    * An event that is important to the viewer, e.g. an ended meeting
    */
-  timelineEvent: TimelineEvent | null;
+  timelineEvent: TimelineEvent;
   updatedTaskIds: Array<string> | null;
 
   /**
@@ -9532,7 +9536,7 @@ export interface IEndRetrospectiveSuccess {
    */
   isKill: boolean | null;
   team: ITeam;
-  meeting: NewMeeting;
+  meeting: IRetrospectiveMeeting;
 
   /**
    * The ID of the suggestion to try a retro meeting, if tried
@@ -10801,8 +10805,9 @@ export type NotificationSubscriptionPayload =
   | ICreateTaskPayload
   | IDeleteTaskPayload
   | IDisconnectSocketPayload
-  | IEndCheckInPayload
+  | IEndCheckInSuccess
   | IEndNewMeetingPayload
+  | IEndRetrospectiveSuccess
   | IInvalidateSessionsPayload
   | IInviteToTeamPayload
   | IMeetingStageTimeLimitPayload
@@ -10983,7 +10988,7 @@ export type TeamSubscriptionPayload =
   | IArchiveTeamPayload
   | IDenyPushInvitationPayload
   | IDowngradeToPersonalPayload
-  | IEndCheckInPayload
+  | IEndCheckInSuccess
   | IEndNewMeetingPayload
   | IEndRetrospectiveSuccess
   | IEndSprintPokerSuccess

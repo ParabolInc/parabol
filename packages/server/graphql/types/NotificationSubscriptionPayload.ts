@@ -18,7 +18,8 @@ import SetNotificationStatusPayload from './SetNotificationStatusPayload'
 import StripeFailPaymentPayload from './StripeFailPaymentPayload'
 import {PersistJiraSearchQuerySuccess} from './PersistJiraSearchQueryPayload'
 import User from './User'
-import EndCheckInPayload from './EndCheckInPayload'
+import {EndCheckInSuccess} from './EndCheckInPayload'
+import {EndRetrospectiveSuccess} from './EndRetrospectivePayload'
 
 const types = [
   AcceptTeamInvitationPayload,
@@ -31,8 +32,9 @@ const types = [
   CreateTaskPayload,
   DeleteTaskPayload,
   DisconnectSocketPayload,
-  EndCheckInPayload,
+  EndCheckInSuccess,
   EndNewMeetingPayload,
+  EndRetrospectiveSuccess,
   InvalidateSessionsPayload,
   InviteToTeamPayload,
   MeetingStageTimeLimitPayload,

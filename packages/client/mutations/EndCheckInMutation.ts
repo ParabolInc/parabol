@@ -19,7 +19,7 @@ import handleAddTimelineEvent from './handlers/handleAddTimelineEvent'
 import {RecordProxy} from 'relay-runtime'
 
 graphql`
-  fragment EndCheckInMutation_team on EndCheckInPayload {
+  fragment EndCheckInMutation_team on EndCheckInSuccess {
     isKill
     meeting {
       id
@@ -64,7 +64,7 @@ graphql`
 `
 
 graphql`
-  fragment EndCheckInMutation_notification on EndCheckInPayload {
+  fragment EndCheckInMutation_notification on EndCheckInSuccess {
     removedSuggestedActionId
   }
 `
@@ -72,8 +72,10 @@ graphql`
 const mutation = graphql`
   mutation EndCheckInMutation($meetingId: ID!) {
     endCheckIn(meetingId: $meetingId) {
-      error {
-        message
+      ... on ErrorPayload {
+        error {
+          message
+        }
       }
       ...EndCheckInMutation_notification @relay(mask: false)
       ...EndCheckInMutation_team @relay(mask: false)
@@ -137,14 +139,14 @@ const EndCheckInMutation: StandardMutation<TEndCheckInMutation, HistoryMaybeLoca
       const payload = store.getRootField('endCheckIn')
       if (!payload) return
       const context = {atmosphere, store: store as any}
-      endCheckInNotificationUpdater(payload, context)
-      endCheckInTeamUpdater(payload, context)
+      endCheckInNotificationUpdater(payload as any, context)
+      endCheckInTeamUpdater(payload as any, context)
     },
     onCompleted: (res, errors) => {
       if (onCompleted) {
         onCompleted(res, errors)
       }
-      endCheckInTeamOnNext(res.endCheckIn, {atmosphere, history})
+      endCheckInTeamOnNext(res.endCheckIn as any, {atmosphere, history})
     },
     onError
   })

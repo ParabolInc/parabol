@@ -1,10 +1,10 @@
 import {GraphQLBoolean, GraphQLID, GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import {resolveNewMeeting} from '../resolvers'
 import Team from './Team'
-import NewMeeting from './NewMeeting'
 import {GQLContext} from '../graphql'
 import TimelineEvent from './TimelineEvent'
 import makeMutationPayload from './makeMutationPayload'
+import RetrospectiveMeeting from './RetrospectiveMeeting'
 
 export const EndRetrospectiveSuccess = new GraphQLObjectType<any, GQLContext>({
   name: 'EndRetrospectiveSuccess',
@@ -20,7 +20,7 @@ export const EndRetrospectiveSuccess = new GraphQLObjectType<any, GQLContext>({
       }
     },
     meeting: {
-      type: GraphQLNonNull(NewMeeting),
+      type: GraphQLNonNull(RetrospectiveMeeting),
       resolve: resolveNewMeeting
     },
     removedSuggestedActionId: {
@@ -37,21 +37,6 @@ export const EndRetrospectiveSuccess = new GraphQLObjectType<any, GQLContext>({
         return await dataLoader.get('timelineEvents').load(timelineEventId)
       }
     }
-    // updatedTaskIds: {
-    //   type: new GraphQLList(new GraphQLNonNull(GraphQLID))
-    // },
-    // updatedTasks: {
-    //   type: new GraphQLList(new GraphQLNonNull(Task)),
-    //   description: 'Any tasks that were updated during the meeting',
-    //   resolve: async ({updatedTaskIds}, _args, {authToken, dataLoader}) => {
-    //     if (!updatedTaskIds) return []
-    //     const viewerId = getUserId(authToken)
-    //     const allUpdatedTasks = await dataLoader.get('tasks').loadMany(updatedTaskIds)
-    //     return allUpdatedTasks.filter((task) => {
-    //       return isTaskPrivate(task.tags) ? task.userId === viewerId : true
-    //     })
-    //   }
-    // }
   })
 })
 

@@ -118,7 +118,6 @@ export default {
     const presentMemberUserIds = presentMembers.map(({userId}) => userId)
     endSlackMeeting(meetingId, teamId, dataLoader).catch(console.log)
     finishRetroMeeting(completedRetrospective, dataLoader)
-    // const updatedTaskIds = (retroMeeting && retroMeeting.updatedTaskIds) || []
     const {facilitatorUserId, templateId} = completedRetrospective
     const template = await dataLoader.get('meetingTemplates').load(templateId)
     const {name: meetingTemplateName} = template
@@ -168,6 +167,7 @@ export default {
         teamLeadUserId,
         SuggestedActionTypeEnum.tryRetroMeeting
       )
+      console.log('resolve -> removedSuggestedActionId', removedSuggestedActionId)
       if (removedSuggestedActionId) {
         publish(
           SubscriptionChannel.NOTIFICATION,
@@ -183,7 +183,6 @@ export default {
       meetingId,
       teamId,
       isKill: ![DISCUSS].includes(phase.phaseType),
-      // updatedTaskIds,
       removedTaskIds,
       timelineEventId
     }

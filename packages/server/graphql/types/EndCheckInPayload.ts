@@ -1,43 +1,40 @@
 import {GraphQLBoolean, GraphQLID, GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
-import {resolveNewMeeting} from '../resolvers'
 import Team from './Team'
 import Task from './Task'
-import StandardMutationError from './StandardMutationError'
-import NewMeeting from './NewMeeting'
 import {GQLContext} from '../graphql'
 import {getUserId} from '../../utils/authorization'
 import isTaskPrivate from 'parabol-client/utils/isTaskPrivate'
 import TimelineEvent from './TimelineEvent'
+import makeMutationPayload from './makeMutationPayload'
+import ActionMeeting from './ActionMeeting'
+import {resolveNewMeeting} from '../resolvers'
 
-const EndCheckInPayload = new GraphQLObjectType<any, GQLContext>({
-  name: 'EndCheckInPayload',
+export const EndCheckInSuccess = new GraphQLObjectType<any, GQLContext>({
+  name: 'EndCheckInSuccess',
   fields: () => ({
-    error: {
-      type: StandardMutationError
-    },
     isKill: {
       type: GraphQLBoolean,
       description: 'true if the meeting was killed (ended before reaching last stage)'
     },
     team: {
-      type: Team,
+      type: GraphQLNonNull(Team),
       resolve: ({teamId}, _args, {dataLoader}) => {
         return teamId ? dataLoader.get('teams').load(teamId) : null
       }
     },
     meeting: {
-      type: NewMeeting,
+      type: GraphQLNonNull(ActionMeeting),
       resolve: resolveNewMeeting
     },
     removedSuggestedActionId: {
-      type: GraphQLID,
+      type: GraphQLNonNull(GraphQLID),
       description: 'The ID of the suggestion to try a check-in meeting, if tried'
     },
     removedTaskIds: {
       type: new GraphQLList(new GraphQLNonNull(GraphQLID))
     },
     timelineEvent: {
-      type: TimelineEvent,
+      type: GraphQLNonNull(TimelineEvent),
       description: 'An event that is important to the viewer, e.g. an ended meeting',
       resolve: async ({timelineEventId}, _args, {dataLoader}) => {
         return await dataLoader.get('timelineEvents').load(timelineEventId)
@@ -60,5 +57,7 @@ const EndCheckInPayload = new GraphQLObjectType<any, GQLContext>({
     }
   })
 })
+
+const EndCheckInPayload = makeMutationPayload('EndCheckInPayload', EndCheckInSuccess)
 
 export default EndCheckInPayload

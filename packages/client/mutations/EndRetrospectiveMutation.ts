@@ -16,6 +16,8 @@ import {EndRetrospectiveMutation as TEndRetrospectiveMutation} from '../__genera
 import handleRemoveSuggestedActions from './handlers/handleRemoveSuggestedActions'
 import handleAddTimelineEvent from './handlers/handleAddTimelineEvent'
 import {RecordProxy} from 'relay-runtime'
+import handleRemoveTasks from './handlers/handleRemoveTasks'
+import handleUpsertTasks from './handlers/handleUpsertTasks'
 
 graphql`
   fragment EndRetrospectiveMutation_team on EndRetrospectiveSuccess {
@@ -114,13 +116,13 @@ export const endRetrospectiveTeamUpdater: SharedUpdater<EndRetrospectiveMutation
   payload,
   {store}
 ) => {
-  // const updatedTasks = payload.getLinkedRecords('updatedTasks')
-  // const removedTaskIds = payload.getValue('removedTaskIds')
+  const updatedTasks = payload.getLinkedRecords('updatedTasks')
+  const removedTaskIds = payload.getValue('removedTaskIds')
   const meeting = payload.getLinkedRecord('meeting') as RecordProxy
   const timelineEvent = payload.getLinkedRecord('timelineEvent') as RecordProxy
   handleAddTimelineEvent(meeting, timelineEvent, store)
-  // handleRemoveTasks(removedTaskIds as any, store)
-  // handleUpsertTasks(updatedTasks as any, store)
+  handleRemoveTasks(removedTaskIds as any, store)
+  handleUpsertTasks(updatedTasks as any, store)
 }
 
 const EndRetrospectiveMutation: StandardMutation<
@@ -134,14 +136,14 @@ const EndRetrospectiveMutation: StandardMutation<
       const payload = store.getRootField('endRetrospective')
       if (!payload) return
       const context = {atmosphere, store: store as any}
-      endRetrospectiveNotificationUpdater(payload, context)
-      endRetrospectiveTeamUpdater(payload, context)
+      endRetrospectiveNotificationUpdater(payload as any, context)
+      endRetrospectiveTeamUpdater(payload as any, context)
     },
     onCompleted: (res, errors) => {
       if (onCompleted) {
         onCompleted(res, errors)
       }
-      endRetrospectiveTeamOnNext(res.endRetrospective, {atmosphere, history})
+      endRetrospectiveTeamOnNext(res.endRetrospective as any, {atmosphere, history})
     },
     onError
   })

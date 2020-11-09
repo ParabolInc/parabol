@@ -56,7 +56,7 @@ import UpdatePokerTemplateDimensionScalePayload from './UpdatePokerTemplateDimen
 import UpdatePokerTemplateScaleValuePayload from './UpdatePokerTemplateScaleValuePayload'
 import UpdateUserProfilePayload from './UpdateUserProfilePayload'
 import UpgradeToProPayload from './UpgradeToProPayload'
-import EndCheckInPayload from './EndCheckInPayload'
+import {EndCheckInSuccess} from './EndCheckInPayload'
 import {EndRetrospectiveSuccess} from './EndRetrospectivePayload'
 import {PersistJiraSearchQuerySuccess} from './PersistJiraSearchQueryPayload'
 
@@ -70,7 +70,7 @@ const types = [
   ArchiveTeamPayload,
   DenyPushInvitationPayload,
   DowngradeToPersonalPayload,
-  EndCheckInPayload,
+  EndCheckInSuccess,
   EndNewMeetingPayload,
   EndRetrospectiveSuccess,
   EndSprintPokerSuccess,
