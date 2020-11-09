@@ -135,7 +135,7 @@ const finishCheckInMeeting = async (meeting: MeetingAction, dataLoader: DataLoad
   const userIds = meetingMembers.map(({userId}) => userId)
   const meetingPhase = getMeetingPhase(phases)
   const pinnedAgendaItems = await getPinnedAgendaItems(teamId)
-  const isKill = ![AGENDA_ITEMS, LAST_CALL].includes(meetingPhase.phaseType)
+  const isKill = meetingPhase && ![AGENDA_ITEMS, LAST_CALL].includes(meetingPhase.phaseType)
   await Promise.all([
     isKill ? undefined : archiveTasksForDB(doneTasks, meetingId),
     isKill ? undefined : clearAgendaItems(teamId),
