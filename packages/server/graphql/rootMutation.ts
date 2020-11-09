@@ -116,6 +116,7 @@ import updateTeamName from './mutations/updateTeamName'
 import updateTemplateScope from './mutations/updateTemplateScope'
 import updateUserProfile from './mutations/updateUserProfile'
 import upgradeToPro from './mutations/upgradeToPro'
+import uploadOrgImage from './mutations/uploadOrgImage'
 import uploadUserImage from './mutations/uploadUserImage'
 import verifyEmail from './mutations/verifyEmail'
 import voteForReflectionGroup from './mutations/voteForReflectionGroup'
@@ -250,6 +251,7 @@ export default new GraphQLObjectType<any, Context>({
       updateTemplateScope,
       updateUserProfile,
       upgradeToPro,
+      uploadOrgImage,
       uploadUserImage,
       verifyEmail,
       voteForReflectionGroup,

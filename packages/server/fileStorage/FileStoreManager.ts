@@ -1,15 +1,9 @@
+import shortid from 'shortid'
+
 export interface PutFileOptions {
   partialPath: string
   buffer: Buffer
 }
-
-interface UserAvatarPathOptions {
-  userId: string
-  fileName: string
-  ext: string
-}
-
-interface OrgAvatarPathOptions {}
 
 export default abstract class FileStoreManager {
   _putFileCb: undefined | ((fullPath: string) => void)
@@ -28,12 +22,11 @@ export default abstract class FileStoreManager {
 
   abstract getPublicFileLocation(fullPath: string): string
 
-  static getUserAvatarPath(options: UserAvatarPathOptions) {
-    const {userId, fileName, ext} = options
-    return `User/${userId}/picture/${fileName}.${ext}`
+  static getUserAvatarPath(userId: string, ext: string): string {
+    return `User/${userId}/picture/${shortid.generate()}.${ext}`
   }
 
-  static getOrgAvatarPath(options: OrgAvatarPathOptions) {
-    console.log(options)
+  static getOrgAvatarPath(orgId: string, ext: string): string {
+    return `Organization/${orgId}/picture/${shortid.generate()}.${ext}`
   }
 }

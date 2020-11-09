@@ -1,10 +1,9 @@
-import {GraphQLInt} from 'graphql'
+import {GraphQLNonNull} from 'graphql'
 import {getUserId} from '../../utils/authorization'
 import {isAuthenticated} from '../../utils/authorization'
 import standardError from '../../utils/standardError'
 import GraphQLFileType from '../types/GraphQLFileType'
 import validateAvatarUpload from '../../utils/validateAvatarUpload'
-import shortid from 'shortid'
 import getFileStoreManager from '../../fileStorage/getFileStoreManager'
 import FileStoreManager from '../../fileStorage/FileStoreManager'
 import updateUserProfile from './helpers/updateUserProfile'
@@ -14,17 +13,9 @@ export default {
   type: UpdateUserProfilePayload,
   description: 'Upload an image for a user avatar',
   args: {
-    dummy: {
-      type: GraphQLInt,
-      description: 'test test'
-    },
     file: {
-      type: GraphQLFileType,
-      description: 'the file'
-    },
-    test: {
-      type: GraphQLInt,
-      description: 'testtest '
+      type: new GraphQLNonNull(GraphQLFileType),
+      description: 'the user avatar image file'
     }
   },
   resolve: async (
@@ -53,17 +44,12 @@ export default {
     const [ext, validBuffer] = await validateAvatarUpload(contentType, buffer)
 
     // RESOLUTION
-    const fileName = shortid.generate()
-    const userAvatarPath = FileStoreManager.getUserAvatarPath({
-      userId,
-      fileName,
-      ext
-    })
+    const userAvatarPath = FileStoreManager.getUserAvatarPath(userId, ext)
     const publicLocation = await getFileStoreManager().putFile({
       partialPath: userAvatarPath,
       buffer: validBuffer
     })
-    console.log('file location:', publicLocation)
+    console.log('user avatar location:', publicLocation)
     /*
     todos: 
       - create abstract fileStorage sendFile handler

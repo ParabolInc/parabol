@@ -7257,6 +7257,11 @@ export interface IMutation {
   upgradeToPro: IUpgradeToProPayload | null;
 
   /**
+   * Upload an image for an org avatar
+   */
+  uploadOrgImage: boolean | null;
+
+  /**
    * Upload an image for a user avatar
    */
   uploadUserImage: IUpdateUserProfilePayload | null;
@@ -8307,21 +8312,23 @@ export interface IUpgradeToProOnMutationArguments {
   stripeToken: string;
 }
 
+export interface IUploadOrgImageOnMutationArguments {
+  /**
+   * the org avatar image file
+   */
+  file: any;
+
+  /**
+   * The org id to upload an avatar for
+   */
+  orgId: string;
+}
+
 export interface IUploadUserImageOnMutationArguments {
   /**
-   * test test
+   * the user avatar image file
    */
-  dummy?: number | null;
-
-  /**
-   * the file
-   */
-  file?: any | null;
-
-  /**
-   * testtest
-   */
-  test?: number | null;
+  file: any;
 }
 
 export interface IVerifyEmailOnMutationArguments {

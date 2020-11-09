@@ -2,17 +2,12 @@ import {commitMutation} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 
 const mutation = graphql`
-  mutation UploadUserImageMutation($file: File!) {
-    uploadUserImage(file: $file) {
-      error {
-        message
-      }
-      ...UpdateUserProfileMutation_team @relay(mask: false)
-    }
+  mutation UploadOrgImageMutation($file: File!, $orgId: ID!) {
+    uploadOrgImage(file: $file, orgId: $orgId)
   }
 `
 
-const UploadUserImageMutation = (
+const UploadOrgImageMutation = (
   atmosphere,
   variables,
   {onCompleted, onError}
@@ -28,4 +23,4 @@ const UploadUserImageMutation = (
   })
 }
 
-export default UploadUserImageMutation
+export default UploadOrgImageMutation
