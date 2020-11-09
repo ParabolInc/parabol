@@ -1,4 +1,4 @@
-import {GraphQLBoolean, GraphQLInt} from 'graphql'
+import {GraphQLInt} from 'graphql'
 import {getUserId} from '../../utils/authorization'
 import {isAuthenticated} from '../../utils/authorization'
 import standardError from '../../utils/standardError'
@@ -7,9 +7,11 @@ import validateAvatarUpload from '../../utils/validateAvatarUpload'
 import shortid from 'shortid'
 import getFileStoreManager from '../../fileStorage/getFileStoreManager'
 import FileStoreManager from '../../fileStorage/FileStoreManager'
+import updateUserProfile from './helpers/updateUserProfile'
+import UpdateUserProfilePayload from '../types/UpdateUserProfilePayload'
 
 export default {
-  type: GraphQLBoolean, // todo: return payload
+  type: UpdateUserProfilePayload,
   description: 'Upload an image for a user avatar',
   args: {
     dummy: {
@@ -38,9 +40,10 @@ export default {
         }
       }
     },
-    {authToken}
+    context
   ) => {
     // AUTH
+    const {authToken} = context
     if (!isAuthenticated(authToken)) return standardError(new Error('Not authenticated'))
     const userId = getUserId(authToken)
 
@@ -64,12 +67,18 @@ export default {
     /*
     todos: 
       - create abstract fileStorage sendFile handler
+        - fix whitelisting uploaded file in static server
       - PR trebuchet client package to really expect uploadables
       - normalize image size to min necessary for avatar
       - mutation for org avatar
       - update user picture field after put success
+        - why isn't it updating automatically in UI?
     */
-
-    return true
+    const updatedUser = await updateUserProfile(
+      undefined,
+      {updatedUser: {picture: publicLocation}},
+      context
+    )
+    return updatedUser
   }
 }

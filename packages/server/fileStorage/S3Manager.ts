@@ -13,7 +13,7 @@ export default class S3Manager extends FileStoreManager {
   getPublicFileLocation(fullPath: string): string {
     const bucket = process.env.AWS_S3_BUCKET
     if (!bucket) throw new Error('`AWS_S3_BUCKET` env var is not configured')
-    return path.join('https://', bucket, fullPath)
+    return encodeURI(`https://${bucket}${fullPath}`)
   }
 
   async _putFile(fullPath: string, buffer: Buffer): Promise<void> {

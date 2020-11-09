@@ -4,8 +4,6 @@ import {Readable} from 'stream'
 import {OutgoingMessage} from '@mattkrick/graphql-trebuchet-client'
 import {APP_MAX_AVATAR_FILE_SIZE} from 'parabol-client/utils/constants'
 
-type ParseFormBodySignature = (res: HttpResponse, req: HttpRequest) => Promise<JSON | null>
-
 const bodyStream = (res: HttpResponse) => {
   const stream = new Readable()
   stream._read = () => 'no-op'
@@ -45,7 +43,7 @@ const parseFile = (fileStream, contentType) => {
   })
 }
 
-const parseFormBody: ParseFormBodySignature = (res, req) => {
+const parseFormBody = ({res, req}: {res: HttpResponse; req: HttpRequest}): Promise<JSON | null> => {
   const parser = new Busboy({
     headers: reqHeaders(req),
     limits: {

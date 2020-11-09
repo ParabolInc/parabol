@@ -3,7 +3,12 @@ import graphql from 'babel-plugin-relay/macro'
 
 const mutation = graphql`
   mutation UploadUserImageMutation($dummy: Int, $test: Int, $file: File) {
-    uploadUserImage(dummy: $dummy, test: $test, file: $file)
+    uploadUserImage(dummy: $dummy, test: $test, file: $file) {
+      error {
+        message
+      }
+      ...UpdateUserProfileMutation_team @relay(mask: false)
+    }
   }
 `
 
@@ -14,7 +19,6 @@ const UploadUserImageMutation = (
 ) => {
   const {file} = variables
   const uploadables = file ? {file} : undefined
-  console.log('file in mutation:', file)
   return commitMutation(atmosphere, {
     mutation,
     variables,

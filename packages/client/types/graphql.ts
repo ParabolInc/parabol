@@ -7259,7 +7259,7 @@ export interface IMutation {
   /**
    * Upload an image for a user avatar
    */
-  uploadUserImage: boolean | null;
+  uploadUserImage: IUpdateUserProfilePayload | null;
 
   /**
    * Verify an email address and sign in if not already a user

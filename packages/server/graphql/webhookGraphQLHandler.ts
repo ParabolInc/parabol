@@ -61,7 +61,7 @@ const webhookGraphQLHandler = uWSAsyncHandler(async (res: HttpResponse, req: Htt
   }
 
   // verify body
-  const body = await parseBody(res)
+  const body = await parseBody({res})
   if (!body) {
     res.writeStatus('422').end()
     return

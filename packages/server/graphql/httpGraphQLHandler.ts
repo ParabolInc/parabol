@@ -85,7 +85,7 @@ const httpGraphQLHandler = uWSAsyncHandler(async (res: HttpResponse, req: HttpRe
     return
   }
   const parseFn = contentTypeBodyParserMap[ct]
-  const body = await parseFn(res, req)
+  const body = await parseFn({res, req})
   if (!body) {
     res.writeStatus('422').end()
     return
