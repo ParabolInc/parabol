@@ -9,7 +9,7 @@ import {TemplateScaleValueItem_scaleValue} from '../../../__generated__/Template
 import Icon from '../../../components/Icon'
 import {PALETTE} from '../../../styles/paletteV2'
 import {ICON_SIZE} from '../../../styles/typographyV2'
-import EditableTemplateScaleLabel from './EditableTemplateScaleLabel'
+import EditableTemplateScaleValueLabel from './EditableTemplateScaleValueLabel'
 import EditableTemplateScaleValueColor from './EditableTemplateScaleValueColor'
 import {TemplateScaleValueItem_scale} from '~/__generated__/TemplateScaleValueItem_scale.graphql'
 import RemovePokerTemplateScaleValueMutation from '~/mutations/RemovePokerTemplateScaleValueMutation'
@@ -98,7 +98,7 @@ const TemplateScaleValueItem = (props: Props) => {
     >
       <EditableTemplateScaleValueColor isOwner={isOwner} scaleValue={scaleValue} scale={scale} />
       <ScaleAndDescription>
-        <EditableTemplateScaleLabel
+        <EditableTemplateScaleValueLabel
           isOwner={isOwner}
           isEditingDescription={isEditingDescription}
           isHover={isHover}
@@ -116,13 +116,13 @@ export default createFragmentContainer(TemplateScaleValueItem, {
   scale: graphql`
     fragment TemplateScaleValueItem_scale on TemplateScale {
       id
-      ...EditableTemplateScaleLabel_scale
+      ...EditableTemplateScaleValueLabel_scale
       ...EditableTemplateScaleValueColor_scale
     }
   `,
   scaleValue: graphql`
     fragment TemplateScaleValueItem_scaleValue on TemplateScaleValue {
-      ...EditableTemplateScaleLabel_scaleValue
+      ...EditableTemplateScaleValueLabel_scaleValue
       ...EditableTemplateScaleValueColor_scaleValue
       id
       value

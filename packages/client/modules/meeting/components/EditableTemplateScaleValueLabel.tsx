@@ -10,8 +10,8 @@ import withMutationProps, {WithMutationProps} from '../../../utils/relay/withMut
 import Legitity from '../../../validation/Legitity'
 import {PALETTE} from '~/styles/paletteV2'
 import UpdatePokerTemplateScaleValueMutation from '~/mutations/UpdatePokerTemplateScaleValueMutation'
-import {EditableTemplateScaleLabel_scaleValue} from '~/__generated__/EditableTemplateScaleLabel_scaleValue.graphql'
-import {EditableTemplateScaleLabel_scale} from '~/__generated__/EditableTemplateScaleLabel_scale.graphql'
+import {EditableTemplateScaleValueLabel_scaleValue} from '~/__generated__/EditableTemplateScaleValueLabel_scaleValue.graphql'
+import {EditableTemplateScaleValueLabel_scale} from '~/__generated__/EditableTemplateScaleValueLabel_scale.graphql'
 
 const StyledEditableText = styled(EditableText)({
   fontFamily: PALETTE.TEXT_MAIN,
@@ -24,11 +24,11 @@ interface Props extends WithAtmosphereProps, WithMutationProps {
   isOwner: boolean
   isEditingDescription: boolean
   isHover: boolean
-  scale: EditableTemplateScaleLabel_scale
-  scaleValue: EditableTemplateScaleLabel_scaleValue
+  scale: EditableTemplateScaleValueLabel_scale
+  scaleValue: EditableTemplateScaleValueLabel_scaleValue
 }
 
-class EditableTemplateScaleLabel extends Component<Props> {
+class EditableTemplateScaleValueLabel extends Component<Props> {
   handleSubmit = (rawScaleLabel) => {
     const {
       atmosphere,
@@ -47,23 +47,22 @@ class EditableTemplateScaleLabel extends Component<Props> {
     submitMutation()
 
     const scaleId = scale.id
-    const oldScaleValue = scaleValue
-    const newScaleValue = {...scaleValue, label: newLabel}
-
+    const {id: _omit, ...oldScaleValue} = scaleValue
+    const {id: _removal, ...newScaleValue} = {...scaleValue, label: newLabel}
     UpdatePokerTemplateScaleValueMutation(atmosphere, {scaleId, oldScaleValue, newScaleValue}, {}, onError, onCompleted)
   }
 
   legitify(value: string) {
-    const {scale} = this.props
-    const scaleValueId = scale.id
+    const {scaleValue, scale} = this.props
+    const scaleValueId = scaleValue.id
     return new Legitity(value)
       .trim()
       .required('Please enter a scale label')
       .max(2, 'That scale label is probably long enough')
       .test((mVal) => {
-        const isDupe = scale.values.find(
-          (scaleValue) => `${scale.id}:${scaleValue.value}` !== scaleValueId && scaleValue.label.toLowerCase() === mVal.toLowerCase()
-        )
+        const isDupe = mVal ? scale.values.find(
+          (aScaleValue) => aScaleValue.id !== scaleValueId && aScaleValue.label.toLowerCase() === mVal.toLowerCase()
+        ) : undefined
         return isDupe ? 'That scale label already exists' : undefined
       })
   }
@@ -88,19 +87,20 @@ class EditableTemplateScaleLabel extends Component<Props> {
         hideIcon={isEditingDescription ? true : !isHover}
         handleSubmit={this.handleSubmit}
         initialValue={scaleValue.label}
-        maxLength={100}
+        maxLength={2}
         validate={this.validate}
-        placeholder={''}
+        placeholder={'*'}
       />
     )
   }
 }
 
-export default createFragmentContainer(withAtmosphere(withMutationProps(EditableTemplateScaleLabel)), {
+export default createFragmentContainer(withAtmosphere(withMutationProps(EditableTemplateScaleValueLabel)), {
   scale: graphql`
-    fragment EditableTemplateScaleLabel_scale on TemplateScale {
+    fragment EditableTemplateScaleValueLabel_scale on TemplateScale {
       id
       values {
+        id
         label
         value
         color
@@ -108,7 +108,8 @@ export default createFragmentContainer(withAtmosphere(withMutationProps(Editable
     }
   `,
   scaleValue: graphql`
-    fragment EditableTemplateScaleLabel_scaleValue on TemplateScaleValue {
+    fragment EditableTemplateScaleValueLabel_scaleValue on TemplateScaleValue {
+      id
       label
       value
       color
