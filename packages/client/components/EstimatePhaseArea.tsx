@@ -39,14 +39,12 @@ const SwipableEstimateItem = styled('div')({
 const innerStyle = (isDesktop: boolean) => {
   return {
     height: '100%',
-    padding: isDesktop ? '0 10%' : '0 40px',
-    width: isDesktop ? '75%' : '100%',
+    margin: isDesktop ? '0 auto' : null,
+    maxWidth: isDesktop ? '728px' : null,
+    padding: isDesktop ? '0 80px' : '0 16px',
+    width: '100%',
     overflow: 'visible'
   }
-}
-
-const slideContainer = {
-  padding: '0 16px'
 }
 
 const containerStyle = {
@@ -62,6 +60,10 @@ const EstimatePhaseArea = () => {
   }
 
   const dummyEstimateItems = [1, 2, 3]
+
+  const slideContainer = {
+    padding: isDesktop ? '0 8px' : '0 4px'
+  }
 
   return (
     <EstimateArea>
