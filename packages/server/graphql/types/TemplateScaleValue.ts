@@ -34,7 +34,7 @@ const TemplateScaleValue = new GraphQLObjectType<any, GQLContext>({
     sortOrder: {
       type: new GraphQLNonNull(GraphQLFloat),
       description: 'the order of the scale value in this scale',
-      resolve: ({$value}) => $value
+      resolve: ({value}) => value
     }
   })
 })

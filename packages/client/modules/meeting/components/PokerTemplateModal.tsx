@@ -55,7 +55,7 @@ const PokerTemplateModal = (props: Props) => {
 
       <SwipeableViews
         enableMouseEvents
-        index={scaleId ? 0 : 1}
+        index={scaleId ? 1 : 1}
         containerStyle={containerStyle}
         style={innerStyle}
       >

@@ -3,6 +3,7 @@ import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {PokerTemplateScaleDetails_viewer} from '../../../__generated__/PokerTemplateScaleDetails_viewer.graphql'
+import AddPokerTemplateScaleValue from './AddPokerTemplateScaleValue'
 import EditableTemplateScaleName from './EditableTemplateScaleName'
 import TemplateScaleValueList from './TemplateScaleValueList'
 
@@ -84,6 +85,7 @@ const PokerTemplateScaleDetails = (props: Props) => {
           </FirstLine>
         </ScaleHeader>
         <TemplateScaleValueList scale={scale} />
+        <AddPokerTemplateScaleValue scaleId={scale.id} scaleValues={scale.values} />
       </Scrollable>
     </ScaleValueEditor>
   )
@@ -104,6 +106,9 @@ export default createFragmentContainer(PokerTemplateScaleDetails, {
               name
               teamId
               ...TemplateScaleValueList_scale
+              values {
+                ...AddPokerTemplateScaleValue_scaleValues
+              }
             }
           }
         }

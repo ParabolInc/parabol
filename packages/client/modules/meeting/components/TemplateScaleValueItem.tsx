@@ -68,7 +68,7 @@ const TemplateScaleValueItem = (props: Props) => {
   const [isEditingDescription] = useState(false)
   const {submitting, submitMutation, onError, onCompleted} = useMutationProps()
   const atmosphere = useAtmosphere()
-  const canRemove = scale.values.length > 1 && isOwner
+  const canRemove = !scaleValue.isSpecial
   const onMouseEnter = () => {
     setIsHover(true)
   }
@@ -97,7 +97,7 @@ const TemplateScaleValueItem = (props: Props) => {
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
     >
-      <EditableTemplateScaleValueColor isOwner={isOwner} scaleValue={scaleValue} scaleValues={scale.values} />
+      <EditableTemplateScaleValueColor isOwner={isOwner} scaleValue={scaleValue} scale={scale} />
       <ScaleAndDescription>
         <EditableTemplateScaleLabel
           isOwner={isOwner}
@@ -117,9 +117,7 @@ export default createFragmentContainer(TemplateScaleValueItem, {
   scale: graphql`
     fragment TemplateScaleValueItem_scale on TemplateScale {
       ...EditableTemplateScaleLabel_scale
-      values {
-        ...EditableTemplateScaleValueColor_scaleValues
-      }
+      ...EditableTemplateScaleValueColor_scale
     }
   `,
   scaleValue: graphql`

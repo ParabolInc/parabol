@@ -4,7 +4,7 @@ import {SprintPokerDefaults} from '~/types/constEnums'
 import {BaseLocalHandlers, SharedUpdater, StandardMutation} from '../types/relayMutations'
 import createProxyRecord from '../utils/relay/createProxyRecord'
 import {AddPokerTemplateDimensionMutation as TAddPokerTemplateDimensionMutation} from '../__generated__/AddPokerTemplateDimensionMutation.graphql'
-import {AddPokerTemplateDimensionMutation_team} from '../__generated__/AddPokerTemplateDimensionMutation_team.graphql'
+import {AddPokerTemplateDimensionMutation_dimension} from '../__generated__/AddPokerTemplateDimensionMutation_dimension.graphql'
 import handleAddPokerTemplateDimension from './handlers/handleAddPokerTemplateDimension'
 
 interface Handlers extends BaseLocalHandlers {
@@ -13,7 +13,7 @@ interface Handlers extends BaseLocalHandlers {
 }
 
 graphql`
-  fragment AddPokerTemplateDimensionMutation_team on AddPokerTemplateDimensionPayload {
+  fragment AddPokerTemplateDimensionMutation_dimension on AddPokerTemplateDimensionPayload {
     dimension {
       ...AddPokerTemplateDimension_dimensions @relay(mask: false)
       ...TemplateDimensionList_dimensions @relay(mask: false)
@@ -29,12 +29,12 @@ graphql`
 const mutation = graphql`
   mutation AddPokerTemplateDimensionMutation($templateId: ID!) {
     addPokerTemplateDimension(templateId: $templateId) {
-      ...AddPokerTemplateDimensionMutation_team @relay(mask: false)
+      ...AddPokerTemplateDimensionMutation_dimension @relay(mask: false)
     }
   }
 `
 
-export const addPokerTemplateDimensionTeamUpdater: SharedUpdater<AddPokerTemplateDimensionMutation_team> = (
+export const addPokerTemplateDimensionTeamUpdater: SharedUpdater<AddPokerTemplateDimensionMutation_dimension> = (
   payload,
   {store}
 ) => {
