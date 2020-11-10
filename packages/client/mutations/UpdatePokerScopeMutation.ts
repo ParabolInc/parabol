@@ -7,7 +7,7 @@ graphql`
   fragment UpdatePokerScopeMutation_meeting on UpdatePokerScopeSuccess {
     meeting {
       phases {
-        ...PokerSidebarEstimateSectionEstimatePhase
+        ...useMakeStageSummaries_phase
         ...on EstimatePhase {
           stages {
             id
@@ -15,18 +15,6 @@ graphql`
             service
             serviceTaskId
             sortOrder
-            ...on EstimateStageJira {
-              issue {
-                id
-                summary
-              }
-            }
-            ... on EstimateStageParabol {
-              task {
-                id
-                content
-              }
-            }
           }
         }
       }

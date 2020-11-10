@@ -8,6 +8,7 @@ import Meeting from '../../database/types/Meeting'
 import MeetingPoker from '../../database/types/MeetingPoker'
 import TimelineEventPokerComplete from '../../database/types/TimelineEventPokerComplete'
 import {getUserId, isSuperUser, isTeamMember} from '../../utils/authorization'
+import getRedis from '../../utils/getRedis'
 import publish from '../../utils/publish'
 import segmentIo from '../../utils/segmentIo'
 import standardError from '../../utils/standardError'
@@ -50,6 +51,16 @@ export default {
     if (endedAt) return standardError(new Error('Meeting already ended'), {userId: viewerId})
 
     // RESOLUTION
+    // remove hovering data from redis
+    const estimatePhase = phases.find(
+      (phase) => phase.phaseType === NewMeetingPhaseTypeEnum.ESTIMATE
+    )!
+    const {stages: estimateStages} = estimatePhase
+    const redisKeys = estimateStages.map((stage) => `pokerHover:${stage.id}`)
+    const redis = getRedis()
+    // no need to await
+    redis.del(...redisKeys)
+
     const currentStageRes = findStageById(phases, facilitatorStageId)
     if (!currentStageRes) {
       return standardError(new Error('Cannot find facilitator stage'), {userId: viewerId})

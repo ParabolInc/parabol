@@ -124,6 +124,10 @@ import updatePokerScope from './mutations/updatePokerScope'
 import voteForPokerStory from './mutations/voteForPokerStory'
 import endCheckIn from './mutations/endCheckIn'
 import endRetrospective from './mutations/endRetrospective'
+import pokerRevealVotes from './mutations/pokerRevealVotes'
+import pokerResetDimension from './mutations/pokerResetDimension'
+import pokerAnnounceDeckHover from './mutations/pokerAnnounceDeckHover'
+import pokerSetFinalScore from './mutations/pokerSetFinalScore'
 import persistJiraSearchQuery from './mutations/persistJiraSearchQuery'
 
 interface Context extends InternalContext, GQLContext {}
@@ -259,6 +263,10 @@ export default new GraphQLObjectType<any, Context>({
       verifyEmail,
       voteForReflectionGroup,
       upgradeToPro,
-      voteForPokerStory
+      voteForPokerStory,
+      pokerRevealVotes,
+      pokerResetDimension,
+      pokerAnnounceDeckHover,
+      pokerSetFinalScore
     } as any)
 })

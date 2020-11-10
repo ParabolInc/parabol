@@ -63,7 +63,7 @@ const PokerMeetingSidebar = (props: Props) => {
           const estimatePhase = phases.find((phase) => {
             return phase.phaseType === 'ESTIMATE'
           })!
-          const phaseCount = phaseType === 'ESTIMATE' ? estimatePhase.stages.length : undefined
+          const phaseCount = phaseType === 'ESTIMATE' ? new Set(estimatePhase.stages.map(({serviceTaskId}) => serviceTaskId)).size : undefined
           return (
             <NewMeetingSidebarPhaseListItem
               handleClick={canNavigate ? handleClick : undefined}
@@ -130,6 +130,9 @@ export default createFragmentContainer(PokerMeetingSidebar, {
           isComplete
           isNavigable
           isNavigableByFacilitator
+          ... on EstimateStage {
+            serviceTaskId
+          }
         }
       }
     }

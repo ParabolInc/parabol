@@ -109,7 +109,10 @@ export default {
     const otherActiveMeeting = newActiveMeetings.find((activeMeeting) => {
       const {createdAt, id} = activeMeeting
       if (id === meeting.id || activeMeeting.meetingType !== meetingType) return false
-      return meetingType === EMeetingTypeEnum.action || createdAt > Date.now() - DUPLICATE_THRESHOLD
+      return (
+        meetingType === EMeetingTypeEnum.action ||
+        createdAt.getTime() > Date.now() - DUPLICATE_THRESHOLD
+      )
     })
     if (otherActiveMeeting) {
       await r

@@ -354,18 +354,18 @@ export default abstract class AtlassianManager {
       ) as AtlassianError | JiraError | JiraIssueBean
     ])
     if ('fields' in issueRes) {
-      ;(issueRes.fields as any).cloudName = cloudNameLookup[cloudId]
-      ;(issueRes.fields as any).descriptionHTML = (issueRes as any).renderedFields.description
+      ; (issueRes.fields as any).cloudName = cloudNameLookup[cloudId]
+        ; (issueRes.fields as any).descriptionHTML = (issueRes as any).renderedFields.description
     }
     return issueRes as
       | AtlassianError
       | JiraError
       | JiraIssueBean<{
-          description: any
-          summary: string
-          cloudName: string
-          descriptionHTML: string
-        }>
+        description: any
+        summary: string
+        cloudName: string
+        descriptionHTML: string
+      }>
   }
 
   async getIssues(
@@ -443,10 +443,9 @@ export default abstract class AtlassianManager {
     cloudId: string,
     issueKey: string,
     storyPoints: string | number,
-    dimensionName: string | null
+    dimensionName: string
   ) {
     // try to update the field by dimension name.
-    // if the dimension name is null, use the jira defaults
     // if we can't trigger an update, then just write a comment
     const fields = await this.getFields(cloudId)
     const searchFields = fields.map((field) => ({
@@ -454,15 +453,14 @@ export default abstract class AtlassianManager {
       searchName: field.name.toLowerCase().trim()
     }))
 
-    let fieldsToTry = [] as JiraField[]
-    if (!dimensionName) {
-      const namesToTry = ['Story Points', 'Story point estimate'].map((val) => val.toLowerCase())
-      fieldsToTry = searchFields.filter((field) => namesToTry.includes(field.searchName))
-    } else {
-      const normalizedDimensionName = dimensionName.toLowerCase().trim()
-      fieldsToTry = searchFields.filter((field) => field.searchName === normalizedDimensionName)
-    }
+    const normalizedDimensionName = dimensionName.toLowerCase().trim()
+    const namesToTry = [normalizedDimensionName] as string[]
 
+    if (normalizedDimensionName === 'story points') {
+      // new jira projects call it this >:-(
+      namesToTry.push('story point estimate')
+    }
+    const fieldsToTry = searchFields.filter((field) => namesToTry.includes(field.searchName))
     let updatedFieldSuccess = false
     if (fieldsToTry.length > 0) {
       const res = await Promise.all(
@@ -522,7 +520,7 @@ export default abstract class AtlassianManager {
                   {
                     type: 'link',
                     attrs: {
-                      href: 'http://action.parabol.co'
+                      href: 'https://action.parabol.co'
                     }
                   }
                 ]

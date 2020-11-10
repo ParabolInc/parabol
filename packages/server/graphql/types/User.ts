@@ -14,6 +14,7 @@ import getRethink from '../../database/rethinkDriver'
 import {getUserId, isSuperUser, isTeamMember} from '../../utils/authorization'
 import getDomainFromEmail from '../../utils/getDomainFromEmail'
 import getMonthlyStreak from '../../utils/getMonthlyStreak'
+import getRedis from '../../utils/getRedis'
 import isCompanyDomain from '../../utils/isCompanyDomain'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
@@ -36,7 +37,7 @@ import TeamMember from './TeamMember'
 import TierEnum from './TierEnum'
 import {TimelineEventConnection} from './TimelineEvent'
 import UserFeatureFlags from './UserFeatureFlags'
-import getRedis from '../../utils/getRedis'
+import errorFilter from '../errorFilter'
 
 const User = new GraphQLObjectType<any, GQLContext>({
   name: 'User',
@@ -140,7 +141,10 @@ const User = new GraphQLObjectType<any, GQLContext>({
         const checkedInMeetingMembers = meetingMembers.filter(
           (meetingMember) => meetingMember.isCheckedIn
         )
-        const lastMetAt = Math.max(0, ...checkedInMeetingMembers.map(({updatedAt}) => updatedAt))
+        const lastMetAt = Math.max(
+          0,
+          ...checkedInMeetingMembers.map(({updatedAt}) => updatedAt.getTime())
+        )
         return lastMetAt ? new Date(lastMetAt) : null
       }
     },
@@ -354,7 +358,10 @@ const User = new GraphQLObjectType<any, GQLContext>({
       async resolve({id: userId}, _args, {authToken, dataLoader}) {
         const organizationUsers = await dataLoader.get('organizationUsersByUserId').load(userId)
         const orgIds = organizationUsers.map(({orgId}) => orgId)
-        const organizations = await dataLoader.get('organizations').loadMany(orgIds)
+        const organizations = (await dataLoader.get('organizations').loadMany(orgIds)).filter(
+          errorFilter
+        )
+
         organizations.sort((a, b) => (a.name > b.name ? 1 : -1))
         const viewerId = getUserId(authToken)
         if (viewerId === userId || isSuperUser(authToken)) {

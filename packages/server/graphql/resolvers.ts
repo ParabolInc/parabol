@@ -7,6 +7,7 @@ import sendToSentry from '../utils/sendToSentry'
 import GenericMeetingStage from '../database/types/GenericMeetingStage'
 import Meeting from '../database/types/Meeting'
 import {getUserId, isSuperUser, isUserBillingLeader} from '../utils/authorization'
+import {DataLoaderWorker} from './graphql'
 
 export const resolveAgendaItem = ({agendaItemId, agendaItem}, _args, {dataLoader}) => {
   return agendaItemId ? dataLoader.get('agendaItems').load(agendaItemId) : agendaItem
@@ -148,30 +149,28 @@ export const resolveForBillingLeaders = (fieldName) => async (
   return isBillingLeader || isSuperUser(authToken) ? source[fieldName] : undefined
 }
 
-export const resolveJiraIssue = async (source, _args, {authToken, dataLoader}) => {
-  const {teamId, serviceTaskId} = source
-  const [cloudId, issueKey] = serviceTaskId
-    ? serviceTaskId.split(':')
-    : [source.cloudId, source.key]
-  const viewerId = getUserId(authToken)
-  // we need the access token of a person on this team
-  const teamAuths = await dataLoader.get('atlassianAuthByTeamId').load(teamId)
-  const [teamAuth] = teamAuths
-  if (!teamAuth) {
-    sendToSentry(new Error('No atlassian access token exists for team'), {userId: viewerId})
+export const resolveJiraIssue = async (
+  cloudId: string,
+  issueKey: string,
+  teamId: string,
+  userId: string,
+  dataLoader: DataLoaderWorker
+) => {
+  const auth = await dataLoader.get('freshAtlassianAuth').load({teamId, userId})
+  if (!auth) {
+    sendToSentry(new Error('No atlassian access token exists for team member'), {userId})
     return null
   }
-  const {userId} = teamAuth
-  const accessToken = await dataLoader.get('freshAtlassianAccessToken').load({teamId, userId})
+  const {accessToken} = auth
   const manager = new AtlassianServerManager(accessToken)
   const issueRes = await manager.getIssue(cloudId, issueKey)
   if ('message' in issueRes) {
-    sendToSentry(new Error(issueRes.message), {userId: viewerId})
+    sendToSentry(new Error(issueRes.message), {userId})
     return null
   }
   if ('errors' in issueRes) {
     const error = issueRes.errors[0]
-    sendToSentry(new Error(error), {userId: viewerId})
+    sendToSentry(new Error(error), {userId})
     return null
   }
   const data = {

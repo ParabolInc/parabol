@@ -8,6 +8,7 @@ import TimelineEvent from './TimelineEvent'
 import makeMutationPayload from './makeMutationPayload'
 import ActionMeeting from './ActionMeeting'
 import {resolveNewMeeting} from '../resolvers'
+import errorFilter from '../errorFilter'
 
 export const EndCheckInSuccess = new GraphQLObjectType<any, GQLContext>({
   name: 'EndCheckInSuccess',
@@ -49,7 +50,9 @@ export const EndCheckInSuccess = new GraphQLObjectType<any, GQLContext>({
       resolve: async ({updatedTaskIds}, _args, {authToken, dataLoader}) => {
         if (!updatedTaskIds) return []
         const viewerId = getUserId(authToken)
-        const allUpdatedTasks = await dataLoader.get('tasks').loadMany(updatedTaskIds)
+        const allUpdatedTasks = (await dataLoader.get('tasks').loadMany(updatedTaskIds)).filter(
+          errorFilter
+        )
         return allUpdatedTasks.filter((task) => {
           return isTaskPrivate(task.tags) ? task.userId === viewerId : true
         })
