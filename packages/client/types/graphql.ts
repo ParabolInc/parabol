@@ -7259,7 +7259,7 @@ export interface IMutation {
   /**
    * Upload an image for an org avatar
    */
-  uploadOrgImage: boolean | null;
+  uploadOrgImage: IUpdateOrgPayload;
 
   /**
    * Upload an image for a user avatar

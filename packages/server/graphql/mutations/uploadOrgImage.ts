@@ -1,13 +1,15 @@
-import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql'
+import {GraphQLID, GraphQLNonNull} from 'graphql'
 import GraphQLFileType from '../types/GraphQLFileType'
 import {getUserId, isUserBillingLeader} from '../../utils/authorization'
 import standardError from '../../utils/standardError'
 import validateAvatarUpload from '../../utils/validateAvatarUpload'
 import FileStoreManager from '../../fileStorage/FileStoreManager'
 import getFileStoreManager from '../../fileStorage/getFileStoreManager'
+import {default as updateOrgResolver} from './helpers/updateOrg'
+import UpdateOrgPayload from '../types/UpdateOrgPayload'
 
 export default {
-  type: GraphQLBoolean,
+  type: new GraphQLNonNull(UpdateOrgPayload),
   description: 'Upload an image for an org avatar',
   args: {
     file: {
@@ -56,6 +58,16 @@ export default {
     })
     console.log('org avatar location:', publicLocation)
 
-    return true
+    const updatedOrg = await updateOrgResolver(
+      undefined,
+      {
+        updatedOrg: {
+          id: orgId,
+          picture: publicLocation
+        }
+      },
+      context
+    )
+    return updatedOrg
   }
 }
