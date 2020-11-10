@@ -12,6 +12,7 @@ import {ICON_SIZE} from '../../../styles/typographyV2'
 import EditableTemplateScaleLabel from './EditableTemplateScaleLabel'
 import EditableTemplateScaleValueColor from './EditableTemplateScaleValueColor'
 import {TemplateScaleValueItem_scale} from '~/__generated__/TemplateScaleValueItem_scale.graphql'
+import RemovePokerTemplateScaleValueMutation from '~/mutations/RemovePokerTemplateScaleValueMutation'
 
 interface Props {
   isOwner: boolean
@@ -41,7 +42,7 @@ const ScaleItem = styled('div')<StyledProps & {isOwner: boolean}>(
   })
 )
 
-const RemoveScaleIcon = styled(Icon)<StyledProps>(({isHover, enabled}) => ({
+const RemoveScaleValueIcon = styled(Icon)<StyledProps>(({isHover, enabled}) => ({
   color: PALETTE.TEXT_GRAY,
   cursor: 'pointer',
   display: 'block',
@@ -63,7 +64,6 @@ const ScaleAndDescription = styled('div')({
 
 const TemplateScaleValueItem = (props: Props) => {
   const {dragProvided, isDragging, isOwner, scale, scaleValue} = props
-  const {id: scaleValueId} = scaleValue
   const [isHover, setIsHover] = useState(false)
   const [isEditingDescription] = useState(false)
   const {submitting, submitMutation, onError, onCompleted} = useMutationProps()
@@ -75,15 +75,14 @@ const TemplateScaleValueItem = (props: Props) => {
   const onMouseLeave = () => {
     setIsHover(false)
   }
-  const removeScale = () => {
+  const removeScaleValue = () => {
     if (submitting) return
     if (!canRemove) {
       onError(new Error('You must have at least 1 scale'))
       return
     }
     submitMutation()
-    //RemovePokerTemplateScaleValueMutation(atmosphere, {scaleValueId}, {}, onError, onCompleted)
-    console.log(`scaleValueId = ${scaleValueId}; onCompleted = ${onCompleted}; atmosphere = ${atmosphere}`)
+    RemovePokerTemplateScaleValueMutation(atmosphere, {scaleId: scale.id, scaleValue: scaleValue.value}, {}, onError, onCompleted)
   }
 
   return (
@@ -107,15 +106,16 @@ const TemplateScaleValueItem = (props: Props) => {
           scaleValue={scaleValue}
         />
       </ScaleAndDescription>
-      <RemoveScaleIcon isHover={isHover} onClick={removeScale} enabled={canRemove}>
+      <RemoveScaleValueIcon isHover={isHover} onClick={removeScaleValue} enabled={canRemove}>
         cancel
-      </RemoveScaleIcon>
+      </RemoveScaleValueIcon>
     </ScaleItem >
   )
 }
 export default createFragmentContainer(TemplateScaleValueItem, {
   scale: graphql`
     fragment TemplateScaleValueItem_scale on TemplateScale {
+      id
       ...EditableTemplateScaleLabel_scale
       ...EditableTemplateScaleValueColor_scale
     }

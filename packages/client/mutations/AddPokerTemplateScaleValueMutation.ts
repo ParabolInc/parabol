@@ -12,11 +12,7 @@ graphql`
       id
       name
       values {
-        id
-        value
-        label
-        color
-        isSpecial
+        ...AddPokerTemplateScaleValue_scaleValues
       }
       teamId
     }
@@ -48,11 +44,11 @@ const AddPokerTemplateScaleValueMutation: StandardMutation<
     variables,
     onCompleted,
     onError,
-    // updater: (store) => {
-    //   const payload = store.getRootField('addPokerTemplateScaleValue')
-    //   if (!payload) return
-    //   addPokerTemplateScaleValueTeamUpdater(payload, {atmosphere, store})
-    // },
+    updater: (store) => {
+      const payload = store.getRootField('addPokerTemplateScaleValue')
+      if (!payload) return
+      addPokerTemplateScaleValueTeamUpdater(payload, {atmosphere, store})
+    },
     optimisticUpdater: (store) => {
       const {scaleId, scaleValue} = variables
       const proxyTemplateScaleValue = createProxyRecord(store, 'TemplateScaleValue', {
