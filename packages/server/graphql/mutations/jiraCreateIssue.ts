@@ -53,9 +53,8 @@ export default {
     }
 
     // VALIDATION
-    const viewerAuthRes = await dataLoader.get('atlassianAuthByUserId').load(viewerId)
-    const viewerAuth = viewerAuthRes.find((auth) => auth.teamId === teamId)
-    if (!viewerAuth || !viewerAuth.isActive) {
+    const viewerAuth = await dataLoader.get('freshAtlassianAuth').load({teamId, userId: viewerId})
+    if (!viewerAuth?.isActive) {
       return standardError(new Error('The viewer does not have access to Jira'), {
         userId: viewerId
       })
@@ -77,9 +76,7 @@ export default {
     }
 
     // RESOLUTION
-    const accessToken = await dataLoader
-      .get('freshAtlassianAccessToken')
-      .load({teamId, userId: viewerId})
+    const {accessToken} = viewerAuth
     const manager = new AtlassianServerManager(accessToken)
     const [sites, issueMetaRes, description] = await Promise.all([
       manager.getAccessibleResources(),
@@ -122,7 +119,8 @@ export default {
       cloudId,
       key: res.key,
       meetingId,
-      teamId
+      teamId,
+      userId: viewerId
     }
     if (meetingId) {
       publish(SubscriptionChannel.MEETING, meetingId, 'JiraCreateIssuePayload', data, subOptions)

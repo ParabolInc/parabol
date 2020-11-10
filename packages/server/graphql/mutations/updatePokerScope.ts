@@ -10,6 +10,8 @@ import {GQLContext} from '../graphql'
 import UpdatePokerScopeItemInput from '../types/UpdatePokerScopeItemInput'
 import UpdatePokerScopePayload from '../types/UpdatePokerScopePayload'
 import isRecordActiveForMeeting from '../../utils/isRecordActiveForMeeting'
+import getRedis from '../../utils/getRedis'
+import MeetingPoker from '../../database/types/MeetingPoker'
 
 const updatePokerScope = {
   type: GraphQLNonNull(UpdatePokerScopePayload),
@@ -30,12 +32,13 @@ const updatePokerScope = {
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) => {
     const r = await getRethink()
+    const redis = getRedis()
     const viewerId = getUserId(authToken)
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
 
     //AUTH
-    const meeting = await dataLoader.get('newMeetings').load(meetingId)
+    const meeting = (await dataLoader.get('newMeetings').load(meetingId)) as MeetingPoker
     if (!meeting) {
       return {error: {message: `Meeting not found`}}
     }
@@ -87,6 +90,7 @@ const updatePokerScope = {
         const newStages = dimensions.map(
           (dimension) =>
             new EstimateStage({
+              creatorUserId: viewerId,
               service,
               serviceTaskId,
               sortOrder: lastSortOrder + 1,
@@ -97,9 +101,16 @@ const updatePokerScope = {
         // MUTATIVE
         stages.push(...newStages)
       } else if (action === 'DELETE') {
-        // MUTATIVE
-        estimatePhase.stages = stages.filter((stage) => stage.serviceTaskId !== serviceTaskId)
-        stages = estimatePhase.stages
+        const stagesToRemove = stages.filter((stage) => stage.serviceTaskId === serviceTaskId)
+        if (stagesToRemove.length > 0) {
+          // MUTATIVE
+          stages = stages.filter((stage) => stage.serviceTaskId !== serviceTaskId)
+          estimatePhase.stages = stages
+          const writes = stagesToRemove.map((stage) => {
+            return ['del', `pokerHover:${stage.id}`]
+          })
+          redis.multi(writes).exec()
+        }
       }
     })
 

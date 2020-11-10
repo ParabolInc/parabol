@@ -12,6 +12,7 @@ import makeAppLink from '../../../utils/makeAppLink'
 import segmentIo from '../../../utils/segmentIo'
 import sendToSentry from '../../../utils/sendToSentry'
 import SlackServerManager from '../../../utils/SlackServerManager'
+import errorFilter from '../../errorFilter'
 import {DataLoaderWorker} from '../../graphql'
 
 const getSlackDetails = async (
@@ -31,7 +32,9 @@ const getSlackDetails = async (
     distinctChannelNotifications.push(notification)
   }
   const notificationUserIds = distinctChannelNotifications.map(({userId}) => userId)
-  const userSlackAuths = await dataLoader.get('slackAuthByUserId').loadMany(notificationUserIds)
+  const userSlackAuths = (
+    await dataLoader.get('slackAuthByUserId').loadMany(notificationUserIds)
+  ).filter(errorFilter)
   return userSlackAuths.map((userSlackAuthArr, idx) => {
     const auth = userSlackAuthArr.find((val) => val.teamId === teamId) as SlackAuth
     return {auth, notification: distinctChannelNotifications[idx]}

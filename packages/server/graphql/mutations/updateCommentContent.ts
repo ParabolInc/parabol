@@ -19,7 +19,7 @@ export default {
     content: {
       type: new GraphQLNonNull(GraphQLString),
       description: 'A stringified draft-js document containing thoughts'
-    },
+    }
   },
   async resolve(
     _source,
@@ -63,8 +63,15 @@ export default {
       .run()
 
     const data = {commentId}
-
-    publish(SubscriptionChannel.MEETING, meetingId, 'UpdateCommentContentSuccess', data, subOptions)
+    if (meetingId) {
+      publish(
+        SubscriptionChannel.MEETING,
+        meetingId,
+        'UpdateCommentContentSuccess',
+        data,
+        subOptions
+      )
+    }
     return data
   }
 }

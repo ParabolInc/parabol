@@ -26,11 +26,8 @@ const ParabolScopingSearchResults = (props: Props) => {
     if (incomingEdges) setEdges(incomingEdges)
   }, [incomingEdges])
   const {id: meetingId, phases} = meeting
-  const usedParabolTaskIds = useRecordIdsWithStages(
-    phases,
-    NewMeetingPhaseTypeEnum.ESTIMATE,
-    'task'
-  )
+  const estimatePhase = phases.find(({phaseType}) => phaseType === NewMeetingPhaseTypeEnum.ESTIMATE)
+  const usedParabolTaskIds = useRecordIdsWithStages(estimatePhase)
 
   if (edges.length === 0)
     return viewer ? <IntegrationScopingNoResults msg={'No tasks match that query'} /> : null
@@ -65,15 +62,7 @@ export default createPaginationContainer(
         id
         phases {
           phaseType
-          ... on EstimatePhase {
-            stages {
-              ... on EstimateStageParabol {
-                task {
-                  id
-                }
-              }
-            }
-          }
+          ...useRecordIdsWithStages_phase
         }
       }
     `,
