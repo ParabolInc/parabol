@@ -3,17 +3,17 @@ import {SubscriptionChannel, Threshold} from 'parabol-client/types/constEnums'
 import {ReactableEnum as EReactableEnum} from 'parabol-client/types/graphql'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import getRethink from '../../database/rethinkDriver'
+import Comment from '../../database/types/Comment'
+import {Reactable} from '../../database/types/Reactable'
+import Reflection from '../../database/types/Reflection'
 import {getUserId} from '../../utils/authorization'
 import emojiIds from '../../utils/emojiIds'
 import getGroupedReactjis from '../../utils/getGroupedReactjis'
 import publish from '../../utils/publish'
-import {GQLContext, DataLoaderWorker} from '../graphql'
+import {DataLoaderWorker, GQLContext} from '../graphql'
 import AddReactjiToReactablePayload from '../types/AddReactjiToReactablePayload'
-import ReactableEnum from '../types/ReactableEnum'
-import {Reactable} from '../../database/types/Reactable'
 import getReactableType from '../types/getReactableType'
-import Comment from '../../database/types/Comment'
-import Reflection from '../../database/types/Reflection'
+import ReactableEnum from '../types/ReactableEnum'
 
 const tableLookup = {
   [EReactableEnum.COMMENT]: 'Comment',
@@ -84,10 +84,14 @@ const addReactjiToReactable = {
       return {error: {message: `Unknown item`}}
     }
     const meetingId = await getMeetingIdFromReactable(reactable, reactableType, dataLoader)
-    const meetingMemberId = toTeamMemberId(meetingId, viewerId)
-    const viewerMeetingMember = await dataLoader.get('meetingMembers').load(meetingMemberId)
-    if (!viewerMeetingMember) {
-      return {error: {message: `Not a part of the meeting`}}
+
+    // FIXME: make sure we can verify that they have permission to write!
+    if (meetingId) {
+      const meetingMemberId = toTeamMemberId(meetingId, viewerId)
+      const viewerMeetingMember = await dataLoader.get('meetingMembers').load(meetingMemberId)
+      if (!viewerMeetingMember) {
+        return {error: {message: `Not a part of the meeting`}}
+      }
     }
 
     // VALIDATION
@@ -133,13 +137,15 @@ const addReactjiToReactable = {
     }
 
     const data = {reactableId, reactableType}
-    publish(
-      SubscriptionChannel.MEETING,
-      meetingId,
-      'AddReactjiToReactableSuccess',
-      data,
-      subOptions
-    )
+    if (meetingId) {
+      publish(
+        SubscriptionChannel.MEETING,
+        meetingId,
+        'AddReactjiToReactableSuccess',
+        data,
+        subOptions
+      )
+    }
     return data
   }
 }

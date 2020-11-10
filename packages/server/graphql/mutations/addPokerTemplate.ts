@@ -7,6 +7,7 @@ import TemplateDimension from '../../database/types/TemplateDimension'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
+import {GQLContext} from '../graphql'
 import AddPokerTemplatePayload from '../types/AddPokerTemplatePayload'
 
 const addPokerTemplate = {
@@ -20,7 +21,11 @@ const addPokerTemplate = {
       type: new GraphQLNonNull(GraphQLID)
     }
   },
-  async resolve(_source, {parentTemplateId, teamId}, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve(
+    _source,
+    {parentTemplateId, teamId},
+    {authToken, dataLoader, socketId: mutatorId}: GQLContext
+  ) {
     const r = await getRethink()
     const operationId = dataLoader.share()
     const subOptions = {operationId, mutatorId}

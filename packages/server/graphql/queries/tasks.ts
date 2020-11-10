@@ -9,6 +9,7 @@ import {
 import isTaskPrivate from 'parabol-client/utils/isTaskPrivate'
 import {getUserId} from '../../utils/authorization'
 import standardError from '../../utils/standardError'
+import errorFilter from '../errorFilter'
 import {DataLoaderWorker, GQLContext} from '../graphql'
 import GraphQLISO8601Type from '../types/GraphQLISO8601Type'
 import {TaskConnection} from '../types/Task'
@@ -33,7 +34,9 @@ const getValidUserIds = async (
   if (!userIds) return null
   if (userIds.length === 1 && userIds[0] === viewerId) return userIds
   // NOTE: this will filter out ex-teammembers. if that's a problem, we should use a different dataloader
-  const teamMembersByUserIds = await dataLoader.get('teamMembersByUserId').loadMany(userIds)
+  const teamMembersByUserIds = (
+    await dataLoader.get('teamMembersByUserId').loadMany(userIds)
+  ).filter(errorFilter)
   const teamMembersOnValidTeams = teamMembersByUserIds
     .flat()
     .filter((teamMember) => validTeamIds.includes(teamMember.teamId))

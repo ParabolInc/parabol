@@ -160,8 +160,7 @@ export type NewMeetingStage =
   | IGenericMeetingStage
   | IRetroDiscussStage
   | IUpdatesStage
-  | IEstimateStageJira
-  | IEstimateStageParabol
+  | IEstimateStage
   | IAgendaItemsStage;
 
 /**
@@ -254,6 +253,7 @@ export interface INewMeetingStage {
    * The suggested time limit for a phase to be completed together, null if not enough data to make a suggestion
    */
   suggestedTimeLimit: number | null;
+  teamId: string;
 
   /**
    * The number of milliseconds left before the scheduled end time. Useful for unsynced client clocks. null if scheduledEndTime is null
@@ -717,6 +717,23 @@ export interface IJiraIssue {
    * The description converted into raw HTML
    */
   descriptionHTML: string;
+}
+
+/**
+ * An entity that can be used in a poker meeting and receive estimates
+ */
+export type Story = IJiraIssue | ITask;
+
+/**
+ * An entity that can be used in a poker meeting and receive estimates
+ */
+export interface IStory {
+  __typename: 'Story';
+
+  /**
+   * serviceTaskId
+   */
+  id: string;
 }
 
 export interface IStandardMutationError {
@@ -3361,6 +3378,7 @@ export interface ICheckInStage {
    * The suggested time limit for a phase to be completed together, null if not enough data to make a suggestion
    */
   suggestedTimeLimit: number | null;
+  teamId: string;
 
   /**
    * The number of milliseconds left before the scheduled end time. Useful for unsynced client clocks. null if scheduledEndTime is null
@@ -3566,6 +3584,7 @@ export interface IGenericMeetingStage {
    * The suggested time limit for a phase to be completed together, null if not enough data to make a suggestion
    */
   suggestedTimeLimit: number | null;
+  teamId: string;
 
   /**
    * The number of milliseconds left before the scheduled end time. Useful for unsynced client clocks. null if scheduledEndTime is null
@@ -3947,6 +3966,7 @@ export interface IRetroDiscussStage {
    * The suggested time limit for a phase to be completed together, null if not enough data to make a suggestion
    */
   suggestedTimeLimit: number | null;
+  teamId: string;
 
   /**
    * The number of milliseconds left before the scheduled end time. Useful for unsynced client clocks. null if scheduledEndTime is null
@@ -4380,6 +4400,7 @@ export interface IUpdatesStage {
    * The suggested time limit for a phase to be completed together, null if not enough data to make a suggestion
    */
   suggestedTimeLimit: number | null;
+  teamId: string;
 
   /**
    * The number of milliseconds left before the scheduled end time. Useful for unsynced client clocks. null if scheduledEndTime is null
@@ -4401,11 +4422,6 @@ export interface IUpdatesStage {
    */
   teamMember: ITeamMember;
 }
-
-/**
- * The stage where the team estimates & discusses a single task
- */
-export type EstimateStage = IEstimateStageJira | IEstimateStageParabol;
 
 /**
  * The stage where the team estimates & discusses a single task
@@ -4497,6 +4513,7 @@ export interface IEstimateStage {
    * The suggested time limit for a phase to be completed together, null if not enough data to make a suggestion
    */
   suggestedTimeLimit: number | null;
+  teamId: string;
 
   /**
    * The number of milliseconds left before the scheduled end time. Useful for unsynced client clocks. null if scheduledEndTime is null
@@ -4547,6 +4564,11 @@ export interface IEstimateStage {
    * all the estimates, 1 per user
    */
   scores: Array<IEstimateUserScore>;
+
+  /**
+   * the story referenced in the stage. Either a Parabol Task or something similar from an integration
+   */
+  story: Story;
 
   /**
    * true when the participants are still voting and results are hidden. false when votes are revealed
@@ -4584,310 +4606,6 @@ export interface IEstimateUserScore {
    * The label that was associated with the score at the time of the vote
    */
   label: string;
-}
-
-/**
- * The stage where the team estimates & discusses a single jira issue
- */
-export interface IEstimateStageJira {
-  __typename: 'EstimateStageJira';
-
-  /**
-   * stageId, shortid
-   */
-  id: string;
-
-  /**
-   * The datetime the stage was completed
-   */
-  endAt: any | null;
-
-  /**
-   * foreign key. try using meeting
-   */
-  meetingId: string;
-
-  /**
-   * The meeting this stage belongs to
-   */
-  meeting: NewMeeting | null;
-
-  /**
-   * true if the facilitator has completed this stage, else false. Should be boolean(endAt)
-   */
-  isComplete: boolean;
-
-  /**
-   * true if any meeting participant can navigate to this stage
-   */
-  isNavigable: boolean;
-
-  /**
-   * true if the facilitator can navigate to this stage
-   */
-  isNavigableByFacilitator: boolean;
-
-  /**
-   * The phase this stage belongs to
-   */
-  phase: NewMeetingPhase | null;
-
-  /**
-   * The type of the phase
-   */
-  phaseType: NewMeetingPhaseTypeEnum | null;
-
-  /**
-   * The datetime the stage was started
-   */
-  startAt: any | null;
-
-  /**
-   * Number of times the facilitator has visited this stage
-   */
-  viewCount: number | null;
-
-  /**
-   * true if a time limit is set, false if end time is set, null if neither is set
-   */
-  isAsync: boolean | null;
-
-  /**
-   * true if the viewer is ready to advance, else false
-   */
-  isViewerReady: boolean;
-
-  /**
-   * the number of meeting members ready to advance, excluding the facilitator
-   */
-  readyCount: number;
-
-  /**
-   * The datetime the phase is scheduled to be finished, null if no time limit or end time is set
-   */
-  scheduledEndTime: any | null;
-
-  /**
-   * The suggested ending datetime for a phase to be completed async, null if not enough data to make a suggestion
-   */
-  suggestedEndTime: any | null;
-
-  /**
-   * The suggested time limit for a phase to be completed together, null if not enough data to make a suggestion
-   */
-  suggestedTimeLimit: number | null;
-
-  /**
-   * The number of milliseconds left before the scheduled end time. Useful for unsynced client clocks. null if scheduledEndTime is null
-   */
-  timeRemaining: number | null;
-
-  /**
-   * The id of the user that added this stage. Useful for knowing which access key to use to get the underlying issue
-   */
-  creatorUserId: string;
-
-  /**
-   * The service the task is connected to. If null, it is parabol
-   */
-  service: TaskServiceEnum | null;
-
-  /**
-   * The stringified JSON used to fetch the task used by the service
-   */
-  serviceTaskId: string;
-
-  /**
-   * The sort order for reprioritizing discussion topics
-   */
-  sortOrder: number;
-
-  /**
-   * the dimensionId that corresponds to this stage
-   */
-  dimensionId: string;
-
-  /**
-   * the final score, as defined by the facilitator
-   */
-  finalScore: number | null;
-
-  /**
-   * the userIds of the team members hovering the deck
-   */
-  hoveringUserIds: Array<string>;
-
-  /**
-   * the users of the team members hovering the deck
-   */
-  hoveringUsers: Array<IUser>;
-
-  /**
-   * all the estimates, 1 per user
-   */
-  scores: Array<IEstimateUserScore>;
-
-  /**
-   * true when the participants are still voting and results are hidden. false when votes are revealed
-   */
-  isVoting: boolean;
-
-  /**
-   * the issue straight from Jira
-   */
-  issue: IJiraIssue | null;
-}
-
-/**
- * The stage where the team estimates & discusses a single jira issue
- */
-export interface IEstimateStageParabol {
-  __typename: 'EstimateStageParabol';
-
-  /**
-   * stageId, shortid
-   */
-  id: string;
-
-  /**
-   * The datetime the stage was completed
-   */
-  endAt: any | null;
-
-  /**
-   * foreign key. try using meeting
-   */
-  meetingId: string;
-
-  /**
-   * The meeting this stage belongs to
-   */
-  meeting: NewMeeting | null;
-
-  /**
-   * true if the facilitator has completed this stage, else false. Should be boolean(endAt)
-   */
-  isComplete: boolean;
-
-  /**
-   * true if any meeting participant can navigate to this stage
-   */
-  isNavigable: boolean;
-
-  /**
-   * true if the facilitator can navigate to this stage
-   */
-  isNavigableByFacilitator: boolean;
-
-  /**
-   * The phase this stage belongs to
-   */
-  phase: NewMeetingPhase | null;
-
-  /**
-   * The type of the phase
-   */
-  phaseType: NewMeetingPhaseTypeEnum | null;
-
-  /**
-   * The datetime the stage was started
-   */
-  startAt: any | null;
-
-  /**
-   * Number of times the facilitator has visited this stage
-   */
-  viewCount: number | null;
-
-  /**
-   * true if a time limit is set, false if end time is set, null if neither is set
-   */
-  isAsync: boolean | null;
-
-  /**
-   * true if the viewer is ready to advance, else false
-   */
-  isViewerReady: boolean;
-
-  /**
-   * the number of meeting members ready to advance, excluding the facilitator
-   */
-  readyCount: number;
-
-  /**
-   * The datetime the phase is scheduled to be finished, null if no time limit or end time is set
-   */
-  scheduledEndTime: any | null;
-
-  /**
-   * The suggested ending datetime for a phase to be completed async, null if not enough data to make a suggestion
-   */
-  suggestedEndTime: any | null;
-
-  /**
-   * The suggested time limit for a phase to be completed together, null if not enough data to make a suggestion
-   */
-  suggestedTimeLimit: number | null;
-
-  /**
-   * The number of milliseconds left before the scheduled end time. Useful for unsynced client clocks. null if scheduledEndTime is null
-   */
-  timeRemaining: number | null;
-
-  /**
-   * The id of the user that added this stage. Useful for knowing which access key to use to get the underlying issue
-   */
-  creatorUserId: string;
-
-  /**
-   * The service the task is connected to. If null, it is parabol
-   */
-  service: TaskServiceEnum | null;
-
-  /**
-   * The stringified JSON used to fetch the task used by the service
-   */
-  serviceTaskId: string;
-
-  /**
-   * The sort order for reprioritizing discussion topics
-   */
-  sortOrder: number;
-
-  /**
-   * the dimensionId that corresponds to this stage
-   */
-  dimensionId: string;
-
-  /**
-   * the final score, as defined by the facilitator
-   */
-  finalScore: number | null;
-
-  /**
-   * the userIds of the team members hovering the deck
-   */
-  hoveringUserIds: Array<string>;
-
-  /**
-   * the users of the team members hovering the deck
-   */
-  hoveringUsers: Array<IUser>;
-
-  /**
-   * all the estimates, 1 per user
-   */
-  scores: Array<IEstimateUserScore>;
-
-  /**
-   * true when the participants are still voting and results are hidden. false when votes are revealed
-   */
-  isVoting: boolean;
-
-  /**
-   * the Parabol task
-   */
-  task: ITask;
 }
 
 /**
@@ -5000,6 +4718,7 @@ export interface IAgendaItemsStage {
    * The suggested time limit for a phase to be completed together, null if not enough data to make a suggestion
    */
   suggestedTimeLimit: number | null;
+  teamId: string;
 
   /**
    * The number of milliseconds left before the scheduled end time. Useful for unsynced client clocks. null if scheduledEndTime is null
@@ -5050,7 +4769,7 @@ export interface IEstimatePhase {
    * The type of phase
    */
   phaseType: NewMeetingPhaseTypeEnum;
-  stages: Array<EstimateStage>;
+  stages: Array<IEstimateStage>;
 }
 
 /**
@@ -6593,7 +6312,7 @@ export interface ISuggestedIntegrationJira {
   /**
    * The full project document fetched from Jira
    */
-  remoteProject: IJiraRemoteProject;
+  remoteProject: IJiraRemoteProject | null;
 }
 
 /**
@@ -9242,7 +8961,7 @@ export interface IDragEstimatingTaskSuccess {
   meetingId: string;
   meeting: IPokerMeeting;
   stageId: string;
-  stage: EstimateStage;
+  stage: IEstimateStage;
 }
 
 /**
@@ -10738,7 +10457,7 @@ export interface IVoteForPokerStorySuccess {
   /**
    * The stage that holds the updated scores
    */
-  stage: EstimateStage;
+  stage: IEstimateStage;
 }
 
 /**
@@ -10752,7 +10471,7 @@ export interface IPokerRevealVotesSuccess {
   /**
    * The stage that holds the updated isVoting step
    */
-  stage: EstimateStage;
+  stage: IEstimateStage;
 }
 
 /**
@@ -10768,7 +10487,7 @@ export interface IPokerResetDimensionSuccess {
   /**
    * The stage that holds the updated isVoting step
    */
-  stage: EstimateStage;
+  stage: IEstimateStage;
 }
 
 /**
@@ -10784,7 +10503,7 @@ export interface IPokerAnnounceDeckHoverSuccess {
   /**
    * The stage that holds the updated scores
    */
-  stage: EstimateStage;
+  stage: IEstimateStage;
 }
 
 /**
@@ -10800,7 +10519,7 @@ export interface IPokerSetFinalScoreSuccess {
   /**
    * The stage that holds the updated finalScore
    */
-  stage: EstimateStage;
+  stage: IEstimateStage;
 }
 
 export interface ISubscription {

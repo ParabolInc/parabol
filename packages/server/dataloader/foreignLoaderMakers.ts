@@ -43,7 +43,6 @@ export const agendaItemsByMeetingId = new LoaderMakerForeign(
       .run()
   }
 )
-
 export const atlassianAuthByUserId = new LoaderMakerForeign(
   'atlassianAuths',
   'userId',
@@ -66,7 +65,6 @@ export const atlassianAuthByTeamId = new LoaderMakerForeign(
       .run()
   }
 )
-
 export const commentsByThreadId = new LoaderMakerForeign(
   'comments',
   'threadId',

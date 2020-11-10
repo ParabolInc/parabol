@@ -6,6 +6,7 @@ import {createFragmentContainer} from 'react-relay'
 import useGotoStageId from '~/hooks/useGotoStageId'
 import {PokerSidebarEstimateSection_meeting} from '~/__generated__/PokerSidebarEstimateSection_meeting.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
+import useMakeStageSummaries from '../hooks/useMakeStageSummaries'
 import DragEstimatingTaskMutation from '../mutations/DragEstimatingTaskMutation'
 import {navItemRaised} from '../styles/elevation'
 import {SORT_STEP} from '../utils/constants'
@@ -34,9 +35,11 @@ const PokerSidebarEstimateSection = (props: Props) => {
   const {gotoStageId, handleMenuClick, meeting} = props
   const {localStage, facilitatorStageId, id: meetingId, phases, endedAt} = meeting
   const atmosphere = useAtmosphere()
+  const {viewerId} = atmosphere
   const estimatePhase = phases!.find(({phaseType}) => phaseType === 'ESTIMATE')!
   const {stages} = estimatePhase!
   const {id: localStageId} = localStage
+  const stageSummaries = useMakeStageSummaries(estimatePhase, localStageId)
   const inSync = localStageId === facilitatorStageId
 
   const onDragEnd = (result) => {
@@ -51,30 +54,48 @@ const PokerSidebarEstimateSection = (props: Props) => {
       return
     }
 
-    const sourceTopic = stages![source.index]
-    const destinationTopic = stages![destination.index]
+    const sourceTopic = stageSummaries![source.index]
+    const destinationTopic = stageSummaries![destination.index]
 
     let sortOrder
     if (destination.index === 0) {
       sortOrder = destinationTopic.sortOrder - SORT_STEP + dndNoise()
-    } else if (destination.index === stages!.length - 1) {
+    } else if (destination.index === stageSummaries!.length - 1) {
       sortOrder = destinationTopic.sortOrder + SORT_STEP + dndNoise()
     } else {
       const offset = source.index > destination.index ? -1 : 1
       sortOrder =
-        (stages![destination.index + offset].sortOrder + destinationTopic.sortOrder) / 2 +
+        (stageSummaries![destination.index + offset].sortOrder + destinationTopic.sortOrder) / 2 +
         dndNoise()
     }
 
-    const {id: stageId} = sourceTopic
-    const variables = {meetingId, stageId, sortOrder}
+    const {stageIds} = sourceTopic
+    const [firstStageId] = stageIds
+    const variables = {meetingId, stageId: firstStageId, sortOrder}
     DragEstimatingTaskMutation(atmosphere, variables)
   }
 
-  const handleClick = (id) => {
-    gotoStageId(id).catch()
+  const handleClick = (stageIds: string[]) => {
+    // if the facilitator is at one of the stages, go there
+    if (stageIds.includes(facilitatorStageId)) {
+      gotoStageId(facilitatorStageId).catch()
+    } else {
+      // goto the first stage that the user hasn't voted on
+      const summaryStages = stageIds.map((id) => stages.find((stage) => stage.id === id))
+      const unvotedStage = summaryStages.find((stage) => {
+        return !stage!.scores!.find(({userId}) => userId === viewerId)
+      })
+      if (unvotedStage) {
+        gotoStageId(unvotedStage.id)
+      } else {
+        // goto the last stage
+        const lastStageId = stageIds[stageIds.length - 1]
+        gotoStageId(lastStageId)
+      }
+    }
     handleMenuClick()
   }
+
   return (
     <DragDropContext onDragEnd={onDragEnd}>
       <MeetingSidebarPhaseItemChild>
@@ -82,17 +103,16 @@ const PokerSidebarEstimateSection = (props: Props) => {
           {(provided) => {
             return (
               <ScrollWrapper ref={provided.innerRef}>
-                {stages!.map((stage, idx) => {
-                  const {task, issue} = stage
-                  const content = task?.plaintextContent.split('\n')[0] || issue?.summary
-                  const title = content || 'Unknown story'
+                {stageSummaries!.map((summary, idx) => {
+                  const {stageIds, title, isActive, isComplete, isNavigable} = summary
+                  const [firstStageId] = stageIds
                   // the local user is at another stage than the facilitator stage
-                  const isUnsyncedFacilitatorStage = !inSync && stage.id === facilitatorStageId
+                  const isUnsyncedFacilitatorStage = !inSync && stageIds.includes(facilitatorStageId)
                   const estimateMeta = <div>-</div>
                   return (
                     <Draggable
-                      key={stage.id}
-                      draggableId={stage.id}
+                      key={firstStageId}
+                      draggableId={firstStageId}
                       index={idx}
                       isDragDisabled={!!endedAt}
                     >
@@ -105,14 +125,14 @@ const PokerSidebarEstimateSection = (props: Props) => {
                             {...dragProvided.dragHandleProps}
                           >
                             <MeetingSubnavItem
-                              key={stage.id}
+                              key={firstStageId}
                               isDragging={dragSnapshot.isDragging}
                               label={title!}
                               metaContent={estimateMeta}
-                              onClick={() => handleClick(stage.id)}
-                              isActive={localStage.id === stage.id}
-                              isComplete={stage.isComplete}
-                              isDisabled={!stage.isNavigable}
+                              onClick={() => handleClick(stageIds)}
+                              isActive={isActive}
+                              isComplete={isComplete}
+                              isDisabled={!isNavigable}
                               isUnsyncedFacilitatorStage={isUnsyncedFacilitatorStage}
                             />
                           </DraggableMeetingSubnavItem>
@@ -131,29 +151,6 @@ const PokerSidebarEstimateSection = (props: Props) => {
   )
 }
 
-graphql`
-  fragment PokerSidebarEstimateSectionEstimatePhase on EstimatePhase {
-    phaseType
-    stages {
-      id
-      isComplete
-      isNavigable
-      ... on EstimateStageJira {
-        issue {
-          summary
-        }
-      }
-      ... on EstimateStageParabol {
-        task {
-          content
-          plaintextContent
-        }
-      }
-      sortOrder
-    }
-  }
-`
-
 export default createFragmentContainer(PokerSidebarEstimateSection, {
   meeting: graphql`
     fragment PokerSidebarEstimateSection_meeting on PokerMeeting {
@@ -165,7 +162,18 @@ export default createFragmentContainer(PokerSidebarEstimateSection, {
       facilitatorStageId
       # load up the localPhase
       phases {
-        ...PokerSidebarEstimateSectionEstimatePhase @relay(mask: false)
+        ...useMakeStageSummaries_phase
+        ... on EstimatePhase {
+          stages {
+          scores {
+            userId
+          }
+        }
+        }
+        phaseType
+        stages {
+          id
+        }
       }
       localStage {
         id
