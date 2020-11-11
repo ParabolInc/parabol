@@ -8,8 +8,8 @@ import PokerMeetingMember from './PokerMeetingMember'
 import PokerMeetingSettings from './PokerMeetingSettings'
 import Story from './Story'
 import isValidJiraId from '../../utils/isValidJiraId'
-import {StoryTypeEnum} from './StoryTypeEnum'
 import getJiraCloudIdAndKey from '../../utils/getJiraCloudIdAndKey'
+import {resolveJiraIssue} from '../resolvers'
 
 const PokerMeeting = new GraphQLObjectType<any, GQLContext>({
   name: 'PokerMeeting',
@@ -52,20 +52,14 @@ const PokerMeeting = new GraphQLObjectType<any, GQLContext>({
         }
       },
       resolve: async ({teamId}, {storyId}, {authToken, dataLoader}) => {
+        const userId = getUserId(authToken)
         const isJiraId = await isValidJiraId(storyId, teamId, {authToken, dataLoader})
         if (isJiraId) {
-          const [cloudId, key] = getJiraCloudIdAndKey(storyId)
-          return {
-            id: storyId,
-            cloudId,
-            key,
-            type: StoryTypeEnum.JIRA_ISSUE
-          }
+          const [cloudId, issueKey] = getJiraCloudIdAndKey(storyId)
+          const jiraIssue = await resolveJiraIssue(cloudId, issueKey, teamId, userId, dataLoader)
+          return {...jiraIssue, id: storyId}
         }
-        return {
-          id: storyId,
-          type: StoryTypeEnum.TASK
-        }
+        return dataLoader.get('tasks').load(storyId)
       }
     },
     // tasks: {
