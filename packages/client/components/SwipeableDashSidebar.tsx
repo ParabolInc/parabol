@@ -12,19 +12,19 @@ import PlainButton from './PlainButton/PlainButton'
 
 const PEEK_WIDTH = 20
 
-const SidebarAndScrim = styled('div')<{isRightSidebar: boolean; sidebarWidth: number}>(
-  ({isRightSidebar, sidebarWidth}) => ({
+const SidebarAndScrim = styled('div')<{isRightSidebar: boolean; SIDEBAR_WIDTH: number}>(
+  ({isRightSidebar, SIDEBAR_WIDTH}) => ({
     position: 'absolute',
-    left: isRightSidebar ? undefined : -sidebarWidth,
+    left: isRightSidebar ? undefined : -SIDEBAR_WIDTH,
     right: isRightSidebar ? PEEK_WIDTH : undefined,
     top: 0
   })
 )
-const Scrim = styled('div')<{x: number; sidebarWidth: number}>(({x, sidebarWidth}) => ({
+const Scrim = styled('div')<{x: number; SIDEBAR_WIDTH: number}>(({x, SIDEBAR_WIDTH}) => ({
   background: PALETTE.BACKGROUND_FORCED_BACKDROP,
   height: '100%',
   left: 0,
-  opacity: x / sidebarWidth,
+  opacity: x / SIDEBAR_WIDTH,
   position: 'fixed',
   pointerEvents: x > 0 ? undefined : 'none',
   transition: `opacity 200ms ${DECELERATE}`,
@@ -42,10 +42,10 @@ const SidebarAndHandle = styled('div')<{x: number; isRightSidebar: boolean}>(
     zIndex: ZIndex.SIDEBAR
   })
 )
-const Sidebar = styled('div')<{x: number; hysteresisThresh: number}>(({x, hysteresisThresh}) => ({
+const Sidebar = styled('div')<{x: number; HYSTERESIS_THRESH: number}>(({x, HYSTERESIS_THRESH}) => ({
   boxShadow: x > 0 ? navDrawerShadow : undefined,
   height: '100vh',
-  pointerEvents: hysteresisThresh !== undefined && x > hysteresisThresh ? undefined : 'none'
+  pointerEvents: x > HYSTERESIS_THRESH ? undefined : 'none'
 }))
 
 const SwipeHandle = styled(PlainButton)({
@@ -117,8 +117,8 @@ const SwipeableDashSidebar = (props: Props) => {
     noClose: true
   })
   const [xRef, setX] = useRefState(0)
-  const sidebarWidth: number = isRightSidebar ? DiscussionThreadEnum.WIDTH : NavSidebar.WIDTH
-  const HYSTERESIS_THRESH = HYSTERESIS * sidebarWidth
+  const SIDEBAR_WIDTH: number = isRightSidebar ? DiscussionThreadEnum.WIDTH : NavSidebar.WIDTH
+  const HYSTERESIS_THRESH = HYSTERESIS * SIDEBAR_WIDTH
 
   useEffect(
     () => {
@@ -139,7 +139,7 @@ const SwipeableDashSidebar = (props: Props) => {
   }, [setX])
 
   const showSidebar = useCallback(() => {
-    setX(sidebarWidth)
+    setX(SIDEBAR_WIDTH)
     swipe.showBodyScroll = hideBodyScroll()
   }, [setX])
 
@@ -198,7 +198,7 @@ const SwipeableDashSidebar = (props: Props) => {
 
     const movementX = isRightSidebar ? swipe.lastX - clientX : clientX - swipe.lastX
     const minWidth = swipe.isOpen ? 0 : PEEK_WIDTH
-    const nextX = Math.min(sidebarWidth, Math.max(minWidth, xRef.current + movementX))
+    const nextX = Math.min(SIDEBAR_WIDTH, Math.max(minWidth, xRef.current + movementX))
     updateSpeed(clientX)
     setX(nextX)
   })
@@ -206,7 +206,7 @@ const SwipeableDashSidebar = (props: Props) => {
   const onMouseDown = useEventCallback((e: React.MouseEvent | React.TouchEvent) => {
     if (swipe.downCaptured) return
     const {current: x} = xRef
-    if (x !== 0 && x !== sidebarWidth) return
+    if (x !== 0 && x !== SIDEBAR_WIDTH) return
     const isTouchStart = e.type === 'touchstart'
     let event: {clientX: number; clientY: number}
     if (isTouchStart) {
@@ -236,15 +236,15 @@ const SwipeableDashSidebar = (props: Props) => {
   const {current: x} = xRef
 
   return portal(
-    <SidebarAndScrim isRightSidebar={isRightSidebar} sidebarWidth={sidebarWidth}>
-      <Scrim x={x} sidebarWidth={sidebarWidth} onClick={onToggle} />
+    <SidebarAndScrim isRightSidebar={isRightSidebar} SIDEBAR_WIDTH={SIDEBAR_WIDTH}>
+      <Scrim x={x} SIDEBAR_WIDTH={SIDEBAR_WIDTH} onClick={onToggle} />
       <SidebarAndHandle
         x={x}
         onMouseDown={onMouseDown}
         onTouchStart={onMouseDown}
         isRightSidebar={isRightSidebar}
       >
-        <Sidebar x={x} hysteresisThresh={HYSTERESIS_THRESH}>
+        <Sidebar x={x} HYSTERESIS_THRESH={HYSTERESIS_THRESH}>
           {children}
         </Sidebar>
         <SwipeHandle />
