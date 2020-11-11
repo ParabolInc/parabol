@@ -77,7 +77,8 @@ const addPokerTemplateScale = {
         sortOrder,
         name: newName,
         teamId,
-        parentScaleId
+        parentScaleId,
+        values: parentScale.values
       })
     } else {
       newScale = new TemplateScale({
