@@ -4,6 +4,7 @@ import {isAuthenticated} from '../../utils/authorization'
 import standardError from '../../utils/standardError'
 import GraphQLFileType from '../types/GraphQLFileType'
 import validateAvatarUpload from '../../utils/validateAvatarUpload'
+import normalizeAvatarUpload from '../../utils/normalizeAvatarUpload'
 import getFileStoreManager from '../../fileStorage/getFileStoreManager'
 import FileStoreManager from '../../fileStorage/FileStoreManager'
 import updateUserProfile from './helpers/updateUserProfile'
@@ -41,18 +42,23 @@ export default {
     // VALIDATION
     const {contentType, buffer: jsonBuffer} = file
     const buffer = Buffer.from(jsonBuffer.data)
-    const [ext, validBuffer] = await validateAvatarUpload(contentType, buffer)
+    const [validExt, validBuffer] = await validateAvatarUpload(contentType, buffer)
 
     // RESOLUTION
-    const userAvatarPath = FileStoreManager.getUserAvatarPath(userId, ext)
+    const [
+      normalExt,
+      normalBuffer
+    ] = await normalizeAvatarUpload(validExt, validBuffer)
+    const userAvatarPath = FileStoreManager.getUserAvatarPath(userId, normalExt)
     const publicLocation = await getFileStoreManager().putFile({
       partialPath: userAvatarPath,
-      buffer: validBuffer
+      buffer: normalBuffer
     })
     /*
     todos: 
       - PR trebuchet client package to really expect uploadables
-      - normalize image size to min necessary for avatar
+      - if `self-hosted` folder is deleted, then upon uploading a file
+        for the first time, the dirs are made but write file fails
       - update user picture field after put success
         - why isn't it updating automatically in UI?
     */

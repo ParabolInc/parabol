@@ -3,6 +3,7 @@ import GraphQLFileType from '../types/GraphQLFileType'
 import {getUserId, isUserBillingLeader} from '../../utils/authorization'
 import standardError from '../../utils/standardError'
 import validateAvatarUpload from '../../utils/validateAvatarUpload'
+import normalizeAvatarUpload from '../../utils/normalizeAvatarUpload'
 import FileStoreManager from '../../fileStorage/FileStoreManager'
 import getFileStoreManager from '../../fileStorage/getFileStoreManager'
 import {default as updateOrgResolver} from './helpers/updateOrg'
@@ -48,13 +49,17 @@ export default {
     // VALIDATION
     const {contentType, buffer: jsonBuffer} = file
     const buffer = Buffer.from(jsonBuffer.data)
-    const [ext, validBuffer] = await validateAvatarUpload(contentType, buffer)
+    const [validExt, validBuffer] = await validateAvatarUpload(contentType, buffer)
 
     // RESOLUTION
-    const orgAvatarPath = FileStoreManager.getOrgAvatarPath(orgId, ext)
+    const [
+      normalExt,
+      normalBuffer
+    ] = await normalizeAvatarUpload(validExt, validBuffer)
+    const orgAvatarPath = FileStoreManager.getOrgAvatarPath(orgId, normalExt)
     const publicLocation = await getFileStoreManager().putFile({
       partialPath: orgAvatarPath,
-      buffer: validBuffer
+      buffer: normalBuffer
     })
 
     const updatedOrg = await updateOrgResolver(
