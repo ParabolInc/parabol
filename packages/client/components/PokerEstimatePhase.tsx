@@ -63,7 +63,8 @@ const PokerEstimatePhase = (props: Props) => {
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const {isOpen, toggle: toggleDrawer} = useSidebar(showSidebar)
   if (!localStage) return null
-  const {__typename} = localStage
+  const {story} = localStage
+  const {__typename} = story!
 
   return (
     <MeetingContent>
@@ -87,9 +88,8 @@ const PokerEstimatePhase = (props: Props) => {
             </ButtonContainer>
           )}
         </Header>
-        {__typename === 'EstimateStageJira' && (
-          <PokerEstimateHeaderCardJira stage={localStage as any} />
-        )}
+        {__typename === 'JiraIssue' && <PokerEstimateHeaderCardJira stage={localStage as any} />}
+
         <PhaseWrapper>
           <EstimatePhaseArea />
         </PhaseWrapper>
@@ -107,10 +107,9 @@ const PokerEstimatePhase = (props: Props) => {
 
 graphql`
   fragment PokerEstimatePhaseStage on EstimateStage {
-    ... on EstimateStageJira {
+    ...PokerEstimateHeaderCardJira_stage
+    story {
       __typename
-      serviceTaskId
-      ...PokerEstimateHeaderCardJira_stage
     }
   }
 `

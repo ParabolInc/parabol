@@ -12,6 +12,7 @@ const JiraIssue = new GraphQLObjectType<any, GQLContext>({
   name: 'JiraIssue',
   description: 'The Jira Issue that comes direct from Jira',
   interfaces: () => [Story, ThreadSource],
+  isTypeOf: ({cloudId, key}) => !!(cloudId && key),
   fields: () => ({
     ...storyFields(),
     id: {

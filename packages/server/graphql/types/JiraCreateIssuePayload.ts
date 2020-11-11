@@ -13,7 +13,9 @@ const JiraCreateIssuePayload = new GraphQLObjectType<any, GQLContext>({
     jiraIssue: {
       type: JiraIssue,
       description: 'The issue straight from Jira',
-      resolve: resolveJiraIssue
+      resolve: ({teamId, userId, key, cloudId}, _args, {dataLoader}) => {
+        return resolveJiraIssue(cloudId, key, teamId, userId, dataLoader)
+      }
     },
     meetingId: {
       type: GraphQLID,

@@ -148,9 +148,7 @@ const EstimatePhaseDiscussionDrawer = (props: Props) => {
 
 graphql`
   fragment EstimatePhaseDiscussionDrawerStage on EstimateStage {
-    ... on EstimateStageJira {
-      serviceTaskId
-    }
+    serviceTaskId
   }
 `
 export default createFragmentContainer(EstimatePhaseDiscussionDrawer, {
