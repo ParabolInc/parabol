@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
-import TemplateDetailAction from '../../../components/TemplateDetailAction'
+import DetailAction from '../../../components/DetailAction'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
 import RemoveReflectTemplateMutation from '../../../mutations/RemoveReflectTemplateMutation'
@@ -50,7 +50,7 @@ const RemoveTemplate = (props: Props) => {
     }
   }
 
-  return <TemplateDetailAction icon={'delete'} tooltip={'Delete template'} onClick={removeTemplate} />
+  return <DetailAction icon={'delete'} tooltip={'Delete template'} onClick={removeTemplate} />
 }
 export default createFragmentContainer(
   RemoveTemplate,

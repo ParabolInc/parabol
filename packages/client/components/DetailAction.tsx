@@ -27,7 +27,7 @@ interface Props {
   icon: string
 }
 
-const TemplateDetailAction = (props: Props) => {
+const DetailAction = (props: Props) => {
   const {disabled, tooltip, icon, onClick} = props
   const {tooltipPortal, openTooltip, closeTooltip, originRef} = useTooltip<HTMLButtonElement>(
     MenuPosition.UPPER_CENTER
@@ -48,4 +48,4 @@ const TemplateDetailAction = (props: Props) => {
   )
 }
 
-export default TemplateDetailAction
+export default DetailAction

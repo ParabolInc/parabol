@@ -1,5 +1,5 @@
 import React from 'react'
-import TemplateDetailAction from '../../../components/TemplateDetailAction'
+import DetailAction from '../../../components/DetailAction'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
 import {Threshold} from '../../../types/constEnums'
@@ -27,7 +27,7 @@ const CloneScale = (props: Props) => {
     AddPokerTemplateScaleMutation(atmosphere, {parentScaleId: scaleId, teamId}, {onError, onCompleted})
   }
   return (
-    <TemplateDetailAction disabled={!canClone} icon={'content_copy'} tooltip={tooltip} onClick={cloneScale} />
+    <DetailAction disabled={!canClone} icon={'content_copy'} tooltip={tooltip} onClick={cloneScale} />
   )
 }
 export default CloneScale

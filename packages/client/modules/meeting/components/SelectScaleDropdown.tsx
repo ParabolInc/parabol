@@ -31,7 +31,7 @@ const SelectScaleDropdown = (props: Props) => {
       {availableScales.map((scale) =>
         <MenuItem
           key={scale.id}
-          label={<ScaleDropdownMenuItem scale={scale} />}
+          label={<ScaleDropdownMenuItem scale={scale} dimension={dimension} />}
           onClick={setScale(scale.id)}
         />
       )}
@@ -44,6 +44,7 @@ export default createFragmentContainer(SelectScaleDropdown, {
     fragment SelectScaleDropdown_dimension on TemplateDimension {
       id
       name
+      ...ScaleDropdownMenuItem_dimension
       selectedScale {
         id
         ...ScaleDropdownMenuItem_scale

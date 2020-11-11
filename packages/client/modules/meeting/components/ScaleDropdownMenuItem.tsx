@@ -6,11 +6,13 @@ import textOverflow from '~/styles/helpers/textOverflow'
 import {PALETTE} from '~/styles/paletteV2'
 import {FONT_FAMILY} from '~/styles/typographyV2'
 import {PokerCards} from '../../../types/constEnums'
+import {ScaleDropdownMenuItem_dimension} from '../../../__generated__/ScaleDropdownMenuItem_dimension.graphql'
 import {ScaleDropdownMenuItem_scale} from '../../../__generated__/ScaleDropdownMenuItem_scale.graphql'
 import CloneScale from './CloneScale'
 
 interface Props {
   scale: ScaleDropdownMenuItem_scale
+  dimension: ScaleDropdownMenuItem_dimension
 }
 
 const ScaleDetails = styled('div')({
@@ -38,8 +40,9 @@ const ScaleValues = styled('div')({
 })
 
 const ScaleDropdownMenuItem = (props: Props) => {
-  const {scale} = props
+  const {scale, dimension} = props
   const {values} = scale
+  const availableScalesCount = dimension.availableScales.length
   return (
     <ScaleDetails>
       <ScaleName>{scale.name}</ScaleName>
@@ -53,12 +56,19 @@ const ScaleDropdownMenuItem = (props: Props) => {
             .join(", ")
         }
       </ScaleValues>
-      <CloneScale scaleId={scale.id} scaleCount={0} teamId={"aDw6KWqar"} />
+      <CloneScale scaleId={scale.id} scaleCount={availableScalesCount} teamId={"aDw6KWqar"} />
     </ScaleDetails>
   )
 }
 
 export default createFragmentContainer(ScaleDropdownMenuItem, {
+  dimension: graphql`
+    fragment ScaleDropdownMenuItem_dimension on TemplateDimension {
+      availableScales {
+        id
+      }
+    }
+  `,
   scale: graphql`
     fragment ScaleDropdownMenuItem_scale on TemplateScale {
       id
