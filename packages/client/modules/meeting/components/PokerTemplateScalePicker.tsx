@@ -25,8 +25,8 @@ const DropdownIcon = styled(Icon)({
   fontSize: ICON_SIZE.MD18
 })
 
-const DropdownBlock = styled('div')({
-  background: '#fff',
+const DropdownBlock = styled('div')<{disabled: boolean}>(({disabled}) => ({
+  background: disabled ? PALETTE.BACKGROUND_MAIN : '#fff',
   border: `1px solid ${PALETTE.BORDER_DROPDOWN}`,
   borderRadius: '30px',
   cursor: 'pointer',
@@ -35,7 +35,7 @@ const DropdownBlock = styled('div')({
   lineHeight: '20px',
   minWidth: 128,
   userSelect: 'none'
-})
+}))
 
 const MenuToggleInner = styled('div')({
   alignItems: 'center',
@@ -55,10 +55,11 @@ const MenuToggleLabel = styled('div')({
 
 interface Props {
   dimension: PokerTemplateScalePicker_dimension
+  isOwner: boolean
 }
 
 const PokerTemplateScalePicker = (props: Props) => {
-  const {dimension} = props
+  const {dimension, isOwner} = props
   const {selectedScale} = dimension
   const {togglePortal, menuPortal, originRef, menuProps} = useMenu<HTMLDivElement>(
     MenuPosition.LOWER_RIGHT,
@@ -72,7 +73,8 @@ const PokerTemplateScalePicker = (props: Props) => {
     <>
       <DropdownBlock
         onMouseEnter={SelectScaleDropdown.preload}
-        onClick={togglePortal}
+        onClick={isOwner ? togglePortal : undefined}
+        disabled={!isOwner}
         ref={originRef}
       >
         <MenuToggleInner>

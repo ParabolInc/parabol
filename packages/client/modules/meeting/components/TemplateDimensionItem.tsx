@@ -112,7 +112,7 @@ const TemplateDimensionItem = (props: Props) => {
           dimensions={dimensions}
         />
       </DimensionAndDescription>
-      <PokerTemplateScalePicker dimension={dimension} />
+      <PokerTemplateScalePicker dimension={dimension} isOwner={isOwner} />
     </DimensionItem >
   )
 }
