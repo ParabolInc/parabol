@@ -124,7 +124,6 @@ export default class Atmosphere extends Environment {
   }
 
   fetchHTTP = async (body: FetchHTTPData, connectionId?: string) => {
-    console.log('fetchHTTp called!', body, connectionId)
     const req = {
       method: 'POST',
       headers: {
@@ -148,7 +147,6 @@ export default class Atmosphere extends Environment {
       Object.assign(req.headers, {'content-type': 'application/json'})
       Object.assign(req, {body: JSON.stringify(body)})
     }
-    console.log('heres the req:', req)
     const res = await fetch('/graphql', req)
     const contentTypeHeader = res.headers.get('content-type') || ''
     if (contentTypeHeader.toLowerCase().startsWith('application/json')) {
@@ -250,7 +248,6 @@ export default class Atmosphere extends Environment {
     uploadables?: UploadableMap | null,
     sink?: Sink<any>
   ) => {
-    console.log('in handle fetch promise:', request, variables, uploadables)
     // await sleep(1000)
     const field = __PRODUCTION__ ? 'documentId' : 'query'
     let data = request.id
@@ -259,7 +256,6 @@ export default class Atmosphere extends Environment {
       data = queryMap[request.id!]
     }
     const transport = uploadables ? this.baseHTTPTransport : this.transport
-    console.log('in handleFetch promise, uploadables:', uploadables)
     return transport.fetch({
       [field]: data,
       variables: uploadables ? 
