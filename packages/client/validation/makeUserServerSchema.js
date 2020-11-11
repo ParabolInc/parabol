@@ -6,7 +6,17 @@ export default function makeUserServerSchema() {
     picture: (value) =>
       value
         .trim()
-        .matches(urlRegex, 'that picture url doesn’t look quite right')
+        .satisfies(
+          (value) => {
+            try {
+              new URL(value)
+            } catch(e) {
+              return false
+            }
+            return true
+          },
+          'that picture url doesn’t look quite right'
+        )
         .max(2000, 'please use a shorter url'),
     preferredName: (value) =>
       value

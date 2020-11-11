@@ -76,13 +76,6 @@ export default class StaticServer {
       }
     })
   }
-  whiteListStaticFile(fullPath: string): void {
-    console.log('white listing!')
-    const key = getPathnamesKeyForStaticFile(fullPath)
-    if (key in this.pathnames) return
-    const fsAbsLocation = path.join(process.cwd(), fullPath)
-    this.pathnames[key] = fsAbsLocation
-  }
   getMeta(filename: string) {
     filename = decodeURI(filename)
     const existingMeta = this.meta[filename]

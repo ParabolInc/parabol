@@ -16,10 +16,10 @@ const getProjectRoot = () => {
 const PROJECT_ROOT = getProjectRoot()
 
 const selfHostedHandler = async (res: HttpResponse, req: HttpRequest) => {
-  const url = req.getUrl()
+  const url = path.join(PROJECT_ROOT, decodeURI(req.getUrl()))
   let stats: fs.Stats
   try {
-    stats = fs.statSync(path.join(PROJECT_ROOT, url))
+    stats = fs.statSync(url)
   } catch (e) {
     res.writeStatus('404').end()
     return

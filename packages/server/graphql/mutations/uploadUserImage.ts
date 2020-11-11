@@ -52,12 +52,8 @@ export default {
     console.log('user avatar location:', publicLocation)
     /*
     todos: 
-      - create abstract fileStorage sendFile handler
-        - fix whitelisting uploaded file in static server
       - PR trebuchet client package to really expect uploadables
       - normalize image size to min necessary for avatar
-      - mutation for org avatar
-        - update org after uploaded
       - update user picture field after put success
         - why isn't it updating automatically in UI?
     */
