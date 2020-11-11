@@ -10,19 +10,16 @@ import withAtmosphere, {
 } from '../../../decorators/withAtmosphere/withAtmosphere'
 import {MenuProps} from '../../../hooks/useMenu'
 import AddPokerTemplateScaleMutation from '../../../mutations/AddPokerTemplateScaleMutation'
+import {FONT_FAMILY} from '../../../styles/typographyV2'
 import withMutationProps, {WithMutationProps} from '../../../utils/relay/withMutationProps'
 import {AddPokerTemplateScale_scales} from '../../../__generated__/AddPokerTemplateScale_scales.graphql'
 
 const AddScaleLink = styled(LinkButton)({
-  alignItems: 'center',
-  display: 'flex',
-  justifyContent: 'flex-start',
-  fontSize: 16,
+  fontFamily: FONT_FAMILY.SANS_SERIF,
+  fontWeight: 600,
+  fontsize: 16,
   lineHeight: '24px',
-  margin: 0,
-  marginBottom: 16,
-  outline: 'none',
-  padding: '8px 0'
+  padding: '16px 0px 16px 16px'
 })
 
 const AddScaleLinkPlus = styled(Icon)({
@@ -67,7 +64,7 @@ class AddTemplateScale extends Component<Props> {
     return (
       <AddScaleLink palette='blue' onClick={this.addScale} waiting={submitting}>
         <AddScaleLinkPlus>add</AddScaleLinkPlus>
-        <div>Add another scale</div>
+        <div>Create a Scale</div>
       </AddScaleLink>
     )
   }

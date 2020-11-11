@@ -29,7 +29,8 @@ const ScaleNameAndValues = styled('div')({
   flexDirection: 'column',
   maxWidth: '300px',
   paddingTop: 12,
-  paddingLeft: 16
+  paddingLeft: 16,
+  paddingBottom: 12
 })
 
 const ScaleName = styled('div')({

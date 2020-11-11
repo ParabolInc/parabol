@@ -10,11 +10,22 @@ import useMutationProps from '../../../hooks/useMutationProps'
 import {SelectScaleDropdown_dimension} from '../../../__generated__/SelectScaleDropdown_dimension.graphql'
 import ScaleDropdownMenuItem from './ScaleDropdownMenuItem'
 import AddPokerTemplateScale from './AddPokerTemplateScale'
+import styled from '@emotion/styled'
+import {PALETTE} from '../../../styles/paletteV2'
 
 interface Props {
   menuProps: MenuProps
   dimension: SelectScaleDropdown_dimension
 }
+
+const HR = styled('hr')({
+  backgroundColor: PALETTE.BORDER_LIGHT,
+  border: 'none',
+  height: 1,
+  margin: 0,
+  padding: 0,
+  width: '100%'
+})
 
 const SelectScaleDropdown = (props: Props) => {
   const {menuProps, dimension} = props
@@ -36,6 +47,7 @@ const SelectScaleDropdown = (props: Props) => {
           onClick={setScale(scale.id)}
         />
       )}
+      <HR />
       <AddPokerTemplateScale teamId={selectedScale.teamId} scales={availableScales} menuProps={menuProps} />
     </Menu >
   )
