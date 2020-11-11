@@ -1,18 +1,19 @@
 import styled from '@emotion/styled'
-import React, {useRef, useState} from 'react'
 import graphql from 'babel-plugin-relay/macro'
-import {createFragmentContainer} from 'react-relay'
+import React, {useEffect, useRef} from 'react'
+import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import {useCoverable} from '~/hooks/useControlBarCovers'
 import {desktopSidebarShadow} from '~/styles/elevation'
-import {EstimatePhaseDiscussionDrawer_meeting} from '~/__generated__/EstimatePhaseDiscussionDrawer_meeting.graphql'
-import {DiscussionThreadEnum, MeetingControlBarEnum, ZIndex} from '../types/constEnums'
-import DiscussionThreadRoot from './DiscussionThreadRoot'
 import {PALETTE} from '~/styles/paletteV2'
-import Icon from './Icon'
 import {ICON_SIZE} from '~/styles/typographyV2'
-import PlainButton from './PlainButton/PlainButton'
-import LabelHeading from './LabelHeading/LabelHeading'
+import {EstimatePhaseDiscussionDrawer_meeting} from '~/__generated__/EstimatePhaseDiscussionDrawer_meeting.graphql'
+import useAtmosphere from '../hooks/useAtmosphere'
+import {DiscussionThreadEnum, MeetingControlBarEnum, ZIndex} from '../types/constEnums'
 import Avatar from './Avatar/Avatar'
+import DiscussionThreadRoot from './DiscussionThreadRoot'
+import Icon from './Icon'
+import LabelHeading from './LabelHeading/LabelHeading'
+import PlainButton from './PlainButton/PlainButton'
 
 const Drawer = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   boxShadow: isDesktop ? desktopSidebarShadow : undefined,
@@ -103,11 +104,22 @@ interface Props {
 
 const EstimatePhaseDiscussionDrawer = (props: Props) => {
   const {isDesktop, meeting} = props
-  const {id: meetingId, endedAt, localStage, viewerMeetingMember} = meeting
+  const {id: meetingId, endedAt, localStage, viewerMeetingMember, isShowingVideo} = meeting
   const {user} = viewerMeetingMember
   const {picture} = user
   const {serviceTaskId} = localStage
-  const [isShowingVideo, setIsShowingVideo] = useState(true)
+  // const [isShowingVideo, _setIsShowingVideo] = useState(true)
+  const setIsShowingVideo = (isShowing: boolean) => {
+    commitLocalUpdate(atmosphere, (store) => {
+      const meeting = store.get(meetingId)!
+      meeting.setValue(isShowing, 'isShowingVideo')
+    })
+  }
+  const atmosphere = useAtmosphere()
+  useEffect(() => {
+    setIsShowingVideo(true)
+  }, [])
+
   const ref = useRef<HTMLDivElement>(null)
   const meetingControlBarBottom = 16
   const coverableHeight = isDesktop ? MeetingControlBarEnum.HEIGHT + meetingControlBarBottom : 0
@@ -157,6 +169,7 @@ export default createFragmentContainer(EstimatePhaseDiscussionDrawer, {
   meeting: graphql`
     fragment EstimatePhaseDiscussionDrawer_meeting on PokerMeeting {
       id
+      isShowingVideo
       endedAt
       localStage {
         ...EstimatePhaseDiscussionDrawerStage @relay(mask: false)

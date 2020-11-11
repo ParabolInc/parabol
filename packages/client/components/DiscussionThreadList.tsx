@@ -1,16 +1,16 @@
+import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {forwardRef, RefObject} from 'react'
 import {createFragmentContainer} from 'react-relay'
+import useScrollThreadList from '~/hooks/useScrollThreadList'
+import {MeetingTypeEnum} from '~/types/graphql'
 import {DiscussionThreadList_meeting} from '~/__generated__/DiscussionThreadList_meeting.graphql'
 import {DiscussionThreadList_threadables} from '~/__generated__/DiscussionThreadList_threadables.graphql'
-import useScrollThreadList from '~/hooks/useScrollThreadList'
-import styled from '@emotion/styled'
 import {PALETTE} from '../styles/paletteV2'
 import CommentingStatusText from './CommentingStatusText'
 import DiscussionThreadListEmptyState from './DiscussionThreadListEmptyState'
 import LabelHeading from './LabelHeading/LabelHeading'
 import ThreadedItem from './ThreadedItem'
-import {MeetingTypeEnum} from '~/types/graphql'
 
 const EmptyWrapper = styled('div')({
   alignItems: 'center',
@@ -58,9 +58,10 @@ interface Props {
 
 const DiscussionThreadList = forwardRef((props: Props, ref: any) => {
   const {editorRef, meeting, threadSourceId, threadables, dataCy, preferredNames} = props
-  const {endedAt, meetingType} = meeting
+  const {endedAt, meetingType, isShowingVideo} = meeting
   const isEmpty = threadables.length === 0
-  useScrollThreadList(threadables, editorRef, ref, preferredNames)
+  useScrollThreadList(threadables, editorRef, ref, isShowingVideo)
+
   const HeaderBlock = () => {
     if (meetingType === MeetingTypeEnum.poker) return null
     return <Header>{'Discussion & Takeaway Tasks'}</Header>
@@ -103,6 +104,9 @@ export default createFragmentContainer(DiscussionThreadList, {
       ...ThreadedItem_meeting
       endedAt
       meetingType
+      ... on PokerMeeting {
+        isShowingVideo
+      }
     }
   `,
 
