@@ -1,9 +1,8 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {SharedUpdater, StandardMutation} from '../types/relayMutations'
+import {StandardMutation} from '../types/relayMutations'
 import createProxyRecord from '../utils/relay/createProxyRecord'
 import {AddPokerTemplateScaleValueMutation as TAddPokerTemplateScaleValueMutation} from '../__generated__/AddPokerTemplateScaleValueMutation.graphql'
-import {AddPokerTemplateScaleValueMutation_scale} from '../__generated__/AddPokerTemplateScaleValueMutation_scale.graphql'
 import handleAddPokerTemplateScaleValue from './handlers/handleAddPokerTemplateScaleValue'
 
 graphql`
@@ -27,15 +26,6 @@ const mutation = graphql`
   }
 `
 
-export const addPokerTemplateScaleValueTeamUpdater: SharedUpdater<AddPokerTemplateScaleValueMutation_scale> = (
-  payload,
-  {store}
-) => {
-  const scale = payload.getLinkedRecord('scale')
-  if (!scale) return
-  handleAddPokerTemplateScaleValue(scale, store)
-}
-
 const AddPokerTemplateScaleValueMutation: StandardMutation<
   TAddPokerTemplateScaleValueMutation
 > = (atmosphere, variables, {onError, onCompleted}) => {
@@ -44,11 +34,6 @@ const AddPokerTemplateScaleValueMutation: StandardMutation<
     variables,
     onCompleted,
     onError,
-    updater: (store) => {
-      const payload = store.getRootField('addPokerTemplateScaleValue')
-      if (!payload) return
-      addPokerTemplateScaleValueTeamUpdater(payload, {atmosphere, store})
-    },
     optimisticUpdater: (store) => {
       const {scaleId, scaleValue} = variables
       const proxyTemplateScaleValue = createProxyRecord(store, 'TemplateScaleValue', {

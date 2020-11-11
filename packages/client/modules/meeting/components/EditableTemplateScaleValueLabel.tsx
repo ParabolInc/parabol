@@ -47,8 +47,8 @@ class EditableTemplateScaleValueLabel extends Component<Props> {
     submitMutation()
 
     const scaleId = scale.id
-    const {id: _omit, ...oldScaleValue} = scaleValue
-    const {id: _removal, ...newScaleValue} = {...scaleValue, label: newLabel}
+    const oldScaleValue = {label: scaleValue.label, color: scaleValue.color, value: scaleValue.value}
+    const newScaleValue = {...oldScaleValue, label: newLabel}
     UpdatePokerTemplateScaleValueMutation(atmosphere, {scaleId, oldScaleValue, newScaleValue}, {}, onError, onCompleted)
   }
 
