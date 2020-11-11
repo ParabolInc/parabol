@@ -10,6 +10,7 @@ interface Props {
   scaleId: string
   scaleCount: number
   teamId: string
+  isStarter: boolean
   menuProps: MenuProps
 }
 
@@ -18,6 +19,7 @@ const CloneScale = (props: Props) => {
     scaleId,
     scaleCount,
     teamId,
+    isStarter,
     menuProps
   } = props
   const atmosphere = useAtmosphere()
@@ -32,7 +34,7 @@ const CloneScale = (props: Props) => {
     closePortal()
   }
   return (
-    <DetailAction disabled={!canClone} icon={'content_copy'} tooltip={tooltip} onClick={cloneScale} />
+    <DetailAction disabled={!canClone} icon={isStarter ? 'content_copy' : 'edit'} tooltip={tooltip} onClick={cloneScale} />
   )
 }
 export default CloneScale

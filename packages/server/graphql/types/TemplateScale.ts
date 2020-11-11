@@ -28,6 +28,11 @@ const TemplateScale = new GraphQLObjectType<any, GQLContext>({
       resolve: ({removedAt}) => !removedAt,
       description: 'true if the scale is currently used by the team, else false'
     },
+    isStarter: {
+      type: new GraphQLNonNull(GraphQLBoolean),
+      resolve: ({isStarter}) => !!isStarter,
+      description: 'True if this is a starter/default scale; false otherwise'
+    },
     removedAt: {
       type: GraphQLISO8601Type,
       description: 'The datetime that the scale was removed. Null if it has not been removed.'

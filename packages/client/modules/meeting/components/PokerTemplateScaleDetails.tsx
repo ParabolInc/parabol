@@ -64,24 +64,6 @@ const PokerTemplateScaleDetails = (props: Props) => {
               scales={teamScales}
               isOwner={isOwner}
             />
-            {/* {isOwner && (
-              <RemoveTemplate
-                templateId={templateId}
-                teamId={teamId}
-                teamTemplates={teamTemplates}
-                gotoPublicTemplates={gotoPublicTemplates}
-                type={MeetingTypeEnum.poker}
-              />
-            )}
-            {!isOwner && (
-              <CloneTemplate
-                gotoTeamTemplates={gotoTeamTemplates}
-                teamId={teamId}
-                templateId={templateId}
-                templateCount={templateCount}
-                type={MeetingTypeEnum.poker}
-              />
-            )} */}
           </FirstLine>
         </ScaleHeader>
         <TemplateScaleValueList scale={scale} />

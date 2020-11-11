@@ -59,7 +59,7 @@ const CloneScaleButton = styled('div')({
 
 const ScaleDropdownMenuItem = (props: Props) => {
   const {scale, dimension, menuProps} = props
-  const {values} = scale
+  const {values, isStarter} = scale
   const availableScalesCount = dimension.availableScales.length
   return (
     <ScaleDetails>
@@ -77,7 +77,7 @@ const ScaleDropdownMenuItem = (props: Props) => {
         </ScaleValues>
       </ScaleNameAndValues>
       <CloneScaleButton>
-        <CloneScale scaleId={scale.id} scaleCount={availableScalesCount} teamId={"aDw6KWqar"} menuProps={menuProps} />
+        <CloneScale scaleId={scale.id} isStarter={isStarter} scaleCount={availableScalesCount} teamId={"aDw6KWqar"} menuProps={menuProps} />
       </CloneScaleButton>
     </ScaleDetails>
   )
@@ -95,6 +95,7 @@ export default createFragmentContainer(ScaleDropdownMenuItem, {
     fragment ScaleDropdownMenuItem_scale on TemplateScale {
       id
       name
+      isStarter
       values {
         label
         isSpecial
