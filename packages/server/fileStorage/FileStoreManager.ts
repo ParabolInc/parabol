@@ -13,8 +13,7 @@ export default abstract class FileStoreManager {
   async putFile(options: PutFileOptions): Promise<string> {
     const {partialPath, buffer} = options
     const fullPath = this.prependPath(partialPath)
-    this._putFile(fullPath, buffer)
-    if (this._putFileCb) this._putFileCb(fullPath)
+    await this._putFile(fullPath, buffer)
     return this.getPublicFileLocation(fullPath)
   }
 

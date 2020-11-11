@@ -54,8 +54,6 @@ export default {
     /*
     todos: 
       - PR trebuchet client package to really expect uploadables
-      - update user picture field after put success
-        - why isn't it updating automatically in UI?
     */
     const updatedUser = await updateUserProfile(
       undefined,
