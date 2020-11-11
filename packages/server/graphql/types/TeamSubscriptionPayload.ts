@@ -45,7 +45,9 @@ import RenamePokerTemplateScalePayload from './RenamePokerTemplateScalePayload'
 import SelectRetroTemplatePayload from './SelectRetroTemplatePayload'
 import SetCheckInEnabledPayload from './SetCheckInEnabledPayload'
 import SetSlackNotificationPayload from './SetSlackNotificationPayload'
+import {StartCheckInSuccess} from './StartCheckInPayload'
 import StartNewMeetingPayload from './StartNewMeetingPayload'
+import {StartRetrospectiveSuccess} from './StartRetrospectivePayload'
 import {StartSprintPokerSuccess} from './StartSprintPokerPayload'
 import UpdateAgendaItemPayload from './UpdateAgendaItemPayload'
 import UpdateCreditCardPayload from './UpdateCreditCardPayload'
@@ -54,6 +56,8 @@ import UpdatePokerTemplateDimensionScalePayload from './UpdatePokerTemplateDimen
 import UpdatePokerTemplateScaleValuePayload from './UpdatePokerTemplateScaleValuePayload'
 import UpdateUserProfilePayload from './UpdateUserProfilePayload'
 import UpgradeToProPayload from './UpgradeToProPayload'
+import {EndCheckInSuccess} from './EndCheckInPayload'
+import {EndRetrospectiveSuccess} from './EndRetrospectivePayload'
 import {PersistJiraSearchQuerySuccess} from './PersistJiraSearchQueryPayload'
 
 const types = [
@@ -66,7 +70,9 @@ const types = [
   ArchiveTeamPayload,
   DenyPushInvitationPayload,
   DowngradeToPersonalPayload,
+  EndCheckInSuccess,
   EndNewMeetingPayload,
+  EndRetrospectiveSuccess,
   EndSprintPokerSuccess,
   NavigateMeetingPayload,
   PushInvitationPayload,
@@ -76,7 +82,9 @@ const types = [
   RemoveTeamMemberPayload,
   RenameMeetingSuccess,
   SelectRetroTemplatePayload,
+  StartCheckInSuccess,
   StartNewMeetingPayload,
+  StartRetrospectiveSuccess,
   StartSprintPokerSuccess,
   UpdateAgendaItemPayload,
   UpdateCreditCardPayload,

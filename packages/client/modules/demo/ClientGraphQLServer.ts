@@ -1385,7 +1385,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       }
       return {dragDiscussionTopic: data}
     },
-    EndNewMeetingMutation: ({meetingId}, userId) => {
+    EndRetrospectiveMutation: ({meetingId}, userId) => {
       const phases = this.db.newMeeting.phases as NewMeetingPhase[]
       const lastPhase = phases[phases.length - 1] as IDiscussPhase
       const currentStage = lastPhase.stages.find((stage) => stage.startAt && !stage.endAt)
@@ -1408,12 +1408,12 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         removedSuggestedActionId: null,
         timelineEvent: null,
         updatedTasks: this.db.tasks,
-        __typename: 'EndNewMeetingPayload'
+        __typename: 'EndRetrospectiveSuccess'
       }
       if (userId !== demoViewerId) {
         this.emit(TEAM, data)
       }
-      return {endNewMeeting: data}
+      return {endRetrospective: data}
     },
     InviteToTeamMutation: ({invitees}) => {
       return {inviteToTeam: {invitees}}

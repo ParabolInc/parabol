@@ -18,6 +18,7 @@ import useMobileSidebarDefaultClosed from './useMobileSidebarDefaultClosed'
 import useResumeFacilitation from './useResumeFacilitation'
 import useMediaRoom from './useMediaRoom'
 import useToggleSidebar from './useToggleSidebar'
+import {MeetingTypeEnum} from '~/types/graphql'
 
 const useMeeting = (meetingRef: any) => {
   const meeting = readInlineData<useMeeting_meeting>(
@@ -30,6 +31,7 @@ const useMeeting = (meetingRef: any) => {
         ...useResumeFacilitation_meeting
         ...useAutoCheckIn_meeting
         id
+        meetingType
         name
         showSidebar
         team {
@@ -40,13 +42,13 @@ const useMeeting = (meetingRef: any) => {
     `,
     meetingRef
   )
-  const {id: meetingId, name: meetingName, team} = meeting
+  const {id: meetingId, meetingType, name: meetingName, team} = meeting
   const {id: teamId, name: teamName} = team
   const gotoStageId = useGotoStageId(meeting)
   const handleGotoNext = useGotoNext(meeting, gotoStageId)
   const safeRoute = useMeetingLocalState(meeting)
   useResumeFacilitation(meeting)
-  useEndMeetingHotkey(meetingId)
+  useEndMeetingHotkey(meetingId, meetingType as MeetingTypeEnum)
   useGotoNextHotkey(handleGotoNext.gotoNext)
   useGotoPrevHotkey(meeting, gotoStageId)
   // save a few cycles
