@@ -29,7 +29,6 @@ const updateUserProfile = async (
   // VALIDATION
   const schema = makeUserServerSchema()
   const {data: validUpdatedUser, errors} = schema(updatedUser) as any
-  console.log('errors:', errors)
   if (Object.keys(errors).length) {
     return standardError(new Error('Failed input validation'), {userId})
   }

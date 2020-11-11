@@ -1,5 +1,5 @@
 import {APP_MAX_AVATAR_FILE_SIZE, TASK_MAX_CHARS} from '../utils/constants'
-import {compositeIdRegex, emailRegex, idRegex, urlRegex} from './regex'
+import {compositeIdRegex, emailRegex, idRegex} from './regex'
 
 export const avatar = {
   size: (value) =>
@@ -72,4 +72,18 @@ export const makeTeamNameSchema = (teamNames) => (value) =>
     .max(50, 'That isn’t very memorable. Maybe shorten it up?')
     .test((val) => teamNames.includes(val) && 'That name is already taken')
 
-export const url = (value) => value.matches(urlRegex)
+export const url = (value) => 
+  value
+    .trim()
+    .satisfies(
+      (value) => {
+        try {
+          new URL(value)
+        } catch(e) {
+          return false
+        }
+        return true
+      },
+      'that url doesn’t look quite right'
+    )
+    .max(2000, 'please use a shorter url')

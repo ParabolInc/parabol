@@ -49,7 +49,6 @@ export default {
       partialPath: userAvatarPath,
       buffer: validBuffer
     })
-    console.log('user avatar location:', publicLocation)
     /*
     todos: 
       - PR trebuchet client package to really expect uploadables

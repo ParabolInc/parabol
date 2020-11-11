@@ -56,7 +56,6 @@ export default {
       partialPath: orgAvatarPath,
       buffer: validBuffer
     })
-    console.log('org avatar location:', publicLocation)
 
     const updatedOrg = await updateOrgResolver(
       undefined,
