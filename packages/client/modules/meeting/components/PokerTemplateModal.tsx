@@ -33,11 +33,10 @@ const TabContents = styled('div')({
 const PokerTemplateModal = (props: Props) => {
   const {pokerMeetingSettings} = props
   const {selectedTemplate, team} = pokerMeetingSettings
-  const {id: teamId, orgId} = team
+  const {id: teamId, orgId, editingScaleId} = team
   const lowestScope = getTemplateList(teamId, orgId, selectedTemplate)
   const listIdx = SCOPES.indexOf(lowestScope)
   const [activeIdx, setActiveIdx] = useState(listIdx)
-  const [scaleId] = useState("Pi8StrPy8")
   const gotoTeamTemplates = () => {
     setActiveIdx(0)
   }
@@ -55,7 +54,7 @@ const PokerTemplateModal = (props: Props) => {
 
       <SwipeableViews
         enableMouseEvents
-        index={scaleId ? 1 : 1}
+        index={editingScaleId ? 1 : 0}
         containerStyle={containerStyle}
         style={innerStyle}
       >
@@ -67,7 +66,7 @@ const PokerTemplateModal = (props: Props) => {
           />
         </TabContents>
         <TabContents>
-          <PokerTemplateScaleDetailsRoot teamId={teamId} scaleId={scaleId} isActive={scaleId != undefined} />
+          <PokerTemplateScaleDetailsRoot teamId={teamId} scaleId={editingScaleId} isActive={editingScaleId != undefined} />
         </TabContents>
       </SwipeableViews>
 
@@ -83,6 +82,7 @@ export default createFragmentContainer(PokerTemplateModal, {
       team {
         id
         orgId
+        editingScaleId
       }
       selectedTemplate {
         ...getTemplateList_template

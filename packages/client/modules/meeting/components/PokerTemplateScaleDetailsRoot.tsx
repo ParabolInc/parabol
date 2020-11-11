@@ -15,8 +15,8 @@ const query = graphql`
 
 interface Props {
   isActive: boolean
-  teamId?: string
-  scaleId?: string
+  teamId: string
+  scaleId: string | null
 }
 
 const PokerTemplateScaleDetailsRoot = (props: Props) => {

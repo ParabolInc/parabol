@@ -7,6 +7,7 @@ import {PALETTE} from '~/styles/paletteV2'
 import {FONT_FAMILY} from '~/styles/typographyV2'
 import {PokerCards} from '../../../types/constEnums'
 import {ScaleDropdownMenuItem_scale} from '../../../__generated__/ScaleDropdownMenuItem_scale.graphql'
+import CloneScale from './CloneScale'
 
 interface Props {
   scale: ScaleDropdownMenuItem_scale
@@ -52,6 +53,7 @@ const ScaleDropdownMenuItem = (props: Props) => {
             .join(", ")
         }
       </ScaleValues>
+      <CloneScale scaleId={scale.id} scaleCount={0} teamId={"aDw6KWqar"} />
     </ScaleDetails>
   )
 }
