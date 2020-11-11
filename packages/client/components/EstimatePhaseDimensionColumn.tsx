@@ -1,8 +1,9 @@
-import React from 'react'
+import React, {useState} from 'react'
 import styled from '@emotion/styled'
 import PokerActiveVoting from './PokerActiveVoting'
 import PokerDiscussVoting from './PokerDiscussVoting'
 import LinkButton from './LinkButton'
+import useHotkey from '~/hooks/useHotkey'
 
 const ColumnInner = styled('div')({
   display: 'flex',
@@ -30,7 +31,10 @@ const StyledLinkButton = styled(LinkButton)({
 })
 
 const EstimatePhaseDimensionColumn = () => {
-  const activeVoting = true
+  const [activeVoting, setActiveVoting] = useState(false)
+  useHotkey('a', () => {
+    setActiveVoting(!activeVoting)
+  })
   return (
     <ColumnInner>
       <DimensionHeader>

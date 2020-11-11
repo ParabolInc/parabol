@@ -2,6 +2,7 @@ import React from 'react'
 import styled from '@emotion/styled'
 import MiniPokerCardPlaceholder from './MiniPokerCardPlaceholder'
 import MiniPokerCard from './MiniPokerCard'
+import LinkButton from './LinkButton'
 import {PALETTE} from '~/styles/paletteV2'
 
 const ControlWrap = styled('div')({
@@ -46,6 +47,14 @@ const Label = styled('label')({
   padding: 0
 })
 
+const StyledLinkButton = styled(LinkButton)({
+  fontSize: 14,
+  fontWeight: 600,
+  height: 40,
+  margin: '0 0 0 8px',
+  padding: '0 8px'
+})
+
 interface Props {
   hasFocus: boolean
   placeholder: string
@@ -66,7 +75,7 @@ const PokerDimensionValueControl = (props: Props) => {
             <MiniPokerCardPlaceholder>
               <Input autoFocus={hasFocus} placeholder={placeholder}></Input>
             </MiniPokerCardPlaceholder>
-            <Label>{'Enter Final Value'}</Label>
+            <StyledLinkButton palette={'blue'}>{'Confirm'}</StyledLinkButton>
           </>
         }
       </Control>

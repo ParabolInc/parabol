@@ -33,7 +33,20 @@ const group4 = [
   getDemoAvatar(10),
   getDemoAvatar(11),
   getDemoAvatar(12),
-  getDemoAvatar(13)
+  getDemoAvatar(13),
+  getDemoAvatar(14),
+  getDemoAvatar(15),
+  getDemoAvatar(16),
+  getDemoAvatar(17),
+  getDemoAvatar(18),
+  getDemoAvatar(19),
+  getDemoAvatar(20),
+  getDemoAvatar(21),
+  getDemoAvatar(22),
+  getDemoAvatar(23),
+  getDemoAvatar(24),
+  getDemoAvatar(25),
+  getDemoAvatar(26)
 ]
 
 const votingResults = [
@@ -70,7 +83,7 @@ const PokerDiscussVoting = () => {
   return (
     <>
       {isFacilitator
-        ? <PokerDimensionValueControl hasFocus={false} placeholder={mostCommonVotedValue} scaleValue={scaleValue} />
+        ? <PokerDimensionValueControl hasFocus={false} placeholder={mostCommonVotedValue} scaleValue={null} />
         : <PokerDimensionValueStatic scaleValue={scaleValue} />
       }
       {/* Map voting rows */}

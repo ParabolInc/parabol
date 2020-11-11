@@ -4,9 +4,9 @@ import {PALETTE} from '~/styles/paletteV2'
 import SwipeableViews from 'react-swipeable-views'
 import useBreakpoint from '~/hooks/useBreakpoint'
 import {Breakpoint} from '~/types/constEnums'
-import PokerCardDeck from './PokerCardDeck'
 import EstimatePhaseDimensionColumn from './EstimatePhaseDimensionColumn'
-import DeckActivityAvatars from './DeckActivityAvatars'
+// import PokerCardDeck from './PokerCardDeck'
+// import DeckActivityAvatars from './DeckActivityAvatars'
 
 const EstimateArea = styled('div')({
   display: 'flex',
@@ -18,7 +18,7 @@ const EstimateArea = styled('div')({
 const StepperDots = styled('div')({
   display: 'flex',
   justifyContent: 'center',
-  padding: '16px 0'
+  padding: '4px 0 8px'
 })
 
 const StepperDot = styled('div')<{isActive: boolean}>(({isActive}) => ({
@@ -40,7 +40,8 @@ const innerStyle = (isDesktop: boolean) => {
   return {
     height: '100%',
     margin: isDesktop ? '0 auto' : null,
-    maxWidth: isDesktop ? '728px' : null,
+    maxWidth: isDesktop ? 656 : null,
+    // maxWidth: 816,
     padding: isDesktop ? '0 80px' : '0 16px',
     width: '100%',
     overflow: 'visible'
@@ -72,8 +73,8 @@ const EstimatePhaseArea = () => {
           return <StepperDot key={idx} isActive={idx === activeIdx} />
         })}
       </StepperDots>
-      <PokerCardDeck />
-      <DeckActivityAvatars />
+      {/* <PokerCardDeck />
+      <DeckActivityAvatars /> */}
       <SwipeableViews
         containerStyle={containerStyle}
         enableMouseEvents

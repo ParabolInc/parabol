@@ -29,7 +29,6 @@ interface Props {
 
 const MiniPokerCard = (props: Props) => {
   const {color, label, value} = props.scaleValue
-  console.log(value, 'value')
   // Todo PassSVG could use a little drop shadow like the label
   return (
     <Card color={color}>

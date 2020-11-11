@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useState} from 'react'
 import styled from '@emotion/styled'
 import MiniPokerCardPlaceholder from './MiniPokerCardPlaceholder'
 import PokerVotingAvatarGroup from './PokerVotingAvatarGroup'
@@ -9,6 +9,7 @@ import TipBanner from './TipBanner'
 import SecondaryButtonCool from './SecondaryButtonCool'
 import {PALETTE} from '~/styles/paletteV2'
 import getDemoAvatar from '~/utils/getDemoAvatar'
+import useHotkey from '~/hooks/useHotkey'
 
 const CheckIcon = styled(Icon)({
   color: PALETTE.TEXT_GREEN
@@ -24,13 +25,26 @@ const StyledTipBanner = styled(TipBanner)({
 })
 
 const RevealButtonBlock = styled('div')({
+  minHeight: 48, // reduce layout change when button not present
   padding: '8px 16px'
 })
 
 const PokerActiveVoting = () => {
-  const hasVotes = true
-  const isFacilitator = true
-  const viewerHasVoted = false
+
+  const [hasVotes, setHasVotes] = useState(false)
+  useHotkey('v', () => {
+    setHasVotes(!hasVotes)
+  })
+
+  const [isFacilitator, setIsFacilitator] = useState(false)
+  useHotkey('f', () => {
+    setIsFacilitator(!isFacilitator)
+  })
+
+  const [viewerHasVoted, setViewerHasVoted] = useState(false)
+  useHotkey('p', () => {
+    setViewerHasVoted(!viewerHasVoted)
+  })
 
   // Show the facilitator a tooltip if nobody has voted yet
   // Show the participant a tooltip if they haven’t voted yet
@@ -68,17 +82,22 @@ const PokerActiveVoting = () => {
             </MiniPokerCardPlaceholder>
             <PokerVotingAvatarGroup voters={voters} />
           </PokerVotingRowBase>
-          {/* Show the reveal button if 2+ people have voted */}
-          {voters.length > 1
-            ? <RevealButtonBlock>
-              <SecondaryButtonCool>{'Reveal Votes'}</SecondaryButtonCool>
-            </RevealButtonBlock>
-            : null
-          }
         </>
         : <PokerVotingRowEmpty />
       }
-      {showTip ? <BannerWrap><StyledTipBanner>{tipCopy}</StyledTipBanner></BannerWrap> : null}
+      <RevealButtonBlock>
+        {/* Show the reveal button if 2+ people have voted */}
+        {isFacilitator && hasVotes && voters.length > 1
+          ? <SecondaryButtonCool>{'Reveal Votes'}</SecondaryButtonCool>
+          : null
+        }
+      </RevealButtonBlock>
+      {showTip
+        ? <BannerWrap>
+          <StyledTipBanner>{tipCopy}</StyledTipBanner>
+        </BannerWrap>
+        : null
+      }
     </>
   )
 }

@@ -13,16 +13,17 @@ import {IJiraIssue} from '../types/graphql'
 
 const HeaderCardWrapper = styled('div')({
   display: 'flex',
-  padding: '4px 24px'
+  padding: '4px 8px'
 })
 
 const HeaderCard = styled('div')({
   background: PALETTE.CONTROL_LIGHT,
-  borderRadius: '4px',
-  boxShadow: Elevation.Z3,
+  borderRadius: 4,
+  boxShadow: Elevation.Z1,
   padding: '12px 16px',
-  maxWidth: 1000,
-  width: '70%'
+  maxWidth: 640,
+  margin: '0 auto',
+  width: '100%'
 })
 
 const CardTitle = styled('h1')({
