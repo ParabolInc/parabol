@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
-import React, {useRef, useState} from 'react'
+import React, {useEffect, useRef} from 'react'
 import graphql from 'babel-plugin-relay/macro'
-import {createFragmentContainer} from 'react-relay'
+import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import {useCoverable} from '~/hooks/useControlBarCovers'
 import {desktopSidebarShadow} from '~/styles/elevation'
 import {EstimatePhaseDiscussionDrawer_meeting} from '~/__generated__/EstimatePhaseDiscussionDrawer_meeting.graphql'
@@ -13,6 +13,7 @@ import {ICON_SIZE} from '~/styles/typographyV2'
 import PlainButton from './PlainButton/PlainButton'
 import LabelHeading from './LabelHeading/LabelHeading'
 import Avatar from './Avatar/Avatar'
+import useAtmosphere from '~/hooks/useAtmosphere'
 
 const Drawer = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   boxShadow: isDesktop ? desktopSidebarShadow : undefined,
@@ -103,11 +104,21 @@ interface Props {
 
 const EstimatePhaseDiscussionDrawer = (props: Props) => {
   const {isDesktop, meeting} = props
-  const {id: meetingId, endedAt, localStage, viewerMeetingMember} = meeting
+  const {id: meetingId, endedAt, isShowingVideo, localStage, viewerMeetingMember} = meeting
   const {user} = viewerMeetingMember
   const {picture} = user
   const {serviceTaskId} = localStage
-  const [isShowingVideo, setIsShowingVideo] = useState(true)
+  const atmosphere = useAtmosphere()
+  const setIsShowingVideo = (isShowing: boolean) => {
+    commitLocalUpdate(atmosphere, (store) => {
+      const meeting = store.get(meetingId)!
+      meeting.setValue(isShowing, 'isShowingVideo')
+    })
+  }
+  useEffect(() => {
+    setIsShowingVideo(true)
+  }, [])
+  // const [isShowingVideo, setIsShowingVideo] = useState(true)
   const ref = useRef<HTMLDivElement>(null)
   const meetingControlBarBottom = 16
   const coverableHeight = isDesktop ? MeetingControlBarEnum.HEIGHT + meetingControlBarBottom : 0
@@ -156,6 +167,7 @@ export default createFragmentContainer(EstimatePhaseDiscussionDrawer, {
     fragment EstimatePhaseDiscussionDrawer_meeting on PokerMeeting {
       id
       endedAt
+      isShowingVideo
       localStage {
         ...EstimatePhaseDiscussionDrawerStage @relay(mask: false)
       }

@@ -1,5 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
-import React, {useRef, RefObject} from 'react'
+import React, {useRef, RefObject, useMemo} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {DiscussionThread_viewer} from '~/__generated__/DiscussionThread_viewer.graphql'
 import {useCoverable} from '~/hooks/useControlBarCovers'
@@ -44,8 +44,10 @@ const DiscussionThread = (props: Props) => {
   const {endedAt, meetingType, replyingToCommentId, threadSource} = meeting
   const thread = threadSource?.thread
   const commentors = threadSource?.commentors
-  const preferredNames =
-    (commentors && commentors.map((commentor) => commentor.preferredName)) || null
+  const preferredNames = useMemo(
+    () => (commentors && commentors.map((commentor) => commentor.preferredName)) || null,
+    [commentors]
+  )
   const edges = thread?.edges ?? [] // should never happen, but Terry reported it in demo. likely relay error
   const threadables = edges.map(({node}) => node)
   const getMaxSortOrder = () => {

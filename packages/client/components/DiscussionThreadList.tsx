@@ -58,9 +58,9 @@ interface Props {
 
 const DiscussionThreadList = forwardRef((props: Props, ref: any) => {
   const {editorRef, meeting, threadSourceId, threadables, dataCy, preferredNames} = props
-  const {endedAt, meetingType} = meeting
+  const {endedAt, meetingType, isShowingVideo} = meeting
   const isEmpty = threadables.length === 0
-  useScrollThreadList(threadables, editorRef, ref, preferredNames)
+  useScrollThreadList(threadables, editorRef, ref, preferredNames, isShowingVideo)
   const HeaderBlock = () => {
     if (meetingType === MeetingTypeEnum.poker) return null
     return <Header>{'Discussion & Takeaway Tasks'}</Header>
@@ -103,6 +103,9 @@ export default createFragmentContainer(DiscussionThreadList, {
       ...ThreadedItem_meeting
       endedAt
       meetingType
+      ... on PokerMeeting {
+        isShowingVideo
+      }
     }
   `,
 

@@ -5,14 +5,14 @@ const useScrollThreadList = (
   threadables: readonly any[],
   editorRef: RefObject<HTMLTextAreaElement>,
   wrapperRef: RefObject<HTMLDivElement>,
-  preferredNames: string[] | null
+  preferredNames: string[] | null,
+  isShowingVideo?: boolean
 ) => {
   const isInit = useInitialRender()
   // if we're at or near the bottom of the scroll container
   // and the body is the active element
   // then scroll to the bottom whenever threadables changes
   const oldScrollHeightRef = useRef(0)
-  const oldClientHeightRef = useRef(0)
 
   const {current: el} = wrapperRef
   useLayoutEffect(() => {
@@ -35,7 +35,7 @@ const useScrollThreadList = (
     if (
       document.activeElement === edEl ||
       scrollTop + clientHeight > oldScrollHeightRef.current - 20 ||
-      oldClientHeightRef.current > clientHeight
+      isShowingVideo
     ) {
       setTimeout(() => {
         if (el.scrollTo) {
@@ -46,8 +46,7 @@ const useScrollThreadList = (
         // the delay is required for new task cards, not sure why height is determined async
       }, 50)
     }
-    oldClientHeightRef.current = clientHeight
-  }, [isInit, threadables, preferredNames])
+  }, [isInit, threadables, preferredNames, isShowingVideo])
   useEffect(() => {
     oldScrollHeightRef.current = wrapperRef.current?.scrollHeight ?? 0
   }, [threadables])
