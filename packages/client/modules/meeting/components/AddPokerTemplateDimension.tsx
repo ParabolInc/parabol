@@ -35,7 +35,7 @@ interface Props extends WithAtmosphereProps, WithMutationProps {
   templateId: string
 }
 
-class AddTemplateDimension extends Component<Props> {
+class AddPokerTemplateDimension extends Component<Props> {
   addPrompt = () => {
     const {
       atmosphere,
@@ -75,7 +75,7 @@ class AddTemplateDimension extends Component<Props> {
   }
 }
 
-export default createFragmentContainer(withMutationProps(withAtmosphere(AddTemplateDimension)), {
+export default createFragmentContainer(withMutationProps(withAtmosphere(AddPokerTemplateDimension)), {
   dimensions: graphql`
     fragment AddPokerTemplateDimension_dimensions on TemplateDimension @relay(plural: true) {
       sortOrder
