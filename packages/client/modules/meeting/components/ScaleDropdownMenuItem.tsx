@@ -17,9 +17,17 @@ interface Props {
 
 const ScaleDetails = styled('div')({
   display: 'flex',
+  flexDirection: 'row',
+  width: '100%',
+  alignItems: 'flex-start'
+})
+
+const ScaleNameAndValues = styled('div')({
+  display: 'flex',
   flexDirection: 'column',
   maxWidth: '300px',
-  padding: "12px 16px"
+  paddingTop: 12,
+  paddingLeft: 16
 })
 
 const ScaleName = styled('div')({
@@ -39,24 +47,35 @@ const ScaleValues = styled('div')({
   lineHeight: '16px'
 })
 
+const CloneScaleButton = styled('div')({
+  display: 'block',
+  marginLeft: 'auto',
+  marginTop: 'auto',
+  marginBottom: 'auto'
+})
+
 const ScaleDropdownMenuItem = (props: Props) => {
   const {scale, dimension} = props
   const {values} = scale
   const availableScalesCount = dimension.availableScales.length
   return (
     <ScaleDetails>
-      <ScaleName>{scale.name}</ScaleName>
-      <ScaleValues>
-        {
-          values.map(
-            ({label, isSpecial}) => {
-              return isSpecial && label === PokerCards.PASS_CARD ? "Pass" : label
-            }
-          )
-            .join(", ")
-        }
-      </ScaleValues>
-      <CloneScale scaleId={scale.id} scaleCount={availableScalesCount} teamId={"aDw6KWqar"} />
+      <ScaleNameAndValues>
+        <ScaleName>{scale.name}</ScaleName>
+        <ScaleValues>
+          {
+            values.map(
+              ({label, isSpecial}) => {
+                return isSpecial && label === 'X' ? "Pass" : label
+              }
+            )
+              .join(", ")
+          }
+        </ScaleValues>
+      </ScaleNameAndValues>
+      <CloneScaleButton>
+        <CloneScale scaleId={scale.id} scaleCount={availableScalesCount} teamId={"aDw6KWqar"} />
+      </CloneScaleButton>
     </ScaleDetails>
   )
 }

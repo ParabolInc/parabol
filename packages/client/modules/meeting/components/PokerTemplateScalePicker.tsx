@@ -70,7 +70,8 @@ const PokerTemplateScalePicker = (props: Props) => {
     {
       isDropdown: true,
       id: 'scaleDropdown',
-      parentId: 'templateModal'
+      parentId: 'templateModal',
+      loadingWidth: 300
     }
   )
   const {openTooltip, tooltipPortal, closeTooltip, originRef: tooltipRef} = useTooltip<
