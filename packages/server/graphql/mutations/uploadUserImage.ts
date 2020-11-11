@@ -45,10 +45,7 @@ export default {
     const [validExt, validBuffer] = await validateAvatarUpload(contentType, buffer)
 
     // RESOLUTION
-    const [
-      normalExt,
-      normalBuffer
-    ] = await normalizeAvatarUpload(validExt, validBuffer)
+    const [normalExt, normalBuffer] = await normalizeAvatarUpload(validExt, validBuffer)
     const userAvatarPath = FileStoreManager.getUserAvatarPath(userId, normalExt)
     const publicLocation = await getFileStoreManager().putFile({
       partialPath: userAvatarPath,
@@ -57,8 +54,6 @@ export default {
     /*
     todos: 
       - PR trebuchet client package to really expect uploadables
-      - if `self-hosted` folder is deleted, then upon uploading a file
-        for the first time, the dirs are made but write file fails
       - update user picture field after put success
         - why isn't it updating automatically in UI?
     */
