@@ -39,6 +39,16 @@ const PokerVotingAvatarGroup = (props: Props) => {
     : overflowCount === 0
       ? voters
       : voters.slice(0, overflowThreshold)
+
+  // Todo: Avatars and overflow badge transition in and out
+  //       See `NewMeetingAvatarGroup.tsx` and use a similar approach
+
+  // Todo: Animate avatars into their place in the row
+  //       - Compare the y coordinate and the index of
+  //       the pre-revealed row of voters with the revealed row of voters
+  //       - Transition the x position of the avatar from the difference in index * avatar width
+  //       - Transition the y position from the difference in the pre-revealed and revealed row
+
   return (
     <Wrapper ref={rowRef}>
       {visibleVoters.map((voter, idx) => (
