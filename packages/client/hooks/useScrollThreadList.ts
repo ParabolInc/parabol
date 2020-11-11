@@ -14,8 +14,8 @@ const useScrollThreadList = (
   // then scroll to the bottom whenever threadables changes
   const oldScrollHeightRef = useRef(0)
 
-  const {current: el} = wrapperRef
   useLayoutEffect(() => {
+    const {current: el} = wrapperRef
     if (!el) return
 
     const {scrollTop, scrollHeight, clientHeight} = el
