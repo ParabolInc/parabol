@@ -130,6 +130,7 @@
     "rethinkdbdash": "^2.3.31",
     "samlify": "^2.6.1",
     "secure-compare": "^3.0.1",
+    "sharp": "^0.26.2",
     "shortid": "2.2.15",
     "string-similarity": "^3.0.0",
     "stripe": "^4.24.0",
