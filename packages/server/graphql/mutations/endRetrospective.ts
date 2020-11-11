@@ -1,6 +1,6 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import {NewMeetingPhaseTypeEnum, SuggestedActionTypeEnum} from 'parabol-client/types/graphql'
+import {MeetingMember, SuggestedActionTypeEnum} from 'parabol-client/types/graphql'
 import {DISCUSS} from 'parabol-client/utils/constants'
 import getMeetingPhase from 'parabol-client/utils/getMeetingPhase'
 import findStageById from 'parabol-client/utils/meetings/findStageById'
@@ -10,10 +10,10 @@ import TimelineEventRetroComplete from '../../database/types/TimelineEventRetroC
 import removeSuggestedAction from '../../safeMutations/removeSuggestedAction'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
-import segmentIo from '../../utils/segmentIo'
 import standardError from '../../utils/standardError'
 import {DataLoaderWorker, GQLContext} from '../graphql'
 import EndRetrospectivePayload from '../types/EndRetrospectivePayload'
+import sendMeetingEndToSegment from './helpers/endMeeting/sendMeetingEndToSegment'
 import sendNewMeetingSummary from './helpers/endMeeting/sendNewMeetingSummary'
 import {endSlackMeeting} from './helpers/notifySlack'
 import removeEmptyTasks from './helpers/removeEmptyTasks'
@@ -75,7 +75,7 @@ export default {
       .default(null)
       .run()) as MeetingRetrospective | null
     if (!meeting) return standardError(new Error('Meeting not found'), {userId: viewerId})
-    const {endedAt, facilitatorStageId, meetingNumber, phases, teamId, meetingType} = meeting
+    const {endedAt, facilitatorStageId, phases, teamId} = meeting
 
     // VALIDATION
     if (!isTeamMember(authToken, teamId) && authToken.rol !== 'su') {
@@ -103,43 +103,31 @@ export default {
         },
         {returnChanges: true}
       )('changes')(0)('new_val')
+      .default(null)
       .run()) as unknown) as MeetingRetrospective
 
-    // remove any empty tasks
-    const removedTaskIds = await removeEmptyTasks(meetingId)
+    if (!completedRetrospective) {
+      return standardError(new Error('Completed check-in meeting does not exist'), {
+        userId: viewerId
+      })
+    }
 
-    const [meetingMembers, team] = await Promise.all([
+    // remove any empty tasks
+    const {templateId} = completedRetrospective
+    const [meetingMembers, team, removedTaskIds, template] = await Promise.all([
       dataLoader.get('meetingMembersByMeetingId').load(meetingId),
-      dataLoader.get('teams').load(teamId)
+      dataLoader.get('teams').load(teamId),
+      removeEmptyTasks(meetingId),
+      dataLoader.get('meetingTemplates').load(templateId)
     ])
-    const presentMembers = meetingMembers.filter(
-      (meetingMember) => meetingMember.isCheckedIn === true
-    )
-    const presentMemberUserIds = presentMembers.map(({userId}) => userId)
     endSlackMeeting(meetingId, teamId, dataLoader).catch(console.log)
     finishRetroMeeting(completedRetrospective, dataLoader)
-    const {facilitatorUserId, templateId} = completedRetrospective
-    const template = await dataLoader.get('meetingTemplates').load(templateId)
     const {name: meetingTemplateName} = template
-    presentMemberUserIds.forEach((userId) => {
-      const wasFacilitator = userId === facilitatorUserId
-      segmentIo.track({
-        userId,
-        event: 'Meeting Completed',
-        properties: {
-          hasIcebreaker: phases[0].phaseType === NewMeetingPhaseTypeEnum.checkin,
-          // include wasFacilitator as a flag to handle 1 per meeting
-          wasFacilitator,
-          userIds: wasFacilitator ? presentMemberUserIds : undefined,
-          meetingType,
-          meetingTemplateName,
-          meetingNumber,
-          teamMembersCount: meetingMembers.length,
-          teamMembersPresentCount: presentMembers.length,
-          teamId
-        }
-      })
-    })
+    sendMeetingEndToSegment(
+      completedRetrospective,
+      meetingMembers as MeetingMember[],
+      meetingTemplateName
+    )
     sendNewMeetingSummary(completedRetrospective, context).catch(console.log)
     const events = meetingMembers.map(
       (meetingMember) =>
@@ -181,7 +169,7 @@ export default {
     const data = {
       meetingId,
       teamId,
-      isKill: ![DISCUSS].includes(phase.phaseType),
+      isKill: phase.phaseType !== DISCUSS,
       removedTaskIds,
       timelineEventId
     }

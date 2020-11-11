@@ -3,7 +3,6 @@ import {commitMutation} from 'react-relay'
 import onMeetingRoute from '~/utils/onMeetingRoute'
 import {EndCheckInMutation_notification} from '~/__generated__/EndCheckInMutation_notification.graphql'
 import {EndCheckInMutation_team} from '~/__generated__/EndCheckInMutation_team.graphql'
-import Atmosphere from '../Atmosphere'
 import {
   HistoryMaybeLocalHandler,
   OnNextHandler,
@@ -17,6 +16,7 @@ import handleRemoveTasks from './handlers/handleRemoveTasks'
 import handleUpsertTasks from './handlers/handleUpsertTasks'
 import handleAddTimelineEvent from './handlers/handleAddTimelineEvent'
 import {RecordProxy} from 'relay-runtime'
+import popEndMeetingToast from './toasts/popEndMeetingToast'
 
 graphql`
   fragment EndCheckInMutation_team on EndCheckInSuccess {
@@ -25,11 +25,9 @@ graphql`
       id
       endedAt
       teamId
-      ... on ActionMeeting {
-        agendaItemCount
-        commentCount
-        taskCount
-      }
+      agendaItemCount
+      commentCount
+      taskCount
     }
     removedTaskIds
     team {
@@ -82,15 +80,6 @@ const mutation = graphql`
     }
   }
 `
-
-const popEndCheckInToast = (atmosphere: Atmosphere, meetingId: string) => {
-  atmosphere.eventEmitter.emit('addSnackbar', {
-    key: `meetingKilled:${meetingId}`,
-    autoDismiss: 5,
-    message: `The meeting has been terminated`
-  })
-}
-
 export const endCheckInTeamOnNext: OnNextHandler<EndCheckInMutation_team, OnNextHistoryContext> = (
   payload,
   context
@@ -102,7 +91,7 @@ export const endCheckInTeamOnNext: OnNextHandler<EndCheckInMutation_team, OnNext
   if (onMeetingRoute(window.location.pathname, [meetingId])) {
     if (isKill) {
       history.push(`/team/${teamId}`)
-      popEndCheckInToast(atmosphere, meetingId)
+      popEndMeetingToast(atmosphere, meetingId)
     } else {
       history.push(`/new-summary/${meetingId}`)
     }

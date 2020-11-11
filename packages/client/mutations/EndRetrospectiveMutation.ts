@@ -3,7 +3,6 @@ import {commitMutation} from 'react-relay'
 import onMeetingRoute from '~/utils/onMeetingRoute'
 import {EndRetrospectiveMutation_notification} from '~/__generated__/EndRetrospectiveMutation_notification.graphql'
 import {EndRetrospectiveMutation_team} from '~/__generated__/EndRetrospectiveMutation_team.graphql'
-import Atmosphere from '../Atmosphere'
 import {RetroDemo} from '../types/constEnums'
 import {
   HistoryMaybeLocalHandler,
@@ -16,6 +15,7 @@ import {EndRetrospectiveMutation as TEndRetrospectiveMutation} from '../__genera
 import handleRemoveSuggestedActions from './handlers/handleRemoveSuggestedActions'
 import handleAddTimelineEvent from './handlers/handleAddTimelineEvent'
 import {RecordProxy} from 'relay-runtime'
+import popEndMeetingToast from './toasts/popEndMeetingToast'
 
 graphql`
   fragment EndRetrospectiveMutation_team on EndRetrospectiveSuccess {
@@ -24,12 +24,10 @@ graphql`
       id
       endedAt
       teamId
-      ... on RetrospectiveMeeting {
-        commentCount
-        reflectionCount
-        taskCount
-        topicCount
-      }
+      commentCount
+      reflectionCount
+      taskCount
+      topicCount
     }
     team {
       id
@@ -68,14 +66,6 @@ const mutation = graphql`
   }
 `
 
-const popEndRetrospectiveToast = (atmosphere: Atmosphere, meetingId: string) => {
-  atmosphere.eventEmitter.emit('addSnackbar', {
-    key: `meetingKilled:${meetingId}`,
-    autoDismiss: 5,
-    message: `The meeting has been terminated`
-  })
-}
-
 export const endRetrospectiveTeamOnNext: OnNextHandler<
   EndRetrospectiveMutation_team,
   OnNextHistoryContext
@@ -94,7 +84,7 @@ export const endRetrospectiveTeamOnNext: OnNextHandler<
   } else if (onMeetingRoute(window.location.pathname, [meetingId])) {
     if (isKill) {
       history.push(`/team/${teamId}`)
-      popEndRetrospectiveToast(atmosphere, meetingId)
+      popEndMeetingToast(atmosphere, meetingId)
     } else {
       history.push(`/new-summary/${meetingId}`)
     }

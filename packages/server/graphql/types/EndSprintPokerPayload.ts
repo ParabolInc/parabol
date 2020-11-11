@@ -8,7 +8,7 @@ export const EndSprintPokerSuccess = new GraphQLObjectType<any, GQLContext>({
   name: 'EndSprintPokerSuccess',
   fields: () => ({
     isKill: {
-      type: GraphQLBoolean,
+      type: GraphQLNonNull(GraphQLBoolean),
       description: 'true if the meeting was killed (ended before reaching last stage)'
     },
     meetingId: {

@@ -10,7 +10,7 @@ export const EndRetrospectiveSuccess = new GraphQLObjectType<any, GQLContext>({
   name: 'EndRetrospectiveSuccess',
   fields: () => ({
     isKill: {
-      type: GraphQLBoolean,
+      type: GraphQLNonNull(GraphQLBoolean),
       description: 'true if the meeting was killed (ended before reaching last stage)'
     },
     team: {

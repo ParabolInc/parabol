@@ -9183,7 +9183,7 @@ export interface IEndSprintPokerSuccess {
   /**
    * true if the meeting was killed (ended before reaching last stage)
    */
-  isKill: boolean | null;
+  isKill: boolean;
   meetingId: string;
   meeting: IPokerMeeting;
   removedTaskIds: Array<string>;
@@ -9230,7 +9230,7 @@ export interface IEndCheckInSuccess {
   /**
    * true if the meeting was killed (ended before reaching last stage)
    */
-  isKill: boolean | null;
+  isKill: boolean;
   team: ITeam;
   meeting: IActionMeeting;
 
@@ -9391,7 +9391,7 @@ export interface IEndRetrospectiveSuccess {
   /**
    * true if the meeting was killed (ended before reaching last stage)
    */
-  isKill: boolean | null;
+  isKill: boolean;
   team: ITeam;
   meeting: IRetrospectiveMeeting;
 
