@@ -20,7 +20,7 @@ graphql`
 `
 
 const mutation = graphql`
-  mutation AddPokerTemplateScaleMutation($parentScaleId: ID!, $teamId: ID!) {
+  mutation AddPokerTemplateScaleMutation($parentScaleId: ID, $teamId: ID!) {
     addPokerTemplateScale(parentScaleId: $parentScaleId, teamId: $teamId) {
       ...AddPokerTemplateScaleMutation_scale @relay(mask: false)
     }

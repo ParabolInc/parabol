@@ -6,6 +6,7 @@ import textOverflow from '~/styles/helpers/textOverflow'
 import {PALETTE} from '~/styles/paletteV2'
 import {FONT_FAMILY} from '~/styles/typographyV2'
 import {PokerCards} from '../../../types/constEnums'
+import {MenuProps} from '../../../hooks/useMenu'
 import {ScaleDropdownMenuItem_dimension} from '../../../__generated__/ScaleDropdownMenuItem_dimension.graphql'
 import {ScaleDropdownMenuItem_scale} from '../../../__generated__/ScaleDropdownMenuItem_scale.graphql'
 import CloneScale from './CloneScale'
@@ -13,6 +14,7 @@ import CloneScale from './CloneScale'
 interface Props {
   scale: ScaleDropdownMenuItem_scale
   dimension: ScaleDropdownMenuItem_dimension
+  menuProps: MenuProps
 }
 
 const ScaleDetails = styled('div')({
@@ -55,7 +57,7 @@ const CloneScaleButton = styled('div')({
 })
 
 const ScaleDropdownMenuItem = (props: Props) => {
-  const {scale, dimension} = props
+  const {scale, dimension, menuProps} = props
   const {values} = scale
   const availableScalesCount = dimension.availableScales.length
   return (
@@ -74,7 +76,7 @@ const ScaleDropdownMenuItem = (props: Props) => {
         </ScaleValues>
       </ScaleNameAndValues>
       <CloneScaleButton>
-        <CloneScale scaleId={scale.id} scaleCount={availableScalesCount} teamId={"aDw6KWqar"} />
+        <CloneScale scaleId={scale.id} scaleCount={availableScalesCount} teamId={"aDw6KWqar"} menuProps={menuProps} />
       </CloneScaleButton>
     </ScaleDetails>
   )
