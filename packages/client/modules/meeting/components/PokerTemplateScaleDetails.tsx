@@ -1,7 +1,13 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
+import FlatButton from '../../../components/FlatButton'
+import Icon from '../../../components/Icon'
+import MenuItemHR from '../../../components/MenuItemHR'
+import useAtmosphere from '../../../hooks/useAtmosphere'
+import {PALETTE} from '../../../styles/paletteV2'
+import {FONT_FAMILY} from '../../../styles/typographyV2'
 import {PokerTemplateScaleDetails_viewer} from '../../../__generated__/PokerTemplateScaleDetails_viewer.graphql'
 import AddPokerTemplateScaleValue from './AddPokerTemplateScaleValue'
 import EditableTemplateScaleName from './EditableTemplateScaleName'
@@ -14,6 +20,26 @@ const ScaleHeader = styled('div')({
   paddingLeft: 56,
   paddingRight: 16,
   width: '100%'
+})
+
+const IconButton = styled(FlatButton)({
+  color: PALETTE.TEXT_GRAY,
+  height: 24,
+  width: 24,
+  ':hover, :focus, :active': {
+    color: PALETTE.TEXT_MAIN
+  }
+})
+
+const BackIcon = styled(Icon)({
+  color: 'inherit'
+})
+
+const ScaleDetailHeader = styled('div')({
+  display: 'flex',
+  flexDirection: 'row',
+  alignItems: 'flex-start',
+  padding: '16px'
 })
 
 const ScaleValueEditor = styled('div')({
@@ -40,6 +66,18 @@ const Scrollable = styled('div')({
   width: '100%'
 })
 
+const ScaleDetailsTitle = styled('div')({
+  fontFamily: FONT_FAMILY.SANS_SERIF,
+  fontSize: 16,
+  fontWeight: 600,
+  lineHeight: '24px',
+  paddingLeft: '16px'
+})
+
+const HR = styled(MenuItemHR)({
+  width: '100%'
+})
+
 interface Props {
   gotoTeamTemplates: () => void
   gotoPublicTemplates: () => void
@@ -52,9 +90,24 @@ const PokerTemplateScaleDetails = (props: Props) => {
   const {scales} = team
   const scale = team.scale!
   const isOwner = scale.teamId === team!.id
+  const atmosphere = useAtmosphere()
+
+  const gotoTemplateDetail = () => {
+    commitLocalUpdate(atmosphere, (store) => {
+      store.get(team.id)?.setValue(null, 'editingScaleId')
+    })
+  }
+
   return (
     <ScaleValueEditor>
       <Scrollable>
+        <ScaleDetailHeader onClick={gotoTemplateDetail}>
+          <IconButton aria-label='Back to Template' onClick={gotoTemplateDetail}>
+            <BackIcon>arrow_back</BackIcon>
+          </IconButton>
+          <ScaleDetailsTitle>{'Edit Scale'}</ScaleDetailsTitle>
+        </ScaleDetailHeader>
+        <HR />
         <ScaleHeader>
           <FirstLine>
             <EditableTemplateScaleName
