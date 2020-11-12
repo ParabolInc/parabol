@@ -39,12 +39,12 @@ const SelectScaleDropdown = (props: Props) => {
   const {scales} = team
   const defaultActiveIdx = useMemo(() => scales.findIndex(({id}) => id === dimension.selectedScale.id), [dimension])
 
-  const {submitting} = useMutationProps()
+  const atmosphere = useAtmosphere()
+  const {onError, onCompleted, submitting, submitMutation} = useMutationProps()
+
   const addScale = () => {
     const {menuProps} = props
     const {closePortal} = menuProps
-    const atmosphere = useAtmosphere()
-    const {onError, onCompleted, submitting, submitMutation} = useMutationProps()
     if (submitting) return
     submitMutation()
     AddPokerTemplateScaleMutation(
