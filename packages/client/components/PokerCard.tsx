@@ -3,8 +3,8 @@ import React, {RefObject, useEffect, useRef} from 'react'
 import usePokerZIndexOverride from '../hooks/usePokerZIndexOverride'
 import logoMarkWhite from '../styles/theme/images/brand/mark-white.svg'
 import {BezierCurve, PokerCards} from '../types/constEnums'
-import getColorLuminance from '../utils/getColorLuminance'
 import getBezierTimePercentGivenDistancePercent from '../utils/getBezierTimePercentGivenDistancePercent'
+import getColorLuminance from '../utils/getColorLuminance'
 
 const getCollapsedX = () => window.innerWidth - PokerCards.WIDTH - 16
 const COLLAPSE_DUR = 1000
@@ -51,6 +51,17 @@ interface CardBaseProps {
   isSelected: boolean,
   totalCards: number
 }
+
+// const getRotation = (totalCards: number, idx: number) => {
+//   const totalSteps = Math.floor(totalCards / 2)
+//   const stepIdx = idx < totalSteps ? idx : totalSteps - (idx - totalSteps)
+//   const values = [2, 5, 9, 14, 20, 27, 35]
+//   const slicedVals = values.slice(0, totalSteps).reverse()
+//   const val = slicedVals[stepIdx]
+//   const res = idx < totalSteps ? -val : val
+//   console.log('res', {res, idx, stepIdx})
+//   return res
+// }
 const CardBase = styled('div')<CardBaseProps>(({cardRef, color, idx, isCollapsed, isSelected, totalCards, delay}) => ({
   background: `radial-gradient(50% 50% at 50% 50%, ${color} 0%, ${getColorLuminance(color, -.12)} 100%)`,
   borderRadius: 6,
@@ -89,17 +100,20 @@ interface Props {
   isCollapsed: boolean
   isSelected: boolean
   onClick: () => void
+  onMouseEnter: () => void
+  onMouseLeave: () => void
   totalCards: number
 }
 
 
 const PokerCard = (props: Props) => {
-  const {card, idx, isCollapsed, isSelected, onClick, totalCards, deckRef} = props
+  const {card, idx, isCollapsed, isSelected, onClick, totalCards, deckRef, onMouseEnter, onMouseLeave} = props
   const {color, label} = card
   const wasCollapsedRef = useRef(isCollapsed)
   const cardRef = useRef<HTMLDivElement>(null)
   const isMoving = wasCollapsedRef.current !== isCollapsed
   const isExpanding = isMoving && !isCollapsed
+
   useEffect(() => {
     wasCollapsedRef.current = isCollapsed
   }, [isCollapsed])
@@ -107,7 +121,7 @@ const PokerCard = (props: Props) => {
   const delay = getShuffleToTopDelay(ref, deckRef, isMoving, isSelected, idx, totalCards)
   usePokerZIndexOverride(delay, cardRef, isExpanding, COLLAPSE_DUR)
   return (
-    <CardBase ref={cardRef} delay={delay} cardRef={ref} color={color} idx={idx} isCollapsed={isCollapsed} isSelected={isSelected} totalCards={totalCards} onClick={onClick}>
+    <CardBase ref={cardRef} delay={delay} cardRef={ref} color={color} idx={idx} isCollapsed={isCollapsed} isSelected={isSelected} totalCards={totalCards} onClick={onClick} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
       <UpperLeftCardValue>{label}</UpperLeftCardValue>
       <Logo src={logoMarkWhite} />
     </CardBase>

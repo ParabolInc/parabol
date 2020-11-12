@@ -36,7 +36,7 @@ const PokerEstimatePhase = (props: Props) => {
         </MeetingTopBar>
         {__typename === 'JiraIssue' && <PokerEstimateHeaderCardJira stage={localStage as any} />}
         <PhaseWrapper>
-          <EstimatePhaseArea />
+          <EstimatePhaseArea meeting={meeting} />
         </PhaseWrapper>
       </MeetingHeaderAndPhase>
     </MeetingContent>
@@ -56,6 +56,7 @@ export default createFragmentContainer(
   {
     meeting: graphql`
     fragment PokerEstimatePhase_meeting on PokerMeeting {
+      ...EstimatePhaseArea_meeting
       id
       endedAt
       showSidebar
