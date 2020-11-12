@@ -2,7 +2,6 @@ import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
 import onMeetingRoute from '~/utils/onMeetingRoute'
 import {EndSprintPokerMutation_team} from '~/__generated__/EndSprintPokerMutation_team.graphql'
-import Atmosphere from '../Atmosphere'
 import {
   HistoryMaybeLocalHandler,
   OnNextHandler,
@@ -12,6 +11,7 @@ import {
 } from '../types/relayMutations'
 import {EndSprintPokerMutation as TEndSprintPokerMutation} from '../__generated__/EndSprintPokerMutation.graphql'
 import handleRemoveTasks from './handlers/handleRemoveTasks'
+import popEndMeetingToast from './toasts/popEndMeetingToast'
 
 graphql`
   fragment EndSprintPokerMutation_team on EndSprintPokerSuccess {
@@ -44,14 +44,6 @@ const mutation = graphql`
   }
 `
 
-const popEndSprintPokerToast = (atmosphere: Atmosphere, meetingId: string) => {
-  atmosphere.eventEmitter.emit('addSnackbar', {
-    key: `meetingKilled:${meetingId}`,
-    autoDismiss: 5,
-    message: `The meeting has been terminated`
-  })
-}
-
 export const endSprintPokerTeamOnNext: OnNextHandler<
   EndSprintPokerMutation_team,
   OnNextHistoryContext
@@ -63,7 +55,7 @@ export const endSprintPokerTeamOnNext: OnNextHandler<
   if (onMeetingRoute(window.location.pathname, [meetingId])) {
     if (isKill) {
       history.push(`/team/${teamId}`)
-      popEndSprintPokerToast(atmosphere, meetingId)
+      popEndMeetingToast(atmosphere, meetingId)
     } else {
       history.push(`/new-summary/${meetingId}`)
     }
@@ -78,11 +70,10 @@ export const endSprintPokerTeamUpdater: SharedUpdater<EndSprintPokerMutation_tea
   handleRemoveTasks(removedTaskIds as any, store)
 }
 
-const EndSprintPokerMutation: StandardMutation<TEndSprintPokerMutation, HistoryMaybeLocalHandler> = (
-  atmosphere,
-  variables,
-  {onError, onCompleted, history}
-) => {
+const EndSprintPokerMutation: StandardMutation<
+  TEndSprintPokerMutation,
+  HistoryMaybeLocalHandler
+> = (atmosphere, variables, {onError, onCompleted, history}) => {
   return commitMutation<TEndSprintPokerMutation>(atmosphere, {
     mutation,
     variables,

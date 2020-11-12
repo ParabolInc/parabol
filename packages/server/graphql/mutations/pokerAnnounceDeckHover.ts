@@ -86,7 +86,7 @@ const pokerAnnounceDeckHover = {
       }
     }
 
-    const data = {meetingId, stageId}
+    const data = {meetingId, stageId, userId: viewerId, isHover}
     publish(
       SubscriptionChannel.MEETING,
       meetingId,

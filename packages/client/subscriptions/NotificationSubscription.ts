@@ -3,6 +3,8 @@ import {RouterProps} from 'react-router'
 import {requestSubscription, Variables} from 'relay-runtime'
 import {RecordSourceSelectorProxy} from 'relay-runtime/lib/store/RelayStoreTypes'
 import {archiveTimelineEventNotificationUpdater} from '~/mutations/ArchiveTimelineEventMutation'
+import {endCheckInNotificationUpdater} from '~/mutations/EndCheckInMutation'
+import {endRetrospectiveNotificationUpdater} from '~/mutations/EndRetrospectiveMutation'
 import {InvalidateSessionsMutation_notification} from '~/__generated__/InvalidateSessionsMutation_notification.graphql'
 import {NotificationSubscription_meetingStageTimeLimitEnd} from '~/__generated__/NotificationSubscription_meetingStageTimeLimitEnd.graphql'
 import {NotificationSubscription_paymentRejected} from '~/__generated__/NotificationSubscription_paymentRejected.graphql'
@@ -66,7 +68,9 @@ const subscription = graphql`
       ...ArchiveTimelineEventMutation_notification @relay(mask: false)
       ...SetNotificationStatusMutation_notification @relay(mask: false)
       ...CreateTaskMutation_notification @relay(mask: false)
+      ...EndCheckInMutation_notification @relay(mask: false)
       ...EndNewMeetingMutation_notification @relay(mask: false)
+      ...EndRetrospectiveMutation_notification @relay(mask: false)
       ...InviteToTeamMutation_notification @relay(mask: false)
       ...RemoveOrgUserMutation_notification @relay(mask: false)
       ...InvalidateSessionsMutation_notification @relay(mask: false)
@@ -249,8 +253,14 @@ const NotificationSubscription = (
           break
         case 'DisconnectSocketPayload':
           break
+        case 'EndCheckInSuccess':
+          endCheckInNotificationUpdater(payload, context)
+          break
         case 'EndNewMeetingPayload':
           endNewMeetingNotificationUpdater(payload, context)
+          break
+        case 'EndRetrospectiveSuccess':
+          endRetrospectiveNotificationUpdater(payload, context)
           break
         case 'InviteToTeamPayload':
           inviteToTeamNotificationUpdater(payload, context)

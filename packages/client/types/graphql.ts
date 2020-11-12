@@ -6723,14 +6723,25 @@ export interface IMutation {
   editTask: IEditTaskPayload | null;
 
   /**
+   * Finish a check-in meeting
+   */
+  endCheckIn: EndCheckInPayload;
+
+  /**
    * Broadcast that the viewer stopped dragging a reflection
    */
   endDraggingReflection: IEndDraggingReflectionPayload | null;
 
   /**
    * Finish a new meeting
+   * @deprecated "Using more specfic end[meetingType] instead"
    */
   endNewMeeting: IEndNewMeetingPayload;
+
+  /**
+   * Finish a retrospective meeting
+   */
+  endRetrospective: EndRetrospectivePayload;
 
   /**
    * flag a viewer as ready to advance to the next stage of a meeting
@@ -6973,7 +6984,18 @@ export interface IMutation {
   /**
    * Start a new meeting
    */
+  startCheckIn: StartCheckInPayload;
+
+  /**
+   * Start a new meeting
+   * @deprecated "Using more specfic start[meetingType] instead"
+   */
   startNewMeeting: IStartNewMeetingPayload;
+
+  /**
+   * Start a new meeting
+   */
+  startRetrospective: StartRetrospectivePayload;
 
   /**
    * Start a new sprint poker meeting
@@ -7490,6 +7512,13 @@ export interface IEditTaskOnMutationArguments {
   isEditing: boolean;
 }
 
+export interface IEndCheckInOnMutationArguments {
+  /**
+   * The meeting to end
+   */
+  meetingId: string;
+}
+
 export interface IEndDraggingReflectionOnMutationArguments {
   reflectionId: string;
 
@@ -7510,6 +7539,13 @@ export interface IEndDraggingReflectionOnMutationArguments {
 }
 
 export interface IEndNewMeetingOnMutationArguments {
+  /**
+   * The meeting to end
+   */
+  meetingId: string;
+}
+
+export interface IEndRetrospectiveOnMutationArguments {
   /**
    * The meeting to end
    */
@@ -7932,6 +7968,13 @@ export interface IStartDraggingReflectionOnMutationArguments {
   dragId: string;
 }
 
+export interface IStartCheckInOnMutationArguments {
+  /**
+   * The team starting the meeting
+   */
+  teamId: string;
+}
+
 export interface IStartNewMeetingOnMutationArguments {
   /**
    * The team starting the meeting
@@ -7942,6 +7985,13 @@ export interface IStartNewMeetingOnMutationArguments {
    * The base type of the meeting (action, retro, etc)
    */
   meetingType: MeetingTypeEnum;
+}
+
+export interface IStartRetrospectiveOnMutationArguments {
+  /**
+   * The team starting the meeting
+   */
+  teamId: string;
 }
 
 export interface IStartSprintPokerOnMutationArguments {
@@ -9133,7 +9183,7 @@ export interface IEndSprintPokerSuccess {
   /**
    * true if the meeting was killed (ended before reaching last stage)
    */
-  isKill: boolean | null;
+  isKill: boolean;
   meetingId: string;
   meeting: IPokerMeeting;
   removedTaskIds: Array<string>;
@@ -9167,6 +9217,39 @@ export interface IEditTaskPayload {
    * true if the editor is editing, false if they stopped editing
    */
   isEditing: boolean | null;
+}
+
+/**
+ * Return object for EndCheckInPayload
+ */
+export type EndCheckInPayload = IErrorPayload | IEndCheckInSuccess;
+
+export interface IEndCheckInSuccess {
+  __typename: 'EndCheckInSuccess';
+
+  /**
+   * true if the meeting was killed (ended before reaching last stage)
+   */
+  isKill: boolean;
+  team: ITeam;
+  meeting: IActionMeeting;
+
+  /**
+   * The ID of the suggestion to try a check-in meeting, if tried
+   */
+  removedSuggestedActionId: string | null;
+  removedTaskIds: Array<string> | null;
+
+  /**
+   * An event that is important to the viewer, e.g. an ended meeting
+   */
+  timelineEvent: TimelineEvent;
+  updatedTaskIds: Array<string> | null;
+
+  /**
+   * Any tasks that were updated during the meeting
+   */
+  updatedTasks: Array<ITask> | null;
 }
 
 export interface IEndDraggingReflectionPayload {
@@ -9295,6 +9378,33 @@ export interface IEndNewMeetingPayload {
    * Any tasks that were updated during the meeting
    */
   updatedTasks: Array<ITask> | null;
+}
+
+/**
+ * Return object for EndRetrospectivePayload
+ */
+export type EndRetrospectivePayload = IErrorPayload | IEndRetrospectiveSuccess;
+
+export interface IEndRetrospectiveSuccess {
+  __typename: 'EndRetrospectiveSuccess';
+
+  /**
+   * true if the meeting was killed (ended before reaching last stage)
+   */
+  isKill: boolean;
+  team: ITeam;
+  meeting: IRetrospectiveMeeting;
+
+  /**
+   * The ID of the suggestion to try a retro meeting, if tried
+   */
+  removedSuggestedActionId: string | null;
+  removedTaskIds: Array<string>;
+
+  /**
+   * An event that is important to the viewer, e.g. an ended meeting
+   */
+  timelineEvent: TimelineEvent;
 }
 
 /**
@@ -10030,12 +10140,38 @@ export interface IStartDraggingReflectionPayload {
   teamId: string | null;
 }
 
+/**
+ * Return object for StartCheckInPayload
+ */
+export type StartCheckInPayload = IErrorPayload | IStartCheckInSuccess;
+
+export interface IStartCheckInSuccess {
+  __typename: 'StartCheckInSuccess';
+  meeting: IActionMeeting;
+  meetingId: string;
+  team: ITeam;
+}
+
 export interface IStartNewMeetingPayload {
   __typename: 'StartNewMeetingPayload';
   error: IStandardMutationError | null;
   team: ITeam | null;
   meetingId: string | null;
   meeting: NewMeeting | null;
+}
+
+/**
+ * Return object for StartRetrospectivePayload
+ */
+export type StartRetrospectivePayload =
+  | IErrorPayload
+  | IStartRetrospectiveSuccess;
+
+export interface IStartRetrospectiveSuccess {
+  __typename: 'StartRetrospectiveSuccess';
+  meeting: IRetrospectiveMeeting;
+  meetingId: string;
+  team: ITeam;
 }
 
 /**
@@ -10499,6 +10635,11 @@ export type PokerAnnounceDeckHoverPayload =
 
 export interface IPokerAnnounceDeckHoverSuccess {
   __typename: 'PokerAnnounceDeckHoverSuccess';
+  meetingId: string;
+  stageId: string;
+  userId: string;
+  user: IUser;
+  isHover: boolean;
 
   /**
    * The stage that holds the updated scores
@@ -10592,7 +10733,9 @@ export type NotificationSubscriptionPayload =
   | ICreateTaskPayload
   | IDeleteTaskPayload
   | IDisconnectSocketPayload
+  | IEndCheckInSuccess
   | IEndNewMeetingPayload
+  | IEndRetrospectiveSuccess
   | IInvalidateSessionsPayload
   | IInviteToTeamPayload
   | IMeetingStageTimeLimitPayload
@@ -10773,7 +10916,9 @@ export type TeamSubscriptionPayload =
   | IArchiveTeamPayload
   | IDenyPushInvitationPayload
   | IDowngradeToPersonalPayload
+  | IEndCheckInSuccess
   | IEndNewMeetingPayload
+  | IEndRetrospectiveSuccess
   | IEndSprintPokerSuccess
   | INavigateMeetingPayload
   | IPushInvitationPayload
@@ -10783,7 +10928,9 @@ export type TeamSubscriptionPayload =
   | IRemoveTeamMemberPayload
   | IRenameMeetingSuccess
   | ISelectRetroTemplatePayload
+  | IStartCheckInSuccess
   | IStartNewMeetingPayload
+  | IStartRetrospectiveSuccess
   | IStartSprintPokerSuccess
   | IUpdateAgendaItemPayload
   | IUpdateCreditCardPayload
