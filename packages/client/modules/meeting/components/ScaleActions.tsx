@@ -7,6 +7,7 @@ import AddPokerTemplateScaleMutation from '../../../mutations/AddPokerTemplateSc
 import {MenuProps} from '../../../hooks/useMenu'
 import RemovePokerTemplateScaleMutation from '../../../mutations/RemovePokerTemplateScaleMutation'
 import styled from '@emotion/styled'
+import {commitLocalUpdate} from 'react-relay'
 
 const CloneAndDelete = styled('div')({
   display: 'flex',
@@ -38,8 +39,14 @@ const ScaleActions = (props: Props) => {
   const deleteTooltip = canDelete ? 'Delete scale' : 'Sorry you cannot delete a default scale'
   const cloneScale = () => {
     if (submitting || !canClone) return
-    submitMutation()
-    AddPokerTemplateScaleMutation(atmosphere, {parentScaleId: scaleId, teamId}, {onError, onCompleted})
+    if (isStarter) {
+      submitMutation()
+      AddPokerTemplateScaleMutation(atmosphere, {parentScaleId: scaleId, teamId}, {onError, onCompleted})
+    } else {
+      commitLocalUpdate(atmosphere, (store) => {
+        store.get(teamId)?.setValue(scaleId, 'editingScaleId')
+      })
+    }
     closePortal()
   }
   const deleteScale = () => {

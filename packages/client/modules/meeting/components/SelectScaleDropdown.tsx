@@ -62,7 +62,7 @@ const SelectScaleDropdown = (props: Props) => {
     <Menu ariaLabel={'Select the scale for this dimension'} {...menuProps} defaultActiveIdx={defaultActiveIdx}>
       {scales
         .map((scale) => (
-          <ScaleDropdownMenuItem scale={scale} dimension={dimension} menuProps={menuProps} />
+          <ScaleDropdownMenuItem key={scale.id} scale={scale} dimension={dimension} menuProps={menuProps} />
         ))
       }
       <MenuItemHR key='HR1' />
