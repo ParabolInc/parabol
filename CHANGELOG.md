@@ -15,6 +15,7 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
 - Sprint Poker estimate stage display in sidebar #4318
 - Refactor atlassian jira auth #4312
+- Increased invitation expiration time to 30 days #4335
 
 ### Fixed
 
