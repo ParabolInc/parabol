@@ -1,5 +1,5 @@
 import {RefObject, useEffect} from 'react'
-import {BezierCurve, Breakpoint} from '~/types/constEnums'
+import {BezierCurve, Breakpoint, NavSidebar} from '~/types/constEnums'
 import useResizeObserver from './useResizeObserver'
 
 interface ControlBarCoverable {
@@ -89,7 +89,7 @@ export const cacheCoveringBBox = () => {
   if (covering.el) {
     const coveringBBox = covering.el.getBoundingClientRect()
     const {left, right} = coveringBBox
-    covering.left = left
+    covering.left = left - NavSidebar.WIDTH
     covering.right = right
   }
   return covering

@@ -10,7 +10,7 @@ import useGotoStageId from '~/hooks/useGotoStageId'
 import useInitialRender from '~/hooks/useInitialRender'
 import useTransition, {TransitionStatus} from '~/hooks/useTransition'
 import {PALETTE} from '~/styles/paletteV2'
-import {Breakpoint, ZIndex} from '~/types/constEnums'
+import {Breakpoint, NavSidebar, ZIndex} from '~/types/constEnums'
 import {MeetingTypeEnum, NewMeetingPhaseTypeEnum} from '~/types/graphql'
 import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
 import findStageAfterId from '~/utils/meetings/findStageAfterId'
@@ -37,7 +37,7 @@ const Wrapper = styled('div')({
   fontSize: 14,
   height: 56,
   justifyContent: 'space-between',
-  left: 0,
+  left: NavSidebar.WIDTH,
   margin: '0 auto',
   minHeight: 56,
   padding: 8,
