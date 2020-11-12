@@ -1,11 +1,12 @@
-import {RefObject, useEffect, useRef} from 'react'
+import {RefObject, useEffect, useLayoutEffect, useRef} from 'react'
 import useInitialRender from '~/hooks/useInitialRender'
 
 const useScrollThreadList = (
   threadables: readonly any[],
   editorRef: RefObject<HTMLTextAreaElement>,
   wrapperRef: RefObject<HTMLDivElement>,
-  preferredNames: string[] | null
+  preferredNames: string[] | null,
+  isShowingVideo?: boolean
 ) => {
   const isInit = useInitialRender()
   // if we're at or near the bottom of the scroll container
@@ -13,7 +14,7 @@ const useScrollThreadList = (
   // then scroll to the bottom whenever threadables changes
   const oldScrollHeightRef = useRef(0)
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const {current: el} = wrapperRef
     if (!el) return
 
@@ -29,10 +30,12 @@ const useScrollThreadList = (
     // get the element for the draft-js el or android fallback
     const edEl = (editorRef.current as any)?.editor || editorRef.current
 
-    // if i'm writing something or i'm almost at the bottom, go to the bottom
+    // if i'm writing something or i'm almost at the bottom or i've reduced the
+    // wrapper height, i.e. closed video in poker meeting, go to the bottom
     if (
       document.activeElement === edEl ||
-      scrollTop + clientHeight > oldScrollHeightRef.current - 20
+      scrollTop + clientHeight > oldScrollHeightRef.current - 20 ||
+      isShowingVideo
     ) {
       setTimeout(() => {
         if (el.scrollTo) {
@@ -43,7 +46,7 @@ const useScrollThreadList = (
         // the delay is required for new task cards, not sure why height is determined async
       }, 50)
     }
-  }, [isInit, threadables, preferredNames])
+  }, [isInit, threadables, preferredNames, isShowingVideo])
   useEffect(() => {
     oldScrollHeightRef.current = wrapperRef.current?.scrollHeight ?? 0
   }, [threadables])

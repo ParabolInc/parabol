@@ -3,7 +3,7 @@ import styled from '@emotion/styled'
 import {PALETTE} from '~/styles/paletteV2'
 import SwipeableViews from 'react-swipeable-views'
 import useBreakpoint from '~/hooks/useBreakpoint'
-import {Breakpoint} from '~/types/constEnums'
+import {Breakpoint, DiscussionThreadEnum} from '~/types/constEnums'
 import PokerCardDeck from './PokerCardDeck'
 import DeckActivityAvatars from './DeckActivityAvatars'
 
@@ -14,11 +14,12 @@ const EstimateArea = styled('div')({
   width: '100%'
 })
 
-const StepperDots = styled('div')({
+const StepperDots = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   display: 'flex',
   justifyContent: 'center',
-  padding: '16px 0'
-})
+  padding: '16px 0',
+  width: isDesktop ? `calc(100% - ${DiscussionThreadEnum.WIDTH}px)` : '100%'
+}))
 
 const StepperDot = styled('div')<{isActive: boolean}>(({isActive}) => ({
   backgroundColor: isActive ? PALETTE.STATUS_ACTIVE : PALETTE.TEXT_GRAY,
@@ -56,7 +57,7 @@ const EstimatePhaseArea = () => {
   const [activeIdx, setActiveIdx] = useState(1)
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
 
-  const onChangeIdx = (idx) => {
+  const onChangeIdx = (idx: number) => {
     setActiveIdx(idx)
   }
 
@@ -64,7 +65,7 @@ const EstimatePhaseArea = () => {
 
   return (
     <EstimateArea>
-      <StepperDots>
+      <StepperDots isDesktop={isDesktop}>
         {dummyEstimateItems.map((_, idx) => {
           return <StepperDot key={idx} isActive={idx === activeIdx} />
         })}
@@ -83,7 +84,6 @@ const EstimatePhaseArea = () => {
           <SwipableEstimateItem key={idx} />
         ))}
       </SwipeableViews>
-
     </EstimateArea>
   )
 }

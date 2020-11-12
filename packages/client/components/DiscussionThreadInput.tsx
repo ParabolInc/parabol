@@ -80,7 +80,8 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
 
   const threadSourceByMeetingType = {
     [MeetingTypeEnum.retrospective]: ThreadSourceEnum.REFLECTION_GROUP,
-    [MeetingTypeEnum.action]: ThreadSourceEnum.AGENDA_ITEM
+    [MeetingTypeEnum.action]: ThreadSourceEnum.AGENDA_ITEM,
+    [MeetingTypeEnum.poker]: ThreadSourceEnum.STORY
   }
   const threadSource = threadSourceByMeetingType[meetingType]
 
@@ -126,13 +127,12 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
     const comment = {
       content: rawContent,
       isAnonymous: isAnonymousComment,
-      meetingId,
       threadId: threadSourceId,
       threadParentId,
       threadSource: threadSource,
       threadSortOrder: getMaxSortOrder() + SORT_STEP + dndNoise()
     }
-    AddCommentMutation(atmosphere, {comment}, {onError, onCompleted})
+    AddCommentMutation(atmosphere, {comment, meetingId}, {onError, onCompleted})
     // move focus to end is very important! otherwise ghost chars appear
     setEditorState(
       EditorState.moveFocusToEnd(
@@ -205,17 +205,19 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
         setEditorState={setEditorState}
         teamId={teamId}
       />
-      <CommentSendOrAdd
-        dataCy={`${dataCy}`}
-        getMaxSortOrder={getMaxSortOrder}
-        commentSubmitState={commentSubmitState}
-        meeting={meeting}
-        threadSourceId={threadSourceId}
-        threadParentId={threadParentId}
-        threadSource={threadSource}
-        collapseAddTask={collapseAddTask}
-        onSubmit={onSubmit}
-      />
+      {meetingType !== MeetingTypeEnum.poker && (
+        <CommentSendOrAdd
+          dataCy={`${dataCy}`}
+          getMaxSortOrder={getMaxSortOrder}
+          commentSubmitState={commentSubmitState}
+          meeting={meeting}
+          threadSourceId={threadSourceId}
+          threadParentId={threadParentId}
+          threadSource={threadSource}
+          collapseAddTask={collapseAddTask}
+          onSubmit={onSubmit}
+        />
+      )}
     </Wrapper>
   )
 })
