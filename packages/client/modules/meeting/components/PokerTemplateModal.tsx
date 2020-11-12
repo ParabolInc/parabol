@@ -7,7 +7,6 @@ import getTemplateList from '../../../utils/getTemplateList'
 import {PokerTemplateModal_pokerMeetingSettings} from '../../../__generated__/PokerTemplateModal_pokerMeetingSettings.graphql'
 import PokerTemplateDetails from './PokerTemplateDetails'
 import PokerTemplateList from './PokerTemplateList'
-import SwipeableViews from 'react-swipeable-views'
 import PokerTemplateScaleDetailsRoot from './PokerTemplateScaleDetailsRoot'
 
 interface Props {
@@ -22,13 +21,6 @@ const StyledDialogContainer = styled(DialogContainer)({
 })
 
 const SCOPES = ['TEAM', 'ORGANIZATION', 'PUBLIC']
-const containerStyle = {height: '100%'}
-const innerStyle = {width: '100%', height: '100%'}
-const TabContents = styled('div')({
-  display: 'flex',
-  flexDirection: 'column',
-  height: '100%'
-})
 
 const PokerTemplateModal = (props: Props) => {
   const {pokerMeetingSettings} = props
@@ -52,24 +44,17 @@ const PokerTemplateModal = (props: Props) => {
         setActiveIdx={setActiveIdx}
       />
 
-      <SwipeableViews
-        enableMouseEvents
-        index={editingScaleId ? 1 : 0}
-        containerStyle={containerStyle}
-        style={innerStyle}
-      >
-        <TabContents>
-          <PokerTemplateDetails
-            settings={pokerMeetingSettings}
-            gotoTeamTemplates={gotoTeamTemplates}
-            gotoPublicTemplates={gotoPublicTemplates}
-          />
-        </TabContents>
-        <TabContents>
-          <PokerTemplateScaleDetailsRoot teamId={teamId} scaleId={editingScaleId} isActive={editingScaleId != undefined} />
-        </TabContents>
-      </SwipeableViews>
-
+      {editingScaleId ?
+        <PokerTemplateScaleDetailsRoot
+          teamId={teamId}
+          scaleId={editingScaleId}
+        /> :
+        <PokerTemplateDetails
+          settings={pokerMeetingSettings}
+          gotoTeamTemplates={gotoTeamTemplates}
+          gotoPublicTemplates={gotoPublicTemplates}
+        />
+      }
 
     </StyledDialogContainer >
   )

@@ -14,15 +14,13 @@ const query = graphql`
 `
 
 interface Props {
-  isActive: boolean
   teamId: string
-  scaleId: string | null
+  scaleId: string
 }
 
 const PokerTemplateScaleDetailsRoot = (props: Props) => {
-  const {isActive, teamId, scaleId} = props
+  const {teamId, scaleId} = props
   const atmosphere = useAtmosphere()
-  if (!isActive) return null
   return (
     <QueryRenderer
       environment={atmosphere}

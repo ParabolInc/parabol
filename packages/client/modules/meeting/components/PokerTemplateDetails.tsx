@@ -21,7 +21,8 @@ const TemplateHeader = styled('div')({
   margin: '16px 0',
   paddingLeft: 56,
   paddingRight: 16,
-  width: '100%'
+  width: '100%',
+  flexShrink: 0
 })
 
 const DimensionEditor = styled('div')({
@@ -37,8 +38,9 @@ const DimensionEditor = styled('div')({
 
 const CreateTemplateImg = styled('img')({
   margin: '0 auto',
-  padding: '24px 56px 0',
-  width: 320
+  maxWidth: 360,
+  padding: '16px 0 0',
+  width: '100%'
 })
 
 const Description = styled('div')({
