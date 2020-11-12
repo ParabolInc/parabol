@@ -6,6 +6,7 @@ import FlatButton from '../../../components/FlatButton'
 import Icon from '../../../components/Icon'
 import MenuItemHR from '../../../components/MenuItemHR'
 import useAtmosphere from '../../../hooks/useAtmosphere'
+import textOverflow from '../../../styles/helpers/textOverflow'
 import {PALETTE} from '../../../styles/paletteV2'
 import {FONT_FAMILY} from '../../../styles/typographyV2'
 import {PokerTemplateScaleDetails_viewer} from '../../../__generated__/PokerTemplateScaleDetails_viewer.graphql'
@@ -53,10 +54,10 @@ const ScaleValueEditor = styled('div')({
   width: '100%'
 })
 
-
-const FirstLine = styled('div')({
-  alignItems: 'center',
-  display: 'flex'
+const ScaleNameAndValues = styled('div')({
+  alignItems: 'flex-start',
+  display: 'flex',
+  flexDirection: 'column'
 })
 
 const Scrollable = styled('div')({
@@ -76,6 +77,15 @@ const ScaleDetailsTitle = styled('div')({
 
 const HR = styled(MenuItemHR)({
   width: '100%'
+})
+
+const ScaleValues = styled('div')({
+  ...textOverflow,
+  color: PALETTE.TEXT_GRAY,
+  fontFamily: FONT_FAMILY.SANS_SERIF,
+  fontSize: 12,
+  lineHeight: '16px',
+  paddingTop: '4px'
 })
 
 interface Props {
@@ -109,14 +119,20 @@ const PokerTemplateScaleDetails = (props: Props) => {
         </ScaleDetailHeader>
         <HR />
         <ScaleHeader>
-          <FirstLine>
+          <ScaleNameAndValues>
             <EditableTemplateScaleName
               name={scale.name}
               scaleId={scale.id}
               scales={scales}
               isOwner={isOwner}
             />
-          </FirstLine>
+            <ScaleValues>
+              {
+                [...scale.values.filter(({isSpecial}) => !isSpecial).map(({label}) => label), '?', 'Pass'].join(", ")
+              }
+            </ScaleValues>
+            <ScaleValues>{'Note: all scales include ? and Pass cards'}</ScaleValues>
+          </ScaleNameAndValues>
         </ScaleHeader>
         <TemplateScaleValueList scale={scale} />
         <AddPokerTemplateScaleValue scaleId={scale.id} scaleValues={scale.values} />
@@ -139,6 +155,8 @@ export default createFragmentContainer(PokerTemplateScaleDetails, {
           teamId
           ...TemplateScaleValueList_scale
           values {
+            label
+            isSpecial
             ...AddPokerTemplateScaleValue_scaleValues
           }
         }

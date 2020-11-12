@@ -28,7 +28,7 @@ interface StyledProps {
   enabled?: boolean
 }
 
-const ScaleItem = styled('div')<StyledProps & {isOwner: boolean}>(
+const ScaleValueItem = styled('div')<StyledProps & {isOwner: boolean}>(
   ({isOwner, isHover, isDragging}) => ({
     alignItems: 'center',
     backgroundColor:
@@ -86,7 +86,7 @@ const TemplateScaleValueItem = (props: Props) => {
   }
 
   return (
-    <ScaleItem
+    <ScaleValueItem
       ref={dragProvided.innerRef}
       {...dragProvided.dragHandleProps}
       {...dragProvided.draggableProps}
@@ -109,7 +109,7 @@ const TemplateScaleValueItem = (props: Props) => {
       <RemoveScaleValueIcon isHover={isHover} onClick={removeScaleValue} enabled={canRemove}>
         cancel
       </RemoveScaleValueIcon>
-    </ScaleItem >
+    </ScaleValueItem >
   )
 }
 export default createFragmentContainer(TemplateScaleValueItem, {

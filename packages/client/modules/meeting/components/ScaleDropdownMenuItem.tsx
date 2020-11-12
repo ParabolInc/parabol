@@ -29,12 +29,13 @@ const ScaleDetails = styled('div')({
 })
 
 const ScaleNameAndValues = styled('div')({
-  display: 'flex',
+  display: 'block',
   flexDirection: 'column',
   maxWidth: '300px',
   paddingTop: 12,
   paddingLeft: 16,
-  paddingBottom: 12
+  paddingBottom: 12,
+  flexGrow: 1
 })
 
 const ScaleName = styled('div')({
@@ -54,10 +55,8 @@ const ScaleValues = styled('div')({
   lineHeight: '16px'
 })
 
-
 const ScaleActionButtonGroup = styled('div')({
   display: 'block',
-  marginLeft: 'auto',
   marginTop: 'auto',
   marginBottom: 'auto'
 })
@@ -85,12 +84,7 @@ const ScaleDropdownMenuItem = forwardRef((props: Props, ref) => {
             <ScaleName>{scale.name}</ScaleName>
             <ScaleValues>
               {
-                values.map(
-                  ({label, isSpecial}) => {
-                    return isSpecial && label === 'X' ? "Pass" : label
-                  }
-                )
-                  .join(", ")
+                [...values.filter(({isSpecial}) => !isSpecial).map(({label}) => label), '?', 'Pass'].join(", ")
               }
             </ScaleValues>
           </ScaleNameAndValues>

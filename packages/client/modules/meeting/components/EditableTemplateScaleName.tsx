@@ -22,7 +22,8 @@ const InheritedStyles = styled('div')({
   flex: 1,
   fontSize: 20,
   fontWeight: 600,
-  lineHeight: '24px'
+  lineHeight: '24px',
+  paddingTop: "4px"
 })
 
 const StyledEditableText = styled(EditableText)({
