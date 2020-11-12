@@ -32,7 +32,7 @@ uws
   .get('/email/createics', ICSHandler)
   .get('/sse', SSEConnectionHandler)
   .get('/sse-ping', SSEPingHandler)
-  .get('/self-hosted', selfHostedHandler)
+  .get('/self-hosted/*', selfHostedHandler)
   .post('/stripe', stripeWebhookHandler)
   .post('/webhooks/github', githubWebhookHandler)
   .post('/webhooks/graphql', webhookGraphQLHandler)

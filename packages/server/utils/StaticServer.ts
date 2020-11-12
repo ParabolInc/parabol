@@ -52,7 +52,6 @@ const makePathnames = (dirname: string, pathnames: PathNames, prefix: string) =>
     }
   })
 }
-
 export default class StaticServer {
   pathnames: PathNames = {}
   cachedFileSet: Set<string>

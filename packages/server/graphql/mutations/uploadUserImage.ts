@@ -55,6 +55,7 @@ export default {
     todos: 
       - PR trebuchet client package to really expect uploadables
       - move files to fileStore folder
+      - deprecate old mutations
     */
     const updatedUser = await updateUserProfile(
       undefined,
