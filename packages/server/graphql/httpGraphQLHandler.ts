@@ -13,15 +13,6 @@ import uwsGetIP from '../utils/uwsGetIP'
 import handleGraphQLTrebuchetRequest from './handleGraphQLTrebuchetRequest'
 import uWSAsyncHandler from './uWSAsyncHandler'
 
-interface ContentTypeBodyParserMap {
-  [contentType: string]: (HttpResponse, HttpRequest?) => Promise<JSON | null>
-}
-
-const contentTypeBodyParserMap = {
-  'application/json': parseBody,
-  'multipart/form-data': parseFormBody
-} as ContentTypeBodyParserMap
-
 const SSE_PROBLEM_USERS = [] as string[]
 
 const httpGraphQLBodyHandler = async (
@@ -72,6 +63,11 @@ const httpGraphQLBodyHandler = async (
       res.writeStatus('200').end()
     }
   })
+}
+
+const contentTypeBodyParserMap = {
+  'application/json': parseBody,
+  'multipart/form-data': parseFormBody
 }
 
 const httpGraphQLHandler = uWSAsyncHandler(async (res: HttpResponse, req: HttpRequest) => {

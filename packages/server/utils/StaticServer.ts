@@ -53,10 +53,6 @@ const makePathnames = (dirname: string, pathnames: PathNames, prefix: string) =>
   })
 }
 
-export const getPathnamesKeyForStaticFile = (fullPath: string): string => {
-  return fullPath.slice('/static/'.length)
-}
-
 export default class StaticServer {
   pathnames: PathNames = {}
   cachedFileSet: Set<string>
@@ -77,7 +73,6 @@ export default class StaticServer {
     })
   }
   getMeta(filename: string) {
-    filename = decodeURI(filename)
     const existingMeta = this.meta[filename]
     if (existingMeta) return existingMeta
     const pathname = this.pathnames[filename]

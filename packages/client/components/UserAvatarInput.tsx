@@ -51,14 +51,6 @@ class UserAvatarInput extends Component<Props> {
       return
     }
 
-    const variables: any = {
-      image: {
-        contentType: file.type,
-        contentLength: file.size
-      }
-    }
-
-    let pngFile
     if (file.type === 'image/svg+xml') {
       const isSanitary = await sanitizeSVG(file)
       if (!isSanitary) {
@@ -67,11 +59,7 @@ class UserAvatarInput extends Component<Props> {
       }
       const png = await svgToPng(file)
       if (png) {
-        pngFile = new File([png], file.name.slice(0, -3) + 'png', {type: png.type})
-        variables.pngVersion = {
-          contentType: pngFile.type,
-          contentLength: pngFile.size
-        }
+        file = new File([png], file.name.slice(0, -3) + 'png', {type: png.type})
       }
     }
     submitMutation()

@@ -2,10 +2,10 @@ import {HttpRequest, HttpResponse} from 'uWebSockets.js'
 import acceptsBrotli from './acceptsBrotli'
 import safetyPatchRes from './safetyPatchRes'
 import serveStatic from './utils/serveStatic'
-import {getPathnamesKeyForStaticFile} from './utils/StaticServer'
 
+const ROUTE = '/static/'
 const staticFileHandler = async (res: HttpResponse, req: HttpRequest) => {
-  const fileName = getPathnamesKeyForStaticFile(req.getUrl())
+  const fileName = req.getUrl().slice(ROUTE.length)
   const servedStatic = serveStatic(res, fileName, acceptsBrotli(req))
   if (servedStatic) return
   safetyPatchRes(res)
