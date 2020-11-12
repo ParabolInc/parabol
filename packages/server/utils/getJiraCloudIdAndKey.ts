@@ -1,5 +1,5 @@
-const getJiraCloudIdAndKey = (id: string): [string, string] => {
-  const [cloudId, key] = id.split(':')
-  return [cloudId, key]
+const getJiraCloudIdAndKey = (id: string) => {
+  const [cloudId, issueKey] = id.split(':')
+  return [cloudId, issueKey] as [cloudId: string, issueKey: string]
 }
 export default getJiraCloudIdAndKey
