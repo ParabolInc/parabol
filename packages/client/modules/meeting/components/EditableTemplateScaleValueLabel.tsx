@@ -82,6 +82,7 @@ class EditableTemplateScaleValueLabel extends Component<Props> {
     const {isOwner, error, isHover, isEditingDescription, scaleValue} = this.props
     return (
       <StyledEditableText
+        autoFocus={scaleValue.label.startsWith('*')}
         disabled={!isOwner}
         error={error as string}
         hideIcon={isEditingDescription ? true : !isHover}
@@ -89,7 +90,7 @@ class EditableTemplateScaleValueLabel extends Component<Props> {
         initialValue={scaleValue.label}
         maxLength={2}
         validate={this.validate}
-        placeholder={'*'}
+        placeholder={''}
       />
     )
   }

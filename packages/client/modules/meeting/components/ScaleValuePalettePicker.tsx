@@ -43,10 +43,10 @@ const ScaleValuePalettePicker = (props: Props) => {
   const handleClick = (newColor: string) => {
     if (submitting) return
     submitMutation()
-    const scaleId = scale.id
-    const oldScaleValue = scaleValue
-    const newScaleValue = {...scaleValue, color: newColor}
 
+    const scaleId = scale.id
+    const oldScaleValue = {label: scaleValue.label, color: scaleValue.color, value: scaleValue.value}
+    const newScaleValue = {...oldScaleValue, color: newColor}
     UpdatePokerTemplateScaleValueMutation(atmosphere, {scaleId, oldScaleValue, newScaleValue}, {}, onError, onCompleted)
     closePortal()
   }
