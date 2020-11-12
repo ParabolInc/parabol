@@ -1,5 +1,4 @@
 import {RecordProxy, RecordSourceSelectorProxy} from 'relay-runtime'
-import {IPokerMeetingSettings, MeetingTypeEnum} from '../../types/graphql'
 import addNodeToArray from '../../utils/relay/addNodeToArray'
 
 const handleAddPokerTemplateScale = (
@@ -10,11 +9,7 @@ const handleAddPokerTemplateScale = (
   const teamId = newNode.getValue('teamId') as string
   const team = store.get(teamId)
   if (!team) return
-  const meetingSettings = team.getLinkedRecord<IPokerMeetingSettings>('meetingSettings', {
-    meetingType: MeetingTypeEnum.poker
-  })
-  if (!meetingSettings) return
-  addNodeToArray(newNode, meetingSettings, 'teamScales', 'name')
+  addNodeToArray(newNode, team, 'scales', 'name')
 }
 
 export default handleAddPokerTemplateScale

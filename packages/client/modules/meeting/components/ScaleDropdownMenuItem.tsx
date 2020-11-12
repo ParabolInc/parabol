@@ -1,15 +1,19 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
+import React, {forwardRef} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import textOverflow from '~/styles/helpers/textOverflow'
 import {PALETTE} from '~/styles/paletteV2'
 import {FONT_FAMILY} from '~/styles/typographyV2'
 import {PokerCards} from '../../../types/constEnums'
+import MenuItem from '../../../components/MenuItem'
+import useAtmosphere from '../../../hooks/useAtmosphere'
 import {MenuProps} from '../../../hooks/useMenu'
+import useMutationProps from '../../../hooks/useMutationProps'
+import UpdatePokerTemplateDimensionScaleMutation from '../../../mutations/UpdatePokerTemplateDimensionScaleMutation'
 import {ScaleDropdownMenuItem_dimension} from '../../../__generated__/ScaleDropdownMenuItem_dimension.graphql'
 import {ScaleDropdownMenuItem_scale} from '../../../__generated__/ScaleDropdownMenuItem_scale.graphql'
-import CloneScale from './CloneScale'
+import ScaleActions from './ScaleActions'
 
 interface Props {
   scale: ScaleDropdownMenuItem_scale
@@ -50,45 +54,68 @@ const ScaleValues = styled('div')({
   lineHeight: '16px'
 })
 
-const CloneScaleButton = styled('div')({
+
+const ScaleActionButtonGroup = styled('div')({
   display: 'block',
   marginLeft: 'auto',
   marginTop: 'auto',
   marginBottom: 'auto'
 })
 
-const ScaleDropdownMenuItem = (props: Props) => {
+const ScaleDropdownMenuItem = forwardRef((props: Props, ref) => {
   const {scale, dimension, menuProps} = props
-  const {values, isStarter} = scale
-  const availableScalesCount = dimension.availableScales.length
+  const {values} = scale
+
+  const atmosphere = useAtmosphere()
+  const {submitMutation, submitting, onError, onCompleted} = useMutationProps()
+
+  const setScale = (scaleId: any) => () => {
+    if (submitting) return
+    submitMutation()
+    UpdatePokerTemplateDimensionScaleMutation(atmosphere, {dimensionId: dimension.id, scaleId}, {onError, onCompleted})
+  }
+
   return (
-    <ScaleDetails>
-      <ScaleNameAndValues>
-        <ScaleName>{scale.name}</ScaleName>
-        <ScaleValues>
-          {
-            values.map(
-              ({label, isSpecial}) => {
-                return isSpecial && label === 'X' ? "Pass" : label
+    <MenuItem
+      ref={ref}
+      key={scale.id}
+      label={
+        <ScaleDetails>
+          <ScaleNameAndValues onClick={setScale(scale.id)}>
+            <ScaleName>{scale.name}</ScaleName>
+            <ScaleValues>
+              {
+                values.map(
+                  ({label, isSpecial}) => {
+                    return isSpecial && label === 'X' ? "Pass" : label
+                  }
+                )
+                  .join(", ")
               }
-            )
-              .join(", ")
-          }
-        </ScaleValues>
-      </ScaleNameAndValues>
-      <CloneScaleButton>
-        <CloneScale scaleId={scale.id} isStarter={isStarter} scaleCount={availableScalesCount} teamId={"aDw6KWqar"} menuProps={menuProps} />
-      </CloneScaleButton>
-    </ScaleDetails>
+            </ScaleValues>
+          </ScaleNameAndValues>
+          <ScaleActionButtonGroup key={`scale_edit_${scale.id}`} >
+            <ScaleActions
+              scaleId={scale.id}
+              isStarter={scale.isStarter}
+              scaleCount={0}
+              teamId={dimension.team.id}
+              menuProps={menuProps}
+            />
+          </ScaleActionButtonGroup>
+        </ScaleDetails>
+      }
+    />
   )
-}
+})
 
 export default createFragmentContainer(ScaleDropdownMenuItem, {
   dimension: graphql`
     fragment ScaleDropdownMenuItem_dimension on TemplateDimension {
-      availableScales {
+      team {
         id
       }
+      id
     }
   `,
   scale: graphql`
@@ -96,6 +123,7 @@ export default createFragmentContainer(ScaleDropdownMenuItem, {
       id
       name
       isStarter
+      teamId
       values {
         label
         isSpecial

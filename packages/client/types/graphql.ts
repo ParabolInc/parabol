@@ -1773,6 +1773,16 @@ export interface ITeam {
   scales: Array<ITemplateScale>
 
   /**
+   * A query for the scale
+   */
+  scale: ITemplateScale | null
+
+  /**
+   * The list of scales this team can use
+   */
+  scales: Array<ITemplateScale>
+
+  /**
    * a list of meetings that are currently in progress
    */
   activeMeetings: Array<NewMeeting>
@@ -1821,6 +1831,13 @@ export interface IMeetingSettingsOnTeamArguments {
    * the type of meeting for the settings
    */
   meetingType: MeetingTypeEnum
+}
+
+export interface IScaleOnTeamArguments {
+  /**
+   * The scale ID for the desired scale
+   */
+  scaleId: string
 }
 
 export interface IScaleOnTeamArguments {
@@ -2249,6 +2266,162 @@ export interface ITemplateScaleValue {
    * The color used to visually group a scale value
    */
   color: string
+
+  /**
+   * The label for this value, e.g., XS, M, L
+   */
+  label: string
+
+  /**
+   * true if the value of this scale is a special value, e.g., ? or X
+   */
+  isSpecial: boolean
+
+  /**
+   * the order of the scale value in this scale
+   */
+  sortOrder: number
+}
+
+/**
+ * A team-specific template scale.
+ */
+export interface ITemplateScale {
+  __typename: 'TemplateScale'
+
+  /**
+   * shortid
+   */
+  id: string
+  createdAt: any
+
+  /**
+   * true if the scale is currently used by the team, else false
+   */
+  isActive: boolean
+
+  /**
+   * True if this is a starter/default scale; false otherwise
+   */
+  isStarter: boolean
+
+  /**
+   * The datetime that the scale was removed. Null if it has not been removed.
+   */
+  removedAt: any | null
+
+  /**
+   * foreign key. use the team field
+   */
+  teamId: string
+
+  /**
+   * The team that owns this template scale
+   */
+  team: ITeam
+  updatedAt: any
+
+  /**
+   * The title of the scale used in the template
+   */
+  name: string
+
+  /**
+   * The dimensions currently using this scale
+   */
+  dimensions: Array<ITemplateDimension>
+
+  /**
+   * The values used in this scale
+   */
+  values: Array<ITemplateScaleValue>
+}
+
+/**
+ * A team-specific template dimension: e.g., effort, importance etc.
+ */
+export interface ITemplateDimension {
+  __typename: 'TemplateDimension'
+
+  /**
+   * shortid
+   */
+  id: string
+  createdAt: any
+
+  /**
+   * true if the dimension is currently used by the team, else false
+   */
+  isActive: boolean
+
+  /**
+   * The datetime that the dimension was removed. Null if it has not been removed.
+   */
+  removedAt: any | null
+
+  /**
+   * foreign key. use the team field
+   */
+  teamId: string
+
+  /**
+   * The team that owns this dimension
+   */
+  team: ITeam
+  updatedAt: any
+
+  /**
+   * the order of the dimensions in the template
+   */
+  sortOrder: number
+
+  /**
+   * FK for template
+   */
+  templateId: string
+
+  /**
+   * The template that this dimension belongs to
+   */
+  template: IPokerTemplate
+
+  /**
+   * The name of the dimension
+   */
+  name: string
+
+  /**
+   * The description to the dimension name for further context. A long version of the dimension name.
+   */
+  description: string
+
+  /**
+   * The scaleId to resolve the selected scale
+   */
+  scaleId: string
+
+  /**
+   * scale used in this dimension
+   */
+  selectedScale: ITemplateScale
+}
+
+/**
+ * A value for a scale.
+ */
+export interface ITemplateScaleValue {
+  __typename: 'TemplateScaleValue'
+  id: string
+
+  /**
+   * The color used to visually group a scale value
+   */
+  color: string
+
+  /**
+   * The numerical value for this scale value
+   */
+  value: number
 
   /**
    * The label for this value, e.g., XS, M, L
@@ -3896,162 +4069,6 @@ export interface IDimensionOnPokerTemplateArguments {
    * The dimension ID for the desired dimension
    */
   dimensionId: string
-}
-
-/**
- * A team-specific template dimension: e.g., effort, importance etc.
- */
-export interface ITemplateDimension {
-  __typename: 'TemplateDimension'
-
-  /**
-   * shortid
-   */
-  id: string
-  createdAt: any
-
-  /**
-   * true if the dimension is currently used by the team, else false
-   */
-  isActive: boolean
-
-  /**
-   * The datetime that the dimension was removed. Null if it has not been removed.
-   */
-  removedAt: any | null
-
-  /**
-   * foreign key. use the team field
-   */
-  teamId: string
-
-  /**
-   * The team that owns this dimension
-   */
-  team: ITeam
-  updatedAt: any
-
-  /**
-   * the order of the dimensions in the template
-   */
-  sortOrder: number
-
-  /**
-   * FK for template
-   */
-  templateId: string
-
-  /**
-   * The template that this dimension belongs to
-   */
-  template: IPokerTemplate
-
-  /**
-   * The name of the dimension
-   */
-  name: string
-
-  /**
-   * The description to the dimension name for further context. A long version of the dimension name.
-   */
-  description: string
-
-  /**
-   * The scaleId to resolve the selected scale
-   */
-  scaleId: string
-
-  /**
-   * scale used in this dimension
-   */
-  selectedScale: ITemplateScale
-
-  /**
-   * The list of scales can be set for this dimension
-   */
-  availableScales: Array<ITemplateScale>
-}
-
-/**
- * A team-specific template scale.
- */
-export interface ITemplateScale {
-  __typename: 'TemplateScale'
-
-  /**
-   * shortid
-   */
-  id: string
-  createdAt: any
-
-  /**
-   * true if the scale is currently used by the team, else false
-   */
-  isActive: boolean
-
-  /**
-   * True if this is a starter/default scale; false otherwise
-   */
-  isStarter: boolean
-
-  /**
-   * The datetime that the scale was removed. Null if it has not been removed.
-   */
-  removedAt: any | null
-
-  /**
-   * foreign key. use the team field
-   */
-  teamId: string
-
-  /**
-   * The team that owns this template scale
-   */
-  team: ITeam
-  updatedAt: any
-
-  /**
-   * The title of the scale used in the template
-   */
-  name: string
-
-  /**
-   * The values used in this scale
-   */
-  values: Array<ITemplateScaleValue>
-}
-
-/**
- * A value for a scale.
- */
-export interface ITemplateScaleValue {
-  __typename: 'TemplateScaleValue'
-  id: string
-
-  /**
-   * The color used to visually group a scale value
-   */
-  color: string
-
-  /**
-   * The numerical value for this scale value
-   */
-  value: number
-
-  /**
-   * The label for this value, e.g., XS, M, L
-   */
-  label: string
-
-  /**
-   * true if the value of this scale is a special value, e.g., ? or X
-   */
-  isSpecial: boolean
-
-  /**
-   * the order of the scale value in this scale
-   */
-  sortOrder: number
 }
 
 /**

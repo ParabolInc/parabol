@@ -49,9 +49,8 @@ interface Props {
 const PokerTemplateScaleDetails = (props: Props) => {
   const {viewer} = props
   const team = viewer.team!
-  const {meetingSettings} = team
-  const {teamScales} = meetingSettings
-  const scale = meetingSettings.scale!
+  const {scales} = team
+  const scale = team.scale!
   const isOwner = scale.teamId === team!.id
   return (
     <ScaleValueEditor>
@@ -61,7 +60,7 @@ const PokerTemplateScaleDetails = (props: Props) => {
             <EditableTemplateScaleName
               name={scale.name}
               scaleId={scale.id}
-              scales={teamScales}
+              scales={scales}
               isOwner={isOwner}
             />
           </FirstLine>
@@ -78,20 +77,16 @@ export default createFragmentContainer(PokerTemplateScaleDetails, {
     fragment PokerTemplateScaleDetails_viewer on User {
       team(teamId: $teamId) {
         id
-        meetingSettings(meetingType: poker) {
-          ... on PokerMeetingSettings {
-            teamScales {
-              ...EditableTemplateScaleName_scales
-            }
-            scale(scaleId: $scaleId) {
-              id
-              name
-              teamId
-              ...TemplateScaleValueList_scale
-              values {
-                ...AddPokerTemplateScaleValue_scaleValues
-              }
-            }
+        scales {
+          ...EditableTemplateScaleName_scales
+        }
+        scale(scaleId: $scaleId) {
+          id
+          name
+          teamId
+          ...TemplateScaleValueList_scale
+          values {
+            ...AddPokerTemplateScaleValue_scaleValues
           }
         }
       }

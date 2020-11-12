@@ -1,6 +1,5 @@
 import {RecordSourceSelectorProxy} from 'relay-runtime'
 import pluralizeHandler from './pluralizeHandler'
-import {IPokerMeetingSettings, MeetingTypeEnum} from '~/types/graphql'
 import safeRemoveNodeFromArray from '~/utils/relay/safeRemoveNodeFromArray'
 
 const handleRemovePokerTemplateScale = (
@@ -9,11 +8,7 @@ const handleRemovePokerTemplateScale = (
   store: RecordSourceSelectorProxy
 ) => {
   const team = store.get(teamId)!
-  const settings = team.getLinkedRecord<IPokerMeetingSettings>('meetingSettings', {
-    meetingType: MeetingTypeEnum.poker
-  })
-  if (!settings) return
-  safeRemoveNodeFromArray(scaleId, settings, 'teamScales')
+  safeRemoveNodeFromArray(scaleId, team, 'scales')
 }
 
 const handleRemovePokerTemplateScales = pluralizeHandler(handleRemovePokerTemplateScale)

@@ -14,6 +14,14 @@ graphql`
     scale {
       id
       teamId
+      dimensions {
+        id
+        selectedScale {
+          id
+          name
+          teamId
+        }
+      }
     }
   }
 `

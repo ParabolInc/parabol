@@ -1,18 +1,13 @@
 import styled from '@emotion/styled'
-import graphql from 'babel-plugin-relay/macro'
-import React, {Component} from 'react'
-import {createFragmentContainer} from 'react-relay'
+import React from 'react'
 import {Threshold} from '~/types/constEnums'
 import Icon from '../../../components/Icon'
 import LinkButton from '../../../components/LinkButton'
-import withAtmosphere, {
-  WithAtmosphereProps
-} from '../../../decorators/withAtmosphere/withAtmosphere'
+import useAtmosphere from '../../../hooks/useAtmosphere'
 import {MenuProps} from '../../../hooks/useMenu'
+import useMutationProps from '../../../hooks/useMutationProps'
 import AddPokerTemplateScaleMutation from '../../../mutations/AddPokerTemplateScaleMutation'
 import {FONT_FAMILY} from '../../../styles/typographyV2'
-import withMutationProps, {WithMutationProps} from '../../../utils/relay/withMutationProps'
-import {AddPokerTemplateScale_scales} from '../../../__generated__/AddPokerTemplateScale_scales.graphql'
 
 const AddScaleLink = styled(LinkButton)({
   fontFamily: FONT_FAMILY.SANS_SERIF,
@@ -27,23 +22,20 @@ const AddScaleLinkPlus = styled(Icon)({
   margin: '0 16px 0 16px'
 })
 
-interface Props extends WithAtmosphereProps, WithMutationProps {
-  scales: AddPokerTemplateScale_scales
+interface Props {
+  scalesCount: number
   teamId: string
   menuProps: MenuProps
 }
 
-class AddTemplateScale extends Component<Props> {
-  addScale = () => {
+const AddPokerTemplateScale = (props: Props) => {
+  const addScale = () => {
     const {
-      atmosphere,
       teamId,
-      menuProps,
-      onError,
-      onCompleted,
-      submitMutation,
-      submitting
-    } = this.props
+      menuProps
+    } = props
+    const atmosphere = useAtmosphere()
+    const {onError, onCompleted, submitting, submitMutation} = useMutationProps()
     const {closePortal} = menuProps
     if (submitting) return
     submitMutation()
@@ -58,22 +50,14 @@ class AddTemplateScale extends Component<Props> {
     closePortal()
   }
 
-  render() {
-    const {scales, submitting} = this.props
-    if (scales.length >= Threshold.MAX_REFLECTION_PROMPTS) return null
-    return (
-      <AddScaleLink palette='blue' onClick={this.addScale} waiting={submitting}>
-        <AddScaleLinkPlus>add</AddScaleLinkPlus>
-        <div>Create a Scale</div>
-      </AddScaleLink>
-    )
-  }
+  const {scalesCount} = props
+  const {submitting, } = useMutationProps()
+  if (scalesCount >= Threshold.MAX_REFLECTION_PROMPTS) return null
+  return (
+    <AddScaleLink palette='blue' onClick={addScale} waiting={submitting}>
+      <AddScaleLinkPlus>add</AddScaleLinkPlus>
+      <div>Create a Scale</div>
+    </AddScaleLink>
+  )
 }
-
-export default createFragmentContainer(withMutationProps(withAtmosphere(AddTemplateScale)), {
-  scales: graphql`
-    fragment AddPokerTemplateScale_scales on TemplateScale @relay(plural: true) {
-      id
-    }
-  `
-})
+export default AddPokerTemplateScale

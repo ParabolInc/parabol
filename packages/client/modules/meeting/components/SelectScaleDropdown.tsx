@@ -1,54 +1,81 @@
 import graphql from 'babel-plugin-relay/macro'
 import React, {useMemo} from 'react'
 import {createFragmentContainer} from 'react-relay'
-import UpdatePokerTemplateDimensionScaleMutation from '../../../mutations/UpdatePokerTemplateDimensionScaleMutation'
 import Menu from '../../../components/Menu'
-import MenuItem from '../../../components/MenuItem'
-import useAtmosphere from '../../../hooks/useAtmosphere'
 import {MenuProps} from '../../../hooks/useMenu'
-import useMutationProps from '../../../hooks/useMutationProps'
 import {SelectScaleDropdown_dimension} from '../../../__generated__/SelectScaleDropdown_dimension.graphql'
 import ScaleDropdownMenuItem from './ScaleDropdownMenuItem'
-import AddPokerTemplateScale from './AddPokerTemplateScale'
+import MenuItemHR from '../../../components/MenuItemHR'
+import MenuItem from '../../../components/MenuItem'
 import styled from '@emotion/styled'
-import {PALETTE} from '../../../styles/paletteV2'
+import Icon from '../../../components/Icon'
+import LinkButton from '../../../components/LinkButton'
+import {FONT_FAMILY} from '../../../styles/typographyV2'
+import useAtmosphere from '../../../hooks/useAtmosphere'
+import useMutationProps from '../../../hooks/useMutationProps'
+import AddPokerTemplateScaleMutation from '../../../mutations/AddPokerTemplateScaleMutation'
 
 interface Props {
   menuProps: MenuProps
   dimension: SelectScaleDropdown_dimension
 }
 
-const HR = styled('hr')({
-  backgroundColor: PALETTE.BORDER_LIGHT,
-  border: 'none',
-  height: 1,
-  margin: 0,
-  padding: 0,
-  width: '100%'
+const AddScaleLink = styled(LinkButton)({
+  fontFamily: FONT_FAMILY.SANS_SERIF,
+  fontWeight: 600,
+  fontsize: 16,
+  lineHeight: '24px',
+  padding: '16px 0px 16px 16px'
+})
+
+const AddScaleLinkPlus = styled(Icon)({
+  display: 'block',
+  margin: '0 16px 0 16px'
 })
 
 const SelectScaleDropdown = (props: Props) => {
   const {menuProps, dimension} = props
-  const {id: dimensionId, selectedScale, availableScales} = dimension
-  const atmosphere = useAtmosphere()
-  const {submitting, submitMutation, onError, onCompleted} = useMutationProps()
-  const setScale = (scaleId: any) => () => {
+  const {team} = dimension
+  const {scales} = team
+  const defaultActiveIdx = useMemo(() => scales.findIndex(({id}) => id === dimension.selectedScale.id), [dimension])
+
+  const {submitting} = useMutationProps()
+  const addScale = () => {
+    const {menuProps} = props
+    const {closePortal} = menuProps
+    const atmosphere = useAtmosphere()
+    const {onError, onCompleted, submitting, submitMutation} = useMutationProps()
     if (submitting) return
     submitMutation()
-    UpdatePokerTemplateDimensionScaleMutation(atmosphere, {dimensionId, scaleId}, {onError, onCompleted})
+    AddPokerTemplateScaleMutation(
+      atmosphere,
+      {teamId: team.id},
+      {
+        onError,
+        onCompleted
+      }
+    )
+    closePortal()
   }
-  const defaultActiveIdx = useMemo(() => availableScales.findIndex(({id}) => id === dimension.selectedScale.id), [dimension])
+
   return (
     <Menu ariaLabel={'Select the scale for this dimension'} {...menuProps} defaultActiveIdx={defaultActiveIdx}>
-      {availableScales.map((scale) =>
-        <MenuItem
-          key={scale.id}
-          label={<ScaleDropdownMenuItem scale={scale} dimension={dimension} menuProps={menuProps} />}
-          onClick={setScale(scale.id)}
-        />
-      )}
-      <HR />
-      <AddPokerTemplateScale teamId={selectedScale.teamId} scales={availableScales} menuProps={menuProps} />
+      {scales
+        .map((scale) => (
+          <ScaleDropdownMenuItem scale={scale} dimension={dimension} menuProps={menuProps} />
+        ))
+      }
+      <MenuItemHR key='HR1' />
+      <MenuItem
+        key='create'
+        label={
+          <AddScaleLink palette='blue' onClick={addScale} waiting={submitting}>
+            <AddScaleLinkPlus>add</AddScaleLinkPlus>
+            <div>Create a Scale</div>
+          </AddScaleLink>
+        }
+        onClick={addScale}
+      />
     </Menu >
   )
 }
@@ -56,18 +83,21 @@ const SelectScaleDropdown = (props: Props) => {
 export default createFragmentContainer(SelectScaleDropdown, {
   dimension: graphql`
     fragment SelectScaleDropdown_dimension on TemplateDimension {
+      ...ScaleDropdownMenuItem_dimension
       id
       name
-      ...ScaleDropdownMenuItem_dimension
       selectedScale {
         id
         teamId
         ...ScaleDropdownMenuItem_scale
       }
-      availableScales {
+      team {
         id
-        ...ScaleDropdownMenuItem_scale
-        ...AddPokerTemplateScale_scales
+        scales {
+          id
+          isStarter
+          ...ScaleDropdownMenuItem_scale
+        }
       }
     }
   `

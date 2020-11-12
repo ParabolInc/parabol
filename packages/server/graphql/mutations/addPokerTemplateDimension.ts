@@ -51,7 +51,7 @@ const addPokerTemplateDimension = {
     const sortOrder =
       Math.max(0, ...activeDimensions.map((dimension) => dimension.sortOrder)) + 1 + dndNoise()
 
-    const teamScales = await r
+    const availableScales = await r
       .table('TemplateScale')
       .filter({teamId})
       .filter((row) =>
@@ -62,8 +62,8 @@ const addPokerTemplateDimension = {
       .orderBy(r.desc('updatedAt'))
       .run()
     const defaultScaleId =
-      teamScales.length > 0
-        ? teamScales.map((teamScale) => teamScale.id)[0]
+      availableScales.length > 0
+        ? availableScales.map((teamScale) => teamScale.id)[0]
         : SprintPokerDefaults.DEFAULT_SCALE_ID
 
     const newDimension = new TemplateDimension({

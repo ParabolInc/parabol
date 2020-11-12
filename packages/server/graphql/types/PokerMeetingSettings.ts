@@ -6,11 +6,8 @@ import getPublicScoredTemplates from '../queries/helpers/getPublicScoredTemplate
 import getScoredTemplates from '../queries/helpers/getScoredTemplates'
 import resolveSelectedTemplate from '../queries/helpers/resolveSelectedTemplate'
 import TeamMeetingSettings, {teamMeetingSettingsFields} from './TeamMeetingSettings'
-import TemplateScale from './TemplateScale'
 import PokerTemplate, {PokerTemplateConnection} from './PokerTemplate'
 import {MeetingTypeEnum} from 'parabol-client/types/graphql'
-import {getUserId} from '../../utils/authorization'
-import standardError from '../../utils/standardError'
 
 const PokerMeetingSettings = new GraphQLObjectType<any, GQLContext>({
   name: 'PokerMeetingSettings',
@@ -26,35 +23,6 @@ const PokerMeetingSettings = new GraphQLObjectType<any, GQLContext>({
       type: GraphQLNonNull(PokerTemplate),
       description: 'The template that will be used to start the Poker meeting',
       resolve: resolveSelectedTemplate('estimatedEffortTemplate')
-    },
-    teamScales: {
-      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(TemplateScale))),
-      description: 'The list of scales belong to this team',
-      resolve: async ({teamId}, _args, {dataLoader}) => {
-        const activeScales = await dataLoader.get('scalesByTeamId').load(teamId)
-        activeScales.slice().sort((a, b) => (a.sortOrder < b.sortOrder ? -1 : 1))
-        return activeScales
-      }
-    },
-    scale: {
-      type: TemplateScale,
-      description: 'A query for the scale',
-      args: {
-        scaleId: {
-          type: new GraphQLNonNull(GraphQLID),
-          description: 'The scale ID for the desired scale'
-        }
-      },
-      resolve: async ({teamId}, {scaleId}, {authToken, dataLoader}) => {
-        const viewerId = getUserId(authToken)
-        const activeScales = await dataLoader.get('scalesByTeamId').load(teamId)
-        const scale = activeScales.find(({id}) => id === scaleId)
-        if (!scale) {
-          standardError(new Error('Scale not found'), {userId: viewerId})
-          return null
-        }
-        return scale
-      }
     },
     teamTemplates: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(PokerTemplate))),
@@ -91,13 +59,6 @@ const PokerMeetingSettings = new GraphQLObjectType<any, GQLContext>({
         )
         const scoredTemplates = await getScoredTemplates(organizationTemplates, 0.8)
         return connectionFromTemplateArray(scoredTemplates, first, after)
-      }
-    },
-    starterScales: {
-      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(TemplateScale))),
-      description: 'The list of starter scales',
-      resolve: async (_srouce, _args, _context) => {
-        return await db.read('starterScales', 'aGhostTeam')
       }
     },
     publicTemplates: {

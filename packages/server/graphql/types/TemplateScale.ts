@@ -6,10 +6,12 @@ import {
   GraphQLObjectType,
   GraphQLString
 } from 'graphql'
+import getRethink from '../../database/rethinkDriver'
 import {GQLContext} from '../graphql'
 import {resolveTeam} from '../resolvers'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import Team from './Team'
+import TemplateDimension from './TemplateDimension'
 import TemplateScaleValue from './TemplateScaleValue'
 
 const TemplateScale = new GraphQLObjectType<any, GQLContext>({
@@ -52,6 +54,23 @@ const TemplateScale = new GraphQLObjectType<any, GQLContext>({
     name: {
       type: new GraphQLNonNull(GraphQLString),
       description: 'The title of the scale used in the template'
+    },
+    dimensions: {
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(TemplateDimension))),
+      description: 'The dimensions currently using this scale',
+      resolve: async ({id: scaleId, teamId}) => {
+        const r = await getRethink()
+        return r
+          .table('TemplateDimension')
+          .getAll(teamId, {index: 'teamId'})
+          .filter((row) =>
+            row('removedAt')
+              .default(null)
+              .eq(null)
+              .and(row('scaleId').eq(scaleId))
+          )
+          .run()
+      }
     },
     values: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(TemplateScaleValue))),
