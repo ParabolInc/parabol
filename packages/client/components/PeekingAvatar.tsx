@@ -12,13 +12,13 @@ const Wrapper = styled('div')<{status: TransitionStatus, voteOffsets: [number?, 
   transform: status === TransitionStatus.EXITING ? voteOffsets.length ? `translate(${voteOffsets[0]}px,${voteOffsets[1]}px)` : `translateX(64px)` : status === TransitionStatus.MOUNTED ? `translate(64px)` : undefined,
   transition: `all 300ms ${BezierCurve.DECELERATE}`
 }))
+
 interface Props {
   hasVoted: boolean
   getVotedUserEl: (userId: string) => HTMLDivElement
   status: TransitionStatus
   onTransitionEnd: () => void
   user: PeekingAvatar_user
-
 }
 
 const PeekingAvatar = (props: Props) => {
@@ -40,7 +40,7 @@ const PeekingAvatar = (props: Props) => {
   }
   return (
     <Wrapper ref={ref} status={status} voteOffsets={voteOffsets} onTransitionEnd={onTransitionEnd}>
-      <Avatar picture={picture} size={48} />
+      <Avatar picture={picture} size={40} />
     </Wrapper>
   )
 }

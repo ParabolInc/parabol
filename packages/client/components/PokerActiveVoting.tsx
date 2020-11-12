@@ -8,8 +8,8 @@ import Icon from './Icon'
 import TipBanner from './TipBanner'
 import SecondaryButtonCool from './SecondaryButtonCool'
 import {PALETTE} from '~/styles/paletteV2'
-import getDemoAvatar from '~/utils/getDemoAvatar'
 import useHotkey from '~/hooks/useHotkey'
+import getPokerVoters from '~/utils/getPokerVoters'
 
 const CheckIcon = styled(Icon)({
   color: PALETTE.TEXT_GREEN
@@ -29,14 +29,21 @@ const RevealButtonBlock = styled('div')({
   padding: '8px 16px'
 })
 
-const PokerActiveVoting = () => {
+interface Props {
+  scores: Array<any>
+  teamMembers: Array<any>
+}
 
-  const [hasVotes, setHasVotes] = useState(false)
+const PokerActiveVoting = (props: Props) => {
+
+  const {scores, teamMembers} = props
+
+  const [hasVotes, setHasVotes] = useState(true)
   useHotkey('v', () => {
     setHasVotes(!hasVotes)
   })
 
-  const [isFacilitator, setIsFacilitator] = useState(false)
+  const [isFacilitator, setIsFacilitator] = useState(true)
   useHotkey('f', () => {
     setIsFacilitator(!isFacilitator)
   })
@@ -56,21 +63,13 @@ const PokerActiveVoting = () => {
     ? 'Votes are automatically revealed once everyone has voted.'
     : 'Tap a card to vote. Swipe to view each dimension.'
 
-  const voters = [
-    getDemoAvatar(1),
-    getDemoAvatar(2),
-    getDemoAvatar(3),
-    getDemoAvatar(4),
-    getDemoAvatar(5),
-    getDemoAvatar(6),
-    getDemoAvatar(7),
-    getDemoAvatar(8),
-    getDemoAvatar(9),
-    getDemoAvatar(10),
-    getDemoAvatar(11),
-    getDemoAvatar(12),
-    getDemoAvatar(13)
-  ]
+  // Todo: Peeking avatars animate into the pre-revealed row
+  //       - The array of voters has an index
+  //       - The pre-revealed row has an x and y position
+  //       - Animate the peeking avatar to the  y position and the x + (index * avatar width)
+  //       - Transition out the peeking avatar, transition in the actual avatar in the row
+
+  const voters = getPokerVoters(scores, teamMembers)
 
   return (
     <>
@@ -87,7 +86,7 @@ const PokerActiveVoting = () => {
       }
       <RevealButtonBlock>
         {/* Show the reveal button if 2+ people have voted */}
-        {isFacilitator && hasVotes && voters.length > 1
+        {isFacilitator && scores.length > 1
           ? <SecondaryButtonCool>{'Reveal Votes'}</SecondaryButtonCool>
           : null
         }

@@ -30,18 +30,28 @@ const StyledLinkButton = styled(LinkButton)({
   fontWeight: 600
 })
 
-const EstimatePhaseDimensionColumn = () => {
-  const [activeVoting, setActiveVoting] = useState(false)
+interface Props {
+  estimateStage: any
+}
+
+const EstimatePhaseDimensionColumn = (props: Props) => {
+
+  const {dimensionName, scores, selectedScale, teamMembers} = props.estimateStage
+
+  const [isVoting, setIsVoting] = useState(false)
   useHotkey('a', () => {
-    setActiveVoting(!activeVoting)
+    setIsVoting(!isVoting)
   })
+
   return (
     <ColumnInner>
       <DimensionHeader>
-        <DimensionName>Dimension Name</DimensionName>
-        {activeVoting ? null : <StyledLinkButton palette={'blue'}>{'Team Revote'}</StyledLinkButton>}
+        <DimensionName>{dimensionName}</DimensionName>
+        {isVoting ? null : <StyledLinkButton palette={'blue'}>{'Team Revote'}</StyledLinkButton>}
       </DimensionHeader>
-      {activeVoting ? <PokerActiveVoting /> : <PokerDiscussVoting />}
+      {isVoting
+        ? <PokerActiveVoting scores={scores} teamMembers={teamMembers} />
+        : <PokerDiscussVoting selectedScale={selectedScale} scores={scores} teamMembers={teamMembers} />}
     </ColumnInner>
   )
 }
