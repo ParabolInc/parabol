@@ -39,7 +39,7 @@ const PokerCardDeck = (props: Props) => {
     {label: '10', value: 10, color: PALETTE.BACKGROUND_BLUE},
     {label: '11', value: 11, color: PALETTE.BACKGROUND_GREEN},
     {label: '12', value: 12, color: PALETTE.BACKGROUND_YELLOW},
-    {label: '13', value: 13, color: PALETTE.BACKGROUND_RED},
+    {label: '13', value: 13, color: PALETTE.BACKGROUND_RED}
   ]
   const totalCards = cards.length
   const [selectedIdx, setSelectedIdx] = useState<number | undefined>()
