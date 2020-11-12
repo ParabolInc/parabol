@@ -74,7 +74,6 @@ const SelectScaleDropdown = (props: Props) => {
             <div>Create a Scale</div>
           </AddScaleLink>
         }
-        onClick={addScale}
       />
     </Menu >
   )
