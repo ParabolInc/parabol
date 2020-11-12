@@ -32,10 +32,11 @@ const StyledLinkButton = styled(LinkButton)({
 
 interface Props {
   estimateStage: any
+  setVotedUserEl: (userId: string, el: HTMLDivElement) => void
 }
 
 const EstimatePhaseDimensionColumn = (props: Props) => {
-
+  const {setVotedUserEl} = props
   const {dimensionName, scores, selectedScale, teamMembers} = props.estimateStage
 
   const [isVoting, setIsVoting] = useState(false)
@@ -49,6 +50,13 @@ const EstimatePhaseDimensionColumn = (props: Props) => {
         <DimensionName>{dimensionName}</DimensionName>
         {isVoting ? null : <StyledLinkButton palette={'blue'}>{'Team Revote'}</StyledLinkButton>}
       </DimensionHeader>
+
+      {teamMembers.map((teamMember) => {
+        return <div ref={(el: HTMLDivElement) => {
+          setVotedUserEl(teamMember.userId, el)
+        }} />
+      })}
+
       {isVoting
         ? <PokerActiveVoting scores={scores} teamMembers={teamMembers} />
         : <PokerDiscussVoting selectedScale={selectedScale} scores={scores} teamMembers={teamMembers} />}

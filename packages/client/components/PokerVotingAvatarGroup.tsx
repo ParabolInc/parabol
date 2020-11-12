@@ -44,22 +44,12 @@ const PokerVotingAvatarGroup = (props: Props) => {
   //       See `NewMeetingAvatarGroup.tsx` and use a similar approach
 
   // Todo: Animate avatars into revealed rows from the pre-revealed row
-  //       - Compare the y coordinate and the index of
-  //       the pre-revealed row of voters with the revealed row of voters
-  //       - Transition the x position of the avatar from the difference in index * avatar width
-  //       - Transition the y position from the difference in the pre-revealed and revealed row
+  //       Floating avatars animate to preview row avatars or revealed row avatars
+  //       based on refs that are set by preview/revealed avatars and used by the floating avatars
+  //       See useDraggableReflectionCard.tsx to check every frame via requestAnimationFrame
+  //       in case the peeking avatar is in flight and the stage changes from isVoting to discussion
 
-  // Todo: Animate avatar from one revealed row to another when they change votes during discussion state
-  //       - Compare scores with previous scores
-  //       - Compare template scale value index e.g. [1, 2, 3] and person changed from 1 to 3
-  //       - Compare index of voters per scale value e.g. person was 3rd on previous row, now 2nd on new row
-  //       - Transition y position based on scale value index change * fixed row height
-  //       - Transition x position based on avatar index change * fixed avatar width
-  //
-  //       How do know the change in layout should be for a change in vote
-  //       and not a change from voting view to discussion view?
-  //
-  //       Alternatively: we could just animated the initial change from voting to discussing.
+  // Todo: Transition avatars with change in votes during discussion
   //       Avatars that change during discussion transition in or out like connected meeting avatars
 
   // Todo: Animate avatars if they’ve voted but are hoving cards

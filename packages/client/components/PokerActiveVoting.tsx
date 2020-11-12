@@ -63,11 +63,10 @@ const PokerActiveVoting = (props: Props) => {
     ? 'Votes are automatically revealed once everyone has voted.'
     : 'Tap a card to vote. Swipe to view each dimension.'
 
-  // Todo: Peeking avatars animate into the pre-revealed row
-  //       - The array of voters has an index
-  //       - The pre-revealed row has an x and y position
-  //       - Animate the peeking avatar to the  y position and the x + (index * avatar width)
-  //       - Transition out the peeking avatar, transition in the actual avatar in the row
+  // Todo: Peeking avatars animate into the preview or revealed row
+  //       Check for refs from preview or revealed row
+  //       See useDraggableReflectionCard.tsx to check every frame via requestAnimationFrame
+  //       in case the peeking avatar is in flight and the stage changes from isVoting to discussion
 
   const voters = getPokerVoters(scores, teamMembers)
 

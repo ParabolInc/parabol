@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, {useRef, useState} from 'react'
 import styled from '@emotion/styled'
 import {PALETTE} from '~/styles/paletteV2'
 import SwipeableViews from 'react-swipeable-views'
@@ -69,13 +69,17 @@ const EstimatePhaseArea = (props: Props) => {
     setActiveIdx(idx)
   }
 
-  const getVotedUserEl = (_userId: string) => {
+  const avatarRef = useRef<{[userId: string]: HTMLDivElement}>({})
+
+  const getVotedUserEl = (userId: string) => {
     // mock Element
-    return {
-      getBoundingClientRect() {
-        return {top: 100, left: 200}
-      }
-    } as any as HTMLDivElement
+    return avatarRef.current[userId]
+  }
+
+  const setVotedUserEl = (userId: string, el: HTMLDivElement) => {
+    // userId param for?
+    console.log(userId, 'setVotedUserEl userId param')
+    avatarRef.current.userId = el
   }
 
   const mockMember1 = {
@@ -230,7 +234,7 @@ const EstimatePhaseArea = (props: Props) => {
       >
         {mockEstimateStages.map((stage, idx) => (
           <SwipableEstimateItem key={idx}>
-            <EstimatePhaseDimensionColumn estimateStage={stage} />
+            <EstimatePhaseDimensionColumn setVotedUserEl={setVotedUserEl} estimateStage={stage} />
           </SwipableEstimateItem>
         ))}
       </SwipeableViews>
