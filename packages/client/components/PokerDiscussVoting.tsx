@@ -28,8 +28,8 @@ const PokerDiscussVoting = (props: Props) => {
         : <PokerDimensionValueStatic scaleValue={mockScaleValue} />
       }
       {/* Map voting rows */}
-      {voterGroups.map(({scaleValue, scores}, idx) => (
-        <PokerVotingRow key={idx} scaleValue={scaleValue} scores={scores} teamMembers={teamMembers} />
+      {voterGroups.map(({scaleValue, groupScores}, idx) => (
+        <PokerVotingRow key={idx} scaleValue={scaleValue} scores={groupScores} teamMembers={teamMembers} />
       ))}
     </>
   )
