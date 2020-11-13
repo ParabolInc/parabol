@@ -2,7 +2,7 @@ import {GraphQLID, GraphQLInt, GraphQLNonNull, GraphQLString} from 'graphql'
 import CreatePicturePutUrlPayload from '../types/CreatePicturePutUrlPayload'
 import {getUserId, isUserBillingLeader} from '../../utils/authorization'
 import getS3SignedPutUrl from '../../utils/getS3SignedPutUrl'
-import validateAvatarUpload from '../../utils/validateAvatarUpload'
+import validateAvatarUpload from '../../fileStorage/validateAvatarUpload'
 import shortid from 'shortid'
 import standardError from '../../utils/standardError'
 
