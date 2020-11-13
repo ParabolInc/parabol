@@ -65,7 +65,7 @@ const MassInvitationTokenLink = (props: Props) => {
       url={url}
       label={linkLabel}
       title={'Copy invite link'}
-      tooltip={'Copied! Valid for 1 day'}
+      tooltip={'Copied! Valid for 30 days'}
     />
   )
 }
