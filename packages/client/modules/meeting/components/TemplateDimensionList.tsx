@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {Component} from 'react'
+import React from 'react'
 import {DragDropContext, Draggable, Droppable} from 'react-beautiful-dnd'
 import {createFragmentContainer} from 'react-relay'
 import withAtmosphere, {
@@ -18,10 +18,6 @@ interface Props extends WithAtmosphereProps, WithMutationProps {
   templateId: string
 }
 
-interface State {
-  scrollOffset: number
-}
-
 const DimensionList = styled('div')({
   margin: 0,
   padding: 0,
@@ -30,10 +26,10 @@ const DimensionList = styled('div')({
 
 const TEMPLATE_DIMENSION = 'TEMPLATE_DIMENSION'
 
-class TemplateDimensionList extends Component<Props, State> {
-  onDragEnd = (result) => {
+const TemplateDimensionList = (props: Props) => {
+  const onDragEnd = (result) => {
     const {source, destination} = result
-    const {atmosphere, dimensions, templateId} = this.props
+    const {atmosphere, dimensions, templateId} = props
     if (
       !destination ||
       destination.droppableId !== TEMPLATE_DIMENSION ||
@@ -63,46 +59,44 @@ class TemplateDimensionList extends Component<Props, State> {
     MovePokerTemplateDimensionMutation(atmosphere, variables, {templateId})
   }
 
-  render() {
-    const {isOwner, dimensions} = this.props
-    return (
-      <DragDropContext onDragEnd={this.onDragEnd}>
-        <DimensionList>
-          <Droppable droppableId={TEMPLATE_DIMENSION} isDropDisabled={!isOwner}>
-            {(provided) => {
-              return (
-                <div ref={provided.innerRef}>
-                  {dimensions.map((dimension, idx) => {
-                    return (
-                      <Draggable
-                        key={dimension.id}
-                        draggableId={dimension.id}
-                        index={idx}
-                        isDragDisabled={!isOwner}
-                      >
-                        {(dragProvided, dragSnapshot) => {
-                          return (
-                            <TemplateDimensionItem
-                              isOwner={isOwner}
-                              dimension={dimension}
-                              dimensions={dimensions}
-                              isDragging={dragSnapshot.isDragging}
-                              dragProvided={dragProvided}
-                            />
-                          )
-                        }}
-                      </Draggable>
-                    )
-                  })}
-                  {provided.placeholder}
-                </div>
-              )
-            }}
-          </Droppable>
-        </DimensionList>
-      </DragDropContext>
-    )
-  }
+  const {isOwner, dimensions} = props
+  return (
+    <DragDropContext onDragEnd={onDragEnd}>
+      <DimensionList>
+        <Droppable droppableId={TEMPLATE_DIMENSION} isDropDisabled={!isOwner}>
+          {(provided) => {
+            return (
+              <div ref={provided.innerRef}>
+                {dimensions.map((dimension, idx) => {
+                  return (
+                    <Draggable
+                      key={dimension.id}
+                      draggableId={dimension.id}
+                      index={idx}
+                      isDragDisabled={!isOwner}
+                    >
+                      {(dragProvided, dragSnapshot) => {
+                        return (
+                          <TemplateDimensionItem
+                            isOwner={isOwner}
+                            dimension={dimension}
+                            dimensions={dimensions}
+                            isDragging={dragSnapshot.isDragging}
+                            dragProvided={dragProvided}
+                          />
+                        )
+                      }}
+                    </Draggable>
+                  )
+                })}
+                {provided.placeholder}
+              </div>
+            )
+          }}
+        </Droppable>
+      </DimensionList>
+    </DragDropContext>
+  )
 }
 
 export default createFragmentContainer(withAtmosphere(withMutationProps(TemplateDimensionList)), {

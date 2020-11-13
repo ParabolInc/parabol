@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {Component} from 'react'
+import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import EditableText from '../../../components/EditableText'
 import withAtmosphere, {
@@ -26,8 +26,8 @@ interface Props extends WithAtmosphereProps, WithMutationProps {
   prompts: EditableTemplatePrompt_prompts
 }
 
-class EditableTemplatePrompt extends Component<Props> {
-  handleSubmit = (rawQuestion) => {
+const EditableTemplatePrompt = (props: Props) => {
+  const handleSubmit = (rawQuestion) => {
     const {
       atmosphere,
       promptId,
@@ -36,17 +36,17 @@ class EditableTemplatePrompt extends Component<Props> {
       setDirty,
       submitMutation,
       submitting
-    } = this.props
+    } = props
     if (submitting) return
     setDirty()
-    const {error, value: question} = this.validate(rawQuestion)
+    const {error, value: question} = validate(rawQuestion)
     if (error) return
     submitMutation()
     RenameReflectTemplatePromptMutation(atmosphere, {promptId, question}, {}, onError, onCompleted)
   }
 
-  legitify(value: string) {
-    const {promptId, prompts} = this.props
+  const legitify = (value: string) => {
+    const {promptId, prompts} = props
     return new Legitity(value)
       .trim()
       .required('Please enter a prompt question')
@@ -59,9 +59,9 @@ class EditableTemplatePrompt extends Component<Props> {
       })
   }
 
-  validate = (rawValue: string) => {
-    const {error, onError} = this.props
-    const res = this.legitify(rawValue)
+  const validate = (rawValue: string) => {
+    const {error, onError} = props
+    const res = legitify(rawValue)
     if (res.error) {
       onError(res.error)
     } else if (error) {
@@ -70,22 +70,20 @@ class EditableTemplatePrompt extends Component<Props> {
     return res
   }
 
-  render() {
-    const {isOwner, error, isHover, question, isEditingDescription} = this.props
-    return (
-      <StyledEditableText
-        autoFocus={question.startsWith('New prompt #')}
-        disabled={!isOwner}
-        error={error as string}
-        hideIcon={isEditingDescription ? true : !isHover}
-        handleSubmit={this.handleSubmit}
-        initialValue={question}
-        maxLength={100}
-        validate={this.validate}
-        placeholder={'New Prompt'}
-      />
-    )
-  }
+  const {isOwner, error, isHover, question, isEditingDescription} = props
+  return (
+    <StyledEditableText
+      autoFocus={question.startsWith('New prompt #')}
+      disabled={!isOwner}
+      error={error as string}
+      hideIcon={isEditingDescription ? true : !isHover}
+      handleSubmit={handleSubmit}
+      initialValue={question}
+      maxLength={100}
+      validate={validate}
+      placeholder={'New Prompt'}
+    />
+  )
 }
 
 export default createFragmentContainer(withAtmosphere(withMutationProps(EditableTemplatePrompt)), {

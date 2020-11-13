@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {Component} from 'react'
+import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {Threshold} from '~/types/constEnums'
 import Icon from '../../../components/Icon'
@@ -35,8 +35,8 @@ interface Props extends WithAtmosphereProps, WithMutationProps {
   templateId: string
 }
 
-class AddPokerTemplateDimension extends Component<Props> {
-  addPrompt = () => {
+const AddPokerTemplateDimension = (props: Props) => {
+  const addDimension = () => {
     const {
       atmosphere,
       dimensions,
@@ -45,7 +45,7 @@ class AddPokerTemplateDimension extends Component<Props> {
       onCompleted,
       submitMutation,
       submitting
-    } = this.props
+    } = props
     if (submitting) return
     submitMutation()
     const sortOrders = dimensions.map(({sortOrder}) => sortOrder)
@@ -63,16 +63,14 @@ class AddPokerTemplateDimension extends Component<Props> {
     )
   }
 
-  render() {
-    const {dimensions, submitting} = this.props
-    if (dimensions.length >= Threshold.MAX_REFLECTION_PROMPTS) return null
-    return (
-      <AddDimensionLink palette='blue' onClick={this.addPrompt} waiting={submitting}>
-        <AddDimensionLinkPlus>add</AddDimensionLinkPlus>
-        <div>Add another dimension</div>
-      </AddDimensionLink>
-    )
-  }
+  const {dimensions, submitting} = props
+  if (dimensions.length >= Threshold.MAX_REFLECTION_PROMPTS) return null
+  return (
+    <AddDimensionLink palette='blue' onClick={addDimension} waiting={submitting}>
+      <AddDimensionLinkPlus>add</AddDimensionLinkPlus>
+      <div>Add another dimension</div>
+    </AddDimensionLink>
+  )
 }
 
 export default createFragmentContainer(withMutationProps(withAtmosphere(AddPokerTemplateDimension)), {

@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {Component} from 'react'
+import React from 'react'
 import {DragDropContext, Draggable, Droppable} from 'react-beautiful-dnd'
 import {createFragmentContainer} from 'react-relay'
 import withAtmosphere, {
@@ -18,10 +18,6 @@ interface Props extends WithAtmosphereProps, WithMutationProps {
   templateId: string
 }
 
-interface State {
-  scrollOffset: number
-}
-
 const PromptList = styled('div')({
   margin: 0,
   padding: 0,
@@ -30,10 +26,10 @@ const PromptList = styled('div')({
 
 const TEMPLATE_PROMPT = 'TEMPLATE_PROMPT'
 
-class TemplatePromptList extends Component<Props, State> {
-  onDragEnd = (result) => {
+const TemplatePromptList = (props: Props) => {
+  const onDragEnd = (result) => {
     const {source, destination} = result
-    const {atmosphere, prompts, templateId} = this.props
+    const {atmosphere, prompts, templateId} = props
     if (
       !destination ||
       destination.droppableId !== TEMPLATE_PROMPT ||
@@ -63,46 +59,44 @@ class TemplatePromptList extends Component<Props, State> {
     MoveReflectTemplatePromptMutation(atmosphere, variables, {templateId})
   }
 
-  render() {
-    const {isOwner, prompts} = this.props
-    return (
-      <DragDropContext onDragEnd={this.onDragEnd}>
-        <PromptList>
-          <Droppable droppableId={TEMPLATE_PROMPT} isDropDisabled={!isOwner}>
-            {(provided) => {
-              return (
-                <div ref={provided.innerRef}>
-                  {prompts.map((prompt, idx) => {
-                    return (
-                      <Draggable
-                        key={prompt.id}
-                        draggableId={prompt.id}
-                        index={idx}
-                        isDragDisabled={!isOwner}
-                      >
-                        {(dragProvided, dragSnapshot) => {
-                          return (
-                            <TemplatePromptItem
-                              isOwner={isOwner}
-                              prompt={prompt}
-                              prompts={prompts}
-                              isDragging={dragSnapshot.isDragging}
-                              dragProvided={dragProvided}
-                            />
-                          )
-                        }}
-                      </Draggable>
-                    )
-                  })}
-                  {provided.placeholder}
-                </div>
-              )
-            }}
-          </Droppable>
-        </PromptList>
-      </DragDropContext>
-    )
-  }
+  const {isOwner, prompts} = props
+  return (
+    <DragDropContext onDragEnd={onDragEnd}>
+      <PromptList>
+        <Droppable droppableId={TEMPLATE_PROMPT} isDropDisabled={!isOwner}>
+          {(provided) => {
+            return (
+              <div ref={provided.innerRef}>
+                {prompts.map((prompt, idx) => {
+                  return (
+                    <Draggable
+                      key={prompt.id}
+                      draggableId={prompt.id}
+                      index={idx}
+                      isDragDisabled={!isOwner}
+                    >
+                      {(dragProvided, dragSnapshot) => {
+                        return (
+                          <TemplatePromptItem
+                            isOwner={isOwner}
+                            prompt={prompt}
+                            prompts={prompts}
+                            isDragging={dragSnapshot.isDragging}
+                            dragProvided={dragProvided}
+                          />
+                        )
+                      }}
+                    </Draggable>
+                  )
+                })}
+                {provided.placeholder}
+              </div>
+            )
+          }}
+        </Droppable>
+      </PromptList>
+    </DragDropContext>
+  )
 }
 
 export default createFragmentContainer(withAtmosphere(withMutationProps(TemplatePromptList)), {

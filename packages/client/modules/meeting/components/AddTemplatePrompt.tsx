@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {Component} from 'react'
+import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {Threshold} from '~/types/constEnums'
 import Icon from '../../../components/Icon'
@@ -36,8 +36,8 @@ interface Props extends WithAtmosphereProps, WithMutationProps {
   templateId: string
 }
 
-class AddTemplatePrompt extends Component<Props> {
-  addPrompt = () => {
+const AddTemplatePrompt = (props: Props) => {
+  const addPrompt = () => {
     const {
       atmosphere,
       prompts,
@@ -46,7 +46,7 @@ class AddTemplatePrompt extends Component<Props> {
       onCompleted,
       submitMutation,
       submitting
-    } = this.props
+    } = props
     if (submitting) return
     submitMutation()
     const sortOrders = prompts.map(({sortOrder}) => sortOrder)
@@ -64,16 +64,14 @@ class AddTemplatePrompt extends Component<Props> {
     )
   }
 
-  render() {
-    const {prompts, submitting} = this.props
-    if (prompts.length >= Threshold.MAX_REFLECTION_PROMPTS) return null
-    return (
-      <AddPromptLink palette='blue' onClick={this.addPrompt} waiting={submitting}>
-        <AddPromptLinkPlus>add</AddPromptLinkPlus>
-        <div>Add another prompt</div>
-      </AddPromptLink>
-    )
-  }
+  const {prompts, submitting} = props
+  if (prompts.length >= Threshold.MAX_REFLECTION_PROMPTS) return null
+  return (
+    <AddPromptLink palette='blue' onClick={addPrompt} waiting={submitting}>
+      <AddPromptLinkPlus>add</AddPromptLinkPlus>
+      <div>Add another prompt</div>
+    </AddPromptLink>
+  )
 }
 
 export default createFragmentContainer(withMutationProps(withAtmosphere(AddTemplatePrompt)), {

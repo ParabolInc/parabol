@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {Component} from 'react'
+import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import EditableText from '../../../components/EditableText'
 import withAtmosphere, {
@@ -28,8 +28,8 @@ const InheritedStyles = styled('div')({
 const StyledEditableText = styled(EditableText)({
   lineHeight: '24px'
 })
-class EditableTemplateName extends Component<Props> {
-  handleSubmit = (rawName) => {
+const EditableTemplateName = (props: Props) => {
+  const handleSubmit = (rawName) => {
     const {
       atmosphere,
       templateId,
@@ -38,17 +38,17 @@ class EditableTemplateName extends Component<Props> {
       setDirty,
       submitMutation,
       submitting
-    } = this.props
+    } = props
     if (submitting) return
     setDirty()
-    const {error, value: name} = this.validate(rawName)
+    const {error, value: name} = validate(rawName)
     if (error) return
     submitMutation()
     RenameMeetingTemplateMutation(atmosphere, {templateId, name}, {}, onError, onCompleted)
   }
 
-  legitify(value) {
-    const {templateId, teamTemplates} = this.props
+  const legitify = (value) => {
+    const {templateId, teamTemplates} = props
     return new Legitity(value)
       .trim()
       .required('Please enter a template name')
@@ -62,9 +62,9 @@ class EditableTemplateName extends Component<Props> {
       })
   }
 
-  validate = (rawValue: string) => {
-    const {error, onError} = this.props
-    const res = this.legitify(rawValue)
+  const validate = (rawValue: string) => {
+    const {error, onError} = props
+    const res = legitify(rawValue)
     if (res.error) {
       onError(res.error)
     } else if (error) {
@@ -73,22 +73,20 @@ class EditableTemplateName extends Component<Props> {
     return res
   }
 
-  render() {
-    const {dirty, error, name, isOwner} = this.props
-    return (
-      <InheritedStyles>
-        <StyledEditableText
-          disabled={!isOwner}
-          error={dirty ? (error as string) : undefined}
-          handleSubmit={this.handleSubmit}
-          initialValue={name}
-          maxLength={100}
-          validate={this.validate}
-          placeholder={'*New Template'}
-        />
-      </InheritedStyles>
-    )
-  }
+  const {dirty, error, name, isOwner} = props
+  return (
+    <InheritedStyles>
+      <StyledEditableText
+        disabled={!isOwner}
+        error={dirty ? (error as string) : undefined}
+        handleSubmit={handleSubmit}
+        initialValue={name}
+        maxLength={100}
+        validate={validate}
+        placeholder={'*New Template'}
+      />
+    </InheritedStyles>
+  )
 }
 
 export default createFragmentContainer(withAtmosphere(withMutationProps(EditableTemplateName)), {
