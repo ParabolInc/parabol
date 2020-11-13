@@ -8,6 +8,7 @@ import {FONT_FAMILY} from '~/styles/typographyV2'
 import {PokerCards} from '../../../types/constEnums'
 import MenuItem from '../../../components/MenuItem'
 import useAtmosphere from '../../../hooks/useAtmosphere'
+import {MenuProps} from '../../../hooks/useMenu'
 import useMutationProps from '../../../hooks/useMutationProps'
 import UpdatePokerTemplateDimensionScaleMutation from '../../../mutations/UpdatePokerTemplateDimensionScaleMutation'
 import {ScaleDropdownMenuItem_dimension} from '../../../__generated__/ScaleDropdownMenuItem_dimension.graphql'
@@ -17,6 +18,7 @@ import ScaleActions from './ScaleActions'
 interface Props {
   scale: ScaleDropdownMenuItem_scale
   dimension: ScaleDropdownMenuItem_dimension
+  menuProps: MenuProps
 }
 
 const ScaleDetails = styled('div')({
@@ -60,7 +62,8 @@ const ScaleActionButtonGroup = styled('div')({
 })
 
 const ScaleDropdownMenuItem = forwardRef((props: Props, ref) => {
-  const {scale, dimension} = props
+  const {scale, dimension, menuProps} = props
+  const {closePortal} = menuProps
   const {values} = scale
 
   const atmosphere = useAtmosphere()
@@ -70,6 +73,7 @@ const ScaleDropdownMenuItem = forwardRef((props: Props, ref) => {
     if (submitting) return
     submitMutation()
     UpdatePokerTemplateDimensionScaleMutation(atmosphere, {dimensionId: dimension.id, scaleId}, {onError, onCompleted})
+    closePortal()
   }
 
   return (
