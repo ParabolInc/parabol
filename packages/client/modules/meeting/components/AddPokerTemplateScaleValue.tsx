@@ -89,6 +89,7 @@ export default createFragmentContainer(withMutationProps(withAtmosphere(AddTempl
       isSpecial
       value
       color
+      label
     }
   `
 })
