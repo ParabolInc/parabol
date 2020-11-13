@@ -222,7 +222,7 @@ const AddTeamMemberModal = (props: Props) => {
           <MassInvitationTokenLinkRoot meetingId={meetingId} teamId={teamId} />
 
           <StyledHeading>{'Or, send invites by email'}</StyledHeading>
-          <StyledTip>{'Email invitations expire in 7 days.'}</StyledTip>
+          <StyledTip>{'Email invitations expire in 30 days.'}</StyledTip>
           <BasicTextArea
             autoFocus
             name='rawInvitees'
