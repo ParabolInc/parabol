@@ -4,7 +4,6 @@ import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
 import {Threshold} from '../../../types/constEnums'
 import AddPokerTemplateScaleMutation from '../../../mutations/AddPokerTemplateScaleMutation'
-import {MenuProps} from '../../../hooks/useMenu'
 import RemovePokerTemplateScaleMutation from '../../../mutations/RemovePokerTemplateScaleMutation'
 import styled from '@emotion/styled'
 import {commitLocalUpdate} from 'react-relay'
@@ -19,7 +18,6 @@ interface Props {
   scaleCount: number
   teamId: string
   isStarter: boolean
-  menuProps: MenuProps
 }
 
 const ScaleActions = (props: Props) => {
@@ -27,12 +25,10 @@ const ScaleActions = (props: Props) => {
     scaleId,
     scaleCount,
     teamId,
-    isStarter,
-    menuProps
+    isStarter
   } = props
   const atmosphere = useAtmosphere()
   const {onError, onCompleted, submitting, submitMutation} = useMutationProps()
-  const {closePortal} = menuProps
   const canClone = scaleCount < Threshold.MAX_RETRO_TEAM_TEMPLATES
   const canDelete = !isStarter
   const cloneTooltip = canClone ? (isStarter ? 'Clone a default scale' : 'Edit scale') : 'Too many team templates! Remove one first'
@@ -47,7 +43,6 @@ const ScaleActions = (props: Props) => {
         store.get(teamId)?.setValue(scaleId, 'editingScaleId')
       })
     }
-    closePortal()
   }
   const deleteScale = () => {
     if (submitting || !canDelete) return
