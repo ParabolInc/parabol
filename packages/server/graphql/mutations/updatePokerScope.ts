@@ -101,12 +101,15 @@ const updatePokerScope = {
         // MUTATIVE
         stages.push(...newStages)
       } else if (action === 'DELETE') {
-        const stageToRemove = stages.find((stage) => stage.serviceTaskId === serviceTaskId)
-        if (stageToRemove) {
-          redis.del(`pokerHover:${stageToRemove.id}`)
+        const stagesToRemove = stages.filter((stage) => stage.serviceTaskId === serviceTaskId)
+        if (stagesToRemove.length > 0) {
           // MUTATIVE
-          estimatePhase.stages = stages.filter((stage) => stage !== stageToRemove)
-          stages = estimatePhase.stages
+          stages = stages.filter((stage) => stage.serviceTaskId !== serviceTaskId)
+          estimatePhase.stages = stages
+          const writes = stagesToRemove.map((stage) => {
+            return ['del', `pokerHover:${stage.id}`]
+          })
+          redis.multi(writes).exec()
         }
       }
     })

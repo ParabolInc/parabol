@@ -160,8 +160,7 @@ export type NewMeetingStage =
   | IGenericMeetingStage
   | IRetroDiscussStage
   | IUpdatesStage
-  | IEstimateStageJira
-  | IEstimateStageParabol
+  | IEstimateStage
   | IAgendaItemsStage;
 
 /**
@@ -254,6 +253,7 @@ export interface INewMeetingStage {
    * The suggested time limit for a phase to be completed together, null if not enough data to make a suggestion
    */
   suggestedTimeLimit: number | null;
+  teamId: string;
 
   /**
    * The number of milliseconds left before the scheduled end time. Useful for unsynced client clocks. null if scheduledEndTime is null
@@ -717,6 +717,23 @@ export interface IJiraIssue {
    * The description converted into raw HTML
    */
   descriptionHTML: string;
+}
+
+/**
+ * An entity that can be used in a poker meeting and receive estimates
+ */
+export type Story = IJiraIssue | ITask;
+
+/**
+ * An entity that can be used in a poker meeting and receive estimates
+ */
+export interface IStory {
+  __typename: 'Story';
+
+  /**
+   * serviceTaskId
+   */
+  id: string;
 }
 
 export interface IStandardMutationError {
@@ -3361,6 +3378,7 @@ export interface ICheckInStage {
    * The suggested time limit for a phase to be completed together, null if not enough data to make a suggestion
    */
   suggestedTimeLimit: number | null;
+  teamId: string;
 
   /**
    * The number of milliseconds left before the scheduled end time. Useful for unsynced client clocks. null if scheduledEndTime is null
@@ -3566,6 +3584,7 @@ export interface IGenericMeetingStage {
    * The suggested time limit for a phase to be completed together, null if not enough data to make a suggestion
    */
   suggestedTimeLimit: number | null;
+  teamId: string;
 
   /**
    * The number of milliseconds left before the scheduled end time. Useful for unsynced client clocks. null if scheduledEndTime is null
@@ -3947,6 +3966,7 @@ export interface IRetroDiscussStage {
    * The suggested time limit for a phase to be completed together, null if not enough data to make a suggestion
    */
   suggestedTimeLimit: number | null;
+  teamId: string;
 
   /**
    * The number of milliseconds left before the scheduled end time. Useful for unsynced client clocks. null if scheduledEndTime is null
@@ -4380,6 +4400,7 @@ export interface IUpdatesStage {
    * The suggested time limit for a phase to be completed together, null if not enough data to make a suggestion
    */
   suggestedTimeLimit: number | null;
+  teamId: string;
 
   /**
    * The number of milliseconds left before the scheduled end time. Useful for unsynced client clocks. null if scheduledEndTime is null
@@ -4401,11 +4422,6 @@ export interface IUpdatesStage {
    */
   teamMember: ITeamMember;
 }
-
-/**
- * The stage where the team estimates & discusses a single task
- */
-export type EstimateStage = IEstimateStageJira | IEstimateStageParabol;
 
 /**
  * The stage where the team estimates & discusses a single task
@@ -4497,6 +4513,7 @@ export interface IEstimateStage {
    * The suggested time limit for a phase to be completed together, null if not enough data to make a suggestion
    */
   suggestedTimeLimit: number | null;
+  teamId: string;
 
   /**
    * The number of milliseconds left before the scheduled end time. Useful for unsynced client clocks. null if scheduledEndTime is null
@@ -4547,6 +4564,11 @@ export interface IEstimateStage {
    * all the estimates, 1 per user
    */
   scores: Array<IEstimateUserScore>;
+
+  /**
+   * the story referenced in the stage. Either a Parabol Task or something similar from an integration
+   */
+  story: Story;
 
   /**
    * true when the participants are still voting and results are hidden. false when votes are revealed
@@ -4584,310 +4606,6 @@ export interface IEstimateUserScore {
    * The label that was associated with the score at the time of the vote
    */
   label: string;
-}
-
-/**
- * The stage where the team estimates & discusses a single jira issue
- */
-export interface IEstimateStageJira {
-  __typename: 'EstimateStageJira';
-
-  /**
-   * stageId, shortid
-   */
-  id: string;
-
-  /**
-   * The datetime the stage was completed
-   */
-  endAt: any | null;
-
-  /**
-   * foreign key. try using meeting
-   */
-  meetingId: string;
-
-  /**
-   * The meeting this stage belongs to
-   */
-  meeting: NewMeeting | null;
-
-  /**
-   * true if the facilitator has completed this stage, else false. Should be boolean(endAt)
-   */
-  isComplete: boolean;
-
-  /**
-   * true if any meeting participant can navigate to this stage
-   */
-  isNavigable: boolean;
-
-  /**
-   * true if the facilitator can navigate to this stage
-   */
-  isNavigableByFacilitator: boolean;
-
-  /**
-   * The phase this stage belongs to
-   */
-  phase: NewMeetingPhase | null;
-
-  /**
-   * The type of the phase
-   */
-  phaseType: NewMeetingPhaseTypeEnum | null;
-
-  /**
-   * The datetime the stage was started
-   */
-  startAt: any | null;
-
-  /**
-   * Number of times the facilitator has visited this stage
-   */
-  viewCount: number | null;
-
-  /**
-   * true if a time limit is set, false if end time is set, null if neither is set
-   */
-  isAsync: boolean | null;
-
-  /**
-   * true if the viewer is ready to advance, else false
-   */
-  isViewerReady: boolean;
-
-  /**
-   * the number of meeting members ready to advance, excluding the facilitator
-   */
-  readyCount: number;
-
-  /**
-   * The datetime the phase is scheduled to be finished, null if no time limit or end time is set
-   */
-  scheduledEndTime: any | null;
-
-  /**
-   * The suggested ending datetime for a phase to be completed async, null if not enough data to make a suggestion
-   */
-  suggestedEndTime: any | null;
-
-  /**
-   * The suggested time limit for a phase to be completed together, null if not enough data to make a suggestion
-   */
-  suggestedTimeLimit: number | null;
-
-  /**
-   * The number of milliseconds left before the scheduled end time. Useful for unsynced client clocks. null if scheduledEndTime is null
-   */
-  timeRemaining: number | null;
-
-  /**
-   * The id of the user that added this stage. Useful for knowing which access key to use to get the underlying issue
-   */
-  creatorUserId: string;
-
-  /**
-   * The service the task is connected to. If null, it is parabol
-   */
-  service: TaskServiceEnum | null;
-
-  /**
-   * The stringified JSON used to fetch the task used by the service
-   */
-  serviceTaskId: string;
-
-  /**
-   * The sort order for reprioritizing discussion topics
-   */
-  sortOrder: number;
-
-  /**
-   * the dimensionId that corresponds to this stage
-   */
-  dimensionId: string;
-
-  /**
-   * the final score, as defined by the facilitator
-   */
-  finalScore: number | null;
-
-  /**
-   * the userIds of the team members hovering the deck
-   */
-  hoveringUserIds: Array<string>;
-
-  /**
-   * the users of the team members hovering the deck
-   */
-  hoveringUsers: Array<IUser>;
-
-  /**
-   * all the estimates, 1 per user
-   */
-  scores: Array<IEstimateUserScore>;
-
-  /**
-   * true when the participants are still voting and results are hidden. false when votes are revealed
-   */
-  isVoting: boolean;
-
-  /**
-   * the issue straight from Jira
-   */
-  issue: IJiraIssue | null;
-}
-
-/**
- * The stage where the team estimates & discusses a single jira issue
- */
-export interface IEstimateStageParabol {
-  __typename: 'EstimateStageParabol';
-
-  /**
-   * stageId, shortid
-   */
-  id: string;
-
-  /**
-   * The datetime the stage was completed
-   */
-  endAt: any | null;
-
-  /**
-   * foreign key. try using meeting
-   */
-  meetingId: string;
-
-  /**
-   * The meeting this stage belongs to
-   */
-  meeting: NewMeeting | null;
-
-  /**
-   * true if the facilitator has completed this stage, else false. Should be boolean(endAt)
-   */
-  isComplete: boolean;
-
-  /**
-   * true if any meeting participant can navigate to this stage
-   */
-  isNavigable: boolean;
-
-  /**
-   * true if the facilitator can navigate to this stage
-   */
-  isNavigableByFacilitator: boolean;
-
-  /**
-   * The phase this stage belongs to
-   */
-  phase: NewMeetingPhase | null;
-
-  /**
-   * The type of the phase
-   */
-  phaseType: NewMeetingPhaseTypeEnum | null;
-
-  /**
-   * The datetime the stage was started
-   */
-  startAt: any | null;
-
-  /**
-   * Number of times the facilitator has visited this stage
-   */
-  viewCount: number | null;
-
-  /**
-   * true if a time limit is set, false if end time is set, null if neither is set
-   */
-  isAsync: boolean | null;
-
-  /**
-   * true if the viewer is ready to advance, else false
-   */
-  isViewerReady: boolean;
-
-  /**
-   * the number of meeting members ready to advance, excluding the facilitator
-   */
-  readyCount: number;
-
-  /**
-   * The datetime the phase is scheduled to be finished, null if no time limit or end time is set
-   */
-  scheduledEndTime: any | null;
-
-  /**
-   * The suggested ending datetime for a phase to be completed async, null if not enough data to make a suggestion
-   */
-  suggestedEndTime: any | null;
-
-  /**
-   * The suggested time limit for a phase to be completed together, null if not enough data to make a suggestion
-   */
-  suggestedTimeLimit: number | null;
-
-  /**
-   * The number of milliseconds left before the scheduled end time. Useful for unsynced client clocks. null if scheduledEndTime is null
-   */
-  timeRemaining: number | null;
-
-  /**
-   * The id of the user that added this stage. Useful for knowing which access key to use to get the underlying issue
-   */
-  creatorUserId: string;
-
-  /**
-   * The service the task is connected to. If null, it is parabol
-   */
-  service: TaskServiceEnum | null;
-
-  /**
-   * The stringified JSON used to fetch the task used by the service
-   */
-  serviceTaskId: string;
-
-  /**
-   * The sort order for reprioritizing discussion topics
-   */
-  sortOrder: number;
-
-  /**
-   * the dimensionId that corresponds to this stage
-   */
-  dimensionId: string;
-
-  /**
-   * the final score, as defined by the facilitator
-   */
-  finalScore: number | null;
-
-  /**
-   * the userIds of the team members hovering the deck
-   */
-  hoveringUserIds: Array<string>;
-
-  /**
-   * the users of the team members hovering the deck
-   */
-  hoveringUsers: Array<IUser>;
-
-  /**
-   * all the estimates, 1 per user
-   */
-  scores: Array<IEstimateUserScore>;
-
-  /**
-   * true when the participants are still voting and results are hidden. false when votes are revealed
-   */
-  isVoting: boolean;
-
-  /**
-   * the Parabol task
-   */
-  task: ITask;
 }
 
 /**
@@ -5000,6 +4718,7 @@ export interface IAgendaItemsStage {
    * The suggested time limit for a phase to be completed together, null if not enough data to make a suggestion
    */
   suggestedTimeLimit: number | null;
+  teamId: string;
 
   /**
    * The number of milliseconds left before the scheduled end time. Useful for unsynced client clocks. null if scheduledEndTime is null
@@ -5050,7 +4769,7 @@ export interface IEstimatePhase {
    * The type of phase
    */
   phaseType: NewMeetingPhaseTypeEnum;
-  stages: Array<EstimateStage>;
+  stages: Array<IEstimateStage>;
 }
 
 /**
@@ -7004,14 +6723,25 @@ export interface IMutation {
   editTask: IEditTaskPayload | null;
 
   /**
+   * Finish a check-in meeting
+   */
+  endCheckIn: EndCheckInPayload;
+
+  /**
    * Broadcast that the viewer stopped dragging a reflection
    */
   endDraggingReflection: IEndDraggingReflectionPayload | null;
 
   /**
    * Finish a new meeting
+   * @deprecated "Using more specfic end[meetingType] instead"
    */
   endNewMeeting: IEndNewMeetingPayload;
+
+  /**
+   * Finish a retrospective meeting
+   */
+  endRetrospective: EndRetrospectivePayload;
 
   /**
    * flag a viewer as ready to advance to the next stage of a meeting
@@ -7254,7 +6984,18 @@ export interface IMutation {
   /**
    * Start a new meeting
    */
+  startCheckIn: StartCheckInPayload;
+
+  /**
+   * Start a new meeting
+   * @deprecated "Using more specfic start[meetingType] instead"
+   */
   startNewMeeting: IStartNewMeetingPayload;
+
+  /**
+   * Start a new meeting
+   */
+  startRetrospective: StartRetrospectivePayload;
 
   /**
    * Start a new sprint poker meeting
@@ -7771,6 +7512,13 @@ export interface IEditTaskOnMutationArguments {
   isEditing: boolean;
 }
 
+export interface IEndCheckInOnMutationArguments {
+  /**
+   * The meeting to end
+   */
+  meetingId: string;
+}
+
 export interface IEndDraggingReflectionOnMutationArguments {
   reflectionId: string;
 
@@ -7791,6 +7539,13 @@ export interface IEndDraggingReflectionOnMutationArguments {
 }
 
 export interface IEndNewMeetingOnMutationArguments {
+  /**
+   * The meeting to end
+   */
+  meetingId: string;
+}
+
+export interface IEndRetrospectiveOnMutationArguments {
   /**
    * The meeting to end
    */
@@ -8213,6 +7968,13 @@ export interface IStartDraggingReflectionOnMutationArguments {
   dragId: string;
 }
 
+export interface IStartCheckInOnMutationArguments {
+  /**
+   * The team starting the meeting
+   */
+  teamId: string;
+}
+
 export interface IStartNewMeetingOnMutationArguments {
   /**
    * The team starting the meeting
@@ -8223,6 +7985,13 @@ export interface IStartNewMeetingOnMutationArguments {
    * The base type of the meeting (action, retro, etc)
    */
   meetingType: MeetingTypeEnum;
+}
+
+export interface IStartRetrospectiveOnMutationArguments {
+  /**
+   * The team starting the meeting
+   */
+  teamId: string;
 }
 
 export interface IStartSprintPokerOnMutationArguments {
@@ -9242,7 +9011,7 @@ export interface IDragEstimatingTaskSuccess {
   meetingId: string;
   meeting: IPokerMeeting;
   stageId: string;
-  stage: EstimateStage;
+  stage: IEstimateStage;
 }
 
 /**
@@ -9414,7 +9183,7 @@ export interface IEndSprintPokerSuccess {
   /**
    * true if the meeting was killed (ended before reaching last stage)
    */
-  isKill: boolean | null;
+  isKill: boolean;
   meetingId: string;
   meeting: IPokerMeeting;
   removedTaskIds: Array<string>;
@@ -9448,6 +9217,39 @@ export interface IEditTaskPayload {
    * true if the editor is editing, false if they stopped editing
    */
   isEditing: boolean | null;
+}
+
+/**
+ * Return object for EndCheckInPayload
+ */
+export type EndCheckInPayload = IErrorPayload | IEndCheckInSuccess;
+
+export interface IEndCheckInSuccess {
+  __typename: 'EndCheckInSuccess';
+
+  /**
+   * true if the meeting was killed (ended before reaching last stage)
+   */
+  isKill: boolean;
+  team: ITeam;
+  meeting: IActionMeeting;
+
+  /**
+   * The ID of the suggestion to try a check-in meeting, if tried
+   */
+  removedSuggestedActionId: string | null;
+  removedTaskIds: Array<string> | null;
+
+  /**
+   * An event that is important to the viewer, e.g. an ended meeting
+   */
+  timelineEvent: TimelineEvent;
+  updatedTaskIds: Array<string> | null;
+
+  /**
+   * Any tasks that were updated during the meeting
+   */
+  updatedTasks: Array<ITask> | null;
 }
 
 export interface IEndDraggingReflectionPayload {
@@ -9576,6 +9378,33 @@ export interface IEndNewMeetingPayload {
    * Any tasks that were updated during the meeting
    */
   updatedTasks: Array<ITask> | null;
+}
+
+/**
+ * Return object for EndRetrospectivePayload
+ */
+export type EndRetrospectivePayload = IErrorPayload | IEndRetrospectiveSuccess;
+
+export interface IEndRetrospectiveSuccess {
+  __typename: 'EndRetrospectiveSuccess';
+
+  /**
+   * true if the meeting was killed (ended before reaching last stage)
+   */
+  isKill: boolean;
+  team: ITeam;
+  meeting: IRetrospectiveMeeting;
+
+  /**
+   * The ID of the suggestion to try a retro meeting, if tried
+   */
+  removedSuggestedActionId: string | null;
+  removedTaskIds: Array<string>;
+
+  /**
+   * An event that is important to the viewer, e.g. an ended meeting
+   */
+  timelineEvent: TimelineEvent;
 }
 
 /**
@@ -10311,12 +10140,38 @@ export interface IStartDraggingReflectionPayload {
   teamId: string | null;
 }
 
+/**
+ * Return object for StartCheckInPayload
+ */
+export type StartCheckInPayload = IErrorPayload | IStartCheckInSuccess;
+
+export interface IStartCheckInSuccess {
+  __typename: 'StartCheckInSuccess';
+  meeting: IActionMeeting;
+  meetingId: string;
+  team: ITeam;
+}
+
 export interface IStartNewMeetingPayload {
   __typename: 'StartNewMeetingPayload';
   error: IStandardMutationError | null;
   team: ITeam | null;
   meetingId: string | null;
   meeting: NewMeeting | null;
+}
+
+/**
+ * Return object for StartRetrospectivePayload
+ */
+export type StartRetrospectivePayload =
+  | IErrorPayload
+  | IStartRetrospectiveSuccess;
+
+export interface IStartRetrospectiveSuccess {
+  __typename: 'StartRetrospectiveSuccess';
+  meeting: IRetrospectiveMeeting;
+  meetingId: string;
+  team: ITeam;
 }
 
 /**
@@ -10744,7 +10599,7 @@ export interface IVoteForPokerStorySuccess {
   /**
    * The stage that holds the updated scores
    */
-  stage: EstimateStage;
+  stage: IEstimateStage;
 }
 
 /**
@@ -10758,7 +10613,7 @@ export interface IPokerRevealVotesSuccess {
   /**
    * The stage that holds the updated isVoting step
    */
-  stage: EstimateStage;
+  stage: IEstimateStage;
 }
 
 /**
@@ -10774,7 +10629,7 @@ export interface IPokerResetDimensionSuccess {
   /**
    * The stage that holds the updated isVoting step
    */
-  stage: EstimateStage;
+  stage: IEstimateStage;
 }
 
 /**
@@ -10786,11 +10641,16 @@ export type PokerAnnounceDeckHoverPayload =
 
 export interface IPokerAnnounceDeckHoverSuccess {
   __typename: 'PokerAnnounceDeckHoverSuccess';
+  meetingId: string;
+  stageId: string;
+  userId: string;
+  user: IUser;
+  isHover: boolean;
 
   /**
    * The stage that holds the updated scores
    */
-  stage: EstimateStage;
+  stage: IEstimateStage;
 }
 
 /**
@@ -10806,7 +10666,7 @@ export interface IPokerSetFinalScoreSuccess {
   /**
    * The stage that holds the updated finalScore
    */
-  stage: EstimateStage;
+  stage: IEstimateStage;
 }
 
 export interface ISubscription {
@@ -10879,7 +10739,9 @@ export type NotificationSubscriptionPayload =
   | ICreateTaskPayload
   | IDeleteTaskPayload
   | IDisconnectSocketPayload
+  | IEndCheckInSuccess
   | IEndNewMeetingPayload
+  | IEndRetrospectiveSuccess
   | IInvalidateSessionsPayload
   | IInviteToTeamPayload
   | IMeetingStageTimeLimitPayload
@@ -11060,7 +10922,9 @@ export type TeamSubscriptionPayload =
   | IArchiveTeamPayload
   | IDenyPushInvitationPayload
   | IDowngradeToPersonalPayload
+  | IEndCheckInSuccess
   | IEndNewMeetingPayload
+  | IEndRetrospectiveSuccess
   | IEndSprintPokerSuccess
   | INavigateMeetingPayload
   | IPushInvitationPayload
@@ -11070,7 +10934,9 @@ export type TeamSubscriptionPayload =
   | IRemoveTeamMemberPayload
   | IRenameMeetingSuccess
   | ISelectTemplatePayload
+  | IStartCheckInSuccess
   | IStartNewMeetingPayload
+  | IStartRetrospectiveSuccess
   | IStartSprintPokerSuccess
   | IUpdateAgendaItemPayload
   | IUpdateCreditCardPayload

@@ -119,7 +119,8 @@ export default {
       cloudId,
       key: res.key,
       meetingId,
-      teamId
+      teamId,
+      userId: viewerId
     }
     if (meetingId) {
       publish(SubscriptionChannel.MEETING, meetingId, 'JiraCreateIssuePayload', data, subOptions)

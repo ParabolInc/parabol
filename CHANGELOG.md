@@ -5,6 +5,26 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 5.24.0 2020-Nov-12
+
+### Added
+
+- Sprint Poker UI deck animations #4334
+
+### Changed
+
+- Sprint Poker estimate stage display in sidebar #4318
+- Refactor atlassian jira auth #4312
+- Increased invitation expiration time to 30 days #4335
+
+### Fixed
+
+- Race condition occurring when a retro meeting starts while a checkin is taking place #4329
+
+### Deprecated
+
+- Deprecated the `startNewMeeting` and `endNewMeeting` mutations in favour of meeting specific mutations #4330
+
 ## 5.23.0 2020-Nov-04
 
 ### Added

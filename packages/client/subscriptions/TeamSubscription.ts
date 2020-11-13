@@ -1,6 +1,11 @@
 import graphql from 'babel-plugin-relay/macro'
 import {RouterProps} from 'react-router'
 import {requestSubscription, Variables} from 'relay-runtime'
+import {endCheckInTeamOnNext, endCheckInTeamUpdater} from '~/mutations/EndCheckInMutation'
+import {
+  endRetrospectiveTeamOnNext,
+  endRetrospectiveTeamUpdater
+} from '~/mutations/EndRetrospectiveMutation'
 import {navigateMeetingTeamUpdater} from '~/mutations/NavigateMeetingMutation'
 import Atmosphere from '../Atmosphere'
 import {
@@ -36,36 +41,40 @@ const subscription = graphql`
     teamSubscription {
       __typename
       ...AcceptTeamInvitationMutation_team @relay(mask: false)
+      ...AddAgendaItemMutation_team @relay(mask: false)
       ...AddAtlassianAuthMutation_team @relay(mask: false)
       ...AddReflectTemplateMutation_team @relay(mask: false)
       ...AddReflectTemplatePromptMutation_team @relay(mask: false)
       ...AddTeamMutation_team @relay(mask: false)
       ...ArchiveTeamMutation_team @relay(mask: false)
       ...DenyPushInvitationMutation_team @relay(mask: false)
+      ...EndCheckInMutation_team @relay(mask: false)
       ...EndNewMeetingMutation_team @relay(mask: false)
+      ...EndRetrospectiveMutation_team @relay(mask: false)
       ...EndSprintPokerMutation_team @relay(mask: false)
       ...MoveReflectTemplatePromptMutation_team @relay(mask: false)
       ...NavigateMeetingMutation_team @relay(mask: false)
       ...PromoteToTeamLeadMutation_team @relay(mask: false)
       ...PushInvitationMutation_team @relay(mask: false)
       ...ReflectTemplatePromptUpdateGroupColorMutation_team @relay(mask: false)
+      ...RemoveAgendaItemMutation_team @relay(mask: false)
+      ...RemoveOrgUserMutation_team @relay(mask: false)
       ...RemoveReflectTemplateMutation_team @relay(mask: false)
       ...RemoveReflectTemplatePromptMutation_team @relay(mask: false)
       ...RemoveTeamMemberMutation_team @relay(mask: false)
-      ...RemoveOrgUserMutation_team @relay(mask: false)
       ...RenameMeetingMutation_team @relay(mask: false)
       ...RenameMeetingTemplateMutation_meetingTemplate @relay(mask: false)
       ...RenameReflectTemplatePromptMutation_team @relay(mask: false)
       ...SelectTemplateMutation_team @relay(mask: false)
       ...SetCheckInEnabledMutation_team @relay(mask: false)
+      ...StartCheckInMutation_team @relay(mask: false)
       ...StartNewMeetingMutation_team @relay(mask: false)
-      ...UpdateCreditCardMutation_team @relay(mask: false)
-      ...UpdateUserProfileMutation_team @relay(mask: false)
-      ...UpdateTeamNameMutation_team @relay(mask: false)
-      ...UpgradeToProMutation_team @relay(mask: false)
-      ...AddAgendaItemMutation_team @relay(mask: false)
-      ...RemoveAgendaItemMutation_team @relay(mask: false)
+      ...StartRetrospectiveMutation_team @relay(mask: false)
       ...UpdateAgendaItemMutation_team @relay(mask: false)
+      ...UpdateCreditCardMutation_team @relay(mask: false)
+      ...UpdateTeamNameMutation_team @relay(mask: false)
+      ...UpdateUserProfileMutation_team @relay(mask: false)
+      ...UpgradeToProMutation_team @relay(mask: false)
     }
   }
 `
@@ -74,7 +83,9 @@ const onNextHandlers = {
   AcceptTeamInvitationPayload: acceptTeamInvitationTeamOnNext,
   ArchiveTeamPayload: archiveTeamTeamOnNext,
   DenyPushInvitationPayload: denyPushInvitationTeamOnNext,
+  EndCheckInSuccess: endCheckInTeamOnNext,
   EndNewMeetingPayload: endNewMeetingTeamOnNext,
+  EndRetrospectiveSuccess: endRetrospectiveTeamOnNext,
   EndSprintPokerSuccess: endSprintPokerTeamOnNext,
   RemoveOrgUserPayload: removeOrgUserTeamOnNext,
   RemoveTeamMemberPayload: removeTeamMemberTeamOnNext,
@@ -90,7 +101,9 @@ const updateHandlers = {
   AddReflectTemplatePromptPayload: addReflectTemplatePromptTeamUpdater,
   AddTeamMutationPayload: addTeamTeamUpdater,
   ArchiveTeamPayload: archiveTeamTeamUpdater,
+  EndCheckInSuccess: endCheckInTeamUpdater,
   EndNewMeetingPayload: endNewMeetingTeamUpdater,
+  EndRetrospectiveSuccess: endRetrospectiveTeamUpdater,
   EndSprintPokerSuccess: endSprintPokerTeamUpdater,
   MoveReflectTemplatePromptPayload: moveReflectTemplatePromptTeamUpdater,
   NavigateMeetingPayload: navigateMeetingTeamUpdater,
