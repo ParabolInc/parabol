@@ -218,7 +218,7 @@ const AddTeamMemberModal = (props: Props) => {
       <StyledDialogContent>
         <Fields>
           <StyledHeading>{'Share this link'}</StyledHeading>
-          <StyledTip>{'This link expires in 24 hours.'}</StyledTip>
+          <StyledTip>{'This link expires in 30 days.'}</StyledTip>
           <MassInvitationTokenLinkRoot meetingId={meetingId} teamId={teamId} />
 
           <StyledHeading>{'Or, send invites by email'}</StyledHeading>
