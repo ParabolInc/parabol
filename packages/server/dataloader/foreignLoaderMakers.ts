@@ -249,6 +249,7 @@ export const scalesByTeamId = new LoaderMakerForeign(
           .default(null)
           .eq(null)
       )
+      .orderBy('sortOrder')
       .run()
   }
 )

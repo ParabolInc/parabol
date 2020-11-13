@@ -9,7 +9,7 @@ const handleAddPokerTemplateScale = (
   const teamId = newNode.getValue('teamId') as string
   const team = store.get(teamId)
   if (!team) return
-  addNodeToArray(newNode, team, 'scales', 'name')
+  addNodeToArray(newNode, team, 'scales', 'teamId')
 }
 
 export default handleAddPokerTemplateScale

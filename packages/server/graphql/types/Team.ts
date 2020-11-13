@@ -188,7 +188,7 @@ const Team = new GraphQLObjectType<ITeam, GQLContext>({
         const uniqueScales = activeScales.filter(
           (scale, index) => index === activeScales.findIndex((obj) => obj.id === scale.id)
         )
-        return uniqueScales.sort((a, b) => (a.sortOrder < b.sortOrder ? -1 : 1))
+        return uniqueScales
       }
     },
     activeMeetings: {
