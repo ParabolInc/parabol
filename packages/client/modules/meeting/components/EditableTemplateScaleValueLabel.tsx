@@ -87,7 +87,7 @@ class EditableTemplateScaleValueLabel extends Component<Props> {
         error={error as string}
         hideIcon={isEditingDescription ? true : !isHover}
         handleSubmit={this.handleSubmit}
-        initialValue={scaleValue.label}
+        initialValue={scaleValue.label === 'X' ? 'Pass' : scaleValue.label}
         maxLength={2}
         validate={this.validate}
         placeholder={''}
