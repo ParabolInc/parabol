@@ -12,16 +12,10 @@ import getInProxy from '~/utils/relay/getInProxy'
 graphql`
   fragment RemovePokerTemplateScaleMutation_scale on RemovePokerTemplateScalePayload {
     scale {
-      id
-      teamId
-      dimensions {
-        id
-        selectedScale {
-          id
-          name
-          teamId
-        }
-      }
+      ...ScaleDropdownMenuItem_scale
+    }
+    dimensions {
+      ...PokerTemplateScalePicker_dimension
     }
   }
 `

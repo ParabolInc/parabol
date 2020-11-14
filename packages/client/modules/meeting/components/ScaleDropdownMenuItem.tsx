@@ -124,6 +124,11 @@ export default createFragmentContainer(ScaleDropdownMenuItem, {
         label
         isSpecial
       }
+      dimensions {
+        selectedScale {
+          id
+        }
+      }
     }
   `
 })
