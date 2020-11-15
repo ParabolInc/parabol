@@ -1,5 +1,5 @@
 import {RefObject, useEffect} from 'react'
-import {BezierCurve, Breakpoint, NavSidebar} from '~/types/constEnums'
+import {BezierCurve, Breakpoint, DiscussionThreadEnum, NavSidebar} from '~/types/constEnums'
 import useResizeObserver from './useResizeObserver'
 
 interface ControlBarCoverable {
@@ -59,7 +59,8 @@ export const useCoverable = (
     }
     if (covering.el) {
       cacheCoveringBBox()
-      ensureCovering(coverable, covering.left, covering.right)
+      ensureCovering(coverable, covering.left, covering.right - DiscussionThreadEnum.WIDTH)
+      // ensureCovering(coverable, covering.left, covering.right)
     }
     coverables[id] = coverable
   }
@@ -80,28 +81,32 @@ export const useCoverable = (
 }
 
 export const ensureAllCovering = (leftBound: number, rightBound: number) => {
+  console.log('ensureAllCovering -> coverables', coverables)
   Object.values(coverables).forEach((coverable) => {
     ensureCovering(coverable, leftBound, rightBound, true)
   })
 }
 
-export const cacheCoveringBBox = () => {
+export const cacheCoveringBBox = (showRightSidebar?: boolean) => {
   if (covering.el) {
     const coveringBBox = covering.el.getBoundingClientRect()
     const {left, right} = coveringBBox
+    // covering.left = left + NavSidebar.WIDTH
     covering.left = left - NavSidebar.WIDTH
-    covering.right = right
+    // covering.right = right
+    // covering.right = right + (showRightSidebar ? +DiscussionThreadEnum.WIDTH : 0)
+    covering.right = right + DiscussionThreadEnum.WIDTH
   }
   return covering
 }
 
-export const useCovering = (ref: RefObject<HTMLDivElement>) => {
+export const useCovering = (ref: RefObject<HTMLDivElement>, showRightSidebar?: boolean) => {
   useEffect(() => {
     const el = ref.current
     if (!el) return
     covering.el = el
     if (Object.keys(coverables).length) {
-      cacheCoveringBBox()
+      cacheCoveringBBox(showRightSidebar)
     }
     ensureAllCovering(covering.left, covering.right)
     return () => {

@@ -60,7 +60,6 @@ const DiscussionThread = (props: Props) => {
   // don't resize in a poker meeting as we do this in the parent
   const coverableHeight = isPokerMeeting ? 0 : MeetingControlBarEnum.HEIGHT
   const isExpanded = useCoverable('threads', ref, coverableHeight, meetingContentRef) || !!endedAt
-
   return (
     <Wrapper isExpanded={isExpanded} isPokerMeeting={isPokerMeeting} ref={ref}>
       <DiscussionThreadList

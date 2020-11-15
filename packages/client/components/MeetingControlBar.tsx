@@ -10,7 +10,7 @@ import useGotoStageId from '~/hooks/useGotoStageId'
 import useInitialRender from '~/hooks/useInitialRender'
 import useTransition, {TransitionStatus} from '~/hooks/useTransition'
 import {PALETTE} from '~/styles/paletteV2'
-import {Breakpoint, NavSidebar, ZIndex} from '~/types/constEnums'
+import {Breakpoint, DiscussionThreadEnum, NavSidebar, ZIndex} from '~/types/constEnums'
 import {MeetingTypeEnum, NewMeetingPhaseTypeEnum} from '~/types/graphql'
 import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
 import findStageAfterId from '~/utils/meetings/findStageAfterId'
@@ -26,7 +26,7 @@ import BottomControlBarTips from './BottomControlBarTips'
 import EndMeetingButton from './EndMeetingButton'
 import StageTimerControl from './StageTimerControl'
 
-const Wrapper = styled('div')({
+const Wrapper = styled('div')<{showRightSidebar: boolean}>(({showRightSidebar}) => ({
   alignItems: 'center',
   backgroundColor: '#FFFFFF',
   bottom: 0,
@@ -37,12 +37,14 @@ const Wrapper = styled('div')({
   fontSize: 14,
   height: 56,
   justifyContent: 'space-between',
+  // left: NavSidebar.WIDTH,
   left: NavSidebar.WIDTH,
   margin: '0 auto',
   minHeight: 56,
   padding: 8,
   position: 'fixed',
-  right: 0,
+  // right: 0,
+  right: showRightSidebar ? DiscussionThreadEnum.WIDTH : 0,
   width: '100%',
   zIndex: ZIndex.BOTTOM_BAR,
   [makeMinWidthMediaQuery(Breakpoint.SINGLE_REFLECTION_COLUMN)]: {
@@ -51,7 +53,7 @@ const Wrapper = styled('div')({
     boxShadow: desktopBarShadow,
     width: 'fit-content'
   }
-})
+}))
 
 const DEFAULT_TIME_LIMIT = {
   [NewMeetingPhaseTypeEnum.reflect]: 5,
@@ -65,10 +67,11 @@ interface Props {
   isDemoStageComplete?: boolean
   gotoStageId: ReturnType<typeof useGotoStageId>
   meeting: MeetingControlBar_meeting
+  showRightSidebar?: boolean
 }
 
 const MeetingControlBar = (props: Props) => {
-  const {handleGotoNext, isDemoStageComplete, meeting, gotoStageId} = props
+  const {handleGotoNext, isDemoStageComplete, meeting, gotoStageId, showRightSidebar} = props
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
   const {
@@ -102,7 +105,7 @@ const MeetingControlBar = (props: Props) => {
   const {onMouseDown, onClickCapture} = useDraggableFixture()
   const ref = useRef<HTMLDivElement>(null)
   useSnackbarPad(ref)
-  useCovering(ref)
+  useCovering(ref, showRightSidebar)
   const isInit = useInitialRender()
   if (endedAt) return null
   return (
@@ -111,6 +114,7 @@ const MeetingControlBar = (props: Props) => {
       onMouseDown={onMouseDown}
       onClickCapture={onClickCapture}
       onTouchStart={onMouseDown}
+      showRightSidebar={!!showRightSidebar}
     >
       {tranChildren
         .map((tranChild) => {

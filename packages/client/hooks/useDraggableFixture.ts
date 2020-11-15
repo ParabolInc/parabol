@@ -2,7 +2,7 @@ import getIsDrag from '~/utils/retroGroup/getIsDrag'
 import {cacheCoveringBBox, ensureAllCovering} from './useControlBarCovers'
 import useEventCallback from './useEventCallback'
 import useBreakpoint from './useBreakpoint'
-import {Breakpoint, NavSidebar} from '~/types/constEnums'
+import {Breakpoint, DiscussionThreadEnum, NavSidebar} from '~/types/constEnums'
 
 const makeDrag = (ref: HTMLDivElement, lastX: number) => ({
   ref,
@@ -42,12 +42,12 @@ const useDraggableFixture = () => {
       // const width = right - leftTest
       drag.translation = -Math.round((window.innerWidth - left - right) / 2)
       // drag.translation = -Math.round((window.innerWidth - leftTest - right) / 2)
-      const startingLeft = left - drag.translation
+      const startingLeft = left - drag.translation + NavSidebar.WIDTH
       // const startingLeft = leftTest - drag.translation
-      const startingRight = left + width - drag.translation
+      const startingRight = left + width - drag.translation - DiscussionThreadEnum.WIDTH
       // const startingRight = leftTest + width - drag.translation
       const PADDING = 8
-      drag.minTranslation = -startingLeft + PADDING - NavSidebar.WIDTH
+      drag.minTranslation = -startingLeft + PADDING
       drag.maxTranslation = window.innerWidth - startingRight - PADDING
       // drag.maxTranslation = window.innerWidth - startingRight - PADDING + NavSidebar.WIDTH
       drag.width = width
@@ -64,7 +64,7 @@ const useDraggableFixture = () => {
     drag.ref.style.transform = `translateX(${drag.translation}px)`
     // const left = window.innerWidth / 2 - 0.5 * drag.width + drag.translation
     const left = window.innerWidth / 2 - 0.5 * drag.width + NavSidebar.WIDTH + drag.translation
-    const right = left + drag.width - NavSidebar.WIDTH
+    const right = left + drag.width - NavSidebar.WIDTH - DiscussionThreadEnum.WIDTH
     // const right = left + drag.width
     ensureAllCovering(left, right)
   })
