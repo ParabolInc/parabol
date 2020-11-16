@@ -14,9 +14,7 @@ import {Breakpoint, DiscussionThreadEnum, NavSidebar, ZIndex} from '~/types/cons
 import {MeetingTypeEnum, NewMeetingPhaseTypeEnum} from '~/types/graphql'
 import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
 import findStageAfterId from '~/utils/meetings/findStageAfterId'
-
 import styled from '@emotion/styled'
-
 import useClickConfirmation from '../hooks/useClickConfirmation'
 import useSnackbarPad from '../hooks/useSnackbarPad'
 import {bottomBarShadow, desktopBarShadow} from '../styles/elevation'
@@ -25,35 +23,38 @@ import BottomControlBarRejoin from './BottomControlBarRejoin'
 import BottomControlBarTips from './BottomControlBarTips'
 import EndMeetingButton from './EndMeetingButton'
 import StageTimerControl from './StageTimerControl'
+import useBreakpoint from '~/hooks/useBreakpoint'
 
-const Wrapper = styled('div')<{showRightSidebar: boolean}>(({showRightSidebar}) => ({
-  alignItems: 'center',
-  backgroundColor: '#FFFFFF',
-  bottom: 0,
-  boxShadow: bottomBarShadow,
-  color: PALETTE.TEXT_GRAY,
-  display: 'flex',
-  flexWrap: 'nowrap',
-  fontSize: 14,
-  height: 56,
-  justifyContent: 'space-between',
-  // left: NavSidebar.WIDTH,
-  left: NavSidebar.WIDTH,
-  margin: '0 auto',
-  minHeight: 56,
-  padding: 8,
-  position: 'fixed',
-  // right: 0,
-  right: showRightSidebar ? DiscussionThreadEnum.WIDTH : 0,
-  width: '100%',
-  zIndex: ZIndex.BOTTOM_BAR,
-  [makeMinWidthMediaQuery(Breakpoint.SINGLE_REFLECTION_COLUMN)]: {
-    borderRadius: 4,
-    bottom: 8,
-    boxShadow: desktopBarShadow,
-    width: 'fit-content'
-  }
-}))
+const Wrapper = styled('div')<{isDesktop: boolean; showRightSidebar: boolean}>(
+  ({isDesktop, showRightSidebar}) => ({
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+    bottom: 0,
+    boxShadow: bottomBarShadow,
+    color: PALETTE.TEXT_GRAY,
+    display: 'flex',
+    flexWrap: 'nowrap',
+    fontSize: 14,
+    height: 56,
+    justifyContent: 'space-between',
+    // left: NavSidebar.WIDTH,
+    left: isDesktop ? NavSidebar.WIDTH : 0,
+    margin: '0 auto',
+    minHeight: 56,
+    padding: 8,
+    position: 'fixed',
+    // right: 0,
+    right: showRightSidebar && isDesktop ? DiscussionThreadEnum.WIDTH : 0,
+    width: '100%',
+    zIndex: ZIndex.BOTTOM_BAR,
+    [makeMinWidthMediaQuery(Breakpoint.SINGLE_REFLECTION_COLUMN)]: {
+      borderRadius: 4,
+      bottom: 8,
+      boxShadow: desktopBarShadow,
+      width: 'fit-content'
+    }
+  })
+)
 
 const DEFAULT_TIME_LIMIT = {
   [NewMeetingPhaseTypeEnum.reflect]: 5,
@@ -79,6 +80,8 @@ const MeetingControlBar = (props: Props) => {
     showRightSidebar = false
   } = props
   const atmosphere = useAtmosphere()
+  const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
+  // const isDesktop = useBreakpoint(Breakpoint.SINGLE_REFLECTION_COLUMN)
   const {viewerId} = atmosphere
   const {
     endedAt,
@@ -108,19 +111,20 @@ const MeetingControlBar = (props: Props) => {
   const [confirmingButton, setConfirmingButton] = useClickConfirmation()
   const cancelConfirm = confirmingButton ? () => setConfirmingButton('') : undefined
   const tranChildren = useTransition(buttons)
-  const {onMouseDown, onClickCapture} = useDraggableFixture(showRightSidebar)
+  const {onMouseDown, onClickCapture} = useDraggableFixture(showRightSidebar && isDesktop)
   const ref = useRef<HTMLDivElement>(null)
   useSnackbarPad(ref)
-  useCovering(ref, showRightSidebar)
+  useCovering(ref, showRightSidebar && isDesktop)
   const isInit = useInitialRender()
   if (endedAt) return null
   return (
     <Wrapper
       ref={ref}
+      isDesktop={isDesktop}
       onMouseDown={onMouseDown}
       onClickCapture={onClickCapture}
       onTouchStart={onMouseDown}
-      showRightSidebar={!!showRightSidebar}
+      showRightSidebar={showRightSidebar}
     >
       {tranChildren
         .map((tranChild) => {
