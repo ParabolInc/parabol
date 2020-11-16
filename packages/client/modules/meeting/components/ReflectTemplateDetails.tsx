@@ -88,8 +88,7 @@ const ReflectTemplateDetails = (props: Props) => {
     fourLsTemplate: fourLsTemplate,
     gladSadMadTemplate: gladSadMadTemplate
   }
-  const headerImg =
-    selectedTemplate.teamId === 'aGhostTeam' ? defaultIllustrations[templateId] : customTemplate
+  const headerImg = defaultIllustrations[templateId] ? defaultIllustrations[templateId] : customTemplate
   return (
     <PromptEditor>
       <Scrollable>
