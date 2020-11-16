@@ -81,7 +81,6 @@ const MeetingControlBar = (props: Props) => {
   } = props
   const atmosphere = useAtmosphere()
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
-  // const isDesktop = useBreakpoint(Breakpoint.SINGLE_REFLECTION_COLUMN)
   const {viewerId} = atmosphere
   const {
     endedAt,

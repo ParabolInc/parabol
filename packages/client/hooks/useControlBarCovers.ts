@@ -42,7 +42,6 @@ export const useCoverable = (
   height: number,
   parentRef?: RefObject<HTMLDivElement>
 ) => {
-  // const isDesktop = useBreakpoint(Breakpoint.SINGLE_REFLECTION_COLUMN)
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const updateCoverables = () => {
     const el = ref.current
