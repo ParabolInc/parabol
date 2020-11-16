@@ -55,6 +55,7 @@ const removePokerTemplateScale = {
         },
         {returnChanges: true}
       )('changes')('new_val')
+      .default([])
       .run()
 
     const data = {scaleId, dimensions}
