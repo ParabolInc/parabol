@@ -3,15 +3,13 @@ import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import EditableText from '../../../components/EditableText'
-import withAtmosphere, {
-  WithAtmosphereProps
-} from '../../../decorators/withAtmosphere/withAtmosphere'
+import useAtmosphere from '../../../hooks/useAtmosphere'
+import useMutationProps from '../../../hooks/useMutationProps'
 import RenameMeetingTemplateMutation from '../../../mutations/RenameMeetingTemplateMutation'
-import withMutationProps, {WithMutationProps} from '../../../utils/relay/withMutationProps'
 import Legitity from '../../../validation/Legitity'
 import {EditableTemplateName_teamTemplates} from '../../../__generated__/EditableTemplateName_teamTemplates.graphql'
 
-interface Props extends WithAtmosphereProps, WithMutationProps {
+interface Props {
   name: string
   templateId: string
   teamTemplates: EditableTemplateName_teamTemplates
@@ -29,18 +27,12 @@ const StyledEditableText = styled(EditableText)({
   lineHeight: '24px'
 })
 const EditableTemplateName = (props: Props) => {
+  const {name, templateId, teamTemplates, isOwner} = props
+  const atmosphere = useAtmosphere()
+  const {onError, error, onCompleted, submitMutation, submitting} = useMutationProps()
+
   const handleSubmit = (rawName) => {
-    const {
-      atmosphere,
-      templateId,
-      onError,
-      onCompleted,
-      setDirty,
-      submitMutation,
-      submitting
-    } = props
     if (submitting) return
-    setDirty()
     const {error, value: name} = validate(rawName)
     if (error) return
     submitMutation()
@@ -48,7 +40,6 @@ const EditableTemplateName = (props: Props) => {
   }
 
   const legitify = (value) => {
-    const {templateId, teamTemplates} = props
     return new Legitity(value)
       .trim()
       .required('Please enter a template name')
@@ -63,22 +54,20 @@ const EditableTemplateName = (props: Props) => {
   }
 
   const validate = (rawValue: string) => {
-    const {error, onError} = props
     const res = legitify(rawValue)
     if (res.error) {
-      onError(res.error)
+      onError(new Error(res.error))
     } else if (error) {
-      onError()
+      onError(new Error(error.message))
     }
     return res
   }
 
-  const {dirty, error, name, isOwner} = props
   return (
     <InheritedStyles>
       <StyledEditableText
         disabled={!isOwner}
-        error={dirty ? (error as string) : undefined}
+        error={error ? error.message : undefined}
         handleSubmit={handleSubmit}
         initialValue={name}
         maxLength={100}
@@ -89,7 +78,7 @@ const EditableTemplateName = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(withAtmosphere(withMutationProps(EditableTemplateName)), {
+export default createFragmentContainer(EditableTemplateName, {
   teamTemplates: graphql`
     fragment EditableTemplateName_teamTemplates on MeetingTemplate @relay(plural: true) {
       id

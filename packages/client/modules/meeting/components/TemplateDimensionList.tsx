@@ -3,16 +3,13 @@ import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {DragDropContext, Draggable, Droppable} from 'react-beautiful-dnd'
 import {createFragmentContainer} from 'react-relay'
-import withAtmosphere, {
-  WithAtmosphereProps
-} from '../../../decorators/withAtmosphere/withAtmosphere'
+import useAtmosphere from '../../../hooks/useAtmosphere'
 import MovePokerTemplateDimensionMutation from '../../../mutations/MovePokerTemplateDimensionMutation'
 import dndNoise from '../../../utils/dndNoise'
-import withMutationProps, {WithMutationProps} from '../../../utils/relay/withMutationProps'
 import {TemplateDimensionList_dimensions} from '../../../__generated__/TemplateDimensionList_dimensions.graphql'
 import TemplateDimensionItem from './TemplateDimensionItem'
 
-interface Props extends WithAtmosphereProps, WithMutationProps {
+interface Props {
   isOwner: boolean
   dimensions: TemplateDimensionList_dimensions
   templateId: string
@@ -27,9 +24,11 @@ const DimensionList = styled('div')({
 const TEMPLATE_DIMENSION = 'TEMPLATE_DIMENSION'
 
 const TemplateDimensionList = (props: Props) => {
+  const {isOwner, dimensions, templateId} = props
+  const atmosphere = useAtmosphere()
+
   const onDragEnd = (result) => {
     const {source, destination} = result
-    const {atmosphere, dimensions, templateId} = props
     if (
       !destination ||
       destination.droppableId !== TEMPLATE_DIMENSION ||
@@ -59,7 +58,6 @@ const TemplateDimensionList = (props: Props) => {
     MovePokerTemplateDimensionMutation(atmosphere, variables, {templateId})
   }
 
-  const {isOwner, dimensions} = props
   return (
     <DragDropContext onDragEnd={onDragEnd}>
       <DimensionList>
@@ -99,7 +97,7 @@ const TemplateDimensionList = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(withAtmosphere(withMutationProps(TemplateDimensionList)), {
+export default createFragmentContainer(TemplateDimensionList, {
   dimensions: graphql`
     fragment TemplateDimensionList_dimensions on TemplateDimension @relay(plural: true) {
       id

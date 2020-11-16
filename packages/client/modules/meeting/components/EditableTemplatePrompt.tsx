@@ -3,11 +3,9 @@ import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import EditableText from '../../../components/EditableText'
-import withAtmosphere, {
-  WithAtmosphereProps
-} from '../../../decorators/withAtmosphere/withAtmosphere'
+import useAtmosphere from '../../../hooks/useAtmosphere'
+import useMutationProps from '../../../hooks/useMutationProps'
 import RenameReflectTemplatePromptMutation from '../../../mutations/RenameReflectTemplatePromptMutation'
-import withMutationProps, {WithMutationProps} from '../../../utils/relay/withMutationProps'
 import Legitity from '../../../validation/Legitity'
 import {EditableTemplatePrompt_prompts} from '../../../__generated__/EditableTemplatePrompt_prompts.graphql'
 
@@ -17,7 +15,7 @@ const StyledEditableText = styled(EditableText)({
   padding: 0
 })
 
-interface Props extends WithAtmosphereProps, WithMutationProps {
+interface Props {
   isOwner: boolean
   isEditingDescription: boolean
   isHover: boolean
@@ -27,18 +25,12 @@ interface Props extends WithAtmosphereProps, WithMutationProps {
 }
 
 const EditableTemplatePrompt = (props: Props) => {
+  const {isOwner, promptId, isHover, question, isEditingDescription} = props
+  const atmosphere = useAtmosphere()
+  const {onError, error, onCompleted, submitMutation, submitting} = useMutationProps()
+
   const handleSubmit = (rawQuestion) => {
-    const {
-      atmosphere,
-      promptId,
-      onError,
-      onCompleted,
-      setDirty,
-      submitMutation,
-      submitting
-    } = props
     if (submitting) return
-    setDirty()
     const {error, value: question} = validate(rawQuestion)
     if (error) return
     submitMutation()
@@ -60,22 +52,20 @@ const EditableTemplatePrompt = (props: Props) => {
   }
 
   const validate = (rawValue: string) => {
-    const {error, onError} = props
     const res = legitify(rawValue)
     if (res.error) {
-      onError(res.error)
+      onError(new Error(res.error))
     } else if (error) {
-      onError()
+      onError(new Error(error.message))
     }
     return res
   }
 
-  const {isOwner, error, isHover, question, isEditingDescription} = props
   return (
     <StyledEditableText
       autoFocus={question.startsWith('New prompt #')}
       disabled={!isOwner}
-      error={error as string}
+      error={error?.message}
       hideIcon={isEditingDescription ? true : !isHover}
       handleSubmit={handleSubmit}
       initialValue={question}
@@ -86,7 +76,7 @@ const EditableTemplatePrompt = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(withAtmosphere(withMutationProps(EditableTemplatePrompt)), {
+export default createFragmentContainer(EditableTemplatePrompt, {
   prompts: graphql`
     fragment EditableTemplatePrompt_prompts on ReflectPrompt @relay(plural: true) {
       id

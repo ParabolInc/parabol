@@ -4,13 +4,11 @@ import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import RenamePokerTemplateDimensionMutation from '../../../mutations/RenamePokerTemplateDimensionMutation'
 import EditableText from '../../../components/EditableText'
-import withAtmosphere, {
-  WithAtmosphereProps
-} from '../../../decorators/withAtmosphere/withAtmosphere'
-import withMutationProps, {WithMutationProps} from '../../../utils/relay/withMutationProps'
 import Legitity from '../../../validation/Legitity'
 import {EditableTemplateDimension_dimensions} from '../../../__generated__/EditableTemplateDimension_dimensions.graphql'
 import {PALETTE} from '~/styles/paletteV2'
+import useAtmosphere from '../../../hooks/useAtmosphere'
+import useMutationProps from '../../../hooks/useMutationProps'
 
 const StyledEditableText = styled(EditableText)({
   fontFamily: PALETTE.TEXT_MAIN,
@@ -19,7 +17,7 @@ const StyledEditableText = styled(EditableText)({
   padding: 0
 })
 
-interface Props extends WithAtmosphereProps, WithMutationProps {
+interface Props {
   isOwner: boolean
   isEditingDescription: boolean
   isHover: boolean
@@ -29,18 +27,12 @@ interface Props extends WithAtmosphereProps, WithMutationProps {
 }
 
 const EditableTemplateDimension = (props: Props) => {
+  const {dimensionId, dimensions} = props
+  const atmosphere = useAtmosphere()
+  const {onError, error, onCompleted, submitMutation, submitting} = useMutationProps()
+
   const handleSubmit = (rawDimensionName) => {
-    const {
-      atmosphere,
-      dimensionId,
-      onError,
-      onCompleted,
-      setDirty,
-      submitMutation,
-      submitting
-    } = props
     if (submitting) return
-    setDirty()
     const {error, value: name} = validate(rawDimensionName)
     if (error) return
     submitMutation()
@@ -48,7 +40,6 @@ const EditableTemplateDimension = (props: Props) => {
   }
 
   const legitify = (value: string) => {
-    const {dimensionId, dimensions} = props
     return new Legitity(value)
       .trim()
       .required('Please enter a dimension name')
@@ -62,22 +53,21 @@ const EditableTemplateDimension = (props: Props) => {
   }
 
   const validate = (rawValue: string) => {
-    const {error, onError} = props
     const res = legitify(rawValue)
     if (res.error) {
-      onError(res.error)
+      onError(new Error(res.error))
     } else if (error) {
-      onError()
+      onError(new Error(error.message))
     }
     return res
   }
 
-  const {isOwner, error, isHover, isEditingDescription, dimensionName} = props
+  const {isOwner, isHover, isEditingDescription, dimensionName} = props
   return (
     <StyledEditableText
       autoFocus={dimensionName.startsWith('New dimension #')}
       disabled={!isOwner}
-      error={error as string}
+      error={error?.message}
       hideIcon={isEditingDescription ? true : !isHover}
       handleSubmit={handleSubmit}
       initialValue={dimensionName}
@@ -88,7 +78,7 @@ const EditableTemplateDimension = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(withAtmosphere(withMutationProps(EditableTemplateDimension)), {
+export default createFragmentContainer(EditableTemplateDimension, {
   dimensions: graphql`
     fragment EditableTemplateDimension_dimensions on TemplateDimension @relay(plural: true) {
       id

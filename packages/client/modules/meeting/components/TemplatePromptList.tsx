@@ -3,16 +3,13 @@ import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {DragDropContext, Draggable, Droppable} from 'react-beautiful-dnd'
 import {createFragmentContainer} from 'react-relay'
-import withAtmosphere, {
-  WithAtmosphereProps
-} from '../../../decorators/withAtmosphere/withAtmosphere'
+import useAtmosphere from '../../../hooks/useAtmosphere'
 import MoveReflectTemplatePromptMutation from '../../../mutations/MoveReflectTemplatePromptMutation'
 import dndNoise from '../../../utils/dndNoise'
-import withMutationProps, {WithMutationProps} from '../../../utils/relay/withMutationProps'
 import {TemplatePromptList_prompts} from '../../../__generated__/TemplatePromptList_prompts.graphql'
 import TemplatePromptItem from './TemplatePromptItem'
 
-interface Props extends WithAtmosphereProps, WithMutationProps {
+interface Props {
   isOwner: boolean
   prompts: TemplatePromptList_prompts
   templateId: string
@@ -27,9 +24,11 @@ const PromptList = styled('div')({
 const TEMPLATE_PROMPT = 'TEMPLATE_PROMPT'
 
 const TemplatePromptList = (props: Props) => {
+  const {isOwner, prompts, templateId} = props
+  const atmosphere = useAtmosphere()
+
   const onDragEnd = (result) => {
     const {source, destination} = result
-    const {atmosphere, prompts, templateId} = props
     if (
       !destination ||
       destination.droppableId !== TEMPLATE_PROMPT ||
@@ -59,7 +58,6 @@ const TemplatePromptList = (props: Props) => {
     MoveReflectTemplatePromptMutation(atmosphere, variables, {templateId})
   }
 
-  const {isOwner, prompts} = props
   return (
     <DragDropContext onDragEnd={onDragEnd}>
       <PromptList>
@@ -99,7 +97,7 @@ const TemplatePromptList = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(withAtmosphere(withMutationProps(TemplatePromptList)), {
+export default createFragmentContainer(TemplatePromptList, {
   prompts: graphql`
     fragment TemplatePromptList_prompts on ReflectPrompt @relay(plural: true) {
       id

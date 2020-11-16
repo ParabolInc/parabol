@@ -5,12 +5,10 @@ import {createFragmentContainer} from 'react-relay'
 import {Threshold} from '~/types/constEnums'
 import Icon from '../../../components/Icon'
 import LinkButton from '../../../components/LinkButton'
-import withAtmosphere, {
-  WithAtmosphereProps
-} from '../../../decorators/withAtmosphere/withAtmosphere'
+import useAtmosphere from '../../../hooks/useAtmosphere'
+import useMutationProps from '../../../hooks/useMutationProps'
 import AddPokerTemplateDimensionMutation from '../../../mutations/AddPokerTemplateDimensionMutation'
 import dndNoise from '../../../utils/dndNoise'
-import withMutationProps, {WithMutationProps} from '../../../utils/relay/withMutationProps'
 import {AddPokerTemplateDimension_dimensions} from '../../../__generated__/AddPokerTemplateDimension_dimensions.graphql'
 
 const AddDimensionLink = styled(LinkButton)({
@@ -30,22 +28,17 @@ const AddDimensionLinkPlus = styled(Icon)({
   margin: '0 16px 0 16px'
 })
 
-interface Props extends WithAtmosphereProps, WithMutationProps {
+interface Props {
   dimensions: AddPokerTemplateDimension_dimensions
   templateId: string
 }
 
 const AddPokerTemplateDimension = (props: Props) => {
+  const {dimensions, templateId} = props
+  const atmosphere = useAtmosphere()
+  const {onError, onCompleted, submitMutation, submitting} = useMutationProps()
+
   const addDimension = () => {
-    const {
-      atmosphere,
-      dimensions,
-      templateId,
-      onError,
-      onCompleted,
-      submitMutation,
-      submitting
-    } = props
     if (submitting) return
     submitMutation()
     const sortOrders = dimensions.map(({sortOrder}) => sortOrder)
@@ -63,7 +56,6 @@ const AddPokerTemplateDimension = (props: Props) => {
     )
   }
 
-  const {dimensions, submitting} = props
   if (dimensions.length >= Threshold.MAX_REFLECTION_PROMPTS) return null
   return (
     <AddDimensionLink palette='blue' onClick={addDimension} waiting={submitting}>
@@ -73,7 +65,7 @@ const AddPokerTemplateDimension = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(withMutationProps(withAtmosphere(AddPokerTemplateDimension)), {
+export default createFragmentContainer(AddPokerTemplateDimension, {
   dimensions: graphql`
     fragment AddPokerTemplateDimension_dimensions on TemplateDimension @relay(plural: true) {
       sortOrder

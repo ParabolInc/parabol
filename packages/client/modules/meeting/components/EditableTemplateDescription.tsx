@@ -1,14 +1,12 @@
 import styled from '@emotion/styled'
 import React from 'react'
 import EditableText from '../../../components/EditableText'
-import withAtmosphere, {
-  WithAtmosphereProps
-} from '../../../decorators/withAtmosphere/withAtmosphere'
+import useAtmosphere from '../../../hooks/useAtmosphere'
+import useMutationProps from '../../../hooks/useMutationProps'
 import ReflectTemplatePromptUpdateDescriptionMutation from '../../../mutations/ReflectTemplatePromptUpdateDescriptionMutation'
-import withMutationProps, {WithMutationProps} from '../../../utils/relay/withMutationProps'
 import Legitity from '../../../validation/Legitity'
 
-interface Props extends WithAtmosphereProps, WithMutationProps {
+interface Props {
   isOwner: boolean
   description: string
   promptId: string
@@ -21,18 +19,12 @@ const EditableSubText = styled(EditableText)({
 })
 
 const EditableTemplateDescription = (props: Props) => {
+  const {isOwner, description, promptId, onEditingChange} = props
+  const atmosphere = useAtmosphere()
+  const {onError, error, onCompleted, submitMutation, submitting} = useMutationProps()
+
   const handleSubmit = (rawQuestion) => {
-    const {
-      atmosphere,
-      promptId,
-      onError,
-      onCompleted,
-      setDirty,
-      submitMutation,
-      submitting
-    } = props
     if (submitting) return
-    setDirty()
     const {error, value: description = ''} = validate(rawQuestion)
     if (error) return
     submitMutation()
@@ -48,26 +40,23 @@ const EditableTemplateDescription = (props: Props) => {
   }
 
   const validate = (rawValue: string) => {
-    const {error, onError} = props
     const res = legitify(rawValue)
     if (res.error) {
-      onError(res.error)
+      onError(new Error(res.error))
     } else if (error) {
-      onError()
+      onError(new Error(error.message))
     }
     return res
   }
 
   const onEditChange = (isEditing: boolean) => {
-    const {onEditingChange} = props
     onEditingChange && onEditingChange(isEditing)
   }
 
-  const {isOwner, error, description} = props
   return (
     <EditableSubText
       disabled={!isOwner}
-      error={error as string}
+      error={error?.message}
       hideIcon
       handleSubmit={handleSubmit}
       initialValue={description}
@@ -79,4 +68,4 @@ const EditableTemplateDescription = (props: Props) => {
   )
 }
 
-export default withAtmosphere(withMutationProps(EditableTemplateDescription))
+export default EditableTemplateDescription
