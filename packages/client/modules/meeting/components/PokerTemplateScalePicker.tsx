@@ -5,6 +5,7 @@ import {createFragmentContainer} from 'react-relay'
 import Icon from '../../../components/Icon'
 import {MenuPosition} from '../../../hooks/useCoords'
 import useMenu from '../../../hooks/useMenu'
+import useTooltip from '../../../hooks/useTooltip'
 import {PALETTE} from '../../../styles/paletteV2'
 import {FONT_FAMILY, ICON_SIZE} from '../../../styles/typographyV2'
 import lazyPreload from '../../../utils/lazyPreload'
@@ -29,7 +30,7 @@ const DropdownBlock = styled('div')<{disabled: boolean}>(({disabled}) => ({
   background: disabled ? PALETTE.BACKGROUND_MAIN : '#fff',
   border: `1px solid ${PALETTE.BORDER_DROPDOWN}`,
   borderRadius: '30px',
-  cursor: 'pointer',
+  cursor: disabled ? 'not-allowed' : 'pointer',
   display: 'flex',
   fontSize: 13,
   lineHeight: '20px',
@@ -69,13 +70,20 @@ const PokerTemplateScalePicker = (props: Props) => {
       parentId: 'templateModal'
     }
   )
+  const {openTooltip, tooltipPortal, closeTooltip, originRef: tooltipRef} = useTooltip<
+    HTMLDivElement
+  >(MenuPosition.LOWER_CENTER, {
+    disabled: isOwner
+  })
   return (
     <>
       <DropdownBlock
         onMouseEnter={SelectScaleDropdown.preload}
         onClick={isOwner ? togglePortal : undefined}
         disabled={!isOwner}
-        ref={originRef}
+        ref={isOwner ? originRef : tooltipRef}
+        onMouseOver={openTooltip}
+        onMouseLeave={closeTooltip}
       >
         <MenuToggleInner>
           <MenuToggleLabel>{selectedScale.name}</MenuToggleLabel>
@@ -83,6 +91,7 @@ const PokerTemplateScalePicker = (props: Props) => {
         <DropdownIcon>expand_more</DropdownIcon>
       </DropdownBlock>
       {menuPortal(<SelectScaleDropdown menuProps={menuProps} dimension={dimension} />)}
+      {tooltipPortal(<div>Must be the template owner to change</div>)}
     </>
   )
 }
