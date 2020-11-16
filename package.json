@@ -37,6 +37,7 @@
     "ultrahook": "export $(grep ^ULTRAHOOK_API_KEY .env | tr -d \"'\") && ultrahook -k $ULTRAHOOK_API_KEY dev 3000"
   },
   "resolutions": {
+    "typescript": "^4.0.5",
     "hoist-non-react-statics": "^3.3.0",
     "@types/react": "16.9.11",
     "@types/react-dom": "16.9.4",
@@ -68,5 +69,8 @@
       "pre-commit": "lerna run --concurrency 1 --stream precommit",
       "post-commit": "git update-index --again"
     }
+  },
+  "dependencies": {
+    "typescript": "^4.0.5"
   }
 }
