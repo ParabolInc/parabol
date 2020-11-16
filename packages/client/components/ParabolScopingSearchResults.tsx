@@ -11,6 +11,7 @@ import IntegrationScopingNoResults from './IntegrationScopingNoResults'
 import useRecordIdsWithStages from '~/hooks/useRecordIdsWithStages'
 import {NewMeetingPhaseTypeEnum} from '~/types/graphql'
 import NewParabolTaskButton from './NewParabolTaskButton'
+import NewParabolTaskInput from './NewParabolTaskInput'
 
 const ResultScroller = styled('div')({
   overflow: 'auto'
@@ -46,6 +47,10 @@ const ParabolScopingSearchResults = (props: Props) => {
         meetingId={meetingId}
       />
       <ResultScroller>
+        <NewParabolTaskInput
+          isEditing={isEditing}
+          setIsEditing={setIsEditing}
+        />
         {edges.map(({node}) => {
           return (
             <ParabolScopingSearchResultItem
