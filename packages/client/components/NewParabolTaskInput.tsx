@@ -2,6 +2,13 @@ import React, {FormEvent, useState} from 'react'
 import styled from '@emotion/styled'
 import {PALETTE} from '~/styles/paletteV2'
 import Checkbox from './Checkbox'
+import CreateTaskMutation from '~/mutations/CreateTaskMutation'
+import useAtmosphere from '~/hooks/useAtmosphere'
+import {TaskStatusEnum} from '~/types/graphql'
+import dndNoise from '~/utils/dndNoise'
+import {createFragmentContainer} from 'react-relay'
+import {NewParabolTaskInput_meeting} from '~/__generated__/NewParabolTaskInput_meeting.graphql'
+import graphql from 'babel-plugin-relay/macro'
 
 const Item = styled('div')({
   backgroundColor: PALETTE.BACKGROUND_BLUE_MAGENTA,
@@ -36,13 +43,16 @@ const SearchInput = styled('input')({
 })
 
 interface Props {
+  meeting: NewParabolTaskInput_meeting
   isEditing: boolean
   setIsEditing: (isEditing: boolean) => void
 }
 
 const NewParabolTaskInput = (props: Props) => {
-  const {isEditing, setIsEditing} = props
+  const {isEditing, setIsEditing, meeting} = props
+  const {id: meetingId, teamId} = meeting
   const [newTaskContent, setNewTaskContent] = useState('')
+  const atmosphere = useAtmosphere()
 
   const handleCreateNewTask = (e: FormEvent) => {
     e.preventDefault()
@@ -51,7 +61,16 @@ const NewParabolTaskInput = (props: Props) => {
       return
     }
     // todo: create task mutation
-    console.log('calling client mutation')
+    const {viewerId} = atmosphere
+    const newTask = {
+      status: TaskStatusEnum.active,
+      sortOrder: dndNoise(),
+      meetingId,
+      userId: viewerId,
+      teamId
+    }
+    console.log('calling client mutation', newTask)
+    CreateTaskMutation(atmosphere, {newTask}, {})
     setNewTaskContent('')
   }
 
@@ -76,4 +95,11 @@ const NewParabolTaskInput = (props: Props) => {
   )
 }
 
-export default NewParabolTaskInput
+export default createFragmentContainer(NewParabolTaskInput, {
+  meeting: graphql`
+    fragment NewParabolTaskInput_meeting on PokerMeeting {
+      id
+      teamId
+    }
+  `
+})
