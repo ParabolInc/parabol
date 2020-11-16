@@ -17,7 +17,7 @@ const makeDrag = (ref: HTMLDivElement, lastX: number) => ({
 let drag: ReturnType<typeof makeDrag>
 
 const noop = () => {}
-const useDraggableFixture = () => {
+const useDraggableFixture = (showRightSidebar: boolean) => {
   const isDesktop = useBreakpoint(Breakpoint.SINGLE_REFLECTION_COLUMN)
   const onMouseUp = useEventCallback((e: MouseEvent | TouchEvent) => {
     if (e.type === 'touchend') {
@@ -36,15 +36,18 @@ const useDraggableFixture = () => {
     if (!wasDrag) {
       drag.isDrag = getIsDrag(clientX, 0, drag.lastX, 0)
       if (!drag.isDrag) return
-      const {left, right} = cacheCoveringBBox()
+      const {left, right} = cacheCoveringBBox(showRightSidebar)
+      console.log('useDraggableFixture -> left, right', left, right)
       const width = right - left
       // const leftTest = left - NavSidebar.WIDTH
       // const width = right - leftTest
       drag.translation = -Math.round((window.innerWidth - left - right) / 2)
       // drag.translation = -Math.round((window.innerWidth - leftTest - right) / 2)
+      // const startingLeft = left - drag.translation + NavSidebar.WIDTH
       const startingLeft = left - drag.translation + NavSidebar.WIDTH
       // const startingLeft = leftTest - drag.translation
-      const startingRight = left + width - drag.translation - DiscussionThreadEnum.WIDTH
+      const startingRight =
+        left + width - drag.translation - (showRightSidebar ? DiscussionThreadEnum.WIDTH : 0)
       // const startingRight = leftTest + width - drag.translation
       const PADDING = 8
       drag.minTranslation = -startingLeft + PADDING
@@ -64,7 +67,9 @@ const useDraggableFixture = () => {
     drag.ref.style.transform = `translateX(${drag.translation}px)`
     // const left = window.innerWidth / 2 - 0.5 * drag.width + drag.translation
     const left = window.innerWidth / 2 - 0.5 * drag.width + NavSidebar.WIDTH + drag.translation
-    const right = left + drag.width - NavSidebar.WIDTH - DiscussionThreadEnum.WIDTH
+    const right =
+      left + drag.width - NavSidebar.WIDTH - (showRightSidebar ? DiscussionThreadEnum.WIDTH : 0)
+    // const right = left + drag.width - NavSidebar.WIDTH
     // const right = left + drag.width
     ensureAllCovering(left, right)
   })

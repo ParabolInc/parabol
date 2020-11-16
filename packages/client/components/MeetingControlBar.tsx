@@ -71,7 +71,13 @@ interface Props {
 }
 
 const MeetingControlBar = (props: Props) => {
-  const {handleGotoNext, isDemoStageComplete, meeting, gotoStageId, showRightSidebar} = props
+  const {
+    handleGotoNext,
+    isDemoStageComplete,
+    meeting,
+    gotoStageId,
+    showRightSidebar = false
+  } = props
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
   const {
@@ -102,7 +108,7 @@ const MeetingControlBar = (props: Props) => {
   const [confirmingButton, setConfirmingButton] = useClickConfirmation()
   const cancelConfirm = confirmingButton ? () => setConfirmingButton('') : undefined
   const tranChildren = useTransition(buttons)
-  const {onMouseDown, onClickCapture} = useDraggableFixture()
+  const {onMouseDown, onClickCapture} = useDraggableFixture(showRightSidebar)
   const ref = useRef<HTMLDivElement>(null)
   useSnackbarPad(ref)
   useCovering(ref, showRightSidebar)

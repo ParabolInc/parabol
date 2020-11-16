@@ -58,8 +58,13 @@ export const useCoverable = (
       isExpanded: oldCoverable?.isExpanded ?? false
     }
     if (covering.el) {
-      cacheCoveringBBox()
-      ensureCovering(coverable, covering.left, covering.right - DiscussionThreadEnum.WIDTH)
+      const showRightSidebar = id === 'thread'
+      cacheCoveringBBox(showRightSidebar)
+      ensureCovering(
+        coverable,
+        covering.left,
+        covering.right - (showRightSidebar ? DiscussionThreadEnum.WIDTH : 0)
+      )
       // ensureCovering(coverable, covering.left, covering.right)
     }
     coverables[id] = coverable
@@ -81,31 +86,31 @@ export const useCoverable = (
 }
 
 export const ensureAllCovering = (leftBound: number, rightBound: number) => {
-  console.log('ensureAllCovering -> coverables', coverables)
   Object.values(coverables).forEach((coverable) => {
     ensureCovering(coverable, leftBound, rightBound, true)
   })
 }
 
-export const cacheCoveringBBox = (showRightSidebar?: boolean) => {
+export const cacheCoveringBBox = (showRightSidebar: boolean) => {
   if (covering.el) {
     const coveringBBox = covering.el.getBoundingClientRect()
     const {left, right} = coveringBBox
     // covering.left = left + NavSidebar.WIDTH
     covering.left = left - NavSidebar.WIDTH
     // covering.right = right
-    // covering.right = right + (showRightSidebar ? +DiscussionThreadEnum.WIDTH : 0)
-    covering.right = right + DiscussionThreadEnum.WIDTH
+    covering.right = right + (showRightSidebar ? DiscussionThreadEnum.WIDTH : 0)
+    // covering.right = right + DiscussionThreadEnum.WIDTH
   }
   return covering
 }
 
-export const useCovering = (ref: RefObject<HTMLDivElement>, showRightSidebar?: boolean) => {
+export const useCovering = (ref: RefObject<HTMLDivElement>, showRightSidebar: boolean) => {
   useEffect(() => {
     const el = ref.current
     if (!el) return
     covering.el = el
     if (Object.keys(coverables).length) {
+      console.log('useCovering -> coverables <><><><', coverables)
       cacheCoveringBBox(showRightSidebar)
     }
     ensureAllCovering(covering.left, covering.right)

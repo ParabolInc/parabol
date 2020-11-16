@@ -121,6 +121,8 @@ const EstimatePhaseDiscussionDrawer = (props: Props) => {
   // const [isShowingVideo, setIsShowingVideo] = useState(true)
   const ref = useRef<HTMLDivElement>(null)
   const meetingControlBarBottom = 16
+  const test = ref.current
+  // test?.getBoundingClientRect()?.right -= DiscussionThreadEnum.WIDTH
   const coverableHeight = isDesktop ? MeetingControlBarEnum.HEIGHT + meetingControlBarBottom : 0
   useCoverable('drawer', ref, coverableHeight) || !!endedAt
 
