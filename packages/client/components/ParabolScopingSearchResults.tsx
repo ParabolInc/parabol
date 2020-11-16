@@ -1,3 +1,4 @@
+import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useEffect, useState} from 'react'
 import {createPaginationContainer, RelayPaginationProp} from 'react-relay'
@@ -9,7 +10,11 @@ import useLoadMoreOnScrollBottom from '~/hooks/useLoadMoreOnScrollBottom'
 import IntegrationScopingNoResults from './IntegrationScopingNoResults'
 import useRecordIdsWithStages from '~/hooks/useRecordIdsWithStages'
 import {NewMeetingPhaseTypeEnum} from '~/types/graphql'
+import NewParabolTaskButton from './NewParabolTaskButton'
 
+const ResultScroller = styled('div')({
+  overflow: 'auto'
+})
 interface Props {
   relay: RelayPaginationProp
   viewer: ParabolScopingSearchResults_viewer | null
@@ -21,6 +26,7 @@ const ParabolScopingSearchResults = (props: Props) => {
   const tasks = viewer?.tasks ?? null
   const incomingEdges = tasks?.edges ?? null
   const [edges, setEdges] = useState([] as readonly any[])
+  const [isEditing, setIsEditing] = useState(false)
   const lastItem = useLoadMoreOnScrollBottom(relay, {}, 50)
   useEffect(() => {
     if (incomingEdges) setEdges(incomingEdges)
@@ -39,17 +45,20 @@ const ParabolScopingSearchResults = (props: Props) => {
         tasks={edges}
         meetingId={meetingId}
       />
-      {edges.map(({node}) => {
-        return (
-          <ParabolScopingSearchResultItem
-            key={node.id}
-            task={node}
-            meetingId={meeting.id}
-            isSelected={usedParabolTaskIds.has(node.id)}
-          />
-        )
-      })}
-      {lastItem}
+      <ResultScroller>
+        {edges.map(({node}) => {
+          return (
+            <ParabolScopingSearchResultItem
+              key={node.id}
+              task={node}
+              meetingId={meeting.id}
+              isSelected={usedParabolTaskIds.has(node.id)}
+            />
+          )
+        })}
+        {lastItem}
+      </ResultScroller>
+      {!isEditing && <NewParabolTaskButton setIsEditing={setIsEditing} />}
     </>
   )
 }
