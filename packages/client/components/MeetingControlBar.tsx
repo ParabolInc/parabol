@@ -25,8 +25,8 @@ import EndMeetingButton from './EndMeetingButton'
 import StageTimerControl from './StageTimerControl'
 import useBreakpoint from '~/hooks/useBreakpoint'
 
-const Wrapper = styled('div')<{isDesktop: boolean; showRightSidebar: boolean}>(
-  ({isDesktop, showRightSidebar}) => ({
+const Wrapper = styled('div')<{isDesktop: boolean; isRightSidebarOpen: boolean}>(
+  ({isDesktop, isRightSidebarOpen}) => ({
     alignItems: 'center',
     backgroundColor: '#FFFFFF',
     bottom: 0,
@@ -37,14 +37,12 @@ const Wrapper = styled('div')<{isDesktop: boolean; showRightSidebar: boolean}>(
     fontSize: 14,
     height: 56,
     justifyContent: 'space-between',
-    // left: NavSidebar.WIDTH,
     left: isDesktop ? NavSidebar.WIDTH : 0,
     margin: '0 auto',
     minHeight: 56,
     padding: 8,
     position: 'fixed',
-    // right: 0,
-    right: showRightSidebar && isDesktop ? DiscussionThreadEnum.WIDTH : 0,
+    right: isRightSidebarOpen ? DiscussionThreadEnum.WIDTH : 0,
     width: '100%',
     zIndex: ZIndex.BOTTOM_BAR,
     [makeMinWidthMediaQuery(Breakpoint.SINGLE_REFLECTION_COLUMN)]: {
@@ -68,7 +66,7 @@ interface Props {
   isDemoStageComplete?: boolean
   gotoStageId: ReturnType<typeof useGotoStageId>
   meeting: MeetingControlBar_meeting
-  showRightSidebar?: boolean
+  isRightSidebarOpen?: boolean
 }
 
 const MeetingControlBar = (props: Props) => {
@@ -77,7 +75,7 @@ const MeetingControlBar = (props: Props) => {
     isDemoStageComplete,
     meeting,
     gotoStageId,
-    showRightSidebar = false
+    isRightSidebarOpen = false
   } = props
   const atmosphere = useAtmosphere()
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
@@ -110,10 +108,10 @@ const MeetingControlBar = (props: Props) => {
   const [confirmingButton, setConfirmingButton] = useClickConfirmation()
   const cancelConfirm = confirmingButton ? () => setConfirmingButton('') : undefined
   const tranChildren = useTransition(buttons)
-  const {onMouseDown, onClickCapture} = useDraggableFixture(showRightSidebar && isDesktop)
+  const {onMouseDown, onClickCapture} = useDraggableFixture(isRightSidebarOpen)
   const ref = useRef<HTMLDivElement>(null)
   useSnackbarPad(ref)
-  useCovering(ref, showRightSidebar && isDesktop)
+  useCovering(ref, isRightSidebarOpen)
   const isInit = useInitialRender()
   if (endedAt) return null
   return (
@@ -123,7 +121,7 @@ const MeetingControlBar = (props: Props) => {
       onMouseDown={onMouseDown}
       onClickCapture={onClickCapture}
       onTouchStart={onMouseDown}
-      showRightSidebar={showRightSidebar}
+      isRightSidebarOpen={isRightSidebarOpen}
     >
       {tranChildren
         .map((tranChild) => {

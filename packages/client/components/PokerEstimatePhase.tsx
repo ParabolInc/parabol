@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
+import React, {useRef} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {phaseLabelLookup} from '../utils/meetings/lookups'
 import {PokerEstimatePhase_meeting} from '../__generated__/PokerEstimatePhase_meeting.graphql'
@@ -62,12 +62,13 @@ const PokerEstimatePhase = (props: Props) => {
   const {localStage, endedAt, showSidebar} = meeting
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const {isOpen, toggle: toggleDrawer} = useSidebar(showSidebar)
+  const meetingContentRef = useRef<HTMLDivElement>(null)
   if (!localStage) return null
   const {story} = localStage
   const {__typename} = story!
 
   return (
-    <MeetingContent>
+    <MeetingContent ref={meetingContentRef}>
       <MeetingHeaderAndPhase hideBottomBar={!!endedAt}>
         <Header>
           <MeetingTopBarWrapper>
@@ -89,16 +90,23 @@ const PokerEstimatePhase = (props: Props) => {
           )}
         </Header>
         {__typename === 'JiraIssue' && <PokerEstimateHeaderCardJira stage={localStage as any} />}
-
         <PhaseWrapper>
-          <EstimatePhaseArea />
+          <EstimatePhaseArea showSidebar={showSidebar} />
         </PhaseWrapper>
       </MeetingHeaderAndPhase>
       {isDesktop ? (
-        <EstimatePhaseDiscussionDrawer isDesktop={isDesktop} meeting={meeting} />
+        <EstimatePhaseDiscussionDrawer
+          isDesktop={isDesktop}
+          meeting={meeting}
+          meetingContentRef={meetingContentRef}
+        />
       ) : (
         <SwipeableDashSidebar isOpen={isOpen} isRightSidebar onToggle={toggleDrawer}>
-          <EstimatePhaseDiscussionDrawer isDesktop={isDesktop} meeting={meeting} />
+          <EstimatePhaseDiscussionDrawer
+            isDesktop={isDesktop}
+            meeting={meeting}
+            meetingContentRef={meetingContentRef}
+          />
         </SwipeableDashSidebar>
       )}
     </MeetingContent>

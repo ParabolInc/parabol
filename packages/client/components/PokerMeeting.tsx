@@ -57,8 +57,7 @@ const PokerMeeting = (props: Props) => {
   const {featureFlags} = user
   const {video: allowVideo} = featureFlags
   const localPhaseType = localPhase?.phaseType
-  const showRightSidebar = isDesktop && localPhaseType === NewMeetingPhaseTypeEnum.ESTIMATE
-  console.log('PokerMeeting -> showRightSidebar', showRightSidebar)
+  const isRightSidebarOpen = isDesktop && localPhaseType === NewMeetingPhaseTypeEnum.ESTIMATE
   const Phase = phaseLookup[localPhaseType] as PhaseComponent
   return (
     <MeetingStyles>
@@ -91,7 +90,7 @@ const PokerMeeting = (props: Props) => {
         meeting={meeting}
         handleGotoNext={handleGotoNext}
         gotoStageId={gotoStageId}
-        showRightSidebar={showRightSidebar}
+        isRightSidebarOpen={isRightSidebarOpen}
       />
     </MeetingStyles>
   )

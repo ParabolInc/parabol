@@ -5,13 +5,13 @@ import useResizeObserver from './useResizeObserver'
 const usePokerDeckLeft = (
   deckRef: RefObject<HTMLDivElement>,
   totalCards: number,
-  showingSidebars: boolean
+  showSidebar: boolean
 ) => {
   const [left, setLeft] = useState(0)
   const adjustLeft = () => {
     const totalWidth = deckRef.current!.clientWidth
     const deckWidth = PokerCards.WIDTH + (PokerCards.WIDTH - PokerCards.OVERLAP) * (totalCards - 1)
-    setLeft((totalWidth - deckWidth - (showingSidebars ? DiscussionThreadEnum.WIDTH : 0)) / 2)
+    setLeft((totalWidth - deckWidth - (showSidebar ? DiscussionThreadEnum.WIDTH : 0)) / 2)
   }
   useLayoutEffect(adjustLeft, [])
   useResizeObserver(adjustLeft, deckRef)

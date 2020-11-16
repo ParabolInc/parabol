@@ -53,7 +53,12 @@ const containerStyle = {
   height: '100%'
 }
 
-const EstimatePhaseArea = () => {
+interface Props {
+  showSidebar: boolean
+}
+
+const EstimatePhaseArea = (props: Props) => {
+  const {showSidebar} = props
   const [activeIdx, setActiveIdx] = useState(1)
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
 
@@ -70,7 +75,7 @@ const EstimatePhaseArea = () => {
           return <StepperDot key={idx} isActive={idx === activeIdx} />
         })}
       </StepperDots>
-      <PokerCardDeck />
+      <PokerCardDeck showSidebar={showSidebar} />
       <DeckActivityAvatars />
       <SwipeableViews
         containerStyle={containerStyle}

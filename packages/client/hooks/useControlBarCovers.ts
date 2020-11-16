@@ -42,7 +42,7 @@ export const useCoverable = (
   height: number,
   parentRef?: RefObject<HTMLDivElement>
 ) => {
-  const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
+  const isLeftSidebarOpen = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const updateCoverables = () => {
     const el = ref.current
     if (!el) return
@@ -60,14 +60,8 @@ export const useCoverable = (
       isExpanded: oldCoverable?.isExpanded ?? false
     }
     if (covering.el) {
-      const showRightSidebar = id === 'thread' && isDesktop
-      cacheCoveringBBox(showRightSidebar, isDesktop)
-      ensureCovering(
-        coverable,
-        covering.left,
-        covering.right - (showRightSidebar ? DiscussionThreadEnum.WIDTH : 0)
-      )
-      // ensureCovering(coverable, covering.left, covering.right)
+      cacheCoveringBBox(isLeftSidebarOpen)
+      ensureCovering(coverable, covering.left, covering.right)
     }
     coverables[id] = coverable
   }
@@ -93,29 +87,24 @@ export const ensureAllCovering = (leftBound: number, rightBound: number) => {
   })
 }
 
-export const cacheCoveringBBox = (showRightSidebar: boolean, isDesktop: boolean) => {
+export const cacheCoveringBBox = (isLeftSidebarOpen: boolean, isRightSidebarOpen?: boolean) => {
   if (covering.el) {
     const coveringBBox = covering.el.getBoundingClientRect()
     const {left, right} = coveringBBox
-    // covering.left = left + NavSidebar.WIDTH
-    covering.left = left - (isDesktop ? NavSidebar.WIDTH : 0)
-    // covering.right = right
-    covering.right = right + (showRightSidebar && isDesktop ? DiscussionThreadEnum.WIDTH : 0)
-    // covering.right = right + DiscussionThreadEnum.WIDTH
+    covering.left = left - (isLeftSidebarOpen ? NavSidebar.WIDTH : 0)
+    covering.right = right + (isRightSidebarOpen ? DiscussionThreadEnum.WIDTH : 0)
   }
   return covering
 }
 
-export const useCovering = (ref: RefObject<HTMLDivElement>, showRightSidebar: boolean) => {
-  // const isDesktop = useBreakpoint(Breakpoint.SINGLE_REFLECTION_COLUMN)
-  const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
+export const useCovering = (ref: RefObject<HTMLDivElement>, isRightSidebarOpen: boolean) => {
+  const isLeftSidebarOpen = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   useEffect(() => {
     const el = ref.current
     if (!el) return
     covering.el = el
     if (Object.keys(coverables).length) {
-      console.log('useCovering -> coverables <><><><', coverables)
-      cacheCoveringBBox(showRightSidebar, isDesktop)
+      cacheCoveringBBox(isLeftSidebarOpen, isRightSidebarOpen)
     }
     ensureAllCovering(covering.left, covering.right)
     return () => {

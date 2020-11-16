@@ -20,7 +20,6 @@ const noop = () => {}
 const useDraggableFixture = (isRightSidebarOpen: boolean) => {
   const isDesktop = useBreakpoint(Breakpoint.SINGLE_REFLECTION_COLUMN)
   const isLeftSidebarOpen = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
-  console.log('useDraggableFixture -> isLeftSidebarOpen', isLeftSidebarOpen)
   const onMouseUp = useEventCallback((e: MouseEvent | TouchEvent) => {
     if (e.type === 'touchend') {
       drag.ref.removeEventListener('touchmove', onMouseMove)
@@ -38,29 +37,15 @@ const useDraggableFixture = (isRightSidebarOpen: boolean) => {
     if (!wasDrag) {
       drag.isDrag = getIsDrag(clientX, 0, drag.lastX, 0)
       if (!drag.isDrag) return
-      const {left, right} = cacheCoveringBBox(
-        isRightSidebarOpen && isLeftSidebarOpen,
-        isLeftSidebarOpen
-      )
-      console.log('useDraggableFixture -> left, right', left, right)
+      const {left, right} = cacheCoveringBBox(isLeftSidebarOpen, isRightSidebarOpen)
       const width = right - left
-      // const leftTest = left - NavSidebar.WIDTH
-      // const width = right - leftTest
       drag.translation = -Math.round((window.innerWidth - left - right) / 2)
-      // drag.translation = -Math.round((window.innerWidth - leftTest - right) / 2)
-      // const startingLeft = left - drag.translation + NavSidebar.WIDTH
       const startingLeft = left - drag.translation + (isLeftSidebarOpen ? NavSidebar.WIDTH : 0)
-      // const startingLeft = leftTest - drag.translation
       const startingRight =
-        left +
-        width -
-        drag.translation -
-        (isLeftSidebarOpen && isRightSidebarOpen ? DiscussionThreadEnum.WIDTH : 0)
-      // const startingRight = leftTest + width - drag.translation
+        left + width - drag.translation - (isRightSidebarOpen ? DiscussionThreadEnum.WIDTH : 0)
       const PADDING = 8
       drag.minTranslation = -startingLeft + PADDING
       drag.maxTranslation = window.innerWidth - startingRight - PADDING
-      // drag.maxTranslation = window.innerWidth - startingRight - PADDING + NavSidebar.WIDTH
       drag.width = width
       const eventName = isTouchMove ? 'touchend' : 'mouseup'
       document.addEventListener(eventName, onMouseUp, {once: true})
@@ -73,7 +58,6 @@ const useDraggableFixture = (isRightSidebarOpen: boolean) => {
       drag.minTranslation
     )
     drag.ref.style.transform = `translateX(${drag.translation}px)`
-    // const left = window.innerWidth / 2 - 0.5 * drag.width + drag.translation
     const left =
       window.innerWidth / 2 -
       0.5 * drag.width +
@@ -83,9 +67,7 @@ const useDraggableFixture = (isRightSidebarOpen: boolean) => {
       left +
       drag.width -
       (isLeftSidebarOpen ? NavSidebar.WIDTH : 0) -
-      (isRightSidebarOpen && isLeftSidebarOpen ? DiscussionThreadEnum.WIDTH : 0)
-    // const right = left + drag.width - NavSidebar.WIDTH
-    // const right = left + drag.width
+      (isRightSidebarOpen ? DiscussionThreadEnum.WIDTH : 0)
     ensureAllCovering(left, right)
   })
 

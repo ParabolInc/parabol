@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import React, {useEffect, useRef} from 'react'
+import React, {RefObject, useEffect, useRef} from 'react'
 import graphql from 'babel-plugin-relay/macro'
 import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import {useCoverable} from '~/hooks/useControlBarCovers'
@@ -100,10 +100,11 @@ const ShowVideoButton = styled(PlainButton)<{isShowingVideo: boolean}>(({isShowi
 interface Props {
   isDesktop: boolean
   meeting: EstimatePhaseDiscussionDrawer_meeting
+  meetingContentRef: RefObject<HTMLDivElement>
 }
 
 const EstimatePhaseDiscussionDrawer = (props: Props) => {
-  const {isDesktop, meeting} = props
+  const {isDesktop, meeting, meetingContentRef} = props
   const {id: meetingId, endedAt, isShowingVideo, localStage, viewerMeetingMember} = meeting
   const {user} = viewerMeetingMember
   const {picture} = user
@@ -118,13 +119,10 @@ const EstimatePhaseDiscussionDrawer = (props: Props) => {
   useEffect(() => {
     setIsShowingVideo(true)
   }, [])
-  // const [isShowingVideo, setIsShowingVideo] = useState(true)
   const ref = useRef<HTMLDivElement>(null)
   const meetingControlBarBottom = 16
-  const test = ref.current
-  // test?.getBoundingClientRect()?.right -= DiscussionThreadEnum.WIDTH
   const coverableHeight = isDesktop ? MeetingControlBarEnum.HEIGHT + meetingControlBarBottom : 0
-  useCoverable('drawer', ref, coverableHeight) || !!endedAt
+  useCoverable('drawer', ref, coverableHeight, meetingContentRef) || !!endedAt
 
   return (
     <Drawer isDesktop={isDesktop} ref={ref}>

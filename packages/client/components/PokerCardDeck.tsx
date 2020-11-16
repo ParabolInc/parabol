@@ -1,7 +1,5 @@
 import styled from '@emotion/styled'
 import React, {useRef, useState} from 'react'
-import useBreakpoint from '~/hooks/useBreakpoint'
-import {Breakpoint} from '~/types/constEnums'
 import useHotkey from '../hooks/useHotkey'
 import usePokerDeckLeft from '../hooks/usePokerDeckLeft'
 import {PALETTE} from '../styles/paletteV2'
@@ -17,10 +15,12 @@ const Deck = styled('div')<{left: number}>(({left}) => ({
   zIndex: 1 // TODO remove. needs to be under bottom bar but above dimension bg
 }))
 
-interface Props {}
+interface Props {
+  showSidebar: boolean
+}
 
 const PokerCardDeck = (props: Props) => {
-  const {} = props
+  const {showSidebar} = props
   const cards = [
     {label: '1', value: 1, color: PALETTE.BACKGROUND_RED},
     {label: '2', value: 2, color: PALETTE.BACKGROUND_BLUE},
@@ -28,7 +28,6 @@ const PokerCardDeck = (props: Props) => {
     {label: '4', value: 4, color: PALETTE.BACKGROUND_YELLOW}
   ]
   const totalCards = cards.length
-  const showingSidebars = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const [selectedIdx, setSelectedIdx] = useState<number | undefined>()
   const [isCollapsed, setIsCollapsed] = useState(false)
   const deckRef = useRef<HTMLDivElement>(null)
@@ -36,7 +35,7 @@ const PokerCardDeck = (props: Props) => {
     setIsCollapsed(!isCollapsed)
   }
   useHotkey('c', toggleCollapse)
-  const left = usePokerDeckLeft(deckRef, totalCards, showingSidebars)
+  const left = usePokerDeckLeft(deckRef, totalCards, showSidebar)
 
   return (
     <Deck ref={deckRef} left={left}>
