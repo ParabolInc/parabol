@@ -2134,15 +2134,10 @@
     eventemitter3 "^3.1.0"
     tslib "^1.9.3"
 
-"@mattkrick/graphql-trebuchet-client@^0.2.0":
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/@mattkrick/graphql-trebuchet-client/-/graphql-trebuchet-client-0.2.0.tgz#d50603b97900bfeb87d97ea0cad1ea0104b34773"
-  integrity sha512-8l5LfOp6TwKbtxG2/yySl1Q9czdH3395J9lPWjW4VR2ZKaAPuJuCVnHh0PQEXuhBrFW4Qmq0Z503cqreiBiDWQ==
-
-"@mattkrick/graphql-trebuchet-client@^1.0.0":
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/@mattkrick/graphql-trebuchet-client/-/graphql-trebuchet-client-1.0.1.tgz#59750cdcc88d777267394a95293443f4919d9fde"
-  integrity sha512-9r0LjFWPefUHXN+lX2fAgcPMi1NbdsnXPJCL+fJdhZ1Jeo3F+La6KF2S+bo0bMBNsHowqSaeuTv2arSi0DDHJQ==
+"@mattkrick/graphql-trebuchet-client@^1.0.2":
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/@mattkrick/graphql-trebuchet-client/-/graphql-trebuchet-client-1.0.2.tgz#9ef56ca05ed6e3f6785348ae67c70f23c2d5cce0"
+  integrity sha512-XexI4g+4U6LuaNNdOhpuD1PewHXmvvcKcs61pZFD2HZTSUT4h807WyZiKIONpqHb/egjPqtB8khldAex76d1uQ==
 
 "@mattkrick/sanitize-svg@0.2.1", "@mattkrick/sanitize-svg@^0.2.1":
   version "0.2.1"
