@@ -10717,6 +10717,11 @@ export type PokerAnnounceDeckHoverPayload =
 
 export interface IPokerAnnounceDeckHoverSuccess {
   __typename: 'PokerAnnounceDeckHoverSuccess';
+  meetingId: string;
+  stageId: string;
+  userId: string;
+  user: IUser;
+  isHover: boolean;
 
   /**
    * The stage that holds the updated scores

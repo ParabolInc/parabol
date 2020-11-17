@@ -6,6 +6,9 @@ import useBreakpoint from '~/hooks/useBreakpoint'
 import {Breakpoint, DiscussionThreadEnum} from '~/types/constEnums'
 import PokerCardDeck from './PokerCardDeck'
 import DeckActivityAvatars from './DeckActivityAvatars'
+import {createFragmentContainer} from 'react-relay'
+import graphql from 'babel-plugin-relay/macro'
+import {EstimatePhaseArea_meeting} from '~/__generated__/EstimatePhaseArea_meeting.graphql'
 
 const EstimateArea = styled('div')({
   display: 'flex',
@@ -54,16 +57,25 @@ const containerStyle = {
 }
 
 interface Props {
-  showSidebar: boolean
+  meeting: EstimatePhaseArea_meeting
 }
-
 const EstimatePhaseArea = (props: Props) => {
-  const {showSidebar} = props
+  const {meeting} = props
+  const {localStage} = meeting
   const [activeIdx, setActiveIdx] = useState(1)
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
 
   const onChangeIdx = (idx: number) => {
     setActiveIdx(idx)
+  }
+
+  const getVotedUserEl = (_userId: string) => {
+    // mock Element
+    return ({
+      getBoundingClientRect() {
+        return {top: 100, left: 200}
+      }
+    } as any) as HTMLDivElement
   }
 
   const dummyEstimateItems = [1, 2, 3]
@@ -75,8 +87,8 @@ const EstimatePhaseArea = (props: Props) => {
           return <StepperDot key={idx} isActive={idx === activeIdx} />
         })}
       </StepperDots>
-      <PokerCardDeck showSidebar={showSidebar} />
-      <DeckActivityAvatars />
+      <PokerCardDeck meeting={meeting} />
+      <DeckActivityAvatars stage={localStage} getVotedUserEl={getVotedUserEl} />
       <SwipeableViews
         containerStyle={containerStyle}
         enableMouseEvents
@@ -93,4 +105,22 @@ const EstimatePhaseArea = (props: Props) => {
   )
 }
 
-export default EstimatePhaseArea
+export default createFragmentContainer(EstimatePhaseArea, {
+  meeting: graphql`
+    fragment EstimatePhaseArea_meeting on PokerMeeting {
+      ...PokerCardDeck_meeting
+      localStage {
+        ... on EstimateStage {
+          ...DeckActivityAvatars_stage
+        }
+      }
+      phases {
+        ... on EstimatePhase {
+          stages {
+            ...DeckActivityAvatars_stage
+          }
+        }
+      }
+    }
+  `
+})

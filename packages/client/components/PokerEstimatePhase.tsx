@@ -91,7 +91,7 @@ const PokerEstimatePhase = (props: Props) => {
         </Header>
         {__typename === 'JiraIssue' && <PokerEstimateHeaderCardJira stage={localStage as any} />}
         <PhaseWrapper>
-          <EstimatePhaseArea showSidebar={showSidebar} />
+          <EstimatePhaseArea meeting={meeting} />
         </PhaseWrapper>
       </MeetingHeaderAndPhase>
       {isDesktop ? (
@@ -124,6 +124,7 @@ graphql`
 export default createFragmentContainer(PokerEstimatePhase, {
   meeting: graphql`
     fragment PokerEstimatePhase_meeting on PokerMeeting {
+      ...EstimatePhaseArea_meeting
       id
       endedAt
       showSidebar
