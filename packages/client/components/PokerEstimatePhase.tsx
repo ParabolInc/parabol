@@ -95,20 +95,21 @@ const PokerEstimatePhase = (props: Props) => {
         </PhaseWrapper>
       </MeetingHeaderAndPhase>
       {isDesktop ? (
-        <EstimatePhaseDiscussionDrawer
-          isDesktop={isDesktop}
-          meeting={meeting}
-          meetingContentRef={meetingContentRef}
-        />
+        <div>thread drawer</div>
+        // <EstimatePhaseDiscussionDrawer
+        //   isDesktop={isDesktop}
+        //   meeting={meeting}
+        //   meetingContentRef={meetingContentRef}
+        // />
       ) : (
-        <SwipeableDashSidebar isOpen={isOpen} isRightSidebar onToggle={toggleDrawer}>
-          <EstimatePhaseDiscussionDrawer
-            isDesktop={isDesktop}
-            meeting={meeting}
-            meetingContentRef={meetingContentRef}
-          />
-        </SwipeableDashSidebar>
-      )}
+          <SwipeableDashSidebar isOpen={isOpen} isRightSidebar onToggle={toggleDrawer}>
+            <EstimatePhaseDiscussionDrawer
+              isDesktop={isDesktop}
+              meeting={meeting}
+              meetingContentRef={meetingContentRef}
+            />
+          </SwipeableDashSidebar>
+        )}
     </MeetingContent>
   )
 }

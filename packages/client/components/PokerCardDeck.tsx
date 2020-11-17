@@ -43,35 +43,17 @@ const makeHandleCompleted = (onCompleted: () => void, atmosphere: Atmosphere) =>
 const PokerCardDeck = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {viewerId: userId} = atmosphere
-
   const {meeting} = props
-
-  // const {id: meetingId, localStage, showSidebar} = meeting
-  const {id: meetingId, localStage} = meeting
-
-  // const {id: meetingId, localStage, phases, settings} = meeting
+  const {id: meetingId, localStage, showSidebar, settings, phases} = meeting
   const stageId = localStage.id!
-
-  // const {stages} = phases!.find(({phaseType}) => phaseType === 'ESTIMATE')!
-  // const stage = stages.find(({id}) => id === stageId)
-  // const {dimensionId, scores} = stage
-  // console.log(scores, 'scores')
-  // const {selectedTemplate} = settings
-  // const {dimensions} = selectedTemplate
-  // const {selectedScale} = dimensions.find(({id}) => id === dimensionId)
-  // const {values: cards} = selectedScale
-
-  const cards = [
-    {color: '#5CA0E5', label: 'SM', value: 1},
-    {color: '#5CA0E5', label: 'MD', value: 2},
-    {color: '#5CA0E5', label: 'LG', value: 3},
-  ]
-
+  const {stages} = phases!.find(({phaseType}) => phaseType === 'ESTIMATE')!
+  const stage = stages.find(({id}) => id === stageId)
+  const {dimensionId, scores} = stage
+  const {selectedTemplate} = settings
+  const {dimensions} = selectedTemplate
+  const {selectedScale} = dimensions.find(({id}) => id === dimensionId)
+  const {values: cards} = selectedScale
   const totalCards = cards.length
-
-  const scores = [
-    {userId, label: 'SM', value: 1}
-  ]
 
   const maybeGetUserVoteValueIdx = () => {
     const userVote = scores.find(({userId: scoreUserId}) => userId === scoreUserId)

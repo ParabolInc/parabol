@@ -1,7 +1,7 @@
 import React from 'react'
 import styled from '@emotion/styled'
-// import PokerActiveVoting from './PokerActiveVoting'
-// import PokerDiscussVoting from './PokerDiscussVoting'
+import PokerActiveVoting from './PokerActiveVoting'
+import PokerDiscussVoting from './PokerDiscussVoting'
 import LinkButton from './LinkButton'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
@@ -40,17 +40,15 @@ interface Props {
 }
 
 const EstimateDimensionColumn = (props: Props) => {
-  // const {stage, meeting, setVotedUserEl} = props
-  const {stage, meeting} = props
-  console.dir(meeting)
-
-  // const {settings} = meeting
-  // const {selectedTemplate} = settings
-  // const {dimensions} = selectedTemplate
-  // const {dimensionId} = stage
-  // const dimension = dimensions.find(({id}) => id === dimensionId)
-  const name = 'Dimension Name'
-  // const {name} = dimension
+  const {stage, meeting, setVotedUserEl} = props
+  const {team} = meeting
+  const {teamMembers} = team
+  const {settings} = meeting
+  const {selectedTemplate} = settings
+  const {dimensions} = selectedTemplate
+  const {dimensionId} = stage
+  const dimension = dimensions.find(({id}) => id === dimensionId)
+  const {name} = dimension
 
   const {isVoting} = stage
 
@@ -61,31 +59,33 @@ const EstimateDimensionColumn = (props: Props) => {
         {isVoting ? null : <StyledLinkButton palette={'blue'}>{'Team Revote'}</StyledLinkButton>}
       </DimensionHeader>
 
-      {/* {teamMembers.map((teamMember, idx) => {
+      {teamMembers.map((teamMember, idx) => {
         return <div key={idx} ref={(el: HTMLDivElement) => {
           setVotedUserEl(teamMember.userId, el)
         }} />
-      })} */}
+      })}
 
-      {/* {isVoting
+      {isVoting
         ? <PokerActiveVoting meeting={meeting} stage={stage} />
-        : '!isVoting'} */}
+        : '!isVoting'}
 
       {/* <PokerDiscussVoting selectedScale={selectedScale} scores={scores} teamMembers={teamMembers} /> */}
     </ColumnInner>
   )
 }
 
-
-// ...PokerActiveVoting_stage
-// ...PokerActiveVoting_meeting
-
-
 export default createFragmentContainer(
   EstimateDimensionColumn,
   {
     meeting: graphql`
     fragment EstimateDimensionColumn_meeting on PokerMeeting {
+      ...PokerActiveVoting_meeting
+      team {
+        teamMembers {
+          userId
+          picture
+        }
+      }
       settings {
         selectedTemplate {
           dimensions {
@@ -97,6 +97,7 @@ export default createFragmentContainer(
     }`,
     stage: graphql`
     fragment EstimateDimensionColumn_stage on EstimateStage {
+      ...PokerActiveVoting_stage
       isVoting
       dimensionId
     }

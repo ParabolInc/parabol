@@ -31,6 +31,7 @@ const getRotation = (isSelected: boolean, isCollapsed: boolean, radius: number, 
 const CardBase = styled('div')<CardBaseProps>(({color, isCollapsed, isSelected, radius, rotation, yOffset}) => ({
   background: `radial-gradient(50% 50% at 50% 50%, ${color} 0%, ${getColorLuminance(color, -.12)} 100%)`,
   borderRadius: 6,
+  cursor: 'pointer',
   display: 'flex',
   height: PokerCards.HEIGHT,
   justifyContent: 'center',

@@ -45,7 +45,6 @@ const innerStyle = (isDesktop: boolean) => {
     height: '100%',
     margin: isDesktop ? '0 auto' : null,
     maxWidth: isDesktop ? 656 : null,
-    // maxWidth: 816,
     padding: isDesktop ? '0 80px' : '0 16px',
     width: '100%',
     overflow: 'visible'
@@ -66,13 +65,8 @@ const EstimatePhaseArea = (props: Props) => {
   const [activeIdx, setActiveIdx] = useState(1)
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
 
-  console.log(meeting, 'area meeting')
-
   const {stages} = phases!.find(({phaseType}) => phaseType === 'ESTIMATE')!
   const dimensionStages = stages?.filter(({story}) => (story.id === localStage.story!.id))
-
-  console.log(dimensionStages, 'dimensionStages')
-  console.dir(dimensionStages)
 
   const onChangeIdx = (idx: number) => {
     setActiveIdx(idx)
