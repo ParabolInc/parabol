@@ -1,3 +1,4 @@
+import {MeetingTypeEnum} from 'parabol-client/types/graphql'
 import shortid from 'shortid'
 import {SharingScopeEnum} from '../../../client/types/graphql'
 
@@ -8,7 +9,7 @@ interface Input {
   orgId: string
   parentTemplateId?: string
   lastUsedAt?: Date
-  type: string
+  type: MeetingTypeEnum
   isStarter?: boolean
 }
 
@@ -23,7 +24,7 @@ export default class MeetingTemplate {
   scope: SharingScopeEnum
   orgId: string
   parentTemplateId?: string
-  type: string
+  type: MeetingTypeEnum
   isStarter?: boolean
 
   constructor(input: Input) {

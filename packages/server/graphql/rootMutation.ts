@@ -86,7 +86,7 @@ import removePokerTemplateScaleValue from './mutations/removePokerTemplateScaleV
 import resetMeetingToStage from './mutations/resetMeetingToStage'
 import resetPassword from './mutations/resetPassword'
 import segmentEventTrack from './mutations/segmentEventTrack'
-import selectRetroTemplate from './mutations/selectRetroTemplate'
+import selectTemplate from './mutations/selectTemplate'
 import setAppLocation from './mutations/setAppLocation'
 import setCheckInEnabled from './mutations/setCheckInEnabled'
 import setNotificationStatus from './mutations/setNotificationStatus'
@@ -229,7 +229,7 @@ export default new GraphQLObjectType<any, Context>({
       resetMeetingToStage,
       resetPassword,
       segmentEventTrack,
-      selectRetroTemplate,
+      selectTemplate,
       setAppLocation,
       setCheckInEnabled,
       setOrgUserRole,

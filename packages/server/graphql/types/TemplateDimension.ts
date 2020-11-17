@@ -90,7 +90,10 @@ const TemplateDimension = new GraphQLObjectType<any, GQLContext>({
         const activeTeamScales = await dataLoader.get('scalesByTeamId').load(teamId)
         const publicScales = await db.read('starterScales', 'aGhostTeam')
         const activeScales = [...activeTeamScales, ...publicScales]
-        return activeScales.sort((a, b) => (a.sortOrder < b.sortOrder ? -1 : 1))
+        const uniqueScales = activeScales.filter(
+          (scale, index) => index === activeScales.findIndex((obj) => obj.id === scale.id)
+        )
+        return uniqueScales.sort((a, b) => (a.sortOrder < b.sortOrder ? -1 : 1))
       }
     }
   })

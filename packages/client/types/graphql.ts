@@ -3766,7 +3766,7 @@ export interface ITemplateScale {
   /**
    * The values used in this scale
    */
-  values: Array<ITemplateScaleValue> | null;
+  values: Array<ITemplateScaleValue>;
 }
 
 /**
@@ -6943,7 +6943,7 @@ export interface IMutation {
   /**
    * Set the selected template for the upcoming retro meeting
    */
-  selectRetroTemplate: ISelectRetroTemplatePayload | null;
+  selectTemplate: ISelectTemplatePayload | null;
 
   /**
    * Share where in the app the viewer is
@@ -7030,7 +7030,7 @@ export interface IMutation {
   /**
    * Update the scale used for a dimension in a template
    */
-  updatePokerTemplateDimensionScale: IAddPokerTemplateDimensionPayload;
+  updatePokerTemplateDimensionScale: IUpdatePokerTemplateDimensionScalePayload;
 
   /**
    * Update the label, numerical value or color of a scale value in a scale
@@ -7878,7 +7878,7 @@ export interface ISegmentEventTrackOnMutationArguments {
   options?: ISegmentEventTrackOptions | null;
 }
 
-export interface ISelectRetroTemplateOnMutationArguments {
+export interface ISelectTemplateOnMutationArguments {
   selectedTemplateId: string;
   teamId: string;
 }
@@ -10044,10 +10044,10 @@ export interface ISegmentEventTrackOptions {
   actionType?: string | null;
 }
 
-export interface ISelectRetroTemplatePayload {
-  __typename: 'SelectRetroTemplatePayload';
+export interface ISelectTemplatePayload {
+  __typename: 'SelectTemplatePayload';
   error: IStandardMutationError | null;
-  retroMeetingSettings: IRetrospectiveMeetingSettings | null;
+  meetingSettings: TeamMeetingSettings | null;
 }
 
 /**
@@ -10282,6 +10282,12 @@ export interface IUpdateOrgInput {
    * The org avatar
    */
   picture?: any | null;
+}
+
+export interface IUpdatePokerTemplateDimensionScalePayload {
+  __typename: 'UpdatePokerTemplateDimensionScalePayload';
+  error: IStandardMutationError | null;
+  dimension: ITemplateDimension | null;
 }
 
 export interface IUpdatePokerTemplateScaleValuePayload {
@@ -10927,7 +10933,7 @@ export type TeamSubscriptionPayload =
   | IRemoveOrgUserPayload
   | IRemoveTeamMemberPayload
   | IRenameMeetingSuccess
-  | ISelectRetroTemplatePayload
+  | ISelectTemplatePayload
   | IStartCheckInSuccess
   | IStartNewMeetingPayload
   | IStartRetrospectiveSuccess
@@ -10972,12 +10978,6 @@ export interface IRenamePokerTemplatePayload {
   __typename: 'RenamePokerTemplatePayload';
   error: IStandardMutationError | null;
   pokerTemplate: IPokerTemplate | null;
-}
-
-export interface IUpdatePokerTemplateDimensionScalePayload {
-  __typename: 'UpdatePokerTemplateDimensionScalePayload';
-  error: IStandardMutationError | null;
-  dimension: ITemplateDimension | null;
 }
 
 // tslint:enable

@@ -1,6 +1,5 @@
 import {RecordProxy, RecordSourceSelectorProxy} from 'relay-runtime'
-import {IRetrospectiveMeetingSettings} from '../../types/graphql'
-import {RETROSPECTIVE} from '../../utils/constants'
+import {IRetrospectiveMeetingSettings, MeetingTypeEnum} from '../../types/graphql'
 import addNodeToArray from '../../utils/relay/addNodeToArray'
 
 const handleAddReflectTemplate = (
@@ -12,7 +11,7 @@ const handleAddReflectTemplate = (
   const team = store.get(teamId)
   if (!team) return
   const meetingSettings = team.getLinkedRecord<IRetrospectiveMeetingSettings>('meetingSettings', {
-    meetingType: RETROSPECTIVE
+    meetingType: MeetingTypeEnum.retrospective
   })
   if (!meetingSettings) return
   addNodeToArray(newNode, meetingSettings, 'teamTemplates', 'name')

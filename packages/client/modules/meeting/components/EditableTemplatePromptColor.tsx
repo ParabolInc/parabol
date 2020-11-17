@@ -22,7 +22,7 @@ interface Props {
 const PromptColor = styled(PlainButton)<{isOwner: boolean}>(({isOwner}) => ({
   cursor: isOwner ? 'pointer' : 'default',
   display: 'block',
-  flex: 1,
+  flexShrink: 0,
   height: 24,
   padding: 4,
   position: 'relative',
@@ -38,6 +38,7 @@ const ColorBadge = styled('div')<{groupColor?: string}>(({groupColor}) => ({
   backgroundColor: groupColor,
   borderRadius: '50%',
   height: 14,
+  margin: 1,
   width: 14
 }))
 
