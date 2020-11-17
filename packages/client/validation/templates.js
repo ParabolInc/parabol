@@ -75,14 +75,13 @@ export const makeTeamNameSchema = (teamNames) => (value) =>
 export const url = (value) => 
   value
     .trim()
-    .satisfies(
+    .test(
       (value) => {
         try {
           new URL(value)
         } catch(e) {
-          return false
+          return e.message
         }
-        return true
       },
       'that url doesn’t look quite right'
     )

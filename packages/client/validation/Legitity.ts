@@ -28,13 +28,6 @@ class Legitity {
     return this
   }
 
-  satisfies(cb: (any) => boolean, msg?: string) {
-    if (!this.error && this.value && !cb(this.value)) {
-      this.error = msg || 'custom condition'
-    }
-    return this
-  }
-
   matches(regex: RegExp, msg?: string) {
     if (!this.error && this.value && !regex.test(this.value)) {
       this.error = msg || 'regex'
