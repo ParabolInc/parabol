@@ -166,7 +166,8 @@ const ReflectionCard = (props: Props) => {
         reactableId: reflectionId,
         reactableType: ReactableEnum.REFLECTION,
         isRemove,
-        reactji: emojiId
+        reactji: emojiId,
+        meetingId
       },
       {onCompleted, onError}
     )

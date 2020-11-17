@@ -24,7 +24,7 @@ interface Props {
 
 const PokerCardDeck = (props: Props) => {
   const {meeting} = props
-  const {id: meetingId, localStage} = meeting
+  const {id: meetingId, localStage, showSidebar} = meeting
   const stageId = localStage.id!
   const cards = [
     {label: '1', value: 1, color: PALETTE.BACKGROUND_RED},
@@ -39,7 +39,7 @@ const PokerCardDeck = (props: Props) => {
     {label: '10', value: 10, color: PALETTE.BACKGROUND_BLUE},
     {label: '11', value: 11, color: PALETTE.BACKGROUND_GREEN},
     {label: '12', value: 12, color: PALETTE.BACKGROUND_YELLOW},
-    {label: '13', value: 13, color: PALETTE.BACKGROUND_RED},
+    {label: '13', value: 13, color: PALETTE.BACKGROUND_RED}
   ]
   const totalCards = cards.length
   const [selectedIdx, setSelectedIdx] = useState<number | undefined>()
@@ -58,7 +58,12 @@ const PokerCardDeck = (props: Props) => {
     // leave fires before enter, but we want it to happen after
     // this complexity is necessary because we don't care if the enter/leave the deck, but the individual cards. precision counts!
     setTimeout(() => {
-      console.log({leaving: cardId, ref: hoveringCardIdRef.current, announce: hoveringCardIdRef.current === cardId, isHover: false})
+      console.log({
+        leaving: cardId,
+        ref: hoveringCardIdRef.current,
+        announce: hoveringCardIdRef.current === cardId,
+        isHover: false
+      })
       if (hoveringCardIdRef.current === cardId) {
         hoveringCardIdRef.current = ''
         PokerAnnounceDeckHoverMutation(atmosphere, {isHover: false, meetingId, stageId: stageId})
@@ -70,7 +75,7 @@ const PokerCardDeck = (props: Props) => {
     setIsCollapsed(!isCollapsed)
   }
   useHotkey('c', toggleCollapse)
-  const left = usePokerDeckLeft(deckRef, totalCards)
+  const left = usePokerDeckLeft(deckRef, totalCards, showSidebar)
 
   return (
     <Deck ref={deckRef} left={left}>
@@ -80,33 +85,46 @@ const PokerCardDeck = (props: Props) => {
           if (isCollapsed) return
           setSelectedIdx(isSelected ? undefined : idx)
         }
-        return <PokerCard onMouseEnter={onMouseEnter(card.label)} onMouseLeave={onMouseLeave(card.label)} key={card.value} card={card} idx={idx} totalCards={totalCards} onClick={onClick} isCollapsed={isCollapsed} isSelected={isSelected} deckRef={deckRef} />
+        return (
+          <PokerCard
+            onMouseEnter={onMouseEnter(card.label)}
+            onMouseLeave={onMouseLeave(card.label)}
+            key={card.value}
+            card={card}
+            idx={idx}
+            totalCards={totalCards}
+            onClick={onClick}
+            isCollapsed={isCollapsed}
+            isSelected={isSelected}
+            deckRef={deckRef}
+          />
+        )
       })}
     </Deck>
   )
 }
 
 graphql`
-fragment PokerCardDeckStage on EstimateStage {
-  id
-  hoveringUsers {
+  fragment PokerCardDeckStage on EstimateStage {
     id
+    hoveringUsers {
+      id
+    }
   }
-}`
-export default createFragmentContainer(
-  PokerCardDeck,
-  {
-    meeting: graphql`
-      fragment PokerCardDeck_meeting on PokerMeeting {
-        id
-        localStage {
+`
+export default createFragmentContainer(PokerCardDeck, {
+  meeting: graphql`
+    fragment PokerCardDeck_meeting on PokerMeeting {
+      id
+      showSidebar
+      localStage {
+        ...PokerCardDeckStage @relay(mask: false)
+      }
+      phases {
+        stages {
           ...PokerCardDeckStage @relay(mask: false)
         }
-        phases {
-          stages {
-            ...PokerCardDeckStage @relay(mask: false)
-          }
-        }
-      }`
-  }
-)
+      }
+    }
+  `
+})

@@ -1,6 +1,8 @@
 import graphql from 'babel-plugin-relay/macro'
 import React, {ReactElement, Suspense} from 'react'
 import {createFragmentContainer} from 'react-relay'
+import useBreakpoint from '~/hooks/useBreakpoint'
+import {Breakpoint} from '~/types/constEnums'
 import {PokerMeeting_meeting} from '~/__generated__/PokerMeeting_meeting.graphql'
 import useMeeting from '../hooks/useMeeting'
 import NewMeetingAvatarGroup from '../modules/meeting/components/MeetingAvatarGroup/NewMeetingAvatarGroup'
@@ -36,6 +38,7 @@ export interface PokerMeetingPhaseProps {
 
 const PokerMeeting = (props: Props) => {
   const {meeting} = props
+  const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const {
     toggleSidebar,
     room,
@@ -54,6 +57,7 @@ const PokerMeeting = (props: Props) => {
   const {featureFlags} = user
   const {video: allowVideo} = featureFlags
   const localPhaseType = localPhase?.phaseType
+  const isRightSidebarOpen = isDesktop && localPhaseType === NewMeetingPhaseTypeEnum.ESTIMATE
   const Phase = phaseLookup[localPhaseType] as PhaseComponent
   return (
     <MeetingStyles>
@@ -86,6 +90,7 @@ const PokerMeeting = (props: Props) => {
         meeting={meeting}
         handleGotoNext={handleGotoNext}
         gotoStageId={gotoStageId}
+        isRightSidebarOpen={isRightSidebarOpen}
       />
     </MeetingStyles>
   )
@@ -93,7 +98,7 @@ const PokerMeeting = (props: Props) => {
 
 export default createFragmentContainer(PokerMeeting, {
   meeting: graphql`
-    fragment PokerMeeting_meeting on PokerMeeting  {
+    fragment PokerMeeting_meeting on PokerMeeting {
       ...useMeeting_meeting
       ...PokerMeetingSidebar_meeting
       ...NewMeetingCheckIn_meeting

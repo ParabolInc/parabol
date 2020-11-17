@@ -1,15 +1,26 @@
-import {GraphQLID, GraphQLInterfaceType, GraphQLNonNull} from 'graphql'
+import {GraphQLID, GraphQLNonNull, GraphQLList, GraphQLInterfaceType} from 'graphql'
+import ThreadSource, {threadSourceFields} from './ThreadSource'
+import CommentorDetails from './CommentorDetails'
 
 export const storyFields = () => ({
+  ...threadSourceFields(),
   id: {
-    type: GraphQLNonNull(GraphQLID),
+    type: new GraphQLNonNull(GraphQLID),
     description: 'serviceTaskId'
+  },
+  commentors: {
+    type: new GraphQLList(new GraphQLNonNull(CommentorDetails)),
+    description: 'A list of users currently commenting',
+    resolve: ({commentors = []}) => {
+      return commentors
+    }
   }
 })
 
 const Story = new GraphQLInterfaceType({
   name: 'Story',
   description: 'An entity that can be used in a poker meeting and receive estimates',
+  interfaces: () => [ThreadSource],
   fields: () => ({
     ...storyFields()
   })
