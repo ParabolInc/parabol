@@ -76,14 +76,21 @@ const EstimateDimensionColumn = (props: Props) => {
   )
 }
 
+<<<<<<< Updated upstream
 // ...PokerActiveVoting_stage
 // ...PokerActiveVoting_meeting
 
+=======
+>>>>>>> Stashed changes
 export default createFragmentContainer(
   EstimateDimensionColumn,
   {
     meeting: graphql`
     fragment EstimateDimensionColumn_meeting on PokerMeeting {
+<<<<<<< Updated upstream
+=======
+      ...PokerActiveVoting_meeting
+>>>>>>> Stashed changes
       settings {
         selectedTemplate {
           dimensions {
@@ -95,6 +102,10 @@ export default createFragmentContainer(
     }`,
     stage: graphql`
     fragment EstimateDimensionColumn_stage on EstimateStage {
+<<<<<<< Updated upstream
+=======
+      ...PokerActiveVoting_stage
+>>>>>>> Stashed changes
       isVoting
       dimensionId
     }

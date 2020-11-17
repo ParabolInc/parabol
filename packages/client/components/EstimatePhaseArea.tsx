@@ -11,7 +11,6 @@ import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import {EstimatePhaseArea_meeting} from '~/__generated__/EstimatePhaseArea_meeting.graphql'
 
-
 const EstimateArea = styled('div')({
   display: 'flex',
   flexDirection: 'column',
