@@ -7,6 +7,11 @@ import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import {EstimateDimensionColumn_meeting} from '../__generated__/EstimateDimensionColumn_meeting.graphql'
 import {EstimateDimensionColumn_stage} from '../__generated__/EstimateDimensionColumn_stage.graphql'
+import useMutationProps from '~/hooks/useMutationProps'
+import PokerResetDimensionMutation from '../mutations/PokerResetDimensionMutation'
+import useAtmosphere from '../hooks/useAtmosphere'
+import getGraphQLError from '~/utils/relay/getGraphQLError'
+import Atmosphere from '~/Atmosphere'
 
 const ColumnInner = styled('div')({
   display: 'flex',
@@ -40,31 +45,51 @@ interface Props {
 }
 
 const EstimateDimensionColumn = (props: Props) => {
-  const {stage, meeting, setVotedUserEl} = props
-  const {team} = meeting
-  const {teamMembers} = team
-  const {settings} = meeting
-  const {selectedTemplate} = settings
-  const {dimensions} = selectedTemplate
-  const {dimensionId} = stage
-  const dimension = dimensions.find(({id}) => id === dimensionId)
-  const {name} = dimension
+  const atmosphere = useAtmosphere()
 
+  const {stage, meeting, setVotedUserEl} = props
+  const {id: meetingId, team} = meeting
+  const {teamMembers} = team
+  const {id: stageId, dimension} = stage
+  const {name} = dimension
   const {isVoting} = stage
+
+
+
+  const makeHandleCompleted = (onCompleted: () => void, atmosphere: Atmosphere) => (res, errors) => {
+    onCompleted()
+    const error = getGraphQLError(res, errors)
+    if (error) {
+      atmosphere.eventEmitter.emit('addSnackbar', {
+        key: 'voteError',
+        message: error.message || 'Error submitting vote',
+        autoDismiss: 5
+      })
+    }
+  }
+  const {onError, onCompleted, submitMutation} = useMutationProps()
+  const reset = () => {
+    submitMutation()
+    const handleCompleted = makeHandleCompleted(onCompleted, atmosphere)
+    PokerResetDimensionMutation(
+      atmosphere,
+      {meetingId, stageId},
+      {onError, onCompleted: handleCompleted}
+    )
+  }
 
   return (
     <ColumnInner>
       <DimensionHeader>
         <DimensionName>{name}</DimensionName>
-        {isVoting ? null : <StyledLinkButton palette={'blue'}>{'Team Revote'}</StyledLinkButton>}
+        {isVoting ? null : <StyledLinkButton onClick={reset} palette={'blue'}>{'Team Revote'}</StyledLinkButton>}
       </DimensionHeader>
-
+      {/* todo: animate avatars to their respective row */}
       {teamMembers.map((teamMember, idx) => {
         return <div key={idx} ref={(el: HTMLDivElement) => {
           setVotedUserEl(teamMember.userId, el)
         }} />
       })}
-
       {isVoting
         ? <PokerActiveVoting meeting={meeting} stage={stage} />
         : <PokerDiscussVoting meeting={meeting} stage={stage} />
@@ -80,18 +105,11 @@ export default createFragmentContainer(
     fragment EstimateDimensionColumn_meeting on PokerMeeting {
       ...PokerActiveVoting_meeting
       ...PokerDiscussVoting_meeting
+      id
       team {
         teamMembers {
           userId
           picture
-        }
-      }
-      settings {
-        selectedTemplate {
-          dimensions {
-            id
-            name
-          }
         }
       }
     }`,
@@ -99,8 +117,12 @@ export default createFragmentContainer(
     fragment EstimateDimensionColumn_stage on EstimateStage {
       ...PokerActiveVoting_stage
       ...PokerDiscussVoting_stage
+      id
       isVoting
       dimensionId
+      dimension {
+        name
+      }
     }
     `
   }

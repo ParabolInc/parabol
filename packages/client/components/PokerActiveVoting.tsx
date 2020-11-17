@@ -95,7 +95,6 @@ const PokerActiveVoting = (props: Props) => {
   }
   const {onError, onCompleted, submitMutation} = useMutationProps()
   const reveal = () => {
-    // score is the value field of EstimateUserScore
     submitMutation()
     const handleCompleted = makeHandleCompleted(onCompleted, atmosphere)
     PokerRevealVotesMutation(
@@ -144,14 +143,6 @@ export default createFragmentContainer(
         teamMembers {
           userId
           picture
-        }
-      }
-      settings {
-        selectedTemplate {
-          dimensions {
-            id
-            name
-          }
         }
       }
     }`,

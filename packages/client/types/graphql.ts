@@ -4608,6 +4608,11 @@ export interface IEstimateStage {
   dimensionId: string;
 
   /**
+   * the dimension related to this stage by dimension id
+   */
+  dimension: ITemplateDimension;
+
+  /**
    * the final score, as defined by the facilitator
    */
   finalScore: number | null;

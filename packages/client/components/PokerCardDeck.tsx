@@ -44,19 +44,15 @@ const PokerCardDeck = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {viewerId: userId} = atmosphere
   const {meeting} = props
-  const {id: meetingId, localStage, showSidebar, settings, phases} = meeting
-  const stageId = localStage.id!
-  const {stages} = phases!.find(({phaseType}) => phaseType === 'ESTIMATE')!
-  const stage = stages.find(({id}) => id === stageId)
-  const {dimensionId, scores} = stage
-  const {selectedTemplate} = settings
-  const {dimensions} = selectedTemplate
-  const {selectedScale} = dimensions.find(({id}) => id === dimensionId)
+  const {id: meetingId, localStage, showSidebar} = meeting
+  console.log(showSidebar, 'showSidebar')
+  const {dimension, scores, id: stageId} = localStage
+  const {selectedScale} = dimension!
   const {values: cards} = selectedScale
   const totalCards = cards.length
 
   const maybeGetUserVoteValueIdx = () => {
-    const userVote = scores.find(({userId: scoreUserId}) => userId === scoreUserId)
+    const userVote = scores!.find(({userId: scoreUserId}) => userId === scoreUserId)
     if (!userVote) return undefined
     const {value: userVoteValue} = userVote
     const idx = cards.findIndex(({value}) => value === userVoteValue)
@@ -70,7 +66,7 @@ const PokerCardDeck = (props: Props) => {
   const hoveringCardIdRef = useRef('')
   const onMouseEnter = (cardId: string) => () => {
     if (!hoveringCardIdRef.current) {
-      PokerAnnounceDeckHoverMutation(atmosphere, {isHover: true, meetingId, stageId: stageId})
+      PokerAnnounceDeckHoverMutation(atmosphere, {isHover: true, meetingId, stageId})
     }
     hoveringCardIdRef.current = cardId
   }
@@ -87,7 +83,7 @@ const PokerCardDeck = (props: Props) => {
       })
       if (hoveringCardIdRef.current === cardId) {
         hoveringCardIdRef.current = ''
-        PokerAnnounceDeckHoverMutation(atmosphere, {isHover: false, meetingId, stageId: stageId})
+        PokerAnnounceDeckHoverMutation(atmosphere, {isHover: false, meetingId, stageId})
       }
     })
   }
@@ -140,7 +136,6 @@ const PokerCardDeck = (props: Props) => {
     )
   }
 
-
   return (
     <Deck ref={deckRef}>
       {cards.map((card, idx) => {
@@ -174,10 +169,11 @@ export default createFragmentContainer(
     fragment PokerCardDeck_meeting on PokerMeeting {
       id
       showSidebar
-      settings {
-        selectedTemplate {
-          dimensions {
-            id
+      localStage {
+        ...PokerCardDeckStage @relay(mask: false)
+        ... on EstimateStage {
+          id
+          dimension {
             selectedScale {
               values {
                 color
@@ -186,24 +182,10 @@ export default createFragmentContainer(
               }
             }
           }
-        }
-      }
-      localStage {
-        ...PokerCardDeckStage @relay(mask: false)
-        id
-      }
-      phases {
-        phaseType
-        stages {
-          ... on EstimateStage {
-            ...PokerCardDeckStage @relay(mask: false)
-            id
-            dimensionId
-            scores {
-              userId
-              value
-              label
-            }
+          scores {
+            userId
+            label
+            value
           }
         }
       }

@@ -16,12 +16,10 @@ interface Props {
 
 const PokerDiscussVoting = (props: Props) => {
   const {meeting, stage} = props
-  const {team, settings} = meeting
-  const {dimensionId, scores} = stage
+  const {team} = meeting
+  const {dimension, scores} = stage
   const {teamMembers} = team
-  const {selectedTemplate} = settings
-  const {dimensions} = selectedTemplate
-  const {selectedScale} = dimensions.find(({id}) => id === dimensionId)
+  const {selectedScale} = dimension
   const {values: scaleValues} = selectedScale
 
   const voterGroups = groupPokerScores(scores, scaleValues)
@@ -57,25 +55,19 @@ export default createFragmentContainer(
           picture
         }
       }
-      settings {
-        selectedTemplate {
-          dimensions {
-            id
-            name
-            selectedScale {
-              values {
-                color
-                label
-                value
-              }
-            }
-          }
-        }
-      }
     }`,
     stage: graphql`
     fragment PokerDiscussVoting_stage on EstimateStage {
       isVoting
+      dimension {
+        selectedScale {
+          values {
+            color
+            label
+            value
+          }
+        }
+      }
       dimensionId
       scores {
         userId

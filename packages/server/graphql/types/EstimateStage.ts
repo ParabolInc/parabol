@@ -15,6 +15,7 @@ import EstimateUserScore from './EstimateUserScore'
 import NewMeetingStage, {newMeetingStageFields} from './NewMeetingStage'
 import Story from './Story'
 import TaskServiceEnum from './TaskServiceEnum'
+import TemplateDimension from './TemplateDimension'
 import User from './User'
 
 export const estimateStageFields = () => ({})
@@ -46,6 +47,13 @@ const EstimateStage = new GraphQLObjectType<any, GQLContext>({
     dimensionId: {
       type: GraphQLNonNull(GraphQLID),
       description: 'the dimensionId that corresponds to this stage'
+    },
+    dimension: {
+      type: GraphQLNonNull(TemplateDimension),
+      description: 'the dimension related to this stage by dimension id',
+      resolve: async ({dimensionId}, _args, {dataLoader}) => {
+        return dataLoader.get('templateDimensions').load(dimensionId)
+      }
     },
     finalScore: {
       type: GraphQLFloat,
