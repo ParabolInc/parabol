@@ -5,11 +5,14 @@ import {createFragmentContainer} from 'react-relay'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useHotkey from '../hooks/useHotkey'
 import PokerAnnounceDeckHoverMutation from '../mutations/PokerAnnounceDeckHoverMutation'
-import {PALETTE} from '../styles/paletteV2'
 import {PokerCards} from '../types/constEnums'
 import getRotatedBBox from '../utils/getRotatedBBox'
 import {PokerCardDeck_meeting} from '../__generated__/PokerCardDeck_meeting.graphql'
 import PokerCard from './PokerCard'
+import useMutationProps from '~/hooks/useMutationProps'
+import VoteForPokerStoryMutation from '../mutations/VoteForPokerStoryMutation'
+import getGraphQLError from '~/utils/relay/getGraphQLError'
+import Atmosphere from '~/Atmosphere'
 
 const Deck = styled('div')({
   display: 'flex',
@@ -25,31 +28,64 @@ interface Props {
 
 const MAX_HIDDEN = .3 // The max % of the card that can be hidden below the fold
 
+const makeHandleCompleted = (onCompleted: () => void, atmosphere: Atmosphere) => (res, errors) => {
+  onCompleted()
+  const error = getGraphQLError(res, errors)
+  if (error) {
+    atmosphere.eventEmitter.emit('addSnackbar', {
+      key: 'voteError',
+      message: error.message || 'Error submitting vote',
+      autoDismiss: 5
+    })
+  }
+}
+
 const PokerCardDeck = (props: Props) => {
+  const atmosphere = useAtmosphere()
+  const {viewerId: userId} = atmosphere
+
   const {meeting} = props
-  const {id: meetingId, localStage, showSidebar} = meeting
+
+  // const {id: meetingId, localStage, showSidebar} = meeting
+  const {id: meetingId, localStage} = meeting
+
+  // const {id: meetingId, localStage, phases, settings} = meeting
   const stageId = localStage.id!
+
+  // const {stages} = phases!.find(({phaseType}) => phaseType === 'ESTIMATE')!
+  // const stage = stages.find(({id}) => id === stageId)
+  // const {dimensionId, scores} = stage
+  // console.log(scores, 'scores')
+  // const {selectedTemplate} = settings
+  // const {dimensions} = selectedTemplate
+  // const {selectedScale} = dimensions.find(({id}) => id === dimensionId)
+  // const {values: cards} = selectedScale
+
   const cards = [
-    {label: '1', value: 1, color: PALETTE.BACKGROUND_RED},
-    {label: '2', value: 2, color: PALETTE.BACKGROUND_BLUE},
-    {label: '3', value: 3, color: PALETTE.BACKGROUND_GREEN},
-    {label: '4', value: 4, color: PALETTE.BACKGROUND_YELLOW},
-    {label: '5', value: 5, color: PALETTE.BACKGROUND_RED},
-    {label: '6', value: 6, color: PALETTE.BACKGROUND_BLUE},
-    {label: '7', value: 7, color: PALETTE.BACKGROUND_GREEN},
-    {label: '8', value: 8, color: PALETTE.BACKGROUND_YELLOW},
-    {label: '9', value: 9, color: PALETTE.BACKGROUND_RED},
-    {label: '10', value: 10, color: PALETTE.BACKGROUND_BLUE},
-    {label: '11', value: 11, color: PALETTE.BACKGROUND_GREEN},
-    {label: '12', value: 12, color: PALETTE.BACKGROUND_YELLOW},
-    {label: '13', value: 13, color: PALETTE.BACKGROUND_RED}
+    {color: '#5CA0E5', label: 'SM', value: 1},
+    {color: '#5CA0E5', label: 'MD', value: 2},
+    {color: '#5CA0E5', label: 'LG', value: 3},
   ]
+
   const totalCards = cards.length
-  const [selectedIdx, setSelectedIdx] = useState<number | undefined>()
+
+  const scores = [
+    {userId, label: 'SM', value: 1}
+  ]
+
+  const maybeGetUserVoteValueIdx = () => {
+    const userVote = scores.find(({userId: scoreUserId}) => userId === scoreUserId)
+    if (!userVote) return undefined
+    const {value: userVoteValue} = userVote
+    const idx = cards.findIndex(({value}) => value === userVoteValue)
+    return idx
+  }
+  const userVoteValueIdx = maybeGetUserVoteValueIdx()
+
+  const [selectedIdx, setSelectedIdx] = useState<number | undefined>(userVoteValueIdx)
   const [isCollapsed, setIsCollapsed] = useState(false)
   const deckRef = useRef<HTMLDivElement>(null)
   const hoveringCardIdRef = useRef('')
-  const atmosphere = useAtmosphere()
   const onMouseEnter = (cardId: string) => () => {
     if (!hoveringCardIdRef.current) {
       PokerAnnounceDeckHoverMutation(atmosphere, {isHover: true, meetingId, stageId: stageId})
@@ -79,6 +115,7 @@ const PokerCardDeck = (props: Props) => {
   }
   useHotkey('c', toggleCollapse)
 
+
   const [radius, setRadius] = useState(400)
   useHotkey('q', () => {
     const nextRadius = Math.max(0, radius - 10)
@@ -107,13 +144,32 @@ const PokerCardDeck = (props: Props) => {
   const pxBelowFold = height * (1 - MAX_HIDDEN)
   const yOffset = radius * Math.cos((initialRotation * Math.PI) / 180) - pxBelowFold
 
+  // const left = usePokerDeckLeft(deckRef, totalCards, showSidebar)
+
+  const {onError, onCompleted, submitMutation} = useMutationProps()
+  const vote = (score: number) => {
+    // score is the value field of EstimateUserScore
+    submitMutation()
+    const handleCompleted = makeHandleCompleted(onCompleted, atmosphere)
+    VoteForPokerStoryMutation(
+      atmosphere,
+      {meetingId, stageId, score},
+      {onError, onCompleted: handleCompleted}
+    )
+  }
+
+
   return (
     <Deck ref={deckRef}>
       {cards.map((card, idx) => {
         const isSelected = selectedIdx === idx
+        const {value} = card
         const onClick = () => {
-          if (isCollapsed) return
+          // todo: is there a way in the mutation to remove a vote?
+          //       if the user taps a card, then taps the same card what happens?
+          if (isCollapsed || isSelected) return
           setSelectedIdx(isSelected ? undefined : idx)
+          vote(value)
         }
         const rotation = initialRotation + rotationPerCard * idx
         return <PokerCard yOffset={yOffset} rotation={rotation} radius={radius} onMouseEnter={onMouseEnter(card.label)} onMouseLeave={onMouseLeave(card.label)} key={card.value} card={card} idx={idx} totalCards={totalCards} onClick={onClick} isCollapsed={isCollapsed} isSelected={isSelected} deckRef={deckRef} />
@@ -130,19 +186,45 @@ graphql`
     }
   }
 `
+
 export default createFragmentContainer(PokerCardDeck, {
   meeting: graphql`
     fragment PokerCardDeck_meeting on PokerMeeting {
       id
       showSidebar
-      localStage {
-        ...PokerCardDeckStage @relay(mask: false)
-      }
-      phases {
-        stages {
-          ...PokerCardDeckStage @relay(mask: false)
+      settings {
+        selectedTemplate {
+          dimensions {
+            id
+            selectedScale {
+              values {
+                color
+                label
+                value
+              }
+            }
+          }
         }
       }
-    }
-  `
-})
+      localStage {
+        ...PokerCardDeckStage @relay(mask: false)
+        id
+      }
+      phases {
+        phaseType
+        stages {
+          ... on EstimateStage {
+            ...PokerCardDeckStage @relay(mask: false)
+            id
+            dimensionId
+            scores {
+              userId
+              value
+              label
+            }
+          }
+        }
+      }
+    }`
+}
+)

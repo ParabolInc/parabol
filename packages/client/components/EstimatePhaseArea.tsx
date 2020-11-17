@@ -3,19 +3,13 @@ import styled from '@emotion/styled'
 import {PALETTE} from '~/styles/paletteV2'
 import SwipeableViews from 'react-swipeable-views'
 import useBreakpoint from '~/hooks/useBreakpoint'
-
-
-import EstimatePhaseDimensionColumn from './EstimatePhaseDimensionColumn'
-
+import EstimateDimensionColumn from './EstimateDimensionColumn'
 import {Breakpoint, DiscussionThreadEnum} from '~/types/constEnums'
-
 import PokerCardDeck from './PokerCardDeck'
 import DeckActivityAvatars from './DeckActivityAvatars'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-
-import {EstimatePhaseArea_meeting} from '../__generated__/EstimatePhaseArea_meeting.graphql'
-import getDemoAvatar from '~/utils/getDemoAvatar'
+import {EstimatePhaseArea_meeting} from '~/__generated__/EstimatePhaseArea_meeting.graphql'
 
 
 const EstimateArea = styled('div')({
@@ -66,11 +60,20 @@ const containerStyle = {
 interface Props {
   meeting: EstimatePhaseArea_meeting
 }
+
 const EstimatePhaseArea = (props: Props) => {
   const {meeting} = props
-  const {localStage} = meeting
+  const {localStage, phases} = meeting
   const [activeIdx, setActiveIdx] = useState(1)
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
+
+  console.log(meeting, 'area meeting')
+
+  const {stages} = phases!.find(({phaseType}) => phaseType === 'ESTIMATE')!
+  const dimensionStages = stages?.filter(({story}) => (story.id === localStage.story!.id))
+
+  console.log(dimensionStages, 'dimensionStages')
+  console.dir(dimensionStages)
 
   const onChangeIdx = (idx: number) => {
     setActiveIdx(idx)
@@ -86,135 +89,6 @@ const EstimatePhaseArea = (props: Props) => {
     avatarRef.current[userId] = el
   }
 
-  const mockMember1 = {
-    ...getDemoAvatar(1),
-    userId: 1
-  }
-
-  const mockMember2 = {
-    ...getDemoAvatar(2),
-    userId: 2
-  }
-
-  const mockMember3 = {
-    ...getDemoAvatar(3),
-    userId: 3
-  }
-
-  const mockMember4 = {
-    ...getDemoAvatar(4),
-    userId: 4
-  }
-
-  const mockMember5 = {
-    ...getDemoAvatar(5),
-    userId: 5
-  }
-
-  const mockMember6 = {
-    ...getDemoAvatar(6),
-    userId: 6
-  }
-
-  const mockMember7 = {
-    ...getDemoAvatar(7),
-    userId: 7
-  }
-
-  const mockMember8 = {
-    ...getDemoAvatar(8),
-    userId: 8
-  }
-
-  const mockMember9 = {
-    ...getDemoAvatar(9),
-    userId: 9
-  }
-
-  const mockMember10 = {
-    ...getDemoAvatar(10),
-    userId: 10
-  }
-
-  const mockMember11 = {
-    ...getDemoAvatar(11),
-    userId: 11
-  }
-
-  const mockMember12 = {
-    ...getDemoAvatar(12),
-    userId: 12
-  }
-
-  const mockTeamMembers = [
-    mockMember1,
-    mockMember2,
-    mockMember3,
-    mockMember4,
-    mockMember5,
-    mockMember6,
-    mockMember7,
-    mockMember8,
-    mockMember9,
-    mockMember10,
-    mockMember11,
-    mockMember12
-  ]
-
-  const MAX_32_BIT_INTEGER = Math.pow(2, 31) - 1
-  const mockEstimateStages = [
-    {
-      dimensionName: 'Value',
-      scores: [
-        {userId: 1, value: -1, label: '?'},
-        {userId: 2, value: 1, label: '1'},
-        {userId: 3, value: 1, label: '1'},
-        {userId: 4, value: 1, label: '1'},
-        {userId: 5, value: 3, label: '3'},
-        {userId: 6, value: 1, label: '1'},
-        {userId: 7, value: 1, label: '1'},
-        {userId: 8, value: 3, label: '3'},
-        {userId: 9, value: 1, label: '1'},
-        {userId: 10, value: 1, label: '1'},
-        {userId: 11, value: 5, label: '5'},
-        {userId: 12, value: MAX_32_BIT_INTEGER, label: 'P'}
-      ],
-      selectedScale: [
-        {color: PALETTE.PROMPT_PINK, value: -1, label: '?'},
-        {color: PALETTE.PROMPT_RED, value: 5, label: '5'},
-        {color: PALETTE.PROMPT_ORANGE, value: 3, label: '3'},
-        {color: PALETTE.PROMPT_GREEN, value: 1, label: '1'},
-        {color: PALETTE.PROMPT_BLUE, value: MAX_32_BIT_INTEGER, label: 'P'}
-      ],
-      teamMembers: mockTeamMembers
-    },
-    {
-      dimensionName: 'Effort',
-      scores: [
-        {userId: 1, value: -1, label: '?'},
-        {userId: 2, value: 1, label: '1'},
-        {userId: 3, value: 1, label: '1'},
-        {userId: 4, value: 1, label: '1'},
-        {userId: 5, value: 3, label: '3'},
-        {userId: 6, value: 1, label: '1'},
-        {userId: 7, value: 1, label: '1'},
-        {userId: 8, value: 3, label: '3'},
-        {userId: 9, value: 1, label: '1'},
-        {userId: 10, value: 1, label: '1'},
-        {userId: 11, value: 5, label: '5'},
-        {userId: 12, value: MAX_32_BIT_INTEGER, label: 'P'}
-      ],
-      selectedScale: [
-        {color: PALETTE.PROMPT_PINK, value: -1, label: '?'},
-        {color: PALETTE.PROMPT_RED, value: 5, label: '5'},
-        {color: PALETTE.PROMPT_ORANGE, value: 3, label: '3'},
-        {color: PALETTE.PROMPT_GREEN, value: 1, label: '1'},
-        {color: PALETTE.PROMPT_BLUE, value: MAX_32_BIT_INTEGER, label: 'P'}
-      ],
-      teamMembers: mockTeamMembers
-    }
-  ]
-
   const slideContainer = {
     padding: isDesktop ? '0 8px' : '0 4px'
   }
@@ -222,7 +96,7 @@ const EstimatePhaseArea = (props: Props) => {
   return (
     <EstimateArea>
       <StepperDots isDesktop={isDesktop}>
-        {mockEstimateStages.map((_, idx) => {
+        {dimensionStages!.map((_, idx) => {
           return <StepperDot key={idx} isActive={idx === activeIdx} />
         })}
       </StepperDots>
@@ -236,9 +110,9 @@ const EstimatePhaseArea = (props: Props) => {
         slideStyle={slideContainer}
         style={innerStyle(isDesktop)}
       >
-        {mockEstimateStages.map((stage, idx) => (
+        {dimensionStages!.map((stage, idx) => (
           <SwipableEstimateItem key={idx}>
-            <EstimatePhaseDimensionColumn setVotedUserEl={setVotedUserEl} estimateStage={stage} />
+            <EstimateDimensionColumn meeting={meeting} setVotedUserEl={setVotedUserEl} stage={stage} />
           </SwipableEstimateItem>
         ))}
       </SwipeableViews>
@@ -250,15 +124,26 @@ export default createFragmentContainer(EstimatePhaseArea, {
   meeting: graphql`
     fragment EstimatePhaseArea_meeting on PokerMeeting {
       ...PokerCardDeck_meeting
+      ...EstimateDimensionColumn_meeting
       localStage {
         ... on EstimateStage {
           ...DeckActivityAvatars_stage
+          story {
+            id
+          }
         }
       }
       phases {
         ... on EstimatePhase {
+          phaseType
           stages {
-            ...DeckActivityAvatars_stage
+            ... on EstimateStage {
+              ...DeckActivityAvatars_stage
+              ...EstimateDimensionColumn_stage
+              story {
+                id
+              }
+            }
           }
         }
       }

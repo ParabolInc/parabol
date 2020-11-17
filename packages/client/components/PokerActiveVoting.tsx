@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React from 'react'
 import styled from '@emotion/styled'
 import MiniPokerCardPlaceholder from './MiniPokerCardPlaceholder'
 import PokerVotingAvatarGroup from './PokerVotingAvatarGroup'
@@ -8,8 +8,11 @@ import Icon from './Icon'
 import TipBanner from './TipBanner'
 import SecondaryButtonCool from './SecondaryButtonCool'
 import {PALETTE} from '~/styles/paletteV2'
-import useHotkey from '~/hooks/useHotkey'
 import getPokerVoters from '~/utils/getPokerVoters'
+import {createFragmentContainer} from 'react-relay'
+import graphql from 'babel-plugin-relay/macro'
+import {PokerActiveVoting_meeting} from '../__generated__/PokerActiveVoting_meeting.graphql'
+import {PokerActiveVoting_stage} from '../__generated__/PokerActiveVoting_stage.graphql'
 
 const CheckIcon = styled(Icon)({
   color: PALETTE.TEXT_GREEN
@@ -30,28 +33,23 @@ const RevealButtonBlock = styled('div')({
 })
 
 interface Props {
-  scores: Array<any>
-  teamMembers: Array<any>
+  meeting: PokerActiveVoting_meeting
+  stage: PokerActiveVoting_stage
 }
 
 const PokerActiveVoting = (props: Props) => {
 
-  const {scores, teamMembers} = props
+  const {meeting, stage} = props
 
-  const [hasVotes, setHasVotes] = useState(true)
-  useHotkey('v', () => {
-    setHasVotes(!hasVotes)
-  })
+  console.log(stage, 'active voting stage')
 
-  const [isFacilitator, setIsFacilitator] = useState(true)
-  useHotkey('f', () => {
-    setIsFacilitator(!isFacilitator)
-  })
+  const {scores} = stage
+  const {team} = meeting
+  const {teamMembers} = team
 
-  const [viewerHasVoted, setViewerHasVoted] = useState(false)
-  useHotkey('p', () => {
-    setViewerHasVoted(!viewerHasVoted)
-  })
+  const hasVotes = stage.scores.length > 0
+  const isFacilitator = true
+  const viewerHasVoted = false
 
   // Show the facilitator a tooltip if nobody has voted yet
   // Show the participant a tooltip if they haven’t voted yet
@@ -100,4 +98,36 @@ const PokerActiveVoting = (props: Props) => {
   )
 }
 
-export default PokerActiveVoting
+export default createFragmentContainer(
+  PokerActiveVoting,
+  {
+    meeting: graphql`
+    fragment PokerActiveVoting_meeting on PokerMeeting {
+      team {
+        teamMembers {
+          userId
+          picture
+        }
+      }
+      settings {
+        selectedTemplate {
+          dimensions {
+            id
+            name
+          }
+        }
+      }
+    }`,
+    stage: graphql`
+    fragment PokerActiveVoting_stage on EstimateStage {
+      isVoting
+      dimensionId
+      scores {
+        userId
+        label
+        value
+      }
+    }
+    `
+  }
+)
