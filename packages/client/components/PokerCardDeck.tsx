@@ -189,39 +189,38 @@ graphql`
 export default createFragmentContainer(
   PokerCardDeck, {
   meeting: graphql`
-      fragment PokerCardDeck_meeting on PokerMeeting {
-        id
-        showSidebar
-        settings {
-          selectedTemplate {
-            dimensions {
-              id
-              selectedScale {
-                values {
-                  color
-                  label
-                  value
-                }
+    fragment PokerCardDeck_meeting on PokerMeeting {
+      id
+      showSidebar
+      settings {
+        selectedTemplate {
+          dimensions {
+            id
+            selectedScale {
+              values {
+                color
+                label
+                value
               }
             }
           }
         }
-        localStage {
-          ...PokerCardDeckStage @relay(mask: false)
-          id
-        }
-        phases {
-          phaseType
-          stages {
-            ... on EstimateStage {
-              ...PokerCardDeckStage @relay(mask: false)
-              id
-              dimensionId
-              scores {
-                userId
-                value
-                label
-              }
+      }
+      localStage {
+        ...PokerCardDeckStage @relay(mask: false)
+        id
+      }
+      phases {
+        phaseType
+        stages {
+          ... on EstimateStage {
+            ...PokerCardDeckStage @relay(mask: false)
+            id
+            dimensionId
+            scores {
+              userId
+              value
+              label
             }
           }
         }
