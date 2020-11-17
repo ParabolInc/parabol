@@ -24,14 +24,14 @@ interface Props {
 const ScaleDetails = styled('div')({
   display: 'flex',
   flexDirection: 'row',
-  width: '100%',
-  alignItems: 'flex-start'
+  alignItems: 'flex-start',
+  maxWidth: '300px'
 })
 
 const ScaleNameAndValues = styled('div')({
   display: 'block',
   flexDirection: 'column',
-  maxWidth: '300px',
+  minWidth: '236px',
   paddingTop: 12,
   paddingLeft: 16,
   paddingBottom: 12,
