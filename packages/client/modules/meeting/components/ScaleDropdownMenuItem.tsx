@@ -14,7 +14,7 @@ interface Props {
 const ScaleDetails = styled('div')({
   display: 'flex',
   flexDirection: 'column',
-  maxWidth: '100%',
+  maxWidth: '300px',
   padding: "12px 16px"
 })
 
