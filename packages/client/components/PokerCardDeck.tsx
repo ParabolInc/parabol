@@ -1,26 +1,29 @@
 import styled from '@emotion/styled'
+import graphql from 'babel-plugin-relay/macro'
 import React, {useRef, useState} from 'react'
+import {createFragmentContainer} from 'react-relay'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useHotkey from '../hooks/useHotkey'
-import usePokerDeckLeft from '../hooks/usePokerDeckLeft'
-import {PALETTE} from '../styles/paletteV2'
-import PokerCard from './PokerCard'
-import graphql from 'babel-plugin-relay/macro'
-import {createFragmentContainer} from 'react-relay'
 import PokerAnnounceDeckHoverMutation from '../mutations/PokerAnnounceDeckHoverMutation'
+import {PALETTE} from '../styles/paletteV2'
+import {PokerCards} from '../types/constEnums'
+import getRotatedBBox from '../utils/getRotatedBBox'
 import {PokerCardDeck_meeting} from '../__generated__/PokerCardDeck_meeting.graphql'
-const Deck = styled('div')<{left: number}>(({left}) => ({
+import PokerCard from './PokerCard'
+
+const Deck = styled('div')({
   display: 'flex',
-  left,
-  // justifyContent: 'center',
+  left: '50%',
   position: 'absolute',
-  bottom: -32,
+  bottom: 0,
   width: '100%',
   zIndex: 1 // TODO remove. needs to be under bottom bar but above dimension bg
-}))
+})
 interface Props {
   meeting: PokerCardDeck_meeting
 }
+
+const MAX_HIDDEN = .3 // The max % of the card that can be hidden below the fold
 
 const PokerCardDeck = (props: Props) => {
   const {meeting} = props
@@ -70,17 +73,43 @@ const PokerCardDeck = (props: Props) => {
     setIsCollapsed(!isCollapsed)
   }
   useHotkey('c', toggleCollapse)
-  const left = usePokerDeckLeft(deckRef, totalCards)
+
+  const [radius, setRadius] = useState(400)
+  useHotkey('q', () => {
+    const nextRadius = Math.max(0, radius - 10)
+    setRadius(nextRadius)
+  })
+  useHotkey('w', () => {
+    const nextRadius = Math.min(1500, radius + 10)
+    setRadius(nextRadius)
+  })
+  const [tilt, setTilt] = useState(30)
+  useHotkey('e', () => {
+    const nextTilt = Math.max(0, tilt - 1)
+    setTilt(nextTilt)
+  })
+  useHotkey('r', () => {
+    const nextTilt = Math.min(90, tilt + 1)
+    setTilt(nextTilt)
+  })
+
+  const maxSpreadDeg = tilt * 2
+  const rotationPerCard = maxSpreadDeg / totalCards
+  const initialRotation = (totalCards - 1) / 2 * -rotationPerCard
+  const {height} = getRotatedBBox(tilt, PokerCards.WIDTH, PokerCards.HEIGHT)
+  const pxBelowFold = height * (1 - MAX_HIDDEN)
+  const yOffset = radius * Math.cos((initialRotation * Math.PI) / 180) - pxBelowFold
 
   return (
-    <Deck ref={deckRef} left={left}>
+    <Deck ref={deckRef}>
       {cards.map((card, idx) => {
         const isSelected = selectedIdx === idx
         const onClick = () => {
           if (isCollapsed) return
           setSelectedIdx(isSelected ? undefined : idx)
         }
-        return <PokerCard onMouseEnter={onMouseEnter(card.label)} onMouseLeave={onMouseLeave(card.label)} key={card.value} card={card} idx={idx} totalCards={totalCards} onClick={onClick} isCollapsed={isCollapsed} isSelected={isSelected} deckRef={deckRef} />
+        const rotation = initialRotation + rotationPerCard * idx
+        return <PokerCard yOffset={yOffset} rotation={rotation} radius={radius} onMouseEnter={onMouseEnter(card.label)} onMouseLeave={onMouseLeave(card.label)} key={card.value} card={card} idx={idx} totalCards={totalCards} onClick={onClick} isCollapsed={isCollapsed} isSelected={isSelected} deckRef={deckRef} />
       })}
     </Deck>
   )
