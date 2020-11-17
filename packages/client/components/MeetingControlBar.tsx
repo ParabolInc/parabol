@@ -10,7 +10,7 @@ import useGotoStageId from '~/hooks/useGotoStageId'
 import useInitialRender from '~/hooks/useInitialRender'
 import useTransition, {TransitionStatus} from '~/hooks/useTransition'
 import {PALETTE} from '~/styles/paletteV2'
-import {Breakpoint, DiscussionThreadEnum, NavSidebar, ZIndex} from '~/types/constEnums'
+import {BezierCurve, Breakpoint, DiscussionThreadEnum, NavSidebar, ZIndex} from '~/types/constEnums'
 import {MeetingTypeEnum, NewMeetingPhaseTypeEnum} from '~/types/graphql'
 import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
 import findStageAfterId from '~/utils/meetings/findStageAfterId'
@@ -42,6 +42,7 @@ const Wrapper = styled('div')<{isLeftSidebarOpen: boolean; isRightSidebarOpen: b
     padding: 8,
     position: 'fixed',
     right: isRightSidebarOpen ? DiscussionThreadEnum.WIDTH : 0,
+    transition: `200ms ${BezierCurve.DECELERATE}`,
     width: '100%',
     zIndex: ZIndex.BOTTOM_BAR,
     [makeMinWidthMediaQuery(Breakpoint.SINGLE_REFLECTION_COLUMN)]: {
