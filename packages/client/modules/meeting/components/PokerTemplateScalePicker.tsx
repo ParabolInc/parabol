@@ -6,6 +6,7 @@ import Icon from '../../../components/Icon'
 import {MenuPosition} from '../../../hooks/useCoords'
 import useMenu from '../../../hooks/useMenu'
 import useTooltip from '../../../hooks/useTooltip'
+import textOverflow from '../../../styles/helpers/textOverflow'
 import {PALETTE} from '../../../styles/paletteV2'
 import {FONT_FAMILY, ICON_SIZE} from '../../../styles/typographyV2'
 import lazyPreload from '../../../utils/lazyPreload'
@@ -43,10 +44,12 @@ const MenuToggleInner = styled('div')({
   display: 'flex',
   flex: 1,
   flexWrap: 'wrap',
+  minWidth: 0,
   marginLeft: 16
 })
 
 const MenuToggleLabel = styled('div')({
+  ...textOverflow,
   fontFamily: FONT_FAMILY.SANS_SERIF,
   fontWeight: 600,
   lineHeight: '20px',
