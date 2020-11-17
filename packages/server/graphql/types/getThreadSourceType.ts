@@ -1,7 +1,9 @@
 import {ThreadSourceEnum} from 'parabol-client/types/graphql'
 
-const getThreadSourceType = (threadSource: any) => {
-  return threadSource.reflections ? ThreadSourceEnum.REFLECTION_GROUP : ThreadSourceEnum.AGENDA_ITEM
+const getThreadSourceType = (threadSource) => {
+  if (threadSource.reflections) return ThreadSourceEnum.REFLECTION_GROUP
+  else if (threadSource.content) return ThreadSourceEnum.AGENDA_ITEM
+  return ThreadSourceEnum.STORY
 }
 
 export default getThreadSourceType

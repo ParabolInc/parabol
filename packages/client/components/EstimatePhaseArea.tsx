@@ -3,14 +3,20 @@ import styled from '@emotion/styled'
 import {PALETTE} from '~/styles/paletteV2'
 import SwipeableViews from 'react-swipeable-views'
 import useBreakpoint from '~/hooks/useBreakpoint'
-import {Breakpoint} from '~/types/constEnums'
+
+
 import EstimatePhaseDimensionColumn from './EstimatePhaseDimensionColumn'
+
+import {Breakpoint, DiscussionThreadEnum} from '~/types/constEnums'
+
 import PokerCardDeck from './PokerCardDeck'
 import DeckActivityAvatars from './DeckActivityAvatars'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
+
 import {EstimatePhaseArea_meeting} from '../__generated__/EstimatePhaseArea_meeting.graphql'
 import getDemoAvatar from '~/utils/getDemoAvatar'
+
 
 const EstimateArea = styled('div')({
   display: 'flex',
@@ -19,11 +25,12 @@ const EstimateArea = styled('div')({
   width: '100%'
 })
 
-const StepperDots = styled('div')({
+const StepperDots = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   display: 'flex',
   justifyContent: 'center',
-  padding: '4px 0 8px'
-})
+  padding: '4px 0 8px',
+  width: isDesktop ? `calc(100% - ${DiscussionThreadEnum.WIDTH}px)` : '100%'
+}))
 
 const StepperDot = styled('div')<{isActive: boolean}>(({isActive}) => ({
   backgroundColor: isActive ? PALETTE.TEXT_PURPLE : PALETTE.TEXT_GRAY,
@@ -65,21 +72,18 @@ const EstimatePhaseArea = (props: Props) => {
   const [activeIdx, setActiveIdx] = useState(1)
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
 
-  const onChangeIdx = (idx) => {
+  const onChangeIdx = (idx: number) => {
     setActiveIdx(idx)
   }
 
   const avatarRef = useRef<{[userId: string]: HTMLDivElement}>({})
 
   const getVotedUserEl = (userId: string) => {
-    // mock Element
     return avatarRef.current[userId]
   }
 
   const setVotedUserEl = (userId: string, el: HTMLDivElement) => {
-    // userId param for?
-    console.log(userId, 'setVotedUserEl userId param')
-    avatarRef.current.userId = el
+    avatarRef.current[userId] = el
   }
 
   const mockMember1 = {
@@ -217,7 +221,7 @@ const EstimatePhaseArea = (props: Props) => {
 
   return (
     <EstimateArea>
-      <StepperDots>
+      <StepperDots isDesktop={isDesktop}>
         {mockEstimateStages.map((_, idx) => {
           return <StepperDot key={idx} isActive={idx === activeIdx} />
         })}
@@ -238,19 +242,16 @@ const EstimatePhaseArea = (props: Props) => {
           </SwipableEstimateItem>
         ))}
       </SwipeableViews>
-
-    </EstimateArea>
+    </EstimateArea >
   )
 }
 
-export default createFragmentContainer(
-  EstimatePhaseArea,
-  {
-    meeting: graphql`
+export default createFragmentContainer(EstimatePhaseArea, {
+  meeting: graphql`
     fragment EstimatePhaseArea_meeting on PokerMeeting {
       ...PokerCardDeck_meeting
       localStage {
-        ...on EstimateStage {
+        ... on EstimateStage {
           ...DeckActivityAvatars_stage
         }
       }
@@ -261,6 +262,6 @@ export default createFragmentContainer(
           }
         }
       }
-    }`
-  }
-)
+    }
+  `
+})

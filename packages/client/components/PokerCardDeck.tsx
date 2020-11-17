@@ -27,7 +27,7 @@ const MAX_HIDDEN = .3 // The max % of the card that can be hidden below the fold
 
 const PokerCardDeck = (props: Props) => {
   const {meeting} = props
-  const {id: meetingId, localStage} = meeting
+  const {id: meetingId, localStage, showSidebar} = meeting
   const stageId = localStage.id!
   const cards = [
     {label: '1', value: 1, color: PALETTE.BACKGROUND_RED},
@@ -61,7 +61,12 @@ const PokerCardDeck = (props: Props) => {
     // leave fires before enter, but we want it to happen after
     // this complexity is necessary because we don't care if the enter/leave the deck, but the individual cards. precision counts!
     setTimeout(() => {
-      console.log({leaving: cardId, ref: hoveringCardIdRef.current, announce: hoveringCardIdRef.current === cardId, isHover: false})
+      console.log({
+        leaving: cardId,
+        ref: hoveringCardIdRef.current,
+        announce: hoveringCardIdRef.current === cardId,
+        isHover: false
+      })
       if (hoveringCardIdRef.current === cardId) {
         hoveringCardIdRef.current = ''
         PokerAnnounceDeckHoverMutation(atmosphere, {isHover: false, meetingId, stageId: stageId})
@@ -93,6 +98,8 @@ const PokerCardDeck = (props: Props) => {
     setTilt(nextTilt)
   })
 
+  // const left = usePokerDeckLeft(deckRef, totalCards, showSidebar)
+
   const maxSpreadDeg = tilt * 2
   const rotationPerCard = maxSpreadDeg / totalCards
   const initialRotation = (totalCards - 1) / 2 * -rotationPerCard
@@ -116,26 +123,26 @@ const PokerCardDeck = (props: Props) => {
 }
 
 graphql`
-fragment PokerCardDeckStage on EstimateStage {
-  id
-  hoveringUsers {
+  fragment PokerCardDeckStage on EstimateStage {
     id
+    hoveringUsers {
+      id
+    }
   }
-}`
-export default createFragmentContainer(
-  PokerCardDeck,
-  {
-    meeting: graphql`
-      fragment PokerCardDeck_meeting on PokerMeeting {
-        id
-        localStage {
+`
+export default createFragmentContainer(PokerCardDeck, {
+  meeting: graphql`
+    fragment PokerCardDeck_meeting on PokerMeeting {
+      id
+      showSidebar
+      localStage {
+        ...PokerCardDeckStage @relay(mask: false)
+      }
+      phases {
+        stages {
           ...PokerCardDeckStage @relay(mask: false)
         }
-        phases {
-          stages {
-            ...PokerCardDeckStage @relay(mask: false)
-          }
-        }
-      }`
-  }
-)
+      }
+    }
+  `
+})
