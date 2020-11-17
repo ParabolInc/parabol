@@ -13,6 +13,11 @@ import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import {PokerActiveVoting_meeting} from '../__generated__/PokerActiveVoting_meeting.graphql'
 import {PokerActiveVoting_stage} from '../__generated__/PokerActiveVoting_stage.graphql'
+import useMutationProps from '~/hooks/useMutationProps'
+import PokerRevealVotesMutation from '../mutations/PokerRevealVotesMutation'
+import useAtmosphere from '../hooks/useAtmosphere'
+import getGraphQLError from '~/utils/relay/getGraphQLError'
+import Atmosphere from '~/Atmosphere'
 
 const CheckIcon = styled(Icon)({
   color: PALETTE.TEXT_GREEN
@@ -39,17 +44,22 @@ interface Props {
 
 const PokerActiveVoting = (props: Props) => {
 
+  const atmosphere = useAtmosphere()
+
   const {meeting, stage} = props
 
   console.log(stage, 'active voting stage')
 
-  const {scores} = stage
-  const {team} = meeting
+
+  const {id: stageId, scores} = stage
+  const {id: meetingId, team} = meeting
   const {teamMembers} = team
 
   const hasVotes = stage.scores.length > 0
   const isFacilitator = true
   const viewerHasVoted = false
+
+  // const [selectedIdx, setSelectedIdx] = useState<number | undefined>(userVoteValueIdx)
 
   // Show the facilitator a tooltip if nobody has voted yet
   // Show the participant a tooltip if they haven’t voted yet
@@ -68,6 +78,33 @@ const PokerActiveVoting = (props: Props) => {
 
   const voters = getPokerVoters(scores, teamMembers)
 
+  // Show the reveal button if 2+ people have voted
+  // const showRevealButton = isFacilitator && scores.length > 1
+  const showRevealButton = isFacilitator && scores.length > 0 // dev debugging
+
+  const makeHandleCompleted = (onCompleted: () => void, atmosphere: Atmosphere) => (res, errors) => {
+    onCompleted()
+    const error = getGraphQLError(res, errors)
+    if (error) {
+      atmosphere.eventEmitter.emit('addSnackbar', {
+        key: 'voteError',
+        message: error.message || 'Error submitting vote',
+        autoDismiss: 5
+      })
+    }
+  }
+  const {onError, onCompleted, submitMutation} = useMutationProps()
+  const reveal = () => {
+    // score is the value field of EstimateUserScore
+    submitMutation()
+    const handleCompleted = makeHandleCompleted(onCompleted, atmosphere)
+    PokerRevealVotesMutation(
+      atmosphere,
+      {meetingId, stageId},
+      {onError, onCompleted: handleCompleted}
+    )
+  }
+
   return (
     <>
       {hasVotes
@@ -82,9 +119,8 @@ const PokerActiveVoting = (props: Props) => {
         : <PokerVotingRowEmpty />
       }
       <RevealButtonBlock>
-        {/* Show the reveal button if 2+ people have voted */}
-        {isFacilitator && scores.length > 1
-          ? <SecondaryButtonCool>{'Reveal Votes'}</SecondaryButtonCool>
+        {showRevealButton
+          ? <SecondaryButtonCool onClick={reveal}>{'Reveal Votes'}</SecondaryButtonCool>
           : null
         }
       </RevealButtonBlock>
@@ -103,6 +139,7 @@ export default createFragmentContainer(
   {
     meeting: graphql`
     fragment PokerActiveVoting_meeting on PokerMeeting {
+      id
       team {
         teamMembers {
           userId
@@ -120,7 +157,7 @@ export default createFragmentContainer(
     }`,
     stage: graphql`
     fragment PokerActiveVoting_stage on EstimateStage {
-      isVoting
+      id
       dimensionId
       scores {
         userId

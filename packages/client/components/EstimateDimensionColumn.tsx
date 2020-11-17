@@ -67,9 +67,8 @@ const EstimateDimensionColumn = (props: Props) => {
 
       {isVoting
         ? <PokerActiveVoting meeting={meeting} stage={stage} />
-        : '!isVoting'}
-
-      {/* <PokerDiscussVoting selectedScale={selectedScale} scores={scores} teamMembers={teamMembers} /> */}
+        : <PokerDiscussVoting meeting={meeting} stage={stage} />
+      }
     </ColumnInner>
   )
 }
@@ -80,6 +79,7 @@ export default createFragmentContainer(
     meeting: graphql`
     fragment EstimateDimensionColumn_meeting on PokerMeeting {
       ...PokerActiveVoting_meeting
+      ...PokerDiscussVoting_meeting
       team {
         teamMembers {
           userId
@@ -98,6 +98,7 @@ export default createFragmentContainer(
     stage: graphql`
     fragment EstimateDimensionColumn_stage on EstimateStage {
       ...PokerActiveVoting_stage
+      ...PokerDiscussVoting_stage
       isVoting
       dimensionId
     }

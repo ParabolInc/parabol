@@ -4,16 +4,27 @@ import PokerDimensionValueStatic from './PokerDimensionValueStatic'
 import PokerVotingRow from './PokerVotingRow'
 import {PALETTE} from '~/styles/paletteV2'
 import groupPokerScores from '~/utils/groupPokerScores'
+import {createFragmentContainer} from 'react-relay'
+import graphql from 'babel-plugin-relay/macro'
+import {PokerDiscussVoting_meeting} from '../__generated__/PokerDiscussVoting_meeting.graphql'
+import {PokerDiscussVoting_stage} from '../__generated__/PokerDiscussVoting_stage.graphql'
 
 interface Props {
-  selectedScale: Array<any>
-  scores: Array<any>
-  teamMembers: Array<any>
+  meeting: PokerDiscussVoting_meeting
+  stage: PokerDiscussVoting_stage
 }
 
 const PokerDiscussVoting = (props: Props) => {
-  const {selectedScale, scores, teamMembers} = props
-  const voterGroups = groupPokerScores(scores, selectedScale)
+  const {meeting, stage} = props
+  const {team, settings} = meeting
+  const {dimensionId, scores} = stage
+  const {teamMembers} = team
+  const {selectedTemplate} = settings
+  const {dimensions} = selectedTemplate
+  const {selectedScale} = dimensions.find(({id}) => id === dimensionId)
+  const {values: scaleValues} = selectedScale
+
+  const voterGroups = groupPokerScores(scores, scaleValues)
   const isFacilitator = true
   const mockScaleValue = {
     color: PALETTE.PROMPT_BLUE,
@@ -35,4 +46,43 @@ const PokerDiscussVoting = (props: Props) => {
   )
 }
 
-export default PokerDiscussVoting
+export default createFragmentContainer(
+  PokerDiscussVoting,
+  {
+    meeting: graphql`
+    fragment PokerDiscussVoting_meeting on PokerMeeting {
+      team {
+        teamMembers {
+          userId
+          picture
+        }
+      }
+      settings {
+        selectedTemplate {
+          dimensions {
+            id
+            name
+            selectedScale {
+              values {
+                color
+                label
+                value
+              }
+            }
+          }
+        }
+      }
+    }`,
+    stage: graphql`
+    fragment PokerDiscussVoting_stage on EstimateStage {
+      isVoting
+      dimensionId
+      scores {
+        userId
+        label
+        value
+      }
+    }
+    `
+  }
+)
