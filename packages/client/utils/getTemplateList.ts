@@ -5,7 +5,7 @@ import {getTemplateList_template} from '../__generated__/getTemplateList_templat
 const getTemplateList = (viewerTeamId: string, viewerOrgId: string, templateRef: any) => {
   const template = readInlineData<getTemplateList_template>(
     graphql`
-      fragment getTemplateList_template on ReflectTemplate @inline {
+      fragment getTemplateList_template on MeetingTemplate @inline {
         team {
           id
           orgId

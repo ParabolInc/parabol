@@ -1,4 +1,6 @@
 import React from 'react'
+import AddPokerTemplateMutation from '../../../mutations/AddPokerTemplateMutation'
+import {MeetingTypeEnum} from '../../../types/graphql'
 import TemplateDetailAction from '../../../components/TemplateDetailAction'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
@@ -10,6 +12,7 @@ interface Props {
   templateId: string
   templateCount: number
   teamId: string
+  type: string
 }
 
 const CloneTemplate = (props: Props) => {
@@ -18,6 +21,7 @@ const CloneTemplate = (props: Props) => {
     gotoTeamTemplates,
     templateId,
     teamId,
+    type
   } = props
   const atmosphere = useAtmosphere()
   const {onError, onCompleted, submitting, submitMutation} = useMutationProps()
@@ -26,7 +30,11 @@ const CloneTemplate = (props: Props) => {
   const cloneTemplate = () => {
     if (submitting || !canClone) return
     submitMutation()
-    AddReflectTemplateMutation(atmosphere, {parentTemplateId: templateId, teamId}, {onError, onCompleted})
+    if (type === MeetingTypeEnum.retrospective) {
+      AddReflectTemplateMutation(atmosphere, {parentTemplateId: templateId, teamId}, {onError, onCompleted})
+    } else if (type === MeetingTypeEnum.poker) {
+      AddPokerTemplateMutation(atmosphere, {parentTemplateId: templateId, teamId}, {onError, onCompleted})
+    }
     gotoTeamTemplates()
   }
   return (
