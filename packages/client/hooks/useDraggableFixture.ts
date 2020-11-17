@@ -17,9 +17,8 @@ const makeDrag = (ref: HTMLDivElement, lastX: number) => ({
 let drag: ReturnType<typeof makeDrag>
 
 const noop = () => {}
-const useDraggableFixture = (isRightSidebarOpen: boolean) => {
+const useDraggableFixture = (isLeftSidebarOpen: boolean, isRightSidebarOpen: boolean) => {
   const isDesktop = useBreakpoint(Breakpoint.SINGLE_REFLECTION_COLUMN)
-  const isLeftSidebarOpen = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const onMouseUp = useEventCallback((e: MouseEvent | TouchEvent) => {
     if (e.type === 'touchend') {
       drag.ref.removeEventListener('touchmove', onMouseMove)

@@ -23,10 +23,9 @@ import BottomControlBarRejoin from './BottomControlBarRejoin'
 import BottomControlBarTips from './BottomControlBarTips'
 import EndMeetingButton from './EndMeetingButton'
 import StageTimerControl from './StageTimerControl'
-import useBreakpoint from '~/hooks/useBreakpoint'
 
-const Wrapper = styled('div')<{isDesktop: boolean; isRightSidebarOpen: boolean}>(
-  ({isDesktop, isRightSidebarOpen}) => ({
+const Wrapper = styled('div')<{isLeftSidebarOpen: boolean; isRightSidebarOpen: boolean}>(
+  ({isLeftSidebarOpen, isRightSidebarOpen}) => ({
     alignItems: 'center',
     backgroundColor: '#FFFFFF',
     bottom: 0,
@@ -37,7 +36,7 @@ const Wrapper = styled('div')<{isDesktop: boolean; isRightSidebarOpen: boolean}>
     fontSize: 14,
     height: 56,
     justifyContent: 'space-between',
-    left: isDesktop ? NavSidebar.WIDTH : 0,
+    left: isLeftSidebarOpen ? NavSidebar.WIDTH : 0,
     margin: '0 auto',
     minHeight: 56,
     padding: 8,
@@ -78,7 +77,6 @@ const MeetingControlBar = (props: Props) => {
     isRightSidebarOpen = false
   } = props
   const atmosphere = useAtmosphere()
-  const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const {viewerId} = atmosphere
   const {
     endedAt,
@@ -88,7 +86,8 @@ const MeetingControlBar = (props: Props) => {
     id: meetingId,
     localStage,
     phases,
-    meetingType
+    meetingType,
+    showSidebar: isLeftSidebarOpen
   } = meeting
   const isFacilitating = facilitatorUserId === viewerId && !endedAt
   const {phaseType} = localPhase
@@ -108,19 +107,19 @@ const MeetingControlBar = (props: Props) => {
   const [confirmingButton, setConfirmingButton] = useClickConfirmation()
   const cancelConfirm = confirmingButton ? () => setConfirmingButton('') : undefined
   const tranChildren = useTransition(buttons)
-  const {onMouseDown, onClickCapture} = useDraggableFixture(isRightSidebarOpen)
+  const {onMouseDown, onClickCapture} = useDraggableFixture(isLeftSidebarOpen, isRightSidebarOpen)
   const ref = useRef<HTMLDivElement>(null)
   useSnackbarPad(ref)
-  useCovering(ref, isRightSidebarOpen)
+  useCovering(ref)
   const isInit = useInitialRender()
   if (endedAt) return null
   return (
     <Wrapper
       ref={ref}
-      isDesktop={isDesktop}
       onMouseDown={onMouseDown}
       onClickCapture={onClickCapture}
       onTouchStart={onMouseDown}
+      isLeftSidebarOpen={isLeftSidebarOpen}
       isRightSidebarOpen={isRightSidebarOpen}
     >
       {tranChildren
@@ -202,6 +201,7 @@ export default createFragmentContainer(MeetingControlBar, {
       facilitatorStageId
       facilitatorUserId
       meetingType
+      showSidebar
       localStage {
         id
         isComplete

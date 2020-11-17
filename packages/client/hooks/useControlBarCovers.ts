@@ -1,6 +1,5 @@
 import {RefObject, useEffect} from 'react'
 import {BezierCurve, Breakpoint, DiscussionThreadEnum, NavSidebar} from '~/types/constEnums'
-import useBreakpoint from './useBreakpoint'
 import useResizeObserver from './useResizeObserver'
 
 interface ControlBarCoverable {
@@ -42,7 +41,6 @@ export const useCoverable = (
   height: number,
   parentRef?: RefObject<HTMLDivElement>
 ) => {
-  const isLeftSidebarOpen = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const updateCoverables = () => {
     const el = ref.current
     if (!el) return
@@ -60,7 +58,7 @@ export const useCoverable = (
       isExpanded: oldCoverable?.isExpanded ?? false
     }
     if (covering.el) {
-      cacheCoveringBBox(isLeftSidebarOpen)
+      cacheCoveringBBox()
       ensureCovering(coverable, covering.left, covering.right)
     }
     coverables[id] = coverable
@@ -87,7 +85,7 @@ export const ensureAllCovering = (leftBound: number, rightBound: number) => {
   })
 }
 
-export const cacheCoveringBBox = (isLeftSidebarOpen: boolean, isRightSidebarOpen?: boolean) => {
+export const cacheCoveringBBox = (isLeftSidebarOpen?: boolean, isRightSidebarOpen?: boolean) => {
   if (covering.el) {
     const coveringBBox = covering.el.getBoundingClientRect()
     const {left, right} = coveringBBox
@@ -97,14 +95,13 @@ export const cacheCoveringBBox = (isLeftSidebarOpen: boolean, isRightSidebarOpen
   return covering
 }
 
-export const useCovering = (ref: RefObject<HTMLDivElement>, isRightSidebarOpen: boolean) => {
-  const isLeftSidebarOpen = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
+export const useCovering = (ref: RefObject<HTMLDivElement>) => {
   useEffect(() => {
     const el = ref.current
     if (!el) return
     covering.el = el
     if (Object.keys(coverables).length) {
-      cacheCoveringBBox(isLeftSidebarOpen, isRightSidebarOpen)
+      cacheCoveringBBox()
     }
     ensureAllCovering(covering.left, covering.right)
     return () => {
