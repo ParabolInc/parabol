@@ -15,8 +15,9 @@ const upsertNotifications = async (
   viewerId: string,
   teamId: string,
   teamChannelId: string,
-  botChannelId: string
-) => {
+  channelId: string
+  ) => {
+    console.log("ADD SLACK AUTH", viewerId, teamId)
   const r = await getRethink()
   const existingNotifications = await r
     .table('SlackNotification')
@@ -37,12 +38,13 @@ const upsertNotifications = async (
     return new SlackNotification({
       event,
       // the existing notification channel could be a bad one (legacy reasons, bad means not public or not @Parabol)
-      channelId: teamEvents.includes(event) ? teamChannelId : botChannelId,
+      channelId: teamEvents.includes(event) ? teamChannelId : channelId,
       teamId,
       userId: viewerId,
       id: (existingNotification && existingNotification.id) || undefined
     })
   })
+  console.log("upsertableNotifications", upsertableNotifications)
   await r
     .table('SlackNotification')
     .insert(upsertableNotifications, {conflict: 'replace'})
@@ -64,6 +66,8 @@ const upsertAuth = async (
     .nth(0)
     .default(null)
     .run()) as SlackAuth | null
+    console.log("slackRes <><><><>", slackRes)
+
   const slackAuth = new SlackAuth({
     id: (existingAuth && existingAuth.id) || undefined,
     createdAt: (existingAuth && existingAuth.createdAt) || undefined,
@@ -71,12 +75,12 @@ const upsertAuth = async (
     defaultTeamChannelId: teamChannelId,
     teamId,
     userId: viewerId,
-    slackTeamId: slackRes.team_id,
-    slackTeamName: slackRes.team_name,
-    slackUserId: slackRes.user_id,
+    slackTeamId: slackRes.team.id,
+    slackTeamName: slackRes.team.name,
+    slackUserId: slackRes.authed_user.id,
     slackUserName,
-    botUserId: slackRes.bot.bot_user_id,
-    botAccessToken: slackRes.bot.bot_access_token
+    botUserId: slackRes.bot_user_id,
+    botAccessToken: slackRes.access_token // TODO
   })
   await r
     .table('SlackAuth')
@@ -113,28 +117,43 @@ export default {
     // RESOLUTION
     const manager = await SlackServerManager.init(code)
     const {response} = manager
-    const slackUserId = response.user_id
+    console.log("response", response)
+    // const slackUserId = response.user_id
+    const slackUserId = response.authed_user.id
+    console.log("slackUserId", slackUserId)
     const defaultChannelId = response.incoming_webhook.channel_id
-    const [convoRes, userInfoRes, botChannelRes] = await Promise.all([
+    console.log("defaultChannelId", defaultChannelId)
+    // const [convoRes, userInfoRes, channelRes] = await Promise.all([
+    //   manager.getConversationInfo(defaultChannelId),
+    //   manager.getUserInfo(slackUserId),
+    //   manager.openConversation()
+    // ])
+    const [convoRes, userInfoRes, ] = await Promise.all([
       manager.getConversationInfo(defaultChannelId),
       manager.getUserInfo(slackUserId),
-      manager.openIM(slackUserId)
     ])
+    // console.log("convoRes", convoRes)
+    // console.log("userInfoRes", userInfoRes)
+    // console.log("channelRes", channelRes)
     if (!userInfoRes.ok) {
       return standardError(new Error(userInfoRes.error), {userId: viewerId})
     }
-    if (!botChannelRes.ok) {
-      return standardError(new Error(botChannelRes.error), {userId: viewerId})
-    }
-    const {channel} = botChannelRes
-    const {id: botChannelId} = channel
+    // if (!channelRes.ok) {
+    //   return standardError(new Error(channelRes.error), {userId: viewerId})
+    // }
+    // const {channel} = channelRes
+    // const {id: channelId} = channel
+
     // The default channel could be anything: public, private, im, mpim. Only allow public channels or the @Parabol channel
-    const teamChannelId = convoRes.ok ? defaultChannelId : botChannelId
+    // const teamChannelId = convoRes.ok ? defaultChannelId : channelId
+    const teamChannelId = convoRes.ok ? defaultChannelId : defaultChannelId
+    console.log("teamChannelId", teamChannelId)
 
     const [, slackAuthId] = await Promise.all([
-      upsertNotifications(viewerId, teamId, teamChannelId, botChannelId),
+      upsertNotifications(viewerId, teamId, teamChannelId, defaultChannelId),
       upsertAuth(viewerId, teamId, teamChannelId, userInfoRes.user.profile.display_name, response)
     ])
+    console.log("slackAuthId", slackAuthId)
     segmentIo.track({
       userId: viewerId,
       event: 'Added Integration',

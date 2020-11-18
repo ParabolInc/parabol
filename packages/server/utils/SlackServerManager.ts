@@ -12,17 +12,26 @@ interface IncomingWebhook {
 
 interface OAuth2Response {
   ok: boolean
+  app_id: string
   access_token: string
   error?: any
   scope: string
-  team_id: string
-  team_name: string
-  user_id: string
-  incoming_webhook: IncomingWebhook
-  bot: {
-    bot_user_id: string
-    bot_access_token: string
+  bot_user_id: string
+  team: {
+    id: string
+    name: string
   }
+  // team_id: string
+  // team_name: string
+  // user_id: string
+  authed_user: {
+    id: string
+  }
+  incoming_webhook: IncomingWebhook
+  // bot: {
+  //   bot_user_id: string
+  //   bot_access_token: string
+  // }
 }
 
 class SlackServerManager extends SlackManager {
@@ -39,7 +48,7 @@ class SlackServerManager extends SlackManager {
       redirect_uri: makeAppLink('auth/slack')
     }
 
-    const uri = `https://slack.com/api/oauth.access?${stringify(queryParams)}`
+    const uri = `https://slack.com/api/oauth.v2.access?${stringify(queryParams)}`
 
     const tokenRes = await fetch(uri, {
       method: 'POST',
@@ -54,7 +63,7 @@ class SlackServerManager extends SlackManager {
     if (error) {
       throw new Error(`Slack: ${error}`)
     }
-    return new SlackServerManager(tokenJson.bot.bot_access_token, tokenJson) as Required<
+    return new SlackServerManager(tokenJson.access_token, tokenJson) as Required<
       SlackServerManager
     >
   }

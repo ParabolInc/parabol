@@ -90,6 +90,13 @@ interface ConversationListResponse {
   channels: SlackConversation[]
 }
 
+interface ConversationOpenResponse {
+  ok: true
+  channel: {
+    id: string
+  }
+}
+
 interface PostMessageResponse {
   ok: true
 }
@@ -164,13 +171,6 @@ interface UserInfoResponse {
   user: SlackUser
 }
 
-interface IMOpenResponse {
-  ok: true
-  channel: {
-    id: string
-  }
-}
-
 interface ConversationInfoResponse {
   ok: true
   channel: SlackConversation
@@ -210,7 +210,8 @@ interface ChannelInfoResponse {
 type ConversationType = 'public_channel' | 'private_channel' | 'im' | 'mpim'
 
 abstract class SlackManager {
-  static SCOPE = 'identify,bot,incoming-webhook,channels:read,chat:write:bot'
+  // static SCOPE = 'identify,bot,incoming-webhook,channels:read,chat:write:bot'
+  static SCOPE = 'incoming-webhook,channels:read,chat:write,im:write,users:read'
   // token can be a botAccessToken or accessToken!
   token: string
   abstract fetch: any
@@ -310,11 +311,17 @@ abstract class SlackManager {
     )
   }
 
-  openIM(slackUserId: string) {
-    return this.get<IMOpenResponse>(
-      `https://slack.com/api/im.open?token=${this.token}&user=${slackUserId}`
+  // openIM(slackUserId: string) {
+  //   return this.get<IMOpenResponse>(
+  //     `https://slack.com/api/im.open?token=${this.token}&user=${slackUserId}`
+  //   )
+  // }
+  openConversation() {
+    return this.get<ConversationOpenResponse>(
+      `https://slack.com/api/conversations.open?token=${this.token}`
     )
   }
+
 }
 
 export default SlackManager
