@@ -26,14 +26,14 @@
 
 import {sign} from 'jsonwebtoken'
 import {toEpochSeconds} from '../../server/utils/epochTime'
-import {JWT_LIFESPAN} from '../../server/utils/serverConstants'
+import {Threshold} from '../../client/types/constEnums'
 
 const login = (_overrides = {}) => {
   Cypress.log({
     name: 'login'
   })
   const now = Date.now()
-  const exp = toEpochSeconds(now + JWT_LIFESPAN)
+  const exp = toEpochSeconds(now + Threshold.JWT_LIFESPAN)
   const iat = toEpochSeconds(now)
   const tokenObj = {
     sub: 'local|bZgjbfchN',
