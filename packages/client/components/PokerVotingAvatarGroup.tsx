@@ -11,7 +11,6 @@ const Wrapper = styled('div')({
   marginLeft: 14, // 16px is 2x grid but accounts for 2px invisible overlapping border
   maxWidth: '100%',
   minWidth: 54,
-  // overflow: 'auto',
   paddingLeft: 10 // accounts for avatar overlap and overflow
 })
 
@@ -20,6 +19,7 @@ const CountBadge = styled(PokerVotingAvatarOverflowCount)<{count: number}>(({cou
 }))
 
 interface Props {
+  setVotedUserEl: (userId: string, el: HTMLDivElement) => void
   voters: Array<any>
 }
 
@@ -28,7 +28,7 @@ const PokerVotingAvatarGroup = (props: Props) => {
       TBD Tapping the avatar group when there’s overflow raises a
       dialog with a read-only list of all teammates showing who hasn’t voted first?
   */}
-  const {voters} = props
+  const {setVotedUserEl, voters} = props
   const rowRef = useRef<HTMLDivElement>(null)
   const overflowCount = usePokerAvatarOverflow(rowRef, voters.length)
   // Adjust for the overflow badge taking an extra avatar spot
@@ -62,7 +62,7 @@ const PokerVotingAvatarGroup = (props: Props) => {
   return (
     <Wrapper ref={rowRef}>
       {visibleVoters.map((voter, idx) => (
-        <PokerVotingAvatar idx={idx} key={idx} picture={voter.picture} />
+        <PokerVotingAvatar key={idx} setVotedUserEl={setVotedUserEl} voter={voter} />
       ))}
       {overflowCount > 0
         ? <CountBadge count={adjustedCount}>{'+'}{adjustedCount}</CountBadge>

@@ -2,13 +2,16 @@ import styled from '@emotion/styled'
 import React, {RefObject, useEffect, useRef} from 'react'
 import usePokerZIndexOverride from '../hooks/usePokerZIndexOverride'
 import logoMarkWhite from '../styles/theme/images/brand/mark-white.svg'
-import {BezierCurve, PokerCards} from '../types/constEnums'
+import {BezierCurve, Breakpoint, PokerCards} from '../types/constEnums'
 import getColorLuminance from '../utils/getColorLuminance'
+import PassSVG from '../../../static/images/icons/no_entry.svg'
+import useBreakpoint from '~/hooks/useBreakpoint'
 
 const COLLAPSE_DUR = 1000
 const EXPAND_DUR = 100
 interface CardBaseProps {
   color: string,
+  isDesktop: boolean,
   isCollapsed: boolean,
   isSelected: boolean,
   radius: number
@@ -28,20 +31,27 @@ const getRotation = (isSelected: boolean, isCollapsed: boolean, radius: number, 
   return `translate(${x}px, ${y + selectedOffset}px)rotate(${rotation}deg)`
 }
 
-const CardBase = styled('div')<CardBaseProps>(({color, isCollapsed, isSelected, radius, rotation, yOffset}) => ({
-  background: `radial-gradient(50% 50% at 50% 50%, ${color} 0%, ${getColorLuminance(color, -.12)} 100%)`,
-  borderRadius: 6,
-  cursor: 'pointer',
-  display: 'flex',
-  height: PokerCards.HEIGHT,
-  justifyContent: 'center',
-  position: 'absolute',
-  transform: getRotation(isSelected, isCollapsed, radius, rotation, yOffset),
-  transition: `transform ${isCollapsed ? COLLAPSE_DUR : EXPAND_DUR}ms ${BezierCurve.DECELERATE}`,
-  userSelect: 'none',
-  width: PokerCards.WIDTH,
-  zIndex: isSelected && isCollapsed ? 1 : undefined
-}))
+const CardBase = styled('div')<CardBaseProps>(({color, isCollapsed, isDesktop, isSelected, radius, rotation, yOffset}) => {
+  const transform = getRotation(isSelected, isCollapsed, radius, rotation, yOffset)
+  const hoverTransform = `${transform} translateY(-8px)`
+  return ({
+    background: `radial-gradient(50% 50% at 50% 50%, ${color} 0%, ${getColorLuminance(color, -.12)} 100%)`,
+    borderRadius: 6,
+    cursor: 'pointer',
+    display: 'flex',
+    height: PokerCards.HEIGHT,
+    justifyContent: 'center',
+    position: 'absolute',
+    transform,
+    transition: `transform ${isCollapsed ? COLLAPSE_DUR : EXPAND_DUR}ms ${BezierCurve.DECELERATE}`,
+    userSelect: 'none',
+    width: PokerCards.WIDTH,
+    zIndex: isSelected && isCollapsed ? 1 : undefined,
+    '&:hover': {
+      transform: isCollapsed ? undefined : isDesktop ? hoverTransform : undefined
+    }
+  })
+})
 
 const UpperLeftCardValue = styled('div')({
   color: '#fff',
@@ -58,6 +68,13 @@ const Logo = styled('img')({
   minWidth: 64,
   maxWidth: PokerCards.OVERLAP,
   opacity: 0.5
+})
+
+const Pass = styled('img')({
+  display: 'block',
+  height: 18,
+  marginTop: 4,
+  width: 18
 })
 
 interface Props {
@@ -78,20 +95,34 @@ interface Props {
 
 const PokerCard = (props: Props) => {
   const {card, isCollapsed, yOffset, isSelected, onClick, onMouseEnter, onMouseLeave, radius, rotation} = props
-  const {color, label} = card
+  const {color, label, value} = card
   const wasCollapsedRef = useRef(isCollapsed)
   const cardRef = useRef<HTMLDivElement>(null)
   const isMoving = wasCollapsedRef.current !== isCollapsed
   const isExpanding = isMoving && !isCollapsed
-
   useEffect(() => {
     wasCollapsedRef.current = isCollapsed
   }, [isCollapsed])
   const isTop = isSelected && isMoving
   usePokerZIndexOverride(isTop, cardRef, isExpanding, COLLAPSE_DUR, EXPAND_DUR)
+  const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   return (
-    <CardBase ref={cardRef} yOffset={yOffset} color={color} isCollapsed={isCollapsed} isSelected={isSelected} onClick={onClick} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave} radius={radius} rotation={rotation}>
-      <UpperLeftCardValue>{label}</UpperLeftCardValue>
+    <CardBase
+      ref={cardRef}
+      yOffset={yOffset}
+      color={color}
+      isDesktop={isDesktop}
+      isCollapsed={isCollapsed}
+      isSelected={isSelected}
+      onClick={onClick}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
+      radius={radius}
+      rotation={rotation}
+    >
+      <UpperLeftCardValue>
+        {value === PokerCards.MAX_VALUE ? <Pass src={PassSVG} /> : label}
+      </UpperLeftCardValue>
       <Logo src={logoMarkWhite} />
     </CardBase>
   )

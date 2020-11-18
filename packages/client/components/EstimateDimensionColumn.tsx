@@ -40,15 +40,16 @@ const StyledLinkButton = styled(LinkButton)({
 
 interface Props {
   meeting: EstimateDimensionColumn_meeting
-  stage: EstimateDimensionColumn_stage
   setVotedUserEl: (userId: string, el: HTMLDivElement) => void
+  stage: EstimateDimensionColumn_stage
 }
 
 const EstimateDimensionColumn = (props: Props) => {
   const atmosphere = useAtmosphere()
-
+  const {viewerId} = atmosphere
   const {stage, meeting, setVotedUserEl} = props
-  const {id: meetingId, team} = meeting
+  const {facilitatorUserId, id: meetingId, team} = meeting
+  const isFacilitator = viewerId === facilitatorUserId
   const {teamMembers} = team
   const {id: stageId, dimension} = stage
   const {name} = dimension
@@ -82,7 +83,7 @@ const EstimateDimensionColumn = (props: Props) => {
     <ColumnInner>
       <DimensionHeader>
         <DimensionName>{name}</DimensionName>
-        {isVoting ? null : <StyledLinkButton onClick={reset} palette={'blue'}>{'Team Revote'}</StyledLinkButton>}
+        {!isVoting && isFacilitator ? <StyledLinkButton onClick={reset} palette={'blue'}>{'Team Revote'}</StyledLinkButton> : null}
       </DimensionHeader>
       {/* todo: animate avatars to their respective row */}
       {teamMembers.map((teamMember, idx) => {
@@ -91,8 +92,8 @@ const EstimateDimensionColumn = (props: Props) => {
         }} />
       })}
       {isVoting
-        ? <PokerActiveVoting meeting={meeting} stage={stage} />
-        : <PokerDiscussVoting meeting={meeting} stage={stage} />
+        ? <PokerActiveVoting meeting={meeting} setVotedUserEl={setVotedUserEl} stage={stage} />
+        : <PokerDiscussVoting meeting={meeting} setVotedUserEl={setVotedUserEl} stage={stage} />
       }
     </ColumnInner>
   )
@@ -105,6 +106,7 @@ export default createFragmentContainer(
     fragment EstimateDimensionColumn_meeting on PokerMeeting {
       ...PokerActiveVoting_meeting
       ...PokerDiscussVoting_meeting
+      facilitatorUserId
       id
       team {
         teamMembers {

@@ -4,12 +4,13 @@ import {PALETTE} from '~/styles/paletteV2'
 import SwipeableViews from 'react-swipeable-views'
 import useBreakpoint from '~/hooks/useBreakpoint'
 import EstimateDimensionColumn from './EstimateDimensionColumn'
-import {Breakpoint, DiscussionThreadEnum} from '~/types/constEnums'
+import {Breakpoint} from '~/types/constEnums'
 import PokerCardDeck from './PokerCardDeck'
 import DeckActivityAvatars from './DeckActivityAvatars'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import {EstimatePhaseArea_meeting} from '~/__generated__/EstimatePhaseArea_meeting.graphql'
+import useGotoStageId from '~/hooks/useGotoStageId'
 
 const EstimateArea = styled('div')({
   display: 'flex',
@@ -18,12 +19,12 @@ const EstimateArea = styled('div')({
   width: '100%'
 })
 
-const StepperDots = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
+const StepperDots = styled('div')({
   display: 'flex',
   justifyContent: 'center',
   padding: '4px 0 8px',
-  width: isDesktop ? `calc(100% - ${DiscussionThreadEnum.WIDTH}px)` : '100%'
-}))
+  width: '100%'
+})
 
 const StepperDot = styled('div')<{isActive: boolean}>(({isActive}) => ({
   backgroundColor: isActive ? PALETTE.TEXT_PURPLE : PALETTE.TEXT_GRAY,
@@ -44,8 +45,8 @@ const innerStyle = (isDesktop: boolean) => {
   return {
     height: '100%',
     margin: isDesktop ? '0 auto' : null,
-    maxWidth: isDesktop ? 656 : null,
-    padding: isDesktop ? '0 80px' : '0 16px',
+    maxWidth: isDesktop ? 1600 : null,
+    padding: isDesktop ? '0 40px' : '0 16px',
     width: '100%',
     overflow: 'visible'
   }
@@ -56,20 +57,28 @@ const containerStyle = {
 }
 
 interface Props {
+  gotoStageId: ReturnType<typeof useGotoStageId>
   meeting: EstimatePhaseArea_meeting
 }
 
 const EstimatePhaseArea = (props: Props) => {
-  const {meeting} = props
+  const {gotoStageId, meeting} = props
   const {localStage, phases} = meeting
-  const [activeIdx, setActiveIdx] = useState(1)
-  const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
 
   const {stages} = phases!.find(({phaseType}) => phaseType === 'ESTIMATE')!
   const dimensionStages = stages?.filter(({story}) => (story.id === localStage.story!.id))
 
+  const stageIdx = dimensionStages!.findIndex(({id}) => id === localStage.id)
+
+  console.log(stageIdx, 'stageIdx')
+
+  const [activeIdx, setActiveIdx] = useState(stageIdx)
+  const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
+
+
   const onChangeIdx = (idx: number) => {
     setActiveIdx(idx)
+    gotoStageId(dimensionStages![idx].id)
   }
 
   const avatarRef = useRef<{[userId: string]: HTMLDivElement}>({})
@@ -88,7 +97,7 @@ const EstimatePhaseArea = (props: Props) => {
 
   return (
     <EstimateArea>
-      <StepperDots isDesktop={isDesktop}>
+      <StepperDots>
         {dimensionStages!.map((_, idx) => {
           return <StepperDot key={idx} isActive={idx === activeIdx} />
         })}
@@ -121,6 +130,7 @@ export default createFragmentContainer(EstimatePhaseArea, {
       localStage {
         ... on EstimateStage {
           ...DeckActivityAvatars_stage
+          id
           story {
             id
           }
@@ -133,6 +143,7 @@ export default createFragmentContainer(EstimatePhaseArea, {
             ... on EstimateStage {
               ...DeckActivityAvatars_stage
               ...EstimateDimensionColumn_stage
+              id
               story {
                 id
               }

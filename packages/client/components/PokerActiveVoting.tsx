@@ -25,7 +25,7 @@ const CheckIcon = styled(Icon)({
 
 const BannerWrap = styled('div')({
   margin: 'auto',
-  padding: '8px 0 200px' // accounts for deck of cards below the tip
+  padding: '8px 16px 200px' // accounts for deck of cards below the tip
 })
 
 const StyledTipBanner = styled(TipBanner)({
@@ -39,27 +39,21 @@ const RevealButtonBlock = styled('div')({
 
 interface Props {
   meeting: PokerActiveVoting_meeting
+  setVotedUserEl: (userId: string, el: HTMLDivElement) => void
   stage: PokerActiveVoting_stage
 }
 
 const PokerActiveVoting = (props: Props) => {
-
   const atmosphere = useAtmosphere()
-
-  const {meeting, stage} = props
-
-  console.log(stage, 'active voting stage')
-
-
+  const {viewerId} = atmosphere
+  const {meeting, setVotedUserEl, stage} = props
+  const {facilitatorUserId, id: meetingId, team} = meeting
   const {id: stageId, scores} = stage
-  const {id: meetingId, team} = meeting
+  const hasVotes = scores.length > 0
+  const isFacilitator = viewerId === facilitatorUserId
+  const viewerHasVoted = Boolean(scores.find(({userId}) => userId === viewerId))
   const {teamMembers} = team
-
-  const hasVotes = stage.scores.length > 0
-  const isFacilitator = true
-  const viewerHasVoted = false
-
-  // const [selectedIdx, setSelectedIdx] = useState<number | undefined>(userVoteValueIdx)
+  const voters = getPokerVoters(scores, teamMembers)
 
   // Show the facilitator a tooltip if nobody has voted yet
   // Show the participant a tooltip if they haven’t voted yet
@@ -76,11 +70,9 @@ const PokerActiveVoting = (props: Props) => {
   //       See useDraggableReflectionCard.tsx to check every frame via requestAnimationFrame
   //       in case the peeking avatar is in flight and the stage changes from isVoting to discussion
 
-  const voters = getPokerVoters(scores, teamMembers)
-
   // Show the reveal button if 2+ people have voted
-  // const showRevealButton = isFacilitator && scores.length > 1
-  const showRevealButton = isFacilitator && scores.length > 0 // dev debugging
+  // TBD For folks kicking the tires maybe they want to reveal when running a test meeting by themselves?
+  const showRevealButton = isFacilitator && scores.length > 0
 
   const makeHandleCompleted = (onCompleted: () => void, atmosphere: Atmosphere) => (res, errors) => {
     onCompleted()
@@ -112,7 +104,7 @@ const PokerActiveVoting = (props: Props) => {
             <MiniPokerCardPlaceholder>
               <CheckIcon>check</CheckIcon>
             </MiniPokerCardPlaceholder>
-            <PokerVotingAvatarGroup voters={voters} />
+            <PokerVotingAvatarGroup setVotedUserEl={setVotedUserEl} voters={voters} />
           </PokerVotingRowBase>
         </>
         : <PokerVotingRowEmpty />
@@ -138,6 +130,7 @@ export default createFragmentContainer(
   {
     meeting: graphql`
     fragment PokerActiveVoting_meeting on PokerMeeting {
+      facilitatorUserId
       id
       team {
         teamMembers {

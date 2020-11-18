@@ -71,6 +71,7 @@ const PokerMeeting = (props: Props) => {
       </ResponsiveDashSidebar>
       <Suspense fallback={''}>
         <Phase
+          gotoStageId={gotoStageId}
           meeting={meeting}
           toggleSidebar={toggleSidebar}
           avatarGroup={

@@ -14,14 +14,16 @@ import PhaseHeaderTitle from './PhaseHeaderTitle'
 import PhaseWrapper from './PhaseWrapper'
 import PokerEstimateHeaderCardJira from './PokerEstimateHeaderCardJira'
 import {PokerMeetingPhaseProps} from './PokerMeeting'
-import {Breakpoint} from '~/types/constEnums'
+import {Breakpoint, DiscussionThreadEnum} from '~/types/constEnums'
 import useBreakpoint from '~/hooks/useBreakpoint'
 import useSidebar from '~/hooks/useSidebar'
 import SwipeableDashSidebar from './SwipeableDashSidebar'
 import Icon from './Icon'
 import PlainButton from './PlainButton/PlainButton'
 import {PALETTE} from '~/styles/paletteV2'
+import useGotoStageId from '~/hooks/useGotoStageId'
 interface Props extends PokerMeetingPhaseProps {
+  gotoStageId: ReturnType<typeof useGotoStageId>
   meeting: PokerEstimatePhase_meeting
 }
 
@@ -57,8 +59,12 @@ const ShowDiscussionButton = styled(PlainButton)({
   padding: 8
 })
 
+const StyledMeetingHeaderAndPhase = styled(MeetingHeaderAndPhase)<{isDesktop: boolean}>(({isDesktop}) => ({
+  width: isDesktop ? `calc(100% - ${DiscussionThreadEnum.WIDTH}px)` : '100%'
+}))
+
 const PokerEstimatePhase = (props: Props) => {
-  const {avatarGroup, toggleSidebar, meeting} = props
+  const {avatarGroup, toggleSidebar, meeting, gotoStageId} = props
   const {localStage, endedAt, showSidebar} = meeting
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const {isOpen, toggle: toggleDrawer} = useSidebar(showSidebar)
@@ -66,10 +72,9 @@ const PokerEstimatePhase = (props: Props) => {
   if (!localStage) return null
   const {story} = localStage
   const {__typename} = story!
-
   return (
     <MeetingContent ref={meetingContentRef}>
-      <MeetingHeaderAndPhase hideBottomBar={!!endedAt}>
+      <StyledMeetingHeaderAndPhase isDesktop={isDesktop} hideBottomBar={!!endedAt}>
         <Header>
           <MeetingTopBarWrapper>
             <MeetingTopBar
@@ -91,16 +96,15 @@ const PokerEstimatePhase = (props: Props) => {
         </Header>
         {__typename === 'JiraIssue' && <PokerEstimateHeaderCardJira stage={localStage as any} />}
         <PhaseWrapper>
-          <EstimatePhaseArea meeting={meeting} />
+          <EstimatePhaseArea gotoStageId={gotoStageId} meeting={meeting} />
         </PhaseWrapper>
-      </MeetingHeaderAndPhase>
+      </StyledMeetingHeaderAndPhase>
       {isDesktop ? (
-        <div>thread drawer</div>
-        // <EstimatePhaseDiscussionDrawer
-        //   isDesktop={isDesktop}
-        //   meeting={meeting}
-        //   meetingContentRef={meetingContentRef}
-        // />
+        <EstimatePhaseDiscussionDrawer
+          isDesktop={isDesktop}
+          meeting={meeting}
+          meetingContentRef={meetingContentRef}
+        />
       ) : (
           <SwipeableDashSidebar isOpen={isOpen} isRightSidebar onToggle={toggleDrawer}>
             <EstimatePhaseDiscussionDrawer

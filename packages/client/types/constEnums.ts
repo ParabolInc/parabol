@@ -170,8 +170,8 @@ export const enum MeetingLabels {
 export const enum PokerCards {
   HEIGHT = 175,
   WIDTH = 125,
-  OVERLAP = 96
-
+  OVERLAP = 96,
+  MAX_VALUE = 2147483647
 }
 export const enum UserTaskViewFilterLabels {
   ALL_TEAMS = 'All Teams',

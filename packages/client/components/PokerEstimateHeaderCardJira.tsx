@@ -10,18 +10,20 @@ import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import {PokerEstimateHeaderCardJira_stage} from '../__generated__/PokerEstimateHeaderCardJira_stage.graphql'
 import {IJiraIssue} from '../types/graphql'
+import useBreakpoint from '~/hooks/useBreakpoint'
+import {Breakpoint} from '~/types/constEnums'
 
-const HeaderCardWrapper = styled('div')({
+const HeaderCardWrapper = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   display: 'flex',
-  padding: '4px 8px'
-})
+  padding: isDesktop ? '4px 16px' : '4px 8px'
+}))
 
 const HeaderCard = styled('div')({
   background: PALETTE.CONTROL_LIGHT,
   borderRadius: 4,
   boxShadow: Elevation.Z1,
   padding: '12px 16px',
-  maxWidth: 640,
+  maxWidth: 1504, // matches widest dimension column 1600 - padding etc.
   margin: '0 auto',
   width: '100%'
 })
@@ -86,8 +88,9 @@ const PokerEstimateHeaderCardJira = (props: Props) => {
   const toggleExpand = () => {
     setIsExpanded(!isExpanded)
   }
+  const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   return (
-    <HeaderCardWrapper>
+    <HeaderCardWrapper isDesktop={isDesktop}>
       <HeaderCard>
         <CardTitleWrapper>
           <CardTitle>{summary}</CardTitle>
