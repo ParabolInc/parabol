@@ -14,7 +14,7 @@ interface IntranetPayload {
 }
 const intranetHttpGraphQLHandler = uWSAsyncHandler(async (res: HttpResponse, req: HttpRequest) => {
   const authToken = getReqAuth(req)
-  const ip = uwsGetIP(res, req)
+  const ip = uwsGetIP(res)
   if (!isAuthenticated(authToken) || !isSuperUser(authToken)) {
     res.writeStatus('401').end()
     return
