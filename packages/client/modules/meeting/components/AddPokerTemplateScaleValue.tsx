@@ -1,18 +1,16 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {Component} from 'react'
+import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import palettePickerOptions from '../../../styles/palettePickerOptions'
 import Icon from '../../../components/Icon'
 import LinkButton from '../../../components/LinkButton'
-import withAtmosphere, {
-  WithAtmosphereProps
-} from '../../../decorators/withAtmosphere/withAtmosphere'
 import AddPokerTemplateScaleValueMutation from '../../../mutations/AddPokerTemplateScaleValueMutation'
-import withMutationProps, {WithMutationProps} from '../../../utils/relay/withMutationProps'
 import {AddPokerTemplateScaleValue_scaleValues} from '../../../__generated__/AddPokerTemplateScaleValue_scaleValues.graphql'
 import {PALETTE} from '../../../styles/paletteV2'
 import computeNewScaleValue from '../../../utils/meetings/computeNewScaleValue'
+import useAtmosphere from '../../../hooks/useAtmosphere'
+import useMutationProps from '../../../hooks/useMutationProps'
 
 const AddScaleValueLink = styled(LinkButton)({
   alignItems: 'center',
@@ -31,22 +29,17 @@ const AddScaleValueLinkPlus = styled(Icon)({
   margin: '0 16px 0 16px'
 })
 
-interface Props extends WithAtmosphereProps, WithMutationProps {
+interface Props {
   scaleValues: AddPokerTemplateScaleValue_scaleValues
   scaleId: string
 }
 
-class AddTemplateScaleValue extends Component<Props> {
-  addScaleValue = () => {
-    const {
-      atmosphere,
-      scaleValues,
-      scaleId,
-      onError,
-      onCompleted,
-      submitMutation,
-      submitting
-    } = this.props
+const AddTemplateScaleValue = (props: Props) => {
+  const {scaleValues, scaleId} = props
+  const atmosphere = useAtmosphere()
+  const {onError, onCompleted, submitMutation, submitting} = useMutationProps()
+
+  const addScaleValue = () => {
     if (submitting) return
     submitMutation()
     const values = scaleValues.filter(({isSpecial}) => !isSpecial).map(({value}) => value)
@@ -72,19 +65,16 @@ class AddTemplateScaleValue extends Component<Props> {
     )
   }
 
-  render() {
-    const {scaleValues, submitting} = this.props
-    if (scaleValues.length >= 20) return null
-    return (
-      <AddScaleValueLink palette='blue' onClick={this.addScaleValue} waiting={submitting}>
-        <AddScaleValueLinkPlus>add</AddScaleValueLinkPlus>
-        <div>Add value</div>
-      </AddScaleValueLink>
-    )
-  }
+  if (scaleValues.length >= 20) return null
+  return (
+    <AddScaleValueLink palette='blue' onClick={addScaleValue} waiting={submitting}>
+      <AddScaleValueLinkPlus>add</AddScaleValueLinkPlus>
+      <div>Add value</div>
+    </AddScaleValueLink>
+  )
 }
 
-export default createFragmentContainer(withMutationProps(withAtmosphere(AddTemplateScaleValue)), {
+export default createFragmentContainer(AddTemplateScaleValue, {
   scaleValues: graphql`
     fragment AddPokerTemplateScaleValue_scaleValues on TemplateScaleValue @relay(plural: true) {
       isSpecial

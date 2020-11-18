@@ -1,17 +1,15 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {Component} from 'react'
+import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import EditableText from '../../../components/EditableText'
-import withAtmosphere, {
-  WithAtmosphereProps
-} from '../../../decorators/withAtmosphere/withAtmosphere'
-import withMutationProps, {WithMutationProps} from '../../../utils/relay/withMutationProps'
 import Legitity from '../../../validation/Legitity'
 import {PALETTE} from '~/styles/paletteV2'
 import UpdatePokerTemplateScaleValueMutation from '~/mutations/UpdatePokerTemplateScaleValueMutation'
 import {EditableTemplateScaleValueLabel_scaleValue} from '~/__generated__/EditableTemplateScaleValueLabel_scaleValue.graphql'
 import {EditableTemplateScaleValueLabel_scale} from '~/__generated__/EditableTemplateScaleValueLabel_scale.graphql'
+import useAtmosphere from '../../../hooks/useAtmosphere'
+import useMutationProps from '../../../hooks/useMutationProps'
 
 const StyledEditableText = styled(EditableText)({
   fontFamily: PALETTE.TEXT_MAIN,
@@ -20,7 +18,7 @@ const StyledEditableText = styled(EditableText)({
   padding: 0
 })
 
-interface Props extends WithAtmosphereProps, WithMutationProps {
+interface Props {
   isOwner: boolean
   isEditingDescription: boolean
   isHover: boolean
@@ -28,21 +26,14 @@ interface Props extends WithAtmosphereProps, WithMutationProps {
   scaleValue: EditableTemplateScaleValueLabel_scaleValue
 }
 
-class EditableTemplateScaleValueLabel extends Component<Props> {
-  handleSubmit = (rawScaleLabel) => {
-    const {
-      atmosphere,
-      scale,
-      scaleValue,
-      onError,
-      onCompleted,
-      setDirty,
-      submitMutation,
-      submitting
-    } = this.props
+const EditableTemplateScaleValueLabel = (props: Props) => {
+  const {isOwner, isHover, isEditingDescription, scale, scaleValue} = props
+  const atmosphere = useAtmosphere()
+  const {onError, error, onCompleted, submitMutation, submitting} = useMutationProps()
+
+  const handleSubmit = (rawScaleLabel) => {
     if (submitting) return
-    setDirty()
-    const {error, value: newLabel} = this.validate(rawScaleLabel)
+    const {error, value: newLabel} = validate(rawScaleLabel)
     if (error) return
     submitMutation()
 
@@ -53,8 +44,7 @@ class EditableTemplateScaleValueLabel extends Component<Props> {
     UpdatePokerTemplateScaleValueMutation(atmosphere, {scaleId, oldScaleValue, newScaleValue}, {}, onError, onCompleted)
   }
 
-  legitify(value: string) {
-    const {scaleValue, scale} = this.props
+  const legitify = (value: string) => {
     const scaleValueId = scaleValue.id
     return new Legitity(value)
       .trim()
@@ -68,36 +58,32 @@ class EditableTemplateScaleValueLabel extends Component<Props> {
       })
   }
 
-  validate = (rawValue: string) => {
-    const {error, onError} = this.props
-    const res = this.legitify(rawValue)
+  const validate = (rawValue: string) => {
+    const res = legitify(rawValue)
     if (res.error) {
-      onError(res.error)
+      onError(new Error(res.error))
     } else if (error) {
-      onError()
+      onError(new Error(error.message))
     }
     return res
   }
 
-  render() {
-    const {isOwner, error, isHover, isEditingDescription, scaleValue} = this.props
-    return (
-      <StyledEditableText
-        autoFocus={scaleValue.label.startsWith('*')}
-        disabled={!isOwner}
-        error={error as string}
-        hideIcon={isEditingDescription ? true : !isHover}
-        handleSubmit={this.handleSubmit}
-        initialValue={scaleValue.label === 'X' ? 'Pass' : scaleValue.label}
-        maxLength={2}
-        validate={this.validate}
-        placeholder={''}
-      />
-    )
-  }
+  return (
+    <StyledEditableText
+      autoFocus={scaleValue.label.startsWith('*')}
+      disabled={!isOwner}
+      error={error?.message}
+      hideIcon={isEditingDescription ? true : !isHover}
+      handleSubmit={handleSubmit}
+      initialValue={scaleValue.label}
+      maxLength={2}
+      validate={validate}
+      placeholder={''}
+    />
+  )
 }
 
-export default createFragmentContainer(withAtmosphere(withMutationProps(EditableTemplateScaleValueLabel)), {
+export default createFragmentContainer(EditableTemplateScaleValueLabel, {
   scale: graphql`
     fragment EditableTemplateScaleValueLabel_scale on TemplateScale {
       id

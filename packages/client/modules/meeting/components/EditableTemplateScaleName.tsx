@@ -1,17 +1,15 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {Component} from 'react'
+import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {EditableTemplateScaleName_scales} from '../../../__generated__/EditableTemplateScaleName_scales.graphql'
 import EditableText from '../../../components/EditableText'
-import withAtmosphere, {
-  WithAtmosphereProps
-} from '../../../decorators/withAtmosphere/withAtmosphere'
 import RenamePokerTemplateScaleMutation from '../../../mutations/RenamePokerTemplateScaleMutation'
-import withMutationProps, {WithMutationProps} from '../../../utils/relay/withMutationProps'
 import Legitity from '../../../validation/Legitity'
+import useAtmosphere from '../../../hooks/useAtmosphere'
+import useMutationProps from '../../../hooks/useMutationProps'
 
-interface Props extends WithAtmosphereProps, WithMutationProps {
+interface Props {
   name: string
   scaleId: string
   scales: EditableTemplateScaleName_scales | undefined
@@ -29,27 +27,21 @@ const InheritedStyles = styled('div')({
 const StyledEditableText = styled(EditableText)({
   lineHeight: '24px'
 })
-class EditableTemplateScaleName extends Component<Props> {
-  handleSubmit = (rawName) => {
-    const {
-      atmosphere,
-      scaleId,
-      onError,
-      onCompleted,
-      setDirty,
-      submitMutation,
-      submitting
-    } = this.props
+
+const EditableTemplateScaleName = (props: Props) => {
+  const {name, scaleId, scales, isOwner} = props
+  const atmosphere = useAtmosphere()
+  const {onError, error, onCompleted, submitMutation, submitting} = useMutationProps()
+
+  const handleSubmit = (rawName) => {
     if (submitting) return
-    setDirty()
-    const {error, value: name} = this.validate(rawName)
+    const {error, value: name} = validate(rawName)
     if (error) return
     submitMutation()
     RenamePokerTemplateScaleMutation(atmosphere, {scaleId, name}, {}, onError, onCompleted)
   }
 
-  legitify(value) {
-    const {scaleId, scales} = this.props
+  const legitify = (value) => {
     return new Legitity(value)
       .trim()
       .required('Please enter a scale name')
@@ -63,36 +55,32 @@ class EditableTemplateScaleName extends Component<Props> {
       })
   }
 
-  validate = (rawValue: string) => {
-    const {error, onError} = this.props
-    const res = this.legitify(rawValue)
+  const validate = (rawValue: string) => {
+    const res = legitify(rawValue)
     if (res.error) {
-      onError(res.error)
+      onError(new Error(res.error))
     } else if (error) {
-      onError()
+      onError(new Error(error.message))
     }
     return res
   }
 
-  render() {
-    const {dirty, error, name, isOwner} = this.props
-    return (
-      <InheritedStyles>
-        <StyledEditableText
-          disabled={!isOwner}
-          error={dirty ? (error as string) : undefined}
-          handleSubmit={this.handleSubmit}
-          initialValue={name}
-          maxLength={100}
-          validate={this.validate}
-          placeholder={'*New Scale'}
-        />
-      </InheritedStyles>
-    )
-  }
+  return (
+    <InheritedStyles>
+      <StyledEditableText
+        disabled={!isOwner}
+        error={error?.message}
+        handleSubmit={handleSubmit}
+        initialValue={name}
+        maxLength={100}
+        validate={validate}
+        placeholder={'*New Scale'}
+      />
+    </InheritedStyles>
+  )
 }
 
-export default createFragmentContainer(withAtmosphere(withMutationProps(EditableTemplateScaleName)), {
+export default createFragmentContainer(EditableTemplateScaleName, {
   scales: graphql`
     fragment EditableTemplateScaleName_scales on TemplateScale @relay(plural: true) {
       id
