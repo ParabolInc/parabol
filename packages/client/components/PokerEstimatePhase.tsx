@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
@@ -17,45 +16,10 @@ import {PokerMeetingPhaseProps} from './PokerMeeting'
 import {Breakpoint} from '~/types/constEnums'
 import useBreakpoint from '~/hooks/useBreakpoint'
 import useSidebar from '~/hooks/useSidebar'
-import Icon from './Icon'
-import PlainButton from './PlainButton/PlainButton'
-import {PALETTE} from '~/styles/paletteV2'
 import ResponsiveDashSidebar from './ResponsiveDashSidebar'
 interface Props extends PokerMeetingPhaseProps {
   meeting: PokerEstimatePhase_meeting
 }
-
-const Header = styled('div')({
-  display: 'flex',
-  width: '100%'
-})
-
-const MeetingTopBarWrapper = styled('div')({
-  display: 'flex',
-  justifyContent: 'space-between',
-  width: '100%'
-})
-
-const StyledIcon = styled(Icon)({
-  color: '#FFFF',
-  fontSize: 30,
-  transform: 'scaleX(-1)'
-})
-
-const ButtonContainer = styled('div')({
-  padding: '8px 0',
-  left: -8,
-  position: 'relative'
-})
-
-const ShowDiscussionButton = styled(PlainButton)({
-  alignItems: 'center',
-  backgroundColor: PALETTE.TEXT_PURPLE,
-  borderRadius: '50%',
-  display: 'flex',
-  height: 48,
-  padding: 8
-})
 
 const PokerEstimatePhase = (props: Props) => {
   const {avatarGroup, toggleSidebar, meeting} = props
@@ -69,23 +33,15 @@ const PokerEstimatePhase = (props: Props) => {
   return (
     <MeetingContent>
       <MeetingHeaderAndPhase hideBottomBar={!!endedAt}>
-        <Header>
-          <MeetingTopBarWrapper>
-            <MeetingTopBar
-              avatarGroup={avatarGroup}
-              isMeetingSidebarCollapsed={!showSidebar}
-              toggleSidebar={toggleSidebar}
-            >
-              <PhaseHeaderTitle>{phaseLabelLookup.ESTIMATE}</PhaseHeaderTitle>
-              <PhaseHeaderDescription>{'Estimate each story as a team'}</PhaseHeaderDescription>
-            </MeetingTopBar>
-          </MeetingTopBarWrapper>
-          <ButtonContainer>
-            <ShowDiscussionButton onClick={toggleDrawer}>
-              <StyledIcon>comment</StyledIcon>
-            </ShowDiscussionButton>
-          </ButtonContainer>
-        </Header>
+        <MeetingTopBar
+          avatarGroup={avatarGroup}
+          isMeetingSidebarCollapsed={!showSidebar}
+          toggleSidebar={toggleSidebar}
+          toggleDrawer={toggleDrawer}
+        >
+          <PhaseHeaderTitle>{phaseLabelLookup.ESTIMATE}</PhaseHeaderTitle>
+          <PhaseHeaderDescription>{'Estimate each story as a team'}</PhaseHeaderDescription>
+        </MeetingTopBar>
         {__typename === 'JiraIssue' && <PokerEstimateHeaderCardJira stage={localStage as any} />}
         <PhaseWrapper>
           <EstimatePhaseArea />

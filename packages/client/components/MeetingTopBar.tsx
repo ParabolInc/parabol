@@ -57,8 +57,12 @@ const ChildrenBlock = styled('div')({
   width: '100%'
 })
 
-const Toggle = styled(SidebarToggle)({
+const StyledSidebarToggle = styled(SidebarToggle)({
   marginRight: 16
+})
+
+const StyledDrawerToggle = styled(SidebarToggle)({
+  margin: '16px 4px 0px 16px'
 })
 
 interface Props {
@@ -66,15 +70,18 @@ interface Props {
   children?: ReactNode
   isMeetingSidebarCollapsed: boolean
   toggleSidebar: () => void
+  toggleDrawer?: () => void
 }
 
 const MeetingTopBar = (props: Props) => {
-  const {avatarGroup, children, isMeetingSidebarCollapsed, toggleSidebar} = props
+  const {avatarGroup, children, isMeetingSidebarCollapsed, toggleDrawer, toggleSidebar} = props
   const showButton = isDemoRoute() && !hasToken()
   return (
     <MeetingTopBarStyles>
       <HeadingBlock isMeetingSidebarCollapsed={isMeetingSidebarCollapsed}>
-        {isMeetingSidebarCollapsed ? <Toggle dataCy={`topbar`} onClick={toggleSidebar} /> : null}
+        {isMeetingSidebarCollapsed && (
+          <StyledSidebarToggle dataCy='topbar' onClick={toggleSidebar} />
+        )}
         <ChildrenBlock>{children}</ChildrenBlock>
       </HeadingBlock>
       <AvatarGroupBlock>
@@ -85,6 +92,7 @@ const MeetingTopBar = (props: Props) => {
         )}
         {avatarGroup}
       </AvatarGroupBlock>
+      {toggleDrawer && <StyledDrawerToggle dataCy='drawer' onClick={toggleDrawer} />}
     </MeetingTopBarStyles>
   )
 }

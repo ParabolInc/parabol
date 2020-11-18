@@ -22,8 +22,8 @@ const Drawer = styled('div')<{isDesktop: boolean; isOpen: boolean}>(({isDesktop,
   justifyContent: 'flex-start',
   overflow: 'hidden',
   position: isDesktop ? 'fixed' : 'static',
-  top: 0,
   bottom: 0,
+  top: 0,
   right: isDesktop ? 0 : undefined,
   transition: `all 200ms ${DECELERATE}`,
   userSelect: 'none',
@@ -54,16 +54,22 @@ const AvatarGroup = styled(LabelHeading)({
 
 const DiscussingGroup = styled('div')({
   alignItems: 'center',
-  borderTop: `1px solid ${PALETTE.BORDER_LIGHTER}`,
   borderBottom: `1px solid ${PALETTE.BORDER_LIGHTER}`,
   display: 'flex',
-  padding: '3px 6px',
+  justifyContent: 'space-between',
+  padding: '6px 0px 6px 6px',
   width: '100%'
 })
 
 const StyledAvatar = styled(Avatar)({
   margin: '6px 3px',
   transition: 'all 150ms'
+})
+
+const Toggle = styled(SidebarToggle)({
+  left: 3,
+  marginRight: 20,
+  position: 'relative'
 })
 
 interface Props {
@@ -92,7 +98,7 @@ const EstimatePhaseDiscussionDrawer = (props: Props) => {
             return <StyledAvatar key={idx} size={32} picture={picture} />
           })}
         </AvatarGroup>
-        <SidebarToggle dataCy='right-sidebar' onClick={onToggle} />
+        <Toggle dataCy='right-drawer-open' onClick={onToggle} />
       </DiscussingGroup>
       <ThreadColumn>
         <DiscussionThreadRoot
