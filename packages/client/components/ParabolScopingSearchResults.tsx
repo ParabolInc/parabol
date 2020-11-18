@@ -36,8 +36,14 @@ const ParabolScopingSearchResults = (props: Props) => {
   const estimatePhase = phases.find(({phaseType}) => phaseType === NewMeetingPhaseTypeEnum.ESTIMATE)
   const usedParabolTaskIds = useRecordIdsWithStages(estimatePhase)
 
-  if (edges.length === 0)
-    return viewer ? <IntegrationScopingNoResults msg={'No tasks match that query'} /> : null
+  if (edges.length === 0 && !isEditing)
+    return viewer ?
+      <>
+        <IntegrationScopingNoResults msg={'No tasks match that query'} />
+        <NewParabolTaskButton setIsEditing={setIsEditing} />
+      </>
+      :
+      null
 
   return (
     <>
