@@ -19,7 +19,6 @@ type ParabolSearchQuery {
 }
 
 extend type PokerMeeting {
-  isShowingVideo: Boolean!
   localPhase: NewMeetingPhase!
   localStage: NewMeetingStage!
   showSidebar: Boolean!
