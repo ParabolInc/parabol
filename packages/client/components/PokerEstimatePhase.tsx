@@ -17,10 +17,10 @@ import {PokerMeetingPhaseProps} from './PokerMeeting'
 import {Breakpoint} from '~/types/constEnums'
 import useBreakpoint from '~/hooks/useBreakpoint'
 import useSidebar from '~/hooks/useSidebar'
-import SwipeableDashSidebar from './SwipeableDashSidebar'
 import Icon from './Icon'
 import PlainButton from './PlainButton/PlainButton'
 import {PALETTE} from '~/styles/paletteV2'
+import ResponsiveDashSidebar from './ResponsiveDashSidebar'
 interface Props extends PokerMeetingPhaseProps {
   meeting: PokerEstimatePhase_meeting
 }
@@ -80,27 +80,25 @@ const PokerEstimatePhase = (props: Props) => {
               <PhaseHeaderDescription>{'Estimate each story as a team'}</PhaseHeaderDescription>
             </MeetingTopBar>
           </MeetingTopBarWrapper>
-          {!isDesktop && (
-            <ButtonContainer>
-              <ShowDiscussionButton onClick={toggleDrawer}>
-                <StyledIcon>comment</StyledIcon>
-              </ShowDiscussionButton>
-            </ButtonContainer>
-          )}
+          <ButtonContainer>
+            <ShowDiscussionButton onClick={toggleDrawer}>
+              <StyledIcon>comment</StyledIcon>
+            </ShowDiscussionButton>
+          </ButtonContainer>
         </Header>
         {__typename === 'JiraIssue' && <PokerEstimateHeaderCardJira stage={localStage as any} />}
-
         <PhaseWrapper>
           <EstimatePhaseArea />
         </PhaseWrapper>
       </MeetingHeaderAndPhase>
-      {isDesktop ? (
-        <EstimatePhaseDiscussionDrawer isDesktop={isDesktop} meeting={meeting} />
-      ) : (
-        <SwipeableDashSidebar isOpen={isOpen} isRightSidebar onToggle={toggleDrawer}>
-          <EstimatePhaseDiscussionDrawer isDesktop={isDesktop} meeting={meeting} />
-        </SwipeableDashSidebar>
-      )}
+      <ResponsiveDashSidebar isOpen={isOpen} isRightSidebar onToggle={toggleDrawer}>
+        <EstimatePhaseDiscussionDrawer
+          isDesktop={isDesktop}
+          isOpen={isOpen}
+          meeting={meeting}
+          onToggle={toggleDrawer}
+        />
+      </ResponsiveDashSidebar>
     </MeetingContent>
   )
 }

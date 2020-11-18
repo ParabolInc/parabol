@@ -11,19 +11,23 @@ import {PALETTE} from '~/styles/paletteV2'
 import LabelHeading from './LabelHeading/LabelHeading'
 import Avatar from './Avatar/Avatar'
 import SidebarToggle from './SidebarToggle'
+import {DECELERATE} from '~/styles/animation'
 
-const Drawer = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
+const Drawer = styled('div')<{isDesktop: boolean; isOpen: boolean}>(({isDesktop, isOpen}) => ({
   boxShadow: isDesktop ? desktopSidebarShadow : undefined,
   backgroundColor: '#FFFFFF',
   display: 'flex',
   flexDirection: 'column',
-  height: '100%',
+  height: '100vh',
   justifyContent: 'flex-start',
   overflow: 'hidden',
   position: isDesktop ? 'fixed' : 'static',
+  top: 0,
+  bottom: 0,
   right: isDesktop ? 0 : undefined,
+  transition: `all 200ms ${DECELERATE}`,
   userSelect: 'none',
-  width: DiscussionThreadEnum.WIDTH,
+  width: isOpen || !isDesktop ? DiscussionThreadEnum.WIDTH : 0,
   zIndex: ZIndex.SIDEBAR
 }))
 
@@ -64,11 +68,13 @@ const StyledAvatar = styled(Avatar)({
 
 interface Props {
   isDesktop: boolean
+  isOpen: boolean
   meeting: EstimatePhaseDiscussionDrawer_meeting
+  onToggle: () => void
 }
 
 const EstimatePhaseDiscussionDrawer = (props: Props) => {
-  const {isDesktop, meeting} = props
+  const {isDesktop, isOpen, meeting, onToggle} = props
   const {id: meetingId, endedAt, localStage, viewerMeetingMember} = meeting
   const {user} = viewerMeetingMember
   const {picture} = user
@@ -79,14 +85,14 @@ const EstimatePhaseDiscussionDrawer = (props: Props) => {
   useCoverable('drawer', ref, coverableHeight) || !!endedAt
 
   return (
-    <Drawer isDesktop={isDesktop} ref={ref}>
+    <Drawer isDesktop={isDesktop} isOpen={isOpen} ref={ref}>
       <DiscussingGroup>
         <AvatarGroup>
           {[1, 2, 3, 4].map((__example, idx) => {
             return <StyledAvatar key={idx} size={32} picture={picture} />
           })}
         </AvatarGroup>
-        <SidebarToggle dataCy='right-sidebar' />
+        <SidebarToggle dataCy='right-sidebar' onClick={onToggle} />
       </DiscussingGroup>
       <ThreadColumn>
         <DiscussionThreadRoot
