@@ -1,5 +1,4 @@
 import {ConnectionHandler, RecordProxy, RecordSourceSelectorProxy} from 'relay-runtime'
-import toJiraSearchQueryId from '~/utils/relay/toJiraSearchQueryId'
 import toTeamMemberId from '~/utils/relay/toTeamMemberId'
 import getJiraIssuesConn from '../connections/getJiraIssuesConn'
 
@@ -13,12 +12,11 @@ const handleJiraCreateIssue = (payload: RecordProxy<any>, store: RecordSourceSel
   const teamMember = store.get(teamMemberId)
   const integrations = teamMember?.getLinkedRecord('integrations')
   const atlassian = integrations?.getLinkedRecord('atlassian')
-  const jiraSearchQueryId = toJiraSearchQueryId(meetingId)
-  const jiraSearchQuery = store.get(jiraSearchQueryId)
+  const meeting = store.get(meetingId)
+  const jiraSearchQuery = meeting?.getLinkedRecord('jiraSearchQuery')
   const queryString = jiraSearchQuery?.getValue('queryString') as string | undefined
   const isJql = jiraSearchQuery?.getValue('isJql') as boolean | undefined
   const projectKeyFilters = jiraSearchQuery?.getValue('projectKeyFilters') as string[] | undefined
-
   const jiraIssue = payload.getLinkedRecord('jiraIssue')
   const jiraIssuesConn = getJiraIssuesConn(atlassian, isJql, queryString, projectKeyFilters)
   if (!jiraIssuesConn) return
