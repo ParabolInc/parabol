@@ -1,3 +1,4 @@
+/* DEPRECATED */
 import { s3SignPutObject } from './s3'
 import getS3PutUrl from './getS3PutUrl'
 

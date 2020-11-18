@@ -9,6 +9,7 @@ import ImageMetadataInput from '../types/ImageMetadataInput'
 
 const createUserPicturePutUrl = {
   type: CreateUserPicturePutUrlPayload,
+  deprecationReason: 'Replaced with `uploadUserImage` mutation',
   description: 'Create a PUT URL on the CDN for the currently authenticated user’s profile picture',
   args: {
     image: {

@@ -6634,6 +6634,7 @@ export interface IMutation {
 
   /**
    * Create a PUT URL on the CDN for an organization’s profile picture
+   * @deprecated "Replaced with `uploadOrgImage` mutation"
    */
   createOrgPicturePutUrl: ICreatePicturePutUrlPayload | null;
 
@@ -6649,6 +6650,7 @@ export interface IMutation {
 
   /**
    * Create a PUT URL on the CDN for the currently authenticated user’s profile picture
+   * @deprecated "Replaced with `uploadUserImage` mutation"
    */
   createUserPicturePutUrl: ICreateUserPicturePutUrlPayload | null;
 

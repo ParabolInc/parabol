@@ -8,6 +8,7 @@ import standardError from '../../utils/standardError'
 
 const createOrgPicturePutUrl = {
   type: CreatePicturePutUrlPayload,
+  deprecationReason: 'Replaced with `uploadOrgImage` mutation',
   description: 'Create a PUT URL on the CDN for an organization’s profile picture',
   args: {
     contentType: {
