@@ -47,8 +47,9 @@ class EditableTemplateScaleValueLabel extends Component<Props> {
     submitMutation()
 
     const scaleId = scale.id
+    const newValue = isNaN(Number(newLabel)) ? scaleValue.value : Number(newLabel)
     const oldScaleValue = {label: scaleValue.label, color: scaleValue.color, value: scaleValue.value}
-    const newScaleValue = {...oldScaleValue, label: newLabel}
+    const newScaleValue = {...oldScaleValue, label: newLabel, value: newValue}
     UpdatePokerTemplateScaleValueMutation(atmosphere, {scaleId, oldScaleValue, newScaleValue}, {}, onError, onCompleted)
   }
 
