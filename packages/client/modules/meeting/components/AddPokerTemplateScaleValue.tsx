@@ -12,6 +12,7 @@ import AddPokerTemplateScaleValueMutation from '../../../mutations/AddPokerTempl
 import withMutationProps, {WithMutationProps} from '../../../utils/relay/withMutationProps'
 import {AddPokerTemplateScaleValue_scaleValues} from '../../../__generated__/AddPokerTemplateScaleValue_scaleValues.graphql'
 import {PALETTE} from '../../../styles/paletteV2'
+import computeNewScaleValue from '../../../utils/meetings/computeNewScaleValue'
 
 const AddScaleValueLink = styled(LinkButton)({
   alignItems: 'center',
@@ -53,7 +54,7 @@ class AddTemplateScaleValue extends Component<Props> {
     const availableNewColor = palettePickerOptions.find(
       (color) => !pickedColors.includes(color.hex)
     )
-    const newValue = Math.max(0, ...values) + 1
+    const newValue = computeNewScaleValue(values)
 
     const scaleValue = {
       color: availableNewColor?.hex ?? PALETTE.PROMPT_GREEN,
