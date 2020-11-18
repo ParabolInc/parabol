@@ -1,5 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
+import React, {useRef} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {phaseLabelLookup} from '../utils/meetings/lookups'
 import {PokerEstimatePhase_meeting} from '../__generated__/PokerEstimatePhase_meeting.graphql'
@@ -26,12 +26,13 @@ const PokerEstimatePhase = (props: Props) => {
   const {localStage, endedAt, showSidebar} = meeting
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const {isOpen, toggle: toggleDrawer} = useSidebar(showSidebar)
+  const meetingContentRef = useRef<HTMLDivElement>(null)
   if (!localStage) return null
   const {story} = localStage
   const {__typename} = story!
 
   return (
-    <MeetingContent>
+    <MeetingContent ref={meetingContentRef}>
       <MeetingHeaderAndPhase hideBottomBar={!!endedAt}>
         <MeetingTopBar
           avatarGroup={avatarGroup}
@@ -44,7 +45,7 @@ const PokerEstimatePhase = (props: Props) => {
         </MeetingTopBar>
         {__typename === 'JiraIssue' && <PokerEstimateHeaderCardJira stage={localStage as any} />}
         <PhaseWrapper>
-          <EstimatePhaseArea />
+          <EstimatePhaseArea meeting={meeting} />
         </PhaseWrapper>
       </MeetingHeaderAndPhase>
       <ResponsiveDashSidebar isOpen={isOpen} isRightSidebar onToggle={toggleDrawer}>
@@ -52,6 +53,7 @@ const PokerEstimatePhase = (props: Props) => {
           isDesktop={isDesktop}
           isOpen={isOpen}
           meeting={meeting}
+          meetingContentRef={meetingContentRef}
           onToggle={toggleDrawer}
         />
       </ResponsiveDashSidebar>
@@ -70,6 +72,7 @@ graphql`
 export default createFragmentContainer(PokerEstimatePhase, {
   meeting: graphql`
     fragment PokerEstimatePhase_meeting on PokerMeeting {
+      ...EstimatePhaseArea_meeting
       id
       endedAt
       showSidebar

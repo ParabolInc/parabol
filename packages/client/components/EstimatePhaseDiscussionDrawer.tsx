@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import React, {useRef} from 'react'
+import React, {RefObject, useRef} from 'react'
 import graphql from 'babel-plugin-relay/macro'
 import {createFragmentContainer} from 'react-relay'
 import {useCoverable} from '~/hooks/useControlBarCovers'
@@ -77,18 +77,19 @@ interface Props {
   isOpen: boolean
   meeting: EstimatePhaseDiscussionDrawer_meeting
   onToggle: () => void
+  meetingContentRef: RefObject<HTMLDivElement>
 }
 
 const EstimatePhaseDiscussionDrawer = (props: Props) => {
-  const {isDesktop, isOpen, meeting, onToggle} = props
+  const {isDesktop, isOpen, meeting,meetingContentRef, onToggle} = props
   const {id: meetingId, endedAt, localStage, viewerMeetingMember} = meeting
+  const {serviceTaskId} = localStage
   const {user} = viewerMeetingMember
   const {picture} = user
-  const {serviceTaskId} = localStage
   const ref = useRef<HTMLDivElement>(null)
   const meetingControlBarBottom = 16
   const coverableHeight = isDesktop ? MeetingControlBarEnum.HEIGHT + meetingControlBarBottom : 0
-  useCoverable('drawer', ref, coverableHeight) || !!endedAt
+  useCoverable('drawer', ref, coverableHeight, meetingContentRef) || !!endedAt
 
   return (
     <Drawer isDesktop={isDesktop} isOpen={isOpen} ref={ref}>

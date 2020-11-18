@@ -16,15 +16,15 @@ const pokerAnnounceDeckHover = {
   description: ``,
   args: {
     meetingId: {
-      type: GraphQLNonNull(GraphQLID)
+      type: GraphQLNonNull(GraphQLID),
     },
     stageId: {
-      type: GraphQLNonNull(GraphQLID)
+      type: GraphQLNonNull(GraphQLID),
     },
     isHover: {
       type: GraphQLNonNull(GraphQLBoolean),
-      description: 'true if the viewer has started hovering the deck, else false'
-    }
+      description: 'true if the viewer has started hovering the deck, else false',
+    },
   },
   resolve: async (
     _source,
@@ -69,11 +69,7 @@ const pokerAnnounceDeckHover = {
     const redis = getRedis()
     const key = `pokerHover:${stageId}`
     if (isHover) {
-      const [numAddedRes] = await redis
-        .multi()
-        .sadd(key, viewerId)
-        .pexpire(key, ms('1h'))
-        .exec()
+      const [numAddedRes] = await redis.multi().sadd(key, viewerId).pexpire(key, ms('1h')).exec()
       const numAdded = numAddedRes[1]
       if (numAdded !== 1) {
         // this is primarily to avoid publishing a useless message to the pubsub
@@ -86,7 +82,7 @@ const pokerAnnounceDeckHover = {
       }
     }
 
-    const data = {meetingId, stageId}
+    const data = {meetingId, stageId, userId: viewerId, isHover}
     publish(
       SubscriptionChannel.MEETING,
       meetingId,
@@ -95,6 +91,6 @@ const pokerAnnounceDeckHover = {
       subOptions
     )
     return data
-  }
+  },
 }
 export default pokerAnnounceDeckHover

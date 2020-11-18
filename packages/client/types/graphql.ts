@@ -61,7 +61,7 @@ export interface IAuthIdentity {
  */
 export const enum AuthIdentityTypeEnum {
   LOCAL = 'LOCAL',
-  GOOGLE = 'GOOGLE'
+  GOOGLE = 'GOOGLE',
 }
 
 /**
@@ -149,7 +149,7 @@ export const enum NewMeetingPhaseTypeEnum {
   discuss = 'discuss',
   SUMMARY = 'SUMMARY',
   SCOPE = 'SCOPE',
-  ESTIMATE = 'ESTIMATE'
+  ESTIMATE = 'ESTIMATE',
 }
 
 /**
@@ -490,7 +490,7 @@ export interface ISuggestedIntegration {
 export const enum TaskServiceEnum {
   github = 'github',
   jira = 'jira',
-  PARABOL = 'PARABOL'
+  PARABOL = 'PARABOL',
 }
 
 /**
@@ -1521,7 +1521,7 @@ export interface IThreadOnTaskArguments {
 export const enum ThreadSourceEnum {
   AGENDA_ITEM = 'AGENDA_ITEM',
   REFLECTION_GROUP = 'REFLECTION_GROUP',
-  STORY = 'STORY'
+  STORY = 'STORY',
 }
 
 /**
@@ -1678,7 +1678,7 @@ export const enum TaskStatusEnum {
   active = 'active',
   stuck = 'stuck',
   done = 'done',
-  future = 'future'
+  future = 'future',
 }
 
 /**
@@ -1842,7 +1842,7 @@ export interface ITeamMembersOnTeamArguments {
 export const enum MeetingTypeEnum {
   action = 'action',
   retrospective = 'retrospective',
-  poker = 'poker'
+  poker = 'poker',
 }
 
 /**
@@ -1992,7 +1992,7 @@ export interface IReflectTemplate {
 export const enum SharingScopeEnum {
   TEAM = 'TEAM',
   ORGANIZATION = 'ORGANIZATION',
-  PUBLIC = 'PUBLIC'
+  PUBLIC = 'PUBLIC',
 }
 
 /**
@@ -2099,7 +2099,7 @@ export interface ITeamMeetingSettings {
 export const enum TierEnum {
   personal = 'personal',
   pro = 'pro',
-  enterprise = 'enterprise'
+  enterprise = 'enterprise',
 }
 
 /**
@@ -2401,7 +2401,7 @@ export interface IOrganizationUser {
  * The role of the org user
  */
 export const enum OrgUserRole {
-  BILLING_LEADER = 'BILLING_LEADER'
+  BILLING_LEADER = 'BILLING_LEADER',
 }
 
 export interface IOrgUserCount {
@@ -2655,7 +2655,7 @@ export const enum InvoiceLineItemEnum {
   ADDED_USERS = 'ADDED_USERS',
   INACTIVITY_ADJUSTMENTS = 'INACTIVITY_ADJUSTMENTS',
   OTHER_ADJUSTMENTS = 'OTHER_ADJUSTMENTS',
-  REMOVED_USERS = 'REMOVED_USERS'
+  REMOVED_USERS = 'REMOVED_USERS',
 }
 
 /**
@@ -2697,7 +2697,7 @@ export const enum InvoiceStatusEnum {
   PENDING = 'PENDING',
   PAID = 'PAID',
   FAILED = 'FAILED',
-  UPCOMING = 'UPCOMING'
+  UPCOMING = 'UPCOMING',
 }
 
 /**
@@ -2790,7 +2790,7 @@ export const enum SuggestedActionTypeEnum {
   tryTheDemo = 'tryTheDemo',
   tryRetroMeeting = 'tryRetroMeeting',
   createNewTeam = 'createNewTeam',
-  tryActionMeeting = 'tryActionMeeting'
+  tryActionMeeting = 'tryActionMeeting',
 }
 
 /**
@@ -2908,7 +2908,7 @@ export const enum TimelineEventEnum {
   actionComplete = 'actionComplete',
   joinedParabol = 'joinedParabol',
   createdTeam = 'createdTeam',
-  POKER_COMPLETE = 'POKER_COMPLETE'
+  POKER_COMPLETE = 'POKER_COMPLETE',
 }
 
 /**
@@ -3035,7 +3035,7 @@ export interface INotification {
 export const enum NotificationStatusEnum {
   UNREAD = 'UNREAD',
   READ = 'READ',
-  CLICKED = 'CLICKED'
+  CLICKED = 'CLICKED',
 }
 
 /**
@@ -3048,7 +3048,7 @@ export const enum NotificationEnum {
   TEAM_INVITATION = 'TEAM_INVITATION',
   TEAM_ARCHIVED = 'TEAM_ARCHIVED',
   TASK_INVOLVES = 'TASK_INVOLVES',
-  MEETING_STAGE_TIME_LIMIT_END = 'MEETING_STAGE_TIME_LIMIT_END'
+  MEETING_STAGE_TIME_LIMIT_END = 'MEETING_STAGE_TIME_LIMIT_END',
 }
 
 /**
@@ -3314,7 +3314,7 @@ export const enum SlackNotificationEventEnum {
   meetingStart = 'meetingStart',
   meetingEnd = 'meetingEnd',
   MEETING_STAGE_TIME_LIMIT_END = 'MEETING_STAGE_TIME_LIMIT_END',
-  MEETING_STAGE_TIME_LIMIT_START = 'MEETING_STAGE_TIME_LIMIT_START'
+  MEETING_STAGE_TIME_LIMIT_START = 'MEETING_STAGE_TIME_LIMIT_START',
 }
 
 /**
@@ -3329,7 +3329,7 @@ export const enum SlackNotificationEventTypeEnum {
   /**
    * notification that concerns a single member on the team
    */
-  member = 'member'
+  member = 'member',
 }
 
 /**
@@ -3828,7 +3828,7 @@ export interface ITemplateScale {
   /**
    * The values used in this scale
    */
-  values: Array<ITemplateScaleValue> | null;
+  values: Array<ITemplateScaleValue>;
 }
 
 /**
@@ -5024,7 +5024,7 @@ export interface ICustomPhaseItem {
  * The type of phase item
  */
 export const enum CustomPhaseItemTypeEnum {
-  retroPhaseItem = 'retroPhaseItem'
+  retroPhaseItem = 'retroPhaseItem',
 }
 
 /**
@@ -5494,7 +5494,7 @@ export interface IReflectionGroupsOnRetrospectiveMeetingArguments {
  */
 export const enum ReflectionGroupSortEnum {
   voteCount = 'voteCount',
-  stageOrder = 'stageOrder'
+  stageOrder = 'stageOrder',
 }
 
 /**
@@ -6533,7 +6533,7 @@ export interface IMassInvitationPayload {
 export const enum TeamInvitationErrorEnum {
   accepted = 'accepted',
   expired = 'expired',
-  notFound = 'notFound'
+  notFound = 'notFound',
 }
 
 export interface IVerifiedInvitationPayload {
@@ -6785,14 +6785,25 @@ export interface IMutation {
   editTask: IEditTaskPayload | null;
 
   /**
+   * Finish a check-in meeting
+   */
+  endCheckIn: EndCheckInPayload;
+
+  /**
    * Broadcast that the viewer stopped dragging a reflection
    */
   endDraggingReflection: IEndDraggingReflectionPayload | null;
 
   /**
    * Finish a new meeting
+   * @deprecated "Using more specfic end[meetingType] instead"
    */
   endNewMeeting: IEndNewMeetingPayload;
+
+  /**
+   * Finish a retrospective meeting
+   */
+  endRetrospective: EndRetrospectivePayload;
 
   /**
    * flag a viewer as ready to advance to the next stage of a meeting
@@ -6994,7 +7005,7 @@ export interface IMutation {
   /**
    * Set the selected template for the upcoming retro meeting
    */
-  selectRetroTemplate: ISelectRetroTemplatePayload | null;
+  selectTemplate: ISelectTemplatePayload | null;
 
   /**
    * Share where in the app the viewer is
@@ -7035,7 +7046,18 @@ export interface IMutation {
   /**
    * Start a new meeting
    */
+  startCheckIn: StartCheckInPayload;
+
+  /**
+   * Start a new meeting
+   * @deprecated "Using more specfic start[meetingType] instead"
+   */
   startNewMeeting: IStartNewMeetingPayload;
+
+  /**
+   * Start a new meeting
+   */
+  startRetrospective: StartRetrospectivePayload;
 
   /**
    * Start a new sprint poker meeting
@@ -7070,7 +7092,7 @@ export interface IMutation {
   /**
    * Update the scale used for a dimension in a template
    */
-  updatePokerTemplateDimensionScale: IAddPokerTemplateDimensionPayload;
+  updatePokerTemplateDimensionScale: IUpdatePokerTemplateDimensionScalePayload;
 
   /**
    * Update the label, numerical value or color of a scale value in a scale
@@ -7563,6 +7585,13 @@ export interface IEditTaskOnMutationArguments {
   isEditing: boolean;
 }
 
+export interface IEndCheckInOnMutationArguments {
+  /**
+   * The meeting to end
+   */
+  meetingId: string;
+}
+
 export interface IEndDraggingReflectionOnMutationArguments {
   reflectionId: string;
 
@@ -7583,6 +7612,13 @@ export interface IEndDraggingReflectionOnMutationArguments {
 }
 
 export interface IEndNewMeetingOnMutationArguments {
+  /**
+   * The meeting to end
+   */
+  meetingId: string;
+}
+
+export interface IEndRetrospectiveOnMutationArguments {
   /**
    * The meeting to end
    */
@@ -7915,7 +7951,7 @@ export interface ISegmentEventTrackOnMutationArguments {
   options?: ISegmentEventTrackOptions | null;
 }
 
-export interface ISelectRetroTemplateOnMutationArguments {
+export interface ISelectTemplateOnMutationArguments {
   selectedTemplateId: string;
   teamId: string;
 }
@@ -8005,6 +8041,13 @@ export interface IStartDraggingReflectionOnMutationArguments {
   dragId: string;
 }
 
+export interface IStartCheckInOnMutationArguments {
+  /**
+   * The team starting the meeting
+   */
+  teamId: string;
+}
+
 export interface IStartNewMeetingOnMutationArguments {
   /**
    * The team starting the meeting
@@ -8015,6 +8058,13 @@ export interface IStartNewMeetingOnMutationArguments {
    * The base type of the meeting (action, retro, etc)
    */
   meetingType: MeetingTypeEnum;
+}
+
+export interface IStartRetrospectiveOnMutationArguments {
+  /**
+   * The team starting the meeting
+   */
+  teamId: string;
 }
 
 export interface IStartSprintPokerOnMutationArguments {
@@ -8479,7 +8529,7 @@ export interface IAddReactjiToReactableSuccess {
  */
 export const enum ReactableEnum {
   COMMENT = 'COMMENT',
-  REFLECTION = 'REFLECTION'
+  REFLECTION = 'REFLECTION',
 }
 
 export interface IAddReflectTemplatePayload {
@@ -8535,7 +8585,7 @@ export interface IAddFeatureFlagPayload {
 export const enum UserFlagEnum {
   video = 'video',
   jira = 'jira',
-  poker = 'poker'
+  poker = 'poker',
 }
 
 export interface IAddGitHubAuthPayload {
@@ -8883,7 +8933,7 @@ export interface INotifyTaskInvolves {
  */
 export const enum TaskInvolvementType {
   ASSIGNEE = 'ASSIGNEE',
-  MENTIONEE = 'MENTIONEE'
+  MENTIONEE = 'MENTIONEE',
 }
 
 export interface ICreateTaskInput {
@@ -8921,7 +8971,7 @@ export interface ICreateTaskInput {
 export const enum AreaEnum {
   meeting = 'meeting',
   teamDash = 'teamDash',
-  userDash = 'userDash'
+  userDash = 'userDash',
 }
 
 export interface ICreateUserPicturePutUrlPayload {
@@ -9215,7 +9265,7 @@ export interface IEndSprintPokerSuccess {
   /**
    * true if the meeting was killed (ended before reaching last stage)
    */
-  isKill: boolean | null;
+  isKill: boolean;
   meetingId: string;
   meeting: IPokerMeeting;
   removedTaskIds: Array<string>;
@@ -9249,6 +9299,39 @@ export interface IEditTaskPayload {
    * true if the editor is editing, false if they stopped editing
    */
   isEditing: boolean | null;
+}
+
+/**
+ * Return object for EndCheckInPayload
+ */
+export type EndCheckInPayload = IErrorPayload | IEndCheckInSuccess;
+
+export interface IEndCheckInSuccess {
+  __typename: 'EndCheckInSuccess';
+
+  /**
+   * true if the meeting was killed (ended before reaching last stage)
+   */
+  isKill: boolean;
+  team: ITeam;
+  meeting: IActionMeeting;
+
+  /**
+   * The ID of the suggestion to try a check-in meeting, if tried
+   */
+  removedSuggestedActionId: string | null;
+  removedTaskIds: Array<string> | null;
+
+  /**
+   * An event that is important to the viewer, e.g. an ended meeting
+   */
+  timelineEvent: TimelineEvent;
+  updatedTaskIds: Array<string> | null;
+
+  /**
+   * Any tasks that were updated during the meeting
+   */
+  updatedTasks: Array<ITask> | null;
 }
 
 export interface IEndDraggingReflectionPayload {
@@ -9347,7 +9430,7 @@ export interface IRemoteReflectionDrag {
  */
 export const enum DragReflectionDropTargetTypeEnum {
   REFLECTION_GROUP = 'REFLECTION_GROUP',
-  REFLECTION_GRID = 'REFLECTION_GRID'
+  REFLECTION_GRID = 'REFLECTION_GRID',
 }
 
 export interface IEndNewMeetingPayload {
@@ -9377,6 +9460,33 @@ export interface IEndNewMeetingPayload {
    * Any tasks that were updated during the meeting
    */
   updatedTasks: Array<ITask> | null;
+}
+
+/**
+ * Return object for EndRetrospectivePayload
+ */
+export type EndRetrospectivePayload = IErrorPayload | IEndRetrospectiveSuccess;
+
+export interface IEndRetrospectiveSuccess {
+  __typename: 'EndRetrospectiveSuccess';
+
+  /**
+   * true if the meeting was killed (ended before reaching last stage)
+   */
+  isKill: boolean;
+  team: ITeam;
+  meeting: IRetrospectiveMeeting;
+
+  /**
+   * The ID of the suggestion to try a retro meeting, if tried
+   */
+  removedSuggestedActionId: string | null;
+  removedTaskIds: Array<string>;
+
+  /**
+   * An event that is important to the viewer, e.g. an ended meeting
+   */
+  timelineEvent: TimelineEvent;
 }
 
 /**
@@ -10016,10 +10126,10 @@ export interface ISegmentEventTrackOptions {
   actionType?: string | null;
 }
 
-export interface ISelectRetroTemplatePayload {
-  __typename: 'SelectRetroTemplatePayload';
+export interface ISelectTemplatePayload {
+  __typename: 'SelectTemplatePayload';
   error: IStandardMutationError | null;
-  retroMeetingSettings: IRetrospectiveMeetingSettings | null;
+  meetingSettings: TeamMeetingSettings | null;
 }
 
 /**
@@ -10112,12 +10222,38 @@ export interface IStartDraggingReflectionPayload {
   teamId: string | null;
 }
 
+/**
+ * Return object for StartCheckInPayload
+ */
+export type StartCheckInPayload = IErrorPayload | IStartCheckInSuccess;
+
+export interface IStartCheckInSuccess {
+  __typename: 'StartCheckInSuccess';
+  meeting: IActionMeeting;
+  meetingId: string;
+  team: ITeam;
+}
+
 export interface IStartNewMeetingPayload {
   __typename: 'StartNewMeetingPayload';
   error: IStandardMutationError | null;
   team: ITeam | null;
   meetingId: string | null;
   meeting: NewMeeting | null;
+}
+
+/**
+ * Return object for StartRetrospectivePayload
+ */
+export type StartRetrospectivePayload =
+  | IErrorPayload
+  | IStartRetrospectiveSuccess;
+
+export interface IStartRetrospectiveSuccess {
+  __typename: 'StartRetrospectiveSuccess';
+  meeting: IRetrospectiveMeeting;
+  meetingId: string;
+  team: ITeam;
 }
 
 /**
@@ -10230,6 +10366,12 @@ export interface IUpdateOrgInput {
   picture?: any | null;
 }
 
+export interface IUpdatePokerTemplateDimensionScalePayload {
+  __typename: 'UpdatePokerTemplateDimensionScalePayload';
+  error: IStandardMutationError | null;
+  dimension: ITemplateDimension | null;
+}
+
 export interface IUpdatePokerTemplateScaleValuePayload {
   __typename: 'UpdatePokerTemplateScaleValuePayload';
   error: IStandardMutationError | null;
@@ -10340,7 +10482,7 @@ export interface IUpdatePokerScopeItemInput {
  */
 export const enum AddOrDeleteEnum {
   ADD = 'ADD',
-  DELETE = 'DELETE'
+  DELETE = 'DELETE',
 }
 
 export interface IUpdateReflectionContentPayload {
@@ -10581,6 +10723,11 @@ export type PokerAnnounceDeckHoverPayload =
 
 export interface IPokerAnnounceDeckHoverSuccess {
   __typename: 'PokerAnnounceDeckHoverSuccess';
+  meetingId: string;
+  stageId: string;
+  userId: string;
+  user: IUser;
+  isHover: boolean;
 
   /**
    * The stage that holds the updated scores
@@ -10674,7 +10821,9 @@ export type NotificationSubscriptionPayload =
   | ICreateTaskPayload
   | IDeleteTaskPayload
   | IDisconnectSocketPayload
+  | IEndCheckInSuccess
   | IEndNewMeetingPayload
+  | IEndRetrospectiveSuccess
   | IInvalidateSessionsPayload
   | IInviteToTeamPayload
   | IMeetingStageTimeLimitPayload
@@ -10855,7 +11004,9 @@ export type TeamSubscriptionPayload =
   | IArchiveTeamPayload
   | IDenyPushInvitationPayload
   | IDowngradeToPersonalPayload
+  | IEndCheckInSuccess
   | IEndNewMeetingPayload
+  | IEndRetrospectiveSuccess
   | IEndSprintPokerSuccess
   | INavigateMeetingPayload
   | IPushInvitationPayload
@@ -10864,8 +11015,10 @@ export type TeamSubscriptionPayload =
   | IRemoveOrgUserPayload
   | IRemoveTeamMemberPayload
   | IRenameMeetingSuccess
-  | ISelectRetroTemplatePayload
+  | ISelectTemplatePayload
+  | IStartCheckInSuccess
   | IStartNewMeetingPayload
+  | IStartRetrospectiveSuccess
   | IStartSprintPokerSuccess
   | IUpdateAgendaItemPayload
   | IUpdateCreditCardPayload
@@ -10907,12 +11060,6 @@ export interface IRenamePokerTemplatePayload {
   __typename: 'RenamePokerTemplatePayload';
   error: IStandardMutationError | null;
   pokerTemplate: IPokerTemplate | null;
-}
-
-export interface IUpdatePokerTemplateDimensionScalePayload {
-  __typename: 'UpdatePokerTemplateDimensionScalePayload';
-  error: IStandardMutationError | null;
-  dimension: ITemplateDimension | null;
 }
 
 // tslint:enable

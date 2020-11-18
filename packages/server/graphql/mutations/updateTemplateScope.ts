@@ -1,6 +1,8 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import {SharingScopeEnum as ESharingScope} from 'parabol-client/types/graphql'
+import {MeetingTypeEnum, SharingScopeEnum as ESharingScope} from 'parabol-client/types/graphql'
+import PokerTemplate from '../../database/types/PokerTemplate'
+import TemplateDimension from '../../database/types/TemplateDimension'
 import toTeamMemberId from '../../../client/utils/relay/toTeamMemberId'
 import getRethink from '../../database/rethinkDriver'
 import ReflectTemplate from '../../database/types/ReflectTemplate'
@@ -17,12 +19,12 @@ const updateTemplateScope = {
   args: {
     templateId: {
       type: GraphQLNonNull(GraphQLID),
-      description: 'The id of the template'
+      description: 'The id of the template',
     },
     scope: {
       type: GraphQLNonNull(SharingScopeEnum),
-      description: 'the new scope'
-    }
+      description: 'the new scope',
+    },
   },
   resolve: async (
     _source,
@@ -69,14 +71,15 @@ const updateTemplateScope = {
           .run()
       : false
     let clonedTemplateId: string | undefined
-    if (shouldClone) {
+
+    const cloneReflectTemplate = async () => {
       const clonedTemplate = new ReflectTemplate({
         name,
         teamId,
         orgId,
         scope: newScope,
         parentTemplateId: templateId,
-        lastUsedAt: template.lastUsedAt
+        lastUsedAt: template.lastUsedAt,
       })
       clonedTemplateId = clonedTemplate.id
       const prompts = await dataLoader.get('reflectPromptsByTemplateId').load(templateId)
@@ -87,27 +90,62 @@ const updateTemplateScope = {
           ...prompt,
           templateId: clonedTemplateId!,
           parentPromptId: prompt.id,
-          removedAt: null
+          removedAt: null,
         })
       })
       await r({
         clonedTemplate: r.table('MeetingTemplate').insert(clonedTemplate),
         clonedPrompts: r.table('ReflectPrompt').insert(clonedPrompts),
-        inactivatedTemplate: r
-          .table('MeetingTemplate')
-          .get(templateId)
-          .update({isActive: false}),
+        inactivatedTemplate: r.table('MeetingTemplate').get(templateId).update({isActive: false}),
         inactivatedPrompts: r
           .table('ReflectPrompt')
           .getAll(r.args(promptIds))
-          .update({removedAt: now})
+          .update({removedAt: now}),
       }).run()
+    }
+
+    const clonePokerTemplate = async () => {
+      const clonedTemplate = new PokerTemplate({
+        name,
+        teamId,
+        orgId,
+        scope: newScope,
+        parentTemplateId: templateId,
+        lastUsedAt: template.lastUsedAt,
+      })
+      clonedTemplateId = clonedTemplate.id
+      const dimensions = await dataLoader.get('templateDimensionsByTemplateId').load(templateId)
+      const activeDimensions = dimensions.filter(({removedAt}) => !removedAt)
+      const dimensionIds = activeDimensions.map(({id}) => id)
+      const clonedDimensions = activeDimensions.map((dimension) => {
+        return new TemplateDimension({
+          ...dimension,
+          templateId: clonedTemplateId!,
+        })
+      })
+      await r({
+        clonedTemplate: r.table('MeetingTemplate').insert(clonedTemplate),
+        clonedDimensions: r.table('TemplateDimension').insert(clonedDimensions),
+        inactivatedTemplate: r.table('MeetingTemplate').get(templateId).update({isActive: false}),
+        inactivatedDimensions: r
+          .table('TemplateDimension')
+          .getAll(r.args(dimensionIds))
+          .update({removedAt: now}),
+      }).run()
+    }
+
+    if (shouldClone) {
+      if (template.type === MeetingTypeEnum.retrospective) {
+        cloneReflectTemplate()
+      } else if (template.type === MeetingTypeEnum.poker) {
+        clonePokerTemplate()
+      }
     } else {
       await r
         .table('MeetingTemplate')
         .get(templateId)
         .update({
-          scope: newScope
+          scope: newScope,
         })
         .run()
     }
@@ -116,7 +154,7 @@ const updateTemplateScope = {
     // technically, this affects every connected client (public), or every team in the org (organization), but those are edge cases
     publish(SubscriptionChannel.ORGANIZATION, orgId, 'UpdateTemplateScopeSuccess', data, subOptions)
     return data
-  }
+  },
 }
 
 export default updateTemplateScope
