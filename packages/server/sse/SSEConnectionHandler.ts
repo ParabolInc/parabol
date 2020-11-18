@@ -18,7 +18,7 @@ const APP_VERSION = process.env.npm_package_version
 
 const SSEConnectionHandler = uWSAsyncHandler(async (res: HttpResponse, req: HttpRequest) => {
   const authToken = getQueryToken(req)
-  const connectionContext = new ConnectionContext(res, authToken, uwsGetIP(res, req))
+  const connectionContext = new ConnectionContext(res, authToken, uwsGetIP(res))
   res.onAborted(() => {
     handleDisconnect(connectionContext)
   })
