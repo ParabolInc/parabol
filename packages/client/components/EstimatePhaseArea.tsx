@@ -70,8 +70,8 @@ const EstimatePhaseArea = (props: Props) => {
 
   const stageIdx = dimensionStages!.findIndex(({id}) => id === localStage.id)
 
-  console.log(stageIdx, 'stageIdx')
-
+  // Todo: this only works when swiping
+  // using the ‘Next’ control does not update the columns
   const [activeIdx, setActiveIdx] = useState(stageIdx)
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
 
