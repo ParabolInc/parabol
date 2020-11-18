@@ -9,6 +9,7 @@ import dndNoise from '~/utils/dndNoise'
 import {createFragmentContainer} from 'react-relay'
 import {NewParabolTaskInput_meeting} from '~/__generated__/NewParabolTaskInput_meeting.graphql'
 import graphql from 'babel-plugin-relay/macro'
+import convertToTaskContent from '~/utils/draftjs/convertToTaskContent'
 
 const Item = styled('div')({
   backgroundColor: PALETTE.BACKGROUND_BLUE_MAGENTA,
@@ -67,9 +68,9 @@ const NewParabolTaskInput = (props: Props) => {
       sortOrder: dndNoise(),
       meetingId,
       userId: viewerId,
-      teamId
+      teamId,
+      content: convertToTaskContent(newTaskContent)
     }
-    console.log('calling client mutation', newTask)
     CreateTaskMutation(atmosphere, {newTask}, {})
     setNewTaskContent('')
   }
