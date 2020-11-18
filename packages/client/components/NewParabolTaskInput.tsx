@@ -4,12 +4,14 @@ import {PALETTE} from '~/styles/paletteV2'
 import Checkbox from './Checkbox'
 import CreateTaskMutation from '~/mutations/CreateTaskMutation'
 import useAtmosphere from '~/hooks/useAtmosphere'
-import {TaskStatusEnum} from '~/types/graphql'
+import {AddOrDeleteEnum, TaskServiceEnum, TaskStatusEnum} from '~/types/graphql'
 import dndNoise from '~/utils/dndNoise'
 import {createFragmentContainer} from 'react-relay'
 import {NewParabolTaskInput_meeting} from '~/__generated__/NewParabolTaskInput_meeting.graphql'
 import graphql from 'babel-plugin-relay/macro'
 import convertToTaskContent from '~/utils/draftjs/convertToTaskContent'
+import useMutationProps from '~/hooks/useMutationProps'
+import UpdatePokerScopeMutation from '../mutations/UpdatePokerScopeMutation'
 
 const Item = styled('div')({
   backgroundColor: PALETTE.BACKGROUND_BLUE_MAGENTA,
@@ -54,6 +56,24 @@ const NewParabolTaskInput = (props: Props) => {
   const {id: meetingId, teamId} = meeting
   const [newTaskContent, setNewTaskContent] = useState('')
   const atmosphere = useAtmosphere()
+  const {onError, onCompleted} = useMutationProps()
+
+  const updatePokerScope = (res) => {
+    const payload = res.createTask
+    if (!payload || !onCompleted || !onError) return
+    const {task} = payload
+    const pokerScopeVariables = {
+      meetingId,
+      updates: [
+        {
+          service: TaskServiceEnum.PARABOL,
+          serviceTaskId: task.id,
+          action: AddOrDeleteEnum.ADD
+        }
+      ]
+    }
+    UpdatePokerScopeMutation(atmosphere, pokerScopeVariables, {onError, onCompleted})
+  }
 
   const handleCreateNewTask = (e: FormEvent) => {
     e.preventDefault()
@@ -61,7 +81,6 @@ const NewParabolTaskInput = (props: Props) => {
       setIsEditing(false)
       return
     }
-    // todo: create task mutation
     const {viewerId} = atmosphere
     const newTask = {
       status: TaskStatusEnum.active,
@@ -71,7 +90,11 @@ const NewParabolTaskInput = (props: Props) => {
       teamId,
       content: convertToTaskContent(newTaskContent)
     }
-    CreateTaskMutation(atmosphere, {newTask}, {})
+    CreateTaskMutation(
+      atmosphere,
+      {newTask},
+      {onError, onCompleted: updatePokerScope}
+    )
     setNewTaskContent('')
   }
 
