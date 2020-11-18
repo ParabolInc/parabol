@@ -57,7 +57,7 @@
     "@emotion/core": "^10.0.27",
     "@emotion/styled": "^10.0.27",
     "@mattkrick/fast-rtc-swarm": "^0.4.1",
-    "@mattkrick/graphql-trebuchet-client": "^1.0.0",
+    "@mattkrick/graphql-trebuchet-client": "^1.0.2",
     "@mattkrick/sanitize-svg": "0.2.1",
     "@mattkrick/trebuchet-client": "^2.0.0",
     "@sentry/browser": "^5.8.0",
