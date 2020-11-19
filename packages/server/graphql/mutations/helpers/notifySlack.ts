@@ -56,14 +56,17 @@ const notifySlack = async (
     const {channelId} = notification
     const {accessToken, botAccessToken, userId} = auth
     const manager = new SlackServerManager(botAccessToken || accessToken)
+    console.log('channelId', channelId)
+    console.log('slackText', slackText)
     const res = await manager.postMessage(channelId!, slackText)
+    console.log('res', res)
     segmentIo.track({
       userId,
       event: 'Slack notification sent',
       properties: {
         teamId,
-        notificationEvent: event
-      }
+        notificationEvent: event,
+      },
     })
     if ('error' in res) {
       const {error} = res
@@ -73,11 +76,10 @@ const notifySlack = async (
           .getAll(teamId, {index: 'teamId'})
           .filter({channelId})
           .update({
-            channelId: null
+            channelId: null,
           })
           .run()
       } else if (error === 'not_in_channel' || error === 'invalid_auth') {
-        console.log('Slack Channel Notification Error:', error)
         sendToSentry(
           new Error(`Slack Channel Notification Error: ${teamId}, ${channelId}, ${auth.id}`)
         )
@@ -94,7 +96,7 @@ export const startSlackMeeting = async (
   const params = {
     utm_source: 'slack meeting start',
     utm_medium: 'product',
-    utm_campaign: 'invitations'
+    utm_campaign: 'invitations',
   }
   const options = {params}
   const team = await dataLoader.get('teams').load(teamId)
@@ -108,7 +110,7 @@ export const endSlackMeeting = async (meetingId, teamId, dataLoader: DataLoaderW
   const params = {
     utm_source: 'slack summary',
     utm_medium: 'product',
-    utm_campaign: 'after-meeting'
+    utm_campaign: 'after-meeting',
   }
   const options = {params}
   const team = await dataLoader.get('teams').load(teamId)
@@ -165,7 +167,7 @@ export const notifySlackTimeLimitStart = async (
 ) => {
   const [team, meeting] = await Promise.all([
     dataLoader.get('teams').load(teamId),
-    dataLoader.get('newMeetings').load(meetingId)
+    dataLoader.get('newMeetings').load(meetingId),
   ])
   const {name: meetingName, phases, facilitatorStageId} = meeting
   const stageRes = findStageById(phases, facilitatorStageId)

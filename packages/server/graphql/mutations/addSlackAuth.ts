@@ -16,8 +16,7 @@ const upsertNotifications = async (
   teamId: string,
   teamChannelId: string,
   channelId: string
-  ) => {
-    console.log("ADD SLACK AUTH", viewerId, teamId)
+) => {
   const r = await getRethink()
   const existingNotifications = await r
     .table('SlackNotification')
@@ -27,7 +26,7 @@ const upsertNotifications = async (
   const teamEvents = [
     'meetingStart',
     'meetingEnd',
-    'MEETING_STAGE_TIME_LIMIT_START'
+    'MEETING_STAGE_TIME_LIMIT_START',
   ] as SlackNotificationEvent[]
   const userEvents = ['MEETING_STAGE_TIME_LIMIT_END'] as SlackNotificationEvent[]
   const events = [...teamEvents, ...userEvents]
@@ -41,14 +40,10 @@ const upsertNotifications = async (
       channelId: teamEvents.includes(event) ? teamChannelId : channelId,
       teamId,
       userId: viewerId,
-      id: (existingNotification && existingNotification.id) || undefined
+      id: (existingNotification && existingNotification.id) || undefined,
     })
   })
-  console.log("upsertableNotifications", upsertableNotifications)
-  await r
-    .table('SlackNotification')
-    .insert(upsertableNotifications, {conflict: 'replace'})
-    .run()
+  await r.table('SlackNotification').insert(upsertableNotifications, {conflict: 'replace'}).run()
 }
 
 const upsertAuth = async (
@@ -66,7 +61,6 @@ const upsertAuth = async (
     .nth(0)
     .default(null)
     .run()) as SlackAuth | null
-    console.log("slackRes <><><><>", slackRes)
 
   const slackAuth = new SlackAuth({
     id: (existingAuth && existingAuth.id) || undefined,
@@ -80,12 +74,9 @@ const upsertAuth = async (
     slackUserId: slackRes.authed_user.id,
     slackUserName,
     botUserId: slackRes.bot_user_id,
-    botAccessToken: slackRes.access_token // TODO
+    botAccessToken: slackRes.access_token,
   })
-  await r
-    .table('SlackAuth')
-    .insert(slackAuth, {conflict: 'replace'})
-    .run()
+  await r.table('SlackAuth').insert(slackAuth, {conflict: 'replace'}).run()
   return slackAuth.id
 }
 
@@ -94,11 +85,11 @@ export default {
   type: new GraphQLNonNull(AddSlackAuthPayload),
   args: {
     code: {
-      type: new GraphQLNonNull(GraphQLID)
+      type: new GraphQLNonNull(GraphQLID),
     },
     teamId: {
-      type: new GraphQLNonNull(GraphQLID)
-    }
+      type: new GraphQLNonNull(GraphQLID),
+    },
   },
   resolve: async (
     _source,
@@ -117,53 +108,37 @@ export default {
     // RESOLUTION
     const manager = await SlackServerManager.init(code)
     const {response} = manager
-    console.log("response", response)
-    // const slackUserId = response.user_id
     const slackUserId = response.authed_user.id
-    console.log("slackUserId", slackUserId)
     const defaultChannelId = response.incoming_webhook.channel_id
-    console.log("defaultChannelId", defaultChannelId)
-    // const [convoRes, userInfoRes, channelRes] = await Promise.all([
-    //   manager.getConversationInfo(defaultChannelId),
-    //   manager.getUserInfo(slackUserId),
-    //   manager.openConversation()
-    // ])
-    const [convoRes, userInfoRes, ] = await Promise.all([
-      manager.getConversationInfo(defaultChannelId),
+    const [joinConvoRes, userInfoRes, openDMRes] = await Promise.all([
+      manager.joinConversation(defaultChannelId),
       manager.getUserInfo(slackUserId),
+      manager.openDM(slackUserId),
     ])
-    // console.log("convoRes", convoRes)
-    // console.log("userInfoRes", userInfoRes)
-    // console.log("channelRes", channelRes)
     if (!userInfoRes.ok) {
       return standardError(new Error(userInfoRes.error), {userId: viewerId})
     }
-    // if (!channelRes.ok) {
-    //   return standardError(new Error(channelRes.error), {userId: viewerId})
-    // }
-    // const {channel} = channelRes
-    // const {id: channelId} = channel
+    if (!openDMRes.ok) {
+      return standardError(new Error(openDMRes.error), {userId: viewerId})
+    }
 
     // The default channel could be anything: public, private, im, mpim. Only allow public channels or the @Parabol channel
-    // const teamChannelId = convoRes.ok ? defaultChannelId : channelId
-    const teamChannelId = convoRes.ok ? defaultChannelId : defaultChannelId
-    console.log("teamChannelId", teamChannelId)
+    const teamChannelId = joinConvoRes.ok ? joinConvoRes.channel.id : openDMRes.channel.id
 
     const [, slackAuthId] = await Promise.all([
       upsertNotifications(viewerId, teamId, teamChannelId, defaultChannelId),
-      upsertAuth(viewerId, teamId, teamChannelId, userInfoRes.user.profile.display_name, response)
+      upsertAuth(viewerId, teamId, teamChannelId, userInfoRes.user.profile.display_name, response),
     ])
-    console.log("slackAuthId", slackAuthId)
     segmentIo.track({
       userId: viewerId,
       event: 'Added Integration',
       properties: {
         teamId,
-        service: 'Slack'
-      }
+        service: 'Slack',
+      },
     })
     const data = {slackAuthId, userId: viewerId}
     publish(SubscriptionChannel.TEAM, teamId, 'AddSlackAuthPayload', data, subOptions)
     return data
-  }
+  },
 }

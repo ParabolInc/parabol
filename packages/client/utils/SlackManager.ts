@@ -89,6 +89,12 @@ interface ConversationListResponse {
   ok: true
   channels: SlackConversation[]
 }
+interface ConversationJoinResponse {
+  ok: true
+  channel: {
+    id: string
+  }
+}
 
 interface ConversationOpenResponse {
   ok: true
@@ -211,7 +217,8 @@ type ConversationType = 'public_channel' | 'private_channel' | 'im' | 'mpim'
 
 abstract class SlackManager {
   // static SCOPE = 'identify,bot,incoming-webhook,channels:read,chat:write:bot'
-  static SCOPE = 'incoming-webhook,channels:read,chat:write,im:write,users:read'
+  static SCOPE =
+    'incoming-webhook,channels:read,chat:write,im:write,users:read,channels:manage,channels:join'
   // token can be a botAccessToken or accessToken!
   token: string
   abstract fetch: any
@@ -230,9 +237,9 @@ abstract class SlackManager {
       headers: {
         Accept: 'application/json' as const,
         Authorization: `Bearer ${this.token}`,
-        'Content-Type': 'application/json;charset=utf-8'
+        'Content-Type': 'application/json;charset=utf-8',
       },
-      body: JSON.stringify(payload)
+      body: JSON.stringify(payload),
     })
     return res.json()
   }
@@ -245,7 +252,7 @@ abstract class SlackManager {
         result,
         expiration: setTimeout(() => {
           delete this.cache[url]
-        }, this.timeout)
+        }, this.timeout),
       }
     } else {
       clearTimeout(record.expiration)
@@ -294,13 +301,25 @@ abstract class SlackManager {
     )
   }
 
+  joinConversation(channelId: string) {
+    return this.get<ConversationJoinResponse>(
+      `https://slack.com/api/conversations.join?token=${this.token}&channel=${channelId}`
+    )
+  }
+
+  openDM(userId) {
+    return this.get<ConversationOpenResponse>(
+      `https://slack.com/api/conversations.open?token=${this.token}&users=${userId}`
+    )
+  }
+
   postMessage(channelId: string, text: string | Array<{type: string}>) {
     const prop = typeof text === 'string' ? 'text' : Array.isArray(text) ? 'blocks' : null
     if (!prop) throw new Error('Invalid Slack postMessage')
     const payload = {
       channel: channelId,
       unfurl_links: true,
-      [prop]: text
+      [prop]: text,
     }
     return this.post<PostMessageResponse>('https://slack.com/api/chat.postMessage', payload)
   }
@@ -310,18 +329,6 @@ abstract class SlackManager {
       `https://slack.com/api/chat.update?token=${this.token}&channel=${channelId}&text=${text}&ts=${ts}`
     )
   }
-
-  // openIM(slackUserId: string) {
-  //   return this.get<IMOpenResponse>(
-  //     `https://slack.com/api/im.open?token=${this.token}&user=${slackUserId}`
-  //   )
-  // }
-  openConversation() {
-    return this.get<ConversationOpenResponse>(
-      `https://slack.com/api/conversations.open?token=${this.token}`
-    )
-  }
-
 }
 
 export default SlackManager
