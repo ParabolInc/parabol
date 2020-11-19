@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useState} from 'react'
+import {DraggableProvided} from 'react-beautiful-dnd'
 import {createFragmentContainer} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useMutationProps from '~/hooks/useMutationProps'
@@ -15,20 +16,23 @@ import RemovePokerTemplateScaleValueMutation from '~/mutations/RemovePokerTempla
 
 interface Props {
   isOwner: boolean
+  isDragging: boolean
   scale: TemplateScaleValueItem_scale
   scaleValue: TemplateScaleValueItem_scaleValue
+  dragProvided: DraggableProvided
 }
 
 interface StyledProps {
+  isDragging?: boolean
   isHover?: boolean
   enabled?: boolean
 }
 
 const ScaleValueItem = styled('div')<StyledProps & {isOwner: boolean}>(
-  ({isOwner, isHover}) => ({
+  ({isOwner, isHover, isDragging}) => ({
     alignItems: 'center',
     backgroundColor:
-      isOwner && isHover ? PALETTE.BACKGROUND_MAIN_LIGHTENED : undefined,
+      isOwner && (isHover || isDragging) ? PALETTE.BACKGROUND_MAIN_LIGHTENED : undefined,
     cursor: isOwner ? 'pointer' : undefined,
     display: 'flex',
     fontSize: 14,
@@ -59,7 +63,7 @@ const ScaleAndDescription = styled('div')({
 })
 
 const TemplateScaleValueItem = (props: Props) => {
-  const {isOwner, scale, scaleValue} = props
+  const {dragProvided, isDragging, isOwner, scale, scaleValue} = props
   const [isHover, setIsHover] = useState(false)
   const [isEditingDescription] = useState(false)
   const {submitting, submitMutation, onError, onCompleted} = useMutationProps()
@@ -83,6 +87,10 @@ const TemplateScaleValueItem = (props: Props) => {
 
   return (
     <ScaleValueItem
+      ref={dragProvided.innerRef}
+      {...dragProvided.dragHandleProps}
+      {...dragProvided.draggableProps}
+      isDragging={isDragging}
       isHover={isHover}
       isOwner={isOwner}
       onMouseEnter={onMouseEnter}
