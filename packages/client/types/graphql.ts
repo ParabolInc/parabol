@@ -2414,12 +2414,12 @@ export interface ITemplateScaleValue {
   id: string
 
   /**
-   * The color used to visually group a scale value
+   * The id of the scale this value belongs to
    */
   color: string
 
   /**
-   * The numerical value for this scale value
+   * The color used to visually group a scale value
    */
   value: number
 

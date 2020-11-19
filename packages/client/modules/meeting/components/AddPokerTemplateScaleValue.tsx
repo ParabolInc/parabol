@@ -8,7 +8,6 @@ import LinkButton from '../../../components/LinkButton'
 import AddPokerTemplateScaleValueMutation from '../../../mutations/AddPokerTemplateScaleValueMutation'
 import {AddPokerTemplateScaleValue_scaleValues} from '../../../__generated__/AddPokerTemplateScaleValue_scaleValues.graphql'
 import {PALETTE} from '../../../styles/paletteV2'
-import computeNewScaleValue from '../../../utils/meetings/computeNewScaleValue'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
 
@@ -42,16 +41,13 @@ const AddTemplateScaleValue = (props: Props) => {
   const addScaleValue = () => {
     if (submitting) return
     submitMutation()
-    const values = scaleValues.filter(({isSpecial}) => !isSpecial).map(({value}) => value)
     const pickedColors = scaleValues.filter(({isSpecial}) => !isSpecial).map(({color}) => color)
     const availableNewColor = palettePickerOptions.find(
       (color) => !pickedColors.includes(color.hex)
     )
-    const newValue = computeNewScaleValue(values)
 
     const scaleValue = {
       color: availableNewColor?.hex ?? PALETTE.PROMPT_GREEN,
-      value: newValue,
       label: '*',
       isSpecial: false
     }
@@ -78,7 +74,6 @@ export default createFragmentContainer(AddTemplateScaleValue, {
   scaleValues: graphql`
     fragment AddPokerTemplateScaleValue_scaleValues on TemplateScaleValue @relay(plural: true) {
       isSpecial
-      value
       color
       label
     }

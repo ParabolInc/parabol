@@ -38,9 +38,8 @@ const EditableTemplateScaleValueLabel = (props: Props) => {
     submitMutation()
 
     const scaleId = scale.id
-    const newValue = isNaN(Number(newLabel)) ? scaleValue.value : Number(newLabel)
-    const oldScaleValue = {label: scaleValue.label, color: scaleValue.color, value: scaleValue.value}
-    const newScaleValue = {...oldScaleValue, label: newLabel, value: newValue}
+    const oldScaleValue = {label: scaleValue.label, color: scaleValue.color}
+    const newScaleValue = {label: newLabel, color: scaleValue.color}
     UpdatePokerTemplateScaleValueMutation(atmosphere, {scaleId, oldScaleValue, newScaleValue}, {}, onError, onCompleted)
   }
 
@@ -90,7 +89,6 @@ export default createFragmentContainer(EditableTemplateScaleValueLabel, {
       values {
         id
         label
-        value
         color
       }
     }
@@ -99,8 +97,8 @@ export default createFragmentContainer(EditableTemplateScaleValueLabel, {
     fragment EditableTemplateScaleValueLabel_scaleValue on TemplateScaleValue {
       id
       label
-      value
       color
+      sortOrder
     }
   `
 })

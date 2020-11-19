@@ -16,8 +16,8 @@ graphql`
 `
 
 const mutation = graphql`
-  mutation RemovePokerTemplateScaleValueMutation($scaleId: ID!, $scaleValue: Float!) {
-    removePokerTemplateScaleValue(scaleId: $scaleId, scaleValue: $scaleValue) {
+  mutation RemovePokerTemplateScaleValueMutation($scaleId: ID!, $label: String!) {
+    removePokerTemplateScaleValue(scaleId: $scaleId, label: $label) {
       ...RemovePokerTemplateScaleValueMutation_scale @relay(mask: false)
     }
   }
@@ -36,10 +36,10 @@ const RemovePokerTemplateScaleValueMutation = (
     onCompleted,
     onError,
     optimisticUpdater: (store) => {
-      const {scaleId, scaleValue} = variables
+      const {scaleId, label} = variables
       const scale = store.get(scaleId)
       if (!scale) return
-      const scaleValueId = `${scale.getDataID()}:${scaleValue}`
+      const scaleValueId = `${scale.getDataID()}:${label}`
       safeRemoveNodeFromArray(scaleValueId, scale, 'values')
     }
   })

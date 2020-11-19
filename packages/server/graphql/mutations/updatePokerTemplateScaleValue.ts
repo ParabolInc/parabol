@@ -50,8 +50,7 @@ const updatePokerTemplateScaleValue = {
     }
     const {values: oldScaleValues} = existingScale
     const oldScaleValueIndex = oldScaleValues.findIndex(
-      (scaleValue) =>
-        scaleValue.value === oldScaleValue.value && scaleValue.label === oldScaleValue.label
+      (scaleValue) => scaleValue.label === oldScaleValue.label
     )
     if (oldScaleValueIndex === -1) {
       return standardError(new Error('Did not find an existing scale value to update'), {

@@ -12,12 +12,9 @@ graphql`
   fragment UpdatePokerTemplateScaleValueMutation_scale on UpdatePokerTemplateScaleValuePayload {
     scale {
       id
-      name
       values {
-        label
-        value
-        color
-        isSpecial
+        ...ScaleValuePalettePicker_scaleValue
+        ...EditableTemplateScaleValueLabel_scaleValue
       }
     }
   }
@@ -50,11 +47,15 @@ const UpdatePokerTemplateScaleValueMutation = (
       const {scaleId, oldScaleValue, newScaleValue} = variables
       const scale = store.get(scaleId)
       if (!scale) return
-      const oldScaleValueId = `${scaleId}:${oldScaleValue.value}`
+      const oldScaleValueId = `${scaleId}:${oldScaleValue.label}`
+      const sortOrder = store.get(oldScaleValueId)?.getValue('sortOrder')
       safeRemoveNodeFromArray(oldScaleValueId, scale, 'values')
 
-      const proxyScaleValue = createProxyRecord(store, 'TemplateScaleValue', {...newScaleValue})
-      addNodeToArray(proxyScaleValue, scale, 'values', 'value')
+      const proxyScaleValue = createProxyRecord(store, 'TemplateScaleValue', {
+        ...newScaleValue,
+        sortOrder: sortOrder
+      })
+      addNodeToArray(proxyScaleValue, scale, 'values', 'sortOrder')
     }
   })
 }

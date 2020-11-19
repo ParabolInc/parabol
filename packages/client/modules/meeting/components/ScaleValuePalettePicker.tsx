@@ -45,7 +45,7 @@ const ScaleValuePalettePicker = (props: Props) => {
     submitMutation()
 
     const scaleId = scale.id
-    const oldScaleValue = {label: scaleValue.label, color: scaleValue.color, value: scaleValue.value}
+    const oldScaleValue = {label: scaleValue.label, color: scaleValue.color}
     const newScaleValue = {...oldScaleValue, color: newColor}
     UpdatePokerTemplateScaleValueMutation(atmosphere, {scaleId, oldScaleValue, newScaleValue}, {}, onError, onCompleted)
     closePortal()
@@ -76,7 +76,6 @@ export default createFragmentContainer(ScaleValuePalettePicker, {
       id
       values {
         label
-        value
         color
       }
     }
@@ -84,7 +83,6 @@ export default createFragmentContainer(ScaleValuePalettePicker, {
   scaleValue: graphql`
     fragment ScaleValuePalettePicker_scaleValue on TemplateScaleValue {
       label
-      value
       color
     }
   `

@@ -115,7 +115,7 @@ const pokerSetFinalScore = {
       const scale = await dataLoader.get('templateScales').load(scaleId)
       const {values} = scale
       const resolvedValue = values.find((value) => value.label === finalScore)
-      const value = resolvedValue?.value ?? undefined
+      const value = isNaN(Number(resolvedValue)) ? undefined : Number(resolvedValue)
       await r
         .table('Task')
         .get(serviceTaskId)

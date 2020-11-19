@@ -38,7 +38,7 @@ const AddPokerTemplateScaleValueMutation: StandardMutation<
       const {scaleId, scaleValue} = variables
       const proxyTemplateScaleValue = createProxyRecord(store, 'TemplateScaleValue', {
         ...scaleValue,
-        id: `${scaleId}:${scaleValue.value}`
+        id: `${scaleId}:${scaleValue.label}`
       })
       handleAddPokerTemplateScaleValue(proxyTemplateScaleValue, store)
     }

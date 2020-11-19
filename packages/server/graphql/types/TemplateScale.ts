@@ -76,11 +76,11 @@ const TemplateScale = new GraphQLObjectType<any, GQLContext>({
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(TemplateScaleValue))),
       description: 'The values used in this scale',
       resolve: ({id, values}) => {
-        const rawScaleValues = values.map((value) => ({
+        return values.map((value, index) => ({
           ...value,
-          scaleId: id
+          scaleId: id,
+          sortOrder: index
         }))
-        return rawScaleValues.sort((a, b) => (a.value < b.value ? -1 : 1))
       }
     }
   })

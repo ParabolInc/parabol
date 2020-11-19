@@ -1,6 +1,5 @@
 import {
   GraphQLBoolean,
-  GraphQLFloat,
   GraphQLID,
   GraphQLNonNull,
   GraphQLObjectType,
@@ -18,6 +17,10 @@ const TemplateScaleValue = new GraphQLObjectType<any, GQLContext>({
         return `${scaleId}:${label}`
       }
     },
+    scaleId: {
+      description: 'The id of the scale this value belongs to',
+      type: GraphQLNonNull(GraphQLID)
+    },
     color: {
       description: 'The color used to visually group a scale value',
       type: new GraphQLNonNull(GraphQLString)
@@ -32,9 +35,8 @@ const TemplateScaleValue = new GraphQLObjectType<any, GQLContext>({
       resolve: ({isSpecial}) => !!isSpecial
     },
     sortOrder: {
-      type: new GraphQLNonNull(GraphQLFloat),
-      description: 'the order of the scale value in this scale',
-      resolve: ({value}) => value
+      type: new GraphQLNonNull(GraphQLInt),
+      description: 'the order of the scale value in this scale'
     }
   })
 })

@@ -78,7 +78,7 @@ const TemplateScaleValueItem = (props: Props) => {
       return
     }
     submitMutation()
-    RemovePokerTemplateScaleValueMutation(atmosphere, {scaleId: scale.id, scaleValue: scaleValue.value}, {}, onError, onCompleted)
+    RemovePokerTemplateScaleValueMutation(atmosphere, {scaleId: scale.id, label: scaleValue.label}, {}, onError, onCompleted)
   }
 
   return (
@@ -117,7 +117,6 @@ export default createFragmentContainer(TemplateScaleValueItem, {
       ...EditableTemplateScaleValueLabel_scaleValue
       ...EditableTemplateScaleValueColor_scaleValue
       id
-      value
       label
       isSpecial
     }
