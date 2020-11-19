@@ -121,7 +121,8 @@ const CreateTaskMutation: StandardMutation<TCreateTaskMutation, OptionalHandlers
         createdBy: viewerId,
         updatedAt: now,
         tags: [],
-        content: newTask.content || makeEmptyStr()
+        content: newTask.content || makeEmptyStr(),
+        plaintextContent: newTask.plaintextContent || makeEmptyStr()
       }
       const task = createProxyRecord(store, 'Task', optimisticTask)
         .setLinkedRecord(store.get(teamId)!, 'team')

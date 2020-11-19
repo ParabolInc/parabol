@@ -8865,6 +8865,7 @@ export const enum TaskInvolvementType {
 
 export interface ICreateTaskInput {
   content?: string | null;
+  plaintextContent?: string | null;
 
   /**
    * foreign key for the meeting this was created in

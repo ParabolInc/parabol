@@ -14,6 +14,9 @@ const CreateTaskInput = new GraphQLInputObjectType({
     content: {
       type: GraphQLString
     },
+    plaintextContent: {
+      type: GraphQLString
+    },
     meetingId: {
       type: GraphQLID,
       description: 'foreign key for the meeting this was created in'

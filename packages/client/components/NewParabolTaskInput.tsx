@@ -88,7 +88,8 @@ const NewParabolTaskInput = (props: Props) => {
       meetingId,
       userId: viewerId,
       teamId,
-      content: convertToTaskContent(newTaskContent)
+      content: convertToTaskContent(newTaskContent),
+      plaintextContent: newTaskContent
     }
     CreateTaskMutation(
       atmosphere,
@@ -96,6 +97,7 @@ const NewParabolTaskInput = (props: Props) => {
       {onError, onCompleted: updatePokerScope}
     )
     setNewTaskContent('')
+    setIsEditing(false)
   }
 
   if (!isEditing) return null
