@@ -18,6 +18,7 @@ import {promoteNewMeetingFacilitatorMeetingOnNext} from '../mutations/PromoteNew
 import {removeReflectionMeetingUpdater} from '../mutations/RemoveReflectionMutation'
 import {setStageTimerMeetingUpdater} from '../mutations/SetStageTimerMutation'
 import {startDraggingReflectionMeetingUpdater} from '../mutations/StartDraggingReflectionMutation'
+import {pokerAnnounceDeckHoverMeetingUpdater} from '../mutations/PokerAnnounceDeckHoverMutation'
 
 const subscription = graphql`
   subscription MeetingSubscription($meetingId: ID!) {
@@ -74,7 +75,8 @@ const updateHandlers = {
   JiraCreateIssuePayload: jiraCreateIssueUpdater,
   RemoveReflectionPayload: removeReflectionMeetingUpdater,
   SetStageTimerPayload: setStageTimerMeetingUpdater,
-  StartDraggingReflectionPayload: startDraggingReflectionMeetingUpdater
+  StartDraggingReflectionPayload: startDraggingReflectionMeetingUpdater,
+  PokerAnnounceDeckHoverSuccess: pokerAnnounceDeckHoverMeetingUpdater
 }
 
 const MeetingSubscription = (

@@ -5,8 +5,10 @@ import TemplateDetailAction from '../../../components/TemplateDetailAction'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
 import RemoveReflectTemplateMutation from '../../../mutations/RemoveReflectTemplateMutation'
-import SelectRetroTemplateMutation from '../../../mutations/SelectRetroTemplateMutation'
+import RemovePokerTemplateMutation from '../../../mutations/RemovePokerTemplateMutation'
+import SelectTemplateMutation from '../../../mutations/SelectTemplateMutation'
 import {RemoveTemplate_teamTemplates} from '../../../__generated__/RemoveTemplate_teamTemplates.graphql'
+import {MeetingTypeEnum} from '~/types/graphql'
 
 
 interface Props {
@@ -14,6 +16,7 @@ interface Props {
   teamTemplates: RemoveTemplate_teamTemplates
   templateId: string
   teamId: string
+  type: string
 }
 
 const RemoveTemplate = (props: Props) => {
@@ -22,6 +25,7 @@ const RemoveTemplate = (props: Props) => {
     templateId,
     teamId,
     teamTemplates,
+    type
   } = props
   const atmosphere = useAtmosphere()
   const {onError, onCompleted, submitting, submitMutation} = useMutationProps()
@@ -35,11 +39,15 @@ const RemoveTemplate = (props: Props) => {
     // use the same index as the previous item. if the item was last in the list, grab the new last
     const nextTemplateId = templateIds[templateIdx] || templateIds[templateIds.length - 1]
     if (nextTemplateId) {
-      SelectRetroTemplateMutation(atmosphere, {selectedTemplateId: nextTemplateId, teamId})
+      SelectTemplateMutation(atmosphere, {selectedTemplateId: nextTemplateId, teamId})
     } else {
       gotoPublicTemplates()
     }
-    RemoveReflectTemplateMutation(atmosphere, {templateId}, {onError, onCompleted})
+    if (type === MeetingTypeEnum.retrospective) {
+      RemoveReflectTemplateMutation(atmosphere, {templateId}, {onError, onCompleted})
+    } else if (type === MeetingTypeEnum.poker) {
+      RemovePokerTemplateMutation(atmosphere, {templateId}, {onError, onCompleted})
+    }
   }
 
   return <TemplateDetailAction icon={'delete'} tooltip={'Delete template'} onClick={removeTemplate} />
@@ -48,8 +56,9 @@ export default createFragmentContainer(
   RemoveTemplate,
   {
     teamTemplates: graphql`
-      fragment RemoveTemplate_teamTemplates on ReflectTemplate @relay(plural: true) {
+      fragment RemoveTemplate_teamTemplates on MeetingTemplate @relay(plural: true) {
         id
+        type
       }`
   }
 )

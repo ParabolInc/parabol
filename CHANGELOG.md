@@ -5,6 +5,46 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 5.25.1 2020-Nov-19
+
+### Fixed
+- Reverted back to using header to determine client IP
+
+## 5.25.0 2020-Nov-18
+
+### Added
+- Sprint Poker template UI w/o scales (#4310)
+- Poker peekers (#4334)
+### Changed
+- Upgraded uWS to v18, now with upgrade callback (#4357)
+- Invitation lifespan to 30 days (#4353)
+- Initial Poker template has a single dimension (#4347)
+- Added curve to poker deck (#4337)
+### Fixed
+- A handle of client-side bugs found in Sentry, likely due to Relay (#4354)
+- Centered meeting bottom control bar (#4344)
+- Language for invitation expiration (#4341)
+
+## 5.24.0 2020-Nov-12
+
+### Added
+
+- Sprint Poker UI deck animations #4334
+
+### Changed
+
+- Sprint Poker estimate stage display in sidebar #4318
+- Refactor atlassian jira auth #4312
+- Increased invitation expiration time to 30 days #4335
+
+### Fixed
+
+- Race condition occurring when a retro meeting starts while a checkin is taking place #4329
+
+### Deprecated
+
+- Deprecated the `startNewMeeting` and `endNewMeeting` mutations in favour of meeting specific mutations #4330
+
 ## 5.23.0 2020-Nov-04
 
 ### Added

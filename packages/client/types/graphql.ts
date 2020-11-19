@@ -684,6 +684,16 @@ export interface IJiraIssue {
   id: string;
 
   /**
+   * the comments and tasks created from the discussion
+   */
+  thread: IThreadableConnection;
+
+  /**
+   * A list of users currently commenting
+   */
+  commentors: Array<ICommentorDetails> | null;
+
+  /**
    * The ID of the jira cloud where the issue lives
    */
   cloudId: string;
@@ -719,6 +729,15 @@ export interface IJiraIssue {
   descriptionHTML: string;
 }
 
+export interface IThreadOnJiraIssueArguments {
+  first: number;
+
+  /**
+   * the incrementing sort order in string format
+   */
+  after?: string | null;
+}
+
 /**
  * An entity that can be used in a poker meeting and receive estimates
  */
@@ -734,69 +753,41 @@ export interface IStory {
    * serviceTaskId
    */
   id: string;
-}
-
-export interface IStandardMutationError {
-  __typename: 'StandardMutationError';
 
   /**
-   * The title of the error
+   * the comments and tasks created from the discussion
    */
-  title: string | null;
+  thread: IThreadableConnection;
 
   /**
-   * The full error
+   * A list of users currently commenting
    */
-  message: string;
+  commentors: Array<ICommentorDetails> | null;
 }
 
-/**
- * A project fetched from Jira in real time
- */
-export interface IJiraRemoteProject {
-  __typename: 'JiraRemoteProject';
-  id: string;
-  self: string;
+export interface IThreadOnStoryArguments {
+  first: number;
 
   /**
-   * The cloud ID that the project lives on. Does not exist on the Jira object!
+   * the incrementing sort order in string format
    */
-  cloudId: string;
-  key: string;
-  name: string;
-  avatarUrls: IJiraRemoteAvatarUrls;
-  projectCategory: IJiraRemoteProjectCategory;
-  simplified: boolean;
-  style: string;
+  after?: string | null;
 }
 
 /**
- * A project fetched from Jira in real time
+ * The source of a discusson thread
  */
-export interface IJiraRemoteAvatarUrls {
-  __typename: 'JiraRemoteAvatarUrls';
-  x48: string;
-  x24: string;
-  x16: string;
-  x32: string;
-}
+export type ThreadSource =
+  | IJiraIssue
+  | ITask
+  | IAgendaItem
+  | IRetroReflectionGroup;
 
 /**
- * A project category fetched from a JiraRemoteProject
+ * The source of a discusson thread
  */
-export interface IJiraRemoteProjectCategory {
-  __typename: 'JiraRemoteProjectCategory';
-  self: string;
-  id: string;
-  name: string;
-  description: string;
-}
-
-/**
- * A jira search query including all filters selected when the query was executed
- */
-export interface IJiraSearchQuery {
-  __typename: 'JiraSearchQuery';
+export interface IThreadSource {
+  __typename: 'ThreadSource';
 
   /**
    * shortid
@@ -804,31 +795,87 @@ export interface IJiraSearchQuery {
   id: string;
 
   /**
-   * The query string, either simple or JQL depending on the isJQL flag
+   * the comments and tasks created from the discussion
    */
-  queryString: string;
+  thread: IThreadableConnection;
+}
+
+export interface IThreadOnThreadSourceArguments {
+  first: number;
 
   /**
-   * true if the queryString is JQL, else false
+   * the incrementing sort order in string format
    */
-  isJQL: boolean;
-
-  /**
-   * The list of project keys selected as a filter. null if not set
-   */
-  projectKeyFilters: Array<string>;
-
-  /**
-   * the time the search query was last used. Used for sorting
-   */
-  lastUsedAt: any;
+  after?: string | null;
 }
 
 /**
- * OAuth token for a team member
+ * A connection to a list of items.
  */
-export interface IGitHubIntegration {
-  __typename: 'GitHubIntegration';
+export interface IThreadableConnection {
+  __typename: 'ThreadableConnection';
+
+  /**
+   * Page info with strings (sortOrder) as cursors
+   */
+  pageInfo: IPageInfo | null;
+
+  /**
+   * A list of edges.
+   */
+  edges: Array<IThreadableEdge>;
+}
+
+/**
+ * Information about pagination in a connection.
+ */
+export interface IPageInfo {
+  __typename: 'PageInfo';
+
+  /**
+   * When paginating forwards, are there more items?
+   */
+  hasNextPage: boolean;
+
+  /**
+   * When paginating backwards, are there more items?
+   */
+  hasPreviousPage: boolean;
+
+  /**
+   * When paginating backwards, the cursor to continue.
+   */
+  startCursor: string | null;
+
+  /**
+   * When paginating forwards, the cursor to continue.
+   */
+  endCursor: string | null;
+}
+
+/**
+ * An edge in a connection.
+ */
+export interface IThreadableEdge {
+  __typename: 'ThreadableEdge';
+
+  /**
+   * The item at the end of the edge
+   */
+  node: Threadable;
+  cursor: string | null;
+}
+
+/**
+ * An item that can be put in a thread
+ */
+export type Threadable = ITask | IComment;
+
+/**
+ * An item that can be put in a thread
+ */
+export interface IThreadable {
+  __typename: 'Threadable';
 
   /**
    * shortid
@@ -836,208 +883,54 @@ export interface IGitHubIntegration {
   id: string;
 
   /**
-   * true if an access token exists, else false
+   * The rich text body of the item
    */
-  isActive: boolean;
+  content: string;
 
   /**
-   * The access token to github. good forever
-   */
-  accessToken: string | null;
-
-  /**
-   * *The GitHub login used for queries
-   */
-  login: string;
-
-  /**
-   * The timestamp the provider was created
+   * The timestamp the item was created
    */
   createdAt: any;
 
   /**
-   * *The team that the token is linked to
+   * The userId that created the item
    */
-  teamId: string;
+  createdBy: string | null;
 
   /**
-   * The timestamp the token was updated at
+   * The user that created the item
+   */
+  createdByUser: IUser | null;
+
+  /**
+   * the replies to this threadable item
+   */
+  replies: Array<Threadable>;
+
+  /**
+   * The ID of the thread
+   */
+  threadId: string | null;
+
+  /**
+   * The item that spurred the threaded discussion
+   */
+  threadSource: ThreadSourceEnum | null;
+
+  /**
+   * the parent, if this threadable is a reply, else null
+   */
+  threadParentId: string | null;
+
+  /**
+   * the order of this threadable, relative to threadParentId
+   */
+  threadSortOrder: number | null;
+
+  /**
+   * The timestamp the item was updated
    */
   updatedAt: any;
-
-  /**
-   * The user that the access token is attached to
-   */
-  userId: string;
-}
-
-/**
- * OAuth token for a team member
- */
-export interface ISlackIntegration {
-  __typename: 'SlackIntegration';
-
-  /**
-   * shortid
-   */
-  id: string;
-
-  /**
-   * true if the auth is updated & ready to use for all features, else false
-   */
-  isActive: boolean;
-
-  /**
-   * The access token to slack, only visible to the owner. Used as a fallback to botAccessToken
-   */
-  accessToken: string | null;
-
-  /**
-   * the parabol bot user id
-   */
-  botUserId: string | null;
-
-  /**
-   * the parabol bot access token, used as primary communication
-   */
-  botAccessToken: string | null;
-
-  /**
-   * The timestamp the provider was created
-   */
-  createdAt: any;
-
-  /**
-   * The default channel to assign to new team notifications
-   */
-  defaultTeamChannelId: string;
-
-  /**
-   * The id of the team in slack
-   */
-  slackTeamId: string | null;
-
-  /**
-   * The name of the team in slack
-   */
-  slackTeamName: string | null;
-
-  /**
-   * The userId in slack
-   */
-  slackUserId: string;
-
-  /**
-   * The name of the user in slack
-   */
-  slackUserName: string;
-
-  /**
-   * *The team that the token is linked to
-   */
-  teamId: string;
-
-  /**
-   * The timestamp the token was updated at
-   */
-  updatedAt: any;
-
-  /**
-   * The user that the access token is attached to
-   */
-  userId: string;
-
-  /**
-   * A list of events and the slack channels they get posted to
-   */
-  notifications: Array<ISlackNotification>;
-}
-
-/**
- * an event trigger and slack channel to receive it
- */
-export interface ISlackNotification {
-  __typename: 'SlackNotification';
-  id: string;
-  event: SlackNotificationEventEnum;
-  eventType: SlackNotificationEventTypeEnum;
-
-  /**
-   * null if no notification is to be sent
-   */
-  channelId: string | null;
-  teamId: string;
-  userId: string;
-}
-
-/**
- * The event that triggers a slack notification
- */
-export const enum SlackNotificationEventEnum {
-  meetingStart = 'meetingStart',
-  meetingEnd = 'meetingEnd',
-  MEETING_STAGE_TIME_LIMIT_END = 'MEETING_STAGE_TIME_LIMIT_END',
-  MEETING_STAGE_TIME_LIMIT_START = 'MEETING_STAGE_TIME_LIMIT_START'
-}
-
-/**
- * The type of event for a slack notification
- */
-export const enum SlackNotificationEventTypeEnum {
-  /**
-   * notification that concerns the whole team
-   */
-  team = 'team',
-
-  /**
-   * notification that concerns a single member on the team
-   */
-  member = 'member'
-}
-
-/**
- * All the user details for a specific meeting
- */
-export type MeetingMember =
-  | IActionMeetingMember
-  | IRetrospectiveMeetingMember
-  | IPokerMeetingMember;
-
-/**
- * All the user details for a specific meeting
- */
-export interface IMeetingMember {
-  __typename: 'MeetingMember';
-
-  /**
-   * A composite of userId::meetingId
-   */
-  id: string;
-
-  /**
-   * true if present, false if absent, else null
-   */
-  isCheckedIn: boolean | null;
-  meetingId: string;
-  meetingType: MeetingTypeEnum;
-  teamId: string;
-  teamMember: ITeamMember;
-  user: IUser;
-  userId: string;
-
-  /**
-   * The last time a meeting was updated (stage completed, finished, etc)
-   */
-  updatedAt: any;
-}
-
-/**
- * The type of meeting
- */
-export const enum MeetingTypeEnum {
-  action = 'action',
-  retrospective = 'retrospective',
-  poker = 'poker'
 }
 
 /**
@@ -1477,7 +1370,7 @@ export interface ITask {
   __typename: 'Task';
 
   /**
-   * shortid
+   * serviceTaskId
    */
   id: string;
 
@@ -1530,6 +1423,16 @@ export interface ITask {
    * The timestamp the item was updated
    */
   updatedAt: any;
+
+  /**
+   * the comments and tasks created from the discussion
+   */
+  thread: IThreadableConnection;
+
+  /**
+   * A list of users currently commenting
+   */
+  commentors: Array<ICommentorDetails> | null;
 
   /**
    * The agenda item that the task was created in, if any
@@ -1603,71 +1506,13 @@ export interface ITask {
   user: IUser | null;
 }
 
-/**
- * An item that can be put in a thread
- */
-export type Threadable = ITask | IComment;
-
-/**
- * An item that can be put in a thread
- */
-export interface IThreadable {
-  __typename: 'Threadable';
+export interface IThreadOnTaskArguments {
+  first: number;
 
   /**
-   * shortid
+   * the incrementing sort order in string format
    */
-  id: string;
-
-  /**
-   * The rich text body of the item
-   */
-  content: string;
-
-  /**
-   * The timestamp the item was created
-   */
-  createdAt: any;
-
-  /**
-   * The userId that created the item
-   */
-  createdBy: string | null;
-
-  /**
-   * The user that created the item
-   */
-  createdByUser: IUser | null;
-
-  /**
-   * the replies to this threadable item
-   */
-  replies: Array<Threadable>;
-
-  /**
-   * The ID of the thread
-   */
-  threadId: string | null;
-
-  /**
-   * The item that spurred the threaded discussion
-   */
-  threadSource: ThreadSourceEnum | null;
-
-  /**
-   * the parent, if this threadable is a reply, else null
-   */
-  threadParentId: string | null;
-
-  /**
-   * the order of this threadable, relative to threadParentId
-   */
-  threadSortOrder: number | null;
-
-  /**
-   * The timestamp the item was updated
-   */
-  updatedAt: any;
+  after?: string | null;
 }
 
 /**
@@ -1675,7 +1520,25 @@ export interface IThreadable {
  */
 export const enum ThreadSourceEnum {
   AGENDA_ITEM = 'AGENDA_ITEM',
-  REFLECTION_GROUP = 'REFLECTION_GROUP'
+  REFLECTION_GROUP = 'REFLECTION_GROUP',
+  STORY = 'STORY'
+}
+
+/**
+ * The user that is commenting
+ */
+export interface ICommentorDetails {
+  __typename: 'CommentorDetails';
+
+  /**
+   * The userId of the person commenting
+   */
+  userId: string;
+
+  /**
+   * The preferred name of the user commenting
+   */
+  preferredName: string;
 }
 
 /**
@@ -1762,111 +1625,6 @@ export interface IThreadOnAgendaItemArguments {
    * the incrementing sort order in string format
    */
   after?: string | null;
-}
-
-/**
- * The source of a discusson thread
- */
-export type ThreadSource = IAgendaItem | IRetroReflectionGroup;
-
-/**
- * The source of a discusson thread
- */
-export interface IThreadSource {
-  __typename: 'ThreadSource';
-
-  /**
-   * shortid
-   */
-  id: string;
-
-  /**
-   * the comments and tasks created from the discussion
-   */
-  thread: IThreadableConnection;
-}
-
-export interface IThreadOnThreadSourceArguments {
-  first: number;
-
-  /**
-   * the incrementing sort order in string format
-   */
-  after?: string | null;
-}
-
-/**
- * A connection to a list of items.
- */
-export interface IThreadableConnection {
-  __typename: 'ThreadableConnection';
-
-  /**
-   * Page info with strings (sortOrder) as cursors
-   */
-  pageInfo: IPageInfo | null;
-
-  /**
-   * A list of edges.
-   */
-  edges: Array<IThreadableEdge>;
-}
-
-/**
- * Information about pagination in a connection.
- */
-export interface IPageInfo {
-  __typename: 'PageInfo';
-
-  /**
-   * When paginating forwards, are there more items?
-   */
-  hasNextPage: boolean;
-
-  /**
-   * When paginating backwards, are there more items?
-   */
-  hasPreviousPage: boolean;
-
-  /**
-   * When paginating backwards, the cursor to continue.
-   */
-  startCursor: string | null;
-
-  /**
-   * When paginating forwards, the cursor to continue.
-   */
-  endCursor: string | null;
-}
-
-/**
- * An edge in a connection.
- */
-export interface IThreadableEdge {
-  __typename: 'ThreadableEdge';
-
-  /**
-   * The item at the end of the edge
-   */
-  node: Threadable;
-  cursor: string | null;
-}
-
-/**
- * The user that is commenting
- */
-export interface ICommentorDetails {
-  __typename: 'CommentorDetails';
-
-  /**
-   * The userId of the person commenting
-   */
-  userId: string;
-
-  /**
-   * The preferred name of the user commenting
-   */
-  preferredName: string;
 }
 
 /**
@@ -2076,6 +1834,15 @@ export interface ITeamMembersOnTeamArguments {
    * the field to sort the teamMembers by
    */
   sortBy?: string | null;
+}
+
+/**
+ * The type of meeting
+ */
+export const enum MeetingTypeEnum {
+  action = 'action',
+  retrospective = 'retrospective',
+  poker = 'poker'
 }
 
 /**
@@ -3163,6 +2930,42 @@ export interface INewFeatureBroadcast {
 }
 
 /**
+ * All the user details for a specific meeting
+ */
+export type MeetingMember =
+  | IActionMeetingMember
+  | IRetrospectiveMeetingMember
+  | IPokerMeetingMember;
+
+/**
+ * All the user details for a specific meeting
+ */
+export interface IMeetingMember {
+  __typename: 'MeetingMember';
+
+  /**
+   * A composite of userId::meetingId
+   */
+  id: string;
+
+  /**
+   * true if present, false if absent, else null
+   */
+  isCheckedIn: boolean | null;
+  meetingId: string;
+  meetingType: MeetingTypeEnum;
+  teamId: string;
+  teamMember: ITeamMember;
+  user: IUser;
+  userId: string;
+
+  /**
+   * The last time a meeting was updated (stage completed, finished, etc)
+   */
+  updatedAt: any;
+}
+
+/**
  * A connection to a list of items.
  */
 export interface INotificationConnection {
@@ -3268,6 +3071,265 @@ export interface ITeamInvitationPayload {
    * one of the active meetings trying to join
    */
   meetingId: string | null;
+}
+
+export interface IStandardMutationError {
+  __typename: 'StandardMutationError';
+
+  /**
+   * The title of the error
+   */
+  title: string | null;
+
+  /**
+   * The full error
+   */
+  message: string;
+}
+
+/**
+ * A project fetched from Jira in real time
+ */
+export interface IJiraRemoteProject {
+  __typename: 'JiraRemoteProject';
+  id: string;
+  self: string;
+
+  /**
+   * The cloud ID that the project lives on. Does not exist on the Jira object!
+   */
+  cloudId: string;
+  key: string;
+  name: string;
+  avatarUrls: IJiraRemoteAvatarUrls;
+  projectCategory: IJiraRemoteProjectCategory;
+  simplified: boolean;
+  style: string;
+}
+
+/**
+ * A project fetched from Jira in real time
+ */
+export interface IJiraRemoteAvatarUrls {
+  __typename: 'JiraRemoteAvatarUrls';
+  x48: string;
+  x24: string;
+  x16: string;
+  x32: string;
+}
+
+/**
+ * A project category fetched from a JiraRemoteProject
+ */
+export interface IJiraRemoteProjectCategory {
+  __typename: 'JiraRemoteProjectCategory';
+  self: string;
+  id: string;
+  name: string;
+  description: string;
+}
+
+/**
+ * A jira search query including all filters selected when the query was executed
+ */
+export interface IJiraSearchQuery {
+  __typename: 'JiraSearchQuery';
+
+  /**
+   * shortid
+   */
+  id: string;
+
+  /**
+   * The query string, either simple or JQL depending on the isJQL flag
+   */
+  queryString: string;
+
+  /**
+   * true if the queryString is JQL, else false
+   */
+  isJQL: boolean;
+
+  /**
+   * The list of project keys selected as a filter. null if not set
+   */
+  projectKeyFilters: Array<string>;
+
+  /**
+   * the time the search query was last used. Used for sorting
+   */
+  lastUsedAt: any;
+}
+
+/**
+ * OAuth token for a team member
+ */
+export interface IGitHubIntegration {
+  __typename: 'GitHubIntegration';
+
+  /**
+   * shortid
+   */
+  id: string;
+
+  /**
+   * true if an access token exists, else false
+   */
+  isActive: boolean;
+
+  /**
+   * The access token to github. good forever
+   */
+  accessToken: string | null;
+
+  /**
+   * *The GitHub login used for queries
+   */
+  login: string;
+
+  /**
+   * The timestamp the provider was created
+   */
+  createdAt: any;
+
+  /**
+   * *The team that the token is linked to
+   */
+  teamId: string;
+
+  /**
+   * The timestamp the token was updated at
+   */
+  updatedAt: any;
+
+  /**
+   * The user that the access token is attached to
+   */
+  userId: string;
+}
+
+/**
+ * OAuth token for a team member
+ */
+export interface ISlackIntegration {
+  __typename: 'SlackIntegration';
+
+  /**
+   * shortid
+   */
+  id: string;
+
+  /**
+   * true if the auth is updated & ready to use for all features, else false
+   */
+  isActive: boolean;
+
+  /**
+   * The access token to slack, only visible to the owner. Used as a fallback to botAccessToken
+   */
+  accessToken: string | null;
+
+  /**
+   * the parabol bot user id
+   */
+  botUserId: string | null;
+
+  /**
+   * the parabol bot access token, used as primary communication
+   */
+  botAccessToken: string | null;
+
+  /**
+   * The timestamp the provider was created
+   */
+  createdAt: any;
+
+  /**
+   * The default channel to assign to new team notifications
+   */
+  defaultTeamChannelId: string;
+
+  /**
+   * The id of the team in slack
+   */
+  slackTeamId: string | null;
+
+  /**
+   * The name of the team in slack
+   */
+  slackTeamName: string | null;
+
+  /**
+   * The userId in slack
+   */
+  slackUserId: string;
+
+  /**
+   * The name of the user in slack
+   */
+  slackUserName: string;
+
+  /**
+   * *The team that the token is linked to
+   */
+  teamId: string;
+
+  /**
+   * The timestamp the token was updated at
+   */
+  updatedAt: any;
+
+  /**
+   * The user that the access token is attached to
+   */
+  userId: string;
+
+  /**
+   * A list of events and the slack channels they get posted to
+   */
+  notifications: Array<ISlackNotification>;
+}
+
+/**
+ * an event trigger and slack channel to receive it
+ */
+export interface ISlackNotification {
+  __typename: 'SlackNotification';
+  id: string;
+  event: SlackNotificationEventEnum;
+  eventType: SlackNotificationEventTypeEnum;
+
+  /**
+   * null if no notification is to be sent
+   */
+  channelId: string | null;
+  teamId: string;
+  userId: string;
+}
+
+/**
+ * The event that triggers a slack notification
+ */
+export const enum SlackNotificationEventEnum {
+  meetingStart = 'meetingStart',
+  meetingEnd = 'meetingEnd',
+  MEETING_STAGE_TIME_LIMIT_END = 'MEETING_STAGE_TIME_LIMIT_END',
+  MEETING_STAGE_TIME_LIMIT_START = 'MEETING_STAGE_TIME_LIMIT_START'
+}
+
+/**
+ * The type of event for a slack notification
+ */
+export const enum SlackNotificationEventTypeEnum {
+  /**
+   * notification that concerns the whole team
+   */
+  team = 'team',
+
+  /**
+   * notification that concerns a single member on the team
+   */
+  member = 'member'
 }
 
 /**
@@ -3766,7 +3828,7 @@ export interface ITemplateScale {
   /**
    * The values used in this scale
    */
-  values: Array<ITemplateScaleValue> | null;
+  values: Array<ITemplateScaleValue>;
 }
 
 /**
@@ -6725,14 +6787,25 @@ export interface IMutation {
   editTask: IEditTaskPayload | null;
 
   /**
+   * Finish a check-in meeting
+   */
+  endCheckIn: EndCheckInPayload;
+
+  /**
    * Broadcast that the viewer stopped dragging a reflection
    */
   endDraggingReflection: IEndDraggingReflectionPayload | null;
 
   /**
    * Finish a new meeting
+   * @deprecated "Using more specfic end[meetingType] instead"
    */
   endNewMeeting: IEndNewMeetingPayload;
+
+  /**
+   * Finish a retrospective meeting
+   */
+  endRetrospective: EndRetrospectivePayload;
 
   /**
    * flag a viewer as ready to advance to the next stage of a meeting
@@ -6934,7 +7007,7 @@ export interface IMutation {
   /**
    * Set the selected template for the upcoming retro meeting
    */
-  selectRetroTemplate: ISelectRetroTemplatePayload | null;
+  selectTemplate: ISelectTemplatePayload | null;
 
   /**
    * Share where in the app the viewer is
@@ -6975,7 +7048,18 @@ export interface IMutation {
   /**
    * Start a new meeting
    */
+  startCheckIn: StartCheckInPayload;
+
+  /**
+   * Start a new meeting
+   * @deprecated "Using more specfic start[meetingType] instead"
+   */
   startNewMeeting: IStartNewMeetingPayload;
+
+  /**
+   * Start a new meeting
+   */
+  startRetrospective: StartRetrospectivePayload;
 
   /**
    * Start a new sprint poker meeting
@@ -7010,7 +7094,7 @@ export interface IMutation {
   /**
    * Update the scale used for a dimension in a template
    */
-  updatePokerTemplateDimensionScale: IAddPokerTemplateDimensionPayload;
+  updatePokerTemplateDimensionScale: IUpdatePokerTemplateDimensionScalePayload;
 
   /**
    * Update the label, numerical value or color of a scale value in a scale
@@ -7140,6 +7224,11 @@ export interface IAddCommentOnMutationArguments {
    * A partial new comment
    */
   comment: IAddCommentInput;
+
+  /**
+   * The id of the meeting
+   */
+  meetingId: string;
 }
 
 export interface IAddPokerTemplateOnMutationArguments {
@@ -7198,6 +7287,11 @@ export interface IAddReactjiToReactableOnMutationArguments {
    * If true, remove the reaction, else add it
    */
   isRemove?: boolean | null;
+
+  /**
+   * The id of the meeting
+   */
+  meetingId: string;
 }
 
 export interface IAddReflectTemplateOnMutationArguments {
@@ -7401,6 +7495,7 @@ export interface ICreateUserPicturePutUrlOnMutationArguments {
 
 export interface IDeleteCommentOnMutationArguments {
   commentId: string;
+  meetingId: string;
 }
 
 export interface IDeleteTaskOnMutationArguments {
@@ -7502,6 +7597,13 @@ export interface IEditTaskOnMutationArguments {
   isEditing: boolean;
 }
 
+export interface IEndCheckInOnMutationArguments {
+  /**
+   * The meeting to end
+   */
+  meetingId: string;
+}
+
 export interface IEndDraggingReflectionOnMutationArguments {
   reflectionId: string;
 
@@ -7522,6 +7624,13 @@ export interface IEndDraggingReflectionOnMutationArguments {
 }
 
 export interface IEndNewMeetingOnMutationArguments {
+  /**
+   * The meeting to end
+   */
+  meetingId: string;
+}
+
+export interface IEndRetrospectiveOnMutationArguments {
   /**
    * The meeting to end
    */
@@ -7854,7 +7963,7 @@ export interface ISegmentEventTrackOnMutationArguments {
   options?: ISegmentEventTrackOptions | null;
 }
 
-export interface ISelectRetroTemplateOnMutationArguments {
+export interface ISelectTemplateOnMutationArguments {
   selectedTemplateId: string;
   teamId: string;
 }
@@ -7944,6 +8053,13 @@ export interface IStartDraggingReflectionOnMutationArguments {
   dragId: string;
 }
 
+export interface IStartCheckInOnMutationArguments {
+  /**
+   * The team starting the meeting
+   */
+  teamId: string;
+}
+
 export interface IStartNewMeetingOnMutationArguments {
   /**
    * The team starting the meeting
@@ -7954,6 +8070,13 @@ export interface IStartNewMeetingOnMutationArguments {
    * The base type of the meeting (action, retro, etc)
    */
   meetingType: MeetingTypeEnum;
+}
+
+export interface IStartRetrospectiveOnMutationArguments {
+  /**
+   * The team starting the meeting
+   */
+  teamId: string;
 }
 
 export interface IStartSprintPokerOnMutationArguments {
@@ -7984,6 +8107,7 @@ export interface IUpdateCommentContentOnMutationArguments {
    * A stringified draft-js document containing thoughts
    */
   content: string;
+  meetingId: string;
 }
 
 export interface IUpdateCreditCardOnMutationArguments {
@@ -8340,7 +8464,6 @@ export interface IAddCommentInput {
    * true if the comment should be anonymous
    */
   isAnonymous?: boolean | null;
-  meetingId: string;
 
   /**
    * foreign key for the reflection group or agenda item this was created from
@@ -9104,9 +9227,18 @@ export interface IPokerMeeting {
   settings: IPokerMeetingSettings;
 
   /**
+   * A single story created in a Sprint Poker meeting
+   */
+  story: Story | null;
+
+  /**
    * The ID of the template used for the meeting
    */
   templateId: string;
+}
+
+export interface IStoryOnPokerMeetingArguments {
+  storyId: string;
 }
 
 /**
@@ -9164,7 +9296,7 @@ export interface IEndSprintPokerSuccess {
   /**
    * true if the meeting was killed (ended before reaching last stage)
    */
-  isKill: boolean | null;
+  isKill: boolean;
   meetingId: string;
   meeting: IPokerMeeting;
   removedTaskIds: Array<string>;
@@ -9198,6 +9330,39 @@ export interface IEditTaskPayload {
    * true if the editor is editing, false if they stopped editing
    */
   isEditing: boolean | null;
+}
+
+/**
+ * Return object for EndCheckInPayload
+ */
+export type EndCheckInPayload = IErrorPayload | IEndCheckInSuccess;
+
+export interface IEndCheckInSuccess {
+  __typename: 'EndCheckInSuccess';
+
+  /**
+   * true if the meeting was killed (ended before reaching last stage)
+   */
+  isKill: boolean;
+  team: ITeam;
+  meeting: IActionMeeting;
+
+  /**
+   * The ID of the suggestion to try a check-in meeting, if tried
+   */
+  removedSuggestedActionId: string | null;
+  removedTaskIds: Array<string> | null;
+
+  /**
+   * An event that is important to the viewer, e.g. an ended meeting
+   */
+  timelineEvent: TimelineEvent;
+  updatedTaskIds: Array<string> | null;
+
+  /**
+   * Any tasks that were updated during the meeting
+   */
+  updatedTasks: Array<ITask> | null;
 }
 
 export interface IEndDraggingReflectionPayload {
@@ -9326,6 +9491,33 @@ export interface IEndNewMeetingPayload {
    * Any tasks that were updated during the meeting
    */
   updatedTasks: Array<ITask> | null;
+}
+
+/**
+ * Return object for EndRetrospectivePayload
+ */
+export type EndRetrospectivePayload = IErrorPayload | IEndRetrospectiveSuccess;
+
+export interface IEndRetrospectiveSuccess {
+  __typename: 'EndRetrospectiveSuccess';
+
+  /**
+   * true if the meeting was killed (ended before reaching last stage)
+   */
+  isKill: boolean;
+  team: ITeam;
+  meeting: IRetrospectiveMeeting;
+
+  /**
+   * The ID of the suggestion to try a retro meeting, if tried
+   */
+  removedSuggestedActionId: string | null;
+  removedTaskIds: Array<string>;
+
+  /**
+   * An event that is important to the viewer, e.g. an ended meeting
+   */
+  timelineEvent: TimelineEvent;
 }
 
 /**
@@ -9965,10 +10157,10 @@ export interface ISegmentEventTrackOptions {
   actionType?: string | null;
 }
 
-export interface ISelectRetroTemplatePayload {
-  __typename: 'SelectRetroTemplatePayload';
+export interface ISelectTemplatePayload {
+  __typename: 'SelectTemplatePayload';
   error: IStandardMutationError | null;
-  retroMeetingSettings: IRetrospectiveMeetingSettings | null;
+  meetingSettings: TeamMeetingSettings | null;
 }
 
 /**
@@ -10061,12 +10253,38 @@ export interface IStartDraggingReflectionPayload {
   teamId: string | null;
 }
 
+/**
+ * Return object for StartCheckInPayload
+ */
+export type StartCheckInPayload = IErrorPayload | IStartCheckInSuccess;
+
+export interface IStartCheckInSuccess {
+  __typename: 'StartCheckInSuccess';
+  meeting: IActionMeeting;
+  meetingId: string;
+  team: ITeam;
+}
+
 export interface IStartNewMeetingPayload {
   __typename: 'StartNewMeetingPayload';
   error: IStandardMutationError | null;
   team: ITeam | null;
   meetingId: string | null;
   meeting: NewMeeting | null;
+}
+
+/**
+ * Return object for StartRetrospectivePayload
+ */
+export type StartRetrospectivePayload =
+  | IErrorPayload
+  | IStartRetrospectiveSuccess;
+
+export interface IStartRetrospectiveSuccess {
+  __typename: 'StartRetrospectiveSuccess';
+  meeting: IRetrospectiveMeeting;
+  meetingId: string;
+  team: ITeam;
 }
 
 /**
@@ -10177,6 +10395,12 @@ export interface IUpdateOrgInput {
    * The org avatar
    */
   picture?: any | null;
+}
+
+export interface IUpdatePokerTemplateDimensionScalePayload {
+  __typename: 'UpdatePokerTemplateDimensionScalePayload';
+  error: IStandardMutationError | null;
+  dimension: ITemplateDimension | null;
 }
 
 export interface IUpdatePokerTemplateScaleValuePayload {
@@ -10530,6 +10754,11 @@ export type PokerAnnounceDeckHoverPayload =
 
 export interface IPokerAnnounceDeckHoverSuccess {
   __typename: 'PokerAnnounceDeckHoverSuccess';
+  meetingId: string;
+  stageId: string;
+  userId: string;
+  user: IUser;
+  isHover: boolean;
 
   /**
    * The stage that holds the updated scores
@@ -10623,7 +10852,9 @@ export type NotificationSubscriptionPayload =
   | ICreateTaskPayload
   | IDeleteTaskPayload
   | IDisconnectSocketPayload
+  | IEndCheckInSuccess
   | IEndNewMeetingPayload
+  | IEndRetrospectiveSuccess
   | IInvalidateSessionsPayload
   | IInviteToTeamPayload
   | IMeetingStageTimeLimitPayload
@@ -10804,7 +11035,9 @@ export type TeamSubscriptionPayload =
   | IArchiveTeamPayload
   | IDenyPushInvitationPayload
   | IDowngradeToPersonalPayload
+  | IEndCheckInSuccess
   | IEndNewMeetingPayload
+  | IEndRetrospectiveSuccess
   | IEndSprintPokerSuccess
   | INavigateMeetingPayload
   | IPushInvitationPayload
@@ -10813,8 +11046,10 @@ export type TeamSubscriptionPayload =
   | IRemoveOrgUserPayload
   | IRemoveTeamMemberPayload
   | IRenameMeetingSuccess
-  | ISelectRetroTemplatePayload
+  | ISelectTemplatePayload
+  | IStartCheckInSuccess
   | IStartNewMeetingPayload
+  | IStartRetrospectiveSuccess
   | IStartSprintPokerSuccess
   | IUpdateAgendaItemPayload
   | IUpdateCreditCardPayload
@@ -10856,12 +11091,6 @@ export interface IRenamePokerTemplatePayload {
   __typename: 'RenamePokerTemplatePayload';
   error: IStandardMutationError | null;
   pokerTemplate: IPokerTemplate | null;
-}
-
-export interface IUpdatePokerTemplateDimensionScalePayload {
-  __typename: 'UpdatePokerTemplateDimensionScalePayload';
-  error: IStandardMutationError | null;
-  dimension: ITemplateDimension | null;
 }
 
 // tslint:enable

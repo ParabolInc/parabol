@@ -24,6 +24,7 @@ import {startSlackMeeting} from './helpers/notifySlack'
 export default {
   type: new GraphQLNonNull(StartNewMeetingPayload),
   description: 'Start a new meeting',
+  deprecationReason: 'Using more specfic start[meetingType] instead',
   args: {
     teamId: {
       type: new GraphQLNonNull(GraphQLID),

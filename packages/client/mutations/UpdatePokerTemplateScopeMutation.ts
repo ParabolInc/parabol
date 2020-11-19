@@ -10,16 +10,16 @@ import getNodeById from '../utils/relay/getNodeById'
 import {insertEdgeAfter} from '../utils/relay/insertEdge'
 import safeRemoveNodeFromArray from '../utils/relay/safeRemoveNodeFromArray'
 import safeRemoveNodeFromConn from '../utils/relay/safeRemoveNodeFromConn'
-import {UpdateTemplateScopeMutation as TUpdateTemplateScopeMutation} from '../__generated__/UpdateTemplateScopeMutation.graphql'
-import {SharingScopeEnum, UpdateTemplateScopeMutation_organization} from '../__generated__/UpdateTemplateScopeMutation_organization.graphql'
-import getReflectTemplateOrgConn from './connections/getReflectTemplateOrgConn'
+import {UpdatePokerTemplateScopeMutation as TUpdateTemplateScopeMutation} from '../__generated__/UpdatePokerTemplateScopeMutation.graphql'
+import {SharingScopeEnum, UpdatePokerTemplateScopeMutation_organization} from '../__generated__/UpdatePokerTemplateScopeMutation_organization.graphql'
+import getPokerTemplateOrgConn from './connections/getPokerTemplateOrgConn'
 
 graphql`
-  fragment UpdateTemplateScopeMutation_organization on UpdateTemplateScopeSuccess {
+  fragment UpdatePokerTemplateScopeMutation_organization on UpdateTemplateScopeSuccess {
     template {
       # these fragments are needed for listening org members
       ...TemplateSharing_template
-      ...ReflectTemplateDetailsTemplate
+      ...PokerTemplateDetailsTemplate
       id
       orgId
       scope
@@ -27,21 +27,21 @@ graphql`
     }
     clonedTemplate {
       ...TemplateSharing_template
-      ...ReflectTemplateDetailsTemplate
+      ...PokerTemplateDetailsTemplate
       orgId
     }
   }
 `
 
 const mutation = graphql`
-  mutation UpdateTemplateScopeMutation($templateId: ID!, $scope: SharingScopeEnum!) {
+  mutation UpdatePokerTemplateScopeMutation($templateId: ID!, $scope: SharingScopeEnum!) {
     updateTemplateScope(templateId: $templateId, scope: $scope) {
       ... on ErrorPayload {
         error {
           message
         }
       }
-      ...UpdateTemplateScopeMutation_organization @relay(mask: false)
+      ...UpdatePokerTemplateScopeMutation_organization @relay(mask: false)
     }
   }
 `
@@ -50,7 +50,7 @@ const removeTemplateFromCurrentScope = (templateId: string, scopeList: SharingSc
   if (scopeList === 'TEAM') {
     safeRemoveNodeFromArray(templateId, meetingSettings, 'teamTemplates')
   } else if (scopeList === 'ORGANIZATION') {
-    const orgTemplatesConn = getReflectTemplateOrgConn(meetingSettings)
+    const orgTemplatesConn = getPokerTemplateOrgConn(meetingSettings)
     safeRemoveNodeFromConn(templateId, orgTemplatesConn)
   }
   // not possible for the public list to get mutated because this is an org subscription
@@ -59,7 +59,7 @@ const removeTemplateFromCurrentScope = (templateId: string, scopeList: SharingSc
 const putTemplateInConnection = (template: RecordProxy, connection: RecordProxy | null | undefined, store: RecordSourceSelectorProxy) => {
   const templateId = template.getValue('id')
   if (connection && !getNodeById(templateId as string, connection)) {
-    const newEdge = ConnectionHandler.createEdge(store, connection, template, 'ReflectTemplateEdge')
+    const newEdge = ConnectionHandler.createEdge(store, connection, template, 'PokerTemplateEdge')
     newEdge.setValue(templateId, 'cursor')
     insertEdgeAfter(connection, newEdge)
   }
@@ -69,7 +69,7 @@ const addTemplateToScope = (template: RecordProxy, scope: SharingScopeEnum, meet
   if (scope === 'TEAM') {
     addNodeToArray(template, meetingSettings, 'teamTemplates')
   } else if (scope === 'ORGANIZATION') {
-    const orgTemplatesConn = getReflectTemplateOrgConn(meetingSettings)
+    const orgTemplatesConn = getPokerTemplateOrgConn(meetingSettings)
     putTemplateInConnection(template, orgTemplatesConn, store)
   }
 }
@@ -90,7 +90,7 @@ const handleUpdateTemplateScope = (template: RecordProxy, newScope: SharingScope
   teamIds.forEach((teamId) => {
     const team = store.get(teamId)
     if (!team) return
-    const meetingSettings = team.getLinkedRecord('meetingSettings', {meetingType: MeetingTypeEnum.retrospective})
+    const meetingSettings = team.getLinkedRecord('meetingSettings', {meetingType: MeetingTypeEnum.poker})
     if (!meetingSettings) return
     // this is on the ORG subscription, so this won't affect anything on a PUBLIC list because they're at least on the same org
     const scopeList = teamId === templateTeamId ? 'TEAM' : 'ORGANIZATION'
@@ -109,7 +109,7 @@ const handleUpdateTemplateScope = (template: RecordProxy, newScope: SharingScope
   })
 }
 
-export const updateTemplateScopeOrganizationUpdater: SharedUpdater<UpdateTemplateScopeMutation_organization> = (payload: any, {store}) => {
+export const updateTemplateScopeOrganizationUpdater: SharedUpdater<UpdatePokerTemplateScopeMutation_organization> = (payload: any, {store}) => {
   const template = payload.getLinkedRecord('template')
   if (!template) return
   const clonedTemplate = payload.getLinkedRecord('clonedTemplate')
@@ -118,7 +118,7 @@ export const updateTemplateScopeOrganizationUpdater: SharedUpdater<UpdateTemplat
   handleUpdateTemplateScope(template, newScope, store, clonedTemplate)
 }
 
-const UpdateTemplateScopeMutation: StandardMutation<TUpdateTemplateScopeMutation> = (
+const UpdatePokerTemplateScopeMutation: StandardMutation<TUpdateTemplateScopeMutation> = (
   atmosphere,
   variables,
   {onError, onCompleted}
@@ -143,4 +143,4 @@ const UpdateTemplateScopeMutation: StandardMutation<TUpdateTemplateScopeMutation
   })
 }
 
-export default UpdateTemplateScopeMutation
+export default UpdatePokerTemplateScopeMutation

@@ -4,11 +4,11 @@ import getRethink from '../../database/rethinkDriver'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
-import AddPokerTemplateDimensionPayload from '../types/AddPokerTemplateDimensionPayload'
+import UpdatePokerTemplateDimensionScalePayload from '../types/UpdatePokerTemplateDimensionScalePayload'
 
 const updatePokerTemplateDimensionScale = {
   description: 'Update the scale used for a dimension in a template',
-  type: new GraphQLNonNull(AddPokerTemplateDimensionPayload),
+  type: new GraphQLNonNull(UpdatePokerTemplateDimensionScalePayload),
   args: {
     dimensionId: {
       type: new GraphQLNonNull(GraphQLID)
@@ -53,7 +53,13 @@ const updatePokerTemplateDimensionScale = {
       .run()
 
     const data = {dimensionId}
-    publish(SubscriptionChannel.TEAM, teamId, 'AddPokerTemplateDimensionPayload', data, subOptions)
+    publish(
+      SubscriptionChannel.TEAM,
+      teamId,
+      'UpdatePokerTemplateDimensionScalePayload',
+      data,
+      subOptions
+    )
     return data
   }
 }

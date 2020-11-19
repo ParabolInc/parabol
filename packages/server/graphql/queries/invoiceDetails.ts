@@ -1,8 +1,8 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
+import {Threshold} from '../../../client/types/constEnums'
 import generateUpcomingInvoice from '../../billing/helpers/generateUpcomingInvoice'
 import getRethink from '../../database/rethinkDriver'
 import {getUserId, isUserBillingLeader} from '../../utils/authorization'
-import {UPCOMING_INVOICE_TIME_VALID} from '../../utils/serverConstants'
 import standardError from '../../utils/standardError'
 import Invoice from '../types/Invoice'
 
@@ -36,7 +36,7 @@ export default {
     if (
       !isUpcoming ||
       (currentInvoice &&
-        new Date(currentInvoice.createdAt.getTime() + UPCOMING_INVOICE_TIME_VALID) > now)
+        new Date(currentInvoice.createdAt.getTime() + Threshold.UPCOMING_INVOICE_TIME_VALID) > now)
     ) {
       return currentInvoice
     }

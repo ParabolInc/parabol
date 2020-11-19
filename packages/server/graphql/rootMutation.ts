@@ -86,7 +86,7 @@ import removePokerTemplateScaleValue from './mutations/removePokerTemplateScaleV
 import resetMeetingToStage from './mutations/resetMeetingToStage'
 import resetPassword from './mutations/resetPassword'
 import segmentEventTrack from './mutations/segmentEventTrack'
-import selectRetroTemplate from './mutations/selectRetroTemplate'
+import selectTemplate from './mutations/selectTemplate'
 import setAppLocation from './mutations/setAppLocation'
 import setCheckInEnabled from './mutations/setCheckInEnabled'
 import setNotificationStatus from './mutations/setNotificationStatus'
@@ -96,7 +96,9 @@ import setSlackNotification from './mutations/setSlackNotification'
 import setStageTimer from './mutations/setStageTimer'
 import signUpWithPassword from './mutations/signUpWithPassword'
 import startDraggingReflection from './mutations/startDraggingReflection'
+import startCheckIn from './mutations/startCheckIn'
 import startNewMeeting from './mutations/startNewMeeting'
+import startRetrospective from './mutations/startRetrospective'
 import startSprintPoker from './mutations/startSprintPoker'
 import toggleAgendaList from './mutations/toggleAgendaList'
 import updateAgendaItem from './mutations/updateAgendaItem'
@@ -122,6 +124,8 @@ import verifyEmail from './mutations/verifyEmail'
 import voteForReflectionGroup from './mutations/voteForReflectionGroup'
 import updatePokerScope from './mutations/updatePokerScope'
 import voteForPokerStory from './mutations/voteForPokerStory'
+import endCheckIn from './mutations/endCheckIn'
+import endRetrospective from './mutations/endRetrospective'
 import pokerRevealVotes from './mutations/pokerRevealVotes'
 import pokerResetDimension from './mutations/pokerResetDimension'
 import pokerAnnounceDeckHover from './mutations/pokerAnnounceDeckHover'
@@ -182,8 +186,10 @@ export default new GraphQLObjectType<any, Context>({
       endSprintPoker,
       editReflection,
       editTask,
+      endCheckIn,
       endDraggingReflection,
       endNewMeeting,
+      endRetrospective,
       flagReadyToAdvance,
       inactivateUser,
       invalidateSessions,
@@ -225,7 +231,7 @@ export default new GraphQLObjectType<any, Context>({
       resetMeetingToStage,
       resetPassword,
       segmentEventTrack,
-      selectRetroTemplate,
+      selectTemplate,
       setAppLocation,
       setCheckInEnabled,
       setOrgUserRole,
@@ -234,7 +240,9 @@ export default new GraphQLObjectType<any, Context>({
       setSlackNotification,
       signUpWithPassword,
       startDraggingReflection,
+      startCheckIn,
       startNewMeeting,
+      startRetrospective,
       startSprintPoker,
       toggleAgendaList,
       updateAgendaItem,

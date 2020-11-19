@@ -1,5 +1,5 @@
 import {RefObject, useEffect} from 'react'
-import {BezierCurve, Breakpoint} from '~/types/constEnums'
+import {BezierCurve, Breakpoint, DiscussionThreadEnum, NavSidebar} from '~/types/constEnums'
 import useResizeObserver from './useResizeObserver'
 
 interface ControlBarCoverable {
@@ -85,12 +85,12 @@ export const ensureAllCovering = (leftBound: number, rightBound: number) => {
   })
 }
 
-export const cacheCoveringBBox = () => {
+export const cacheCoveringBBox = (isLeftSidebarOpen?: boolean, isRightSidebarOpen?: boolean) => {
   if (covering.el) {
     const coveringBBox = covering.el.getBoundingClientRect()
     const {left, right} = coveringBBox
-    covering.left = left
-    covering.right = right
+    covering.left = left - (isLeftSidebarOpen ? NavSidebar.WIDTH : 0)
+    covering.right = right + (isRightSidebarOpen ? DiscussionThreadEnum.WIDTH : 0)
   }
   return covering
 }

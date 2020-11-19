@@ -22,7 +22,7 @@ const HeaderCard = styled('div')({
   boxShadow: Elevation.Z3,
   padding: '12px 16px',
   maxWidth: 1000,
-  width: '70%'
+  width: '55%'
 })
 
 const CardTitle = styled('h1')({
