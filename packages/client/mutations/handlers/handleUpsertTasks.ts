@@ -1,4 +1,4 @@
-import {RecordProxy, RecordSourceSelectorProxy} from 'relay-runtime'
+import {ConnectionHandler, RecordProxy, RecordSourceSelectorProxy} from 'relay-runtime'
 import getThreadSourceThreadConn from '~/mutations/connections/getThreadSourceThreadConn'
 import addNodeToArray from '../../utils/relay/addNodeToArray'
 import safeRemoveNodeFromConn from '../../utils/relay/safeRemoveNodeFromConn'
@@ -9,6 +9,7 @@ import pluralizeHandler from './pluralizeHandler'
 import safePutNodeInConn from './safePutNodeInConn'
 import isTaskPrivate from '~/utils/isTaskPrivate'
 import {parseUserTaskFilterQueryParams} from '~/utils/useUserTaskFilters'
+import getScopingTasksConn from '../connections/getScopingTasksConn'
 
 type Task = RecordProxy<{
   readonly id: string
@@ -24,7 +25,7 @@ type Task = RecordProxy<{
 
 const handleUpsertTask = (task: Task | null, store: RecordSourceSelectorProxy<any>) => {
   if (!task) return
-  // we currently have 3 connections, user, team, and team archive
+  // we currently have 4 connections: user, team, team archive, scoping
   const viewer = store.getRoot().getLinkedRecord('viewer')
   if (!viewer) return
   const viewerId = viewer.getDataID()
@@ -68,6 +69,20 @@ const handleUpsertTask = (task: Task | null, store: RecordSourceSelectorProxy<an
       }
     }
   }
+  const parabolSearchQuery = meeting?.getLinkedRecord('parabolSearchQuery')
+  const queryString = parabolSearchQuery?.getValue('queryString') as string | undefined
+  const statusFilters = parabolSearchQuery?.getValue('statusFilters') as string[] | undefined
+  const scopingTasksConn = getScopingTasksConn(
+    viewer,
+    [teamId],
+    statusFilters,
+    queryString
+  )
+  if (!scopingTasksConn) return
+  const now = new Date().toISOString()
+  const newEdge = ConnectionHandler.createEdge(store, scopingTasksConn, task, 'ParabolTaskEdge')
+  newEdge.setValue(now, 'cursor')
+  ConnectionHandler.insertEdgeBefore(scopingTasksConn, newEdge)
 }
 
 const handleUpsertTasks = pluralizeHandler(handleUpsertTask)
