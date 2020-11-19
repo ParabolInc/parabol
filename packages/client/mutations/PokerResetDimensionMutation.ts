@@ -9,7 +9,6 @@ graphql`
       isVoting
       scores {
         userId
-        value
         label
       }
       finalScore

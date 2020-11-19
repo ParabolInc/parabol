@@ -1,17 +1,17 @@
-import React from 'react'
 import styled from '@emotion/styled'
-import PokerActiveVoting from './PokerActiveVoting'
-import PokerDiscussVoting from './PokerDiscussVoting'
-import LinkButton from './LinkButton'
-import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
+import React from 'react'
+import {createFragmentContainer} from 'react-relay'
+import useMutationProps from '~/hooks/useMutationProps'
+import useAtmosphere from '../hooks/useAtmosphere'
+import PokerResetDimensionMutation from '../mutations/PokerResetDimensionMutation'
+import {PALETTE} from '../styles/paletteV2'
 import {EstimateDimensionColumn_meeting} from '../__generated__/EstimateDimensionColumn_meeting.graphql'
 import {EstimateDimensionColumn_stage} from '../__generated__/EstimateDimensionColumn_stage.graphql'
-import useMutationProps from '~/hooks/useMutationProps'
-import PokerResetDimensionMutation from '../mutations/PokerResetDimensionMutation'
-import useAtmosphere from '../hooks/useAtmosphere'
-import getGraphQLError from '~/utils/relay/getGraphQLError'
-import Atmosphere from '~/Atmosphere'
+import {SetVotedUserEl} from './EstimatePhaseArea'
+import LinkButton from './LinkButton'
+import PokerActiveVoting from './PokerActiveVoting'
+import PokerDiscussVoting from './PokerDiscussVoting'
 
 const ColumnInner = styled('div')({
   display: 'flex',
@@ -22,6 +22,7 @@ const ColumnInner = styled('div')({
 })
 
 const DimensionHeader = styled('div')({
+  alignItems: 'center',
   display: 'flex',
   padding: '8px 16px'
 })
@@ -38,44 +39,37 @@ const StyledLinkButton = styled(LinkButton)({
   fontWeight: 600
 })
 
+const StyledError = styled('div')({
+  color: PALETTE.ERROR_MAIN,
+  fontSize: 12,
+  fontWeight: 600,
+  paddingRight: 16
+})
+
 interface Props {
-  meeting: EstimateDimensionColumn_meeting
-  setVotedUserEl: (userId: string, el: HTMLDivElement) => void
   stage: EstimateDimensionColumn_stage
+  meeting: EstimateDimensionColumn_meeting
+  setVotedUserEl: SetVotedUserEl
 }
 
 const EstimateDimensionColumn = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
-  const {stage, meeting, setVotedUserEl} = props
-  const {facilitatorUserId, id: meetingId, team} = meeting
+  const {meeting, setVotedUserEl, stage} = props
+  const {facilitatorUserId, id: meetingId} = meeting
   const isFacilitator = viewerId === facilitatorUserId
-  const {teamMembers} = team
   const {id: stageId, dimension} = stage
   const {name} = dimension
   const {isVoting} = stage
+  const {onError, onCompleted, submitMutation, error, submitting} = useMutationProps()
 
-
-
-  const makeHandleCompleted = (onCompleted: () => void, atmosphere: Atmosphere) => (res, errors) => {
-    onCompleted()
-    const error = getGraphQLError(res, errors)
-    if (error) {
-      atmosphere.eventEmitter.emit('addSnackbar', {
-        key: 'voteError',
-        message: error.message || 'Error submitting vote',
-        autoDismiss: 5
-      })
-    }
-  }
-  const {onError, onCompleted, submitMutation} = useMutationProps()
   const reset = () => {
+    if (submitting) return
     submitMutation()
-    const handleCompleted = makeHandleCompleted(onCompleted, atmosphere)
     PokerResetDimensionMutation(
       atmosphere,
       {meetingId, stageId},
-      {onError, onCompleted: handleCompleted}
+      {onError, onCompleted}
     )
   }
 
@@ -83,14 +77,15 @@ const EstimateDimensionColumn = (props: Props) => {
     <ColumnInner>
       <DimensionHeader>
         <DimensionName>{name}</DimensionName>
-        {!isVoting && isFacilitator ? <StyledLinkButton onClick={reset} palette={'blue'}>{'Team Revote'}</StyledLinkButton> : null}
+        {error && <StyledError>{error.message}</StyledError>}
+        {!isVoting && isFacilitator && <StyledLinkButton onClick={reset} palette={'blue'}>{'Team Revote'}</StyledLinkButton>}
       </DimensionHeader>
       {/* todo: animate avatars to their respective row */}
-      {teamMembers.map((teamMember, idx) => {
-        return <div key={idx} ref={(el: HTMLDivElement) => {
+      {/* {teamMembers.map((teamMember, idx) => {
+        return <div key={idx} ref={(el) => {
           setVotedUserEl(teamMember.userId, el)
         }} />
-      })}
+      })} */}
       {isVoting
         ? <PokerActiveVoting meeting={meeting} setVotedUserEl={setVotedUserEl} stage={stage} />
         : <PokerDiscussVoting meeting={meeting} setVotedUserEl={setVotedUserEl} stage={stage} />
@@ -102,30 +97,24 @@ const EstimateDimensionColumn = (props: Props) => {
 export default createFragmentContainer(
   EstimateDimensionColumn,
   {
-    meeting: graphql`
-    fragment EstimateDimensionColumn_meeting on PokerMeeting {
-      ...PokerActiveVoting_meeting
-      ...PokerDiscussVoting_meeting
-      facilitatorUserId
-      id
-      team {
-        teamMembers {
-          userId
-          picture
-        }
-      }
-    }`,
     stage: graphql`
     fragment EstimateDimensionColumn_stage on EstimateStage {
       ...PokerActiveVoting_stage
       ...PokerDiscussVoting_stage
       id
       isVoting
-      dimensionId
       dimension {
         name
       }
     }
-    `
+    `,
+    meeting: graphql`
+    fragment EstimateDimensionColumn_meeting on PokerMeeting {
+      ...PokerActiveVoting_meeting
+      ...PokerDiscussVoting_meeting
+      facilitatorUserId
+      id
+    }`,
+
   }
 )

@@ -1,12 +1,14 @@
 import styled from '@emotion/styled'
+import graphql from 'babel-plugin-relay/macro'
 import React, {RefObject, useEffect, useRef} from 'react'
+import {createFragmentContainer} from 'react-relay'
+import useBreakpoint from '~/hooks/useBreakpoint'
+import PassSVG from '../../../static/images/icons/no_entry.svg'
 import usePokerZIndexOverride from '../hooks/usePokerZIndexOverride'
 import logoMarkWhite from '../styles/theme/images/brand/mark-white.svg'
 import {BezierCurve, Breakpoint, PokerCards} from '../types/constEnums'
-import getColorLuminance from '../utils/getColorLuminance'
-import PassSVG from '../../../static/images/icons/no_entry.svg'
-import useBreakpoint from '~/hooks/useBreakpoint'
-
+import getPokerCardBackground from '../utils/getPokerCardBackground'
+import {PokerCard_scaleValue} from '../__generated__/PokerCard_scaleValue.graphql'
 const COLLAPSE_DUR = 1000
 const EXPAND_DUR = 100
 interface CardBaseProps {
@@ -14,28 +16,27 @@ interface CardBaseProps {
   isDesktop: boolean,
   isCollapsed: boolean,
   isSelected: boolean,
-  radius: number
   rotation: number
   yOffset: number
 
 }
 
-const getRotation = (isSelected: boolean, isCollapsed: boolean, radius: number, rotation: number, yOffset: number) => {
+const getRotation = (isSelected: boolean, isCollapsed: boolean, rotation: number, yOffset: number) => {
   // TODO fix left offset
   const leftEdge = 500
   if (isCollapsed) return `translate(${leftEdge}px, -${PokerCards.HEIGHT}px)`
   const radians = (rotation * Math.PI) / 180
-  const x = radius * Math.sin(radians)
-  const y = -radius * Math.cos(radians) + yOffset
+  const x = PokerCards.RADIUS * Math.sin(radians)
+  const y = -PokerCards.RADIUS * Math.cos(radians) + yOffset
   const selectedOffset = isSelected ? - 48 : 0
   return `translate(${x}px, ${y + selectedOffset}px)rotate(${rotation}deg)`
 }
 
-const CardBase = styled('div')<CardBaseProps>(({color, isCollapsed, isDesktop, isSelected, radius, rotation, yOffset}) => {
-  const transform = getRotation(isSelected, isCollapsed, radius, rotation, yOffset)
+const CardBase = styled('div')<CardBaseProps>(({color, isCollapsed, isDesktop, isSelected, rotation, yOffset}) => {
+  const transform = getRotation(isSelected, isCollapsed, rotation, yOffset)
   const hoverTransform = `${transform} translateY(-8px)`
   return ({
-    background: `radial-gradient(50% 50% at 50% 50%, ${color} 0%, ${getColorLuminance(color, -.12)} 100%)`,
+    background: getPokerCardBackground(color),
     borderRadius: 6,
     cursor: 'pointer',
     display: 'flex',
@@ -78,7 +79,7 @@ const Pass = styled('img')({
 })
 
 interface Props {
-  card: any
+  scaleValue: PokerCard_scaleValue
   deckRef: RefObject<HTMLDivElement>
   idx: number
   isCollapsed: boolean
@@ -86,7 +87,6 @@ interface Props {
   onClick: () => void
   onMouseEnter: () => void
   onMouseLeave: () => void
-  radius: number
   rotation: number
   totalCards: number
   yOffset: number
@@ -94,8 +94,8 @@ interface Props {
 
 
 const PokerCard = (props: Props) => {
-  const {card, isCollapsed, yOffset, isSelected, onClick, onMouseEnter, onMouseLeave, radius, rotation} = props
-  const {color, label, value} = card
+  const {scaleValue, isCollapsed, yOffset, isSelected, onClick, onMouseEnter, onMouseLeave, rotation} = props
+  const {color, label} = scaleValue
   const wasCollapsedRef = useRef(isCollapsed)
   const cardRef = useRef<HTMLDivElement>(null)
   const isMoving = wasCollapsedRef.current !== isCollapsed
@@ -117,15 +117,23 @@ const PokerCard = (props: Props) => {
       onClick={onClick}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
-      radius={radius}
       rotation={rotation}
     >
       <UpperLeftCardValue>
-        {value === PokerCards.MAX_VALUE ? <Pass src={PassSVG} /> : label}
+        {label === PokerCards.PASS_CARD ? <Pass src={PassSVG} /> : label}
       </UpperLeftCardValue>
       <Logo src={logoMarkWhite} />
     </CardBase>
   )
 }
 
-export default PokerCard
+export default createFragmentContainer(
+  PokerCard,
+  {
+    scaleValue: graphql`
+    fragment PokerCard_scaleValue on TemplateScaleValue {
+      color
+      label
+    }`
+  }
+)

@@ -1,11 +1,15 @@
+import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import styled from '@emotion/styled'
 import MiniPokerCardPlaceholder from './MiniPokerCardPlaceholder'
 import MiniPokerCard from './MiniPokerCard'
 import {PALETTE} from '~/styles/paletteV2'
+import {createFragmentContainer} from 'react-relay'
+import {PokerDimensionValueStatic_scaleValue} from '../__generated__/PokerDimensionValueStatic_scaleValue.graphql'
 
 const Wrapper = styled('div')({
   alignItems: 'center',
+  // FIXME: WE HAVE TOO MANY COLORS
   backgroundColor: '#D4CFE2',
   borderRadius: 4,
   display: 'flex',
@@ -23,7 +27,7 @@ const Label = styled('label')({
 })
 
 interface Props {
-  scaleValue?: any
+  scaleValue: PokerDimensionValueStatic_scaleValue | null
 }
 
 const PokerDimensionValueStatic = (props: Props) => {
@@ -39,4 +43,12 @@ const PokerDimensionValueStatic = (props: Props) => {
   )
 }
 
-export default PokerDimensionValueStatic
+export default createFragmentContainer(
+  PokerDimensionValueStatic,
+  {
+    scaleValue: graphql`
+    fragment PokerDimensionValueStatic_scaleValue on TemplateScaleValue {
+      ...MiniPokerCard_scaleValue
+    }`
+  }
+)

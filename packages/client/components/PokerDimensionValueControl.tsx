@@ -4,6 +4,9 @@ import MiniPokerCardPlaceholder from './MiniPokerCardPlaceholder'
 import MiniPokerCard from './MiniPokerCard'
 import LinkButton from './LinkButton'
 import {PALETTE} from '~/styles/paletteV2'
+import {createFragmentContainer} from 'react-relay'
+import graphql from 'babel-plugin-relay/macro'
+import {PokerDimensionValueControl_scaleValue} from '../__generated__/PokerDimensionValueControl_scaleValue.graphql'
 
 const ControlWrap = styled('div')({
   padding: '0 8px'
@@ -58,7 +61,7 @@ const StyledLinkButton = styled(LinkButton)({
 interface Props {
   hasFocus: boolean
   placeholder: string
-  scaleValue?: any
+  scaleValue: PokerDimensionValueControl_scaleValue | null
 }
 
 const PokerDimensionValueControl = (props: Props) => {
@@ -83,4 +86,12 @@ const PokerDimensionValueControl = (props: Props) => {
   )
 }
 
-export default PokerDimensionValueControl
+export default createFragmentContainer(
+  PokerDimensionValueControl,
+  {
+    scaleValue: graphql`
+    fragment PokerDimensionValueControl_scaleValue on TemplateScaleValue {
+      ...MiniPokerCard_scaleValue
+    }`
+  }
+)

@@ -1,23 +1,21 @@
-import React from 'react'
 import styled from '@emotion/styled'
+import graphql from 'babel-plugin-relay/macro'
+import React from 'react'
+import {createFragmentContainer} from 'react-relay'
+import useMutationProps from '~/hooks/useMutationProps'
+import {PALETTE} from '~/styles/paletteV2'
+import useAtmosphere from '../hooks/useAtmosphere'
+import PokerRevealVotesMutation from '../mutations/PokerRevealVotesMutation'
+import {PokerActiveVoting_meeting} from '../__generated__/PokerActiveVoting_meeting.graphql'
+import {PokerActiveVoting_stage} from '../__generated__/PokerActiveVoting_stage.graphql'
+import {SetVotedUserEl} from './EstimatePhaseArea'
+import Icon from './Icon'
 import MiniPokerCardPlaceholder from './MiniPokerCardPlaceholder'
 import PokerVotingAvatarGroup from './PokerVotingAvatarGroup'
 import PokerVotingRowBase from './PokerVotingRowBase'
 import PokerVotingRowEmpty from './PokerVotingRowEmpty'
-import Icon from './Icon'
-import TipBanner from './TipBanner'
 import SecondaryButtonCool from './SecondaryButtonCool'
-import {PALETTE} from '~/styles/paletteV2'
-import getPokerVoters from '~/utils/getPokerVoters'
-import {createFragmentContainer} from 'react-relay'
-import graphql from 'babel-plugin-relay/macro'
-import {PokerActiveVoting_meeting} from '../__generated__/PokerActiveVoting_meeting.graphql'
-import {PokerActiveVoting_stage} from '../__generated__/PokerActiveVoting_stage.graphql'
-import useMutationProps from '~/hooks/useMutationProps'
-import PokerRevealVotesMutation from '../mutations/PokerRevealVotesMutation'
-import useAtmosphere from '../hooks/useAtmosphere'
-import getGraphQLError from '~/utils/relay/getGraphQLError'
-import Atmosphere from '~/Atmosphere'
+import TipBanner from './TipBanner'
 
 const CheckIcon = styled(Icon)({
   color: PALETTE.TEXT_GREEN
@@ -37,23 +35,27 @@ const RevealButtonBlock = styled('div')({
   padding: '8px 16px'
 })
 
+const StyledError = styled('div')({
+  paddingLeft: 8,
+  fontSize: 14,
+  color: PALETTE.ERROR_MAIN,
+  fontWeight: 400,
+})
 interface Props {
   meeting: PokerActiveVoting_meeting
-  setVotedUserEl: (userId: string, el: HTMLDivElement) => void
   stage: PokerActiveVoting_stage
+  setVotedUserEl: SetVotedUserEl
 }
 
 const PokerActiveVoting = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
   const {meeting, setVotedUserEl, stage} = props
-  const {facilitatorUserId, id: meetingId, team} = meeting
+  const {facilitatorUserId, id: meetingId} = meeting
   const {id: stageId, scores} = stage
   const hasVotes = scores.length > 0
   const isFacilitator = viewerId === facilitatorUserId
   const viewerHasVoted = Boolean(scores.find(({userId}) => userId === viewerId))
-  const {teamMembers} = team
-  const voters = getPokerVoters(scores, teamMembers)
 
   // Show the facilitator a tooltip if nobody has voted yet
   // Show the participant a tooltip if they haven’t voted yet
@@ -73,26 +75,14 @@ const PokerActiveVoting = (props: Props) => {
   // Show the reveal button if 2+ people have voted
   // TBD For folks kicking the tires maybe they want to reveal when running a test meeting by themselves?
   const showRevealButton = isFacilitator && scores.length > 0
-
-  const makeHandleCompleted = (onCompleted: () => void, atmosphere: Atmosphere) => (res, errors) => {
-    onCompleted()
-    const error = getGraphQLError(res, errors)
-    if (error) {
-      atmosphere.eventEmitter.emit('addSnackbar', {
-        key: 'voteError',
-        message: error.message || 'Error submitting vote',
-        autoDismiss: 5
-      })
-    }
-  }
-  const {onError, onCompleted, submitMutation} = useMutationProps()
+  const {onError, onCompleted, submitMutation, submitting, error} = useMutationProps()
   const reveal = () => {
+    if (submitting) return
     submitMutation()
-    const handleCompleted = makeHandleCompleted(onCompleted, atmosphere)
     PokerRevealVotesMutation(
       atmosphere,
       {meetingId, stageId},
-      {onError, onCompleted: handleCompleted}
+      {onError, onCompleted}
     )
   }
 
@@ -104,16 +94,14 @@ const PokerActiveVoting = (props: Props) => {
             <MiniPokerCardPlaceholder>
               <CheckIcon>check</CheckIcon>
             </MiniPokerCardPlaceholder>
-            <PokerVotingAvatarGroup setVotedUserEl={setVotedUserEl} voters={voters} />
+            <PokerVotingAvatarGroup setVotedUserEl={setVotedUserEl} scores={scores} />
           </PokerVotingRowBase>
         </>
         : <PokerVotingRowEmpty />
       }
       <RevealButtonBlock>
-        {showRevealButton
-          ? <SecondaryButtonCool onClick={reveal}>{'Reveal Votes'}</SecondaryButtonCool>
-          : null
-        }
+        {showRevealButton && <SecondaryButtonCool onClick={reveal}>{'Reveal Votes'}</SecondaryButtonCool>}
+        {error && <StyledError>{error.message}</StyledError>}
       </RevealButtonBlock>
       {showTip
         ? <BannerWrap>
@@ -125,30 +113,23 @@ const PokerActiveVoting = (props: Props) => {
   )
 }
 
+
 export default createFragmentContainer(
   PokerActiveVoting,
   {
-    meeting: graphql`
-    fragment PokerActiveVoting_meeting on PokerMeeting {
-      facilitatorUserId
-      id
-      team {
-        teamMembers {
-          userId
-          picture
-        }
-      }
-    }`,
     stage: graphql`
     fragment PokerActiveVoting_stage on EstimateStage {
       id
       dimensionId
       scores {
+        ...PokerVotingAvatarGroup_scores
         userId
-        label
-        value
       }
-    }
-    `
+    }`,
+    meeting: graphql`
+    fragment PokerActiveVoting_meeting on PokerMeeting {
+      facilitatorUserId
+      id
+    }`,
   }
 )

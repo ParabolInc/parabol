@@ -1,16 +1,16 @@
-import React, {useRef, useState} from 'react'
 import styled from '@emotion/styled'
-import {PALETTE} from '~/styles/paletteV2'
+import graphql from 'babel-plugin-relay/macro'
+import React, {useRef} from 'react'
+import {createFragmentContainer} from 'react-relay'
 import SwipeableViews from 'react-swipeable-views'
 import useBreakpoint from '~/hooks/useBreakpoint'
-import EstimateDimensionColumn from './EstimateDimensionColumn'
-import {Breakpoint} from '~/types/constEnums'
-import PokerCardDeck from './PokerCardDeck'
-import DeckActivityAvatars from './DeckActivityAvatars'
-import {createFragmentContainer} from 'react-relay'
-import graphql from 'babel-plugin-relay/macro'
-import {EstimatePhaseArea_meeting} from '~/__generated__/EstimatePhaseArea_meeting.graphql'
 import useGotoStageId from '~/hooks/useGotoStageId'
+import {PALETTE} from '~/styles/paletteV2'
+import {Breakpoint} from '~/types/constEnums'
+import {EstimatePhaseArea_meeting} from '~/__generated__/EstimatePhaseArea_meeting.graphql'
+import DeckActivityAvatars from './DeckActivityAvatars'
+import EstimateDimensionColumn from './EstimateDimensionColumn'
+import PokerCardDeck from './PokerCardDeck'
 
 const EstimateArea = styled('div')({
   display: 'flex',
@@ -56,6 +56,8 @@ const containerStyle = {
   height: '100%'
 }
 
+export type SetVotedUserEl = (userId: string, el: HTMLDivElement | null) => void
+export type GetVotedUserEl = (userId: string) => HTMLDivElement | null
 interface Props {
   gotoStageId: ReturnType<typeof useGotoStageId>
   meeting: EstimatePhaseArea_meeting
@@ -64,30 +66,26 @@ interface Props {
 const EstimatePhaseArea = (props: Props) => {
   const {gotoStageId, meeting} = props
   const {localStage, phases} = meeting
+  const {id: localStageId, story} = localStage
+  const {id: storyId} = story!
+  const {stages} = phases.find(({phaseType}) => phaseType === 'ESTIMATE')!
+  const dimensionStages = stages!.filter(({story}) => (story.id === storyId))
 
-  const {stages} = phases!.find(({phaseType}) => phaseType === 'ESTIMATE')!
-  const dimensionStages = stages?.filter(({story}) => (story.id === localStage.story!.id))
-
-  const stageIdx = dimensionStages!.findIndex(({id}) => id === localStage.id)
-
-  // Todo: this only works when swiping
-  // using the ‘Next’ control does not update the columns
-  const [activeIdx, setActiveIdx] = useState(stageIdx)
+  const stageIdx = dimensionStages!.findIndex(({id}) => id === localStageId)
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
 
 
   const onChangeIdx = (idx: number) => {
-    setActiveIdx(idx)
-    gotoStageId(dimensionStages![idx].id)
+    gotoStageId(dimensionStages[idx].id)
   }
 
-  const avatarRef = useRef<{[userId: string]: HTMLDivElement}>({})
+  const avatarRef = useRef<{[userId: string]: HTMLDivElement | null}>({})
 
-  const getVotedUserEl = (userId: string) => {
+  const getVotedUserEl: GetVotedUserEl = (userId) => {
     return avatarRef.current[userId]
   }
 
-  const setVotedUserEl = (userId: string, el: HTMLDivElement) => {
+  const setVotedUserEl: SetVotedUserEl = (userId, el) => {
     avatarRef.current[userId] = el
   }
 
@@ -98,8 +96,8 @@ const EstimatePhaseArea = (props: Props) => {
   return (
     <EstimateArea>
       <StepperDots>
-        {dimensionStages!.map((_, idx) => {
-          return <StepperDot key={idx} isActive={idx === activeIdx} />
+        {dimensionStages.map((_, idx) => {
+          return <StepperDot key={idx} isActive={idx === stageIdx} onClick={() => onChangeIdx(idx)} />
         })}
       </StepperDots>
       <PokerCardDeck meeting={meeting} />
@@ -107,12 +105,12 @@ const EstimatePhaseArea = (props: Props) => {
       <SwipeableViews
         containerStyle={containerStyle}
         enableMouseEvents
-        index={activeIdx}
+        index={stageIdx}
         onChangeIndex={onChangeIdx}
         slideStyle={slideContainer}
         style={innerStyle(isDesktop)}
       >
-        {dimensionStages!.map((stage, idx) => (
+        {dimensionStages.map((stage, idx) => (
           <SwipableEstimateItem key={idx}>
             <EstimateDimensionColumn meeting={meeting} setVotedUserEl={setVotedUserEl} stage={stage} />
           </SwipableEstimateItem>
@@ -122,32 +120,29 @@ const EstimatePhaseArea = (props: Props) => {
   )
 }
 
+graphql`
+fragment EstimatePhaseAreaStage on EstimateStage {
+  ...DeckActivityAvatars_stage
+  id
+  story {
+    id
+  }
+}`
+
 export default createFragmentContainer(EstimatePhaseArea, {
   meeting: graphql`
     fragment EstimatePhaseArea_meeting on PokerMeeting {
       ...PokerCardDeck_meeting
       ...EstimateDimensionColumn_meeting
       localStage {
-        ... on EstimateStage {
-          ...DeckActivityAvatars_stage
-          id
-          story {
-            id
-          }
-        }
+        ...EstimatePhaseAreaStage @relay(mask: false)
       }
       phases {
         ... on EstimatePhase {
           phaseType
           stages {
-            ... on EstimateStage {
-              ...DeckActivityAvatars_stage
-              ...EstimateDimensionColumn_stage
-              id
-              story {
-                id
-              }
-            }
+            ...EstimateDimensionColumn_stage
+            ...EstimatePhaseAreaStage @relay(mask: false)
           }
         }
       }

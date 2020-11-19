@@ -4,7 +4,8 @@ import {
   GraphQLID,
   GraphQLList,
   GraphQLNonNull,
-  GraphQLObjectType
+  GraphQLObjectType,
+  GraphQLString
 } from 'graphql'
 import {NewMeetingPhaseTypeEnum} from '../../../client/types/graphql'
 import db from '../../db'
@@ -56,7 +57,7 @@ const EstimateStage = new GraphQLObjectType<any, GQLContext>({
       }
     },
     finalScore: {
-      type: GraphQLFloat,
+      type: GraphQLString,
       description: 'the final score, as defined by the facilitator'
     },
     hoveringUserIds: {

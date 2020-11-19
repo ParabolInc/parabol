@@ -1,12 +1,15 @@
-import React from 'react'
 import styled from '@emotion/styled'
-import getColorLuminance from '../utils/getColorLuminance'
-import MiniPokerCardPlaceholder from './MiniPokerCardPlaceholder'
+import React from 'react'
+import {createFragmentContainer} from 'react-relay'
 import PassSVG from '../../../static/images/icons/no_entry.svg'
 import {PokerCards} from '../types/constEnums'
-
+import getPokerCardBackground from '../utils/getPokerCardBackground'
+import MiniPokerCardPlaceholder from './MiniPokerCardPlaceholder'
+import graphql from 'babel-plugin-relay/macro'
+import {MiniPokerCard_scaleValue} from '../__generated__/MiniPokerCard_scaleValue.graphql'
+import {PALETTE} from '../styles/paletteV2'
 const Card = styled(MiniPokerCardPlaceholder)<{color: string}>(({color}) => ({
-  background: `radial-gradient(50% 50% at 50% 50%, ${color} 0%, ${getColorLuminance(color, -.12)} 100%)`,
+  background: getPokerCardBackground(color),
   border: 0,
   color: 'white',
   textShadow: '0px 1px 1px rgba(0, 0, 0, 0.1)'
@@ -18,23 +21,29 @@ const Pass = styled('img')({
   width: 16
 })
 
-interface ScaleValue {
-  color: string
-  label: string
-  value: number
-}
-
 interface Props {
-  scaleValue: ScaleValue
+  scaleValue: MiniPokerCard_scaleValue | null
+  // required in case viewing an old meeting where the scaleValue no longer exists
+  fallbackLabel?: string
 }
 
 const MiniPokerCard = (props: Props) => {
-  const {color, label, value} = props.scaleValue
+  const {fallbackLabel, scaleValue} = props
+  const {color, label} = scaleValue || {color: PALETTE.BACKGROUND_GRAY, label: fallbackLabel}
   return (
     <Card color={color}>
-      {value === PokerCards.MAX_VALUE ? <Pass src={PassSVG} /> : label}
+      {label === PokerCards.PASS_CARD ? <Pass src={PassSVG} /> : label}
     </Card>
   )
 }
 
-export default MiniPokerCard
+export default createFragmentContainer(
+  MiniPokerCard,
+  {
+    scaleValue: graphql`
+    fragment MiniPokerCard_scaleValue on TemplateScaleValue {
+      color
+      label
+    }`
+  }
+)

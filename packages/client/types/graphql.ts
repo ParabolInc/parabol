@@ -3844,11 +3844,6 @@ export interface ITemplateScaleValue {
   color: string;
 
   /**
-   * The numerical value for this scale value
-   */
-  value: number;
-
-  /**
    * The label for this value, e.g., XS, M, L
    */
   label: string;
@@ -4615,7 +4610,7 @@ export interface IEstimateStage {
   /**
    * the final score, as defined by the facilitator
    */
-  finalScore: number | null;
+  finalScore: string | null;
 
   /**
    * the userIds of the team members hovering the deck
@@ -4665,12 +4660,12 @@ export interface IEstimateUserScore {
   userId: string;
 
   /**
-   * the value that existed in the scale at the time of the vote. note that this value may no longer exist on the scale
+   * The user that for this score
    */
-  value: number;
+  user: IUser;
 
   /**
-   * The label that was associated with the score at the time of the vote
+   * The label that was associated with the score at the time of the vote. Note: It may no longer exist on the dimension
    */
   label: string;
 }
@@ -8282,9 +8277,9 @@ export interface IVoteForPokerStoryOnMutationArguments {
   stageId: string;
 
   /**
-   * The value of the scaleValue to vote for. If null, remove the vote
+   * The label of the scaleValue to vote for. If null, remove the vote
    */
-  score?: number | null;
+  score?: string | null;
 }
 
 export interface IPokerRevealVotesOnMutationArguments {

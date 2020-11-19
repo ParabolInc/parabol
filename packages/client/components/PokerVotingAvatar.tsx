@@ -1,7 +1,11 @@
+import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import styled from '@emotion/styled'
 import {TransitionStatus} from '~/hooks/useTransition'
 import PokerVotingAvatarBase from './PokerVotingAvatarBase'
+import {createFragmentContainer} from 'react-relay'
+import {PokerVotingAvatar_user} from '../__generated__/PokerVotingAvatar_user.graphql'
+import {SetVotedUserEl} from './EstimatePhaseArea'
 
 const Avatar = PokerVotingAvatarBase.withComponent('img')
 
@@ -9,29 +13,31 @@ const StyledAvatar = styled(Avatar)({
   position: 'relative'
 })
 
-interface Voter {
-  picture: string
-  userId: string
-}
-
 interface Props {
-  className?: string
   onTransitionEnd?: () => void
-  setVotedUserEl: (userId: string, el: HTMLDivElement) => void
+  setVotedUserEl: SetVotedUserEl
   status?: TransitionStatus
-  voter: Voter
+  user: PokerVotingAvatar_user
 }
 
 const PokerVotingAvatar = (props: Props) => {
-  const {setVotedUserEl, className, voter} = props
-  const {picture, userId} = voter
+  const {setVotedUserEl, user} = props
+  const {picture, id: userId} = user
   return (
     <StyledAvatar
-      className={className}
-      ref={(el: HTMLImageElement) => setVotedUserEl(userId, el)}
+      ref={(el) => setVotedUserEl(userId, el)}
       src={picture}
     />
   )
 }
 
-export default PokerVotingAvatar
+export default createFragmentContainer(
+  PokerVotingAvatar,
+  {
+    user: graphql`
+      fragment PokerVotingAvatar_user on User{
+        id
+        picture
+      }`
+  }
+)

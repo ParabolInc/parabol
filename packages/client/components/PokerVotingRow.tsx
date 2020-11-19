@@ -1,34 +1,27 @@
+import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {createFragmentContainer} from 'react-relay'
+import {PokerVotingRow_scaleValue} from '../__generated__/PokerVotingRow_scaleValue.graphql'
+import {PokerVotingRow_scores} from '../__generated__/PokerVotingRow_scores.graphql'
+import {SetVotedUserEl} from './EstimatePhaseArea'
+import MiniPokerCard from './MiniPokerCard'
 import PokerVotingAvatarGroup from './PokerVotingAvatarGroup'
 import PokerVotingRowBase from './PokerVotingRowBase'
-import MiniPokerCard from './MiniPokerCard'
-import getPokerVoters from '~/utils/getPokerVoters'
-import {createFragmentContainer} from 'react-relay'
-import graphql from 'babel-plugin-relay/macro'
-import {PokerVotingRow_meeting} from '../__generated__/PokerVotingRow_meeting.graphql'
-
-interface ScaleValue {
-  color: string
-  label: string
-  value: number
-}
 
 interface Props {
-  meeting: PokerVotingRow_meeting
-  scaleValue: ScaleValue
-  scores: Array<any>
-  setVotedUserEl: (userId: string, el: HTMLDivElement) => void
+  // can be null if the meeting had ended & then the scaleValues were modified
+  scaleValue: PokerVotingRow_scaleValue | null
+  scores: PokerVotingRow_scores
+  setVotedUserEl: SetVotedUserEl
 }
 
 const PokerVotingRow = (props: Props) => {
-  const {meeting, setVotedUserEl, scaleValue, scores} = props
-  const {team} = meeting
-  const {teamMembers} = team
-  const voters = getPokerVoters(scores, teamMembers)
+  const {setVotedUserEl, scaleValue, scores} = props
+  const fallbackLabel = scaleValue ? undefined : scores[0]?.label ?? '#'
   return (
     <PokerVotingRowBase>
-      <MiniPokerCard scaleValue={scaleValue} />
-      <PokerVotingAvatarGroup setVotedUserEl={setVotedUserEl} voters={voters} />
+      <MiniPokerCard scaleValue={scaleValue} fallbackLabel={fallbackLabel} />
+      <PokerVotingAvatarGroup setVotedUserEl={setVotedUserEl} scores={scores} />
     </PokerVotingRowBase>
   )
 }
@@ -36,14 +29,14 @@ const PokerVotingRow = (props: Props) => {
 export default createFragmentContainer(
   PokerVotingRow,
   {
-    meeting: graphql`
-    fragment PokerVotingRow_meeting on PokerMeeting {
-      team {
-        teamMembers {
-          userId
-          picture
-        }
-      }
+    scaleValue: graphql`
+    fragment PokerVotingRow_scaleValue on TemplateScaleValue {
+      ...MiniPokerCard_scaleValue
+    }`,
+    scores: graphql`
+    fragment PokerVotingRow_scores on EstimateUserScore @relay(plural: true) {
+      ...PokerVotingAvatarGroup_scores
+      label
     }`
   }
 )

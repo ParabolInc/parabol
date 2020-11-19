@@ -1,4 +1,4 @@
-import {GraphQLFloat, GraphQLID, GraphQLNonNull} from 'graphql'
+import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {MeetingTypeEnum, NewMeetingPhaseTypeEnum} from 'parabol-client/types/graphql'
 import isPhaseComplete from 'parabol-client/utils/meetings/isPhaseComplete'
@@ -24,7 +24,7 @@ const removeVoteForUserId = async (userId: string, stageId: string, meetingId: s
 }
 
 const upsertVote = async (
-  vote: {userId: string; value: number; label: string},
+  vote: {userId: string; label: string},
   stageId: string,
   meetingId: string
 ) => {
@@ -61,8 +61,8 @@ const voteForPokerStory = {
       description: 'The stage that contains the dimension to vote for'
     },
     score: {
-      type: GraphQLFloat,
-      description: 'The value of the scaleValue to vote for. If null, remove the vote'
+      type: GraphQLString,
+      description: 'The label of the scaleValue to vote for. If null, remove the vote'
     }
   },
   resolve: async (
@@ -111,15 +111,11 @@ const voteForPokerStory = {
     const {values} = scale
     if (score) {
       // validate the score is a value on the scale
-      const scoreValue = values.find((value) => value.value === score)
+      const scoreValue = values.find((value) => value.label === score)
       if (!scoreValue) {
         return {error: {value: 'Score does not exists in scale'}}
       }
-      await upsertVote(
-        {userId: viewerId, value: score, label: scoreValue.label},
-        stageId,
-        meetingId
-      )
+      await upsertVote({userId: viewerId, label: scoreValue.label}, stageId, meetingId)
     } else {
       // undo the vote, remove from array
       await removeVoteForUserId(viewerId, stageId, meetingId)

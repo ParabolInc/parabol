@@ -5,6 +5,7 @@ import {createFragmentContainer} from 'react-relay'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useTransition from '../hooks/useTransition'
 import {DeckActivityAvatars_stage} from '../__generated__/DeckActivityAvatars_stage.graphql'
+import {GetVotedUserEl} from './EstimatePhaseArea'
 import PeekingAvatar from './PeekingAvatar'
 
 
@@ -18,7 +19,7 @@ const DeckActivityPanel = styled('div')({
 
 interface Props {
   stage: DeckActivityAvatars_stage
-  getVotedUserEl: (userId: string) => HTMLDivElement
+  getVotedUserEl: GetVotedUserEl
 }
 
 const MAX_PEEKERS = 5

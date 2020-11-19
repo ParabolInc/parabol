@@ -1,21 +1,21 @@
 import {RefObject, useLayoutEffect, useState} from 'react'
 import useResizeObserver from './useResizeObserver'
 
-const usePokerAvatarOverflow = (rowRef: RefObject<HTMLDivElement>, totalAvatars: number) => {
+const usePokerAvatarOverflow = (rowRef: RefObject<HTMLDivElement>) => {
   const avatarWidth = 44
   const avatarOverlap = 10
-  const [overflowCount, setOverflowCount] = useState(0)
+  const [maxAvatars, setMaxAvatars] = useState(0)
   const checkOverflow = () => {
-    const totalWidth = rowRef.current!.clientWidth
-    const avatarsWidth = avatarWidth + (avatarWidth - avatarOverlap) * (totalAvatars - 1)
-    const overflowCount = totalWidth >= avatarsWidth
-      ? 0
-      : Math.ceil((avatarsWidth - totalWidth) / (avatarWidth - avatarOverlap))
-    setOverflowCount(overflowCount)
+    const {current: el} = rowRef
+    if (!el) return
+    const {clientWidth: totalWidth} = el
+    const lappedAvatarWidth = avatarWidth - avatarOverlap
+    const maxAvatars = Math.floor((totalWidth - avatarWidth) / lappedAvatarWidth)
+    setMaxAvatars(maxAvatars)
   }
   useLayoutEffect(checkOverflow, [])
   useResizeObserver(checkOverflow, rowRef)
-  return overflowCount
+  return maxAvatars
 }
 
 export default usePokerAvatarOverflow

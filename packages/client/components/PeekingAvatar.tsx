@@ -6,6 +6,7 @@ import {TransitionStatus} from '../hooks/useTransition'
 import {BezierCurve} from '../types/constEnums'
 import {PeekingAvatar_user} from '../__generated__/PeekingAvatar_user.graphql'
 import Avatar from './Avatar/Avatar'
+import {GetVotedUserEl} from './EstimatePhaseArea'
 
 const Wrapper = styled('div')<{status: TransitionStatus, voteOffsets: [number?, number?]}>(({voteOffsets, status}) => ({
   height: status === TransitionStatus.EXITING || status === TransitionStatus.MOUNTED ? 0 : 48,
@@ -15,7 +16,7 @@ const Wrapper = styled('div')<{status: TransitionStatus, voteOffsets: [number?, 
 
 interface Props {
   hasVoted: boolean
-  getVotedUserEl: (userId: string) => HTMLDivElement
+  getVotedUserEl: GetVotedUserEl
   status: TransitionStatus
   onTransitionEnd: () => void
   user: PeekingAvatar_user
@@ -28,14 +29,16 @@ const PeekingAvatar = (props: Props) => {
   let voteOffsets = [] as [number?, number?]
   if (status === TransitionStatus.EXITING && hasVoted) {
     const el = getVotedUserEl(userId)
-    const bbox = el.getBoundingClientRect()
-    const {left: targetX, top: targetY} = bbox
-    const wrapperBBox = ref.current?.getBoundingClientRect()
-    if (wrapperBBox) {
-      const {left, top} = wrapperBBox
-      const dX = left - targetX
-      const dY = top - targetY
-      voteOffsets = [dX, dY]
+    if (el) {
+      const bbox = el.getBoundingClientRect()
+      const {left: targetX, top: targetY} = bbox
+      const wrapperBBox = ref.current?.getBoundingClientRect()
+      if (wrapperBBox) {
+        const {left, top} = wrapperBBox
+        const dX = left - targetX
+        const dY = top - targetY
+        voteOffsets = [dX, dY]
+      }
     }
   }
   return (
