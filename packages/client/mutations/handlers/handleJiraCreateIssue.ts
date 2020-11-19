@@ -1,4 +1,5 @@
-import {ConnectionHandler, RecordProxy, RecordSourceSelectorProxy} from 'relay-runtime'
+import {RecordProxy, RecordSourceSelectorProxy} from 'relay-runtime'
+import {insertNodeBeforeInConn} from '~/utils/relay/insertNode'
 import toTeamMemberId from '~/utils/relay/toTeamMemberId'
 import getJiraIssuesConn from '../connections/getJiraIssuesConn'
 
@@ -20,10 +21,7 @@ const handleJiraCreateIssue = (payload: RecordProxy<any>, store: RecordSourceSel
   const jiraIssue = payload.getLinkedRecord('jiraIssue')
   const jiraIssuesConn = getJiraIssuesConn(atlassian, isJql, queryString, projectKeyFilters)
   if (!jiraIssuesConn) return
-  const now = new Date().toISOString()
-  const newEdge = ConnectionHandler.createEdge(store, jiraIssuesConn, jiraIssue, 'JiraIssueEdge')
-  newEdge.setValue(now, 'cursor')
-  ConnectionHandler.insertEdgeBefore(jiraIssuesConn, newEdge)
+  insertNodeBeforeInConn(jiraIssuesConn, jiraIssue, store, 'JiraIssueEdge')
 }
 
 export default handleJiraCreateIssue

@@ -1,4 +1,4 @@
-import {ConnectionHandler, RecordProxy, RecordSourceSelectorProxy} from 'relay-runtime'
+import {RecordProxy, RecordSourceSelectorProxy} from 'relay-runtime'
 import getThreadSourceThreadConn from '~/mutations/connections/getThreadSourceThreadConn'
 import addNodeToArray from '../../utils/relay/addNodeToArray'
 import safeRemoveNodeFromConn from '../../utils/relay/safeRemoveNodeFromConn'
@@ -10,6 +10,7 @@ import safePutNodeInConn from './safePutNodeInConn'
 import isTaskPrivate from '~/utils/isTaskPrivate'
 import {parseUserTaskFilterQueryParams} from '~/utils/useUserTaskFilters'
 import getScopingTasksConn from '../connections/getScopingTasksConn'
+import {insertNodeBeforeInConn} from '~/utils/relay/insertNode'
 
 type Task = RecordProxy<{
   readonly id: string
@@ -79,10 +80,7 @@ const handleUpsertTask = (task: Task | null, store: RecordSourceSelectorProxy<an
     queryString
   )
   if (!scopingTasksConn) return
-  const now = new Date().toISOString()
-  const newEdge = ConnectionHandler.createEdge(store, scopingTasksConn, task, 'ParabolTaskEdge')
-  newEdge.setValue(now, 'cursor')
-  ConnectionHandler.insertEdgeBefore(scopingTasksConn, newEdge)
+  insertNodeBeforeInConn(scopingTasksConn, task, store, 'ParabolTaskEdge')
 }
 
 const handleUpsertTasks = pluralizeHandler(handleUpsertTask)
