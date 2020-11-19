@@ -42,7 +42,8 @@ export const enum Elevation {
   SHEET = 'rgba(0,0,0,.2) 0px 8px 10px -5px, rgba(0,0,0,.14) 0px 16px 24px 2px, rgba(0,0,0,.12) 0px 6px 30px 5px', // Z16
   CARD_SHADOW = 'rgba(0,0,0,.2) 0px 2px 1px -1px, rgba(0,0,0,.14) 0px 1px 1px 0px, rgba(0,0,0,.12) 0px 1px 3px 0px', // Z1
   DISCUSSION_THREAD = 'rgba(0,0,0,.2) 0px 3px 1px -2px, rgba(0,0,0,.14) 0px 2px 2px 0px, rgba(0,0,0,.12) 0px 1px 5px 0px', // Z2
-  DISCUSSION_INPUT = '0px 0px 16px 0px rgba(0,0,0,0.3)' // shadow on the top that lays over the thread
+  DISCUSSION_INPUT = '0px 0px 16px 0px rgba(0,0,0,0.3)', // shadow on the top that lays over the thread
+  DISCUSSION_DRAWER = 'inset 0px 8px 10px -7px rgba(0,0,0,0.3)' // shadow lays within the thread at the top
 }
 
 // TODO move these into the enum

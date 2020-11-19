@@ -17,7 +17,7 @@ const SidebarAndScrim = styled('div')<{isRightSidebar: boolean; SIDEBAR_WIDTH: n
     position: 'absolute',
     left: isRightSidebar ? undefined : -SIDEBAR_WIDTH,
     right: isRightSidebar ? PEEK_WIDTH : undefined,
-    top: 0
+    top: 0,
   })
 )
 const Scrim = styled('div')<{x: number; SIDEBAR_WIDTH: number}>(({x, SIDEBAR_WIDTH}) => ({
@@ -34,6 +34,7 @@ const Scrim = styled('div')<{x: number; SIDEBAR_WIDTH: number}>(({x, SIDEBAR_WID
 
 const SidebarAndHandle = styled('div')<{x: number; isRightSidebar: boolean}>(
   ({x, isRightSidebar}) => ({
+    bottom: 0,
     display: 'flex',
     flexDirection: isRightSidebar ? 'row-reverse' : 'row',
     position: 'fixed',
@@ -44,7 +45,6 @@ const SidebarAndHandle = styled('div')<{x: number; isRightSidebar: boolean}>(
 )
 const Sidebar = styled('div')<{x: number; HYSTERESIS_THRESH: number}>(({x, HYSTERESIS_THRESH}) => ({
   boxShadow: x > 0 ? navDrawerShadow : undefined,
-  height: '100vh',
   pointerEvents: x > HYSTERESIS_THRESH ? undefined : 'none'
 }))
 

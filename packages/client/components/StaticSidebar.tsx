@@ -15,13 +15,13 @@ const Placeholder = styled('div')<StyleProps>(({isOpen}) => ({
   // changing width is expensive, but this is only run on non-mobile devices, so it's not horrible & looks better than alternatives
   transition: `all ${DURATION}ms ${DECELERATE}`,
   // needs to be above the main view area
-  zIndex: ZIndex.SIDE_SHEET
+  zIndex: ZIndex.SIDE_SHEET,
 }))
 
 const Fixed = styled('div')<StyleProps>(({isOpen, isRightSidebar}) => ({
   position: 'fixed',
   transform: isRightSidebar ? undefined : `translateX(${isOpen ? 0 : -NavSidebar.WIDTH}px)`,
-  transition: `all ${DURATION}ms ${DECELERATE}`
+  transition: `all ${DURATION}ms ${DECELERATE}`,
 }))
 
 interface Props {

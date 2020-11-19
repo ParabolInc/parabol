@@ -11,6 +11,7 @@ import DiscussionThreadListEmptyState from './DiscussionThreadListEmptyState'
 import LabelHeading from './LabelHeading/LabelHeading'
 import ThreadedItem from './ThreadedItem'
 import {MeetingTypeEnum} from '~/types/graphql'
+import {Elevation} from '~/styles/elevation'
 
 const EmptyWrapper = styled('div')({
   alignItems: 'center',
@@ -23,16 +24,19 @@ const EmptyWrapper = styled('div')({
 
 const Wrapper = styled('div')({
   flex: 1,
+  boxShadow: `${Elevation.DISCUSSION_DRAWER}`,
   display: 'flex',
   flexDirection: 'column',
   overflow: 'auto',
-  padding: '8px 0'
+  padding: '8px 0',
 })
 
 // https://stackoverflow.com/questions/36130760/use-justify-content-flex-end-and-to-have-vertical-scrollbar
 const PusherDowner = styled('div')({
-  margin: '0 0 auto'
+  margin: '0 0 auto',  
 })
+
+
 
 const Header = styled(LabelHeading)({
   borderBottom: `1px solid ${PALETTE.BORDER_LIGHTER}`,

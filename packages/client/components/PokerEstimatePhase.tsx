@@ -54,7 +54,6 @@ const PokerEstimatePhase = (props: Props) => {
           isOpen={isOpen}
           meeting={meeting}
           meetingContentRef={meetingContentRef}
-          onToggle={toggleDrawer}
         />
       </ResponsiveDashSidebar>
     </MeetingContent>
