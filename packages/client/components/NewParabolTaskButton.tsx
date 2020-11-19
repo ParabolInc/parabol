@@ -25,10 +25,9 @@ const StyledLabel = styled('div')({
 
 interface Props {
   setIsEditing: (isEditing: boolean) => void
-  labelText?: string
 }
 
-const NewJiraIssueButton = (props: Props) => {
+const NewParabolTaskButton = (props: Props) => {
   const {setIsEditing} = props
   return (
     <Button onClick={() => setIsEditing(true)} palette='blue'>
@@ -38,4 +37,4 @@ const NewJiraIssueButton = (props: Props) => {
   )
 }
 
-export default NewJiraIssueButton
+export default NewParabolTaskButton
