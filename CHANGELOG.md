@@ -5,6 +5,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 5.25.1 2020-Nov-19
+
+### Fixed
+- Reverted back to using header to determine client IP
+
 ## 5.25.0 2020-Nov-18
 
 ### Added
