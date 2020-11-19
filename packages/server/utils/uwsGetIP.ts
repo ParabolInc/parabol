@@ -1,8 +1,10 @@
-import {HttpResponse} from 'uWebSockets.js'
+import {HttpRequest, HttpResponse} from 'uWebSockets.js'
 
-const uwsGetIP = (res: HttpResponse) => {
-  // nginx will always returned the proxied address in the header, locally, we just grab the remote address
-  return Buffer.from(res.getProxiedRemoteAddressAsText()).toString() || Buffer.from(res.getRemoteAddressAsText()).toString()
+const uwsGetIP = (res: HttpResponse, req: HttpRequest) => {
+  const clientIp = req.getHeader('x-forwarded-for')
+  if (clientIp) return clientIp
+  // returns ipv6 e.g. '0000:0000:0000:0000:0000:ffff:ac11:0001'
+  return Buffer.from(res.getRemoteAddressAsText()).toString()
 }
 
 export default uwsGetIP
