@@ -156,22 +156,6 @@ interface SlackUser {
   locale: string
 }
 
-// interface SlackMessage {
-//   type: 'message'
-//   user: string
-//   text: string
-//   ts: string
-//   attachments?: {
-//     service_name: string
-//     text: string
-//     fallback: string
-//     thumb_url: string
-//     thumb_width: number
-//     thumb_height: number
-//     id: number
-//   }[]
-// }
-
 interface UserInfoResponse {
   ok: true
   user: SlackUser
@@ -204,15 +188,6 @@ interface ChannelInfoResponse {
   }
 }
 
-// interface ConversationHistoryResponse {
-//   ok: true
-//   message: SlackMessage[]
-//   has_more: boolean
-//   pin_count: number
-//   response_metadata: {
-//     next_cursor: string
-//   }
-// }
 type ConversationType = 'public_channel' | 'private_channel' | 'im' | 'mpim'
 
 abstract class SlackManager {
@@ -280,13 +255,6 @@ abstract class SlackManager {
       `https://slack.com/api/channels.list?token=${this.token}&exclude_archived=1`
     )
   }
-
-  // getConversationHistory(channelId: string) {
-  //   const oldest = toEpochSeconds(Date.now() - ms('30m'))
-  //   return this.get<ConversationHistoryResponse>(`https://slack.com/api/conversations.history?token=${
-  //     this.token
-  //     }&channel=${channelId}&oldest=${oldest}`)
-  // }
 
   getConversationList(types: ConversationType[] = ['public_channel']) {
     const typeStr = types.join(',')

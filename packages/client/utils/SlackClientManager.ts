@@ -8,9 +8,10 @@ class SlackClientManager extends SlackManager {
   fetch = window.fetch.bind(window)
   static openOAuth(atmosphere: Atmosphere, teamId: string, mutationProps: MenuMutationProps) {
     const {submitting, onError, onCompleted, submitMutation} = mutationProps
-    const providerState = Math.random().toString(36).substring(5)
+    const providerState = Math.random()
+      .toString(36)
+      .substring(5)
     const redirect = makeHref('/auth/slack')
-    // const uri = `https://slack.com/oauth/authorize?client_id=${window.__ACTION__.slack}&scope=${SlackClientManager.SCOPE}&state=${providerState}&redirect_uri=${redirect}`
     const uri = `https://slack.com/oauth/v2/authorize?client_id=${window.__ACTION__.slack}&scope=${SlackClientManager.SCOPE}&state=${providerState}&redirect_uri=${redirect}`
     const popup = window.open(
       uri,
