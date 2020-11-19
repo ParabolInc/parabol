@@ -60,7 +60,7 @@ const NewParabolTaskInput = (props: Props) => {
 
   const updatePokerScope = (res) => {
     const payload = res.createTask
-    if (!payload || !onCompleted || !onError) return
+    if (!payload) return
     const {task} = payload
     const pokerScopeVariables = {
       meetingId,

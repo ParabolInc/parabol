@@ -73,12 +73,7 @@ const handleUpsertTask = (task: Task | null, store: RecordSourceSelectorProxy<an
   const parabolSearchQuery = meeting?.getLinkedRecord('parabolSearchQuery')
   const queryString = parabolSearchQuery?.getValue('queryString') as string | undefined
   const statusFilters = parabolSearchQuery?.getValue('statusFilters') as string[] | undefined
-  const scopingTasksConn = getScopingTasksConn(
-    viewer,
-    [teamId],
-    statusFilters,
-    queryString
-  )
+  const scopingTasksConn = getScopingTasksConn(viewer, [teamId], statusFilters, queryString)
   if (!scopingTasksConn) return
   insertNodeBeforeInConn(scopingTasksConn, task, store, 'ParabolTaskEdge')
 }
