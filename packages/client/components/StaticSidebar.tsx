@@ -1,13 +1,13 @@
 import styled from '@emotion/styled'
 import React, {ReactNode} from 'react'
 import {DECELERATE} from '../styles/animation'
-import { NavSidebar, ZIndex} from '../types/constEnums'
+import {NavSidebar, ZIndex} from '../types/constEnums'
 
 const DURATION = 200
 
 interface StyleProps {
   isOpen: boolean
-  isRightSidebar?: boolean
+  isRightDrawer?: boolean
 }
 const Placeholder = styled('div')<StyleProps>(({isOpen}) => ({
   minWidth: isOpen ? NavSidebar.WIDTH : 0,
@@ -18,23 +18,25 @@ const Placeholder = styled('div')<StyleProps>(({isOpen}) => ({
   zIndex: ZIndex.SIDE_SHEET
 }))
 
-const Fixed = styled('div')<StyleProps>(({isOpen, isRightSidebar}) => ({
+const Fixed = styled('div')<StyleProps>(({isOpen, isRightDrawer}) => ({
   position: 'fixed',
-  transform: isRightSidebar ? undefined : `translateX(${isOpen ? 0 : -NavSidebar.WIDTH}px)`,
+  transform: isRightDrawer ? undefined : `translateX(${isOpen ? 0 : -NavSidebar.WIDTH}px)`,
   transition: `all ${DURATION}ms ${DECELERATE}`
 }))
 
 interface Props {
   children: ReactNode
   isOpen: boolean
-  isRightSidebar?: boolean
+  isRightDrawer?: boolean
 }
 
 const StaticSidebar = (props: Props) => {
-  const {children, isOpen, isRightSidebar = false} = props
+  const {children, isOpen, isRightDrawer = false} = props
   return (
-    <Placeholder isOpen={isOpen} >
-      <Fixed isOpen={isOpen} isRightSidebar={isRightSidebar}>{children}</Fixed>
+    <Placeholder isOpen={isOpen}>
+      <Fixed isOpen={isOpen} isRightDrawer={isRightDrawer}>
+        {children}
+      </Fixed>
     </Placeholder>
   )
 }

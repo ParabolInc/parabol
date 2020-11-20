@@ -20,19 +20,18 @@ import styled from '@emotion/styled'
 
 const StyledMeetingHeaderAndPhase = styled(MeetingHeaderAndPhase)<{isOpen: boolean}>(
   ({isOpen}) => ({
-    width: isOpen ? `calc(100% - ${DiscussionThreadEnum.WIDTH}px)` : '100%',
+    width: isOpen ? `calc(100% - ${DiscussionThreadEnum.WIDTH}px)` : '100%'
   })
 )
 
 interface Props extends PokerMeetingPhaseProps {
-  isDrawerOpen: boolean
   meeting: PokerEstimatePhase_meeting
   toggleDrawer: () => void
 }
 
 const PokerEstimatePhase = (props: Props) => {
-  const {avatarGroup, isDrawerOpen, meeting, toggleDrawer, toggleSidebar} = props
-  const {localStage, endedAt, showSidebar} = meeting
+  const {avatarGroup, meeting, toggleDrawer, toggleSidebar} = props
+  const {localStage, endedAt, isCommentUnread, isRightDrawerOpen, showSidebar} = meeting
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const meetingContentRef = useRef<HTMLDivElement>(null)
   if (!localStage) return null
@@ -41,11 +40,12 @@ const PokerEstimatePhase = (props: Props) => {
 
   return (
     <MeetingContent ref={meetingContentRef}>
-      <StyledMeetingHeaderAndPhase isOpen={isDrawerOpen} hideBottomBar={!!endedAt}>
+      <StyledMeetingHeaderAndPhase isOpen={isRightDrawerOpen} hideBottomBar={!!endedAt}>
         <MeetingTopBar
           avatarGroup={avatarGroup}
+          isCommentUnread={isCommentUnread}
           isMeetingSidebarCollapsed={!showSidebar}
-          isDrawerOpen={isDrawerOpen}
+          isRightDrawerOpen={isRightDrawerOpen}
           toggleSidebar={toggleSidebar}
           toggleDrawer={toggleDrawer}
         >
@@ -57,10 +57,10 @@ const PokerEstimatePhase = (props: Props) => {
           <EstimatePhaseArea meeting={meeting} />
         </PhaseWrapper>
       </StyledMeetingHeaderAndPhase>
-      <ResponsiveDashSidebar isOpen={isDrawerOpen} isRightSidebar onToggle={toggleDrawer}>
+      <ResponsiveDashSidebar isOpen={isRightDrawerOpen} isRightDrawer onToggle={toggleDrawer}>
         <EstimatePhaseDiscussionDrawer
           isDesktop={isDesktop}
-          isOpen={isDrawerOpen}
+          isOpen={isRightDrawerOpen}
           meeting={meeting}
           meetingContentRef={meetingContentRef}
           onToggle={toggleDrawer}
@@ -84,7 +84,8 @@ export default createFragmentContainer(PokerEstimatePhase, {
       ...EstimatePhaseArea_meeting
       id
       endedAt
-      showSidebar
+      isCommentUnread
+      isRightDrawerOpen
       localStage {
         ...PokerEstimatePhaseStage @relay(mask: false)
       }
@@ -95,7 +96,8 @@ export default createFragmentContainer(PokerEstimatePhase, {
           }
         }
       }
+      showSidebar
       ...EstimatePhaseDiscussionDrawer_meeting
     }
-  `,
+  `
 })

@@ -25,8 +25,8 @@ const MeetingTopBarStyles = styled('div')({
   paddingRight: 14, // compensate for overlapping block padding
   width: '100%',
   [meetingAvatarMediaQueries[0]]: {
-    paddingRight: 13, // compensate for overlapping block padding
-  },
+    paddingRight: 13 // compensate for overlapping block padding
+  }
 })
 
 const HeadingBlock = styled('div')<{isMeetingSidebarCollapsed: boolean}>(
@@ -37,14 +37,14 @@ const HeadingBlock = styled('div')<{isMeetingSidebarCollapsed: boolean}>(
     marginTop: 16,
     minHeight: 24,
     [localHeaderBreakpoint]: {
-      flex: 1,
-    },
+      flex: 1
+    }
   })
 )
 
 const PrimaryActionBlock = styled('div')({
   alignItems: 'center',
-  display: 'flex',
+  display: 'flex'
 })
 
 const AvatarGroupBlock = styled('div')({
@@ -53,16 +53,16 @@ const AvatarGroupBlock = styled('div')({
   padding: '10px 0',
   [meetingAvatarMediaQueries[0]]: {
     minHeight: 76,
-    padding: 0,
-  },
+    padding: 0
+  }
 })
 
 const ChildrenBlock = styled('div')({
-  width: '100%',
+  width: '100%'
 })
 
 const StyledSidebarToggle = styled(SidebarToggle)({
-  marginRight: 16,
+  marginRight: 16
 })
 
 const StyledIcon = styled(Icon)({
@@ -70,15 +70,34 @@ const StyledIcon = styled(Icon)({
   transform: 'scaleX(-1)',
   fontSize: ICON_SIZE.MD24,
   [meetingAvatarMediaQueries[0]]: {
-    fontSize: ICON_SIZE.MD36,
-  },
+    fontSize: ICON_SIZE.MD36
+  }
+})
+
+const badgeSize = 10
+
+const Badge = styled('div')<{isCommentUnread: boolean}>(({isCommentUnread}) => ({
+  bottom: 14,
+  display: isCommentUnread ? 'block' : 'none',
+  height: badgeSize,
+  position: 'relative',
+  right: -8,
+  width: badgeSize
+}))
+
+const BadgeDot = styled('div')({
+  backgroundColor: PALETTE.PROMPT_RED,
+  border: '1px solid rgba(255, 255, 255, .65)',
+  borderRadius: badgeSize,
+  height: badgeSize,
+  width: badgeSize
 })
 
 const ButtonContainer = styled('div')({
   alignItems: 'center',
   alignContent: 'center',
   display: 'flex',
-  paddingLeft: 4,
+  paddingLeft: 4
 })
 
 const DiscussionButton = styled(PlainButton)({
@@ -88,15 +107,16 @@ const DiscussionButton = styled(PlainButton)({
   display: 'flex',
   padding: 8,
   [meetingAvatarMediaQueries[0]]: {
-    padding: 10,
-  },
+    padding: 10
+  }
 })
 
 interface Props {
   avatarGroup: ReactElement
   children?: ReactNode
+  isCommentUnread?: boolean
   isMeetingSidebarCollapsed: boolean
-  isDrawerOpen?: boolean
+  isRightDrawerOpen?: boolean
   toggleSidebar: () => void
   toggleDrawer?: () => void
 }
@@ -105,13 +125,14 @@ const MeetingTopBar = (props: Props) => {
   const {
     avatarGroup,
     children,
+    isCommentUnread = false,
     isMeetingSidebarCollapsed,
-    isDrawerOpen,
+    isRightDrawerOpen,
     toggleDrawer,
-    toggleSidebar,
+    toggleSidebar
   } = props
   const showButton = isDemoRoute() && !hasToken()
-  const showDiscussionButton = toggleDrawer && !isDrawerOpen
+  const showDiscussionButton = toggleDrawer && !isRightDrawerOpen
   return (
     <MeetingTopBarStyles>
       <HeadingBlock isMeetingSidebarCollapsed={isMeetingSidebarCollapsed}>
@@ -127,8 +148,11 @@ const MeetingTopBar = (props: Props) => {
           </PrimaryActionBlock>
         )}
         {avatarGroup}
-        {showDiscussionButton && (
+        {showDiscussionButton && toggleDrawer && (
           <ButtonContainer>
+            <Badge isCommentUnread={isCommentUnread}>
+              <BadgeDot />
+            </Badge>
             <DiscussionButton onClick={toggleDrawer}>
               <StyledIcon>comment</StyledIcon>
             </DiscussionButton>

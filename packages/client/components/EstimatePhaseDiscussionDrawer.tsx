@@ -26,7 +26,7 @@ const Drawer = styled('div')<{isDesktop: boolean; isOpen: boolean}>(({isDesktop,
   bottom: 0,
   top: 0,
   right: isDesktop ? 0 : undefined,
-  transition: `all 200ms ${DECELERATE}`,
+  transition: `all 300ms ${DECELERATE}`,
   userSelect: 'none',
   width: isOpen || !isDesktop ? DiscussionThreadEnum.WIDTH : 0,
   zIndex: ZIndex.SIDEBAR

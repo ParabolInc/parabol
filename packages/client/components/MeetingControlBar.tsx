@@ -24,8 +24,8 @@ import BottomControlBarTips from './BottomControlBarTips'
 import EndMeetingButton from './EndMeetingButton'
 import StageTimerControl from './StageTimerControl'
 
-const Wrapper = styled('div')<{isLeftSidebarOpen: boolean; isRightSidebarOpen: boolean}>(
-  ({isLeftSidebarOpen, isRightSidebarOpen}) => ({
+const Wrapper = styled('div')<{isLeftSidebarOpen: boolean; isRightDrawerOpen: boolean}>(
+  ({isLeftSidebarOpen, isRightDrawerOpen}) => ({
     alignItems: 'center',
     backgroundColor: '#FFFFFF',
     bottom: 0,
@@ -41,7 +41,7 @@ const Wrapper = styled('div')<{isLeftSidebarOpen: boolean; isRightSidebarOpen: b
     minHeight: 56,
     padding: 8,
     position: 'fixed',
-    right: isRightSidebarOpen ? DiscussionThreadEnum.WIDTH : 0,
+    right: isRightDrawerOpen ? DiscussionThreadEnum.WIDTH : 0,
     transition: `200ms ${BezierCurve.DECELERATE}`,
     width: '100%',
     zIndex: ZIndex.BOTTOM_BAR,
@@ -66,7 +66,7 @@ interface Props {
   isDemoStageComplete?: boolean
   gotoStageId: ReturnType<typeof useGotoStageId>
   meeting: MeetingControlBar_meeting
-  isRightSidebarOpen?: boolean
+  isRightDrawerOpen?: boolean
 }
 
 const MeetingControlBar = (props: Props) => {
@@ -75,7 +75,7 @@ const MeetingControlBar = (props: Props) => {
     isDemoStageComplete,
     meeting,
     gotoStageId,
-    isRightSidebarOpen = false
+    isRightDrawerOpen = false
   } = props
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
@@ -108,7 +108,7 @@ const MeetingControlBar = (props: Props) => {
   const [confirmingButton, setConfirmingButton] = useClickConfirmation()
   const cancelConfirm = confirmingButton ? () => setConfirmingButton('') : undefined
   const tranChildren = useTransition(buttons)
-  const {onMouseDown, onClickCapture} = useDraggableFixture(isLeftSidebarOpen, isRightSidebarOpen)
+  const {onMouseDown, onClickCapture} = useDraggableFixture(isLeftSidebarOpen, isRightDrawerOpen)
   const ref = useRef<HTMLDivElement>(null)
   useSnackbarPad(ref)
   useCovering(ref)
@@ -121,7 +121,7 @@ const MeetingControlBar = (props: Props) => {
       onClickCapture={onClickCapture}
       onTouchStart={onMouseDown}
       isLeftSidebarOpen={isLeftSidebarOpen}
-      isRightSidebarOpen={isRightSidebarOpen}
+      isRightDrawerOpen={isRightDrawerOpen}
     >
       {tranChildren
         .map((tranChild) => {

@@ -1,6 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
-import React, {ReactElement, Suspense} from 'react'
-import {createFragmentContainer} from 'react-relay'
+import React, {ReactElement, Suspense, useEffect} from 'react'
+import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
+import useAtmosphere from '~/hooks/useAtmosphere'
 import useSidebar from '~/hooks/useSidebar'
 import {PokerMeeting_meeting} from '~/__generated__/PokerMeeting_meeting.graphql'
 import useMeeting from '../hooks/useMeeting'
@@ -24,7 +25,7 @@ const phaseLookup = {
   SCOPE: lazyPreload(() => import(/* webpackChunkName: 'ScopePhase' */ './ScopePhase')),
   ESTIMATE: lazyPreload(
     () => import(/* webpackChunkName: 'PokerEstimatePhase' */ './PokerEstimatePhase')
-  ),
+  )
 }
 
 type PhaseComponent = ValueOf<typeof phaseLookup>
@@ -47,16 +48,40 @@ const PokerMeeting = (props: Props) => {
     handleGotoNext,
     gotoStageId,
     safeRoute,
-    handleMenuClick,
+    handleMenuClick
   } = useMeeting(meeting)
-  const {showSidebar, viewerMeetingMember, localPhase} = meeting
-  const {isOpen: isDrawerOpen, toggle: toggleDrawer} = useSidebar(showSidebar)
+  const atmosphere = useAtmosphere()
+  const {
+    id: meetingId,
+    isCommentUnread,
+    isRightDrawerOpen,
+    showSidebar,
+    viewerMeetingMember,
+    localPhase
+  } = meeting
+  const {isOpen: isDrawerInitiallyOpen} = useSidebar(showSidebar)
+
+  const handleLocalUpdate = (isDrawerOpen: boolean) => {
+    commitLocalUpdate(atmosphere, (store) => {
+      const meeting = store.get(meetingId)!
+      meeting.setValue(isDrawerOpen, 'isRightDrawerOpen')
+      if (isDrawerOpen && isCommentUnread) {
+        meeting.setValue(false, 'isCommentUnread')
+      } else if (isCommentUnread === undefined) {
+        meeting.setValue(false, 'isCommentUnread')
+      }
+    })
+  }
+  const toggleDrawer = () => handleLocalUpdate(!isRightDrawerOpen)
+  useEffect(() => {
+    handleLocalUpdate(isDrawerInitiallyOpen)
+  }, [])
+
   if (!safeRoute) return null
   const {user} = viewerMeetingMember
   const {featureFlags} = user
   const {video: allowVideo} = featureFlags
   const localPhaseType = localPhase?.phaseType
-  const isRightSidebarOpen = isDrawerOpen && localPhaseType === NewMeetingPhaseTypeEnum.ESTIMATE
   const Phase = phaseLookup[localPhaseType] as PhaseComponent
   return (
     <MeetingStyles>
@@ -70,10 +95,9 @@ const PokerMeeting = (props: Props) => {
       </ResponsiveDashSidebar>
       <Suspense fallback={''}>
         <Phase
-          isDrawerOpen={isDrawerOpen}
           meeting={meeting}
-          toggleSidebar={toggleSidebar}
           toggleDrawer={toggleDrawer}
+          toggleSidebar={toggleSidebar}
           avatarGroup={
             <NewMeetingAvatarGroup
               allowVideo={allowVideo}
@@ -91,7 +115,7 @@ const PokerMeeting = (props: Props) => {
         meeting={meeting}
         handleGotoNext={handleGotoNext}
         gotoStageId={gotoStageId}
-        isRightSidebarOpen={isRightSidebarOpen}
+        isRightDrawerOpen={isRightDrawerOpen}
       />
     </MeetingStyles>
   )
@@ -110,7 +134,8 @@ export default createFragmentContainer(PokerMeeting, {
       id
       # hack to initialize local state (clientField needs to be on non-id domain state. thx relay)
       init: id @__clientField(handle: "localPoker")
-      showSidebar
+      isCommentUnread
+      isRightDrawerOpen
       localPhase {
         phaseType
       }
@@ -120,6 +145,7 @@ export default createFragmentContainer(PokerMeeting, {
           id
         }
       }
+      showSidebar
       viewerMeetingMember {
         user {
           featureFlags {
@@ -128,5 +154,5 @@ export default createFragmentContainer(PokerMeeting, {
         }
       }
     }
-  `,
+  `
 })

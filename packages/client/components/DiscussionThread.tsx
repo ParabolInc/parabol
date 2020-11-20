@@ -1,17 +1,16 @@
 import graphql from 'babel-plugin-relay/macro'
-import React, {useRef, RefObject, useMemo} from 'react'
-import {createFragmentContainer} from 'react-relay'
+import React, {useRef, RefObject, useMemo, useEffect} from 'react'
+import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import {DiscussionThread_viewer} from '~/__generated__/DiscussionThread_viewer.graphql'
 import {useCoverable} from '~/hooks/useControlBarCovers'
 import {Breakpoint, DiscussionThreadEnum, MeetingControlBarEnum} from '~/types/constEnums'
-
 import styled from '@emotion/styled'
-
 import {Elevation} from '../styles/elevation'
 import makeMinWidthMediaQuery from '../utils/makeMinWidthMediaQuery'
 import DiscussionThreadInput from './DiscussionThreadInput'
 import DiscussionThreadList from './DiscussionThreadList'
 import {MeetingTypeEnum} from '~/types/graphql'
+import useAtmosphere from '~/hooks/useAtmosphere'
 
 const Wrapper = styled('div')<{isExpanded: boolean; isPokerMeeting?: boolean}>(
   ({isExpanded, isPokerMeeting}) => ({
@@ -41,22 +40,45 @@ interface Props {
 const DiscussionThread = (props: Props) => {
   const {meetingContentRef, threadSourceId, viewer} = props
   const meeting = viewer.meeting!
-  const {endedAt, meetingType, replyingToCommentId, threadSource} = meeting
+  const {
+    id: meetingId,
+    endedAt,
+    meetingType,
+    replyingToCommentId,
+    threadSource,
+    isCommentUnread,
+    isRightDrawerOpen
+  } = meeting
   const thread = threadSource?.thread
   const commentors = threadSource?.commentors
+  const isPokerMeeting = meetingType === MeetingTypeEnum.poker
+  const atmosphere = useAtmosphere()
   const preferredNames = useMemo(
     () => (commentors && commentors.map((commentor) => commentor.preferredName)) || null,
     [commentors]
   )
   const edges = thread?.edges ?? [] // should never happen, but Terry reported it in demo. likely relay error
+  const setIsCommentUnread = (isCommentUnread: boolean) => {
+    commitLocalUpdate(atmosphere, (store) => {
+      if (isPokerMeeting && meetingId) {
+        const meeting = store.get(meetingId)!
+        meeting.setValue(isCommentUnread, 'isCommentUnread')
+      }
+    })
+  }
+  useEffect(() => {
+    if (isCommentUnread === false && !isRightDrawerOpen) {
+      setIsCommentUnread(true)
+    }
+  }, [edges])
   const threadables = edges.map(({node}) => node)
   const getMaxSortOrder = () => {
     return Math.max(0, ...threadables.map((threadable) => threadable.threadSortOrder || 0))
   }
+
   const listRef = useRef<HTMLDivElement>(null)
   const editorRef = useRef<HTMLTextAreaElement>(null)
   const ref = useRef<HTMLDivElement>(null)
-  const isPokerMeeting = meetingType === MeetingTypeEnum.poker
   // don't resize in a poker meeting as we do this in the parent
   const coverableHeight = isPokerMeeting ? 0 : MeetingControlBarEnum.HEIGHT
   const isExpanded = useCoverable('threads', ref, coverableHeight, meetingContentRef) || !!endedAt
@@ -130,6 +152,9 @@ export default createFragmentContainer(DiscussionThread, {
           }
         }
         ... on PokerMeeting {
+          id
+          isCommentUnread
+          isRightDrawerOpen
           threadSource: story(storyId: $threadSourceId) {
             ...DiscussionThread_threadSource @relay(mask: false)
             commentors {
