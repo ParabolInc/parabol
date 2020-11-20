@@ -12,7 +12,7 @@ const currentDimensions = [
     scaleId: 'tshirtSizeScale',
     teamId: 'aGhostTeam',
     templateId: 'estimatedEffortTemplate',
-    sortOrder: 0,
+    sortOrder: 0
   },
   {
     createdAt: oldDataDate,
@@ -22,8 +22,8 @@ const currentDimensions = [
     scaleId: 'fibonacciScale',
     teamId: 'aGhostTeam',
     templateId: 'estimatedEffortTemplate',
-    sortOrder: 1,
-  },
+    sortOrder: 1
+  }
 ]
 
 const currentPokerTemplates = [
@@ -37,8 +37,8 @@ const currentPokerTemplates = [
     scope: 'PUBLIC',
     teamId: 'aGhostTeam',
     type: 'poker',
-    updatedAt: oldDataDate,
-  },
+    updatedAt: oldDataDate
+  }
 ]
 
 const newDimensions = [
@@ -50,7 +50,7 @@ const newDimensions = [
     teamId: 'aGhostTeam',
     templateId: 'wsjfTemplate',
     updatedAt: newDataDate,
-    sortOrder: 0,
+    sortOrder: 0
   },
   {
     createdAt: newDataDate,
@@ -60,7 +60,7 @@ const newDimensions = [
     teamId: 'aGhostTeam',
     templateId: 'estimatedEffortTemplate',
     updatedAt: newDataDate,
-    sortOrder: 0,
+    sortOrder: 0
   },
   {
     createdAt: newDataDate,
@@ -70,8 +70,8 @@ const newDimensions = [
     teamId: 'aGhostTeam',
     templateId: 'wsjfTemplate',
     updatedAt: newDataDate,
-    sortOrder: 1,
-  },
+    sortOrder: 1
+  }
 ]
 
 const newPokerTemplates = [
@@ -85,7 +85,7 @@ const newPokerTemplates = [
     scope: 'PUBLIC',
     teamId: 'aGhostTeam',
     type: 'poker',
-    updatedAt: newDataDate,
+    updatedAt: newDataDate
   },
   {
     createdAt: newDataDate,
@@ -97,8 +97,8 @@ const newPokerTemplates = [
     scope: 'PUBLIC',
     teamId: 'aGhostTeam',
     type: 'poker',
-    updatedAt: newDataDate,
-  },
+    updatedAt: newDataDate
+  }
 ]
 
 export const up = async function (r: R) {
