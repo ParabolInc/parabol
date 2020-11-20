@@ -179,7 +179,8 @@ export const enum PokerCards {
   // the % of the first & last card that sits below the fold (0-1)
   MAX_HIDDEN = .35,
   PASS_CARD = 'X',
-  QUESTION_CARD = '?'
+  QUESTION_CARD = '?',
+  DELETED_CARD = '#'
 }
 export const enum UserTaskViewFilterLabels {
   ALL_TEAMS = 'All Teams',

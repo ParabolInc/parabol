@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {useEffect, useRef, useState} from 'react'
+import React, {useEffect, useLayoutEffect, useRef, useState} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {PALETTE} from '~/styles/paletteV2'
 import useAtmosphere from '../hooks/useAtmosphere'
@@ -79,6 +79,9 @@ const PokerDimensionValueControl = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {submitMutation, submitting, error, onError, onCompleted} = useMutationProps()
   const [pendingScore, setPendingScore] = useState(finalScore || '')
+  useLayoutEffect(() => {
+    setPendingScore(finalScore || '')
+  }, [finalScore])
   useEffect(() => {
     if (error) {
       setPendingScore(finalScore || '')
@@ -97,6 +100,7 @@ const PokerDimensionValueControl = (props: Props) => {
     setFocus(true)
   }
   const onBlur = () => {
+    setPendingScore(finalScore || '')
     setFocus(false)
   }
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
