@@ -9,8 +9,8 @@ graphql`
   fragment VoteForPokerStoryMutation_meeting on VoteForPokerStorySuccess {
     stage {
       scores {
+        ...PokerVotingRow_scores
         userId
-        value
         label
       }
     }
@@ -18,7 +18,7 @@ graphql`
 `
 
 const mutation = graphql`
-  mutation VoteForPokerStoryMutation($meetingId: ID!, $stageId: ID!, $score: Float!) {
+mutation VoteForPokerStoryMutation($meetingId: ID!, $stageId: ID!, $score: String) {
     voteForPokerStory(meetingId: $meetingId, stageId: $stageId, score: $score) {
       ... on ErrorPayload {
         error {
@@ -53,16 +53,13 @@ const VoteForPokerStoryMutation: StandardMutation<TVoteForPokerStoryMutation> = 
         const scaleId = dimension.getValue('scaleId')
         if (!scaleId) return
         const scale = store.get<ITemplateScale>('scaleId')
-        const values = scale?.getLinkedRecords('values')
-        if (!values) return
-        const value = values.find((value) => value.getValue('value') === score)
-        if (!value) return
-        const label = value.getValue('label')
-        if (!label) return
+        const scaleValues = scale?.getLinkedRecords('values')
+        if (!scaleValues) return
+        const scaleValue = scaleValues.find((value) => value.getValue('label') === score)
+        if (!scaleValue) return
         const optimisticScore = createProxyRecord(store, 'EstimateUserScore', {
           userId: viewerId,
-          score,
-          label
+          score
         })
         const nextScores = existingScoreIdx === -1 ? [...scores, optimisticScore] :
           [...scores.slice(0, existingScoreIdx), optimisticScore, ...scores.slice(existingScoreIdx + 1)]

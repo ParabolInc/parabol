@@ -15,6 +15,9 @@ graphql`
             service
             serviceTaskId
             sortOrder
+            scores {
+              userId
+            }
           }
         }
       }

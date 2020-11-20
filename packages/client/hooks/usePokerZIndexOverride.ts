@@ -1,9 +1,9 @@
 
 import {RefObject, useEffect} from 'react'
 
-const usePokerZIndexOverride = (delay: number, cardRef: RefObject<HTMLDivElement>, isExpanding: boolean, collapseDuration: number) => {
+const usePokerZIndexOverride = (isTop: boolean, cardRef: RefObject<HTMLDivElement>, isExpanding: boolean, collapseDuration: number, expandDuration: number) => {
   useEffect(() => {
-    if (delay === 0) return
+    if (!isTop) return
     const el = cardRef.current
     if (!el) return
     const {style} = el
@@ -12,16 +12,16 @@ const usePokerZIndexOverride = (delay: number, cardRef: RefObject<HTMLDivElement
       style.zIndex = '1'
       setTimeout(() => {
         style.zIndex = ''
-      }, delay)
+      }, expandDuration)
     } else {
       setTimeout(() => {
         style.zIndex = '1'
         setTimeout(() => {
           style.zIndex = ''
         }, collapseDuration)
-      }, delay)
+      }, expandDuration)
     }
-  }, [delay])
+  }, [isTop])
 }
 
 export default usePokerZIndexOverride
