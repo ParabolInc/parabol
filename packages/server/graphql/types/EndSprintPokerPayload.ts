@@ -9,30 +9,30 @@ export const EndSprintPokerSuccess = new GraphQLObjectType<any, GQLContext>({
   fields: () => ({
     isKill: {
       type: GraphQLNonNull(GraphQLBoolean),
-      description: 'true if the meeting was killed (ended before reaching last stage)',
+      description: 'true if the meeting was killed (ended before reaching last stage)'
     },
     meetingId: {
-      type: GraphQLNonNull(GraphQLID),
+      type: GraphQLNonNull(GraphQLID)
     },
     meeting: {
       type: GraphQLNonNull(PokerMeeting),
       resolve: ({meetingId}, _args, {dataLoader}) => {
         return dataLoader.get('newMeetings').load(meetingId)
-      },
+      }
     },
     removedTaskIds: {
-      type: GraphQLNonNull(GraphQLList(GraphQLNonNull(GraphQLID))),
+      type: GraphQLNonNull(GraphQLList(GraphQLNonNull(GraphQLID)))
     },
     team: {
       type: GraphQLNonNull(Team),
       resolve: ({teamId}, _args, {dataLoader}) => {
         return dataLoader.get('teams').load(teamId)
-      },
+      }
     },
     teamId: {
-      type: GraphQLNonNull(GraphQLID),
-    },
-  }),
+      type: GraphQLNonNull(GraphQLID)
+    }
+  })
 })
 
 const EndSprintPokerPayload = makeMutationPayload('EndSprintPokerPayload', EndSprintPokerSuccess)

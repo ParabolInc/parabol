@@ -11,33 +11,33 @@ export const EndRetrospectiveSuccess = new GraphQLObjectType<any, GQLContext>({
   fields: () => ({
     isKill: {
       type: GraphQLNonNull(GraphQLBoolean),
-      description: 'true if the meeting was killed (ended before reaching last stage)',
+      description: 'true if the meeting was killed (ended before reaching last stage)'
     },
     team: {
       type: GraphQLNonNull(Team),
       resolve: ({teamId}, _args, {dataLoader}) => {
         return teamId ? dataLoader.get('teams').load(teamId) : null
-      },
+      }
     },
     meeting: {
       type: GraphQLNonNull(RetrospectiveMeeting),
-      resolve: resolveNewMeeting,
+      resolve: resolveNewMeeting
     },
     removedSuggestedActionId: {
       type: GraphQLID,
-      description: 'The ID of the suggestion to try a retro meeting, if tried',
+      description: 'The ID of the suggestion to try a retro meeting, if tried'
     },
     removedTaskIds: {
-      type: GraphQLNonNull(GraphQLList(GraphQLNonNull(GraphQLID))),
+      type: GraphQLNonNull(GraphQLList(GraphQLNonNull(GraphQLID)))
     },
     timelineEvent: {
       type: GraphQLNonNull(TimelineEvent),
       description: 'An event that is important to the viewer, e.g. an ended meeting',
       resolve: async ({timelineEventId}, _args, {dataLoader}) => {
         return await dataLoader.get('timelineEvents').load(timelineEventId)
-      },
-    },
-  }),
+      }
+    }
+  })
 })
 
 const EndRetrospectivePayload = makeMutationPayload(

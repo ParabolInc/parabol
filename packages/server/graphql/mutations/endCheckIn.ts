@@ -38,7 +38,7 @@ const updateTaskSortOrders = async (userIds: string[], tasks: SortOrderTask[]) =
   })
   const updatedTasks = tasks.map((task) => ({
     id: task.id,
-    sortOrder: task.sortOrder,
+    sortOrder: task.sortOrder
   }))
   await r(updatedTasks)
     .forEach((task) => {
@@ -46,7 +46,7 @@ const updateTaskSortOrders = async (userIds: string[], tasks: SortOrderTask[]) =
         .table('Task')
         .get(task('id'))
         .update({
-          sortOrder: (task('sortOrder') as unknown) as number,
+          sortOrder: (task('sortOrder') as unknown) as number
         })
     })
     .run()
@@ -59,7 +59,7 @@ const clearAgendaItems = async (teamId: string) => {
     .table('AgendaItem')
     .getAll(teamId, {index: 'teamId'})
     .update({
-      isActive: false,
+      isActive: false
     })
     .run()
 }
@@ -84,7 +84,7 @@ const clonePinnedAgendaItems = async (pinnedAgendaItems: AgendaItem[]) => {
       pinnedParentId: agendaItem.pinnedParentId ? agendaItem.pinnedParentId : agendaItemId,
       sortOrder: agendaItem.sortOrder,
       teamId: agendaItem.teamId,
-      teamMemberId: agendaItem.teamMemberId,
+      teamMemberId: agendaItem.teamMemberId
     })
   })
 
@@ -104,7 +104,7 @@ const finishCheckInMeeting = async (meeting: MeetingAction, dataLoader: DataLoad
       .table('Task')
       .getAll(teamId, {index: 'teamId'})
       .filter({
-        meetingId,
+        meetingId
       })
       .run(),
     r
@@ -113,7 +113,7 @@ const finishCheckInMeeting = async (meeting: MeetingAction, dataLoader: DataLoad
       .filter({status: DONE})
       .filter((task) => task('tags').contains('archived').not())
       .run(),
-    r.table('AgendaItem').getAll(teamId, {index: 'teamId'}).filter({isActive: true}).run(),
+    r.table('AgendaItem').getAll(teamId, {index: 'teamId'}).filter({isActive: true}).run()
   ])
 
   const activeAgendaItemIds = activeAgendaItems.map(({id}) => id)
@@ -137,11 +137,11 @@ const finishCheckInMeeting = async (meeting: MeetingAction, dataLoader: DataLoad
             .getAll(r.args(activeAgendaItemIds), {index: 'threadId'})
             .count()
             .default(0) as unknown) as number,
-          taskCount: tasks.length,
+          taskCount: tasks.length
         },
         {nonAtomic: true}
       )
-      .run(),
+      .run()
   ])
 
   return {updatedTaskIds: [...tasks, ...doneTasks].map(({id}) => id)}
@@ -153,8 +153,8 @@ export default {
   args: {
     meetingId: {
       type: new GraphQLNonNull(GraphQLID),
-      description: 'The meeting to end',
-    },
+      description: 'The meeting to end'
+    }
   },
   async resolve(_source, {meetingId}, context: GQLContext) {
     const {authToken, socketId: mutatorId, dataLoader} = context
@@ -195,7 +195,7 @@ export default {
       .update(
         {
           endedAt: now,
-          phases,
+          phases
         },
         {returnChanges: true}
       )('changes')(0)('new_val')
@@ -204,7 +204,7 @@ export default {
 
     if (!completedCheckIn) {
       return standardError(new Error('Completed check-in meeting does not exist'), {
-        userId: viewerId,
+        userId: viewerId
       })
     }
 
@@ -213,7 +213,7 @@ export default {
       dataLoader.get('meetingMembersByMeetingId').load(meetingId),
       dataLoader.get('teams').load(teamId),
       removeEmptyTasks(meetingId),
-      finishCheckInMeeting(completedCheckIn, dataLoader),
+      finishCheckInMeeting(completedCheckIn, dataLoader)
     ])
     endSlackMeeting(meetingId, teamId, dataLoader).catch(console.log)
     const updatedTaskIds = (result && result.updatedTaskIds) || []
@@ -225,7 +225,7 @@ export default {
           userId: meetingMember.userId,
           teamId,
           orgId: team.orgId,
-          meetingId,
+          meetingId
         })
     )
     const timelineEventId = events[0].id as string
@@ -259,10 +259,10 @@ export default {
       isKill: ![AGENDA_ITEMS, LAST_CALL].includes(phase.phaseType),
       updatedTaskIds,
       removedTaskIds,
-      timelineEventId,
+      timelineEventId
     }
     publish(SubscriptionChannel.TEAM, teamId, 'EndCheckInSuccess', data, subOptions)
 
     return data
-  },
+  }
 }

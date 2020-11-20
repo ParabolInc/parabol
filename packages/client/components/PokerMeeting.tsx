@@ -89,6 +89,7 @@ const PokerMeeting = (props: Props) => {
       <ResponsiveDashSidebar isOpen={showSidebar} onToggle={toggleSidebar}>
         <PokerMeetingSidebar
           gotoStageId={gotoStageId}
+          
           handleMenuClick={handleMenuClick}
           toggleSidebar={toggleSidebar}
           meeting={meeting}

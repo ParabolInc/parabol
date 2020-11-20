@@ -3,7 +3,7 @@ import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {
   MeetingTypeEnum,
   NewMeetingPhaseTypeEnum,
-  SuggestedActionTypeEnum,
+  SuggestedActionTypeEnum
 } from 'parabol-client/types/graphql'
 import {
   ACTION,
@@ -11,7 +11,7 @@ import {
   DISCUSS,
   DONE,
   LAST_CALL,
-  RETROSPECTIVE,
+  RETROSPECTIVE
 } from 'parabol-client/utils/constants'
 import getMeetingPhase from 'parabol-client/utils/getMeetingPhase'
 import findStageById from 'parabol-client/utils/meetings/findStageById'
@@ -39,12 +39,12 @@ import removeEmptyTasks from './helpers/removeEmptyTasks'
 
 const timelineEventLookup = {
   [RETROSPECTIVE]: TimelineEventRetroComplete,
-  [ACTION]: TimelineEventCheckinComplete,
+  [ACTION]: TimelineEventCheckinComplete
 } as const
 
 const suggestedActionLookup = {
   [MeetingTypeEnum.retrospective]: SuggestedActionTypeEnum.tryRetroMeeting,
-  [MeetingTypeEnum.action]: SuggestedActionTypeEnum.tryActionMeeting,
+  [MeetingTypeEnum.action]: SuggestedActionTypeEnum.tryActionMeeting
 } as const
 
 type SortOrderTask = Pick<Task, 'id' | 'sortOrder'>
@@ -63,7 +63,7 @@ const updateTaskSortOrders = async (userIds: string[], tasks: SortOrderTask[]) =
   })
   const updatedTasks = tasks.map((task) => ({
     id: task.id,
-    sortOrder: task.sortOrder,
+    sortOrder: task.sortOrder
   }))
   await r(updatedTasks)
     .forEach((task) => {
@@ -71,7 +71,7 @@ const updateTaskSortOrders = async (userIds: string[], tasks: SortOrderTask[]) =
         .table('Task')
         .get(task('id'))
         .update({
-          sortOrder: (task('sortOrder') as unknown) as number,
+          sortOrder: (task('sortOrder') as unknown) as number
         })
     })
     .run()
@@ -84,7 +84,7 @@ const clearAgendaItems = async (teamId: string) => {
     .table('AgendaItem')
     .getAll(teamId, {index: 'teamId'})
     .update({
-      isActive: false,
+      isActive: false
     })
     .run()
 }
@@ -109,7 +109,7 @@ const clonePinnedAgendaItems = async (pinnedAgendaItems: AgendaItem[]) => {
       pinnedParentId: agendaItem.pinnedParentId ? agendaItem.pinnedParentId : agendaItemId,
       sortOrder: agendaItem.sortOrder,
       teamId: agendaItem.teamId,
-      teamMemberId: agendaItem.teamMemberId,
+      teamMemberId: agendaItem.teamMemberId
     })
   })
 
@@ -129,7 +129,7 @@ const finishActionMeeting = async (meeting: MeetingAction, dataLoader: DataLoade
       .table('Task')
       .getAll(teamId, {index: 'teamId'})
       .filter({
-        meetingId,
+        meetingId
       })
       .run(),
     r
@@ -138,7 +138,7 @@ const finishActionMeeting = async (meeting: MeetingAction, dataLoader: DataLoade
       .filter({status: DONE})
       .filter((task) => task('tags').contains('archived').not())
       .run(),
-    r.table('AgendaItem').getAll(teamId, {index: 'teamId'}).filter({isActive: true}).run(),
+    r.table('AgendaItem').getAll(teamId, {index: 'teamId'}).filter({isActive: true}).run()
   ])
 
   const activeAgendaItemIds = activeAgendaItems.map(({id}) => id)
@@ -162,11 +162,11 @@ const finishActionMeeting = async (meeting: MeetingAction, dataLoader: DataLoade
             .getAll(r.args(activeAgendaItemIds), {index: 'threadId'})
             .count()
             .default(0) as unknown) as number,
-          taskCount: tasks.length,
+          taskCount: tasks.length
         },
         {nonAtomic: true}
       )
-      .run(),
+      .run()
   ])
 
   return {updatedTaskIds: [...tasks, ...doneTasks].map(({id}) => id)}
@@ -177,7 +177,7 @@ const finishRetroMeeting = async (meeting: MeetingRetrospective, dataLoader: Dat
   const r = await getRethink()
   const [reflectionGroups, reflections] = await Promise.all([
     dataLoader.get('retroReflectionGroupsByMeetingId').load(meetingId),
-    dataLoader.get('retroReflectionsByMeetingId').load(meetingId),
+    dataLoader.get('retroReflectionsByMeetingId').load(meetingId)
   ])
   const reflectionGroupIds = reflectionGroups.map(({id}) => id)
 
@@ -198,7 +198,7 @@ const finishRetroMeeting = async (meeting: MeetingRetrospective, dataLoader: Dat
           .count()
           .default(0) as unknown) as number,
         topicCount: reflectionGroupIds.length,
-        reflectionCount: reflections.length,
+        reflectionCount: reflections.length
       },
       {nonAtomic: true}
     )
@@ -237,8 +237,8 @@ export default {
   args: {
     meetingId: {
       type: new GraphQLNonNull(GraphQLID),
-      description: 'The meeting to end',
-    },
+      description: 'The meeting to end'
+    }
   },
   async resolve(_source, {meetingId}, context: GQLContext) {
     const {authToken, socketId: mutatorId, dataLoader} = context
@@ -279,7 +279,7 @@ export default {
       .update(
         {
           endedAt: now,
-          phases,
+          phases
         },
         {returnChanges: true}
       )('changes')(0)('new_val')
@@ -290,7 +290,7 @@ export default {
 
     const [meetingMembers, team] = await Promise.all([
       dataLoader.get('meetingMembersByMeetingId').load(meetingId),
-      dataLoader.get('teams').load(teamId),
+      dataLoader.get('teams').load(teamId)
     ])
     const presentMembers = meetingMembers.filter(
       (meetingMember) => meetingMember.isCheckedIn === true
@@ -321,8 +321,8 @@ export default {
           meetingNumber,
           teamMembersCount: meetingMembers.length,
           teamMembersPresentCount: presentMembers.length,
-          teamId,
-        },
+          teamId
+        }
       })
     })
     sendNewMeetingSummary(completedMeeting, context).catch(console.log)
@@ -333,7 +333,7 @@ export default {
           userId: meetingMember.userId,
           teamId,
           orgId: team.orgId,
-          meetingId,
+          meetingId
         })
     )
     const timelineEventId = events[0].id as string
@@ -367,10 +367,10 @@ export default {
       isKill: getIsKill(meetingType, phase),
       updatedTaskIds,
       removedTaskIds,
-      timelineEventId,
+      timelineEventId
     }
     publish(SubscriptionChannel.TEAM, teamId, 'EndNewMeetingPayload', data, subOptions)
 
     return data
-  },
+  }
 }

@@ -120,7 +120,7 @@ const types = [
   UpdatePokerTemplateDimensionScalePayload,
   UpdatePokerTemplateScaleValuePayload,
   UpdateUserProfilePayload,
-  PersistJiraSearchQuerySuccess,
+  PersistJiraSearchQuerySuccess
 ]
 
 export default graphQLSubscriptionType('TeamSubscriptionPayload', types)

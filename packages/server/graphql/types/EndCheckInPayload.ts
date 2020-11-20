@@ -15,34 +15,34 @@ export const EndCheckInSuccess = new GraphQLObjectType<any, GQLContext>({
   fields: () => ({
     isKill: {
       type: GraphQLNonNull(GraphQLBoolean),
-      description: 'true if the meeting was killed (ended before reaching last stage)',
+      description: 'true if the meeting was killed (ended before reaching last stage)'
     },
     team: {
       type: GraphQLNonNull(Team),
       resolve: ({teamId}, _args, {dataLoader}) => {
         return teamId ? dataLoader.get('teams').load(teamId) : null
-      },
+      }
     },
     meeting: {
       type: GraphQLNonNull(ActionMeeting),
-      resolve: resolveNewMeeting,
+      resolve: resolveNewMeeting
     },
     removedSuggestedActionId: {
       type: GraphQLID,
-      description: 'The ID of the suggestion to try a check-in meeting, if tried',
+      description: 'The ID of the suggestion to try a check-in meeting, if tried'
     },
     removedTaskIds: {
-      type: new GraphQLList(new GraphQLNonNull(GraphQLID)),
+      type: new GraphQLList(new GraphQLNonNull(GraphQLID))
     },
     timelineEvent: {
       type: GraphQLNonNull(TimelineEvent),
       description: 'An event that is important to the viewer, e.g. an ended meeting',
       resolve: async ({timelineEventId}, _args, {dataLoader}) => {
         return await dataLoader.get('timelineEvents').load(timelineEventId)
-      },
+      }
     },
     updatedTaskIds: {
-      type: new GraphQLList(new GraphQLNonNull(GraphQLID)),
+      type: new GraphQLList(new GraphQLNonNull(GraphQLID))
     },
     updatedTasks: {
       type: new GraphQLList(new GraphQLNonNull(Task)),
@@ -56,9 +56,9 @@ export const EndCheckInSuccess = new GraphQLObjectType<any, GQLContext>({
         return allUpdatedTasks.filter((task) => {
           return isTaskPrivate(task.tags) ? task.userId === viewerId : true
         })
-      },
-    },
-  }),
+      }
+    }
+  })
 })
 
 const EndCheckInPayload = makeMutationPayload('EndCheckInPayload', EndCheckInSuccess)

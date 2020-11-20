@@ -24,8 +24,8 @@ export default {
   args: {
     meetingId: {
       type: GraphQLNonNull(GraphQLID),
-      description: 'The meeting to end',
-    },
+      description: 'The meeting to end'
+    }
   },
   async resolve(_source, {meetingId}, context: GQLContext) {
     const {authToken, socketId: mutatorId, dataLoader} = context
@@ -76,7 +76,7 @@ export default {
       .update(
         {
           endedAt: now,
-          phases,
+          phases
         },
         {returnChanges: true}
       )('changes')(0)('new_val')
@@ -84,7 +84,7 @@ export default {
       .run()) as unknown) as MeetingPoker
     if (!completedMeeting) {
       return standardError(new Error('Completed check-in meeting does not exist'), {
-        userId: viewerId,
+        userId: viewerId
       })
     }
     const {templateId} = completedMeeting
@@ -92,7 +92,7 @@ export default {
       dataLoader.get('meetingMembersByMeetingId').load(meetingId),
       dataLoader.get('teams').load(teamId),
       removeEmptyTasks(meetingId),
-      dataLoader.get('meetingTemplates').load(templateId),
+      dataLoader.get('meetingTemplates').load(templateId)
     ])
     endSlackMeeting(meetingId, teamId, dataLoader).catch(console.log)
     const {name: meetingTemplateName} = template
@@ -109,7 +109,7 @@ export default {
           userId: meetingMember.userId,
           teamId,
           orgId: team.orgId,
-          meetingId,
+          meetingId
         })
     )
     await r.table('TimelineEvent').insert(events).run()
@@ -118,10 +118,10 @@ export default {
       meetingId,
       teamId,
       isKill: phase.phaseType !== 'ESTIMATE',
-      removedTaskIds,
+      removedTaskIds
     }
     publish(SubscriptionChannel.TEAM, teamId, 'EndSprintPokerSuccess', data, subOptions)
 
     return data
-  },
+  }
 }

@@ -267,6 +267,6 @@ export default new GraphQLObjectType<any, Context>({
       pokerRevealVotes,
       pokerResetDimension,
       pokerAnnounceDeckHover,
-      pokerSetFinalScore,
-    } as any),
+      pokerSetFinalScore
+    } as any)
 })

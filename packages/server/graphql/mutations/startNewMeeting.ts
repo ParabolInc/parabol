@@ -2,7 +2,7 @@ import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {
   IStartNewMeetingOnMutationArguments,
-  MeetingTypeEnum as EMeetingTypeEnum,
+  MeetingTypeEnum as EMeetingTypeEnum
 } from 'parabol-client/types/graphql'
 import getRethink from '../../database/rethinkDriver'
 import GenericMeetingPhase from '../../database/types/GenericMeetingPhase'
@@ -28,12 +28,12 @@ export default {
   args: {
     teamId: {
       type: new GraphQLNonNull(GraphQLID),
-      description: 'The team starting the meeting',
+      description: 'The team starting the meeting'
     },
     meetingType: {
       type: new GraphQLNonNull(MeetingTypeEnum),
-      description: 'The base type of the meeting (action, retro, etc)',
-    },
+      description: 'The base type of the meeting (action, retro, etc)'
+    }
   },
   async resolve(
     _source,
@@ -87,14 +87,14 @@ export default {
         facilitatorUserId: viewerId,
         totalVotes,
         maxVotesPerGroup,
-        templateId: selectedTemplateId,
+        templateId: selectedTemplateId
       })
     } else {
       meeting = new MeetingAction({
         teamId,
         meetingCount,
         phases,
-        facilitatorUserId: viewerId,
+        facilitatorUserId: viewerId
       })
     }
     const teamMembers = await dataLoader.get('teamMembersByTeamId').load(meeting.teamId)
@@ -121,12 +121,12 @@ export default {
     await Promise.all([
       r.table('MeetingMember').insert(meetingMembers).run(),
       r.table('Team').get(teamId).update({lastMeetingType: meetingType}).run(),
-      r.table('AgendaItem').getAll(r.args(agendaItemIds)).update({meetingId: meeting.id}).run(),
+      r.table('AgendaItem').getAll(r.args(agendaItemIds)).update({meetingId: meeting.id}).run()
     ])
 
     startSlackMeeting(meeting.id, teamId, dataLoader).catch(console.log)
     const data = {teamId, meetingId: meeting.id}
     publish(SubscriptionChannel.TEAM, teamId, 'StartNewMeetingPayload', data, subOptions)
     return data
-  },
+  }
 }

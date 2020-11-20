@@ -27,8 +27,8 @@ const sendMeetingEndToSegment = async (
         meetingNumber,
         teamMembersCount: meetingMembers.length,
         teamMembersPresentCount: presentMembers.length,
-        teamId,
-      },
+        teamId
+      }
     })
   })
 }

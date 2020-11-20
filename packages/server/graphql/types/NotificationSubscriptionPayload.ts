@@ -44,7 +44,7 @@ const types = [
   // User doesn't have an error field, either make an exception & add it (because it's the Viewer) or use a payload here
   User,
   // a one off used so the server can sniff it & update its connection context
-  AuthTokenPayload,
+  AuthTokenPayload
 ]
 
 export default graphQLSubscriptionType('NotificationSubscriptionPayload', types)

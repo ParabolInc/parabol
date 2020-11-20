@@ -12,11 +12,11 @@ const selectTemplate = {
   type: SelectTemplatePayload,
   args: {
     selectedTemplateId: {
-      type: new GraphQLNonNull(GraphQLID),
+      type: new GraphQLNonNull(GraphQLID)
     },
     teamId: {
-      type: GraphQLNonNull(GraphQLID),
-    },
+      type: GraphQLNonNull(GraphQLID)
+    }
   },
   async resolve(
     _source,
@@ -56,11 +56,11 @@ const selectTemplate = {
       .table('MeetingSettings')
       .getAll(teamId, {index: 'teamId'})
       .filter({
-        meetingType: template.type,
+        meetingType: template.type
       })
       .update(
         {
-          selectedTemplateId,
+          selectedTemplateId
         },
         {returnChanges: true}
       )('changes')(0)('old_val')('id')
@@ -74,7 +74,7 @@ const selectTemplate = {
     const data = {meetingSettingsId}
     publish(SubscriptionChannel.TEAM, teamId, 'SelectTemplatePayload', data, subOptions)
     return data
-  },
+  }
 }
 
 export default selectTemplate

@@ -11,11 +11,11 @@ const updatePokerTemplateDimensionScale = {
   type: new GraphQLNonNull(UpdatePokerTemplateDimensionScalePayload),
   args: {
     dimensionId: {
-      type: new GraphQLNonNull(GraphQLID),
+      type: new GraphQLNonNull(GraphQLID)
     },
     scaleId: {
-      type: new GraphQLNonNull(GraphQLID),
-    },
+      type: new GraphQLNonNull(GraphQLID)
+    }
   },
   async resolve(_source, {dimensionId, scaleId}, {authToken, dataLoader, socketId: mutatorId}) {
     const r = await getRethink()
@@ -51,7 +51,7 @@ const updatePokerTemplateDimensionScale = {
       subOptions
     )
     return data
-  },
+  }
 }
 
 export default updatePokerTemplateDimensionScale

@@ -11,18 +11,18 @@ export const StartRetrospectiveSuccess = new GraphQLObjectType<any, GQLContext>(
       type: GraphQLNonNull(RetrospectiveMeeting),
       resolve: ({meetingId}, _args, {dataLoader}) => {
         return dataLoader.get('newMeetings').load(meetingId)
-      },
+      }
     },
     meetingId: {
-      type: GraphQLNonNull(GraphQLID),
+      type: GraphQLNonNull(GraphQLID)
     },
     team: {
       type: GraphQLNonNull(Team),
       resolve: ({teamId}, _args, {dataLoader}) => {
         return dataLoader.get('teams').load(teamId)
-      },
-    },
-  }),
+      }
+    }
+  })
 })
 
 const StartRetrospectivePayload = makeMutationPayload(

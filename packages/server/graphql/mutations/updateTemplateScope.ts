@@ -19,12 +19,12 @@ const updateTemplateScope = {
   args: {
     templateId: {
       type: GraphQLNonNull(GraphQLID),
-      description: 'The id of the template',
+      description: 'The id of the template'
     },
     scope: {
       type: GraphQLNonNull(SharingScopeEnum),
-      description: 'the new scope',
-    },
+      description: 'the new scope'
+    }
   },
   resolve: async (
     _source,
@@ -79,7 +79,7 @@ const updateTemplateScope = {
         orgId,
         scope: newScope,
         parentTemplateId: templateId,
-        lastUsedAt: template.lastUsedAt,
+        lastUsedAt: template.lastUsedAt
       })
       clonedTemplateId = clonedTemplate.id
       const prompts = await dataLoader.get('reflectPromptsByTemplateId').load(templateId)
@@ -90,7 +90,7 @@ const updateTemplateScope = {
           ...prompt,
           templateId: clonedTemplateId!,
           parentPromptId: prompt.id,
-          removedAt: null,
+          removedAt: null
         })
       })
       await r({
@@ -100,7 +100,7 @@ const updateTemplateScope = {
         inactivatedPrompts: r
           .table('ReflectPrompt')
           .getAll(r.args(promptIds))
-          .update({removedAt: now}),
+          .update({removedAt: now})
       }).run()
     }
 
@@ -111,7 +111,7 @@ const updateTemplateScope = {
         orgId,
         scope: newScope,
         parentTemplateId: templateId,
-        lastUsedAt: template.lastUsedAt,
+        lastUsedAt: template.lastUsedAt
       })
       clonedTemplateId = clonedTemplate.id
       const dimensions = await dataLoader.get('templateDimensionsByTemplateId').load(templateId)
@@ -120,7 +120,7 @@ const updateTemplateScope = {
       const clonedDimensions = activeDimensions.map((dimension) => {
         return new TemplateDimension({
           ...dimension,
-          templateId: clonedTemplateId!,
+          templateId: clonedTemplateId!
         })
       })
       await r({
@@ -130,7 +130,7 @@ const updateTemplateScope = {
         inactivatedDimensions: r
           .table('TemplateDimension')
           .getAll(r.args(dimensionIds))
-          .update({removedAt: now}),
+          .update({removedAt: now})
       }).run()
     }
 
@@ -145,7 +145,7 @@ const updateTemplateScope = {
         .table('MeetingTemplate')
         .get(templateId)
         .update({
-          scope: newScope,
+          scope: newScope
         })
         .run()
     }
@@ -154,7 +154,7 @@ const updateTemplateScope = {
     // technically, this affects every connected client (public), or every team in the org (organization), but those are edge cases
     publish(SubscriptionChannel.ORGANIZATION, orgId, 'UpdateTemplateScopeSuccess', data, subOptions)
     return data
-  },
+  }
 }
 
 export default updateTemplateScope

@@ -18,8 +18,8 @@ export default {
   args: {
     teamId: {
       type: new GraphQLNonNull(GraphQLID),
-      description: 'The team starting the meeting',
-    },
+      description: 'The team starting the meeting'
+    }
   },
   async resolve(
     _source,
@@ -51,7 +51,7 @@ export default {
       teamId,
       meetingCount,
       phases,
-      facilitatorUserId: viewerId,
+      facilitatorUserId: viewerId
     })
     const meetingId = meeting.id
     const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)
@@ -75,12 +75,12 @@ export default {
     await Promise.all([
       r.table('MeetingMember').insert(meetingMembers).run(),
       r.table('Team').get(teamId).update({lastMeetingType: meetingType}).run(),
-      r.table('AgendaItem').getAll(r.args(agendaItemIds)).update({meetingId: meetingId}).run(),
+      r.table('AgendaItem').getAll(r.args(agendaItemIds)).update({meetingId: meetingId}).run()
     ])
 
     startSlackMeeting(meetingId, teamId, dataLoader).catch(console.log)
     const data = {teamId, meetingId}
     publish(SubscriptionChannel.TEAM, teamId, 'StartCheckInSuccess', data, subOptions)
     return data
-  },
+  }
 }

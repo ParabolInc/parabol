@@ -16,15 +16,15 @@ const pokerAnnounceDeckHover = {
   description: ``,
   args: {
     meetingId: {
-      type: GraphQLNonNull(GraphQLID),
+      type: GraphQLNonNull(GraphQLID)
     },
     stageId: {
-      type: GraphQLNonNull(GraphQLID),
+      type: GraphQLNonNull(GraphQLID)
     },
     isHover: {
       type: GraphQLNonNull(GraphQLBoolean),
-      description: 'true if the viewer has started hovering the deck, else false',
-    },
+      description: 'true if the viewer has started hovering the deck, else false'
+    }
   },
   resolve: async (
     _source,
@@ -91,6 +91,6 @@ const pokerAnnounceDeckHover = {
       subOptions
     )
     return data
-  },
+  }
 }
 export default pokerAnnounceDeckHover

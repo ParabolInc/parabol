@@ -23,7 +23,7 @@ const finishRetroMeeting = async (meeting: MeetingRetrospective, dataLoader: Dat
   const r = await getRethink()
   const [reflectionGroups, reflections] = await Promise.all([
     dataLoader.get('retroReflectionGroupsByMeetingId').load(meetingId),
-    dataLoader.get('retroReflectionsByMeetingId').load(meetingId),
+    dataLoader.get('retroReflectionsByMeetingId').load(meetingId)
   ])
   const reflectionGroupIds = reflectionGroups.map(({id}) => id)
 
@@ -44,7 +44,7 @@ const finishRetroMeeting = async (meeting: MeetingRetrospective, dataLoader: Dat
           .count()
           .default(0) as unknown) as number,
         topicCount: reflectionGroupIds.length,
-        reflectionCount: reflections.length,
+        reflectionCount: reflections.length
       },
       {nonAtomic: true}
     )
@@ -57,8 +57,8 @@ export default {
   args: {
     meetingId: {
       type: new GraphQLNonNull(GraphQLID),
-      description: 'The meeting to end',
-    },
+      description: 'The meeting to end'
+    }
   },
   async resolve(_source, {meetingId}, context: GQLContext) {
     const {authToken, socketId: mutatorId, dataLoader} = context
@@ -99,7 +99,7 @@ export default {
       .update(
         {
           endedAt: now,
-          phases,
+          phases
         },
         {returnChanges: true}
       )('changes')(0)('new_val')
@@ -108,7 +108,7 @@ export default {
 
     if (!completedRetrospective) {
       return standardError(new Error('Completed check-in meeting does not exist'), {
-        userId: viewerId,
+        userId: viewerId
       })
     }
 
@@ -118,7 +118,7 @@ export default {
       dataLoader.get('meetingMembersByMeetingId').load(meetingId),
       dataLoader.get('teams').load(teamId),
       removeEmptyTasks(meetingId),
-      dataLoader.get('meetingTemplates').load(templateId),
+      dataLoader.get('meetingTemplates').load(templateId)
     ])
     endSlackMeeting(meetingId, teamId, dataLoader).catch(console.log)
     finishRetroMeeting(completedRetrospective, dataLoader)
@@ -135,7 +135,7 @@ export default {
           userId: meetingMember.userId,
           teamId,
           orgId: team.orgId,
-          meetingId,
+          meetingId
         })
     )
     const timelineEventId = events[0].id as string
@@ -168,10 +168,10 @@ export default {
       teamId,
       isKill: phase.phaseType !== DISCUSS,
       removedTaskIds,
-      timelineEventId,
+      timelineEventId
     }
     publish(SubscriptionChannel.TEAM, teamId, 'EndRetrospectiveSuccess', data, subOptions)
 
     return data
-  },
+  }
 }

@@ -4,7 +4,7 @@ import {
   GraphQLList,
   GraphQLNonNull,
   GraphQLObjectType,
-  GraphQLString,
+  GraphQLString
 } from 'graphql'
 import {GQLContext} from '../graphql'
 import {resolveTeam} from '../resolvers'
@@ -18,35 +18,35 @@ const TemplateScale = new GraphQLObjectType<any, GQLContext>({
   fields: () => ({
     id: {
       type: new GraphQLNonNull(GraphQLID),
-      description: 'shortid',
+      description: 'shortid'
     },
     createdAt: {
-      type: new GraphQLNonNull(GraphQLISO8601Type),
+      type: new GraphQLNonNull(GraphQLISO8601Type)
     },
     isActive: {
       type: new GraphQLNonNull(GraphQLBoolean),
       resolve: ({removedAt}) => !removedAt,
-      description: 'true if the scale is currently used by the team, else false',
+      description: 'true if the scale is currently used by the team, else false'
     },
     removedAt: {
       type: GraphQLISO8601Type,
-      description: 'The datetime that the scale was removed. Null if it has not been removed.',
+      description: 'The datetime that the scale was removed. Null if it has not been removed.'
     },
     teamId: {
       type: new GraphQLNonNull(GraphQLID),
-      description: 'foreign key. use the team field',
+      description: 'foreign key. use the team field'
     },
     team: {
       type: new GraphQLNonNull(Team),
       description: 'The team that owns this template scale',
-      resolve: resolveTeam,
+      resolve: resolveTeam
     },
     updatedAt: {
-      type: new GraphQLNonNull(GraphQLISO8601Type),
+      type: new GraphQLNonNull(GraphQLISO8601Type)
     },
     name: {
       type: new GraphQLNonNull(GraphQLString),
-      description: 'The title of the scale used in the template',
+      description: 'The title of the scale used in the template'
     },
     values: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(TemplateScaleValue))),
@@ -54,11 +54,11 @@ const TemplateScale = new GraphQLObjectType<any, GQLContext>({
       resolve: ({id, values}) => {
         return values.map((value) => ({
           ...value,
-          scaleId: id,
+          scaleId: id
         }))
-      },
-    },
-  }),
+      }
+    }
+  })
 })
 
 export default TemplateScale

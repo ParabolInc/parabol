@@ -55,7 +55,7 @@ const customRedisQueries = {
     )
 
     return starterScales
-  },
+  }
 } as const
 
 export default customRedisQueries
