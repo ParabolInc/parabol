@@ -75,13 +75,15 @@ const httpGraphQLHandler = uWSAsyncHandler(async (res: HttpResponse, req: HttpRe
   const authToken = getReqAuth(req)
   const ip = uwsGetIP(res, req)
   const contentTypeHeader = req.getHeader('content-type')
-  const ct = Object.keys(contentTypeBodyParserMap).find((key) => contentTypeHeader.startsWith(key))
-  if (!ct) {
+  const shortCt = Object.keys(contentTypeBodyParserMap).find((key) =>
+    contentTypeHeader.startsWith(key)
+  )
+  if (!shortCt) {
     res.writeStatus('415').end()
     return
   }
-  const parseFn = contentTypeBodyParserMap[ct]
-  const body = await parseFn({res, req})
+  const parseFn = contentTypeBodyParserMap[shortCt]
+  const body = await parseFn({res, contentType: contentTypeHeader})
   if (!body) {
     res.writeStatus('422').end()
     return
