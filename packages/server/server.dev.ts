@@ -43,6 +43,7 @@ uws
     compression: SHARED_COMPRESSOR,
     idleTimeout: 0,
     maxPayloadLength: 5 * 2 ** 20,
+    upgrade: (...args) => require('./socketHandlers/handleUpgrade').default(...args),
     open: (...args) => require('./socketHandlers/handleOpen').default(...args),
     message: (...args) => require('./socketHandlers/handleMessage').default(...args),
     // today, we don't send folks enough data to worry about backpressure
@@ -70,6 +71,7 @@ if (module.hot) {
     './graphql/httpGraphQLHandler',
     './graphql/intranetGraphQLHandler',
     './createSSR',
+    './socketHandlers/handleUpgrade',
     './socketHandlers/handleMessage',
     './socketHandlers/handleClose',
     './socketHandlers/handleOpen'
