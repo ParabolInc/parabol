@@ -1,12 +1,15 @@
-import React from 'react'
 import styled from '@emotion/styled'
-import MiniPokerCardPlaceholder from './MiniPokerCardPlaceholder'
-import MiniPokerCard from './MiniPokerCard'
-import LinkButton from './LinkButton'
-import {PALETTE} from '~/styles/paletteV2'
-import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import {PokerDimensionValueControl_scaleValue} from '../__generated__/PokerDimensionValueControl_scaleValue.graphql'
+import React, {useEffect, useRef, useState} from 'react'
+import {createFragmentContainer} from 'react-relay'
+import {PALETTE} from '~/styles/paletteV2'
+import useAtmosphere from '../hooks/useAtmosphere'
+import useMutationProps from '../hooks/useMutationProps'
+import PokerSetFinalScoreMutation from '../mutations/PokerSetFinalScoreMutation'
+import {PokerDimensionValueControl_stage} from '../__generated__/PokerDimensionValueControl_stage.graphql'
+import LinkButton from './LinkButton'
+import MiniPokerCard from './MiniPokerCard'
+import StyledError from './StyledError'
 
 const ControlWrap = styled('div')({
   padding: '0 8px'
@@ -23,10 +26,10 @@ const Control = styled('div')<{hasFocus: boolean}>(({hasFocus}) => ({
   padding: 6
 }))
 
-const Input = styled('input')({
+const Input = styled('input')<{color?: string}>(({color}) => ({
   background: 'none',
   border: 0,
-  color: PALETTE.TEXT_MAIN,
+  color: color || PALETTE.TEXT_MAIN,
   display: 'block',
   fontSize: 18,
   fontWeight: 600,
@@ -38,7 +41,7 @@ const Input = styled('input')({
     // color: hasFocus ? 'rgba(125, 125, 125, 125, .25' : 'rgba(125, 125, 125, .5)'
     color: 'rgba(125, 125, 125, .25)'
   }
-})
+}))
 
 const Label = styled('label')({
   color: PALETTE.TEXT_GRAY,
@@ -58,29 +61,72 @@ const StyledLinkButton = styled(LinkButton)({
   padding: '0 8px'
 })
 
+const ErrorMessage = styled(StyledError)({
+  paddingLeft: 8
+})
 interface Props {
-  hasFocus: boolean
   placeholder: string
-  scaleValue: PokerDimensionValueControl_scaleValue | null
+  stage: PokerDimensionValueControl_stage
 }
 
 const PokerDimensionValueControl = (props: Props) => {
-  const {hasFocus, placeholder, scaleValue} = props
+  const {placeholder, stage} = props
+  const {id: stageId, dimension, finalScore, meetingId} = stage
+  const {selectedScale} = dimension
+  const {values: scaleValues} = selectedScale
+  const inputRef = useRef<HTMLInputElement>(null)
+  const [hasFocus, setFocus] = useState(!finalScore)
+  const atmosphere = useAtmosphere()
+  const {submitMutation, submitting, error, onError, onCompleted} = useMutationProps()
+  const [pendingScore, setPendingScore] = useState(finalScore || '')
+  useEffect(() => {
+    if (error) {
+      setPendingScore(finalScore || '')
+    }
+  }, [error])
+  console.log({error})
+  const submitScore = () => {
+    if (submitting || finalScore === pendingScore) return
+    submitMutation()
+    PokerSetFinalScoreMutation(atmosphere, {finalScore: pendingScore, meetingId, stageId}, {onError, onCompleted})
+  }
+  const focusInput = () => {
+    inputRef.current?.focus()
+  }
+  const onFocus = () => {
+    setFocus(true)
+  }
+  const onBlur = () => {
+    setFocus(false)
+  }
+  const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const {value} = e.target
+    setPendingScore(value)
+  }
+
+  const onKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault()
+      const {value} = e.currentTarget
+      if (!value) return
+      submitScore()
+      onBlur()
+    }
+  }
+  const matchingScale = scaleValues.find((scaleValue) => scaleValue.label === pendingScore)
+  const scaleColor = matchingScale?.color
+  const textColor = scaleColor ? '#fff' : undefined
   return (
     <ControlWrap>
       <Control hasFocus={hasFocus}>
-        {scaleValue
-          ? <>
-            <MiniPokerCard scaleValue={scaleValue} />
-            <Label>{'Edit Final Value'}</Label>
-          </>
-          : <>
-            <MiniPokerCardPlaceholder>
-              <Input autoFocus={hasFocus} placeholder={placeholder}></Input>
-            </MiniPokerCardPlaceholder>
-            <StyledLinkButton palette={'blue'}>{'Confirm'}</StyledLinkButton>
-          </>
+        <MiniPokerCard color={scaleColor}>
+          <Input onKeyPress={onKeyPress} autoFocus={!finalScore} color={textColor} ref={inputRef} onChange={onChange} placeholder={placeholder} onFocus={onFocus} onBlur={onBlur} value={pendingScore}></Input>
+        </MiniPokerCard>
+        {hasFocus ?
+          <StyledLinkButton palette={'blue'}>{'Update'}</StyledLinkButton> :
+          <Label onClick={focusInput}>{'Edit Final Score'}</Label>
         }
+        {error && <ErrorMessage>{error.message}</ErrorMessage>}
       </Control>
     </ControlWrap>
   )
@@ -89,9 +135,19 @@ const PokerDimensionValueControl = (props: Props) => {
 export default createFragmentContainer(
   PokerDimensionValueControl,
   {
-    scaleValue: graphql`
-    fragment PokerDimensionValueControl_scaleValue on TemplateScaleValue {
-      ...MiniPokerCard_scaleValue
+    stage: graphql`
+    fragment PokerDimensionValueControl_stage on EstimateStage {
+      id
+      meetingId
+      finalScore
+      dimension {
+        selectedScale {
+          values {
+            label
+            color
+          }
+        }
+      }
     }`
   }
 )

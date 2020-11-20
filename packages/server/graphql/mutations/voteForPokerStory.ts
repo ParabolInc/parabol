@@ -4,6 +4,7 @@ import {MeetingTypeEnum, NewMeetingPhaseTypeEnum} from 'parabol-client/types/gra
 import isPhaseComplete from 'parabol-client/utils/meetings/isPhaseComplete'
 import getRethink from '../../database/rethinkDriver'
 import EstimatePhase from '../../database/types/EstimatePhase'
+import EstimateUserScore from '../../database/types/EstimateUserScore'
 import MeetingPoker from '../../database/types/MeetingPoker'
 import updateStage from '../../database/updateStage'
 import {getUserId, isTeamMember} from '../../utils/authorization'
@@ -23,11 +24,7 @@ const removeVoteForUserId = async (userId: string, stageId: string, meetingId: s
   return updateStage(meetingId, stageId, updater)
 }
 
-const upsertVote = async (
-  vote: {userId: string; label: string},
-  stageId: string,
-  meetingId: string
-) => {
+const upsertVote = async (vote: EstimateUserScore, stageId: string, meetingId: string) => {
   const r = await getRethink()
   const updater = (estimateStage) =>
     estimateStage.merge({
@@ -115,7 +112,8 @@ const voteForPokerStory = {
       if (!scoreValue) {
         return {error: {value: 'Score does not exists in scale'}}
       }
-      await upsertVote({userId: viewerId, label: scoreValue.label}, stageId, meetingId)
+      const userScore = new EstimateUserScore({userId: viewerId, label: scoreValue.label})
+      await upsertVote(userScore, stageId, meetingId)
     } else {
       // undo the vote, remove from array
       await removeVoteForUserId(viewerId, stageId, meetingId)

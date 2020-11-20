@@ -56,9 +56,9 @@ const PokerDiscussVoting = (props: Props) => {
   const isFacilitator = viewerId === facilitatorUserId
   return (
     <>
-      {!isFacilitator
-        ? <PokerDimensionValueControl hasFocus={false} placeholder={topLabel} scaleValue={null} />
-        : <PokerDimensionValueStatic scaleValue={finalScaleValue} />
+      {isFacilitator
+        ? <PokerDimensionValueControl placeholder={topLabel} stage={stage} />
+        : <PokerDimensionValueStatic label={finalScore} color={finalScaleValue?.color} />
       }
       {rows.map(({scaleValue, scores, key}) => (
         <PokerVotingRow key={key} setVotedUserEl={setVotedUserEl} scaleValue={scaleValue} scores={scores} />
@@ -74,13 +74,14 @@ export default createFragmentContainer(
   {
     stage: graphql`
     fragment PokerDiscussVoting_stage on EstimateStage {
+      ...PokerDimensionValueControl_stage
       finalScore
       dimension {
         selectedScale {
           values {
             ...PokerVotingRow_scaleValue
-            ...PokerDimensionValueStatic_scaleValue
             label
+            color
           }
         }
       }

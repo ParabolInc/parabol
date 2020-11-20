@@ -6,11 +6,12 @@ import useMutationProps from '~/hooks/useMutationProps'
 import {PALETTE} from '~/styles/paletteV2'
 import useAtmosphere from '../hooks/useAtmosphere'
 import PokerRevealVotesMutation from '../mutations/PokerRevealVotesMutation'
+import {BezierCurve} from '../types/constEnums'
 import {PokerActiveVoting_meeting} from '../__generated__/PokerActiveVoting_meeting.graphql'
 import {PokerActiveVoting_stage} from '../__generated__/PokerActiveVoting_stage.graphql'
 import {SetVotedUserEl} from './EstimatePhaseArea'
 import Icon from './Icon'
-import MiniPokerCardPlaceholder from './MiniPokerCardPlaceholder'
+import MiniPokerCard from './MiniPokerCard'
 import PokerVotingAvatarGroup from './PokerVotingAvatarGroup'
 import PokerVotingRowBase from './PokerVotingRowBase'
 import PokerVotingRowEmpty from './PokerVotingRowEmpty'
@@ -21,10 +22,12 @@ const CheckIcon = styled(Icon)({
   color: PALETTE.TEXT_GREEN
 })
 
-const BannerWrap = styled('div')({
+const BannerWrap = styled('div')<{showTip: boolean}>(({showTip}) => ({
   margin: 'auto',
-  padding: '8px 16px 200px' // accounts for deck of cards below the tip
-})
+  padding: '8px 16px 200px', // accounts for deck of cards below the tip
+  opacity: showTip ? 1 : 0,
+  transition: `opacity 200ms ${BezierCurve.DECELERATE}`
+}))
 
 const StyledTipBanner = styled(TipBanner)({
   margin: 'auto'
@@ -91,9 +94,9 @@ const PokerActiveVoting = (props: Props) => {
       {hasVotes
         ? <>
           <PokerVotingRowBase>
-            <MiniPokerCardPlaceholder>
+            <MiniPokerCard>
               <CheckIcon>check</CheckIcon>
-            </MiniPokerCardPlaceholder>
+            </MiniPokerCard>
             <PokerVotingAvatarGroup setVotedUserEl={setVotedUserEl} scores={scores} />
           </PokerVotingRowBase>
         </>
@@ -103,12 +106,9 @@ const PokerActiveVoting = (props: Props) => {
         {showRevealButton && <SecondaryButtonCool onClick={reveal}>{'Reveal Votes'}</SecondaryButtonCool>}
         {error && <StyledError>{error.message}</StyledError>}
       </RevealButtonBlock>
-      {showTip
-        ? <BannerWrap>
-          <StyledTipBanner>{tipCopy}</StyledTipBanner>
-        </BannerWrap>
-        : null
-      }
+      <BannerWrap showTip={showTip}>
+        <StyledTipBanner>{tipCopy}</StyledTipBanner>
+      </BannerWrap>
     </>
   )
 }

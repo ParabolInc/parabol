@@ -1,6 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
+import {PALETTE} from '../styles/paletteV2'
 import {PokerVotingRow_scaleValue} from '../__generated__/PokerVotingRow_scaleValue.graphql'
 import {PokerVotingRow_scores} from '../__generated__/PokerVotingRow_scores.graphql'
 import {SetVotedUserEl} from './EstimatePhaseArea'
@@ -17,10 +18,11 @@ interface Props {
 
 const PokerVotingRow = (props: Props) => {
   const {setVotedUserEl, scaleValue, scores} = props
-  const fallbackLabel = scaleValue ? undefined : scores[0]?.label ?? '#'
+  const color = scaleValue?.color ?? PALETTE.BACKGROUND_DARK
+  const label = scores[0]?.label ?? '#'
   return (
     <PokerVotingRowBase>
-      <MiniPokerCard scaleValue={scaleValue} fallbackLabel={fallbackLabel} />
+      <MiniPokerCard color={color}>{label}</MiniPokerCard>
       <PokerVotingAvatarGroup setVotedUserEl={setVotedUserEl} scores={scores} />
     </PokerVotingRowBase>
   )
@@ -31,7 +33,7 @@ export default createFragmentContainer(
   {
     scaleValue: graphql`
     fragment PokerVotingRow_scaleValue on TemplateScaleValue {
-      ...MiniPokerCard_scaleValue
+      color
     }`,
     scores: graphql`
     fragment PokerVotingRow_scores on EstimateUserScore @relay(plural: true) {

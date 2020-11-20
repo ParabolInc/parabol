@@ -9,7 +9,7 @@ graphql`
   fragment VoteForPokerStoryMutation_meeting on VoteForPokerStorySuccess {
     stage {
       scores {
-        ...PokerVotingAvatarGroup_scores
+        ...PokerVotingRow_scores
         userId
         label
       }

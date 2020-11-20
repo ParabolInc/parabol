@@ -1,8 +1,8 @@
-import React from 'react'
 import styled from '@emotion/styled'
-import MiniPokerCardPlaceholder from './MiniPokerCardPlaceholder'
-import PokerVotingRowBase from './PokerVotingRowBase'
+import React from 'react'
 import {PALETTE} from '~/styles/paletteV2'
+import MiniPokerCard from './MiniPokerCard'
+import PokerVotingRowBase from './PokerVotingRowBase'
 
 const HeaderLabel = styled('div')({
   color: PALETTE.TEXT_GRAY,
@@ -14,7 +14,7 @@ const HeaderLabel = styled('div')({
 
 const PokerVotingRowEmpty = () =>
   <PokerVotingRowBase>
-    <MiniPokerCardPlaceholder>{'?'}</MiniPokerCardPlaceholder>
+    <MiniPokerCard>{'?'}</MiniPokerCard>
     <HeaderLabel>{'No Votes'}</HeaderLabel>
   </PokerVotingRowBase>
 

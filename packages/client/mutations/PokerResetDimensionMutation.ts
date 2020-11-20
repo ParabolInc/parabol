@@ -8,6 +8,7 @@ graphql`
     stage {
       isVoting
       scores {
+        ...PokerVotingRow_scores
         userId
         label
       }
@@ -42,7 +43,7 @@ const PokerResetDimensionMutation: StandardMutation<TPokerResetDimensionMutation
       const stage = store.get(stageId)
       if (!stage) return
       stage.setValue(true, 'isVoting')
-      stage.setValue([], 'scores')
+      stage.setLinkedRecords([], 'scores')
       stage.setValue(null, 'finalScore')
     },
     onCompleted,

@@ -57,7 +57,6 @@ const PokerVotingAvatarGroup = (props: Props) => {
 
   // Todo: For the row of pass cards including folks who didn’t vote
   //       The avatars for those who didn’t vote transition in like connected meeting avatars
-  console.log('scores', visibleScores)
   return (
     <Wrapper ref={rowRef}>
       {visibleScores.map((score) => {
