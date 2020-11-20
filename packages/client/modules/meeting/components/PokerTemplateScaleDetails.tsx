@@ -9,6 +9,7 @@ import useAtmosphere from '../../../hooks/useAtmosphere'
 import textOverflow from '../../../styles/helpers/textOverflow'
 import {PALETTE} from '../../../styles/paletteV2'
 import {FONT_FAMILY} from '../../../styles/typographyV2'
+import {PokerCards} from '../../../types/constEnums'
 import {PokerTemplateScaleDetails_viewer} from '../../../__generated__/PokerTemplateScaleDetails_viewer.graphql'
 import AddPokerTemplateScaleValue from './AddPokerTemplateScaleValue'
 import EditableTemplateScaleName from './EditableTemplateScaleName'
@@ -128,7 +129,7 @@ const PokerTemplateScaleDetails = (props: Props) => {
             />
             <ScaleValues>
               {
-                [...scale.values.filter(({isSpecial}) => !isSpecial).map(({label}) => label), '?', 'Pass'].join(", ")
+                [...scale.values.filter(({isSpecial}) => !isSpecial).map(({label}) => label), PokerCards.QUESTION_CARD, PokerCards.PASS_CARD].join(", ")
               }
             </ScaleValues>
             <ScaleValues>{'Note: all scales include ? and Pass cards'}</ScaleValues>

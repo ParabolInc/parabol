@@ -5,6 +5,7 @@ import {SharedUpdater, StandardMutation} from '../types/relayMutations'
 import createProxyRecord from '../utils/relay/createProxyRecord'
 import {AddPokerTemplateScaleMutation as TAddPokerTemplateScaleMutation} from '../__generated__/AddPokerTemplateScaleMutation.graphql'
 import handleAddPokerTemplateScale from './handlers/handleAddPokerTemplateScale'
+import {PokerCards} from '../types/constEnums'
 
 graphql`
   fragment AddPokerTemplateScaleMutation_scale on AddPokerTemplateScalePayload {
@@ -69,13 +70,13 @@ const AddPokerTemplateScaleMutation: StandardMutation<
       } else {
         const questionMarkCard = createProxyRecord(store, 'TemplateScaleValue', {
           color: '#E55CA0',
-          label: '?',
+          label: PokerCards.QUESTION_CARD,
           value: -1,
           isSpecial: true
         })
         const passCard = createProxyRecord(store, 'TemplateScaleValue', {
           color: '#AC72E5',
-          label: 'X',
+          label: PokerCards.PASS_CARD,
           value: Math.pow(2, 31) - 1,
           isSpecial: true
         })

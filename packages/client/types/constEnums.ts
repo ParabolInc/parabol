@@ -178,7 +178,7 @@ export const enum PokerCards {
   RADIUS = 1200,
   // the % of the first & last card that sits below the fold (0-1)
   MAX_HIDDEN = .35,
-  PASS_CARD = 'X',
+  PASS_CARD = 'Pass',
   QUESTION_CARD = '?'
 }
 export const enum UserTaskViewFilterLabels {

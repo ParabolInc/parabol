@@ -87,7 +87,7 @@ const ScaleDropdownMenuItem = forwardRef((props: Props, ref) => {
             <ScaleName>{scale.name}</ScaleName>
             <ScaleValues>
               {
-                [...values.filter(({isSpecial}) => !isSpecial).map(({label}) => label), '?', 'Pass'].join(", ")
+                [...values.filter(({isSpecial}) => !isSpecial).map(({label}) => label), PokerCards.QUESTION_CARD, PokerCards.PASS_CARD].join(", ")
               }
             </ScaleValues>
           </ScaleNameAndValues>
