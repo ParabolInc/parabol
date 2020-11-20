@@ -4,7 +4,9 @@ import React from 'react'
 import {DragDropContext, Droppable, Draggable} from 'react-beautiful-dnd'
 import {createFragmentContainer} from 'react-relay'
 import {TemplateScaleValueList_scale} from '~/__generated__/TemplateScaleValueList_scale.graphql'
-import dndNoise from '../../../utils/dndNoise'
+import useAtmosphere from '../../../hooks/useAtmosphere'
+import useMutationProps from '../../../hooks/useMutationProps'
+import MovePokerTemplateScaleValueMutation from '../../../mutations/MovePokerTemplateScaleValueMutation'
 import TemplateScaleValueItem from './TemplateScaleValueItem'
 
 interface Props {
@@ -17,47 +19,35 @@ const ScaleList = styled('div')({
   width: '100%'
 })
 
-const TEMPLATE_DIMENSION = 'TEMPLATE_DIMENSION'
+const TEMPLATE_SCALE_VALUE = 'TEMPLATE_SCALE_VALUE'
 
 const TemplateScaleValueList = (props: Props) => {
   const {scale} = props
+  const {onError, onCompleted} = useMutationProps()
+  const atmosphere = useAtmosphere()
 
   const onDragEnd = (result) => {
     const {source, destination} = result
-    console.log(`${source}:${destination}; ${dndNoise}`)
-    // const {atmosphere, scaleValues} = props
-    // if (
-    //   !destination ||
-    //   destination.droppableId !== TEMPLATE_DIMENSION ||
-    //   source.droppableId !== TEMPLATE_DIMENSION ||
-    //   destination.index === source.index
-    // ) {
-    //   return
-    // }
+    const {values: scaleValues} = scale
+    if (
+      !destination ||
+      destination.droppableId !== TEMPLATE_SCALE_VALUE ||
+      source.droppableId !== TEMPLATE_SCALE_VALUE ||
+      destination.index === source.index
+    ) {
+      return
+    }
 
-    // const sourceScale = scaleValues[source.index]
-    // const destinationScale = scaleValues[destination.index]
+    const sourceScaleValue = scaleValues[source.index]
 
-    // let sortOrder
-    // if (destination.index === 0) {
-    //   sortOrder = destinationScale.sortOrder - 1 + dndNoise()
-    // } else if (destination.index === scaleValues.length - 1) {
-    //   sortOrder = destinationScale.sortOrder + 1 + dndNoise()
-    // } else {
-    //   const offset = source.index > destination.index ? -1 : 1
-    //   sortOrder =
-    //     (scaleValues[destination.index + offset].sortOrder + destinationScale.sortOrder) / 2 +
-    //     dndNoise()
-    // }
-
-    // const {id: scaleId} = sourceScale
-    // const variables = {scaleId, sortOrder}
+    const variables = {scaleId: scale.id, label: sourceScaleValue.label, index: destination.index}
+    MovePokerTemplateScaleValueMutation(atmosphere, variables, {onError, onCompleted})
   }
 
   return (
     <DragDropContext onDragEnd={onDragEnd}>
       <ScaleList>
-        <Droppable droppableId={TEMPLATE_DIMENSION} isDropDisabled={false}>
+        <Droppable droppableId={TEMPLATE_SCALE_VALUE} isDropDisabled={false}>
           {(provided) => {
             return (
               <div ref={provided.innerRef}>
@@ -96,9 +86,11 @@ const TemplateScaleValueList = (props: Props) => {
 export default createFragmentContainer(TemplateScaleValueList, {
   scale: graphql`
     fragment TemplateScaleValueList_scale on TemplateScale {
+      id
       ...TemplateScaleValueItem_scale
       values {
         id
+        label
         isSpecial
         ...TemplateScaleValueItem_scaleValue
       }

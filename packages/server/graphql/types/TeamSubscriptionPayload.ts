@@ -58,6 +58,7 @@ import UpdateUserProfilePayload from './UpdateUserProfilePayload'
 import UpgradeToProPayload from './UpgradeToProPayload'
 import {EndCheckInSuccess} from './EndCheckInPayload'
 import {EndRetrospectiveSuccess} from './EndRetrospectivePayload'
+import {MovePokerTemplateScaleValueSuccess} from './MovePokerTemplateScaleValuePayload'
 import {PersistJiraSearchQuerySuccess} from './PersistJiraSearchQueryPayload'
 
 const types = [
@@ -120,7 +121,8 @@ const types = [
   UpdatePokerTemplateDimensionScalePayload,
   UpdatePokerTemplateScaleValuePayload,
   UpdateUserProfilePayload,
-  PersistJiraSearchQuerySuccess
+  PersistJiraSearchQuerySuccess,
+  MovePokerTemplateScaleValueSuccess
 ]
 
 export default graphQLSubscriptionType('TeamSubscriptionPayload', types)

@@ -8538,6 +8538,20 @@ export interface IMovePokerTemplateScaleValueOnMutationArguments {
   index: number
 }
 
+export interface IMovePokerTemplateScaleValueOnMutationArguments {
+  scaleId: string
+
+  /**
+   * The label of the moving scale value
+   */
+  label: string
+
+  /**
+   * The index position where the scale value is moving to
+   */
+  index: number
+}
+
 export interface IAcceptTeamInvitationPayload {
   __typename: 'AcceptTeamInvitationPayload'
   error: IStandardMutationError | null
@@ -10969,6 +10983,22 @@ export interface IPokerSetFinalScoreSuccess {
    * The stage that holds the updated finalScore
    */
   stage: IEstimateStage
+}
+
+/**
+ * Return object for MovePokerTemplateScaleValuePayload
+ */
+export type MovePokerTemplateScaleValuePayload =
+  | IErrorPayload
+  | IMovePokerTemplateScaleValueSuccess
+
+export interface IMovePokerTemplateScaleValueSuccess {
+  __typename: 'MovePokerTemplateScaleValueSuccess'
+
+  /**
+   * The scale after values are moved
+   */
+  scale: ITemplateScale
 }
 
 /**
