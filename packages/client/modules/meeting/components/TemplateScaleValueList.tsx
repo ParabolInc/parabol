@@ -51,28 +51,26 @@ const TemplateScaleValueList = (props: Props) => {
           {(provided) => {
             return (
               <div ref={provided.innerRef}>
-                {scale.values.map((scaleValue, idx) => {
-                  return (
-                    <Draggable
-                      key={scaleValue.id}
-                      draggableId={scaleValue.id}
-                      index={idx}
-                      isDragDisabled={scaleValue.isSpecial}
-                    >
-                      {(dragProvided, dragSnapshot) => {
-                        return (
-                          <TemplateScaleValueItem
-                            isOwner={!scaleValue.isSpecial}
-                            scale={scale}
-                            scaleValue={scaleValue}
-                            isDragging={dragSnapshot.isDragging}
-                            dragProvided={dragProvided}
-                          />
-                        )
-                      }}
-                    </Draggable>
-                  )
-                })}
+                {scale.values.map((scaleValue, idx) => scaleValue.isSpecial ? null : (
+                  <Draggable
+                    key={scaleValue.id}
+                    draggableId={scaleValue.id}
+                    index={idx}
+                    isDragDisabled={scaleValue.isSpecial}
+                  >
+                    {(dragProvided, dragSnapshot) => {
+                      return (
+                        <TemplateScaleValueItem
+                          isOwner={!scaleValue.isSpecial}
+                          scale={scale}
+                          scaleValue={scaleValue}
+                          isDragging={dragSnapshot.isDragging}
+                          dragProvided={dragProvided} />
+                      )
+                    }}
+                  </Draggable>
+                )
+                )}
                 {provided.placeholder}
               </div>
             )
