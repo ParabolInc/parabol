@@ -138,16 +138,16 @@ export default class Atmosphere extends Environment {
   }
 
   fetchHTTP = async (body: FetchHTTPData, connectionId?: string) => {
-    const {payload} = body
-    const {uploadables} = payload
+    const uploadables = body.payload.uploadables
+    const headers = {
+      accept: 'application/json',
+      Authorization: this.authToken ? `Bearer ${this.authToken}` : '',
+      'x-correlation-id': connectionId || '',
+    }
+    if (!uploadables) headers['content-type'] = 'application/json'
     const res = await fetch('/graphql', {
       method: 'POST',
-      headers: {
-        accept: 'application/json',
-        Authorization: this.authToken ? `Bearer ${this.authToken}` : '',
-        'x-correlation-id': connectionId || '',
-        'content-type': uploadables ? 'multipart/form-data' : 'application/json'
-      },
+      headers,
       body: uploadables ? toFormData(body) : JSON.stringify(body)
     })
     const contentTypeHeader = res.headers.get('content-type') || ''
