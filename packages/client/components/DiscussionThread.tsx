@@ -58,6 +58,7 @@ const DiscussionThread = (props: Props) => {
     [commentors]
   )
   const edges = thread?.edges ?? [] // should never happen, but Terry reported it in demo. likely relay error
+  const threadables = edges.map(({node}) => node)
   const setIsCommentUnread = (isCommentUnread: boolean) => {
     commitLocalUpdate(atmosphere, (store) => {
       if (isPokerMeeting && meetingId) {
@@ -67,11 +68,10 @@ const DiscussionThread = (props: Props) => {
     })
   }
   useEffect(() => {
-    if (isPokerMeeting && !isCommentUnread && !isRightDrawerOpen) {
+    if (threadables.length && isPokerMeeting && !isCommentUnread && !isRightDrawerOpen) {
       setIsCommentUnread(true)
     }
   }, [edges])
-  const threadables = edges.map(({node}) => node)
   const getMaxSortOrder = () => {
     return Math.max(0, ...threadables.map((threadable) => threadable.threadSortOrder || 0))
   }
