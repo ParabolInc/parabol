@@ -17,6 +17,7 @@ import {Breakpoint, DiscussionThreadEnum} from '~/types/constEnums'
 import useBreakpoint from '~/hooks/useBreakpoint'
 import ResponsiveDashSidebar from './ResponsiveDashSidebar'
 import styled from '@emotion/styled'
+import useGotoStageId from '~/hooks/useGotoStageId'
 
 const StyledMeetingHeaderAndPhase = styled(MeetingHeaderAndPhase)<{isOpen: boolean}>(
   ({isOpen}) => ({
@@ -25,19 +26,19 @@ const StyledMeetingHeaderAndPhase = styled(MeetingHeaderAndPhase)<{isOpen: boole
 )
 
 interface Props extends PokerMeetingPhaseProps {
+  gotoStageId: ReturnType<typeof useGotoStageId>
   meeting: PokerEstimatePhase_meeting
   toggleDrawer: () => void
 }
 
 const PokerEstimatePhase = (props: Props) => {
-  const {avatarGroup, meeting, toggleDrawer, toggleSidebar} = props
+  const {avatarGroup, meeting, toggleDrawer, toggleSidebar, gotoStageId} = props
   const {localStage, endedAt, isCommentUnread, isRightDrawerOpen, showSidebar} = meeting
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const meetingContentRef = useRef<HTMLDivElement>(null)
   if (!localStage) return null
   const {story} = localStage
   const {__typename} = story!
-
   return (
     <MeetingContent ref={meetingContentRef}>
       <StyledMeetingHeaderAndPhase isOpen={isRightDrawerOpen} hideBottomBar={!!endedAt}>
@@ -54,7 +55,7 @@ const PokerEstimatePhase = (props: Props) => {
         </MeetingTopBar>
         {__typename === 'JiraIssue' && <PokerEstimateHeaderCardJira stage={localStage as any} />}
         <PhaseWrapper>
-          <EstimatePhaseArea meeting={meeting} />
+          <EstimatePhaseArea gotoStageId={gotoStageId} meeting={meeting} />
         </PhaseWrapper>
       </StyledMeetingHeaderAndPhase>
       <ResponsiveDashSidebar isOpen={isRightDrawerOpen} isRightDrawer onToggle={toggleDrawer}>

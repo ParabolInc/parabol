@@ -1,9 +1,10 @@
-import {GraphQLFloat, GraphQLID, GraphQLNonNull} from 'graphql'
+import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {MeetingTypeEnum, NewMeetingPhaseTypeEnum} from 'parabol-client/types/graphql'
 import isPhaseComplete from 'parabol-client/utils/meetings/isPhaseComplete'
 import getRethink from '../../database/rethinkDriver'
 import EstimatePhase from '../../database/types/EstimatePhase'
+import EstimateUserScore from '../../database/types/EstimateUserScore'
 import MeetingPoker from '../../database/types/MeetingPoker'
 import updateStage from '../../database/updateStage'
 import {getUserId, isTeamMember} from '../../utils/authorization'
@@ -23,11 +24,7 @@ const removeVoteForUserId = async (userId: string, stageId: string, meetingId: s
   return updateStage(meetingId, stageId, updater)
 }
 
-const upsertVote = async (
-  vote: {userId: string; value: number; label: string},
-  stageId: string,
-  meetingId: string
-) => {
+const upsertVote = async (vote: EstimateUserScore, stageId: string, meetingId: string) => {
   const r = await getRethink()
   const updater = (estimateStage) =>
     estimateStage.merge({
@@ -61,8 +58,8 @@ const voteForPokerStory = {
       description: 'The stage that contains the dimension to vote for'
     },
     score: {
-      type: GraphQLFloat,
-      description: 'The value of the scaleValue to vote for. If null, remove the vote'
+      type: GraphQLString,
+      description: 'The label of the scaleValue to vote for. If null, remove the vote'
     }
   },
   resolve: async (
@@ -111,15 +108,12 @@ const voteForPokerStory = {
     const {values} = scale
     if (score) {
       // validate the score is a value on the scale
-      const scoreValue = values.find((value) => value.value === score)
+      const scoreValue = values.find((value) => value.label === score)
       if (!scoreValue) {
         return {error: {value: 'Score does not exists in scale'}}
       }
-      await upsertVote(
-        {userId: viewerId, value: score, label: scoreValue.label},
-        stageId,
-        meetingId
-      )
+      const userScore = new EstimateUserScore({userId: viewerId, label: scoreValue.label})
+      await upsertVote(userScore, stageId, meetingId)
     } else {
       // undo the vote, remove from array
       await removeVoteForUserId(viewerId, stageId, meetingId)

@@ -17,6 +17,7 @@ import MeetingHeaderAndPhase from './MeetingHeaderAndPhase'
 import MeetingTopBar from './MeetingTopBar'
 import PhaseHeaderTitle from './PhaseHeaderTitle'
 import PhaseWrapper from './PhaseWrapper'
+import useGotoStageId from '~/hooks/useGotoStageId'
 
 const CheckIn = styled('div')({
   display: 'flex',
@@ -41,6 +42,7 @@ interface Props {
   avatarGroup: ReactElement
   meeting: NewMeetingCheckIn_meeting
   toggleSidebar: () => void
+  gotoStageId?: ReturnType<typeof useGotoStageId>
 }
 
 const NewMeetingCheckIn = (props: Props) => {

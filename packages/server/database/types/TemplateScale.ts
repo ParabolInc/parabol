@@ -1,4 +1,5 @@
 import shortid from 'shortid'
+import {PokerCards} from '../../../client/types/constEnums'
 import TemplateScaleValue from './TemplateScaleValue'
 
 export interface TemplateScaleInput {
@@ -13,13 +14,13 @@ export interface TemplateScaleInput {
 
 const questionMarkCard = new TemplateScaleValue({
   color: '#E55CA0',
-  label: '?',
+  label: PokerCards.QUESTION_CARD as string,
   value: -1,
   isSpecial: true
 })
 const passCard = new TemplateScaleValue({
   color: '#AC72E5',
-  label: 'X',
+  label: PokerCards.PASS_CARD as string,
   value: Math.pow(2, 31) - 1,
   isSpecial: true
 })

@@ -170,8 +170,16 @@ export const enum MeetingLabels {
 export const enum PokerCards {
   HEIGHT = 175,
   WIDTH = 125,
-  OVERLAP = 96
-
+  OVERLAP = 96,
+  MAX_VALUE = 2147483647,
+  // the angle in degrees from the middle of the deck to a deck edge (0-90)
+  TILT = 8,
+  // number of pixels from the middle of the circle below the fold to the middle of the card (0-2x innerHeight)
+  RADIUS = 1200,
+  // the % of the first & last card that sits below the fold (0-1)
+  MAX_HIDDEN = .35,
+  PASS_CARD = 'X',
+  QUESTION_CARD = '?'
 }
 export const enum UserTaskViewFilterLabels {
   ALL_TEAMS = 'All Teams',
