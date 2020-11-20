@@ -2,7 +2,8 @@ import graphql from 'babel-plugin-relay/macro'
 import React, {ReactElement, Suspense, useEffect} from 'react'
 import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
-import useSidebar from '~/hooks/useSidebar'
+import useBreakpoint from '~/hooks/useBreakpoint'
+import {Breakpoint} from '~/types/constEnums'
 import {PokerMeeting_meeting} from '~/__generated__/PokerMeeting_meeting.graphql'
 import useMeeting from '../hooks/useMeeting'
 import NewMeetingAvatarGroup from '../modules/meeting/components/MeetingAvatarGroup/NewMeetingAvatarGroup'
@@ -51,6 +52,7 @@ const PokerMeeting = (props: Props) => {
     handleMenuClick
   } = useMeeting(meeting)
   const atmosphere = useAtmosphere()
+  const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const {
     id: meetingId,
     isCommentUnread,
@@ -59,23 +61,22 @@ const PokerMeeting = (props: Props) => {
     viewerMeetingMember,
     localPhase
   } = meeting
-  const {isOpen: isDrawerInitiallyOpen} = useSidebar(showSidebar)
 
-  const handleLocalUpdate = (isDrawerOpen: boolean) => {
+  const toggleDrawer = () => {
     commitLocalUpdate(atmosphere, (store) => {
       const meeting = store.get(meetingId)!
-      meeting.setValue(isDrawerOpen, 'isRightDrawerOpen')
-      if (isDrawerOpen && isCommentUnread) {
-        meeting.setValue(false, 'isCommentUnread')
-      } else if (isCommentUnread === undefined) {
+      if (isRightDrawerOpen && isCommentUnread) {
         meeting.setValue(false, 'isCommentUnread')
       }
+      meeting.setValue(!isRightDrawerOpen, 'isRightDrawerOpen')
     })
   }
-  const toggleDrawer = () => handleLocalUpdate(!isRightDrawerOpen)
   useEffect(() => {
-    handleLocalUpdate(isDrawerInitiallyOpen)
-  }, [])
+    commitLocalUpdate(atmosphere, (store) => {
+      const meeting = store.get(meetingId)!
+      meeting.setValue(isDesktop, 'isRightDrawerOpen')
+    })
+  }, [isDesktop])
 
   if (!safeRoute) return null
   const {user} = viewerMeetingMember

@@ -76,28 +76,28 @@ const StyledIcon = styled(Icon)({
 
 const badgeSize = 10
 
-const Badge = styled('div')<{isCommentUnread: boolean}>(({isCommentUnread}) => ({
+const Badge = styled('div')({
   bottom: 14,
-  display: isCommentUnread ? 'block' : 'none',
+  display: 'block',
   height: badgeSize,
   position: 'relative',
   right: -8,
   width: badgeSize
-}))
+})
 
-const BadgeDot = styled('div')({
+const BadgeDot = styled('div')<{isCommentUnread: boolean}>(({isCommentUnread}) => ({
   backgroundColor: PALETTE.PROMPT_RED,
   border: '1px solid rgba(255, 255, 255, .65)',
   borderRadius: badgeSize,
+  display: isCommentUnread ? 'flex' : 'none',
   height: badgeSize,
   width: badgeSize
-})
+}))
 
 const ButtonContainer = styled('div')({
   alignItems: 'center',
   alignContent: 'center',
-  display: 'flex',
-  paddingLeft: 4
+  display: 'flex'
 })
 
 const DiscussionButton = styled(PlainButton)({
@@ -150,8 +150,8 @@ const MeetingTopBar = (props: Props) => {
         {avatarGroup}
         {showDiscussionButton && toggleDrawer && (
           <ButtonContainer>
-            <Badge isCommentUnread={isCommentUnread}>
-              <BadgeDot />
+            <Badge>
+              <BadgeDot isCommentUnread={isCommentUnread} />
             </Badge>
             <DiscussionButton onClick={toggleDrawer}>
               <StyledIcon>comment</StyledIcon>

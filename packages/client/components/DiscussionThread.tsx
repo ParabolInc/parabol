@@ -67,7 +67,7 @@ const DiscussionThread = (props: Props) => {
     })
   }
   useEffect(() => {
-    if (isCommentUnread === false && !isRightDrawerOpen) {
+    if (isPokerMeeting && !isCommentUnread && !isRightDrawerOpen) {
       setIsCommentUnread(true)
     }
   }, [edges])
