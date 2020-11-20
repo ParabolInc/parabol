@@ -26,14 +26,14 @@
 
 import {sign} from 'jsonwebtoken'
 import {toEpochSeconds} from '../../server/utils/epochTime'
-import {JWT_LIFESPAN} from '../../server/utils/serverConstants'
+import {Threshold} from '../../client/types/constEnums'
 
 const login = (_overrides = {}) => {
   Cypress.log({
     name: 'login'
   })
   const now = Date.now()
-  const exp = toEpochSeconds(now + JWT_LIFESPAN)
+  const exp = toEpochSeconds(now + Threshold.JWT_LIFESPAN)
   const iat = toEpochSeconds(now)
   const tokenObj = {
     sub: 'local|bZgjbfchN',
@@ -88,9 +88,7 @@ const propertyErr = /^Cannot read property/
 const visitReflect = () => {
   cy.viewport(1280, 720)
   cy.visit('/retrospective-demo/reflect')
-  cy.get('[data-cy=start-demo-button]')
-    .should('be.visible')
-    .click({force: true})
+  cy.get('[data-cy=start-demo-button]').should('be.visible').click({force: true})
 }
 
 const visitPhase = (phase: string, idx = '') => {
@@ -111,9 +109,7 @@ const visitPhase = (phase: string, idx = '') => {
     }
     return undefined
   })
-  cy.get(`[data-cy=next-phase]`)
-    .should('be.visible')
-    .dblclick()
+  cy.get(`[data-cy=next-phase]`).should('be.visible').dblclick()
 
   cy.url().should('be.eq', `http://localhost:3000/retrospective-demo/${phase}${idx}`)
 }

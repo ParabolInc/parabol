@@ -15,7 +15,6 @@ import PokerEstimateHeaderCardJira from './PokerEstimateHeaderCardJira'
 import {PokerMeetingPhaseProps} from './PokerMeeting'
 import {Breakpoint, DiscussionThreadEnum} from '~/types/constEnums'
 import useBreakpoint from '~/hooks/useBreakpoint'
-import useSidebar from '~/hooks/useSidebar'
 import ResponsiveDashSidebar from './ResponsiveDashSidebar'
 import styled from '@emotion/styled'
 
@@ -26,14 +25,15 @@ const StyledMeetingHeaderAndPhase = styled(MeetingHeaderAndPhase)<{isOpen: boole
 )
 
 interface Props extends PokerMeetingPhaseProps {
+  isDrawerOpen: boolean
   meeting: PokerEstimatePhase_meeting
+  toggleDrawer: () => void
 }
 
 const PokerEstimatePhase = (props: Props) => {
-  const {avatarGroup, toggleSidebar, meeting} = props
+  const {avatarGroup, isDrawerOpen, meeting, toggleDrawer, toggleSidebar} = props
   const {localStage, endedAt, showSidebar} = meeting
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
-  const {isOpen, toggle: toggleDrawer} = useSidebar(showSidebar)
   const meetingContentRef = useRef<HTMLDivElement>(null)
   if (!localStage) return null
   const {story} = localStage
@@ -41,11 +41,11 @@ const PokerEstimatePhase = (props: Props) => {
 
   return (
     <MeetingContent ref={meetingContentRef}>
-      <StyledMeetingHeaderAndPhase isOpen={isOpen} hideBottomBar={!!endedAt}>
+      <StyledMeetingHeaderAndPhase isOpen={isDrawerOpen} hideBottomBar={!!endedAt}>
         <MeetingTopBar
           avatarGroup={avatarGroup}
           isMeetingSidebarCollapsed={!showSidebar}
-          isOpen={isOpen}
+          isDrawerOpen={isDrawerOpen}
           toggleSidebar={toggleSidebar}
           toggleDrawer={toggleDrawer}
         >
@@ -57,10 +57,10 @@ const PokerEstimatePhase = (props: Props) => {
           <EstimatePhaseArea meeting={meeting} />
         </PhaseWrapper>
       </StyledMeetingHeaderAndPhase>
-      <ResponsiveDashSidebar isOpen={isOpen} isRightSidebar onToggle={toggleDrawer}>
+      <ResponsiveDashSidebar isOpen={isDrawerOpen} isRightSidebar onToggle={toggleDrawer}>
         <EstimatePhaseDiscussionDrawer
           isDesktop={isDesktop}
-          isOpen={isOpen}
+          isOpen={isDrawerOpen}
           meeting={meeting}
           meetingContentRef={meetingContentRef}
           onToggle={toggleDrawer}

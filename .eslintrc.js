@@ -26,5 +26,5 @@ module.exports = {
     '@typescript-eslint/no-var-requires': 'off',
     '@typescript-eslint/no-parameter-properties': 'off',
     '@typescript-eslint/no-namespace': 'off'
-  },
+  }
 }

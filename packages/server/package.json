@@ -3,7 +3,7 @@
   "description": "An open-source app for building smarter, more agile teams.",
   "author": "Parabol Inc. <love@parabol.com> (http://github.com/ParabolInc)",
   "license": "AGPL-3.0",
-  "version": "5.24.0",
+  "version": "5.25.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/ParabolInc/parabol"
@@ -43,7 +43,7 @@
     "cross-env": "^5.1.6",
     "css-loader": "^3.1.0",
     "dynamic-serializer": "^0.2.1",
-    "eslint": "^7.13.0",
+    "eslint": "^6.6.0",
     "eslint-config-prettier": "^6.15.0",
     "eslint-plugin-emotion": "^10.0.14",
     "eslint-plugin-prettier": "^3.1.1",
@@ -121,7 +121,7 @@
     "node-env-flag": "0.1.0",
     "node-fetch": "^2.6.0",
     "nodemailer": "^6.4.6",
-    "parabol-client": "^5.24.0",
+    "parabol-client": "^5.25.0",
     "pm2": "^4.4.1",
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
@@ -132,8 +132,8 @@
     "shortid": "2.2.15",
     "string-similarity": "^3.0.0",
     "stripe": "^4.24.0",
-    "tslib": "^2.0.3",
-    "uWebSockets.js": "uNetworking/uWebSockets.js#v17.6.0",
+    "tslib": "^1.11.1",
+    "uWebSockets.js": "uNetworking/uWebSockets.js#v18.8.0",
     "webpack-hot-client": "https://github.com/mattkrick/webpack-hot-client/tarball/2e0b804700ba886f17bd9c5e2e60ec03b58aecdb"
   },
   "jest": {

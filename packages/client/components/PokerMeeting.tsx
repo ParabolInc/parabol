@@ -1,8 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import React, {ReactElement, Suspense} from 'react'
 import {createFragmentContainer} from 'react-relay'
-import useBreakpoint from '~/hooks/useBreakpoint'
-import {Breakpoint} from '~/types/constEnums'
+import useSidebar from '~/hooks/useSidebar'
 import {PokerMeeting_meeting} from '~/__generated__/PokerMeeting_meeting.graphql'
 import useMeeting from '../hooks/useMeeting'
 import NewMeetingAvatarGroup from '../modules/meeting/components/MeetingAvatarGroup/NewMeetingAvatarGroup'
@@ -19,13 +18,13 @@ interface Props {
 }
 
 const phaseLookup = {
-  [NewMeetingPhaseTypeEnum.checkin]: lazyPreload(() =>
-    import(/* webpackChunkName: 'NewMeetingCheckIn' */ './NewMeetingCheckIn')
+  [NewMeetingPhaseTypeEnum.checkin]: lazyPreload(
+    () => import(/* webpackChunkName: 'NewMeetingCheckIn' */ './NewMeetingCheckIn')
   ),
   SCOPE: lazyPreload(() => import(/* webpackChunkName: 'ScopePhase' */ './ScopePhase')),
-  ESTIMATE: lazyPreload(() =>
-    import(/* webpackChunkName: 'PokerEstimatePhase' */ './PokerEstimatePhase')
-  )
+  ESTIMATE: lazyPreload(
+    () => import(/* webpackChunkName: 'PokerEstimatePhase' */ './PokerEstimatePhase')
+  ),
 }
 
 type PhaseComponent = ValueOf<typeof phaseLookup>
@@ -38,7 +37,6 @@ export interface PokerMeetingPhaseProps {
 
 const PokerMeeting = (props: Props) => {
   const {meeting} = props
-  const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const {
     toggleSidebar,
     room,
@@ -49,15 +47,16 @@ const PokerMeeting = (props: Props) => {
     handleGotoNext,
     gotoStageId,
     safeRoute,
-    handleMenuClick
+    handleMenuClick,
   } = useMeeting(meeting)
-  if (!safeRoute) return null
   const {showSidebar, viewerMeetingMember, localPhase} = meeting
+  const {isOpen: isDrawerOpen, toggle: toggleDrawer} = useSidebar(showSidebar)
+  if (!safeRoute) return null
   const {user} = viewerMeetingMember
   const {featureFlags} = user
   const {video: allowVideo} = featureFlags
   const localPhaseType = localPhase?.phaseType
-  const isRightSidebarOpen = isDesktop && localPhaseType === NewMeetingPhaseTypeEnum.ESTIMATE
+  const isRightSidebarOpen = isDrawerOpen && localPhaseType === NewMeetingPhaseTypeEnum.ESTIMATE
   const Phase = phaseLookup[localPhaseType] as PhaseComponent
   return (
     <MeetingStyles>
@@ -71,8 +70,10 @@ const PokerMeeting = (props: Props) => {
       </ResponsiveDashSidebar>
       <Suspense fallback={''}>
         <Phase
+          isDrawerOpen={isDrawerOpen}
           meeting={meeting}
           toggleSidebar={toggleSidebar}
+          toggleDrawer={toggleDrawer}
           avatarGroup={
             <NewMeetingAvatarGroup
               allowVideo={allowVideo}
@@ -127,5 +128,5 @@ export default createFragmentContainer(PokerMeeting, {
         }
       }
     }
-  `
+  `,
 })

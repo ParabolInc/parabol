@@ -1,7 +1,7 @@
 import crypto from 'crypto'
 import promisify from 'es6-promisify'
 import {GraphQLID, GraphQLList, GraphQLNonNull} from 'graphql'
-import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import {SubscriptionChannel, Threshold} from 'parabol-client/types/constEnums'
 import {SuggestedActionTypeEnum} from 'parabol-client/types/graphql'
 import getRethink from '../../database/rethinkDriver'
 import NotificationTeamInvitation from '../../database/types/NotificationTeamInvitation'
@@ -14,7 +14,6 @@ import getBestInvitationMeeting from '../../utils/getBestInvitationMeeting'
 import makeAppLink from '../../utils/makeAppLink'
 import publish from '../../utils/publish'
 import segmentIo from '../../utils/segmentIo'
-import {TEAM_INVITATION_LIFESPAN} from '../../utils/serverConstants'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import rateLimit from '../rateLimit'
@@ -57,10 +56,7 @@ export default {
       // RESOLUTION
       const subOptions = {mutatorId, operationId}
       const [users, team, inviter] = await Promise.all([
-        r
-          .table('User')
-          .getAll(r.args(invitees), {index: 'email'})
-          .run(),
+        r.table('User').getAll(r.args(invitees), {index: 'email'}).run(),
         dataLoader.get('teams').load(teamId),
         dataLoader.get('users').load(viewerId)
       ])
@@ -75,7 +71,7 @@ export default {
       })
       const bufferTokens = await Promise.all<Buffer>(newInvitees.map(() => randomBytes(48)))
       const tokens = bufferTokens.map((buffer: Buffer) => buffer.toString('hex'))
-      const expiresAt = new Date(Date.now() + TEAM_INVITATION_LIFESPAN)
+      const expiresAt = new Date(Date.now() + Threshold.TEAM_INVITATION_LIFESPAN)
       // insert invitation records
       const teamInvitationsToInsert = newInvitees.map((email, idx) => {
         return new TeamInvitation({
@@ -87,10 +83,7 @@ export default {
           token: tokens[idx]
         })
       })
-      await r
-        .table('TeamInvitation')
-        .insert(teamInvitationsToInsert)
-        .run()
+      await r.table('TeamInvitation').insert(teamInvitationsToInsert).run()
 
       // remove suggested action, if any
       let removedSuggestedActionId
@@ -115,10 +108,7 @@ export default {
         }
       })
       if (notificationsToInsert.length > 0) {
-        await r
-          .table('Notification')
-          .insert(notificationsToInsert)
-          .run()
+        await r.table('Notification').insert(notificationsToInsert).run()
       }
 
       const bestMeeting = await getBestInvitationMeeting(teamId, meetingId, dataLoader)

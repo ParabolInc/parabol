@@ -96,7 +96,7 @@ interface Props {
   avatarGroup: ReactElement
   children?: ReactNode
   isMeetingSidebarCollapsed: boolean
-  isOpen?: boolean
+  isDrawerOpen?: boolean
   toggleSidebar: () => void
   toggleDrawer?: () => void
 }
@@ -106,12 +106,12 @@ const MeetingTopBar = (props: Props) => {
     avatarGroup,
     children,
     isMeetingSidebarCollapsed,
-    isOpen,
+    isDrawerOpen,
     toggleDrawer,
     toggleSidebar,
   } = props
   const showButton = isDemoRoute() && !hasToken()
-  const showDiscussionButton = toggleDrawer && !isOpen
+  const showDiscussionButton = toggleDrawer && !isDrawerOpen
   return (
     <MeetingTopBarStyles>
       <HeadingBlock isMeetingSidebarCollapsed={isMeetingSidebarCollapsed}>

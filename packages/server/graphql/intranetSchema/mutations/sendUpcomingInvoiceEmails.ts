@@ -1,13 +1,13 @@
 import {GraphQLList, GraphQLString} from 'graphql'
 import {OrgUserRole, TierEnum} from 'parabol-client/types/graphql'
 import {months} from 'parabol-client/utils/makeDateString'
+import {Threshold} from '../../../../client/types/constEnums'
 import getRethink from '../../../database/rethinkDriver'
 import {UpcomingInvoiceEmailProps} from '../../../email/components/UpcomingInvoiceEmail'
 import UpcomingInvoiceEmailTemplate from '../../../email/components/UpcomingInvoiceEmailTemplate'
 import getMailManager from '../../../email/getMailManager'
 import {requireSU} from '../../../utils/authorization'
 import makeAppLink from '../../../utils/makeAppLink'
-import {UPCOMING_INVOICE_EMAIL_WARNING} from '../../../utils/serverConstants'
 
 interface Details extends UpcomingInvoiceEmailProps {
   emails: string[]
@@ -48,20 +48,16 @@ const sendUpcomingInvoiceEmails = {
     requireSU(authToken)
     const r = await getRethink()
     const now = new Date()
-    const periodEndThresh = new Date(Date.now() + UPCOMING_INVOICE_EMAIL_WARNING)
-    const lastSentThresh = new Date(Date.now() - UPCOMING_INVOICE_EMAIL_WARNING)
+    const periodEndThresh = new Date(Date.now() + Threshold.UPCOMING_INVOICE_EMAIL_WARNING)
+    const lastSentThresh = new Date(Date.now() - Threshold.UPCOMING_INVOICE_EMAIL_WARNING)
 
     const organizations = await r
       .table('Organization')
       .getAll(TierEnum.pro, {index: 'tier'})
       .filter((organization) =>
         r.and(
-          organization('periodEnd')
-            .le(periodEndThresh)
-            .default(false),
-          organization('upcomingInvoiceEmailSentAt')
-            .le(lastSentThresh)
-            .default(true)
+          organization('periodEnd').le(periodEndThresh).default(false),
+          organization('upcomingInvoiceEmailSentAt').le(lastSentThresh).default(true)
         )
       )
       .coerceTo('array')
@@ -73,17 +69,10 @@ const sendUpcomingInvoiceEmails = {
           .filter({removedAt: null, role: null})
           .coerceTo('array')
           .merge((organizationUser) => ({
-            user: r
-              .table('User')
-              .get(organizationUser('userId'))
-              .pluck('preferredName', 'email')
+            user: r.table('User').get(organizationUser('userId')).pluck('preferredName', 'email')
           }))
       }))
-      .filter((organization) =>
-        organization('newUsers')
-          .count()
-          .ge(1)
-      )
+      .filter((organization) => organization('newUsers').count().ge(1))
       .merge((organization) => ({
         billingLeaders: r
           .table('OrganizationUser')
@@ -91,10 +80,7 @@ const sendUpcomingInvoiceEmails = {
           .filter({role: OrgUserRole.BILLING_LEADER, removedAt: null})
           .coerceTo('array')
           .merge((organizationUser) => ({
-            user: r
-              .table('User')
-              .get(organizationUser('userId'))
-              .pluck('preferredName', 'email')
+            user: r.table('User').get(organizationUser('userId')).pluck('preferredName', 'email')
           }))
       }))
       .coerceTo('array')
