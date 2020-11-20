@@ -9,9 +9,10 @@ import {DiscussionThreadEnum, MeetingControlBarEnum, ZIndex} from '../types/cons
 import DiscussionThreadRoot from './DiscussionThreadRoot'
 import {PALETTE} from '~/styles/paletteV2'
 import LabelHeading from './LabelHeading/LabelHeading'
-import Avatar from './Avatar/Avatar'
-import SidebarToggle from './SidebarToggle'
 import {DECELERATE} from '~/styles/animation'
+import PlainButton from './PlainButton/PlainButton'
+import Icon from './Icon'
+import {ICON_SIZE} from '~/styles/typographyV2'
 
 const Drawer = styled('div')<{isDesktop: boolean; isOpen: boolean}>(({isDesktop, isOpen}) => ({
   boxShadow: isDesktop ? desktopSidebarShadow : undefined,
@@ -45,31 +46,27 @@ const ThreadColumn = styled('div')({
   width: '100%'
 })
 
-const AvatarGroup = styled(LabelHeading)({
-  alignItems: 'center',
-  display: 'flex',
-  textTransform: 'none',
-  width: '100%'
+const CancelIcon = styled(Icon)({
+  color: PALETTE.TEXT_GRAY,
+  cursor: 'pointer',
+  fontSize: ICON_SIZE.MD24,
+  '&:hover': {
+    opacity: 0.5
+  }
 })
 
-const DiscussingGroup = styled('div')({
+const Header = styled('div')({
   alignItems: 'center',
   borderBottom: `1px solid ${PALETTE.BORDER_LIGHTER}`,
   display: 'flex',
   justifyContent: 'space-between',
-  padding: '6px 0px 6px 6px',
+  padding: '6px 12px',
   width: '100%'
 })
 
-const StyledAvatar = styled(Avatar)({
-  margin: '6px 3px',
-  transition: 'all 150ms'
-})
-
-const Toggle = styled(SidebarToggle)({
-  left: 3,
-  marginRight: 20,
-  position: 'relative'
+const HeaderLabel = styled(LabelHeading)({
+  textTransform: 'none',
+  width: '100%'
 })
 
 interface Props {
@@ -81,11 +78,9 @@ interface Props {
 }
 
 const EstimatePhaseDiscussionDrawer = (props: Props) => {
-  const {isDesktop, isOpen, meeting,meetingContentRef, onToggle} = props
-  const {id: meetingId, endedAt, localStage, viewerMeetingMember} = meeting
+  const {isDesktop, isOpen, meeting, meetingContentRef, onToggle} = props
+  const {id: meetingId, endedAt, localStage} = meeting
   const {serviceTaskId} = localStage
-  const {user} = viewerMeetingMember
-  const {picture} = user
   const ref = useRef<HTMLDivElement>(null)
   const meetingControlBarBottom = 16
   const coverableHeight = isDesktop ? MeetingControlBarEnum.HEIGHT + meetingControlBarBottom : 0
@@ -93,14 +88,12 @@ const EstimatePhaseDiscussionDrawer = (props: Props) => {
 
   return (
     <Drawer isDesktop={isDesktop} isOpen={isOpen} ref={ref}>
-      <DiscussingGroup>
-        <AvatarGroup>
-          {[1, 2, 3, 4].map((__example, idx) => {
-            return <StyledAvatar key={idx} size={32} picture={picture} />
-          })}
-        </AvatarGroup>
-        <Toggle dataCy='right-drawer-open' onClick={onToggle} />
-      </DiscussingGroup>
+      <Header>
+        <HeaderLabel>{'Discussion'}</HeaderLabel>
+        <PlainButton onClick={onToggle}>
+          <CancelIcon>close</CancelIcon>
+        </PlainButton>
+      </Header>
       <ThreadColumn>
         <DiscussionThreadRoot
           meetingId={meetingId}
@@ -124,11 +117,6 @@ export default createFragmentContainer(EstimatePhaseDiscussionDrawer, {
       endedAt
       localStage {
         ...EstimatePhaseDiscussionDrawerStage @relay(mask: false)
-      }
-      viewerMeetingMember {
-        user {
-          picture
-        }
       }
     }
   `

@@ -13,10 +13,18 @@ import PhaseHeaderTitle from './PhaseHeaderTitle'
 import PhaseWrapper from './PhaseWrapper'
 import PokerEstimateHeaderCardJira from './PokerEstimateHeaderCardJira'
 import {PokerMeetingPhaseProps} from './PokerMeeting'
-import {Breakpoint} from '~/types/constEnums'
+import {Breakpoint, DiscussionThreadEnum} from '~/types/constEnums'
 import useBreakpoint from '~/hooks/useBreakpoint'
 import useSidebar from '~/hooks/useSidebar'
 import ResponsiveDashSidebar from './ResponsiveDashSidebar'
+import styled from '@emotion/styled'
+
+const StyledMeetingHeaderAndPhase = styled(MeetingHeaderAndPhase)<{isOpen: boolean}>(
+  ({isOpen}) => ({
+    width: isOpen ? `calc(100% - ${DiscussionThreadEnum.WIDTH}px)` : '100%'
+  })
+)
+
 interface Props extends PokerMeetingPhaseProps {
   meeting: PokerEstimatePhase_meeting
 }
@@ -33,7 +41,7 @@ const PokerEstimatePhase = (props: Props) => {
 
   return (
     <MeetingContent ref={meetingContentRef}>
-      <MeetingHeaderAndPhase hideBottomBar={!!endedAt}>
+      <StyledMeetingHeaderAndPhase isOpen={isOpen} hideBottomBar={!!endedAt}>
         <MeetingTopBar
           avatarGroup={avatarGroup}
           isMeetingSidebarCollapsed={!showSidebar}
@@ -47,7 +55,7 @@ const PokerEstimatePhase = (props: Props) => {
         <PhaseWrapper>
           <EstimatePhaseArea meeting={meeting} />
         </PhaseWrapper>
-      </MeetingHeaderAndPhase>
+      </StyledMeetingHeaderAndPhase>
       <ResponsiveDashSidebar isOpen={isOpen} isRightSidebar onToggle={toggleDrawer}>
         <EstimatePhaseDiscussionDrawer
           isDesktop={isDesktop}
