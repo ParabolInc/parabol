@@ -41,6 +41,18 @@ const EstimateStage = new GraphQLObjectType<any, GQLContext>({
       type: GraphQLNonNull(GraphQLID),
       description: 'The stringified JSON used to fetch the task used by the service'
     },
+    serviceFieldName: {
+      type: GraphQLNonNull(GraphQLString),
+      description: 'The field name used by the service for this dimension',
+      resolve: async ({dimensionId, teamId}, _args, {dataLoader}) => {
+        const team = await dataLoader.get('teams').load(teamId)
+        const jiraDimensionFields = team.jiraDimensionFields || []
+        const fieldName = jiraDimensionFields.find(
+          (dimensionField) => dimensionField.dimensionId === dimensionId
+        )
+        return fieldName || 'Story Points'
+      }
+    },
     sortOrder: {
       type: new GraphQLNonNull(GraphQLFloat),
       description: 'The sort order for reprioritizing discussion topics'

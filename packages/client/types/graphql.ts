@@ -1718,6 +1718,11 @@ export interface ITeam {
   massInvitation: IMassInvitation | null;
 
   /**
+   * Integration details that are shared by all team members. Nothing user specific
+   */
+  integrations: ITeamIntegrations;
+
+  /**
    * true if the underlying org has a validUntil date greater than now. if false, subs do not work
    */
   isPaid: boolean | null;
@@ -1861,6 +1866,58 @@ export interface IMassInvitation {
    */
   expiration: any;
   meetingId: string | null;
+}
+
+/**
+ * All the available integrations available for this team member
+ */
+export interface ITeamIntegrations {
+  __typename: 'TeamIntegrations';
+
+  /**
+   * composite
+   */
+  id: string;
+
+  /**
+   * All things associated with an atlassian integration for a team member
+   */
+  atlassian: IAtlassianTeamIntegration;
+}
+
+/**
+ * The atlassian integration details shared across an entire team
+ */
+export interface IAtlassianTeamIntegration {
+  __typename: 'AtlassianTeamIntegration';
+
+  /**
+   * shortid
+   */
+  id: string;
+
+  /**
+   * The dimensions and their corresponding Jira fields
+   */
+  jiraDimensionFields: Array<IJiraDimensionField>;
+}
+
+/**
+ * Poker dimensions mapped to their corresponding fields in jira
+ */
+export interface IJiraDimensionField {
+  __typename: 'JiraDimensionField';
+  id: string;
+
+  /**
+   * The poker template dimension Id
+   */
+  dimensionId: string;
+
+  /**
+   * The field name in jira that the estimate is pushed to
+   */
+  fieldName: string;
 }
 
 /**
@@ -4593,6 +4650,11 @@ export interface IEstimateStage {
   serviceTaskId: string;
 
   /**
+   * The field name used by the service for this dimension
+   */
+  serviceFieldName: string;
+
+  /**
    * The sort order for reprioritizing discussion topics
    */
   sortOrder: number;
@@ -7181,6 +7243,11 @@ export interface IMutation {
    * Update the final score field & push to the associated integration
    */
   pokerSetFinalScore: PokerSetFinalScorePayload;
+
+  /**
+   * Set the jira field that the poker dimension should map to
+   */
+  updateJiraDimensionField: UpdateJiraDimensionFieldPayload;
 }
 
 export interface IAcceptTeamInvitationOnMutationArguments {
@@ -8310,6 +8377,20 @@ export interface IPokerSetFinalScoreOnMutationArguments {
    * A string representation of the final score. It may not have an associated value in the scale
    */
   finalScore: string;
+}
+
+export interface IUpdateJiraDimensionFieldOnMutationArguments {
+  dimensionId: string;
+
+  /**
+   * The jira field name that we should push estimates to
+   */
+  fieldName: string;
+
+  /**
+   * The meeting the update happend in. If present, can return a meeting object with updated serviceFieldName
+   */
+  meetingId?: string | null;
 }
 
 export interface IAcceptTeamInvitationPayload {
@@ -10751,6 +10832,25 @@ export interface IPokerSetFinalScoreSuccess {
   stage: IEstimateStage;
 }
 
+/**
+ * Return object for UpdateJiraDimensionFieldPayload
+ */
+export type UpdateJiraDimensionFieldPayload =
+  | IErrorPayload
+  | IUpdateJiraDimensionFieldSuccess;
+
+export interface IUpdateJiraDimensionFieldSuccess {
+  __typename: 'UpdateJiraDimensionFieldSuccess';
+  teamId: string;
+  meetingId: string | null;
+  team: ITeam;
+
+  /**
+   * The poker meeting the field was updated from
+   */
+  meeting: IPokerMeeting | null;
+}
+
 export interface ISubscription {
   __typename: 'Subscription';
   meetingSubscription: MeetingSubscriptionPayload;
@@ -11054,7 +11154,8 @@ export type TeamSubscriptionPayload =
   | IUpdatePokerTemplateDimensionScalePayload
   | IUpdatePokerTemplateScaleValuePayload
   | IUpdateUserProfilePayload
-  | IPersistJiraSearchQuerySuccess;
+  | IPersistJiraSearchQuerySuccess
+  | IUpdateJiraDimensionFieldSuccess;
 
 export interface IRenamePokerTemplatePayload {
   __typename: 'RenamePokerTemplatePayload';
