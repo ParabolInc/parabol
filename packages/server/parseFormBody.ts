@@ -1,54 +1,15 @@
 import {HttpResponse, getParts, MultipartField} from 'uWebSockets.js'
-// import Busboy from 'busboy'
-// import {Readable} from 'stream'
-// import {OutgoingMessage} from '@mattkrick/graphql-trebuchet-client'
-// import {APP_MAX_AVATAR_FILE_SIZE} from 'parabol-client/utils/constants'
-
-// const bodyStream = (res: HttpResponse) => {
-//   const stream = new Readable()
-//   stream._read = () => 'no-op'
-//   res.onData((ab, isLast) => {
-//     const curBuf = Buffer.from(ab)
-//     stream.push(new Uint8Array(curBuf.slice(curBuf.byteOffset, curBuf.byteLength)))
-//     if (isLast) stream.push(null)
-//   })
-//   return stream
-// }
-
-// const reqHeaders = (req: HttpRequest) => {
-//   const headers = {} as {[key: string]: string}
-//   req.forEach((k, v) => (headers[k] = v))
-//   return headers
-// }
-
-// const parseFile = (fileStream, contentType) => {
-//   return new Promise((resolve, reject) => {
-//     let buffer: Buffer
-//     fileStream.on('data', (curBuf) => {
-//       buffer = buffer ? Buffer.concat([buffer, curBuf]) : Buffer.concat([curBuf])
-//     })
-//     fileStream.on('end', () => {
-//       const parsedFile = {
-//         buffer,
-//         contentType
-//       } as {
-//         contentType: string
-//         buffer: Buffer
-//       }
-//       resolve(parsedFile)
-//     })
-//     fileStream.on('limit', () => {
-//       reject(new Error('File size too large'))
-//     })
-//   })
-// }
-
 interface Uploadable {
   contentType: string
   buffer: Buffer
 }
 
-const parseBody = ({res}: {res: HttpResponse; parser?: (buffer: Buffer) => any}) => {
+type ParseFormBodySignature = {
+  res: HttpResponse
+  contentType: string
+}
+
+const parseRes = (res: HttpResponse) => {
   return new Promise<Buffer>((resolve) => {
     let buffer: Buffer
     res.onData((ab, isLast) => {
@@ -59,73 +20,23 @@ const parseBody = ({res}: {res: HttpResponse; parser?: (buffer: Buffer) => any})
   })
 }
 
-const parseFormBody = ({
-  res,
-  contentType
-}: {
-  res: HttpResponse
-  contentType: string
-}): Promise<JSON | null> => {
-  return new Promise(async (resolve) => {
-    const body = await parseBody({res})
-    console.log('body:', body)
-    console.log('ct:', contentType)
-    const parts = getParts(body, contentType) as MultipartField[]
-    console.log('parts', parts)
-    if (!parts) return resolve(null)
-    let parsedBody
-    const parsedUploadables = {} as {[key: string]: Uploadable}
-    parts.forEach((part) => {
-      const {name, data} = part
-      if (name === 'body') {
-        parsedBody = JSON.parse(Buffer.from(data).toString())
-      } else if (name.startsWith('uploadables')) {
-        const parsedUploadable = {
-          contentType: part['type'],
-          buffer: Buffer.from(data)
-        } as Uploadable
-        const [, key] = name.split('.')
-        parsedUploadables[key] = parsedUploadable
-      }
-    })
-    parsedBody.payload.variables = {
-      ...parsedBody.payload.variables,
-      ...parsedUploadables
+const parseFormBody = async ({res, contentType}: ParseFormBodySignature): Promise<JSON | null> => {
+  let parsedBody
+  const resBuffer = await parseRes(res)
+  const parts = getParts(resBuffer, contentType) as MultipartField[]
+  parts.forEach(({name, data, type}) => {
+    if (name === 'body') {
+      parsedBody = JSON.parse(Buffer.from(data).toString())
+      return
     }
-    resolve(parsedBody)
+    if (!name.startsWith('uploadables')) return
+    const [, key] = name.split('.')
+    parsedBody.payload.variables[key] = {
+      contentType: type,
+      buffer: Buffer.from(data)
+    } as Uploadable
   })
-
-  // const parser = new Busboy({
-  //   headers: reqHeaders(req),
-  //   limits: {
-  //     fields: 1,
-  //     files: 1,
-  //     fileSize: APP_MAX_AVATAR_FILE_SIZE
-  //   }
-  // })
-  // return new Promise((resolve) => {
-  //   let foundMessage, foundFile
-  //   parser.on('field', async (fieldname, value) => {
-  //     if (fieldname !== 'body') return
-  //     foundMessage = JSON.parse(value) as Promise<OutgoingMessage>
-  //   })
-  //   parser.on('file', async (_0, fileStream, _1, _2, contentType) => {
-  //     foundFile = parseFile(fileStream, contentType)
-  //   })
-  //   parser.on('finish', async () => {
-  //     try {
-  //       const [parsedMessage, parsedFile] = await Promise.all([foundMessage, foundFile])
-  //       parsedMessage.payload.variables = {
-  //         ...parsedMessage.payload.variables,
-  //         file: parsedFile
-  //       }
-  //       resolve(parsedMessage)
-  //     } catch (e) {
-  //       resolve(null)
-  //     }
-  //   })
-  //   bodyStream(res).pipe(parser)
-  // })
+  return parsedBody
 }
 
 export default parseFormBody
