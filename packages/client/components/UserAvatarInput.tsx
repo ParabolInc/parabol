@@ -65,8 +65,9 @@ class UserAvatarInput extends Component<Props> {
     submitMutation()
     UploadUserImageMutation(
       atmosphere,
-      {file},
-      {onCompleted, onError}
+      {},
+      {onCompleted, onError},
+      {file}
     )
   }
 

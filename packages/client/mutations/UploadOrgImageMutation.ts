@@ -1,5 +1,6 @@
 import {commitMutation} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
+import {UploadableMap} from 'relay-runtime'
 
 const mutation = graphql`
   mutation UploadOrgImageMutation($file: File!, $orgId: ID!) {
@@ -15,10 +16,9 @@ const mutation = graphql`
 const UploadOrgImageMutation = (
   atmosphere,
   variables,
-  {onCompleted, onError}
+  {onCompleted, onError},
+  uploadables?: UploadableMap
 ) => {
-  const {file} = variables
-  const uploadables = file ? {file} : undefined
   return commitMutation(atmosphere, {
     mutation,
     variables,

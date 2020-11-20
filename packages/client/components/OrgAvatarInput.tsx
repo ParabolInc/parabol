@@ -62,8 +62,9 @@ class OrgAvatarInput extends Component<Props> {
     submitMutation()
     UploadOrgImageMutation(
       atmosphere,
-      {file, orgId}, 
-      {onCompleted, onError}
+      {orgId},
+      {onCompleted, onError},
+      {file}
     )
   }
 
