@@ -6,6 +6,10 @@ import isDemoRoute from '../utils/isDemoRoute'
 import hasToken from '../utils/hasToken'
 import {meetingAvatarMediaQueries} from '../styles/meeting'
 import makeMinWidthMediaQuery from '../utils/makeMinWidthMediaQuery'
+import PlainButton from './PlainButton/PlainButton'
+import {PALETTE} from '~/styles/paletteV2'
+import Icon from './Icon'
+import {ICON_SIZE} from '~/styles/typographyV2'
 
 const localHeaderBreakpoint = makeMinWidthMediaQuery(600)
 
@@ -21,8 +25,8 @@ const MeetingTopBarStyles = styled('div')({
   paddingRight: 14, // compensate for overlapping block padding
   width: '100%',
   [meetingAvatarMediaQueries[0]]: {
-    paddingRight: 13 // compensate for overlapping block padding
-  }
+    paddingRight: 13, // compensate for overlapping block padding
+  },
 })
 
 const HeadingBlock = styled('div')<{isMeetingSidebarCollapsed: boolean}>(
@@ -33,14 +37,14 @@ const HeadingBlock = styled('div')<{isMeetingSidebarCollapsed: boolean}>(
     marginTop: 16,
     minHeight: 24,
     [localHeaderBreakpoint]: {
-      flex: 1
-    }
+      flex: 1,
+    },
   })
 )
 
 const PrimaryActionBlock = styled('div')({
   alignItems: 'center',
-  display: 'flex'
+  display: 'flex',
 })
 
 const AvatarGroupBlock = styled('div')({
@@ -49,33 +53,65 @@ const AvatarGroupBlock = styled('div')({
   padding: '10px 0',
   [meetingAvatarMediaQueries[0]]: {
     minHeight: 76,
-    padding: 0
-  }
+    padding: 0,
+  },
 })
 
 const ChildrenBlock = styled('div')({
-  width: '100%'
+  width: '100%',
 })
 
 const StyledSidebarToggle = styled(SidebarToggle)({
-  marginRight: 16
+  marginRight: 16,
 })
 
-const StyledDrawerToggle = styled(SidebarToggle)({
-  margin: '16px 4px 0px 16px'
+const StyledIcon = styled(Icon)({
+  color: '#FFFF',
+  transform: 'scaleX(-1)',
+  fontSize: ICON_SIZE.MD24,
+  [meetingAvatarMediaQueries[0]]: {
+    fontSize: ICON_SIZE.MD36,
+  },
+})
+
+const ButtonContainer = styled('div')({
+  alignItems: 'center',
+  alignContent: 'center',
+  display: 'flex',
+  paddingLeft: 4,
+})
+
+const DiscussionButton = styled(PlainButton)({
+  alignItems: 'center',
+  backgroundColor: PALETTE.TEXT_PURPLE,
+  borderRadius: '50%',
+  display: 'flex',
+  padding: 8,
+  [meetingAvatarMediaQueries[0]]: {
+    padding: 10,
+  },
 })
 
 interface Props {
   avatarGroup: ReactElement
   children?: ReactNode
   isMeetingSidebarCollapsed: boolean
+  isOpen?: boolean
   toggleSidebar: () => void
   toggleDrawer?: () => void
 }
 
 const MeetingTopBar = (props: Props) => {
-  const {avatarGroup, children, isMeetingSidebarCollapsed, toggleDrawer, toggleSidebar} = props
+  const {
+    avatarGroup,
+    children,
+    isMeetingSidebarCollapsed,
+    isOpen,
+    toggleDrawer,
+    toggleSidebar,
+  } = props
   const showButton = isDemoRoute() && !hasToken()
+  const showDiscussionButton = toggleDrawer && !isOpen
   return (
     <MeetingTopBarStyles>
       <HeadingBlock isMeetingSidebarCollapsed={isMeetingSidebarCollapsed}>
@@ -91,8 +127,14 @@ const MeetingTopBar = (props: Props) => {
           </PrimaryActionBlock>
         )}
         {avatarGroup}
+        {showDiscussionButton && (
+          <ButtonContainer>
+            <DiscussionButton onClick={toggleDrawer}>
+              <StyledIcon>comment</StyledIcon>
+            </DiscussionButton>
+          </ButtonContainer>
+        )}
       </AvatarGroupBlock>
-      {toggleDrawer && <StyledDrawerToggle dataCy='drawer' onClick={toggleDrawer} />}
     </MeetingTopBarStyles>
   )
 }

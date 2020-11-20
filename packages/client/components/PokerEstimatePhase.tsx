@@ -21,7 +21,7 @@ import styled from '@emotion/styled'
 
 const StyledMeetingHeaderAndPhase = styled(MeetingHeaderAndPhase)<{isOpen: boolean}>(
   ({isOpen}) => ({
-    width: isOpen ? `calc(100% - ${DiscussionThreadEnum.WIDTH}px)` : '100%'
+    width: isOpen ? `calc(100% - ${DiscussionThreadEnum.WIDTH}px)` : '100%',
   })
 )
 
@@ -45,6 +45,7 @@ const PokerEstimatePhase = (props: Props) => {
         <MeetingTopBar
           avatarGroup={avatarGroup}
           isMeetingSidebarCollapsed={!showSidebar}
+          isOpen={isOpen}
           toggleSidebar={toggleSidebar}
           toggleDrawer={toggleDrawer}
         >
@@ -96,5 +97,5 @@ export default createFragmentContainer(PokerEstimatePhase, {
       }
       ...EstimatePhaseDiscussionDrawer_meeting
     }
-  `
+  `,
 })
