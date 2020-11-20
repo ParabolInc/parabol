@@ -1,4 +1,4 @@
-import {HttpResponse, getParts} from 'uWebSockets.js'
+import {HttpResponse, getParts, MultipartField} from 'uWebSockets.js'
 // import Busboy from 'busboy'
 // import {Readable} from 'stream'
 // import {OutgoingMessage} from '@mattkrick/graphql-trebuchet-client'
@@ -43,6 +43,11 @@ import {HttpResponse, getParts} from 'uWebSockets.js'
 //   })
 // }
 
+interface Uploadable {
+  contentType: string
+  buffer: Buffer
+}
+
 const parseBody = ({res}: {res: HttpResponse; parser?: (buffer: Buffer) => any}) => {
   return new Promise<Buffer>((resolve) => {
     let buffer: Buffer
@@ -54,19 +59,42 @@ const parseBody = ({res}: {res: HttpResponse; parser?: (buffer: Buffer) => any})
   })
 }
 
-const parseFormBody = async ({
+const parseFormBody = ({
   res,
   contentType
 }: {
   res: HttpResponse
   contentType: string
 }): Promise<JSON | null> => {
-  const body = await parseBody({res})
-  console.log('body:', body)
-  console.log('ct:', contentType)
-  const parts = getParts(body, contentType)
-  console.log('parts', parts)
-  return null
+  return new Promise(async (resolve) => {
+    const body = await parseBody({res})
+    console.log('body:', body)
+    console.log('ct:', contentType)
+    const parts = getParts(body, contentType) as MultipartField[]
+    console.log('parts', parts)
+    if (!parts) return resolve(null)
+    let parsedBody
+    const parsedUploadables = {} as {[key: string]: Uploadable}
+    parts.forEach((part) => {
+      const {name, data} = part
+      if (name === 'body') {
+        parsedBody = JSON.parse(Buffer.from(data).toString())
+      } else if (name.startsWith('uploadables')) {
+        const parsedUploadable = {
+          contentType: part['type'],
+          buffer: Buffer.from(data)
+        } as Uploadable
+        const [, key] = name.split('.')
+        parsedUploadables[key] = parsedUploadable
+      }
+    })
+    parsedBody.payload.variables = {
+      ...parsedBody.payload.variables,
+      ...parsedUploadables
+    }
+    resolve(parsedBody)
+  })
+
   // const parser = new Busboy({
   //   headers: reqHeaders(req),
   //   limits: {

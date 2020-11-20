@@ -68,21 +68,34 @@ const noopSink = {
   closed: false
 }
 
-const toFormData = (body: FetchHTTPData, prefix = '', formData = new FormData()) => {
-  Object.keys(body).forEach((key) => {
-    const value = body[key]
-    // ignore undefined, but not null
-    if (value === undefined) return
-    const prop = prefix ? `${prefix}.${key}` : key
-    if (!value || typeof value !== 'object' || value instanceof Blob) {
-      // if null, scalar, File, Blob
-      formData.append(prop, value)
-    } else if (typeof value === 'object') {
-      toFormData(value, prop, formData)
-    }
+const toFormData = (
+  body: FetchHTTPData,
+  uploadables: UploadableMap,
+  formData = new FormData()
+) => {
+  console.log('body:', body)
+  formData.append('body', JSON.stringify(body))
+  Object.keys(uploadables).forEach(key => {
+    formData.append(`uploadables.${key}`, uploadables[key])
   })
   return formData
 }
+
+// const toFormData2 = (body: FetchHTTPData, prefix = '', formData = new FormData()) => {
+//   Object.keys(body).forEach((key) => {
+//     const value = body[key]
+//     // ignore undefined, but not null
+//     if (value === undefined) return
+//     const prop = prefix ? `${prefix}.${key}` : key
+//     if (!value || typeof value !== 'object' || value instanceof Blob) {
+//       // if null, scalar, File, Blob
+//       formData.append(prop, value)
+//     } else if (typeof value === 'object') {
+//       toFormData2(value, prop, formData)
+//     }
+//   })
+//   return formData
+// }
 export interface AtmosphereEvents {
   addSnackbar: (snack: Snack) => void
   removeSnackbar: (filterFn: SnackbarRemoveFn) => void
@@ -139,6 +152,7 @@ export default class Atmosphere extends Environment {
 
   fetchHTTP = async (body: FetchHTTPData, connectionId?: string) => {
     const uploadables = body.payload.uploadables
+    delete body.payload.uploadables
     const headers = {
       accept: 'application/json',
       Authorization: this.authToken ? `Bearer ${this.authToken}` : '',
@@ -148,7 +162,7 @@ export default class Atmosphere extends Environment {
     const res = await fetch('/graphql', {
       method: 'POST',
       headers,
-      body: uploadables ? toFormData(body) : JSON.stringify(body)
+      body: uploadables ? toFormData(body, uploadables) : JSON.stringify(body)
     })
     const contentTypeHeader = res.headers.get('content-type') || ''
     if (contentTypeHeader.toLowerCase().startsWith('application/json')) {
