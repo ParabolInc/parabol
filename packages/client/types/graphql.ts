@@ -679,7 +679,7 @@ export interface IJiraIssue {
   __typename: 'JiraIssue';
 
   /**
-   * shortid
+   * cloudId:key
    */
   id: string;
 
@@ -1642,11 +1642,6 @@ export interface ITaskEstimate {
    * The human-readable label for the estimate
    */
   label: string;
-
-  /**
-   * The numeric value representing the label. If the label was not a value in the TemplateScale, this is null
-   */
-  value: number | null;
 }
 
 export interface ITaskEditorDetails {
@@ -4640,9 +4635,9 @@ export interface IEstimateStage {
   creatorUserId: string;
 
   /**
-   * The service the task is connected to. If null, it is parabol
+   * The service the task is connected to
    */
-  service: TaskServiceEnum | null;
+  service: TaskServiceEnum;
 
   /**
    * The stringified JSON used to fetch the task used by the service
@@ -4690,9 +4685,9 @@ export interface IEstimateStage {
   scores: Array<IEstimateUserScore>;
 
   /**
-   * the story referenced in the stage. Either a Parabol Task or something similar from an integration
+   * the story referenced in the stage. Either a Parabol Task or something similar from an integration. Null if fetching from service failed
    */
-  story: Story;
+  story: Story | null;
 
   /**
    * true when the participants are still voting and results are hidden. false when votes are revealed
@@ -8374,7 +8369,7 @@ export interface IPokerSetFinalScoreOnMutationArguments {
   stageId: string;
 
   /**
-   * A string representation of the final score. It may not have an associated value in the scale
+   * The label from the scale value
    */
   finalScore: string;
 }

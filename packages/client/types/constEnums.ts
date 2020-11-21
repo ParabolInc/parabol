@@ -361,5 +361,9 @@ export const enum AuthTokenRole {
 
 export const enum SprintPokerDefaults {
   DEFAULT_TEMPLATE_ID = 'estimatedEffortTemplate',
-  DEFAULT_SCALE_ID = 'fibonacciScale'
+  DEFAULT_SCALE_ID = 'fibonacciScale',
+  JIRA_FIELD_DEFAULT = 'Story point estimate',
+  JIRA_FIELD_COMMENT = '__comment',
+  JIRA_FIELD_NULL = ''
+
 }

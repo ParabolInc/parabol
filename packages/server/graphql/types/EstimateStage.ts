@@ -11,13 +11,16 @@ import {NewMeetingPhaseTypeEnum} from '../../../client/types/graphql'
 import db from '../../db'
 import getRedis from '../../utils/getRedis'
 import {GQLContext} from '../graphql'
-import {resolveJiraIssue} from '../resolvers'
 import EstimateUserScore from './EstimateUserScore'
 import NewMeetingStage, {newMeetingStageFields} from './NewMeetingStage'
 import Story from './Story'
 import TaskServiceEnum from './TaskServiceEnum'
 import TemplateDimension from './TemplateDimension'
 import User from './User'
+import {SprintPokerDefaults} from '~/types/constEnums'
+import MeetingPoker from '../../database/types/MeetingPoker'
+import JiraDimensionField from '../../database/types/JiraDimensionField'
+import getRethink from '../../database/rethinkDriver'
 
 export const estimateStageFields = () => ({})
 
@@ -34,8 +37,9 @@ const EstimateStage = new GraphQLObjectType<any, GQLContext>({
         'The id of the user that added this stage. Useful for knowing which access key to use to get the underlying issue'
     },
     service: {
-      type: TaskServiceEnum,
-      description: 'The service the task is connected to. If null, it is parabol'
+      type: GraphQLNonNull(TaskServiceEnum),
+      description: 'The service the task is connected to',
+      resolve: ({service}) => service || 'PARABOL'
     },
     serviceTaskId: {
       type: GraphQLNonNull(GraphQLID),
@@ -44,13 +48,40 @@ const EstimateStage = new GraphQLObjectType<any, GQLContext>({
     serviceFieldName: {
       type: GraphQLNonNull(GraphQLString),
       description: 'The field name used by the service for this dimension',
-      resolve: async ({dimensionId, teamId}, _args, {dataLoader}) => {
-        const team = await dataLoader.get('teams').load(teamId)
-        const jiraDimensionFields = team.jiraDimensionFields || []
-        const fieldName = jiraDimensionFields.find(
-          (dimensionField) => dimensionField.dimensionId === dimensionId
-        )
-        return fieldName || 'Story Points'
+      resolve: async ({dimensionId, meetingId, service, teamId}, _args, {dataLoader}) => {
+        if (service === 'jira') {
+          const team = await dataLoader.get('teams').load(teamId)
+          const jiraDimensionFields = team.jiraDimensionFields || []
+          const existingDimensionField = jiraDimensionFields.find(
+            (dimensionField) => dimensionField.dimensionId === dimensionId
+          )
+          if (existingDimensionField) return existingDimensionField.fieldName
+
+          // This is first time accessing the serviceFieldName, set it up on the Team
+          const meeting = (await dataLoader.get('newMeetings').load(meetingId)) as MeetingPoker
+          const {templateId} = meeting
+          const sortedTemplateDimensions = await dataLoader
+            .get('dimensionsByTemplateId')
+            .load(templateId)
+          const [firstDimension] = sortedTemplateDimensions
+          const isFirst = firstDimension.id === dimensionId
+          const fieldName = isFirst
+            ? SprintPokerDefaults.JIRA_FIELD_DEFAULT
+            : (SprintPokerDefaults.JIRA_FIELD_COMMENT as string)
+          const dimensionField = new JiraDimensionField({dimensionId, fieldName})
+          jiraDimensionFields.push(dimensionField)
+          const r = await getRethink()
+          await r
+            .table('Team')
+            .get(teamId)
+            .update({
+              jiraDimensionFields
+            })
+            .run()
+          return fieldName
+        } else {
+          return SprintPokerDefaults.JIRA_FIELD_NULL
+        }
       }
     },
     sortOrder: {
@@ -103,13 +134,15 @@ const EstimateStage = new GraphQLObjectType<any, GQLContext>({
       }
     },
     story: {
-      type: GraphQLNonNull(Story),
+      type: Story,
       description:
-        'the story referenced in the stage. Either a Parabol Task or something similar from an integration',
-      resolve: ({service, serviceTaskId, teamId, creatorUserId}, _args, {dataLoader}) => {
+        'the story referenced in the stage. Either a Parabol Task or something similar from an integration. Null if fetching from service failed',
+      resolve: async ({service, serviceTaskId, teamId, creatorUserId}, _args, {dataLoader}) => {
         if (service === 'jira') {
           const [cloudId, issueKey] = serviceTaskId.split(':')
-          return resolveJiraIssue(cloudId, issueKey, teamId, creatorUserId, dataLoader)
+          return dataLoader
+            .get('jiraIssue')
+            .load({cloudId, issueKey, teamId, userId: creatorUserId})
         }
         return dataLoader.get('tasks').load(serviceTaskId)
       }

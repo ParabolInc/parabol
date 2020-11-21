@@ -87,33 +87,34 @@ const PokerDimensionValueControl = (props: Props) => {
       setPendingScore(finalScore || '')
     }
   }, [error])
-  console.log({error})
+
   const submitScore = () => {
     if (submitting || finalScore === pendingScore) return
     submitMutation()
     PokerSetFinalScoreMutation(atmosphere, {finalScore: pendingScore, meetingId, stageId}, {onError, onCompleted})
   }
+
   const focusInput = () => {
     inputRef.current?.focus()
   }
+
   const onFocus = () => {
     setFocus(true)
   }
+
   const onBlur = () => {
-    setPendingScore(finalScore || '')
     setFocus(false)
+    submitScore()
   }
+
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const {value} = e.target
     setPendingScore(value)
   }
 
   const onKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
+    if (e.key === 'Tab' || e.key === 'Enter') {
       e.preventDefault()
-      const {value} = e.currentTarget
-      if (!value) return
-      submitScore()
       onBlur()
     }
   }
@@ -144,6 +145,7 @@ export default createFragmentContainer(
       id
       meetingId
       finalScore
+      serviceFieldName
       dimension {
         selectedScale {
           values {
