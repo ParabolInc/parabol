@@ -60,13 +60,17 @@ const Header = styled('div')({
   borderBottom: `1px solid ${PALETTE.BORDER_LIGHTER}`,
   display: 'flex',
   justifyContent: 'space-between',
-  padding: '6px 12px',
+  padding: '8px 8px 8px 12px',
   width: '100%'
 })
 
 const HeaderLabel = styled(LabelHeading)({
   textTransform: 'none',
   width: '100%'
+})
+
+const StyledCloseButton = styled(PlainButton)({
+  height: 24
 })
 
 interface Props {
@@ -90,9 +94,9 @@ const EstimatePhaseDiscussionDrawer = (props: Props) => {
     <Drawer isDesktop={isDesktop} isOpen={isOpen} ref={ref}>
       <Header>
         <HeaderLabel>{'Discussion'}</HeaderLabel>
-        <PlainButton onClick={onToggle}>
+        <StyledCloseButton onClick={onToggle}>
           <CancelIcon>close</CancelIcon>
-        </PlainButton>
+        </StyledCloseButton>
       </Header>
       <ThreadColumn>
         <DiscussionThreadRoot

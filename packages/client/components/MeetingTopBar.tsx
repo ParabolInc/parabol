@@ -48,6 +48,7 @@ const PrimaryActionBlock = styled('div')({
 })
 
 const AvatarGroupBlock = styled('div')({
+  alignItems: 'center',
   display: 'flex',
   justifyContent: 'center',
   padding: '10px 0',
@@ -65,24 +66,24 @@ const StyledSidebarToggle = styled(SidebarToggle)({
   marginRight: 16
 })
 
-const StyledIcon = styled(Icon)({
-  color: '#FFFF',
-  transform: 'scaleX(-1)',
-  fontSize: ICON_SIZE.MD24,
-  [meetingAvatarMediaQueries[0]]: {
-    fontSize: ICON_SIZE.MD36
-  }
-})
-
 const badgeSize = 10
 
 const Badge = styled('div')({
-  bottom: 14,
   display: 'block',
   height: badgeSize,
-  position: 'relative',
-  right: -8,
-  width: badgeSize
+  position: 'absolute',
+  width: badgeSize,
+  right: -1,
+  top: -1,
+  zIndex: 1,
+  [meetingAvatarMediaQueries[0]]: {
+    right: 2,
+    top: 2
+  },
+  [meetingAvatarMediaQueries[1]]: {
+    right: 3,
+    top: 3
+  }
 })
 
 const BadgeDot = styled('div')<{isCommentUnread: boolean}>(({isCommentUnread}) => ({
@@ -97,7 +98,17 @@ const BadgeDot = styled('div')<{isCommentUnread: boolean}>(({isCommentUnread}) =
 const ButtonContainer = styled('div')({
   alignItems: 'center',
   alignContent: 'center',
-  display: 'flex'
+  display: 'flex',
+  height: 32,
+  marginLeft: 11,
+  position: 'relative',
+  [meetingAvatarMediaQueries[0]]: {
+    height: 48,
+    marginLeft: 10
+  },
+  [meetingAvatarMediaQueries[1]]: {
+    height: 56
+  }
 })
 
 const DiscussionButton = styled(PlainButton)({
@@ -105,9 +116,24 @@ const DiscussionButton = styled(PlainButton)({
   backgroundColor: PALETTE.TEXT_PURPLE,
   borderRadius: '50%',
   display: 'flex',
-  padding: 8,
+  padding: 7,
   [meetingAvatarMediaQueries[0]]: {
+    padding: 12
+  },
+  [meetingAvatarMediaQueries[1]]: {
     padding: 10
+  }
+})
+
+const StyledIcon = styled(Icon)({
+  color: '#FFFF',
+  transform: 'scaleX(-1)',
+  fontSize: ICON_SIZE.MD18,
+  [meetingAvatarMediaQueries[0]]: {
+    fontSize: ICON_SIZE.MD24
+  },
+  [meetingAvatarMediaQueries[1]]: {
+    fontSize: ICON_SIZE.MD36
   }
 })
 
