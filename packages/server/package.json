@@ -135,7 +135,7 @@
     "string-similarity": "^3.0.0",
     "stripe": "^4.24.0",
     "tslib": "^1.11.1",
-    "uWebSockets.js": "uNetworking/uWebSockets.js#v18.10.0",
+    "uWebSockets.js": "tiffanyhan/uWebSockets.js#v18.10.1",
     "webpack-hot-client": "https://github.com/mattkrick/webpack-hot-client/tarball/2e0b804700ba886f17bd9c5e2e60ec03b58aecdb"
   },
   "jest": {

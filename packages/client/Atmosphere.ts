@@ -73,7 +73,6 @@ const toFormData = (
   uploadables: UploadableMap,
   formData = new FormData()
 ) => {
-  console.log('body:', body)
   formData.append('body', JSON.stringify(body))
   Object.keys(uploadables).forEach(key => {
     formData.append(`uploadables.${key}`, uploadables[key])
@@ -81,21 +80,6 @@ const toFormData = (
   return formData
 }
 
-// const toFormData2 = (body: FetchHTTPData, prefix = '', formData = new FormData()) => {
-//   Object.keys(body).forEach((key) => {
-//     const value = body[key]
-//     // ignore undefined, but not null
-//     if (value === undefined) return
-//     const prop = prefix ? `${prefix}.${key}` : key
-//     if (!value || typeof value !== 'object' || value instanceof Blob) {
-//       // if null, scalar, File, Blob
-//       formData.append(prop, value)
-//     } else if (typeof value === 'object') {
-//       toFormData2(value, prop, formData)
-//     }
-//   })
-//   return formData
-// }
 export interface AtmosphereEvents {
   addSnackbar: (snack: Snack) => void
   removeSnackbar: (filterFn: SnackbarRemoveFn) => void
