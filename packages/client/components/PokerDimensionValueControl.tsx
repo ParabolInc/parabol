@@ -5,6 +5,7 @@ import {createFragmentContainer} from 'react-relay'
 import {PALETTE} from '~/styles/paletteV2'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
+import useResizeFontForInput from '../hooks/useResizeFontForInput'
 import PokerSetFinalScoreMutation from '../mutations/PokerSetFinalScoreMutation'
 import {PokerDimensionValueControl_stage} from '../__generated__/PokerDimensionValueControl_stage.graphql'
 import LinkButton from './LinkButton'
@@ -35,6 +36,7 @@ const Input = styled('input')<{color?: string}>(({color}) => ({
   fontWeight: 600,
   lineHeight: '24px',
   outline: 0,
+  padding: 0,
   textAlign: 'center',
   width: '100%',
   '::placeholder': {
@@ -92,6 +94,8 @@ const PokerDimensionValueControl = (props: Props) => {
   const onBlur = () => {
     submitScore()
   }
+
+  useResizeFontForInput(inputRef, pendingScore, 12, 18)
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const {value} = e.target

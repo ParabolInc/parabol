@@ -116,6 +116,7 @@ const PokerSidebarEstimateSection = (props: Props) => {
                   // show the first score it has
                   // if more than 1 score, have it do a tooltip
                   const label = finalScores.find(Boolean) || '-'
+                  console.log({finalScores})
                   const estimateMeta = <EstimateMeta>{label}</EstimateMeta>
                   return (
                     <Draggable
