@@ -5,11 +5,12 @@ import {createFragmentContainer} from 'react-relay'
 import {PALETTE} from '~/styles/paletteV2'
 import {MenuPosition} from '../hooks/useCoords'
 import useMenu from '../hooks/useMenu'
-import {NewMeeting, SprintPokerDefaults} from '../types/constEnums'
+import {ICON_SIZE} from '../styles/typographyV2'
+import {SprintPokerDefaults} from '../types/constEnums'
 import lazyPreload from '../utils/lazyPreload'
 import {JiraFieldDimensionDropdown_stage} from '../__generated__/JiraFieldDimensionDropdown_stage.graphql'
-import DropdownToggleV2 from './DropdownToggleV2'
-import MenuToggleV2Text from './MenuToggleV2Text'
+import Icon from './Icon'
+import PlainButton from './PlainButton/PlainButton'
 
 const JiraFieldMenuRoot = lazyPreload(async () =>
   import(/* webpackChunkName: 'JiraFieldMenuRoot' */ './JiraFieldMenuRoot')
@@ -20,12 +21,23 @@ interface Props {
 
 }
 
-const Dropdown = styled(DropdownToggleV2)({
-  backgroundColor: '#fff',
-  width: NewMeeting.CONTROLS_WIDTH,
+const Wrapper = styled(PlainButton)({
+  display: 'flex',
+  color: PALETTE.TEXT_MAIN,
   ':hover': {
-    backgroundColor: PALETTE.BACKGROUND_MAIN_LIGHTENED
-  }
+    color: PALETTE.TEXT_LIGHT_DARK
+  },
+  userSelect: 'none'
+})
+
+const CurrentValue = styled('div')({
+  fontSize: 14,
+  fontWeight: 600,
+  textDecoration: 'underline'
+})
+
+const StyledIcon = styled(Icon)({
+  fontSize: ICON_SIZE.MD18
 })
 
 const labelLookup = {
@@ -35,8 +47,9 @@ const labelLookup = {
 
 const JiraFieldDimensionDropdown = (props: Props) => {
   const {stage} = props
-  const {serviceFieldName} = stage
-  const {togglePortal, menuPortal, originRef, menuProps} = useMenu<HTMLDivElement>(
+  const {serviceField} = stage
+  const {name: serviceFieldName} = serviceField
+  const {togglePortal, menuPortal, originRef, menuProps} = useMenu<HTMLButtonElement>(
     MenuPosition.UPPER_RIGHT,
     {
       isDropdown: true
@@ -45,18 +58,15 @@ const JiraFieldDimensionDropdown = (props: Props) => {
 
   const label = labelLookup[serviceFieldName] || serviceFieldName
   return (
-    <>
-      <Dropdown
-        onMouseEnter={JiraFieldMenuRoot.preload}
-        onClick={togglePortal}
-        ref={originRef}
-      >
-        <MenuToggleV2Text icon={'stop'} label={label} />
-      </Dropdown>
+    <Wrapper onMouseEnter={JiraFieldMenuRoot.preload}
+      onClick={togglePortal}
+      ref={originRef}>
+      <CurrentValue>{label}</CurrentValue>
+      <StyledIcon>{'expand_more'}</StyledIcon>
       {menuPortal(
         <JiraFieldMenuRoot menuProps={menuProps} stage={stage} />
       )}
-    </>
+    </Wrapper>
   )
 }
 
@@ -65,7 +75,9 @@ export default createFragmentContainer(JiraFieldDimensionDropdown,
     stage: graphql`
     fragment JiraFieldDimensionDropdown_stage on EstimateStage {
       ...JiraFieldMenuRoot_stage
-      serviceFieldName
+      serviceField {
+        name
+      }
     }
     `
   }

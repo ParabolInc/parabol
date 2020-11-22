@@ -22,7 +22,6 @@ const Control = styled('div')({
   border: '2px solid',
   borderColor: PALETTE.TEXT_BLUE,
   borderRadius: 4,
-  cursor: 'pointer',
   display: 'flex',
   padding: 6
 })
@@ -59,27 +58,34 @@ interface Props {
   stage: PokerDimensionValueControl_stage
 }
 
+
 const PokerDimensionValueControl = (props: Props) => {
   const {placeholder, stage} = props
-  const {id: stageId, dimension, finalScore, meetingId, service} = stage
+  const {id: stageId, dimension, finalScore, meetingId, service, serviceField} = stage
+  const {name: serviceFieldName, type: serviceFieldType} = serviceField
   const {selectedScale} = dimension
   const {values: scaleValues} = selectedScale
   const inputRef = useRef<HTMLInputElement>(null)
   const atmosphere = useAtmosphere()
   const {submitMutation, submitting, error, onError, onCompleted} = useMutationProps()
   const [pendingScore, setPendingScore] = useState(finalScore || '')
+  const lastServiceFieldNameRef = useRef(serviceFieldName)
+  const canUpdate = pendingScore !== finalScore || lastServiceFieldNameRef.current !== serviceFieldName
+  const [localError, setLocalError] = useState('')
   useLayoutEffect(() => {
     setPendingScore(finalScore || '')
   }, [finalScore])
   useEffect(() => {
     if (error) {
+      // we want this for remote errors but not local errors, so we keep the 2 in different vars
       setPendingScore(finalScore || '')
     }
   }, [error])
 
   const submitScore = () => {
-    if (submitting || finalScore === pendingScore) return
+    if (submitting || !canUpdate) return
     submitMutation()
+    lastServiceFieldNameRef.current = serviceFieldName
     PokerSetFinalScoreMutation(atmosphere, {finalScore: pendingScore, meetingId, stageId}, {onError, onCompleted})
   }
 
@@ -89,30 +95,50 @@ const PokerDimensionValueControl = (props: Props) => {
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const {value} = e.target
+    if (serviceFieldType === 'number') {
+      if (isNaN(value as any)) {
+        // the service wants a number but we didn't get one
+        setLocalError('The field selected only accepts numbers')
+      } else {
+        setLocalError('')
+      }
+    }
     setPendingScore(value)
   }
 
-  const onKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    // keydown required bceause escape doesn't fire onKeyPress
     if (e.key === 'Tab' || e.key === 'Enter') {
       e.preventDefault()
-      onBlur()
+      inputRef.current?.blur()
+    } else if (e.key === 'Escape') {
+      e.preventDefault()
+      setPendingScore(finalScore || '')
+      setTimeout(() => {
+        inputRef.current?.blur()
+      })
     }
   }
+
 
   const matchingScale = scaleValues.find((scaleValue) => scaleValue.label === pendingScore)
   const scaleColor = matchingScale?.color
   const textColor = scaleColor ? '#fff' : undefined
+  const errorMessage = localError || error?.message || undefined
   return (
     <ControlWrap>
       <Control>
         <MiniPokerCard color={scaleColor}>
-          <Input onKeyPress={onKeyPress} autoFocus={!finalScore} color={textColor} ref={inputRef} onChange={onChange} placeholder={placeholder} onBlur={onBlur} value={pendingScore}></Input>
+          <Input onKeyDown={onKeyDown} autoFocus={!finalScore} color={textColor} ref={inputRef} onChange={onChange} placeholder={placeholder} onBlur={onBlur} value={pendingScore}></Input>
         </MiniPokerCard>
         {
-          service === 'jira' ? <PokerDimensionFinalScoreJiraPicker stage={stage} /> :
-            <StyledLinkButton palette={'blue'}>{'Update'}</StyledLinkButton>
+          service === 'jira' ? <PokerDimensionFinalScoreJiraPicker canUpdate={canUpdate} stage={stage} error={errorMessage} /> :
+            <>
+              <StyledLinkButton palette={'blue'}>{'Update'}</StyledLinkButton>
+              {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
+            </>
         }
-        {error && <ErrorMessage>{error.message}</ErrorMessage>}
+
       </Control>
     </ControlWrap>
   )
@@ -127,7 +153,10 @@ export default createFragmentContainer(
       id
       meetingId
       finalScore
-      serviceFieldName
+      serviceField {
+        name
+        type
+      }
       service
       dimension {
         selectedScale {

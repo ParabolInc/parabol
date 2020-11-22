@@ -1935,6 +1935,11 @@ export interface IJiraDimensionField {
    * The field name in jira that the estimate is pushed to
    */
   fieldName: string;
+
+  /**
+   * the type of field, e.g. number, string, any
+   */
+  fieldType: string;
 }
 
 /**
@@ -4669,7 +4674,7 @@ export interface IEstimateStage {
   /**
    * The field name used by the service for this dimension
    */
-  serviceFieldName: string;
+  serviceField: IServiceField;
 
   /**
    * The sort order for reprioritizing discussion topics
@@ -4715,6 +4720,23 @@ export interface IEstimateStage {
    * true when the participants are still voting and results are hidden. false when votes are revealed
    */
   isVoting: boolean;
+}
+
+/**
+ * A field that exists on a 3rd party service
+ */
+export interface IServiceField {
+  __typename: 'ServiceField';
+
+  /**
+   * The name of the field as provided by the service
+   */
+  name: string;
+
+  /**
+   * The field type, to be used for validation and analytics
+   */
+  type: string;
 }
 
 /**
@@ -8410,7 +8432,7 @@ export interface IUpdateJiraDimensionFieldOnMutationArguments {
   cloudId: string;
 
   /**
-   * The meeting the update happend in. If present, can return a meeting object with updated serviceFieldName
+   * The meeting the update happend in. If present, can return a meeting object with updated serviceField
    */
   meetingId?: string | null;
 }

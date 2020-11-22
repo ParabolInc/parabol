@@ -26,7 +26,7 @@ const updateJiraDimensionField = {
     meetingId: {
       type: GraphQLID,
       description:
-        'The meeting the update happend in. If present, can return a meeting object with updated serviceFieldName'
+        'The meeting the update happend in. If present, can return a meeting object with updated serviceField'
     }
   },
   resolve: async (
@@ -82,8 +82,11 @@ const updateJiraDimensionField = {
       const fields = await manager.getFields(cloudId)
       const field = fields.find((field) => field.name === fieldName)
       if (!field) return {error: {message: 'Invalid field name'}}
-      const {id: fieldId} = field
-      jiraDimensionFields.push(new JiraDimensionField({dimensionId, fieldName, fieldId, cloudId}))
+      const {id: fieldId, schema} = field
+      const type = schema.type as 'string' | 'number'
+      jiraDimensionFields.push(
+        new JiraDimensionField({dimensionId, fieldName, fieldId, cloudId, fieldType: type})
+      )
     }
     const MAX_JIRA_DIMENSION_FIELDS = 100 // prevent a-holes from unbounded growth of the Team object
     await r

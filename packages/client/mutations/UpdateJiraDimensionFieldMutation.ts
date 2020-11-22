@@ -12,7 +12,10 @@ graphql`
       phases {
         ...on EstimatePhase {
           stages {
-            serviceFieldName
+            serviceField {
+              name
+              type
+            }
           }
         }
       }
@@ -76,7 +79,9 @@ const UpdateJiraDimensionFieldMutation: SimpleMutation<TUpdateJiraDimensionField
       stages.forEach((stage) => {
         const [stageCloudId] = getJiraCloudIdAndKey(stage.getValue('serviceTaskId'))
         if (stage.getValue('dimensionId') === dimensionId && stageCloudId === cloudId) {
-          stage.setValue(fieldName, 'serviceFieldName')
+          // the type being a number is just a guess
+          const nextServiceField = createProxyRecord(store, 'ServiceField', {name: fieldName, type: 'number'})
+          stage.setLinkedRecord(nextServiceField, 'serviceField')
         }
       })
     }

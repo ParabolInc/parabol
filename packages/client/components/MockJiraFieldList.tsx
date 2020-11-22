@@ -6,7 +6,7 @@ const MockJiraFieldList = forwardRef(() => {
   return (
     <>
       {Array.from(Array(3).keys()).map((idx) => {
-        return <MockJiraFieldLine key={idx} delay={idx * 20} />
+        return <MockJiraFieldLine key={idx} delay={idx * 40} />
       })}
     </>
   )

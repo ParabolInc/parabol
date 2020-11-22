@@ -1,4 +1,4 @@
-import {GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql'
+import {GraphQLID, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
 import {GQLContext} from '../graphql'
 
 const JiraDimensionField = new GraphQLObjectType<any, GQLContext>({
@@ -24,6 +24,10 @@ const JiraDimensionField = new GraphQLObjectType<any, GQLContext>({
     fieldName: {
       type: GraphQLNonNull(GraphQLID),
       description: 'The field name in jira that the estimate is pushed to'
+    },
+    fieldType: {
+      type: GraphQLNonNull(GraphQLString),
+      description: 'the type of field, e.g. number, string, any'
     }
   })
 })

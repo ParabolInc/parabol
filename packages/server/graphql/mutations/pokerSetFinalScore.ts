@@ -95,11 +95,6 @@ const pokerSetFinalScore = {
     }
 
     // RESOLUTION
-    // update cache
-    stage.finalScore = finalScore
-    // update stage in DB
-    const updater = (estimateStage) => estimateStage.merge({finalScore})
-    await updateStage(meetingId, stageId, updater)
     // update integration
     const {creatorUserId, dimensionId, service, serviceTaskId} = stage
     const dimension = await dataLoader.get('templateDimensions').load(dimensionId)
@@ -154,7 +149,12 @@ const pokerSetFinalScore = {
         }))
         .run()
     }
-
+    // Integration push success! update DB
+    // update cache
+    stage.finalScore = finalScore
+    // update stage in DB
+    const updater = (estimateStage) => estimateStage.merge({finalScore})
+    await updateStage(meetingId, stageId, updater)
     const data = {meetingId, stageId}
     publish(SubscriptionChannel.MEETING, meetingId, 'PokerSetFinalScoreSuccess', data, subOptions)
     return data

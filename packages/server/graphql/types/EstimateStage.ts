@@ -23,6 +23,7 @@ import Story from './Story'
 import TaskServiceEnum from './TaskServiceEnum'
 import TemplateDimension from './TemplateDimension'
 import User from './User'
+import ServiceField from './ServiceField'
 
 const EstimateStage = new GraphQLObjectType<any, GQLContext>({
   name: 'EstimateStage',
@@ -46,8 +47,8 @@ const EstimateStage = new GraphQLObjectType<any, GQLContext>({
       description:
         'The key used to fetch the task used by the service. Jira: cloudId:issueKey. Parabol: taskId'
     },
-    serviceFieldName: {
-      type: GraphQLNonNull(GraphQLString),
+    serviceField: {
+      type: GraphQLNonNull(ServiceField),
       description: 'The field name used by the service for this dimension',
       resolve: async (
         {dimensionId, meetingId, service, serviceTaskId, teamId, creatorUserId},
@@ -61,9 +62,11 @@ const EstimateStage = new GraphQLObjectType<any, GQLContext>({
           const existingDimensionField = jiraDimensionFields.find(
             (field) => field.dimensionId === dimensionId && field.cloudId === cloudId
           )
-          if (existingDimensionField) return existingDimensionField.fieldName
 
-          // This is first time accessing the serviceFieldName, set it up on the Team
+          if (existingDimensionField)
+            return {name: existingDimensionField.fieldName, type: existingDimensionField.fieldType}
+
+          // This is first time accessing the serviceField, set it up on the Team
           const meeting = (await dataLoader.get('newMeetings').load(meetingId)) as MeetingPoker
           const {templateId} = meeting
           const sortedTemplateDimensions = await dataLoader
@@ -87,10 +90,11 @@ const EstimateStage = new GraphQLObjectType<any, GQLContext>({
               if (defaultField) {
                 const {id: fieldId} = defaultField
                 dimensionField = new JiraDimensionField({
+                  cloudId,
                   dimensionId,
                   fieldName: SprintPokerDefaults.JIRA_FIELD_DEFAULT,
                   fieldId,
-                  cloudId
+                  fieldType: 'number'
                 })
               }
             }
@@ -101,7 +105,8 @@ const EstimateStage = new GraphQLObjectType<any, GQLContext>({
               dimensionId,
               fieldName: SprintPokerDefaults.JIRA_FIELD_COMMENT,
               cloudId,
-              fieldId: ''
+              fieldId: '',
+              fieldType: 'string'
             })
           }
           jiraDimensionFields.push(dimensionField)
@@ -113,9 +118,9 @@ const EstimateStage = new GraphQLObjectType<any, GQLContext>({
               jiraDimensionFields
             })
             .run()
-          return dimensionField.fieldName
+          return {name: dimensionField.fieldName, type: dimensionField.fieldType}
         } else {
-          return SprintPokerDefaults.JIRA_FIELD_NULL
+          return {name: '', type: 'string'}
         }
       }
     },
