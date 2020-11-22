@@ -129,10 +129,11 @@ const PokerDimensionValueControl = (props: Props) => {
   const scaleColor = matchingScale?.color
   const textColor = scaleColor ? '#fff' : undefined
   const errorMessage = localError || error?.message || undefined
+  const isFinal = finalScore !== null && pendingScore === finalScore
   return (
     <ControlWrap>
       <Control>
-        <MiniPokerCard color={scaleColor}>
+        <MiniPokerCard color={scaleColor} isFinal={isFinal}>
           <Input onKeyDown={onKeyDown} autoFocus={!finalScore} color={textColor} ref={inputRef} onChange={onChange} placeholder={placeholder} onBlur={onBlur} value={pendingScore}></Input>
         </MiniPokerCard>
         {
