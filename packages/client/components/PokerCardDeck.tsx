@@ -1,8 +1,9 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {useEffect, useMemo, useRef, useState} from 'react'
+import React, {RefObject, useEffect, useMemo, useRef, useState} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import useMutationProps from '~/hooks/useMutationProps'
+import usePokerDeckLeftEdge from '~/hooks/usePokerDeckLeftEdge'
 import useAtmosphere from '../hooks/useAtmosphere'
 import usePokerCardLocation from '../hooks/usePokerCardLocation'
 import PokerAnnounceDeckHoverMutation from '../mutations/PokerAnnounceDeckHoverMutation'
@@ -21,12 +22,13 @@ const Deck = styled('div')({
 
 interface Props {
   meeting: PokerCardDeck_meeting
+  estimateAreaRef: RefObject<HTMLDivElement>
 }
 
-const PokerCardDeck = (props: Props) => {
+const PokerCardDeck = (props: Props,) => {
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
-  const {meeting} = props
+  const {meeting, estimateAreaRef} = props
   const {id: meetingId, localStage} = meeting
   const {dimension, id: stageId} = localStage
   const scores = localStage.scores!
@@ -36,6 +38,7 @@ const PokerCardDeck = (props: Props) => {
   const {values: cards} = selectedScale
   const totalCards = cards.length
   const [isCollapsed, setIsCollapsed] = useState(!isVoting)
+  const leftEdge = usePokerDeckLeftEdge(estimateAreaRef)
   useEffect(() => {
     setIsCollapsed(!isVoting)
   }, [isVoting])
@@ -104,7 +107,7 @@ const PokerCardDeck = (props: Props) => {
           }
         }
         const rotation = initialRotation + rotationPerCard * idx
-        return <PokerCard key={card.label} yOffset={yOffset} rotation={rotation} onMouseEnter={onMouseEnter(card.label)} onMouseLeave={onMouseLeave(card.label)} scaleValue={card} idx={idx} totalCards={totalCards} onClick={onClick} isCollapsed={isCollapsed} isSelected={isSelected} deckRef={deckRef} />
+        return <PokerCard key={card.label} yOffset={yOffset} rotation={rotation}  onMouseEnter={onMouseEnter(card.label)} onMouseLeave={onMouseLeave(card.label)} scaleValue={card} idx={idx} totalCards={totalCards} onClick={onClick} isCollapsed={isCollapsed} isSelected={isSelected} deckRef={deckRef} leftEdge={leftEdge}/>
       })}
     </Deck>
   )
