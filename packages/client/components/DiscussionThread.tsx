@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
-import React, {useRef, RefObject, useMemo, useEffect} from 'react'
-import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
+import React, {useRef, RefObject, useMemo, } from 'react'
+import { createFragmentContainer} from 'react-relay'
 import {DiscussionThread_viewer} from '~/__generated__/DiscussionThread_viewer.graphql'
 import {useCoverable} from '~/hooks/useControlBarCovers'
 import {Breakpoint, DiscussionThreadEnum, MeetingControlBarEnum} from '~/types/constEnums'
@@ -10,7 +10,6 @@ import makeMinWidthMediaQuery from '../utils/makeMinWidthMediaQuery'
 import DiscussionThreadInput from './DiscussionThreadInput'
 import DiscussionThreadList from './DiscussionThreadList'
 import {MeetingTypeEnum} from '~/types/graphql'
-import useAtmosphere from '~/hooks/useAtmosphere'
 
 const Wrapper = styled('div')<{isExpanded: boolean; isPokerMeeting?: boolean}>(
   ({isExpanded, isPokerMeeting}) => ({
@@ -41,37 +40,20 @@ const DiscussionThread = (props: Props) => {
   const {meetingContentRef, threadSourceId, viewer} = props
   const meeting = viewer.meeting!
   const {
-    id: meetingId,
     endedAt,
     meetingType,
     replyingToCommentId,
     threadSource,
-    isCommentUnread,
-    isRightDrawerOpen
   } = meeting
   const thread = threadSource?.thread
   const commentors = threadSource?.commentors
   const isPokerMeeting = meetingType === MeetingTypeEnum.poker
-  const atmosphere = useAtmosphere()
   const preferredNames = useMemo(
     () => (commentors && commentors.map((commentor) => commentor.preferredName)) || null,
     [commentors]
   )
   const edges = thread?.edges ?? [] // should never happen, but Terry reported it in demo. likely relay error
   const threadables = edges.map(({node}) => node)
-  const setIsCommentUnread = (isCommentUnread: boolean) => {
-    commitLocalUpdate(atmosphere, (store) => {
-      if (isPokerMeeting && meetingId) {
-        const meeting = store.get(meetingId)!
-        meeting.setValue(isCommentUnread, 'isCommentUnread')
-      }
-    })
-  }
-  useEffect(() => {
-    if (threadables.length && isPokerMeeting && !isCommentUnread && !isRightDrawerOpen) {
-      setIsCommentUnread(true)
-    }
-  }, [edges])
   const getMaxSortOrder = () => {
     return Math.max(0, ...threadables.map((threadable) => threadable.threadSortOrder || 0))
   }
@@ -152,9 +134,6 @@ export default createFragmentContainer(DiscussionThread, {
           }
         }
         ... on PokerMeeting {
-          id
-          isCommentUnread
-          isRightDrawerOpen
           threadSource: story(storyId: $threadSourceId) {
             ...DiscussionThread_threadSource @relay(mask: false)
             commentors {

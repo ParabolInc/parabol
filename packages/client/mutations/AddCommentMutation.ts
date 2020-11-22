@@ -38,6 +38,12 @@ export const addCommentMeetingUpdater: SharedUpdater<AddCommentMutation_meeting>
   payload,
   {store}
 ) => {
+  const meetingId = payload.getValue('meetingId') as string
+  const meeting = store.get(meetingId)
+  const isRightDrawerOpen = meeting?.getValue('isRightDrawerOpen')
+  if (isRightDrawerOpen === false) {
+    meeting?.setValue(true, 'isCommentUnread')
+  }
   const comment = payload.getLinkedRecord('comment')
   if (!comment) return
   const threadParentId = comment.getValue('threadParentId')
@@ -63,6 +69,8 @@ const AddCommentMutation: StandardMutation<TAddCommentMutation> = (
     variables,
     updater: (store) => {
       const payload = store.getRootField('addComment')
+      const {meetingId} = variables
+      payload.setValue(meetingId, 'meetingId')
       addCommentMeetingUpdater(payload as any, {atmosphere, store})
     },
     optimisticUpdater: (store) => {
