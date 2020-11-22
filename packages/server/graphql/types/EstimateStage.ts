@@ -7,8 +7,14 @@ import {
   GraphQLObjectType,
   GraphQLString
 } from 'graphql'
+import {SprintPokerDefaults} from '~/types/constEnums'
 import {NewMeetingPhaseTypeEnum} from '../../../client/types/graphql'
+import getRethink from '../../database/rethinkDriver'
+import JiraDimensionField from '../../database/types/JiraDimensionField'
+import MeetingPoker from '../../database/types/MeetingPoker'
 import db from '../../db'
+import AtlassianServerManager from '../../utils/AtlassianServerManager'
+import getJiraCloudIdAndKey from '../../../client/utils/getJiraCloudIdAndKey'
 import getRedis from '../../utils/getRedis'
 import {GQLContext} from '../graphql'
 import EstimateUserScore from './EstimateUserScore'
@@ -17,12 +23,6 @@ import Story from './Story'
 import TaskServiceEnum from './TaskServiceEnum'
 import TemplateDimension from './TemplateDimension'
 import User from './User'
-import {SprintPokerDefaults} from '~/types/constEnums'
-import MeetingPoker from '../../database/types/MeetingPoker'
-import JiraDimensionField from '../../database/types/JiraDimensionField'
-import getRethink from '../../database/rethinkDriver'
-
-export const estimateStageFields = () => ({})
 
 const EstimateStage = new GraphQLObjectType<any, GQLContext>({
   name: 'EstimateStage',
@@ -43,17 +43,23 @@ const EstimateStage = new GraphQLObjectType<any, GQLContext>({
     },
     serviceTaskId: {
       type: GraphQLNonNull(GraphQLID),
-      description: 'The stringified JSON used to fetch the task used by the service'
+      description:
+        'The key used to fetch the task used by the service. Jira: cloudId:issueKey. Parabol: taskId'
     },
     serviceFieldName: {
       type: GraphQLNonNull(GraphQLString),
       description: 'The field name used by the service for this dimension',
-      resolve: async ({dimensionId, meetingId, service, teamId}, _args, {dataLoader}) => {
+      resolve: async (
+        {dimensionId, meetingId, service, serviceTaskId, teamId, creatorUserId},
+        _args,
+        {dataLoader}
+      ) => {
         if (service === 'jira') {
+          const [cloudId] = getJiraCloudIdAndKey(serviceTaskId)
           const team = await dataLoader.get('teams').load(teamId)
           const jiraDimensionFields = team.jiraDimensionFields || []
           const existingDimensionField = jiraDimensionFields.find(
-            (dimensionField) => dimensionField.dimensionId === dimensionId
+            (field) => field.dimensionId === dimensionId && field.cloudId === cloudId
           )
           if (existingDimensionField) return existingDimensionField.fieldName
 
@@ -65,10 +71,39 @@ const EstimateStage = new GraphQLObjectType<any, GQLContext>({
             .load(templateId)
           const [firstDimension] = sortedTemplateDimensions
           const isFirst = firstDimension.id === dimensionId
-          const fieldName = isFirst
-            ? SprintPokerDefaults.JIRA_FIELD_DEFAULT
-            : (SprintPokerDefaults.JIRA_FIELD_COMMENT as string)
-          const dimensionField = new JiraDimensionField({dimensionId, fieldName})
+          let dimensionField = undefined as undefined | JiraDimensionField
+          if (isFirst) {
+            // try to use the default field for the first dimension
+            const auth = await dataLoader
+              .get('freshAtlassianAuth')
+              .load({userId: creatorUserId, teamId})
+            if (auth) {
+              const {accessToken} = auth
+              const manager = new AtlassianServerManager(accessToken)
+              const fields = await manager.getFields(cloudId)
+              const defaultField = fields.find(
+                (field) => field.name === SprintPokerDefaults.JIRA_FIELD_DEFAULT
+              )
+              if (defaultField) {
+                const {id: fieldId} = defaultField
+                dimensionField = new JiraDimensionField({
+                  dimensionId,
+                  fieldName: SprintPokerDefaults.JIRA_FIELD_DEFAULT,
+                  fieldId,
+                  cloudId
+                })
+              }
+            }
+          }
+          // use comments as default for all following dimensions
+          if (!dimensionField) {
+            dimensionField = new JiraDimensionField({
+              dimensionId,
+              fieldName: SprintPokerDefaults.JIRA_FIELD_COMMENT,
+              cloudId,
+              fieldId: ''
+            })
+          }
           jiraDimensionFields.push(dimensionField)
           const r = await getRethink()
           await r
@@ -78,7 +113,7 @@ const EstimateStage = new GraphQLObjectType<any, GQLContext>({
               jiraDimensionFields
             })
             .run()
-          return fieldName
+          return dimensionField.fieldName
         } else {
           return SprintPokerDefaults.JIRA_FIELD_NULL
         }
@@ -139,7 +174,7 @@ const EstimateStage = new GraphQLObjectType<any, GQLContext>({
         'the story referenced in the stage. Either a Parabol Task or something similar from an integration. Null if fetching from service failed',
       resolve: async ({service, serviceTaskId, teamId, creatorUserId}, _args, {dataLoader}) => {
         if (service === 'jira') {
-          const [cloudId, issueKey] = serviceTaskId.split(':')
+          const [cloudId, issueKey] = getJiraCloudIdAndKey(serviceTaskId)
           return dataLoader
             .get('jiraIssue')
             .load({cloudId, issueKey, teamId, userId: creatorUserId})

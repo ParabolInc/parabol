@@ -7,11 +7,19 @@ const JiraDimensionField = new GraphQLObjectType<any, GQLContext>({
   fields: () => ({
     id: {
       type: new GraphQLNonNull(GraphQLID),
-      resolve: ({dimensionId, fieldName}) => `${dimensionId}:${fieldName}`
+      resolve: ({cloudId, dimensionId, fieldId}) => `${cloudId}:${dimensionId}:${fieldId}`
+    },
+    cloudId: {
+      type: GraphQLNonNull(GraphQLID),
+      description: 'The atlassian cloud that the field lives in'
     },
     dimensionId: {
       type: GraphQLNonNull(GraphQLID),
       description: 'The poker template dimension Id'
+    },
+    fieldId: {
+      type: GraphQLNonNull(GraphQLID),
+      description: 'The ID referring to the field name'
     },
     fieldName: {
       type: GraphQLNonNull(GraphQLID),

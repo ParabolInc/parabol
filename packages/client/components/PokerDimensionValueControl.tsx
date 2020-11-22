@@ -9,22 +9,23 @@ import PokerSetFinalScoreMutation from '../mutations/PokerSetFinalScoreMutation'
 import {PokerDimensionValueControl_stage} from '../__generated__/PokerDimensionValueControl_stage.graphql'
 import LinkButton from './LinkButton'
 import MiniPokerCard from './MiniPokerCard'
+import PokerDimensionFinalScoreJiraPicker from './PokerDimensionFinalScoreJiraPicker'
 import StyledError from './StyledError'
 
 const ControlWrap = styled('div')({
   padding: '0 8px'
 })
 
-const Control = styled('div')<{hasFocus: boolean}>(({hasFocus}) => ({
+const Control = styled('div')({
   alignItems: 'center',
-  backgroundColor: hasFocus ? 'white' : 'rgba(255, 255, 255, .75)',
+  backgroundColor: '#fff',
   border: '2px solid',
-  borderColor: hasFocus ? PALETTE.TEXT_BLUE : 'transparent',
+  borderColor: PALETTE.TEXT_BLUE,
   borderRadius: 4,
   cursor: 'pointer',
   display: 'flex',
   padding: 6
-}))
+})
 
 const Input = styled('input')<{color?: string}>(({color}) => ({
   background: 'none',
@@ -38,20 +39,9 @@ const Input = styled('input')<{color?: string}>(({color}) => ({
   textAlign: 'center',
   width: '100%',
   '::placeholder': {
-    // color: hasFocus ? 'rgba(125, 125, 125, 125, .25' : 'rgba(125, 125, 125, .5)'
     color: 'rgba(125, 125, 125, .25)'
   }
 }))
-
-const Label = styled('label')({
-  color: PALETTE.TEXT_GRAY,
-  cursor: 'pointer',
-  fontSize: 14,
-  fontWeight: 600,
-  lineHeight: '24px',
-  margin: '0 0 0 16px',
-  padding: 0
-})
 
 const StyledLinkButton = styled(LinkButton)({
   fontSize: 14,
@@ -71,11 +61,10 @@ interface Props {
 
 const PokerDimensionValueControl = (props: Props) => {
   const {placeholder, stage} = props
-  const {id: stageId, dimension, finalScore, meetingId} = stage
+  const {id: stageId, dimension, finalScore, meetingId, service} = stage
   const {selectedScale} = dimension
   const {values: scaleValues} = selectedScale
   const inputRef = useRef<HTMLInputElement>(null)
-  const [hasFocus, setFocus] = useState(!finalScore)
   const atmosphere = useAtmosphere()
   const {submitMutation, submitting, error, onError, onCompleted} = useMutationProps()
   const [pendingScore, setPendingScore] = useState(finalScore || '')
@@ -94,16 +83,7 @@ const PokerDimensionValueControl = (props: Props) => {
     PokerSetFinalScoreMutation(atmosphere, {finalScore: pendingScore, meetingId, stageId}, {onError, onCompleted})
   }
 
-  const focusInput = () => {
-    inputRef.current?.focus()
-  }
-
-  const onFocus = () => {
-    setFocus(true)
-  }
-
   const onBlur = () => {
-    setFocus(false)
     submitScore()
   }
 
@@ -118,18 +98,19 @@ const PokerDimensionValueControl = (props: Props) => {
       onBlur()
     }
   }
+
   const matchingScale = scaleValues.find((scaleValue) => scaleValue.label === pendingScore)
   const scaleColor = matchingScale?.color
   const textColor = scaleColor ? '#fff' : undefined
   return (
     <ControlWrap>
-      <Control hasFocus={hasFocus}>
+      <Control>
         <MiniPokerCard color={scaleColor}>
-          <Input onKeyPress={onKeyPress} autoFocus={!finalScore} color={textColor} ref={inputRef} onChange={onChange} placeholder={placeholder} onFocus={onFocus} onBlur={onBlur} value={pendingScore}></Input>
+          <Input onKeyPress={onKeyPress} autoFocus={!finalScore} color={textColor} ref={inputRef} onChange={onChange} placeholder={placeholder} onBlur={onBlur} value={pendingScore}></Input>
         </MiniPokerCard>
-        {hasFocus ?
-          <StyledLinkButton palette={'blue'}>{'Update'}</StyledLinkButton> :
-          <Label onClick={focusInput}>{'Edit Final Score'}</Label>
+        {
+          service === 'jira' ? <PokerDimensionFinalScoreJiraPicker stage={stage} /> :
+            <StyledLinkButton palette={'blue'}>{'Update'}</StyledLinkButton>
         }
         {error && <ErrorMessage>{error.message}</ErrorMessage>}
       </Control>
@@ -142,10 +123,12 @@ export default createFragmentContainer(
   {
     stage: graphql`
     fragment PokerDimensionValueControl_stage on EstimateStage {
+      ...PokerDimensionFinalScoreJiraPicker_stage
       id
       meetingId
       finalScore
       serviceFieldName
+      service
       dimension {
         selectedScale {
           values {

@@ -364,6 +364,8 @@ export const enum SprintPokerDefaults {
   DEFAULT_SCALE_ID = 'fibonacciScale',
   JIRA_FIELD_DEFAULT = 'Story point estimate',
   JIRA_FIELD_COMMENT = '__comment',
-  JIRA_FIELD_NULL = ''
+  JIRA_FIELD_COMMENT_LABEL = 'As Comment',
+  JIRA_FIELD_NULL = '',
+  JIRA_FIELD_NULL_LABEL = 'Do Not Update'
 
 }

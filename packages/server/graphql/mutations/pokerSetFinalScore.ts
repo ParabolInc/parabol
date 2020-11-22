@@ -12,6 +12,7 @@ import MeetingPoker from '../../database/types/MeetingPoker'
 import updateStage from '../../database/updateStage'
 import AtlassianServerManager from '../../utils/AtlassianServerManager'
 import {getUserId, isTeamMember} from '../../utils/authorization'
+import getJiraCloudIdAndKey from '../../../client/utils/getJiraCloudIdAndKey'
 import makeAppLink from '../../utils/makeAppLink'
 import makeScoreJiraComment from '../../utils/makeScoreJiraComment'
 import publish from '../../utils/publish'
@@ -89,7 +90,7 @@ const pokerSetFinalScore = {
     if (!stage) {
       return {error: {message: 'Invalid stageId provided'}}
     }
-    if (finalScore.length > 2) {
+    if (finalScore.length > 4) {
       return {error: {message: 'Score is too long'}}
     }
 
@@ -109,12 +110,13 @@ const pokerSetFinalScore = {
         return {error: {message: 'User no longer has access to Atlassian'}}
       }
       const {accessToken} = auth
-      const [cloudId, issueKey] = serviceTaskId.split(':')
+      const [cloudId, issueKey] = getJiraCloudIdAndKey(serviceTaskId)
       const manager = new AtlassianServerManager(accessToken)
       const team = await dataLoader.get('teams').load(teamId)
       const jiraDimensionFields = team.jiraDimensionFields || []
       const dimensionField = jiraDimensionFields.find(
-        (dimensionField) => dimensionField.dimensionId === dimensionId
+        (dimensionField) =>
+          dimensionField.dimensionId === dimensionId && dimensionField.cloudId === cloudId
       )
       // should never have to use default
       const fieldName = dimensionField?.fieldName ?? SprintPokerDefaults.JIRA_FIELD_DEFAULT
@@ -130,8 +132,9 @@ const pokerSetFinalScore = {
           makeScoreJiraComment(dimensionName, finalScore, meetingName, discussionURL)
         )
       } else if (fieldName !== SprintPokerDefaults.JIRA_FIELD_NULL) {
+        const {fieldId} = dimensionField!
         try {
-          await manager.updateStoryPoints(cloudId, issueKey, finalScore, fieldName)
+          await manager.updateStoryPoints(cloudId, issueKey, finalScore, fieldId)
         } catch (e) {
           return {error: {message: e.message}}
         }

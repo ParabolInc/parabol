@@ -582,6 +582,11 @@ export interface IAtlassianIntegration {
   projects: Array<IJiraRemoteProject>;
 
   /**
+   * The list of field names that can be used as a
+   */
+  jiraFields: Array<string>;
+
+  /**
    * the list of suggested search queries, sorted by most recent. Guaranteed to be < 60 days old
    */
   jiraSearchQueries: Array<IJiraSearchQuery>;
@@ -608,6 +613,13 @@ export interface IIssuesOnAtlassianIntegrationArguments {
    */
   isJQL: boolean;
   projectKeyFilters?: Array<string> | null;
+}
+
+export interface IJiraFieldsOnAtlassianIntegrationArguments {
+  /**
+   * Filter the fields to single cloudId
+   */
+  cloudId: string;
 }
 
 /**
@@ -1905,9 +1917,19 @@ export interface IJiraDimensionField {
   id: string;
 
   /**
+   * The atlassian cloud that the field lives in
+   */
+  cloudId: string;
+
+  /**
    * The poker template dimension Id
    */
   dimensionId: string;
+
+  /**
+   * The ID referring to the field name
+   */
+  fieldId: string;
 
   /**
    * The field name in jira that the estimate is pushed to
@@ -4640,7 +4662,7 @@ export interface IEstimateStage {
   service: TaskServiceEnum;
 
   /**
-   * The stringified JSON used to fetch the task used by the service
+   * The key used to fetch the task used by the service. Jira: cloudId:issueKey. Parabol: taskId
    */
   serviceTaskId: string;
 
@@ -8381,6 +8403,11 @@ export interface IUpdateJiraDimensionFieldOnMutationArguments {
    * The jira field name that we should push estimates to
    */
   fieldName: string;
+
+  /**
+   * The cloudId the field lives on
+   */
+  cloudId: string;
 
   /**
    * The meeting the update happend in. If present, can return a meeting object with updated serviceFieldName

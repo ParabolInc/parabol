@@ -452,15 +452,11 @@ export default abstract class AtlassianManager {
     cloudId: string,
     issueKey: string,
     storyPoints: string | number,
-    fieldName: string
+    fieldId: string
   ) {
-    const fields = await this.getFields(cloudId)
-    const field = fields.find((field) => field.name === fieldName)
-    if (!field) throw new Error('Field not found')
-    const {id: fieldId} = field
     const payload = {
       fields: {
-        [fieldId]: storyPoints
+        [fieldId]: isFinite(storyPoints as number) ? Number(storyPoints) : storyPoints
       }
     }
     const res = await this.put(
@@ -468,7 +464,7 @@ export default abstract class AtlassianManager {
       payload
     )
     if (res !== null) {
-      console.log('ERR', {res})
+      console.log('ERR', {res, storyPoints, fieldId, issueKey, cloudId})
       const jiraError = res.errors?.[fieldId]
       const error = jiraError ? `Jira: ${jiraError}` : 'Cannot update field in Jira'
       throw new Error(error)
