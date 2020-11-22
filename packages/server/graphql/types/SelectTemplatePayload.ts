@@ -7,15 +7,15 @@ const SelectTemplatePayload = new GraphQLObjectType<any, GQLContext>({
   name: 'SelectTemplatePayload',
   fields: () => ({
     error: {
-      type: StandardMutationError,
+      type: StandardMutationError
     },
     meetingSettings: {
       type: TeamMeetingSettings,
       resolve: ({meetingSettingsId}, _args, {dataLoader}) => {
         return meetingSettingsId ? dataLoader.get('meetingSettings').load(meetingSettingsId) : null
-      },
-    },
-  }),
+      }
+    }
+  })
 })
 
 export default SelectTemplatePayload

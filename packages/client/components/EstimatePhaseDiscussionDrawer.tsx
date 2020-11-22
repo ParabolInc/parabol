@@ -46,7 +46,7 @@ const ThreadColumn = styled('div')({
   width: '100%'
 })
 
-const CancelIcon = styled(Icon)({
+const CloseIcon = styled(Icon)({
   color: PALETTE.TEXT_GRAY,
   cursor: 'pointer',
   fontSize: ICON_SIZE.MD24,
@@ -95,7 +95,7 @@ const EstimatePhaseDiscussionDrawer = (props: Props) => {
       <Header>
         <HeaderLabel>{'Discussion'}</HeaderLabel>
         <StyledCloseButton onClick={onToggle}>
-          <CancelIcon>close</CancelIcon>
+          <CloseIcon>close</CloseIcon>
         </StyledCloseButton>
       </Header>
       <ThreadColumn>
