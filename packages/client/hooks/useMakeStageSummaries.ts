@@ -3,7 +3,7 @@ import {useMemo} from 'react'
 import {readInlineData} from 'react-relay'
 import {useMakeStageSummaries_phase} from '../__generated__/useMakeStageSummaries_phase.graphql'
 
-interface StageSummary {title: string, isComplete: boolean, isNavigable: boolean, isActive: boolean, sortOrder: number, stageIds: string[]}
+interface StageSummary {title: string, isComplete: boolean, isNavigable: boolean, isActive: boolean, sortOrder: number, stageIds: string[], finalScores: (string | null)[]}
 
 const getTitleFromStory = (service: string, story: useMakeStageSummaries_phase['stages'][0]['story'], fallback = 'Unknown Story') => {
   if (!story) return fallback
@@ -18,6 +18,7 @@ const useMakeStageSummaries = (phaseRef: any, localStageId: string) => {
         phaseType
         stages {
           id
+          finalScore
           isComplete
           isNavigable
           sortOrder
@@ -56,7 +57,8 @@ const useMakeStageSummaries = (phaseRef: any, localStageId: string) => {
         isNavigable: batch.some(({isNavigable}) => isNavigable),
         isActive: !!batch.find(({id}) => id === localStageId),
         sortOrder: stage.sortOrder,
-        stageIds: batch.map(({id}) => id)
+        stageIds: batch.map(({id}) => id),
+        finalScores: batch.map(({finalScore}) => finalScore)
       })
       serviceTaskSet.add(serviceTaskId)
       i += batch.length - 1
