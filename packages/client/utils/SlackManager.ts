@@ -9,23 +9,6 @@ interface SlackIM {
   is_im: true
   is_org_shared: boolean
   is_user_deleted: boolean
-  latest: {
-    bot_id: string
-    type: string
-    text: string
-    user: string
-    ts: string
-    team: string
-    bot_profile: {
-      id: string
-      deleted: boolean
-      name: string
-      updated: number
-      app_id: string
-      icons: any
-      team_id: string
-    }
-  }
   priority: number
   user: string
 }

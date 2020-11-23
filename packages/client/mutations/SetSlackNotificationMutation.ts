@@ -44,6 +44,22 @@ const mutation = graphql`
   }
 `
 
+export const setSlackNotificationUpdater = (payload, {store}) => {
+  const user = payload.getLinkedRecord('user')
+  if (!user) return
+  const userId = user.getValue('id')
+  const teamId = payload.getValue('teamId')
+  const slackChannelId = payload.getValue('slackChannelId')
+  const teamMemberId = toTeamMemberId(teamId, userId)
+  const teamMember = store.get(teamMemberId)
+  if (!teamMember) return
+  const integrations = teamMember.getLinkedRecord('integrations')
+  if (!integrations) return
+  const slack = integrations.getLinkedRecord('slack')
+  if (!slack) return
+  slack.setValue(slackChannelId, 'defaultTeamChannelId')
+}
+
 const SetSlackNotificationMutation = (
   atmosphere,
   variables: SetSlackNotificationMutationVariables,
@@ -52,6 +68,14 @@ const SetSlackNotificationMutation = (
   return commitMutation<TSetSlackNotificationMutation>(atmosphere, {
     mutation,
     variables,
+    updater: (store) => {
+      const {slackChannelId, teamId} = variables
+      const payload = store.getRootField('setSlackNotification')
+      if (!payload) return
+      payload.setValue(teamId, 'teamId')
+      payload.setValue(slackChannelId, 'slackChannelId')
+      setSlackNotificationUpdater(payload, {store})
+    },
     optimisticUpdater: (store) => {
       const {slackNotificationEvents, slackChannelId, teamId} = variables
       const {viewerId} = atmosphere
@@ -62,6 +86,7 @@ const SetSlackNotificationMutation = (
       if (!integrations) return
       const slack = integrations.getLinkedRecord('slack')
       if (!slack) return
+      slack.setValue(slackChannelId, 'defaultTeamChannelId')
       const existingNotifications = slack.getLinkedRecords('notifications')
       if (!existingNotifications) return
       slackNotificationEvents.forEach((event) => {

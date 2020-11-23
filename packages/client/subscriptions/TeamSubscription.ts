@@ -7,6 +7,7 @@ import {
   endRetrospectiveTeamUpdater
 } from '~/mutations/EndRetrospectiveMutation'
 import {navigateMeetingTeamUpdater} from '~/mutations/NavigateMeetingMutation'
+import {setSlackNotificationUpdater} from '~/mutations/SetSlackNotificationMutation'
 import Atmosphere from '../Atmosphere'
 import {
   acceptTeamInvitationTeamOnNext,
@@ -67,6 +68,7 @@ const subscription = graphql`
       ...RenameReflectTemplatePromptMutation_team @relay(mask: false)
       ...SelectTemplateMutation_team @relay(mask: false)
       ...SetCheckInEnabledMutation_team @relay(mask: false)
+      ...SetSlackNotificationMutation_team @relay(mask: false)
       ...StartCheckInMutation_team @relay(mask: false)
       ...StartNewMeetingMutation_team @relay(mask: false)
       ...StartRetrospectiveMutation_team @relay(mask: false)
@@ -110,7 +112,8 @@ const updateHandlers = {
   RemoveOrgUserPayload: removeOrgUserTeamUpdater,
   RemoveReflectTemplatePayload: removeReflectTemplateTeamUpdater,
   RemoveReflectTemplatePromptPayload: removeReflectTemplatePromptTeamUpdater,
-  RemoveTeamMemberPayload: removeTeamMemberTeamUpdater
+  RemoveTeamMemberPayload: removeTeamMemberTeamUpdater,
+  SetSlackNotificationPayload: setSlackNotificationUpdater
 }
 
 const TeamSubscription = (

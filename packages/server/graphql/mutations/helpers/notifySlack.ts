@@ -4,6 +4,7 @@ import formatTime from 'parabol-client/utils/date/formatTime'
 import formatWeekday from 'parabol-client/utils/date/formatWeekday'
 import findStageById from 'parabol-client/utils/meetings/findStageById'
 import {phaseLabelLookup} from 'parabol-client/utils/meetings/lookups'
+import {SlackPublicConversation} from 'parabol-client/utils/SlackManager'
 import getRethink from '../../../database/rethinkDriver'
 import SlackAuth from '../../../database/types/SlackAuth'
 import SlackNotification, {SlackNotificationEvent} from '../../../database/types/SlackNotification'
@@ -129,7 +130,7 @@ const upsertSlackMessage = async (
   const channelInfo = await manager.getConversationInfo(channelId)
   if (channelInfo.ok) {
     const {channel} = channelInfo
-    const {latest} = channel
+    const {latest} = channel as SlackPublicConversation
     if (latest) {
       const {ts, bot_profile} = latest
       const {name} = bot_profile
