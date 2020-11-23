@@ -582,6 +582,11 @@ export interface IAtlassianIntegration {
   projects: Array<IJiraRemoteProject>;
 
   /**
+   * The list of field names that can be used as a
+   */
+  jiraFields: Array<string>;
+
+  /**
    * the list of suggested search queries, sorted by most recent. Guaranteed to be < 60 days old
    */
   jiraSearchQueries: Array<IJiraSearchQuery>;
@@ -608,6 +613,13 @@ export interface IIssuesOnAtlassianIntegrationArguments {
    */
   isJQL: boolean;
   projectKeyFilters?: Array<string> | null;
+}
+
+export interface IJiraFieldsOnAtlassianIntegrationArguments {
+  /**
+   * Filter the fields to single cloudId
+   */
+  cloudId: string;
 }
 
 /**
@@ -679,7 +691,7 @@ export interface IJiraIssue {
   __typename: 'JiraIssue';
 
   /**
-   * shortid
+   * cloudId:key
    */
   id: string;
 
@@ -1642,11 +1654,6 @@ export interface ITaskEstimate {
    * The human-readable label for the estimate
    */
   label: string;
-
-  /**
-   * The numeric value representing the label. If the label was not a value in the TemplateScale, this is null
-   */
-  value: number | null;
 }
 
 export interface ITaskEditorDetails {
@@ -1716,6 +1723,11 @@ export interface ITeam {
    * The hash and expiration for a token that allows anyone with it to join the team
    */
   massInvitation: IMassInvitation | null;
+
+  /**
+   * Integration details that are shared by all team members. Nothing user specific
+   */
+  integrations: ITeamIntegrations;
 
   /**
    * true if the underlying org has a validUntil date greater than now. if false, subs do not work
@@ -1861,6 +1873,73 @@ export interface IMassInvitation {
    */
   expiration: any;
   meetingId: string | null;
+}
+
+/**
+ * All the available integrations available for this team member
+ */
+export interface ITeamIntegrations {
+  __typename: 'TeamIntegrations';
+
+  /**
+   * composite
+   */
+  id: string;
+
+  /**
+   * All things associated with an atlassian integration for a team member
+   */
+  atlassian: IAtlassianTeamIntegration;
+}
+
+/**
+ * The atlassian integration details shared across an entire team
+ */
+export interface IAtlassianTeamIntegration {
+  __typename: 'AtlassianTeamIntegration';
+
+  /**
+   * shortid
+   */
+  id: string;
+
+  /**
+   * The dimensions and their corresponding Jira fields
+   */
+  jiraDimensionFields: Array<IJiraDimensionField>;
+}
+
+/**
+ * Poker dimensions mapped to their corresponding fields in jira
+ */
+export interface IJiraDimensionField {
+  __typename: 'JiraDimensionField';
+  id: string;
+
+  /**
+   * The atlassian cloud that the field lives in
+   */
+  cloudId: string;
+
+  /**
+   * The poker template dimension Id
+   */
+  dimensionId: string;
+
+  /**
+   * The ID referring to the field name
+   */
+  fieldId: string;
+
+  /**
+   * The field name in jira that the estimate is pushed to
+   */
+  fieldName: string;
+
+  /**
+   * the type of field, e.g. number, string, any
+   */
+  fieldType: string;
 }
 
 /**
@@ -4583,14 +4662,19 @@ export interface IEstimateStage {
   creatorUserId: string;
 
   /**
-   * The service the task is connected to. If null, it is parabol
+   * The service the task is connected to
    */
-  service: TaskServiceEnum | null;
+  service: TaskServiceEnum;
 
   /**
-   * The stringified JSON used to fetch the task used by the service
+   * The key used to fetch the task used by the service. Jira: cloudId:issueKey. Parabol: taskId
    */
   serviceTaskId: string;
+
+  /**
+   * The field name used by the service for this dimension
+   */
+  serviceField: IServiceField;
 
   /**
    * The sort order for reprioritizing discussion topics
@@ -4628,14 +4712,31 @@ export interface IEstimateStage {
   scores: Array<IEstimateUserScore>;
 
   /**
-   * the story referenced in the stage. Either a Parabol Task or something similar from an integration
+   * the story referenced in the stage. Either a Parabol Task or something similar from an integration. Null if fetching from service failed
    */
-  story: Story;
+  story: Story | null;
 
   /**
    * true when the participants are still voting and results are hidden. false when votes are revealed
    */
   isVoting: boolean;
+}
+
+/**
+ * A field that exists on a 3rd party service
+ */
+export interface IServiceField {
+  __typename: 'ServiceField';
+
+  /**
+   * The name of the field as provided by the service
+   */
+  name: string;
+
+  /**
+   * The field type, to be used for validation and analytics
+   */
+  type: string;
 }
 
 /**
@@ -7181,6 +7282,11 @@ export interface IMutation {
    * Update the final score field & push to the associated integration
    */
   pokerSetFinalScore: PokerSetFinalScorePayload;
+
+  /**
+   * Set the jira field that the poker dimension should map to
+   */
+  updateJiraDimensionField: UpdateJiraDimensionFieldPayload;
 }
 
 export interface IAcceptTeamInvitationOnMutationArguments {
@@ -8307,9 +8413,28 @@ export interface IPokerSetFinalScoreOnMutationArguments {
   stageId: string;
 
   /**
-   * A string representation of the final score. It may not have an associated value in the scale
+   * The label from the scale value
    */
   finalScore: string;
+}
+
+export interface IUpdateJiraDimensionFieldOnMutationArguments {
+  dimensionId: string;
+
+  /**
+   * The jira field name that we should push estimates to
+   */
+  fieldName: string;
+
+  /**
+   * The cloudId the field lives on
+   */
+  cloudId: string;
+
+  /**
+   * The meeting the update happend in. If present, can return a meeting object with updated serviceField
+   */
+  meetingId?: string | null;
 }
 
 export interface IAcceptTeamInvitationPayload {
@@ -10751,6 +10876,25 @@ export interface IPokerSetFinalScoreSuccess {
   stage: IEstimateStage;
 }
 
+/**
+ * Return object for UpdateJiraDimensionFieldPayload
+ */
+export type UpdateJiraDimensionFieldPayload =
+  | IErrorPayload
+  | IUpdateJiraDimensionFieldSuccess;
+
+export interface IUpdateJiraDimensionFieldSuccess {
+  __typename: 'UpdateJiraDimensionFieldSuccess';
+  teamId: string;
+  meetingId: string | null;
+  team: ITeam;
+
+  /**
+   * The poker meeting the field was updated from
+   */
+  meeting: IPokerMeeting | null;
+}
+
 export interface ISubscription {
   __typename: 'Subscription';
   meetingSubscription: MeetingSubscriptionPayload;
@@ -11054,7 +11198,8 @@ export type TeamSubscriptionPayload =
   | IUpdatePokerTemplateDimensionScalePayload
   | IUpdatePokerTemplateScaleValuePayload
   | IUpdateUserProfilePayload
-  | IPersistJiraSearchQuerySuccess;
+  | IPersistJiraSearchQuerySuccess
+  | IUpdateJiraDimensionFieldSuccess;
 
 export interface IRenamePokerTemplatePayload {
   __typename: 'RenamePokerTemplatePayload';

@@ -2,12 +2,9 @@ import {NewMeetingPhaseTypeEnum} from 'parabol-client/types/graphql'
 import findStageById from 'parabol-client/utils/meetings/findStageById'
 import nullIfEmpty from 'parabol-client/utils/nullIfEmpty'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
-import AtlassianServerManager from '../utils/AtlassianServerManager'
-import sendToSentry from '../utils/sendToSentry'
 import GenericMeetingStage from '../database/types/GenericMeetingStage'
 import Meeting from '../database/types/Meeting'
 import {getUserId, isSuperUser, isUserBillingLeader} from '../utils/authorization'
-import {DataLoaderWorker} from './graphql'
 
 export const resolveAgendaItem = ({agendaItemId, agendaItem}, _args, {dataLoader}) => {
   return agendaItemId ? dataLoader.get('agendaItems').load(agendaItemId) : agendaItem
@@ -147,36 +144,4 @@ export const resolveForBillingLeaders = (fieldName) => async (
   const viewerId = getUserId(authToken)
   const isBillingLeader = await isUserBillingLeader(viewerId, orgId, dataLoader)
   return isBillingLeader || isSuperUser(authToken) ? source[fieldName] : undefined
-}
-
-export const resolveJiraIssue = async (
-  cloudId: string,
-  issueKey: string,
-  teamId: string,
-  userId: string,
-  dataLoader: DataLoaderWorker
-) => {
-  const auth = await dataLoader.get('freshAtlassianAuth').load({teamId, userId})
-  if (!auth) {
-    sendToSentry(new Error('No atlassian access token exists for team member'), {userId})
-    return null
-  }
-  const {accessToken} = auth
-  const manager = new AtlassianServerManager(accessToken)
-  const issueRes = await manager.getIssue(cloudId, issueKey)
-  if ('message' in issueRes) {
-    sendToSentry(new Error(issueRes.message), {userId})
-    return null
-  }
-  if ('errors' in issueRes) {
-    const error = issueRes.errors[0]
-    sendToSentry(new Error(error), {userId})
-    return null
-  }
-  const data = {
-    ...issueRes.fields,
-    cloudId,
-    key: issueKey
-  }
-  return data
 }

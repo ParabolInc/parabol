@@ -179,7 +179,8 @@ export const enum PokerCards {
   // the % of the first & last card that sits below the fold (0-1)
   MAX_HIDDEN = .35,
   PASS_CARD = 'X',
-  QUESTION_CARD = '?'
+  QUESTION_CARD = '?',
+  DELETED_CARD = '#'
 }
 export const enum UserTaskViewFilterLabels {
   ALL_TEAMS = 'All Teams',
@@ -360,5 +361,11 @@ export const enum AuthTokenRole {
 
 export const enum SprintPokerDefaults {
   DEFAULT_TEMPLATE_ID = 'estimatedEffortTemplate',
-  DEFAULT_SCALE_ID = 'fibonacciScale'
+  DEFAULT_SCALE_ID = 'fibonacciScale',
+  JIRA_FIELD_DEFAULT = 'Story point estimate',
+  JIRA_FIELD_COMMENT = '__comment',
+  JIRA_FIELD_COMMENT_LABEL = 'As Comment',
+  JIRA_FIELD_NULL = '',
+  JIRA_FIELD_NULL_LABEL = 'Do Not Update'
+
 }

@@ -1,15 +1,14 @@
 import {GraphQLID, GraphQLInt, GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
-import {MeetingTypeEnum} from '../../../client/types/graphql'
+import {MeetingTypeEnum, NewMeetingPhaseTypeEnum} from '../../../client/types/graphql'
+import EstimatePhase from '../../database/types/EstimatePhase'
 import {getUserId} from '../../utils/authorization'
+import getJiraCloudIdAndKey from '../../../client/utils/getJiraCloudIdAndKey'
 import {GQLContext} from '../graphql'
 import NewMeeting, {newMeetingFields} from './NewMeeting'
 import PokerMeetingMember from './PokerMeetingMember'
 import PokerMeetingSettings from './PokerMeetingSettings'
 import Story from './Story'
-import isValidJiraId from '../../utils/isValidJiraId'
-import getJiraCloudIdAndKey from '../../utils/getJiraCloudIdAndKey'
-import {resolveJiraIssue} from '../resolvers'
 
 const PokerMeeting = new GraphQLObjectType<any, GQLContext>({
   name: 'PokerMeeting',
@@ -51,28 +50,25 @@ const PokerMeeting = new GraphQLObjectType<any, GQLContext>({
           type: GraphQLNonNull(GraphQLID)
         }
       },
-      resolve: async ({teamId}, {storyId}, {authToken, dataLoader}) => {
-        const userId = getUserId(authToken)
-        const isJiraId = await isValidJiraId(storyId, teamId, {authToken, dataLoader})
-        if (isJiraId) {
-          const [cloudId, issueKey] = getJiraCloudIdAndKey(storyId)
-          const jiraIssue = await resolveJiraIssue(cloudId, issueKey, teamId, userId, dataLoader)
-          return {...jiraIssue, id: storyId}
+      resolve: async ({phases, teamId}, {storyId: serviceTaskId}, {dataLoader}) => {
+        const estimatePhase = phases.find(
+          (phase) => phase.phaseType === NewMeetingPhaseTypeEnum.ESTIMATE
+        ) as EstimatePhase
+        const {stages} = estimatePhase
+        const stage = stages.find((stage) => stage.serviceTaskId === serviceTaskId)
+        if (!stage) return null
+        const {creatorUserId, service} = stage
+        if (service === 'jira') {
+          const [cloudId, issueKey] = getJiraCloudIdAndKey(serviceTaskId)
+          const res = await dataLoader
+            .get('jiraIssue')
+            .load({teamId, userId: creatorUserId, cloudId, issueKey})
+          return res
+        } else {
+          return dataLoader.get('tasks').load(serviceTaskId)
         }
-        return dataLoader.get('tasks').load(storyId)
       }
     },
-    // tasks: {
-    //   type: GraphQLNonNull(GraphQLList(GraphQLNonNull(Task))),
-    //   description: 'The tasks created within the meeting',
-    //   resolve: async ({id: meetingId}, _args, {authToken, dataLoader}) => {
-    //     const viewerId = getUserId(authToken)
-    //     const meeting = await dataLoader.get('newMeetings').load(meetingId)
-    //     const {teamId} = meeting
-    //     const teamTasks = await dataLoader.get('tasksByTeamId').load(teamId)
-    //     return filterTasksByMeeting(teamTasks, meetingId, viewerId)
-    //   }
-    // },
     teamId: {
       type: GraphQLNonNull(GraphQLID)
     },

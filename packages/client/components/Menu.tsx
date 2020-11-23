@@ -55,7 +55,13 @@ const Menu = forwardRef((props: Props, ref: any) => {
   const [activeIdx, setActiveIdx] = useState<number | null>(defaultActiveIdx || null)
   const menuRef = useRef<HTMLDivElement>(null)
   const itemHandles = useRef<{onClick: (e?: React.MouseEvent | React.KeyboardEvent) => void}[]>([])
-
+  const initialDefaultActiveIdxRef = useRef(activeIdx)
+  useEffect(() => {
+    // support an active index that is async fetched
+    if (defaultActiveIdx && !initialDefaultActiveIdxRef.current) {
+      setActiveIdx(defaultActiveIdx)
+    }
+  }, [defaultActiveIdx])
   useImperativeHandle(ref, () => ({
     handleKeyDown
   }))
