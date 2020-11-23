@@ -45,14 +45,14 @@ const Menu = forwardRef((props: Props, ref: any) => {
     children,
     className,
     closePortal,
-    defaultActiveIdx,
+    defaultActiveIdx = null,
     isDropdown,
     keepParentFocus,
     resetActiveOnChanges,
     portalStatus,
     tabReturns
   } = props
-  const [activeIdx, setActiveIdx] = useState<number | null>(defaultActiveIdx || null)
+  const [activeIdx, setActiveIdx] = useState<number | null>(defaultActiveIdx)
   const menuRef = useRef<HTMLDivElement>(null)
   const itemHandles = useRef<{onClick: (e?: React.MouseEvent | React.KeyboardEvent) => void}[]>([])
 
@@ -65,9 +65,9 @@ const Menu = forwardRef((props: Props, ref: any) => {
       if (!keepParentFocus) menuRef.current && menuRef.current.focus()
     },
     resetActiveOnChanges ||
-    [
-      /* eslint-disable-line react-hooks/exhaustive-deps*/
-    ]
+      [
+        /* eslint-disable-line react-hooks/exhaustive-deps*/
+      ]
   )
 
   const handleMouseDown = useCallback(
