@@ -9,6 +9,23 @@ interface SlackIM {
   is_im: true
   is_org_shared: boolean
   is_user_deleted: boolean
+  latest: {
+    bot_id: string
+    type: string
+    text: string
+    user: string
+    ts: string
+    team: string
+    bot_profile: {
+      id: string
+      deleted: boolean
+      name: string
+      updated: number
+      app_id: string
+      icons: any
+      team_id: string
+    }
+  }
   priority: number
   user: string
 }
@@ -36,6 +53,23 @@ export interface SlackPublicConversation {
   is_private: boolean
   is_mpim: boolean
   last_read: string
+  latest: {
+    bot_id: string
+    type: string
+    text: string
+    user: string
+    ts: string
+    team: string
+    bot_profile: {
+      id: string
+      deleted: boolean
+      name: string
+      updated: number
+      app_id: string
+      icons: any
+      team_id: string
+    }
+  }
   topic: {
     value: string
     creator: string
@@ -133,7 +167,6 @@ interface SlackUser {
     display_name: string
     real_name_normalized: string
     display_name_normalized: string
-    // email?: string
     image_original: string
     image_24: string
     image_32: string
@@ -166,32 +199,9 @@ interface ConversationInfoResponse {
   channel: SlackConversation
 }
 
-interface ChannelInfoResponse {
-  ok: true
-  channel: SlackChannelInfo & {
-    creator: string
-    latest?: {
-      text: string
-      username: string
-      bot_id: string
-      attachments: {
-        text: string
-        id: number
-        fallback: string
-      }[]
-      type: 'message'
-      subtype: string
-      ts: string
-      unread_count: number
-      unread_count_display: number
-    }
-  }
-}
-
 type ConversationType = 'public_channel' | 'private_channel' | 'im' | 'mpim'
 
 abstract class SlackManager {
-  // static SCOPE = 'identify,bot,incoming-webhook,channels:read,chat:write:bot'
   static SCOPE =
     'incoming-webhook,channels:read,chat:write,im:write,users:read,channels:manage,channels:join'
   // token can be a botAccessToken or accessToken!
@@ -212,9 +222,9 @@ abstract class SlackManager {
       headers: {
         Accept: 'application/json' as const,
         Authorization: `Bearer ${this.token}`,
-        'Content-Type': 'application/json;charset=utf-8',
+        'Content-Type': 'application/json;charset=utf-8'
       },
-      body: JSON.stringify(payload),
+      body: JSON.stringify(payload)
     })
     return res.json()
   }
@@ -227,7 +237,7 @@ abstract class SlackManager {
         result,
         expiration: setTimeout(() => {
           delete this.cache[url]
-        }, this.timeout),
+        }, this.timeout)
       }
     } else {
       clearTimeout(record.expiration)
@@ -238,21 +248,15 @@ abstract class SlackManager {
     return this.cache[url].result
   }
 
-  getConversationInfo(slackChannelId: string) {
+  getConversationInfo(channelId: string) {
     return this.get<ConversationInfoResponse>(
-      `https://slack.com/api/conversations.info?token=${this.token}&channel=${slackChannelId}`
-    )
-  }
-
-  getChannelInfo(channelId: string) {
-    return this.get<ChannelInfoResponse>(
-      `https://slack.com/api/channels.info?token=${this.token}&channel=${channelId}`
+      `https://slack.com/api/conversations.info?token=${this.token}&channel=${channelId}`
     )
   }
 
   getChannelList() {
     return this.get<ChannelListResponse>(
-      `https://slack.com/api/channels.list?token=${this.token}&exclude_archived=1`
+      `https://slack.com/api/conversations.list?token=${this.token}&exclude_archived=true`
     )
   }
 
@@ -287,7 +291,7 @@ abstract class SlackManager {
     const payload = {
       channel: channelId,
       unfurl_links: true,
-      [prop]: text,
+      [prop]: text
     }
     return this.post<PostMessageResponse>('https://slack.com/api/chat.postMessage', payload)
   }

@@ -56,17 +56,14 @@ const notifySlack = async (
     const {channelId} = notification
     const {accessToken, botAccessToken, userId} = auth
     const manager = new SlackServerManager(botAccessToken || accessToken)
-    console.log('channelId', channelId)
-    console.log('slackText', slackText)
     const res = await manager.postMessage(channelId!, slackText)
-    console.log('res', res)
     segmentIo.track({
       userId,
       event: 'Slack notification sent',
       properties: {
         teamId,
-        notificationEvent: event,
-      },
+        notificationEvent: event
+      }
     })
     if ('error' in res) {
       const {error} = res
@@ -76,7 +73,7 @@ const notifySlack = async (
           .getAll(teamId, {index: 'teamId'})
           .filter({channelId})
           .update({
-            channelId: null,
+            channelId: null
           })
           .run()
       } else if (error === 'not_in_channel' || error === 'invalid_auth') {
@@ -96,7 +93,7 @@ export const startSlackMeeting = async (
   const params = {
     utm_source: 'slack meeting start',
     utm_medium: 'product',
-    utm_campaign: 'invitations',
+    utm_campaign: 'invitations'
   }
   const options = {params}
   const team = await dataLoader.get('teams').load(teamId)
@@ -110,7 +107,7 @@ export const endSlackMeeting = async (meetingId, teamId, dataLoader: DataLoaderW
   const params = {
     utm_source: 'slack summary',
     utm_medium: 'product',
-    utm_campaign: 'after-meeting',
+    utm_campaign: 'after-meeting'
   }
   const options = {params}
   const team = await dataLoader.get('teams').load(teamId)
@@ -129,13 +126,14 @@ const upsertSlackMessage = async (
   if (!channelId) return
   const manager = new SlackServerManager(accessToken)
   const botManager = new SlackServerManager(botAccessToken)
-  const channelInfo = await manager.getChannelInfo(channelId)
+  const channelInfo = await manager.getConversationInfo(channelId)
   if (channelInfo.ok) {
     const {channel} = channelInfo
     const {latest} = channel
     if (latest) {
-      const {ts, username} = latest
-      if (username === 'Parabol') {
+      const {ts, bot_profile} = latest
+      const {name} = bot_profile
+      if (name === 'Parabol') {
         const timestamp = new Date(Number.parseFloat(ts) * 1000)
         const ageThresh = new Date(Date.now() - ms('5m'))
         if (timestamp >= ageThresh) {
@@ -167,7 +165,7 @@ export const notifySlackTimeLimitStart = async (
 ) => {
   const [team, meeting] = await Promise.all([
     dataLoader.get('teams').load(teamId),
-    dataLoader.get('newMeetings').load(meetingId),
+    dataLoader.get('newMeetings').load(meetingId)
   ])
   const {name: meetingName, phases, facilitatorStageId} = meeting
   const stageRes = findStageById(phases, facilitatorStageId)

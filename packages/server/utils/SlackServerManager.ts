@@ -14,6 +14,9 @@ interface OAuth2Response {
   ok: boolean
   app_id: string
   access_token: string
+  authed_user: {
+    id: string
+  }
   error?: any
   scope: string
   bot_user_id: string
@@ -21,17 +24,7 @@ interface OAuth2Response {
     id: string
     name: string
   }
-  // team_id: string
-  // team_name: string
-  // user_id: string
-  authed_user: {
-    id: string
-  }
   incoming_webhook: IncomingWebhook
-  // bot: {
-  //   bot_user_id: string
-  //   bot_access_token: string
-  // }
 }
 
 class SlackServerManager extends SlackManager {
@@ -63,9 +56,7 @@ class SlackServerManager extends SlackManager {
     if (error) {
       throw new Error(`Slack: ${error}`)
     }
-    return new SlackServerManager(tokenJson.access_token, tokenJson) as Required<
-      SlackServerManager
-    >
+    return new SlackServerManager(tokenJson.access_token, tokenJson) as Required<SlackServerManager>
   }
 
   constructor(botAccessToken, public response?: OAuth2Response) {
