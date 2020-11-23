@@ -91,16 +91,13 @@ const PokerDimensionValueControl = (props: Props) => {
     PokerSetFinalScoreMutation(atmosphere, {finalScore: pendingScore, meetingId, stageId}, {onError, onCompleted})
   }
 
-  const onBlur = () => {
-    submitScore()
-  }
-
   useResizeFontForInput(inputRef, pendingScore, 12, 18)
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const {value} = e.target
     if (serviceFieldType === 'number') {
-      if (isNaN(value as any)) {
+      // isNaN says "3." is a number, so we stringify the parsed number & see if it matches
+      if (String(parseFloat(value)) !== value) {
         // the service wants a number but we didn't get one
         setLocalError('The field selected only accepts numbers')
       } else {
@@ -114,14 +111,17 @@ const PokerDimensionValueControl = (props: Props) => {
     // keydown required bceause escape doesn't fire onKeyPress
     if (e.key === 'Tab' || e.key === 'Enter') {
       e.preventDefault()
-      inputRef.current?.blur()
+      submitScore()
     } else if (e.key === 'Escape') {
       e.preventDefault()
       setPendingScore(finalScore || '')
-      setTimeout(() => {
-        inputRef.current?.blur()
-      })
+      inputRef.current?.blur()
     }
+  }
+
+  const clearError = () => {
+    setLocalError('')
+    onCompleted()
   }
 
 
@@ -134,10 +134,10 @@ const PokerDimensionValueControl = (props: Props) => {
     <ControlWrap>
       <Control>
         <MiniPokerCard color={scaleColor} isFinal={isFinal}>
-          <Input onKeyDown={onKeyDown} autoFocus={!finalScore} color={textColor} ref={inputRef} onChange={onChange} placeholder={placeholder} onBlur={onBlur} value={pendingScore}></Input>
+          <Input onKeyDown={onKeyDown} autoFocus={!finalScore} color={textColor} ref={inputRef} onChange={onChange} placeholder={placeholder} value={pendingScore}></Input>
         </MiniPokerCard>
         {
-          service === 'jira' ? <PokerDimensionFinalScoreJiraPicker canUpdate={canUpdate} stage={stage} error={errorMessage} /> :
+          service === 'jira' ? <PokerDimensionFinalScoreJiraPicker canUpdate={canUpdate} stage={stage} error={errorMessage} submitScore={submitScore} clearError={clearError} /> :
             <>
               <StyledLinkButton palette={'blue'}>{'Update'}</StyledLinkButton>
               {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}

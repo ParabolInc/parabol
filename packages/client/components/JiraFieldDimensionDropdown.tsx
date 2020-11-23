@@ -17,6 +17,7 @@ const JiraFieldMenuRoot = lazyPreload(async () =>
 )
 
 interface Props {
+  clearError: () => void
   stage: JiraFieldDimensionDropdown_stage
 
 }
@@ -46,7 +47,7 @@ const labelLookup = {
 }
 
 const JiraFieldDimensionDropdown = (props: Props) => {
-  const {stage} = props
+  const {clearError, stage} = props
   const {serviceField} = stage
   const {name: serviceFieldName} = serviceField
   const {togglePortal, menuPortal, originRef, menuProps} = useMenu<HTMLButtonElement>(
@@ -56,10 +57,15 @@ const JiraFieldDimensionDropdown = (props: Props) => {
     }
   )
 
+  const onClick = () => {
+    togglePortal()
+    clearError()
+  }
+
   const label = labelLookup[serviceFieldName] || serviceFieldName
   return (
     <Wrapper onMouseEnter={JiraFieldMenuRoot.preload}
-      onClick={togglePortal}
+      onClick={onClick}
       ref={originRef}>
       <CurrentValue>{label}</CurrentValue>
       <StyledIcon>{'expand_more'}</StyledIcon>

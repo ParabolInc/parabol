@@ -12,7 +12,6 @@ const useResizeFontForInput = (ref: RefObject<HTMLInputElement>, value: string, 
     const {style} = el
     for (let i = maxSize; i >= minSize; i--) {
       const {clientWidth, scrollWidth} = el
-      console.log('trying', i, clientWidth, scrollWidth)
       style.fontSize = `${i}px`
       if (scrollWidth <= clientWidth) return
     }

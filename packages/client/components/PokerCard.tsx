@@ -64,6 +64,13 @@ const UpperLeftCardValue = styled('div')({
   left: 8
 })
 
+const LowerRightCardValue = styled(UpperLeftCardValue)({
+  top: 'unset',
+  left: 'unset',
+  bottom: 4,
+  right: 8
+})
+
 const Logo = styled('img')({
   // set min & max to accomodate custom logos here
   minWidth: 64,
@@ -106,6 +113,7 @@ const PokerCard = (props: Props) => {
   const isTop = isSelected && isMoving
   usePokerZIndexOverride(isTop, cardRef, isExpanding, COLLAPSE_DUR, EXPAND_DUR)
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
+  const cornerValue = label === PokerCards.PASS_CARD ? <Pass src={PassSVG} /> : label
   return (
     <CardBase
       ref={cardRef}
@@ -120,8 +128,11 @@ const PokerCard = (props: Props) => {
       rotation={rotation}
     >
       <UpperLeftCardValue>
-        {label === PokerCards.PASS_CARD ? <Pass src={PassSVG} /> : label}
+        {cornerValue}
       </UpperLeftCardValue>
+      <LowerRightCardValue>
+        {cornerValue}
+      </LowerRightCardValue>
       <Logo src={logoMarkWhite} />
     </CardBase>
   )

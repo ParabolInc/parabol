@@ -22,7 +22,7 @@ const EstimateArea = styled('div')({
 const StepperDots = styled('div')({
   display: 'flex',
   justifyContent: 'center',
-  padding: '4px 0 8px',
+  paddingTop: 4,
   width: '100%'
 })
 
@@ -46,7 +46,7 @@ const innerStyle = (isDesktop: boolean) => {
     height: '100%',
     margin: isDesktop ? '0 auto' : null,
     maxWidth: isDesktop ? 1600 : null,
-    padding: isDesktop ? '0 40px' : '0 16px',
+    padding: isDesktop ? '8px 40px 0' : '8px 16px 0',
     width: '100%',
     overflow: 'visible'
   }
@@ -94,11 +94,12 @@ const EstimatePhaseArea = (props: Props) => {
 
   return (
     <EstimateArea>
-      <StepperDots>
+      {dimensionStages.length > 1 && <StepperDots>
         {dimensionStages.map((_, idx) => {
           return <StepperDot key={idx} isActive={idx === stageIdx} onClick={() => onChangeIdx(idx)} />
         })}
       </StepperDots>
+      }
       <PokerCardDeck meeting={meeting} />
       <DeckActivityAvatars stage={localStage} getVotedUserEl={getVotedUserEl} />
       <SwipeableViews
