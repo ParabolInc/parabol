@@ -3,7 +3,7 @@ interface ErrorResponse {
   error: string
 }
 
-interface SlackIM {
+export interface SlackIM {
   created: number
   id: string
   is_im: true
@@ -69,7 +69,7 @@ export interface SlackPublicConversation {
 
 type SlackConversation = SlackPublicConversation | SlackIM
 
-interface SlackChannelInfo {
+export interface SlackChannelInfo {
   id: string
   name: string
   is_channel: boolean
@@ -77,6 +77,7 @@ interface SlackChannelInfo {
   is_archived: boolean
   is_general: boolean
   name_normalized: string
+  is_im: boolean
   is_shared: boolean
   is_org_shared: boolean
   is_member: boolean
@@ -97,14 +98,9 @@ interface SlackChannelInfo {
   num_members: number
 }
 
-interface ChannelListResponse {
-  ok: true
-  channels: SlackChannelInfo[]
-}
-
 interface ConversationListResponse {
   ok: true
-  channels: SlackConversation[]
+  channels: SlackChannelInfo[] | SlackIM[]
 }
 interface ConversationJoinResponse {
   ok: true
@@ -186,7 +182,7 @@ type ConversationType = 'public_channel' | 'private_channel' | 'im' | 'mpim'
 
 abstract class SlackManager {
   static SCOPE =
-    'incoming-webhook,channels:read,chat:write,im:write,users:read,channels:manage,channels:join'
+    'incoming-webhook,channels:read,channels:join,chat:write,im:read,im:write,users:read,groups:read'
   // token can be a botAccessToken or accessToken!
   token: string
   abstract fetch: any
@@ -237,16 +233,10 @@ abstract class SlackManager {
     )
   }
 
-  getChannelList() {
-    return this.get<ChannelListResponse>(
-      `https://slack.com/api/conversations.list?token=${this.token}&exclude_archived=true`
-    )
-  }
-
   getConversationList(types: ConversationType[] = ['public_channel']) {
     const typeStr = types.join(',')
     return this.get<ConversationListResponse>(
-      `https://slack.com/api/conversations.list?token=${this.token}&exclude_archived=1&types=${typeStr}`
+      `https://slack.com/api/conversations.list?token=${this.token}&exclude_archived=true&types=${typeStr}`
     )
   }
 

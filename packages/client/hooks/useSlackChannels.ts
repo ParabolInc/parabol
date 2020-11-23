@@ -1,4 +1,5 @@
 import {useEffect, useState} from 'react'
+import {SlackChannelInfo, SlackIM} from '~/utils/SlackManager'
 import {SlackChannelDropdownChannels} from '../components/SlackChannelDropdown'
 import SlackClientManager from '../utils/SlackClientManager'
 
@@ -13,7 +14,7 @@ const useSlackChannels = (
       const botManager = new SlackClientManager(slackAuth.botAccessToken!)
       const userManager = new SlackClientManager(slackAuth.accessToken!)
       const [channelResponse, convoResponse] = await Promise.all([
-        userManager.getChannelList(),
+        userManager.getConversationList(),
         botManager.getConversationList(['im'])
       ])
       if (!isMounted) return
@@ -21,10 +22,12 @@ const useSlackChannels = (
         console.error(channelResponse.error)
         return
       }
-      const {channels: publicChannels} = channelResponse
+      const {channels} = channelResponse
+      const publicChannels = channels as SlackChannelInfo[]
       const memberChannels = publicChannels.filter((channel) => channel.is_member)
       if (convoResponse.ok) {
-        const {channels: ims} = convoResponse
+        const {channels} = convoResponse
+        const ims = channels as SlackIM[]
         const botChannel = ims.find((im) => im.is_im && im.user === slackAuth.slackUserId) as any
         if (botChannel) {
           memberChannels.unshift({...botChannel, name: '@Parabol'})
