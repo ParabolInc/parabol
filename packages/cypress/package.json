@@ -49,7 +49,7 @@
     "prettier": "^2.1.2",
     "start-server-and-test": "^1.10.6",
     "sucrase": "^3.16.0",
-    "typescript": "^4.0.5",
+    "typescript": "^4.0.2",
     "webpack": "^4.41.5",
     "webpack-cli": "^3.3.10"
   },

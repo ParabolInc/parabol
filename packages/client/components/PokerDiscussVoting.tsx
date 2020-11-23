@@ -2,6 +2,8 @@ import graphql from 'babel-plugin-relay/macro'
 import React, {useMemo} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
+import useMutationProps from '../hooks/useMutationProps'
+import PokerSetFinalScoreMutation from '../mutations/PokerSetFinalScoreMutation'
 import {PokerCards} from '../types/constEnums'
 import {PokerDiscussVoting_meeting} from '../__generated__/PokerDiscussVoting_meeting.graphql'
 import {PokerDiscussVoting_stage} from '../__generated__/PokerDiscussVoting_stage.graphql'
@@ -18,10 +20,11 @@ interface Props {
 
 const PokerDiscussVoting = (props: Props) => {
   const atmosphere = useAtmosphere()
+  const {submitting, submitMutation, onError, onCompleted} = useMutationProps()
   const {viewerId} = atmosphere
   const {meeting, setVotedUserEl, stage} = props
-  const {facilitatorUserId} = meeting
-  const {finalScore, dimension, scores} = stage
+  const {id: meetingId, facilitatorUserId} = meeting
+  const {id: stageId, finalScore, dimension, scores} = stage
   const {selectedScale} = dimension
   const {values: scaleValues} = selectedScale
   const finalScaleValue = scaleValues.find((scaleValue) => scaleValue.label === finalScore) || null
@@ -60,9 +63,20 @@ const PokerDiscussVoting = (props: Props) => {
         ? <PokerDimensionValueControl placeholder={topLabel} stage={stage} />
         : <PokerDimensionValueStatic label={finalScore} color={finalScaleValue?.color} />
       }
-      {rows.map(({scaleValue, scores, key}) => (
-        <PokerVotingRow key={key} setVotedUserEl={setVotedUserEl} scaleValue={scaleValue} scores={scores} />
-      ))}
+      {rows.map(({scaleValue, scores, key}) => {
+        const label = scores[0]?.label
+        const isSpecial = [PokerCards.QUESTION_CARD, PokerCards.PASS_CARD].includes(label as any)
+        const canClick = isFacilitator && !isSpecial
+        const setFinalScore = canClick ? () => {
+
+          if (submitting || !label || finalScore === label) return
+          submitMutation()
+          PokerSetFinalScoreMutation(atmosphere, {finalScore: label, meetingId, stageId}, {onError, onCompleted})
+        } : undefined
+        return (
+          <PokerVotingRow key={key} setVotedUserEl={setVotedUserEl} scaleValue={scaleValue} scores={scores} setFinalScore={setFinalScore} />
+        )
+      })}
     </>
   )
 }
@@ -75,6 +89,7 @@ export default createFragmentContainer(
     stage: graphql`
     fragment PokerDiscussVoting_stage on EstimateStage {
       ...PokerDimensionValueControl_stage
+      id
       finalScore
       dimension {
         selectedScale {
@@ -92,6 +107,7 @@ export default createFragmentContainer(
     }`,
     meeting: graphql`
     fragment PokerDiscussVoting_meeting on PokerMeeting {
+      id
       facilitatorUserId
     }`
   }

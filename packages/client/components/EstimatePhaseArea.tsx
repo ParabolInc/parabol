@@ -66,10 +66,9 @@ interface Props {
 const EstimatePhaseArea = (props: Props) => {
   const {gotoStageId, meeting} = props
   const {localStage, phases} = meeting
-  const {id: localStageId, story} = localStage
-  const {id: storyId} = story!
+  const {id: localStageId, serviceTaskId} = localStage
   const {stages} = phases.find(({phaseType}) => phaseType === 'ESTIMATE')!
-  const dimensionStages = stages!.filter(({story}) => story.id === storyId)
+  const dimensionStages = stages!.filter((stage) => stage.serviceTaskId === serviceTaskId)
 
   const stageIdx = dimensionStages!.findIndex(({id}) => id === localStageId)
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
@@ -130,9 +129,7 @@ graphql`
   fragment EstimatePhaseAreaStage on EstimateStage {
     ...DeckActivityAvatars_stage
     id
-    story {
-      id
-    }
+    serviceTaskId
   }
 `
 

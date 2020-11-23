@@ -5,12 +5,13 @@ import PassSVG from '../../../static/images/icons/no_entry.svg'
 import {PokerCards} from '../types/constEnums'
 import getPokerCardBackground from '../utils/getPokerCardBackground'
 
-const MiniPokerCardPlaceholder = styled('div')<{color?: string}>(({color}) => ({
+const MiniPokerCardPlaceholder = styled('div')<{color?: string, onClick?: () => void, isFinal?: boolean}>(({color, onClick, isFinal}) => ({
   alignItems: 'center',
   background: color ? getPokerCardBackground(color) : '#fff',
-  border: color ? 0 : `1px dashed ${PALETTE.TEXT_GRAY}`,
+  border: color ? 0 : isFinal ? `1px solid ${PALETTE.TEXT_GRAY}` : `1px dashed ${PALETTE.TEXT_GRAY}`,
   borderRadius: 2,
   color: color ? '#fff' : PALETTE.TEXT_GRAY,
+  cursor: onClick ? 'pointer' : undefined,
   display: 'flex',
   flexShrink: 0,
   fontWeight: 600,
@@ -32,12 +33,14 @@ const Pass = styled('img')({
 interface Props {
   color?: string
   children: ReactNode
+  isFinal?: boolean
+  onClick?: () => void
 }
 
 const MiniPokerCard = (props: Props) => {
-  const {color, children} = props
+  const {color, children, onClick, isFinal} = props
   return (
-    <MiniPokerCardPlaceholder color={color}>
+    <MiniPokerCardPlaceholder color={color} onClick={onClick} isFinal={isFinal}>
       {children === PokerCards.PASS_CARD ? <Pass src={PassSVG} /> : children}
     </MiniPokerCardPlaceholder>
   )
