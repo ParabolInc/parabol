@@ -9,31 +9,33 @@ import logoMarkWhite from '../styles/theme/images/brand/mark-white.svg'
 import {BezierCurve, Breakpoint, PokerCards} from '../types/constEnums'
 import getPokerCardBackground from '../utils/getPokerCardBackground'
 import {PokerCard_scaleValue} from '../__generated__/PokerCard_scaleValue.graphql'
-const COLLAPSE_DUR = 1000
-const EXPAND_DUR = 100
+
+const COLLAPSE_DUR = 700
+const EXPAND_DUR = 300
 interface CardBaseProps {
   color: string,
   isDesktop: boolean,
   isCollapsed: boolean,
   isSelected: boolean,
+  radius: number
   rotation: number
   yOffset: number
 
 }
 
-const getRotation = (isSelected: boolean, isCollapsed: boolean, rotation: number, yOffset: number) => {
+const getRotation = (isSelected: boolean, isCollapsed: boolean, radius: number, rotation: number, yOffset: number) => {
   // TODO fix left offset
   const leftEdge = 500
   if (isCollapsed) return `translate(${leftEdge}px, -${PokerCards.HEIGHT}px)`
   const radians = (rotation * Math.PI) / 180
-  const x = PokerCards.RADIUS * Math.sin(radians)
-  const y = -PokerCards.RADIUS * Math.cos(radians) + yOffset
+  const x = radius * Math.sin(radians)
+  const y = -radius * Math.cos(radians) + yOffset
   const selectedOffset = isSelected ? - 48 : 0
   return `translate(${x}px, ${y + selectedOffset}px)rotate(${rotation}deg)`
 }
 
-const CardBase = styled('div')<CardBaseProps>(({color, isCollapsed, isDesktop, isSelected, rotation, yOffset}) => {
-  const transform = getRotation(isSelected, isCollapsed, rotation, yOffset)
+const CardBase = styled('div')<CardBaseProps>(({color, isCollapsed, isDesktop, isSelected, radius, rotation, yOffset}) => {
+  const transform = getRotation(isSelected, isCollapsed, radius, rotation, yOffset)
   const hoverTransform = `${transform} translateY(-8px)`
   return ({
     background: getPokerCardBackground(color),
@@ -94,6 +96,7 @@ interface Props {
   onClick: () => void
   onMouseEnter: () => void
   onMouseLeave: () => void
+  radius: number
   rotation: number
   totalCards: number
   yOffset: number
@@ -101,7 +104,7 @@ interface Props {
 
 
 const PokerCard = (props: Props) => {
-  const {scaleValue, isCollapsed, yOffset, isSelected, onClick, onMouseEnter, onMouseLeave, rotation} = props
+  const {scaleValue, isCollapsed, yOffset, isSelected, onClick, onMouseEnter, onMouseLeave, rotation, radius} = props
   const {color, label} = scaleValue
   const wasCollapsedRef = useRef(isCollapsed)
   const cardRef = useRef<HTMLDivElement>(null)
@@ -126,6 +129,7 @@ const PokerCard = (props: Props) => {
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
       rotation={rotation}
+      radius={radius}
     >
       <UpperLeftCardValue>
         {cornerValue}

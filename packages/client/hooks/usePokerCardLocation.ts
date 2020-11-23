@@ -4,16 +4,17 @@ import getRotatedBBox from '../utils/getRotatedBBox'
 
 
 
-const MAX_SPREAD_DEG = PokerCards.TILT * 2
-const usePokerCardLocation = (totalCards: number) => {
+// const MAX_SPREAD_DEG = PokerCards.TILT * 2
+const usePokerCardLocation = (totalCards: number, tilt: number, maxHidden: number, radius: number) => {
   return useMemo(() => {
-    const rotationPerCard = MAX_SPREAD_DEG / totalCards
+    const maxSpreadDeg = tilt * 2
+    const rotationPerCard = maxSpreadDeg / totalCards
     const initialRotation = (totalCards - 1) / 2 * -rotationPerCard
-    const {height} = getRotatedBBox(PokerCards.TILT, PokerCards.WIDTH, PokerCards.HEIGHT)
-    const pxBelowFold = height * (1 - PokerCards.MAX_HIDDEN)
-    const yOffset = PokerCards.RADIUS * Math.cos((initialRotation * Math.PI) / 180) - pxBelowFold
+    const {height} = getRotatedBBox(tilt, PokerCards.WIDTH, PokerCards.HEIGHT)
+    const pxBelowFold = height * (1 - maxHidden)
+    const yOffset = radius * Math.cos((initialRotation * Math.PI) / 180) - pxBelowFold
     return {yOffset, rotationPerCard, initialRotation}
-  }, [totalCards])
+  }, [totalCards, tilt, maxHidden, radius])
 }
 
 export default usePokerCardLocation
