@@ -43,14 +43,15 @@ const StyledError = styled('div')({
   fontWeight: 400,
 })
 interface Props {
+  isClosing: boolean
   meeting: PokerActiveVoting_meeting
   stage: PokerActiveVoting_stage
 }
 
 const PokerActiveVoting = (props: Props) => {
+  const {isClosing, meeting, stage} = props
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
-  const {meeting, stage} = props
   const {facilitatorUserId, id: meetingId} = meeting
   const {id: stageId, scores} = stage
   const hasVotes = scores.length > 0
@@ -84,7 +85,7 @@ const PokerActiveVoting = (props: Props) => {
         <MiniPokerCard>
           <CheckIcon>check</CheckIcon>
         </MiniPokerCard>
-        <PokerVotingAvatarGroup scores={scores} />
+        <PokerVotingAvatarGroup scores={scores} isClosing={isClosing} />
       </PokerVotingRowBase>
       <RevealButtonBlock>
         {showRevealButton && <SecondaryButtonCool onClick={reveal}>{'Reveal Votes'}</SecondaryButtonCool>}

@@ -31,21 +31,18 @@ const CountBadge = styled(PokerVotingAvatarOverflowCount)<{count: number}>(({cou
 }))
 
 interface Props {
+  isClosing?: boolean
   scores: PokerVotingAvatarGroup_scores
 }
 
 const PokerVotingAvatarGroup = (props: Props) => {
-  const {scores} = props
-
-  {/*
-      TBD Tapping the avatar group when there’s overflow raises a
-      dialog with a read-only list of all teammates showing who hasn’t voted first?
-  */}
+  const {isClosing, scores} = props
   const rowRef = useRef<HTMLDivElement>(null)
   const maxAvatars = usePokerAvatarOverflow(rowRef) // max is 5, scores is 6
   const overflowCount = scores.length > maxAvatars ? scores.length - maxAvatars - 1 : 0
   const visibleScores = overflowCount === 0 ? scores : scores.slice(0, maxAvatars - 1)
-  const transitionChildren = useTransition(visibleScores.map((score => ({...score, key: score.id}))))
+  const children = isClosing ? [] : visibleScores.map((score => ({...score, key: score.id})))
+  const transitionChildren = useTransition(children)
   return (
     <Wrapper ref={rowRef}>
       {transitionChildren.length === 0 && <NoVotesHeaderLabel>{'No Votes'}</NoVotesHeaderLabel>}
