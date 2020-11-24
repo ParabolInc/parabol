@@ -127,9 +127,9 @@ const upsertSlackMessage = async (
   if (!channelId) return
   const manager = new SlackServerManager(accessToken)
   const botManager = new SlackServerManager(botAccessToken)
-  const channelInfo = await manager.getConversationInfo(channelId)
-  if (channelInfo.ok) {
-    const {channel} = channelInfo
+  const convoInfo = await manager.getConversationInfo(channelId)
+  if (convoInfo.ok) {
+    const {channel} = convoInfo
     const {latest} = channel as SlackPublicConversation
     if (latest) {
       const {ts, bot_profile} = latest
@@ -147,7 +147,7 @@ const upsertSlackMessage = async (
         }
       }
     }
-  } else if (channelInfo.error === 'method_not_supported_for_channel_type') {
+  } else if (convoInfo.error === 'method_not_supported_for_channel_type') {
     // not a public channel, ignore
   } else {
     // handle error?
