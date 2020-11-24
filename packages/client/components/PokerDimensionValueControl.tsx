@@ -5,7 +5,7 @@ import {createFragmentContainer} from 'react-relay'
 import {PALETTE} from '~/styles/paletteV2'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
-import useResizeFontForInput from '../hooks/useResizeFontForInput'
+import useResizeFontForElement from '../hooks/useResizeFontForElement'
 import useSetFinalScoreError, {setFinalScoreError} from '../hooks/useSetFinalScoreError'
 import PokerSetFinalScoreMutation from '../mutations/PokerSetFinalScoreMutation'
 import {PokerDimensionValueControl_stage} from '../__generated__/PokerDimensionValueControl_stage.graphql'
@@ -106,7 +106,7 @@ const PokerDimensionValueControl = (props: Props) => {
     PokerSetFinalScoreMutation(atmosphere, {finalScore: pendingScore, meetingId, stageId}, {onError, onCompleted})
   }
 
-  useResizeFontForInput(inputRef, pendingScore, 12, 18)
+  useResizeFontForElement(inputRef, pendingScore, 12, 18)
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const {value} = e.target

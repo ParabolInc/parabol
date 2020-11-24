@@ -1,3 +1,4 @@
+import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useMemo} from 'react'
 import {createFragmentContainer} from 'react-relay'
@@ -10,6 +11,13 @@ import {PokerDiscussVoting_meeting} from '../__generated__/PokerDiscussVoting_me
 import {PokerDiscussVoting_stage} from '../__generated__/PokerDiscussVoting_stage.graphql'
 import PokerDimensionValueControl from './PokerDimensionValueControl'
 import PokerVotingRow from './PokerVotingRow'
+
+const GroupedVotes = styled('div')({
+  display: 'flex',
+  flexDirection: 'column',
+  height: '100%',
+  overflowY: 'auto'
+})
 
 interface Props {
   meeting: PokerDiscussVoting_meeting
@@ -58,20 +66,22 @@ const PokerDiscussVoting = (props: Props) => {
   return (
     <>
       <PokerDimensionValueControl placeholder={isFacilitator ? topLabel : '?'} stage={stage} isFacilitator={isFacilitator} />
-      {rows.map(({scaleValue, scores, key}) => {
-        const label = scores[0]?.label
-        const isSpecial = [PokerCards.QUESTION_CARD, PokerCards.PASS_CARD].includes(label as any)
-        const canClick = isFacilitator && !isSpecial
-        const setFinalScore = canClick ? () => {
-          // finalScore === label isn't 100% accurate because they could change the dimensionField & could still submit new info
-          if (submitting || !label || finalScore === label) return
-          submitMutation()
-          PokerSetFinalScoreMutation(atmosphere, {finalScore: label, meetingId, stageId}, {onError, onCompleted})
-        } : undefined
-        return (
-          <PokerVotingRow key={key} scaleValue={scaleValue} scores={scores} setFinalScore={setFinalScore} />
-        )
-      })}
+      <GroupedVotes>
+        {rows.map(({scaleValue, scores, key}) => {
+          const label = scores[0]?.label
+          const isSpecial = [PokerCards.QUESTION_CARD, PokerCards.PASS_CARD].includes(label as any)
+          const canClick = isFacilitator && !isSpecial
+          const setFinalScore = canClick ? () => {
+            // finalScore === label isn't 100% accurate because they could change the dimensionField & could still submit new info
+            if (submitting || !label || finalScore === label) return
+            submitMutation()
+            PokerSetFinalScoreMutation(atmosphere, {finalScore: label, meetingId, stageId}, {onError, onCompleted})
+          } : undefined
+          return (
+            <PokerVotingRow key={key} scaleValue={scaleValue} scores={scores} setFinalScore={setFinalScore} />
+          )
+        })}
+      </GroupedVotes>
     </>
   )
 }

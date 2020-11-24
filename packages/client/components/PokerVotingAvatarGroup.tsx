@@ -7,7 +7,7 @@ import useTransition from '../hooks/useTransition'
 import {PALETTE} from '../styles/paletteV2'
 import {PokerVotingAvatarGroup_scores} from '../__generated__/PokerVotingAvatarGroup_scores.graphql'
 import PokerVotingAvatar from './PokerVotingAvatar'
-import PokerVotingAvatarOverflowCount from './PokerVotingAvatarOverflowCount'
+import PokerVotingOverflow from './PokerVotingOverflow'
 
 const NoVotesHeaderLabel = styled('div')({
   color: PALETTE.TEXT_GRAY,
@@ -26,10 +26,6 @@ const Wrapper = styled('div')({
   height: '100%'
 })
 
-const CountBadge = styled(PokerVotingAvatarOverflowCount)<{count: number}>(({count}) => ({
-  fontSize: count >= 10 ? 12 : 14
-}))
-
 interface Props {
   isClosing?: boolean
   scores: PokerVotingAvatarGroup_scores
@@ -39,22 +35,28 @@ const PokerVotingAvatarGroup = (props: Props) => {
   const {isClosing, scores} = props
   const rowRef = useRef<HTMLDivElement>(null)
   const maxAvatars = usePokerAvatarOverflow(rowRef) // max is 5, scores is 6
-  const overflowCount = scores.length > maxAvatars ? scores.length - maxAvatars - 1 : 0
+  const overflowCount = scores.length > maxAvatars ? scores.length - maxAvatars + 1 : 0
   const visibleScores = overflowCount === 0 ? scores : scores.slice(0, maxAvatars - 1)
-  const children = isClosing ? [] : visibleScores.map((score => ({...score, key: score.id})))
+  const visibleAvatars = visibleScores.map((score => ({...score, key: score.id})))
+  if (overflowCount > 0) {
+    visibleAvatars.push({key: 'overflow', overflowCount} as any)
+  }
+
+  const children = isClosing ? [] : visibleAvatars
   const transitionChildren = useTransition(children)
   return (
     <Wrapper ref={rowRef}>
       {transitionChildren.length === 0 && <NoVotesHeaderLabel>{'No Votes'}</NoVotesHeaderLabel>}
       {transitionChildren.map(({onTransitionEnd, child, status}, idx) => {
         const {user, id: childId} = child
+        const overflowCount = (child as any).overflowCount
         const visibleScoreIdx = visibleScores.findIndex((score) => score.id === child.id)
         const displayIdx = visibleScoreIdx === -1 ? idx : visibleScoreIdx
+        if (overflowCount) return <PokerVotingOverflow key={childId} onTransitionEnd={onTransitionEnd} status={status} idx={displayIdx} overflowCount={overflowCount} />
         return (
           <PokerVotingAvatar key={childId} user={user} onTransitionEnd={onTransitionEnd} status={status} idx={displayIdx} />
         )
       })}
-      {overflowCount > 0 && <CountBadge count={overflowCount}>{'+'}{overflowCount}</CountBadge>}
     </Wrapper >
   )
 }

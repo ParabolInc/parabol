@@ -1,7 +1,7 @@
 import {RefObject, useEffect} from 'react'
 import useForceUpdate from './useForceUpdate'
 
-const useResizeFontForInput = (ref: RefObject<HTMLInputElement>, value: string, minSize: number, maxSize: number) => {
+const useResizeFontForElement = <T extends HTMLElement = HTMLInputElement>(ref: RefObject<T>, value: string, minSize: number, maxSize: number) => {
   const forceUpdate = useForceUpdate()
   useEffect(() => {
     const el = ref.current
@@ -18,4 +18,4 @@ const useResizeFontForInput = (ref: RefObject<HTMLInputElement>, value: string, 
   }, [value, ref.current])
 
 }
-export default useResizeFontForInput
+export default useResizeFontForElement

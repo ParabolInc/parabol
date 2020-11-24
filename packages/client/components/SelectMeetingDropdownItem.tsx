@@ -23,6 +23,10 @@ const MeetingIcon = styled(Icon)({
   padding: 16
 })
 
+const MeetingSVG = styled('div')({
+  padding: 16
+})
+
 const MeetingInfo = styled('div')({
   display: 'flex',
   flexDirection: 'column'
@@ -67,13 +71,13 @@ const SelectMeetingDropdownItem = (props: Props) => {
   const gotoMeeting = () => {
     history.push(`/meet/${meetingId}`)
   }
-  const icon = meetingTypeToIcon[meetingType]
+  const IconOrSVG = meetingTypeToIcon[meetingType]
   const meetingPhase = getMeetingPhase(phases)
   const meetingPhaseLabel = (meetingPhase && phaseLabelLookup[meetingPhase.phaseType]) || 'Complete'
 
   return (
     <Wrapper onClick={gotoMeeting}>
-      <MeetingIcon>{icon}</MeetingIcon>
+      {typeof IconOrSVG === 'string' ? <MeetingIcon>{IconOrSVG}</MeetingIcon> : <MeetingSVG><IconOrSVG /></MeetingSVG>}
       <MeetingInfo>
         <Title>{name}</Title>
         <Subtitle>
