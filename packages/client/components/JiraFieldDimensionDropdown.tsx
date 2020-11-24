@@ -17,28 +17,45 @@ const JiraFieldMenuRoot = lazyPreload(async () =>
 )
 
 interface Props {
+  clearError: () => void
+  isFacilitator: boolean
   stage: JiraFieldDimensionDropdown_stage
 
 }
 
-const Wrapper = styled(PlainButton)({
+const Wrapper = styled(PlainButton)<{
+  isFacilitator: boolean
+}>(({
+  isFacilitator
+}) => ({
+  cursor: isFacilitator ? undefined : 'default',
   display: 'flex',
   color: PALETTE.TEXT_MAIN,
   ':hover': {
-    color: PALETTE.TEXT_LIGHT_DARK
+    color: isFacilitator ? PALETTE.TEXT_LIGHT_DARK : undefined
   },
   userSelect: 'none'
-})
+}))
 
-const CurrentValue = styled('div')({
+
+const CurrentValue = styled('div')<{
+  isFacilitator: boolean
+}>(({
+  isFacilitator
+}) => ({
   fontSize: 14,
   fontWeight: 600,
-  textDecoration: 'underline'
-})
+  textDecoration: isFacilitator ? 'underline' : undefined
+}))
 
-const StyledIcon = styled(Icon)({
-  fontSize: ICON_SIZE.MD18
-})
+const StyledIcon = styled(Icon)<{
+  isFacilitator: boolean
+}>(({
+  isFacilitator
+}) => ({
+  fontSize: ICON_SIZE.MD18,
+  visibility: isFacilitator ? undefined : 'hidden'
+}))
 
 const labelLookup = {
   [SprintPokerDefaults.JIRA_FIELD_COMMENT]: SprintPokerDefaults.JIRA_FIELD_COMMENT_LABEL,
@@ -46,7 +63,7 @@ const labelLookup = {
 }
 
 const JiraFieldDimensionDropdown = (props: Props) => {
-  const {stage} = props
+  const {clearError, stage, isFacilitator} = props
   const {serviceField} = stage
   const {name: serviceFieldName} = serviceField
   const {togglePortal, menuPortal, originRef, menuProps} = useMenu<HTMLButtonElement>(
@@ -56,13 +73,19 @@ const JiraFieldDimensionDropdown = (props: Props) => {
     }
   )
 
+  const onClick = () => {
+    if (!isFacilitator) return
+    togglePortal()
+    clearError()
+  }
+
   const label = labelLookup[serviceFieldName] || serviceFieldName
   return (
-    <Wrapper onMouseEnter={JiraFieldMenuRoot.preload}
-      onClick={togglePortal}
+    <Wrapper onMouseEnter={JiraFieldMenuRoot.preload} isFacilitator={isFacilitator}
+      onClick={onClick}
       ref={originRef}>
-      <CurrentValue>{label}</CurrentValue>
-      <StyledIcon>{'expand_more'}</StyledIcon>
+      <CurrentValue isFacilitator={isFacilitator}>{label}</CurrentValue>
+      <StyledIcon isFacilitator={isFacilitator}>{'expand_more'}</StyledIcon>
       {menuPortal(
         <JiraFieldMenuRoot menuProps={menuProps} stage={stage} />
       )}

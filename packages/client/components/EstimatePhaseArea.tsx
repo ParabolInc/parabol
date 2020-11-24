@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {useRef} from 'react'
+import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import SwipeableViews from 'react-swipeable-views'
 import useBreakpoint from '~/hooks/useBreakpoint'
@@ -22,7 +22,7 @@ const EstimateArea = styled('div')({
 const StepperDots = styled('div')({
   display: 'flex',
   justifyContent: 'center',
-  padding: '4px 0 8px',
+  paddingTop: 4,
   width: '100%'
 })
 
@@ -46,7 +46,7 @@ const innerStyle = (isDesktop: boolean) => {
     height: '100%',
     margin: isDesktop ? '0 auto' : null,
     maxWidth: isDesktop ? 1600 : null,
-    padding: isDesktop ? '0 40px' : '0 16px',
+    padding: isDesktop ? '8px 40px 0' : '8px 16px 0',
     width: '100%',
     overflow: 'visible'
   }
@@ -56,8 +56,6 @@ const containerStyle = {
   height: '100%'
 }
 
-export type SetVotedUserEl = (userId: string, el: HTMLDivElement | null) => void
-export type GetVotedUserEl = (userId: string) => HTMLDivElement | null
 interface Props {
   gotoStageId: ReturnType<typeof useGotoStageId>
   meeting: EstimatePhaseArea_meeting
@@ -78,29 +76,20 @@ const EstimatePhaseArea = (props: Props) => {
     gotoStageId(dimensionStages[idx].id)
   }
 
-  const avatarRef = useRef<{[userId: string]: HTMLDivElement | null}>({})
-
-  const getVotedUserEl: GetVotedUserEl = (userId) => {
-    return avatarRef.current[userId]
-  }
-
-  const setVotedUserEl: SetVotedUserEl = (userId, el) => {
-    avatarRef.current[userId] = el
-  }
-
   const slideContainer = {
     padding: isDesktop ? '0 8px' : '0 4px'
   }
 
   return (
     <EstimateArea>
-      <StepperDots>
+      {dimensionStages.length > 1 && <StepperDots>
         {dimensionStages.map((_, idx) => {
           return <StepperDot key={idx} isActive={idx === stageIdx} onClick={() => onChangeIdx(idx)} />
         })}
       </StepperDots>
+      }
       <PokerCardDeck meeting={meeting} />
-      <DeckActivityAvatars stage={localStage} getVotedUserEl={getVotedUserEl} />
+      <DeckActivityAvatars stage={localStage} />
       <SwipeableViews
         containerStyle={containerStyle}
         enableMouseEvents
@@ -111,7 +100,7 @@ const EstimatePhaseArea = (props: Props) => {
       >
         {dimensionStages.map((stage, idx) => (
           <SwipableEstimateItem key={idx}>
-            <EstimateDimensionColumn meeting={meeting} setVotedUserEl={setVotedUserEl} stage={stage} />
+            <EstimateDimensionColumn meeting={meeting} stage={stage} />
           </SwipableEstimateItem>
         ))}
       </SwipeableViews>
