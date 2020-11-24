@@ -7,7 +7,6 @@ import PokerSetFinalScoreMutation from '../mutations/PokerSetFinalScoreMutation'
 import {PokerCards} from '../types/constEnums'
 import {PokerDiscussVoting_meeting} from '../__generated__/PokerDiscussVoting_meeting.graphql'
 import {PokerDiscussVoting_stage} from '../__generated__/PokerDiscussVoting_stage.graphql'
-import {SetVotedUserEl} from './EstimatePhaseArea'
 import PokerDimensionValueControl from './PokerDimensionValueControl'
 import PokerDimensionValueStatic from './PokerDimensionValueStatic'
 import PokerVotingRow from './PokerVotingRow'
@@ -15,14 +14,13 @@ import PokerVotingRow from './PokerVotingRow'
 interface Props {
   meeting: PokerDiscussVoting_meeting
   stage: PokerDiscussVoting_stage
-  setVotedUserEl: SetVotedUserEl
 }
 
 const PokerDiscussVoting = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {submitting, submitMutation, onError, onCompleted} = useMutationProps()
   const {viewerId} = atmosphere
-  const {meeting, setVotedUserEl, stage} = props
+  const {meeting, stage} = props
   const {id: meetingId, facilitatorUserId} = meeting
   const {id: stageId, finalScore, dimension, scores} = stage
   const {selectedScale} = dimension
@@ -74,7 +72,7 @@ const PokerDiscussVoting = (props: Props) => {
           PokerSetFinalScoreMutation(atmosphere, {finalScore: label, meetingId, stageId}, {onError, onCompleted})
         } : undefined
         return (
-          <PokerVotingRow key={key} setVotedUserEl={setVotedUserEl} scaleValue={scaleValue} scores={scores} setFinalScore={setFinalScore} />
+          <PokerVotingRow key={key} scaleValue={scaleValue} scores={scores} setFinalScore={setFinalScore} />
         )
       })}
     </>
