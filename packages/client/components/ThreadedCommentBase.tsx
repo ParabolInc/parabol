@@ -78,7 +78,13 @@ const ThreadedCommentBase = (props: Props) => {
     submitMutation()
     AddReactjiToReactableMutation(
       atmosphere,
-      {reactableType: ReactableEnum.COMMENT, reactableId: commentId, isRemove, reactji: emojiId},
+      {
+        reactableType: ReactableEnum.COMMENT,
+        reactableId: commentId,
+        isRemove,
+        reactji: emojiId,
+        meetingId
+      },
       {onCompleted, onError}
     )
     // when the reactjis move to the bottom & increase the height, make sure they're visible
@@ -110,7 +116,7 @@ const ThreadedCommentBase = (props: Props) => {
       submitMutation()
       UpdateCommentContentMutation(
         atmosphere,
-        {commentId, content: convertToTaskContent(value)},
+        {commentId, content: convertToTaskContent(value), meetingId},
         {onError, onCompleted}
       )
       return
@@ -123,7 +129,7 @@ const ThreadedCommentBase = (props: Props) => {
     submitMutation()
     UpdateCommentContentMutation(
       atmosphere,
-      {commentId, content: nextContent},
+      {commentId, content: nextContent, meetingId},
       {onError, onCompleted}
     )
   }
@@ -136,6 +142,7 @@ const ThreadedCommentBase = (props: Props) => {
           dataCy={dataCy}
           comment={comment}
           editComment={editComment}
+          meetingId={meetingId}
           onToggleReactji={onToggleReactji}
           onReply={onReply}
         />

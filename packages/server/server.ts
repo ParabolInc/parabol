@@ -15,6 +15,7 @@ import PWAHandler from './PWAHandler'
 import handleClose from './socketHandlers/handleClose'
 import handleMessage from './socketHandlers/handleMessage'
 import handleOpen from './socketHandlers/handleOpen'
+import handleUpgrade from './socketHandlers/handleUpgrade'
 import SSEConnectionHandler from './sse/SSEConnectionHandler'
 import SSEPingHandler from './sse/SSEPingHandler'
 import staticFileHandler from './staticFileHandler'
@@ -41,6 +42,7 @@ uws
     compression: SHARED_COMPRESSOR,
     idleTimeout: 0,
     maxPayloadLength: 5 * 2 ** 20,
+    upgrade: handleUpgrade,
     open: handleOpen,
     message: handleMessage,
     // today, we don't send folks enough data to worry about backpressure

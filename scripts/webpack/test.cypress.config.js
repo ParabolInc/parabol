@@ -22,7 +22,7 @@ module.exports = {
     rules: [
       {
         test: /\.tsx?$/,
-        include: [CYPRESS_ROOT, SERVER_ROOT],
+        include: [CYPRESS_ROOT, SERVER_ROOT, CLIENT_ROOT],
         use: {
           loader: '@sucrase/webpack-loader',
           options: {

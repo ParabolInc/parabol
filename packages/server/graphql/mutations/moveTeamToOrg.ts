@@ -130,7 +130,6 @@ export default {
     }
   },
   async resolve(_source, {teamIds, orgId}, {authToken}) {
-    console.log('teamIds', teamIds)
     const results = [] as (string | object)[]
     for (let i = 0; i < teamIds.length; i++) {
       const teamId = teamIds[i]

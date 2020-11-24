@@ -143,6 +143,16 @@ interface JiraIssueBean<F = {description: any; summary: string}, R = unknown> {
   fields: F
 }
 
+export type JiraGetIssueRes = JiraIssueBean<{
+  id: string
+  cloudId: string
+  cloudName: string
+  description: any
+  descriptionHTML: string
+  key: string
+  summary: string
+}>
+
 interface JiraSearchResponse<T = {summary: string; description: string}> {
   expand: string
   startAt: number
@@ -354,18 +364,17 @@ export default abstract class AtlassianManager {
       ) as AtlassianError | JiraError | JiraIssueBean
     ])
     if ('fields' in issueRes) {
-      ; (issueRes.fields as any).cloudName = cloudNameLookup[cloudId]
-        ; (issueRes.fields as any).descriptionHTML = (issueRes as any).renderedFields.description
+      const fields = issueRes.fields as any
+      fields.cloudName = cloudNameLookup[cloudId]
+      fields.descriptionHTML = (issueRes as any).renderedFields.description
+      fields.cloudId = cloudId
+      fields.key = issueKey
+      fields.id = `${cloudId}:${issueKey}`
     }
     return issueRes as
       | AtlassianError
       | JiraError
-      | JiraIssueBean<{
-        description: any
-        summary: string
-        cloudName: string
-        descriptionHTML: string
-      }>
+      | JiraGetIssueRes
   }
 
   async getIssues(
@@ -443,97 +452,22 @@ export default abstract class AtlassianManager {
     cloudId: string,
     issueKey: string,
     storyPoints: string | number,
-    dimensionName: string
+    fieldId: string
   ) {
-    // try to update the field by dimension name.
-    // if we can't trigger an update, then just write a comment
-    const fields = await this.getFields(cloudId)
-    const searchFields = fields.map((field) => ({
-      ...field,
-      searchName: field.name.toLowerCase().trim()
-    }))
-
-    const normalizedDimensionName = dimensionName.toLowerCase().trim()
-    const namesToTry = [normalizedDimensionName] as string[]
-
-    if (normalizedDimensionName === 'story points') {
-      // new jira projects call it this >:-(
-      namesToTry.push('story point estimate')
+    const payload = {
+      fields: {
+        [fieldId]: isFinite(storyPoints as number) ? Number(storyPoints) : storyPoints
+      }
     }
-    const fieldsToTry = searchFields.filter((field) => namesToTry.includes(field.searchName))
-    let updatedFieldSuccess = false
-    if (fieldsToTry.length > 0) {
-      const res = await Promise.all(
-        fieldsToTry.map((field) => {
-          const {id} = field
-          const payload = {
-            fields: {
-              [id]: storyPoints
-            }
-          }
-          return this.put(
-            `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/issue/${issueKey}`,
-            payload
-          )
-        })
-      )
-      updatedFieldSuccess = res.indexOf(null) !== -1
+    const res = await this.put(
+      `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/issue/${issueKey}`,
+      payload
+    )
+    if (res !== null) {
+      console.log('ERR', {res, storyPoints, fieldId, issueKey, cloudId})
+      const jiraError = res.errors?.[fieldId]
+      const error = jiraError ? `Jira: ${jiraError}` : 'Cannot update field in Jira'
+      throw new Error(error)
     }
-    if (!updatedFieldSuccess) {
-      await this.addComment(cloudId, issueKey, {
-        version: 1,
-        type: 'doc',
-        content: [
-          {
-            type: 'paragraph',
-            content: [
-              {
-                type: 'text',
-                text: 'This issue is worth '
-              },
-              {
-                type: 'text',
-                text: `${storyPoints} story points`,
-                marks: [
-                  {
-                    type: 'strong'
-                  }
-                ]
-              },
-              {
-                type: 'text',
-                text: '.'
-              }
-            ]
-          },
-          {
-            type: 'paragraph',
-            content: [
-              {
-                type: 'text',
-                text: 'Visit the meeting where it happened at '
-              },
-              {
-                type: 'text',
-                text: 'Parabol',
-                marks: [
-                  {
-                    type: 'link',
-                    attrs: {
-                      href: 'https://action.parabol.co'
-                    }
-                  }
-                ]
-              },
-              {
-                type: 'text',
-                text: '.'
-              }
-            ]
-          }
-        ]
-      })
-    }
-    return true
   }
 }

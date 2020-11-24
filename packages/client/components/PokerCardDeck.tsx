@@ -1,112 +1,149 @@
 import styled from '@emotion/styled'
-import React, {useRef, useState} from 'react'
-import useAtmosphere from '../hooks/useAtmosphere'
-import useHotkey from '../hooks/useHotkey'
-import usePokerDeckLeft from '../hooks/usePokerDeckLeft'
-import {PALETTE} from '../styles/paletteV2'
-import PokerCard from './PokerCard'
 import graphql from 'babel-plugin-relay/macro'
+import React, {useEffect, useMemo, useRef, useState} from 'react'
 import {createFragmentContainer} from 'react-relay'
+import useMutationProps from '~/hooks/useMutationProps'
+import useAtmosphere from '../hooks/useAtmosphere'
+import usePokerCardLocation from '../hooks/usePokerCardLocation'
 import PokerAnnounceDeckHoverMutation from '../mutations/PokerAnnounceDeckHoverMutation'
+import VoteForPokerStoryMutation from '../mutations/VoteForPokerStoryMutation'
 import {PokerCardDeck_meeting} from '../__generated__/PokerCardDeck_meeting.graphql'
-const Deck = styled('div')<{left: number}>(({left}) => ({
+import PokerCard from './PokerCard'
+
+const Deck = styled('div')({
+  bottom: 0,
   display: 'flex',
-  left,
-  // justifyContent: 'center',
+  left: '45%',
   position: 'absolute',
-  bottom: -32,
   width: '100%',
   zIndex: 1 // TODO remove. needs to be under bottom bar but above dimension bg
-}))
+})
+
 interface Props {
   meeting: PokerCardDeck_meeting
 }
 
 const PokerCardDeck = (props: Props) => {
+  const atmosphere = useAtmosphere()
+  const {viewerId} = atmosphere
   const {meeting} = props
   const {id: meetingId, localStage} = meeting
-  const stageId = localStage.id!
-  const cards = [
-    {label: '1', value: 1, color: PALETTE.BACKGROUND_RED},
-    {label: '2', value: 2, color: PALETTE.BACKGROUND_BLUE},
-    {label: '3', value: 3, color: PALETTE.BACKGROUND_GREEN},
-    {label: '4', value: 4, color: PALETTE.BACKGROUND_YELLOW},
-    {label: '5', value: 5, color: PALETTE.BACKGROUND_RED},
-    {label: '6', value: 6, color: PALETTE.BACKGROUND_BLUE},
-    {label: '7', value: 7, color: PALETTE.BACKGROUND_GREEN},
-    {label: '8', value: 8, color: PALETTE.BACKGROUND_YELLOW},
-    {label: '9', value: 9, color: PALETTE.BACKGROUND_RED},
-    {label: '10', value: 10, color: PALETTE.BACKGROUND_BLUE},
-    {label: '11', value: 11, color: PALETTE.BACKGROUND_GREEN},
-    {label: '12', value: 12, color: PALETTE.BACKGROUND_YELLOW},
-    {label: '13', value: 13, color: PALETTE.BACKGROUND_RED},
-  ]
+  const {dimension, id: stageId} = localStage
+  const scores = localStage.scores!
+  const isVoting = localStage.isVoting!
+  if (!stageId) return <div>No stage ID</div>
+  const {selectedScale} = dimension!
+  const {values: cards} = selectedScale
   const totalCards = cards.length
-  const [selectedIdx, setSelectedIdx] = useState<number | undefined>()
-  const [isCollapsed, setIsCollapsed] = useState(false)
+  const [isCollapsed, setIsCollapsed] = useState(!isVoting)
+  useEffect(() => {
+    setIsCollapsed(!isVoting)
+  }, [isVoting])
+
+  const selectedIdx = useMemo(() => {
+    const userVote = scores.find(({userId}) => userId === viewerId)
+    return userVote ? cards.findIndex(({label}) => label === userVote.label) : undefined
+  }, [scores])
   const deckRef = useRef<HTMLDivElement>(null)
   const hoveringCardIdRef = useRef('')
-  const atmosphere = useAtmosphere()
+  const {yOffset, initialRotation, rotationPerCard} = usePokerCardLocation(totalCards)
+  const {onError, onCompleted, submitMutation, submitting, error} = useMutationProps()
   const onMouseEnter = (cardId: string) => () => {
     if (!hoveringCardIdRef.current) {
-      PokerAnnounceDeckHoverMutation(atmosphere, {isHover: true, meetingId, stageId: stageId})
+      PokerAnnounceDeckHoverMutation(atmosphere, {isHover: true, meetingId, stageId})
     }
     hoveringCardIdRef.current = cardId
   }
 
   const onMouseLeave = (cardId: string) => () => {
     // leave fires before enter, but we want it to happen after
-    // this complexity is necessary because we don't care if the enter/leave the deck, but the individual cards. precision counts!
+    // this complexity is necessary because we don't care if they enter/leave the deck, but the individual cards. precision counts!
     setTimeout(() => {
-      console.log({leaving: cardId, ref: hoveringCardIdRef.current, announce: hoveringCardIdRef.current === cardId, isHover: false})
       if (hoveringCardIdRef.current === cardId) {
         hoveringCardIdRef.current = ''
-        PokerAnnounceDeckHoverMutation(atmosphere, {isHover: false, meetingId, stageId: stageId})
+        PokerAnnounceDeckHoverMutation(atmosphere, {isHover: false, meetingId, stageId})
       }
     })
   }
 
-  const toggleCollapse = () => {
-    setIsCollapsed(!isCollapsed)
+
+  useEffect(() => {
+    if (error) {
+      atmosphere.eventEmitter.emit('addSnackbar', {
+        key: 'voteError',
+        message: error.message || 'Error submitting vote',
+        autoDismiss: 5
+      })
+    }
+  }, [error])
+
+  const vote = (score: string | null) => {
+    if (submitting) return
+    submitMutation()
+    if (!isVoting) {
+      setIsCollapsed(true)
+    }
+    VoteForPokerStoryMutation(
+      atmosphere,
+      {meetingId, stageId, score},
+      {onError, onCompleted}
+    )
   }
-  useHotkey('c', toggleCollapse)
-  const left = usePokerDeckLeft(deckRef, totalCards)
 
   return (
-    <Deck ref={deckRef} left={left}>
+    <Deck ref={deckRef}>
       {cards.map((card, idx) => {
         const isSelected = selectedIdx === idx
+        const {label} = card
         const onClick = () => {
-          if (isCollapsed) return
-          setSelectedIdx(isSelected ? undefined : idx)
+          if (isCollapsed) {
+            setIsCollapsed(false)
+          } else {
+            // if card is selected and clicked again remove vote
+            vote(isSelected ? null : label)
+          }
         }
-        return <PokerCard onMouseEnter={onMouseEnter(card.label)} onMouseLeave={onMouseLeave(card.label)} key={card.value} card={card} idx={idx} totalCards={totalCards} onClick={onClick} isCollapsed={isCollapsed} isSelected={isSelected} deckRef={deckRef} />
+        const rotation = initialRotation + rotationPerCard * idx
+        return <PokerCard key={card.label} yOffset={yOffset} rotation={rotation} onMouseEnter={onMouseEnter(card.label)} onMouseLeave={onMouseLeave(card.label)} scaleValue={card} idx={idx} totalCards={totalCards} onClick={onClick} isCollapsed={isCollapsed} isSelected={isSelected} deckRef={deckRef} />
       })}
     </Deck>
   )
 }
 
 graphql`
-fragment PokerCardDeckStage on EstimateStage {
-  id
-  hoveringUsers {
+  fragment PokerCardDeckStage on EstimateStage {
     id
-  }
-}`
-export default createFragmentContainer(
-  PokerCardDeck,
-  {
-    meeting: graphql`
-      fragment PokerCardDeck_meeting on PokerMeeting {
-        id
-        localStage {
-          ...PokerCardDeckStage @relay(mask: false)
+    isVoting
+    dimension {
+      selectedScale {
+        values {
+          ...PokerCard_scaleValue
+          label
         }
-        phases {
+      }
+    }
+    scores {
+      userId
+      label
+    }
+  }
+`
+export default createFragmentContainer(
+  PokerCardDeck, {
+  meeting: graphql`
+    fragment PokerCardDeck_meeting on PokerMeeting {
+      id
+      showSidebar
+      phases {
+        ... on EstimatePhase {
           stages {
             ...PokerCardDeckStage @relay(mask: false)
           }
         }
-      }`
-  }
+      }
+      localStage {
+        ...PokerCardDeckStage @relay(mask: false)
+      }
+    }`
+}
 )

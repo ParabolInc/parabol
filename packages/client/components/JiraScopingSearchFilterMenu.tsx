@@ -89,7 +89,6 @@ const JiraScopingSearchFilterMenu = (props: Props) => {
   const meeting = viewer?.meeting ?? null
   const meetingId = meeting?.id ?? ''
   const jiraSearchQuery = meeting?.jiraSearchQuery ?? null
-  console.log({jiraSearchQuery})
   const projectKeyFilters = jiraSearchQuery?.projectKeyFilters ?? []
   const isJQL = jiraSearchQuery?.isJQL ?? false
   const {fields, onChange} = useForm({
@@ -112,7 +111,6 @@ const JiraScopingSearchFilterMenu = (props: Props) => {
       jiraSearchQuery.setValue([], 'projectKeyFilters')
     })
   }
-  console.log({projectKeyFilters})
   return (
     <Menu
       keepParentFocus

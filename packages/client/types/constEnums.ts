@@ -170,8 +170,17 @@ export const enum MeetingLabels {
 export const enum PokerCards {
   HEIGHT = 175,
   WIDTH = 125,
-  OVERLAP = 96
-
+  OVERLAP = 96,
+  MAX_VALUE = 2147483647,
+  // the angle in degrees from the middle of the deck to a deck edge (0-90)
+  TILT = 8,
+  // number of pixels from the middle of the circle below the fold to the middle of the card (0-2x innerHeight)
+  RADIUS = 1200,
+  // the % of the first & last card that sits below the fold (0-1)
+  MAX_HIDDEN = .35,
+  PASS_CARD = 'X',
+  QUESTION_CARD = '?',
+  DELETED_CARD = '#'
 }
 export const enum UserTaskViewFilterLabels {
   ALL_TEAMS = 'All Teams',
@@ -287,9 +296,10 @@ export const enum TierLabel {
 export const enum Threshold {
   MAX_NUMBER_OF_TASKS_TO_LOAD = 1000,
   AUTO_PAUSE = 2592000000, // 30 days
-  EMAIL_VERIFICATION_LIFESPAN = 2592000000, // 30 days
+  EMAIL_VERIFICATION_LIFESPAN = 86400000, // 1 day
   JWT_LIFESPAN = 2592000000, // 30 days
   MASS_INVITATION_TOKEN_LIFESPAN = 2592000000, // 30 days
+  TEAM_INVITATION_LIFESPAN = 2592000000, // 30 days
   MAX_FREE_TEAMS = 10,
   MAX_MONTHLY_PAUSES = 4,
   MAX_ACCOUNT_PASSWORD_ATTEMPTS = 10,
@@ -304,7 +314,9 @@ export const enum Threshold {
   MAX_REACTJIS = 12,
   REFRESH_JWT_AFTER = 1296000000, // 15 days
   RESET_PASSWORD_LIFESPAN = 86400000, // 1 day
-  VERIFY_TOKEN_LIFESPAN = 2592000000 // 30 days
+  VERIFY_TOKEN_LIFESPAN = 2592000000, // 30 days
+  UPCOMING_INVOICE_EMAIL_WARNING = 345600000, // 4 days
+  UPCOMING_INVOICE_TIME_VALID = 120000 // 2 minutes
 }
 
 export const enum Times {
@@ -349,5 +361,11 @@ export const enum AuthTokenRole {
 
 export const enum SprintPokerDefaults {
   DEFAULT_TEMPLATE_ID = 'estimatedEffortTemplate',
-  DEFAULT_SCALE_ID = 'fibonacciScale'
+  DEFAULT_SCALE_ID = 'fibonacciScale',
+  JIRA_FIELD_DEFAULT = 'Story point estimate',
+  JIRA_FIELD_COMMENT = '__comment',
+  JIRA_FIELD_COMMENT_LABEL = 'As Comment',
+  JIRA_FIELD_NULL = '',
+  JIRA_FIELD_NULL_LABEL = 'Do Not Update'
+
 }

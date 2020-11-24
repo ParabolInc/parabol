@@ -22,8 +22,8 @@ graphql`
 `
 
 const mutation = graphql`
-  mutation AddCommentMutation($comment: AddCommentInput!) {
-    addComment(comment: $comment) {
+  mutation AddCommentMutation($comment: AddCommentInput!, $meetingId: ID!) {
+    addComment(comment: $comment, meetingId: $meetingId) {
       ... on ErrorPayload {
         error {
           message

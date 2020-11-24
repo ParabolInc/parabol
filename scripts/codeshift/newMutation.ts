@@ -127,14 +127,15 @@ const addToRootSubscription = (mutationName: string, subscription?: string) => {
   fs.writeFileSync(subPath, res)
 }
 
-const createClientMutation = (mutationName: string) => {
+const createClientMutation = (mutationName: string, subscription?: string) => {
+  const lowercaseSub = subscription?.toLowerCase() ?? 'part'
   const pascalMutation = mutationName[0].toUpperCase() + mutationName.slice(1)
   const fileName = pascalMutation + 'Mutation.ts'
   const mutationPath = path.join(PROJECT_ROOT, 'packages/client/mutations', fileName)
 
   const basePath = path.join(PROJECT_ROOT, 'scripts/codeshift', 'baseClientMutation.ts')
   const baseStr = fs.readFileSync(basePath, 'utf-8')
-  const nextStr = baseStr.replace(/PASCAL_MUTATION/g, pascalMutation).replace(/MUTATION_NAME/g, mutationName)
+  const nextStr = baseStr.replace(/PASCAL_MUTATION/g, pascalMutation).replace(/MUTATION_NAME/g, mutationName).replace(/LCASE_SUB/g, lowercaseSub)
   fs.writeFileSync(mutationPath, nextStr)
 }
 
@@ -171,7 +172,7 @@ const newMutation = () => {
   addToRootSubscription(mutationName, subscription)
   addToRootMutation(mutationName)
 
-  createClientMutation(mutationName)
+  createClientMutation(mutationName, subscription)
   addToClientSubscription(mutationName, subscription)
 }
 newMutation()

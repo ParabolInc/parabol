@@ -40,6 +40,7 @@ const subscription = graphql`
   subscription TeamSubscription {
     teamSubscription {
       __typename
+      ...UpdateJiraDimensionFieldMutation_team @relay(mask: false)
       ...AcceptTeamInvitationMutation_team @relay(mask: false)
       ...AddAgendaItemMutation_team @relay(mask: false)
       ...AddAtlassianAuthMutation_team @relay(mask: false)

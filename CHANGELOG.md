@@ -5,6 +5,21 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 5.25.0 2020-Nov-18
+
+### Added
+- Sprint Poker template UI w/o scales (#4310)
+- Poker peekers (#4334)
+### Changed
+- Upgraded uWS to v18, now with upgrade callback (#4357)
+- Invitation lifespan to 30 days (#4353)
+- Initial Poker template has a single dimension (#4347)
+- Added curve to poker deck (#4337)
+### Fixed
+- A handle of client-side bugs found in Sentry, likely due to Relay (#4354)
+- Centered meeting bottom control bar (#4344)
+- Language for invitation expiration (#4341)
+
 ## 5.24.0 2020-Nov-12
 
 ### Added
