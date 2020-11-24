@@ -22,7 +22,7 @@
     "chokidar": "^3.3.1",
     "sucrase": "^3.16.0",
     "ts-node": "^8.6.2",
-    "typescript": "^3.9.5"
+    "typescript": "^4.0.2"
   },
   "dependencies": {
     "awaitqueue": "^2.1.1",
