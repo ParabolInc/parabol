@@ -124,7 +124,7 @@ const pokerSetFinalScore = {
         await manager.addComment(
           cloudId,
           issueKey,
-          makeScoreJiraComment(dimensionName, finalScore, meetingName, discussionURL)
+          makeScoreJiraComment(dimensionName, finalScore || '<None>', meetingName, discussionURL)
         )
       } else if (fieldName !== SprintPokerDefaults.JIRA_FIELD_NULL) {
         const {fieldId} = dimensionField!

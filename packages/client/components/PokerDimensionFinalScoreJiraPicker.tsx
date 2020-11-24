@@ -51,7 +51,7 @@ interface Props {
   clearError: () => void
   isFacilitator: boolean
   stage: PokerDimensionFinalScoreJiraPicker_stage
-  error?: string
+  error?: string | null
   submitScore: () => void
 }
 

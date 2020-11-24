@@ -3,6 +3,7 @@ import React, {useMemo} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
+import useSetFinalScoreError from '../hooks/useSetFinalScoreError'
 import PokerSetFinalScoreMutation from '../mutations/PokerSetFinalScoreMutation'
 import {PokerCards} from '../types/constEnums'
 import {PokerDiscussVoting_meeting} from '../__generated__/PokerDiscussVoting_meeting.graphql'
@@ -17,13 +18,14 @@ interface Props {
 
 const PokerDiscussVoting = (props: Props) => {
   const atmosphere = useAtmosphere()
-  const {submitting, submitMutation, onError, onCompleted} = useMutationProps()
+  const {submitting, submitMutation, onError, onCompleted, error} = useMutationProps()
   const {viewerId} = atmosphere
   const {meeting, stage} = props
   const {id: meetingId, facilitatorUserId} = meeting
   const {id: stageId, finalScore, dimension, scores} = stage
   const {selectedScale} = dimension
   const {values: scaleValues} = selectedScale
+  useSetFinalScoreError(stageId, error)
   const {rows, topLabel} = useMemo(() => {
     const scoreObj = {} as {[label: string]: PokerDiscussVoting_stage['scores'][0][]}
     let highScore = 0
@@ -61,7 +63,7 @@ const PokerDiscussVoting = (props: Props) => {
         const isSpecial = [PokerCards.QUESTION_CARD, PokerCards.PASS_CARD].includes(label as any)
         const canClick = isFacilitator && !isSpecial
         const setFinalScore = canClick ? () => {
-
+          // finalScore === label isn't 100% accurate because they could change the dimensionField & could still submit new info
           if (submitting || !label || finalScore === label) return
           submitMutation()
           PokerSetFinalScoreMutation(atmosphere, {finalScore: label, meetingId, stageId}, {onError, onCompleted})
