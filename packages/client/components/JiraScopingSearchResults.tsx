@@ -13,7 +13,7 @@ import JiraScopingSearchResultItem from './JiraScopingSearchResultItem'
 import JiraScopingSelectAllIssues from './JiraScopingSelectAllIssues'
 import NewJiraIssueInput from './NewJiraIssueInput'
 import MockScopingList from '~/modules/meeting/components/MockScopingList'
-import NewJiraIssueButton from './NewJiraIssueButton'
+import NewIntegrationRecordButton from './NewIntegrationRecordButton'
 
 const ResultScroller = styled('div')({
   overflow: 'auto'
@@ -60,7 +60,7 @@ const JiraScopingSearchResults = (props: Props) => {
     return viewer ? (
       <>
         <IntegrationScopingNoResults error={error?.message} msg={'No issues match that query'} />
-        <NewJiraIssueButton setIsEditing={setIsEditing} />
+        <NewIntegrationRecordButton setIsEditing={setIsEditing} labelText={'New Issue'} />
       </>
     ) : (
         <MockScopingList />
@@ -110,7 +110,7 @@ const JiraScopingSearchResults = (props: Props) => {
           )
         })}
       </ResultScroller>
-      {!isEditing && <NewJiraIssueButton setIsEditing={setIsEditing} />}
+      {!isEditing && <NewIntegrationRecordButton setIsEditing={setIsEditing} labelText={'New Issue'} />}
     </>
   )
 }

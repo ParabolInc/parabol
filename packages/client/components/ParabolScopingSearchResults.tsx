@@ -10,7 +10,7 @@ import useLoadMoreOnScrollBottom from '~/hooks/useLoadMoreOnScrollBottom'
 import IntegrationScopingNoResults from './IntegrationScopingNoResults'
 import useRecordIdsWithStages from '~/hooks/useRecordIdsWithStages'
 import {NewMeetingPhaseTypeEnum} from '~/types/graphql'
-import NewParabolTaskButton from './NewParabolTaskButton'
+import NewIntegrationRecordButton from './NewIntegrationRecordButton'
 import NewParabolTaskInput from './NewParabolTaskInput'
 
 const ResultScroller = styled('div')({
@@ -21,6 +21,10 @@ interface Props {
   viewer: ParabolScopingSearchResults_viewer | null
   meeting: ParabolScopingSearchResults_meeting
 }
+
+const StyledIssueButton = styled(NewIntegrationRecordButton)({
+  left: '174%',
+})
 
 const ParabolScopingSearchResults = (props: Props) => {
   const {viewer, meeting, relay} = props
@@ -40,7 +44,7 @@ const ParabolScopingSearchResults = (props: Props) => {
     return viewer ?
       <>
         <IntegrationScopingNoResults msg={'No tasks match that query'} />
-        <NewParabolTaskButton setIsEditing={setIsEditing} />
+        <StyledIssueButton setIsEditing={setIsEditing} labelText={'New Task'} />
       </>
       :
       null
@@ -70,7 +74,7 @@ const ParabolScopingSearchResults = (props: Props) => {
         })}
         {lastItem}
       </ResultScroller>
-      {!isEditing && <NewParabolTaskButton setIsEditing={setIsEditing} />}
+      {!isEditing && <StyledIssueButton setIsEditing={setIsEditing} labelText={'New Task'} />}
     </>
   )
 }

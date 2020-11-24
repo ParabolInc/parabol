@@ -9,7 +9,7 @@ const Button = styled(FloatingActionButton)({
   padding: '10px 12px',
   width: '150px',
   top: '85%',
-  left: '174%',
+  left: '74%',
   position: 'absolute',
   zIndex: ZIndex.FAB
 })
@@ -25,16 +25,18 @@ const StyledLabel = styled('div')({
 
 interface Props {
   setIsEditing: (isEditing: boolean) => void
+  labelText?: string
+  className?: string
 }
 
-const NewParabolTaskButton = (props: Props) => {
-  const {setIsEditing} = props
+const NewIntegrationRecordButton = (props: Props) => {
+  const {setIsEditing, labelText='New Record', className} = props
   return (
-    <Button onClick={() => setIsEditing(true)} palette='blue'>
+    <Button className={className} onClick={() => setIsEditing(true)} palette='blue'>
       <StyledIcon>{'add'}</StyledIcon>
-      <StyledLabel>{'New Task'}</StyledLabel>
+      <StyledLabel>{labelText}</StyledLabel>
     </Button>
   )
 }
 
-export default NewParabolTaskButton
+export default NewIntegrationRecordButton
