@@ -7119,6 +7119,11 @@ export interface IMutation {
   setCheckInEnabled: ISetCheckInEnabledPayload;
 
   /**
+   * Update the default Slack channel where notifications are sent
+   */
+  setDefaultSlackChannel: SetDefaultSlackChannelPayload;
+
+  /**
    * Set the role of a user
    */
   setOrgUserRole: SetOrgUserRolePayload | null;
@@ -7287,11 +7292,6 @@ export interface IMutation {
    * Set the jira field that the poker dimension should map to
    */
   updateJiraDimensionField: UpdateJiraDimensionFieldPayload;
-
-  /**
-   * Update the default Slack channel where notifications are sent
-   */
-  setDefaultSlackChannel: SetDefaultSlackChannelPayload;
 }
 
 export interface IAcceptTeamInvitationOnMutationArguments {
@@ -8083,6 +8083,11 @@ export interface ISetCheckInEnabledOnMutationArguments {
   isEnabled: boolean;
 }
 
+export interface ISetDefaultSlackChannelOnMutationArguments {
+  slackChannelId: string;
+  teamId: string;
+}
+
 export interface ISetOrgUserRoleOnMutationArguments {
   /**
    * The org to affect
@@ -8440,11 +8445,6 @@ export interface IUpdateJiraDimensionFieldOnMutationArguments {
    * The meeting the update happend in. If present, can return a meeting object with updated serviceField
    */
   meetingId?: string | null;
-}
-
-export interface ISetDefaultSlackChannelOnMutationArguments {
-  slackChannelId: string;
-  teamId: string;
 }
 
 export interface IAcceptTeamInvitationPayload {
@@ -10287,6 +10287,22 @@ export interface ISetCheckInEnabledPayload {
   settings: TeamMeetingSettings | null;
 }
 
+/**
+ * Return object for SetDefaultSlackChannelPayload
+ */
+export type SetDefaultSlackChannelPayload =
+  | IErrorPayload
+  | ISetDefaultSlackChannelSuccess;
+
+export interface ISetDefaultSlackChannelSuccess {
+  __typename: 'SetDefaultSlackChannelSuccess';
+
+  /**
+   * The team member with the updated slack channel
+   */
+  teamMember: ITeamMember;
+}
+
 export type SetOrgUserRolePayload =
   | ISetOrgUserRoleAddedPayload
   | ISetOrgUserRoleRemovedPayload;
@@ -10903,22 +10919,6 @@ export interface IUpdateJiraDimensionFieldSuccess {
    * The poker meeting the field was updated from
    */
   meeting: IPokerMeeting | null;
-}
-
-/**
- * Return object for SetDefaultSlackChannelPayload
- */
-export type SetDefaultSlackChannelPayload =
-  | IErrorPayload
-  | ISetDefaultSlackChannelSuccess;
-
-export interface ISetDefaultSlackChannelSuccess {
-  __typename: 'SetDefaultSlackChannelSuccess';
-
-  /**
-   * The team member with the updated slack channel
-   */
-  teamMember: ITeamMember | null;
 }
 
 export interface ISubscription {
