@@ -49,20 +49,21 @@ const StyledLinkButton = styled(LinkButton)<{canUpdate: boolean}>(({canUpdate}) 
 interface Props {
   canUpdate: boolean
   clearError: () => void
+  isFacilitator: boolean
   stage: PokerDimensionFinalScoreJiraPicker_stage
   error?: string
   submitScore: () => void
 }
 
 const PokerDimensionFinalScoreJiraPicker = (props: Props) => {
-  const {canUpdate, error, stage, clearError, submitScore} = props
+  const {isFacilitator, canUpdate, error, stage, clearError, submitScore} = props
   return (
     <Wrapper>
-      <StyledLinkButton canUpdate={canUpdate} onClick={submitScore}>{'Update'}</StyledLinkButton>
+      {isFacilitator && <StyledLinkButton canUpdate={canUpdate} onClick={submitScore}>{'Update'}</StyledLinkButton>}
       <Mapper>
         {error && <ErrorMessage>{error}</ErrorMessage>}
         <Label>{'Jira Issue Field: '}</Label>
-        <JiraFieldDimensionDropdown clearError={clearError} stage={stage} />
+        <JiraFieldDimensionDropdown clearError={clearError} stage={stage} isFacilitator={isFacilitator} />
       </Mapper>
     </Wrapper>
   )

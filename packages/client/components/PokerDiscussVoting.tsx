@@ -8,7 +8,6 @@ import {PokerCards} from '../types/constEnums'
 import {PokerDiscussVoting_meeting} from '../__generated__/PokerDiscussVoting_meeting.graphql'
 import {PokerDiscussVoting_stage} from '../__generated__/PokerDiscussVoting_stage.graphql'
 import PokerDimensionValueControl from './PokerDimensionValueControl'
-import PokerDimensionValueStatic from './PokerDimensionValueStatic'
 import PokerVotingRow from './PokerVotingRow'
 
 interface Props {
@@ -25,7 +24,6 @@ const PokerDiscussVoting = (props: Props) => {
   const {id: stageId, finalScore, dimension, scores} = stage
   const {selectedScale} = dimension
   const {values: scaleValues} = selectedScale
-  const finalScaleValue = scaleValues.find((scaleValue) => scaleValue.label === finalScore) || null
   const {rows, topLabel} = useMemo(() => {
     const scoreObj = {} as {[label: string]: PokerDiscussVoting_stage['scores'][0][]}
     let highScore = 0
@@ -57,10 +55,7 @@ const PokerDiscussVoting = (props: Props) => {
   const isFacilitator = viewerId === facilitatorUserId
   return (
     <>
-      {isFacilitator
-        ? <PokerDimensionValueControl placeholder={topLabel} stage={stage} />
-        : <PokerDimensionValueStatic label={finalScore} color={finalScaleValue?.color} />
-      }
+      <PokerDimensionValueControl placeholder={isFacilitator ? topLabel : '?'} stage={stage} isFacilitator={isFacilitator} />
       {rows.map(({scaleValue, scores, key}) => {
         const label = scores[0]?.label
         const isSpecial = [PokerCards.QUESTION_CARD, PokerCards.PASS_CARD].includes(label as any)

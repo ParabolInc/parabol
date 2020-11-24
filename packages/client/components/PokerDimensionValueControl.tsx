@@ -55,14 +55,24 @@ const StyledLinkButton = styled(LinkButton)({
 const ErrorMessage = styled(StyledError)({
   paddingLeft: 8
 })
+
+const Label = styled('div')({
+  color: PALETTE.TEXT_MAIN,
+  fontSize: 14,
+  fontWeight: 600,
+  margin: '0 0 0 16px',
+  width: '100%'
+})
+
 interface Props {
+  isFacilitator: boolean
   placeholder: string
   stage: PokerDimensionValueControl_stage
 }
 
 
 const PokerDimensionValueControl = (props: Props) => {
-  const {placeholder, stage} = props
+  const {isFacilitator, placeholder, stage} = props
   const {id: stageId, dimension, finalScore, meetingId, service, serviceField} = stage
   const {name: serviceFieldName, type: serviceFieldType} = serviceField
   const {selectedScale} = dimension
@@ -112,6 +122,7 @@ const PokerDimensionValueControl = (props: Props) => {
     if (e.key === 'Tab' || e.key === 'Enter') {
       e.preventDefault()
       submitScore()
+      inputRef.current?.blur()
     } else if (e.key === 'Escape') {
       e.preventDefault()
       setPendingScore(finalScore || '')
@@ -134,14 +145,15 @@ const PokerDimensionValueControl = (props: Props) => {
     <ControlWrap>
       <Control>
         <MiniPokerCard color={scaleColor} isFinal={isFinal}>
-          <Input onKeyDown={onKeyDown} autoFocus={!finalScore} color={textColor} ref={inputRef} onChange={onChange} placeholder={placeholder} value={pendingScore}></Input>
+          <Input disabled={!isFacilitator} onKeyDown={onKeyDown} autoFocus={!finalScore} color={textColor} ref={inputRef} onChange={onChange} placeholder={placeholder} value={pendingScore}></Input>
         </MiniPokerCard>
-        {
-          service === 'jira' ? <PokerDimensionFinalScoreJiraPicker canUpdate={canUpdate} stage={stage} error={errorMessage} submitScore={submitScore} clearError={clearError} /> :
-            <>
-              <StyledLinkButton palette={'blue'}>{'Update'}</StyledLinkButton>
-              {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
-            </>
+        {!isFacilitator && <Label>{`Final Score${finalScore ? '' : ' (set by facilitator)'}`}</Label>}
+        {service === 'jira' && <PokerDimensionFinalScoreJiraPicker canUpdate={canUpdate} stage={stage} error={errorMessage} submitScore={submitScore} clearError={clearError} isFacilitator={isFacilitator} />}
+        {service !== 'jira' &&
+          <>
+            <StyledLinkButton palette={'blue'}>{'Update Score'}</StyledLinkButton>
+            {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
+          </>
         }
 
       </Control>
