@@ -40,6 +40,7 @@ const subscription = graphql`
   subscription TeamSubscription {
     teamSubscription {
       __typename
+      ...SetDefaultSlackChannelMutation_team @relay(mask: false)
       ...UpdateJiraDimensionFieldMutation_team @relay(mask: false)
       ...AcceptTeamInvitationMutation_team @relay(mask: false)
       ...AddAgendaItemMutation_team @relay(mask: false)

@@ -7287,6 +7287,11 @@ export interface IMutation {
    * Set the jira field that the poker dimension should map to
    */
   updateJiraDimensionField: UpdateJiraDimensionFieldPayload;
+
+  /**
+   * Update the default Slack channel where notifications are sent
+   */
+  setDefaultSlackChannel: SetDefaultSlackChannelPayload;
 }
 
 export interface IAcceptTeamInvitationOnMutationArguments {
@@ -8435,6 +8440,11 @@ export interface IUpdateJiraDimensionFieldOnMutationArguments {
    * The meeting the update happend in. If present, can return a meeting object with updated serviceField
    */
   meetingId?: string | null;
+}
+
+export interface ISetDefaultSlackChannelOnMutationArguments {
+  slackChannelId: string;
+  teamId: string;
 }
 
 export interface IAcceptTeamInvitationPayload {
@@ -10895,6 +10905,22 @@ export interface IUpdateJiraDimensionFieldSuccess {
   meeting: IPokerMeeting | null;
 }
 
+/**
+ * Return object for SetDefaultSlackChannelPayload
+ */
+export type SetDefaultSlackChannelPayload =
+  | IErrorPayload
+  | ISetDefaultSlackChannelSuccess;
+
+export interface ISetDefaultSlackChannelSuccess {
+  __typename: 'SetDefaultSlackChannelSuccess';
+
+  /**
+   * The team member with the updated slack channel
+   */
+  teamMember: ITeamMember | null;
+}
+
 export interface ISubscription {
   __typename: 'Subscription';
   meetingSubscription: MeetingSubscriptionPayload;
@@ -11199,7 +11225,8 @@ export type TeamSubscriptionPayload =
   | IUpdatePokerTemplateScaleValuePayload
   | IUpdateUserProfilePayload
   | IPersistJiraSearchQuerySuccess
-  | IUpdateJiraDimensionFieldSuccess;
+  | IUpdateJiraDimensionFieldSuccess
+  | ISetDefaultSlackChannelSuccess;
 
 export interface IRenamePokerTemplatePayload {
   __typename: 'RenamePokerTemplatePayload';
