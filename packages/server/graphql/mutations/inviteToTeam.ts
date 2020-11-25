@@ -56,10 +56,7 @@ export default {
       // RESOLUTION
       const subOptions = {mutatorId, operationId}
       const [users, team, inviter] = await Promise.all([
-        r
-          .table('User')
-          .getAll(r.args(invitees), {index: 'email'})
-          .run(),
+        r.table('User').getAll(r.args(invitees), {index: 'email'}).run(),
         dataLoader.get('teams').load(teamId),
         dataLoader.get('users').load(viewerId)
       ])
@@ -86,10 +83,7 @@ export default {
           token: tokens[idx]
         })
       })
-      await r
-        .table('TeamInvitation')
-        .insert(teamInvitationsToInsert)
-        .run()
+      await r.table('TeamInvitation').insert(teamInvitationsToInsert).run()
 
       // remove suggested action, if any
       let removedSuggestedActionId
@@ -114,10 +108,7 @@ export default {
         }
       })
       if (notificationsToInsert.length > 0) {
-        await r
-          .table('Notification')
-          .insert(notificationsToInsert)
-          .run()
+        await r.table('Notification').insert(notificationsToInsert).run()
       }
 
       const bestMeeting = await getBestInvitationMeeting(teamId, meetingId, dataLoader)

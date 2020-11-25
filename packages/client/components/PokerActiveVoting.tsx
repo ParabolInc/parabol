@@ -21,8 +21,8 @@ const CheckIcon = styled(Icon)({
 })
 
 const BannerWrap = styled('div')<{showTip: boolean}>(({showTip}) => ({
-  margin: 'auto',
-  padding: '8px 16px 200px', // accounts for deck of cards below the tip
+  margin: '0 auto',
+  padding: '8px 16px',
   opacity: showTip ? 1 : 0,
   transition: `opacity 200ms ${BezierCurve.DECELERATE}`
 }))

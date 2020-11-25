@@ -112,10 +112,7 @@ export default {
           meetingId
         })
     )
-    await r
-      .table('TimelineEvent')
-      .insert(events)
-      .run()
+    await r.table('TimelineEvent').insert(events).run()
 
     const data = {
       meetingId,

@@ -17,7 +17,7 @@ const makeDrag = (ref: HTMLDivElement, lastX: number) => ({
 let drag: ReturnType<typeof makeDrag>
 
 const noop = () => {}
-const useDraggableFixture = (isLeftSidebarOpen: boolean, isRightSidebarOpen: boolean) => {
+const useDraggableFixture = (isLeftSidebarOpen: boolean, isRightDrawerOpen: boolean) => {
   const isDesktop = useBreakpoint(Breakpoint.SINGLE_REFLECTION_COLUMN)
   const onMouseUp = useEventCallback((e: MouseEvent | TouchEvent) => {
     if (e.type === 'touchend') {
@@ -36,12 +36,12 @@ const useDraggableFixture = (isLeftSidebarOpen: boolean, isRightSidebarOpen: boo
     if (!wasDrag) {
       drag.isDrag = getIsDrag(clientX, 0, drag.lastX, 0)
       if (!drag.isDrag) return
-      const {left, right} = cacheCoveringBBox(isLeftSidebarOpen, isRightSidebarOpen)
+      const {left, right} = cacheCoveringBBox(isLeftSidebarOpen, isRightDrawerOpen)
       const width = right - left
       drag.translation = -Math.round((window.innerWidth - left - right) / 2)
       const startingLeft = left - drag.translation + (isLeftSidebarOpen ? NavSidebar.WIDTH : 0)
       const startingRight =
-        left + width - drag.translation - (isRightSidebarOpen ? DiscussionThreadEnum.WIDTH : 0)
+        left + width - drag.translation - (isRightDrawerOpen ? DiscussionThreadEnum.WIDTH : 0)
       const PADDING = 8
       drag.minTranslation = -startingLeft + PADDING
       drag.maxTranslation = window.innerWidth - startingRight - PADDING
@@ -66,7 +66,7 @@ const useDraggableFixture = (isLeftSidebarOpen: boolean, isRightSidebarOpen: boo
       left +
       drag.width -
       (isLeftSidebarOpen ? NavSidebar.WIDTH : 0) -
-      (isRightSidebarOpen ? DiscussionThreadEnum.WIDTH : 0)
+      (isRightDrawerOpen ? DiscussionThreadEnum.WIDTH : 0)
     ensureAllCovering(left, right)
   })
 

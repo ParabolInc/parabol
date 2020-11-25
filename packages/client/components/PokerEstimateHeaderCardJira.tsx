@@ -15,7 +15,7 @@ import {Breakpoint} from '~/types/constEnums'
 
 const HeaderCardWrapper = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   display: 'flex',
-  padding: isDesktop ? '4px 16px' : '4px 8px'
+  padding: isDesktop ? '0px 16px 4px' : '0px 8px 4px'
 }))
 
 const HeaderCard = styled('div')({

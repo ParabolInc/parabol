@@ -9,7 +9,7 @@ import uWSAsyncHandler from './uWSAsyncHandler'
 
 interface IntranetPayload {
   query: string
-  variables: object
+  variables: Record<string, unknown>
   isPrivate?: boolean
 }
 const intranetHttpGraphQLHandler = uWSAsyncHandler(async (res: HttpResponse, req: HttpRequest) => {

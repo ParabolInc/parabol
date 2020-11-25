@@ -213,9 +213,7 @@ export const userTasks = (parent: RethinkDataLoader) => {
               .filter((task) =>
                 archived
                   ? task('tags').contains('archived')
-                  : task('tags')
-                      .contains('archived')
-                      .not()
+                  : task('tags').contains('archived').not()
               )
               .filter((task) => {
                 if (includeUnassigned) return true

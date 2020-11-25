@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
+import React, {useRef} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import SwipeableViews from 'react-swipeable-views'
 import useBreakpoint from '~/hooks/useBreakpoint'
@@ -67,10 +67,9 @@ const EstimatePhaseArea = (props: Props) => {
   const {id: localStageId, serviceTaskId} = localStage
   const {stages} = phases.find(({phaseType}) => phaseType === 'ESTIMATE')!
   const dimensionStages = stages!.filter((stage) => stage.serviceTaskId === serviceTaskId)
-
   const stageIdx = dimensionStages!.findIndex(({id}) => id === localStageId)
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
-
+  const estimateAreaRef = useRef<HTMLDivElement>(null)
 
   const onChangeIdx = (idx: number) => {
     gotoStageId(dimensionStages[idx].id)
@@ -81,14 +80,16 @@ const EstimatePhaseArea = (props: Props) => {
   }
 
   return (
-    <EstimateArea>
+    <EstimateArea ref={estimateAreaRef}>
       {dimensionStages.length > 1 && <StepperDots>
         {dimensionStages.map((_, idx) => {
-          return <StepperDot key={idx} isActive={idx === stageIdx} onClick={() => onChangeIdx(idx)} />
+          return (
+            <StepperDot key={idx} isActive={idx === stageIdx} onClick={() => onChangeIdx(idx)} />
+          )
         })}
       </StepperDots>
       }
-      <PokerCardDeck meeting={meeting} />
+      <PokerCardDeck meeting={meeting}  estimateAreaRef={estimateAreaRef}/>
       <DeckActivityAvatars stage={localStage} />
       <SwipeableViews
         containerStyle={containerStyle}
@@ -104,16 +105,17 @@ const EstimatePhaseArea = (props: Props) => {
           </SwipableEstimateItem>
         ))}
       </SwipeableViews>
-    </EstimateArea >
+    </EstimateArea>
   )
 }
 
 graphql`
-fragment EstimatePhaseAreaStage on EstimateStage {
-  ...DeckActivityAvatars_stage
-  id
-  serviceTaskId
-}`
+  fragment EstimatePhaseAreaStage on EstimateStage {
+    ...DeckActivityAvatars_stage
+    id
+    serviceTaskId
+  }
+`
 
 export default createFragmentContainer(EstimatePhaseArea, {
   meeting: graphql`

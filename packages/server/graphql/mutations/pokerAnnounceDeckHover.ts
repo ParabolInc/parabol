@@ -69,11 +69,7 @@ const pokerAnnounceDeckHover = {
     const redis = getRedis()
     const key = `pokerHover:${stageId}`
     if (isHover) {
-      const [numAddedRes] = await redis
-        .multi()
-        .sadd(key, viewerId)
-        .pexpire(key, ms('1h'))
-        .exec()
+      const [numAddedRes] = await redis.multi().sadd(key, viewerId).pexpire(key, ms('1h')).exec()
       const numAdded = numAddedRes[1]
       if (numAdded !== 1) {
         // this is primarily to avoid publishing a useless message to the pubsub

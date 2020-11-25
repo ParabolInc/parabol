@@ -139,10 +139,7 @@ export default {
         })
     )
     const timelineEventId = events[0].id as string
-    await r
-      .table('TimelineEvent')
-      .insert(events)
-      .run()
+    await r.table('TimelineEvent').insert(events).run()
     if (team.isOnboardTeam) {
       const teamLeadUserId = await r
         .table('TeamMember')

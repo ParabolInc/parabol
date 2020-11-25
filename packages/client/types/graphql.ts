@@ -61,7 +61,7 @@ export interface IAuthIdentity {
  */
 export const enum AuthIdentityTypeEnum {
   LOCAL = 'LOCAL',
-  GOOGLE = 'GOOGLE'
+  GOOGLE = 'GOOGLE',
 }
 
 /**
@@ -149,7 +149,7 @@ export const enum NewMeetingPhaseTypeEnum {
   discuss = 'discuss',
   SUMMARY = 'SUMMARY',
   SCOPE = 'SCOPE',
-  ESTIMATE = 'ESTIMATE'
+  ESTIMATE = 'ESTIMATE',
 }
 
 /**
@@ -490,7 +490,7 @@ export interface ISuggestedIntegration {
 export const enum TaskServiceEnum {
   github = 'github',
   jira = 'jira',
-  PARABOL = 'PARABOL'
+  PARABOL = 'PARABOL',
 }
 
 /**
@@ -1533,7 +1533,7 @@ export interface IThreadOnTaskArguments {
 export const enum ThreadSourceEnum {
   AGENDA_ITEM = 'AGENDA_ITEM',
   REFLECTION_GROUP = 'REFLECTION_GROUP',
-  STORY = 'STORY'
+  STORY = 'STORY',
 }
 
 /**
@@ -1685,7 +1685,7 @@ export const enum TaskStatusEnum {
   active = 'active',
   stuck = 'stuck',
   done = 'done',
-  future = 'future'
+  future = 'future',
 }
 
 /**
@@ -1854,7 +1854,7 @@ export interface ITeamMembersOnTeamArguments {
 export const enum MeetingTypeEnum {
   action = 'action',
   retrospective = 'retrospective',
-  poker = 'poker'
+  poker = 'poker',
 }
 
 /**
@@ -2071,7 +2071,7 @@ export interface IReflectTemplate {
 export const enum SharingScopeEnum {
   TEAM = 'TEAM',
   ORGANIZATION = 'ORGANIZATION',
-  PUBLIC = 'PUBLIC'
+  PUBLIC = 'PUBLIC',
 }
 
 /**
@@ -2178,7 +2178,7 @@ export interface ITeamMeetingSettings {
 export const enum TierEnum {
   personal = 'personal',
   pro = 'pro',
-  enterprise = 'enterprise'
+  enterprise = 'enterprise',
 }
 
 /**
@@ -2480,7 +2480,7 @@ export interface IOrganizationUser {
  * The role of the org user
  */
 export const enum OrgUserRole {
-  BILLING_LEADER = 'BILLING_LEADER'
+  BILLING_LEADER = 'BILLING_LEADER',
 }
 
 export interface IOrgUserCount {
@@ -2734,7 +2734,7 @@ export const enum InvoiceLineItemEnum {
   ADDED_USERS = 'ADDED_USERS',
   INACTIVITY_ADJUSTMENTS = 'INACTIVITY_ADJUSTMENTS',
   OTHER_ADJUSTMENTS = 'OTHER_ADJUSTMENTS',
-  REMOVED_USERS = 'REMOVED_USERS'
+  REMOVED_USERS = 'REMOVED_USERS',
 }
 
 /**
@@ -2776,7 +2776,7 @@ export const enum InvoiceStatusEnum {
   PENDING = 'PENDING',
   PAID = 'PAID',
   FAILED = 'FAILED',
-  UPCOMING = 'UPCOMING'
+  UPCOMING = 'UPCOMING',
 }
 
 /**
@@ -2869,7 +2869,7 @@ export const enum SuggestedActionTypeEnum {
   tryTheDemo = 'tryTheDemo',
   tryRetroMeeting = 'tryRetroMeeting',
   createNewTeam = 'createNewTeam',
-  tryActionMeeting = 'tryActionMeeting'
+  tryActionMeeting = 'tryActionMeeting',
 }
 
 /**
@@ -2987,7 +2987,7 @@ export const enum TimelineEventEnum {
   actionComplete = 'actionComplete',
   joinedParabol = 'joinedParabol',
   createdTeam = 'createdTeam',
-  POKER_COMPLETE = 'POKER_COMPLETE'
+  POKER_COMPLETE = 'POKER_COMPLETE',
 }
 
 /**
@@ -3114,7 +3114,7 @@ export interface INotification {
 export const enum NotificationStatusEnum {
   UNREAD = 'UNREAD',
   READ = 'READ',
-  CLICKED = 'CLICKED'
+  CLICKED = 'CLICKED',
 }
 
 /**
@@ -3127,7 +3127,7 @@ export const enum NotificationEnum {
   TEAM_INVITATION = 'TEAM_INVITATION',
   TEAM_ARCHIVED = 'TEAM_ARCHIVED',
   TASK_INVOLVES = 'TASK_INVOLVES',
-  MEETING_STAGE_TIME_LIMIT_END = 'MEETING_STAGE_TIME_LIMIT_END'
+  MEETING_STAGE_TIME_LIMIT_END = 'MEETING_STAGE_TIME_LIMIT_END',
 }
 
 /**
@@ -3393,7 +3393,7 @@ export const enum SlackNotificationEventEnum {
   meetingStart = 'meetingStart',
   meetingEnd = 'meetingEnd',
   MEETING_STAGE_TIME_LIMIT_END = 'MEETING_STAGE_TIME_LIMIT_END',
-  MEETING_STAGE_TIME_LIMIT_START = 'MEETING_STAGE_TIME_LIMIT_START'
+  MEETING_STAGE_TIME_LIMIT_START = 'MEETING_STAGE_TIME_LIMIT_START',
 }
 
 /**
@@ -3408,7 +3408,7 @@ export const enum SlackNotificationEventTypeEnum {
   /**
    * notification that concerns a single member on the team
    */
-  member = 'member'
+  member = 'member',
 }
 
 /**
@@ -5125,7 +5125,7 @@ export interface ICustomPhaseItem {
  * The type of phase item
  */
 export const enum CustomPhaseItemTypeEnum {
-  retroPhaseItem = 'retroPhaseItem'
+  retroPhaseItem = 'retroPhaseItem',
 }
 
 /**
@@ -5595,7 +5595,7 @@ export interface IReflectionGroupsOnRetrospectiveMeetingArguments {
  */
 export const enum ReflectionGroupSortEnum {
   voteCount = 'voteCount',
-  stageOrder = 'stageOrder'
+  stageOrder = 'stageOrder',
 }
 
 /**
@@ -6634,7 +6634,7 @@ export interface IMassInvitationPayload {
 export const enum TeamInvitationErrorEnum {
   accepted = 'accepted',
   expired = 'expired',
-  notFound = 'notFound'
+  notFound = 'notFound',
 }
 
 export interface IVerifiedInvitationPayload {
@@ -8546,6 +8546,11 @@ export interface IAddCommentSuccess {
    * the comment just created
    */
   comment: IComment;
+
+  /**
+   * The id of the meeting where the comment was added
+   */
+  meetingId: string;
 }
 
 export interface IAddCommentInput {
@@ -8654,7 +8659,7 @@ export interface IAddReactjiToReactableSuccess {
  */
 export const enum ReactableEnum {
   COMMENT = 'COMMENT',
-  REFLECTION = 'REFLECTION'
+  REFLECTION = 'REFLECTION',
 }
 
 export interface IAddReflectTemplatePayload {
@@ -8710,7 +8715,7 @@ export interface IAddFeatureFlagPayload {
 export const enum UserFlagEnum {
   video = 'video',
   jira = 'jira',
-  poker = 'poker'
+  poker = 'poker',
 }
 
 export interface IAddGitHubAuthPayload {
@@ -9058,7 +9063,7 @@ export interface INotifyTaskInvolves {
  */
 export const enum TaskInvolvementType {
   ASSIGNEE = 'ASSIGNEE',
-  MENTIONEE = 'MENTIONEE'
+  MENTIONEE = 'MENTIONEE',
 }
 
 export interface ICreateTaskInput {
@@ -9096,7 +9101,7 @@ export interface ICreateTaskInput {
 export const enum AreaEnum {
   meeting = 'meeting',
   teamDash = 'teamDash',
-  userDash = 'userDash'
+  userDash = 'userDash',
 }
 
 export interface ICreateUserPicturePutUrlPayload {
@@ -9555,7 +9560,7 @@ export interface IRemoteReflectionDrag {
  */
 export const enum DragReflectionDropTargetTypeEnum {
   REFLECTION_GROUP = 'REFLECTION_GROUP',
-  REFLECTION_GRID = 'REFLECTION_GRID'
+  REFLECTION_GRID = 'REFLECTION_GRID',
 }
 
 export interface IEndNewMeetingPayload {
@@ -10607,7 +10612,7 @@ export interface IUpdatePokerScopeItemInput {
  */
 export const enum AddOrDeleteEnum {
   ADD = 'ADD',
-  DELETE = 'DELETE'
+  DELETE = 'DELETE',
 }
 
 export interface IUpdateReflectionContentPayload {

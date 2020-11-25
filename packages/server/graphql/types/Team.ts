@@ -85,10 +85,7 @@ const Team = new GraphQLObjectType<ITeam, GQLContext>({
             .run()
         }
         const massInvitation = new MassInvitationDB({meetingId, teamMemberId})
-        await r
-          .table('MassInvitation')
-          .insert(massInvitation, {conflict: 'replace'})
-          .run()
+        await r.table('MassInvitation').insert(massInvitation, {conflict: 'replace'}).run()
         invitationTokens.length = 1
         invitationTokens[0] = massInvitation
         return massInvitation

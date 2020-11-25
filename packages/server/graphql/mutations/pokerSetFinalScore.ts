@@ -140,12 +140,10 @@ const pokerSetFinalScore = {
         .table('Task')
         .get(serviceTaskId)
         .update((row) => ({
-          estimates: row('estimates')
-            .default([])
-            .append({
-              name: dimensionName,
-              label: finalScore
-            })
+          estimates: row('estimates').default([]).append({
+            name: dimensionName,
+            label: finalScore
+          })
         }))
         .run()
     }

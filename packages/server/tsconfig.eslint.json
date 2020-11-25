@@ -6,6 +6,7 @@
     "graphql/queries",
     "email/**/*",
     "segmentFns/*",
-    "utils/*"
+    "utils/*",
+    "server.dev.ts"
   ]
 }

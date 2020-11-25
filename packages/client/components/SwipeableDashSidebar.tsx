@@ -12,11 +12,11 @@ import PlainButton from './PlainButton/PlainButton'
 
 const PEEK_WIDTH = 20
 
-const SidebarAndScrim = styled('div')<{isRightSidebar: boolean; SIDEBAR_WIDTH: number}>(
-  ({isRightSidebar, SIDEBAR_WIDTH}) => ({
+const SidebarAndScrim = styled('div')<{isRightDrawer: boolean; SIDEBAR_WIDTH: number}>(
+  ({isRightDrawer, SIDEBAR_WIDTH}) => ({
     position: 'absolute',
-    left: isRightSidebar ? undefined : -SIDEBAR_WIDTH,
-    right: isRightSidebar ? PEEK_WIDTH : undefined,
+    left: isRightDrawer ? undefined : -SIDEBAR_WIDTH,
+    right: isRightDrawer ? PEEK_WIDTH : undefined,
     top: 0
   })
 )
@@ -32,12 +32,12 @@ const Scrim = styled('div')<{x: number; SIDEBAR_WIDTH: number}>(({x, SIDEBAR_WID
   zIndex: ZIndex.SIDEBAR
 }))
 
-const SidebarAndHandle = styled('div')<{x: number; isRightSidebar: boolean}>(
-  ({x, isRightSidebar}) => ({
+const SidebarAndHandle = styled('div')<{x: number; isRightDrawer: boolean}>(
+  ({x, isRightDrawer}) => ({
     display: 'flex',
-    flexDirection: isRightSidebar ? 'row-reverse' : 'row',
+    flexDirection: isRightDrawer ? 'row-reverse' : 'row',
     position: 'fixed',
-    transform: `translateX(${isRightSidebar ? -x : x}px)`,
+    transform: `translateX(${isRightDrawer ? -x : x}px)`,
     transition: `transform 200ms ${DECELERATE}`,
     zIndex: ZIndex.SIDEBAR
   })
@@ -63,7 +63,7 @@ const updateSpeed = (clientX: number) => {
   swipe.lastX = clientX
 }
 
-const updateIsSwipe = (clientX: number, clientY: number, isRightSidebar: boolean) => {
+const updateIsSwipe = (clientX: number, clientY: number, isRightDrawer: boolean) => {
   const movementX = swipe.startX - clientX
   const movementY = swipe.startY - clientY
   const dx = Math.abs(movementX)
@@ -75,10 +75,10 @@ const updateIsSwipe = (clientX: number, clientY: number, isRightSidebar: boolean
     // if it's open & sidebar is on the right & it's a swipe to the right || it's closed
     // & sidebar is on the right & it's a swipe to the left. Vice versa for left sidebar
     swipe.isSwipe = swipe.isOpen
-      ? isRightSidebar
+      ? isRightDrawer
         ? swipingRight
         : swipingLeft
-      : isRightSidebar
+      : isRightDrawer
       ? swipingLeft
       : swipingRight
   }
@@ -106,18 +106,18 @@ const swipe = {
 interface Props {
   children: ReactNode
   isOpen: boolean
-  isRightSidebar?: boolean
+  isRightDrawer?: boolean
   onToggle: () => void
 }
 
 const SwipeableDashSidebar = (props: Props) => {
-  const {children, isOpen, isRightSidebar = false, onToggle} = props
+  const {children, isOpen, isRightDrawer = false, onToggle} = props
   const {portal, openPortal} = usePortal({
     allowScroll: true,
     noClose: true
   })
   const [xRef, setX] = useRefState(0)
-  const SIDEBAR_WIDTH: number = isRightSidebar ? DiscussionThreadEnum.WIDTH : NavSidebar.WIDTH
+  const SIDEBAR_WIDTH: number = isRightDrawer ? DiscussionThreadEnum.WIDTH : NavSidebar.WIDTH
   const HYSTERESIS_THRESH = HYSTERESIS * SIDEBAR_WIDTH
 
   useEffect(
@@ -187,7 +187,7 @@ const SwipeableDashSidebar = (props: Props) => {
     if (swipe.isSwipe === null) {
       // they don't want a peek
       window.clearTimeout(swipe.peekTimeout)
-      updateIsSwipe(clientX, clientY, isRightSidebar)
+      updateIsSwipe(clientX, clientY, isRightDrawer)
       if (!swipe.isSwipe) {
         if (swipe.isSwipe === false) {
           onMouseUp(e)
@@ -196,7 +196,7 @@ const SwipeableDashSidebar = (props: Props) => {
       }
     }
 
-    const movementX = isRightSidebar ? swipe.lastX - clientX : clientX - swipe.lastX
+    const movementX = isRightDrawer ? swipe.lastX - clientX : clientX - swipe.lastX
     const minWidth = swipe.isOpen ? 0 : PEEK_WIDTH
     const nextX = Math.min(SIDEBAR_WIDTH, Math.max(minWidth, xRef.current + movementX))
     updateSpeed(clientX)
@@ -236,13 +236,13 @@ const SwipeableDashSidebar = (props: Props) => {
   const {current: x} = xRef
 
   return portal(
-    <SidebarAndScrim isRightSidebar={isRightSidebar} SIDEBAR_WIDTH={SIDEBAR_WIDTH}>
+    <SidebarAndScrim isRightDrawer={isRightDrawer} SIDEBAR_WIDTH={SIDEBAR_WIDTH}>
       <Scrim x={x} SIDEBAR_WIDTH={SIDEBAR_WIDTH} onClick={onToggle} />
       <SidebarAndHandle
         x={x}
         onMouseDown={onMouseDown}
         onTouchStart={onMouseDown}
-        isRightSidebar={isRightSidebar}
+        isRightDrawer={isRightDrawer}
       >
         <Sidebar x={x} HYSTERESIS_THRESH={HYSTERESIS_THRESH}>
           {children}
