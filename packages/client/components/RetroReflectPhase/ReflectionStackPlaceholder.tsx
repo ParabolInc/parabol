@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import React, {forwardRef, Ref} from 'react'
 import {PALETTE} from '../../styles/paletteV2'
-import {Breakpoint, Card, ElementHeight, ElementWidth, Gutters} from '../../types/constEnums'
+import {Breakpoint, Card, ElementHeight,  Gutters} from '../../types/constEnums'
 
 interface Props {
   idx: number
@@ -14,7 +14,7 @@ const PlaceholderCard = styled('div')({
   display: 'flex',
   justifyContent: 'center',
   margin: `0 0 ${Gutters.ROW_INNER_GUTTER}`,
-  width: ElementWidth.REFLECTION_CARD,
+  width: '100%',
   [`@media screen and (min-width: ${Breakpoint.SINGLE_REFLECTION_COLUMN}px)`]: {
     minHeight: ElementHeight.REFLECTION_CARD_MAX,
     margin: '0 0 24px' // matches Reflection Stack
