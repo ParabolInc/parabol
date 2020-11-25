@@ -1,72 +1,62 @@
-import React, {useRef} from 'react'
 import styled from '@emotion/styled'
-import PokerVotingAvatar from './PokerVotingAvatar'
-import PokerVotingAvatarOverflowCount from './PokerVotingAvatarOverflowCount'
-import usePokerAvatarOverflow from '~/hooks/userPokerAvatarOverflow'
-import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
+import React, {useRef} from 'react'
+import {createFragmentContainer} from 'react-relay'
+import usePokerAvatarOverflow from '~/hooks/userPokerAvatarOverflow'
+import useTransition from '../hooks/useTransition'
+import {PALETTE} from '../styles/paletteV2'
 import {PokerVotingAvatarGroup_scores} from '../__generated__/PokerVotingAvatarGroup_scores.graphql'
-import {SetVotedUserEl} from './EstimatePhaseArea'
+import PokerVotingAvatar from './PokerVotingAvatar'
+import PokerVotingOverflow from './PokerVotingOverflow'
 
-const Wrapper = styled('div')({
-  display: 'flex',
-  flex: 1,
-  flexShrink: 0,
-  marginLeft: 14, // 16px is 2x grid but accounts for 2px invisible overlapping border
-  maxWidth: '100%',
-  minWidth: 54,
-  paddingLeft: 10 // accounts for avatar overlap and overflow
+const NoVotesHeaderLabel = styled('div')({
+  color: PALETTE.TEXT_GRAY,
+  fontSize: 14,
+  fontWeight: 600,
+  lineHeight: '24px',
+  paddingLeft: 16
 })
 
-const CountBadge = styled(PokerVotingAvatarOverflowCount)<{count: number}>(({count}) => ({
-  fontSize: count >= 10 ? 12 : 14
-}))
+const Wrapper = styled('div')({
+  alignItems: 'center',
+  display: 'flex',
+  position: 'relative',
+  marginLeft: 8,
+  width: '100%',
+  height: '100%'
+})
 
 interface Props {
-  setVotedUserEl: SetVotedUserEl
+  isClosing?: boolean
   scores: PokerVotingAvatarGroup_scores
 }
 
 const PokerVotingAvatarGroup = (props: Props) => {
-  const {scores, setVotedUserEl} = props
-
-  {/*
-      TBD Tapping the avatar group when there’s overflow raises a
-      dialog with a read-only list of all teammates showing who hasn’t voted first?
-  */}
+  const {isClosing, scores} = props
   const rowRef = useRef<HTMLDivElement>(null)
   const maxAvatars = usePokerAvatarOverflow(rowRef) // max is 5, scores is 6
-  const overflowCount = scores.length > maxAvatars ? scores.length - maxAvatars - 1 : 0
+  const overflowCount = scores.length > maxAvatars ? scores.length - maxAvatars + 1 : 0
   const visibleScores = overflowCount === 0 ? scores : scores.slice(0, maxAvatars - 1)
+  const visibleAvatars = visibleScores.map((score => ({...score, key: score.id})))
+  if (overflowCount > 0) {
+    visibleAvatars.push({key: 'overflow', overflowCount} as any)
+  }
 
-  // Todo: Avatars and overflow badge transition in and out
-  //       See `NewMeetingAvatarGroup.tsx` and use a similar approach
-
-  // Todo: Animate avatars into revealed rows from the pre-revealed row
-  //       Floating avatars animate to preview row avatars or revealed row avatars
-  //       based on refs that are set by preview/revealed avatars and used by the floating avatars
-  //       See useDraggableReflectionCard.tsx to check every frame via requestAnimationFrame
-  //       in case the peeking avatar is in flight and the stage changes from isVoting to discussion
-
-  // Todo: Transition avatars with change in votes during discussion
-  //       Avatars that change during discussion transition in or out like connected meeting avatars
-
-  // Todo: Animate avatars if they’ve voted but are hoving cards
-  //       - Listen for hovering avatars
-  //       - Apply a transition that includes a wiggling effect
-
-  // Todo: For the row of pass cards including folks who didn’t vote
-  //       The avatars for those who didn’t vote transition in like connected meeting avatars
+  const children = isClosing ? [] : visibleAvatars
+  const transitionChildren = useTransition(children)
   return (
     <Wrapper ref={rowRef}>
-      {visibleScores.map((score) => {
-        const {user} = score
-        const {id: userId} = user
+      {transitionChildren.length === 0 && <NoVotesHeaderLabel>{'No Votes'}</NoVotesHeaderLabel>}
+      {transitionChildren.map(({onTransitionEnd, child, status}, idx) => {
+        const {user, id: childId} = child
+        const overflowCount = (child as any).overflowCount
+        const visibleScoreIdx = visibleScores.findIndex((score) => score.id === child.id)
+        const displayIdx = visibleScoreIdx === -1 ? idx : visibleScoreIdx
+        if (overflowCount) return <PokerVotingOverflow key={childId} onTransitionEnd={onTransitionEnd} status={status} idx={displayIdx} overflowCount={overflowCount} />
         return (
-          <PokerVotingAvatar key={userId} setVotedUserEl={setVotedUserEl} user={user} />
+          <PokerVotingAvatar key={childId} user={user} onTransitionEnd={onTransitionEnd} status={status} idx={displayIdx} />
         )
       })}
-      {overflowCount > 0 && <CountBadge count={overflowCount}>{'+'}{overflowCount}</CountBadge>}
     </Wrapper >
   )
 }
@@ -76,9 +66,9 @@ export default createFragmentContainer(
   {
     scores: graphql`
       fragment PokerVotingAvatarGroup_scores on EstimateUserScore @relay(plural: true) {
+        id
         user {
           ...PokerVotingAvatar_user
-          id
         }
       }`
   }

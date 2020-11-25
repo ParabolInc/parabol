@@ -88,6 +88,7 @@ const EstimateStage = new GraphQLObjectType<any, GQLContext>({
                 (field) => field.name === SprintPokerDefaults.JIRA_FIELD_DEFAULT
               )
               if (defaultField) {
+                // it's still possible that we can't write to this field
                 const {id: fieldId} = defaultField
                 dimensionField = new JiraDimensionField({
                   cloudId,

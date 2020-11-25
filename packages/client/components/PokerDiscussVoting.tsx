@@ -1,33 +1,39 @@
+import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useMemo} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
+import useSetFinalScoreError from '../hooks/useSetFinalScoreError'
 import PokerSetFinalScoreMutation from '../mutations/PokerSetFinalScoreMutation'
 import {PokerCards} from '../types/constEnums'
 import {PokerDiscussVoting_meeting} from '../__generated__/PokerDiscussVoting_meeting.graphql'
 import {PokerDiscussVoting_stage} from '../__generated__/PokerDiscussVoting_stage.graphql'
-import {SetVotedUserEl} from './EstimatePhaseArea'
 import PokerDimensionValueControl from './PokerDimensionValueControl'
-import PokerDimensionValueStatic from './PokerDimensionValueStatic'
 import PokerVotingRow from './PokerVotingRow'
+
+const GroupedVotes = styled('div')({
+  display: 'flex',
+  flexDirection: 'column',
+  height: '100%',
+  overflowY: 'auto'
+})
 
 interface Props {
   meeting: PokerDiscussVoting_meeting
   stage: PokerDiscussVoting_stage
-  setVotedUserEl: SetVotedUserEl
 }
 
 const PokerDiscussVoting = (props: Props) => {
   const atmosphere = useAtmosphere()
-  const {submitting, submitMutation, onError, onCompleted} = useMutationProps()
+  const {submitting, submitMutation, onError, onCompleted, error} = useMutationProps()
   const {viewerId} = atmosphere
-  const {meeting, setVotedUserEl, stage} = props
+  const {meeting, stage} = props
   const {id: meetingId, facilitatorUserId} = meeting
   const {id: stageId, finalScore, dimension, scores} = stage
   const {selectedScale} = dimension
   const {values: scaleValues} = selectedScale
-  const finalScaleValue = scaleValues.find((scaleValue) => scaleValue.label === finalScore) || null
+  useSetFinalScoreError(stageId, error)
   const {rows, topLabel} = useMemo(() => {
     const scoreObj = {} as {[label: string]: PokerDiscussVoting_stage['scores'][0][]}
     let highScore = 0
@@ -59,24 +65,23 @@ const PokerDiscussVoting = (props: Props) => {
   const isFacilitator = viewerId === facilitatorUserId
   return (
     <>
-      {isFacilitator
-        ? <PokerDimensionValueControl placeholder={topLabel} stage={stage} />
-        : <PokerDimensionValueStatic label={finalScore} color={finalScaleValue?.color} />
-      }
-      {rows.map(({scaleValue, scores, key}) => {
-        const label = scores[0]?.label
-        const isSpecial = [PokerCards.QUESTION_CARD, PokerCards.PASS_CARD].includes(label as any)
-        const canClick = isFacilitator && !isSpecial
-        const setFinalScore = canClick ? () => {
-
-          if (submitting || !label || finalScore === label) return
-          submitMutation()
-          PokerSetFinalScoreMutation(atmosphere, {finalScore: label, meetingId, stageId}, {onError, onCompleted})
-        } : undefined
-        return (
-          <PokerVotingRow key={key} setVotedUserEl={setVotedUserEl} scaleValue={scaleValue} scores={scores} setFinalScore={setFinalScore} />
-        )
-      })}
+      <PokerDimensionValueControl placeholder={isFacilitator ? topLabel : '?'} stage={stage} isFacilitator={isFacilitator} />
+      <GroupedVotes>
+        {rows.map(({scaleValue, scores, key}) => {
+          const label = scores[0]?.label
+          const isSpecial = [PokerCards.QUESTION_CARD, PokerCards.PASS_CARD].includes(label as any)
+          const canClick = isFacilitator && !isSpecial
+          const setFinalScore = canClick ? () => {
+            // finalScore === label isn't 100% accurate because they could change the dimensionField & could still submit new info
+            if (submitting || !label || finalScore === label) return
+            submitMutation()
+            PokerSetFinalScoreMutation(atmosphere, {finalScore: label, meetingId, stageId}, {onError, onCompleted})
+          } : undefined
+          return (
+            <PokerVotingRow key={key} scaleValue={scaleValue} scores={scores} setFinalScore={setFinalScore} />
+          )
+        })}
+      </GroupedVotes>
     </>
   )
 }

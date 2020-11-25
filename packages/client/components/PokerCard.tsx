@@ -9,30 +9,32 @@ import logoMarkWhite from '../styles/theme/images/brand/mark-white.svg'
 import {BezierCurve, Breakpoint, PokerCards} from '../types/constEnums'
 import getPokerCardBackground from '../utils/getPokerCardBackground'
 import {PokerCard_scaleValue} from '../__generated__/PokerCard_scaleValue.graphql'
-const COLLAPSE_DUR = 1000
-const EXPAND_DUR = 100
+
+const COLLAPSE_DUR = 700
+const EXPAND_DUR = 300
 interface CardBaseProps {
   color: string,
   isDesktop: boolean,
   isCollapsed: boolean,
   isSelected: boolean,
   leftEdge:  number,
+  radius: number
   rotation: number
   yOffset: number
 
 }
 
-const getRotation = (isSelected: boolean, isCollapsed: boolean, leftEdge: number, rotation: number, yOffset: number) => {
+const getRotation = (isSelected: boolean, isCollapsed: boolean, leftEdge: number, radius: number, rotation: number, yOffset: number) => {
   if (isCollapsed) return `translate(${leftEdge}px, -${PokerCards.HEIGHT}px)`
   const radians = (rotation * Math.PI) / 180
-  const x = PokerCards.RADIUS * Math.sin(radians)
-  const y = -PokerCards.RADIUS * Math.cos(radians) + yOffset
+  const x = radius * Math.sin(radians)
+  const y = -radius * Math.cos(radians) + yOffset
   const selectedOffset = isSelected ? - 48 : 0
   return `translate(${x}px, ${y + selectedOffset}px)rotate(${rotation}deg)`
 }
 
-const CardBase = styled('div')<CardBaseProps>(({color, isCollapsed, isDesktop, isSelected, leftEdge, rotation, yOffset}) => {
-  const transform = getRotation(isSelected, isCollapsed, leftEdge, rotation, yOffset)
+const CardBase = styled('div')<CardBaseProps>(({color, isCollapsed, isDesktop, isSelected, leftEdge, radius, rotation, yOffset}) => {
+  const transform = getRotation(isSelected, isCollapsed, leftEdge, radius, rotation, yOffset)
   const hoverTransform = `${transform} translateY(-8px)`
   return ({
     background: getPokerCardBackground(color),
@@ -63,6 +65,13 @@ const UpperLeftCardValue = styled('div')({
   left: 8
 })
 
+const LowerRightCardValue = styled(UpperLeftCardValue)({
+  top: 'unset',
+  left: 'unset',
+  bottom: 4,
+  right: 8
+})
+
 const Logo = styled('img')({
   // set min & max to accomodate custom logos here
   minWidth: 64,
@@ -87,6 +96,7 @@ interface Props {
   onClick: () => void
   onMouseEnter: () => void
   onMouseLeave: () => void
+  radius: number
   rotation: number
   totalCards: number
   yOffset: number
@@ -94,7 +104,7 @@ interface Props {
 
 
 const PokerCard = (props: Props) => {
-  const {scaleValue, isCollapsed, yOffset, isSelected, leftEdge, onClick, onMouseEnter, onMouseLeave,  rotation} = props
+  const {scaleValue, isCollapsed, yOffset, isSelected, leftEdge, onClick, onMouseEnter, onMouseLeave, rotation, radius} = props
   const {color, label} = scaleValue
   const wasCollapsedRef = useRef(isCollapsed)
   const cardRef = useRef<HTMLDivElement>(null)
@@ -106,7 +116,7 @@ const PokerCard = (props: Props) => {
   const isTop = isSelected && isMoving
   usePokerZIndexOverride(isTop, cardRef, isExpanding, COLLAPSE_DUR, EXPAND_DUR)
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
-
+  const cornerValue = label === PokerCards.PASS_CARD ? <Pass src={PassSVG} /> : label
   return (
     <CardBase
       ref={cardRef}
@@ -120,10 +130,14 @@ const PokerCard = (props: Props) => {
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
       rotation={rotation}
+      radius={radius}
     >
       <UpperLeftCardValue>
-        {label === PokerCards.PASS_CARD ? <Pass src={PassSVG} /> : label}
+        {cornerValue}
       </UpperLeftCardValue>
+      <LowerRightCardValue>
+        {cornerValue}
+      </LowerRightCardValue>
       <Logo src={logoMarkWhite} />
     </CardBase>
   )

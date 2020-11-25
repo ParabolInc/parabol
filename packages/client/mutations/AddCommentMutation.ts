@@ -18,6 +18,7 @@ graphql`
       threadSortOrder
       threadParentId
     }
+    meetingId
   }
 `
 
@@ -38,7 +39,7 @@ export const addCommentMeetingUpdater: SharedUpdater<AddCommentMutation_meeting>
   payload,
   {store}
 ) => {
-  const meetingId = payload.getValue('meetingId') as string
+  const meetingId = payload.getValue('meetingId')
   const meeting = store.get(meetingId)
   const isRightDrawerOpen = meeting?.getValue('isRightDrawerOpen')
   if (isRightDrawerOpen === false) {
@@ -69,8 +70,6 @@ const AddCommentMutation: StandardMutation<TAddCommentMutation> = (
     variables,
     updater: (store) => {
       const payload = store.getRootField('addComment')
-      const {meetingId} = variables
-      payload.setValue(meetingId, 'meetingId')
       addCommentMeetingUpdater(payload as any, {atmosphere, store})
     },
     optimisticUpdater: (store) => {

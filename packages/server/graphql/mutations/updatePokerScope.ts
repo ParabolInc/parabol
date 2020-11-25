@@ -3,15 +3,14 @@ import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getRethink from '../../database/rethinkDriver'
 import EstimatePhase from '../../database/types/EstimatePhase'
 import EstimateStage from '../../database/types/EstimateStage'
+import MeetingPoker from '../../database/types/MeetingPoker'
 import {getUserId, isTeamMember} from '../../utils/authorization'
+import getRedis from '../../utils/getRedis'
+import isRecordActiveForMeeting from '../../utils/isRecordActiveForMeeting'
 import publish from '../../utils/publish'
-import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import UpdatePokerScopeItemInput from '../types/UpdatePokerScopeItemInput'
 import UpdatePokerScopePayload from '../types/UpdatePokerScopePayload'
-import isRecordActiveForMeeting from '../../utils/isRecordActiveForMeeting'
-import getRedis from '../../utils/getRedis'
-import MeetingPoker from '../../database/types/MeetingPoker'
 
 const updatePokerScope = {
   type: GraphQLNonNull(UpdatePokerScopePayload),
@@ -43,26 +42,12 @@ const updatePokerScope = {
       return {error: {message: `Meeting not found`}}
     }
 
-    const {
-      endedAt,
-      teamId,
-      facilitatorUserId,
-      defaultFacilitatorUserId,
-      phases,
-      meetingType,
-      templateId
-    } = meeting
+    const {endedAt, teamId, phases, meetingType, templateId} = meeting
     if (endedAt) {
       return {error: {message: `Meeting already ended`}}
     }
     if (!isTeamMember(authToken, teamId)) {
       return {error: {message: `Not on team`}}
-    }
-    if (viewerId !== facilitatorUserId) {
-      if (viewerId !== defaultFacilitatorUserId) {
-        return standardError(new Error('Not meeting facilitator'), {userId: viewerId})
-      }
-      return standardError(new Error('Not meeting facilitator anymore'), {userId: viewerId})
     }
 
     if (meetingType !== 'poker') {

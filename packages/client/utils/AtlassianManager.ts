@@ -143,7 +143,9 @@ interface JiraIssueBean<F = {description: any; summary: string}, R = unknown> {
   fields: F
 }
 
-export type JiraGetIssueRes = JiraIssueBean<{
+export type JiraGetIssueRes = JiraIssueBean<JiraGQLFields>
+
+interface JiraGQLFields {
   id: string
   cloudId: string
   cloudName: string
@@ -151,8 +153,7 @@ export type JiraGetIssueRes = JiraIssueBean<{
   descriptionHTML: string
   key: string
   summary: string
-}>
-
+}
 interface JiraSearchResponse<T = {summary: string; description: string}> {
   expand: string
   startAt: number
@@ -164,6 +165,9 @@ interface JiraSearchResponse<T = {summary: string; description: string}> {
     self: string
     key: string
     fields: T
+    renderedFields: {
+      description: string
+    }
   }[]
 }
 
@@ -329,6 +333,12 @@ export default abstract class AtlassianManager {
     ) as IssueCreateMetadata | AtlassianError | JiraError
   }
 
+  async getEditMeta(cloudId: string, issueKey: string) {
+    return this.get(
+      `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/issue/${issueKey}/editmeta`
+    ) as IssueCreateMetadata | AtlassianError | JiraError
+  }
+
   async createIssue(cloudId: string, projectKey: string, issueFields: CreateIssueFields) {
     const payload = {
       fields: {
@@ -356,11 +366,13 @@ export default abstract class AtlassianManager {
     return cloudNameLookup
   }
 
-  async getIssue(cloudId: string, issueKey: string) {
+  async getIssue(cloudId: string, issueKey: string, extraFieldIds: string[] = []) {
+    const baseFields = ['summary', 'description']
+    const fields = [...baseFields, ...extraFieldIds].join(',')
     const [cloudNameLookup, issueRes] = await Promise.all([
       this.getCloudNameLookup(),
       this.get(
-        `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/issue/${issueKey}?fields=summary,description&expand=renderedFields`
+        `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/issue/${issueKey}?fields=${fields}&expand=renderedFields`
       ) as AtlassianError | JiraError | JiraIssueBean
     ])
     if ('fields' in issueRes) {
@@ -383,13 +395,7 @@ export default abstract class AtlassianManager {
     projectFiltersByCloudId: {[cloudId: string]: string[]}
   ) {
     const cloudIds = Object.keys(projectFiltersByCloudId)
-    const allIssues = [] as {
-      id: number
-      key: string
-      summary: string
-      cloudId: string
-      cloudName: string
-    }[]
+    const allIssues = [] as JiraGQLFields[]
     let firstError: string | null = null
     const composeJQL = (queryString: string | null, isJQL: boolean, projectKeys: string[]) => {
       const orderBy = 'order by lastViewed DESC'
@@ -408,16 +414,19 @@ export default abstract class AtlassianManager {
       const payload = {
         jql,
         maxResults: 100,
-        fields: ['summary', 'description']
+        fields: ['summary', 'description'],
+        expand: ['renderedFields']
       }
       // TODO add type
       const res = (await this.post(url, payload)) as AtlassianError | JiraError | JiraSearchResponse
       if ('issues' in res) {
         const {issues} = res
         issues.forEach((issue) => {
-          const {id, key, fields} = issue
-          const {summary} = fields
-          allIssues.push({key, summary, cloudId, id: Number(id), cloudName: ''})
+          const {key, fields, renderedFields} = issue
+          const {description, summary} = fields
+          const {description: descriptionHTML} = renderedFields
+          const gqlFields = {key, summary, cloudId, id: `${cloudId}:${key}`, description, descriptionHTML, cloudName: ''} as JiraGQLFields
+          allIssues.push(gqlFields)
         })
       }
     })
@@ -452,7 +461,8 @@ export default abstract class AtlassianManager {
     cloudId: string,
     issueKey: string,
     storyPoints: string | number,
-    fieldId: string
+    fieldId: string,
+    fieldName: string
   ) {
     const payload = {
       fields: {
@@ -466,6 +476,9 @@ export default abstract class AtlassianManager {
     if (res !== null) {
       console.log('ERR', {res, storyPoints, fieldId, issueKey, cloudId})
       const jiraError = res.errors?.[fieldId]
+      if (jiraError.includes('is not on the appropriate screen')) {
+        throw new Error(`Update failed! In Jira, add the field "${fieldName}" to the Issue screen.`)
+      }
       const error = jiraError ? `Jira: ${jiraError}` : 'Cannot update field in Jira'
       throw new Error(error)
     }

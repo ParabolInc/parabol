@@ -9,12 +9,10 @@ import PokerRevealVotesMutation from '../mutations/PokerRevealVotesMutation'
 import {BezierCurve} from '../types/constEnums'
 import {PokerActiveVoting_meeting} from '../__generated__/PokerActiveVoting_meeting.graphql'
 import {PokerActiveVoting_stage} from '../__generated__/PokerActiveVoting_stage.graphql'
-import {SetVotedUserEl} from './EstimatePhaseArea'
 import Icon from './Icon'
 import MiniPokerCard from './MiniPokerCard'
 import PokerVotingAvatarGroup from './PokerVotingAvatarGroup'
 import PokerVotingRowBase from './PokerVotingRowBase'
-import PokerVotingRowEmpty from './PokerVotingRowEmpty'
 import SecondaryButtonCool from './SecondaryButtonCool'
 import TipBanner from './TipBanner'
 
@@ -45,15 +43,15 @@ const StyledError = styled('div')({
   fontWeight: 400,
 })
 interface Props {
+  isClosing: boolean
   meeting: PokerActiveVoting_meeting
   stage: PokerActiveVoting_stage
-  setVotedUserEl: SetVotedUserEl
 }
 
 const PokerActiveVoting = (props: Props) => {
+  const {isClosing, meeting, stage} = props
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
-  const {meeting, setVotedUserEl, stage} = props
   const {facilitatorUserId, id: meetingId} = meeting
   const {id: stageId, scores} = stage
   const hasVotes = scores.length > 0
@@ -69,14 +67,6 @@ const PokerActiveVoting = (props: Props) => {
   const tipCopy = isFacilitator
     ? 'Votes are automatically revealed once everyone has voted.'
     : 'Tap a card to vote. Swipe to view each dimension.'
-
-  // Todo: Peeking avatars animate into the preview or revealed row
-  //       Check for refs from preview or revealed row
-  //       See useDraggableReflectionCard.tsx to check every frame via requestAnimationFrame
-  //       in case the peeking avatar is in flight and the stage changes from isVoting to discussion
-
-  // Show the reveal button if 2+ people have voted
-  // TBD For folks kicking the tires maybe they want to reveal when running a test meeting by themselves?
   const showRevealButton = isFacilitator && scores.length > 0
   const {onError, onCompleted, submitMutation, submitting, error} = useMutationProps()
   const reveal = () => {
@@ -91,17 +81,12 @@ const PokerActiveVoting = (props: Props) => {
 
   return (
     <>
-      {hasVotes
-        ? <>
-          <PokerVotingRowBase>
-            <MiniPokerCard>
-              <CheckIcon>check</CheckIcon>
-            </MiniPokerCard>
-            <PokerVotingAvatarGroup setVotedUserEl={setVotedUserEl} scores={scores} />
-          </PokerVotingRowBase>
-        </>
-        : <PokerVotingRowEmpty />
-      }
+      <PokerVotingRowBase>
+        <MiniPokerCard>
+          <CheckIcon>check</CheckIcon>
+        </MiniPokerCard>
+        <PokerVotingAvatarGroup scores={scores} isClosing={isClosing} />
+      </PokerVotingRowBase>
       <RevealButtonBlock>
         {showRevealButton && <SecondaryButtonCool onClick={reveal}>{'Reveal Votes'}</SecondaryButtonCool>}
         {error && <StyledError>{error.message}</StyledError>}

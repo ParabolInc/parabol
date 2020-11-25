@@ -41,6 +41,7 @@ interface Props {
   isConnected?: boolean
   onClick?: (e?: React.MouseEvent) => void
   onMouseEnter?: () => void
+  onTransitionEnd?: () => void
   picture: string
   sansRadius?: boolean
   sansShadow?: boolean
@@ -54,6 +55,7 @@ const Avatar = forwardRef((props: Props, ref: any) => {
     isConnected,
     onClick,
     onMouseEnter,
+    onTransitionEnd,
     picture,
     sansRadius,
     sansShadow,
@@ -62,6 +64,7 @@ const Avatar = forwardRef((props: Props, ref: any) => {
 
   return (
     <ImageBlock
+      onTransitionEnd={onTransitionEnd}
       className={className}
       ref={ref}
       onClick={onClick}

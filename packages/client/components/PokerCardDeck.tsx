@@ -5,9 +5,12 @@ import {createFragmentContainer} from 'react-relay'
 import useMutationProps from '~/hooks/useMutationProps'
 import usePokerDeckLeftEdge from '~/hooks/usePokerDeckLeftEdge'
 import useAtmosphere from '../hooks/useAtmosphere'
+import useForceUpdate from '../hooks/useForceUpdate'
+import useInitialRender from '../hooks/useInitialRender'
 import usePokerCardLocation from '../hooks/usePokerCardLocation'
 import PokerAnnounceDeckHoverMutation from '../mutations/PokerAnnounceDeckHoverMutation'
 import VoteForPokerStoryMutation from '../mutations/VoteForPokerStoryMutation'
+import {PokerCards} from '../types/constEnums'
 import {PokerCardDeck_meeting} from '../__generated__/PokerCardDeck_meeting.graphql'
 import PokerCard from './PokerCard'
 
@@ -39,17 +42,23 @@ const PokerCardDeck = (props: Props,) => {
   const totalCards = cards.length
   const [isCollapsed, setIsCollapsed] = useState(!isVoting)
   const leftEdge = usePokerDeckLeftEdge(estimateAreaRef)
+  const isInit = useInitialRender()
+  const forceUpdate = useForceUpdate()
+  // re-render to triger the animation
+  useEffect(forceUpdate, [])
   useEffect(() => {
     setIsCollapsed(!isVoting)
   }, [isVoting])
-
+  const tilt = isInit ? 0 : PokerCards.TILT
+  const maxHidden = isInit ? 1 : PokerCards.MAX_HIDDEN
+  const radius = isInit ? 0 : PokerCards.RADIUS as number
   const selectedIdx = useMemo(() => {
     const userVote = scores.find(({userId}) => userId === viewerId)
     return userVote ? cards.findIndex(({label}) => label === userVote.label) : undefined
   }, [scores])
   const deckRef = useRef<HTMLDivElement>(null)
   const hoveringCardIdRef = useRef('')
-  const {yOffset, initialRotation, rotationPerCard} = usePokerCardLocation(totalCards)
+  const {yOffset, initialRotation, rotationPerCard} = usePokerCardLocation(totalCards, tilt, maxHidden, radius)
   const {onError, onCompleted, submitMutation, submitting, error} = useMutationProps()
   const onMouseEnter = (cardId: string) => () => {
     if (!hoveringCardIdRef.current) {
@@ -107,7 +116,7 @@ const PokerCardDeck = (props: Props,) => {
           }
         }
         const rotation = initialRotation + rotationPerCard * idx
-        return <PokerCard key={card.label} yOffset={yOffset} rotation={rotation}  onMouseEnter={onMouseEnter(card.label)} onMouseLeave={onMouseLeave(card.label)} scaleValue={card} idx={idx} totalCards={totalCards} onClick={onClick} isCollapsed={isCollapsed} isSelected={isSelected} deckRef={deckRef} leftEdge={leftEdge}/>
+        return <PokerCard key={card.label} yOffset={yOffset} rotation={rotation} onMouseEnter={onMouseEnter(card.label)} onMouseLeave={onMouseLeave(card.label)} scaleValue={card} idx={idx} totalCards={totalCards} onClick={onClick} isCollapsed={isCollapsed} isSelected={isSelected} deckRef={deckRef} radius={radius}  leftEdge={leftEdge}/>
       })}
     </Deck>
   )

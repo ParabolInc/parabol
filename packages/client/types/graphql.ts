@@ -8434,7 +8434,7 @@ export interface IUpdateJiraDimensionFieldOnMutationArguments {
   /**
    * The meeting the update happend in. If present, can return a meeting object with updated serviceField
    */
-  meetingId?: string | null;
+  meetingId: string;
 }
 
 export interface IAcceptTeamInvitationPayload {
@@ -8546,6 +8546,11 @@ export interface IAddCommentSuccess {
    * the comment just created
    */
   comment: IComment;
+
+  /**
+   * The id of the meeting where the comment was added
+   */
+  meetingId: string;
 }
 
 export interface IAddCommentInput {

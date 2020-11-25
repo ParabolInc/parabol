@@ -29,6 +29,10 @@ const Label = styled('div')({
   fontWeight: 600
 })
 
+const ErrorMessage = styled(StyledError)({
+  fontSize: 14
+})
+
 const StyledLinkButton = styled(LinkButton)<{canUpdate: boolean}>(({canUpdate}) => ({
   color: PALETTE.LINK_BLUE,
   fontSize: 14,
@@ -44,19 +48,22 @@ const StyledLinkButton = styled(LinkButton)<{canUpdate: boolean}>(({canUpdate}) 
 
 interface Props {
   canUpdate: boolean
+  clearError: () => void
+  isFacilitator: boolean
   stage: PokerDimensionFinalScoreJiraPicker_stage
-  error?: string
+  error?: string | null
+  submitScore: () => void
 }
 
 const PokerDimensionFinalScoreJiraPicker = (props: Props) => {
-  const {canUpdate, error, stage} = props
+  const {isFacilitator, canUpdate, error, stage, clearError, submitScore} = props
   return (
     <Wrapper>
-      <StyledLinkButton canUpdate={canUpdate}>{'Update'}</StyledLinkButton>
+      {isFacilitator && <StyledLinkButton canUpdate={canUpdate} onClick={submitScore}>{'Update'}</StyledLinkButton>}
       <Mapper>
-        {error && <StyledError>{error}</StyledError>}
+        {error && <ErrorMessage>{error}</ErrorMessage>}
         <Label>{'Jira Issue Field: '}</Label>
-        <JiraFieldDimensionDropdown stage={stage} />
+        <JiraFieldDimensionDropdown clearError={clearError} stage={stage} isFacilitator={isFacilitator} />
       </Mapper>
     </Wrapper>
   )

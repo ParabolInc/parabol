@@ -23,7 +23,6 @@ interface Props {
 const JiraFieldMenu = (props: Props) => {
   const {menuProps, viewer, stage} = props
   const {meetingId, dimensionId, serviceField, serviceTaskId} = stage
-  console.log({serviceField})
   const {name: serviceFieldName} = serviceField
   const isLoading = viewer === null
   const serverFields = viewer?.teamMember?.integrations.atlassian?.jiraFields ?? []
