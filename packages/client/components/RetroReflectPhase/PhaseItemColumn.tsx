@@ -1,9 +1,8 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {EditorState} from 'draft-js'
-import React, {useEffect, useMemo, useRef, useState} from 'react'
+import React, {MouseEvent, useEffect, useMemo, useRef, useLayoutEffect, useState} from 'react'
 import {createFragmentContainer} from 'react-relay'
-// import {ICON_SIZE} from '~/styles/typographyV2'
 import {PhaseItemColumn_prompt} from '~/__generated__/PhaseItemColumn_prompt.graphql'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import {MenuPosition} from '../../hooks/useCoords'
@@ -12,17 +11,17 @@ import useTooltip from '../../hooks/useTooltip'
 import SetPhaseFocusMutation from '../../mutations/SetPhaseFocusMutation'
 import {DECELERATE} from '../../styles/animation'
 import {PALETTE} from '../../styles/paletteV2'
-import {BezierCurve, ElementWidth, Gutters} from '../../types/constEnums'
+import {BezierCurve, Breakpoint, ElementWidth, Gutters} from '../../types/constEnums'
 import {NewMeetingPhaseTypeEnum} from '../../types/graphql'
 import getNextSortOrder from '../../utils/getNextSortOrder'
 import {PhaseItemColumn_meeting} from '../../__generated__/PhaseItemColumn_meeting.graphql'
-// import Icon from '../Icon'
 import PlainButton from '../PlainButton/PlainButton'
 import RetroPrompt from '../RetroPrompt'
 import PhaseItemChits from './PhaseItemChits'
 import PhaseItemEditor from './PhaseItemEditor'
 import ReflectionStack from './ReflectionStack'
 import ExpandArrowSVG from '../../../../static/images/icons/arrow_expand.svg'
+import useBreakpoint from '~/hooks/useBreakpoint'
 
 const ColumnWrapper = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   alignItems: 'center',
@@ -151,10 +150,11 @@ interface Props {
   meeting: PhaseItemColumn_meeting
   phaseRef: React.RefObject<HTMLDivElement>
   prompt: PhaseItemColumn_prompt
+  reflectPromptsCount: number
 }
 
 const PhaseItemColumn = (props: Props) => {
-  const {idx, meeting, phaseRef, prompt, isDesktop} = props
+  const {idx, meeting, phaseRef, prompt, isDesktop, reflectPromptsCount} = props
   const {id: promptId, editorIds, question, groupColor, description} = prompt
   const {id: meetingId, facilitatorUserId, localPhase, phases, reflectionGroups} = meeting
   const {id: phaseId, focusedPromptId} = localPhase
@@ -169,6 +169,7 @@ const PhaseItemColumn = (props: Props) => {
   const hasFocusedRef = useRef(false)
   const phaseEditorRef = useRef<HTMLDivElement>(null)
   const stackTopRef = useRef<HTMLDivElement>(null)
+  const isWiderScreen = useBreakpoint(Breakpoint.WIDER_SCREEN)
   const [isExpanded, setIsExpanded] = useState(false)
   const [cardsInFlightRef, setCardsInFlight] = useRefState<ReflectColumnCardInFlight[]>([])
   const isFacilitator = viewerId === facilitatorUserId
@@ -177,7 +178,17 @@ const PhaseItemColumn = (props: Props) => {
     hasFocusedRef.current = true
   }, [focusedPromptId])
 
-const toggleWidth = () => {
+  useLayoutEffect(() => {
+
+    if (reflectPromptsCount <= 2 && isWiderScreen){
+      setIsExpanded(true)
+    } else {
+      setIsExpanded(false)
+    }
+  }, [isWiderScreen])
+
+const toggleWidth = (e: MouseEvent<HTMLElement>) => {
+  e.stopPropagation()
   setIsExpanded(!isExpanded)
 }
 
@@ -247,6 +258,7 @@ const toggleWidth = () => {
                   cardsInFlightRef={cardsInFlightRef}
                   setCardsInFlight={setCardsInFlight}
                   phaseEditorRef={phaseEditorRef}
+                  isExpanded={isExpanded}
                   meetingId={meetingId}
                   nextSortOrder={nextSortOrder}
                   promptId={promptId}
@@ -260,6 +272,7 @@ const toggleWidth = () => {
               dataCy={`reflection-stack-${question}`}
               reflectionStack={reflectionStack}
               idx={idx}
+              isExpanded={isExpanded}
               phaseEditorRef={phaseEditorRef}
               phaseRef={phaseRef}
               meeting={meeting}

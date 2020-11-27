@@ -1,9 +1,9 @@
 import styled from '@emotion/styled'
 import {DECELERATE} from '../../styles/animation'
 import {Elevation} from '../../styles/elevation'
-import {Card} from '../../types/constEnums'
+import {Card, ElementWidth} from '../../types/constEnums'
 
-const ReflectionCardRoot = styled('div')({
+const ReflectionCardRoot = styled('div')<{isExpanded?: boolean}>(({isExpanded = false}) => ({
   background: Card.BACKGROUND_COLOR,
   borderRadius: Card.BORDER_RADIUS,
   boxShadow: Elevation.CARD_SHADOW,
@@ -12,7 +12,7 @@ const ReflectionCardRoot = styled('div')({
   maxWidth: '100%',
   position: 'relative',
   transition: `box-shadow 2000ms ${DECELERATE}`,
-  width: '100%'
-})
+  width: isExpanded ? ElementWidth.REFLECTION_CARD * 2: ElementWidth.REFLECTION_CARD 
+}))
 
 export default ReflectionCardRoot

@@ -30,6 +30,7 @@ const RetroReflectPhase = (props: Props) => {
   const {localPhase, endedAt, showSidebar} = meeting
   if (!localPhase || !localPhase.reflectPrompts) return null
   const reflectPrompts = localPhase!.reflectPrompts
+  const reflectPromptsCount = reflectPrompts.length
   const focusedPromptId = localPhase!.focusedPromptId
   const ColumnWrapper = isDesktop ? ReflectWrapperDesktop : ReflectWrapperMobile
   return (
@@ -60,6 +61,7 @@ const RetroReflectPhase = (props: Props) => {
                 idx={idx}
                 phaseRef={phaseRef}
                 isDesktop={isDesktop}
+                reflectPromptsCount={reflectPromptsCount}
               />
             ))}
           </ColumnWrapper>
