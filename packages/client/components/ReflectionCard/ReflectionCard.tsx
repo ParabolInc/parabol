@@ -30,7 +30,7 @@ const StyledReacjis = styled(ReactjiSection)({
 
 interface Props {
   isClipped?: boolean
-  isExpanded?: boolean
+  isWidthExpanded?: boolean
   reflection: ReflectionCard_reflection
   meeting: ReflectionCard_meeting | null
   stackCount?: number
@@ -54,7 +54,7 @@ const getReadOnly = (
 }
 
 const ReflectionCard = (props: Props) => {
-  const {meeting, reflection, isClipped, isExpanded = false, stackCount, showReactji, dataCy} = props
+  const {meeting, reflection, isClipped, isWidthExpanded = false, stackCount, showReactji, dataCy} = props
   const {meetingId, reactjis} = reflection
   const phaseType = meeting ? meeting.localPhase.phaseType : null
   const phases = meeting ? meeting.phases : null
@@ -178,7 +178,7 @@ const ReflectionCard = (props: Props) => {
     onCompleted()
   }
   return (
-    <ReflectionCardRoot data-cy={`${dataCy}-root`} isExpanded={isExpanded}>
+    <ReflectionCardRoot data-cy={`${dataCy}-root`} isWidthExpanded={isWidthExpanded}>
       <ColorBadge phaseType={phaseType as NewMeetingPhaseTypeEnum} reflection={reflection} />
       <ReflectionEditorWrapper
         dataCy={`editor-wrapper`}

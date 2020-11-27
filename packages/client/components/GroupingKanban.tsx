@@ -2,6 +2,7 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {RefObject, useMemo, useState} from 'react'
 import {createFragmentContainer} from 'react-relay'
+import useExpandColumns from '~/hooks/useExpandColumns'
 import {GroupingKanban_meeting} from '~/__generated__/GroupingKanban_meeting.graphql'
 import useBreakpoint from '../hooks/useBreakpoint'
 import useHideBodyScroll from '../hooks/useHideBodyScroll'
@@ -38,7 +39,9 @@ const GroupingKanban = (props: Props) => {
   const {reflectionGroups, phases} = meeting
   const reflectPhase = phases.find((phase) => phase.phaseType === NewMeetingPhaseTypeEnum.reflect)!
   const reflectPrompts = reflectPhase.reflectPrompts!
+  const reflectPromptsCount = reflectPrompts.length
   useHideBodyScroll()
+  const isInitiallyExpanded = useExpandColumns(phaseRef, reflectPromptsCount)
   const {groupsByPrompt, isAnyEditing} = useMemo(() => {
     const container = {} as {[promptId: string]: typeof reflectionGroups[0][]}
     let isEditing = false
@@ -64,9 +67,11 @@ const GroupingKanban = (props: Props) => {
       )
   }, [isDesktop, reflectionGroups])
   const swipeColumn: SwipeColumn = useThrottledEvent((offset: number) => {
-    const nextIdx = Math.min(reflectPrompts.length - 1, Math.max(0, activeIdx + offset))
+    const nextIdx = Math.min(reflectPromptsCount- 1, Math.max(0, activeIdx + offset))
     setActiveIdx(nextIdx)
   }, Times.REFLECTION_COLUMN_SWIPE_THRESH)
+
+
   return (
     <PortalProvider>
       <ColumnsBlock isDesktop={isDesktop}>
@@ -77,6 +82,7 @@ const GroupingKanban = (props: Props) => {
         >
           {reflectPrompts.map((prompt) => (
             <GroupingKanbanColumn
+            isInitiallyExpanded={isInitiallyExpanded}
               isAnyEditing={isAnyEditing}
               isDesktop={isDesktop}
               key={prompt.id}

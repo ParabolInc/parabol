@@ -244,7 +244,6 @@ const toggleWidth = (e: MouseEvent<HTMLElement>) => {
               {tooltipPortal(<div>Tap to highlight prompt for everybody</div>)}
               <Description>{description}</Description>
               <ExpandButton onClick={toggleWidth}>
-                {/* <StyledIcon isExpanded>{isExpanded ? 'unfold_less' : 'unfold_more'}</StyledIcon> */}
                 <img alt="expand-arrow-icon" src={ExpandArrowSVG} />
               </ExpandButton>
             </PromptHeader>
