@@ -31,6 +31,7 @@ const ButtonGroup = styled('div')({
   alignItems: 'center',
   display: 'flex'
 })
+
 const Column = styled('div')<{isLengthExpanded: boolean; isWidthExpanded: boolean}>(
   ({isLengthExpanded, isWidthExpanded}) => ({
     alignItems: 'center',
@@ -50,16 +51,18 @@ const Column = styled('div')<{isLengthExpanded: boolean; isWidthExpanded: boolea
   })
 )
 
-const ColumnHeader = styled('div')({
+const ColumnHeader = styled('div')<{isWidthExpanded: boolean}>(({isWidthExpanded}) => ({
   color: PALETTE.TEXT_MAIN,
   display: 'flex',
   justifyContent: 'space-between',
   lineHeight: '24px',
   margin: '0 auto',
-  maxWidth: ElementWidth.REFLECTION_CARD_PADDED,
+  maxWidth: isWidthExpanded
+    ? ElementWidth.REFLECTION_CARD_PADDED * 2
+    : ElementWidth.REFLECTION_CARD_PADDED,
   paddingTop: 12,
   width: '100%'
-})
+}))
 
 const ColumnBody = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   flex: 1,
@@ -155,7 +158,7 @@ const GroupingKanbanColumn = (props: Props) => {
       data-cy={`group-column-${question}`}
       ref={ref}
     >
-      <ColumnHeader>
+      <ColumnHeader isWidthExpanded={!!isWidthExpanded}>
         <Prompt>
           <ColumnColorDrop groupColor={groupColor} />
           {question}

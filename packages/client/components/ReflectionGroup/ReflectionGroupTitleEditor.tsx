@@ -16,14 +16,11 @@ import ui from '../../styles/ui'
 import {Card} from '../../types/constEnums'
 import {RETRO_TOPIC_LABEL} from '../../utils/constants'
 import withMutationProps, {WithMutationProps} from '../../utils/relay/withMutationProps'
-import Icon from '../Icon'
-import {ICON_SIZE} from '../../styles/typographyV2'
 
 interface Props extends WithMutationProps, WithAtmosphereProps {
   isExpanded: boolean
   reflectionGroup: ReflectionGroupTitleEditor_reflectionGroup
   readOnly: boolean
-  hidePencil: boolean
   meeting: ReflectionGroupTitleEditor_meeting
   titleInputRef: RefObject<HTMLInputElement>
 }
@@ -43,16 +40,6 @@ const InputWithIconWrap = styled('div')({
   alignItems: 'center',
   display: 'flex'
 })
-
-const PencilIcon = styled(Icon)<{isExpanded?: boolean}>(({isExpanded}) => ({
-  color: isExpanded ? '#FFFFFF' : PALETTE.TEXT_GRAY,
-  display: 'block',
-  fontSize: ICON_SIZE.MD18,
-  opacity: 0.5,
-  marginLeft: '0.25rem',
-  textAlign: 'center',
-  top: '-.0625rem'
-}))
 
 const RootBlock = styled('div')({
   display: 'flex',
@@ -187,7 +174,6 @@ class ReflectionGroupTitleEditor extends Component<Props> {
       isExpanded,
       error,
       readOnly,
-      hidePencil,
       reflectionGroup: {title},
       titleInputRef
     } = this.props
@@ -210,11 +196,6 @@ class ReflectionGroupTitleEditor extends Component<Props> {
           </FormBlock>
           {error && <StyledError>{error}</StyledError>}
         </RootBlock>
-        {!readOnly && !hidePencil && (
-          <PencilIcon isExpanded={isExpanded} onClick={this.onClick}>
-            edit
-          </PencilIcon>
-        )}
       </InputWithIconWrap>
     )
   }

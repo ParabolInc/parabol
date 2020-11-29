@@ -74,6 +74,7 @@ const ReflectionGroup = (props: Props) => {
   const {isComplete} = localStage
   const {reflections, id: reflectionGroupId, titleIsUserDefined} = reflectionGroup
   const titleInputRef = useRef(null)
+  const expandedTitleInputRef = useRef(null)
   const headerRef = useRef<HTMLDivElement>(null)
   const staticReflections = useMemo(() => {
     return reflections.filter(
@@ -145,7 +146,7 @@ const ReflectionGroup = (props: Props) => {
               meeting={meeting}
               portalStatus={portalStatus}
               reflectionGroup={reflectionGroup}
-              titleInputRef={titleInputRef}
+              titleInputRef={expandedTitleInputRef}
             />
           }
           phaseRef={phaseRef}
