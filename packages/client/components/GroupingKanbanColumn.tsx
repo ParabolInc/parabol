@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
-import React, {MouseEvent, RefObject, useLayoutEffect, useRef, useState} from 'react'
+import React, {MouseEvent, RefObject, useRef} from 'react'
 import {useCoverable} from '~/hooks/useControlBarCovers'
 import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
 import {GroupingKanbanColumn_meeting} from '~/__generated__/GroupingKanbanColumn_meeting.graphql'
@@ -140,7 +140,7 @@ const GroupingKanbanColumn = (props: Props) => {
   const isLengthExpanded =
     useCoverable(promptId, ref, MeetingControlBarEnum.HEIGHT, phaseRef) || !!endedAt
 
-  const toggleWidth = (e: MouseEvent<HTMLElement>) => {
+  const toggleWidth = (e: MouseEvent<Element>) => {
     e.stopPropagation()
     commitLocalUpdate(atmosphere, (store) => {
       const reflectPrompt = store.get(promptId)
