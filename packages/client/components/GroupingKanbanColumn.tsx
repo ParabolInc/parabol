@@ -11,26 +11,12 @@ import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
 import CreateReflectionMutation from '../mutations/CreateReflectionMutation'
 import {PALETTE} from '../styles/paletteV2'
-import {
-  BezierCurve,
-  Breakpoint,
-  DragAttribute,
-  ElementWidth,
-  MeetingControlBarEnum
-} from '../types/constEnums'
+import {BezierCurve, Breakpoint, DragAttribute, MeetingControlBarEnum} from '../types/constEnums'
 import {NewMeetingPhaseTypeEnum} from '../types/graphql'
 import getNextSortOrder from '../utils/getNextSortOrder'
-import FlatButton from './FlatButton'
 import {SwipeColumn} from './GroupingKanban'
-import Icon from './Icon'
 import ReflectionGroup from './ReflectionGroup/ReflectionGroup'
-import RetroPrompt from './RetroPrompt'
-import ExpandArrowSVG from '../../../static/images/icons/arrow_expand.svg'
-
-const ButtonGroup = styled('div')({
-  alignItems: 'center',
-  display: 'flex'
-})
+import GroupingKanbanColumnHeader from './GroupingKanbanColumnHeader'
 
 const Column = styled('div')<{isLengthExpanded: boolean; isWidthExpanded: boolean}>(
   ({isLengthExpanded, isWidthExpanded}) => ({
@@ -51,19 +37,6 @@ const Column = styled('div')<{isLengthExpanded: boolean; isWidthExpanded: boolea
   })
 )
 
-const ColumnHeader = styled('div')<{isWidthExpanded: boolean}>(({isWidthExpanded}) => ({
-  color: PALETTE.TEXT_MAIN,
-  display: 'flex',
-  justifyContent: 'space-between',
-  lineHeight: '24px',
-  margin: '0 auto',
-  maxWidth: isWidthExpanded
-    ? ElementWidth.REFLECTION_CARD_PADDED * 2
-    : ElementWidth.REFLECTION_CARD_PADDED,
-  paddingTop: 12,
-  width: '100%'
-}))
-
 const ColumnBody = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   flex: 1,
   height: '100%',
@@ -73,42 +46,6 @@ const ColumnBody = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   padding: isDesktop ? '6px 12px' : '6px 8px',
   width: 'fit-content'
 }))
-
-const ExpandButton = styled(FlatButton)({
-  alignItems: 'center',
-  background: 'transparent',
-  display: 'flex',
-  height: 24,
-  marginLeft: 4,
-  padding: 0,
-  width: 24,
-  ':focus, :active': {
-    backgroundColor: 'inherit'
-  }
-})
-
-const Prompt = styled(RetroPrompt)({
-  alignItems: 'center',
-  display: 'flex',
-  marginRight: 8
-})
-
-const ColumnColorDrop = styled('div')<{groupColor: string}>(({groupColor}) => ({
-  backgroundColor: groupColor,
-  borderRadius: '50%',
-  boxShadow: `0 0 0 1px ${PALETTE.BACKGROUND_MAIN}`,
-  marginRight: 8,
-  height: 8,
-  width: 8
-}))
-
-const AddReflectionButton = styled(FlatButton)({
-  border: 0,
-  height: 24,
-  lineHeight: '24px',
-  padding: 0,
-  width: 24
-})
 
 interface Props {
   columnsRef: RefObject<HTMLDivElement>
@@ -149,9 +86,9 @@ const GroupingKanbanColumn = (props: Props) => {
     CreateReflectionMutation(atmosphere, {input}, {onError, onCompleted})
   }
   const ref = useRef<HTMLDivElement>(null)
-  const canAdd = phaseType === NewMeetingPhaseTypeEnum.group && !isComplete && !isAnyEditing
   const isLengthExpanded =
     useCoverable(promptId, ref, MeetingControlBarEnum.HEIGHT, phaseRef, columnsRef) || !!endedAt
+  const canAdd = phaseType === NewMeetingPhaseTypeEnum.group && !isComplete && !isAnyEditing
 
   const toggleWidth = (e: MouseEvent<Element>) => {
     e.stopPropagation()
@@ -168,27 +105,15 @@ const GroupingKanbanColumn = (props: Props) => {
       data-cy={`group-column-${question}`}
       ref={ref}
     >
-      <ColumnHeader isWidthExpanded={!!isWidthExpanded}>
-        <Prompt>
-          <ColumnColorDrop groupColor={groupColor} />
-          {question}
-        </Prompt>
-        <ButtonGroup>
-          {canAdd && (
-            <AddReflectionButton
-              dataCy={`add-reflection-${question}`}
-              aria-label={'Add a reflection'}
-              onClick={onClick}
-              waiting={submitting}
-            >
-              <Icon>add</Icon>
-            </AddReflectionButton>
-          )}
-          <ExpandButton onClick={toggleWidth}>
-            <img alt='expand-arrow-icon' src={ExpandArrowSVG} />
-          </ExpandButton>
-        </ButtonGroup>
-      </ColumnHeader>
+      <GroupingKanbanColumnHeader
+        canAdd={canAdd}
+        groupColor={groupColor}
+        isWidthExpanded={!!isWidthExpanded}
+        onClick={onClick}
+        question={question}
+        submitting={submitting}
+        toggleWidth={toggleWidth}
+      />
       <ColumnBody
         data-cy={`group-column-${question}-body`}
         isDesktop={isDesktop}
