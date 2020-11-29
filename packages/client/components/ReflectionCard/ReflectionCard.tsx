@@ -5,6 +5,7 @@ import React, {useEffect, useRef} from 'react'
 import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import AddReactjiToReactableMutation from '~/mutations/AddReactjiToReactableMutation'
 import {ReflectionCard_meeting} from '~/__generated__/ReflectionCard_meeting.graphql'
+import {ReflectionCard_prompt} from '~/__generated__/ReflectionCard_prompt.graphql'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import useEditorState from '../../hooks/useEditorState'
 import useMutationProps from '../../hooks/useMutationProps'
@@ -30,7 +31,6 @@ const StyledReacjis = styled(ReactjiSection)({
 
 interface Props {
   isClipped?: boolean
-  isWidthExpanded?: boolean
   reflection: ReflectionCard_reflection
   meeting: ReflectionCard_meeting | null
   stackCount?: number
@@ -54,11 +54,12 @@ const getReadOnly = (
 }
 
 const ReflectionCard = (props: Props) => {
-  const {meeting, reflection, isClipped, isWidthExpanded = false, stackCount, showReactji, dataCy} = props
+  const {meeting, reflection, isClipped, stackCount, showReactji, dataCy} = props
   const {meetingId, reactjis} = reflection
   const phaseType = meeting ? meeting.localPhase.phaseType : null
   const phases = meeting ? meeting.phases : null
-  const {id: reflectionId, content, promptId, isViewerCreator} = reflection
+  const {id: reflectionId, content, promptId, isViewerCreator, prompt} = reflection
+  const {isWidthExpanded} = prompt
   const atmosphere = useAtmosphere()
   const {onCompleted, submitting, submitMutation, error, onError} = useMutationProps()
   const editorRef = useRef<HTMLTextAreaElement>(null)
@@ -178,7 +179,7 @@ const ReflectionCard = (props: Props) => {
     onCompleted()
   }
   return (
-    <ReflectionCardRoot data-cy={`${dataCy}-root`} isWidthExpanded={isWidthExpanded}>
+    <ReflectionCardRoot data-cy={`${dataCy}-root`} isWidthExpanded={!!isWidthExpanded}>
       <ColorBadge phaseType={phaseType as NewMeetingPhaseTypeEnum} reflection={reflection} />
       <ReflectionEditorWrapper
         dataCy={`editor-wrapper`}
@@ -218,6 +219,9 @@ export default createFragmentContainer(ReflectionCard, {
       meetingId
       reflectionGroupId
       promptId
+      prompt {
+        isWidthExpanded
+      }
       content
       reactjis {
         ...ReactjiSection_reactjis

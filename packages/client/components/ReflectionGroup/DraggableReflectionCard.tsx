@@ -47,7 +47,6 @@ export type ReflectionDragState = ReturnType<typeof makeDragState>
 interface Props {
   isClipped?: boolean
   isDraggable?: boolean
-  isWidthExpanded: boolean
   meeting: DraggableReflectionCard_meeting
   reflection: DraggableReflectionCard_reflection
   staticIdx: number
@@ -73,12 +72,12 @@ const DraggableReflectionCard = (props: Props) => {
     meeting,
     isDraggable,
     swipeColumn,
-    dataCy,
-    isWidthExpanded
+    dataCy
+    // isWidthExpanded
   } = props
   const {id: meetingId, teamId, localStage} = meeting
   const {isComplete, phaseType} = localStage
-  const {isDropping, isEditing} = reflection
+  const {isDropping, isEditing, promptId} = reflection
   const [drag] = useState(makeDragState)
   const staticReflectionCount = staticReflections.length
   const {onMouseDown} = useDraggableReflectionCard(
@@ -106,7 +105,8 @@ const DraggableReflectionCard = (props: Props) => {
         reflection={reflection}
         isClipped={isClipped}
         meeting={meeting}
-        isWidthExpanded={isWidthExpanded}
+        // prompt={promptId}
+        // isWidthExpanded={isWidthExpanded}
       />
     </DragWrapper>
   )

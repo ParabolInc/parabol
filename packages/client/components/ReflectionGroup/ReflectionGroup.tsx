@@ -62,13 +62,12 @@ interface Props {
   phaseRef: RefObject<HTMLDivElement>
   meeting: ReflectionGroup_meeting
   reflectionGroup: ReflectionGroup_reflectionGroup
-  isWidthExpanded: boolean
   swipeColumn?: SwipeColumn
   dataCy?: string
 }
 
 const ReflectionGroup = (props: Props) => {
-  const {meeting, phaseRef, reflectionGroup, swipeColumn, dataCy, isWidthExpanded} = props
+  const {meeting, phaseRef, reflectionGroup, swipeColumn, dataCy} = props
   const groupRef = useRef<HTMLDivElement>(null)
   const {localPhase, localStage} = meeting
   const {phaseType} = localPhase
@@ -194,7 +193,6 @@ const ReflectionGroup = (props: Props) => {
                   staticIdx={staticIdx}
                   isClipped={staticIdx !== 0}
                   isDraggable={staticIdx === 0}
-                  isWidthExpanded={isWidthExpanded}
                   meeting={meeting}
                   reflection={reflection}
                   staticReflections={staticReflections}

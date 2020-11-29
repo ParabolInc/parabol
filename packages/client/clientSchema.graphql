@@ -67,6 +67,7 @@ extend type RetroReflection {
 
 extend type ReflectPrompt {
   editorIds: [ID!]
+  isWidthExpanded: Boolean
 }
 
 extend interface NewMeetingStage {

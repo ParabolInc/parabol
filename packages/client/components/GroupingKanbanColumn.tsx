@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import {createFragmentContainer} from 'react-relay'
+import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import React, {MouseEvent, RefObject, useLayoutEffect, useRef, useState} from 'react'
 import {useCoverable} from '~/hooks/useControlBarCovers'
 import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
@@ -29,25 +29,26 @@ import ExpandArrowSVG from '../../../static/images/icons/arrow_expand.svg'
 
 const ButtonGroup = styled('div')({
   alignItems: 'center',
-display: 'flex',
-
+  display: 'flex'
 })
-const Column = styled('div')<{isLengthExpanded: boolean, isWidthExpanded: boolean}>(({isLengthExpanded, isWidthExpanded}) => ({
-  alignItems: 'center',
-  background: PALETTE.BACKGROUND_REFLECTION,
-  borderRadius: 8,
-  display: 'flex',
-  flex: 1,
-  flexDirection: 'column',
-  height: '100%',
-  position: 'relative',
-  transition: `all 100ms ${BezierCurve.DECELERATE}`,
-  [makeMinWidthMediaQuery(Breakpoint.SINGLE_REFLECTION_COLUMN)]: {
-    height: isLengthExpanded ? '100%' : `calc(100% - ${MeetingControlBarEnum.HEIGHT}px)`,
-    margin: '0 8px',
-    minWidth: isWidthExpanded ? 320 * 2 : 320
-  }
-}))
+const Column = styled('div')<{isLengthExpanded: boolean; isWidthExpanded: boolean}>(
+  ({isLengthExpanded, isWidthExpanded}) => ({
+    alignItems: 'center',
+    background: PALETTE.BACKGROUND_REFLECTION,
+    borderRadius: 8,
+    display: 'flex',
+    flex: 1,
+    flexDirection: 'column',
+    height: '100%',
+    position: 'relative',
+    transition: `all 100ms ${BezierCurve.DECELERATE}`,
+    [makeMinWidthMediaQuery(Breakpoint.SINGLE_REFLECTION_COLUMN)]: {
+      height: isLengthExpanded ? '100%' : `calc(100% - ${MeetingControlBarEnum.HEIGHT}px)`,
+      margin: '0 8px',
+      minWidth: isWidthExpanded ? 320 * 2 : 320
+    }
+  })
+)
 
 const ColumnHeader = styled('div')({
   color: PALETTE.TEXT_MAIN,
@@ -107,7 +108,6 @@ const AddReflectionButton = styled(FlatButton)({
 })
 
 interface Props {
-  isInitiallyExpanded: boolean
   isAnyEditing: boolean
   isDesktop: boolean
   meeting: GroupingKanbanColumn_meeting
@@ -118,18 +118,12 @@ interface Props {
 }
 
 const GroupingKanbanColumn = (props: Props) => {
-  const {isInitiallyExpanded, isAnyEditing, isDesktop, meeting, reflectionGroups, phaseRef, prompt, swipeColumn} = props
-  const {question, id: promptId, groupColor} = prompt
+  const {isAnyEditing, isDesktop, meeting, reflectionGroups, phaseRef, prompt, swipeColumn} = props
+  const {question, id: promptId, groupColor, isWidthExpanded} = prompt
   const {id: meetingId, endedAt, localStage} = meeting
   const {isComplete, phaseType} = localStage
   const {submitting, onError, submitMutation, onCompleted} = useMutationProps()
-  const [isWidthExpanded, setIsWidthExpanded] = useState(isInitiallyExpanded)
   const atmosphere = useAtmosphere()
-
-useLayoutEffect(() => {
-  setIsWidthExpanded(isInitiallyExpanded)
-}, [isInitiallyExpanded])
-
   const onClick = () => {
     if (submitting || isAnyEditing) return
     const input = {
@@ -144,35 +138,43 @@ useLayoutEffect(() => {
   const ref = useRef<HTMLDivElement>(null)
   const canAdd = phaseType === NewMeetingPhaseTypeEnum.group && !isComplete && !isAnyEditing
   const isLengthExpanded =
-  useCoverable(promptId, ref, MeetingControlBarEnum.HEIGHT, phaseRef) || !!endedAt
+    useCoverable(promptId, ref, MeetingControlBarEnum.HEIGHT, phaseRef) || !!endedAt
 
-    const toggleWidth = (e: MouseEvent<HTMLElement>) => {
-      e.stopPropagation()
-      setIsWidthExpanded(!isWidthExpanded)
-    }
+  const toggleWidth = (e: MouseEvent<HTMLElement>) => {
+    e.stopPropagation()
+    commitLocalUpdate(atmosphere, (store) => {
+      const reflectPrompt = store.get(promptId)
+      reflectPrompt?.setValue(!isWidthExpanded, 'isWidthExpanded')
+    })
+  }
 
   return (
-    <Column isLengthExpanded={isLengthExpanded}isWidthExpanded={isWidthExpanded} data-cy={`group-column-${question}`} ref={ref}>
+    <Column
+      isLengthExpanded={isLengthExpanded}
+      isWidthExpanded={!!isWidthExpanded}
+      data-cy={`group-column-${question}`}
+      ref={ref}
+    >
       <ColumnHeader>
         <Prompt>
           <ColumnColorDrop groupColor={groupColor} />
           {question}
         </Prompt>
         <ButtonGroup>
-        {canAdd && (
-          <AddReflectionButton
-            dataCy={`add-reflection-${question}`}
-            aria-label={'Add a reflection'}
-            onClick={onClick}
-            waiting={submitting}
-          >
-            <Icon>add</Icon>
-          </AddReflectionButton>
-        )}
-              <ExpandButton onClick={toggleWidth}>
-                <img alt="expand-arrow-icon" src={ExpandArrowSVG} />
-              </ExpandButton>
-              </ButtonGroup>
+          {canAdd && (
+            <AddReflectionButton
+              dataCy={`add-reflection-${question}`}
+              aria-label={'Add a reflection'}
+              onClick={onClick}
+              waiting={submitting}
+            >
+              <Icon>add</Icon>
+            </AddReflectionButton>
+          )}
+          <ExpandButton onClick={toggleWidth}>
+            <img alt='expand-arrow-icon' src={ExpandArrowSVG} />
+          </ExpandButton>
+        </ButtonGroup>
       </ColumnHeader>
       <ColumnBody
         data-cy={`group-column-${question}-body`}
@@ -190,7 +192,6 @@ useLayoutEffect(() => {
                 dataCy={`${question}-group-${idx}`}
                 key={reflectionGroup.id}
                 meeting={meeting}
-                isWidthExpanded={isWidthExpanded}
                 phaseRef={phaseRef}
                 reflectionGroup={reflectionGroup}
                 swipeColumn={swipeColumn}
@@ -233,6 +234,7 @@ export default createFragmentContainer(GroupingKanbanColumn, {
   prompt: graphql`
     fragment GroupingKanbanColumn_prompt on ReflectPrompt {
       id
+      isWidthExpanded
       question
       groupColor
     }
