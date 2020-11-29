@@ -30,7 +30,7 @@ const ColumnWrapper = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   flex: 1,
   justifyContent: 'flex-start',
   margin: isDesktop ? '0 8px 16px' : undefined,
-  minHeight: isDesktop ? undefined : '100%',  
+  minHeight: isDesktop ? undefined : '100%'
 }))
 
 const ColumnHighlight = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
@@ -49,17 +49,19 @@ const ColumnHighlight = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   width: '100%'
 }))
 
-const ColumnContent = styled('div')<{isDesktop: boolean, isExpanded: boolean}>(({isDesktop, isExpanded}) => ({
-  display: 'flex',
-  flex: 1,
-  flexDirection: 'column',
-  height: '100%',
-  justifyContent: isDesktop ? 'space-between' : 'space-between',
-  margin: '0 auto',
-  width: isExpanded ? ElementWidth.REFLECTION_CARD * 2 :  ElementWidth.REFLECTION_CARD ,
-  // must be greater than the highlighted el
-  zIndex: 1
-}))
+const ColumnContent = styled('div')<{isDesktop: boolean; isExpanded: boolean}>(
+  ({isDesktop, isExpanded}) => ({
+    display: 'flex',
+    flex: 1,
+    flexDirection: 'column',
+    height: '100%',
+    justifyContent: isDesktop ? 'space-between' : 'space-between',
+    margin: '0 auto',
+    width: isExpanded ? ElementWidth.REFLECTION_CARD * 2 : ElementWidth.REFLECTION_CARD,
+    // must be greater than the highlighted el
+    zIndex: 1
+  })
+)
 
 const HeaderAndEditor = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   flex: isDesktop ? 0.3 : undefined
@@ -110,7 +112,7 @@ const PromptHeader = styled('div')<{isClickable: boolean}>(({isClickable}) => ({
   cursor: isClickable ? 'pointer' : undefined,
   padding: `0 0 ${Gutters.ROW_INNER_GUTTER} 0`,
   position: 'relative',
-  userSelect: 'none',
+  userSelect: 'none'
 }))
 
 const ExpandButton = styled(PlainButton)({
@@ -179,18 +181,17 @@ const PhaseItemColumn = (props: Props) => {
   }, [focusedPromptId])
 
   useLayoutEffect(() => {
-
-    if (reflectPromptsCount <= 2 && isWiderScreen){
+    if (reflectPromptsCount <= 2 && isWiderScreen) {
       setIsExpanded(true)
     } else {
       setIsExpanded(false)
     }
   }, [isWiderScreen])
 
-const toggleWidth = (e: MouseEvent<HTMLElement>) => {
-  e.stopPropagation()
-  setIsExpanded(!isExpanded)
-}
+  const toggleWidth = (e: MouseEvent<HTMLElement>) => {
+    e.stopPropagation()
+    setIsExpanded(!isExpanded)
+  }
 
   const setColumnFocus = () => {
     if (!isFacilitator || isComplete) return
@@ -244,7 +245,7 @@ const toggleWidth = (e: MouseEvent<HTMLElement>) => {
               {tooltipPortal(<div>Tap to highlight prompt for everybody</div>)}
               <Description>{description}</Description>
               <ExpandButton onClick={toggleWidth}>
-                <img alt="expand-arrow-icon" src={ExpandArrowSVG} />
+                <img alt='expand-arrow-icon' src={ExpandArrowSVG} />
               </ExpandButton>
             </PromptHeader>
             <EditorSection data-cy={`editor-section-${question}`}>
@@ -257,7 +258,6 @@ const toggleWidth = (e: MouseEvent<HTMLElement>) => {
                   cardsInFlightRef={cardsInFlightRef}
                   setCardsInFlight={setCardsInFlight}
                   phaseEditorRef={phaseEditorRef}
-                  isExpanded={isExpanded}
                   meetingId={meetingId}
                   nextSortOrder={nextSortOrder}
                   promptId={promptId}
@@ -271,7 +271,6 @@ const toggleWidth = (e: MouseEvent<HTMLElement>) => {
               dataCy={`reflection-stack-${question}`}
               reflectionStack={reflectionStack}
               idx={idx}
-              isExpanded={isExpanded}
               phaseEditorRef={phaseEditorRef}
               phaseRef={phaseRef}
               meeting={meeting}

@@ -82,7 +82,7 @@ const ExpandButton = styled(FlatButton)({
   marginLeft: 4,
   padding: 0,
   width: 24,
-  ':focus,:active': {
+  ':focus, :active': {
     backgroundColor: 'inherit'
   }
 })
@@ -111,6 +111,7 @@ const AddReflectionButton = styled(FlatButton)({
 })
 
 interface Props {
+  columnsRef: RefObject<HTMLDivElement>
   isAnyEditing: boolean
   isDesktop: boolean
   meeting: GroupingKanbanColumn_meeting
@@ -121,7 +122,16 @@ interface Props {
 }
 
 const GroupingKanbanColumn = (props: Props) => {
-  const {isAnyEditing, isDesktop, meeting, reflectionGroups, phaseRef, prompt, swipeColumn} = props
+  const {
+    columnsRef,
+    isAnyEditing,
+    isDesktop,
+    meeting,
+    reflectionGroups,
+    phaseRef,
+    prompt,
+    swipeColumn
+  } = props
   const {question, id: promptId, groupColor, isWidthExpanded} = prompt
   const {id: meetingId, endedAt, localStage} = meeting
   const {isComplete, phaseType} = localStage
@@ -141,7 +151,7 @@ const GroupingKanbanColumn = (props: Props) => {
   const ref = useRef<HTMLDivElement>(null)
   const canAdd = phaseType === NewMeetingPhaseTypeEnum.group && !isComplete && !isAnyEditing
   const isLengthExpanded =
-    useCoverable(promptId, ref, MeetingControlBarEnum.HEIGHT, phaseRef) || !!endedAt
+    useCoverable(promptId, ref, MeetingControlBarEnum.HEIGHT, phaseRef, columnsRef) || !!endedAt
 
   const toggleWidth = (e: MouseEvent<Element>) => {
     e.stopPropagation()

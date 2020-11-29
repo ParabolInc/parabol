@@ -39,7 +39,8 @@ export const useCoverable = (
   id: string,
   ref: RefObject<HTMLDivElement>,
   height: number,
-  parentRef?: RefObject<HTMLDivElement>
+  parentRef?: RefObject<HTMLDivElement>,
+  columnsRef?: RefObject<HTMLDivElement>
 ) => {
   const updateCoverables = () => {
     const el = ref.current
@@ -65,6 +66,7 @@ export const useCoverable = (
   }
 
   useResizeObserver(updateCoverables, parentRef)
+  useResizeObserver(updateCoverables, columnsRef)
 
   useEffect(() => {
     updateCoverables()

@@ -21,7 +21,6 @@ interface Props {
   phaseEditorRef: React.RefObject<HTMLDivElement>
   phaseRef: React.RefObject<HTMLDivElement>
   dataCy: string
-  isExpanded: boolean
   reflectionStack: readonly PhaseItemColumn_meeting['reflectionGroups'][0]['reflections'][0][]
   stackTopRef: RefObject<HTMLDivElement>
 }
@@ -32,14 +31,14 @@ const CardStack = styled('div')({
   flex: 1,
   margin: '0 0 24px', // stacked cards + row gutter = 6 + 6 + 12 = 24
   position: 'relative',
-  justifyContent: 'center',  
+  justifyContent: 'center',
   [`@media screen and (min-width: ${Breakpoint.SINGLE_REFLECTION_COLUMN}px)`]: {
     minHeight: ElementHeight.REFLECTION_CARD_MAX
   }
 })
 
 const CenteredCardStack = styled('div')({
-  position: 'relative',
+  position: 'relative'
   // width: '100%',
 })
 
@@ -61,7 +60,7 @@ const ReflectionWrapper = styled('div')<{idx: number}>(({idx}): any => {
 })
 
 const ReflectionStack = (props: Props) => {
-  const {phaseRef, idx, isExpanded, meeting, reflectionStack, stackTopRef, dataCy} = props
+  const {phaseRef, idx, meeting, reflectionStack, stackTopRef, dataCy} = props
   const stackRef = useRef<HTMLDivElement>(null)
   const {setItemsRef, scrollRef, bgRef, portal, collapse, expand} = useExpandedReflections(
     stackRef,
@@ -102,7 +101,6 @@ const ReflectionStack = (props: Props) => {
                     reflection={reflection}
                     stackCount={reflectionStack.length}
                     isClipped={idx !== 0}
-                    isExpanded={isExpanded}
                   />
                 </ReflectionWrapper>
               )

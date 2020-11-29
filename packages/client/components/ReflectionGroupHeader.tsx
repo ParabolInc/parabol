@@ -87,7 +87,7 @@ const ReflectionGroupHeader = forwardRef((props: Props, ref: Ref<HTMLDivElement>
       data-cy={dataCy}
       portalStatus={portalStatus}
       isExpanded={isExpanded}
-      isWidthExpanded={isWidthExpanded}
+      isWidthExpanded={!!isWidthExpanded}
       ref={ref}
     >
       <ReflectionGroupTitleEditor

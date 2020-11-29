@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {RefObject, useMemo, useState} from 'react'
+import React, {RefObject, useMemo, useRef, useState} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import useExpandColumnsWidth from '~/hooks/useExpandColumnsWidth'
 import {GroupingKanban_meeting} from '~/__generated__/GroupingKanban_meeting.graphql'
@@ -40,6 +40,7 @@ const GroupingKanban = (props: Props) => {
   const reflectPhase = phases.find((phase) => phase.phaseType === NewMeetingPhaseTypeEnum.reflect)!
   const reflectPrompts = reflectPhase.reflectPrompts!
   const reflectPromptsCount = reflectPrompts.length
+  const columnsRef = useRef<HTMLDivElement>(null)
   useHideBodyScroll()
   useExpandColumnsWidth(reflectPromptsCount, reflectPrompts)
   const {groupsByPrompt, isAnyEditing} = useMemo(() => {
@@ -78,9 +79,11 @@ const GroupingKanban = (props: Props) => {
           setActiveIdx={setActiveIdx}
           activeIdx={activeIdx}
           disabled={isViewerDragging}
+          columnsRef={columnsRef}
         >
           {reflectPrompts.map((prompt) => (
             <GroupingKanbanColumn
+              columnsRef={columnsRef}
               isAnyEditing={isAnyEditing}
               isDesktop={isDesktop}
               key={prompt.id}

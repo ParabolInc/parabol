@@ -29,7 +29,6 @@ const CardInFlightStyles = styled(ReflectionCardRoot)<{transform: string; isStar
 interface Props {
   cardsInFlightRef: MutableRefObject<ReflectColumnCardInFlight[]>
   setCardsInFlight: (cards: ReflectColumnCardInFlight[]) => void
-  isExpanded: boolean
   meetingId: string
   nextSortOrder: () => number
   phaseEditorRef: React.RefObject<HTMLDivElement>
@@ -40,7 +39,6 @@ interface Props {
 
 const PhaseItemEditor = (props: Props) => {
   const {
-    isExpanded,
     meetingId,
     nextSortOrder,
     phaseEditorRef,
@@ -165,7 +163,7 @@ const PhaseItemEditor = (props: Props) => {
 
   return (
     <>
-      <ReflectionCardRoot data-cy={dataCy} isExpanded={isExpanded} ref={phaseEditorRef}>
+      <ReflectionCardRoot data-cy={dataCy} ref={phaseEditorRef}>
         <ReflectionEditorWrapper
           dataCy={`${dataCy}-wrapper`}
           isPhaseItemEditor
