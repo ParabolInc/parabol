@@ -44,7 +44,7 @@ const EditableTemplateDescription = (props: Props) => {
     if (res.error) {
       onError(new Error(res.error))
     } else if (error) {
-      onError(new Error(error.message))
+      onError()
     }
     return res
   }

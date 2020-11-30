@@ -20,14 +20,14 @@ const StyledEditableText = styled(EditableText)({
 
 interface Props {
   isOwner: boolean
-  isEditingDescription: boolean
+  isEditingLabel: boolean
   isHover: boolean
   scale: EditableTemplateScaleValueLabel_scale
   scaleValue: EditableTemplateScaleValueLabel_scaleValue
 }
 
 const EditableTemplateScaleValueLabel = (props: Props) => {
-  const {isOwner, isHover, isEditingDescription, scale, scaleValue} = props
+  const {isOwner, isHover, isEditingLabel, scale, scaleValue} = props
   const atmosphere = useAtmosphere()
   const {onError, error, onCompleted, submitMutation, submitting} = useMutationProps()
 
@@ -62,7 +62,7 @@ const EditableTemplateScaleValueLabel = (props: Props) => {
     if (res.error) {
       onError(new Error(res.error))
     } else if (error) {
-      onError(new Error(error.message))
+      onError()
     }
     return res
   }
@@ -72,7 +72,7 @@ const EditableTemplateScaleValueLabel = (props: Props) => {
       autoFocus={scaleValue.label.startsWith('*')}
       disabled={!isOwner}
       error={error?.message}
-      hideIcon={isEditingDescription ? true : !isHover}
+      hideIcon={isEditingLabel ? true : !isHover}
       handleSubmit={handleSubmit}
       initialValue={scaleValue.label}
       maxLength={2}

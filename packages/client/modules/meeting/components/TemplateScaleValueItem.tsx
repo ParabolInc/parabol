@@ -100,7 +100,7 @@ const TemplateScaleValueItem = (props: Props) => {
       <ScaleAndDescription>
         <EditableTemplateScaleValueLabel
           isOwner={isOwner}
-          isEditingDescription={isEditingDescription}
+          isEditingLabel={isEditingDescription}
           isHover={isHover}
           scale={scale}
           scaleValue={scaleValue}
