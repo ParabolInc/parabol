@@ -68,7 +68,6 @@ const upsertAuth = async (
   const slackAuth = new SlackAuth({
     id: (existingAuth && existingAuth.id) || undefined,
     createdAt: (existingAuth && existingAuth.createdAt) || undefined,
-    accessToken: slackRes.access_token,
     defaultTeamChannelId: teamChannelId,
     teamId,
     userId: viewerId,

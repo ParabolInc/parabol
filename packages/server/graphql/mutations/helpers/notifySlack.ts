@@ -55,8 +55,8 @@ const notifySlack = async (
   for (let i = 0; i < slackDetails.length; i++) {
     const {notification, auth} = slackDetails[i]
     const {channelId} = notification
-    const {accessToken, botAccessToken, userId} = auth
-    const manager = new SlackServerManager(botAccessToken || accessToken)
+    const {botAccessToken, userId} = auth
+    const manager = new SlackServerManager(botAccessToken)
     const res = await manager.postMessage(channelId!, slackText)
     segmentIo.track({
       userId,
@@ -123,10 +123,9 @@ const upsertSlackMessage = async (
 ) => {
   const {notification, auth} = slackDetails
   const {channelId} = notification
-  const {accessToken, botAccessToken} = auth
+  const {botAccessToken} = auth
   if (!channelId) return
-  const manager = new SlackServerManager(accessToken)
-  const botManager = new SlackServerManager(botAccessToken)
+  const manager = new SlackServerManager(botAccessToken)
   const convoInfo = await manager.getConversationInfo(channelId)
   if (convoInfo.ok) {
     const {channel} = convoInfo
@@ -139,7 +138,7 @@ const upsertSlackMessage = async (
         const ageThresh = new Date(Date.now() - ms('5m'))
         if (timestamp >= ageThresh) {
           // trigger update
-          const res = await botManager.updateMessage(channelId, slackText, ts)
+          const res = await manager.updateMessage(channelId, slackText, ts)
           if (!res.ok) {
             console.error(res.error)
           }
@@ -152,7 +151,7 @@ const upsertSlackMessage = async (
   } else {
     // handle error?
   }
-  const res = await botManager.postMessage(channelId, slackText)
+  const res = await manager.postMessage(channelId, slackText)
   if (!res.ok) {
     console.error(res.error)
   }

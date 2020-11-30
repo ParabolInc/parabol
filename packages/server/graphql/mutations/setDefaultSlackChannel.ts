@@ -40,10 +40,8 @@ const setDefaultSlackChannel = {
     if (!slackAuth) {
       return standardError(new Error('Slack authentication not found'), {userId: viewerId})
     }
-    const {id: slackAuthId, accessToken, botAccessToken, defaultTeamChannelId} = slackAuth
-
-    // use accessToken as a fallback for folks who haven't refreshed their auth lately
-    const manager = new SlackServerManager(botAccessToken || accessToken)
+    const {id: slackAuthId, botAccessToken, defaultTeamChannelId} = slackAuth
+    const manager = new SlackServerManager(botAccessToken)
     const channelInfo = await manager.getConversationInfo(slackChannelId)
 
     if (!channelInfo.ok) {

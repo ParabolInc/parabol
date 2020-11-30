@@ -150,7 +150,6 @@ export default createFragmentContainer(SlackNotificationList, {
       teamMember(teamId: $teamId) {
         integrations {
           slack {
-            accessToken
             botAccessToken
             isActive
             slackUserId

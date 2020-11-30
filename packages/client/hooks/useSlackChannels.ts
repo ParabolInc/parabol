@@ -4,7 +4,7 @@ import {SlackChannelDropdownChannels} from '../components/SlackChannelDropdown'
 import SlackClientManager from '../utils/SlackClientManager'
 
 const useSlackChannels = (
-  slackAuth: {accessToken: string | null; botAccessToken: string | null; slackUserId: string} | null
+  slackAuth: {botAccessToken: string | null; slackUserId: string} | null
 ) => {
   const [channels, setChannels] = useState<SlackChannelDropdownChannels>([])
   useEffect(() => {
@@ -12,9 +12,8 @@ const useSlackChannels = (
     let isMounted = true
     const getChannels = async () => {
       const botManager = new SlackClientManager(slackAuth.botAccessToken!)
-      const userManager = new SlackClientManager(slackAuth.accessToken!)
       const [channelResponse, convoResponse] = await Promise.all([
-        userManager.getConversationList(),
+        botManager.getConversationList(),
         botManager.getConversationList(['im'])
       ])
       if (!isMounted) return

@@ -1,7 +1,6 @@
 import shortid from 'shortid'
 
 interface Input {
-  accessToken: string
   botUserId: string
   botAccessToken: string
   defaultTeamChannelId: string
@@ -20,10 +19,9 @@ export default class SlackAuth {
   updatedAt = new Date()
   id: string
   botUserId: string
-  botAccessToken: string
+  botAccessToken: string | null
   createdAt: Date
   defaultTeamChannelId: string
-  accessToken: string | null
   teamId: string
   userId: string
   slackTeamId: string
@@ -33,7 +31,6 @@ export default class SlackAuth {
 
   constructor(input: Input) {
     const {
-      accessToken,
       botUserId,
       botAccessToken,
       defaultTeamChannelId,
@@ -48,7 +45,6 @@ export default class SlackAuth {
     } = input
     this.id = id || shortid.generate()
     this.createdAt = createdAt || new Date()
-    this.accessToken = accessToken
     this.botUserId = botUserId
     this.botAccessToken = botAccessToken
     this.defaultTeamChannelId = defaultTeamChannelId

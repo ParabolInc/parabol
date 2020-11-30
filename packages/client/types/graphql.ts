@@ -3304,11 +3304,6 @@ export interface ISlackIntegration {
   isActive: boolean;
 
   /**
-   * The access token to slack, only visible to the owner. Used as a fallback to botAccessToken
-   */
-  accessToken: string | null;
-
-  /**
    * the parabol bot user id
    */
   botUserId: string | null;
@@ -3359,7 +3354,7 @@ export interface ISlackIntegration {
   updatedAt: any;
 
   /**
-   * The user that the access token is attached to
+   * The id of the user that integrated Slack
    */
   userId: string;
 

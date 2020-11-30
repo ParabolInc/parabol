@@ -36,8 +36,8 @@ const messageAllSlackUsers = {
 
     const messagedUserIds = [] as string[]
     for (const slackAuth of testSlackAuths) {
-      const {accessToken, botAccessToken, slackUserId, userId} = slackAuth
-      const manager = new SlackServerManager(botAccessToken || accessToken)
+      const {botAccessToken, slackUserId, userId} = slackAuth
+      const manager = new SlackServerManager(botAccessToken)
       const openDMRes = await manager.openDM(slackUserId)
       if (!openDMRes.ok) {
         return standardError(new Error(openDMRes.error), {userId})

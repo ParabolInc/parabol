@@ -24,15 +24,6 @@ const SlackIntegration = new GraphQLObjectType<any, GQLContext>({
       type: new GraphQLNonNull(GraphQLBoolean),
       resolve: ({botAccessToken}) => !!botAccessToken
     },
-    accessToken: {
-      description:
-        'The access token to slack, only visible to the owner. Used as a fallback to botAccessToken',
-      type: GraphQLID,
-      resolve: async ({accessToken, userId}, _args, {authToken}) => {
-        const viewerId = getUserId(authToken)
-        return viewerId === userId ? accessToken : null
-      }
-    },
     botUserId: {
       type: GraphQLID,
       description: 'the parabol bot user id'
@@ -79,7 +70,7 @@ const SlackIntegration = new GraphQLObjectType<any, GQLContext>({
     },
     userId: {
       type: new GraphQLNonNull(GraphQLID),
-      description: 'The user that the access token is attached to'
+      description: 'The id of the user that integrated Slack'
     },
     notifications: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(SlackNotification))),
