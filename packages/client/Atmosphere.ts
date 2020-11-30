@@ -70,9 +70,10 @@ const noopSink = {
 
 const toFormData = (
   body: FetchHTTPData,
-  uploadables: UploadableMap,
   formData = new FormData()
 ) => {
+  const uploadables = body.payload.uploadables || []
+  delete body.payload.uploadables
   formData.append('body', JSON.stringify(body))
   Object.keys(uploadables).forEach(key => {
     formData.append(`uploadables.${key}`, uploadables[key])
@@ -136,17 +137,17 @@ export default class Atmosphere extends Environment {
 
   fetchHTTP = async (body: FetchHTTPData, connectionId?: string) => {
     const uploadables = body.payload.uploadables
-    delete body.payload.uploadables
     const headers = {
       accept: 'application/json',
       Authorization: this.authToken ? `Bearer ${this.authToken}` : '',
       'x-correlation-id': connectionId || '',
     }
+    /* if uploadables, don't set content type bc we want the browser to set it */
     if (!uploadables) headers['content-type'] = 'application/json'
     const res = await fetch('/graphql', {
       method: 'POST',
       headers,
-      body: uploadables ? toFormData(body, uploadables) : JSON.stringify(body)
+      body: uploadables ? toFormData(body) : JSON.stringify(body)
     })
     const contentTypeHeader = res.headers.get('content-type') || ''
     if (contentTypeHeader.toLowerCase().startsWith('application/json')) {
