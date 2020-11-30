@@ -17,7 +17,7 @@ const JiraIssue = new GraphQLObjectType<any, GQLContext>({
     ...storyFields(),
     id: {
       type: GraphQLNonNull(GraphQLID),
-      description: 'cloudId:key'
+      description: 'cloudId:key. equal to the serviceTaskId on the EstimateStage'
     },
     cloudId: {
       type: GraphQLNonNull(GraphQLID),
