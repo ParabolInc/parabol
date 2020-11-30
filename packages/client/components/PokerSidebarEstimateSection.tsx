@@ -32,7 +32,8 @@ const ScrollWrapper = styled('div')({
 })
 
 const EstimateMeta = styled('div')({
-  paddingRight: 4
+  fontWeight: 600,
+  paddingRight: 8
 })
 
 const PokerSidebarEstimateSection = (props: Props) => {
@@ -115,7 +116,7 @@ const PokerSidebarEstimateSection = (props: Props) => {
                   // show a disk if no scores
                   // show the first score it has
                   // if more than 1 score, have it do a tooltip
-                  const label = finalScores.find(Boolean) || '-'
+                  const label = finalScores.find(Boolean) || '–'
                   const estimateMeta = <EstimateMeta>{label}</EstimateMeta>
                   return (
                     <Draggable

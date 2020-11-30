@@ -41,12 +41,16 @@ const SwipableEstimateItem = styled('div')({
   height: '100%'
 })
 
-const innerStyle = (isDesktop: boolean) => {
+const innerStyle = (isDesktop: boolean, hasSingleDimension: boolean) => {
   return {
     height: '100%',
     margin: isDesktop ? '0 auto' : null,
-    maxWidth: isDesktop ? 1600 : null,
-    padding: isDesktop ? '8px 40px 0' : '8px 16px 0',
+    maxWidth: hasSingleDimension
+      ? isDesktop ? 1536 : null
+      : isDesktop ? 1600 : null,
+    padding: hasSingleDimension
+      ? isDesktop ? '12px 8px 0' : '4px 4px 0'
+      : isDesktop ? '8px 40px 0' : '8px 16px 0',
     width: '100%',
     overflow: 'visible'
   }
@@ -79,6 +83,8 @@ const EstimatePhaseArea = (props: Props) => {
     padding: isDesktop ? '0 8px' : '0 4px'
   }
 
+  const hasSingleDimension = dimensionStages.length === 1
+
   return (
     <EstimateArea ref={estimateAreaRef}>
       {dimensionStages.length > 1 && <StepperDots>
@@ -89,7 +95,7 @@ const EstimatePhaseArea = (props: Props) => {
         })}
       </StepperDots>
       }
-      <PokerCardDeck meeting={meeting}  estimateAreaRef={estimateAreaRef}/>
+      <PokerCardDeck meeting={meeting} estimateAreaRef={estimateAreaRef} />
       <DeckActivityAvatars stage={localStage} />
       <SwipeableViews
         containerStyle={containerStyle}
@@ -97,7 +103,7 @@ const EstimatePhaseArea = (props: Props) => {
         index={stageIdx}
         onChangeIndex={onChangeIdx}
         slideStyle={slideContainer}
-        style={innerStyle(isDesktop)}
+        style={innerStyle(isDesktop, hasSingleDimension)}
       >
         {dimensionStages.map((stage, idx) => (
           <SwipableEstimateItem key={idx}>
