@@ -42,7 +42,11 @@ const MeetingSelector = (props: Props) => {
   useEffect(() => {
     if (!meetingId || !isConnected) return
     const location = `/meet/${meetingId}`
-    SetAppLocationMutation(atmosphere, {location})
+    const setAfterUpgrade = async () => {
+      await atmosphere.upgradeTransport()
+      SetAppLocationMutation(atmosphere, {location})
+    }
+    setAfterUpgrade()
     return () => {
       SetAppLocationMutation(atmosphere, {location: null})
     }

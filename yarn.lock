@@ -2299,10 +2299,10 @@
   resolved "https://registry.yarnpkg.com/@mattkrick/graphql-trebuchet-client/-/graphql-trebuchet-client-1.0.1.tgz#59750cdcc88d777267394a95293443f4919d9fde"
   integrity sha512-9r0LjFWPefUHXN+lX2fAgcPMi1NbdsnXPJCL+fJdhZ1Jeo3F+La6KF2S+bo0bMBNsHowqSaeuTv2arSi0DDHJQ==
 
-"@mattkrick/sanitize-svg@0.2.1", "@mattkrick/sanitize-svg@^0.2.1":
-  version "0.2.1"
-  resolved "https://registry.yarnpkg.com/@mattkrick/sanitize-svg/-/sanitize-svg-0.2.1.tgz#050e68e10e15d074e15945dfc2dd7245858db261"
-  integrity sha512-9T5xb8pq0GLNuKmKbXLvILOi1bQeu9FzAup+dB3zWRgzOVh40yE0YqWY/lrKzBrpj968ZaKTxegTwU1zyRtfBA==
+"@mattkrick/sanitize-svg@0.3.1":
+  version "0.3.1"
+  resolved "https://registry.yarnpkg.com/@mattkrick/sanitize-svg/-/sanitize-svg-0.3.1.tgz#c21da0a835857ffa2014d9fe76ff80bda704cb9f"
+  integrity sha512-wbIv43EBkzMlYcfv2+SrLVfgpzEp8axjOFD1TGOwHuS1I60GQplzx8fduWWHGNpgt/1QlrI95vNXFRSZM2oWtA==
 
 "@mattkrick/trebuchet-client@^2.0.0":
   version "2.0.0"
