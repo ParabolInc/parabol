@@ -22,7 +22,7 @@ const ActionButton = styled(Icon)({
 
 interface Props {
   disabled?: boolean
-  onClick: () => void
+  onClick: React.MouseEventHandler
   tooltip: string
   icon: string
 }

@@ -80,7 +80,7 @@ const ScaleDropdownMenuItem = forwardRef((props: Props, ref) => {
     <MenuItem
       ref={ref}
       key={scale.id}
-      noCloseOnClick
+      noCloseOnClick={true}
       label={
         <ScaleDetails>
           <ScaleNameAndValues onClick={setScale(scale.id)}>

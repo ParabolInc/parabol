@@ -33,7 +33,8 @@ const ScaleActions = (props: Props) => {
   const canDelete = !isStarter
   const cloneTooltip = canClone ? (isStarter ? 'Clone a default scale' : 'Edit scale') : 'Too many team templates! Remove one first'
   const deleteTooltip = canDelete ? 'Delete scale' : 'Sorry you cannot delete a default scale'
-  const cloneScale = () => {
+  const cloneScale = (e: React.MouseEvent) => {
+    e.stopPropagation()
     if (submitting || !canClone) return
     if (isStarter) {
       submitMutation()
@@ -44,7 +45,8 @@ const ScaleActions = (props: Props) => {
       })
     }
   }
-  const deleteScale = () => {
+  const deleteScale = (e: React.MouseEvent) => {
+    e.stopPropagation()
     if (submitting || !canDelete) return
     submitMutation()
     RemovePokerTemplateScaleMutation(atmosphere, {scaleId}, {}, onError, onCompleted)
