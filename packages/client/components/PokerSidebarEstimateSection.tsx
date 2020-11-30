@@ -13,6 +13,7 @@ import {SORT_STEP} from '../utils/constants'
 import dndNoise from '../utils/dndNoise'
 import MeetingSidebarPhaseItemChild from './MeetingSidebarPhaseItemChild'
 import MeetingSubnavItem from './MeetingSubnavItem'
+import PokerSidebarEstimateMeta from './PokerSidebarEstimateMeta'
 
 interface Props {
   gotoStageId: ReturnType<typeof useGotoStageId>
@@ -29,11 +30,6 @@ const ScrollWrapper = styled('div')({
   paddingBottom: 8,
   paddingRight: 8,
   height: '100%'
-})
-
-const EstimateMeta = styled('div')({
-  fontWeight: 600,
-  paddingRight: 8
 })
 
 const PokerSidebarEstimateSection = (props: Props) => {
@@ -113,11 +109,6 @@ const PokerSidebarEstimateSection = (props: Props) => {
                   const [firstStageId] = stageIds
                   // the local user is at another stage than the facilitator stage
                   const isUnsyncedFacilitatorStage = !inSync && stageIds.includes(facilitatorStageId)
-                  // show a disk if no scores
-                  // show the first score it has
-                  // if more than 1 score, have it do a tooltip
-                  const label = finalScores.find(Boolean) || '–'
-                  const estimateMeta = <EstimateMeta>{label}</EstimateMeta>
                   return (
                     <Draggable
                       key={firstStageId}
@@ -137,7 +128,7 @@ const PokerSidebarEstimateSection = (props: Props) => {
                               key={firstStageId}
                               isDragging={dragSnapshot.isDragging}
                               label={title!}
-                              metaContent={estimateMeta}
+                              metaContent={<PokerSidebarEstimateMeta finalScores={finalScores} />}
                               onClick={() => handleClick(stageIds)}
                               isActive={isActive}
                               isComplete={isComplete}
