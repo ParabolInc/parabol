@@ -7287,7 +7287,16 @@ export interface IMutation {
    * Set the jira field that the poker dimension should map to
    */
   updateJiraDimensionField: UpdateJiraDimensionFieldPayload;
+
+  /**
+   * Send a message to all authorised Slack users
+   */
   messageAllSlackUsers: MessageAllSlackUsersPayload;
+
+  /**
+   * Remove Slack integrations for all users
+   */
+  removeAllSlackAuths: RemoveAllSlackAuthsPayload;
 }
 
 export interface IAcceptTeamInvitationOnMutationArguments {
@@ -10938,6 +10947,27 @@ export interface IMessageAllSlackUsersSuccess {
    * A list of the Parabol user ids that have been sent a direct message in Slack
    */
   messagedUserIds: Array<string>;
+}
+
+/**
+ * Return object for RemoveAllSlackAuthsPayload
+ */
+export type RemoveAllSlackAuthsPayload =
+  | IErrorPayload
+  | IRemoveAllSlackAuthsSuccess;
+
+export interface IRemoveAllSlackAuthsSuccess {
+  __typename: 'RemoveAllSlackAuthsSuccess';
+
+  /**
+   * Response from removing all Slack auths
+   */
+  slackAuthRes: string;
+
+  /**
+   * Response from removing all Slack notifications
+   */
+  slackNotificationRes: string;
 }
 
 export interface ISubscription {
