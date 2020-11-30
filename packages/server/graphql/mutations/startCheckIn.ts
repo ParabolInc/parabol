@@ -56,10 +56,7 @@ export default {
     const meetingId = meeting.id
     const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)
     const meetingMembers = createMeetingMembers(meeting, teamMembers)
-    await r
-      .table('NewMeeting')
-      .insert(meeting)
-      .run()
+    await r.table('NewMeeting').insert(meeting).run()
 
     // Disallow accidental starts (2 meetings within 2 seconds)
     const newActiveMeetings = await dataLoader.get('activeMeetingsByTeamId').load(teamId)
@@ -69,31 +66,16 @@ export default {
       return true
     })
     if (otherActiveMeeting) {
-      await r
-        .table('NewMeeting')
-        .get(meetingId)
-        .delete()
-        .run()
+      await r.table('NewMeeting').get(meetingId).delete().run()
       return {error: {message: 'Meeting already started'}}
     }
     const agendaItems = await dataLoader.get('agendaItemsByTeamId').load(teamId)
     const agendaItemIds = agendaItems.map(({id}) => id)
 
     await Promise.all([
-      r
-        .table('MeetingMember')
-        .insert(meetingMembers)
-        .run(),
-      r
-        .table('Team')
-        .get(teamId)
-        .update({lastMeetingType: meetingType})
-        .run(),
-      r
-        .table('AgendaItem')
-        .getAll(r.args(agendaItemIds))
-        .update({meetingId: meetingId})
-        .run()
+      r.table('MeetingMember').insert(meetingMembers).run(),
+      r.table('Team').get(teamId).update({lastMeetingType: meetingType}).run(),
+      r.table('AgendaItem').getAll(r.args(agendaItemIds)).update({meetingId: meetingId}).run()
     ])
 
     startSlackMeeting(meetingId, teamId, dataLoader).catch(console.log)

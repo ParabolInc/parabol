@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useRef} from 'react'
 import {createFragmentContainer} from 'react-relay'
@@ -14,101 +13,60 @@ import PhaseHeaderTitle from './PhaseHeaderTitle'
 import PhaseWrapper from './PhaseWrapper'
 import PokerEstimateHeaderCardJira from './PokerEstimateHeaderCardJira'
 import {PokerMeetingPhaseProps} from './PokerMeeting'
-import {Breakpoint} from '~/types/constEnums'
+import {Breakpoint, DiscussionThreadEnum} from '~/types/constEnums'
 import useBreakpoint from '~/hooks/useBreakpoint'
-import useSidebar from '~/hooks/useSidebar'
-import SwipeableDashSidebar from './SwipeableDashSidebar'
-import Icon from './Icon'
-import PlainButton from './PlainButton/PlainButton'
-import {PALETTE} from '~/styles/paletteV2'
+import ResponsiveDashSidebar from './ResponsiveDashSidebar'
+import styled from '@emotion/styled'
+import useGotoStageId from '~/hooks/useGotoStageId'
+
+const StyledMeetingHeaderAndPhase = styled(MeetingHeaderAndPhase)<{isOpen: boolean}>(
+  ({isOpen}) => ({
+    width: isOpen ? `calc(100% - ${DiscussionThreadEnum.WIDTH}px)` : '100%'
+  })
+)
+
 interface Props extends PokerMeetingPhaseProps {
+  gotoStageId: ReturnType<typeof useGotoStageId>
   meeting: PokerEstimatePhase_meeting
+  toggleDrawer: () => void
 }
 
-const Header = styled('div')({
-  display: 'flex',
-  width: '100%'
-})
-
-const MeetingTopBarWrapper = styled('div')({
-  display: 'flex',
-  justifyContent: 'space-between',
-  width: '100%'
-})
-
-const StyledIcon = styled(Icon)({
-  color: '#FFFF',
-  fontSize: 30,
-  transform: 'scaleX(-1)'
-})
-
-const ButtonContainer = styled('div')({
-  padding: '8px 0',
-  left: -8,
-  position: 'relative'
-})
-
-const ShowDiscussionButton = styled(PlainButton)({
-  alignItems: 'center',
-  backgroundColor: PALETTE.TEXT_PURPLE,
-  borderRadius: '50%',
-  display: 'flex',
-  height: 48,
-  padding: 8
-})
-
 const PokerEstimatePhase = (props: Props) => {
-  const {avatarGroup, toggleSidebar, meeting} = props
-  const {localStage, endedAt, showSidebar} = meeting
+  const {avatarGroup, meeting, toggleDrawer, toggleSidebar, gotoStageId} = props
+  const {localStage, endedAt, isCommentUnread, isRightDrawerOpen, showSidebar} = meeting
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
-  const {isOpen, toggle: toggleDrawer} = useSidebar(showSidebar)
   const meetingContentRef = useRef<HTMLDivElement>(null)
   if (!localStage) return null
   const {story} = localStage
   const {__typename} = story!
-
   return (
     <MeetingContent ref={meetingContentRef}>
-      <MeetingHeaderAndPhase hideBottomBar={!!endedAt}>
-        <Header>
-          <MeetingTopBarWrapper>
-            <MeetingTopBar
-              avatarGroup={avatarGroup}
-              isMeetingSidebarCollapsed={!showSidebar}
-              toggleSidebar={toggleSidebar}
-            >
-              <PhaseHeaderTitle>{phaseLabelLookup.ESTIMATE}</PhaseHeaderTitle>
-              <PhaseHeaderDescription>{'Estimate each story as a team'}</PhaseHeaderDescription>
-            </MeetingTopBar>
-          </MeetingTopBarWrapper>
-          {!isDesktop && (
-            <ButtonContainer>
-              <ShowDiscussionButton onClick={toggleDrawer}>
-                <StyledIcon>comment</StyledIcon>
-              </ShowDiscussionButton>
-            </ButtonContainer>
-          )}
-        </Header>
+      <StyledMeetingHeaderAndPhase isOpen={isRightDrawerOpen} hideBottomBar={!!endedAt}>
+        <MeetingTopBar
+          avatarGroup={avatarGroup}
+          isCommentUnread={isCommentUnread}
+          isMeetingSidebarCollapsed={!showSidebar}
+          isRightDrawerOpen={isRightDrawerOpen}
+          toggleSidebar={toggleSidebar}
+          toggleDrawer={toggleDrawer}
+        >
+          <PhaseHeaderTitle>{phaseLabelLookup.ESTIMATE}</PhaseHeaderTitle>
+          <PhaseHeaderDescription>{'Estimate each story as a team'}</PhaseHeaderDescription>
+        </MeetingTopBar>
         {__typename === 'JiraIssue' && <PokerEstimateHeaderCardJira stage={localStage as any} />}
         <PhaseWrapper>
-          <EstimatePhaseArea meeting={meeting} />
+          <EstimatePhaseArea gotoStageId={gotoStageId} meeting={meeting} />
         </PhaseWrapper>
-      </MeetingHeaderAndPhase>
-      {isDesktop ? (
+      </StyledMeetingHeaderAndPhase>
+      <ResponsiveDashSidebar isOpen={isRightDrawerOpen} isRightDrawer onToggle={toggleDrawer}>
         <EstimatePhaseDiscussionDrawer
           isDesktop={isDesktop}
+          isOpen={isRightDrawerOpen}
           meeting={meeting}
           meetingContentRef={meetingContentRef}
+          onToggle={toggleDrawer}
         />
-      ) : (
-        <SwipeableDashSidebar isOpen={isOpen} isRightSidebar onToggle={toggleDrawer}>
-          <EstimatePhaseDiscussionDrawer
-            isDesktop={isDesktop}
-            meeting={meeting}
-            meetingContentRef={meetingContentRef}
-          />
-        </SwipeableDashSidebar>
-      )}
+      </ResponsiveDashSidebar>
     </MeetingContent>
   )
 }
@@ -127,7 +85,8 @@ export default createFragmentContainer(PokerEstimatePhase, {
       ...EstimatePhaseArea_meeting
       id
       endedAt
-      showSidebar
+      isCommentUnread
+      isRightDrawerOpen
       localStage {
         ...PokerEstimatePhaseStage @relay(mask: false)
       }
@@ -138,6 +97,7 @@ export default createFragmentContainer(PokerEstimatePhase, {
           }
         }
       }
+      showSidebar
       ...EstimatePhaseDiscussionDrawer_meeting
     }
   `

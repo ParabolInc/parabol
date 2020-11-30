@@ -5,6 +5,7 @@ import {createFragmentContainer} from 'react-relay'
 import textOverflow from '~/styles/helpers/textOverflow'
 import {PALETTE} from '~/styles/paletteV2'
 import {FONT_FAMILY} from '~/styles/typographyV2'
+import {PokerCards} from '../../../types/constEnums'
 import {ScaleDropdownMenuItem_scale} from '../../../__generated__/ScaleDropdownMenuItem_scale.graphql'
 
 interface Props {
@@ -45,7 +46,7 @@ const ScaleDropdownMenuItem = (props: Props) => {
         {
           values.map(
             ({label, isSpecial}) => {
-              return isSpecial && label === 'X' ? "Pass" : label
+              return isSpecial && label === PokerCards.PASS_CARD ? "Pass" : label
             }
           )
             .join(", ")

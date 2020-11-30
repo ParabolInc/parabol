@@ -28,6 +28,7 @@ import TeamInvitation from './TeamInvitation'
 import TeamMeetingSettings from './TeamMeetingSettings'
 import TeamMember from './TeamMember'
 import TierEnum from './TierEnum'
+import TeamIntegrations from './TeamIntegrations'
 
 const Team = new GraphQLObjectType<ITeam, GQLContext>({
   name: 'Team',
@@ -84,14 +85,16 @@ const Team = new GraphQLObjectType<ITeam, GQLContext>({
             .run()
         }
         const massInvitation = new MassInvitationDB({meetingId, teamMemberId})
-        await r
-          .table('MassInvitation')
-          .insert(massInvitation, {conflict: 'replace'})
-          .run()
+        await r.table('MassInvitation').insert(massInvitation, {conflict: 'replace'}).run()
         invitationTokens.length = 1
         invitationTokens[0] = massInvitation
         return massInvitation
       }
+    },
+    integrations: {
+      type: GraphQLNonNull(TeamIntegrations),
+      description: 'Integration details that are shared by all team members. Nothing user specific',
+      resolve: (source) => source
     },
     isPaid: {
       type: GraphQLBoolean,

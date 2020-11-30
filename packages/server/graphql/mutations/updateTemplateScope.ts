@@ -96,10 +96,7 @@ const updateTemplateScope = {
       await r({
         clonedTemplate: r.table('MeetingTemplate').insert(clonedTemplate),
         clonedPrompts: r.table('ReflectPrompt').insert(clonedPrompts),
-        inactivatedTemplate: r
-          .table('MeetingTemplate')
-          .get(templateId)
-          .update({isActive: false}),
+        inactivatedTemplate: r.table('MeetingTemplate').get(templateId).update({isActive: false}),
         inactivatedPrompts: r
           .table('ReflectPrompt')
           .getAll(r.args(promptIds))
@@ -129,10 +126,7 @@ const updateTemplateScope = {
       await r({
         clonedTemplate: r.table('MeetingTemplate').insert(clonedTemplate),
         clonedDimensions: r.table('TemplateDimension').insert(clonedDimensions),
-        inactivatedTemplate: r
-          .table('MeetingTemplate')
-          .get(templateId)
-          .update({isActive: false}),
+        inactivatedTemplate: r.table('MeetingTemplate').get(templateId).update({isActive: false}),
         inactivatedDimensions: r
           .table('TemplateDimension')
           .getAll(r.args(dimensionIds))

@@ -20,8 +20,8 @@ export default {
   args: {
     teamId: {
       type: new GraphQLNonNull(GraphQLID),
-      description: 'The team starting the meeting'
-    }
+      description: 'The team starting the meeting',
+    },
   },
   async resolve(
     _source,
@@ -69,16 +69,13 @@ export default {
       facilitatorUserId: viewerId,
       totalVotes,
       maxVotesPerGroup,
-      templateId: selectedTemplateId
+      templateId: selectedTemplateId,
     })
 
     const meetingId = meeting.id
     const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)
     const meetingMembers = createMeetingMembers(meeting, teamMembers)
-    await r
-      .table('NewMeeting')
-      .insert(meeting)
-      .run()
+    await r.table('NewMeeting').insert(meeting).run()
 
     // Disallow accidental starts (2 meetings within 2 seconds)
     const newActiveMeetings = await dataLoader.get('activeMeetingsByTeamId').load(teamId)
@@ -88,29 +85,18 @@ export default {
       return createdAt.getTime() > Date.now() - DUPLICATE_THRESHOLD
     })
     if (otherActiveMeeting) {
-      await r
-        .table('NewMeeting')
-        .get(meetingId)
-        .delete()
-        .run()
+      await r.table('NewMeeting').get(meetingId).delete().run()
       return {error: {message: 'Meeting already started'}}
     }
 
     await Promise.all([
-      r
-        .table('MeetingMember')
-        .insert(meetingMembers)
-        .run(),
-      r
-        .table('Team')
-        .get(teamId)
-        .update({lastMeetingType: meetingType})
-        .run()
+      r.table('MeetingMember').insert(meetingMembers).run(),
+      r.table('Team').get(teamId).update({lastMeetingType: meetingType}).run(),
     ])
 
     startSlackMeeting(meetingId, teamId, dataLoader).catch(console.log)
     const data = {teamId, meetingId}
     publish(SubscriptionChannel.TEAM, teamId, 'StartRetrospectiveSuccess', data, subOptions)
     return data
-  }
+  },
 }

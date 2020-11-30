@@ -31,6 +31,11 @@ const ScrollWrapper = styled('div')({
   height: '100%'
 })
 
+const EstimateMeta = styled('div')({
+  fontWeight: 600,
+  paddingRight: 8
+})
+
 const PokerSidebarEstimateSection = (props: Props) => {
   const {gotoStageId, handleMenuClick, meeting} = props
   const {localStage, facilitatorStageId, id: meetingId, phases, endedAt} = meeting
@@ -104,11 +109,15 @@ const PokerSidebarEstimateSection = (props: Props) => {
             return (
               <ScrollWrapper ref={provided.innerRef}>
                 {stageSummaries!.map((summary, idx) => {
-                  const {stageIds, title, isActive, isComplete, isNavigable} = summary
+                  const {stageIds, title, isActive, isComplete, isNavigable, finalScores} = summary
                   const [firstStageId] = stageIds
                   // the local user is at another stage than the facilitator stage
                   const isUnsyncedFacilitatorStage = !inSync && stageIds.includes(facilitatorStageId)
-                  const estimateMeta = <div>-</div>
+                  // show a disk if no scores
+                  // show the first score it has
+                  // if more than 1 score, have it do a tooltip
+                  const label = finalScores.find(Boolean) || '–'
+                  const estimateMeta = <EstimateMeta>{label}</EstimateMeta>
                   return (
                     <Draggable
                       key={firstStageId}
@@ -165,10 +174,10 @@ export default createFragmentContainer(PokerSidebarEstimateSection, {
         ...useMakeStageSummaries_phase
         ... on EstimatePhase {
           stages {
-          scores {
-            userId
+            scores {
+              userId
+            }
           }
-        }
         }
         phaseType
         stages {

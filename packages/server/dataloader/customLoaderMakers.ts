@@ -7,6 +7,7 @@ import {
   ThreadSourceEnum
 } from 'parabol-client/types/graphql'
 import promiseAllPartial from 'parabol-client/utils/promiseAllPartial'
+import {JiraGetIssueRes} from '../../client/utils/AtlassianManager'
 import getRethink, {RethinkSchema} from '../database/rethinkDriver'
 import AtlassianAuth from '../database/types/AtlassianAuth'
 import MeetingTemplate from '../database/types/MeetingTemplate'
@@ -14,6 +15,7 @@ import {Reactable} from '../database/types/Reactable'
 import Task from '../database/types/Task'
 import {ThreadSource} from '../database/types/ThreadSource'
 import AtlassianServerManager from '../utils/AtlassianServerManager'
+import sendToSentry from '../utils/sendToSentry'
 import normalizeRethinkDbResults from './normalizeRethinkDbResults'
 import ProxiedCache from './ProxiedCache'
 import RethinkDataLoader from './RethinkDataLoader'
@@ -23,6 +25,13 @@ export interface JiraRemoteProjectKey {
   accessToken: string
   cloudId: string
   atlassianProjectId: string
+}
+
+export interface JiraIssueKey {
+  teamId: string
+  userId: string
+  cloudId: string
+  issueKey: string
 }
 
 export interface UserTasksKey {
@@ -204,9 +213,7 @@ export const userTasks = (parent: RethinkDataLoader) => {
               .filter((task) =>
                 archived
                   ? task('tags').contains('archived')
-                  : task('tags')
-                      .contains('archived')
-                      .not()
+                  : task('tags').contains('archived').not()
               )
               .filter((task) => {
                 if (includeUnassigned) return true
@@ -293,6 +300,42 @@ export const jiraRemoteProject = (parent: RethinkDataLoader) => {
     {
       ...parent.dataLoaderOptions,
       cacheKeyFn: (key) => `${key.atlassianProjectId}:${key.cloudId}`
+    }
+  )
+}
+
+export const jiraIssue = (parent: RethinkDataLoader) => {
+  return new DataLoader<JiraIssueKey, JiraGetIssueRes['fields'] | null, string>(
+    async (keys) => {
+      return promiseAllPartial(
+        keys.map(async ({teamId, userId, cloudId, issueKey}) => {
+          const auth = await parent.get('freshAtlassianAuth').load({teamId, userId})
+          if (!auth) {
+            sendToSentry(new Error('No atlassian access token exists for team member'), {
+              userId,
+              tags: {teamId}
+            })
+            return null
+          }
+          const {accessToken} = auth
+          const manager = new AtlassianServerManager(accessToken)
+          const issueRes = await manager.getIssue(cloudId, issueKey)
+          if ('message' in issueRes) {
+            sendToSentry(new Error(issueRes.message), {userId, tags: {cloudId, issueKey, teamId}})
+            return null
+          }
+          if ('errors' in issueRes) {
+            const error = issueRes.errors[0]
+            sendToSentry(new Error(error), {userId, tags: {cloudId, issueKey, teamId}})
+            return null
+          }
+          return issueRes.fields
+        })
+      )
+    },
+    {
+      ...parent.dataLoaderOptions,
+      cacheKeyFn: ({cloudId, issueKey}) => `${cloudId}:${issueKey}`
     }
   )
 }

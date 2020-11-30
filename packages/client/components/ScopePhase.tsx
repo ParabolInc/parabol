@@ -12,8 +12,10 @@ import PhaseWrapper from './PhaseWrapper'
 import {PokerMeetingPhaseProps} from './PokerMeeting'
 import ScopePhaseArea from './ScopePhaseArea'
 import StageTimerDisplay from './StageTimerDisplay'
+import useGotoStageId from '~/hooks/useGotoStageId'
 interface Props extends PokerMeetingPhaseProps {
   meeting: ScopePhase_meeting
+  gotoStageId?: ReturnType<typeof useGotoStageId>
 }
 
 const ScopePhase = (props: Props) => {

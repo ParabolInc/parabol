@@ -15,7 +15,7 @@ graphql`
     meetingId
     user {
       id
-      ...PeekingAvatar_user
+      ...PokerVotingAvatar_user
     }
     isHover
     stageId

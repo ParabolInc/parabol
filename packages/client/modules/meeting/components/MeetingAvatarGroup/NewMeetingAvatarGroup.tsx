@@ -51,7 +51,7 @@ const OverlappingBlock = styled('div')({
 const OverflowCount = styled('div')<{status: TransitionStatus}>(({status}) => ({
   opacity: status === TransitionStatus.MOUNTED || status === TransitionStatus.EXITING ? 0 : 1,
   transition: `all 300ms ${DECELERATE}`,
-  backgroundColor: PALETTE.BACKGROUND_BLUE,
+  backgroundColor: PALETTE.BACKGROUND_BLUE_LIGHT,
   borderRadius: '100%',
   color: '#FFFFFF',
   fontSize: 11,

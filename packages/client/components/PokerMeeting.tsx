@@ -1,6 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
-import React, {ReactElement, Suspense} from 'react'
-import {createFragmentContainer} from 'react-relay'
+import React, {ReactElement, Suspense, useEffect} from 'react'
+import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
+import useAtmosphere from '~/hooks/useAtmosphere'
 import useBreakpoint from '~/hooks/useBreakpoint'
 import {Breakpoint} from '~/types/constEnums'
 import {PokerMeeting_meeting} from '~/__generated__/PokerMeeting_meeting.graphql'
@@ -19,12 +20,12 @@ interface Props {
 }
 
 const phaseLookup = {
-  [NewMeetingPhaseTypeEnum.checkin]: lazyPreload(() =>
-    import(/* webpackChunkName: 'NewMeetingCheckIn' */ './NewMeetingCheckIn')
+  [NewMeetingPhaseTypeEnum.checkin]: lazyPreload(
+    () => import(/* webpackChunkName: 'NewMeetingCheckIn' */ './NewMeetingCheckIn')
   ),
   SCOPE: lazyPreload(() => import(/* webpackChunkName: 'ScopePhase' */ './ScopePhase')),
-  ESTIMATE: lazyPreload(() =>
-    import(/* webpackChunkName: 'PokerEstimatePhase' */ './PokerEstimatePhase')
+  ESTIMATE: lazyPreload(
+    () => import(/* webpackChunkName: 'PokerEstimatePhase' */ './PokerEstimatePhase')
   )
 }
 
@@ -38,7 +39,6 @@ export interface PokerMeetingPhaseProps {
 
 const PokerMeeting = (props: Props) => {
   const {meeting} = props
-  const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const {
     toggleSidebar,
     room,
@@ -51,19 +51,45 @@ const PokerMeeting = (props: Props) => {
     safeRoute,
     handleMenuClick
   } = useMeeting(meeting)
+  const atmosphere = useAtmosphere()
+  const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
+  const {
+    id: meetingId,
+    isCommentUnread,
+    isRightDrawerOpen,
+    showSidebar,
+    viewerMeetingMember,
+    localPhase
+  } = meeting
+
+  const toggleDrawer = () => {
+    commitLocalUpdate(atmosphere, (store) => {
+      const meeting = store.get(meetingId)!
+      if (isRightDrawerOpen && isCommentUnread) {
+        meeting.setValue(false, 'isCommentUnread')
+      }
+      meeting.setValue(!isRightDrawerOpen, 'isRightDrawerOpen')
+    })
+  }
+  useEffect(() => {
+    commitLocalUpdate(atmosphere, (store) => {
+      const meeting = store.get(meetingId)!
+      meeting.setValue(isDesktop, 'isRightDrawerOpen')
+    })
+  }, [isDesktop])
+
   if (!safeRoute) return null
-  const {showSidebar, viewerMeetingMember, localPhase} = meeting
   const {user} = viewerMeetingMember
   const {featureFlags} = user
   const {video: allowVideo} = featureFlags
   const localPhaseType = localPhase?.phaseType
-  const isRightSidebarOpen = isDesktop && localPhaseType === NewMeetingPhaseTypeEnum.ESTIMATE
   const Phase = phaseLookup[localPhaseType] as PhaseComponent
   return (
     <MeetingStyles>
       <ResponsiveDashSidebar isOpen={showSidebar} onToggle={toggleSidebar}>
         <PokerMeetingSidebar
           gotoStageId={gotoStageId}
+          
           handleMenuClick={handleMenuClick}
           toggleSidebar={toggleSidebar}
           meeting={meeting}
@@ -71,7 +97,9 @@ const PokerMeeting = (props: Props) => {
       </ResponsiveDashSidebar>
       <Suspense fallback={''}>
         <Phase
+          gotoStageId={gotoStageId}
           meeting={meeting}
+          toggleDrawer={toggleDrawer}
           toggleSidebar={toggleSidebar}
           avatarGroup={
             <NewMeetingAvatarGroup
@@ -90,7 +118,7 @@ const PokerMeeting = (props: Props) => {
         meeting={meeting}
         handleGotoNext={handleGotoNext}
         gotoStageId={gotoStageId}
-        isRightSidebarOpen={isRightSidebarOpen}
+        isRightDrawerOpen={isRightDrawerOpen}
       />
     </MeetingStyles>
   )
@@ -109,7 +137,8 @@ export default createFragmentContainer(PokerMeeting, {
       id
       # hack to initialize local state (clientField needs to be on non-id domain state. thx relay)
       init: id @__clientField(handle: "localPoker")
-      showSidebar
+      isCommentUnread
+      isRightDrawerOpen
       localPhase {
         phaseType
       }
@@ -119,6 +148,7 @@ export default createFragmentContainer(PokerMeeting, {
           id
         }
       }
+      showSidebar
       viewerMeetingMember {
         user {
           featureFlags {

@@ -39,7 +39,7 @@
     "@types/stripe-v2": "^2.0.1",
     "babel-plugin-relay": "^8.0.0",
     "eslint": "^6.6.0",
-    "eslint-config-prettier": "^6.5.0",
+    "eslint-config-prettier": "^6.15.0",
     "eslint-plugin-emotion": "^10.0.14",
     "eslint-plugin-prettier": "^3.1.1",
     "eslint-plugin-react": "^7.16.0",
@@ -47,10 +47,10 @@
     "expect": "^24.8.0",
     "flow-bin": "^0.103.0",
     "lint-staged": "^10.1.7",
-    "prettier": "^1.19.1",
+    "prettier": "^2.1.2",
     "relay-config": "^8.0.0",
     "strict-event-emitter-types": "^2.0.0",
-    "typescript": "^4.0.2",
+    "typescript": "^4.0.5",
     "webpack": "^4.41.5"
   },
   "dependencies": {
@@ -58,7 +58,7 @@
     "@emotion/styled": "^10.0.27",
     "@mattkrick/fast-rtc-swarm": "^0.4.1",
     "@mattkrick/graphql-trebuchet-client": "^1.0.2",
-    "@mattkrick/sanitize-svg": "0.2.1",
+    "@mattkrick/sanitize-svg": "0.3.1",
     "@mattkrick/trebuchet-client": "^2.0.0",
     "@sentry/browser": "^5.8.0",
     "core-js": "^3.6.5",
@@ -107,7 +107,7 @@
     "string-score": "^1.0.1",
     "tayden-clusterfck": "^0.7.0",
     "tlds": "^1.192.0",
-    "tslib": "^1.11.1",
+    "tslib": "^2.0.3",
     "unicode-substring": "^1.0.0"
   },
   "jest": {

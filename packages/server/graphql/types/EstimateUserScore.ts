@@ -1,5 +1,6 @@
-import {GraphQLFloat, GraphQLID, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
+import {GraphQLID, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
 import {GQLContext} from '../graphql'
+import User from './User'
 
 const EstimateUserScore = new GraphQLObjectType<any, GQLContext>({
   name: 'EstimateUserScore',
@@ -21,14 +22,17 @@ const EstimateUserScore = new GraphQLObjectType<any, GQLContext>({
       type: GraphQLNonNull(GraphQLID),
       description: 'The userId that for this score'
     },
-    value: {
-      type: GraphQLNonNull(GraphQLFloat),
-      description:
-        'the value that existed in the scale at the time of the vote. note that this value may no longer exist on the scale'
+    user: {
+      type: GraphQLNonNull(User),
+      description: 'The user that for this score',
+      resolve: ({userId}, _args, {dataLoader}) => {
+        return dataLoader.get('users').load(userId)
+      }
     },
     label: {
       type: GraphQLNonNull(GraphQLString),
-      description: 'The label that was associated with the score at the time of the vote'
+      description:
+        'The label that was associated with the score at the time of the vote. Note: It may no longer exist on the dimension'
     }
   })
 })

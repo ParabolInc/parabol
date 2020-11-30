@@ -6,7 +6,6 @@ import getQueryToken from '../utils/getQueryToken'
 import sendToSentry from '../utils/sendToSentry'
 import uwsGetIP from '../utils/uwsGetIP'
 
-
 const handleUpgrade: WebSocketBehavior['upgrade'] = async (res, req, context) => {
   const aborted = {done: false}
   const protocol = req.getHeader('sec-websocket-protocol')

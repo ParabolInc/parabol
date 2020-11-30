@@ -101,14 +101,10 @@ const newPokerTemplates = [
   }
 ]
 
-export const up = async function(r: R) {
+export const up = async function (r: R) {
   try {
     // Delete old template
-    await r
-      .table('MeetingTemplate')
-      .get('estimatedEffortTemplate')
-      .delete()
-      .run()
+    await r.table('MeetingTemplate').get('estimatedEffortTemplate').delete().run()
 
     // Delete old dimensions
     await r
@@ -118,22 +114,16 @@ export const up = async function(r: R) {
       .run()
 
     // Insert new dimensions
-    await r
-      .table('TemplateDimension')
-      .insert(newDimensions)
-      .run()
+    await r.table('TemplateDimension').insert(newDimensions).run()
 
     // Insert new templates
-    await r
-      .table('MeetingTemplate')
-      .insert(newPokerTemplates)
-      .run()
+    await r.table('MeetingTemplate').insert(newPokerTemplates).run()
   } catch (e) {
     console.log(e)
   }
 }
 
-export const down = async function(r: R) {
+export const down = async function (r: R) {
   try {
     // Delete new template
     await r
@@ -152,16 +142,10 @@ export const down = async function(r: R) {
       .run()
 
     // Insert old dimensions
-    await r
-      .table('TemplateDimension')
-      .insert(currentDimensions)
-      .run()
+    await r.table('TemplateDimension').insert(currentDimensions).run()
 
     // Insert old templates
-    await r
-      .table('MeetingTemplate')
-      .insert(currentPokerTemplates)
-      .run()
+    await r.table('MeetingTemplate').insert(currentPokerTemplates).run()
   } catch (e) {
     console.log(e)
   }

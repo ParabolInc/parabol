@@ -61,7 +61,7 @@ export interface IAuthIdentity {
  */
 export const enum AuthIdentityTypeEnum {
   LOCAL = 'LOCAL',
-  GOOGLE = 'GOOGLE'
+  GOOGLE = 'GOOGLE',
 }
 
 /**
@@ -149,7 +149,7 @@ export const enum NewMeetingPhaseTypeEnum {
   discuss = 'discuss',
   SUMMARY = 'SUMMARY',
   SCOPE = 'SCOPE',
-  ESTIMATE = 'ESTIMATE'
+  ESTIMATE = 'ESTIMATE',
 }
 
 /**
@@ -490,7 +490,7 @@ export interface ISuggestedIntegration {
 export const enum TaskServiceEnum {
   github = 'github',
   jira = 'jira',
-  PARABOL = 'PARABOL'
+  PARABOL = 'PARABOL',
 }
 
 /**
@@ -582,6 +582,11 @@ export interface IAtlassianIntegration {
   projects: Array<IJiraRemoteProject>;
 
   /**
+   * The list of field names that can be used as a
+   */
+  jiraFields: Array<string>;
+
+  /**
    * the list of suggested search queries, sorted by most recent. Guaranteed to be < 60 days old
    */
   jiraSearchQueries: Array<IJiraSearchQuery>;
@@ -608,6 +613,13 @@ export interface IIssuesOnAtlassianIntegrationArguments {
    */
   isJQL: boolean;
   projectKeyFilters?: Array<string> | null;
+}
+
+export interface IJiraFieldsOnAtlassianIntegrationArguments {
+  /**
+   * Filter the fields to single cloudId
+   */
+  cloudId: string;
 }
 
 /**
@@ -679,7 +691,7 @@ export interface IJiraIssue {
   __typename: 'JiraIssue';
 
   /**
-   * shortid
+   * cloudId:key
    */
   id: string;
 
@@ -1521,7 +1533,7 @@ export interface IThreadOnTaskArguments {
 export const enum ThreadSourceEnum {
   AGENDA_ITEM = 'AGENDA_ITEM',
   REFLECTION_GROUP = 'REFLECTION_GROUP',
-  STORY = 'STORY'
+  STORY = 'STORY',
 }
 
 /**
@@ -1642,11 +1654,6 @@ export interface ITaskEstimate {
    * The human-readable label for the estimate
    */
   label: string;
-
-  /**
-   * The numeric value representing the label. If the label was not a value in the TemplateScale, this is null
-   */
-  value: number | null;
 }
 
 export interface ITaskEditorDetails {
@@ -1678,7 +1685,7 @@ export const enum TaskStatusEnum {
   active = 'active',
   stuck = 'stuck',
   done = 'done',
-  future = 'future'
+  future = 'future',
 }
 
 /**
@@ -1716,6 +1723,11 @@ export interface ITeam {
    * The hash and expiration for a token that allows anyone with it to join the team
    */
   massInvitation: IMassInvitation | null;
+
+  /**
+   * Integration details that are shared by all team members. Nothing user specific
+   */
+  integrations: ITeamIntegrations;
 
   /**
    * true if the underlying org has a validUntil date greater than now. if false, subs do not work
@@ -1842,7 +1854,7 @@ export interface ITeamMembersOnTeamArguments {
 export const enum MeetingTypeEnum {
   action = 'action',
   retrospective = 'retrospective',
-  poker = 'poker'
+  poker = 'poker',
 }
 
 /**
@@ -1861,6 +1873,73 @@ export interface IMassInvitation {
    */
   expiration: any;
   meetingId: string | null;
+}
+
+/**
+ * All the available integrations available for this team member
+ */
+export interface ITeamIntegrations {
+  __typename: 'TeamIntegrations';
+
+  /**
+   * composite
+   */
+  id: string;
+
+  /**
+   * All things associated with an atlassian integration for a team member
+   */
+  atlassian: IAtlassianTeamIntegration;
+}
+
+/**
+ * The atlassian integration details shared across an entire team
+ */
+export interface IAtlassianTeamIntegration {
+  __typename: 'AtlassianTeamIntegration';
+
+  /**
+   * shortid
+   */
+  id: string;
+
+  /**
+   * The dimensions and their corresponding Jira fields
+   */
+  jiraDimensionFields: Array<IJiraDimensionField>;
+}
+
+/**
+ * Poker dimensions mapped to their corresponding fields in jira
+ */
+export interface IJiraDimensionField {
+  __typename: 'JiraDimensionField';
+  id: string;
+
+  /**
+   * The atlassian cloud that the field lives in
+   */
+  cloudId: string;
+
+  /**
+   * The poker template dimension Id
+   */
+  dimensionId: string;
+
+  /**
+   * The ID referring to the field name
+   */
+  fieldId: string;
+
+  /**
+   * The field name in jira that the estimate is pushed to
+   */
+  fieldName: string;
+
+  /**
+   * the type of field, e.g. number, string, any
+   */
+  fieldType: string;
 }
 
 /**
@@ -1992,7 +2071,7 @@ export interface IReflectTemplate {
 export const enum SharingScopeEnum {
   TEAM = 'TEAM',
   ORGANIZATION = 'ORGANIZATION',
-  PUBLIC = 'PUBLIC'
+  PUBLIC = 'PUBLIC',
 }
 
 /**
@@ -2099,7 +2178,7 @@ export interface ITeamMeetingSettings {
 export const enum TierEnum {
   personal = 'personal',
   pro = 'pro',
-  enterprise = 'enterprise'
+  enterprise = 'enterprise',
 }
 
 /**
@@ -2401,7 +2480,7 @@ export interface IOrganizationUser {
  * The role of the org user
  */
 export const enum OrgUserRole {
-  BILLING_LEADER = 'BILLING_LEADER'
+  BILLING_LEADER = 'BILLING_LEADER',
 }
 
 export interface IOrgUserCount {
@@ -2655,7 +2734,7 @@ export const enum InvoiceLineItemEnum {
   ADDED_USERS = 'ADDED_USERS',
   INACTIVITY_ADJUSTMENTS = 'INACTIVITY_ADJUSTMENTS',
   OTHER_ADJUSTMENTS = 'OTHER_ADJUSTMENTS',
-  REMOVED_USERS = 'REMOVED_USERS'
+  REMOVED_USERS = 'REMOVED_USERS',
 }
 
 /**
@@ -2697,7 +2776,7 @@ export const enum InvoiceStatusEnum {
   PENDING = 'PENDING',
   PAID = 'PAID',
   FAILED = 'FAILED',
-  UPCOMING = 'UPCOMING'
+  UPCOMING = 'UPCOMING',
 }
 
 /**
@@ -2790,7 +2869,7 @@ export const enum SuggestedActionTypeEnum {
   tryTheDemo = 'tryTheDemo',
   tryRetroMeeting = 'tryRetroMeeting',
   createNewTeam = 'createNewTeam',
-  tryActionMeeting = 'tryActionMeeting'
+  tryActionMeeting = 'tryActionMeeting',
 }
 
 /**
@@ -2908,7 +2987,7 @@ export const enum TimelineEventEnum {
   actionComplete = 'actionComplete',
   joinedParabol = 'joinedParabol',
   createdTeam = 'createdTeam',
-  POKER_COMPLETE = 'POKER_COMPLETE'
+  POKER_COMPLETE = 'POKER_COMPLETE',
 }
 
 /**
@@ -3035,7 +3114,7 @@ export interface INotification {
 export const enum NotificationStatusEnum {
   UNREAD = 'UNREAD',
   READ = 'READ',
-  CLICKED = 'CLICKED'
+  CLICKED = 'CLICKED',
 }
 
 /**
@@ -3048,7 +3127,7 @@ export const enum NotificationEnum {
   TEAM_INVITATION = 'TEAM_INVITATION',
   TEAM_ARCHIVED = 'TEAM_ARCHIVED',
   TASK_INVOLVES = 'TASK_INVOLVES',
-  MEETING_STAGE_TIME_LIMIT_END = 'MEETING_STAGE_TIME_LIMIT_END'
+  MEETING_STAGE_TIME_LIMIT_END = 'MEETING_STAGE_TIME_LIMIT_END',
 }
 
 /**
@@ -3314,7 +3393,7 @@ export const enum SlackNotificationEventEnum {
   meetingStart = 'meetingStart',
   meetingEnd = 'meetingEnd',
   MEETING_STAGE_TIME_LIMIT_END = 'MEETING_STAGE_TIME_LIMIT_END',
-  MEETING_STAGE_TIME_LIMIT_START = 'MEETING_STAGE_TIME_LIMIT_START'
+  MEETING_STAGE_TIME_LIMIT_START = 'MEETING_STAGE_TIME_LIMIT_START',
 }
 
 /**
@@ -3329,7 +3408,7 @@ export const enum SlackNotificationEventTypeEnum {
   /**
    * notification that concerns a single member on the team
    */
-  member = 'member'
+  member = 'member',
 }
 
 /**
@@ -3842,11 +3921,6 @@ export interface ITemplateScaleValue {
    * The color used to visually group a scale value
    */
   color: string;
-
-  /**
-   * The numerical value for this scale value
-   */
-  value: number;
 
   /**
    * The label for this value, e.g., XS, M, L
@@ -4588,14 +4662,19 @@ export interface IEstimateStage {
   creatorUserId: string;
 
   /**
-   * The service the task is connected to. If null, it is parabol
+   * The service the task is connected to
    */
-  service: TaskServiceEnum | null;
+  service: TaskServiceEnum;
 
   /**
-   * The stringified JSON used to fetch the task used by the service
+   * The key used to fetch the task used by the service. Jira: cloudId:issueKey. Parabol: taskId
    */
   serviceTaskId: string;
+
+  /**
+   * The field name used by the service for this dimension
+   */
+  serviceField: IServiceField;
 
   /**
    * The sort order for reprioritizing discussion topics
@@ -4608,9 +4687,14 @@ export interface IEstimateStage {
   dimensionId: string;
 
   /**
+   * the dimension related to this stage by dimension id
+   */
+  dimension: ITemplateDimension;
+
+  /**
    * the final score, as defined by the facilitator
    */
-  finalScore: number | null;
+  finalScore: string | null;
 
   /**
    * the userIds of the team members hovering the deck
@@ -4628,14 +4712,31 @@ export interface IEstimateStage {
   scores: Array<IEstimateUserScore>;
 
   /**
-   * the story referenced in the stage. Either a Parabol Task or something similar from an integration
+   * the story referenced in the stage. Either a Parabol Task or something similar from an integration. Null if fetching from service failed
    */
-  story: Story;
+  story: Story | null;
 
   /**
    * true when the participants are still voting and results are hidden. false when votes are revealed
    */
   isVoting: boolean;
+}
+
+/**
+ * A field that exists on a 3rd party service
+ */
+export interface IServiceField {
+  __typename: 'ServiceField';
+
+  /**
+   * The name of the field as provided by the service
+   */
+  name: string;
+
+  /**
+   * The field type, to be used for validation and analytics
+   */
+  type: string;
 }
 
 /**
@@ -4660,12 +4761,12 @@ export interface IEstimateUserScore {
   userId: string;
 
   /**
-   * the value that existed in the scale at the time of the vote. note that this value may no longer exist on the scale
+   * The user that for this score
    */
-  value: number;
+  user: IUser;
 
   /**
-   * The label that was associated with the score at the time of the vote
+   * The label that was associated with the score at the time of the vote. Note: It may no longer exist on the dimension
    */
   label: string;
 }
@@ -5024,7 +5125,7 @@ export interface ICustomPhaseItem {
  * The type of phase item
  */
 export const enum CustomPhaseItemTypeEnum {
-  retroPhaseItem = 'retroPhaseItem'
+  retroPhaseItem = 'retroPhaseItem',
 }
 
 /**
@@ -5494,7 +5595,7 @@ export interface IReflectionGroupsOnRetrospectiveMeetingArguments {
  */
 export const enum ReflectionGroupSortEnum {
   voteCount = 'voteCount',
-  stageOrder = 'stageOrder'
+  stageOrder = 'stageOrder',
 }
 
 /**
@@ -6533,7 +6634,7 @@ export interface IMassInvitationPayload {
 export const enum TeamInvitationErrorEnum {
   accepted = 'accepted',
   expired = 'expired',
-  notFound = 'notFound'
+  notFound = 'notFound',
 }
 
 export interface IVerifiedInvitationPayload {
@@ -7193,6 +7294,11 @@ export interface IMutation {
    * Update the final score field & push to the associated integration
    */
   pokerSetFinalScore: PokerSetFinalScorePayload;
+
+  /**
+   * Set the jira field that the poker dimension should map to
+   */
+  updateJiraDimensionField: UpdateJiraDimensionFieldPayload;
 }
 
 export interface IAcceptTeamInvitationOnMutationArguments {
@@ -8308,9 +8414,9 @@ export interface IVoteForPokerStoryOnMutationArguments {
   stageId: string;
 
   /**
-   * The value of the scaleValue to vote for. If null, remove the vote
+   * The label of the scaleValue to vote for. If null, remove the vote
    */
-  score?: number | null;
+  score?: string | null;
 }
 
 export interface IPokerRevealVotesOnMutationArguments {
@@ -8338,9 +8444,28 @@ export interface IPokerSetFinalScoreOnMutationArguments {
   stageId: string;
 
   /**
-   * A string representation of the final score. It may not have an associated value in the scale
+   * The label from the scale value
    */
   finalScore: string;
+}
+
+export interface IUpdateJiraDimensionFieldOnMutationArguments {
+  dimensionId: string;
+
+  /**
+   * The jira field name that we should push estimates to
+   */
+  fieldName: string;
+
+  /**
+   * The cloudId the field lives on
+   */
+  cloudId: string;
+
+  /**
+   * The meeting the update happend in. If present, can return a meeting object with updated serviceField
+   */
+  meetingId: string;
 }
 
 export interface IAcceptTeamInvitationPayload {
@@ -8452,6 +8577,11 @@ export interface IAddCommentSuccess {
    * the comment just created
    */
   comment: IComment;
+
+  /**
+   * The id of the meeting where the comment was added
+   */
+  meetingId: string;
 }
 
 export interface IAddCommentInput {
@@ -8560,7 +8690,7 @@ export interface IAddReactjiToReactableSuccess {
  */
 export const enum ReactableEnum {
   COMMENT = 'COMMENT',
-  REFLECTION = 'REFLECTION'
+  REFLECTION = 'REFLECTION',
 }
 
 export interface IAddReflectTemplatePayload {
@@ -8616,7 +8746,7 @@ export interface IAddFeatureFlagPayload {
 export const enum UserFlagEnum {
   video = 'video',
   jira = 'jira',
-  poker = 'poker'
+  poker = 'poker',
 }
 
 export interface IAddGitHubAuthPayload {
@@ -8964,7 +9094,7 @@ export interface INotifyTaskInvolves {
  */
 export const enum TaskInvolvementType {
   ASSIGNEE = 'ASSIGNEE',
-  MENTIONEE = 'MENTIONEE'
+  MENTIONEE = 'MENTIONEE',
 }
 
 export interface ICreateTaskInput {
@@ -9002,7 +9132,7 @@ export interface ICreateTaskInput {
 export const enum AreaEnum {
   meeting = 'meeting',
   teamDash = 'teamDash',
-  userDash = 'userDash'
+  userDash = 'userDash',
 }
 
 export interface ICreateUserPicturePutUrlPayload {
@@ -9461,7 +9591,7 @@ export interface IRemoteReflectionDrag {
  */
 export const enum DragReflectionDropTargetTypeEnum {
   REFLECTION_GROUP = 'REFLECTION_GROUP',
-  REFLECTION_GRID = 'REFLECTION_GRID'
+  REFLECTION_GRID = 'REFLECTION_GRID',
 }
 
 export interface IEndNewMeetingPayload {
@@ -10513,7 +10643,7 @@ export interface IUpdatePokerScopeItemInput {
  */
 export const enum AddOrDeleteEnum {
   ADD = 'ADD',
-  DELETE = 'DELETE'
+  DELETE = 'DELETE',
 }
 
 export interface IUpdateReflectionContentPayload {
@@ -10780,6 +10910,25 @@ export interface IPokerSetFinalScoreSuccess {
    * The stage that holds the updated finalScore
    */
   stage: IEstimateStage;
+}
+
+/**
+ * Return object for UpdateJiraDimensionFieldPayload
+ */
+export type UpdateJiraDimensionFieldPayload =
+  | IErrorPayload
+  | IUpdateJiraDimensionFieldSuccess;
+
+export interface IUpdateJiraDimensionFieldSuccess {
+  __typename: 'UpdateJiraDimensionFieldSuccess';
+  teamId: string;
+  meetingId: string | null;
+  team: ITeam;
+
+  /**
+   * The poker meeting the field was updated from
+   */
+  meeting: IPokerMeeting | null;
 }
 
 export interface ISubscription {
@@ -11085,7 +11234,8 @@ export type TeamSubscriptionPayload =
   | IUpdatePokerTemplateDimensionScalePayload
   | IUpdatePokerTemplateScaleValuePayload
   | IUpdateUserProfilePayload
-  | IPersistJiraSearchQuerySuccess;
+  | IPersistJiraSearchQuerySuccess
+  | IUpdateJiraDimensionFieldSuccess;
 
 export interface IRenamePokerTemplatePayload {
   __typename: 'RenamePokerTemplatePayload';

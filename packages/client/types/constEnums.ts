@@ -170,8 +170,18 @@ export const enum MeetingLabels {
 export const enum PokerCards {
   HEIGHT = 175,
   WIDTH = 125,
-  OVERLAP = 96
-
+  OVERLAP = 96,
+  MAX_VALUE = 2147483647,
+  // the angle in degrees from the middle of the deck to a deck edge (0-90)
+  TILT = 8,
+  // number of pixels from the middle of the circle below the fold to the middle of the card (0-2x innerHeight)
+  RADIUS = 1200,
+  // the % of the first & last card that sits below the fold (0-1)
+  MAX_HIDDEN = .35,
+  PASS_CARD = 'X',
+  QUESTION_CARD = '?',
+  DELETED_CARD = '#',
+  AVATAR_WIDTH = 40
 }
 export const enum UserTaskViewFilterLabels {
   ALL_TEAMS = 'All Teams',
@@ -352,5 +362,11 @@ export const enum AuthTokenRole {
 
 export const enum SprintPokerDefaults {
   DEFAULT_TEMPLATE_ID = 'estimatedEffortTemplate',
-  DEFAULT_SCALE_ID = 'fibonacciScale'
+  DEFAULT_SCALE_ID = 'fibonacciScale',
+  JIRA_FIELD_DEFAULT = 'Story point estimate',
+  JIRA_FIELD_COMMENT = '__comment',
+  JIRA_FIELD_COMMENT_LABEL = 'As Comment',
+  JIRA_FIELD_NULL = '',
+  JIRA_FIELD_NULL_LABEL = 'Do Not Update'
+
 }
