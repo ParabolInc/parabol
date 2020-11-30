@@ -1,6 +1,7 @@
 import {APP_MAX_AVATAR_FILE_SIZE} from 'parabol-client/utils/constants'
 import {HttpResponse, getParts, MultipartField} from 'uWebSockets.js'
-import {OperationPayload} from '@mattkrick/graphql-trebuchet-client'
+import isObject from 'parabol-client/utils/isObject'
+import {FetchHTTPData} from 'parabol-client/Atmosphere'
 
 interface UploadableBuffer {
   contentType: string
@@ -16,9 +17,11 @@ type ParseFormBodySignature = {
   contentType: string
 }
 
-interface FetchHTTPData {
-  type: 'start' | 'stop'
-  payload: OperationPayload
+const isFetchHTTPData = (body: any): body is FetchHTTPData => {
+  const validShape = isObject(body)
+  const validTypeField = ['start', 'stop'].includes(body['type'])
+  const validPayloadField = isObject(body['payload'])
+  return validShape && validTypeField && validPayloadField
 }
 
 const parseRes = (res: HttpResponse) => {
@@ -33,7 +36,10 @@ const parseRes = (res: HttpResponse) => {
   })
 }
 
-const parseFormBody = async ({res, contentType}: ParseFormBodySignature): Promise<JSON | null> => {
+const parseFormBody = async ({
+  res,
+  contentType
+}: ParseFormBodySignature): Promise<FetchHTTPData | null> => {
   let parsedBody: unknown
   const parsedUploadables: UploadableBufferMap = {}
   const resBuffer = await parseRes(res)
@@ -53,15 +59,15 @@ const parseFormBody = async ({res, contentType}: ParseFormBodySignature): Promis
         } as UploadableBuffer
       }
     })
-    if (!parsedBody || typeof parsedBody !== 'object') return null
+    if (!isFetchHTTPData(parsedBody)) return null
+    const validParsedBody = parsedBody as FetchHTTPData
     if (Object.keys(parsedUploadables).length) {
-      const validParsedBody = parsedBody as FetchHTTPData
       validParsedBody.payload.variables = {
         ...validParsedBody.payload.variables,
         ...parsedUploadables
       }
     }
-    return parsedBody as JSON
+    return validParsedBody
   } catch (e) {
     return null
   }

@@ -51,7 +51,7 @@ export type SubscriptionRequestor = {
   key: string
 }
 
-interface FetchHTTPData {
+export interface FetchHTTPData {
   type: 'start' | 'stop'
   payload: OperationPayload
 }
