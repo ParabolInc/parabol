@@ -7292,6 +7292,7 @@ export interface IMutation {
    * Set the jira field that the poker dimension should map to
    */
   updateJiraDimensionField: UpdateJiraDimensionFieldPayload;
+  messageAllSlackUsers: MessageAllSlackUsersPayload;
 }
 
 export interface IAcceptTeamInvitationOnMutationArguments {
@@ -8445,6 +8446,13 @@ export interface IUpdateJiraDimensionFieldOnMutationArguments {
    * The meeting the update happend in. If present, can return a meeting object with updated serviceField
    */
   meetingId?: string | null;
+}
+
+export interface IMessageAllSlackUsersOnMutationArguments {
+  /**
+   * The slack message that will be sent to all Slack users
+   */
+  message: string;
 }
 
 export interface IAcceptTeamInvitationPayload {
@@ -10919,6 +10927,22 @@ export interface IUpdateJiraDimensionFieldSuccess {
    * The poker meeting the field was updated from
    */
   meeting: IPokerMeeting | null;
+}
+
+/**
+ * Return object for MessageAllSlackUsersPayload
+ */
+export type MessageAllSlackUsersPayload =
+  | IErrorPayload
+  | IMessageAllSlackUsersSuccess;
+
+export interface IMessageAllSlackUsersSuccess {
+  __typename: 'MessageAllSlackUsersSuccess';
+
+  /**
+   * A list of the Parabol user ids that have been sent a direct message in Slack
+   */
+  messagedUserIds: Array<string>;
 }
 
 export interface ISubscription {
