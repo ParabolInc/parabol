@@ -18,6 +18,7 @@ import pinIcon from '../../../../styles/theme/images/icons/pin.svg'
 import unpinIcon from '../../../../styles/theme/images/icons/unpin.svg'
 import {ICON_SIZE} from '../../../../styles/typographyV2'
 import {NewMeetingPhaseTypeEnum} from '~/types/graphql'
+import findStageAfterId from '../../../../utils/meetings/findStageAfterId'
 
 const AgendaItemStyles = styled('div')({
   position: 'relative',
@@ -113,6 +114,9 @@ const AgendaItem = (props: Props) => {
   const {id: agendaItemId, content, pinned, teamMember} = agendaItem
   const meetingId = meeting?.id
   const endedAt = meeting?.endedAt
+  const facilitatorUserId = meeting?.facilitatorUserId
+  const facilitatorStageId = meeting?.facilitatorStageId
+  const phases = meeting?.phases ?? null
   const {picture} = teamMember
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
@@ -145,6 +149,13 @@ const AgendaItem = (props: Props) => {
   }
 
   const handleRemove = () => {
+    if (viewerId === facilitatorUserId && isFacilitatorStage) {
+      // navigate to the next best stage. onward!
+      const stageRes = findStageAfterId(phases as any, facilitatorStageId!)
+      if (gotoStageId && stageRes) {
+        gotoStageId(stageRes.stage.id)
+      }
+    }
     RemoveAgendaItemMutation(atmosphere, {agendaItemId}, {meetingId})
   }
 
@@ -227,6 +238,9 @@ export default createFragmentContainer(AgendaItem, {
       facilitatorUserId
       phases {
         phaseType
+        stages {
+          id
+        }
         ...AgendaItemPhase @relay(mask: false)
       }
       localPhase {
