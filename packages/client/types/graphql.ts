@@ -10315,11 +10315,6 @@ export interface ISetDefaultSlackChannelSuccess {
   slackChannelId: string;
 
   /**
-   * The id of the team changing their default slack channel
-   */
-  teamId: string;
-
-  /**
    * The team member with the updated slack channel
    */
   teamMember: ITeamMember;

@@ -4,7 +4,6 @@ import formatTime from 'parabol-client/utils/date/formatTime'
 import formatWeekday from 'parabol-client/utils/date/formatWeekday'
 import findStageById from 'parabol-client/utils/meetings/findStageById'
 import {phaseLabelLookup} from 'parabol-client/utils/meetings/lookups'
-import {SlackPublicConversation} from 'parabol-client/utils/SlackManager'
 import getRethink from '../../../database/rethinkDriver'
 import SlackAuth from '../../../database/types/SlackAuth'
 import SlackNotification, {SlackNotificationEvent} from '../../../database/types/SlackNotification'
@@ -127,9 +126,9 @@ const upsertSlackMessage = async (
   if (!channelId) return
   const manager = new SlackServerManager(botAccessToken)
   const convoInfo = await manager.getConversationInfo(channelId)
-  if (convoInfo.ok) {
+  if (convoInfo.ok && 'latest' in convoInfo.channel) {
     const {channel} = convoInfo
-    const {latest} = channel as SlackPublicConversation
+    const {latest} = channel
     if (latest) {
       const {ts, bot_profile} = latest
       const {name} = bot_profile
@@ -146,8 +145,6 @@ const upsertSlackMessage = async (
         }
       }
     }
-  } else if (convoInfo.error === 'method_not_supported_for_channel_type') {
-    // not a public channel, ignore
   } else {
     // handle error?
   }
