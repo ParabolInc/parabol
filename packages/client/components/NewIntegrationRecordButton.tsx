@@ -25,12 +25,12 @@ const StyledLabel = styled('div')({
 
 interface Props {
   setIsEditing: (isEditing: boolean) => void
-  labelText?: string
+  labelText: string
   className?: string
 }
 
 const NewIntegrationRecordButton = (props: Props) => {
-  const {setIsEditing, labelText='New Record', className} = props
+  const {setIsEditing, labelText, className} = props
   return (
     <Button className={className} onClick={() => setIsEditing(true)} palette='blue'>
       <StyledIcon>{'add'}</StyledIcon>
