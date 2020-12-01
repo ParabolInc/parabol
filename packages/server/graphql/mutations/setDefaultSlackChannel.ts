@@ -63,7 +63,7 @@ const setDefaultSlackChannel = {
         .update({defaultTeamChannelId: slackChannelId})
         .run()
     }
-    const data = {teamId, userId: viewerId}
+    const data = {slackChannelId, teamId, userId: viewerId}
     publish(SubscriptionChannel.TEAM, teamId, 'SetDefaultSlackChannelSuccess', data, subOptions)
     return data
   }
