@@ -25,8 +25,11 @@ const ScaleHeader = styled('div')({
 })
 
 const IconButton = styled(FlatButton)({
+  alignItems: 'center',
   color: PALETTE.TEXT_GRAY,
   height: 24,
+  justifyContent: 'center',
+  padding: 0,
   width: 24,
   ':hover, :focus, :active': {
     color: PALETTE.TEXT_MAIN
@@ -77,7 +80,8 @@ const ScaleDetailsTitle = styled('div')({
 })
 
 const HR = styled(MenuItemHR)({
-  width: '100%'
+  width: '100%',
+  marginTop: 0
 })
 
 const ScaleValues = styled('div')({
