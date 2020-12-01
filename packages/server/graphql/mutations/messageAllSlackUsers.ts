@@ -30,6 +30,7 @@ const messageAllSlackUsers = {
       return standardError(new Error('No authorised Slack users'))
     }
 
+    const delay = 100
     const messagedUserIds = [] as string[]
     for (const slackAuth of allSlackAuths) {
       const {botAccessToken, slackUserId, userId} = slackAuth
@@ -44,6 +45,11 @@ const messageAllSlackUsers = {
         return standardError(new Error(postMessageRes.error), {userId})
       }
       messagedUserIds.push(userId)
+      if (messagedUserIds.length % 100 === 0) {
+        setTimeout(() => {
+          console.log(`Throttling next message after sending ${messagedUserIds.length} messages`)
+        }, delay)
+      }
     }
 
     const data = {messagedUserIds}

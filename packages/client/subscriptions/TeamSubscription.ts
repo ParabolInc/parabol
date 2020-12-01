@@ -7,6 +7,7 @@ import {
   endRetrospectiveTeamUpdater
 } from '~/mutations/EndRetrospectiveMutation'
 import {navigateMeetingTeamUpdater} from '~/mutations/NavigateMeetingMutation'
+import {setDefaultSlackChannelUpdater} from '~/mutations/SetDefaultSlackChannelMutation'
 import Atmosphere from '../Atmosphere'
 import {
   acceptTeamInvitationTeamOnNext,
@@ -112,7 +113,8 @@ const updateHandlers = {
   RemoveOrgUserPayload: removeOrgUserTeamUpdater,
   RemoveReflectTemplatePayload: removeReflectTemplateTeamUpdater,
   RemoveReflectTemplatePromptPayload: removeReflectTemplatePromptTeamUpdater,
-  RemoveTeamMemberPayload: removeTeamMemberTeamUpdater
+  RemoveTeamMemberPayload: removeTeamMemberTeamUpdater,
+  SetDefaultSlackChannelSuccess: setDefaultSlackChannelUpdater
 }
 
 const TeamSubscription = (

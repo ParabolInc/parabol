@@ -73,11 +73,11 @@ export interface SlackChannelInfo {
   id: string
   name: string
   is_channel: boolean
+  is_im: boolean
   created: number
   is_archived: boolean
   is_general: boolean
   name_normalized: string
-  is_im: boolean
   is_shared: boolean
   is_org_shared: boolean
   is_member: boolean
@@ -100,7 +100,7 @@ export interface SlackChannelInfo {
 
 interface ConversationListResponse {
   ok: true
-  channels: SlackChannelInfo[] | SlackIM[]
+  channels: SlackPublicConversation[] | SlackIM[]
 }
 interface ConversationJoinResponse {
   ok: true
@@ -234,6 +234,7 @@ abstract class SlackManager {
 
   getConversationList(types: ConversationType[] = ['public_channel']) {
     const typeStr = types.join(',')
+    console.log('🚀 ~ SlackManager ~ getConversationList ~ typeStr', typeStr)
     return this.get<ConversationListResponse>(
       `https://slack.com/api/conversations.list?token=${this.token}&exclude_archived=true&types=${typeStr}`
     )

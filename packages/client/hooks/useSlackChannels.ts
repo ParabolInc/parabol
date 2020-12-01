@@ -1,5 +1,5 @@
 import {useEffect, useState} from 'react'
-import {SlackChannelInfo, SlackIM} from '~/utils/SlackManager'
+import {SlackIM, SlackPublicConversation} from '~/utils/SlackManager'
 import {SlackChannelDropdownChannels} from '../components/SlackChannelDropdown'
 import SlackClientManager from '../utils/SlackClientManager'
 
@@ -21,12 +21,10 @@ const useSlackChannels = (
         console.error(channelResponse.error)
         return
       }
-      const {channels} = channelResponse
-      const publicChannels = channels as SlackChannelInfo[]
+      const publicChannels = channelResponse.channels as SlackPublicConversation[]
       const memberChannels = publicChannels.filter((channel) => channel.is_member)
       if (convoResponse.ok) {
-        const {channels} = convoResponse
-        const ims = channels as SlackIM[]
+        const ims = convoResponse.channels as SlackIM[]
         const botChannel = ims.find((im) => im.is_im && im.user === slackAuth.slackUserId) as any
         if (botChannel) {
           memberChannels.unshift({...botChannel, name: '@Parabol'})
