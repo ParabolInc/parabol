@@ -12,6 +12,7 @@ import graphql from 'babel-plugin-relay/macro'
 import convertToTaskContent from '~/utils/draftjs/convertToTaskContent'
 import useMutationProps from '~/hooks/useMutationProps'
 import UpdatePokerScopeMutation from '../mutations/UpdatePokerScopeMutation'
+import {CreateTaskMutationResponse} from '~/__generated__/CreateTaskMutation.graphql'
 
 const Item = styled('div')({
   backgroundColor: PALETTE.BACKGROUND_BLUE_MAGENTA,
@@ -58,10 +59,11 @@ const NewParabolTaskInput = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {onError, onCompleted} = useMutationProps()
 
-  const updatePokerScope = (res) => {
+  const updatePokerScope = (res: CreateTaskMutationResponse) => {
     const payload = res.createTask
     if (!payload) return
     const {task} = payload
+    if (!task) return
     const pokerScopeVariables = {
       meetingId,
       updates: [
