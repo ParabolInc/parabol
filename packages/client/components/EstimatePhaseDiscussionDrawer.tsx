@@ -1,39 +1,35 @@
 import styled from '@emotion/styled'
-import React, {RefObject, useEffect, useRef} from 'react'
+import React, {RefObject, useRef} from 'react'
 import graphql from 'babel-plugin-relay/macro'
-import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
+import {createFragmentContainer} from 'react-relay'
 import {useCoverable} from '~/hooks/useControlBarCovers'
 import {desktopSidebarShadow} from '~/styles/elevation'
 import {EstimatePhaseDiscussionDrawer_meeting} from '~/__generated__/EstimatePhaseDiscussionDrawer_meeting.graphql'
 import {DiscussionThreadEnum, MeetingControlBarEnum, ZIndex} from '../types/constEnums'
 import DiscussionThreadRoot from './DiscussionThreadRoot'
 import {PALETTE} from '~/styles/paletteV2'
+import LabelHeading from './LabelHeading/LabelHeading'
+import {DECELERATE} from '~/styles/animation'
+import PlainButton from './PlainButton/PlainButton'
 import Icon from './Icon'
 import {ICON_SIZE} from '~/styles/typographyV2'
-import PlainButton from './PlainButton/PlainButton'
-import LabelHeading from './LabelHeading/LabelHeading'
-import Avatar from './Avatar/Avatar'
-import useAtmosphere from '~/hooks/useAtmosphere'
 
-const Drawer = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
+const Drawer = styled('div')<{isDesktop: boolean; isOpen: boolean}>(({isDesktop, isOpen}) => ({
   boxShadow: isDesktop ? desktopSidebarShadow : undefined,
   backgroundColor: '#FFFFFF',
   display: 'flex',
   flexDirection: 'column',
-  height: '100%',
+  height: '100vh',
   justifyContent: 'flex-start',
   overflow: 'hidden',
   position: isDesktop ? 'fixed' : 'static',
+  bottom: 0,
+  top: 0,
   right: isDesktop ? 0 : undefined,
+  transition: `all 300ms ${DECELERATE}`,
   userSelect: 'none',
-  width: DiscussionThreadEnum.WIDTH,
+  width: isOpen || !isDesktop ? DiscussionThreadEnum.WIDTH : 0,
   zIndex: ZIndex.SIDEBAR
-}))
-
-const VideoContainer = styled('div')<{isShowingVideo: boolean}>(({isShowingVideo}) => ({
-  display: isShowingVideo ? 'flex' : 'none',
-  height: '200px',
-  padding: 6
 }))
 
 const ThreadColumn = styled('div')({
@@ -50,102 +46,58 @@ const ThreadColumn = styled('div')({
   width: '100%'
 })
 
-const ButtonGroup = styled('div')({
+const CloseIcon = styled(Icon)({
+  color: PALETTE.TEXT_GRAY,
+  cursor: 'pointer',
+  fontSize: ICON_SIZE.MD24,
+  '&:hover': {
+    opacity: 0.5
+  }
+})
+
+const Header = styled('div')({
+  alignItems: 'center',
+  borderBottom: `1px solid ${PALETTE.BORDER_LIGHTER}`,
   display: 'flex',
-  justifyContent: 'flex-end',
-  height: 16,
-  userSelect: 'none',
+  justifyContent: 'space-between',
+  padding: '8px 8px 8px 12px',
   width: '100%'
 })
 
-const StyledIcon = styled(Icon)({
-  fontSize: ICON_SIZE.MD24,
-  cursor: 'pointer'
-})
-
-const AvatarGroup = styled(LabelHeading)({
-  alignItems: 'center',
-  display: 'flex',
+const HeaderLabel = styled(LabelHeading)({
   textTransform: 'none',
   width: '100%'
 })
 
-const DiscussingGroup = styled('div')({
-  alignItems: 'center',
-  borderTop: `1px solid ${PALETTE.BORDER_LIGHTER}`,
-  borderBottom: `1px solid ${PALETTE.BORDER_LIGHTER}`,
-  display: 'flex',
-  padding: '3px 6px',
-  width: '100%'
+const StyledCloseButton = styled(PlainButton)({
+  height: 24
 })
-
-const StyledAvatar = styled(Avatar)({
-  margin: '6px 3px',
-  transition: 'all 150ms'
-})
-
-const ShowVideoIcon = styled(Icon)({
-  color: '#FFFF',
-  fontSize: ICON_SIZE.MD24
-})
-
-const ShowVideoButton = styled(PlainButton)<{isShowingVideo: boolean}>(({isShowingVideo}) => ({
-  backgroundColor: PALETTE.TEXT_PURPLE,
-  borderRadius: '50%',
-  display: isShowingVideo ? 'none' : 'flex',
-  margin: '0px 3px',
-  padding: 8
-}))
 
 interface Props {
   isDesktop: boolean
+  isOpen: boolean
   meeting: EstimatePhaseDiscussionDrawer_meeting
+  onToggle: () => void
   meetingContentRef: RefObject<HTMLDivElement>
 }
 
 const EstimatePhaseDiscussionDrawer = (props: Props) => {
-  const {isDesktop, meeting, meetingContentRef} = props
-  const {id: meetingId, endedAt, isShowingVideo, localStage, viewerMeetingMember} = meeting
-  const {user} = viewerMeetingMember
-  const {picture} = user
+  const {isDesktop, isOpen, meeting, meetingContentRef, onToggle} = props
+  const {id: meetingId, endedAt, localStage} = meeting
   const {serviceTaskId} = localStage
-  const atmosphere = useAtmosphere()
-  const setIsShowingVideo = (isShowing: boolean) => {
-    commitLocalUpdate(atmosphere, (store) => {
-      const meeting = store.get(meetingId)!
-      meeting.setValue(isShowing, 'isShowingVideo')
-    })
-  }
-  useEffect(() => {
-    setIsShowingVideo(true)
-  }, [])
   const ref = useRef<HTMLDivElement>(null)
   const meetingControlBarBottom = 16
   const coverableHeight = isDesktop ? MeetingControlBarEnum.HEIGHT + meetingControlBarBottom : 0
   useCoverable('drawer', ref, coverableHeight, meetingContentRef) || !!endedAt
 
   return (
-    <Drawer isDesktop={isDesktop} ref={ref}>
-      <VideoContainer isShowingVideo={isShowingVideo}>
-        <ButtonGroup>
-          <PlainButton>
-            <StyledIcon>fullscreen</StyledIcon>
-          </PlainButton>
-          <PlainButton onClick={() => setIsShowingVideo(false)}>
-            <StyledIcon>close</StyledIcon>
-          </PlainButton>
-        </ButtonGroup>
-      </VideoContainer>
-      <DiscussingGroup>
-        <AvatarGroup>
-          {[1, 2, 3, 4].map((__example, idx) => {
-            return <StyledAvatar key={idx} size={32} picture={picture} />
-          })}
-        </AvatarGroup>
-        <ShowVideoButton isShowingVideo={isShowingVideo} onClick={() => setIsShowingVideo(true)}>
-          <ShowVideoIcon>videocam</ShowVideoIcon>
-        </ShowVideoButton>
-      </DiscussingGroup>
+    <Drawer isDesktop={isDesktop} isOpen={isOpen} ref={ref}>
+      <Header>
+        <HeaderLabel>{'Discussion'}</HeaderLabel>
+        <StyledCloseButton onClick={onToggle}>
+          <CloseIcon>close</CloseIcon>
+        </StyledCloseButton>
+      </Header>
       <ThreadColumn>
         <DiscussionThreadRoot
           meetingId={meetingId}
@@ -167,14 +119,8 @@ export default createFragmentContainer(EstimatePhaseDiscussionDrawer, {
     fragment EstimatePhaseDiscussionDrawer_meeting on PokerMeeting {
       id
       endedAt
-      isShowingVideo
       localStage {
         ...EstimatePhaseDiscussionDrawerStage @relay(mask: false)
-      }
-      viewerMeetingMember {
-        user {
-          picture
-        }
       }
     }
   `

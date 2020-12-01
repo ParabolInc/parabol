@@ -1,12 +1,10 @@
 import graphql from 'babel-plugin-relay/macro'
-import React, {useRef, RefObject, useMemo} from 'react'
-import {createFragmentContainer} from 'react-relay'
+import React, {useRef, RefObject, useMemo, } from 'react'
+import { createFragmentContainer} from 'react-relay'
 import {DiscussionThread_viewer} from '~/__generated__/DiscussionThread_viewer.graphql'
 import {useCoverable} from '~/hooks/useControlBarCovers'
 import {Breakpoint, DiscussionThreadEnum, MeetingControlBarEnum} from '~/types/constEnums'
-
 import styled from '@emotion/styled'
-
 import {Elevation} from '../styles/elevation'
 import makeMinWidthMediaQuery from '../utils/makeMinWidthMediaQuery'
 import DiscussionThreadInput from './DiscussionThreadInput'
@@ -41,9 +39,15 @@ interface Props {
 const DiscussionThread = (props: Props) => {
   const {meetingContentRef, threadSourceId, viewer} = props
   const meeting = viewer.meeting!
-  const {endedAt, meetingType, replyingToCommentId, threadSource} = meeting
+  const {
+    endedAt,
+    meetingType,
+    replyingToCommentId,
+    threadSource,
+  } = meeting
   const thread = threadSource?.thread
   const commentors = threadSource?.commentors
+  const isPokerMeeting = meetingType === MeetingTypeEnum.poker
   const preferredNames = useMemo(
     () => (commentors && commentors.map((commentor) => commentor.preferredName)) || null,
     [commentors]
@@ -53,10 +57,10 @@ const DiscussionThread = (props: Props) => {
   const getMaxSortOrder = () => {
     return Math.max(0, ...threadables.map((threadable) => threadable.threadSortOrder || 0))
   }
+
   const listRef = useRef<HTMLDivElement>(null)
   const editorRef = useRef<HTMLTextAreaElement>(null)
   const ref = useRef<HTMLDivElement>(null)
-  const isPokerMeeting = meetingType === MeetingTypeEnum.poker
   // don't resize in a poker meeting as we do this in the parent
   const coverableHeight = isPokerMeeting ? 0 : MeetingControlBarEnum.HEIGHT
   const isExpanded = useCoverable('threads', ref, coverableHeight, meetingContentRef) || !!endedAt

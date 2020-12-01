@@ -5,7 +5,7 @@ import {HttpResponse, HttpRequest} from 'uWebSockets.js'
 
 const makeSentryRequest = (res: HttpResponse, req: HttpRequest) => {
   return {
-    ip: uwsGetIP(res),
+    ip: uwsGetIP(res, req),
     method: req.getMethod().toUpperCase(),
     url: req.getUrl(),
     header: uwsGetHeaders(req),

@@ -22,7 +22,7 @@ const EstimateArea = styled('div')({
 const StepperDots = styled('div')({
   display: 'flex',
   justifyContent: 'center',
-  padding: '4px 0 8px',
+  paddingTop: 4,
   width: '100%'
 })
 
@@ -41,12 +41,16 @@ const SwipableEstimateItem = styled('div')({
   height: '100%'
 })
 
-const innerStyle = (isDesktop: boolean) => {
+const innerStyle = (isDesktop: boolean, hasSingleDimension: boolean) => {
   return {
     height: '100%',
     margin: isDesktop ? '0 auto' : null,
-    maxWidth: isDesktop ? 1600 : null,
-    padding: isDesktop ? '0 40px' : '0 16px',
+    maxWidth: hasSingleDimension
+      ? isDesktop ? 1536 : null
+      : isDesktop ? 1600 : null,
+    padding: hasSingleDimension
+      ? isDesktop ? '12px 8px 0' : '4px 4px 0'
+      : isDesktop ? '8px 40px 0' : '8px 16px 0',
     width: '100%',
     overflow: 'visible'
   }
@@ -56,8 +60,6 @@ const containerStyle = {
   height: '100%'
 }
 
-export type SetVotedUserEl = (userId: string, el: HTMLDivElement | null) => void
-export type GetVotedUserEl = (userId: string) => HTMLDivElement | null
 interface Props {
   gotoStageId: ReturnType<typeof useGotoStageId>
   meeting: EstimatePhaseArea_meeting
@@ -69,62 +71,57 @@ const EstimatePhaseArea = (props: Props) => {
   const {id: localStageId, serviceTaskId} = localStage
   const {stages} = phases.find(({phaseType}) => phaseType === 'ESTIMATE')!
   const dimensionStages = stages!.filter((stage) => stage.serviceTaskId === serviceTaskId)
-
   const stageIdx = dimensionStages!.findIndex(({id}) => id === localStageId)
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
-
+  const estimateAreaRef = useRef<HTMLDivElement>(null)
 
   const onChangeIdx = (idx: number) => {
     gotoStageId(dimensionStages[idx].id)
-  }
-
-  const avatarRef = useRef<{[userId: string]: HTMLDivElement | null}>({})
-
-  const getVotedUserEl: GetVotedUserEl = (userId) => {
-    return avatarRef.current[userId]
-  }
-
-  const setVotedUserEl: SetVotedUserEl = (userId, el) => {
-    avatarRef.current[userId] = el
   }
 
   const slideContainer = {
     padding: isDesktop ? '0 8px' : '0 4px'
   }
 
+  const hasSingleDimension = dimensionStages.length === 1
+
   return (
-    <EstimateArea>
-      <StepperDots>
+    <EstimateArea ref={estimateAreaRef}>
+      {dimensionStages.length > 1 && <StepperDots>
         {dimensionStages.map((_, idx) => {
-          return <StepperDot key={idx} isActive={idx === stageIdx} onClick={() => onChangeIdx(idx)} />
+          return (
+            <StepperDot key={idx} isActive={idx === stageIdx} onClick={() => onChangeIdx(idx)} />
+          )
         })}
       </StepperDots>
-      <PokerCardDeck meeting={meeting} />
-      <DeckActivityAvatars stage={localStage} getVotedUserEl={getVotedUserEl} />
+      }
+      <PokerCardDeck meeting={meeting} estimateAreaRef={estimateAreaRef} />
+      <DeckActivityAvatars stage={localStage} />
       <SwipeableViews
         containerStyle={containerStyle}
         enableMouseEvents
         index={stageIdx}
         onChangeIndex={onChangeIdx}
         slideStyle={slideContainer}
-        style={innerStyle(isDesktop)}
+        style={innerStyle(isDesktop, hasSingleDimension)}
       >
         {dimensionStages.map((stage, idx) => (
           <SwipableEstimateItem key={idx}>
-            <EstimateDimensionColumn meeting={meeting} setVotedUserEl={setVotedUserEl} stage={stage} />
+            <EstimateDimensionColumn meeting={meeting} stage={stage} />
           </SwipableEstimateItem>
         ))}
       </SwipeableViews>
-    </EstimateArea >
+    </EstimateArea>
   )
 }
 
 graphql`
-fragment EstimatePhaseAreaStage on EstimateStage {
-  ...DeckActivityAvatars_stage
-  id
-  serviceTaskId
-}`
+  fragment EstimatePhaseAreaStage on EstimateStage {
+    ...DeckActivityAvatars_stage
+    id
+    serviceTaskId
+  }
+`
 
 export default createFragmentContainer(EstimatePhaseArea, {
   meeting: graphql`

@@ -10,13 +10,37 @@ graphql`
         ...useMakeStageSummaries_phase
         ...on EstimatePhase {
           stages {
+            ...PokerCardDeckStage
+            ...EstimatePhaseAreaStage
+            ...JiraFieldDimensionDropdown_stage
+            ...EstimateDimensionColumn_stage
             id
             isNavigableByFacilitator
             service
             serviceTaskId
             sortOrder
+            isVoting
+            creatorUserId
+            dimension {
+              selectedScale {
+                values {
+                  color
+                  label
+                }
+              }
+            }
+            serviceField {
+              name
+              type
+            }
             scores {
               userId
+              label
+              stageId
+              user {
+                picture
+                preferredName
+              }
             }
           }
         }

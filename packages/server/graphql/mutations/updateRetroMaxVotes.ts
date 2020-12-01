@@ -39,10 +39,7 @@ const updateRetroMaxVotes = {
     const subOptions = {mutatorId, operationId}
 
     //AUTH
-    const meeting = (await r
-      .table('NewMeeting')
-      .get(meetingId)
-      .run()) as MeetingRetrospective
+    const meeting = (await r.table('NewMeeting').get(meetingId).run()) as MeetingRetrospective
 
     if (!meeting) {
       return {error: {message: 'Meeting not found'}}

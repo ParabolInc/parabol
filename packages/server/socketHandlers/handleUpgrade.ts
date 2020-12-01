@@ -6,7 +6,6 @@ import getQueryToken from '../utils/getQueryToken'
 import sendToSentry from '../utils/sendToSentry'
 import uwsGetIP from '../utils/uwsGetIP'
 
-
 const handleUpgrade: WebSocketBehavior['upgrade'] = async (res, req, context) => {
   const aborted = {done: false}
   const protocol = req.getHeader('sec-websocket-protocol')
@@ -27,6 +26,7 @@ const handleUpgrade: WebSocketBehavior['upgrade'] = async (res, req, context) =>
 
   const key = req.getHeader('sec-websocket-key')
   const extensions = req.getHeader('sec-websocket-extensions')
+  const ip = uwsGetIP(res, req)
   const {sub: userId, iat} = authToken
   // ALL async calls must come after the message listener, or we'll skip out on messages (e.g. resub after server restart)
   const isBlacklistedJWT = await checkBlacklistJWT(userId, iat)
@@ -35,7 +35,7 @@ const handleUpgrade: WebSocketBehavior['upgrade'] = async (res, req, context) =>
     res.writeStatus('401').end(TrebuchetCloseReason.EXPIRED_SESSION)
     return
   }
-  const ip = uwsGetIP(res)
+
   res.upgrade({ip, authToken}, key, protocol, extensions, context)
 }
 

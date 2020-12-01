@@ -19,7 +19,8 @@ type ParabolSearchQuery {
 }
 
 extend type PokerMeeting {
-  isShowingVideo: Boolean!
+  isCommentUnread: Boolean!
+  isRightDrawerOpen: Boolean!
   localPhase: NewMeetingPhase!
   localStage: NewMeetingStage!
   showSidebar: Boolean!
@@ -90,4 +91,8 @@ extend type UpdatesStage {
 
 extend type AgendaItemsStage {
   localScheduledEndTime: String
+}
+
+extend type EstimateStage {
+  finalScoreError: String
 }

@@ -118,18 +118,18 @@ const pokerSetFinalScore = {
       if (fieldName === SprintPokerDefaults.JIRA_FIELD_COMMENT) {
         const dimensionsPerStageIdx = stages.filter((stage) => stage.dimensionId === dimensionId)
           .length
-        const stageIdx = stages.findIndex((stage) => stage.id === stageId)
+        const stageIdx = stages.findIndex((stage) => stage.id === stageId) + 1
         const routeIdx = Math.ceil(stageIdx / dimensionsPerStageIdx)
         const discussionURL = makeAppLink(`meet/${meetingId}/estimate/${routeIdx}`)
         await manager.addComment(
           cloudId,
           issueKey,
-          makeScoreJiraComment(dimensionName, finalScore, meetingName, discussionURL)
+          makeScoreJiraComment(dimensionName, finalScore || '<None>', meetingName, discussionURL)
         )
       } else if (fieldName !== SprintPokerDefaults.JIRA_FIELD_NULL) {
         const {fieldId} = dimensionField!
         try {
-          await manager.updateStoryPoints(cloudId, issueKey, finalScore, fieldId)
+          await manager.updateStoryPoints(cloudId, issueKey, finalScore, fieldId, fieldName)
         } catch (e) {
           return {error: {message: e.message}}
         }
@@ -140,12 +140,10 @@ const pokerSetFinalScore = {
         .table('Task')
         .get(serviceTaskId)
         .update((row) => ({
-          estimates: row('estimates')
-            .default([])
-            .append({
-              name: dimensionName,
-              label: finalScore
-            })
+          estimates: row('estimates').default([]).append({
+            name: dimensionName,
+            label: finalScore
+          })
         }))
         .run()
     }

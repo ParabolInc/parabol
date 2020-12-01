@@ -5,7 +5,8 @@ import {createFragmentContainer} from 'react-relay'
 import {PALETTE} from '~/styles/paletteV2'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
-import useResizeFontForInput from '../hooks/useResizeFontForInput'
+import useResizeFontForElement from '../hooks/useResizeFontForElement'
+import useSetFinalScoreError, {setFinalScoreError} from '../hooks/useSetFinalScoreError'
 import PokerSetFinalScoreMutation from '../mutations/PokerSetFinalScoreMutation'
 import {PokerDimensionValueControl_stage} from '../__generated__/PokerDimensionValueControl_stage.graphql'
 import LinkButton from './LinkButton'
@@ -55,32 +56,46 @@ const StyledLinkButton = styled(LinkButton)({
 const ErrorMessage = styled(StyledError)({
   paddingLeft: 8
 })
+
+const Label = styled('div')({
+  color: PALETTE.TEXT_MAIN,
+  fontSize: 14,
+  fontWeight: 600,
+  margin: '0 0 0 16px',
+  width: '100%'
+})
+
 interface Props {
+  isFacilitator: boolean
   placeholder: string
   stage: PokerDimensionValueControl_stage
 }
 
 
 const PokerDimensionValueControl = (props: Props) => {
-  const {placeholder, stage} = props
-  const {id: stageId, dimension, finalScore, meetingId, service, serviceField} = stage
+  const {isFacilitator, placeholder, stage} = props
+  const {id: stageId, dimension, finalScoreError, meetingId, service, serviceField} = stage
+  const finalScore = stage.finalScore || ''
   const {name: serviceFieldName, type: serviceFieldType} = serviceField
   const {selectedScale} = dimension
   const {values: scaleValues} = selectedScale
   const inputRef = useRef<HTMLInputElement>(null)
   const atmosphere = useAtmosphere()
   const {submitMutation, submitting, error, onError, onCompleted} = useMutationProps()
-  const [pendingScore, setPendingScore] = useState(finalScore || '')
+  const [pendingScore, setPendingScore] = useState(finalScore)
   const lastServiceFieldNameRef = useRef(serviceFieldName)
   const canUpdate = pendingScore !== finalScore || lastServiceFieldNameRef.current !== serviceFieldName
-  const [localError, setLocalError] = useState('')
+  console.log({canUpdate, pendingScore, finalScore, serviceFieldName, last: lastServiceFieldNameRef.current})
+  useSetFinalScoreError(stageId, error)
+
   useLayoutEffect(() => {
-    setPendingScore(finalScore || '')
+    setPendingScore(finalScore)
+    lastServiceFieldNameRef.current = serviceFieldName
   }, [finalScore])
   useEffect(() => {
     if (error) {
       // we want this for remote errors but not local errors, so we keep the 2 in different vars
-      setPendingScore(finalScore || '')
+      setPendingScore(finalScore)
     }
   }, [error])
 
@@ -91,20 +106,17 @@ const PokerDimensionValueControl = (props: Props) => {
     PokerSetFinalScoreMutation(atmosphere, {finalScore: pendingScore, meetingId, stageId}, {onError, onCompleted})
   }
 
-  const onBlur = () => {
-    submitScore()
-  }
-
-  useResizeFontForInput(inputRef, pendingScore, 12, 18)
+  useResizeFontForElement(inputRef, pendingScore, 12, 18)
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const {value} = e.target
     if (serviceFieldType === 'number') {
-      if (isNaN(value as any)) {
+      // isNaN says "3." is a number, so we stringify the parsed number & see if it matches
+      if (String(parseFloat(value)) !== value) {
         // the service wants a number but we didn't get one
-        setLocalError('The field selected only accepts numbers')
+        setFinalScoreError(atmosphere, stageId, 'The field selected only accepts numbers')
       } else {
-        setLocalError('')
+        setFinalScoreError(atmosphere, stageId, '')
       }
     }
     setPendingScore(value)
@@ -114,34 +126,38 @@ const PokerDimensionValueControl = (props: Props) => {
     // keydown required bceause escape doesn't fire onKeyPress
     if (e.key === 'Tab' || e.key === 'Enter') {
       e.preventDefault()
+      submitScore()
       inputRef.current?.blur()
     } else if (e.key === 'Escape') {
       e.preventDefault()
-      setPendingScore(finalScore || '')
-      setTimeout(() => {
-        inputRef.current?.blur()
-      })
+      setPendingScore(finalScore)
+      inputRef.current?.blur()
     }
+  }
+
+  const clearError = () => {
+    setFinalScoreError(atmosphere, stageId, '')
+    onCompleted()
   }
 
 
   const matchingScale = scaleValues.find((scaleValue) => scaleValue.label === pendingScore)
   const scaleColor = matchingScale?.color
   const textColor = scaleColor ? '#fff' : undefined
-  const errorMessage = localError || error?.message || undefined
-  const isFinal = finalScore !== null && pendingScore === finalScore
+  const isFinal = !!finalScore && pendingScore === finalScore
   return (
     <ControlWrap>
       <Control>
         <MiniPokerCard color={scaleColor} isFinal={isFinal}>
-          <Input onKeyDown={onKeyDown} autoFocus={!finalScore} color={textColor} ref={inputRef} onChange={onChange} placeholder={placeholder} onBlur={onBlur} value={pendingScore}></Input>
+          <Input disabled={!isFacilitator} onKeyDown={onKeyDown} autoFocus={!finalScore} color={textColor} ref={inputRef} onChange={onChange} placeholder={placeholder} value={pendingScore}></Input>
         </MiniPokerCard>
-        {
-          service === 'jira' ? <PokerDimensionFinalScoreJiraPicker canUpdate={canUpdate} stage={stage} error={errorMessage} /> :
-            <>
-              <StyledLinkButton palette={'blue'}>{'Update'}</StyledLinkButton>
-              {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
-            </>
+        {!isFacilitator && <Label>{`Final Score${finalScore ? '' : ' (set by facilitator)'}`}</Label>}
+        {service === 'jira' && <PokerDimensionFinalScoreJiraPicker canUpdate={canUpdate} stage={stage} error={finalScoreError} submitScore={submitScore} clearError={clearError} isFacilitator={isFacilitator} />}
+        {service !== 'jira' &&
+          <>
+            <StyledLinkButton palette={'blue'}>{'Update Score'}</StyledLinkButton>
+            {finalScoreError && <ErrorMessage>{finalScoreError}</ErrorMessage>}
+          </>
         }
 
       </Control>
@@ -158,6 +174,7 @@ export default createFragmentContainer(
       id
       meetingId
       finalScore
+      finalScoreError
       serviceField {
         name
         type

@@ -9,12 +9,12 @@ import uWSAsyncHandler from './uWSAsyncHandler'
 
 interface IntranetPayload {
   query: string
-  variables: object
+  variables: Record<string, unknown>
   isPrivate?: boolean
 }
 const intranetHttpGraphQLHandler = uWSAsyncHandler(async (res: HttpResponse, req: HttpRequest) => {
   const authToken = getReqAuth(req)
-  const ip = uwsGetIP(res)
+  const ip = uwsGetIP(res, req)
   if (!isAuthenticated(authToken) || !isSuperUser(authToken)) {
     res.writeStatus('401').end()
     return

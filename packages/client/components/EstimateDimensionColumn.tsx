@@ -4,11 +4,11 @@ import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import useMutationProps from '~/hooks/useMutationProps'
 import useAtmosphere from '../hooks/useAtmosphere'
+import useIsPokerVotingClosing from '../hooks/useIsPokerVotingClosing'
 import PokerResetDimensionMutation from '../mutations/PokerResetDimensionMutation'
 import {PALETTE} from '../styles/paletteV2'
 import {EstimateDimensionColumn_meeting} from '../__generated__/EstimateDimensionColumn_meeting.graphql'
 import {EstimateDimensionColumn_stage} from '../__generated__/EstimateDimensionColumn_stage.graphql'
-import {SetVotedUserEl} from './EstimatePhaseArea'
 import LinkButton from './LinkButton'
 import PokerActiveVoting from './PokerActiveVoting'
 import PokerDiscussVoting from './PokerDiscussVoting'
@@ -49,19 +49,20 @@ const StyledError = styled('div')({
 interface Props {
   stage: EstimateDimensionColumn_stage
   meeting: EstimateDimensionColumn_meeting
-  setVotedUserEl: SetVotedUserEl
 }
+
 
 const EstimateDimensionColumn = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
-  const {meeting, setVotedUserEl, stage} = props
+  const {meeting, stage} = props
   const {facilitatorUserId, id: meetingId} = meeting
   const isFacilitator = viewerId === facilitatorUserId
   const {id: stageId, dimension} = stage
   const {name} = dimension
   const {isVoting} = stage
   const {onError, onCompleted, submitMutation, error, submitting} = useMutationProps()
+  const isClosing = useIsPokerVotingClosing(isVoting)
 
   const reset = () => {
     if (submitting) return
@@ -73,6 +74,7 @@ const EstimateDimensionColumn = (props: Props) => {
     )
   }
 
+  const showVoting = isVoting || isClosing
   return (
     <ColumnInner>
       <DimensionHeader>
@@ -80,15 +82,9 @@ const EstimateDimensionColumn = (props: Props) => {
         {error && <StyledError>{error.message}</StyledError>}
         {!isVoting && isFacilitator && <StyledLinkButton onClick={reset} palette={'blue'}>{'Team Revote'}</StyledLinkButton>}
       </DimensionHeader>
-      {/* todo: animate avatars to their respective row */}
-      {/* {teamMembers.map((teamMember, idx) => {
-        return <div key={idx} ref={(el) => {
-          setVotedUserEl(teamMember.userId, el)
-        }} />
-      })} */}
-      {isVoting
-        ? <PokerActiveVoting meeting={meeting} setVotedUserEl={setVotedUserEl} stage={stage} />
-        : <PokerDiscussVoting meeting={meeting} setVotedUserEl={setVotedUserEl} stage={stage} />
+      {showVoting
+        ? <PokerActiveVoting meeting={meeting} stage={stage} isClosing={isClosing} />
+        : <PokerDiscussVoting meeting={meeting} stage={stage} />
       }
     </ColumnInner>
   )
