@@ -23,15 +23,14 @@ interface Props {
 
 const ScaleDetails = styled('div')({
   display: 'flex',
-  flexDirection: 'row',
-  alignItems: 'flex-start',
-  maxWidth: '300px'
+  justifyContent: 'space-between',
+  minWidth: '300px'
 })
 
 const ScaleNameAndValues = styled('div')({
   display: 'block',
   flexDirection: 'column',
-  minWidth: '236px',
+  maxWidth: '200px',
   paddingTop: 12,
   paddingLeft: 16,
   paddingBottom: 12,
@@ -56,7 +55,8 @@ const ScaleValues = styled('div')({
 })
 
 const ScaleActionButtonGroup = styled('div')({
-  display: 'block',
+  paddingLeft: '8px',
+  paddingRight: '8px',
   marginTop: 'auto',
   marginBottom: 'auto'
 })
