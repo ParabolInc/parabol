@@ -11,6 +11,7 @@ import isTaskPrivate from '~/utils/isTaskPrivate'
 import {parseUserTaskFilterQueryParams} from '~/utils/useUserTaskFilters'
 import getScopingTasksConn from '../connections/getScopingTasksConn'
 import {insertNodeBeforeInConn} from '~/utils/relay/insertNode'
+import toSearchQueryId from '~/utils/relay/toSearchQueryId'
 
 type Task = RecordProxy<{
   readonly id: string
@@ -70,12 +71,20 @@ const handleUpsertTask = (task: Task | null, store: RecordSourceSelectorProxy<an
       }
     }
   }
-  const parabolSearchQuery = meeting?.getLinkedRecord('parabolSearchQuery')
-  const queryString = parabolSearchQuery?.getValue('queryString') as string | undefined
-  const statusFilters = parabolSearchQuery?.getValue('statusFilters') as string[] | undefined
-  const scopingTasksConn = getScopingTasksConn(viewer, [teamId], statusFilters, queryString)
-  if (!scopingTasksConn) return
-  insertNodeBeforeInConn(scopingTasksConn, task, store, 'ParabolTaskEdge')
+  /* updates parabol search query if task is created from a sprint poker meeting
+   * should also implement updating parabol search query if task is created elsewhere?
+   */
+  if (meetingId) {
+    const parabolSearchQueryId = toSearchQueryId('parabolSearchQuery', meetingId)
+    const parabolSearchQuery = store.get(parabolSearchQueryId)
+    if (parabolSearchQuery) {
+      const queryString = parabolSearchQuery?.getValue('queryString') as string | undefined
+      const statusFilters = parabolSearchQuery?.getValue('statusFilters') as string[] | undefined
+      const scopingTasksConn = getScopingTasksConn(viewer, [teamId], statusFilters, queryString)
+      if (!scopingTasksConn) return
+      insertNodeBeforeInConn(scopingTasksConn, task, store, 'ParabolTaskEdge')
+    }
+  }
 }
 
 const handleUpsertTasks = pluralizeHandler(handleUpsertTask)
