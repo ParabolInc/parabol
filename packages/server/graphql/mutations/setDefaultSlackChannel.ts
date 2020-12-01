@@ -1,9 +1,7 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import getRethink from '../../database/rethinkDriver'
 import {getUserId, isTeamMember} from '../../utils/authorization'
-import publish from '../../utils/publish'
 import SetDefaultSlackChannelPayload from '../types/SetDefaultSlackChannelPayload'
-import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {GQLContext} from '../graphql'
 import standardError from '../../utils/standardError'
 import SlackServerManager from '../../utils/SlackServerManager'
@@ -19,15 +17,9 @@ const setDefaultSlackChannel = {
       type: new GraphQLNonNull(GraphQLID)
     }
   },
-  resolve: async (
-    _source,
-    {slackChannelId, teamId},
-    {authToken, dataLoader, socketId: mutatorId}: GQLContext
-  ) => {
+  resolve: async (_source, {slackChannelId, teamId}, {authToken, dataLoader}: GQLContext) => {
     const r = await getRethink()
     const viewerId = getUserId(authToken)
-    const operationId = dataLoader.share()
-    const subOptions = {mutatorId, operationId}
 
     // AUTH
     if (!isTeamMember(authToken, teamId)) {
@@ -64,7 +56,6 @@ const setDefaultSlackChannel = {
         .run()
     }
     const data = {slackChannelId, teamId, userId: viewerId}
-    publish(SubscriptionChannel.TEAM, teamId, 'SetDefaultSlackChannelSuccess', data, subOptions)
     return data
   }
 }

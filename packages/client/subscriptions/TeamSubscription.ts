@@ -7,7 +7,6 @@ import {
   endRetrospectiveTeamUpdater
 } from '~/mutations/EndRetrospectiveMutation'
 import {navigateMeetingTeamUpdater} from '~/mutations/NavigateMeetingMutation'
-import {setDefaultSlackChannelUpdater} from '~/mutations/SetDefaultSlackChannelMutation'
 import Atmosphere from '../Atmosphere'
 import {
   acceptTeamInvitationTeamOnNext,
@@ -41,7 +40,6 @@ const subscription = graphql`
   subscription TeamSubscription {
     teamSubscription {
       __typename
-      ...SetDefaultSlackChannelMutation_team @relay(mask: false)
       ...UpdateJiraDimensionFieldMutation_team @relay(mask: false)
       ...AcceptTeamInvitationMutation_team @relay(mask: false)
       ...AddAgendaItemMutation_team @relay(mask: false)
@@ -113,8 +111,7 @@ const updateHandlers = {
   RemoveOrgUserPayload: removeOrgUserTeamUpdater,
   RemoveReflectTemplatePayload: removeReflectTemplateTeamUpdater,
   RemoveReflectTemplatePromptPayload: removeReflectTemplatePromptTeamUpdater,
-  RemoveTeamMemberPayload: removeTeamMemberTeamUpdater,
-  SetDefaultSlackChannelSuccess: setDefaultSlackChannelUpdater
+  RemoveTeamMemberPayload: removeTeamMemberTeamUpdater
 }
 
 const TeamSubscription = (

@@ -31,16 +31,6 @@ const mutation = graphql`
     }
   }
 `
-export const setDefaultSlackChannelUpdater = (payload) => {
-  const teamMember = payload.getLinkedRecord('teamMember')
-  if (!teamMember) return
-  const slackChannelId = payload.getValue('slackChannelId')
-  const integrations = teamMember.getLinkedRecord('integrations')
-  if (!integrations) return
-  const slack = integrations.getLinkedRecord('slack')
-  if (!slack) return
-  slack.setValue(slackChannelId, 'defaultTeamChannelId')
-}
 
 const SetDefaultSlackChannelMutation: StandardMutation<TSetDefaultSlackChannelMutation> = (
   atmosphere,
@@ -53,7 +43,14 @@ const SetDefaultSlackChannelMutation: StandardMutation<TSetDefaultSlackChannelMu
     updater: (store) => {
       const payload = store.getRootField('setDefaultSlackChannel')
       if (!payload) return
-      setDefaultSlackChannelUpdater(payload)
+      const teamMember = payload.getLinkedRecord('teamMember')
+      if (!teamMember) return
+      const slackChannelId = payload.getValue('slackChannelId')
+      const integrations = teamMember.getLinkedRecord('integrations')
+      if (!integrations) return
+      const slack = integrations.getLinkedRecord('slack')
+      if (!slack) return
+      slack.setValue(slackChannelId, 'defaultTeamChannelId')
     },
     optimisticUpdater: (store) => {
       const {slackChannelId, teamId} = variables
