@@ -8,8 +8,8 @@ const Button = styled(FloatingActionButton)({
   color: '#fff',
   padding: '10px 12px',
   width: '150px',
-  top: '85%',
-  left: '74%',
+  bottom: 8,
+  right: 16,
   position: 'absolute',
   zIndex: ZIndex.FAB
 })
@@ -23,6 +23,10 @@ const StyledLabel = styled('div')({
   fontWeight: 600
 })
 
+const ButtonWrapper = styled('div')({
+  position: 'relative'
+})
+
 interface Props {
   setIsEditing: (isEditing: boolean) => void
   labelText: string
@@ -32,10 +36,12 @@ interface Props {
 const NewIntegrationRecordButton = (props: Props) => {
   const {setIsEditing, labelText, className} = props
   return (
-    <Button className={className} onClick={() => setIsEditing(true)} palette='blue'>
-      <StyledIcon>{'add'}</StyledIcon>
-      <StyledLabel>{labelText}</StyledLabel>
-    </Button>
+    <ButtonWrapper>
+      <Button className={className} onClick={() => setIsEditing(true)} palette='blue'>
+        <StyledIcon>{'add'}</StyledIcon>
+        <StyledLabel>{labelText}</StyledLabel>
+      </Button>
+    </ButtonWrapper>
   )
 }
 

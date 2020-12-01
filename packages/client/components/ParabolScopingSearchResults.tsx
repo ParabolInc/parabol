@@ -22,10 +22,6 @@ interface Props {
   meeting: ParabolScopingSearchResults_meeting
 }
 
-const StyledNewIntegrationRecordButton = styled(NewIntegrationRecordButton)({
-  left: '174%',
-})
-
 const ParabolScopingSearchResults = (props: Props) => {
   const {viewer, meeting, relay} = props
   const tasks = viewer?.tasks ?? null
@@ -44,7 +40,7 @@ const ParabolScopingSearchResults = (props: Props) => {
     return viewer ?
       <>
         <IntegrationScopingNoResults msg={'No tasks match that query'} />
-        <StyledNewIntegrationRecordButton setIsEditing={setIsEditing} labelText={'New Task'} />
+        <NewIntegrationRecordButton setIsEditing={setIsEditing} labelText={'New Task'} />
       </>
       :
       null
@@ -74,7 +70,7 @@ const ParabolScopingSearchResults = (props: Props) => {
         })}
         {lastItem}
       </ResultScroller>
-      {!isEditing && <StyledNewIntegrationRecordButton setIsEditing={setIsEditing} labelText={'New Task'} />}
+      {!isEditing && <NewIntegrationRecordButton setIsEditing={setIsEditing} labelText={'New Task'} />}
     </>
   )
 }
