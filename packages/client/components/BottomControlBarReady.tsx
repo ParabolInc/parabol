@@ -19,6 +19,7 @@ import BottomNavIconLabel from './BottomNavIconLabel'
 import Icon from './Icon'
 
 interface Props {
+  isNext: boolean
   cancelConfirm: undefined | (() => void)
   isConfirming: boolean
   setConfirmingButton: (button: string) => void
@@ -53,6 +54,7 @@ const BottomControlBarReady = (props: Props) => {
   const {
     cancelConfirm,
     isConfirming,
+    isNext,
     setConfirmingButton,
     handleGotoNext,
     meeting,
@@ -61,7 +63,6 @@ const BottomControlBarReady = (props: Props) => {
   } = props
   const {
     id: meetingId,
-    facilitatorUserId,
     localPhase,
     localStage,
     meetingMembers,
@@ -79,8 +80,6 @@ const BottomControlBarReady = (props: Props) => {
     }
   )
   const atmosphere = useAtmosphere()
-  const {viewerId} = atmosphere
-  const isFacilitating = facilitatorUserId === viewerId
   const readyCount = localStage.readyCount || 0
   const progress = readyCount / Math.max(1, activeCount - 1)
   const isLastStageInPhase = stages[stages.length - 1]?.id === localStage?.id
@@ -91,7 +90,7 @@ const BottomControlBarReady = (props: Props) => {
     activeCount > 1
 
   const onClick = () => {
-    if (!isFacilitating) {
+    if (!isNext) {
       FlagReadyToAdvanceMutation(atmosphere, {isReady: !isViewerReady, meetingId, stageId})
     } else if (isComplete || !isConfirmRequired || isConfirming) {
       setConfirmingButton('')
@@ -102,15 +101,15 @@ const BottomControlBarReady = (props: Props) => {
       setTimeout(openTooltip)
     }
   }
-  const onKeyDown = isFacilitating
+  const onKeyDown = isNext
     ? handleRightArrow(() => {
-        gotoNext()
-      })
+      gotoNext()
+    })
     : undefined
-  const icon = isFacilitating ? 'arrow_forward' : 'check'
-  const label = isFacilitating ? 'Next' : 'Ready'
+  const icon = isNext ? 'arrow_forward' : 'check'
+  const label = isNext ? 'Next' : 'Ready'
   const getDisabled = () => {
-    if (!isFacilitating) return false
+    if (!isNext) return false
     if (phaseType === NewMeetingPhaseTypeEnum.reflect) {
       return reflectionGroups?.length === 0 ?? true
     }
@@ -129,9 +128,9 @@ const BottomControlBarReady = (props: Props) => {
         onKeyDown={onKeyDown}
         ref={ref}
       >
-        <BottomControlBarProgress isNext={isFacilitating} progress={progress} />
+        <BottomControlBarProgress isNext={isNext} progress={progress} />
         <BottomNavIconLabel label={label} ref={originRef}>
-          <CheckIcon isViewerReady={isViewerReady} isNext={isFacilitating} progress={progress}>
+          <CheckIcon isViewerReady={isViewerReady} isNext={isNext} progress={progress}>
             {icon}
           </CheckIcon>
         </BottomNavIconLabel>
@@ -160,7 +159,6 @@ export default createFragmentContainer(BottomControlBarReady, {
         }
       }
       id
-      facilitatorUserId
       localStage {
         ...BottomControlBarReadyStage @relay(mask: false)
       }
