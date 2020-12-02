@@ -20,12 +20,10 @@ const ControlWrap = styled('div')({
 
 const Control = styled('div')({
   alignItems: 'center',
-  backgroundColor: '#fff',
-  border: '2px solid',
-  borderColor: PALETTE.TEXT_BLUE,
+  backgroundColor: '#FFF',
   borderRadius: 4,
   display: 'flex',
-  padding: 6
+  padding: 8
 })
 
 const Input = styled('input')<{color?: string}>(({color}) => ({
@@ -153,10 +151,15 @@ const PokerDimensionValueControl = (props: Props) => {
         </MiniPokerCard>
         {!isFacilitator && <Label>{`Final Score${finalScore ? '' : ' (set by facilitator)'}`}</Label>}
         {service === 'jira' && <PokerDimensionFinalScoreJiraPicker canUpdate={canUpdate} stage={stage} error={finalScoreError} submitScore={submitScore} clearError={clearError} isFacilitator={isFacilitator} />}
-        {service !== 'jira' &&
+        {service !== 'jira' && isFacilitator &&
           <>
-            <StyledLinkButton palette={'blue'}>{'Update Score'}</StyledLinkButton>
-            {finalScoreError && <ErrorMessage>{finalScoreError}</ErrorMessage>}
+            {canUpdate
+              ? <>
+                <StyledLinkButton onClick={submitScore} palette={'blue'}>{'Update Score'}</StyledLinkButton>
+                {finalScoreError && <ErrorMessage>{finalScoreError}</ErrorMessage>}
+              </>
+              : <Label>Final Score</Label>
+            }
           </>
         }
 
