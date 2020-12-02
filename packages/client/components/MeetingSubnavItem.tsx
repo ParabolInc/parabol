@@ -20,8 +20,8 @@ const ItemRoot = styled('div')<ItemRootProps>(
     backgroundColor: isActive
       ? PALETTE.BACKGROUND_NAV_LIGHT_ACTIVE
       : isDragging
-      ? PALETTE.BACKGROUND_NAV_LIGHT_HOVER
-      : 'transparent',
+        ? PALETTE.BACKGROUND_NAV_LIGHT_HOVER
+        : 'transparent',
     borderRadius: '0 4px 4px 0',
     color: PALETTE.TEXT_MAIN,
     display: 'flex',
@@ -58,6 +58,7 @@ const ItemLabel = styled('div')<{isComplete: boolean}>(({isComplete}) => ({
 }))
 
 const ItemMeta = styled('div')({
+  alignItems: 'center',
   alignContent: 'center',
   display: 'flex',
   height: lineHeight,

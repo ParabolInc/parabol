@@ -85,12 +85,12 @@ export const ensureAllCovering = (leftBound: number, rightBound: number) => {
   })
 }
 
-export const cacheCoveringBBox = (isLeftSidebarOpen?: boolean, isRightSidebarOpen?: boolean) => {
+export const cacheCoveringBBox = (isLeftSidebarOpen?: boolean, isRightDrawerOpen?: boolean) => {
   if (covering.el) {
     const coveringBBox = covering.el.getBoundingClientRect()
     const {left, right} = coveringBBox
     covering.left = left - (isLeftSidebarOpen ? NavSidebar.WIDTH : 0)
-    covering.right = right + (isRightSidebarOpen ? DiscussionThreadEnum.WIDTH : 0)
+    covering.right = right + (isRightDrawerOpen ? DiscussionThreadEnum.WIDTH : 0)
   }
   return covering
 }

@@ -40,7 +40,7 @@ export const phaseImageLookup = {
 export const meetingTypeToIcon = {
   [RETROSPECTIVE]: 'history',
   [ACTION]: 'change_history',
-  poker: 'style'
+  poker: CardsSVG
 
 } as const
 

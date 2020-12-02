@@ -22,10 +22,7 @@ const updatePokerTemplateDimensionScale = {
     const now = new Date()
     const operationId = dataLoader.share()
     const subOptions = {operationId, mutatorId}
-    const dimension = await r
-      .table('TemplateDimension')
-      .get(dimensionId)
-      .run()
+    const dimension = await r.table('TemplateDimension').get(dimensionId).run()
     const viewerId = getUserId(authToken)
     const teamId = dimension.teamId
 
@@ -38,19 +35,12 @@ const updatePokerTemplateDimensionScale = {
     }
 
     // VALIDATION
-    const scale = await r
-      .table('TemplateScale')
-      .get(scaleId)
-      .run()
+    const scale = await r.table('TemplateScale').get(scaleId).run()
     if (!scale || scale.removedAt || (!scale.isStarter && scale.teamId !== teamId)) {
       return standardError(new Error('Scale not found'), {userId: viewerId})
     }
 
-    await r
-      .table('TemplateDimension')
-      .get(dimensionId)
-      .update({scaleId, updatedAt: now})
-      .run()
+    await r.table('TemplateDimension').get(dimensionId).update({scaleId, updatedAt: now}).run()
 
     const data = {dimensionId}
     publish(

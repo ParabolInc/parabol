@@ -60,18 +60,11 @@ const moveToOrg = async (teamId: string, orgId: string, authToken: any) => {
     notifications: (r
       .table('Notification')
       .filter({teamId})
-      .filter((notification) =>
-        notification('orgId')
-          .default(null)
-          .ne(null)
-      )
+      .filter((notification) => notification('orgId').default(null).ne(null))
       .update({orgId}) as unknown) as Notification[],
-    templates: r
-      .table('MeetingTemplate')
-      .getAll(currentOrgId, {index: 'orgId'})
-      .update({
-        orgId
-      }),
+    templates: r.table('MeetingTemplate').getAll(currentOrgId, {index: 'orgId'}).update({
+      orgId
+    }),
     team: (r
       .table('Team')
       .get(teamId)
@@ -130,8 +123,7 @@ export default {
     }
   },
   async resolve(_source, {teamIds, orgId}, {authToken}) {
-    console.log('teamIds', teamIds)
-    const results = [] as (string | object)[]
+    const results = [] as (string | any)[]
     for (let i = 0; i < teamIds.length; i++) {
       const teamId = teamIds[i]
       const result = await moveToOrg(teamId, orgId, authToken)

@@ -3,7 +3,7 @@
   "description": "An open-source app for building smarter, more agile teams.",
   "author": "Parabol Inc. <love@parabol.com> (http://github.com/ParabolInc)",
   "license": "AGPL-3.0",
-  "version": "5.25.0",
+  "version": "5.26.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/ParabolInc/parabol"
@@ -25,12 +25,12 @@
     "@babel/preset-env": "^7.3.1",
     "@babel/preset-flow": "^7.0.0",
     "@babel/preset-react": "^7.0.0",
-    "@babel/preset-typescript": "^7.0.0",
+    "@babel/preset-typescript": "^7.12.1",
     "@babel/register": "^7.0.0",
     "@cypress/webpack-preprocessor": "^4.0.3",
     "@sucrase/webpack-loader": "^2.0.0",
-    "@typescript-eslint/eslint-plugin": "2.7.0",
-    "@typescript-eslint/parser": "2.7.0",
+    "@typescript-eslint/eslint-plugin": "4.7.0",
+    "@typescript-eslint/parser": "4.7.0",
     "awesome-typescript-loader": "^5.2.0",
     "babel-eslint": "^10.0.1",
     "babel-loader": "^8.0.5",
@@ -40,15 +40,15 @@
     "cypress": "^4.1.0",
     "cypress-pipe": "^1.7.0",
     "eslint": "^6.6.0",
-    "eslint-config-prettier": "^6.5.0",
+    "eslint-config-prettier": "^6.15.0",
     "eslint-plugin-emotion": "^10.0.14",
     "eslint-plugin-prettier": "^3.1.1",
     "eslint-plugin-react": "^7.16.0",
     "graphql": "^15.3.0",
     "lint-staged": "^10.1.7",
-    "prettier": "^1.19.1",
+    "prettier": "^2.1.2",
     "start-server-and-test": "^1.10.6",
-    "sucrase": "^3.10.1",
+    "sucrase": "^3.16.0",
     "typescript": "^4.0.2",
     "webpack": "^4.41.5",
     "webpack-cli": "^3.3.10"
@@ -56,6 +56,6 @@
   "dependencies": {
     "dotenv": "8.0.0",
     "dotenv-expand": "5.1.0",
-    "parabol-client": "^5.25.0"
+    "parabol-client": "^5.26.0"
   }
 }

@@ -6,7 +6,6 @@ const useScrollThreadList = (
   editorRef: RefObject<HTMLTextAreaElement>,
   wrapperRef: RefObject<HTMLDivElement>,
   preferredNames: string[] | null,
-  isShowingVideo?: boolean
 ) => {
   const isInit = useInitialRender()
   // if we're at or near the bottom of the scroll container
@@ -34,8 +33,7 @@ const useScrollThreadList = (
     // wrapper height, i.e. closed video in poker meeting, go to the bottom
     if (
       document.activeElement === edEl ||
-      scrollTop + clientHeight > oldScrollHeightRef.current - 20 ||
-      isShowingVideo
+      scrollTop + clientHeight > oldScrollHeightRef.current - 20 
     ) {
       setTimeout(() => {
         if (el.scrollTo) {
@@ -46,7 +44,7 @@ const useScrollThreadList = (
         // the delay is required for new task cards, not sure why height is determined async
       }, 50)
     }
-  }, [isInit, threadables, preferredNames, isShowingVideo])
+  }, [isInit, threadables, preferredNames])
   useEffect(() => {
     oldScrollHeightRef.current = wrapperRef.current?.scrollHeight ?? 0
   }, [threadables])

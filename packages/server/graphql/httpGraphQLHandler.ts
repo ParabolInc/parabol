@@ -68,7 +68,7 @@ const httpGraphQLHandler = uWSAsyncHandler(async (res: HttpResponse, req: HttpRe
   const contentType = req.getHeader('content-type')
   const connectionId = req.getHeader('x-correlation-id')
   const authToken = getReqAuth(req)
-  const ip = uwsGetIP(res)
+  const ip = uwsGetIP(res, req)
   if (contentType.startsWith('application/json')) {
     const body = await parseBody(res)
     if (!body) {

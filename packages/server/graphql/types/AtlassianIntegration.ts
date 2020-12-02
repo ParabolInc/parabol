@@ -145,6 +145,39 @@ const AtlassianIntegration = new GraphQLObjectType<any, GQLContext>({
         return projects
       }
     },
+    jiraFields: {
+      type: GraphQLNonNull(GraphQLList(GraphQLNonNull(GraphQLString))),
+      description: 'The list of field names that can be used as a ',
+      args: {
+        cloudId: {
+          type: GraphQLNonNull(GraphQLID),
+          description: 'Filter the fields to single cloudId'
+        }
+      },
+      resolve: async ({accessToken}: AtlassianAuth, {cloudId}) => {
+        if (!accessToken) return []
+        const manager = new AtlassianServerManager(accessToken)
+        const fields = await manager.getFields(cloudId)
+        const VALID_TYPES = ['string', 'number']
+        const INVALID_WORDS = ['color', 'name', 'description', 'environment']
+        const uniqueFieldNames = Array.from(
+          new Set(
+            fields
+              .filter((field) => {
+                if (!VALID_TYPES.includes(field.schema?.type)) return false
+                const fieldName = field.name.toLowerCase()
+                for (let i = 0; i < INVALID_WORDS.length; i++) {
+                  if (fieldName.includes(INVALID_WORDS[i])) return false
+                }
+                return true
+              })
+              .map((field) => field.name)
+              .sort()
+          )
+        )
+        return uniqueFieldNames
+      }
+    },
     jiraSearchQueries: {
       type: GraphQLNonNull(GraphQLList(GraphQLNonNull(JiraSearchQuery))),
       description:

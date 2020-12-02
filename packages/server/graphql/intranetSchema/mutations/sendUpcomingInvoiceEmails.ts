@@ -56,12 +56,8 @@ const sendUpcomingInvoiceEmails = {
       .getAll(TierEnum.pro, {index: 'tier'})
       .filter((organization) =>
         r.and(
-          organization('periodEnd')
-            .le(periodEndThresh)
-            .default(false),
-          organization('upcomingInvoiceEmailSentAt')
-            .le(lastSentThresh)
-            .default(true)
+          organization('periodEnd').le(periodEndThresh).default(false),
+          organization('upcomingInvoiceEmailSentAt').le(lastSentThresh).default(true)
         )
       )
       .coerceTo('array')
@@ -73,17 +69,10 @@ const sendUpcomingInvoiceEmails = {
           .filter({removedAt: null, role: null})
           .coerceTo('array')
           .merge((organizationUser) => ({
-            user: r
-              .table('User')
-              .get(organizationUser('userId'))
-              .pluck('preferredName', 'email')
+            user: r.table('User').get(organizationUser('userId')).pluck('preferredName', 'email')
           }))
       }))
-      .filter((organization) =>
-        organization('newUsers')
-          .count()
-          .ge(1)
-      )
+      .filter((organization) => organization('newUsers').count().ge(1))
       .merge((organization) => ({
         billingLeaders: r
           .table('OrganizationUser')
@@ -91,10 +80,7 @@ const sendUpcomingInvoiceEmails = {
           .filter({role: OrgUserRole.BILLING_LEADER, removedAt: null})
           .coerceTo('array')
           .merge((organizationUser) => ({
-            user: r
-              .table('User')
-              .get(organizationUser('userId'))
-              .pluck('preferredName', 'email')
+            user: r.table('User').get(organizationUser('userId')).pluck('preferredName', 'email')
           }))
       }))
       .coerceTo('array')
