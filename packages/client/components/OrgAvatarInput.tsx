@@ -50,7 +50,7 @@ class OrgAvatarInput extends Component<Props> {
     } = this.props
     setDirty()
     if (file.size > 2 ** 21) {
-      onError('File is too large')
+      onError('File is too large (1MB Max)')
       return
     }
     const isSanitary = await sanitizeSVG(file)

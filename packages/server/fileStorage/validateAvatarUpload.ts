@@ -6,9 +6,6 @@ const validateAvatarUpload = async (
   contentType: string,
   buffer: Buffer
 ): Promise<[string, Buffer]> => {
-  if (typeof process.env.CDN_BASE_URL === 'undefined') {
-    throw new Error('CDN_BASE_URL environment variable is not defined')
-  }
   if (!contentType || !contentType.startsWith('image/')) {
     throw new Error('file must be an image')
   }

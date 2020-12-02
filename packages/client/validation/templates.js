@@ -1,11 +1,11 @@
-import {APP_MAX_AVATAR_FILE_SIZE, TASK_MAX_CHARS} from '../utils/constants'
+import {TASK_MAX_CHARS} from '../utils/constants'
 import {compositeIdRegex, emailRegex, idRegex} from './regex'
 
 export const avatar = {
   size: (value) =>
     value.int('Hey! Don’t monkey with that!').test((raw) => {
-      if (raw > APP_MAX_AVATAR_FILE_SIZE) {
-        return `File too large! It must be <${APP_MAX_AVATAR_FILE_SIZE / 1024}kB`
+      if (raw > 1024 * 1024) {
+        return `File too large! It must be <${1024}kB`
       }
       return undefined
     }),
@@ -72,14 +72,14 @@ export const makeTeamNameSchema = (teamNames) => (value) =>
     .max(50, 'That isn’t very memorable. Maybe shorten it up?')
     .test((val) => teamNames.includes(val) && 'That name is already taken')
 
-export const url = (value) => 
+export const url = (value) =>
   value
     .trim()
     .test(
       (value) => {
         try {
           new URL(value)
-        } catch(e) {
+        } catch (e) {
           return e.message
         }
       },

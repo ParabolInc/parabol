@@ -47,7 +47,7 @@ class UserAvatarInput extends Component<Props> {
       file = (await jpgWithoutEXIF(file)) as File
     }
     if (file.size > 2 ** 20) {
-      onError('File is too large')
+      onError('File is too large (1MB Max)')
       return
     }
 

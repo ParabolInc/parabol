@@ -1,7 +1,7 @@
-import {APP_MAX_AVATAR_FILE_SIZE} from 'parabol-client/utils/constants'
 import {HttpResponse, getParts, MultipartField} from 'uWebSockets.js'
 import isObject from 'parabol-client/utils/isObject'
 import {FetchHTTPData} from 'parabol-client/Atmosphere'
+import {Threshold} from '../client/types/constEnums'
 
 interface UploadableBuffer {
   contentType: string
@@ -30,7 +30,8 @@ const parseRes = (res: HttpResponse) => {
     res.onData((ab, isLast) => {
       const curBuf = Buffer.from(ab)
       buffer = buffer ? Buffer.concat([buffer, curBuf]) : isLast ? curBuf : Buffer.concat([curBuf])
-      if (buffer.length > APP_MAX_AVATAR_FILE_SIZE) resolve(null)
+      // give an extra MB for the rest of the payload
+      if (buffer.length > Threshold.MAX_AVATAR_FILE_SIZE * 2) resolve(null)
       if (isLast) resolve(buffer)
     })
   })
