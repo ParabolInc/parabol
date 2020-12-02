@@ -27,10 +27,10 @@ const ScaleHeader = styled('div')({
 const IconButton = styled(FlatButton)({
   alignItems: 'center',
   color: PALETTE.TEXT_GRAY,
-  height: 24,
+  height: 32,
   justifyContent: 'center',
   padding: 0,
-  width: 24,
+  width: 32,
   ':hover, :focus, :active': {
     color: PALETTE.TEXT_MAIN
   }
@@ -44,7 +44,7 @@ const ScaleDetailHeader = styled('div')({
   display: 'flex',
   flexDirection: 'row',
   alignItems: 'flex-start',
-  padding: '16px'
+  padding: 12
 })
 
 const ScaleValueEditor = styled('div')({
@@ -75,8 +75,8 @@ const ScaleDetailsTitle = styled('div')({
   fontFamily: FONT_FAMILY.SANS_SERIF,
   fontSize: 16,
   fontWeight: 600,
-  lineHeight: '24px',
-  paddingLeft: '16px'
+  lineHeight: '32px',
+  paddingLeft: 12
 })
 
 const HR = styled(MenuItemHR)({

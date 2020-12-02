@@ -35,7 +35,7 @@ const DropdownBlock = styled('div')<{disabled: boolean}>(({disabled}) => ({
   display: 'flex',
   fontSize: 13,
   lineHeight: '20px',
-  minWidth: 128,
+  minWidth: 144,
   userSelect: 'none'
 }))
 

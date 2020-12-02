@@ -21,16 +21,23 @@ interface Props {
 }
 
 const AddScaleLink = styled(LinkButton)({
+  display: 'flex',
   fontFamily: FONT_FAMILY.SANS_SERIF,
   fontWeight: 600,
-  fontsize: 16,
+  fontSize: 16,
+  justifyContent: 'flex-start',
   lineHeight: '24px',
-  padding: '16px 0px 16px 16px'
+  padding: '12px 16px',
+  width: '100%'
 })
 
 const AddScaleLinkPlus = styled(Icon)({
   display: 'block',
-  margin: '0 16px 0 16px'
+  margin: '0 8px 0 0'
+})
+
+const StyledMenu = styled(Menu)({
+  maxHeight: 320
 })
 
 const SelectScaleDropdown = (props: Props) => {
@@ -59,7 +66,7 @@ const SelectScaleDropdown = (props: Props) => {
   }
 
   return (
-    <Menu ariaLabel={'Select the scale for this dimension'} {...menuProps} defaultActiveIdx={defaultActiveIdx}>
+    <StyledMenu ariaLabel={'Select the scale for this dimension'} {...menuProps} defaultActiveIdx={defaultActiveIdx}>
       {scales
         .map((scale) => (
           <ScaleDropdownMenuItem key={scale.id} scale={scale} dimension={dimension} menuProps={menuProps} />
@@ -71,11 +78,11 @@ const SelectScaleDropdown = (props: Props) => {
         label={
           <AddScaleLink palette='blue' onClick={addScale} waiting={submitting}>
             <AddScaleLinkPlus>add</AddScaleLinkPlus>
-            <div>Create a Scale</div>
+            Create a Scale
           </AddScaleLink>
         }
       />
-    </Menu >
+    </StyledMenu>
   )
 }
 
