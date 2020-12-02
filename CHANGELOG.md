@@ -5,22 +5,44 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 5.26.0 2020-Dec-2
+
+### Added
+
+- Set Sprint Poker final score and push it to Jira (#4368)
+
+### Changed
+
+- Updated Sprint Poker drawer discussion thread (#4364)
+- Sprint Poker UI clean-up (#4377)
+
+### Fixed
+
+- Multiple Sprint Poker bug fixes & polish (#4376)
+- Fixed remove agenda item & setAppLocation bugs (#4380)
+
 ## 5.25.1 2020-Nov-19
 
 ### Fixed
+
 - Reverted back to using header to determine client IP
 
 ## 5.25.0 2020-Nov-18
 
 ### Added
+
 - Sprint Poker template UI w/o scales (#4310)
 - Poker peekers (#4334)
+
 ### Changed
+
 - Upgraded uWS to v18, now with upgrade callback (#4357)
 - Invitation lifespan to 30 days (#4353)
 - Initial Poker template has a single dimension (#4347)
 - Added curve to poker deck (#4337)
+
 ### Fixed
+
 - A handle of client-side bugs found in Sentry, likely due to Relay (#4354)
 - Centered meeting bottom control bar (#4344)
 - Language for invitation expiration (#4341)
