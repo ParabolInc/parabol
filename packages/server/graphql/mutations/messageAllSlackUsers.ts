@@ -22,10 +22,7 @@ const messageAllSlackUsers = {
     requireSU(authToken)
 
     // RESOLUTION
-    const allSlackAuths = await r
-      .table('SlackAuth')
-      .filter({isActive: true})
-      .run()
+    const allSlackAuths = await r.table('SlackAuth').filter({isActive: true}).run()
     if (!allSlackAuths || !allSlackAuths.length) {
       return standardError(new Error('No authorised Slack users'))
     }
@@ -33,14 +30,9 @@ const messageAllSlackUsers = {
     const delay = 100
     const messagedUserIds = [] as string[]
     for (const slackAuth of allSlackAuths) {
-      const {botAccessToken, slackUserId, userId} = slackAuth
+      const {botAccessToken, defaultTeamChannelId, userId} = slackAuth
       const manager = new SlackServerManager(botAccessToken)
-      const openDMRes = await manager.openDM(slackUserId)
-      if (!openDMRes.ok) {
-        return standardError(new Error(openDMRes.error), {userId})
-      }
-      const channelId = openDMRes.channel.id
-      const postMessageRes = await manager.postMessage(channelId, message)
+      const postMessageRes = await manager.postMessage(defaultTeamChannelId, message)
       if (!postMessageRes.ok) {
         return standardError(new Error(postMessageRes.error), {userId})
       }
