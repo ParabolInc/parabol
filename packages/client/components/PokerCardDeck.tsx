@@ -92,9 +92,6 @@ const PokerCardDeck = (props: Props,) => {
   const vote = (score: string | null) => {
     if (submitting) return
     submitMutation()
-    if (!isVoting) {
-      setIsCollapsed(true)
-    }
     VoteForPokerStoryMutation(
       atmosphere,
       {meetingId, stageId, score},
@@ -108,15 +105,22 @@ const PokerCardDeck = (props: Props,) => {
         const isSelected = selectedIdx === idx
         const {label} = card
         const onClick = () => {
-          if (isCollapsed) {
+          if (isVoting) {
+            vote(isSelected ? null : label)
+          } else if (isCollapsed) {
+            // if the deck is collapsed, expand it
             setIsCollapsed(false)
           } else {
-            // if card is selected and clicked again remove vote
-            vote(isSelected ? null : label)
+            // if the deck is expanded, collapse it
+            setIsCollapsed(true)
+            if (!isSelected) {
+              // if they pick a new card, update it
+              vote(label)
+            }
           }
         }
         const rotation = initialRotation + rotationPerCard * idx
-        return <PokerCard key={card.label} yOffset={yOffset} rotation={rotation} onMouseEnter={onMouseEnter(card.label)} onMouseLeave={onMouseLeave(card.label)} scaleValue={card} idx={idx} totalCards={totalCards} onClick={onClick} isCollapsed={isCollapsed} isSelected={isSelected} deckRef={deckRef} radius={radius}  leftEdge={leftEdge}/>
+        return <PokerCard key={card.label} yOffset={yOffset} rotation={rotation} onMouseEnter={onMouseEnter(card.label)} onMouseLeave={onMouseLeave(card.label)} scaleValue={card} idx={idx} totalCards={totalCards} onClick={onClick} isCollapsed={isCollapsed} isSelected={isSelected} deckRef={deckRef} radius={radius} leftEdge={leftEdge} />
       })}
     </Deck>
   )
