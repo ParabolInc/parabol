@@ -76,7 +76,8 @@ const ScaleDetailsTitle = styled('div')({
   fontSize: 16,
   fontWeight: 600,
   lineHeight: '32px',
-  paddingLeft: 12
+  paddingLeft: 12,
+  userSelect: 'none'
 })
 
 const HR = styled(MenuItemHR)({
@@ -116,7 +117,7 @@ const PokerTemplateScaleDetails = (props: Props) => {
   return (
     <ScaleValueEditor>
       <Scrollable>
-        <ScaleDetailHeader onClick={gotoTemplateDetail}>
+        <ScaleDetailHeader>
           <IconButton aria-label='Back to Template' onClick={gotoTemplateDetail}>
             <BackIcon>arrow_back</BackIcon>
           </IconButton>
