@@ -83,7 +83,6 @@ const PokerDimensionValueControl = (props: Props) => {
   const [pendingScore, setPendingScore] = useState(finalScore)
   const lastServiceFieldNameRef = useRef(serviceFieldName)
   const canUpdate = pendingScore !== finalScore || lastServiceFieldNameRef.current !== serviceFieldName
-  console.log({canUpdate, pendingScore, finalScore, serviceFieldName, last: lastServiceFieldNameRef.current})
   useSetFinalScoreError(stageId, error)
 
   useLayoutEffect(() => {

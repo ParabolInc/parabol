@@ -691,7 +691,7 @@ export interface IJiraIssue {
   __typename: 'JiraIssue';
 
   /**
-   * cloudId:key
+   * cloudId:key. equal to the serviceTaskId on the EstimateStage
    */
   id: string;
 

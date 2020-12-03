@@ -11,7 +11,7 @@ const MiniPokerCardPlaceholder = styled('div')<{color?: string, onClick?: () => 
   border: color ? 0 : isFinal ? `1px solid ${PALETTE.TEXT_GRAY}` : `1px dashed ${PALETTE.TEXT_GRAY}`,
   borderRadius: 2,
   color: color ? '#fff' : PALETTE.TEXT_GRAY,
-  cursor: onClick ? 'pointer' : undefined,
+  cursor: onClick ? 'pointer' : 'default',
   display: 'flex',
   flexShrink: 0,
   fontWeight: 600,
@@ -21,12 +21,14 @@ const MiniPokerCardPlaceholder = styled('div')<{color?: string, onClick?: () => 
   lineHeight: '24px',
   textAlign: 'center',
   textShadow: '0px 1px 1px rgba(0, 0, 0, 0.1)',
+  userSelect: 'none',
   width: 28
 }))
 
 const Pass = styled('img')({
   display: 'block',
   height: 16,
+  userSelect: 'none',
   width: 16
 })
 
