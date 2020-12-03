@@ -45,10 +45,14 @@ const AddTemplateScaleValue = (props: Props) => {
     const availableNewColor = palettePickerOptions.find(
       (color) => !pickedColors.includes(color.hex)
     )
+    const existingLabels = scaleValues.filter(({isSpecial}) => !isSpecial).map(({label}) => label)
+    const potentialNextLabel = Number(existingLabels[existingLabels.length - 1]) + 1
+    const isNextLabelValid = !isNaN(potentialNextLabel) ? (potentialNextLabel >= 0 && potentialNextLabel < 100) : false
+    const nextLabel = isNextLabelValid ? potentialNextLabel.toString() : '*'
 
     const scaleValue = {
       color: availableNewColor?.hex ?? PALETTE.PROMPT_GREEN,
-      label: '*',
+      label: nextLabel,
       isSpecial: false
     }
     AddPokerTemplateScaleValueMutation(
