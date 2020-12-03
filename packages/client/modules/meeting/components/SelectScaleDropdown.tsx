@@ -14,6 +14,7 @@ import {FONT_FAMILY} from '../../../styles/typographyV2'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
 import AddPokerTemplateScaleMutation from '../../../mutations/AddPokerTemplateScaleMutation'
+import {Threshold} from '../../../types/constEnums'
 
 interface Props {
   menuProps: MenuProps
@@ -73,15 +74,17 @@ const SelectScaleDropdown = (props: Props) => {
         ))
       }
       <MenuItemHR key='HR1' />
-      <MenuItem
-        key='create'
-        label={
-          <AddScaleLink palette='blue' onClick={addScale} waiting={submitting}>
-            <AddScaleLinkPlus>add</AddScaleLinkPlus>
+      {scales.length < Threshold.MAX_POKER_TEMPLATE_SCALES &&
+        <MenuItem
+          key='create'
+          label={
+            <AddScaleLink palette='blue' onClick={addScale} waiting={submitting}>
+              <AddScaleLinkPlus>add</AddScaleLinkPlus>
             Create a Scale
           </AddScaleLink>
-        }
-      />
+          }
+        />
+      }
     </StyledMenu>
   )
 }
