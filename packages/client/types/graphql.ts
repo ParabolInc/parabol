@@ -10957,6 +10957,24 @@ export interface IMessageAllSlackUsersSuccess {
    * A list of the Parabol user ids that have been sent a direct message in Slack
    */
   messagedUserIds: Array<string>;
+
+  /**
+   * Slack messages that failed to send
+   */
+  errors: Array<IMessageSlackUserError> | null;
+}
+
+/**
+ * An error from sending a message to a Slack user
+ */
+export interface IMessageSlackUserError {
+  __typename: 'MessageSlackUserError';
+  userId: string;
+
+  /**
+   * The error message received from Slack
+   */
+  error: string;
 }
 
 /**

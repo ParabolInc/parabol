@@ -6,6 +6,11 @@ import {GQLContext} from '../graphql'
 import SlackServerManager from '../../utils/SlackServerManager'
 import standardError from '../../utils/standardError'
 
+interface MessageSlackUserError {
+  userId: string
+  error: string
+}
+
 const messageAllSlackUsers = {
   type: GraphQLNonNull(MessageAllSlackUsersPayload),
   description: 'Send a message to all authorised Slack users',
@@ -27,24 +32,23 @@ const messageAllSlackUsers = {
       return standardError(new Error('No authorised Slack users'))
     }
 
-    const delay = 100
     const messagedUserIds = [] as string[]
+    const errors = [] as MessageSlackUserError[]
     for (const slackAuth of allSlackAuths) {
       const {botAccessToken, defaultTeamChannelId, userId} = slackAuth
       const manager = new SlackServerManager(botAccessToken)
       const postMessageRes = await manager.postMessage(defaultTeamChannelId, message)
       if (!postMessageRes.ok) {
-        return standardError(new Error(postMessageRes.error), {userId})
-      }
-      messagedUserIds.push(userId)
-      if (messagedUserIds.length % 100 === 0) {
-        setTimeout(() => {
-          console.log(`Throttling next message after sending ${messagedUserIds.length} messages`)
-        }, delay)
+        errors.push({
+          userId,
+          error: postMessageRes.error
+        })
+      } else {
+        messagedUserIds.push(userId)
       }
     }
 
-    const data = {messagedUserIds}
+    const data = {messagedUserIds, errors}
     return data
   }
 }

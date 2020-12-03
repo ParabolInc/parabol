@@ -1,6 +1,7 @@
 import {GraphQLID, GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import {GQLContext} from '../graphql'
 import makeMutationPayload from './makeMutationPayload'
+import MessageSlackUserError from './MessageSlackUserError'
 
 export const MessageAllSlackUsersSuccess = new GraphQLObjectType<any, GQLContext>({
   name: 'MessageAllSlackUsersSuccess',
@@ -8,6 +9,10 @@ export const MessageAllSlackUsersSuccess = new GraphQLObjectType<any, GQLContext
     messagedUserIds: {
       type: GraphQLNonNull(GraphQLList(GraphQLNonNull(GraphQLID))),
       description: 'A list of the Parabol user ids that have been sent a direct message in Slack'
+    },
+    errors: {
+      type: GraphQLList(GraphQLNonNull(MessageSlackUserError)),
+      description: 'Slack messages that failed to send'
     }
   })
 })
