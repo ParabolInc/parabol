@@ -9,11 +9,12 @@ import PokerRevealVotesMutation from '../mutations/PokerRevealVotesMutation'
 import {BezierCurve} from '../types/constEnums'
 import {PokerActiveVoting_meeting} from '../__generated__/PokerActiveVoting_meeting.graphql'
 import {PokerActiveVoting_stage} from '../__generated__/PokerActiveVoting_stage.graphql'
+import CircularProgress from './CircularProgress'
 import Icon from './Icon'
 import MiniPokerCard from './MiniPokerCard'
 import PokerVotingAvatarGroup from './PokerVotingAvatarGroup'
 import PokerVotingRowBase from './PokerVotingRowBase'
-import SecondaryButtonCool from './SecondaryButtonCool'
+import RaisedButton from './RaisedButton'
 import TipBanner from './TipBanner'
 
 const CheckIcon = styled(Icon)({
@@ -42,6 +43,42 @@ const StyledError = styled('div')({
   color: PALETTE.ERROR_MAIN,
   fontWeight: 400,
 })
+
+const RevealLabel = styled('div')<{color: string}>(({color}) => ({
+  color,
+  paddingLeft: 8
+}))
+
+const RevealButton = styled(RaisedButton)<{color}>(({color}) => ({
+  backgroundColor: '#fff',
+  color,
+  fontWeight: 600,
+  height: 56,
+  position: 'relative'
+}))
+
+const Progress = styled(CircularProgress)({
+  transform: `translate(-4px, 0px)`,
+  // prevent color overlap & bleed with static progress ring
+  zIndex: 1
+})
+
+const RevealButtonIcon = styled(Icon)<{color: string}>(({color}) => ({
+  alignItems: 'center',
+  border: `1px solid rgba(130, 128, 154, 0.2)`,
+  borderRadius: '100%',
+  boxShadow: `0px 0px 2px rgba(68, 66, 88, 0.14), 0px 2px 2px rgba(68, 66, 88, 0.12), 0px 1px 3px rgba(68, 66, 88, 0.2)`,
+  color,
+  display: 'flex',
+  fontWeight: 600,
+  height: 40,
+  justifyContent: 'center',
+  left: 19,
+  position: 'absolute',
+  top: 7,
+  width: 40,
+}))
+
 interface Props {
   isClosing: boolean
   meeting: PokerActiveVoting_meeting
@@ -52,12 +89,14 @@ const PokerActiveVoting = (props: Props) => {
   const {isClosing, meeting, stage} = props
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
-  const {facilitatorUserId, id: meetingId} = meeting
+  const {facilitatorUserId, id: meetingId, meetingMembers} = meeting
   const {id: stageId, scores} = stage
   const hasVotes = scores.length > 0
   const isFacilitator = viewerId === facilitatorUserId
   const viewerHasVoted = Boolean(scores.find(({userId}) => userId === viewerId))
-
+  const checkedInCount = meetingMembers.filter((member) => member.isCheckedIn).length
+  const votePercent = scores.length / checkedInCount
+  const allVotesIn = scores.length === checkedInCount
   // Show the facilitator a tooltip if nobody has voted yet
   // Show the participant a tooltip if they haven’t voted yet
   // Consider dismissing the tooltip silently if each role has seen their tooltip once
@@ -88,7 +127,13 @@ const PokerActiveVoting = (props: Props) => {
         <PokerVotingAvatarGroup scores={scores} isClosing={isClosing} />
       </PokerVotingRowBase>
       <RevealButtonBlock>
-        {showRevealButton && <SecondaryButtonCool onClick={reveal}>{'Reveal Votes'}</SecondaryButtonCool>}
+        {showRevealButton &&
+          <RevealButton onClick={reveal} color={PALETTE.TEXT_GRAY}>
+            <Progress radius={22} thickness={4} stroke={PALETTE.BACKGROUND_GREEN} progress={votePercent} />
+            <RevealButtonIcon color={allVotesIn ? PALETTE.TEXT_GREEN : PALETTE.BORDER_GRAY}>{'check'}</RevealButtonIcon>
+            <RevealLabel color={allVotesIn ? PALETTE.TEXT_GREEN : PALETTE.TEXT_GRAY}>{'Reveal Votes'}</RevealLabel>
+          </RevealButton>
+        }
         {error && <StyledError>{error.message}</StyledError>}
       </RevealButtonBlock>
       <BannerWrap showTip={showTip}>
@@ -115,6 +160,9 @@ export default createFragmentContainer(
     fragment PokerActiveVoting_meeting on PokerMeeting {
       facilitatorUserId
       id
+      meetingMembers {
+        isCheckedIn
+      }
     }`,
   }
 )

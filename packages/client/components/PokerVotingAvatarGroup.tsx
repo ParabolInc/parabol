@@ -39,7 +39,7 @@ const PokerVotingAvatarGroup = (props: Props) => {
   const visibleScores = overflowCount === 0 ? scores : scores.slice(0, maxAvatars - 1)
   const visibleAvatars = visibleScores.map((score => ({...score, key: score.id})))
   if (overflowCount > 0) {
-    visibleAvatars.push({key: 'overflow', overflowCount} as any)
+    visibleAvatars.push({id: 'overflow', key: 'overflow', overflowCount} as any)
   }
 
   const children = isClosing ? [] : visibleAvatars
