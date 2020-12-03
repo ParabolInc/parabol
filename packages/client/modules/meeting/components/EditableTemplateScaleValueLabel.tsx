@@ -47,13 +47,13 @@ const EditableTemplateScaleValueLabel = (props: Props) => {
     const scaleValueId = scaleValue.id
     return new Legitity(value)
       .trim()
-      .required('Please enter a scale label')
-      .max(2, 'That scale label is probably long enough')
+      .required('Please enter a value')
+      .max(2, 'Value cannot be longer than 2 characters')
       .test((mVal) => {
         const isDupe = mVal ? scale.values.find(
           (aScaleValue) => aScaleValue.id !== scaleValueId && aScaleValue.label.toLowerCase() === mVal.toLowerCase()
         ) : undefined
-        return isDupe ? 'That scale label already exists' : undefined
+        return isDupe ? 'That value already exists' : undefined
       })
   }
 
@@ -75,7 +75,7 @@ const EditableTemplateScaleValueLabel = (props: Props) => {
       hideIcon={isEditingLabel ? true : !isHover}
       handleSubmit={handleSubmit}
       initialValue={scaleValue.label}
-      maxLength={2}
+      maxLength={50}
       validate={validate}
       placeholder={''}
     />
