@@ -103,6 +103,14 @@ const Task = new GraphQLObjectType<any, GQLContext>({
         return dataLoader.get('teams').load(teamId)
       }
     },
+    title: {
+      type: GraphQLNonNull(GraphQLString),
+      description: 'The first block of the content',
+      resolve: ({plaintextContent}) => {
+        const firstBreak = plaintextContent.indexOf('\n')
+        return plaintextContent.slice(0, firstBreak)
+      }
+    },
     userId: {
       type: GraphQLID,
       description:

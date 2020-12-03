@@ -15,6 +15,7 @@ import QuickStats from './QuickStats'
 import RetroTopics from './RetroTopics'
 import SummaryHeader from './SummaryHeader'
 import SummarySheetCTA from './SummarySheetCTA'
+import SummaryPokerStories from './SummaryPokerStories'
 
 interface Props {
   emailCSVUrl: string
@@ -55,6 +56,7 @@ const SummarySheet = (props: Props) => {
         <MeetingMembersWithTasks meeting={meeting} />
         <MeetingMembersWithoutTasks meeting={meeting} />
         <RetroTopics isDemo={isDemo} isEmail={referrer === 'email'} meeting={meeting} />
+        <SummaryPokerStories meeting={meeting} isEmail={referrer === 'email'} />
         <ContactUsFooter
           isDemo={isDemo}
           hasLearningLink={meetingType === ACTION}
@@ -76,6 +78,7 @@ export default createFragmentContainer(SummarySheet, {
       ...MeetingMembersWithTasks_meeting
       ...MeetingMembersWithoutTasks_meeting
       ...RetroTopics_meeting
+      ...SummaryPokerStories_meeting
       meetingType
       name
     }

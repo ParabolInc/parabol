@@ -5,12 +5,6 @@ import {useMakeStageSummaries_phase} from '../__generated__/useMakeStageSummarie
 
 interface StageSummary {title: string, isComplete: boolean, isNavigable: boolean, isActive: boolean, sortOrder: number, stageIds: string[], finalScores: (string | null)[]}
 
-const getTitleFromStory = (service: string, story: useMakeStageSummaries_phase['stages'][0]['story'], fallback = 'Unknown Story') => {
-  if (!story) return fallback
-  if (service === 'jira') return story.summary ?? fallback
-  return story.plaintextContent?.split('\n')[0] ?? fallback
-}
-
 const useMakeStageSummaries = (phaseRef: any, localStageId: string) => {
   const estimatePhase = readInlineData<useMakeStageSummaries_phase>(
     graphql`
@@ -23,15 +17,9 @@ const useMakeStageSummaries = (phaseRef: any, localStageId: string) => {
           isNavigable
           sortOrder
           serviceTaskId
-          service
           story {
             id
-            ... on JiraIssue {
-              summary
-            }
-            ... on Task {
-              plaintextContent
-            }
+            title
           }
         }
       }
@@ -44,7 +32,7 @@ const useMakeStageSummaries = (phaseRef: any, localStageId: string) => {
     const summaries = [] as StageSummary[]
     for (let i = 0; i < stages.length; i++) {
       const stage = stages[i]
-      const {serviceTaskId, service, story} = stage
+      const {serviceTaskId, story} = stage
       const batch = [stage]
       for (let j = i + 1; j < stages.length; j++) {
         const nextStage = stages[j]
@@ -52,7 +40,7 @@ const useMakeStageSummaries = (phaseRef: any, localStageId: string) => {
         batch.push(nextStage)
       }
       summaries.push({
-        title: getTitleFromStory(service, story),
+        title: story?.title ?? 'Unknown Story',
         isComplete: batch.every(({isComplete}) => isComplete),
         isNavigable: batch.some(({isNavigable}) => isNavigable),
         isActive: !!batch.find(({id}) => id === localStageId),
