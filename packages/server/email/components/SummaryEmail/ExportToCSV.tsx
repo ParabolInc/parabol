@@ -9,6 +9,8 @@ import withMutationProps, {WithMutationProps} from 'parabol-client/utils/relay/w
 import {ExportToCSVQuery} from 'parabol-client/__generated__/ExportToCSVQuery.graphql'
 import React, {Component} from 'react'
 import {fetchQuery} from 'react-relay'
+import {PokerCards} from '../../../../client/types/constEnums'
+import {NewMeetingPhaseTypeEnum} from '../../../../client/types/graphql'
 import emailDir from '../../emailDir'
 import AnchorIfEmail from './MeetingSummaryEmail/AnchorIfEmail'
 import EmailBorderBottom from './MeetingSummaryEmail/EmailBorderBottom'
@@ -56,6 +58,25 @@ const query = graphql`
           name
         }
         endedAt
+        ... on PokerMeeting {
+          phases {
+            phaseType
+            ... on EstimatePhase {
+              stages {
+                finalScore
+                dimension {
+                  name
+                }
+                story {
+                  title
+                }
+                scores {
+                  label
+                }
+              }
+            }
+          }
+        }
         ... on ActionMeeting {
           agendaItems {
             content
@@ -104,6 +125,12 @@ const query = graphql`
 type Meeting = NonNullable<NonNullable<ExportToCSVQuery['response']['viewer']>['newMeeting']>
 type ExportableTypeName = 'Task' | 'Reflection' | 'Comment' | 'Reply'
 
+interface CSVPokerRow {
+  story: string
+  dimension: string
+  finalScore: string | number
+  voteCount: number
+}
 interface CSVRetroRow {
   reflectionGroup: string
   author: string
@@ -153,6 +180,27 @@ class ExportToCSV extends Component<Props> {
     }
   }
 
+  handlePokerMeeting(meeting: Meeting) {
+    const rows = [] as CSVPokerRow[]
+    const {phases} = meeting
+    const estimatePhase = phases!.find(
+      (phase) => phase.phaseType === NewMeetingPhaseTypeEnum.ESTIMATE
+    )!
+    const stages = estimatePhase.stages!
+    stages.forEach((stage) => {
+      const {finalScore, dimension, story, scores} = stage
+      const {name} = dimension
+      const title = story?.title ?? 'Unknown Story'
+      const voteCount = scores.filter((score) => score.label !== PokerCards.PASS_CARD).length
+      rows.push({
+        story: title,
+        dimension: name,
+        finalScore: finalScore || '',
+        voteCount
+      })
+    })
+    return rows
+  }
   handleRetroMeeting(newMeeting: Meeting) {
     const {reflectionGroups} = newMeeting
 
@@ -261,8 +309,7 @@ class ExportToCSV extends Component<Props> {
       case 'retrospective':
         return this.handleRetroMeeting(newMeeting)
       case 'poker':
-        // TODO summary
-        return []
+        return this.handlePokerMeeting(newMeeting)
     }
   }
 

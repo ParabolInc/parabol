@@ -42,6 +42,13 @@ const JiraIssue = new GraphQLObjectType<any, GQLContext>({
       type: GraphQLNonNull(GraphQLString),
       description: 'The plaintext summary of the jira issue'
     },
+    title: {
+      type: GraphQLNonNull(GraphQLString),
+      description: 'Alias for summary used by the Story interface',
+      resolve: ({summary}) => {
+        return summary
+      }
+    },
     description: {
       type: GraphQLNonNull(GraphQLString),
       description: 'The stringified ADF of the jira issue description',

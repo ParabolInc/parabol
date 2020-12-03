@@ -706,6 +706,11 @@ export interface IJiraIssue {
   commentors: Array<ICommentorDetails> | null;
 
   /**
+   * Alias for summary used by the Story interface
+   */
+  title: string;
+
+  /**
    * The ID of the jira cloud where the issue lives
    */
   cloudId: string;
@@ -775,6 +780,11 @@ export interface IStory {
    * A list of users currently commenting
    */
   commentors: Array<ICommentorDetails> | null;
+
+  /**
+   * The title, independent of the story type
+   */
+  title: string;
 }
 
 export interface IThreadOnStoryArguments {
@@ -1445,6 +1455,11 @@ export interface ITask {
    * A list of users currently commenting
    */
   commentors: Array<ICommentorDetails> | null;
+
+  /**
+   * The first block of the content
+   */
+  title: string;
 
   /**
    * The agenda item that the task was created in, if any

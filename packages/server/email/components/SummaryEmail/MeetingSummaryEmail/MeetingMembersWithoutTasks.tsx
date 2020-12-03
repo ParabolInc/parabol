@@ -6,6 +6,7 @@ import {RETROSPECTIVE} from 'parabol-client/utils/constants'
 import {MeetingMembersWithoutTasks_meeting} from 'parabol-client/__generated__/MeetingMembersWithoutTasks_meeting.graphql'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
+import {MeetingTypeEnum} from '../../../../../client/types/graphql'
 import EmailBorderBottom from './EmailBorderBottom'
 import SummaryAvatarHeader from './SummaryAvatarHeader'
 
@@ -34,11 +35,12 @@ interface Props {
 const MeetingMembersWithoutTasks = (props: Props) => {
   const {meeting} = props
   const {meetingMembers, meetingType} = meeting
+  if (meetingType === MeetingTypeEnum.poker) return null
   // const meetingMembers = new Array(7).fill(mock)
   const membersWithoutTasks = meetingMembers.filter(
     (member) =>
       ((member.tasks && member.tasks.length) || 0) +
-      ((member.doneTasks && member.doneTasks.length) || 0) ===
+        ((member.doneTasks && member.doneTasks.length) || 0) ===
       0
   )
   membersWithoutTasks.sort((a, b) =>
