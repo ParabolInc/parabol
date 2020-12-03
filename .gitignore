@@ -24,6 +24,7 @@ rethinkdb_dump_*
 schema.graphql
 scratch/
 scripts/toolbox/*
+self-hosted/
 stats.json
 storybook-static/
 test-report.xml
