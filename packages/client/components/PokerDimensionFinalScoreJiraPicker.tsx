@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
+import React, {RefObject} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {PALETTE} from '../styles/paletteV2'
 import {PokerDimensionFinalScoreJiraPicker_stage} from '../__generated__/PokerDimensionFinalScoreJiraPicker_stage.graphql'
@@ -30,24 +30,20 @@ const Label = styled('div')({
 })
 
 const ErrorMessage = styled(StyledError)({
+  textAlign: 'left',
   fontSize: 14
 })
 
-const StyledLinkButton = styled(LinkButton)<{canUpdate: boolean}>(({canUpdate}) => ({
+const StyledLinkButton = styled(LinkButton)({
   color: PALETTE.LINK_BLUE,
   fontSize: 14,
   fontWeight: 600,
   height: 40,
-  paddingLeft: 16,
+  padding: '0 16px',
   ':hover,:focus,:active': {
     boxShadow: 'none',
     color: PALETTE.LINK_BLUE_HOVER
-  },
-  visibility: canUpdate ? undefined : 'hidden'
-}))
-
-const ScoreLabel = styled(Label)({
-  marginLeft: 8
+  }
 })
 
 interface Props {
@@ -57,17 +53,19 @@ interface Props {
   stage: PokerDimensionFinalScoreJiraPicker_stage
   error?: string | null
   submitScore: () => void
+  inputRef: RefObject<HTMLInputElement>
 }
 
 const PokerDimensionFinalScoreJiraPicker = (props: Props) => {
-  const {isFacilitator, canUpdate, error, stage, clearError, submitScore} = props
+  const {inputRef, isFacilitator, canUpdate, error, stage, clearError, submitScore} = props
+  const focusInput = () => inputRef.current!.focus()
   return (
     <Wrapper>
-      {isFacilitator &&
-        <>
-          {!canUpdate && <ScoreLabel>Final Score</ScoreLabel>}
-          <StyledLinkButton canUpdate={canUpdate} onClick={submitScore}>{'Update'}</StyledLinkButton>
-        </>
+      {isFacilitator
+        ? canUpdate
+          ? <StyledLinkButton onClick={submitScore}>{'Update'}</StyledLinkButton>
+          : <StyledLinkButton onClick={focusInput}>{'Edit Score'}</StyledLinkButton>
+        : null
       }
       <Mapper>
         {error && <ErrorMessage>{error}</ErrorMessage>}

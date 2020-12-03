@@ -43,24 +43,27 @@ const Input = styled('input')<{color?: string}>(({color}) => ({
   }
 }))
 
-const StyledLinkButton = styled(LinkButton)({
-  fontSize: 14,
-  fontWeight: 600,
-  height: 40,
-  margin: '0 0 0 8px',
-  padding: '0 8px'
-})
-
 const ErrorMessage = styled(StyledError)({
   paddingLeft: 8
 })
 
 const Label = styled('div')({
-  color: PALETTE.TEXT_MAIN,
+  flexShrink: 0,
   fontSize: 14,
   fontWeight: 600,
-  margin: '0 0 0 16px',
-  width: '100%'
+  margin: '0 0 0 16px'
+})
+
+const StyledLinkButton = styled(LinkButton)({
+  color: PALETTE.LINK_BLUE,
+  fontSize: 14,
+  fontWeight: 600,
+  height: 40,
+  padding: '0 16px',
+  ':hover,:focus,:active': {
+    boxShadow: 'none',
+    color: PALETTE.LINK_BLUE_HOVER
+  }
 })
 
 interface Props {
@@ -142,22 +145,23 @@ const PokerDimensionValueControl = (props: Props) => {
   const scaleColor = matchingScale?.color
   const textColor = scaleColor ? '#fff' : undefined
   const isFinal = !!finalScore && pendingScore === finalScore
+  const handleLabelClick = () => inputRef.current!.focus()
   return (
     <ControlWrap>
       <Control>
-        <MiniPokerCard color={scaleColor} isFinal={isFinal}>
+        <MiniPokerCard canEdit={isFacilitator} color={scaleColor} isFinal={isFinal}>
           <Input disabled={!isFacilitator} onKeyDown={onKeyDown} autoFocus={!finalScore} color={textColor} ref={inputRef} onChange={onChange} placeholder={placeholder} value={pendingScore}></Input>
         </MiniPokerCard>
         {!isFacilitator && <Label>{`Final Score${finalScore ? '' : ' (set by facilitator)'}`}</Label>}
-        {service === 'jira' && <PokerDimensionFinalScoreJiraPicker canUpdate={canUpdate} stage={stage} error={finalScoreError} submitScore={submitScore} clearError={clearError} isFacilitator={isFacilitator} />}
+        {service === 'jira' && <PokerDimensionFinalScoreJiraPicker canUpdate={canUpdate} stage={stage} error={finalScoreError} submitScore={submitScore} clearError={clearError} inputRef={inputRef} isFacilitator={isFacilitator} />}
         {service !== 'jira' && isFacilitator &&
           <>
             {canUpdate
               ? <>
-                <StyledLinkButton onClick={submitScore} palette={'blue'}>{'Update Score'}</StyledLinkButton>
+                <StyledLinkButton onClick={submitScore}>{'Update'}</StyledLinkButton>
                 {finalScoreError && <ErrorMessage>{finalScoreError}</ErrorMessage>}
               </>
-              : <Label>Final Score</Label>
+              : <StyledLinkButton onClick={handleLabelClick}>{'Edit Score'}</StyledLinkButton>
             }
           </>
         }

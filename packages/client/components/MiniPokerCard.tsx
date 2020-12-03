@@ -4,14 +4,15 @@ import {PALETTE} from '~/styles/paletteV2'
 import PassSVG from '../../../static/images/icons/no_entry.svg'
 import {PokerCards} from '../types/constEnums'
 import getPokerCardBackground from '../utils/getPokerCardBackground'
+import {Elevation} from '../styles/elevation'
 
-const MiniPokerCardPlaceholder = styled('div')<{color?: string, onClick?: () => void, isFinal?: boolean}>(({color, onClick, isFinal}) => ({
+const MiniPokerCardPlaceholder = styled('div')<{canEdit?: boolean, color?: string, onClick?: () => void, isFinal?: boolean}>(({canEdit, color, onClick, isFinal}) => ({
   alignItems: 'center',
   background: color ? getPokerCardBackground(color) : '#fff',
-  border: color ? 0 : isFinal ? `1px solid ${PALETTE.TEXT_GRAY}` : `1px dashed ${PALETTE.TEXT_GRAY}`,
+  border: color ? 0 : isFinal ? `1px solid ${PALETTE.BORDER_GRAY}` : `1px dashed ${PALETTE.TEXT_GRAY}`,
   borderRadius: 2,
   color: color ? '#fff' : PALETTE.TEXT_GRAY,
-  cursor: onClick ? 'pointer' : 'default',
+  cursor: onClick || canEdit ? 'pointer' : 'default',
   display: 'flex',
   flexShrink: 0,
   fontWeight: 600,
@@ -21,8 +22,12 @@ const MiniPokerCardPlaceholder = styled('div')<{color?: string, onClick?: () => 
   lineHeight: '24px',
   textAlign: 'center',
   textShadow: '0px 1px 1px rgba(0, 0, 0, 0.1)',
+  transition: onClick ? 'all 200ms' : 'none',
   userSelect: 'none',
-  width: 28
+  width: 28,
+  ':hover,:focus,:active': {
+    boxShadow: onClick || canEdit ? Elevation.Z3 : 'none'
+  }
 }))
 
 const Pass = styled('img')({
@@ -33,6 +38,7 @@ const Pass = styled('img')({
 })
 
 interface Props {
+  canEdit?: boolean
   color?: string
   children: ReactNode
   isFinal?: boolean
@@ -40,9 +46,9 @@ interface Props {
 }
 
 const MiniPokerCard = (props: Props) => {
-  const {color, children, onClick, isFinal} = props
+  const {canEdit, color, children, onClick, isFinal} = props
   return (
-    <MiniPokerCardPlaceholder color={color} onClick={onClick} isFinal={isFinal}>
+    <MiniPokerCardPlaceholder canEdit={canEdit} color={color} onClick={onClick} isFinal={isFinal}>
       {children === PokerCards.PASS_CARD ? <Pass src={PassSVG} /> : children}
     </MiniPokerCardPlaceholder>
   )
