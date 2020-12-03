@@ -16,7 +16,9 @@ import endOldMeetings from './mutations/endOldMeetings'
 import flagConversionModal from './mutations/flagConversionModal'
 import flagOverLimit from './mutations/flagOverLimit'
 import loginSAML from './mutations/loginSAML'
+import messageAllSlackUsers from '../mutations/messageAllSlackUsers'
 import profileCPU from './mutations/profileCPU'
+import removeAllSlackAuths from '../mutations/removeAllSlackAuths'
 import runScheduledJobs from './mutations/runScheduledJobs'
 import sendBatchNotificationEmails from './mutations/sendBatchNotificationEmails'
 import sendUpcomingInvoiceEmails from './mutations/sendUpcomingInvoiceEmails'
@@ -70,6 +72,8 @@ const mutation = new GraphQLObjectType<any, GQLContext>({
       flagOverLimit,
       loginSAML,
       enableSAMLForDomain,
+      messageAllSlackUsers,
+      removeAllSlackAuths,
       runScheduledJobs,
       sendBatchNotificationEmails,
       sendUpcomingInvoiceEmails,
