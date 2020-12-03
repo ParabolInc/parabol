@@ -2,7 +2,9 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useEffect, useLayoutEffect, useRef, useState} from 'react'
 import {createFragmentContainer} from 'react-relay'
+import useBreakpoint from '~/hooks/useBreakpoint'
 import {PALETTE} from '~/styles/paletteV2'
+import {Breakpoint} from '~/types/constEnums'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
 import useResizeFontForElement from '../hooks/useResizeFontForElement'
@@ -44,7 +46,8 @@ const Input = styled('input')<{color?: string}>(({color}) => ({
 }))
 
 const ErrorMessage = styled(StyledError)({
-  paddingLeft: 8
+  paddingLeft: 8,
+  textAlign: 'left'
 })
 
 const Label = styled('div')({
@@ -59,7 +62,8 @@ const StyledLinkButton = styled(LinkButton)({
   fontSize: 14,
   fontWeight: 600,
   height: 40,
-  padding: '0 16px',
+  marginLeft: 8,
+  padding: '0 8px',
   ':hover,:focus,:active': {
     boxShadow: 'none',
     color: PALETTE.LINK_BLUE_HOVER
@@ -140,19 +144,21 @@ const PokerDimensionValueControl = (props: Props) => {
     onCompleted()
   }
 
+  const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
 
   const matchingScale = scaleValues.find((scaleValue) => scaleValue.label === pendingScore)
   const scaleColor = matchingScale?.color
   const textColor = scaleColor ? '#fff' : undefined
   const isFinal = !!finalScore && pendingScore === finalScore
   const handleLabelClick = () => inputRef.current!.focus()
+  const label = isDesktop ? finalScore ? 'Final Score' : 'Final Score (set by facilitator)' : 'Final Score'
   return (
     <ControlWrap>
       <Control>
         <MiniPokerCard canEdit={isFacilitator} color={scaleColor} isFinal={isFinal}>
           <Input disabled={!isFacilitator} onKeyDown={onKeyDown} autoFocus={!finalScore} color={textColor} ref={inputRef} onChange={onChange} placeholder={placeholder} value={pendingScore}></Input>
         </MiniPokerCard>
-        {!isFacilitator && <Label>{`Final Score${finalScore ? '' : ' (set by facilitator)'}`}</Label>}
+        {!isFacilitator && <Label>{label}</Label>}
         {service === 'jira' && <PokerDimensionFinalScoreJiraPicker canUpdate={canUpdate} stage={stage} error={finalScoreError} submitScore={submitScore} clearError={clearError} inputRef={inputRef} isFacilitator={isFacilitator} />}
         {service !== 'jira' && isFacilitator &&
           <>

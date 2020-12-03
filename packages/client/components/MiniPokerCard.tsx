@@ -25,7 +25,7 @@ const MiniPokerCardPlaceholder = styled('div')<{canEdit?: boolean, color?: strin
   transition: onClick ? 'all 200ms' : 'none',
   userSelect: 'none',
   width: 28,
-  ':hover,:focus,:active': {
+  ':hover': {
     boxShadow: onClick || canEdit ? Elevation.Z3 : 'none'
   }
 }))

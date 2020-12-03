@@ -3,6 +3,8 @@ import graphql from 'babel-plugin-relay/macro'
 import React, {useState} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import SwipeableViews from 'react-swipeable-views'
+import useBreakpoint from '~/hooks/useBreakpoint'
+import {Breakpoint} from '~/types/constEnums'
 import {ScopePhaseArea_meeting} from '~/__generated__/ScopePhaseArea_meeting.graphql'
 import {Elevation} from '../styles/elevation'
 import {PALETTE} from '../styles/paletteV2'
@@ -17,15 +19,16 @@ interface Props {
   meeting: ScopePhaseArea_meeting
 }
 
-const ScopingArea = styled('div')({
+const ScopingArea = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   background: '#fff',
   borderRadius: 8,
   display: 'flex',
   flexDirection: 'column',
-  width: 640,
+  margin: isDesktop ? undefined : '0 auto',
+  width: isDesktop ? 640 : 'calc(100% - 16px)',
   height: 476,
   boxShadow: Elevation.Z3
-})
+}))
 
 const StyledTabsBar = styled(Tabs)({
   boxShadow: `inset 0 -1px 0 ${PALETTE.BORDER_LIGHTER}`,
@@ -51,7 +54,8 @@ const TabLabel = styled('div')({
 const TabContents = styled('div')({
   display: 'flex',
   flexDirection: 'column',
-  height: '100%'
+  height: '100%',
+  position: 'relative'
 })
 
 const containerStyle = {height: '100%'}
@@ -60,6 +64,7 @@ const innerStyle = {width: '100%', height: '100%'}
 const ScopePhaseArea = (props: Props) => {
   const {meeting} = props
   const [activeIdx, setActiveIdx] = useState(0)
+  const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const gotoAddJira = () => {
     setActiveIdx(0)
   }
@@ -73,7 +78,7 @@ const ScopePhaseArea = (props: Props) => {
     setActiveIdx(idx)
   }
   return (
-    <ScopingArea>
+    <ScopingArea isDesktop={isDesktop}>
       <StyledTabsBar activeIdx={activeIdx}>
         <FullTab
           label={

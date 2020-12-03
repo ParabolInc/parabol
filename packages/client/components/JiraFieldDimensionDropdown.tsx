@@ -27,6 +27,7 @@ const Wrapper = styled(PlainButton)<{isFacilitator: boolean}>(({isFacilitator}) 
   color: PALETTE.TEXT_MAIN,
   cursor: isFacilitator ? undefined : 'default',
   display: 'flex',
+  paddingRight: isFacilitator ? undefined : 8,
   userSelect: 'none',
   ':hover,:focus,:active': {
     opacity: isFacilitator ? '50%' : undefined
@@ -39,7 +40,7 @@ const CurrentValue = styled('div')({
 
 const StyledIcon = styled(Icon)<{isFacilitator: boolean}>(({isFacilitator}) => ({
   fontSize: ICON_SIZE.MD18,
-  visibility: isFacilitator ? undefined : 'hidden'
+  display: isFacilitator ? undefined : 'none'
 }))
 
 const labelLookup = {
