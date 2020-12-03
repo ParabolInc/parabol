@@ -5,6 +5,7 @@ import {createFragmentContainer} from 'react-relay'
 import useMutationProps from '~/hooks/useMutationProps'
 import usePokerDeckLeftEdge from '~/hooks/usePokerDeckLeftEdge'
 import useAtmosphere from '../hooks/useAtmosphere'
+import useEventCallback from '../hooks/useEventCallback'
 import useForceUpdate from '../hooks/useForceUpdate'
 import useInitialRender from '../hooks/useInitialRender'
 import usePokerCardLocation from '../hooks/usePokerCardLocation'
@@ -17,7 +18,7 @@ import PokerCard from './PokerCard'
 const Deck = styled('div')({
   bottom: 0,
   display: 'flex',
-  left: '45%',
+  left: `calc(50% - ${PokerCards.WIDTH / 2}px)`,
   position: 'absolute',
   width: '100%',
   zIndex: 1 // TODO remove. needs to be under bottom bar but above dimension bg
@@ -44,7 +45,7 @@ const PokerCardDeck = (props: Props,) => {
   const leftEdge = usePokerDeckLeftEdge(estimateAreaRef)
   const isInit = useInitialRender()
   const forceUpdate = useForceUpdate()
-  // re-render to triger the animation
+  // re-render to trigger the animation
   useEffect(forceUpdate, [])
   useEffect(() => {
     setIsCollapsed(!isVoting)
@@ -78,6 +79,15 @@ const PokerCardDeck = (props: Props,) => {
     })
   }
 
+  // if we're no longer voting, aggressively collapse the deck on stray clicks
+  const handleDocumentClick = useEventCallback((e: MouseEvent) => {
+    if (isVoting || isCollapsed || deckRef.current?.contains(e.target as Node)) return
+    setIsCollapsed(true)
+  })
+  useEffect(() => {
+    document.addEventListener('touchstart', handleDocumentClick)
+    document.addEventListener('click', handleDocumentClick)
+  }, [])
 
   useEffect(() => {
     if (error) {
