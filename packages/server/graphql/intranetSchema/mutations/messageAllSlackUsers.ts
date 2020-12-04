@@ -1,10 +1,10 @@
 import {GraphQLNonNull, GraphQLString} from 'graphql'
-import getRethink from '../../database/rethinkDriver'
-import {requireSU} from '../../utils/authorization'
+import getRethink from '../../../database/rethinkDriver'
+import {requireSU} from '../../../utils/authorization'
 import MessageAllSlackUsersPayload from '../types/MessageAllSlackUsersPayload'
-import {GQLContext} from '../graphql'
-import SlackServerManager from '../../utils/SlackServerManager'
-import standardError from '../../utils/standardError'
+import {GQLContext} from '../../graphql'
+import SlackServerManager from '../../../utils/SlackServerManager'
+import standardError from '../../../utils/standardError'
 
 interface MessageSlackUserError {
   userId: string

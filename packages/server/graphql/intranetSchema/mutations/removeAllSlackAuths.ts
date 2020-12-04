@@ -1,8 +1,8 @@
 import {GraphQLNonNull} from 'graphql'
-import getRethink from '../../database/rethinkDriver'
-import {requireSU} from '../../utils/authorization'
+import getRethink from '../../../database/rethinkDriver'
+import {requireSU} from '../../../utils/authorization'
 import RemoveAllSlackAuthsPayload from '../types/RemoveAllSlackAuthsPayload'
-import {GQLContext} from '../graphql'
+import {GQLContext} from '../../graphql'
 
 const removeAllSlackAuths = {
   type: GraphQLNonNull(RemoveAllSlackAuthsPayload),
@@ -14,11 +14,7 @@ const removeAllSlackAuths = {
     requireSU(authToken)
 
     // RESOLUTION
-    const allSlackAuths = await r
-      .table('SlackAuth')
-      .filter({isActive: true})
-      .run()
-
+    const allSlackAuths = await r.table('SlackAuth').filter({isActive: true}).run()
     const allSlackAuthIds = allSlackAuths.map(({id}) => id)
     const [slackAuthRes, slackNotificationRes] = await Promise.all([
       r
@@ -26,10 +22,7 @@ const removeAllSlackAuths = {
         .getAll(r.args(allSlackAuthIds))
         .update({botAccessToken: null, isActive: false, updatedAt: now})
         .run(),
-      r
-        .table('SlackNotification')
-        .delete()
-        .run()
+      r.table('SlackNotification').delete().run()
     ])
     const data = {
       slackAuthRes: JSON.stringify(slackAuthRes),

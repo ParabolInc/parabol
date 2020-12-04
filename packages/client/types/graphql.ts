@@ -7287,16 +7287,6 @@ export interface IMutation {
    * Set the jira field that the poker dimension should map to
    */
   updateJiraDimensionField: UpdateJiraDimensionFieldPayload;
-
-  /**
-   * Send a message to all authorised Slack users
-   */
-  messageAllSlackUsers: MessageAllSlackUsersPayload;
-
-  /**
-   * Remove Slack integrations for all users
-   */
-  removeAllSlackAuths: RemoveAllSlackAuthsPayload;
 }
 
 export interface IAcceptTeamInvitationOnMutationArguments {
@@ -8450,13 +8440,6 @@ export interface IUpdateJiraDimensionFieldOnMutationArguments {
    * The meeting the update happend in. If present, can return a meeting object with updated serviceField
    */
   meetingId: string;
-}
-
-export interface IMessageAllSlackUsersOnMutationArguments {
-  /**
-   * The slack message that will be sent to all Slack users
-   */
-  message: string;
 }
 
 export interface IAcceptTeamInvitationPayload {
@@ -10941,61 +10924,6 @@ export interface IUpdateJiraDimensionFieldSuccess {
    * The poker meeting the field was updated from
    */
   meeting: IPokerMeeting | null;
-}
-
-/**
- * Return object for MessageAllSlackUsersPayload
- */
-export type MessageAllSlackUsersPayload =
-  | IErrorPayload
-  | IMessageAllSlackUsersSuccess;
-
-export interface IMessageAllSlackUsersSuccess {
-  __typename: 'MessageAllSlackUsersSuccess';
-
-  /**
-   * A list of the Parabol user ids that have been sent a direct message in Slack
-   */
-  messagedUserIds: Array<string>;
-
-  /**
-   * Slack messages that failed to send
-   */
-  errors: Array<IMessageSlackUserError> | null;
-}
-
-/**
- * An error from sending a message to a Slack user
- */
-export interface IMessageSlackUserError {
-  __typename: 'MessageSlackUserError';
-  userId: string;
-
-  /**
-   * The error message received from Slack
-   */
-  error: string;
-}
-
-/**
- * Return object for RemoveAllSlackAuthsPayload
- */
-export type RemoveAllSlackAuthsPayload =
-  | IErrorPayload
-  | IRemoveAllSlackAuthsSuccess;
-
-export interface IRemoveAllSlackAuthsSuccess {
-  __typename: 'RemoveAllSlackAuthsSuccess';
-
-  /**
-   * Response from removing all Slack auths
-   */
-  slackAuthRes: string;
-
-  /**
-   * Response from removing all Slack notifications
-   */
-  slackNotificationRes: string;
 }
 
 export interface ISubscription {

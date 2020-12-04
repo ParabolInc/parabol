@@ -1,6 +1,6 @@
 import {GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
-import {GQLContext} from '../graphql'
-import makeMutationPayload from './makeMutationPayload'
+import {GQLContext} from '../../graphql'
+import makeMutationPayload from '../../types/makeMutationPayload'
 
 export const RemoveAllSlackAuthsSuccess = new GraphQLObjectType<any, GQLContext>({
   name: 'RemoveAllSlackAuthsSuccess',

@@ -130,8 +130,6 @@ import pokerAnnounceDeckHover from './mutations/pokerAnnounceDeckHover'
 import pokerSetFinalScore from './mutations/pokerSetFinalScore'
 import updateJiraDimensionField from './mutations/updateJiraDimensionField'
 import setDefaultSlackChannel from './mutations/setDefaultSlackChannel'
-import messageAllSlackUsers from './mutations/messageAllSlackUsers'
-import removeAllSlackAuths from './mutations/removeAllSlackAuths'
 import persistJiraSearchQuery from './mutations/persistJiraSearchQuery'
 
 interface Context extends InternalContext, GQLContext {}
@@ -273,8 +271,6 @@ export default new GraphQLObjectType<any, Context>({
       pokerResetDimension,
       pokerAnnounceDeckHover,
       pokerSetFinalScore,
-      updateJiraDimensionField,
-      messageAllSlackUsers,
-      removeAllSlackAuths
+      updateJiraDimensionField
     } as any)
 })

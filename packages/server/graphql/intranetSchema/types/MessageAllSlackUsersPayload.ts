@@ -1,7 +1,7 @@
 import {GraphQLID, GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
-import {GQLContext} from '../graphql'
-import makeMutationPayload from './makeMutationPayload'
-import MessageSlackUserError from './MessageSlackUserError'
+import {GQLContext} from '../../graphql'
+import makeMutationPayload from '../../types/makeMutationPayload'
+import MessageSlackUserError from '../../types/MessageSlackUserError'
 
 export const MessageAllSlackUsersSuccess = new GraphQLObjectType<any, GQLContext>({
   name: 'MessageAllSlackUsersSuccess',
