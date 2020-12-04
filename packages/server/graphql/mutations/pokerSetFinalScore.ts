@@ -121,11 +121,14 @@ const pokerSetFinalScore = {
         const stageIdx = stages.findIndex((stage) => stage.id === stageId) + 1
         const routeIdx = Math.ceil(stageIdx / dimensionsPerStageIdx)
         const discussionURL = makeAppLink(`meet/${meetingId}/estimate/${routeIdx}`)
-        await manager.addComment(
+        const res = await manager.addComment(
           cloudId,
           issueKey,
           makeScoreJiraComment(dimensionName, finalScore || '<None>', meetingName, discussionURL)
         )
+        if ('message' in res) {
+          return {error: {message: res.message}}
+        }
       } else if (fieldName !== SprintPokerDefaults.JIRA_FIELD_NULL) {
         const {fieldId} = dimensionField!
         try {

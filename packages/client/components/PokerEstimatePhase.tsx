@@ -18,6 +18,7 @@ import useBreakpoint from '~/hooks/useBreakpoint'
 import ResponsiveDashSidebar from './ResponsiveDashSidebar'
 import styled from '@emotion/styled'
 import useGotoStageId from '~/hooks/useGotoStageId'
+import {TaskServiceEnum} from '../types/graphql'
 
 const StyledMeetingHeaderAndPhase = styled(MeetingHeaderAndPhase)<{isOpen: boolean}>(
   ({isOpen}) => ({
@@ -37,8 +38,7 @@ const PokerEstimatePhase = (props: Props) => {
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const meetingContentRef = useRef<HTMLDivElement>(null)
   if (!localStage) return null
-  const {story} = localStage
-  const {__typename} = story!
+  const {service} = localStage
   return (
     <MeetingContent ref={meetingContentRef}>
       <StyledMeetingHeaderAndPhase isOpen={isRightDrawerOpen} hideBottomBar={!!endedAt}>
@@ -53,7 +53,7 @@ const PokerEstimatePhase = (props: Props) => {
           <PhaseHeaderTitle>{phaseLabelLookup.ESTIMATE}</PhaseHeaderTitle>
           <PhaseHeaderDescription>{'Estimate each story as a team'}</PhaseHeaderDescription>
         </MeetingTopBar>
-        {__typename === 'JiraIssue' && <PokerEstimateHeaderCardJira stage={localStage as any} />}
+        {service === TaskServiceEnum.jira && <PokerEstimateHeaderCardJira stage={localStage as any} />}
         <PhaseWrapper>
           <EstimatePhaseArea gotoStageId={gotoStageId} meeting={meeting} />
         </PhaseWrapper>
@@ -74,9 +74,7 @@ const PokerEstimatePhase = (props: Props) => {
 graphql`
   fragment PokerEstimatePhaseStage on EstimateStage {
     ...PokerEstimateHeaderCardJira_stage
-    story {
-      __typename
-    }
+    service
   }
 `
 export default createFragmentContainer(PokerEstimatePhase, {

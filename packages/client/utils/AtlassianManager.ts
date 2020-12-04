@@ -1,3 +1,4 @@
+import AbortController from 'abort-controller'
 export interface JiraUser {
   self: string
   key: string
@@ -18,17 +19,18 @@ export interface AccessibleResource {
   url: string
 }
 
+interface AvatarURLs {
+  '48x48': string
+  '24x24': string
+  '16x16': string
+  '32x32': string
+}
 export interface JiraProject {
   self: string
   id: string
   key: string
   name: string
-  avatarUrls: {
-    '48x48': string
-    '24x24': string
-    '16x16': string
-    '32x32': string
-  }
+  avatarUrls: AvatarURLs
   projectCategory: {
     self: string
     id: string
@@ -143,6 +145,32 @@ interface JiraIssueBean<F = {description: any; summary: string}, R = unknown> {
   fields: F
 }
 
+interface JiraAuthor {
+  self: string
+  emailAddress: string
+  avatarUrls: AvatarURLs
+  displayName: string
+  active: boolean
+  timeZone: string
+  accountType: 'atlassian'
+
+}
+
+interface JiraAddCommentResponse {
+  self: string
+  id: string,
+  author: JiraAuthor,
+  body: {
+    version: 1,
+    type: 'doc',
+    content: any[]
+  }
+  updateAuthor: JiraAuthor,
+  created: string,
+  updated: string,
+  jsdPublic: true
+}
+
 export type JiraGetIssueRes = JiraIssueBean<JiraGQLFields>
 
 interface JiraGQLFields {
@@ -187,11 +215,12 @@ interface JiraField {
   searchable: boolean
   untranslatedName: string
 }
-
+const MAX_REQUEST_TIME = 5000
 export default abstract class AtlassianManager {
   abstract fetch: any
   static SCOPE = 'read:jira-user read:jira-work write:jira-work offline_access'
   accessToken: string
+  private readonly fetchWithTimeout: (url: string, options: RequestInit) => any
   private readonly get: (url: string) => any
   private readonly post: (url: string, payload: object) => any
   private readonly put: (url: string, payload: object) => any
@@ -207,43 +236,45 @@ export default abstract class AtlassianManager {
       Accept: 'application/json' as 'application/json',
       'Content-Type': 'application/json'
     }
+    this.fetchWithTimeout = async (url, options) => {
+      const controller = new AbortController()
+      const {signal} = controller as any
+      const timeout = setTimeout(() => {
+        controller.abort()
+      }, MAX_REQUEST_TIME)
+      try {
+        const res = await this.fetch(url, {...options, signal})
+        clearTimeout(timeout)
+        return res
+      } catch (e) {
+        clearTimeout(timeout)
+        return {code: -1, message: 'Atlassian is down'}
+      }
+    }
+
     this.post = async (url, payload) => {
-      const res = await this.fetch(url, {
+      const res = await this.fetchWithTimeout(url, {
         method: 'POST',
         headers,
         body: JSON.stringify(payload)
       })
-      return res.json()
+      return res.code === -1 ? res : res.json()
     }
 
     this.put = async (url, payload) => {
-      const res = await this.fetch(url, {
+      const res = await this.fetchWithTimeout(url, {
         method: 'PUT',
         headers,
         body: JSON.stringify(payload)
       })
       if (res.status == 204) return null
+      if (res.code === -1) return res
       return res.json()
     }
 
     this.get = async (url) => {
-      const record = this.cache[url]
-      if (!record) {
-        const res = await this.fetch(url, {headers})
-        const result = await res.json()
-        this.cache[url] = {
-          result,
-          expiration: setTimeout(() => {
-            delete this.cache[url]
-          }, this.timeout)
-        }
-      } else {
-        clearTimeout(record.expiration)
-        record.expiration = setTimeout(() => {
-          delete this.cache[url]
-        }, this.timeout)
-      }
-      return this.cache[url].result
+      const res = await this.fetchWithTimeout(url, {headers})
+      return res.code === -1 ? res : res.json()
     }
   }
 
@@ -419,6 +450,9 @@ export default abstract class AtlassianManager {
       }
       // TODO add type
       const res = (await this.post(url, payload)) as AtlassianError | JiraError | JiraSearchResponse
+      if ('message' in res && !firstError) {
+        firstError = res.message
+      }
       if ('issues' in res) {
         const {issues} = res
         issues.forEach((issue) => {
@@ -434,7 +468,7 @@ export default abstract class AtlassianManager {
     allIssues.forEach((issue) => {
       issue.cloudName = cloudNameLookup[issue.cloudId]
     })
-    return {error: firstError, issues: allIssues}
+    return {error: firstError as string | null, issues: allIssues}
   }
 
   async getComments(cloudId: string, issueKey: string) {
@@ -454,7 +488,7 @@ export default abstract class AtlassianManager {
     return this.post(
       `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/issue/${issueKey}/comment`,
       payload
-    ) as any
+    ) as AtlassianError | JiraAddCommentResponse
   }
 
   async updateStoryPoints(
@@ -472,9 +506,12 @@ export default abstract class AtlassianManager {
     const res = await this.put(
       `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/issue/${issueKey}`,
       payload
-    )
+    ) as null | AtlassianError | JiraError
     if (res !== null) {
       console.log('ERR', {res, storyPoints, fieldId, issueKey, cloudId})
+      if ('message' in res) {
+        throw new Error(res.message)
+      }
       const jiraError = res.errors?.[fieldId]
       if (jiraError.includes('is not on the appropriate screen')) {
         throw new Error(`Update failed! In Jira, add the field "${fieldName}" to the Issue screen.`)

@@ -1,6 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useMemo} from 'react'
 import {readInlineData} from 'react-relay'
+import getJiraCloudIdAndKey from '../utils/getJiraCloudIdAndKey'
 import {useMakeStageSummaries_phase} from '../__generated__/useMakeStageSummaries_phase.graphql'
 
 interface StageSummary {title: string, isComplete: boolean, isNavigable: boolean, isActive: boolean, sortOrder: number, stageIds: string[], finalScores: (string | null)[]}
@@ -39,8 +40,9 @@ const useMakeStageSummaries = (phaseRef: any, localStageId: string) => {
         if (nextStage.serviceTaskId !== serviceTaskId) break
         batch.push(nextStage)
       }
+      const [, issueKey] = getJiraCloudIdAndKey(serviceTaskId)
       summaries.push({
-        title: story?.title ?? 'Unknown Story',
+        title: story?.title ?? issueKey,
         isComplete: batch.every(({isComplete}) => isComplete),
         isNavigable: batch.some(({isNavigable}) => isNavigable),
         isActive: !!batch.find(({id}) => id === localStageId),

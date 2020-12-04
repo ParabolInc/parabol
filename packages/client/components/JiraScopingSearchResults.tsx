@@ -69,6 +69,8 @@ const JiraScopingSearchResults = (props: Props) => {
 
   const persistQuery = () => {
     const {queryString, isJQL} = jiraSearchQuery
+    // don't persist an empty string (the default)
+    if (!queryString) return
     const projectKeyFilters = jiraSearchQuery.projectKeyFilters as string[]
     projectKeyFilters.sort()
     const lookupKey = JSON.stringify({queryString, projectKeyFilters})
