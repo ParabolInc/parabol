@@ -14,10 +14,10 @@ const Wrapper = styled('div')<{idx: number, isColumn?: boolean}>(({idx, isColumn
   transition: `all 300ms ${BezierCurve.DECELERATE}`
 }))
 
-const StyledAvatar = styled(Avatar)<{status?: TransitionStatus}>(({status}) => ({
-  opacity: status === TransitionStatus.EXITING || status === TransitionStatus.MOUNTED ? 0 : 1,
+const StyledAvatar = styled(Avatar)<{status?: TransitionStatus, isInitialStageRender: boolean}>(({status, isInitialStageRender}) => ({
+  opacity: isInitialStageRender ? undefined : (status === TransitionStatus.EXITING || status === TransitionStatus.MOUNTED) ? 0 : 1,
   border: `2px solid ${PALETTE.BORDER_MATCH_MEETING_COLUMN}`,
-  transform: status === TransitionStatus.EXITING || status === TransitionStatus.MOUNTED ? 'scale(0)' : 'scale(1)',
+  transform: isInitialStageRender ? undefined : (status === TransitionStatus.EXITING || status === TransitionStatus.MOUNTED) ? 'scale(0)' : 'scale(1)',
   transition: `all 300ms ${BezierCurve.DECELERATE}`
 }))
 
@@ -25,13 +25,14 @@ interface Props {
   className?: string
   idx: number
   isColumn?: boolean
+  isInitialStageRender: boolean
   onTransitionEnd?: () => void
   status?: TransitionStatus
   user: PokerVotingAvatar_user
 }
 
 const PokerVotingAvatar = (props: Props) => {
-  const {className, isColumn, user, onTransitionEnd, status, idx} = props
+  const {className, isColumn, user, onTransitionEnd, status, idx, isInitialStageRender} = props
   const {picture} = user
   return (
     <Wrapper idx={idx} isColumn={isColumn}>
@@ -41,6 +42,7 @@ const PokerVotingAvatar = (props: Props) => {
         onTransitionEnd={onTransitionEnd}
         picture={picture}
         size={40}
+        isInitialStageRender={isInitialStageRender}
       />
     </Wrapper>
   )

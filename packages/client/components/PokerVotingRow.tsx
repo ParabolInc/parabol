@@ -14,16 +14,17 @@ interface Props {
   scaleValue: PokerVotingRow_scaleValue | null
   scores: PokerVotingRow_scores
   setFinalScore?: () => void
+  isInitialStageRender: boolean
 }
 
 const PokerVotingRow = (props: Props) => {
-  const {scaleValue, scores, setFinalScore} = props
+  const {scaleValue, scores, setFinalScore, isInitialStageRender} = props
   const color = scaleValue?.color ?? PALETTE.BACKGROUND_DARK
   const label = scores[0]?.label ?? PokerCards.DELETED_CARD
   return (
     <PokerVotingRowBase>
       <MiniPokerCard color={color} onClick={setFinalScore} >{label}</MiniPokerCard>
-      <PokerVotingAvatarGroup scores={scores} />
+      <PokerVotingAvatarGroup scores={scores} isInitialStageRender={isInitialStageRender} />
     </PokerVotingRowBase>
   )
 }

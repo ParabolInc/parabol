@@ -1,12 +1,13 @@
 import React, {forwardRef} from 'react'
 import AvatarBadge from '../AvatarBadge/AvatarBadge'
 import styled from '@emotion/styled'
+import defaultUserAvatar from '../../styles/theme/images/avatar-user.svg'
 
 type ImageBlockProps = Pick<Props, 'sansRadius' | 'sansShadow' | 'picture' | 'size' | 'onClick'>
 
 const ImageBlock = styled('div')<ImageBlockProps>(
   ({sansRadius, sansShadow, picture, size, onClick}) => ({
-    backgroundImage: `url(${picture})`,
+    backgroundImage: `url(${picture}), url(${defaultUserAvatar})`,
     backgroundPosition: 'center center',
     backgroundRepeat: 'no-repeat',
     backgroundSize: 'cover',
