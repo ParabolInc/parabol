@@ -85,6 +85,11 @@ const GroupingKanbanColumnHeader = (props: Props) => {
     MenuPosition.UPPER_CENTER
   )
 
+  const handleClick = () => {
+    onClick()
+    closeReflectionTooltip()
+  }
+
   return (
     <ColumnHeader isWidthExpanded={!!isWidthExpanded}>
       <Prompt>
@@ -92,19 +97,18 @@ const GroupingKanbanColumnHeader = (props: Props) => {
         {question}
       </Prompt>
       <ButtonGroup>
-        {canAdd && (
-          <AddReflectionButton
-            dataCy={`add-reflection-${question}`}
-            aria-label={'Add a reflection'}
-            onClick={onClick}
-            onMouseEnter={openReflectionTooltip}
-            onMouseLeave={closeReflectionTooltip}
-            ref={addReflectionRef}
-            waiting={submitting}
-          >
-            <Icon>add</Icon>
-          </AddReflectionButton>
-        )}
+        <AddReflectionButton
+          dataCy={`add-reflection-${question}`}
+          aria-label={'Add a reflection'}
+          disabled={!canAdd}
+          onClick={handleClick}
+          onMouseEnter={openReflectionTooltip}
+          onMouseLeave={closeReflectionTooltip}
+          ref={addReflectionRef}
+          waiting={submitting}
+        >
+          <Icon>add</Icon>
+        </AddReflectionButton>
         {addReflectionPortal(<div>Add new reflection</div>)}
         <ExpandButton
           onClick={toggleWidth}
