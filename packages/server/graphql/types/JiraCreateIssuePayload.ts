@@ -2,7 +2,6 @@ import {GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import StandardMutationError from './StandardMutationError'
 import {GQLContext} from '../graphql'
 import JiraIssue from './JiraIssue'
-import {resolveJiraIssue} from '../resolvers'
 
 const JiraCreateIssuePayload = new GraphQLObjectType<any, GQLContext>({
   name: 'JiraCreateIssuePayload',
@@ -14,7 +13,7 @@ const JiraCreateIssuePayload = new GraphQLObjectType<any, GQLContext>({
       type: JiraIssue,
       description: 'The issue straight from Jira',
       resolve: ({teamId, userId, key, cloudId}, _args, {dataLoader}) => {
-        return resolveJiraIssue(cloudId, key, teamId, userId, dataLoader)
+        return dataLoader.get('jiraIssue').load({teamId, userId, cloudId, issueKey: key})
       }
     },
     meetingId: {

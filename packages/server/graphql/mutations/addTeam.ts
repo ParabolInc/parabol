@@ -28,7 +28,6 @@ export default {
   },
   resolve: rateLimit({perMinute: 4, perHour: 20})(
     async (_source, args, {authToken, dataLoader, socketId: mutatorId}) => {
-      console.log({_source})
       const operationId = dataLoader.share()
       const subOptions = {mutatorId, operationId}
       const r = await getRethink()
@@ -41,10 +40,7 @@ export default {
       }
 
       // VALIDATION
-      const orgTeams = await r
-        .table('Team')
-        .getAll(orgId, {index: 'orgId'})
-        .run()
+      const orgTeams = await r.table('Team').getAll(orgId, {index: 'orgId'}).run()
 
       const orgTeamNames = orgTeams.map((team) => !team.isArchived && team.name)
       const {

@@ -1,8 +1,9 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
-import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import {PokerCards, SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {MeetingTypeEnum, NewMeetingPhaseTypeEnum} from 'parabol-client/types/graphql'
 import isPhaseComplete from 'parabol-client/utils/meetings/isPhaseComplete'
 import EstimatePhase from '../../database/types/EstimatePhase'
+import EstimateUserScore from '../../database/types/EstimateUserScore'
 import MeetingPoker from '../../database/types/MeetingPoker'
 import updateStage from '../../database/updateStage'
 import {getUserId, isTeamMember} from '../../utils/authorization'
@@ -31,7 +32,13 @@ const pokerRevealVotes = {
     const subOptions = {mutatorId, operationId}
 
     //AUTH
-    const meeting = (await dataLoader.get('newMeetings').load(meetingId)) as MeetingPoker
+
+    // fetch meetingMembers up here to reduce chance of race condition that a vote gets cast in between now & when we update the scores
+    const [meetingMembers, meeting] = await Promise.all([
+      dataLoader.get('meetingMembersByMeetingId').load(meetingId),
+      dataLoader.get('newMeetings').load(meetingId) as Promise<MeetingPoker>
+    ])
+
     if (!meeting) {
       return {error: {message: 'Meeting not found'}}
     }
@@ -77,10 +84,24 @@ const pokerRevealVotes = {
     }
 
     // RESOLUTION
+    // add a pass card for everyone who was present but did not vote
+    const {scores} = stage
+    meetingMembers.forEach((meetingMember) => {
+      const {userId, isCheckedIn} = meetingMember
+      if (!isCheckedIn) return
+      const userScore = scores.find((score) => score.userId === userId)
+      if (!userScore) {
+        const passScore = new EstimateUserScore({userId, label: PokerCards.PASS_CARD as string})
+        scores.push(passScore)
+      }
+    })
+
     stage.isVoting = false
     const updater = (estimateStage) =>
       estimateStage.merge({
-        isVoting: false
+        isVoting: false,
+        // note that a race condition exists here. it's possible that i cast my vote after the meeting is fetched but before this update & that'll be overwritten
+        scores
       })
     await updateStage(meetingId, stageId, updater)
     const data = {meetingId, stageId}

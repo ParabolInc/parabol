@@ -49,7 +49,7 @@ const TemplateScale = new GraphQLObjectType<any, GQLContext>({
       description: 'The title of the scale used in the template'
     },
     values: {
-      type: new GraphQLList(new GraphQLNonNull(TemplateScaleValue)),
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(TemplateScaleValue))),
       description: 'The values used in this scale',
       resolve: ({id, values}) => {
         return values.map((value) => ({

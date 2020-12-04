@@ -1,35 +1,37 @@
 import graphql from 'babel-plugin-relay/macro'
-import React, {useRef, RefObject} from 'react'
-import {createFragmentContainer} from 'react-relay'
+import React, {useRef, RefObject, useMemo, } from 'react'
+import { createFragmentContainer} from 'react-relay'
 import {DiscussionThread_viewer} from '~/__generated__/DiscussionThread_viewer.graphql'
 import {useCoverable} from '~/hooks/useControlBarCovers'
 import {Breakpoint, DiscussionThreadEnum, MeetingControlBarEnum} from '~/types/constEnums'
-
 import styled from '@emotion/styled'
-
 import {Elevation} from '../styles/elevation'
 import makeMinWidthMediaQuery from '../utils/makeMinWidthMediaQuery'
 import DiscussionThreadInput from './DiscussionThreadInput'
 import DiscussionThreadList from './DiscussionThreadList'
+import {MeetingTypeEnum} from '~/types/graphql'
 
-const Wrapper = styled('div')<{isExpanded: boolean}>(({isExpanded}) => ({
-  background: '#fff',
-  borderRadius: 4,
-  boxShadow: Elevation.DISCUSSION_THREAD,
-  display: 'flex',
-  flexDirection: 'column',
-  justifyContent: 'space-between',
-  height: '100%',
-  overflow: 'hidden',
-  width: 'calc(100% - 16px)',
-  [makeMinWidthMediaQuery(Breakpoint.SIDEBAR_LEFT)]: {
-    height: isExpanded ? '100%' : `calc(100% - ${MeetingControlBarEnum.HEIGHT}px)`,
-    width: DiscussionThreadEnum.WIDTH
-  }
-}))
+const Wrapper = styled('div')<{isExpanded: boolean; isPokerMeeting?: boolean}>(
+  ({isExpanded, isPokerMeeting}) => ({
+    background: '#fff',
+    borderRadius: 4,
+    boxShadow: Elevation.DISCUSSION_THREAD,
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'space-between',
+    height: '100%',
+    overflow: 'hidden',
+    width: isPokerMeeting ? '100%' : 'calc(100% - 16px)',
+    [makeMinWidthMediaQuery(Breakpoint.SIDEBAR_LEFT)]: {
+      height:
+        isExpanded || isPokerMeeting ? '100%' : `calc(100% - ${MeetingControlBarEnum.HEIGHT}px)`,
+      width: DiscussionThreadEnum.WIDTH
+    }
+  })
+)
 
 interface Props {
-  meetingContentRef: RefObject<HTMLDivElement>
+  meetingContentRef?: RefObject<HTMLDivElement>
   threadSourceId: string
   viewer: DiscussionThread_viewer
 }
@@ -37,24 +39,33 @@ interface Props {
 const DiscussionThread = (props: Props) => {
   const {meetingContentRef, threadSourceId, viewer} = props
   const meeting = viewer.meeting!
-  const {endedAt, replyingToCommentId, threadSource} = meeting
+  const {
+    endedAt,
+    meetingType,
+    replyingToCommentId,
+    threadSource,
+  } = meeting
   const thread = threadSource?.thread
   const commentors = threadSource?.commentors
-  const preferredNames =
-    (commentors && commentors.map((commentor) => commentor.preferredName)) || null
+  const isPokerMeeting = meetingType === MeetingTypeEnum.poker
+  const preferredNames = useMemo(
+    () => (commentors && commentors.map((commentor) => commentor.preferredName)) || null,
+    [commentors]
+  )
   const edges = thread?.edges ?? [] // should never happen, but Terry reported it in demo. likely relay error
   const threadables = edges.map(({node}) => node)
   const getMaxSortOrder = () => {
     return Math.max(0, ...threadables.map((threadable) => threadable.threadSortOrder || 0))
   }
+
   const listRef = useRef<HTMLDivElement>(null)
   const editorRef = useRef<HTMLTextAreaElement>(null)
   const ref = useRef<HTMLDivElement>(null)
-  const isExpanded =
-    useCoverable('threads', ref, MeetingControlBarEnum.HEIGHT, meetingContentRef) || !!endedAt
-
+  // don't resize in a poker meeting as we do this in the parent
+  const coverableHeight = isPokerMeeting ? 0 : MeetingControlBarEnum.HEIGHT
+  const isExpanded = useCoverable('threads', ref, coverableHeight, meetingContentRef) || !!endedAt
   return (
-    <Wrapper isExpanded={isExpanded} ref={ref}>
+    <Wrapper isExpanded={isExpanded} isPokerMeeting={isPokerMeeting} ref={ref}>
       <DiscussionThreadList
         dataCy='discuss-thread-list'
         threadSourceId={threadSourceId}
@@ -101,6 +112,7 @@ export default createFragmentContainer(DiscussionThread, {
           ...DiscussionThreadInput_meeting
           ...DiscussionThreadList_meeting
           endedAt
+          meetingType
           replyingToCommentId
         }
         ... on RetrospectiveMeeting {
@@ -114,6 +126,15 @@ export default createFragmentContainer(DiscussionThread, {
         }
         ... on ActionMeeting {
           threadSource: agendaItem(agendaItemId: $threadSourceId) {
+            ...DiscussionThread_threadSource @relay(mask: false)
+            commentors {
+              userId
+              preferredName
+            }
+          }
+        }
+        ... on PokerMeeting {
+          threadSource: story(storyId: $threadSourceId) {
             ...DiscussionThread_threadSource @relay(mask: false)
             commentors {
               userId

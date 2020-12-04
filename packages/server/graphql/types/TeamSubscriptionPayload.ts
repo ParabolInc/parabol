@@ -42,7 +42,7 @@ import RenamePokerTemplatePayload from './RenamePokerTemplatePayload'
 import RenameReflectTemplatePromptPayload from './RenameReflectTemplatePromptPayload'
 import RenamePokerTemplateDimensionPayload from './RenamePokerTemplateDimensionPayload'
 import RenamePokerTemplateScalePayload from './RenamePokerTemplateScalePayload'
-import SelectRetroTemplatePayload from './SelectRetroTemplatePayload'
+import SelectTemplatePayload from './SelectTemplatePayload'
 import SetCheckInEnabledPayload from './SetCheckInEnabledPayload'
 import SetSlackNotificationPayload from './SetSlackNotificationPayload'
 import {StartCheckInSuccess} from './StartCheckInPayload'
@@ -58,6 +58,7 @@ import UpdateUserProfilePayload from './UpdateUserProfilePayload'
 import UpgradeToProPayload from './UpgradeToProPayload'
 import {EndCheckInSuccess} from './EndCheckInPayload'
 import {EndRetrospectiveSuccess} from './EndRetrospectivePayload'
+import {UpdateJiraDimensionFieldSuccess} from './UpdateJiraDimensionFieldPayload'
 import {PersistJiraSearchQuerySuccess} from './PersistJiraSearchQueryPayload'
 
 const types = [
@@ -81,7 +82,7 @@ const types = [
   RemoveOrgUserPayload,
   RemoveTeamMemberPayload,
   RenameMeetingSuccess,
-  SelectRetroTemplatePayload,
+  SelectTemplatePayload,
   StartCheckInSuccess,
   StartNewMeetingPayload,
   StartRetrospectiveSuccess,
@@ -120,7 +121,8 @@ const types = [
   UpdatePokerTemplateDimensionScalePayload,
   UpdatePokerTemplateScaleValuePayload,
   UpdateUserProfilePayload,
-  PersistJiraSearchQuerySuccess
+  PersistJiraSearchQuerySuccess,
+  UpdateJiraDimensionFieldSuccess
 ]
 
 export default graphQLSubscriptionType('TeamSubscriptionPayload', types)

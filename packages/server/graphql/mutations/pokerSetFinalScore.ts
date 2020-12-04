@@ -1,5 +1,5 @@
 import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
-import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import {SprintPokerDefaults, SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {
   MeetingTypeEnum,
   NewMeetingPhaseTypeEnum,
@@ -12,6 +12,9 @@ import MeetingPoker from '../../database/types/MeetingPoker'
 import updateStage from '../../database/updateStage'
 import AtlassianServerManager from '../../utils/AtlassianServerManager'
 import {getUserId, isTeamMember} from '../../utils/authorization'
+import getJiraCloudIdAndKey from '../../../client/utils/getJiraCloudIdAndKey'
+import makeAppLink from '../../utils/makeAppLink'
+import makeScoreJiraComment from '../../utils/makeScoreJiraComment'
 import publish from '../../utils/publish'
 import {GQLContext} from '../graphql'
 import PokerSetFinalScorePayload from '../types/PokerSetFinalScorePayload'
@@ -27,8 +30,7 @@ const pokerSetFinalScore = {
       type: GraphQLNonNull(GraphQLID)
     },
     finalScore: {
-      description:
-        'A string representation of the final score. It may not have an associated value in the scale',
+      description: 'The label from the scale value',
       type: GraphQLNonNull(GraphQLString)
     }
   },
@@ -53,7 +55,8 @@ const pokerSetFinalScore = {
       meetingType,
       teamId,
       defaultFacilitatorUserId,
-      facilitatorUserId
+      facilitatorUserId,
+      name: meetingName
     } = meeting
     if (!isTeamMember(authToken, teamId)) {
       return {error: {message: 'Not on the team'}}
@@ -87,50 +90,69 @@ const pokerSetFinalScore = {
     if (!stage) {
       return {error: {message: 'Invalid stageId provided'}}
     }
-    if (finalScore.length > 5) {
+    if (finalScore.length > 4) {
       return {error: {message: 'Score is too long'}}
     }
 
     // RESOLUTION
-    // update cache
-    stage.finalScore = finalScore
-    // update stage in DB
-    const updater = (estimateStage) => estimateStage.merge({finalScore})
-    await updateStage(meetingId, stageId, updater)
     // update integration
     const {creatorUserId, dimensionId, service, serviceTaskId} = stage
     const dimension = await dataLoader.get('templateDimensions').load(dimensionId)
-    const {name: dimensionName, scaleId} = dimension
+    const {name: dimensionName} = dimension
     if (service === TaskServiceEnum.jira) {
       const auth = await dataLoader.get('freshAtlassianAuth').load({teamId, userId: creatorUserId})
       if (!auth) {
         return {error: {message: 'User no longer has access to Atlassian'}}
       }
       const {accessToken} = auth
-      const [cloudId, issueKey] = serviceTaskId.split(':')
+      const [cloudId, issueKey] = getJiraCloudIdAndKey(serviceTaskId)
       const manager = new AtlassianServerManager(accessToken)
-      await manager.updateStoryPoints(cloudId, issueKey, finalScore, dimensionName)
+      const team = await dataLoader.get('teams').load(teamId)
+      const jiraDimensionFields = team.jiraDimensionFields || []
+      const dimensionField = jiraDimensionFields.find(
+        (dimensionField) =>
+          dimensionField.dimensionId === dimensionId && dimensionField.cloudId === cloudId
+      )
+      // should never have to use default
+      const fieldName = dimensionField?.fieldName ?? SprintPokerDefaults.JIRA_FIELD_DEFAULT
+      if (fieldName === SprintPokerDefaults.JIRA_FIELD_COMMENT) {
+        const dimensionsPerStageIdx = stages.filter((stage) => stage.dimensionId === dimensionId)
+          .length
+        const stageIdx = stages.findIndex((stage) => stage.id === stageId) + 1
+        const routeIdx = Math.ceil(stageIdx / dimensionsPerStageIdx)
+        const discussionURL = makeAppLink(`meet/${meetingId}/estimate/${routeIdx}`)
+        await manager.addComment(
+          cloudId,
+          issueKey,
+          makeScoreJiraComment(dimensionName, finalScore || '<None>', meetingName, discussionURL)
+        )
+      } else if (fieldName !== SprintPokerDefaults.JIRA_FIELD_NULL) {
+        const {fieldId} = dimensionField!
+        try {
+          await manager.updateStoryPoints(cloudId, issueKey, finalScore, fieldId, fieldName)
+        } catch (e) {
+          return {error: {message: e.message}}
+        }
+      }
     } else {
       // this is a parabol task
-      const scale = await dataLoader.get('templateScales').load(scaleId)
-      const {values} = scale
-      const resolvedValue = values.find((value) => value.label === finalScore)
-      const value = resolvedValue?.value ?? undefined
       await r
         .table('Task')
         .get(serviceTaskId)
         .update((row) => ({
-          estimates: row('estimates')
-            .default([])
-            .append({
-              name: dimensionName,
-              label: finalScore,
-              value
-            })
+          estimates: row('estimates').default([]).append({
+            name: dimensionName,
+            label: finalScore
+          })
         }))
         .run()
     }
-
+    // Integration push success! update DB
+    // update cache
+    stage.finalScore = finalScore
+    // update stage in DB
+    const updater = (estimateStage) => estimateStage.merge({finalScore})
+    await updateStage(meetingId, stageId, updater)
     const data = {meetingId, stageId}
     publish(SubscriptionChannel.MEETING, meetingId, 'PokerSetFinalScoreSuccess', data, subOptions)
     return data

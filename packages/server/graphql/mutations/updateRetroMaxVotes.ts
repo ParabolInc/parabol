@@ -39,10 +39,7 @@ const updateRetroMaxVotes = {
     const subOptions = {mutatorId, operationId}
 
     //AUTH
-    const meeting = (await r
-      .table('NewMeeting')
-      .get(meetingId)
-      .run()) as MeetingRetrospective
+    const meeting = (await r.table('NewMeeting').get(meetingId).run()) as MeetingRetrospective
 
     if (!meeting) {
       return {error: {message: 'Meeting not found'}}
@@ -90,7 +87,6 @@ const updateRetroMaxVotes = {
     // this isn't 100% atomic, but it's done in a single call, so it's pretty close
     // eventual consistancy is OK, it's just possible for a client to get a bad data in between the 2 updates
     // if votesRemaining goes negative for any user, we know we can't decrease any more
-    console.log('')
     const hasError = await r
       .table('MeetingMember')
       .getAll(meetingId, {index: 'meetingId'})

@@ -28,6 +28,7 @@ interface Props {
   onToggleReactji: (emojiId: string) => void
   onReply: () => void
   dataCy: string
+  meetingId: string
 }
 
 const getName = (comment) => {
@@ -38,7 +39,7 @@ const getName = (comment) => {
 }
 
 const ThreadedCommentHeader = (props: Props) => {
-  const {comment, onReply, editComment, onToggleReactji, dataCy} = props
+  const {comment, onReply, editComment, onToggleReactji, dataCy, meetingId} = props
   const {id: commentId, isActive, isViewerComment, reactjis, updatedAt} = comment
   const name = getName(comment)
   const hasReactjis = reactjis.length > 0
@@ -57,6 +58,7 @@ const ThreadedCommentHeader = (props: Props) => {
               dataCy={`${dataCy}`}
               editComment={editComment}
               commentId={commentId}
+              meetingId={meetingId}
             />
           )}
         </HeaderActions>

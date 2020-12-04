@@ -34,10 +34,11 @@ interface Props {
   commentId: string
   editComment: () => void
   dataCy: string
+  meetingId: string
 }
 
 const CommentAuthorOptionsButton = (props: Props) => {
-  const {commentId, editComment, dataCy} = props
+  const {commentId, editComment, dataCy, meetingId} = props
   const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT)
   return (
     <StyledButton
@@ -52,6 +53,7 @@ const CommentAuthorOptionsButton = (props: Props) => {
           menuProps={menuProps}
           commentId={commentId}
           editComment={editComment}
+          meetingId={meetingId}
         />
       )}
     </StyledButton>

@@ -4,14 +4,13 @@ import {createFragmentContainer} from 'react-relay'
 import {DiscussionThreadList_meeting} from '~/__generated__/DiscussionThreadList_meeting.graphql'
 import {DiscussionThreadList_threadables} from '~/__generated__/DiscussionThreadList_threadables.graphql'
 import useScrollThreadList from '~/hooks/useScrollThreadList'
-
 import styled from '@emotion/styled'
-
 import {PALETTE} from '../styles/paletteV2'
 import CommentingStatusText from './CommentingStatusText'
 import DiscussionThreadListEmptyState from './DiscussionThreadListEmptyState'
 import LabelHeading from './LabelHeading/LabelHeading'
 import ThreadedItem from './ThreadedItem'
+import {MeetingTypeEnum} from '~/types/graphql'
 
 const EmptyWrapper = styled('div')({
   alignItems: 'center',
@@ -59,10 +58,13 @@ interface Props {
 
 const DiscussionThreadList = forwardRef((props: Props, ref: any) => {
   const {editorRef, meeting, threadSourceId, threadables, dataCy, preferredNames} = props
-  const {endedAt} = meeting
+  const {endedAt, meetingType} = meeting
   const isEmpty = threadables.length === 0
   useScrollThreadList(threadables, editorRef, ref, preferredNames)
-  const HeaderBlock = () => <Header>{'Discussion & Takeaway Tasks'}</Header>
+  const HeaderBlock = () => {
+    if (meetingType === MeetingTypeEnum.poker) return null
+    return <Header>{'Discussion & Takeaway Tasks'}</Header>
+  }
   if (isEmpty) {
     return (
       <EmptyWrapper>
@@ -100,6 +102,7 @@ export default createFragmentContainer(DiscussionThreadList, {
     fragment DiscussionThreadList_meeting on NewMeeting {
       ...ThreadedItem_meeting
       endedAt
+      meetingType
     }
   `,
 

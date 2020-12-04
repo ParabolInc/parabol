@@ -27,6 +27,7 @@ uws
   .get('/email/createics', (...args) => require('./ICSHandler').default(...args))
   .get('/sse', (...args) => require('./sse/SSEConnectionHandler').default(...args))
   .get('/sse-ping', (...args) => require('./sse/SSEPingHandler').default(...args))
+  .get('/self-hosted/*', (...args) => require('./selfHostedHandler').default(...args))
   .post('/stripe', (...args) => require('./billing/stripeWebhookHandler').default(...args))
   .post('/webhooks/github', (...args) =>
     require('./integrations/githubWebhookHandler').default(...args)
@@ -43,6 +44,7 @@ uws
     compression: SHARED_COMPRESSOR,
     idleTimeout: 0,
     maxPayloadLength: 5 * 2 ** 20,
+    upgrade: (...args) => require('./socketHandlers/handleUpgrade').default(...args),
     open: (...args) => require('./socketHandlers/handleOpen').default(...args),
     message: (...args) => require('./socketHandlers/handleMessage').default(...args),
     // today, we don't send folks enough data to worry about backpressure
@@ -70,6 +72,7 @@ if (module.hot) {
     './graphql/httpGraphQLHandler',
     './graphql/intranetGraphQLHandler',
     './createSSR',
+    './socketHandlers/handleUpgrade',
     './socketHandlers/handleMessage',
     './socketHandlers/handleClose',
     './socketHandlers/handleOpen'

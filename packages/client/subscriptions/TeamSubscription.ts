@@ -40,6 +40,7 @@ const subscription = graphql`
   subscription TeamSubscription {
     teamSubscription {
       __typename
+      ...UpdateJiraDimensionFieldMutation_team @relay(mask: false)
       ...AcceptTeamInvitationMutation_team @relay(mask: false)
       ...AddAgendaItemMutation_team @relay(mask: false)
       ...AddAtlassianAuthMutation_team @relay(mask: false)
@@ -65,7 +66,7 @@ const subscription = graphql`
       ...RenameMeetingMutation_team @relay(mask: false)
       ...RenameMeetingTemplateMutation_meetingTemplate @relay(mask: false)
       ...RenameReflectTemplatePromptMutation_team @relay(mask: false)
-      ...SelectRetroTemplateMutation_team @relay(mask: false)
+      ...SelectTemplateMutation_team @relay(mask: false)
       ...SetCheckInEnabledMutation_team @relay(mask: false)
       ...StartCheckInMutation_team @relay(mask: false)
       ...StartNewMeetingMutation_team @relay(mask: false)

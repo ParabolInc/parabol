@@ -9,9 +9,7 @@ const useRecordIdsWithStages = (phaseRef: any) => {
       graphql`
       fragment useRecordIdsWithStages_phase on EstimatePhase @inline {
         stages {
-          story {
-            id
-          }
+          serviceTaskId
         }
       }
     `,
@@ -20,9 +18,8 @@ const useRecordIdsWithStages = (phaseRef: any) => {
     const {stages} = estimatePhase
     const usedRecordIds = new Set<string>()
     stages.forEach((stage) => {
-      const {story} = stage
-      const {id: storyId} = story
-      usedRecordIds.add(storyId)
+      const {serviceTaskId} = stage
+      usedRecordIds.add(serviceTaskId)
     })
     return usedRecordIds
   }, [phaseRef])

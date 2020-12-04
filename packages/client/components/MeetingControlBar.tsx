@@ -10,13 +10,11 @@ import useGotoStageId from '~/hooks/useGotoStageId'
 import useInitialRender from '~/hooks/useInitialRender'
 import useTransition, {TransitionStatus} from '~/hooks/useTransition'
 import {PALETTE} from '~/styles/paletteV2'
-import {Breakpoint, ZIndex} from '~/types/constEnums'
+import {BezierCurve, Breakpoint, DiscussionThreadEnum, NavSidebar, ZIndex} from '~/types/constEnums'
 import {MeetingTypeEnum, NewMeetingPhaseTypeEnum} from '~/types/graphql'
 import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
 import findStageAfterId from '~/utils/meetings/findStageAfterId'
-
 import styled from '@emotion/styled'
-
 import useClickConfirmation from '../hooks/useClickConfirmation'
 import useSnackbarPad from '../hooks/useSnackbarPad'
 import {bottomBarShadow, desktopBarShadow} from '../styles/elevation'
@@ -26,32 +24,35 @@ import BottomControlBarTips from './BottomControlBarTips'
 import EndMeetingButton from './EndMeetingButton'
 import StageTimerControl from './StageTimerControl'
 
-const Wrapper = styled('div')({
-  alignItems: 'center',
-  backgroundColor: '#FFFFFF',
-  bottom: 0,
-  boxShadow: bottomBarShadow,
-  color: PALETTE.TEXT_GRAY,
-  display: 'flex',
-  flexWrap: 'nowrap',
-  fontSize: 14,
-  height: 56,
-  justifyContent: 'space-between',
-  left: 0,
-  margin: '0 auto',
-  minHeight: 56,
-  padding: 8,
-  position: 'fixed',
-  right: 0,
-  width: '100%',
-  zIndex: ZIndex.BOTTOM_BAR,
-  [makeMinWidthMediaQuery(Breakpoint.SINGLE_REFLECTION_COLUMN)]: {
-    borderRadius: 4,
-    bottom: 8,
-    boxShadow: desktopBarShadow,
-    width: 'fit-content'
-  }
-})
+const Wrapper = styled('div')<{isLeftSidebarOpen: boolean; isRightDrawerOpen: boolean}>(
+  ({isLeftSidebarOpen, isRightDrawerOpen}) => ({
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+    bottom: 0,
+    boxShadow: bottomBarShadow,
+    color: PALETTE.TEXT_GRAY,
+    display: 'flex',
+    flexWrap: 'nowrap',
+    fontSize: 14,
+    height: 56,
+    justifyContent: 'space-between',
+    left: isLeftSidebarOpen ? NavSidebar.WIDTH : 0,
+    margin: '0 auto',
+    minHeight: 56,
+    padding: 8,
+    position: 'fixed',
+    right: isRightDrawerOpen ? DiscussionThreadEnum.WIDTH : 0,
+    transition: `200ms ${BezierCurve.DECELERATE}`,
+    width: '100%',
+    zIndex: ZIndex.BOTTOM_BAR,
+    [makeMinWidthMediaQuery(Breakpoint.SINGLE_REFLECTION_COLUMN)]: {
+      borderRadius: 4,
+      bottom: 8,
+      boxShadow: desktopBarShadow,
+      width: 'fit-content'
+    }
+  })
+)
 
 const DEFAULT_TIME_LIMIT = {
   [NewMeetingPhaseTypeEnum.reflect]: 5,
@@ -65,10 +66,17 @@ interface Props {
   isDemoStageComplete?: boolean
   gotoStageId: ReturnType<typeof useGotoStageId>
   meeting: MeetingControlBar_meeting
+  isRightDrawerOpen?: boolean
 }
 
 const MeetingControlBar = (props: Props) => {
-  const {handleGotoNext, isDemoStageComplete, meeting, gotoStageId} = props
+  const {
+    handleGotoNext,
+    isDemoStageComplete,
+    meeting,
+    gotoStageId,
+    isRightDrawerOpen = false
+  } = props
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
   const {
@@ -79,19 +87,21 @@ const MeetingControlBar = (props: Props) => {
     id: meetingId,
     localStage,
     phases,
-    meetingType
+    meetingType,
+    showSidebar: isLeftSidebarOpen
   } = meeting
   const isFacilitating = facilitatorUserId === viewerId && !endedAt
   const {phaseType} = localPhase
   const {id: localStageId, isComplete} = localStage
   const isCheckIn = phaseType === NewMeetingPhaseTypeEnum.checkin
   const isRetro = meetingType === MeetingTypeEnum.retrospective
+  const isPoker = meetingType === MeetingTypeEnum.poker
   const getPossibleButtons = () => {
     const buttons = ['tips']
-    if (!isFacilitating && !isCheckIn && !isComplete) buttons.push('ready')
+    if (!isFacilitating && !isCheckIn && !isComplete && !isPoker) buttons.push('ready')
     if (!isFacilitating && localStageId !== facilitatorStageId) buttons.push('rejoin')
     if (isFacilitating && isRetro && !isCheckIn && !isComplete) buttons.push('timer')
-    if (isFacilitating && findStageAfterId(phases, localStageId)) buttons.push('next')
+    if ((isFacilitating || isPoker) && findStageAfterId(phases, localStageId)) buttons.push('next')
     if (isFacilitating) buttons.push('end')
     return buttons.map((key) => ({key}))
   }
@@ -99,7 +109,7 @@ const MeetingControlBar = (props: Props) => {
   const [confirmingButton, setConfirmingButton] = useClickConfirmation()
   const cancelConfirm = confirmingButton ? () => setConfirmingButton('') : undefined
   const tranChildren = useTransition(buttons)
-  const {onMouseDown, onClickCapture} = useDraggableFixture()
+  const {onMouseDown, onClickCapture} = useDraggableFixture(isLeftSidebarOpen, isRightDrawerOpen)
   const ref = useRef<HTMLDivElement>(null)
   useSnackbarPad(ref)
   useCovering(ref)
@@ -111,6 +121,8 @@ const MeetingControlBar = (props: Props) => {
       onMouseDown={onMouseDown}
       onClickCapture={onClickCapture}
       onTouchStart={onMouseDown}
+      isLeftSidebarOpen={isLeftSidebarOpen}
+      isRightDrawerOpen={isRightDrawerOpen}
     >
       {tranChildren
         .map((tranChild) => {
@@ -135,8 +147,9 @@ const MeetingControlBar = (props: Props) => {
               return (
                 <BottomControlBarReady
                   {...tranProps}
-                  cancelConfirm={confirmingButton === 'next' ? undefined : cancelConfirm}
-                  isConfirming={confirmingButton === 'next'}
+                  isNext={isPoker ? true : isFacilitating}
+                  cancelConfirm={isPoker ? undefined : confirmingButton === 'next' ? undefined : cancelConfirm}
+                  isConfirming={isPoker ? false : confirmingButton === 'next'}
                   setConfirmingButton={setConfirmingButton}
                   isDemoStageComplete={isDemoStageComplete}
                   meeting={meeting}
@@ -191,6 +204,7 @@ export default createFragmentContainer(MeetingControlBar, {
       facilitatorStageId
       facilitatorUserId
       meetingType
+      showSidebar
       localStage {
         id
         isComplete

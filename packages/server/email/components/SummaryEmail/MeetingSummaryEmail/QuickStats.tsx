@@ -7,6 +7,7 @@ import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import makeActionStats from './makeActionStats'
 import makeRetroStats from './makeRetroStats'
+import makePokerStats from './makePokerStats'
 
 const statLabel = (idx, len) =>
   ({
@@ -43,7 +44,8 @@ interface Props {
 
 const quickStatsLookup = {
   [ACTION]: makeActionStats,
-  [RETROSPECTIVE]: makeRetroStats
+  [RETROSPECTIVE]: makeRetroStats,
+  poker: makePokerStats
 }
 
 const QuickStats = (props: Props) => {
@@ -59,10 +61,10 @@ const QuickStats = (props: Props) => {
           {stats.map((stat, idx) => {
             return (
               <td
-                key={stat.label}
+                key={idx}
                 width='25%'
                 align='center'
-                bgcolor={PALETTE.BACKGROUND_MAIN}
+                bgcolor={stat.label ? PALETTE.BACKGROUND_MAIN : undefined}
                 style={statLabel(idx, stats.length)}
               >
                 {stat.value}
@@ -74,10 +76,10 @@ const QuickStats = (props: Props) => {
           {stats.map((stat, idx) => {
             return (
               <td
-                key={stat.label}
+                key={idx}
                 width='25%'
                 align='center'
-                bgcolor={PALETTE.BACKGROUND_MAIN}
+                bgcolor={stat.label ? PALETTE.BACKGROUND_MAIN : undefined}
                 style={descriptionLabel(idx, stats.length)}
               >
                 {stat.label}
@@ -95,6 +97,7 @@ export default createFragmentContainer(QuickStats, {
     fragment QuickStats_meeting on NewMeeting {
       __typename
       meetingType
+      ...makePokerStats_meeting
       ... on RetrospectiveMeeting {
         reflectionGroups(sortBy: voteCount) {
           voteCount

@@ -13,6 +13,7 @@ import {SORT_STEP} from '../utils/constants'
 import dndNoise from '../utils/dndNoise'
 import MeetingSidebarPhaseItemChild from './MeetingSidebarPhaseItemChild'
 import MeetingSubnavItem from './MeetingSubnavItem'
+import PokerSidebarEstimateMeta from './PokerSidebarEstimateMeta'
 
 interface Props {
   gotoStageId: ReturnType<typeof useGotoStageId>
@@ -104,11 +105,10 @@ const PokerSidebarEstimateSection = (props: Props) => {
             return (
               <ScrollWrapper ref={provided.innerRef}>
                 {stageSummaries!.map((summary, idx) => {
-                  const {stageIds, title, isActive, isComplete, isNavigable} = summary
+                  const {stageIds, title, isActive, isComplete, isNavigable, finalScores} = summary
                   const [firstStageId] = stageIds
                   // the local user is at another stage than the facilitator stage
                   const isUnsyncedFacilitatorStage = !inSync && stageIds.includes(facilitatorStageId)
-                  const estimateMeta = <div>-</div>
                   return (
                     <Draggable
                       key={firstStageId}
@@ -128,7 +128,7 @@ const PokerSidebarEstimateSection = (props: Props) => {
                               key={firstStageId}
                               isDragging={dragSnapshot.isDragging}
                               label={title!}
-                              metaContent={estimateMeta}
+                              metaContent={<PokerSidebarEstimateMeta finalScores={finalScores} />}
                               onClick={() => handleClick(stageIds)}
                               isActive={isActive}
                               isComplete={isComplete}
@@ -165,10 +165,10 @@ export default createFragmentContainer(PokerSidebarEstimateSection, {
         ...useMakeStageSummaries_phase
         ... on EstimatePhase {
           stages {
-          scores {
-            userId
+            scores {
+              userId
+            }
           }
-        }
         }
         phaseType
         stages {

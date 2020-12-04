@@ -7,6 +7,9 @@ graphql`
   fragment PokerRevealVotesMutation_meeting on PokerRevealVotesSuccess {
     stage {
       isVoting
+      scores {
+        ...PokerVotingRow_scores
+      }
     }
   }
 `

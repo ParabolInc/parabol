@@ -99,7 +99,8 @@ const Facilitator = (props: Props) => {
   const {meeting} = props
   const {endedAt, facilitatorUserId, facilitator} = meeting
   const {user, picture, preferredName} = facilitator
-  const {isConnected} = user
+  // https://sentry.io/share/issue/efef01c3e7934ab981ed5c80ef2d64c8/
+  const isConnected = user?.isConnected ?? false
   const {togglePortal, menuProps, menuPortal, originRef, portalStatus} = useMenu<HTMLDivElement>(
     MenuPosition.UPPER_RIGHT,
     {

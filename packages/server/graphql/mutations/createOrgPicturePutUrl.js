@@ -1,13 +1,14 @@
 import {GraphQLID, GraphQLInt, GraphQLNonNull, GraphQLString} from 'graphql'
 import CreatePicturePutUrlPayload from '../types/CreatePicturePutUrlPayload'
 import {getUserId, isUserBillingLeader} from '../../utils/authorization'
-import getS3PutUrl from '../../utils/getS3PutUrl'
-import validateAvatarUpload from '../../utils/validateAvatarUpload'
+import getS3SignedPutUrl from '../../utils/getS3SignedPutUrl'
+import validateAvatarUpload from '../../fileStorage/validateAvatarUpload'
 import shortid from 'shortid'
 import standardError from '../../utils/standardError'
 
 const createOrgPicturePutUrl = {
   type: CreatePicturePutUrlPayload,
+  deprecationReason: 'Replaced with `uploadOrgImage` mutation',
   description: 'Create a PUT URL on the CDN for an organization’s profile picture',
   args: {
     contentType: {
@@ -35,7 +36,7 @@ const createOrgPicturePutUrl = {
 
     // RESOLUTION
     const partialPath = `Organization/${orgId}/picture/${shortid.generate()}.${ext}`
-    const url = await getS3PutUrl(contentType, contentLength, partialPath)
+    const url = await getS3SignedPutUrl(contentType, contentLength, partialPath)
     return {url}
   }
 }

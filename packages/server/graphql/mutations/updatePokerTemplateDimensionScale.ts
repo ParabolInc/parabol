@@ -4,11 +4,11 @@ import getRethink from '../../database/rethinkDriver'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
-import AddPokerTemplateDimensionPayload from '../types/AddPokerTemplateDimensionPayload'
+import UpdatePokerTemplateDimensionScalePayload from '../types/UpdatePokerTemplateDimensionScalePayload'
 
 const updatePokerTemplateDimensionScale = {
   description: 'Update the scale used for a dimension in a template',
-  type: new GraphQLNonNull(AddPokerTemplateDimensionPayload),
+  type: new GraphQLNonNull(UpdatePokerTemplateDimensionScalePayload),
   args: {
     dimensionId: {
       type: new GraphQLNonNull(GraphQLID)
@@ -22,10 +22,7 @@ const updatePokerTemplateDimensionScale = {
     const now = new Date()
     const operationId = dataLoader.share()
     const subOptions = {operationId, mutatorId}
-    const dimension = await r
-      .table('TemplateDimension')
-      .get(dimensionId)
-      .run()
+    const dimension = await r.table('TemplateDimension').get(dimensionId).run()
     const viewerId = getUserId(authToken)
     const teamId = dimension.teamId
 
@@ -38,22 +35,21 @@ const updatePokerTemplateDimensionScale = {
     }
 
     // VALIDATION
-    const scale = await r
-      .table('TemplateScale')
-      .get(scaleId)
-      .run()
+    const scale = await r.table('TemplateScale').get(scaleId).run()
     if (!scale || scale.removedAt || (!scale.isStarter && scale.teamId !== teamId)) {
       return standardError(new Error('Scale not found'), {userId: viewerId})
     }
 
-    await r
-      .table('TemplateDimension')
-      .get(dimensionId)
-      .update({scaleId, updatedAt: now})
-      .run()
+    await r.table('TemplateDimension').get(dimensionId).update({scaleId, updatedAt: now}).run()
 
     const data = {dimensionId}
-    publish(SubscriptionChannel.TEAM, teamId, 'AddPokerTemplateDimensionPayload', data, subOptions)
+    publish(
+      SubscriptionChannel.TEAM,
+      teamId,
+      'UpdatePokerTemplateDimensionScalePayload',
+      data,
+      subOptions
+    )
     return data
   }
 }

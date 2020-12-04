@@ -4,7 +4,7 @@ import {StandardMutation} from '../types/relayMutations'
 import {PASCAL_MUTATIONMutation as TPASCAL_MUTATIONMutation} from '../__generated__/PASCAL_MUTATIONMutation.graphql'
 
 graphql`
-  fragment PASCAL_MUTATIONMutation_meeting on PASCAL_MUTATIONSuccess {
+  fragment PASCAL_MUTATIONMutation_LCASE_SUB on PASCAL_MUTATIONSuccess {
 
   }
 `
@@ -17,7 +17,7 @@ const mutation = graphql`
           message
         }
       }
-      ...PASCAL_MUTATIONMutation_meeting @relay(mask: false)
+      ...PASCAL_MUTATIONMutation_LCASE_SUB @relay(mask: false)
     }
   }
 `
@@ -31,7 +31,7 @@ const PASCAL_MUTATIONMutation: StandardMutation<TPASCAL_MUTATIONMutation> = (
     mutation,
     variables,
     optimisticUpdater: (store) => {
-      const {} = variables
+      const { } = variables
 
     },
     onCompleted,

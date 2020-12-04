@@ -15,7 +15,7 @@ const query = graphql`
 
 interface Props {
   meetingId: string
-  meetingContentRef: RefObject<HTMLDivElement>
+  meetingContentRef?: RefObject<HTMLDivElement>
   threadSourceId: string
 }
 

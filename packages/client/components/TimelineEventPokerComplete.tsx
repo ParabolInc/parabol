@@ -2,8 +2,10 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
+import {NewMeetingPhaseTypeEnum} from '../types/graphql'
 import plural from '../utils/plural'
 import {TimelineEventPokerComplete_timelineEvent} from '../__generated__/TimelineEventPokerComplete_timelineEvent.graphql'
+import CardsSVG from './CardsSVG'
 import StyledLink from './StyledLink'
 import TimelineEventBody from './TimelineEventBody'
 import TimelineEventCard from './TimelineEventCard'
@@ -28,21 +30,30 @@ const TimelineEventPokerComplete = (props: Props) => {
     id: meetingId,
     name: meetingName,
     commentCount,
+    phases
   } = meeting
   const {name: teamName} = team
+  const estimatePhase = phases.find((phase) => phase.phaseType === NewMeetingPhaseTypeEnum.ESTIMATE)!
+  const stages = estimatePhase.stages!
+  const storyCount = new Set(stages.map(({serviceTaskId}) => serviceTaskId)).size
   return (
     <TimelineEventCard
-      iconName='style'
+      IconSVG={<CardsSVG />}
       timelineEvent={timelineEvent}
       title={
         <TimelineEventTitle>{`${meetingName} with ${teamName} Complete`}</TimelineEventTitle>
       }
     >
       <TimelineEventBody>
-        {'You added '}
+        {'You voted on '}
+        <CountItem>
+          {storyCount} {plural(storyCount, 'story', 'stories')}
+        </CountItem>
+        {' and added '}
         <CountItem>
           {commentCount} {plural(commentCount, 'comment')}
         </CountItem>
+        {'.'}
         <br />
         <Link to={`/meet/${meetingId}/estimate/1`}>See the estimates</Link>
         {' in your meeting or '}
@@ -61,6 +72,15 @@ export default createFragmentContainer(TimelineEventPokerComplete, {
         id
         commentCount
         name
+        phases {
+          phaseType
+          ... on EstimatePhase {
+            stages {
+              id
+              serviceTaskId
+            }
+          }
+        }
       }
       team {
         id

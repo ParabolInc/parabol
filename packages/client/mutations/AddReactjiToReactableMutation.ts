@@ -23,12 +23,14 @@ const mutation = graphql`
     $reactableType: ReactableEnum!
     $reactji: String!
     $isRemove: Boolean
+    $meetingId: ID!
   ) {
     addReactjiToReactable(
       reactableId: $reactableId
       reactableType: $reactableType
       reactji: $reactji
       isRemove: $isRemove
+      meetingId: $meetingId
     ) {
       ... on ErrorPayload {
         error {

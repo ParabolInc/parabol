@@ -1,15 +1,15 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import {MeetingTypeEnum} from 'parabol-client/types/graphql'
+import MeetingTemplate from '../../database/types/MeetingTemplate'
 import getRethink from '../../database/rethinkDriver'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
-import SelectRetroTemplatePayload from '../types/SelectRetroTemplatePayload'
+import SelectTemplatePayload from '../types/SelectTemplatePayload'
 
-const selectRetroTemplate = {
+const selectTemplate = {
   description: 'Set the selected template for the upcoming retro meeting',
-  type: SelectRetroTemplatePayload,
+  type: SelectTemplatePayload,
   args: {
     selectedTemplateId: {
       type: new GraphQLNonNull(GraphQLID)
@@ -29,7 +29,9 @@ const selectRetroTemplate = {
     const viewerId = getUserId(authToken)
 
     // AUTH
-    const template = await dataLoader.get('meetingTemplates').load(selectedTemplateId)
+    const template = (await dataLoader
+      .get('meetingTemplates')
+      .load(selectedTemplateId)) as MeetingTemplate
 
     if (!template || !template.isActive) {
       console.log('no template', selectedTemplateId, template)
@@ -54,7 +56,7 @@ const selectRetroTemplate = {
       .table('MeetingSettings')
       .getAll(teamId, {index: 'teamId'})
       .filter({
-        meetingType: MeetingTypeEnum.retrospective
+        meetingType: template.type
       })
       .update(
         {
@@ -70,9 +72,9 @@ const selectRetroTemplate = {
     }
 
     const data = {meetingSettingsId}
-    publish(SubscriptionChannel.TEAM, teamId, 'SelectRetroTemplatePayload', data, subOptions)
+    publish(SubscriptionChannel.TEAM, teamId, 'SelectTemplatePayload', data, subOptions)
     return data
   }
 }
 
-export default selectRetroTemplate
+export default selectTemplate

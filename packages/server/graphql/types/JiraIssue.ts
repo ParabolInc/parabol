@@ -5,20 +5,19 @@ import GraphQLISO8601Type from './GraphQLISO8601Type'
 import GraphQLURLType from './GraphQLURLType'
 import PageInfoDateCursor from './PageInfoDateCursor'
 import StandardMutationError from './StandardMutationError'
-import Story from './Story'
+import Story, {storyFields} from './Story'
+import ThreadSource from './ThreadSource'
 
 const JiraIssue = new GraphQLObjectType<any, GQLContext>({
   name: 'JiraIssue',
   description: 'The Jira Issue that comes direct from Jira',
-  interfaces: () => [Story],
+  interfaces: () => [Story, ThreadSource],
   isTypeOf: ({cloudId, key}) => !!(cloudId && key),
   fields: () => ({
+    ...storyFields(),
     id: {
       type: GraphQLNonNull(GraphQLID),
-      description: 'shortid',
-      resolve: ({cloudId, key}) => {
-        return `${cloudId}:${key}`
-      }
+      description: 'cloudId:key. equal to the serviceTaskId on the EstimateStage'
     },
     cloudId: {
       type: GraphQLNonNull(GraphQLID),
@@ -42,6 +41,13 @@ const JiraIssue = new GraphQLObjectType<any, GQLContext>({
     summary: {
       type: GraphQLNonNull(GraphQLString),
       description: 'The plaintext summary of the jira issue'
+    },
+    title: {
+      type: GraphQLNonNull(GraphQLString),
+      description: 'Alias for summary used by the Story interface',
+      resolve: ({summary}) => {
+        return summary
+      }
     },
     description: {
       type: GraphQLNonNull(GraphQLString),
