@@ -2,7 +2,9 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useEffect, useLayoutEffect, useRef, useState} from 'react'
 import {createFragmentContainer} from 'react-relay'
+import useBreakpoint from '~/hooks/useBreakpoint'
 import {PALETTE} from '~/styles/paletteV2'
+import {Breakpoint} from '~/types/constEnums'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
 import useResizeFontForElement from '../hooks/useResizeFontForElement'
@@ -20,12 +22,10 @@ const ControlWrap = styled('div')({
 
 const Control = styled('div')({
   alignItems: 'center',
-  backgroundColor: '#fff',
-  border: '2px solid',
-  borderColor: PALETTE.TEXT_BLUE,
+  backgroundColor: '#FFF',
   borderRadius: 4,
   display: 'flex',
-  padding: 6
+  padding: 8
 })
 
 const Input = styled('input')<{color?: string}>(({color}) => ({
@@ -45,24 +45,29 @@ const Input = styled('input')<{color?: string}>(({color}) => ({
   }
 }))
 
-const StyledLinkButton = styled(LinkButton)({
-  fontSize: 14,
-  fontWeight: 600,
-  height: 40,
-  margin: '0 0 0 8px',
-  padding: '0 8px'
-})
-
 const ErrorMessage = styled(StyledError)({
-  paddingLeft: 8
+  paddingLeft: 8,
+  textAlign: 'left'
 })
 
 const Label = styled('div')({
-  color: PALETTE.TEXT_MAIN,
+  flexShrink: 0,
   fontSize: 14,
   fontWeight: 600,
-  margin: '0 0 0 16px',
-  width: '100%'
+  margin: '0 0 0 16px'
+})
+
+const StyledLinkButton = styled(LinkButton)({
+  color: PALETTE.LINK_BLUE,
+  fontSize: 14,
+  fontWeight: 600,
+  height: 40,
+  marginLeft: 8,
+  padding: '0 8px',
+  ':hover,:focus,:active': {
+    boxShadow: 'none',
+    color: PALETTE.LINK_BLUE_HOVER
+  }
 })
 
 interface Props {
@@ -139,23 +144,31 @@ const PokerDimensionValueControl = (props: Props) => {
     onCompleted()
   }
 
+  const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
 
   const matchingScale = scaleValues.find((scaleValue) => scaleValue.label === pendingScore)
   const scaleColor = matchingScale?.color
   const textColor = scaleColor ? '#fff' : undefined
   const isFinal = !!finalScore && pendingScore === finalScore
+  const handleLabelClick = () => inputRef.current!.focus()
+  const label = isDesktop ? finalScore ? 'Final Score' : 'Final Score (set by facilitator)' : 'Final Score'
   return (
     <ControlWrap>
       <Control>
-        <MiniPokerCard color={scaleColor} isFinal={isFinal}>
+        <MiniPokerCard canEdit={isFacilitator} color={scaleColor} isFinal={isFinal}>
           <Input disabled={!isFacilitator} onKeyDown={onKeyDown} autoFocus={!finalScore} color={textColor} ref={inputRef} onChange={onChange} placeholder={placeholder} value={pendingScore}></Input>
         </MiniPokerCard>
-        {!isFacilitator && <Label>{`Final Score${finalScore ? '' : ' (set by facilitator)'}`}</Label>}
-        {service === 'jira' && <PokerDimensionFinalScoreJiraPicker canUpdate={canUpdate} stage={stage} error={finalScoreError} submitScore={submitScore} clearError={clearError} isFacilitator={isFacilitator} />}
-        {service !== 'jira' &&
+        {!isFacilitator && <Label>{label}</Label>}
+        {service === 'jira' && <PokerDimensionFinalScoreJiraPicker canUpdate={canUpdate} stage={stage} error={finalScoreError} submitScore={submitScore} clearError={clearError} inputRef={inputRef} isFacilitator={isFacilitator} />}
+        {service !== 'jira' && isFacilitator &&
           <>
-            <StyledLinkButton palette={'blue'}>{'Update Score'}</StyledLinkButton>
-            {finalScoreError && <ErrorMessage>{finalScoreError}</ErrorMessage>}
+            {canUpdate
+              ? <>
+                <StyledLinkButton onClick={submitScore}>{'Update'}</StyledLinkButton>
+                {finalScoreError && <ErrorMessage>{finalScoreError}</ErrorMessage>}
+              </>
+              : <StyledLinkButton onClick={handleLabelClick}>{'Edit Score'}</StyledLinkButton>
+            }
           </>
         }
 

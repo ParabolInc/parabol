@@ -8,8 +8,10 @@ const Button = styled(FloatingActionButton)({
   color: '#fff',
   padding: '10px 12px',
   width: '150px',
-  top: '85%',
-  left: '74%',
+  // top: '85%',
+  // left: '74%',
+  bottom: 16,
+  right: 16,
   position: 'absolute',
   zIndex: ZIndex.FAB
 })

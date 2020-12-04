@@ -23,38 +23,24 @@ interface Props {
 
 }
 
-const Wrapper = styled(PlainButton)<{
-  isFacilitator: boolean
-}>(({
-  isFacilitator
-}) => ({
+const Wrapper = styled(PlainButton)<{isFacilitator: boolean}>(({isFacilitator}) => ({
+  color: PALETTE.TEXT_MAIN,
   cursor: isFacilitator ? undefined : 'default',
   display: 'flex',
-  color: PALETTE.TEXT_MAIN,
-  ':hover': {
-    color: isFacilitator ? PALETTE.TEXT_LIGHT_DARK : undefined
-  },
-  userSelect: 'none'
+  paddingRight: isFacilitator ? undefined : 8,
+  userSelect: 'none',
+  ':hover,:focus,:active': {
+    opacity: isFacilitator ? '50%' : undefined
+  }
 }))
 
+const CurrentValue = styled('div')({
+  fontSize: 14
+})
 
-const CurrentValue = styled('div')<{
-  isFacilitator: boolean
-}>(({
-  isFacilitator
-}) => ({
-  fontSize: 14,
-  fontWeight: 600,
-  textDecoration: isFacilitator ? 'underline' : undefined
-}))
-
-const StyledIcon = styled(Icon)<{
-  isFacilitator: boolean
-}>(({
-  isFacilitator
-}) => ({
+const StyledIcon = styled(Icon)<{isFacilitator: boolean}>(({isFacilitator}) => ({
   fontSize: ICON_SIZE.MD18,
-  visibility: isFacilitator ? undefined : 'hidden'
+  display: isFacilitator ? undefined : 'none'
 }))
 
 const labelLookup = {
@@ -84,7 +70,7 @@ const JiraFieldDimensionDropdown = (props: Props) => {
     <Wrapper onMouseEnter={JiraFieldMenuRoot.preload} isFacilitator={isFacilitator}
       onClick={onClick}
       ref={originRef}>
-      <CurrentValue isFacilitator={isFacilitator}>{label}</CurrentValue>
+      <CurrentValue>{label}</CurrentValue>
       <StyledIcon isFacilitator={isFacilitator}>{'expand_more'}</StyledIcon>
       {menuPortal(
         <JiraFieldMenuRoot menuProps={menuProps} stage={stage} />
