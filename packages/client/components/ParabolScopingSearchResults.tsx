@@ -128,7 +128,6 @@ export default createPaginationContainer(
   {
     meeting: graphql`
       fragment ParabolScopingSearchResults_meeting on PokerMeeting {
-        ...NewParabolTaskInput_meeting
         id
         phases {
           phaseType

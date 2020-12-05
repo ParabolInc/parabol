@@ -1,8 +1,9 @@
-import {RecordProxy, RecordSourceSelectorProxy} from 'relay-runtime'
-import {insertNodeBeforeInConn} from '~/utils/relay/insertNode'
+import {ConnectionHandler, RecordProxy, RecordSourceSelectorProxy} from 'relay-runtime'
+import createProxyRecord from '~/utils/relay/createProxyRecord'
+import toSearchQueryId from '~/utils/relay/toSearchQueryId'
 import toTeamMemberId from '~/utils/relay/toTeamMemberId'
 import getJiraIssuesConn from '../connections/getJiraIssuesConn'
-import toSearchQueryId from '../../utils/relay/toSearchQueryId'
+import {SearchQueryMeetingPropName} from '~/utils/relay/LocalPokerHandler'
 
 const handleJiraCreateIssue = (payload: RecordProxy<any>, store: RecordSourceSelectorProxy) => {
   const teamId = payload.getValue('teamId')
@@ -14,15 +15,36 @@ const handleJiraCreateIssue = (payload: RecordProxy<any>, store: RecordSourceSel
   const teamMember = store.get(teamMemberId)
   const integrations = teamMember?.getLinkedRecord('integrations')
   const atlassian = integrations?.getLinkedRecord('atlassian')
-  const jiraSearchQueryId = toSearchQueryId('jiraSearchQuery', meetingId)
+  const jiraSearchQueryId = toSearchQueryId(SearchQueryMeetingPropName.jira, meetingId)
   const jiraSearchQuery = store.get(jiraSearchQueryId)
   const queryString = jiraSearchQuery?.getValue('queryString') as string | undefined
   const isJql = jiraSearchQuery?.getValue('isJql') as boolean | undefined
   const projectKeyFilters = jiraSearchQuery?.getValue('projectKeyFilters') as string[] | undefined
+
   const jiraIssue = payload.getLinkedRecord('jiraIssue')
+  const key = jiraIssue.getValue('key')
+  const summary = jiraIssue.getValue('summary')
+  const url = jiraIssue.getValue('url')
+  const newJiraIssue = {
+    key,
+    summary,
+    url
+  }
+  const jiraIssueProxy = createProxyRecord(store, 'JiraIssue', newJiraIssue)
   const jiraIssuesConn = getJiraIssuesConn(atlassian, isJql, queryString, projectKeyFilters)
   if (!jiraIssuesConn) return
-  insertNodeBeforeInConn(jiraIssuesConn, jiraIssue, store, 'JiraIssueEdge')
+  const now = new Date().toISOString()
+  const newEdge = ConnectionHandler.createEdge(
+    store,
+    jiraIssuesConn,
+    jiraIssueProxy,
+    'JiraIssueEdge'
+  )
+  newEdge.setValue(now, 'cursor')
+  const node = newEdge.getLinkedRecord('node')
+  const newJiraIssueId = jiraIssue.getValue('id')
+  node?.setValue(newJiraIssueId, 'id')
+  ConnectionHandler.insertEdgeBefore(jiraIssuesConn, newEdge)
 }
 
 export default handleJiraCreateIssue

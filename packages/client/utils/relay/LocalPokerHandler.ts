@@ -4,9 +4,14 @@ import upperFirst from '../upperFirst'
 import createProxyRecord from './createProxyRecord'
 import toSearchQueryId from './toSearchQueryId'
 
+export enum SearchQueryMeetingPropName {
+  parabol = 'parabolSearchQuery',
+  jira = 'jiraSearchQuery'
+}
+
 const lookup = {
   [TaskServiceEnum.jira]: {
-    meetingPropertyName: 'jiraSearchQuery',
+    meetingPropertyName: SearchQueryMeetingPropName.jira,
     defaultQuery: {
       queryString: '',
       projectKeyFilters: [],
@@ -14,7 +19,7 @@ const lookup = {
     }
   },
   [TaskServiceEnum.PARABOL]: {
-    meetingPropertyName: 'parabolSearchQuery',
+    meetingPropertyName: SearchQueryMeetingPropName.parabol,
     defaultQuery: {
       queryString: '',
       statusFilters: [TaskStatusEnum.active]

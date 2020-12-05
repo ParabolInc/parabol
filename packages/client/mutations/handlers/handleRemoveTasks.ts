@@ -9,7 +9,6 @@ import getTeamTasksConn from '../connections/getTeamTasksConn'
 import getUserTasksConn from '../connections/getUserTasksConn'
 import pluralizeHandler from './pluralizeHandler'
 import {parseUserTaskFilterQueryParams} from '~/utils/useUserTaskFilters'
-import toSearchQueryId from '~/utils/relay/toSearchQueryId'
 import getScopingTasksConn from '../connections/getScopingTasksConn'
 
 const handleRemoveTask = (taskId: string, store: RecordSourceSelectorProxy<any>) => {
@@ -39,18 +38,8 @@ const handleRemoveTask = (taskId: string, store: RecordSourceSelectorProxy<any>)
   safeRemoveNodeFromConn(taskId, threadSourceConn)
   safeRemoveNodeFromArray(taskId, meeting, 'tasks')
 
-  if (meetingId) {
-    const parabolSearchQueryId = toSearchQueryId('parabolSearchQuery', meetingId)
-    const parabolSearchQuery = store.get(parabolSearchQueryId)
-    if (parabolSearchQuery) {
-      const queryString = parabolSearchQuery.getValue('queryString') as string
-      const statusFilters = parabolSearchQuery.getValue('statusFilters') as string[]
-      const scopingTasksConn = getScopingTasksConn(viewer, [teamId], statusFilters, queryString)
-      if (scopingTasksConn) {
-        safeRemoveNodeFromConn(taskId, scopingTasksConn)
-      }
-    }
-  }
+  const scopingTasksConn = getScopingTasksConn(store, meetingId, viewer, [teamId])
+  safeRemoveNodeFromConn(taskId, scopingTasksConn)
 }
 
 const handleRemoveTasks = pluralizeHandler(handleRemoveTask)

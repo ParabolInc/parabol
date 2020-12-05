@@ -10,7 +10,6 @@ import safePutNodeInConn from './safePutNodeInConn'
 import isTaskPrivate from '~/utils/isTaskPrivate'
 import {parseUserTaskFilterQueryParams} from '~/utils/useUserTaskFilters'
 import getScopingTasksConn from '../connections/getScopingTasksConn'
-import toSearchQueryId from '~/utils/relay/toSearchQueryId'
 
 type Task = RecordProxy<{
   readonly id: string
@@ -73,19 +72,8 @@ const handleUpsertTask = (task: Task | null, store: RecordSourceSelectorProxy<an
   /* updates parabol search query if task is created from a sprint poker meeting
    * should also implement updating parabol search query if task is created elsewhere?
    */
-  if (meetingId) {
-    const parabolSearchQueryId = toSearchQueryId('parabolSearchQuery', meetingId)
-    const parabolSearchQuery = store.get(parabolSearchQueryId)
-    if (parabolSearchQuery) {
-      const queryString = parabolSearchQuery.getValue('queryString') as string
-      const statusFilters = parabolSearchQuery.getValue('statusFilters') as string[]
-      const scopingTasksConn = getScopingTasksConn(viewer, [teamId], statusFilters, queryString)
-      if (scopingTasksConn) {
-        // insertNodeBeforeInConn(scopingTasksConn, task, store, 'ParabolTaskEdge')
-        safePutNodeInConn(scopingTasksConn, task, store, 'updatedAt', false)
-      }
-    }
-  }
+  const scopingTasksConn = getScopingTasksConn(store, meetingId, viewer, [teamId])
+  safePutNodeInConn(scopingTasksConn, task, store, 'updatedAt', false)
 }
 
 const handleUpsertTasks = pluralizeHandler(handleUpsertTask)

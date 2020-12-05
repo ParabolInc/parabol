@@ -1,5 +1,7 @@
+import {SearchQueryMeetingPropName} from './LocalPokerHandler'
+
 const toSearchQueryId = (
-  meetingPropName: string,
+  meetingPropName: SearchQueryMeetingPropName,
   meetingId: string
 ) => `${meetingPropName}:${meetingId}`
 

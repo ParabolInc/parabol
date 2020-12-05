@@ -7,6 +7,7 @@ import useAtmosphere from '../hooks/useAtmosphere'
 import {PALETTE} from '../styles/paletteV2'
 import {JiraScopingSearchInput_meeting} from '../__generated__/JiraScopingSearchInput_meeting.graphql'
 import Icon from './Icon'
+import {SearchQueryMeetingPropName} from '~/utils/relay/LocalPokerHandler'
 
 const SearchInput = styled('input')({
   appearance: 'none',
@@ -36,7 +37,7 @@ const setSearch = (atmosphere: Atmosphere, meetingId: string, value: string) => 
   commitLocalUpdate(atmosphere, (store) => {
     const meeting = store.get(meetingId)
     if (!meeting) return
-    const jiraSearchQuery = meeting.getLinkedRecord('jiraSearchQuery')!
+    const jiraSearchQuery = meeting.getLinkedRecord(SearchQueryMeetingPropName.jira)!
     jiraSearchQuery.setValue(value, 'queryString')
   })
 }
