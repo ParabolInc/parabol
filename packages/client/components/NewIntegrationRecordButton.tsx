@@ -25,14 +25,13 @@ const StyledLabel = styled('div')({
 
 interface Props {
   labelText: string
-  className?: string
   onClick: (e: React.MouseEvent) => void
 }
 
 const NewIntegrationRecordButton = (props: Props) => {
-  const {labelText, className, onClick} = props
+  const {labelText, onClick} = props
   return (
-    <Button className={className} onClick={onClick} palette='blue'>
+    <Button onClick={onClick} palette='blue'>
       <StyledIcon>{'add'}</StyledIcon>
       <StyledLabel>{labelText}</StyledLabel>
     </Button>
