@@ -42,7 +42,6 @@ const ParabolScopingSearchResults = (props: Props) => {
   const {onError, onCompleted} = useMutationProps()
 
   const addTask = () => {
-    setIsEditing(true)
     const {viewerId} = atmosphere
     const newTask = {
       status: TaskStatusEnum.active,
@@ -58,13 +57,18 @@ const ParabolScopingSearchResults = (props: Props) => {
     )
   }
 
+  const handleAddTaskClick = () => {
+    setIsEditing(true)
+    addTask()
+  }
+
   if (edges.length === 0 && !isEditing)
     return viewer ?
       <>
         <IntegrationScopingNoResults msg={'No tasks match that query'} />
         <NewIntegrationRecordButton
           labelText={'New Task'}
-          onClick={addTask}
+          onClick={handleAddTaskClick}
         />
       </>
       :
@@ -96,7 +100,7 @@ const ParabolScopingSearchResults = (props: Props) => {
       {!isEditing &&
       <NewIntegrationRecordButton
         labelText={'New Task'}
-        onClick={addTask}
+        onClick={handleAddTaskClick}
       />
       }
     </>

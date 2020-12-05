@@ -54,13 +54,15 @@ const JiraScopingSearchResults = (props: Props) => {
       )
     } */
 
+  const handleAddIssueClick = () => setIsEditing(true)
+
   if (edges.length === 0 && !isEditing) {
     // only show the mock on the initial load or if the last query returned no results and
     // the user isn't adding a new jira issue
     return viewer ? (
       <>
         <IntegrationScopingNoResults error={error?.message} msg={'No issues match that query'} />
-        <NewIntegrationRecordButton onClick={() => setIsEditing(true)} labelText={'New Issue'} />
+        <NewIntegrationRecordButton onClick={handleAddIssueClick} labelText={'New Issue'} />
       </>
     ) : (
         <MockScopingList />
@@ -112,7 +114,7 @@ const JiraScopingSearchResults = (props: Props) => {
       </ResultScroller>
       {!isEditing && 
       <NewIntegrationRecordButton
-        onClick={() => setIsEditing(true)}
+        onClick={handleAddIssueClick}
         labelText={'New Issue'}
       />}
     </>
