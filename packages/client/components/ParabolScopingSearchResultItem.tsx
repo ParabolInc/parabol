@@ -21,9 +21,9 @@ import DeleteTaskMutation from '~/mutations/DeleteTaskMutation'
 import UpdateTaskMutation from '~/mutations/UpdateTaskMutation'
 import useScrollIntoView from '~/hooks/useScrollIntoVIew'
 
-const Item = styled('div')<{isEditing: boolean}>(({isEditing}) => ({
-  backgroundColor: isEditing ? PALETTE.BACKGROUND_BLUE_MAGENTA : 'transparent',
-  cursor: isEditing ? undefined : 'pointer',
+const Item = styled('div')<{isEditingThisItem: boolean}>(({isEditingThisItem}) => ({
+  backgroundColor: isEditingThisItem ? PALETTE.BACKGROUND_BLUE_MAGENTA : 'transparent',
+  cursor: isEditingThisItem ? undefined : 'pointer',
   display: 'flex',
   paddingLeft: 16,
   paddingTop: 8,
@@ -65,10 +65,10 @@ const ParabolScopingSearchResultItem = (props: Props) => {
   })
   const editorRef = useRef<HTMLTextAreaElement>(null)
   const {useTaskChild, addTaskChild, removeTaskChild, isTaskFocused} = useTaskChildFocus(taskId)
-  const isEditing = !plaintextContent
+  const isEditingThisItem = !plaintextContent
 
-  const onClick = () => {
-    if (submitting || isEditing) return
+  const updatePokerScope = () => {
+    if (submitting) return
     submitMutation()
     const variables = {
       meetingId,
@@ -86,7 +86,6 @@ const ParabolScopingSearchResultItem = (props: Props) => {
   const handleTaskUpdate = () => {
     const isFocused = isTaskFocused()
     const area = AreaEnum.meeting
-    console.log('handle task update called')
     if (isAndroid) {
       const editorEl = editorRef.current
       if (!editorEl || editorEl.type !== 'textarea') return
@@ -101,50 +100,55 @@ const ParabolScopingSearchResultItem = (props: Props) => {
           id: taskId,
           content: convertToTaskContent(value)
         }
-        UpdateTaskMutation(atmosphere, {updatedTask, area})
+        UpdateTaskMutation(atmosphere, {updatedTask, area}, {onCompleted: updatePokerScope})
       }
       return
     }
     const nextContentState = editorStateRef.current.getCurrentContent()
     const hasText = nextContentState.hasText()
-    console.log(nextContentState)
-    console.log(hasText, isFocused)
     if (!hasText && !isFocused) {
-      console.log('deleting mutation')
       DeleteTaskMutation(atmosphere, taskId, teamId)
     } else {
       const content = JSON.stringify(convertToRaw(nextContentState))
       const initialContent = JSON.stringify(convertToRaw(contentState))
-      console.log('comparing:', initialContent, content)
       if (content === initialContent) return
       const updatedTask = {
         id: taskId,
         content
       }
-      UpdateTaskMutation(atmosphere, {updatedTask, area})
+      UpdateTaskMutation(atmosphere, {updatedTask, area}, {onCompleted: updatePokerScope})
     }
   }
 
   const ref = useRef<HTMLDivElement>(null)
-  useScrollIntoView(ref, isEditing)
+  useScrollIntoView(ref, isEditingThisItem)
 
   return (
-    /* todo: shouldn't be able to check/ uncheck when editing */
-    <Item onClick={onClick} isEditing={isEditing}>
-      <Checkbox active={isSelected} />
+    <Item
+      onClick={() => {
+        if (isEditingThisItem) return
+        updatePokerScope()
+      }}
+      isEditingThisItem={isEditingThisItem}
+    >
+      <Checkbox active={isSelected || isEditingThisItem} />
       <Task
         onBlur={() => {
+          if (!isEditingThisItem) return
           removeTaskChild('root')
           setTimeout(handleTaskUpdate)
           setIsEditing(false)
         }}
-        onFocus={() => addTaskChild('root')}
+        onFocus={() => {
+          if (!isEditingThisItem) return
+          addTaskChild('root')
+        }}
         ref={ref}
       >
         <StyledTaskEditor
           dataCy={`task`}
           editorRef={editorRef}
-          readOnly={!!plaintextContent}
+          readOnly={!isEditingThisItem}
           editorState={editorStateRef.current}
           setEditorState={setEditorStateRef}
           teamId={teamId}

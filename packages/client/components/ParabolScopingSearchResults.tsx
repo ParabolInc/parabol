@@ -9,14 +9,12 @@ import ParabolScopingSearchResultItem from './ParabolScopingSearchResultItem'
 import useLoadMoreOnScrollBottom from '~/hooks/useLoadMoreOnScrollBottom'
 import IntegrationScopingNoResults from './IntegrationScopingNoResults'
 import useRecordIdsWithStages from '~/hooks/useRecordIdsWithStages'
-import {NewMeetingPhaseTypeEnum, TaskStatusEnum, TaskServiceEnum, AddOrDeleteEnum} from '~/types/graphql'
+import {NewMeetingPhaseTypeEnum, TaskStatusEnum} from '~/types/graphql'
 import NewIntegrationRecordButton from './NewIntegrationRecordButton'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import dndNoise from '~/utils/dndNoise'
 import CreateTaskMutation from '~/mutations/CreateTaskMutation'
 import useMutationProps from '~/hooks/useMutationProps'
-import UpdatePokerScopeMutation from '../mutations/UpdatePokerScopeMutation'
-import {CreateTaskMutationResponse} from '~/__generated__/CreateTaskMutation.graphql'
 
 const ResultScroller = styled('div')({
   overflow: 'auto'
@@ -43,24 +41,6 @@ const ParabolScopingSearchResults = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {onError, onCompleted} = useMutationProps()
 
-  const updatePokerScope = (res: CreateTaskMutationResponse) => {
-    const payload = res.createTask
-    if (!payload) return
-    const {task} = payload
-    if (!task) return
-    const pokerScopeVariables = {
-      meetingId,
-      updates: [
-        {
-          service: TaskServiceEnum.PARABOL,
-          serviceTaskId: task.id,
-          action: AddOrDeleteEnum.ADD
-        }
-      ]
-    }
-    UpdatePokerScopeMutation(atmosphere, pokerScopeVariables, {onError, onCompleted})
-  }
-
   const addTask = () => {
     setIsEditing(true)
     const {viewerId} = atmosphere
@@ -74,7 +54,7 @@ const ParabolScopingSearchResults = (props: Props) => {
     CreateTaskMutation(
       atmosphere,
       {newTask},
-      {onError, onCompleted: updatePokerScope}
+      {onError, onCompleted}
     )
   }
 

@@ -63,7 +63,7 @@ const OutcomeCardContainer = memo((props: Props) => {
           id: taskId,
           content: convertToTaskContent(value)
         }
-        UpdateTaskMutation(atmosphere, {updatedTask, area})
+        UpdateTaskMutation(atmosphere, {updatedTask, area}, {})
       }
       return
     }
@@ -79,7 +79,7 @@ const OutcomeCardContainer = memo((props: Props) => {
         id: taskId,
         content
       }
-      UpdateTaskMutation(atmosphere, {updatedTask, area})
+      UpdateTaskMutation(atmosphere, {updatedTask, area}, {})
     }
   }
 
