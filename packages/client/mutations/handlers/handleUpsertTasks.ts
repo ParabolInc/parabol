@@ -10,7 +10,6 @@ import safePutNodeInConn from './safePutNodeInConn'
 import isTaskPrivate from '~/utils/isTaskPrivate'
 import {parseUserTaskFilterQueryParams} from '~/utils/useUserTaskFilters'
 import getScopingTasksConn from '../connections/getScopingTasksConn'
-import {insertNodeBeforeInConn} from '~/utils/relay/insertNode'
 import toSearchQueryId from '~/utils/relay/toSearchQueryId'
 
 type Task = RecordProxy<{
@@ -78,11 +77,13 @@ const handleUpsertTask = (task: Task | null, store: RecordSourceSelectorProxy<an
     const parabolSearchQueryId = toSearchQueryId('parabolSearchQuery', meetingId)
     const parabolSearchQuery = store.get(parabolSearchQueryId)
     if (parabolSearchQuery) {
-      const queryString = parabolSearchQuery?.getValue('queryString') as string | undefined
-      const statusFilters = parabolSearchQuery?.getValue('statusFilters') as string[] | undefined
+      const queryString = parabolSearchQuery.getValue('queryString') as string
+      const statusFilters = parabolSearchQuery.getValue('statusFilters') as string[]
       const scopingTasksConn = getScopingTasksConn(viewer, [teamId], statusFilters, queryString)
-      if (!scopingTasksConn) return
-      insertNodeBeforeInConn(scopingTasksConn, task, store, 'ParabolTaskEdge')
+      if (scopingTasksConn) {
+        // insertNodeBeforeInConn(scopingTasksConn, task, store, 'ParabolTaskEdge')
+        safePutNodeInConn(scopingTasksConn, task, store, 'updatedAt', false)
+      }
     }
   }
 }

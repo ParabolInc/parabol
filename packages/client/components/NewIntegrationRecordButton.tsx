@@ -23,25 +23,19 @@ const StyledLabel = styled('div')({
   fontWeight: 600
 })
 
-const ButtonWrapper = styled('div')({
-  position: 'relative'
-})
-
 interface Props {
-  setIsEditing: (isEditing: boolean) => void
   labelText: string
   className?: string
+  onClick: (e: React.MouseEvent) => void
 }
 
 const NewIntegrationRecordButton = (props: Props) => {
-  const {setIsEditing, labelText, className} = props
+  const {labelText, className, onClick} = props
   return (
-    <ButtonWrapper>
-      <Button className={className} onClick={() => setIsEditing(true)} palette='blue'>
-        <StyledIcon>{'add'}</StyledIcon>
-        <StyledLabel>{labelText}</StyledLabel>
-      </Button>
-    </ButtonWrapper>
+    <Button className={className} onClick={onClick} palette='blue'>
+      <StyledIcon>{'add'}</StyledIcon>
+      <StyledLabel>{labelText}</StyledLabel>
+    </Button>
   )
 }
 

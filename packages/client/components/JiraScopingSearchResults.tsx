@@ -60,7 +60,7 @@ const JiraScopingSearchResults = (props: Props) => {
     return viewer ? (
       <>
         <IntegrationScopingNoResults error={error?.message} msg={'No issues match that query'} />
-        <NewIntegrationRecordButton setIsEditing={setIsEditing} labelText={'New Issue'} />
+        <NewIntegrationRecordButton onClick={() => setIsEditing(true)} labelText={'New Issue'} />
       </>
     ) : (
         <MockScopingList />
@@ -110,7 +110,11 @@ const JiraScopingSearchResults = (props: Props) => {
           )
         })}
       </ResultScroller>
-      {!isEditing && <NewIntegrationRecordButton setIsEditing={setIsEditing} labelText={'New Issue'} />}
+      {!isEditing && 
+      <NewIntegrationRecordButton
+        onClick={() => setIsEditing(true)}
+        labelText={'New Issue'}
+      />}
     </>
   )
 }

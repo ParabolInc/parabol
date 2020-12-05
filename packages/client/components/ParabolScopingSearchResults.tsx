@@ -9,9 +9,14 @@ import ParabolScopingSearchResultItem from './ParabolScopingSearchResultItem'
 import useLoadMoreOnScrollBottom from '~/hooks/useLoadMoreOnScrollBottom'
 import IntegrationScopingNoResults from './IntegrationScopingNoResults'
 import useRecordIdsWithStages from '~/hooks/useRecordIdsWithStages'
-import {NewMeetingPhaseTypeEnum} from '~/types/graphql'
+import {NewMeetingPhaseTypeEnum, TaskStatusEnum, TaskServiceEnum, AddOrDeleteEnum} from '~/types/graphql'
 import NewIntegrationRecordButton from './NewIntegrationRecordButton'
-import NewParabolTaskInput from './NewParabolTaskInput'
+import useAtmosphere from '~/hooks/useAtmosphere'
+import dndNoise from '~/utils/dndNoise'
+import CreateTaskMutation from '~/mutations/CreateTaskMutation'
+import useMutationProps from '~/hooks/useMutationProps'
+import UpdatePokerScopeMutation from '../mutations/UpdatePokerScopeMutation'
+import {CreateTaskMutationResponse} from '~/__generated__/CreateTaskMutation.graphql'
 
 const ResultScroller = styled('div')({
   overflow: 'auto'
@@ -35,16 +40,57 @@ const ParabolScopingSearchResults = (props: Props) => {
   const {id: meetingId, phases} = meeting
   const estimatePhase = phases.find(({phaseType}) => phaseType === NewMeetingPhaseTypeEnum.ESTIMATE)
   const usedParabolTaskIds = useRecordIdsWithStages(estimatePhase)
+  const atmosphere = useAtmosphere()
+  const {onError, onCompleted} = useMutationProps()
+
+  const updatePokerScope = (res: CreateTaskMutationResponse) => {
+    const payload = res.createTask
+    if (!payload) return
+    const {task} = payload
+    if (!task) return
+    const pokerScopeVariables = {
+      meetingId,
+      updates: [
+        {
+          service: TaskServiceEnum.PARABOL,
+          serviceTaskId: task.id,
+          action: AddOrDeleteEnum.ADD
+        }
+      ]
+    }
+    UpdatePokerScopeMutation(atmosphere, pokerScopeVariables, {onError, onCompleted})
+  }
+
+  const addTask = () => {
+    setIsEditing(true)
+    const {viewerId} = atmosphere
+    const newTask = {
+      status: TaskStatusEnum.active,
+      sortOrder: dndNoise(),
+      meetingId,
+      userId: viewerId,
+      teamId: meeting.teamId,
+    }
+    CreateTaskMutation(
+      atmosphere,
+      {newTask},
+      {onError, onCompleted: updatePokerScope}
+    )
+  }
 
   if (edges.length === 0 && !isEditing)
     return viewer ?
       <>
         <IntegrationScopingNoResults msg={'No tasks match that query'} />
-        <NewIntegrationRecordButton setIsEditing={setIsEditing} labelText={'New Task'} />
+        <NewIntegrationRecordButton
+          labelText={'New Task'}
+          onClick={addTask}
+        />
       </>
       :
       null
 
+  /* todo: should NOT return tasks with no content in them */
   return (
     <>
       <ParabolScopingSelectAllTasks
@@ -53,11 +99,6 @@ const ParabolScopingSearchResults = (props: Props) => {
         meetingId={meetingId}
       />
       <ResultScroller>
-        <NewParabolTaskInput
-          meeting={meeting}
-          isEditing={isEditing}
-          setIsEditing={setIsEditing}
-        />
         {edges.map(({node}) => {
           return (
             <ParabolScopingSearchResultItem
@@ -65,12 +106,19 @@ const ParabolScopingSearchResults = (props: Props) => {
               task={node}
               meetingId={meeting.id}
               isSelected={usedParabolTaskIds.has(node.id)}
+              teamId={meeting.teamId}
+              setIsEditing={setIsEditing}
             />
           )
         })}
         {lastItem}
       </ResultScroller>
-      {!isEditing && <NewIntegrationRecordButton setIsEditing={setIsEditing} labelText={'New Task'} />}
+      {!isEditing &&
+      <NewIntegrationRecordButton
+        labelText={'New Task'}
+        onClick={addTask}
+      />
+      }
     </>
   )
 }
@@ -86,6 +134,7 @@ export default createPaginationContainer(
           phaseType
           ...useRecordIdsWithStages_phase
         }
+        teamId
       }
     `,
     viewer: graphql`
