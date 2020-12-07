@@ -74,7 +74,6 @@ const ParabolScopingSearchResults = (props: Props) => {
       :
       null
 
-  /* todo: should NOT return tasks with no content in them */
   return (
     <>
       <ParabolScopingSelectAllTasks
