@@ -165,9 +165,10 @@ const EndDraggingReflectionMutation = (
       reflection.setValue(false, 'isViewerDragging')
       const reflectionGroup = payload.getLinkedRecord('reflectionGroup')
       if (!reflectionGroup) return
-      const prompt = reflectionGroup.getLinkedRecord('prompt')
+      const prompt = reflection.getLinkedRecord('prompt')
       if (prompt) {
         reflection.setLinkedRecord(prompt, 'prompt')
+        reflectionGroup.setLinkedRecord(prompt, 'prompt')
       }
       const oldReflectionGroupId = getInProxy(payload, 'oldReflectionGroup', 'id')
       moveReflectionLocation(reflection, reflectionGroup, oldReflectionGroupId, store)
@@ -198,10 +199,11 @@ const EndDraggingReflectionMutation = (
           voterIds: []
         }
         reflectionGroupProxy = createProxyRecord(store, 'RetroReflectionGroup', reflectionGroup)
+        const prompt = reflection.getLinkedRecord('prompt')
+        reflectionGroupProxy.setLinkedRecord(prompt, 'prompt')
         updateProxyRecord(reflection, {sortOrder: 0, reflectionGroupId: newReflectionGroupId})
       } else {
         reflectionGroupProxy = store.get(reflectionGroupId)
-        const prompt = reflectionGroupProxy.getLinkedRecord('prompt')
         const reflections = reflectionGroupProxy.getLinkedRecords('reflections')
         const maxSortOrder = Math.max(
           ...reflections.map((reflection) => (reflection ? reflection.getValue('sortOrder') : -1))
@@ -211,8 +213,10 @@ const EndDraggingReflectionMutation = (
           sortOrder: maxSortOrder + 1 + dndNoise(),
           reflectionGroupId
         })
-        reflection.setLinkedRecord(reflectionGroupProxy, 'retroReflectionGroup')
+        const prompt = reflectionGroupProxy.getLinkedRecord('prompt')
+        reflectionGroupProxy.setLinkedRecord(prompt, 'prompt')
         reflection.setLinkedRecord(prompt, 'prompt')
+        reflection.setLinkedRecord(reflectionGroupProxy, 'retroReflectionGroup')
       }
       moveReflectionLocation(reflection, reflectionGroupProxy, oldReflectionGroupId, store)
     }
