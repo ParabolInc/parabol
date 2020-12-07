@@ -28,6 +28,7 @@ const ColumnsBlock = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   justifyContent: 'center',
   margin: '0 auto',
   overflow: 'auto',
+  border: '2px solid red',
   padding: isDesktop ? '0 0 16px' : undefined,
   width: '100%'
 }))
@@ -39,10 +40,9 @@ const GroupingKanban = (props: Props) => {
   const {reflectionGroups, phases} = meeting
   const reflectPhase = phases.find((phase) => phase.phaseType === NewMeetingPhaseTypeEnum.reflect)!
   const reflectPrompts = reflectPhase.reflectPrompts!
-  const reflectPromptsCount = reflectPrompts.length
   const columnsRef = useRef<HTMLDivElement>(null)
   useHideBodyScroll()
-  useExpandColumnsWidth(reflectPromptsCount, reflectPrompts)
+  useExpandColumnsWidth(reflectPrompts)
   const {groupsByPrompt, isAnyEditing} = useMemo(() => {
     const container = {} as {[promptId: string]: typeof reflectionGroups[0][]}
     let isEditing = false
@@ -68,9 +68,13 @@ const GroupingKanban = (props: Props) => {
         )
   }, [isDesktop, reflectionGroups])
   const swipeColumn: SwipeColumn = useThrottledEvent((offset: number) => {
-    const nextIdx = Math.min(reflectPromptsCount - 1, Math.max(0, activeIdx + offset))
+    const nextIdx = Math.min(reflectPrompts.length - 1, Math.max(0, activeIdx + offset))
     setActiveIdx(nextIdx)
   }, Times.REFLECTION_COLUMN_SWIPE_THRESH)
+  console.log(
+    '🚀 ~ constswipeColumn:SwipeColumn=useThrottledEvent ~ reflectPrompts',
+    reflectPrompts
+  )
 
   return (
     <PortalProvider>
@@ -86,6 +90,8 @@ const GroupingKanban = (props: Props) => {
               columnsRef={columnsRef}
               isAnyEditing={isAnyEditing}
               isDesktop={isDesktop}
+              isFirstColumn={prompt.sortOrder === 0}
+              isLastColumn={prompt.sortOrder === reflectPrompts.length - 1}
               key={prompt.id}
               meeting={meeting}
               phaseRef={phaseRef}
@@ -110,6 +116,7 @@ export default createFragmentContainer(GroupingKanban, {
           reflectPrompts {
             ...GroupingKanbanColumn_prompt
             id
+            sortOrder
           }
         }
       }

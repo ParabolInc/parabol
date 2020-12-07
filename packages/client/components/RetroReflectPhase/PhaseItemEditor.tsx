@@ -7,7 +7,7 @@ import usePortal from '../../hooks/usePortal'
 import CreateReflectionMutation from '../../mutations/CreateReflectionMutation'
 import EditReflectionMutation from '../../mutations/EditReflectionMutation'
 import {Elevation} from '../../styles/elevation'
-import {BezierCurve, ZIndex} from '../../types/constEnums'
+import {BezierCurve, ElementWidth, ZIndex} from '../../types/constEnums'
 import convertToTaskContent from '../../utils/draftjs/convertToTaskContent'
 import ReflectionCardRoot from '../ReflectionCard/ReflectionCardRoot'
 import ReflectionEditorWrapper from '../ReflectionEditorWrapper'
@@ -15,20 +15,24 @@ import getBBox from './getBBox'
 import {ReflectColumnCardInFlight} from './PhaseItemColumn'
 
 const FLIGHT_TIME = 500
-const CardInFlightStyles = styled(ReflectionCardRoot)<{transform: string; isStart: boolean}>(
-  ({isStart, transform}) => ({
-    boxShadow: isStart ? Elevation.Z8 : Elevation.Z0,
-    position: 'absolute',
-    top: 0,
-    transform,
-    transition: `all ${FLIGHT_TIME}ms ${BezierCurve.DECELERATE}`,
-    zIndex: ZIndex.REFLECTION_IN_FLIGHT
-  })
-)
+const CardInFlightStyles = styled(ReflectionCardRoot)<{
+  transform: string
+  isStart: boolean
+  isWidthExpanded: boolean
+}>(({isStart, isWidthExpanded, transform}) => ({
+  boxShadow: isStart ? Elevation.Z8 : Elevation.Z0,
+  position: 'absolute',
+  top: 0,
+  transform,
+  transition: `all ${FLIGHT_TIME}ms ${BezierCurve.DECELERATE}`,
+  width: isWidthExpanded ? ElementWidth.REFLECTION_CARD * 2 : ElementWidth.REFLECTION_CARD,
+  zIndex: ZIndex.REFLECTION_IN_FLIGHT
+}))
 
 interface Props {
   cardsInFlightRef: MutableRefObject<ReflectColumnCardInFlight[]>
   setCardsInFlight: (cards: ReflectColumnCardInFlight[]) => void
+  isWidthExpanded?: boolean
   meetingId: string
   nextSortOrder: () => number
   phaseEditorRef: React.RefObject<HTMLDivElement>
@@ -46,6 +50,7 @@ const PhaseItemEditor = (props: Props) => {
     stackTopRef,
     cardsInFlightRef,
     setCardsInFlight,
+    isWidthExpanded,
     dataCy
   } = props
   const atmosphere = useAtmosphere()
@@ -163,7 +168,7 @@ const PhaseItemEditor = (props: Props) => {
 
   return (
     <>
-      <ReflectionCardRoot data-cy={dataCy} ref={phaseEditorRef}>
+      <ReflectionCardRoot data-cy={dataCy} ref={phaseEditorRef} isWidthExpanded={!!isWidthExpanded}>
         <ReflectionEditorWrapper
           dataCy={`${dataCy}-wrapper`}
           isPhaseItemEditor
@@ -187,6 +192,7 @@ const PhaseItemEditor = (props: Props) => {
                 key={card.key}
                 transform={card.transform}
                 isStart={card.isStart}
+                isWidthExpanded={!!isWidthExpanded}
                 onTransitionEnd={removeCardInFlight(card.key)}
               >
                 <ReflectionEditorWrapper editorState={card.editorState} readOnly />

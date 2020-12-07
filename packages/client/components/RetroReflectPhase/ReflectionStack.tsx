@@ -39,7 +39,6 @@ const CardStack = styled('div')({
 
 const CenteredCardStack = styled('div')({
   position: 'relative'
-  // width: '100%',
 })
 
 const ReflectionWrapper = styled('div')<{idx: number}>(({idx}): any => {

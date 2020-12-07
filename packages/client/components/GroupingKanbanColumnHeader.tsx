@@ -52,7 +52,7 @@ const ExpandButton = styled(FlatButton)({
   marginLeft: 4,
   padding: 0,
   width: 24,
-  ':focus, :active': {
+  ':click, :focus, :active': {
     backgroundColor: 'inherit'
   }
 })

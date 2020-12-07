@@ -4,8 +4,9 @@ import {Breakpoint} from '~/types/constEnums'
 import useAtmosphere from './useAtmosphere'
 import useBreakpoint from './useBreakpoint'
 
-const useExpandColumnsWidth = (reflectPromptsCount: number, reflectPrompts) => {
+const useExpandColumnsWidth = (reflectPrompts) => {
   const atmosphere = useAtmosphere()
+  const reflectPromptsCount = reflectPrompts.length
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const isWiderScreen = useBreakpoint(Breakpoint.WIDER_SCREEN)
   useLayoutEffect(() => {

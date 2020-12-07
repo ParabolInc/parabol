@@ -18,24 +18,27 @@ import {SwipeColumn} from './GroupingKanban'
 import ReflectionGroup from './ReflectionGroup/ReflectionGroup'
 import GroupingKanbanColumnHeader from './GroupingKanbanColumnHeader'
 
-const Column = styled('div')<{isLengthExpanded: boolean; isWidthExpanded: boolean}>(
-  ({isLengthExpanded, isWidthExpanded}) => ({
-    alignItems: 'center',
-    background: PALETTE.BACKGROUND_REFLECTION,
-    borderRadius: 8,
-    display: 'flex',
-    flex: 1,
-    flexDirection: 'column',
-    height: '100%',
-    position: 'relative',
-    transition: `all 100ms ${BezierCurve.DECELERATE}`,
-    [makeMinWidthMediaQuery(Breakpoint.SINGLE_REFLECTION_COLUMN)]: {
-      height: isLengthExpanded ? '100%' : `calc(100% - ${MeetingControlBarEnum.HEIGHT}px)`,
-      margin: '0 8px',
-      minWidth: isWidthExpanded ? 320 * 2 : 320
-    }
-  })
-)
+const Column = styled('div')<{
+  isLengthExpanded: boolean
+  isWidthExpanded: boolean
+  marginLeft: boolean
+  marginRight: boolean
+}>(({isLengthExpanded, isWidthExpanded, marginLeft, marginRight}) => ({
+  alignItems: 'center',
+  background: PALETTE.BACKGROUND_REFLECTION,
+  borderRadius: 8,
+  display: 'flex',
+  flex: 1,
+  flexDirection: 'column',
+  height: '100%',
+  position: 'relative',
+  transition: `all 100ms ${BezierCurve.DECELERATE}`,
+  [makeMinWidthMediaQuery(Breakpoint.SINGLE_REFLECTION_COLUMN)]: {
+    height: isLengthExpanded ? '100%' : `calc(100% - ${MeetingControlBarEnum.HEIGHT}px)`,
+    margin: `0 ${marginRight ? 16 : 8}px 0px ${marginLeft ? 16 : 8}px`,
+    minWidth: isWidthExpanded ? 320 * 2 : 320
+  }
+}))
 
 const ColumnBody = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   flex: 1,
@@ -51,6 +54,8 @@ interface Props {
   columnsRef: RefObject<HTMLDivElement>
   isAnyEditing: boolean
   isDesktop: boolean
+  isFirstColumn: boolean
+  isLastColumn: boolean
   meeting: GroupingKanbanColumn_meeting
   phaseRef: RefObject<HTMLDivElement>
   prompt: GroupingKanbanColumn_prompt
@@ -63,6 +68,8 @@ const GroupingKanbanColumn = (props: Props) => {
     columnsRef,
     isAnyEditing,
     isDesktop,
+    isFirstColumn,
+    isLastColumn,
     meeting,
     reflectionGroups,
     phaseRef,
@@ -74,6 +81,7 @@ const GroupingKanbanColumn = (props: Props) => {
   const {isComplete, phaseType} = localStage
   const {submitting, onError, submitMutation, onCompleted} = useMutationProps()
   const atmosphere = useAtmosphere()
+
   const onClick = () => {
     if (submitting || isAnyEditing) return
     const input = {
@@ -102,6 +110,8 @@ const GroupingKanbanColumn = (props: Props) => {
     <Column
       isLengthExpanded={isLengthExpanded}
       isWidthExpanded={!!isWidthExpanded}
+      marginLeft={isFirstColumn}
+      marginRight={isLastColumn}
       data-cy={`group-column-${question}`}
       ref={ref}
     >
