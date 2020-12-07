@@ -60,6 +60,8 @@ const RetroReflectPhase = (props: Props) => {
                 meeting={meeting}
                 prompt={prompt}
                 idx={idx}
+                isFirstColumn={prompt.sortOrder === 0}
+                isLastColumn={prompt.sortOrder === reflectPrompts.length - 1}
                 phaseRef={phaseRef}
                 isDesktop={isDesktop}
               />
@@ -77,6 +79,7 @@ graphql`
     reflectPrompts {
       ...PhaseItemColumn_prompt
       id
+      sortOrder
     }
   }
 `

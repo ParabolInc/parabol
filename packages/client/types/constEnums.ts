@@ -81,6 +81,7 @@ export const enum Duration {
 export const enum ElementWidth {
   END_MEETING_BUTTON = 90,
   REFLECTION_CARD = 296,
+  REFLECTION_CARD_EXPANDED = 592,
   REFLECTION_CARD_PADDED = 296,
   REFLECTION_CARD_PADDING = 6
 }
@@ -178,7 +179,7 @@ export const enum PokerCards {
   // number of pixels from the middle of the circle below the fold to the middle of the card (0-2x innerHeight)
   RADIUS = 1200,
   // the % of the first & last card that sits below the fold (0-1)
-  MAX_HIDDEN = .35,
+  MAX_HIDDEN = 0.35,
   PASS_CARD = 'X',
   QUESTION_CARD = '?',
   DELETED_CARD = '#',
@@ -369,5 +370,4 @@ export const enum SprintPokerDefaults {
   JIRA_FIELD_COMMENT_LABEL = 'As Comment',
   JIRA_FIELD_NULL = '',
   JIRA_FIELD_NULL_LABEL = 'Do Not Update'
-
 }

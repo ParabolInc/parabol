@@ -13,7 +13,6 @@ import useAtmosphere from '../../hooks/useAtmosphere'
 import {DeepNonNullable} from '../../types/generics'
 import {getMinTop} from '../../utils/retroGroup/updateClonePosition'
 import useEditorState from '../../hooks/useEditorState'
-
 const RemoteReflectionModal = styled('div')<{isDropping?: boolean | null}>(({isDropping}) => ({
   position: 'absolute',
   left: 0,
@@ -26,14 +25,14 @@ const RemoteReflectionModal = styled('div')<{isDropping?: boolean | null}>(({isD
   zIndex: ZIndex.REFLECTION_IN_FLIGHT
 }))
 
-const HeaderModal = styled('div')({
+const HeaderModal = styled('div')<{isWidthExpanded: boolean}>(({isWidthExpanded}) => ({
   position: 'absolute',
   left: 0,
   top: 0,
   pointerEvents: 'none',
-  width: ElementWidth.REFLECTION_CARD,
+  width: isWidthExpanded ? ElementWidth.REFLECTION_CARD_EXPANDED : ElementWidth.REFLECTION_CARD,
   zIndex: ZIndex.REFLECTION_IN_FLIGHT
-})
+}))
 
 interface Props {
   style: React.CSSProperties
@@ -113,7 +112,8 @@ const getInlineStyle = (
 
 const RemoteReflection = (props: Props) => {
   const {reflection, style} = props
-  const {id: reflectionId, content, isDropping} = reflection
+  const {id: reflectionId, content, isDropping, prompt} = reflection
+  const {isWidthExpanded} = prompt
   const remoteDrag = reflection.remoteDrag as DeepNonNullable<
     NonNullable<RemoteReflection_reflection['remoteDrag']>
   >
@@ -139,13 +139,13 @@ const RemoteReflection = (props: Props) => {
   return (
     <>
       <RemoteReflectionModal ref={ref} style={nextStyle} isDropping={isDropping}>
-        <ReflectionCardRoot>
+        <ReflectionCardRoot isWidthExpanded={!!isWidthExpanded}>
           {!headerTransform && <UserDraggingHeader userId={dragUserId} name={dragUserName} />}
           <ReflectionEditorWrapper editorState={editorState} readOnly />
         </ReflectionCardRoot>
       </RemoteReflectionModal>
       {headerTransform && (
-        <HeaderModal>
+        <HeaderModal isWidthExpanded={!!isWidthExpanded}>
           <UserDraggingHeader
             userId={dragUserId}
             name={dragUserName}
@@ -164,6 +164,9 @@ export default createFragmentContainer(RemoteReflection, {
       id
       content
       isDropping
+      prompt {
+        isWidthExpanded
+      }
       remoteDrag {
         dragUserId
         dragUserName

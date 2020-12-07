@@ -12,7 +12,7 @@ const ReflectionCardRoot = styled('div')<{isWidthExpanded?: boolean}>(
     maxWidth: '100%',
     position: 'relative',
     transition: `all 100ms ${BezierCurve.DECELERATE}`,
-    width: isWidthExpanded ? ElementWidth.REFLECTION_CARD * 2 : ElementWidth.REFLECTION_CARD
+    width: isWidthExpanded ? ElementWidth.REFLECTION_CARD_EXPANDED : ElementWidth.REFLECTION_CARD
   })
 )
 

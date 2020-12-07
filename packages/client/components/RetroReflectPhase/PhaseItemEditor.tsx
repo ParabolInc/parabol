@@ -25,7 +25,7 @@ const CardInFlightStyles = styled(ReflectionCardRoot)<{
   top: 0,
   transform,
   transition: `all ${FLIGHT_TIME}ms ${BezierCurve.DECELERATE}`,
-  width: isWidthExpanded ? ElementWidth.REFLECTION_CARD * 2 : ElementWidth.REFLECTION_CARD,
+  width: isWidthExpanded ? ElementWidth.REFLECTION_CARD_EXPANDED : ElementWidth.REFLECTION_CARD,
   zIndex: ZIndex.REFLECTION_IN_FLIGHT
 }))
 

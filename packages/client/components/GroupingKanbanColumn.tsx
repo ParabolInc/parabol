@@ -21,9 +21,9 @@ import GroupingKanbanColumnHeader from './GroupingKanbanColumnHeader'
 const Column = styled('div')<{
   isLengthExpanded: boolean
   isWidthExpanded: boolean
-  marginLeft: boolean
-  marginRight: boolean
-}>(({isLengthExpanded, isWidthExpanded, marginLeft, marginRight}) => ({
+  isFirstColumn: boolean
+  isLastColumn: boolean
+}>(({isLengthExpanded, isWidthExpanded, isFirstColumn, isLastColumn}) => ({
   alignItems: 'center',
   background: PALETTE.BACKGROUND_REFLECTION,
   borderRadius: 8,
@@ -35,7 +35,7 @@ const Column = styled('div')<{
   transition: `all 100ms ${BezierCurve.DECELERATE}`,
   [makeMinWidthMediaQuery(Breakpoint.SINGLE_REFLECTION_COLUMN)]: {
     height: isLengthExpanded ? '100%' : `calc(100% - ${MeetingControlBarEnum.HEIGHT}px)`,
-    margin: `0 ${marginRight ? 16 : 8}px 0px ${marginLeft ? 16 : 8}px`,
+    margin: `0 ${isLastColumn ? 16 : 8}px 0px ${isFirstColumn ? 16 : 8}px`,
     minWidth: isWidthExpanded ? 320 * 2 : 320
   }
 }))
@@ -110,8 +110,8 @@ const GroupingKanbanColumn = (props: Props) => {
     <Column
       isLengthExpanded={isLengthExpanded}
       isWidthExpanded={!!isWidthExpanded}
-      marginLeft={isFirstColumn}
-      marginRight={isLastColumn}
+      isFirstColumn={isFirstColumn}
+      isLastColumn={isLastColumn}
       data-cy={`group-column-${question}`}
       ref={ref}
     >

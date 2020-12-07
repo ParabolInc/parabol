@@ -28,7 +28,6 @@ const ColumnsBlock = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   justifyContent: 'center',
   margin: '0 auto',
   overflow: 'auto',
-  border: '2px solid red',
   padding: isDesktop ? '0 0 16px' : undefined,
   width: '100%'
 }))
@@ -71,10 +70,6 @@ const GroupingKanban = (props: Props) => {
     const nextIdx = Math.min(reflectPrompts.length - 1, Math.max(0, activeIdx + offset))
     setActiveIdx(nextIdx)
   }, Times.REFLECTION_COLUMN_SWIPE_THRESH)
-  console.log(
-    '🚀 ~ constswipeColumn:SwipeColumn=useThrottledEvent ~ reflectPrompts',
-    reflectPrompts
-  )
 
   return (
     <PortalProvider>

@@ -35,7 +35,7 @@ const GroupHeader = styled('div')<{
   fontSize: 14,
   justifyContent: 'space-between',
   margin: isExpanded ? `0 ${Gutters.COLUMN_INNER_GUTTER}` : undefined,
-  maxWidth: isWidthExpanded ? ElementWidth.REFLECTION_CARD * 2 : ElementWidth.REFLECTION_CARD,
+  maxWidth: isWidthExpanded ? ElementWidth.REFLECTION_CARD_EXPANDED : ElementWidth.REFLECTION_CARD,
   minHeight: 32,
   opacity: !isExpanded && portalStatus !== PortalStatus.Exited ? 0 : undefined,
   paddingLeft: Gutters.REFLECTION_INNER_GUTTER_HORIZONTAL,
