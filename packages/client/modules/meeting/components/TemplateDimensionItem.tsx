@@ -96,13 +96,11 @@ const TemplateDimensionItem = (props: Props) => {
       isDragging={isDragging}
       isHover={isHover}
       isOwner={isOwner}
-      onMouseEnter={onMouseEnter}
-      onMouseLeave={onMouseLeave}
     >
-      <RemoveDimensionIcon isHover={isHover} onClick={removeDimension} enabled={canRemove}>
+      <RemoveDimensionIcon isHover={isHover} onClick={removeDimension} enabled={canRemove} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
         cancel
       </RemoveDimensionIcon>
-      <DimensionAndDescription>
+      <DimensionAndDescription onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
         <EditableTemplateDimension
           isOwner={isOwner}
           isEditingDescription={isEditingDescription}
