@@ -127,6 +127,9 @@ export default createFragmentContainer(DraggableReflectionCard, {
       isViewerDragging
       isViewerCreator
       isDropping
+      prompt {
+        isWidthExpanded
+      }
       remoteDrag {
         dragUserId
         dragUserName

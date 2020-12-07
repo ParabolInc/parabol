@@ -75,12 +75,17 @@ const getCoords = (
   }
 }
 
-const getHeaderTransform = (ref: RefObject<HTMLDivElement>, topPadding = 18) => {
+const getHeaderTransform = (ref: RefObject<HTMLDivElement>, topPadding = 18, isWidthExpanded) => {
   if (!ref.current) return {}
   const bbox = ref.current.getBoundingClientRect()
-  const minLeft = -ElementWidth.REFLECTION_CARD + OFFSCREEN_PADDING * 8
+  const minLeft =
+    -(isWidthExpanded ? ElementWidth.REFLECTION_CARD_EXPANDED : ElementWidth.REFLECTION_CARD) +
+    OFFSCREEN_PADDING * 8
   const minTop = OFFSCREEN_PADDING + topPadding
-  const maxLeft = windowDims.innerWidth - ElementWidth.REFLECTION_CARD - OFFSCREEN_PADDING
+  const maxLeft =
+    windowDims.innerWidth -
+    (isWidthExpanded ? ElementWidth.REFLECTION_CARD_EXPANDED : ElementWidth.REFLECTION_CARD) -
+    OFFSCREEN_PADDING
   const maxTop = windowDims.innerHeight - OFFSCREEN_PADDING
   const headerLeft = Math.max(minLeft, Math.min(maxLeft, bbox.left))
   const headerTop = Math.max(minTop, Math.min(maxTop, bbox.top))
@@ -135,7 +140,7 @@ const RemoteReflection = (props: Props) => {
   if (!remoteDrag) return null
   const {dragUserId, dragUserName} = remoteDrag
   const {nextStyle, minTop} = getInlineStyle(remoteDrag!, isDropping, style)
-  const {headerTransform, arrow} = getHeaderTransform(ref, minTop)
+  const {headerTransform, arrow} = getHeaderTransform(ref, minTop, isWidthExpanded)
   return (
     <>
       <RemoteReflectionModal ref={ref} style={nextStyle} isDropping={isDropping}>

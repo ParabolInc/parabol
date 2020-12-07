@@ -163,8 +163,12 @@ const EndDraggingReflectionMutation = (
       const reflection = payload.getLinkedRecord('reflection')
       if (!reflection) return
       reflection.setValue(false, 'isViewerDragging')
-      if (!reflection) return
-      const reflectionGroup = payload.getLinkedRecord('reflectionGroup')!
+      const reflectionGroup = payload.getLinkedRecord('reflectionGroup')
+      if (!reflectionGroup) return
+      const prompt = reflectionGroup.getLinkedRecord('prompt')
+      if (prompt) {
+        reflection.setLinkedRecord(prompt, 'prompt')
+      }
       const oldReflectionGroupId = getInProxy(payload, 'oldReflectionGroup', 'id')
       moveReflectionLocation(reflection, reflectionGroup, oldReflectionGroupId, store)
     },
@@ -173,7 +177,6 @@ const EndDraggingReflectionMutation = (
       const {reflectionId, dropTargetId: reflectionGroupId, dropTargetType} = variables
       const reflection = store.get(reflectionId)
       if (!reflection) return
-
       if (!dropTargetType) {
         reflection.setValue(false, 'isViewerDragging')
         return
@@ -198,6 +201,7 @@ const EndDraggingReflectionMutation = (
         updateProxyRecord(reflection, {sortOrder: 0, reflectionGroupId: newReflectionGroupId})
       } else {
         reflectionGroupProxy = store.get(reflectionGroupId)
+        const prompt = reflectionGroupProxy.getLinkedRecord('prompt')
         const reflections = reflectionGroupProxy.getLinkedRecords('reflections')
         const maxSortOrder = Math.max(
           ...reflections.map((reflection) => (reflection ? reflection.getValue('sortOrder') : -1))
@@ -208,6 +212,7 @@ const EndDraggingReflectionMutation = (
           reflectionGroupId
         })
         reflection.setLinkedRecord(reflectionGroupProxy, 'retroReflectionGroup')
+        reflection.setLinkedRecord(prompt, 'prompt')
       }
       moveReflectionLocation(reflection, reflectionGroupProxy, oldReflectionGroupId, store)
     }
