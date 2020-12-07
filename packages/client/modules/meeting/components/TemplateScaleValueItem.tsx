@@ -71,7 +71,7 @@ const TemplateScaleValueItem = (props: Props) => {
   const {submitting, submitMutation, onError, onCompleted} = useMutationProps()
   const atmosphere = useAtmosphere()
   const canRemove = !scaleValue.isSpecial
-  const onMouseEnter = () => {
+  const onMouseOver = () => {
     setIsHover(true)
   }
   const onMouseLeave = () => {
@@ -95,7 +95,7 @@ const TemplateScaleValueItem = (props: Props) => {
       isDragging={isDragging}
       isHover={isHover}
       isOwner={isOwner}
-      onMouseEnter={onMouseEnter}
+      onMouseOver={onMouseOver}
       onMouseLeave={onMouseLeave}
     >
       <EditableTemplateScaleValueColor isOwner={isOwner} scaleValue={scaleValue} scale={scale} />
