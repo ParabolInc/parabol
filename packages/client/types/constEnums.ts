@@ -181,7 +181,8 @@ export const enum PokerCards {
   PASS_CARD = 'X',
   QUESTION_CARD = '?',
   DELETED_CARD = '#',
-  AVATAR_WIDTH = 40
+  // 40 image footprint + 3px border * 2 = 46
+  AVATAR_WIDTH = 46
 }
 export const enum UserTaskViewFilterLabels {
   ALL_TEAMS = 'All Teams',

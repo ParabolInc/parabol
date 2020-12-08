@@ -14,14 +14,14 @@ const NoVotesHeaderLabel = styled('div')({
   fontSize: 14,
   fontWeight: 600,
   lineHeight: '24px',
-  paddingLeft: 2 // same as avatar border
+  paddingLeft: 3 // same as avatar border
 })
 
 const Wrapper = styled('div')({
   alignItems: 'center',
   display: 'flex',
   position: 'relative',
-  marginLeft: 14, // plus 2 background border of avatar = 16
+  marginLeft: 13, // plus 3 background border of avatar = 16
   width: '100%',
   height: '100%'
 })
