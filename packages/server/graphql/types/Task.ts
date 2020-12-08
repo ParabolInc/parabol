@@ -108,7 +108,8 @@ const Task = new GraphQLObjectType<any, GQLContext>({
       description: 'The first block of the content',
       resolve: ({plaintextContent}) => {
         const firstBreak = plaintextContent.indexOf('\n')
-        return plaintextContent.slice(0, firstBreak)
+        const endIndex = firstBreak > -1 ? firstBreak : plaintextContent.length
+        return plaintextContent.slice(0, endIndex)
       }
     },
     userId: {

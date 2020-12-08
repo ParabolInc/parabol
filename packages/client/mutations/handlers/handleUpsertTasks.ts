@@ -9,6 +9,7 @@ import pluralizeHandler from './pluralizeHandler'
 import safePutNodeInConn from './safePutNodeInConn'
 import isTaskPrivate from '~/utils/isTaskPrivate'
 import {parseUserTaskFilterQueryParams} from '~/utils/useUserTaskFilters'
+import getScopingTasksConn from '../connections/getScopingTasksConn'
 
 type Task = RecordProxy<{
   readonly id: string
@@ -24,7 +25,7 @@ type Task = RecordProxy<{
 
 const handleUpsertTask = (task: Task | null, store: RecordSourceSelectorProxy<any>) => {
   if (!task) return
-  // we currently have 3 connections, user, team, and team archive
+  // we currently have 4 connections: user, team, team archive, scoping
   const viewer = store.getRoot().getLinkedRecord('viewer')
   if (!viewer) return
   const viewerId = viewer.getDataID()
@@ -68,6 +69,11 @@ const handleUpsertTask = (task: Task | null, store: RecordSourceSelectorProxy<an
       }
     }
   }
+  /* updates parabol search query if task is created from a sprint poker meeting
+   * should also implement updating parabol search query if task is created elsewhere?
+   */
+  const scopingTasksConn = getScopingTasksConn(store, meetingId, viewer, [teamId])
+  safePutNodeInConn(scopingTasksConn, task, store, 'updatedAt', false)
 }
 
 const handleUpsertTasks = pluralizeHandler(handleUpsertTask)
