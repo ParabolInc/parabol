@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import styled from '@emotion/styled'
-import React, {useMemo, useRef} from 'react'
+import React, {useRef} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {ParabolScopingSearchResultItem_task} from '../__generated__/ParabolScopingSearchResultItem_task.graphql'
 import Checkbox from './Checkbox'
@@ -9,17 +9,16 @@ import UpdatePokerScopeMutation from '~/mutations/UpdatePokerScopeMutation'
 import {AreaEnum, TaskServiceEnum} from '~/types/graphql'
 import {AddOrDeleteEnum} from '~/types/graphql'
 import useMutationProps from '~/hooks/useMutationProps'
-import {convertFromRaw, EditorState, ContentState, convertToRaw} from 'draft-js'
-import editorDecorators from './TaskEditor/decorators'
+import {convertToRaw} from 'draft-js'
 import {PALETTE} from '~/styles/paletteV2'
 import TaskEditor from './TaskEditor/TaskEditor'
-import useRefState from '~/hooks/useRefState'
 import useTaskChildFocus from '~/hooks/useTaskChildFocus'
 import isAndroid from '~/utils/draftjs/isAndroid'
 import convertToTaskContent from '~/utils/draftjs/convertToTaskContent'
 import DeleteTaskMutation from '~/mutations/DeleteTaskMutation'
 import UpdateTaskMutation from '~/mutations/UpdateTaskMutation'
 import useScrollIntoView from '~/hooks/useScrollIntoVIew'
+import useEditorState from '~/hooks/useEditorState'
 
 const Item = styled('div')<{isEditingThisItem: boolean}>(({isEditingThisItem}) => ({
   backgroundColor: isEditingThisItem ? PALETTE.BACKGROUND_BLUE_MAGENTA : 'transparent',
@@ -56,13 +55,8 @@ const ParabolScopingSearchResultItem = (props: Props) => {
   const {id: taskId, content, plaintextContent} = task
   const atmosphere = useAtmosphere()
   const {onCompleted, onError, submitMutation, submitting} = useMutationProps()
-  const contentState = useMemo(() => convertFromRaw(JSON.parse(content)), [content])
-  const [editorStateRef, setEditorStateRef] = useRefState<EditorState>(() => {
-    return EditorState.createWithContent(
-      ContentState.createFromBlockArray([contentState.getFirstBlock()]),
-      editorDecorators(() => editorStateRef.current)
-    )
-  })
+  // const contentState = useMemo(() => convertFromRaw(JSON.parse(content)), [content])
+  const [editorState, setEditorState] = useEditorState(content)
   const editorRef = useRef<HTMLTextAreaElement>(null)
   const {useTaskChild, addTaskChild, removeTaskChild, isTaskFocused} = useTaskChildFocus(taskId)
   const isEditingThisItem = !plaintextContent
@@ -93,7 +87,7 @@ const ParabolScopingSearchResultItem = (props: Props) => {
       if (!value && !isFocused) {
         DeleteTaskMutation(atmosphere, taskId, teamId)
       } else {
-        const initialContentState = editorStateRef.current.getCurrentContent()
+        const initialContentState = editorState.getCurrentContent()
         const initialText = initialContentState.getPlainText()
         if (initialText === value) return
         const updatedTask = {
@@ -104,17 +98,16 @@ const ParabolScopingSearchResultItem = (props: Props) => {
       }
       return
     }
-    const nextContentState = editorStateRef.current.getCurrentContent()
+    const nextContentState = editorState.getCurrentContent()
     const hasText = nextContentState.hasText()
     if (!hasText && !isFocused) {
       DeleteTaskMutation(atmosphere, taskId, teamId)
     } else {
-      const content = JSON.stringify(convertToRaw(nextContentState))
-      const initialContent = JSON.stringify(convertToRaw(contentState))
-      if (content === initialContent) return
+      const nextContent = JSON.stringify(convertToRaw(nextContentState))
+      if (nextContent === content) return
       const updatedTask = {
         id: taskId,
-        content
+        content: nextContent
       }
       UpdateTaskMutation(atmosphere, {updatedTask, area}, {onCompleted: updatePokerScope})
     }
@@ -149,8 +142,8 @@ const ParabolScopingSearchResultItem = (props: Props) => {
           dataCy={`task`}
           editorRef={editorRef}
           readOnly={!isEditingThisItem}
-          editorState={editorStateRef.current}
-          setEditorState={setEditorStateRef}
+          editorState={editorState}
+          setEditorState={setEditorState}
           teamId={teamId}
           useTaskChild={useTaskChild}
         />
