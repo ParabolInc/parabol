@@ -81,7 +81,7 @@ const TaskColumns = (props: Props) => {
     if (!isSameColumn) {
       ; (updatedTask as any).status = destination.droppableId
     }
-    UpdateTaskMutation(atmosphere, {updatedTask, area})
+    UpdateTaskMutation(atmosphere, {updatedTask, area}, {})
   })
   return (
     <DragDropContext onDragEnd={onDragEnd}>

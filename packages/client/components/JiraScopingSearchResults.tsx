@@ -13,7 +13,7 @@ import JiraScopingSearchResultItem from './JiraScopingSearchResultItem'
 import JiraScopingSelectAllIssues from './JiraScopingSelectAllIssues'
 import NewJiraIssueInput from './NewJiraIssueInput'
 import MockScopingList from '~/modules/meeting/components/MockScopingList'
-import NewJiraIssueButton from './NewJiraIssueButton'
+import NewIntegrationRecordButton from './NewIntegrationRecordButton'
 
 const ResultScroller = styled('div')({
   overflow: 'auto'
@@ -54,13 +54,15 @@ const JiraScopingSearchResults = (props: Props) => {
       )
     } */
 
+  const handleAddIssueClick = () => setIsEditing(true)
+
   if (edges.length === 0 && !isEditing) {
     // only show the mock on the initial load or if the last query returned no results and
     // the user isn't adding a new jira issue
     return viewer ? (
       <>
         <IntegrationScopingNoResults error={error?.message} msg={'No issues match that query'} />
-        <NewJiraIssueButton setIsEditing={setIsEditing} />
+        <NewIntegrationRecordButton onClick={handleAddIssueClick} labelText={'New Issue'} />
       </>
     ) : (
         <MockScopingList />
@@ -110,7 +112,11 @@ const JiraScopingSearchResults = (props: Props) => {
           )
         })}
       </ResultScroller>
-      {!isEditing && <NewJiraIssueButton setIsEditing={setIsEditing} />}
+      {!isEditing && 
+      <NewIntegrationRecordButton
+        onClick={handleAddIssueClick}
+        labelText={'New Issue'}
+      />}
     </>
   )
 }

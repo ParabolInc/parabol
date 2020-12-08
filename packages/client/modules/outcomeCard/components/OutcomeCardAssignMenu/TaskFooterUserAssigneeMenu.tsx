@@ -37,7 +37,7 @@ const TaskFooterUserAssigneeMenu = (props: Props) => {
   )
   const handleTaskUpdate = (newAssignee) => () => {
     const newUserId = newAssignee.userId === userId ? null : newAssignee.userId
-    UpdateTaskMutation(atmosphere, {updatedTask: {id: taskId, userId: newUserId}, area})
+    UpdateTaskMutation(atmosphere, {updatedTask: {id: taskId, userId: newUserId}, area}, {})
   }
 
   return (
