@@ -1,4 +1,4 @@
-import React, {useMemo, useRef, useState} from 'react'
+import React, {useRef, useState, useEffect} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import {PokerEstimateHeaderCardParabol_stage} from '../__generated__/PokerEstimateHeaderCardParabol_stage.graphql'
@@ -16,9 +16,9 @@ import {ICON_SIZE} from '../styles/typographyV2'
 import {ITask} from '../types/graphql'
 import useBreakpoint from '~/hooks/useBreakpoint'
 import {Breakpoint} from '~/types/constEnums'
-import {convertFromRaw, EditorState, ContentState, Editor} from 'draft-js'
-import useRefState from '~/hooks/useRefState'
-import editorDecorators from './TaskEditor/decorators'
+import {Editor} from 'draft-js'
+import useEditorState from '~/hooks/useEditorState'
+import {ZIndex} from '~/types/constEnums'
 
 const HeaderCardWrapper = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   display: 'flex',
@@ -32,33 +32,25 @@ const HeaderCard = styled('div')({
   padding: '12px 16px',
   maxWidth: 1504, // matches widest dimension column 1600 - padding etc.
   margin: '0 auto',
-  width: '100%'
-})
-
-const CardTitle = styled('h1')({
-  fontSize: 16,
-  lineHeight: '24px',
-  margin: 0
+  width: '100%',
+  position: 'relative'
 })
 
 const CardIcons = styled('div')({
-  display: 'flex'
-})
-
-const CardTitleWrapper = styled('div')({
   display: 'flex',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-  width: '100%'
+  position: 'absolute',
+  top: 12,
+  right: 16,
+  zIndex: ZIndex.FAB
 })
 
-const CardDescription = styled('div')<{isExpanded: boolean, maxHeight: number}>(({isExpanded, maxHeight}) => ({
+const EditorWrapper = styled('div')<{isExpanded: boolean, maxHeight: number}>(({isExpanded, maxHeight}) => ({
   color: PALETTE.TEXT_MAIN,
   fontWeight: 'normal',
   lineHeight: '20px',
   fontSize: 14,
   margin: 0,
-  maxHeight: isExpanded ? maxHeight : 30,
+  maxHeight: isExpanded ? maxHeight : 40,
   overflow: 'hidden',
   transition: 'all 300ms'
 }))
@@ -72,7 +64,8 @@ const StyledTaskIntegrationLink = styled(TaskIntegrationLink)({
   padding: '0 0',
   '&:hover,:focus': {
     textDecoration: 'none'
-  }
+  },
+  marginTop: 4
 })
 
 const StyledIcon = styled(Icon)({
@@ -94,7 +87,7 @@ interface Props {
 const PokerEstimateHeaderCardParabol = (props: Props) => {
   const {stage} = props
   const {story} = stage
-  const {content} = story as unknown as ITask
+  const {content, id: taskId} = story as unknown as ITask
   const integration = story!.integration
   const [isExpanded, setIsExpanded] = useState(false)
   const {onCompleted, onError, submitMutation, submitting} = useMutationProps()
@@ -105,65 +98,42 @@ const PokerEstimateHeaderCardParabol = (props: Props) => {
     submitting
   }
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
-  const contentState = useMemo(() => convertFromRaw(JSON.parse(content)), [content])
-  const [titleEditorStateRef] = useRefState<EditorState>(() => {
-    return EditorState.createWithContent(
-      ContentState.createFromBlockArray([contentState.getFirstBlock()]),
-      editorDecorators(() => titleEditorStateRef.current)
-    )
-  })
-  const [descriptionEditorStateRef] = useRefState<EditorState>(() => {
-    const secondBlock = contentState.getBlocksAsArray()[2]
-    const descriptionContentState = secondBlock ?
-      ContentState.createFromBlockArray([secondBlock]) :
-      ContentState.createFromText('')
-    return EditorState.createWithContent(
-      descriptionContentState,
-      editorDecorators(() => titleEditorStateRef.current)
-    )
-  })
+  const [editorState, setEditorState] = useEditorState(content)
+  console.log(setEditorState)
   const descriptionRef = useRef<HTMLDivElement>(null)
   const maxHeight = descriptionRef.current?.scrollHeight ?? 1000
+  useEffect(() => () => { setIsExpanded(false) }, [taskId])
   
   return (
     <>
       <HeaderCardWrapper isDesktop={isDesktop}>
         <HeaderCard>
-          <CardTitleWrapper>
-            <CardTitle>
-              <Editor
-                readOnly
-                editorState={titleEditorStateRef.current}
-                onChange={() => {}}
+          <CardIcons>
+            <IntegrationToggleWrapper>
+              {!integration && 
+              <TaskFooterIntegrateToggle
+                dataCy={`task-integration`}
+                mutationProps={mutationProps}
+                task={story}
+                useTaskChild={useTaskChild}
               />
-            </CardTitle>
-            <CardIcons>
-              <IntegrationToggleWrapper>
-                {!integration && 
-                <TaskFooterIntegrateToggle
-                  dataCy={`task-integration`}
-                  mutationProps={mutationProps}
-                  task={story}
-                  useTaskChild={useTaskChild}
-                />
-                }
-              </IntegrationToggleWrapper>
-              <CardButton>
-                <IconLabel icon='unfold_more' onClick={() => setIsExpanded(!isExpanded)} />
-              </CardButton>
-            </CardIcons>
-          </CardTitleWrapper>
-          <CardDescription
+              }
+            </IntegrationToggleWrapper>
+            <CardButton>
+              <IconLabel icon='unfold_more' onClick={() => setIsExpanded(!isExpanded)} />
+            </CardButton>
+          </CardIcons>
+          <EditorWrapper
             ref={descriptionRef}
-            maxHeight={maxHeight}
             isExpanded={isExpanded}
+            maxHeight={maxHeight}
           >
             <Editor
               readOnly
-              editorState={descriptionEditorStateRef.current}
+              editorState={editorState}
               onChange={() => {}}
             />
-          </CardDescription>
+          </EditorWrapper>
           <StyledTaskIntegrationLink
             dataCy={`task`}
             integration={integration || null}
@@ -184,6 +154,7 @@ export default createFragmentContainer(
     fragment PokerEstimateHeaderCardParabol_stage on EstimateStage {
       story {
         ...on Task {
+          id
           title
           integration {
             service
