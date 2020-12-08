@@ -58,6 +58,7 @@ const PokerCardDeck = (props: Props,) => {
   const {yOffset, initialRotation, rotationPerCard} = usePokerCardLocation(totalCards, tilt, maxHidden, radius)
   const {onError, onCompleted, submitMutation, submitting, error} = useMutationProps()
   const onMouseEnter = (cardId: string) => () => {
+    if (isCollapsed) return
     if (!hoveringCardIdRef.current) {
       PokerAnnounceDeckHoverMutation(atmosphere, {isHover: true, meetingId, stageId})
     }

@@ -7,7 +7,7 @@ import ParabolScopingSelectAllTasks from './ParabolScopingSelectAllTasks'
 import ParabolScopingSearchResultItem from './ParabolScopingSearchResultItem'
 import useLoadMoreOnScrollBottom from '~/hooks/useLoadMoreOnScrollBottom'
 import IntegrationScopingNoResults from './IntegrationScopingNoResults'
-import useRecordIdsWithStages from '~/hooks/useRecordIdsWithStages'
+import useGetUsedServiceTaskIds from '~/hooks/useGetUsedServiceTaskIds'
 import {NewMeetingPhaseTypeEnum} from '~/types/graphql'
 
 interface Props {
@@ -27,7 +27,7 @@ const ParabolScopingSearchResults = (props: Props) => {
   }, [incomingEdges])
   const {id: meetingId, phases} = meeting
   const estimatePhase = phases.find(({phaseType}) => phaseType === NewMeetingPhaseTypeEnum.ESTIMATE)
-  const usedParabolTaskIds = useRecordIdsWithStages(estimatePhase)
+  const usedServiceTaskIds = useGetUsedServiceTaskIds(estimatePhase)
 
   if (edges.length === 0)
     return viewer ? <IntegrationScopingNoResults msg={'No tasks match that query'} /> : null
@@ -35,7 +35,7 @@ const ParabolScopingSearchResults = (props: Props) => {
   return (
     <>
       <ParabolScopingSelectAllTasks
-        usedParabolTaskIds={usedParabolTaskIds}
+        usedServiceTaskIds={usedServiceTaskIds}
         tasks={edges}
         meetingId={meetingId}
       />
@@ -45,7 +45,7 @@ const ParabolScopingSearchResults = (props: Props) => {
             key={node.id}
             task={node}
             meetingId={meeting.id}
-            isSelected={usedParabolTaskIds.has(node.id)}
+            usedServiceTaskIds={usedServiceTaskIds}
           />
         )
       })}
@@ -62,7 +62,7 @@ export default createPaginationContainer(
         id
         phases {
           phaseType
-          ...useRecordIdsWithStages_phase
+          ...useGetUsedServiceTaskIds_phase
         }
       }
     `,

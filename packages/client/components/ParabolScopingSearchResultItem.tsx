@@ -9,6 +9,7 @@ import UpdatePokerScopeMutation from '~/mutations/UpdatePokerScopeMutation'
 import {TaskServiceEnum} from '~/types/graphql'
 import {AddOrDeleteEnum} from '~/types/graphql'
 import useMutationProps from '~/hooks/useMutationProps'
+import {Threshold} from '../types/constEnums'
 
 const Item = styled('div')({
   display: 'flex',
@@ -25,18 +26,20 @@ const Title = styled('div')({})
 
 interface Props {
   meetingId: string
-  isSelected: boolean
+  usedServiceTaskIds: Set<string>
   task: ParabolScopingSearchResultItem_task
 }
 
 const ParabolScopingSearchResultItem = (props: Props) => {
-  const {task, meetingId, isSelected} = props
+  const {task, meetingId, usedServiceTaskIds} = props
   const {id: serviceTaskId, plaintextContent} = task
+  const isSelected = usedServiceTaskIds.has(serviceTaskId)
+  const disabled = !isSelected && usedServiceTaskIds.size >= Threshold.MAX_POKER_STORIES
   const snippet = plaintextContent.split('\n')[0]
   const atmosphere = useAtmosphere()
   const {onCompleted, onError, submitMutation, submitting} = useMutationProps()
   const onClick = () => {
-    if (submitting) return
+    if (submitting || disabled) return
     submitMutation()
     const variables = {
       meetingId,
@@ -52,7 +55,7 @@ const ParabolScopingSearchResultItem = (props: Props) => {
   }
   return (
     <Item onClick={onClick}>
-      <Checkbox active={isSelected} />
+      <Checkbox active={isSelected} disabled={disabled} />
       <Issue>
         <Title>{snippet}</Title>
       </Issue>
