@@ -63,11 +63,12 @@ extend type RetroReflection {
   remoteDrag: RemoteReflectionDrag
   ignoreDragStarts: [ID!]
   isEditing: Boolean
+  isDraggingWidthExpanded: Boolean
 }
 
 extend type ReflectPrompt {
   editorIds: [ID!]
-  isWidthExpanded: Boolean
+  isWidthExpanded: Boolean!
 }
 
 extend interface NewMeetingStage {

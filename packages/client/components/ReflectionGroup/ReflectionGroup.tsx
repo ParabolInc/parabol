@@ -39,7 +39,8 @@ const ReflectionWrapper = styled('div')<{
   staticIdx: number
   isDropping: boolean | null
   groupCount: number
-}>(({staticIdx, isDropping, groupCount}): any => {
+  isWidthExpanded: boolean
+}>(({staticIdx, isDropping, groupCount, isWidthExpanded}): any => {
   const isHidden = staticIdx === -1 || isDropping
   const multiple = Math.min(staticIdx, 2)
   const scaleX =
@@ -53,8 +54,9 @@ const ReflectionWrapper = styled('div')<{
     outline: 0,
     opacity: isHidden ? 0 : undefined,
     transform: `translateY(${translateY}px) scaleX(${scaleX})`,
-    zIndex: 3 - multiple,
-    transition: isHidden ? undefined : `transform ${Times.REFLECTION_DROP_DURATION}ms`
+    transition: isHidden ? undefined : `transform ${Times.REFLECTION_DROP_DURATION}ms`,
+    width: isWidthExpanded ? ElementWidth.REFLECTION_CARD_EXPANDED : ElementWidth.REFLECTION_CARD,
+    zIndex: 3 - multiple
   }
 })
 
@@ -72,7 +74,8 @@ const ReflectionGroup = (props: Props) => {
   const {localPhase, localStage} = meeting
   const {phaseType} = localPhase
   const {isComplete} = localStage
-  const {reflections, id: reflectionGroupId, titleIsUserDefined} = reflectionGroup
+  const {reflections, id: reflectionGroupId, titleIsUserDefined, prompt} = reflectionGroup
+  const {isWidthExpanded} = prompt
   const titleInputRef = useRef(null)
   const expandedTitleInputRef = useRef(null)
   const headerRef = useRef<HTMLDivElement>(null)
@@ -187,6 +190,7 @@ const ReflectionGroup = (props: Props) => {
                 groupCount={reflections.length}
                 staticIdx={staticIdx}
                 isDropping={isDropping}
+                isWidthExpanded={!!isWidthExpanded}
               >
                 <DraggableReflectionCard
                   dataCy={`${dataCy}-card-${staticIdx}`}
@@ -228,6 +232,9 @@ export default createFragmentContainer(ReflectionGroup, {
       ...ReflectionGroupHeader_reflectionGroup
       promptId
       id
+      prompt {
+        isWidthExpanded
+      }
       sortOrder
       titleIsUserDefined
       title

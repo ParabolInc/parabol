@@ -249,7 +249,7 @@ const useDragAndDrop = (
       // clip quick drags so the cursor is guaranteed to be inside the card
       drag.cardOffsetX = Math.min(clientX - bbox.left, bbox.width)
       drag.cardOffsetY = Math.min(clientY - bbox.top, bbox.height)
-      drag.clone = cloneReflection(drag.ref, reflectionId)
+      drag.clone = cloneReflection(drag.ref, reflectionId, atmosphere)
       drag.id = shortid.generate()
       StartDraggingReflectionMutation(atmosphere, {reflectionId, dragId: drag.id})
     }
@@ -260,6 +260,10 @@ const useDragAndDrop = (
     }px)`
     const dropZoneEl = findDropZoneFromEvent(e)
     if (dropZoneEl !== drag.dropZoneEl) {
+      // commitLocalUpdate(atmosphere, (store) => {
+      //   const reflection = store.get(reflectionId)!
+      //   reflection.setValue(true, 'isDraggingWidthExpanded')
+      // })
       drag.dropZoneEl = dropZoneEl
       if (dropZoneEl) {
         drag.dropZoneBBox = dropZoneEl.getBoundingClientRect()
