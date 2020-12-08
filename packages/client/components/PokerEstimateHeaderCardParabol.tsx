@@ -7,7 +7,6 @@ import CardButton from './CardButton'
 import IconLabel from './IconLabel'
 import {PALETTE} from '~/styles/paletteV2'
 import {Elevation} from '~/styles/elevation'
-import useTaskChild from '~/hooks/useTaskChildFocus'
 import TaskFooterIntegrateToggle from '../modules/outcomeCard/components/OutcomeCardFooter/TaskFooterIntegrateToggle'
 import useMutationProps from '~/hooks/useMutationProps'
 import TaskIntegrationLink from '~/components/TaskIntegrationLink'
@@ -16,9 +15,10 @@ import {ICON_SIZE} from '../styles/typographyV2'
 import {ITask} from '../types/graphql'
 import useBreakpoint from '~/hooks/useBreakpoint'
 import {Breakpoint} from '~/types/constEnums'
-import {Editor} from 'draft-js'
 import useEditorState from '~/hooks/useEditorState'
 import {ZIndex} from '~/types/constEnums'
+import TaskEditor from './TaskEditor/TaskEditor'
+import useTaskChildFocus from '~/hooks/useTaskChildFocus'
 
 const HeaderCardWrapper = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   display: 'flex',
@@ -50,7 +50,7 @@ const EditorWrapper = styled('div')<{isExpanded: boolean, maxHeight: number}>(({
   lineHeight: '20px',
   fontSize: 14,
   margin: 0,
-  maxHeight: isExpanded ? maxHeight : 40,
+  maxHeight: isExpanded ? maxHeight : 38,
   overflow: 'hidden',
   transition: 'all 300ms'
 }))
@@ -80,6 +80,13 @@ const IntegrationToggleWrapper = styled('div')({
   width: '100%'
 })
 
+const StyledTaskEditor = styled(TaskEditor)({
+  width: '100%',
+  padding: '0 0',
+  lineHeight: 'normal',
+  height: 'auto'
+})
+
 interface Props {
   stage: PokerEstimateHeaderCardParabol_stage
 }
@@ -87,7 +94,7 @@ interface Props {
 const PokerEstimateHeaderCardParabol = (props: Props) => {
   const {stage} = props
   const {story} = stage
-  const {content, id: taskId} = story as unknown as ITask
+  const {content, id: taskId, teamId} = story as unknown as ITask
   const integration = story!.integration
   const [isExpanded, setIsExpanded] = useState(false)
   const {onCompleted, onError, submitMutation, submitting} = useMutationProps()
@@ -99,11 +106,12 @@ const PokerEstimateHeaderCardParabol = (props: Props) => {
   }
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const [editorState, setEditorState] = useEditorState(content)
-  console.log(setEditorState)
+  const editorRef = useRef<HTMLTextAreaElement>(null)
   const descriptionRef = useRef<HTMLDivElement>(null)
   const maxHeight = descriptionRef.current?.scrollHeight ?? 1000
   useEffect(() => () => { setIsExpanded(false) }, [taskId])
-  
+  const {useTaskChild} = useTaskChildFocus(taskId)
+
   return (
     <>
       <HeaderCardWrapper isDesktop={isDesktop}>
@@ -128,10 +136,14 @@ const PokerEstimateHeaderCardParabol = (props: Props) => {
             isExpanded={isExpanded}
             maxHeight={maxHeight}
           >
-            <Editor
-              readOnly
+            <StyledTaskEditor
+              dataCy={`task`}
+              editorRef={editorRef}
               editorState={editorState}
-              onChange={() => {}}
+              readOnly={true}
+              setEditorState={setEditorState}
+              teamId={teamId}
+              useTaskChild={useTaskChild}
             />
           </EditorWrapper>
           <StyledTaskIntegrationLink
@@ -162,6 +174,7 @@ export default createFragmentContainer(
           }
           plaintextContent
           content
+          teamId
           ...TaskFooterIntegrateMenuRoot_task
         }
       }
