@@ -1,5 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
+import extractTextFromDraftString from '~/utils/draftjs/extractTextFromDraftString'
 import Atmosphere from '../Atmosphere'
 import {
   OnNextHandler,
@@ -112,6 +113,8 @@ const CreateTaskMutation: StandardMutation<TCreateTaskMutation, OptionalHandlers
       const now = new Date().toJSON()
       const taskId = clientTempId(teamId)
       const viewer = store.getRoot().getLinkedRecord('viewer')
+      const plaintextContent = newTask.plaintextContent || (
+        newTask.content ? extractTextFromDraftString(newTask.content) : '')
       const optimisticTask = {
         ...newTask,
         id: taskId,
@@ -122,7 +125,7 @@ const CreateTaskMutation: StandardMutation<TCreateTaskMutation, OptionalHandlers
         updatedAt: now,
         tags: [],
         content: newTask.content || makeEmptyStr(),
-        plaintextContent: newTask.plaintextContent || makeEmptyStr()
+        plaintextContent
       }
       const task = createProxyRecord(store, 'Task', optimisticTask)
         .setLinkedRecord(store.get(teamId)!, 'team')
