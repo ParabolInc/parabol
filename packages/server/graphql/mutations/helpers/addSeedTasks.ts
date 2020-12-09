@@ -4,13 +4,15 @@ import convertToTaskContent from 'parabol-client/utils/draftjs/convertToTaskCont
 import getTagsFromEntityMap from 'parabol-client/utils/draftjs/getTagsFromEntityMap'
 import {TaskStatusEnum} from 'parabol-client/types/graphql'
 
+const CONTENT_STRING = `
+  This is a task card. They can be created here, in a meeting, or via an integration`
+
 const SEED_TASKS = [
   {
     status: TaskStatusEnum.active,
     sortOrder: 0,
-    content: convertToTaskContent(
-      `This is a task card. They can be created here, in a meeting, or via an integration`
-    )
+    content: convertToTaskContent(CONTENT_STRING),
+    plaintextContent: CONTENT_STRING
   }
 ]
 
