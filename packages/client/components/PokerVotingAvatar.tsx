@@ -16,7 +16,7 @@ const Wrapper = styled('div')<{idx: number, isColumn?: boolean}>(({idx, isColumn
 
 const StyledAvatar = styled(Avatar)<{status?: TransitionStatus, isInitialStageRender: boolean}>(({status, isInitialStageRender}) => ({
   opacity: isInitialStageRender ? undefined : (status === TransitionStatus.EXITING || status === TransitionStatus.MOUNTED) ? 0 : 1,
-  border: `3px solid ${PALETTE.BORDER_MATCH_MEETING_COLUMN}`,
+  border: `${PokerCards.AVATAR_BORDER}px solid ${PALETTE.BORDER_MATCH_MEETING_COLUMN}`,
   transform: isInitialStageRender ? undefined : (status === TransitionStatus.EXITING || status === TransitionStatus.MOUNTED) ? 'scale(0)' : 'scale(1)',
   transition: `all 300ms ${BezierCurve.DECELERATE}`
 }))
