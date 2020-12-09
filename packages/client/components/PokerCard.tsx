@@ -14,10 +14,11 @@ const COLLAPSE_DUR = 700
 const EXPAND_DUR = 300
 interface CardBaseProps {
   color: string,
+  showTransition: boolean
   isDesktop: boolean,
   isCollapsed: boolean,
   isSelected: boolean,
-  leftEdge:  number,
+  leftEdge: number,
   radius: number
   rotation: number
   yOffset: number
@@ -33,7 +34,7 @@ const getRotation = (isSelected: boolean, isCollapsed: boolean, leftEdge: number
   return `translate(${x}px, ${y + selectedOffset}px)rotate(${rotation}deg)`
 }
 
-const CardBase = styled('div')<CardBaseProps>(({color, isCollapsed, isDesktop, isSelected, leftEdge, radius, rotation, yOffset}) => {
+const CardBase = styled('div')<CardBaseProps>(({color, isCollapsed, isDesktop, isSelected, leftEdge, radius, rotation, yOffset, showTransition}) => {
   const transform = getRotation(isSelected, isCollapsed, leftEdge, radius, rotation, yOffset)
   const hoverTransform = `${transform} translateY(-8px)`
   return ({
@@ -45,7 +46,7 @@ const CardBase = styled('div')<CardBaseProps>(({color, isCollapsed, isDesktop, i
     justifyContent: 'center',
     position: 'absolute',
     transform,
-    transition: `transform ${isCollapsed ? COLLAPSE_DUR : EXPAND_DUR}ms ${BezierCurve.DECELERATE}`,
+    transition: showTransition ? `transform ${isCollapsed ? COLLAPSE_DUR : EXPAND_DUR}ms ${BezierCurve.DECELERATE}` : undefined,
     userSelect: 'none',
     width: PokerCards.WIDTH,
     zIndex: isSelected && isCollapsed ? 1 : undefined,
@@ -98,13 +99,14 @@ interface Props {
   onMouseLeave: () => void
   radius: number
   rotation: number
+  showTransition: boolean
   totalCards: number
   yOffset: number
 }
 
 
 const PokerCard = (props: Props) => {
-  const {scaleValue, isCollapsed, yOffset, isSelected, leftEdge, onClick, onMouseEnter, onMouseLeave, rotation, radius} = props
+  const {scaleValue, showTransition, isCollapsed, yOffset, isSelected, leftEdge, onClick, onMouseEnter, onMouseLeave, rotation, radius} = props
   const {color, label} = scaleValue
   const wasCollapsedRef = useRef(isCollapsed)
   const cardRef = useRef<HTMLDivElement>(null)
@@ -131,6 +133,7 @@ const PokerCard = (props: Props) => {
       onMouseLeave={onMouseLeave}
       rotation={rotation}
       radius={radius}
+      showTransition={showTransition}
     >
       <UpperLeftCardValue>
         {cornerValue}

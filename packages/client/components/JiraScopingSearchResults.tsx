@@ -2,7 +2,8 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useEffect, useState} from 'react'
 import {createFragmentContainer} from 'react-relay'
-import useRecordIdsWithStages from '~/hooks/useRecordIdsWithStages'
+import useGetUsedServiceTaskIds from '~/hooks/useGetUsedServiceTaskIds'
+import MockScopingList from '~/modules/meeting/components/MockScopingList'
 import useAtmosphere from '../hooks/useAtmosphere'
 import PersistJiraSearchQueryMutation from '../mutations/PersistJiraSearchQueryMutation'
 import {NewMeetingPhaseTypeEnum} from '../types/graphql'
@@ -12,7 +13,6 @@ import IntegrationScopingNoResults from './IntegrationScopingNoResults'
 import JiraScopingSearchResultItem from './JiraScopingSearchResultItem'
 import JiraScopingSelectAllIssues from './JiraScopingSelectAllIssues'
 import NewJiraIssueInput from './NewJiraIssueInput'
-import MockScopingList from '~/modules/meeting/components/MockScopingList'
 import NewIntegrationRecordButton from './NewIntegrationRecordButton'
 
 const ResultScroller = styled('div')({
@@ -41,7 +41,7 @@ const JiraScopingSearchResults = (props: Props) => {
   }, [incomingEdges])
   const {id: meetingId, teamId, phases, jiraSearchQuery} = meeting
   const estimatePhase = phases.find(({phaseType}) => phaseType === NewMeetingPhaseTypeEnum.ESTIMATE)
-  const usedJiraIssueIds = useRecordIdsWithStages(estimatePhase)
+  const usedServiceTaskIds = useGetUsedServiceTaskIds(estimatePhase)
 
   // Terry, you can use this in case you need to put some final touches on styles
   /*   const [showMock, setShowMock] = useState(false)
@@ -71,6 +71,8 @@ const JiraScopingSearchResults = (props: Props) => {
 
   const persistQuery = () => {
     const {queryString, isJQL} = jiraSearchQuery
+    // don't persist an empty string (the default)
+    if (!queryString) return
     const projectKeyFilters = jiraSearchQuery.projectKeyFilters as string[]
     projectKeyFilters.sort()
     const lookupKey = JSON.stringify({queryString, projectKeyFilters})
@@ -89,7 +91,7 @@ const JiraScopingSearchResults = (props: Props) => {
   return (
     <>
       <JiraScopingSelectAllIssues
-        usedJiraIssueIds={usedJiraIssueIds}
+        usedServiceTaskIds={usedServiceTaskIds}
         issues={edges}
         meetingId={meetingId}
       />
@@ -105,18 +107,18 @@ const JiraScopingSearchResults = (props: Props) => {
             <JiraScopingSearchResultItem
               key={node.id}
               issue={node}
-              isSelected={usedJiraIssueIds.has(node.id)}
+              usedServiceTaskIds={usedServiceTaskIds}
               meetingId={meetingId}
               persistQuery={persistQuery}
             />
           )
         })}
       </ResultScroller>
-      {!isEditing && 
-      <NewIntegrationRecordButton
-        onClick={handleAddIssueClick}
-        labelText={'New Issue'}
-      />}
+      {!isEditing &&
+        <NewIntegrationRecordButton
+          onClick={handleAddIssueClick}
+          labelText={'New Issue'}
+        />}
     </>
   )
 }
@@ -133,8 +135,8 @@ export default createFragmentContainer(JiraScopingSearchResults, {
         queryString
       }
       phases {
+        ...useGetUsedServiceTaskIds_phase
         phaseType
-        ...useRecordIdsWithStages_phase
       }
     }
   `,

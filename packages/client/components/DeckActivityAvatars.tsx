@@ -54,7 +54,7 @@ const DeckActivityAvatars = (props: Props) => {
         const visibleScoreIdx = peekingUsers.findIndex((user) => user.id === userId)
         const displayIdx = visibleScoreIdx === -1 ? idx : visibleScoreIdx
         return (
-          <PeekingAvatar key={userId} status={status} onTransitionEnd={onTransitionEnd} user={child} idx={displayIdx} isColumn />
+          <PeekingAvatar key={userId} status={status} onTransitionEnd={onTransitionEnd} user={child} idx={displayIdx} isColumn isInitialStageRender={false} />
         )
       })}
     </DeckActivityPanel>

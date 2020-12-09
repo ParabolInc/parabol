@@ -8,7 +8,7 @@ import ParabolScopingSelectAllTasks from './ParabolScopingSelectAllTasks'
 import ParabolScopingSearchResultItem from './ParabolScopingSearchResultItem'
 import useLoadMoreOnScrollBottom from '~/hooks/useLoadMoreOnScrollBottom'
 import IntegrationScopingNoResults from './IntegrationScopingNoResults'
-import useRecordIdsWithStages from '~/hooks/useRecordIdsWithStages'
+import useGetUsedServiceTaskIds from '~/hooks/useGetUsedServiceTaskIds'
 import {NewMeetingPhaseTypeEnum, TaskStatusEnum} from '~/types/graphql'
 import NewIntegrationRecordButton from './NewIntegrationRecordButton'
 import useAtmosphere from '~/hooks/useAtmosphere'
@@ -37,7 +37,7 @@ const ParabolScopingSearchResults = (props: Props) => {
   }, [incomingEdges])
   const {id: meetingId, phases} = meeting
   const estimatePhase = phases.find(({phaseType}) => phaseType === NewMeetingPhaseTypeEnum.ESTIMATE)
-  const usedParabolTaskIds = useRecordIdsWithStages(estimatePhase)
+  const usedServiceTaskIds = useGetUsedServiceTaskIds(estimatePhase)
   const atmosphere = useAtmosphere()
   const {onError, onCompleted} = useMutationProps()
 
@@ -77,7 +77,7 @@ const ParabolScopingSearchResults = (props: Props) => {
   return (
     <>
       <ParabolScopingSelectAllTasks
-        usedParabolTaskIds={usedParabolTaskIds}
+        usedServiceTaskIds={usedServiceTaskIds}
         tasks={edges}
         meetingId={meetingId}
       />
@@ -88,7 +88,7 @@ const ParabolScopingSearchResults = (props: Props) => {
               key={node.id}
               task={node}
               meetingId={meeting.id}
-              isSelected={usedParabolTaskIds.has(node.id)}
+              usedServiceTaskIds={usedServiceTaskIds}
               teamId={meeting.teamId}
               setIsEditing={setIsEditing}
             />
@@ -114,7 +114,7 @@ export default createPaginationContainer(
         id
         phases {
           phaseType
-          ...useRecordIdsWithStages_phase
+          ...useGetUsedServiceTaskIds_phase
         }
         teamId
       }

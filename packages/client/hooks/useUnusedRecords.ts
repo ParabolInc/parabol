@@ -1,18 +1,19 @@
 import {useMemo} from 'react'
+import {Threshold} from '../types/constEnums'
 
 const useUnusedRecords = (
-  records: ReadonlyArray<{readonly node: {readonly id: string}}>,
-  usedRecordIds: Set<string>
+  storyEdges: ReadonlyArray<{readonly node: {readonly id: string}}>,
+  usedServiceTaskIds: Set<string>
 ): [string[], boolean | null] => {
   return useMemo(() => {
-    const unusedRecords = [] as string[]
-    records.forEach(({node}) => {
-      if (!usedRecordIds.has(node.id)) unusedRecords.push(node.id)
+    const unusedServiceTaskIds = [] as string[]
+    storyEdges.forEach(({node}) => {
+      if (!usedServiceTaskIds.has(node.id)) unusedServiceTaskIds.push(node.id)
     })
     const allSelected =
-      unusedRecords.length === 0 ? true : unusedRecords.length === records.length ? false : null
-    return [unusedRecords, allSelected]
-  }, [records, usedRecordIds])
+      unusedServiceTaskIds.length === 0 || usedServiceTaskIds.size === Threshold.MAX_POKER_STORIES ? true : unusedServiceTaskIds.length === storyEdges.length ? false : null
+    return [unusedServiceTaskIds, allSelected]
+  }, [storyEdges, usedServiceTaskIds])
 }
 
 export default useUnusedRecords
