@@ -130,7 +130,7 @@ const AtlassianIntegration = new GraphQLObjectType<any, GQLContext>({
           ...issue,
           updatedAt: new Date()
         }))
-        return connectionFromTasks(mappedIssues, first, error || undefined)
+        return connectionFromTasks(mappedIssues, first, error ? {message: error} : undefined)
       }
     },
     projects: {

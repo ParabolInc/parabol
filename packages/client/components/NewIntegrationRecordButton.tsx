@@ -8,8 +8,6 @@ const Button = styled(FloatingActionButton)({
   color: '#fff',
   padding: '10px 12px',
   width: '150px',
-  // top: '85%',
-  // left: '74%',
   bottom: 16,
   right: 16,
   position: 'absolute',
@@ -26,17 +24,18 @@ const StyledLabel = styled('div')({
 })
 
 interface Props {
-  setIsEditing: (isEditing: boolean) => void
+  labelText: string
+  onClick: (e: React.MouseEvent) => void
 }
 
-const NewJiraIssueButton = (props: Props) => {
-  const {setIsEditing} = props
+const NewIntegrationRecordButton = (props: Props) => {
+  const {labelText, onClick} = props
   return (
-    <Button onClick={() => setIsEditing(true)} palette='blue'>
+    <Button onClick={onClick} palette='blue'>
       <StyledIcon>{'add'}</StyledIcon>
-      <StyledLabel>{'New Issue'}</StyledLabel>
+      <StyledLabel>{labelText}</StyledLabel>
     </Button>
   )
 }
 
-export default NewJiraIssueButton
+export default NewIntegrationRecordButton

@@ -29,10 +29,11 @@ const Wrapper = styled('div')({
 interface Props {
   isClosing?: boolean
   scores: PokerVotingAvatarGroup_scores
+  isInitialStageRender: boolean
 }
 
 const PokerVotingAvatarGroup = (props: Props) => {
-  const {isClosing, scores} = props
+  const {isClosing, scores, isInitialStageRender} = props
   const rowRef = useRef<HTMLDivElement>(null)
   const maxAvatars = usePokerAvatarOverflow(rowRef) // max is 5, scores is 6
   const overflowCount = scores.length > maxAvatars ? scores.length - maxAvatars + 1 : 0
@@ -52,9 +53,9 @@ const PokerVotingAvatarGroup = (props: Props) => {
         const overflowCount = (child as any).overflowCount
         const visibleScoreIdx = visibleScores.findIndex((score) => score.id === child.id)
         const displayIdx = visibleScoreIdx === -1 ? idx : visibleScoreIdx
-        if (overflowCount) return <PokerVotingOverflow key={childId} onTransitionEnd={onTransitionEnd} status={status} idx={displayIdx} overflowCount={overflowCount} />
+        if (overflowCount) return <PokerVotingOverflow key={childId} isInitialStageRender={isInitialStageRender} onTransitionEnd={onTransitionEnd} status={status} idx={displayIdx} overflowCount={overflowCount} />
         return (
-          <PokerVotingAvatar key={childId} user={user} onTransitionEnd={onTransitionEnd} status={status} idx={displayIdx} />
+          <PokerVotingAvatar key={childId} isInitialStageRender={isInitialStageRender} user={user} onTransitionEnd={onTransitionEnd} status={status} idx={displayIdx} />
         )
       })}
     </Wrapper >

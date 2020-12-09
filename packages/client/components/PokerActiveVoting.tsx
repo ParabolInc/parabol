@@ -83,10 +83,11 @@ interface Props {
   isClosing: boolean
   meeting: PokerActiveVoting_meeting
   stage: PokerActiveVoting_stage
+  isInitialStageRender: boolean
 }
 
 const PokerActiveVoting = (props: Props) => {
-  const {isClosing, meeting, stage} = props
+  const {isClosing, meeting, stage, isInitialStageRender} = props
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
   const {facilitatorUserId, id: meetingId, meetingMembers} = meeting
@@ -124,7 +125,7 @@ const PokerActiveVoting = (props: Props) => {
         <MiniPokerCard>
           <CheckIcon>check</CheckIcon>
         </MiniPokerCard>
-        <PokerVotingAvatarGroup scores={scores} isClosing={isClosing} />
+        <PokerVotingAvatarGroup scores={scores} isClosing={isClosing} isInitialStageRender={isInitialStageRender} />
       </PokerVotingRowBase>
       <RevealButtonBlock>
         {showRevealButton &&
