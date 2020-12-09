@@ -1,13 +1,14 @@
 import React, {useContext, useEffect} from 'react'
 import {commitLocalUpdate} from 'relay-runtime'
 import shortid from 'shortid'
+import adjustReflectionWidth from '~/utils/retroGroup/adjustReflectionWidth'
 import {PortalContext, SetPortal} from '../components/AtmosphereProvider/PortalProvider'
 import {SwipeColumn} from '../components/GroupingKanban'
 import {ReflectionDragState} from '../components/ReflectionGroup/DraggableReflectionCard'
 import RemoteReflection from '../components/ReflectionGroup/RemoteReflection'
 import StartDraggingReflectionMutation from '../mutations/StartDraggingReflectionMutation'
 import UpdateDragLocationMutation from '../mutations/UpdateDragLocationMutation'
-import {Times} from '../types/constEnums'
+import {ElementWidth, Times} from '../types/constEnums'
 import {DragReflectionDropTargetTypeEnum} from '../types/graphql'
 import findDropZoneFromEvent from '../utils/findDropZoneFromEvent'
 import maybeStartReflectionScroll from '../utils/maybeStartReflectionScroll'
@@ -186,6 +187,14 @@ const useDragAndDrop = (
     drag.targets.length = 0
     drag.prevTargetId = ''
     const targetGroupId = getTargetGroupId(e)
+    if (drag.dropZoneEl && drag.clone) {
+      drag.dropZoneBBox = drag.dropZoneEl.getBoundingClientRect()
+      const {width} = drag.dropZoneBBox
+      if (targetGroupId) {
+        const isColumnExpanded = width > ElementWidth.REFLECTION_CARD_EXPANDED
+        adjustReflectionWidth(drag.clone, isColumnExpanded)
+      }
+    }
     const targetType =
       targetGroupId && reflectionGroupId !== targetGroupId
         ? DragReflectionDropTargetTypeEnum.REFLECTION_GROUP
@@ -249,7 +258,7 @@ const useDragAndDrop = (
       // clip quick drags so the cursor is guaranteed to be inside the card
       drag.cardOffsetX = Math.min(clientX - bbox.left, bbox.width)
       drag.cardOffsetY = Math.min(clientY - bbox.top, bbox.height)
-      drag.clone = cloneReflection(drag.ref, reflectionId, atmosphere)
+      drag.clone = cloneReflection(drag.ref, reflectionId)
       drag.id = shortid.generate()
       StartDraggingReflectionMutation(atmosphere, {reflectionId, dragId: drag.id})
     }
@@ -260,10 +269,6 @@ const useDragAndDrop = (
     }px)`
     const dropZoneEl = findDropZoneFromEvent(e)
     if (dropZoneEl !== drag.dropZoneEl) {
-      // commitLocalUpdate(atmosphere, (store) => {
-      //   const reflection = store.get(reflectionId)!
-      //   reflection.setValue(true, 'isDraggingWidthExpanded')
-      // })
       drag.dropZoneEl = dropZoneEl
       if (dropZoneEl) {
         drag.dropZoneBBox = dropZoneEl.getBoundingClientRect()
