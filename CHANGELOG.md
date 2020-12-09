@@ -5,6 +5,21 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 5.27.0 2020-Dec-09
+
+### Added
+
+- Support avatar image uploads (#3957)
+- Poker reveal voting button implemented (#4392)
+- Use next button for participants (#4349)
+- Implement final score for poker meeting (#4396)
+- Add summary for poker meeting (#4397)
+- Implement adding Parabol task during scope phase of poker meeting (#4359)
+
+### Fixed
+
+- Poker meeting fixups (#4381)
+
 ## 5.26.0 2020-Dec-2
 
 ### Added
