@@ -49,7 +49,9 @@ interface Props {
 const SummaryPokerStories = (props: Props) => {
   const {isEmail, meeting} = props
   const {id: meetingId, phases} = meeting
-  const estimatePhase = phases.find((phase) => phase.phaseType === NewMeetingPhaseTypeEnum.ESTIMATE)
+  const estimatePhase = phases?.find(
+    (phase) => phase.phaseType === NewMeetingPhaseTypeEnum.ESTIMATE
+  )
   if (!estimatePhase) return null
   const stages = estimatePhase.stages!
   const usedServiceTaskIds = new Set<string>()
