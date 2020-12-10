@@ -1,7 +1,6 @@
 import React, {MouseEvent} from 'react'
 import styled from '@emotion/styled'
 import {PALETTE} from '~/styles/paletteV2'
-import {ElementWidth} from '~/types/constEnums'
 import ExpandArrowSVG from '../../../static/images/icons/arrow_expand.svg'
 import FlatButton from './FlatButton'
 import {MenuPosition} from '~/hooks/useCoords'
@@ -31,15 +30,15 @@ const ColumnColorDrop = styled('div')<{groupColor: string}>(({groupColor}) => ({
   width: 8
 }))
 
-const ColumnHeader = styled('div')<{isWidthExpanded: boolean}>(({isWidthExpanded}) => ({
+const ColumnHeader = styled('div')({
   color: PALETTE.TEXT_MAIN,
   display: 'flex',
   justifyContent: 'space-between',
   lineHeight: '24px',
   margin: '0 auto',
-  paddingTop: 12,
+  padding: '12px 12px 0px',
   width: '100%'
-}))
+})
 
 const ExpandButton = styled(FlatButton)({
   alignItems: 'center',
@@ -88,7 +87,7 @@ const GroupingKanbanColumnHeader = (props: Props) => {
   }
 
   return (
-    <ColumnHeader isWidthExpanded={!!isWidthExpanded}>
+    <ColumnHeader>
       <Prompt>
         <ColumnColorDrop groupColor={groupColor} />
         {question}

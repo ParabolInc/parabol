@@ -1,6 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitLocalUpdate, commitMutation} from 'react-relay'
 import {Disposable, RecordProxy, RecordSourceSelectorProxy} from 'relay-runtime'
+import {SubColumn} from '~/types/constEnums'
 import {EndDraggingReflectionMutation_meeting} from '~/__generated__/EndDraggingReflectionMutation_meeting.graphql'
 import Atmosphere from '../Atmosphere'
 import {IEndDraggingReflectionOnMutationArguments} from '../types/graphql'
@@ -99,16 +100,6 @@ export const moveReflectionLocation = (
 ) => {
   if (!reflection) return
   const reflectionId = reflection.getValue('id') as string
-  // if (userId) {
-  //   // else it is an autogroup
-  //   const reflection = store.get(reflectionId)
-  //   const meetingId = reflection.getValue('meetingId')
-  //   const meeting = store.get(meetingId)
-  //   // meeting.setValue(undefined, 'isViewerDragInProgress')
-  //   // const dragContext = reflection.getLinkedRecord('dragContext')
-  //   const dragUserId = reflection.getValue('dragUserId')
-  //   const isViewerDragging = reflection.getValue('isViewerDragging')
-  // }
   handleRemoveReflectionFromGroup(reflectionId, oldReflectionGroupId, store)
   handleAddReflectionToGroup(reflection, store)
   handleRemoveEmptyReflectionGroup(oldReflectionGroupId, store)
@@ -166,11 +157,15 @@ const EndDraggingReflectionMutation = (
       const reflectionGroup = payload.getLinkedRecord('reflectionGroup')
       if (!reflectionGroup) return
       const prompt = reflection.getLinkedRecord('prompt')
-      if (prompt) {
-        reflection.setLinkedRecord(prompt, 'prompt')
-        reflectionGroup.setLinkedRecord(prompt, 'prompt')
-      }
+      reflection.setLinkedRecord(prompt, 'prompt')
+      reflectionGroup.setLinkedRecord(prompt, 'prompt')
+      const isWidthExpanded = prompt?.getValue('isWidthExpanded')
       const oldReflectionGroupId = getInProxy(payload, 'oldReflectionGroup', 'id')
+      if (isWidthExpanded && !reflectionGroup.getValue('subColumn')) {
+        const oldReflectionGroup = store.get(oldReflectionGroupId)
+        const oldSubColumn = oldReflectionGroup?.getValue('subColumn')
+        reflectionGroup.setValue(oldSubColumn, 'subColumn')
+      }
       moveReflectionLocation(reflection, reflectionGroup, oldReflectionGroupId, store)
     },
     optimisticUpdater: (store) => {

@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
-import React, {MouseEvent, RefObject, useRef} from 'react'
+import React, {MouseEvent, RefObject, useMemo, useRef} from 'react'
 import {useCoverable} from '~/hooks/useControlBarCovers'
 import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
 import {GroupingKanbanColumn_meeting} from '~/__generated__/GroupingKanbanColumn_meeting.graphql'
@@ -15,6 +15,7 @@ import {
   BezierCurve,
   Breakpoint,
   DragAttribute,
+  ElementWidth,
   MeetingControlBarEnum,
   SubColumn
 } from '../types/constEnums'
@@ -23,6 +24,7 @@ import getNextSortOrder from '../utils/getNextSortOrder'
 import {SwipeColumn} from './GroupingKanban'
 import ReflectionGroup from './ReflectionGroup/ReflectionGroup'
 import GroupingKanbanColumnHeader from './GroupingKanbanColumnHeader'
+import useSortSubColumns from '~/hooks/useSortSubColumns'
 
 const Column = styled('div')<{
   isLengthExpanded: boolean
@@ -47,19 +49,23 @@ const Column = styled('div')<{
   }
 }))
 
-const ColumnBody = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
-  alignContent: 'flex-start',
-  display: 'flex',
-  flex: 1,
-  flexDirection: 'row',
-  flexWrap: 'wrap',
-  height: '100%',
-  maxHeight: 'fit-content',
-  minHeight: 200,
-  overflowX: 'hidden',
-  overflowY: 'auto',
-  padding: isDesktop ? '6px 12px' : '6px 8px'
-}))
+const ColumnBody = styled('div')<{isDesktop: boolean; isWidthExpanded: boolean}>(
+  ({isDesktop, isWidthExpanded}) => ({
+    alignContent: 'flex-start',
+    display: 'flex',
+    flex: 1,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    height: '100%',
+    maxHeight: 'fit-content',
+    minHeight: 200,
+    overflowX: 'hidden',
+    overflowY: 'auto',
+    padding: `${isWidthExpanded ? 3 : 6}px ${isDesktop ? 12 : 8}px`,
+    transition: `all 100ms ${BezierCurve.DECELERATE}`,
+    width: isWidthExpanded ? ElementWidth.REFLECTION_CARD_EXPANDED : ElementWidth.REFLECTION_CARD
+  })
+)
 
 interface Props {
   columnsRef: RefObject<HTMLDivElement>
@@ -92,7 +98,7 @@ const GroupingKanbanColumn = (props: Props) => {
   const {isComplete, phaseType} = localStage
   const {submitting, onError, submitMutation, onCompleted} = useMutationProps()
   const atmosphere = useAtmosphere()
-  const subColumnsArr = isWidthExpanded ? [SubColumn.LEFT, SubColumn.RIGHT] : ['']
+  const subColumns = isWidthExpanded ? [SubColumn.LEFT, SubColumn.RIGHT] : ['']
 
   const onClick = () => {
     if (submitting || isAnyEditing) return
@@ -108,6 +114,13 @@ const GroupingKanbanColumn = (props: Props) => {
   const ref = useRef<HTMLDivElement>(null)
   const isLengthExpanded =
     useCoverable(promptId, ref, MeetingControlBarEnum.HEIGHT, phaseRef, columnsRef) || !!endedAt
+
+  // group may be undefined because relay could GC before useMemo in the Kanban recomputes >:-(
+  const filteredReflectionGroups = useMemo(() => {
+    console.log('SECOND')
+    return reflectionGroups?.filter((group) => group.reflections.length > 0)
+  }, reflectionGroups)
+  useSortSubColumns(isWidthExpanded, filteredReflectionGroups)
   const canAdd = phaseType === NewMeetingPhaseTypeEnum.group && !isComplete && !isAnyEditing
 
   const toggleWidth = (e: MouseEvent<Element>) => {
@@ -136,22 +149,18 @@ const GroupingKanbanColumn = (props: Props) => {
         submitting={submitting}
         toggleWidth={toggleWidth}
       />
-      {subColumnsArr.map((subColumn) => {
+      {subColumns.map((subColumn) => {
         return (
           <ColumnBody
             data-cy={`group-column-${question}-body`}
             isDesktop={isDesktop}
             key={`${promptId}-${subColumn}`}
+            isWidthExpanded={!!isWidthExpanded}
             {...{[DragAttribute.DROPZONE]: promptId}}
           >
-            {reflectionGroups
+            {filteredReflectionGroups
               .filter((group) => {
-                // group may be undefined because relay could GC before useMemo in the Kanban recomputes >:-(
-                return (
-                  group &&
-                  group.reflections.length > 0 &&
-                  (isWidthExpanded ? group.subColumn === subColumn : true)
-                )
+                return isWidthExpanded ? group.subColumn === subColumn : true
               })
               .map((reflectionGroup, idx) => {
                 return (
@@ -160,6 +169,7 @@ const GroupingKanbanColumn = (props: Props) => {
                     key={reflectionGroup.id}
                     meeting={meeting}
                     phaseRef={phaseRef}
+                    index={idx}
                     reflectionGroup={reflectionGroup}
                     swipeColumn={swipeColumn}
                   />

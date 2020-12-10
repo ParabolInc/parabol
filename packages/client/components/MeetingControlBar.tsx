@@ -40,7 +40,7 @@ const Wrapper = styled('div')<{isLeftSidebarOpen: boolean; isRightDrawerOpen: bo
     margin: '0 auto',
     minHeight: 56,
     padding: 8,
-    position: 'fixed',
+    position: 'absolute',
     right: isRightDrawerOpen ? DiscussionThreadEnum.WIDTH : 0,
     transition: `200ms ${BezierCurve.DECELERATE}`,
     width: '100%',

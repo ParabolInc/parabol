@@ -1,6 +1,6 @@
 import {useLayoutEffect} from 'react'
 import {commitLocalUpdate} from 'react-relay'
-import {Breakpoint, SubColumn} from '~/types/constEnums'
+import {Breakpoint} from '~/types/constEnums'
 import useAtmosphere from './useAtmosphere'
 import useBreakpoint from './useBreakpoint'
 
@@ -16,14 +16,6 @@ const useExpandColumnsWidth = (reflectPrompts, reflectionGroups) => {
       reflectPrompts.forEach((prompt) => {
         const reflectPrompt = store.get(prompt.id)
         reflectPrompt?.setValue(isWidthExpanded, 'isWidthExpanded')
-      })
-
-      // TODO: if is init
-      if (!reflectionGroups) return
-      reflectionGroups.forEach((group, index) => {
-        const reflectionGroup = store.get(group.id)
-        const subColumn = index % 2 === 0 ? SubColumn.LEFT : SubColumn.RIGHT
-        reflectionGroup?.setValue(subColumn, 'subColumn')
       })
     })
   }, [isDesktop, isWiderScreen])
