@@ -8,20 +8,21 @@ import {PALETTE} from '../styles/paletteV2'
 import {PokerVotingAvatarGroup_scores} from '../__generated__/PokerVotingAvatarGroup_scores.graphql'
 import PokerVotingAvatar from './PokerVotingAvatar'
 import PokerVotingOverflow from './PokerVotingOverflow'
+import {PokerCards} from '../types/constEnums'
 
 const NoVotesHeaderLabel = styled('div')({
   color: PALETTE.TEXT_GRAY,
   fontSize: 14,
   fontWeight: 600,
   lineHeight: '24px',
-  paddingLeft: 2 // same as avatar border
+  paddingLeft: PokerCards.AVATAR_BORDER
 })
 
 const Wrapper = styled('div')({
   alignItems: 'center',
   display: 'flex',
+  marginLeft: 16 - PokerCards.AVATAR_BORDER,
   position: 'relative',
-  marginLeft: 14, // plus 2 background border of avatar = 16
   width: '100%',
   height: '100%'
 })
@@ -29,10 +30,11 @@ const Wrapper = styled('div')({
 interface Props {
   isClosing?: boolean
   scores: PokerVotingAvatarGroup_scores
+  isInitialStageRender: boolean
 }
 
 const PokerVotingAvatarGroup = (props: Props) => {
-  const {isClosing, scores} = props
+  const {isClosing, scores, isInitialStageRender} = props
   const rowRef = useRef<HTMLDivElement>(null)
   const maxAvatars = usePokerAvatarOverflow(rowRef) // max is 5, scores is 6
   const overflowCount = scores.length > maxAvatars ? scores.length - maxAvatars + 1 : 0
@@ -52,9 +54,9 @@ const PokerVotingAvatarGroup = (props: Props) => {
         const overflowCount = (child as any).overflowCount
         const visibleScoreIdx = visibleScores.findIndex((score) => score.id === child.id)
         const displayIdx = visibleScoreIdx === -1 ? idx : visibleScoreIdx
-        if (overflowCount) return <PokerVotingOverflow key={childId} onTransitionEnd={onTransitionEnd} status={status} idx={displayIdx} overflowCount={overflowCount} />
+        if (overflowCount) return <PokerVotingOverflow key={childId} isInitialStageRender={isInitialStageRender} onTransitionEnd={onTransitionEnd} status={status} idx={displayIdx} overflowCount={overflowCount} />
         return (
-          <PokerVotingAvatar key={childId} user={user} onTransitionEnd={onTransitionEnd} status={status} idx={displayIdx} />
+          <PokerVotingAvatar key={childId} isInitialStageRender={isInitialStageRender} user={user} onTransitionEnd={onTransitionEnd} status={status} idx={displayIdx} />
         )
       })}
     </Wrapper >

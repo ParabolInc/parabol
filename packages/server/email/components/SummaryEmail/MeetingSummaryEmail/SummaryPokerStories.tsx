@@ -9,6 +9,7 @@ import makeAppLink from '../../../../utils/makeAppLink'
 import AnchorIfEmail from './AnchorIfEmail'
 import EmailBorderBottom from './EmailBorderBottom'
 import {meetingSummaryUrlParams} from 'parabol-server/email/components/MeetingSummaryEmailRootSSR'
+import getJiraCloudIdAndKey from '../../../../../client/utils/getJiraCloudIdAndKey'
 
 const tableStyles = {
   border: `1px solid ${PALETTE.BORDER_GRAY}`,
@@ -48,7 +49,9 @@ interface Props {
 const SummaryPokerStories = (props: Props) => {
   const {isEmail, meeting} = props
   const {id: meetingId, phases} = meeting
-  const estimatePhase = phases.find((phase) => phase.phaseType === NewMeetingPhaseTypeEnum.ESTIMATE)
+  const estimatePhase = phases?.find(
+    (phase) => phase.phaseType === NewMeetingPhaseTypeEnum.ESTIMATE
+  )
   if (!estimatePhase) return null
   const stages = estimatePhase.stages!
   const usedServiceTaskIds = new Set<string>()
@@ -63,7 +66,8 @@ const SummaryPokerStories = (props: Props) => {
                 if (usedServiceTaskIds.has(serviceTaskId)) return null
                 usedServiceTaskIds.add(serviceTaskId)
                 const isLast = idx === stages.length - 1
-                const title = story?.title ?? 'Unknown Story'
+                const [, issueKey] = getJiraCloudIdAndKey(serviceTaskId)
+                const title = story?.title ?? issueKey
                 const urlPath = `meet/${meetingId}/estimate/${usedServiceTaskIds.size}`
                 const to = isEmail
                   ? makeAppLink(urlPath, {params: meetingSummaryUrlParams})

@@ -181,7 +181,8 @@ export const enum PokerCards {
   PASS_CARD = 'X',
   QUESTION_CARD = '?',
   DELETED_CARD = '#',
-  AVATAR_WIDTH = 40
+  AVATAR_WIDTH = 46,
+  AVATAR_BORDER = 3
 }
 export const enum UserTaskViewFilterLabels {
   ALL_TEAMS = 'All Teams',
@@ -314,6 +315,7 @@ export const enum Threshold {
   MAX_RETRO_TEAM_TEMPLATES = 20,
   MAX_POKER_TEAM_TEMPLATES = 20,
   MAX_REACTJIS = 12,
+  MAX_POKER_STORIES = 50,
   REFRESH_JWT_AFTER = 1296000000, // 15 days
   RESET_PASSWORD_LIFESPAN = 86400000, // 1 day
   VERIFY_TOKEN_LIFESPAN = 2592000000, // 30 days

@@ -6,6 +6,7 @@ import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
 import UpdatePokerScopeMutation from '../mutations/UpdatePokerScopeMutation'
 import {PALETTE} from '../styles/paletteV2'
+import {Threshold} from '../types/constEnums'
 import {AddOrDeleteEnum, TaskServiceEnum} from '../types/graphql'
 import {JiraScopingSearchResultItem_issue} from '../__generated__/JiraScopingSearchResultItem_issue.graphql'
 import Checkbox from './Checkbox'
@@ -41,18 +42,20 @@ const StyledLink = styled('a')({
 
 interface Props {
   meetingId: string
-  isSelected: boolean
+  usedServiceTaskIds: Set<string>
   issue: JiraScopingSearchResultItem_issue
   persistQuery: () => void
 }
 
 const JiraScopingSearchResultItem = (props: Props) => {
-  const {isSelected, issue, meetingId, persistQuery} = props
+  const {issue, meetingId, persistQuery, usedServiceTaskIds} = props
   const {id: serviceTaskId, key, summary, url} = issue
+  const isSelected = usedServiceTaskIds.has(serviceTaskId)
   const atmosphere = useAtmosphere()
   const {onCompleted, onError, submitMutation, submitting} = useMutationProps()
+  const disabled = !isSelected && usedServiceTaskIds.size >= Threshold.MAX_POKER_STORIES
   const onClick = () => {
-    if (submitting) return
+    if (submitting || disabled) return
     submitMutation()
     const variables = {
       meetingId,
@@ -72,7 +75,7 @@ const JiraScopingSearchResultItem = (props: Props) => {
   }
   return (
     <Item onClick={onClick} >
-      <Checkbox active={isSelected} />
+      <Checkbox active={isSelected} disabled={disabled} />
       <Issue>
         <Title>{summary}</Title>
         <StyledLink

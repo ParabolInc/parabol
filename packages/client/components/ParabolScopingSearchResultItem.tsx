@@ -19,6 +19,7 @@ import DeleteTaskMutation from '~/mutations/DeleteTaskMutation'
 import UpdateTaskMutation from '~/mutations/UpdateTaskMutation'
 import useScrollIntoView from '~/hooks/useScrollIntoVIew'
 import useEditorState from '~/hooks/useEditorState'
+import {Threshold} from '../types/constEnums'
 
 const Item = styled('div')<{isEditingThisItem: boolean}>(({isEditingThisItem}) => ({
   backgroundColor: isEditingThisItem ? PALETTE.BACKGROUND_BLUE_MAGENTA : 'transparent',
@@ -44,32 +45,33 @@ const StyledTaskEditor = styled(TaskEditor)({
 
 interface Props {
   meetingId: string
-  isSelected: boolean
+  usedServiceTaskIds: Set<string>
   task: ParabolScopingSearchResultItem_task
   teamId: string
   setIsEditing: (isEditing: boolean) => void
 }
 
 const ParabolScopingSearchResultItem = (props: Props) => {
-  const {task, meetingId, isSelected, teamId, setIsEditing} = props
-  const {id: taskId, content, plaintextContent} = task
+  const {usedServiceTaskIds, task, meetingId, teamId, setIsEditing} = props
+  const {id: serviceTaskId, content, plaintextContent} = task
+  const isSelected = usedServiceTaskIds.has(serviceTaskId)
+  const disabled = !isSelected && usedServiceTaskIds.size >= Threshold.MAX_POKER_STORIES
   const atmosphere = useAtmosphere()
   const {onCompleted, onError, submitMutation, submitting} = useMutationProps()
-  // const contentState = useMemo(() => convertFromRaw(JSON.parse(content)), [content])
   const [editorState, setEditorState] = useEditorState(content)
   const editorRef = useRef<HTMLTextAreaElement>(null)
-  const {useTaskChild, addTaskChild, removeTaskChild, isTaskFocused} = useTaskChildFocus(taskId)
+  const {useTaskChild, addTaskChild, removeTaskChild, isTaskFocused} = useTaskChildFocus(serviceTaskId)
   const isEditingThisItem = !plaintextContent
 
   const updatePokerScope = () => {
-    if (submitting) return
+    if (submitting || disabled) return
     submitMutation()
     const variables = {
       meetingId,
       updates: [
         {
           service: TaskServiceEnum.PARABOL,
-          serviceTaskId: taskId,
+          serviceTaskId,
           action: isSelected ? AddOrDeleteEnum.DELETE : AddOrDeleteEnum.ADD
         }
       ]
@@ -85,13 +87,13 @@ const ParabolScopingSearchResultItem = (props: Props) => {
       if (!editorEl || editorEl.type !== 'textarea') return
       const {value} = editorEl
       if (!value && !isFocused) {
-        DeleteTaskMutation(atmosphere, taskId, teamId)
+        DeleteTaskMutation(atmosphere, serviceTaskId, teamId)
       } else {
         const initialContentState = editorState.getCurrentContent()
         const initialText = initialContentState.getPlainText()
         if (initialText === value) return
         const updatedTask = {
-          id: taskId,
+          id: serviceTaskId,
           content: convertToTaskContent(value)
         }
         UpdateTaskMutation(atmosphere, {updatedTask, area}, {onCompleted: updatePokerScope})
@@ -101,12 +103,12 @@ const ParabolScopingSearchResultItem = (props: Props) => {
     const nextContentState = editorState.getCurrentContent()
     const hasText = nextContentState.hasText()
     if (!hasText && !isFocused) {
-      DeleteTaskMutation(atmosphere, taskId, teamId)
+      DeleteTaskMutation(atmosphere, serviceTaskId, teamId)
     } else {
       const nextContent = JSON.stringify(convertToRaw(nextContentState))
       if (nextContent === content) return
       const updatedTask = {
-        id: taskId,
+        id: serviceTaskId,
         content: nextContent
       }
       UpdateTaskMutation(atmosphere, {updatedTask, area}, {onCompleted: updatePokerScope})
@@ -124,7 +126,7 @@ const ParabolScopingSearchResultItem = (props: Props) => {
       }}
       isEditingThisItem={isEditingThisItem}
     >
-      <Checkbox active={isSelected || isEditingThisItem} />
+      <Checkbox active={isSelected || isEditingThisItem} disabled={disabled} />
       <Task
         onBlur={() => {
           if (!isEditingThisItem) return

@@ -6,7 +6,6 @@ import useMutationProps from '~/hooks/useMutationProps'
 import usePokerDeckLeftEdge from '~/hooks/usePokerDeckLeftEdge'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useEventCallback from '../hooks/useEventCallback'
-import useForceUpdate from '../hooks/useForceUpdate'
 import useInitialRender from '../hooks/useInitialRender'
 import usePokerCardLocation from '../hooks/usePokerCardLocation'
 import PokerAnnounceDeckHoverMutation from '../mutations/PokerAnnounceDeckHoverMutation'
@@ -42,11 +41,8 @@ const PokerCardDeck = (props: Props,) => {
   const {values: cards} = selectedScale
   const totalCards = cards.length
   const [isCollapsed, setIsCollapsed] = useState(!isVoting)
-  const leftEdge = usePokerDeckLeftEdge(estimateAreaRef)
+  const [leftEdge, showTransition] = usePokerDeckLeftEdge(estimateAreaRef, isVoting)
   const isInit = useInitialRender()
-  const forceUpdate = useForceUpdate()
-  // re-render to trigger the animation
-  useEffect(forceUpdate, [])
   useEffect(() => {
     setIsCollapsed(!isVoting)
   }, [isVoting])
@@ -62,6 +58,7 @@ const PokerCardDeck = (props: Props,) => {
   const {yOffset, initialRotation, rotationPerCard} = usePokerCardLocation(totalCards, tilt, maxHidden, radius)
   const {onError, onCompleted, submitMutation, submitting, error} = useMutationProps()
   const onMouseEnter = (cardId: string) => () => {
+    if (isCollapsed) return
     if (!hoveringCardIdRef.current) {
       PokerAnnounceDeckHoverMutation(atmosphere, {isHover: true, meetingId, stageId})
     }
@@ -130,7 +127,7 @@ const PokerCardDeck = (props: Props,) => {
           }
         }
         const rotation = initialRotation + rotationPerCard * idx
-        return <PokerCard key={card.label} yOffset={yOffset} rotation={rotation} onMouseEnter={onMouseEnter(card.label)} onMouseLeave={onMouseLeave(card.label)} scaleValue={card} idx={idx} totalCards={totalCards} onClick={onClick} isCollapsed={isCollapsed} isSelected={isSelected} deckRef={deckRef} radius={radius} leftEdge={leftEdge} />
+        return <PokerCard key={card.label} showTransition={showTransition} yOffset={yOffset} rotation={rotation} onMouseEnter={onMouseEnter(card.label)} onMouseLeave={onMouseLeave(card.label)} scaleValue={card} idx={idx} totalCards={totalCards} onClick={onClick} isCollapsed={isCollapsed} isSelected={isSelected} deckRef={deckRef} radius={radius} leftEdge={leftEdge} />
       })}
     </Deck>
   )

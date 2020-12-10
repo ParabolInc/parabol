@@ -1,4 +1,4 @@
-FROM node:13.6.0 as base
+FROM node:14.10.0 as base
 
 ENV NPM_CONFIG_PREFIX=/home/node/.npm-global
 

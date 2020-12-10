@@ -11,6 +11,7 @@ import React, {Component} from 'react'
 import {fetchQuery} from 'react-relay'
 import {PokerCards} from '../../../../client/types/constEnums'
 import {NewMeetingPhaseTypeEnum} from '../../../../client/types/graphql'
+import getJiraCloudIdAndKey from '../../../../client/utils/getJiraCloudIdAndKey'
 import emailDir from '../../emailDir'
 import AnchorIfEmail from './MeetingSummaryEmail/AnchorIfEmail'
 import EmailBorderBottom from './MeetingSummaryEmail/EmailBorderBottom'
@@ -63,6 +64,7 @@ const query = graphql`
             phaseType
             ... on EstimatePhase {
               stages {
+                serviceTaskId
                 finalScore
                 dimension {
                   name
@@ -188,9 +190,10 @@ class ExportToCSV extends Component<Props> {
     )!
     const stages = estimatePhase.stages!
     stages.forEach((stage) => {
-      const {finalScore, dimension, story, scores} = stage
+      const {finalScore, dimension, story, scores, serviceTaskId} = stage
       const {name} = dimension
-      const title = story?.title ?? 'Unknown Story'
+      const [, issueKey] = getJiraCloudIdAndKey(serviceTaskId)
+      const title = story?.title ?? issueKey
       const voteCount = scores.filter((score) => score.label !== PokerCards.PASS_CARD).length
       rows.push({
         story: title,
