@@ -1,15 +1,7 @@
 import styled from '@emotion/styled'
-import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
-import palettePickerOptions from '../../../styles/palettePickerOptions'
 import Icon from '../../../components/Icon'
 import LinkButton from '../../../components/LinkButton'
-import AddPokerTemplateScaleValueMutation from '../../../mutations/AddPokerTemplateScaleValueMutation'
-import {AddPokerTemplateScaleValue_scaleValues} from '../../../__generated__/AddPokerTemplateScaleValue_scaleValues.graphql'
-import {PALETTE} from '../../../styles/paletteV2'
-import useAtmosphere from '../../../hooks/useAtmosphere'
-import useMutationProps from '../../../hooks/useMutationProps'
 
 const AddScaleValueLink = styled(LinkButton)({
   alignItems: 'center',
@@ -29,57 +21,18 @@ const AddScaleValueLinkPlus = styled(Icon)({
 })
 
 interface Props {
-  scaleValues: AddPokerTemplateScaleValue_scaleValues
-  scaleId: string
+  setIsEditing: (isEditing: boolean) => void
 }
 
 const AddTemplateScaleValue = (props: Props) => {
-  const {scaleValues, scaleId} = props
-  const atmosphere = useAtmosphere()
-  const {onError, onCompleted, submitMutation, submitting} = useMutationProps()
+  const {setIsEditing} = props
 
-  const addScaleValue = () => {
-    if (submitting) return
-    submitMutation()
-    const pickedColors = scaleValues.filter(({isSpecial}) => !isSpecial).map(({color}) => color)
-    const availableNewColor = palettePickerOptions.find(
-      (color) => !pickedColors.includes(color.hex)
-    )
-    const existingLabels = scaleValues.filter(({isSpecial}) => !isSpecial).map(({label}) => label)
-    const potentialNextLabel = Number(existingLabels[existingLabels.length - 1]) + 1
-    const isNextLabelValid = !isNaN(potentialNextLabel) ? (potentialNextLabel >= 0 && potentialNextLabel < 100) : false
-    const nextLabel = isNextLabelValid ? potentialNextLabel.toString() : '*'
-
-    const scaleValue = {
-      color: availableNewColor?.hex ?? PALETTE.PROMPT_GREEN,
-      label: nextLabel,
-      isSpecial: false
-    }
-    AddPokerTemplateScaleValueMutation(
-      atmosphere,
-      {scaleId, scaleValue},
-      {
-        onError,
-        onCompleted
-      }
-    )
-  }
-
-  if (scaleValues.length >= 20) return null
   return (
-    <AddScaleValueLink palette='blue' onClick={addScaleValue} waiting={submitting}>
+    <AddScaleValueLink palette='blue' onClick={() => setIsEditing(true)}>
       <AddScaleValueLinkPlus>add</AddScaleValueLinkPlus>
       <div>Add value</div>
     </AddScaleValueLink>
   )
 }
 
-export default createFragmentContainer(AddTemplateScaleValue, {
-  scaleValues: graphql`
-    fragment AddPokerTemplateScaleValue_scaleValues on TemplateScaleValue @relay(plural: true) {
-      isSpecial
-      color
-      label
-    }
-  `
-})
+export default AddTemplateScaleValue

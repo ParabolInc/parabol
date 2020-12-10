@@ -67,7 +67,7 @@ const ScaleAndDescription = styled('div')({
 const TemplateScaleValueItem = (props: Props) => {
   const {dragProvided, isDragging, isOwner, scale, scaleValue} = props
   const [isHover, setIsHover] = useState(false)
-  const [isEditingDescription] = useState(false)
+  const [isEditingScaleValueLabel] = useState(false)
   const {submitting, submitMutation, onError, onCompleted} = useMutationProps()
   const atmosphere = useAtmosphere()
   const canRemove = !scaleValue.isSpecial
@@ -98,12 +98,13 @@ const TemplateScaleValueItem = (props: Props) => {
       onMouseOver={onMouseOver}
       onMouseLeave={onMouseLeave}
     >
-      <EditableTemplateScaleValueColor isOwner={isOwner} scaleValue={scaleValue} scale={scale} />
+      <EditableTemplateScaleValueColor isOwner={isOwner} scale={scale}
+        scaleValueLabel={scaleValue.label} scaleValueColor={scaleValue.color} />
       <ScaleAndDescription>
         <EditableTemplateScaleValueLabel
           isOwner={isOwner}
-          isEditingLabel={isEditingDescription}
           isHover={isHover}
+          isEditingLabel={isEditingScaleValueLabel}
           scale={scale}
           scaleValue={scaleValue}
         />
@@ -125,10 +126,10 @@ export default createFragmentContainer(TemplateScaleValueItem, {
   scaleValue: graphql`
     fragment TemplateScaleValueItem_scaleValue on TemplateScaleValue {
       ...EditableTemplateScaleValueLabel_scaleValue
-      ...EditableTemplateScaleValueColor_scaleValue
       id
       label
       isSpecial
+      color
     }
   `
 })
