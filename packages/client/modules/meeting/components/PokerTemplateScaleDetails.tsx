@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
+import React, {useEffect} from 'react'
 import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import FlatButton from '../../../components/FlatButton'
 import Icon from '../../../components/Icon'
@@ -113,6 +113,7 @@ const PokerTemplateScaleDetails = (props: Props) => {
       store.get(team.id)?.setValue(null, 'editingScaleId')
     })
   }
+  useEffect(() => gotoTemplateDetail, [])
 
   return (
     <ScaleValueEditor>
