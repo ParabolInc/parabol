@@ -11,7 +11,7 @@ const EstimateMeta = styled('div')({
 })
 
 const EmptyProgressBar = styled('div')({
-  background: PALETTE.BACKGROUND_GRAY,
+  background: PALETTE.BACKGROUND_GRAY_50,
   borderRadius: 10,
   height: 4
 })

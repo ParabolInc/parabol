@@ -3,7 +3,7 @@ import React, {useRef} from 'react'
 import {TransitionStatus} from '~/hooks/useTransition'
 import useResizeFontForElement from '../hooks/useResizeFontForElement'
 import {PALETTE} from '../styles/paletteV2'
-import {BezierCurve} from '../types/constEnums'
+import {BezierCurve, PokerCards} from '../types/constEnums'
 
 const Wrapper = styled('div')<{idx: number}>(({idx}) => ({
   position: 'absolute',
@@ -17,9 +17,8 @@ const OverflowCount = styled('div')<{status?: TransitionStatus, isInitialStageRe
   border: `2px solid ${PALETTE.BORDER_MATCH_MEETING_COLUMN}`,
   borderRadius: '50%',
   display: 'flex',
-  height: 40,
+  height: PokerCards.AVATAR_WIDTH,
   justifyContent: 'center',
-  width: 40,
   color: '#fff',
   fontSize: 14,
   fontWeight: 600,
@@ -27,7 +26,8 @@ const OverflowCount = styled('div')<{status?: TransitionStatus, isInitialStageRe
   overflow: 'hidden',
   transform: isInitialStageRender ? undefined : status === TransitionStatus.EXITING || status === TransitionStatus.MOUNTED ? 'scale(0)' : 'scale(1)',
   transition: `all 300ms ${BezierCurve.DECELERATE}`,
-  userSelect: 'none'
+  userSelect: 'none',
+  width: PokerCards.AVATAR_WIDTH
 }))
 
 interface Props {
