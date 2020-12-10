@@ -12,6 +12,7 @@ import palettePickerOptions from '../../../styles/palettePickerOptions'
 import Icon from '../../../components/Icon'
 import {ICON_SIZE} from '../../../styles/typographyV2'
 import Legitity from '../../../validation/Legitity'
+import useEventCallback from '../../../hooks/useEventCallback'
 
 const Form = styled('form')({
   width: '100%',
@@ -113,6 +114,12 @@ const NewTemplateScaleValueLabelInput = (props: Props) => {
     return res
   }
 
+  const handleKeyDown = useEventCallback((e: React.KeyboardEvent) => {
+    if (e.key === 'Escape') {
+      setIsEditing(false)
+    }
+  })
+
   const handleCreateNewLabel = (e: FormEvent) => {
     e.preventDefault()
     const {error} = validate(newScaleValueLabel)
@@ -138,7 +145,6 @@ const NewTemplateScaleValueLabelInput = (props: Props) => {
         onCompleted: handleCompleted
       }
     )
-
   }
 
   const existingLabels = scale.values.filter(({isSpecial}) => !isSpecial).map(({label}) => label)
@@ -162,6 +168,7 @@ const NewTemplateScaleValueLabelInput = (props: Props) => {
             validate(e.target.value)
           }}
           placeholder={nextLabel}
+          onKeyDown={handleKeyDown}
           type='text'
         />
         {error && <StyledError>{error.message}</StyledError>}
