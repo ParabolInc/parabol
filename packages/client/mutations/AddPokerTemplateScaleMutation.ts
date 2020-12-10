@@ -13,7 +13,8 @@ graphql`
       id
       name
       values {
-        ...AddPokerTemplateScaleValue_scaleValues
+        label
+        color
       }
       teamId
     }

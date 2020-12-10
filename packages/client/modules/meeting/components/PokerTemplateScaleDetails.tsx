@@ -1,6 +1,8 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
+import {useEffect} from 'react'
+import {useState} from 'react'
 import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import FlatButton from '../../../components/FlatButton'
 import Icon from '../../../components/Icon'
@@ -9,10 +11,11 @@ import useAtmosphere from '../../../hooks/useAtmosphere'
 import textOverflow from '../../../styles/helpers/textOverflow'
 import {PALETTE} from '../../../styles/paletteV2'
 import {FONT_FAMILY} from '../../../styles/typographyV2'
-import {PokerCards} from '../../../types/constEnums'
+import {PokerCards, Threshold} from '../../../types/constEnums'
 import {PokerTemplateScaleDetails_viewer} from '../../../__generated__/PokerTemplateScaleDetails_viewer.graphql'
 import AddPokerTemplateScaleValue from './AddPokerTemplateScaleValue'
 import EditableTemplateScaleName from './EditableTemplateScaleName'
+import NewTemplateScaleValueLabelInput from './NewTemplateScaleValueLabelInput'
 import TemplateScaleValueList from './TemplateScaleValueList'
 
 const ScaleHeader = styled('div')({
@@ -105,13 +108,27 @@ const PokerTemplateScaleDetails = (props: Props) => {
   const team = viewer.team!
   const {scales} = team
   const scale = team.scale!
+  const incomingEdges = scale.values ?? null
   const isOwner = scale.teamId === team!.id
   const atmosphere = useAtmosphere()
+  const [isEditingScaleValueLabel, setIsEditingScaleValueLabel] = useState(false)
+  const [edges, setEdges] = useState([] as readonly any[])
+
+  useEffect(() => {
+    if (incomingEdges) {
+      setEdges(incomingEdges)
+      setIsEditingScaleValueLabel(false)
+    }
+  }, [incomingEdges])
 
   const gotoTemplateDetail = () => {
     commitLocalUpdate(atmosphere, (store) => {
       store.get(team.id)?.setValue(null, 'editingScaleId')
     })
+  }
+
+  if (edges.length === 0 && !isEditingScaleValueLabel) {
+    return <AddPokerTemplateScaleValue setIsEditing={setIsEditingScaleValueLabel} />
   }
 
   return (
@@ -141,7 +158,18 @@ const PokerTemplateScaleDetails = (props: Props) => {
           </ScaleNameAndValues>
         </ScaleHeader>
         <TemplateScaleValueList scale={scale} />
-        <AddPokerTemplateScaleValue scaleId={scale.id} scaleValues={scale.values} />
+        <NewTemplateScaleValueLabelInput
+          isOwner={isOwner}
+          isHover={true}
+          isEditing={isEditingScaleValueLabel}
+          setIsEditing={setIsEditingScaleValueLabel}
+          scale={scale}
+        />
+        {!isEditingScaleValueLabel && scale.values.length < Threshold.MAX_POKER_TEMPLATE_SCALES &&
+          <AddPokerTemplateScaleValue
+            setIsEditing={setIsEditingScaleValueLabel}
+          />
+        }
       </Scrollable>
     </ScaleValueEditor>
   )
@@ -160,10 +188,10 @@ export default createFragmentContainer(PokerTemplateScaleDetails, {
           name
           teamId
           ...TemplateScaleValueList_scale
+          ...NewTemplateScaleValueLabelInput_scale
           values {
             label
             isSpecial
-            ...AddPokerTemplateScaleValue_scaleValues
           }
         }
       }

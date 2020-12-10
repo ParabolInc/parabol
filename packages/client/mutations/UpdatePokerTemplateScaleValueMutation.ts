@@ -13,7 +13,6 @@ graphql`
     scale {
       id
       values {
-        ...ScaleValuePalettePicker_scaleValue
         ...EditableTemplateScaleValueLabel_scaleValue
       }
     }

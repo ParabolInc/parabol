@@ -5,7 +5,6 @@ import {createFragmentContainer} from 'react-relay'
 import Icon from '~/components/Icon'
 import PlainButton from '~/components/PlainButton/PlainButton'
 import {BezierCurve} from '~/types/constEnums'
-import {EditableTemplateScaleValueColor_scaleValue} from '~/__generated__/EditableTemplateScaleValueColor_scaleValue.graphql'
 import {EditableTemplateScaleValueColor_scale} from '~/__generated__/EditableTemplateScaleValueColor_scale.graphql'
 import ScaleValuePalettePicker from './ScaleValuePalettePicker'
 import {MenuPosition} from '../../../hooks/useCoords'
@@ -15,8 +14,10 @@ import {ICON_SIZE} from '../../../styles/typographyV2'
 
 interface Props {
   isOwner: boolean
-  scaleValue: EditableTemplateScaleValueColor_scaleValue
   scale: EditableTemplateScaleValueColor_scale
+  scaleValueLabel: string
+  scaleValueColor: string
+  setScaleValueColor?: (scaleValueColor: string) => void
 }
 
 const ScaleValueColor = styled(PlainButton)<{isOwner: boolean}>(({isOwner}) => ({
@@ -55,17 +56,21 @@ const DropdownIcon = styled(Icon)({
 })
 
 const EditableTemplateScaleValueColor = (props: Props) => {
-  const {isOwner, scaleValue, scale} = props
-  const {color} = scaleValue
+  const {isOwner, scaleValueLabel, scaleValueColor, scale, setScaleValueColor} = props
   const {menuProps, menuPortal, originRef, togglePortal} = useMenu<HTMLButtonElement>(
     MenuPosition.UPPER_LEFT,
     {parentId: 'templateModal'}
   )
   return (
     <ScaleValueColor ref={originRef} isOwner={isOwner} onClick={isOwner ? togglePortal : undefined}>
-      <ColorBadge color={color} />
+      <ColorBadge color={scaleValueColor} />
       <DropdownIcon>arrow_drop_down</DropdownIcon>
-      {menuPortal(<ScaleValuePalettePicker menuProps={menuProps} scaleValue={scaleValue} scale={scale} />)}
+      {menuPortal(<ScaleValuePalettePicker menuProps={menuProps}
+        scaleValueLabel={scaleValueLabel}
+        scaleValueColor={scaleValueColor}
+        scale={scale}
+        setScaleValueColor={setScaleValueColor}
+      />)}
     </ScaleValueColor>
   )
 }
@@ -74,12 +79,6 @@ export default createFragmentContainer(EditableTemplateScaleValueColor, {
   scale: graphql`
     fragment EditableTemplateScaleValueColor_scale on TemplateScale {
       ...ScaleValuePalettePicker_scale
-    }
-  `,
-  scaleValue: graphql`
-    fragment EditableTemplateScaleValueColor_scaleValue on TemplateScaleValue {
-      ...ScaleValuePalettePicker_scaleValue
-      color
     }
   `
 })

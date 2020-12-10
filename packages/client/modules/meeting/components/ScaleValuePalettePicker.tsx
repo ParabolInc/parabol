@@ -6,16 +6,17 @@ import Menu from '~/components/Menu'
 import PaletteColor from '~/components/PaletteColor/PaletteColor'
 import UpdatePokerTemplateScaleValueMutation from '~/mutations/UpdatePokerTemplateScaleValueMutation'
 import palettePickerOptions from '~/styles/palettePickerOptions'
-import {ScaleValuePalettePicker_scaleValue} from '../../../__generated__/ScaleValuePalettePicker_scaleValue.graphql'
 import {ScaleValuePalettePicker_scale} from '../../../__generated__/ScaleValuePalettePicker_scale.graphql'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import {MenuProps} from '../../../hooks/useMenu'
 import useMutationProps from '../../../hooks/useMutationProps'
 
 interface Props {
-  scaleValue: ScaleValuePalettePicker_scaleValue
   scale: ScaleValuePalettePicker_scale
+  scaleValueLabel: string
+  scaleValueColor: string
   menuProps: MenuProps
+  setScaleValueColor?: (scaleValueColor: string) => void
 }
 
 const ScaleValuePaletteDropDown = styled(Menu)({
@@ -34,18 +35,22 @@ const ScaleValuePaletteList = styled('ul')({
 })
 
 const ScaleValuePalettePicker = (props: Props) => {
-  const {scaleValue, scale, menuProps} = props
+  const {scaleValueLabel, scaleValueColor, scale, menuProps, setScaleValueColor} = props
   const {submitting, submitMutation, onError, onCompleted} = useMutationProps()
   const {closePortal} = menuProps
-  const {color: scaleValueColor} = scaleValue
   const atmosphere = useAtmosphere()
   const allTakenColors = scale.values.map((scaleValue) => scaleValue.color)
   const handleClick = (newColor: string) => {
+    if (setScaleValueColor) {
+      setScaleValueColor(newColor)
+      return
+    }
+
     if (submitting) return
     submitMutation()
 
     const scaleId = scale.id
-    const oldScaleValue = {label: scaleValue.label, color: scaleValue.color}
+    const oldScaleValue = {label: scaleValueLabel, color: scaleValueColor}
     const newScaleValue = {...oldScaleValue, color: newColor}
     UpdatePokerTemplateScaleValueMutation(atmosphere, {scaleId, oldScaleValue, newScaleValue}, {}, onError, onCompleted)
     closePortal()
@@ -78,12 +83,6 @@ export default createFragmentContainer(ScaleValuePalettePicker, {
         label
         color
       }
-    }
-  `,
-  scaleValue: graphql`
-    fragment ScaleValuePalettePicker_scaleValue on TemplateScaleValue {
-      label
-      color
     }
   `
 })
