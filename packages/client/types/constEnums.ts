@@ -264,6 +264,12 @@ export const enum ServerChannel {
   GQL_EXECUTOR_REQUEST = 'gqlExRreq',
   GQL_EXECUTOR_RESPONSE = 'gqlExRes'
 }
+
+export const enum SubColumn {
+  LEFT = 'LEFT',
+  RIGHT = 'RIGHT'
+}
+
 export const enum SubscriptionChannel {
   TASK = 'task',
   TEAM = 'team',

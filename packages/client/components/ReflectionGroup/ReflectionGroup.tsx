@@ -29,6 +29,7 @@ export const getCardStackPadding = (count: number) => {
 }
 
 const Group = styled('div')<{staticReflectionCount: number}>(({staticReflectionCount}) => ({
+  height: 'max-content',
   position: 'relative',
   paddingTop: ElementWidth.REFLECTION_CARD_PADDING,
   paddingBottom: ElementWidth.REFLECTION_CARD_PADDING + getCardStackPadding(staticReflectionCount),

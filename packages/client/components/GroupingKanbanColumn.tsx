@@ -11,7 +11,13 @@ import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
 import CreateReflectionMutation from '../mutations/CreateReflectionMutation'
 import {PALETTE} from '../styles/paletteV2'
-import {BezierCurve, Breakpoint, DragAttribute, MeetingControlBarEnum} from '../types/constEnums'
+import {
+  BezierCurve,
+  Breakpoint,
+  DragAttribute,
+  MeetingControlBarEnum,
+  SubColumn
+} from '../types/constEnums'
 import {NewMeetingPhaseTypeEnum} from '../types/graphql'
 import getNextSortOrder from '../utils/getNextSortOrder'
 import {SwipeColumn} from './GroupingKanban'
@@ -29,25 +35,30 @@ const Column = styled('div')<{
   borderRadius: 8,
   display: 'flex',
   flex: 1,
-  flexDirection: 'column',
+  flexDirection: 'row',
+  flexWrap: 'wrap',
   height: '100%',
   position: 'relative',
   transition: `all 100ms ${BezierCurve.DECELERATE}`,
   [makeMinWidthMediaQuery(Breakpoint.SINGLE_REFLECTION_COLUMN)]: {
     height: isLengthExpanded ? '100%' : `calc(100% - ${MeetingControlBarEnum.HEIGHT}px)`,
     margin: `0 ${isLastColumn ? 16 : 8}px 0px ${isFirstColumn ? 16 : 8}px`,
-    minWidth: isWidthExpanded ? 320 * 2 : 320
+    maxWidth: isWidthExpanded ? 320 * 2 : 320
   }
 }))
 
 const ColumnBody = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
+  alignContent: 'flex-start',
+  display: 'flex',
   flex: 1,
+  flexDirection: 'row',
+  flexWrap: 'wrap',
   height: '100%',
-  overflowY: 'auto',
-  overflowX: 'hidden',
+  maxHeight: 'fit-content',
   minHeight: 200,
-  padding: isDesktop ? '6px 12px' : '6px 8px',
-  width: 'fit-content'
+  overflowX: 'hidden',
+  overflowY: 'auto',
+  padding: isDesktop ? '6px 12px' : '6px 8px'
 }))
 
 interface Props {
@@ -81,6 +92,7 @@ const GroupingKanbanColumn = (props: Props) => {
   const {isComplete, phaseType} = localStage
   const {submitting, onError, submitMutation, onCompleted} = useMutationProps()
   const atmosphere = useAtmosphere()
+  const subColumnsArr = isWidthExpanded ? [SubColumn.LEFT, SubColumn.RIGHT] : ['']
 
   const onClick = () => {
     if (submitting || isAnyEditing) return
@@ -124,29 +136,38 @@ const GroupingKanbanColumn = (props: Props) => {
         submitting={submitting}
         toggleWidth={toggleWidth}
       />
-      <ColumnBody
-        data-cy={`group-column-${question}-body`}
-        isDesktop={isDesktop}
-        {...{[DragAttribute.DROPZONE]: promptId}}
-      >
-        {reflectionGroups
-          .filter((group) => {
-            // group may be undefined because relay could GC before useMemo in the Kanban recomputes >:-(
-            return group && group.reflections.length > 0
-          })
-          .map((reflectionGroup, idx) => {
-            return (
-              <ReflectionGroup
-                dataCy={`${question}-group-${idx}`}
-                key={reflectionGroup.id}
-                meeting={meeting}
-                phaseRef={phaseRef}
-                reflectionGroup={reflectionGroup}
-                swipeColumn={swipeColumn}
-              />
-            )
-          })}
-      </ColumnBody>
+      {subColumnsArr.map((subColumn) => {
+        return (
+          <ColumnBody
+            data-cy={`group-column-${question}-body`}
+            isDesktop={isDesktop}
+            key={`${promptId}-${subColumn}`}
+            {...{[DragAttribute.DROPZONE]: promptId}}
+          >
+            {reflectionGroups
+              .filter((group) => {
+                // group may be undefined because relay could GC before useMemo in the Kanban recomputes >:-(
+                return (
+                  group &&
+                  group.reflections.length > 0 &&
+                  (isWidthExpanded ? group.subColumn === subColumn : true)
+                )
+              })
+              .map((reflectionGroup, idx) => {
+                return (
+                  <ReflectionGroup
+                    dataCy={`${question}-group-${idx}`}
+                    key={reflectionGroup.id}
+                    meeting={meeting}
+                    phaseRef={phaseRef}
+                    reflectionGroup={reflectionGroup}
+                    swipeColumn={swipeColumn}
+                  />
+                )
+              })}
+          </ColumnBody>
+        )
+      })}
     </Column>
   )
 }
@@ -177,6 +198,7 @@ export default createFragmentContainer(GroupingKanbanColumn, {
       reflections {
         id
       }
+      subColumn
     }
   `,
   prompt: graphql`

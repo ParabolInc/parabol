@@ -53,8 +53,14 @@ extend type Task {
   contentText: String
 }
 
+enum SubColumn {
+  LEFT
+  RIGHT
+}
+
 extend type RetroReflectionGroup {
   isExpanded: Boolean
+  subColumn: SubColumn
 }
 
 extend type RetroReflection {

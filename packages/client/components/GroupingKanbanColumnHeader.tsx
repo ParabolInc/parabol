@@ -37,9 +37,6 @@ const ColumnHeader = styled('div')<{isWidthExpanded: boolean}>(({isWidthExpanded
   justifyContent: 'space-between',
   lineHeight: '24px',
   margin: '0 auto',
-  maxWidth: isWidthExpanded
-    ? ElementWidth.REFLECTION_CARD_PADDED * 2
-    : ElementWidth.REFLECTION_CARD_PADDED,
   paddingTop: 12,
   width: '100%'
 }))
