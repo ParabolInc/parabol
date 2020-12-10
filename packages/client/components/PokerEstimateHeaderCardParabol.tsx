@@ -16,7 +16,6 @@ import {ITask} from '../types/graphql'
 import useBreakpoint from '~/hooks/useBreakpoint'
 import {Breakpoint} from '~/types/constEnums'
 import useEditorState from '~/hooks/useEditorState'
-import {ZIndex} from '~/types/constEnums'
 import TaskEditor from './TaskEditor/TaskEditor'
 import useTaskChildFocus from '~/hooks/useTaskChildFocus'
 
@@ -26,10 +25,12 @@ const HeaderCardWrapper = styled('div')<{isDesktop: boolean}>(({isDesktop}) => (
 }))
 
 const HeaderCard = styled('div')({
+  alignItems: 'flex-start',
   background: PALETTE.CONTROL_LIGHT,
   borderRadius: 4,
   boxShadow: Elevation.Z1,
-  padding: '12px 16px',
+  display: 'flex',
+  padding: '12px 8px 12px 16px',
   maxWidth: 1504, // matches widest dimension column 1600 - padding etc.
   margin: '0 auto',
   width: '100%',
@@ -37,11 +38,8 @@ const HeaderCard = styled('div')({
 })
 
 const CardIcons = styled('div')({
-  display: 'flex',
-  position: 'absolute',
-  top: 12,
-  right: 16,
-  zIndex: ZIndex.FAB
+  alignItems: 'center',
+  display: 'flex'
 })
 
 const EditorWrapper = styled('div')<{isExpanded: boolean, maxHeight: number}>(({isExpanded, maxHeight}) => ({
@@ -87,6 +85,11 @@ const StyledTaskEditor = styled(TaskEditor)({
   height: 'auto'
 })
 
+const Content = styled('div')({
+  flex: 1,
+  paddingRight: 4
+})
+
 interface Props {
   stage: PokerEstimateHeaderCardParabol_stage
 }
@@ -109,50 +112,52 @@ const PokerEstimateHeaderCardParabol = (props: Props) => {
   const editorRef = useRef<HTMLTextAreaElement>(null)
   const descriptionRef = useRef<HTMLDivElement>(null)
   const maxHeight = descriptionRef.current?.scrollHeight ?? 1000
-  useEffect(() => () => { setIsExpanded(false) }, [taskId])
+  useEffect(() => () => {setIsExpanded(false)}, [taskId])
   const {useTaskChild} = useTaskChildFocus(taskId)
 
   return (
     <>
       <HeaderCardWrapper isDesktop={isDesktop}>
         <HeaderCard>
-          <CardIcons>
-            <IntegrationToggleWrapper>
-              {!integration && 
-              <TaskFooterIntegrateToggle
-                dataCy={`task-integration`}
-                mutationProps={mutationProps}
-                task={story}
+          <Content>
+            <EditorWrapper
+              ref={descriptionRef}
+              isExpanded={isExpanded}
+              maxHeight={maxHeight}
+            >
+              <StyledTaskEditor
+                dataCy={`task`}
+                editorRef={editorRef}
+                editorState={editorState}
+                readOnly={true}
+                setEditorState={setEditorState}
+                teamId={teamId}
                 useTaskChild={useTaskChild}
               />
+            </EditorWrapper>
+            <StyledTaskIntegrationLink
+              dataCy={`task`}
+              integration={integration || null}
+              showJiraLabelPrefix={false}
+            >
+              <StyledIcon>launch</StyledIcon>
+            </StyledTaskIntegrationLink>
+          </Content>
+          <CardIcons>
+            <IntegrationToggleWrapper>
+              {!integration &&
+                <TaskFooterIntegrateToggle
+                  dataCy={`task-integration`}
+                  mutationProps={mutationProps}
+                  task={story}
+                  useTaskChild={useTaskChild}
+                />
               }
             </IntegrationToggleWrapper>
             <CardButton>
               <IconLabel icon='unfold_more' onClick={() => setIsExpanded(!isExpanded)} />
             </CardButton>
           </CardIcons>
-          <EditorWrapper
-            ref={descriptionRef}
-            isExpanded={isExpanded}
-            maxHeight={maxHeight}
-          >
-            <StyledTaskEditor
-              dataCy={`task`}
-              editorRef={editorRef}
-              editorState={editorState}
-              readOnly={true}
-              setEditorState={setEditorState}
-              teamId={teamId}
-              useTaskChild={useTaskChild}
-            />
-          </EditorWrapper>
-          <StyledTaskIntegrationLink
-            dataCy={`task`}
-            integration={integration || null}
-            showJiraLabelPrefix={false}
-          >
-            <StyledIcon>launch</StyledIcon>
-          </StyledTaskIntegrationLink>
         </HeaderCard>
       </HeaderCardWrapper>
     </>
