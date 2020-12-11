@@ -189,6 +189,7 @@ export default createFragmentContainer(NewTemplateScaleValueLabelInput, {
         id
         label
         color
+        sortOrder
         isSpecial
       }
     }

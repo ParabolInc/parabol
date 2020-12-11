@@ -9,13 +9,7 @@ import {AddPokerTemplateScaleValueMutation as TAddPokerTemplateScaleValueMutatio
 graphql`
   fragment AddPokerTemplateScaleValueMutation_scale on AddPokerTemplateScaleValuePayload {
     scale {
-      id
-      name
-      values {
-        label
-        color
-      }
-      teamId
+      ...NewTemplateScaleValueLabelInput_scale
     }
   }
 `
