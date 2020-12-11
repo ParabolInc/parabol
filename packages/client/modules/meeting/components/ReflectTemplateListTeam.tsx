@@ -35,16 +35,16 @@ const StyledLink = styled('span')({
 
 interface Props {
   isActive: boolean
-  selectedTemplateId: string
+  activeTemplateId: string
   showPublicTemplates: () => void
   teamId: string
   teamTemplates: ReflectTemplateListTeam_teamTemplates
 }
 
 const ReflectTemplateListTeam = (props: Props) => {
-  const {isActive, selectedTemplateId, showPublicTemplates, teamId, teamTemplates} = props
+  const {isActive, activeTemplateId, showPublicTemplates, teamId, teamTemplates} = props
   const edges = teamTemplates.map((t) => ({node: {id: t.id}})) as readonly {node: {id: string}}[]
-  useSelectTopTemplate(edges, selectedTemplateId, teamId, isActive)
+  useSelectTopTemplate(edges, activeTemplateId, teamId, isActive)
   if (teamTemplates.length === 0) {
     return (
       <Message>
@@ -60,7 +60,7 @@ const ReflectTemplateListTeam = (props: Props) => {
           <ReflectTemplateItem
             key={template.id}
             template={template}
-            isActive={template.id === selectedTemplateId}
+            isActive={template.id === activeTemplateId}
             lowestScope={'TEAM'}
             teamId={teamId}
           />

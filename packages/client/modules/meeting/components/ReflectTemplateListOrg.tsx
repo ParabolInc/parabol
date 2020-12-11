@@ -30,7 +30,7 @@ const ReflectTemplateListOrg = (props: Props) => {
   const {viewer} = props
   const team = viewer.team!
   const {id: teamId, meetingSettings} = team
-  const selectedTemplateId = meetingSettings.selectedTemplateId!
+  const selectedTemplateId = meetingSettings.activeTemplate!.id
   const organizationTemplates = meetingSettings.organizationTemplates!
   const {edges} = organizationTemplates
   useSelectTopTemplate(edges, selectedTemplateId, teamId, true)
@@ -71,7 +71,9 @@ export default createFragmentContainer(ReflectTemplateListOrg, {
                 }
               }
             }
-            selectedTemplateId
+            activeTemplate {
+              id
+            }
           }
         }
       }

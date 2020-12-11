@@ -9,6 +9,7 @@ import ReflectTemplateDetails from './ReflectTemplateDetails'
 import ReflectTemplateList from './ReflectTemplateList'
 
 interface Props {
+  closePortal: () => void
   retroMeetingSettings: ReflectTemplateModal_retroMeetingSettings
 }
 
@@ -22,7 +23,7 @@ const StyledDialogContainer = styled(DialogContainer)({
 const SCOPES = ['TEAM', 'ORGANIZATION', 'PUBLIC']
 
 const ReflectTemplateModal = (props: Props) => {
-  const {retroMeetingSettings} = props
+  const {closePortal, retroMeetingSettings} = props
   const {selectedTemplate, team} = retroMeetingSettings
   const {id: teamId, orgId} = team
   const lowestScope = getTemplateList(teamId, orgId, selectedTemplate)
@@ -45,6 +46,7 @@ const ReflectTemplateModal = (props: Props) => {
         settings={retroMeetingSettings}
         gotoTeamTemplates={gotoTeamTemplates}
         gotoPublicTemplates={gotoPublicTemplates}
+        closePortal={closePortal}
       />
     </StyledDialogContainer>
   )

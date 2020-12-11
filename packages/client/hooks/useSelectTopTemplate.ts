@@ -1,5 +1,5 @@
 import {useEffect, useRef} from 'react'
-import SelectTemplate from '../mutations/SelectTemplateMutation'
+import SelectTemplateMutation from '../mutations/SelectTemplateMutation'
 import isTempId from '../utils/relay/isTempId'
 import useAtmosphere from './useAtmosphere'
 
@@ -15,7 +15,7 @@ const useSelectTopTemplate = (edges: readonly {node: {id: string}}[], selectedTe
       const listTemplateIds = edges.map(({node}) => node.id)
       const isSelectedInView = listTemplateIds.includes(selectedTemplateId)
       if (!isSelectedInView) {
-        SelectTemplate(atmosphere, {selectedTemplateId: listTemplateIds[0], teamId})
+        SelectTemplateMutation(atmosphere, {selectedTemplateId: listTemplateIds[0], teamId})
       }
     }, 300)
   }, [isActive, selectedTemplateId])

@@ -2,8 +2,8 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useEffect, useRef} from 'react'
 import {createFragmentContainer} from 'react-relay'
-import FloatingActionButton from '../../../components/FloatingActionButton'
 import Icon from '../../../components/Icon'
+import LinkButton from '../../../components/LinkButton'
 import TooltipStyled from '../../../components/TooltipStyled'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
@@ -15,22 +15,23 @@ const ErrorLine = styled(TooltipStyled)({
   margin: '0 0 8px'
 })
 
-const ButtonBlock = styled('div')({
-  alignItems: 'flex-end',
+const AddPokerTemplateLink = styled(LinkButton)({
+  alignItems: 'center',
   display: 'flex',
-  flexDirection: 'column',
-  justifyContent: 'flex-end',
-  padding: '8px 16px 16px 8px',
-  position: 'absolute',
-  pointerEvents: 'none',
-  right: 0,
-  bottom: 0,
-  width: '100%'
+  justifyContent: 'flex-start',
+  fontSize: 16,
+  fontWeight: 600,
+  lineHeight: '24px',
+  margin: 0,
+  marginTop: 16,
+  marginBottom: 16,
+  outline: 'none',
+  padding: '4px 0'
 })
 
-const Button = styled(FloatingActionButton)({
-  padding: 15,
-  pointerEvents: 'all'
+const AddPokerTemplateLinkPlus = styled(Icon)({
+  display: 'block',
+  margin: '0 16px 0 16px'
 })
 
 interface Props {
@@ -69,13 +70,18 @@ const AddNewPokerTemplate = (props: Props) => {
     AddPokerTemplateMutation(atmosphere, {teamId}, {onError, onCompleted})
     gotoTeamTemplates()
   }
+
+  const containsNewTemplate = pokerTemplates.find((template) => template.name === '*New Template')
+
+  if (pokerTemplates.length > Threshold.MAX_POKER_TEAM_TEMPLATES || containsNewTemplate) return null
   return (
-    <ButtonBlock>
+    <div>
       {error && <ErrorLine>{error.message}</ErrorLine>}
-      <Button onClick={addNewTemplate} palette='blue' waiting={submitting}>
-        <Icon>add</Icon>
-      </Button>
-    </ButtonBlock>
+      <AddPokerTemplateLink palette='blue' onClick={addNewTemplate} waiting={submitting}>
+        <AddPokerTemplateLinkPlus>add</AddPokerTemplateLinkPlus>
+        <div>Create New Template</div>
+      </AddPokerTemplateLink>
+    </div>
   )
 }
 

@@ -1,14 +1,15 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useRef} from 'react'
-import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
+import {createFragmentContainer} from 'react-relay'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useScrollIntoView from '../../../hooks/useScrollIntoVIew'
-import SelectTemplate from '../../../mutations/SelectTemplateMutation'
 import {DECELERATE} from '../../../styles/animation'
 import textOverflow from '../../../styles/helpers/textOverflow'
 import {PALETTE} from '../../../styles/paletteV2'
+import {MeetingTypeEnum} from '../../../types/graphql'
 import makeTemplateDescription from '../../../utils/makeTemplateDescription'
+import setTemplateId from '../../../utils/relay/setTemplateId'
 import {PokerTemplateItem_template} from '../../../__generated__/PokerTemplateItem_template.graphql'
 
 const TemplateItem = styled('li')<{isActive: boolean}>(({isActive}) => ({
@@ -64,11 +65,7 @@ const PokerTemplateItem = (props: Props) => {
   const ref = useRef<HTMLLIElement>(null)
   useScrollIntoView(ref, isActive)
   const selectTemplate = () => {
-    if (isActive) return
-    SelectTemplate(atmosphere, {selectedTemplateId: templateId, teamId})
-    commitLocalUpdate(atmosphere, (store) => {
-      store.get(teamId)?.setValue(null, 'editingScaleId')
-    })
+    setTemplateId(atmosphere, teamId, templateId, MeetingTypeEnum.poker)
   }
   return (
     <TemplateItem ref={ref} isActive={isActive} onClick={selectTemplate}>

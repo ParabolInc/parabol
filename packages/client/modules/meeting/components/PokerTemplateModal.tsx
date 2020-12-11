@@ -10,6 +10,7 @@ import PokerTemplateList from './PokerTemplateList'
 import PokerTemplateScaleDetailsRoot from './PokerTemplateScaleDetailsRoot'
 
 interface Props {
+  closePortal: () => void
   pokerMeetingSettings: PokerTemplateModal_pokerMeetingSettings
 }
 
@@ -23,7 +24,7 @@ const StyledDialogContainer = styled(DialogContainer)({
 const SCOPES = ['TEAM', 'ORGANIZATION', 'PUBLIC']
 
 const PokerTemplateModal = (props: Props) => {
-  const {pokerMeetingSettings} = props
+  const {closePortal, pokerMeetingSettings} = props
   const {selectedTemplate, team} = pokerMeetingSettings
   const {id: teamId, orgId, editingScaleId} = team
   const lowestScope = getTemplateList(teamId, orgId, selectedTemplate)
@@ -53,6 +54,7 @@ const PokerTemplateModal = (props: Props) => {
           settings={pokerMeetingSettings}
           gotoTeamTemplates={gotoTeamTemplates}
           gotoPublicTemplates={gotoPublicTemplates}
+          closePortal={closePortal}
         />
       }
 
