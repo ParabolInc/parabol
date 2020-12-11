@@ -7,6 +7,7 @@ import {TemplateScaleValueList_scale} from '~/__generated__/TemplateScaleValueLi
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
 import MovePokerTemplateScaleValueMutation from '../../../mutations/MovePokerTemplateScaleValueMutation'
+import AddScaleValueButtonInput from './AddScaleValueButtonInput'
 import TemplateScaleValueItem from './TemplateScaleValueItem'
 
 interface Props {
@@ -14,8 +15,9 @@ interface Props {
 }
 
 const ScaleList = styled('div')({
-  margin: 0,
-  padding: 0,
+  display: 'flex',
+  flexDirection: 'column',
+  overflow: 'auto',
   width: '100%'
 })
 
@@ -23,7 +25,7 @@ const TEMPLATE_SCALE_VALUE = 'TEMPLATE_SCALE_VALUE'
 
 const TemplateScaleValueList = (props: Props) => {
   const {scale} = props
-  const {onError, onCompleted} = useMutationProps()
+  const {onError, onCompleted, submitting, submitMutation} = useMutationProps()
   const atmosphere = useAtmosphere()
 
   const onDragEnd = (result) => {
@@ -37,7 +39,7 @@ const TemplateScaleValueList = (props: Props) => {
     ) {
       return
     }
-
+    submitMutation()
     const sourceScaleValue = scaleValues[source.index]
 
     const variables = {scaleId: scale.id, label: sourceScaleValue.label, index: destination.index}
@@ -45,8 +47,8 @@ const TemplateScaleValueList = (props: Props) => {
   }
 
   return (
-    <DragDropContext onDragEnd={onDragEnd}>
-      <ScaleList>
+    <ScaleList>
+      <DragDropContext onDragEnd={onDragEnd}>
         <Droppable droppableId={TEMPLATE_SCALE_VALUE} isDropDisabled={false}>
           {(provided) => {
             return (
@@ -56,7 +58,7 @@ const TemplateScaleValueList = (props: Props) => {
                     key={scaleValue.id}
                     draggableId={scaleValue.id}
                     index={idx}
-                    isDragDisabled={scaleValue.isSpecial}
+                    isDragDisabled={submitting}
                   >
                     {(dragProvided, dragSnapshot) => {
                       return (
@@ -76,16 +78,18 @@ const TemplateScaleValueList = (props: Props) => {
             )
           }}
         </Droppable>
-      </ScaleList>
-    </DragDropContext>
+      </DragDropContext>
+      <AddScaleValueButtonInput scale={scale} />
+    </ScaleList>
   )
 }
 
 export default createFragmentContainer(TemplateScaleValueList, {
   scale: graphql`
     fragment TemplateScaleValueList_scale on TemplateScale {
-      id
       ...TemplateScaleValueItem_scale
+      ...AddScaleValueButtonInput_scale
+      id
       values {
         id
         label

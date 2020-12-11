@@ -1,4 +1,4 @@
-import React, {FormEvent, useState} from 'react'
+import React, {FormEvent, useEffect, useRef, useState} from 'react'
 import graphql from 'babel-plugin-relay/macro'
 import styled from '@emotion/styled'
 import {PALETTE} from '~/styles/paletteV2'
@@ -13,6 +13,7 @@ import Icon from '../../../components/Icon'
 import {ICON_SIZE} from '../../../styles/typographyV2'
 import Legitity from '../../../validation/Legitity'
 import useEventCallback from '../../../hooks/useEventCallback'
+import useScrollIntoView from '../../../hooks/useScrollIntoVIew'
 
 const Form = styled('form')({
   width: '100%',
@@ -62,34 +63,32 @@ const RemoveScaleValueIcon = styled(Icon)({
   textAlign: 'center',
 })
 
+const predictNextLabel = (values: NewTemplateScaleValueLabelInput_scale['values']) => {
+  const existingLabels = values.filter(({isSpecial}) => !isSpecial).map(({label}) => label)
+  const potentialNextLabel = Number(existingLabels[existingLabels.length - 1]) + 1
+  const isNextLabelValid = !isNaN(potentialNextLabel) ? (potentialNextLabel >= 0 && potentialNextLabel < 100 && !existingLabels.includes(String(potentialNextLabel))) : false
+  return isNextLabelValid ? potentialNextLabel.toString() : 'Enter a new scale value'
+}
 interface Props {
-  isOwner: boolean
-  isEditing: boolean
-  setIsEditing: (isEditing: boolean) => void
-  isHover: boolean
+  closeAdding: () => void
   scale: NewTemplateScaleValueLabelInput_scale
 }
 
 const NewTemplateScaleValueLabelInput = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {error, onError, onCompleted, submitMutation, submitting} = useMutationProps()
-  const {isEditing, setIsEditing, scale} = props
+  const {closeAdding, scale} = props
+  const {id: scaleId, values} = scale
   const [newScaleValueLabel, setNewScaleValueLabel] = useState("")
   const [scaleValueColor, setScaleValueColor] = useState("")
-
-  React.useEffect(() => {
-    const pickedColors = scale.values.filter(({isSpecial}) => !isSpecial).map(({color}) => color)
-    const availableNewColor = palettePickerOptions.find(
-      (color) => !pickedColors.includes(color.hex)
-    )
-    setScaleValueColor(availableNewColor?.hex || PALETTE.PROMPT_GREEN)
+  const isEmpty = !newScaleValueLabel
+  useEffect(() => {
+    const pickedColors = values.filter(({isSpecial}) => !isSpecial).map(({color}) => color)
+    const hexColors = palettePickerOptions.map(({hex}) => hex)
+    const lastColor = pickedColors[pickedColors.length - 1] || PALETTE.PROMPT_GREEN
+    const availableNewColor = hexColors.find((hex) => !pickedColors.includes(hex)) || lastColor
+    setScaleValueColor(availableNewColor)
   }, [scale])
-
-  const makeHandleCompleted = (onCompleted: () => void) => () => {
-    onCompleted()
-    setNewScaleValueLabel("")
-    setIsEditing(true)
-  }
 
   const legitify = (value: string) => {
     return new Legitity(value)
@@ -97,9 +96,10 @@ const NewTemplateScaleValueLabelInput = (props: Props) => {
       .required('Please enter a value')
       .max(2, 'Value cannot be longer than 2 characters')
       .test((mVal) => {
-        const isDupe = mVal ? scale.values.find(
+        if (!mVal) return undefined
+        const isDupe = values.find(
           (scaleValue) => scaleValue.label.toLowerCase() === mVal.toLowerCase()
-        ) : undefined
+        )
         return isDupe ? 'That value already exists' : undefined
       })
   }
@@ -108,55 +108,44 @@ const NewTemplateScaleValueLabelInput = (props: Props) => {
     const res = legitify(rawValue)
     if (res.error) {
       onError(new Error(res.error))
-    } else if (error) {
-      onError()
+    } else {
+      onCompleted()
     }
     return res
   }
 
   const handleKeyDown = useEventCallback((e: React.KeyboardEvent) => {
     if (e.key === 'Escape') {
-      setIsEditing(false)
+      closeAdding()
     }
   })
 
   const handleCreateNewLabel = (e: FormEvent) => {
     e.preventDefault()
     const {error} = validate(newScaleValueLabel)
-    if (error || !newScaleValueLabel.length) {
-      setIsEditing(false)
-      return
-    }
-
-    if (submitting) return
+    if (submitting || error) return
     submitMutation()
-
     const scaleValue = {
       color: scaleValueColor,
       label: newScaleValueLabel,
       isSpecial: false
     }
-    const handleCompleted = makeHandleCompleted(onCompleted)
+    setNewScaleValueLabel("")
     AddPokerTemplateScaleValueMutation(
       atmosphere,
-      {scaleId: scale.id, scaleValue},
+      {scaleId, scaleValue},
       {
         onError,
-        onCompleted: handleCompleted
+        onCompleted
       }
     )
   }
-
-  const existingLabels = scale.values.filter(({isSpecial}) => !isSpecial).map(({label}) => label)
-  const potentialNextLabel = Number(existingLabels[existingLabels.length - 1]) + 1
-  const isNextLabelValid = !isNaN(potentialNextLabel) ? (potentialNextLabel >= 0 && potentialNextLabel < 100) : false
-  const nextLabel = isNextLabelValid ? potentialNextLabel.toString() : 'Enter a new scale value'
-
-
-  if (!isEditing) return null
+  const ref = useRef<HTMLDivElement>(null)
+  useScrollIntoView(ref, isEmpty)
+  const placeholder = predictNextLabel(values)
   return (
-    <NewScaleValueInput>
-      <EditableTemplateScaleValueColor isOwner={true} scale={scale}
+    <NewScaleValueInput ref={ref}>
+      <EditableTemplateScaleValueColor isOwner scale={scale}
         scaleValueColor={scaleValueColor} scaleValueLabel={newScaleValueLabel}
         setScaleValueColor={setScaleValueColor}
       />
@@ -167,13 +156,14 @@ const NewTemplateScaleValueLabelInput = (props: Props) => {
             setNewScaleValueLabel(e.target.value)
             validate(e.target.value)
           }}
-          placeholder={nextLabel}
+          placeholder={placeholder}
           onKeyDown={handleKeyDown}
+          value={newScaleValueLabel}
           type='text'
         />
         {error && <StyledError>{error.message}</StyledError>}
       </Form>
-      <RemoveScaleValueIcon onClick={() => setIsEditing(false)}>
+      <RemoveScaleValueIcon onClick={closeAdding}>
         cancel
       </RemoveScaleValueIcon>
     </NewScaleValueInput>

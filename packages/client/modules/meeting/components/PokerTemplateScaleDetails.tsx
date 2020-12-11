@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {useEffect, useState} from 'react'
+import React, {useEffect} from 'react'
 import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import FlatButton from '../../../components/FlatButton'
 import Icon from '../../../components/Icon'
@@ -9,11 +9,9 @@ import useAtmosphere from '../../../hooks/useAtmosphere'
 import textOverflow from '../../../styles/helpers/textOverflow'
 import {PALETTE} from '../../../styles/paletteV2'
 import {FONT_FAMILY} from '../../../styles/typographyV2'
-import {PokerCards, Threshold} from '../../../types/constEnums'
-import {PokerTemplateScaleDetails_viewer} from '../../../__generated__/PokerTemplateScaleDetails_viewer.graphql'
-import AddPokerTemplateScaleValue from './AddPokerTemplateScaleValue'
+import {PokerCards} from '../../../types/constEnums'
+import {PokerTemplateScaleDetails_team} from '../../../__generated__/PokerTemplateScaleDetails_team.graphql'
 import EditableTemplateScaleName from './EditableTemplateScaleName'
-import NewTemplateScaleValueLabelInput from './NewTemplateScaleValueLabelInput'
 import TemplateScaleValueList from './TemplateScaleValueList'
 
 const ScaleHeader = styled('div')({
@@ -65,13 +63,6 @@ const ScaleNameAndValues = styled('div')({
   flexDirection: 'column'
 })
 
-const Scrollable = styled('div')({
-  display: 'flex',
-  flexDirection: 'column',
-  overflow: 'auto',
-  width: '100%'
-})
-
 const ScaleDetailsTitle = styled('div')({
   fontFamily: FONT_FAMILY.SANS_SERIF,
   fontSize: 16,
@@ -96,102 +87,67 @@ const ScaleValues = styled('div')({
 })
 
 interface Props {
-  gotoTeamTemplates: () => void
-  gotoPublicTemplates: () => void
-  viewer: PokerTemplateScaleDetails_viewer
+  team: PokerTemplateScaleDetails_team
 }
 
+const specialCards = [PokerCards.QUESTION_CARD, PokerCards.PASS_CARD] as string[]
 const PokerTemplateScaleDetails = (props: Props) => {
-  const {viewer} = props
-  const team = viewer.team!
-  const {scales} = team
-  const scale = team.scale!
-  const incomingEdges = scale.values ?? null
-  const isOwner = scale.teamId === team!.id
+  const {team} = props
+  const {id: teamId, scales, editingScaleId} = team
+  const scale = scales.find((scale) => scale.id === editingScaleId)!
+  const {values} = scale
+  const isOwner = scale.teamId === teamId
   const atmosphere = useAtmosphere()
-  const [isEditingScaleValueLabel, setIsEditingScaleValueLabel] = useState(false)
-  const [edges, setEdges] = useState([] as readonly any[])
-
-  useEffect(() => {
-    if (incomingEdges) {
-      setEdges(incomingEdges)
-      setIsEditingScaleValueLabel(false)
-    }
-  }, [incomingEdges])
-
   const gotoTemplateDetail = () => {
     commitLocalUpdate(atmosphere, (store) => {
-      store.get(team.id)?.setValue(null, 'editingScaleId')
+      store.get(teamId)?.setValue(null, 'editingScaleId')
     })
   }
   useEffect(() => gotoTemplateDetail, [])
 
-  if (edges.length === 0 && !isEditingScaleValueLabel) {
-    return <AddPokerTemplateScaleValue setIsEditing={setIsEditingScaleValueLabel} />
-  }
-
   return (
     <ScaleValueEditor>
-      <Scrollable>
-        <ScaleDetailHeader>
-          <IconButton aria-label='Back to Template' onClick={gotoTemplateDetail}>
-            <BackIcon>arrow_back</BackIcon>
-          </IconButton>
-          <ScaleDetailsTitle>{'Edit Scale'}</ScaleDetailsTitle>
-        </ScaleDetailHeader>
-        <HR />
-        <ScaleHeader>
-          <ScaleNameAndValues>
-            <EditableTemplateScaleName
-              name={scale.name}
-              scaleId={scale.id}
-              scales={scales}
-              isOwner={isOwner}
-            />
-            <ScaleValues>
-              {
-                [...scale.values.filter(({isSpecial}) => !isSpecial).map(({label}) => label), PokerCards.QUESTION_CARD, PokerCards.PASS_CARD].join(", ")
-              }
-            </ScaleValues>
-            <ScaleValues>{'Note: all scales include ? and Pass cards'}</ScaleValues>
-          </ScaleNameAndValues>
-        </ScaleHeader>
-        <TemplateScaleValueList scale={scale} />
-        <NewTemplateScaleValueLabelInput
-          isOwner={isOwner}
-          isHover={true}
-          isEditing={isEditingScaleValueLabel}
-          setIsEditing={setIsEditingScaleValueLabel}
-          scale={scale}
-        />
-        {!isEditingScaleValueLabel && scale.values.length < Threshold.MAX_POKER_TEMPLATE_SCALES &&
-          <AddPokerTemplateScaleValue
-            setIsEditing={setIsEditingScaleValueLabel}
+      <ScaleDetailHeader>
+        <IconButton aria-label='Back to Template' onClick={gotoTemplateDetail}>
+          <BackIcon>arrow_back</BackIcon>
+        </IconButton>
+        <ScaleDetailsTitle>{'Edit Scale'}</ScaleDetailsTitle>
+      </ScaleDetailHeader>
+      <HR />
+      <ScaleHeader>
+        <ScaleNameAndValues>
+          <EditableTemplateScaleName
+            name={scale.name}
+            scaleId={scale.id}
+            scales={scales}
+            isOwner={isOwner}
           />
-        }
-      </Scrollable>
+          <ScaleValues>
+            {values.map(({label}) => label).filter((label) => !specialCards.includes(label)).concat(...specialCards).join(', ')}
+          </ScaleValues>
+          <ScaleValues>{'Note: all scales include ? and Pass cards'}</ScaleValues>
+        </ScaleNameAndValues>
+      </ScaleHeader>
+      <TemplateScaleValueList scale={scale} />
     </ScaleValueEditor>
   )
 }
 
 export default createFragmentContainer(PokerTemplateScaleDetails, {
-  viewer: graphql`
-    fragment PokerTemplateScaleDetails_viewer on User {
-      team(teamId: $teamId) {
+  team: graphql`
+    fragment PokerTemplateScaleDetails_team on Team {
+      id
+      editingScaleId
+      scales {
+        ...EditableTemplateScaleName_scales
+        ...TemplateScaleValueList_scale
+        ...NewTemplateScaleValueLabelInput_scale
         id
-        scales {
-          ...EditableTemplateScaleName_scales
-        }
-        scale(scaleId: $scaleId) {
-          id
-          name
-          teamId
-          ...TemplateScaleValueList_scale
-          ...NewTemplateScaleValueLabelInput_scale
-          values {
-            label
-            isSpecial
-          }
+        name
+        teamId
+        values {
+          label
+          isSpecial
         }
       }
     }
