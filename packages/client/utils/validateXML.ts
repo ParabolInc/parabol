@@ -1,6 +1,6 @@
 import jsdom from 'jsdom'
 
-const isXML = (possiblyXML: string): {error?: string} => {
+const validateXML = (possiblyXML: string): {error?: string} => {
   try {
     new jsdom.JSDOM(possiblyXML, {contentType: 'text/xml'})
   } catch(e) {
@@ -9,4 +9,4 @@ const isXML = (possiblyXML: string): {error?: string} => {
   return {}
 }
 
-export default isXML
+export default validateXML

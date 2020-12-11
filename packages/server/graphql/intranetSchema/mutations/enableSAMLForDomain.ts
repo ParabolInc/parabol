@@ -1,6 +1,7 @@
 import {GraphQLNonNull, GraphQLString} from 'graphql'
 import getRethink from '../../../database/rethinkDriver'
-import isXML from '~/utils/isXML'
+import validateXML from '~/utils/validateXML'
+import validateURL from '~/utils/validateURL'
 
 const AZURE_AD_LOGIN_URL_HOSTNAME = `microsoftonline`
 
@@ -42,8 +43,10 @@ const enableSAMLForDomain = {
     if (!validDomain(domain)) {
       return `Invalid domain. Please remove any top-level domain or subdomain`
     }
-    const {error: xmlError} = isXML(metadata)
+    const {error: xmlError} = validateXML(metadata)
     if (xmlError) return `Got invalid xml for metadata field: [${xmlError}]`
+    const {error: urlError} = validateURL(url)
+    if (urlError) return `Got invalid url for url field`
 
     // RESOLUTION
     const r = await getRethink()
