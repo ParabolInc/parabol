@@ -54,7 +54,10 @@ const ItemLabel = styled('div')<{isComplete: boolean}>(({isComplete}) => ({
   lineHeight,
   paddingLeft: 56,
   textDecoration: isComplete ? 'line-through' : undefined,
-  wordBreak: 'break-word'
+  wordBreak: 'break-word',
+  overflow: 'hidden',
+  textOverflow: 'ellipsis',
+  whiteSpace: 'pre'
 }))
 
 const ItemMeta = styled('div')({

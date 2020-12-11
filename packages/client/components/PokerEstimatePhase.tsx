@@ -76,6 +76,7 @@ const PokerEstimatePhase = (props: Props) => {
 graphql`
   fragment PokerEstimatePhaseStage on EstimateStage {
     ...PokerEstimateHeaderCardJira_stage
+    ...PokerEstimateHeaderCardParabol_stage
     service
   }
 `

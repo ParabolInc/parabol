@@ -1,24 +1,21 @@
-import React, {useRef, useState, useEffect} from 'react'
-import {createFragmentContainer} from 'react-relay'
-import graphql from 'babel-plugin-relay/macro'
-import {PokerEstimateHeaderCardParabol_stage} from '../__generated__/PokerEstimateHeaderCardParabol_stage.graphql'
 import styled from '@emotion/styled'
-import CardButton from './CardButton'
-import IconLabel from './IconLabel'
-import {PALETTE} from '~/styles/paletteV2'
-import {Elevation} from '~/styles/elevation'
-import TaskFooterIntegrateToggle from '../modules/outcomeCard/components/OutcomeCardFooter/TaskFooterIntegrateToggle'
-import useMutationProps from '~/hooks/useMutationProps'
+import graphql from 'babel-plugin-relay/macro'
+import React, {useEffect, useRef, useState} from 'react'
+import {createFragmentContainer} from 'react-relay'
 import TaskIntegrationLink from '~/components/TaskIntegrationLink'
-import Icon from './Icon'
+import useBreakpoint from '~/hooks/useBreakpoint'
+import useEditorState from '~/hooks/useEditorState'
+import useTaskChildFocus from '~/hooks/useTaskChildFocus'
+import {Elevation} from '~/styles/elevation'
+import {PALETTE} from '~/styles/paletteV2'
+import {Breakpoint, ZIndex} from '~/types/constEnums'
 import {ICON_SIZE} from '../styles/typographyV2'
 import {ITask} from '../types/graphql'
-import useBreakpoint from '~/hooks/useBreakpoint'
-import {Breakpoint} from '~/types/constEnums'
-import useEditorState from '~/hooks/useEditorState'
-import {ZIndex} from '~/types/constEnums'
+import {PokerEstimateHeaderCardParabol_stage} from '../__generated__/PokerEstimateHeaderCardParabol_stage.graphql'
+import CardButton from './CardButton'
+import Icon from './Icon'
+import IconLabel from './IconLabel'
 import TaskEditor from './TaskEditor/TaskEditor'
-import useTaskChildFocus from '~/hooks/useTaskChildFocus'
 
 const HeaderCardWrapper = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   display: 'flex',
@@ -65,19 +62,13 @@ const StyledTaskIntegrationLink = styled(TaskIntegrationLink)({
   '&:hover,:focus': {
     textDecoration: 'none'
   },
-  marginTop: 4
+  marginTop: 4,
+  width: 'fit-content'
 })
 
 const StyledIcon = styled(Icon)({
   fontSize: ICON_SIZE.MD18,
   paddingLeft: 4
-})
-
-const IntegrationToggleWrapper = styled('div')({
-  display: 'flex',
-  justifyContent: 'flex-end',
-  alignItems: 'center',
-  width: '100%'
 })
 
 const StyledTaskEditor = styled(TaskEditor)({
@@ -97,19 +88,12 @@ const PokerEstimateHeaderCardParabol = (props: Props) => {
   const {content, id: taskId, teamId} = story as unknown as ITask
   const integration = story!.integration
   const [isExpanded, setIsExpanded] = useState(false)
-  const {onCompleted, onError, submitMutation, submitting} = useMutationProps()
-  const mutationProps = {
-    onCompleted,
-    onError,
-    submitMutation,
-    submitting
-  }
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const [editorState, setEditorState] = useEditorState(content)
   const editorRef = useRef<HTMLTextAreaElement>(null)
   const descriptionRef = useRef<HTMLDivElement>(null)
   const maxHeight = descriptionRef.current?.scrollHeight ?? 1000
-  useEffect(() => () => { setIsExpanded(false) }, [taskId])
+  useEffect(() => () => {setIsExpanded(false)}, [taskId])
   const {useTaskChild} = useTaskChildFocus(taskId)
 
   return (
@@ -117,16 +101,6 @@ const PokerEstimateHeaderCardParabol = (props: Props) => {
       <HeaderCardWrapper isDesktop={isDesktop}>
         <HeaderCard>
           <CardIcons>
-            <IntegrationToggleWrapper>
-              {!integration && 
-              <TaskFooterIntegrateToggle
-                dataCy={`task-integration`}
-                mutationProps={mutationProps}
-                task={story}
-                useTaskChild={useTaskChild}
-              />
-              }
-            </IntegrationToggleWrapper>
             <CardButton>
               <IconLabel icon='unfold_more' onClick={() => setIsExpanded(!isExpanded)} />
             </CardButton>
@@ -140,7 +114,6 @@ const PokerEstimateHeaderCardParabol = (props: Props) => {
               dataCy={`task`}
               editorRef={editorRef}
               editorState={editorState}
-              readOnly={true}
               setEditorState={setEditorState}
               teamId={teamId}
               useTaskChild={useTaskChild}
@@ -175,7 +148,6 @@ export default createFragmentContainer(
           plaintextContent
           content
           teamId
-          ...TaskFooterIntegrateMenuRoot_task
         }
       }
     }
