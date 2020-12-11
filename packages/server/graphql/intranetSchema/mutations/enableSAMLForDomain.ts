@@ -18,7 +18,6 @@ const enableSAMLForDomain = {
   async resolve(_source, {url, domain, metadata}) {
     const r = await getRethink()
     const normalizedDomain = domain.toLowerCase()
-    const normalizedUrl = url.toLowerCase()
 
     await r
       .table('SAML')
@@ -26,8 +25,8 @@ const enableSAMLForDomain = {
         {
           id: normalizedDomain,
           domain: normalizedDomain,
-          url: normalizedUrl,
-          metadata: metadata
+          url,
+          metadata
         },
         {conflict: 'replace'}
       )
