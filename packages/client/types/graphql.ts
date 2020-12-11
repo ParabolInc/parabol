@@ -1790,6 +1790,16 @@ export interface ITeam {
   meetingSettings: TeamMeetingSettings;
 
   /**
+   * A query for the scale
+   */
+  scale: ITemplateScale | null;
+
+  /**
+   * The list of scales this team can use
+   */
+  scales: Array<ITemplateScale>;
+
+  /**
    * a list of meetings that are currently in progress
    */
   activeMeetings: Array<NewMeeting>;
@@ -1838,6 +1848,13 @@ export interface IMeetingSettingsOnTeamArguments {
    * the type of meeting for the settings
    */
   meetingType: MeetingTypeEnum;
+}
+
+export interface IScaleOnTeamArguments {
+  /**
+   * The scale ID for the desired scale
+   */
+  scaleId: string;
 }
 
 export interface IMeetingOnTeamArguments {
@@ -2185,6 +2202,162 @@ export interface ITeamMeetingSettings {
    * The team these settings belong to
    */
   team: ITeam;
+}
+
+/**
+ * A team-specific template scale.
+ */
+export interface ITemplateScale {
+  __typename: 'TemplateScale';
+
+  /**
+   * shortid
+   */
+  id: string;
+  createdAt: any;
+
+  /**
+   * true if the scale is currently used by the team, else false
+   */
+  isActive: boolean;
+
+  /**
+   * True if this is a starter/default scale; false otherwise
+   */
+  isStarter: boolean;
+
+  /**
+   * The datetime that the scale was removed. Null if it has not been removed.
+   */
+  removedAt: any | null;
+
+  /**
+   * foreign key. use the team field
+   */
+  teamId: string;
+
+  /**
+   * The team that owns this template scale
+   */
+  team: ITeam;
+  updatedAt: any;
+
+  /**
+   * The title of the scale used in the template
+   */
+  name: string;
+
+  /**
+   * The dimensions currently using this scale
+   */
+  dimensions: Array<ITemplateDimension>;
+
+  /**
+   * The values used in this scale
+   */
+  values: Array<ITemplateScaleValue>;
+}
+
+/**
+ * A team-specific template dimension: e.g., effort, importance etc.
+ */
+export interface ITemplateDimension {
+  __typename: 'TemplateDimension';
+
+  /**
+   * shortid
+   */
+  id: string;
+  createdAt: any;
+
+  /**
+   * true if the dimension is currently used by the team, else false
+   */
+  isActive: boolean;
+
+  /**
+   * The datetime that the dimension was removed. Null if it has not been removed.
+   */
+  removedAt: any | null;
+
+  /**
+   * foreign key. use the team field
+   */
+  teamId: string;
+
+  /**
+   * The team that owns this dimension
+   */
+  team: ITeam;
+  updatedAt: any;
+
+  /**
+   * the order of the dimensions in the template
+   */
+  sortOrder: number;
+
+  /**
+   * FK for template
+   */
+  templateId: string;
+
+  /**
+   * The template that this dimension belongs to
+   */
+  template: IPokerTemplate;
+
+  /**
+   * The name of the dimension
+   */
+  name: string;
+
+  /**
+   * The description to the dimension name for further context. A long version of the dimension name.
+   */
+  description: string;
+
+  /**
+   * The scaleId to resolve the selected scale
+   */
+  scaleId: string;
+
+  /**
+   * scale used in this dimension
+   */
+  selectedScale: ITemplateScale;
+}
+
+/**
+ * A value for a scale.
+ */
+export interface ITemplateScaleValue {
+  __typename: 'TemplateScaleValue';
+  id: string;
+
+  /**
+   * The id of the scale this value belongs to
+   */
+  scaleId: string;
+
+  /**
+   * The color used to visually group a scale value
+   */
+  color: string;
+
+  /**
+   * The label for this value, e.g., XS, M, L
+   */
+  label: string;
+
+  /**
+   * true if the value of this scale is a special value, e.g., ? or X
+   */
+  isSpecial: boolean;
+
+  /**
+   * the order of the scale value in this scale
+   */
+  sortOrder: number;
 }
 
 /**
@@ -3805,147 +3978,18 @@ export interface IPokerTemplate {
    * The dimensions that are part of this template
    */
   dimensions: Array<ITemplateDimension>;
+
+  /**
+   * A query for the dimension
+   */
+  dimension: ITemplateDimension;
 }
 
-/**
- * A team-specific template dimension: e.g., effort, importance etc.
- */
-export interface ITemplateDimension {
-  __typename: 'TemplateDimension';
-
+export interface IDimensionOnPokerTemplateArguments {
   /**
-   * shortid
+   * The dimension ID for the desired dimension
    */
-  id: string;
-  createdAt: any;
-
-  /**
-   * true if the dimension is currently used by the team, else false
-   */
-  isActive: boolean;
-
-  /**
-   * The datetime that the dimension was removed. Null if it has not been removed.
-   */
-  removedAt: any | null;
-
-  /**
-   * foreign key. use the team field
-   */
-  teamId: string;
-
-  /**
-   * The team that owns this dimension
-   */
-  team: ITeam;
-  updatedAt: any;
-
-  /**
-   * the order of the dimensions in the template
-   */
-  sortOrder: number;
-
-  /**
-   * FK for template
-   */
-  templateId: string;
-
-  /**
-   * The template that this dimension belongs to
-   */
-  template: IPokerTemplate;
-
-  /**
-   * The name of the dimension
-   */
-  name: string;
-
-  /**
-   * The description to the dimension name for further context. A long version of the dimension name.
-   */
-  description: string;
-
-  /**
-   * The scaleId to resolve the selected scale
-   */
-  scaleId: string;
-
-  /**
-   * scale used in this dimension
-   */
-  selectedScale: ITemplateScale;
-
-  /**
-   * The list of scales can be set for this dimension
-   */
-  availableScales: Array<ITemplateScale>;
-}
-
-/**
- * A team-specific template scale.
- */
-export interface ITemplateScale {
-  __typename: 'TemplateScale';
-
-  /**
-   * shortid
-   */
-  id: string;
-  createdAt: any;
-
-  /**
-   * true if the scale is currently used by the team, else false
-   */
-  isActive: boolean;
-
-  /**
-   * The datetime that the scale was removed. Null if it has not been removed.
-   */
-  removedAt: any | null;
-
-  /**
-   * foreign key. use the team field
-   */
-  teamId: string;
-
-  /**
-   * The team that owns this template scale
-   */
-  team: ITeam;
-  updatedAt: any;
-
-  /**
-   * The title of the scale used in the template
-   */
-  name: string;
-
-  /**
-   * The values used in this scale
-   */
-  values: Array<ITemplateScaleValue>;
-}
-
-/**
- * A value for a scale.
- */
-export interface ITemplateScaleValue {
-  __typename: 'TemplateScaleValue';
-  id: string;
-
-  /**
-   * The color used to visually group a scale value
-   */
-  color: string;
-
-  /**
-   * The label for this value, e.g., XS, M, L
-   */
-  label: string;
-
-  /**
-   * true if the value of this scale is a special value, e.g., ? or X
-   */
-  isSpecial: boolean;
+  dimensionId: string;
 }
 
 /**
@@ -5356,11 +5400,6 @@ export interface IPokerMeetingSettings {
   selectedTemplate: IPokerTemplate;
 
   /**
-   * The list of scales belong to this team
-   */
-  teamScales: Array<ITemplateScale>;
-
-  /**
    * The list of templates used to start a Poker meeting
    */
   teamTemplates: Array<IPokerTemplate>;
@@ -5369,11 +5408,6 @@ export interface IPokerMeetingSettings {
    * The list of templates shared across the organization to start a Poker meeting
    */
   organizationTemplates: IPokerTemplateConnection;
-
-  /**
-   * The list of starter scales
-   */
-  starterScales: Array<ITemplateScale>;
 
   /**
    * The list of templates shared across the organization to start a Poker meeting
@@ -7311,6 +7345,11 @@ export interface IMutation {
   pokerSetFinalScore: PokerSetFinalScorePayload;
 
   /**
+   * Move a scale value to an index
+   */
+  movePokerTemplateScaleValue: MovePokerTemplateScaleValuePayload;
+
+  /**
    * Set the jira field that the poker dimension should map to
    */
   updateJiraDimensionField: UpdateJiraDimensionFieldPayload;
@@ -8041,7 +8080,7 @@ export interface IRemovePokerTemplateScaleOnMutationArguments {
 
 export interface IRemovePokerTemplateScaleValueOnMutationArguments {
   scaleId: string;
-  scaleValue: number;
+  label: string;
 }
 
 export interface IRemoveReflectionOnMutationArguments {
@@ -8464,6 +8503,20 @@ export interface IPokerSetFinalScoreOnMutationArguments {
   finalScore: string;
 }
 
+export interface IMovePokerTemplateScaleValueOnMutationArguments {
+  scaleId: string;
+
+  /**
+   * The label of the moving scale value
+   */
+  label: string;
+
+  /**
+   * The index position where the scale value is moving to
+   */
+  index: number;
+}
+
 export interface IUpdateJiraDimensionFieldOnMutationArguments {
   dimensionId: string;
 
@@ -8651,11 +8704,6 @@ export interface IAddTemplateScaleInput {
    * The color used to visually group a scale value
    */
   color: string;
-
-  /**
-   * The numerical value for this scale value
-   */
-  value: number;
 
   /**
    * The label for this value, e.g., XS, M, L
@@ -10205,8 +10253,12 @@ export interface IRenamePokerTemplateScalePayload {
 export interface IRemovePokerTemplateScalePayload {
   __typename: 'RemovePokerTemplateScalePayload';
   error: IStandardMutationError | null;
-  pokerTemplate: IPokerTemplate | null;
   scale: ITemplateScale | null;
+
+  /**
+   * A list of dimensions that were using the archived scale
+   */
+  dimensions: Array<ITemplateDimension>;
 }
 
 export interface IRemovePokerTemplateScaleValuePayload {
@@ -10563,11 +10615,6 @@ export interface ITemplateScaleInput {
    * The color used to visually group a scale value
    */
   color: string;
-
-  /**
-   * The numerical value for this scale value
-   */
-  value: number;
 
   /**
    * The label for this value, e.g., XS, M, L
@@ -10929,6 +10976,22 @@ export interface IPokerSetFinalScoreSuccess {
 }
 
 /**
+ * Return object for MovePokerTemplateScaleValuePayload
+ */
+export type MovePokerTemplateScaleValuePayload =
+  | IErrorPayload
+  | IMovePokerTemplateScaleValueSuccess;
+
+export interface IMovePokerTemplateScaleValueSuccess {
+  __typename: 'MovePokerTemplateScaleValueSuccess';
+
+  /**
+   * The scale after values are moved
+   */
+  scale: ITemplateScale;
+}
+
+/**
  * Return object for UpdateJiraDimensionFieldPayload
  */
 export type UpdateJiraDimensionFieldPayload =
@@ -11251,6 +11314,7 @@ export type TeamSubscriptionPayload =
   | IUpdatePokerTemplateScaleValuePayload
   | IUpdateUserProfilePayload
   | IPersistJiraSearchQuerySuccess
+  | IMovePokerTemplateScaleValueSuccess
   | IUpdateJiraDimensionFieldSuccess;
 
 export interface IRenamePokerTemplatePayload {

@@ -7,6 +7,7 @@ import getTemplateList from '../../../utils/getTemplateList'
 import {PokerTemplateModal_pokerMeetingSettings} from '../../../__generated__/PokerTemplateModal_pokerMeetingSettings.graphql'
 import PokerTemplateDetails from './PokerTemplateDetails'
 import PokerTemplateList from './PokerTemplateList'
+import PokerTemplateScaleDetailsRoot from './PokerTemplateScaleDetailsRoot'
 
 interface Props {
   pokerMeetingSettings: PokerTemplateModal_pokerMeetingSettings
@@ -24,7 +25,7 @@ const SCOPES = ['TEAM', 'ORGANIZATION', 'PUBLIC']
 const PokerTemplateModal = (props: Props) => {
   const {pokerMeetingSettings} = props
   const {selectedTemplate, team} = pokerMeetingSettings
-  const {id: teamId, orgId} = team
+  const {id: teamId, orgId, editingScaleId} = team
   const lowestScope = getTemplateList(teamId, orgId, selectedTemplate)
   const listIdx = SCOPES.indexOf(lowestScope)
   const [activeIdx, setActiveIdx] = useState(listIdx)
@@ -34,6 +35,7 @@ const PokerTemplateModal = (props: Props) => {
   const gotoPublicTemplates = () => {
     setActiveIdx(2)
   }
+
   return (
     <StyledDialogContainer>
       <PokerTemplateList
@@ -41,12 +43,20 @@ const PokerTemplateModal = (props: Props) => {
         activeIdx={activeIdx}
         setActiveIdx={setActiveIdx}
       />
-      <PokerTemplateDetails
-        settings={pokerMeetingSettings}
-        gotoTeamTemplates={gotoTeamTemplates}
-        gotoPublicTemplates={gotoPublicTemplates}
-      />
-    </StyledDialogContainer>
+
+      {editingScaleId ?
+        <PokerTemplateScaleDetailsRoot
+          teamId={teamId}
+          scaleId={editingScaleId}
+        /> :
+        <PokerTemplateDetails
+          settings={pokerMeetingSettings}
+          gotoTeamTemplates={gotoTeamTemplates}
+          gotoPublicTemplates={gotoPublicTemplates}
+        />
+      }
+
+    </StyledDialogContainer >
   )
 }
 export default createFragmentContainer(PokerTemplateModal, {
@@ -57,6 +67,7 @@ export default createFragmentContainer(PokerTemplateModal, {
       team {
         id
         orgId
+        editingScaleId
       }
       selectedTemplate {
         ...getTemplateList_template
