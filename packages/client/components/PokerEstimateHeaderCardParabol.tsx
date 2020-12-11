@@ -8,7 +8,7 @@ import useEditorState from '~/hooks/useEditorState'
 import useTaskChildFocus from '~/hooks/useTaskChildFocus'
 import {Elevation} from '~/styles/elevation'
 import {PALETTE} from '~/styles/paletteV2'
-import {Breakpoint, ZIndex} from '~/types/constEnums'
+import {Breakpoint} from '~/types/constEnums'
 import {ICON_SIZE} from '../styles/typographyV2'
 import {ITask} from '../types/graphql'
 import {PokerEstimateHeaderCardParabol_stage} from '../__generated__/PokerEstimateHeaderCardParabol_stage.graphql'
@@ -23,10 +23,12 @@ const HeaderCardWrapper = styled('div')<{isDesktop: boolean}>(({isDesktop}) => (
 }))
 
 const HeaderCard = styled('div')({
+  alignItems: 'flex-start',
   background: PALETTE.CONTROL_LIGHT,
   borderRadius: 4,
   boxShadow: Elevation.Z1,
-  padding: '12px 16px',
+  display: 'flex',
+  padding: '12px 8px 12px 16px',
   maxWidth: 1504, // matches widest dimension column 1600 - padding etc.
   margin: '0 auto',
   width: '100%',
@@ -34,11 +36,8 @@ const HeaderCard = styled('div')({
 })
 
 const CardIcons = styled('div')({
-  display: 'flex',
-  position: 'absolute',
-  top: 12,
-  right: 16,
-  zIndex: ZIndex.FAB
+  alignItems: 'center',
+  display: 'flex'
 })
 
 const EditorWrapper = styled('div')<{isExpanded: boolean, maxHeight: number}>(({isExpanded, maxHeight}) => ({
@@ -78,6 +77,11 @@ const StyledTaskEditor = styled(TaskEditor)({
   height: 'auto'
 })
 
+const Content = styled('div')({
+  flex: 1,
+  paddingRight: 4
+})
+
 interface Props {
   stage: PokerEstimateHeaderCardParabol_stage
 }
@@ -100,32 +104,34 @@ const PokerEstimateHeaderCardParabol = (props: Props) => {
     <>
       <HeaderCardWrapper isDesktop={isDesktop}>
         <HeaderCard>
+          <Content>
+            <EditorWrapper
+              ref={descriptionRef}
+              isExpanded={isExpanded}
+              maxHeight={maxHeight}
+            >
+              <StyledTaskEditor
+                dataCy={`task`}
+                editorRef={editorRef}
+                editorState={editorState}
+                setEditorState={setEditorState}
+                teamId={teamId}
+                useTaskChild={useTaskChild}
+              />
+            </EditorWrapper>
+            <StyledTaskIntegrationLink
+              dataCy={`task`}
+              integration={integration || null}
+              showJiraLabelPrefix={false}
+            >
+              <StyledIcon>launch</StyledIcon>
+            </StyledTaskIntegrationLink>
+          </Content>
           <CardIcons>
             <CardButton>
               <IconLabel icon='unfold_more' onClick={() => setIsExpanded(!isExpanded)} />
             </CardButton>
           </CardIcons>
-          <EditorWrapper
-            ref={descriptionRef}
-            isExpanded={isExpanded}
-            maxHeight={maxHeight}
-          >
-            <StyledTaskEditor
-              dataCy={`task`}
-              editorRef={editorRef}
-              editorState={editorState}
-              setEditorState={setEditorState}
-              teamId={teamId}
-              useTaskChild={useTaskChild}
-            />
-          </EditorWrapper>
-          <StyledTaskIntegrationLink
-            dataCy={`task`}
-            integration={integration || null}
-            showJiraLabelPrefix={false}
-          >
-            <StyledIcon>launch</StyledIcon>
-          </StyledTaskIntegrationLink>
         </HeaderCard>
       </HeaderCardWrapper>
     </>
