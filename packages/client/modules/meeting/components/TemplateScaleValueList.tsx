@@ -1,9 +1,10 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {DragDropContext, Droppable, Draggable} from 'react-beautiful-dnd'
+import {DragDropContext, Droppable, Draggable, DropResult} from 'react-beautiful-dnd'
 import {createFragmentContainer} from 'react-relay'
 import {TemplateScaleValueList_scale} from '~/__generated__/TemplateScaleValueList_scale.graphql'
+import isSpecialPokerLabel from '../../../utils/isSpecialPokerLabel'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
 import MovePokerTemplateScaleValueMutation from '../../../mutations/MovePokerTemplateScaleValueMutation'
@@ -11,6 +12,7 @@ import AddScaleValueButtonInput from './AddScaleValueButtonInput'
 import TemplateScaleValueItem from './TemplateScaleValueItem'
 
 interface Props {
+  isOwner: boolean
   scale: TemplateScaleValueList_scale
 }
 
@@ -24,11 +26,12 @@ const ScaleList = styled('div')({
 const TEMPLATE_SCALE_VALUE = 'TEMPLATE_SCALE_VALUE'
 
 const TemplateScaleValueList = (props: Props) => {
-  const {scale} = props
+  const {isOwner, scale} = props
+  const {values} = scale
   const {onError, onCompleted, submitting, submitMutation} = useMutationProps()
   const atmosphere = useAtmosphere()
 
-  const onDragEnd = (result) => {
+  const onDragEnd = (result: DropResult) => {
     const {source, destination} = result
     const {values: scaleValues} = scale
     if (
@@ -49,30 +52,30 @@ const TemplateScaleValueList = (props: Props) => {
   return (
     <ScaleList>
       <DragDropContext onDragEnd={onDragEnd}>
-        <Droppable droppableId={TEMPLATE_SCALE_VALUE} isDropDisabled={false}>
+        <Droppable droppableId={TEMPLATE_SCALE_VALUE} isDropDisabled={!isOwner}>
           {(provided) => {
             return (
               <div ref={provided.innerRef}>
-                {scale.values.map((scaleValue, idx) => scaleValue.isSpecial ? null : (
-                  <Draggable
-                    key={scaleValue.id}
-                    draggableId={scaleValue.id}
-                    index={idx}
-                    isDragDisabled={submitting}
-                  >
-                    {(dragProvided, dragSnapshot) => {
-                      return (
-                        <TemplateScaleValueItem
-                          isOwner={!scaleValue.isSpecial}
-                          scale={scale}
-                          scaleValue={scaleValue}
-                          isDragging={dragSnapshot.isDragging}
-                          dragProvided={dragProvided} />
-                      )
-                    }}
-                  </Draggable>
-                )
-                )}
+                {values
+                  .filter(({label}) => !isSpecialPokerLabel(label))
+                  .map((scaleValue, idx) => (
+                    <Draggable
+                      key={scaleValue.id}
+                      draggableId={scaleValue.id}
+                      index={idx}
+                      isDragDisabled={!isOwner || submitting}
+                    >
+                      {(dragProvided, dragSnapshot) => {
+                        return (
+                          <TemplateScaleValueItem
+                            scale={scale}
+                            scaleValue={scaleValue}
+                            isDragging={dragSnapshot.isDragging}
+                            dragProvided={dragProvided} />
+                        )
+                      }}
+                    </Draggable>
+                  ))}
                 {provided.placeholder}
               </div>
             )
@@ -93,7 +96,6 @@ export default createFragmentContainer(TemplateScaleValueList, {
       values {
         id
         label
-        isSpecial
         ...TemplateScaleValueItem_scaleValue
       }
     }

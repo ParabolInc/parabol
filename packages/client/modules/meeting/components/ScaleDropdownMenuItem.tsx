@@ -10,10 +10,10 @@ import MenuItem from '../../../components/MenuItem'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
 import UpdatePokerTemplateDimensionScaleMutation from '../../../mutations/UpdatePokerTemplateDimensionScaleMutation'
-import {PokerCards} from '../../../types/constEnums'
 import {ScaleDropdownMenuItem_dimension} from '../../../__generated__/ScaleDropdownMenuItem_dimension.graphql'
 import {ScaleDropdownMenuItem_scale} from '../../../__generated__/ScaleDropdownMenuItem_scale.graphql'
 import ScaleActions from './ScaleActions'
+import scaleValueString from './scaleValueString'
 
 interface Props {
   scale: ScaleDropdownMenuItem_scale
@@ -96,9 +96,7 @@ const ScaleDropdownMenuItem = forwardRef((props: Props, ref) => {
               {isStarter && <StarterIcon>public</StarterIcon>}
             </ScaleName>
             <ScaleValues>
-              {
-                [...values.filter(({isSpecial}) => !isSpecial).map(({label}) => label), PokerCards.QUESTION_CARD, PokerCards.PASS_CARD].join(", ")
-              }
+              {scaleValueString(values)}
             </ScaleValues>
           </ScaleNameAndValues>
           <ScaleActionButtonGroup>
@@ -132,7 +130,6 @@ export default createFragmentContainer(ScaleDropdownMenuItem, {
       teamId
       values {
         label
-        isSpecial
       }
       dimensions {
         selectedScale {

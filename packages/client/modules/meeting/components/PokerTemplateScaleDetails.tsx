@@ -9,9 +9,9 @@ import useAtmosphere from '../../../hooks/useAtmosphere'
 import textOverflow from '../../../styles/helpers/textOverflow'
 import {PALETTE} from '../../../styles/paletteV2'
 import {FONT_FAMILY} from '../../../styles/typographyV2'
-import {PokerCards} from '../../../types/constEnums'
 import {PokerTemplateScaleDetails_team} from '../../../__generated__/PokerTemplateScaleDetails_team.graphql'
 import EditableTemplateScaleName from './EditableTemplateScaleName'
+import scaleValueString from './scaleValueString'
 import TemplateScaleValueList from './TemplateScaleValueList'
 
 const ScaleHeader = styled('div')({
@@ -90,7 +90,6 @@ interface Props {
   team: PokerTemplateScaleDetails_team
 }
 
-const specialCards = [PokerCards.QUESTION_CARD, PokerCards.PASS_CARD] as string[]
 const PokerTemplateScaleDetails = (props: Props) => {
   const {team} = props
   const {id: teamId, scales, editingScaleId} = team
@@ -123,12 +122,12 @@ const PokerTemplateScaleDetails = (props: Props) => {
             isOwner={isOwner}
           />
           <ScaleValues>
-            {values.map(({label}) => label).filter((label) => !specialCards.includes(label)).concat(...specialCards).join(', ')}
+            {scaleValueString(values)}
           </ScaleValues>
           <ScaleValues>{'Note: all scales include ? and Pass cards'}</ScaleValues>
         </ScaleNameAndValues>
       </ScaleHeader>
-      <TemplateScaleValueList scale={scale} />
+      <TemplateScaleValueList scale={scale} isOwner={isOwner} />
     </ScaleValueEditor>
   )
 }
@@ -147,7 +146,6 @@ export default createFragmentContainer(PokerTemplateScaleDetails, {
         teamId
         values {
           label
-          isSpecial
         }
       }
     }

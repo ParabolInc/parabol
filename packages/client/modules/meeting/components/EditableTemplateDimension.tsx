@@ -56,8 +56,8 @@ const EditableTemplateDimension = (props: Props) => {
     const res = legitify(rawValue)
     if (res.error) {
       onError(new Error(res.error))
-    } else if (error) {
-      onError()
+    } else {
+      onCompleted()
     }
     return res
   }

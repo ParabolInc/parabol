@@ -19,15 +19,15 @@ const StyledEditableText = styled(EditableText)({
 })
 
 interface Props {
-  isOwner: boolean
-  isEditingLabel: boolean
   isHover: boolean
   scale: EditableTemplateScaleValueLabel_scale
   scaleValue: EditableTemplateScaleValueLabel_scaleValue
 }
 
 const EditableTemplateScaleValueLabel = (props: Props) => {
-  const {isOwner, isHover, isEditingLabel, scale, scaleValue} = props
+  const {isHover, scaleValue, scale} = props
+  const {id: scaleId} = scale
+  const {id: scaleValueId, label, color} = scaleValue
   const atmosphere = useAtmosphere()
   const {onError, error, onCompleted, submitMutation, submitting} = useMutationProps()
 
@@ -37,14 +37,12 @@ const EditableTemplateScaleValueLabel = (props: Props) => {
     if (error) return
     submitMutation()
 
-    const scaleId = scale.id
-    const oldScaleValue = {label: scaleValue.label, color: scaleValue.color}
-    const newScaleValue = {label: newLabel, color: scaleValue.color}
+    const oldScaleValue = {label, color}
+    const newScaleValue = {label: newLabel, color}
     UpdatePokerTemplateScaleValueMutation(atmosphere, {scaleId, oldScaleValue, newScaleValue}, {}, onError, onCompleted)
   }
 
   const legitify = (value: string) => {
-    const scaleValueId = scaleValue.id
     return new Legitity(value)
       .trim()
       .required('Please enter a value')
@@ -61,21 +59,19 @@ const EditableTemplateScaleValueLabel = (props: Props) => {
     const res = legitify(rawValue)
     if (res.error) {
       onError(new Error(res.error))
-    } else if (error) {
-      onError()
+    } else {
+      onCompleted()
     }
     return res
   }
 
   return (
     <StyledEditableText
-      autoFocus={scaleValue.label.startsWith('*')}
-      disabled={!isOwner}
       error={error?.message}
-      hideIcon={isEditingLabel ? true : !isHover}
+      hideIcon={!isHover}
       handleSubmit={handleSubmit}
       initialValue={scaleValue.label}
-      maxLength={50}
+      maxLength={5}
       validate={validate}
       placeholder={''}
     />
@@ -98,7 +94,6 @@ export default createFragmentContainer(EditableTemplateScaleValueLabel, {
       id
       label
       color
-      sortOrder
     }
   `
 })

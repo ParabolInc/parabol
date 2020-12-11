@@ -14,6 +14,7 @@ import {ICON_SIZE} from '../../../styles/typographyV2'
 import Legitity from '../../../validation/Legitity'
 import useEventCallback from '../../../hooks/useEventCallback'
 import useScrollIntoView from '../../../hooks/useScrollIntoVIew'
+import isSpecialPokerLabel from '../../../utils/isSpecialPokerLabel'
 
 const Form = styled('form')({
   width: '100%',
@@ -64,7 +65,7 @@ const RemoveScaleValueIcon = styled(Icon)({
 })
 
 const predictNextLabel = (values: NewTemplateScaleValueLabelInput_scale['values']) => {
-  const existingLabels = values.filter(({isSpecial}) => !isSpecial).map(({label}) => label)
+  const existingLabels = values.map(({label}) => label).filter((label) => !isSpecialPokerLabel(label))
   const potentialNextLabel = Number(existingLabels[existingLabels.length - 1]) + 1
   const isNextLabelValid = !isNaN(potentialNextLabel) ? (potentialNextLabel >= 0 && potentialNextLabel < 100 && !existingLabels.includes(String(potentialNextLabel))) : false
   return isNextLabelValid ? potentialNextLabel.toString() : 'Enter a new scale value'
@@ -83,7 +84,7 @@ const NewTemplateScaleValueLabelInput = (props: Props) => {
   const [scaleValueColor, setScaleValueColor] = useState("")
   const isEmpty = !newScaleValueLabel
   useEffect(() => {
-    const pickedColors = values.filter(({isSpecial}) => !isSpecial).map(({color}) => color)
+    const pickedColors = values.filter(({label}) => !isSpecialPokerLabel(label)).map(({color}) => color)
     const hexColors = palettePickerOptions.map(({hex}) => hex)
     const lastColor = pickedColors[pickedColors.length - 1] || PALETTE.PROMPT_GREEN
     const availableNewColor = hexColors.find((hex) => !pickedColors.includes(hex)) || lastColor
@@ -127,8 +128,7 @@ const NewTemplateScaleValueLabelInput = (props: Props) => {
     submitMutation()
     const scaleValue = {
       color: scaleValueColor,
-      label: newScaleValueLabel,
-      isSpecial: false
+      label: newScaleValueLabel
     }
     setNewScaleValueLabel("")
     AddPokerTemplateScaleValueMutation(
@@ -145,7 +145,7 @@ const NewTemplateScaleValueLabelInput = (props: Props) => {
   const placeholder = predictNextLabel(values)
   return (
     <NewScaleValueInput ref={ref}>
-      <EditableTemplateScaleValueColor isOwner scale={scale}
+      <EditableTemplateScaleValueColor scale={scale}
         scaleValueColor={scaleValueColor} scaleValueLabel={newScaleValueLabel}
         setScaleValueColor={setScaleValueColor}
       />
@@ -180,7 +180,6 @@ export default createFragmentContainer(NewTemplateScaleValueLabelInput, {
         label
         color
         sortOrder
-        isSpecial
       }
     }
   `

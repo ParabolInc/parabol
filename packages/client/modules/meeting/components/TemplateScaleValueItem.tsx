@@ -15,24 +15,18 @@ import EditableTemplateScaleValueColor from './EditableTemplateScaleValueColor'
 import EditableTemplateScaleValueLabel from './EditableTemplateScaleValueLabel'
 
 interface Props {
-  isOwner: boolean
   isDragging: boolean
   scale: TemplateScaleValueItem_scale
   scaleValue: TemplateScaleValueItem_scaleValue
   dragProvided: DraggableProvided
 }
 
-interface StyledProps {
-  isDragging?: boolean
-  isHover?: boolean
-}
-
-const ScaleValueItem = styled('div')<StyledProps & {isOwner: boolean}>(
-  ({isOwner, isHover, isDragging}) => ({
+const ScaleValueItem = styled('div')<{isHover: boolean, isDragging: boolean}>(
+  ({isHover, isDragging}) => ({
     alignItems: 'center',
     backgroundColor:
-      isOwner && (isHover || isDragging) ? PALETTE.BACKGROUND_MAIN_LIGHTENED : undefined,
-    cursor: isOwner ? 'pointer' : undefined,
+      (isHover || isDragging) ? PALETTE.BACKGROUND_MAIN_LIGHTENED : undefined,
+    cursor: 'pointer',
     display: 'flex',
     fontSize: 14,
     lineHeight: '24px',
@@ -41,7 +35,7 @@ const ScaleValueItem = styled('div')<StyledProps & {isOwner: boolean}>(
   })
 )
 
-const RemoveScaleValueIcon = styled(Icon)<StyledProps>(({isHover}) => ({
+const RemoveScaleValueIcon = styled(Icon)<{isHover: boolean}>(({isHover}) => ({
   color: PALETTE.TEXT_GRAY,
   cursor: 'pointer',
   display: 'block',
@@ -63,11 +57,10 @@ const ScaleAndDescription = styled('div')({
 })
 
 const TemplateScaleValueItem = (props: Props) => {
-  const {dragProvided, isDragging, isOwner, scale, scaleValue} = props
+  const {dragProvided, isDragging, scale, scaleValue} = props
   const {id: scaleId} = scale
   const {label, color} = scaleValue
   const [isHover, setIsHover] = useState(false)
-  const [isEditingScaleValueLabel] = useState(false)
   const {submitting, submitMutation, onError, onCompleted} = useMutationProps()
   const atmosphere = useAtmosphere()
   const onMouseOver = () => {
@@ -88,17 +81,14 @@ const TemplateScaleValueItem = (props: Props) => {
       {...dragProvided.draggableProps}
       isDragging={isDragging}
       isHover={isHover}
-      isOwner={isOwner}
       onMouseOver={onMouseOver}
       onMouseLeave={onMouseLeave}
     >
-      <EditableTemplateScaleValueColor isOwner={isOwner} scale={scale}
+      <EditableTemplateScaleValueColor scale={scale}
         scaleValueLabel={label} scaleValueColor={color} />
       <ScaleAndDescription>
         <EditableTemplateScaleValueLabel
-          isOwner={isOwner}
           isHover={isHover}
-          isEditingLabel={isEditingScaleValueLabel}
           scale={scale}
           scaleValue={scaleValue}
         />
@@ -122,7 +112,6 @@ export default createFragmentContainer(TemplateScaleValueItem, {
       ...EditableTemplateScaleValueLabel_scaleValue
       id
       label
-      isSpecial
       color
     }
   `
