@@ -7,7 +7,7 @@ const AZURE_AD_LOGIN_URL_HOSTNAME = `microsoftonline`
 const isMicrosoft = (url: string): boolean =>
   new URL(url).hostname.includes(AZURE_AD_LOGIN_URL_HOSTNAME)
 
-const addMicrosoftSAMLRequestParam = async (url: string, client: string): Promise<string> => {
+const getMicrosoftSAMLRequestParam = async (url: string, client: string): Promise<string> => {
   const zlib = await import('zlib')
   const uuidv4 = (await import('uuid')).default.v4
   const template = `
@@ -18,9 +18,10 @@ const addMicrosoftSAMLRequestParam = async (url: string, client: string): Promis
       <samlp:NameIDPolicy Format="urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress" AllowCreate="false"/>
   </samlp:AuthnRequest>
   `
-  const deflateEncoded = zlib.deflateRawSync(template).toString('base64')
-  return `${url}?SAMLRequest=${encodeURIComponent(deflateEncoded)}`
+  return encodeURIComponent(zlib.deflateRawSync(template).toString('base64'))
 }
+
+const validDomain = (domain: string): boolean => !domain.includes('.')
 
 const enableSAMLForDomain = {
   type: new GraphQLNonNull(GraphQLString),
@@ -37,12 +38,20 @@ const enableSAMLForDomain = {
     }
   },
   async resolve(_source, {url, domain, metadata}) {
+    // VALIDATION
+    if (!validDomain(domain)) {
+      return `Invalid domain. Please remove any top-level domain or subdomain`
+    }
+    const {error: xmlError} = isXML(metadata)
+    if (xmlError) return `Got invalid xml for metadata field: [${xmlError}]`
+
+    // RESOLUTION
     const r = await getRethink()
     const normalizedDomain = domain.toLowerCase()
-    if (isMicrosoft(url)) url = await addMicrosoftSAMLRequestParam(url, normalizedDomain)
-    // todo: check if domain has any . in it (it shouldnt)
-    const {error} = isXML(metadata)
-    if (error) return `Got invalid xml for metadata field: [${error}]`
+    if (isMicrosoft(url)) {
+      const paramValue = await getMicrosoftSAMLRequestParam(url, normalizedDomain)
+      url = `${url}?SAMLRequest=${paramValue}`
+    }
 
     await r
       .table('SAML')
