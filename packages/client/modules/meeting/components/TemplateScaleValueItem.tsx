@@ -66,7 +66,7 @@ const TemplateScaleValueItem = (props: Props) => {
   const onMouseOver = () => {
     setIsHover(true)
   }
-  const onMouseLeave = () => {
+  const onMouseOut = () => {
     setIsHover(false)
   }
   const removeScaleValue = () => {
@@ -82,7 +82,7 @@ const TemplateScaleValueItem = (props: Props) => {
       isDragging={isDragging}
       isHover={isHover}
       onMouseOver={onMouseOver}
-      onMouseLeave={onMouseLeave}
+      onMouseOut={onMouseOut}
     >
       <EditableTemplateScaleValueColor scale={scale}
         scaleValueLabel={label} scaleValueColor={color} />

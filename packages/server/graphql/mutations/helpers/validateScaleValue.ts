@@ -1,7 +1,9 @@
+import palettePickerOptions from '../../../../client/styles/palettePickerOptions'
 import TemplateScaleValue from '../../../database/types/TemplateScaleValue'
 
 const validateColorValue = (color: string) => {
-  return /^#[0-9A-F]{6}$/i.test(color)
+  const validHexes = palettePickerOptions.map(({hex}) => hex)
+  return validHexes.includes(color)
 }
 
 const validateScaleLabel = (label: string) => {
