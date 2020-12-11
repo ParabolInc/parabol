@@ -89,7 +89,6 @@ const PokerMeeting = (props: Props) => {
       <ResponsiveDashSidebar isOpen={showSidebar} onToggle={toggleSidebar}>
         <PokerMeetingSidebar
           gotoStageId={gotoStageId}
-          
           handleMenuClick={handleMenuClick}
           toggleSidebar={toggleSidebar}
           meeting={meeting}
@@ -118,7 +117,7 @@ const PokerMeeting = (props: Props) => {
         meeting={meeting}
         handleGotoNext={handleGotoNext}
         gotoStageId={gotoStageId}
-        isRightDrawerOpen={isRightDrawerOpen}
+        isRightDrawerOpen={isRightDrawerOpen && localPhaseType === NewMeetingPhaseTypeEnum.ESTIMATE}
       />
     </MeetingStyles>
   )
