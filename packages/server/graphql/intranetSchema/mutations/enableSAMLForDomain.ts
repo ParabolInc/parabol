@@ -1,6 +1,26 @@
 import {GraphQLNonNull, GraphQLString, GraphQLBoolean} from 'graphql'
 import getRethink from '../../../database/rethinkDriver'
 
+const AZURE_AD_LOGIN_URL_HOSTNAME = `microsoftonline`
+
+const isMicrosoft = (url: string): boolean =>
+  new URL(url).hostname.includes(AZURE_AD_LOGIN_URL_HOSTNAME)
+
+const addMicrosoftSAMLRequestParam = async (url: string, client: string): Promise<string> => {
+  const zlib = await import('zlib')
+  const uuidv4 = (await import('uuid')).default.v4
+  const template = `
+  <samlp:AuthnRequest
+      xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol"
+      xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion" ID="_${uuidv4()}" Version="2.0" IssueInstant="${new Date().toISOString()}" Destination="${url}" ProtocolBinding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" AssertionConsumerServiceURL="https://action.parabol.co/saml/${client}">
+  <saml:Issuer>https://action.parabol.co/saml-metadata/${client}</saml:Issuer>
+      <samlp:NameIDPolicy Format="urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress" AllowCreate="false"/>
+  </samlp:AuthnRequest>
+  `
+  const deflateEncoded = zlib.deflateRawSync(template).toString('base64')
+  return `${url}?SAMLRequest=${encodeURIComponent(deflateEncoded)}`
+}
+
 const enableSAMLForDomain = {
   type: new GraphQLNonNull(GraphQLBoolean),
   description: 'Enable SAML for domain',
@@ -18,6 +38,7 @@ const enableSAMLForDomain = {
   async resolve(_source, {url, domain, metadata}) {
     const r = await getRethink()
     const normalizedDomain = domain.toLowerCase()
+    if (isMicrosoft(url)) url = await addMicrosoftSAMLRequestParam(url, normalizedDomain)
 
     await r
       .table('SAML')
