@@ -17,6 +17,7 @@ const useMakeStageSummaries = (phaseRef: any, localStageId: string) => {
           isComplete
           isNavigable
           sortOrder
+          service
           serviceTaskId
           story {
             id
@@ -33,16 +34,16 @@ const useMakeStageSummaries = (phaseRef: any, localStageId: string) => {
     const summaries = [] as StageSummary[]
     for (let i = 0; i < stages.length; i++) {
       const stage = stages[i]
-      const {serviceTaskId, story} = stage
+      const {serviceTaskId, story, service} = stage
       const batch = [stage]
       for (let j = i + 1; j < stages.length; j++) {
         const nextStage = stages[j]
         if (nextStage.serviceTaskId !== serviceTaskId) break
         batch.push(nextStage)
       }
-      const [, issueKey] = getJiraCloudIdAndKey(serviceTaskId)
+      const fallback = service === 'jira' ? getJiraCloudIdAndKey(serviceTaskId)[1] : 'Unknown Story'
       summaries.push({
-        title: story?.title ?? issueKey,
+        title: story?.title ?? fallback,
         isComplete: batch.every(({isComplete}) => isComplete),
         isNavigable: batch.some(({isNavigable}) => isNavigable),
         isActive: !!batch.find(({id}) => id === localStageId),

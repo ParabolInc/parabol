@@ -125,6 +125,7 @@ const ParabolScopingSearchResultItem = (props: Props) => {
         updatePokerScope()
       }}
       isEditingThisItem={isEditingThisItem}
+      ref={ref}
     >
       <Checkbox active={isSelected || isEditingThisItem} disabled={disabled} />
       <Task
@@ -138,7 +139,6 @@ const ParabolScopingSearchResultItem = (props: Props) => {
           if (!isEditingThisItem) return
           addTaskChild('root')
         }}
-        ref={ref}
       >
         <StyledTaskEditor
           dataCy={`task`}
