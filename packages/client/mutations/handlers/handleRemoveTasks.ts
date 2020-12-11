@@ -9,6 +9,7 @@ import getTeamTasksConn from '../connections/getTeamTasksConn'
 import getUserTasksConn from '../connections/getUserTasksConn'
 import pluralizeHandler from './pluralizeHandler'
 import {parseUserTaskFilterQueryParams} from '~/utils/useUserTaskFilters'
+import getScopingTasksConn from '../connections/getScopingTasksConn'
 
 const handleRemoveTask = (taskId: string, store: RecordSourceSelectorProxy<any>) => {
   const viewer = store.getRoot().getLinkedRecord<IUser>('viewer')
@@ -36,6 +37,9 @@ const handleRemoveTask = (taskId: string, store: RecordSourceSelectorProxy<any>)
   archiveConns.forEach((archiveConn) => safeRemoveNodeFromConn(taskId, archiveConn))
   safeRemoveNodeFromConn(taskId, threadSourceConn)
   safeRemoveNodeFromArray(taskId, meeting, 'tasks')
+
+  const scopingTasksConn = getScopingTasksConn(store, meetingId, viewer, [teamId])
+  safeRemoveNodeFromConn(taskId, scopingTasksConn)
 }
 
 const handleRemoveTasks = pluralizeHandler(handleRemoveTask)

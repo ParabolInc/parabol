@@ -4,6 +4,7 @@ import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import useMutationProps from '~/hooks/useMutationProps'
 import useAtmosphere from '../hooks/useAtmosphere'
+import useIsInitializing from '../hooks/useIsInitializing'
 import useIsPokerVotingClosing from '../hooks/useIsPokerVotingClosing'
 import PokerResetDimensionMutation from '../mutations/PokerResetDimensionMutation'
 import {PALETTE} from '../styles/paletteV2'
@@ -62,8 +63,8 @@ const EstimateDimensionColumn = (props: Props) => {
   const {name} = dimension
   const {isVoting} = stage
   const {onError, onCompleted, submitMutation, error, submitting} = useMutationProps()
-  const isClosing = useIsPokerVotingClosing(isVoting)
-
+  const isClosing = useIsPokerVotingClosing(isVoting, stageId)
+  const isInitialStageRender = useIsInitializing()
   const reset = () => {
     if (submitting) return
     submitMutation()
@@ -73,7 +74,6 @@ const EstimateDimensionColumn = (props: Props) => {
       {onError, onCompleted}
     )
   }
-
   const showVoting = isVoting || isClosing
   return (
     <ColumnInner>
@@ -83,8 +83,8 @@ const EstimateDimensionColumn = (props: Props) => {
         {!isVoting && isFacilitator && <StyledLinkButton onClick={reset} palette={'blue'}>{'Team Revote'}</StyledLinkButton>}
       </DimensionHeader>
       {showVoting
-        ? <PokerActiveVoting meeting={meeting} stage={stage} isClosing={isClosing} />
-        : <PokerDiscussVoting meeting={meeting} stage={stage} />
+        ? <PokerActiveVoting meeting={meeting} stage={stage} isClosing={isClosing} isInitialStageRender={isInitialStageRender} />
+        : <PokerDiscussVoting meeting={meeting} stage={stage} isInitialStageRender={isInitialStageRender} />
       }
     </ColumnInner>
   )

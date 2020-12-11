@@ -10,6 +10,7 @@ import useAtmosphere from '../hooks/useAtmosphere'
 import graphql from 'babel-plugin-relay/macro'
 import {ParabolScopingSelectAllTasks_tasks} from '../__generated__/ParabolScopingSelectAllTasks_tasks.graphql'
 import useUnusedRecords from '~/hooks/useUnusedRecords'
+import getSelectAllTitle from '../utils/getSelectAllTitle'
 
 const Item = styled('div')({
   display: 'flex',
@@ -24,14 +25,14 @@ const Title = styled('div')({
 interface Props {
   meetingId: string
   tasks: ParabolScopingSelectAllTasks_tasks
-  usedParabolTaskIds: Set<string>
+  usedServiceTaskIds: Set<string>
 }
 
 const ParabolScopingSelectAllTasks = (props: Props) => {
-  const {meetingId, usedParabolTaskIds, tasks} = props
-  const taskIds = tasks.map(taskEdge => taskEdge.node.id) 
+  const {meetingId, usedServiceTaskIds, tasks} = props
+  const taskIds = tasks.map(taskEdge => taskEdge.node.id)
   const atmosphere = useAtmosphere()
-  const [unusedTasks, allSelected] = useUnusedRecords(tasks, usedParabolTaskIds)
+  const [unusedTasks, allSelected] = useUnusedRecords(tasks, usedServiceTaskIds)
   const {submitting, submitMutation, onCompleted, onError} = useMutationProps()
   const onClick = () => {
     if (submitting) return
@@ -50,10 +51,11 @@ const ParabolScopingSelectAllTasks = (props: Props) => {
     UpdatePokerScopeMutation(atmosphere, variables, {onError, onCompleted})
   }
   if (tasks.length < 2) return null
+  const title = getSelectAllTitle(tasks.length, usedServiceTaskIds.size, 'task')
   return (
     <Item onClick={onClick}>
       <Checkbox active={allSelected} />
-      <Title>{`Select all ${tasks.length} tasks`}</Title>
+      <Title>{title}</Title>
     </Item>
   )
 }

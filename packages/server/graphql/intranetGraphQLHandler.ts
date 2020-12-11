@@ -24,7 +24,7 @@ const intranetHttpGraphQLHandler = uWSAsyncHandler(async (res: HttpResponse, req
     res.writeStatus('415').end()
     return
   }
-  const body = await parseBody(res)
+  const body = await parseBody({res})
   if (!body) {
     res.writeStatus('422').end()
     return

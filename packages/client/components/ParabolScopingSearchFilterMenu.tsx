@@ -12,6 +12,7 @@ import styled from '@emotion/styled'
 import DropdownMenuLabel from './DropdownMenuLabel'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import {ParabolSearchQuery} from '~/types/clientSchema'
+import {SearchQueryMeetingPropName} from '~/utils/relay/LocalPokerHandler'
 
 const StyledCheckBox = styled(Checkbox)({
   marginLeft: -8,
@@ -45,7 +46,7 @@ const ParabolScopingSearchFilterMenu = (props: Props) => {
         const toggleStatusFilter = () => {
           commitLocalUpdate(atmosphere, (store) => {
             const meeting = store.get(meetingId)!
-            const parabolSearchQuery = meeting.getLinkedRecord<ParabolSearchQuery>('parabolSearchQuery')
+            const parabolSearchQuery = meeting.getLinkedRecord<ParabolSearchQuery>(SearchQueryMeetingPropName.parabol)
             const statusFiltersProxy = parabolSearchQuery.getValue('statusFilters').slice()
             const keyIdx = statusFiltersProxy.indexOf(status)
             keyIdx !== -1 ?

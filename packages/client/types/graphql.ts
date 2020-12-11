@@ -691,7 +691,7 @@ export interface IJiraIssue {
   __typename: 'JiraIssue';
 
   /**
-   * cloudId:key
+   * cloudId:key. equal to the serviceTaskId on the EstimateStage
    */
   id: string;
 
@@ -704,6 +704,11 @@ export interface IJiraIssue {
    * A list of users currently commenting
    */
   commentors: Array<ICommentorDetails> | null;
+
+  /**
+   * Alias for summary used by the Story interface
+   */
+  title: string;
 
   /**
    * The ID of the jira cloud where the issue lives
@@ -775,6 +780,11 @@ export interface IStory {
    * A list of users currently commenting
    */
   commentors: Array<ICommentorDetails> | null;
+
+  /**
+   * The title, independent of the story type
+   */
+  title: string;
 }
 
 export interface IThreadOnStoryArguments {
@@ -1445,6 +1455,11 @@ export interface ITask {
    * A list of users currently commenting
    */
   commentors: Array<ICommentorDetails> | null;
+
+  /**
+   * The first block of the content
+   */
+  title: string;
 
   /**
    * The agenda item that the task was created in, if any
@@ -6831,6 +6846,7 @@ export interface IMutation {
 
   /**
    * Create a PUT URL on the CDN for an organization’s profile picture
+   * @deprecated "Replaced with `uploadOrgImage` mutation"
    */
   createOrgPicturePutUrl: ICreatePicturePutUrlPayload | null;
 
@@ -6846,6 +6862,7 @@ export interface IMutation {
 
   /**
    * Create a PUT URL on the CDN for the currently authenticated user’s profile picture
+   * @deprecated "Replaced with `uploadUserImage` mutation"
    */
   createUserPicturePutUrl: ICreateUserPicturePutUrlPayload | null;
 
@@ -7282,6 +7299,21 @@ export interface IMutation {
   updateUserProfile: IUpdateUserProfilePayload | null;
 
   /**
+   * Upgrade an account to the paid service
+   */
+  upgradeToPro: IUpgradeToProPayload | null;
+
+  /**
+   * Upload an image for an org avatar
+   */
+  uploadOrgImage: IUpdateOrgPayload;
+
+  /**
+   * Upload an image for a user avatar
+   */
+  uploadUserImage: IUpdateUserProfilePayload | null;
+
+  /**
    * Verify an email address and sign in if not already a user
    */
   verifyEmail: IVerifyEmailPayload;
@@ -7290,11 +7322,6 @@ export interface IMutation {
    * Cast your vote for a reflection group
    */
   voteForReflectionGroup: IVoteForReflectionGroupPayload | null;
-
-  /**
-   * Upgrade an account to the paid service
-   */
-  upgradeToPro: IUpgradeToProPayload | null;
 
   /**
    * Cast a vote for the estimated points for a given dimension
@@ -8386,6 +8413,37 @@ export interface IUpdateUserProfileOnMutationArguments {
   updatedUser: IUpdateUserProfileInput;
 }
 
+export interface IUpgradeToProOnMutationArguments {
+  /**
+   * the org requesting the upgrade
+   */
+  orgId: string;
+
+  /**
+   * The token that came back from stripe
+   */
+  stripeToken: string;
+}
+
+export interface IUploadOrgImageOnMutationArguments {
+  /**
+   * the org avatar image file
+   */
+  file: any;
+
+  /**
+   * The org id to upload an avatar for
+   */
+  orgId: string;
+}
+
+export interface IUploadUserImageOnMutationArguments {
+  /**
+   * the user avatar image file
+   */
+  file: any;
+}
+
 export interface IVerifyEmailOnMutationArguments {
   /**
    * The 48-byte url-safe base64 encoded verification token
@@ -8399,18 +8457,6 @@ export interface IVoteForReflectionGroupOnMutationArguments {
    */
   isUnvote?: boolean | null;
   reflectionGroupId: string;
-}
-
-export interface IUpgradeToProOnMutationArguments {
-  /**
-   * the org requesting the upgrade
-   */
-  orgId: string;
-
-  /**
-   * The token that came back from stripe
-   */
-  stripeToken: string;
 }
 
 export interface IVoteForPokerStoryOnMutationArguments {
@@ -9116,6 +9162,7 @@ export const enum TaskInvolvementType {
 
 export interface ICreateTaskInput {
   content?: string | null;
+  plaintextContent?: string | null;
 
   /**
    * foreign key for the meeting this was created in
@@ -10795,31 +10842,6 @@ export interface IUpdateUserProfileInput {
   preferredName?: string | null;
 }
 
-export interface IVerifyEmailPayload {
-  __typename: 'VerifyEmailPayload';
-  error: IStandardMutationError | null;
-
-  /**
-   * The new auth token sent to the mutator
-   */
-  authToken: string | null;
-  userId: string | null;
-  user: IUser | null;
-}
-
-export interface IVoteForReflectionGroupPayload {
-  __typename: 'VoteForReflectionGroupPayload';
-  error: IStandardMutationError | null;
-  meeting: IRetrospectiveMeeting | null;
-  meetingMember: IRetrospectiveMeetingMember | null;
-  reflectionGroup: IRetroReflectionGroup | null;
-
-  /**
-   * The stages that were locked or unlocked by having at least 1 vote
-   */
-  unlockedStages: Array<NewMeetingStage> | null;
-}
-
 export interface IUpgradeToProPayload {
   __typename: 'UpgradeToProPayload';
   error: IStandardMutationError | null;
@@ -10843,6 +10865,31 @@ export interface IUpgradeToProPayload {
    * the meetings that were showing conversion modals
    */
   meetings: Array<NewMeeting> | null;
+}
+
+export interface IVerifyEmailPayload {
+  __typename: 'VerifyEmailPayload';
+  error: IStandardMutationError | null;
+
+  /**
+   * The new auth token sent to the mutator
+   */
+  authToken: string | null;
+  userId: string | null;
+  user: IUser | null;
+}
+
+export interface IVoteForReflectionGroupPayload {
+  __typename: 'VoteForReflectionGroupPayload';
+  error: IStandardMutationError | null;
+  meeting: IRetrospectiveMeeting | null;
+  meetingMember: IRetrospectiveMeetingMember | null;
+  reflectionGroup: IRetroReflectionGroup | null;
+
+  /**
+   * The stages that were locked or unlocked by having at least 1 vote
+   */
+  unlockedStages: Array<NewMeetingStage> | null;
 }
 
 /**

@@ -3,7 +3,7 @@ import React, {useRef} from 'react'
 import {TransitionStatus} from '~/hooks/useTransition'
 import useResizeFontForElement from '../hooks/useResizeFontForElement'
 import {PALETTE} from '../styles/paletteV2'
-import {BezierCurve} from '../types/constEnums'
+import {BezierCurve, PokerCards} from '../types/constEnums'
 
 const Wrapper = styled('div')<{idx: number}>(({idx}) => ({
   position: 'absolute',
@@ -11,34 +11,35 @@ const Wrapper = styled('div')<{idx: number}>(({idx}) => ({
   transition: `all 300ms ${BezierCurve.DECELERATE}`
 }))
 
-const OverflowCount = styled('div')<{status?: TransitionStatus}>(({status}) => ({
+const OverflowCount = styled('div')<{status?: TransitionStatus, isInitialStageRender: boolean}>(({status, isInitialStageRender}) => ({
   alignItems: 'center',
   backgroundColor: PALETTE.BACKGROUND_BLUE_LIGHT,
   border: `2px solid ${PALETTE.BORDER_MATCH_MEETING_COLUMN}`,
   borderRadius: '50%',
   display: 'flex',
-  height: 40,
+  height: PokerCards.AVATAR_WIDTH,
   justifyContent: 'center',
-  width: 40,
   color: '#fff',
   fontSize: 14,
   fontWeight: 600,
-  opacity: status === TransitionStatus.EXITING || status === TransitionStatus.MOUNTED ? 0 : 1,
+  opacity: isInitialStageRender ? undefined : status === TransitionStatus.EXITING || status === TransitionStatus.MOUNTED ? 0 : 1,
   overflow: 'hidden',
-  transform: status === TransitionStatus.EXITING || status === TransitionStatus.MOUNTED ? 'scale(0)' : 'scale(1)',
+  transform: isInitialStageRender ? undefined : status === TransitionStatus.EXITING || status === TransitionStatus.MOUNTED ? 'scale(0)' : 'scale(1)',
   transition: `all 300ms ${BezierCurve.DECELERATE}`,
-  userSelect: 'none'
+  userSelect: 'none',
+  width: PokerCards.AVATAR_WIDTH
 }))
 
 interface Props {
   idx: number
+  isInitialStageRender: boolean
   status: TransitionStatus
   onTransitionEnd: () => void
   overflowCount: number
 }
 
 const PokerVotingOverflow = (props: Props) => {
-  const {overflowCount, idx, status, onTransitionEnd} = props
+  const {overflowCount, idx, status, onTransitionEnd, isInitialStageRender} = props
   const ref = useRef<HTMLDivElement>(null)
   useResizeFontForElement<HTMLDivElement>(ref, '', 12, 18)
   return (
@@ -46,7 +47,9 @@ const PokerVotingOverflow = (props: Props) => {
       <OverflowCount
         ref={ref}
         status={status}
-        onTransitionEnd={onTransitionEnd}>{`+${overflowCount}`}</OverflowCount>
+        onTransitionEnd={onTransitionEnd}
+        isInitialStageRender={isInitialStageRender}
+      >{`+${overflowCount}`}</OverflowCount>
     </Wrapper>
   )
 }

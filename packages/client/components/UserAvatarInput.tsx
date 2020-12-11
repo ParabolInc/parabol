@@ -3,14 +3,12 @@ import sanitizeSVG from '@mattkrick/sanitize-svg'
 import React, {Component} from 'react'
 import jpgWithoutEXIF from '~/utils/jpgWithoutEXIF'
 import withAtmosphere, {WithAtmosphereProps} from '../decorators/withAtmosphere/withAtmosphere'
-import CreateUserPicturePutUrlMutation from '../mutations/CreateUserPicturePutUrlMutation'
-import UpdateUserProfileMutation from '../mutations/UpdateUserProfileMutation'
 import withMutationProps, {WithMutationProps} from '../utils/relay/withMutationProps'
-import sendAssetToS3 from '../utils/sendAssetToS3'
 import svgToPng from '../utils/svgToPng'
 import Avatar from './Avatar/Avatar'
 import AvatarInput from './AvatarInput'
 import DialogTitle from './DialogTitle'
+import UploadUserImageMutation from '../mutations/UploadUserImageMutation'
 
 interface Props extends WithAtmosphereProps, WithMutationProps {
   picture: string
@@ -49,18 +47,10 @@ class UserAvatarInput extends Component<Props> {
       file = (await jpgWithoutEXIF(file)) as File
     }
     if (file.size > 2 ** 20) {
-      onError('File is too large')
+      onError('File is too large (1MB Max)')
       return
     }
 
-    const variables: any = {
-      image: {
-        contentType: file.type,
-        contentLength: file.size
-      }
-    }
-
-    let pngFile
     if (file.type === 'image/svg+xml') {
       const isSanitary = await sanitizeSVG(file)
       if (!isSanitary) {
@@ -69,26 +59,16 @@ class UserAvatarInput extends Component<Props> {
       }
       const png = await svgToPng(file)
       if (png) {
-        pngFile = new File([png], file.name.slice(0, -3) + 'png', {type: png.type})
-        variables.pngVersion = {
-          contentType: pngFile.type,
-          contentLength: pngFile.size
-        }
+        file = new File([png], file.name.slice(0, -3) + 'png', {type: png.type})
       }
     }
-
     submitMutation()
-    const handleCompleted = async (res) => {
-      const {
-        createUserPicturePutUrl: {url, pngUrl}
-      } = res
-      const pictureUrl = await sendAssetToS3(file, url)
-      if (pngUrl) {
-        await sendAssetToS3(pngFile, pngUrl)
-      }
-      UpdateUserProfileMutation(atmosphere, {picture: pictureUrl}, {onError, onCompleted})
-    }
-    CreateUserPicturePutUrlMutation(atmosphere, variables, onError, handleCompleted)
+    UploadUserImageMutation(
+      atmosphere,
+      {},
+      {onCompleted, onError},
+      {file}
+    )
   }
 
   render() {

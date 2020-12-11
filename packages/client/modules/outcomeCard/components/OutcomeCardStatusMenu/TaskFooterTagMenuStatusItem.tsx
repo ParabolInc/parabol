@@ -29,7 +29,7 @@ const TaskFooterTagMenuStatusItem = forwardRef((props: Props, ref) => {
       id: task.id,
       status
     }
-    UpdateTaskMutation(atmosphere, {updatedTask, area})
+    UpdateTaskMutation(atmosphere, {updatedTask, area}, {})
   }
   return (
     <MenuItem

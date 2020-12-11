@@ -30,7 +30,7 @@ const SAMLHandler = uWSAsyncHandler(async (res: HttpResponse, req: HttpRequest) 
     return
   }
   const parser = (buffer: Buffer) => buffer.toString()
-  const queryString = await parseBody(res, parser)
+  const queryString = await parseBody({res, parser})
   const payload = await publishWebhookGQL(query, {domain, queryString})
   if (!payload) return
   const {data, errors} = payload

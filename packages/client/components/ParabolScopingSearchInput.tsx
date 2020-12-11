@@ -7,6 +7,7 @@ import Icon from './Icon'
 import Atmosphere from '../Atmosphere'
 import useAtmosphere from '../hooks/useAtmosphere'
 import {PALETTE} from '~/styles/paletteV2'
+import {SearchQueryMeetingPropName} from '~/utils/relay/LocalPokerHandler'
 
 const Wrapper = styled('div')({
   alignItems: 'center',
@@ -36,7 +37,7 @@ const setSearch = (atmosphere: Atmosphere, meetingId: string, value: string) => 
   commitLocalUpdate(atmosphere, (store) => {
     const meeting = store.get(meetingId)
     if (!meeting) return
-    const parabolSearchQuery = meeting.getLinkedRecord('parabolSearchQuery')!
+    const parabolSearchQuery = meeting.getLinkedRecord(SearchQueryMeetingPropName.parabol)!
     parabolSearchQuery.setValue(value, 'queryString')
   })
 }
