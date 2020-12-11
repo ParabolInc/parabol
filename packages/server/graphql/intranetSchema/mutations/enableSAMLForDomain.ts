@@ -1,5 +1,6 @@
-import {GraphQLNonNull, GraphQLString, GraphQLBoolean} from 'graphql'
+import {GraphQLNonNull, GraphQLString} from 'graphql'
 import getRethink from '../../../database/rethinkDriver'
+import isXML from '~/utils/isXML'
 
 const AZURE_AD_LOGIN_URL_HOSTNAME = `microsoftonline`
 
@@ -22,7 +23,7 @@ const addMicrosoftSAMLRequestParam = async (url: string, client: string): Promis
 }
 
 const enableSAMLForDomain = {
-  type: new GraphQLNonNull(GraphQLBoolean),
+  type: new GraphQLNonNull(GraphQLString),
   description: 'Enable SAML for domain',
   args: {
     url: {
@@ -39,6 +40,9 @@ const enableSAMLForDomain = {
     const r = await getRethink()
     const normalizedDomain = domain.toLowerCase()
     if (isMicrosoft(url)) url = await addMicrosoftSAMLRequestParam(url, normalizedDomain)
+    // todo: check if domain has any . in it (it shouldnt)
+    const {error} = isXML(metadata)
+    if (error) return `Got invalid xml for metadata field: [${error}]`
 
     await r
       .table('SAML')
@@ -53,7 +57,7 @@ const enableSAMLForDomain = {
       )
       .run()
 
-    return true
+    return 'success'
   }
 }
 
