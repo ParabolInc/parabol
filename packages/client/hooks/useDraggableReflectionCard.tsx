@@ -1,14 +1,13 @@
 import React, {useContext, useEffect} from 'react'
 import {commitLocalUpdate} from 'relay-runtime'
 import shortid from 'shortid'
-import adjustReflectionWidth from '~/utils/retroGroup/adjustReflectionWidth'
 import {PortalContext, SetPortal} from '../components/AtmosphereProvider/PortalProvider'
 import {SwipeColumn} from '../components/GroupingKanban'
 import {ReflectionDragState} from '../components/ReflectionGroup/DraggableReflectionCard'
 import RemoteReflection from '../components/ReflectionGroup/RemoteReflection'
 import StartDraggingReflectionMutation from '../mutations/StartDraggingReflectionMutation'
 import UpdateDragLocationMutation from '../mutations/UpdateDragLocationMutation'
-import {ElementWidth, Times} from '../types/constEnums'
+import {Times} from '../types/constEnums'
 import {DragReflectionDropTargetTypeEnum} from '../types/graphql'
 import findDropZoneFromEvent from '../utils/findDropZoneFromEvent'
 import maybeStartReflectionScroll from '../utils/maybeStartReflectionScroll'
@@ -36,7 +35,9 @@ const useRemoteDrag = (
   const setPortal = useContext(PortalContext)
   const {remoteDrag, isDropping} = reflection
   const setRemoteCard = (isClose: boolean, timeRemaining: number, lastTop?: number) => {
-    if (!drag.ref || timeRemaining <= 0) return
+    if (!drag.ref || timeRemaining <= 0) {
+      return
+    }
     const beforeFrame = Date.now()
     const bbox = drag.ref.getBoundingClientRect()
     if (bbox.top !== lastTop) {
@@ -172,8 +173,7 @@ const useDragAndDrop = (
 ) => {
   const atmosphere = useAtmosphere()
 
-  const {id: reflectionId, reflectionGroupId, isDropping, isEditing, prompt} = reflection
-  const {isWidthExpanded} = prompt
+  const {id: reflectionId, reflectionGroupId, isDropping, isEditing} = reflection
 
   const onMouseUp = useEventCallback((e: MouseEvent | TouchEvent) => {
     if (e.type === 'touchend' && drag.ref) {
@@ -187,14 +187,6 @@ const useDragAndDrop = (
     drag.targets.length = 0
     drag.prevTargetId = ''
     const targetGroupId = getTargetGroupId(e)
-    if (drag.dropZoneEl && drag.clone) {
-      drag.dropZoneBBox = drag.dropZoneEl.getBoundingClientRect()
-      const {width} = drag.dropZoneBBox
-      if (targetGroupId) {
-        const isColumnExpanded = width > ElementWidth.REFLECTION_CARD_EXPANDED
-        adjustReflectionWidth(drag.clone, isColumnExpanded)
-      }
-    }
     const targetType =
       targetGroupId && reflectionGroupId !== targetGroupId
         ? DragReflectionDropTargetTypeEnum.REFLECTION_GROUP
@@ -213,8 +205,7 @@ const useDragAndDrop = (
       drag.cardOffsetX,
       drag.cardOffsetY,
       drag.targets,
-      drag.prevTargetId,
-      !!isWidthExpanded
+      drag.prevTargetId
     )
     drag.prevTargetId = targetId
     const input = {

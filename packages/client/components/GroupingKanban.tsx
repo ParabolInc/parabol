@@ -41,7 +41,7 @@ const GroupingKanban = (props: Props) => {
   const reflectPrompts = reflectPhase.reflectPrompts!
   const columnsRef = useRef<HTMLDivElement>(null)
   useHideBodyScroll()
-  useExpandColumnsWidth(reflectPrompts, reflectionGroups)
+  useExpandColumnsWidth(reflectPrompts)
   const {groupsByPrompt, isAnyEditing} = useMemo(() => {
     const container = {} as {[promptId: string]: typeof reflectionGroups[0][]}
     let isEditing = false

@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
-import React, {MouseEvent, RefObject, useMemo, useRef} from 'react'
+import React, {MouseEvent, RefObject, useRef} from 'react'
 import {useCoverable} from '~/hooks/useControlBarCovers'
 import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
 import {GroupingKanbanColumn_meeting} from '~/__generated__/GroupingKanbanColumn_meeting.graphql'
@@ -45,7 +45,9 @@ const Column = styled('div')<{
   [makeMinWidthMediaQuery(Breakpoint.SINGLE_REFLECTION_COLUMN)]: {
     height: isLengthExpanded ? '100%' : `calc(100% - ${MeetingControlBarEnum.HEIGHT}px)`,
     margin: `0 ${isLastColumn ? 16 : 8}px 0px ${isFirstColumn ? 16 : 8}px`,
-    maxWidth: isWidthExpanded ? 320 * 2 : 320
+    maxWidth: isWidthExpanded
+      ? ElementWidth.REFLCTION_COLUMN_EXPANDED
+      : ElementWidth.REFLECTION_COLUMN
   }
 }))
 
@@ -61,9 +63,9 @@ const ColumnBody = styled('div')<{isDesktop: boolean; isWidthExpanded: boolean}>
     minHeight: 200,
     overflowX: 'hidden',
     overflowY: 'auto',
-    padding: `${isWidthExpanded ? 3 : 6}px ${isDesktop ? 12 : 8}px`,
+    padding: `${isWidthExpanded ? 32 : 6}px ${isDesktop ? 12 : 8}px`,
     transition: `all 100ms ${BezierCurve.DECELERATE}`,
-    width: isWidthExpanded ? ElementWidth.REFLECTION_CARD_EXPANDED : ElementWidth.REFLECTION_CARD
+    width: isWidthExpanded ? ElementWidth.REFLCTION_COLUMN_EXPANDED : ElementWidth.REFLECTION_COLUMN
   })
 )
 
@@ -116,18 +118,17 @@ const GroupingKanbanColumn = (props: Props) => {
     useCoverable(promptId, ref, MeetingControlBarEnum.HEIGHT, phaseRef, columnsRef) || !!endedAt
 
   // group may be undefined because relay could GC before useMemo in the Kanban recomputes >:-(
-  const filteredReflectionGroups = useMemo(() => {
-    console.log('SECOND')
-    return reflectionGroups?.filter((group) => group.reflections.length > 0)
-  }, reflectionGroups)
+  const filteredReflectionGroups = reflectionGroups?.filter((group) => group.reflections.length > 0)
   useSortSubColumns(isWidthExpanded, filteredReflectionGroups)
+
   const canAdd = phaseType === NewMeetingPhaseTypeEnum.group && !isComplete && !isAnyEditing
 
   const toggleWidth = (e: MouseEvent<Element>) => {
     e.stopPropagation()
     commitLocalUpdate(atmosphere, (store) => {
       const reflectPrompt = store.get(promptId)
-      reflectPrompt?.setValue(!isWidthExpanded, 'isWidthExpanded')
+      if (!reflectPrompt) return
+      reflectPrompt.setValue(!isWidthExpanded, 'isWidthExpanded')
     })
   }
 
@@ -159,9 +160,7 @@ const GroupingKanbanColumn = (props: Props) => {
             {...{[DragAttribute.DROPZONE]: promptId}}
           >
             {filteredReflectionGroups
-              .filter((group) => {
-                return isWidthExpanded ? group.subColumn === subColumn : true
-              })
+              .filter((group) => (isWidthExpanded ? group.subColumn === subColumn : true))
               .map((reflectionGroup, idx) => {
                 return (
                   <ReflectionGroup
@@ -207,6 +206,7 @@ export default createFragmentContainer(GroupingKanbanColumn, {
       sortOrder
       reflections {
         id
+        content
       }
       subColumn
     }

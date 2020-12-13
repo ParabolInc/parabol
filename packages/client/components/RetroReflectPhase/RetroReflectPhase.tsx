@@ -1,7 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import React, {useRef, useState} from 'react'
 import {createFragmentContainer} from 'react-relay'
-import useExpandColumnsWidth from '~/hooks/useExpandColumnsWidth'
 import {RetroReflectPhase_meeting} from '~/__generated__/RetroReflectPhase_meeting.graphql'
 import useBreakpoint from '../../hooks/useBreakpoint'
 import {Breakpoint} from '../../types/constEnums'
@@ -31,7 +30,6 @@ const RetroReflectPhase = (props: Props) => {
   const {localPhase, endedAt, showSidebar} = meeting
   if (!localPhase || !localPhase.reflectPrompts) return null
   const reflectPrompts = localPhase!.reflectPrompts
-  useExpandColumnsWidth(reflectPrompts)
   const focusedPromptId = localPhase!.focusedPromptId
   const ColumnWrapper = isDesktop ? ReflectWrapperDesktop : ReflectWrapperMobile
   return (

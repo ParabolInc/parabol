@@ -4,7 +4,7 @@ import {Breakpoint} from '~/types/constEnums'
 import useAtmosphere from './useAtmosphere'
 import useBreakpoint from './useBreakpoint'
 
-const useExpandColumnsWidth = (reflectPrompts, reflectionGroups) => {
+const useExpandColumnsWidth = (reflectPrompts) => {
   const atmosphere = useAtmosphere()
   const reflectPromptsCount = reflectPrompts.length
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)

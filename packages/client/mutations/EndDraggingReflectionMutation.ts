@@ -1,7 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitLocalUpdate, commitMutation} from 'react-relay'
 import {Disposable, RecordProxy, RecordSourceSelectorProxy} from 'relay-runtime'
-import {SubColumn} from '~/types/constEnums'
 import {EndDraggingReflectionMutation_meeting} from '~/__generated__/EndDraggingReflectionMutation_meeting.graphql'
 import Atmosphere from '../Atmosphere'
 import {IEndDraggingReflectionOnMutationArguments} from '../types/graphql'
@@ -157,16 +156,11 @@ const EndDraggingReflectionMutation = (
       const reflectionGroup = payload.getLinkedRecord('reflectionGroup')
       if (!reflectionGroup) return
       const prompt = reflection.getLinkedRecord('prompt')
+      if (!prompt) return
       reflection.setLinkedRecord(prompt, 'prompt')
       reflectionGroup.setLinkedRecord(prompt, 'prompt')
-      const isWidthExpanded = prompt?.getValue('isWidthExpanded')
       const oldReflectionGroupId = getInProxy(payload, 'oldReflectionGroup', 'id')
-      if (isWidthExpanded && !reflectionGroup.getValue('subColumn')) {
-        const oldReflectionGroup = store.get(oldReflectionGroupId)
-        const oldSubColumn = oldReflectionGroup?.getValue('subColumn')
-        reflectionGroup.setValue(oldSubColumn, 'subColumn')
-      }
-      moveReflectionLocation(reflection, reflectionGroup, oldReflectionGroupId, store)
+      moveReflectionLocation(reflection, reflectionGroup!, oldReflectionGroupId, store)
     },
     optimisticUpdater: (store) => {
       const nowISO = new Date().toJSON()

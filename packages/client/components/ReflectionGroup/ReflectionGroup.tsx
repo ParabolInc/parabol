@@ -28,14 +28,15 @@ export const getCardStackPadding = (count: number) => {
   return Math.max(0, Math.min(3, count) - 1) * ReflectionStackPerspective.Y
 }
 
-const Group = styled('div')<{addMarginTop: boolean; staticReflectionCount: number}>(
-  ({addMarginTop, staticReflectionCount}) => ({
+const Group = styled('div')<{moveUp: boolean; staticReflectionCount: number}>(
+  ({moveUp, staticReflectionCount}) => ({
     height: 'max-content',
-    marginTop: addMarginTop ? 32 : 0,
+    marginBottom: moveUp ? -32 : 0,
     position: 'relative',
     paddingTop: ElementWidth.REFLECTION_CARD_PADDING,
     paddingBottom:
       ElementWidth.REFLECTION_CARD_PADDING + getCardStackPadding(staticReflectionCount),
+    top: moveUp ? -32 : 0,
     transition: `padding-bottom ${Times.REFLECTION_DROP_DURATION}ms`
   })
 )
@@ -44,8 +45,7 @@ const ReflectionWrapper = styled('div')<{
   staticIdx: number
   isDropping: boolean | null
   groupCount: number
-  isWidthExpanded: boolean
-}>(({staticIdx, isDropping, groupCount, isWidthExpanded}): any => {
+}>(({staticIdx, isDropping, groupCount}): any => {
   const isHidden = staticIdx === -1 || isDropping
   const multiple = Math.min(staticIdx, 2)
   const scaleX =
@@ -60,18 +60,18 @@ const ReflectionWrapper = styled('div')<{
     opacity: isHidden ? 0 : undefined,
     transform: `translateY(${translateY}px) scaleX(${scaleX})`,
     transition: isHidden ? undefined : `transform ${Times.REFLECTION_DROP_DURATION}ms`,
-    width: isWidthExpanded ? ElementWidth.REFLECTION_CARD_EXPANDED : ElementWidth.REFLECTION_CARD,
+    width: ElementWidth.REFLECTION_CARD,
     zIndex: 3 - multiple
   }
 })
 
 interface Props {
+  index?: number
   phaseRef: RefObject<HTMLDivElement>
   meeting: ReflectionGroup_meeting
   reflectionGroup: ReflectionGroup_reflectionGroup
   swipeColumn?: SwipeColumn
   dataCy?: string
-  index: number
 }
 
 const ReflectionGroup = (props: Props) => {
@@ -81,7 +81,7 @@ const ReflectionGroup = (props: Props) => {
   const {phaseType} = localPhase
   const {isComplete} = localStage
   const {reflections, id: reflectionGroupId, titleIsUserDefined, prompt} = reflectionGroup
-  const {isWidthExpanded} = prompt
+  const isWidthExpanded = prompt?.isWidthExpanded
   const titleInputRef = useRef(null)
   const expandedTitleInputRef = useRef(null)
   const headerRef = useRef<HTMLDivElement>(null)
@@ -174,7 +174,7 @@ const ReflectionGroup = (props: Props) => {
         ref={groupRef}
         staticReflectionCount={staticReflections.length}
         data-cy={dataCy}
-        addMarginTop={!showHeader && isWidthExpanded && index === 0}
+        moveUp={showHeader && isWidthExpanded && index === 0}
       >
         {showHeader && (
           <ReflectionGroupHeader
@@ -197,7 +197,6 @@ const ReflectionGroup = (props: Props) => {
                 groupCount={reflections.length}
                 staticIdx={staticIdx}
                 isDropping={isDropping}
-                isWidthExpanded={!!isWidthExpanded}
               >
                 <DraggableReflectionCard
                   dataCy={`${dataCy}-card-${staticIdx}`}

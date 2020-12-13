@@ -26,16 +26,15 @@ interface Props {
 
 const GroupHeader = styled('div')<{
   isExpanded: boolean
-  isWidthExpanded: boolean
   portalStatus: PortalStatus
-}>(({isExpanded, isWidthExpanded, portalStatus}) => ({
+}>(({isExpanded, portalStatus}) => ({
   alignItems: 'center',
   display: 'flex',
   flexShrink: 1,
   fontSize: 14,
   justifyContent: 'space-between',
   margin: isExpanded ? `0 ${Gutters.COLUMN_INNER_GUTTER}` : undefined,
-  maxWidth: isWidthExpanded ? ElementWidth.REFLECTION_CARD_EXPANDED : ElementWidth.REFLECTION_CARD,
+  maxWidth: ElementWidth.REFLECTION_CARD,
   minHeight: 32,
   opacity: !isExpanded && portalStatus !== PortalStatus.Exited ? 0 : undefined,
   paddingLeft: Gutters.REFLECTION_INNER_GUTTER_HORIZONTAL,
@@ -75,21 +74,14 @@ const ReflectionGroupHeader = forwardRef((props: Props, ref: Ref<HTMLDivElement>
     localStage,
     localPhase: {phaseType}
   } = meeting
-  const {prompt, reflections} = reflectionGroup
-  const {isWidthExpanded} = prompt
+  const {reflections} = reflectionGroup
   const canEdit = (phaseType === GROUP || phaseType === VOTE) && !localStage.isComplete
   const onClick = () => {
     titleInputRef.current && titleInputRef.current.select()
   }
 
   return (
-    <GroupHeader
-      data-cy={dataCy}
-      portalStatus={portalStatus}
-      isExpanded={isExpanded}
-      isWidthExpanded={!!isWidthExpanded}
-      ref={ref}
-    >
+    <GroupHeader data-cy={dataCy} portalStatus={portalStatus} isExpanded={isExpanded} ref={ref}>
       <ReflectionGroupTitleEditor
         isExpanded={isExpanded && portalStatus !== PortalStatus.Exiting}
         reflectionGroup={reflectionGroup}
@@ -139,9 +131,6 @@ export default createFragmentContainer(ReflectionGroupHeader, {
     fragment ReflectionGroupHeader_reflectionGroup on RetroReflectionGroup {
       ...ReflectionGroupTitleEditor_reflectionGroup
       ...ReflectionGroupVoting_reflectionGroup
-      prompt {
-        isWidthExpanded
-      }
       reflections {
         id
       }

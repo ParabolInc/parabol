@@ -51,20 +51,15 @@ const getTargetReference = (
   cardOffsetX: number,
   cardOffsetY: number,
   targets: TargetBBox[],
-  prevTargetId: string,
-  isWidthExpanded: boolean
+  prevTargetId: string
 ) => {
   const distances = [] as number[]
   // if it's clear they aren't near a card, don't try to force a relative position
-  const MAX_DIST = isWidthExpanded
-    ? ElementWidth.REFLECTION_CARD_EXPANDED
-    : ElementWidth.REFLECTION_CARD
+  const MAX_DIST = ElementWidth.REFLECTION_CARD
   for (let i = 0; i < targets.length; i++) {
     const target = targets[i]
     distances[i] = 1e6
-    const centroidX =
-      target.left +
-      (isWidthExpanded ? ElementWidth.REFLECTION_CARD_EXPANDED : ElementWidth.REFLECTION_CARD) / 2
+    const centroidX = target.left + ElementWidth.REFLECTION_CARD / 2
     const centroidY = target.top + target.height / 2
     const deltaX = centroidX - cursorX
     const deltaY = centroidY - cursorY

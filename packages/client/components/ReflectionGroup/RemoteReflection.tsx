@@ -25,14 +25,14 @@ const RemoteReflectionModal = styled('div')<{isDropping?: boolean | null}>(({isD
   zIndex: ZIndex.REFLECTION_IN_FLIGHT
 }))
 
-const HeaderModal = styled('div')<{isWidthExpanded: boolean}>(({isWidthExpanded}) => ({
+const HeaderModal = styled('div')({
   position: 'absolute',
   left: 0,
   top: 0,
   pointerEvents: 'none',
-  width: isWidthExpanded ? ElementWidth.REFLECTION_CARD_EXPANDED : ElementWidth.REFLECTION_CARD,
+  width: ElementWidth.REFLECTION_CARD,
   zIndex: ZIndex.REFLECTION_IN_FLIGHT
-}))
+})
 
 interface Props {
   style: React.CSSProperties
@@ -75,17 +75,12 @@ const getCoords = (
   }
 }
 
-const getHeaderTransform = (ref: RefObject<HTMLDivElement>, topPadding = 18, isWidthExpanded) => {
+const getHeaderTransform = (ref: RefObject<HTMLDivElement>, topPadding = 18) => {
   if (!ref.current) return {}
   const bbox = ref.current.getBoundingClientRect()
-  const minLeft =
-    -(isWidthExpanded ? ElementWidth.REFLECTION_CARD_EXPANDED : ElementWidth.REFLECTION_CARD) +
-    OFFSCREEN_PADDING * 8
+  const minLeft = -ElementWidth.REFLECTION_CARD + OFFSCREEN_PADDING * 8
   const minTop = OFFSCREEN_PADDING + topPadding
-  const maxLeft =
-    windowDims.innerWidth -
-    (isWidthExpanded ? ElementWidth.REFLECTION_CARD_EXPANDED : ElementWidth.REFLECTION_CARD) -
-    OFFSCREEN_PADDING
+  const maxLeft = windowDims.innerWidth - ElementWidth.REFLECTION_CARD - OFFSCREEN_PADDING
   const maxTop = windowDims.innerHeight - OFFSCREEN_PADDING
   const headerLeft = Math.max(minLeft, Math.min(maxLeft, bbox.left))
   const headerTop = Math.max(minTop, Math.min(maxTop, bbox.top))
@@ -117,8 +112,7 @@ const getInlineStyle = (
 
 const RemoteReflection = (props: Props) => {
   const {reflection, style} = props
-  const {id: reflectionId, content, isDropping, prompt} = reflection
-  const {isWidthExpanded} = prompt
+  const {id: reflectionId, content, isDropping} = reflection
   const remoteDrag = reflection.remoteDrag as DeepNonNullable<
     NonNullable<RemoteReflection_reflection['remoteDrag']>
   >
@@ -130,6 +124,7 @@ const RemoteReflection = (props: Props) => {
     timeoutRef.current = window.setTimeout(() => {
       commitLocalUpdate(atmosphere, (store) => {
         const reflection = store.get(reflectionId)!
+        console.log('TREE')
         reflection.setValue(true, 'isDropping')
       })
     }, Times.REFLECTION_STALE_LIMIT)
@@ -137,20 +132,21 @@ const RemoteReflection = (props: Props) => {
       window.clearTimeout(timeoutRef.current)
     }
   }, [remoteDrag])
+
   if (!remoteDrag) return null
   const {dragUserId, dragUserName} = remoteDrag
   const {nextStyle, minTop} = getInlineStyle(remoteDrag!, isDropping, style)
-  const {headerTransform, arrow} = getHeaderTransform(ref, minTop, isWidthExpanded)
+  const {headerTransform, arrow} = getHeaderTransform(ref, minTop)
   return (
     <>
       <RemoteReflectionModal ref={ref} style={nextStyle} isDropping={isDropping}>
-        <ReflectionCardRoot isWidthExpanded={!!isWidthExpanded}>
+        <ReflectionCardRoot>
           {!headerTransform && <UserDraggingHeader userId={dragUserId} name={dragUserName} />}
           <ReflectionEditorWrapper editorState={editorState} readOnly />
         </ReflectionCardRoot>
       </RemoteReflectionModal>
       {headerTransform && (
-        <HeaderModal isWidthExpanded={!!isWidthExpanded}>
+        <HeaderModal>
           <UserDraggingHeader
             userId={dragUserId}
             name={dragUserName}
@@ -169,9 +165,6 @@ export default createFragmentContainer(RemoteReflection, {
       id
       content
       isDropping
-      prompt {
-        isWidthExpanded
-      }
       remoteDrag {
         dragUserId
         dragUserName

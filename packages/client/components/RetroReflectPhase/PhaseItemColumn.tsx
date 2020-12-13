@@ -1,8 +1,8 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {EditorState} from 'draft-js'
-import React, {MouseEvent, useEffect, useMemo, useRef} from 'react'
-import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
+import React, {useEffect, useMemo, useRef} from 'react'
+import {createFragmentContainer} from 'react-relay'
 import {PhaseItemColumn_prompt} from '~/__generated__/PhaseItemColumn_prompt.graphql'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import {MenuPosition} from '../../hooks/useCoords'
@@ -19,20 +19,16 @@ import RetroPrompt from '../RetroPrompt'
 import PhaseItemChits from './PhaseItemChits'
 import PhaseItemEditor from './PhaseItemEditor'
 import ReflectionStack from './ReflectionStack'
-import ExpandArrowSVG from '../../../../static/images/icons/arrow_expand.svg'
-import FlatButton from '../FlatButton'
 
 const ColumnWrapper = styled('div')<{
   isDesktop: boolean
-  isFirstColumn: boolean
-  isLastColumn: boolean
-}>(({isDesktop, isFirstColumn, isLastColumn}) => ({
+}>(({isDesktop}) => ({
   alignItems: 'center',
   display: 'flex',
   flexDirection: 'column',
   flex: 1,
   justifyContent: 'flex-start',
-  margin: isDesktop ? `0 ${isLastColumn ? 16 : 8}px 16px ${isFirstColumn ? 16 : 8}px` : undefined,
+  margin: isDesktop ? '0 8px 16px' : undefined,
   minHeight: isDesktop ? undefined : '100%'
 }))
 
@@ -52,20 +48,18 @@ const ColumnHighlight = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   width: '100%'
 }))
 
-const ColumnContent = styled('div')<{isDesktop: boolean; isWidthExpanded: boolean}>(
-  ({isDesktop, isWidthExpanded}) => ({
-    display: 'flex',
-    flex: 1,
-    flexDirection: 'column',
-    height: '100%',
-    justifyContent: isDesktop ? 'space-between' : 'space-between',
-    margin: '0 auto',
-    transition: `all 100ms ${BezierCurve.DECELERATE}`,
-    width: isWidthExpanded ? ElementWidth.REFLECTION_CARD_EXPANDED : ElementWidth.REFLECTION_CARD,
-    // must be greater than the highlighted el
-    zIndex: 1
-  })
-)
+const ColumnContent = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
+  display: 'flex',
+  flex: 1,
+  flexDirection: 'column',
+  height: '100%',
+  justifyContent: isDesktop ? 'space-between' : 'space-between',
+  margin: '0 auto',
+  transition: `all 100ms ${BezierCurve.DECELERATE}`,
+  width: ElementWidth.REFLECTION_CARD,
+  // must be greater than the highlighted el
+  zIndex: 1
+}))
 
 const HeaderAndEditor = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   flex: isDesktop ? 0.3 : undefined
@@ -119,24 +113,6 @@ const PromptHeader = styled('div')<{isClickable: boolean}>(({isClickable}) => ({
   userSelect: 'none'
 }))
 
-const ExpandButton = styled(FlatButton)({
-  alignItems: 'center',
-  background: 'transparent',
-  display: 'flex',
-  height: 24,
-  marginLeft: 4,
-  padding: 0,
-  width: 24,
-  ':click, :focus, :active': {
-    backgroundColor: 'inherit'
-  }
-})
-
-const TopRow = styled('div')({
-  display: 'flex',
-  justifyContent: 'space-between'
-})
-
 interface EditorAndStatusProps {
   isGroupingComplete: boolean
 }
@@ -169,8 +145,8 @@ interface Props {
 }
 
 const PhaseItemColumn = (props: Props) => {
-  const {idx, meeting, phaseRef, prompt, isDesktop, isFirstColumn, isLastColumn} = props
-  const {id: promptId, editorIds, question, groupColor, description, isWidthExpanded} = prompt
+  const {idx, meeting, phaseRef, prompt, isDesktop} = props
+  const {id: promptId, editorIds, question, groupColor, description} = prompt
   const {id: meetingId, facilitatorUserId, localPhase, phases, reflectionGroups} = meeting
   const {id: phaseId, focusedPromptId} = localPhase
   const groupPhase = phases.find((phase) => phase.phaseType === NewMeetingPhaseTypeEnum.group)!
@@ -190,14 +166,6 @@ const PhaseItemColumn = (props: Props) => {
   useEffect(() => {
     hasFocusedRef.current = true
   }, [focusedPromptId])
-
-  const toggleWidth = (e: MouseEvent<Element>) => {
-    e.stopPropagation()
-    commitLocalUpdate(atmosphere, (store) => {
-      const reflectPrompt = store.get(promptId)
-      reflectPrompt?.setValue(!isWidthExpanded, 'isWidthExpanded')
-    })
-  }
 
   const setColumnFocus = () => {
     if (!isFacilitator || isComplete) return
@@ -236,41 +204,19 @@ const PhaseItemColumn = (props: Props) => {
       disabled: hasFocusedRef.current || isFocused || !isFacilitator || isComplete
     }
   )
-  const {
-    tooltipPortal: expandPortal,
-    openTooltip: openExpandTooltip,
-    closeTooltip: closeExpandTooltip,
-    originRef: expandRef
-  } = useTooltip<HTMLButtonElement>(MenuPosition.UPPER_CENTER)
 
   return (
-    <ColumnWrapper
-      data-cy={`reflection-column-${question}`}
-      isDesktop={isDesktop}
-      isFirstColumn={isFirstColumn}
-      isLastColumn={isLastColumn}
-    >
+    <ColumnWrapper data-cy={`reflection-column-${question}`} isDesktop={isDesktop}>
       <ColumnHighlight isDesktop={isDesktop}>
         <ColumnColorDrop isFocused={isFocused} groupColor={groupColor} />
-        <ColumnContent isDesktop={isDesktop} isWidthExpanded={!!isWidthExpanded}>
+        <ColumnContent isDesktop={isDesktop}>
           <HeaderAndEditor isDesktop={isDesktop}>
             <PromptHeader isClickable={isFacilitator && !isComplete} onClick={setColumnFocus}>
-              <TopRow>
-                <RetroPrompt onMouseEnter={openTooltip} onMouseLeave={closeTooltip} ref={originRef}>
-                  <ColorSpacer />
-                  {question}
-                </RetroPrompt>
-                {tooltipPortal(<div>Tap to highlight prompt for everybody</div>)}
-                <ExpandButton
-                  onClick={toggleWidth}
-                  onMouseEnter={openExpandTooltip}
-                  onMouseLeave={closeExpandTooltip}
-                  ref={expandRef}
-                >
-                  <img alt='expand-arrow-icon' src={ExpandArrowSVG} />
-                </ExpandButton>
-                {expandPortal(<div>{`${isWidthExpanded ? 'Minimise' : 'Expand'}`}</div>)}
-              </TopRow>
+              <RetroPrompt onMouseEnter={openTooltip} onMouseLeave={closeTooltip} ref={originRef}>
+                <ColorSpacer />
+                {question}
+              </RetroPrompt>
+              {tooltipPortal(<div>Tap to highlight prompt for everybody</div>)}
               <Description>{description}</Description>
             </PromptHeader>
             <EditorSection data-cy={`editor-section-${question}`}>
@@ -281,7 +227,6 @@ const PhaseItemColumn = (props: Props) => {
                 <PhaseItemEditor
                   cardsInFlightRef={cardsInFlightRef}
                   dataCy={`phase-item-editor-${question}`}
-                  isWidthExpanded={!!isWidthExpanded}
                   meetingId={meetingId}
                   nextSortOrder={nextSortOrder}
                   phaseEditorRef={phaseEditorRef}
@@ -322,7 +267,6 @@ export default createFragmentContainer(PhaseItemColumn, {
       description
       editorIds
       groupColor
-      isWidthExpanded
       question
     }
   `,

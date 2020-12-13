@@ -57,8 +57,7 @@ const ReflectionCard = (props: Props) => {
   const {meetingId, reactjis} = reflection
   const phaseType = meeting ? meeting.localPhase.phaseType : null
   const phases = meeting ? meeting.phases : null
-  const {id: reflectionId, content, promptId, isViewerCreator, prompt} = reflection
-  const {isWidthExpanded} = prompt
+  const {id: reflectionId, content, promptId, isViewerCreator} = reflection
   const atmosphere = useAtmosphere()
   const {onCompleted, submitting, submitMutation, error, onError} = useMutationProps()
   const editorRef = useRef<HTMLTextAreaElement>(null)
@@ -178,7 +177,7 @@ const ReflectionCard = (props: Props) => {
     onCompleted()
   }
   return (
-    <ReflectionCardRoot data-cy={`${dataCy}-root`} isWidthExpanded={!!isWidthExpanded}>
+    <ReflectionCardRoot data-cy={`${dataCy}-root`}>
       <ColorBadge phaseType={phaseType as NewMeetingPhaseTypeEnum} reflection={reflection} />
       <ReflectionEditorWrapper
         dataCy={`editor-wrapper`}
@@ -218,9 +217,6 @@ export default createFragmentContainer(ReflectionCard, {
       meetingId
       reflectionGroupId
       promptId
-      prompt {
-        isWidthExpanded
-      }
       content
       reactjis {
         ...ReactjiSection_reactjis

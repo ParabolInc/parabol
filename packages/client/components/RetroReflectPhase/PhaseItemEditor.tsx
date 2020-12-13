@@ -18,21 +18,19 @@ const FLIGHT_TIME = 500
 const CardInFlightStyles = styled(ReflectionCardRoot)<{
   transform: string
   isStart: boolean
-  isWidthExpanded: boolean
-}>(({isStart, isWidthExpanded, transform}) => ({
+}>(({isStart, transform}) => ({
   boxShadow: isStart ? Elevation.Z8 : Elevation.Z0,
   position: 'absolute',
   top: 0,
   transform,
   transition: `all ${FLIGHT_TIME}ms ${BezierCurve.DECELERATE}`,
-  width: isWidthExpanded ? ElementWidth.REFLECTION_CARD_EXPANDED : ElementWidth.REFLECTION_CARD,
+  width: ElementWidth.REFLECTION_CARD,
   zIndex: ZIndex.REFLECTION_IN_FLIGHT
 }))
 
 interface Props {
   cardsInFlightRef: MutableRefObject<ReflectColumnCardInFlight[]>
   setCardsInFlight: (cards: ReflectColumnCardInFlight[]) => void
-  isWidthExpanded?: boolean
   meetingId: string
   nextSortOrder: () => number
   phaseEditorRef: React.RefObject<HTMLDivElement>
@@ -50,7 +48,6 @@ const PhaseItemEditor = (props: Props) => {
     stackTopRef,
     cardsInFlightRef,
     setCardsInFlight,
-    isWidthExpanded,
     dataCy
   } = props
   const atmosphere = useAtmosphere()
@@ -168,7 +165,7 @@ const PhaseItemEditor = (props: Props) => {
 
   return (
     <>
-      <ReflectionCardRoot data-cy={dataCy} ref={phaseEditorRef} isWidthExpanded={!!isWidthExpanded}>
+      <ReflectionCardRoot data-cy={dataCy} ref={phaseEditorRef}>
         <ReflectionEditorWrapper
           dataCy={`${dataCy}-wrapper`}
           isPhaseItemEditor
@@ -192,7 +189,6 @@ const PhaseItemEditor = (props: Props) => {
                 key={card.key}
                 transform={card.transform}
                 isStart={card.isStart}
-                isWidthExpanded={!!isWidthExpanded}
                 onTransitionEnd={removeCardInFlight(card.key)}
               >
                 <ReflectionEditorWrapper editorState={card.editorState} readOnly />
