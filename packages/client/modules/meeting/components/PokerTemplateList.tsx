@@ -118,6 +118,7 @@ const PokerTemplateList = (props: Props) => {
           onClick={gotoPublicTemplates}
         />
       </StyledTabsBar>
+      <AddNewPokerTemplate teamId={teamId} pokerTemplates={teamTemplates} gotoTeamTemplates={gotoTeamTemplates} />
       <SwipeableViews
         enableMouseEvents
         index={activeIdx}
@@ -126,7 +127,6 @@ const PokerTemplateList = (props: Props) => {
         style={innerStyle}
       >
         <TabContents>
-          <AddNewPokerTemplate teamId={teamId} pokerTemplates={teamTemplates} gotoTeamTemplates={gotoTeamTemplates} />
           <PokerTemplateListTeam
             activeTemplateId={activeTemplateId}
             showPublicTemplates={gotoPublicTemplates}
@@ -136,11 +136,9 @@ const PokerTemplateList = (props: Props) => {
           />
         </TabContents>
         <TabContents>
-          <AddNewPokerTemplate teamId={teamId} pokerTemplates={teamTemplates} gotoTeamTemplates={gotoTeamTemplates} />
           <PokerTemplateListOrgRoot teamId={teamId} isActive={activeIdx === 1} />
         </TabContents>
         <TabContents>
-          <AddNewPokerTemplate teamId={teamId} pokerTemplates={teamTemplates} gotoTeamTemplates={gotoTeamTemplates} />
           <PokerTemplateListPublicRoot teamId={teamId} isActive={activeIdx === 2} />
         </TabContents>
       </SwipeableViews>

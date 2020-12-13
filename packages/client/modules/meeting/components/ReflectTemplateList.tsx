@@ -119,6 +119,7 @@ const ReflectTemplateList = (props: Props) => {
           onClick={gotoPublicTemplates}
         />
       </StyledTabsBar>
+      <AddNewReflectTemplate teamId={teamId} reflectTemplates={teamTemplates} gotoTeamTemplates={gotoTeamTemplates} />
       <SwipeableViews
         enableMouseEvents
         index={activeIdx}
@@ -127,11 +128,6 @@ const ReflectTemplateList = (props: Props) => {
         style={innerStyle}
       >
         <TabContents>
-          <AddNewReflectTemplate
-            teamId={teamId}
-            reflectTemplates={teamTemplates}
-            gotoTeamTemplates={gotoTeamTemplates}
-          />
           <ReflectTemplateListTeam
             activeTemplateId={activeTemplateId}
             showPublicTemplates={gotoPublicTemplates}
@@ -141,19 +137,9 @@ const ReflectTemplateList = (props: Props) => {
           />
         </TabContents>
         <TabContents>
-          <AddNewReflectTemplate
-            teamId={teamId}
-            reflectTemplates={teamTemplates}
-            gotoTeamTemplates={gotoTeamTemplates}
-          />
           <ReflectTemplateListOrgRoot teamId={teamId} isActive={activeIdx === 1} />
         </TabContents>
         <TabContents>
-          <AddNewReflectTemplate
-            teamId={teamId}
-            reflectTemplates={teamTemplates}
-            gotoTeamTemplates={gotoTeamTemplates}
-          />
           <ReflectTemplateListPublicRoot teamId={teamId} isActive={activeIdx === 2} />
         </TabContents>
       </SwipeableViews>
