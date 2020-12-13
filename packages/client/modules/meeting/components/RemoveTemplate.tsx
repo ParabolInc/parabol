@@ -9,6 +9,7 @@ import RemovePokerTemplateMutation from '../../../mutations/RemovePokerTemplateM
 import SelectTemplateMutation from '../../../mutations/SelectTemplateMutation'
 import {RemoveTemplate_teamTemplates} from '../../../__generated__/RemoveTemplate_teamTemplates.graphql'
 import {MeetingTypeEnum} from '~/types/graphql'
+import setTemplateId from '../../../utils/relay/setTemplateId'
 
 
 interface Props {
@@ -45,8 +46,10 @@ const RemoveTemplate = (props: Props) => {
     }
     if (type === MeetingTypeEnum.retrospective) {
       RemoveReflectTemplateMutation(atmosphere, {templateId}, {onError, onCompleted})
+      setTemplateId(atmosphere, teamId, nextTemplateId, MeetingTypeEnum.retrospective)
     } else if (type === MeetingTypeEnum.poker) {
       RemovePokerTemplateMutation(atmosphere, {templateId}, {onError, onCompleted})
+      setTemplateId(atmosphere, teamId, nextTemplateId, MeetingTypeEnum.poker)
     }
   }
 
