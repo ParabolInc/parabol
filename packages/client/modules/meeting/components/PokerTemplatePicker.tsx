@@ -49,6 +49,7 @@ export default createFragmentContainer(PokerTemplatePicker, {
       selectedTemplate {
         id
         name
+        ...PokerTemplateDetailsTemplate
       }
     }
   `

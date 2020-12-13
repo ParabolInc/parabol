@@ -49,6 +49,7 @@ export default createFragmentContainer(RetroTemplatePicker, {
       selectedTemplate {
         id
         name
+        ...ReflectTemplateDetailsTemplate
       }
     }
   `
