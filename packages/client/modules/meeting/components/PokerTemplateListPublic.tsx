@@ -3,6 +3,7 @@ import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import useSelectTopTemplate from '../../../hooks/useSelectTopTemplate'
+import {MeetingTypeEnum} from '../../../types/graphql'
 import {PokerTemplateListPublic_viewer} from '../../../__generated__/PokerTemplateListPublic_viewer.graphql'
 import PokerTemplateItem from './PokerTemplateItem'
 
@@ -24,7 +25,7 @@ const PokerTemplateListPublic = (props: Props) => {
   const publicTemplates = meetingSettings.publicTemplates!
   const selectedTemplateId = meetingSettings.activeTemplate!.id
   const {edges} = publicTemplates
-  useSelectTopTemplate(edges, selectedTemplateId, teamId, true)
+  useSelectTopTemplate(edges, selectedTemplateId, teamId, true, MeetingTypeEnum.poker)
   return (
     <TemplateList>
       {

@@ -1,9 +1,10 @@
 import {useEffect, useRef} from 'react'
-import SelectTemplateMutation from '../mutations/SelectTemplateMutation'
+import {MeetingTypeEnum} from '../types/graphql'
 import isTempId from '../utils/relay/isTempId'
+import setTemplateId from '../utils/relay/setTemplateId'
 import useAtmosphere from './useAtmosphere'
 
-const useSelectTopTemplate = (edges: readonly {node: {id: string}}[], selectedTemplateId: string, teamId: string, isActive: boolean) => {
+const useSelectTopTemplate = (edges: readonly {node: {id: string}}[], selectedTemplateId: string, teamId: string, isActive: boolean, meetingType: MeetingTypeEnum) => {
   const atmosphere = useAtmosphere()
   const timer = useRef<number | undefined>()
   useEffect(() => {
@@ -15,7 +16,7 @@ const useSelectTopTemplate = (edges: readonly {node: {id: string}}[], selectedTe
       const listTemplateIds = edges.map(({node}) => node.id)
       const isSelectedInView = listTemplateIds.includes(selectedTemplateId)
       if (!isSelectedInView) {
-        SelectTemplateMutation(atmosphere, {selectedTemplateId: listTemplateIds[0], teamId})
+        setTemplateId(atmosphere, teamId, listTemplateIds[0], meetingType)
       }
     }, 300)
   }, [isActive, selectedTemplateId])

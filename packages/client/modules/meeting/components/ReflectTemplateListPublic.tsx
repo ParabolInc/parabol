@@ -3,6 +3,7 @@ import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import useSelectTopTemplate from '../../../hooks/useSelectTopTemplate'
+import {MeetingTypeEnum} from '../../../types/graphql'
 import {ReflectTemplateListPublic_viewer} from '../../../__generated__/ReflectTemplateListPublic_viewer.graphql'
 import ReflectTemplateItem from './ReflectTemplateItem'
 
@@ -24,7 +25,7 @@ const ReflectTemplateListPublic = (props: Props) => {
   const publicTemplates = meetingSettings.publicTemplates!
   const selectedTemplateId = meetingSettings.activeTemplate!.id
   const {edges} = publicTemplates
-  useSelectTopTemplate(edges, selectedTemplateId, teamId, true)
+  useSelectTopTemplate(edges, selectedTemplateId, teamId, true, MeetingTypeEnum.retrospective)
   return (
     <TemplateList>
       {

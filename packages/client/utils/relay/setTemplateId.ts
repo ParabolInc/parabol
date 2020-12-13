@@ -7,9 +7,9 @@ const setTemplateId = (atmosphere: Atmosphere, teamId: string, templateId: strin
     const team = store.get<ITeam>(teamId)
     if (!team) return
     const meetingSettings = team.getLinkedRecord('meetingSettings', {meetingType: meetingType})
-    const selectedTemplate = templateId ? store.get(templateId)! : null
-    if (selectedTemplate) {
-      meetingSettings.setLinkedRecord(selectedTemplate, 'activeTemplate')
+    const activeTemplate = templateId ? store.get(templateId)! : null
+    if (activeTemplate) {
+      meetingSettings.setLinkedRecord(activeTemplate, 'activeTemplate')
     } else {
       meetingSettings.setValue(null, 'activeTemplate')
     }

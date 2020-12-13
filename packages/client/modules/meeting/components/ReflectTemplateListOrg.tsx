@@ -4,6 +4,7 @@ import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import useSelectTopTemplate from '../../../hooks/useSelectTopTemplate'
 import {PALETTE} from '../../../styles/paletteV2'
+import {MeetingTypeEnum} from '../../../types/graphql'
 import {ReflectTemplateListOrg_viewer} from '../../../__generated__/ReflectTemplateListOrg_viewer.graphql'
 import ReflectTemplateItem from './ReflectTemplateItem'
 const TemplateList = styled('ul')({
@@ -33,7 +34,7 @@ const ReflectTemplateListOrg = (props: Props) => {
   const selectedTemplateId = meetingSettings.activeTemplate!.id
   const organizationTemplates = meetingSettings.organizationTemplates!
   const {edges} = organizationTemplates
-  useSelectTopTemplate(edges, selectedTemplateId, teamId, true)
+  useSelectTopTemplate(edges, selectedTemplateId, teamId, true, MeetingTypeEnum.retrospective)
 
   if (edges.length === 0) {
     return <Message>{'No other teams in your organization are sharing a template.'}</Message>

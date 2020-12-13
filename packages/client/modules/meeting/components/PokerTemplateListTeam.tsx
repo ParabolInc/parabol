@@ -4,6 +4,7 @@ import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import useSelectTopTemplate from '../../../hooks/useSelectTopTemplate'
 import {PALETTE} from '../../../styles/paletteV2'
+import {MeetingTypeEnum} from '../../../types/graphql'
 import {PokerTemplateListTeam_teamTemplates} from '../../../__generated__/PokerTemplateListTeam_teamTemplates.graphql'
 import PokerTemplateItem from './PokerTemplateItem'
 
@@ -44,7 +45,7 @@ interface Props {
 const PokerTemplateListTeam = (props: Props) => {
   const {isActive, activeTemplateId, showPublicTemplates, teamId, teamTemplates} = props
   const edges = teamTemplates.map((t) => ({node: {id: t.id}})) as readonly {node: {id: string}}[]
-  useSelectTopTemplate(edges, activeTemplateId, teamId, isActive)
+  useSelectTopTemplate(edges, activeTemplateId, teamId, isActive, MeetingTypeEnum.poker)
   if (teamTemplates.length === 0) {
     return (
       <Message>
