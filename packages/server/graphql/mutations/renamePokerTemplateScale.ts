@@ -22,10 +22,7 @@ const renamePokerTemplateScale = {
     const now = new Date()
     const operationId = dataLoader.share()
     const subOptions = {operationId, mutatorId}
-    const scale = await r
-      .table('TemplateScale')
-      .get(scaleId)
-      .run()
+    const scale = await r.table('TemplateScale').get(scaleId).run()
     const viewerId = getUserId(authToken)
 
     // AUTH
@@ -38,17 +35,13 @@ const renamePokerTemplateScale = {
 
     // VALIDATION
     const {teamId} = scale
-    const trimmedName = name.trim().slice(0, 100)
+    const trimmedName = name.trim().slice(0, 50)
     const normalizedName = trimmedName || 'Unnamed Scale'
 
     const allScales = await r
       .table('TemplateScale')
       .getAll(teamId, {index: 'teamId'})
-      .filter((row) =>
-        row('removedAt')
-          .default(null)
-          .eq(null)
-      )
+      .filter((row) => row('removedAt').default(null).eq(null))
       .run()
     if (allScales.find((scale) => scale.name === normalizedName)) {
       return standardError(new Error('Duplicate name scale'), {userId: viewerId})

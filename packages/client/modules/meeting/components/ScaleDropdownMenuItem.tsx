@@ -72,13 +72,13 @@ const StarterIcon = styled(Icon)({
 const ScaleDropdownMenuItem = forwardRef((props: Props, ref) => {
   const {scale, dimension, closePortal, scaleCount} = props
   const {id: scaleId, isStarter, name: scaleName, values} = scale
-  const {id: dimensionId, team} = dimension
-  const {id: teamId} = team
+  const {id: dimensionId, selectedScale} = dimension
+  const {id: selectedScaleId} = selectedScale
   const atmosphere = useAtmosphere()
   const {submitMutation, submitting, onError, onCompleted} = useMutationProps()
 
   const setScale = (scaleId: any) => () => {
-    if (submitting) return
+    if (submitting || scaleId === selectedScaleId) return
     submitMutation()
     UpdatePokerTemplateDimensionScaleMutation(atmosphere, {dimensionId, scaleId}, {onError, onCompleted})
     closePortal()
@@ -101,10 +101,8 @@ const ScaleDropdownMenuItem = forwardRef((props: Props, ref) => {
           </ScaleNameAndValues>
           <ScaleActionButtonGroup>
             <ScaleActions
-              scaleId={scaleId}
-              isStarter={isStarter}
+              scale={scale}
               scaleCount={scaleCount}
-              teamId={teamId}
             />
           </ScaleActionButtonGroup>
         </ScaleDetails>
@@ -116,25 +114,21 @@ const ScaleDropdownMenuItem = forwardRef((props: Props, ref) => {
 export default createFragmentContainer(ScaleDropdownMenuItem, {
   dimension: graphql`
     fragment ScaleDropdownMenuItem_dimension on TemplateDimension {
-      team {
+      id
+      selectedScale {
         id
       }
-      id
     }
   `,
   scale: graphql`
     fragment ScaleDropdownMenuItem_scale on TemplateScale {
+      ...ScaleActions_scale
       id
       name
       isStarter
       teamId
       values {
         label
-      }
-      dimensions {
-        selectedScale {
-          id
-        }
       }
     }
   `
