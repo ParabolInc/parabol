@@ -1,4 +1,4 @@
-import {GraphQLID, GraphQLNonNull, GraphQLList, GraphQLInterfaceType} from 'graphql'
+import {GraphQLID, GraphQLNonNull, GraphQLList, GraphQLInterfaceType, GraphQLString} from 'graphql'
 import ThreadSource, {threadSourceFields} from './ThreadSource'
 import CommentorDetails from './CommentorDetails'
 
@@ -14,6 +14,10 @@ export const storyFields = () => ({
     resolve: ({commentors = []}) => {
       return commentors
     }
+  },
+  title: {
+    type: GraphQLNonNull(GraphQLString),
+    description: 'The title, independent of the story type'
   }
 })
 

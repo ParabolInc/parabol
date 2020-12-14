@@ -1,3 +1,4 @@
+import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useEffect, useState} from 'react'
 import {createPaginationContainer, RelayPaginationProp} from 'react-relay'
@@ -7,9 +8,17 @@ import ParabolScopingSelectAllTasks from './ParabolScopingSelectAllTasks'
 import ParabolScopingSearchResultItem from './ParabolScopingSearchResultItem'
 import useLoadMoreOnScrollBottom from '~/hooks/useLoadMoreOnScrollBottom'
 import IntegrationScopingNoResults from './IntegrationScopingNoResults'
-import useRecordIdsWithStages from '~/hooks/useRecordIdsWithStages'
-import {NewMeetingPhaseTypeEnum} from '~/types/graphql'
+import useGetUsedServiceTaskIds from '~/hooks/useGetUsedServiceTaskIds'
+import {NewMeetingPhaseTypeEnum, TaskStatusEnum} from '~/types/graphql'
+import NewIntegrationRecordButton from './NewIntegrationRecordButton'
+import useAtmosphere from '~/hooks/useAtmosphere'
+import dndNoise from '~/utils/dndNoise'
+import CreateTaskMutation from '~/mutations/CreateTaskMutation'
+import useMutationProps from '~/hooks/useMutationProps'
 
+const ResultScroller = styled('div')({
+  overflow: 'auto'
+})
 interface Props {
   relay: RelayPaginationProp
   viewer: ParabolScopingSearchResults_viewer | null
@@ -21,35 +30,78 @@ const ParabolScopingSearchResults = (props: Props) => {
   const tasks = viewer?.tasks ?? null
   const incomingEdges = tasks?.edges ?? null
   const [edges, setEdges] = useState([] as readonly any[])
+  const [isEditing, setIsEditing] = useState(false)
   const lastItem = useLoadMoreOnScrollBottom(relay, {}, 50)
   useEffect(() => {
     if (incomingEdges) setEdges(incomingEdges)
   }, [incomingEdges])
-  const {id: meetingId, phases} = meeting
+  const {id: meetingId, phases, teamId} = meeting
   const estimatePhase = phases.find(({phaseType}) => phaseType === NewMeetingPhaseTypeEnum.ESTIMATE)
-  const usedParabolTaskIds = useRecordIdsWithStages(estimatePhase)
+  const usedServiceTaskIds = useGetUsedServiceTaskIds(estimatePhase)
+  const atmosphere = useAtmosphere()
+  const {onError, onCompleted} = useMutationProps()
 
-  if (edges.length === 0)
-    return viewer ? <IntegrationScopingNoResults msg={'No tasks match that query'} /> : null
+  const addTask = () => {
+    const {viewerId} = atmosphere
+    const newTask = {
+      status: TaskStatusEnum.active,
+      sortOrder: dndNoise(),
+      meetingId,
+      userId: viewerId,
+      teamId,
+    }
+    CreateTaskMutation(
+      atmosphere,
+      {newTask},
+      {onError, onCompleted}
+    )
+  }
+
+  const handleAddTaskClick = () => {
+    setIsEditing(true)
+    addTask()
+  }
+
+  if (edges.length === 0 && !isEditing)
+    return viewer ?
+      <>
+        <IntegrationScopingNoResults msg={'No tasks match that query'} />
+        <NewIntegrationRecordButton
+          labelText={'New Task'}
+          onClick={handleAddTaskClick}
+        />
+      </>
+      :
+      null
 
   return (
     <>
       <ParabolScopingSelectAllTasks
-        usedParabolTaskIds={usedParabolTaskIds}
+        usedServiceTaskIds={usedServiceTaskIds}
         tasks={edges}
         meetingId={meetingId}
       />
-      {edges.map(({node}) => {
-        return (
-          <ParabolScopingSearchResultItem
-            key={node.id}
-            task={node}
-            meetingId={meeting.id}
-            isSelected={usedParabolTaskIds.has(node.id)}
-          />
-        )
-      })}
-      {lastItem}
+      <ResultScroller>
+        {edges.map(({node}) => {
+          return (
+            <ParabolScopingSearchResultItem
+              key={node.id}
+              task={node}
+              meetingId={meetingId}
+              usedServiceTaskIds={usedServiceTaskIds}
+              teamId={teamId}
+              setIsEditing={setIsEditing}
+            />
+          )
+        })}
+        {lastItem}
+      </ResultScroller>
+      {!isEditing &&
+        <NewIntegrationRecordButton
+          labelText={'New Task'}
+          onClick={handleAddTaskClick}
+        />
+      }
     </>
   )
 }
@@ -62,8 +114,9 @@ export default createPaginationContainer(
         id
         phases {
           phaseType
-          ...useRecordIdsWithStages_phase
+          ...useGetUsedServiceTaskIds_phase
         }
+        teamId
       }
     `,
     viewer: graphql`

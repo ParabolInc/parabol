@@ -167,7 +167,8 @@ class EditableText extends Component<Props, State> {
 
   onKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Escape') {
-      this.reset()
+      // wait a tick so other escape listeners see that this is the active element
+      setTimeout(this.reset)
     }
   }
 

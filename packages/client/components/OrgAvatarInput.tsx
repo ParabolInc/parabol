@@ -5,10 +5,8 @@ import Avatar from './Avatar/Avatar'
 import AvatarInput from './AvatarInput'
 import DialogTitle from './DialogTitle'
 import withAtmosphere, {WithAtmosphereProps} from '../decorators/withAtmosphere/withAtmosphere'
-import CreateOrgPicturePutUrlMutation from '../mutations/CreateOrgPicturePutUrlMutation'
-import UpdateOrgMutation from '../mutations/UpdateOrgMutation'
 import withMutationProps, {WithMutationProps} from '../utils/relay/withMutationProps'
-import sendAssetToS3 from '../utils/sendAssetToS3'
+import UploadOrgImageMutation from '~/mutations/UploadOrgImageMutation'
 
 interface Props extends WithAtmosphereProps, WithMutationProps {
   picture: string
@@ -52,7 +50,7 @@ class OrgAvatarInput extends Component<Props> {
     } = this.props
     setDirty()
     if (file.size > 2 ** 21) {
-      onError('File is too large')
+      onError('File is too large (1MB Max)')
       return
     }
     const isSanitary = await sanitizeSVG(file)
@@ -62,23 +60,12 @@ class OrgAvatarInput extends Component<Props> {
     }
     if (submitting) return
     submitMutation()
-    const variables = {
-      contentType: file.type,
-      contentLength: file.size,
-      orgId
-    }
-    const handleCompleted = async (res) => {
-      const {
-        createOrgPicturePutUrl: {url}
-      } = res
-      const pictureUrl = await sendAssetToS3(file, url)
-      const updatedOrg = {
-        id: orgId,
-        picture: pictureUrl
-      }
-      UpdateOrgMutation(atmosphere, {updatedOrg}, {onError, onCompleted})
-    }
-    CreateOrgPicturePutUrlMutation(atmosphere, variables, onError, handleCompleted)
+    UploadOrgImageMutation(
+      atmosphere,
+      {orgId},
+      {onCompleted, onError},
+      {file}
+    )
   }
 
   render() {

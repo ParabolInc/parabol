@@ -2,10 +2,16 @@ import {Handler} from 'relay-runtime/lib/store/RelayStoreTypes'
 import {TaskStatusEnum, TaskServiceEnum} from '~/types/graphql'
 import upperFirst from '../upperFirst'
 import createProxyRecord from './createProxyRecord'
+import toSearchQueryId from './toSearchQueryId'
+
+export enum SearchQueryMeetingPropName {
+  parabol = 'parabolSearchQuery',
+  jira = 'jiraSearchQuery'
+}
 
 const lookup = {
   [TaskServiceEnum.jira]: {
-    meetingPropertyName: 'jiraSearchQuery',
+    meetingPropertyName: SearchQueryMeetingPropName.jira,
     defaultQuery: {
       queryString: '',
       projectKeyFilters: [],
@@ -13,7 +19,7 @@ const lookup = {
     }
   },
   [TaskServiceEnum.PARABOL]: {
-    meetingPropertyName: 'parabolSearchQuery',
+    meetingPropertyName: SearchQueryMeetingPropName.parabol,
     defaultQuery: {
       queryString: '',
       statusFilters: [TaskStatusEnum.active]
@@ -27,10 +33,13 @@ const initializeDefaultSearchQueries = (store, payload): void => {
 
   for (const data of Object.values(lookup)) {
     const {meetingPropertyName, defaultQuery} = data
-    const existingQuery = meeting.getLinkedRecord(meetingPropertyName)
+    const queryId = toSearchQueryId(meetingPropertyName, meetingId)
+    const existingQuery = store.get(queryId)
     if (!existingQuery) {
-      const newQuery = createProxyRecord(
-        store, upperFirst(meetingPropertyName), defaultQuery)
+      const newQuery = createProxyRecord(store, upperFirst(meetingPropertyName), {
+        id: queryId,
+        ...defaultQuery
+      })
       meeting.setLinkedRecord(newQuery, meetingPropertyName)
     }
   }

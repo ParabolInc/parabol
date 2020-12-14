@@ -1,8 +1,8 @@
-import {GraphQLObjectType} from 'graphql'
+import {GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import {GQLContext} from '../graphql'
-import PokerTemplate from './PokerTemplate'
 import TemplateScale from './TemplateScale'
 import StandardMutationError from './StandardMutationError'
+import TemplateDimension from './TemplateDimension'
 
 const RemovePokerTemplateScalePayload = new GraphQLObjectType<any, GQLContext>({
   name: 'RemovePokerTemplateScalePayload',
@@ -10,19 +10,16 @@ const RemovePokerTemplateScalePayload = new GraphQLObjectType<any, GQLContext>({
     error: {
       type: StandardMutationError
     },
-    pokerTemplate: {
-      type: PokerTemplate,
-      resolve: ({templateId}, _args, {dataLoader}) => {
-        if (!templateId) return null
-        return dataLoader.get('meetingTemplates').load(templateId)
-      }
-    },
     scale: {
       type: TemplateScale,
       resolve: ({scaleId}, _args, {dataLoader}) => {
         if (!scaleId) return null
         return dataLoader.get('templateScales').load(scaleId)
       }
+    },
+    dimensions: {
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(TemplateDimension))),
+      description: 'A list of dimensions that were using the archived scale'
     }
   })
 })

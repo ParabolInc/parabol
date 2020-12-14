@@ -1,7 +1,7 @@
 import React from 'react'
 import AddPokerTemplateMutation from '../../../mutations/AddPokerTemplateMutation'
 import {MeetingTypeEnum} from '../../../types/graphql'
-import TemplateDetailAction from '../../../components/TemplateDetailAction'
+import DetailAction from '../../../components/DetailAction'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
 import AddReflectTemplateMutation from '../../../mutations/AddReflectTemplateMutation'
@@ -38,7 +38,7 @@ const CloneTemplate = (props: Props) => {
     gotoTeamTemplates()
   }
   return (
-    <TemplateDetailAction disabled={!canClone} icon={'content_copy'} tooltip={tooltip} onClick={cloneTemplate} />
+    <DetailAction disabled={!canClone} icon={'content_copy'} tooltip={tooltip} onClick={cloneTemplate} />
   )
 }
 export default CloneTemplate

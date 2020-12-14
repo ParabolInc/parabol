@@ -22,13 +22,14 @@ const GroupedVotes = styled('div')({
 interface Props {
   meeting: PokerDiscussVoting_meeting
   stage: PokerDiscussVoting_stage
+  isInitialStageRender: boolean
 }
 
 const PokerDiscussVoting = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {submitting, submitMutation, onError, onCompleted, error} = useMutationProps()
   const {viewerId} = atmosphere
-  const {meeting, stage} = props
+  const {meeting, stage, isInitialStageRender} = props
   const {id: meetingId, facilitatorUserId} = meeting
   const {id: stageId, finalScore, dimension, scores} = stage
   const {selectedScale} = dimension
@@ -78,7 +79,7 @@ const PokerDiscussVoting = (props: Props) => {
             PokerSetFinalScoreMutation(atmosphere, {finalScore: label, meetingId, stageId}, {onError, onCompleted})
           } : undefined
           return (
-            <PokerVotingRow key={key} scaleValue={scaleValue} scores={scores} setFinalScore={setFinalScore} />
+            <PokerVotingRow key={key} scaleValue={scaleValue} scores={scores} setFinalScore={setFinalScore} isInitialStageRender={isInitialStageRender} />
           )
         })}
       </GroupedVotes>

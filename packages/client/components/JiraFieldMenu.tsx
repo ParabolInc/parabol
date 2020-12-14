@@ -41,10 +41,11 @@ const JiraFieldMenu = (props: Props) => {
     return idx === -1 ? undefined : idx
   }, [serviceFieldName, serverFields])
 
-  if (isLoading) {
+  if (serverFields.length === 0) {
+    const child = isLoading ? <MockJiraFieldList /> : <MenuItem key={'noResults'} label={'<<Cannot connect to Jira>>'} />
     return (
       <Menu ariaLabel={'Loading'} portalStatus={portalStatus} isDropdown={isDropdown}>
-        <MockJiraFieldList />
+        {child}
       </Menu>
     )
   }

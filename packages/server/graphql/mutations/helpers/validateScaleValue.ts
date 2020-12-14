@@ -13,13 +13,9 @@ const validateScaleValue = (value: number, isSpecial: boolean) => {
 }
 
 const validateScaleLabelValueUniqueness = (scaleValues: TemplateScaleValue[]) => {
-  const numericalValueList = scaleValues.map((scaleValue) => scaleValue.value)
   const labelList = scaleValues.map((scaleValue) => scaleValue.label)
 
-  return (
-    new Set(numericalValueList).size === numericalValueList.length &&
-    new Set(labelList).size === labelList.length
-  )
+  return new Set(labelList).size === labelList.length
 }
 
 export {

@@ -95,12 +95,13 @@ const MeetingControlBar = (props: Props) => {
   const {id: localStageId, isComplete} = localStage
   const isCheckIn = phaseType === NewMeetingPhaseTypeEnum.checkin
   const isRetro = meetingType === MeetingTypeEnum.retrospective
+  const isPoker = meetingType === MeetingTypeEnum.poker
   const getPossibleButtons = () => {
     const buttons = ['tips']
-    if (!isFacilitating && !isCheckIn && !isComplete) buttons.push('ready')
+    if (!isFacilitating && !isCheckIn && !isComplete && !isPoker) buttons.push('ready')
     if (!isFacilitating && localStageId !== facilitatorStageId) buttons.push('rejoin')
     if (isFacilitating && isRetro && !isCheckIn && !isComplete) buttons.push('timer')
-    if (isFacilitating && findStageAfterId(phases, localStageId)) buttons.push('next')
+    if ((isFacilitating || isPoker) && findStageAfterId(phases, localStageId)) buttons.push('next')
     if (isFacilitating) buttons.push('end')
     return buttons.map((key) => ({key}))
   }
@@ -146,8 +147,9 @@ const MeetingControlBar = (props: Props) => {
               return (
                 <BottomControlBarReady
                   {...tranProps}
-                  cancelConfirm={confirmingButton === 'next' ? undefined : cancelConfirm}
-                  isConfirming={confirmingButton === 'next'}
+                  isNext={isPoker ? true : isFacilitating}
+                  cancelConfirm={isPoker ? undefined : confirmingButton === 'next' ? undefined : cancelConfirm}
+                  isConfirming={isPoker ? false : confirmingButton === 'next'}
                   setConfirmingButton={setConfirmingButton}
                   isDemoStageComplete={isDemoStageComplete}
                   meeting={meeting}

@@ -9,7 +9,6 @@ import AddPokerTemplateScaleValuePayload from '../types/AddPokerTemplateScaleVal
 import {
   validateColorValue,
   validateScaleLabel,
-  validateScaleValue,
   validateScaleLabelValueUniqueness
 } from './helpers/validateScaleValue'
 
@@ -32,10 +31,7 @@ const addPokerTemplateScaleValue = {
     const viewerId = getUserId(authToken)
 
     // AUTH
-    const existingScale = await r
-      .table('TemplateScale')
-      .get(scaleId)
-      .run()
+    const existingScale = await r.table('TemplateScale').get(scaleId).run()
     if (!existingScale || existingScale.removedAt) {
       return standardError(new Error('Did not find an active scale'), {userId: viewerId})
     }
@@ -44,15 +40,12 @@ const addPokerTemplateScaleValue = {
     }
 
     // VALIDATION
-    const {color, label, value, isSpecial} = scaleValue
+    const {color, label} = scaleValue
     if (!validateColorValue(color)) {
       return standardError(new Error('Invalid scale color'), {userId: viewerId})
     }
     if (!validateScaleLabel(label)) {
       return standardError(new Error('Invalid scale label'), {userId: viewerId})
-    }
-    if (!validateScaleValue(value, !!isSpecial)) {
-      return standardError(new Error('Invalid scale value'), {userId: viewerId})
     }
 
     const updatedScale = await r
@@ -60,7 +53,8 @@ const addPokerTemplateScaleValue = {
       .get(scaleId)
       .update(
         (row) => ({
-          values: row('values').append(scaleValue),
+          // Append at the end of the sub-array (minus ? and Pass)
+          values: row('values').insertAt(row('values').count().sub(2), scaleValue),
           updatedAt: now
         }),
         {returnChanges: true}

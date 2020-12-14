@@ -38,10 +38,7 @@ const updatePokerTemplateScaleValue = {
     const viewerId = getUserId(authToken)
 
     // AUTH
-    const existingScale = await r
-      .table('TemplateScale')
-      .get(scaleId)
-      .run()
+    const existingScale = await r.table('TemplateScale').get(scaleId).run()
     if (!existingScale || existingScale.removedAt) {
       return standardError(new Error('Did not find an active scale'), {userId: viewerId})
     }
@@ -50,8 +47,7 @@ const updatePokerTemplateScaleValue = {
     }
     const {values: oldScaleValues} = existingScale
     const oldScaleValueIndex = oldScaleValues.findIndex(
-      (scaleValue) =>
-        scaleValue.value === oldScaleValue.value && scaleValue.label === oldScaleValue.label
+      (scaleValue) => scaleValue.label === oldScaleValue.label
     )
     if (oldScaleValueIndex === -1) {
       return standardError(new Error('Did not find an existing scale value to update'), {
@@ -85,12 +81,9 @@ const updatePokerTemplateScaleValue = {
         updatedAt: now
       }))
       .run()
-    const updatedScale = await r
-      .table('TemplateScale')
-      .get(scaleId)
-      .run()
+    const updatedScale = await r.table('TemplateScale').get(scaleId).run()
 
-    if (validateScaleLabelValueUniqueness(updatedScale.values)) {
+    if (!validateScaleLabelValueUniqueness(updatedScale.values)) {
       // updated values or labels are not unique, rolling back
       await r
         .table('TemplateScale')

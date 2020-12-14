@@ -49,7 +49,7 @@ const useMutationProps = () => {
     []
   )
 
-  const onError = useCallback((error: Error | MutationServerError | RelayMustFixError) => {
+  const onError = useCallback((error?: Error | MutationServerError | RelayMustFixError) => {
     setSubmitting(false)
     const sourceError = (error as any)?.source?.errors?.[0]
     setError(sourceError || error)

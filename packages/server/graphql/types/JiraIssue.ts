@@ -17,7 +17,7 @@ const JiraIssue = new GraphQLObjectType<any, GQLContext>({
     ...storyFields(),
     id: {
       type: GraphQLNonNull(GraphQLID),
-      description: 'cloudId:key'
+      description: 'cloudId:key. equal to the serviceTaskId on the EstimateStage'
     },
     cloudId: {
       type: GraphQLNonNull(GraphQLID),
@@ -41,6 +41,13 @@ const JiraIssue = new GraphQLObjectType<any, GQLContext>({
     summary: {
       type: GraphQLNonNull(GraphQLString),
       description: 'The plaintext summary of the jira issue'
+    },
+    title: {
+      type: GraphQLNonNull(GraphQLString),
+      description: 'Alias for summary used by the Story interface',
+      resolve: ({summary}) => {
+        return summary
+      }
     },
     description: {
       type: GraphQLNonNull(GraphQLString),

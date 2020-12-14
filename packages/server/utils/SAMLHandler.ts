@@ -15,10 +15,7 @@ mutation LoginSAML($queryString: String!, $domain: String!) {
 `
 
 const redirectOnError = (res: HttpResponse, error: string) => {
-  res
-    .writeStatus('302')
-    .writeHeader('location', `/saml-redirect?error=${error}`)
-    .end()
+  res.writeStatus('302').writeHeader('location', `/saml-redirect?error=${error}`).end()
 }
 
 const GENERIC_ERROR = 'Error signing in|Please try again'
@@ -30,7 +27,7 @@ const SAMLHandler = uWSAsyncHandler(async (res: HttpResponse, req: HttpRequest) 
     return
   }
   const parser = (buffer: Buffer) => buffer.toString()
-  const queryString = await parseBody(res, parser)
+  const queryString = await parseBody({res, parser})
   const payload = await publishWebhookGQL(query, {domain, queryString})
   if (!payload) return
   const {data, errors} = payload
@@ -46,10 +43,7 @@ const SAMLHandler = uWSAsyncHandler(async (res: HttpResponse, req: HttpRequest) 
     return
   }
   res.cork(() => {
-    res
-      .writeStatus('302')
-      .writeHeader('location', `/saml-redirect?token=${authToken}`)
-      .end()
+    res.writeStatus('302').writeHeader('location', `/saml-redirect?token=${authToken}`).end()
   })
 })
 

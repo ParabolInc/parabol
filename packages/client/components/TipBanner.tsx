@@ -9,7 +9,8 @@ const Banner = styled('div')({
   display: 'flex',
   fontSize: 14,
   lineHeight: '24px',
-  padding: 15 // 16 - 1 (border-widt)
+  padding: 15, // 16 - 1 (border-widt)
+  userSelect: 'none'
 })
 
 const StyledIcon = styled(Icon)({

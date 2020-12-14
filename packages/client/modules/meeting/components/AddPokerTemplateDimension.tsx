@@ -20,7 +20,7 @@ const AddDimensionLink = styled(LinkButton)({
   margin: 0,
   marginBottom: 16,
   outline: 'none',
-  padding: '8px 0'
+  padding: '4px 0'
 })
 
 const AddDimensionLinkPlus = styled(Icon)({

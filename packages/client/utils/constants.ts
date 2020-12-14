@@ -4,7 +4,6 @@ import {TaskStatusEnum} from '../types/graphql'
  * Big stuff:
  */
 export const APP_CDN_USER_ASSET_SUBDIR = '/store'
-export const APP_MAX_AVATAR_FILE_SIZE = 1024 * 1024
 export const APP_NAME = 'Action'
 
 /* Meeting Misc. */

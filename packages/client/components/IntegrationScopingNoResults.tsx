@@ -30,7 +30,7 @@ const IntegrationScopingNoResults = (props: Props) => {
   const {error, msg} = props
   return (
     <Message>
-      <Info>{error ? 'warn' : 'info'}</Info>
+      <Info>{error ? 'warning' : 'info'}</Info>
       {error || msg || 'No records found'}
     </Message>
   )

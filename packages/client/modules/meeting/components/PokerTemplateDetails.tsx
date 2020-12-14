@@ -21,10 +21,11 @@ const TemplateHeader = styled('div')({
   margin: '16px 0',
   paddingLeft: 56,
   paddingRight: 16,
-  width: '100%'
+  width: '100%',
+  flexShrink: 0
 })
 
-const PromptEditor = styled('div')({
+const DimensionEditor = styled('div')({
   alignItems: 'flex-start',
   background: '#fff',
   borderRadius: 8,
@@ -37,8 +38,9 @@ const PromptEditor = styled('div')({
 
 const CreateTemplateImg = styled('img')({
   margin: '0 auto',
-  padding: '24px 56px 0',
-  width: 320
+  maxWidth: 360,
+  padding: '16px 0 0',
+  width: '100%'
 })
 
 const Description = styled('div')({
@@ -75,7 +77,7 @@ const PokerTemplateDetails = (props: Props) => {
   const description = makeTemplateDescription(lowestScope, selectedTemplate)
   const templateCount = teamTemplates.length
   return (
-    <PromptEditor>
+    <DimensionEditor>
       <Scrollable>
         <CreateTemplateImg src={customTemplate} />
         <TemplateHeader>
@@ -112,7 +114,7 @@ const PokerTemplateDetails = (props: Props) => {
         {isOwner && <AddPokerTemplateDimension templateId={templateId} dimensions={dimensions} />}
       </Scrollable>
       <TemplateSharing teamId={teamId} template={selectedTemplate} />
-    </PromptEditor>
+    </DimensionEditor>
   )
 }
 
