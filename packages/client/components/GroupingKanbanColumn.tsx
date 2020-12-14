@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
+import {createFragmentContainer} from 'react-relay'
 import React, {MouseEvent, RefObject, useRef} from 'react'
 import {useCoverable} from '~/hooks/useControlBarCovers'
 import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
@@ -25,6 +25,7 @@ import {SwipeColumn} from './GroupingKanban'
 import ReflectionGroup from './ReflectionGroup/ReflectionGroup'
 import GroupingKanbanColumnHeader from './GroupingKanbanColumnHeader'
 import useSortSubColumns from '~/hooks/useSortSubColumns'
+import useExpandColumnWidth from '~/hooks/useExpandColumnWidth'
 
 const Column = styled('div')<{
   isLengthExpanded: boolean
@@ -79,6 +80,7 @@ interface Props {
   phaseRef: RefObject<HTMLDivElement>
   prompt: GroupingKanbanColumn_prompt
   reflectionGroups: GroupingKanbanColumn_reflectionGroups
+  reflectPromptsCount: number
   swipeColumn?: SwipeColumn
 }
 
@@ -93,13 +95,15 @@ const GroupingKanbanColumn = (props: Props) => {
     reflectionGroups,
     phaseRef,
     prompt,
+    reflectPromptsCount,
     swipeColumn
   } = props
-  const {question, id: promptId, groupColor, isWidthExpanded} = prompt
+  const {question, id: promptId, groupColor} = prompt
   const {id: meetingId, endedAt, localStage} = meeting
   const {isComplete, phaseType} = localStage
   const {submitting, onError, submitMutation, onCompleted} = useMutationProps()
   const atmosphere = useAtmosphere()
+  const [isWidthExpanded, toggleWidth] = useExpandColumnWidth(reflectPromptsCount)
   const subColumns = isWidthExpanded ? [SubColumn.LEFT, SubColumn.RIGHT] : ['']
 
   const onClick = () => {
@@ -123,19 +127,15 @@ const GroupingKanbanColumn = (props: Props) => {
 
   const canAdd = phaseType === NewMeetingPhaseTypeEnum.group && !isComplete && !isAnyEditing
 
-  const toggleWidth = (e: MouseEvent<Element>) => {
+  const toggle = (e: MouseEvent<Element>) => {
     e.stopPropagation()
-    commitLocalUpdate(atmosphere, (store) => {
-      const reflectPrompt = store.get(promptId)
-      if (!reflectPrompt) return
-      reflectPrompt.setValue(!isWidthExpanded, 'isWidthExpanded')
-    })
+    toggleWidth()
   }
 
   return (
     <Column
       isLengthExpanded={isLengthExpanded}
-      isWidthExpanded={!!isWidthExpanded}
+      isWidthExpanded={isWidthExpanded}
       isFirstColumn={isFirstColumn}
       isLastColumn={isLastColumn}
       data-cy={`group-column-${question}`}
@@ -144,11 +144,11 @@ const GroupingKanbanColumn = (props: Props) => {
       <GroupingKanbanColumnHeader
         canAdd={canAdd}
         groupColor={groupColor}
-        isWidthExpanded={!!isWidthExpanded}
+        isWidthExpanded={isWidthExpanded}
         onClick={onClick}
         question={question}
         submitting={submitting}
-        toggleWidth={toggleWidth}
+        toggleWidth={toggle}
       />
       {subColumns.map((subColumn) => {
         return (
@@ -156,7 +156,7 @@ const GroupingKanbanColumn = (props: Props) => {
             data-cy={`group-column-${question}-body`}
             isDesktop={isDesktop}
             key={`${promptId}-${subColumn}`}
-            isWidthExpanded={!!isWidthExpanded}
+            isWidthExpanded={isWidthExpanded}
             {...{[DragAttribute.DROPZONE]: promptId}}
           >
             {filteredReflectionGroups
@@ -169,6 +169,7 @@ const GroupingKanbanColumn = (props: Props) => {
                     meeting={meeting}
                     phaseRef={phaseRef}
                     index={idx}
+                    isWidthExpanded={isWidthExpanded}
                     reflectionGroup={reflectionGroup}
                     swipeColumn={swipeColumn}
                   />

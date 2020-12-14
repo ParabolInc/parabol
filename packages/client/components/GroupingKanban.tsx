@@ -2,7 +2,6 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {RefObject, useMemo, useRef, useState} from 'react'
 import {createFragmentContainer} from 'react-relay'
-import useExpandColumnsWidth from '~/hooks/useExpandColumnsWidth'
 import {GroupingKanban_meeting} from '~/__generated__/GroupingKanban_meeting.graphql'
 import useBreakpoint from '../hooks/useBreakpoint'
 import useHideBodyScroll from '../hooks/useHideBodyScroll'
@@ -39,9 +38,9 @@ const GroupingKanban = (props: Props) => {
   const {reflectionGroups, phases} = meeting
   const reflectPhase = phases.find((phase) => phase.phaseType === NewMeetingPhaseTypeEnum.reflect)!
   const reflectPrompts = reflectPhase.reflectPrompts!
+  const reflectPromptsCount = reflectPrompts.length
   const columnsRef = useRef<HTMLDivElement>(null)
   useHideBodyScroll()
-  useExpandColumnsWidth(reflectPrompts)
   const {groupsByPrompt, isAnyEditing} = useMemo(() => {
     const container = {} as {[promptId: string]: typeof reflectionGroups[0][]}
     let isEditing = false
@@ -67,7 +66,7 @@ const GroupingKanban = (props: Props) => {
         )
   }, [isDesktop, reflectionGroups])
   const swipeColumn: SwipeColumn = useThrottledEvent((offset: number) => {
-    const nextIdx = Math.min(reflectPrompts.length - 1, Math.max(0, activeIdx + offset))
+    const nextIdx = Math.min(reflectPromptsCount - 1, Math.max(0, activeIdx + offset))
     setActiveIdx(nextIdx)
   }, Times.REFLECTION_COLUMN_SWIPE_THRESH)
 
@@ -86,12 +85,13 @@ const GroupingKanban = (props: Props) => {
               isAnyEditing={isAnyEditing}
               isDesktop={isDesktop}
               isFirstColumn={prompt.sortOrder === 0}
-              isLastColumn={prompt.sortOrder === reflectPrompts.length - 1}
+              isLastColumn={prompt.sortOrder === reflectPromptsCount - 1}
               key={prompt.id}
               meeting={meeting}
               phaseRef={phaseRef}
               prompt={prompt}
               reflectionGroups={groupsByPrompt[prompt.id] || []}
+              reflectPromptsCount={reflectPromptsCount}
               swipeColumn={swipeColumn}
             />
           ))}

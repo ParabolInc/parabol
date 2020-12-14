@@ -30,7 +30,7 @@ const ensureCovering = (
   const {style} = coverable.el
   style.height = height
   if (isDrag) {
-    style.transition = `height 100ms ${BezierCurve.DECELERATE}`
+    style.transition = `all 100ms ${BezierCurve.DECELERATE}`
   }
   coverable.isExpanded = willBeExpanded
 }

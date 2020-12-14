@@ -67,6 +67,7 @@ const ReflectionWrapper = styled('div')<{
 
 interface Props {
   index?: number
+  isWidthExpanded?: boolean
   phaseRef: RefObject<HTMLDivElement>
   meeting: ReflectionGroup_meeting
   reflectionGroup: ReflectionGroup_reflectionGroup
@@ -75,13 +76,12 @@ interface Props {
 }
 
 const ReflectionGroup = (props: Props) => {
-  const {meeting, phaseRef, reflectionGroup, swipeColumn, dataCy, index} = props
+  const {isWidthExpanded, meeting, phaseRef, reflectionGroup, swipeColumn, dataCy, index} = props
   const groupRef = useRef<HTMLDivElement>(null)
   const {localPhase, localStage} = meeting
   const {phaseType} = localPhase
   const {isComplete} = localStage
-  const {reflections, id: reflectionGroupId, titleIsUserDefined, prompt} = reflectionGroup
-  const isWidthExpanded = prompt?.isWidthExpanded
+  const {reflections, id: reflectionGroupId, titleIsUserDefined} = reflectionGroup
   const titleInputRef = useRef(null)
   const expandedTitleInputRef = useRef(null)
   const headerRef = useRef<HTMLDivElement>(null)
@@ -174,7 +174,7 @@ const ReflectionGroup = (props: Props) => {
         ref={groupRef}
         staticReflectionCount={staticReflections.length}
         data-cy={dataCy}
-        moveUp={showHeader && isWidthExpanded && index === 0}
+        moveUp={showHeader && !!isWidthExpanded && index === 0}
       >
         {showHeader && (
           <ReflectionGroupHeader
@@ -238,9 +238,6 @@ export default createFragmentContainer(ReflectionGroup, {
       ...ReflectionGroupHeader_reflectionGroup
       promptId
       id
-      prompt {
-        isWidthExpanded
-      }
       sortOrder
       titleIsUserDefined
       title
