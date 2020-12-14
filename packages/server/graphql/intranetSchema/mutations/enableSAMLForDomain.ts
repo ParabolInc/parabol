@@ -22,7 +22,8 @@ const getMicrosoftSAMLRequestParam = async (url: string, client: string): Promis
   return encodeURIComponent(zlib.deflateRawSync(template).toString('base64'))
 }
 
-const validDomain = (domain: string): boolean => !domain.includes('.')
+const validateDomain = (domain: string): {error?: string} =>
+  domain.includes('.') ? {error: 'top-level domain or subdomain detected'} : {}
 
 const enableSAMLForDomain = {
   type: new GraphQLNonNull(GraphQLString),
@@ -40,13 +41,12 @@ const enableSAMLForDomain = {
   },
   async resolve(_source, {url, domain, metadata}) {
     // VALIDATION
-    if (!validDomain(domain)) {
-      return `Invalid domain. Please remove any top-level domain or subdomain`
-    }
-    const {error: xmlError} = validateXML(metadata)
-    if (xmlError) return `Got invalid xml for metadata field: [${xmlError}]`
     const {error: urlError} = validateURL(url)
     if (urlError) return `Got invalid url for url field`
+    const {error: domainError} = validateDomain(domain)
+    if (domainError) return `Got invalidate domain: [${domainError}]`
+    const {error: xmlError} = validateXML(metadata)
+    if (xmlError) return `Got invalid xml for metadata field: [${xmlError}]`
 
     // RESOLUTION
     const r = await getRethink()
@@ -55,19 +55,25 @@ const enableSAMLForDomain = {
       const paramValue = await getMicrosoftSAMLRequestParam(url, normalizedDomain)
       url = `${url}?SAMLRequest=${paramValue}`
     }
+    const now = new Date()
 
-    await r
+    const inserted = await r
       .table('SAML')
       .insert(
         {
           id: normalizedDomain,
           domain: normalizedDomain,
           url,
-          metadata
+          metadata,
+          updatedAt: now
         },
-        {conflict: 'replace'}
-      )
+        {conflict: 'update', returnChanges: true}
+      )('inserted')
       .run()
+
+    if (inserted) {
+      await r.table('SAML').getAll(normalizedDomain).update({createdAt: now}).run()
+    }
 
     return 'success'
   }
