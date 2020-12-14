@@ -61,7 +61,8 @@ const PokerDiscussVoting = (props: Props) => {
         scores: scoreObj[label]
       }
     })
-    return {rows, topLabel}
+    const safeTopLabel = isSpecialPokerLabel(topLabel) ? PokerCards.QUESTION_CARD : topLabel
+    return {rows, topLabel: safeTopLabel}
   }, [scores])
 
   const isFacilitator = viewerId === facilitatorUserId
