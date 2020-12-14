@@ -210,7 +210,6 @@ export default createFragmentContainer(GroupingKanbanColumn, {
       sortOrder
       reflections {
         id
-        content
       }
       subColumn
     }

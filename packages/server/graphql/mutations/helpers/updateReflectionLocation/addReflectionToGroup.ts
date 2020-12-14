@@ -18,7 +18,7 @@ const addReflectionToGroup = async (
   if (!reflectionGroup || !reflectionGroup.isActive) {
     throw new Error('Reflection group not found')
   }
-  const {meetingId, promptId} = reflectionGroup
+  const {meetingId} = reflectionGroup
   if (reflectionMeetingId !== meetingId) {
     throw new Error('Reflection group not found')
   }
@@ -36,8 +36,7 @@ const addReflectionToGroup = async (
     .update({
       sortOrder: maxSortOrder + 1 + dndNoise(),
       reflectionGroupId,
-      updatedAt: now,
-      promptId
+      updatedAt: now
     })
     .run()
 

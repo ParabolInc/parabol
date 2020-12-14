@@ -153,9 +153,9 @@ const EndDraggingReflectionMutation = (
       const reflection = payload.getLinkedRecord('reflection')
       if (!reflection) return
       reflection.setValue(false, 'isViewerDragging')
-      const reflectionGroup = payload.getLinkedRecord('reflectionGroup')
+      const reflectionGroup = payload.getLinkedRecord('reflectionGroup')!
       const oldReflectionGroupId = getInProxy(payload, 'oldReflectionGroup', 'id')
-      moveReflectionLocation(reflection, reflectionGroup!, oldReflectionGroupId, store)
+      moveReflectionLocation(reflection, reflectionGroup, oldReflectionGroupId, store)
     },
     optimisticUpdater: (store) => {
       const nowISO = new Date().toJSON()

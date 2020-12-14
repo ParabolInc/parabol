@@ -1,11 +1,9 @@
 import {Elevation} from '../../styles/elevation'
-import {Card, ZIndex} from '../../types/constEnums'
+import {ZIndex} from '../../types/constEnums'
 
 const cloneReflection = (element: HTMLElement, reflectionId: string) => {
   const cloneContainer = document.createElement('div')
-  cloneContainer.style.background = Card.BACKGROUND_COLOR
   cloneContainer.style.boxShadow = Elevation.CARD_DRAGGING
-  cloneContainer.style.borderRadius = `${Card.BORDER_RADIUS}px`
   cloneContainer.style.position = 'absolute'
   cloneContainer.style.left = '0'
   cloneContainer.style.top = '0'

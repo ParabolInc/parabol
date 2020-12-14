@@ -35,9 +35,7 @@ const useRemoteDrag = (
   const setPortal = useContext(PortalContext)
   const {remoteDrag, isDropping} = reflection
   const setRemoteCard = (isClose: boolean, timeRemaining: number, lastTop?: number) => {
-    if (!drag.ref || timeRemaining <= 0) {
-      return
-    }
+    if (!drag.ref || timeRemaining <= 0) return
     const beforeFrame = Date.now()
     const bbox = drag.ref.getBoundingClientRect()
     if (bbox.top !== lastTop) {

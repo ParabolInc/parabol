@@ -20,9 +20,7 @@ import PhaseItemChits from './PhaseItemChits'
 import PhaseItemEditor from './PhaseItemEditor'
 import ReflectionStack from './ReflectionStack'
 
-const ColumnWrapper = styled('div')<{
-  isDesktop: boolean
-}>(({isDesktop}) => ({
+const ColumnWrapper = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   alignItems: 'center',
   display: 'flex',
   flexDirection: 'column',
@@ -55,7 +53,6 @@ const ColumnContent = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   height: '100%',
   justifyContent: isDesktop ? 'space-between' : 'space-between',
   margin: '0 auto',
-  transition: `all 100ms ${BezierCurve.DECELERATE}`,
   width: ElementWidth.REFLECTION_CARD,
   // must be greater than the highlighted el
   zIndex: 1
@@ -110,7 +107,8 @@ const PromptHeader = styled('div')<{isClickable: boolean}>(({isClickable}) => ({
   cursor: isClickable ? 'pointer' : undefined,
   padding: `0 0 ${Gutters.ROW_INNER_GUTTER} 0`,
   position: 'relative',
-  userSelect: 'none'
+  userSelect: 'none',
+  width: '100%'
 }))
 
 interface EditorAndStatusProps {

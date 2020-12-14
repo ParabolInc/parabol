@@ -45,6 +45,9 @@ import {TargetBBox} from '../../components/ReflectionGroup/DraggableReflectionCa
 // increasing this increases the probability that the targetId is not the nearest
 const SWITCHING_COST = 50
 
+  // if it's clear they aren't near a card, don't try to force a relative position
+  const MAX_DIST = ElementWidth.REFLECTION_CARD
+
 const getTargetReference = (
   cursorX: number,
   cursorY: number,
@@ -54,8 +57,6 @@ const getTargetReference = (
   prevTargetId: string
 ) => {
   const distances = [] as number[]
-  // if it's clear they aren't near a card, don't try to force a relative position
-  const MAX_DIST = ElementWidth.REFLECTION_CARD
   for (let i = 0; i < targets.length; i++) {
     const target = targets[i]
     distances[i] = 1e6

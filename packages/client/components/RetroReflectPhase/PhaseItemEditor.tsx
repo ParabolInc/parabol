@@ -7,7 +7,7 @@ import usePortal from '../../hooks/usePortal'
 import CreateReflectionMutation from '../../mutations/CreateReflectionMutation'
 import EditReflectionMutation from '../../mutations/EditReflectionMutation'
 import {Elevation} from '../../styles/elevation'
-import {BezierCurve, ElementWidth, ZIndex} from '../../types/constEnums'
+import {BezierCurve,  ZIndex} from '../../types/constEnums'
 import convertToTaskContent from '../../utils/draftjs/convertToTaskContent'
 import ReflectionCardRoot from '../ReflectionCard/ReflectionCardRoot'
 import ReflectionEditorWrapper from '../ReflectionEditorWrapper'
@@ -15,16 +15,12 @@ import getBBox from './getBBox'
 import {ReflectColumnCardInFlight} from './PhaseItemColumn'
 
 const FLIGHT_TIME = 500
-const CardInFlightStyles = styled(ReflectionCardRoot)<{
-  transform: string
-  isStart: boolean
-}>(({isStart, transform}) => ({
+const CardInFlightStyles = styled(ReflectionCardRoot)<{transform: string, isStart: boolean}>(({isStart, transform}) => ({
   boxShadow: isStart ? Elevation.Z8 : Elevation.Z0,
   position: 'absolute',
   top: 0,
   transform,
   transition: `all ${FLIGHT_TIME}ms ${BezierCurve.DECELERATE}`,
-  width: ElementWidth.REFLECTION_CARD,
   zIndex: ZIndex.REFLECTION_IN_FLIGHT
 }))
 
