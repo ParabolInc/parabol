@@ -154,11 +154,6 @@ const EndDraggingReflectionMutation = (
       if (!reflection) return
       reflection.setValue(false, 'isViewerDragging')
       const reflectionGroup = payload.getLinkedRecord('reflectionGroup')
-      if (!reflectionGroup) return
-      const prompt = reflection.getLinkedRecord('prompt')
-      if (!prompt) return
-      reflection.setLinkedRecord(prompt, 'prompt')
-      reflectionGroup.setLinkedRecord(prompt, 'prompt')
       const oldReflectionGroupId = getInProxy(payload, 'oldReflectionGroup', 'id')
       moveReflectionLocation(reflection, reflectionGroup!, oldReflectionGroupId, store)
     },
@@ -188,8 +183,6 @@ const EndDraggingReflectionMutation = (
           voterIds: []
         }
         reflectionGroupProxy = createProxyRecord(store, 'RetroReflectionGroup', reflectionGroup)
-        const prompt = reflection.getLinkedRecord('prompt')
-        reflectionGroupProxy.setLinkedRecord(prompt, 'prompt')
         updateProxyRecord(reflection, {sortOrder: 0, reflectionGroupId: newReflectionGroupId})
       } else {
         reflectionGroupProxy = store.get(reflectionGroupId)
@@ -202,9 +195,6 @@ const EndDraggingReflectionMutation = (
           sortOrder: maxSortOrder + 1 + dndNoise(),
           reflectionGroupId
         })
-        const prompt = reflectionGroupProxy.getLinkedRecord('prompt')
-        reflectionGroupProxy.setLinkedRecord(prompt, 'prompt')
-        reflection.setLinkedRecord(prompt, 'prompt')
         reflection.setLinkedRecord(reflectionGroupProxy, 'retroReflectionGroup')
       }
       moveReflectionLocation(reflection, reflectionGroupProxy, oldReflectionGroupId, store)

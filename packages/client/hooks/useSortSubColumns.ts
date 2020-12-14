@@ -1,17 +1,18 @@
 import {useLayoutEffect, useEffect} from 'react'
 import {commitLocalUpdate} from 'react-relay'
 import {SubColumn} from '~/types/constEnums'
+import {GroupingKanbanColumn_reflectionGroups} from '~/__generated__/GroupingKanbanColumn_reflectionGroups.graphql'
 import useAtmosphere from './useAtmosphere'
-import useDeepEqual from './useDeepEqual'
 
-const useSortSubColumns = (isWidthExpanded: boolean, reflectionGroups) => {
+const useSortSubColumns = (
+  isWidthExpanded: boolean,
+  reflectionGroups: GroupingKanbanColumn_reflectionGroups
+) => {
   const atmosphere = useAtmosphere()
-  const groups = useDeepEqual(reflectionGroups)
-
   useLayoutEffect(() => {
-    if (!groups) return
+    if (!reflectionGroups) return
     commitLocalUpdate(atmosphere, (store) => {
-      groups.forEach((group, index) => {
+      reflectionGroups.forEach((group, index) => {
         const reflectionGroup = store.get(group.id)
         if (!reflectionGroup) return
         const subColumn = index % 2 === 0 ? SubColumn.LEFT : SubColumn.RIGHT
@@ -21,11 +22,11 @@ const useSortSubColumns = (isWidthExpanded: boolean, reflectionGroups) => {
   }, [isWidthExpanded])
 
   const updateReflectionGroups = () => {
-    if (!isWidthExpanded || !groups) return
+    if (!isWidthExpanded || !reflectionGroups) return
     commitLocalUpdate(atmosphere, (store) => {
       let leftSubColumnCount = 0
       let rightSubColumnCount = 0
-      groups.forEach((group) => {
+      reflectionGroups.forEach((group) => {
         const reflectionGroup = store.get(group.id)
         if (!reflectionGroup) return
         const currentSubColumn = reflectionGroup.getValue('subColumn')
@@ -41,9 +42,7 @@ const useSortSubColumns = (isWidthExpanded: boolean, reflectionGroups) => {
       })
     })
   }
-  useEffect(() => {
-    updateReflectionGroups()
-  }, [groups])
+  useEffect(() => updateReflectionGroups(), [reflectionGroups])
 }
 
 export default useSortSubColumns

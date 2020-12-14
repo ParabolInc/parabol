@@ -19,7 +19,7 @@ const AddReflectionButton = styled(FlatButton)({
 })
 
 const ButtonGroup = styled('div')({
-  alignItems: 'center',
+  alignItems: 'flex-start',
   display: 'flex'
 })
 
@@ -45,18 +45,18 @@ const ColumnHeader = styled('div')<{isWidthExpanded: boolean}>(({isWidthExpanded
   width: '100%'
 }))
 
-const ExpandButton = styled(FlatButton)({
+const ExpandButton = styled(FlatButton)<{isWidthExpanded: boolean}>(({isWidthExpanded}) => ({
   alignItems: 'center',
   background: 'transparent',
   display: 'flex',
   height: 24,
-  marginLeft: 4,
+  marginLeft: isWidthExpanded ? 8 : 4,
   padding: 0,
   width: 24,
   ':click, :focus, :active': {
     backgroundColor: 'inherit'
   }
-})
+}))
 
 const Prompt = styled(RetroPrompt)({
   alignItems: 'center',
@@ -119,6 +119,7 @@ const GroupingKanbanColumnHeader = (props: Props) => {
           {isDesktop && (
             <>
               <ExpandButton
+                isWidthExpanded={isWidthExpanded}
                 onClick={toggleWidth}
                 onMouseEnter={openTooltip}
                 onMouseLeave={closeTooltip}

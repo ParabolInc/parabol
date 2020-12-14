@@ -124,7 +124,6 @@ const RemoteReflection = (props: Props) => {
     timeoutRef.current = window.setTimeout(() => {
       commitLocalUpdate(atmosphere, (store) => {
         const reflection = store.get(reflectionId)!
-        console.log('TREE')
         reflection.setValue(true, 'isDropping')
       })
     }, Times.REFLECTION_STALE_LIMIT)

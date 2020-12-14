@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {createFragmentContainer} from 'react-relay'
-import React, {MouseEvent, RefObject, useRef} from 'react'
+import React, {MouseEvent, RefObject, useRef, useMemo} from 'react'
 import {useCoverable} from '~/hooks/useControlBarCovers'
 import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
 import {GroupingKanbanColumn_meeting} from '~/__generated__/GroupingKanbanColumn_meeting.graphql'
@@ -26,6 +26,7 @@ import ReflectionGroup from './ReflectionGroup/ReflectionGroup'
 import GroupingKanbanColumnHeader from './GroupingKanbanColumnHeader'
 import useSortSubColumns from '~/hooks/useSortSubColumns'
 import useColumnWidth from '~/hooks/useColumnWidth'
+import useDeepEqual from '~/hooks/useDeepEqual'
 
 const Column = styled('div')<{
   isLengthExpanded: boolean
@@ -110,8 +111,12 @@ const GroupingKanbanColumn = (props: Props) => {
   const ref = useRef<HTMLDivElement>(null)
   const isLengthExpanded =
     useCoverable(promptId, ref, MeetingControlBarEnum.HEIGHT, phaseRef, columnsRef) || !!endedAt
+  const groups = useDeepEqual(reflectionGroups)
   // group may be undefined because relay could GC before useMemo in the Kanban recomputes >:-(
-  const filteredReflectionGroups = reflectionGroups?.filter((group) => group.reflections.length > 0)
+  const filteredReflectionGroups = useMemo(
+    () => groups.filter((group) => group.reflections.length > 0),
+    [groups]
+  )
   useSortSubColumns(isWidthExpanded, filteredReflectionGroups)
   const canAdd = phaseType === NewMeetingPhaseTypeEnum.group && !isComplete && !isAnyEditing
 
