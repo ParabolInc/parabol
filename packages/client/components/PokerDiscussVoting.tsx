@@ -9,6 +9,7 @@ import PokerSetFinalScoreMutation from '../mutations/PokerSetFinalScoreMutation'
 import {PokerCards} from '../types/constEnums'
 import {PokerDiscussVoting_meeting} from '../__generated__/PokerDiscussVoting_meeting.graphql'
 import {PokerDiscussVoting_stage} from '../__generated__/PokerDiscussVoting_stage.graphql'
+import isSpecialPokerLabel from '../utils/isSpecialPokerLabel'
 import PokerDimensionValueControl from './PokerDimensionValueControl'
 import PokerVotingRow from './PokerVotingRow'
 
@@ -60,7 +61,8 @@ const PokerDiscussVoting = (props: Props) => {
         scores: scoreObj[label]
       }
     })
-    return {rows, topLabel}
+    const safeTopLabel = isSpecialPokerLabel(topLabel) ? PokerCards.QUESTION_CARD : topLabel
+    return {rows, topLabel: safeTopLabel}
   }, [scores])
 
   const isFacilitator = viewerId === facilitatorUserId
@@ -70,8 +72,7 @@ const PokerDiscussVoting = (props: Props) => {
       <GroupedVotes>
         {rows.map(({scaleValue, scores, key}) => {
           const label = scores[0]?.label
-          const isSpecial = [PokerCards.QUESTION_CARD, PokerCards.PASS_CARD].includes(label as any)
-          const canClick = isFacilitator && !isSpecial
+          const canClick = isFacilitator && !isSpecialPokerLabel(label)
           const setFinalScore = canClick ? () => {
             // finalScore === label isn't 100% accurate because they could change the dimensionField & could still submit new info
             if (submitting || !label || finalScore === label) return

@@ -21,14 +21,13 @@ const AddScaleValueLinkPlus = styled(Icon)({
 })
 
 interface Props {
-  setIsEditing: (isEditing: boolean) => void
+  onClick: () => void
 }
 
 const AddTemplateScaleValue = (props: Props) => {
-  const {setIsEditing} = props
-
+  const {onClick} = props
   return (
-    <AddScaleValueLink palette='blue' onClick={() => setIsEditing(true)}>
+    <AddScaleValueLink palette='blue' onClick={onClick}>
       <AddScaleValueLinkPlus>add</AddScaleValueLinkPlus>
       <div>Add value</div>
     </AddScaleValueLink>

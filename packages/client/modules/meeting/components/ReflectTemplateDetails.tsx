@@ -20,6 +20,10 @@ import TemplatePromptList from './TemplatePromptList'
 import TemplateSharing from './TemplateSharing'
 import {MeetingTypeEnum} from '../../../types/graphql'
 import SelectTemplate from './SelectTemplate'
+import useAtmosphere from '../../../hooks/useAtmosphere'
+import useMutationProps from '../../../hooks/useMutationProps'
+import {Threshold} from '../../../types/constEnums'
+import AddReflectTemplateMutation from '../../../mutations/AddReflectTemplateMutation'
 
 const TemplateHeader = styled('div')({
   display: 'flex',
@@ -83,6 +87,15 @@ const ReflectTemplateDetails = (props: Props) => {
   const isOwner = activeTemplate.teamId === teamId
   const description = makeTemplateDescription(lowestScope, activeTemplate)
   const templateCount = teamTemplates.length
+  const atmosphere = useAtmosphere()
+  const {onError, onCompleted, submitting, submitMutation} = useMutationProps()
+  const canClone = templateCount < Threshold.MAX_RETRO_TEAM_TEMPLATES
+  const onClone = () => {
+    if (submitting || !canClone) return
+    submitMutation()
+    AddReflectTemplateMutation(atmosphere, {parentTemplateId: templateId, teamId}, {onError, onCompleted})
+    gotoTeamTemplates()
+  }
   const defaultIllustrations = {
     sailboatTemplate: sailboatTemplate,
     startStopContinueTemplate: startStopContinueTemplate,
@@ -115,11 +128,8 @@ const ReflectTemplateDetails = (props: Props) => {
             )}
             {!isOwner && (
               <CloneTemplate
-                gotoTeamTemplates={gotoTeamTemplates}
-                teamId={teamId}
-                templateId={templateId}
-                templateCount={templateCount}
-                type={MeetingTypeEnum.retrospective}
+                onClick={onClone}
+                canClone={canClone}
               />
             )}
           </FirstLine>

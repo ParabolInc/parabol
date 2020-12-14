@@ -53,7 +53,7 @@ const AddNewPokerTemplate = (props: Props) => {
   const addNewTemplate = () => {
     if (submitting) return
     if (pokerTemplates.length >= Threshold.MAX_RETRO_TEAM_TEMPLATES) {
-      onError(new Error('You may only have 20 templates per team. Please remove one first.'))
+      onError(new Error(`You may only have ${Threshold.MAX_RETRO_TEAM_TEMPLATES} templates per team. Please remove one first.`))
       errorTimerId.current = window.setTimeout(() => {
         onCompleted()
       }, 8000)

@@ -13,27 +13,20 @@ import {PALETTE} from '../../../styles/paletteV2'
 import {ICON_SIZE} from '../../../styles/typographyV2'
 
 interface Props {
-  isOwner: boolean
   scale: EditableTemplateScaleValueColor_scale
   scaleValueLabel: string
   scaleValueColor: string
   setScaleValueColor?: (scaleValueColor: string) => void
 }
 
-const ScaleValueColor = styled(PlainButton)<{isOwner: boolean}>(({isOwner}) => ({
-  cursor: isOwner ? 'pointer' : 'default',
+const ScaleValueColor = styled(PlainButton)({
   display: 'block',
   flex: 1,
   height: 24,
   padding: 4,
   position: 'relative',
-  width: 24,
-  ':hover': {
-    i: {
-      opacity: isOwner ? 1 : undefined
-    }
-  }
-}))
+  width: 24
+})
 
 const ColorBadge = styled('div')<{color?: string}>(({color}) => ({
   backgroundColor: color,
@@ -56,13 +49,13 @@ const DropdownIcon = styled(Icon)({
 })
 
 const EditableTemplateScaleValueColor = (props: Props) => {
-  const {isOwner, scaleValueLabel, scaleValueColor, scale, setScaleValueColor} = props
+  const {scaleValueLabel, scaleValueColor, scale, setScaleValueColor} = props
   const {menuProps, menuPortal, originRef, togglePortal} = useMenu<HTMLButtonElement>(
     MenuPosition.UPPER_LEFT,
     {parentId: 'templateModal'}
   )
   return (
-    <ScaleValueColor ref={originRef} isOwner={isOwner} onClick={isOwner ? togglePortal : undefined}>
+    <ScaleValueColor ref={originRef} onClick={togglePortal}>
       <ColorBadge color={scaleValueColor} />
       <DropdownIcon>arrow_drop_down</DropdownIcon>
       {menuPortal(<ScaleValuePalettePicker menuProps={menuProps}

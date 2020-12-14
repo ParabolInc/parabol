@@ -5,35 +5,28 @@ import {DraggableProvided} from 'react-beautiful-dnd'
 import {createFragmentContainer} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useMutationProps from '~/hooks/useMutationProps'
-import {TemplateScaleValueItem_scaleValue} from '../../../__generated__/TemplateScaleValueItem_scaleValue.graphql'
+import RemovePokerTemplateScaleValueMutation from '~/mutations/RemovePokerTemplateScaleValueMutation'
+import {TemplateScaleValueItem_scale} from '~/__generated__/TemplateScaleValueItem_scale.graphql'
 import Icon from '../../../components/Icon'
 import {PALETTE} from '../../../styles/paletteV2'
 import {ICON_SIZE} from '../../../styles/typographyV2'
-import EditableTemplateScaleValueLabel from './EditableTemplateScaleValueLabel'
+import {TemplateScaleValueItem_scaleValue} from '../../../__generated__/TemplateScaleValueItem_scaleValue.graphql'
 import EditableTemplateScaleValueColor from './EditableTemplateScaleValueColor'
-import {TemplateScaleValueItem_scale} from '~/__generated__/TemplateScaleValueItem_scale.graphql'
-import RemovePokerTemplateScaleValueMutation from '~/mutations/RemovePokerTemplateScaleValueMutation'
+import EditableTemplateScaleValueLabel from './EditableTemplateScaleValueLabel'
 
 interface Props {
-  isOwner: boolean
   isDragging: boolean
   scale: TemplateScaleValueItem_scale
   scaleValue: TemplateScaleValueItem_scaleValue
   dragProvided: DraggableProvided
 }
 
-interface StyledProps {
-  isDragging?: boolean
-  isHover?: boolean
-  enabled?: boolean
-}
-
-const ScaleValueItem = styled('div')<StyledProps & {isOwner: boolean}>(
-  ({isOwner, isHover, isDragging}) => ({
+const ScaleValueItem = styled('div')<{isHover: boolean, isDragging: boolean}>(
+  ({isHover, isDragging}) => ({
     alignItems: 'center',
     backgroundColor:
-      isOwner && (isHover || isDragging) ? PALETTE.BACKGROUND_MAIN_LIGHTENED : undefined,
-    cursor: isOwner ? 'pointer' : undefined,
+      (isHover || isDragging) ? PALETTE.BACKGROUND_MAIN_LIGHTENED : undefined,
+    cursor: 'pointer',
     display: 'flex',
     fontSize: 14,
     lineHeight: '24px',
@@ -42,7 +35,7 @@ const ScaleValueItem = styled('div')<StyledProps & {isOwner: boolean}>(
   })
 )
 
-const RemoveScaleValueIcon = styled(Icon)<StyledProps>(({isHover, enabled}) => ({
+const RemoveScaleValueIcon = styled(Icon)<{isHover: boolean}>(({isHover}) => ({
   color: PALETTE.TEXT_GRAY,
   cursor: 'pointer',
   display: 'block',
@@ -53,8 +46,7 @@ const RemoveScaleValueIcon = styled(Icon)<StyledProps>(({isHover, enabled}) => (
   marginLeft: 'auto',
   padding: 0,
   opacity: isHover ? 1 : 0,
-  textAlign: 'center',
-  visibility: enabled ? 'visible' : 'hidden'
+  textAlign: 'center'
 }))
 
 const ScaleAndDescription = styled('div')({
@@ -65,28 +57,23 @@ const ScaleAndDescription = styled('div')({
 })
 
 const TemplateScaleValueItem = (props: Props) => {
-  const {dragProvided, isDragging, isOwner, scale, scaleValue} = props
+  const {dragProvided, isDragging, scale, scaleValue} = props
+  const {id: scaleId} = scale
+  const {label, color} = scaleValue
   const [isHover, setIsHover] = useState(false)
-  const [isEditingScaleValueLabel] = useState(false)
   const {submitting, submitMutation, onError, onCompleted} = useMutationProps()
   const atmosphere = useAtmosphere()
-  const canRemove = !scaleValue.isSpecial
   const onMouseOver = () => {
     setIsHover(true)
   }
-  const onMouseLeave = () => {
+  const onMouseOut = () => {
     setIsHover(false)
   }
   const removeScaleValue = () => {
     if (submitting) return
-    if (!canRemove) {
-      onError(new Error('You must have at least 1 scale'))
-      return
-    }
     submitMutation()
-    RemovePokerTemplateScaleValueMutation(atmosphere, {scaleId: scale.id, label: scaleValue.label}, {}, onError, onCompleted)
+    RemovePokerTemplateScaleValueMutation(atmosphere, {scaleId, label}, {}, onError, onCompleted)
   }
-
   return (
     <ScaleValueItem
       ref={dragProvided.innerRef}
@@ -94,22 +81,19 @@ const TemplateScaleValueItem = (props: Props) => {
       {...dragProvided.draggableProps}
       isDragging={isDragging}
       isHover={isHover}
-      isOwner={isOwner}
       onMouseOver={onMouseOver}
-      onMouseLeave={onMouseLeave}
+      onMouseOut={onMouseOut}
     >
-      <EditableTemplateScaleValueColor isOwner={isOwner} scale={scale}
-        scaleValueLabel={scaleValue.label} scaleValueColor={scaleValue.color} />
+      <EditableTemplateScaleValueColor scale={scale}
+        scaleValueLabel={label} scaleValueColor={color} />
       <ScaleAndDescription>
         <EditableTemplateScaleValueLabel
-          isOwner={isOwner}
           isHover={isHover}
-          isEditingLabel={isEditingScaleValueLabel}
           scale={scale}
           scaleValue={scaleValue}
         />
       </ScaleAndDescription>
-      <RemoveScaleValueIcon isHover={isHover} onClick={removeScaleValue} enabled={canRemove}>
+      <RemoveScaleValueIcon isHover={isHover} onClick={removeScaleValue}>
         cancel
       </RemoveScaleValueIcon>
     </ScaleValueItem >
@@ -128,7 +112,6 @@ export default createFragmentContainer(TemplateScaleValueItem, {
       ...EditableTemplateScaleValueLabel_scaleValue
       id
       label
-      isSpecial
       color
     }
   `

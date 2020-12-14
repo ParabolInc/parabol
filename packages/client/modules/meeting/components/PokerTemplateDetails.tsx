@@ -15,6 +15,10 @@ import TemplateDimensionList from './TemplateDimensionList'
 import {MeetingTypeEnum} from '../../../types/graphql'
 import SelectTemplate from './SelectTemplate'
 import AddPokerTemplateDimension from './AddPokerTemplateDimension'
+import {Threshold} from '../../../types/constEnums'
+import AddPokerTemplateMutation from '../../../mutations/AddPokerTemplateMutation'
+import useAtmosphere from '../../../hooks/useAtmosphere'
+import useMutationProps from '../../../hooks/useMutationProps'
 
 const TemplateHeader = styled('div')({
   display: 'flex',
@@ -78,6 +82,15 @@ const PokerTemplateDetails = (props: Props) => {
   const isOwner = activeTemplate.teamId === teamId
   const description = makeTemplateDescription(lowestScope, activeTemplate)
   const templateCount = teamTemplates.length
+  const atmosphere = useAtmosphere()
+  const {onError, onCompleted, submitting, submitMutation} = useMutationProps()
+  const canClone = templateCount < Threshold.MAX_POKER_TEAM_TEMPLATES
+  const onClone = () => {
+    if (submitting || !canClone) return
+    submitMutation()
+    AddPokerTemplateMutation(atmosphere, {parentTemplateId: templateId, teamId}, {onError, onCompleted})
+    gotoTeamTemplates()
+  }
   return (
     <DimensionEditor>
       <Scrollable>
@@ -102,11 +115,8 @@ const PokerTemplateDetails = (props: Props) => {
             )}
             {!isOwner && (
               <CloneTemplate
-                gotoTeamTemplates={gotoTeamTemplates}
-                teamId={teamId}
-                templateId={templateId}
-                templateCount={templateCount}
-                type={MeetingTypeEnum.poker}
+                onClick={onClone}
+                canClone={canClone}
               />
             )}
           </FirstLine>

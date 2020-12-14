@@ -7,7 +7,7 @@ import getTemplateList from '../../../utils/getTemplateList'
 import {PokerTemplateModal_pokerMeetingSettings} from '../../../__generated__/PokerTemplateModal_pokerMeetingSettings.graphql'
 import PokerTemplateDetails from './PokerTemplateDetails'
 import PokerTemplateList from './PokerTemplateList'
-import PokerTemplateScaleDetailsRoot from './PokerTemplateScaleDetailsRoot'
+import PokerTemplateScaleDetails from './PokerTemplateScaleDetails'
 
 interface Props {
   closePortal: () => void
@@ -46,10 +46,7 @@ const PokerTemplateModal = (props: Props) => {
       />
 
       {editingScaleId ?
-        <PokerTemplateScaleDetailsRoot
-          teamId={teamId}
-          scaleId={editingScaleId}
-        /> :
+        <PokerTemplateScaleDetails team={team} /> :
         <PokerTemplateDetails
           settings={pokerMeetingSettings}
           gotoTeamTemplates={gotoTeamTemplates}
@@ -67,6 +64,7 @@ export default createFragmentContainer(PokerTemplateModal, {
       ...PokerTemplateList_settings
       ...PokerTemplateDetails_settings
       team {
+        ...PokerTemplateScaleDetails_team
         id
         orgId
         editingScaleId
