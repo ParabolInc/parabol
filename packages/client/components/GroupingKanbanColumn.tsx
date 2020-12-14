@@ -25,7 +25,7 @@ import {SwipeColumn} from './GroupingKanban'
 import ReflectionGroup from './ReflectionGroup/ReflectionGroup'
 import GroupingKanbanColumnHeader from './GroupingKanbanColumnHeader'
 import useSortSubColumns from '~/hooks/useSortSubColumns'
-import useExpandColumnWidth from '~/hooks/useExpandColumnWidth'
+import useColumnWidth from '~/hooks/useColumnWidth'
 
 const Column = styled('div')<{
   isLengthExpanded: boolean
@@ -38,9 +38,10 @@ const Column = styled('div')<{
   borderRadius: 8,
   display: 'flex',
   flex: 1,
-  flexDirection: 'row',
+  flexDirection: isWidthExpanded ? 'row' : 'column',
   flexWrap: 'wrap',
   height: '100%',
+  padding: isWidthExpanded ? '0 8px' : 0,
   position: 'relative',
   transition: `all 100ms ${BezierCurve.DECELERATE}`,
   [makeMinWidthMediaQuery(Breakpoint.SINGLE_REFLECTION_COLUMN)]: {
@@ -60,11 +61,12 @@ const ColumnBody = styled('div')<{isDesktop: boolean; isWidthExpanded: boolean}>
     flexDirection: 'row',
     flexWrap: 'wrap',
     height: '100%',
+    justifyContent: 'space-around',
     maxHeight: 'fit-content',
     minHeight: 200,
     overflowX: 'hidden',
     overflowY: 'auto',
-    padding: `${isWidthExpanded ? 32 : 6}px ${isDesktop ? 12 : 8}px`,
+    padding: `${isWidthExpanded ? 12 : 6}px ${isDesktop ? 12 : 8}px`,
     transition: `all 100ms ${BezierCurve.DECELERATE}`,
     width: isWidthExpanded ? ElementWidth.REFLCTION_COLUMN_EXPANDED : ElementWidth.REFLECTION_COLUMN
   })
@@ -103,8 +105,15 @@ const GroupingKanbanColumn = (props: Props) => {
   const {isComplete, phaseType} = localStage
   const {submitting, onError, submitMutation, onCompleted} = useMutationProps()
   const atmosphere = useAtmosphere()
-  const [isWidthExpanded, toggleWidth] = useExpandColumnWidth(reflectPromptsCount)
+  const [isWidthExpanded, toggleWidth] = useColumnWidth(reflectPromptsCount)
   const subColumns = isWidthExpanded ? [SubColumn.LEFT, SubColumn.RIGHT] : ['']
+  const ref = useRef<HTMLDivElement>(null)
+  const isLengthExpanded =
+    useCoverable(promptId, ref, MeetingControlBarEnum.HEIGHT, phaseRef, columnsRef) || !!endedAt
+  // group may be undefined because relay could GC before useMemo in the Kanban recomputes >:-(
+  const filteredReflectionGroups = reflectionGroups?.filter((group) => group.reflections.length > 0)
+  useSortSubColumns(isWidthExpanded, filteredReflectionGroups)
+  const canAdd = phaseType === NewMeetingPhaseTypeEnum.group && !isComplete && !isAnyEditing
 
   const onClick = () => {
     if (submitting || isAnyEditing) return
@@ -117,15 +126,6 @@ const GroupingKanbanColumn = (props: Props) => {
     submitMutation()
     CreateReflectionMutation(atmosphere, {input}, {onError, onCompleted})
   }
-  const ref = useRef<HTMLDivElement>(null)
-  const isLengthExpanded =
-    useCoverable(promptId, ref, MeetingControlBarEnum.HEIGHT, phaseRef, columnsRef) || !!endedAt
-
-  // group may be undefined because relay could GC before useMemo in the Kanban recomputes >:-(
-  const filteredReflectionGroups = reflectionGroups?.filter((group) => group.reflections.length > 0)
-  useSortSubColumns(isWidthExpanded, filteredReflectionGroups)
-
-  const canAdd = phaseType === NewMeetingPhaseTypeEnum.group && !isComplete && !isAnyEditing
 
   const toggle = (e: MouseEvent<Element>) => {
     e.stopPropagation()
@@ -168,8 +168,6 @@ const GroupingKanbanColumn = (props: Props) => {
                     key={reflectionGroup.id}
                     meeting={meeting}
                     phaseRef={phaseRef}
-                    index={idx}
-                    isWidthExpanded={isWidthExpanded}
                     reflectionGroup={reflectionGroup}
                     swipeColumn={swipeColumn}
                   />
@@ -215,7 +213,6 @@ export default createFragmentContainer(GroupingKanbanColumn, {
   prompt: graphql`
     fragment GroupingKanbanColumn_prompt on ReflectPrompt {
       id
-      isWidthExpanded
       question
       groupColor
     }

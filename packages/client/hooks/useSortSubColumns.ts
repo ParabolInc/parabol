@@ -7,6 +7,7 @@ import useDeepEqual from './useDeepEqual'
 const useSortSubColumns = (isWidthExpanded: boolean, reflectionGroups) => {
   const atmosphere = useAtmosphere()
   const groups = useDeepEqual(reflectionGroups)
+
   useLayoutEffect(() => {
     if (!groups) return
     commitLocalUpdate(atmosphere, (store) => {
@@ -19,7 +20,7 @@ const useSortSubColumns = (isWidthExpanded: boolean, reflectionGroups) => {
     })
   }, [isWidthExpanded])
 
-  const updateGroups = () => {
+  const updateReflectionGroups = () => {
     if (!isWidthExpanded || !groups) return
     commitLocalUpdate(atmosphere, (store) => {
       let leftSubColumnCount = 0
@@ -41,7 +42,7 @@ const useSortSubColumns = (isWidthExpanded: boolean, reflectionGroups) => {
     })
   }
   useEffect(() => {
-    updateGroups()
+    updateReflectionGroups()
   }, [groups])
 }
 

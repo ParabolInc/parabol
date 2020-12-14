@@ -28,18 +28,13 @@ export const getCardStackPadding = (count: number) => {
   return Math.max(0, Math.min(3, count) - 1) * ReflectionStackPerspective.Y
 }
 
-const Group = styled('div')<{moveUp: boolean; staticReflectionCount: number}>(
-  ({moveUp, staticReflectionCount}) => ({
-    height: 'max-content',
-    marginBottom: moveUp ? -32 : 0,
-    position: 'relative',
-    paddingTop: ElementWidth.REFLECTION_CARD_PADDING,
-    paddingBottom:
-      ElementWidth.REFLECTION_CARD_PADDING + getCardStackPadding(staticReflectionCount),
-    top: moveUp ? -32 : 0,
-    transition: `padding-bottom ${Times.REFLECTION_DROP_DURATION}ms`
-  })
-)
+const Group = styled('div')<{staticReflectionCount: number}>(({staticReflectionCount}) => ({
+  height: 'max-content',
+  position: 'relative',
+  paddingTop: ElementWidth.REFLECTION_CARD_PADDING,
+  paddingBottom: ElementWidth.REFLECTION_CARD_PADDING + getCardStackPadding(staticReflectionCount),
+  transition: `padding-bottom ${Times.REFLECTION_DROP_DURATION}ms`
+}))
 
 const ReflectionWrapper = styled('div')<{
   staticIdx: number
@@ -66,8 +61,6 @@ const ReflectionWrapper = styled('div')<{
 })
 
 interface Props {
-  index?: number
-  isWidthExpanded?: boolean
   phaseRef: RefObject<HTMLDivElement>
   meeting: ReflectionGroup_meeting
   reflectionGroup: ReflectionGroup_reflectionGroup
@@ -76,7 +69,7 @@ interface Props {
 }
 
 const ReflectionGroup = (props: Props) => {
-  const {isWidthExpanded, meeting, phaseRef, reflectionGroup, swipeColumn, dataCy, index} = props
+  const {meeting, phaseRef, reflectionGroup, swipeColumn, dataCy} = props
   const groupRef = useRef<HTMLDivElement>(null)
   const {localPhase, localStage} = meeting
   const {phaseType} = localPhase
@@ -174,7 +167,6 @@ const ReflectionGroup = (props: Props) => {
         ref={groupRef}
         staticReflectionCount={staticReflections.length}
         data-cy={dataCy}
-        moveUp={showHeader && !!isWidthExpanded && index === 0}
       >
         {showHeader && (
           <ReflectionGroupHeader

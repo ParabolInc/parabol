@@ -7,6 +7,8 @@ import {MenuPosition} from '~/hooks/useCoords'
 import useTooltip from '~/hooks/useTooltip'
 import Icon from './Icon'
 import RetroPrompt from './RetroPrompt'
+import {Breakpoint, ElementWidth} from '~/types/constEnums'
+import useBreakpoint from '~/hooks/useBreakpoint'
 
 const AddReflectionButton = styled(FlatButton)({
   border: 0,
@@ -30,15 +32,18 @@ const ColumnColorDrop = styled('div')<{groupColor: string}>(({groupColor}) => ({
   width: 8
 }))
 
-const ColumnHeader = styled('div')({
+const ColumnHeader = styled('div')<{isWidthExpanded: boolean}>(({isWidthExpanded}) => ({
   color: PALETTE.TEXT_MAIN,
   display: 'flex',
   justifyContent: 'space-between',
   lineHeight: '24px',
   margin: '0 auto',
+  maxWidth: isWidthExpanded
+    ? ElementWidth.REFLECTION_CARD_PADDED_EXPANDED
+    : ElementWidth.REFLECTION_CARD_PADDED,
   padding: '12px 12px 0px',
   width: '100%'
-})
+}))
 
 const ExpandButton = styled(FlatButton)({
   alignItems: 'center',
@@ -59,6 +64,10 @@ const Prompt = styled(RetroPrompt)({
   marginRight: 8
 })
 
+const Wrapper = styled('div')({
+  width: '100%'
+})
+
 interface Props {
   canAdd: boolean
   groupColor: string
@@ -77,46 +86,52 @@ const GroupingKanbanColumnHeader = (props: Props) => {
     closeTooltip: closeReflectionTooltip,
     originRef: addReflectionRef
   } = useTooltip<HTMLButtonElement>(MenuPosition.UPPER_CENTER)
+  const isDesktop = useBreakpoint(Breakpoint.SINGLE_REFLECTION_COLUMN)
   const {tooltipPortal, openTooltip, closeTooltip, originRef} = useTooltip<HTMLButtonElement>(
     MenuPosition.UPPER_CENTER
   )
-
   const handleClick = () => {
     onClick()
     closeReflectionTooltip()
   }
 
   return (
-    <ColumnHeader>
-      <Prompt>
-        <ColumnColorDrop groupColor={groupColor} />
-        {question}
-      </Prompt>
-      <ButtonGroup>
-        <AddReflectionButton
-          dataCy={`add-reflection-${question}`}
-          aria-label={'Add a reflection'}
-          disabled={!canAdd}
-          onClick={handleClick}
-          onMouseEnter={openReflectionTooltip}
-          onMouseLeave={closeReflectionTooltip}
-          ref={addReflectionRef}
-          waiting={submitting}
-        >
-          <Icon>add</Icon>
-        </AddReflectionButton>
-        {addReflectionPortal(<div>Add new reflection</div>)}
-        <ExpandButton
-          onClick={toggleWidth}
-          onMouseEnter={openTooltip}
-          onMouseLeave={closeTooltip}
-          ref={originRef}
-        >
-          <img alt='expand-arrow-icon' src={ExpandArrowSVG} />
-        </ExpandButton>
-        {tooltipPortal(<div>{`${isWidthExpanded ? 'Minimise' : 'Expand'}`}</div>)}
-      </ButtonGroup>
-    </ColumnHeader>
+    <Wrapper>
+      <ColumnHeader isWidthExpanded={isWidthExpanded}>
+        <Prompt>
+          <ColumnColorDrop groupColor={groupColor} />
+          {question}
+        </Prompt>
+        <ButtonGroup>
+          <AddReflectionButton
+            dataCy={`add-reflection-${question}`}
+            aria-label={'Add a reflection'}
+            disabled={!canAdd}
+            onClick={handleClick}
+            onMouseEnter={openReflectionTooltip}
+            onMouseLeave={closeReflectionTooltip}
+            ref={addReflectionRef}
+            waiting={submitting}
+          >
+            <Icon>add</Icon>
+          </AddReflectionButton>
+          {addReflectionPortal(<div>Add new reflection</div>)}
+          {isDesktop && (
+            <>
+              <ExpandButton
+                onClick={toggleWidth}
+                onMouseEnter={openTooltip}
+                onMouseLeave={closeTooltip}
+                ref={originRef}
+              >
+                <img alt='expand-arrow-icon' src={ExpandArrowSVG} />
+              </ExpandButton>
+              {tooltipPortal(<div>{`${isWidthExpanded ? 'Minimise' : 'Expand'}`}</div>)}
+            </>
+          )}
+        </ButtonGroup>
+      </ColumnHeader>
+    </Wrapper>
   )
 }
 
