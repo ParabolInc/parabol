@@ -45,7 +45,7 @@ const EditableTemplateScaleName = (props: Props) => {
     return new Legitity(value)
       .trim()
       .required('Please enter a scale name')
-      .max(100, 'That scale name is probably long enough')
+      .max(50, 'That scale name is probably long enough')
       .test((mVal) => {
         const isDupe = !scales ? undefined : scales.find(
           (scale) =>
@@ -59,8 +59,8 @@ const EditableTemplateScaleName = (props: Props) => {
     const res = legitify(rawValue)
     if (res.error) {
       onError(new Error(res.error))
-    } else if (error) {
-      onError()
+    } else {
+      onCompleted()
     }
     return res
   }
@@ -72,7 +72,7 @@ const EditableTemplateScaleName = (props: Props) => {
         error={error?.message}
         handleSubmit={handleSubmit}
         initialValue={name}
-        maxLength={100}
+        maxLength={50}
         validate={validate}
         placeholder={'*New Scale'}
       />

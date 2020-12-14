@@ -2350,11 +2350,6 @@ export interface ITemplateScaleValue {
   label: string;
 
   /**
-   * true if the value of this scale is a special value, e.g., ? or X
-   */
-  isSpecial: boolean;
-
-  /**
    * the order of the scale value in this scale
    */
   sortOrder: number;
@@ -8709,11 +8704,6 @@ export interface IAddTemplateScaleInput {
    * The label for this value, e.g., XS, M, L
    */
   label: string;
-
-  /**
-   * True if this is a special scale value; false/null otherwise
-   */
-  isSpecial?: boolean | null;
 }
 
 /**
