@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
+import React, {useRef} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import RenamePokerTemplateDimensionMutation from '../../../mutations/RenamePokerTemplateDimensionMutation'
 import EditableText from '../../../components/EditableText'
@@ -9,6 +9,7 @@ import {EditableTemplateDimension_dimensions} from '../../../__generated__/Edita
 import {PALETTE} from '~/styles/paletteV2'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
+import useScrollIntoView from '../../../hooks/useScrollIntoVIew'
 
 const StyledEditableText = styled(EditableText)({
   fontFamily: PALETTE.TEXT_MAIN,
@@ -63,17 +64,21 @@ const EditableTemplateDimension = (props: Props) => {
   }
 
   const {isOwner, isHover, isEditingDescription, dimensionName} = props
+  const autoFocus = dimensionName.startsWith('*New Dimension #')
+  const ref = useRef<HTMLDivElement>(null)
+  useScrollIntoView(ref, autoFocus)
   return (
     <StyledEditableText
-      autoFocus={dimensionName.startsWith('New dimension #')}
+      ref={ref}
+      autoFocus={autoFocus}
       disabled={!isOwner}
       error={error?.message}
       hideIcon={isEditingDescription ? true : !isHover}
       handleSubmit={handleSubmit}
       initialValue={dimensionName}
-      maxLength={100}
+      maxLength={50}
       validate={validate}
-      placeholder={'New Dimension'}
+      placeholder={dimensionName}
     />
   )
 }

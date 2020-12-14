@@ -61,15 +61,18 @@ const AddPokerTemplateDimensionMutation: StandardMutation<
       const {templateId} = variables
       const nowISO = new Date().toJSON()
       const defaultScale = store.get(SprintPokerDefaults.DEFAULT_SCALE_ID)
+      const template = store.get(templateId)
+      if (!defaultScale || !template) return
       const proxyTemplateDimension = createProxyRecord(store, 'PokerTemplateDimension', {
-        scaleId: SprintPokerDefaults.DEFAULT_SCALE_ID,
-        description: '',
-        sortOrder,
-        name: `*New Dimension #${dimensionCount + 1}`,
         createdAt: nowISO,
+        name: `*New Dimension #${dimensionCount + 1}`,
+        description: '',
+        scaleId: SprintPokerDefaults.DEFAULT_SCALE_ID,
+        sortOrder,
         templateId,
-        scale: defaultScale
       })
+      proxyTemplateDimension.setLinkedRecord(defaultScale, 'selectedScale')
+      proxyTemplateDimension.setLinkedRecord(template, 'template')
       handleAddPokerTemplateDimension(proxyTemplateDimension, store)
     }
   })
