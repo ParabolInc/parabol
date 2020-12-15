@@ -6797,7 +6797,7 @@ export interface IMutation {
   /**
    * Give someone advanced features in a flag
    */
-  addFeatureFlag: IAddFeatureFlagPayload | null;
+  addFeatureFlag: IAddFeatureFlagPayload;
   addGitHubAuth: IAddGitHubAuthPayload;
 
   /**
@@ -8801,11 +8801,6 @@ export interface IAddFeatureFlagPayload {
    * the users given the super power
    */
   users: Array<IUser | null> | null;
-
-  /**
-   * A human-readable result
-   */
-  result: string | null;
 }
 
 /**

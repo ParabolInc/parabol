@@ -38,7 +38,8 @@ const Emoji = styled('div')({
   fontFamily: 'sans-serif',
   fontSize: 16,
   height: 24,
-  lineHeight: '24px'
+  lineHeight: '24px',
+  width: 24
 })
 
 const Count = styled('div')({
