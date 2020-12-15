@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {DragDropContext, Draggable, Droppable} from 'react-beautiful-dnd'
+import {DragDropContext, Draggable, Droppable, DropResult} from 'react-beautiful-dnd'
 import {createFragmentContainer} from 'react-relay'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import MovePokerTemplateDimensionMutation from '../../../mutations/MovePokerTemplateDimensionMutation'
@@ -27,7 +27,7 @@ const TemplateDimensionList = (props: Props) => {
   const {isOwner, dimensions, templateId} = props
   const atmosphere = useAtmosphere()
 
-  const onDragEnd = (result) => {
+  const onDragEnd = (result: DropResult) => {
     const {source, destination} = result
     if (
       !destination ||

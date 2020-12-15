@@ -79,7 +79,7 @@ const TimelinePriorityTasks = (props: Props) => {
         dndNoise()
     }
     const updatedTask = {id: draggableId, sortOrder}
-    UpdateTaskMutation(atmosphere, {updatedTask, area: AreaEnum.userDash})
+    UpdateTaskMutation(atmosphere, {updatedTask, area: AreaEnum.userDash}, {})
   })
 
   if (activeTasks.length === 0) return <TimelineNoTasks />

@@ -11,8 +11,8 @@ const useResizeFontForElement = <T extends HTMLElement = HTMLInputElement>(ref: 
     }
     const {style} = el
     for (let i = maxSize; i >= minSize; i--) {
-      const {clientWidth, scrollWidth} = el
       style.fontSize = `${i}px`
+      const {clientWidth, scrollWidth} = el
       if (scrollWidth <= clientWidth) return
     }
   }, [value, ref.current])

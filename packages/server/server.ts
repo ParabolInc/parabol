@@ -12,6 +12,7 @@ import './initSentry'
 import githubWebhookHandler from './integrations/githubWebhookHandler'
 import listenHandler from './listenHandler'
 import PWAHandler from './PWAHandler'
+import selfHostedHandler from './selfHostedHandler'
 import handleClose from './socketHandlers/handleClose'
 import handleMessage from './socketHandlers/handleMessage'
 import handleOpen from './socketHandlers/handleOpen'
@@ -32,6 +33,7 @@ uws
   .get('/email/createics', ICSHandler)
   .get('/sse', SSEConnectionHandler)
   .get('/sse-ping', SSEPingHandler)
+  .get('/self-hosted/*', selfHostedHandler)
   .post('/stripe', stripeWebhookHandler)
   .post('/webhooks/github', githubWebhookHandler)
   .post('/webhooks/graphql', webhookGraphQLHandler)

@@ -9,6 +9,7 @@ import PokerSetFinalScoreMutation from '../mutations/PokerSetFinalScoreMutation'
 import {PokerCards} from '../types/constEnums'
 import {PokerDiscussVoting_meeting} from '../__generated__/PokerDiscussVoting_meeting.graphql'
 import {PokerDiscussVoting_stage} from '../__generated__/PokerDiscussVoting_stage.graphql'
+import isSpecialPokerLabel from '../utils/isSpecialPokerLabel'
 import PokerDimensionValueControl from './PokerDimensionValueControl'
 import PokerVotingRow from './PokerVotingRow'
 
@@ -22,13 +23,14 @@ const GroupedVotes = styled('div')({
 interface Props {
   meeting: PokerDiscussVoting_meeting
   stage: PokerDiscussVoting_stage
+  isInitialStageRender: boolean
 }
 
 const PokerDiscussVoting = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {submitting, submitMutation, onError, onCompleted, error} = useMutationProps()
   const {viewerId} = atmosphere
-  const {meeting, stage} = props
+  const {meeting, stage, isInitialStageRender} = props
   const {id: meetingId, facilitatorUserId} = meeting
   const {id: stageId, finalScore, dimension, scores} = stage
   const {selectedScale} = dimension
@@ -59,7 +61,8 @@ const PokerDiscussVoting = (props: Props) => {
         scores: scoreObj[label]
       }
     })
-    return {rows, topLabel}
+    const safeTopLabel = isSpecialPokerLabel(topLabel) ? PokerCards.QUESTION_CARD : topLabel
+    return {rows, topLabel: safeTopLabel}
   }, [scores])
 
   const isFacilitator = viewerId === facilitatorUserId
@@ -69,8 +72,7 @@ const PokerDiscussVoting = (props: Props) => {
       <GroupedVotes>
         {rows.map(({scaleValue, scores, key}) => {
           const label = scores[0]?.label
-          const isSpecial = [PokerCards.QUESTION_CARD, PokerCards.PASS_CARD].includes(label as any)
-          const canClick = isFacilitator && !isSpecial
+          const canClick = isFacilitator && !isSpecialPokerLabel(label)
           const setFinalScore = canClick ? () => {
             // finalScore === label isn't 100% accurate because they could change the dimensionField & could still submit new info
             if (submitting || !label || finalScore === label) return
@@ -78,7 +80,7 @@ const PokerDiscussVoting = (props: Props) => {
             PokerSetFinalScoreMutation(atmosphere, {finalScore: label, meetingId, stageId}, {onError, onCompleted})
           } : undefined
           return (
-            <PokerVotingRow key={key} scaleValue={scaleValue} scores={scores} setFinalScore={setFinalScore} />
+            <PokerVotingRow key={key} scaleValue={scaleValue} scores={scores} setFinalScore={setFinalScore} isInitialStageRender={isInitialStageRender} />
           )
         })}
       </GroupedVotes>

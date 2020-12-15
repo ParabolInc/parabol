@@ -1,7 +1,9 @@
-const getSSODomainFromEmail = (email: string) => {
-  // cypress doesn't like lookaheads like /(?<=@)[^.]+(?=\.)/
-  const match = email.match(/@(\w+)/)
-  return match?.[1].toLowerCase() ?? null
+const getSSODomainFromEmail = (email) => {
+  const [, domainWithTld] = email.toLowerCase().split('@')
+  if (!domainWithTld) return null
+  const lastDotIdx = domainWithTld.lastIndexOf('.')
+  const lastSafeDotIdx = lastDotIdx === -1 ? 1e6 : lastDotIdx
+  return domainWithTld.slice(0, lastSafeDotIdx)
 }
 
 export default getSSODomainFromEmail

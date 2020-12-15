@@ -5,7 +5,7 @@ import {createFragmentContainer} from 'react-relay'
 import useMutationProps from '~/hooks/useMutationProps'
 import usePokerDeckLeftEdge from '~/hooks/usePokerDeckLeftEdge'
 import useAtmosphere from '../hooks/useAtmosphere'
-import useForceUpdate from '../hooks/useForceUpdate'
+import useEventCallback from '../hooks/useEventCallback'
 import useInitialRender from '../hooks/useInitialRender'
 import usePokerCardLocation from '../hooks/usePokerCardLocation'
 import PokerAnnounceDeckHoverMutation from '../mutations/PokerAnnounceDeckHoverMutation'
@@ -17,7 +17,7 @@ import PokerCard from './PokerCard'
 const Deck = styled('div')({
   bottom: 0,
   display: 'flex',
-  left: '45%',
+  left: `calc(50% - ${PokerCards.WIDTH / 2}px)`,
   position: 'absolute',
   width: '100%',
   zIndex: 1 // TODO remove. needs to be under bottom bar but above dimension bg
@@ -41,11 +41,8 @@ const PokerCardDeck = (props: Props,) => {
   const {values: cards} = selectedScale
   const totalCards = cards.length
   const [isCollapsed, setIsCollapsed] = useState(!isVoting)
-  const leftEdge = usePokerDeckLeftEdge(estimateAreaRef)
+  const [leftEdge, showTransition] = usePokerDeckLeftEdge(estimateAreaRef, isVoting)
   const isInit = useInitialRender()
-  const forceUpdate = useForceUpdate()
-  // re-render to triger the animation
-  useEffect(forceUpdate, [])
   useEffect(() => {
     setIsCollapsed(!isVoting)
   }, [isVoting])
@@ -61,6 +58,7 @@ const PokerCardDeck = (props: Props,) => {
   const {yOffset, initialRotation, rotationPerCard} = usePokerCardLocation(totalCards, tilt, maxHidden, radius)
   const {onError, onCompleted, submitMutation, submitting, error} = useMutationProps()
   const onMouseEnter = (cardId: string) => () => {
+    if (isCollapsed) return
     if (!hoveringCardIdRef.current) {
       PokerAnnounceDeckHoverMutation(atmosphere, {isHover: true, meetingId, stageId})
     }
@@ -78,6 +76,15 @@ const PokerCardDeck = (props: Props,) => {
     })
   }
 
+  // if we're no longer voting, aggressively collapse the deck on stray clicks
+  const handleDocumentClick = useEventCallback((e: MouseEvent) => {
+    if (isVoting || isCollapsed || deckRef.current?.contains(e.target as Node)) return
+    setIsCollapsed(true)
+  })
+  useEffect(() => {
+    document.addEventListener('touchstart', handleDocumentClick)
+    document.addEventListener('click', handleDocumentClick)
+  }, [])
 
   useEffect(() => {
     if (error) {
@@ -92,9 +99,6 @@ const PokerCardDeck = (props: Props,) => {
   const vote = (score: string | null) => {
     if (submitting) return
     submitMutation()
-    if (!isVoting) {
-      setIsCollapsed(true)
-    }
     VoteForPokerStoryMutation(
       atmosphere,
       {meetingId, stageId, score},
@@ -108,15 +112,22 @@ const PokerCardDeck = (props: Props,) => {
         const isSelected = selectedIdx === idx
         const {label} = card
         const onClick = () => {
-          if (isCollapsed) {
+          if (isVoting) {
+            vote(isSelected ? null : label)
+          } else if (isCollapsed) {
+            // if the deck is collapsed, expand it
             setIsCollapsed(false)
           } else {
-            // if card is selected and clicked again remove vote
-            vote(isSelected ? null : label)
+            // if the deck is expanded, collapse it
+            setIsCollapsed(true)
+            if (!isSelected) {
+              // if they pick a new card, update it
+              vote(label)
+            }
           }
         }
         const rotation = initialRotation + rotationPerCard * idx
-        return <PokerCard key={card.label} yOffset={yOffset} rotation={rotation} onMouseEnter={onMouseEnter(card.label)} onMouseLeave={onMouseLeave(card.label)} scaleValue={card} idx={idx} totalCards={totalCards} onClick={onClick} isCollapsed={isCollapsed} isSelected={isSelected} deckRef={deckRef} radius={radius}  leftEdge={leftEdge}/>
+        return <PokerCard key={card.label} showTransition={showTransition} yOffset={yOffset} rotation={rotation} onMouseEnter={onMouseEnter(card.label)} onMouseLeave={onMouseLeave(card.label)} scaleValue={card} idx={idx} totalCards={totalCards} onClick={onClick} isCollapsed={isCollapsed} isSelected={isSelected} deckRef={deckRef} radius={radius} leftEdge={leftEdge} />
       })}
     </Deck>
   )

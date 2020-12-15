@@ -19,10 +19,7 @@ const removePokerTemplateScale = {
     const now = new Date()
     const operationId = dataLoader.share()
     const subOptions = {operationId, mutatorId}
-    const scale = await r
-      .table('TemplateScale')
-      .get(scaleId)
-      .run()
+    const scale = await dataLoader.get('templateScales').load(scaleId)
     const viewerId = getUserId(authToken)
 
     // AUTH
@@ -35,42 +32,24 @@ const removePokerTemplateScale = {
     }
 
     // RESOLUTION
-    await r
-      .table('TemplateScale')
-      .get(scaleId)
-      .update({removedAt: now, updatedAt: now})
-      .run()
+    await r.table('TemplateScale').get(scaleId).update({removedAt: now, updatedAt: now}).run()
 
-    const activeTeamScales = await r
-      .table('TemplateScale')
-      .getAll(teamId, {index: 'teamId'})
-      .filter((row) =>
-        row('removedAt')
-          .default(null)
-          .eq(null)
-      )
-      .orderBy('sortOrder')
-      .run()
-    const nextDefaultScaleId =
-      activeTeamScales.length > 0
-        ? activeTeamScales.map((teamScale) => teamScale.id)[0]
-        : SprintPokerDefaults.DEFAULT_SCALE_ID
-    await r
+    const nextDefaultScaleId = SprintPokerDefaults.DEFAULT_SCALE_ID
+    const dimensions = await r
       .table('TemplateDimension')
       .getAll(teamId, {index: 'teamId'})
-      .filter((row) =>
-        row('removedAt')
-          .default(null)
-          .eq(null)
-          .and(row('scaleId').eq(scaleId))
-      )
-      .update({
-        scaleId: nextDefaultScaleId,
-        updatedAt: now
-      })
+      .filter((row) => row('removedAt').default(null).eq(null).and(row('scaleId').eq(scaleId)))
+      .update(
+        {
+          scaleId: nextDefaultScaleId,
+          updatedAt: now
+        },
+        {returnChanges: true}
+      )('changes')('new_val')
+      .default([])
       .run()
 
-    const data = {scaleId}
+    const data = {scaleId, dimensions}
     publish(SubscriptionChannel.TEAM, teamId, 'RemovePokerTemplateScalePayload', data, subOptions)
     return data
   }

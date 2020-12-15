@@ -58,6 +58,7 @@ import UpdateUserProfilePayload from './UpdateUserProfilePayload'
 import UpgradeToProPayload from './UpgradeToProPayload'
 import {EndCheckInSuccess} from './EndCheckInPayload'
 import {EndRetrospectiveSuccess} from './EndRetrospectivePayload'
+import {MovePokerTemplateScaleValueSuccess} from './MovePokerTemplateScaleValuePayload'
 import {UpdateJiraDimensionFieldSuccess} from './UpdateJiraDimensionFieldPayload'
 import {SetDefaultSlackChannelSuccess} from './SetDefaultSlackChannelPayload'
 import {PersistJiraSearchQuerySuccess} from './PersistJiraSearchQueryPayload'
@@ -123,6 +124,7 @@ const types = [
   UpdatePokerTemplateScaleValuePayload,
   UpdateUserProfilePayload,
   PersistJiraSearchQuerySuccess,
+  MovePokerTemplateScaleValueSuccess,
   UpdateJiraDimensionFieldSuccess,
   SetDefaultSlackChannelSuccess
 ]

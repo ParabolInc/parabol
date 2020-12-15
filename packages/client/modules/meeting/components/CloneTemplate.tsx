@@ -1,44 +1,19 @@
 import React from 'react'
-import AddPokerTemplateMutation from '../../../mutations/AddPokerTemplateMutation'
-import {MeetingTypeEnum} from '../../../types/graphql'
-import TemplateDetailAction from '../../../components/TemplateDetailAction'
-import useAtmosphere from '../../../hooks/useAtmosphere'
-import useMutationProps from '../../../hooks/useMutationProps'
-import AddReflectTemplateMutation from '../../../mutations/AddReflectTemplateMutation'
-import {Threshold} from '../../../types/constEnums'
+import DetailAction from '../../../components/DetailAction'
 
 interface Props {
-  gotoTeamTemplates: () => void
-  templateId: string
-  templateCount: number
-  teamId: string
-  type: string
+  canClone: boolean
+  onClick: () => void
 }
 
 const CloneTemplate = (props: Props) => {
   const {
-    templateCount,
-    gotoTeamTemplates,
-    templateId,
-    teamId,
-    type
+    canClone,
+    onClick,
   } = props
-  const atmosphere = useAtmosphere()
-  const {onError, onCompleted, submitting, submitMutation} = useMutationProps()
-  const canClone = templateCount < Threshold.MAX_RETRO_TEAM_TEMPLATES
   const tooltip = canClone ? 'Clone & Edit Template' : 'Too many team templates! Remove one first'
-  const cloneTemplate = () => {
-    if (submitting || !canClone) return
-    submitMutation()
-    if (type === MeetingTypeEnum.retrospective) {
-      AddReflectTemplateMutation(atmosphere, {parentTemplateId: templateId, teamId}, {onError, onCompleted})
-    } else if (type === MeetingTypeEnum.poker) {
-      AddPokerTemplateMutation(atmosphere, {parentTemplateId: templateId, teamId}, {onError, onCompleted})
-    }
-    gotoTeamTemplates()
-  }
   return (
-    <TemplateDetailAction disabled={!canClone} icon={'content_copy'} tooltip={tooltip} onClick={cloneTemplate} />
+    <DetailAction disabled={!canClone} icon={'content_copy'} tooltip={tooltip} onClick={onClick} />
   )
 }
 export default CloneTemplate

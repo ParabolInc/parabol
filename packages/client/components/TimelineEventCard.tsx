@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {Component, ReactNode} from 'react'
+import React, {ReactNode} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {cardShadow} from '../styles/elevation'
 import {PALETTE} from '../styles/paletteV2'
@@ -12,7 +12,8 @@ import TimelineEventHeaderMenuToggle from './TimelineEventHeaderMenuToggle'
 
 interface Props {
   children: ReactNode
-  iconName: string
+  iconName?: string
+  IconSVG?: ReactNode
   title: ReactNode
   timelineEvent: TimelineEventCard_timelineEvent
 }
@@ -51,15 +52,6 @@ const EventIcon = styled(Icon)({
   width: 24
 })
 
-// const MenuIcon = styled(Icon)({
-//   color: PALETTE.PRIMARY_MAIN,
-//   position: 'absolute',
-//   fontSize: ICON_SIZE.MD18,
-//   top: 0,
-//   right: 0,
-//   userSelect: 'none'
-// })
-
 const HeaderText = styled('div')({
   display: 'flex',
   flexDirection: 'column',
@@ -70,28 +62,27 @@ const HeaderText = styled('div')({
   paddingTop: 2
 })
 
-class TimelineEventCard extends Component<Props> {
-  render() {
-    const {children, iconName, title, timelineEvent} = this.props
-    const {id: timelineEventId, createdAt, type} = timelineEvent
-    return (
-      <Surface>
-        <CardHeader>
-          <CardTitleBlock>
-            <EventIcon>{iconName}</EventIcon>
-            <HeaderText>
-              {title}
-              <TimelineEventDate createdAt={createdAt} />
-            </HeaderText>
-          </CardTitleBlock>
-          {type == 'retroComplete' || type == 'actionComplete' ? (
-            <TimelineEventHeaderMenuToggle timelineEventId={timelineEventId} />
-          ) : null}
-        </CardHeader>
-        {children}
-      </Surface>
-    )
-  }
+const TimelineEventCard = (props: Props) => {
+  const {children, iconName, IconSVG, title, timelineEvent} = props
+  const {id: timelineEventId, createdAt, type} = timelineEvent
+  return (
+    <Surface>
+      <CardHeader>
+        <CardTitleBlock>
+          {iconName && <EventIcon>{iconName}</EventIcon>}
+          {IconSVG}
+          <HeaderText>
+            {title}
+            <TimelineEventDate createdAt={createdAt} />
+          </HeaderText>
+        </CardTitleBlock>
+        {type == 'retroComplete' || type == 'actionComplete' ? (
+          <TimelineEventHeaderMenuToggle timelineEventId={timelineEventId} />
+        ) : null}
+      </CardHeader>
+      {children}
+    </Surface>
+  )
 }
 
 export default createFragmentContainer(TimelineEventCard, {

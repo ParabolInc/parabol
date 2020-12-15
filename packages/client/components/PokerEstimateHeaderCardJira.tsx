@@ -1,18 +1,18 @@
-import React, {useRef, useState} from 'react'
 import styled from '@emotion/styled'
+import graphql from 'babel-plugin-relay/macro'
+import React, {useRef, useState} from 'react'
+import {createFragmentContainer} from 'react-relay'
+import useBreakpoint from '~/hooks/useBreakpoint'
 import {Elevation} from '~/styles/elevation'
 import {PALETTE} from '~/styles/paletteV2'
-import CardButton from './CardButton'
-import IconLabel from './IconLabel'
-import Icon from './Icon'
-import {ICON_SIZE} from '../styles/typographyV2'
-import {createFragmentContainer} from 'react-relay'
-import graphql from 'babel-plugin-relay/macro'
-import {PokerEstimateHeaderCardJira_stage} from '../__generated__/PokerEstimateHeaderCardJira_stage.graphql'
-import {IJiraIssue} from '../types/graphql'
-import useBreakpoint from '~/hooks/useBreakpoint'
 import {Breakpoint} from '~/types/constEnums'
-
+import {DeepNonNullable} from '../types/generics'
+import {ICON_SIZE} from '../styles/typographyV2'
+import {PokerEstimateHeaderCardJira_stage} from '../__generated__/PokerEstimateHeaderCardJira_stage.graphql'
+import CardButton from './CardButton'
+import Icon from './Icon'
+import IconLabel from './IconLabel'
+import getJiraCloudIdAndKey from '../utils/getJiraCloudIdAndKey'
 const HeaderCardWrapper = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   display: 'flex',
   padding: isDesktop ? '0px 16px 4px' : '0px 8px 4px'
@@ -80,8 +80,7 @@ interface Props {
 }
 const PokerEstimateHeaderCardJira = (props: Props) => {
   const {stage} = props
-  const {story} = stage
-  const {key, summary, descriptionHTML, url} = story as IJiraIssue
+  const {serviceTaskId, story} = stage
   const [isExpanded, setIsExpanded] = useState(false)
   const descriptionRef = useRef<HTMLDivElement>(null)
   const maxHeight = descriptionRef.current?.scrollHeight ?? 1000
@@ -89,6 +88,24 @@ const PokerEstimateHeaderCardJira = (props: Props) => {
     setIsExpanded(!isExpanded)
   }
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
+  if (!story) {
+    // Jira is down, show something
+    const [, issueKey] = getJiraCloudIdAndKey(serviceTaskId)
+    return (
+      <HeaderCardWrapper isDesktop={isDesktop}>
+        <HeaderCard>
+          <CardTitleWrapper>
+            <CardTitle>{`Jira is Down!`}</CardTitle>
+          </CardTitleWrapper>
+          <CardDescription ref={descriptionRef} maxHeight={maxHeight} isExpanded={isExpanded}>
+            {`Cannot connect to Jira. You can still vote for ${issueKey}, but it may not update in Jira. If this issue persists, try re-integrating.`}
+          </CardDescription>
+        </HeaderCard>
+      </HeaderCardWrapper>
+    )
+  }
+  const {key, summary, descriptionHTML, url} = story as DeepNonNullable<typeof story>
+
   return (
     <HeaderCardWrapper isDesktop={isDesktop}>
       <HeaderCard>
@@ -120,6 +137,7 @@ export default createFragmentContainer(
   {
     stage: graphql`
     fragment PokerEstimateHeaderCardJira_stage on EstimateStage {
+      serviceTaskId
       story {
         ...on JiraIssue {
           key

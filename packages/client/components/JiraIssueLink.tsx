@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import React from 'react'
+import React, {ReactNode} from 'react'
 import {PALETTE} from '../styles/paletteV2'
 import {Card} from '../types/constEnums'
 
@@ -21,10 +21,12 @@ interface Props {
   cloudName: string
   issueKey: string
   projectKey: string
+  children?: ReactNode
+  showLabelPrefix?: boolean
 }
 
 const JiraIssueLink = (props: Props) => {
-  const {dataCy, className, cloudName, issueKey, projectKey} = props
+  const {dataCy, className, cloudName, issueKey, projectKey, children, showLabelPrefix=true} = props
   const href =
     cloudName === 'jira-demo'
       ? 'https://www.parabol.co/features/integrations'
@@ -38,7 +40,9 @@ const JiraIssueLink = (props: Props) => {
       target='_blank'
       title={`Jira Issue #${issueKey} on ${projectKey}`}
     >
-      {`Issue #${issueKey}`}
+      {`${showLabelPrefix ? 'Issue #': ''}
+      ${issueKey}`}
+      {children}
     </StyledLink>
   )
 }

@@ -12,6 +12,7 @@ import isTaskPrivate from 'parabol-client/utils/isTaskPrivate'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import getRethink from '../../database/rethinkDriver'
 import MassInvitationDB from '../../database/types/MassInvitation'
+import db from '../../db'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
@@ -27,6 +28,7 @@ import {TaskConnection} from './Task'
 import TeamInvitation from './TeamInvitation'
 import TeamMeetingSettings from './TeamMeetingSettings'
 import TeamMember from './TeamMember'
+import TemplateScale from './TemplateScale'
 import TierEnum from './TierEnum'
 import TeamIntegrations from './TeamIntegrations'
 
@@ -157,6 +159,39 @@ const Team = new GraphQLObjectType<ITeam, GQLContext>({
         // the implicit business logic says client will never request settings for a foregin team
         if (!isTeamMember(authToken, teamId)) return null
         return await dataLoader.get('meetingSettingsByType').load({teamId, meetingType})
+      }
+    },
+    scale: {
+      type: TemplateScale,
+      description: 'A query for the scale',
+      args: {
+        scaleId: {
+          type: new GraphQLNonNull(GraphQLID),
+          description: 'The scale ID for the desired scale'
+        }
+      },
+      resolve: async ({id: teamId}, {scaleId}, {authToken, dataLoader}) => {
+        const viewerId = getUserId(authToken)
+        const activeScales = await dataLoader.get('scalesByTeamId').load(teamId)
+        const scale = activeScales.find(({id}) => id === scaleId)
+        if (!scale) {
+          standardError(new Error('Scale not found'), {userId: viewerId})
+          return null
+        }
+        return scale
+      }
+    },
+    scales: {
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(TemplateScale))),
+      description: 'The list of scales this team can use',
+      resolve: async ({id: teamId}, {}, {dataLoader}) => {
+        const activeTeamScales = await dataLoader.get('scalesByTeamId').load(teamId)
+        const publicScales = await db.read('starterScales', 'aGhostTeam')
+        const activeScales = [...activeTeamScales, ...publicScales]
+        const uniqueScales = activeScales.filter(
+          (scale, index) => index === activeScales.findIndex((obj) => obj.id === scale.id)
+        )
+        return uniqueScales
       }
     },
     activeMeetings: {

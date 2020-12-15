@@ -1,5 +1,5 @@
 import {GraphQLID, GraphQLList, GraphQLNonNull} from 'graphql'
-import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import {SubscriptionChannel, Threshold} from 'parabol-client/types/constEnums'
 import getRethink from '../../database/rethinkDriver'
 import EstimatePhase from '../../database/types/EstimatePhase'
 import EstimateStage from '../../database/types/EstimateStage'
@@ -99,6 +99,9 @@ const updatePokerScope = {
       }
     })
 
+    if (stages.length > Threshold.MAX_POKER_STORIES) {
+      return {error: {message: 'Story limit reached'}}
+    }
     await r
       .table('NewMeeting')
       .get(meetingId)

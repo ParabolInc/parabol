@@ -17,7 +17,7 @@ const addContentTag = (
     id: taskId,
     content: rawContentStr
   }
-  UpdateTaskMutation(atmosphere, {updatedTask, area})
+  UpdateTaskMutation(atmosphere, {updatedTask, area}, {})
 }
 
 export default addContentTag

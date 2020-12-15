@@ -35,7 +35,7 @@ const DropdownBlock = styled('div')<{disabled: boolean}>(({disabled}) => ({
   display: 'flex',
   fontSize: 13,
   lineHeight: '20px',
-  minWidth: 128,
+  minWidth: 144,
   userSelect: 'none'
 }))
 
@@ -70,7 +70,8 @@ const PokerTemplateScalePicker = (props: Props) => {
     {
       isDropdown: true,
       id: 'scaleDropdown',
-      parentId: 'templateModal'
+      parentId: 'templateModal',
+      loadingWidth: 300
     }
   )
   const {openTooltip, tooltipPortal, closeTooltip, originRef: tooltipRef} = useTooltip<

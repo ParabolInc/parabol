@@ -27,6 +27,7 @@ uws
   .get('/email/createics', (...args) => require('./ICSHandler').default(...args))
   .get('/sse', (...args) => require('./sse/SSEConnectionHandler').default(...args))
   .get('/sse-ping', (...args) => require('./sse/SSEPingHandler').default(...args))
+  .get('/self-hosted/*', (...args) => require('./selfHostedHandler').default(...args))
   .post('/stripe', (...args) => require('./billing/stripeWebhookHandler').default(...args))
   .post('/webhooks/github', (...args) =>
     require('./integrations/githubWebhookHandler').default(...args)

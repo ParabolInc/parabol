@@ -17,7 +17,7 @@ const removeContentTag = (
     id: taskId,
     content: nextContent
   }
-  UpdateTaskMutation(atmosphere, {updatedTask, area})
+  UpdateTaskMutation(atmosphere, {updatedTask, area}, {})
 }
 
 export default removeContentTag
