@@ -491,6 +491,25 @@ export default abstract class AtlassianManager {
     ) as AtlassianError | JiraAddCommentResponse
   }
 
+  async getFirstValidJiraField(cloudId: string, possibleFieldNames: string[], testIssueKeyId: string) {
+    const fields = await this.getFields(cloudId)
+    const possibleFields = possibleFieldNames.map((fieldName) => {
+      return fields.find((field) => field.name === fieldName)
+    }).filter(Boolean) as JiraField[]
+    const updateResArr = await Promise.all(possibleFields.map((field) => {
+      return this.put(
+        `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/issue/${testIssueKeyId}`,
+        {
+          fields: {
+            [field.id]: 0
+          }
+        }
+      ) as null | AtlassianError | JiraError
+    }))
+    const firstValidUpdateIdx = updateResArr.indexOf(null)
+    if (firstValidUpdateIdx === -1) return null
+    return possibleFields[firstValidUpdateIdx]
+  }
   async updateStoryPoints(
     cloudId: string,
     issueKey: string,

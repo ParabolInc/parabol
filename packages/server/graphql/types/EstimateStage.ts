@@ -9,21 +9,17 @@ import {
 } from 'graphql'
 import {SprintPokerDefaults} from '~/types/constEnums'
 import {NewMeetingPhaseTypeEnum} from '../../../client/types/graphql'
-import getRethink from '../../database/rethinkDriver'
-import JiraDimensionField from '../../database/types/JiraDimensionField'
-import MeetingPoker from '../../database/types/MeetingPoker'
-import db from '../../db'
-import AtlassianServerManager from '../../utils/AtlassianServerManager'
 import getJiraCloudIdAndKey from '../../../client/utils/getJiraCloudIdAndKey'
+import db from '../../db'
 import getRedis from '../../utils/getRedis'
 import {GQLContext} from '../graphql'
 import EstimateUserScore from './EstimateUserScore'
 import NewMeetingStage, {newMeetingStageFields} from './NewMeetingStage'
+import ServiceField from './ServiceField'
 import Story from './Story'
 import TaskServiceEnum from './TaskServiceEnum'
 import TemplateDimension from './TemplateDimension'
 import User from './User'
-import ServiceField from './ServiceField'
 
 const EstimateStage = new GraphQLObjectType<any, GQLContext>({
   name: 'EstimateStage',
@@ -50,79 +46,24 @@ const EstimateStage = new GraphQLObjectType<any, GQLContext>({
     serviceField: {
       type: GraphQLNonNull(ServiceField),
       description: 'The field name used by the service for this dimension',
-      resolve: async (
-        {dimensionId, meetingId, service, serviceTaskId, teamId, creatorUserId},
-        _args,
-        {dataLoader}
-      ) => {
+      resolve: async ({dimensionId, service, serviceTaskId, teamId}, _args, {dataLoader}) => {
         if (service === 'jira') {
-          const [cloudId] = getJiraCloudIdAndKey(serviceTaskId)
+          const [cloudId, , projectKey] = getJiraCloudIdAndKey(serviceTaskId)
           const team = await dataLoader.get('teams').load(teamId)
           const jiraDimensionFields = team.jiraDimensionFields || []
           const existingDimensionField = jiraDimensionFields.find(
-            (field) => field.dimensionId === dimensionId && field.cloudId === cloudId
+            (field) =>
+              field.dimensionId === dimensionId &&
+              field.cloudId === cloudId &&
+              field.projectKey === projectKey
           )
 
           if (existingDimensionField)
             return {name: existingDimensionField.fieldName, type: existingDimensionField.fieldType}
 
-          // This is first time accessing the serviceField, set it up on the Team
-          const meeting = (await dataLoader.get('newMeetings').load(meetingId)) as MeetingPoker
-          const {templateId} = meeting
-          const sortedTemplateDimensions = await dataLoader
-            .get('dimensionsByTemplateId')
-            .load(templateId)
-          const [firstDimension] = sortedTemplateDimensions
-          const isFirst = firstDimension.id === dimensionId
-          let dimensionField = undefined as undefined | JiraDimensionField
-          if (isFirst) {
-            // try to use the default field for the first dimension
-            const auth = await dataLoader
-              .get('freshAtlassianAuth')
-              .load({userId: creatorUserId, teamId})
-            if (auth) {
-              const {accessToken} = auth
-              const manager = new AtlassianServerManager(accessToken)
-              const fields = await manager.getFields(cloudId)
-              const defaultField = fields.find(
-                (field) => field.name === SprintPokerDefaults.JIRA_FIELD_DEFAULT
-              )
-              if (defaultField) {
-                // it's still possible that we can't write to this field
-                const {id: fieldId} = defaultField
-                dimensionField = new JiraDimensionField({
-                  cloudId,
-                  dimensionId,
-                  fieldName: SprintPokerDefaults.JIRA_FIELD_DEFAULT,
-                  fieldId,
-                  fieldType: 'number'
-                })
-              }
-            }
-          }
-          // use comments as default for all following dimensions
-          if (!dimensionField) {
-            dimensionField = new JiraDimensionField({
-              dimensionId,
-              fieldName: SprintPokerDefaults.JIRA_FIELD_COMMENT,
-              cloudId,
-              fieldId: '',
-              fieldType: 'string'
-            })
-          }
-          jiraDimensionFields.push(dimensionField)
-          const r = await getRethink()
-          await r
-            .table('Team')
-            .get(teamId)
-            .update({
-              jiraDimensionFields
-            })
-            .run()
-          return {name: dimensionField.fieldName, type: dimensionField.fieldType}
-        } else {
-          return {name: '', type: 'string'}
+          return {name: SprintPokerDefaults.JIRA_FIELD_COMMENT, type: 'string'}
         }
+        return {name: '', type: 'string'}
       }
     },
     sortOrder: {

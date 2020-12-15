@@ -105,16 +105,17 @@ const pokerSetFinalScore = {
         return {error: {message: 'User no longer has access to Atlassian'}}
       }
       const {accessToken} = auth
-      const [cloudId, issueKey] = getJiraCloudIdAndKey(serviceTaskId)
+      const [cloudId, issueKey, projectKey] = getJiraCloudIdAndKey(serviceTaskId)
       const manager = new AtlassianServerManager(accessToken)
       const team = await dataLoader.get('teams').load(teamId)
       const jiraDimensionFields = team.jiraDimensionFields || []
       const dimensionField = jiraDimensionFields.find(
         (dimensionField) =>
-          dimensionField.dimensionId === dimensionId && dimensionField.cloudId === cloudId
+          dimensionField.dimensionId === dimensionId &&
+          dimensionField.cloudId === cloudId &&
+          dimensionField.projectKey === projectKey
       )
-      // should never have to use default
-      const fieldName = dimensionField?.fieldName ?? SprintPokerDefaults.JIRA_FIELD_DEFAULT
+      const fieldName = dimensionField?.fieldName ?? SprintPokerDefaults.JIRA_FIELD_COMMENT
       if (fieldName === SprintPokerDefaults.JIRA_FIELD_COMMENT) {
         const dimensionsPerStageIdx = stages.filter((stage) => stage.dimensionId === dimensionId)
           .length
