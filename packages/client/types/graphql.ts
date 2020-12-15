@@ -7470,10 +7470,15 @@ export interface IAddSlackAuthOnMutationArguments {
 
 export interface IAddFeatureFlagOnMutationArguments {
   /**
-   * the complete or partial email of the person to whom you are giving advanced features.
+   * a list of the complete or partial email of the person to whom you are giving advanced features.
    *       Matches via a regex to support entire domains
    */
-  email: string;
+  emails?: Array<string> | null;
+
+  /**
+   * grant access to an entire domain. the part of the email after the @
+   */
+  domain?: string | null;
 
   /**
    * the flag that you want to give to the user
