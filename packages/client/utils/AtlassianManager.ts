@@ -110,12 +110,16 @@ interface JiraCreateIssueResponse {
 
 type GetProjectsCallback = (error: AtlassianError | null, result: GetProjectsResult | null) => void
 
-interface JiraError {
-  errorMessages: any[]
+interface JiraNoAccessError {
+  errorMessages: ['The app is not installed on this instance.']
+}
+interface JiraFieldError {
   errors: {
     [fieldName: string]: string
   }
 }
+
+type JiraError = JiraNoAccessError | JiraFieldError
 
 type JiraIssueProperties = any
 type JiraIssueNames = any
@@ -450,9 +454,17 @@ export default abstract class AtlassianManager {
       }
       // TODO add type
       const res = (await this.post(url, payload)) as AtlassianError | JiraError | JiraSearchResponse
-      if ('message' in res && !firstError) {
-        firstError = res.message
+      if (!firstError) {
+        if ('message' in res) {
+          firstError = res.message
+        } else if ('errorMessages' in res) {
+          firstError = res.errorMessages[0]
+          if (firstError.includes('THe app is not installed on this instance')) {
+            firstError = 'Jira access revoked. Please reintegrate with Jira.'
+          }
+        }
       }
+
       if ('issues' in res) {
         const {issues} = res
         issues.forEach((issue) => {
@@ -531,12 +543,24 @@ export default abstract class AtlassianManager {
       if ('message' in res) {
         throw new Error(res.message)
       }
-      const jiraError = res.errors?.[fieldId]
-      if (jiraError.includes('is not on the appropriate screen')) {
-        throw new Error(`Update failed! In Jira, add the field "${fieldName}" to the Issue screen.`)
+
+      if ('errorMessages' in res) {
+        const globalError = res.errorMessages?.[0]
+        if (globalError) {
+          if (globalError.includes('The app is not installed on this instance')) {
+            throw new Error('The user who added this issue was removed from Jira. Please remove & re-add the issue')
+          }
+          throw new Error(globalError)
+        }
       }
-      const error = jiraError ? `Jira: ${jiraError}` : 'Cannot update field in Jira'
-      throw new Error(error)
+      if ('errors' in res) {
+        const fieldError = res.errors[fieldId]
+        if (fieldError.includes('is not on the appropriate screen')) {
+          throw new Error(`Update failed! In Jira, add the field "${fieldName}" to the Issue screen.`)
+        }
+        throw new Error(`Jira: ${fieldError}`)
+      }
+      throw new Error('Cannot update field in Jira')
     }
   }
 }
