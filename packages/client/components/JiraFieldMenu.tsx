@@ -28,9 +28,9 @@ const JiraFieldMenu = (props: Props) => {
   const serverFields = viewer?.teamMember?.integrations.atlassian?.jiraFields ?? []
   const atmosphere = useAtmosphere()
   const {portalStatus, isDropdown, closePortal} = menuProps
-  const [cloudId] = getJiraCloudIdAndKey(serviceTaskId)
+  const [cloudId, , projectKey] = getJiraCloudIdAndKey(serviceTaskId)
   const handleClick = (fieldName: string) => () => {
-    UpdateJiraDimensionFieldMutation(atmosphere, {dimensionId, fieldName, meetingId, cloudId})
+    UpdateJiraDimensionFieldMutation(atmosphere, {dimensionId, fieldName, meetingId, cloudId, projectKey})
     closePortal()
   }
   const defaultActiveidx = useMemo(() => {

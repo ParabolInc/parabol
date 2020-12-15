@@ -1959,6 +1959,11 @@ export interface IJiraDimensionField {
   dimensionId: string;
 
   /**
+   * The project under the atlassian cloud the field lives in
+   */
+  projectKey: string;
+
+  /**
    * The ID referring to the field name
    */
   fieldId: string;
@@ -8524,6 +8529,11 @@ export interface IUpdateJiraDimensionFieldOnMutationArguments {
    * The cloudId the field lives on
    */
   cloudId: string;
+
+  /**
+   * The project the field lives on
+   */
+  projectKey: string;
 
   /**
    * The meeting the update happend in. If present, can return a meeting object with updated serviceField
