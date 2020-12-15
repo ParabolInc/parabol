@@ -38,7 +38,7 @@ export default {
     }
   },
   resolve: async (
-    _source: object,
+    _source: Record<string, unknown>,
     {cloudId, meetingId, projectKey, summary, teamId}: IJiraCreateIssueOnMutationArguments,
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) => {
@@ -92,6 +92,9 @@ export default {
     if ('errors' in issueMetaRes) {
       return standardError(new Error(Object.values(issueMetaRes.errors)[0]), {userId: viewerId})
     }
+    if ('errorMessages' in issueMetaRes) {
+      return {error: {message: issueMetaRes.errorMessages[0]}}
+    }
     const {projects} = issueMetaRes
     // should always be the first and only item in the project arr
     const project = projects.find((project) => project.key === projectKey)!
@@ -114,6 +117,9 @@ export default {
     }
     if ('errors' in res) {
       return standardError(new Error(Object.values(res.errors)[0]), {userId: viewerId})
+    }
+    if ('errorMessages' in res) {
+      return {error: {message: res.errorMessages[0]}}
     }
     const data = {
       cloudId,
