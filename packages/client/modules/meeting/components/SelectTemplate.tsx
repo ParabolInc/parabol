@@ -23,8 +23,14 @@ const ButtonBlock = styled('div')({
 })
 
 const Button = styled(FloatingActionButton)({
-  padding: 15,
+  border: 0,
+  fontSize: 16,
+  padding: '8px 20px',
   pointerEvents: 'all'
+})
+
+const StyledIcon = styled(Icon)({
+  marginRight: 4
 })
 
 interface Props {
@@ -52,8 +58,8 @@ const SelectTemplate = (props: Props) => {
     <ButtonBlock>
       {error && <StyledError>{error.message}</StyledError>}
       <Button onClick={selectTemplate} palette='blue' waiting={submitting}>
-        <Icon>check</Icon>
-        Use Template
+        <StyledIcon>check</StyledIcon>
+        {'Use Template'}
       </Button>
     </ButtonBlock>
   )

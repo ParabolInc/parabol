@@ -2,7 +2,6 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useEffect, useRef} from 'react'
 import {createFragmentContainer} from 'react-relay'
-import Icon from '../../../components/Icon'
 import LinkButton from '../../../components/LinkButton'
 import TooltipStyled from '../../../components/TooltipStyled'
 import useAtmosphere from '../../../hooks/useAtmosphere'
@@ -22,16 +21,9 @@ const AddPokerTemplateLink = styled(LinkButton)({
   fontSize: 16,
   fontWeight: 600,
   lineHeight: '24px',
-  margin: 0,
-  marginTop: 16,
-  marginBottom: 16,
   outline: 'none',
-  padding: '4px 0'
-})
-
-const AddPokerTemplateLinkPlus = styled(Icon)({
-  display: 'block',
-  margin: '0 16px 0 16px'
+  padding: '20px 16px',
+  width: '100%'
 })
 
 interface Props {
@@ -78,8 +70,7 @@ const AddNewPokerTemplate = (props: Props) => {
     <div>
       {error && <ErrorLine>{error.message}</ErrorLine>}
       <AddPokerTemplateLink palette='blue' onClick={addNewTemplate} waiting={submitting}>
-        <AddPokerTemplateLinkPlus>add</AddPokerTemplateLinkPlus>
-        <div>Create New Template</div>
+        {'Create New Template'}
       </AddPokerTemplateLink>
     </div>
   )
