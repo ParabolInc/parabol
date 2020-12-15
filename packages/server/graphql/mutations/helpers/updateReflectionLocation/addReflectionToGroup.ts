@@ -14,7 +14,10 @@ const addReflectionToGroup = async (
   const reflection = await dataLoader.get('retroReflections').load(reflectionId)
   if (!reflection) throw new Error('Reflection not found')
   const {reflectionGroupId: oldReflectionGroupId, meetingId: reflectionMeetingId} = reflection
-  const reflectionGroup = await r.table('RetroReflectionGroup').get(reflectionGroupId).run()
+  const reflectionGroup = await r
+    .table('RetroReflectionGroup')
+    .get(reflectionGroupId)
+    .run()
   if (!reflectionGroup || !reflectionGroup.isActive) {
     throw new Error('Reflection group not found')
   }

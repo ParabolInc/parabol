@@ -63,7 +63,12 @@ const TemplateScale = new GraphQLObjectType<any, GQLContext>({
         return r
           .table('TemplateDimension')
           .getAll(teamId, {index: 'teamId'})
-          .filter((row) => row('removedAt').default(null).eq(null).and(row('scaleId').eq(scaleId)))
+          .filter((row) =>
+            row('removedAt')
+              .default(null)
+              .eq(null)
+              .and(row('scaleId').eq(scaleId))
+          )
           .run()
       }
     },
