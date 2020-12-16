@@ -10,6 +10,7 @@ import {TemplateScaleValueItem_scale} from '~/__generated__/TemplateScaleValueIt
 import Icon from '../../../components/Icon'
 import {PALETTE} from '../../../styles/paletteV2'
 import {ICON_SIZE} from '../../../styles/typographyV2'
+import isSpecialPokerLabel from '../../../utils/isSpecialPokerLabel'
 import {TemplateScaleValueItem_scaleValue} from '../../../__generated__/TemplateScaleValueItem_scaleValue.graphql'
 import EditableTemplateScaleValueColor from './EditableTemplateScaleValueColor'
 import EditableTemplateScaleValueLabel from './EditableTemplateScaleValueLabel'
@@ -18,7 +19,7 @@ interface Props {
   isDragging: boolean
   scale: TemplateScaleValueItem_scale
   scaleValue: TemplateScaleValueItem_scaleValue
-  dragProvided: DraggableProvided
+  dragProvided?: DraggableProvided
 }
 
 const ScaleValueItem = styled('div')<{isHover: boolean, isDragging: boolean}>(
@@ -76,9 +77,9 @@ const TemplateScaleValueItem = (props: Props) => {
   }
   return (
     <ScaleValueItem
-      ref={dragProvided.innerRef}
-      {...dragProvided.dragHandleProps}
-      {...dragProvided.draggableProps}
+      ref={dragProvided?.innerRef}
+      {...dragProvided?.dragHandleProps}
+      {...dragProvided?.draggableProps}
       isDragging={isDragging}
       isHover={isHover}
       onMouseOver={onMouseOver}
@@ -93,9 +94,12 @@ const TemplateScaleValueItem = (props: Props) => {
           scaleValue={scaleValue}
         />
       </ScaleAndDescription>
-      <RemoveScaleValueIcon isHover={isHover} onClick={removeScaleValue}>
-        cancel
-      </RemoveScaleValueIcon>
+      {
+        !isSpecialPokerLabel(label) &&
+        <RemoveScaleValueIcon isHover={isHover} onClick={removeScaleValue}>
+          cancel
+        </RemoveScaleValueIcon>
+      }
     </ScaleValueItem >
   )
 }
