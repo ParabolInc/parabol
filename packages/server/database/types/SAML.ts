@@ -2,7 +2,7 @@ import shortid from 'shortid'
 
 interface Input {
   id?: string
-  domain: string
+  domains: string[]
   cert: string
   url: string
   metadata: string
@@ -10,7 +10,7 @@ interface Input {
 
 export default class SAML {
   id: string
-  domain: string
+  domains: string[]
   cert: string
   url: string
   metadata: string
@@ -18,9 +18,9 @@ export default class SAML {
   updatedAt = new Date()
 
   constructor(input: Input) {
-    const {id, domain, cert, url, metadata} = input
+    const {id, domains, cert, url, metadata} = input
     this.id = id || shortid.generate()
-    this.domain = domain
+    this.domains = domains || []
     this.cert = cert
     this.url = url
     this.metadata = metadata
