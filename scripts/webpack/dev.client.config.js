@@ -10,6 +10,7 @@ const SERVER_ROOT = path.join(PROJECT_ROOT, 'packages', 'server')
 const STATIC_ROOT = path.join(PROJECT_ROOT, 'static')
 
 module.exports = {
+  infrastructureLogging: {level: 'warn'},
   devtool: 'eval-source-map',
   mode: 'development',
   entry: {

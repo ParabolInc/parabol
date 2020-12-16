@@ -49,7 +49,7 @@ module.exports = {
   target: 'node',
   externals: [
     nodeExternals({
-      whitelist: ['webpack/hot/poll?1000', /parabol-client/, /parabol-server/]
+      allowlist: ['webpack/hot/poll?1000', /parabol-client/, /parabol-server/]
     })
   ],
   plugins: [new webpack.HotModuleReplacementPlugin()],
