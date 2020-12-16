@@ -10,7 +10,7 @@ import useGotoStageId from '~/hooks/useGotoStageId'
 import useInitialRender from '~/hooks/useInitialRender'
 import useTransition, {TransitionStatus} from '~/hooks/useTransition'
 import {PALETTE} from '~/styles/paletteV2'
-import {BezierCurve, Breakpoint, DiscussionThreadEnum, NavSidebar, ZIndex} from '~/types/constEnums'
+import {BezierCurve, Breakpoint, ElementWidth, ZIndex} from '~/types/constEnums'
 import {MeetingTypeEnum, NewMeetingPhaseTypeEnum} from '~/types/graphql'
 import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
 import findStageAfterId from '~/utils/meetings/findStageAfterId'
@@ -25,8 +25,8 @@ import EndMeetingButton from './EndMeetingButton'
 import StageTimerControl from './StageTimerControl'
 import useControlBarLeft from '~/hooks/useControlBarLeft'
 
-const Wrapper = styled('div')<{controlBarLeft}>(
-  ({controlBarLeft}) => ({
+const Wrapper = styled('div')<{left: number, }>(
+  ({left}) => ({
     alignItems: 'center',
     backgroundColor: '#FFFFFF',
     bottom: 0,
@@ -37,10 +37,10 @@ const Wrapper = styled('div')<{controlBarLeft}>(
     fontSize: 14,
     height: 56,
     justifyContent: 'space-between',
-    left: controlBarLeft,
+    left,
     margin: '0 auto',
     minHeight: 56,
-    padding: 8,
+    padding: ElementWidth.CONTROL_BAR_PADDING,
     position: 'fixed',
     transition: `200ms ${BezierCurve.DECELERATE}`,
     width: '100%',
@@ -50,7 +50,7 @@ const Wrapper = styled('div')<{controlBarLeft}>(
       bottom: 8,
       boxShadow: desktopBarShadow,
       width: 'fit-content'
-    }
+    } 
   })
 )
 
@@ -86,7 +86,8 @@ const MeetingControlBar = (props: Props) => {
     localStage,
     phases,
     meetingType,
-    showSidebar: isLeftSidebarOpen
+    showSidebar: isLeftSidebarOpen,
+    isRightDrawerOpen
   } = meeting
   const isFacilitating = facilitatorUserId === viewerId && !endedAt
   const {phaseType} = localPhase
@@ -107,20 +108,21 @@ const MeetingControlBar = (props: Props) => {
   const [confirmingButton, setConfirmingButton] = useClickConfirmation()
   const cancelConfirm = confirmingButton ? () => setConfirmingButton('') : undefined
   const tranChildren = useTransition(buttons)
-  const {onMouseDown, onClickCapture} = useDraggableFixture(isLeftSidebarOpen, isRightDrawerOpen)
+  const showRightDrawer = isRightDrawerOpen && meetingType === MeetingTypeEnum.poker && phaseType === NewMeetingPhaseTypeEnum.ESTIMATE
+  const {onMouseDown, onClickCapture} = useDraggableFixture(isLeftSidebarOpen, showRightDrawer)
   const ref = useRef<HTMLDivElement>(null)
+  const left = useControlBarLeft(showRightDrawer, isLeftSidebarOpen, buttons.length)
   useSnackbarPad(ref)
   useCovering(ref)
-  const controlBarLeft = useControlBarLeft(meetingType, phaseType, isLeftSidebarOpen, ref)
   const isInit = useInitialRender()
   if (endedAt) return null
   return (
     <Wrapper
       ref={ref}
+      left={left}
       onMouseDown={onMouseDown}
       onClickCapture={onClickCapture}
       onTouchStart={onMouseDown}
-      controlBarLeft={controlBarLeft}
     >
       {tranChildren
         .map((tranChild) => {
@@ -203,6 +205,9 @@ export default createFragmentContainer(MeetingControlBar, {
       facilitatorUserId
       meetingType
       showSidebar
+      ... on PokerMeeting {
+        isRightDrawerOpen
+      }
       localStage {
         id
         isComplete

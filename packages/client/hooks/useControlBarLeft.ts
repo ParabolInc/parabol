@@ -1,39 +1,20 @@
-import {MeetingTypeEnum, NewMeetingPhaseTypeEnum} from '~/types/graphql'
-import {RefObject, useEffect,  useState} from 'react'
-import {DiscussionThreadEnum, NavSidebar} from '~/types/constEnums'
-import useResizeObserver from './useResizeObserver'
+import {useMemo} from 'react'
+import {DiscussionThreadEnum, ElementWidth, NavSidebar} from '~/types/constEnums'
 
 const useControlBarLeft = (
-  meetingType: string,
-  phaseType: string,
+  showRightDrawer: boolean,
   showSidebar: boolean,
-  ref: RefObject<HTMLDivElement>
+  buttonsCount: number
 ): number => {
-  const [left, setLeft] = useState(0)
-
-  const calculateLeft = () => {
-    if (!ref || !ref.current) return
-    const innerWidth = window.innerWidth
-    const bbox = ref.current.getBoundingClientRect()
-    const {width} = bbox
-    const isRightDrawerOpen =
-    meetingType === MeetingTypeEnum.poker && phaseType === NewMeetingPhaseTypeEnum.ESTIMATE
-    if (showSidebar && !isRightDrawerOpen) {
-      const newLeft = NavSidebar.WIDTH + (innerWidth - NavSidebar.WIDTH) / 2 - width / 2
-      setLeft(newLeft)
-    } else if (showSidebar && isRightDrawerOpen)
-      setLeft(NavSidebar.WIDTH + DiscussionThreadEnum.WIDTH)
-    else {
-      //
-    }
-  }
-
-  useResizeObserver(() => calculateLeft(), ref)
-  useEffect(() => {
-    calculateLeft()
-  }, [meetingType, phaseType, showSidebar, ref])
-
-  return left
+  return useMemo(() => {
+    const windowWidth = window.innerWidth
+    const controlBarWidth =
+      buttonsCount * ElementWidth.CONTROL_BAR_BUTTON + ElementWidth.CONTROL_BAR_PADDING * 2
+    const sidebarWidth = showSidebar ? NavSidebar.WIDTH : 0
+    const rightDrawerWidth = showRightDrawer ? DiscussionThreadEnum.WIDTH : 0
+    const meetingAreaCenter = (windowWidth - sidebarWidth - rightDrawerWidth) / 2
+    return sidebarWidth + meetingAreaCenter - controlBarWidth / 2
+  }, [showSidebar, showRightDrawer, buttonsCount])
 }
 
 export default useControlBarLeft
