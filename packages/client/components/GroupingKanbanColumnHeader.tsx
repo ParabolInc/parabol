@@ -1,13 +1,12 @@
 import React, {MouseEvent} from 'react'
 import styled from '@emotion/styled'
 import {PALETTE} from '~/styles/paletteV2'
-import ExpandArrowSVG from '../../../static/images/icons/arrow_expand.svg'
 import FlatButton from './FlatButton'
 import {MenuPosition} from '~/hooks/useCoords'
 import useTooltip from '~/hooks/useTooltip'
 import Icon from './Icon'
 import RetroPrompt from './RetroPrompt'
-import {Breakpoint, ElementWidth} from '~/types/constEnums'
+import {Breakpoint} from '~/types/constEnums'
 import useBreakpoint from '~/hooks/useBreakpoint'
 
 const AddReflectionButton = styled(FlatButton)({
@@ -16,6 +15,10 @@ const AddReflectionButton = styled(FlatButton)({
   lineHeight: '24px',
   padding: 0,
   width: 24
+})
+
+const ExpandButton = styled(AddReflectionButton)({
+  marginLeft: 4
 })
 
 const ButtonGroup = styled('div')({
@@ -32,31 +35,15 @@ const ColumnColorDrop = styled('div')<{groupColor: string}>(({groupColor}) => ({
   width: 8
 }))
 
-const ColumnHeader = styled('div')<{isWidthExpanded: boolean}>(({isWidthExpanded}) => ({
+const ColumnHeader = styled('div')({
   color: PALETTE.TEXT_MAIN,
   display: 'flex',
   justifyContent: 'space-between',
   lineHeight: '24px',
   margin: '0 auto',
-  maxWidth: isWidthExpanded
-    ? ElementWidth.REFLECTION_CARD_PADDED_EXPANDED
-    : ElementWidth.REFLECTION_CARD_PADDED,
   padding: '12px 12px 0px',
   width: '100%'
-}))
-
-const ExpandButton = styled(FlatButton)<{isWidthExpanded: boolean}>(({isWidthExpanded}) => ({
-  alignItems: 'center',
-  background: 'transparent',
-  display: 'flex',
-  height: 24,
-  marginLeft: isWidthExpanded ? 8 : 4,
-  padding: 0,
-  width: 24,
-  ':click, :focus, :active': {
-    backgroundColor: 'inherit'
-  }
-}))
+})
 
 const Prompt = styled(RetroPrompt)({
   alignItems: 'center',
@@ -66,6 +53,10 @@ const Prompt = styled(RetroPrompt)({
 
 const Wrapper = styled('div')({
   width: '100%'
+})
+
+const StyledIcon = styled(Icon)({
+  transform: 'rotate(45deg)'
 })
 
 interface Props {
@@ -97,7 +88,7 @@ const GroupingKanbanColumnHeader = (props: Props) => {
 
   return (
     <Wrapper>
-      <ColumnHeader isWidthExpanded={isWidthExpanded}>
+      <ColumnHeader>
         <Prompt>
           <ColumnColorDrop groupColor={groupColor} />
           {question}
@@ -119,13 +110,12 @@ const GroupingKanbanColumnHeader = (props: Props) => {
           {isDesktop && (
             <>
               <ExpandButton
-                isWidthExpanded={isWidthExpanded}
                 onClick={toggleWidth}
                 onMouseEnter={openTooltip}
                 onMouseLeave={closeTooltip}
                 ref={originRef}
               >
-                <img alt='expand-arrow-icon' src={ExpandArrowSVG} />
+                <StyledIcon>{isWidthExpanded ? 'unfold_less' : 'unfold_more'}</StyledIcon>
               </ExpandButton>
               {tooltipPortal(<div>{`${isWidthExpanded ? 'Minimise' : 'Expand'}`}</div>)}
             </>
