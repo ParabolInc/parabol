@@ -3,8 +3,11 @@ import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import NewMeetingDropdown from '../../../components/NewMeetingDropdown'
+import useAtmosphere from '../../../hooks/useAtmosphere'
 import useModal from '../../../hooks/useModal'
+import {MeetingTypeEnum} from '../../../types/graphql'
 import lazyPreload from '../../../utils/lazyPreload'
+import setTemplateId from '../../../utils/relay/setTemplateId'
 import {PokerTemplatePicker_settings} from '../../../__generated__/PokerTemplatePicker_settings.graphql'
 
 interface Props {
@@ -24,10 +27,17 @@ const Dropdown = styled(NewMeetingDropdown)({
 })
 
 const PokerTemplatePicker = (props: Props) => {
+  const atmosphere = useAtmosphere()
   const {settings} = props
-  const {selectedTemplate} = settings
+  const {teamId, selectedTemplate} = settings
   const {name: templateName} = selectedTemplate
-  const {togglePortal, modalPortal, closePortal} = useModal({id: 'templateModal'})
+  const {togglePortal, modalPortal, closePortal} = useModal({
+    id: 'templateModal',
+    onClose: () => {
+      setTemplateId(atmosphere, teamId, selectedTemplate.id, MeetingTypeEnum.poker)
+    }
+  })
+
   return (
     <>
       <Dropdown
@@ -46,6 +56,7 @@ export default createFragmentContainer(PokerTemplatePicker, {
   settings: graphql`
     fragment PokerTemplatePicker_settings on PokerMeetingSettings {
       ...PokerTemplateModal_pokerMeetingSettings
+      teamId
       selectedTemplate {
         id
         name
