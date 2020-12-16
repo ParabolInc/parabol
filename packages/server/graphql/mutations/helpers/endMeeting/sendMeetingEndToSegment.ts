@@ -1,11 +1,12 @@
 import {MeetingMember, NewMeetingPhaseTypeEnum} from 'parabol-client/types/graphql'
 import Meeting from '../../../../database/types/Meeting'
+import MeetingTemplate from '../../../../database/types/MeetingTemplate'
 import segmentIo from '../../../../utils/segmentIo'
 
 const sendMeetingEndToSegment = async (
   completedMeeting: Meeting,
   meetingMembers: MeetingMember[],
-  meetingTemplateName?: string
+  template?: MeetingTemplate
 ) => {
   const {facilitatorUserId, meetingNumber, meetingType, phases, teamId} = completedMeeting
   const presentMembers = meetingMembers.filter(
@@ -23,7 +24,8 @@ const sendMeetingEndToSegment = async (
         wasFacilitator,
         userIds: wasFacilitator ? presentMemberUserIds : undefined,
         meetingType,
-        meetingTemplateName: meetingTemplateName ? meetingTemplateName : undefined,
+        meetingTemplateName: template ? template.name : undefined,
+        meetingTemplateScope: template ? template.scope : undefined,
         meetingNumber,
         teamMembersCount: meetingMembers.length,
         teamMembersPresentCount: presentMembers.length,
