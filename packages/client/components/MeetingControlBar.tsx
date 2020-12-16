@@ -23,9 +23,10 @@ import BottomControlBarRejoin from './BottomControlBarRejoin'
 import BottomControlBarTips from './BottomControlBarTips'
 import EndMeetingButton from './EndMeetingButton'
 import StageTimerControl from './StageTimerControl'
+import useControlBarLeft from '~/hooks/useControlBarLeft'
 
-const Wrapper = styled('div')<{isLeftSidebarOpen: boolean; isRightDrawerOpen: boolean}>(
-  ({isLeftSidebarOpen, isRightDrawerOpen}) => ({
+const Wrapper = styled('div')<{controlBarLeft}>(
+  ({controlBarLeft}) => ({
     alignItems: 'center',
     backgroundColor: '#FFFFFF',
     bottom: 0,
@@ -36,12 +37,11 @@ const Wrapper = styled('div')<{isLeftSidebarOpen: boolean; isRightDrawerOpen: bo
     fontSize: 14,
     height: 56,
     justifyContent: 'space-between',
-    left: isLeftSidebarOpen ? NavSidebar.WIDTH : 0,
+    left: controlBarLeft,
     margin: '0 auto',
     minHeight: 56,
     padding: 8,
     position: 'fixed',
-    right: isRightDrawerOpen ? DiscussionThreadEnum.WIDTH : 0,
     transition: `200ms ${BezierCurve.DECELERATE}`,
     width: '100%',
     zIndex: ZIndex.BOTTOM_BAR,
@@ -66,7 +66,6 @@ interface Props {
   isDemoStageComplete?: boolean
   gotoStageId: ReturnType<typeof useGotoStageId>
   meeting: MeetingControlBar_meeting
-  isRightDrawerOpen?: boolean
 }
 
 const MeetingControlBar = (props: Props) => {
@@ -75,7 +74,6 @@ const MeetingControlBar = (props: Props) => {
     isDemoStageComplete,
     meeting,
     gotoStageId,
-    isRightDrawerOpen = false
   } = props
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
@@ -113,6 +111,7 @@ const MeetingControlBar = (props: Props) => {
   const ref = useRef<HTMLDivElement>(null)
   useSnackbarPad(ref)
   useCovering(ref)
+  const controlBarLeft = useControlBarLeft(meetingType, phaseType, isLeftSidebarOpen, ref)
   const isInit = useInitialRender()
   if (endedAt) return null
   return (
@@ -121,8 +120,7 @@ const MeetingControlBar = (props: Props) => {
       onMouseDown={onMouseDown}
       onClickCapture={onClickCapture}
       onTouchStart={onMouseDown}
-      isLeftSidebarOpen={isLeftSidebarOpen}
-      isRightDrawerOpen={isRightDrawerOpen}
+      controlBarLeft={controlBarLeft}
     >
       {tranChildren
         .map((tranChild) => {

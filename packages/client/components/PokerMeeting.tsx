@@ -117,7 +117,6 @@ const PokerMeeting = (props: Props) => {
         meeting={meeting}
         handleGotoNext={handleGotoNext}
         gotoStageId={gotoStageId}
-        isRightDrawerOpen={isRightDrawerOpen && localPhaseType === NewMeetingPhaseTypeEnum.ESTIMATE}
       />
     </MeetingStyles>
   )
