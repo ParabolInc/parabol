@@ -1,6 +1,5 @@
 import {FormattedExecutionResult} from 'graphql'
 import {Environment, FetchFunction, Network, RecordSource, Store} from 'relay-runtime'
-import shortid from 'shortid'
 import AuthToken from '../database/types/AuthToken'
 import executeGraphQL from '../graphql/executeGraphQL'
 
@@ -32,19 +31,17 @@ export default class ServerEnvironment extends Environment {
     }
   }
 
-  // @ts-ignore
   fetch: FetchFunction = (request, variables) => {
     if (!this.isFetched) {
       this.requestCache.push(
         executeGraphQL({
-          jobId: shortid.generate(),
           authToken: this.authToken,
           docId: request.id!,
           variables,
           dataLoaderId: this.dataLoaderId
         })
       )
-      return undefined
+      return undefined as any
     } else {
       return this.results!.shift()
     }
