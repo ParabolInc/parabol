@@ -102,12 +102,14 @@ module.exports = ({isDeploy, isStats}) => ({
     }
   },
   plugins: [
-    new CopyPlugin([
-      {
-        from: path.join(PROJECT_ROOT, 'static', 'manifest.json'),
-        to: buildPath
-      }
-    ]),
+    new CopyPlugin({
+      patterns: [
+        {
+          from: path.join(PROJECT_ROOT, 'static', 'manifest.json'),
+          to: buildPath
+        }
+      ]
+    }),
     new HtmlWebpackPlugin({
       filename: 'index.html',
       template: path.join(PROJECT_ROOT, 'template.html'),
@@ -150,18 +152,18 @@ module.exports = ({isDeploy, isStats}) => ({
       exclude: [/GraphqlContainer/, /\.map$/, /^manifest.*\.js$/, /index.html$/]
     }),
     isDeploy &&
-      new S3Plugin({
-        s3Options: {
-          accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-          secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-          region: process.env.AWS_REGION
-        },
-        s3UploadOptions: {
-          Bucket: process.env.AWS_S3_BUCKET
-        },
-        basePath: getS3BasePath(),
-        directory: buildPath
-      }),
+    new S3Plugin({
+      s3Options: {
+        accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+        region: process.env.AWS_REGION
+      },
+      s3UploadOptions: {
+        Bucket: process.env.AWS_S3_BUCKET
+      },
+      basePath: getS3BasePath(),
+      directory: buildPath
+    }),
     isStats && new BundleAnalyzerPlugin({generateStatsFile: true})
   ].filter(Boolean),
   module: {
