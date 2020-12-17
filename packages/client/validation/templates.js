@@ -72,15 +72,17 @@ export const makeTeamNameSchema = (teamNames) => (value) =>
     .max(50, 'That isn’t very memorable. Maybe shorten it up?')
     .test((val) => teamNames.includes(val) && 'That name is already taken')
 
-export const url = (value) =>
+export const optionalUrl = (value) =>
   value
     .trim()
     .test(
       (value) => {
-        try {
-          new URL(value)
-        } catch (e) {
-          return e.message
+        if (value) {
+          try {
+            new URL(value)
+          } catch (e) {
+            return e.message
+          }
         }
       },
       'that url doesn’t look quite right'
