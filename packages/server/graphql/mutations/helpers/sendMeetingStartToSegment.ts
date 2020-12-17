@@ -11,8 +11,9 @@ const sendMeetingStartToSegment = async (newMeeting: Meeting, template?: Meeting
     properties: {
       hasIcebreaker: phases[0].phaseType === NewMeetingPhaseTypeEnum.checkin,
       meetingType,
-      meetingTemplateName: template ? template.name : undefined,
-      meetingTemplateScope: template ? template.scope : undefined,
+      meetingTemplateId: template?.id,
+      meetingTemplateName: template?.name,
+      meetingTemplateScope: template?.scope,
       meetingNumber,
       teamId
     }
