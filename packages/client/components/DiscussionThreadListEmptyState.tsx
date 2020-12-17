@@ -1,22 +1,32 @@
 import React from 'react'
-import ThreadEmptyMessage from './ThreadEmptyMessage'
-import {MeetingTypeEnum} from '~/types/graphql'
+import styled from '@emotion/styled'
+import {PALETTE} from '~/styles/paletteV2'
+
+const Message = styled('div')({
+  border: `1px dashed ${PALETTE.BORDER_GRAY}`,
+  borderRadius: 4,
+  color: PALETTE.TEXT_GRAY,
+  fontSize: 14,
+  fontStyle: 'italic',
+  lineHeight: '20px',
+  margin: 'auto',
+  padding: 8
+})
 
 interface Props {
   isEndedMeeting: boolean
-  meetingType: MeetingTypeEnum
+  hasTasks: boolean
 }
 
 const DiscussionThreadListEmptyState = (props: Props) => {
-  const {isEndedMeeting, meetingType} = props
-  const meetingEndedMessage = meetingType === MeetingTypeEnum.poker
-    ? 'No comments were added here'
-    : 'No comments or tasks were added here'
-  const message = meetingType === MeetingTypeEnum.poker
-    ? '✍️ Be the first to add a comment'
-    : '✍️ Be the first to add a comment or task'
-  if (isEndedMeeting) return <ThreadEmptyMessage>{meetingEndedMessage}</ThreadEmptyMessage>
-  return <ThreadEmptyMessage>{message}</ThreadEmptyMessage>
+  const {isEndedMeeting, hasTasks} = props
+  const meetingEndedMessage = hasTasks
+    ? 'No comments or tasks were added here'
+    : 'No comments were added here'
+  const message = hasTasks
+    ? '✍️ Be the first to add a comment or task'
+    : '✍️ Be the first to add a comment'
+  return <Message>{isEndedMeeting ? meetingEndedMessage : message}</Message>
 }
 
 export default DiscussionThreadListEmptyState
