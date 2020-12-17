@@ -78,9 +78,7 @@ module.exports = ({isDeploy, isStats}) => ({
     minimize: Boolean(isDeploy || isStats),
     minimizer: [
       new TerserPlugin({
-        cache: true,
         parallel: isDeploy ? 2 : true,
-        sourceMap: true, // Must be set to true if using source-maps in production
         terserOptions: {
           output: {
             comments: false,
@@ -92,14 +90,7 @@ module.exports = ({isDeploy, isStats}) => ({
           // https://github.com/webpack-contrib/terser-webpack-plugin#terseroptions
         }
       })
-    ],
-    splitChunks: {
-      chunks: 'all',
-      // OK to be above 6 because we serve these via http2
-      maxAsyncRequests: 20,
-      maxInitialRequests: 20,
-      minSize: 4096
-    }
+    ]
   },
   plugins: [
     new CopyPlugin({
@@ -141,7 +132,7 @@ module.exports = ({isDeploy, isStats}) => ({
       __STATIC_IMAGES__: JSON.stringify(`https://${process.env.AWS_S3_BUCKET}/static`)
     }),
     new webpack.SourceMapDevToolPlugin({
-      filename: '[name]_[hash].js.map',
+      filename: '[name]_[contenthash].js.map',
       append: `\n//# sourceMappingURL=${publicPath}[url]`
     }),
     new InjectManifest({

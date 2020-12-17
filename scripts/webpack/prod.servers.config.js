@@ -51,7 +51,7 @@ module.exports = ({isDeploy}) => ({
   ],
   plugins: [
     new webpack.SourceMapDevToolPlugin({
-      filename: '[name]_[hash].js.map',
+      filename: '[name]_[contenthash].js.map',
       append: `\n//# sourceMappingURL=${publicPath}[url]`
     }),
     isDeploy &&

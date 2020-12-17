@@ -14,14 +14,13 @@ const DOTENV = path.join(PROJECT_ROOT, 'scripts', 'webpack', 'utils', 'dotenv.js
 
 module.exports = {
   stats: 'minimal',
-  watch: true,
   devtool: 'eval-source-map',
   mode: 'development',
   node: {
     __dirname: false
   },
   entry: {
-    web: ['webpack/hot/poll?1000', DOTENV, path.join(SERVER_ROOT, 'server.dev.ts')],
+    web: [DOTENV, path.join(SERVER_ROOT, 'server.dev.ts')],
     gqlExecutor: [DOTENV, path.join(GQL_ROOT, 'gqlExecutor.ts')],
     sfu: [DOTENV, path.join(SFU_ROOT, 'server.ts')]
   },
@@ -29,8 +28,8 @@ module.exports = {
     filename: '[name].js',
     path: path.join(PROJECT_ROOT, 'dev'),
     libraryTarget: 'commonjs',
-    hotUpdateChunkFilename: 'hot/[id].[hash].hot-update.js',
-    hotUpdateMainFilename: 'hot/[hash].hot-update.json'
+    // hotUpdateChunkFilename: 'hot/[id].[contenthash].hot-update.js',
+    // hotUpdateMainFilename: 'hot/[contenthash].hot-update.json'
   },
   resolve: {
     alias: {
@@ -73,8 +72,5 @@ module.exports = {
         use: ['ignore-loader']
       }
     ]
-  },
-  optimization: {
-    noEmitOnErrors: true
   }
 }

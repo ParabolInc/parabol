@@ -14,7 +14,7 @@ module.exports = {
   devtool: 'eval-source-map',
   mode: 'development',
   entry: {
-    app: [path.join(CLIENT_ROOT, 'client.tsx')]
+    app: ['webpack-hot-client/client?123', path.join(CLIENT_ROOT, 'client.tsx')]
   },
   output: {
     path: path.join(PROJECT_ROOT, 'build'),
@@ -30,6 +30,9 @@ module.exports = {
       static: STATIC_ROOT
     },
     extensions: ['.js', '.json', '.ts', '.tsx'],
+    fallback: {
+      os: false
+    },
     unsafeCache: true,
     modules: [
       path.resolve(CLIENT_ROOT, '../node_modules'),
@@ -45,6 +48,7 @@ module.exports = {
     ]
   },
   plugins: [
+    new webpack.HotModuleReplacementPlugin(),
     new webpack.DefinePlugin({
       __CLIENT__: true,
       __PRODUCTION__: false,

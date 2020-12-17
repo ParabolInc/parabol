@@ -6,7 +6,7 @@ import uwsGetHeaders from './utils/uwsGetHeaders'
 const startHotServer = async (compiler) => {
   return new Promise<void>((resolve) => {
     const hotClient = require('webpack-hot-client')
-    const client = hotClient(compiler, {port: 8082, logLevel: 'error'})
+    const client = hotClient(compiler, {port: 8082, logLevel: 'error', autoConfigure: false})
     const {server} = client
     server.on('listening', () => {
       resolve()
