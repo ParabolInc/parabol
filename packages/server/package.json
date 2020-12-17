@@ -133,7 +133,7 @@
     "stripe": "^4.24.0",
     "tslib": "2.0.3",
     "uWebSockets.js": "tiffanyhan/uWebSockets.js#v18.10.1",
-    "webpack-hot-client": "https://github.com/mattkrick/webpack-hot-client/tarball/09176902b71a1b1b6c61d918c21154f3ec7bf8ed"
+    "webpack-hot-client": "https://github.com/mattkrick/webpack-hot-client/tarball/29f9ddeef94d7296b909f9bf76820aff41c73a78"
   },
   "jest": {
     "modulePaths": [

@@ -1744,14 +1744,6 @@
     pirates "^4.0.0"
     source-map-support "^0.5.16"
 
-"@babel/runtime-corejs2@^7.6.3":
-  version "7.9.2"
-  resolved "https://registry.yarnpkg.com/@babel/runtime-corejs2/-/runtime-corejs2-7.9.2.tgz#f11d074ff99b9b4319b5ecf0501f12202bf2bf4d"
-  integrity sha512-ayjSOxuK2GaSDJFCtLgHnYjuMyIpViNujWrZo8GUpN60/n7juzJKK5yOo6RFVb0zdU9ACJFK+MsZrUnj3OmXMw==
-  dependencies:
-    core-js "^2.6.5"
-    regenerator-runtime "^0.13.4"
-
 "@babel/runtime-corejs3@^7.8.3":
   version "7.9.2"
   resolved "https://registry.yarnpkg.com/@babel/runtime-corejs3/-/runtime-corejs3-7.9.2.tgz#26fe4aa77e9f1ecef9b776559bbb8e84d34284b7"
@@ -6150,7 +6142,7 @@ core-js@^1.0.0:
   resolved "https://registry.yarnpkg.com/core-js/-/core-js-1.2.7.tgz#652294c14651db28fa93bd2d5ff2983a4f08c636"
   integrity sha1-ZSKUwUZR2yj6k70tX/KYOk8IxjY=
 
-core-js@^2.0.0, core-js@^2.4.0, core-js@^2.4.1, core-js@^2.6.5:
+core-js@^2.0.0, core-js@^2.4.0, core-js@^2.4.1:
   version "2.6.11"
   resolved "https://registry.yarnpkg.com/core-js/-/core-js-2.6.11.tgz#38831469f9922bded8ee21c9dc46985e0399308c"
   integrity sha512-5wjnpaT/3dV+XB4borEsnAYQchn00XSgTAWKDkEqv+K8KevjbzmofK6hfJ9TZIlpj2N0xQpazy7PiRQiWHqzWg==
@@ -10348,7 +10340,7 @@ log-update@^2.3.0:
     cli-cursor "^2.0.0"
     wrap-ansi "^3.0.1"
 
-loglevelnext@^1.0.1, loglevelnext@^1.0.2:
+loglevelnext@^1.0.1:
   version "1.0.5"
   resolved "https://registry.yarnpkg.com/loglevelnext/-/loglevelnext-1.0.5.tgz#36fc4f5996d6640f539ff203ba819641680d75a2"
   integrity sha512-V/73qkPuJmx4BcBF19xPBr+0ZRVBhc4POxvZTZdMeXpJ4NItXSJ/MSwuFT0kQJlCbXvdlZoQQ/418bS1y9Jh6A==
@@ -12634,12 +12626,12 @@ rc@^1.2.7:
     minimist "^1.2.0"
     strip-json-comments "~2.0.1"
 
-react-beautiful-dnd@12.0.0:
-  version "12.0.0"
-  resolved "https://registry.yarnpkg.com/react-beautiful-dnd/-/react-beautiful-dnd-12.0.0.tgz#38b76446455c332870bf0d05f14a97af2a07dfca"
-  integrity sha512-NdttVdqLL1y8vKNx7VlcBCsC4c/8R/H4NIYo5rqPGU1HF48oXHrTpSDWw1HPMTBifVty4OKOkSIwo1NcvE3bDw==
+react-beautiful-dnd@13.0.0:
+  version "13.0.0"
+  resolved "https://registry.yarnpkg.com/react-beautiful-dnd/-/react-beautiful-dnd-13.0.0.tgz#f70cc8ff82b84bc718f8af157c9f95757a6c3b40"
+  integrity sha512-87It8sN0ineoC3nBW0SbQuTFXM6bUqM62uJGY4BtTf0yzPl8/3+bHMWkgIe0Z6m8e+gJgjWxefGRVfpE3VcdEg==
   dependencies:
-    "@babel/runtime-corejs2" "^7.6.3"
+    "@babel/runtime" "^7.8.4"
     css-box-model "^1.2.0"
     memoize-one "^5.1.1"
     raf-schd "^4.0.2"
@@ -15498,13 +15490,12 @@ webpack-dev-middleware@4.0.2:
     range-parser "^1.2.1"
     schema-utils "^3.0.0"
 
-"webpack-hot-client@https://github.com/mattkrick/webpack-hot-client/tarball/09176902b71a1b1b6c61d918c21154f3ec7bf8ed":
+"webpack-hot-client@https://github.com/mattkrick/webpack-hot-client/tarball/29f9ddeef94d7296b909f9bf76820aff41c73a78":
   version "5.0.0"
-  resolved "https://github.com/mattkrick/webpack-hot-client/tarball/09176902b71a1b1b6c61d918c21154f3ec7bf8ed#3ff2995d48dd6177c1e2616ab60d2a3603e68655"
+  resolved "https://github.com/mattkrick/webpack-hot-client/tarball/29f9ddeef94d7296b909f9bf76820aff41c73a78#b48d733c5d98da0954337c78714c657c9a254a41"
   dependencies:
     "@webpack-contrib/schema-utils" "^1.0.0-beta.0"
     json-stringify-safe "^5.0.1"
-    loglevelnext "^1.0.2"
     merge-options "^1.0.1"
     strip-ansi "^4.0.0"
     uuid "^3.1.0"
