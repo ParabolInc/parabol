@@ -23,7 +23,8 @@ import BottomControlBarRejoin from './BottomControlBarRejoin'
 import BottomControlBarTips from './BottomControlBarTips'
 import EndMeetingButton from './EndMeetingButton'
 import StageTimerControl from './StageTimerControl'
-import useControlBarLeft from '~/hooks/useControlBarLeft'
+import useLeft from '~/hooks/useLeft'
+import useBreakpoint from '~/hooks/useBreakpoint'
 
 const Wrapper = styled('div')<{left: number }>(
   ({left}) => ({
@@ -109,9 +110,12 @@ const MeetingControlBar = (props: Props) => {
   const cancelConfirm = confirmingButton ? () => setConfirmingButton('') : undefined
   const tranChildren = useTransition(buttons)
   const showRightDrawer = isRightDrawerOpen && meetingType === MeetingTypeEnum.poker && phaseType === NewMeetingPhaseTypeEnum.ESTIMATE || false
+  const isDesktop = useBreakpoint(Breakpoint.SINGLE_REFLECTION_COLUMN)
+  const controlBarWidth = buttons.length * ElementWidth.CONTROL_BAR_BUTTON + ElementWidth.CONTROL_BAR_PADDING * 2
+  const left = useLeft(controlBarWidth, showRightDrawer, showSidebar)
+  const controlBarLeft = isDesktop ? left : 0
   const {onMouseDown, onClickCapture} = useDraggableFixture(showSidebar, showRightDrawer)
   const ref = useRef<HTMLDivElement>(null)
-  const left = useControlBarLeft(showSidebar, showRightDrawer, buttons.length)
   useSnackbarPad(ref)
   useCovering(ref)
   const isInit = useInitialRender()
@@ -119,7 +123,7 @@ const MeetingControlBar = (props: Props) => {
   return (
     <Wrapper
       ref={ref}
-      left={left}
+      left={controlBarLeft}
       onMouseDown={onMouseDown}
       onClickCapture={onClickCapture}
       onTouchStart={onMouseDown}
