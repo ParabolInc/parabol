@@ -14,6 +14,7 @@ const sendMeetingStartToSegment = async (newMeeting: Meeting, template?: Meeting
       meetingTemplateId: template?.id,
       meetingTemplateName: template?.name,
       meetingTemplateScope: template?.scope,
+      meetingTemplateIsFromParabol: !!template?.isStarter,
       meetingNumber,
       teamId
     }

@@ -27,6 +27,7 @@ const sendMeetingEndToSegment = async (
         meetingTemplateId: template?.id,
         meetingTemplateName: template?.name,
         meetingTemplateScope: template?.scope,
+        meetingTemplateIsFromParabol: !!template?.isStarter,
         meetingNumber,
         teamMembersCount: meetingMembers.length,
         teamMembersPresentCount: presentMembers.length,

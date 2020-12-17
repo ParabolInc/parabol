@@ -4,7 +4,7 @@ import segmentIo from '../../../utils/segmentIo'
 const sendTemplateEventToSegment = async (
   userId: string,
   template: MeetingTemplate,
-  event: string
+  event: 'Template Created' | 'Template Cloned' | 'Template Shared'
 ) => {
   segmentIo.track({
     userId,
@@ -12,7 +12,6 @@ const sendTemplateEventToSegment = async (
     properties: {
       meetingTemplateId: template.id,
       meetingTemplateType: template.type,
-      meetingTemplateName: template.name,
       meetingTemplateScope: template.scope,
       teamId: template.teamId
     }
