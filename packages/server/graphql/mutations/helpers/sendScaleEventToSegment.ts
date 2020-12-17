@@ -1,7 +1,11 @@
 import TemplateScale from '../../../database/types/TemplateScale'
 import segmentIo from '../../../utils/segmentIo'
 
-const sendScaleEventToSegment = async (userId: string, scale: TemplateScale, event: string) => {
+const sendScaleEventToSegment = async (
+  userId: string,
+  scale: TemplateScale,
+  event: 'Scale Created' | 'Scale Cloned'
+) => {
   segmentIo.track({
     userId,
     event,
