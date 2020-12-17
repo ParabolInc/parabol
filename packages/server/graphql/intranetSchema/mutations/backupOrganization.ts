@@ -170,7 +170,7 @@ const backupOrganization = {
         }),
       activeDomains: r
         .table('Organization')
-        .getAll(r.args(orgIds))('activeDomain') // this value contains TLD, but saml domains don't
+        .getAll(r.args(orgIds))('activeDomain')
         .coerceTo('array')
         .do((domains) => {
           return r({
