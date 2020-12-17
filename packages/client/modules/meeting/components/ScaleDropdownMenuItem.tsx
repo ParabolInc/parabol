@@ -103,6 +103,7 @@ const ScaleDropdownMenuItem = forwardRef((props: Props, ref) => {
             <ScaleActions
               scale={scale}
               scaleCount={scaleCount}
+              teamId={dimension.team.id}
             />
           </ScaleActionButtonGroup>
         </ScaleDetails>
@@ -116,6 +117,9 @@ export default createFragmentContainer(ScaleDropdownMenuItem, {
     fragment ScaleDropdownMenuItem_dimension on TemplateDimension {
       id
       selectedScale {
+        id
+      }
+      team {
         id
       }
     }
