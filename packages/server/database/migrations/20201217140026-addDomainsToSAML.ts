@@ -3,12 +3,14 @@ import {R} from 'rethinkdb-ts'
 export const up = async function (r: R) {
   const samlWithDomains = await r
     .table('SAML')
-    .map((row) => ({
-      id: row('id'),
-      domains: [row('domain')],
-      url: row('url'),
-      metadata: row('metadata')
-    }))
+    .map((row) => {
+      return {
+        id: row('id'),
+        domains: [row('id').add(r.branch(row('id').eq('allegro'), '.pl', '.com'))],
+        url: row('url'),
+        metadata: row('metadata')
+      }
+    })
     .run()
 
   await r.table('SAML').insert(samlWithDomains, {conflict: 'replace'}).run()
