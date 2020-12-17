@@ -25,7 +25,7 @@ import EndMeetingButton from './EndMeetingButton'
 import StageTimerControl from './StageTimerControl'
 import useControlBarLeft from '~/hooks/useControlBarLeft'
 
-const Wrapper = styled('div')<{left: number, }>(
+const Wrapper = styled('div')<{left: number }>(
   ({left}) => ({
     alignItems: 'center',
     backgroundColor: '#FFFFFF',
@@ -86,7 +86,7 @@ const MeetingControlBar = (props: Props) => {
     localStage,
     phases,
     meetingType,
-    showSidebar: isLeftSidebarOpen,
+    showSidebar,
     isRightDrawerOpen
   } = meeting
   const isFacilitating = facilitatorUserId === viewerId && !endedAt
@@ -108,10 +108,10 @@ const MeetingControlBar = (props: Props) => {
   const [confirmingButton, setConfirmingButton] = useClickConfirmation()
   const cancelConfirm = confirmingButton ? () => setConfirmingButton('') : undefined
   const tranChildren = useTransition(buttons)
-  const showRightDrawer = isRightDrawerOpen && meetingType === MeetingTypeEnum.poker && phaseType === NewMeetingPhaseTypeEnum.ESTIMATE
-  const {onMouseDown, onClickCapture} = useDraggableFixture(isLeftSidebarOpen, showRightDrawer)
+  const showRightDrawer = isRightDrawerOpen && meetingType === MeetingTypeEnum.poker && phaseType === NewMeetingPhaseTypeEnum.ESTIMATE || false
+  const {onMouseDown, onClickCapture} = useDraggableFixture(showSidebar, showRightDrawer)
   const ref = useRef<HTMLDivElement>(null)
-  const left = useControlBarLeft(showRightDrawer, isLeftSidebarOpen, buttons.length)
+  const left = useControlBarLeft(showSidebar, showRightDrawer, buttons.length)
   useSnackbarPad(ref)
   useCovering(ref)
   const isInit = useInitialRender()
