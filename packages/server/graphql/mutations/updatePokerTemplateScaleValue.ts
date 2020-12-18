@@ -68,7 +68,7 @@ const updatePokerTemplateScaleValue = {
     if (!validateColorValue(color)) {
       return standardError(new Error('Invalid scale color'), {userId: viewerId})
     }
-    if (!validateScaleLabel(label)) {
+    if (!isSpecialPokerLabel(label) && !validateScaleLabel(label)) {
       return standardError(new Error('Invalid scale label'), {userId: viewerId})
     }
 
