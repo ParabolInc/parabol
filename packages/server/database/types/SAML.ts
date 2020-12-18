@@ -1,8 +1,14 @@
 import shortid from 'shortid'
 
+interface Domain {
+  domain: string
+  verifiedAt?: Date | null
+  verifyToken?: string | null
+}
+
 interface Input {
   id?: string
-  domains: string[]
+  domains: Domain[]
   cert: string
   url: string
   metadata: string
@@ -10,7 +16,7 @@ interface Input {
 
 export default class SAML {
   id: string
-  domains: string[]
+  domains: Domain[]
   cert: string
   url: string
   metadata: string

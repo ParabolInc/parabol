@@ -6,7 +6,12 @@ export const up = async function (r: R) {
     .map((row) => {
       return {
         id: row('id'),
-        domains: [row('id').add(r.branch(row('id').eq('allegro'), '.pl', '.com'))],
+        domains: [
+          {
+            domain: row('id').add('.com'),
+            verifiedAt: new Date()
+          }
+        ],
         url: row('url'),
         metadata: row('metadata')
       }
@@ -15,7 +20,7 @@ export const up = async function (r: R) {
 
   await r.table('SAML').insert(samlWithDomains, {conflict: 'replace'}).run()
 
-  await r.table('SAML').indexCreate('domains', {multi: true}).run()
+  await r.table('SAML').indexCreate('domains', r.row('domains')('domain'), {multi: true}).run()
 
   await r.table('SAML').indexDrop('domain').run()
 }
