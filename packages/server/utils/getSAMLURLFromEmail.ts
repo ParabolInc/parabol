@@ -16,9 +16,11 @@ const getSAMLURLFromEmail = async (email: string, isInvited?: boolean | null) =>
   if (!domainName) return null
   const r = await getRethink()
   const baseURL = (await r
-    .table('SAML')
-    .getAll(domainName, {index: 'domains'})
-    .nth(0)('url')
+    .table('SAMLDomain')
+    .getAll([domainName, true], {index: 'nameVerified'})
+    .eqJoin('samlId', r.table('SAML'))
+    .nth(0)('right')
+    .getField('url')
     .default(null)
     .run()) as string | null
   if (!baseURL) return null

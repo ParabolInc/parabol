@@ -36,6 +36,7 @@ import Reflection from './types/Reflection'
 import ReflectionGroup from './types/ReflectionGroup'
 import RetrospectivePrompt from './types/RetrospectivePrompt'
 import SAML from './types/SAML'
+import SAMLDomain from './types/SAMLDomain'
 import ScheduledJob from './types/ScheduledJob'
 import SuggestedActionCreateNewTeam from './types/SuggestedActionCreateNewTeam'
 import SuggestedActionInviteYourTeam from './types/SuggestedActionInviteYourTeam'
@@ -153,7 +154,11 @@ export type RethinkSchema = {
   }
   SAML: {
     type: SAML
-    index: 'domains'
+    index: 'id'
+  }
+  SAMLDomain: {
+    type: SAMLDomain
+    index: 'nameVerified' | 'samlId' | 'name'
   }
   ScheduledJob: {
     type: ScheduledJob

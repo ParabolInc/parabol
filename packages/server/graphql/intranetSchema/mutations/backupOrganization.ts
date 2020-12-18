@@ -174,9 +174,17 @@ const backupOrganization = {
         .coerceTo('array')
         .do((domains) => {
           return r({
-            SAML: (r.table('SAML').getAll(r.args(domains), {index: 'domains'}) as any)
+            SAML: (r.table('SAMLDomain').getAll(r.args(domains), {index: 'name'}) as any)
+              .eqJoin(
+                'samlId',
+                r.table('SAML')
+              )('right')
               .coerceTo('array')
+              .distinct()
               .do((items) => r.db(DESTINATION).table('SAML').insert(items)),
+            SAMLDomain: (r.table('SAMLDomain').getAll(r.args(domains), {index: 'name'}) as any)
+              .coerceTo('array')
+              .do((items) => r.db(DESTINATION).table('SAMLDomain').insert(items)),
             secureDomain: (r
               .table('SecureDomain')
               .getAll(r.args(domains), {index: 'domain'}) as any)

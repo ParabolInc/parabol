@@ -74,9 +74,15 @@ const loginSAML = {
       return {error: {message: 'Email attribute was not included in SAML response'}}
     }
     const ssoDomain = getSSODomainFromEmail(email)
-    if (!doc.domains.includes(ssoDomain)) {
+    const docDomains = await r
+      .table('SAMLDomain')
+      .getAll(doc.id, {index: 'samlId'})
+      .map((domain) => domain('nameVerified')(0))
+      .coerceTo('array')
+      .run()
+    if (!docDomains.includes(ssoDomain)) {
       // don't blindly trust the IdP
-      return {error: {message: `Email domain must be one of: ${doc.domains}`}}
+      return {error: {message: `Email domain must be one of: ${docDomains}`}}
     }
 
     const user = await r.table('User').getAll(email, {index: 'email'}).nth(0).default(null).run()

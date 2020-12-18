@@ -959,7 +959,7 @@ export interface RTable<TSchema extends TableSchema, T = TSchema['type']> extend
   sync(): RDatum<{synced: number}>
 
   get(key: any): RSingleSelection<T>
-  getAll(key: RValue<string> | RValue<Date> | RValue<boolean> | RValue<number>, options?: {index: TSchema['index'] | 'id'}): RSelection<T>
+  getAll(key: RValue<string> | RValue<Date> | RValue<boolean> | RValue<number> | RValue<Array<any>>, options?: {index: TSchema['index'] | 'id'}): RSelection<T>
   getAll(key1: RValue<string> | RValue<Date> | RValue<boolean> | RValue<number>, key2: RValue<string> | RValue<Date> | RValue<boolean> | RValue<number>, options?: {index: TSchema['index'] | 'id'}): RSelection<T>
   getAll(
     key1: RValue<string> | RValue<Date> | RValue<boolean> | RValue<number>,
