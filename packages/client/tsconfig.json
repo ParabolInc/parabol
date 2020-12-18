@@ -19,6 +19,9 @@
       "node"
     ],
   },
+  "files": [
+    "client.tsx"
+  ],
   "exclude": [
     "serviceWorker",
     "**/node_modules",
