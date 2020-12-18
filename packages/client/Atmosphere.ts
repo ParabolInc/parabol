@@ -29,19 +29,10 @@ import handleInvalidatedSession from './hooks/handleInvalidatedSession'
 import {LocalStorageKey, TrebuchetCloseReason} from './types/constEnums'
 import handlerProvider from './utils/relay/handlerProvider'
 import {InviteToTeamMutation_notification} from './__generated__/InviteToTeamMutation_notification.graphql'
+import {AuthToken} from './types/AuthToken'
 
 (RelayFeatureFlags as any).ENABLE_RELAY_CONTAINERS_SUSPENSE = false
 
-interface AuthToken {
-  sub: string
-  tms: string[]
-  rol?: 'su'
-  bet?: 1
-  iat: number
-  iss: string
-  exp: number
-  aud: string
-}
 interface QuerySubscription {
   subKey: string
   queryKey: string

@@ -1,6 +1,6 @@
 import React from 'react'
+import {ExternalLinks} from '../../../../types/constEnums'
 import makeAppURL from '../../../../utils/makeAppURL'
-import emailDir from 'parabol-server/email/emailDir'
 import {emailTableBase} from '../../styles'
 
 const imageStyle = {
@@ -35,7 +35,7 @@ const Header = (props: Props) => {
                 crossOrigin=''
                 alt='Parabol, Inc. Logo'
                 height={40}
-                src={`${emailDir}email-header-branding-color@3x.png`}
+                src={`${ExternalLinks.EMAIL_CDN}email-header-branding-color@3x.png`}
                 style={imageStyle}
                 width={192}
               />

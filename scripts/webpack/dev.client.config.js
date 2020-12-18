@@ -6,7 +6,6 @@ const getProjectRoot = require('./utils/getProjectRoot')
 // const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin')
 const PROJECT_ROOT = getProjectRoot()
 const CLIENT_ROOT = path.join(PROJECT_ROOT, 'packages', 'client')
-const SERVER_ROOT = path.join(PROJECT_ROOT, 'packages', 'server')
 const STATIC_ROOT = path.join(PROJECT_ROOT, 'static')
 
 module.exports = {
@@ -29,7 +28,6 @@ module.exports = {
   resolve: {
     alias: {
       '~': CLIENT_ROOT,
-      'parabol-server': SERVER_ROOT,
       'parabol-client': CLIENT_ROOT,
       static: STATIC_ROOT
     },
@@ -40,14 +38,12 @@ module.exports = {
     unsafeCache: true,
     modules: [
       path.resolve(CLIENT_ROOT, '../node_modules'),
-      path.resolve(SERVER_ROOT, '../node_modules'),
       'node_modules'
     ]
   },
   resolveLoader: {
     modules: [
       path.resolve(CLIENT_ROOT, '../node_modules'),
-      path.resolve(SERVER_ROOT, '../node_modules'),
       'node_modules'
     ]
   },
@@ -76,7 +72,7 @@ module.exports = {
       ...clientTransformRules(PROJECT_ROOT),
       {
         test: /\.js$/,
-        include: [path.join(SERVER_ROOT), path.join(CLIENT_ROOT)],
+        include: [path.join(CLIENT_ROOT)],
         use: [
           {
             loader: 'babel-loader',

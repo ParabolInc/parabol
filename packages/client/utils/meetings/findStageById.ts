@@ -1,4 +1,3 @@
-import GenericMeetingPhase from 'parabol-server/database/types/GenericMeetingPhase'
 
 export interface FindStageByIdStage {
   id: string
@@ -8,7 +7,14 @@ export interface FindStageByIdPhase {
   stages: readonly FindStageByIdStage[]
 }
 
-const findStageById = <T extends FindStageByIdPhase = GenericMeetingPhase>(
+interface MeetingPhase {
+  phaseType: string,
+  stages: {
+    id: string
+    [key: string]: string
+  }[]
+}
+const findStageById = <T extends FindStageByIdPhase = MeetingPhase>(
   phases: T[] | readonly T[] | null | undefined,
   foreignKey: string,
   stageKey = 'id'

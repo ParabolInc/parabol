@@ -43,6 +43,7 @@ const NewMeetingSummary = (props: Props) => {
   return (
     <div style={{backgroundColor: PALETTE.BACKGROUND_MAIN, minHeight: '100vh'}}>
       <MeetingSummaryEmail
+        appOrigin={window.location.origin}
         urlAction={urlAction}
         isDemo={teamId === demoTeamId}
         meeting={newMeeting}

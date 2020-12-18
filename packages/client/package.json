@@ -110,7 +110,6 @@
     "modulePaths": [
       "<rootDir>/packages/"
     ],
-    "testRegex": "/__tests__/.*.test\\.jsx?$",
-    "testResultsProcessor": "./packages/server/__tests__/teardown"
+    "testRegex": "/__tests__/.*.test\\.jsx?$"
   }
 }
