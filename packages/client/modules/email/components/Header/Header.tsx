@@ -1,7 +1,7 @@
 import React from 'react'
-import emailDir from '../../emailDir'
+import makeAppURL from '../../../../utils/makeAppURL'
+import emailDir from 'parabol-server/email/emailDir'
 import {emailTableBase} from '../../styles'
-import makeAppLink from '../../../utils/makeAppLink'
 
 const imageStyle = {
   border: '0px',
@@ -18,15 +18,19 @@ const linkStyle = {
   textDecoration: 'none'
 }
 
-const dashUrl = makeAppLink('me')
+interface Props {
+  appOrigin: string
+}
 
-const Header = () => {
+const Header = (props: Props) => {
+  const {appOrigin} = props
+  const dashURL = makeAppURL(appOrigin, 'me')
   return (
     <table style={emailTableBase} width='100%'>
       <tbody>
         <tr>
           <td align='left' style={cellStyle}>
-            <a style={linkStyle} href={dashUrl}>
+            <a style={linkStyle} href={dashURL}>
               <img
                 crossOrigin=''
                 alt='Parabol, Inc. Logo'

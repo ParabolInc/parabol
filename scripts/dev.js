@@ -25,7 +25,9 @@ const compileServers = () => {
   return new Promise((resolve) => {
     const config = require('./webpack/dev.servers.config')
     const compiler = webpack(config)
-    compiler.run(resolve)
+    compiler.watch(true, () => {
+      resolve()
+    })
   })
 }
 

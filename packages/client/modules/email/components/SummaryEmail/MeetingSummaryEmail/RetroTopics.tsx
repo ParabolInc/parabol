@@ -6,10 +6,9 @@ import plural from 'parabol-client/utils/plural'
 import {RetroTopics_meeting} from 'parabol-client/__generated__/RetroTopics_meeting.graphql'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
+import makeAppURL from '../../../../../utils/makeAppURL'
 import EmailBorderBottom from './EmailBorderBottom'
 import RetroTopic from './RetroTopic'
-import makeAppLink from 'parabol-server/utils/makeAppLink'
-import {meetingSummaryUrlParams} from 'parabol-server/email/components/MeetingSummaryEmailRootSSR'
 
 const sectionHeading = {
   color: PALETTE.TEXT_MAIN,
@@ -22,11 +21,12 @@ const sectionHeading = {
 interface Props {
   isDemo: boolean
   isEmail: boolean
+  appOrigin: string
   meeting: RetroTopics_meeting
 }
 
 const RetroTopics = (props: Props) => {
-  const {isDemo, isEmail, meeting} = props
+  const {isDemo, isEmail, appOrigin, meeting} = props
   const {id: meetingId, reflectionGroups} = meeting
   if (!reflectionGroups) return null
   return (
@@ -37,10 +37,15 @@ const RetroTopics = (props: Props) => {
         </td>
       </tr>
       {reflectionGroups.map((topic, idx) => {
-        const topicUrlPath = `meet/${meetingId}/discuss/${idx + 1}`
+        const topicUrlPath = `/meet/${meetingId}/discuss/${idx + 1}`
         const topicUrl = isEmail
-          ? makeAppLink(topicUrlPath, {params: meetingSummaryUrlParams})
-          : `/${topicUrlPath}`
+          ? makeAppURL(appOrigin, topicUrlPath, {
+            searchParams: {
+              utm_source: 'summary email',
+              utm_medium: 'email',
+              utm_campaign: 'after-meeting'
+            }
+          }) : topicUrlPath
         return (
           <RetroTopic
             key={topic.id}

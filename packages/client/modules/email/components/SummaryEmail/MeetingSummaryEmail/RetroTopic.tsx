@@ -6,7 +6,7 @@ import plural from 'parabol-client/utils/plural'
 import {RetroTopic_topic} from 'parabol-client/__generated__/RetroTopic_topic.graphql'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
-import emailDir from '../../../emailDir'
+import {ExternalLinks} from '../../../../../types/constEnums'
 import AnchorIfEmail from './AnchorIfEmail'
 import EmailReflectionCard from './EmailReflectionCard'
 
@@ -62,7 +62,7 @@ const RetroTopic = (props: Props) => {
   const {reflections, title, voteCount, commentCount} = topic
   const imageSource = isEmail ? 'static' : 'local'
   const icon = imageSource === 'local' ? 'thumb_up_18.svg' : 'thumb_up_18@3x.png'
-  const src = `${emailDir}${icon}`
+  const src = `${ExternalLinks.EMAIL_CDN}${icon}`
   const grid = useEmailItemGrid(reflections, 3)
   const commentLinkLabel =
     commentCount === 0

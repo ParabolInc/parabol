@@ -19,7 +19,7 @@ const PORT = Number(process.env.PORT)
 
 uws
   .App()
-  .get('/email', (...args) => require('./emailSSR').default(...args))
+  // .get('/email', (...args) => require('./emailSSR').default(...args))
   .get('/favicon.ico', (...args) => require('./PWAHandler').default(...args))
   .get('/sw.js', (...args) => require('./PWAHandler').default(...args))
   .get('/manifest.json', (...args) => require('./PWAHandler').default(...args))

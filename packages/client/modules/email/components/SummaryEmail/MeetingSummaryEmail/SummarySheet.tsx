@@ -21,6 +21,7 @@ interface Props {
   emailCSVUrl: string
   isDemo?: boolean
   meeting: SummarySheet_meeting
+  appOrigin: string
   referrer: MeetingSummaryReferrer
   referrerUrl?: string
   teamDashUrl: string
@@ -33,7 +34,7 @@ const sheetStyle = {
 }
 
 const SummarySheet = (props: Props) => {
-  const {emailCSVUrl, urlAction, meeting, referrer, teamDashUrl} = props
+  const {emailCSVUrl, urlAction, meeting, referrer, teamDashUrl, appOrigin} = props
   const {id: meetingId, meetingType} = meeting
   const isDemo = !!props.isDemo
   return (
@@ -55,7 +56,7 @@ const SummarySheet = (props: Props) => {
         <CreateAccountSection dataCy='create-account-section' isDemo={isDemo} />
         <MeetingMembersWithTasks meeting={meeting} />
         <MeetingMembersWithoutTasks meeting={meeting} />
-        <RetroTopics isDemo={isDemo} isEmail={referrer === 'email'} meeting={meeting} />
+        <RetroTopics isDemo={isDemo} isEmail={referrer === 'email'} meeting={meeting} appOrigin={appOrigin} />
         <SummaryPokerStories meeting={meeting} isEmail={referrer === 'email'} />
         <ContactUsFooter
           isDemo={isDemo}

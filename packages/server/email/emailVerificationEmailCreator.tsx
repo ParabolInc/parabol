@@ -1,9 +1,10 @@
 import {PALETTE} from 'parabol-client/styles/paletteV2'
 import React from 'react'
 import ReactDOMServer from 'react-dom/server'
-import makeAppLink from '../../utils/makeAppLink'
-import emailTemplate from '../emailTemplate'
-import EmailVerificationEmail from './EmailVerificationEmail'
+import emailTemplate from './emailTemplate'
+import EmailVerificationEmail from 'parabol-client/modules/email/components/EmailVerificationEmail'
+import appOrigin from '../appOrigin'
+import makeAppURL from '../../client/utils/makeAppURL'
 
 interface Props {
   verifiedEmailToken: string
@@ -15,15 +16,15 @@ const emailVerificationEmailCreator = (props: Props) => {
   const fullToken = invitationToken
     ? `${verifiedEmailToken}/${invitationToken}`
     : verifiedEmailToken
-  const params = {
+  const searchParams = {
     utm_source: 'verify account',
     utm_medium: 'email',
     utm_campaign: 'invitations'
   }
-  const options = {params}
-  const verificationURL = makeAppLink(`verify-email/${fullToken}`, options)
+  const options = {searchParams}
+  const verificationURL = makeAppURL(appOrigin, `verify-email/${fullToken}`, options)
   const bodyContent = ReactDOMServer.renderToStaticMarkup(
-    <EmailVerificationEmail verificationURL={verificationURL} />
+    <EmailVerificationEmail appOrigin={appOrigin} verificationURL={verificationURL} />
   )
 
   const subject = `Verify your email address`

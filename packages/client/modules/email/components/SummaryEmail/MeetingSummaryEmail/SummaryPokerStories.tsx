@@ -4,12 +4,11 @@ import {NewMeetingPhaseTypeEnum} from 'parabol-client/types/graphql'
 import {SummaryPokerStories_meeting} from 'parabol-client/__generated__/SummaryPokerStories_meeting.graphql'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
-import {FONT_FAMILY} from '../../../../../client/styles/typographyV2'
-import makeAppLink from '../../../../utils/makeAppLink'
+import {FONT_FAMILY} from 'parabol-client/styles/typographyV2'
+import getJiraCloudIdAndKey from 'parabol-client/utils/getJiraCloudIdAndKey'
+import makeAppURL from '../../../../../utils/makeAppURL'
 import AnchorIfEmail from './AnchorIfEmail'
 import EmailBorderBottom from './EmailBorderBottom'
-import {meetingSummaryUrlParams} from 'parabol-server/email/components/MeetingSummaryEmailRootSSR'
-import getJiraCloudIdAndKey from '../../../../../client/utils/getJiraCloudIdAndKey'
 
 const tableStyles = {
   border: `1px solid ${PALETTE.BORDER_GRAY}`,
@@ -68,10 +67,16 @@ const SummaryPokerStories = (props: Props) => {
                 const isLast = idx === stages.length - 1
                 const [, issueKey] = getJiraCloudIdAndKey(serviceTaskId)
                 const title = story?.title ?? issueKey
-                const urlPath = `meet/${meetingId}/estimate/${usedServiceTaskIds.size}`
+                const urlPath = `/meet/${meetingId}/estimate/${usedServiceTaskIds.size}`
                 const to = isEmail
-                  ? makeAppLink(urlPath, {params: meetingSummaryUrlParams})
-                  : `/${urlPath}`
+                  ? makeAppURL(origin, urlPath, {
+                    searchParams: {
+                      utm_source: 'summary email',
+                      utm_medium: 'email',
+                      utm_campaign: 'after-meeting'
+                    }
+                  })
+                  : urlPath
                 return (
                   <tr style={rowStyle} key={id}>
                     <td style={titleStyle(isLast)}>

@@ -5,7 +5,7 @@ import makeDateString from 'parabol-client/utils/makeDateString'
 import {SummaryHeader_meeting} from 'parabol-client/__generated__/SummaryHeader_meeting.graphql'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
-import emailDir from '../../../emailDir'
+import {ExternalLinks} from '../../../../../types/constEnums'
 
 const meetingSummaryLabel = {
   color: PALETTE.TEXT_GRAY,
@@ -51,7 +51,7 @@ const SummaryHeader = (props: Props) => {
             <img
               crossOrigin=''
               alt='Parabol Logo'
-              src={`${emailDir}mark-purple@3x.png`}
+              src={`${ExternalLinks.EMAIL_CDN}mark-purple@3x.png`}
               height='28'
               width='31'
             />

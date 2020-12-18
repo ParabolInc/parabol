@@ -1,6 +1,6 @@
-import makeAppLink from '../../utils/makeAppLink'
 import {toEpochSeconds} from '../../utils/epochTime'
 import {Threshold} from 'parabol-client/types/constEnums'
+import makeAppURL from '../../../client/utils/makeAppURL'
 
 interface Input {
   sub: string
@@ -25,7 +25,7 @@ export default class AuthToken {
     this.tms = tms
     this.iat = toEpochSeconds(now)
     this.aud = 'action'
-    this.iss = makeAppLink()
+    this.iss = makeAppURL(origin, '/')
     this.exp = toEpochSeconds(now.getTime() + Threshold.JWT_LIFESPAN)
 
     if (bet) {

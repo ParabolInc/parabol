@@ -1,15 +1,15 @@
 import FileStoreManager from './FileStoreManager'
 import fs from 'fs'
 import path from 'path'
-import makeAppLink from '../utils/makeAppLink'
-
+import makeAppURL from 'parabol-client/utils/makeAppURL'
+import appOrigin from '../appOrigin'
 export default class LocalFileSystemManager extends FileStoreManager {
   protected prependPath(partialPath: string): string {
     return path.join('self-hosted', partialPath)
   }
 
   protected getPublicFileLocation(fullPath: string): string {
-    return encodeURI(makeAppLink(fullPath))
+    return encodeURI(makeAppURL(appOrigin, fullPath))
   }
 
   protected async _putFile(fullPath: string, buffer: Buffer): Promise<void> {

@@ -3,7 +3,7 @@ import {MeetingSummaryEmailRootSSRQuery} from 'parabol-client/__generated__/Meet
 import React from 'react'
 import {QueryRenderer} from 'react-relay'
 import {Environment} from 'relay-runtime'
-import makeAppLink from '../../utils/makeAppLink'
+import makeAppURL from '../../../utils/makeAppURL'
 import MeetingSummaryEmail from './SummaryEmail/MeetingSummaryEmail/MeetingSummaryEmail'
 
 const query = graphql`
@@ -21,6 +21,7 @@ const query = graphql`
 `
 
 interface Props {
+  appOrigin: string
   environment: Environment
   meetingId: string
 }
@@ -32,7 +33,7 @@ export const meetingSummaryUrlParams = {
 }
 
 const MeetingSummaryEmailRootSSR = (props: Props) => {
-  const {environment, meetingId} = props
+  const {appOrigin, environment, meetingId} = props
   return (
     <QueryRenderer<MeetingSummaryEmailRootSSRQuery>
       environment={environment}
@@ -46,11 +47,11 @@ const MeetingSummaryEmailRootSSR = (props: Props) => {
         if (!newMeeting) return null
         const {team} = newMeeting
         const {id: teamId} = team
-        const options = {params: meetingSummaryUrlParams}
-        const referrerUrl = makeAppLink(`new-summary/${meetingId}`, options)
-        const meetingUrl = makeAppLink(`meet/${meetingId}`, options)
-        const teamDashUrl = makeAppLink(`team/${teamId}`, options)
-        const emailCSVUrl = makeAppLink(`new-summary/${meetingId}/csv`, options)
+        const options = {searchParams: meetingSummaryUrlParams}
+        const referrerUrl = makeAppURL(appOrigin, `new-summary/${meetingId}`, options)
+        const meetingUrl = makeAppURL(appOrigin, `meet/${meetingId}`, options)
+        const teamDashUrl = makeAppURL(appOrigin, `team/${teamId}`, options)
+        const emailCSVUrl = makeAppURL(appOrigin, `new-summary/${meetingId}/csv`, options)
         return (
           <MeetingSummaryEmail
             meeting={newMeeting}
@@ -59,6 +60,7 @@ const MeetingSummaryEmailRootSSR = (props: Props) => {
             meetingUrl={meetingUrl}
             referrerUrl={referrerUrl}
             emailCSVUrl={emailCSVUrl}
+            appOrigin={appOrigin}
           />
         )
       }}

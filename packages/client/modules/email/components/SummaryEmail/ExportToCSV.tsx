@@ -9,10 +9,9 @@ import withMutationProps, {WithMutationProps} from 'parabol-client/utils/relay/w
 import {ExportToCSVQuery} from 'parabol-client/__generated__/ExportToCSVQuery.graphql'
 import React, {Component} from 'react'
 import {fetchQuery} from 'react-relay'
-import {PokerCards} from '../../../../client/types/constEnums'
-import {NewMeetingPhaseTypeEnum} from '../../../../client/types/graphql'
-import getJiraCloudIdAndKey from '../../../../client/utils/getJiraCloudIdAndKey'
-import emailDir from '../../emailDir'
+import {ExternalLinks, PokerCards} from '../../../../types/constEnums'
+import {NewMeetingPhaseTypeEnum} from '../../../../types/graphql'
+import getJiraCloudIdAndKey from '../../../../utils/getJiraCloudIdAndKey'
 import AnchorIfEmail from './MeetingSummaryEmail/AnchorIfEmail'
 import EmailBorderBottom from './MeetingSummaryEmail/EmailBorderBottom'
 import {MeetingSummaryReferrer} from './MeetingSummaryEmail/MeetingSummaryEmail'
@@ -356,7 +355,7 @@ class ExportToCSV extends Component<Props> {
               <img
                 crossOrigin=''
                 alt={label}
-                src={`${emailDir}cloud_download.png`}
+                src={`${ExternalLinks.EMAIL_CDN}cloud_download.png`}
                 style={imageStyle}
               />
               <span style={labelStyle}>{label}</span>

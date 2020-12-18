@@ -9,20 +9,21 @@ import Layout from './Layout/Layout'
 const innerMaxWidth = 480
 
 interface ResetPasswordEmailProps {
-  resetURL: string
+  verificationURL: string
+  appOrigin: string
 }
 
-const ResetPasswordEmail = (props: ResetPasswordEmailProps) => {
-  const {resetURL} = props
+const EmailVerificationEmail = (props: ResetPasswordEmailProps) => {
+  const {appOrigin, verificationURL} = props
   return (
     <Layout maxWidth={544}>
       <EmailBlock innerMaxWidth={innerMaxWidth}>
-        <Header />
-        <p style={emailCopyStyle}>{'Forget your password?'}</p>
-        <p style={emailCopyStyle}>{`No problem, just click the link below.`}</p>
+        <Header appOrigin={appOrigin} />
+        <p style={emailCopyStyle}>{'Hello 👋'}</p>
+        <p style={emailCopyStyle}>{'Tap the link below to verify your email.'}</p>
         <p style={emailCopyStyle}>
-          <a href={resetURL} style={emailLinkStyle} title='Reset Password'>
-            {'Reset Password'}
+          <a href={verificationURL} style={emailLinkStyle} title='Verify My Email'>
+            {'Verify My Email'}
           </a>
         </p>
         <p style={emailCopyStyle}>
@@ -43,4 +44,4 @@ const ResetPasswordEmail = (props: ResetPasswordEmailProps) => {
   )
 }
 
-export default ResetPasswordEmail
+export default EmailVerificationEmail

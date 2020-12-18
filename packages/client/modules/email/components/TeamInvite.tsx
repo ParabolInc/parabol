@@ -1,6 +1,5 @@
 import {ExternalLinks} from 'parabol-client/types/constEnums'
 import React from 'react'
-import emailDir from '../emailDir'
 import {emailCopyStyle, emailLinkStyle, emailProductTeamSignature} from '../styles'
 import Button from './Button'
 import EmailBlock from './EmailBlock/EmailBlock'
@@ -30,9 +29,10 @@ const videoGraphicStyle = {
   width: '100%'
 }
 
-const videoGraphicSrc = `${emailDir}retro-video-still.png`
+const videoGraphicSrc = `${ExternalLinks.EMAIL_CDN}retro-video-still.png`
 
 export interface TeamInviteProps {
+  appOrigin: string
   inviteeName: string
   inviteeEmail: string
   inviterName: string
@@ -47,6 +47,7 @@ export interface TeamInviteProps {
 
 const TeamInvite = (props: TeamInviteProps) => {
   const {
+    appOrigin,
     inviterName,
     inviterEmail,
     inviteeEmail,
@@ -68,7 +69,7 @@ const TeamInvite = (props: TeamInviteProps) => {
   return (
     <Layout maxWidth={544}>
       <EmailBlock innerMaxWidth={innerMaxWidth}>
-        <Header />
+        <Header appOrigin={appOrigin} />
         {meeting ? (
           <div>
             <p style={emailCopyStyle}>
@@ -89,25 +90,25 @@ const TeamInvite = (props: TeamInviteProps) => {
             <Button url={inviteLink}>Join {meeting.name}</Button>
           </div>
         ) : (
-          <div>
-            <p style={emailCopyStyle}>
-              {'Hi '}
-              <span style={emailCopyStyle}>{nameOrEmail}</span>
-              {','}
-            </p>
-            <p style={emailCopyStyle}>
-              <span style={boldStyle}>{inviterName}</span>
-              {' ('}
-              <a href={`mailto:${inviterEmail}`} style={emailLinkStyle}>
-                {inviterEmail}
-              </a>
-              {') has invited you to join a team ('}
-              <b>{teamName}</b>
-              {') on Parabol.'}
-            </p>
-            <Button url={inviteLink}>Join Team</Button>
-          </div>
-        )}
+            <div>
+              <p style={emailCopyStyle}>
+                {'Hi '}
+                <span style={emailCopyStyle}>{nameOrEmail}</span>
+                {','}
+              </p>
+              <p style={emailCopyStyle}>
+                <span style={boldStyle}>{inviterName}</span>
+                {' ('}
+                <a href={`mailto:${inviterEmail}`} style={emailLinkStyle}>
+                  {inviterEmail}
+                </a>
+                {') has invited you to join a team ('}
+                <b>{teamName}</b>
+                {') on Parabol.'}
+              </p>
+              <Button url={inviteLink}>Join Team</Button>
+            </div>
+          )}
         <EmptySpace height={24} />
         <p style={emailCopyStyle}>
           <span style={boldStyle}>{'New to Parabol?'}</span>

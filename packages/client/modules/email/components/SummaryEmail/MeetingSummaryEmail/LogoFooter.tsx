@@ -1,7 +1,7 @@
 import {PALETTE} from 'parabol-client/styles/paletteV2'
 import {FONT_FAMILY} from 'parabol-client/styles/typographyV2'
 import React from 'react'
-import emailDir from '../../../emailDir'
+import {ExternalLinks} from '../../../../../types/constEnums'
 
 const logoStyle = {
   paddingTop: 64
@@ -20,7 +20,7 @@ const LogoFooter = () => {
     <>
       <tr>
         <td align='center' style={logoStyle}>
-          <img crossOrigin='' src={`${emailDir}mark-color@3x.png`} height='28' width='31' />
+          <img crossOrigin='' src={`${ExternalLinks.EMAIL_CDN}mark-color@3x.png`} height='28' width='31' />
         </td>
       </tr>
       <tr>

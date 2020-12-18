@@ -1,6 +1,6 @@
-import EmailBorderBottom from 'parabol-server/email/components/SummaryEmail/MeetingSummaryEmail/EmailBorderBottom'
+import EmailBorderBottom from '../../email/components/SummaryEmail/MeetingSummaryEmail/EmailBorderBottom'
 import emailDir from 'parabol-server/email/emailDir'
-import {emailFontFamily, emailPrimaryButtonStyle, emailTableBase} from 'parabol-server/email/styles'
+import {emailFontFamily, emailPrimaryButtonStyle, emailTableBase} from '../../email/styles'
 import React from 'react'
 import {PALETTE} from '~/styles/paletteV2'
 import {LocalStorageKey} from '~/types/constEnums'

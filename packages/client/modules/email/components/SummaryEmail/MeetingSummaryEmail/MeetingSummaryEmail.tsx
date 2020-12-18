@@ -24,6 +24,7 @@ interface Props {
   referrerUrl?: string
   teamDashUrl: string
   meetingUrl: string
+  appOrigin: string
   urlAction?: 'csv'
 }
 

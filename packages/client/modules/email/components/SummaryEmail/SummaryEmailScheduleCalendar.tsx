@@ -3,8 +3,8 @@ import {
   makeIcsUrl
 } from 'parabol-client/utils/makeCalendarInvites'
 import React from 'react'
+import {ExternalLinks} from '../../../../types/constEnums'
 import EmptySpace from '../../components/EmptySpace/EmptySpace'
-import emailDir from '../../emailDir'
 import {emailFontFamily} from '../../styles'
 import EmailBorderBottom from './MeetingSummaryEmail/EmailBorderBottom'
 
@@ -91,7 +91,7 @@ const SummaryEmailScheduleCalendar = (props: Props) => {
                   <img
                     crossOrigin=''
                     style={iconLinkIcon}
-                    src={`${emailDir}google@3x.png`}
+                    src={`${ExternalLinks.EMAIL_CDN}google@3x.png`}
                     height={iconSize}
                     width={iconSize}
                   />
@@ -108,7 +108,7 @@ const SummaryEmailScheduleCalendar = (props: Props) => {
                   <img
                     crossOrigin=''
                     style={iconLinkIcon}
-                    src={`${emailDir}event_available@3x.png`}
+                    src={`${ExternalLinks.EMAIL_CDN}event_available@3x.png`}
                     height={iconSize}
                     width={iconSize}
                   />

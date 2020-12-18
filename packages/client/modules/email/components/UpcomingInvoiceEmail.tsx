@@ -14,17 +14,18 @@ const listItemStyle = {
 }
 
 export interface UpcomingInvoiceEmailProps {
+  appOrigin: string
   memberUrl: string
   periodEndStr: string
   newUsers: {email: string; name: string}[]
 }
 
 const UpcomingInvoiceEmail = (props: UpcomingInvoiceEmailProps) => {
-  const {periodEndStr, newUsers, memberUrl} = props
+  const {appOrigin, periodEndStr, newUsers, memberUrl} = props
   return (
     <Layout maxWidth={544}>
       <EmailBlock innerMaxWidth={innerMaxWidth}>
-        <Header />
+        <Header appOrigin={appOrigin} />
         <p style={emailCopyStyle}>{'Hello, '}</p>
         <p style={emailCopyStyle}>
           {`Your teams have added the following users to your organization for the billing cycle ending on ${periodEndStr}.`}

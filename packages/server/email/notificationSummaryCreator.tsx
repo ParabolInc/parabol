@@ -2,12 +2,12 @@ import Oy from 'oy-vey'
 import {ContactInfo, ExternalLinks} from 'parabol-client/types/constEnums'
 import plural from 'parabol-client/utils/plural'
 import React from 'react'
-import makeAppLink from '../../utils/makeAppLink'
-import NotificationSummaryEmail, {NotificationSummaryProps} from './NotificationSummaryEmail'
+import NotificationSummaryEmail, {NotificationSummaryProps} from 'parabol-client/modules/email/components/NotificationSummaryEmail'
+import makeAppURL from 'parabol-client/utils/makeAppURL'
 
 const textOnlySummary = (props: NotificationSummaryProps) => {
-  const {preferredName, notificationCount} = props
-  const taskUrl = makeAppLink('me/tasks')
+  const {preferredName, notificationCount, appOrigin} = props
+  const taskUrl = makeAppURL(appOrigin, 'me/tasks')
   return `Hi ${preferredName} -
 
 You have ${notificationCount} new ${plural(
