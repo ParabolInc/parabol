@@ -23,15 +23,15 @@ import {
   Variables
 } from 'relay-runtime'
 import {Sink} from 'relay-runtime/lib/network/RelayObservable'
-import RelayFeatureFlags from 'relay-runtime/lib/util/RelayFeatureFlags'
+import {RelayFeatureFlags} from 'relay-runtime'
 import StrictEventEmitter from 'strict-event-emitter-types'
 import {Snack, SnackbarRemoveFn} from './components/Snackbar'
 import handleInvalidatedSession from './hooks/handleInvalidatedSession'
 import {LocalStorageKey, TrebuchetCloseReason} from './types/constEnums'
 import handlerProvider from './utils/relay/handlerProvider'
 import {InviteToTeamMutation_notification} from './__generated__/InviteToTeamMutation_notification.graphql'
-(RelayFeatureFlags as any).ENABLE_RELAY_CONTAINERS_SUSPENSE = false
 
+(RelayFeatureFlags as any).ENABLE_RELAY_CONTAINERS_SUSPENSE = false
 interface QuerySubscription {
   subKey: string
   queryKey: string

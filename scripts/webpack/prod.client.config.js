@@ -78,9 +78,7 @@ module.exports = ({isDeploy, isStats}) => ({
     minimize: Boolean(isDeploy || isStats),
     minimizer: [
       new TerserPlugin({
-        cache: true,
         parallel: isDeploy ? 2 : true,
-        sourceMap: true, // Must be set to true if using source-maps in production
         terserOptions: {
           output: {
             comments: false,
@@ -92,22 +90,17 @@ module.exports = ({isDeploy, isStats}) => ({
           // https://github.com/webpack-contrib/terser-webpack-plugin#terseroptions
         }
       })
-    ],
-    splitChunks: {
-      chunks: 'all',
-      // OK to be above 6 because we serve these via http2
-      maxAsyncRequests: 20,
-      maxInitialRequests: 20,
-      minSize: 4096
-    }
+    ]
   },
   plugins: [
-    new CopyPlugin([
-      {
-        from: path.join(PROJECT_ROOT, 'static', 'manifest.json'),
-        to: buildPath
-      }
-    ]),
+    new CopyPlugin({
+      patterns: [
+        {
+          from: path.join(PROJECT_ROOT, 'static', 'manifest.json'),
+          to: buildPath
+        }
+      ]
+    }),
     new HtmlWebpackPlugin({
       filename: 'index.html',
       template: path.join(PROJECT_ROOT, 'template.html'),
@@ -139,7 +132,7 @@ module.exports = ({isDeploy, isStats}) => ({
       __STATIC_IMAGES__: JSON.stringify(`https://${process.env.AWS_S3_BUCKET}/static`)
     }),
     new webpack.SourceMapDevToolPlugin({
-      filename: '[name]_[hash].js.map',
+      filename: '[name]_[contenthash].js.map',
       append: `\n//# sourceMappingURL=${publicPath}[url]`
     }),
     new InjectManifest({
@@ -150,18 +143,18 @@ module.exports = ({isDeploy, isStats}) => ({
       exclude: [/GraphqlContainer/, /\.map$/, /^manifest.*\.js$/, /index.html$/]
     }),
     isDeploy &&
-      new S3Plugin({
-        s3Options: {
-          accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-          secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-          region: process.env.AWS_REGION
-        },
-        s3UploadOptions: {
-          Bucket: process.env.AWS_S3_BUCKET
-        },
-        basePath: getS3BasePath(),
-        directory: buildPath
-      }),
+    new S3Plugin({
+      s3Options: {
+        accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+        region: process.env.AWS_REGION
+      },
+      s3UploadOptions: {
+        Bucket: process.env.AWS_S3_BUCKET
+      },
+      basePath: getS3BasePath(),
+      directory: buildPath
+    }),
     isStats && new BundleAnalyzerPlugin({generateStatsFile: true})
   ].filter(Boolean),
   module: {

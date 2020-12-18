@@ -33,6 +33,7 @@
     "graphql/queries/tasks.ts",
     "graphql/queries/archivedTasks.ts",
     "billing/debug.ts",
-    "server.ts"
+    "server.ts",
+    "serveFromWebpack.ts"
   ],
 }
