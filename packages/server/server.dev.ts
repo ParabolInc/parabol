@@ -24,6 +24,7 @@ uws
   .get('/sw.js', (...args) => require('./PWAHandler').default(...args))
   .get('/manifest.json', (...args) => require('./PWAHandler').default(...args))
   .get('/static/*', (...args) => require('./staticFileHandler').default(...args))
+  .get('/__webpack_hmr', (...args) => require('./staticFileHandler').default(...args))
   .get('/email/createics', (...args) => require('./ICSHandler').default(...args))
   .get('/sse', (...args) => require('./sse/SSEConnectionHandler').default(...args))
   .get('/sse-ping', (...args) => require('./sse/SSEPingHandler').default(...args))
@@ -53,7 +54,7 @@ uws
   .any('/*', (...args) => require('./createSSR').default(...args))
   .listen(PORT, (...args) => require('./listenHandler').default(...args))
 
-require('./serveFromWebpack').getWebpackDevMiddleware()
+require('./serveFromWebpack').buildClient()
 // Development server details
 
 if (module.hot) {

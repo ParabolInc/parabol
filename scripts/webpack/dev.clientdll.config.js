@@ -37,6 +37,7 @@ module.exports = {
       'react-copy-to-clipboard',
       'react-day-picker',
       'react-dom',
+      'react-refresh/runtime',
       'react-dom-confetti',
       // 'react-relay',
       'react-router',

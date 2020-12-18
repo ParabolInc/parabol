@@ -1,9 +1,9 @@
 const path = require('path')
 const webpack = require('webpack')
 const vendors = require('../../dev/dll/vendors')
-const transformRules = require('./utils/transformRules')
+const clientTransformRules = require('./utils/clientTransformRules')
 const getProjectRoot = require('./utils/getProjectRoot')
-
+// const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin')
 const PROJECT_ROOT = getProjectRoot()
 const CLIENT_ROOT = path.join(PROJECT_ROOT, 'packages', 'client')
 const SERVER_ROOT = path.join(PROJECT_ROOT, 'packages', 'server')
@@ -11,10 +11,14 @@ const STATIC_ROOT = path.join(PROJECT_ROOT, 'static')
 
 module.exports = {
   infrastructureLogging: {level: 'warn'},
+  watchOptions: {
+    ignored: /node_modules/,
+    // aggregateTimeout: 200,
+  },
   devtool: 'eval-source-map',
   mode: 'development',
   entry: {
-    app: [path.join(CLIENT_ROOT, 'client.tsx')]
+    app: ['webpack-hot-middleware/client?noInfo=true', path.join(CLIENT_ROOT, 'client.tsx')]
   },
   output: {
     path: path.join(PROJECT_ROOT, 'build'),
@@ -57,13 +61,19 @@ module.exports = {
       'process.env.PROTOO_LISTEN_PORT': JSON.stringify(process.env.PROTOO_LISTEN_PORT || 4444),
       __STATIC_IMAGES__: JSON.stringify(`/static/images`)
     }),
+    new webpack.HotModuleReplacementPlugin(),
+    // new ReactRefreshWebpackPlugin({
+    // overlay: {
+    // sockIntegration: 'whm'
+    // }
+    // }),
     new webpack.DllReferencePlugin({
       manifest: vendors
     })
   ],
   module: {
     rules: [
-      ...transformRules(PROJECT_ROOT),
+      ...clientTransformRules(PROJECT_ROOT),
       {
         test: /\.js$/,
         include: [path.join(SERVER_ROOT), path.join(CLIENT_ROOT)],
@@ -81,7 +91,8 @@ module.exports = {
                       artifactDirectory: path.join(CLIENT_ROOT, '__generated__')
                     }
                   }
-                ]
+                ],
+                // 'react-refresh/babel',
               ]
             }
           },

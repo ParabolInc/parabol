@@ -20,6 +20,7 @@
     "typecheck": "yarn tsc --noEmit -p tsconfig.json"
   },
   "devDependencies": {
+    "@pmmmwh/react-refresh-webpack-plugin": "^0.4.3",
     "@types/draft-js": "^0.10.24",
     "@types/json2csv": "^4.4.0",
     "@types/mousetrap": "^1.6.2",
@@ -44,6 +45,7 @@
     "expect": "^24.8.0",
     "lint-staged": "^10.1.7",
     "prettier": "^2.1.2",
+    "react-refresh": "^0.9.0",
     "relay-config": "^8.0.0",
     "strict-event-emitter-types": "^2.0.0",
     "typescript": "4.1.3",
