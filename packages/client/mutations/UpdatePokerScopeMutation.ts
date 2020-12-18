@@ -136,7 +136,7 @@ const UpdatePokerScopeMutation: StandardMutation<TUpdatePokerScopeMutation> = (
             nextEstimateStage.setLinkedRecords([], 'scores')
             nextEstimateStage.setLinkedRecords([], 'hoveringUsers')
             nextEstimateStage.setLinkedRecord(serviceField, 'serviceField')
-            nextEstimateStage.setLinkedRecord(store.get('dimensionId')!, 'dimension')
+            nextEstimateStage.setLinkedRecord(store.get(dimensionId)!, 'dimension')
             const story = store.get(serviceTaskId)
             if (story) {
               nextEstimateStage.setLinkedRecord(story, 'story')
