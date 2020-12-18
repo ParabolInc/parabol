@@ -132,7 +132,7 @@
     "string-similarity": "^3.0.0",
     "stripe": "^4.24.0",
     "tslib": "2.0.3",
-    "uWebSockets.js": "tiffanyhan/uWebSockets.js#v18.10.1"
+    "uWebSockets.js": "tiffanyhan/uWebSockets.js#2e733751ce4765c23ca96e3e57265069536ac173"
   },
   "jest": {
     "modulePaths": [

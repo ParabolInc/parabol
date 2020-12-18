@@ -1,12 +1,6 @@
 
 const unlockAllStagesForPhase = (
-  phases: {
-    phaseType: string,
-    stages: {
-      id: string
-      [key: string]: string | boolean
-    }[]
-  }[],
+  phases: any[],
   phaseType: any,
   isForFacilitator: boolean,
   isUnlock = true

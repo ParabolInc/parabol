@@ -7,7 +7,13 @@ import getTitleFromComputedGroup from './getTitleFromComputedGroup'
 /*
  * Read each reflection, parse the content for entities (i.e. nouns), group the reflections based on common themes
  */
-const groupReflections = (reflections: Partial<IRetroReflection>[], groupingThreshold: number) => {
+
+interface Reflection {
+  entities: any[]
+  reflectionGroupId: string
+
+}
+const groupReflections = <T extends Reflection>(reflections: T[], groupingThreshold: number) => {
   const allReflectionEntities = reflections.map(({entities}) => entities!)
   const oldReflectionGroupIds = reflections.map(({reflectionGroupId}) => reflectionGroupId)
 

@@ -1,20 +1,16 @@
 
 export interface FindStageByIdStage {
   id: string
+  [key: string]: any
 }
 
 export interface FindStageByIdPhase {
   stages: readonly FindStageByIdStage[]
+  [key: string]: any
 }
 
-interface MeetingPhase {
-  phaseType: string,
-  stages: {
-    id: string
-    [key: string]: string
-  }[]
-}
-const findStageById = <T extends FindStageByIdPhase = MeetingPhase>(
+
+const findStageById = <T extends FindStageByIdPhase>(
   phases: T[] | readonly T[] | null | undefined,
   foreignKey: string,
   stageKey = 'id'
