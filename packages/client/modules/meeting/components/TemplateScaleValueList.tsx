@@ -82,6 +82,7 @@ const TemplateScaleValueList = (props: Props) => {
           }}
         </Droppable>
       </DragDropContext>
+      <AddScaleValueButtonInput scale={scale} />
       {values
         .filter(({label}) => isSpecialPokerLabel(label))
         .map((scaleValue) => (
@@ -91,7 +92,6 @@ const TemplateScaleValueList = (props: Props) => {
             isDragging={false}
           />
         ))}
-      <AddScaleValueButtonInput scale={scale} />
     </ScaleList>
   )
 }

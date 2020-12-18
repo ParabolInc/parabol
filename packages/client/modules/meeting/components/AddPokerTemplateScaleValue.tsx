@@ -10,7 +10,6 @@ const AddScaleValueLink = styled(LinkButton)({
   fontSize: 16,
   lineHeight: '24px',
   margin: 0,
-  marginBottom: 16,
   outline: 'none',
   padding: '8px 0'
 })
