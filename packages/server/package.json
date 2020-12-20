@@ -54,9 +54,6 @@
     "gql2ts": "^1.10.1",
     "graphql-typed": "^0.4.1",
     "graphql-typescript-definitions": "^0.21.0",
-    "hard-source-webpack-plugin": "^0.13.1",
-    "html-webpack-plugin": "4.5.0",
-    "html-webpack-tags-plugin": "^2.0.13",
     "ignore-loader": "^0.1.2",
     "jsdom": "^15.1.1",
     "json-loader": "^0.5.7",
@@ -132,7 +129,7 @@
     "string-similarity": "^3.0.0",
     "stripe": "^4.24.0",
     "tslib": "2.0.3",
-    "uWebSockets.js": "tiffanyhan/uWebSockets.js#2e733751ce4765c23ca96e3e57265069536ac173"
+    "uWebSockets.js": "https://github.com/tiffanyhan/uWebSockets.js/tarball/2e733751ce4765c23ca96e3e57265069536ac173"
   },
   "jest": {
     "modulePaths": [

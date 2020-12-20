@@ -16,7 +16,6 @@
     "node": "^14.10.0",
     "yarn": "^1.15.2"
   },
-  "main": "index.js",
   "private": true,
   "workspaces": [
     "packages/*"

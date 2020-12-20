@@ -43,13 +43,15 @@
     "eslint-plugin-react": "^7.16.0",
     "eslint-plugin-react-hooks": "^1.6.1",
     "expect": "^24.8.0",
+    "html-webpack-plugin": "5.0.0-beta.1",
     "lint-staged": "^10.1.7",
     "prettier": "^2.1.2",
     "react-refresh": "^0.9.0",
     "relay-config": "^8.0.0",
     "strict-event-emitter-types": "^2.0.0",
     "typescript": "4.1.3",
-    "webpack": "5.10.3"
+    "webpack": "5.10.3",
+    "webpack-dev-server": "^3.11.0"
   },
   "dependencies": {
     "@emotion/core": "^10.0.27",

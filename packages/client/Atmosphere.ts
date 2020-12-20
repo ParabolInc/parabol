@@ -209,7 +209,8 @@ export default class Atmosphere extends Environment {
         })
         return ''
       }
-      return `${wsProtocol}//${window.location.host}/?token=${this.authToken}`
+      const host = __PRODUCTION__ ? window.location.host : `${window.location.hostname}:${__SOCKET_PORT__}`
+      return `${wsProtocol}//${host}/?token=${this.authToken}`
     }
     return new SocketTrebuchet({getUrl})
   }

@@ -7,7 +7,7 @@ const {promisify} = require('util')
 const webpack = require('webpack')
 const getProjectRoot = require('./webpack/utils/getProjectRoot')
 const Redis = require('ioredis')
-
+const WebpackDevServer = require('webpack-dev-server/lib/Server')
 const rmdir = promisify(fs.rmdir)
 const unlink = promisify(fs.unlink)
 const PROJECT_ROOT = getProjectRoot()
@@ -86,20 +86,30 @@ const dev = async (maybeInit, isDangerous) => {
     console.log('👋👋👋      Welcome to Parabol!      👋👋👋')
     await Promise.all([removeArtifacts(), compileToolbox()])
   }
-  await require('./toolbox/updateSchema.js').default()
-  await compileGraphQL()
+  // await require('./toolbox/updateSchema.js').default()
+  // await compileGraphQL()
   if (!isDangerous) {
-    fork(path.join(TOOLBOX_ROOT, 'migrateDB.js'))
-    await rmdir(path.join(PROJECT_ROOT, 'dev/hot'), {recursive: true})
+    // fork(path.join(TOOLBOX_ROOT, 'migrateDB.js'))
+    // await rmdir(path.join(PROJECT_ROOT, 'dev/hot'), {recursive: true})
     await require('./buildDll')()
     await compileServers()
   }
   fork(path.join(PROJECT_ROOT, 'dev/gqlExecutor.js'))
-  fork(path.join(PROJECT_ROOT, 'dev/sfu.js'))
-  const redis = new Redis(process.env.REDIS_URL)
+  // fork(path.join(PROJECT_ROOT, 'dev/sfu.js'))
+  // const redis = new Redis(process.env.REDIS_URL)
   // it's nice to flush the cache, but can comment this out if you want to test cache hits between restarts
-  redis.flushall()
+  // redis.flushall()
   require('../dev/web.js')
+
+  const config = require('./webpack/dev.client.config')
+  const compiler = webpack(config)
+  const devServerOptions = Object.assign({}, config.devServer, {
+    // open: true,
+  })
+  const server = new WebpackDevServer(compiler, devServerOptions)
+
+  server.listen(process.env.PORT, 'localhost')
+
 }
 
 const args = process.argv.slice(2)

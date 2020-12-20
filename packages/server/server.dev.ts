@@ -15,7 +15,7 @@ process.on('uncaughtException', (err) => {
   console.log('FIXME UNCAUGHT EXCEPTION', err)
 })
 
-const PORT = Number(process.env.PORT)
+const SOCKET_PORT = Number(process.env.SOCKET_PORT)
 
 uws
   .App()
@@ -24,7 +24,6 @@ uws
   .get('/sw.js', (...args) => require('./PWAHandler').default(...args))
   .get('/manifest.json', (...args) => require('./PWAHandler').default(...args))
   .get('/static/*', (...args) => require('./staticFileHandler').default(...args))
-  .get('/__webpack_hmr', (...args) => require('./staticFileHandler').default(...args))
   .get('/email/createics', (...args) => require('./ICSHandler').default(...args))
   .get('/sse', (...args) => require('./sse/SSEConnectionHandler').default(...args))
   .get('/sse-ping', (...args) => require('./sse/SSEPingHandler').default(...args))
@@ -52,14 +51,12 @@ uws
     close: (...args) => require('./socketHandlers/handleClose').default(...args)
   })
   .any('/*', (...args) => require('./createSSR').default(...args))
-  .listen(PORT, (...args) => require('./listenHandler').default(...args))
+  .listen(SOCKET_PORT, (...args) => require('./listenHandler').default(...args))
 
-require('./serveFromWebpack').buildClient()
 // Development server details
 
 if (module.hot) {
   module.hot.accept([
-    './serveFromWebpack',
     './ICSHandler',
     './PWAHandler',
     './listenHandler',
