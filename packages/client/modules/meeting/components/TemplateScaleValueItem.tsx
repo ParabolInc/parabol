@@ -75,13 +75,14 @@ const TemplateScaleValueItem = (props: Props) => {
     submitMutation()
     RemovePokerTemplateScaleValueMutation(atmosphere, {scaleId, label}, {}, onError, onCompleted)
   }
+  const isSpecial = isSpecialPokerLabel(label)
   return (
     <ScaleValueItem
       ref={dragProvided?.innerRef}
       {...dragProvided?.dragHandleProps}
       {...dragProvided?.draggableProps}
       isDragging={isDragging}
-      isHover={isHover}
+      isHover={!isSpecial && isHover}
       onMouseOver={onMouseOver}
       onMouseOut={onMouseOut}
     >
@@ -95,7 +96,7 @@ const TemplateScaleValueItem = (props: Props) => {
         />
       </ScaleAndDescription>
       {
-        !isSpecialPokerLabel(label) &&
+        !isSpecial &&
         <RemoveScaleValueIcon isHover={isHover} onClick={removeScaleValue}>
           cancel
         </RemoveScaleValueIcon>
