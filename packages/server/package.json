@@ -120,7 +120,7 @@
     "pm2": "^4.4.1",
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
-    "rethinkdb-ts": "^2.4.0",
+    "rethinkdb-ts": "2.4.5",
     "rethinkdbdash": "^2.3.31",
     "samlify": "^2.6.1",
     "secure-compare": "^3.0.1",

@@ -100,6 +100,7 @@ module.exports = {
         prblIn: process.env.INVITATION_SHORTLINK
       })
     }),
+    new ReactRefreshWebpackPlugin(),
     new webpack.DefinePlugin({
       __CLIENT__: true,
       __PRODUCTION__: false,
@@ -111,7 +112,6 @@ module.exports = {
       __STATIC_IMAGES__: JSON.stringify(`/static/images`)
     }),
     new webpack.HotModuleReplacementPlugin(),
-    new ReactRefreshWebpackPlugin(),
   ],
   module: {
     rules: [

@@ -13808,7 +13808,12 @@ rethinkdb-ts-migrate@^0.2.1:
     sucrase "^3.10.1"
     tslib "^1.10.0"
 
-rethinkdb-ts@^2.4.0, rethinkdb-ts@^2.4.0-rc.16:
+rethinkdb-ts@2.4.5:
+  version "2.4.5"
+  resolved "https://registry.yarnpkg.com/rethinkdb-ts/-/rethinkdb-ts-2.4.5.tgz#986916d3ec21deb1be84e0376c06fe8738837833"
+  integrity sha512-Dcp6+TTyFjfSwX7Ai0JWnOr+dfAv7FrWUs/ufSGU+auapWuolwn/WjpvKYrPMpwgvgOHeJldA8IE8yTW2nYc7g==
+
+rethinkdb-ts@^2.4.0-rc.16:
   version "2.4.2"
   resolved "https://registry.yarnpkg.com/rethinkdb-ts/-/rethinkdb-ts-2.4.2.tgz#231feb8f27a1fa280919458ce5c4f2207df56aeb"
   integrity sha512-IkhQ2iVhMxyWpwEckoP4fjoCJv2NPGDMw6io8xyPYq2jTTKpneKuHj5iA3EcRyvMw4OQoBN56AQT04GuBWIanA==

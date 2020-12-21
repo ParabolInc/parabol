@@ -15,17 +15,17 @@ module.exports = {
   stats: 'minimal',
   devtool: 'eval-source-map',
   mode: 'development',
-  cache: {
-    type: 'filesystem',
-    buildDependencies: {
-      config: [__filename]
-    }
-  },
+  // cache: {
+  //   type: 'filesystem',
+  //   buildDependencies: {
+  //     config: [__filename]
+  //   }
+  // },
   node: {
     __dirname: false
   },
   entry: {
-    web: [DOTENV, path.join(SERVER_ROOT, 'server.dev.ts')],
+    web: [DOTENV, path.join(SERVER_ROOT, 'server.ts')],
     gqlExecutor: [DOTENV, path.join(GQL_ROOT, 'gqlExecutor.ts')],
     sfu: [DOTENV, path.join(SFU_ROOT, 'server.ts')]
   },
