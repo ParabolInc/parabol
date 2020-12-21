@@ -7,7 +7,7 @@ import useAtmosphere from '../../../hooks/useAtmosphere'
 import useModal from '../../../hooks/useModal'
 import {MeetingTypeEnum} from '../../../types/graphql'
 import lazyPreload from '../../../utils/lazyPreload'
-import setTemplateId from '../../../utils/relay/setTemplateId'
+import setActiveTemplate from '../../../utils/relay/setActiveTemplate'
 import {PokerTemplatePicker_settings} from '../../../__generated__/PokerTemplatePicker_settings.graphql'
 
 interface Props {
@@ -34,7 +34,7 @@ const PokerTemplatePicker = (props: Props) => {
   const {togglePortal, modalPortal, closePortal} = useModal({
     id: 'templateModal',
     onClose: () => {
-      setTemplateId(atmosphere, teamId, selectedTemplate.id, MeetingTypeEnum.poker)
+      setActiveTemplate(atmosphere, teamId, selectedTemplate.id, MeetingTypeEnum.poker)
     }
   })
 

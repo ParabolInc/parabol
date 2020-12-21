@@ -9,8 +9,7 @@ import {RemoveTemplate_teamTemplates} from '../../../__generated__/RemoveTemplat
 import {MeetingTypeEnum} from '~/types/graphql'
 import {SprintPokerDefaults} from '../../../types/constEnums'
 import RemovePokerTemplateMutation from '../../../mutations/RemovePokerTemplateMutation'
-import setTemplateId from '../../../utils/relay/setTemplateId'
-
+import setActiveTemplate from '../../../utils/relay/setActiveTemplate'
 
 interface Props {
   gotoPublicTemplates: () => void
@@ -41,10 +40,10 @@ const RemoveTemplate = (props: Props) => {
     const nextTemplateId = templateIds[templateIdx] || templateIds[templateIds.length - 1]
     const meetingType = type === MeetingTypeEnum.retrospective ? MeetingTypeEnum.retrospective : MeetingTypeEnum.poker
     if (nextTemplateId) {
-      setTemplateId(atmosphere, teamId, nextTemplateId, meetingType)
+      setActiveTemplate(atmosphere, teamId, nextTemplateId, meetingType)
     } else {
       const defaultTemplateId = meetingType === MeetingTypeEnum.retrospective ? 'workingStuckTemplate' : SprintPokerDefaults.DEFAULT_TEMPLATE_ID
-      setTemplateId(atmosphere, teamId, defaultTemplateId, meetingType)
+      setActiveTemplate(atmosphere, teamId, defaultTemplateId, meetingType)
       gotoPublicTemplates()
     }
     meetingType === MeetingTypeEnum.retrospective ?

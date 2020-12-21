@@ -6,7 +6,7 @@ import NewMeetingSettingsToggleCheckIn from './NewMeetingSettingsToggleCheckIn'
 import PokerTemplatePicker from '../modules/meeting/components/PokerTemplatePicker'
 import useAtmosphere from '../hooks/useAtmosphere'
 import {MeetingTypeEnum} from '../types/graphql'
-import setTemplateId from '../utils/relay/setTemplateId'
+import setActiveTemplate from '../utils/relay/setActiveTemplate'
 
 interface Props {
   team: NewMeetingSettingsPoker_team
@@ -19,7 +19,7 @@ const NewMeetingSettingsPoker = (props: Props) => {
 
   const atmosphere = useAtmosphere()
   useEffect(() => {
-    setTemplateId(atmosphere, teamId, selectedTemplateId!, MeetingTypeEnum.poker)
+    setActiveTemplate(atmosphere, teamId, selectedTemplateId!, MeetingTypeEnum.poker)
   }, [])
 
   return (

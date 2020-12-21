@@ -5,7 +5,7 @@ import {NewMeetingSettingsRetrospective_team} from '~/__generated__/NewMeetingSe
 import useAtmosphere from '../hooks/useAtmosphere'
 import RetroTemplatePicker from '../modules/meeting/components/RetroTemplatePicker'
 import {MeetingTypeEnum} from '../types/graphql'
-import setTemplateId from '../utils/relay/setTemplateId'
+import setActiveTemplate from '../utils/relay/setActiveTemplate'
 import NewMeetingSettingsToggleCheckIn from './NewMeetingSettingsToggleCheckIn'
 
 interface Props {
@@ -19,7 +19,7 @@ const NewMeetingSettingsRetrospective = (props: Props) => {
 
   const atmosphere = useAtmosphere()
   useEffect(() => {
-    setTemplateId(atmosphere, teamId, selectedTemplateId!, MeetingTypeEnum.retrospective)
+    setActiveTemplate(atmosphere, teamId, selectedTemplateId!, MeetingTypeEnum.retrospective)
   }, [])
 
   return (

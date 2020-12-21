@@ -7,7 +7,7 @@ import useAtmosphere from '../../../hooks/useAtmosphere'
 import useModal from '../../../hooks/useModal'
 import {MeetingTypeEnum} from '../../../types/graphql'
 import lazyPreload from '../../../utils/lazyPreload'
-import setTemplateId from '../../../utils/relay/setTemplateId'
+import setActiveTemplate from '../../../utils/relay/setActiveTemplate'
 import {RetroTemplatePicker_settings} from '../../../__generated__/RetroTemplatePicker_settings.graphql'
 
 interface Props {
@@ -34,7 +34,7 @@ const RetroTemplatePicker = (props: Props) => {
   const {togglePortal, modalPortal, closePortal} = useModal({
     id: 'templateModal',
     onClose: () => {
-      setTemplateId(atmosphere, teamId, selectedTemplate.id, MeetingTypeEnum.retrospective)
+      setActiveTemplate(atmosphere, teamId, selectedTemplate.id, MeetingTypeEnum.retrospective)
     }
   })
 

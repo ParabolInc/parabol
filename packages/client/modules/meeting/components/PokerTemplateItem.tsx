@@ -9,7 +9,7 @@ import textOverflow from '../../../styles/helpers/textOverflow'
 import {PALETTE} from '../../../styles/paletteV2'
 import {MeetingTypeEnum} from '../../../types/graphql'
 import makeTemplateDescription from '../../../utils/makeTemplateDescription'
-import setTemplateId from '../../../utils/relay/setTemplateId'
+import setActiveTemplate from '../../../utils/relay/setActiveTemplate'
 import {PokerTemplateItem_template} from '../../../__generated__/PokerTemplateItem_template.graphql'
 
 const TemplateItem = styled('li')<{isActive: boolean}>(({isActive}) => ({
@@ -66,7 +66,7 @@ const PokerTemplateItem = (props: Props) => {
   useScrollIntoView(ref, isActive)
   const selectTemplate = () => {
     if (isActive) return
-    setTemplateId(atmosphere, teamId, templateId, MeetingTypeEnum.poker)
+    setActiveTemplate(atmosphere, teamId, templateId, MeetingTypeEnum.poker)
     commitLocalUpdate(atmosphere, (store) => {
       store.get(teamId)?.setValue(null, 'editingScaleId')
     })

@@ -2,7 +2,7 @@ import {commitLocalUpdate} from 'react-relay'
 import {ITeam, MeetingTypeEnum} from '../../types/graphql'
 import Atmosphere from '../../Atmosphere'
 
-const setTemplateId = (atmosphere: Atmosphere, teamId: string, templateId: string | null, meetingType: MeetingTypeEnum) => {
+const setActiveTemplate = (atmosphere: Atmosphere, teamId: string, templateId: string | null, meetingType: MeetingTypeEnum) => {
   commitLocalUpdate(atmosphere, (store) => {
     const team = store.get<ITeam>(teamId)
     if (!team) return
@@ -16,4 +16,4 @@ const setTemplateId = (atmosphere: Atmosphere, teamId: string, templateId: strin
   })
 }
 
-export default setTemplateId
+export default setActiveTemplate

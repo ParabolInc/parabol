@@ -2,7 +2,7 @@ import {useEffect, useRef} from 'react'
 import {MeetingTypeEnum} from '../types/graphql'
 import {commitLocalUpdate} from 'react-relay'
 import isTempId from '../utils/relay/isTempId'
-import setTemplateId from '../utils/relay/setTemplateId'
+import setActiveTemplate from '../utils/relay/setActiveTemplate'
 import useAtmosphere from './useAtmosphere'
 
 const useActiveTopTemplate = (edges: readonly {node: {id: string}}[], selectedTemplateId: string, teamId: string, isActive: boolean, meetingType: MeetingTypeEnum) => {
@@ -17,7 +17,7 @@ const useActiveTopTemplate = (edges: readonly {node: {id: string}}[], selectedTe
       const listTemplateIds = edges.map(({node}) => node.id)
       const isSelectedInView = listTemplateIds.includes(selectedTemplateId)
       if (!isSelectedInView) {
-        setTemplateId(atmosphere, teamId, listTemplateIds[0], meetingType)
+        setActiveTemplate(atmosphere, teamId, listTemplateIds[0], meetingType)
         commitLocalUpdate(atmosphere, (store) => {
           store.get(teamId)?.setValue('', 'editingScaleId')
         })
