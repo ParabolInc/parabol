@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {useEffect, useRef} from 'react'
+import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import FloatingActionButton from '../../../components/FloatingActionButton'
 import Icon from '../../../components/Icon'
@@ -44,12 +44,6 @@ const SelectTemplate = (props: Props) => {
   const {id: templateId} = template
   const atmosphere = useAtmosphere()
   const {submitting, error} = useMutationProps()
-  const errorTimerId = useRef<undefined | number>()
-  useEffect(() => {
-    return () => {
-      window.clearTimeout(errorTimerId.current)
-    }
-  }, [])
   const selectTemplate = () => {
     SelectTemplateMutation(atmosphere, {selectedTemplateId: templateId, teamId})
     closePortal()
