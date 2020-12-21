@@ -20,7 +20,7 @@ const NewMeetingSettingsRetrospective = (props: Props) => {
   const atmosphere = useAtmosphere()
   useEffect(() => {
     setTemplateId(atmosphere, teamId, selectedTemplateId!, MeetingTypeEnum.retrospective)
-  }, [selectedTemplateId])
+  }, [])
 
   return (
     <>

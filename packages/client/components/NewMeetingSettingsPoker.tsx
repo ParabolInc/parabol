@@ -20,7 +20,7 @@ const NewMeetingSettingsPoker = (props: Props) => {
   const atmosphere = useAtmosphere()
   useEffect(() => {
     setTemplateId(atmosphere, teamId, selectedTemplateId!, MeetingTypeEnum.poker)
-  }, [selectedTemplateId])
+  }, [])
 
   return (
     <>
