@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useRef} from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useScrollIntoView from '../../../hooks/useScrollIntoVIew'
 import {DECELERATE} from '../../../styles/animation'
@@ -65,7 +65,11 @@ const PokerTemplateItem = (props: Props) => {
   const ref = useRef<HTMLLIElement>(null)
   useScrollIntoView(ref, isActive)
   const selectTemplate = () => {
+    if (isActive) return
     setTemplateId(atmosphere, teamId, templateId, MeetingTypeEnum.poker)
+    commitLocalUpdate(atmosphere, (store) => {
+      store.get(teamId)?.setValue(null, 'editingScaleId')
+    })
   }
   return (
     <TemplateItem ref={ref} isActive={isActive} onClick={selectTemplate}>
