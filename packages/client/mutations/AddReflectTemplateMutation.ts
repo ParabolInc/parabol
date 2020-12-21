@@ -45,7 +45,7 @@ export const addReflectTemplateTeamUpdater: SharedUpdater<AddReflectTemplateMuta
   const selectedTemplate = store.get<IReflectTemplate>(templateId)!
   settings.setLinkedRecord(selectedTemplate, 'selectedTemplate')
   settings.setValue(templateId, 'selectedTemplateId')
-  setActiveTemplateInRelayStore(store, teamId, templateId, MeetingTypeEnum.poker)
+  setActiveTemplateInRelayStore(store, teamId, templateId, MeetingTypeEnum.retrospective)
 }
 
 const AddReflectTemplateMutation: StandardMutation<TAddReflectTemplateMutation> = (
