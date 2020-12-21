@@ -31,10 +31,10 @@ const ReflectTemplateListOrg = (props: Props) => {
   const {viewer} = props
   const team = viewer.team!
   const {id: teamId, meetingSettings} = team
-  const selectedTemplateId = meetingSettings.activeTemplate!.id
+  const activeTemplateId = meetingSettings.activeTemplate?.id ?? "-tmp"
   const organizationTemplates = meetingSettings.organizationTemplates!
   const {edges} = organizationTemplates
-  useActiveTopTemplate(edges, selectedTemplateId, teamId, true, MeetingTypeEnum.retrospective)
+  useActiveTopTemplate(edges, activeTemplateId, teamId, true, MeetingTypeEnum.retrospective)
 
   if (edges.length === 0) {
     return <Message>{'No other teams in your organization are sharing a template.'}</Message>
@@ -46,7 +46,7 @@ const ReflectTemplateListOrg = (props: Props) => {
           <ReflectTemplateItem
             key={template.id}
             template={template}
-            isActive={template.id === selectedTemplateId}
+            isActive={template.id === activeTemplateId}
             lowestScope={'ORGANIZATION'}
             teamId={teamId}
           />

@@ -23,9 +23,9 @@ const PokerTemplateListPublic = (props: Props) => {
   const team = viewer.team!
   const {id: teamId, meetingSettings} = team
   const publicTemplates = meetingSettings.publicTemplates!
-  const selectedTemplateId = meetingSettings.activeTemplate!.id
+  const activeTemplateId = meetingSettings.activeTemplate?.id ?? "-tmp"
   const {edges} = publicTemplates
-  useActiveTopTemplate(edges, selectedTemplateId, teamId, true, MeetingTypeEnum.poker)
+  useActiveTopTemplate(edges, activeTemplateId, teamId, true, MeetingTypeEnum.poker)
   return (
     <TemplateList>
       {
@@ -33,7 +33,7 @@ const PokerTemplateListPublic = (props: Props) => {
           return <PokerTemplateItem
             key={template.id}
             template={template}
-            isActive={template.id === selectedTemplateId}
+            isActive={template.id === activeTemplateId}
             lowestScope={'PUBLIC'}
             teamId={teamId}
           />
