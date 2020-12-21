@@ -6,7 +6,6 @@
  */
 import {graphql} from 'graphql'
 import {FormattedExecutionResult} from 'graphql/execution/execute'
-import getRethink from '../database/rethinkDriver'
 import AuthToken from '../database/types/AuthToken'
 import PROD from '../PROD'
 import CompiledQueryCache from './CompiledQueryCache'
@@ -31,25 +30,6 @@ export interface GQLRequest {
 }
 
 const queryCache = new CompiledQueryCache()
-interface LongQuery {
-  duration: number
-  userId: string
-  ip: string
-  docId: string
-  variables: string
-}
-
-const REQUESTS = [] as LongQuery[]
-const MIN_DURATION = Number(process.env.MIN_LOG_DURATION)
-const LOG_BATCH_SIZE = 50
-const flushLogToDB = async () => {
-  if (REQUESTS.length === 0) return
-  const r = await getRethink()
-  r.table('GQLRequest').insert(REQUESTS).run()
-  REQUESTS.length = 0
-}
-
-// setInterval(flushLogToDB, ms('10m'))
 
 const executeGraphQL = async (req: GQLRequest) => {
   const {
@@ -73,7 +53,6 @@ const executeGraphQL = async (req: GQLRequest) => {
   const variableValues = variables
   const source = query!
   let response: FormattedExecutionResult
-  const start = Date.now()
   if (isAdHoc) {
     response = await graphql({schema, source, variableValues, contextValue})
   } else {
@@ -92,25 +71,6 @@ const executeGraphQL = async (req: GQLRequest) => {
   }
   if (!PROD && response.errors) {
     console.trace({error: JSON.stringify(response.errors)})
-  }
-  const end = Date.now()
-  const duration = end - start
-  if (duration > MIN_DURATION) {
-    try {
-      const length = REQUESTS.push({
-        duration,
-        ip: ip ?? '',
-        userId: authToken?.sub ?? '',
-        docId: docId ?? '',
-        variables: JSON.stringify(variables)
-      })
-
-      if (length > LOG_BATCH_SIZE) {
-        flushLogToDB()
-      }
-    } catch (e) {
-      console.log('Error flushing', e)
-    }
   }
   dataLoader.dispose()
   return response

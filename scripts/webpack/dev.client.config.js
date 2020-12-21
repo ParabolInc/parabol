@@ -5,12 +5,14 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 const vendors = require('../../dev/dll/vendors')
 const clientTransformRules = require('./utils/clientTransformRules')
 const getProjectRoot = require('./utils/getProjectRoot')
-// const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin')
+const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin')
 
 const PROJECT_ROOT = getProjectRoot()
 const CLIENT_ROOT = path.join(PROJECT_ROOT, 'packages', 'client')
 const STATIC_ROOT = path.join(PROJECT_ROOT, 'static')
+const {PORT, SOCKET_PORT} = process.env
 
+const USE_REFRESH = false
 module.exports = {
   cache: {
     type: 'filesystem',
@@ -27,10 +29,10 @@ module.exports = {
     hot: true,
     historyApiFallback: true,
     stats: 'minimal',
-    port: process.env.PORT,
+    port: PORT,
     proxy: {
       '/graphql': {
-        target: `http://localhost:${process.env.SOCKERT_PORT}`,
+        target: `http://localhost:${SOCKET_PORT}`,
       }
     },
   },
@@ -109,11 +111,11 @@ module.exports = {
       __STATIC_IMAGES__: JSON.stringify(`/static/images`)
     }),
     new webpack.HotModuleReplacementPlugin(),
-    // new ReactRefreshWebpackPlugin(),
+    new ReactRefreshWebpackPlugin(),
   ],
   module: {
     rules: [
-      ...clientTransformRules(PROJECT_ROOT),
+      ...clientTransformRules(PROJECT_ROOT, USE_REFRESH),
       {
         test: /\.js$/,
         include: [path.join(CLIENT_ROOT)],
@@ -132,7 +134,7 @@ module.exports = {
                     }
                   }
                 ],
-                // 'react-refresh/babel',
+                'react-refresh/babel',
               ]
             }
           },

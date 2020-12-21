@@ -1,6 +1,6 @@
 const path = require('path')
 
-const clientTransformRules = (projectRoot) => {
+const clientTransformRules = (projectRoot, USE_REFRESH) => {
   const CLIENT_ROOT = path.join(projectRoot, 'packages', 'client')
   return [
     {
@@ -24,7 +24,7 @@ const clientTransformRules = (projectRoot) => {
                   }
                 }
               ],
-              // 'react-refresh/babel',
+              'react-refresh/babel',
             ]
           }
         },
