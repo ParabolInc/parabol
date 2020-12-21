@@ -153,9 +153,7 @@ const CommentEditor = (props: Props) => {
     return 'not-handled'
   }
 
-  const onPastedText = (text): DraftHandleValue => {
-    handlePastedText(text, text, editorState)
-    return 'handled'
+  const onPastedText = (text: string): DraftHandleValue => {
     if (text) {
       for (let i = 0; i < textTags.length; i++) {
         const tag = textTags[i]
@@ -168,6 +166,9 @@ const CommentEditor = (props: Props) => {
         }
       }
     }
+    if (handlePastedText){
+      return handlePastedText(text, text, editorState)
+    } 
     return 'not-handled'
   }
 

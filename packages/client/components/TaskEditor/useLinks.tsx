@@ -305,14 +305,16 @@ const useLinks = (editorState: EditorState, setEditorState: SetEditorState, hand
     return null
   }
 
-  const onPastedText: Handlers['handlePastedText'] = (text, href, editorState) => {
-    const selectionState = editorState.getSelection()
-    const focusedEditorState = EditorState.forceSelection(editorState, selectionState)
-    const nextEditorState = completeEntity(focusedEditorState, 'LINK', {href}, text, {
+  const onPastedText: Handlers['handlePastedText'] = (text: string, href: string, editorState: EditorState) => {
+    const isLink = linkify.match(text)
+    if (isLink){
+    const nextEditorState = completeEntity(editorState, 'LINK', {href}, text, {
       keepSelection: true
     })
     setEditorState(nextEditorState)
     return 'handled'
+  }
+    return 'not-handled'
   }
 
   return {

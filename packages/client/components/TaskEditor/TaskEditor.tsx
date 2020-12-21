@@ -42,6 +42,7 @@ type DraftProps = Pick<
   | 'editorState'
   | 'handleBeforeInput'
   | 'handleKeyCommand'
+  | 'handlePastedText'
   | 'handleReturn'
   | 'keyBindingFn'
   | 'readOnly'
@@ -65,6 +66,7 @@ const TaskEditor = (props: Props) => {
     handleChange,
     handleBeforeInput,
     handleKeyCommand,
+    handlePastedText,
     keyBindingFn,
     handleReturn
   } = useTaskPlugins({...props})
@@ -163,6 +165,9 @@ const TaskEditor = (props: Props) => {
         }
       }
     }
+        if (handlePastedText){
+      return handlePastedText(text, text, editorState)
+    } 
     return 'not-handled'
   }
 
