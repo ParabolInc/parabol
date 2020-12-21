@@ -2,7 +2,7 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
-import useSelectTopTemplate from '../../../hooks/useSelectTopTemplate'
+import useActiveTopTemplate from '../../../hooks/useActiveTopTemplate'
 import {PALETTE} from '../../../styles/paletteV2'
 import {MeetingTypeEnum} from '../../../types/graphql'
 import {PokerTemplateListOrg_viewer} from '../../../__generated__/PokerTemplateListOrg_viewer.graphql'
@@ -34,7 +34,7 @@ const PokerTemplateListOrg = (props: Props) => {
   const selectedTemplateId = meetingSettings.activeTemplate!.id
   const organizationTemplates = meetingSettings.organizationTemplates!
   const {edges} = organizationTemplates
-  useSelectTopTemplate(edges, selectedTemplateId, teamId, true, MeetingTypeEnum.poker)
+  useActiveTopTemplate(edges, selectedTemplateId, teamId, true, MeetingTypeEnum.poker)
 
   if (edges.length === 0) {
     return <Message>{'No other teams in your organization are sharing a template.'}</Message>

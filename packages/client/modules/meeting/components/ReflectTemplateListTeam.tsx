@@ -2,7 +2,7 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
-import useSelectTopTemplate from '../../../hooks/useSelectTopTemplate'
+import useActiveTopTemplate from '../../../hooks/useActiveTopTemplate'
 import {PALETTE} from '../../../styles/paletteV2'
 import {MeetingTypeEnum} from '../../../types/graphql'
 import {ReflectTemplateListTeam_teamTemplates} from '../../../__generated__/ReflectTemplateListTeam_teamTemplates.graphql'
@@ -45,7 +45,7 @@ interface Props {
 const ReflectTemplateListTeam = (props: Props) => {
   const {isActive, activeTemplateId, showPublicTemplates, teamId, teamTemplates} = props
   const edges = teamTemplates.map((t) => ({node: {id: t.id}})) as readonly {node: {id: string}}[]
-  useSelectTopTemplate(edges, activeTemplateId, teamId, isActive, MeetingTypeEnum.retrospective)
+  useActiveTopTemplate(edges, activeTemplateId, teamId, isActive, MeetingTypeEnum.retrospective)
   if (teamTemplates.length === 0) {
     return (
       <Message>

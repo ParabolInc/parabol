@@ -5,7 +5,7 @@ import isTempId from '../utils/relay/isTempId'
 import setTemplateId from '../utils/relay/setTemplateId'
 import useAtmosphere from './useAtmosphere'
 
-const useSelectTopTemplate = (edges: readonly {node: {id: string}}[], selectedTemplateId: string, teamId: string, isActive: boolean, meetingType: MeetingTypeEnum) => {
+const useActiveTopTemplate = (edges: readonly {node: {id: string}}[], selectedTemplateId: string, teamId: string, isActive: boolean, meetingType: MeetingTypeEnum) => {
   const atmosphere = useAtmosphere()
   const timer = useRef<number | undefined>()
   useEffect(() => {
@@ -26,4 +26,4 @@ const useSelectTopTemplate = (edges: readonly {node: {id: string}}[], selectedTe
   }, [isActive, selectedTemplateId])
 }
 
-export default useSelectTopTemplate
+export default useActiveTopTemplate
