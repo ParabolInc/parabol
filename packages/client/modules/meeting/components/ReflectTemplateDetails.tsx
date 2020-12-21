@@ -80,7 +80,8 @@ interface Props {
 
 const ReflectTemplateDetails = (props: Props) => {
   const {gotoTeamTemplates, gotoPublicTemplates, closePortal, settings} = props
-  const {teamTemplates, activeTemplate, team} = settings
+  const {teamTemplates, team} = settings
+  const activeTemplate = settings.activeTemplate ?? settings.selectedTemplate
   const {id: templateId, name: templateName, prompts} = activeTemplate
   const {id: teamId, orgId} = team
   const lowestScope = getTemplateList(teamId, orgId, activeTemplate)
@@ -162,6 +163,10 @@ export default createFragmentContainer(ReflectTemplateDetails, {
   settings: graphql`
     fragment ReflectTemplateDetails_settings on RetrospectiveMeetingSettings {
       activeTemplate {
+        ...ReflectTemplateDetailsTemplate @relay(mask: false)
+        ...SelectTemplate_template
+      }
+      selectedTemplate {
         ...ReflectTemplateDetailsTemplate @relay(mask: false)
         ...SelectTemplate_template
       }

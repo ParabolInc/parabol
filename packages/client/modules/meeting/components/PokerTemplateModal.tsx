@@ -1,9 +1,12 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import DialogContainer from '../../../components/DialogContainer'
+import useAtmosphere from '../../../hooks/useAtmosphere'
+import {MeetingTypeEnum} from '../../../types/graphql'
 import getTemplateList from '../../../utils/getTemplateList'
+import setActiveTemplate from '../../../utils/relay/setActiveTemplate'
 import {PokerTemplateModal_pokerMeetingSettings} from '../../../__generated__/PokerTemplateModal_pokerMeetingSettings.graphql'
 import PokerTemplateDetails from './PokerTemplateDetails'
 import PokerTemplateList from './PokerTemplateList'
@@ -36,6 +39,11 @@ const PokerTemplateModal = (props: Props) => {
   const gotoPublicTemplates = () => {
     setActiveIdx(2)
   }
+
+  const atmosphere = useAtmosphere()
+  useEffect(() => {
+    setActiveTemplate(atmosphere, teamId, selectedTemplate.id, MeetingTypeEnum.poker)
+  }, [])
 
   return (
     <StyledDialogContainer>
@@ -70,6 +78,7 @@ export default createFragmentContainer(PokerTemplateModal, {
         editingScaleId
       }
       selectedTemplate {
+        id
         ...getTemplateList_template
       }
     }

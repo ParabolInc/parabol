@@ -75,7 +75,8 @@ interface Props {
 
 const PokerTemplateDetails = (props: Props) => {
   const {gotoTeamTemplates, gotoPublicTemplates, closePortal, settings} = props
-  const {teamTemplates, activeTemplate, team} = settings
+  const {teamTemplates, team} = settings
+  const activeTemplate = settings.activeTemplate ?? settings.selectedTemplate
   const {id: templateId, name: templateName, dimensions} = activeTemplate
   const {id: teamId, orgId} = team
   const lowestScope = getTemplateList(teamId, orgId, activeTemplate)
@@ -149,6 +150,10 @@ export default createFragmentContainer(PokerTemplateDetails, {
   settings: graphql`
     fragment PokerTemplateDetails_settings on PokerMeetingSettings {
       activeTemplate {
+        ...PokerTemplateDetailsTemplate @relay(mask: false)
+        ...SelectTemplate_template
+      }
+      selectedTemplate {
         ...PokerTemplateDetailsTemplate @relay(mask: false)
         ...SelectTemplate_template
       }

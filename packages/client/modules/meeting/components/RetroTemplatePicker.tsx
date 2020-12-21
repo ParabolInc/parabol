@@ -3,11 +3,8 @@ import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import NewMeetingDropdown from '../../../components/NewMeetingDropdown'
-import useAtmosphere from '../../../hooks/useAtmosphere'
 import useModal from '../../../hooks/useModal'
-import {MeetingTypeEnum} from '../../../types/graphql'
 import lazyPreload from '../../../utils/lazyPreload'
-import setActiveTemplate from '../../../utils/relay/setActiveTemplate'
 import {RetroTemplatePicker_settings} from '../../../__generated__/RetroTemplatePicker_settings.graphql'
 
 interface Props {
@@ -27,16 +24,10 @@ const Dropdown = styled(NewMeetingDropdown)({
 })
 
 const RetroTemplatePicker = (props: Props) => {
-  const atmosphere = useAtmosphere()
   const {settings} = props
-  const {teamId, selectedTemplate} = settings
+  const {selectedTemplate} = settings
   const {name: templateName} = selectedTemplate
-  const {togglePortal, modalPortal, closePortal} = useModal({
-    id: 'templateModal',
-    onClose: () => {
-      setActiveTemplate(atmosphere, teamId, selectedTemplate.id, MeetingTypeEnum.retrospective)
-    }
-  })
+  const {togglePortal, modalPortal, closePortal} = useModal({id: 'templateModal'})
 
   return (
     <>
@@ -56,7 +47,6 @@ export default createFragmentContainer(RetroTemplatePicker, {
   settings: graphql`
     fragment RetroTemplatePicker_settings on RetrospectiveMeetingSettings {
       ...ReflectTemplateModal_retroMeetingSettings
-      teamId
       selectedTemplate {
         id
         name

@@ -73,9 +73,9 @@ interface Props {
 
 const PokerTemplateList = (props: Props) => {
   const {activeIdx, setActiveIdx, settings} = props
-  const {activeTemplate, team, teamTemplates} = settings
+  const {team, teamTemplates} = settings
   const {id: teamId} = team
-  const {id: activeTemplateId} = activeTemplate
+  const activeTemplateId = settings.activeTemplate?.id ?? "-tmp"
 
   const gotoTeamTemplates = () => {
     setActiveIdx(0)
