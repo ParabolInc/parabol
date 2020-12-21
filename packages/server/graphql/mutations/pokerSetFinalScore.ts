@@ -118,11 +118,8 @@ const pokerSetFinalScore = {
       )
       const fieldName = dimensionField?.fieldName ?? SprintPokerDefaults.JIRA_FIELD_COMMENT
       if (fieldName === SprintPokerDefaults.JIRA_FIELD_COMMENT) {
-        const dimensionsPerStageIdx = stages.filter((stage) => stage.dimensionId === dimensionId)
-          .length
-        const stageIdx = stages.findIndex((stage) => stage.id === stageId) + 1
-        const routeIdx = Math.ceil(stageIdx / dimensionsPerStageIdx)
-        const discussionURL = makeAppURL(appOrigin, `meet/${meetingId}/estimate/${routeIdx}`)
+        const stageIdx = stages.findIndex((stage) => stage.id === stageId)
+        const discussionURL = makeAppURL(appOrigin, `meet/${meetingId}/estimate/${stageIdx + 1}`)
         const res = await manager.addComment(
           cloudId,
           issueKey,

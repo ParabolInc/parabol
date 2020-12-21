@@ -5,6 +5,31 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 5.28.0 2020-Dec-17
+
+### Added
+
+- Added batch support for feature flags #4446
+- Pre-validate jira field mappers #4445
+- Adds Parabol stories to Sprint Poker Estimate phase #4420
+
+### Changed
+
+- Moved HubSpot Segment function inside the app #4451
+- Scale editor UI refined #4435 #4430
+- Sprint Poker UI refined #4416
+- Bump ini from 1.3.5 to 1.3.7 #4434
+
+### Fixed
+
+- Fixed reactji spacing #4427
+- User cannot update their preferred name #4456
+- User cannot clone a public scale #4458
+- Sprint Poker: can’t add Parabol tasks when integrated with Jira #4461
+- Sprint Poker: can’t add new Jira tasks in Scope view
+- Sprint Poker: Parabol task edits persist in Estimate phase #4464
+- Thread empty state mentions tasks conditionally
+
 ## 5.27.0 2020-Dec-09
 
 ### Added
