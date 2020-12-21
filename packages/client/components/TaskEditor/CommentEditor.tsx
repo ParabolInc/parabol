@@ -39,6 +39,7 @@ type DraftProps = Pick<
   | 'editorState'
   | 'handleBeforeInput'
   | 'handleKeyCommand'
+  | 'handlePastedText'
   | 'keyBindingFn'
   | 'readOnly'
   | 'onFocus'
@@ -75,6 +76,7 @@ const CommentEditor = (props: Props) => {
     handleChange,
     handleReturn,
     handleBeforeInput,
+    handlePastedText,
     handleKeyCommand,
     keyBindingFn
   } = useCommentPlugins({...props})
@@ -152,6 +154,8 @@ const CommentEditor = (props: Props) => {
   }
 
   const onPastedText = (text): DraftHandleValue => {
+    handlePastedText(text, text, editorState)
+    return 'handled'
     if (text) {
       for (let i = 0; i < textTags.length; i++) {
         const tag = textTags[i]
