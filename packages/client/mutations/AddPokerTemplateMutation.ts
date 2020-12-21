@@ -4,6 +4,7 @@ import {SprintPokerDefaults} from '~/types/constEnums'
 import {IPokerTemplate, IRetrospectiveMeetingSettings, MeetingTypeEnum} from '../types/graphql'
 import {SharedUpdater, StandardMutation} from '../types/relayMutations'
 import createProxyRecord from '../utils/relay/createProxyRecord'
+import {setActiveTemplateInRelayStore} from '../utils/relay/setActiveTemplate'
 import {AddPokerTemplateMutation as TAddPokerTemplateMutation} from '../__generated__/AddPokerTemplateMutation.graphql'
 import {AddPokerTemplateMutation_team} from '../__generated__/AddPokerTemplateMutation_team.graphql'
 import handleAddPokerTemplate from './handlers/handleAddPokerTemplate'
@@ -45,6 +46,7 @@ export const addPokerTemplateTeamUpdater: SharedUpdater<AddPokerTemplateMutation
   const selectedTemplate = store.get<IPokerTemplate>(templateId)!
   settings.setLinkedRecord(selectedTemplate, 'selectedTemplate')
   settings.setValue(templateId, 'selectedTemplateId')
+  setActiveTemplateInRelayStore(store, teamId, templateId, MeetingTypeEnum.poker)
 }
 
 const AddPokerTemplateMutation: StandardMutation<TAddPokerTemplateMutation> = (

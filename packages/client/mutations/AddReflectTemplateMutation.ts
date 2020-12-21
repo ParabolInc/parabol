@@ -3,6 +3,7 @@ import {commitMutation} from 'react-relay'
 import {IReflectTemplate, IRetrospectiveMeetingSettings, MeetingTypeEnum} from '../types/graphql'
 import {SharedUpdater, StandardMutation} from '../types/relayMutations'
 import createProxyRecord from '../utils/relay/createProxyRecord'
+import {setActiveTemplateInRelayStore} from '../utils/relay/setActiveTemplate'
 import {AddReflectTemplateMutation as TAddReflectTemplateMutation} from '../__generated__/AddReflectTemplateMutation.graphql'
 import {AddReflectTemplateMutation_team} from '../__generated__/AddReflectTemplateMutation_team.graphql'
 import handleAddReflectTemplate from './handlers/handleAddReflectTemplate'
@@ -44,6 +45,7 @@ export const addReflectTemplateTeamUpdater: SharedUpdater<AddReflectTemplateMuta
   const selectedTemplate = store.get<IReflectTemplate>(templateId)!
   settings.setLinkedRecord(selectedTemplate, 'selectedTemplate')
   settings.setValue(templateId, 'selectedTemplateId')
+  setActiveTemplateInRelayStore(store, teamId, templateId, MeetingTypeEnum.poker)
 }
 
 const AddReflectTemplateMutation: StandardMutation<TAddReflectTemplateMutation> = (

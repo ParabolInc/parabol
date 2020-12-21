@@ -9,7 +9,7 @@ import {RemoveTemplate_teamTemplates} from '../../../__generated__/RemoveTemplat
 import {MeetingTypeEnum} from '~/types/graphql'
 import {SprintPokerDefaults} from '../../../types/constEnums'
 import RemovePokerTemplateMutation from '../../../mutations/RemovePokerTemplateMutation'
-import setActiveTemplate from '../../../utils/relay/setActiveTemplate'
+import {setActiveTemplate} from '../../../utils/relay/setActiveTemplate'
 
 interface Props {
   gotoPublicTemplates: () => void

@@ -9,7 +9,7 @@ import textOverflow from '../../../styles/helpers/textOverflow'
 import {PALETTE} from '../../../styles/paletteV2'
 import {MeetingTypeEnum} from '../../../types/graphql'
 import makeTemplateDescription from '../../../utils/makeTemplateDescription'
-import setActiveTemplate from '../../../utils/relay/setActiveTemplate'
+import {setActiveTemplate} from '../../../utils/relay/setActiveTemplate'
 import {PokerTemplateItem_template} from '../../../__generated__/PokerTemplateItem_template.graphql'
 
 const TemplateItem = styled('li')<{isActive: boolean}>(({isActive}) => ({
