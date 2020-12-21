@@ -4,7 +4,6 @@ import React, {useEffect} from 'react'
 import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import FlatButton from '../../../components/FlatButton'
 import Icon from '../../../components/Icon'
-import MenuItemHR from '../../../components/MenuItemHR'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import textOverflow from '../../../styles/helpers/textOverflow'
 import {PALETTE} from '../../../styles/paletteV2'
@@ -72,11 +71,6 @@ const ScaleDetailsTitle = styled('div')({
   userSelect: 'none'
 })
 
-const HR = styled(MenuItemHR)({
-  width: '100%',
-  marginTop: 0
-})
-
 const ScaleValues = styled('div')({
   ...textOverflow,
   color: PALETTE.TEXT_GRAY,
@@ -112,7 +106,6 @@ const PokerTemplateScaleDetails = (props: Props) => {
         </IconButton>
         <ScaleDetailsTitle>{'Edit Scale'}</ScaleDetailsTitle>
       </ScaleDetailHeader>
-      <HR />
       <ScaleHeader>
         <ScaleNameAndValues>
           <EditableTemplateScaleName
