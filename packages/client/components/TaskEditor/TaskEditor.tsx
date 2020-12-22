@@ -152,7 +152,7 @@ const TaskEditor = (props: Props) => {
     return 'not-handled'
   }
 
-  const onPastedText = (text): DraftHandleValue => {
+  const onPastedText = (text: string): DraftHandleValue => {
     if (text) {
       for (let i = 0; i < textTags.length; i++) {
         const tag = textTags[i]

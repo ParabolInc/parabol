@@ -8,6 +8,8 @@ import {
   getDefaultKeyBinding
 } from 'draft-js'
 import React, {RefObject, Suspense, useRef} from 'react'
+import completeEntity from '~/utils/draftjs/completeEnitity'
+import linkify from '~/utils/linkify'
 import {Card} from '../../types/constEnums'
 import {textTags} from '../../utils/constants'
 import entitizeText from '../../utils/draftjs/entitizeText'
@@ -76,7 +78,6 @@ const CommentEditor = (props: Props) => {
     handleChange,
     handleReturn,
     handleBeforeInput,
-    handlePastedText,
     handleKeyCommand,
     keyBindingFn
   } = useCommentPlugins({...props})
@@ -166,9 +167,15 @@ const CommentEditor = (props: Props) => {
         }
       }
     }
-    if (handlePastedText){
-      return handlePastedText(text, text, editorState)
-    } 
+    const links = linkify.match(text)
+    if (links){
+      const {url} = links[0]
+      const nextEditorState = completeEntity(editorState, 'LINK', {href: url}, text, {
+      keepSelection: true
+    })
+    setEditorState(nextEditorState)
+    if (url === text) return 'handled'
+  }
     return 'not-handled'
   }
 
