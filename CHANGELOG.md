@@ -5,6 +5,18 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 5.29.0 2020-Dec-22
+
+### Added
+
+- Support for multi-domain SAML (#4478)
+### Changed
+
+- Upgrade to Webpack v5 (#4455, #4477)
+
+### Fixed
+
+- Scale UI Fixups (#4472)
 ## 5.28.0 2020-Dec-17
 
 ### Added
