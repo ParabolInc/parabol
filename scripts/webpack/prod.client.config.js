@@ -61,6 +61,10 @@ module.exports = ({isDeploy, isStats}) => ({
       static: STATIC_ROOT
     },
     extensions: ['.js', '.json', '.ts', '.tsx', '.graphql'],
+    fallback: {
+      assert: path.join(PROJECT_ROOT, 'scripts/webpack/assert.js'),
+      os: false
+    },
     modules: [
       path.resolve(CLIENT_ROOT, '../node_modules'),
       path.resolve(SERVER_ROOT, '../node_modules'),

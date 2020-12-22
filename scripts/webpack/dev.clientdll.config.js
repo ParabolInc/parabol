@@ -56,6 +56,11 @@ module.exports = {
       'unicode-substring'
     ]
   },
+  resolve: {
+    fallback: {
+      assert: path.join(PROJECT_ROOT, 'scripts/webpack/assert.js')
+    }
+  },
   output: {
     filename: '[name].dll.js',
     path: DLL_ROOT,
