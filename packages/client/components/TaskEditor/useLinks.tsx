@@ -20,7 +20,6 @@ import {SetEditorState} from '../../types/draft'
 import {UseTaskChild} from '../../hooks/useTaskChildFocus'
 import useForceUpdate from '../../hooks/useForceUpdate'
 import lazyPreload from '../../utils/lazyPreload'
-import completeEntity from '~/utils/draftjs/completeEnitity'
 
 const EditorLinkChanger = lazyPreload(() =>
   import(
@@ -76,7 +75,7 @@ interface CustomProps {
 
 type Handlers = Pick<
   EditorProps,
-  'handleBeforeInput' | 'onChange' | 'handleKeyCommand' | 'keyBindingFn' | 'handlePastedText'
+  'handleBeforeInput' | 'onChange' | 'handleKeyCommand' | 'keyBindingFn'
 > &
   CustomProps
 
@@ -305,21 +304,7 @@ const useLinks = (editorState: EditorState, setEditorState: SetEditorState, hand
     return null
   }
 
-  const onPastedText: Handlers['handlePastedText'] = (text: string) => {
-    const links = linkify.match(text)
-    if (links){
-      const {url} = links[0]
-      const nextEditorState = completeEntity(editorState, 'LINK', {href: url}, text, {
-      keepSelection: true
-    })
-    setEditorState(nextEditorState)
-    if (url === text) return 'handled'
-  }
-  return 'not-handled'
-  }
-
   return {
-    handlePastedText: onPastedText,
     handleBeforeInput: onHandleBeforeInput,
     handleChange,
     handleKeyCommand: onKeyCommand,

@@ -8,8 +8,8 @@ import {
   getDefaultKeyBinding
 } from 'draft-js'
 import React, {RefObject, Suspense, useRef} from 'react'
-import completeEntity from '~/utils/draftjs/completeEnitity'
-import linkify from '~/utils/linkify'
+import completeEntity from '../../utils/draftjs/completeEntity'
+import linkify from '../../utils/linkify'
 import {Card} from '../../types/constEnums'
 import {textTags} from '../../utils/constants'
 import entitizeText from '../../utils/draftjs/entitizeText'
@@ -41,7 +41,6 @@ type DraftProps = Pick<
   | 'editorState'
   | 'handleBeforeInput'
   | 'handleKeyCommand'
-  | 'handlePastedText'
   | 'keyBindingFn'
   | 'readOnly'
   | 'onFocus'
@@ -134,10 +133,10 @@ const CommentEditor = (props: Props) => {
       ensureCommenting()
     }
     if (keyBindingFn) {
-      const result = keyBindingFn(e)
-      if (result) {
-        return result
-      }
+    const result = keyBindingFn(e)
+    if (result) {
+      return result
+    }
     }
     if (e.key === 'Escape') {
       e.preventDefault()
@@ -168,14 +167,14 @@ const CommentEditor = (props: Props) => {
       }
     }
     const links = linkify.match(text)
-    if (links){
-      const {url} = links[0]
-      const nextEditorState = completeEntity(editorState, 'LINK', {href: url}, text, {
-      keepSelection: true
-    })
-    setEditorState(nextEditorState)
-    if (url === text) return 'handled'
-  }
+    const url = links && links[0].url    
+      if (url === text){
+        const nextEditorState = completeEntity(editorState, 'LINK', {href: url}, text, {
+        keepSelection: true
+      })
+      setEditorState(nextEditorState)
+      return 'handled'
+    }
     return 'not-handled'
   }
 

@@ -8,6 +8,8 @@ import {
   getDefaultKeyBinding
 } from 'draft-js'
 import React, {RefObject, Suspense, useEffect, useRef} from 'react'
+import completeEntity from '~/utils/draftjs/completeEntity'
+import linkify from '~/utils/linkify'
 import {UseTaskChild} from '../../hooks/useTaskChildFocus'
 import {Card} from '../../types/constEnums'
 import {textTags} from '../../utils/constants'
@@ -42,7 +44,6 @@ type DraftProps = Pick<
   | 'editorState'
   | 'handleBeforeInput'
   | 'handleKeyCommand'
-  | 'handlePastedText'
   | 'handleReturn'
   | 'keyBindingFn'
   | 'readOnly'
@@ -66,7 +67,6 @@ const TaskEditor = (props: Props) => {
     handleChange,
     handleBeforeInput,
     handleKeyCommand,
-    handlePastedText,
     keyBindingFn,
     handleReturn
   } = useTaskPlugins({...props})
@@ -165,9 +165,15 @@ const TaskEditor = (props: Props) => {
         }
       }
     }
-        if (handlePastedText){
-      return handlePastedText(text, text, editorState)
-    } 
+  const links = linkify.match(text)
+  const url = links && links[0].url    
+    if (url === text){
+      const nextEditorState = completeEntity(editorState, 'LINK', {href: url}, text, {
+      keepSelection: true
+    })
+    setEditorState(nextEditorState)
+    return 'handled'
+  }
     return 'not-handled'
   }
 
