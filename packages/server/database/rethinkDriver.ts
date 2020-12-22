@@ -106,13 +106,13 @@ export type RethinkSchema = {
   }
   Notification: {
     type:
-      | NotificationTaskInvolves
-      | NotificationTeamArchived
-      | NotificationMeetingStageTimeLimitEnd
-      | NotificationPaymentRejected
-      | NotificationKickedOut
-      | NotificationPromoteToBillingLeader
-      | NotificationTeamInvitation
+    | NotificationTaskInvolves
+    | NotificationTeamArchived
+    | NotificationMeetingStageTimeLimitEnd
+    | NotificationPaymentRejected
+    | NotificationKickedOut
+    | NotificationPromoteToBillingLeader
+    | NotificationTeamInvitation
     index: 'userId'
   }
   Organization: {
@@ -153,7 +153,7 @@ export type RethinkSchema = {
   }
   SAML: {
     type: SAML
-    index: 'domain'
+    index: 'domains'
   }
   ScheduledJob: {
     type: ScheduledJob
