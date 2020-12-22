@@ -23,7 +23,6 @@
     "typecheck": "yarn tsc --noEmit -p tsconfig.json"
   },
   "devDependencies": {
-    "@cypress/webpack-preprocessor": "^4.0.3",
     "@mattkrick/fast-rtc-swarm": "^0.4.0",
     "@mattkrick/graphql-trebuchet-client": "^1.0.2",
     "@types/analytics-node": "^3.1.3",
