@@ -98,7 +98,7 @@ const PokerEstimateHeaderCardJira = (props: Props) => {
             <CardTitle>{`Jira is Down!`}</CardTitle>
           </CardTitleWrapper>
           <CardDescription ref={descriptionRef} maxHeight={maxHeight} isExpanded={isExpanded}>
-            {`Cannot connect to Jira. You can still vote for ${issueKey}, but it may not update in Jira. If this issue persists, try re-integrating.`}
+            {`Cannot connect to Jira. Voting will be disabled for ${issueKey}. If the problem persists, please reintegrate or remove the issue and add it again.`}
           </CardDescription>
         </HeaderCard>
       </HeaderCardWrapper>

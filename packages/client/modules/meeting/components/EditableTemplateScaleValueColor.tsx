@@ -20,18 +20,26 @@ interface Props {
 }
 
 const ScaleValueColor = styled(PlainButton)({
+  cursor: 'pointer',
   display: 'block',
   flex: 1,
+  flexShrink: 0,
   height: 24,
   padding: 4,
   position: 'relative',
-  width: 24
+  width: 24,
+  ':hover': {
+    i: {
+      opacity: 1
+    }
+  }
 })
 
 const ColorBadge = styled('div')<{color?: string}>(({color}) => ({
   backgroundColor: color,
   borderRadius: '50%',
   height: 14,
+  margin: 1,
   width: 14
 }))
 
