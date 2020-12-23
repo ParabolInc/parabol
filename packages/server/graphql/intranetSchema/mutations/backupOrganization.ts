@@ -298,7 +298,7 @@ const backupOrganization = {
         .coerceTo('array')
         .do((domains) => {
           return r({
-            SAML: (r.table('SAML').getAll(r.args(domains), {index: 'domain'}) as any)
+            SAML: (r.table('SAML').getAll(r.args(domains), {index: 'domains'}) as any)
               .coerceTo('array')
               .do((items) =>
                 r

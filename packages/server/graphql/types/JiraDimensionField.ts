@@ -17,6 +17,10 @@ const JiraDimensionField = new GraphQLObjectType<any, GQLContext>({
       type: GraphQLNonNull(GraphQLID),
       description: 'The poker template dimension Id'
     },
+    projectKey: {
+      type: GraphQLNonNull(GraphQLID),
+      description: 'The project under the atlassian cloud the field lives in'
+    },
     fieldId: {
       type: GraphQLNonNull(GraphQLID),
       description: 'The ID referring to the field name'

@@ -46,27 +46,27 @@ module.exports = ({isDeploy}) => ({
   target: 'node',
   externals: [
     nodeExternals({
-      whitelist: [/parabol-client/, /parabol-server/]
+      allowlist: [/parabol-client/, /parabol-server/]
     })
   ],
   plugins: [
     new webpack.SourceMapDevToolPlugin({
-      filename: '[name]_[hash].js.map',
+      filename: '[name]_[contenthash].js.map',
       append: `\n//# sourceMappingURL=${publicPath}[url]`
     }),
     isDeploy &&
-      new S3Plugin({
-        s3Options: {
-          accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-          secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-          region: process.env.AWS_REGION
-        },
-        s3UploadOptions: {
-          Bucket: process.env.AWS_S3_BUCKET
-        },
-        basePath: getS3BasePath(),
-        directory: distPath
-      })
+    new S3Plugin({
+      s3Options: {
+        accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+        region: process.env.AWS_REGION
+      },
+      s3UploadOptions: {
+        Bucket: process.env.AWS_S3_BUCKET
+      },
+      basePath: getS3BasePath(),
+      directory: distPath
+    })
   ].filter(Boolean),
   module: {
     rules: [

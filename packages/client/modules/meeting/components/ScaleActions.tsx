@@ -19,14 +19,16 @@ const CloneAndDelete = styled('div')({
 interface Props {
   scale: ScaleActions_scale
   scaleCount: number
+  teamId: string
 }
 
 const ScaleActions = (props: Props) => {
   const {
     scale,
     scaleCount,
+    teamId
   } = props
-  const {id: scaleId, teamId, isStarter} = scale
+  const {id: scaleId, isStarter} = scale
   const atmosphere = useAtmosphere()
   const {onError, onCompleted, submitting, submitMutation} = useMutationProps()
   const canClone = scaleCount < Threshold.MAX_POKER_TEMPLATE_SCALES

@@ -1959,6 +1959,11 @@ export interface IJiraDimensionField {
   dimensionId: string;
 
   /**
+   * The project under the atlassian cloud the field lives in
+   */
+  projectKey: string;
+
+  /**
    * The ID referring to the field name
    */
   fieldId: string;
@@ -6787,7 +6792,7 @@ export interface IMutation {
   /**
    * Give someone advanced features in a flag
    */
-  addFeatureFlag: IAddFeatureFlagPayload | null;
+  addFeatureFlag: IAddFeatureFlagPayload;
   addGitHubAuth: IAddGitHubAuthPayload;
 
   /**
@@ -7465,10 +7470,15 @@ export interface IAddSlackAuthOnMutationArguments {
 
 export interface IAddFeatureFlagOnMutationArguments {
   /**
-   * the complete or partial email of the person to whom you are giving advanced features.
+   * a list of the complete or partial email of the person to whom you are giving advanced features.
    *       Matches via a regex to support entire domains
    */
-  email: string;
+  emails?: Array<string> | null;
+
+  /**
+   * grant access to an entire domain. the part of the email after the @
+   */
+  domain?: string | null;
 
   /**
    * the flag that you want to give to the user
@@ -8531,6 +8541,11 @@ export interface IUpdateJiraDimensionFieldOnMutationArguments {
   cloudId: string;
 
   /**
+   * The project the field lives on
+   */
+  projectKey: string;
+
+  /**
    * The meeting the update happend in. If present, can return a meeting object with updated serviceField
    */
   meetingId: string;
@@ -8791,11 +8806,6 @@ export interface IAddFeatureFlagPayload {
    * the users given the super power
    */
   users: Array<IUser | null> | null;
-
-  /**
-   * A human-readable result
-   */
-  result: string | null;
 }
 
 /**
