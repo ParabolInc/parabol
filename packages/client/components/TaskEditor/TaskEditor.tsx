@@ -189,6 +189,7 @@ const TaskEditor = (props: Props) => {
             editorState={editorState}
             placeholder={placeholder}
             onKeyDown={onKeyDownFallback}
+            onPastedText={onPastedText}
             editorRef={editorRef}
           />
         </Suspense>
