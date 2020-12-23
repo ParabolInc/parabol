@@ -19,7 +19,7 @@ const Parent = styled('div')<{status: TransitionStatus}>(({status}) => ({
   maxWidth: status === TransitionStatus.MOUNTED || status === TransitionStatus.EXITING ? 0 : 68,
   opacity: status === TransitionStatus.MOUNTED || status === TransitionStatus.EXITING ? 0 : 1,
   paddingLeft: status === TransitionStatus.MOUNTED || status === TransitionStatus.EXITING ? 0 : 0,
-  paddingRight: status === TransitionStatus.MOUNTED || status === TransitionStatus.EXITING ? 0 : 8,
+  paddingRight: status === TransitionStatus.MOUNTED || status === TransitionStatus.EXITING ? 0 : 12,
   transition: `all 300ms ${BezierCurve.DECELERATE}`,
   userSelect: 'none'
 }))
@@ -38,7 +38,8 @@ const Emoji = styled('div')({
   fontFamily: 'sans-serif',
   fontSize: 16,
   height: 24,
-  lineHeight: '24px'
+  lineHeight: '24px',
+  textAlign: 'left'
 })
 
 const Count = styled('div')({
@@ -47,7 +48,7 @@ const Count = styled('div')({
   fontWeight: 600,
   height: 24,
   lineHeight: '24px',
-  paddingLeft: 2
+  paddingLeft: 4
 })
 
 interface Props {

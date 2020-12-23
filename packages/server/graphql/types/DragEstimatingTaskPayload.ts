@@ -23,7 +23,7 @@ export const DragEstimatingTaskSuccess = new GraphQLObjectType<any, GQLContext>(
     },
     stage: {
       type: GraphQLNonNull(EstimateStage),
-      resolve: resolveStage(NewMeetingPhaseTypeEnum.ESTIMATE)
+      resovle: resolveStage(NewMeetingPhaseTypeEnum.ESTIMATE)
     }
   })
 })

@@ -14,7 +14,7 @@ export type CacheType = RedisType & DBType
 
 const TTL = ms('3h')
 
-const msetpx = (key: string, value: object) => {
+const msetpx = (key: string, value: Record<string, unknown>) => {
   return ['set', key, JSON.stringify(value), 'PX', TTL] as string[]
 }
 // type ClearLocal = (key: string) => void
@@ -148,7 +148,7 @@ export default class RedisCache<T extends keyof CacheType> {
   writeTable = async <T extends keyof DBType>(table: T, updater: Partial<CacheType[T]>) => {
     // inefficient to not update rethink & redis in parallel, but writeTable is uncommon
     await this.rethinkDBCache.writeTable(table, updater)
-    return new Promise((resolve) => {
+    return new Promise<void>((resolve) => {
       const stream = this.getRedis().scanStream({match: `${table}:*`, count: 100})
       stream.on('data', async (keys) => {
         if (!keys?.length) return

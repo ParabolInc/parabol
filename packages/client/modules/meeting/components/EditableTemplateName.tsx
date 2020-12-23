@@ -57,8 +57,8 @@ const EditableTemplateName = (props: Props) => {
     const res = legitify(rawValue)
     if (res.error) {
       onError(new Error(res.error))
-    } else if (error) {
-      onError(new Error(error.message))
+    } else {
+      onCompleted()
     }
     return res
   }

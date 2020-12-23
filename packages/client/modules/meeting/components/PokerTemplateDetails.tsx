@@ -14,6 +14,10 @@ import TemplateSharing from './TemplateSharing'
 import TemplateDimensionList from './TemplateDimensionList'
 import {MeetingTypeEnum} from '../../../types/graphql'
 import AddPokerTemplateDimension from './AddPokerTemplateDimension'
+import {Threshold} from '../../../types/constEnums'
+import AddPokerTemplateMutation from '../../../mutations/AddPokerTemplateMutation'
+import useAtmosphere from '../../../hooks/useAtmosphere'
+import useMutationProps from '../../../hooks/useMutationProps'
 
 const TemplateHeader = styled('div')({
   display: 'flex',
@@ -21,10 +25,11 @@ const TemplateHeader = styled('div')({
   margin: '16px 0',
   paddingLeft: 56,
   paddingRight: 16,
-  width: '100%'
+  width: '100%',
+  flexShrink: 0
 })
 
-const PromptEditor = styled('div')({
+const DimensionEditor = styled('div')({
   alignItems: 'flex-start',
   background: '#fff',
   borderRadius: 8,
@@ -37,8 +42,9 @@ const PromptEditor = styled('div')({
 
 const CreateTemplateImg = styled('img')({
   margin: '0 auto',
-  padding: '24px 56px 0',
-  width: 320
+  maxWidth: 360,
+  padding: '16px 0 0',
+  width: '100%'
 })
 
 const Description = styled('div')({
@@ -74,8 +80,17 @@ const PokerTemplateDetails = (props: Props) => {
   const isOwner = selectedTemplate.teamId === teamId
   const description = makeTemplateDescription(lowestScope, selectedTemplate)
   const templateCount = teamTemplates.length
+  const atmosphere = useAtmosphere()
+  const {onError, onCompleted, submitting, submitMutation} = useMutationProps()
+  const canClone = templateCount < Threshold.MAX_POKER_TEAM_TEMPLATES
+  const onClone = () => {
+    if (submitting || !canClone) return
+    submitMutation()
+    AddPokerTemplateMutation(atmosphere, {parentTemplateId: templateId, teamId}, {onError, onCompleted})
+    gotoTeamTemplates()
+  }
   return (
-    <PromptEditor>
+    <DimensionEditor>
       <Scrollable>
         <CreateTemplateImg src={customTemplate} />
         <TemplateHeader>
@@ -98,11 +113,8 @@ const PokerTemplateDetails = (props: Props) => {
             )}
             {!isOwner && (
               <CloneTemplate
-                gotoTeamTemplates={gotoTeamTemplates}
-                teamId={teamId}
-                templateId={templateId}
-                templateCount={templateCount}
-                type={MeetingTypeEnum.poker}
+                onClick={onClone}
+                canClone={canClone}
               />
             )}
           </FirstLine>
@@ -112,7 +124,7 @@ const PokerTemplateDetails = (props: Props) => {
         {isOwner && <AddPokerTemplateDimension templateId={templateId} dimensions={dimensions} />}
       </Scrollable>
       <TemplateSharing teamId={teamId} template={selectedTemplate} />
-    </PromptEditor>
+    </DimensionEditor>
   )
 }
 

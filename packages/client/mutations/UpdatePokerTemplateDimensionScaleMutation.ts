@@ -6,22 +6,7 @@ import {UpdatePokerTemplateDimensionScaleMutation as TUpdatePokerTemplateDimensi
 graphql`
   fragment UpdatePokerTemplateDimensionScaleMutation_dimension on UpdatePokerTemplateDimensionScalePayload {
     dimension {
-      id
-      name
-      selectedScale {
-        id
-        name
-        values {
-          label
-        }
-      }
-      availableScales {
-        id
-        name
-        values {
-          label
-        }
-      }
+      ...SelectScaleDropdown_dimension
     }
   }
 `

@@ -1,25 +1,15 @@
-const crypto = require('crypto')
-const fetch = require('node-fetch')
+import fetch from 'node-fetch'
+import sleep from 'parabol-client/utils/sleep'
+import ServerAuthToken from '../database/types/ServerAuthToken'
+import User from '../database/types/User'
+import executeGraphQL from '../graphql/executeGraphQL'
+import sendToSentry from './sendToSentry'
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+interface BulkRecord {
+  id?: string
+  email: string
+  [key: string]: string | number | undefined
+}
 
 const contactKeys = {
   lastMetAt: 'last_met_at',
@@ -219,48 +209,31 @@ query ArchiveTeam($userId: ID!) {
 }
 
 const tierChanges = ['Upgrade to Pro', 'Enterprise invoice drafted', 'Downgrade to personal']
+const hapiKey = process.env.HUBSPOT_API_KEY
 
-const sleep = async (ms) => new Promise((resolve) => setTimeout(resolve, ms))
-
-const parabolFetch = async (
-  query,
-  variables,
-  payload,
-  settings
-) => {
-  const {parabolToken, originalTimestamp} = payload
-  const {segmentFnKey, parabolEndpoint} = settings
-  const ts = Math.floor(new Date(originalTimestamp).getTime() / 1000)
-  const signature = crypto
-    .createHmac('sha256', segmentFnKey)
-    .update(parabolToken)
-    .digest('base64')
-  const authToken = `${ts}.${signature}`
-  const res = await fetch(parabolEndpoint, {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${authToken}`,
-      Accept: 'application/json',
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      query,
-      variables
-    })
+const parabolFetch = async (query: string, variables: Record<string, unknown>) => {
+  const result = await executeGraphQL({
+    authToken: new ServerAuthToken(),
+    query,
+    variables,
+    isPrivate: true
   })
-  if (!String(res.status).startsWith('2')) {
-    console.log({query, variables: JSON.stringify(variables)})
-    throw new Error(`ParabolFetch: ${res.status}`)
+
+  if (result.errors) {
+    const [firstError] = result.errors
+    const safeError = new Error(firstError.message)
+    safeError.stack = (firstError as Error).stack
+    sendToSentry(safeError)
   }
-  const resJSON = await res.json()
-  const {data, errors} = resJSON
-  if (errors) {
-    throw new Error(errors[0].message)
+  if (!result.data) {
+    sendToSentry(new Error('HS Parabol did not return data'), {
+      tags: {query, variables: JSON.stringify(variables)}
+    })
   }
-  return data
+  return result.data
 }
 
-const normalize = (value) => {
+const normalize = (value?: string | number) => {
   if (typeof value === 'string' && new Date(value).toJSON() === value) {
     return new Date(value).getTime()
   }
@@ -268,11 +241,17 @@ const normalize = (value) => {
 }
 
 const upsertHubspotContact = async (
-  email,
-  hapiKey,
-  propertiesObj
+  email: string,
+  propertiesObj: {[key: string]: string | number},
+  retryCount = 0
 ) => {
   if (!propertiesObj || Object.keys(propertiesObj).length === 0) return
+  const body = JSON.stringify({
+    properties: Object.keys(propertiesObj).map((key) => ({
+      property: contactKeys[key],
+      value: normalize(propertiesObj[key])
+    }))
+  })
   const res = await fetch(
     `https://api.hubapi.com/contacts/v1/contact/createOrUpdate/email/${email}/?hapikey=${hapiKey}`,
     {
@@ -280,20 +259,16 @@ const upsertHubspotContact = async (
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({
-        properties: Object.keys(propertiesObj).map((key) => ({
-          property: contactKeys[key],
-          value: normalize(propertiesObj[key])
-        }))
-      })
+      body
     }
   )
   if (!String(res.status).startsWith('2')) {
-    throw new Error(`upsertFail: ${res.status}: ${email}`)
+    sendToSentry(new Error('HS upsertContact Fail'), {tags: {email, body}})
+    if (retryCount >= 3) return upsertHubspotContact(email, propertiesObj, retryCount + 1)
   }
 }
 
-const updateHubspotBulkContact = async (records, hapiKey) => {
+const updateHubspotBulkContact = async (records: BulkRecord[], retryCount = 0) => {
   if (!records || Object.keys(records).length === 0) return
   const body = JSON.stringify(
     records.map((record) => {
@@ -315,41 +290,47 @@ const updateHubspotBulkContact = async (records, hapiKey) => {
     body
   })
   if (!String(res.status).startsWith('2')) {
-    throw new Error(`${res.status}: ${body}`)
+    sendToSentry(new Error('HS Fail bulk contact update'), {tags: {body}})
+    if (retryCount < 3) {
+      return updateHubspotBulkContact(records, retryCount + 1)
+    }
   }
 }
 
 const updateHubspotCompany = async (
-  email,
-  hapiKey,
-  propertiesObj
+  email: string,
+  propertiesObj: {[key: string]: string | number},
+  retryCount = 0
 ) => {
   if (!propertiesObj || Object.keys(propertiesObj).length === 0) return
   const url = `https://api.hubapi.com/contacts/v1/contact/email/${email}/profile?hapikey=${hapiKey}&property=associatedcompanyid&property_mode=value_only&formSubmissionMode=none&showListMemberships=false`
   const contactRes = await fetch(url)
   const contactStatus = String(contactRes.status)
-  if (contactStatus === '404') {
-    // the contact wasn't created yet, try again in a second
+  if (!contactStatus.startsWith('2')) {
     await sleep(2000)
-    updateHubspotCompany(email, hapiKey, propertiesObj)
-    return
-  } else if (!contactStatus.startsWith('2')) {
-    throw new Error(`${contactRes.status}: ${email}`)
+    if (contactStatus !== '404') {
+      // 404 happens when the contact isn't created yet. don't send that error to sentry
+      sendToSentry(new Error('HS Update Company Fail. No Contact'), {tags: {email}})
+    }
+    if (retryCount >= 3) return
+    return updateHubspotCompany(email, propertiesObj, retryCount + 1)
   }
   const contactResJSON = await contactRes.json()
-  const body = JSON.stringify({
-    properties: Object.keys(propertiesObj).map((key) => ({
-      name: companyKeys[key],
-      value: propertiesObj[key]
-    }))
-  })
   const associatedCompany = contactResJSON['associated-company']
   const companyId = associatedCompany ? associatedCompany['company-id'] : undefined
   if (!companyId) {
-    console.log({contact: JSON.stringify(contactResJSON)})
-    // force a timeout so segment retries this once hubspot associates a record
-    await sleep(10000)
+    sendToSentry(new Error('HS No CompanyID'), {
+      tags: {email, associatedCompany: JSON.stringify(associatedCompany)}
+    })
+    if (retryCount >= 3) return
+    return updateHubspotCompany(email, propertiesObj, retryCount + 1)
   }
+  const body = JSON.stringify({
+    properties: Object.keys(propertiesObj).map((key) => ({
+      name: companyKeys[key],
+      value: normalize(propertiesObj[key])
+    }))
+  })
   const companyRes = await fetch(
     `https://api.hubapi.com/companies/v2/companies/${companyId}?hapikey=${hapiKey}`,
     {
@@ -361,64 +342,62 @@ const updateHubspotCompany = async (
     }
   )
   if (!String(companyRes.status).startsWith('2')) {
-    throw new Error(`${companyRes.status}: ${body}`)
+    let errBody
+    try {
+      errBody = await companyRes.json()
+    } catch {
+      errBody = ''
+    }
+
+    sendToSentry(new Error('HS Bad Compamny Update'), {
+      tags: {email, body, companyId, error: JSON.stringify(errBody)}
+    })
+    if (retryCount >= 3) return
+    return updateHubspotCompany(email, propertiesObj, retryCount + 1)
   }
 }
 
-const updateHubspot = async (
-  query,
-  userId,
-  payload,
-  settings
-) => {
+const updateHubspotParallel = async (query: string | undefined, userId: string) => {
   if (!query) return
-  const parabolPayload = await parabolFetch(query, {userId}, payload, settings)
+  const parabolPayload = await parabolFetch(query, {userId})
   if (!parabolPayload) return
   const {user} = parabolPayload
   const {email, company, ...contact} = user
-  const {hubspotKey} = settings
-  await Promise.all([
-    upsertHubspotContact(email, hubspotKey, contact),
-    updateHubspotCompany(email, hubspotKey, company)
-  ])
+  await Promise.all([upsertHubspotContact(email, contact), updateHubspotCompany(email, company)])
 }
 
-async function onTrack(payload, settings) {
-  const {event, userId, properties} = payload
-  const {hubspotKey} = settings
+const updateHubspot = async (event: string, user: User, properties: BulkRecord) => {
+  if (!hapiKey) return
   const query = queries[event]
+  if (!query) return
+  const {id: userId} = user
   if (event === 'Meeting Completed') {
     const {userIds} = properties
     // only the facilitator has userIds
     if (!userIds) return
-    const parabolPayload = await parabolFetch(query, {userIds, userId}, payload, settings)
-    if (!parabolPayload)
-      throw new InvalidEventPayload(`Null payload from parabol: ${userIds}, ${userId}, ${query}`)
+    const parabolPayload = await parabolFetch(query, {userIds, userId})
+    if (!parabolPayload) return
     const {users, company} = parabolPayload
     const facilitator = users.find((user) => user.id === userId)
     const {email} = facilitator
-    await Promise.all([
-      updateHubspotBulkContact(users, hubspotKey),
-      updateHubspotCompany(email, hubspotKey, company)
-    ])
+    await Promise.all([updateHubspotBulkContact(users), updateHubspotCompany(email, company)])
   } else if (event === 'Account Created') {
-    const parabolPayload = await parabolFetch(query, {userId}, payload, settings)
+    const parabolPayload = await parabolFetch(query, {userId})
     if (!parabolPayload) return
     const {user} = parabolPayload
     const {email, company, ...contact} = user
-    const {hubspotKey} = settings
-    await upsertHubspotContact(email, hubspotKey, contact)
+    await upsertHubspotContact(email, contact)
     // wait for hubspot to associate the contact with the company, fn must run in 5 seconds
-    await sleep(2000)
-    await updateHubspotCompany(email, hubspotKey, company)
+    await sleep(5000)
+    await updateHubspotCompany(email, company)
   } else if (tierChanges.includes(event)) {
     const {email} = properties
-    const parabolPayload = await parabolFetch(query, {userId}, payload, settings)
+    const parabolPayload = await parabolFetch(query, {userId})
     if (!parabolPayload) return
     const {company} = parabolPayload
     const {tier, organizations} = company
-    const users = []
-    const emails = new Set()
+    const users = [] as {email: string; [key: string]: string | number}[]
+    const emails = new Set<string>()
     organizations.forEach((organization) => {
       const {organizationUsers} = organization
       const {edges} = organizationUsers
@@ -431,23 +410,11 @@ async function onTrack(payload, settings) {
         users.push(user)
       })
     })
-    const {hubspotKey} = settings
-    await Promise.all([
-      updateHubspotBulkContact(users, hubspotKey),
-      updateHubspotCompany(email, hubspotKey, {tier})
-    ])
+    await Promise.all([updateHubspotBulkContact(users), updateHubspotCompany(email, {tier})])
   } else {
     // standard handler
-    await updateHubspot(query, userId, payload, settings)
+    await updateHubspotParallel(query, userId)
   }
 }
 
-async function onIdentify() {
-  /* noop */
-}
-
-async function onPage() {
-  /* noop */
-}
-
-module.exports = onTrack
+export default updateHubspot

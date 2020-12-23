@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import React, {Component} from 'react'
+import React, {forwardRef, useEffect, useRef, useState} from 'react'
 import TextAreaAutoSize from 'react-textarea-autosize'
 import {PALETTE} from '../styles/paletteV2'
 import {FONT_FAMILY, ICON_SIZE} from '../styles/typographyV2'
@@ -87,62 +87,33 @@ interface Props {
   onEditingChange?: (isEditing: boolean) => void
 }
 
-interface State {
-  autoFocus: boolean
-  value: string
-  isEditing: boolean
-}
+const EditableText = forwardRef((props: Props, ref: any) => {
+  const {initialValue, error, handleSubmit, maxLength, placeholder, validate, autoFocus: autoFocusProp, className, disabled, hideIcon, isWrap, onEditingChange} = props
+  const [isEditing, setIsEditing] = useState(false)
+  const inputRef = useRef<HTMLInputElement | HTMLTextAreaElement>(null)
+  const [autoFocus, setAutoFocus] = useState(autoFocusProp)
+  const [value, setValue] = useState(initialValue)
+  useEffect(() => {
+    if (isEditing) return
+    setValue(initialValue)
+  }, [initialValue])
 
-class EditableText extends Component<Props, State> {
-  static getDerivedStateFromProps(
-    nextProps: Readonly<Props>,
-    prevState: State
-  ): Partial<State> | null {
-    const {initialValue} = nextProps
-    if (prevState.isEditing || initialValue === prevState.value) return null
-    return {value: initialValue}
+  const setEditing = (isEditing: boolean) => {
+    setIsEditing(isEditing)
+    setAutoFocus(false)
+    onEditingChange?.(isEditing)
   }
 
-  state = {
-    autoFocus: false,
-    isEditing: false,
-    value: this.props.initialValue
-  }
-
-  inputRef = React.createRef<HTMLInputElement | HTMLTextAreaElement>()
-
-  componentDidMount() {
-    if (this.props.autoFocus) {
-      this.setState({autoFocus: true})
-    }
-  }
-
-  setEditing = (isEditing: boolean) => {
-    const {onEditingChange} = this.props
-    this.setState({
-      isEditing
-    })
-    onEditingChange && onEditingChange(isEditing)
-    this.setState({
-      autoFocus: false
-    })
-  }
-
-  onChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const {validate} = this.props
+  const onChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const nextValue = e.target.value || ''
     validate(nextValue)
     // make sure this is always true
     // repro: remove all text, blur input, focus input (with error present), then type a char
-    this.setEditing(true)
-    this.setState({
-      value: nextValue
-    })
+    setEditing(true)
+    setValue(nextValue)
   }
 
-  onFocus = (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const {value} = this.state
-    const {placeholder, isWrap} = this.props
+  const onFocus = (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     if (value.toLowerCase().startsWith(placeholder.toLowerCase())) {
       e.target.select()
     }
@@ -155,82 +126,63 @@ class EditableText extends Component<Props, State> {
     }
   }
 
-  onSubmit = async (e: React.FocusEvent | React.FormEvent) => {
+  const onSubmit = async (e: React.FocusEvent | React.FormEvent) => {
     e.preventDefault()
-    this.setEditing(false)
-    const {handleSubmit, initialValue} = this.props
-    const {value} = this.state
-
+    setEditing(false)
     if (value.trim() === initialValue.trim()) return
     handleSubmit(value)
   }
 
-  onKeyDown = (e: React.KeyboardEvent) => {
+  const reset = () => {
+    setEditing(false)
+    setValue(initialValue)
+    validate(initialValue)
+    inputRef.current?.blur()
+  }
+
+  const onKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Escape') {
-      this.reset()
+      // wait a tick so other escape listeners see that this is the active element
+      setTimeout(reset)
     }
   }
 
-  reset = () => {
-    this.setEditing(false)
-    this.setState(
-      {
-        value: this.props.initialValue
-      },
-      () => {
-        this.props.validate(this.props.initialValue)
-        this.inputRef.current && this.inputRef.current.blur()
-      }
-    )
-  }
-  renderEditing = () => {
-    const {error, maxLength, placeholder, isWrap} = this.props
-    const {value} = this.state
+  const showEditing = (error || isEditing || autoFocus) && !disabled
+  if (showEditing) {
     const inProps = {
       autoFocus: true,
-      ref: this.inputRef,
+      ref: inputRef as any,
       maxLength,
-      onBlur: this.onSubmit,
-      onChange: this.onChange,
-      onFocus: this.onFocus,
-      onKeyDown: this.onKeyDown,
+      onBlur: onSubmit,
+      onChange: onChange,
+      onFocus: onFocus,
+      onKeyDown: onKeyDown,
       placeholder,
       value
-    } as any
+    } as const
     return (
-      <Form onSubmit={this.onSubmit}>
-        {isWrap ? <TextArea {...inProps} maxRows={3} /> : <Input {...inProps} />}
-        {error && <Error>{error}</Error>}
-      </Form>
+      <div className={className} ref={ref}>
+        <Form onSubmit={onSubmit}>
+          {isWrap ? <TextArea {...inProps} maxRows={3} /> : <Input {...inProps} />}
+          {error && <Error>{error}</Error>}
+        </Form>
+      </div>
     )
   }
-
-  renderStatic = () => {
-    const {disabled, hideIcon, placeholder} = this.props
-    const value = this.state.value || this.props.initialValue
-    const showPlaceholder = !value && placeholder
-    return (
+  const showPlaceholder = !value && placeholder
+  return (
+    <div className={className} ref={ref}>
       <StaticBlock
         disabled={disabled}
         tabIndex={0}
-        onFocus={() => this.setEditing(true)}
-        onClick={() => this.setEditing(true)}
+        onFocus={() => setEditing(true)}
+        onClick={() => setEditing(true)}
       >
         {showPlaceholder && <Placeholder>{placeholder}</Placeholder>}
         {value && <StaticValue>{value}</StaticValue>}
         {!hideIcon && !disabled && <StyledIcon>edit</StyledIcon>}
       </StaticBlock>
-    )
-  }
-
-  render() {
-    const {className, disabled, error} = this.props
-    const {autoFocus, isEditing} = this.state
-    const showEditing = (error || isEditing || autoFocus) && !disabled
-    return (
-      <div className={className}>{showEditing ? this.renderEditing() : this.renderStatic()}</div>
-    )
-  }
-}
-
+    </div>
+  )
+})
 export default EditableText

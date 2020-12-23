@@ -130,6 +130,7 @@ import pokerRevealVotes from './mutations/pokerRevealVotes'
 import pokerResetDimension from './mutations/pokerResetDimension'
 import pokerAnnounceDeckHover from './mutations/pokerAnnounceDeckHover'
 import pokerSetFinalScore from './mutations/pokerSetFinalScore'
+import movePokerTemplateScaleValue from './mutations/movePokerTemplateScaleValue'
 import updateJiraDimensionField from './mutations/updateJiraDimensionField'
 import persistJiraSearchQuery from './mutations/persistJiraSearchQuery'
 
@@ -273,6 +274,7 @@ export default new GraphQLObjectType<any, Context>({
       pokerResetDimension,
       pokerAnnounceDeckHover,
       pokerSetFinalScore,
+      movePokerTemplateScaleValue,
       updateJiraDimensionField
     } as any)
 })

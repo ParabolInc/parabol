@@ -52,7 +52,7 @@ const Menu = forwardRef((props: Props, ref: any) => {
     portalStatus,
     tabReturns
   } = props
-  const [activeIdx, setActiveIdx] = useState<number | null>(defaultActiveIdx || null)
+  const [activeIdx, setActiveIdx] = useState<number | null>(defaultActiveIdx === undefined ? null : defaultActiveIdx)
   const menuRef = useRef<HTMLDivElement>(null)
   const itemHandles = useRef<{onClick: (e?: React.MouseEvent | React.KeyboardEvent) => void}[]>([])
   const initialDefaultActiveIdxRef = useRef(activeIdx)
