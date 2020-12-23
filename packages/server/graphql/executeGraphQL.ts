@@ -16,7 +16,6 @@ import privateSchema from './intranetSchema/intranetSchema'
 import publicSchema from './rootSchema'
 
 export interface GQLRequest {
-  jobId: string
   authToken: AuthToken
   ip?: string
   socketId?: string
@@ -46,9 +45,7 @@ const LOG_BATCH_SIZE = 50
 const flushLogToDB = async () => {
   if (REQUESTS.length === 0) return
   const r = await getRethink()
-  r.table('GQLRequest')
-    .insert(REQUESTS)
-    .run()
+  r.table('GQLRequest').insert(REQUESTS).run()
   REQUESTS.length = 0
 }
 

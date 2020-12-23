@@ -153,7 +153,7 @@ export type RethinkSchema = {
   }
   SAML: {
     type: SAML
-    index: 'domain'
+    index: 'domains'
   }
   ScheduledJob: {
     type: ScheduledJob

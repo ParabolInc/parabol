@@ -17,6 +17,12 @@ module.exports = {
       'parabol-client': CLIENT_ROOT,
     },
     unsafeCache: true,
+    fallback: {
+      //   os: false,
+      crypto: 'crypto-browserify',
+      util: require.resolve('util'),
+      stream: 'stream-browserify'
+    },
   },
   module: {
     rules: [

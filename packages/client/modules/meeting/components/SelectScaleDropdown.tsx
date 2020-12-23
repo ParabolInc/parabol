@@ -43,21 +43,21 @@ const StyledMenu = styled(Menu)({
 
 const SelectScaleDropdown = (props: Props) => {
   const {menuProps, dimension} = props
-  const {team} = dimension
-  const {scales} = team
-  const defaultActiveIdx = useMemo(() => scales.findIndex(({id}) => id === dimension.selectedScale.id), [dimension])
+  const {closePortal} = menuProps
+  const {selectedScale, team} = dimension
+  const {id: seletedScaleId} = selectedScale
+  const {id: teamId, scales} = team
+  const defaultActiveIdx = useMemo(() => scales.findIndex(({id}) => id === seletedScaleId), [dimension])
 
   const atmosphere = useAtmosphere()
   const {onError, onCompleted, submitting, submitMutation} = useMutationProps()
 
   const addScale = () => {
-    const {menuProps} = props
-    const {closePortal} = menuProps
     if (submitting) return
     submitMutation()
     AddPokerTemplateScaleMutation(
       atmosphere,
-      {teamId: team.id},
+      {teamId},
       {
         onError,
         onCompleted
@@ -70,7 +70,7 @@ const SelectScaleDropdown = (props: Props) => {
     <StyledMenu ariaLabel={'Select the scale for this dimension'} {...menuProps} defaultActiveIdx={defaultActiveIdx}>
       {scales
         .map((scale) => (
-          <ScaleDropdownMenuItem key={scale.id} scale={scale} dimension={dimension} menuProps={menuProps} />
+          <ScaleDropdownMenuItem key={scale.id} scale={scale} dimension={dimension} scaleCount={scales.length} closePortal={closePortal} />
         ))
       }
       <MenuItemHR key='HR1' />

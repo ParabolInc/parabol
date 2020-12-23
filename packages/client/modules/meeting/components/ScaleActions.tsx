@@ -6,7 +6,10 @@ import {Threshold} from '../../../types/constEnums'
 import AddPokerTemplateScaleMutation from '../../../mutations/AddPokerTemplateScaleMutation'
 import RemovePokerTemplateScaleMutation from '../../../mutations/RemovePokerTemplateScaleMutation'
 import styled from '@emotion/styled'
-import {commitLocalUpdate} from 'react-relay'
+import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
+import graphql from 'babel-plugin-relay/macro'
+import {ScaleActions_scale} from '../../../__generated__/ScaleActions_scale.graphql'
+
 
 const CloneAndDelete = styled('div')({
   display: 'flex',
@@ -14,48 +17,59 @@ const CloneAndDelete = styled('div')({
 })
 
 interface Props {
-  scaleId: string
+  scale: ScaleActions_scale
   scaleCount: number
   teamId: string
-  isStarter: boolean
 }
 
 const ScaleActions = (props: Props) => {
   const {
-    scaleId,
+    scale,
     scaleCount,
-    teamId,
-    isStarter
+    teamId
   } = props
+  const {id: scaleId, isStarter} = scale
   const atmosphere = useAtmosphere()
   const {onError, onCompleted, submitting, submitMutation} = useMutationProps()
-  const canClone = scaleCount < Threshold.MAX_RETRO_TEAM_TEMPLATES
-  const canDelete = !isStarter
-  const cloneTooltip = canClone ? (isStarter ? 'Clone a default scale' : 'Edit scale') : 'Too many team templates! Remove one first'
-  const deleteTooltip = canDelete ? 'Delete scale' : 'Sorry you cannot delete a default scale'
+  const canClone = scaleCount < Threshold.MAX_POKER_TEMPLATE_SCALES
+  const cloneTooltip = canClone ? 'Clone default scale' : 'Too many team templates! Remove one first'
   const cloneScale = (e: React.MouseEvent) => {
     e.stopPropagation()
     if (submitting || !canClone) return
     if (isStarter) {
       submitMutation()
       AddPokerTemplateScaleMutation(atmosphere, {parentScaleId: scaleId, teamId}, {onError, onCompleted})
-    } else {
-      commitLocalUpdate(atmosphere, (store) => {
-        store.get(teamId)?.setValue(scaleId, 'editingScaleId')
-      })
     }
+  }
+  const editScale = () => {
+    commitLocalUpdate(atmosphere, (store) => {
+      store.get(teamId)?.setValue(scaleId, 'editingScaleId')
+    })
   }
   const deleteScale = (e: React.MouseEvent) => {
     e.stopPropagation()
-    if (submitting || !canDelete) return
+    if (submitting) return
     submitMutation()
     RemovePokerTemplateScaleMutation(atmosphere, {scaleId}, {}, onError, onCompleted)
   }
   return (
     <CloneAndDelete>
-      <DetailAction disabled={!canClone} icon={isStarter ? 'content_copy' : 'edit'} tooltip={cloneTooltip} onClick={cloneScale} />
-      {canDelete && <DetailAction disabled={!canDelete} icon={'delete'} tooltip={deleteTooltip} onClick={deleteScale} />}
+      {isStarter ?
+        <DetailAction disabled={!canClone} icon={'content_copy'} tooltip={cloneTooltip} onClick={cloneScale} /> :
+        <>
+          <DetailAction icon={'edit'} tooltip={'Edit scale'} onClick={editScale} />
+          <DetailAction icon={'delete'} tooltip={'Delete scale'} onClick={deleteScale} />
+        </>
+      }
     </CloneAndDelete>
   )
 }
-export default ScaleActions
+export default createFragmentContainer(ScaleActions, {
+  scale: graphql`
+    fragment ScaleActions_scale on TemplateScale {
+      id
+      isStarter
+      teamId
+    }
+  `
+})

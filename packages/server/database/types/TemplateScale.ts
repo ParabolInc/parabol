@@ -1,4 +1,5 @@
 import shortid from 'shortid'
+import {PALETTE} from '../../../client/styles/paletteV2'
 import {PokerCards} from '../../../client/types/constEnums'
 import TemplateScaleValue from './TemplateScaleValue'
 
@@ -13,14 +14,12 @@ export interface TemplateScaleInput {
 }
 
 const questionMarkCard = new TemplateScaleValue({
-  color: '#E55CA0',
-  label: PokerCards.QUESTION_CARD as string,
-  isSpecial: true
+  color: PALETTE.POKER_QUESTION_CARD,
+  label: PokerCards.QUESTION_CARD as string
 })
 const passCard = new TemplateScaleValue({
-  color: '#AC72E5',
-  label: PokerCards.PASS_CARD as string,
-  isSpecial: true
+  color: PALETTE.POKER_PASS_CARD,
+  label: PokerCards.PASS_CARD as string
 })
 
 export default class TemplateScale {
