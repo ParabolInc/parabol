@@ -28,7 +28,6 @@ module.exports = {
       'json2csv',
       'jwt-decode',
       'linkify-it',
-      'micro-memoize',
       'mousetrap',
       'ms',
       'oy-vey',
@@ -38,6 +37,7 @@ module.exports = {
       'react-copy-to-clipboard',
       'react-day-picker',
       'react-dom',
+      'react-refresh/runtime',
       'react-dom-confetti',
       // 'react-relay',
       'react-router',
@@ -56,17 +56,22 @@ module.exports = {
       'unicode-substring'
     ]
   },
+  resolve: {
+    fallback: {
+      assert: path.join(PROJECT_ROOT, 'scripts/webpack/assert.js')
+    }
+  },
   output: {
     filename: '[name].dll.js',
     path: DLL_ROOT,
     library: '[name]'
   },
   plugins: [
-    new webpack.DllPlugin({ name: '[name]', path: path.join(DLL_ROOT, '[name].json') }) // eslint-disable-line no-new
+    new webpack.DllPlugin({name: '[name]', path: path.join(DLL_ROOT, '[name].json')}) // eslint-disable-line no-new
   ],
   module: {
     rules: [
-      { test: /\.flow$/, loader: 'ignore-loader' },
+      {test: /\.flow$/, loader: 'ignore-loader'},
       {
         test: /\.mjs$/,
         include: /node_modules/,

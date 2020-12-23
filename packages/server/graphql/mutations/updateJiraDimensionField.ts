@@ -23,6 +23,10 @@ const updateJiraDimensionField = {
       type: GraphQLNonNull(GraphQLID),
       description: 'The cloudId the field lives on'
     },
+    projectKey: {
+      type: GraphQLNonNull(GraphQLID),
+      description: 'The project the field lives on'
+    },
     meetingId: {
       type: GraphQLNonNull(GraphQLID),
       description:
@@ -31,7 +35,7 @@ const updateJiraDimensionField = {
   },
   resolve: async (
     _source,
-    {dimensionId, fieldName, meetingId, cloudId},
+    {dimensionId, fieldName, meetingId, cloudId, projectKey},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) => {
     const r = await getRethink()
@@ -60,7 +64,9 @@ const updateJiraDimensionField = {
     const jiraDimensionFields = team.jiraDimensionFields || []
     const existingDimensionField = jiraDimensionFields.find(
       (dimensionField) =>
-        dimensionField.dimensionId === dimensionId && dimensionField.cloudId === cloudId
+        dimensionField.dimensionId === dimensionId &&
+        dimensionField.cloudId === cloudId &&
+        dimensionField.projectKey === projectKey
     )
     if (existingDimensionField) {
       if (existingDimensionField.fieldName === fieldName) {
@@ -80,7 +86,14 @@ const updateJiraDimensionField = {
       const {id: fieldId, schema} = field
       const type = schema.type as 'string' | 'number'
       jiraDimensionFields.push(
-        new JiraDimensionField({dimensionId, fieldName, fieldId, cloudId, fieldType: type})
+        new JiraDimensionField({
+          dimensionId,
+          fieldName,
+          fieldId,
+          cloudId,
+          fieldType: type,
+          projectKey
+        })
       )
     }
     const MAX_JIRA_DIMENSION_FIELDS = 100 // prevent a-holes from unbounded growth of the Team object
