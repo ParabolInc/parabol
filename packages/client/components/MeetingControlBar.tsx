@@ -88,7 +88,7 @@ const MeetingControlBar = (props: Props) => {
     phases,
     meetingType,
     showSidebar,
-    isRightDrawerOpen
+    isRightDrawerOpen = false
   } = meeting
   const isFacilitating = facilitatorUserId === viewerId && !endedAt
   const {phaseType} = localPhase
@@ -109,12 +109,11 @@ const MeetingControlBar = (props: Props) => {
   const [confirmingButton, setConfirmingButton] = useClickConfirmation()
   const cancelConfirm = confirmingButton ? () => setConfirmingButton('') : undefined
   const tranChildren = useTransition(buttons)
-  const showRightDrawer = isRightDrawerOpen && meetingType === MeetingTypeEnum.poker && phaseType === NewMeetingPhaseTypeEnum.ESTIMATE || false
   const isDesktop = useBreakpoint(Breakpoint.SINGLE_REFLECTION_COLUMN)
   const controlBarWidth = buttons.length * ElementWidth.CONTROL_BAR_BUTTON + ElementWidth.CONTROL_BAR_PADDING * 2
-  const left = useLeft(controlBarWidth, showRightDrawer, showSidebar)
+  const left = useLeft(controlBarWidth, isRightDrawerOpen, showSidebar)
   const controlBarLeft = isDesktop ? left : 0
-  const {onMouseDown, onClickCapture} = useDraggableFixture(showSidebar, showRightDrawer)
+  const {onMouseDown, onClickCapture} = useDraggableFixture(showSidebar, isRightDrawerOpen)
   const ref = useRef<HTMLDivElement>(null)
   useSnackbarPad(ref)
   useCovering(ref)

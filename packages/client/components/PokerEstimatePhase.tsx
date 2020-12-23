@@ -20,6 +20,7 @@ import ResponsiveDashSidebar from './ResponsiveDashSidebar'
 import styled from '@emotion/styled'
 import useGotoStageId from '~/hooks/useGotoStageId'
 import {TaskServiceEnum} from '../types/graphql'
+import useRightDrawer from '~/hooks/useRightDrawer'
 
 const StyledMeetingHeaderAndPhase = styled(MeetingHeaderAndPhase)<{isOpen: boolean}>(
   ({isOpen}) => ({
@@ -30,13 +31,13 @@ const StyledMeetingHeaderAndPhase = styled(MeetingHeaderAndPhase)<{isOpen: boole
 interface Props extends PokerMeetingPhaseProps {
   gotoStageId: ReturnType<typeof useGotoStageId>
   meeting: PokerEstimatePhase_meeting
-  toggleDrawer: () => void
 }
 
 const PokerEstimatePhase = (props: Props) => {
-  const {avatarGroup, meeting, toggleDrawer, toggleSidebar, gotoStageId} = props
-  const {localStage, endedAt, isCommentUnread, isRightDrawerOpen, showSidebar} = meeting
+  const {avatarGroup, meeting, toggleSidebar, gotoStageId} = props
+  const {id: meetingId, localStage, endedAt, isCommentUnread, isRightDrawerOpen, showSidebar} = meeting
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
+  const toggleDrawer = useRightDrawer(meetingId)
   const meetingContentRef = useRef<HTMLDivElement>(null)
   if (!localStage) return null
   const {service} = localStage
