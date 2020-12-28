@@ -5,11 +5,11 @@ import {TierEnum} from 'parabol-client/types/graphql'
 import getSSODomainFromEmail from 'parabol-client/utils/getSSODomainFromEmail'
 import querystring from 'querystring'
 import * as samlify from 'samlify'
-import shortid from 'shortid'
 import getRethink from '../../../database/rethinkDriver'
 import AuthToken from '../../../database/types/AuthToken'
 import SAML from '../../../database/types/SAML'
 import User from '../../../database/types/User'
+import generateUID from '../../../generateUID'
 import encodeAuthToken from '../../../utils/encodeAuthToken'
 import bootstrapNewUser from '../../mutations/helpers/bootstrapNewUser'
 import {SSORelayState} from '../../queries/SAMLIdP'
@@ -79,19 +79,14 @@ const loginSAML = {
       return {error: {message: `Email domain must be ${normalizedDomain}`}}
     }
 
-    const user = await r
-      .table('User')
-      .getAll(email, {index: 'email'})
-      .nth(0)
-      .default(null)
-      .run()
+    const user = await r.table('User').getAll(email, {index: 'email'}).nth(0).default(null).run()
     if (user) {
       return {
         authToken: encodeAuthToken(new AuthToken({sub: user.id, tms: user.tms, rol: user.rol}))
       }
     }
 
-    const userId = `sso|${shortid.generate()}`
+    const userId = `sso|${generateUID()}`
     const newUser = new User({
       id: userId,
       email,

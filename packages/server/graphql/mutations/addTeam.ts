@@ -2,9 +2,9 @@ import {GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel, Threshold} from 'parabol-client/types/constEnums'
 import {SuggestedActionTypeEnum, TierEnum} from 'parabol-client/types/graphql'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
-import shortid from 'shortid'
 import getRethink from '../../database/rethinkDriver'
 import AuthToken from '../../database/types/AuthToken'
+import generateUID from '../../generateUID'
 import removeSuggestedAction from '../../safeMutations/removeSuggestedAction'
 import {getUserId, isUserInOrg} from '../../utils/authorization'
 import encodeAuthToken from '../../utils/encodeAuthToken'
@@ -66,7 +66,7 @@ export default {
       }
 
       // RESOLUTION
-      const teamId = shortid.generate()
+      const teamId = generateUID()
       await createTeamAndLeader(viewerId, {id: teamId, isOnboardTeam: false, ...newTeam})
 
       const {tms} = authToken

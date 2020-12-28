@@ -1,4 +1,3 @@
-import shortid from 'shortid'
 import getRethink from '../../../database/rethinkDriver'
 import AuthToken from '../../../database/types/AuthToken'
 import SuggestedActionCreateNewTeam from '../../../database/types/SuggestedActionCreateNewTeam'
@@ -6,6 +5,7 @@ import SuggestedActionInviteYourTeam from '../../../database/types/SuggestedActi
 import SuggestedActionTryTheDemo from '../../../database/types/SuggestedActionTryTheDemo'
 import TimelineEventJoinedParabol from '../../../database/types/TimelineEventJoinedParabol'
 import User from '../../../database/types/User'
+import generateUID from '../../../generateUID'
 import segmentIo from '../../../utils/segmentIo'
 import addSeedTasks from './addSeedTasks'
 import createNewOrg from './createNewOrg'
@@ -48,8 +48,8 @@ const bootstrapNewUser = async (newUser: User, isOrganic: boolean) => {
 
   const tms = [] as string[]
   if (isOrganic) {
-    const orgId = shortid.generate()
-    const teamId = shortid.generate()
+    const orgId = generateUID()
+    const teamId = generateUID()
     tms.push(teamId) // MUTATIVE
     const validNewTeam = {
       id: teamId,
@@ -62,10 +62,7 @@ const bootstrapNewUser = async (newUser: User, isOrganic: boolean) => {
     await Promise.all([
       createTeamAndLeader(userId, validNewTeam),
       addSeedTasks(userId, teamId),
-      r
-        .table('SuggestedAction')
-        .insert(new SuggestedActionInviteYourTeam({userId, teamId}))
-        .run()
+      r.table('SuggestedAction').insert(new SuggestedActionInviteYourTeam({userId, teamId})).run()
     ])
     segmentIo.track({
       userId,

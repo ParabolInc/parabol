@@ -1,4 +1,4 @@
-import shortid from 'shortid'
+import generateUID from '../../generateUID'
 
 interface Input {
   id?: string
@@ -16,14 +16,8 @@ export default class SAML {
   metadata: string
 
   constructor(input: Input) {
-    const {
-      id,
-      domain,
-      cert,
-      url,
-      metadata
-    } = input
-    this.id = id || shortid.generate()
+    const {id, domain, cert, url, metadata} = input
+    this.id = id || generateUID()
     this.domain = domain
     this.cert = cert
     this.url = url

@@ -1,8 +1,8 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import shortid from 'shortid'
 import removeEntityKeepText from 'parabol-client/utils/draftjs/removeEntityKeepText'
 import getRethink from '../../database/rethinkDriver'
+import generateUID from '../../generateUID'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
@@ -32,10 +32,7 @@ export default {
     if (!isTeamMember(authToken, teamId)) {
       return standardError(new Error('Team not found'), {userId: viewerId})
     }
-    const task = await r
-      .table('Task')
-      .get(taskId)
-      .run()
+    const task = await r.table('Task').get(taskId).run()
     if (!task) {
       return standardError(new Error('Task not found'), {userId: viewerId})
     }
@@ -70,10 +67,7 @@ export default {
       teamId
     }
     await r({
-      newTask: r
-        .table('Task')
-        .get(taskId)
-        .update(updates),
+      newTask: r.table('Task').get(taskId).update(updates),
       taskHistory: r
         .table('TaskHistory')
         .between([taskId, r.minval], [taskId, r.maxval], {
@@ -86,9 +80,7 @@ export default {
           // prepopulated cards will not have a history
           return r.branch(
             taskHistoryRecord.ne(null),
-            r
-              .table('TaskHistory')
-              .insert(taskHistoryRecord.merge(updates, {id: shortid.generate()})),
+            r.table('TaskHistory').insert(taskHistoryRecord.merge(updates, {id: generateUID()})),
             null
           )
         })
