@@ -10,18 +10,19 @@ import useInitialRender from '../hooks/useInitialRender'
 import usePokerCardLocation from '../hooks/usePokerCardLocation'
 import PokerAnnounceDeckHoverMutation from '../mutations/PokerAnnounceDeckHoverMutation'
 import VoteForPokerStoryMutation from '../mutations/VoteForPokerStoryMutation'
-import {PokerCards} from '../types/constEnums'
+import {BezierCurve, PokerCards} from '../types/constEnums'
 import {PokerCardDeck_meeting} from '../__generated__/PokerCardDeck_meeting.graphql'
 import PokerCard from './PokerCard'
+import useLeft from '../hooks/useLeft'
 
-const Deck = styled('div')({
+const Deck = styled('div')<{left: number}>(({left}) => ({
   bottom: 0,
   display: 'flex',
-  left: `calc(50% - ${PokerCards.WIDTH / 2}px)`,
-  position: 'absolute',
-  width: '100%',
+  left,
+  position: 'fixed',
+  transition: `200ms ${BezierCurve.DECELERATE}`,
   zIndex: 1 // TODO remove. needs to be under bottom bar but above dimension bg
-})
+}))
 
 interface Props {
   meeting: PokerCardDeck_meeting
@@ -32,7 +33,7 @@ const PokerCardDeck = (props: Props,) => {
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
   const {meeting, estimateAreaRef} = props
-  const {id: meetingId, localStage} = meeting
+  const {id: meetingId, isRightDrawerOpen,localStage, showSidebar } = meeting
   const {dimension, id: stageId} = localStage
   const scores = localStage.scores!
   const isVoting = localStage.isVoting!
@@ -42,6 +43,7 @@ const PokerCardDeck = (props: Props,) => {
   const totalCards = cards.length
   const [isCollapsed, setIsCollapsed] = useState(!isVoting)
   const [leftEdge, showTransition] = usePokerDeckLeftEdge(estimateAreaRef, isVoting)
+  const left = useLeft(PokerCards.WIDTH, isRightDrawerOpen, showSidebar )
   const isInit = useInitialRender()
   useEffect(() => {
     setIsCollapsed(!isVoting)
@@ -107,7 +109,7 @@ const PokerCardDeck = (props: Props,) => {
   }
 
   return (
-    <Deck ref={deckRef}>
+    <Deck ref={deckRef} left={left}>
       {cards.map((card, idx) => {
         const isSelected = selectedIdx === idx
         const {label} = card
@@ -156,6 +158,7 @@ export default createFragmentContainer(
   meeting: graphql`
     fragment PokerCardDeck_meeting on PokerMeeting {
       id
+      isRightDrawerOpen
       showSidebar
       phases {
         ... on EstimatePhase {

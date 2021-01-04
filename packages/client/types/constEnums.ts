@@ -79,7 +79,8 @@ export const enum Duration {
 }
 
 export const enum ElementWidth {
-  END_MEETING_BUTTON = 90,
+  CONTROL_BAR_BUTTON = 90,
+  CONTROL_BAR_PADDING = 8,
   REFLECTION_CARD = 296,
   REFLECTION_CARD_PADDED = 296,
   REFLECTION_CARD_PADDED_EXPANDED = 592,
@@ -163,7 +164,7 @@ export const enum MathEnum {
 }
 
 export const enum MeetingControlBarEnum {
-  HEIGHT = 56
+  HEIGHT = 56,
 }
 
 export const enum MeetingLabels {

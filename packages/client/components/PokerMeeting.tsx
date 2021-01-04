@@ -1,9 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
-import React, {ReactElement, Suspense, useEffect} from 'react'
-import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
-import useAtmosphere from '~/hooks/useAtmosphere'
-import useBreakpoint from '~/hooks/useBreakpoint'
-import {Breakpoint} from '~/types/constEnums'
+import React, {ReactElement, Suspense} from 'react'
+import { createFragmentContainer} from 'react-relay'
 import {PokerMeeting_meeting} from '~/__generated__/PokerMeeting_meeting.graphql'
 import useMeeting from '../hooks/useMeeting'
 import NewMeetingAvatarGroup from '../modules/meeting/components/MeetingAvatarGroup/NewMeetingAvatarGroup'
@@ -51,32 +48,11 @@ const PokerMeeting = (props: Props) => {
     safeRoute,
     handleMenuClick
   } = useMeeting(meeting)
-  const atmosphere = useAtmosphere()
-  const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const {
-    id: meetingId,
-    isCommentUnread,
-    isRightDrawerOpen,
     showSidebar,
     viewerMeetingMember,
     localPhase
   } = meeting
-
-  const toggleDrawer = () => {
-    commitLocalUpdate(atmosphere, (store) => {
-      const meeting = store.get(meetingId)!
-      if (isRightDrawerOpen && isCommentUnread) {
-        meeting.setValue(false, 'isCommentUnread')
-      }
-      meeting.setValue(!isRightDrawerOpen, 'isRightDrawerOpen')
-    })
-  }
-  useEffect(() => {
-    commitLocalUpdate(atmosphere, (store) => {
-      const meeting = store.get(meetingId)!
-      meeting.setValue(isDesktop, 'isRightDrawerOpen')
-    })
-  }, [isDesktop])
 
   if (!safeRoute) return null
   const {user} = viewerMeetingMember
@@ -89,7 +65,6 @@ const PokerMeeting = (props: Props) => {
       <ResponsiveDashSidebar isOpen={showSidebar} onToggle={toggleSidebar}>
         <PokerMeetingSidebar
           gotoStageId={gotoStageId}
-          
           handleMenuClick={handleMenuClick}
           toggleSidebar={toggleSidebar}
           meeting={meeting}
@@ -99,7 +74,6 @@ const PokerMeeting = (props: Props) => {
         <Phase
           gotoStageId={gotoStageId}
           meeting={meeting}
-          toggleDrawer={toggleDrawer}
           toggleSidebar={toggleSidebar}
           avatarGroup={
             <NewMeetingAvatarGroup
@@ -118,7 +92,6 @@ const PokerMeeting = (props: Props) => {
         meeting={meeting}
         handleGotoNext={handleGotoNext}
         gotoStageId={gotoStageId}
-        isRightDrawerOpen={isRightDrawerOpen}
       />
     </MeetingStyles>
   )
@@ -137,8 +110,6 @@ export default createFragmentContainer(PokerMeeting, {
       id
       # hack to initialize local state (clientField needs to be on non-id domain state. thx relay)
       init: id @__clientField(handle: "localPoker")
-      isCommentUnread
-      isRightDrawerOpen
       localPhase {
         phaseType
       }
