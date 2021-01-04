@@ -2,8 +2,9 @@ import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
 import {RecordProxy} from 'relay-runtime'
 import {PALETTE} from '../styles/paletteV2'
-import {IEstimatePhase, IPokerMeeting, ITemplateDimension, NewMeetingPhaseTypeEnum} from '../types/graphql'
+import {IEstimatePhase, IPokerMeeting, NewMeetingPhaseTypeEnum} from '../types/graphql'
 import {StandardMutation} from '../types/relayMutations'
+import clientTempId from '../utils/relay/clientTempId'
 import createProxyRecord from '../utils/relay/createProxyRecord'
 import {UpdatePokerScopeMutation as TUpdatePokerScopeMutation} from '../__generated__/UpdatePokerScopeMutation.graphql'
 
@@ -85,8 +86,13 @@ const UpdatePokerScopeMutation: StandardMutation<TUpdatePokerScopeMutation> = (
       const estimatePhase = phases.find((phase) => phase.getValue('phaseType') === NewMeetingPhaseTypeEnum.ESTIMATE) as RecordProxy<IEstimatePhase>
       const stages = estimatePhase.getLinkedRecords('stages')
       const [firstStage] = stages
-      let dimension = firstStage?.getLinkedRecord<ITemplateDimension>('dimension')
-      if (!dimension) {
+      const dimensionIds = [] as string[]
+      if (firstStage) {
+        const firstStageServiceTaskId = firstStage.getValue('serviceTaskId')
+        const stagesForServiceTaskId = stages.filter((stage) => stage.getValue('serviceTaskId') === firstStageServiceTaskId)
+        const prevDimensionIds = stagesForServiceTaskId.map((stage) => stage.getValue('dimensionId'))
+        dimensionIds.push(...prevDimensionIds)
+      } else {
         const value = createProxyRecord(store, 'TemplateScaleValue', {
           color: PALETTE.BACKGROUND_GRAY,
           label: '#'
@@ -94,11 +100,14 @@ const UpdatePokerScopeMutation: StandardMutation<TUpdatePokerScopeMutation> = (
         const selectedScale = createProxyRecord(store, 'TemplateScale', {
 
         })
+        const dimensionId = clientTempId()
         selectedScale.setLinkedRecords([value], 'values')
-        dimension = createProxyRecord(store, 'TeplateDimension', {
+        const dimension = createProxyRecord(store, 'TemplateDimension', {
+          id: dimensionId,
           name: 'Loading'
-        }) as any
+        })
         dimension.setLinkedRecord(selectedScale, 'selectedScale')
+        dimensionIds.push(dimensionId)
       }
       updates.forEach((update) => {
         const {service, serviceTaskId, action} = update
@@ -113,27 +122,31 @@ const UpdatePokerScopeMutation: StandardMutation<TUpdatePokerScopeMutation> = (
             type: 'number'
           })
 
-          const nextEstimateStage = createProxyRecord(store, 'EstimateStage', {
-            creatorUserId: viewerId,
-            service,
-            serviceTaskId,
-            sortOrder: lastSortOrder + 1,
-            durations: undefined,
-            dimensionId: '',
-            teamId,
-            meetingId
+          const newStages = dimensionIds.map((dimensionId) => {
+            const nextEstimateStage = createProxyRecord(store, 'EstimateStage', {
+              creatorUserId: viewerId,
+              service,
+              serviceTaskId,
+              sortOrder: lastSortOrder + 1,
+              durations: undefined,
+              dimensionId,
+              teamId,
+              meetingId
+            })
+            nextEstimateStage.setLinkedRecords([], 'scores')
+            nextEstimateStage.setLinkedRecords([], 'hoveringUsers')
+            nextEstimateStage.setLinkedRecord(serviceField, 'serviceField')
+            nextEstimateStage.setLinkedRecord(store.get(dimensionId)!, 'dimension')
+            const story = store.get(serviceTaskId)
+            if (story) {
+              nextEstimateStage.setLinkedRecord(story, 'story')
+            }
+            return nextEstimateStage
           })
-          nextEstimateStage.setLinkedRecords([], 'scores')
-          nextEstimateStage.setLinkedRecords([], 'hoveringUsers')
-          nextEstimateStage.setLinkedRecord(serviceField, 'serviceField')
-          nextEstimateStage.setLinkedRecord(dimension, 'dimension')
-          const story = store.get(serviceTaskId)
-          if (story) {
-            nextEstimateStage.setLinkedRecord(story, 'story')
-          }
+
           const nextStages = [
             ...estimatePhase.getLinkedRecords('stages'),
-            nextEstimateStage
+            ...newStages
           ]
           estimatePhase.setLinkedRecords(nextStages, 'stages')
         } else if (action === 'DELETE') {

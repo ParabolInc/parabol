@@ -5,6 +5,23 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 5.29.1 2020-Dec-23
+
+### Fixed
+
+- Bug on non-poker meeting summary
+## 5.29.0 2020-Dec-22
+
+### Added
+
+- Support for multi-domain SAML (#4478)
+### Changed
+
+- Upgrade to Webpack v5 (#4455, #4477)
+
+### Fixed
+
+- Scale UI Fixups (#4472)
 ## 5.28.0 2020-Dec-17
 
 ### Added
@@ -23,6 +40,12 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 ### Fixed
 
 - Fixed reactji spacing #4427
+- User cannot update their preferred name #4456
+- User cannot clone a public scale #4458
+- Sprint Poker: can’t add Parabol tasks when integrated with Jira #4461
+- Sprint Poker: can’t add new Jira tasks in Scope view
+- Sprint Poker: Parabol task edits persist in Estimate phase #4464
+- Thread empty state mentions tasks conditionally
 
 ## 5.27.0 2020-Dec-09
 

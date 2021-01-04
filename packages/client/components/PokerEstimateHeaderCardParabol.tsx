@@ -1,5 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
+import {convertToRaw} from 'draft-js'
 import React, {useEffect, useRef, useState} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import TaskIntegrationLink from '~/components/TaskIntegrationLink'
@@ -9,14 +10,17 @@ import useTaskChildFocus from '~/hooks/useTaskChildFocus'
 import {Elevation} from '~/styles/elevation'
 import {PALETTE} from '~/styles/paletteV2'
 import {Breakpoint} from '~/types/constEnums'
+import isAndroid from '~/utils/draftjs/isAndroid'
+import useAtmosphere from '../hooks/useAtmosphere'
+import UpdateTaskMutation from '../mutations/UpdateTaskMutation'
 import {ICON_SIZE} from '../styles/typographyV2'
-import {ITask} from '../types/graphql'
+import {AreaEnum, ITask} from '../types/graphql'
+import convertToTaskContent from '../utils/draftjs/convertToTaskContent'
 import {PokerEstimateHeaderCardParabol_stage} from '../__generated__/PokerEstimateHeaderCardParabol_stage.graphql'
 import CardButton from './CardButton'
 import Icon from './Icon'
 import IconLabel from './IconLabel'
 import TaskEditor from './TaskEditor/TaskEditor'
-
 const HeaderCardWrapper = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   display: 'flex',
   padding: isDesktop ? '0px 16px 4px' : '0px 8px 4px'
@@ -91,6 +95,7 @@ const PokerEstimateHeaderCardParabol = (props: Props) => {
   const {story} = stage
   const {content, id: taskId, teamId} = story as unknown as ITask
   const integration = story!.integration
+  const atmosphere = useAtmosphere()
   const [isExpanded, setIsExpanded] = useState(false)
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const [editorState, setEditorState] = useEditorState(content)
@@ -99,7 +104,33 @@ const PokerEstimateHeaderCardParabol = (props: Props) => {
   const maxHeight = descriptionRef.current?.scrollHeight ?? 1000
   useEffect(() => () => {setIsExpanded(false)}, [taskId])
   const {useTaskChild} = useTaskChildFocus(taskId)
-
+  const onBlur = () => {
+    if (isAndroid) {
+      const editorEl = editorRef.current
+      if (!editorEl || editorEl.type !== 'textarea') return
+      const {value} = editorEl
+      if (!value) return
+      const initialContentState = editorState.getCurrentContent()
+      const initialText = initialContentState.getPlainText()
+      if (initialText === value) return
+      const updatedTask = {
+        id: taskId,
+        content: convertToTaskContent(value)
+      }
+      UpdateTaskMutation(atmosphere, {updatedTask, area: AreaEnum.meeting}, {})
+      return
+    }
+    const nextContentState = editorState.getCurrentContent()
+    const hasText = nextContentState.hasText()
+    if (!hasText) return
+    const nextContent = JSON.stringify(convertToRaw(nextContentState))
+    if (nextContent === content) return
+    const updatedTask = {
+      id: taskId,
+      content: nextContent
+    }
+    UpdateTaskMutation(atmosphere, {updatedTask, area: AreaEnum.meeting}, {})
+  }
   return (
     <>
       <HeaderCardWrapper isDesktop={isDesktop}>
@@ -109,6 +140,7 @@ const PokerEstimateHeaderCardParabol = (props: Props) => {
               ref={descriptionRef}
               isExpanded={isExpanded}
               maxHeight={maxHeight}
+              onBlur={onBlur}
             >
               <StyledTaskEditor
                 dataCy={`task`}

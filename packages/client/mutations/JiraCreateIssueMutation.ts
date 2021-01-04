@@ -17,8 +17,11 @@ graphql`
   fragment JiraCreateIssueMutation_meeting on JiraCreateIssuePayload {
     jiraIssue {
       id
+      cloudId
       key
       summary
+      title
+      descriptionHTML
       url
     }
     meetingId
@@ -70,11 +73,14 @@ const JiraCreateIssueMutation = (
       jiraCreateIssueUpdater(payload, context)
     },
     optimisticUpdater: (store) => {
-      const {teamId, meetingId, projectKey, summary} = variables
+      const {cloudId, teamId, meetingId, projectKey, summary} = variables
       const optimisticJiraIssue = createProxyRecord(store, 'JiraIssue', {
+        cloudId,
+        url: '',
         key: `${projectKey}-?`,
         summary,
-        url: ''
+        title: summary,
+        descriptionHTML: ''
       })
       const payload = createProxyRecord(store, 'payload', {})
       payload.setLinkedRecord(optimisticJiraIssue, 'jiraIssue')

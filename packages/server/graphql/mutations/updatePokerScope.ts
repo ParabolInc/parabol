@@ -1,5 +1,6 @@
 import {GraphQLID, GraphQLList, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel, Threshold} from 'parabol-client/types/constEnums'
+import {TaskServiceEnum} from '../../../client/types/graphql'
 import getJiraCloudIdAndKey from '../../../client/utils/getJiraCloudIdAndKey'
 import getRethink from '../../database/rethinkDriver'
 import EstimatePhase from '../../database/types/EstimatePhase'
@@ -57,7 +58,7 @@ const updatePokerScope = {
     }
 
     // RESOLUTION
-    const requiredMappers = [] as {
+    const requiredJiraMappers = [] as {
       cloudId: string
       projectKey: string
       issueKey: string
@@ -95,16 +96,18 @@ const updatePokerScope = {
         stages.push(...newStages)
         const [cloudId, issueKey, projectKey] = getJiraCloudIdAndKey(serviceTaskId)
         const firstDimensionId = dimensions[0].id
-        const existingMapper = requiredMappers.find((mapper) => {
-          // only attempt the first dimension. the other dimensions will default to comment
-          return (
-            mapper.cloudId === cloudId &&
-            mapper.projectKey === projectKey &&
-            mapper.dimensionId === firstDimensionId
-          )
-        })
-        if (!existingMapper) {
-          requiredMappers.push({cloudId, issueKey, projectKey, dimensionId: firstDimensionId})
+        if (service === TaskServiceEnum.jira) {
+          const existingMapper = requiredJiraMappers.find((mapper) => {
+            // only attempt the first dimension. the other dimensions will default to comment
+            return (
+              mapper.cloudId === cloudId &&
+              mapper.projectKey === projectKey &&
+              mapper.dimensionId === firstDimensionId
+            )
+          })
+          if (!existingMapper) {
+            requiredJiraMappers.push({cloudId, issueKey, projectKey, dimensionId: firstDimensionId})
+          }
         }
       } else if (action === 'DELETE') {
         const stagesToRemove = stages.filter((stage) => stage.serviceTaskId === serviceTaskId)
@@ -120,7 +123,7 @@ const updatePokerScope = {
       }
     })
 
-    await ensureJiraDimensionField(requiredMappers, teamId, viewerId, dataLoader)
+    await ensureJiraDimensionField(requiredJiraMappers, teamId, viewerId, dataLoader)
     if (stages.length > Threshold.MAX_POKER_STORIES) {
       return {error: {message: 'Story limit reached'}}
     }

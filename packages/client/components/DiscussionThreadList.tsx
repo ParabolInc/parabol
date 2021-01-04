@@ -69,7 +69,10 @@ const DiscussionThreadList = forwardRef((props: Props, ref: any) => {
     return (
       <EmptyWrapper>
         <HeaderBlock />
-        <DiscussionThreadListEmptyState isEndedMeeting={!!endedAt} />
+        <DiscussionThreadListEmptyState
+          hasTasks={meetingType !== MeetingTypeEnum.poker}
+          isEndedMeeting={!!endedAt}
+        />
         <CommentingStatusBlock>
           <CommentingStatusText preferredNames={preferredNames} />
         </CommentingStatusBlock>

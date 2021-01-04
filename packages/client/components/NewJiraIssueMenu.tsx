@@ -69,7 +69,10 @@ interface Props {
   userId: string
 }
 
-const getValue = (item: any) => (item.projectName || item.nameWithOwner).toLowerCase()
+const getValue = (item: {projectName?: string, nameWithOwner?: string}) => {
+  const repoName = item.projectName || item.nameWithOwner || 'Unknown Project'
+  return repoName.toLowerCase()
+}
 
 const NewJiraIssueMenu = (props: Props) => {
   const {handleSelectProjectKey, menuProps, suggestedIntegrations, teamId, userId} = props

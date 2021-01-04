@@ -10,13 +10,15 @@ import {EditableTemplateScaleValueLabel_scaleValue} from '~/__generated__/Editab
 import {EditableTemplateScaleValueLabel_scale} from '~/__generated__/EditableTemplateScaleValueLabel_scale.graphql'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
+import isSpecialPokerLabel from '../../../utils/isSpecialPokerLabel'
 
-const StyledEditableText = styled(EditableText)({
+const StyledEditableText = styled(EditableText)<{disabled: boolean | undefined}>(({disabled}) => ({
   fontFamily: PALETTE.TEXT_MAIN,
   fontSize: 14,
   lineHeight: '24px',
-  padding: 0
-})
+  padding: 0,
+  userSelect: disabled ? 'none' : 'auto'
+}))
 
 interface Props {
   isHover: boolean
@@ -67,6 +69,7 @@ const EditableTemplateScaleValueLabel = (props: Props) => {
 
   return (
     <StyledEditableText
+      disabled={isSpecialPokerLabel(scaleValue.label)}
       error={error?.message}
       hideIcon={!isHover}
       handleSubmit={handleSubmit}

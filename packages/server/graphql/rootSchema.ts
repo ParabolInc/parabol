@@ -1,6 +1,4 @@
-import fs from 'fs'
 import {GraphQLSchema} from 'graphql'
-import path from 'path'
 import mutation from './rootMutation'
 import query from './rootQuery'
 import subscription from './rootSubscription'
@@ -15,6 +13,7 @@ import Comment from './types/Comment'
 import DiscussPhase from './types/DiscussPhase'
 import EstimatePhase from './types/EstimatePhase'
 import GenericMeetingPhase from './types/GenericMeetingPhase'
+import MeetingTemplate from './types/MeetingTemplate'
 import NotificationTeamInvitation from './types/NotificationTeamInvitation'
 import NotifyPromoteToOrgLeader from './types/NotifyPromoteToOrgLeader'
 import PokerMeetingSettings from './types/PokerMeetingSettings'
@@ -24,7 +23,6 @@ import RetroPhaseItem from './types/RetroPhaseItem'
 import RetrospectiveMeeting from './types/RetrospectiveMeeting'
 import RetrospectiveMeetingMember from './types/RetrospectiveMeetingMember'
 import RetrospectiveMeetingSettings from './types/RetrospectiveMeetingSettings'
-import MeetingTemplate from './types/MeetingTemplate'
 import SuggestedActionCreateNewTeam from './types/SuggestedActionCreateNewTeam'
 import SuggestedActionInviteYourTeam from './types/SuggestedActionInviteYourTeam'
 import SuggestedActionTryActionMeeting from './types/SuggestedActionTryActionMeeting'
@@ -40,20 +38,6 @@ import TimelineEventJoinedParabol from './types/TimelineEventJoinedParabol'
 import TimelineEventPokerComplete from './types/TimelineEventPokerComplete'
 import TimelineEventTeamCreated from './types/TimelineEventTeamCreated'
 import UpdatesPhase from './types/UpdatesPhase'
-
-if (module.hot) {
-  // every time this module gets loaded, see if it's different from it's previous version.
-  if (!global.hmrSchema) {
-    // relative to the build path
-    const PROJECT_ROOT = path.join(__dirname, '../')
-    const SCHEMA = path.join(PROJECT_ROOT, 'schema.graphql')
-    global.hmrSchema = fs.readFileSync(SCHEMA).toString()
-  }
-  // update on restart since schema might have changed
-  const updateGQLSchema = require('../utils/updateGQLSchema').default
-  updateGQLSchema({delay: 3000, oldSchema: global.hmrSchema})
-}
-
 export default new GraphQLSchema({
   query,
   mutation,

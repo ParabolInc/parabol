@@ -48,7 +48,7 @@ module.exports = {
   target: 'node',
   externals: [
     nodeExternals({
-      whitelist: [/parabol-client/, '/parabol-server/']
+      allowlist: [/parabol-client/, '/parabol-server/']
     })
   ],
   module: {

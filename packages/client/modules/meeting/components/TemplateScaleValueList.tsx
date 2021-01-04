@@ -4,10 +4,10 @@ import React from 'react'
 import {DragDropContext, Droppable, Draggable, DropResult} from 'react-beautiful-dnd'
 import {createFragmentContainer} from 'react-relay'
 import {TemplateScaleValueList_scale} from '~/__generated__/TemplateScaleValueList_scale.graphql'
-import isSpecialPokerLabel from '../../../utils/isSpecialPokerLabel'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
 import MovePokerTemplateScaleValueMutation from '../../../mutations/MovePokerTemplateScaleValueMutation'
+import isSpecialPokerLabel from '../../../utils/isSpecialPokerLabel'
 import AddScaleValueButtonInput from './AddScaleValueButtonInput'
 import TemplateScaleValueItem from './TemplateScaleValueItem'
 
@@ -83,6 +83,15 @@ const TemplateScaleValueList = (props: Props) => {
         </Droppable>
       </DragDropContext>
       <AddScaleValueButtonInput scale={scale} />
+      {values
+        .filter(({label}) => isSpecialPokerLabel(label))
+        .map((scaleValue) => (
+          <TemplateScaleValueItem
+            scale={scale}
+            scaleValue={scaleValue}
+            isDragging={false}
+          />
+        ))}
     </ScaleList>
   )
 }
