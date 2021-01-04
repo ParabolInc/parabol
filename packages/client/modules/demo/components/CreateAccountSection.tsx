@@ -1,9 +1,8 @@
-import EmailBorderBottom from 'parabol-server/email/components/SummaryEmail/MeetingSummaryEmail/EmailBorderBottom'
-import emailDir from 'parabol-server/email/emailDir'
-import {emailFontFamily, emailPrimaryButtonStyle, emailTableBase} from 'parabol-server/email/styles'
+import EmailBorderBottom from '../../email/components/SummaryEmail/MeetingSummaryEmail/EmailBorderBottom'
+import {emailFontFamily, emailPrimaryButtonStyle, emailTableBase} from '../../email/styles'
 import React from 'react'
 import {PALETTE} from '~/styles/paletteV2'
-import {LocalStorageKey} from '~/types/constEnums'
+import {ExternalLinks, LocalStorageKey} from '~/types/constEnums'
 
 const tableStyle = {
   ...emailTableBase,
@@ -73,7 +72,7 @@ const features = [
 ]
 
 const makeFeatureRow = (featureIconFile, featureCopy, idx) => {
-  const src = `${emailDir}${featureIconFile}`
+  const src = `${ExternalLinks.EMAIL_CDN}${featureIconFile}`
   return (
     <tr key={`feature${idx}`}>
       <td style={featureIconCellStyle} width={iconSize}>

@@ -11,7 +11,7 @@ import teamInviteEmailCreator from '../../email/teamInviteEmailCreator'
 import removeSuggestedAction from '../../safeMutations/removeSuggestedAction'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import getBestInvitationMeeting from '../../utils/getBestInvitationMeeting'
-import makeAppLink from '../../utils/makeAppLink'
+import makeAppURL from 'parabol-client/utils/makeAppURL'
 import publish from '../../utils/publish'
 import segmentIo from '../../utils/segmentIo'
 import standardError from '../../utils/standardError'
@@ -19,6 +19,7 @@ import {GQLContext} from '../graphql'
 import rateLimit from '../rateLimit'
 import GraphQLEmailType from '../types/GraphQLEmailType'
 import InviteToTeamPayload from '../types/InviteToTeamPayload'
+import appOrigin from '../../appOrigin'
 
 const randomBytes = promisify(crypto.randomBytes, crypto)
 
@@ -114,17 +115,18 @@ export default {
       const bestMeeting = await getBestInvitationMeeting(teamId, meetingId, dataLoader)
 
       // send emails
-      const params = {
+      const searchParams = {
         utm_source: 'invite email',
         utm_medium: 'email',
         utm_campaign: 'invitations'
       }
-      const options = {params}
+      const options = {searchParams}
       const emailResults = await Promise.all(
         teamInvitationsToInsert.map((invitation) => {
           const user = users.find((user) => user.email === invitation.email)
           const {html, subject, body} = teamInviteEmailCreator({
-            inviteLink: makeAppLink(`team-invitation/${invitation.token}`, options),
+            appOrigin,
+            inviteLink: makeAppURL(appOrigin, `team-invitation/${invitation.token}`, options),
             inviteeName: user ? user.preferredName : '',
             inviteeEmail: invitation.email,
             inviterName: inviter.preferredName,

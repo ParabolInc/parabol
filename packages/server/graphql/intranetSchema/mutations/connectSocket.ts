@@ -15,6 +15,7 @@ export interface UserPresence {
   serverId: string
   socketId: string
 }
+const serverId = process.env.SERVER_ID
 export default {
   name: 'ConnectSocket',
   description: 'a server-side mutation called when a client connects',
@@ -50,7 +51,7 @@ export default {
     }
     const socketCount = await redis.rpush(
       `presence:${userId}`,
-      JSON.stringify({lastSeenAtURL: null, serverId: 'server1', socketId} as UserPresence)
+      JSON.stringify({lastSeenAtURL: null, serverId, socketId} as UserPresence)
     )
 
     // If this is the first socket, tell everyone they're online

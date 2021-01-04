@@ -13,11 +13,12 @@ import updateStage from '../../database/updateStage'
 import AtlassianServerManager from '../../utils/AtlassianServerManager'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import getJiraCloudIdAndKey from '../../../client/utils/getJiraCloudIdAndKey'
-import makeAppLink from '../../utils/makeAppLink'
+import makeAppURL from 'parabol-client/utils/makeAppURL'
 import makeScoreJiraComment from '../../utils/makeScoreJiraComment'
 import publish from '../../utils/publish'
 import {GQLContext} from '../graphql'
 import PokerSetFinalScorePayload from '../types/PokerSetFinalScorePayload'
+import appOrigin from '../../appOrigin'
 
 const pokerSetFinalScore = {
   type: GraphQLNonNull(PokerSetFinalScorePayload),
@@ -105,22 +106,20 @@ const pokerSetFinalScore = {
         return {error: {message: 'User no longer has access to Atlassian'}}
       }
       const {accessToken} = auth
-      const [cloudId, issueKey] = getJiraCloudIdAndKey(serviceTaskId)
+      const [cloudId, issueKey, projectKey] = getJiraCloudIdAndKey(serviceTaskId)
       const manager = new AtlassianServerManager(accessToken)
       const team = await dataLoader.get('teams').load(teamId)
       const jiraDimensionFields = team.jiraDimensionFields || []
       const dimensionField = jiraDimensionFields.find(
         (dimensionField) =>
-          dimensionField.dimensionId === dimensionId && dimensionField.cloudId === cloudId
+          dimensionField.dimensionId === dimensionId &&
+          dimensionField.cloudId === cloudId &&
+          dimensionField.projectKey === projectKey
       )
-      // should never have to use default
-      const fieldName = dimensionField?.fieldName ?? SprintPokerDefaults.JIRA_FIELD_DEFAULT
+      const fieldName = dimensionField?.fieldName ?? SprintPokerDefaults.JIRA_FIELD_COMMENT
       if (fieldName === SprintPokerDefaults.JIRA_FIELD_COMMENT) {
-        const dimensionsPerStageIdx = stages.filter((stage) => stage.dimensionId === dimensionId)
-          .length
-        const stageIdx = stages.findIndex((stage) => stage.id === stageId) + 1
-        const routeIdx = Math.ceil(stageIdx / dimensionsPerStageIdx)
-        const discussionURL = makeAppLink(`meet/${meetingId}/estimate/${routeIdx}`)
+        const stageIdx = stages.findIndex((stage) => stage.id === stageId)
+        const discussionURL = makeAppURL(appOrigin, `meet/${meetingId}/estimate/${stageIdx + 1}`)
         const res = await manager.addComment(
           cloudId,
           issueKey,

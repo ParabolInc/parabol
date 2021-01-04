@@ -1,6 +1,6 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import {MeetingTypeEnum, NewMeetingPhaseTypeEnum} from 'parabol-client/types/graphql'
+import {MeetingMember, MeetingTypeEnum, NewMeetingPhaseTypeEnum} from 'parabol-client/types/graphql'
 import isPhaseComplete from 'parabol-client/utils/meetings/isPhaseComplete'
 import EstimatePhase from '../../database/types/EstimatePhase'
 import MeetingPoker from '../../database/types/MeetingPoker'
@@ -9,6 +9,7 @@ import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import {GQLContext} from '../graphql'
 import PokerResetDimensionPayload from '../types/PokerResetDimensionPayload'
+import sendPokerMeetingRevoteToSegment from './helpers/sendPokerMeetingRevoteToSegment'
 
 const pokerResetDimension = {
   type: GraphQLNonNull(PokerResetDimensionPayload),
@@ -87,6 +88,10 @@ const pokerResetDimension = {
     const updater = (estimateStage) => estimateStage.merge(updates)
     await updateStage(meetingId, stageId, updater)
     const data = {meetingId, stageId}
+
+    const meetingMembers = await dataLoader.get('meetingMembersByMeetingId').load(meetingId)
+    sendPokerMeetingRevoteToSegment(meeting, meetingMembers as MeetingMember[])
+
     publish(SubscriptionChannel.MEETING, meetingId, 'PokerResetDimensionSuccess', data, subOptions)
     return data
   }

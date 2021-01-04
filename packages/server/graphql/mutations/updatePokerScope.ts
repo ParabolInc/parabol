@@ -1,10 +1,13 @@
 import {GraphQLID, GraphQLList, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel, Threshold} from 'parabol-client/types/constEnums'
+import {TaskServiceEnum} from '../../../client/types/graphql'
+import getJiraCloudIdAndKey from '../../../client/utils/getJiraCloudIdAndKey'
 import getRethink from '../../database/rethinkDriver'
 import EstimatePhase from '../../database/types/EstimatePhase'
 import EstimateStage from '../../database/types/EstimateStage'
 import MeetingPoker from '../../database/types/MeetingPoker'
 import {getUserId, isTeamMember} from '../../utils/authorization'
+import ensureJiraDimensionField from '../../utils/ensureJiraDimensionField'
 import getRedis from '../../utils/getRedis'
 import isRecordActiveForMeeting from '../../utils/isRecordActiveForMeeting'
 import publish from '../../utils/publish'
@@ -55,6 +58,12 @@ const updatePokerScope = {
     }
 
     // RESOLUTION
+    const requiredJiraMappers = [] as {
+      cloudId: string
+      projectKey: string
+      issueKey: string
+      dimensionId: string
+    }[]
     const estimatePhase = phases.find((phase) => phase.phaseType === 'ESTIMATE') as EstimatePhase
     let stages = estimatePhase.stages
     const allDimensions = await dataLoader.get('templateDimensionsByTemplateId').load(templateId)
@@ -85,6 +94,21 @@ const updatePokerScope = {
         )
         // MUTATIVE
         stages.push(...newStages)
+        const [cloudId, issueKey, projectKey] = getJiraCloudIdAndKey(serviceTaskId)
+        const firstDimensionId = dimensions[0].id
+        if (service === TaskServiceEnum.jira) {
+          const existingMapper = requiredJiraMappers.find((mapper) => {
+            // only attempt the first dimension. the other dimensions will default to comment
+            return (
+              mapper.cloudId === cloudId &&
+              mapper.projectKey === projectKey &&
+              mapper.dimensionId === firstDimensionId
+            )
+          })
+          if (!existingMapper) {
+            requiredJiraMappers.push({cloudId, issueKey, projectKey, dimensionId: firstDimensionId})
+          }
+        }
       } else if (action === 'DELETE') {
         const stagesToRemove = stages.filter((stage) => stage.serviceTaskId === serviceTaskId)
         if (stagesToRemove.length > 0) {
@@ -99,6 +123,7 @@ const updatePokerScope = {
       }
     })
 
+    await ensureJiraDimensionField(requiredJiraMappers, teamId, viewerId, dataLoader)
     if (stages.length > Threshold.MAX_POKER_STORIES) {
       return {error: {message: 'Story limit reached'}}
     }

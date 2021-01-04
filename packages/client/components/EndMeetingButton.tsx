@@ -33,7 +33,7 @@ interface Props {
 }
 
 const EndMeetingButtonStyles = styled(BottomNavControl)({
-  width: ElementWidth.END_MEETING_BUTTON
+  width: ElementWidth.CONTROL_BAR_BUTTON
 })
 
 const EndMeetingButton = forwardRef((props: Props, ref: Ref<HTMLButtonElement>) => {

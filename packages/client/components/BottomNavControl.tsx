@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import {TransitionStatus} from '~/hooks/useTransition'
-import {BezierCurve} from '~/types/constEnums'
+import {BezierCurve, ElementWidth} from '~/types/constEnums'
 import FlatButton, {FlatButtonProps} from './FlatButton'
 import {PALETTE} from '../styles/paletteV2'
 
@@ -18,7 +18,7 @@ const BottomNavControl = styled(FlatButton)<Props>((props) => {
     border: 0,
     borderRadius: 0,
     minHeight: 56,
-    width: status === TransitionStatus.MOUNTED || status === TransitionStatus.EXITING ? 0 : 90,
+    width: status === TransitionStatus.MOUNTED || status === TransitionStatus.EXITING ? 0 : ElementWidth.CONTROL_BAR_BUTTON,
     opacity: confirming
       ? 0.5
       : status === TransitionStatus.MOUNTED || status === TransitionStatus.EXITING

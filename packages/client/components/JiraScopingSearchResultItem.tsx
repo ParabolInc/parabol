@@ -8,8 +8,10 @@ import UpdatePokerScopeMutation from '../mutations/UpdatePokerScopeMutation'
 import {PALETTE} from '../styles/paletteV2'
 import {Threshold} from '../types/constEnums'
 import {AddOrDeleteEnum, TaskServiceEnum} from '../types/graphql'
+import isTempId from '../utils/relay/isTempId'
 import {JiraScopingSearchResultItem_issue} from '../__generated__/JiraScopingSearchResultItem_issue.graphql'
 import Checkbox from './Checkbox'
+import Ellipsis from './Ellipsis/Ellipsis'
 
 const Item = styled('div')({
   cursor: 'pointer',
@@ -54,8 +56,9 @@ const JiraScopingSearchResultItem = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {onCompleted, onError, submitMutation, submitting} = useMutationProps()
   const disabled = !isSelected && usedServiceTaskIds.size >= Threshold.MAX_POKER_STORIES
+  const isTemp = isTempId(serviceTaskId)
   const onClick = () => {
-    if (submitting || disabled) return
+    if (submitting || disabled || isTemp) return
     submitMutation()
     const variables = {
       meetingId,
@@ -75,7 +78,7 @@ const JiraScopingSearchResultItem = (props: Props) => {
   }
   return (
     <Item onClick={onClick} >
-      <Checkbox active={isSelected} disabled={disabled} />
+      <Checkbox active={isSelected || isTemp} disabled={disabled} />
       <Issue>
         <Title>{summary}</Title>
         <StyledLink
@@ -85,6 +88,7 @@ const JiraScopingSearchResultItem = (props: Props) => {
           title={`Jira Issue #${key}`}
         >
           {key}
+          {isTemp && <Ellipsis />}
         </StyledLink>
       </Issue>
     </Item>

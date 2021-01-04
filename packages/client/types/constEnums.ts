@@ -78,7 +78,8 @@ export const enum Duration {
 }
 
 export const enum ElementWidth {
-  END_MEETING_BUTTON = 90,
+  CONTROL_BAR_BUTTON = 90,
+  CONTROL_BAR_PADDING = 8,
   REFLECTION_CARD = 296,
   REFLECTION_CARD_PADDED = 296,
   REFLECTION_CARD_PADDING = 6
@@ -89,6 +90,7 @@ export const enum ElementHeight {
 }
 
 export const enum ExternalLinks {
+  EMAIL_CDN = 'https://action-files.parabol.co/static/email/',
   PRICING_LINK = 'https://www.parabol.co/pricing/',
   GETTING_STARTED_RETROS = 'https://www.parabol.co/resources/retrospective-meetings',
   GETTING_STARTED_CHECK_INS = 'https://www.parabol.co/resources/check-in-meetings',
@@ -159,7 +161,7 @@ export const enum MathEnum {
 }
 
 export const enum MeetingControlBarEnum {
-  HEIGHT = 56
+  HEIGHT = 56,
 }
 
 export const enum MeetingLabels {
@@ -368,6 +370,7 @@ export const enum SprintPokerDefaults {
   DEFAULT_TEMPLATE_ID = 'estimatedEffortTemplate',
   DEFAULT_SCALE_ID = 'fibonacciScale',
   JIRA_FIELD_DEFAULT = 'Story point estimate',
+  JIRA_FIELD_LEGACY_DEFAULT = 'Story Points',
   JIRA_FIELD_COMMENT = '__comment',
   JIRA_FIELD_COMMENT_LABEL = 'As Comment',
   JIRA_FIELD_NULL = '',
