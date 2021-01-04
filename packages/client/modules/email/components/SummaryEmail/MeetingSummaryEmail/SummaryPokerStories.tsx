@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import {PALETTE} from 'parabol-client/styles/paletteV2'
-import {NewMeetingPhaseTypeEnum} from 'parabol-client/types/graphql'
+import {MeetingTypeEnum, NewMeetingPhaseTypeEnum} from 'parabol-client/types/graphql'
 import {SummaryPokerStories_meeting} from 'parabol-client/__generated__/SummaryPokerStories_meeting.graphql'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
@@ -47,9 +47,10 @@ interface Props {
 
 const SummaryPokerStories = (props: Props) => {
   const {isEmail, meeting} = props
-  const {id: meetingId, phases} = meeting
+  const {id: meetingId, phases, meetingType} = meeting
+  if (meetingType !== MeetingTypeEnum.poker) return null
   const estimatePhase = phases?.find(
-    (phase) => phase.phaseType === NewMeetingPhaseTypeEnum.ESTIMATE
+    (phase) => phase?.phaseType === NewMeetingPhaseTypeEnum.ESTIMATE
   )
   if (!estimatePhase) return null
   const stages = estimatePhase.stages!
@@ -101,8 +102,9 @@ const SummaryPokerStories = (props: Props) => {
 
 export default createFragmentContainer(SummaryPokerStories, {
   meeting: graphql`
-    fragment SummaryPokerStories_meeting on PokerMeeting {
+    fragment SummaryPokerStories_meeting on NewMeeting {
       id
+      meetingType
       phases {
         phaseType
         ... on EstimatePhase {

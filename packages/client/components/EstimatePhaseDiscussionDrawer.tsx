@@ -5,11 +5,10 @@ import {createFragmentContainer} from 'react-relay'
 import {useCoverable} from '~/hooks/useControlBarCovers'
 import {desktopSidebarShadow} from '~/styles/elevation'
 import {EstimatePhaseDiscussionDrawer_meeting} from '~/__generated__/EstimatePhaseDiscussionDrawer_meeting.graphql'
-import {DiscussionThreadEnum, MeetingControlBarEnum, ZIndex} from '../types/constEnums'
+import {BezierCurve, DiscussionThreadEnum, MeetingControlBarEnum, ZIndex} from '../types/constEnums'
 import DiscussionThreadRoot from './DiscussionThreadRoot'
 import {PALETTE} from '~/styles/paletteV2'
 import LabelHeading from './LabelHeading/LabelHeading'
-import {DECELERATE} from '~/styles/animation'
 import PlainButton from './PlainButton/PlainButton'
 import Icon from './Icon'
 import {ICON_SIZE} from '~/styles/typographyV2'
@@ -26,7 +25,7 @@ const Drawer = styled('div')<{isDesktop: boolean; isOpen: boolean}>(({isDesktop,
   bottom: 0,
   top: 0,
   right: isDesktop ? 0 : undefined,
-  transition: `all 300ms ${DECELERATE}`,
+  transition: `all 200ms ${BezierCurve.DECELERATE}`,
   userSelect: 'none',
   width: isOpen || !isDesktop ? DiscussionThreadEnum.WIDTH : 0,
   zIndex: ZIndex.SIDEBAR
