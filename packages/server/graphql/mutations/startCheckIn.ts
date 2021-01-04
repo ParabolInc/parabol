@@ -11,6 +11,7 @@ import StartCheckInPayload from '../types/StartCheckInPayload'
 import createMeetingMembers from './helpers/createMeetingMembers'
 import createNewMeetingPhases from './helpers/createNewMeetingPhases'
 import {startSlackMeeting} from './helpers/notifySlack'
+import sendMeetingStartToSegment from './helpers/sendMeetingStartToSegment'
 
 export default {
   type: new GraphQLNonNull(StartCheckInPayload),
@@ -79,6 +80,7 @@ export default {
     ])
 
     startSlackMeeting(meetingId, teamId, dataLoader).catch(console.log)
+    sendMeetingStartToSegment(meeting)
     const data = {teamId, meetingId}
     publish(SubscriptionChannel.TEAM, teamId, 'StartCheckInSuccess', data, subOptions)
     return data

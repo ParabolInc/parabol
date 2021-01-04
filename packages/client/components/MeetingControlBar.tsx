@@ -10,7 +10,7 @@ import useGotoStageId from '~/hooks/useGotoStageId'
 import useInitialRender from '~/hooks/useInitialRender'
 import useTransition, {TransitionStatus} from '~/hooks/useTransition'
 import {PALETTE} from '~/styles/paletteV2'
-import {BezierCurve, Breakpoint, DiscussionThreadEnum, NavSidebar, ZIndex} from '~/types/constEnums'
+import {BezierCurve, Breakpoint, ElementWidth, ZIndex} from '~/types/constEnums'
 import {MeetingTypeEnum, NewMeetingPhaseTypeEnum} from '~/types/graphql'
 import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
 import findStageAfterId from '~/utils/meetings/findStageAfterId'
@@ -23,9 +23,11 @@ import BottomControlBarRejoin from './BottomControlBarRejoin'
 import BottomControlBarTips from './BottomControlBarTips'
 import EndMeetingButton from './EndMeetingButton'
 import StageTimerControl from './StageTimerControl'
+import useLeft from '~/hooks/useLeft'
+import useBreakpoint from '~/hooks/useBreakpoint'
 
-const Wrapper = styled('div')<{isLeftSidebarOpen: boolean; isRightDrawerOpen: boolean}>(
-  ({isLeftSidebarOpen, isRightDrawerOpen}) => ({
+const Wrapper = styled('div')<{left: number }>(
+  ({left}) => ({
     alignItems: 'center',
     backgroundColor: '#FFFFFF',
     bottom: 0,
@@ -36,12 +38,11 @@ const Wrapper = styled('div')<{isLeftSidebarOpen: boolean; isRightDrawerOpen: bo
     fontSize: 14,
     height: 56,
     justifyContent: 'space-between',
-    left: isLeftSidebarOpen ? NavSidebar.WIDTH : 0,
+    left,
     margin: '0 auto',
     minHeight: 56,
-    padding: 8,
+    padding: ElementWidth.CONTROL_BAR_PADDING,
     position: 'fixed',
-    right: isRightDrawerOpen ? DiscussionThreadEnum.WIDTH : 0,
     transition: `200ms ${BezierCurve.DECELERATE}`,
     width: '100%',
     zIndex: ZIndex.BOTTOM_BAR,
@@ -50,7 +51,7 @@ const Wrapper = styled('div')<{isLeftSidebarOpen: boolean; isRightDrawerOpen: bo
       bottom: 8,
       boxShadow: desktopBarShadow,
       width: 'fit-content'
-    }
+    } 
   })
 )
 
@@ -66,7 +67,6 @@ interface Props {
   isDemoStageComplete?: boolean
   gotoStageId: ReturnType<typeof useGotoStageId>
   meeting: MeetingControlBar_meeting
-  isRightDrawerOpen?: boolean
 }
 
 const MeetingControlBar = (props: Props) => {
@@ -75,7 +75,6 @@ const MeetingControlBar = (props: Props) => {
     isDemoStageComplete,
     meeting,
     gotoStageId,
-    isRightDrawerOpen = false
   } = props
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
@@ -88,7 +87,8 @@ const MeetingControlBar = (props: Props) => {
     localStage,
     phases,
     meetingType,
-    showSidebar: isLeftSidebarOpen
+    showSidebar,
+    isRightDrawerOpen = false
   } = meeting
   const isFacilitating = facilitatorUserId === viewerId && !endedAt
   const {phaseType} = localPhase
@@ -109,7 +109,11 @@ const MeetingControlBar = (props: Props) => {
   const [confirmingButton, setConfirmingButton] = useClickConfirmation()
   const cancelConfirm = confirmingButton ? () => setConfirmingButton('') : undefined
   const tranChildren = useTransition(buttons)
-  const {onMouseDown, onClickCapture} = useDraggableFixture(isLeftSidebarOpen, isRightDrawerOpen)
+  const isDesktop = useBreakpoint(Breakpoint.SINGLE_REFLECTION_COLUMN)
+  const controlBarWidth = buttons.length * ElementWidth.CONTROL_BAR_BUTTON + ElementWidth.CONTROL_BAR_PADDING * 2
+  const left = useLeft(controlBarWidth, isRightDrawerOpen, showSidebar)
+  const controlBarLeft = isDesktop ? left : 0
+  const {onMouseDown, onClickCapture} = useDraggableFixture(showSidebar, isRightDrawerOpen)
   const ref = useRef<HTMLDivElement>(null)
   useSnackbarPad(ref)
   useCovering(ref)
@@ -118,11 +122,10 @@ const MeetingControlBar = (props: Props) => {
   return (
     <Wrapper
       ref={ref}
+      left={controlBarLeft}
       onMouseDown={onMouseDown}
       onClickCapture={onClickCapture}
       onTouchStart={onMouseDown}
-      isLeftSidebarOpen={isLeftSidebarOpen}
-      isRightDrawerOpen={isRightDrawerOpen}
     >
       {tranChildren
         .map((tranChild) => {
@@ -205,6 +208,9 @@ export default createFragmentContainer(MeetingControlBar, {
       facilitatorUserId
       meetingType
       showSidebar
+      ... on PokerMeeting {
+        isRightDrawerOpen
+      }
       localStage {
         id
         isComplete
