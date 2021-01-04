@@ -1,6 +1,5 @@
 import React, {useContext, useEffect} from 'react'
 import {commitLocalUpdate} from 'relay-runtime'
-import shortid from 'shortid'
 import {PortalContext, SetPortal} from '../components/AtmosphereProvider/PortalProvider'
 import {SwipeColumn} from '../components/GroupingKanban'
 import {ReflectionDragState} from '../components/ReflectionGroup/DraggableReflectionCard'
@@ -13,6 +12,7 @@ import findDropZoneFromEvent from '../utils/findDropZoneFromEvent'
 import maybeStartReflectionScroll from '../utils/maybeStartReflectionScroll'
 import measureDroppableReflections from '../utils/measureDroppableReflections'
 import getTargetReference from '../utils/multiplayerMasonry/getTargetReference'
+import clientTempId from '../utils/relay/clientTempId'
 import cloneReflection from '../utils/retroGroup/cloneReflection'
 import getIsDrag from '../utils/retroGroup/getIsDrag'
 import getTargetGroupId from '../utils/retroGroup/getTargetGroupId'
@@ -192,8 +192,8 @@ const useDragAndDrop = (
       targetGroupId && reflectionGroupId !== targetGroupId
         ? DragReflectionDropTargetTypeEnum.REFLECTION_GROUP
         : !targetGroupId && reflectionCount > 0
-        ? DragReflectionDropTargetTypeEnum.REFLECTION_GRID
-        : null
+          ? DragReflectionDropTargetTypeEnum.REFLECTION_GRID
+          : null
     handleDrop(atmosphere, reflectionId, drag, targetType, targetGroupId)
   })
 
@@ -251,7 +251,7 @@ const useDragAndDrop = (
       drag.cardOffsetX = Math.min(clientX - bbox.left, bbox.width)
       drag.cardOffsetY = Math.min(clientY - bbox.top, bbox.height)
       drag.clone = cloneReflection(drag.ref, reflectionId)
-      drag.id = shortid.generate()
+      drag.id = clientTempId()
       StartDraggingReflectionMutation(atmosphere, {reflectionId, dragId: drag.id})
     }
     if (!drag.clone) return
