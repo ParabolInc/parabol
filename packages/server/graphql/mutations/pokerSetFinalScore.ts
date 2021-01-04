@@ -13,11 +13,12 @@ import updateStage from '../../database/updateStage'
 import AtlassianServerManager from '../../utils/AtlassianServerManager'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import getJiraCloudIdAndKey from '../../../client/utils/getJiraCloudIdAndKey'
-import makeAppLink from '../../utils/makeAppLink'
+import makeAppURL from 'parabol-client/utils/makeAppURL'
 import makeScoreJiraComment from '../../utils/makeScoreJiraComment'
 import publish from '../../utils/publish'
 import {GQLContext} from '../graphql'
 import PokerSetFinalScorePayload from '../types/PokerSetFinalScorePayload'
+import appOrigin from '../../appOrigin'
 
 const pokerSetFinalScore = {
   type: GraphQLNonNull(PokerSetFinalScorePayload),
@@ -118,7 +119,7 @@ const pokerSetFinalScore = {
       const fieldName = dimensionField?.fieldName ?? SprintPokerDefaults.JIRA_FIELD_COMMENT
       if (fieldName === SprintPokerDefaults.JIRA_FIELD_COMMENT) {
         const stageIdx = stages.findIndex((stage) => stage.id === stageId)
-        const discussionURL = makeAppLink(`meet/${meetingId}/estimate/${stageIdx + 1}`)
+        const discussionURL = makeAppURL(appOrigin, `meet/${meetingId}/estimate/${stageIdx + 1}`)
         const res = await manager.addComment(
           cloudId,
           issueKey,

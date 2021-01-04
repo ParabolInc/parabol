@@ -3,11 +3,12 @@ import {OrgUserRole, TierEnum} from 'parabol-client/types/graphql'
 import {months} from 'parabol-client/utils/makeDateString'
 import {Threshold} from '../../../../client/types/constEnums'
 import getRethink from '../../../database/rethinkDriver'
-import {UpcomingInvoiceEmailProps} from '../../../email/components/UpcomingInvoiceEmail'
-import UpcomingInvoiceEmailTemplate from '../../../email/components/UpcomingInvoiceEmailTemplate'
+import {UpcomingInvoiceEmailProps} from 'parabol-client/modules/email/components/UpcomingInvoiceEmail'
+import UpcomingInvoiceEmailTemplate from '../../../email/UpcomingInvoiceEmailTemplate'
 import getMailManager from '../../../email/getMailManager'
 import {requireSU} from '../../../utils/authorization'
-import makeAppLink from '../../../utils/makeAppLink'
+import makeAppURL from 'parabol-client/utils/makeAppURL'
+import appOrigin from '../../../appOrigin'
 
 interface Details extends UpcomingInvoiceEmailProps {
   emails: string[]
@@ -31,9 +32,10 @@ const getEmailDetails = (organizations) => {
       name: newUser.user.preferredName
     }))
     details.push({
+      appOrigin,
       emails: billingLeaders.map((billingLeader) => billingLeader.user.email),
       periodEndStr: makePeriodEndStr(periodEnd),
-      memberUrl: makeAppLink(`me/organizations/${orgId}/members`),
+      memberUrl: makeAppURL(appOrigin, `me/organizations/${orgId}/members`),
       newUsers
     })
   }

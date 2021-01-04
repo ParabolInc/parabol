@@ -16,7 +16,6 @@
     "node": "^14.10.0",
     "yarn": "^1.15.2"
   },
-  "main": "index.js",
   "private": true,
   "workspaces": [
     "packages/*"
@@ -28,12 +27,13 @@
     "db:create": "node scripts/toolbox/createMigration.js",
     "db:migrate": "node scripts/toolbox/migrateDB.js",
     "postdeploy": "node scripts/toolbox/postDeploy.js",
-    "dev": "node scripts/dev.js",
+    "dev": "node scripts/dev.js && pm2-runtime start pm2.dev.config.js",
     "lint": "lerna run --parallel lint",
     "test": "start-server-and-test start http://localhost:3000 cypress",
     "newMutation": "yarn sucrase-node scripts/codeshift/newMutation.ts",
     "cypress": "yarn workspace parabol-cypress start",
     "typecheck": "lerna run --parallel typecheck",
+    "update-schema": "node scripts/updateSchemaCLI.js",
     "ultrahook": "export $(grep ^ULTRAHOOK_API_KEY .env | tr -d \"'\") && ultrahook -k $ULTRAHOOK_API_KEY dev 3000"
   },
   "resolutions": {
