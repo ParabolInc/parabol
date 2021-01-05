@@ -26,8 +26,7 @@ const ButtonBlock = styled('div')({
   right: 0,
   bottom: 0,
   width: '100%',
-  animation: `${fadein} 2s`,
-  WebkitAnimation: `${fadein} 2s`
+  animation: `${fadein} 2s`
 })
 
 const Button = styled(FloatingActionButton)({
