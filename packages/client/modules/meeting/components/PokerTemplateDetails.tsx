@@ -127,7 +127,7 @@ const PokerTemplateDetails = (props: Props) => {
         {isOwner && <AddPokerTemplateDimension templateId={templateId} dimensions={dimensions} />}
       </Scrollable>
       <TemplateSharing teamId={teamId} template={activeTemplate} />
-      <SelectTemplate closePortal={closePortal} template={activeTemplate} teamId={teamId} />
+      {activeTemplate.id !== settings.selectedTemplate.id && <SelectTemplate closePortal={closePortal} template={activeTemplate} teamId={teamId} />}
     </DimensionEditor>
   )
 }
