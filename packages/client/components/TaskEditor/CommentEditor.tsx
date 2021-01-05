@@ -28,7 +28,7 @@ const RootEditor = styled('div')({
   width: '100%'
 })
 
-const AndroidEditorFallback = lazyPreload(() =>
+  const AndroidEditorFallback = lazyPreload(() =>
   import(/* webpackChunkName: 'AndroidEditorFallback' */ '../AndroidEditorFallback')
 )
 
@@ -167,9 +167,10 @@ const CommentEditor = (props: Props) => {
       }
     }
     const links = linkify.match(text)
-    const url = links && links[0].url    
-      if (url === text){
-        const nextEditorState = completeEntity(editorState, 'LINK', {href: url}, text, {
+    const url = links && links[0].url.trim()    
+    const trimmedText = text.trim()
+      if (url === trimmedText){
+        const nextEditorState = completeEntity(editorState, 'LINK', {href: url}, trimmedText, {
         keepSelection: true
       })
       setEditorState(nextEditorState)

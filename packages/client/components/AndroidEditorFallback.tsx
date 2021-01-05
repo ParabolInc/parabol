@@ -49,8 +49,8 @@ const AndroidEditorFallback = (props: Props) => {
   const handlePaste = (e: ClipboardEvent) => {
     if (onPastedText){
       const clipboardData =  e.clipboardData
-      const pastedData = clipboardData.getData('Text');
-      onPastedText(pastedData)
+      const pastedText = clipboardData.getData('Text');
+      onPastedText(pastedText)
     }
   }
 

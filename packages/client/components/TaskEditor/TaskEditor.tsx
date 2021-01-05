@@ -166,9 +166,10 @@ const TaskEditor = (props: Props) => {
       }
     }
   const links = linkify.match(text)
-  const url = links && links[0].url    
-    if (url === text){
-      const nextEditorState = completeEntity(editorState, 'LINK', {href: url}, text, {
+  const url = links && links[0].url.trim()
+  const trimmedText = text.trim()    
+    if (url === trimmedText){
+      const nextEditorState = completeEntity(editorState, 'LINK', {href: url}, trimmedText, {
       keepSelection: true
     })
     setEditorState(nextEditorState)
@@ -180,7 +181,7 @@ const TaskEditor = (props: Props) => {
   const noText = !editorState.getCurrentContent().hasText()
   const placeholder = 'Describe what “Done” looks like'
   const useFallback = isAndroid && !readOnly
-  const showFallback = useFallback && !isRichDraft(editorState)
+  const showFallback =  useFallback && !isRichDraft(editorState)
   return (
     <RootEditor data-cy={`${dataCy}-editor`} noText={noText} readOnly={readOnly} className={className}>
       {showFallback ? (
