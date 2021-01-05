@@ -1,4 +1,4 @@
-import Reflection from 'parabol-server/database/types/Reflection'
+import {IRetroReflection} from '../../types/graphql'
 import computeDistanceMatrix from './computeDistanceMatrix'
 import getAllLemmasFromReflections from './getAllLemmasFromReflections'
 import getGroupMatrix from './getGroupMatrix'
@@ -7,8 +7,14 @@ import getTitleFromComputedGroup from './getTitleFromComputedGroup'
 /*
  * Read each reflection, parse the content for entities (i.e. nouns), group the reflections based on common themes
  */
-const groupReflections = (reflections: Reflection[], groupingThreshold: number) => {
-  const allReflectionEntities = reflections.map(({entities}) => entities)
+
+interface Reflection {
+  entities: any[]
+  reflectionGroupId: string
+
+}
+const groupReflections = <T extends Reflection>(reflections: T[], groupingThreshold: number) => {
+  const allReflectionEntities = reflections.map(({entities}) => entities!)
   const oldReflectionGroupIds = reflections.map(({reflectionGroupId}) => reflectionGroupId)
 
   // create a unique array of all entity names mentioned in the meeting's reflect phase
@@ -20,7 +26,7 @@ const groupReflections = (reflections: Reflection[], groupingThreshold: number) 
     groupingThreshold
   )
   // replace the arrays with reflections
-  const updatedReflections = [] as Reflection[]
+  const updatedReflections = [] as Partial<IRetroReflection>[]
   const updatedGroups = (groupedArrays as any[]).map((group) => {
     // look up the reflection by its vector, put them all in the same group
     let reflectionGroupId = ''

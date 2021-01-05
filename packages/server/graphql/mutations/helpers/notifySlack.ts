@@ -8,12 +8,13 @@ import getRethink from '../../../database/rethinkDriver'
 import SlackAuth from '../../../database/types/SlackAuth'
 import SlackNotification, {SlackNotificationEvent} from '../../../database/types/SlackNotification'
 import {toEpochSeconds} from '../../../utils/epochTime'
-import makeAppLink from '../../../utils/makeAppLink'
+import makeAppURL from 'parabol-client/utils/makeAppURL'
 import segmentIo from '../../../utils/segmentIo'
 import sendToSentry from '../../../utils/sendToSentry'
 import SlackServerManager from '../../../utils/SlackServerManager'
 import errorFilter from '../../errorFilter'
 import {DataLoaderWorker} from '../../graphql'
+import appOrigin from '../../../appOrigin'
 
 const getSlackDetails = async (
   event: SlackNotificationEvent,
@@ -90,28 +91,28 @@ export const startSlackMeeting = async (
   teamId: string,
   dataLoader: DataLoaderWorker
 ) => {
-  const params = {
+  const searchParams = {
     utm_source: 'slack meeting start',
     utm_medium: 'product',
     utm_campaign: 'invitations'
   }
-  const options = {params}
+  const options = {searchParams}
   const team = await dataLoader.get('teams').load(teamId)
 
-  const meetingUrl = makeAppLink(`meet/${meetingId}`, options)
+  const meetingUrl = makeAppURL(appOrigin, `meet/${meetingId}`, options)
   const slackText = `${team.name} has started a meeting!\n To join, click here: ${meetingUrl}`
   notifySlack('meetingStart', dataLoader, teamId, slackText).catch(console.log)
 }
 
 export const endSlackMeeting = async (meetingId, teamId, dataLoader: DataLoaderWorker) => {
-  const params = {
+  const searchParams = {
     utm_source: 'slack summary',
     utm_medium: 'product',
     utm_campaign: 'after-meeting'
   }
-  const options = {params}
+  const options = {searchParams}
   const team = await dataLoader.get('teams').load(teamId)
-  const summaryUrl = makeAppLink(`new-summary/${meetingId}`, options)
+  const summaryUrl = makeAppURL(appOrigin, `new-summary/${meetingId}`, options)
   const slackText = `The meeting for ${team.name} has ended!\n Check out the summary here: ${summaryUrl}`
   notifySlack('meetingEnd', dataLoader, teamId, slackText).catch(console.log)
 }
@@ -167,7 +168,7 @@ export const notifySlackTimeLimitStart = async (
   const {name: meetingName, phases, facilitatorStageId} = meeting
   const stageRes = findStageById(phases, facilitatorStageId)
   const {stage} = stageRes!
-  const meetingUrl = makeAppLink(`meet/${meetingId}`)
+  const meetingUrl = makeAppURL(appOrigin, `meet/${meetingId}`)
   const {phaseType} = stage
   const phaseLabel = phaseLabelLookup[phaseType]
   const slackDetails = await getSlackDetails('MEETING_STAGE_TIME_LIMIT_START', teamId, dataLoader)

@@ -12,12 +12,7 @@ export default class SAML {
   metadata: string
 
   constructor(input: Input) {
-    const {
-      id,
-      domains,
-      url,
-      metadata
-    } = input
+    const {id, domains, url, metadata} = input
     this.id = id
     this.domains = domains
     this.url = url

@@ -49,8 +49,9 @@ const updatePokerTemplateScaleValue = {
 
     // VALIDATION
     const {label: oldScaleLabel} = oldScaleValue
-    if (isSpecialPokerLabel(oldScaleLabel)) {
-      return {error: {message: 'Cannot change a special value'}}
+    const {label: newScaleLabel} = newScaleValue
+    if (isSpecialPokerLabel(oldScaleLabel) && oldScaleLabel !== newScaleLabel) {
+      return {error: {message: 'Cannot change the label for a special scale value'}}
     }
 
     const {values: oldScaleValues} = existingScale
@@ -67,7 +68,7 @@ const updatePokerTemplateScaleValue = {
     if (!validateColorValue(color)) {
       return standardError(new Error('Invalid scale color'), {userId: viewerId})
     }
-    if (!validateScaleLabel(label)) {
+    if (!isSpecialPokerLabel(label) && !validateScaleLabel(label)) {
       return standardError(new Error('Invalid scale label'), {userId: viewerId})
     }
 

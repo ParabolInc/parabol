@@ -7,7 +7,8 @@ export default class CompiledQueryCache {
   store = {} as {[docId: string]: CompiledQuery}
   private set(docId: string, queryString: string, schema: GraphQLSchema) {
     const document = parse(queryString)
-    const compiledQuery = compileQuery(schema, document) as CompiledQuery
+    const compiledQuery = compileQuery(schema, document)
+    if (!('query' in compiledQuery)) return null
     this.store[docId] = compiledQuery
     return compiledQuery
   }
@@ -15,11 +16,7 @@ export default class CompiledQueryCache {
     const compiledQuery = this.store[docId]
     if (compiledQuery) return compiledQuery
     const r = await getRethink()
-    let queryString = await r
-      .table('QueryMap')
-      .get(docId)('query')
-      .default(null)
-      .run()
+    let queryString = await r.table('QueryMap').get(docId)('query').default(null).run()
     if (!queryString && !PROD) {
       const queryMap = require('../../../queryMap.json')
       queryString = queryMap[docId]

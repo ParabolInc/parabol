@@ -1,7 +1,6 @@
-import GenericMeetingPhase from 'parabol-server/database/types/GenericMeetingPhase'
 
 const unlockAllStagesForPhase = (
-  phases: GenericMeetingPhase[],
+  phases: any[],
   phaseType: any,
   isForFacilitator: boolean,
   isUnlock = true

@@ -5,6 +5,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 5.29.1 2020-Dec-23
+
+### Fixed
+
+- Bug on non-poker meeting summary
 ## 5.29.0 2020-Dec-22
 
 ### Added

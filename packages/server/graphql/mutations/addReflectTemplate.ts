@@ -10,6 +10,7 @@ import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import AddReflectTemplatePayload from '../types/AddReflectTemplatePayload'
 import makeRetroTemplates from './helpers/makeRetroTemplates'
+import sendTemplateEventToSegment from './helpers/sendTemplateEventToSegment'
 
 const addReflectTemplate = {
   description: 'Add a new template full of prompts',
@@ -101,6 +102,7 @@ const addReflectTemplate = {
             selectedTemplateId: newTemplate.id
           })
       }).run()
+      sendTemplateEventToSegment(viewerId, newTemplate, 'Template Cloned')
       data = {templateId: newTemplate.id}
     } else {
       if (allTemplates.find((template) => template.name === '*New Template')) {
@@ -138,6 +140,7 @@ const addReflectTemplate = {
             selectedTemplateId: templateId
           })
       }).run()
+      sendTemplateEventToSegment(viewerId, newTemplate, 'Template Created')
       data = {templateId}
     }
     publish(SubscriptionChannel.TEAM, teamId, 'AddReflectTemplatePayload', data, subOptions)

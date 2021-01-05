@@ -1,4 +1,4 @@
-import makeGitHubWebhookParams from '../utils/makeGitHubWebhookParams'
+// import makeGitHubWebhookParams from '../utils/makeGitHubWebhookParams'
 import {GITHUB_ENDPOINT} from 'parabol-client/utils/constants'
 import makeGitHubPostOptions from 'parabol-client/utils/makeGitHubPostOptions'
 import fetch from 'node-fetch'
@@ -11,16 +11,16 @@ export const createRepoWebhook = async (accessToken, nameWithOwner, publicKey) =
   const webhooks = await res.json()
   // no need for an extra call to repositoryOwner to find out if its an org because personal or no access is handled the same
   if (Array.isArray(webhooks) && webhooks.length === 0) {
-    const createHookParams = makeGitHubWebhookParams(publicKey, [
-      'issues',
-      'issue_comment',
-      'label',
-      'member',
-      'milestone',
-      'pull_request',
-      'pull_request_review',
-      'repository'
-    ])
+    // const createHookParams = makeGitHubWebhookParams(publicKey, [
+    //   'issues',
+    //   'issue_comment',
+    //   'label',
+    //   'member',
+    //   'milestone',
+    //   'pull_request',
+    //   'pull_request_review',
+    //   'repository'
+    // ])
     fetch(endpoint, makeGitHubPostOptions(accessToken, createHookParams))
   }
 }
@@ -55,8 +55,9 @@ export const createOrgWebhook = async (accessToken, nameWithOwner) => {
         organization: {databaseId}
       }
     } = profileRes
-    const publickKey = String(databaseId)
-    const createHookParams = makeGitHubWebhookParams(publickKey, ['organization'])
-    fetch(endpoint, makeGitHubPostOptions(accessToken, createHookParams))
+    const publicKey = String(databaseId)
+    console.log(publicKey)
+    // const createHookParams = makeGitHubWebhookParams(publickKey, ['organization'])
+    // fetch(endpoint, makeGitHubPostOptions(accessToken, createHookParams))
   }
 }

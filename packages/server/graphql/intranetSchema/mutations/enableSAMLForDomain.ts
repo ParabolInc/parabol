@@ -35,7 +35,8 @@ const enableSAMLForDomain = {
     },
     domains: {
       type: GraphQLNonNull(GraphQLList(GraphQLNonNull(GraphQLID))),
-      description: 'a list of domains that the account has control over. usually the part after the @ of their email'
+      description:
+        'a list of domains that the account has control over. usually the part after the @ of their email'
     },
     metadata: {
       type: GraphQLNonNull(GraphQLString),
@@ -81,7 +82,9 @@ const enableSAMLForDomain = {
     }
 
     // RESOLUTION
-    const url = isMicrosoft(signOnURL) ? getURLWithSAMLRequestParam(signOnURL, normalizedName) : signOnURL
+    const url = isMicrosoft(signOnURL)
+      ? getURLWithSAMLRequestParam(signOnURL, normalizedName)
+      : signOnURL
     await r
       .table('SAML')
       .insert(
