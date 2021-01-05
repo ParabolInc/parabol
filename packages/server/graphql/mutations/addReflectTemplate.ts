@@ -91,16 +91,7 @@ const addReflectTemplate = {
       })
       await r({
         newTemplate: r.table('MeetingTemplate').insert(newTemplate),
-        newTemplatePrompts: r.table('ReflectPrompt').insert(newTemplatePrompts),
-        settings: r
-          .table('MeetingSettings')
-          .getAll(teamId, {index: 'teamId'})
-          .filter({
-            meetingType: MeetingTypeEnum.retrospective
-          })
-          .update({
-            selectedTemplateId: newTemplate.id
-          })
+        newTemplatePrompts: r.table('ReflectPrompt').insert(newTemplatePrompts)
       }).run()
       sendTemplateEventToSegment(viewerId, newTemplate, 'Template Cloned')
       data = {templateId: newTemplate.id}
@@ -129,16 +120,7 @@ const addReflectTemplate = {
       const {id: templateId} = newTemplate
       await r({
         newTemplate: r.table('MeetingTemplate').insert(newTemplate),
-        newTemplatePrompts: r.table('ReflectPrompt').insert(newTemplatePrompts),
-        settings: r
-          .table('MeetingSettings')
-          .getAll(teamId, {index: 'teamId'})
-          .filter({
-            meetingType: MeetingTypeEnum.retrospective
-          })
-          .update({
-            selectedTemplateId: templateId
-          })
+        newTemplatePrompts: r.table('ReflectPrompt').insert(newTemplatePrompts)
       }).run()
       sendTemplateEventToSegment(viewerId, newTemplate, 'Template Created')
       data = {templateId}
