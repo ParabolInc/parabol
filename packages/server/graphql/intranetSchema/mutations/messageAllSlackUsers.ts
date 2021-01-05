@@ -32,19 +32,23 @@ const messageAllSlackUsers = {
       return standardError(new Error('No authorised Slack users'))
     }
 
-    const messagedUserIds = [] as string[]
+    const messagedUserIds = new Set<string>()
+    const messagedTeamChannelIds = new Set<string>()
     const errors = [] as MessageSlackUserError[]
     for (const slackAuth of allSlackAuths) {
       const {botAccessToken, defaultTeamChannelId, userId} = slackAuth
       const manager = new SlackServerManager(botAccessToken)
-      const postMessageRes = await manager.postMessage(defaultTeamChannelId, message)
-      if (!postMessageRes.ok) {
-        errors.push({
-          userId,
-          error: postMessageRes.error
-        })
-      } else {
-        messagedUserIds.push(userId)
+      if (!messagedTeamChannelIds.has(defaultTeamChannelId)) {
+        const postMessageRes = await manager.postMessage(defaultTeamChannelId, message)
+        messagedTeamChannelIds.add(defaultTeamChannelId)
+        if (!postMessageRes.ok) {
+          errors.push({
+            userId,
+            error: postMessageRes.error
+          })
+        } else {
+          messagedUserIds.add(userId)
+        }
       }
     }
 
