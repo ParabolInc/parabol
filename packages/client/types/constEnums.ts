@@ -94,6 +94,7 @@ export const enum ElementHeight {
 }
 
 export const enum ExternalLinks {
+  EMAIL_CDN = 'https://action-files.parabol.co/static/email/',
   PRICING_LINK = 'https://www.parabol.co/pricing/',
   GETTING_STARTED_RETROS = 'https://www.parabol.co/resources/retrospective-meetings',
   GETTING_STARTED_CHECK_INS = 'https://www.parabol.co/resources/check-in-meetings',

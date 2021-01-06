@@ -4,6 +4,7 @@ import suCountTiersForUser from '../queries/suCountTiersForUser'
 import suOrgCount from '../queries/suOrgCount'
 import suProOrgInfo from '../queries/suProOrgInfo'
 import suUserCount from '../queries/suUserCount'
+import rootTypes from '../rootTypes'
 import addNewFeature from './mutations/addNewFeature'
 import autopauseUsers from './mutations/autopauseUsers'
 import backupOrganization from './mutations/backupOrganization'
@@ -83,4 +84,4 @@ const mutation = new GraphQLObjectType<any, GQLContext>({
     } as any)
 })
 
-export default new GraphQLSchema({query, mutation})
+export default new GraphQLSchema({query, mutation, types: rootTypes})

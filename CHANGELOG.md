@@ -5,16 +5,29 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 5.30.0 2021-Jan-06
+
+### Changed
+
+- Guarantee unique ID for redis jobs (#4487)
+
+### Fixed
+
+- Retro meeting fixes & add new emojis (#4499)
+- Remove retro templates that have no prompts (#4486)
+
 ## 5.29.1 2020-Dec-23
 
 ### Fixed
 
 - Bug on non-poker meeting summary
+
 ## 5.29.0 2020-Dec-22
 
 ### Added
 
 - Support for multi-domain SAML (#4478)
+
 ### Changed
 
 - Upgrade to Webpack v5 (#4455, #4477)
@@ -22,6 +35,7 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 ### Fixed
 
 - Scale UI Fixups (#4472)
+
 ## 5.28.0 2020-Dec-17
 
 ### Added

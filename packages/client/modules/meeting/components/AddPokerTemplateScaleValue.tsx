@@ -1,18 +1,22 @@
 import styled from '@emotion/styled'
 import React from 'react'
+import {PALETTE} from '~/styles/paletteV2'
 import Icon from '../../../components/Icon'
 import LinkButton from '../../../components/LinkButton'
 
 const AddScaleValueLink = styled(LinkButton)({
   alignItems: 'center',
+  borderBottom: `1px solid ${PALETTE.BORDER_LIGHTER}`,
   display: 'flex',
   justifyContent: 'flex-start',
-  fontSize: 16,
+  fontSize: 14, // match the scale item font-size
   lineHeight: '24px',
   margin: 0,
-  marginBottom: 16,
   outline: 'none',
-  padding: '8px 0'
+  padding: '8px 0',
+  ':hover': {
+    backgroundColor: PALETTE.BACKGROUND_LIGHTEST
+  }
 })
 
 const AddScaleValueLinkPlus = styled(Icon)({

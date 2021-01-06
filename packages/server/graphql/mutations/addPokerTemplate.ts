@@ -9,6 +9,7 @@ import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import AddPokerTemplatePayload from '../types/AddPokerTemplatePayload'
+import sendTemplateEventToSegment from './helpers/sendTemplateEventToSegment'
 
 const addPokerTemplate = {
   description: 'Add a new poker template with a default dimension created',
@@ -105,6 +106,7 @@ const addPokerTemplate = {
             selectedTemplateId: newTemplate.id
           })
       }).run()
+      sendTemplateEventToSegment(viewerId, newTemplate, 'Template Cloned')
       data = {templateId: newTemplate.id}
     } else {
       if (allTemplates.find((template) => template.name === '*New Template')) {
@@ -137,6 +139,7 @@ const addPokerTemplate = {
             selectedTemplateId: templateId
           })
       }).run()
+      sendTemplateEventToSegment(viewerId, newTemplate, 'Template Created')
       data = {templateId}
     }
     publish(SubscriptionChannel.TEAM, teamId, 'AddPokerTemplatePayload', data, subOptions)

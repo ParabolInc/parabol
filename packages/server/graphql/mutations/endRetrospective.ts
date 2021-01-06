@@ -122,12 +122,7 @@ export default {
     ])
     endSlackMeeting(meetingId, teamId, dataLoader).catch(console.log)
     finishRetroMeeting(completedRetrospective, dataLoader)
-    const {name: meetingTemplateName} = template
-    sendMeetingEndToSegment(
-      completedRetrospective,
-      meetingMembers as MeetingMember[],
-      meetingTemplateName
-    )
+    sendMeetingEndToSegment(completedRetrospective, meetingMembers as MeetingMember[], template)
     sendNewMeetingSummary(completedRetrospective, context).catch(console.log)
     const events = meetingMembers.map(
       (meetingMember) =>

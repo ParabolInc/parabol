@@ -21,8 +21,16 @@ import SSEConnectionHandler from './sse/SSEConnectionHandler'
 import SSEPingHandler from './sse/SSEPingHandler'
 import staticFileHandler from './staticFileHandler'
 import SAMLHandler from './utils/SAMLHandler'
+import PROD from './PROD'
+import {r} from 'rethinkdb-ts'
 
-const PORT = Number(process.env.PORT)
+const PORT = Number(PROD ? process.env.PORT : process.env.SOCKET_PORT)
+if (!PROD) {
+  process.on('SIGINT', async () => {
+    await r.getPoolMaster()?.drain()
+    process.exit()
+  })
+}
 
 uws
   .App()
