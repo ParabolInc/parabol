@@ -22,7 +22,7 @@ const compile = (config, isSilent) => {
 
 const prod = async (isDeploy) => {
   console.log('🙏🙏🙏      Building Production Server      🙏🙏🙏')
-  await compile(toolboxConfig, true)
+  await compile(toolboxConfig)
   await require('./toolbox/updateSchema.js').default()
   await require('./compileRelay')()
   const serversConfig = makeServersConfig({isDeploy})
