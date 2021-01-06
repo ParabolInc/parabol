@@ -77,15 +77,13 @@ const GroupingKanban = (props: Props) => {
           setActiveIdx={setActiveIdx}
           activeIdx={activeIdx}
           disabled={isViewerDragging}
-          columnsRef={columnsRef}
+          ref={columnsRef}
         >
           {reflectPrompts.map((prompt) => (
             <GroupingKanbanColumn
               columnsRef={columnsRef}
               isAnyEditing={isAnyEditing}
               isDesktop={isDesktop}
-              isFirstColumn={prompt.sortOrder === 0}
-              isLastColumn={prompt.sortOrder === reflectPromptsCount - 1}
               key={prompt.id}
               meeting={meeting}
               phaseRef={phaseRef}
@@ -111,7 +109,6 @@ export default createFragmentContainer(GroupingKanban, {
           reflectPrompts {
             ...GroupingKanbanColumn_prompt
             id
-            sortOrder
           }
         }
       }

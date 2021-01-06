@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {createFragmentContainer} from 'react-relay'
-import React, {MouseEvent, RefObject, useRef, useMemo} from 'react'
+import React, {RefObject, useRef, useMemo} from 'react'
 import {useCoverable} from '~/hooks/useControlBarCovers'
 import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
 import {GroupingKanbanColumn_meeting} from '~/__generated__/GroupingKanbanColumn_meeting.graphql'
@@ -77,8 +77,6 @@ interface Props {
   columnsRef: RefObject<HTMLDivElement>
   isAnyEditing: boolean
   isDesktop: boolean
-  isFirstColumn: boolean
-  isLastColumn: boolean
   meeting: GroupingKanbanColumn_meeting
   phaseRef: RefObject<HTMLDivElement>
   prompt: GroupingKanbanColumn_prompt
@@ -92,8 +90,6 @@ const GroupingKanbanColumn = (props: Props) => {
     columnsRef,
     isAnyEditing,
     isDesktop,
-    isFirstColumn,
-    isLastColumn,
     meeting,
     reflectionGroups,
     phaseRef,
@@ -111,6 +107,8 @@ const GroupingKanbanColumn = (props: Props) => {
   const ref = useRef<HTMLDivElement>(null)
   const isLengthExpanded =
     useCoverable(promptId, ref, MeetingControlBarEnum.HEIGHT, phaseRef, columnsRef) || !!endedAt
+  const isFirstColumn = prompt.sortOrder === reflectPromptsCount - 1
+  const isLastColumn = prompt.sortOrder === 0
   const groups = useDeepEqual(reflectionGroups)
   // group may be undefined because relay could GC before useMemo in the Kanban recomputes >:-(
   const filteredReflectionGroups = useMemo(
@@ -132,11 +130,6 @@ const GroupingKanbanColumn = (props: Props) => {
     CreateReflectionMutation(atmosphere, {input}, {onError, onCompleted})
   }
 
-  const toggle = (e: MouseEvent<Element>) => {
-    e.stopPropagation()
-    toggleWidth()
-  }
-
   return (
     <Column
       isLengthExpanded={isLengthExpanded}
@@ -153,7 +146,7 @@ const GroupingKanbanColumn = (props: Props) => {
         onClick={onClick}
         question={question}
         submitting={submitting}
-        toggleWidth={toggle}
+        toggleWidth={toggleWidth}
       />
       {subColumns.map((subColumn) => {
         return (
@@ -207,10 +200,10 @@ export default createFragmentContainer(GroupingKanbanColumn, {
     fragment GroupingKanbanColumn_reflectionGroups on RetroReflectionGroup @relay(plural: true) {
       ...ReflectionGroup_reflectionGroup
       id
-      sortOrder
       reflections {
         id
       }
+      sortOrder
       subColumn
     }
   `,
@@ -219,6 +212,7 @@ export default createFragmentContainer(GroupingKanbanColumn, {
       id
       question
       groupColor
+      sortOrder
     }
   `
 })

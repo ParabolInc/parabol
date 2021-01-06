@@ -1,4 +1,4 @@
-import React, {ReactNode, RefObject} from 'react'
+import React, {forwardRef, ReactNode, Ref} from 'react'
 import styled from '@emotion/styled'
 
 const DesktopWrapper = styled('div')({
@@ -16,16 +16,15 @@ const Inner = styled('div')({
 
 interface Props {
   children: ReactNode
-  columnsRef?: RefObject<HTMLDivElement>
 }
 
-const ReflectWrapperDesktop = (props: Props) => {
-  const {children, columnsRef} = props
+const ReflectWrapperDesktop = forwardRef((props: Props, ref: Ref<HTMLDivElement>) => {
+  const {children} = props
   return (
     <DesktopWrapper>
-      <Inner ref={columnsRef}>{children}</Inner>
+      <Inner ref={ref}>{children}</Inner>
     </DesktopWrapper>
   )
-}
+})
 
 export default ReflectWrapperDesktop
