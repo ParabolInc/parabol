@@ -1,5 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
-import Parser from 'json2csv/lib/JSON2CSVParser' // only grab the sync parser
+import {Parser} from 'json2csv' // only grab the sync parser
 import withAtmosphere, {
   WithAtmosphereProps
 } from 'parabol-client/decorators/withAtmosphere/withAtmosphere'
