@@ -15,7 +15,7 @@ const TOOLBOX_SRC = path.join(PROJECT_ROOT, 'scripts/toolboxSrc')
 module.exports = {
   stats: 'minimal',
   devtool: 'eval',
-  mode: 'production',
+  mode: 'none',
   node: {
     __dirname: false
   },
