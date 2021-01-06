@@ -37,10 +37,7 @@ export default {
 
     // AUTH
     const viewerId = getUserId(authToken)
-    const reflectionGroup = await r
-      .table('RetroReflectionGroup')
-      .get(reflectionGroupId)
-      .run()
+    const reflectionGroup = await r.table('RetroReflectionGroup').get(reflectionGroupId).run()
     if (!reflectionGroup) {
       return standardError(new Error('Reflection group not found'), {userId: viewerId})
     }
@@ -63,6 +60,11 @@ export default {
     if (normalizedTitle.length < 1) {
       return standardError(new Error('Reflection group title required'), {userId: viewerId})
     }
+
+    if (normalizedTitle.length > 200) {
+      return {error: {message: 'Title is too long'}}
+    }
+
     const allTitles = await r
       .table('RetroReflectionGroup')
       .getAll(meetingId, {index: 'meetingId'})

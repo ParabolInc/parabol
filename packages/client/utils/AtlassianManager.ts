@@ -505,6 +505,7 @@ export default abstract class AtlassianManager {
 
   async getFirstValidJiraField(cloudId: string, possibleFieldNames: string[], testIssueKeyId: string) {
     const fields = await this.getFields(cloudId)
+
     const possibleFields = possibleFieldNames.map((fieldName) => {
       return fields.find((field) => field.name === fieldName)
     }).filter(Boolean) as JiraField[]

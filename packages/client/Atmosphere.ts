@@ -5,7 +5,6 @@ import GQLTrebuchetClient, {
 import getTrebuchet, {SocketTrebuchet, SSETrebuchet} from '@mattkrick/trebuchet-client'
 import EventEmitter from 'eventemitter3'
 import jwtDecode from 'jwt-decode'
-import AuthToken from 'parabol-server/database/types/AuthToken'
 import {Disposable} from 'react-relay'
 import {RouterProps} from 'react-router'
 import {
@@ -30,8 +29,10 @@ import handleInvalidatedSession from './hooks/handleInvalidatedSession'
 import {LocalStorageKey, TrebuchetCloseReason} from './types/constEnums'
 import handlerProvider from './utils/relay/handlerProvider'
 import {InviteToTeamMutation_notification} from './__generated__/InviteToTeamMutation_notification.graphql'
+import {AuthToken} from './types/AuthToken'
 
 (RelayFeatureFlags as any).ENABLE_RELAY_CONTAINERS_SUSPENSE = false
+
 interface QuerySubscription {
   subKey: string
   queryKey: string
@@ -208,7 +209,8 @@ export default class Atmosphere extends Environment {
         })
         return ''
       }
-      return `${wsProtocol}//${window.location.host}/?token=${this.authToken}`
+      const host = __PRODUCTION__ ? window.location.host : `${window.location.hostname}:${__SOCKET_PORT__}`
+      return `${wsProtocol}//${host}/?token=${this.authToken}`
     }
     return new SocketTrebuchet({getUrl})
   }

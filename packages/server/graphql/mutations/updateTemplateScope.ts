@@ -12,6 +12,7 @@ import publish from '../../utils/publish'
 import {GQLContext} from '../graphql'
 import SharingScopeEnum from '../types/SharingScopeEnum'
 import UpdateTemplateScopePayload from '../types/UpdateTemplateScopePayload'
+import sendTemplateEventToSegment from './helpers/sendTemplateEventToSegment'
 
 const updateTemplateScope = {
   type: GraphQLNonNull(UpdateTemplateScopePayload),
@@ -151,6 +152,7 @@ const updateTemplateScope = {
     }
     const data = {templateId, teamId, clonedTemplateId}
 
+    sendTemplateEventToSegment(viewerId, {...template, scope: newScope}, 'Template Shared')
     // technically, this affects every connected client (public), or every team in the org (organization), but those are edge cases
     publish(SubscriptionChannel.ORGANIZATION, orgId, 'UpdateTemplateScopeSuccess', data, subOptions)
     return data

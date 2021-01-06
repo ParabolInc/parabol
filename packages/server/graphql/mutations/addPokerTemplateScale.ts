@@ -7,6 +7,7 @@ import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import AddPokerTemplateScalePayload from '../types/AddPokerTemplateScalePayload'
+import sendScaleEventToSegment from './helpers/sendScaleEventToSegment'
 
 const addPokerTemplateScale = {
   description: 'Add a new scale for the poker template',
@@ -84,6 +85,7 @@ const addPokerTemplateScale = {
 
     const scaleId = newScale.id
     const data = {scaleId}
+    sendScaleEventToSegment(viewerId, newScale, parentScaleId ? 'Scale Cloned' : 'Scale Created')
     publish(SubscriptionChannel.TEAM, teamId, 'AddPokerTemplateScalePayload', data, subOptions)
     return data
   }

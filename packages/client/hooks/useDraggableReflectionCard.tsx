@@ -92,7 +92,9 @@ const useLocalDrag = (
   // handle drag conflicts
   useEffect(() => {
     if (!isViewerDragging && !isDropping && drag.clone) {
-      document.body.removeChild(drag.clone)
+      if (document.body.contains(drag.clone)) {
+        document.body.removeChild(drag.clone)
+      }
       drag.clone = null
       const el = drag.ref!
       el.removeEventListener('touchmove', onMouseMove)
@@ -140,7 +142,9 @@ const useDroppingDrag = (
           () => {
             if (drag.clone) {
               // local
-              document.body.removeChild(drag.clone!)
+              if (document.body.contains(drag.clone)) {
+                document.body.removeChild(drag.clone!)
+              }
               drag.clone = null
             } else {
               //remote
@@ -189,8 +193,8 @@ const useDragAndDrop = (
       targetGroupId && reflectionGroupId !== targetGroupId
         ? DragReflectionDropTargetTypeEnum.REFLECTION_GROUP
         : !targetGroupId && reflectionCount > 0
-        ? DragReflectionDropTargetTypeEnum.REFLECTION_GRID
-        : null
+          ? DragReflectionDropTargetTypeEnum.REFLECTION_GRID
+          : null
     handleDrop(atmosphere, reflectionId, drag, targetType, targetGroupId)
   })
 
