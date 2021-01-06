@@ -31,10 +31,7 @@ const addPokerTemplateScaleValue = {
     const viewerId = getUserId(authToken)
 
     // AUTH
-    const existingScale = await r
-      .table('TemplateScale')
-      .get(scaleId)
-      .run()
+    const existingScale = await r.table('TemplateScale').get(scaleId).run()
     if (!existingScale || existingScale.removedAt) {
       return standardError(new Error('Did not find an active scale'), {userId: viewerId})
     }
@@ -57,12 +54,7 @@ const addPokerTemplateScaleValue = {
       .update(
         (row) => ({
           // Append at the end of the sub-array (minus ? and Pass)
-          values: row('values').insertAt(
-            row('values')
-              .count()
-              .sub(2),
-            scaleValue
-          ),
+          values: row('values').insertAt(row('values').count().sub(2), scaleValue),
           updatedAt: now
         }),
         {returnChanges: true}

@@ -123,38 +123,26 @@ const newScales = [
   }
 ]
 
-export const up = async function(r: R) {
+export const up = async function (r: R) {
   try {
     // clear TemplateScale table
-    await r
-      .table('TemplateScale')
-      .delete()
-      .run()
+    await r.table('TemplateScale').delete().run()
 
     // insert new data to TemplateScale table
-    await r
-      .table('TemplateScale')
-      .insert(newScales)
-      .run()
+    await r.table('TemplateScale').insert(newScales).run()
   } catch (e) {
     console.log(e)
   }
 }
 
-export const down = async function(r: R) {
+export const down = async function (r: R) {
   const MAX_32_BIT_INTEGER = Math.pow(2, 31) - 1
   try {
     // clear TemplateScale table
-    await r
-      .table('TemplateScale')
-      .delete()
-      .run()
+    await r.table('TemplateScale').delete().run()
 
     // insert old data to TemplateScale table
-    await r
-      .table('TemplateScale')
-      .insert(oldScales)
-      .run()
+    await r.table('TemplateScale').insert(oldScales).run()
   } catch (e) {
     console.log(e)
   }

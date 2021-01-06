@@ -25,10 +25,7 @@ const removePokerTemplateScaleValue = {
     const viewerId = getUserId(authToken)
 
     // AUTH
-    const scale = await r
-      .table('TemplateScale')
-      .get(scaleId)
-      .run()
+    const scale = await r.table('TemplateScale').get(scaleId).run()
     if (!scale || scale.removedAt) {
       return standardError(new Error('Did not find an active scale'), {userId: viewerId})
     }
@@ -50,11 +47,7 @@ const removePokerTemplateScaleValue = {
       .table('TemplateScale')
       .get(scaleId)
       .update((row) => ({
-        values: row('values').deleteAt(
-          row('values')
-            .offsetsOf(oldScaleValue)
-            .nth(0)
-        ),
+        values: row('values').deleteAt(row('values').offsetsOf(oldScaleValue).nth(0)),
         updatedAt: now
       }))
       .run()

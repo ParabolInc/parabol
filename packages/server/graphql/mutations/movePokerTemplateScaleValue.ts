@@ -33,10 +33,7 @@ const movePokerTemplateScaleValue = {
     const now = new Date()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
-    const scale = await r
-      .table('TemplateScale')
-      .get(scaleId)
-      .run()
+    const scale = await r.table('TemplateScale').get(scaleId).run()
 
     //AUTH
     if (!scale || scale.removedAt) {
