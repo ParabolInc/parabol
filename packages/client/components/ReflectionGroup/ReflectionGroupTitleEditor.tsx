@@ -1,25 +1,21 @@
-import {ReflectionGroupTitleEditor_meeting} from '../../__generated__/ReflectionGroupTitleEditor_meeting.graphql'
-import {ReflectionGroupTitleEditor_reflectionGroup} from '../../__generated__/ReflectionGroupTitleEditor_reflectionGroup.graphql'
-/**
- * Edits the name of a reflection group.
- *
- */
-import React, {Component, RefObject} from 'react'
 import styled from '@emotion/styled'
-import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import StyledError from '../StyledError'
-import withAtmosphere, {WithAtmosphereProps} from '../../decorators/withAtmosphere/withAtmosphere'
+import React, {RefObject, useRef} from 'react'
+import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
+import useAtmosphere from '../../hooks/useAtmosphere'
+import useMutationProps from '../../hooks/useMutationProps'
 import UpdateReflectionGroupTitleMutation from '../../mutations/UpdateReflectionGroupTitleMutation'
 import {PALETTE} from '../../styles/paletteV2'
+import {ICON_SIZE} from '../../styles/typographyV2'
 import ui from '../../styles/ui'
 import {Card} from '../../types/constEnums'
 import {RETRO_TOPIC_LABEL} from '../../utils/constants'
-import withMutationProps, {WithMutationProps} from '../../utils/relay/withMutationProps'
+import {ReflectionGroupTitleEditor_meeting} from '../../__generated__/ReflectionGroupTitleEditor_meeting.graphql'
+import {ReflectionGroupTitleEditor_reflectionGroup} from '../../__generated__/ReflectionGroupTitleEditor_reflectionGroup.graphql'
 import Icon from '../Icon'
-import {ICON_SIZE} from '../../styles/typographyV2'
+import StyledError from '../StyledError'
 
-interface Props extends WithMutationProps, WithAtmosphereProps {
+interface Props {
   isExpanded: boolean
   reflectionGroup: ReflectionGroupTitleEditor_reflectionGroup
   readOnly: boolean
@@ -105,75 +101,55 @@ const getValidationError = (title: string | null, reflectionGroups, reflectionGr
   return undefined
 }
 
-class ReflectionGroupTitleEditor extends Component<Props> {
-  initialTitle: string
+const ReflectionGroupTitleEditor = (props: Props) => {
+  const atmosphere = useAtmosphere()
+  const {submitMutation, submitting, onCompleted, onError, error} = useMutationProps()
+  const {meeting, reflectionGroup, titleInputRef, isExpanded, readOnly, hidePencil} = props
+  const {reflectionGroups} = meeting
+  const {id: reflectionGroupId, title} = reflectionGroup
+  const dirtyRef = useRef(false)
+  const initialTitleRef = useRef(title)
 
-  constructor(props: Props) {
-    super(props)
-    this.initialTitle = props.reflectionGroup.title || ''
-  }
-
-  onChange = (e) => {
-    const {
-      atmosphere,
-      dirty,
-      error,
-      onCompleted,
-      onError,
-      meeting: {reflectionGroups},
-      reflectionGroup: {id: reflectionGroupId}
-    } = this.props
+  const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const title = e.target.value
     commitLocalUpdate(atmosphere, (store) => {
       const reflectionGroup = store.get(reflectionGroupId)
       if (!reflectionGroup) return
       reflectionGroup.setValue(title, 'title')
     })
-    if (dirty) {
-      const normalizedTitle = title.trim()
-      const validationError = getValidationError(
-        normalizedTitle,
-        reflectionGroups,
-        reflectionGroupId
-      )
-      if (!validationError) {
-        if (error) {
-          onCompleted()
-        }
-      } else {
-        onError({message: validationError})
+    if (!dirtyRef.current) return
+    const normalizedTitle = title.trim()
+    const validationError = getValidationError(
+      normalizedTitle,
+      reflectionGroups,
+      reflectionGroupId
+    )
+    if (!validationError) {
+      if (error) {
+        onCompleted()
       }
+    } else {
+      onError(new Error(validationError))
     }
   }
 
-  onClick = () => {
-    const {titleInputRef} = this.props
-    titleInputRef.current && titleInputRef.current.select()
+  const onClick = () => {
+    titleInputRef.current?.select()
   }
 
-  onSubmit = (e) => {
+  const onSubmit = (e: React.FormEvent<HTMLInputElement | HTMLFormElement>) => {
     e.preventDefault()
-    const {
-      atmosphere,
-      setDirty,
-      submitting,
-      submitMutation,
-      onCompleted,
-      onError,
-      meeting: {reflectionGroups},
-      reflectionGroup: {id: reflectionGroupId, title}
-    } = this.props
-    if (submitting || title === this.initialTitle || !title) return
-    this.initialTitle = title
+    if (submitting || title === initialTitleRef.current || !title) return
+    initialTitleRef.current = title
     // validate
-    setDirty()
+    dirtyRef.current = true
     const normalizedTitle = title.trim()
     const validationError = getValidationError(normalizedTitle, reflectionGroups, reflectionGroupId)
     if (validationError) {
-      onError({message: validationError})
+      onError(new Error(validationError))
       return
     }
-
+    titleInputRef.current?.blur()
     submitMutation()
     UpdateReflectionGroupTitleMutation(
       atmosphere,
@@ -182,46 +158,43 @@ class ReflectionGroupTitleEditor extends Component<Props> {
     )
   }
 
-  render() {
-    const {
-      isExpanded,
-      error,
-      readOnly,
-      hidePencil,
-      reflectionGroup: {title},
-      titleInputRef
-    } = this.props
-    return (
-      <InputWithIconWrap>
-        <RootBlock data-cy='group-title-editor'>
-          <FormBlock onSubmit={this.onSubmit}>
-            <NameInput
-              data-cy='group-title-editor-input'
-              isExpanded={isExpanded}
-              onBlur={this.onSubmit}
-              onChange={this.onChange}
-              placeholder={RETRO_TOPIC_LABEL}
-              readOnly={readOnly}
-              ref={titleInputRef}
-              size={20}
-              type='text'
-              value={title || ''}
-            />
-          </FormBlock>
-          {error && <StyledError>{error}</StyledError>}
-        </RootBlock>
-        {!readOnly && !hidePencil && (
-          <PencilIcon isExpanded={isExpanded} onClick={this.onClick}>
-            edit
-          </PencilIcon>
-        )}
-      </InputWithIconWrap>
-    )
+  const onKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key !== 'Enter' || e.shiftKey) return
+    e.preventDefault()
+    onSubmit(e as any)
   }
+
+  return (
+    <InputWithIconWrap>
+      <RootBlock data-cy='group-title-editor'>
+        <FormBlock onSubmit={onSubmit}>
+          <NameInput
+            data-cy='group-title-editor-input'
+            isExpanded={isExpanded}
+            onBlur={onSubmit}
+            onChange={onChange}
+            onKeyPress={onKeyPress}
+            placeholder={RETRO_TOPIC_LABEL}
+            readOnly={readOnly}
+            ref={titleInputRef}
+            maxLength={200}
+            type='text'
+            value={title || ''}
+          />
+        </FormBlock>
+        {error && <StyledError>{error}</StyledError>}
+      </RootBlock>
+      {!readOnly && !hidePencil && (
+        <PencilIcon isExpanded={isExpanded} onClick={onClick}>
+          edit
+        </PencilIcon>
+      )}
+    </InputWithIconWrap>
+  )
 }
 
 export default createFragmentContainer(
-  withAtmosphere(withMutationProps(ReflectionGroupTitleEditor)),
+  ReflectionGroupTitleEditor,
   {
     reflectionGroup: graphql`
       fragment ReflectionGroupTitleEditor_reflectionGroup on RetroReflectionGroup {
