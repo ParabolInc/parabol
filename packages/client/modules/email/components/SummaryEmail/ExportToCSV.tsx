@@ -1,5 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
-import {Parser} from 'json2csv' // only grab the sync parser
+import Parser from 'json2csv/lib/JSON2CSVParser' // only grab the sync parser
 import withAtmosphere, {
   WithAtmosphereProps
 } from 'parabol-client/decorators/withAtmosphere/withAtmosphere'
@@ -329,7 +329,7 @@ class ExportToCSV extends Component<Props> {
     const {endedAt, team, meetingType} = newMeeting
     const {name: teamName} = team
     const label = meetingType[0].toUpperCase() + meetingType.slice(1)
-    const parser = new Parser({withBOM: true})
+    const parser = new Parser({withBOM: true, eol: '\n'})
     const csv = parser.parse(rows)
     const date = new Date(endedAt!)
     const numDate = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`
