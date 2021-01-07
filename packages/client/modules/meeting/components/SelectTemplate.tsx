@@ -9,6 +9,7 @@ import StyledError from '../../../components/StyledError'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
 import SelectTemplateMutation from '../../../mutations/SelectTemplateMutation'
+import {BezierCurve} from '../../../types/constEnums'
 import {SelectTemplate_template} from '../../../__generated__/SelectTemplate_template.graphql'
 
 const fadein = keyframes`
@@ -17,16 +18,16 @@ const fadein = keyframes`
 `
 
 const ButtonBlock = styled('div')({
+  animation: `${fadein} 200ms ${BezierCurve.DECELERATE}`,
   alignItems: 'flex-end',
   display: 'flex',
   flexDirection: 'column',
   justifyContent: 'flex-end',
-  padding: '8px 16px 16px 8px',
   pointerEvents: 'none',
-  right: 0,
-  bottom: 0,
+  position: 'absolute',
+  right: 16,
+  bottom: 16,
   width: '100%',
-  animation: `${fadein} 2s`
 })
 
 const Button = styled(FloatingActionButton)({
