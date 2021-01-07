@@ -1,10 +1,11 @@
 import {useEffect, useRef} from 'react'
+import {MeetingTypeEnum} from '../types/graphql'
 import {commitLocalUpdate} from 'react-relay'
-import SelectTemplate from '../mutations/SelectTemplateMutation'
 import isTempId from '../utils/relay/isTempId'
+import {setActiveTemplate} from '../utils/relay/setActiveTemplate'
 import useAtmosphere from './useAtmosphere'
 
-const useSelectTopTemplate = (edges: readonly {node: {id: string}}[], selectedTemplateId: string, teamId: string, isActive: boolean) => {
+const useActiveTopTemplate = (edges: readonly {node: {id: string}}[], selectedTemplateId: string, teamId: string, isActive: boolean, meetingType: MeetingTypeEnum) => {
   const atmosphere = useAtmosphere()
   const timer = useRef<number | undefined>()
   useEffect(() => {
@@ -16,7 +17,7 @@ const useSelectTopTemplate = (edges: readonly {node: {id: string}}[], selectedTe
       const listTemplateIds = edges.map(({node}) => node.id)
       const isSelectedInView = listTemplateIds.includes(selectedTemplateId)
       if (!isSelectedInView) {
-        SelectTemplate(atmosphere, {selectedTemplateId: listTemplateIds[0], teamId})
+        setActiveTemplate(atmosphere, teamId, listTemplateIds[0], meetingType)
         commitLocalUpdate(atmosphere, (store) => {
           store.get(teamId)?.setValue('', 'editingScaleId')
         })
@@ -25,4 +26,4 @@ const useSelectTopTemplate = (edges: readonly {node: {id: string}}[], selectedTe
   }, [isActive, selectedTemplateId])
 }
 
-export default useSelectTopTemplate
+export default useActiveTopTemplate
