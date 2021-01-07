@@ -9,6 +9,7 @@ import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import AddPokerTemplatePayload from '../types/AddPokerTemplatePayload'
+import sendTemplateEventToSegment from './helpers/sendTemplateEventToSegment'
 
 const addPokerTemplate = {
   description: 'Add a new poker template with a default dimension created',
@@ -94,17 +95,9 @@ const addPokerTemplate = {
 
       await r({
         newTemplate: r.table('MeetingTemplate').insert(newTemplate),
-        newTemplateDimensions: r.table('TemplateDimension').insert(newTemplateDimensions),
-        settings: r
-          .table('MeetingSettings')
-          .getAll(teamId, {index: 'teamId'})
-          .filter({
-            meetingType: MeetingTypeEnum.poker
-          })
-          .update({
-            selectedTemplateId: newTemplate.id
-          })
+        newTemplateDimensions: r.table('TemplateDimension').insert(newTemplateDimensions)
       }).run()
+      sendTemplateEventToSegment(viewerId, newTemplate, 'Template Cloned')
       data = {templateId: newTemplate.id}
     } else {
       if (allTemplates.find((template) => template.name === '*New Template')) {
@@ -126,17 +119,9 @@ const addPokerTemplate = {
 
       await r({
         newTemplate: r.table('MeetingTemplate').insert(newTemplate),
-        newTemplateDimension: r.table('TemplateDimension').insert(newDimension),
-        settings: r
-          .table('MeetingSettings')
-          .getAll(teamId, {index: 'teamId'})
-          .filter({
-            meetingType: MeetingTypeEnum.poker
-          })
-          .update({
-            selectedTemplateId: templateId
-          })
+        newTemplateDimension: r.table('TemplateDimension').insert(newDimension)
       }).run()
+      sendTemplateEventToSegment(viewerId, newTemplate, 'Template Created')
       data = {templateId}
     }
     publish(SubscriptionChannel.TEAM, teamId, 'AddPokerTemplatePayload', data, subOptions)

@@ -96,12 +96,7 @@ export default {
       dataLoader.get('meetingTemplates').load(templateId)
     ])
     endSlackMeeting(meetingId, teamId, dataLoader).catch(console.log)
-    const {name: meetingTemplateName} = template
-    sendMeetingEndToSegment(
-      completedMeeting,
-      meetingMembers as MeetingMember[],
-      meetingTemplateName
-    )
+    sendMeetingEndToSegment(completedMeeting, meetingMembers as MeetingMember[], template)
     sendNewMeetingSummary(completedMeeting, context).catch(console.log)
 
     const events = meetingMembers.map(

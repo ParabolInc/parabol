@@ -12,6 +12,7 @@ import {GQLContext} from '../graphql'
 import StartRetrospectivePayload from '../types/StartRetrospectivePayload'
 import createMeetingMembers from './helpers/createMeetingMembers'
 import createNewMeetingPhases from './helpers/createNewMeetingPhases'
+import sendMeetingStartToSegment from './helpers/sendMeetingStartToSegment'
 import {startSlackMeeting} from './helpers/notifySlack'
 
 export default {
@@ -74,6 +75,7 @@ export default {
 
     const meetingId = meeting.id
     const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)
+    const template = await dataLoader.get('meetingTemplates').load(selectedTemplateId)
     const meetingMembers = createMeetingMembers(meeting, teamMembers)
     await r.table('NewMeeting').insert(meeting).run()
 
@@ -95,6 +97,7 @@ export default {
     ])
 
     startSlackMeeting(meetingId, teamId, dataLoader).catch(console.log)
+    sendMeetingStartToSegment(meeting, template)
     const data = {teamId, meetingId}
     publish(SubscriptionChannel.TEAM, teamId, 'StartRetrospectiveSuccess', data, subOptions)
     return data

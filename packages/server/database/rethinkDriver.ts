@@ -106,13 +106,13 @@ export type RethinkSchema = {
   }
   Notification: {
     type:
-    | NotificationTaskInvolves
-    | NotificationTeamArchived
-    | NotificationMeetingStageTimeLimitEnd
-    | NotificationPaymentRejected
-    | NotificationKickedOut
-    | NotificationPromoteToBillingLeader
-    | NotificationTeamInvitation
+      | NotificationTaskInvolves
+      | NotificationTeamArchived
+      | NotificationMeetingStageTimeLimitEnd
+      | NotificationPaymentRejected
+      | NotificationKickedOut
+      | NotificationPromoteToBillingLeader
+      | NotificationTeamInvitation
     index: 'userId'
   }
   Organization: {
@@ -233,6 +233,8 @@ const getRethink = async () => {
     await promise
     isLoaded = true
   }
+  // this is important because pm2 will restart the process & for whatever reason r isn't always healthy
+  await r.waitForHealthy()
   return (r as unknown) as ParabolR
 }
 

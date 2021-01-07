@@ -140,7 +140,7 @@ const ReflectTemplateDetails = (props: Props) => {
         {isOwner && <AddTemplatePrompt templateId={templateId} prompts={prompts} />}
       </Scrollable>
       <TemplateSharing teamId={teamId} template={activeTemplate} />
-      <SelectTemplate closePortal={closePortal} template={activeTemplate} teamId={teamId} />
+      {activeTemplate.id !== settings.selectedTemplate.id && <SelectTemplate closePortal={closePortal} template={activeTemplate} teamId={teamId} />}
     </PromptEditor>
   )
 }

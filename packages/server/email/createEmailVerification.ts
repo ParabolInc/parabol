@@ -5,7 +5,7 @@ import {Security} from 'parabol-client/types/constEnums'
 import {ISignUpWithPasswordOnMutationArguments} from 'parabol-client/types/graphql'
 import getRethink from '../database/rethinkDriver'
 import EmailVerification from '../database/types/EmailVerification'
-import emailVerificationEmailCreator from './components/emailVerificationEmailCreator'
+import emailVerificationEmailCreator from './emailVerificationEmailCreator'
 import getMailManager from './getMailManager'
 
 const createEmailVerification = async (props: ISignUpWithPasswordOnMutationArguments) => {

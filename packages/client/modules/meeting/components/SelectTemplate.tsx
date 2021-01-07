@@ -1,3 +1,4 @@
+import {keyframes} from '@emotion/core'
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
@@ -10,6 +11,11 @@ import useMutationProps from '../../../hooks/useMutationProps'
 import SelectTemplateMutation from '../../../mutations/SelectTemplateMutation'
 import {SelectTemplate_template} from '../../../__generated__/SelectTemplate_template.graphql'
 
+const fadein = keyframes`
+0% { opacity: 0; }
+100% { opacity: 1; }
+`
+
 const ButtonBlock = styled('div')({
   alignItems: 'flex-end',
   display: 'flex',
@@ -19,7 +25,8 @@ const ButtonBlock = styled('div')({
   pointerEvents: 'none',
   right: 0,
   bottom: 0,
-  width: '100%'
+  width: '100%',
+  animation: `${fadein} 2s`
 })
 
 const Button = styled(FloatingActionButton)({

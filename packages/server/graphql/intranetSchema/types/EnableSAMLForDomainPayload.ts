@@ -11,6 +11,9 @@ export const EnableSAMLForDomainSuccess = new GraphQLObjectType<any, GQLContext>
   })
 })
 
-const EnableSAMLForDomainPayload = makeMutationPayload('EnableSAMLForDomainPayload', EnableSAMLForDomainSuccess)
+const EnableSAMLForDomainPayload = makeMutationPayload(
+  'EnableSAMLForDomainPayload',
+  EnableSAMLForDomainSuccess
+)
 
 export default EnableSAMLForDomainPayload

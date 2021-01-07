@@ -9,11 +9,9 @@ export const up = async function (r: R) {
     // noop
   }
   try {
-    await r.table('SAML')
-      .replace((row) => row
-        .merge({domains: [row('domain').add('.com')]})
-        .without('domain', 'cert')
-      )
+    await r
+      .table('SAML')
+      .replace((row) => row.merge({domains: [row('domain').add('.com')]}).without('domain', 'cert'))
       .run()
   } catch (e) {
     // noop
@@ -30,10 +28,10 @@ export const down = async function (r: R) {
     // noop
   }
   try {
-    await r.table('SAML')
-      .replace((row) => row
-        .merge({domain: row('domain').nth(0).split('.').nth(0)})
-        .without('domains')
+    await r
+      .table('SAML')
+      .replace((row) =>
+        row.merge({domain: row('domain').nth(0).split('.').nth(0)}).without('domains')
       )
       .run()
   } catch (e) {

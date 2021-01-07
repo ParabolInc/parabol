@@ -1,4 +1,3 @@
-const webpack = require('webpack')
 const path = require('path')
 const nodeExternals = require('webpack-node-externals')
 const transformRules = require('./utils/transformRules')
@@ -16,11 +15,17 @@ module.exports = {
   stats: 'minimal',
   devtool: 'eval-source-map',
   mode: 'development',
+  // cache: {
+  //   type: 'filesystem',
+  //   buildDependencies: {
+  //     config: [__filename]
+  //   }
+  // },
   node: {
     __dirname: false
   },
   entry: {
-    web: [DOTENV, path.join(SERVER_ROOT, 'server.dev.ts')],
+    web: [DOTENV, path.join(SERVER_ROOT, 'server.ts')],
     gqlExecutor: [DOTENV, path.join(GQL_ROOT, 'gqlExecutor.ts')],
     sfu: [DOTENV, path.join(SFU_ROOT, 'server.ts')]
   },
@@ -28,8 +33,6 @@ module.exports = {
     filename: '[name].js',
     path: path.join(PROJECT_ROOT, 'dev'),
     libraryTarget: 'commonjs',
-    // hotUpdateChunkFilename: 'hot/[id].[contenthash].hot-update.js',
-    // hotUpdateMainFilename: 'hot/[contenthash].hot-update.json'
   },
   resolve: {
     alias: {
@@ -48,10 +51,9 @@ module.exports = {
   target: 'node',
   externals: [
     nodeExternals({
-      allowlist: ['webpack/hot/poll?1000', /parabol-client/, /parabol-server/]
+      allowlist: [/parabol-client/, /parabol-server/]
     })
   ],
-  plugins: [new webpack.HotModuleReplacementPlugin()],
   module: {
     rules: [
       ...transformRules(PROJECT_ROOT),
