@@ -1,4 +1,4 @@
-import shortid from 'shortid'
+import generateUID from '../../generateUID'
 
 interface Input {
   botUserId: string
@@ -43,7 +43,7 @@ export default class SlackAuth {
       id,
       createdAt
     } = input
-    this.id = id || shortid.generate()
+    this.id = id || generateUID()
     this.createdAt = createdAt || new Date()
     this.botUserId = botUserId
     this.botAccessToken = botAccessToken

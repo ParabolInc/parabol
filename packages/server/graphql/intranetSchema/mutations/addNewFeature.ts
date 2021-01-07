@@ -1,13 +1,13 @@
 import {GraphQLNonNull, GraphQLString} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import shortid from 'shortid'
 import getRethink from '../../../database/rethinkDriver'
 import db from '../../../db'
+import generateUID from '../../../generateUID'
 import {requireSU} from '../../../utils/authorization'
-import publish from '../../../utils/publish'
-import AddNewFeaturePayload from '../../types/addNewFeaturePayload'
 import getRedis from '../../../utils/getRedis'
+import publish from '../../../utils/publish'
 import sendToSentry from '../../../utils/sendToSentry'
+import AddNewFeaturePayload from '../../types/addNewFeaturePayload'
 
 const addNewFeature = {
   type: AddNewFeaturePayload,
@@ -32,17 +32,14 @@ const addNewFeature = {
     const subOptions = {operationId}
 
     // RESOLUTION
-    const newFeatureId = shortid.generate()
+    const newFeatureId = generateUID()
     const newFeature = {
       id: newFeatureId,
       copy,
       url
     }
     await Promise.all([
-      r
-        .table('NewFeature')
-        .insert(newFeature)
-        .run(),
+      r.table('NewFeature').insert(newFeature).run(),
       db.writeTable('User', {newFeatureId})
     ])
 

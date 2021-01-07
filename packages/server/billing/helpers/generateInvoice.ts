@@ -5,7 +5,7 @@ import {
   OrgUserRole,
   TierEnum
 } from 'parabol-client/types/graphql'
-import shortid from 'shortid'
+import generateUID from '../../generateUID'
 import Stripe from 'stripe'
 import getRethink from '../../database/rethinkDriver'
 import Coupon from '../../database/types/Coupon'
@@ -106,7 +106,7 @@ const reduceItemsByType = (typesDict: TypesDict, email: string) => {
       const unusedTimeAmount = unusedTime ? unusedTime.amount : 0
       const remainingTimeAmount = remainingTime ? remainingTime.amount : 0
       reducedItems[k] = ({
-        id: shortid.generate(),
+        id: generateUID(),
         amount: unusedTimeAmount + remainingTimeAmount,
         email,
         [dateField]: fromEpochSeconds(startTime)
@@ -157,7 +157,7 @@ const makeQuantityChangeLineItems = (detailedLineItems: DetailedLineItemDict) =>
     const lineItemType = lineItemTypes[i]
     const details = detailedLineItems[lineItemType] as ReducedItem[]
     if (details.length > 0) {
-      const id = shortid.generate()
+      const id = generateUID()
       quantityChangeLineItems.push(
         new QuantityChangeLineItem({
           id,

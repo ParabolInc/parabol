@@ -1,5 +1,5 @@
 import {TierEnum} from 'parabol-client/types/graphql'
-import shortid from 'shortid'
+import generateUID from '../../generateUID'
 import CreditCard from './CreditCard'
 
 interface Input {
@@ -47,7 +47,7 @@ export default class Organization {
       picture,
       tier
     } = input
-    this.id = id || shortid.generate()
+    this.id = id || generateUID()
     this.activeDomain = activeDomain
     this.isActiveDomainTouched = isActiveDomainTouched
     this.createdAt = createdAt || new Date()

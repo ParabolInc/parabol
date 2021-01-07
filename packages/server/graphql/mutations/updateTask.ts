@@ -1,23 +1,22 @@
 import {GraphQLNonNull} from 'graphql'
 import ms from 'ms'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import {ITeamMember, IUpdateTaskOnMutationArguments} from 'parabol-client/types/graphql'
+import extractTextFromDraftString from 'parabol-client/utils/draftjs/extractTextFromDraftString'
+import normalizeRawDraftJS from 'parabol-client/validation/normalizeRawDraftJS'
 import getRethink from '../../database/rethinkDriver'
-import publishChangeNotifications from './helpers/publishChangeNotifications'
+import Task from '../../database/types/Task'
+import generateUID from '../../generateUID'
+import {getUserId, isTeamMember} from '../../utils/authorization'
+import publish from '../../utils/publish'
+import standardError from '../../utils/standardError'
+import {GQLContext} from '../graphql'
 import AreaEnum from '../types/AreaEnum'
 import UpdateTaskInput from '../types/UpdateTaskInput'
 import UpdateTaskPayload from '../types/UpdateTaskPayload'
-import {getUserId, isTeamMember} from '../../utils/authorization'
-import publish from '../../utils/publish'
-import shortid from 'shortid'
-import standardError from '../../utils/standardError'
-import {IUpdateTaskOnMutationArguments} from 'parabol-client/types/graphql'
-import {GQLContext} from '../graphql'
 import {validateTaskUserId} from './createTask'
-import Task from '../../database/types/Task'
-import normalizeRawDraftJS from 'parabol-client/validation/normalizeRawDraftJS'
-import {ITeamMember} from 'parabol-client/types/graphql'
 import getUsersToIgnore from './helpers/getUsersToIgnore'
-import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import extractTextFromDraftString from 'parabol-client/utils/draftjs/extractTextFromDraftString'
+import publishChangeNotifications from './helpers/publishChangeNotifications'
 
 const DEBOUNCE_TIME = ms('5m')
 
@@ -55,10 +54,7 @@ export default {
       content
     } = updatedTask
     const validContent = normalizeRawDraftJS(content)
-    const task = await r
-      .table('Task')
-      .get(taskId)
-      .run()
+    const task = await r.table('Task').get(taskId).run()
     if (!task) {
       return {error: {message: 'Task not found'}}
     }
@@ -111,11 +107,8 @@ export default {
         .do((lastDoc) => {
           return r.branch(
             lastDoc('updatedAt').gt(r.epochTime((now.getTime() - DEBOUNCE_TIME) / 1000)),
-            r
-              .table('TaskHistory')
-              .get(lastDoc('id'))
-              .update(mergeDoc),
-            r.table('TaskHistory').insert(lastDoc.merge(mergeDoc, {id: shortid.generate()}))
+            r.table('TaskHistory').get(lastDoc('id')).update(mergeDoc),
+            r.table('TaskHistory').insert(lastDoc.merge(mergeDoc, {id: generateUID()}))
           )
         })
     }

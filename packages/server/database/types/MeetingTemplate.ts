@@ -1,6 +1,6 @@
 import {MeetingTypeEnum} from 'parabol-client/types/graphql'
-import shortid from 'shortid'
 import {SharingScopeEnum} from '../../../client/types/graphql'
+import generateUID from '../../generateUID'
 
 interface Input {
   name: string
@@ -30,7 +30,7 @@ export default class MeetingTemplate {
   constructor(input: Input) {
     const {name, teamId, scope, orgId, parentTemplateId, lastUsedAt, type, isStarter} = input
     const now = new Date()
-    this.id = shortid.generate()
+    this.id = generateUID()
     this.createdAt = now
     this.isActive = true
     this.name = name

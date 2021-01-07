@@ -1,5 +1,5 @@
-import shortid from 'shortid'
 import ms from 'ms'
+import generateUID from '../../generateUID'
 
 const MAX_SYNC_STAGE_DURATION = ms('1h')
 
@@ -28,7 +28,7 @@ const getSuggestedDuration = (filteredDurations: number[], allDurations: number[
 }
 
 export default class GenericMeetingStage {
-  id = shortid.generate()
+  id = generateUID()
   isAsync: boolean | undefined | null
   isComplete = false
   isNavigable = false

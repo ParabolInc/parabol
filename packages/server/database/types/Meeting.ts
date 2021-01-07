@@ -1,6 +1,6 @@
-import GenericMeetingPhase from './GenericMeetingPhase'
-import shortid from 'shortid'
 import {MeetingTypeEnum} from 'parabol-client/types/graphql'
+import generateUID from '../../generateUID'
+import GenericMeetingPhase from './GenericMeetingPhase'
 
 interface Input {
   teamId: string
@@ -18,7 +18,7 @@ const namePrefix = {
 }
 // export type MeetingTypeEnum = 'action' | 'retrospective'
 export default class Meeting {
-  id = shortid.generate()
+  id = generateUID()
   isLegacy?: boolean // true if old version of action meeting
   createdAt = new Date()
   updatedAt = new Date()

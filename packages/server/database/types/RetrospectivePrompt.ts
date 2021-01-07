@@ -1,4 +1,4 @@
-import shortid from 'shortid'
+import generateUID from '../../generateUID'
 
 interface Input {
   teamId: string
@@ -38,7 +38,7 @@ export default class RetrospectivePrompt {
       title,
       parentPromptId
     } = input
-    this.id = shortid.generate()
+    this.id = generateUID()
     this.sortOrder = sortOrder
     this.teamId = teamId
     this.templateId = templateId

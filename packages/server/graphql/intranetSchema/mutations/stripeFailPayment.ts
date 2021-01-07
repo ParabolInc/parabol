@@ -75,16 +75,12 @@ export default {
     // we take out the charge for future services since we are ending service immediately
     await manager.updateAccountBalance(customerId, amountDue - nextPeriodAmount)
 
-    // const notificationId = shortid.generate()
     const notifications = billingLeaderUserIds.map(
       (userId) => new NotificationPaymentRejected({orgId, last4, brand, userId})
     )
 
     await r({
-      update: r
-        .table('Invoice')
-        .get(invoiceId)
-        .update({status: InvoiceStatusEnum.FAILED}),
+      update: r.table('Invoice').get(invoiceId).update({status: InvoiceStatusEnum.FAILED}),
       insert: r.table('Notification').insert(notifications)
     }).run()
 
