@@ -59,11 +59,9 @@ const Snackbar = React.memo(() => {
   const snackQueueRef = useRef<Snack[]>([])
   const activeSnacksRef = useRef<Snack[]>([])
   const forceUpdate = useForceUpdate()
-  // const [snacksRef, setActiveSnacks] = useRefState<Snack[]>([])
   const atmosphere = useAtmosphere()
   const {openPortal, terminatePortal, portal} = usePortal({id: 'snackbar', noClose: true})
   const transitionChildren = useTransition(activeSnacksRef.current)
-  // const transitionChildrenRef = useRef(transitionChildren)
   const data = useLocalQuery<SnackbarQuery>(query)
   const snackbarOffset = data?.viewer?.snackbarOffset
   // used to ensure the snack isn't dismissed when the cursor is on it

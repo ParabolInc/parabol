@@ -6,7 +6,7 @@ import {createFragmentContainer} from 'react-relay'
 import {PhaseItemColumn_prompt} from '~/__generated__/PhaseItemColumn_prompt.graphql'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import {MenuPosition} from '../../hooks/useCoords'
-import useRefState from '../../hooks/useRefState'
+import useForceUpdate from '../../hooks/useForceUpdate'
 import useTooltip from '../../hooks/useTooltip'
 import SetPhaseFocusMutation from '../../mutations/SetPhaseFocusMutation'
 import {DECELERATE} from '../../styles/animation'
@@ -156,7 +156,8 @@ const PhaseItemColumn = (props: Props) => {
   const hasFocusedRef = useRef(false)
   const phaseEditorRef = useRef<HTMLDivElement>(null)
   const stackTopRef = useRef<HTMLDivElement>(null)
-  const [cardsInFlightRef, setCardsInFlight] = useRefState<ReflectColumnCardInFlight[]>([])
+  const cardsInFlightRef = useRef<ReflectColumnCardInFlight[]>([])
+  const forceUpdateColumn = useForceUpdate()
   const isFacilitator = viewerId === facilitatorUserId
   useEffect(() => {
     hasFocusedRef.current = true
@@ -222,10 +223,10 @@ const PhaseItemColumn = (props: Props) => {
                 <PhaseItemEditor
                   dataCy={`phase-item-editor-${question}`}
                   cardsInFlightRef={cardsInFlightRef}
-                  setCardsInFlight={setCardsInFlight}
                   phaseEditorRef={phaseEditorRef}
                   meetingId={meetingId}
                   nextSortOrder={nextSortOrder}
+                  forceUpdateColumn={forceUpdateColumn}
                   promptId={promptId}
                   stackTopRef={stackTopRef}
                 />
