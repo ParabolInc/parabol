@@ -83,10 +83,8 @@ export const enum ElementWidth {
   CONTROL_BAR_PADDING = 8,
   REFLECTION_CARD = 296,
   REFLECTION_CARD_PADDED = 296,
-  REFLECTION_CARD_PADDED_EXPANDED = 592,
   REFLECTION_CARD_PADDING = 6,
-  REFLECTION_COLUMN = 320,
-  REFLCTION_COLUMN_EXPANDED = 640
+  REFLECTION_COLUMN = 320
 }
 
 export const enum ElementHeight {
@@ -165,7 +163,7 @@ export const enum MathEnum {
 }
 
 export const enum MeetingControlBarEnum {
-  HEIGHT = 56,
+  HEIGHT = 56
 }
 
 export const enum MeetingLabels {
@@ -268,11 +266,6 @@ export const enum Security {
 export const enum ServerChannel {
   GQL_EXECUTOR_REQUEST = 'gqlExRreq',
   GQL_EXECUTOR_RESPONSE = 'gqlExRes'
-}
-
-export const enum SubColumn {
-  LEFT = 'LEFT',
-  RIGHT = 'RIGHT'
 }
 
 export const enum SubscriptionChannel {

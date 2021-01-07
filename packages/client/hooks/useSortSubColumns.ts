@@ -1,22 +1,28 @@
 import {useLayoutEffect, useEffect} from 'react'
 import {commitLocalUpdate} from 'react-relay'
-import {SubColumn} from '~/types/constEnums'
 import {GroupingKanbanColumn_reflectionGroups} from '~/__generated__/GroupingKanbanColumn_reflectionGroups.graphql'
 import useAtmosphere from './useAtmosphere'
 
+interface SubColumnIdxs {
+  [key: string]: number
+}
+
 const useSortSubColumns = (
   isWidthExpanded: boolean,
+  maxSubColumnCount: number,
   reflectionGroups: GroupingKanbanColumn_reflectionGroups
 ) => {
   const atmosphere = useAtmosphere()
   useLayoutEffect(() => {
     if (!reflectionGroups) return
     commitLocalUpdate(atmosphere, (store) => {
-      reflectionGroups.forEach((group, index) => {
+      let nextSubColumnIdx = 0
+      reflectionGroups.forEach((group) => {
         const reflectionGroup = store.get(group.id)
         if (!reflectionGroup) return
-        const subColumn = index % 2 === 0 ? SubColumn.LEFT : SubColumn.RIGHT
-        reflectionGroup.setValue(subColumn, 'subColumn')
+        reflectionGroup.setValue(nextSubColumnIdx, 'subColumnIdx')
+        if (nextSubColumnIdx === maxSubColumnCount - 1) nextSubColumnIdx = 0
+        else nextSubColumnIdx += 1
       })
     })
   }, [isWidthExpanded])
@@ -24,20 +30,22 @@ const useSortSubColumns = (
   const updateReflectionGroups = () => {
     if (!isWidthExpanded || !reflectionGroups) return
     commitLocalUpdate(atmosphere, (store) => {
-      let leftSubColumnCount = 0
-      let rightSubColumnCount = 0
+      const subColumnIdxCounts = {} as SubColumnIdxs
+      const subColumnIndexes = [...Array(maxSubColumnCount).keys()]
+      subColumnIndexes.forEach((idx) => (subColumnIdxCounts[idx] = 0))
+
       reflectionGroups.forEach((group) => {
         const reflectionGroup = store.get(group.id)
         if (!reflectionGroup) return
-        const currentSubColumn = reflectionGroup.getValue('subColumn')
-        if (!currentSubColumn) {
-          const subColumn =
-            leftSubColumnCount > rightSubColumnCount ? SubColumn.RIGHT : SubColumn.LEFT
-          reflectionGroup.setValue(subColumn, 'subColumn')
+        const currentSubColumnIdx = reflectionGroup.getValue('subColumnIdx') as number
+        if (currentSubColumnIdx === undefined) {
+          const smallestSubColumnCount = Math.min(...Object.values(subColumnIdxCounts))
+          const smallestSubColumnKey = Object.keys(subColumnIdxCounts).find(
+            (key) => subColumnIdxCounts[key] === smallestSubColumnCount
+          ) as string
+          reflectionGroup.setValue(parseInt(smallestSubColumnKey), 'subColumnIdx')
         } else {
-          currentSubColumn === SubColumn.LEFT
-            ? (leftSubColumnCount += 1)
-            : (rightSubColumnCount += 1)
+          subColumnIdxCounts[currentSubColumnIdx] += 1
         }
       })
     })
