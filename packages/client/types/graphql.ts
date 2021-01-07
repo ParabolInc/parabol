@@ -6769,11 +6769,6 @@ export interface IMutation {
   addPokerTemplateScaleValue: IAddPokerTemplateScaleValuePayload;
 
   /**
-   * Add or remove a reactji to a reflection
-   */
-  addReactjiToReflection: AddReactjiToReflectionPayload;
-
-  /**
    * Add or remove a reactji from a reactable
    */
   addReactjiToReactable: AddReactjiToReactablePayload;
@@ -7408,23 +7403,6 @@ export interface IAddPokerTemplateScaleOnMutationArguments {
 export interface IAddPokerTemplateScaleValueOnMutationArguments {
   scaleId: string;
   scaleValue: IAddTemplateScaleInput;
-}
-
-export interface IAddReactjiToReflectionOnMutationArguments {
-  /**
-   * The reflection getting the reaction
-   */
-  reflectionId: string;
-
-  /**
-   * the id of the reactji to add
-   */
-  reactji: string;
-
-  /**
-   * If true, remove the reaction, else add it
-   */
-  isRemove?: boolean | null;
 }
 
 export interface IAddReactjiToReactableOnMutationArguments {
@@ -8724,22 +8702,6 @@ export interface IAddTemplateScaleInput {
    * The label for this value, e.g., XS, M, L
    */
   label: string;
-}
-
-/**
- * Return object for AddReactjiToReflectionPayload
- */
-export type AddReactjiToReflectionPayload =
-  | IErrorPayload
-  | IAddReactjiToReflectionSuccess;
-
-export interface IAddReactjiToReflectionSuccess {
-  __typename: 'AddReactjiToReflectionSuccess';
-
-  /**
-   * the reflection with the updated list of reactjis
-   */
-  reflection: IRetroReflection;
 }
 
 /**
@@ -11084,6 +11046,15 @@ export type MeetingSubscriptionPayload =
   | IPokerResetDimensionSuccess
   | IPokerAnnounceDeckHoverSuccess
   | IPokerSetFinalScoreSuccess;
+
+export interface IAddReactjiToReflectionSuccess {
+  __typename: 'AddReactjiToReflectionSuccess';
+
+  /**
+   * the reflection with the updated list of reactjis
+   */
+  reflection: IRetroReflection;
+}
 
 export interface IUpdateDragLocationPayload {
   __typename: 'UpdateDragLocationPayload';

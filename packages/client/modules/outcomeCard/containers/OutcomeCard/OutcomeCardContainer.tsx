@@ -1,20 +1,18 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import {ContentState, convertToRaw, EditorState} from 'draft-js'
-import React, {memo, useEffect, useRef, useState} from 'react'
+import {ContentState, convertToRaw} from 'draft-js'
+import React, {memo, useRef, useState} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import useScrollIntoView from '~/hooks/useScrollIntoVIew'
 import {OutcomeCardContainer_task} from '~/__generated__/OutcomeCardContainer_task.graphql'
-import editorDecorators from '../../../../components/TaskEditor/decorators'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
-import useRefState from '../../../../hooks/useRefState'
+import useEditorState from '../../../../hooks/useEditorState'
 import useTaskChildFocus from '../../../../hooks/useTaskChildFocus'
 import DeleteTaskMutation from '../../../../mutations/DeleteTaskMutation'
 import UpdateTaskMutation from '../../../../mutations/UpdateTaskMutation'
 import {AreaEnum, TaskStatusEnum} from '../../../../types/graphql'
 import convertToTaskContent from '../../../../utils/draftjs/convertToTaskContent'
 import isAndroid from '../../../../utils/draftjs/isAndroid'
-import mergeServerContent from '../../../../utils/mergeServerContent'
 import OutcomeCard from '../../components/OutcomeCard/OutcomeCard'
 
 const Wrapper = styled('div')({
@@ -33,18 +31,14 @@ interface Props {
 
 const OutcomeCardContainer = memo((props: Props) => {
   const {contentState, className, isDraggingOver, task, area, isAgenda, dataCy} = props
-  const {id: taskId, team} = task
+  const {id: taskId, team, content} = task
   const {id: teamId} = team
   const atmosphere = useAtmosphere()
   const ref = useRef<HTMLDivElement>(null)
   const [isTaskHovered, setIsTaskHovered] = useState(false)
   const editorRef = useRef<HTMLTextAreaElement>(null)
-  const [editorStateRef, setEditorStateRef] = useRefState<EditorState>(() => {
-    return EditorState.createWithContent(
-      contentState,
-      editorDecorators(() => editorStateRef.current)
-    )
-  })
+
+  const [editorState, setEditorState] = useEditorState(content)
   const {useTaskChild, isTaskFocused} = useTaskChildFocus(taskId)
 
   const handleCardUpdate = () => {
@@ -56,7 +50,7 @@ const OutcomeCardContainer = memo((props: Props) => {
       if (!value && !isFocused) {
         DeleteTaskMutation(atmosphere, taskId, teamId)
       } else {
-        const initialContentState = editorStateRef.current.getCurrentContent()
+        const initialContentState = editorState.getCurrentContent()
         const initialText = initialContentState.getPlainText()
         if (initialText === value) return
         const updatedTask = {
@@ -67,7 +61,7 @@ const OutcomeCardContainer = memo((props: Props) => {
       }
       return
     }
-    const nextContentState = editorStateRef.current.getCurrentContent()
+    const nextContentState = editorState.getCurrentContent()
     const hasText = nextContentState.hasText()
     if (!hasText && !isFocused) {
       DeleteTaskMutation(atmosphere, taskId, teamId)
@@ -83,14 +77,6 @@ const OutcomeCardContainer = memo((props: Props) => {
     }
   }
 
-  useEffect(() => {
-    const editorState = editorStateRef.current
-    if (!editorState || editorState.getCurrentContent() === contentState) return
-    const newContentState = mergeServerContent(editorState, contentState)
-    const newEditorState = EditorState.push(editorState, newContentState, 'insert-characters')
-    setEditorStateRef(newEditorState)
-  }, [contentState, editorStateRef])
-
   useScrollIntoView(ref, !contentState.hasText())
   return (
     <Wrapper
@@ -104,14 +90,14 @@ const OutcomeCardContainer = memo((props: Props) => {
         dataCy={`${dataCy}-card`}
         area={area}
         editorRef={editorRef}
-        editorState={editorStateRef.current}
+        editorState={editorState}
         handleCardUpdate={handleCardUpdate}
         isTaskFocused={isTaskFocused()}
         isTaskHovered={isTaskHovered}
         isAgenda={!!isAgenda}
         isDraggingOver={isDraggingOver}
         task={task}
-        setEditorState={setEditorStateRef}
+        setEditorState={setEditorState}
         useTaskChild={useTaskChild}
       />
     </Wrapper>
@@ -124,6 +110,7 @@ export default createFragmentContainer(OutcomeCardContainer, {
       editors {
         userId
       }
+      content
       id
       team {
         id

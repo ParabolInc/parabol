@@ -1,4 +1,4 @@
-const getBestFitSelection = (oldContentState, newContentState, oldKey, oldOffset) => {
+const getBestFitSelection = (newContentState, oldKey, oldOffset) => {
   const contentBlock = newContentState.getBlockForKey(oldKey) || newContentState.getFirstBlock()
   const key = contentBlock.getKey()
   const blockLength = contentBlock.getText().length
@@ -8,11 +8,9 @@ const getBestFitSelection = (oldContentState, newContentState, oldKey, oldOffset
 
 const getMergedSelection = (oldEditorState, newContentState) => {
   const oldSelection = oldEditorState.getSelection()
-  const oldContent = oldEditorState.getCurrentContent()
   const oldStartKey = oldSelection.getStartKey()
   const oldStartOffset = oldSelection.getStartOffset()
   const {offset: startOffset, key: startKey} = getBestFitSelection(
-    oldContent,
     newContentState,
     oldStartKey,
     oldStartOffset
@@ -26,7 +24,6 @@ const getMergedSelection = (oldEditorState, newContentState) => {
     })
   }
   const {offset: endOffset, key: endKey} = getBestFitSelection(
-    oldContent,
     newContentState,
     oldSelection.getEndKey(),
     oldSelection.getEndOffset()
@@ -46,7 +43,6 @@ const mergeServerContent = (oldEditorState, newContentState) => {
   }
   return newContentState.merge({
     selectionAfter: getMergedSelection(oldEditorState, newContentState)
-    // selectionBefore: updatedSelectionState
   })
 }
 
