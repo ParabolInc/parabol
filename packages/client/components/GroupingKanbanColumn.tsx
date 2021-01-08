@@ -33,7 +33,7 @@ const Column = styled('div')<{
   isFirstColumn: boolean
   isLastColumn: boolean
 }>(({isLengthExpanded, isWidthExpanded, isFirstColumn, isLastColumn}) => ({
-  alignItems: 'center',
+  alignContent: 'flex-start',
   background: PALETTE.BACKGROUND_REFLECTION,
   borderRadius: 8,
   display: 'flex',
@@ -50,22 +50,21 @@ const Column = styled('div')<{
   }
 }))
 
-const ColumnBody = styled('div')<{isDesktop: boolean; isWidthExpanded: boolean, maxSubColumnCount: number}>(
-  ({isDesktop, isWidthExpanded, maxSubColumnCount}) => ({
+const ColumnBody = styled('div')<{headerHeight: number, isDesktop: boolean; isWidthExpanded: boolean, maxSubColumnCount: number}>(
+  ({headerHeight, isDesktop, isWidthExpanded, maxSubColumnCount}) => ({
     alignContent: 'flex-start',
     display: 'flex',
     flex: 1,
     flexDirection: 'row',
     flexWrap: 'wrap',
-    height: '100%',
+    maxHeight: `calc(100% - ${headerHeight}px)`,
     justifyContent: 'space-around',
-    maxHeight: 'fit-content',
     minHeight: 200,
     overflowX: 'hidden',
     overflowY: 'auto',
     padding: `${isWidthExpanded ? 12 : 6}px ${isDesktop ? 12 : 8}px`,
     transition: `all 100ms ${BezierCurve.DECELERATE}`,
-    width: isWidthExpanded ?  ElementWidth.REFLECTION_COLUMN * maxSubColumnCount  : ElementWidth.REFLECTION_COLUMN
+    width: isWidthExpanded ?  ElementWidth.REFLECTION_COLUMN * maxSubColumnCount : ElementWidth.REFLECTION_COLUMN
   })
 )
 
@@ -99,7 +98,10 @@ const GroupingKanbanColumn = (props: Props) => {
   const {submitting, onError, submitMutation, onCompleted} = useMutationProps()
   const atmosphere = useAtmosphere()
   const columnRef = useRef<HTMLDivElement>(null)
-  const [isWidthExpanded, maxSubColumnCount, toggleWidth] = useColumnWidth(reflectPromptsCount, columnRef)
+  const columnBodyRef = useRef<HTMLDivElement>(null)
+  const columnHeaderRef = useRef<HTMLDivElement>(null)
+  const headerHeight = columnHeaderRef.current && columnHeaderRef.current.clientHeight || 0
+  const [isWidthExpanded, maxSubColumnCount, toggleWidth] = useColumnWidth(reflectPromptsCount, columnBodyRef, columnHeaderRef)
   const subColumnIndexes = isWidthExpanded ? [...Array(maxSubColumnCount).keys()] : [0]
   const isLengthExpanded =
     useCoverable(promptId, columnRef, MeetingControlBarEnum.HEIGHT, phaseRef, columnsRef) || !!endedAt
@@ -132,6 +134,7 @@ const GroupingKanbanColumn = (props: Props) => {
       isWidthExpanded={isWidthExpanded}
       isFirstColumn={isFirstColumn}
       isLastColumn={isLastColumn}
+      ref={columnRef}
       data-cy={`group-column-${question}`}
     >
       <GroupingKanbanColumnHeader
@@ -140,18 +143,20 @@ const GroupingKanbanColumn = (props: Props) => {
         isWidthExpanded={isWidthExpanded}
         onClick={onClick}
         question={question}
+        columnHeaderRef={columnHeaderRef}
         submitting={submitting}
         toggleWidth={toggleWidth}
       />
-      {subColumnIndexes.map((subColumnIdx) => {
+      {subColumnIndexes.map((subColumnIdx, idx) => {
         return (
           <ColumnBody
             data-cy={`group-column-${question}-body`}
+            headerHeight={headerHeight}
             isDesktop={isDesktop}
             key={`${promptId}-${subColumnIdx}`}
             isWidthExpanded={isWidthExpanded}
             maxSubColumnCount={maxSubColumnCount}
-            ref={columnRef}
+            ref={idx === 0 ? columnBodyRef : undefined}
             {...{[DragAttribute.DROPZONE]: promptId}}
           >
             {filteredReflectionGroups

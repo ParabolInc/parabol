@@ -1,4 +1,4 @@
-import React, {MouseEvent} from 'react'
+import React, {MouseEvent, RefObject} from 'react'
 import styled from '@emotion/styled'
 import {PALETTE} from '~/styles/paletteV2'
 import FlatButton from './FlatButton'
@@ -61,6 +61,7 @@ const StyledIcon = styled(Icon)({
 
 interface Props {
   canAdd: boolean
+  columnHeaderRef: RefObject<HTMLDivElement>
   groupColor: string
   isWidthExpanded: boolean
   onClick: () => void
@@ -70,7 +71,7 @@ interface Props {
 }
 
 const GroupingKanbanColumnHeader = (props: Props) => {
-  const {canAdd, groupColor, isWidthExpanded, onClick, question, submitting, toggleWidth} = props
+  const {canAdd, columnHeaderRef, groupColor, isWidthExpanded, onClick, question, submitting, toggleWidth} = props
   const {
     tooltipPortal: addReflectionPortal,
     openTooltip: openReflectionTooltip,
@@ -87,7 +88,7 @@ const GroupingKanbanColumnHeader = (props: Props) => {
   }
 
   return (
-    <Wrapper>
+    <Wrapper ref={columnHeaderRef}>
       <ColumnHeader>
         <Prompt>
           <ColumnColorDrop groupColor={groupColor} />

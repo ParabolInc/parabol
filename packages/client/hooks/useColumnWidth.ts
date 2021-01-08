@@ -6,7 +6,8 @@ const DEFAULT_MAX_SUB_COLUMNS = 2
 
 const useColumnWidth = (
   reflectPromptsCount: number,
-  columnRef: RefObject<HTMLDivElement>
+  columnRef: RefObject<HTMLDivElement>,
+  columnHeaderRef: RefObject<HTMLDivElement>
 ): [boolean, number, () => void] => {
   const [isWidthExpanded, setIsWidthExpanded] = useState(false)
   const [maxSubColumnCount, setMaxSubColumnCount] = useState(DEFAULT_MAX_SUB_COLUMNS)
@@ -15,6 +16,15 @@ const useColumnWidth = (
 
   const toggleWidth = () => {
     setIsWidthExpanded(!isWidthExpanded)
+    const columnEl = columnRef.current
+    const columnHeaderEl = columnHeaderRef.current
+    if (columnEl && columnHeaderEl) {
+      const headerHeight = columnHeaderEl.clientHeight
+      const newMaxSubColumnCount = Math.ceil(
+        columnEl.scrollHeight / (columnEl.clientHeight - headerHeight)
+      )
+      setMaxSubColumnCount(newMaxSubColumnCount)
+    }
   }
   useLayoutEffect(() => {
     if (!isDesktop && isWidthExpanded) {
@@ -25,13 +35,6 @@ const useColumnWidth = (
       (reflectPromptsCount === 1 && isDesktop) || (reflectPromptsCount === 2 && isWiderScreen)
     if (isWidthExpanded !== expandWidth) {
       toggleWidth()
-    }
-    const el = columnRef.current
-    if (el) {
-      const newMaxSubColumnCount = Math.ceil(el.scrollHeight / el.clientHeight)
-      if (newMaxSubColumnCount > maxSubColumnCount) {
-        setMaxSubColumnCount(newMaxSubColumnCount)
-      }
     }
   }, [isDesktop, isWiderScreen])
 

@@ -29,11 +29,11 @@ const useSortSubColumns = (
 
   const updateReflectionGroups = () => {
     if (!isWidthExpanded || !reflectionGroups) return
-    commitLocalUpdate(atmosphere, (store) => {
-      const subColumnIdxCounts = {} as SubColumnIdxs
-      const subColumnIndexes = [...Array(maxSubColumnCount).keys()]
-      subColumnIndexes.forEach((idx) => (subColumnIdxCounts[idx] = 0))
+    const subColumnIdxCounts = {} as SubColumnIdxs
+    const subColumnIndexes = [...Array(maxSubColumnCount).keys()]
+    subColumnIndexes.forEach((idx) => (subColumnIdxCounts[idx] = 0))
 
+    commitLocalUpdate(atmosphere, (store) => {
       reflectionGroups.forEach((group) => {
         const reflectionGroup = store.get(group.id)
         if (!reflectionGroup) return
