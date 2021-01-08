@@ -1,4 +1,4 @@
-import {useLayoutEffect, useEffect} from 'react'
+import {useEffect} from 'react'
 import {commitLocalUpdate} from 'react-relay'
 import {GroupingKanbanColumn_reflectionGroups} from '~/__generated__/GroupingKanbanColumn_reflectionGroups.graphql'
 import useAtmosphere from './useAtmosphere'
@@ -7,30 +7,17 @@ interface SubColumnIdxs {
   [key: string]: number
 }
 
-const useSortSubColumns = (
+const useSortNewReflectionGroup = (
   isWidthExpanded: boolean,
-  maxSubColumnCount: number,
+  subColumnCount: number,
   reflectionGroups: GroupingKanbanColumn_reflectionGroups
 ) => {
   const atmosphere = useAtmosphere()
-  useLayoutEffect(() => {
-    if (!reflectionGroups) return
-    commitLocalUpdate(atmosphere, (store) => {
-      let nextSubColumnIdx = 0
-      reflectionGroups.forEach((group) => {
-        const reflectionGroup = store.get(group.id)
-        if (!reflectionGroup) return
-        reflectionGroup.setValue(nextSubColumnIdx, 'subColumnIdx')
-        if (nextSubColumnIdx === maxSubColumnCount - 1) nextSubColumnIdx = 0
-        else nextSubColumnIdx += 1
-      })
-    })
-  }, [isWidthExpanded])
 
-  const updateReflectionGroups = () => {
+  const handleNewReflectionGroup = () => {
     if (!isWidthExpanded || !reflectionGroups) return
     const subColumnIdxCounts = {} as SubColumnIdxs
-    const subColumnIndexes = [...Array(maxSubColumnCount).keys()]
+    const subColumnIndexes = [...Array(subColumnCount).keys()]
     subColumnIndexes.forEach((idx) => (subColumnIdxCounts[idx] = 0))
 
     commitLocalUpdate(atmosphere, (store) => {
@@ -50,7 +37,7 @@ const useSortSubColumns = (
       })
     })
   }
-  useEffect(() => updateReflectionGroups(), [reflectionGroups])
+  useEffect(() => handleNewReflectionGroup(), [reflectionGroups])
 }
 
-export default useSortSubColumns
+export default useSortNewReflectionGroup
