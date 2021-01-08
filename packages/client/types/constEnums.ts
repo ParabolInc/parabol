@@ -88,6 +88,7 @@ export const enum ElementWidth {
 }
 
 export const enum ElementHeight {
+  REFLECTION_CARD = 44,
   REFLECTION_CARD_MAX = 104 // 4 lines (20px each) + (2 * 12px) vertical gutter
 }
 

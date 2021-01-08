@@ -31,8 +31,9 @@ const Column = styled('div')<{
   isLengthExpanded: boolean
   isWidthExpanded: boolean
   isFirstColumn: boolean
-  isLastColumn: boolean
-}>(({isLengthExpanded, isWidthExpanded, isFirstColumn, isLastColumn}) => ({
+  isLastColumn: boolean,
+  maxSubColumnCount: number
+}>(({isLengthExpanded, isWidthExpanded, isFirstColumn, isLastColumn, maxSubColumnCount}) => ({
   alignContent: 'flex-start',
   background: PALETTE.BACKGROUND_REFLECTION,
   borderRadius: 8,
@@ -43,15 +44,17 @@ const Column = styled('div')<{
   maxHeight: '100%',
   padding: isWidthExpanded ? '0 8px' : 0,
   position: 'relative',
+  minWidth: isWidthExpanded ? ElementWidth.REFLECTION_COLUMN * maxSubColumnCount : ElementWidth.REFLECTION_COLUMN,
   transition: `all 100ms ${BezierCurve.DECELERATE}`,
   [makeMinWidthMediaQuery(Breakpoint.SINGLE_REFLECTION_COLUMN)]: {
     height: isLengthExpanded ? '100%' : `calc(100% - ${MeetingControlBarEnum.HEIGHT}px)`,
     margin: `0 ${isLastColumn ? 16 : 8}px 0px ${isFirstColumn ? 16 : 8}px`,
+    maxWidth: isWidthExpanded ?  ElementWidth.REFLECTION_COLUMN * maxSubColumnCount  : ElementWidth.REFLECTION_COLUMN
   }
 }))
 
-const ColumnBody = styled('div')<{headerHeight: number, isDesktop: boolean; isWidthExpanded: boolean, maxSubColumnCount: number}>(
-  ({headerHeight, isDesktop, isWidthExpanded, maxSubColumnCount}) => ({
+const ColumnBody = styled('div')<{headerHeight: number, isDesktop: boolean; isWidthExpanded: boolean}>(
+  ({headerHeight, isDesktop, isWidthExpanded, }) => ({
     alignContent: 'flex-start',
     display: 'flex',
     flex: 1,
@@ -64,7 +67,7 @@ const ColumnBody = styled('div')<{headerHeight: number, isDesktop: boolean; isWi
     overflowY: 'auto',
     padding: `${isWidthExpanded ? 12 : 6}px ${isDesktop ? 12 : 8}px`,
     transition: `all 100ms ${BezierCurve.DECELERATE}`,
-    width: isWidthExpanded ?  ElementWidth.REFLECTION_COLUMN * maxSubColumnCount : ElementWidth.REFLECTION_COLUMN
+    width: ElementWidth.REFLECTION_COLUMN
   })
 )
 
@@ -100,8 +103,8 @@ const GroupingKanbanColumn = (props: Props) => {
   const columnRef = useRef<HTMLDivElement>(null)
   const columnBodyRef = useRef<HTMLDivElement>(null)
   const columnHeaderRef = useRef<HTMLDivElement>(null)
-  const headerHeight = columnHeaderRef.current && columnHeaderRef.current.clientHeight || 0
-  const [isWidthExpanded, maxSubColumnCount, toggleWidth] = useColumnWidth(reflectPromptsCount, columnBodyRef, columnHeaderRef)
+  const headerHeight = columnHeaderRef.current?.clientHeight || 0
+  const [isWidthExpanded, maxSubColumnCount, toggleWidth] = useColumnWidth(reflectPromptsCount, columnBodyRef)
   const subColumnIndexes = isWidthExpanded ? [...Array(maxSubColumnCount).keys()] : [0]
   const isLengthExpanded =
     useCoverable(promptId, columnRef, MeetingControlBarEnum.HEIGHT, phaseRef, columnsRef) || !!endedAt
@@ -134,6 +137,7 @@ const GroupingKanbanColumn = (props: Props) => {
       isWidthExpanded={isWidthExpanded}
       isFirstColumn={isFirstColumn}
       isLastColumn={isLastColumn}
+      maxSubColumnCount={maxSubColumnCount}
       ref={columnRef}
       data-cy={`group-column-${question}`}
     >
@@ -155,7 +159,6 @@ const GroupingKanbanColumn = (props: Props) => {
             isDesktop={isDesktop}
             key={`${promptId}-${subColumnIdx}`}
             isWidthExpanded={isWidthExpanded}
-            maxSubColumnCount={maxSubColumnCount}
             ref={idx === 0 ? columnBodyRef : undefined}
             {...{[DragAttribute.DROPZONE]: promptId}}
           >

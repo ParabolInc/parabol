@@ -1,13 +1,12 @@
 import {RefObject, useLayoutEffect, useState} from 'react'
-import {Breakpoint} from '~/types/constEnums'
+import {Breakpoint, ElementHeight} from '~/types/constEnums'
 import useBreakpoint from './useBreakpoint'
 
 const DEFAULT_MAX_SUB_COLUMNS = 2
 
 const useColumnWidth = (
   reflectPromptsCount: number,
-  columnRef: RefObject<HTMLDivElement>,
-  columnHeaderRef: RefObject<HTMLDivElement>
+  columnBodyRef: RefObject<HTMLDivElement>
 ): [boolean, number, () => void] => {
   const [isWidthExpanded, setIsWidthExpanded] = useState(false)
   const [maxSubColumnCount, setMaxSubColumnCount] = useState(DEFAULT_MAX_SUB_COLUMNS)
@@ -16,12 +15,10 @@ const useColumnWidth = (
 
   const toggleWidth = () => {
     setIsWidthExpanded(!isWidthExpanded)
-    const columnEl = columnRef.current
-    const columnHeaderEl = columnHeaderRef.current
-    if (columnEl && columnHeaderEl) {
-      const headerHeight = columnHeaderEl.clientHeight
+    const el = columnBodyRef.current
+    if (el) {
       const newMaxSubColumnCount = Math.ceil(
-        columnEl.scrollHeight / (columnEl.clientHeight - headerHeight)
+        el.scrollHeight / (el.clientHeight - ElementHeight.REFLECTION_CARD)
       )
       setMaxSubColumnCount(newMaxSubColumnCount)
     }
