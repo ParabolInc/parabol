@@ -8,16 +8,15 @@ interface SubColumnIdxs {
 }
 
 const useSortNewReflectionGroup = (
-  isWidthExpanded: boolean,
   subColumnCount: number,
+  subColumnIndexes: number[],
   reflectionGroups: GroupingKanbanColumn_reflectionGroups
 ) => {
   const atmosphere = useAtmosphere()
 
   const handleNewReflectionGroup = () => {
-    if (!isWidthExpanded || !reflectionGroups) return
+    if (!(subColumnCount > 1) || !reflectionGroups) return
     const subColumnIdxCounts = {} as SubColumnIdxs
-    const subColumnIndexes = [...Array(subColumnCount).keys()]
     subColumnIndexes.forEach((idx) => (subColumnIdxCounts[idx] = 0))
 
     commitLocalUpdate(atmosphere, (store) => {

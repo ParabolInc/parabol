@@ -112,7 +112,7 @@ const GroupingKanbanColumn = (props: Props) => {
     () => groups.filter((group) => group.reflections.length > 0),
     [groups]
   )
-  const [isWidthExpanded, subColumnCount, subColumnIndexes, toggleWidth] = useSubColumns(columnBodyRef, phaseRef, reflectPromptsCount, reflectionGroups)
+  const [isWidthExpanded, subColumnCount, subColumnIndexes, toggleWidth] = useSubColumns(columnBodyRef, phaseRef, reflectPromptsCount, filteredReflectionGroups)
   const canAdd = phaseType === NewMeetingPhaseTypeEnum.group && !isComplete && !isAnyEditing
 
   const onClick = () => {
