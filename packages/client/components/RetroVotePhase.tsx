@@ -1,5 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
-import React, {useRef} from 'react'
+import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {RetroVotePhase_meeting} from '~/__generated__/RetroVotePhase_meeting.graphql'
 import {NewMeetingPhaseTypeEnum} from '../types/graphql'
@@ -15,6 +15,7 @@ import PhaseWrapper from './PhaseWrapper'
 import {RetroMeetingPhaseProps} from './RetroMeeting'
 import RetroVoteMetaHeader from './RetroVoteMetaHeader'
 import StageTimerDisplay from './StageTimerDisplay'
+import useCallbackRefBBox from '../hooks/useCallbackRefBBox'
 
 interface Props extends RetroMeetingPhaseProps {
   meeting: RetroVotePhase_meeting
@@ -22,10 +23,10 @@ interface Props extends RetroMeetingPhaseProps {
 
 const RetroVotePhase = (props: Props) => {
   const {avatarGroup, toggleSidebar, meeting} = props
-  const phaseRef = useRef<HTMLDivElement>(null)
+  const [callbackRef, phaseBBox,  phaseRef] = useCallbackRefBBox()
   const {endedAt, showSidebar} = meeting
   return (
-    <MeetingContent ref={phaseRef}>
+    <MeetingContent ref={callbackRef}>
       <MeetingHeaderAndPhase hideBottomBar={!!endedAt}>
         <MeetingTopBar
           avatarGroup={avatarGroup}
@@ -41,7 +42,7 @@ const RetroVotePhase = (props: Props) => {
           <RetroVoteMetaHeader meeting={meeting} />
           <StageTimerDisplay meeting={meeting} />
           <MeetingPhaseWrapper>
-            <GroupingKanban meeting={meeting} phaseRef={phaseRef} />
+            <GroupingKanban meeting={meeting} phaseBBox={phaseBBox} phaseRef={phaseRef}  />
           </MeetingPhaseWrapper>
         </PhaseWrapper>
       </MeetingHeaderAndPhase>

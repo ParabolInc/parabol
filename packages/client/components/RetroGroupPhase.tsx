@@ -3,8 +3,9 @@ import graphql from 'babel-plugin-relay/macro'
  * Renders the UI for the reflection phase of the retrospective meeting
  *
  */
-import React, {useRef} from 'react'
+import React from 'react'
 import {createFragmentContainer} from 'react-relay'
+import useCallbackRefBBox from '~/hooks/useCallbackRefBBox'
 import {RetroGroupPhase_meeting} from '~/__generated__/RetroGroupPhase_meeting.graphql'
 import {NewMeetingPhaseTypeEnum} from '../types/graphql'
 import {phaseLabelLookup} from '../utils/meetings/lookups'
@@ -24,11 +25,12 @@ interface Props extends RetroMeetingPhaseProps {
 }
 
 const RetroGroupPhase = (props: Props) => {
-  const phaseRef = useRef<HTMLDivElement>(null)
   const {avatarGroup, toggleSidebar, meeting} = props
+  const [callbackRef,phaseBBox,  phaseRef] = useCallbackRefBBox()
   const {endedAt, showSidebar} = meeting
+
   return (
-    <MeetingContent ref={phaseRef}>
+    <MeetingContent ref={callbackRef}>
       <MeetingHeaderAndPhase hideBottomBar={!!endedAt}>
         <MeetingTopBar
           avatarGroup={avatarGroup}
@@ -41,7 +43,7 @@ const RetroGroupPhase = (props: Props) => {
         <PhaseWrapper>
           <StageTimerDisplay meeting={meeting} canUndo={true} />
           <MeetingPhaseWrapper>
-            <GroupingKanban meeting={meeting} phaseRef={phaseRef} />
+            <GroupingKanban meeting={meeting} phaseBBox={phaseBBox} phaseRef={phaseRef} />
           </MeetingPhaseWrapper>
         </PhaseWrapper>
       </MeetingHeaderAndPhase>

@@ -3,6 +3,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {EditorState} from 'draft-js'
 import React, {useEffect, useMemo, useRef} from 'react'
 import {createFragmentContainer} from 'react-relay'
+import {BBox} from '~/types/animations'
 import {PhaseItemColumn_prompt} from '~/__generated__/PhaseItemColumn_prompt.graphql'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import {MenuPosition} from '../../hooks/useCoords'
@@ -135,15 +136,13 @@ export interface ReflectColumnCardInFlight {
 interface Props {
   idx: number
   isDesktop: boolean
-  isFirstColumn: boolean
-  isLastColumn: boolean
   meeting: PhaseItemColumn_meeting
-  phaseRef: React.RefObject<HTMLDivElement>
+  phaseBBox: BBox | null
   prompt: PhaseItemColumn_prompt
 }
 
 const PhaseItemColumn = (props: Props) => {
-  const {idx, meeting, phaseRef, prompt, isDesktop} = props
+  const {idx, meeting, phaseBBox, prompt, isDesktop} = props
   const {id: promptId, editorIds, question, groupColor, description} = prompt
   const {id: meetingId, facilitatorUserId, localPhase, phases, reflectionGroups} = meeting
   const {id: phaseId, focusedPromptId} = localPhase
@@ -241,7 +240,7 @@ const PhaseItemColumn = (props: Props) => {
               reflectionStack={reflectionStack}
               idx={idx}
               phaseEditorRef={phaseEditorRef}
-              phaseRef={phaseRef}
+              phaseBBox={phaseBBox}
               meeting={meeting}
               stackTopRef={stackTopRef}
             />

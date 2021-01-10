@@ -1,7 +1,8 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {RefObject, useEffect, useMemo, useRef, useState} from 'react'
+import React, { useEffect, useMemo, useRef, useState} from 'react'
 import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
+import {BBox} from '~/types/animations'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import useEventCallback from '../../hooks/useEventCallback'
 import useExpandedReflections from '../../hooks/useExpandedReflections'
@@ -61,7 +62,7 @@ const ReflectionWrapper = styled('div')<{
 })
 
 interface Props {
-  phaseRef: RefObject<HTMLDivElement>
+  phaseBBox: BBox | null
   meeting: ReflectionGroup_meeting
   reflectionGroup: ReflectionGroup_reflectionGroup
   swipeColumn?: SwipeColumn
@@ -69,7 +70,7 @@ interface Props {
 }
 
 const ReflectionGroup = (props: Props) => {
-  const {meeting, phaseRef, reflectionGroup, swipeColumn, dataCy} = props
+  const {meeting, phaseBBox, reflectionGroup, swipeColumn, dataCy} = props
   const groupRef = useRef<HTMLDivElement>(null)
   const {localPhase, localStage} = meeting
   const {phaseType} = localPhase
@@ -151,7 +152,7 @@ const ReflectionGroup = (props: Props) => {
               titleInputRef={expandedTitleInputRef}
             />
           }
-          phaseRef={phaseRef}
+          phaseBBox={phaseBBox}
           staticReflections={staticReflections}
           reflections={reflections}
           scrollRef={scrollRef}

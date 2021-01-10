@@ -1,6 +1,5 @@
-import React, {ReactNode, Ref, useMemo, useEffect} from 'react'
+import React, {ReactNode, Ref,  useEffect} from 'react'
 import styled from '@emotion/styled'
-import getBBox from './getBBox'
 import {PALETTE} from '../../styles/paletteV2'
 import {BBox} from '../../types/animations'
 import {RefCallbackInstance} from '../../types/generics'
@@ -64,7 +63,7 @@ const ScrollBlock = styled('div')({
 interface Props {
   closePortal: () => void
   header?: ReactNode
-  phaseRef: React.RefObject<HTMLDivElement>
+  phaseBBox: BBox | null
   staticReflections: readonly any[]
   reflections: readonly any[]
   meeting: any
@@ -78,7 +77,7 @@ const ExpandedReflectionStack = (props: Props) => {
   const {
     header,
     staticReflections,
-    phaseRef,
+    phaseBBox,
     scrollRef,
     setItemsRef,
     bgRef,
@@ -87,9 +86,6 @@ const ExpandedReflectionStack = (props: Props) => {
     reflectionGroupId,
     meeting
   } = props
-  const phaseBBox = useMemo(() => {
-    return getBBox(phaseRef.current)
-  }, [phaseRef.current])
   useEffect(() => {
     const handleKeydown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {

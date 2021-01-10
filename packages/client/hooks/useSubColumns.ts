@@ -10,7 +10,7 @@ const DEFAULT_SUB_COLUMNS = 1
 
 const useSubColumns = (
   columnBodyRef: RefObject<HTMLDivElement>,
-  phaseRef: RefObject<HTMLDivElement>,
+  phaseWidth: number | null,
   reflectPromptsCount: number,
   reflectionGroups: GroupingKanbanColumn_reflectionGroups
 ): [boolean, number, number[], () => void] => {
@@ -52,18 +52,20 @@ const useSubColumns = (
   }
 
   const getInitialSubColumnCount = () => {
-    const phaseEl = phaseRef.current
-    if (!phaseEl) return DEFAULT_SUB_COLUMNS
-    const {clientWidth} = phaseEl
-    const maxSubColumnsInPhase = Math.floor(clientWidth / ElementWidth.REFLECTION_COLUMN)
-    const newSubColumnCount = Math.floor(maxSubColumnsInPhase / reflectPromptsCount)
-    return newSubColumnCount
+    const maxSubColumnsInPhase = Math.floor(phaseWidth! / ElementWidth.REFLECTION_COLUMN)
+    const maxSubColumnsPerColumn = Math.floor(maxSubColumnsInPhase / reflectPromptsCount)
+    const maxSubColumnCount = getMaxSubColumnCount()
+    return Math.min(maxSubColumnCount, maxSubColumnsPerColumn)
   }
+
   useLayoutEffect(() => {
+    if (!phaseWidth) return
     const initialSubColumnCount = getInitialSubColumnCount()
     setSubColumnCount(initialSubColumnCount)
-    sortSubColumns(initialSubColumnCount)
-  }, [phaseRef.current])
+    if (initialSubColumnCount > 1) {
+      sortSubColumns(initialSubColumnCount)
+    }
+  }, [phaseWidth])
 
   return [subColumnCount > 1, subColumnCount, subColumnIndexes, toggleWidth]
 }

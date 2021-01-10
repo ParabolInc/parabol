@@ -25,6 +25,7 @@ import ReflectionGroup from './ReflectionGroup/ReflectionGroup'
 import GroupingKanbanColumnHeader from './GroupingKanbanColumnHeader'
 import useSubColumns from '~/hooks/useSubColumns'
 import useDeepEqual from '~/hooks/useDeepEqual'
+import {BBox} from '~/types/animations'
 
 const Column = styled('div')<{
   isLengthExpanded: boolean
@@ -76,6 +77,7 @@ interface Props {
   isAnyEditing: boolean
   isDesktop: boolean
   meeting: GroupingKanbanColumn_meeting
+  phaseBBox: BBox | null
   phaseRef: RefObject<HTMLDivElement>
   prompt: GroupingKanbanColumn_prompt
   reflectionGroups: GroupingKanbanColumn_reflectionGroups
@@ -90,6 +92,7 @@ const GroupingKanbanColumn = (props: Props) => {
     isDesktop,
     meeting,
     reflectionGroups,
+    phaseBBox,
     phaseRef,
     prompt,
     reflectPromptsCount,
@@ -112,7 +115,8 @@ const GroupingKanbanColumn = (props: Props) => {
     () => groups.filter((group) => group.reflections.length > 0),
     [groups]
   )
-  const [isWidthExpanded, subColumnCount, subColumnIndexes, toggleWidth] = useSubColumns(columnBodyRef, phaseRef, reflectPromptsCount, filteredReflectionGroups)
+  const phaseWidth = phaseBBox?.width || null
+  const [isWidthExpanded, subColumnCount, subColumnIndexes, toggleWidth] = useSubColumns(columnBodyRef, phaseWidth, reflectPromptsCount, filteredReflectionGroups)
   const canAdd = phaseType === NewMeetingPhaseTypeEnum.group && !isComplete && !isAnyEditing
 
   const onClick = () => {
@@ -164,7 +168,7 @@ const GroupingKanbanColumn = (props: Props) => {
                     dataCy={`${question}-group-${idx}`}
                     key={reflectionGroup.id}
                     meeting={meeting}
-                    phaseRef={phaseRef}
+                    phaseBBox={phaseBBox}
                     reflectionGroup={reflectionGroup}
                     swipeColumn={swipeColumn}
                   />

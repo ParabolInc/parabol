@@ -2,6 +2,7 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {RefObject, useMemo, useRef, useState} from 'react'
 import {createFragmentContainer} from 'react-relay'
+import {BBox} from '~/types/animations'
 import {GroupingKanban_meeting} from '~/__generated__/GroupingKanban_meeting.graphql'
 import useBreakpoint from '../hooks/useBreakpoint'
 import useHideBodyScroll from '../hooks/useHideBodyScroll'
@@ -16,6 +17,7 @@ import ReflectWrapperDesktop from './RetroReflectPhase/ReflectWrapperDesktop'
 interface Props {
   meeting: GroupingKanban_meeting
   phaseRef: RefObject<HTMLDivElement>
+  phaseBBox: BBox | null
 }
 
 const ColumnsBlock = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
@@ -34,7 +36,7 @@ const ColumnsBlock = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
 export type SwipeColumn = (offset: number) => void
 
 const GroupingKanban = (props: Props) => {
-  const {meeting, phaseRef} = props
+  const {meeting, phaseBBox, phaseRef} = props
   const {reflectionGroups, phases} = meeting
   const reflectPhase = phases.find((phase) => phase.phaseType === NewMeetingPhaseTypeEnum.reflect)!
   const reflectPrompts = reflectPhase.reflectPrompts!
@@ -86,6 +88,7 @@ const GroupingKanban = (props: Props) => {
               isDesktop={isDesktop}
               key={prompt.id}
               meeting={meeting}
+              phaseBBox={phaseBBox}
               phaseRef={phaseRef}
               prompt={prompt}
               reflectionGroups={groupsByPrompt[prompt.id] || []}
