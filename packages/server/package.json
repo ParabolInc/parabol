@@ -63,7 +63,7 @@
     "relay-compiler-language-typescript": "^13.0.2",
     "relay-config": "^8.0.0",
     "relay-runtime": "https://github.com/mattkrick/relay/tarball/ea411fa5aa507b9c1082f12e6111bdea7186c817",
-    "rethinkdb-ts-migrate": "^0.2.1",
+    "rethinkdb-ts-migrate": "^0.3.1",
     "script-ext-html-webpack-plugin": "2.1.5",
     "style-loader": "2.0.0",
     "sucrase": "^3.16.0",
