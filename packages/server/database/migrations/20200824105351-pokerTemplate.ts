@@ -1,5 +1,4 @@
 import {R} from 'rethinkdb-ts'
-import shortid from 'shortid'
 
 const createdAt = new Date('2020-08-24')
 const templates = [
@@ -83,6 +82,7 @@ const scales = [
 ]
 
 export const up = async function(r: R) {
+  let counter = 654
   // all previous templates should be marked as retrospective templates
   try {
     await r
@@ -129,7 +129,7 @@ export const up = async function(r: R) {
       .coerceTo('array')
       .run()
     const settings = teamIds.map((teamId) => ({
-      id: shortid.generate(),
+      id: `settings:${teamId}:${counter++}`,
       selectedTemplateId: 'estimatedEffortTemplate',
       meetingType: 'poker',
       teamId,

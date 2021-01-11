@@ -2,8 +2,9 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
-import useSelectTopTemplate from '../../../hooks/useSelectTopTemplate'
+import useActiveTopTemplate from '../../../hooks/useActiveTopTemplate'
 import {PALETTE} from '../../../styles/paletteV2'
+import {MeetingTypeEnum} from '../../../types/graphql'
 import {ReflectTemplateListTeam_teamTemplates} from '../../../__generated__/ReflectTemplateListTeam_teamTemplates.graphql'
 import ReflectTemplateItem from './ReflectTemplateItem'
 
@@ -35,16 +36,16 @@ const StyledLink = styled('span')({
 
 interface Props {
   isActive: boolean
-  selectedTemplateId: string
+  activeTemplateId: string
   showPublicTemplates: () => void
   teamId: string
   teamTemplates: ReflectTemplateListTeam_teamTemplates
 }
 
 const ReflectTemplateListTeam = (props: Props) => {
-  const {isActive, selectedTemplateId, showPublicTemplates, teamId, teamTemplates} = props
+  const {isActive, activeTemplateId, showPublicTemplates, teamId, teamTemplates} = props
   const edges = teamTemplates.map((t) => ({node: {id: t.id}})) as readonly {node: {id: string}}[]
-  useSelectTopTemplate(edges, selectedTemplateId, teamId, isActive)
+  useActiveTopTemplate(edges, activeTemplateId, teamId, isActive, MeetingTypeEnum.retrospective)
   if (teamTemplates.length === 0) {
     return (
       <Message>
@@ -60,7 +61,7 @@ const ReflectTemplateListTeam = (props: Props) => {
           <ReflectTemplateItem
             key={template.id}
             template={template}
-            isActive={template.id === selectedTemplateId}
+            isActive={template.id === activeTemplateId}
             lowestScope={'TEAM'}
             teamId={teamId}
           />

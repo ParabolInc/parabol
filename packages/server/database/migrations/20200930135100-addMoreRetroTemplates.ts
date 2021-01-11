@@ -1,5 +1,3 @@
-import {RETRO_PHASE_ITEM} from 'parabol-client/utils/constants'
-import shortid from 'shortid'
 import {R} from 'rethinkdb-ts'
 
 const createdAt = new Date()

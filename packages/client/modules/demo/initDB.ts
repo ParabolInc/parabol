@@ -125,7 +125,6 @@ const initSlackNotification = (userId) => ({
 const initSlackAuth = (userId) => ({
   __typename: 'SlackAuth',
   isActive: true,
-  accessToken: 'demoToken',
   botUserId: 'demoSlackBotId',
   botAccessToken: 'demoToken',
   defaultTeamChannelId: 'demoChannelId',

@@ -41,6 +41,14 @@ extend type Team {
   editingScaleId: ID
 }
 
+extend type PokerMeetingSettings {
+  activeTemplate: PokerTemplate!
+}
+
+extend type RetrospectiveMeetingSettings {
+  activeTemplate: ReflectTemplate!
+}
+
 extend type User {
   # If positive, client clock is ahead of server clock by this many ms
   clientClockOffset: Int

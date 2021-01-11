@@ -3492,11 +3492,6 @@ export interface ISlackIntegration {
   isActive: boolean;
 
   /**
-   * The access token to slack, only visible to the owner. Used as a fallback to botAccessToken
-   */
-  accessToken: string | null;
-
-  /**
    * the parabol bot user id
    */
   botUserId: string | null;
@@ -3547,7 +3542,7 @@ export interface ISlackIntegration {
   updatedAt: any;
 
   /**
-   * The user that the access token is attached to
+   * The id of the user that integrated Slack
    */
   userId: string;
 
@@ -7165,6 +7160,11 @@ export interface IMutation {
   setCheckInEnabled: ISetCheckInEnabledPayload;
 
   /**
+   * Update the default Slack channel where notifications are sent
+   */
+  setDefaultSlackChannel: SetDefaultSlackChannelPayload;
+
+  /**
    * Set the role of a user
    */
   setOrgUserRole: SetOrgUserRolePayload | null;
@@ -8125,6 +8125,11 @@ export interface ISetCheckInEnabledOnMutationArguments {
    * true to turn icebreaker phase on, false to turn it off
    */
   isEnabled: boolean;
+}
+
+export interface ISetDefaultSlackChannelOnMutationArguments {
+  slackChannelId: string;
+  teamId: string;
 }
 
 export interface ISetOrgUserRoleOnMutationArguments {
@@ -10343,6 +10348,27 @@ export interface ISetCheckInEnabledPayload {
   settings: TeamMeetingSettings | null;
 }
 
+/**
+ * Return object for SetDefaultSlackChannelPayload
+ */
+export type SetDefaultSlackChannelPayload =
+  | IErrorPayload
+  | ISetDefaultSlackChannelSuccess;
+
+export interface ISetDefaultSlackChannelSuccess {
+  __typename: 'SetDefaultSlackChannelSuccess';
+
+  /**
+   * The id of the slack channel that is now the default slack channel
+   */
+  slackChannelId: string;
+
+  /**
+   * The team member with the updated slack channel
+   */
+  teamMember: ITeamMember;
+}
+
 export type SetOrgUserRolePayload =
   | ISetOrgUserRoleAddedPayload
   | ISetOrgUserRoleRemovedPayload;
@@ -11286,7 +11312,8 @@ export type TeamSubscriptionPayload =
   | IUpdateUserProfilePayload
   | IPersistJiraSearchQuerySuccess
   | IMovePokerTemplateScaleValueSuccess
-  | IUpdateJiraDimensionFieldSuccess;
+  | IUpdateJiraDimensionFieldSuccess
+  | ISetDefaultSlackChannelSuccess;
 
 export interface IRenamePokerTemplatePayload {
   __typename: 'RenamePokerTemplatePayload';

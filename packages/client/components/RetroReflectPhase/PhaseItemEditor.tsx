@@ -26,7 +26,7 @@ const CardInFlightStyles = styled(ReflectionCardRoot)<{transform: string, isStar
 
 interface Props {
   cardsInFlightRef: MutableRefObject<ReflectColumnCardInFlight[]>
-  setCardsInFlight: (cards: ReflectColumnCardInFlight[]) => void
+  forceUpdateColumn: () => void
   meetingId: string
   nextSortOrder: () => number
   phaseEditorRef: React.RefObject<HTMLDivElement>
@@ -43,7 +43,7 @@ const PhaseItemEditor = (props: Props) => {
     promptId,
     stackTopRef,
     cardsInFlightRef,
-    setCardsInFlight,
+    forceUpdateColumn,
     dataCy
   } = props
   const atmosphere = useAtmosphere()
@@ -52,7 +52,6 @@ const PhaseItemEditor = (props: Props) => {
   const [isEditing, setIsEditing] = useState(false)
   const idleTimerIdRef = useRef<number>()
   const {terminatePortal, openPortal, portal} = usePortal({noClose: true, id: 'phaseItemEditor'})
-
   useEffect(() => {
     return () => {
       window.clearTimeout(idleTimerIdRef.current)
@@ -76,13 +75,17 @@ const PhaseItemEditor = (props: Props) => {
       isStart: true
     }
     openPortal()
-    setCardsInFlight([...cardsInFlightRef.current, cardInFlight])
+    cardsInFlightRef.current = [
+      ...cardsInFlightRef.current,
+      cardInFlight
+    ]
+    forceUpdateColumn()
     requestAnimationFrame(() => {
       const stackBBox = getBBox(stackTopRef.current)
       if (!stackBBox) return
       const {left, top} = stackBBox
       const idx = cardsInFlightRef.current.findIndex((card) => card.key == content)
-      setCardsInFlight([
+      cardsInFlightRef.current = [
         ...cardsInFlightRef.current.slice(0, idx),
         {
           ...cardInFlight,
@@ -90,7 +93,8 @@ const PhaseItemEditor = (props: Props) => {
           transform: `translate(${left}px,${top}px)`
         },
         ...cardsInFlightRef.current.slice(idx + 1)
-      ])
+      ]
+      forceUpdateColumn()
       setTimeout(removeCardInFlight(content), FLIGHT_TIME)
     })
     // move focus to end is very important! otherwise ghost chars appear
@@ -154,7 +158,8 @@ const PhaseItemEditor = (props: Props) => {
       ...cardsInFlightRef.current.slice(idx + 1)
     ]
     if (nextCardsInFlight.length === 0) terminatePortal()
-    setCardsInFlight(nextCardsInFlight)
+    cardsInFlightRef.current = nextCardsInFlight
+    forceUpdateColumn()
   }
 
   const editorRef = useRef<HTMLTextAreaElement>(null)

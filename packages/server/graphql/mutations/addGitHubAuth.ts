@@ -1,7 +1,7 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {GITHUB} from 'parabol-client/utils/constants'
-import shortid from 'shortid'
 import getRethink from '../../database/rethinkDriver'
+import generateUID from '../../generateUID'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import GitHubServerManager from '../../utils/GitHubServerManager'
 import segmentIo from '../../utils/segmentIo'
@@ -60,7 +60,7 @@ export default {
         return r.branch(
           providerId.eq(null),
           r.table('Provider').insert({
-              id: shortid.generate(),
+              id: generateUID(),
               accessToken,
               createdAt: now,
               isActive: true,
