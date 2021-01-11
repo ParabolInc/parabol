@@ -1,10 +1,11 @@
-import React, {ReactNode, Ref,  useEffect} from 'react'
+import React, {ReactNode, Ref,  RefObject, useMemo, useEffect} from 'react'
 import styled from '@emotion/styled'
 import {PALETTE} from '../../styles/paletteV2'
 import {BBox} from '../../types/animations'
 import {RefCallbackInstance} from '../../types/generics'
 import {DragAttribute, ElementWidth, ZIndex} from '../../types/constEnums'
 import ExpandedReflection from './ExpandedReflection'
+import getBBox from './getBBox'
 
 const PortalBlock = styled('div')({
   height: '100%',
@@ -63,7 +64,7 @@ const ScrollBlock = styled('div')({
 interface Props {
   closePortal: () => void
   header?: ReactNode
-  phaseBBox: BBox | null
+  phaseRef: RefObject<HTMLDivElement>
   staticReflections: readonly any[]
   reflections: readonly any[]
   meeting: any
@@ -77,7 +78,7 @@ const ExpandedReflectionStack = (props: Props) => {
   const {
     header,
     staticReflections,
-    phaseBBox,
+    phaseRef,
     scrollRef,
     setItemsRef,
     bgRef,
@@ -86,6 +87,9 @@ const ExpandedReflectionStack = (props: Props) => {
     reflectionGroupId,
     meeting
   } = props
+  const phaseBBox = useMemo(() => {
+    return getBBox(phaseRef.current)
+  }, [phaseRef.current])
   useEffect(() => {
     const handleKeydown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {

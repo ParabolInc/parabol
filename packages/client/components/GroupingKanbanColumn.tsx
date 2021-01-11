@@ -25,7 +25,6 @@ import ReflectionGroup from './ReflectionGroup/ReflectionGroup'
 import GroupingKanbanColumnHeader from './GroupingKanbanColumnHeader'
 import useSubColumns from '~/hooks/useSubColumns'
 import useDeepEqual from '~/hooks/useDeepEqual'
-import {BBox} from '~/types/animations'
 
 const Column = styled('div')<{
   isLengthExpanded: boolean
@@ -68,7 +67,6 @@ const ColumnBody = styled('div')<{isDesktop: boolean; isWidthExpanded: boolean}>
     overflowY: 'auto',
     padding: `${isWidthExpanded ? 12 : 6}px ${isDesktop ? 12 : 8}px`,
     transition: `all 100ms ${BezierCurve.DECELERATE}`,
-    width: ElementWidth.REFLECTION_COLUMN
   })
 )
 
@@ -77,7 +75,6 @@ interface Props {
   isAnyEditing: boolean
   isDesktop: boolean
   meeting: GroupingKanbanColumn_meeting
-  phaseBBox: BBox | null
   phaseRef: RefObject<HTMLDivElement>
   prompt: GroupingKanbanColumn_prompt
   reflectionGroups: GroupingKanbanColumn_reflectionGroups
@@ -92,7 +89,6 @@ const GroupingKanbanColumn = (props: Props) => {
     isDesktop,
     meeting,
     reflectionGroups,
-    phaseBBox,
     phaseRef,
     prompt,
     reflectPromptsCount,
@@ -107,16 +103,15 @@ const GroupingKanbanColumn = (props: Props) => {
   const columnBodyRef = useRef<HTMLDivElement>(null)
   const isLengthExpanded =
     useCoverable(promptId, columnRef, MeetingControlBarEnum.HEIGHT, phaseRef, columnsRef) || !!endedAt
-  const isFirstColumn = prompt.sortOrder === reflectPromptsCount - 1
-  const isLastColumn = prompt.sortOrder === 0
+    const isFirstColumn = prompt.sortOrder === 0
+  const isLastColumn = prompt.sortOrder === reflectPromptsCount - 1
   const groups = useDeepEqual(reflectionGroups)
   // group may be undefined because relay could GC before useMemo in the Kanban recomputes >:-(
   const filteredReflectionGroups = useMemo(
     () => groups.filter((group) => group.reflections.length > 0),
     [groups]
   )
-  const phaseWidth = phaseBBox?.width || null
-  const [isWidthExpanded, subColumnCount, subColumnIndexes, toggleWidth] = useSubColumns(columnBodyRef, phaseWidth, reflectPromptsCount, filteredReflectionGroups)
+  const [isWidthExpanded, subColumnCount, subColumnIndexes, toggleWidth] = useSubColumns(columnBodyRef, phaseRef, reflectPromptsCount, filteredReflectionGroups)
   const canAdd = phaseType === NewMeetingPhaseTypeEnum.group && !isComplete && !isAnyEditing
 
   const onClick = () => {
@@ -125,9 +120,11 @@ const GroupingKanbanColumn = (props: Props) => {
       content: undefined,
       meetingId,
       promptId,
-      sortOrder: getNextSortOrder(reflectionGroups)
+      sortOrder: getNextSortOrder(filteredReflectionGroups)
     }
     submitMutation()
+    console.log("🚀 ~ onClick ~ getNextSortOrder(filteredReflectionGroups)", getNextSortOrder(filteredReflectionGroups))
+
     CreateReflectionMutation(atmosphere, {input}, {onError, onCompleted})
   }
 
@@ -168,7 +165,7 @@ const GroupingKanbanColumn = (props: Props) => {
                     dataCy={`${question}-group-${idx}`}
                     key={reflectionGroup.id}
                     meeting={meeting}
-                    phaseBBox={phaseBBox}
+                    phaseRef={phaseRef}
                     reflectionGroup={reflectionGroup}
                     swipeColumn={swipeColumn}
                   />

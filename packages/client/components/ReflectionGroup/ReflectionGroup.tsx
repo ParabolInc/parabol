@@ -1,8 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, { useEffect, useMemo, useRef, useState} from 'react'
+import React, { RefObject, useEffect, useMemo, useRef, useState} from 'react'
 import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
-import {BBox} from '~/types/animations'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import useEventCallback from '../../hooks/useEventCallback'
 import useExpandedReflections from '../../hooks/useExpandedReflections'
@@ -34,7 +33,8 @@ const Group = styled('div')<{staticReflectionCount: number}>(({staticReflectionC
   position: 'relative',
   paddingTop: ElementWidth.REFLECTION_CARD_PADDING,
   paddingBottom: ElementWidth.REFLECTION_CARD_PADDING + getCardStackPadding(staticReflectionCount),
-  transition: `padding-bottom ${Times.REFLECTION_DROP_DURATION}ms`
+  transition: `padding-bottom ${Times.REFLECTION_DROP_DURATION}ms`,
+  width: '100%'
 }))
 
 const ReflectionWrapper = styled('div')<{
@@ -56,13 +56,13 @@ const ReflectionWrapper = styled('div')<{
     opacity: isHidden ? 0 : undefined,
     transform: `translateY(${translateY}px) scaleX(${scaleX})`,
     transition: isHidden ? undefined : `transform ${Times.REFLECTION_DROP_DURATION}ms`,
-    width: ElementWidth.REFLECTION_CARD,
+    minWidth: ElementWidth.REFLECTION_CARD,
     zIndex: 3 - multiple
   }
 })
 
 interface Props {
-  phaseBBox: BBox | null
+  phaseRef: RefObject<HTMLDivElement>
   meeting: ReflectionGroup_meeting
   reflectionGroup: ReflectionGroup_reflectionGroup
   swipeColumn?: SwipeColumn
@@ -70,7 +70,7 @@ interface Props {
 }
 
 const ReflectionGroup = (props: Props) => {
-  const {meeting, phaseBBox, reflectionGroup, swipeColumn, dataCy} = props
+  const {meeting, phaseRef, reflectionGroup, swipeColumn, dataCy} = props
   const groupRef = useRef<HTMLDivElement>(null)
   const {localPhase, localStage} = meeting
   const {phaseType} = localPhase
@@ -152,7 +152,7 @@ const ReflectionGroup = (props: Props) => {
               titleInputRef={expandedTitleInputRef}
             />
           }
-          phaseBBox={phaseBBox}
+          phaseRef={phaseRef}
           staticReflections={staticReflections}
           reflections={reflections}
           scrollRef={scrollRef}

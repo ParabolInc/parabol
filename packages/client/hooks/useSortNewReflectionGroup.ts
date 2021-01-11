@@ -26,10 +26,10 @@ const useSortNewReflectionGroup = (
         const currentSubColumnIdx = reflectionGroup.getValue('subColumnIdx') as number
         if (currentSubColumnIdx === undefined) {
           const smallestSubColumnCount = Math.min(...Object.values(subColumnIdxCounts))
-          const smallestSubColumnKey = Object.keys(subColumnIdxCounts).find(
+          const smallestSubColumnIdx = Object.keys(subColumnIdxCounts).find(
             (key) => subColumnIdxCounts[key] === smallestSubColumnCount
           ) as string
-          reflectionGroup.setValue(parseInt(smallestSubColumnKey), 'subColumnIdx')
+          reflectionGroup.setValue(parseInt(smallestSubColumnIdx), 'subColumnIdx')
         } else {
           subColumnIdxCounts[currentSubColumnIdx] += 1
         }

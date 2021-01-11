@@ -15,7 +15,7 @@ import PhaseWrapper from './PhaseWrapper'
 import {RetroMeetingPhaseProps} from './RetroMeeting'
 import RetroVoteMetaHeader from './RetroVoteMetaHeader'
 import StageTimerDisplay from './StageTimerDisplay'
-import useCallbackRefBBox from '../hooks/useCallbackRefBBox'
+import useCallbackRef from '../hooks/useCallbackRef'
 
 interface Props extends RetroMeetingPhaseProps {
   meeting: RetroVotePhase_meeting
@@ -23,8 +23,9 @@ interface Props extends RetroMeetingPhaseProps {
 
 const RetroVotePhase = (props: Props) => {
   const {avatarGroup, toggleSidebar, meeting} = props
-  const [callbackRef, phaseBBox,  phaseRef] = useCallbackRefBBox()
+  const [callbackRef, phaseRef] = useCallbackRef()
   const {endedAt, showSidebar} = meeting
+
   return (
     <MeetingContent ref={callbackRef}>
       <MeetingHeaderAndPhase hideBottomBar={!!endedAt}>
@@ -42,7 +43,7 @@ const RetroVotePhase = (props: Props) => {
           <RetroVoteMetaHeader meeting={meeting} />
           <StageTimerDisplay meeting={meeting} />
           <MeetingPhaseWrapper>
-            <GroupingKanban meeting={meeting} phaseBBox={phaseBBox} phaseRef={phaseRef}  />
+            <GroupingKanban meeting={meeting} phaseRef={phaseRef}  />
           </MeetingPhaseWrapper>
         </PhaseWrapper>
       </MeetingHeaderAndPhase>

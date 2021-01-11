@@ -11,7 +11,7 @@ const ReflectionCardRoot = styled('div')({
   maxWidth: '100%',
   position: 'relative',
   transition: `all 100ms ${BezierCurve.DECELERATE}`,
-  width: ElementWidth.REFLECTION_CARD
+  minWidth: ElementWidth.REFLECTION_CARD
 })
 
 export default ReflectionCardRoot

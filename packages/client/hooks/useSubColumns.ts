@@ -1,21 +1,25 @@
 import {RefObject, useLayoutEffect, useMemo, useState} from 'react'
 import {commitLocalUpdate} from 'react-relay'
-import {ElementHeight, ElementWidth} from '~/types/constEnums'
+import {Breakpoint, ElementHeight, ElementWidth} from '~/types/constEnums'
 import useAtmosphere from './useAtmosphere'
 import {GroupingKanbanColumn_reflectionGroups} from '~/__generated__/GroupingKanbanColumn_reflectionGroups.graphql'
 import useSortNewReflectionGroup from './useSortNewReflectionGroup'
+import useBreakpoint from './useBreakpoint'
+import useResizeObserver from './useResizeObserver'
+import getBBox from '~/components/RetroReflectPhase/getBBox'
 
 const DEFAULT_EXPANDED_SUB_COLUMNS = 2
 const DEFAULT_SUB_COLUMNS = 1
 
 const useSubColumns = (
   columnBodyRef: RefObject<HTMLDivElement>,
-  phaseWidth: number | null,
+  phaseRef: RefObject<HTMLDivElement>,
   reflectPromptsCount: number,
   reflectionGroups: GroupingKanbanColumn_reflectionGroups
 ): [boolean, number, number[], () => void] => {
   const [subColumnCount, setSubColumnCount] = useState(DEFAULT_SUB_COLUMNS)
   const atmosphere = useAtmosphere()
+  const isDesktop = useBreakpoint(Breakpoint.SINGLE_REFLECTION_COLUMN)
   const subColumnIndexes = useMemo(() => {
     return [...Array(subColumnCount).keys()]
   }, [subColumnCount])
@@ -35,8 +39,8 @@ const useSubColumns = (
   }
 
   const getMaxSubColumnCount = () => {
+    if (!columnBodyRef?.current) return DEFAULT_EXPANDED_SUB_COLUMNS
     const columnBodyEl = columnBodyRef.current
-    if (!columnBodyEl) return DEFAULT_EXPANDED_SUB_COLUMNS
     const maxSubColumnCount = Math.ceil(
       columnBodyEl.scrollHeight / (columnBodyEl.clientHeight - ElementHeight.REFLECTION_CARD)
     )
@@ -45,13 +49,16 @@ const useSubColumns = (
 
   const toggleWidth = () => {
     const maxSubColumnCount = getMaxSubColumnCount()
-    if (subColumnCount === 1) {
+    if (subColumnCount === DEFAULT_SUB_COLUMNS) {
       setSubColumnCount(maxSubColumnCount)
       sortSubColumns(maxSubColumnCount)
-    } else setSubColumnCount(1)
+    } else setSubColumnCount(DEFAULT_SUB_COLUMNS)
   }
 
   const getInitialSubColumnCount = () => {
+    const phaseBBox = getBBox(phaseRef.current)
+    if (!phaseBBox) return DEFAULT_SUB_COLUMNS
+    const {width: phaseWidth} = phaseBBox
     const maxSubColumnsInPhase = Math.floor(phaseWidth! / ElementWidth.REFLECTION_COLUMN)
     const maxSubColumnsPerColumn = Math.floor(maxSubColumnsInPhase / reflectPromptsCount)
     const maxSubColumnCount = getMaxSubColumnCount()
@@ -59,15 +66,21 @@ const useSubColumns = (
   }
 
   useLayoutEffect(() => {
-    if (!phaseWidth) return
+    if (!phaseRef?.current) return
     const initialSubColumnCount = getInitialSubColumnCount()
     setSubColumnCount(initialSubColumnCount)
     if (initialSubColumnCount > 1) {
       sortSubColumns(initialSubColumnCount)
     }
-  }, [phaseWidth])
+  }, [phaseRef?.current])
 
-  return [subColumnCount > 1, subColumnCount, subColumnIndexes, toggleWidth]
+  useResizeObserver(() => {
+    if (!isDesktop && subColumnCount > DEFAULT_SUB_COLUMNS) {
+      setSubColumnCount(DEFAULT_SUB_COLUMNS)
+    }
+  }, phaseRef)
+
+  return [subColumnCount > DEFAULT_SUB_COLUMNS, subColumnCount, subColumnIndexes, toggleWidth]
 }
 
 export default useSubColumns

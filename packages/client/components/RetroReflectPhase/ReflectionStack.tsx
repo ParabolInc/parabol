@@ -2,7 +2,6 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {RefObject, useRef} from 'react'
 import {createFragmentContainer} from 'react-relay'
-import {BBox} from '~/types/animations'
 import {ReflectionStack_meeting} from '~/__generated__/ReflectionStack_meeting.graphql'
 import useExpandedReflections from '../../hooks/useExpandedReflections'
 import {
@@ -20,7 +19,7 @@ interface Props {
   idx: number
   meeting: ReflectionStack_meeting
   phaseEditorRef: React.RefObject<HTMLDivElement>
-  phaseBBox: BBox | null
+  phaseRef: RefObject<HTMLDivElement>
   dataCy: string
   reflectionStack: readonly PhaseItemColumn_meeting['reflectionGroups'][0]['reflections'][0][]
   stackTopRef: RefObject<HTMLDivElement>
@@ -60,7 +59,7 @@ const ReflectionWrapper = styled('div')<{idx: number}>(({idx}): any => {
 })
 
 const ReflectionStack = (props: Props) => {
-  const {phaseBBox, idx, meeting, reflectionStack, stackTopRef, dataCy} = props
+  const {phaseRef, idx, meeting, reflectionStack, stackTopRef, dataCy} = props
   const stackRef = useRef<HTMLDivElement>(null)
   const {setItemsRef, scrollRef, bgRef, portal, collapse, expand} = useExpandedReflections(
     stackRef,
@@ -74,7 +73,7 @@ const ReflectionStack = (props: Props) => {
     <React.Fragment>
       {portal(
         <ExpandedReflectionStack
-          phaseBBox={phaseBBox}
+          phaseRef={phaseRef}
           staticReflections={reflectionStack}
           reflections={reflectionStack}
           meeting={meeting}

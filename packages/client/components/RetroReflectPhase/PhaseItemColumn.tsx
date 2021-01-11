@@ -1,9 +1,8 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {EditorState} from 'draft-js'
-import React, {useEffect, useMemo, useRef} from 'react'
+import React, {RefObject, useEffect, useMemo, useRef} from 'react'
 import {createFragmentContainer} from 'react-relay'
-import {BBox} from '~/types/animations'
 import {PhaseItemColumn_prompt} from '~/__generated__/PhaseItemColumn_prompt.graphql'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import {MenuPosition} from '../../hooks/useCoords'
@@ -137,12 +136,12 @@ interface Props {
   idx: number
   isDesktop: boolean
   meeting: PhaseItemColumn_meeting
-  phaseBBox: BBox | null
+  phaseRef: RefObject<HTMLDivElement>
   prompt: PhaseItemColumn_prompt
 }
 
 const PhaseItemColumn = (props: Props) => {
-  const {idx, meeting, phaseBBox, prompt, isDesktop} = props
+  const {idx, meeting, phaseRef, prompt, isDesktop} = props
   const {id: promptId, editorIds, question, groupColor, description} = prompt
   const {id: meetingId, facilitatorUserId, localPhase, phases, reflectionGroups} = meeting
   const {id: phaseId, focusedPromptId} = localPhase
@@ -240,7 +239,7 @@ const PhaseItemColumn = (props: Props) => {
               reflectionStack={reflectionStack}
               idx={idx}
               phaseEditorRef={phaseEditorRef}
-              phaseBBox={phaseBBox}
+              phaseRef={phaseRef}
               meeting={meeting}
               stackTopRef={stackTopRef}
             />
