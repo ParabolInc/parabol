@@ -19,9 +19,8 @@ const startMigration = async (direction = 'up') => {
   process.env.port = port
   process.env.db = urlPath.slice(1)
   process.env.r = process.cwd()
-  let r
   try {
-    r = await migrate[direction]({all, root: DB_ROOT})
+    await migrate[direction]({all, root: DB_ROOT})
   } catch (e) {
     console.error('Migration error', e)
   }
