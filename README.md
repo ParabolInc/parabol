@@ -44,7 +44,7 @@ distributed organization. We publish our company's [history and business metrics
 $ git clone https://github.com/ParabolInc/parabol.git
 $ cd parabol
 $ cp .env.example .env # Add your own vars here
-$ rethinkdb & redis-server & # Or if you prefer docker: $ docker-compose up -d db
+$ docker-compose up -d postgres & rethinkdb & redis-server & # Or if you prefer docker for all data stores: $ docker-compose up -d db postgres
 $ yarn && yarn dev -i # -i is only needed the first time you clone the repo
 ```
 
