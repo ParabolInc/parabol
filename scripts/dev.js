@@ -44,7 +44,7 @@ const dev = async (maybeInit) => {
 
   const buildDLL = require('./buildDll')()
   const clearRedis = redis.flushall()
-  const migrateDB = require('./toolbox/migrateDB')
+  const migrateDB = require('./toolbox/migrateDB').default()
   await require('./toolbox/updateSchema.js').default()
   if (isInit) {
     // technically, this is unsafe for SSR, but they're so rarely used that's fine
