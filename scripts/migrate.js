@@ -8,7 +8,6 @@ const startMigration = async (direction = 'up') => {
 
   // migrating up goes all the way, migrating down goes down by 1
   const all = direction === 'up'
-  console.log('running migration', direction)
   if (process.env.NODE_ENV === 'test') {
     console.log('NODE_ENV is test, loading .env.test...')
   }
