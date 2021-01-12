@@ -1,0 +1,2 @@
+DROP DATABASE IF EXISTS development;
+CREATE DATABASE development;
