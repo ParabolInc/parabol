@@ -1,8 +1,8 @@
-import path from 'path'
-import * as migrate from 'rethinkdb-ts-migrate'
-import {parse} from 'url'
-import getProjectRoot from '../webpack/utils/getProjectRoot'
-import * as driver from 'rethinkdb-ts'
+require('./webpack/utils/dotenv')
+const path = require('path')
+const migrate = require('rethinkdb-ts-migrate')
+const {parse} = require('url')
+const getProjectRoot = require('./webpack/utils/getProjectRoot')
 
 const startMigration = async (direction = 'up') => {
 
@@ -22,14 +22,13 @@ const startMigration = async (direction = 'up') => {
     await migrate[direction]({all, root: DB_ROOT})
   } catch (e) {
     console.error('Migration error', e)
-  } finally {
-    await driver.r.getPoolMaster().drain()
   }
 }
 
 if (require.main === module) {
   const [, , direction = 'up'] = process.argv
-  startMigration(direction)
+  const dir = direction === 'up' || direction === 'down' ? direction : undefined
+  startMigration(dir)
 }
 
-export default startMigration
+module.exports = startMigration
