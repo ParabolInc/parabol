@@ -91,7 +91,7 @@
     "react-relay": "https://github.com/mattkrick/relay/tarball/5136cfdc5e33442336a4b8d1be866ecab73ae8d2",
     "react-router": "^5.0.1",
     "react-router-dom": "^5.0.1",
-    "react-swipeable-views": "0.13.3  ",
+    "react-swipeable-views": "https://github.com/mattkrick/react-swipeable-views/tarball/4f1d3062d6f8939e9889bc6241bb46aa7bc5332d",
     "react-swipeable-views-core": "0.13.1",
     "react-swipeable-views-utils": "0.13.3",
     "react-textarea-autosize": "^7.1.0",
