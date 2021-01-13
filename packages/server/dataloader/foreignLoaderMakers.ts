@@ -48,10 +48,7 @@ export const atlassianAuthByUserId = new LoaderMakerForeign(
   'userId',
   async (userIds) => {
     const r = await getRethink()
-    return r
-      .table('AtlassianAuth')
-      .getAll(r.args(userIds), {index: 'userId'})
-      .run()
+    return r.table('AtlassianAuth').getAll(r.args(userIds), {index: 'userId'}).run()
   }
 )
 export const atlassianAuthByTeamId = new LoaderMakerForeign(
@@ -59,10 +56,7 @@ export const atlassianAuthByTeamId = new LoaderMakerForeign(
   'teamId',
   async (teamIds) => {
     const r = await getRethink()
-    return r
-      .table('AtlassianAuth')
-      .getAll(r.args(teamIds), {index: 'teamId'})
-      .run()
+    return r.table('AtlassianAuth').getAll(r.args(teamIds), {index: 'teamId'}).run()
   }
 )
 export const commentsByThreadId = new LoaderMakerForeign(
@@ -89,11 +83,7 @@ export const completedMeetingsByTeamId = new LoaderMakerForeign(
     return r
       .table('NewMeeting')
       .getAll(r.args(teamIds), {index: 'teamId'})
-      .filter((row) =>
-        row('endedAt')
-          .default(null)
-          .ne(null)
-      )
+      .filter((row) => row('endedAt').default(null).ne(null))
       .orderBy(r.desc('endedAt'))
       .run()
   }
@@ -142,10 +132,7 @@ export const meetingMembersByMeetingId = new LoaderMakerForeign(
   'meetingId',
   async (meetingIds) => {
     const r = await getRethink()
-    return r
-      .table('MeetingMember')
-      .getAll(r.args(meetingIds), {index: 'meetingId'})
-      .run()
+    return r.table('MeetingMember').getAll(r.args(meetingIds), {index: 'meetingId'}).run()
   }
 )
 
@@ -154,10 +141,7 @@ export const meetingMembersByUserId = new LoaderMakerForeign(
   'userId',
   async (userIds) => {
     const r = await getRethink()
-    return r
-      .table('MeetingMember')
-      .getAll(r.args(userIds), {index: 'userId'})
-      .run()
+    return r.table('MeetingMember').getAll(r.args(userIds), {index: 'userId'}).run()
   }
 )
 
@@ -166,10 +150,7 @@ export const organizationsByActiveDomain = new LoaderMakerForeign(
   'activeDomain',
   async (activeDomains) => {
     const r = await getRethink()
-    return r
-      .table('Organization')
-      .getAll(r.args(activeDomains), {index: 'activeDomain'})
-      .run()
+    return r.table('Organization').getAll(r.args(activeDomains), {index: 'activeDomain'}).run()
   }
 )
 export const organizationUsersByOrgId = new LoaderMakerForeign(
@@ -244,11 +225,7 @@ export const scalesByTeamId = new LoaderMakerForeign(
     return r
       .table('TemplateScale')
       .getAll(r.args(teamIds), {index: 'teamId'})
-      .filter((row) =>
-        row('removedAt')
-          .default(null)
-          .eq(null)
-      )
+      .filter((row) => row('removedAt').default(null).eq(null))
       .orderBy('sortOrder')
       .run()
   }
@@ -299,10 +276,7 @@ export const timelineEventsByMeetingId = new LoaderMakerForeign(
 
 export const slackAuthByUserId = new LoaderMakerForeign('slackAuths', 'userId', async (userIds) => {
   const r = await getRethink()
-  return r
-    .table('SlackAuth')
-    .getAll(r.args(userIds), {index: 'userId'})
-    .run()
+  return r.table('SlackAuth').getAll(r.args(userIds), {index: 'userId'}).run()
 })
 
 export const slackNotificationsByTeamId = new LoaderMakerForeign(
@@ -310,10 +284,7 @@ export const slackNotificationsByTeamId = new LoaderMakerForeign(
   'teamId',
   async (teamIds) => {
     const r = await getRethink()
-    return r
-      .table('SlackNotification')
-      .getAll(r.args(teamIds), {index: 'teamId'})
-      .run()
+    return r.table('SlackNotification').getAll(r.args(teamIds), {index: 'teamId'}).run()
   }
 )
 
@@ -335,11 +306,7 @@ export const teamsByOrgId = new LoaderMakerForeign('teams', 'orgId', async (orgI
   return r
     .table('Team')
     .getAll(r.args(orgIds), {index: 'orgId'})
-    .filter((team) =>
-      team('isArchived')
-        .default(false)
-        .ne(true)
-    )
+    .filter((team) => team('isArchived').default(false).ne(true))
     .run()
 })
 
@@ -360,11 +327,7 @@ export const tasksByTeamId = new LoaderMakerForeign('tasks', 'teamId', async (te
   return r
     .table('Task')
     .getAll(r.args(teamIds), {index: 'teamId'})
-    .filter((task) =>
-      task('tags')
-        .contains('archived')
-        .not()
-    )
+    .filter((task) => task('tags').contains('archived').not())
     .run()
 })
 

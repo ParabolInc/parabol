@@ -4,11 +4,12 @@ import React, {useRef} from 'react'
 import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useScrollIntoView from '../../../hooks/useScrollIntoVIew'
-import SelectTemplate from '../../../mutations/SelectTemplateMutation'
 import {DECELERATE} from '../../../styles/animation'
 import textOverflow from '../../../styles/helpers/textOverflow'
 import {PALETTE} from '../../../styles/paletteV2'
+import {MeetingTypeEnum} from '../../../types/graphql'
 import makeTemplateDescription from '../../../utils/makeTemplateDescription'
+import {setActiveTemplate} from '../../../utils/relay/setActiveTemplate'
 import {PokerTemplateItem_template} from '../../../__generated__/PokerTemplateItem_template.graphql'
 
 const TemplateItem = styled('li')<{isActive: boolean}>(({isActive}) => ({
@@ -65,7 +66,7 @@ const PokerTemplateItem = (props: Props) => {
   useScrollIntoView(ref, isActive)
   const selectTemplate = () => {
     if (isActive) return
-    SelectTemplate(atmosphere, {selectedTemplateId: templateId, teamId})
+    setActiveTemplate(atmosphere, teamId, templateId, MeetingTypeEnum.poker)
     commitLocalUpdate(atmosphere, (store) => {
       store.get(teamId)?.setValue(null, 'editingScaleId')
     })

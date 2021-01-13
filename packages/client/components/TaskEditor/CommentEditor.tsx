@@ -8,6 +8,8 @@ import {
   getDefaultKeyBinding
 } from 'draft-js'
 import React, {RefObject, Suspense, useRef} from 'react'
+import completeEntity from '../../utils/draftjs/completeEntity'
+import linkify from '../../utils/linkify'
 import {Card} from '../../types/constEnums'
 import {textTags} from '../../utils/constants'
 import entitizeText from '../../utils/draftjs/entitizeText'
@@ -26,7 +28,7 @@ const RootEditor = styled('div')({
   width: '100%'
 })
 
-const AndroidEditorFallback = lazyPreload(() =>
+  const AndroidEditorFallback = lazyPreload(() =>
   import(/* webpackChunkName: 'AndroidEditorFallback' */ '../AndroidEditorFallback')
 )
 
@@ -131,10 +133,10 @@ const CommentEditor = (props: Props) => {
       ensureCommenting()
     }
     if (keyBindingFn) {
-      const result = keyBindingFn(e)
-      if (result) {
-        return result
-      }
+    const result = keyBindingFn(e)
+    if (result) {
+      return result
+    }
     }
     if (e.key === 'Escape') {
       e.preventDefault()
@@ -151,7 +153,7 @@ const CommentEditor = (props: Props) => {
     return 'not-handled'
   }
 
-  const onPastedText = (text): DraftHandleValue => {
+  const onPastedText = (text: string): DraftHandleValue => {
     if (text) {
       for (let i = 0; i < textTags.length; i++) {
         const tag = textTags[i]
@@ -163,6 +165,16 @@ const CommentEditor = (props: Props) => {
           }
         }
       }
+    }
+    const links = linkify.match(text)
+    const url = links && links[0].url.trim()    
+    const trimmedText = text.trim()
+      if (url === trimmedText){
+        const nextEditorState = completeEntity(editorState, 'LINK', {href: url}, trimmedText, {
+        keepSelection: true
+      })
+      setEditorState(nextEditorState)
+      return 'handled'
     }
     return 'not-handled'
   }
@@ -187,6 +199,7 @@ const CommentEditor = (props: Props) => {
             placeholder={placeholder}
             onBlur={onBlur}
             onKeyDown={onKeyDownFallback}
+            onPastedText={onPastedText}
             editorRef={editorRef}
           />
         </Suspense>

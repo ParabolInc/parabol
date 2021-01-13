@@ -1,3 +1,5 @@
+import generateUID from '../../generateUID'
+
 interface Input {
   id: string
   domains: string[]
@@ -13,7 +15,7 @@ export default class SAML {
 
   constructor(input: Input) {
     const {id, domains, url, metadata} = input
-    this.id = id
+    this.id = id || generateUID()
     this.domains = domains
     this.url = url
     this.metadata = metadata

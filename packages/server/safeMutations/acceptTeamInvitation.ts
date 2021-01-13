@@ -1,11 +1,11 @@
 import {InvoiceItemType} from 'parabol-client/types/constEnums'
 import {ITeam, NotificationEnum, NotificationStatusEnum} from 'parabol-client/types/graphql'
-import shortid from 'shortid'
 import adjustUserCount from '../billing/helpers/adjustUserCount'
 import getRethink from '../database/rethinkDriver'
 import OrganizationUser from '../database/types/OrganizationUser'
 import SuggestedActionCreateNewTeam from '../database/types/SuggestedActionCreateNewTeam'
 import User from '../database/types/User'
+import generateUID from '../generateUID'
 import {DataLoaderWorker} from '../graphql/graphql'
 import addTeamMemberToMeetings from '../graphql/mutations/helpers/addTeamMemberToMeetings'
 import getNewTeamLeadUserId from '../safeQueries/getNewTeamLeadUserId'
@@ -24,7 +24,7 @@ const handleFirstAcceptedInvitation = async (team): Promise<string | null> => {
       .table('SuggestedAction')
       .insert([
         {
-          id: shortid.generate(),
+          id: generateUID(),
           createdAt: now,
           priority: 3,
           removedAt: null,
@@ -34,7 +34,7 @@ const handleFirstAcceptedInvitation = async (team): Promise<string | null> => {
         },
         new SuggestedActionCreateNewTeam({userId: newTeamLeadUserId}),
         {
-          id: shortid.generate(),
+          id: generateUID(),
           createdAt: now,
           priority: 5,
           removedAt: null,
@@ -116,12 +116,7 @@ const acceptTeamInvitation = async (
   await addTeamMemberToMeetings(teamMember, teamId, dataLoader)
 
   // if accepted to team, don't count it towards the global denial count
-  await r
-    .table('PushInvitation')
-    .getAll(userId, {index: 'userId'})
-    .filter({teamId})
-    .delete()
-    .run()
+  await r.table('PushInvitation').getAll(userId, {index: 'userId'}).filter({teamId}).delete().run()
   return {
     teamLeadUserIdWithNewActions,
     invitationNotificationIds: invitationNotificationIds as string[]

@@ -1,15 +1,19 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import DialogContainer from '../../../components/DialogContainer'
+import useAtmosphere from '../../../hooks/useAtmosphere'
+import {MeetingTypeEnum} from '../../../types/graphql'
 import getTemplateList from '../../../utils/getTemplateList'
+import {setActiveTemplate} from '../../../utils/relay/setActiveTemplate'
 import {PokerTemplateModal_pokerMeetingSettings} from '../../../__generated__/PokerTemplateModal_pokerMeetingSettings.graphql'
 import PokerTemplateDetails from './PokerTemplateDetails'
 import PokerTemplateList from './PokerTemplateList'
 import PokerTemplateScaleDetails from './PokerTemplateScaleDetails'
 
 interface Props {
+  closePortal: () => void
   pokerMeetingSettings: PokerTemplateModal_pokerMeetingSettings
 }
 
@@ -23,7 +27,7 @@ const StyledDialogContainer = styled(DialogContainer)({
 const SCOPES = ['TEAM', 'ORGANIZATION', 'PUBLIC']
 
 const PokerTemplateModal = (props: Props) => {
-  const {pokerMeetingSettings} = props
+  const {closePortal, pokerMeetingSettings} = props
   const {selectedTemplate, team} = pokerMeetingSettings
   const {id: teamId, orgId, editingScaleId} = team
   const lowestScope = getTemplateList(teamId, orgId, selectedTemplate)
@@ -35,6 +39,11 @@ const PokerTemplateModal = (props: Props) => {
   const gotoPublicTemplates = () => {
     setActiveIdx(2)
   }
+
+  const atmosphere = useAtmosphere()
+  useEffect(() => {
+    setActiveTemplate(atmosphere, teamId, selectedTemplate.id, MeetingTypeEnum.poker)
+  }, [])
 
   return (
     <StyledDialogContainer>
@@ -50,6 +59,7 @@ const PokerTemplateModal = (props: Props) => {
           settings={pokerMeetingSettings}
           gotoTeamTemplates={gotoTeamTemplates}
           gotoPublicTemplates={gotoPublicTemplates}
+          closePortal={closePortal}
         />
       }
 
@@ -68,6 +78,7 @@ export default createFragmentContainer(PokerTemplateModal, {
         editingScaleId
       }
       selectedTemplate {
+        id
         ...getTemplateList_template
       }
     }

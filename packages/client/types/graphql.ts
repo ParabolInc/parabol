@@ -3492,11 +3492,6 @@ export interface ISlackIntegration {
   isActive: boolean;
 
   /**
-   * The access token to slack, only visible to the owner. Used as a fallback to botAccessToken
-   */
-  accessToken: string | null;
-
-  /**
    * the parabol bot user id
    */
   botUserId: string | null;
@@ -3547,7 +3542,7 @@ export interface ISlackIntegration {
   updatedAt: any;
 
   /**
-   * The user that the access token is attached to
+   * The id of the user that integrated Slack
    */
   userId: string;
 
@@ -6774,11 +6769,6 @@ export interface IMutation {
   addPokerTemplateScaleValue: IAddPokerTemplateScaleValuePayload;
 
   /**
-   * Add or remove a reactji to a reflection
-   */
-  addReactjiToReflection: AddReactjiToReflectionPayload;
-
-  /**
    * Add or remove a reactji from a reactable
    */
   addReactjiToReactable: AddReactjiToReactablePayload;
@@ -7170,6 +7160,11 @@ export interface IMutation {
   setCheckInEnabled: ISetCheckInEnabledPayload;
 
   /**
+   * Update the default Slack channel where notifications are sent
+   */
+  setDefaultSlackChannel: SetDefaultSlackChannelPayload;
+
+  /**
    * Set the role of a user
    */
   setOrgUserRole: SetOrgUserRolePayload | null;
@@ -7408,23 +7403,6 @@ export interface IAddPokerTemplateScaleOnMutationArguments {
 export interface IAddPokerTemplateScaleValueOnMutationArguments {
   scaleId: string;
   scaleValue: IAddTemplateScaleInput;
-}
-
-export interface IAddReactjiToReflectionOnMutationArguments {
-  /**
-   * The reflection getting the reaction
-   */
-  reflectionId: string;
-
-  /**
-   * the id of the reactji to add
-   */
-  reactji: string;
-
-  /**
-   * If true, remove the reaction, else add it
-   */
-  isRemove?: boolean | null;
 }
 
 export interface IAddReactjiToReactableOnMutationArguments {
@@ -8149,6 +8127,11 @@ export interface ISetCheckInEnabledOnMutationArguments {
   isEnabled: boolean;
 }
 
+export interface ISetDefaultSlackChannelOnMutationArguments {
+  slackChannelId: string;
+  teamId: string;
+}
+
 export interface ISetOrgUserRoleOnMutationArguments {
   /**
    * The org to affect
@@ -8719,22 +8702,6 @@ export interface IAddTemplateScaleInput {
    * The label for this value, e.g., XS, M, L
    */
   label: string;
-}
-
-/**
- * Return object for AddReactjiToReflectionPayload
- */
-export type AddReactjiToReflectionPayload =
-  | IErrorPayload
-  | IAddReactjiToReflectionSuccess;
-
-export interface IAddReactjiToReflectionSuccess {
-  __typename: 'AddReactjiToReflectionSuccess';
-
-  /**
-   * the reflection with the updated list of reactjis
-   */
-  reflection: IRetroReflection;
 }
 
 /**
@@ -10381,6 +10348,27 @@ export interface ISetCheckInEnabledPayload {
   settings: TeamMeetingSettings | null;
 }
 
+/**
+ * Return object for SetDefaultSlackChannelPayload
+ */
+export type SetDefaultSlackChannelPayload =
+  | IErrorPayload
+  | ISetDefaultSlackChannelSuccess;
+
+export interface ISetDefaultSlackChannelSuccess {
+  __typename: 'SetDefaultSlackChannelSuccess';
+
+  /**
+   * The id of the slack channel that is now the default slack channel
+   */
+  slackChannelId: string;
+
+  /**
+   * The team member with the updated slack channel
+   */
+  teamMember: ITeamMember;
+}
+
 export type SetOrgUserRolePayload =
   | ISetOrgUserRoleAddedPayload
   | ISetOrgUserRoleRemovedPayload;
@@ -11059,6 +11047,15 @@ export type MeetingSubscriptionPayload =
   | IPokerAnnounceDeckHoverSuccess
   | IPokerSetFinalScoreSuccess;
 
+export interface IAddReactjiToReflectionSuccess {
+  __typename: 'AddReactjiToReflectionSuccess';
+
+  /**
+   * the reflection with the updated list of reactjis
+   */
+  reflection: IRetroReflection;
+}
+
 export interface IUpdateDragLocationPayload {
   __typename: 'UpdateDragLocationPayload';
 
@@ -11315,7 +11312,8 @@ export type TeamSubscriptionPayload =
   | IUpdateUserProfilePayload
   | IPersistJiraSearchQuerySuccess
   | IMovePokerTemplateScaleValueSuccess
-  | IUpdateJiraDimensionFieldSuccess;
+  | IUpdateJiraDimensionFieldSuccess
+  | ISetDefaultSlackChannelSuccess;
 
 export interface IRenamePokerTemplatePayload {
   __typename: 'RenamePokerTemplatePayload';

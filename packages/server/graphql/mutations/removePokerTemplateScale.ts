@@ -32,22 +32,13 @@ const removePokerTemplateScale = {
     }
 
     // RESOLUTION
-    await r
-      .table('TemplateScale')
-      .get(scaleId)
-      .update({removedAt: now, updatedAt: now})
-      .run()
+    await r.table('TemplateScale').get(scaleId).update({removedAt: now, updatedAt: now}).run()
 
     const nextDefaultScaleId = SprintPokerDefaults.DEFAULT_SCALE_ID
     const dimensions = await r
       .table('TemplateDimension')
       .getAll(teamId, {index: 'teamId'})
-      .filter((row) =>
-        row('removedAt')
-          .default(null)
-          .eq(null)
-          .and(row('scaleId').eq(scaleId))
-      )
+      .filter((row) => row('removedAt').default(null).eq(null).and(row('scaleId').eq(scaleId)))
       .update(
         {
           scaleId: nextDefaultScaleId,

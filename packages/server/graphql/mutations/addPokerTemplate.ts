@@ -95,16 +95,7 @@ const addPokerTemplate = {
 
       await r({
         newTemplate: r.table('MeetingTemplate').insert(newTemplate),
-        newTemplateDimensions: r.table('TemplateDimension').insert(newTemplateDimensions),
-        settings: r
-          .table('MeetingSettings')
-          .getAll(teamId, {index: 'teamId'})
-          .filter({
-            meetingType: MeetingTypeEnum.poker
-          })
-          .update({
-            selectedTemplateId: newTemplate.id
-          })
+        newTemplateDimensions: r.table('TemplateDimension').insert(newTemplateDimensions)
       }).run()
       sendTemplateEventToSegment(viewerId, newTemplate, 'Template Cloned')
       data = {templateId: newTemplate.id}
@@ -128,16 +119,7 @@ const addPokerTemplate = {
 
       await r({
         newTemplate: r.table('MeetingTemplate').insert(newTemplate),
-        newTemplateDimension: r.table('TemplateDimension').insert(newDimension),
-        settings: r
-          .table('MeetingSettings')
-          .getAll(teamId, {index: 'teamId'})
-          .filter({
-            meetingType: MeetingTypeEnum.poker
-          })
-          .update({
-            selectedTemplateId: templateId
-          })
+        newTemplateDimension: r.table('TemplateDimension').insert(newDimension)
       }).run()
       sendTemplateEventToSegment(viewerId, newTemplate, 'Template Created')
       data = {templateId}

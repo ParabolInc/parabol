@@ -92,7 +92,7 @@ const SlackProviderRow = (props: Props) => {
   const {teamMember} = viewer
   const {integrations} = teamMember!
   const {slack} = integrations
-  const accessToken = slack?.accessToken ?? undefined
+  const botAccessToken = slack?.botAccessToken ?? undefined
   const openOAuth = () => {
     SlackClientManager.openOAuth(atmosphere, teamId, mutationProps)
   }
@@ -106,14 +106,14 @@ const SlackProviderRow = (props: Props) => {
           <ProviderName>{Providers.SLACK_NAME}</ProviderName>
           <RowInfoCopy>{Providers.SLACK_DESC}</RowInfoCopy>
         </RowInfo>
-        {!accessToken && (
+        {!botAccessToken && (
           <ProviderActions>
             <StyledButton onClick={openOAuth} palette='warm' waiting={submitting}>
               {isDesktop ? 'Connect' : <Icon>add</Icon>}
             </StyledButton>
           </ProviderActions>
         )}
-        {accessToken && (
+        {botAccessToken && (
           <ListAndMenu>
             <SlackLogin title={slack!.slackTeamName || 'Slack'}>
               <SlackSVG />
@@ -131,7 +131,7 @@ const SlackProviderRow = (props: Props) => {
           </ListAndMenu>
         )}
       </CardTop>
-      {accessToken && <SlackNotificationList teamId={teamId} viewer={viewer} />}
+      {botAccessToken && <SlackNotificationList teamId={teamId} viewer={viewer} />}
     </ExtraProviderCard>
   )
 }
@@ -142,7 +142,7 @@ graphql`
     teamMember(teamId: $teamId) {
       integrations {
         slack {
-          accessToken
+          botAccessToken
           slackTeamName
           slackUserName
         }

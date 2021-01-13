@@ -3,14 +3,14 @@ const toolboxConfig = require('./webpack/toolbox.config')
 const makeServersConfig = require('./webpack/prod.servers.config')
 const makeClientConfig = require('./webpack/prod.client.config')
 
-const compile = (config) => {
+const compile = (config, isSilent) => {
   return new Promise((resolve) => {
     const cb = (err, stats) => {
-      if (err) {
+      if (err && !isSilent) {
         console.log('Webpack error:', err)
       }
       const {errors} = stats.compilation
-      if (errors.length > 0) {
+      if (errors.length > 0 && !isSilent) {
         console.log('COMPILATION ERRORS:', errors)
       }
       resolve()
@@ -22,7 +22,7 @@ const compile = (config) => {
 
 const prod = async (isDeploy) => {
   console.log('🙏🙏🙏      Building Production Server      🙏🙏🙏')
-  await compile(toolboxConfig)
+  await compile(toolboxConfig, true)
   await require('./toolbox/updateSchema.js').default()
   await require('./compileRelay')()
   const serversConfig = makeServersConfig({isDeploy})

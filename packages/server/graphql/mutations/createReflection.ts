@@ -6,10 +6,10 @@ import isPhaseComplete from 'parabol-client/utils/meetings/isPhaseComplete'
 import getGroupSmartTitle from 'parabol-client/utils/smartGroup/getGroupSmartTitle'
 import unlockAllStagesForPhase from 'parabol-client/utils/unlockAllStagesForPhase'
 import normalizeRawDraftJS from 'parabol-client/validation/normalizeRawDraftJS'
-import shortid from 'shortid'
 import getRethink from '../../database/rethinkDriver'
 import Reflection from '../../database/types/Reflection'
 import ReflectionGroup from '../../database/types/ReflectionGroup'
+import generateUID from '../../generateUID'
 import {getUserId} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import segmentIo from '../../utils/segmentIo'
@@ -40,11 +40,7 @@ export default {
     if (!reflectPrompt) {
       return standardError(new Error('Category not found'), {userId: viewerId})
     }
-    const meeting = await r
-      .table('NewMeeting')
-      .get(meetingId)
-      .default(null)
-      .run()
+    const meeting = await r.table('NewMeeting').get(meetingId).default(null).run()
     if (!meeting) return standardError(new Error('Meeting not found'), {userId: viewerId})
     const {endedAt, phases, teamId} = meeting
     if (endedAt) {
@@ -60,7 +56,7 @@ export default {
     // RESOLUTION
     const plaintextContent = extractTextFromDraftString(normalizedContent)
     const entities = await getReflectionEntities(plaintextContent)
-    const reflectionGroupId = shortid.generate()
+    const reflectionGroupId = generateUID()
 
     const reflection = new Reflection({
       creatorId: viewerId,

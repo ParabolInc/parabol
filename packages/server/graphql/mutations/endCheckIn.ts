@@ -4,12 +4,12 @@ import {MeetingMember, SuggestedActionTypeEnum} from 'parabol-client/types/graph
 import {AGENDA_ITEMS, DONE, LAST_CALL} from 'parabol-client/utils/constants'
 import getMeetingPhase from 'parabol-client/utils/getMeetingPhase'
 import findStageById from 'parabol-client/utils/meetings/findStageById'
-import shortid from 'shortid'
 import getRethink from '../../database/rethinkDriver'
 import AgendaItem from '../../database/types/AgendaItem'
 import MeetingAction from '../../database/types/MeetingAction'
 import Task from '../../database/types/Task'
 import TimelineEventCheckinComplete from '../../database/types/TimelineEventCheckinComplete'
+import generateUID from '../../generateUID'
 import archiveTasksForDB from '../../safeMutations/archiveTasksForDB'
 import removeSuggestedAction from '../../safeMutations/removeSuggestedAction'
 import {getUserId, isTeamMember} from '../../utils/authorization'
@@ -17,10 +17,10 @@ import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import {DataLoaderWorker, GQLContext} from '../graphql'
 import EndCheckInPayload from '../types/EndCheckInPayload'
+import sendMeetingEndToSegment from './helpers/endMeeting/sendMeetingEndToSegment'
 import sendNewMeetingSummary from './helpers/endMeeting/sendNewMeetingSummary'
 import {endSlackMeeting} from './helpers/notifySlack'
 import removeEmptyTasks from './helpers/removeEmptyTasks'
-import sendMeetingEndToSegment from './helpers/endMeeting/sendMeetingEndToSegment'
 
 type SortOrderTask = Pick<Task, 'id' | 'sortOrder'>
 const updateTaskSortOrders = async (userIds: string[], tasks: SortOrderTask[]) => {
@@ -76,7 +76,7 @@ const getPinnedAgendaItems = async (teamId: string) => {
 const clonePinnedAgendaItems = async (pinnedAgendaItems: AgendaItem[]) => {
   const r = await getRethink()
   const formattedPinnedAgendaItems = pinnedAgendaItems.map((agendaItem) => {
-    const agendaItemId = `${agendaItem.teamId}::${shortid.generate()}`
+    const agendaItemId = `${agendaItem.teamId}::${generateUID()}`
     return new AgendaItem({
       id: agendaItemId,
       content: agendaItem.content,

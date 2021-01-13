@@ -15,7 +15,6 @@ import {
 } from 'parabol-client/utils/constants'
 import getMeetingPhase from 'parabol-client/utils/getMeetingPhase'
 import findStageById from 'parabol-client/utils/meetings/findStageById'
-import shortid from 'shortid'
 import getRethink from '../../database/rethinkDriver'
 import AgendaItem from '../../database/types/AgendaItem'
 import GenericMeetingPhase from '../../database/types/GenericMeetingPhase'
@@ -25,6 +24,7 @@ import MeetingRetrospective from '../../database/types/MeetingRetrospective'
 import Task from '../../database/types/Task'
 import TimelineEventCheckinComplete from '../../database/types/TimelineEventCheckinComplete'
 import TimelineEventRetroComplete from '../../database/types/TimelineEventRetroComplete'
+import generateUID from '../../generateUID'
 import archiveTasksForDB from '../../safeMutations/archiveTasksForDB'
 import removeSuggestedAction from '../../safeMutations/removeSuggestedAction'
 import {getUserId, isTeamMember} from '../../utils/authorization'
@@ -101,7 +101,7 @@ const getPinnedAgendaItems = async (teamId: string) => {
 const clonePinnedAgendaItems = async (pinnedAgendaItems: AgendaItem[]) => {
   const r = await getRethink()
   const formattedPinnedAgendaItems = pinnedAgendaItems.map((agendaItem) => {
-    const agendaItemId = `${agendaItem.teamId}::${shortid.generate()}`
+    const agendaItemId = `${agendaItem.teamId}::${generateUID()}`
     return new AgendaItem({
       id: agendaItemId,
       content: agendaItem.content,

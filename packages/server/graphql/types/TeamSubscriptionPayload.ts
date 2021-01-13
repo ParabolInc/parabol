@@ -60,6 +60,7 @@ import {EndCheckInSuccess} from './EndCheckInPayload'
 import {EndRetrospectiveSuccess} from './EndRetrospectivePayload'
 import {MovePokerTemplateScaleValueSuccess} from './MovePokerTemplateScaleValuePayload'
 import {UpdateJiraDimensionFieldSuccess} from './UpdateJiraDimensionFieldPayload'
+import {SetDefaultSlackChannelSuccess} from './SetDefaultSlackChannelPayload'
 import {PersistJiraSearchQuerySuccess} from './PersistJiraSearchQueryPayload'
 
 const types = [
@@ -124,7 +125,8 @@ const types = [
   UpdateUserProfilePayload,
   PersistJiraSearchQuerySuccess,
   MovePokerTemplateScaleValueSuccess,
-  UpdateJiraDimensionFieldSuccess
+  UpdateJiraDimensionFieldSuccess,
+  SetDefaultSlackChannelSuccess
 ]
 
 export default graphQLSubscriptionType('TeamSubscriptionPayload', types)

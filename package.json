@@ -25,7 +25,7 @@
     "heroku-postbuild": "echo 'Skipping build'",
     "build": "node scripts/prod.js",
     "db:create": "node scripts/toolbox/createMigration.js",
-    "db:migrate": "node scripts/toolbox/migrateDB.js",
+    "db:migrate": "node scripts/migrate.js",
     "postdeploy": "node scripts/toolbox/postDeploy.js",
     "dev": "node scripts/dev.js && pm2-runtime start pm2.dev.config.js",
     "lint": "lerna run --parallel lint",
