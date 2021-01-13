@@ -32,8 +32,7 @@ const GraphqlContainer = () => {
     window.localStorage.setItem(LocalStorageKey.GRAPHIQL_SCHEMA, value)
   }
   const fetcher: Fetcher = async ({query, variables}) => {
-    const url = `${window.location.origin}/intranet-graphql`
-    const res = await fetch(url, {
+    const res = await fetch('/intranet-graphql', {
       method: 'POST',
       headers: {
         'content-type': 'application/json',
