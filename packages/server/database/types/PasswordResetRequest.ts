@@ -1,4 +1,4 @@
-import generateUID from '../../generateUID'
+import shortid from 'shortid'
 
 interface Input {
   id?: string
@@ -18,7 +18,7 @@ export default class PasswordResetRequest {
   isValid: boolean
   constructor(input: Input) {
     const {id, email, ip, isValid, time, token} = input
-    this.id = id ?? generateUID()
+    this.id = id ?? shortid.generate()
     this.email = email
     this.ip = ip
     this.time = time ?? new Date()

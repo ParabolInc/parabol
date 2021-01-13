@@ -5,10 +5,7 @@ import TaskServiceEnum from './TaskServiceEnum'
 
 export const suggestedIntegrationFields = () => ({
   id: {
-    type: new GraphQLNonNull(GraphQLID),
-    resolve: ({id}) => {
-      return `sa:${id}`
-    }
+    type: new GraphQLNonNull(GraphQLID)
   },
   service: {
     type: new GraphQLNonNull(TaskServiceEnum)
@@ -23,7 +20,7 @@ const resolveTypeLookup = {
 const SuggestedIntegration = new GraphQLInterfaceType({
   name: 'SuggestedIntegration',
   fields: suggestedIntegrationFields,
-  resolveType(value) {
+  resolveType (value) {
     return resolveTypeLookup[value.service]
   }
 })

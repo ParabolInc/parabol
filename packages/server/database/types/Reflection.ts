@@ -1,5 +1,5 @@
 import extractTextFromDraftString from 'parabol-client/utils/draftjs/extractTextFromDraftString'
-import generateUID from '../../generateUID'
+import shortid from 'shortid'
 import GoogleAnalyzedEntity from './GoogleAnalyzedEntity'
 import Reactji from './Reactji'
 
@@ -49,7 +49,7 @@ export default class Reflection {
       updatedAt
     } = input
     const now = new Date()
-    this.id = id || generateUID()
+    this.id = id || shortid.generate()
     this.createdAt = createdAt || now
     this.creatorId = creatorId
     this.content = content
@@ -58,7 +58,7 @@ export default class Reflection {
     this.isActive = true
     this.meetingId = meetingId
     this.reactjis = reactjis || []
-    this.reflectionGroupId = reflectionGroupId || generateUID()
+    this.reflectionGroupId = reflectionGroupId || shortid.generate()
     this.promptId = promptId
     this.sortOrder = sortOrder || 0
     this.updatedAt = updatedAt || now

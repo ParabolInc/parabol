@@ -9,10 +9,10 @@ import {
 import getTypeFromEntityMap from 'parabol-client/utils/draftjs/getTypeFromEntityMap'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import normalizeRawDraftJS from 'parabol-client/validation/normalizeRawDraftJS'
+import shortid from 'shortid'
 import getRethink from '../../database/rethinkDriver'
 import NotificationTaskInvolves from '../../database/types/NotificationTaskInvolves'
 import Task from '../../database/types/Task'
-import generateUID from '../../generateUID'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish, {SubOptions} from '../../utils/publish'
 import segmentIo from '../../utils/segmentIo'
@@ -147,7 +147,9 @@ const handleAddTaskNotifications = async (
 
   if (notificationsToAdd.length) {
     // don't await to speed up task creation
-    r.table('Notification').insert(notificationsToAdd).run()
+    r.table('Notification')
+      .insert(notificationsToAdd)
+      .run()
     notificationsToAdd.forEach((notification) => {
       publish(
         SubscriptionChannel.NOTIFICATION,
@@ -232,7 +234,7 @@ export default {
     })
     const {id: taskId, updatedAt} = task
     const history = {
-      id: generateUID(),
+      id: shortid.generate(),
       content,
       taskId,
       status,

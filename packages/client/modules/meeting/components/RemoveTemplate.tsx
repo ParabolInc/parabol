@@ -5,11 +5,11 @@ import DetailAction from '../../../components/DetailAction'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
 import RemoveReflectTemplateMutation from '../../../mutations/RemoveReflectTemplateMutation'
+import RemovePokerTemplateMutation from '../../../mutations/RemovePokerTemplateMutation'
+import SelectTemplateMutation from '../../../mutations/SelectTemplateMutation'
 import {RemoveTemplate_teamTemplates} from '../../../__generated__/RemoveTemplate_teamTemplates.graphql'
 import {MeetingTypeEnum} from '~/types/graphql'
-import {SprintPokerDefaults} from '../../../types/constEnums'
-import RemovePokerTemplateMutation from '../../../mutations/RemovePokerTemplateMutation'
-import {setActiveTemplate} from '../../../utils/relay/setActiveTemplate'
+
 
 interface Props {
   gotoPublicTemplates: () => void
@@ -38,17 +38,16 @@ const RemoveTemplate = (props: Props) => {
     templateIds.splice(templateIdx, 1)
     // use the same index as the previous item. if the item was last in the list, grab the new last
     const nextTemplateId = templateIds[templateIdx] || templateIds[templateIds.length - 1]
-    const meetingType = type === MeetingTypeEnum.retrospective ? MeetingTypeEnum.retrospective : MeetingTypeEnum.poker
     if (nextTemplateId) {
-      setActiveTemplate(atmosphere, teamId, nextTemplateId, meetingType)
+      SelectTemplateMutation(atmosphere, {selectedTemplateId: nextTemplateId, teamId})
     } else {
-      const defaultTemplateId = meetingType === MeetingTypeEnum.retrospective ? 'workingStuckTemplate' : SprintPokerDefaults.DEFAULT_TEMPLATE_ID
-      setActiveTemplate(atmosphere, teamId, defaultTemplateId, meetingType)
       gotoPublicTemplates()
     }
-    meetingType === MeetingTypeEnum.retrospective ?
-      RemoveReflectTemplateMutation(atmosphere, {templateId}, {onError, onCompleted}) :
+    if (type === MeetingTypeEnum.retrospective) {
+      RemoveReflectTemplateMutation(atmosphere, {templateId}, {onError, onCompleted})
+    } else if (type === MeetingTypeEnum.poker) {
       RemovePokerTemplateMutation(atmosphere, {templateId}, {onError, onCompleted})
+    }
   }
 
   return <DetailAction icon={'delete'} tooltip={'Delete template'} onClick={removeTemplate} />

@@ -177,14 +177,9 @@ export default class Atmosphere extends Environment {
     const transport = this.transport as GQLTrebuchetClient
     if (!transport.subscribe) return
     if (!__PRODUCTION__) {
-      try {
-        const queryMap = await import('../../queryMap.json')
-        const query = queryMap[documentId!]
-        this.subscriptions[subKey] = transport.subscribe({query, variables}, sink)
-      } catch (e) {
-        return
-      }
-
+      const queryMap = await import('../../queryMap.json')
+      const query = queryMap[documentId!]
+      this.subscriptions[subKey] = transport.subscribe({query, variables}, sink)
     } else {
       this.subscriptions[subKey] = transport.subscribe({documentId, variables}, sink)
     }
@@ -260,12 +255,8 @@ export default class Atmosphere extends Environment {
     const field = __PRODUCTION__ ? 'documentId' : 'query'
     let data = request.id
     if (!__PRODUCTION__) {
-      try {
-        const queryMap = await import('../../queryMap.json').catch()
-        data = queryMap[request.id!]
-      } catch (e) {
-        return
-      }
+      const queryMap = await import('../../queryMap.json')
+      data = queryMap[request.id!]
     }
     const transport = uploadables ? this.baseHTTPTransport : this.transport
     return transport.fetch({

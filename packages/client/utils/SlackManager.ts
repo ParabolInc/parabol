@@ -3,7 +3,7 @@ interface ErrorResponse {
   error: string
 }
 
-export interface SlackIM {
+interface SlackIM {
   created: number
   id: string
   is_im: true
@@ -36,23 +36,6 @@ export interface SlackPublicConversation {
   is_private: boolean
   is_mpim: boolean
   last_read: string
-  latest: {
-    bot_id: string
-    type: string
-    text: string
-    user: string
-    ts: string
-    team: string
-    bot_profile: {
-      id: string
-      deleted: boolean
-      name: string
-      updated: number
-      app_id: string
-      icons: any
-      team_id: string
-    }
-  }
   topic: {
     value: string
     creator: string
@@ -69,22 +52,42 @@ export interface SlackPublicConversation {
 
 type SlackConversation = SlackPublicConversation | SlackIM
 
-interface ConversationListResponse {
-  ok: true
-  channels: SlackPublicConversation[] | SlackIM[]
-}
-interface ConversationJoinResponse {
-  ok: true
-  channel: {
-    id: string
+interface SlackChannelInfo {
+  id: string
+  name: string
+  is_channel: boolean
+  created: number
+  is_archived: boolean
+  is_general: boolean
+  name_normalized: string
+  is_shared: boolean
+  is_org_shared: boolean
+  is_member: boolean
+  is_private: boolean
+  is_mpim: boolean
+  members: string[]
+  topic: {
+    value: string
+    creator: string
+    last_set: number
   }
+  purpose: {
+    value: string
+    creator: string
+    last_set: number
+  }
+  previous_names: string[]
+  num_members: number
 }
 
-interface ConversationOpenResponse {
+interface ChannelListResponse {
   ok: true
-  channel: {
-    id: string
-  }
+  channels: SlackChannelInfo[]
+}
+
+interface ConversationListResponse {
+  ok: true
+  channels: SlackConversation[]
 }
 
 interface PostMessageResponse {
@@ -117,6 +120,7 @@ interface SlackUser {
     display_name: string
     real_name_normalized: string
     display_name_normalized: string
+    // email?: string
     image_original: string
     image_24: string
     image_32: string
@@ -139,9 +143,32 @@ interface SlackUser {
   locale: string
 }
 
+// interface SlackMessage {
+//   type: 'message'
+//   user: string
+//   text: string
+//   ts: string
+//   attachments?: {
+//     service_name: string
+//     text: string
+//     fallback: string
+//     thumb_url: string
+//     thumb_width: number
+//     thumb_height: number
+//     id: number
+//   }[]
+// }
+
 interface UserInfoResponse {
   ok: true
   user: SlackUser
+}
+
+interface IMOpenResponse {
+  ok: true
+  channel: {
+    id: string
+  }
 }
 
 interface ConversationInfoResponse {
@@ -149,11 +176,42 @@ interface ConversationInfoResponse {
   channel: SlackConversation
 }
 
+interface ChannelInfoResponse {
+  ok: true
+  channel: SlackChannelInfo & {
+    creator: string
+    latest?: {
+      text: string
+      username: string
+      bot_id: string
+      attachments: {
+        text: string
+        id: number
+        fallback: string
+      }[]
+      type: 'message'
+      subtype: string
+      ts: string
+      unread_count: number
+      unread_count_display: number
+    }
+  }
+}
+
+// interface ConversationHistoryResponse {
+//   ok: true
+//   message: SlackMessage[]
+//   has_more: boolean
+//   pin_count: number
+//   response_metadata: {
+//     next_cursor: string
+//   }
+// }
 type ConversationType = 'public_channel' | 'private_channel' | 'im' | 'mpim'
 
 abstract class SlackManager {
-  static SCOPE =
-    'incoming-webhook,channels:read,channels:join,chat:write,im:read,im:write,users:read,groups:read'
+  static SCOPE = 'identify,bot,incoming-webhook,channels:read,chat:write:bot'
+  // token can be a botAccessToken or accessToken!
   token: string
   abstract fetch: any
   // the any is for node until we can use tsc in nodeland
@@ -197,34 +255,41 @@ abstract class SlackManager {
     return this.cache[url].result
   }
 
-  getConversationInfo(channelId: string) {
+  getConversationInfo(slackChannelId: string) {
     return this.get<ConversationInfoResponse>(
-      `https://slack.com/api/conversations.info?token=${this.token}&channel=${channelId}`
+      `https://slack.com/api/conversations.info?token=${this.token}&channel=${slackChannelId}`
     )
   }
+
+  getChannelInfo(channelId: string) {
+    return this.get<ChannelInfoResponse>(
+      `https://slack.com/api/channels.info?token=${this.token}&channel=${channelId}`
+    )
+  }
+
+  getChannelList() {
+    return this.get<ChannelListResponse>(
+      `https://slack.com/api/channels.list?token=${this.token}&exclude_archived=1`
+    )
+  }
+
+  // getConversationHistory(channelId: string) {
+  //   const oldest = toEpochSeconds(Date.now() - ms('30m'))
+  //   return this.get<ConversationHistoryResponse>(`https://slack.com/api/conversations.history?token=${
+  //     this.token
+  //     }&channel=${channelId}&oldest=${oldest}`)
+  // }
 
   getConversationList(types: ConversationType[] = ['public_channel']) {
     const typeStr = types.join(',')
     return this.get<ConversationListResponse>(
-      `https://slack.com/api/conversations.list?token=${this.token}&exclude_archived=true&types=${typeStr}`
+      `https://slack.com/api/conversations.list?token=${this.token}&exclude_archived=1&types=${typeStr}`
     )
   }
 
   getUserInfo(userId: string) {
     return this.get<UserInfoResponse>(
       `https://slack.com/api/users.info?token=${this.token}&user=${userId}`
-    )
-  }
-
-  joinConversation(channelId: string) {
-    return this.get<ConversationJoinResponse>(
-      `https://slack.com/api/conversations.join?token=${this.token}&channel=${channelId}`
-    )
-  }
-
-  openDM(userId) {
-    return this.get<ConversationOpenResponse>(
-      `https://slack.com/api/conversations.open?token=${this.token}&users=${userId}`
     )
   }
 
@@ -242,6 +307,12 @@ abstract class SlackManager {
   updateMessage(channelId: string, text: string, ts: string) {
     return this.get<UpdateMessageResponse>(
       `https://slack.com/api/chat.update?token=${this.token}&channel=${channelId}&text=${text}&ts=${ts}`
+    )
+  }
+
+  openIM(slackUserId: string) {
+    return this.get<IMOpenResponse>(
+      `https://slack.com/api/im.open?token=${this.token}&user=${slackUserId}`
     )
   }
 }

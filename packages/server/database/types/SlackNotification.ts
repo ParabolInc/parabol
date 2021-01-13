@@ -1,10 +1,10 @@
-import generateUID from '../../generateUID'
+import shortid from 'shortid'
 
 export const slackNotificationEventTypeLookup = {
-  meetingStart: 'team' as const,
-  meetingEnd: 'team' as const,
-  MEETING_STAGE_TIME_LIMIT_END: 'member' as const,
-  MEETING_STAGE_TIME_LIMIT_START: 'team' as const
+  meetingStart: 'team' as 'team',
+  meetingEnd: 'team' as 'team',
+  MEETING_STAGE_TIME_LIMIT_END: 'member' as 'member',
+  MEETING_STAGE_TIME_LIMIT_START: 'team' as 'team'
 }
 
 export type SlackNotificationEvent = keyof typeof slackNotificationEventTypeLookup
@@ -26,9 +26,9 @@ export default class SlackNotification {
   teamId: string
   userId: string
 
-  constructor(input: Input) {
+  constructor (input: Input) {
     const {event, channelId, teamId, userId, id} = input
-    this.id = id || generateUID()
+    this.id = id || shortid.generate()
     this.event = event
     this.channelId = channelId || null
     // this.channelName = channelName

@@ -2,9 +2,8 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
-import useActiveTopTemplate from '../../../hooks/useActiveTopTemplate'
+import useSelectTopTemplate from '../../../hooks/useSelectTopTemplate'
 import {PALETTE} from '../../../styles/paletteV2'
-import {MeetingTypeEnum} from '../../../types/graphql'
 import {ReflectTemplateListOrg_viewer} from '../../../__generated__/ReflectTemplateListOrg_viewer.graphql'
 import ReflectTemplateItem from './ReflectTemplateItem'
 const TemplateList = styled('ul')({
@@ -31,10 +30,10 @@ const ReflectTemplateListOrg = (props: Props) => {
   const {viewer} = props
   const team = viewer.team!
   const {id: teamId, meetingSettings} = team
-  const activeTemplateId = meetingSettings.activeTemplate?.id ?? "-tmp"
+  const selectedTemplateId = meetingSettings.selectedTemplateId!
   const organizationTemplates = meetingSettings.organizationTemplates!
   const {edges} = organizationTemplates
-  useActiveTopTemplate(edges, activeTemplateId, teamId, true, MeetingTypeEnum.retrospective)
+  useSelectTopTemplate(edges, selectedTemplateId, teamId, true)
 
   if (edges.length === 0) {
     return <Message>{'No other teams in your organization are sharing a template.'}</Message>
@@ -46,7 +45,7 @@ const ReflectTemplateListOrg = (props: Props) => {
           <ReflectTemplateItem
             key={template.id}
             template={template}
-            isActive={template.id === activeTemplateId}
+            isActive={template.id === selectedTemplateId}
             lowestScope={'ORGANIZATION'}
             teamId={teamId}
           />
@@ -72,9 +71,7 @@ export default createFragmentContainer(ReflectTemplateListOrg, {
                 }
               }
             }
-            activeTemplate {
-              id
-            }
+            selectedTemplateId
           }
         }
       }

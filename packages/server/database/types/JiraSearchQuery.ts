@@ -1,4 +1,4 @@
-import generateUID from '../../generateUID'
+import shortid from 'shortid'
 
 interface Input {
   id?: string
@@ -16,7 +16,7 @@ export default class JiraSearchQuery {
   lastUsedAt: Date
   constructor(input: Input) {
     const {id, queryString, isJQL, projectKeyFilters, lastUsedAt} = input
-    this.id = id || generateUID()
+    this.id = id || shortid.generate()
     this.queryString = queryString
     this.isJQL = isJQL
     this.projectKeyFilters = projectKeyFilters

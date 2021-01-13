@@ -1,8 +1,8 @@
-import generateUID from '../generateUID'
+import shortid from 'shortid'
 import getRedis from './getRedis'
 
 export default class RedisLock {
-  value = generateUID()
+  value = shortid.generate()
   key: string
   ttl: number
   redis = getRedis()

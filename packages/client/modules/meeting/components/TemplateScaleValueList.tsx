@@ -87,7 +87,6 @@ const TemplateScaleValueList = (props: Props) => {
         .filter(({label}) => isSpecialPokerLabel(label))
         .map((scaleValue) => (
           <TemplateScaleValueItem
-            key={scaleValue.id}
             scale={scale}
             scaleValue={scaleValue}
             isDragging={false}

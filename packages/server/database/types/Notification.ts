@@ -1,5 +1,5 @@
-import {NotificationEnum, NotificationStatusEnum} from 'parabol-client/types/graphql'
-import generateUID from '../../generateUID'
+import shortid from 'shortid'
+import {NotificationStatusEnum, NotificationEnum} from 'parabol-client/types/graphql'
 
 export interface NotificationInput {
   type: NotificationEnum
@@ -7,7 +7,7 @@ export interface NotificationInput {
 }
 
 export default abstract class Notification {
-  id = generateUID()
+  id = shortid.generate()
   status = NotificationStatusEnum.UNREAD
   createdAt = new Date()
   type: NotificationEnum

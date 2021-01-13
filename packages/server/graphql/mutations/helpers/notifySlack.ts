@@ -55,8 +55,8 @@ const notifySlack = async (
   for (let i = 0; i < slackDetails.length; i++) {
     const {notification, auth} = slackDetails[i]
     const {channelId} = notification
-    const {botAccessToken, userId} = auth
-    const manager = new SlackServerManager(botAccessToken)
+    const {accessToken, botAccessToken, userId} = auth
+    const manager = new SlackServerManager(botAccessToken || accessToken)
     const res = await manager.postMessage(channelId!, slackText)
     segmentIo.track({
       userId,
@@ -78,6 +78,7 @@ const notifySlack = async (
           })
           .run()
       } else if (error === 'not_in_channel' || error === 'invalid_auth') {
+        console.log('Slack Channel Notification Error:', error)
         sendToSentry(
           new Error(`Slack Channel Notification Error: ${teamId}, ${channelId}, ${auth.id}`)
         )
@@ -123,22 +124,22 @@ const upsertSlackMessage = async (
 ) => {
   const {notification, auth} = slackDetails
   const {channelId} = notification
-  const {botAccessToken} = auth
+  const {accessToken, botAccessToken} = auth
   if (!channelId) return
-  const manager = new SlackServerManager(botAccessToken)
-  const convoInfo = await manager.getConversationInfo(channelId)
-  if (convoInfo.ok && 'latest' in convoInfo.channel) {
-    const {channel} = convoInfo
+  const manager = new SlackServerManager(accessToken)
+  const botManager = new SlackServerManager(botAccessToken)
+  const channelInfo = await manager.getChannelInfo(channelId)
+  if (channelInfo.ok) {
+    const {channel} = channelInfo
     const {latest} = channel
     if (latest) {
-      const {ts, bot_profile} = latest
-      const {name} = bot_profile
-      if (name === 'Parabol') {
+      const {ts, username} = latest
+      if (username === 'Parabol') {
         const timestamp = new Date(Number.parseFloat(ts) * 1000)
         const ageThresh = new Date(Date.now() - ms('5m'))
         if (timestamp >= ageThresh) {
           // trigger update
-          const res = await manager.updateMessage(channelId, slackText, ts)
+          const res = await botManager.updateMessage(channelId, slackText, ts)
           if (!res.ok) {
             console.error(res.error)
           }
@@ -146,10 +147,12 @@ const upsertSlackMessage = async (
         }
       }
     }
+  } else if (channelInfo.error === 'method_not_supported_for_channel_type') {
+    // not a public channel, ignore
   } else {
     // handle error?
   }
-  const res = await manager.postMessage(channelId, slackText)
+  const res = await botManager.postMessage(channelId, slackText)
   if (!res.ok) {
     console.error(res.error)
   }

@@ -1,7 +1,7 @@
 import {ExecutionResult} from 'graphql/execution/execute'
+import shortid from 'shortid'
 import {HttpResponse, WebSocket} from 'uWebSockets.js'
 import AuthToken from '../database/types/AuthToken'
-import generateUID from '../generateUID'
 import WebSocketContext from '../wrtc/signalServer/WebSocketContext'
 import isHttpResponse from './isHttpResponse'
 
@@ -30,7 +30,7 @@ class ConnectionContext<T = WebSocket | HttpResponse> {
     this.authToken = authToken
     this.socket = socket
     this.ip = ip
-    this.id = `${prefix}_${generateUID()}`
+    this.id = `${prefix}_${shortid.generate()}`
   }
   ready() {
     this.isReady = true

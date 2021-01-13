@@ -2,8 +2,7 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
-import useActiveTopTemplate from '../../../hooks/useActiveTopTemplate'
-import {MeetingTypeEnum} from '../../../types/graphql'
+import useSelectTopTemplate from '../../../hooks/useSelectTopTemplate'
 import {ReflectTemplateListPublic_viewer} from '../../../__generated__/ReflectTemplateListPublic_viewer.graphql'
 import ReflectTemplateItem from './ReflectTemplateItem'
 
@@ -23,9 +22,9 @@ const ReflectTemplateListPublic = (props: Props) => {
   const team = viewer.team!
   const {id: teamId, meetingSettings} = team
   const publicTemplates = meetingSettings.publicTemplates!
-  const activeTemplateId = meetingSettings.activeTemplate?.id ?? "-tmp"
+  const selectedTemplateId = meetingSettings.selectedTemplateId!
   const {edges} = publicTemplates
-  useActiveTopTemplate(edges, activeTemplateId, teamId, true, MeetingTypeEnum.retrospective)
+  useSelectTopTemplate(edges, selectedTemplateId, teamId, true)
   return (
     <TemplateList>
       {
@@ -33,7 +32,7 @@ const ReflectTemplateListPublic = (props: Props) => {
           return <ReflectTemplateItem
             key={template.id}
             template={template}
-            isActive={template.id === activeTemplateId}
+            isActive={template.id === selectedTemplateId}
             lowestScope={'PUBLIC'}
             teamId={teamId}
           />
@@ -61,9 +60,7 @@ export default createFragmentContainer(
                   }
                 }
               }
-              activeTemplate {
-                id
-              }
+              selectedTemplateId
             }
           }
         }

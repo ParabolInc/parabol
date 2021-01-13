@@ -12,10 +12,9 @@ import {
   UPDATES,
   VOTE
 } from 'parabol-client/utils/constants'
+import shortid from 'shortid'
 
 exports.up = async (r) => {
-  let counter = 0
-  counter++
   try {
     await Promise.all([r.tableCreate('MeetingSettings').run()])
   } catch (e) {
@@ -39,13 +38,13 @@ exports.up = async (r) => {
     teamIds.forEach((teamId) => {
       inserts.push(
         {
-          id: String(counter++),
+          id: shortid.generate(),
           meetingType: RETROSPECTIVE,
           teamId,
           phases: [LOBBY, CHECKIN, 'think', GROUP, VOTE, DISCUSS, SUMMARY]
         },
         {
-          id: String(counter++),
+          id: shortid.generate(),
           meetingType: ACTION,
           teamId,
           phases: [LOBBY, CHECKIN, UPDATES, FIRST_CALL, AGENDA_ITEMS, LAST_CALL, SUMMARY]

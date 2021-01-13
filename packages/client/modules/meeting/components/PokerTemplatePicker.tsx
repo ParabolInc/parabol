@@ -27,8 +27,7 @@ const PokerTemplatePicker = (props: Props) => {
   const {settings} = props
   const {selectedTemplate} = settings
   const {name: templateName} = selectedTemplate
-  const {togglePortal, modalPortal, closePortal} = useModal({id: 'templateModal'})
-
+  const {togglePortal, modalPortal} = useModal({id: 'templateModal'})
   return (
     <>
       <Dropdown
@@ -38,7 +37,7 @@ const PokerTemplatePicker = (props: Props) => {
         onClick={togglePortal}
         onMouseEnter={PokerTemplateModal.preload}
       />
-      {modalPortal(<PokerTemplateModal closePortal={closePortal} pokerMeetingSettings={settings} />)}
+      {modalPortal(<PokerTemplateModal pokerMeetingSettings={settings} />)}
     </>
   )
 }
@@ -50,7 +49,6 @@ export default createFragmentContainer(PokerTemplatePicker, {
       selectedTemplate {
         id
         name
-        ...PokerTemplateDetailsTemplate
       }
     }
   `

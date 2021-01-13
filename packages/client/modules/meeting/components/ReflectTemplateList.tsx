@@ -8,6 +8,7 @@ import Tab from '../../../components/Tab/Tab'
 import Tabs from '../../../components/Tabs/Tabs'
 import {desktopSidebarShadow} from '../../../styles/elevation'
 import {PALETTE} from '../../../styles/paletteV2'
+import {Threshold} from '../../../types/constEnums'
 import {ReflectTemplateList_settings} from '../../../__generated__/ReflectTemplateList_settings.graphql'
 import AddNewReflectTemplate from './AddNewReflectTemplate'
 import ReflectTemplateListOrgRoot from './ReflectTemplateListOrgRoot'
@@ -74,9 +75,9 @@ interface Props {
 
 const ReflectTemplateList = (props: Props) => {
   const {activeIdx, setActiveIdx, settings} = props
-  const {team, teamTemplates} = settings
+  const {selectedTemplate, team, teamTemplates} = settings
   const {id: teamId} = team
-  const activeTemplateId = settings.activeTemplate?.id ?? "-tmp"
+  const {id: selectedTemplateId} = selectedTemplate
 
   const gotoTeamTemplates = () => {
     setActiveIdx(0)
@@ -119,7 +120,6 @@ const ReflectTemplateList = (props: Props) => {
           onClick={gotoPublicTemplates}
         />
       </StyledTabsBar>
-      <AddNewReflectTemplate teamId={teamId} reflectTemplates={teamTemplates} gotoTeamTemplates={gotoTeamTemplates} />
       <SwipeableViews
         enableMouseEvents
         index={activeIdx}
@@ -129,7 +129,7 @@ const ReflectTemplateList = (props: Props) => {
       >
         <TabContents>
           <ReflectTemplateListTeam
-            activeTemplateId={activeTemplateId}
+            selectedTemplateId={selectedTemplateId}
             showPublicTemplates={gotoPublicTemplates}
             teamTemplates={teamTemplates}
             teamId={teamId}
@@ -144,6 +144,13 @@ const ReflectTemplateList = (props: Props) => {
         </TabContents>
       </SwipeableViews>
       {/* add a key to clear the error when they change */}
+      {teamTemplates.length < Threshold.MAX_RETRO_TEAM_TEMPLATES && (
+        <AddNewReflectTemplate
+          teamId={teamId}
+          reflectTemplates={teamTemplates}
+          gotoTeamTemplates={gotoTeamTemplates}
+        />
+      )}
     </TemplateSidebar>
   )
 }
@@ -155,7 +162,7 @@ export default createFragmentContainer(ReflectTemplateList, {
       team {
         id
       }
-      activeTemplate {
+      selectedTemplate {
         ...getTemplateList_template
         id
         teamId

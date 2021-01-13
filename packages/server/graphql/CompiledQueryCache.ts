@@ -18,13 +18,8 @@ export default class CompiledQueryCache {
     const r = await getRethink()
     let queryString = await r.table('QueryMap').get(docId)('query').default(null).run()
     if (!queryString && !PROD) {
-      // try/catch block required for building the toolbox
-      try {
-        const queryMap = require('../../../queryMap.json')
-        queryString = queryMap[docId]
-      } catch (e) {
-        return undefined
-      }
+      const queryMap = require('../../../queryMap.json')
+      queryString = queryMap[docId]
     }
     if (!queryString) return undefined
     return this.set(docId, queryString, schema)

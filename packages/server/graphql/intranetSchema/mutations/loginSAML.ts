@@ -5,10 +5,10 @@ import {TierEnum} from 'parabol-client/types/graphql'
 import getSSODomainFromEmail from 'parabol-client/utils/getSSODomainFromEmail'
 import querystring from 'querystring'
 import * as samlify from 'samlify'
+import shortid from 'shortid'
 import getRethink from '../../../database/rethinkDriver'
 import AuthToken from '../../../database/types/AuthToken'
 import User from '../../../database/types/User'
-import generateUID from '../../../generateUID'
 import encodeAuthToken from '../../../utils/encodeAuthToken'
 import bootstrapNewUser from '../../mutations/helpers/bootstrapNewUser'
 import {SSORelayState} from '../../queries/SAMLIdP'
@@ -81,7 +81,7 @@ const loginSAML = {
       }
     }
 
-    const userId = `sso|${generateUID()}`
+    const userId = `sso|${shortid.generate()}`
     const newUser = new User({
       id: userId,
       email,

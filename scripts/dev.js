@@ -32,23 +32,30 @@ const removeArtifacts = async () => {
 }
 
 const dev = async (maybeInit) => {
-  const isInit = !fs.existsSync(path.join(TOOLBOX_ROOT, 'updateSchema.js')) || maybeInit
+  const isInit = !fs.existsSync(path.join(TOOLBOX_ROOT, 'migrateDB.js')) || maybeInit
   const redis = new Redis(process.env.REDIS_URL)
   if (isInit) {
     console.log('👋👋👋      Welcome to Parabol!      👋👋👋')
-    await Promise.all([compileToolbox(), removeArtifacts()])
+    await Promise.all([
+      compileToolbox(),
+      removeArtifacts()
+    ])
   }
 
   const buildDLL = require('./buildDll')()
   const clearRedis = redis.flushall()
-  const migrateDB = require('./migrate')()
+  const migrateDB = require('./toolbox/migrateDB')
   await require('./toolbox/updateSchema.js').default()
   if (isInit) {
     // technically, this is unsafe for SSR, but they're so rarely used that's fine
     await require('./compileRelay')()
   }
   // await compileServers()
-  await Promise.all([clearRedis, migrateDB, buildDLL])
+  await Promise.all([
+    clearRedis,
+    migrateDB,
+    buildDLL,
+  ])
   redis.disconnect()
 }
 

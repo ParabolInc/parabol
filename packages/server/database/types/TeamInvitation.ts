@@ -1,4 +1,4 @@
-import generateUID from '../../generateUID'
+import shortid from 'shortid'
 import getIsMassInviteToken from '../../graphql/mutations/helpers/getIsMassInviteToken'
 
 interface Input {
@@ -36,7 +36,7 @@ export default class TeamInvitation {
       meetingId,
       token
     } = input
-    this.id = id || generateUID()
+    this.id = id || shortid.generate()
     this.acceptedAt = acceptedAt || null
     this.acceptedBy = acceptedBy
     this.createdAt = new Date()

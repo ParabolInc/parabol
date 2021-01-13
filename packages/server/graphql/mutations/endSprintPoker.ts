@@ -97,10 +97,8 @@ export default {
     ])
     endSlackMeeting(meetingId, teamId, dataLoader).catch(console.log)
     sendMeetingEndToSegment(completedMeeting, meetingMembers as MeetingMember[], template)
-    const isKill = phase.phaseType !== NewMeetingPhaseTypeEnum.ESTIMATE
-    if (!isKill) {
-      sendNewMeetingSummary(completedMeeting, context).catch(console.log)
-    }
+    sendNewMeetingSummary(completedMeeting, context).catch(console.log)
+
     const events = meetingMembers.map(
       (meetingMember) =>
         new TimelineEventPokerComplete({
@@ -115,7 +113,7 @@ export default {
     const data = {
       meetingId,
       teamId,
-      isKill,
+      isKill: phase.phaseType !== 'ESTIMATE',
       removedTaskIds
     }
     publish(SubscriptionChannel.TEAM, teamId, 'EndSprintPokerSuccess', data, subOptions)

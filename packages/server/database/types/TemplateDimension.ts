@@ -1,4 +1,4 @@
-import generateUID from '../../generateUID'
+import shortid from 'shortid'
 
 export interface TemplateDimensionInput {
   name: string
@@ -24,7 +24,7 @@ export default class TemplateDimension {
 
   constructor(input: TemplateDimensionInput) {
     const {name, description, teamId, templateId, sortOrder, scaleId, removedAt} = input
-    this.id = generateUID()
+    this.id = shortid.generate()
     this.name = name
     this.description = description
     this.teamId = teamId

@@ -27,8 +27,7 @@ const RetroTemplatePicker = (props: Props) => {
   const {settings} = props
   const {selectedTemplate} = settings
   const {name: templateName} = selectedTemplate
-  const {togglePortal, modalPortal, closePortal} = useModal({id: 'templateModal'})
-
+  const {togglePortal, modalPortal} = useModal({id: 'templateModal'})
   return (
     <>
       <Dropdown
@@ -38,7 +37,7 @@ const RetroTemplatePicker = (props: Props) => {
         onClick={togglePortal}
         onMouseEnter={ReflectTemplateModal.preload}
       />
-      {modalPortal(<ReflectTemplateModal closePortal={closePortal} retroMeetingSettings={settings} />)}
+      {modalPortal(<ReflectTemplateModal retroMeetingSettings={settings} />)}
     </>
   )
 }
@@ -50,7 +49,6 @@ export default createFragmentContainer(RetroTemplatePicker, {
       selectedTemplate {
         id
         name
-        ...ReflectTemplateDetailsTemplate
       }
     }
   `

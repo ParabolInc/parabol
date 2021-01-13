@@ -2,7 +2,8 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useEffect, useRef} from 'react'
 import {createFragmentContainer} from 'react-relay'
-import LinkButton from '../../../components/LinkButton'
+import FloatingActionButton from '../../../components/FloatingActionButton'
+import Icon from '../../../components/Icon'
 import TooltipStyled from '../../../components/TooltipStyled'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
@@ -14,16 +15,22 @@ const ErrorLine = styled(TooltipStyled)({
   margin: '0 0 8px'
 })
 
-const AddRetroTemplateLink = styled(LinkButton)({
-  alignItems: 'center',
+const ButtonBlock = styled('div')({
+  alignItems: 'flex-end',
   display: 'flex',
-  justifyContent: 'flex-start',
-  fontSize: 16,
-  fontWeight: 600,
-  lineHeight: '24px',
-  outline: 'none',
-  padding: '20px 16px',
+  flexDirection: 'column',
+  justifyContent: 'flex-end',
+  padding: '8px 16px 16px 8px',
+  position: 'absolute',
+  pointerEvents: 'none',
+  right: 0,
+  bottom: 0,
   width: '100%'
+})
+
+const Button = styled(FloatingActionButton)({
+  padding: 15,
+  pointerEvents: 'all'
 })
 
 interface Props {
@@ -62,17 +69,13 @@ const AddNewReflectTemplate = (props: Props) => {
     AddReflectTemplateMutation(atmosphere, {teamId}, {onError, onCompleted})
     gotoTeamTemplates()
   }
-
-  const containsNewTemplate = reflectTemplates.find((template) => template.name === '*New Template')
-
-  if (reflectTemplates.length > Threshold.MAX_RETRO_TEAM_TEMPLATES || containsNewTemplate) return null
   return (
-    <div>
+    <ButtonBlock>
       {error && <ErrorLine>{error.message}</ErrorLine>}
-      <AddRetroTemplateLink palette='blue' onClick={addNewTemplate} waiting={submitting}>
-        {'Create New Template'}
-      </AddRetroTemplateLink>
-    </div>
+      <Button onClick={addNewTemplate} palette='blue' waiting={submitting}>
+        <Icon>add</Icon>
+      </Button>
+    </ButtonBlock>
   )
 }
 

@@ -1,6 +1,6 @@
 import {AuthTokenRole} from 'parabol-client/types/constEnums'
 import {TierEnum} from 'parabol-client/types/graphql'
-import generateUID from '../../generateUID'
+import shortid from 'shortid'
 import AuthIdentity from './AuthIdentity'
 
 interface Input {
@@ -69,7 +69,7 @@ export default class User {
         .slice(0, 2)
         .join('') || 'pa'
     const now = new Date()
-    this.id = id ?? `local|${generateUID()}`
+    this.id = id ?? `local|${shortid.generate()}`
     this.tms = tms || []
     this.email = email
     this.createdAt = createdAt || now

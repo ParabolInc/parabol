@@ -4,12 +4,11 @@ import React, {useRef} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useScrollIntoView from '../../../hooks/useScrollIntoVIew'
+import SelectTemplateMutation from '../../../mutations/SelectTemplateMutation'
 import {DECELERATE} from '../../../styles/animation'
 import textOverflow from '../../../styles/helpers/textOverflow'
 import {PALETTE} from '../../../styles/paletteV2'
-import {MeetingTypeEnum} from '../../../types/graphql'
 import makeTemplateDescription from '../../../utils/makeTemplateDescription'
-import {setActiveTemplate} from '../../../utils/relay/setActiveTemplate'
 import {ReflectTemplateItem_template} from '../../../__generated__/ReflectTemplateItem_template.graphql'
 
 const TemplateItem = styled('li')<{isActive: boolean}>(({isActive}) => ({
@@ -65,7 +64,8 @@ const ReflectTemplateItem = (props: Props) => {
   const ref = useRef<HTMLLIElement>(null)
   useScrollIntoView(ref, isActive)
   const selectTemplate = () => {
-    setActiveTemplate(atmosphere, teamId, templateId, MeetingTypeEnum.retrospective)
+    if (isActive) return
+    SelectTemplateMutation(atmosphere, {selectedTemplateId: templateId, teamId})
   }
   return (
     <TemplateItem ref={ref} isActive={isActive} onClick={selectTemplate}>

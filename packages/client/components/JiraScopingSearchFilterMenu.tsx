@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {useMemo} from 'react'
+import React from 'react'
 import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useFilteredItems from '../hooks/useFilteredItems'
@@ -20,6 +20,7 @@ import MenuItemHR from './MenuItemHR'
 import MenuItemLabel from './MenuItemLabel'
 import TaskFooterIntegrateMenuSearch from './TaskFooterIntegrateMenuSearch'
 import TypeAheadLabel from './TypeAheadLabel'
+
 
 const SearchIcon = styled(Icon)({
   color: PALETTE.TEXT_GRAY,
@@ -81,7 +82,6 @@ interface Props {
 const getValue = (item: {name: string}) => item.name.toLowerCase()
 
 const MAX_PROJECTS = 10
-
 const JiraScopingSearchFilterMenu = (props: Props) => {
   const {menuProps, viewer} = props
   const isLoading = viewer === null
@@ -100,17 +100,7 @@ const JiraScopingSearchFilterMenu = (props: Props) => {
   const {value} = search
   const query = value.toLowerCase()
   const showSearch = projects.length > MAX_PROJECTS
-  const queryFilteredProjects = useFilteredItems(query, projects, getValue)
-  const selectedAndFilteredProjects = useMemo(() => {
-    const selectedProjects = projects.filter((project) => projectKeyFilters.includes(project.id))
-    const adjustedMax =
-      selectedProjects.length >= MAX_PROJECTS ? selectedProjects.length + 1 : MAX_PROJECTS
-    return Array.from(new Set([...selectedProjects, ...queryFilteredProjects])).slice(
-      0,
-      adjustedMax
-    )
-  }, [queryFilteredProjects])
-
+  const filteredProjects = useFilteredItems(query, projects, getValue)
   const atmosphere = useAtmosphere()
   const {portalStatus, isDropdown} = menuProps
   const toggleJQL = () => {
@@ -127,7 +117,7 @@ const JiraScopingSearchFilterMenu = (props: Props) => {
       ariaLabel={'Define the Jira search query'}
       portalStatus={portalStatus}
       isDropdown={isDropdown}
-      resetActiveOnChanges={[selectedAndFilteredProjects]}
+      resetActiveOnChanges={[filteredProjects]}
     >
       <MenuItem
         key={'isJQL'}
@@ -140,24 +130,22 @@ const JiraScopingSearchFilterMenu = (props: Props) => {
         onClick={toggleJQL}
       />
       <MenuItemHR />
-      {selectedAndFilteredProjects.length > 0 && <FilterLabel>Filter by project:</FilterLabel>}
-      {showSearch && (
-        <SearchItem key='search'>
-          <StyledMenuItemIcon>
-            <SearchIcon>search</SearchIcon>
-          </StyledMenuItemIcon>
-          <TaskFooterIntegrateMenuSearch
-            placeholder={'Search Jira'}
-            value={value}
-            onChange={onChange}
-          />
-        </SearchItem>
-      )}
-      {(query && selectedAndFilteredProjects.length === 0 && !isLoading && (
+      {filteredProjects.length > 0 && <FilterLabel>Filter by project:</FilterLabel>}
+      {showSearch && <SearchItem key='search'>
+        <StyledMenuItemIcon>
+          <SearchIcon>search</SearchIcon>
+        </StyledMenuItemIcon>
+        <TaskFooterIntegrateMenuSearch
+          placeholder={'Search Jira'}
+          value={value}
+          onChange={onChange}
+        />
+      </SearchItem>}
+      {(query && filteredProjects.length === 0 && !isLoading && (
         <NoResults key='no-results'>No Jira Projects found!</NoResults>
       )) ||
         null}
-      {selectedAndFilteredProjects.map((project) => {
+      {filteredProjects.slice(0, MAX_PROJECTS).map((project) => {
         const {id: globalProjectKey, avatarUrls, name} = project
         const {x24} = avatarUrls
         const toggleProjectKeyFilter = () => {
@@ -179,10 +167,7 @@ const JiraScopingSearchFilterMenu = (props: Props) => {
             key={globalProjectKey}
             label={
               <StyledMenuItemLabel isDisabled={isJQL}>
-                <StyledCheckBox
-                  active={projectKeyFilters.includes(globalProjectKey)}
-                  disabled={isJQL}
-                />
+                <StyledCheckBox active={projectKeyFilters.includes(globalProjectKey)} disabled={isJQL} />
                 <ProjectAvatar src={x24} />
                 <TypeAheadLabel query={query} label={name} />
               </StyledMenuItemLabel>
@@ -196,12 +181,13 @@ const JiraScopingSearchFilterMenu = (props: Props) => {
   )
 }
 
+
 export default createFragmentContainer(JiraScopingSearchFilterMenu, {
   viewer: graphql`
     fragment JiraScopingSearchFilterMenu_viewer on User {
       meeting(meetingId: $meetingId) {
         id
-        ... on PokerMeeting {
+        ...on PokerMeeting {
           jiraSearchQuery {
             projectKeyFilters
             isJQL

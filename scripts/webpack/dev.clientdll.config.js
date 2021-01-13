@@ -56,6 +56,7 @@ module.exports = {
       "regenerator-runtime",
       "relay-runtime",
       "resize-observer-polyfill",
+      "shortid",
       "string-score",
       "tayden-clusterfck",
       "tlds",

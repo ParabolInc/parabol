@@ -1,8 +1,8 @@
-import {TaskStatusEnum} from 'parabol-client/types/graphql'
+import shortid from 'shortid'
+import getRethink from '../../../database/rethinkDriver'
 import convertToTaskContent from 'parabol-client/utils/draftjs/convertToTaskContent'
 import getTagsFromEntityMap from 'parabol-client/utils/draftjs/getTagsFromEntityMap'
-import getRethink from '../../../database/rethinkDriver'
-import generateUID from '../../../generateUID'
+import {TaskStatusEnum} from 'parabol-client/types/graphql'
 
 const CONTENT_STRING = `
   This is a task card. They can be created here, in a meeting, or via an integration`
@@ -22,7 +22,7 @@ export default async (userId, teamId) => {
 
   const seedTasks = SEED_TASKS.map((proj) => ({
     ...proj,
-    id: `${teamId}::${generateUID()}`,
+    id: `${teamId}::${shortid.generate()}`,
     createdAt: now,
     createdBy: userId,
     tags: getTagsFromEntityMap(JSON.parse(proj.content).entityMap),
@@ -37,7 +37,7 @@ export default async (userId, teamId) => {
     .do((result) => {
       return r.table('TaskHistory').insert(
         result('changes').map((change) => ({
-          id: generateUID(),
+          id: shortid.generate(),
           content: change('new_val')('content'),
           taskId: change('new_val')('id'),
           status: change('new_val')('status'),

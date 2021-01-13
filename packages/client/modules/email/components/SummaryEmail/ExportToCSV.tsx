@@ -312,8 +312,6 @@ class ExportToCSV extends Component<Props> {
         return this.handleRetroMeeting(newMeeting)
       case 'poker':
         return this.handlePokerMeeting(newMeeting)
-      default:
-        return []
     }
   }
 
@@ -331,7 +329,7 @@ class ExportToCSV extends Component<Props> {
     const {endedAt, team, meetingType} = newMeeting
     const {name: teamName} = team
     const label = meetingType[0].toUpperCase() + meetingType.slice(1)
-    const parser = new Parser({withBOM: true, eol: '\n'})
+    const parser = new Parser({withBOM: true})
     const csv = parser.parse(rows)
     const date = new Date(endedAt!)
     const numDate = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`

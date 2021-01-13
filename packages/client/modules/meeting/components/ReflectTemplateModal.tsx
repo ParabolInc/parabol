@@ -1,18 +1,14 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {useEffect, useState} from 'react'
+import React, {useState} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import DialogContainer from '../../../components/DialogContainer'
-import useAtmosphere from '../../../hooks/useAtmosphere'
-import {MeetingTypeEnum} from '../../../types/graphql'
 import getTemplateList from '../../../utils/getTemplateList'
-import {setActiveTemplate} from '../../../utils/relay/setActiveTemplate'
 import {ReflectTemplateModal_retroMeetingSettings} from '../../../__generated__/ReflectTemplateModal_retroMeetingSettings.graphql'
 import ReflectTemplateDetails from './ReflectTemplateDetails'
 import ReflectTemplateList from './ReflectTemplateList'
 
 interface Props {
-  closePortal: () => void
   retroMeetingSettings: ReflectTemplateModal_retroMeetingSettings
 }
 
@@ -26,7 +22,7 @@ const StyledDialogContainer = styled(DialogContainer)({
 const SCOPES = ['TEAM', 'ORGANIZATION', 'PUBLIC']
 
 const ReflectTemplateModal = (props: Props) => {
-  const {closePortal, retroMeetingSettings} = props
+  const {retroMeetingSettings} = props
   const {selectedTemplate, team} = retroMeetingSettings
   const {id: teamId, orgId} = team
   const lowestScope = getTemplateList(teamId, orgId, selectedTemplate)
@@ -38,12 +34,6 @@ const ReflectTemplateModal = (props: Props) => {
   const gotoPublicTemplates = () => {
     setActiveIdx(2)
   }
-
-  const atmosphere = useAtmosphere()
-  useEffect(() => {
-    setActiveTemplate(atmosphere, teamId, selectedTemplate.id, MeetingTypeEnum.retrospective)
-  }, [])
-
   return (
     <StyledDialogContainer>
       <ReflectTemplateList
@@ -55,7 +45,6 @@ const ReflectTemplateModal = (props: Props) => {
         settings={retroMeetingSettings}
         gotoTeamTemplates={gotoTeamTemplates}
         gotoPublicTemplates={gotoPublicTemplates}
-        closePortal={closePortal}
       />
     </StyledDialogContainer>
   )
@@ -70,7 +59,6 @@ export default createFragmentContainer(ReflectTemplateModal, {
         orgId
       }
       selectedTemplate {
-        id
         ...getTemplateList_template
       }
     }

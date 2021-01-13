@@ -1,4 +1,4 @@
-import generateUID from '../../generateUID'
+import shortid from 'shortid'
 
 export interface ReflectionGroupInput {
   id?: string
@@ -36,7 +36,7 @@ export default class ReflectionGroup {
       title
     } = input
     const now = new Date()
-    this.id = id || generateUID()
+    this.id = id || shortid.generate()
     this.createdAt = createdAt || now
     this.isActive = true
     this.meetingId = meetingId
