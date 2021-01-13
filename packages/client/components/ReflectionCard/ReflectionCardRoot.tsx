@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
+import {DECELERATE} from '~/styles/animation'
 import {Elevation} from '../../styles/elevation'
-import {BezierCurve, Card, ElementWidth} from '../../types/constEnums'
+import {Card, ElementWidth} from '../../types/constEnums'
 
 const ReflectionCardRoot = styled('div')({
   background: Card.BACKGROUND_COLOR,
@@ -10,7 +11,7 @@ const ReflectionCardRoot = styled('div')({
   display: 'block',
   maxWidth: '100%',
   position: 'relative',
-  transition: `all 100ms ${BezierCurve.DECELERATE}`,
+  transition: `box-shadow 2000ms ${DECELERATE}`,
   minWidth: ElementWidth.REFLECTION_CARD
 })
 

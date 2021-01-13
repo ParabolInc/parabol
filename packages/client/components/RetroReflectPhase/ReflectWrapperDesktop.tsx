@@ -6,12 +6,14 @@ const DesktopWrapper = styled('div')({
   height: '100%',
   // if the viewport is wide enough for 2+ columns, let them scroll
   overflowX: 'auto',
-  width: '100%'
+  width: '100%',
+  
 })
 
 const Inner = styled('div')({
   display: 'flex',
-  margin: '0 auto'
+  margin: '0 auto',
+  
 })
 
 interface Props {
@@ -21,7 +23,7 @@ interface Props {
 const ReflectWrapperDesktop = forwardRef((props: Props, ref: Ref<HTMLDivElement>) => {
   const {children} = props
   return (
-    <DesktopWrapper>
+    <DesktopWrapper >
       <Inner ref={ref}>{children}</Inner>
     </DesktopWrapper>
   )

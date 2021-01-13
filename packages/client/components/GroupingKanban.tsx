@@ -1,7 +1,8 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {RefObject, useMemo, useRef, useState} from 'react'
+import React, {RefObject, useMemo,  useState} from 'react'
 import {createFragmentContainer} from 'react-relay'
+import useCallbackRef from '~/hooks/useCallbackRef'
 import {GroupingKanban_meeting} from '~/__generated__/GroupingKanban_meeting.graphql'
 import useBreakpoint from '../hooks/useBreakpoint'
 import useHideBodyScroll from '../hooks/useHideBodyScroll'
@@ -29,6 +30,7 @@ const ColumnsBlock = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   overflow: 'auto',
   padding: isDesktop ? '0 0 16px' : undefined,
   width: '100%'
+  
 }))
 
 export type SwipeColumn = (offset: number) => void
@@ -39,7 +41,8 @@ const GroupingKanban = (props: Props) => {
   const reflectPhase = phases.find((phase) => phase.phaseType === NewMeetingPhaseTypeEnum.reflect)!
   const reflectPrompts = reflectPhase.reflectPrompts!
   const reflectPromptsCount = reflectPrompts.length
-  const columnsRef = useRef<HTMLDivElement>(null)
+  // const columnsRef = useRef<HTMLDivElement>(null)
+  const [callbackRef, columnsRef] = useCallbackRef()
   useHideBodyScroll()
   const {groupsByPrompt, isAnyEditing} = useMemo(() => {
     const container = {} as {[promptId: string]: typeof reflectionGroups[0][]}
@@ -72,12 +75,12 @@ const GroupingKanban = (props: Props) => {
 
   return (
     <PortalProvider>
-      <ColumnsBlock isDesktop={isDesktop}>
+      <ColumnsBlock isDesktop={isDesktop} >
         <ColumnWrapper
           setActiveIdx={setActiveIdx}
           activeIdx={activeIdx}
           disabled={isViewerDragging}
-          ref={columnsRef}
+          ref={callbackRef}
         >
           {reflectPrompts.map((prompt) => (
             <GroupingKanbanColumn

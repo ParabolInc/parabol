@@ -40,7 +40,7 @@ const Column = styled('div')<{
   flex: 1,
   flexDirection: isWidthExpanded ? 'row' : 'column',
   flexWrap: 'wrap',
-  maxHeight: '100%',
+  height: '100%',
   minWidth: isWidthExpanded ? ElementWidth.REFLECTION_COLUMN * subColumnCount : ElementWidth.REFLECTION_COLUMN,
   padding: isWidthExpanded ? '0 8px' : 0,
   position: 'relative',
@@ -111,7 +111,7 @@ const GroupingKanbanColumn = (props: Props) => {
     () => groups.filter((group) => group.reflections.length > 0),
     [groups]
   )
-  const [isWidthExpanded, subColumnCount, subColumnIndexes, toggleWidth] = useSubColumns(columnBodyRef, phaseRef, reflectPromptsCount, filteredReflectionGroups)
+  const [isWidthExpanded, subColumnCount, subColumnIndexes, toggleWidth] = useSubColumns(columnBodyRef, phaseRef, reflectPromptsCount, filteredReflectionGroups, columnsRef)
   const canAdd = phaseType === NewMeetingPhaseTypeEnum.group && !isComplete && !isAnyEditing
 
   const onClick = () => {
