@@ -12,6 +12,7 @@ import {GQLContext} from '../graphql'
 import StartRetrospectivePayload from '../types/StartRetrospectivePayload'
 import createMeetingMembers from './helpers/createMeetingMembers'
 import createNewMeetingPhases from './helpers/createNewMeetingPhases'
+import sendMeetingStartToSegment from './helpers/sendMeetingStartToSegment'
 import {startSlackMeeting} from './helpers/notifySlack'
 
 export default {
@@ -20,8 +21,8 @@ export default {
   args: {
     teamId: {
       type: new GraphQLNonNull(GraphQLID),
-      description: 'The team starting the meeting',
-    },
+      description: 'The team starting the meeting'
+    }
   },
   async resolve(
     _source,
@@ -69,11 +70,12 @@ export default {
       facilitatorUserId: viewerId,
       totalVotes,
       maxVotesPerGroup,
-      templateId: selectedTemplateId,
+      templateId: selectedTemplateId
     })
 
     const meetingId = meeting.id
     const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)
+    const template = await dataLoader.get('meetingTemplates').load(selectedTemplateId)
     const meetingMembers = createMeetingMembers(meeting, teamMembers)
     await r.table('NewMeeting').insert(meeting).run()
 
@@ -91,12 +93,13 @@ export default {
 
     await Promise.all([
       r.table('MeetingMember').insert(meetingMembers).run(),
-      r.table('Team').get(teamId).update({lastMeetingType: meetingType}).run(),
+      r.table('Team').get(teamId).update({lastMeetingType: meetingType}).run()
     ])
 
     startSlackMeeting(meetingId, teamId, dataLoader).catch(console.log)
+    sendMeetingStartToSegment(meeting, template)
     const data = {teamId, meetingId}
     publish(SubscriptionChannel.TEAM, teamId, 'StartRetrospectiveSuccess', data, subOptions)
     return data
-  },
+  }
 }

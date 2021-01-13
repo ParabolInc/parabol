@@ -5,6 +5,7 @@ interface Input {
   dimensionId: string
   fieldName: string
   fieldType: FieldType
+  projectKey: string
 }
 
 export default class JiraDimensionField {
@@ -13,12 +14,14 @@ export default class JiraDimensionField {
   fieldId: string
   fieldName: string
   fieldType: FieldType
+  projectKey: string
   constructor(input: Input) {
-    const {cloudId, fieldId, dimensionId, fieldName, fieldType} = input
+    const {cloudId, fieldId, dimensionId, fieldName, fieldType, projectKey} = input
     this.cloudId = cloudId
     this.fieldId = fieldId
     this.dimensionId = dimensionId
     this.fieldName = fieldName
     this.fieldType = fieldType
+    this.projectKey = projectKey
   }
 }

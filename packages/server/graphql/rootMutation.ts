@@ -12,7 +12,6 @@ import addPokerTemplateDimension from './mutations/addPokerTemplateDimension'
 import addPokerTemplateScale from './mutations/addPokerTemplateScale'
 import addPokerTemplateScaleValue from './mutations/addPokerTemplateScaleValue'
 import addReactjiToReactable from './mutations/addReactjiToReactable'
-import addReactjiToReflection from './mutations/addReactjiToReflection'
 import addReflectTemplate from './mutations/addReflectTemplate'
 import addReflectTemplatePrompt from './mutations/addReflectTemplatePrompt'
 import addSlackAuth from './mutations/addSlackAuth'
@@ -130,6 +129,7 @@ import pokerRevealVotes from './mutations/pokerRevealVotes'
 import pokerResetDimension from './mutations/pokerResetDimension'
 import pokerAnnounceDeckHover from './mutations/pokerAnnounceDeckHover'
 import pokerSetFinalScore from './mutations/pokerSetFinalScore'
+import movePokerTemplateScaleValue from './mutations/movePokerTemplateScaleValue'
 import updateJiraDimensionField from './mutations/updateJiraDimensionField'
 import persistJiraSearchQuery from './mutations/persistJiraSearchQuery'
 
@@ -147,10 +147,6 @@ export default new GraphQLObjectType<any, Context>({
       addPokerTemplateDimension,
       addPokerTemplateScale,
       addPokerTemplateScaleValue,
-
-      // DEPRECATED, delete after 4.25.0
-      addReactjiToReflection,
-
       addReactjiToReactable,
       addReflectTemplate,
       addReflectTemplatePrompt,
@@ -273,6 +269,7 @@ export default new GraphQLObjectType<any, Context>({
       pokerResetDimension,
       pokerAnnounceDeckHover,
       pokerSetFinalScore,
+      movePokerTemplateScaleValue,
       updateJiraDimensionField
     } as any)
 })

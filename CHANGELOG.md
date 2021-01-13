@@ -5,6 +5,62 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 5.30.0 2021-Jan-06
+
+### Changed
+
+- Guarantee unique ID for redis jobs (#4487)
+
+### Fixed
+
+- Retro meeting fixes & add new emojis (#4499)
+- Remove retro templates that have no prompts (#4486)
+
+## 5.29.1 2020-Dec-23
+
+### Fixed
+
+- Bug on non-poker meeting summary
+
+## 5.29.0 2020-Dec-22
+
+### Added
+
+- Support for multi-domain SAML (#4478)
+
+### Changed
+
+- Upgrade to Webpack v5 (#4455, #4477)
+
+### Fixed
+
+- Scale UI Fixups (#4472)
+
+## 5.28.0 2020-Dec-17
+
+### Added
+
+- Added batch support for feature flags #4446
+- Pre-validate jira field mappers #4445
+- Adds Parabol stories to Sprint Poker Estimate phase #4420
+
+### Changed
+
+- Moved HubSpot Segment function inside the app #4451
+- Scale editor UI refined #4435 #4430
+- Sprint Poker UI refined #4416
+- Bump ini from 1.3.5 to 1.3.7 #4434
+
+### Fixed
+
+- Fixed reactji spacing #4427
+- User cannot update their preferred name #4456
+- User cannot clone a public scale #4458
+- Sprint Poker: can’t add Parabol tasks when integrated with Jira #4461
+- Sprint Poker: can’t add new Jira tasks in Scope view
+- Sprint Poker: Parabol task edits persist in Estimate phase #4464
+- Thread empty state mentions tasks conditionally
+
 ## 5.27.0 2020-Dec-09
 
 ### Added

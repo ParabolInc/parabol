@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
+import React, {ReactNode} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {PALETTE} from '../styles/paletteV2'
 import {Card} from '../types/constEnums'
@@ -24,15 +24,28 @@ const StyledLink = styled('a')({
 interface Props {
   integration: TaskIntegrationLink_integration | null
   dataCy: string
+  className?: string
+  children?: ReactNode
+  showJiraLabelPrefix?: boolean
 }
 
 const TaskIntegrationLink = (props: Props) => {
-  const {integration, dataCy} = props
+  const {integration, dataCy, className, children, showJiraLabelPrefix} = props
   if (!integration) return null
   const {service} = integration
   if (service === TaskServiceEnum.jira) {
     const {issueKey, projectKey, cloudName} = integration as unknown as TaskIntegrationLinkIntegrationJira
-    return <JiraIssueLink dataCy={`${dataCy}-jira-issue-link`} issueKey={issueKey} projectKey={projectKey} cloudName={cloudName} />
+    return (
+      <JiraIssueLink
+        dataCy={`${dataCy}-jira-issue-link`}
+        issueKey={issueKey}
+        projectKey={projectKey}
+        cloudName={cloudName}
+        className={className}
+        children={children}
+        showLabelPrefix={showJiraLabelPrefix}
+      />
+    )
   } else if (service === TaskServiceEnum.github) {
     const {nameWithOwner, issueNumber} = integration
     const href =
@@ -45,8 +58,10 @@ const TaskIntegrationLink = (props: Props) => {
         rel='noopener noreferrer'
         target='_blank'
         title={`GitHub Issue #${issueNumber} on ${nameWithOwner}`}
+        className={className}
       >
         {`Issue #${issueNumber}`}
+        {children}
       </StyledLink>
     )
   }

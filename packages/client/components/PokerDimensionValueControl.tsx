@@ -156,7 +156,7 @@ const PokerDimensionValueControl = (props: Props) => {
     <ControlWrap>
       <Control>
         <MiniPokerCard canEdit={isFacilitator} color={scaleColor} isFinal={isFinal}>
-          <Input disabled={!isFacilitator} onKeyDown={onKeyDown} autoFocus={!finalScore} color={textColor} ref={inputRef} onChange={onChange} placeholder={placeholder} value={pendingScore}></Input>
+          <Input disabled={!isFacilitator} onKeyDown={onKeyDown} autoFocus={!finalScore} color={textColor} ref={inputRef} onChange={onChange} placeholder={placeholder} value={pendingScore} maxLength={3}></Input>
         </MiniPokerCard>
         {!isFacilitator && <Label>{label}</Label>}
         {service === 'jira' && <PokerDimensionFinalScoreJiraPicker canUpdate={canUpdate} stage={stage} error={finalScoreError} submitScore={submitScore} clearError={clearError} inputRef={inputRef} isFacilitator={isFacilitator} />}

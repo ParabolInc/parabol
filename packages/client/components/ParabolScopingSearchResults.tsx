@@ -35,7 +35,7 @@ const ParabolScopingSearchResults = (props: Props) => {
   useEffect(() => {
     if (incomingEdges) setEdges(incomingEdges)
   }, [incomingEdges])
-  const {id: meetingId, phases} = meeting
+  const {id: meetingId, phases, teamId} = meeting
   const estimatePhase = phases.find(({phaseType}) => phaseType === NewMeetingPhaseTypeEnum.ESTIMATE)
   const usedServiceTaskIds = useGetUsedServiceTaskIds(estimatePhase)
   const atmosphere = useAtmosphere()
@@ -48,7 +48,7 @@ const ParabolScopingSearchResults = (props: Props) => {
       sortOrder: dndNoise(),
       meetingId,
       userId: viewerId,
-      teamId: meeting.teamId,
+      teamId,
     }
     CreateTaskMutation(
       atmosphere,
@@ -87,9 +87,9 @@ const ParabolScopingSearchResults = (props: Props) => {
             <ParabolScopingSearchResultItem
               key={node.id}
               task={node}
-              meetingId={meeting.id}
+              meetingId={meetingId}
               usedServiceTaskIds={usedServiceTaskIds}
-              teamId={meeting.teamId}
+              teamId={teamId}
               setIsEditing={setIsEditing}
             />
           )
@@ -97,10 +97,10 @@ const ParabolScopingSearchResults = (props: Props) => {
         {lastItem}
       </ResultScroller>
       {!isEditing &&
-      <NewIntegrationRecordButton
-        labelText={'New Task'}
-        onClick={handleAddTaskClick}
-      />
+        <NewIntegrationRecordButton
+          labelText={'New Task'}
+          onClick={handleAddTaskClick}
+        />
       }
     </>
   )

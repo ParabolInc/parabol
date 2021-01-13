@@ -25,6 +25,7 @@ graphql`
         atlassian {
           jiraDimensionFields {
             cloudId
+            projectKey
             dimensionId
             fieldName
           }
@@ -35,8 +36,8 @@ graphql`
 `
 
 const mutation = graphql`
-  mutation UpdateJiraDimensionFieldMutation($dimensionId: ID!, $fieldName: String!, $meetingId: ID!, $cloudId: ID!) {
-    updateJiraDimensionField(dimensionId: $dimensionId, fieldName: $fieldName, meetingId: $meetingId, cloudId: $cloudId) {
+  mutation UpdateJiraDimensionFieldMutation($dimensionId: ID!, $fieldName: String!, $meetingId: ID!, $cloudId: ID!, $projectKey: ID!) {
+    updateJiraDimensionField(dimensionId: $dimensionId, fieldName: $fieldName, meetingId: $meetingId, cloudId: $cloudId, projectKey: $projectKey) {
       ... on ErrorPayload {
         error {
           message
@@ -55,7 +56,7 @@ const UpdateJiraDimensionFieldMutation: SimpleMutation<TUpdateJiraDimensionField
     mutation,
     variables,
     optimisticUpdater: (store) => {
-      const {meetingId, cloudId, dimensionId, fieldName} = variables
+      const {meetingId, cloudId, dimensionId, fieldName, projectKey} = variables
       const meeting = store.get<IPokerMeeting>(meetingId)
       if (!meeting) return
       const teamId = meeting.getValue('teamId')
@@ -63,11 +64,11 @@ const UpdateJiraDimensionFieldMutation: SimpleMutation<TUpdateJiraDimensionField
       const atlassianTeamIntegration = store.get(`atlassianTeamIntegration:${teamId}`)
       if (atlassianTeamIntegration) {
         const jiraDimensionFields = atlassianTeamIntegration.getLinkedRecords('jiraDimensionFields') || []
-        const existingField = jiraDimensionFields.find((dimensionField) => dimensionField.getValue('dimensionId') === dimensionId && dimensionField.getValue('cloudId') === cloudId)
+        const existingField = jiraDimensionFields.find((dimensionField) => dimensionField.getValue('dimensionId') === dimensionId && dimensionField.getValue('cloudId') === cloudId && dimensionField.getValue('projectKey') === projectKey)
         if (existingField) {
           existingField.setValue(fieldName, 'fieldName')
         } else {
-          const optimisticJiraDimensionField = createProxyRecord(store, 'JiraDimensionField', {fieldName, dimensionId, cloudId})
+          const optimisticJiraDimensionField = createProxyRecord(store, 'JiraDimensionField', {fieldName, dimensionId, cloudId, projectKey})
           const nextJiraDimensionFields = [...jiraDimensionFields, optimisticJiraDimensionField]
           atlassianTeamIntegration.setLinkedRecords(nextJiraDimensionFields, 'jiraDimensionFields')
         }

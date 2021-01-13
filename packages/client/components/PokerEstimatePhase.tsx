@@ -12,6 +12,7 @@ import PhaseHeaderDescription from './PhaseHeaderDescription'
 import PhaseHeaderTitle from './PhaseHeaderTitle'
 import PhaseWrapper from './PhaseWrapper'
 import PokerEstimateHeaderCardJira from './PokerEstimateHeaderCardJira'
+import PokerEstimateHeaderCardParabol from './PokerEstimateHeaderCardParabol'
 import {PokerMeetingPhaseProps} from './PokerMeeting'
 import {Breakpoint, DiscussionThreadEnum} from '~/types/constEnums'
 import useBreakpoint from '~/hooks/useBreakpoint'
@@ -19,6 +20,7 @@ import ResponsiveDashSidebar from './ResponsiveDashSidebar'
 import styled from '@emotion/styled'
 import useGotoStageId from '~/hooks/useGotoStageId'
 import {TaskServiceEnum} from '../types/graphql'
+import useRightDrawer from '~/hooks/useRightDrawer'
 
 const StyledMeetingHeaderAndPhase = styled(MeetingHeaderAndPhase)<{isOpen: boolean}>(
   ({isOpen}) => ({
@@ -29,13 +31,13 @@ const StyledMeetingHeaderAndPhase = styled(MeetingHeaderAndPhase)<{isOpen: boole
 interface Props extends PokerMeetingPhaseProps {
   gotoStageId: ReturnType<typeof useGotoStageId>
   meeting: PokerEstimatePhase_meeting
-  toggleDrawer: () => void
 }
 
 const PokerEstimatePhase = (props: Props) => {
-  const {avatarGroup, meeting, toggleDrawer, toggleSidebar, gotoStageId} = props
-  const {localStage, endedAt, isCommentUnread, isRightDrawerOpen, showSidebar} = meeting
+  const {avatarGroup, meeting, toggleSidebar, gotoStageId} = props
+  const {id: meetingId, localStage, endedAt, isCommentUnread, isRightDrawerOpen, showSidebar} = meeting
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
+  const toggleDrawer = useRightDrawer(meetingId)
   const meetingContentRef = useRef<HTMLDivElement>(null)
   if (!localStage) return null
   const {service} = localStage
@@ -54,6 +56,7 @@ const PokerEstimatePhase = (props: Props) => {
           <PhaseHeaderDescription>{'Estimate each story as a team'}</PhaseHeaderDescription>
         </MeetingTopBar>
         {service === TaskServiceEnum.jira && <PokerEstimateHeaderCardJira stage={localStage as any} />}
+        {service === TaskServiceEnum.PARABOL && <PokerEstimateHeaderCardParabol stage={localStage as any} />}
         <PhaseWrapper>
           <EstimatePhaseArea gotoStageId={gotoStageId} meeting={meeting} />
         </PhaseWrapper>
@@ -74,6 +77,7 @@ const PokerEstimatePhase = (props: Props) => {
 graphql`
   fragment PokerEstimatePhaseStage on EstimateStage {
     ...PokerEstimateHeaderCardJira_stage
+    ...PokerEstimateHeaderCardParabol_stage
     service
   }
 `

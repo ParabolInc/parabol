@@ -78,7 +78,8 @@ export const enum Duration {
 }
 
 export const enum ElementWidth {
-  END_MEETING_BUTTON = 90,
+  CONTROL_BAR_BUTTON = 90,
+  CONTROL_BAR_PADDING = 8,
   REFLECTION_CARD = 296,
   REFLECTION_CARD_PADDED = 296,
   REFLECTION_CARD_PADDING = 6
@@ -89,6 +90,7 @@ export const enum ElementHeight {
 }
 
 export const enum ExternalLinks {
+  EMAIL_CDN = 'https://action-files.parabol.co/static/email/',
   PRICING_LINK = 'https://www.parabol.co/pricing/',
   GETTING_STARTED_RETROS = 'https://www.parabol.co/resources/retrospective-meetings',
   GETTING_STARTED_CHECK_INS = 'https://www.parabol.co/resources/check-in-meetings',
@@ -159,7 +161,7 @@ export const enum MathEnum {
 }
 
 export const enum MeetingControlBarEnum {
-  HEIGHT = 56
+  HEIGHT = 56,
 }
 
 export const enum MeetingLabels {
@@ -178,10 +180,11 @@ export const enum PokerCards {
   RADIUS = 1200,
   // the % of the first & last card that sits below the fold (0-1)
   MAX_HIDDEN = .35,
-  PASS_CARD = 'X',
+  PASS_CARD = 'Pass',
   QUESTION_CARD = '?',
   DELETED_CARD = '#',
-  AVATAR_WIDTH = 40
+  AVATAR_WIDTH = 46,
+  AVATAR_BORDER = 3
 }
 export const enum UserTaskViewFilterLabels {
   ALL_TEAMS = 'All Teams',
@@ -309,8 +312,9 @@ export const enum Threshold {
   MAX_DAILY_PASSWORD_RESETS = 5,
   MAX_DAILY_PASSWORD_ATTEMPTS = 100,
   MAX_REFLECTION_PROMPTS = 12,
-  MAX_POKER_TEMPLDATE_DIMENSIONS = 12,
-  MAX_POKER_TEMPLDATE_SCALES = 12,
+  MAX_POKER_TEMPLATE_DIMENSIONS = 12,
+  MAX_POKER_TEMPLATE_SCALES = 12,
+  MAX_POKER_SCALE_VALUES = 20,
   MAX_RETRO_TEAM_TEMPLATES = 20,
   MAX_POKER_TEAM_TEMPLATES = 20,
   MAX_REACTJIS = 12,
@@ -366,6 +370,7 @@ export const enum SprintPokerDefaults {
   DEFAULT_TEMPLATE_ID = 'estimatedEffortTemplate',
   DEFAULT_SCALE_ID = 'fibonacciScale',
   JIRA_FIELD_DEFAULT = 'Story point estimate',
+  JIRA_FIELD_LEGACY_DEFAULT = 'Story Points',
   JIRA_FIELD_COMMENT = '__comment',
   JIRA_FIELD_COMMENT_LABEL = 'As Comment',
   JIRA_FIELD_NULL = '',

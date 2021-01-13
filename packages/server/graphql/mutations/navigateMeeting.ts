@@ -11,6 +11,7 @@ import standardError from '../../utils/standardError'
 import Meeting from '../../database/types/Meeting'
 import removeScheduledJobs from './helpers/removeScheduledJobs'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import {MeetingTypeEnum} from '../../../client/types/graphql'
 
 export default {
   type: new GraphQLNonNull(NavigateMeetingPayload),
@@ -47,7 +48,7 @@ export default {
       .default(null)
       .run()) as Meeting | null
     if (!meeting) return standardError(new Error('Meeting not found'), {userId: viewerId})
-    const {defaultFacilitatorUserId, facilitatorUserId, phases, teamId} = meeting
+    const {defaultFacilitatorUserId, facilitatorUserId, phases, teamId, meetingType} = meeting
     if (viewerId !== facilitatorUserId) {
       if (viewerId !== defaultFacilitatorUserId) {
         return standardError(new Error('Not meeting facilitator'), {userId: viewerId})
@@ -71,9 +72,11 @@ export default {
         // MUTATIVE
         stage.isComplete = true
         stage.endAt = now
-        stage.readyToAdvance = stage.readyToAdvance || []
-        if (!stage.readyToAdvance.includes(facilitatorUserId)) {
-          stage.readyToAdvance.push(facilitatorUserId)
+        if (meetingType !== MeetingTypeEnum.poker) {
+          stage.readyToAdvance = stage.readyToAdvance || []
+          if (!stage.readyToAdvance.includes(facilitatorUserId)) {
+            stage.readyToAdvance.push(facilitatorUserId)
+          }
         }
         // handle any side effects, this could mutate the meeting object!
         phaseCompleteData = await handleCompletedStage(stage, meeting, dataLoader)

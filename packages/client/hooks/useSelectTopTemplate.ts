@@ -1,4 +1,5 @@
 import {useEffect, useRef} from 'react'
+import {commitLocalUpdate} from 'react-relay'
 import SelectTemplate from '../mutations/SelectTemplateMutation'
 import isTempId from '../utils/relay/isTempId'
 import useAtmosphere from './useAtmosphere'
@@ -16,6 +17,9 @@ const useSelectTopTemplate = (edges: readonly {node: {id: string}}[], selectedTe
       const isSelectedInView = listTemplateIds.includes(selectedTemplateId)
       if (!isSelectedInView) {
         SelectTemplate(atmosphere, {selectedTemplateId: listTemplateIds[0], teamId})
+        commitLocalUpdate(atmosphere, (store) => {
+          store.get(teamId)?.setValue('', 'editingScaleId')
+        })
       }
     }, 300)
   }, [isActive, selectedTemplateId])

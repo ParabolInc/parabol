@@ -3,7 +3,6 @@ import graphql from 'babel-plugin-relay/macro'
 import React, {useMemo} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import useAtmosphere from '../hooks/useAtmosphere'
-import useMockPeekers from '../hooks/useMockPeekers'
 import useTransition, {TransitionStatus} from '../hooks/useTransition'
 import {DeckActivityAvatars_stage} from '../__generated__/DeckActivityAvatars_stage.graphql'
 import PokerVotingAvatar from './PokerVotingAvatar'
@@ -28,11 +27,11 @@ interface Props {
 const MAX_PEEKERS = 5
 const DeckActivityAvatars = (props: Props) => {
   const {stage} = props
-  const {id: stageId, hoveringUsers, scores} = stage
+  const {hoveringUsers, scores} = stage
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
   // FIXME: DEBUG ONLY!!!
-  useMockPeekers(stageId)
+  // useMockPeekers(stageId)
   const peekingUsers = useMemo(() => {
     const scoredUserIds = new Set(scores.map(({userId}) => userId))
     return hoveringUsers

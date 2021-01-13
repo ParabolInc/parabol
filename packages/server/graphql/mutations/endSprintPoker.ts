@@ -56,11 +56,12 @@ export default {
       (phase) => phase.phaseType === NewMeetingPhaseTypeEnum.ESTIMATE
     )!
     const {stages: estimateStages} = estimatePhase
-    const redisKeys = estimateStages.map((stage) => `pokerHover:${stage.id}`)
-    const redis = getRedis()
-    // no need to await
-    redis.del(...redisKeys)
-
+    if (estimateStages.length > 0) {
+      const redisKeys = estimateStages.map((stage) => `pokerHover:${stage.id}`)
+      const redis = getRedis()
+      // no need to await
+      redis.del(...redisKeys)
+    }
     const currentStageRes = findStageById(phases, facilitatorStageId)
     if (!currentStageRes) {
       return standardError(new Error('Cannot find facilitator stage'), {userId: viewerId})
@@ -83,7 +84,7 @@ export default {
       .default(null)
       .run()) as unknown) as MeetingPoker
     if (!completedMeeting) {
-      return standardError(new Error('Completed check-in meeting does not exist'), {
+      return standardError(new Error('Completed poker meeting does not exist'), {
         userId: viewerId
       })
     }
@@ -95,12 +96,7 @@ export default {
       dataLoader.get('meetingTemplates').load(templateId)
     ])
     endSlackMeeting(meetingId, teamId, dataLoader).catch(console.log)
-    const {name: meetingTemplateName} = template
-    sendMeetingEndToSegment(
-      completedMeeting,
-      meetingMembers as MeetingMember[],
-      meetingTemplateName
-    )
+    sendMeetingEndToSegment(completedMeeting, meetingMembers as MeetingMember[], template)
     sendNewMeetingSummary(completedMeeting, context).catch(console.log)
 
     const events = meetingMembers.map(

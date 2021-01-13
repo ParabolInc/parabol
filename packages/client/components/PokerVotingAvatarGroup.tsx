@@ -8,20 +8,21 @@ import {PALETTE} from '../styles/paletteV2'
 import {PokerVotingAvatarGroup_scores} from '../__generated__/PokerVotingAvatarGroup_scores.graphql'
 import PokerVotingAvatar from './PokerVotingAvatar'
 import PokerVotingOverflow from './PokerVotingOverflow'
+import {PokerCards} from '../types/constEnums'
 
 const NoVotesHeaderLabel = styled('div')({
   color: PALETTE.TEXT_GRAY,
   fontSize: 14,
   fontWeight: 600,
   lineHeight: '24px',
-  paddingLeft: 2 // same as avatar border
+  paddingLeft: PokerCards.AVATAR_BORDER
 })
 
 const Wrapper = styled('div')({
   alignItems: 'center',
   display: 'flex',
+  marginLeft: 16 - PokerCards.AVATAR_BORDER,
   position: 'relative',
-  marginLeft: 14, // plus 2 background border of avatar = 16
   width: '100%',
   height: '100%'
 })

@@ -1,4 +1,4 @@
-import {GraphQLFloat, GraphQLID, GraphQLNonNull} from 'graphql'
+import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getRethink from '../../database/rethinkDriver'
 import {getUserId, isTeamMember} from '../../utils/authorization'
@@ -13,11 +13,11 @@ const removePokerTemplateScaleValue = {
     scaleId: {
       type: new GraphQLNonNull(GraphQLID)
     },
-    scaleValue: {
-      type: new GraphQLNonNull(GraphQLFloat)
+    label: {
+      type: new GraphQLNonNull(GraphQLString)
     }
   },
-  async resolve(_source, {scaleId, scaleValue}, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve(_source, {scaleId, label}, {authToken, dataLoader, socketId: mutatorId}) {
     const r = await getRethink()
     const now = new Date()
     const operationId = dataLoader.share()
@@ -36,7 +36,7 @@ const removePokerTemplateScaleValue = {
       return standardError(new Error('Team not found'), {userId: viewerId})
     }
     const {values: oldScaleValues} = scale
-    const oldScaleValue = oldScaleValues.find((oldScaleValue) => oldScaleValue.value === scaleValue)
+    const oldScaleValue = oldScaleValues.find((oldScaleValue) => oldScaleValue.label === label)
 
     // VALIDATION
     if (!oldScaleValue) {

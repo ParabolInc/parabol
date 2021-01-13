@@ -31,7 +31,7 @@ export default {
     }
   },
   resolve: async (
-    _source: object,
+    _source: Record<string, unknown>,
     {cloudId, projectKey, taskId}: ICreateJiraTaskIntegrationOnMutationArguments,
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) => {
@@ -42,10 +42,7 @@ export default {
     const viewerId = getUserId(authToken)
 
     // AUTH
-    const task = await r
-      .table('Task')
-      .get(taskId)
-      .run()
+    const task = await r.table('Task').get(taskId).run()
     if (!task) {
       return standardError(new Error('Task not found'), {userId: viewerId})
     }
@@ -122,6 +119,9 @@ export default {
     if ('errors' in issueMetaRes) {
       return standardError(new Error(Object.values(issueMetaRes.errors)[0]), {userId: viewerId})
     }
+    if ('errorMessages' in issueMetaRes) {
+      return {error: {message: issueMetaRes.errorMessages[0]}}
+    }
     const {projects} = issueMetaRes
     // should always be the first and only item in the project arr
     const project = projects.find((project) => project.key === projectKey)!
@@ -144,6 +144,9 @@ export default {
     }
     if ('errors' in res) {
       return standardError(new Error(Object.values(res.errors)[0]), {userId: viewerId})
+    }
+    if ('errorMessages' in res) {
+      return {error: {message: res.errorMessages[0]}}
     }
 
     const cloud = sites.find((site) => site.id === cloudId)!

@@ -18,7 +18,7 @@ graphql`
 `
 
 const mutation = graphql`
-mutation VoteForPokerStoryMutation($meetingId: ID!, $stageId: ID!, $score: String) {
+  mutation VoteForPokerStoryMutation($meetingId: ID!, $stageId: ID!, $score: String) {
     voteForPokerStory(meetingId: $meetingId, stageId: $stageId, score: $score) {
       ... on ErrorPayload {
         error {
