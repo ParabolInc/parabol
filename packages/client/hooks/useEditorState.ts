@@ -11,7 +11,12 @@ const useEditorState = (content?: string | null | undefined) => {
   const editorStateRef = useRef<EditorState>(editorState)
   const isErrorSentToSentryRef = useRef<boolean>(false)
   const lastFiredRef = useRef<Date | null>(null)
+  const initialRender = useRef(true)
   useEffect(() => {
+    if (initialRender) {
+      initialRender.current = false
+      return
+    }
     if (!content) return
     const parsedContent = JSON.parse(content)
     if (!parsedContent.blocks) return
@@ -52,10 +57,7 @@ const useEditorState = (content?: string | null | undefined) => {
     setEditorState(editorStateRef.current)
   }, [content])
 
-  return [editorState, setEditorState] as [
-    EditorState,
-    (editorState: EditorState) => void
-  ]
+  return [editorState, setEditorState] as [EditorState, (editorState: EditorState) => void]
 }
 
 export default useEditorState
