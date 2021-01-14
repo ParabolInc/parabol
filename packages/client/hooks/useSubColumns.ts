@@ -41,11 +41,13 @@ const useSubColumns = (
     })
   }
 
-  const willScrollbarExist = (newSubColumnCount: number) => {
+  const willScrollbarExist = (
+    newSubColumnCount: number,
+    columnsWidth: number,
+    phaseWidth: number
+  ) => {
     const newColumnWidth = COLUMN_WIDTH * newSubColumnCount
-    const currentlyTakenWidth = columnsRef.current!.clientWidth
-    const phaseWidth = phaseRef.current!.clientWidth
-    return currentlyTakenWidth + newColumnWidth - subColumnCount * COLUMN_WIDTH > phaseWidth
+    return columnsWidth + newColumnWidth - subColumnCount * COLUMN_WIDTH > phaseWidth
   }
 
   const getMaxSubColumnCount = () => {
@@ -61,10 +63,14 @@ const useSubColumns = (
     const maxSubColumnsInPhase = Math.floor(phaseWidth / COLUMN_WIDTH)
     const scrollbarExists = phaseWidth < columnsWidth
     if (!scrollbarExists) {
-      const scrollbarWillExist = willScrollbarExist(maxSubColumnCount)
+      const scrollbarWillExist = willScrollbarExist(maxSubColumnCount, columnsWidth, phaseWidth)
       // if expanding to maxWidth creates a horizontal scrollbar, check if DEFAULT_EXPANDED_SUB_COLUMNS does not
       if (scrollbarWillExist && maxSubColumnCount > DEFAULT_EXPANDED_SUB_COLUMNS) {
-        const scrollbarWillStillExist = willScrollbarExist(DEFAULT_EXPANDED_SUB_COLUMNS)
+        const scrollbarWillStillExist = willScrollbarExist(
+          DEFAULT_EXPANDED_SUB_COLUMNS,
+          columnsWidth,
+          phaseWidth
+        )
         if (!scrollbarWillStillExist) return DEFAULT_EXPANDED_SUB_COLUMNS
       }
     }
