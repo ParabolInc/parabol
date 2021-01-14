@@ -5,10 +5,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
-## 5.31.0 2021-Jan-13
+## 5.31.2 2021-Jan-14
+### Added
+- Making grouping columns responsive in retrospective meeting (#3614)
+
 ### Changed
 - Links in discussion thread comments are now clickable links (#4345)
 - More intuitive template dialog with FAB button (#4128)
+- Preparation work for Slack migration (#4373)
 
 ### Fixed
 
