@@ -21,7 +21,8 @@ const useSubColumns = (
   const [subColumnCount, setSubColumnCount] = useState(DEFAULT_SUB_COLUMNS)
   const atmosphere = useAtmosphere()
   const isDesktop = useBreakpoint(Breakpoint.SINGLE_REFLECTION_COLUMN)
-
+  const COLUMN_MARGIN = 16
+  const COLUMN_WIDTH = ElementWidth.REFLECTION_COLUMN + COLUMN_MARGIN
   const subColumnIndexes = useMemo(() => {
     return [...Array(subColumnCount).keys()]
   }, [subColumnCount])
@@ -40,6 +41,13 @@ const useSubColumns = (
     })
   }
 
+  const willScrollbarExist = (newSubColumnCount: number) => {
+    const newColumnWidth = COLUMN_WIDTH * newSubColumnCount
+    const currentlyTakenWidth = columnsRef.current!.clientWidth
+    const phaseWidth = phaseRef.current!.clientWidth
+    return currentlyTakenWidth + newColumnWidth - subColumnCount * COLUMN_WIDTH > phaseWidth
+  }
+
   const getMaxSubColumnCount = () => {
     if (!columnBodyRef?.current || !columnsRef?.current || !phaseRef?.current)
       return DEFAULT_EXPANDED_SUB_COLUMNS
@@ -48,24 +56,19 @@ const useSubColumns = (
       columnBodyEl.scrollHeight / (columnBodyEl.clientHeight - ElementHeight.REFLECTION_CARD)
     )
     const maxSubColumnCount = Math.max(subColumnCountWithoutScroll, DEFAULT_EXPANDED_SUB_COLUMNS)
-    const currentlyTakenWidth = columnsRef.current.clientWidth
+    const columnsWidth = columnsRef.current.clientWidth
     const phaseWidth = phaseRef.current.clientWidth
-    const scrollbarExists = phaseWidth < currentlyTakenWidth
+    const maxSubColumnsInPhase = Math.floor(phaseWidth / COLUMN_WIDTH)
+    const scrollbarExists = phaseWidth < columnsWidth
     if (!scrollbarExists) {
-      const newColumnWidth = ElementWidth.REFLECTION_COLUMN * maxSubColumnCount
-      const scrollbarWillExist =
-        currentlyTakenWidth + newColumnWidth - subColumnCount * ElementWidth.REFLECTION_COLUMN >
-        phaseWidth
+      const scrollbarWillExist = willScrollbarExist(maxSubColumnCount)
       // if expanding to maxWidth creates a horizontal scrollbar, check if DEFAULT_EXPANDED_SUB_COLUMNS does not
-      if (scrollbarWillExist) {
-        const newColumnWidth = ElementWidth.REFLECTION_COLUMN * DEFAULT_EXPANDED_SUB_COLUMNS
-        const scrollbarWillStillExist =
-          currentlyTakenWidth + newColumnWidth - subColumnCount * ElementWidth.REFLECTION_COLUMN >
-          phaseWidth
+      if (scrollbarWillExist && maxSubColumnCount > DEFAULT_EXPANDED_SUB_COLUMNS) {
+        const scrollbarWillStillExist = willScrollbarExist(DEFAULT_EXPANDED_SUB_COLUMNS)
         if (!scrollbarWillStillExist) return DEFAULT_EXPANDED_SUB_COLUMNS
       }
     }
-    return maxSubColumnCount
+    return Math.min(maxSubColumnCount, maxSubColumnsInPhase)
   }
 
   const toggleWidth = () => {
@@ -78,9 +81,9 @@ const useSubColumns = (
 
   const getInitialSubColumnCount = () => {
     const phaseBBox = getBBox(phaseRef.current)
-    if (!phaseBBox) return DEFAULT_SUB_COLUMNS
+    if (!phaseBBox || !isDesktop) return DEFAULT_SUB_COLUMNS
     const {width: phaseWidth} = phaseBBox
-    const maxSubColumnsInPhase = Math.floor(phaseWidth! / ElementWidth.REFLECTION_COLUMN)
+    const maxSubColumnsInPhase = Math.floor(phaseWidth! / COLUMN_WIDTH)
     const maxSubColumnsPerColumn = Math.max(
       Math.floor(maxSubColumnsInPhase / reflectPromptsCount),
       DEFAULT_SUB_COLUMNS

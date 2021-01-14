@@ -12,7 +12,7 @@ const ReflectionCardRoot = styled('div')({
   maxWidth: '100%',
   position: 'relative',
   transition: `box-shadow 2000ms ${DECELERATE}`,
-  minWidth: ElementWidth.REFLECTION_CARD
+  width: ElementWidth.REFLECTION_CARD
 })
 
 export default ReflectionCardRoot

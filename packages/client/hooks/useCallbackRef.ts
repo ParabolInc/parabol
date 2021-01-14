@@ -1,7 +1,7 @@
-import {MutableRefObject, useCallback, useRef} from 'react'
+import {useCallback, useRef} from 'react'
 import useForceUpdate from './useForceUpdate'
 
-const useCallbackRef = (): [(node) => void, MutableRefObject<HTMLDivElement | null>] => {
+const useCallbackRef = () => {
   const ref = useRef<HTMLDivElement | null>(null)
   const forceUpdate = useForceUpdate()
   const callbackRef = useCallback((node) => {
@@ -11,7 +11,7 @@ const useCallbackRef = (): [(node) => void, MutableRefObject<HTMLDivElement | nu
     }
   }, [])
 
-  return [callbackRef, ref]
+  return [callbackRef, ref] as const
 }
 
 export default useCallbackRef

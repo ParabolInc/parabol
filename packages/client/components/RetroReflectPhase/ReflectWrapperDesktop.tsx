@@ -7,7 +7,6 @@ const DesktopWrapper = styled('div')({
   // if the viewport is wide enough for 2+ columns, let them scroll
   overflowX: 'auto',
   width: '100%',
-  
 })
 
 const Inner = styled('div')({

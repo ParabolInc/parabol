@@ -29,12 +29,16 @@ export const getCardStackPadding = (count: number) => {
 }
 
 const Group = styled('div')<{staticReflectionCount: number}>(({staticReflectionCount}) => ({
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
   height: 'max-content',
+  justifyContent: 'center',
   position: 'relative',
   paddingTop: ElementWidth.REFLECTION_CARD_PADDING,
   paddingBottom: ElementWidth.REFLECTION_CARD_PADDING + getCardStackPadding(staticReflectionCount),
   transition: `padding-bottom ${Times.REFLECTION_DROP_DURATION}ms`,
-  width: '100%'
+  width: '100%',
 }))
 
 const ReflectionWrapper = styled('div')<{
@@ -56,7 +60,6 @@ const ReflectionWrapper = styled('div')<{
     opacity: isHidden ? 0 : undefined,
     transform: `translateY(${translateY}px) scaleX(${scaleX})`,
     transition: isHidden ? undefined : `transform ${Times.REFLECTION_DROP_DURATION}ms`,
-    minWidth: ElementWidth.REFLECTION_CARD,
     zIndex: 3 - multiple
   }
 })
