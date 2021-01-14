@@ -39,7 +39,10 @@ const addNewFeature = {
       url
     }
     await Promise.all([
-      r.table('NewFeature').insert(newFeature).run(),
+      r
+        .table('NewFeature')
+        .insert(newFeature)
+        .run(),
       db.writeTable('User', {newFeatureId})
     ])
 

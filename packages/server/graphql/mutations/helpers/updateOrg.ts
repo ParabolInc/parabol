@@ -32,7 +32,11 @@ const updateOrg = async (_source, {updatedOrg}, {authToken, dataLoader, socketId
     ...org,
     updatedAt: now
   }
-  await r.table('Organization').get(orgId).update(dbUpdate).run()
+  await r
+    .table('Organization')
+    .get(orgId)
+    .update(dbUpdate)
+    .run()
 
   const data = {orgId}
   publish(SubscriptionChannel.ORGANIZATION, orgId, 'UpdateOrgPayload', data, subOptions)

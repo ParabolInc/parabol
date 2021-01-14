@@ -71,13 +71,19 @@ export default {
               updatedAt: now,
               userId: viewerId
             }, {returnChanges: true})('changes')(0),
-          r.table('Provider').get(providerId).update({
-              accessToken,
-              isActive: true,
-              updatedAt: now,
-              providerUserId: login,
-              providerUserName: login
-            }, {returnChanges: true})('changes')(0)
+          r
+            .table('Provider')
+            .get(providerId)
+            .update(
+              {
+                accessToken,
+                isActive: true,
+                updatedAt: now,
+                providerUserId: login,
+                providerUserName: login
+              },
+              {returnChanges: true}
+            )('changes')(0)
         )
       })
       .run()

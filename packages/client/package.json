@@ -44,7 +44,7 @@
     "expect": "^24.8.0",
     "html-webpack-plugin": "5.0.0-beta.1",
     "lint-staged": "^10.1.7",
-    "prettier": "^2.1.2",
+    "prettier": "^1.19.1",
     "react-refresh": "^0.9.0",
     "relay-config": "^8.0.0",
     "strict-event-emitter-types": "^2.0.0",

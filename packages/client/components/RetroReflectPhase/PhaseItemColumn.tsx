@@ -1,7 +1,8 @@
+
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {EditorState} from 'draft-js'
-import React, {useEffect, useMemo, useRef} from 'react'
+import React, {RefObject, useEffect, useMemo, useRef} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {PhaseItemColumn_prompt} from '~/__generated__/PhaseItemColumn_prompt.graphql'
 import useAtmosphere from '../../hooks/useAtmosphere'
@@ -136,7 +137,7 @@ interface Props {
   idx: number
   isDesktop: boolean
   meeting: PhaseItemColumn_meeting
-  phaseRef: React.RefObject<HTMLDivElement>
+  phaseRef: RefObject<HTMLDivElement>
   prompt: PhaseItemColumn_prompt
 }
 
@@ -159,6 +160,7 @@ const PhaseItemColumn = (props: Props) => {
   const cardsInFlightRef = useRef<ReflectColumnCardInFlight[]>([])
   const forceUpdateColumn = useForceUpdate()
   const isFacilitator = viewerId === facilitatorUserId
+
   useEffect(() => {
     hasFocusedRef.current = true
   }, [focusedPromptId])
@@ -221,8 +223,8 @@ const PhaseItemColumn = (props: Props) => {
                 isGroupingComplete={isComplete}
               >
                 <PhaseItemEditor
-                  dataCy={`phase-item-editor-${question}`}
                   cardsInFlightRef={cardsInFlightRef}
+                  dataCy={`phase-item-editor-${question}`}
                   phaseEditorRef={phaseEditorRef}
                   meetingId={meetingId}
                   nextSortOrder={nextSortOrder}

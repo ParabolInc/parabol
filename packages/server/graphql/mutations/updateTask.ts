@@ -54,7 +54,10 @@ export default {
       content
     } = updatedTask
     const validContent = normalizeRawDraftJS(content)
-    const task = await r.table('Task').get(taskId).run()
+    const task = await r
+      .table('Task')
+      .get(taskId)
+      .run()
     if (!task) {
       return {error: {message: 'Task not found'}}
     }
@@ -107,7 +110,10 @@ export default {
         .do((lastDoc) => {
           return r.branch(
             lastDoc('updatedAt').gt(r.epochTime((now.getTime() - DEBOUNCE_TIME) / 1000)),
-            r.table('TaskHistory').get(lastDoc('id')).update(mergeDoc),
+            r
+              .table('TaskHistory')
+              .get(lastDoc('id'))
+              .update(mergeDoc),
             r.table('TaskHistory').insert(lastDoc.merge(mergeDoc, {id: generateUID()}))
           )
         })

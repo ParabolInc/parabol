@@ -6,20 +6,17 @@ import useAtmosphere from '../../hooks/useAtmosphere'
 import useMutationProps from '../../hooks/useMutationProps'
 import UpdateReflectionGroupTitleMutation from '../../mutations/UpdateReflectionGroupTitleMutation'
 import {PALETTE} from '../../styles/paletteV2'
-import {ICON_SIZE} from '../../styles/typographyV2'
 import ui from '../../styles/ui'
 import {Card} from '../../types/constEnums'
 import {RETRO_TOPIC_LABEL} from '../../utils/constants'
 import {ReflectionGroupTitleEditor_meeting} from '../../__generated__/ReflectionGroupTitleEditor_meeting.graphql'
 import {ReflectionGroupTitleEditor_reflectionGroup} from '../../__generated__/ReflectionGroupTitleEditor_reflectionGroup.graphql'
-import Icon from '../Icon'
 import StyledError from '../StyledError'
 
 interface Props {
   isExpanded: boolean
   reflectionGroup: ReflectionGroupTitleEditor_reflectionGroup
   readOnly: boolean
-  hidePencil: boolean
   meeting: ReflectionGroupTitleEditor_meeting
   titleInputRef: RefObject<HTMLInputElement>
 }
@@ -39,16 +36,6 @@ const InputWithIconWrap = styled('div')({
   alignItems: 'center',
   display: 'flex'
 })
-
-const PencilIcon = styled(Icon)<{isExpanded?: boolean}>(({isExpanded}) => ({
-  color: isExpanded ? '#FFFFFF' : PALETTE.TEXT_GRAY,
-  display: 'block',
-  fontSize: ICON_SIZE.MD18,
-  opacity: 0.5,
-  marginLeft: '0.25rem',
-  textAlign: 'center',
-  top: '-.0625rem'
-}))
 
 const RootBlock = styled('div')({
   display: 'flex',
@@ -104,7 +91,7 @@ const getValidationError = (title: string | null, reflectionGroups, reflectionGr
 const ReflectionGroupTitleEditor = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {submitMutation, submitting, onCompleted, onError, error} = useMutationProps()
-  const {meeting, reflectionGroup, titleInputRef, isExpanded, readOnly, hidePencil} = props
+  const {meeting, reflectionGroup, titleInputRef, isExpanded, readOnly} = props
   const {reflectionGroups} = meeting
   const {id: reflectionGroupId, title} = reflectionGroup
   const dirtyRef = useRef(false)
@@ -131,10 +118,6 @@ const ReflectionGroupTitleEditor = (props: Props) => {
     } else {
       onError(new Error(validationError))
     }
-  }
-
-  const onClick = () => {
-    titleInputRef.current?.select()
   }
 
   const onSubmit = (e: React.FormEvent<HTMLInputElement | HTMLFormElement>) => {
@@ -184,11 +167,6 @@ const ReflectionGroupTitleEditor = (props: Props) => {
         </FormBlock>
         {error && <StyledError>{error}</StyledError>}
       </RootBlock>
-      {!readOnly && !hidePencil && (
-        <PencilIcon isExpanded={isExpanded} onClick={onClick}>
-          edit
-        </PencilIcon>
-      )}
     </InputWithIconWrap>
   )
 }

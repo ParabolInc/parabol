@@ -32,7 +32,10 @@ export default {
     if (!isTeamMember(authToken, teamId)) {
       return standardError(new Error('Team not found'), {userId: viewerId})
     }
-    const task = await r.table('Task').get(taskId).run()
+    const task = await r
+      .table('Task')
+      .get(taskId)
+      .run()
     if (!task) {
       return standardError(new Error('Task not found'), {userId: viewerId})
     }
@@ -67,7 +70,10 @@ export default {
       teamId
     }
     await r({
-      newTask: r.table('Task').get(taskId).update(updates),
+      newTask: r
+        .table('Task')
+        .get(taskId)
+        .update(updates),
       taskHistory: r
         .table('TaskHistory')
         .between([taskId, r.minval], [taskId, r.maxval], {

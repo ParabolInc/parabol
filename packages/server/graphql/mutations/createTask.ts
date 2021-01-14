@@ -147,7 +147,9 @@ const handleAddTaskNotifications = async (
 
   if (notificationsToAdd.length) {
     // don't await to speed up task creation
-    r.table('Notification').insert(notificationsToAdd).run()
+    r.table('Notification')
+      .insert(notificationsToAdd)
+      .run()
     notificationsToAdd.forEach((notification) => {
       publish(
         SubscriptionChannel.NOTIFICATION,
