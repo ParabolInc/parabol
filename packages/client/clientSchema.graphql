@@ -64,6 +64,7 @@ extend type Task {
 
 extend type RetroReflectionGroup {
   isExpanded: Boolean
+  subColumnIdx: Int
 }
 
 extend type RetroReflection {

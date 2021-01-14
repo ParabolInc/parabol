@@ -104,7 +104,6 @@ const CreateReflectionMutation: StandardMutation<TCreateReflectionMutation> = (
       const reflectionGroupNode = createProxyRecord(store, 'RetroReflectionGroup', optimisticGroup)
       reflectionGroupNode.setLinkedRecords([reflectionNode], 'reflections')
       reflectionGroupNode.setLinkedRecord(meeting, 'meeting')
-      handleAddReflectionGroups(reflectionGroupNode, store)
     }
   })
 }

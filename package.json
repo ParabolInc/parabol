@@ -56,7 +56,7 @@
     "jscodeshift": "^0.7.0",
     "lerna": "^3.19.0",
     "minimist": "^1.2.5",
-    "prettier": "^2.1.2",
+    "prettier": "^1.19.1",
     "relay-compiler": "^8.0.0",
     "relay-config": "^8.0.0",
     "ts-loader": "8.0.12",

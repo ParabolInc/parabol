@@ -16,7 +16,11 @@ export default class CompiledQueryCache {
     const compiledQuery = this.store[docId]
     if (compiledQuery) return compiledQuery
     const r = await getRethink()
-    let queryString = await r.table('QueryMap').get(docId)('query').default(null).run()
+    let queryString = await r
+      .table('QueryMap')
+      .get(docId)('query')
+      .default(null)
+      .run()
     if (!queryString && !PROD) {
       // try/catch block required for building the toolbox
       try {

@@ -1,11 +1,11 @@
-import React, {ReactNode, Ref, useMemo, useEffect} from 'react'
+import React, {ReactNode, Ref,  RefObject, useMemo, useEffect} from 'react'
 import styled from '@emotion/styled'
-import getBBox from './getBBox'
 import {PALETTE} from '../../styles/paletteV2'
 import {BBox} from '../../types/animations'
 import {RefCallbackInstance} from '../../types/generics'
 import {DragAttribute, ElementWidth, ZIndex} from '../../types/constEnums'
 import ExpandedReflection from './ExpandedReflection'
+import getBBox from './getBBox'
 
 const PortalBlock = styled('div')({
   height: '100%',
@@ -64,7 +64,7 @@ const ScrollBlock = styled('div')({
 interface Props {
   closePortal: () => void
   header?: ReactNode
-  phaseRef: React.RefObject<HTMLDivElement>
+  phaseRef: RefObject<HTMLDivElement>
   staticReflections: readonly any[]
   reflections: readonly any[]
   meeting: any

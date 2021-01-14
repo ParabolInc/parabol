@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {RefObject, useEffect, useMemo, useRef, useState} from 'react'
+import React, { RefObject, useEffect, useMemo, useRef, useState} from 'react'
 import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import useEventCallback from '../../hooks/useEventCallback'
@@ -29,10 +29,16 @@ export const getCardStackPadding = (count: number) => {
 }
 
 const Group = styled('div')<{staticReflectionCount: number}>(({staticReflectionCount}) => ({
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  height: 'max-content',
+  justifyContent: 'center',
   position: 'relative',
   paddingTop: ElementWidth.REFLECTION_CARD_PADDING,
   paddingBottom: ElementWidth.REFLECTION_CARD_PADDING + getCardStackPadding(staticReflectionCount),
-  transition: `padding-bottom ${Times.REFLECTION_DROP_DURATION}ms`
+  transition: `padding-bottom ${Times.REFLECTION_DROP_DURATION}ms`,
+  width: '100%',
 }))
 
 const ReflectionWrapper = styled('div')<{
@@ -53,8 +59,8 @@ const ReflectionWrapper = styled('div')<{
     outline: 0,
     opacity: isHidden ? 0 : undefined,
     transform: `translateY(${translateY}px) scaleX(${scaleX})`,
-    zIndex: 3 - multiple,
-    transition: isHidden ? undefined : `transform ${Times.REFLECTION_DROP_DURATION}ms`
+    transition: isHidden ? undefined : `transform ${Times.REFLECTION_DROP_DURATION}ms`,
+    zIndex: 3 - multiple
   }
 })
 
@@ -74,6 +80,7 @@ const ReflectionGroup = (props: Props) => {
   const {isComplete} = localStage
   const {reflections, id: reflectionGroupId, titleIsUserDefined} = reflectionGroup
   const titleInputRef = useRef(null)
+  const expandedTitleInputRef = useRef(null)
   const headerRef = useRef<HTMLDivElement>(null)
   const staticReflections = useMemo(() => {
     return reflections.filter(
@@ -145,7 +152,7 @@ const ReflectionGroup = (props: Props) => {
               meeting={meeting}
               portalStatus={portalStatus}
               reflectionGroup={reflectionGroup}
-              titleInputRef={titleInputRef}
+              titleInputRef={expandedTitleInputRef}
             />
           }
           phaseRef={phaseRef}

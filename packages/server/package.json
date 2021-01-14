@@ -58,7 +58,7 @@
     "lint-staged": "^10.1.7",
     "mocha": "^5.2.0",
     "mockdate": "^2.0.1",
-    "prettier": "^2.1.2",
+    "prettier": "^1.19.1",
     "relay-compiler": "^8.0.0",
     "relay-compiler-language-typescript": "^13.0.2",
     "relay-config": "^8.0.0",

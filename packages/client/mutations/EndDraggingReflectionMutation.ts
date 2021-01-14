@@ -99,16 +99,6 @@ export const moveReflectionLocation = (
 ) => {
   if (!reflection) return
   const reflectionId = reflection.getValue('id') as string
-  // if (userId) {
-  //   // else it is an autogroup
-  //   const reflection = store.get(reflectionId)
-  //   const meetingId = reflection.getValue('meetingId')
-  //   const meeting = store.get(meetingId)
-  //   // meeting.setValue(undefined, 'isViewerDragInProgress')
-  //   // const dragContext = reflection.getLinkedRecord('dragContext')
-  //   const dragUserId = reflection.getValue('dragUserId')
-  //   const isViewerDragging = reflection.getValue('isViewerDragging')
-  // }
   handleRemoveReflectionFromGroup(reflectionId, oldReflectionGroupId, store)
   handleAddReflectionToGroup(reflection, store)
   handleRemoveEmptyReflectionGroup(oldReflectionGroupId, store)
@@ -163,7 +153,6 @@ const EndDraggingReflectionMutation = (
       const reflection = payload.getLinkedRecord('reflection')
       if (!reflection) return
       reflection.setValue(false, 'isViewerDragging')
-      if (!reflection) return
       const reflectionGroup = payload.getLinkedRecord('reflectionGroup')!
       const oldReflectionGroupId = getInProxy(payload, 'oldReflectionGroup', 'id')
       moveReflectionLocation(reflection, reflectionGroup, oldReflectionGroupId, store)
@@ -173,7 +162,6 @@ const EndDraggingReflectionMutation = (
       const {reflectionId, dropTargetId: reflectionGroupId, dropTargetType} = variables
       const reflection = store.get(reflectionId)
       if (!reflection) return
-
       if (!dropTargetType) {
         reflection.setValue(false, 'isViewerDragging')
         return
