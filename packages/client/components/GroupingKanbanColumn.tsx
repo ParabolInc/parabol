@@ -44,7 +44,9 @@ const Column = styled('div')<{
 
 const ColumnScrollContainer = styled('div')({
   display: 'flex',
-  overflow: 'auto'
+  // must hide X on firefox v84
+  overflowX: 'hidden',
+  overflowY: 'auto'
 })
 
 const ColumnBody = styled('div')<{isDesktop: boolean; isWidthExpanded: boolean}>(
