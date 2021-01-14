@@ -63,17 +63,17 @@ const GroupingKanban = (props: Props) => {
     return isDesktop
       ? false
       : !!reflectionGroups.find((group) =>
-          group.reflections.find((reflection) => reflection.isViewerDragging)
-        )
+        group.reflections.find((reflection) => reflection.isViewerDragging)
+      )
   }, [isDesktop, reflectionGroups])
   const swipeColumn: SwipeColumn = useThrottledEvent((offset: number) => {
     const nextIdx = Math.min(reflectPromptsCount - 1, Math.max(0, activeIdx + offset))
     setActiveIdx(nextIdx)
   }, Times.REFLECTION_COLUMN_SWIPE_THRESH)
-
+  if (!phaseRef.current) return null
   return (
     <PortalProvider>
-      <ColumnsBlock isDesktop={isDesktop} >
+      <ColumnsBlock isDesktop={isDesktop}>
         <ColumnWrapper
           setActiveIdx={setActiveIdx}
           activeIdx={activeIdx}

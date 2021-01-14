@@ -1,4 +1,4 @@
-import {RefObject, useLayoutEffect, useMemo, useState} from 'react'
+import {RefObject, useMemo, useState} from 'react'
 import {commitLocalUpdate} from 'react-relay'
 import getBBox from '~/components/RetroReflectPhase/getBBox'
 import {Breakpoint, ElementHeight, ElementWidth} from '~/types/constEnums'
@@ -10,6 +10,8 @@ import useSortNewReflectionGroup from './useSortNewReflectionGroup'
 
 const DEFAULT_EXPANDED_SUB_COLUMNS = 2
 const DEFAULT_SUB_COLUMNS = 1
+const COLUMN_MARGIN = 16
+const COLUMN_WIDTH = ElementWidth.REFLECTION_COLUMN + COLUMN_MARGIN
 
 const useSubColumns = (
   columnBodyRef: RefObject<HTMLDivElement>,
@@ -18,16 +20,8 @@ const useSubColumns = (
   reflectionGroups: GroupingKanbanColumn_reflectionGroups,
   columnsRef: RefObject<HTMLDivElement>
 ) => {
-  const [subColumnCount, setSubColumnCount] = useState(DEFAULT_SUB_COLUMNS)
   const atmosphere = useAtmosphere()
   const isDesktop = useBreakpoint(Breakpoint.SINGLE_REFLECTION_COLUMN)
-  const COLUMN_MARGIN = 16
-  const COLUMN_WIDTH = ElementWidth.REFLECTION_COLUMN + COLUMN_MARGIN
-  const subColumnIndexes = useMemo(() => {
-    return [...Array(subColumnCount).keys()]
-  }, [subColumnCount])
-  useSortNewReflectionGroup(subColumnCount, subColumnIndexes, reflectionGroups)
-
   const sortSubColumns = (maxSubColumns: number) => {
     commitLocalUpdate(atmosphere, (store) => {
       let nextSubColumnIdx = 0
@@ -40,18 +34,8 @@ const useSubColumns = (
       })
     })
   }
-
-  const willScrollbarExist = (
-    newSubColumnCount: number,
-    columnsWidth: number,
-    phaseWidth: number
-  ) => {
-    const newColumnWidth = COLUMN_WIDTH * newSubColumnCount
-    return columnsWidth + newColumnWidth - subColumnCount * COLUMN_WIDTH > phaseWidth
-  }
-
   const getMaxSubColumnCount = () => {
-    if (!columnBodyRef?.current || !columnsRef?.current || !phaseRef?.current)
+    if (!columnBodyRef.current || !columnsRef.current || !phaseRef.current)
       return DEFAULT_EXPANDED_SUB_COLUMNS
     const columnBodyEl = columnBodyRef.current
     const subColumnCountWithoutScroll = Math.ceil(
@@ -77,15 +61,7 @@ const useSubColumns = (
     return Math.min(maxSubColumnCount, maxSubColumnsInPhase)
   }
 
-  const toggleWidth = () => {
-    const maxSubColumnCount = getMaxSubColumnCount()
-    if (subColumnCount === DEFAULT_SUB_COLUMNS) {
-      setSubColumnCount(maxSubColumnCount)
-      sortSubColumns(maxSubColumnCount)
-    } else setSubColumnCount(DEFAULT_SUB_COLUMNS)
-  }
-
-  const getInitialSubColumnCount = () => {
+  const [subColumnCount, setSubColumnCount] = useState(() => {
     const phaseBBox = getBBox(phaseRef.current)
     if (!phaseBBox || !isDesktop) return DEFAULT_SUB_COLUMNS
     const {width: phaseWidth} = phaseBBox
@@ -95,20 +71,35 @@ const useSubColumns = (
       DEFAULT_SUB_COLUMNS
     )
     const maxSubColumnCount = getMaxSubColumnCount()
-    return Math.min(maxSubColumnCount, maxSubColumnsPerColumn)
+    const colCount = Math.min(maxSubColumnCount, maxSubColumnsPerColumn)
+    sortSubColumns(colCount)
+    return colCount
+  })
+  const subColumnIndexes = useMemo(() => {
+    return [...Array(subColumnCount).keys()]
+  }, [subColumnCount])
+
+  useSortNewReflectionGroup(subColumnCount, subColumnIndexes, reflectionGroups)
+
+  const willScrollbarExist = (
+    newSubColumnCount: number,
+    columnsWidth: number,
+    phaseWidth: number
+  ) => {
+    const newColumnWidth = COLUMN_WIDTH * newSubColumnCount
+    return columnsWidth + newColumnWidth - subColumnCount * COLUMN_WIDTH > phaseWidth
   }
 
-  useLayoutEffect(() => {
-    if (!phaseRef?.current) return
-    const initialSubColumnCount = getInitialSubColumnCount()
-    setSubColumnCount(initialSubColumnCount)
-    if (initialSubColumnCount > 1) {
-      sortSubColumns(initialSubColumnCount)
-    }
-  }, [phaseRef?.current])
+  const toggleWidth = () => {
+    const maxSubColumnCount = getMaxSubColumnCount()
+    if (subColumnCount === DEFAULT_SUB_COLUMNS) {
+      setSubColumnCount(maxSubColumnCount)
+      sortSubColumns(maxSubColumnCount)
+    } else setSubColumnCount(DEFAULT_SUB_COLUMNS)
+  }
 
   useResizeObserver(() => {
-    if (!isDesktop && subColumnCount > DEFAULT_SUB_COLUMNS) {
+    if (!isDesktop) {
       setSubColumnCount(DEFAULT_SUB_COLUMNS)
     }
   }, phaseRef)
