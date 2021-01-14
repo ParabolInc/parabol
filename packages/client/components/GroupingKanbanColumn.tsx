@@ -1,8 +1,10 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
+import React, {RefObject, useMemo, useRef} from 'react'
 import {createFragmentContainer} from 'react-relay'
-import React, {RefObject, useRef, useMemo} from 'react'
 import {useCoverable} from '~/hooks/useControlBarCovers'
+import useDeepEqual from '~/hooks/useDeepEqual'
+import useSubColumns from '~/hooks/useSubColumns'
 import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
 import {GroupingKanbanColumn_meeting} from '~/__generated__/GroupingKanbanColumn_meeting.graphql'
 import {GroupingKanbanColumn_prompt} from '~/__generated__/GroupingKanbanColumn_prompt.graphql'
@@ -11,50 +13,42 @@ import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
 import CreateReflectionMutation from '../mutations/CreateReflectionMutation'
 import {PALETTE} from '../styles/paletteV2'
-import {
-  BezierCurve,
-  Breakpoint,
-  DragAttribute,
-  ElementWidth,
-  MeetingControlBarEnum,
-} from '../types/constEnums'
+import {BezierCurve, Breakpoint, DragAttribute, MeetingControlBarEnum} from '../types/constEnums'
 import {NewMeetingPhaseTypeEnum} from '../types/graphql'
 import getNextSortOrder from '../utils/getNextSortOrder'
 import {SwipeColumn} from './GroupingKanban'
-import ReflectionGroup from './ReflectionGroup/ReflectionGroup'
 import GroupingKanbanColumnHeader from './GroupingKanbanColumnHeader'
-import useSubColumns from '~/hooks/useSubColumns'
-import useDeepEqual from '~/hooks/useDeepEqual'
+import ReflectionGroup from './ReflectionGroup/ReflectionGroup'
 
 const Column = styled('div')<{
   isLengthExpanded: boolean
-  isWidthExpanded: boolean
   isFirstColumn: boolean
-  isLastColumn: boolean,
-  subColumnCount: number
-}>(({isLengthExpanded, isWidthExpanded, isFirstColumn, isLastColumn, subColumnCount}) => ({
+  isLastColumn: boolean
+}>(({isLengthExpanded, isFirstColumn, isLastColumn}) => ({
   alignContent: 'flex-start',
   background: PALETTE.BACKGROUND_REFLECTION,
   borderRadius: 8,
   display: 'flex',
   flex: 1,
-  flexDirection: isWidthExpanded ? 'row' : 'column',
-  flexWrap: 'wrap',
+  flexDirection: 'column',
   height: '100%',
-  minWidth: isWidthExpanded ? ElementWidth.REFLECTION_COLUMN * subColumnCount : ElementWidth.REFLECTION_COLUMN,
-  padding: isWidthExpanded ? '0 8px' : 0,
+  padding: 0,
   position: 'relative',
-  overflowY: 'auto',
   transition: `all 100ms ${BezierCurve.DECELERATE}`,
   [makeMinWidthMediaQuery(Breakpoint.SINGLE_REFLECTION_COLUMN)]: {
     height: isLengthExpanded ? '100%' : `calc(100% - ${MeetingControlBarEnum.HEIGHT}px)`,
     margin: `0 ${isLastColumn ? 16 : 8}px 0px ${isFirstColumn ? 16 : 8}px`,
-    maxWidth: isWidthExpanded ?  ElementWidth.REFLECTION_COLUMN * subColumnCount  : ElementWidth.REFLECTION_COLUMN
+    maxWidth: 'min-content'
   }
 }))
 
+const ColumnScrollContainer = styled('div')({
+  display: 'flex',
+  overflow: 'auto'
+})
+
 const ColumnBody = styled('div')<{isDesktop: boolean; isWidthExpanded: boolean}>(
-  ({isDesktop, isWidthExpanded }) => ({
+  ({isDesktop, isWidthExpanded}) => ({
     alignContent: 'flex-start',
     display: 'flex',
     flex: 1,
@@ -63,10 +57,8 @@ const ColumnBody = styled('div')<{isDesktop: boolean; isWidthExpanded: boolean}>
     justifyContent: 'space-around',
     maxHeight: 'fit-content',
     minHeight: 200,
-    overflowX: 'hidden',
-    overflowY: 'auto',
     padding: `${isWidthExpanded ? 12 : 6}px ${isDesktop ? 12 : 8}px`,
-    transition: `all 100ms ${BezierCurve.DECELERATE}`,
+    transition: `all 100ms ${BezierCurve.DECELERATE}`
   })
 )
 
@@ -102,7 +94,8 @@ const GroupingKanbanColumn = (props: Props) => {
   const columnRef = useRef<HTMLDivElement>(null)
   const columnBodyRef = useRef<HTMLDivElement>(null)
   const isLengthExpanded =
-    useCoverable(promptId, columnRef, MeetingControlBarEnum.HEIGHT, phaseRef, columnsRef) || !!endedAt
+    useCoverable(promptId, columnRef, MeetingControlBarEnum.HEIGHT, phaseRef, columnsRef) ||
+    !!endedAt
   const isFirstColumn = prompt.sortOrder === 0
   const isLastColumn = Math.round(prompt.sortOrder) === reflectPromptsCount - 1
   const groups = useDeepEqual(reflectionGroups)
@@ -111,7 +104,13 @@ const GroupingKanbanColumn = (props: Props) => {
     () => groups.filter((group) => group.reflections.length > 0),
     [groups]
   )
-  const [isWidthExpanded, subColumnCount, subColumnIndexes, toggleWidth] = useSubColumns(columnBodyRef, phaseRef, reflectPromptsCount, filteredReflectionGroups, columnsRef)
+  const [isWidthExpanded, subColumnIndexes, toggleWidth] = useSubColumns(
+    columnBodyRef,
+    phaseRef,
+    reflectPromptsCount,
+    filteredReflectionGroups,
+    columnsRef
+  )
   const canAdd = phaseType === NewMeetingPhaseTypeEnum.group && !isComplete && !isAnyEditing
 
   const onClick = () => {
@@ -129,10 +128,8 @@ const GroupingKanbanColumn = (props: Props) => {
   return (
     <Column
       isLengthExpanded={isLengthExpanded}
-      isWidthExpanded={isWidthExpanded}
       isFirstColumn={isFirstColumn}
       isLastColumn={isLastColumn}
-      subColumnCount={subColumnCount}
       ref={columnRef}
       data-cy={`group-column-${question}`}
     >
@@ -145,33 +142,35 @@ const GroupingKanbanColumn = (props: Props) => {
         submitting={submitting}
         toggleWidth={toggleWidth}
       />
-      {subColumnIndexes.map((subColumnIdx) => {
-        return (
-          <ColumnBody
-            data-cy={subColumnIdx === 0 ? `group-column-${question}-body`: undefined}
-            isDesktop={isDesktop}
-            isWidthExpanded={isWidthExpanded}
-            key={`${promptId}-${subColumnIdx}`}
-            ref={subColumnIdx === 0 ? columnBodyRef : undefined}
-            {...{[DragAttribute.DROPZONE]: `${promptId}-${subColumnIdx}`}}
-          >
-            {filteredReflectionGroups
-              .filter((group) => isWidthExpanded ? group.subColumnIdx === subColumnIdx : true)
-              .map((reflectionGroup, idx) => {
-                return (
-                  <ReflectionGroup
-                    dataCy={`${question}-group-${idx}`}
-                    key={reflectionGroup.id}
-                    meeting={meeting}
-                    phaseRef={phaseRef}
-                    reflectionGroup={reflectionGroup}
-                    swipeColumn={swipeColumn}
-                  />
-                )
-              })}
-          </ColumnBody>
-        )
-      })}
+      <ColumnScrollContainer>
+        {subColumnIndexes.map((subColumnIdx) => {
+          return (
+            <ColumnBody
+              data-cy={subColumnIdx === 0 ? `group-column-${question}-body` : undefined}
+              isDesktop={isDesktop}
+              isWidthExpanded={isWidthExpanded}
+              key={`${promptId}-${subColumnIdx}`}
+              ref={subColumnIdx === 0 ? columnBodyRef : undefined}
+              {...{[DragAttribute.DROPZONE]: `${promptId}-${subColumnIdx}`}}
+            >
+              {filteredReflectionGroups
+                .filter((group) => (isWidthExpanded ? group.subColumnIdx === subColumnIdx : true))
+                .map((reflectionGroup, idx) => {
+                  return (
+                    <ReflectionGroup
+                      dataCy={`${question}-group-${idx}`}
+                      key={reflectionGroup.id}
+                      meeting={meeting}
+                      phaseRef={phaseRef}
+                      reflectionGroup={reflectionGroup}
+                      swipeColumn={swipeColumn}
+                    />
+                  )
+                })}
+            </ColumnBody>
+          )
+        })}
+      </ColumnScrollContainer>
     </Column>
   )
 }

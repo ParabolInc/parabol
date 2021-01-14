@@ -1,12 +1,12 @@
 import {RefObject, useLayoutEffect, useMemo, useState} from 'react'
 import {commitLocalUpdate} from 'react-relay'
+import getBBox from '~/components/RetroReflectPhase/getBBox'
 import {Breakpoint, ElementHeight, ElementWidth} from '~/types/constEnums'
-import useAtmosphere from './useAtmosphere'
 import {GroupingKanbanColumn_reflectionGroups} from '~/__generated__/GroupingKanbanColumn_reflectionGroups.graphql'
-import useSortNewReflectionGroup from './useSortNewReflectionGroup'
+import useAtmosphere from './useAtmosphere'
 import useBreakpoint from './useBreakpoint'
 import useResizeObserver from './useResizeObserver'
-import getBBox from '~/components/RetroReflectPhase/getBBox'
+import useSortNewReflectionGroup from './useSortNewReflectionGroup'
 
 const DEFAULT_EXPANDED_SUB_COLUMNS = 2
 const DEFAULT_SUB_COLUMNS = 1
@@ -113,12 +113,7 @@ const useSubColumns = (
     }
   }, phaseRef)
 
-  return [
-    subColumnCount > DEFAULT_SUB_COLUMNS,
-    subColumnCount,
-    subColumnIndexes,
-    toggleWidth
-  ] as const
+  return [subColumnCount > DEFAULT_SUB_COLUMNS, subColumnIndexes, toggleWidth] as const
 }
 
 export default useSubColumns
