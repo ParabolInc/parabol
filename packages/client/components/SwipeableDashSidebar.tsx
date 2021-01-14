@@ -1,8 +1,7 @@
 import styled from '@emotion/styled'
-import React, {ReactNode, useCallback, useEffect} from 'react'
+import React, {ReactNode, useCallback, useEffect, useState} from 'react'
 import useEventCallback from '~/hooks/useEventCallback'
 import usePortal from '../hooks/usePortal'
-import useRefState from '../hooks/useRefState'
 import {DECELERATE} from '../styles/animation'
 import {navDrawerShadow} from '../styles/elevation'
 import {PALETTE} from '../styles/paletteV2'
@@ -79,8 +78,8 @@ const updateIsSwipe = (clientX: number, clientY: number, isRightDrawer: boolean)
         ? swipingRight
         : swipingLeft
       : isRightDrawer
-      ? swipingLeft
-      : swipingRight
+        ? swipingLeft
+        : swipingRight
   }
 }
 
@@ -116,7 +115,7 @@ const SwipeableDashSidebar = (props: Props) => {
     allowScroll: true,
     noClose: true
   })
-  const [xRef, setX] = useRefState(0)
+  const [x, setX] = useState(0)
   const SIDEBAR_WIDTH: number = isRightDrawer ? DiscussionThreadEnum.WIDTH : NavSidebar.WIDTH
   const HYSTERESIS_THRESH = HYSTERESIS * SIDEBAR_WIDTH
 
@@ -136,12 +135,12 @@ const SwipeableDashSidebar = (props: Props) => {
   const hideSidebar = useCallback(() => {
     setX(0)
     swipe.showBodyScroll && swipe.showBodyScroll()
-  }, [setX])
+  }, [])
 
   const showSidebar = useCallback(() => {
     setX(SIDEBAR_WIDTH)
     swipe.showBodyScroll = hideBodyScroll()
-  }, [setX])
+  }, [])
 
   useEffect(() => {
     if (isOpen !== swipe.isOpen) {
@@ -160,7 +159,7 @@ const SwipeableDashSidebar = (props: Props) => {
     const isFling = swipe.speed >= MIN_SPEED && isOpening
     if (isFling) {
       onToggle()
-    } else if (xRef.current > HYSTERESIS_THRESH) {
+    } else if (x > HYSTERESIS_THRESH) {
       if (!nextIsOpen) {
         onToggle()
       } else {
@@ -198,14 +197,13 @@ const SwipeableDashSidebar = (props: Props) => {
 
     const movementX = isRightDrawer ? swipe.lastX - clientX : clientX - swipe.lastX
     const minWidth = swipe.isOpen ? 0 : PEEK_WIDTH
-    const nextX = Math.min(SIDEBAR_WIDTH, Math.max(minWidth, xRef.current + movementX))
+    const nextX = Math.min(SIDEBAR_WIDTH, Math.max(minWidth, x + movementX))
     updateSpeed(clientX)
     setX(nextX)
   })
 
   const onMouseDown = useEventCallback((e: React.MouseEvent | React.TouchEvent) => {
     if (swipe.downCaptured) return
-    const {current: x} = xRef
     if (x !== 0 && x !== SIDEBAR_WIDTH) return
     const isTouchStart = e.type === 'touchstart'
     let event: {clientX: number; clientY: number}
@@ -232,8 +230,6 @@ const SwipeableDashSidebar = (props: Props) => {
       }, 100)
     }
   })
-
-  const {current: x} = xRef
 
   return portal(
     <SidebarAndScrim isRightDrawer={isRightDrawer} SIDEBAR_WIDTH={SIDEBAR_WIDTH}>

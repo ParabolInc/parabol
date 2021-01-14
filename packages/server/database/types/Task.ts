@@ -1,10 +1,10 @@
-import shortid from 'shortid'
-import dndNoise from 'parabol-client/utils/dndNoise'
-import getTagsFromEntityMap from 'parabol-client/utils/draftjs/getTagsFromEntityMap'
-import TaskIntegrationJira from './TaskIntegrationJira'
-import TaskIntegrationGitHub from './TaskIntegrationGitHub'
 import {ThreadSourceEnum} from 'parabol-client/types/graphql'
+import dndNoise from 'parabol-client/utils/dndNoise'
 import extractTextFromDraftString from 'parabol-client/utils/draftjs/extractTextFromDraftString'
+import getTagsFromEntityMap from 'parabol-client/utils/draftjs/getTagsFromEntityMap'
+import generateUID from '../../generateUID'
+import TaskIntegrationGitHub from './TaskIntegrationGitHub'
+import TaskIntegrationJira from './TaskIntegrationJira'
 
 export type TaskStatus = 'active' | 'stuck' | 'done' | 'future'
 export type TaskTag = 'private' | 'archived'
@@ -72,7 +72,7 @@ export default class Task {
     } = input
     const {entityMap} = JSON.parse(content)
     const tags = getTagsFromEntityMap<TaskTag>(entityMap)
-    this.id = id || shortid.generate()
+    this.id = id || generateUID()
     this.threadId = threadId || undefined
     this.threadSource = threadSource || undefined
     this.content = content

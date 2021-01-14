@@ -137,7 +137,7 @@ const NewMeeting = (props: Props) => {
     const {lastMeetingType} = selectedTeam
     const meetingIdx = newMeetingOrder.indexOf(lastMeetingType)
     setIdx(meetingIdx)
-  }, [teamId])
+  }, [])
   if (!teamId || !selectedTeam) return null
   return (
     <NewMeetingBlock innerWidth={innerWidth} isDesktop={isDesktop}>

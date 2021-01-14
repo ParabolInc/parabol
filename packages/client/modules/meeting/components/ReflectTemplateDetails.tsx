@@ -19,6 +19,7 @@ import RemoveTemplate from './RemoveTemplate'
 import TemplatePromptList from './TemplatePromptList'
 import TemplateSharing from './TemplateSharing'
 import {MeetingTypeEnum} from '../../../types/graphql'
+import SelectTemplate from './SelectTemplate'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
 import {Threshold} from '../../../types/constEnums'
@@ -73,17 +74,19 @@ const Scrollable = styled('div')({
 interface Props {
   gotoTeamTemplates: () => void
   gotoPublicTemplates: () => void
+  closePortal: () => void
   settings: ReflectTemplateDetails_settings
 }
 
 const ReflectTemplateDetails = (props: Props) => {
-  const {gotoTeamTemplates, gotoPublicTemplates, settings} = props
-  const {teamTemplates, selectedTemplate, team} = settings
-  const {id: templateId, name: templateName, prompts} = selectedTemplate
+  const {gotoTeamTemplates, gotoPublicTemplates, closePortal, settings} = props
+  const {teamTemplates, team} = settings
+  const activeTemplate = settings.activeTemplate ?? settings.selectedTemplate
+  const {id: templateId, name: templateName, prompts} = activeTemplate
   const {id: teamId, orgId} = team
-  const lowestScope = getTemplateList(teamId, orgId, selectedTemplate)
-  const isOwner = selectedTemplate.teamId === teamId
-  const description = makeTemplateDescription(lowestScope, selectedTemplate)
+  const lowestScope = getTemplateList(teamId, orgId, activeTemplate)
+  const isOwner = activeTemplate.teamId === teamId
+  const description = makeTemplateDescription(lowestScope, activeTemplate)
   const templateCount = teamTemplates.length
   const atmosphere = useAtmosphere()
   const {onError, onCompleted, submitting, submitMutation} = useMutationProps()
@@ -136,7 +139,8 @@ const ReflectTemplateDetails = (props: Props) => {
         <TemplatePromptList isOwner={isOwner} prompts={prompts} templateId={templateId} />
         {isOwner && <AddTemplatePrompt templateId={templateId} prompts={prompts} />}
       </Scrollable>
-      <TemplateSharing teamId={teamId} template={selectedTemplate} />
+      <TemplateSharing teamId={teamId} template={activeTemplate} />
+      {activeTemplate.id !== settings.selectedTemplate.id && <SelectTemplate closePortal={closePortal} template={activeTemplate} teamId={teamId} />}
     </PromptEditor>
   )
 }
@@ -158,8 +162,13 @@ graphql`
 export default createFragmentContainer(ReflectTemplateDetails, {
   settings: graphql`
     fragment ReflectTemplateDetails_settings on RetrospectiveMeetingSettings {
+      activeTemplate {
+        ...ReflectTemplateDetailsTemplate @relay(mask: false)
+        ...SelectTemplate_template
+      }
       selectedTemplate {
         ...ReflectTemplateDetailsTemplate @relay(mask: false)
+        ...SelectTemplate_template
       }
       teamTemplates {
         ...EditableTemplateName_teamTemplates

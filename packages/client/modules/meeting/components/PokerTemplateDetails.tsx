@@ -13,6 +13,7 @@ import RemoveTemplate from './RemoveTemplate'
 import TemplateSharing from './TemplateSharing'
 import TemplateDimensionList from './TemplateDimensionList'
 import {MeetingTypeEnum} from '../../../types/graphql'
+import SelectTemplate from './SelectTemplate'
 import AddPokerTemplateDimension from './AddPokerTemplateDimension'
 import {Threshold} from '../../../types/constEnums'
 import AddPokerTemplateMutation from '../../../mutations/AddPokerTemplateMutation'
@@ -68,17 +69,19 @@ const Scrollable = styled('div')({
 interface Props {
   gotoTeamTemplates: () => void
   gotoPublicTemplates: () => void
+  closePortal: () => void
   settings: PokerTemplateDetails_settings
 }
 
 const PokerTemplateDetails = (props: Props) => {
-  const {gotoTeamTemplates, gotoPublicTemplates, settings} = props
-  const {teamTemplates, selectedTemplate, team} = settings
-  const {id: templateId, name: templateName, dimensions} = selectedTemplate
+  const {gotoTeamTemplates, gotoPublicTemplates, closePortal, settings} = props
+  const {teamTemplates, team} = settings
+  const activeTemplate = settings.activeTemplate ?? settings.selectedTemplate
+  const {id: templateId, name: templateName, dimensions} = activeTemplate
   const {id: teamId, orgId} = team
-  const lowestScope = getTemplateList(teamId, orgId, selectedTemplate)
-  const isOwner = selectedTemplate.teamId === teamId
-  const description = makeTemplateDescription(lowestScope, selectedTemplate)
+  const lowestScope = getTemplateList(teamId, orgId, activeTemplate)
+  const isOwner = activeTemplate.teamId === teamId
+  const description = makeTemplateDescription(lowestScope, activeTemplate)
   const templateCount = teamTemplates.length
   const atmosphere = useAtmosphere()
   const {onError, onCompleted, submitting, submitMutation} = useMutationProps()
@@ -123,7 +126,8 @@ const PokerTemplateDetails = (props: Props) => {
         <TemplateDimensionList isOwner={isOwner} dimensions={dimensions} templateId={templateId} />
         {isOwner && <AddPokerTemplateDimension templateId={templateId} dimensions={dimensions} />}
       </Scrollable>
-      <TemplateSharing teamId={teamId} template={selectedTemplate} />
+      <TemplateSharing teamId={teamId} template={activeTemplate} />
+      {activeTemplate.id !== settings.selectedTemplate.id && <SelectTemplate closePortal={closePortal} template={activeTemplate} teamId={teamId} />}
     </DimensionEditor>
   )
 }
@@ -145,8 +149,13 @@ graphql`
 export default createFragmentContainer(PokerTemplateDetails, {
   settings: graphql`
     fragment PokerTemplateDetails_settings on PokerMeetingSettings {
+      activeTemplate {
+        ...PokerTemplateDetailsTemplate @relay(mask: false)
+        ...SelectTemplate_template
+      }
       selectedTemplate {
         ...PokerTemplateDetailsTemplate @relay(mask: false)
+        ...SelectTemplate_template
       }
       teamTemplates {
         ...EditableTemplateName_teamTemplates

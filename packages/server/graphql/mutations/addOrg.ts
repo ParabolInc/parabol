@@ -2,9 +2,9 @@ import {GraphQLNonNull, GraphQLString} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {SuggestedActionTypeEnum} from 'parabol-client/types/graphql'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
-import shortid from 'shortid'
 import AuthToken from '../../database/types/AuthToken'
 import db from '../../db'
+import generateUID from '../../generateUID'
 import removeSuggestedAction from '../../safeMutations/removeSuggestedAction'
 import {getUserId} from '../../utils/authorization'
 import encodeAuthToken from '../../utils/encodeAuthToken'
@@ -49,8 +49,8 @@ export default {
       }
 
       // RESOLUTION
-      const orgId = shortid.generate()
-      const teamId = shortid.generate()
+      const orgId = generateUID()
+      const teamId = generateUID()
       const user = await db.read('User', viewerId)
       const {email} = user
       await createNewOrg(orgId, orgName, viewerId, email)

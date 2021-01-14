@@ -10,7 +10,7 @@ const {SEGMENT_FN_KEY, SERVER_SECRET} = process.env
 
 interface IntranetPayload {
   query: string
-  variables: object
+  variables: Record<string, unknown>
 }
 
 const TOKEN_LIFE = ms('5m')

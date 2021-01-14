@@ -8,6 +8,8 @@ import {
   getDefaultKeyBinding
 } from 'draft-js'
 import React, {RefObject, Suspense, useEffect, useRef} from 'react'
+import completeEntity from '~/utils/draftjs/completeEntity'
+import linkify from '~/utils/linkify'
 import {UseTaskChild} from '../../hooks/useTaskChildFocus'
 import {Card} from '../../types/constEnums'
 import {textTags} from '../../utils/constants'
@@ -150,7 +152,7 @@ const TaskEditor = (props: Props) => {
     return 'not-handled'
   }
 
-  const onPastedText = (text): DraftHandleValue => {
+  const onPastedText = (text: string): DraftHandleValue => {
     if (text) {
       for (let i = 0; i < textTags.length; i++) {
         const tag = textTags[i]
@@ -163,13 +165,23 @@ const TaskEditor = (props: Props) => {
         }
       }
     }
+  const links = linkify.match(text)
+  const url = links && links[0].url.trim()
+  const trimmedText = text.trim()    
+    if (url === trimmedText){
+      const nextEditorState = completeEntity(editorState, 'LINK', {href: url}, trimmedText, {
+      keepSelection: true
+    })
+    setEditorState(nextEditorState)
+    return 'handled'
+  }
     return 'not-handled'
   }
 
   const noText = !editorState.getCurrentContent().hasText()
   const placeholder = 'Describe what “Done” looks like'
   const useFallback = isAndroid && !readOnly
-  const showFallback = useFallback && !isRichDraft(editorState)
+  const showFallback =  useFallback && !isRichDraft(editorState)
   return (
     <RootEditor data-cy={`${dataCy}-editor`} noText={noText} readOnly={readOnly} className={className}>
       {showFallback ? (
@@ -178,6 +190,7 @@ const TaskEditor = (props: Props) => {
             editorState={editorState}
             placeholder={placeholder}
             onKeyDown={onKeyDownFallback}
+            onPastedText={onPastedText}
             editorRef={editorRef}
           />
         </Suspense>

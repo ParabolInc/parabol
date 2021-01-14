@@ -1,6 +1,5 @@
 import React, {useContext, useEffect} from 'react'
 import {commitLocalUpdate} from 'relay-runtime'
-import shortid from 'shortid'
 import {PortalContext, SetPortal} from '../components/AtmosphereProvider/PortalProvider'
 import {SwipeColumn} from '../components/GroupingKanban'
 import {ReflectionDragState} from '../components/ReflectionGroup/DraggableReflectionCard'
@@ -13,6 +12,7 @@ import findDropZoneFromEvent from '../utils/findDropZoneFromEvent'
 import maybeStartReflectionScroll from '../utils/maybeStartReflectionScroll'
 import measureDroppableReflections from '../utils/measureDroppableReflections'
 import getTargetReference from '../utils/multiplayerMasonry/getTargetReference'
+import clientTempId from '../utils/relay/clientTempId'
 import cloneReflection from '../utils/retroGroup/cloneReflection'
 import getIsDrag from '../utils/retroGroup/getIsDrag'
 import getTargetGroupId from '../utils/retroGroup/getTargetGroupId'
@@ -151,10 +151,7 @@ const useDroppingDrag = (
               removeClone(reflectionId, setPortal)
             }
             commitLocalUpdate(atmosphere, (store) => {
-              store
-                .get(reflectionId)!
-                .setValue(false, 'isDropping')
-                .setValue(null, 'remoteDrag')
+              store.get(reflectionId)!.setValue(false, 'isDropping').setValue(null, 'remoteDrag')
             })
           },
           remoteDrag ? Times.REFLECTION_REMOTE_DROP_DURATION : Times.REFLECTION_DROP_DURATION
@@ -255,13 +252,14 @@ const useDragAndDrop = (
       drag.cardOffsetX = Math.min(clientX - bbox.left, bbox.width)
       drag.cardOffsetY = Math.min(clientY - bbox.top, bbox.height)
       drag.clone = cloneReflection(drag.ref, reflectionId)
-      drag.id = shortid.generate()
+      drag.id = clientTempId()
       StartDraggingReflectionMutation(atmosphere, {reflectionId, dragId: drag.id})
     }
     if (!drag.clone) return
     drag.clientY = clientY
-    drag.clone.style.transform = `translate(${clientX - drag.cardOffsetX}px,${clientY -
-      drag.cardOffsetY}px)`
+    drag.clone.style.transform = `translate(${clientX - drag.cardOffsetX}px,${
+      clientY - drag.cardOffsetY
+    }px)`
     const dropZoneEl = findDropZoneFromEvent(e)
     if (dropZoneEl !== drag.dropZoneEl) {
       drag.dropZoneEl = dropZoneEl

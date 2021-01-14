@@ -33,6 +33,9 @@ module.exports = {
     proxy: {
       '/graphql': {
         target: `http://localhost:${SOCKET_PORT}`,
+      },
+      '/intranet-graphql': {
+        target: `http://localhost:${SOCKET_PORT}`,
       }
     },
   },

@@ -1,4 +1,4 @@
-import shortid from 'shortid'
+import generateUID from '../generateUID'
 
 export interface PutFileOptions {
   partialPath: string
@@ -7,11 +7,11 @@ export interface PutFileOptions {
 
 export default abstract class FileStoreManager {
   static getUserAvatarPath(userId: string, ext: string): string {
-    return `User/${userId}/picture/${shortid.generate()}.${ext}`
+    return `User/${userId}/picture/${generateUID()}.${ext}`
   }
 
   static getOrgAvatarPath(orgId: string, ext: string): string {
-    return `Organization/${orgId}/picture/${shortid.generate()}.${ext}`
+    return `Organization/${orgId}/picture/${generateUID()}.${ext}`
   }
 
   protected abstract prependPath(partialPath: string): string

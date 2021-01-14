@@ -5,10 +5,10 @@ import {TierEnum} from 'parabol-client/types/graphql'
 import getSSODomainFromEmail from 'parabol-client/utils/getSSODomainFromEmail'
 import querystring from 'querystring'
 import * as samlify from 'samlify'
-import shortid from 'shortid'
 import getRethink from '../../../database/rethinkDriver'
 import AuthToken from '../../../database/types/AuthToken'
 import User from '../../../database/types/User'
+import generateUID from '../../../generateUID'
 import encodeAuthToken from '../../../utils/encodeAuthToken'
 import bootstrapNewUser from '../../mutations/helpers/bootstrapNewUser'
 import {SSORelayState} from '../../queries/SAMLIdP'
@@ -46,7 +46,10 @@ const loginSAML = {
     const now = new Date()
     const body = querystring.parse(queryString)
     const normalizedName = samlName.trim().toLowerCase()
-    const doc = await r.table('SAML').get(normalizedName).run()
+    const doc = await r
+      .table('SAML')
+      .get(normalizedName)
+      .run()
 
     if (!doc) return {error: {message: `${normalizedName} has not been created in Parabol yet`}}
     const {domains, metadata} = doc
@@ -74,14 +77,19 @@ const loginSAML = {
       return {error: {message: `${email} does not belong to ${domains.join(', ')}`}}
     }
 
-    const user = await r.table('User').getAll(email, {index: 'email'}).nth(0).default(null).run()
+    const user = await r
+      .table('User')
+      .getAll(email, {index: 'email'})
+      .nth(0)
+      .default(null)
+      .run()
     if (user) {
       return {
         authToken: encodeAuthToken(new AuthToken({sub: user.id, tms: user.tms, rol: user.rol}))
       }
     }
 
-    const userId = `sso|${shortid.generate()}`
+    const userId = `sso|${generateUID()}`
     const newUser = new User({
       id: userId,
       email,

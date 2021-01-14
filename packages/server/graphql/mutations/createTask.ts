@@ -9,10 +9,10 @@ import {
 import getTypeFromEntityMap from 'parabol-client/utils/draftjs/getTypeFromEntityMap'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import normalizeRawDraftJS from 'parabol-client/validation/normalizeRawDraftJS'
-import shortid from 'shortid'
 import getRethink from '../../database/rethinkDriver'
 import NotificationTaskInvolves from '../../database/types/NotificationTaskInvolves'
 import Task from '../../database/types/Task'
+import generateUID from '../../generateUID'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish, {SubOptions} from '../../utils/publish'
 import segmentIo from '../../utils/segmentIo'
@@ -234,7 +234,7 @@ export default {
     })
     const {id: taskId, updatedAt} = task
     const history = {
-      id: shortid.generate(),
+      id: generateUID(),
       content,
       taskId,
       status,

@@ -1,12 +1,11 @@
 import {TaskServiceEnum} from 'parabol-client/types/graphql'
-import shortid from 'shortid'
-
+import generateUID from '../../generateUID'
 interface Input {
   service: TaskServiceEnum
 }
 
 export default class TaskIntegration {
-  id = shortid.generate()
+  id = generateUID()
   service: TaskServiceEnum
   constructor(input: Input) {
     const {service} = input

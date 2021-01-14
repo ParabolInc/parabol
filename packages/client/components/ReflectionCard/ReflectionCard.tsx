@@ -68,14 +68,19 @@ const ReflectionCard = (props: Props) => {
     EditReflectionMutation(atmosphere, {isEditing: true, meetingId, promptId})
   }
 
+  const updateIsEditing = (isEditing: boolean) => {
+    commitLocalUpdate(atmosphere, (store) => {
+      const reflection = store.get(reflectionId)
+      if (!reflection) return
+      reflection.setValue(isEditing, 'isEditing')
+    })
+  }
+
   useEffect(() => {
     if (isViewerCreator && !editorState.getCurrentContent().hasText()) {
-      commitLocalUpdate(atmosphere, (store) => {
-        const reflection = store.get(reflectionId)
-        if (!reflection) return
-        reflection.setValue(true, 'isEditing')
-      })
+      updateIsEditing(true)
     }
+    return () => updateIsEditing(false)
   }, [])
 
   const handleContentUpdate = () => {

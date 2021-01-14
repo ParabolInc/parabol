@@ -52,10 +52,7 @@ export default {
     const [validExt, validBuffer] = await validateAvatarUpload(contentType, buffer)
 
     // RESOLUTION
-    const [
-      normalExt,
-      normalBuffer
-    ] = await normalizeAvatarUpload(validExt, validBuffer)
+    const [normalExt, normalBuffer] = await normalizeAvatarUpload(validExt, validBuffer)
     const orgAvatarPath = FileStoreManager.getOrgAvatarPath(orgId, normalExt)
     const publicLocation = await getFileStoreManager().putFile({
       partialPath: orgAvatarPath,

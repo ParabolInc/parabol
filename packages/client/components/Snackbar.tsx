@@ -1,7 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useEffect, useLayoutEffect, useRef} from 'react'
-import shortid from 'shortid'
 import useForceUpdate from '~/hooks/useForceUpdate'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useEventCallback from '../hooks/useEventCallback'
@@ -9,6 +8,7 @@ import useLocalQuery from '../hooks/useLocalQuery'
 import usePortal from '../hooks/usePortal'
 import useTransition from '../hooks/useTransition'
 import {ZIndex} from '../types/constEnums'
+import clientTempId from '../utils/relay/clientTempId'
 import {SnackbarQuery} from '../__generated__/SnackbarQuery.graphql'
 import SnackbarMessage from './SnackbarMessage'
 
@@ -59,11 +59,9 @@ const Snackbar = React.memo(() => {
   const snackQueueRef = useRef<Snack[]>([])
   const activeSnacksRef = useRef<Snack[]>([])
   const forceUpdate = useForceUpdate()
-  // const [snacksRef, setActiveSnacks] = useRefState<Snack[]>([])
   const atmosphere = useAtmosphere()
   const {openPortal, terminatePortal, portal} = usePortal({id: 'snackbar', noClose: true})
   const transitionChildren = useTransition(activeSnacksRef.current)
-  // const transitionChildrenRef = useRef(transitionChildren)
   const data = useLocalQuery<SnackbarQuery>(query)
   const snackbarOffset = data?.viewer?.snackbarOffset
   // used to ensure the snack isn't dismissed when the cursor is on it
@@ -125,7 +123,7 @@ const Snackbar = React.memo(() => {
         return
       }
     }
-    const keyedSnack = {key: shortid.generate(), ...snack}
+    const keyedSnack = {key: clientTempId(), ...snack}
     if (transitionChildren.length < MAX_SNACKS) {
       showSnack(keyedSnack)
     } else {

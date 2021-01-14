@@ -1,6 +1,6 @@
-import shortid from 'shortid'
 import {PALETTE} from '../../../client/styles/paletteV2'
 import {PokerCards} from '../../../client/types/constEnums'
+import generateUID from '../../generateUID'
 import TemplateScaleValue from './TemplateScaleValue'
 
 export interface TemplateScaleInput {
@@ -36,7 +36,7 @@ export default class TemplateScale {
 
   constructor(input: TemplateScaleInput) {
     const {name, sortOrder, values, teamId, parentScaleId, isStarter, removedAt} = input
-    this.id = shortid.generate()
+    this.id = generateUID()
     this.sortOrder = sortOrder
     this.name = name
     this.values = values || [questionMarkCard, passCard]

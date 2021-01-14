@@ -1,7 +1,7 @@
-import shortid from 'shortid'
-import Reactji from './Reactji'
 import {ThreadSourceEnum} from 'parabol-client/types/graphql'
 import extractTextFromDraftString from 'parabol-client/utils/draftjs/extractTextFromDraftString'
+import generateUID from '../../generateUID'
+import Reactji from './Reactji'
 
 export interface CommentInput {
   id?: string
@@ -50,7 +50,7 @@ export default class Comment {
       isAnonymous,
       reactjis
     } = input
-    this.id = id || shortid.generate()
+    this.id = id || generateUID()
     this.content = content
     this.createdAt = createdAt || new Date()
     this.createdBy = createdBy

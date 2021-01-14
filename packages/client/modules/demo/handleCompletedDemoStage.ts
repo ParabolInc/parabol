@@ -1,12 +1,12 @@
-import shortid from 'shortid'
 import {ReactableEnum, ThreadSourceEnum} from '~/types/graphql'
 import {ACTIVE, DISCUSS, GROUP, REFLECT, VOTE} from '../../utils/constants'
 import extractTextFromDraftString from '../../utils/draftjs/extractTextFromDraftString'
 import makeDiscussionStage from '../../utils/makeDiscussionStage'
 import mapGroupsToStages from '../../utils/makeGroupsToStages'
+import clientTempId from '../../utils/relay/clientTempId'
+import commentLookup from './commentLookup'
 import reactjiLookup from './reactjiLookup'
 import taskLookup from './taskLookup'
-import commentLookup from './commentLookup'
 
 const removeEmptyReflections = (db) => {
   const reflections = db.reflections.filter((reflection) => reflection.isActive)
@@ -181,7 +181,7 @@ const addDiscussionTopics = (db) => {
   const placeholderStage = discussPhase.stages[0]
   const sortedReflectionGroups = mapGroupsToStages(db.reflectionGroups)
   const nextDiscussStages = sortedReflectionGroups.map((reflectionGroup, idx) => {
-    const id = idx === 0 ? placeholderStage.id : shortid.generate()
+    const id = idx === 0 ? placeholderStage.id : clientTempId()
     const discussStage = makeDiscussionStage(reflectionGroup.id, meetingId, idx, id)
     addStageToBotScript(id, db, reflectionGroup.id)
     return Object.assign(discussStage, {
