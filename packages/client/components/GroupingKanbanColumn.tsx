@@ -13,7 +13,13 @@ import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
 import CreateReflectionMutation from '../mutations/CreateReflectionMutation'
 import {PALETTE} from '../styles/paletteV2'
-import {BezierCurve, Breakpoint, DragAttribute, MeetingControlBarEnum} from '../types/constEnums'
+import {
+  BezierCurve,
+  Breakpoint,
+  DragAttribute,
+  ElementWidth,
+  MeetingControlBarEnum
+} from '../types/constEnums'
 import {NewMeetingPhaseTypeEnum} from '../types/graphql'
 import getNextSortOrder from '../utils/getNextSortOrder'
 import {SwipeColumn} from './GroupingKanban'
@@ -32,6 +38,7 @@ const Column = styled('div')<{
   flex: 1,
   flexDirection: 'column',
   height: '100%',
+  minWidth: ElementWidth.REFLECTION_COLUMN,
   padding: 0,
   position: 'relative',
   transition: `all 100ms ${BezierCurve.DECELERATE}`,
