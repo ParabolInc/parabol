@@ -15,10 +15,7 @@ import processInvoiceItemHook from './processInvoiceItemHook'
 
 const maybeUpdateOrganizationActiveDomain = async (orgId: string, userId: string) => {
   const r = await getRethink()
-  const organization = await r
-    .table('Organization')
-    .get(orgId)
-    .run()
+  const organization = await r.table('Organization').get(orgId).run()
   const {isActiveDomainTouched, activeDomain} = organization
   // don't modify if the domain was set manually
   if (isActiveDomainTouched) return
@@ -84,10 +81,7 @@ const addUser = async (orgIds: string[], userId: string) => {
       new Date()
     return new OrganizationUser({orgId, userId, newUserUntil, tier: organization.tier})
   })
-  await r
-    .table('OrganizationUser')
-    .insert(docs)
-    .run()
+  await r.table('OrganizationUser').insert(docs, {conflict: 'replace'}).run()
   await Promise.all(
     orgIds.map((orgId) => {
       return maybeUpdateOrganizationActiveDomain(orgId, userId)
@@ -132,11 +126,7 @@ export default async function adjustUserCount(
   const paidOrgs = await r
     .table('Organization')
     .getAll(r.args(orgIds), {index: 'id'})
-    .filter((org) =>
-      org('stripeSubscriptionId')
-        .default(null)
-        .ne(null)
-    )
+    .filter((org) => org('stripeSubscriptionId').default(null).ne(null))
     .run()
 
   const proOrgs = paidOrgs.filter((org) => org.tier === TierEnum.pro)
@@ -163,10 +153,7 @@ export default async function adjustUserCount(
     })
   })
 
-  await r
-    .table('InvoiceItemHook')
-    .insert(hooks)
-    .run()
+  await r.table('InvoiceItemHook').insert(hooks).run()
 
   hooks.forEach((hook) => {
     processInvoiceItemHook(hook.stripeSubscriptionId).catch()

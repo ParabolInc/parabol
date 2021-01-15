@@ -1,6 +1,4 @@
 import {OrgUserRole, TierEnum} from 'parabol-client/types/graphql'
-import generateUID from '../../generateUID'
-
 interface Input {
   orgId: string
   userId: string
@@ -26,7 +24,7 @@ export default class OrganizationUser {
 
   constructor(input: Input) {
     const {userId, id, removedAt, inactive, orgId, joinedAt, newUserUntil, role, tier} = input
-    this.id = id || generateUID()
+    this.id = id || `${userId}::${orgId}`
     this.inactive = inactive || false
     this.joinedAt = joinedAt || new Date()
     this.newUserUntil = newUserUntil || new Date()
