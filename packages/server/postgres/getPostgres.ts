@@ -19,7 +19,7 @@ const getPostgres = (dbKey: dbKeys = dbKeys.web) => {
   if (!poolMap[dbKey]) {
     poolMap[dbKey] = new Pool({
       connectionString: pgUrlMap[dbKey],
-      max: process.env.NODE_ENV === 'production' ? 85 : 5
+      max: process.env.NODE_ENV === 'production' ? 85 : 5 // leave 15 conns for su management in production
     })
   }
   return poolMap[dbKey]
