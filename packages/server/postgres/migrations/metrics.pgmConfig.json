@@ -1,0 +1,5 @@
+{
+  "migrations-dir": "./packages/server/postgres/migrations/metrics",
+  "migration-file-language": "ts",
+  "database-url-var": "PG_METRICS_URL"
+}
