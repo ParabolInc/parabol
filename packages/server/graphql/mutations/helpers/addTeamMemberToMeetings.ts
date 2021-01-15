@@ -13,6 +13,10 @@ import createMeetingMembers from './createMeetingMembers'
  */
 
 const setInPhase = (phase: CheckInPhase | UpdatesPhase, newStage: CheckInStage | UpdatesStage) => {
+  const isMemberInMeeting = phase.stages.find(
+    (stage) => stage.teamMemberId === newStage.teamMemberId
+  )
+  if (isMemberInMeeting) return
   const firstStage = phase.stages[0]
   const isPhaseComplete = phase.stages.every((stage) => stage.isComplete)
   newStage.isNavigable = firstStage.isNavigable
@@ -46,13 +50,10 @@ const addTeamMemberToMeetings = async (
       }
       const [meetingMember] = createMeetingMembers(activeMeeting, [teamMember])
       await r({
-        meeting: r
-          .table('NewMeeting')
-          .get(meetingId)
-          .update({
-            phases,
-            updatedAt: now
-          }),
+        meeting: r.table('NewMeeting').get(meetingId).update({
+          phases,
+          updatedAt: now
+        }),
         member: r.table('MeetingMember').insert(meetingMember)
       }).run()
     })
