@@ -8,6 +8,7 @@ import Icon from './Icon'
 import RetroPrompt from './RetroPrompt'
 import {Breakpoint} from '~/types/constEnums'
 import useBreakpoint from '~/hooks/useBreakpoint'
+import {NewMeetingPhaseTypeEnum} from '../types/graphql'
 
 const AddReflectionButton = styled(FlatButton)({
   border: 0,
@@ -64,13 +65,14 @@ interface Props {
   groupColor: string
   isWidthExpanded: boolean
   onClick: () => void
+  phaseType: string | null
   question: string
   submitting: boolean
   toggleWidth: (e: MouseEvent<Element>) => void
 }
 
 const GroupingKanbanColumnHeader = (props: Props) => {
-  const {canAdd, groupColor, isWidthExpanded, onClick, question, submitting, toggleWidth} = props
+  const {canAdd, groupColor, isWidthExpanded, onClick, question, phaseType, submitting, toggleWidth} = props
   const {
     tooltipPortal: addReflectionPortal,
     openTooltip: openReflectionTooltip,
@@ -94,7 +96,8 @@ const GroupingKanbanColumnHeader = (props: Props) => {
           {question}
         </Prompt>
         <ButtonGroup>
-          <AddReflectionButton
+          {phaseType === NewMeetingPhaseTypeEnum.group && (
+            <AddReflectionButton
             dataCy={`add-reflection-${question}`}
             aria-label={'Add a reflection'}
             disabled={!canAdd}
@@ -103,9 +106,11 @@ const GroupingKanbanColumnHeader = (props: Props) => {
             onMouseLeave={closeReflectionTooltip}
             ref={addReflectionRef}
             waiting={submitting}
-          >
+            >
             <Icon>add</Icon>
           </AddReflectionButton>
+            )
+          }
           {addReflectionPortal(<div>Add new reflection</div>)}
           {isDesktop && (
             <>

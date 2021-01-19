@@ -148,6 +148,7 @@ const GroupingKanbanColumn = (props: Props) => {
         isWidthExpanded={isWidthExpanded}
         onClick={onClick}
         question={question}
+        phaseType={phaseType}
         submitting={submitting}
         toggleWidth={toggleWidth}
       />
