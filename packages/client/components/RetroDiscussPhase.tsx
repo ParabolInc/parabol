@@ -1,9 +1,10 @@
 import styled from '@emotion/styled'
 import * as Sentry from '@sentry/browser'
 import graphql from 'babel-plugin-relay/macro'
-import React, {useRef} from 'react'
+import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import useBreakpoint from '~/hooks/useBreakpoint'
+import useCallbackRef from '~/hooks/useCallbackRef'
 import {RetroDiscussPhase_meeting} from '~/__generated__/RetroDiscussPhase_meeting.graphql'
 import EditorHelpModalContainer from '../containers/EditorHelpModalContainer/EditorHelpModalContainer'
 import {PALETTE} from '../styles/paletteV2'
@@ -135,7 +136,7 @@ const ColumnInner = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
 
 const RetroDiscussPhase = (props: Props) => {
   const {avatarGroup, toggleSidebar, meeting} = props
-  const phaseRef = useRef<HTMLDivElement>(null)
+  const [callbackRef, phaseRef] = useCallbackRef()
   const {id: meetingId, endedAt, localStage, showSidebar, organization} = meeting
   const {reflectionGroup} = localStage
   const isDesktop = useBreakpoint(Breakpoint.SINGLE_REFLECTION_COLUMN)
@@ -153,7 +154,7 @@ const RetroDiscussPhase = (props: Props) => {
     Sentry.captureException(new Error(`NO REFLECTIONS ${JSON.stringify(errObj)}`))
   }
   return (
-    <MeetingContent ref={phaseRef}>
+    <MeetingContent ref={callbackRef}>
       <DiscussPhaseSqueeze meeting={meeting} organization={organization} />
       <MeetingHeaderAndPhase hideBottomBar={!!endedAt}>
         <MeetingTopBar

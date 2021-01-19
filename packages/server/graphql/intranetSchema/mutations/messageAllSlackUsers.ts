@@ -27,7 +27,10 @@ const messageAllSlackUsers = {
     requireSU(authToken)
 
     // RESOLUTION
-    const allSlackAuths = await r.table('SlackAuth').filter({isActive: true}).run()
+    const allSlackAuths = await r
+      .table('SlackAuth')
+      .filter({isActive: true})
+      .run()
     if (!allSlackAuths || !allSlackAuths.length) {
       return standardError(new Error('No authorised Slack users'))
     }

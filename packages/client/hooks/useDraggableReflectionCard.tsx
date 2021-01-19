@@ -151,10 +151,7 @@ const useDroppingDrag = (
               removeClone(reflectionId, setPortal)
             }
             commitLocalUpdate(atmosphere, (store) => {
-              store
-                .get(reflectionId)!
-                .setValue(false, 'isDropping')
-                .setValue(null, 'remoteDrag')
+              store.get(reflectionId)!.setValue(false, 'isDropping').setValue(null, 'remoteDrag')
             })
           },
           remoteDrag ? Times.REFLECTION_REMOTE_DROP_DURATION : Times.REFLECTION_DROP_DURATION
@@ -260,8 +257,9 @@ const useDragAndDrop = (
     }
     if (!drag.clone) return
     drag.clientY = clientY
-    drag.clone.style.transform = `translate(${clientX - drag.cardOffsetX}px,${clientY -
-      drag.cardOffsetY}px)`
+    drag.clone.style.transform = `translate(${clientX - drag.cardOffsetX}px,${
+      clientY - drag.cardOffsetY
+    }px)`
     const dropZoneEl = findDropZoneFromEvent(e)
     if (dropZoneEl !== drag.dropZoneEl) {
       drag.dropZoneEl = dropZoneEl

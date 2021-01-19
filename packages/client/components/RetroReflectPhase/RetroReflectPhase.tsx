@@ -1,6 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
-import React, {useRef, useState} from 'react'
+import React, {useState} from 'react'
 import {createFragmentContainer} from 'react-relay'
+import useCallbackRef from '~/hooks/useCallbackRef'
 import {RetroReflectPhase_meeting} from '~/__generated__/RetroReflectPhase_meeting.graphql'
 import useBreakpoint from '../../hooks/useBreakpoint'
 import {Breakpoint} from '../../types/constEnums'
@@ -24,7 +25,7 @@ interface Props extends RetroMeetingPhaseProps {
 
 const RetroReflectPhase = (props: Props) => {
   const {avatarGroup, toggleSidebar, meeting} = props
-  const phaseRef = useRef<HTMLDivElement>(null)
+  const [callbackRef, phaseRef] = useCallbackRef()
   const [activeIdx, setActiveIdx] = useState(0)
   const isDesktop = useBreakpoint(Breakpoint.SINGLE_REFLECTION_COLUMN)
   const {localPhase, endedAt, showSidebar} = meeting
@@ -33,7 +34,7 @@ const RetroReflectPhase = (props: Props) => {
   const focusedPromptId = localPhase!.focusedPromptId
   const ColumnWrapper = isDesktop ? ReflectWrapperDesktop : ReflectWrapperMobile
   return (
-    <MeetingContent ref={phaseRef}>
+    <MeetingContent ref={callbackRef}>
       <MeetingHeaderAndPhase hideBottomBar={!!endedAt}>
         <MeetingTopBar
           avatarGroup={avatarGroup}
@@ -75,6 +76,7 @@ graphql`
     reflectPrompts {
       ...PhaseItemColumn_prompt
       id
+      sortOrder
     }
   }
 `

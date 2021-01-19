@@ -2,6 +2,7 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {RefObject, useMemo, useState} from 'react'
 import {createFragmentContainer} from 'react-relay'
+import useCallbackRef from '~/hooks/useCallbackRef'
 import {GroupingKanban_meeting} from '~/__generated__/GroupingKanban_meeting.graphql'
 import useBreakpoint from '../hooks/useBreakpoint'
 import useHideBodyScroll from '../hooks/useHideBodyScroll'
@@ -38,6 +39,8 @@ const GroupingKanban = (props: Props) => {
   const {reflectionGroups, phases} = meeting
   const reflectPhase = phases.find((phase) => phase.phaseType === NewMeetingPhaseTypeEnum.reflect)!
   const reflectPrompts = reflectPhase.reflectPrompts!
+  const reflectPromptsCount = reflectPrompts.length
+  const [callbackRef, columnsRef] = useCallbackRef()
   useHideBodyScroll()
   const {groupsByPrompt, isAnyEditing} = useMemo(() => {
     const container = {} as {[promptId: string]: typeof reflectionGroups[0][]}
@@ -64,9 +67,10 @@ const GroupingKanban = (props: Props) => {
       )
   }, [isDesktop, reflectionGroups])
   const swipeColumn: SwipeColumn = useThrottledEvent((offset: number) => {
-    const nextIdx = Math.min(reflectPrompts.length - 1, Math.max(0, activeIdx + offset))
+    const nextIdx = Math.min(reflectPromptsCount - 1, Math.max(0, activeIdx + offset))
     setActiveIdx(nextIdx)
   }, Times.REFLECTION_COLUMN_SWIPE_THRESH)
+  if (!phaseRef.current) return null
   return (
     <PortalProvider>
       <ColumnsBlock isDesktop={isDesktop}>
@@ -74,9 +78,11 @@ const GroupingKanban = (props: Props) => {
           setActiveIdx={setActiveIdx}
           activeIdx={activeIdx}
           disabled={isViewerDragging}
+          ref={isDesktop ? callbackRef : undefined}
         >
           {reflectPrompts.map((prompt) => (
             <GroupingKanbanColumn
+              columnsRef={columnsRef}
               isAnyEditing={isAnyEditing}
               isDesktop={isDesktop}
               key={prompt.id}
@@ -84,6 +90,7 @@ const GroupingKanban = (props: Props) => {
               phaseRef={phaseRef}
               prompt={prompt}
               reflectionGroups={groupsByPrompt[prompt.id] || []}
+              reflectPromptsCount={reflectPromptsCount}
               swipeColumn={swipeColumn}
             />
           ))}

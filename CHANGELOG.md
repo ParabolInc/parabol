@@ -5,6 +5,23 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 5.31.2 2021-Jan-14
+### Added
+- Making grouping columns responsive in retrospective meeting (#3614)
+
+### Changed
+- Links in discussion thread comments are now clickable links (#4345)
+- More intuitive template dialog with FAB button (#4128)
+- Preparation work for Slack migration (#4373)
+
+### Fixed
+
+- Sprint Poker meetings ended before Scoping phases shouldn't generate a summary (#4465)
+- Better UI for many Jira projects import (#4512)
+- Carousel scrolls to different meeting type after changing team (#4484)
+- CSV export is malformed (#4489)
+- Other performance improvements (#4488, #4506, #4513)
+
 ## 5.30.0 2021-Jan-06
 
 ### Changed

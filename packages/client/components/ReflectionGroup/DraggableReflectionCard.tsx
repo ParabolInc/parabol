@@ -14,6 +14,7 @@ export interface DropZoneBBox {
   height: number
   top: number
   bottom: number
+  width: number
 }
 
 const makeDragState = () => ({
