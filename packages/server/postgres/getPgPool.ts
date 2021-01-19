@@ -1,7 +1,7 @@
-import { Pool } from 'pg'
+import {Pool} from 'pg'
 
 let pool
-const getPostgres = () => {
+const getPgPool = () => {
   if (!pool) {
     pool = new Pool({
       connectionString: process.env.POSTGRES_URL,
@@ -11,4 +11,4 @@ const getPostgres = () => {
   return pool
 }
 
-export default getPostgres
+export default getPgPool
