@@ -9,6 +9,7 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 ### Fixed
 - Fixed a bug where tasks didn’t update #4556
 - Fixed a bug with client tempId #4560
+- Fixed a bug with the group title error message #4562
 
 ## 5.31.2 2021-Jan-14
 ### Added
