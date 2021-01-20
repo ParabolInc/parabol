@@ -165,7 +165,7 @@ const ReflectionGroupTitleEditor = (props: Props) => {
             value={title || ''}
           />
         </FormBlock>
-        {error && <StyledError>{error}</StyledError>}
+        {error && <StyledError>{error.message}</StyledError>}
       </RootBlock>
     </InputWithIconWrap>
   )
