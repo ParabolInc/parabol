@@ -20,8 +20,6 @@ const useEditorState = (content?: string | null | undefined) => {
     if (!content) return
     const parsedContent = JSON.parse(content)
     if (!parsedContent.blocks) return
-    const parsedBlock = parsedContent.blocks[0]
-    const {text, key} = parsedBlock
     const editorStateContent = editorStateRef.current.getCurrentContent()
     const editorStateBlock = editorStateContent.getLastBlock()
     const editorStateKey = editorStateBlock.getKey()
@@ -49,10 +47,6 @@ const useEditorState = (content?: string | null | undefined) => {
       return
     }
 
-    if (editorStateText === text && editorStateKey === key) {
-      Sentry.captureException(new Error(`useEditorState text is same as last block`))
-      return
-    }
     lastFiredRef.current = now
     setEditorState(editorStateRef.current)
   }, [content])
