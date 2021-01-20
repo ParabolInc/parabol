@@ -1,5 +1,0 @@
-{
-  "migrations-dir": "./packages/server/postgres/migrations/web",
-  "migration-file-language": "ts",
-  "database-url-var": "PG_WEB_URL"
-}
