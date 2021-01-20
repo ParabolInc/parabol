@@ -5,6 +5,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 5.32.0 2021-Jan-20
+### Fixed
+- Fixed a bug where tasks didn’t update #4556
+- Fixed a bug with client tempId #4560
+
 ## 5.31.2 2021-Jan-14
 ### Added
 - Making grouping columns responsive in retrospective meeting (#3614)
