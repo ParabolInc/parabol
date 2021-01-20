@@ -13,7 +13,7 @@ const useEditorState = (content?: string | null | undefined) => {
   const lastFiredRef = useRef<Date | null>(null)
   const initialRender = useRef(true)
   useEffect(() => {
-    if (initialRender) {
+    if (initialRender.current) {
       initialRender.current = false
       return
     }
