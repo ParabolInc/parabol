@@ -116,7 +116,7 @@
     "node-env-flag": "0.1.0",
     "node-fetch": "^2.6.0",
     "nodemailer": "^6.4.6",
-    "parabol-client": "^5.31.0",
+    "parabol-client": "^5.31.3",
     "pg": "^8.5.1",
     "pm2": "^4.4.1",
     "react": "^16.12.0",

@@ -1,4 +1,2 @@
-FROM postgres:13.1
-ENV POSTGRES_PASSWORD password
-COPY init.sql /docker-entrypoint-initdb.d/
+FROM postgres:12.5
 COPY postgres.conf /usr/local/etc/postgres/postgres.conf
