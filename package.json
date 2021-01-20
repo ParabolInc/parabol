@@ -26,7 +26,6 @@
     "build": "node scripts/prod.js",
     "db:create": "node scripts/toolbox/createMigration.js",
     "db:migrate": "node scripts/migrate.js",
-    "pg:metrics": "ts-node node_modules/node-pg-migrate/bin/node-pg-migrate -f ./packages/server/postgres/migrations/metrics.pgmConfig.json",
     "pg:web": "ts-node node_modules/node-pg-migrate/bin/node-pg-migrate -f ./packages/server/postgres/migrations/web.pgmConfig.json",
     "postdeploy": "node scripts/toolbox/postDeploy.js",
     "dev": "node scripts/dev.js && pm2-runtime start pm2.dev.config.js",
