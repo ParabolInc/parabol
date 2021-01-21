@@ -13,6 +13,8 @@ export interface ConnectedSubs {
   [opId: string]: AsyncIterableIterator<ExecutionResult>
 }
 
+export type ReliableQueue = {[synId: number]: NodeJS.Timer}
+
 class ConnectionContext<T = WebSocket | HttpResponse> {
   authToken: AuthToken
   availableResubs: any[] = []
@@ -25,6 +27,8 @@ class ConnectionContext<T = WebSocket | HttpResponse> {
   subs: ConnectedSubs = {}
   isReady = false
   readyQueue = [] as (() => void)[]
+  reliableQueue = {} as ReliableQueue
+  synId = 0 as number
   constructor(socket: T, authToken: AuthToken, ip: string) {
     const prefix = isHttpResponse(socket) ? 'sse' : 'ws'
     this.authToken = authToken

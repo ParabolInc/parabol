@@ -44,10 +44,10 @@ export interface PubSubPayload {
 }
 
 const documentCache = new DocumentCache()
-
+const reliableSubscriptionPayloadBlackList = ['UpdateDragLocationPayload']
 const subscribeGraphQL = async (req: SubscribeRequest) => {
   const {connectionContext, variables, docId, query, opId, hideErrors} = req
-  const {id: socketId, authToken, socket} = connectionContext
+  const {id: socketId, authToken} = connectionContext
   const document = docId ? await documentCache.fromID(docId) : documentCache.fromString(query!)
   if (!document) {
     if (!hideErrors) {
@@ -93,7 +93,10 @@ const subscribeGraphQL = async (req: SubscribeRequest) => {
         reason: TrebuchetCloseReason.SESSION_INVALIDATED
       })
     }
-    sendGQLMessage(socket, 'data', payload, opId)
+    const subscriptionName = Object.keys(data)[0]
+    const subscriptionType = data[subscriptionName].__typename
+    const syn = !reliableSubscriptionPayloadBlackList.includes(subscriptionType)
+    sendGQLMessage(connectionContext, 'data', syn, payload, opId)
   }
   const resubIdx = connectionContext.availableResubs.indexOf(opId)
   if (resubIdx !== -1) {
@@ -101,7 +104,7 @@ const subscribeGraphQL = async (req: SubscribeRequest) => {
     connectionContext.availableResubs.splice(resubIdx, 1)
     subscribeGraphQL({...req, hideErrors: true}).catch()
   } else {
-    sendGQLMessage(socket, 'complete', undefined, opId)
+    sendGQLMessage(connectionContext, 'complete', false, undefined, opId)
   }
 }
 

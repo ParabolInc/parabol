@@ -29,17 +29,27 @@ const handleParsedMessage = async (
     const response = await handleGraphQLTrebuchetRequest(msg, connectionContext)
     if (response) {
       const {type, id: opId, payload} = response
-      sendGQLMessage(socket, type, payload, opId)
+      sendGQLMessage(connectionContext, type, false, payload, opId)
     }
   })
 }
 
 const PONG = 65
+const ACK_PREFIX = 6
 const isPong = (message) => message.byteLength === 1 && Buffer.from(message)[0] === PONG
+const isAck = (message) => message.byteLength === 2 && Buffer.from(message)[0] === ACK_PREFIX
+
 const handleMessage = (websocket: WebSocket, message: ArrayBuffer) => {
   const {connectionContext} = websocket
   if (isPong(message)) {
     keepAlive(connectionContext)
+    return
+  }
+  if (isAck(message)) {
+    const ackId = Buffer.from(message)[1]
+    const timeout: NodeJS.Timeout = connectionContext.reliableQueue[ackId]
+    clearTimeout(timeout)
+    delete connectionContext.reliableQueue[ackId]
     return
   }
   let parsedMessage

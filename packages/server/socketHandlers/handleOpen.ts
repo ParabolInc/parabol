@@ -15,7 +15,7 @@ const handleOpen: WebSocketBehavior['open'] = async (socket: WebSocket) => {
   ))
   // messages will start coming in before handleConnect completes & sit in the readyQueue
   const nextAuthToken = await handleConnect(connectionContext)
-  sendEncodedMessage(socket, {version: APP_VERSION, authToken: nextAuthToken})
+  sendEncodedMessage(connectionContext, {version: APP_VERSION, authToken: nextAuthToken})
   keepAlive(connectionContext)
 }
 
