@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {useEffect, useState} from 'react'
+import React, {useState} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import useGetUsedServiceTaskIds from '~/hooks/useGetUsedServiceTaskIds'
 import MockScopingList from '~/modules/meeting/components/MockScopingList'
@@ -12,8 +12,8 @@ import {JiraScopingSearchResults_viewer} from '../__generated__/JiraScopingSearc
 import IntegrationScopingNoResults from './IntegrationScopingNoResults'
 import JiraScopingSearchResultItem from './JiraScopingSearchResultItem'
 import JiraScopingSelectAllIssues from './JiraScopingSelectAllIssues'
-import NewJiraIssueInput from './NewJiraIssueInput'
 import NewIntegrationRecordButton from './NewIntegrationRecordButton'
+import NewJiraIssueInput from './NewJiraIssueInput'
 
 const ResultScroller = styled('div')({
   overflow: 'auto'
@@ -27,46 +27,28 @@ interface Props {
 const JiraScopingSearchResults = (props: Props) => {
   const {viewer, meeting} = props
   const atlassian = viewer?.teamMember!.integrations.atlassian ?? null
-  const issues = atlassian?.issues! ?? null
-  const incomingEdges = issues?.edges ?? null
+  const issues = atlassian?.issues ?? null
+  const edges = issues?.edges ?? null
   const error = issues?.error ?? null
   const [isEditing, setIsEditing] = useState(false)
-  const [edges, setEdges] = useState([] as readonly any[])
   const atmosphere = useAtmosphere()
-  useEffect(() => {
-    if (incomingEdges) {
-      setEdges(incomingEdges)
-      setIsEditing(false)
-    }
-  }, [incomingEdges])
   const {id: meetingId, teamId, phases, jiraSearchQuery} = meeting
   const estimatePhase = phases.find(({phaseType}) => phaseType === NewMeetingPhaseTypeEnum.ESTIMATE)
   const usedServiceTaskIds = useGetUsedServiceTaskIds(estimatePhase)
-
-  // Terry, you can use this in case you need to put some final touches on styles
-  /*   const [showMock, setShowMock] = useState(false)
-    useHotkey('f', () => {
-      setShowMock(!showMock)
-    })
-    if (showMock) {
-      return (
-        <MockScopingList />
-      )
-    } */
-
   const handleAddIssueClick = () => setIsEditing(true)
 
+  // even though it's a little herky jerky, we need to give the user feedback that a search is pending
+  // TODO fix flicker after viewer is present but edges isn't set
+  if (!edges) {
+    return <MockScopingList />
+  }
   if (edges.length === 0 && !isEditing) {
-    // only show the mock on the initial load or if the last query returned no results and
-    // the user isn't adding a new jira issue
-    return viewer ? (
+    return (
       <>
         <IntegrationScopingNoResults error={error?.message} msg={'No issues match that query'} />
         <NewIntegrationRecordButton onClick={handleAddIssueClick} labelText={'New Issue'} />
       </>
-    ) : (
-        <MockScopingList />
-      )
+    )
   }
 
   const persistQuery = () => {
@@ -114,11 +96,9 @@ const JiraScopingSearchResults = (props: Props) => {
           )
         })}
       </ResultScroller>
-      {!isEditing &&
-        <NewIntegrationRecordButton
-          onClick={handleAddIssueClick}
-          labelText={'New Issue'}
-        />}
+      {!isEditing && (
+        <NewIntegrationRecordButton onClick={handleAddIssueClick} labelText={'New Issue'} />
+      )}
     </>
   )
 }

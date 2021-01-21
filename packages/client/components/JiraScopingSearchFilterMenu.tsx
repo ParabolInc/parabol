@@ -116,7 +116,9 @@ const JiraScopingSearchFilterMenu = (props: Props) => {
   const toggleJQL = () => {
     commitLocalUpdate(atmosphere, (store) => {
       const searchQueryId = `jiraSearchQuery:${meetingId}`
-      const jiraSearchQuery = store.get<IJiraSearchQuery>(searchQueryId)!
+      const jiraSearchQuery = store.get<IJiraSearchQuery>(searchQueryId)
+      // this might bork if the checkbox is ticked before the full query loads
+      if (!jiraSearchQuery) return
       jiraSearchQuery.setValue(!isJQL, 'isJQL')
       jiraSearchQuery.setValue([], 'projectKeyFilters')
     })
