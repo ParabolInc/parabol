@@ -3,15 +3,15 @@ import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import Atmosphere from '~/Atmosphere'
+import {SearchQueryMeetingPropName} from '~/utils/relay/LocalPokerHandler'
 import useAtmosphere from '../hooks/useAtmosphere'
 import {PALETTE} from '../styles/paletteV2'
 import {JiraScopingSearchInput_meeting} from '../__generated__/JiraScopingSearchInput_meeting.graphql'
 import Icon from './Icon'
-import {SearchQueryMeetingPropName} from '~/utils/relay/LocalPokerHandler'
 
 const SearchInput = styled('input')({
   appearance: 'none',
-  border: '1px solid transparent',
+  border: 'none',
   color: PALETTE.TEXT_MAIN,
   fontSize: 16,
   margin: 0,
@@ -49,9 +49,10 @@ interface Props {
 const JiraScopingSearchInput = (props: Props) => {
   const {meeting} = props
   const {id: meetingId, jiraSearchQuery} = meeting
-  const {queryString} = jiraSearchQuery
+  const {isJQL, queryString} = jiraSearchQuery
   const isEmpty = !queryString
   const atmosphere = useAtmosphere()
+  const placeholder = isJQL ? `SPRINT = fun AND PROJECT = dev` : 'Search issues on Jira'
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const {value} = e.target
     setSearch(atmosphere, meetingId, value)
@@ -61,7 +62,7 @@ const JiraScopingSearchInput = (props: Props) => {
   }
   return (
     <Wrapper>
-      <SearchInput value={queryString} placeholder={'Search issues on Jira'} onChange={onChange} />
+      <SearchInput value={queryString} placeholder={placeholder} onChange={onChange} />
       <ClearSearchIcon isEmpty={isEmpty} onClick={clearSearch}>
         close
       </ClearSearchIcon>
@@ -75,6 +76,7 @@ export default createFragmentContainer(JiraScopingSearchInput, {
       id
       jiraSearchQuery {
         queryString
+        isJQL
       }
     }
   `
