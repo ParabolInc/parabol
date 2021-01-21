@@ -1,0 +1,5 @@
+{
+  "db": {
+    "url": "postgres://tiffanyhan:password@localhost:5432/tiffanyhan"
+  }
+}
