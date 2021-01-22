@@ -1,5 +1,5 @@
 {
   "db": {
-    "url": "postgres://tiffanyhan:password@localhost:5432/tiffanyhan"
+    "url": "postgres://postgres:password@localhost:5432/postgres"
   }
 }
