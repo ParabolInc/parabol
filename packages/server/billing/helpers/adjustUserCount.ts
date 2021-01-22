@@ -15,7 +15,10 @@ import processInvoiceItemHook from './processInvoiceItemHook'
 
 const maybeUpdateOrganizationActiveDomain = async (orgId: string, userId: string) => {
   const r = await getRethink()
-  const organization = await r.table('Organization').get(orgId).run()
+  const organization = await r
+    .table('Organization')
+    .get(orgId)
+    .run()
   const {isActiveDomainTouched, activeDomain} = organization
   // don't modify if the domain was set manually
   if (isActiveDomainTouched) return
@@ -69,10 +72,15 @@ const addUser = async (orgIds: string[], userId: string) => {
       .getAll(r.args(orgIds))
       .coerceTo('array') as unknown) as Organization[]
   }).run()
+
   const docs = orgIds.map((orgId) => {
     const oldOrganizationUser = organizationUsers.find(
       (organizationUser) => organizationUser.orgId === orgId
     )
+    const activeOrganizationUsers = organizationUsers.filter(
+      (organizationUser) => organizationUser.orgId === orgId && !organizationUser.removedAt
+    )
+    if (activeOrganizationUsers.length) return null
     const organization = organizations.find((organization) => organization.id === orgId)!
     // continue the grace period from before, if any OR set to the end of the invoice OR (if it is a free account) no grace period
     const newUserUntil =
@@ -81,7 +89,13 @@ const addUser = async (orgIds: string[], userId: string) => {
       new Date()
     return new OrganizationUser({orgId, userId, newUserUntil, tier: organization.tier})
   })
-  await r.table('OrganizationUser').insert(docs, {conflict: 'replace'}).run()
+  const filteredDocs = docs.filter((doc) => doc)
+
+  // if we await, organizationUsers won't update in time if addUser is triggered in quick succession
+  r.table('OrganizationUser')
+    .insert(filteredDocs)
+    .run()
+
   await Promise.all(
     orgIds.map((orgId) => {
       return maybeUpdateOrganizationActiveDomain(orgId, userId)
@@ -126,7 +140,11 @@ export default async function adjustUserCount(
   const paidOrgs = await r
     .table('Organization')
     .getAll(r.args(orgIds), {index: 'id'})
-    .filter((org) => org('stripeSubscriptionId').default(null).ne(null))
+    .filter((org) =>
+      org('stripeSubscriptionId')
+        .default(null)
+        .ne(null)
+    )
     .run()
 
   const proOrgs = paidOrgs.filter((org) => org.tier === TierEnum.pro)
@@ -153,7 +171,10 @@ export default async function adjustUserCount(
     })
   })
 
-  await r.table('InvoiceItemHook').insert(hooks).run()
+  await r
+    .table('InvoiceItemHook')
+    .insert(hooks)
+    .run()
 
   hooks.forEach((hook) => {
     processInvoiceItemHook(hook.stripeSubscriptionId).catch()
