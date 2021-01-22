@@ -1,5 +1,6 @@
 // Calling this while the cwd is in dev is MUCH slower than calling it at the root dir.
 // Penalty goes away when debugging.
+require('./webpack/utils/dotenv')
 const path = require('path')
 const fs = require('fs')
 const {promisify} = require('util')
@@ -10,6 +11,8 @@ const rmdir = promisify(fs.rmdir)
 const unlink = promisify(fs.unlink)
 const PROJECT_ROOT = getProjectRoot()
 const TOOLBOX_ROOT = path.join(PROJECT_ROOT, 'scripts', 'toolbox')
+const pgMigrate = require('node-pg-migrate').default
+const pgmConfig = require('../packages/server/postgres/pgmConfig')
 
 const compileToolbox = () => {
   return new Promise((resolve) => {
@@ -41,14 +44,19 @@ const dev = async (maybeInit) => {
 
   const buildDLL = require('./buildDll')()
   const clearRedis = redis.flushall()
-  const migrateDB = require('./migrate')()
+  const migrateRethinkDB = require('./migrate')()
+  const pgConfig = {
+    dbClient: pgmConfig,
+    dir: path.join(PROJECT_ROOT, pgmConfig['migrations-dir'])
+  }
+  const migratePG = pgMigrate(pgConfig)
   await require('./toolbox/updateSchema.js').default()
   if (isInit) {
     // technically, this is unsafe for SSR, but they're so rarely used that's fine
     await require('./compileRelay')()
   }
   // await compileServers()
-  await Promise.all([clearRedis, migrateDB, buildDLL])
+  await Promise.all([clearRedis, migrateRethinkDB, migratePG, buildDLL])
   redis.disconnect()
 }
 
