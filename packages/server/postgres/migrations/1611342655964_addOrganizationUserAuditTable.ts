@@ -7,8 +7,8 @@ export async function up(pgm: MigrationBuilder): Promise<void> {
   pgm.sql(`
     CREATE TABLE "OrganizationUserAudit" (
       id SERIAL PRIMARY KEY,
-      "orgId" INT NOT NULL,
-      "userId" INT NOT NULL,
+      "orgId" VARCHAR(100) NOT NULL,
+      "userId" VARCHAR(100) NOT NULL,
       "eventDate" TIMESTAMP WITH TIME ZONE NOT NULL,
       "eventType" INT NOT NULL
     );
