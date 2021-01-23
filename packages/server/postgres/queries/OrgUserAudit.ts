@@ -1,9 +1,10 @@
 import {OrgUserAuditEventTypeEnum} from '../types/OrgUserAuditEventTypeEnum'
 import getPgPool from '../getPgPool'
+import pgFormat from 'pg-format'
 
 export const insertRow = async (
-  orgId: number,
-  userId: number,
+  orgIds: string[],
+  userId: string,
   eventType: OrgUserAuditEventTypeEnum,
   eventDate: Date = new Date()
 ) => {
@@ -14,8 +15,9 @@ export const insertRow = async (
       "userId",
       "eventDate",
       "eventType"
-    ) VALUES ($1, $2, $3, $4);
+    ) VALUES %L;
   `
-  const values = [orgId, userId, eventDate.toISOString(), eventType]
-  await pgPool.query(text, values)
+  const eventDateStr = eventDate.toISOString()
+  const rowValues = orgIds.map((orgId) => [orgId, userId, eventDateStr, eventType])
+  await pgPool.query(pgFormat(text, rowValues))
 }

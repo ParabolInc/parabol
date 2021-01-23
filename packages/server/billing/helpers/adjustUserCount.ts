@@ -12,6 +12,8 @@ import isCompanyDomain from '../../utils/isCompanyDomain'
 import segmentIo from '../../utils/segmentIo'
 import handleEnterpriseOrgQuantityChanges from './handleEnterpriseOrgQuantityChanges'
 import processInvoiceItemHook from './processInvoiceItemHook'
+import {OrgUserAuditEventTypeEnum} from '../../postgres/types/OrgUserAuditEventTypeEnum'
+import {insertRow as insertRowOrgUserAudit} from '../../postgres/queries/OrgUserAudit'
 
 const maybeUpdateOrganizationActiveDomain = async (orgId: string, userId: string) => {
   const r = await getRethink()
@@ -107,12 +109,20 @@ const deleteUser = async (orgIds: string[], userId: string) => {
     .run()
 }
 
-const typeLookup = {
+const dbActionTypeLookup = {
   [InvoiceItemType.ADD_USER]: addUser,
   [InvoiceItemType.AUTO_PAUSE_USER]: changePause(true),
   [InvoiceItemType.PAUSE_USER]: changePause(true),
   [InvoiceItemType.REMOVE_USER]: deleteUser,
   [InvoiceItemType.UNPAUSE_USER]: changePause(false)
+}
+
+const auditEventTypeLookup = {
+  [InvoiceItemType.ADD_USER]: OrgUserAuditEventTypeEnum.added,
+  [InvoiceItemType.AUTO_PAUSE_USER]: OrgUserAuditEventTypeEnum.inactivated,
+  [InvoiceItemType.PAUSE_USER]: OrgUserAuditEventTypeEnum.inactivated,
+  [InvoiceItemType.REMOVE_USER]: OrgUserAuditEventTypeEnum.removed,
+  [InvoiceItemType.UNPAUSE_USER]: OrgUserAuditEventTypeEnum.activated
 }
 
 interface Options {
@@ -127,8 +137,13 @@ export default async function adjustUserCount(
 ) {
   const r = await getRethink()
   const orgIds = Array.isArray(orgInput) ? orgInput : [orgInput]
-  const dbAction = typeLookup[type]
+
+  const dbAction = dbActionTypeLookup[type]
   await dbAction(orgIds, userId)
+
+  const auditEventType = auditEventTypeLookup[type]
+  await insertRowOrgUserAudit(orgIds, userId, auditEventType)
+
   const paidOrgs = await r
     .table('Organization')
     .getAll(r.args(orgIds), {index: 'id'})
