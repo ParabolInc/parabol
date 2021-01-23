@@ -1,7 +1,0 @@
-{
-  "migrations-dir": "./packages/server/postgres/migrations",
-  "migration-file-language": "ts",
-  "database-url-var": "POSTGRES_URL",
-  "_comment": "todo: change above pending base branch approval",
-  "ignore-pattern": "pgmConfig.json"
-}
