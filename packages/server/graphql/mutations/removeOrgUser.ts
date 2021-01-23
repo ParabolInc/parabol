@@ -5,6 +5,8 @@ import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import RemoveOrgUserPayload from '../types/RemoveOrgUserPayload'
 import removeFromOrg from './helpers/removeFromOrg'
+import {insertRow as insertRowOrgUserAudit} from '../../postgres/queries/OrgUserAudit'
+import {OrgUserAuditEventTypeEnum} from '../../postgres/types/OrgUserAuditEventTypeEnum'
 
 const removeOrgUser = {
   type: RemoveOrgUserPayload,
@@ -64,6 +66,7 @@ const removeOrgUser = {
       if (teamMemberIds.includes(teamMember.id)) return
       publish(SubscriptionChannel.TASK, teamMember.userId, 'RemoveOrgUserPayload', data, subOptions)
     })
+    await insertRowOrgUserAudit(orgId, userId, OrgUserAuditEventTypeEnum.removed)
     return data
   }
 }

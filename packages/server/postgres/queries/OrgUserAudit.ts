@@ -1,11 +1,11 @@
-import {OrganizationUserAuditEventTypeEnum} from '../types/OrganizationUserAuditEventTypeEnum'
+import {OrgUserAuditEventTypeEnum} from '../types/OrgUserAuditEventTypeEnum'
 import getPgPool from '../getPgPool'
 
 export const insertRow = async (
   orgId: number,
   userId: number,
-  eventType: OrganizationUserAuditEventTypeEnum,
-  eventDate: Date = new Date(),
+  eventType: OrgUserAuditEventTypeEnum,
+  eventDate: Date = new Date()
 ) => {
   const pgPool = await getPgPool()
   const text = `
