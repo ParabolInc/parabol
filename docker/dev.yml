@@ -1,8 +1,10 @@
+
 version: "3.7"
 
 services:
   db:
     image: rethinkdb:latest
+    restart: unless-stopped
     ports:
       - "8080:8080"
       - "29015:29015"
@@ -13,36 +15,35 @@ services:
       - parabol-network
   postgres:
     image: postgres:12.5
-    restart: always
-    env_file: .env
+    restart: unless-stopped
+    env_file: ../.env
     ports:
       - "5432:5432"
     volumes:
-      - "./packages/server/postgres/postgres.conf:/usr/local/etc/postgres/postgres.conf"
+      - "../packages/server/postgres/postgres.conf:/usr/local/etc/postgres/postgres.conf"
       - "postgres-data:/data"
     command: "postgres -c config_file=/usr/local/etc/postgres/postgres.conf"
     networks:
       - parabol-network
+  pgadmin:
+    container_name: pgadmin_container
+    image: dpage/pgadmin4
+    depends_on:
+      - postgres
+    env_file: ../.env
+    volumes:
+       - "pgadmin-data:/var/lib/pgadmin"
+    ports:
+      - "5050:80"
+    networks:
+      - parabol-network
+    restart: unless-stopped
   redis:
-    image: redis
+    image: redis:latest
     ports:
       - "6379:6379"
     volumes:
       - redis-data:/data
-    networks:
-      - parabol-network
-  app:
-    build:
-      context: .
-      dockerfile: ./docker/Dockerfile.prod
-      target: prod
-    env_file: .env
-    ports:
-      - "3000:3000"
-    depends_on:
-      - db
-      - redis
-      - postgres
     networks:
       - parabol-network
 networks:
@@ -51,3 +52,4 @@ volumes:
   redis-data: {}
   rethink-data: {}
   postgres-data: {}
+  pgadmin-data: {}
