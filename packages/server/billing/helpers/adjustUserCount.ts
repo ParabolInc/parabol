@@ -12,8 +12,8 @@ import isCompanyDomain from '../../utils/isCompanyDomain'
 import segmentIo from '../../utils/segmentIo'
 import handleEnterpriseOrgQuantityChanges from './handleEnterpriseOrgQuantityChanges'
 import processInvoiceItemHook from './processInvoiceItemHook'
-import {OrgUserAuditEventTypeEnum} from '../../postgres/types/OrgUserAuditEventTypeEnum'
-import {insertRow as insertRowOrgUserAudit} from '../../postgres/queries/OrgUserAudit'
+import OrgUserAuditEventTypeEnum from '../../postgres/types/OrgUserAuditEventTypeEnum'
+import {insertOrgUserAudit} from '../../postgres/helpers/OrgUserAudit'
 
 const maybeUpdateOrganizationActiveDomain = async (orgId: string, userId: string) => {
   const r = await getRethink()
@@ -142,7 +142,7 @@ export default async function adjustUserCount(
   await dbAction(orgIds, userId)
 
   const auditEventType = auditEventTypeLookup[type]
-  await insertRowOrgUserAudit(orgIds, userId, auditEventType)
+  await insertOrgUserAudit(orgIds, userId, auditEventType)
 
   const paidOrgs = await r
     .table('Organization')
