@@ -1,8 +1,8 @@
 enum OrgUserAuditEventTypeEnum {
   added = 1,
-  activated,
-  inactivated,
-  removed
+  activated = 2,
+  inactivated = 3,
+  removed = 4
 }
 
 export default OrgUserAuditEventTypeEnum
