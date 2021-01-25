@@ -80,6 +80,8 @@ const addUser = async (orgIds: string[], userId: string) => {
     const activeOrganizationUsers = organizationUsers.filter(
       (organizationUser) => organizationUser.orgId === orgId && !organizationUser.removedAt
     )
+    console.log('🚀 ~ docs ~ activeOrganizationUsers', activeOrganizationUsers)
+
     if (activeOrganizationUsers.length) return null
     const organization = organizations.find((organization) => organization.id === orgId)!
     // continue the grace period from before, if any OR set to the end of the invoice OR (if it is a free account) no grace period
@@ -91,8 +93,8 @@ const addUser = async (orgIds: string[], userId: string) => {
   })
   const filteredDocs = docs.filter((doc) => doc)
 
-  // if we await, organizationUsers won't update in time if addUser is triggered in quick succession
-  r.table('OrganizationUser')
+  await r
+    .table('OrganizationUser')
     .insert(filteredDocs)
     .run()
 
