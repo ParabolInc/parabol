@@ -12,8 +12,8 @@ import isCompanyDomain from '../../utils/isCompanyDomain'
 import segmentIo from '../../utils/segmentIo'
 import handleEnterpriseOrgQuantityChanges from './handleEnterpriseOrgQuantityChanges'
 import processInvoiceItemHook from './processInvoiceItemHook'
-import OrgUserAuditEventTypeEnum from '../../postgres/types/OrgUserAuditEventTypeEnum'
 import insertOrgUserAudit from '../../postgres/helpers/insertOrgUserAudit'
+import {OrganizationUserAuditEventTypeEnum} from '../../postgres/queries/generated/insertOrgUserAuditQuery'
 
 const maybeUpdateOrganizationActiveDomain = async (orgId: string, userId: string) => {
   const r = await getRethink()
@@ -118,12 +118,12 @@ const dbActionTypeLookup = {
 }
 
 const auditEventTypeLookup = {
-  [InvoiceItemType.ADD_USER]: OrgUserAuditEventTypeEnum.added,
-  [InvoiceItemType.AUTO_PAUSE_USER]: OrgUserAuditEventTypeEnum.inactivated,
-  [InvoiceItemType.PAUSE_USER]: OrgUserAuditEventTypeEnum.inactivated,
-  [InvoiceItemType.REMOVE_USER]: OrgUserAuditEventTypeEnum.removed,
-  [InvoiceItemType.UNPAUSE_USER]: OrgUserAuditEventTypeEnum.activated
-}
+  [InvoiceItemType.ADD_USER]: 'added',
+  [InvoiceItemType.AUTO_PAUSE_USER]: 'inactivated',
+  [InvoiceItemType.PAUSE_USER]: 'inactivated',
+  [InvoiceItemType.REMOVE_USER]: 'removed',
+  [InvoiceItemType.UNPAUSE_USER]: 'activated'
+} as {[key: string]: OrganizationUserAuditEventTypeEnum}
 
 interface Options {
   prorationDate?: Date

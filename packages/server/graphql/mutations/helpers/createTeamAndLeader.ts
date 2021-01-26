@@ -1,5 +1,4 @@
 import {InvoiceItemType} from 'parabol-client/types/constEnums'
-import OrgUserAuditEventTypeEnum from '../../../postgres/types/OrgUserAuditEventTypeEnum'
 import adjustUserCount from '../../../billing/helpers/adjustUserCount'
 import getRethink from '../../../database/rethinkDriver'
 import MeetingSettingsAction from '../../../database/types/MeetingSettingsAction'
@@ -71,5 +70,5 @@ export default async function createTeamAndLeader(userId: string, newTeam: Valid
   if (!organizationUser) {
     await adjustUserCount(userId, orgId, InvoiceItemType.ADD_USER)
   }
-  await insertOrgUserAudit([orgId], userId, OrgUserAuditEventTypeEnum.added)
+  await insertOrgUserAudit([orgId], userId, 'added')
 }

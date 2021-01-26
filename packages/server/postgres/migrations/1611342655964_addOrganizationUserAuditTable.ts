@@ -5,15 +5,19 @@ export const shorthands: ColumnDefinitions | undefined = undefined;
 
 export async function up(pgm: MigrationBuilder): Promise<void> {
   pgm.sql(`
+    CREATE TYPE "OrganizationUserAuditEventTypeEnum" AS ENUM (
+      'added',
+      'activated',
+      'inactivated',
+      'removed'
+    );
     CREATE TABLE "OrganizationUserAudit" (
       id SERIAL PRIMARY KEY,
       "orgId" VARCHAR(100) NOT NULL,
       "userId" VARCHAR(100) NOT NULL,
       "eventDate" TIMESTAMP NOT NULL,
-      "eventType" INT NOT NULL
+      "eventType" "OrganizationUserAuditEventTypeEnum" NOT NULL
     );
-  `)
-  pgm.sql(`
     CREATE INDEX "idx_OrganizationUserAudit_orgId" ON "OrganizationUserAudit"("orgId");
   `)
 }
