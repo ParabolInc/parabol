@@ -2,7 +2,7 @@ import {Pool} from 'pg'
 import PROD from '../PROD'
 
 let pool: Pool
-const getPgPool = () => {
+const getPG = () => {
   if (!pool) {
     pool = new Pool({
       user: process.env.POSTGRES_USER,
@@ -14,4 +14,4 @@ const getPgPool = () => {
   return pool
 }
 
-export default getPgPool
+export default getPG
