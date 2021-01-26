@@ -1,4 +1,4 @@
-/** Types generated for queries found in "packages/server/postgres/queries/OrgUserAudit.sql" */
+/** Types generated for queries found in "packages/server/postgres/queries/src/OrgUserAudit.sql" */
 import {PreparedQuery} from '@pgtyped/query'
 
 /** 'InsertOrgUserAudit' parameters type */

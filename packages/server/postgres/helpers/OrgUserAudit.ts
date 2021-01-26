@@ -1,4 +1,4 @@
-import {insertOrgUserAudit as insertQuery} from '../queries/OrgUserAudit'
+import {insertOrgUserAudit as insertQuery} from '../queries/generated/OrgUserAudit'
 import getPgPool from '../getPgPool'
 import OrgUserAuditEventTypeEnum from '../types/OrgUserAuditEventTypeEnum'
 
