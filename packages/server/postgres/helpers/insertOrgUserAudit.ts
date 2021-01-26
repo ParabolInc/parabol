@@ -1,5 +1,8 @@
-import {insertOrgUserAuditQuery, OrganizationUserAuditEventTypeEnum} from '../queries/generated/insertOrgUserAuditQuery'
-import getPG from '../getPG'
+import {
+  insertOrgUserAuditQuery,
+  OrganizationUserAuditEventTypeEnum
+} from '../queries/generated/insertOrgUserAuditQuery'
+import getPg from '../getPg'
 
 const insertOrgUserAudit = async (
   orgIds: string[],
@@ -7,7 +10,7 @@ const insertOrgUserAudit = async (
   eventType: OrganizationUserAuditEventTypeEnum,
   eventDate: Date = new Date()
 ) => {
-  const pgPool = getPG()
+  const pgPool = getPg()
   const auditRows = orgIds.map((orgId) => ({orgId, userId, eventType, eventDate}))
   const parameters = {auditRows}
   await insertOrgUserAuditQuery.run(parameters, pgPool)
