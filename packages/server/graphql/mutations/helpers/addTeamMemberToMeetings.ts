@@ -13,12 +13,6 @@ import createMeetingMembers from './createMeetingMembers'
  */
 
 const setInPhase = (phase: CheckInPhase | UpdatesPhase, newStage: CheckInStage | UpdatesStage) => {
-  const isMemberInMeeting = phase.stages.find(
-    (stage) => stage.teamMemberId === newStage.teamMemberId
-  )
-
-  console.log('🚀 ~ setInPhase ~ isMemberInMeeting', isMemberInMeeting)
-  if (isMemberInMeeting) return
   const firstStage = phase.stages[0]
   const isPhaseComplete = phase.stages.every((stage) => stage.isComplete)
   newStage.isNavigable = firstStage.isNavigable

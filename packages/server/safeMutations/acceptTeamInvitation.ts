@@ -1,9 +1,10 @@
 import {InvoiceItemType} from 'parabol-client/types/constEnums'
-import {NotificationEnum, NotificationStatusEnum} from 'parabol-client/types/graphql'
+import {ITeam, NotificationEnum, NotificationStatusEnum} from 'parabol-client/types/graphql'
 import adjustUserCount from '../billing/helpers/adjustUserCount'
 import getRethink from '../database/rethinkDriver'
 import OrganizationUser from '../database/types/OrganizationUser'
 import SuggestedActionCreateNewTeam from '../database/types/SuggestedActionCreateNewTeam'
+import User from '../database/types/User'
 import generateUID from '../generateUID'
 import {DataLoaderWorker} from '../graphql/graphql'
 import addTeamMemberToMeetings from '../graphql/mutations/helpers/addTeamMemberToMeetings'
@@ -55,20 +56,23 @@ const acceptTeamInvitation = async (
   const r = await getRethink()
   const now = new Date()
 
-  const [team, user] = await Promise.all([
-    r
-      .table('Team')
-      .get(teamId)
-      .run(),
-    r
+  const {team, user} = await r({
+    team: (r.table('Team').get(teamId) as unknown) as ITeam,
+    user: (r
       .table('User')
       .get(userId)
-      .run()
-  ])
+      .merge({
+        organizationUsers: r
+          .table('OrganizationUser')
+          .getAll(userId, {index: 'userId'})
+          .filter({removedAt: null})
+          .coerceTo('array')
+      }) as unknown) as User & {organizationUsers: OrganizationUser[]}
+  }).run()
   const {orgId} = team
-  const {email} = user
+  const {email, organizationUsers} = user
   const teamLeadUserIdWithNewActions = await handleFirstAcceptedInvitation(team)
-
+  const userInOrg = !!organizationUsers.find((organizationUser) => organizationUser.orgId === orgId)
   const [teamMember, invitationNotificationIds] = await Promise.all([
     insertNewTeamMember(userId, teamId),
     r
@@ -98,13 +102,6 @@ const acceptTeamInvitation = async (
       })
       .run()
   ])
-
-  const organizationUsers = (await r
-    .table('OrganizationUser')
-    .getAll(userId, {index: 'userId'})
-    .filter({removedAt: null})
-    .run()) as OrganizationUser[]
-  const userInOrg = !!organizationUsers.find((organizationUser) => organizationUser.orgId === orgId)
 
   if (!userInOrg) {
     try {

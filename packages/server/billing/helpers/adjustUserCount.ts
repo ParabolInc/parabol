@@ -77,12 +77,6 @@ const addUser = async (orgIds: string[], userId: string) => {
     const oldOrganizationUser = organizationUsers.find(
       (organizationUser) => organizationUser.orgId === orgId
     )
-    const activeOrganizationUsers = organizationUsers.filter(
-      (organizationUser) => organizationUser.orgId === orgId && !organizationUser.removedAt
-    )
-    console.log('🚀 ~ docs ~ activeOrganizationUsers', activeOrganizationUsers)
-
-    if (activeOrganizationUsers.length) return null
     const organization = organizations.find((organization) => organization.id === orgId)!
     // continue the grace period from before, if any OR set to the end of the invoice OR (if it is a free account) no grace period
     const newUserUntil =
@@ -91,11 +85,10 @@ const addUser = async (orgIds: string[], userId: string) => {
       new Date()
     return new OrganizationUser({orgId, userId, newUserUntil, tier: organization.tier})
   })
-  const filteredDocs = docs.filter((doc) => doc)
 
   await r
     .table('OrganizationUser')
-    .insert(filteredDocs)
+    .insert(docs)
     .run()
 
   await Promise.all(
