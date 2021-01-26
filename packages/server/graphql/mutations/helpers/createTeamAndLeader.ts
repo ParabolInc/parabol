@@ -9,7 +9,7 @@ import Team from '../../../database/types/Team'
 import TimelineEventCreatedTeam from '../../../database/types/TimelineEventCreatedTeam'
 import addTeamIdToTMS from '../../../safeMutations/addTeamIdToTMS'
 import insertNewTeamMember from '../../../safeMutations/insertNewTeamMember'
-import {insertOrgUserAudit} from '../../../postgres/helpers/OrgUserAudit'
+import insertOrgUserAudit from '../../../postgres/helpers/insertOrgUserAudit'
 
 interface ValidNewTeam {
   id: string

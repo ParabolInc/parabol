@@ -13,7 +13,7 @@ import segmentIo from '../../utils/segmentIo'
 import handleEnterpriseOrgQuantityChanges from './handleEnterpriseOrgQuantityChanges'
 import processInvoiceItemHook from './processInvoiceItemHook'
 import OrgUserAuditEventTypeEnum from '../../postgres/types/OrgUserAuditEventTypeEnum'
-import {insertOrgUserAudit} from '../../postgres/helpers/OrgUserAudit'
+import insertOrgUserAudit from '../../postgres/helpers/insertOrgUserAudit'
 
 const maybeUpdateOrganizationActiveDomain = async (orgId: string, userId: string) => {
   const r = await getRethink()
