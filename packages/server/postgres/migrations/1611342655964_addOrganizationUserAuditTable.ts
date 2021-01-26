@@ -9,7 +9,7 @@ export async function up(pgm: MigrationBuilder): Promise<void> {
       id SERIAL PRIMARY KEY,
       "orgId" VARCHAR(100) NOT NULL,
       "userId" VARCHAR(100) NOT NULL,
-      "eventDate" TIMESTAMP WITH TIME ZONE NOT NULL,
+      "eventDate" TIMESTAMP NOT NULL,
       "eventType" INT NOT NULL
     );
   `)
