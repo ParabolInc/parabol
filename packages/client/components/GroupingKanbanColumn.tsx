@@ -53,7 +53,8 @@ const ColumnScrollContainer = styled('div')({
   display: 'flex',
   // must hide X on firefox v84
   overflowX: 'hidden',
-  overflowY: 'auto'
+  overflowY: 'auto',
+  height: '100%'
 })
 
 const ColumnBody = styled('div')<{isDesktop: boolean; isWidthExpanded: boolean}>(
