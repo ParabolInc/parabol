@@ -4,7 +4,6 @@ import Organization from '../types/Organization'
 export const up = async function(r: R) {
   const now = new Date()
   const manager = new StripeManager()
-
   try {
     const duplicateUserIds = await r
       .table('OrganizationUser')
@@ -30,7 +29,7 @@ export const up = async function(r: R) {
     // org users that have been duplicated may be duplicated in one org but not in another
     const duplicateGroupsToRemove = duplicateOrgUsers.filter((user) => user['reduction'].length > 1)
 
-    const orgDupsCount = {} as Record<string, number> // orgId : num of dups to remove
+    const orgDups = {} as Record<string, number> // orgId : num of dups to remove
     const orgIds = [] as string[]
     const duplicateOrgUserIds = [] as string[]
     duplicateGroupsToRemove.forEach((dup) => {
@@ -39,7 +38,7 @@ export const up = async function(r: R) {
       orgIds.push(orgId)
       const orgUserIds = dup.reduction.slice(1, dupsCount).flat()
       orgUserIds.forEach((orgUserId) => duplicateOrgUserIds.push(orgUserId))
-      orgDupsCount[orgId] = dupsCount - 1
+      orgDups[orgId] = dupsCount - 1
     })
 
     const orgs = (await r
@@ -49,15 +48,16 @@ export const up = async function(r: R) {
       .pluck('id', 'stripeSubscriptionId')
       .run()) as Organization[]
 
-    orgs.forEach(async (org) => {
+    const updateSubsPromises = orgs.map(async (org) => {
       const {id: orgId, stripeSubscriptionId} = org
       const stripeSubscription = await manager.retrieveSubscription(stripeSubscriptionId)
       if (!stripeSubscription) return
       const stripeQty = stripeSubscription.quantity || 0
-      const dupsCount = orgDupsCount[orgId]
+      const dupsCount = orgDups[orgId]
       const newStripeQty = Math.max(1, stripeQty - dupsCount)
-      await manager.updateSubscriptionQuantity(stripeSubscriptionId, newStripeQty)
+      return manager.updateSubscriptionQuantity(stripeSubscriptionId, newStripeQty)
     })
+    await Promise.all(updateSubsPromises)
 
     await r
       .table('OrganizationUser')
