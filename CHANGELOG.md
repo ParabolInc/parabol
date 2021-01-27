@@ -5,6 +5,18 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 5.33.0 2021-Jan-27
+### Added
+- Adds a placeholder with example JQL when JQL search is turned on (#4576)
+- Added postgress to local dev environment allowing developers to run and manage postgres locally via docker-compose (#4580)
+
+### Changed
+- Shows the mock loading bars when a search is in progress. this is a little more jerky than ideal, but we need to show folks that a search is pending (#4576)
+
+### Fixed
+
+- Fixes a bug if JQL is turned on too fast (#4576)
+
 ## 5.32.0 2021-Jan-20
 ### Fixed
 - Fixed a bug where tasks didn’t update #4556
