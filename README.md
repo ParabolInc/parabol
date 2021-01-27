@@ -48,6 +48,9 @@ $ yarn db:start
 $ yarn dev
 ```
 
+If yarn db:start failed and localhost:5050 isn't working, a docker
+container, volume or image may be corrupted and need to be pruned.
+
 Build for production and start application:
 
 ```bash
@@ -65,6 +68,7 @@ $ yarn && yarn build && yarn start
 - Connect using `PGADMIN_DEFAULT_EMAIL` and `PGADMIN_DEFAULT_PASSWORD`
 - Click "Add New Server"
 - Fill out the form with values from your `.env`. Set the host to `postgres`
+
 ## Getting Involved
 
 Parabol offers equity for qualified contributions.
