@@ -1,6 +1,5 @@
 import {OrgUserRole, TierEnum} from 'parabol-client/types/graphql'
 import generateUID from '../../generateUID'
-
 interface Input {
   orgId: string
   userId: string

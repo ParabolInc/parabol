@@ -72,6 +72,7 @@ const addUser = async (orgIds: string[], userId: string) => {
       .getAll(r.args(orgIds))
       .coerceTo('array') as unknown) as Organization[]
   }).run()
+
   const docs = orgIds.map((orgId) => {
     const oldOrganizationUser = organizationUsers.find(
       (organizationUser) => organizationUser.orgId === orgId
@@ -84,10 +85,12 @@ const addUser = async (orgIds: string[], userId: string) => {
       new Date()
     return new OrganizationUser({orgId, userId, newUserUntil, tier: organization.tier})
   })
+
   await r
     .table('OrganizationUser')
     .insert(docs)
     .run()
+
   await Promise.all(
     orgIds.map((orgId) => {
       return maybeUpdateOrganizationActiveDomain(orgId, userId)
