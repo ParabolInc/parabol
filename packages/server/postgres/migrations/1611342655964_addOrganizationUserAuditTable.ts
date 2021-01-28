@@ -12,7 +12,7 @@ export async function up(pgm: MigrationBuilder): Promise<void> {
       'removed'
     );
     CREATE TABLE "OrganizationUserAudit" (
-      id SERIAL PRIMARY KEY,
+      id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
       "orgId" VARCHAR(100) NOT NULL,
       "userId" VARCHAR(100) NOT NULL,
       "eventDate" TIMESTAMP NOT NULL,
@@ -24,6 +24,7 @@ export async function up(pgm: MigrationBuilder): Promise<void> {
 
 export async function down(pgm: MigrationBuilder): Promise<void> {
   pgm.sql(`
+    DROP TYPE "OrganizationUserAuditEventTypeEnum";
     DROP TABLE "OrganizationUserAudit";
   `)
 }
