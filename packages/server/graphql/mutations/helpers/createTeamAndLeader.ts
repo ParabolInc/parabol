@@ -1,5 +1,3 @@
-import {InvoiceItemType} from 'parabol-client/types/constEnums'
-import adjustUserCount from '../../../billing/helpers/adjustUserCount'
 import getRethink from '../../../database/rethinkDriver'
 import MeetingSettingsAction from '../../../database/types/MeetingSettingsAction'
 import MeetingSettingsPoker from '../../../database/types/MeetingSettingsPoker'
@@ -8,7 +6,6 @@ import Team from '../../../database/types/Team'
 import TimelineEventCreatedTeam from '../../../database/types/TimelineEventCreatedTeam'
 import addTeamIdToTMS from '../../../safeMutations/addTeamIdToTMS'
 import insertNewTeamMember from '../../../safeMutations/insertNewTeamMember'
-import insertOrgUserAudit from '../../../postgres/helpers/insertOrgUserAudit'
 
 interface ValidNewTeam {
   id: string
@@ -39,7 +36,7 @@ export default async function createTeamAndLeader(userId: string, newTeam: Valid
     orgId
   })
 
-  const [organizationUser] = await Promise.all([
+  await Promise.all([
     r
       .table('OrganizationUser')
       .getAll(userId, {index: 'userId'})
@@ -66,9 +63,4 @@ export default async function createTeamAndLeader(userId: string, newTeam: Valid
       .run(),
     addTeamIdToTMS(userId, teamId)
   ])
-
-  if (!organizationUser) {
-    await adjustUserCount(userId, orgId, InvoiceItemType.ADD_USER)
-  }
-  await insertOrgUserAudit([orgId], userId, 'added')
 }
