@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
+import React, {Suspense} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import useDocumentTitle from '~/hooks/useDocumentTitle'
 import useStoreQueryRetry from '~/hooks/useStoreQueryRetry'
@@ -8,6 +8,7 @@ import {DashTimeline} from '../types/constEnums'
 import {MyDashboardTimeline_viewer} from '../__generated__/MyDashboardTimeline_viewer.graphql'
 import ErrorBoundary from './ErrorBoundary'
 import TimelineFeedList from './TimelineFeedList'
+import TimelineLoadingEvents from './TimelineLoadingEvents'
 import TimelineRightDrawer from './TimelineRightDrawer'
 import TimelineSuggestedAction from './TimelineSuggestedAction'
 
@@ -46,8 +47,10 @@ const MyDashboardTimeline = (props: Props) => {
       <TimelineFeed>
         <TimelineFeedItems>
           <ErrorBoundary>
-            <TimelineSuggestedAction viewer={viewer} />
-            <TimelineFeedList viewer={viewer} />
+            <Suspense fallback={<TimelineLoadingEvents />}>
+              <TimelineSuggestedAction viewer={viewer} />
+              <TimelineFeedList viewer={viewer} />
+            </Suspense>
           </ErrorBoundary>
         </TimelineFeedItems>
       </TimelineFeed>
