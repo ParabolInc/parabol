@@ -3,7 +3,6 @@ import plural from 'parabol-client/utils/plural'
 
 interface Meeting {
   meetingMembers: {
-    isCheckedIn: boolean | null
     doneTasks: {
       id: string
     }[]
@@ -27,17 +26,12 @@ const makeActionStats = (meeting: Meeting) => {
   const newTaskCount = meetingMembers.reduce((sum, {tasks}) => sum + tasks.length, 0)
   const doneTaskCount = meetingMembers.reduce((sum, {doneTasks}) => sum + doneTasks.length, 0)
   const meetingMembersCount = meetingMembers.length
-  const meetingMembersPresentCount = meetingMembers.filter((member) => member.isCheckedIn === true)
-    .length
-  const memberCount =
-    meetingMembersPresentCount >= 10
-      ? meetingMembersPresentCount
-      : `${meetingMembersPresentCount}/${meetingMembersCount}`
+
   return [
     {value: doneTaskCount, label: `${plural(doneTaskCount, 'Task')} Done`},
     {value: agendaItemsCompleted, label: plural(agendaItemsCompleted, AGENDA_ITEM_LABEL)},
     {value: newTaskCount, label: plural(newTaskCount, 'New Task')},
-    {value: memberCount, label: 'Present'}
+    {value: meetingMembersCount, label: 'Participants'}
   ]
 }
 

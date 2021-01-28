@@ -17,6 +17,7 @@ import getMonthlyStreak from '../../utils/getMonthlyStreak'
 import getRedis from '../../utils/getRedis'
 import isCompanyDomain from '../../utils/isCompanyDomain'
 import standardError from '../../utils/standardError'
+import errorFilter from '../errorFilter'
 import {GQLContext} from '../graphql'
 import invoiceDetails from '../queries/invoiceDetails'
 import invoices from '../queries/invoices'
@@ -37,7 +38,6 @@ import TeamMember from './TeamMember'
 import TierEnum from './TierEnum'
 import {TimelineEventConnection} from './TimelineEvent'
 import UserFeatureFlags from './UserFeatureFlags'
-import errorFilter from '../errorFilter'
 
 const User = new GraphQLObjectType<any, GQLContext>({
   name: 'User',
@@ -138,13 +138,7 @@ const User = new GraphQLObjectType<any, GQLContext>({
       description: 'the endedAt timestamp of the most recent meeting they were a member of',
       resolve: async ({id: userId}, _args, {dataLoader}) => {
         const meetingMembers = await dataLoader.get('meetingMembersByUserId').load(userId)
-        const checkedInMeetingMembers = meetingMembers.filter(
-          (meetingMember) => meetingMember.isCheckedIn
-        )
-        const lastMetAt = Math.max(
-          0,
-          ...checkedInMeetingMembers.map(({updatedAt}) => updatedAt.getTime())
-        )
+        const lastMetAt = Math.max(0, ...meetingMembers.map(({updatedAt}) => updatedAt.getTime()))
         return lastMetAt ? new Date(lastMetAt) : null
       }
     },
@@ -162,7 +156,6 @@ const User = new GraphQLObjectType<any, GQLContext>({
       resolve: async ({id: userId}, _args, {dataLoader}) => {
         const meetingMembers = await dataLoader.get('meetingMembersByUserId').load(userId)
         const meetingDates = meetingMembers
-          .filter(({isCheckedIn}) => isCheckedIn)
           .map(({updatedAt}) => updatedAt.getTime())
           .sort((a, b) => (a < b ? 1 : -1))
 
@@ -176,7 +169,6 @@ const User = new GraphQLObjectType<any, GQLContext>({
       resolve: async ({id: userId}, _args, {dataLoader}) => {
         const meetingMembers = await dataLoader.get('meetingMembersByUserId').load(userId)
         const meetingDates = meetingMembers
-          .filter(({isCheckedIn}) => isCheckedIn)
           .map(({updatedAt}) => updatedAt.getTime())
           .sort((a, b) => (a < b ? 1 : -1))
         return getMonthlyStreak(meetingDates, true)

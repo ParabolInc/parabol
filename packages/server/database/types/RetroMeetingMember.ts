@@ -1,9 +1,8 @@
-import MeetingMember from './MeetingMember'
 import {MeetingTypeEnum} from 'parabol-client/types/graphql'
+import MeetingMember from './MeetingMember'
 
 interface Input {
   id?: string
-  isCheckedIn?: boolean
   updatedAt?: Date
   teamId: string
   userId: string

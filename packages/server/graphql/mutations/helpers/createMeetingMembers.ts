@@ -7,13 +7,10 @@ import RetroMeetingMember from '../../../database/types/RetroMeetingMember'
 import TeamMember from '../../../database/types/TeamMember'
 
 const createMeetingMembers = (meeting: Meeting, teamMembers: TeamMember[]) => {
-  const isLateArrival = teamMembers.length === 1
-  const isCheckedIn = isLateArrival
   switch (meeting.meetingType) {
     case MeetingTypeEnum.action:
       return teamMembers.map(
-        ({teamId, userId}) =>
-          new ActionMeetingMember({teamId, userId, meetingId: meeting.id, isCheckedIn})
+        ({teamId, userId}) => new ActionMeetingMember({teamId, userId, meetingId: meeting.id})
       )
     case MeetingTypeEnum.retrospective:
       const {id: meetingId, totalVotes} = meeting as MeetingRetrospective
@@ -23,8 +20,7 @@ const createMeetingMembers = (meeting: Meeting, teamMembers: TeamMember[]) => {
             teamId,
             userId,
             meetingId,
-            votesRemaining: totalVotes,
-            isCheckedIn
+            votesRemaining: totalVotes
           })
       )
     case MeetingTypeEnum.poker:
@@ -32,8 +28,7 @@ const createMeetingMembers = (meeting: Meeting, teamMembers: TeamMember[]) => {
         return new PokerMeetingMember({
           teamId,
           userId,
-          meetingId: meeting.id,
-          isCheckedIn
+          meetingId: meeting.id
         })
       })
     default:

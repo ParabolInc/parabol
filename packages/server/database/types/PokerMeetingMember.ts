@@ -3,7 +3,6 @@ import MeetingMember from './MeetingMember'
 
 interface Input {
   id?: string
-  isCheckedIn?: boolean
   updatedAt?: Date
   teamId: string
   userId: string

@@ -307,10 +307,7 @@ export default {
       dataLoader.get('meetingMembersByMeetingId').load(meetingId),
       dataLoader.get('teams').load(teamId)
     ])
-    const presentMembers = meetingMembers.filter(
-      (meetingMember) => meetingMember.isCheckedIn === true
-    )
-    const presentMemberUserIds = presentMembers.map(({userId}) => userId)
+    const presentMemberUserIds = meetingMembers.map(({userId}) => userId)
     endSlackMeeting(meetingId, teamId, dataLoader).catch(console.log)
 
     const result = await finishMeetingType(completedMeeting, dataLoader)
@@ -335,7 +332,7 @@ export default {
           meetingTemplateName,
           meetingNumber,
           teamMembersCount: meetingMembers.length,
-          teamMembersPresentCount: presentMembers.length,
+          teamMembersPresentCount: meetingMembers.length,
           teamId
         }
       })

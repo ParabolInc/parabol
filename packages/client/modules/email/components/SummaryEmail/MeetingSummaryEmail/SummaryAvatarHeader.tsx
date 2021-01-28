@@ -5,14 +5,14 @@ import {SummaryAvatarHeader_meetingMember} from 'parabol-client/__generated__/Su
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 
-const presentLabelStyle = (isCheckedIn: boolean) => ({
-  color: isCheckedIn ? PALETTE.TEXT_GREEN : PALETTE.TEXT_GRAY,
+const presentLabelStyle = {
+  color: PALETTE.TEXT_GREEN,
   fontFamily: FONT_FAMILY.SANS_SERIF,
   fontSize: '14px',
   fontStyle: 'italic',
   fontWeight: 600,
   paddingTop: 4
-})
+}
 
 const avatarCell = {
   paddingTop: 24
@@ -36,7 +36,7 @@ interface Props {
 
 const SummaryAvatarHeader = (props: Props) => {
   const {meetingMember} = props
-  const {isCheckedIn, user} = meetingMember
+  const {user} = meetingMember
   const {rasterPicture, preferredName} = user
   return (
     <>
@@ -51,8 +51,8 @@ const SummaryAvatarHeader = (props: Props) => {
         </td>
       </tr>
       <tr>
-        <td align='center' style={presentLabelStyle(!!isCheckedIn)}>
-          {isCheckedIn ? 'Present' : 'Absent'}
+        <td align='center' style={presentLabelStyle}>
+          {'Present'}
         </td>
       </tr>
     </>
@@ -62,7 +62,6 @@ const SummaryAvatarHeader = (props: Props) => {
 export default createFragmentContainer(SummaryAvatarHeader, {
   meetingMember: graphql`
     fragment SummaryAvatarHeader_meetingMember on MeetingMember {
-      isCheckedIn
       user {
         rasterPicture
         preferredName

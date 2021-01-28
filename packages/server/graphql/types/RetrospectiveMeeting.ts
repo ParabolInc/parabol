@@ -172,10 +172,7 @@ const RetrospectiveMeeting = new GraphQLObjectType<any, GQLContext>({
         const meetingMembers = (await dataLoader
           .get('meetingMembersByMeetingId')
           .load(meetingId)) as RetroMeetingMember[]
-        return meetingMembers.reduce(
-          (sum, member) => (member.isCheckedIn ? sum + member.votesRemaining : sum),
-          0
-        )
+        return meetingMembers.reduce((sum, member) => sum + member.votesRemaining, 0)
       }
     },
     viewerMeetingMember: {

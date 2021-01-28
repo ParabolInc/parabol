@@ -9,7 +9,6 @@ interface Meeting {
     voteCount: number
   }[]
   meetingMembers: {
-    isCheckedIn: boolean | null
     tasks: {
       id: string
     }[]
@@ -26,12 +25,6 @@ const makeRetroStats = (meeting: Meeting) => {
   const topicCount = reflectionGroups.length
   const newTaskCount = meetingMembers.reduce((sum, {tasks}) => sum + tasks.length, 0)
   const meetingMembersCount = meetingMembers.length
-  const meetingMembersPresentCount = meetingMembers.filter((member) => member.isCheckedIn === true)
-    .length
-  const memberCount =
-    meetingMembersPresentCount >= 10
-      ? meetingMembersPresentCount
-      : `${meetingMembersPresentCount}/${meetingMembersCount}`
   return [
     {value: reflectionCount, label: plural(reflectionCount, 'Reflection')},
     {
@@ -39,7 +32,7 @@ const makeRetroStats = (meeting: Meeting) => {
       label: plural(topicCount, RETRO_TOPIC_LABEL)
     },
     {value: newTaskCount, label: plural(newTaskCount, 'New Task')},
-    {value: memberCount, label: 'Present'}
+    {value: meetingMembersCount, label: 'Participants'}
   ]
 }
 
