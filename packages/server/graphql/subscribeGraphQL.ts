@@ -44,7 +44,11 @@ export interface PubSubPayload {
 }
 
 const documentCache = new DocumentCache()
-const reliableSubscriptionPayloadBlackList = ['UpdateDragLocationPayload']
+const reliableSubscriptionPayloadBlackList = [
+  'UpdateDragLocationPayload',
+  'AuthTokenPayload',
+  'InvalidateSessionsPayload'
+]
 const subscribeGraphQL = async (req: SubscribeRequest) => {
   const {connectionContext, variables, docId, query, opId, hideErrors} = req
   const {id: socketId, authToken} = connectionContext
