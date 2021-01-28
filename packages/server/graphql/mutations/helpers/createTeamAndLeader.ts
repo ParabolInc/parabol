@@ -37,13 +37,6 @@ export default async function createTeamAndLeader(userId: string, newTeam: Valid
   })
 
   await Promise.all([
-    r
-      .table('OrganizationUser')
-      .getAll(userId, {index: 'userId'})
-      .filter({removedAt: null, orgId})
-      .nth(0)
-      .default(null)
-      .run(),
     // insert team
     r
       .table('Team')
