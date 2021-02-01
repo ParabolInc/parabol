@@ -24,6 +24,7 @@ interface Props {
 const ViewerNotOnTeam = (props: Props) => {
   const {viewer} = props
   const {
+    meeting,
     teamInvitation: {teamInvitation, meetingId, teamId}
   } = viewer
   const atmosphere = useAtmosphere()
@@ -41,10 +42,15 @@ const ViewerNotOnTeam = (props: Props) => {
           {invitationToken: teamInvitation.token},
           {history, meetingId}
         )
-      } else if (isOnTeam) {
-        // if already on the team, goto team dash
-        const redirectTo = getValidRedirectParam()
-        const nextRoute = redirectTo || `/team/${teamId}`
+        return
+      }
+      const redirectTo = getValidRedirectParam()
+      // if already on the team, go to team dash
+      const nextRoute = redirectTo || `/team/${teamId}`
+      const isRoutingToMeeting = nextRoute === `/meet/${meetingId}`
+      const isRoutingToTeam = nextRoute === `/team/${teamId}`
+      const isNextRoutePossible = (isOnTeam && isRoutingToTeam) || (meeting && isRoutingToMeeting)
+      if (isNextRoutePossible) {
         history.replace(nextRoute)
       } else if (teamId) {
         PushInvitationMutation(atmosphere, {meetingId, teamId})
@@ -82,6 +88,9 @@ const ViewerNotOnTeam = (props: Props) => {
 export default createFragmentContainer(ViewerNotOnTeam, {
   viewer: graphql`
     fragment ViewerNotOnTeam_viewer on User {
+      meeting(meetingId: $meetingId) {
+        meetingType
+      }
       teamInvitation(teamId: $teamId, meetingId: $meetingId) {
         teamInvitation {
           token
