@@ -53,7 +53,8 @@ const ColumnScrollContainer = styled('div')({
   display: 'flex',
   // must hide X on firefox v84
   overflowX: 'hidden',
-  overflowY: 'auto'
+  overflowY: 'auto',
+  height: '100%'
 })
 
 const ColumnBody = styled('div')<{isDesktop: boolean; isWidthExpanded: boolean}>(
@@ -67,7 +68,8 @@ const ColumnBody = styled('div')<{isDesktop: boolean; isWidthExpanded: boolean}>
     maxHeight: 'fit-content',
     minHeight: 200,
     padding: `${isWidthExpanded ? 12 : 6}px ${isDesktop ? 12 : 8}px`,
-    transition: `all 100ms ${BezierCurve.DECELERATE}`
+    transition: `all 100ms ${BezierCurve.DECELERATE}`,
+    minWidth: ElementWidth.REFLECTION_COLUMN
   })
 )
 
