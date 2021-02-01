@@ -3,37 +3,21 @@
   "compilerOptions": {
     "baseUrl": "../",
     "paths": {
-      "server/*": [
-        ""
-      ],
-      "parabol-client/*": [
-        "client/*"
-      ],
-      "~/*": [
-        "client/*"
-      ]
+      "server/*": [""],
+      "parabol-client/*": ["client/*"],
+      "~/*": ["client/*"]
     },
-    "lib": [
-      "esnext",
-      "dom"
-    ],
-    "types": [
-      "node"
-    ],
+    "lib": ["esnext", "dom"],
+    "types": ["node"]
   },
-  "include": [
-    "*"
-  ],
-  "exclude": [
-    "**/node_modules"
-  ],
+  "include": ["*", "postgres/zapatos/**/*.d.ts"],
+  "exclude": ["**/node_modules"],
   "files": [
     "types/modules.d.ts",
     "../client/modules/email/components/SummaryEmail/MeetingSummaryEmail/MeetingSummaryEmail.tsx",
     "graphql/queries/tasks.ts",
     "graphql/queries/archivedTasks.ts",
     "billing/debug.ts",
-    "server.ts",
-    "postgres/zapatos/schema.d.ts"
-  ],
+    "server.ts"
+  ]
 }
