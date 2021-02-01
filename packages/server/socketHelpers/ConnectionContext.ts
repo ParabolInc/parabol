@@ -28,7 +28,7 @@ class ConnectionContext<T = WebSocket | HttpResponse> {
   isReady = false
   readyQueue = [] as (() => void)[]
   reliableQueue = {} as ReliableQueue
-  synId = 0 as number
+  synId = 0
   constructor(socket: T, authToken: AuthToken, ip: string) {
     const prefix = isHttpResponse(socket) ? 'sse' : 'ws'
     this.authToken = authToken

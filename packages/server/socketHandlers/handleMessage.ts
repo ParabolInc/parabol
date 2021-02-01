@@ -39,7 +39,10 @@ const ACK_PREFIX = 6
 const isPong = (message) => message.byteLength === 1 && Buffer.from(message)[0] === PONG
 const isAck = (message) => message.byteLength === 2 && Buffer.from(message)[0] === ACK_PREFIX
 
-const handleMessage = (websocket: WebSocket, message: ArrayBuffer) => {
+const handleMessage = (
+  websocket: WebSocket | {connectionContext: ConnectionContext},
+  message: ArrayBuffer
+) => {
   const {connectionContext} = websocket
   if (isPong(message)) {
     keepAlive(connectionContext)
@@ -47,7 +50,7 @@ const handleMessage = (websocket: WebSocket, message: ArrayBuffer) => {
   }
   if (isAck(message)) {
     const ackId = Buffer.from(message)[1]
-    const timeout: NodeJS.Timeout = connectionContext.reliableQueue[ackId]
+    const timeout = connectionContext.reliableQueue[ackId]
     clearTimeout(timeout)
     delete connectionContext.reliableQueue[ackId]
     return

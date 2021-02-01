@@ -5,15 +5,16 @@ import ConnectionContext from './ConnectionContext'
 import isHttpResponse from './isHttpResponse'
 
 const ESTIMATED_MTU = 1400
-const TIME_OUT_COEFFICIENT = 2.0
+const TIMEOUT_COEFFICIENT = 2.0
 const MAX_TIMEOUT = 10000 // 10 seconds
+const TIMEOUT_JITTER = 20 // 20 ms
 const MAX_MESSAGE_ID = 128
 
 const sendAndPushToReliableQueue = (
   context: ConnectionContext,
   synId: number,
   message: string,
-  timeout = 2000
+  timeout = 2000 + Math.random() * TIMEOUT_JITTER
 ) => {
   const {socket, reliableQueue} = context
   if (timeout > MAX_TIMEOUT) {
@@ -22,7 +23,7 @@ const sendAndPushToReliableQueue = (
   }
   sendEncodedMessageBasedOnSocket(socket, message)
   const timer = setTimeout(() => {
-    const newTimeout = timeout * TIME_OUT_COEFFICIENT
+    const newTimeout = timeout * TIMEOUT_COEFFICIENT + Math.random() * TIMEOUT_JITTER
     sendAndPushToReliableQueue(context, synId, message, newTimeout)
   }, timeout)
   reliableQueue[synId % MAX_MESSAGE_ID] = timer
@@ -37,18 +38,17 @@ const sendEncodedMessageBasedOnSocket = (socket: WebSocket | HttpResponse, messa
 const sendEncodedMessage = (context: ConnectionContext, object: any, syn = false) => {
   const {socket} = context
   if (socket.done) return
-  let message: string
 
   if (syn) {
     const synMessage = {
       synId: context.synId % MAX_MESSAGE_ID,
       object
     }
-    message = JSON.stringify(synMessage)
+    const message = JSON.stringify(synMessage)
     sendAndPushToReliableQueue(context, context.synId, message)
     context.synId++
   } else {
-    message = JSON.stringify(object)
+    const message = JSON.stringify(object)
     sendEncodedMessageBasedOnSocket(socket, message)
   }
 }
