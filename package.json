@@ -24,6 +24,7 @@
     "start": "pm2-runtime start pm2.config.js",
     "heroku-postbuild": "echo 'Skipping build'",
     "build": "node scripts/prod.js",
+    "pg:build": "dotenv zapatos",
     "pg:migrate": "node-pg-migrate -f ./packages/server/postgres/pgmConfig.js",
     "db:start": "docker-compose -f docker/dev.yml up -d",
     "db:stop": "docker-compose -f docker/dev.yml down",

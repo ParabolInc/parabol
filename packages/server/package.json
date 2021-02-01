@@ -40,6 +40,7 @@
     "copy-webpack-plugin": "7.0.0",
     "cross-env": "^5.1.6",
     "css-loader": "5.0.1",
+    "dotenv-cli": "^4.0.0",
     "dynamic-serializer": "^0.2.1",
     "eslint": "^6.6.0",
     "eslint-config-prettier": "^6.15.0",
@@ -129,7 +130,8 @@
     "string-similarity": "^3.0.0",
     "stripe": "^4.24.0",
     "tslib": "2.0.3",
-    "uWebSockets.js": "https://github.com/tiffanyhan/uWebSockets.js/tarball/2e733751ce4765c23ca96e3e57265069536ac173"
+    "uWebSockets.js": "https://github.com/tiffanyhan/uWebSockets.js/tarball/2e733751ce4765c23ca96e3e57265069536ac173",
+    "zapatos": "^3.3.0"
   },
   "jest": {
     "modulePaths": [
