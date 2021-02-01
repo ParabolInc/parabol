@@ -1,5 +1,5 @@
 import {HttpResponse, WebSocket} from 'uWebSockets.js'
-import handleClose from '../socketHandlers/handleClose'
+import handleDisconnect from '../socketHandlers/handleDisconnect'
 import sendSSEMessage from '../sse/sendSSEMessage'
 import ConnectionContext from './ConnectionContext'
 import isHttpResponse from './isHttpResponse'
@@ -18,7 +18,7 @@ const sendAndPushToReliableQueue = (
 ) => {
   const {socket, reliableQueue} = context
   if (timeout > MAX_TIMEOUT) {
-    isHttpResponse(socket) ? socket.close() : handleClose(socket)
+    handleDisconnect(context)
     return
   }
   sendEncodedMessageBasedOnSocket(socket, message)
