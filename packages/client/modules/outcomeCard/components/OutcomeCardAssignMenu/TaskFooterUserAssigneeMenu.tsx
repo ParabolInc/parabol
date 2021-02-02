@@ -24,9 +24,8 @@ const TaskFooterUserAssigneeMenu = (props: Props) => {
   const {area, menuProps, task, viewer} = props
   const {userId, id: taskId} = task
   const {team} = viewer
-  if (!team) return null
   const atmosphere = useAtmosphere()
-  const {teamMembers} = team
+  const teamMembers = team?.teamMembers || []
   const taskUserIdx = useMemo(() => teamMembers.findIndex(({userId}) => userId) + 1, [
     userId,
     teamMembers
@@ -40,6 +39,7 @@ const TaskFooterUserAssigneeMenu = (props: Props) => {
     UpdateTaskMutation(atmosphere, {updatedTask: {id: taskId, userId: newUserId}, area}, {})
   }
 
+  if (!team) return null
   return (
     <Menu
       ariaLabel={'Assign this task to a teammate'}
