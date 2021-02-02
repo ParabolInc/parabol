@@ -24,13 +24,13 @@ const TaskFooterUserAssigneeMenu = (props: Props) => {
   const {area, menuProps, task, viewer} = props
   const {userId, id: taskId} = task
   const {team} = viewer
-  const {teamMembers}: any = team || {teamMembers: []}
-  const taskUserIdx = useMemo(() => teamMembers.map(({userId}) => userId).indexOf(userId) + 1, [
+  if (!team) return null
+  const atmosphere = useAtmosphere()
+  const {teamMembers} = team
+  const taskUserIdx = useMemo(() => teamMembers.findIndex(({userId}) => userId) + 1, [
     userId,
     teamMembers
   ])
-  const atmosphere = useAtmosphere()
-  if (!team) return null
   const assignees = useMemo(
     () => teamMembers.filter((teamMember) => teamMember.userId !== userId),
     [userId, teamMembers]
