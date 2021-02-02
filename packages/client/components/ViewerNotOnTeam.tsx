@@ -13,7 +13,6 @@ import InvitationDialogCopy from './InvitationDialogCopy'
 import DialogTitle from './DialogTitle'
 import TeamInvitationWrapper from './TeamInvitationWrapper'
 import useRouter from '../hooks/useRouter'
-import getValidRedirectParam from '../utils/getValidRedirectParam'
 import PushInvitationMutation from '../mutations/PushInvitationMutation'
 import useDocumentTitle from '../hooks/useDocumentTitle'
 
@@ -25,13 +24,12 @@ const ViewerNotOnTeam = (props: Props) => {
   const {viewer} = props
   const {
     meeting,
+    team,
     teamInvitation: {teamInvitation, meetingId, teamId}
   } = viewer
   const atmosphere = useAtmosphere()
-  const {authObj} = atmosphere
   const {history} = useRouter()
   useDocumentTitle(`Invitation Required`, 'Invitation Required')
-  const isOnTeam = authObj?.tms?.includes?.(teamId!) ?? false
 
   useEffect(
     () => {
@@ -43,18 +41,9 @@ const ViewerNotOnTeam = (props: Props) => {
           {history, meetingId}
         )
         return
-      }
-      const redirectTo = getValidRedirectParam()
-      // if already on the team, go to team dash
-      const nextRoute = redirectTo || `/team/${teamId}`
-      const isRoutingToMeeting = nextRoute === `/meet/${meetingId}`
-      const isRoutingToTeam = nextRoute === `/team/${teamId}`
-      const isNextRoutePossible = (isOnTeam && isRoutingToTeam) || (meeting && isRoutingToMeeting)
-      if (isNextRoutePossible) {
-        history.replace(nextRoute)
-      } else if (teamId) {
-        PushInvitationMutation(atmosphere, {meetingId, teamId})
-      }
+      } else if (meeting) history.replace(`/meet/${meetingId}`)
+      else if (team) history.replace(`/team/${teamId}`)
+      else if (teamId) PushInvitationMutation(atmosphere, {meetingId, teamId})
       return undefined
     },
     [
@@ -62,7 +51,7 @@ const ViewerNotOnTeam = (props: Props) => {
     ]
   )
 
-  if (teamInvitation || isOnTeam) {
+  if (teamInvitation || team) {
     return null
   }
   return (
@@ -90,6 +79,9 @@ export default createFragmentContainer(ViewerNotOnTeam, {
     fragment ViewerNotOnTeam_viewer on User {
       meeting(meetingId: $meetingId) {
         meetingType
+      }
+      team(teamId: $teamId) {
+        name
       }
       teamInvitation(teamId: $teamId, meetingId: $meetingId) {
         teamInvitation {
