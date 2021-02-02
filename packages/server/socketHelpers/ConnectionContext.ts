@@ -15,6 +15,7 @@ export interface ConnectedSubs {
 
 export type ReliableQueue = {[synId: number]: NodeJS.Timer}
 
+const MAX_SYN_ID = 64 // because we use 8 bit array and the last 2 bits are reserved for attempt counts
 class ConnectionContext<T = WebSocket | HttpResponse> {
   authToken: AuthToken
   availableResubs: any[] = []
@@ -28,7 +29,7 @@ class ConnectionContext<T = WebSocket | HttpResponse> {
   isReady = false
   readyQueue = [] as (() => void)[]
   reliableQueue = {} as ReliableQueue
-  synId = 0
+  synId = -1
   constructor(socket: T, authToken: AuthToken, ip: string) {
     const prefix = isHttpResponse(socket) ? 'sse' : 'ws'
     this.authToken = authToken
@@ -40,6 +41,14 @@ class ConnectionContext<T = WebSocket | HttpResponse> {
     this.isReady = true
     this.readyQueue.forEach((thunk) => thunk())
     this.readyQueue.length = 0
+  }
+
+  getSynId() {
+    this.synId++
+    if (this.synId >= MAX_SYN_ID) {
+      this.synId = 0
+    }
+    return this.synId
   }
 }
 
