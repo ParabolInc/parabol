@@ -12,7 +12,7 @@ const unlink = promisify(fs.unlink)
 const PROJECT_ROOT = getProjectRoot()
 const TOOLBOX_ROOT = path.join(PROJECT_ROOT, 'scripts', 'toolbox')
 const pgMigrate = require('node-pg-migrate').default
-const pgmConfig = require('../packages/server/postgres/pgmConfig')
+const cliPgmConfig = require('../packages/server/postgres/pgmConfig')
 
 const compileToolbox = () => {
   return new Promise((resolve) => {
@@ -45,11 +45,13 @@ const dev = async (maybeInit) => {
   const buildDLL = require('./buildDll')()
   const clearRedis = redis.flushall()
   const migrateRethinkDB = require('./migrate')()
-  const pgConfig = {
-    dbClient: pgmConfig,
-    dir: path.join(PROJECT_ROOT, pgmConfig['migrations-dir'])
+  const programmaticPgmConfig = {
+    dbClient: cliPgmConfig,
+    dir: path.join(PROJECT_ROOT, cliPgmConfig['migrations-dir']),
+    direction: 'up',
+    migrationsTable: cliPgmConfig['migrations-table']
   }
-  const migratePG = pgMigrate(pgConfig)
+  const migratePG = pgMigrate(programmaticPgmConfig)
   await require('./toolbox/updateSchema.js').default()
   if (isInit) {
     // technically, this is unsafe for SSR, but they're so rarely used that's fine
