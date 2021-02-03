@@ -8,6 +8,10 @@ import startStopContinueTemplate from '../../../../../static/images/illustration
 import workingStuckTemplate from '../../../../../static/images/illustrations/workingStuckTemplate.svg'
 import fourLsTemplate from '../../../../../static/images/illustrations/fourLsTemplate.svg'
 import gladSadMadTemplate from '../../../../../static/images/illustrations/gladSadMadTemplate.svg'
+import energyLevelsTemplate from '../../../../../static/images/illustrations/energyLevelsTemplate.svg'
+import threeLittlePigsTemplate from '../../../../../static/images/illustrations/threeLittlePigsTemplate.svg'
+import winningStreakTemplate from '../../../../../static/images/illustrations/winningStreakTemplate.svg'
+import mountainClimberTemplate from '../../../../../static/images/illustrations/mountainClimberTemplate.svg'
 import {PALETTE} from '../../../styles/paletteV2'
 import getTemplateList from '../../../utils/getTemplateList'
 import makeTemplateDescription from '../../../utils/makeTemplateDescription'
@@ -49,6 +53,7 @@ const PromptEditor = styled('div')({
 const TemplateImage = styled('img')({
   margin: '0 auto',
   maxWidth: 360,
+  maxHeight: 200,
   padding: '16px 0 0',
   width: '100%'
 })
@@ -102,7 +107,11 @@ const ReflectTemplateDetails = (props: Props) => {
     startStopContinueTemplate: startStopContinueTemplate,
     workingStuckTemplate: workingStuckTemplate,
     fourLsTemplate: fourLsTemplate,
-    gladSadMadTemplate: gladSadMadTemplate
+    gladSadMadTemplate: gladSadMadTemplate,
+    energyLevelsTemplate: energyLevelsTemplate,
+    mountainClimberTemplate: mountainClimberTemplate,
+    threeLittlePigsTemplate: threeLittlePigsTemplate,
+    winningStreakTemplate: winningStreakTemplate
   }
   const headerImg = defaultIllustrations[templateId] ? defaultIllustrations[templateId] : customTemplate
   return (
