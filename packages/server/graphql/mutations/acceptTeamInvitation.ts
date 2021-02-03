@@ -10,6 +10,7 @@ import segmentIo from '../../utils/segmentIo'
 import rateLimit from '../rateLimit'
 import AcceptTeamInvitationPayload from '../types/AcceptTeamInvitationPayload'
 import handleInvitationToken from './helpers/handleInvitationToken'
+import RedisLock from '../../utils/RedisLock'
 
 export default {
   type: new GraphQLNonNull(AcceptTeamInvitationPayload),
@@ -72,6 +73,18 @@ export default {
       const {meetingId, teamId} = invitation
       const meeting = meetingId ? await dataLoader.get('newMeetings').load(meetingId) : null
       const activeMeetingId = meeting && !meeting.endedAt ? meetingId : null
+      const team = await dataLoader.get('teams').load(teamId)
+      const {orgId} = team
+
+      // make sure that same invite can't be accepted at the same moment
+      const ttl = 3000
+      const redisLock = new RedisLock(`acceptTeamInvitation:${viewerId}:${orgId}`, ttl)
+      const lockTTL = await redisLock.lock()
+      if (lockTTL > 0) {
+        return {
+          error: {message: `You already called this ${ttl - lockTTL}ms ago!`}
+        }
+      }
 
       // RESOLUTION
       const {teamLeadUserIdWithNewActions, invitationNotificationIds} = await acceptTeamInvitation(
@@ -79,6 +92,7 @@ export default {
         viewerId,
         dataLoader
       )
+      await redisLock.unlock()
       const tms = authToken.tms ? authToken.tms.concat(teamId) : [teamId]
       // IMPORTANT! mutate the current authToken so any queries or subscriptions can get the latest
       authToken.tms = tms

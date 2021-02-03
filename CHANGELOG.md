@@ -5,17 +5,44 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
-## 5.32.0 2021-Jan-20
+## 5.33.1 2021-Jan-28
+
 ### Fixed
+
+- Fixed replicated org users (#4541)
+- Fixed renderQuery failing to send error to Sentry (#4601)
+
+## 5.33.0 2021-Jan-27
+
+### Added
+
+- Adds a placeholder with example JQL when JQL search is turned on (#4576)
+- Added postgress to local dev environment allowing developers to run and manage postgres locally via docker-compose (#4580)
+
+### Changed
+
+- Shows the mock loading bars when a search is in progress. this is a little more jerky than ideal, but we need to show folks that a search is pending (#4576)
+
+### Fixed
+
+- Fixes a bug if JQL is turned on too fast (#4576)
+
+## 5.32.0 2021-Jan-20
+
+### Fixed
+
 - Fixed a bug where tasks didn’t update #4556
 - Fixed a bug with client tempId #4560
 - Fixed a bug with the group title error message #4562
 
 ## 5.31.2 2021-Jan-14
+
 ### Added
+
 - Making grouping columns responsive in retrospective meeting (#3614)
 
 ### Changed
+
 - Links in discussion thread comments are now clickable links (#4345)
 - More intuitive template dialog with FAB button (#4128)
 - Preparation work for Slack migration (#4373)

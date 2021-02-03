@@ -12,6 +12,8 @@ import isCompanyDomain from '../../utils/isCompanyDomain'
 import segmentIo from '../../utils/segmentIo'
 import handleEnterpriseOrgQuantityChanges from './handleEnterpriseOrgQuantityChanges'
 import processInvoiceItemHook from './processInvoiceItemHook'
+import insertOrgUserAudit from '../../postgres/helpers/insertOrgUserAudit'
+import {OrganizationUserAuditEventTypeEnum} from '../../postgres/queries/generated/insertOrgUserAuditQuery'
 
 const maybeUpdateOrganizationActiveDomain = async (orgId: string, userId: string) => {
   const r = await getRethink()
@@ -72,6 +74,7 @@ const addUser = async (orgIds: string[], userId: string) => {
       .getAll(r.args(orgIds))
       .coerceTo('array') as unknown) as Organization[]
   }).run()
+
   const docs = orgIds.map((orgId) => {
     const oldOrganizationUser = organizationUsers.find(
       (organizationUser) => organizationUser.orgId === orgId
@@ -84,10 +87,12 @@ const addUser = async (orgIds: string[], userId: string) => {
       new Date()
     return new OrganizationUser({orgId, userId, newUserUntil, tier: organization.tier})
   })
+
   await r
     .table('OrganizationUser')
     .insert(docs)
     .run()
+
   await Promise.all(
     orgIds.map((orgId) => {
       return maybeUpdateOrganizationActiveDomain(orgId, userId)
@@ -107,13 +112,21 @@ const deleteUser = async (orgIds: string[], userId: string) => {
     .run()
 }
 
-const typeLookup = {
+const dbActionTypeLookup = {
   [InvoiceItemType.ADD_USER]: addUser,
   [InvoiceItemType.AUTO_PAUSE_USER]: changePause(true),
   [InvoiceItemType.PAUSE_USER]: changePause(true),
   [InvoiceItemType.REMOVE_USER]: deleteUser,
   [InvoiceItemType.UNPAUSE_USER]: changePause(false)
 }
+
+const auditEventTypeLookup = {
+  [InvoiceItemType.ADD_USER]: 'added',
+  [InvoiceItemType.AUTO_PAUSE_USER]: 'inactivated',
+  [InvoiceItemType.PAUSE_USER]: 'inactivated',
+  [InvoiceItemType.REMOVE_USER]: 'removed',
+  [InvoiceItemType.UNPAUSE_USER]: 'activated'
+} as {[key: string]: OrganizationUserAuditEventTypeEnum}
 
 interface Options {
   prorationDate?: Date
@@ -127,8 +140,13 @@ export default async function adjustUserCount(
 ) {
   const r = await getRethink()
   const orgIds = Array.isArray(orgInput) ? orgInput : [orgInput]
-  const dbAction = typeLookup[type]
+
+  const dbAction = dbActionTypeLookup[type]
   await dbAction(orgIds, userId)
+
+  const auditEventType = auditEventTypeLookup[type]
+  await insertOrgUserAudit(orgIds, userId, auditEventType)
+
   const paidOrgs = await r
     .table('Organization')
     .getAll(r.args(orgIds), {index: 'id'})
