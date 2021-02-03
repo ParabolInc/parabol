@@ -3,6 +3,8 @@ import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import customTemplate from '../../../../../static/images/illustrations/customTemplate.svg'
+import estimatedEffortTemplate from '../../../../../static/images/illustrations/estimatedEffortTemplate.svg'
+import wsjfTemplate from '../../../../../static/images/illustrations/wsjfTemplate.svg'
 import {PALETTE} from '../../../styles/paletteV2'
 import getTemplateList from '../../../utils/getTemplateList'
 import makeTemplateDescription from '../../../utils/makeTemplateDescription'
@@ -41,11 +43,12 @@ const DimensionEditor = styled('div')({
   width: '100%'
 })
 
-const CreateTemplateImg = styled('img')({
+const TemplateImg = styled('img')({
   margin: '0 auto',
   maxWidth: 360,
+  maxHeight: 200,
   padding: '16px 0 0',
-  width: '100%'
+  width: '100%',
 })
 
 const Description = styled('div')({
@@ -92,10 +95,15 @@ const PokerTemplateDetails = (props: Props) => {
     AddPokerTemplateMutation(atmosphere, {parentTemplateId: templateId, teamId}, {onError, onCompleted})
     gotoTeamTemplates()
   }
+  const defaultIllustrations = {
+    estimatedEffortTemplate: estimatedEffortTemplate,
+    wsjfTemplate: wsjfTemplate
+  }
+  const headerImg = defaultIllustrations[templateId] ? defaultIllustrations[templateId] : customTemplate
   return (
     <DimensionEditor>
       <Scrollable>
-        <CreateTemplateImg src={customTemplate} />
+        <TemplateImg src={headerImg} />
         <TemplateHeader>
           <FirstLine>
             <EditableTemplateName
