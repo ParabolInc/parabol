@@ -13,48 +13,68 @@ import {PokerCard_scaleValue} from '../__generated__/PokerCard_scaleValue.graphq
 const COLLAPSE_DUR = 700
 const EXPAND_DUR = 300
 interface CardBaseProps {
-  color: string,
+  color: string
   showTransition: boolean
-  isDesktop: boolean,
-  isCollapsed: boolean,
-  isSelected: boolean,
-  leftEdge: number,
+  isDesktop: boolean
+  isCollapsed: boolean
+  isSelected: boolean
+  leftEdge: number
   radius: number
   rotation: number
   yOffset: number
-
 }
 
-const getRotation = (isSelected: boolean, isCollapsed: boolean, leftEdge: number, radius: number, rotation: number, yOffset: number) => {
+const getRotation = (
+  isSelected: boolean,
+  isCollapsed: boolean,
+  leftEdge: number,
+  radius: number,
+  rotation: number,
+  yOffset: number
+) => {
   if (isCollapsed) return `translate(${leftEdge}px, -${PokerCards.HEIGHT}px)`
   const radians = (rotation * Math.PI) / 180
   const x = radius * Math.sin(radians)
   const y = -radius * Math.cos(radians) + yOffset
-  const selectedOffset = isSelected ? - 48 : 0
+  const selectedOffset = isSelected ? -48 : 0
   return `translate(${x}px, ${y + selectedOffset}px)rotate(${rotation}deg)`
 }
 
-const CardBase = styled('div')<CardBaseProps>(({color, isCollapsed, isDesktop, isSelected, leftEdge, radius, rotation, yOffset, showTransition}) => {
-  const transform = getRotation(isSelected, isCollapsed, leftEdge, radius, rotation, yOffset)
-  const hoverTransform = `${transform} translateY(-8px)`
-  return ({
-    background: getPokerCardBackground(color),
-    borderRadius: 6,
-    cursor: 'pointer',
-    display: 'flex',
-    height: PokerCards.HEIGHT,
-    justifyContent: 'center',
-    position: 'absolute',
-    transform,
-    transition: showTransition ? `transform ${isCollapsed ? COLLAPSE_DUR : EXPAND_DUR}ms ${BezierCurve.DECELERATE}` : undefined,
-    userSelect: 'none',
-    width: PokerCards.WIDTH,
-    zIndex: isSelected && isCollapsed ? 1 : undefined,
-    '&:hover': {
-      transform: isCollapsed ? undefined : isDesktop ? hoverTransform : undefined
+const CardBase = styled('div')<CardBaseProps>(
+  ({
+    color,
+    isCollapsed,
+    isDesktop,
+    isSelected,
+    leftEdge,
+    radius,
+    rotation,
+    yOffset,
+    showTransition
+  }) => {
+    const transform = getRotation(isSelected, isCollapsed, leftEdge, radius, rotation, yOffset)
+    const hoverTransform = `${transform} translateY(-8px)`
+    return {
+      background: getPokerCardBackground(color),
+      borderRadius: 6,
+      cursor: 'pointer',
+      display: 'flex',
+      height: PokerCards.HEIGHT,
+      justifyContent: 'center',
+      position: 'absolute',
+      transform,
+      transition: showTransition
+        ? `transform ${isCollapsed ? COLLAPSE_DUR : EXPAND_DUR}ms ${BezierCurve.DECELERATE}`
+        : undefined,
+      userSelect: 'none',
+      width: PokerCards.WIDTH,
+      zIndex: isSelected && isCollapsed ? 1 : undefined,
+      '&:hover': {
+        transform: isCollapsed ? undefined : isDesktop ? hoverTransform : undefined
+      }
     }
-  })
-})
+  }
+)
 
 const UpperLeftCardValue = styled('div')({
   color: '#fff',
@@ -104,9 +124,20 @@ interface Props {
   yOffset: number
 }
 
-
 const PokerCard = (props: Props) => {
-  const {scaleValue, showTransition, isCollapsed, yOffset, isSelected, leftEdge, onClick, onMouseEnter, onMouseLeave, rotation, radius} = props
+  const {
+    scaleValue,
+    showTransition,
+    isCollapsed,
+    yOffset,
+    isSelected,
+    leftEdge,
+    onClick,
+    onMouseEnter,
+    onMouseLeave,
+    rotation,
+    radius
+  } = props
   const {color, label} = scaleValue
   const wasCollapsedRef = useRef(isCollapsed)
   const cardRef = useRef<HTMLDivElement>(null)
@@ -135,24 +166,18 @@ const PokerCard = (props: Props) => {
       radius={radius}
       showTransition={showTransition}
     >
-      <UpperLeftCardValue>
-        {cornerValue}
-      </UpperLeftCardValue>
-      <LowerRightCardValue>
-        {cornerValue}
-      </LowerRightCardValue>
-      <Logo src={logoMarkWhite} />
+      <UpperLeftCardValue>{cornerValue}</UpperLeftCardValue>
+      <LowerRightCardValue>{cornerValue}</LowerRightCardValue>
+      <Logo src={logoMarkWhite} draggable={false} />
     </CardBase>
   )
 }
 
-export default createFragmentContainer(
-  PokerCard,
-  {
-    scaleValue: graphql`
+export default createFragmentContainer(PokerCard, {
+  scaleValue: graphql`
     fragment PokerCard_scaleValue on TemplateScaleValue {
       color
       label
-    }`
-  }
-)
+    }
+  `
+})
