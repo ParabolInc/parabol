@@ -74,7 +74,7 @@ jobs:
               sudo pip install rethinkdb==2.4.0
               rethinkdb-restore --force packages/cypress/fixtures/rdb_test.tar.gz
               node scripts/toolbox/softenDurability.js
-              yarn db:migrate
+              yarn db:migrate && yarn pg:migrate up
               yarn postdeploy
               # yarn test
             fi
