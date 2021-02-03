@@ -4,7 +4,6 @@ import {createFragmentContainer} from 'react-relay'
 import {Route} from 'react-router'
 import {matchPath, Switch} from 'react-router-dom'
 import ErrorBoundary from '~/components/ErrorBoundary'
-import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useRouter from '../../../../hooks/useRouter'
 import {TeamContainer_viewer} from '../../../../__generated__/TeamContainer_viewer.graphql'
 import Team from '../../components/Team/Team'
@@ -31,16 +30,12 @@ const TeamContainer = (props: Props) => {
   const {history, match} = useRouter()
   const {location} = window
   const {pathname} = location
-  const atmosphere = useAtmosphere()
   useEffect(() => {
     if (viewer && !viewer.team) {
-      const tms = atmosphere.authObj?.tms ?? []
-      if (!tms.includes(teamId)) {
-        history.replace({
-          pathname: `/invitation-required`,
-          search: `?redirectTo=${encodeURIComponent(pathname)}&teamId=${teamId}`
-        })
-      }
+      history.replace({
+        pathname: `/invitation-required`,
+        search: `?redirectTo=${encodeURIComponent(pathname)}&teamId=${teamId}`
+      })
     }
   })
   if (viewer && !viewer.team) return null
@@ -60,7 +55,9 @@ const TeamContainer = (props: Props) => {
             <Route path={`${match.path}/settings`} component={TeamSettings} />
             <Route
               path={`${match.path}/archive`}
-              render={(p) => <ArchivedTasks {...p} team={team} returnToTeamId={teamId} teamIds={[teamId]} />}
+              render={(p) => (
+                <ArchivedTasks {...p} team={team} returnToTeamId={teamId} teamIds={[teamId]} />
+              )}
             />
           </Switch>
         </Suspense>
