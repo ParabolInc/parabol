@@ -1,7 +1,6 @@
-/* eslint-disable @typescript-eslint/camelcase */
-import { MigrationBuilder, ColumnDefinitions } from 'node-pg-migrate';
+import {ColumnDefinitions, MigrationBuilder} from 'node-pg-migrate'
 
-export const shorthands: ColumnDefinitions | undefined = undefined;
+export const shorthands: ColumnDefinitions | undefined = undefined
 
 export async function up(pgm: MigrationBuilder): Promise<void> {
   pgm.sql(`
@@ -24,7 +23,7 @@ export async function up(pgm: MigrationBuilder): Promise<void> {
 
 export async function down(pgm: MigrationBuilder): Promise<void> {
   pgm.sql(`
-    DROP TYPE "OrganizationUserAuditEventTypeEnum";
+    DROP TYPE "OrganizationUserAuditEventTypeEnum" CASCADE;
     DROP TABLE "OrganizationUserAudit";
   `)
 }

@@ -157,7 +157,7 @@ const PokerCardDeck = (props: Props) => {
   })
 
   const onMouseDown = useEventCallback((e: React.MouseEvent | React.TouchEvent) => {
-    if (maxSlide === 0) return
+    if (maxSlide === 0 || isCollapsed) return
     const isTouchStart = e.type === 'touchstart'
     let event: {clientX: number; clientY: number}
     if (isTouchStart) {

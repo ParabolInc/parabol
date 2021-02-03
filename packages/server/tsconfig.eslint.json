@@ -3,6 +3,7 @@
   "include": [
     "database/types/*",
     "database/migrations/*",
+    "postgres/migrations/*",
     "graphql/queries",
     "email/**/*",
     "segmentFns/*",
