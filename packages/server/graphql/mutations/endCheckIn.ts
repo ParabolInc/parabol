@@ -79,7 +79,7 @@ const getPinnedAgendaItems = async (teamId: string) => {
 
 const clonePinnedAgendaItems = async (pinnedAgendaItems: AgendaItem[]) => {
   const r = await getRethink()
-  const formattedPinnedAgendaItems = pinnedAgendaItems.map((agendaItem) => {
+  const clonedPins = pinnedAgendaItems.map((agendaItem) => {
     const agendaItemId = `${agendaItem.teamId}::${generateUID()}`
     return new AgendaItem({
       id: agendaItemId,
@@ -91,10 +91,9 @@ const clonePinnedAgendaItems = async (pinnedAgendaItems: AgendaItem[]) => {
       teamMemberId: agendaItem.teamMemberId
     })
   })
-
   await r
     .table('AgendaItem')
-    .insert(formattedPinnedAgendaItems)
+    .insert(clonedPins)
     .run()
 }
 
@@ -136,9 +135,9 @@ const finishCheckInMeeting = async (meeting: MeetingAction, dataLoader: DataLoad
   const meetingPhase = getMeetingPhase(phases)
   const pinnedAgendaItems = await getPinnedAgendaItems(teamId)
   const isKill = meetingPhase && ![AGENDA_ITEMS, LAST_CALL].includes(meetingPhase.phaseType)
+  if (!isKill) await clearAgendaItems(teamId)
   await Promise.all([
     isKill ? undefined : archiveTasksForDB(doneTasks, meetingId),
-    isKill ? undefined : clearAgendaItems(teamId),
     isKill ? undefined : clonePinnedAgendaItems(pinnedAgendaItems),
     updateTaskSortOrders(userIds, tasks),
     r
