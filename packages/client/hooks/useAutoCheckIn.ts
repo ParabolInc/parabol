@@ -2,6 +2,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {useEffect} from 'react'
 import {readInlineData} from 'relay-runtime'
 import {useAutoCheckIn_meeting} from '~/__generated__/useAutoCheckIn_meeting.graphql'
+import JoinMeetingMutation from '../mutations/JoinMeetingMutation'
 import useAtmosphere from './useAtmosphere'
 
 const useAutoCheckIn = (meetingRef: any) => {
@@ -20,11 +21,9 @@ const useAutoCheckIn = (meetingRef: any) => {
       meetingRef
     )
     const {id: meetingId, endedAt, viewerMeetingMember} = meeting
-    if (endedAt) return
-    if (!viewerMeetingMember) {
-      console.log('join', atmosphere, meetingId)
-      // JoinMeetingMutation(atmosphere, {meetingId})
-    }
+    console.log('vi', viewerMeetingMember)
+    if (endedAt || viewerMeetingMember) return
+    JoinMeetingMutation(atmosphere, {meetingId})
   }, [])
 }
 

@@ -1,16 +1,16 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
-import {InvitationTokenError, SubscriptionChannel} from '../../../client/types/constEnums'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
+import {InvitationTokenError, SubscriptionChannel} from '../../../client/types/constEnums'
 import AuthToken from '../../database/types/AuthToken'
 import acceptTeamInvitation from '../../safeMutations/acceptTeamInvitation'
 import {getUserId, isAuthenticated} from '../../utils/authorization'
 import encodeAuthToken from '../../utils/encodeAuthToken'
 import publish from '../../utils/publish'
+import RedisLock from '../../utils/RedisLock'
 import segmentIo from '../../utils/segmentIo'
 import rateLimit from '../rateLimit'
 import AcceptTeamInvitationPayload from '../types/AcceptTeamInvitationPayload'
 import handleInvitationToken from './helpers/handleInvitationToken'
-import RedisLock from '../../utils/RedisLock'
 
 export default {
   type: new GraphQLNonNull(AcceptTeamInvitationPayload),
@@ -89,8 +89,7 @@ export default {
       // RESOLUTION
       const {teamLeadUserIdWithNewActions, invitationNotificationIds} = await acceptTeamInvitation(
         teamId,
-        viewerId,
-        dataLoader
+        viewerId
       )
       await redisLock.unlock()
       const tms = authToken.tms ? authToken.tms.concat(teamId) : [teamId]

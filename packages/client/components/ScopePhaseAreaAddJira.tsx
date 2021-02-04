@@ -29,7 +29,7 @@ const StyledLink = styled('span')({
 })
 
 const AddJiraButton = styled(RaisedButton)({
-  whiteSpace: 'pre-wrap',
+  whiteSpace: 'pre-wrap'
 })
 interface Props {
   gotoParabol: () => void
@@ -42,6 +42,7 @@ const ScopePhaseAreaAddJira = (props: Props) => {
 
   const {gotoParabol, meeting} = props
   const {teamId, viewerMeetingMember} = meeting
+  if (!viewerMeetingMember) return null
   const {teamMember} = viewerMeetingMember
   const {integrations} = teamMember
   const hasAuth = integrations.atlassian?.isActive ?? false
@@ -53,7 +54,10 @@ const ScopePhaseAreaAddJira = (props: Props) => {
   }
   return (
     <AddJiraArea>
-      <AddJiraButton onClick={importStories} size={'medium'}><JiraSVG />Import stories from Jira</AddJiraButton>
+      <AddJiraButton onClick={importStories} size={'medium'}>
+        <JiraSVG />
+        Import stories from Jira
+      </AddJiraButton>
       <StyledLink onClick={gotoParabol}>Or add new tasks in Parabol</StyledLink>
     </AddJiraArea>
   )
@@ -67,7 +71,7 @@ export default createFragmentContainer(ScopePhaseAreaAddJira, {
         teamMember {
           integrations {
             atlassian {
-                isActive
+              isActive
             }
           }
         }

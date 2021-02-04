@@ -176,12 +176,13 @@ const RetrospectiveMeeting = new GraphQLObjectType<any, GQLContext>({
       }
     },
     viewerMeetingMember: {
-      type: new GraphQLNonNull(RetrospectiveMeetingMember),
+      type: RetrospectiveMeetingMember,
       description: 'The retrospective meeting member of the viewer',
-      resolve: ({id: meetingId}, _args, {authToken, dataLoader}) => {
+      resolve: async ({id: meetingId}, _args, {authToken, dataLoader}: GQLContext) => {
         const viewerId = getUserId(authToken)
         const meetingMemberId = toTeamMemberId(meetingId, viewerId)
-        return dataLoader.get('meetingMembers').load(meetingMemberId)
+        const meetingMember = await dataLoader.get('meetingMembers').load(meetingMemberId)
+        return meetingMember || null
       }
     }
   })

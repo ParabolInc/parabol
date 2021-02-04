@@ -361,7 +361,7 @@ export interface INewMeeting {
   /**
    * The meeting member of the viewer
    */
-  viewerMeetingMember: MeetingMember;
+  viewerMeetingMember: MeetingMember | null;
 }
 
 /**
@@ -3217,6 +3217,7 @@ export interface IMeetingMember {
 
   /**
    * true if present, false if absent, else null
+   * @deprecated "Members are checked in when they enter the meeting now & not created beforehand"
    */
   isCheckedIn: boolean | null;
   meetingId: string;
@@ -5277,7 +5278,7 @@ export interface IActionMeeting {
   /**
    * The action meeting member of the viewer
    */
-  viewerMeetingMember: IActionMeetingMember;
+  viewerMeetingMember: IActionMeetingMember | null;
 
   /**
    * A single agenda item
@@ -5332,6 +5333,7 @@ export interface IActionMeetingMember {
 
   /**
    * true if present, false if absent, else null
+   * @deprecated "Members are checked in when they enter the meeting now & not created beforehand"
    */
   isCheckedIn: boolean | null;
   meetingId: string;
@@ -5553,7 +5555,7 @@ export interface IRetrospectiveMeeting {
   /**
    * The retrospective meeting member of the viewer
    */
-  viewerMeetingMember: IRetrospectiveMeetingMember;
+  viewerMeetingMember: IRetrospectiveMeetingMember | null;
 
   /**
    * the threshold used to achieve the autogroup. Useful for model tuning. Serves as a flag if autogroup was used.
@@ -5655,6 +5657,7 @@ export interface IRetrospectiveMeetingMember {
 
   /**
    * true if present, false if absent, else null
+   * @deprecated "Members are checked in when they enter the meeting now & not created beforehand"
    */
   isCheckedIn: boolean | null;
   meetingId: string;
@@ -6937,12 +6940,6 @@ export interface IMutation {
   endDraggingReflection: IEndDraggingReflectionPayload | null;
 
   /**
-   * Finish a new meeting
-   * @deprecated "Using more specfic end[meetingType] instead"
-   */
-  endNewMeeting: IEndNewMeetingPayload;
-
-  /**
    * Finish a retrospective meeting
    */
   endRetrospective: EndRetrospectivePayload;
@@ -7000,6 +6997,7 @@ export interface IMutation {
 
   /**
    * Check a member in as present or absent
+   * @deprecated "Members now join lazily and joining means they are present"
    */
   newMeetingCheckIn: INewMeetingCheckInPayload | null;
 
@@ -7197,12 +7195,6 @@ export interface IMutation {
 
   /**
    * Start a new meeting
-   * @deprecated "Using more specfic start[meetingType] instead"
-   */
-  startNewMeeting: IStartNewMeetingPayload;
-
-  /**
-   * Start a new meeting
    */
   startRetrospective: StartRetrospectivePayload;
 
@@ -7348,6 +7340,11 @@ export interface IMutation {
    * Set the jira field that the poker dimension should map to
    */
   updateJiraDimensionField: UpdateJiraDimensionFieldPayload;
+
+  /**
+   * Create a meeting member for a user
+   */
+  joinMeeting: JoinMeetingPayload;
 }
 
 export interface IAcceptTeamInvitationOnMutationArguments {
@@ -7764,13 +7761,6 @@ export interface IEndDraggingReflectionOnMutationArguments {
    * the ID of the drag to connect to the start drag event
    */
   dragId?: string | null;
-}
-
-export interface IEndNewMeetingOnMutationArguments {
-  /**
-   * The meeting to end
-   */
-  meetingId: string;
 }
 
 export interface IEndRetrospectiveOnMutationArguments {
@@ -8208,18 +8198,6 @@ export interface IStartCheckInOnMutationArguments {
   teamId: string;
 }
 
-export interface IStartNewMeetingOnMutationArguments {
-  /**
-   * The team starting the meeting
-   */
-  teamId: string;
-
-  /**
-   * The base type of the meeting (action, retro, etc)
-   */
-  meetingType: MeetingTypeEnum;
-}
-
 export interface IStartRetrospectiveOnMutationArguments {
   /**
    * The team starting the meeting
@@ -8526,6 +8504,10 @@ export interface IUpdateJiraDimensionFieldOnMutationArguments {
   /**
    * The meeting the update happend in. If present, can return a meeting object with updated serviceField
    */
+  meetingId: string;
+}
+
+export interface IJoinMeetingOnMutationArguments {
   meetingId: string;
 }
 
@@ -9370,7 +9352,7 @@ export interface IPokerMeeting {
   /**
    * The Poker meeting member of the viewer
    */
-  viewerMeetingMember: IPokerMeetingMember;
+  viewerMeetingMember: IPokerMeetingMember | null;
 
   /**
    * The number of comments generated in the meeting
@@ -9415,6 +9397,7 @@ export interface IPokerMeetingMember {
 
   /**
    * true if present, false if absent, else null
+   * @deprecated "Members are checked in when they enter the meeting now & not created beforehand"
    */
   isCheckedIn: boolean | null;
   meetingId: string;
@@ -9623,35 +9606,6 @@ export interface IRemoteReflectionDrag {
 export const enum DragReflectionDropTargetTypeEnum {
   REFLECTION_GROUP = 'REFLECTION_GROUP',
   REFLECTION_GRID = 'REFLECTION_GRID'
-}
-
-export interface IEndNewMeetingPayload {
-  __typename: 'EndNewMeetingPayload';
-  error: IStandardMutationError | null;
-
-  /**
-   * true if the meeting was killed (ended before reaching last stage)
-   */
-  isKill: boolean | null;
-  team: ITeam | null;
-  meeting: NewMeeting | null;
-
-  /**
-   * The ID of the suggestion to try a retro meeting, if tried
-   */
-  removedSuggestedActionId: string | null;
-  removedTaskIds: Array<string> | null;
-
-  /**
-   * An event that is important to the viewer, e.g. an ended meeting
-   */
-  timelineEvent: TimelineEvent | null;
-  updatedTaskIds: Array<string> | null;
-
-  /**
-   * Any tasks that were updated during the meeting
-   */
-  updatedTasks: Array<ITask> | null;
 }
 
 /**
@@ -10451,14 +10405,6 @@ export interface IStartCheckInSuccess {
   team: ITeam;
 }
 
-export interface IStartNewMeetingPayload {
-  __typename: 'StartNewMeetingPayload';
-  error: IStandardMutationError | null;
-  team: ITeam | null;
-  meetingId: string | null;
-  meeting: NewMeeting | null;
-}
-
 /**
  * Return object for StartRetrospectivePayload
  */
@@ -10998,6 +10944,21 @@ export interface IUpdateJiraDimensionFieldSuccess {
   meeting: IPokerMeeting | null;
 }
 
+/**
+ * Return object for JoinMeetingPayload
+ */
+export type JoinMeetingPayload = IErrorPayload | IJoinMeetingSuccess;
+
+export interface IJoinMeetingSuccess {
+  __typename: 'JoinMeetingSuccess';
+  meetingId: string;
+
+  /**
+   * The meeting with the updated stages, if any
+   */
+  meeting: NewMeeting;
+}
+
 export interface ISubscription {
   __typename: 'Subscription';
   meetingSubscription: MeetingSubscriptionPayload;
@@ -11045,7 +11006,8 @@ export type MeetingSubscriptionPayload =
   | IPokerRevealVotesSuccess
   | IPokerResetDimensionSuccess
   | IPokerAnnounceDeckHoverSuccess
-  | IPokerSetFinalScoreSuccess;
+  | IPokerSetFinalScoreSuccess
+  | IJoinMeetingSuccess;
 
 export interface IAddReactjiToReflectionSuccess {
   __typename: 'AddReactjiToReflectionSuccess';
@@ -11105,6 +11067,35 @@ export interface IDisconnectSocketPayload {
    * The user that disconnected
    */
   user: IUser | null;
+}
+
+export interface IEndNewMeetingPayload {
+  __typename: 'EndNewMeetingPayload';
+  error: IStandardMutationError | null;
+
+  /**
+   * true if the meeting was killed (ended before reaching last stage)
+   */
+  isKill: boolean | null;
+  team: ITeam | null;
+  meeting: NewMeeting | null;
+
+  /**
+   * The ID of the suggestion to try a retro meeting, if tried
+   */
+  removedSuggestedActionId: string | null;
+  removedTaskIds: Array<string> | null;
+
+  /**
+   * An event that is important to the viewer, e.g. an ended meeting
+   */
+  timelineEvent: TimelineEvent | null;
+  updatedTaskIds: Array<string> | null;
+
+  /**
+   * Any tasks that were updated during the meeting
+   */
+  updatedTasks: Array<ITask> | null;
 }
 
 export interface IMeetingStageTimeLimitPayload {
@@ -11314,6 +11305,14 @@ export type TeamSubscriptionPayload =
   | IMovePokerTemplateScaleValueSuccess
   | IUpdateJiraDimensionFieldSuccess
   | ISetDefaultSlackChannelSuccess;
+
+export interface IStartNewMeetingPayload {
+  __typename: 'StartNewMeetingPayload';
+  error: IStandardMutationError | null;
+  team: ITeam | null;
+  meetingId: string | null;
+  meeting: NewMeeting | null;
+}
 
 export interface IRenamePokerTemplatePayload {
   __typename: 'RenamePokerTemplatePayload';
