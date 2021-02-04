@@ -52,8 +52,8 @@ const SummaryHeader = (props: Props) => {
               crossOrigin=''
               alt='Parabol Logo'
               src={`${ExternalLinks.EMAIL_CDN}mark-purple@3x.png`}
-              height='28'
-              width='31'
+              height='32'
+              width='34'
             />
           </td>
         </tr>
