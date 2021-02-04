@@ -34,10 +34,10 @@ const Header = (props: Props) => {
               <img
                 crossOrigin=''
                 alt='Parabol, Inc. Logo'
-                height={40}
+                height={42}
                 src={`${ExternalLinks.EMAIL_CDN}email-header-branding-color@3x.png`}
                 style={imageStyle}
-                width={192}
+                width={203}
               />
             </a>
           </td>
