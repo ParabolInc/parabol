@@ -21,7 +21,7 @@ interface Props {
 
 const TopBarNotifications = (props: Props) => {
   const {viewer} = props
-  const {notifications} = viewer || {notifications: {edges: []}}
+  const notifications = viewer?.notifications || {edges: []}
   const {edges} = notifications
   const hasNotifications = edges.some(({node}) => node.status === NotificationStatusEnum.UNREAD)
   const menuContentRef = useRef<HTMLDivElement>(null)

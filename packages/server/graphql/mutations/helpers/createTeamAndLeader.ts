@@ -1,5 +1,3 @@
-import {InvoiceItemType} from 'parabol-client/types/constEnums'
-import adjustUserCount from '../../../billing/helpers/adjustUserCount'
 import getRethink from '../../../database/rethinkDriver'
 import MeetingSettingsAction from '../../../database/types/MeetingSettingsAction'
 import MeetingSettingsPoker from '../../../database/types/MeetingSettingsPoker'
@@ -38,14 +36,7 @@ export default async function createTeamAndLeader(userId: string, newTeam: Valid
     orgId
   })
 
-  const [organizationUser] = await Promise.all([
-    r
-      .table('OrganizationUser')
-      .getAll(userId, {index: 'userId'})
-      .filter({removedAt: null, orgId})
-      .nth(0)
-      .default(null)
-      .run(),
+  await Promise.all([
     // insert team
     r
       .table('Team')
@@ -65,8 +56,4 @@ export default async function createTeamAndLeader(userId: string, newTeam: Valid
       .run(),
     addTeamIdToTMS(userId, teamId)
   ])
-
-  if (!organizationUser) {
-    await adjustUserCount(userId, orgId, InvoiceItemType.ADD_USER)
-  }
 }

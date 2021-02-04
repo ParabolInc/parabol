@@ -6,7 +6,8 @@ const pgmConfig = {
   port: process.env.POSTGRES_PORT,
   database: process.env.POSTGRES_DB,
   tsconfig: 'packages/server/tsconfig.json',
-  'migrations-dir': 'packages/server/postgres/migrations'
+  'migrations-dir': 'packages/server/postgres/migrations',
+  'migrations-table': 'PgMigrations'
 }
 
 module.exports = pgmConfig
