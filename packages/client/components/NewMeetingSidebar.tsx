@@ -121,8 +121,8 @@ const NewMeetingSidebar = (props: Props) => {
               placeholder={'Best Meeting Ever!'}
             />
           ) : (
-            <MeetingName>{meetingName}</MeetingName>
-          )}
+              <MeetingName>{meetingName}</MeetingName>
+            )}
           <TeamDashboardLink to={teamLink}>
             {'Team: '}
             {teamName}
@@ -132,7 +132,7 @@ const NewMeetingSidebar = (props: Props) => {
       </SidebarHeader>
       <Facilitator meeting={meeting} />
       {children}
-      <LogoBlock variant='primary' onClick={handleMenuClick} />
+      <LogoBlock onClick={handleMenuClick} />
     </SidebarParent>
   )
 }
