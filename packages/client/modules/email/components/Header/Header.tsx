@@ -37,7 +37,7 @@ const Header = (props: Props) => {
                 height={42}
                 src={`${ExternalLinks.EMAIL_CDN}email-header-branding-color@3x.png`}
                 style={imageStyle}
-                width={203}
+                width={204}
               />
             </a>
           </td>
