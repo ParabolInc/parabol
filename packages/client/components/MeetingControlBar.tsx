@@ -1,59 +1,54 @@
+import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useRef} from 'react'
 import {createFragmentContainer} from 'react-relay'
-import {MeetingControlBar_meeting} from '~/__generated__/MeetingControlBar_meeting.graphql'
 import useAtmosphere from '~/hooks/useAtmosphere'
+import useBreakpoint from '~/hooks/useBreakpoint'
 import {useCovering} from '~/hooks/useControlBarCovers'
 import useDraggableFixture from '~/hooks/useDraggableFixture'
 import useGotoNext from '~/hooks/useGotoNext'
 import useGotoStageId from '~/hooks/useGotoStageId'
 import useInitialRender from '~/hooks/useInitialRender'
+import useLeft from '~/hooks/useLeft'
 import useTransition, {TransitionStatus} from '~/hooks/useTransition'
 import {PALETTE} from '~/styles/paletteV2'
-import {BezierCurve, Breakpoint, ElementWidth, ZIndex} from '~/types/constEnums'
+import {Breakpoint, ElementWidth, ZIndex} from '~/types/constEnums'
 import {MeetingTypeEnum, NewMeetingPhaseTypeEnum} from '~/types/graphql'
 import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
 import findStageAfterId from '~/utils/meetings/findStageAfterId'
-import styled from '@emotion/styled'
+import {MeetingControlBar_meeting} from '~/__generated__/MeetingControlBar_meeting.graphql'
 import useClickConfirmation from '../hooks/useClickConfirmation'
-import useSnackbarPad from '../hooks/useSnackbarPad'
 import {bottomBarShadow, desktopBarShadow} from '../styles/elevation'
 import BottomControlBarReady from './BottomControlBarReady'
 import BottomControlBarRejoin from './BottomControlBarRejoin'
 import BottomControlBarTips from './BottomControlBarTips'
 import EndMeetingButton from './EndMeetingButton'
 import StageTimerControl from './StageTimerControl'
-import useLeft from '~/hooks/useLeft'
-import useBreakpoint from '~/hooks/useBreakpoint'
 
-const Wrapper = styled('div')<{left: number }>(
-  ({left}) => ({
-    alignItems: 'center',
-    backgroundColor: '#FFFFFF',
-    bottom: 0,
-    boxShadow: bottomBarShadow,
-    color: PALETTE.TEXT_GRAY,
-    display: 'flex',
-    flexWrap: 'nowrap',
-    fontSize: 14,
-    height: 56,
-    justifyContent: 'space-between',
-    left,
-    margin: '0 auto',
-    minHeight: 56,
-    padding: ElementWidth.CONTROL_BAR_PADDING,
-    position: 'fixed',
-    transition: `200ms ${BezierCurve.DECELERATE}`,
-    width: '100%',
-    zIndex: ZIndex.BOTTOM_BAR,
-    [makeMinWidthMediaQuery(Breakpoint.SINGLE_REFLECTION_COLUMN)]: {
-      borderRadius: 4,
-      bottom: 8,
-      boxShadow: desktopBarShadow,
-      width: 'fit-content'
-    } 
-  })
-)
+const Wrapper = styled('div')<{left: number}>(({left}) => ({
+  alignItems: 'center',
+  backgroundColor: '#FFFFFF',
+  bottom: 0,
+  boxShadow: bottomBarShadow,
+  color: PALETTE.TEXT_GRAY,
+  display: 'flex',
+  flexWrap: 'nowrap',
+  fontSize: 14,
+  height: 56,
+  justifyContent: 'space-between',
+  left,
+  minHeight: 56,
+  padding: ElementWidth.CONTROL_BAR_PADDING,
+  position: 'fixed',
+  width: '100%',
+  zIndex: ZIndex.BOTTOM_BAR,
+  [makeMinWidthMediaQuery(Breakpoint.SINGLE_REFLECTION_COLUMN)]: {
+    borderRadius: 4,
+    bottom: 8,
+    boxShadow: desktopBarShadow,
+    width: 'fit-content'
+  }
+}))
 
 const DEFAULT_TIME_LIMIT = {
   [NewMeetingPhaseTypeEnum.reflect]: 5,
@@ -68,14 +63,8 @@ interface Props {
   gotoStageId: ReturnType<typeof useGotoStageId>
   meeting: MeetingControlBar_meeting
 }
-
 const MeetingControlBar = (props: Props) => {
-  const {
-    handleGotoNext,
-    isDemoStageComplete,
-    meeting,
-    gotoStageId,
-  } = props
+  const {handleGotoNext, isDemoStageComplete, meeting, gotoStageId} = props
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
   const {
@@ -110,12 +99,12 @@ const MeetingControlBar = (props: Props) => {
   const cancelConfirm = confirmingButton ? () => setConfirmingButton('') : undefined
   const tranChildren = useTransition(buttons)
   const isDesktop = useBreakpoint(Breakpoint.SINGLE_REFLECTION_COLUMN)
-  const controlBarWidth = buttons.length * ElementWidth.CONTROL_BAR_BUTTON + ElementWidth.CONTROL_BAR_PADDING * 2
+  const controlBarWidth =
+    buttons.length * ElementWidth.CONTROL_BAR_BUTTON + ElementWidth.CONTROL_BAR_PADDING * 2
   const left = useLeft(controlBarWidth, isRightDrawerOpen, showSidebar)
   const controlBarLeft = isDesktop ? left : 0
   const {onMouseDown, onClickCapture} = useDraggableFixture(showSidebar, isRightDrawerOpen)
   const ref = useRef<HTMLDivElement>(null)
-  useSnackbarPad(ref)
   useCovering(ref)
   const isInit = useInitialRender()
   if (endedAt) return null
@@ -151,7 +140,9 @@ const MeetingControlBar = (props: Props) => {
                 <BottomControlBarReady
                   {...tranProps}
                   isNext={isPoker ? true : isFacilitating}
-                  cancelConfirm={isPoker ? undefined : confirmingButton === 'next' ? undefined : cancelConfirm}
+                  cancelConfirm={
+                    isPoker ? undefined : confirmingButton === 'next' ? undefined : cancelConfirm
+                  }
                   isConfirming={isPoker ? false : confirmingButton === 'next'}
                   setConfirmingButton={setConfirmingButton}
                   isDemoStageComplete={isDemoStageComplete}
