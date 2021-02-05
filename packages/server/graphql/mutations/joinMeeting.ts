@@ -17,6 +17,7 @@ import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import {GQLContext} from '../graphql'
 import JoinMeetingPayload from '../types/JoinMeetingPayload'
+import sendMeetingJoinToSegment from './helpers/sendMeetingJoinToSegment'
 
 const createMeetingMember = (meeting: Meeting, teamId: string, userId: string) => {
   switch (meeting.meetingType) {
@@ -142,6 +143,7 @@ const joinMeeting = {
 
     const data = {meetingId}
     publish(SubscriptionChannel.MEETING, meetingId, 'JoinMeetingSuccess', data, subOptions)
+    sendMeetingJoinToSegment(viewerId, meeting)
     return data
   }
 }

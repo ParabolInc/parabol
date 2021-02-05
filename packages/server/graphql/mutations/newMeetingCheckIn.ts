@@ -21,6 +21,5 @@ export default {
   },
   async resolve(_source, {userId, meetingId}) {
     return {meetingId, userId}
-    // sendMeetingJoinToSegment(userId, meeting)
   }
 }

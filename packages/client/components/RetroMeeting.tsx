@@ -63,7 +63,6 @@ const RetroMeeting = (props: Props) => {
   const atmosphere = useAtmosphere()
   if (!safeRoute) return null
   const {id: meetingId, showSidebar, viewerMeetingMember, localPhase} = meeting
-  console.log('USE', viewerMeetingMember, viewerMeetingMember?.user)
   const allowVideo = !!viewerMeetingMember?.user?.featureFlags?.video
   const localPhaseType = localPhase?.phaseType
 
