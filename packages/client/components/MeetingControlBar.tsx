@@ -12,7 +12,7 @@ import useInitialRender from '~/hooks/useInitialRender'
 import useLeft from '~/hooks/useLeft'
 import useTransition, {TransitionStatus} from '~/hooks/useTransition'
 import {PALETTE} from '~/styles/paletteV2'
-import {Breakpoint, ElementWidth, ZIndex} from '~/types/constEnums'
+import {BezierCurve, Breakpoint, ElementWidth, ZIndex} from '~/types/constEnums'
 import {MeetingTypeEnum, NewMeetingPhaseTypeEnum} from '~/types/graphql'
 import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
 import findStageAfterId from '~/utils/meetings/findStageAfterId'
@@ -40,6 +40,7 @@ const Wrapper = styled('div')<{left: number}>(({left}) => ({
   minHeight: 56,
   padding: ElementWidth.CONTROL_BAR_PADDING,
   position: 'fixed',
+  transition: `all 200ms ${BezierCurve.DECELERATE}`,
   width: '100%',
   zIndex: ZIndex.BOTTOM_BAR,
   [makeMinWidthMediaQuery(Breakpoint.SINGLE_REFLECTION_COLUMN)]: {

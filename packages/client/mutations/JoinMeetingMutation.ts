@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
 import {INewMeeting, ITeamMember, MeetingTypeEnum, NewMeetingPhaseTypeEnum} from '../types/graphql'
-import {SimpleMutation} from '../types/relayMutations'
+import {StandardMutation} from '../types/relayMutations'
 import createProxyRecord from '../utils/relay/createProxyRecord'
 import toTeamMemberId from '../utils/relay/toTeamMemberId'
 import {JoinMeetingMutation as TJoinMeetingMutation} from '../__generated__/JoinMeetingMutation.graphql'
@@ -28,7 +28,11 @@ const mutation = graphql`
   }
 `
 
-const JoinMeetingMutation: SimpleMutation<TJoinMeetingMutation> = (atmosphere, variables) => {
+const JoinMeetingMutation: StandardMutation<TJoinMeetingMutation> = (
+  atmosphere,
+  variables,
+  {onError, onCompleted}
+) => {
   return commitMutation<TJoinMeetingMutation>(atmosphere, {
     mutation,
     variables,
@@ -81,7 +85,9 @@ const JoinMeetingMutation: SimpleMutation<TJoinMeetingMutation> = (atmosphere, v
       }
       appendStage(NewMeetingPhaseTypeEnum.checkin)
       appendStage(NewMeetingPhaseTypeEnum.updates)
-    }
+    },
+    onError,
+    onCompleted
   })
 }
 

@@ -58,7 +58,6 @@ const joinMeeting = {
     const viewerId = getUserId(authToken)
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
-    console.log('joining Meeting')
     //AUTH
     const meeting = await dataLoader.get('newMeetings').load(meetingId)
     if (!meeting) {
@@ -72,12 +71,10 @@ const joinMeeting = {
       return {error: {message: 'Not on the team'}}
     }
     const meetingMember = createMeetingMember(meeting, teamId, viewerId)
-    const res1 = await r
+    const {errors} = await r
       .table('MeetingMember')
       .insert(meetingMember)
       .run()
-    console.log({res1})
-    const {errors} = res1
     // if this is called concurrently, only 1 will be error free
     if (errors > 0) {
       return {error: {message: 'Already joined meeting'}}
@@ -90,7 +87,6 @@ const joinMeeting = {
       stage: CheckInStage | UpdatesStage,
       phaseType: NewMeetingPhaseTypeEnum
     ) => {
-      console.log('adding stage to', phaseType)
       return r
         .table('NewMeeting')
         .get(meetingId)
@@ -142,6 +138,7 @@ const joinMeeting = {
     // effort is taken here to run both at the same time
     // so e.g.the 5th person in check-in is the 5th person in updates
     await Promise.all([appendToCheckin(), appendToUpdate()])
+    dataLoader.get('newMeetings').clear(meetingId)
 
     const data = {meetingId}
     publish(SubscriptionChannel.MEETING, meetingId, 'JoinMeetingSuccess', data, subOptions)
