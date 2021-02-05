@@ -7,7 +7,7 @@ import HelpMenuCopy from './HelpMenuCopy'
 import HelpMenuHeader from './HelpMenuHeader'
 import HelpMenuLink from './HelpMenuLink'
 
-interface Props {}
+interface Props { }
 
 const EstimateHelpMenu = forwardRef((_props: Props, ref: any) => {
   const {closePortal} = ref
@@ -16,7 +16,7 @@ const EstimateHelpMenu = forwardRef((_props: Props, ref: any) => {
     <HelpMenuContent closePortal={closePortal}>
       <HelpMenuHeader>{phaseLabelLookup.ESTIMATE}</HelpMenuHeader>
       <HelpMenuCopy>
-        Every team member can review the curren task and click a card to estimate its value.
+        Every team member can review the current task and click a card to estimate its value.
       </HelpMenuCopy>
       <HelpMenuCopy>
         Once everyone has played a card, the team can discuss outliers and the facilitator can assign a final score.
