@@ -18,7 +18,6 @@ import {addReflectTemplatePromptTeamUpdater} from '../mutations/AddReflectTempla
 import {addTeamTeamUpdater} from '../mutations/AddTeamMutation'
 import {archiveTeamTeamOnNext, archiveTeamTeamUpdater} from '../mutations/ArchiveTeamMutation'
 import {denyPushInvitationTeamOnNext} from '../mutations/DenyPushInvitationMutation'
-import {endNewMeetingTeamOnNext, endNewMeetingTeamUpdater} from '../mutations/EndNewMeetingMutation'
 import {
   endSprintPokerTeamOnNext,
   endSprintPokerTeamUpdater
@@ -51,7 +50,6 @@ const subscription = graphql`
       ...ArchiveTeamMutation_team @relay(mask: false)
       ...DenyPushInvitationMutation_team @relay(mask: false)
       ...EndCheckInMutation_team @relay(mask: false)
-      ...EndNewMeetingMutation_team @relay(mask: false)
       ...EndRetrospectiveMutation_team @relay(mask: false)
       ...EndSprintPokerMutation_team @relay(mask: false)
       ...MoveReflectTemplatePromptMutation_team @relay(mask: false)
@@ -70,7 +68,6 @@ const subscription = graphql`
       ...SelectTemplateMutation_team @relay(mask: false)
       ...SetCheckInEnabledMutation_team @relay(mask: false)
       ...StartCheckInMutation_team @relay(mask: false)
-      ...StartNewMeetingMutation_team @relay(mask: false)
       ...StartRetrospectiveMutation_team @relay(mask: false)
       ...UpdateAgendaItemMutation_team @relay(mask: false)
       ...UpdateCreditCardMutation_team @relay(mask: false)
@@ -86,7 +83,6 @@ const onNextHandlers = {
   ArchiveTeamPayload: archiveTeamTeamOnNext,
   DenyPushInvitationPayload: denyPushInvitationTeamOnNext,
   EndCheckInSuccess: endCheckInTeamOnNext,
-  EndNewMeetingPayload: endNewMeetingTeamOnNext,
   EndRetrospectiveSuccess: endRetrospectiveTeamOnNext,
   EndSprintPokerSuccess: endSprintPokerTeamOnNext,
   RemoveOrgUserPayload: removeOrgUserTeamOnNext,
@@ -104,7 +100,6 @@ const updateHandlers = {
   AddTeamMutationPayload: addTeamTeamUpdater,
   ArchiveTeamPayload: archiveTeamTeamUpdater,
   EndCheckInSuccess: endCheckInTeamUpdater,
-  EndNewMeetingPayload: endNewMeetingTeamUpdater,
   EndRetrospectiveSuccess: endRetrospectiveTeamUpdater,
   EndSprintPokerSuccess: endSprintPokerTeamUpdater,
   MoveReflectTemplatePromptPayload: moveReflectTemplatePromptTeamUpdater,

@@ -13,15 +13,15 @@ import {meetingAvatarMediaQueries} from '../../../../styles/meeting'
 import {PALETTE} from '../../../../styles/paletteV2'
 import {Breakpoint} from '../../../../types/constEnums'
 import MediaRoom from '../../../../utils/mediaRoom/MediaRoom'
-import {NewMeetingAvatarGroup_meeting} from '../../../../__generated__/NewMeetingAvatarGroup_meeting.graphql'
-import NewMeetingAvatar from './NewMeetingAvatar'
 import {
+  ConsumersState,
+  getConsumersForPeer,
   PeersState,
   ProducersState,
-  ConsumersState,
-  RoomState,
-  getConsumersForPeer
+  RoomState
 } from '../../../../utils/mediaRoom/reducerMediaRoom'
+import {NewMeetingAvatarGroup_meeting} from '../../../../__generated__/NewMeetingAvatarGroup_meeting.graphql'
+import NewMeetingAvatar from './NewMeetingAvatar'
 
 const MeetingAvatarGroupRoot = styled('div')({
   alignItems: 'center',

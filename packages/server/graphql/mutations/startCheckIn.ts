@@ -2,13 +2,13 @@ import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {IStartCheckInOnMutationArguments, MeetingTypeEnum} from 'parabol-client/types/graphql'
 import getRethink from '../../database/rethinkDriver'
+import ActionMeetingMember from '../../database/types/ActionMeetingMember'
 import MeetingAction from '../../database/types/MeetingAction'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import StartCheckInPayload from '../types/StartCheckInPayload'
-import createMeetingMembers from './helpers/createMeetingMembers'
 import createNewMeetingPhases from './helpers/createNewMeetingPhases'
 import {startSlackMeeting} from './helpers/notifySlack'
 import sendMeetingStartToSegment from './helpers/sendMeetingStartToSegment'
@@ -47,17 +47,24 @@ export default {
       .default(0)
       .run()
 
-    const phases = await createNewMeetingPhases(teamId, meetingCount, meetingType, dataLoader)
+    const phases = await createNewMeetingPhases(
+      viewerId,
+      teamId,
+      meetingCount,
+      meetingType,
+      dataLoader
+    )
     const meeting = new MeetingAction({
       teamId,
       meetingCount,
       phases,
       facilitatorUserId: viewerId
     })
-    const meetingId = meeting.id
-    const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)
-    const meetingMembers = createMeetingMembers(meeting, teamMembers)
-    await r.table('NewMeeting').insert(meeting).run()
+    const {id: meetingId} = meeting
+    await r
+      .table('NewMeeting')
+      .insert(meeting)
+      .run()
 
     // Disallow accidental starts (2 meetings within 2 seconds)
     const newActiveMeetings = await dataLoader.get('activeMeetingsByTeamId').load(teamId)
@@ -67,16 +74,31 @@ export default {
       return true
     })
     if (otherActiveMeeting) {
-      await r.table('NewMeeting').get(meetingId).delete().run()
+      await r
+        .table('NewMeeting')
+        .get(meetingId)
+        .delete()
+        .run()
       return {error: {message: 'Meeting already started'}}
     }
     const agendaItems = await dataLoader.get('agendaItemsByTeamId').load(teamId)
     const agendaItemIds = agendaItems.map(({id}) => id)
 
     await Promise.all([
-      r.table('MeetingMember').insert(meetingMembers).run(),
-      r.table('Team').get(teamId).update({lastMeetingType: meetingType}).run(),
-      r.table('AgendaItem').getAll(r.args(agendaItemIds)).update({meetingId: meetingId}).run()
+      r
+        .table('MeetingMember')
+        .insert(new ActionMeetingMember({meetingId, userId: viewerId, teamId}))
+        .run(),
+      r
+        .table('Team')
+        .get(teamId)
+        .update({lastMeetingType: meetingType})
+        .run(),
+      r
+        .table('AgendaItem')
+        .getAll(r.args(agendaItemIds))
+        .update({meetingId})
+        .run()
     ])
 
     startSlackMeeting(meetingId, teamId, dataLoader).catch(console.log)

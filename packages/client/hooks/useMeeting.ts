@@ -1,5 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import {readInlineData} from 'relay-runtime'
+import {MeetingTypeEnum} from '~/types/graphql'
 import isDemoRoute from '~/utils/isDemoRoute'
 import {useMeeting_meeting} from '~/__generated__/useMeeting_meeting.graphql'
 import {Breakpoint} from '../types/constEnums'
@@ -13,12 +14,11 @@ import useGotoNextHotkey from './useGotoNextHotkey'
 import useGotoPrevHotkey from './useGotoPrevHotkey'
 import useGotoStageId from './useGotoStageId'
 import useHandleMenuClick from './useHandleMenuClick'
+import useMediaRoom from './useMediaRoom'
 import useMeetingLocalState from './useMeetingLocalState'
 import useMobileSidebarDefaultClosed from './useMobileSidebarDefaultClosed'
 import useResumeFacilitation from './useResumeFacilitation'
-import useMediaRoom from './useMediaRoom'
 import useToggleSidebar from './useToggleSidebar'
-import {MeetingTypeEnum} from '~/types/graphql'
 
 const useMeeting = (meetingRef: any) => {
   const meeting = readInlineData<useMeeting_meeting>(

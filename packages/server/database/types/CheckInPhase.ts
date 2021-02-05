@@ -4,15 +4,21 @@ import {makeCheckinGreeting, makeCheckinQuestion} from 'parabol-client/utils/mak
 import CheckInStage from './CheckInStage'
 import GenericMeetingPhase from './GenericMeetingPhase'
 
+interface Input {
+  teamId: string
+  meetingCount: number
+  stages: CheckInStage[]
+}
 export default class CheckInPhase extends GenericMeetingPhase {
   checkInGreeting: {content: string; language: string}
   checkInQuestion: string
   stages: CheckInStage[]
 
-  constructor(teamId: string, meetingCount: number, teamMemberIds: string[]) {
+  constructor(input: Input) {
     super(NewMeetingPhaseTypeEnum.checkin)
+    const {teamId, meetingCount, stages} = input
     this.checkInGreeting = makeCheckinGreeting(meetingCount, teamId)
     this.checkInQuestion = convertToTaskContent(makeCheckinQuestion(meetingCount, teamId))
-    this.stages = teamMemberIds.map((id) => new CheckInStage(id))
+    this.stages = stages
   }
 }

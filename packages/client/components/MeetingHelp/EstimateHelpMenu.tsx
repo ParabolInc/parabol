@@ -19,10 +19,16 @@ const EstimateHelpMenu = forwardRef((_props: Props, ref: any) => {
         Every team member can review the current task and click a card to estimate its value.
       </HelpMenuCopy>
       <HelpMenuCopy>
-        Once everyone has played a card, the team can discuss outliers and the facilitator can assign a final score.
+        Once everyone has played a card, the team can discuss outliers and the facilitator can
+        assign a final score.
       </HelpMenuCopy>
-      <HelpMenuCopy>The final score will be saved to the task and visible in the summary.</HelpMenuCopy>
-      <HelpMenuLink copy='Learn More' href={`${ExternalLinks.GETTING_STARTED_SPRINT_POKER}#estimate`} />
+      <HelpMenuCopy>
+        The final score will be saved to the task and visible in the summary.
+      </HelpMenuCopy>
+      <HelpMenuLink
+        copy='Learn More'
+        href={`${ExternalLinks.GETTING_STARTED_SPRINT_POKER}#estimate`}
+      />
     </HelpMenuContent>
   )
 })

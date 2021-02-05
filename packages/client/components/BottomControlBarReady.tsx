@@ -61,17 +61,11 @@ const BottomControlBarReady = (props: Props) => {
     onTransitionEnd,
     status
   } = props
-  const {
-    id: meetingId,
-    localPhase,
-    localStage,
-    meetingMembers,
-    reflectionGroups
-  } = meeting
+  const {id: meetingId, localPhase, localStage, meetingMembers, reflectionGroups} = meeting
   const stages = localPhase.stages || []
   const {id: stageId, isComplete, isViewerReady, phaseType} = localStage
   const {gotoNext, ref} = handleGotoNext
-  const activeCount = meetingMembers.filter((member) => member.isCheckedIn).length
+  const activeCount = meetingMembers.length
   const {openTooltip, tooltipPortal, originRef} = useTooltip<HTMLDivElement>(
     MenuPosition.UPPER_CENTER,
     {
@@ -169,7 +163,6 @@ export default createFragmentContainer(BottomControlBarReady, {
       }
       meetingMembers {
         id
-        isCheckedIn
       }
       phases {
         stages {
