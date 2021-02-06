@@ -1,5 +1,4 @@
 import PROD from '../PROD'
-import readCert from './readCert'
 
 const getPgConfig = () => {
   const config = {
@@ -9,14 +8,6 @@ const getPgConfig = () => {
     host: process.env.POSTGRES_HOST,
     port: Number(process.env.POSTGRES_PORT),
     max: PROD ? 85 : 5 // leave 15 conns for su management in production
-  }
-  if (PROD && process.env.PGSSLMODE === 'require') {
-    Object.assign(config, {
-      ssl: {
-        rejectUnauthorized: true,
-        ca: readCert()
-      }
-    })
   }
   return config
 }
