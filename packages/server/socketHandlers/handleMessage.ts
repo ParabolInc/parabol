@@ -3,6 +3,7 @@ import {WebSocket} from 'uWebSockets.js'
 import handleGraphQLTrebuchetRequest from '../graphql/handleGraphQLTrebuchetRequest'
 import ConnectionContext from '../socketHelpers/ConnectionContext'
 import keepAlive from '../socketHelpers/keepAlive'
+import {sendAndPushToReliableQueue} from '../socketHelpers/sendEncodedMessage'
 import sendGQLMessage from '../socketHelpers/sendGQLMessage'
 import sendToSentry from '../utils/sendToSentry'
 import handleSignal from '../wrtc/signalServer/handleSignal'
@@ -35,9 +36,14 @@ const handleParsedMessage = async (
 }
 
 const PONG = 65
-const ACK_PREFIX = 6
+const ACK = 0
+const REQ = 1
+const MASK = 1
 const isPong = (message) => message.byteLength === 1 && Buffer.from(message)[0] === PONG
-const isAck = (message) => message.byteLength === 2 && Buffer.from(message)[0] === ACK_PREFIX
+const isAck = (message) =>
+  message.byteLength === 4 && (Buffer.from(message).readUInt32LE() & MASK) === ACK
+const isReq = (message) =>
+  message.byteLength === 4 && (Buffer.from(message).readUInt32LE() & MASK) === REQ
 
 const handleMessage = (
   websocket: WebSocket | {connectionContext: ConnectionContext},
@@ -49,10 +55,18 @@ const handleMessage = (
     return
   }
   if (isAck(message)) {
-    const ackId = Buffer.from(message)[1]
-    const timeout = connectionContext.reliableQueue[ackId]
-    clearTimeout(timeout)
-    delete connectionContext.reliableQueue[ackId]
+    const mid = Buffer.from(message).readUInt32LE() >> 1
+    const timer = connectionContext.reliableQueue[mid].timer
+    clearTimeout(timer)
+    delete connectionContext.reliableQueue[mid]
+    return
+  }
+  if (isReq(message)) {
+    const mid = Buffer.from(message).readUInt32LE() >> 1
+    const timer = connectionContext.reliableQueue[mid].timer
+    const object = connectionContext.reliableQueue[mid].object
+    clearTimeout(timer)
+    sendAndPushToReliableQueue(connectionContext, mid, object)
     return
   }
   let parsedMessage

@@ -12,7 +12,7 @@ const TIMEOUT_JITTER = 20 // 20 ms
 
 const sendAndPushToReliableQueue = (
   context: ConnectionContext,
-  synId: number,
+  mid: number,
   object: any,
   timeout = INITIAL_TIMEOUT + Math.random() * TIMEOUT_JITTER
 ) => {
@@ -21,24 +21,19 @@ const sendAndPushToReliableQueue = (
     handleDisconnect(context)
     return
   }
-  const attempt = Math.log2(Math.floor(timeout / INITIAL_TIMEOUT))
-  const message = JSON.stringify({
-    synId: synId,
-    attempt: attempt,
-    object
-  })
+  const message = JSON.stringify([object, mid])
   sendEncodedMessageBasedOnSocket(socket, message)
   const timer = setTimeout(() => {
     const newTimeout = timeout * TIMEOUT_COEFFICIENT + Math.random() * TIMEOUT_JITTER
-    sendAndPushToReliableQueue(context, synId, object, newTimeout)
+    sendAndPushToReliableQueue(context, mid, object, newTimeout)
   }, timeout)
 
-  const queuePos = (synId << 2) | attempt
-  if (queuePos in reliableQueue) {
-    const existingTimer = reliableQueue[queuePos]
+  if (mid in reliableQueue) {
+    const existingTimer = reliableQueue[mid].timer
     clearTimeout(existingTimer)
+    delete reliableQueue[mid]
   }
-  reliableQueue[queuePos] = timer
+  reliableQueue[mid] = {timer, object}
 }
 
 const sendEncodedMessageBasedOnSocket = (socket: WebSocket | HttpResponse, message: string) => {
@@ -52,11 +47,11 @@ const sendEncodedMessage = (context: ConnectionContext, object: any, syn = false
   if (socket.done) return
 
   if (syn) {
-    sendAndPushToReliableQueue(context, context.getSynId(), object)
+    sendAndPushToReliableQueue(context, context.getMid(), object)
   } else {
     const message = JSON.stringify(object)
     sendEncodedMessageBasedOnSocket(socket, message)
   }
 }
 
-export default sendEncodedMessage
+export {sendEncodedMessage, sendAndPushToReliableQueue}

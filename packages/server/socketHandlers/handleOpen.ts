@@ -1,7 +1,7 @@
 import {WebSocket, WebSocketBehavior} from 'uWebSockets.js'
 import ConnectionContext from '../socketHelpers/ConnectionContext'
 import keepAlive from '../socketHelpers/keepAlive'
-import sendEncodedMessage from '../socketHelpers/sendEncodedMessage'
+import {sendEncodedMessage} from '../socketHelpers/sendEncodedMessage'
 import handleConnect from './handleConnect'
 
 const APP_VERSION = process.env.npm_package_version
