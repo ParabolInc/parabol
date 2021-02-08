@@ -73,6 +73,7 @@ const Scrollable = styled('div')({
   display: 'flex',
   flexDirection: 'column',
   overflow: 'auto',
+  paddingBottom: 56,
   width: '100%'
 })
 
@@ -147,8 +148,8 @@ const ReflectTemplateDetails = (props: Props) => {
         </TemplateHeader>
         <TemplatePromptList isOwner={isOwner} prompts={prompts} templateId={templateId} />
         {isOwner && <AddTemplatePrompt templateId={templateId} prompts={prompts} />}
+        <TemplateSharing teamId={teamId} template={activeTemplate} />
       </Scrollable>
-      <TemplateSharing teamId={teamId} template={activeTemplate} />
       {activeTemplate.id !== settings.selectedTemplate.id && <SelectTemplate closePortal={closePortal} template={activeTemplate} teamId={teamId} />}
     </PromptEditor>
   )

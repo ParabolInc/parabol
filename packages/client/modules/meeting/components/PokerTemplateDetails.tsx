@@ -66,6 +66,7 @@ const Scrollable = styled('div')({
   display: 'flex',
   flexDirection: 'column',
   overflow: 'auto',
+  paddingBottom: 56,
   width: '100%'
 })
 
@@ -133,8 +134,8 @@ const PokerTemplateDetails = (props: Props) => {
         </TemplateHeader>
         <TemplateDimensionList isOwner={isOwner} dimensions={dimensions} templateId={templateId} />
         {isOwner && <AddPokerTemplateDimension templateId={templateId} dimensions={dimensions} />}
+        <TemplateSharing teamId={teamId} template={activeTemplate} />
       </Scrollable>
-      <TemplateSharing teamId={teamId} template={activeTemplate} />
       {activeTemplate.id !== settings.selectedTemplate.id && <SelectTemplate closePortal={closePortal} template={activeTemplate} teamId={teamId} />}
     </DimensionEditor>
   )
