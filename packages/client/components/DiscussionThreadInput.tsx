@@ -1,15 +1,15 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import {convertToRaw, EditorState, ContentState} from 'draft-js'
+import {ContentState, convertToRaw, EditorState} from 'draft-js'
+import React, {forwardRef, RefObject, useEffect, useState} from 'react'
+import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useMutationProps from '~/hooks/useMutationProps'
 import useReplyEditorState from '~/hooks/useReplyEditorState'
 import AddCommentMutation from '~/mutations/AddCommentMutation'
-import React, {forwardRef, RefObject, useEffect, useState} from 'react'
-import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
+import EditCommentingMutation from '~/mutations/EditCommentingMutation'
 import {Elevation} from '~/styles/elevation'
-import {ThreadSourceEnum} from '~/types/graphql'
-import {MeetingTypeEnum} from '~/types/graphql'
+import {MeetingTypeEnum, ThreadSourceEnum} from '~/types/graphql'
 import {SORT_STEP} from '~/utils/constants'
 import dndNoise from '~/utils/dndNoise'
 import convertToTaskContent from '~/utils/draftjs/convertToTaskContent'
@@ -20,7 +20,6 @@ import Avatar from './Avatar/Avatar'
 import CommentSendOrAdd from './CommentSendOrAdd'
 import CommentEditor from './TaskEditor/CommentEditor'
 import {ReplyMention, SetReplyMention} from './ThreadedItem'
-import EditCommentingMutation from '~/mutations/EditCommentingMutation'
 
 const Wrapper = styled('div')<{isReply: boolean; isDisabled: boolean}>(({isDisabled, isReply}) => ({
   alignItems: 'center',
@@ -69,8 +68,7 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
   const isReply = !!props.isReply
   const isDisabled = !!props.isDisabled
   const {id: meetingId, isAnonymousComment, teamId, viewerMeetingMember, meetingType} = meeting
-  const {user} = viewerMeetingMember
-  const {picture} = user
+  const picture = viewerMeetingMember?.user.picture ?? anonymousAvatar
   const [editorState, setEditorState] = useReplyEditorState(replyMention, setReplyMention)
   const atmosphere = useAtmosphere()
   const {submitting, onError, onCompleted, submitMutation} = useMutationProps()

@@ -117,12 +117,13 @@ export const newMeetingFields = () => ({
     description: 'The last time a meeting was updated (stage completed, finished, etc)'
   },
   viewerMeetingMember: {
-    type: new GraphQLNonNull(MeetingMember),
+    type: MeetingMember,
     description: 'The meeting member of the viewer',
-    resolve: ({id: meetingId}, _args, {authToken, dataLoader}: GQLContext) => {
+    resolve: async ({id: meetingId}, _args, {authToken, dataLoader}: GQLContext) => {
       const viewerId = getUserId(authToken)
       const meetingMemberId = toTeamMemberId(meetingId, viewerId)
-      return dataLoader.get('meetingMembers').load(meetingMemberId)
+      const meetingMember = await dataLoader.get('meetingMembers').load(meetingMemberId)
+      return meetingMember || null
     }
   }
 })

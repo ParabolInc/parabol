@@ -35,8 +35,8 @@ const UpvoteIcon = styled(Icon)<{isExpanded: boolean; isEnabled: boolean}>(
         ? '#fff'
         : 'rgba(255, 255, 255, .25)'
       : isEnabled
-      ? PALETTE.TEXT_GRAY
-      : PALETTE.BORDER_GRAY,
+        ? PALETTE.TEXT_GRAY
+        : PALETTE.BORDER_GRAY,
     cursor: isEnabled ? 'pointer' : undefined,
     fontSize: ICON_SIZE.MD18,
     height: 24,
@@ -54,8 +54,8 @@ const VoteCount = styled('span')<{voteCount: number; isExpanded: boolean}>(
         ? PALETTE.TEXT_LIGHT
         : '#fff'
       : voteCount === 0
-      ? PALETTE.TEXT_GRAY_DARK
-      : PALETTE.TEXT_BLUE,
+        ? PALETTE.TEXT_GRAY_DARK
+        : PALETTE.TEXT_BLUE,
     fontWeight: 600,
     padding: '0 4px',
     userSelect: 'none'
@@ -86,7 +86,7 @@ const ReflectionGroupVoting = (props: Props) => {
   const {id: reflectionGroupId} = reflectionGroup
   const {id: meetingId, localStage, maxVotesPerGroup, viewerMeetingMember} = meeting
   const {isComplete} = localStage!
-  const {votesRemaining} = viewerMeetingMember
+  const votesRemaining = viewerMeetingMember?.votesRemaining ?? 0
   const viewerVoteCount = Math.max(0, reflectionGroup.viewerVoteCount || 0)
   const canUpvote = viewerVoteCount < maxVotesPerGroup && votesRemaining > 0 && !isComplete
   const canDownvote = viewerVoteCount > 0 && !isComplete

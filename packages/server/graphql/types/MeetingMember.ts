@@ -17,6 +17,8 @@ export const meetingMemberFields = () => ({
   },
   isCheckedIn: {
     type: GraphQLBoolean,
+    deprecationReason:
+      'Members are checked in when they enter the meeting now & not created beforehand',
     description: 'true if present, false if absent, else null'
   },
   meetingId: {

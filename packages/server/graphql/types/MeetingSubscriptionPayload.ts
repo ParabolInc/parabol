@@ -12,7 +12,12 @@ import EditReflectionPayload from './EditReflectionPayload'
 import EndDraggingReflectionPayload from './EndDraggingReflectionPayload'
 import {FlagReadyToAdvanceSuccess} from './FlagReadyToAdvancePayload'
 import JiraCreateIssuePayload from './JiraCreateIssuePayload'
+import {JoinMeetingSuccess} from './JoinMeetingPayload'
 import NewMeetingCheckInPayload from './NewMeetingCheckInPayload'
+import {PokerAnnounceDeckHoverSuccess} from './PokerAnnounceDeckHoverPayload'
+import {PokerResetDimensionSuccess} from './PokerResetDimensionPayload'
+import {PokerRevealVotesSuccess} from './PokerRevealVotesPayload'
+import {PokerSetFinalScoreSuccess} from './PokerSetFinalScorePayload'
 import PromoteNewMeetingFacilitatorPayload from './PromoteNewMeetingFacilitatorPayload'
 import RemoveReflectionPayload from './RemoveReflectionPayload'
 import ResetMeetingToStagePayload from './ResetMeetingToStagePayload'
@@ -23,16 +28,12 @@ import StartDraggingReflectionPayload from './StartDraggingReflectionPayload'
 import {UpdateCommentContentSuccess} from './UpdateCommentContentPayload'
 import UpdateDragLocationPayload from './UpdateDragLocationPayload'
 import UpdateNewCheckInQuestionPayload from './UpdateNewCheckInQuestionPayload'
+import {UpdatePokerScopeSuccess} from './UpdatePokerScopePayload'
 import UpdateReflectionContentPayload from './UpdateReflectionContentPayload'
 import UpdateReflectionGroupTitlePayload from './UpdateReflectionGroupTitlePayload'
 import {UpdateRetroMaxVotesSuccess} from './UpdateRetroMaxVotesPayload'
-import VoteForReflectionGroupPayload from './VoteForReflectionGroupPayload'
 import {VoteForPokerStorySuccess} from './VoteForPokerStoryPayload'
-import {PokerRevealVotesSuccess} from './PokerRevealVotesPayload'
-import {PokerResetDimensionSuccess} from './PokerResetDimensionPayload'
-import {PokerAnnounceDeckHoverSuccess} from './PokerAnnounceDeckHoverPayload'
-import {PokerSetFinalScoreSuccess} from './PokerSetFinalScorePayload'
-import {UpdatePokerScopeSuccess} from './UpdatePokerScopePayload'
+import VoteForReflectionGroupPayload from './VoteForReflectionGroupPayload'
 
 const types = [
   // DEPRECATED
@@ -69,7 +70,8 @@ const types = [
   PokerRevealVotesSuccess,
   PokerResetDimensionSuccess,
   PokerAnnounceDeckHoverSuccess,
-  PokerSetFinalScoreSuccess
+  PokerSetFinalScoreSuccess,
+  JoinMeetingSuccess
 ]
 
 export default graphQLSubscriptionType('MeetingSubscriptionPayload', types)

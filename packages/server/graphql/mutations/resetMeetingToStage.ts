@@ -1,15 +1,15 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import {NewMeetingPhaseTypeEnum} from 'parabol-client/types/graphql'
+import findStageById from 'parabol-client/utils/meetings/findStageById'
+import getRethink from '../../database/rethinkDriver'
 import GenericMeetingPhase from '../../database/types/GenericMeetingPhase'
 import GenericMeetingStage from '../../database/types/GenericMeetingStage'
-import getRethink from '../../database/rethinkDriver'
-import createNewMeetingPhases, {primePhases} from './helpers/createNewMeetingPhases'
-import ResetMeetingToStagePayload from '../types/ResetMeetingToStagePayload'
-import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import publish from '../../utils/publish'
 import {getUserId} from '../../utils/authorization'
+import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
-import findStageById from 'parabol-client/utils/meetings/findStageById'
-import {NewMeetingPhaseTypeEnum} from 'parabol-client/types/graphql'
+import ResetMeetingToStagePayload from '../types/ResetMeetingToStagePayload'
+import createNewMeetingPhases, {primePhases} from './helpers/createNewMeetingPhases'
 
 const resetMeetingToStage = {
   type: GraphQLNonNull(ResetMeetingToStagePayload),
@@ -62,7 +62,9 @@ const resetMeetingToStage = {
       return standardError(new Error('The meeting has already ended'), {userId: viewerId})
 
     // RESOLUTION
+    // TODO don't create all the phases from scratch
     const createdPhases = await createNewMeetingPhases(
+      viewerId,
       teamId,
       meetingCount,
       meetingType,

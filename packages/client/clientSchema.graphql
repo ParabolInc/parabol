@@ -54,7 +54,6 @@ extend type User {
   clientClockOffset: Int
   dashSearch: String
   pageName: String
-  snackbarOffset: Int
 }
 
 extend type Task {
