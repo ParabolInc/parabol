@@ -36,7 +36,6 @@ const MeetingMembersWithoutTasks = (props: Props) => {
   const {meeting} = props
   const {meetingMembers, meetingType} = meeting
   if (meetingType === MeetingTypeEnum.poker) return null
-  // const meetingMembers = new Array(7).fill(mock)
   const membersWithoutTasks = meetingMembers.filter(
     (member) =>
       ((member.tasks && member.tasks.length) || 0) +
@@ -74,7 +73,6 @@ export default createFragmentContainer(MeetingMembersWithoutTasks, {
       meetingMembers {
         ...SummaryAvatarHeader_meetingMember
         id
-        isCheckedIn
         user {
           preferredName
           rasterPicture

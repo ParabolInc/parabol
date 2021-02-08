@@ -16,7 +16,6 @@ import {
   createTaskNotificationOnNext,
   createTaskNotificationUpdater
 } from '../mutations/CreateTaskMutation'
-import {endNewMeetingNotificationUpdater} from '../mutations/EndNewMeetingMutation'
 import handleAddNotifications from '../mutations/handlers/handleAddNotifications'
 import {
   inviteToTeamNotificationOnNext,
@@ -69,7 +68,6 @@ const subscription = graphql`
       ...SetNotificationStatusMutation_notification @relay(mask: false)
       ...CreateTaskMutation_notification @relay(mask: false)
       ...EndCheckInMutation_notification @relay(mask: false)
-      ...EndNewMeetingMutation_notification @relay(mask: false)
       ...EndRetrospectiveMutation_notification @relay(mask: false)
       ...InviteToTeamMutation_notification @relay(mask: false)
       ...RemoveOrgUserMutation_notification @relay(mask: false)
@@ -255,9 +253,6 @@ const NotificationSubscription = (
           break
         case 'EndCheckInSuccess':
           endCheckInNotificationUpdater(payload, context)
-          break
-        case 'EndNewMeetingPayload':
-          endNewMeetingNotificationUpdater(payload, context)
           break
         case 'EndRetrospectiveSuccess':
           endRetrospectiveNotificationUpdater(payload, context)

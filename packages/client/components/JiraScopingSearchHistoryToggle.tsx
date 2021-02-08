@@ -35,14 +35,12 @@ interface Props {
 const JiraScopingSearchHistoryToggle = (props: Props) => {
   const {meeting} = props
   const {id: meetingId, viewerMeetingMember} = meeting
+  const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_LEFT, {
+    loadingWidth: 200,
+    noClose: true
+  })
+  if (!viewerMeetingMember) return null
   const {teamMember} = viewerMeetingMember
-  const {togglePortal, originRef, menuPortal, menuProps} = useMenu(
-    MenuPosition.UPPER_LEFT,
-    {
-      loadingWidth: 200,
-      noClose: true
-    }
-  )
   return (
     <>
       <Toggle onClick={togglePortal} ref={originRef}>

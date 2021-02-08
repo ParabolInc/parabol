@@ -14,16 +14,17 @@ import {
   endDraggingReflectionMeetingOnNext,
   endDraggingReflectionMeetingUpdater
 } from '../mutations/EndDraggingReflectionMutation'
+import {pokerAnnounceDeckHoverMeetingUpdater} from '../mutations/PokerAnnounceDeckHoverMutation'
 import {promoteNewMeetingFacilitatorMeetingOnNext} from '../mutations/PromoteNewMeetingFacilitatorMutation'
 import {removeReflectionMeetingUpdater} from '../mutations/RemoveReflectionMutation'
 import {setStageTimerMeetingUpdater} from '../mutations/SetStageTimerMutation'
 import {startDraggingReflectionMeetingUpdater} from '../mutations/StartDraggingReflectionMutation'
-import {pokerAnnounceDeckHoverMeetingUpdater} from '../mutations/PokerAnnounceDeckHoverMutation'
 
 const subscription = graphql`
   subscription MeetingSubscription($meetingId: ID!) {
     meetingSubscription(meetingId: $meetingId) {
       __typename
+      ...JoinMeetingMutation_meeting @relay(mask: false)
       ...PokerSetFinalScoreMutation_meeting @relay(mask: false)
       ...PokerAnnounceDeckHoverMutation_meeting @relay(mask: false)
       ...PokerResetDimensionMutation_meeting @relay(mask: false)
@@ -39,7 +40,6 @@ const subscription = graphql`
       ...EndDraggingReflectionMutation_meeting @relay(mask: false)
       ...FlagReadyToAdvanceMutation_meeting @relay(mask: false)
       ...JiraCreateIssueMutation_meeting @relay(mask: false)
-      ...NewMeetingCheckInMutation_meeting @relay(mask: false)
       ...PromoteNewMeetingFacilitatorMutation_meeting @relay(mask: false)
       ...RemoveReflectionMutation_meeting @relay(mask: false)
       ...ResetMeetingToStageMutation_meeting @relay(mask: false)

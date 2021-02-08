@@ -9,10 +9,7 @@ const sendMeetingEndToSegment = async (
   template?: MeetingTemplate
 ) => {
   const {facilitatorUserId, meetingNumber, meetingType, phases, teamId} = completedMeeting
-  const presentMembers = meetingMembers.filter(
-    (meetingMember) => meetingMember.isCheckedIn === true
-  )
-  const presentMemberUserIds = presentMembers.map(({userId}) => userId)
+  const presentMemberUserIds = meetingMembers.map(({userId}) => userId)
   presentMemberUserIds.forEach((userId) => {
     const wasFacilitator = userId === facilitatorUserId
     segmentIo.track({
@@ -30,7 +27,7 @@ const sendMeetingEndToSegment = async (
         meetingTemplateIsFromParabol: !!template?.isStarter,
         meetingNumber,
         teamMembersCount: meetingMembers.length,
-        teamMembersPresentCount: presentMembers.length,
+        teamMembersPresentCount: meetingMembers.length,
         teamId
       }
     })

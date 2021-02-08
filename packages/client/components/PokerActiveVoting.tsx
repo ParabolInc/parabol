@@ -41,7 +41,7 @@ const StyledError = styled('div')({
   paddingLeft: 8,
   fontSize: 14,
   color: PALETTE.ERROR_MAIN,
-  fontWeight: 400,
+  fontWeight: 400
 })
 
 const RevealLabel = styled('div')<{color: string}>(({color}) => ({
@@ -76,7 +76,7 @@ const RevealButtonIcon = styled(Icon)<{color: string}>(({color}) => ({
   left: 19,
   position: 'absolute',
   top: 7,
-  width: 40,
+  width: 40
 }))
 
 interface Props {
@@ -95,7 +95,7 @@ const PokerActiveVoting = (props: Props) => {
   const hasVotes = scores.length > 0
   const isFacilitator = viewerId === facilitatorUserId
   const viewerHasVoted = Boolean(scores.find(({userId}) => userId === viewerId))
-  const checkedInCount = meetingMembers.filter((member) => member.isCheckedIn).length
+  const checkedInCount = meetingMembers.length
   const votePercent = scores.length / checkedInCount
   const allVotesIn = scores.length === checkedInCount
   // Show the facilitator a tooltip if nobody has voted yet
@@ -103,7 +103,7 @@ const PokerActiveVoting = (props: Props) => {
   // Consider dismissing the tooltip silently if each role has seen their tooltip once
   // - Show the facilitator a tooltip if nobody has voted yet and the facilitator hasn’t revealed once
   // - Show the participant a tooltip if they haven’t voted once
-  const showTip = Boolean(isFacilitator && !hasVotes || !isFacilitator && !viewerHasVoted)
+  const showTip = Boolean((isFacilitator && !hasVotes) || (!isFacilitator && !viewerHasVoted))
   const tipCopy = isFacilitator
     ? 'Votes are automatically revealed once everyone has voted.'
     : 'Tap a card to vote. Swipe to view each dimension.'
@@ -112,11 +112,7 @@ const PokerActiveVoting = (props: Props) => {
   const reveal = () => {
     if (submitting) return
     submitMutation()
-    PokerRevealVotesMutation(
-      atmosphere,
-      {meetingId, stageId},
-      {onError, onCompleted}
-    )
+    PokerRevealVotesMutation(atmosphere, {meetingId, stageId}, {onError, onCompleted})
   }
 
   return (
@@ -125,16 +121,29 @@ const PokerActiveVoting = (props: Props) => {
         <MiniPokerCard>
           <CheckIcon>check</CheckIcon>
         </MiniPokerCard>
-        <PokerVotingAvatarGroup scores={scores} isClosing={isClosing} isInitialStageRender={isInitialStageRender} />
+        <PokerVotingAvatarGroup
+          scores={scores}
+          isClosing={isClosing}
+          isInitialStageRender={isInitialStageRender}
+        />
       </PokerVotingRowBase>
       <RevealButtonBlock>
-        {showRevealButton &&
+        {showRevealButton && (
           <RevealButton onClick={reveal} color={PALETTE.TEXT_GRAY}>
-            <Progress radius={22} thickness={4} stroke={PALETTE.BACKGROUND_GREEN} progress={votePercent} />
-            <RevealButtonIcon color={allVotesIn ? PALETTE.TEXT_GREEN : PALETTE.BORDER_GRAY}>{'check'}</RevealButtonIcon>
-            <RevealLabel color={allVotesIn ? PALETTE.TEXT_GREEN : PALETTE.TEXT_GRAY}>{'Reveal Votes'}</RevealLabel>
+            <Progress
+              radius={22}
+              thickness={4}
+              stroke={PALETTE.BACKGROUND_GREEN}
+              progress={votePercent}
+            />
+            <RevealButtonIcon color={allVotesIn ? PALETTE.TEXT_GREEN : PALETTE.BORDER_GRAY}>
+              {'check'}
+            </RevealButtonIcon>
+            <RevealLabel color={allVotesIn ? PALETTE.TEXT_GREEN : PALETTE.TEXT_GRAY}>
+              {'Reveal Votes'}
+            </RevealLabel>
           </RevealButton>
-        }
+        )}
         {error && <StyledError>{error.message}</StyledError>}
       </RevealButtonBlock>
       <BannerWrap showTip={showTip}>
@@ -144,11 +153,8 @@ const PokerActiveVoting = (props: Props) => {
   )
 }
 
-
-export default createFragmentContainer(
-  PokerActiveVoting,
-  {
-    stage: graphql`
+export default createFragmentContainer(PokerActiveVoting, {
+  stage: graphql`
     fragment PokerActiveVoting_stage on EstimateStage {
       id
       dimensionId
@@ -156,14 +162,15 @@ export default createFragmentContainer(
         ...PokerVotingAvatarGroup_scores
         userId
       }
-    }`,
-    meeting: graphql`
+    }
+  `,
+  meeting: graphql`
     fragment PokerActiveVoting_meeting on PokerMeeting {
       facilitatorUserId
       id
       meetingMembers {
-        isCheckedIn
+        id
       }
-    }`,
-  }
-)
+    }
+  `
+})

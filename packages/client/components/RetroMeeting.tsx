@@ -63,9 +63,7 @@ const RetroMeeting = (props: Props) => {
   const atmosphere = useAtmosphere()
   if (!safeRoute) return null
   const {id: meetingId, showSidebar, viewerMeetingMember, localPhase} = meeting
-  const {user} = viewerMeetingMember
-  const {featureFlags} = user
-  const {video: allowVideo} = featureFlags
+  const allowVideo = !!viewerMeetingMember?.user?.featureFlags?.video
   const localPhaseType = localPhase?.phaseType
 
   const Phase = phaseLookup[localPhaseType] as PhaseComponent

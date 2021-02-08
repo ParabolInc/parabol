@@ -37,9 +37,10 @@ const removeArtifacts = async () => {
 const dev = async (maybeInit) => {
   const isInit = !fs.existsSync(path.join(TOOLBOX_ROOT, 'updateSchema.js')) || maybeInit
   const redis = new Redis(process.env.REDIS_URL)
+  const toolboxPromise = compileToolbox()
   if (isInit) {
     console.log('👋👋👋      Welcome to Parabol!      👋👋👋')
-    await Promise.all([compileToolbox(), removeArtifacts()])
+    await Promise.all([removeArtifacts()])
   }
 
   const buildDLL = require('./buildDll')()
@@ -52,6 +53,7 @@ const dev = async (maybeInit) => {
     migrationsTable: cliPgmConfig['migrations-table']
   }
   const migratePG = pgMigrate(programmaticPgmConfig)
+  await toolboxPromise
   await require('./toolbox/updateSchema.js').default()
   if (isInit) {
     // technically, this is unsafe for SSR, but they're so rarely used that's fine
