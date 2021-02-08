@@ -62,13 +62,13 @@ const FirstLine = styled('div')({
   display: 'flex'
 })
 
-const Scrollable = styled('div')({
+const Scrollable = styled('div')<{isActiveTemplate: boolean}>(({isActiveTemplate}) => ({
   display: 'flex',
   flexDirection: 'column',
   overflow: 'auto',
-  paddingBottom: 56,
+  paddingBottom: isActiveTemplate ? undefined : 56,
   width: '100%'
-})
+}))
 
 interface Props {
   gotoTeamTemplates: () => void
@@ -101,9 +101,10 @@ const PokerTemplateDetails = (props: Props) => {
     wsjfTemplate: wsjfTemplate
   }
   const headerImg = defaultIllustrations[templateId] ? defaultIllustrations[templateId] : customTemplate
+  const isActiveTemplate = activeTemplate.id === settings.selectedTemplate.id
   return (
     <DimensionEditor>
-      <Scrollable>
+      <Scrollable isActiveTemplate={isActiveTemplate}>
         <TemplateImg src={headerImg} />
         <TemplateHeader>
           <FirstLine>
@@ -136,7 +137,7 @@ const PokerTemplateDetails = (props: Props) => {
         {isOwner && <AddPokerTemplateDimension templateId={templateId} dimensions={dimensions} />}
         <TemplateSharing teamId={teamId} template={activeTemplate} />
       </Scrollable>
-      {activeTemplate.id !== settings.selectedTemplate.id && <SelectTemplate closePortal={closePortal} template={activeTemplate} teamId={teamId} />}
+      {!isActiveTemplate && <SelectTemplate closePortal={closePortal} template={activeTemplate} teamId={teamId} />}
     </DimensionEditor>
   )
 }

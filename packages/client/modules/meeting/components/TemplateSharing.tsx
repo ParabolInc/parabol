@@ -55,7 +55,7 @@ const DropdownBlock = styled('div')<{disabled: boolean}>(({disabled}) => ({
   display: 'flex',
   fontSize: 16,
   lineHeight: '24px',
-  margin: '8px 0',
+  margin: '8px auto 8px 0',
   userSelect: 'none',
   ':hover': {
     color: disabled ? undefined : PALETTE.TEXT_MAIN_HOVER
