@@ -10,6 +10,7 @@ import {printSchema} from 'graphql'
 import path from 'path'
 import {promisify} from 'util'
 import getProjectRoot from '../../../scripts/webpack/utils/getProjectRoot'
+import schema from '../graphql/rootSchema'
 
 const write = promisify(fs.writeFile)
 // relative to the output file
@@ -33,8 +34,6 @@ const typesOverrides = {
 }
 
 const updateGQLSchema = async () => {
-  // very important to require this so it's the latest version
-  const schema = require('../graphql/rootSchema').default
   const nextSchema = printSchema(schema)
   const gqlTypes = generateNamespace('GQL', nextSchema, {}, typesOverrides)
   await Promise.all([write(schemaPath, nextSchema), write(typesPath, gqlTypes)])

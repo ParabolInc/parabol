@@ -1,16 +1,16 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import {IStartNewMeetingOnMutationArguments, MeetingTypeEnum} from 'parabol-client/types/graphql'
-import DimensionScaleMapping from '../../database/types/DimensionScaleMapping'
+import {IStartSprintPokerOnMutationArguments, MeetingTypeEnum} from 'parabol-client/types/graphql'
 import getRethink from '../../database/rethinkDriver'
+import DimensionScaleMapping from '../../database/types/DimensionScaleMapping'
 import MeetingPoker from '../../database/types/MeetingPoker'
 import MeetingSettingsPoker from '../../database/types/MeetingSettingsPoker'
+import PokerMeetingMember from '../../database/types/PokerMeetingMember'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import StartSprintPokerPayload from '../types/StartSprintPokerPayload'
-import createMeetingMembers from './helpers/createMeetingMembers'
 import createNewMeetingPhases from './helpers/createNewMeetingPhases'
 import {startSlackMeeting} from './helpers/notifySlack'
 import sendMeetingStartToSegment from './helpers/sendMeetingStartToSegment'
@@ -26,7 +26,7 @@ export default {
   },
   async resolve(
     _source,
-    {teamId}: IStartNewMeetingOnMutationArguments,
+    {teamId}: IStartSprintPokerOnMutationArguments,
     {authToken, socketId: mutatorId, dataLoader}: GQLContext
   ) {
     const r = await getRethink()
@@ -50,7 +50,13 @@ export default {
       .default(0)
       .run()
 
-    const phases = await createNewMeetingPhases(teamId, meetingCount, meetingType, dataLoader)
+    const phases = await createNewMeetingPhases(
+      viewerId,
+      teamId,
+      meetingCount,
+      meetingType,
+      dataLoader
+    )
     const meetingSettings = (await dataLoader
       .get('meetingSettingsByType')
       .load({teamId, meetingType: MeetingTypeEnum.poker})) as MeetingSettingsPoker
@@ -73,10 +79,11 @@ export default {
       dimensionScaleMapping
     })
     const meetingId = meeting.id
-    const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)
     const template = await dataLoader.get('meetingTemplates').load(selectedTemplateId)
-    const meetingMembers = createMeetingMembers(meeting, teamMembers)
-    await r.table('NewMeeting').insert(meeting).run()
+    await r
+      .table('NewMeeting')
+      .insert(meeting)
+      .run()
 
     // Disallow accidental starts (2 meetings within 2 seconds)
     const newActiveMeetings = await dataLoader.get('activeMeetingsByTeamId').load(teamId)
@@ -86,13 +93,24 @@ export default {
       return createdAt.getTime() > Date.now() - DUPLICATE_THRESHOLD
     })
     if (otherActiveMeeting) {
-      await r.table('NewMeeting').get(meetingId).delete().run()
+      await r
+        .table('NewMeeting')
+        .get(meetingId)
+        .delete()
+        .run()
       return {error: {message: 'Meeting already started'}}
     }
 
     await Promise.all([
-      r.table('MeetingMember').insert(meetingMembers).run(),
-      r.table('Team').get(teamId).update({lastMeetingType: meetingType}).run()
+      r
+        .table('MeetingMember')
+        .insert(new PokerMeetingMember({meetingId, userId: viewerId, teamId}))
+        .run(),
+      r
+        .table('Team')
+        .get(teamId)
+        .update({lastMeetingType: meetingType})
+        .run()
     ])
     startSlackMeeting(meetingId, teamId, dataLoader).catch(console.log)
     sendMeetingStartToSegment(meeting, template)

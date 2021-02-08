@@ -32,9 +32,6 @@ graphql`
     }
     team {
       name
-      activeMeetings {
-        ...MeetingSelector_meeting
-      }
     }
   }
 `

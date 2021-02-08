@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import React, {ReactElement, Suspense} from 'react'
-import { createFragmentContainer} from 'react-relay'
+import {createFragmentContainer} from 'react-relay'
 import {PokerMeeting_meeting} from '~/__generated__/PokerMeeting_meeting.graphql'
 import useMeeting from '../hooks/useMeeting'
 import NewMeetingAvatarGroup from '../modules/meeting/components/MeetingAvatarGroup/NewMeetingAvatarGroup'
@@ -17,12 +17,12 @@ interface Props {
 }
 
 const phaseLookup = {
-  [NewMeetingPhaseTypeEnum.checkin]: lazyPreload(
-    () => import(/* webpackChunkName: 'NewMeetingCheckIn' */ './NewMeetingCheckIn')
+  [NewMeetingPhaseTypeEnum.checkin]: lazyPreload(() =>
+    import(/* webpackChunkName: 'NewMeetingCheckIn' */ './NewMeetingCheckIn')
   ),
   SCOPE: lazyPreload(() => import(/* webpackChunkName: 'ScopePhase' */ './ScopePhase')),
-  ESTIMATE: lazyPreload(
-    () => import(/* webpackChunkName: 'PokerEstimatePhase' */ './PokerEstimatePhase')
+  ESTIMATE: lazyPreload(() =>
+    import(/* webpackChunkName: 'PokerEstimatePhase' */ './PokerEstimatePhase')
   )
 }
 
@@ -48,16 +48,10 @@ const PokerMeeting = (props: Props) => {
     safeRoute,
     handleMenuClick
   } = useMeeting(meeting)
-  const {
-    showSidebar,
-    viewerMeetingMember,
-    localPhase
-  } = meeting
+  const {showSidebar, viewerMeetingMember, localPhase} = meeting
 
   if (!safeRoute) return null
-  const {user} = viewerMeetingMember
-  const {featureFlags} = user
-  const {video: allowVideo} = featureFlags
+  const allowVideo = !!viewerMeetingMember?.user?.featureFlags?.video
   const localPhaseType = localPhase?.phaseType
   const Phase = phaseLookup[localPhaseType] as PhaseComponent
   return (

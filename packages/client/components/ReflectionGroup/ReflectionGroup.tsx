@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, { RefObject, useEffect, useMemo, useRef, useState} from 'react'
+import React, {RefObject, useEffect, useMemo, useRef, useState} from 'react'
 import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import useEventCallback from '../../hooks/useEventCallback'
@@ -29,16 +29,11 @@ export const getCardStackPadding = (count: number) => {
 }
 
 const Group = styled('div')<{staticReflectionCount: number}>(({staticReflectionCount}) => ({
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center',
   height: 'max-content',
-  justifyContent: 'center',
   position: 'relative',
   paddingTop: ElementWidth.REFLECTION_CARD_PADDING,
   paddingBottom: ElementWidth.REFLECTION_CARD_PADDING + getCardStackPadding(staticReflectionCount),
-  transition: `padding-bottom ${Times.REFLECTION_DROP_DURATION}ms`,
-  width: '100%',
+  transition: `padding-bottom ${Times.REFLECTION_DROP_DURATION}ms`
 }))
 
 const ReflectionWrapper = styled('div')<{

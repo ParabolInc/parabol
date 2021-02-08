@@ -1,42 +1,35 @@
 import styled from '@emotion/styled'
-import graphql from 'babel-plugin-relay/macro'
 import React, {useEffect, useLayoutEffect, useRef} from 'react'
 import useForceUpdate from '~/hooks/useForceUpdate'
 import useAtmosphere from '../hooks/useAtmosphere'
+import useBreakpoint from '../hooks/useBreakpoint'
 import useEventCallback from '../hooks/useEventCallback'
-import useLocalQuery from '../hooks/useLocalQuery'
 import usePortal from '../hooks/usePortal'
+import useRouter from '../hooks/useRouter'
 import useTransition from '../hooks/useTransition'
-import {ZIndex} from '../types/constEnums'
+import {Breakpoint, NavSidebar, ZIndex} from '../types/constEnums'
 import clientTempId from '../utils/relay/clientTempId'
-import {SnackbarQuery} from '../__generated__/SnackbarQuery.graphql'
 import SnackbarMessage from './SnackbarMessage'
 
 const MAX_SNACKS = 1
 
-const query = graphql`
-  query SnackbarQuery {
-    viewer {
-      snackbarOffset
-    }
-  }
-`
-
-const Modal = styled('div')<{snackbarOffset: number | undefined | null}>(({snackbarOffset}) => ({
-  alignItems: 'center',
-  display: 'flex',
-  flexDirection: 'column',
-  height: '100vh',
-  justifyContent: 'flex-end',
-  left: 0,
-  padding: 8,
-  paddingBottom: snackbarOffset || 8,
-  position: 'absolute',
-  top: 0,
-  width: '100vw',
-  pointerEvents: 'none',
-  zIndex: ZIndex.SNACKBAR
-}))
+const Modal = styled('div')<{isMeetingRoute: boolean; isDesktop: boolean}>(
+  ({isMeetingRoute, isDesktop}) => ({
+    alignItems: 'center',
+    display: 'flex',
+    flexDirection: 'column',
+    height: '100vh',
+    justifyContent: 'flex-end',
+    left: 0,
+    padding: 8,
+    paddingBottom: isMeetingRoute ? 64 : 8,
+    position: 'fixed',
+    top: 0,
+    width: isMeetingRoute && isDesktop ? `calc(100% + ${NavSidebar.WIDTH}px)` : '100%',
+    pointerEvents: 'none',
+    zIndex: ZIndex.SNACKBAR
+  })
+)
 
 export type SnackbarRemoveFn = (snack: Snack) => boolean
 
@@ -61,9 +54,10 @@ const Snackbar = React.memo(() => {
   const forceUpdate = useForceUpdate()
   const atmosphere = useAtmosphere()
   const {openPortal, terminatePortal, portal} = usePortal({id: 'snackbar', noClose: true})
+  const {location} = useRouter()
+  const isMeetingRoute = location.pathname.startsWith('/meet/')
+  const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const transitionChildren = useTransition(activeSnacksRef.current)
-  const data = useLocalQuery<SnackbarQuery>(query)
-  const snackbarOffset = data?.viewer?.snackbarOffset
   // used to ensure the snack isn't dismissed when the cursor is on it
   const hoveredSnackRef = useRef<Snack | null>(null)
   const dismissOnLeaveRef = useRef<Snack>()
@@ -158,7 +152,7 @@ const Snackbar = React.memo(() => {
   }, [showSnack, transitionChildren])
 
   return portal(
-    <Modal snackbarOffset={snackbarOffset}>
+    <Modal isMeetingRoute={isMeetingRoute} isDesktop={isDesktop}>
       {transitionChildren.map(({child, onTransitionEnd, status}) => {
         const dismiss = () => {
           if (child.noDismissOnClick) return

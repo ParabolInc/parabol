@@ -9,7 +9,7 @@ const makePokerStats = (meetingRef: any) => {
     graphql`
       fragment makePokerStats_meeting on PokerMeeting @inline {
         meetingMembers {
-          isCheckedIn
+          id
         }
         phases {
           phaseType
@@ -33,16 +33,10 @@ const makePokerStats = (meetingRef: any) => {
   const storyCount = new Set(stages.map((stage) => stage.serviceTaskId)).size
 
   const meetingMembersCount = meetingMembers.length
-  const meetingMembersPresentCount = meetingMembers.filter((member) => member.isCheckedIn === true)
-    .length
-  const memberCount =
-    meetingMembersPresentCount >= 10
-      ? meetingMembersPresentCount
-      : `${meetingMembersPresentCount}/${meetingMembersCount}`
   return [
     {value: '', label: ''},
     {value: storyCount, label: plural(storyCount, 'Story', 'Stories')},
-    {value: memberCount, label: 'Present'},
+    {value: meetingMembersCount, label: 'Participants'},
     {value: '', label: ''}
   ]
 }

@@ -1,9 +1,9 @@
 import {GraphQLID, GraphQLInt, GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import {MeetingTypeEnum, NewMeetingPhaseTypeEnum} from '../../../client/types/graphql'
+import getJiraCloudIdAndKey from '../../../client/utils/getJiraCloudIdAndKey'
 import EstimatePhase from '../../database/types/EstimatePhase'
 import {getUserId} from '../../utils/authorization'
-import getJiraCloudIdAndKey from '../../../client/utils/getJiraCloudIdAndKey'
 import {GQLContext} from '../graphql'
 import NewMeeting, {newMeetingFields} from './NewMeeting'
 import PokerMeetingMember from './PokerMeetingMember'
@@ -77,12 +77,13 @@ const PokerMeeting = new GraphQLObjectType<any, GQLContext>({
       description: 'The ID of the template used for the meeting'
     },
     viewerMeetingMember: {
-      type: GraphQLNonNull(PokerMeetingMember),
+      type: PokerMeetingMember,
       description: 'The Poker meeting member of the viewer',
-      resolve: ({id: meetingId}, _args, {authToken, dataLoader}) => {
+      resolve: async ({id: meetingId}, _args, {authToken, dataLoader}: GQLContext) => {
         const viewerId = getUserId(authToken)
         const meetingMemberId = toTeamMemberId(meetingId, viewerId)
-        return dataLoader.get('meetingMembers').load(meetingMemberId)
+        const meetingMember = await dataLoader.get('meetingMembers').load(meetingMemberId)
+        return meetingMember || null
       }
     }
   })

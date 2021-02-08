@@ -7,10 +7,7 @@ const sendPokerMeetingRevoteToSegment = async (
   meetingMembers: MeetingMember[]
 ) => {
   const {facilitatorUserId, meetingNumber, phases, teamId} = meeting
-  const presentMembers = meetingMembers.filter(
-    (meetingMember) => meetingMember.isCheckedIn === true
-  )
-  const presentMemberUserIds = presentMembers.map(({userId}) => userId)
+  const presentMemberUserIds = meetingMembers.map(({userId}) => userId)
   presentMemberUserIds.forEach((userId) => {
     const wasFacilitator = userId === facilitatorUserId
     segmentIo.track({
@@ -21,7 +18,7 @@ const sendPokerMeetingRevoteToSegment = async (
         wasFacilitator,
         meetingNumber,
         teamMembersCount: meetingMembers.length,
-        teamMembersPresentCount: presentMembers.length,
+        teamMembersPresentCount: meetingMembers.length,
         teamId
       }
     })

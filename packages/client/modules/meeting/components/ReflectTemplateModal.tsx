@@ -19,8 +19,8 @@ interface Props {
 const StyledDialogContainer = styled(DialogContainer)({
   flexDirection: 'row',
   width: 880,
-  maxHeight: 500,
-  minHeight: 500
+  maxHeight: 520,
+  minHeight: 520
 })
 
 const SCOPES = ['TEAM', 'ORGANIZATION', 'PUBLIC']

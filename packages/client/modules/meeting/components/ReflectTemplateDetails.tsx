@@ -69,12 +69,13 @@ const FirstLine = styled('div')({
   display: 'flex'
 })
 
-const Scrollable = styled('div')({
+const Scrollable = styled('div')<{isActiveTemplate: boolean}>(({isActiveTemplate}) => ({
   display: 'flex',
   flexDirection: 'column',
   overflow: 'auto',
+  paddingBottom: isActiveTemplate ? undefined : 56,
   width: '100%'
-})
+}))
 
 interface Props {
   gotoTeamTemplates: () => void
@@ -114,9 +115,10 @@ const ReflectTemplateDetails = (props: Props) => {
     winningStreakTemplate: winningStreakTemplate
   }
   const headerImg = defaultIllustrations[templateId] ? defaultIllustrations[templateId] : customTemplate
+  const isActiveTemplate = activeTemplate.id === settings.selectedTemplate.id
   return (
     <PromptEditor>
-      <Scrollable>
+      <Scrollable isActiveTemplate={isActiveTemplate}>
         <TemplateImage src={headerImg} />
         <TemplateHeader>
           <FirstLine>
@@ -147,9 +149,9 @@ const ReflectTemplateDetails = (props: Props) => {
         </TemplateHeader>
         <TemplatePromptList isOwner={isOwner} prompts={prompts} templateId={templateId} />
         {isOwner && <AddTemplatePrompt templateId={templateId} prompts={prompts} />}
+        <TemplateSharing teamId={teamId} template={activeTemplate} />
       </Scrollable>
-      <TemplateSharing teamId={teamId} template={activeTemplate} />
-      {activeTemplate.id !== settings.selectedTemplate.id && <SelectTemplate closePortal={closePortal} template={activeTemplate} teamId={teamId} />}
+      {!isActiveTemplate && <SelectTemplate closePortal={closePortal} template={activeTemplate} teamId={teamId} />}
     </PromptEditor>
   )
 }

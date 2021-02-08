@@ -6,31 +6,31 @@ import {QuickStats_meeting} from 'parabol-client/__generated__/QuickStats_meetin
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import makeActionStats from './makeActionStats'
-import makeRetroStats from './makeRetroStats'
 import makePokerStats from './makePokerStats'
+import makeRetroStats from './makeRetroStats'
 
 const statLabel = (idx, len) =>
-  ({
-    color: PALETTE.TEXT_MAIN,
-    fontFamily: FONT_FAMILY.SANS_SERIF,
-    borderTopLeftRadius: idx === 0 ? 4 : 0,
-    borderTopRightRadius: idx === len - 1 ? 4 : 0,
-    fontSize: 36,
-    lineHeight: '40px',
-    paddingTop: 12
-  } as React.CSSProperties)
+({
+  color: PALETTE.TEXT_MAIN,
+  fontFamily: FONT_FAMILY.SANS_SERIF,
+  borderTopLeftRadius: idx === 0 ? 4 : 0,
+  borderTopRightRadius: idx === len - 1 ? 4 : 0,
+  fontSize: 36,
+  lineHeight: '40px',
+  paddingTop: 12
+} as React.CSSProperties)
 
 const descriptionLabel = (idx, len) =>
-  ({
-    fontFamily: FONT_FAMILY.SANS_SERIF,
-    borderBottomLeftRadius: idx === 0 ? 4 : 0,
-    borderBottomRightRadius: idx === len - 1 ? 4 : 0,
-    color: PALETTE.TEXT_GRAY,
-    fontSize: 10,
-    fontWeight: 600,
-    paddingBottom: 12,
-    textTransform: 'uppercase'
-  } as React.CSSProperties)
+({
+  fontFamily: FONT_FAMILY.SANS_SERIF,
+  borderBottomLeftRadius: idx === 0 ? 4 : 0,
+  borderBottomRightRadius: idx === len - 1 ? 4 : 0,
+  color: PALETTE.TEXT_GRAY,
+  fontSize: 10,
+  fontWeight: 600,
+  paddingBottom: 12,
+  textTransform: 'uppercase'
+} as React.CSSProperties)
 
 const tableStyle = {
   borderSpacing: '2px 0',
@@ -106,7 +106,6 @@ export default createFragmentContainer(QuickStats, {
           }
         }
         meetingMembers {
-          isCheckedIn
           tasks {
             id
           }
@@ -114,7 +113,6 @@ export default createFragmentContainer(QuickStats, {
       }
       ... on ActionMeeting {
         meetingMembers {
-          isCheckedIn
           doneTasks {
             id
           }

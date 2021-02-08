@@ -7,7 +7,6 @@ import SetAppLocationMutation from '~/mutations/SetAppLocationMutation'
 import {MeetingSelector_viewer} from '~/__generated__/MeetingSelector_viewer.graphql'
 import useRouter from '../hooks/useRouter'
 import useSubscription from '../hooks/useSubscription'
-import MeetingSubscription from '../subscriptions/MeetingSubscription'
 import NotificationSubscription from '../subscriptions/NotificationSubscription'
 import OrganizationSubscription from '../subscriptions/OrganizationSubscription'
 import TaskSubscription from '../subscriptions/TaskSubscription'
@@ -56,7 +55,6 @@ const MeetingSelector = (props: Props) => {
   useSubscription('MeetingSelector', OrganizationSubscription)
   useSubscription('MeetingSelector', TaskSubscription)
   useSubscription('MeetingSelector', TeamSubscription)
-  useSubscription('MeetingSelector', MeetingSubscription, {meetingId})
   if (!meeting) return null
   const {meetingType} = meeting
   const Meeting = meetingLookup[meetingType]

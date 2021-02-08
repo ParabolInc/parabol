@@ -10,16 +10,18 @@ import {
   UPDATES,
   VOTE
 } from 'parabol-client/utils/constants'
+import toTeamMemberId from '../../../../client/utils/relay/toTeamMemberId'
 import getRethink from '../../../database/rethinkDriver'
 import AgendaItemsPhase from '../../../database/types/AgendaItemsPhase'
 import CheckInPhase from '../../../database/types/CheckInPhase'
+import CheckInStage from '../../../database/types/CheckInStage'
 import DiscussPhase from '../../../database/types/DiscussPhase'
 import EstimatePhase from '../../../database/types/EstimatePhase'
 import GenericMeetingPhase from '../../../database/types/GenericMeetingPhase'
 import MeetingSettingsRetrospective from '../../../database/types/MeetingSettingsRetrospective'
 import ReflectPhase from '../../../database/types/ReflectPhase'
 import UpdatesPhase from '../../../database/types/UpdatesPhase'
-import getShuffledArr from '../../../utils/getShuffledArr'
+import UpdatesStage from '../../../database/types/UpdatesStage'
 import {DataLoaderWorker} from '../../graphql'
 
 export const primePhases = (phases: GenericMeetingPhase[], startIndex = 0) => {
@@ -65,6 +67,7 @@ const getPastStageDurations = async (teamId: string) => {
 }
 
 const createNewMeetingPhases = async (
+  facilitatorUserId: string,
   teamId: string,
   meetingCount: number,
   meetingType: MeetingTypeEnum,
@@ -72,19 +75,22 @@ const createNewMeetingPhases = async (
 ) => {
   const r = await getRethink()
   const now = new Date()
-  const [meetingSettings, stageDurations, teamMembers] = await Promise.all([
+  const [meetingSettings, stageDurations] = await Promise.all([
     dataLoader.get('meetingSettingsByType').load({teamId, meetingType}),
-    getPastStageDurations(teamId),
-    dataLoader.get('teamMembersByTeamId').load(teamId)
+    getPastStageDurations(teamId)
   ])
-  const teamMemberIds = getShuffledArr(teamMembers.map(({id}) => id))
   const {phaseTypes} = meetingSettings
+  const facilitatorTeamMemberId = toTeamMemberId(teamId, facilitatorUserId)
   const phases = (await Promise.all(
     phaseTypes.map(async (phaseType) => {
       const durations = stageDurations[phaseType]
       switch (phaseType) {
         case CHECKIN:
-          return new CheckInPhase(teamId, meetingCount, teamMemberIds)
+          return new CheckInPhase({
+            teamId,
+            meetingCount,
+            stages: [new CheckInStage(facilitatorTeamMemberId)]
+          })
         case REFLECT:
           const {selectedTemplateId} = meetingSettings as MeetingSettingsRetrospective
           await r
@@ -98,7 +104,7 @@ const createNewMeetingPhases = async (
         case DISCUSS:
           return new DiscussPhase(durations)
         case UPDATES:
-          return new UpdatesPhase(teamMemberIds, durations)
+          return new UpdatesPhase({durations, stages: [new UpdatesStage(facilitatorTeamMemberId)]})
         case AGENDA_ITEMS:
           const agendaItems = await dataLoader.get('agendaItemsByTeamId').load(teamId)
           const agendaItemIds = agendaItems.map(({id}) => id)
