@@ -36,13 +36,13 @@ export default class User {
   picture: string
   inactive: boolean
   identities: AuthIdentity[]
-  isRemoved?: true
+  isRemoved: boolean
   createdAt: Date
-  segmentId?: string
+  segmentId: string | null
   tier: TierEnum
   tms: string[]
-  reasonRemoved?: string
-  rol?: AuthTokenRole.SUPER_USER
+  reasonRemoved?: string | null
+  rol?: AuthTokenRole.SUPER_USER | null
   payLaterClickCount?: number
   constructor(input: Input) {
     const {
@@ -81,7 +81,8 @@ export default class User {
     this.lastSeenAt = lastSeenAt ?? null
     this.lastSeenAtURLs = lastSeenAtURLs ?? null
     this.preferredName = preferredName
-    this.segmentId = segmentId ?? undefined
+    this.segmentId = segmentId ?? null
     this.tier = tier ?? TierEnum.personal
+    this.isRemoved = false
   }
 }

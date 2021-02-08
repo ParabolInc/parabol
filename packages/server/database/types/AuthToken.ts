@@ -6,7 +6,7 @@ import appOrigin from '../../appOrigin'
 interface Input {
   sub: string
   tms: string[]
-  rol?: 'su'
+  rol?: 'su' | null
   bet?: 1
 }
 
