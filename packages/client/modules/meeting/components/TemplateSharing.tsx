@@ -25,8 +25,7 @@ const HR = styled('hr')({
   height: 1,
   margin: 0,
   marginLeft: 56,
-  padding: 0,
-  width: '100%'
+  padding: 0
 })
 
 const DropdownDecoratorIcon = styled(Icon)({
