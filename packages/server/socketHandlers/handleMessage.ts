@@ -39,34 +39,31 @@ const PONG = 65
 const ACK = 0
 const REQ = 1
 const MASK = 1
-const isPong = (message) => message.byteLength === 1 && Buffer.from(message)[0] === PONG
-const isAck = (message) =>
-  message.byteLength === 4 && (Buffer.from(message).readUInt32LE() & MASK) === ACK
-const isReq = (message) =>
-  message.byteLength === 4 && (Buffer.from(message).readUInt32LE() & MASK) === REQ
+const isPong = (message: ArrayBuffer, messageBuffer: Buffer) => message.byteLength === 1 && messageBuffer[0] === PONG
+const isAck = (message: ArrayBuffer, robustId: number) => message.byteLength === 4 && (robustId & MASK) === ACK
+const isReq = (message: ArrayBuffer, robustId: number) => message.byteLength === 4 && (robustId & MASK) === REQ
 
 const handleMessage = (
   websocket: WebSocket | {connectionContext: ConnectionContext},
   message: ArrayBuffer
 ) => {
   const {connectionContext} = websocket
-  if (isPong(message)) {
+  const messageBuffer = Buffer.from(message)
+  if (isPong(message, messageBuffer)) {
     keepAlive(connectionContext)
     return
   }
-  if (isAck(message)) {
-    const mid = Buffer.from(message).readUInt32LE() >> 1
-    const timer = connectionContext.reliableQueue[mid].timer
-    clearTimeout(timer)
-    delete connectionContext.reliableQueue[mid]
+  const robustId = messageBuffer.readUInt32LE()
+  const mid = robustId >> 1
+  if (isAck(message, robustId)) {
+    connectionContext.clearEntryForReliableQueue(mid)
     return
   }
-  if (isReq(message)) {
-    const mid = Buffer.from(message).readUInt32LE() >> 1
+  if (isReq(message, robustId)) {
     const timer = connectionContext.reliableQueue[mid].timer
-    const object = connectionContext.reliableQueue[mid].object
+    const message = connectionContext.reliableQueue[mid].message
     clearTimeout(timer)
-    sendAndPushToReliableQueue(connectionContext, mid, object)
+    sendAndPushToReliableQueue(connectionContext, mid, message)
     return
   }
   let parsedMessage
