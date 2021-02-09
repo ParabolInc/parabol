@@ -40,12 +40,9 @@ const PONG = 65
 const ACK = 0
 const REQ = 1
 const MASK = 1
-const isPong = (message: ArrayBuffer, messageBuffer: Buffer) =>
-  message.byteLength === 1 && messageBuffer[0] === PONG
-const isAck = (message: ArrayBuffer, robustId: number) =>
-  message.byteLength === 4 && (robustId & MASK) === ACK
-const isReq = (message: ArrayBuffer, robustId: number) =>
-  message.byteLength === 4 && (robustId & MASK) === REQ
+const isPong = (messageBuffer: Buffer) => messageBuffer.length === 1 && messageBuffer[0] === PONG
+const isAck = (robustId: number) => (robustId & MASK) === ACK
+const isReq = (robustId: number) => (robustId & MASK) === REQ
 
 const handleMessage = (
   websocket: WebSocket | {connectionContext: ConnectionContext},
@@ -53,24 +50,27 @@ const handleMessage = (
 ) => {
   const {connectionContext} = websocket
   const messageBuffer = Buffer.from(message)
-  if (isPong(message, messageBuffer)) {
+  if (isPong(messageBuffer)) {
     keepAlive(connectionContext)
     return
   }
-  const robustId = messageBuffer.readUInt32LE()
-  const mid = robustId >> 1
-  if (isAck(message, robustId)) {
-    connectionContext.clearEntryForReliableQueue(mid)
-    return
-  }
-  if (isReq(message, robustId)) {
-    const message = connectionContext.reliableQueue[mid]
-    if (message) {
-      sendAndPushToReliableQueue(connectionContext, mid, message)
-    } else {
-      handleDisconnect(connectionContext)
+  if (messageBuffer.length == 4) {
+    // reliable message ACK or REQ
+    const robustId = messageBuffer.readUInt32LE()
+    const mid = robustId >> 1
+    if (isAck(robustId)) {
+      connectionContext.clearEntryForReliableQueue(mid)
+      return
     }
-    return
+    if (isReq(robustId)) {
+      const message = connectionContext.reliableQueue[mid]
+      if (message) {
+        sendAndPushToReliableQueue(connectionContext, mid, message)
+      } else {
+        handleDisconnect(connectionContext)
+      }
+      return
+    }
   }
   let parsedMessage
   try {
