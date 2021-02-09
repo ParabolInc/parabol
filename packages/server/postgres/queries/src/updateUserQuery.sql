@@ -2,26 +2,38 @@
   @name updateUserQuery
   @param update -> (
     email,
+    emailValue,
     updatedAt,
+    updatedAtValue,
     inactive,
+    inactiveValue,
     lastSeenAt,
+    lastSeenAtValue,
     preferredName,
+    preferredNameValue,
     tier,
+    tierValue,
     picture,
+    pictureValue,
     segmentId,
+    segmentIdValue,
     isRemoved,
-    reasonRemoved
+    isRemovedValue,
+    reasonRemoved,
+    reasonRemovedValue,
+    newFeatureId
   )
 */
 UPDATE "User" SET
-  email = COALESCE(:email, email),
-  "updatedAt" = COALESCE(:updatedAt, "updatedAt"),
-  inactive = COALESCE(:inactive, inactive),
-  "lastSeenAt" = COALESCE(:lastSeenAt, "lastSeenAt"),
-  "preferredName" = COALESCE(:preferredName, "preferredName"),
-  tier = COALESCE(:tier, tier),
-  picture = COALESCE(:picture, picture),
-  "segmentId" = COALESCE(:segmentId, "segmentId"),
-  "isRemoved" = COALESCE(:isRemoved, "isRemoved"),
-  "reasonRemoved" = COALESCE(:reasonRemoved, "reasonRemoved")
+  email = CASE WHEN :email then :emailValue ELSE email END,
+  "updatedAt" = CASE WHEN :updatedAt then :updatedAtValue ELSE "updatedAt" END,
+  inactive = CASE WHEN :inactive then :inactiveValue ELSE inactive END,
+  "lastSeenAt" = CASE WHEN :lastSeenAt then :lastSeenAtValue ELSE "lastSeenAt" END,
+  "preferredName" = CASE WHEN :preferredName then :preferredNameValue ELSE "preferredName" END,
+  tier = CASE WHEN :tier then :tierValue ELSE tier END,
+  picture = CASE WHEN :picture then :pictureValue ELSE picture END,
+  "segmentId" = CASE WHEN :segmentId then :segmentIdValue ELSE "segmentId" END,
+  "isRemoved" = CASE WHEN :isRemoved then :isRemovedValue ELSE "isRemoved" END,
+  "reasonRemoved" = CASE WHEN :reasonRemoved then :reasonRemovedValue ELSE "reasonRemoved" END,
+  "newFeatureId" = CASE WHEN :newFeatureId then :newFeatureIdValue ELSE "newFeatureId" END
 WHERE id = :id;
