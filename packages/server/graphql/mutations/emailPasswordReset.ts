@@ -14,6 +14,7 @@ import getMailManager from '../../email/getMailManager'
 import resetPasswordEmailCreator from '../../email/resetPasswordEmailCreator'
 import {GQLContext} from '../graphql'
 import rateLimit from '../rateLimit'
+import updateUser from '../../postgres/helpers/updateUser'
 
 const randomBytes = util.promisify(crypto.randomBytes)
 
@@ -73,7 +74,11 @@ const emailPasswordReset = {
         .insert(new PasswordResetRequest({ip, email, token: resetPasswordToken}))
         .run()
 
-      await db.write('User', userId, {identities})
+      const updates = {identities}
+      await Promise.all([
+        updateUser(userId, updates),
+        db.write('User', userId, updates)
+      ])
 
       const {subject, body, html} = resetPasswordEmailCreator({resetPasswordToken})
       const success = await getMailManager().sendEmail({

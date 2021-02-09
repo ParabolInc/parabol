@@ -13,7 +13,8 @@ const updateableFields = new Set([
   'segmentId',
   'isRemoved',
   'reasonRemoved',
-  'newFeatureId'
+  'newFeatureId',
+  'identities'
 ])
 
 const mapUpdates = (

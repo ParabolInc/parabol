@@ -21,7 +21,8 @@
     isRemovedValue,
     reasonRemoved,
     reasonRemovedValue,
-    newFeatureId
+    newFeatureId,
+    identities
   )
 */
 UPDATE "User" SET
@@ -35,5 +36,6 @@ UPDATE "User" SET
   "segmentId" = CASE WHEN :segmentId then :segmentIdValue ELSE "segmentId" END,
   "isRemoved" = CASE WHEN :isRemoved then :isRemovedValue ELSE "isRemoved" END,
   "reasonRemoved" = CASE WHEN :reasonRemoved then :reasonRemovedValue ELSE "reasonRemoved" END,
-  "newFeatureId" = CASE WHEN :newFeatureId then :newFeatureIdValue ELSE "newFeatureId" END
+  "newFeatureId" = CASE WHEN :newFeatureId then :newFeatureIdValue ELSE "newFeatureId" END,
+  "identities" = CASE WHEN :identities then :identitiesValue ELSE "identities" END
 WHERE id = :id;
