@@ -10,7 +10,9 @@ const updateableFields = new Set([
   'preferredName',
   'tier',
   'picture',
-  'segmentId'
+  'segmentId',
+  'isRemoved',
+  'reasonRemoved'
 ])
 
 const mapUndefined = (
@@ -28,7 +30,9 @@ const updateUser = (
   updates: Partial<User>
 ) => {
   const pg = getPg()
+  console.log('updates:', updates)
   const mappedUpdates = mapUndefined(updates)
+  console.log('mapped updates:', mappedUpdates)
   const parameters = Object.assign(mappedUpdates, {id: userId})
   updateUserQuery.run(parameters, pg)
 }

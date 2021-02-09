@@ -10,6 +10,8 @@ import {GQLContext} from '../../graphql'
 import User from '../../types/User'
 import getRedis from '../../../utils/getRedis'
 import getListeningUserIds, {RedisCommand} from '../../../utils/getListeningUserIds'
+import updateUser from '../../../postgres/helpers/updateUser'
+
 export interface UserPresence {
   lastSeenAtURL: string | null
   serverId: string
@@ -47,7 +49,11 @@ export default {
     }
     const datesAreOnSameDay = now.toDateString() === lastSeenAt?.toDateString()
     if (!datesAreOnSameDay) {
-      await db.write('User', userId, {inactive: false, lastSeenAt: now})
+      const dbUpdates = {inactive: false, lastSeenAt: now}
+      await Promise.all([
+        updateUser(userId, dbUpdates),
+        db.write('User', userId, dbUpdates)
+      ])
     }
     const socketCount = await redis.rpush(
       `presence:${userId}`,

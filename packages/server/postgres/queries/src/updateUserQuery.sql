@@ -8,7 +8,9 @@
     preferredName,
     tier,
     picture,
-    segmentId    
+    segmentId,
+    isRemoved,
+    reasonRemoved
   )
 */
 UPDATE "User" SET
@@ -19,5 +21,7 @@ UPDATE "User" SET
   "preferredName" = COALESCE(:preferredName, "preferredName"),
   tier = COALESCE(:tier, tier),
   picture = COALESCE(:picture, picture),
-  "segmentId" = COALESCE(:segmentId, "segmentId")
+  "segmentId" = COALESCE(:segmentId, "segmentId"),
+  "isRemoved" = COALESCE(:isRemoved, "isRemoved"),
+  "reasonRemoved" = COALESCE(:reasonRemoved, "reasonRemoved")
 WHERE id = :id;
