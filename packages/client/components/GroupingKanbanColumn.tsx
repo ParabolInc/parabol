@@ -22,6 +22,7 @@ import {
 } from '../types/constEnums'
 import {NewMeetingPhaseTypeEnum} from '../types/graphql'
 import getNextSortOrder from '../utils/getNextSortOrder'
+import groupReflections from '../utils/smartGroup/groupReflections'
 import {SwipeColumn} from './GroupingKanban'
 import GroupingKanbanColumnHeader from './GroupingKanbanColumnHeader'
 import ReflectionGroup from './ReflectionGroup/ReflectionGroup'
@@ -85,6 +86,8 @@ interface Props {
   swipeColumn?: SwipeColumn
 }
 
+const AUTO_GROUPING_THRESHOLD = 0.5
+
 const GroupingKanbanColumn = (props: Props) => {
   const {
     columnsRef,
@@ -115,6 +118,18 @@ const GroupingKanbanColumn = (props: Props) => {
     () => groups.filter((group) => group.reflections.length > 0),
     [groups]
   )
+
+  const allReflections = filteredReflectionGroups.flatMap(({reflections}) => reflections)
+  // only do magical sorting before users create groups
+  if (allReflections.length === filteredReflectionGroups.length) {
+    const {reflectionGroupMapping} = groupReflections(allReflections, AUTO_GROUPING_THRESHOLD)
+    filteredReflectionGroups.sort((a, b) => {
+      const reflectionAGroupId = reflectionGroupMapping[a.reflections[0].id]
+      const reflectionBGroupId = reflectionGroupMapping[b.reflections[0].id]
+      return reflectionAGroupId.localeCompare(reflectionBGroupId)
+    })
+  }
+
   const [isWidthExpanded, subColumnIndexes, toggleWidth] = useSubColumns(
     columnBodyRef,
     phaseRef,
@@ -211,6 +226,12 @@ export default createFragmentContainer(GroupingKanbanColumn, {
       id
       reflections {
         id
+        entities {
+          lemma
+          name
+          salience
+        }
+        reflectionGroupId
       }
       sortOrder
       subColumnIdx

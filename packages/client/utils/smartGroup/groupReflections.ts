@@ -9,9 +9,8 @@ import getTitleFromComputedGroup from './getTitleFromComputedGroup'
  */
 
 interface Reflection {
-  entities: any[]
-  reflectionGroupId: string
-
+  readonly entities: readonly any[]
+  readonly reflectionGroupId: string
 }
 const groupReflections = <T extends Reflection>(reflections: T[], groupingThreshold: number) => {
   const allReflectionEntities = reflections.map(({entities}) => entities!)
@@ -27,6 +26,7 @@ const groupReflections = <T extends Reflection>(reflections: T[], groupingThresh
   )
   // replace the arrays with reflections
   const updatedReflections = [] as Partial<IRetroReflection>[]
+  const reflectionGroupMapping = {} as Record<string, string>
   const updatedGroups = (groupedArrays as any[]).map((group) => {
     // look up the reflection by its vector, put them all in the same group
     let reflectionGroupId = ''
@@ -52,6 +52,11 @@ const groupReflections = <T extends Reflection>(reflections: T[], groupingThresh
     )
 
     updatedReflections.push(...groupedReflections)
+
+    groupedReflections.forEach((groupedReflection) => {
+      reflectionGroupMapping[groupedReflection.id] = reflectionGroupId
+    })
+
     return {
       id: reflectionGroupId,
       smartTitle,
@@ -69,6 +74,7 @@ const groupReflections = <T extends Reflection>(reflections: T[], groupingThresh
     autoGroupThreshold: thresh,
     groups: updatedGroups,
     groupedReflections: updatedReflections,
+    reflectionGroupMapping,
     removedReflectionGroupIds,
     nextThresh
   }

@@ -2,7 +2,7 @@
  * Make a list of all the entities mentioned across all the reflections
  */
 
-const getAllLemmasFromReflections = (reflectionEntities: {lemma?: string, name: string, salience: number}[][] = []) => {
+const getAllLemmasFromReflections = (reflectionEntities: (readonly {lemma?: string, name: string, salience: number}[])[] = []) => {
   const lemmaSet = new Set<string>()
   for (let jj = 0; jj < reflectionEntities.length; jj++) {
     const entities = reflectionEntities[jj]
