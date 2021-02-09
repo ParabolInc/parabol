@@ -62,12 +62,13 @@ const FirstLine = styled('div')({
   display: 'flex'
 })
 
-const Scrollable = styled('div')({
+const Scrollable = styled('div')<{isActiveTemplate: boolean}>(({isActiveTemplate}) => ({
   display: 'flex',
   flexDirection: 'column',
   overflow: 'auto',
+  paddingBottom: isActiveTemplate ? undefined : 56,
   width: '100%'
-})
+}))
 
 interface Props {
   gotoTeamTemplates: () => void
@@ -100,9 +101,10 @@ const PokerTemplateDetails = (props: Props) => {
     wsjfTemplate: wsjfTemplate
   }
   const headerImg = defaultIllustrations[templateId] ? defaultIllustrations[templateId] : customTemplate
+  const isActiveTemplate = activeTemplate.id === settings.selectedTemplate.id
   return (
     <DimensionEditor>
-      <Scrollable>
+      <Scrollable isActiveTemplate={isActiveTemplate}>
         <TemplateImg src={headerImg} />
         <TemplateHeader>
           <FirstLine>
@@ -133,9 +135,9 @@ const PokerTemplateDetails = (props: Props) => {
         </TemplateHeader>
         <TemplateDimensionList isOwner={isOwner} dimensions={dimensions} templateId={templateId} />
         {isOwner && <AddPokerTemplateDimension templateId={templateId} dimensions={dimensions} />}
+        <TemplateSharing teamId={teamId} template={activeTemplate} />
       </Scrollable>
-      <TemplateSharing teamId={teamId} template={activeTemplate} />
-      {activeTemplate.id !== settings.selectedTemplate.id && <SelectTemplate closePortal={closePortal} template={activeTemplate} teamId={teamId} />}
+      {!isActiveTemplate && <SelectTemplate closePortal={closePortal} template={activeTemplate} teamId={teamId} />}
     </DimensionEditor>
   )
 }
