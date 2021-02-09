@@ -5,6 +5,24 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 5.34.0 2021-Feb-04
+
+### Added
+
+- New icebreakers in the icebreaker phase of a meeting (#4557)
+- Make poker card deck slideable (#4604)
+- Unique illustrations for default retro and poker meeting templates (#4642)
+- OrgUserAudit table for better tracking & reporting (#4582)
+- Postgres setup configurations for CI and prod (#4640)
+
+### Fixed
+
+- Retro column UI fixes (#4612)
+- Fixed various undefined type errors reported by Sentry (#4620, #4627)
+- Timeline events not scrolling (#4588)
+- New meeting joiner infinite loop (#4625)
+- Pinned agenda items removed on meeting end (#4641)
+
 ## 5.33.1 2021-Jan-28
 
 ### Fixed
