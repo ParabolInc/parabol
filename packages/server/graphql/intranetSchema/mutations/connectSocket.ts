@@ -51,7 +51,7 @@ export default {
     if (!datesAreOnSameDay) {
       const dbUpdates = {inactive: false, lastSeenAt: now}
       await Promise.all([
-        updateUser(userId, dbUpdates),
+        updateUser(dbUpdates, userId),
         db.write('User', userId, dbUpdates)
       ])
     }

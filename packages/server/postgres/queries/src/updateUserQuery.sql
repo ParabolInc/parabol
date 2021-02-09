@@ -38,4 +38,4 @@ UPDATE "User" SET
   "reasonRemoved" = CASE WHEN :reasonRemoved then :reasonRemovedValue ELSE "reasonRemoved" END,
   "newFeatureId" = CASE WHEN :newFeatureId then :newFeatureIdValue ELSE "newFeatureId" END,
   "identities" = CASE WHEN :identities then :identitiesValue ELSE "identities" END
-WHERE id = :id;
+WHERE (:id = false OR id = :idValue);

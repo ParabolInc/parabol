@@ -76,7 +76,7 @@ const emailPasswordReset = {
 
       const updates = {identities}
       await Promise.all([
-        updateUser(userId, updates),
+        updateUser(updates, userId),
         db.write('User', userId, updates)
       ])
 

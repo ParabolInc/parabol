@@ -13,7 +13,7 @@ export default {
     const viewerId = getUserId(authToken)
     const update = {newFeatureId: null}
     await Promise.all([
-      updateUser(viewerId, update),
+      updateUser(update, viewerId),
       db.write('User', viewerId, update)
     ])
     return {}

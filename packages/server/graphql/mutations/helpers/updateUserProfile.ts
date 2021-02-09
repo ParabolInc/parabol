@@ -11,6 +11,7 @@ import segmentIo from '../../../utils/segmentIo'
 import publish from '../../../utils/publish'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import fetch from 'node-fetch'
+import updateUser from '../../../postgres/helpers/updateUser'
 
 const updateUserProfile = async (
   _source,
@@ -65,7 +66,8 @@ const updateUserProfile = async (
       .update(updates, {returnChanges: true})('changes')('new_val')
       .default([])
       .run() as unknown) as TeamMember[],
-    db.write('User', userId, updates)
+    db.write('User', userId, updates),
+    updateUser(updates, userId)
   ])
   //
   // If we ever want to delete the previous profile images:

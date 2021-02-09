@@ -8,6 +8,7 @@ import getRedis from '../../../utils/getRedis'
 import publish from '../../../utils/publish'
 import sendToSentry from '../../../utils/sendToSentry'
 import AddNewFeaturePayload from '../../types/addNewFeaturePayload'
+import updateUser from '../../../postgres/helpers/updateUser'
 
 const addNewFeature = {
   type: AddNewFeaturePayload,
@@ -43,7 +44,8 @@ const addNewFeature = {
         .table('NewFeature')
         .insert(newFeature)
         .run(),
-      db.writeTable('User', {newFeatureId})
+      db.writeTable('User', {newFeatureId}),
+      updateUser({newFeatureId})
     ])
 
     const onlineUserIds = new Set()
