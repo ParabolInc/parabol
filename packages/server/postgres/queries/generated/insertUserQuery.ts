@@ -5,6 +5,8 @@ export type TierEnum = 'personal' | 'pro' | 'enterprise';
 
 export type stringArray = (string)[];
 
+export type JsonArray = (null | boolean | number | string | Json[] | { [key: string]: Json })[];
+
 /** 'InsertUserQuery' parameters type */
 export interface IInsertUserQueryParams {
   users: Array<{
@@ -20,7 +22,8 @@ export interface IInsertUserQueryParams {
     tms: stringArray | null | void,
     featureFlags: stringArray | null | void,
     lastSeenAtURLs: stringArray | null | void,
-    segmentId: string | null | void
+    segmentId: string | null | void,
+    identities: JsonArray | null | void
   }>;
 }
 
@@ -33,7 +36,7 @@ export interface IInsertUserQueryQuery {
   result: IInsertUserQueryResult;
 }
 
-const insertUserQueryIR: any = {"name":"insertUserQuery","params":[{"name":"users","codeRefs":{"defined":{"a":36,"b":40,"line":3,"col":9},"used":[{"a":455,"b":459,"line":33,"col":10}]},"transform":{"type":"pick_array_spread","keys":["id","email","createdAt","updatedAt","inactive","lastSeenAt","preferredName","tier","picture","tms","featureFlags","lastSeenAtURLs","segmentId"]}}],"usedParamSet":{"users":true},"statement":{"body":"INSERT INTO \"User\" (\n  \"id\",\n  \"email\",\n  \"createdAt\", \n  \"updatedAt\",\n  \"inactive\",\n  \"lastSeenAt\",\n  \"preferredName\",\n  \"tier\",\n  \"picture\",\n  \"tms\",\n  \"featureFlags\",\n  \"lastSeenAtURLs\",\n  \"segmentId\"\n) VALUES :users","loc":{"a":241,"b":459,"line":19,"col":0}}};
+const insertUserQueryIR: any = {"name":"insertUserQuery","params":[{"name":"users","codeRefs":{"defined":{"a":36,"b":40,"line":3,"col":9},"used":[{"a":487,"b":491,"line":35,"col":10}]},"transform":{"type":"pick_array_spread","keys":["id","email","createdAt","updatedAt","inactive","lastSeenAt","preferredName","tier","picture","tms","featureFlags","lastSeenAtURLs","segmentId","identities"]}}],"usedParamSet":{"users":true},"statement":{"body":"INSERT INTO \"User\" (\n  \"id\",\n  \"email\",\n  \"createdAt\", \n  \"updatedAt\",\n  \"inactive\",\n  \"lastSeenAt\",\n  \"preferredName\",\n  \"tier\",\n  \"picture\",\n  \"tms\",\n  \"featureFlags\",\n  \"lastSeenAtURLs\",\n  \"segmentId\",\n  \"identities\"\n) VALUES :users","loc":{"a":257,"b":491,"line":20,"col":0}}};
 
 /**
  * Query generated from SQL:
@@ -51,7 +54,8 @@ const insertUserQueryIR: any = {"name":"insertUserQuery","params":[{"name":"user
  *   "tms",
  *   "featureFlags",
  *   "lastSeenAtURLs",
- *   "segmentId"
+ *   "segmentId",
+ *   "identities"
  * ) VALUES :users
  * ```
  */

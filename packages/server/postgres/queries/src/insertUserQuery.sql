@@ -13,7 +13,8 @@
     tms,
     featureFlags,
     lastSeenAtURLs,
-    segmentId
+    segmentId,
+    identities
   )...)
 */
 INSERT INTO "User" (
@@ -29,5 +30,6 @@ INSERT INTO "User" (
   "tms",
   "featureFlags",
   "lastSeenAtURLs",
-  "segmentId"
+  "segmentId",
+  "identities"
 ) VALUES :users;
