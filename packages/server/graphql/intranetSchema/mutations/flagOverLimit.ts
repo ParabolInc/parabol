@@ -1,4 +1,5 @@
 import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
+import updateUser from '../../../postgres/helpers/updateUser'
 import db from '../../../db'
 import {requireSU} from '../../../utils/authorization'
 import {GQLContext} from '../../graphql'
@@ -28,7 +29,10 @@ const flagOverLimit = {
 
     // RESOLUTION
     const userIds = organizationUsers.map(({userId}) => userId)
-    await db.writeMany('User', userIds, {overLimitCopy: copy || null})
+    await Promise.all([
+      updateUser({overLimitCopy: copy || null}, userIds),
+      db.writeMany('User', userIds, {overLimitCopy: copy || null})
+    ])
     return {userIds}
   }
 }

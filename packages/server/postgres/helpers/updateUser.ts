@@ -15,6 +15,7 @@ const passableFields = new Set([
   'reasonRemoved',
   'newFeatureId',
   'identities',
+  'overLimitCopy',
   'id'
 ])
 
@@ -32,11 +33,12 @@ const mapUpdates = (
 
 const updateUser = (
   updates: Partial<User>,
-  userId?: string,
+  userIds?: string[] | string,
 ) => {
   const pg = getPg()
   console.log('updates:', updates)
-  if (userId) Object.assign(updates, {id: userId})
+  userIds = (typeof userIds === 'string') ? [userIds] : userIds
+  if (userIds) { Object.assign(updates, {id: userIds}) }
   console.log('merged updates:', updates)
   const mappedUpdates = mapUpdates(updates)
   console.log('mapped updates:', mappedUpdates)

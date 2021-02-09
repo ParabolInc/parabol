@@ -22,8 +22,13 @@
     reasonRemoved,
     reasonRemovedValue,
     newFeatureId,
-    identities
+    newFeatureIdValue,
+    identities,
+    identitiesValue,
+    overLimitCopy,
+    overLimitCopyValue
   )
+  @param idValue -> (...)
 */
 UPDATE "User" SET
   email = CASE WHEN :email then :emailValue ELSE email END,
@@ -37,5 +42,6 @@ UPDATE "User" SET
   "isRemoved" = CASE WHEN :isRemoved then :isRemovedValue ELSE "isRemoved" END,
   "reasonRemoved" = CASE WHEN :reasonRemoved then :reasonRemovedValue ELSE "reasonRemoved" END,
   "newFeatureId" = CASE WHEN :newFeatureId then :newFeatureIdValue ELSE "newFeatureId" END,
-  "identities" = CASE WHEN :identities then :identitiesValue ELSE "identities" END
-WHERE (:id = false OR id = :idValue);
+  "identities" = CASE WHEN :identities then :identitiesValue ELSE "identities" END,
+  "overLimitCopy" = CASE WHEN :overLimitCopy then :overLimitCopyValue ELSE "overLimitCopy" END
+WHERE (:id = false OR id IN :idValue);
