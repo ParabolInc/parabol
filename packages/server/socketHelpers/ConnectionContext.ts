@@ -13,7 +13,7 @@ export interface ConnectedSubs {
   [opId: string]: AsyncIterableIterator<ExecutionResult>
 }
 
-export type ReliableQueue = {[mid: number]: {timer: NodeJS.Timer; message: string}}
+export type ReliableQueue = {[mid: number]: string}
 
 const MAX_MID = 2 ** 31 - 1
 class ConnectionContext<T = WebSocket | HttpResponse> {
@@ -54,8 +54,6 @@ class ConnectionContext<T = WebSocket | HttpResponse> {
   clearEntryForReliableQueue(mid: number) {
     const entry = this.reliableQueue[mid]
     if (entry) {
-      const timer = entry.timer
-      clearTimeout(timer)
       delete this.reliableQueue[mid]
     }
   }
