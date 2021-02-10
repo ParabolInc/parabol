@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import React, {ReactNode, useState} from 'react'
-import {NotificationStatusEnum} from '~/types/graphql'
+import {NotificationStatusEnum} from '../__generated__/NotificationDropdown_viewer.graphql'
 import {PALETTE} from '../styles/paletteV2'
 
 const Row = styled('div')<{isNew: boolean}>(({isNew}) => ({
@@ -42,8 +42,8 @@ interface Props {
 const NotificationRow = (props: Props) => {
   const {avatar, children, isParabol, status} = props
   const [initialStatus] = useState(status)
-  const isClicked = initialStatus === NotificationStatusEnum.CLICKED
-  const isNew = initialStatus === NotificationStatusEnum.UNREAD
+  const isClicked = initialStatus === 'CLICKED'
+  const isNew = initialStatus === 'UNREAD'
   return (
     <Row isNew={!isClicked}>
       <Avatar isParabol={isParabol} src={avatar} />
