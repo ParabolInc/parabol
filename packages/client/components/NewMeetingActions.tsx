@@ -11,7 +11,7 @@ import useMutationProps from '../hooks/useMutationProps'
 import useRouter from '../hooks/useRouter'
 import StartSprintPokerMutation from '../mutations/StartSprintPokerMutation'
 import {Breakpoint} from '../types/constEnums'
-import {MeetingTypeEnum} from '../types/graphql'
+import {MeetingTypeEnum} from '~/__generated__/NewMeeting_viewer.graphql'
 import Icon from './Icon'
 import NewMeetingActionsCurrentMeetings from './NewMeetingActionsCurrentMeetings'
 import PrimaryButton from './PrimaryButton'
@@ -65,9 +65,9 @@ const NewMeetingActions = (props: Props) => {
   const onStartMeetingClick = () => {
     if (submitting) return
     submitMutation()
-    if (meetingType === MeetingTypeEnum.poker) {
+    if (meetingType === 'poker') {
       StartSprintPokerMutation(atmosphere, {teamId}, {history, onError, onCompleted})
-    } else if (meetingType === MeetingTypeEnum.action) {
+    } else if (meetingType === 'action') {
       StartCheckInMutation(atmosphere, {teamId}, {history, onError, onCompleted})
     } else {
       StartRetrospectiveMutation(atmosphere, {teamId}, {history, onError, onCompleted})

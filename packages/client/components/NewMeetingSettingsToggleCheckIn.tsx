@@ -9,7 +9,6 @@ import SetCheckInEnabledMutation from '../mutations/SetCheckInEnabledMutation'
 import {PALETTE} from '../styles/paletteV2'
 import {ICON_SIZE} from '../styles/typographyV2'
 import {NewMeeting} from '../types/constEnums'
-import {NewMeetingPhaseTypeEnum} from '../types/graphql'
 import Checkbox from './Checkbox'
 import PlainButton from './PlainButton/PlainButton'
 
@@ -34,7 +33,7 @@ const Label = styled('div')({
   fontWeight: 600,
   minWidth: 160,
   lineHeight: '24px',
-  userSelect: 'none',
+  userSelect: 'none'
 })
 
 const StyledCheckbox = styled(Checkbox)<{active: boolean}>(({active}) => ({
@@ -53,7 +52,7 @@ interface Props {
 const NewMeetingSettingsToggleCheckIn = (props: Props) => {
   const {settings} = props
   const {id: settingsId, phaseTypes} = settings
-  const hasCheckIn = phaseTypes.includes(NewMeetingPhaseTypeEnum.checkin)
+  const hasCheckIn = phaseTypes.includes('checkin')
   const atmosphere = useAtmosphere()
   const {onCompleted, onError, submitting, submitMutation} = useMutationProps()
   const toggleCheckIn = () => {
