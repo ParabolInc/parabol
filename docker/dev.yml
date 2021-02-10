@@ -14,7 +14,8 @@ services:
     networks:
       - parabol-network
   postgres:
-    image: postgres:12.3
+    build:
+      context: "../packages/server/postgres"
     restart: unless-stopped
     env_file: ../.env
     ports:
