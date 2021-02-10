@@ -2,9 +2,9 @@ import {insertUserQuery, IInsertUserQueryParams} from '../queries/generated/inse
 import getPg from '../getPg'
 import User from '../../database/types/User'
 
-const insertUser = async (users: User[]): Promise<void> => {
+const insertUser = async (user: User): Promise<void> => {
   const pg = getPg()
-  const parameters = ({users} as unknown) as IInsertUserQueryParams
+  const parameters = (user as unknown) as IInsertUserQueryParams
   await insertUserQuery.run(parameters, pg)
 }
 
