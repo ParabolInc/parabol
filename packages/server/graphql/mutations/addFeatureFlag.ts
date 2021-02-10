@@ -7,6 +7,8 @@ import {requireSU} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import AddFeatureFlagPayload from '../types/AddFeatureFlagPayload'
 import UserFlagEnum from '../types/UserFlagEnum'
+import {appendUserFeatureFlagsQuery} from '../../postgres/queries/generated/appendUserFeatureFlagsQuery'
+import getPg from '../../postgres/getPg'
 
 export default {
   type: GraphQLNonNull(AddFeatureFlagPayload),
@@ -61,7 +63,10 @@ export default {
       featureFlags: user('featureFlags').default([]).append(flag).distinct()
     })
     const userIds = users.map(({id}) => id)
-    await db.writeMany('User', userIds, reqlUpdater)
+    await Promise.all([
+      appendUserFeatureFlagsQuery.run({ids: userIds, flag}, getPg()),
+      db.writeMany('User', userIds, reqlUpdater)
+    ])
     userIds.forEach((userId) => {
       const data = {userId}
       publish(SubscriptionChannel.NOTIFICATION, userId, 'AddFeatureFlagPayload', data, subOptions)
