@@ -6,7 +6,7 @@ import useMeeting from '../hooks/useMeeting'
 import NewMeetingAvatarGroup from '../modules/meeting/components/MeetingAvatarGroup/NewMeetingAvatarGroup'
 import {ValueOf} from '../types/generics'
 import {NewMeetingPhaseTypeEnum} from '../__generated__/ActionMeeting_meeting.graphql'
-import lazyPreload from '../utils/lazyPreload'
+import lazyPreload, {LazyExoticPreload} from '../utils/lazyPreload'
 import ActionMeetingSidebar from './ActionMeetingSidebar'
 import MeetingArea from './MeetingArea'
 import MeetingControlBar from './MeetingControlBar'
@@ -33,7 +33,7 @@ const phaseLookup = {
   ['lastcall']: lazyPreload(() =>
     import(/* webpackChunkName: 'ActionMeetingLastCall' */ './ActionMeetingLastCall')
   )
-} as Record<NewMeetingPhaseTypeEnum, any>
+} as Record<NewMeetingPhaseTypeEnum, LazyExoticPreload<any>>
 
 type PhaseComponent = ValueOf<typeof phaseLookup>
 
