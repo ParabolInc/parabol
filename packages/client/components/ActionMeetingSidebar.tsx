@@ -4,7 +4,7 @@ import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import NewMeetingSidebarPhaseListItem from './NewMeetingSidebarPhaseListItem'
 import ActionSidebarPhaseListItemChildren from './ActionSidebarPhaseListItemChildren'
-import {NewMeetingPhaseTypeEnum} from '../types/graphql'
+import {NewMeetingPhaseTypeEnum} from '../__generated__/ActionMeetingSidebar_meeting.graphql'
 import getSidebarItemStage from '../utils/getSidebarItemStage'
 import findStageById from '../utils/meetings/findStageById'
 import NewMeetingSidebar from './NewMeetingSidebar'
@@ -19,12 +19,8 @@ interface Props {
   meeting: ActionMeetingSidebar_meeting
 }
 
-const blackList: string[] = [NewMeetingPhaseTypeEnum.firstcall, NewMeetingPhaseTypeEnum.lastcall]
-const collapsiblePhases: string[] = [
-  NewMeetingPhaseTypeEnum.checkin,
-  NewMeetingPhaseTypeEnum.updates,
-  NewMeetingPhaseTypeEnum.agendaitems
-]
+const blackList: NewMeetingPhaseTypeEnum[] = ['firstcall', 'lastcall']
+const collapsiblePhases: NewMeetingPhaseTypeEnum[] = ['checkin', 'updates', 'agendaitems']
 
 const ActionMeetingSidebar = (props: Props) => {
   const {gotoStageId, handleMenuClick, toggleSidebar, meeting} = props
@@ -34,7 +30,7 @@ const ActionMeetingSidebar = (props: Props) => {
   const {agendaItems} = team
   const {phaseTypes} = settings
   const {facilitatorUserId, facilitatorStageId, localPhase, localStage, phases} = meeting
-  const localPhaseType = localPhase ? localPhase.phaseType : ''
+  const localPhaseType: NewMeetingPhaseTypeEnum | '' = localPhase ? localPhase.phaseType : ''
   const facilitatorStageRes = findStageById(phases, facilitatorStageId)
   const facilitatorPhaseType = facilitatorStageRes ? facilitatorStageRes.phase.phaseType : ''
   const isViewerFacilitator = facilitatorUserId === viewerId
@@ -59,15 +55,13 @@ const ActionMeetingSidebar = (props: Props) => {
               handleMenuClick()
             }
             const phaseCount =
-              phaseType === NewMeetingPhaseTypeEnum.agendaitems && agendaItems
-                ? agendaItems.length
-                : undefined
+              phaseType === 'agendaitems' && agendaItems ? agendaItems.length : undefined
             return (
               <NewMeetingSidebarPhaseListItem
                 handleClick={canNavigate ? handleClick : undefined}
                 isActive={
-                  phaseType === NewMeetingPhaseTypeEnum.agendaitems
-                    ? blackList.includes(localPhaseType)
+                  phaseType === 'agendaitems'
+                    ? localPhaseType !== '' && blackList.includes(localPhaseType)
                     : localPhaseType === phaseType
                 }
                 isCollapsible={collapsiblePhases.includes(phaseType)}

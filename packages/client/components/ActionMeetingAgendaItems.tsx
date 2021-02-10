@@ -10,7 +10,6 @@ import EditorHelpModalContainer from '../containers/EditorHelpModalContainer/Edi
 import MeetingCopy from '../modules/meeting/components/MeetingCopy/MeetingCopy'
 import MeetingPhaseHeading from '../modules/meeting/components/MeetingPhaseHeading/MeetingPhaseHeading'
 import {Breakpoint} from '../types/constEnums'
-import {NewMeetingPhaseTypeEnum} from '../types/graphql'
 import {phaseLabelLookup} from '../utils/meetings/lookups'
 import {ActionMeetingPhaseProps} from './ActionMeeting'
 import Avatar from './Avatar/Avatar'
@@ -71,9 +70,7 @@ const ActionMeetingAgendaItems = (props: Props) => {
           isMeetingSidebarCollapsed={!showSidebar}
           toggleSidebar={toggleSidebar}
         >
-          <PhaseHeaderTitle>
-            {phaseLabelLookup[NewMeetingPhaseTypeEnum.agendaitems]}
-          </PhaseHeaderTitle>
+          <PhaseHeaderTitle>{phaseLabelLookup.agendaitems}</PhaseHeaderTitle>
         </MeetingTopBar>
         <PhaseWrapper>
           <AgendaVerbatim>

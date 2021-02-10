@@ -5,7 +5,7 @@ import {ActionMeeting_meeting} from '~/__generated__/ActionMeeting_meeting.graph
 import useMeeting from '../hooks/useMeeting'
 import NewMeetingAvatarGroup from '../modules/meeting/components/MeetingAvatarGroup/NewMeetingAvatarGroup'
 import {ValueOf} from '../types/generics'
-import {NewMeetingPhaseTypeEnum} from '../types/graphql'
+import {NewMeetingPhaseTypeEnum} from '../__generated__/ActionMeeting_meeting.graphql'
 import lazyPreload from '../utils/lazyPreload'
 import ActionMeetingSidebar from './ActionMeetingSidebar'
 import MeetingArea from './MeetingArea'
@@ -18,22 +18,22 @@ interface Props {
 }
 
 const phaseLookup = {
-  [NewMeetingPhaseTypeEnum.checkin]: lazyPreload(() =>
+  ['checkin']: lazyPreload(() =>
     import(/* webpackChunkName: 'NewMeetingCheckIn' */ './NewMeetingCheckIn')
   ),
-  [NewMeetingPhaseTypeEnum.updates]: lazyPreload(() =>
+  ['updates']: lazyPreload(() =>
     import(/* webpackChunkName: 'ActionMeetingUpdates' */ './ActionMeetingUpdates')
   ),
-  [NewMeetingPhaseTypeEnum.firstcall]: lazyPreload(() =>
+  ['firstcall']: lazyPreload(() =>
     import(/* webpackChunkName: 'ActionMeetingFirstCall' */ './ActionMeetingFirstCall')
   ),
-  [NewMeetingPhaseTypeEnum.agendaitems]: lazyPreload(() =>
+  ['agendaitems']: lazyPreload(() =>
     import(/* webpackChunkName: 'ActionMeetingAgendaItems' */ './ActionMeetingAgendaItems')
   ),
-  [NewMeetingPhaseTypeEnum.lastcall]: lazyPreload(() =>
+  ['lastcall']: lazyPreload(() =>
     import(/* webpackChunkName: 'ActionMeetingLastCall' */ './ActionMeetingLastCall')
   )
-}
+} as Record<NewMeetingPhaseTypeEnum, any>
 
 type PhaseComponent = ValueOf<typeof phaseLookup>
 
@@ -62,7 +62,7 @@ const ActionMeeting = (props: Props) => {
   }, [])
   if (!safeRoute) return null
   const allowVideo = !!viewerMeetingMember?.user?.featureFlags?.video
-  const localPhaseType = (localPhase && localPhase.phaseType) || NewMeetingPhaseTypeEnum.lobby
+  const localPhaseType = (localPhase && localPhase.phaseType) || 'lobby'
   const Phase = phaseLookup[localPhaseType] as PhaseComponent
   return (
     <MeetingStyles>
