@@ -74,8 +74,11 @@ export default {
         email: 'DELETED',
         reasonRemoved: validReason
       })
-      // todo: set email field to something unique but still deleted
-      updateUser({isRemoved: true, reasonRemoved: validReason}, userIdToDelete)
+      updateUser({
+        isRemoved: true,
+        email: `DELETED:${userId}:${new Date()}`,
+        reasonRemoved: validReason
+      }, userIdToDelete)
     }, 30000)
     return {}
   }
