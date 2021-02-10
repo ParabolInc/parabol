@@ -13,7 +13,7 @@ import useLeft from '~/hooks/useLeft'
 import useTransition, {TransitionStatus} from '~/hooks/useTransition'
 import {PALETTE} from '~/styles/paletteV2'
 import {BezierCurve, Breakpoint, ElementWidth, ZIndex} from '~/types/constEnums'
-import {MeetingTypeEnum, NewMeetingPhaseTypeEnum} from '~/types/graphql'
+import {NewMeetingPhaseTypeEnum} from '../__generated__/MeetingControlBar_meeting.graphql'
 import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
 import findStageAfterId from '~/utils/meetings/findStageAfterId'
 import {MeetingControlBar_meeting} from '~/__generated__/MeetingControlBar_meeting.graphql'
@@ -52,11 +52,11 @@ const Wrapper = styled('div')<{left: number}>(({left}) => ({
 }))
 
 const DEFAULT_TIME_LIMIT = {
-  [NewMeetingPhaseTypeEnum.reflect]: 5,
-  [NewMeetingPhaseTypeEnum.group]: 5,
-  [NewMeetingPhaseTypeEnum.vote]: 3,
-  [NewMeetingPhaseTypeEnum.discuss]: 5
-}
+  ['reflect']: 5,
+  ['group']: 5,
+  ['vote']: 3,
+  ['discuss']: 5
+} as Record<NewMeetingPhaseTypeEnum, number>
 
 interface Props {
   handleGotoNext: ReturnType<typeof useGotoNext>
@@ -83,9 +83,9 @@ const MeetingControlBar = (props: Props) => {
   const isFacilitating = facilitatorUserId === viewerId && !endedAt
   const {phaseType} = localPhase
   const {id: localStageId, isComplete} = localStage
-  const isCheckIn = phaseType === NewMeetingPhaseTypeEnum.checkin
-  const isRetro = meetingType === MeetingTypeEnum.retrospective
-  const isPoker = meetingType === MeetingTypeEnum.poker
+  const isCheckIn = phaseType === 'checkin'
+  const isRetro = meetingType === 'retrospective'
+  const isPoker = meetingType === 'poker'
   const getPossibleButtons = () => {
     const buttons = ['tips']
     if (!isFacilitating && !isCheckIn && !isComplete && !isPoker) buttons.push('ready')
