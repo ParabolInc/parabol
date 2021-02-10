@@ -14,7 +14,7 @@ module.exports = {
       "@mattkrick/fast-rtc-swarm",
       "@mattkrick/graphql-trebuchet-client",
       "@mattkrick/sanitize-svg",
-      "@mattkrick/trebuchet-client",
+      // "@mattkrick/trebuchet-client",
       "@sentry/browser",
       "core-js",
       "debug",

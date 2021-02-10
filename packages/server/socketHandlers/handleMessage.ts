@@ -59,10 +59,12 @@ const handleMessage = (
     const robustId = messageBuffer.readUInt32LE()
     const mid = robustId >> 1
     if (isAck(robustId)) {
+      console.log(`I've received ACK for mid: ${mid}`)
       connectionContext.clearEntryForReliableQueue(mid)
       return
     }
     if (isReq(robustId)) {
+      console.log(`I've received REQ for mid: ${mid}`)
       const message = connectionContext.reliableQueue[mid]
       if (message) {
         sendAndPushToReliableQueue(connectionContext, mid, message)

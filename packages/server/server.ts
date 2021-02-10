@@ -39,7 +39,7 @@ uws
   .get('/manifest.json', PWAHandler)
   .get('/static/*', staticFileHandler)
   .get('/email/createics', ICSHandler)
-  .get('/sse', SSEConnectionHandler)
+  .get('/sse/*', SSEConnectionHandler)
   .get('/sse-ping', SSEPingHandler)
   .get('/self-hosted/*', selfHostedHandler)
   .post('/stripe', stripeWebhookHandler)
