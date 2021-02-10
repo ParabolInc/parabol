@@ -36,12 +36,9 @@ const updateUser = (
   userIds?: string[] | string,
 ): Promise<void[]> => {
   const pg = getPg()
-  console.log('updates:', updates)
   userIds = (typeof userIds === 'string') ? [userIds] : userIds
   if (userIds) { Object.assign(updates, {id: userIds}) }
-  console.log('merged updates:', updates)
   const mappedUpdates = mapUpdates(updates)
-  console.log('mapped updates:', mappedUpdates)
   return updateUserQuery.run(mappedUpdates, pg)
 }
 
