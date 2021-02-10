@@ -34,7 +34,7 @@ const mapUpdates = (
 const updateUser = (
   updates: Partial<User>,
   userIds?: string[] | string,
-) => {
+): Promise<void[]> => {
   const pg = getPg()
   console.log('updates:', updates)
   userIds = (typeof userIds === 'string') ? [userIds] : userIds
@@ -42,7 +42,7 @@ const updateUser = (
   console.log('merged updates:', updates)
   const mappedUpdates = mapUpdates(updates)
   console.log('mapped updates:', mappedUpdates)
-  updateUserQuery.run(mappedUpdates, pg)
+  return updateUserQuery.run(mappedUpdates, pg)
 }
 
 export default updateUser
