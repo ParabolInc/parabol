@@ -1,12 +1,14 @@
 import graphql from 'babel-plugin-relay/macro'
 import React, {ReactElement, Suspense} from 'react'
 import {createFragmentContainer} from 'react-relay'
-import {PokerMeeting_meeting} from '~/__generated__/PokerMeeting_meeting.graphql'
+import {
+  NewMeetingPhaseTypeEnum,
+  PokerMeeting_meeting
+} from '~/__generated__/PokerMeeting_meeting.graphql'
 import useMeeting from '../hooks/useMeeting'
 import NewMeetingAvatarGroup from '../modules/meeting/components/MeetingAvatarGroup/NewMeetingAvatarGroup'
 import {ValueOf} from '../types/generics'
-import {NewMeetingPhaseTypeEnum} from '../types/graphql'
-import lazyPreload from '../utils/lazyPreload'
+import lazyPreload, {LazyExoticPreload} from '../utils/lazyPreload'
 import MeetingControlBar from './MeetingControlBar'
 import MeetingStyles from './MeetingStyles'
 import PokerMeetingSidebar from './PokerMeetingSidebar'
@@ -17,14 +19,14 @@ interface Props {
 }
 
 const phaseLookup = {
-  [NewMeetingPhaseTypeEnum.checkin]: lazyPreload(() =>
+  ['checkin']: lazyPreload(() =>
     import(/* webpackChunkName: 'NewMeetingCheckIn' */ './NewMeetingCheckIn')
   ),
   SCOPE: lazyPreload(() => import(/* webpackChunkName: 'ScopePhase' */ './ScopePhase')),
   ESTIMATE: lazyPreload(() =>
     import(/* webpackChunkName: 'PokerEstimatePhase' */ './PokerEstimatePhase')
   )
-}
+} as Record<NewMeetingPhaseTypeEnum, LazyExoticPreload<any>>
 
 type PhaseComponent = ValueOf<typeof phaseLookup>
 

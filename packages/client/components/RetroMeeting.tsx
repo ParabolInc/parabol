@@ -1,15 +1,17 @@
 import graphql from 'babel-plugin-relay/macro'
 import React, {ReactElement, Suspense} from 'react'
 import {createFragmentContainer} from 'react-relay'
-import {RetroMeeting_meeting} from '~/__generated__/RetroMeeting_meeting.graphql'
+import {
+  NewMeetingPhaseTypeEnum,
+  RetroMeeting_meeting
+} from '~/__generated__/RetroMeeting_meeting.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMeeting from '../hooks/useMeeting'
 import LocalAtmosphere from '../modules/demo/LocalAtmosphere'
 import NewMeetingAvatarGroup from '../modules/meeting/components/MeetingAvatarGroup/NewMeetingAvatarGroup'
 import {RetroDemo} from '../types/constEnums'
 import {ValueOf} from '../types/generics'
-import {NewMeetingPhaseTypeEnum} from '../types/graphql'
-import lazyPreload from '../utils/lazyPreload'
+import lazyPreload, {LazyExoticPreload} from '../utils/lazyPreload'
 import MeetingControlBar from './MeetingControlBar'
 import MeetingStyles from './MeetingStyles'
 import ResponsiveDashSidebar from './ResponsiveDashSidebar'
@@ -20,22 +22,20 @@ interface Props {
 }
 
 const phaseLookup = {
-  [NewMeetingPhaseTypeEnum.checkin]: lazyPreload(() =>
+  ['checkin']: lazyPreload(() =>
     import(/* webpackChunkName: 'NewMeetingCheckIn' */ './NewMeetingCheckIn')
   ),
-  [NewMeetingPhaseTypeEnum.reflect]: lazyPreload(() =>
+  ['reflect']: lazyPreload(() =>
     import(/* webpackChunkName: 'RetroReflectPhase' */ './RetroReflectPhase/RetroReflectPhase')
   ),
-  [NewMeetingPhaseTypeEnum.group]: lazyPreload(() =>
+  ['group']: lazyPreload(() =>
     import(/* webpackChunkName: 'RetroGroupPhase' */ './RetroGroupPhase')
   ),
-  [NewMeetingPhaseTypeEnum.vote]: lazyPreload(() =>
-    import(/* webpackChunkName: 'RetroVotePhase' */ './RetroVotePhase')
-  ),
-  [NewMeetingPhaseTypeEnum.discuss]: lazyPreload(() =>
+  ['vote']: lazyPreload(() => import(/* webpackChunkName: 'RetroVotePhase' */ './RetroVotePhase')),
+  ['discuss']: lazyPreload(() =>
     import(/* webpackChunkName: 'RetroDiscussPhase' */ './RetroDiscussPhase')
   )
-}
+} as Record<NewMeetingPhaseTypeEnum, LazyExoticPreload<any>>
 
 type PhaseComponent = ValueOf<typeof phaseLookup>
 
