@@ -13,7 +13,7 @@ graphql`
     meeting {
       phases {
         ...useMakeStageSummaries_phase
-        ...on EstimatePhase {
+        ... on EstimatePhase {
           stages {
             ...PokerCardDeckStage
             ...EstimatePhaseAreaStage
@@ -83,23 +83,27 @@ const UpdatePokerScopeMutation: StandardMutation<TUpdatePokerScopeMutation> = (
       if (!meeting) return
       const teamId = meeting.getValue('teamId') || ''
       const phases = meeting.getLinkedRecords('phases')
-      const estimatePhase = phases.find((phase) => phase.getValue('phaseType') === NewMeetingPhaseTypeEnum.ESTIMATE) as RecordProxy<IEstimatePhase>
+      const estimatePhase = phases.find(
+        (phase) => phase.getValue('phaseType') === NewMeetingPhaseTypeEnum.ESTIMATE
+      ) as RecordProxy<IEstimatePhase>
       const stages = estimatePhase.getLinkedRecords('stages')
       const [firstStage] = stages
       const dimensionIds = [] as string[]
       if (firstStage) {
         const firstStageServiceTaskId = firstStage.getValue('serviceTaskId')
-        const stagesForServiceTaskId = stages.filter((stage) => stage.getValue('serviceTaskId') === firstStageServiceTaskId)
-        const prevDimensionIds = stagesForServiceTaskId.map((stage) => stage.getValue('dimensionId'))
+        const stagesForServiceTaskId = stages.filter(
+          (stage) => stage.getValue('serviceTaskId') === firstStageServiceTaskId
+        )
+        const prevDimensionIds = stagesForServiceTaskId.map((stage) =>
+          stage.getValue('dimensionId')
+        )
         dimensionIds.push(...prevDimensionIds)
       } else {
         const value = createProxyRecord(store, 'TemplateScaleValue', {
           color: PALETTE.BACKGROUND_GRAY,
           label: '#'
         })
-        const selectedScale = createProxyRecord(store, 'TemplateScale', {
-
-        })
+        const selectedScale = createProxyRecord(store, 'TemplateScale', {})
         const dimensionId = clientTempId()
         selectedScale.setLinkedRecords([value], 'values')
         const dimension = createProxyRecord(store, 'TemplateDimension', {
@@ -113,7 +117,9 @@ const UpdatePokerScopeMutation: StandardMutation<TUpdatePokerScopeMutation> = (
         const {service, serviceTaskId, action} = update
 
         if (action === 'ADD') {
-          const stageExists = !!stages.find((stage) => stage.getValue('serviceTaskId') === serviceTaskId)
+          const stageExists = !!stages.find(
+            (stage) => stage.getValue('serviceTaskId') === serviceTaskId
+          )
           if (stageExists) return
           const lastSortOrder = stages[stages.length - 1]?.getValue('sortOrder') ?? -1
 
@@ -144,15 +150,14 @@ const UpdatePokerScopeMutation: StandardMutation<TUpdatePokerScopeMutation> = (
             return nextEstimateStage
           })
 
-          const nextStages = [
-            ...estimatePhase.getLinkedRecords('stages'),
-            ...newStages
-          ]
+          const nextStages = [...estimatePhase.getLinkedRecords('stages'), ...newStages]
           estimatePhase.setLinkedRecords(nextStages, 'stages')
         } else if (action === 'DELETE') {
           // const stagesToRemove = stages.filter((stage) => stage.getValue('serviceTaskId') === serviceTaskId)
           // if (stagesToRemove.length > 0) {
-          const nextStages = stages.filter((stage) => stage.getValue('serviceTaskId') !== serviceTaskId)
+          const nextStages = stages.filter(
+            (stage) => stage.getValue('serviceTaskId') !== serviceTaskId
+          )
           estimatePhase.setLinkedRecords(nextStages, 'stages')
         }
       })
