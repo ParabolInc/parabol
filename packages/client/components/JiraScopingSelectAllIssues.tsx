@@ -8,10 +8,14 @@ import useMutationProps from '../hooks/useMutationProps'
 import UpdatePokerScopeMutation from '../mutations/UpdatePokerScopeMutation'
 import {PALETTE} from '../styles/paletteV2'
 import {Threshold} from '../types/constEnums'
-import {AddOrDeleteEnum, TaskServiceEnum} from '../types/graphql'
 import getSelectAllTitle from '../utils/getSelectAllTitle'
 import {JiraScopingSelectAllIssues_issues} from '../__generated__/JiraScopingSelectAllIssues_issues.graphql'
 import Checkbox from './Checkbox'
+import {
+  AddOrDeleteEnum,
+  UpdatePokerScopeMutationVariables,
+  UpdatePokerScopeItemInput
+} from '../__generated__/UpdatePokerScopeMutation.graphql'
 
 const Item = styled('div')({
   display: 'flex',
@@ -19,20 +23,19 @@ const Item = styled('div')({
   cursor: 'pointer'
 })
 
-const Title = styled('div')({
-})
+const Title = styled('div')({})
 
 const TitleAndError = styled('div')({
   display: 'flex',
   fontWeight: 600,
   flexDirection: 'column',
   paddingLeft: 16,
-  paddingBottom: 20, // total height is 56
+  paddingBottom: 20 // total height is 56
 })
 
 const ErrorMessage = styled('div')({
   color: PALETTE.ERROR_MAIN,
-  fontWeight: 600,
+  fontWeight: 600
 })
 interface Props {
   meetingId: string
@@ -42,7 +45,7 @@ interface Props {
 
 const JiraScopingSelectAllIssues = (props: Props) => {
   const {meetingId, usedServiceTaskIds, issues} = props
-  const serviceTaskIds = issues.map(issueEdge => issueEdge.node.id)
+  const serviceTaskIds = issues.map((issueEdge) => issueEdge.node.id)
   const atmosphere = useAtmosphere()
   const {onCompleted, onError, submitMutation, submitting, error} = useMutationProps()
   const [unusedServiceTaskIds, allSelected] = useUnusedRecords(issues, usedServiceTaskIds)
@@ -51,18 +54,18 @@ const JiraScopingSelectAllIssues = (props: Props) => {
     if (submitting) return
     submitMutation()
     const updateArr = allSelected === true ? serviceTaskIds : unusedServiceTaskIds
-    const action = allSelected === true ? AddOrDeleteEnum.DELETE : AddOrDeleteEnum.ADD
-    const limit = action === AddOrDeleteEnum.ADD ? availableCountToAdd : 1e6
+    const action: AddOrDeleteEnum = allSelected === true ? 'DELETE' : 'ADD'
+    const limit = action === 'ADD' ? availableCountToAdd : 1e6
     const updates = updateArr.slice(0, limit).map((serviceTaskId) => ({
-      service: TaskServiceEnum.jira,
+      service: 'jira',
       serviceTaskId,
       action
-    }))
+    })) as UpdatePokerScopeItemInput[]
 
     const variables = {
       meetingId,
       updates
-    }
+    } as UpdatePokerScopeMutationVariables
     UpdatePokerScopeMutation(atmosphere, variables, {onError, onCompleted})
   }
   if (issues.length < 2) return null

@@ -7,9 +7,9 @@ import useMutationProps from '../hooks/useMutationProps'
 import UpdatePokerScopeMutation from '../mutations/UpdatePokerScopeMutation'
 import {PALETTE} from '../styles/paletteV2'
 import {Threshold} from '../types/constEnums'
-import {AddOrDeleteEnum, TaskServiceEnum} from '../types/graphql'
 import isTempId from '../utils/relay/isTempId'
 import {JiraScopingSearchResultItem_issue} from '../__generated__/JiraScopingSearchResultItem_issue.graphql'
+import {UpdatePokerScopeMutationVariables} from '../__generated__/UpdatePokerScopeMutation.graphql'
 import Checkbox from './Checkbox'
 import Ellipsis from './Ellipsis/Ellipsis'
 
@@ -24,12 +24,10 @@ const Item = styled('div')({
 const Issue = styled('div')({
   display: 'flex',
   flexDirection: 'column',
-  paddingLeft: 16,
+  paddingLeft: 16
 })
 
-const Title = styled('div')({
-
-})
+const Title = styled('div')({})
 
 const StyledLink = styled('a')({
   color: PALETTE.LINK_BLUE,
@@ -64,12 +62,12 @@ const JiraScopingSearchResultItem = (props: Props) => {
       meetingId,
       updates: [
         {
-          service: TaskServiceEnum.jira,
+          service: 'jira',
           serviceTaskId,
-          action: isSelected ? AddOrDeleteEnum.DELETE : AddOrDeleteEnum.ADD
+          action: isSelected ? 'DELETE' : 'ADD'
         }
       ]
-    }
+    } as UpdatePokerScopeMutationVariables
     UpdatePokerScopeMutation(atmosphere, variables, {onError, onCompleted})
     if (!isSelected) {
       // if they are adding an item, then their search criteria must be good, so persist it
@@ -77,7 +75,7 @@ const JiraScopingSearchResultItem = (props: Props) => {
     }
   }
   return (
-    <Item onClick={onClick} >
+    <Item onClick={onClick}>
       <Checkbox active={isSelected || isTemp} disabled={disabled} />
       <Issue>
         <Title>{summary}</Title>
@@ -95,15 +93,13 @@ const JiraScopingSearchResultItem = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(
-  JiraScopingSearchResultItem,
-  {
-    issue: graphql`
+export default createFragmentContainer(JiraScopingSearchResultItem, {
+  issue: graphql`
     fragment JiraScopingSearchResultItem_issue on JiraIssue {
       id
       summary
       key
       url
-    }`
-  }
-)
+    }
+  `
+})

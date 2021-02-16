@@ -9,12 +9,12 @@ import ParabolScopingSearchResultItem from './ParabolScopingSearchResultItem'
 import useLoadMoreOnScrollBottom from '~/hooks/useLoadMoreOnScrollBottom'
 import IntegrationScopingNoResults from './IntegrationScopingNoResults'
 import useGetUsedServiceTaskIds from '~/hooks/useGetUsedServiceTaskIds'
-import {NewMeetingPhaseTypeEnum, TaskStatusEnum} from '~/types/graphql'
 import NewIntegrationRecordButton from './NewIntegrationRecordButton'
-import useAtmosphere from '~/hooks/useAtmosphere'
 import dndNoise from '~/utils/dndNoise'
 import CreateTaskMutation from '~/mutations/CreateTaskMutation'
 import useMutationProps from '~/hooks/useMutationProps'
+import {CreateTaskInput} from '../__generated__/CreateTaskMutation.graphql'
+import useAtmosphere from '../hooks/useAtmosphere'
 
 const ResultScroller = styled('div')({
   overflow: 'auto'
@@ -36,7 +36,7 @@ const ParabolScopingSearchResults = (props: Props) => {
     if (incomingEdges) setEdges(incomingEdges)
   }, [incomingEdges])
   const {id: meetingId, phases, teamId} = meeting
-  const estimatePhase = phases.find(({phaseType}) => phaseType === NewMeetingPhaseTypeEnum.ESTIMATE)
+  const estimatePhase = phases.find(({phaseType}) => phaseType === 'ESTIMATE')
   const usedServiceTaskIds = useGetUsedServiceTaskIds(estimatePhase)
   const atmosphere = useAtmosphere()
   const {onError, onCompleted} = useMutationProps()
@@ -44,17 +44,13 @@ const ParabolScopingSearchResults = (props: Props) => {
   const addTask = () => {
     const {viewerId} = atmosphere
     const newTask = {
-      status: TaskStatusEnum.active,
+      status: 'active',
       sortOrder: dndNoise(),
       meetingId,
       userId: viewerId,
-      teamId,
-    }
-    CreateTaskMutation(
-      atmosphere,
-      {newTask},
-      {onError, onCompleted}
-    )
+      teamId
+    } as CreateTaskInput
+    CreateTaskMutation(atmosphere, {newTask}, {onError, onCompleted})
   }
 
   const handleAddTaskClick = () => {
@@ -63,16 +59,12 @@ const ParabolScopingSearchResults = (props: Props) => {
   }
 
   if (edges.length === 0 && !isEditing)
-    return viewer ?
+    return viewer ? (
       <>
         <IntegrationScopingNoResults msg={'No tasks match that query'} />
-        <NewIntegrationRecordButton
-          labelText={'New Task'}
-          onClick={handleAddTaskClick}
-        />
+        <NewIntegrationRecordButton labelText={'New Task'} onClick={handleAddTaskClick} />
       </>
-      :
-      null
+    ) : null
 
   return (
     <>
@@ -96,12 +88,9 @@ const ParabolScopingSearchResults = (props: Props) => {
         })}
         {lastItem}
       </ResultScroller>
-      {!isEditing &&
-        <NewIntegrationRecordButton
-          labelText={'New Task'}
-          onClick={handleAddTaskClick}
-        />
-      }
+      {!isEditing && (
+        <NewIntegrationRecordButton labelText={'New Task'} onClick={handleAddTaskClick} />
+      )}
     </>
   )
 }
