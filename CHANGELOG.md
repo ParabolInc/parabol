@@ -5,6 +5,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 5.36.0 2021-Feb-16
+
+### Added
+
+- Release Sprint Poker (#4667)
+
 ## 5.35.0 2021-Feb-10
 
 ### Added
