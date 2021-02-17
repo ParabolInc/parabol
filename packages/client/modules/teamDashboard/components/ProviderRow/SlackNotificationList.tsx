@@ -1,9 +1,11 @@
 import styled from '@emotion/styled'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import {SlackNotificationEventEnum, SlackNotificationEventTypeEnum} from '../../../../types/graphql'
 import SlackNotificationRow from './SlackNotificationRow'
-import {SlackNotificationList_viewer} from '../../../../__generated__/SlackNotificationList_viewer.graphql'
+import {
+  SlackNotificationEventEnum,
+  SlackNotificationList_viewer
+} from '../../../../__generated__/SlackNotificationList_viewer.graphql'
 import React from 'react'
 import {SlackChannelDropdownOnClick} from '../../../../components/SlackChannelDropdown'
 import LabelHeading from '../../../../components/LabelHeading/LabelHeading'
@@ -43,11 +45,11 @@ const Heading = styled(LabelHeading)({
 })
 
 const TEAM_EVENTS = [
-  SlackNotificationEventEnum.meetingStart,
-  SlackNotificationEventEnum.meetingEnd,
-  SlackNotificationEventEnum.MEETING_STAGE_TIME_LIMIT_START
-]
-const USER_EVENTS = [SlackNotificationEventEnum.MEETING_STAGE_TIME_LIMIT_END]
+  'meetingStart',
+  'meetingEnd',
+  'MEETING_STAGE_TIME_LIMIT_START'
+] as SlackNotificationEventEnum[]
+const USER_EVENTS = ['MEETING_STAGE_TIME_LIMIT_END'] as SlackNotificationEventEnum[]
 
 const SlackNotificationList = (props: Props) => {
   const {teamId, viewer} = props
@@ -66,10 +68,7 @@ const SlackNotificationList = (props: Props) => {
     (slackChannelId) => () => {
       // only change the active events
       const slackNotificationEvents = notifications
-        .filter(
-          (notification) =>
-            notification.channelId && notification.eventType === SlackNotificationEventTypeEnum.team
-        )
+        .filter((notification) => notification.channelId && notification.eventType === 'team')
         .map(({event}) => event)
       if (
         submitting ||

@@ -1,8 +1,11 @@
-import {CreateGitHubIssueMutation as TCreateGitHubIssueMutation} from '../__generated__/CreateGitHubIssueMutation.graphql'
+import {
+  CreateGitHubIssueMutation as TCreateGitHubIssueMutation,
+  CreateGitHubIssueMutationVariables,
+  TaskServiceEnum
+} from '../__generated__/CreateGitHubIssueMutation.graphql'
 import {commitMutation} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import Atmosphere from '../Atmosphere'
-import {ICreateGitHubIssueOnMutationArguments, TaskServiceEnum} from '../types/graphql'
 import {LocalHandlers} from '../types/relayMutations'
 import createProxyRecord from '../utils/relay/createProxyRecord'
 
@@ -35,7 +38,7 @@ const mutation = graphql`
 
 const CreateGitHubIssueMutation = (
   atmosphere: Atmosphere,
-  variables: ICreateGitHubIssueOnMutationArguments,
+  variables: CreateGitHubIssueMutationVariables,
   {onError, onCompleted}: LocalHandlers
 ) => {
   return commitMutation<TCreateGitHubIssueMutation>(atmosphere, {
@@ -47,7 +50,7 @@ const CreateGitHubIssueMutation = (
       const task = store.get(taskId)
       if (!task) return
       const optimisticIntegration = {
-        service: TaskServiceEnum.github,
+        service: 'github' as TaskServiceEnum,
         nameWithOwner,
         issueNumber: '?',
         updatedAt: now.toJSON()

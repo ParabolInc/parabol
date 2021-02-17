@@ -12,7 +12,7 @@ import useAtmosphere from '../../../../hooks/useAtmosphere'
 import {MenuProps} from '../../../../hooks/useMenu'
 import UpdateTaskMutation from '../../../../mutations/UpdateTaskMutation'
 import avatarUser from '../../../../styles/theme/images/avatar-user.svg'
-import {AreaEnum} from '../../../../types/graphql'
+import {AreaEnum} from '~/__generated__/UpdateTaskMutation.graphql'
 interface Props {
   area: AreaEnum
   menuProps: MenuProps

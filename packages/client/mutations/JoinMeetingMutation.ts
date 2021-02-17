@@ -1,10 +1,11 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {INewMeeting, ITeamMember, MeetingTypeEnum, NewMeetingPhaseTypeEnum} from '../types/graphql'
+import {INewMeeting, ITeamMember} from '../types/graphql'
 import {StandardMutation} from '../types/relayMutations'
 import createProxyRecord from '../utils/relay/createProxyRecord'
 import toTeamMemberId from '../utils/relay/toTeamMemberId'
 import {JoinMeetingMutation as TJoinMeetingMutation} from '../__generated__/JoinMeetingMutation.graphql'
+import {NewMeetingPhaseTypeEnum} from '~/__generated__/ActionMeeting_meeting.graphql'
 
 graphql`
   fragment JoinMeetingMutation_meeting on JoinMeetingSuccess {
@@ -55,7 +56,7 @@ const JoinMeetingMutation: StandardMutation<TJoinMeetingMutation> = (
       const user = store.getRoot().getLinkedRecord('viewer')
       meetingMember.setLinkedRecord(teamMember, 'teamMember')
       meetingMember.setLinkedRecord(user, 'user')
-      if (meetingType === MeetingTypeEnum.retrospective) {
+      if (meetingType === 'retrospective') {
         meetingMember.setValue(0, 'votesRemaining')
       }
       meeting.setLinkedRecord(meetingMember, 'viewerMeetingMember')
@@ -65,8 +66,8 @@ const JoinMeetingMutation: StandardMutation<TJoinMeetingMutation> = (
         const phase = phases.find((phase) => phase.getValue('phaseType') === phaseType)
         if (!phase) return
         const stageLookup = {
-          [NewMeetingPhaseTypeEnum.checkin]: 'CheckInStage',
-          [NewMeetingPhaseTypeEnum.updates]: 'UpdatesStage'
+          checkin: 'CheckInStage',
+          updates: 'UpdatesStage'
         }
         const stageType = stageLookup[phaseType]
         const stage = createProxyRecord(store, stageType, {
@@ -74,7 +75,7 @@ const JoinMeetingMutation: StandardMutation<TJoinMeetingMutation> = (
           isNavigable: false,
           isNavigableByFacilitator: false,
           teamMemberId,
-          phaseType: NewMeetingPhaseTypeEnum.checkin,
+          phaseType: 'checkin',
           readyToAdvance: []
         })
         stage.setLinkedRecord(meetingMember, 'meetingMember')
@@ -83,8 +84,8 @@ const JoinMeetingMutation: StandardMutation<TJoinMeetingMutation> = (
         const nextStages = [...stages, stage]
         phase.setLinkedRecords(nextStages, 'stages')
       }
-      appendStage(NewMeetingPhaseTypeEnum.checkin)
-      appendStage(NewMeetingPhaseTypeEnum.updates)
+      appendStage('checkin')
+      appendStage('updates')
     },
     onError,
     onCompleted

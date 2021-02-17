@@ -1,4 +1,4 @@
-import {NotificationEnum, NotificationStatusEnum} from 'parabol-client/types/graphql'
+import {NotificationEnum} from '~/__generated__/ArchiveTeamMutation_team.graphql'
 import generateUID from '../../generateUID'
 
 export interface NotificationInput {
@@ -8,7 +8,7 @@ export interface NotificationInput {
 
 export default abstract class Notification {
   id = generateUID()
-  status = NotificationStatusEnum.UNREAD
+  status = 'UNREAD'
   createdAt = new Date()
   type: NotificationEnum
   userId: string

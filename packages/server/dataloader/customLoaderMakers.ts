@@ -1,7 +1,8 @@
 import DataLoader from 'dataloader'
 import {decode} from 'jsonwebtoken'
 import {MeetingTypeEnum} from '~/__generated__/NewMeeting_viewer.graphql'
-import {ReactableEnum, TaskStatusEnum, ThreadSourceEnum} from 'parabol-client/types/graphql'
+import {TaskStatusEnum, ThreadSourceEnum} from '~/__generated__/UpdateTaskMutation.graphql'
+import {ReactableEnum} from '~/__generated__/AddReactjiToReactableMutation.graphql'
 import promiseAllPartial from 'parabol-client/utils/promiseAllPartial'
 import {JiraGetIssueRes} from '../../client/utils/AtlassianManager'
 import getRethink, {RethinkSchema} from '../database/rethinkDriver'
@@ -62,13 +63,13 @@ export interface MeetingTemplateKey {
 }
 
 const reactableLoaders = [
-  {type: ReactableEnum.COMMENT, loader: 'comments'},
-  {type: ReactableEnum.REFLECTION, loader: 'retroReflections'}
+  {type: 'COMMENT' as ReactableEnum, loader: 'comments'},
+  {type: 'REFLECTION' as ReactableEnum, loader: 'retroReflections'}
 ] as const
 
 const threadableLoaders = [
-  {type: ThreadSourceEnum.AGENDA_ITEM, loader: 'agendaItems'},
-  {type: ThreadSourceEnum.REFLECTION_GROUP, loader: 'retroReflectionGroups'}
+  {type: 'AGENDA_ITEM' as ThreadSourceEnum, loader: 'agendaItems'},
+  {type: 'REFLECTION_GROUP' as ThreadSourceEnum, loader: 'retroReflectionGroups'}
 ] as const
 
 // export type LoaderMakerCustom<K, V, C = K> = (parent: RethinkDataLoader) => DataLoader<K, V, C>
