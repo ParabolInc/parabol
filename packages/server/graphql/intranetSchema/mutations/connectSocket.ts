@@ -11,6 +11,7 @@ import User from '../../types/User'
 import getRedis from '../../../utils/getRedis'
 import getListeningUserIds, {RedisCommand} from '../../../utils/getListeningUserIds'
 import updateUser from '../../../postgres/helpers/updateUser'
+import catchAndLog from '../../../postgres/utils/catchAndLog'
 
 export interface UserPresence {
   lastSeenAtURL: string | null
@@ -51,7 +52,7 @@ export default {
     if (!datesAreOnSameDay) {
       const dbUpdates = {inactive: false, lastSeenAt: now}
       await Promise.all([
-        updateUser(dbUpdates, userId),
+        catchAndLog(() => updateUser(dbUpdates, userId)),
         db.write('User', userId, dbUpdates)
       ])
     }

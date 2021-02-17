@@ -12,6 +12,7 @@ import rateLimit from '../rateLimit'
 import VerifyEmailPayload from '../types/VerifyEmailPayload'
 import bootstrapNewUser from './helpers/bootstrapNewUser'
 import updateUser from '../../postgres/helpers/updateUser'
+import catchAndLog from '../../postgres/utils/catchAndLog'
 
 export default {
   type: GraphQLNonNull(VerifyEmailPayload),
@@ -62,7 +63,7 @@ export default {
         // mutative
         localIdentity.isEmailVerified = true
         await Promise.all([
-          updateUser({identities, updatedAt: now}, userId),
+          catchAndLog(() => updateUser({identities, updatedAt: now}, userId)),
           db.write('User', userId, {identities, updatedAt: now})
         ])
       }

@@ -8,6 +8,7 @@ import {GQLContext} from '../graphql'
 import DeleteUserPayload from '../types/DeleteUserPayload'
 import removeFromOrg from './helpers/removeFromOrg'
 import updateUser from '../../postgres/helpers/updateUser'
+import catchAndLog from '../../postgres/utils/catchAndLog'
 
 export default {
   type: GraphQLNonNull(DeleteUserPayload),
@@ -67,18 +68,23 @@ export default {
       }
     })
     // do this after 30 seconds so any segment API calls can still get the email
-    
+
     setTimeout(() => {
       db.write('User', userIdToDelete, {
         isRemoved: true,
         email: 'DELETED',
         reasonRemoved: validReason
-      })
-      updateUser({
-        isRemoved: true,
-        email: `DELETED:${userId}:${new Date()}`,
-        reasonRemoved: validReason
-      }, userIdToDelete)
+      }),
+        catchAndLog(() =>
+          updateUser(
+            {
+              isRemoved: true,
+              email: `DELETED:${userId}:${new Date()}`,
+              reasonRemoved: validReason
+            },
+            userIdToDelete
+          )
+        )
     }, 30000)
     return {}
   }

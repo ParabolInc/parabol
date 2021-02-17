@@ -9,6 +9,7 @@ import publish from '../../../utils/publish'
 import sendToSentry from '../../../utils/sendToSentry'
 import AddNewFeaturePayload from '../../types/addNewFeaturePayload'
 import updateUser from '../../../postgres/helpers/updateUser'
+import catchAndLog from '../../../postgres/utils/catchAndLog'
 
 const addNewFeature = {
   type: AddNewFeaturePayload,
@@ -45,7 +46,7 @@ const addNewFeature = {
         .insert(newFeature)
         .run(),
       db.writeTable('User', {newFeatureId}),
-      updateUser({newFeatureId})
+      catchAndLog(() => updateUser({newFeatureId}))
     ])
 
     const onlineUserIds = new Set()

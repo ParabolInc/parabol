@@ -4,6 +4,7 @@ import db from '../../../db'
 import {requireSU} from '../../../utils/authorization'
 import {GQLContext} from '../../graphql'
 import FlagOverLimitPayload from '../../types/FlagOverLimitPayload'
+import catchAndLog from '../../../postgres/utils/catchAndLog'
 
 const flagOverLimit = {
   type: FlagOverLimitPayload,
@@ -30,7 +31,7 @@ const flagOverLimit = {
     // RESOLUTION
     const userIds = organizationUsers.map(({userId}) => userId)
     await Promise.all([
-      updateUser({overLimitCopy: copy || null}, userIds),
+      catchAndLog(() => updateUser({overLimitCopy: copy || null}, userIds)),
       db.writeMany('User', userIds, {overLimitCopy: copy || null})
     ])
     return {userIds}

@@ -15,6 +15,7 @@ import resetPasswordEmailCreator from '../../email/resetPasswordEmailCreator'
 import {GQLContext} from '../graphql'
 import rateLimit from '../rateLimit'
 import updateUser from '../../postgres/helpers/updateUser'
+import catchAndLog from '../../postgres/utils/catchAndLog'
 
 const randomBytes = util.promisify(crypto.randomBytes)
 
@@ -76,7 +77,7 @@ const emailPasswordReset = {
 
       const updates = {identities}
       await Promise.all([
-        updateUser(updates, userId),
+        catchAndLog(() => updateUser(updates, userId)),
         db.write('User', userId, updates)
       ])
 

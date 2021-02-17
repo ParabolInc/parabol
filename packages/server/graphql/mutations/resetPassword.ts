@@ -14,6 +14,7 @@ import {GQLContext} from '../graphql'
 import rateLimit from '../rateLimit'
 import ResetPasswordPayload from '../types/ResetPasswordPayload'
 import updateUser from '../../postgres/helpers/updateUser'
+import catchAndLog from '../../postgres/utils/catchAndLog'
 
 const resetPassword = {
   type: new GraphQLNonNull(ResetPasswordPayload),
@@ -74,7 +75,7 @@ const resetPassword = {
       localIdentity.hashedPassword = await bcrypt.hash(newPassword, Security.SALT_ROUNDS)
       localIdentity.isEmailVerified = true
       await Promise.all([
-        updateUser({identities}, userId),
+        catchAndLog(() => updateUser({identities}, userId)),
         db.write('User', userId, {identities}),
         r
           .table('FailedAuthRequest')

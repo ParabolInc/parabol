@@ -13,6 +13,7 @@ import rateLimit from '../rateLimit'
 import LoginWithGooglePayload from '../types/LoginWithGooglePayload'
 import bootstrapNewUser from './helpers/bootstrapNewUser'
 import updateUser from '../../postgres/helpers/updateUser'
+import catchAndLog from '../../postgres/utils/catchAndLog'
 
 const loginWithGoogle = {
   type: new GraphQLNonNull(LoginWithGooglePayload),
@@ -79,7 +80,7 @@ const loginWithGoogle = {
           const update = {identities}
           await Promise.all([
             db.write('User', viewerId, update),
-            updateUser(update, viewerId)
+            catchAndLog(() => updateUser(update, viewerId))
           ])
         }
         // MUTATIVE
