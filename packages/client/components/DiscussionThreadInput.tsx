@@ -9,12 +9,15 @@ import useReplyEditorState from '~/hooks/useReplyEditorState'
 import AddCommentMutation from '~/mutations/AddCommentMutation'
 import EditCommentingMutation from '~/mutations/EditCommentingMutation'
 import {Elevation} from '~/styles/elevation'
-import {MeetingTypeEnum, ThreadSourceEnum} from '~/types/graphql'
 import {SORT_STEP} from '~/utils/constants'
 import dndNoise from '~/utils/dndNoise'
 import convertToTaskContent from '~/utils/draftjs/convertToTaskContent'
 import isAndroid from '~/utils/draftjs/isAndroid'
-import {DiscussionThreadInput_meeting} from '~/__generated__/DiscussionThreadInput_meeting.graphql'
+import {
+  MeetingTypeEnum,
+  DiscussionThreadInput_meeting
+} from '~/__generated__/DiscussionThreadInput_meeting.graphql'
+import {ThreadSourceEnum} from '~/__generated__/UpdateTaskMutation.graphql'
 import anonymousAvatar from '../styles/theme/images/anonymous-avatar.svg'
 import Avatar from './Avatar/Avatar'
 import CommentSendOrAdd from './CommentSendOrAdd'
@@ -77,10 +80,10 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
   const [lastTypedTimestamp, setLastTypedTimestamp] = useState<Date>()
 
   const threadSourceByMeetingType = {
-    [MeetingTypeEnum.retrospective]: ThreadSourceEnum.REFLECTION_GROUP,
-    [MeetingTypeEnum.action]: ThreadSourceEnum.AGENDA_ITEM,
-    [MeetingTypeEnum.poker]: ThreadSourceEnum.STORY
-  }
+    ['retrospective']: 'REFLECTION_GROUP',
+    ['action']: 'AGENDA_ITEM',
+    ['poker']: 'STORY'
+  } as Record<MeetingTypeEnum, ThreadSourceEnum>
   const threadSource = threadSourceByMeetingType[meetingType]
 
   useEffect(() => {
@@ -203,7 +206,7 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
         setEditorState={setEditorState}
         teamId={teamId}
       />
-      {meetingType !== MeetingTypeEnum.poker && (
+      {meetingType !== 'poker' && (
         <CommentSendOrAdd
           dataCy={`${dataCy}`}
           getMaxSortOrder={getMaxSortOrder}

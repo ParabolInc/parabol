@@ -3,7 +3,7 @@ import styled from '@emotion/styled'
 import EditorHelpModalContainer from '../../containers/EditorHelpModalContainer/EditorHelpModalContainer'
 import TaskColumn from '../../modules/teamDashboard/components/TaskColumn/TaskColumn'
 import {Layout} from '../../types/constEnums'
-import {AreaEnum} from '../../types/graphql'
+import {AreaEnum} from '../../__generated__/UpdateTaskMutation.graphql'
 import {columnArray, MEETING, meetingColumnArray, SORT_STEP} from '../../utils/constants'
 import makeTasksByStatus from '../../utils/makeTasksByStatus'
 import {createFragmentContainer} from 'react-relay'
@@ -74,12 +74,12 @@ const TaskColumns = (props: Props) => {
       sortOrder =
         (destinationTasks[destination.index + offset].sortOrder +
           destinationTasks[destination.index].sortOrder) /
-        2 +
+          2 +
         dndNoise()
     }
     const updatedTask = {id: draggableId, sortOrder}
     if (!isSameColumn) {
-      ; (updatedTask as any).status = destination.droppableId
+      ;(updatedTask as any).status = destination.droppableId
     }
     UpdateTaskMutation(atmosphere, {updatedTask, area}, {})
   })

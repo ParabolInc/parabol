@@ -10,7 +10,6 @@ import EditorHelpModalContainer from '../containers/EditorHelpModalContainer/Edi
 import {PALETTE} from '../styles/paletteV2'
 import {ICON_SIZE} from '../styles/typographyV2'
 import {Breakpoint} from '../types/constEnums'
-import {NewMeetingPhaseTypeEnum} from '../types/graphql'
 import {phaseLabelLookup} from '../utils/meetings/lookups'
 import plural from '../utils/plural'
 import DiscussionThreadRoot from './DiscussionThreadRoot'
@@ -162,7 +161,7 @@ const RetroDiscussPhase = (props: Props) => {
           isMeetingSidebarCollapsed={!showSidebar}
           toggleSidebar={toggleSidebar}
         >
-          <PhaseHeaderTitle>{phaseLabelLookup[NewMeetingPhaseTypeEnum.discuss]}</PhaseHeaderTitle>
+          <PhaseHeaderTitle>{phaseLabelLookup.discuss}</PhaseHeaderTitle>
           <PhaseHeaderDescription>
             {'Create takeaway task cards to capture next steps'}
           </PhaseHeaderDescription>
@@ -188,12 +187,12 @@ const RetroDiscussPhase = (props: Props) => {
                   {isDesktop ? (
                     <DiscussPhaseReflectionGrid meeting={meeting} />
                   ) : (
-                      <ReflectionGroup
-                        meeting={meeting}
-                        phaseRef={phaseRef}
-                        reflectionGroup={reflectionGroup}
-                      />
-                    )}
+                    <ReflectionGroup
+                      meeting={meeting}
+                      phaseRef={phaseRef}
+                      reflectionGroup={reflectionGroup}
+                    />
+                  )}
                 </ColumnInner>
               </ReflectionColumn>
               <ThreadColumn isDesktop={isDesktop}>

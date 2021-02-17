@@ -3,7 +3,6 @@ import styled from '@emotion/styled'
 import '../styles/daypicker.css'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import {SlackNotificationEventEnum} from '../types/graphql'
 import SlackClientManager from '../utils/SlackClientManager'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
@@ -13,6 +12,7 @@ import SetSlackNotificationMutation from '../mutations/SetSlackNotificationMutat
 import {StageTimerModalEndTimeSlackToggle_facilitator} from '../__generated__/StageTimerModalEndTimeSlackToggle_facilitator.graphql'
 import {ICON_SIZE} from '../styles/typographyV2'
 import PlainButton from './PlainButton/PlainButton'
+import {SetSlackNotificationMutationVariables} from '../__generated__/SetSlackNotificationMutation.graphql'
 
 interface Props {
   facilitator: StageTimerModalEndTimeSlackToggle_facilitator
@@ -53,8 +53,7 @@ const StageTimerModalEndTimeSlackToggle = (props: Props) => {
   const {slack} = integrations
   const notifications = slack?.notifications ?? []
   const timeLimitEvent = notifications.find(
-    (notification) =>
-      notification.event === SlackNotificationEventEnum.MEETING_STAGE_TIME_LIMIT_START
+    (notification) => notification.event === 'MEETING_STAGE_TIME_LIMIT_START'
   )
   const slackToggleActive = (timeLimitEvent && !!timeLimitEvent.channelId) || false
   const atmosphere = useAtmosphere()
@@ -68,9 +67,9 @@ const StageTimerModalEndTimeSlackToggle = (props: Props) => {
       submitMutation()
       const variables = {
         slackChannelId: slackToggleActive ? null : defaultTeamChannelId,
-        slackNotificationEvents: [SlackNotificationEventEnum.MEETING_STAGE_TIME_LIMIT_START],
+        slackNotificationEvents: ['MEETING_STAGE_TIME_LIMIT_START'],
         teamId
-      }
+      } as SetSlackNotificationMutationVariables
       SetSlackNotificationMutation(atmosphere, variables, {onError, onCompleted})
     } else {
       SlackClientManager.openOAuth(atmosphere, teamId, mutationProps)

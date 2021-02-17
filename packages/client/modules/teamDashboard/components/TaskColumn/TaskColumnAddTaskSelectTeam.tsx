@@ -7,7 +7,7 @@ import useAtmosphere from '../../../../hooks/useAtmosphere'
 import {MenuPosition} from '../../../../hooks/useCoords'
 import useMenu from '../../../../hooks/useMenu'
 import CreateTaskMutation from '../../../../mutations/CreateTaskMutation'
-import {TaskStatusEnum} from '../../../../types/graphql'
+import {TaskStatusEnum} from '~/__generated__/UpdateTaskMutation.graphql'
 import lazyPreload from '../../../../utils/lazyPreload'
 import {taskStatusLabels} from '../../../../utils/taskStatus'
 

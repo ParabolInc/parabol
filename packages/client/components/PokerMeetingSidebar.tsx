@@ -2,10 +2,12 @@ import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import useRouter from '~/hooks/useRouter'
-import {PokerMeetingSidebar_meeting} from '~/__generated__/PokerMeetingSidebar_meeting.graphql'
+import {
+  NewMeetingPhaseTypeEnum,
+  PokerMeetingSidebar_meeting
+} from '~/__generated__/PokerMeetingSidebar_meeting.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useGotoStageId from '../hooks/useGotoStageId'
-import {NewMeetingPhaseTypeEnum} from '../types/graphql'
 import getSidebarItemStage from '../utils/getSidebarItemStage'
 import findStageById from '../utils/meetings/findStageById'
 import MeetingNavList from './MeetingNavList'
@@ -20,7 +22,7 @@ interface Props {
   meeting: PokerMeetingSidebar_meeting
 }
 
-const collapsiblePhases: string[] = [NewMeetingPhaseTypeEnum.checkin, 'ESTIMATE']
+const collapsiblePhases: NewMeetingPhaseTypeEnum[] = ['checkin', 'ESTIMATE']
 
 const PokerMeetingSidebar = (props: Props) => {
   const atmosphere = useAtmosphere()
@@ -63,7 +65,10 @@ const PokerMeetingSidebar = (props: Props) => {
           const estimatePhase = phases.find((phase) => {
             return phase.phaseType === 'ESTIMATE'
           })!
-          const phaseCount = phaseType === 'ESTIMATE' ? new Set(estimatePhase.stages.map(({serviceTaskId}) => serviceTaskId)).size : undefined
+          const phaseCount =
+            phaseType === 'ESTIMATE'
+              ? new Set(estimatePhase.stages.map(({serviceTaskId}) => serviceTaskId)).size
+              : undefined
           return (
             <NewMeetingSidebarPhaseListItem
               handleClick={canNavigate ? handleClick : undefined}
@@ -89,14 +94,14 @@ const PokerMeetingSidebar = (props: Props) => {
         })}
         {endedAt && (
           <NewMeetingSidebarPhaseListItem
-            key={'summary'}
+            key='summary'
             isActive={false}
             isFacilitatorPhase={false}
             isUnsyncedFacilitatorPhase={false}
             handleClick={() => {
               history.push(`/new-summary/${meetingId}`)
             }}
-            phaseType={NewMeetingPhaseTypeEnum.SUMMARY}
+            phaseType='SUMMARY'
           />
         )}
       </MeetingNavList>
