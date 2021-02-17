@@ -1,4 +1,5 @@
-import {MeetingTypeEnum, NewMeetingPhaseTypeEnum} from 'parabol-client/types/graphql'
+import {MeetingTypeEnum} from '~/__generated__/NewMeeting_viewer.graphql'
+import {NewMeetingPhaseTypeEnum} from '~/__generated__/ActionMeeting_meeting.graphql'
 import generateUID from '../../generateUID'
 
 interface Input {

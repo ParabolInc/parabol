@@ -1,4 +1,3 @@
-import {MeetingTypeEnum} from 'parabol-client/types/graphql'
 import GenericMeetingPhase from './GenericMeetingPhase'
 import DimensionScaleMapping, {DimensionScaleMappingInput} from './DimensionScaleMapping'
 import Meeting from './Meeting'
@@ -32,7 +31,7 @@ export default class MeetingPoker extends Meeting {
       meetingCount,
       phases,
       facilitatorUserId,
-      meetingType: 'poker' as MeetingTypeEnum,
+      meetingType: 'poker',
       name: name ?? `Sprint Poker #${meetingCount + 1}`
     })
     this.templateId = templateId

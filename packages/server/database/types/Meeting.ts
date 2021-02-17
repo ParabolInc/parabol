@@ -1,4 +1,4 @@
-import {MeetingTypeEnum} from 'parabol-client/types/graphql'
+import {MeetingTypeEnum} from '~/__generated__/NewMeeting_viewer.graphql'
 import generateUID from '../../generateUID'
 import GenericMeetingPhase from './GenericMeetingPhase'
 
@@ -13,10 +13,9 @@ interface Input {
 }
 
 const namePrefix = {
-  [MeetingTypeEnum.action]: 'Check-in',
-  [MeetingTypeEnum.retrospective]: 'Retro'
-}
-// export type MeetingTypeEnum = 'action' | 'retrospective'
+  action: 'Check-in',
+  retrospective: 'Retro'
+} as Record<MeetingTypeEnum, string>
 export default class Meeting {
   id = generateUID()
   isLegacy?: boolean // true if old version of action meeting

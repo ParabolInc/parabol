@@ -1,11 +1,7 @@
 import DataLoader from 'dataloader'
 import {decode} from 'jsonwebtoken'
-import {
-  MeetingTypeEnum,
-  ReactableEnum,
-  TaskStatusEnum,
-  ThreadSourceEnum
-} from 'parabol-client/types/graphql'
+import {MeetingTypeEnum} from '~/__generated__/NewMeeting_viewer.graphql'
+import {ReactableEnum, TaskStatusEnum, ThreadSourceEnum} from 'parabol-client/types/graphql'
 import promiseAllPartial from 'parabol-client/utils/promiseAllPartial'
 import {JiraGetIssueRes} from '../../client/utils/AtlassianManager'
 import getRethink, {RethinkSchema} from '../database/rethinkDriver'
@@ -213,7 +209,9 @@ export const userTasks = (parent: RethinkDataLoader) => {
               .filter((task) =>
                 archived
                   ? task('tags').contains('archived')
-                  : task('tags').contains('archived').not()
+                  : task('tags')
+                      .contains('archived')
+                      .not()
               )
               .filter((task) => {
                 if (includeUnassigned) return true
@@ -344,20 +342,20 @@ export const meetingSettingsByType = (parent: RethinkDataLoader) => {
   return new DataLoader<MeetingSettingsKey, RethinkSchema['MeetingSettings']['type'], string>(
     async (keys) => {
       const r = await getRethink()
-      const types = {} as {[meetingType: string]: string[]}
+      const types = {} as Record<MeetingTypeEnum, string[]>
       keys.forEach((key) => {
         const {meetingType} = key
         types[meetingType] = types[meetingType] || []
         types[meetingType].push(key.teamId)
       })
-      const entries = Object.entries(types)
+      const entries = Object.entries(types) as [MeetingTypeEnum, string[]][]
       const resultsByType = await Promise.all(
         entries.map((entry) => {
           const [meetingType, teamIds] = entry
           return r
             .table('MeetingSettings')
             .getAll(r.args(teamIds), {index: 'teamId'})
-            .filter({meetingType: meetingType as MeetingTypeEnum})
+            .filter({meetingType: meetingType})
             .run()
         })
       )
@@ -378,20 +376,20 @@ export const meetingTemplatesByType = (parent: RethinkDataLoader) => {
   return new DataLoader<MeetingTemplateKey, MeetingTemplate[], string>(
     async (keys) => {
       const r = await getRethink()
-      const types = {} as {[meetingType: string]: string[]}
+      const types = {} as Record<MeetingTypeEnum, string[]>
       keys.forEach((key) => {
         const {meetingType} = key
         types[meetingType] = types[meetingType] || []
         types[meetingType].push(key.teamId)
       })
-      const entries = Object.entries(types)
+      const entries = Object.entries(types) as [MeetingTypeEnum, string[]][]
       const resultsByType = await Promise.all(
         entries.map((entry) => {
           const [meetingType, teamIds] = entry
           return r
             .table('MeetingTemplate')
             .getAll(r.args(teamIds), {index: 'teamId'})
-            .filter({type: meetingType as MeetingTypeEnum, isActive: true})
+            .filter({type: meetingType, isActive: true})
             .run()
         })
       )

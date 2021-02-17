@@ -2,7 +2,6 @@
 // this allows redis to cache the results of arbitrarily complex rethinkdb queries
 
 import ms from 'ms'
-import {MeetingTypeEnum} from 'parabol-client/types/graphql'
 import {SharingScopeEnum} from '../../client/types/graphql'
 import getRethink from '../database/rethinkDriver'
 
@@ -28,8 +27,7 @@ const customRedisQueries = {
 
     const publicTemplatesByType = await Promise.all(
       meetingTypes.map((type) => {
-        const templateType =
-          type === MeetingTypeEnum.poker ? MeetingTypeEnum.poker : MeetingTypeEnum.retrospective
+        const templateType = type === 'poker' ? 'poker' : 'retrospective'
         return r
           .table('MeetingTemplate')
           .filter({scope: SharingScopeEnum.PUBLIC, isActive: true, type: templateType})
@@ -49,7 +47,11 @@ const customRedisQueries = {
           .table('TemplateScale')
           .getAll(teamId, {index: 'teamId'})
           .filter({isStarter: true})
-          .filter((row) => row('removedAt').default(null).eq(null))
+          .filter((row) =>
+            row('removedAt')
+              .default(null)
+              .eq(null)
+          )
           .run()
       })
     )

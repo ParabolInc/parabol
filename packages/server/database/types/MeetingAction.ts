@@ -1,4 +1,3 @@
-import {MeetingTypeEnum} from 'parabol-client/types/graphql'
 import GenericMeetingPhase from './GenericMeetingPhase'
 import Meeting from './Meeting'
 
@@ -21,7 +20,7 @@ export default class MeetingAction extends Meeting {
       meetingCount,
       phases,
       facilitatorUserId,
-      meetingType: MeetingTypeEnum.action,
+      meetingType: 'action',
       name: name ?? `Check-in #${meetingCount + 1}`
     })
   }

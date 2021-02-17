@@ -1,6 +1,7 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import {IStartCheckInOnMutationArguments, MeetingTypeEnum} from 'parabol-client/types/graphql'
+import {IStartCheckInOnMutationArguments} from 'parabol-client/types/graphql'
+import {MeetingTypeEnum} from '~/__generated__/NewMeeting_viewer.graphql'
 import getRethink from '../../database/rethinkDriver'
 import ActionMeetingMember from '../../database/types/ActionMeetingMember'
 import MeetingAction from '../../database/types/MeetingAction'

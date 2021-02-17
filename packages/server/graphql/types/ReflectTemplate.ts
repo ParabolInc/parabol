@@ -1,5 +1,5 @@
 import {GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
-import {MeetingTypeEnum} from 'parabol-client/types/graphql'
+import {MeetingTypeEnum} from '~/__generated__/NewMeeting_viewer.graphql'
 import connectionDefinitions from '../connectionDefinitions'
 import {GQLContext} from '../graphql'
 import ReflectPrompt from './ReflectPrompt'
@@ -9,7 +9,7 @@ const ReflectTemplate = new GraphQLObjectType<any, GQLContext>({
   name: 'ReflectTemplate',
   description: 'The team-specific templates for the reflection prompts',
   interfaces: () => [MeetingTemplate],
-  isTypeOf: ({type}) => type === MeetingTypeEnum.retrospective,
+  isTypeOf: ({type}) => (type as MeetingTypeEnum) === 'retrospective',
   fields: () => ({
     ...meetingTemplateFields(),
     prompts: {

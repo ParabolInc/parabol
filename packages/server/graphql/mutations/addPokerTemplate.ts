@@ -1,6 +1,5 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SprintPokerDefaults, SubscriptionChannel, Threshold} from 'parabol-client/types/constEnums'
-import {MeetingTypeEnum} from '../../../client/types/graphql'
 import getRethink from '../../database/rethinkDriver'
 import PokerTemplate from '../../database/types/PokerTemplate'
 import TemplateDimension from '../../database/types/TemplateDimension'
@@ -42,7 +41,7 @@ const addPokerTemplate = {
       .table('MeetingTemplate')
       .getAll(teamId, {index: 'teamId'})
       .filter({isActive: true})
-      .filter({type: MeetingTypeEnum.poker})
+      .filter({type: 'poker'})
       .run()
 
     if (allTemplates.length >= Threshold.MAX_RETRO_TEAM_TEMPLATES) {
@@ -71,7 +70,7 @@ const addPokerTemplate = {
         .table('MeetingTemplate')
         .getAll(teamId, {index: 'teamId'})
         .filter({isActive: true})
-        .filter({type: MeetingTypeEnum.poker})
+        .filter({type: 'poker'})
         .filter((row) => row('name').match(`^${copyName}`) as any)
         .count()
         .run()
