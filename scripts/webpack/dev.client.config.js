@@ -14,12 +14,12 @@ const {PORT, SOCKET_PORT} = process.env
 
 const USE_REFRESH = false
 module.exports = {
-  cache: {
-    type: 'filesystem',
-    buildDependencies: {
-      config: [__filename]
-    }
-  },
+  // cache: {
+  //   type: 'filesystem',
+  //   buildDependencies: {
+  //     config: [__filename]
+  //   }
+  // },
   devServer: {
     index: 'index.html',
     clientLogLevel: 'silent',
@@ -36,12 +36,18 @@ module.exports = {
       },
       '/intranet-graphql': {
         target: `http://localhost:${SOCKET_PORT}`,
+      },
+      '/sse': {
+        target: `http://localhost:${SOCKET_PORT}`,
+      },
+      '/sse-ping': {
+        target: `http://localhost:${SOCKET_PORT}`,
       }
     },
   },
   infrastructureLogging: {level: 'warn'},
   watchOptions: {
-    ignored: /node_modules/,
+    // ignored: /node_modules/,
     // aggregateTimeout: 200,
   },
   devtool: 'eval-source-map',
@@ -77,7 +83,7 @@ module.exports = {
       path.resolve(CLIENT_ROOT, '../node_modules'),
       'node_modules'
     ],
-    symlinks: false
+    // symlinks: false
   },
   resolveLoader: {
     modules: [

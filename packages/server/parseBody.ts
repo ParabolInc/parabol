@@ -9,7 +9,7 @@ const parseBody = ({
   res: HttpResponse
   parser?: (buffer: Buffer) => any
 }) => {
-  return new Promise<JSON | null>((resolve) => {
+  return new Promise<JSON | Buffer | null>((resolve) => {
     let buffer: Buffer
     res.onData((ab, isLast) => {
       const curBuf = Buffer.from(ab)
