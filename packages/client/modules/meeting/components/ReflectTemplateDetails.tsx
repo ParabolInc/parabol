@@ -22,7 +22,6 @@ import EditableTemplateName from './EditableTemplateName'
 import RemoveTemplate from './RemoveTemplate'
 import TemplatePromptList from './TemplatePromptList'
 import TemplateSharing from './TemplateSharing'
-import {MeetingTypeEnum} from '../../../types/graphql'
 import SelectTemplate from './SelectTemplate'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
@@ -100,7 +99,11 @@ const ReflectTemplateDetails = (props: Props) => {
   const onClone = () => {
     if (submitting || !canClone) return
     submitMutation()
-    AddReflectTemplateMutation(atmosphere, {parentTemplateId: templateId, teamId}, {onError, onCompleted})
+    AddReflectTemplateMutation(
+      atmosphere,
+      {parentTemplateId: templateId, teamId},
+      {onError, onCompleted}
+    )
     gotoTeamTemplates()
   }
   const defaultIllustrations = {
@@ -114,7 +117,9 @@ const ReflectTemplateDetails = (props: Props) => {
     threeLittlePigsTemplate: threeLittlePigsTemplate,
     winningStreakTemplate: winningStreakTemplate
   }
-  const headerImg = defaultIllustrations[templateId] ? defaultIllustrations[templateId] : customTemplate
+  const headerImg = defaultIllustrations[templateId]
+    ? defaultIllustrations[templateId]
+    : customTemplate
   const isActiveTemplate = activeTemplate.id === settings.selectedTemplate.id
   return (
     <PromptEditor>
@@ -135,15 +140,10 @@ const ReflectTemplateDetails = (props: Props) => {
                 teamId={teamId}
                 teamTemplates={teamTemplates}
                 gotoPublicTemplates={gotoPublicTemplates}
-                type={MeetingTypeEnum.retrospective}
+                type='retrospective'
               />
             )}
-            {!isOwner && (
-              <CloneTemplate
-                onClick={onClone}
-                canClone={canClone}
-              />
-            )}
+            {!isOwner && <CloneTemplate onClick={onClone} canClone={canClone} />}
           </FirstLine>
           <Description>{description}</Description>
         </TemplateHeader>
@@ -151,7 +151,9 @@ const ReflectTemplateDetails = (props: Props) => {
         {isOwner && <AddTemplatePrompt templateId={templateId} prompts={prompts} />}
         <TemplateSharing teamId={teamId} template={activeTemplate} />
       </Scrollable>
-      {!isActiveTemplate && <SelectTemplate closePortal={closePortal} template={activeTemplate} teamId={teamId} />}
+      {!isActiveTemplate && (
+        <SelectTemplate closePortal={closePortal} template={activeTemplate} teamId={teamId} />
+      )}
     </PromptEditor>
   )
 }

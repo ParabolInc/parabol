@@ -2,19 +2,19 @@ import React from 'react'
 import invoiceLineFormat from '../../helpers/invoiceLineFormat'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import {InvoiceLineItem_item} from '~/__generated__/InvoiceLineItem_item.graphql'
+import {
+  InvoiceLineItem_item,
+  InvoiceLineItemEnum
+} from '~/__generated__/InvoiceLineItem_item.graphql'
 import plural from '../../../../utils/plural'
 import InvoiceLineItemDetails from './InvoiceLineItemDetails'
-import {InvoiceLineItemEnum} from '../../../../types/graphql'
 import InvoiceLineItemContent from './InvoiceLineItemContent'
 
 const descriptionMaker = {
-  [InvoiceLineItemEnum.ADDED_USERS]: (quantity) =>
-    `${quantity} new ${plural(quantity, 'user')} added`,
-  [InvoiceLineItemEnum.REMOVED_USERS]: (quantity) =>
-    `${quantity} ${plural(quantity, 'user')} removed`,
-  [InvoiceLineItemEnum.INACTIVITY_ADJUSTMENTS]: () => 'Adjustments for paused users'
-}
+  ADDED_USERS: (quantity) => `${quantity} new ${plural(quantity, 'user')} added`,
+  REMOVED_USERS: (quantity) => `${quantity} ${plural(quantity, 'user')} removed`,
+  INACTIVITY_ADJUSTMENTS: () => 'Adjustments for paused users'
+} as Record<InvoiceLineItemEnum, (quantity?) => string>
 
 interface Props {
   item: InvoiceLineItem_item
