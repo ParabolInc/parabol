@@ -52,10 +52,7 @@ class ConnectionContext<T = WebSocket | HttpResponse> {
   }
 
   clearEntryForReliableQueue(mid: number) {
-    const entry = this.reliableQueue[mid]
-    if (entry) {
-      delete this.reliableQueue[mid]
-    }
+    delete this.reliableQueue[mid]
   }
 }
 

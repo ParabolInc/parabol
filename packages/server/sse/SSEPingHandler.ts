@@ -17,8 +17,8 @@ const SSEPingHandler = uWSAsyncHandler(async (res: HttpResponse, req: HttpReques
   }
 
   const parser = (buffer: Buffer) => buffer
-  const messageBuffer = (await parseBody({res, parser})) as Buffer
-  if (messageBuffer.length == 4) {
+  const messageBuffer = await parseBody({res, parser})
+  if (messageBuffer?.length == 4) {
     handleReliableMessage(messageBuffer, connectionContext)
   }
 
