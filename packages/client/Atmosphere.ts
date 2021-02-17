@@ -136,6 +136,18 @@ export default class Atmosphere extends Environment {
     })
   }
 
+  fetchReliable = async (connectionId: string, data: ArrayBuffer) => {
+    console.log(`I'm gonna make a POST request to /sse-ping with body of ${data.byteLength} bytes of data.`)
+    return fetch('/sse-ping', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${this.authToken}`,
+        'x-correlation-id': connectionId || ''
+      },
+      body: data
+    })
+  }
+
   fetchHTTP = async (body: FetchHTTPData, connectionId?: string) => {
     const uploadables = body.payload.uploadables
     const headers = {
@@ -222,7 +234,7 @@ export default class Atmosphere extends Environment {
 
   trySSE = () => {
     const getUrl = () => `/sse/?token=${this.authToken}`
-    return new SSETrebuchet({getUrl, fetchData: this.fetchHTTP, fetchPing: this.fetchPing})
+    return new SSETrebuchet({getUrl, fetchData: this.fetchHTTP, fetchPing: this.fetchPing, fetchReliable: this.fetchReliable})
   }
 
   async promiseToUpgrade() {
