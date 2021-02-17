@@ -3,12 +3,11 @@ import {WebSocket} from 'uWebSockets.js'
 import handleGraphQLTrebuchetRequest from '../graphql/handleGraphQLTrebuchetRequest'
 import ConnectionContext from '../socketHelpers/ConnectionContext'
 import keepAlive from '../socketHelpers/keepAlive'
-import {sendAndPushToReliableQueue} from '../socketHelpers/sendEncodedMessage'
 import sendGQLMessage from '../socketHelpers/sendGQLMessage'
 import sendToSentry from '../utils/sendToSentry'
 import handleSignal from '../wrtc/signalServer/handleSignal'
 import validateInit from '../wrtc/signalServer/validateInit'
-import handleDisconnect from './handleDisconnect'
+import handleReliableMessage from '../utils/handleReliableMessage'
 
 interface WRTCMessage {
   type: 'WRTC_SIGNAL'
@@ -37,12 +36,7 @@ const handleParsedMessage = async (
 }
 
 const PONG = 65
-const ACK = 0
-const REQ = 1
-const MASK = 1
 const isPong = (messageBuffer: Buffer) => messageBuffer.length === 1 && messageBuffer[0] === PONG
-const isAck = (robustId: number) => (robustId & MASK) === ACK
-const isReq = (robustId: number) => (robustId & MASK) === REQ
 
 const handleMessage = (
   websocket: WebSocket | {connectionContext: ConnectionContext},
@@ -55,24 +49,8 @@ const handleMessage = (
     return
   }
   if (messageBuffer.length == 4) {
-    // reliable message ACK or REQ
-    const robustId = messageBuffer.readUInt32LE()
-    const mid = robustId >> 1
-    if (isAck(robustId)) {
-      console.log(`I've received ACK for mid: ${mid}`)
-      connectionContext.clearEntryForReliableQueue(mid)
-      return
-    }
-    if (isReq(robustId)) {
-      console.log(`I've received REQ for mid: ${mid}`)
-      const message = connectionContext.reliableQueue[mid]
-      if (message) {
-        sendAndPushToReliableQueue(connectionContext, mid, message)
-      } else {
-        handleDisconnect(connectionContext)
-      }
-      return
-    }
+    handleReliableMessage(messageBuffer, connectionContext)
+    return
   }
   let parsedMessage
   try {

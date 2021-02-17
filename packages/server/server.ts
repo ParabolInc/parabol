@@ -42,6 +42,7 @@ uws
   .get('/sse/*', SSEConnectionHandler)
   .get('/sse-ping', SSEPingHandler)
   .get('/self-hosted/*', selfHostedHandler)
+  .post('/sse-ping', SSEPingHandler)
   .post('/stripe', stripeWebhookHandler)
   .post('/webhooks/github', githubWebhookHandler)
   .post('/webhooks/graphql', webhookGraphQLHandler)

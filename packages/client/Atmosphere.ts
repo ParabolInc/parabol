@@ -137,7 +137,6 @@ export default class Atmosphere extends Environment {
   }
 
   fetchReliable = async (connectionId: string, data: ArrayBuffer) => {
-    console.log(`I'm gonna make a POST request to /sse-ping with body of ${data.byteLength} bytes of data.`)
     return fetch('/sse-ping', {
       method: 'POST',
       headers: {
