@@ -18,19 +18,19 @@ interface Props {
 }
 
 const phaseLookup = {
-  ['checkin']: lazyPreload(() =>
+  checkin: lazyPreload(() =>
     import(/* webpackChunkName: 'NewMeetingCheckIn' */ './NewMeetingCheckIn')
   ),
-  ['updates']: lazyPreload(() =>
+  updates: lazyPreload(() =>
     import(/* webpackChunkName: 'ActionMeetingUpdates' */ './ActionMeetingUpdates')
   ),
-  ['firstcall']: lazyPreload(() =>
+  firstcall: lazyPreload(() =>
     import(/* webpackChunkName: 'ActionMeetingFirstCall' */ './ActionMeetingFirstCall')
   ),
-  ['agendaitems']: lazyPreload(() =>
+  agendaitems: lazyPreload(() =>
     import(/* webpackChunkName: 'ActionMeetingAgendaItems' */ './ActionMeetingAgendaItems')
   ),
-  ['lastcall']: lazyPreload(() =>
+  lastcall: lazyPreload(() =>
     import(/* webpackChunkName: 'ActionMeetingLastCall' */ './ActionMeetingLastCall')
   )
 } as Record<NewMeetingPhaseTypeEnum, LazyExoticPreload<any>>

@@ -15,7 +15,6 @@ import defaultOrgAvatar from '../../../../styles/theme/images/avatar-organizatio
 import OrganizationDetails from './OrganizationDetails'
 import OrganizationPage from './OrganizationPage'
 import {PALETTE} from '../../../../styles/paletteV2'
-import {TierEnum} from '../../../../types/graphql'
 import useModal from '../../../../hooks/useModal'
 import useDocumentTitle from '../../../../hooks/useDocumentTitle'
 
@@ -80,7 +79,7 @@ const Organization = (props: Props) => {
   if (!organization) return <div />
   const {orgId, createdAt, isBillingLeader, picture: orgAvatar, tier} = organization
   const pictureOrDefault = orgAvatar || defaultOrgAvatar
-  const onlyShowMembers = !isBillingLeader && tier !== TierEnum.personal
+  const onlyShowMembers = !isBillingLeader && tier !== 'personal'
   return (
     <UserSettingsWrapper>
       <SettingsWrapper narrow>
@@ -108,7 +107,7 @@ const Organization = (props: Props) => {
             ) : (
               <OrgNameBlock>{orgName}</OrgNameBlock>
             )}
-            <OrganizationDetails createdAt={createdAt} tier={tier as TierEnum} />
+            <OrganizationDetails createdAt={createdAt} tier={tier} />
           </OrgNameAndDetails>
         </AvatarAndName>
         {!onlyShowMembers && (

@@ -52,10 +52,10 @@ const Wrapper = styled('div')<{left: number}>(({left}) => ({
 }))
 
 const DEFAULT_TIME_LIMIT = {
-  ['reflect']: 5,
-  ['group']: 5,
-  ['vote']: 3,
-  ['discuss']: 5
+  reflect: 5,
+  group: 5,
+  vote: 3,
+  discuss: 5
 } as Record<NewMeetingPhaseTypeEnum, number>
 
 interface Props {

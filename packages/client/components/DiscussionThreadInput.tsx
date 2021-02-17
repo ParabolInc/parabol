@@ -80,9 +80,9 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
   const [lastTypedTimestamp, setLastTypedTimestamp] = useState<Date>()
 
   const threadSourceByMeetingType = {
-    ['retrospective']: 'REFLECTION_GROUP',
-    ['action']: 'AGENDA_ITEM',
-    ['poker']: 'STORY'
+    retrospective: 'REFLECTION_GROUP',
+    action: 'AGENDA_ITEM',
+    poker: 'STORY'
   } as Record<MeetingTypeEnum, ThreadSourceEnum>
   const threadSource = threadSourceByMeetingType[meetingType]
 

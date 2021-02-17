@@ -22,17 +22,15 @@ interface Props {
 }
 
 const phaseLookup = {
-  ['checkin']: lazyPreload(() =>
+  checkin: lazyPreload(() =>
     import(/* webpackChunkName: 'NewMeetingCheckIn' */ './NewMeetingCheckIn')
   ),
-  ['reflect']: lazyPreload(() =>
+  reflect: lazyPreload(() =>
     import(/* webpackChunkName: 'RetroReflectPhase' */ './RetroReflectPhase/RetroReflectPhase')
   ),
-  ['group']: lazyPreload(() =>
-    import(/* webpackChunkName: 'RetroGroupPhase' */ './RetroGroupPhase')
-  ),
-  ['vote']: lazyPreload(() => import(/* webpackChunkName: 'RetroVotePhase' */ './RetroVotePhase')),
-  ['discuss']: lazyPreload(() =>
+  group: lazyPreload(() => import(/* webpackChunkName: 'RetroGroupPhase' */ './RetroGroupPhase')),
+  vote: lazyPreload(() => import(/* webpackChunkName: 'RetroVotePhase' */ './RetroVotePhase')),
+  discuss: lazyPreload(() =>
     import(/* webpackChunkName: 'RetroDiscussPhase' */ './RetroDiscussPhase')
   )
 } as Record<NewMeetingPhaseTypeEnum, LazyExoticPreload<any>>

@@ -9,23 +9,22 @@ import invoiceLineFormat from '../../helpers/invoiceLineFormat'
 import {Elevation} from '../../../../styles/elevation'
 import graphql from 'babel-plugin-relay/macro'
 import {createFragmentContainer} from 'react-relay'
-import {Invoice_viewer} from '~/__generated__/Invoice_viewer.graphql'
+import {InvoiceStatusEnum, Invoice_viewer} from '~/__generated__/Invoice_viewer.graphql'
 import styled from '@emotion/styled'
 import {PALETTE} from '../../../../styles/paletteV2'
 import {Breakpoint} from '../../../../types/constEnums'
 import InvoiceFailedStamp from './InvoiceFailedStamp'
 import InvoiceTag from './InvoiceTag'
 import EmphasisTag from '../../../../components/Tag/EmphasisTag'
-import {InvoiceStatusEnum, TierEnum} from '../../../../types/graphql'
 import NextPeriodChargesLineItem from '../InvoiceLineItem/NextPeriodChargesLineItem'
 import useDocumentTitle from '../../../../hooks/useDocumentTitle'
 
 const chargeStatus = {
-  [InvoiceStatusEnum.PAID]: 'Charged',
-  [InvoiceStatusEnum.FAILED]: 'Failed charge',
-  [InvoiceStatusEnum.PENDING]: 'Pending charge',
-  [InvoiceStatusEnum.UPCOMING]: 'Will be charged'
-}
+  PAID: 'Charged',
+  FAILED: 'Failed charge',
+  PENDING: 'Pending charge',
+  UPCOMING: 'Will be charged'
+} as Record<InvoiceStatusEnum, string>
 
 const AmountSection = styled('div')({
   borderTop: `1px solid ${PALETTE.BORDER_INVOICE_SECTION}`,
@@ -192,7 +191,7 @@ const Invoice = (props: Props) => {
             <Heading>{`Next ${interval}’s usage`}</Heading>
             <Meta>{nextChargesDates}</Meta>
           </SectionHeader>
-          <NextPeriodChargesLineItem tier={tier as TierEnum} item={nextPeriodCharges} />
+          <NextPeriodChargesLineItem tier={tier} item={nextPeriodCharges} />
 
           {/*
             Re: coupon
@@ -239,14 +238,14 @@ const Invoice = (props: Props) => {
               <div>{invoiceLineFormat(amountDue)}</div>
             </AmountLine>
             {creditCard && (
-              <Meta isError={status === InvoiceStatusEnum.FAILED}>
+              <Meta isError={status === 'FAILED'}>
                 {chargeStatus[status]}
                 {' to '}
                 <b>{creditCard.brand}</b> {'ending in '}
                 <b>{creditCard.last4}</b>
               </Meta>
             )}
-            {status === InvoiceStatusEnum.PENDING && payUrl && (
+            {status === 'PENDING' && payUrl && (
               <PayURLText href={payUrl} rel='noopener noreferrer' target='_blank'>
                 <span>PAY NOW</span>
                 <span>{payUrl}</span>

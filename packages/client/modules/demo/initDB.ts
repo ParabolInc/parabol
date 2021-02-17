@@ -7,11 +7,11 @@ import {
   IRetrospectiveMeetingSettings,
   ISuggestedIntegrationGitHub,
   ISuggestedIntegrationJira,
-  ITask,
-  SlackNotificationEventEnum,
-  TaskServiceEnum,
-  TierEnum
+  ITask
 } from '../../types/graphql'
+import {TierEnum} from '~/__generated__/StandardHub_viewer.graphql'
+import {SlackNotificationEventEnum} from '~/__generated__/SlackNotificationList_viewer.graphql'
+import {TaskServiceEnum} from '~/__generated__/UpdateTaskMutation.graphql'
 import {CHECKIN, DISCUSS, GROUP, REFLECT, RETROSPECTIVE, VOTE} from '../../utils/constants'
 import getDemoAvatar from '../../utils/getDemoAvatar'
 import toTeamMemberId from '../../utils/relay/toTeamMemberId'
@@ -54,7 +54,7 @@ export const JiraProjectKeyLookup = {
     cloudId: '123',
     cloudName: JiraDemoCloudName,
     avatar: 'foo',
-    service: TaskServiceEnum.jira
+    service: 'jira' as TaskServiceEnum
   },
   [JiraSecretKey]: {
     projectKey: JiraSecretKey,
@@ -62,7 +62,7 @@ export const JiraProjectKeyLookup = {
     cloudId: '123',
     cloudName: JiraDemoCloudName,
     avatar: 'foo',
-    service: TaskServiceEnum.jira
+    service: 'jira' as TaskServiceEnum
   }
 }
 
@@ -70,7 +70,7 @@ export const GitHubDemoKey = 'ParabolInc/ParabolDemo'
 export const GitHubProjectKeyLookup = {
   [GitHubDemoKey]: {
     nameWithOwner: GitHubDemoKey,
-    service: TaskServiceEnum.github
+    service: 'github' as TaskServiceEnum
   }
 }
 
@@ -115,7 +115,7 @@ const initDemoUser = ({preferredName, email, picture}: BaseUser, idx: number) =>
 const initSlackNotification = (userId) => ({
   __typename: 'SlackNotification',
   id: 'demoSlackNotification',
-  event: SlackNotificationEventEnum.MEETING_STAGE_TIME_LIMIT_START,
+  event: 'MEETING_STAGE_TIME_LIMIT_START' as SlackNotificationEventEnum,
   eventType: 'team',
   channelId: 'demoChannelId',
   userId,
@@ -188,7 +188,7 @@ const initDemoOrg = () => {
   return {
     id: demoOrgId,
     name: 'Demo Organization',
-    tier: TierEnum.pro,
+    tier: 'pro' as TierEnum,
     orgUserCount: {
       activeUserCount: 5,
       inactiveUserCount: 0
@@ -209,7 +209,7 @@ const initDemoTeam = (organization, teamMembers, newMeeting) => {
     name: demoTeamName,
     teamName: demoTeamName,
     orgId: demoOrgId,
-    tier: TierEnum.pro,
+    tier: 'pro' as TierEnum,
     teamId: demoTeamId,
     organization,
     meetingSettings: initMeetingSettings(),
@@ -397,13 +397,13 @@ const initDB = (botScript) => {
     user: users[idx]
   }))
   users.forEach((user, idx) => {
-    ; (user as any).teamMember = teamMembers[idx]
+    ;(user as any).teamMember = teamMembers[idx]
   })
   const org = initDemoOrg()
   const newMeeting = initNewMeeting(org, teamMembers, meetingMembers)
   const team = initDemoTeam(org, teamMembers, newMeeting)
   teamMembers.forEach((teamMember) => {
-    ; (teamMember as any).team = team
+    ;(teamMember as any).team = team
   })
   team.meetingSettings.team = team as any
   newMeeting.commentCount = 0

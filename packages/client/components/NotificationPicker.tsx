@@ -9,23 +9,19 @@ import {
 } from '~/__generated__/NotificationPicker_notification.graphql'
 
 const typePicker = {
-  ['KICKED_OUT']: lazyPreload(() => import(/* webpackChunkName: 'KickedOut' */ './KickedOut')),
-  ['PAYMENT_REJECTED']: lazyPreload(() =>
+  KICKED_OUT: lazyPreload(() => import(/* webpackChunkName: 'KickedOut' */ './KickedOut')),
+  PAYMENT_REJECTED: lazyPreload(() =>
     import(/* webpackChunkName: 'PaymentRejected' */ './PaymentRejected')
   ),
-  ['TASK_INVOLVES']: lazyPreload(() =>
-    import(/* webpackChunkName: 'TaskInvolves' */ './TaskInvolves')
-  ),
-  ['PROMOTE_TO_BILLING_LEADER']: lazyPreload(() =>
+  TASK_INVOLVES: lazyPreload(() => import(/* webpackChunkName: 'TaskInvolves' */ './TaskInvolves')),
+  PROMOTE_TO_BILLING_LEADER: lazyPreload(() =>
     import(/* webpackChunkName: 'PromoteToBillingLeader' */ './PromoteToBillingLeader')
   ),
-  ['TEAM_ARCHIVED']: lazyPreload(() =>
-    import(/* webpackChunkName: 'TeamArchived' */ './TeamArchived')
-  ),
-  ['TEAM_INVITATION']: lazyPreload(() =>
+  TEAM_ARCHIVED: lazyPreload(() => import(/* webpackChunkName: 'TeamArchived' */ './TeamArchived')),
+  TEAM_INVITATION: lazyPreload(() =>
     import(/* webpackChunkName: 'TeamInvitation' */ './TeamInvitationNotification')
   ),
-  ['MEETING_STAGE_TIME_LIMIT_END']: lazyPreload(() =>
+  MEETING_STAGE_TIME_LIMIT_END: lazyPreload(() =>
     import(/* webpackChunkName: 'MeetingStageTimeLimitEnd' */ './MeetingStageTimeLimitEnd')
   )
 } as Record<NotificationEnum, LazyExoticPreload<any>>

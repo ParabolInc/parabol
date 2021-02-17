@@ -9,8 +9,8 @@ import HelpMenuHeader from './HelpMenuHeader'
 import HelpMenuLink from './HelpMenuLink'
 
 const linkLookup = {
-  ['action']: `${ExternalLinks.GETTING_STARTED_CHECK_INS}#icebreaker`,
-  ['retrospective']: `${ExternalLinks.GETTING_STARTED_RETROS}#icebreaker`
+  action: `${ExternalLinks.GETTING_STARTED_CHECK_INS}#icebreaker`,
+  retrospective: `${ExternalLinks.GETTING_STARTED_RETROS}#icebreaker`
 } as Record<MeetingTypeEnum, string>
 
 interface Props {

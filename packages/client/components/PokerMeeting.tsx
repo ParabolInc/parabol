@@ -19,7 +19,7 @@ interface Props {
 }
 
 const phaseLookup = {
-  ['checkin']: lazyPreload(() =>
+  checkin: lazyPreload(() =>
     import(/* webpackChunkName: 'NewMeetingCheckIn' */ './NewMeetingCheckIn')
   ),
   SCOPE: lazyPreload(() => import(/* webpackChunkName: 'ScopePhase' */ './ScopePhase')),

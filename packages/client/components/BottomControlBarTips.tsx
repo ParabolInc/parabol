@@ -76,23 +76,23 @@ const EstimateHelpMenu = lazyPreload(async () =>
 )
 
 const demoHelps = {
-  ['checkin']: DemoReflectHelpMenu,
-  ['reflect']: DemoReflectHelpMenu,
-  ['group']: DemoGroupHelpMenu,
-  ['vote']: DemoVoteHelpMenu,
-  ['discuss']: DemoDiscussHelpMenu
+  checkin: DemoReflectHelpMenu,
+  reflect: DemoReflectHelpMenu,
+  group: DemoGroupHelpMenu,
+  vote: DemoVoteHelpMenu,
+  discuss: DemoDiscussHelpMenu
 } as Record<NewMeetingPhaseTypeEnum, LazyExoticPreload<any>>
 
 const helps = {
-  ['checkin']: CheckInHelpMenu,
-  ['reflect']: ReflectHelpMenu,
-  ['group']: GroupHelpMenu,
-  ['vote']: VoteHelpMenu,
-  ['discuss']: DiscussHelpMenu,
-  ['updates']: UpdatesHelpMenu,
-  ['firstcall']: ActionMeetingFirstCallHelpMenu,
-  ['agendaitems']: ActionMeetingAgendaItemsHelpMenu,
-  ['lastcall']: ActionMeetingLastCallHelpMenu,
+  checkin: CheckInHelpMenu,
+  reflect: ReflectHelpMenu,
+  group: GroupHelpMenu,
+  vote: VoteHelpMenu,
+  discuss: DiscussHelpMenu,
+  updates: UpdatesHelpMenu,
+  firstcall: ActionMeetingFirstCallHelpMenu,
+  agendaitems: ActionMeetingAgendaItemsHelpMenu,
+  lastcall: ActionMeetingLastCallHelpMenu,
   SCOPE: ScopeHelpMenu,
   ESTIMATE: EstimateHelpMenu
 } as Record<NewMeetingPhaseTypeEnum, LazyExoticPreload<any>>

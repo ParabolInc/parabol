@@ -7,7 +7,6 @@ import stringSimilarity from 'string-similarity'
 import {PALETTE} from '~/styles/paletteV2'
 import {MeetingSettingsThreshold, RetroDemo, SubscriptionChannel} from '../../types/constEnums'
 import {
-  DragReflectionDropTargetTypeEnum,
   IDiscussPhase,
   IGoogleAnalyzedEntity,
   INewMeetingStage,
@@ -15,10 +14,10 @@ import {
   IRetroReflection,
   IRetroReflectionGroup,
   ITask,
-  NewMeetingPhase,
-  NewMeetingPhaseTypeEnum,
-  ReactableEnum
+  NewMeetingPhase
 } from '../../types/graphql'
+import {ReactableEnum} from '~/__generated__/AddReactjiToReactableMutation.graphql'
+import {DragReflectionDropTargetTypeEnum} from '~/__generated__/EndDraggingReflectionMutation.graphql'
 import {DISCUSS, GROUP, REFLECT, TASK, TEAM, VOTE} from '../../utils/constants'
 import dndNoise from '../../utils/dndNoise'
 import extractTextFromDraftString from '../../utils/draftjs/extractTextFromDraftString'
@@ -79,7 +78,7 @@ interface DemoEvents {
 }
 
 interface GQLDemoEmitter {
-  new(): StrictEventEmitter<EventEmitter, DemoEvents>
+  new (): StrictEventEmitter<EventEmitter, DemoEvents>
 }
 
 const makeReflectionGroupThread = () => ({
@@ -123,7 +122,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
   getUnlockedStages(stageIds: string[]) {
     const unlockedStages = [] as INewMeetingStage[]
     this.db.newMeeting.phases!.forEach((phase) => {
-      ; (phase.stages as any).forEach((stage) => {
+      ;(phase.stages as any).forEach((stage) => {
         if (stageIds.includes(stage.id)) {
           unlockedStages.push(stage)
         }
@@ -313,7 +312,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
     },
     AddReactjiToReactableMutation: ({reactableId, reactableType, isRemove, reactji}, userId) => {
       const table =
-        reactableType === ReactableEnum.REFLECTION ? this.db.reflections : this.db.comments
+        (reactableType as ReactableEnum) === 'REFLECTION' ? this.db.reflections : this.db.comments
       const reactable = table.find(({id}) => id === reactableId)
       if (!reactable) return null
       const reactjiId = `${reactableId}:${reactji}`
@@ -471,7 +470,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       this.db.reflections.push(reflection)
       const unlockedStageIds = unlockAllStagesForPhase(
         this.db.newMeeting.phases as any,
-        NewMeetingPhaseTypeEnum.group,
+        'group',
         true
       )
       const unlockedStages = this.getUnlockedStages(unlockedStageIds)
@@ -560,11 +559,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       }
       const remainingReflections = this.db.reflections.filter((reflection) => reflection.isActive)
       const unlockedStageIds = remainingReflections.length
-        ? unlockAllStagesForPhase(
-          this.db.newMeeting.phases as any,
-          NewMeetingPhaseTypeEnum.group,
-          true
-        )
+        ? unlockAllStagesForPhase(this.db.newMeeting.phases as any, 'group', true)
         : []
 
       const unlockedStages = this.getUnlockedStages(unlockedStageIds)
@@ -836,7 +831,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       )!
       const oldReflections = oldReflectionGroup.reflections!
       let failedDrop = false
-      if (dropTargetType === DragReflectionDropTargetTypeEnum.REFLECTION_GRID) {
+      if ((dropTargetType as DragReflectionDropTargetTypeEnum) === 'REFLECTION_GRID') {
         const {promptId} = reflection
         newReflectionGroupId = this.getTempId('group')
         const newReflectionGroup = {
@@ -888,7 +883,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
           })
         }
       } else if (
-        dropTargetType === DragReflectionDropTargetTypeEnum.REFLECTION_GROUP &&
+        (dropTargetType as DragReflectionDropTargetTypeEnum) === 'REFLECTION_GROUP' &&
         dropTargetId
       ) {
         // group
@@ -1127,12 +1122,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       }
       const phases = this.db.newMeeting.phases as any
       if (isUnlock !== undefined) {
-        unlockedStageIds = unlockAllStagesForPhase(
-          phases,
-          NewMeetingPhaseTypeEnum.discuss,
-          true,
-          isUnlock
-        )
+        unlockedStageIds = unlockAllStagesForPhase(phases, 'discuss', true, isUnlock)
       }
 
       const data = {
