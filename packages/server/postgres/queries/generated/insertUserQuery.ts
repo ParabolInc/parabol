@@ -21,7 +21,6 @@ export interface IInsertUserQueryParams {
   tms: stringArray | null | void
   featureFlags: stringArray | null | void
   lastSeenAtURLs: stringArray | null | void
-  segmentId: string | null | void
   identities: JsonArray | null | void
 }
 
@@ -40,15 +39,15 @@ const insertUserQueryIR: any = {
     {
       name: 'id',
       transform: {type: 'scalar'},
-      codeRefs: {used: [{a: 264, b: 265, line: 20, col: 3}]}
+      codeRefs: {used: [{a: 249, b: 250, line: 19, col: 3}]}
     },
     {
       name: 'email',
       transform: {type: 'scalar'},
       codeRefs: {
         used: [
-          {a: 271, b: 275, line: 21, col: 3},
-          {a: 489, b: 493, line: 36, col: 11}
+          {a: 256, b: 260, line: 20, col: 3},
+          {a: 460, b: 464, line: 34, col: 11}
         ]
       }
     },
@@ -57,8 +56,8 @@ const insertUserQueryIR: any = {
       transform: {type: 'scalar'},
       codeRefs: {
         used: [
-          {a: 281, b: 289, line: 22, col: 3},
-          {a: 513, b: 521, line: 37, col: 17}
+          {a: 266, b: 274, line: 21, col: 3},
+          {a: 484, b: 492, line: 35, col: 17}
         ]
       }
     },
@@ -67,8 +66,8 @@ const insertUserQueryIR: any = {
       transform: {type: 'scalar'},
       codeRefs: {
         used: [
-          {a: 295, b: 303, line: 23, col: 3},
-          {a: 541, b: 549, line: 38, col: 17}
+          {a: 280, b: 288, line: 22, col: 3},
+          {a: 512, b: 520, line: 36, col: 17}
         ]
       }
     },
@@ -77,8 +76,8 @@ const insertUserQueryIR: any = {
       transform: {type: 'scalar'},
       codeRefs: {
         used: [
-          {a: 309, b: 316, line: 24, col: 3},
-          {a: 566, b: 573, line: 39, col: 14}
+          {a: 294, b: 301, line: 23, col: 3},
+          {a: 537, b: 544, line: 37, col: 14}
         ]
       }
     },
@@ -87,8 +86,8 @@ const insertUserQueryIR: any = {
       transform: {type: 'scalar'},
       codeRefs: {
         used: [
-          {a: 322, b: 331, line: 25, col: 3},
-          {a: 594, b: 603, line: 40, col: 18}
+          {a: 307, b: 316, line: 24, col: 3},
+          {a: 565, b: 574, line: 38, col: 18}
         ]
       }
     },
@@ -97,8 +96,8 @@ const insertUserQueryIR: any = {
       transform: {type: 'scalar'},
       codeRefs: {
         used: [
-          {a: 337, b: 349, line: 26, col: 3},
-          {a: 627, b: 639, line: 41, col: 21}
+          {a: 322, b: 334, line: 25, col: 3},
+          {a: 598, b: 610, line: 39, col: 21}
         ]
       }
     },
@@ -107,8 +106,8 @@ const insertUserQueryIR: any = {
       transform: {type: 'scalar'},
       codeRefs: {
         used: [
-          {a: 355, b: 358, line: 27, col: 3},
-          {a: 652, b: 655, line: 42, col: 10}
+          {a: 340, b: 343, line: 26, col: 3},
+          {a: 623, b: 626, line: 40, col: 10}
         ]
       }
     },
@@ -117,8 +116,8 @@ const insertUserQueryIR: any = {
       transform: {type: 'scalar'},
       codeRefs: {
         used: [
-          {a: 364, b: 370, line: 28, col: 3},
-          {a: 671, b: 677, line: 43, col: 13}
+          {a: 349, b: 355, line: 27, col: 3},
+          {a: 642, b: 648, line: 41, col: 13}
         ]
       }
     },
@@ -127,8 +126,8 @@ const insertUserQueryIR: any = {
       transform: {type: 'scalar'},
       codeRefs: {
         used: [
-          {a: 376, b: 378, line: 29, col: 3},
-          {a: 689, b: 691, line: 44, col: 9}
+          {a: 361, b: 363, line: 28, col: 3},
+          {a: 660, b: 662, line: 42, col: 9}
         ]
       }
     },
@@ -137,8 +136,8 @@ const insertUserQueryIR: any = {
       transform: {type: 'scalar'},
       codeRefs: {
         used: [
-          {a: 384, b: 395, line: 30, col: 3},
-          {a: 714, b: 725, line: 45, col: 20}
+          {a: 369, b: 380, line: 29, col: 3},
+          {a: 685, b: 696, line: 43, col: 20}
         ]
       }
     },
@@ -147,18 +146,8 @@ const insertUserQueryIR: any = {
       transform: {type: 'scalar'},
       codeRefs: {
         used: [
-          {a: 401, b: 414, line: 31, col: 3},
-          {a: 750, b: 763, line: 46, col: 22}
-        ]
-      }
-    },
-    {
-      name: 'segmentId',
-      transform: {type: 'scalar'},
-      codeRefs: {
-        used: [
-          {a: 420, b: 428, line: 32, col: 3},
-          {a: 783, b: 791, line: 47, col: 17}
+          {a: 386, b: 399, line: 30, col: 3},
+          {a: 721, b: 734, line: 44, col: 22}
         ]
       }
     },
@@ -167,8 +156,8 @@ const insertUserQueryIR: any = {
       transform: {type: 'scalar'},
       codeRefs: {
         used: [
-          {a: 434, b: 443, line: 33, col: 3},
-          {a: 810, b: 819, line: 48, col: 16}
+          {a: 405, b: 414, line: 31, col: 3},
+          {a: 753, b: 762, line: 45, col: 16}
         ]
       }
     }
@@ -186,13 +175,12 @@ const insertUserQueryIR: any = {
     tms: true,
     featureFlags: true,
     lastSeenAtURLs: true,
-    segmentId: true,
     identities: true
   },
   statement: {
     body:
-      'INSERT INTO "User" (\n  "id",\n  "email",\n  "createdAt", \n  "updatedAt",\n  "inactive",\n  "lastSeenAt",\n  "preferredName",\n  "tier",\n  "picture",\n  "tms",\n  "featureFlags",\n  "lastSeenAtURLs",\n  "segmentId",\n  "identities"\n) VALUES (\n  :id,\n  :email,\n  :createdAt,\n  :updatedAt,\n  :inactive,\n  :lastSeenAt,\n  :preferredName,\n  :tier,\n  :picture,\n  :tms,\n  :featureFlags,\n  :lastSeenAtURLs,\n  :segmentId,\n  :identities\n)\nON CONFLICT (id) DO UPDATE SET\n  email = :email,\n  "createdAt" = :createdAt,\n  "updatedAt" = :updatedAt,\n  inactive = :inactive,\n  "lastSeenAt" = :lastSeenAt,\n  "preferredName" = :preferredName,\n  tier = :tier,\n  picture = :picture,\n  tms = :tms,\n  "featureFlags" = :featureFlags,\n  "lastSeenAtURLs" = :lastSeenAtURLs,\n  "segmentId" = :segmentId,\n  identities = :identities,\n  "newFeatureId" = DEFAULT,\n  "overLimitCopy" = DEFAULT,\n  "isRemoved" = DEFAULT,\n  "reasonRemoved" = DEFAULT,\n  rol = DEFAULT,\n  "payLaterClickCount" = DEFAULT',
-    loc: {a: 30, b: 981, line: 4, col: 0}
+      'INSERT INTO "User" (\n  "id",\n  "email",\n  "createdAt", \n  "updatedAt",\n  "inactive",\n  "lastSeenAt",\n  "preferredName",\n  "tier",\n  "picture",\n  "tms",\n  "featureFlags",\n  "lastSeenAtURLs",\n  "identities"\n) VALUES (\n  :id,\n  :email,\n  :createdAt,\n  :updatedAt,\n  :inactive,\n  :lastSeenAt,\n  :preferredName,\n  :tier,\n  :picture,\n  :tms,\n  :featureFlags,\n  :lastSeenAtURLs,\n  :identities\n)\nON CONFLICT (id) DO UPDATE SET\n  email = :email,\n  "createdAt" = :createdAt,\n  "updatedAt" = :updatedAt,\n  inactive = :inactive,\n  "lastSeenAt" = :lastSeenAt,\n  "preferredName" = :preferredName,\n  tier = :tier,\n  picture = :picture,\n  tms = :tms,\n  "featureFlags" = :featureFlags,\n  "lastSeenAtURLs" = :lastSeenAtURLs,\n  identities = :identities,\n  "segmentId" = DEFAULT,\n  "newFeatureId" = DEFAULT,\n  "overLimitCopy" = DEFAULT,\n  "isRemoved" = DEFAULT,\n  "reasonRemoved" = DEFAULT,\n  rol = DEFAULT,\n  "payLaterClickCount" = DEFAULT',
+    loc: {a: 30, b: 949, line: 4, col: 0}
   }
 }
 
@@ -212,7 +200,6 @@ const insertUserQueryIR: any = {
  *   "tms",
  *   "featureFlags",
  *   "lastSeenAtURLs",
- *   "segmentId",
  *   "identities"
  * ) VALUES (
  *   :id,
@@ -227,7 +214,6 @@ const insertUserQueryIR: any = {
  *   :tms,
  *   :featureFlags,
  *   :lastSeenAtURLs,
- *   :segmentId,
  *   :identities
  * )
  * ON CONFLICT (id) DO UPDATE SET
@@ -242,8 +228,8 @@ const insertUserQueryIR: any = {
  *   tms = :tms,
  *   "featureFlags" = :featureFlags,
  *   "lastSeenAtURLs" = :lastSeenAtURLs,
- *   "segmentId" = :segmentId,
  *   identities = :identities,
+ *   "segmentId" = DEFAULT,
  *   "newFeatureId" = DEFAULT,
  *   "overLimitCopy" = DEFAULT,
  *   "isRemoved" = DEFAULT,

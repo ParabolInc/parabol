@@ -10,7 +10,11 @@ import segmentIo from '../../../utils/segmentIo'
 import addSeedTasks from './addSeedTasks'
 import createNewOrg from './createNewOrg'
 import createTeamAndLeader from './createTeamAndLeader'
-import insertUser from '../../../postgres/helpers/insertUser'
+import {
+  insertUserQuery,
+  IInsertUserQueryParams
+} from '../../../postgres/queries/generated/insertUserQuery'
+import getPg from '../../../postgres/getPg'
 
 // no waiting necessary, it's just analytics
 const handleSegment = async (user: User, isInvited: boolean) => {
@@ -48,7 +52,7 @@ const bootstrapNewUser = async (newUser: User, isOrganic: boolean) => {
       user: r.table('User').insert(newUser),
       event: r.table('TimelineEvent').insert(joinEvent)
     }).run(),
-    insertUser(newUser)
+    insertUserQuery.run((newUser as unknown) as IInsertUserQueryParams, getPg())
   ])
 
   const tms = [] as string[]

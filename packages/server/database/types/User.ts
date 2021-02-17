@@ -1,6 +1,6 @@
 import {AuthTokenRole} from 'parabol-client/types/constEnums'
 import {TierEnum} from 'parabol-client/types/graphql'
-import generateUID from '../../generateUID'
+import shortid from 'shortid'
 import AuthIdentity from './AuthIdentity'
 
 interface Input {
@@ -36,13 +36,13 @@ export default class User {
   picture: string
   inactive: boolean
   identities: AuthIdentity[]
-  isRemoved: boolean
+  isRemoved?: true
   createdAt: Date
-  segmentId: string | null
+  segmentId?: string
   tier: TierEnum
   tms: string[]
-  reasonRemoved?: string | null
-  rol?: AuthTokenRole.SUPER_USER | null
+  reasonRemoved?: string
+  rol?: AuthTokenRole.SUPER_USER
   payLaterClickCount?: number
   constructor(input: Input) {
     const {
@@ -69,7 +69,7 @@ export default class User {
         .slice(0, 2)
         .join('') || 'pa'
     const now = new Date()
-    this.id = id ?? `local|${generateUID()}`
+    this.id = id ?? `local|${shortid.generate()}`
     this.tms = tms || []
     this.email = email
     this.createdAt = createdAt || now
@@ -81,8 +81,7 @@ export default class User {
     this.lastSeenAt = lastSeenAt ?? null
     this.lastSeenAtURLs = lastSeenAtURLs ?? null
     this.preferredName = preferredName
-    this.segmentId = segmentId ?? null
+    this.segmentId = segmentId ?? undefined
     this.tier = tier ?? TierEnum.personal
-    this.isRemoved = false
   }
 }

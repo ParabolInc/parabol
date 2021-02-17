@@ -14,7 +14,6 @@ INSERT INTO "User" (
   "tms",
   "featureFlags",
   "lastSeenAtURLs",
-  "segmentId",
   "identities"
 ) VALUES (
   :id,
@@ -29,7 +28,6 @@ INSERT INTO "User" (
   :tms,
   :featureFlags,
   :lastSeenAtURLs,
-  :segmentId,
   :identities
 )
 ON CONFLICT (id) DO UPDATE SET
@@ -44,8 +42,8 @@ ON CONFLICT (id) DO UPDATE SET
   tms = :tms,
   "featureFlags" = :featureFlags,
   "lastSeenAtURLs" = :lastSeenAtURLs,
-  "segmentId" = :segmentId,
   identities = :identities,
+  "segmentId" = DEFAULT,
   "newFeatureId" = DEFAULT,
   "overLimitCopy" = DEFAULT,
   "isRemoved" = DEFAULT,
