@@ -15,6 +15,7 @@ import {
   IInsertUserQueryParams
 } from '../../../postgres/queries/generated/insertUserQuery'
 import getPg from '../../../postgres/getPg'
+import catchAndLog from '../../../postgres/utils/catchAndLog'
 
 // no waiting necessary, it's just analytics
 const handleSegment = async (user: User, isInvited: boolean) => {
@@ -52,7 +53,7 @@ const bootstrapNewUser = async (newUser: User, isOrganic: boolean) => {
       user: r.table('User').insert(newUser),
       event: r.table('TimelineEvent').insert(joinEvent)
     }).run(),
-    insertUserQuery.run((newUser as unknown) as IInsertUserQueryParams, getPg())
+    catchAndLog(() => insertUserQuery.run((newUser as unknown) as IInsertUserQueryParams, getPg()))
   ])
 
   const tms = [] as string[]
