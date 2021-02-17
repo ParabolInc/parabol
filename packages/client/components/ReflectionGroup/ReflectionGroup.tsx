@@ -11,7 +11,6 @@ import {
   ReflectionStackPerspective,
   Times
 } from '../../types/constEnums'
-import {NewMeetingPhaseTypeEnum} from '../../types/graphql'
 import {GROUP} from '../../utils/constants'
 import {ReflectionGroup_meeting} from '../../__generated__/ReflectionGroup_meeting.graphql'
 import {ReflectionGroup_reflectionGroup} from '../../__generated__/ReflectionGroup_reflectionGroup.graphql'
@@ -96,7 +95,7 @@ const ReflectionGroup = (props: Props) => {
   } = useExpandedReflections(groupRef, stackRef, reflections.length, headerRef)
   const atmosphere = useAtmosphere()
   const [isEditing, thisSetIsEditing] = useState(false)
-  const isDragPhase = phaseType === NewMeetingPhaseTypeEnum.group && !isComplete
+  const isDragPhase = phaseType === 'group' && !isComplete
   const setIsEditing = (isEditing: boolean) => {
     thisSetIsEditing(isEditing)
     const [firstReflection] = staticReflections
