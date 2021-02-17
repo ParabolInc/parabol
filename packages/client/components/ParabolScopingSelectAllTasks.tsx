@@ -4,13 +4,16 @@ import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import useMutationProps from '~/hooks/useMutationProps'
 import UpdatePokerScopeMutation from '~/mutations/UpdatePokerScopeMutation'
-import {AddOrDeleteEnum, TaskServiceEnum} from '~/types/graphql'
 import Checkbox from './Checkbox'
 import useAtmosphere from '../hooks/useAtmosphere'
 import graphql from 'babel-plugin-relay/macro'
 import {ParabolScopingSelectAllTasks_tasks} from '../__generated__/ParabolScopingSelectAllTasks_tasks.graphql'
 import useUnusedRecords from '~/hooks/useUnusedRecords'
 import getSelectAllTitle from '../utils/getSelectAllTitle'
+import {
+  UpdatePokerScopeMutationVariables,
+  UpdatePokerScopeItemInput
+} from '../__generated__/UpdatePokerScopeMutation.graphql'
 
 const Item = styled('div')({
   display: 'flex',
@@ -30,7 +33,7 @@ interface Props {
 
 const ParabolScopingSelectAllTasks = (props: Props) => {
   const {meetingId, usedServiceTaskIds, tasks} = props
-  const taskIds = tasks.map(taskEdge => taskEdge.node.id)
+  const taskIds = tasks.map((taskEdge) => taskEdge.node.id)
   const atmosphere = useAtmosphere()
   const [unusedTasks, allSelected] = useUnusedRecords(tasks, usedServiceTaskIds)
   const {submitting, submitMutation, onCompleted, onError} = useMutationProps()
@@ -38,16 +41,16 @@ const ParabolScopingSelectAllTasks = (props: Props) => {
     if (submitting) return
     submitMutation()
     const updateArr = allSelected ? Array.from(taskIds) : unusedTasks
-    const action = allSelected ? AddOrDeleteEnum.DELETE : AddOrDeleteEnum.ADD
+    const action = allSelected ? 'DELETE' : 'ADD'
     const updates = updateArr.map((serviceTaskId) => ({
-      service: TaskServiceEnum.PARABOL,
+      service: 'PARABOL',
       serviceTaskId,
       action
-    }))
+    })) as UpdatePokerScopeItemInput[]
     const variables = {
       meetingId,
       updates
-    }
+    } as UpdatePokerScopeMutationVariables
     UpdatePokerScopeMutation(atmosphere, variables, {onError, onCompleted})
   }
   if (tasks.length < 2) return null

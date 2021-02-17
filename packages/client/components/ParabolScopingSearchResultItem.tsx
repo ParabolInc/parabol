@@ -6,8 +6,7 @@ import {ParabolScopingSearchResultItem_task} from '../__generated__/ParabolScopi
 import Checkbox from './Checkbox'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import UpdatePokerScopeMutation from '~/mutations/UpdatePokerScopeMutation'
-import {AreaEnum, TaskServiceEnum} from '~/types/graphql'
-import {AddOrDeleteEnum} from '~/types/graphql'
+import {AreaEnum} from '../__generated__/UpdateTaskMutation.graphql'
 import useMutationProps from '~/hooks/useMutationProps'
 import {convertToRaw} from 'draft-js'
 import {PALETTE} from '~/styles/paletteV2'
@@ -20,6 +19,7 @@ import UpdateTaskMutation from '~/mutations/UpdateTaskMutation'
 import useScrollIntoView from '~/hooks/useScrollIntoVIew'
 import useEditorState from '~/hooks/useEditorState'
 import {Threshold} from '../types/constEnums'
+import {UpdatePokerScopeMutationVariables} from '../__generated__/UpdatePokerScopeMutation.graphql'
 
 const Item = styled('div')<{isEditingThisItem: boolean}>(({isEditingThisItem}) => ({
   backgroundColor: isEditingThisItem ? PALETTE.BACKGROUND_BLUE_MAGENTA : 'transparent',
@@ -27,7 +27,7 @@ const Item = styled('div')<{isEditingThisItem: boolean}>(({isEditingThisItem}) =
   display: 'flex',
   paddingLeft: 16,
   paddingTop: 8,
-  paddingBottom: 8,
+  paddingBottom: 8
 }))
 
 const Task = styled('div')({
@@ -60,7 +60,9 @@ const ParabolScopingSearchResultItem = (props: Props) => {
   const {onCompleted, onError, submitMutation, submitting} = useMutationProps()
   const [editorState, setEditorState] = useEditorState(content)
   const editorRef = useRef<HTMLTextAreaElement>(null)
-  const {useTaskChild, addTaskChild, removeTaskChild, isTaskFocused} = useTaskChildFocus(serviceTaskId)
+  const {useTaskChild, addTaskChild, removeTaskChild, isTaskFocused} = useTaskChildFocus(
+    serviceTaskId
+  )
   const isEditingThisItem = !plaintextContent
 
   const updatePokerScope = () => {
@@ -70,18 +72,18 @@ const ParabolScopingSearchResultItem = (props: Props) => {
       meetingId,
       updates: [
         {
-          service: TaskServiceEnum.PARABOL,
+          service: 'PARABOL',
           serviceTaskId,
-          action: isSelected ? AddOrDeleteEnum.DELETE : AddOrDeleteEnum.ADD
+          action: isSelected ? 'DELETE' : 'ADD'
         }
       ]
-    }
+    } as UpdatePokerScopeMutationVariables
     UpdatePokerScopeMutation(atmosphere, variables, {onError, onCompleted})
   }
 
   const handleTaskUpdate = () => {
     const isFocused = isTaskFocused()
-    const area = AreaEnum.meeting
+    const area: AreaEnum = 'meeting'
     if (isAndroid) {
       const editorEl = editorRef.current
       if (!editorEl || editorEl.type !== 'textarea') return
