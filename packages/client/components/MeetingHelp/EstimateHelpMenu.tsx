@@ -7,11 +7,11 @@ import HelpMenuCopy from './HelpMenuCopy'
 import HelpMenuHeader from './HelpMenuHeader'
 import HelpMenuLink from './HelpMenuLink'
 
-interface Props { }
+interface Props {}
 
 const EstimateHelpMenu = forwardRef((_props: Props, ref: any) => {
   const {closePortal} = ref
-  useSegmentTrack('Help Menu Open', {phase: 'ESTIMATE'})
+  useSegmentTrack('Help Menu Open', {phaseType: 'ESTIMATE'})
   return (
     <HelpMenuContent closePortal={closePortal}>
       <HelpMenuHeader>{phaseLabelLookup.ESTIMATE}</HelpMenuHeader>
