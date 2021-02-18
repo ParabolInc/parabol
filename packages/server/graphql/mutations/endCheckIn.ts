@@ -235,9 +235,9 @@ export default {
     sendMeetingEndToSegment(completedCheckIn, meetingMembers as MeetingMember[])
     sendNewMeetingSummary(completedCheckIn, context).catch(console.log)
     const events = teamMembers.map(
-      (meetingMember) =>
+      (teamMember) =>
         new TimelineEventCheckinComplete({
-          userId: meetingMember.userId,
+          userId: teamMember.userId,
           teamId,
           orgId: team.orgId,
           meetingId

@@ -126,9 +126,9 @@ export default {
     sendMeetingEndToSegment(completedRetrospective, meetingMembers as MeetingMember[], template)
     sendNewMeetingSummary(completedRetrospective, context).catch(console.log)
     const events = teamMembers.map(
-      (meetingMember) =>
+      (teamMember) =>
         new TimelineEventRetroComplete({
-          userId: meetingMember.userId,
+          userId: teamMember.userId,
           teamId,
           orgId: team.orgId,
           meetingId

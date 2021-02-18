@@ -103,9 +103,9 @@ export default {
       sendNewMeetingSummary(completedMeeting, context).catch(console.log)
     }
     const events = teamMembers.map(
-      (meetingMember) =>
+      (teamMember) =>
         new TimelineEventPokerComplete({
-          userId: meetingMember.userId,
+          userId: teamMember.userId,
           teamId,
           orgId: team.orgId,
           meetingId
