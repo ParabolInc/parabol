@@ -28,7 +28,7 @@ const handleSegment = async (user: User, isInvited: boolean) => {
       email,
       name: preferredName
     },
-    anonymousId: segmentId as string
+    anonymousId: segmentId
   })
   segmentIo.track({
     userId,
