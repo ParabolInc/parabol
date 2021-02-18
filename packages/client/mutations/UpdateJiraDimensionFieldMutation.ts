@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {IEstimateStage, IPokerMeeting, NewMeetingPhaseTypeEnum} from '../types/graphql'
+import {IEstimateStage, IPokerMeeting} from '../types/graphql'
 import {SimpleMutation} from '../types/relayMutations'
 import getJiraCloudIdAndKey from '../utils/getJiraCloudIdAndKey'
 import createProxyRecord from '../utils/relay/createProxyRecord'
@@ -10,7 +10,7 @@ graphql`
   fragment UpdateJiraDimensionFieldMutation_team on UpdateJiraDimensionFieldSuccess {
     meeting {
       phases {
-        ...on EstimatePhase {
+        ... on EstimatePhase {
           stages {
             serviceField {
               name
@@ -36,8 +36,20 @@ graphql`
 `
 
 const mutation = graphql`
-  mutation UpdateJiraDimensionFieldMutation($dimensionId: ID!, $fieldName: String!, $meetingId: ID!, $cloudId: ID!, $projectKey: ID!) {
-    updateJiraDimensionField(dimensionId: $dimensionId, fieldName: $fieldName, meetingId: $meetingId, cloudId: $cloudId, projectKey: $projectKey) {
+  mutation UpdateJiraDimensionFieldMutation(
+    $dimensionId: ID!
+    $fieldName: String!
+    $meetingId: ID!
+    $cloudId: ID!
+    $projectKey: ID!
+  ) {
+    updateJiraDimensionField(
+      dimensionId: $dimensionId
+      fieldName: $fieldName
+      meetingId: $meetingId
+      cloudId: $cloudId
+      projectKey: $projectKey
+    ) {
       ... on ErrorPayload {
         error {
           message
@@ -63,25 +75,39 @@ const UpdateJiraDimensionFieldMutation: SimpleMutation<TUpdateJiraDimensionField
       // handle team record
       const atlassianTeamIntegration = store.get(`atlassianTeamIntegration:${teamId}`)
       if (atlassianTeamIntegration) {
-        const jiraDimensionFields = atlassianTeamIntegration.getLinkedRecords('jiraDimensionFields') || []
-        const existingField = jiraDimensionFields.find((dimensionField) => dimensionField.getValue('dimensionId') === dimensionId && dimensionField.getValue('cloudId') === cloudId && dimensionField.getValue('projectKey') === projectKey)
+        const jiraDimensionFields =
+          atlassianTeamIntegration.getLinkedRecords('jiraDimensionFields') || []
+        const existingField = jiraDimensionFields.find(
+          (dimensionField) =>
+            dimensionField.getValue('dimensionId') === dimensionId &&
+            dimensionField.getValue('cloudId') === cloudId &&
+            dimensionField.getValue('projectKey') === projectKey
+        )
         if (existingField) {
           existingField.setValue(fieldName, 'fieldName')
         } else {
-          const optimisticJiraDimensionField = createProxyRecord(store, 'JiraDimensionField', {fieldName, dimensionId, cloudId, projectKey})
+          const optimisticJiraDimensionField = createProxyRecord(store, 'JiraDimensionField', {
+            fieldName,
+            dimensionId,
+            cloudId,
+            projectKey
+          })
           const nextJiraDimensionFields = [...jiraDimensionFields, optimisticJiraDimensionField]
           atlassianTeamIntegration.setLinkedRecords(nextJiraDimensionFields, 'jiraDimensionFields')
         }
       }
       // handle meeting records
       const phases = meeting.getLinkedRecords('phases')
-      const estimatePhase = phases.find((phase) => phase.getValue('phaseType') === NewMeetingPhaseTypeEnum.ESTIMATE)!
+      const estimatePhase = phases.find((phase) => phase.getValue('phaseType') === 'ESTIMATE')!
       const stages = estimatePhase.getLinkedRecords<IEstimateStage[]>('stages')
       stages.forEach((stage) => {
         const [stageCloudId] = getJiraCloudIdAndKey(stage.getValue('serviceTaskId'))
         if (stage.getValue('dimensionId') === dimensionId && stageCloudId === cloudId) {
           // the type being a number is just a guess
-          const nextServiceField = createProxyRecord(store, 'ServiceField', {name: fieldName, type: 'number'})
+          const nextServiceField = createProxyRecord(store, 'ServiceField', {
+            name: fieldName,
+            type: 'number'
+          })
           stage.setLinkedRecord(nextServiceField, 'serviceField')
         }
       })

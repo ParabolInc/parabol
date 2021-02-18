@@ -1,6 +1,7 @@
 import {GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel, Threshold} from 'parabol-client/types/constEnums'
-import {SuggestedActionTypeEnum, TierEnum} from 'parabol-client/types/graphql'
+import {SuggestedActionTypeEnum} from 'parabol-client/types/graphql'
+import {TierEnum} from '~/__generated__/NewMeeting_viewer.graphql'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import getRethink from '../../database/rethinkDriver'
 import AuthToken from '../../database/types/AuthToken'
@@ -62,8 +63,8 @@ export default {
       }
       if (orgTeams.length >= Threshold.MAX_FREE_TEAMS) {
         const organization = await dataLoader.get('organizations').load(orgId)
-        const {tier} = organization
-        if (tier === TierEnum.personal) {
+        const {tier}: {tier: TierEnum} = organization
+        if (tier === 'personal') {
           return standardError(new Error('Max free teams reached'), {userId: viewerId})
         }
       }

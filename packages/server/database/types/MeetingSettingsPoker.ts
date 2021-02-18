@@ -1,4 +1,4 @@
-import {MeetingTypeEnum, NewMeetingPhaseTypeEnum} from 'parabol-client/types/graphql'
+import {NewMeetingPhaseTypeEnum} from '~/__generated__/ActionMeeting_meeting.graphql'
 import MeetingSettings from './MeetingSettings'
 import JiraSearchQuery from './JiraSearchQuery'
 
@@ -10,18 +10,14 @@ interface Input {
   selectedTemplateId?: string
 }
 
-const phaseTypes = [
-  NewMeetingPhaseTypeEnum.checkin,
-  NewMeetingPhaseTypeEnum.SCOPE,
-  NewMeetingPhaseTypeEnum.ESTIMATE
-]
+const phaseTypes = ['checkin', 'SCOPE', 'ESTIMATE'] as NewMeetingPhaseTypeEnum[]
 
 export default class MeetingSettingsPoker extends MeetingSettings {
   selectedTemplateId: string
   jiraSearchQueries?: JiraSearchQuery[]
   constructor(input: Input) {
     const {teamId, id, selectedTemplateId} = input
-    super({teamId, id, meetingType: MeetingTypeEnum.poker, phaseTypes})
+    super({teamId, id, meetingType: 'poker', phaseTypes})
     this.selectedTemplateId = selectedTemplateId || 'estimatedEffortTemplate'
   }
 }

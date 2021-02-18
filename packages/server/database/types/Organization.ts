@@ -1,4 +1,4 @@
-import {TierEnum} from 'parabol-client/types/graphql'
+import {TierEnum} from '../../../client/__generated__/Invoice_viewer.graphql'
 import generateUID from '../../generateUID'
 import CreditCard from './CreditCard'
 

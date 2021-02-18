@@ -1,8 +1,7 @@
-import {GraphQLInt} from 'graphql'
+import {GraphQLInt, GraphQLString} from 'graphql'
 import getRethink from '../../database/rethinkDriver'
 import {requireSU} from '../../utils/authorization'
-import {TierEnum as ETierEnum} from 'parabol-client/types/graphql'
-import TierEnum from '../types/TierEnum'
+import {TierEnum} from '../../../client/__generated__/Invoice_viewer.graphql'
 
 export default {
   type: GraphQLInt,
@@ -13,8 +12,8 @@ export default {
       description: 'the minimum number of users within the org to count it'
     },
     tier: {
-      type: TierEnum,
-      defaultValue: ETierEnum.pro,
+      type: GraphQLString,
+      defaultValue: 'pro' as TierEnum,
       description: 'which tier of org shall we count?'
     }
   },

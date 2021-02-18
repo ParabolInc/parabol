@@ -1,5 +1,4 @@
 import {GraphQLID, GraphQLInt, GraphQLNonNull} from 'graphql'
-import {OrgUserRole, TierEnum} from 'parabol-client/types/graphql'
 import getRethink from '../../../database/rethinkDriver'
 import User from '../../../database/types/User'
 import db from '../../../db'
@@ -41,13 +40,13 @@ const getBillingLeaderUser = async (
       .table('OrganizationUser')
       .getAll(userId, {index: 'userId'})
       .filter({removedAt: null, orgId})
-      .update({role: OrgUserRole.BILLING_LEADER})
+      .update({role: 'BILLING_LEADER'})
       .run()
     return user
   }
   const organizationUsers = await dataLoader.get('organizationUsersByOrgId').load(orgId)
   const billingLeaders = organizationUsers.filter(
-    (organizationUser) => organizationUser.role === OrgUserRole.BILLING_LEADER
+    (organizationUser) => organizationUser.role === 'BILLING_LEADER'
   )
   const billingLeaderUserIds = billingLeaders.map(({userId}) => userId)
   const billingLeaderUsers = await db.readMany('User', billingLeaderUserIds)
@@ -104,11 +103,11 @@ export default {
     }
 
     const {stripeId, stripeSubscriptionId, tier} = org
-    if (tier === TierEnum.enterprise) {
+    if (tier === 'enterprise') {
       return {error: {message: 'Org is already enterprise'}}
     }
     // TODO handle upgrade from PRO to ENTERPRISE
-    if (tier !== TierEnum.personal) {
+    if (tier !== 'personal') {
       return {error: {message: 'Upgrading from PRO not supported. requires PR'}}
     }
     if (stripeSubscriptionId) {
@@ -155,7 +154,7 @@ export default {
           periodEnd: fromEpochSeconds(subscription.current_period_end),
           periodStart: fromEpochSeconds(subscription.current_period_start),
           stripeSubscriptionId: subscription.id,
-          tier: TierEnum.enterprise,
+          tier: 'enterprise',
           updatedAt: now
         }),
       teamIds: r
@@ -163,7 +162,7 @@ export default {
         .getAll(orgId, {index: 'orgId'})
         .update({
           isPaid: true,
-          tier: TierEnum.enterprise,
+          tier: 'enterprise',
           updatedAt: now
         })
     }).run()

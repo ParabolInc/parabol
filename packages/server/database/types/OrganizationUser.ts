@@ -1,4 +1,5 @@
-import {OrgUserRole, TierEnum} from 'parabol-client/types/graphql'
+import {TierEnum} from '../../../client/__generated__/Invoice_viewer.graphql'
+import {OrgUserRole} from '../../../client/__generated__/OrgMemberRow_organizationUser.graphql'
 import generateUID from '../../generateUID'
 interface Input {
   orgId: string

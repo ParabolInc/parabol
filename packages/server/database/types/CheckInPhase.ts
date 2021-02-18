@@ -1,4 +1,3 @@
-import {NewMeetingPhaseTypeEnum} from 'parabol-client/types/graphql'
 import convertToTaskContent from 'parabol-client/utils/draftjs/convertToTaskContent'
 import {makeCheckinGreeting, makeCheckinQuestion} from 'parabol-client/utils/makeCheckinGreeting'
 import CheckInStage from './CheckInStage'
@@ -15,7 +14,7 @@ export default class CheckInPhase extends GenericMeetingPhase {
   stages: CheckInStage[]
 
   constructor(input: Input) {
-    super(NewMeetingPhaseTypeEnum.checkin)
+    super('checkin')
     const {teamId, meetingCount, stages} = input
     this.checkInGreeting = makeCheckinGreeting(meetingCount, teamId)
     this.checkInQuestion = convertToTaskContent(makeCheckinQuestion(meetingCount, teamId))
