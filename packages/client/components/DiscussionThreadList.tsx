@@ -30,8 +30,8 @@ const Wrapper = styled('div')({
 })
 
 // https://stackoverflow.com/questions/36130760/use-justify-content-flex-end-and-to-have-vertical-scrollbar
-const PusherUpper = styled('div')({
-  margin: 'auto 0 0'
+const PusherDowner = styled('div')({
+  margin: '0 0 auto'
 })
 
 const Header = styled(LabelHeading)({
@@ -83,6 +83,7 @@ const DiscussionThreadList = forwardRef((props: Props, ref: any) => {
   return (
     <Wrapper data-cy={`${dataCy}`} ref={ref}>
       <HeaderBlock />
+      <PusherDowner />
       {threadables.map((threadable) => {
         const {id} = threadable
         return (
@@ -94,7 +95,6 @@ const DiscussionThreadList = forwardRef((props: Props, ref: any) => {
           />
         )
       })}
-      <PusherUpper />
       <CommentingStatusText preferredNames={preferredNames} />
     </Wrapper>
   )
