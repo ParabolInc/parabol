@@ -1,9 +1,11 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {IEstimateStage, ITemplateDimension, ITemplateScale} from '../types/graphql'
 import {StandardMutation} from '../types/relayMutations'
 import createProxyRecord from '../utils/relay/createProxyRecord'
-import {VoteForPokerStoryMutation as TVoteForPokerStoryMutation} from '../__generated__/VoteForPokerStoryMutation.graphql'
+import {
+  VoteForPokerStoryMutation as TVoteForPokerStoryMutation,
+  VoteForPokerStoryMutationResponse
+} from '../__generated__/VoteForPokerStoryMutation.graphql'
 
 graphql`
   fragment VoteForPokerStoryMutation_meeting on VoteForPokerStorySuccess {
@@ -30,6 +32,10 @@ const mutation = graphql`
   }
 `
 
+type Stage = NonNullable<
+  NonNullable<VoteForPokerStoryMutationResponse>['voteForPokerStory']['stage']
+>
+
 const VoteForPokerStoryMutation: StandardMutation<TVoteForPokerStoryMutation> = (
   atmosphere,
   variables,
@@ -41,18 +47,18 @@ const VoteForPokerStoryMutation: StandardMutation<TVoteForPokerStoryMutation> = 
     optimisticUpdater: (store) => {
       const {stageId, score} = variables
       const {viewerId} = atmosphere
-      const stage = store.get<IEstimateStage>(stageId)
+      const stage = store.get<Stage>(stageId)
       if (!stage) return
       const scores = stage.getLinkedRecords('scores') || []
       const existingScoreIdx = scores.findIndex((item) => item.getValue('userId') === viewerId)
       if (score) {
-        const dimensionId = stage.getValue('dimensionId')
+        const dimensionId = stage.getValue('dimensionId') as string
         if (!dimensionId) return
-        const dimension = store.get<ITemplateDimension>(dimensionId)
+        const dimension = store.get(dimensionId)
         if (!dimension) return
         const scaleId = dimension.getValue('scaleId')
         if (!scaleId) return
-        const scale = store.get<ITemplateScale>('scaleId')
+        const scale = store.get('scaleId')
         const scaleValues = scale?.getLinkedRecords('values')
         if (!scaleValues) return
         const scaleValue = scaleValues.find((value) => value.getValue('label') === score)
@@ -61,12 +67,21 @@ const VoteForPokerStoryMutation: StandardMutation<TVoteForPokerStoryMutation> = 
           userId: viewerId,
           score
         })
-        const nextScores = existingScoreIdx === -1 ? [...scores, optimisticScore] :
-          [...scores.slice(0, existingScoreIdx), optimisticScore, ...scores.slice(existingScoreIdx + 1)]
+        const nextScores =
+          existingScoreIdx === -1
+            ? [...scores, optimisticScore]
+            : [
+                ...scores.slice(0, existingScoreIdx),
+                optimisticScore,
+                ...scores.slice(existingScoreIdx + 1)
+              ]
         stage.setLinkedRecords(nextScores, 'scores')
       } else {
         if (existingScoreIdx === -1) return
-        const nextScores = [...scores.slice(0, existingScoreIdx), ...scores.slice(existingScoreIdx + 1)]
+        const nextScores = [
+          ...scores.slice(0, existingScoreIdx),
+          ...scores.slice(existingScoreIdx + 1)
+        ]
         stage.setLinkedRecords(nextScores, 'scores')
       }
     },

@@ -3,7 +3,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {Disposable} from 'relay-runtime'
 import Atmosphere from '../Atmosphere'
 import {CompletedHandler, ErrorHandler} from '../types/relayMutations'
-import {IUpdatePokerTemplateScaleValueOnMutationArguments} from '../types/graphql'
+import {UpdatePokerTemplateScaleValueMutationVariables} from '../__generated__/UpdatePokerTemplateScaleValueMutation.graphql'
 import safeRemoveNodeFromArray from '~/utils/relay/safeRemoveNodeFromArray'
 import createProxyRecord from '~/utils/relay/createProxyRecord'
 import addNodeToArray from '~/utils/relay/addNodeToArray'
@@ -20,8 +20,16 @@ graphql`
 `
 
 const mutation = graphql`
-  mutation UpdatePokerTemplateScaleValueMutation($scaleId: ID!, $oldScaleValue: TemplateScaleInput!, $newScaleValue: TemplateScaleInput!) {
-    updatePokerTemplateScaleValue(scaleId: $scaleId, oldScaleValue: $oldScaleValue, newScaleValue: $newScaleValue) {
+  mutation UpdatePokerTemplateScaleValueMutation(
+    $scaleId: ID!
+    $oldScaleValue: TemplateScaleInput!
+    $newScaleValue: TemplateScaleInput!
+  ) {
+    updatePokerTemplateScaleValue(
+      scaleId: $scaleId
+      oldScaleValue: $oldScaleValue
+      newScaleValue: $newScaleValue
+    ) {
       error {
         message
       }
@@ -32,7 +40,7 @@ const mutation = graphql`
 
 const UpdatePokerTemplateScaleValueMutation = (
   atmosphere: Atmosphere,
-  variables: IUpdatePokerTemplateScaleValueOnMutationArguments,
+  variables: UpdatePokerTemplateScaleValueMutationVariables,
   _context: {},
   onError: ErrorHandler,
   onCompleted: CompletedHandler

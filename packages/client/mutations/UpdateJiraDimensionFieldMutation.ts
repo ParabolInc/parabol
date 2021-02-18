@@ -1,10 +1,10 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {IEstimateStage, IPokerMeeting} from '../types/graphql'
 import {SimpleMutation} from '../types/relayMutations'
 import getJiraCloudIdAndKey from '../utils/getJiraCloudIdAndKey'
 import createProxyRecord from '../utils/relay/createProxyRecord'
 import {UpdateJiraDimensionFieldMutation as TUpdateJiraDimensionFieldMutation} from '../__generated__/UpdateJiraDimensionFieldMutation.graphql'
+import {PokerMeeting_meeting} from '../__generated__/PokerMeeting_meeting.graphql'
 
 graphql`
   fragment UpdateJiraDimensionFieldMutation_team on UpdateJiraDimensionFieldSuccess {
@@ -69,7 +69,7 @@ const UpdateJiraDimensionFieldMutation: SimpleMutation<TUpdateJiraDimensionField
     variables,
     optimisticUpdater: (store) => {
       const {meetingId, cloudId, dimensionId, fieldName, projectKey} = variables
-      const meeting = store.get<IPokerMeeting>(meetingId)
+      const meeting = store.get<PokerMeeting_meeting>(meetingId)
       if (!meeting) return
       const teamId = meeting.getValue('teamId')
       // handle team record
@@ -99,9 +99,10 @@ const UpdateJiraDimensionFieldMutation: SimpleMutation<TUpdateJiraDimensionField
       // handle meeting records
       const phases = meeting.getLinkedRecords('phases')
       const estimatePhase = phases.find((phase) => phase.getValue('phaseType') === 'ESTIMATE')!
-      const stages = estimatePhase.getLinkedRecords<IEstimateStage[]>('stages')
+      const stages = estimatePhase.getLinkedRecords('stages')
       stages.forEach((stage) => {
-        const [stageCloudId] = getJiraCloudIdAndKey(stage.getValue('serviceTaskId'))
+        const serviceTaskId = stage.getValue('serviceTaskId') as string
+        const [stageCloudId] = getJiraCloudIdAndKey(serviceTaskId)
         if (stage.getValue('dimensionId') === dimensionId && stageCloudId === cloudId) {
           // the type being a number is just a guess
           const nextServiceField = createProxyRecord(store, 'ServiceField', {
