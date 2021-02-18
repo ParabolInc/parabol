@@ -114,9 +114,10 @@ export default {
 
     // remove any empty tasks
     const {templateId} = completedRetrospective
-    const [meetingMembers, team, removedTaskIds, template] = await Promise.all([
+    const [meetingMembers, team, teamMembers, removedTaskIds, template] = await Promise.all([
       dataLoader.get('meetingMembersByMeetingId').load(meetingId),
       dataLoader.get('teams').load(teamId),
+      dataLoader.get('teamMembersByTeamId').load(teamId),
       removeEmptyTasks(meetingId),
       dataLoader.get('meetingTemplates').load(templateId)
     ])
@@ -124,7 +125,7 @@ export default {
     finishRetroMeeting(completedRetrospective, dataLoader)
     sendMeetingEndToSegment(completedRetrospective, meetingMembers as MeetingMember[], template)
     sendNewMeetingSummary(completedRetrospective, context).catch(console.log)
-    const events = meetingMembers.map(
+    const events = teamMembers.map(
       (meetingMember) =>
         new TimelineEventRetroComplete({
           userId: meetingMember.userId,
@@ -134,7 +135,10 @@ export default {
         })
     )
     const timelineEventId = events[0].id as string
-    await r.table('TimelineEvent').insert(events).run()
+    await r
+      .table('TimelineEvent')
+      .insert(events)
+      .run()
     if (team.isOnboardTeam) {
       const teamLeadUserId = await r
         .table('TeamMember')
