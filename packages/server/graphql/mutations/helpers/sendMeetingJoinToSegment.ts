@@ -1,4 +1,3 @@
-import {NewMeetingPhaseTypeEnum} from 'parabol-client/types/graphql'
 import Meeting from '../../../database/types/Meeting'
 import segmentIo from '../../../utils/segmentIo'
 
@@ -9,7 +8,7 @@ const sendMeetingJoinToSegment = async (userId: string, newMeeting: Meeting) => 
     event: 'Meeting Joined',
     properties: {
       facilitatorUserId,
-      hasIcebreaker: phases[0].phaseType === NewMeetingPhaseTypeEnum.checkin,
+      hasIcebreaker: phases[0].phaseType === 'checkin',
       meetingId,
       meetingType,
       meetingNumber,

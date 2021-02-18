@@ -1,5 +1,5 @@
-import {MeetingMember, NewMeetingPhaseTypeEnum} from 'parabol-client/types/graphql'
 import Meeting from '../../../database/types/Meeting'
+import MeetingMember from '../../../database/types/MeetingMember'
 import segmentIo from '../../../utils/segmentIo'
 
 const sendPokerMeetingRevoteToSegment = async (
@@ -14,7 +14,7 @@ const sendPokerMeetingRevoteToSegment = async (
       userId,
       event: 'Poker Meeting Team Revoted',
       properties: {
-        hasIcebreaker: phases[0].phaseType === NewMeetingPhaseTypeEnum.checkin,
+        hasIcebreaker: phases[0].phaseType === 'checkin',
         wasFacilitator,
         meetingNumber,
         teamMembersCount: meetingMembers.length,

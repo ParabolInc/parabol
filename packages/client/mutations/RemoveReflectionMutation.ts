@@ -5,7 +5,6 @@
 import {commitMutation} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import handleRemoveReflectionGroups from './handlers/handleRemoveReflectionGroups'
-import {IRetroReflection, IRetroReflectionGroup} from '../types/graphql'
 import {BaseLocalHandlers, SharedUpdater, StandardMutation} from '../types/relayMutations'
 import {RemoveReflectionMutation as TRemoveReflectionMutation} from '../__generated__/RemoveReflectionMutation.graphql'
 import safeRemoveNodeFromArray from '../utils/relay/safeRemoveNodeFromArray'
@@ -36,15 +35,17 @@ const mutation = graphql`
   }
 `
 
+type Reflection = NonNullable<RemoveReflectionMutation_meeting['reflection']>
+
 const removeReflectionAndEmptyGroup = (
   reflectionId: string,
   meetingId: string,
   store: RecordSourceSelectorProxy<any>
 ) => {
-  const reflection = store.get<IRetroReflection>(reflectionId)
+  const reflection = store.get<Reflection>(reflectionId)
   if (!reflection) return
   const reflectionGroupId = reflection.getValue('reflectionGroupId')
-  const reflectionGroup = store.get<IRetroReflectionGroup>(reflectionGroupId)
+  const reflectionGroup = store.get(reflectionGroupId)
   if (!reflectionGroup) return
   safeRemoveNodeFromArray(reflectionId, reflectionGroup, 'reflections')
   const reflections = reflectionGroup.getLinkedRecords('reflections')

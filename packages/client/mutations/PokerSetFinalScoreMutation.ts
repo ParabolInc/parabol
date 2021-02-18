@@ -1,6 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {IEstimateStage} from '../types/graphql'
 import {StandardMutation} from '../types/relayMutations'
 import {PokerSetFinalScoreMutation as TPokerSetFinalScoreMutation} from '../__generated__/PokerSetFinalScoreMutation.graphql'
 
@@ -35,7 +34,7 @@ const PokerSetFinalScoreMutation: StandardMutation<TPokerSetFinalScoreMutation> 
     variables,
     optimisticUpdater: (store) => {
       const {stageId, finalScore} = variables
-      const stage = store.get<IEstimateStage>(stageId)
+      const stage = store.get(stageId)
       if (!stage) return
       stage.setValue(finalScore, 'finalScore')
     },
