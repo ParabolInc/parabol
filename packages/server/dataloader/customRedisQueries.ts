@@ -2,7 +2,6 @@
 // this allows redis to cache the results of arbitrarily complex rethinkdb queries
 
 import ms from 'ms'
-import {SharingScopeEnum} from '../../client/types/graphql'
 import getRethink from '../database/rethinkDriver'
 
 const customRedisQueries = {
@@ -30,7 +29,7 @@ const customRedisQueries = {
         const templateType = type === 'poker' ? 'poker' : 'retrospective'
         return r
           .table('MeetingTemplate')
-          .filter({scope: SharingScopeEnum.PUBLIC, isActive: true, type: templateType})
+          .filter({scope: 'PUBLIC', isActive: true, type: templateType})
           .limit(1000)
           .run()
       })

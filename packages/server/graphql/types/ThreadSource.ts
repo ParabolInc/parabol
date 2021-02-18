@@ -1,7 +1,7 @@
 import {GraphQLID, GraphQLNonNull, GraphQLInt, GraphQLString, GraphQLInterfaceType} from 'graphql'
 import {ThreadableConnection} from './Threadable'
 import resolveThread from '../resolvers/resolveThread'
-import {ThreadSourceEnum} from 'parabol-client/types/graphql'
+import {ThreadSourceEnum} from '../../../client/__generated__/TeamSubscription.graphql'
 import RetroReflectionGroup from './RetroReflectionGroup'
 import AgendaItem from './AgendaItem'
 import Story from './Story'
@@ -34,10 +34,10 @@ const ThreadSource = new GraphQLInterfaceType({
   resolveType: (type) => {
     const threadSourceType = getThreadSourceType(type)
     const lookup = {
-      [ThreadSourceEnum.REFLECTION_GROUP]: RetroReflectionGroup,
-      [ThreadSourceEnum.AGENDA_ITEM]: AgendaItem,
-      [ThreadSourceEnum.STORY]: Story
-    }
+      REFLECTION_GROUP: RetroReflectionGroup,
+      AGENDA_ITEM: AgendaItem,
+      STORY: Story
+    } as Record<ThreadSourceEnum, any>
     return lookup[threadSourceType]
   }
 })

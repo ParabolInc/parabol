@@ -1,5 +1,5 @@
 import {MeetingTypeEnum} from '~/__generated__/NewMeeting_viewer.graphql'
-import {SharingScopeEnum} from '../../../client/types/graphql'
+import {SharingScopeEnum} from '~/__generated__/OrganizationSubscription.graphql'
 import generateUID from '../../generateUID'
 
 interface Input {
@@ -36,7 +36,7 @@ export default class MeetingTemplate {
     this.name = name
     this.teamId = teamId
     this.updatedAt = now
-    this.scope = scope || SharingScopeEnum.TEAM
+    this.scope = scope || 'TEAM'
     this.orgId = orgId
     this.parentTemplateId = parentTemplateId
     this.lastUsedAt = lastUsedAt ?? undefined
