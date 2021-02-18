@@ -11,6 +11,7 @@ import {GQLContext} from '../graphql'
 import PayLaterPayload from '../types/PayLaterPayload'
 import {incrementUserPayLaterClickCountQuery} from '../../postgres/queries/generated/incrementUserPayLaterClickCountQuery'
 import getPg from '../../postgres/getPg'
+import catchAndLog from '../../postgres/utils/catchAndLog'
 
 export default {
   type: new GraphQLNonNull(PayLaterPayload),
@@ -73,7 +74,7 @@ export default {
         .add(1)
     })
     await Promise.all([
-      incrementUserPayLaterClickCountQuery.run({id: viewerId}, getPg()),
+      catchAndLog(() => incrementUserPayLaterClickCountQuery.run({id: viewerId}, getPg())),
       db.write('User', viewerId, reqlUpdater)
     ])
 

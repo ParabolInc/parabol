@@ -3,6 +3,7 @@ import Team from '../database/types/Team'
 import db from '../db'
 import {removeUserTmsQuery} from '../postgres/queries/generated/removeUserTmsQuery'
 import getPg from '../postgres/getPg'
+import catchAndLog from '../postgres/utils/catchAndLog'
 
 const safeArchiveTeam = async (teamId: string) => {
   const r = await getRethink()
@@ -16,7 +17,7 @@ const safeArchiveTeam = async (teamId: string) => {
     db.writeMany('User', userIds, (user) => ({
       tms: user('tms').difference([teamId])
     })),
-    removeUserTmsQuery.run({ids: userIds, teamIds: [teamId]}, getPg())
+    catchAndLog(() => removeUserTmsQuery.run({ids: userIds, teamIds: [teamId]}, getPg()))
   ])
   const result = await r({
     team: (r

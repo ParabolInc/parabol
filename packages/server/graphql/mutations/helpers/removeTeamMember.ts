@@ -11,6 +11,7 @@ import removeStagesFromMeetings from './removeStagesFromMeetings'
 import removeUserFromMeetingStages from './removeUserFromMeetingStages'
 import {removeUserTmsQuery} from '../../../postgres/queries/generated/removeUserTmsQuery'
 import getPg from '../../../postgres/getPg'
+import catchAndLog from '../../../postgres/utils/catchAndLog'
 
 interface Options {
   evictorUserId?: string
@@ -126,7 +127,7 @@ const removeTeamMember = async (
 
   const [user] = await Promise.all([
     db.write('User', userId, reqlUpdater),
-    removeUserTmsQuery.run({ids: [userId], teamIds: [teamId]}, getPg())
+    catchAndLog(() => removeUserTmsQuery.run({ids: [userId], teamIds: [teamId]}, getPg()))
   ])
   let notificationId
   if (evictorUserId) {

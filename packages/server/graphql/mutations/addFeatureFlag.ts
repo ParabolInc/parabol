@@ -9,6 +9,7 @@ import AddFeatureFlagPayload from '../types/AddFeatureFlagPayload'
 import UserFlagEnum from '../types/UserFlagEnum'
 import {appendUserFeatureFlagsQuery} from '../../postgres/queries/generated/appendUserFeatureFlagsQuery'
 import getPg from '../../postgres/getPg'
+import catchAndLog from '../../postgres/utils/catchAndLog'
 
 export default {
   type: GraphQLNonNull(AddFeatureFlagPayload),
@@ -43,7 +44,10 @@ export default {
     // RESOLUTION
     const users = [] as User[]
     if (emails) {
-      const usersByEmail = await r.table('User').getAll(r.args(emails), {index: 'email'}).run()
+      const usersByEmail = await r
+        .table('User')
+        .getAll(r.args(emails), {index: 'email'})
+        .run()
       users.push(...usersByEmail)
     }
     if (domain) {
@@ -60,11 +64,14 @@ export default {
     }
 
     const reqlUpdater = (user) => ({
-      featureFlags: user('featureFlags').default([]).append(flag).distinct()
+      featureFlags: user('featureFlags')
+        .default([])
+        .append(flag)
+        .distinct()
     })
     const userIds = users.map(({id}) => id)
     await Promise.all([
-      appendUserFeatureFlagsQuery.run({ids: userIds, flag}, getPg()),
+      catchAndLog(() => appendUserFeatureFlagsQuery.run({ids: userIds, flag}, getPg())),
       db.writeMany('User', userIds, reqlUpdater)
     ])
     userIds.forEach((userId) => {
