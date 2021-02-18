@@ -14,7 +14,6 @@ import isAndroid from '~/utils/draftjs/isAndroid'
 import useAtmosphere from '../hooks/useAtmosphere'
 import UpdateTaskMutation from '../mutations/UpdateTaskMutation'
 import {ICON_SIZE} from '../styles/typographyV2'
-import {ITask} from '../types/graphql'
 import convertToTaskContent from '../utils/draftjs/convertToTaskContent'
 import {PokerEstimateHeaderCardParabol_stage} from '../__generated__/PokerEstimateHeaderCardParabol_stage.graphql'
 import CardButton from './CardButton'
@@ -92,10 +91,12 @@ interface Props {
   stage: PokerEstimateHeaderCardParabol_stage
 }
 
+type Story = Required<NonNullable<NonNullable<PokerEstimateHeaderCardParabol_stage>['story']>>
+
 const PokerEstimateHeaderCardParabol = (props: Props) => {
   const {stage} = props
   const {story} = stage
-  const {content, id: taskId, teamId} = (story as unknown) as ITask
+  const {content, id: taskId, teamId} = story as Story
   const integration = story!.integration
   const atmosphere = useAtmosphere()
   const [isExpanded, setIsExpanded] = useState(false)
