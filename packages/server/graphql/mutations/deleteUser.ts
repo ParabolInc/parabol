@@ -74,17 +74,17 @@ export default {
         isRemoved: true,
         email: 'DELETED',
         reasonRemoved: validReason
-      }),
-        catchAndLog(() =>
-          updateUser(
-            {
-              isRemoved: true,
-              email: `DELETED:${userId}:${new Date()}`,
-              reasonRemoved: validReason
-            },
-            userIdToDelete
-          )
+      })
+      catchAndLog(() =>
+        updateUser(
+          {
+            isRemoved: true,
+            email: `DELETED:${userId}:${new Date()}`,
+            reasonRemoved: validReason
+          },
+          userIdToDelete
         )
+      )
     }, 30000)
     return {}
   }
