@@ -1,5 +1,5 @@
-import {TimelineEventEnum} from 'parabol-client/types/graphql'
 import generateUID from '../../generateUID'
+import {TimelineEventEnum} from '~/__generated__/TeamSubscription.graphql'
 
 // export type ScheduledJobType = 'MEETING_STAGE_TIME_LIMIT_END'
 

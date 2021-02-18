@@ -1,6 +1,5 @@
 import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import {MeetingTypeEnum, NewMeetingPhaseTypeEnum} from 'parabol-client/types/graphql'
 import isPhaseComplete from 'parabol-client/utils/meetings/isPhaseComplete'
 import getRethink from '../../database/rethinkDriver'
 import EstimatePhase from '../../database/types/EstimatePhase'
@@ -83,17 +82,15 @@ const voteForPokerStory = {
     if (endedAt) {
       return {error: {message: 'Meeting has ended'}}
     }
-    if (meetingType !== MeetingTypeEnum.poker) {
+    if (meetingType !== 'poker') {
       return {error: {message: 'Not a poker meeting'}}
     }
-    if (isPhaseComplete(NewMeetingPhaseTypeEnum.ESTIMATE, phases)) {
+    if (isPhaseComplete('ESTIMATE', phases)) {
       return {error: {message: 'Estimate phase is already complete'}}
     }
 
     // VALIDATION
-    const estimatePhase = phases.find(
-      (phase) => phase.phaseType === NewMeetingPhaseTypeEnum.ESTIMATE
-    )! as EstimatePhase
+    const estimatePhase = phases.find((phase) => phase.phaseType === 'ESTIMATE')! as EstimatePhase
     const {stages} = estimatePhase
     const stage = stages.find((stage) => stage.id === stageId)
     if (!stage) {

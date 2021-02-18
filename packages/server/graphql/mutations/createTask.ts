@@ -3,9 +3,9 @@ import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {
   ICreateTaskOnMutationArguments,
   ITeamMember,
-  NewMeetingPhaseTypeEnum,
-  ThreadSourceEnum
+  NewMeetingPhaseTypeEnum
 } from 'parabol-client/types/graphql'
+import {ThreadSourceEnum} from '~/__generated__/AddCommentMutation.graphql'
 import getTypeFromEntityMap from 'parabol-client/utils/draftjs/getTypeFromEntityMap'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import normalizeRawDraftJS from 'parabol-client/validation/normalizeRawDraftJS'
@@ -30,7 +30,7 @@ const validateTaskAgendaItemId = async (
   teamId: string,
   dataLoader: DataLoaderWorker
 ) => {
-  const agendaItemId = threadSource === ThreadSourceEnum.AGENDA_ITEM ? threadId : undefined
+  const agendaItemId = threadSource === 'AGENDA_ITEM' ? threadId : undefined
   if (agendaItemId) {
     const agendaItem = await dataLoader.get('agendaItems').load(agendaItemId)
     if (!agendaItem || agendaItem.teamId !== teamId) {

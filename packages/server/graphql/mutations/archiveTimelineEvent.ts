@@ -1,6 +1,6 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import {TimelineEventEnum} from 'parabol-client/types/graphql'
+import {TimelineEventEnum} from '~/__generated__/TeamSubscription.graphql'
 import TimelineEventCheckinComplete from 'parabol-server/database/types/TimelineEventCheckinComplete'
 import TimelineEventRetroComplete from 'parabol-server/database/types/TimelineEventRetroComplete'
 import getRethink from '../../database/rethinkDriver'
@@ -40,7 +40,7 @@ const archiveTimelineEvent = {
       return {error: {message: 'Timeline Event not found'}}
     }
 
-    const meetingTypes = [TimelineEventEnum.actionComplete, TimelineEventEnum.retroComplete]
+    const meetingTypes: TimelineEventEnum[] = ['actionComplete', 'retroComplete']
     if (meetingTypes.includes(type)) {
       // it's a meeting timeline event, archive it for everyone
       const {teamId, meetingId} = timelineEvent as

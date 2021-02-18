@@ -1,4 +1,4 @@
-import {ThreadSourceEnum} from 'parabol-client/types/graphql'
+import {ThreadSourceEnum} from '~/__generated__/AddCommentMutation.graphql'
 import dndNoise from 'parabol-client/utils/dndNoise'
 import extractTextFromDraftString from 'parabol-client/utils/draftjs/extractTextFromDraftString'
 import getTagsFromEntityMap from 'parabol-client/utils/draftjs/getTagsFromEntityMap'
