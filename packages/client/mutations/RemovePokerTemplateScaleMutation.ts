@@ -4,9 +4,11 @@ import {Disposable} from 'relay-runtime'
 import Atmosphere from '../Atmosphere'
 import {CompletedHandler, ErrorHandler, SharedUpdater} from '../types/relayMutations'
 import handleRemovePokerTemplateScale from './handlers/handleRemovePokerTemplateScale'
-import {IRemovePokerTemplateScaleOnMutationArguments} from '../types/graphql'
 import {RemovePokerTemplateScaleMutation_scale} from '../__generated__/RemovePokerTemplateScaleMutation_scale.graphql'
-import {RemovePokerTemplateScaleMutation as IRemovePokerTemplateScaleMutation} from '../__generated__/RemovePokerTemplateScaleMutation.graphql'
+import {
+  RemovePokerTemplateScaleMutation as IRemovePokerTemplateScaleMutation,
+  RemovePokerTemplateScaleMutationVariables
+} from '../__generated__/RemovePokerTemplateScaleMutation.graphql'
 import getInProxy from '~/utils/relay/getInProxy'
 
 graphql`
@@ -39,7 +41,7 @@ export const removePokerTemplateScaleTeamUpdater: SharedUpdater<RemovePokerTempl
 
 const RemovePokerTemplateScaleMutation = (
   atmosphere: Atmosphere,
-  variables: IRemovePokerTemplateScaleOnMutationArguments,
+  variables: RemovePokerTemplateScaleMutationVariables,
   _context: {},
   onError: ErrorHandler,
   onCompleted: CompletedHandler

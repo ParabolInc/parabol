@@ -4,9 +4,11 @@ import {Disposable} from 'relay-runtime'
 import Atmosphere from '../Atmosphere'
 import {CompletedHandler, ErrorHandler, SharedUpdater} from '../types/relayMutations'
 import handleRemoveReflectTemplatePrompt from './handlers/handleRemoveReflectTemplatePrompt'
-import {IRemoveReflectTemplatePromptOnMutationArguments} from '../types/graphql'
 import {RemoveReflectTemplatePromptMutation_team} from '../__generated__/RemoveReflectTemplatePromptMutation_team.graphql'
-import {RemoveReflectTemplatePromptMutation as IRemoveReflectTemplatePromptMutation} from '../__generated__/RemoveReflectTemplatePromptMutation.graphql'
+import {
+  RemoveReflectTemplatePromptMutation as IRemoveReflectTemplatePromptMutation,
+  RemoveReflectTemplatePromptMutationVariables
+} from '../__generated__/RemoveReflectTemplatePromptMutation.graphql'
 import getInProxy from '~/utils/relay/getInProxy'
 
 graphql`
@@ -37,7 +39,7 @@ export const removeReflectTemplatePromptTeamUpdater: SharedUpdater<RemoveReflect
 
 const RemoveReflectTemplatePromptMutation = (
   atmosphere: Atmosphere,
-  variables: IRemoveReflectTemplatePromptOnMutationArguments,
+  variables: RemoveReflectTemplatePromptMutationVariables,
   _context: {},
   onError: ErrorHandler,
   onCompleted: CompletedHandler

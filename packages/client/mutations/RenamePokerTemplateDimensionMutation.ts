@@ -3,7 +3,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {Disposable} from 'relay-runtime'
 import Atmosphere from '../Atmosphere'
 import {CompletedHandler, ErrorHandler} from '../types/relayMutations'
-import {IRenamePokerTemplateDimensionOnMutationArguments} from '../types/graphql'
+import {RenamePokerTemplateDimensionMutationVariables} from '~/__generated__/RenamePokerTemplateDimensionMutation.graphql'
 
 graphql`
   fragment RenamePokerTemplateDimensionMutation_dimension on RenamePokerTemplateDimensionPayload {
@@ -26,7 +26,7 @@ const mutation = graphql`
 
 const RenamePokerTemplateDimensionMutation = (
   atmosphere: Atmosphere,
-  variables: IRenamePokerTemplateDimensionOnMutationArguments,
+  variables: RenamePokerTemplateDimensionMutationVariables,
   _context: {},
   onError: ErrorHandler,
   onCompleted: CompletedHandler

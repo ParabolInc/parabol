@@ -1,11 +1,11 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {INewMeeting, ITeamMember} from '../types/graphql'
 import {StandardMutation} from '../types/relayMutations'
 import createProxyRecord from '../utils/relay/createProxyRecord'
 import toTeamMemberId from '../utils/relay/toTeamMemberId'
 import {JoinMeetingMutation as TJoinMeetingMutation} from '../__generated__/JoinMeetingMutation.graphql'
 import {NewMeetingPhaseTypeEnum} from '~/__generated__/ActionMeeting_meeting.graphql'
+import {MeetingTypeEnum} from '~/__generated__/NewMeeting_viewer.graphql'
 
 graphql`
   fragment JoinMeetingMutation_meeting on JoinMeetingSuccess {
@@ -40,10 +40,10 @@ const JoinMeetingMutation: StandardMutation<TJoinMeetingMutation> = (
     optimisticUpdater: (store) => {
       const {meetingId} = variables
       const {viewerId} = atmosphere
-      const meeting = store.get<INewMeeting>(meetingId)
+      const meeting = store.get(meetingId)
       if (!meeting) return
-      const meetingType = meeting.getValue('meetingType')
-      const teamId = meeting.getValue('teamId')
+      const meetingType = meeting.getValue('meetingType') as MeetingTypeEnum
+      const teamId = meeting.getValue('teamId') as string
       const meetingMember = createProxyRecord(store, 'MeetingMember', {
         meetingId,
         meetingType,
@@ -51,7 +51,7 @@ const JoinMeetingMutation: StandardMutation<TJoinMeetingMutation> = (
         userId: viewerId
       })
       const teamMemberId = toTeamMemberId(teamId, viewerId)
-      const teamMember = store.get<ITeamMember>(teamMemberId)
+      const teamMember = store.get(teamMemberId)
       if (!teamMember) return
       const user = store.getRoot().getLinkedRecord('viewer')
       meetingMember.setLinkedRecord(teamMember, 'teamMember')
@@ -62,6 +62,7 @@ const JoinMeetingMutation: StandardMutation<TJoinMeetingMutation> = (
       meeting.setLinkedRecord(meetingMember, 'viewerMeetingMember')
 
       const phases = meeting.getLinkedRecords('phases')
+      if (!phases) return
       const appendStage = (phaseType: NewMeetingPhaseTypeEnum) => {
         const phase = phases.find((phase) => phase.getValue('phaseType') === phaseType)
         if (!phase) return
@@ -81,6 +82,7 @@ const JoinMeetingMutation: StandardMutation<TJoinMeetingMutation> = (
         stage.setLinkedRecord(meetingMember, 'meetingMember')
         stage.setLinkedRecord(teamMember, 'teamMember')
         const stages = phase.getLinkedRecords('stages')
+        if (!stages) return
         const nextStages = [...stages, stage]
         phase.setLinkedRecords(nextStages, 'stages')
       }

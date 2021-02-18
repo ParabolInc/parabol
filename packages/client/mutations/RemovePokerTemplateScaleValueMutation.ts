@@ -3,8 +3,10 @@ import graphql from 'babel-plugin-relay/macro'
 import {Disposable} from 'relay-runtime'
 import Atmosphere from '../Atmosphere'
 import {CompletedHandler, ErrorHandler} from '../types/relayMutations'
-import {IRemovePokerTemplateScaleValueOnMutationArguments} from '../types/graphql'
-import {RemovePokerTemplateScaleValueMutation as IRemovePokerTemplateScaleValueMutation} from '../__generated__/RemovePokerTemplateScaleValueMutation.graphql'
+import {
+  RemovePokerTemplateScaleValueMutation as IRemovePokerTemplateScaleValueMutation,
+  RemovePokerTemplateScaleValueMutationVariables
+} from '../__generated__/RemovePokerTemplateScaleValueMutation.graphql'
 import safeRemoveNodeFromArray from '~/utils/relay/safeRemoveNodeFromArray'
 
 graphql`
@@ -25,7 +27,7 @@ const mutation = graphql`
 
 const RemovePokerTemplateScaleValueMutation = (
   atmosphere: Atmosphere,
-  variables: IRemovePokerTemplateScaleValueOnMutationArguments,
+  variables: RemovePokerTemplateScaleValueMutationVariables,
   _context: {},
   onError: ErrorHandler,
   onCompleted: CompletedHandler

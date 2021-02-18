@@ -3,7 +3,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {Disposable} from 'relay-runtime'
 import Atmosphere from '../Atmosphere'
 import handleMoveTemplatePrompt from './handlers/handleMoveTemplatePrompt'
-import {IMoveReflectTemplatePromptOnMutationArguments} from '../types/graphql'
+import {MoveReflectTemplatePromptMutationVariables} from '~/__generated__/MoveReflectTemplatePromptMutation.graphql'
 import getInProxy from '../utils/relay/getInProxy'
 
 interface Context {
@@ -38,7 +38,7 @@ export const moveReflectTemplatePromptTeamUpdater = (payload, {store}) => {
 
 const MoveReflectTemplatePromptMutation = (
   atmosphere: Atmosphere,
-  variables: IMoveReflectTemplatePromptOnMutationArguments,
+  variables: MoveReflectTemplatePromptMutationVariables,
   context: Context
 ): Disposable => {
   return commitMutation(atmosphere, {

@@ -1,9 +1,11 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
 import Atmosphere from '../Atmosphere'
-import {IRemoveAgendaItemOnMutationArguments} from '../types/graphql'
 import getInProxy from '../utils/relay/getInProxy'
-import {RemoveAgendaItemMutation as TRemoveAgendaItemMutation} from '../__generated__/RemoveAgendaItemMutation.graphql'
+import {
+  RemoveAgendaItemMutation as TRemoveAgendaItemMutation,
+  RemoveAgendaItemMutationVariables
+} from '../__generated__/RemoveAgendaItemMutation.graphql'
 import handleRemoveAgendaItems from './handlers/handleRemoveAgendaItems'
 
 graphql`
@@ -44,7 +46,7 @@ interface Handlers {
 
 const RemoveAgendaItemMutation = (
   atmosphere: Atmosphere,
-  variables: IRemoveAgendaItemOnMutationArguments,
+  variables: RemoveAgendaItemMutationVariables,
   {meetingId}: Handlers
 ) => {
   return commitMutation<TRemoveAgendaItemMutation>(atmosphere, {

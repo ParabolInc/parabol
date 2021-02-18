@@ -3,7 +3,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {Disposable} from 'relay-runtime'
 import Atmosphere from '../Atmosphere'
 import {CompletedHandler, ErrorHandler} from '../types/relayMutations'
-import {IRenameMeetingTemplateOnMutationArguments} from '../types/graphql'
+import {RenameMeetingTemplateMutationVariables} from '~/__generated__/RenameMeetingTemplateMutation.graphql'
 
 graphql`
   fragment RenameMeetingTemplateMutation_meetingTemplate on RenameMeetingTemplatePayload {
@@ -23,7 +23,7 @@ const mutation = graphql`
 
 const RenameMeetingTemplateMutation = (
   atmosphere: Atmosphere,
-  variables: IRenameMeetingTemplateOnMutationArguments,
+  variables: RenameMeetingTemplateMutationVariables,
   _context: {},
   onError: ErrorHandler,
   onCompleted: CompletedHandler

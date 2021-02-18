@@ -3,7 +3,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {Disposable} from 'relay-runtime'
 import Atmosphere from '../Atmosphere'
 import {CompletedHandler, ErrorHandler} from '../types/relayMutations'
-import {IRenameReflectTemplatePromptOnMutationArguments} from '../types/graphql'
+import {RenameReflectTemplatePromptMutationVariables} from '~/__generated__/RenameReflectTemplatePromptMutation.graphql'
 
 graphql`
   fragment RenameReflectTemplatePromptMutation_team on RenameReflectTemplatePromptPayload {
@@ -26,7 +26,7 @@ const mutation = graphql`
 
 const RenameReflectTemplatePromptMutation = (
   atmosphere: Atmosphere,
-  variables: IRenameReflectTemplatePromptOnMutationArguments,
+  variables: RenameReflectTemplatePromptMutationVariables,
   _context: {},
   onError: ErrorHandler,
   onCompleted: CompletedHandler

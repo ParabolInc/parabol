@@ -3,8 +3,8 @@ import graphql from 'babel-plugin-relay/macro'
 import {Disposable} from 'relay-runtime'
 import Atmosphere from '../Atmosphere'
 import handleMovePokerTemplateDimension from './handlers/handleMovePokerTemplateDimension'
-import {IMovePokerTemplateDimensionOnMutationArguments} from '../types/graphql'
 import getInProxy from '../utils/relay/getInProxy'
+import {MovePokerTemplateDimensionMutationVariables} from '~/__generated__/MovePokerTemplateDimensionMutation.graphql'
 
 interface Context {
   templateId: string
@@ -38,7 +38,7 @@ export const movePokerTemplateDimensionTeamUpdater = (payload, {store}) => {
 
 const MovePokerTemplateDimensionMutation = (
   atmosphere: Atmosphere,
-  variables: IMovePokerTemplateDimensionOnMutationArguments,
+  variables: MovePokerTemplateDimensionMutationVariables,
   context: Context
 ): Disposable => {
   return commitMutation(atmosphere, {
