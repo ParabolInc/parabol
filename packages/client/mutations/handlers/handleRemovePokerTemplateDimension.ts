@@ -13,9 +13,9 @@ const handleRemovePokerTemplateDimension = (
     meetingType: MeetingTypeEnum.poker
   })
   if (!settings) return
-  const selectedTemplate = settings.getLinkedRecord('selectedTemplate')
-  if (!selectedTemplate) return
-  safeRemoveNodeFromArray(dimensionId, selectedTemplate, 'dimensions')
+  const activeTemplate = settings.getLinkedRecord('activeTemplate')
+  if (!activeTemplate) return
+  safeRemoveNodeFromArray(dimensionId, activeTemplate, 'dimensions')
 }
 
 const handleRemovePokerTemplateDimensions = pluralizeHandler(handleRemovePokerTemplateDimension)
