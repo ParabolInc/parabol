@@ -1,4 +1,4 @@
-import {TaskStatusEnum} from '../types/graphql'
+import {TaskStatusEnum} from '~/__generated__/UpdateTaskMutation.graphql'
 
 /**
  * Big stuff:

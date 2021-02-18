@@ -2,7 +2,7 @@ import {ContentState, convertFromRaw} from 'draft-js'
 import {stateToMarkdown} from 'draft-js-export-markdown'
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import {ICreateJiraTaskIntegrationOnMutationArguments} from 'parabol-client/types/graphql'
+import {CreateJiraTaskIntegrationMutationVariables} from '~/__generated__/CreateJiraTaskIntegrationMutation.graphql'
 import getRethink from '../../database/rethinkDriver'
 import db from '../../db'
 import AtlassianServerManager from '../../utils/AtlassianServerManager'
@@ -32,7 +32,7 @@ export default {
   },
   resolve: async (
     _source: Record<string, unknown>,
-    {cloudId, projectKey, taskId}: ICreateJiraTaskIntegrationOnMutationArguments,
+    {cloudId, projectKey, taskId}: CreateJiraTaskIntegrationMutationVariables,
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) => {
     const r = await getRethink()
@@ -42,7 +42,10 @@ export default {
     const viewerId = getUserId(authToken)
 
     // AUTH
-    const task = await r.table('Task').get(taskId).run()
+    const task = await r
+      .table('Task')
+      .get(taskId)
+      .run()
     if (!task) {
       return standardError(new Error('Task not found'), {userId: viewerId})
     }

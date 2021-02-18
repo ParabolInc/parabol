@@ -1,6 +1,5 @@
 import {RecordSourceSelectorProxy} from 'relay-runtime'
 import pluralizeHandler from './pluralizeHandler'
-import {IRetrospectiveMeetingSettings} from '~/types/graphql'
 import safeRemoveNodeFromArray from '~/utils/relay/safeRemoveNodeFromArray'
 
 const handleRemoveReflectTemplatePrompt = (
@@ -9,7 +8,7 @@ const handleRemoveReflectTemplatePrompt = (
   store: RecordSourceSelectorProxy
 ) => {
   const team = store.get(teamId)!
-  const settings = team.getLinkedRecord<IRetrospectiveMeetingSettings>('meetingSettings', {
+  const settings = team.getLinkedRecord('meetingSettings', {
     meetingType: 'retrospective'
   })
   if (!settings) return

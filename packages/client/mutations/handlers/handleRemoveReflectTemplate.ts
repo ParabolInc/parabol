@@ -1,5 +1,4 @@
 import {RecordSourceSelectorProxy} from 'relay-runtime'
-import {IRetrospectiveMeetingSettings} from '../../types/graphql'
 import safeRemoveNodeFromArray from '../../utils/relay/safeRemoveNodeFromArray'
 import safeRemoveNodeFromConn from '../../utils/relay/safeRemoveNodeFromConn'
 import getReflectTemplateOrgConn from '../connections/getReflectTemplateOrgConn'
@@ -12,7 +11,7 @@ const handleRemoveReflectTemplate = (
   store: RecordSourceSelectorProxy<any>
 ) => {
   const team = store.get(teamId)!
-  const settings = team.getLinkedRecord<IRetrospectiveMeetingSettings>('meetingSettings', {
+  const settings = team.getLinkedRecord('meetingSettings', {
     meetingType: 'retrospective'
   })
   safeRemoveNodeFromArray(templateId, settings, 'teamTemplates')

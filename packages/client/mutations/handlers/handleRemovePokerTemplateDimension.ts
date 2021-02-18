@@ -1,6 +1,5 @@
 import {RecordSourceSelectorProxy} from 'relay-runtime'
 import pluralizeHandler from './pluralizeHandler'
-import {IPokerMeetingSettings} from '~/types/graphql'
 import safeRemoveNodeFromArray from '~/utils/relay/safeRemoveNodeFromArray'
 
 const handleRemovePokerTemplateDimension = (
@@ -9,7 +8,7 @@ const handleRemovePokerTemplateDimension = (
   store: RecordSourceSelectorProxy
 ) => {
   const team = store.get(teamId)!
-  const settings = team.getLinkedRecord<IPokerMeetingSettings>('meetingSettings', {
+  const settings = team.getLinkedRecord('meetingSettings', {
     meetingType: 'poker'
   })
   if (!settings) return
