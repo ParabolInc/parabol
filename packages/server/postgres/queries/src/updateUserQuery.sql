@@ -28,7 +28,7 @@
     overLimitCopy,
     overLimitCopyValue
   )
-  @param idValue -> (...)
+  @param ids -> (...)
 */
 UPDATE "User" SET
   email = CASE WHEN :email THEN :emailValue ELSE email END,
@@ -44,4 +44,4 @@ UPDATE "User" SET
   "newFeatureId" = CASE WHEN :newFeatureId THEN :newFeatureIdValue ELSE "newFeatureId" END,
   "identities" = CASE WHEN :identities THEN :identitiesValue ELSE "identities" END,
   "overLimitCopy" = CASE WHEN :overLimitCopy THEN :overLimitCopyValue ELSE "overLimitCopy" END
-WHERE (:id = false OR id IN :idValue);
+WHERE id IN :ids;

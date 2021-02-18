@@ -15,31 +15,24 @@ const passableFields = new Set([
   'reasonRemoved',
   'newFeatureId',
   'identities',
-  'overLimitCopy',
-  'id'
+  'overLimitCopy'
 ])
 
-const mapUpdates = (
-  updates: Partial<User>
-): IUpdateUserQueryParams => {
+const mapUpdates = (updates: Partial<User>): IUpdateUserQueryParams => {
   const mapped = {}
   for (const f of passableFields.values()) {
-    [mapped[f], mapped[`${f}Value`]] = (
-      (updates.hasOwnProperty(f))
-    ) ? [true, updates[f]] : [false, null]
+    ;[mapped[f], mapped[`${f}Value`]] = updates.hasOwnProperty(f)
+      ? [true, updates[f]]
+      : [false, null]
   }
   return mapped as IUpdateUserQueryParams
 }
 
-const updateUser = (
-  updates: Partial<User>,
-  userIds?: string[] | string,
-): Promise<void[]> => {
-  const pg = getPg()
-  userIds = (typeof userIds === 'string') ? [userIds] : userIds
-  if (userIds) { Object.assign(updates, {id: userIds}) }
+const updateUser = (updates: Partial<User>, userIds: string[] | string): Promise<void[]> => {
   const mappedUpdates = mapUpdates(updates)
-  return updateUserQuery.run(mappedUpdates, pg)
+  userIds = typeof userIds === 'string' ? [userIds] : userIds
+  Object.assign(mappedUpdates, {ids: userIds})
+  return updateUserQuery.run(mappedUpdates, getPg())
 }
 
 export default updateUser
