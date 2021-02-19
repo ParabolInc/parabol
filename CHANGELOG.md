@@ -5,6 +5,15 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.0.0 2021-Feb-18
+
+### Fixes
+- User cannot delete prompts from retro templates
+- Non-meeting members do not get meeting summary emails (#4681)
+
+### Changed
+- Threaded comments are fully expanded (#4647)
+
 ## 5.36.0 2021-Feb-16
 
 ### Added
