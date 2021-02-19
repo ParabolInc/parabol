@@ -89,9 +89,10 @@ export default {
       })
     }
     const {templateId} = completedMeeting
-    const [meetingMembers, team, removedTaskIds, template] = await Promise.all([
+    const [meetingMembers, team, teamMembers, removedTaskIds, template] = await Promise.all([
       dataLoader.get('meetingMembersByMeetingId').load(meetingId),
       dataLoader.get('teams').load(teamId),
+      dataLoader.get('teamMembersByTeamId').load(teamId),
       removeEmptyTasks(meetingId),
       dataLoader.get('meetingTemplates').load(templateId)
     ])
@@ -101,16 +102,19 @@ export default {
     if (!isKill) {
       sendNewMeetingSummary(completedMeeting, context).catch(console.log)
     }
-    const events = meetingMembers.map(
-      (meetingMember) =>
+    const events = teamMembers.map(
+      (teamMember) =>
         new TimelineEventPokerComplete({
-          userId: meetingMember.userId,
+          userId: teamMember.userId,
           teamId,
           orgId: team.orgId,
           meetingId
         })
     )
-    await r.table('TimelineEvent').insert(events).run()
+    await r
+      .table('TimelineEvent')
+      .insert(events)
+      .run()
 
     const data = {
       meetingId,
