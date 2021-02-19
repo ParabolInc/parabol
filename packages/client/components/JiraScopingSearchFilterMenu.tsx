@@ -17,6 +17,7 @@ import MenuItem from './MenuItem'
 import MenuItemComponentAvatar from './MenuItemComponentAvatar'
 import MenuItemHR from './MenuItemHR'
 import MenuItemLabel from './MenuItemLabel'
+import MockJiraFieldList from './MockJiraFieldList'
 import TaskFooterIntegrateMenuSearch from './TaskFooterIntegrateMenuSearch'
 import TypeAheadLabel from './TypeAheadLabel'
 
@@ -145,6 +146,7 @@ const JiraScopingSearchFilterMenu = (props: Props) => {
         onClick={toggleJQL}
       />
       <MenuItemHR />
+      {isLoading && <MockJiraFieldList />}
       {selectedAndFilteredProjects.length > 0 && <FilterLabel>Filter by project:</FilterLabel>}
       {showSearch && (
         <SearchItem key='search'>
@@ -163,8 +165,7 @@ const JiraScopingSearchFilterMenu = (props: Props) => {
       )) ||
         null}
       {selectedAndFilteredProjects.map((project) => {
-        const {id: globalProjectKey, avatarUrls, name} = project
-        const {x24} = avatarUrls
+        const {id: globalProjectKey, avatar, name} = project
         const toggleProjectKeyFilter = () => {
           commitLocalUpdate(atmosphere, (store) => {
             const searchQueryId = `jiraSearchQuery:${meetingId}`
@@ -188,7 +189,7 @@ const JiraScopingSearchFilterMenu = (props: Props) => {
                   active={projectKeyFilters.includes(globalProjectKey)}
                   disabled={isJQL}
                 />
-                <ProjectAvatar src={x24} />
+                <ProjectAvatar src={avatar} />
                 <TypeAheadLabel query={query} label={name} />
               </StyledMenuItemLabel>
             }
@@ -219,9 +220,7 @@ export default createFragmentContainer(JiraScopingSearchFilterMenu, {
             projects {
               id
               name
-              avatarUrls {
-                x24
-              }
+              avatar
             }
           }
         }

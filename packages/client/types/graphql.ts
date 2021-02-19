@@ -3369,6 +3369,7 @@ export interface IJiraRemoteProject {
   cloudId: string;
   key: string;
   name: string;
+  avatar: string;
   avatarUrls: IJiraRemoteAvatarUrls;
   projectCategory: IJiraRemoteProjectCategory;
   simplified: boolean;
@@ -3376,7 +3377,7 @@ export interface IJiraRemoteProject {
 }
 
 /**
- * A project fetched from Jira in real time
+ * The URLs for avatars. NOTE: If they are custom, an Authorization header is required!
  */
 export interface IJiraRemoteAvatarUrls {
   __typename: 'JiraRemoteAvatarUrls';

@@ -224,9 +224,10 @@ export default {
     }
 
     // remove any empty tasks
-    const [meetingMembers, team, removedTaskIds, result] = await Promise.all([
+    const [meetingMembers, team, teamMembers, removedTaskIds, result] = await Promise.all([
       dataLoader.get('meetingMembersByMeetingId').load(meetingId),
       dataLoader.get('teams').load(teamId),
+      dataLoader.get('teamMembersByTeamId').load(teamId),
       removeEmptyTasks(meetingId),
       finishCheckInMeeting(completedCheckIn, dataLoader)
     ])
@@ -234,10 +235,10 @@ export default {
     const updatedTaskIds = (result && result.updatedTaskIds) || []
     sendMeetingEndToSegment(completedCheckIn, meetingMembers as MeetingMember[])
     sendNewMeetingSummary(completedCheckIn, context).catch(console.log)
-    const events = meetingMembers.map(
-      (meetingMember) =>
+    const events = teamMembers.map(
+      (teamMember) =>
         new TimelineEventCheckinComplete({
-          userId: meetingMember.userId,
+          userId: teamMember.userId,
           teamId,
           orgId: team.orgId,
           meetingId

@@ -1,25 +1,25 @@
-import graphql from 'babel-plugin-relay/macro'
 import styled from '@emotion/styled'
+import graphql from 'babel-plugin-relay/macro'
+import {convertToRaw} from 'draft-js'
 import React, {useRef} from 'react'
 import {createFragmentContainer} from 'react-relay'
-import {ParabolScopingSearchResultItem_task} from '../__generated__/ParabolScopingSearchResultItem_task.graphql'
-import Checkbox from './Checkbox'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import UpdatePokerScopeMutation from '~/mutations/UpdatePokerScopeMutation'
 import {AreaEnum} from '../__generated__/UpdateTaskMutation.graphql'
+import useEditorState from '~/hooks/useEditorState'
 import useMutationProps from '~/hooks/useMutationProps'
-import {convertToRaw} from 'draft-js'
-import {PALETTE} from '~/styles/paletteV2'
-import TaskEditor from './TaskEditor/TaskEditor'
+import useScrollIntoView from '~/hooks/useScrollIntoVIew'
 import useTaskChildFocus from '~/hooks/useTaskChildFocus'
-import isAndroid from '~/utils/draftjs/isAndroid'
-import convertToTaskContent from '~/utils/draftjs/convertToTaskContent'
 import DeleteTaskMutation from '~/mutations/DeleteTaskMutation'
 import UpdateTaskMutation from '~/mutations/UpdateTaskMutation'
-import useScrollIntoView from '~/hooks/useScrollIntoVIew'
-import useEditorState from '~/hooks/useEditorState'
+import {PALETTE} from '~/styles/paletteV2'
+import convertToTaskContent from '~/utils/draftjs/convertToTaskContent'
+import isAndroid from '~/utils/draftjs/isAndroid'
 import {Threshold} from '../types/constEnums'
 import {UpdatePokerScopeMutationVariables} from '../__generated__/UpdatePokerScopeMutation.graphql'
+import {ParabolScopingSearchResultItem_task} from '../__generated__/ParabolScopingSearchResultItem_task.graphql'
+import Checkbox from './Checkbox'
+import TaskEditor from './TaskEditor/TaskEditor'
 
 const Item = styled('div')<{isEditingThisItem: boolean}>(({isEditingThisItem}) => ({
   backgroundColor: isEditingThisItem ? PALETTE.BACKGROUND_BLUE_MAGENTA : 'transparent',
@@ -162,6 +162,8 @@ export default createFragmentContainer(ParabolScopingSearchResultItem, {
       id
       content
       plaintextContent
+      # grab title so the optimistic updater can use it to update sidebar
+      title
       updatedAt
     }
   `

@@ -5,6 +5,39 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.0.0 2021-Feb-18
+
+### Fixes
+- User cannot delete prompts from retro templates
+- Non-meeting members do not get meeting summary emails (#4681)
+
+### Changed
+- Threaded comments are fully expanded (#4647)
+
+## 5.36.0 2021-Feb-16
+
+### Added
+
+- Release Sprint Poker (#4667)
+
+## 5.35.0 2021-Feb-10
+
+### Added
+
+- postgres-json-schema PG extension to dev docker-compose (#4660)
+
+### Fixed
+
+- Hyperlinks in discussion thread comments (#4655)
+- Poker Jira Filter includes all projects and avatars (#4663)
+- Template dialog select button (#4653)
+- Retro collapsing stack animation (#4643)
+
+### Changed
+
+- Logos & Static assets (#4645)
+- Meeting members are only added when they enter the meeting (#4611)
+
 ## 5.34.0 2021-Feb-04
 
 ### Added
