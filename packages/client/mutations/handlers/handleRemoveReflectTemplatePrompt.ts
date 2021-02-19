@@ -13,9 +13,9 @@ const handleRemoveReflectTemplatePrompt = (
     meetingType: MeetingTypeEnum.retrospective
   })
   if (!settings) return
-  const selectedTemplate = settings.getLinkedRecord('selectedTemplate')
-  if (!selectedTemplate) return
-  safeRemoveNodeFromArray(promptId, selectedTemplate, 'prompts')
+  const activeTemplate = settings.getLinkedRecord('activeTemplate')
+  if (!activeTemplate) return
+  safeRemoveNodeFromArray(promptId, activeTemplate, 'prompts')
 }
 
 const handleRemoveReflectTemplatePrompts = pluralizeHandler(handleRemoveReflectTemplatePrompt)
