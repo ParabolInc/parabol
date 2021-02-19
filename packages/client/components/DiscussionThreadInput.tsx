@@ -22,7 +22,7 @@ import CommentEditor from './TaskEditor/CommentEditor'
 import {ReplyMention, SetReplyMention} from './ThreadedItem'
 
 const Wrapper = styled('div')<{isReply: boolean; isDisabled: boolean}>(({isDisabled, isReply}) => ({
-  alignItems: 'center',
+  alignItems: 'flex-end',
   borderRadius: isReply ? '4px 0 0 4px' : undefined,
   display: 'flex',
   boxShadow: isReply ? Elevation.Z2 : Elevation.DISCUSSION_INPUT,
@@ -37,6 +37,11 @@ const Wrapper = styled('div')<{isReply: boolean; isDisabled: boolean}>(({isDisab
 const CommentAvatar = styled(Avatar)({
   margin: 8,
   transition: 'all 150ms'
+})
+
+const EditorWrap = styled('div')({
+  flex: 1,
+  margin: '14px 0'
 })
 
 interface Props {
@@ -192,17 +197,19 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
   return (
     <Wrapper data-cy={`${dataCy}-wrapper`} ref={ref} isReply={isReply} isDisabled={isDisabled}>
       <CommentAvatar size={32} picture={avatar} onClick={toggleAnonymous} />
-      <CommentEditor
-        dataCy={`${dataCy}`}
-        editorRef={editorRef}
-        editorState={editorState}
-        ensureCommenting={ensureCommenting}
-        onBlur={ensureNotCommenting}
-        onSubmit={onSubmit}
-        placeholder={placeholder}
-        setEditorState={setEditorState}
-        teamId={teamId}
-      />
+      <EditorWrap>
+        <CommentEditor
+          dataCy={`${dataCy}`}
+          editorRef={editorRef}
+          editorState={editorState}
+          ensureCommenting={ensureCommenting}
+          onBlur={ensureNotCommenting}
+          onSubmit={onSubmit}
+          placeholder={placeholder}
+          setEditorState={setEditorState}
+          teamId={teamId}
+        />
+      </EditorWrap>
       {meetingType !== MeetingTypeEnum.poker && (
         <CommentSendOrAdd
           dataCy={`${dataCy}`}

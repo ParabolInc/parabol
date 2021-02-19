@@ -23,8 +23,6 @@ import useCommentPlugins from './useCommentPlugins'
 const RootEditor = styled('div')({
   fontSize: Card.FONT_SIZE,
   lineHeight: Card.LINE_HEIGHT,
-  maxHeight: 84,
-  overflowY: 'auto',
   width: '100%'
 })
 
@@ -209,23 +207,23 @@ const CommentEditor = (props: Props) => {
           />
         </Suspense>
       ) : (
-        <Editor
-          spellCheck
-          blockStyleFn={blockStyleFn}
-          editorState={editorState}
-          handleBeforeInput={onBeforeInput}
-          handleKeyCommand={nextKeyCommand}
-          handlePastedText={onPastedText}
-          handleReturn={onReturn}
-          keyBindingFn={onKeyBindingFn}
-          onBlur={handleBlur}
-          onFocus={onFocus}
-          onChange={onChange}
-          placeholder={placeholder}
-          readOnly={readOnly || (useFallback && !showFallback)}
-          ref={editorRef as any}
-        />
-      )}
+          <Editor
+            spellCheck
+            blockStyleFn={blockStyleFn}
+            editorState={editorState}
+            handleBeforeInput={onBeforeInput}
+            handleKeyCommand={nextKeyCommand}
+            handlePastedText={onPastedText}
+            handleReturn={onReturn}
+            keyBindingFn={onKeyBindingFn}
+            onBlur={handleBlur}
+            onFocus={onFocus}
+            onChange={onChange}
+            placeholder={placeholder}
+            readOnly={readOnly || (useFallback && !showFallback)}
+            ref={editorRef as any}
+          />
+        )}
       {renderModal && renderModal()}
     </RootEditor>
   )
