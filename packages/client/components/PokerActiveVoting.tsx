@@ -157,7 +157,6 @@ export default createFragmentContainer(PokerActiveVoting, {
   stage: graphql`
     fragment PokerActiveVoting_stage on EstimateStage {
       id
-      dimensionId
       scores {
         ...PokerVotingAvatarGroup_scores
         userId

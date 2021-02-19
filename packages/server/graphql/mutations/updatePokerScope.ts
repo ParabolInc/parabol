@@ -6,10 +6,10 @@ import getRethink from '../../database/rethinkDriver'
 import EstimatePhase from '../../database/types/EstimatePhase'
 import EstimateStage from '../../database/types/EstimateStage'
 import MeetingPoker from '../../database/types/MeetingPoker'
+import getTemplateRefById from '../../postgres/queries/getTemplateRefById'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import ensureJiraDimensionField from '../../utils/ensureJiraDimensionField'
 import getRedis from '../../utils/getRedis'
-import isRecordActiveForMeeting from '../../utils/isRecordActiveForMeeting'
 import publish from '../../utils/publish'
 import {GQLContext} from '../graphql'
 import UpdatePokerScopeItemInput from '../types/UpdatePokerScopeItemInput'
@@ -45,7 +45,7 @@ const updatePokerScope = {
       return {error: {message: `Meeting not found`}}
     }
 
-    const {endedAt, teamId, phases, meetingType, templateId} = meeting
+    const {endedAt, teamId, phases, meetingType, templateRefId} = meeting
     if (endedAt) {
       return {error: {message: `Meeting already ended`}}
     }
@@ -62,16 +62,14 @@ const updatePokerScope = {
       cloudId: string
       projectKey: string
       issueKey: string
-      dimensionId: string
+      dimensionName: string
     }[]
     const estimatePhase = phases.find((phase) => phase.phaseType === 'ESTIMATE') as EstimatePhase
     let stages = estimatePhase.stages
-    const allDimensions = await dataLoader.get('templateDimensionsByTemplateId').load(templateId)
+    // const allDimensions = await dataLoader.get('templateDimensionsByTemplateId').load(templateId)
+    const templateRef = await getTemplateRefById(templateRefId)
 
-    const dimensions = allDimensions.filter((dimension) =>
-      isRecordActiveForMeeting(dimension, meeting.createdAt)
-    )
-
+    const {dimensions} = templateRef
     updates.forEach((update) => {
       const {service, serviceTaskId, action} = update
 
@@ -82,31 +80,36 @@ const updatePokerScope = {
         const lastSortOrder = stages[stages.length - 1]?.sortOrder ?? -1
 
         const newStages = dimensions.map(
-          (dimension) =>
+          (_, idx) =>
             new EstimateStage({
               creatorUserId: viewerId,
               service,
               serviceTaskId,
               sortOrder: lastSortOrder + 1,
               durations: undefined,
-              dimensionId: dimension.id
+              dimensionRefIdx: idx
             })
         )
         // MUTATIVE
         stages.push(...newStages)
         const [cloudId, issueKey, projectKey] = getJiraCloudIdAndKey(serviceTaskId)
-        const firstDimensionId = dimensions[0].id
+        const firstDimensionName = dimensions[0].name
         if (service === TaskServiceEnum.jira) {
           const existingMapper = requiredJiraMappers.find((mapper) => {
             // only attempt the first dimension. the other dimensions will default to comment
             return (
               mapper.cloudId === cloudId &&
               mapper.projectKey === projectKey &&
-              mapper.dimensionId === firstDimensionId
+              mapper.dimensionName === firstDimensionName
             )
           })
           if (!existingMapper) {
-            requiredJiraMappers.push({cloudId, issueKey, projectKey, dimensionId: firstDimensionId})
+            requiredJiraMappers.push({
+              cloudId,
+              issueKey,
+              projectKey,
+              dimensionName: firstDimensionName
+            })
           }
         }
       } else if (action === 'DELETE') {

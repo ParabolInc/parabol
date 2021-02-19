@@ -48,11 +48,11 @@ const PokerCardDeck = (props: Props) => {
   const {meeting, estimateAreaRef} = props
   const {id: meetingId, isRightDrawerOpen, localStage, showSidebar} = meeting
   const stageId = localStage.id!
-  const {dimension} = localStage
+  const {dimensionRef} = localStage
   const scores = localStage.scores!
   const isVoting = localStage.isVoting!
-  const {selectedScale} = dimension!
-  const {values: cards} = selectedScale
+  const {scale} = dimensionRef!
+  const {values: cards} = scale
   const totalCards = cards.length
   const [isCollapsed, setIsCollapsed] = useState(!isVoting)
   const [estimateAreaWidth, showTransition] = usePokerDeckLeftEdge(estimateAreaRef, isVoting)
@@ -237,8 +237,8 @@ graphql`
   fragment PokerCardDeckStage on EstimateStage {
     id
     isVoting
-    dimension {
-      selectedScale {
+    dimensionRef {
+      scale {
         values {
           ...PokerCard_scaleValue
           label
