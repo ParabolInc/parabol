@@ -49,6 +49,7 @@ export const AGENDA_ITEM = 'agendaItem'
 /* Sorting */
 export const SORT_STEP = 1
 export const DND_THROTTLE = 25
+export const AUTO_GROUPING_THRESHOLD = 0.25
 
 /* Areas */
 export const MEETING = 'meeting'

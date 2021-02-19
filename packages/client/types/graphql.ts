@@ -9823,6 +9823,11 @@ export interface IReflectPhaseCompletePayload {
    * a list of empty reflection groups to remove
    */
   emptyReflectionGroupIds: Array<string>;
+
+  /**
+   * The grouped reflections
+   */
+  reflectionGroups: Array<IRetroReflectionGroup>;
 }
 
 export interface IGroupPhaseCompletePayload {

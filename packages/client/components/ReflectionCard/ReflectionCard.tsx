@@ -228,6 +228,11 @@ export default createFragmentContainer(ReflectionCard, {
         id
         isViewerReactji
       }
+      entities {
+        lemma
+        name
+        salience
+      }
       sortOrder
     }
   `,
