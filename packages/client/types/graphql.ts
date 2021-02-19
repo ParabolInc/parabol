@@ -8136,7 +8136,7 @@ export interface ISetOrgUserRoleOnMutationArguments {
   /**
    * the user’s new role
    */
-  role?: string | null;
+  role?: OrgUserRole | null;
 }
 
 export interface ISetPhaseFocusOnMutationArguments {

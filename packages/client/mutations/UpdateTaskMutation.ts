@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {ITask} from '../types/graphql'
+import ITask from '../../server/database/types/Task'
 import {
   OnNextHandler,
   OnNextHistoryContext,

@@ -1,4 +1,4 @@
-import {TaskStatusEnum} from 'parabol-client/types/graphql'
+import {TaskStatusEnum} from '~/__generated__/UpdateTaskMutation.graphql'
 import convertToTaskContent from 'parabol-client/utils/draftjs/convertToTaskContent'
 import getTagsFromEntityMap from 'parabol-client/utils/draftjs/getTagsFromEntityMap'
 import getRethink from '../../../database/rethinkDriver'
@@ -9,7 +9,7 @@ const CONTENT_STRING = `
 
 const SEED_TASKS = [
   {
-    status: TaskStatusEnum.active,
+    status: 'active' as TaskStatusEnum,
     sortOrder: 0,
     content: convertToTaskContent(CONTENT_STRING),
     plaintextContent: CONTENT_STRING

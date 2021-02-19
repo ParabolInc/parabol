@@ -3,7 +3,6 @@ import TaskDB from '../../database/types/Task'
 import {Threadable} from '../../database/types/Threadable'
 
 const resovleThread = async ({id: threadSourceId}, _args, {dataLoader}) => {
-  console.log('resolve thread!')
   const [comments, tasks] = await Promise.all([
     dataLoader.get('commentsByThreadId').load(threadSourceId),
     dataLoader.get('tasksByThreadId').load(threadSourceId)

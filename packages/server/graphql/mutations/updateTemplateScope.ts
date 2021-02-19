@@ -1,6 +1,6 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import {MeetingTypeEnum, SharingScopeEnum as ESharingScope} from 'parabol-client/types/graphql'
+import {SharingScopeEnum as ESharingScope} from '~/__generated__/OrganizationSubscription.graphql'
 import PokerTemplate from '../../database/types/PokerTemplate'
 import TemplateDimension from '../../database/types/TemplateDimension'
 import toTeamMemberId from '../../../client/utils/relay/toTeamMemberId'
@@ -59,7 +59,7 @@ const updateTemplateScope = {
 
     // RESOLUTION
     template.scope = newScope // mutate the cached record
-    const SCOPES = [ESharingScope.TEAM, ESharingScope.ORGANIZATION, ESharingScope.PUBLIC]
+    const SCOPES: ESharingScope[] = ['TEAM', 'ORGANIZATION', 'PUBLIC']
     const isDownscope = SCOPES.indexOf(newScope) < SCOPES.indexOf(scope)
     const shouldClone = isDownscope
       ? await r
@@ -97,7 +97,10 @@ const updateTemplateScope = {
       await r({
         clonedTemplate: r.table('MeetingTemplate').insert(clonedTemplate),
         clonedPrompts: r.table('ReflectPrompt').insert(clonedPrompts),
-        inactivatedTemplate: r.table('MeetingTemplate').get(templateId).update({isActive: false}),
+        inactivatedTemplate: r
+          .table('MeetingTemplate')
+          .get(templateId)
+          .update({isActive: false}),
         inactivatedPrompts: r
           .table('ReflectPrompt')
           .getAll(r.args(promptIds))
@@ -127,7 +130,10 @@ const updateTemplateScope = {
       await r({
         clonedTemplate: r.table('MeetingTemplate').insert(clonedTemplate),
         clonedDimensions: r.table('TemplateDimension').insert(clonedDimensions),
-        inactivatedTemplate: r.table('MeetingTemplate').get(templateId).update({isActive: false}),
+        inactivatedTemplate: r
+          .table('MeetingTemplate')
+          .get(templateId)
+          .update({isActive: false}),
         inactivatedDimensions: r
           .table('TemplateDimension')
           .getAll(r.args(dimensionIds))
@@ -136,9 +142,9 @@ const updateTemplateScope = {
     }
 
     if (shouldClone) {
-      if (template.type === MeetingTypeEnum.retrospective) {
+      if (template.type === 'retrospective') {
         cloneReflectTemplate()
-      } else if (template.type === MeetingTypeEnum.poker) {
+      } else if (template.type === 'poker') {
         clonePokerTemplate()
       }
     } else {

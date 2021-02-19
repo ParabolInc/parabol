@@ -1,7 +1,8 @@
 import {RecordSourceSelectorProxy} from 'relay-runtime'
 import getThreadSourceThreadConn from '~/mutations/connections/getThreadSourceThreadConn'
 import {handleRemoveReply} from '~/mutations/DeleteCommentMutation'
-import {ITask, IUser} from '../../types/graphql'
+import ITask from '../../../server/database/types/Task'
+import IUser from '../../../server/database/types/User'
 import safeRemoveNodeFromArray from '../../utils/relay/safeRemoveNodeFromArray'
 import safeRemoveNodeFromConn from '../../utils/relay/safeRemoveNodeFromConn'
 import getArchivedTasksConn from '../connections/getArchivedTasksConn'
@@ -27,8 +28,10 @@ const handleRemoveTask = (taskId: string, store: RecordSourceSelectorProxy<any>)
   const meeting = store.get(meetingId!)
   const team = store.get(teamId)
   const {userIds, teamIds} = parseUserTaskFilterQueryParams(viewer.getDataID(), window.location)
-  const archiveConns = [ /* archived task conn in user dash*/ getArchivedTasksConn(viewer, userIds, teamIds),
-                         /* archived task conn in team dash*/ getArchivedTasksConn(viewer, null, [teamId])]
+  const archiveConns = [
+    /* archived task conn in user dash*/ getArchivedTasksConn(viewer, userIds, teamIds),
+    /* archived task conn in team dash*/ getArchivedTasksConn(viewer, null, [teamId])
+  ]
   const teamConn = getTeamTasksConn(team)
   const userConn = getUserTasksConn(viewer, userIds, teamIds)
   const threadSourceConn = getThreadSourceThreadConn(threadSourceProxy)

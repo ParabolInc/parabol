@@ -1,17 +1,15 @@
 import {GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import {
-  ICreateTaskOnMutationArguments,
-  ITeamMember,
-  NewMeetingPhaseTypeEnum
-} from 'parabol-client/types/graphql'
 import {ThreadSourceEnum} from '~/__generated__/AddCommentMutation.graphql'
+import {NewMeetingPhaseTypeEnum} from '~/__generated__/ActionMeeting_meeting.graphql'
+import {CreateTaskMutationVariables} from '~/__generated__/CreateTaskMutation.graphql'
 import getTypeFromEntityMap from 'parabol-client/utils/draftjs/getTypeFromEntityMap'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import normalizeRawDraftJS from 'parabol-client/validation/normalizeRawDraftJS'
 import getRethink from '../../database/rethinkDriver'
 import NotificationTaskInvolves from '../../database/types/NotificationTaskInvolves'
 import Task from '../../database/types/Task'
+import TeamMember from '../../database/types/TeamMember'
 import generateUID from '../../generateUID'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish, {SubOptions} from '../../utils/publish'
@@ -78,9 +76,8 @@ const sendToSentryTaskCreated = async (
     if (!meeting) return
     const {phases} = meeting
     const discussPhase = phases.find(
-      ({phaseType}) =>
-        phaseType === NewMeetingPhaseTypeEnum.discuss ||
-        phaseType === NewMeetingPhaseTypeEnum.agendaitems
+      ({phaseType}: {phaseType: NewMeetingPhaseTypeEnum}) =>
+        phaseType === 'discuss' || phaseType === 'agendaitems'
     )
     if (discussPhase) {
       const {stages} = discussPhase
@@ -184,7 +181,7 @@ export default {
   },
   async resolve(
     _source,
-    {newTask}: ICreateTaskOnMutationArguments,
+    {newTask}: CreateTaskMutationVariables,
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) {
     const r = await getRethink()
@@ -252,7 +249,7 @@ export default {
         .filter({
           isNotRemoved: true
         })
-        .coerceTo('array') as unknown) as ITeamMember[]
+        .coerceTo('array') as unknown) as TeamMember[]
     }).run()
 
     handleAddTaskNotifications(teamMembers, task, viewerId, teamId, {
