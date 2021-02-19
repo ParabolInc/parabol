@@ -8,7 +8,7 @@
  * will be created.
  */
 import getRethink from '../database/rethinkDriver'
-import {TierEnum} from 'parabol-client/types/graphql'
+import {TierEnum} from '~/__generated__/Invoice_viewer.graphql'
 
 const setTierForOrgUsers = async (orgId: string) => {
   const r = await getRethink()

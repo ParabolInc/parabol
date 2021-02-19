@@ -1,5 +1,5 @@
 import {GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql'
-import {NewMeetingPhaseTypeEnum} from '../../../client/types/graphql'
+import {NewMeetingPhaseTypeEnum} from '~/__generated__/ActionMeeting_meeting.graphql'
 import {GQLContext} from '../graphql'
 import AgendaItem from './AgendaItem'
 import NewMeetingStage, {newMeetingStageFields} from './NewMeetingStage'
@@ -8,7 +8,7 @@ const AgendaItemsStage = new GraphQLObjectType<any, GQLContext>({
   name: 'AgendaItemsStage',
   description: 'The stage where the team discusses a single agenda item',
   interfaces: () => [NewMeetingStage],
-  isTypeOf: ({phaseType}) => phaseType === NewMeetingPhaseTypeEnum.agendaitems,
+  isTypeOf: ({phaseType}) => (phaseType as NewMeetingPhaseTypeEnum) === 'agendaitems',
   fields: () => ({
     ...newMeetingStageFields(),
     agendaItemId: {

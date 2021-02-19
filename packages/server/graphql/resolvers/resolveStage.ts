@@ -1,4 +1,4 @@
-import {NewMeetingPhaseTypeEnum} from 'parabol-client/types/graphql'
+import {NewMeetingPhaseTypeEnum} from '~/__generated__/ActionMeeting_meeting.graphql'
 
 const resolveStage = (phaseType: NewMeetingPhaseTypeEnum) => async (
   {meetingId, stageId},

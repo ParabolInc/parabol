@@ -1,6 +1,6 @@
 import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import {IJiraCreateIssueOnMutationArguments} from 'parabol-client/types/graphql'
+import {JiraCreateIssueMutationVariables} from '~/__generated__/JiraCreateIssueMutation.graphql'
 import getRethink from '../../database/rethinkDriver'
 import MeetingMember from '../../database/types/MeetingMember'
 import AtlassianServerManager from '../../utils/AtlassianServerManager'
@@ -39,7 +39,7 @@ export default {
   },
   resolve: async (
     _source: Record<string, unknown>,
-    {cloudId, meetingId, projectKey, summary, teamId}: IJiraCreateIssueOnMutationArguments,
+    {cloudId, meetingId, projectKey, summary, teamId}: JiraCreateIssueMutationVariables,
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) => {
     const r = await getRethink()

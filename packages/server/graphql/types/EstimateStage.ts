@@ -8,7 +8,7 @@ import {
   GraphQLString
 } from 'graphql'
 import {SprintPokerDefaults} from '~/types/constEnums'
-import {NewMeetingPhaseTypeEnum} from '../../../client/types/graphql'
+import {NewMeetingPhaseTypeEnum} from '~/__generated__/ActionMeeting_meeting.graphql'
 import getJiraCloudIdAndKey from '../../../client/utils/getJiraCloudIdAndKey'
 import db from '../../db'
 import getRedis from '../../utils/getRedis'
@@ -25,7 +25,7 @@ const EstimateStage = new GraphQLObjectType<any, GQLContext>({
   name: 'EstimateStage',
   description: 'The stage where the team estimates & discusses a single task',
   interfaces: () => [NewMeetingStage],
-  isTypeOf: ({phaseType}) => phaseType === NewMeetingPhaseTypeEnum.ESTIMATE,
+  isTypeOf: ({phaseType}) => (phaseType as NewMeetingPhaseTypeEnum) === 'ESTIMATE',
   fields: () => ({
     ...newMeetingStageFields(),
     creatorUserId: {

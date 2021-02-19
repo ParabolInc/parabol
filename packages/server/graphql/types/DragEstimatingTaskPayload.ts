@@ -1,5 +1,4 @@
 import {GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql'
-import {NewMeetingPhaseTypeEnum} from '../../../client/types/graphql'
 import {GQLContext} from '../graphql'
 import resolveStage from '../resolvers/resolveStage'
 import EstimateStage from './EstimateStage'
@@ -23,7 +22,7 @@ export const DragEstimatingTaskSuccess = new GraphQLObjectType<any, GQLContext>(
     },
     stage: {
       type: GraphQLNonNull(EstimateStage),
-      resovle: resolveStage(NewMeetingPhaseTypeEnum.ESTIMATE)
+      resovle: resolveStage('ESTIMATE')
     }
   })
 })

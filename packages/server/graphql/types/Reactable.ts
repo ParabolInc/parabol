@@ -2,7 +2,7 @@ import {GraphQLID, GraphQLInterfaceType, GraphQLList, GraphQLNonNull} from 'grap
 import Reactji from './Reactji'
 import resolveReactjis from '../resolvers/resolveReactjis'
 import getReactableType from './getReactableType'
-import {ReactableEnum} from 'parabol-client/types/graphql'
+import {ReactableEnum} from '~/__generated__/AddReactjiToReactableMutation.graphql'
 
 export const reactableFields = () => ({
   id: {
@@ -23,9 +23,9 @@ const Reactable = new GraphQLInterfaceType({
   resolveType: (type) => {
     const reactableType = getReactableType(type)
     const lookup = {
-      [ReactableEnum.COMMENT]: require('./Comment').default,
-      [ReactableEnum.REFLECTION]: require('./RetroReflection').default
-    }
+      COMMENT: require('./Comment').default,
+      REFLECTION: require('./RetroReflection').default
+    } as Record<ReactableEnum, any>
     return lookup[reactableType]
   }
 })

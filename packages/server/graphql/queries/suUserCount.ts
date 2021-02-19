@@ -1,15 +1,13 @@
-import {GraphQLInt} from 'graphql'
+import {GraphQLInt, GraphQLString} from 'graphql'
 import getRethink from '../../database/rethinkDriver'
 import {requireSU} from '../../utils/authorization'
-import {TierEnum as ETierEnum} from 'parabol-client/types/graphql'
-import TierEnum from '../types/TierEnum'
 
 export default {
   type: GraphQLInt,
   args: {
     tier: {
-      type: TierEnum,
-      defaultValue: ETierEnum.pro,
+      type: GraphQLString,
+      defaultValue: 'pro',
       description: 'which tier of org shall we count?'
     }
   },
