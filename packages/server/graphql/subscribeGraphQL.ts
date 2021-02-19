@@ -11,7 +11,6 @@
 import {createSourceEventStream, ExecutionResult} from 'graphql'
 import {decode} from 'jsonwebtoken'
 import {TrebuchetCloseReason} from 'parabol-client/types/constEnums'
-import {IAuthTokenPayload} from 'parabol-client/types/graphql'
 import AuthToken from '../database/types/AuthToken'
 import handleDisconnect from '../socketHandlers/handleDisconnect'
 import ConnectionContext from '../socketHelpers/ConnectionContext'
@@ -79,7 +78,7 @@ const subscribeGraphQL = async (req: SubscribeRequest) => {
     const notificationType = data?.notificationSubscription?.__typename
     if (notificationType === 'AuthTokenPayload') {
       // AuthTokenPayload is sent when a user is added/removed from a team and their JWT is soft invalidated
-      const jwt = (data.notificationSubscription as IAuthTokenPayload).id
+      const jwt = data.notificationSubscription.id
       connectionContext.authToken = new AuthToken(decode(jwt) as any)
       // When a JWT is invalidated, so are the subscriptions.
       // Allow the other subscription payloads to complete, then resubscribe

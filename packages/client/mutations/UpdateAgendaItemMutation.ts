@@ -3,18 +3,15 @@ import graphql from 'babel-plugin-relay/macro'
 import {RecordProxy, RecordSourceSelectorProxy} from 'relay-runtime'
 import Atmosphere from '../Atmosphere'
 import handleUpdateAgendaItems from './handlers/handleUpdateAgendaItems'
-import {
-  IActionMeeting,
-  IAgendaItem,
-  IAgendaItemsPhase,
-  IAgendaItemsStage,
-  IUpdateAgendaItemOnMutationArguments,
-  NewMeetingPhaseTypeEnum
-} from '../types/graphql'
 import {SharedUpdater} from '../types/relayMutations'
 import updateProxyRecord from '../utils/relay/updateProxyRecord'
-import {UpdateAgendaItemMutation as TUpdateAgendaItemMutation} from '../__generated__/UpdateAgendaItemMutation.graphql'
+import {
+  UpdateAgendaItemMutationVariables,
+  UpdateAgendaItemMutation as TUpdateAgendaItemMutation
+} from '../__generated__/UpdateAgendaItemMutation.graphql'
 import {UpdateAgendaItemMutation_team} from '~/__generated__/UpdateAgendaItemMutation_team.graphql'
+import {ActionMeeting_meeting} from '~/__generated__/ActionMeeting_meeting.graphql'
+import {AgendaItem_agendaItem} from '~/__generated__/AgendaItem_agendaItem.graphql'
 
 graphql`
   fragment UpdateAgendaItemMutation_team on UpdateAgendaItemPayload {
@@ -44,22 +41,23 @@ const handleUpdateAgendaPhase = (
   meetingId: string | undefined | null
 ) => {
   if (meetingId) {
-    const meeting = store.get(meetingId) as RecordProxy<IActionMeeting>
+    const meeting = store.get(meetingId) as RecordProxy<ActionMeeting_meeting>
     if (!meeting) return
     const phases = meeting.getLinkedRecords('phases')
     const agendaPhase = phases.find((phase) =>
-      phase ? phase.getValue('phaseType') === NewMeetingPhaseTypeEnum.agendaitems : false
-    ) as RecordProxy<IAgendaItemsPhase>
+      phase ? phase.getValue('phaseType') === 'agendaitems' : false
+    )
     if (!agendaPhase) return
-    const getSortOrder = (stage: RecordProxy<IAgendaItemsStage>) => {
+    const getSortOrder = (stage) => {
       const agendaItemId = stage.getValue('agendaItemId')
-      const agendaItem = store.get<IAgendaItem>(agendaItemId)
+      const agendaItem = store.get<AgendaItem_agendaItem>(agendaItemId)
       if (!agendaItem) return 0
       return agendaItem.getValue('sortOrder')
     }
     const stages = agendaPhase.getLinkedRecords('stages')
+    if (!stages) return
     stages.sort((a, b) => {
-      return getSortOrder(a) > getSortOrder(b) ? 1 : -1
+      return getSortOrder(a)! > getSortOrder(b)! ? 1 : -1
     })
     agendaPhase.setLinkedRecords(stages, 'stages')
   }
@@ -79,7 +77,7 @@ export const updateAgendaItemUpdater: SharedUpdater<UpdateAgendaItemMutation_tea
 
 const UpdateAgendaItemMutation = (
   atmosphere: Atmosphere,
-  variables: IUpdateAgendaItemOnMutationArguments,
+  variables: UpdateAgendaItemMutationVariables,
   {onError, onCompleted, meetingId}: any = {}
 ) => {
   const {updatedAgendaItem} = variables

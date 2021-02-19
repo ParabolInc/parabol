@@ -1,6 +1,6 @@
-import {IRetroReflection} from '../../types/graphql'
 import computeDistanceMatrix from './computeDistanceMatrix'
 import getAllLemmasFromReflections from './getAllLemmasFromReflections'
+import {ReflectionCard_reflection} from '~/__generated__/ReflectionCard_reflection.graphql'
 import getGroupMatrix from './getGroupMatrix'
 import getTitleFromComputedGroup from './getTitleFromComputedGroup'
 
@@ -11,7 +11,6 @@ import getTitleFromComputedGroup from './getTitleFromComputedGroup'
 interface Reflection {
   entities: any[]
   reflectionGroupId: string
-
 }
 const groupReflections = <T extends Reflection>(reflections: T[], groupingThreshold: number) => {
   const allReflectionEntities = reflections.map(({entities}) => entities!)
@@ -26,7 +25,7 @@ const groupReflections = <T extends Reflection>(reflections: T[], groupingThresh
     groupingThreshold
   )
   // replace the arrays with reflections
-  const updatedReflections = [] as Partial<IRetroReflection>[]
+  const updatedReflections = [] as Partial<ReflectionCard_reflection>[]
   const updatedGroups = (groupedArrays as any[]).map((group) => {
     // look up the reflection by its vector, put them all in the same group
     let reflectionGroupId = ''

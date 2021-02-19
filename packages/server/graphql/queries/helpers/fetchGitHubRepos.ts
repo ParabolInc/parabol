@@ -1,9 +1,6 @@
 import getRethink from '../../../database/rethinkDriver'
 import GitHubServerManager from '../../../utils/GitHubServerManager'
-import {Omit} from 'parabol-client/types/generics'
-import {ISuggestedIntegrationGitHub} from 'parabol-client/types/graphql'
 import {GITHUB} from 'parabol-client/utils/constants'
-// import {GetReposQueryData} from 'parabol-client/utils/githubQueries/getRepos.graphql'
 
 namespace GetReposQueryData {
   export type ViewerOrganizationsNodes = any
@@ -73,7 +70,7 @@ const fetchGitHubRepos = async (teamId: string, userId: string) => {
     id: repo.nameWithOwner,
     service: 'github', // TaskServiceEnum.github
     nameWithOwner: repo.nameWithOwner
-  })) as Omit<ISuggestedIntegrationGitHub, '__typename'>[]
+  }))
 }
 
 export default fetchGitHubRepos

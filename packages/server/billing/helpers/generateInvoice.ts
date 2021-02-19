@@ -1,10 +1,6 @@
 import {InvoiceItemType} from 'parabol-client/types/constEnums'
-import {
-  InvoiceLineItemEnum,
-  InvoiceStatusEnum,
-  OrgUserRole,
-  TierEnum
-} from 'parabol-client/types/graphql'
+import {InvoiceLineItemEnum} from '~/__generated__/InvoiceLineItem_item.graphql'
+import {InvoiceStatusEnum} from '~/__generated__/Invoice_viewer.graphql'
 import generateUID from '../../generateUID'
 import Stripe from 'stripe'
 import getRethink from '../../database/rethinkDriver'
@@ -336,18 +332,18 @@ export default async function generateInvoice(
   const [type] = invoiceId.split('_')
   const isUpcoming = type === 'upcoming'
 
-  let status = isUpcoming ? InvoiceStatusEnum.UPCOMING : InvoiceStatusEnum.PENDING
-  if (status === InvoiceStatusEnum.PENDING && invoice.closed === true) {
-    status = invoice.paid ? InvoiceStatusEnum.PAID : InvoiceStatusEnum.FAILED
+  let status: InvoiceStatusEnum = isUpcoming ? 'UPCOMING' : 'PENDING'
+  if (status === 'PENDING' && invoice.closed === true) {
+    status = invoice.paid ? 'PAID' : 'FAILED'
   }
-  const paidAt = status === InvoiceStatusEnum.PAID ? now : undefined
+  const paidAt = status === 'PAID' ? now : undefined
 
   const {organization, billingLeaderEmails} = await r({
     organization: (r.table('Organization').get(orgId) as unknown) as Organization,
     billingLeaderEmails: (r
       .table('OrganizationUser')
       .getAll(orgId, {index: 'orgId'})
-      .filter({removedAt: null, role: OrgUserRole.BILLING_LEADER})
+      .filter({removedAt: null, role: 'BILLING_LEADER'})
       .coerceTo('array')('userId')
       .do((userIds) => {
         return r.table('User').getAll(userIds, {index: 'id'})('email')
@@ -386,7 +382,7 @@ export default async function generateInvoice(
     startAt: fromEpochSeconds(invoice.period_start),
     startingBalance: invoice.starting_balance,
     status,
-    tier: nextPeriodCharges.interval === 'year' ? TierEnum.enterprise : TierEnum.pro
+    tier: nextPeriodCharges.interval === 'year' ? 'enterprise' : 'pro'
   })
 
   return r

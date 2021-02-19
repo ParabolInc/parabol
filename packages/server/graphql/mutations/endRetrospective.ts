@@ -1,11 +1,12 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import {MeetingMember, SuggestedActionTypeEnum} from 'parabol-client/types/graphql'
+import {SuggestedActionTypeEnum} from 'parabol-client/types/graphql'
 import {DISCUSS} from 'parabol-client/utils/constants'
 import getMeetingPhase from 'parabol-client/utils/getMeetingPhase'
 import findStageById from 'parabol-client/utils/meetings/findStageById'
 import getRethink from '../../database/rethinkDriver'
 import MeetingRetrospective from '../../database/types/MeetingRetrospective'
+import MeetingMember from '../../database/types/MeetingMember'
 import TimelineEventRetroComplete from '../../database/types/TimelineEventRetroComplete'
 import removeSuggestedAction from '../../safeMutations/removeSuggestedAction'
 import {getUserId, isTeamMember} from '../../utils/authorization'
@@ -134,7 +135,10 @@ export default {
         })
     )
     const timelineEventId = events[0].id as string
-    await r.table('TimelineEvent').insert(events).run()
+    await r
+      .table('TimelineEvent')
+      .insert(events)
+      .run()
     if (team.isOnboardTeam) {
       const teamLeadUserId = await r
         .table('TeamMember')

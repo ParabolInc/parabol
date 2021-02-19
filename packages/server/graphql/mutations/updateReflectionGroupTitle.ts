@@ -1,9 +1,6 @@
 import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import {
-  IUpdateReflectionGroupTitleOnMutationArguments,
-  NewMeetingPhaseTypeEnum
-} from 'parabol-client/types/graphql'
+import {UpdateReflectionGroupTitleMutationVariables} from '~/__generated__/UpdateReflectionGroupTitleMutation.graphql'
 import isPhaseComplete from 'parabol-client/utils/meetings/isPhaseComplete'
 import stringSimilarity from 'string-similarity'
 import getRethink from '../../database/rethinkDriver'
@@ -28,7 +25,7 @@ export default {
   },
   async resolve(
     _source,
-    {reflectionGroupId, title}: IUpdateReflectionGroupTitleOnMutationArguments,
+    {reflectionGroupId, title}: UpdateReflectionGroupTitleMutationVariables,
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) {
     const r = await getRethink()
@@ -37,7 +34,10 @@ export default {
 
     // AUTH
     const viewerId = getUserId(authToken)
-    const reflectionGroup = await r.table('RetroReflectionGroup').get(reflectionGroupId).run()
+    const reflectionGroup = await r
+      .table('RetroReflectionGroup')
+      .get(reflectionGroupId)
+      .run()
     if (!reflectionGroup) {
       return standardError(new Error('Reflection group not found'), {userId: viewerId})
     }
@@ -51,7 +51,7 @@ export default {
       return standardError(new Error('Team not found'), {userId: viewerId})
     }
     if (endedAt) return standardError(new Error('Meeting already ended'), {userId: viewerId})
-    if (isPhaseComplete(NewMeetingPhaseTypeEnum.vote, phases)) {
+    if (isPhaseComplete('vote', phases)) {
       return standardError(new Error('Meeting phase already completed'), {userId: viewerId})
     }
 

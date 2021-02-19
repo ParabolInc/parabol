@@ -1,5 +1,4 @@
 import {GraphQLID, GraphQLInt, GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
-import {IActionMeeting} from 'parabol-client/types/graphql'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import {getUserId} from '../../utils/authorization'
 import filterTasksByMeeting from '../../utils/filterTasksByMeeting'
@@ -10,7 +9,7 @@ import AgendaItem from './AgendaItem'
 import NewMeeting, {newMeetingFields} from './NewMeeting'
 import Task from './Task'
 
-const ActionMeeting = new GraphQLObjectType<IActionMeeting, GQLContext>({
+const ActionMeeting = new GraphQLObjectType<any, GQLContext>({
   name: 'ActionMeeting',
   interfaces: () => [NewMeeting],
   description: 'An action meeting',

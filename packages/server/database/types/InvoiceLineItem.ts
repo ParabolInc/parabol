@@ -1,4 +1,4 @@
-import {InvoiceLineItemEnum} from 'parabol-client/types/graphql'
+import {InvoiceLineItemEnum} from '~/__generated__/InvoiceLineItem_item.graphql'
 import generateUID from '../../generateUID'
 import InvoiceLineItemDetail from './InvoiceLineItemDetail'
 
