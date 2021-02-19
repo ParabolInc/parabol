@@ -1,16 +1,16 @@
 import {GraphQLObjectType} from 'graphql'
-import {NewMeetingPhaseTypeEnum} from '../../../client/types/graphql'
+import {NewMeetingPhaseTypeEnum} from '~/__generated__/ActionMeeting_meeting.graphql'
 import {GQLContext} from '../graphql'
 import NewMeetingStage, {newMeetingStageFields} from './NewMeetingStage'
 
 const phaseTypes = [
-  NewMeetingPhaseTypeEnum.reflect,
-  NewMeetingPhaseTypeEnum.group,
-  NewMeetingPhaseTypeEnum.vote,
-  NewMeetingPhaseTypeEnum.firstcall,
-  NewMeetingPhaseTypeEnum.lastcall,
-  NewMeetingPhaseTypeEnum.SCOPE
-]
+  'reflect',
+  'group',
+  'vote',
+  'firstcall',
+  'lastcall',
+  'SCOPE'
+] as NewMeetingPhaseTypeEnum[]
 
 const GenericMeetingStage = new GraphQLObjectType<any, GQLContext>({
   name: 'GenericMeetingStage',

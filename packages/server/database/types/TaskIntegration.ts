@@ -1,4 +1,4 @@
-import {TaskServiceEnum} from 'parabol-client/types/graphql'
+import {TaskServiceEnum} from '~/__generated__/UpdateTaskMutation.graphql'
 import generateUID from '../../generateUID'
 interface Input {
   service: TaskServiceEnum

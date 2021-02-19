@@ -1,5 +1,4 @@
 import {GraphQLBoolean, GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql'
-import {NewMeetingPhaseTypeEnum} from 'parabol-client/types/graphql'
 import EstimateStage from './EstimateStage'
 import resolveStage from '../resolvers/resolveStage'
 import {GQLContext} from '../graphql'
@@ -30,7 +29,7 @@ export const PokerAnnounceDeckHoverSuccess = new GraphQLObjectType<any, GQLConte
     stage: {
       type: GraphQLNonNull(EstimateStage),
       description: 'The stage that holds the updated scores',
-      resolve: resolveStage(NewMeetingPhaseTypeEnum.ESTIMATE)
+      resolve: resolveStage('ESTIMATE')
     }
   })
 })

@@ -1,11 +1,12 @@
 import {GraphQLNonNull} from 'graphql'
 import ms from 'ms'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import {ITeamMember, IUpdateTaskOnMutationArguments} from 'parabol-client/types/graphql'
+import {UpdateTaskMutationVariables} from '~/__generated__/UpdateTaskMutation.graphql'
 import extractTextFromDraftString from 'parabol-client/utils/draftjs/extractTextFromDraftString'
 import normalizeRawDraftJS from 'parabol-client/validation/normalizeRawDraftJS'
 import getRethink from '../../database/rethinkDriver'
 import Task from '../../database/types/Task'
+import TeamMember from '../../database/types/TeamMember'
 import generateUID from '../../generateUID'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
@@ -35,7 +36,7 @@ export default {
   },
   async resolve(
     _source,
-    {updatedTask}: IUpdateTaskOnMutationArguments,
+    {updatedTask}: UpdateTaskMutationVariables,
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) {
     const r = await getRethink()
@@ -131,7 +132,7 @@ export default {
         .filter({
           isNotRemoved: true
         })
-        .coerceTo('array') as unknown) as ITeamMember[]
+        .coerceTo('array') as unknown) as TeamMember[]
     }).run()
     // TODO: get users in the same location
     const usersToIgnore = await getUsersToIgnore(viewerId, teamId)

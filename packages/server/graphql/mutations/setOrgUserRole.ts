@@ -1,13 +1,14 @@
-import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
+import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import {OrgUserRole} from 'parabol-client/types/graphql'
 import getRethink from '../../database/rethinkDriver'
 import NotificationPromoteToBillingLeader from '../../database/types/NotificationPromoteToBillingLeader'
+import OrgUserRole from '../types/OrgUserRole'
 import {getUserId, isUserBillingLeader} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import segmentIo from '../../utils/segmentIo'
 import standardError from '../../utils/standardError'
 import SetOrgUserRolePayload from '../types/SetOrgUserRolePayload'
+import {OrgUserRole as IOrgUserRole} from '~/__generated__/OrganizationSubscription.graphql'
 
 export default {
   type: SetOrgUserRolePayload,
@@ -22,11 +23,15 @@ export default {
       description: 'the user who is receiving a role change'
     },
     role: {
-      type: GraphQLString,
+      type: OrgUserRole,
       description: 'the user’s new role'
     }
   },
-  async resolve(_source, {orgId, userId, role}, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve(
+    _source,
+    {orgId, userId, role}: {orgId: string; userId: string; role: IOrgUserRole},
+    {authToken, dataLoader, socketId: mutatorId}
+  ) {
     const r = await getRethink()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
@@ -38,7 +43,7 @@ export default {
     }
 
     // VALIDATION
-    if (role && role !== OrgUserRole.BILLING_LEADER) {
+    if (role && role !== 'BILLING_LEADER') {
       return standardError(new Error('Invalid role'), {userId: viewerId})
     }
     // if someone is leaving, make sure there is someone else to take their place
@@ -46,7 +51,7 @@ export default {
       const leaderCount = await r
         .table('OrganizationUser')
         .getAll(orgId, {index: 'orgId'})
-        .filter({removedAt: null, role: OrgUserRole.BILLING_LEADER})
+        .filter({removedAt: null, role: 'BILLING_LEADER'})
         .count()
         .run()
       if (leaderCount === 1) {
@@ -72,7 +77,7 @@ export default {
       .update({role})
       .run()
 
-    if (role === OrgUserRole.BILLING_LEADER) {
+    if (role === 'BILLING_LEADER') {
       const promotionNotification = new NotificationPromoteToBillingLeader({orgId, userId})
       const {id: promotionNotificationId} = promotionNotification
       await r

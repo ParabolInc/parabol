@@ -1,6 +1,6 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import {NewMeetingPhaseTypeEnum} from 'parabol-client/types/graphql'
+import {NewMeetingPhaseTypeEnum} from '~/__generated__/ActionMeeting_meeting.graphql'
 import findStageById from 'parabol-client/utils/meetings/findStageById'
 import getRethink from '../../database/rethinkDriver'
 import GenericMeetingPhase from '../../database/types/GenericMeetingPhase'
@@ -54,7 +54,7 @@ const resetMeetingToStage = {
       return standardError(new Error('Stage has not started'), {userId: viewerId})
     if (!resetToStage.isComplete)
       return standardError(new Error('Stage has not finished'), {userId: viewerId})
-    if (resetToStage.phaseType !== NewMeetingPhaseTypeEnum.group)
+    if ((resetToStage.phaseType as NewMeetingPhaseTypeEnum) !== 'group')
       return standardError(new Error('Resetting to this stage type is not supported'), {
         userId: viewerId
       })

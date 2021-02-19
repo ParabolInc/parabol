@@ -7,7 +7,7 @@ import publish from '../../utils/publish'
 import {GQLContext} from '../graphql'
 import SlackNotification from '../../database/types/SlackNotification'
 import SlackNotificationEventEnum from '../types/SlackNotificationEventEnum'
-import {ISetSlackNotificationOnMutationArguments} from 'parabol-client/types/graphql'
+import {SetSlackNotificationMutationVariables} from '~/__generated__/SetSlackNotificationMutation.graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 
 export default {
@@ -26,7 +26,7 @@ export default {
   },
   resolve: async (
     _source,
-    {slackChannelId, slackNotificationEvents, teamId}: ISetSlackNotificationOnMutationArguments,
+    {slackChannelId, slackNotificationEvents, teamId}: SetSlackNotificationMutationVariables,
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) => {
     const viewerId = getUserId(authToken)

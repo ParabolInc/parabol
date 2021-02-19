@@ -1,12 +1,13 @@
-import {GraphQLInt, GraphQLString} from 'graphql'
+import {GraphQLInt} from 'graphql'
 import getRethink from '../../database/rethinkDriver'
 import {requireSU} from '../../utils/authorization'
+import TierEnum from '../types/TierEnum'
 
 export default {
   type: GraphQLInt,
   args: {
     tier: {
-      type: GraphQLString,
+      type: TierEnum,
       defaultValue: 'pro',
       description: 'which tier of org shall we count?'
     }

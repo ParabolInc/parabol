@@ -1,5 +1,5 @@
 import {GraphQLBoolean, GraphQLNonNull, GraphQLString} from 'graphql'
-import {ISegmentEventTrackOnMutationArguments} from 'parabol-client/types/graphql'
+import {SendClientSegmentEventMutationVariables} from '~/__generated__/SendClientSegmentEventMutation.graphql'
 import getRethink from '../../database/rethinkDriver'
 import {getUserId, isTeamMember, isUserBillingLeader} from '../../utils/authorization'
 import segmentIo from '../../utils/segmentIo'
@@ -8,7 +8,11 @@ import {DataLoaderWorker} from '../graphql'
 import SegmentEventTrackOptions from '../types/SegmentEventTrackOptions'
 
 const extraOptionsCreator = {
-  HelpMenuOpen: async (viewerId: string, _dataLoader: DataLoaderWorker, _options: object) => {
+  HelpMenuOpen: async (
+    viewerId: string,
+    _dataLoader: DataLoaderWorker,
+    _options: Record<string, unknown>
+  ) => {
     const r = await getRethink()
     const meetingCount = await r
       .table('MeetingMember')
@@ -35,7 +39,7 @@ export default {
   },
   resolve: async (
     _source,
-    {event, options}: ISegmentEventTrackOnMutationArguments,
+    {event, options}: SendClientSegmentEventMutationVariables,
     {authToken, dataLoader}
   ) => {
     // AUTH

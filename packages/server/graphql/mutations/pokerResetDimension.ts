@@ -1,10 +1,10 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import {MeetingMember, MeetingTypeEnum, NewMeetingPhaseTypeEnum} from 'parabol-client/types/graphql'
 import isPhaseComplete from 'parabol-client/utils/meetings/isPhaseComplete'
 import EstimatePhase from '../../database/types/EstimatePhase'
 import MeetingPoker from '../../database/types/MeetingPoker'
 import updateStage from '../../database/updateStage'
+import MeetingMember from '../../database/types/MeetingMember'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import {GQLContext} from '../graphql'
@@ -50,10 +50,10 @@ const pokerResetDimension = {
     if (endedAt) {
       return {error: {message: 'Meeting has ended'}}
     }
-    if (meetingType !== MeetingTypeEnum.poker) {
+    if (meetingType !== 'poker') {
       return {error: {message: 'Not a poker meeting'}}
     }
-    if (isPhaseComplete(NewMeetingPhaseTypeEnum.ESTIMATE, phases)) {
+    if (isPhaseComplete('ESTIMATE', phases)) {
       return {error: {message: 'Estimate phase is already complete'}}
     }
     if (viewerId !== facilitatorUserId) {
@@ -68,9 +68,7 @@ const pokerResetDimension = {
     }
 
     // VALIDATION
-    const estimatePhase = phases.find(
-      (phase) => phase.phaseType === NewMeetingPhaseTypeEnum.ESTIMATE
-    )! as EstimatePhase
+    const estimatePhase = phases.find((phase) => phase.phaseType === 'ESTIMATE')! as EstimatePhase
     const {stages} = estimatePhase
     const stage = stages.find((stage) => stage.id === stageId)
     if (!stage) {

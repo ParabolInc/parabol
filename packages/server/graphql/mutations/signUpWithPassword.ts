@@ -1,7 +1,7 @@
 import bcrypt from 'bcrypt'
 import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import {AuthenticationError, Security} from 'parabol-client/types/constEnums'
-import {ISignUpWithPasswordOnMutationArguments} from 'parabol-client/types/graphql'
+import {SignUpWithPasswordMutationVariables} from '~/__generated__/SignUpWithPasswordMutation.graphql'
 import getRethink from '../../database/rethinkDriver'
 import createEmailVerification from '../../email/createEmailVerification'
 import createNewLocalUser from '../../utils/createNewLocalUser'
@@ -33,7 +33,7 @@ const signUpWithPassword = {
     }
   },
   resolve: rateLimit({perMinute: 50, perHour: 500})(
-    async (_source, args: ISignUpWithPasswordOnMutationArguments, context: GQLContext) => {
+    async (_source, args: SignUpWithPasswordMutationVariables, context: GQLContext) => {
       const {invitationToken, password, segmentId} = args
       const denormEmail = args.email
       const email = denormEmail.toLowerCase()
