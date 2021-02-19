@@ -2,13 +2,13 @@ import base64url from 'base64url'
 import bcrypt from 'bcrypt'
 import crypto from 'crypto'
 import {Security} from 'parabol-client/types/constEnums'
-import {ISignUpWithPasswordOnMutationArguments} from 'parabol-client/types/graphql'
+import {SignUpWithPasswordMutationVariables} from '~/__generated__/SignUpWithPasswordMutation.graphql'
 import getRethink from '../database/rethinkDriver'
 import EmailVerification from '../database/types/EmailVerification'
 import emailVerificationEmailCreator from './emailVerificationEmailCreator'
 import getMailManager from './getMailManager'
 
-const createEmailVerification = async (props: ISignUpWithPasswordOnMutationArguments) => {
+const createEmailVerification = async (props: SignUpWithPasswordMutationVariables) => {
   const {password, invitationToken, segmentId} = props
   const email = props.email.toLowerCase()
   const tokenBuffer = crypto.randomBytes(48)

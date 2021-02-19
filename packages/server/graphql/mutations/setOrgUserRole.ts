@@ -1,8 +1,7 @@
-import {GraphQLID, GraphQLNonNull} from 'graphql'
+import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getRethink from '../../database/rethinkDriver'
 import NotificationPromoteToBillingLeader from '../../database/types/NotificationPromoteToBillingLeader'
-import OrgUserRole from '../types/OrgUserRole'
 import {getUserId, isUserBillingLeader} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import segmentIo from '../../utils/segmentIo'
@@ -23,7 +22,7 @@ export default {
       description: 'the user who is receiving a role change'
     },
     role: {
-      type: OrgUserRole,
+      type: GraphQLString,
       description: 'the user’s new role'
     }
   },

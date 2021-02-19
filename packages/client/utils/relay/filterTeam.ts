@@ -1,5 +1,5 @@
 import {commitLocalUpdate} from 'react-relay'
-import {ITeam} from '../../types/graphql'
+import ITeam from '../../../server/database/types/Team'
 import Atmosphere from '../../Atmosphere'
 
 const filterTeam = (atmosphere: Atmosphere, teamId: string | null) => {

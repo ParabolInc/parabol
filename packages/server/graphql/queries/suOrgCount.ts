@@ -1,7 +1,8 @@
-import {GraphQLInt, GraphQLString} from 'graphql'
+import {GraphQLInt} from 'graphql'
 import getRethink from '../../database/rethinkDriver'
 import {requireSU} from '../../utils/authorization'
 import {TierEnum} from '../../../client/__generated__/Invoice_viewer.graphql'
+import OrgUserRole from '../types/OrgUserRole'
 
 export default {
   type: GraphQLInt,
@@ -12,7 +13,7 @@ export default {
       description: 'the minimum number of users within the org to count it'
     },
     tier: {
-      type: GraphQLString,
+      type: OrgUserRole,
       defaultValue: 'pro' as TierEnum,
       description: 'which tier of org shall we count?'
     }
