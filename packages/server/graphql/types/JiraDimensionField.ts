@@ -1,5 +1,5 @@
-import base64url from 'base64url'
 import {GraphQLID, GraphQLInt, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
+import JiraDimensionFieldId from '../../../client/shared/gqlIds/JiraDimensionFieldId'
 import {GQLContext} from '../graphql'
 
 const JiraDimensionField = new GraphQLObjectType<any, GQLContext>({
@@ -9,7 +9,7 @@ const JiraDimensionField = new GraphQLObjectType<any, GQLContext>({
     id: {
       type: new GraphQLNonNull(GraphQLID),
       resolve: ({cloudId, dimensionName, fieldId}) =>
-        `${cloudId}:${base64url.encode(dimensionName)}:${fieldId}`
+        JiraDimensionFieldId.join(cloudId, dimensionName, fieldId)
     },
     cloudId: {
       type: GraphQLNonNull(GraphQLID),

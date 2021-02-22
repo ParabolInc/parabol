@@ -1,5 +1,5 @@
 import {GraphQLFloat, GraphQLID, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
-import getDimensionRefId from '../../../client/utils/getDimensionRefId'
+import TemplateDimensionRefId from '../../../client/shared/gqlIds/TemplateDimensionRefId'
 import getTemplateScaleRefById from '../../postgres/queries/getTemplateScaleRefById'
 import {GQLContext} from '../graphql'
 import TemplateScaleRef from './TemplateScaleRef'
@@ -10,7 +10,8 @@ const TemplateDimensionRef = new GraphQLObjectType<any, GQLContext>({
   fields: () => ({
     id: {
       type: new GraphQLNonNull(GraphQLID),
-      resolve: ({meetingId, dimensionRefIdx}) => getDimensionRefId(meetingId, dimensionRefIdx)
+      resolve: ({meetingId, dimensionRefIdx}) =>
+        TemplateDimensionRefId.join(meetingId, dimensionRefIdx)
     },
     sortOrder: {
       type: new GraphQLNonNull(GraphQLFloat),
