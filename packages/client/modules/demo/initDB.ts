@@ -1,15 +1,10 @@
 import {PALETTE} from '~/styles/paletteV2'
 import demoUserAvatar from '../../styles/theme/images/avatar-user.svg'
 import {MeetingSettingsThreshold, RetroDemo} from '../../types/constEnums'
-import {
-  IJiraRemoteProject,
-  IRetrospectiveMeeting,
-  IRetrospectiveMeetingSettings,
-  ISuggestedIntegrationGitHub,
-  ISuggestedIntegrationJira,
-  ITask
-} from '../../types/graphql'
+import RetrospectiveMeeting from '../../../server/database/types/MeetingRetrospective'
+import RetrospectiveMeetingSettings from '../../../server/database/types/MeetingSettingsRetrospective'
 import {TierEnum} from '~/__generated__/StandardHub_viewer.graphql'
+import ITask from '../../../server/database/types/Task'
 import {SlackNotificationEventEnum} from '~/__generated__/SlackNotificationList_viewer.graphql'
 import {TaskServiceEnum} from '~/__generated__/UpdateTaskMutation.graphql'
 import {CHECKIN, DISCUSS, GROUP, REFLECT, RETROSPECTIVE, VOTE} from '../../utils/constants'
@@ -26,6 +21,24 @@ interface BaseUser {
   preferredName: string
   email: string
   picture: string
+}
+
+type IRetrospectiveMeeting = Omit<
+  RetrospectiveMeeting,
+  'summarySentAt' | 'createdAt' | 'endedAt'
+> & {
+  __typename: string
+  createdAt: string | Date
+  endedAt: string | Date | null
+  meetingMembers: any
+  team: any
+  settings: any
+  summarySentAt: string | Date | null
+  votesRemaining: number
+}
+
+type IRetrospectiveMeetingSettings = RetrospectiveMeetingSettings & {
+  team: any
 }
 
 const initMeetingSettings = () => {
@@ -74,14 +87,14 @@ export const GitHubProjectKeyLookup = {
   }
 }
 
-const makeSuggestedIntegrationJira = (key): ISuggestedIntegrationJira => ({
+const makeSuggestedIntegrationJira = (key) => ({
   __typename: 'SuggestedIntegrationJira',
   id: key,
-  remoteProject: {} as IJiraRemoteProject,
+  remoteProject: {},
   ...JiraProjectKeyLookup[key]
 })
 
-const makeSuggestedIntegrationGitHub = (nameWithOwner): ISuggestedIntegrationGitHub => ({
+const makeSuggestedIntegrationGitHub = (nameWithOwner) => ({
   __typename: 'SuggestedIntegrationGitHub',
   id: nameWithOwner,
   ...GitHubProjectKeyLookup[nameWithOwner]
