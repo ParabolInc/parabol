@@ -11,11 +11,13 @@ import {
   IGoogleAnalyzedEntity,
   INewMeetingStage,
   IReflectPhase,
-  IRetroReflection,
-  IRetroReflectionGroup,
-  ITask,
+  // IRetroReflection,
+  // IRetroReflectionGroup,
   NewMeetingPhase
 } from '../../types/graphql'
+import ITask from '../../../server/database/types/Task'
+import ReflectionGroup from '../../../server/database/types/ReflectionGroup'
+import Reflection from '../../../server/database/types/Reflection'
 import {ReactableEnum} from '~/__generated__/AddReactjiToReactableMutation.graphql'
 import {DragReflectionDropTargetTypeEnum} from '~/__generated__/EndDraggingReflectionMutation.graphql'
 import {DISCUSS, GROUP, REFLECT, TASK, TEAM, VOTE} from '../../utils/constants'
@@ -43,22 +45,40 @@ import initDB, {
 } from './initDB'
 import LocalAtmosphere from './LocalAtmosphere'
 
-export type DemoReflection = Omit<
-  IRetroReflection,
-  'autoReflectionGroupId' | 'team' | 'reactjis' | 'retroPhaseItemId' | 'phaseItem'
-> & {
-  creatorId: string
+export type DemoReflection = Omit<Reflection, 'reactjis' | 'createdAt' | 'updatedAt'> & {
+  __typename: string
+  createdAt: string | Date
+  dragContext: any
+  editorIds: any
+  entities: any
+  groupColor: string
+  isEditing: any
+  isHumanTouched: boolean
+  isViewerCreator: boolean
+  meeting: any
+  prompt: any
   reactjis: any[]
   reflectionId: string
-  isHumanTouched: boolean
+  retroReflectionGroup: DemoReflectionGroup
+  updatedAt: string | Date
 }
 
-export type DemoReflectionGroup = Omit<
-  IRetroReflectionGroup,
-  'team' | 'reflections' | 'retroPhaseItemId' | 'phaseItem'
-> & {
+export type DemoReflectionGroup = Omit<ReflectionGroup, 'team' | 'createdAt' | 'updatedAt'> & {
+  __typename: string
+  commentCount: number
+  commentors: any
+  createdAt: string | Date
+  meeting: any
+  prompt: any
   reflectionGroupId: string
   reflections: DemoReflection[]
+  tasks: any
+  thread: any
+  titleIsUserDefined: boolean
+  updatedAt: string | Date
+  viewerVoteCount: number
+  voteCount: number
+  voterIds: any
 }
 
 export type DemoTask = Omit<ITask, 'agendaItem'>
