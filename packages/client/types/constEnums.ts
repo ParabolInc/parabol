@@ -185,7 +185,6 @@ export const enum PokerCards {
   MAX_HIDDEN = 0.35,
   PASS_CARD = 'Pass',
   QUESTION_CARD = '?',
-  DELETED_CARD = '#',
   AVATAR_WIDTH = 46,
   AVATAR_BORDER = 3
 }

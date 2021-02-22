@@ -55,7 +55,7 @@ const PokerDiscussVoting = (props: Props) => {
     const rows = scoreLabels.map((label) => {
       return {
         key: label,
-        scaleValue: scaleValues.find((scaleValue) => scaleValue.label === label) || null,
+        scaleValue: scaleValues.find((scaleValue) => scaleValue.label === label)!,
         scores: scoreObj[label]
       }
     })
@@ -73,7 +73,7 @@ const PokerDiscussVoting = (props: Props) => {
       />
       <GroupedVotes>
         {rows.map(({scaleValue, scores, key}) => {
-          const label = scores[0]?.label
+          const {label} = scaleValue
           const canClick = isFacilitator && !isSpecialPokerLabel(label)
           const setFinalScore = canClick
             ? () => {
@@ -92,6 +92,7 @@ const PokerDiscussVoting = (props: Props) => {
               key={key}
               scaleValue={scaleValue}
               scores={scores}
+              stageId={stageId}
               setFinalScore={setFinalScore}
               isInitialStageRender={isInitialStageRender}
             />

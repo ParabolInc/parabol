@@ -122,6 +122,7 @@ const PokerActiveVoting = (props: Props) => {
           <CheckIcon>check</CheckIcon>
         </MiniPokerCard>
         <PokerVotingAvatarGroup
+          stageId={stageId}
           scores={scores}
           isClosing={isClosing}
           isInitialStageRender={isInitialStageRender}

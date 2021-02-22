@@ -4,11 +4,13 @@ import React, {useRef} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import usePokerAvatarOverflow from '~/hooks/userPokerAvatarOverflow'
 import useTransition from '../hooks/useTransition'
+import EstimateUserScoreId from '../shared/gqlIds/EstimateUserScoreId'
 import {PALETTE} from '../styles/paletteV2'
+import {PokerCards} from '../types/constEnums'
+import isTempId from '../utils/relay/isTempId'
 import {PokerVotingAvatarGroup_scores} from '../__generated__/PokerVotingAvatarGroup_scores.graphql'
 import PokerVotingAvatar from './PokerVotingAvatar'
 import PokerVotingOverflow from './PokerVotingOverflow'
-import {PokerCards} from '../types/constEnums'
 
 const NoVotesHeaderLabel = styled('div')({
   color: PALETTE.TEXT_GRAY,
@@ -28,18 +30,23 @@ const Wrapper = styled('div')({
 })
 
 interface Props {
+  stageId: string
   isClosing?: boolean
   scores: PokerVotingAvatarGroup_scores
   isInitialStageRender: boolean
 }
 
 const PokerVotingAvatarGroup = (props: Props) => {
-  const {isClosing, scores, isInitialStageRender} = props
+  const {isClosing, scores, stageId, isInitialStageRender} = props
   const rowRef = useRef<HTMLDivElement>(null)
   const maxAvatars = usePokerAvatarOverflow(rowRef) // max is 5, scores is 6
   const overflowCount = scores.length > maxAvatars ? scores.length - maxAvatars + 1 : 0
   const visibleScores = overflowCount === 0 ? scores : scores.slice(0, maxAvatars - 1)
-  const visibleAvatars = visibleScores.map((score => ({...score, key: score.id})))
+  const visibleAvatars = visibleScores.map((score) => ({
+    ...score,
+    key: isTempId(score.id) ? EstimateUserScoreId.join(stageId, score.user?.id) : score.id
+  }))
+
   if (overflowCount > 0) {
     visibleAvatars.push({id: 'overflow', key: 'overflow', overflowCount} as any)
   }
@@ -54,24 +61,40 @@ const PokerVotingAvatarGroup = (props: Props) => {
         const overflowCount = (child as any).overflowCount
         const visibleScoreIdx = visibleScores.findIndex((score) => score.id === child.id)
         const displayIdx = visibleScoreIdx === -1 ? idx : visibleScoreIdx
-        if (overflowCount) return <PokerVotingOverflow key={childId} isInitialStageRender={isInitialStageRender} onTransitionEnd={onTransitionEnd} status={status} idx={displayIdx} overflowCount={overflowCount} />
+        if (overflowCount)
+          return (
+            <PokerVotingOverflow
+              key={childId}
+              isInitialStageRender={isInitialStageRender}
+              onTransitionEnd={onTransitionEnd}
+              status={status}
+              idx={displayIdx}
+              overflowCount={overflowCount}
+            />
+          )
         return (
-          <PokerVotingAvatar key={childId} isInitialStageRender={isInitialStageRender} user={user} onTransitionEnd={onTransitionEnd} status={status} idx={displayIdx} />
+          <PokerVotingAvatar
+            key={childId}
+            isInitialStageRender={isInitialStageRender}
+            user={user}
+            onTransitionEnd={onTransitionEnd}
+            status={status}
+            idx={displayIdx}
+          />
         )
       })}
-    </Wrapper >
+    </Wrapper>
   )
 }
 
-export default createFragmentContainer(
-  PokerVotingAvatarGroup,
-  {
-    scores: graphql`
-      fragment PokerVotingAvatarGroup_scores on EstimateUserScore @relay(plural: true) {
+export default createFragmentContainer(PokerVotingAvatarGroup, {
+  scores: graphql`
+    fragment PokerVotingAvatarGroup_scores on EstimateUserScore @relay(plural: true) {
+      id
+      user {
+        ...PokerVotingAvatar_user
         id
-        user {
-          ...PokerVotingAvatar_user
-        }
-      }`
-  }
-)
+      }
+    }
+  `
+})
