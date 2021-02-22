@@ -1,4 +1,4 @@
-import {SuggestedActionTypeEnum} from 'parabol-client/types/graphql'
+import {SuggestedActionTypeEnum} from '../../../client/types/constEnums'
 import generateUID from '../../generateUID'
 
 interface Input {
