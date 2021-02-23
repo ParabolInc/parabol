@@ -1,5 +1,5 @@
 import {NewTeamForm_organizations} from '../../../../__generated__/NewTeamForm_organizations.graphql'
-import React, {Component} from 'react'
+import React, {useEffect, useState} from 'react'
 import styled from '@emotion/styled'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
@@ -23,6 +23,9 @@ import NewTeamFormTeamName from './NewTeamFormTeamName'
 import StyledError from '../../../../components/StyledError'
 import DashHeaderTitle from '../../../../components/DashHeaderTitle'
 import linkify from '../../../../utils/linkify'
+import useMutationProps from '../../../../hooks/useMutationProps'
+import useAtmosphere from '../../../../hooks/useAtmosphere'
+import useRouter from '../../../../hooks/useRouter'
 
 const StyledForm = styled('form')({
   margin: 0,
@@ -69,12 +72,6 @@ interface Props extends WithMutationProps, WithAtmosphereProps, RouteComponentPr
   organizations: NewTeamForm_organizations
 }
 
-interface State {
-  isNewOrg: boolean
-  orgId: string
-  fields: Fields
-}
-
 interface Field {
   dirty?: boolean
   error: string | undefined
@@ -89,53 +86,33 @@ interface Fields {
 type FieldName = 'orgName' | 'teamName'
 const DEFAULT_FIELD = {value: '', error: undefined, dirty: false}
 
-class NewTeamForm extends Component<Props, State> {
-  state = {
-    isNewOrg: this.props.isNewOrganization,
-    orgId: '',
-    fields: {
-      orgName: {...DEFAULT_FIELD},
-      teamName: {...DEFAULT_FIELD}
-    }
+const NewTeamForm = (props: Props) => {
+  const {isNewOrganization, organizations} = props
+  const [isNewOrg, setIsNewOrg] = useState(isNewOrganization)
+  const [orgId, setOrgId] = useState('')
+  const [fields, setFields] = useState<Fields>({
+    orgName: {...DEFAULT_FIELD},
+    teamName: {...DEFAULT_FIELD}
+  })
+  const {submitting, onError, error, onCompleted, submitMutation} = useMutationProps()
+  const atmosphere = useAtmosphere()
+  const {history} = useRouter()
+
+  const updateOrgId = (orgId: string) => {
+    setOrgId(orgId)
   }
 
-  setOrgId = (orgId: string) => {
-    this.setState(
-      {
-        orgId
-      },
-      () => {
-        this.validate('teamName')
-      }
-    )
+  const validateOrgName = () => {
+    const rawOrgName = fields.orgName.value
+    return new Legitity(rawOrgName)
+      .trim()
+      .required('Your new org needs a name!')
+      .min(2, 'C’mon, you call that an organization?')
+      .max(100, 'Maybe just the legal name?')
+      .test((val) => (linkify.match(val) ? 'Try using a name, not a link!' : undefined))
   }
 
-  validate = (name: FieldName) => {
-    const validators = {
-      teamName: this.validateTeamName,
-      orgName: this.validateOrgName
-    }
-    const res: Legitity = validators[name]()
-
-    const {fields} = this.state
-    const field = fields[name]
-    if (res.error !== field.error) {
-      this.setState({
-        fields: {
-          ...fields,
-          [name]: {
-            ...field,
-            error: res.error
-          }
-        }
-      })
-    }
-    return res
-  }
-
-  validateTeamName = () => {
-    const {organizations} = this.props
-    const {isNewOrg, orgId, fields} = this.state
+  const validateTeamName = () => {
     const rawTeamName = fields.teamName.value
     let teamNames: string[] = []
     if (!isNewOrg) {
@@ -147,92 +124,88 @@ class NewTeamForm extends Component<Props, State> {
     return teamNameValidation(rawTeamName, teamNames)
   }
 
-  validateOrgName = () => {
-    const {fields} = this.state
-    const rawOrgName = fields.orgName.value
-    return new Legitity(rawOrgName)
-      .trim()
-      .required('Your new org needs a name!')
-      .min(2, 'C’mon, you call that an organization?')
-      .max(100, 'Maybe just the legal name?')
-      .test((val) => (linkify.match(val) ? 'Try using a name, not a link!' : undefined))
+  const validate = (name: FieldName) => {
+    const validators = {
+      teamName: validateTeamName,
+      orgName: validateOrgName
+    }
+    const res: Legitity = validators[name]()
+    const field = fields[name]
+    if (res.error !== field.error) {
+      setFields({
+        ...fields,
+        [name]: {
+          ...field,
+          error: res.error
+        }
+      })
+    }
+    return res
   }
 
-  handleBlur = (e: React.FocusEvent<HTMLTextAreaElement | HTMLInputElement>) => {
-    this.setDirty(e.target.name as FieldName)
+  useEffect(() => {
+    validate('orgName')
+  }, [fields.orgName])
+
+  useEffect(() => {
+    validate('teamName')
+  }, [fields.teamName])
+
+  const handleBlur = (e: React.FocusEvent<HTMLTextAreaElement | HTMLInputElement>) => {
+    setDirty(e.target.name as FieldName)
   }
 
-  setDirty = (name: FieldName) => {
-    const {fields} = this.state
+  const setDirty = (name: FieldName) => {
     const field = fields[name]
     if (!field.dirty) {
-      this.setState({
-        fields: {
-          ...fields,
-          [name]: {
-            ...field,
-            dirty: true
-          }
+      setFields({
+        ...fields,
+        [name]: {
+          ...field,
+          dirty: true
         }
       })
     }
   }
 
-  handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const {fields} = this.state
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const {value} = e.target
     const name = e.target.name as FieldName
     const field = fields[name]
-    this.setState(
-      {
-        fields: {
-          ...fields,
-          [name]: {
-            ...field,
-            value
-          }
-        }
-      },
-      () => {
-        this.validate(name)
+    setFields({
+      ...fields,
+      [name]: {
+        ...field,
+        value
       }
-    )
+    })
   }
 
-  handleIsNewOrgChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleIsNewOrgChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const isNewOrg = e.target.value === 'true'
-    this.setState(
-      {
-        isNewOrg,
-        fields: {
-          ...this.state.fields,
-          orgName: {
-            ...this.state.fields.orgName,
-            dirty: false,
-            error: undefined
-          }
-        }
-      },
-      () => {
-        this.validate('teamName')
+    setIsNewOrg(isNewOrg)
+    setFields({
+      ...fields,
+      orgName: {
+        ...fields.orgName,
+        dirty: false,
+        error: undefined
       }
-    )
+    })
   }
 
-  onSubmit = (e: React.FormEvent) => {
-    const {atmosphere, history, onError, onCompleted, submitMutation, submitting} = this.props
+  const onSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (submitting) return
-    const {isNewOrg, orgId} = this.state
     const fieldNames: FieldName[] = ['teamName']
-    fieldNames.forEach(this.setDirty)
-    const fieldRes = fieldNames.map(this.validate)
+    fieldNames.forEach(setDirty)
+    const fieldRes = fieldNames.map(validate)
     const hasError = fieldRes.reduce((err: boolean, val) => err || !!val.error, false)
     if (hasError) return
     const [teamRes] = fieldRes
     if (isNewOrg) {
-      this.setDirty('orgName')
-      const {error, value: orgName} = this.validate('orgName')
+      setDirty('orgName')
+      const {error, value: orgName} = validate('orgName')
       if (error) return
       const newTeam = {
         name: teamRes.value
@@ -250,64 +223,59 @@ class NewTeamForm extends Component<Props, State> {
     }
   }
 
-  render() {
-    const {fields, isNewOrg, orgId} = this.state
-    const {error, submitting, organizations} = this.props
-
-    return (
-      <StyledForm onSubmit={this.onSubmit}>
-        <Header>
-          <FormHeading>{'Create a New Team'}</FormHeading>
-        </Header>
-        <StyledPanel>
-          <FormInner>
-            <NewTeamFormBlock>
-              <FieldLabel fieldSize={controlSize} indent label='Add Team to…' />
-            </NewTeamFormBlock>
-            <NewTeamFormBlock>
-              <Radio
-                checked={!isNewOrg}
-                name='isNewOrganization'
-                value='false'
-                label='an existing organization:'
-                onChange={this.handleIsNewOrgChange}
+  return (
+    <StyledForm onSubmit={onSubmit}>
+      <Header>
+        <FormHeading>{'Create a New Team'}</FormHeading>
+      </Header>
+      <StyledPanel>
+        <FormInner>
+          <NewTeamFormBlock>
+            <FieldLabel fieldSize={controlSize} indent label='Add Team to…' />
+          </NewTeamFormBlock>
+          <NewTeamFormBlock>
+            <Radio
+              checked={!isNewOrg}
+              name='isNewOrganization'
+              value='false'
+              label='an existing organization:'
+              onChange={handleIsNewOrgChange}
+            />
+            <NewTeamFieldBlock>
+              <NewTeamOrgPicker
+                disabled={isNewOrg}
+                onChange={updateOrgId}
+                organizations={organizations}
+                orgId={orgId}
               />
-              <NewTeamFieldBlock>
-                <NewTeamOrgPicker
-                  disabled={isNewOrg}
-                  onChange={this.setOrgId}
-                  organizations={organizations}
-                  orgId={orgId}
-                />
-              </NewTeamFieldBlock>
-            </NewTeamFormBlock>
-            <NewTeamFormOrgName
-              isNewOrg={isNewOrg}
-              onChange={this.handleInputChange}
-              onTypeChange={this.handleIsNewOrgChange}
-              orgName={fields.orgName.value}
-              dirty={fields.orgName.dirty}
-              error={fields.orgName.error}
-              placeholder='My new organization'
-              onBlur={this.handleBlur}
-            />
-            <NewTeamFormTeamName
-              dirty={fields.teamName.dirty}
-              error={fields.teamName.error}
-              onChange={this.handleInputChange}
-              teamName={fields.teamName.value}
-              onBlur={this.handleBlur}
-            />
+            </NewTeamFieldBlock>
+          </NewTeamFormBlock>
+          <NewTeamFormOrgName
+            isNewOrg={isNewOrg}
+            onChange={handleInputChange}
+            onTypeChange={handleIsNewOrgChange}
+            orgName={fields.orgName.value}
+            dirty={!!fields.orgName.dirty}
+            error={fields.orgName.error}
+            placeholder='My new organization'
+            onBlur={handleBlur}
+          />
+          <NewTeamFormTeamName
+            dirty={!!fields.teamName.dirty}
+            error={fields.teamName.error}
+            onChange={handleInputChange}
+            teamName={fields.teamName.value}
+            onBlur={handleBlur}
+          />
 
-            <StyledButton size='large' waiting={submitting}>
-              {isNewOrg ? 'Create Team & Org' : 'Create Team'}
-            </StyledButton>
-            {error && <StyledError>{error}</StyledError>}
-          </FormInner>
-        </StyledPanel>
-      </StyledForm>
-    )
-  }
+          <StyledButton size='large' waiting={submitting}>
+            {isNewOrg ? 'Create Team & Org' : 'Create Team'}
+          </StyledButton>
+          {error && <StyledError>{error.message}</StyledError>}
+        </FormInner>
+      </StyledPanel>
+    </StyledForm>
+  )
 }
 
 export default createFragmentContainer(withAtmosphere(withRouter(withMutationProps(NewTeamForm))), {

@@ -1,4 +1,4 @@
-import React, {Component} from 'react'
+import React, {ChangeEvent, FocusEvent} from 'react'
 import styled from '@emotion/styled'
 import FieldLabel from '../../../../components/FieldLabel/FieldLabel'
 import BasicInput from '../../../../components/InputField/BasicInput'
@@ -17,31 +17,29 @@ interface Props {
   dirty: boolean
   error: string | undefined
 
-  onChange(e: React.ChangeEvent<HTMLInputElement>): void
+  onChange(e: ChangeEvent<HTMLInputElement>): void
 
   teamName: string
 
-  onBlur(e: React.FocusEvent<HTMLInputElement>): void
+  onBlur(e: FocusEvent<HTMLInputElement>): void
 }
 
-class NewTeamFormTeamName extends Component<Props> {
-  render() {
-    const {dirty, error, onChange, onBlur, teamName} = this.props
-    return (
-      <FormBlockInline>
-        <FieldLabel fieldSize='medium' htmlFor='teamName' indent inline label='Team Name' />
-        <NewTeamFieldBlock>
-          <BasicInput
-            error={dirty ? (error as string) : undefined}
-            name='teamName'
-            onBlur={onBlur}
-            onChange={onChange}
-            value={teamName}
-          />
-        </NewTeamFieldBlock>
-      </FormBlockInline>
-    )
-  }
+const NewTeamFormTeamName = (props: Props) => {
+  const {dirty, error, onChange, onBlur, teamName} = props
+  return (
+    <FormBlockInline>
+      <FieldLabel fieldSize='medium' htmlFor='teamName' indent inline label='Team Name' />
+      <NewTeamFieldBlock>
+        <BasicInput
+          error={dirty ? (error as string) : undefined}
+          name='teamName'
+          onBlur={onBlur}
+          onChange={onChange}
+          value={teamName}
+        />
+      </NewTeamFieldBlock>
+    </FormBlockInline>
+  )
 }
 
 export default NewTeamFormTeamName

@@ -107,7 +107,7 @@ const StageTimerModalTimeLimit = (props: Props) => {
       <StyledButton onClick={startTimer}>
         {scheduledEndTime ? 'Add Time' : `Start ${MeetingLabels.TIMER}`}
       </StyledButton>
-      {error && <StyledError>{error}</StyledError>}
+      {error && <StyledError>{error.message}</StyledError>}
     </SetLimit>
   )
 }

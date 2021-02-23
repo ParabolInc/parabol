@@ -6,8 +6,6 @@ export default function addOrgValidation() {
     newTeam: {
       name: teamName
     },
-    orgName: {
-      orgName
-    }
+    orgName
   })
 }

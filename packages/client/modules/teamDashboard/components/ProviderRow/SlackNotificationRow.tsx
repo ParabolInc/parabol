@@ -45,9 +45,7 @@ const SlackNotificationRow = (props: Props) => {
   const notifications = slack?.notifications ?? []
   const label = labelLookup[event]
   const atmosphere = useAtmosphere()
-  const existingNotification = notifications.find(
-    (notification) => notification.event === event
-  )
+  const existingNotification = notifications.find((notification) => notification.event === event)
   const active = !!(existingNotification && existingNotification.channelId)
   const {error, submitMutation, onCompleted, onError, submitting} = useMutationProps()
   const onClick = () => {
@@ -71,7 +69,7 @@ const SlackNotificationRow = (props: Props) => {
         <Label>{label}</Label>
         <Toggle active={active} disabled={!localChannelId} onClick={onClick} />
       </Row>
-      {error && <StyledError>{error}</StyledError>}
+      {error && <StyledError>{error.message}</StyledError>}
     </>
   )
 }
