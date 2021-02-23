@@ -22,6 +22,7 @@ import NewTeamFormOrgName from './NewTeamFormOrgName'
 import NewTeamFormTeamName from './NewTeamFormTeamName'
 import StyledError from '../../../../components/StyledError'
 import DashHeaderTitle from '../../../../components/DashHeaderTitle'
+import linkify from '../../../../utils/linkify'
 
 const StyledForm = styled('form')({
   margin: 0,
@@ -154,6 +155,7 @@ class NewTeamForm extends Component<Props, State> {
       .required('Your new org needs a name!')
       .min(2, 'C’mon, you call that an organization?')
       .max(100, 'Maybe just the legal name?')
+      .test((val) => (linkify.match(val) ? 'Try using a name, not a link!' : undefined))
   }
 
   handleBlur = (e: React.FocusEvent<HTMLTextAreaElement | HTMLInputElement>) => {

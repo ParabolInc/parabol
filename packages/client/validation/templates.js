@@ -44,6 +44,7 @@ export const orgName = (value) =>
     .required('Your new org needs a name!')
     .min(2, 'C’mon, you call that an organization?')
     .max(100, 'Maybe just the legal name?')
+    .test((val) => (linkify.match(val) ? 'Try using a name, not a link!' : undefined))
 
 export const preferredName = (value) =>
   value
@@ -64,6 +65,7 @@ export const teamName = (value) =>
     .required('“The nameless wonder” is better than nothing')
     .min(2, 'The “A Team” had a longer name than that')
     .max(50, 'That isn’t very memorable. Maybe shorten it up?')
+    .test((val) => (linkify.match(val) ? 'Try using a name, not a link!' : undefined))
 
 export const makeTeamNameSchema = (teamNames) => (value) =>
   value

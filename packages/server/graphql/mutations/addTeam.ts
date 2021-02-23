@@ -45,7 +45,10 @@ export default {
         .getAll(orgId, {index: 'orgId'})
         .run()
 
-      const orgTeamNames = orgTeams.map((team) => !team.isArchived && team.name)
+      const orgTeamNames = [] as string[]
+      orgTeams.forEach((team) => {
+        if (!team.isArchived) orgTeamNames.push(team.name)
+      })
       const {
         data: {newTeam},
         errors
