@@ -26,7 +26,7 @@ export async function up(pgm: MigrationBuilder): Promise<void> {
       picture VARCHAR(255) NOT NULL,
       tms VARCHAR(100)[] NOT NULL DEFAULT '{}',
       "featureFlags" VARCHAR(50)[] NOT NULL DEFAULT '{}',
-      identities JSONB NOT NULL DEFAULT '[]',
+      identities JSONB[] NOT NULL DEFAULT '{}',
       "lastSeenAtURLs" text[],
       "segmentId" VARCHAR(100),
       "newFeatureId" VARCHAR(100),

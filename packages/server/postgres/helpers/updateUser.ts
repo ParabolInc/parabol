@@ -1,7 +1,6 @@
 import {updateUserQuery, IUpdateUserQueryParams} from '../queries/generated/updateUserQuery'
 import getPg from '../getPg'
 import User from '../../database/types/User'
-import prepareJson from '../utils/prepareJson'
 
 const passableFields = new Set([
   'email',
@@ -33,9 +32,6 @@ const updateUser = (updates: Partial<User>, userIds: string[] | string): Promise
   const mappedUpdates = mapUpdates(updates)
   userIds = typeof userIds === 'string' ? [userIds] : userIds
   Object.assign(mappedUpdates, {ids: userIds})
-  mappedUpdates.identitiesValue = mappedUpdates.identities
-    ? prepareJson(mappedUpdates.identitiesValue)
-    : mappedUpdates.identitiesValue
   return updateUserQuery.run(mappedUpdates, getPg())
 }
 

@@ -1,5 +1,6 @@
 /** Types generated for queries found in "packages/server/postgres/queries/src/backupUserQuery.sql" */
 import { PreparedQuery } from '@pgtyped/query';
+import AuthIdentity from '../../../database/types/AuthIdentity'
 
 export type TierEnum = 'personal' | 'pro' | 'enterprise';
 
@@ -7,7 +8,7 @@ export type AuthTokenRole = 'su';
 
 export type stringArray = (string)[];
 
-export type Json = null | boolean | number | string | Json[] | { [key: string]: Json };
+export type JsonArray = (null | boolean | number | string | Json[] | { [key: string]: Json })[];
 
 /** 'BackupUserQuery' parameters type */
 export interface IBackupUserQueryParams {
@@ -24,7 +25,7 @@ export interface IBackupUserQueryParams {
     tms: stringArray | null | void,
     featureFlags: stringArray | null | void,
     lastSeenAtURLs: stringArray | null | void,
-    identities: Json | null | void,
+    identities: AuthIdentity[] | JsonArray | null | void,
     segmentId: string | null | void,
     newFeatureId: string | null | void,
     overLimitCopy: string | null | void,
