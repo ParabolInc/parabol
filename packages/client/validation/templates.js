@@ -1,5 +1,6 @@
 import {TASK_MAX_CHARS} from '../utils/constants'
 import {compositeIdRegex, emailRegex, idRegex} from './regex'
+import linkify from '../utils/linkify'
 
 export const avatar = {
   size: (value) =>
@@ -71,20 +72,18 @@ export const makeTeamNameSchema = (teamNames) => (value) =>
     .min(2, 'The “A Team” had a longer name than that')
     .max(50, 'That isn’t very memorable. Maybe shorten it up?')
     .test((val) => teamNames.includes(val) && 'That name is already taken')
+    .test((val) => (linkify.match(val) ? 'Try using a name, not a link!' : undefined))
 
 export const optionalUrl = (value) =>
   value
     .trim()
-    .test(
-      (value) => {
-        if (value) {
-          try {
-            new URL(value)
-          } catch (e) {
-            return e.message
-          }
+    .test((value) => {
+      if (value) {
+        try {
+          new URL(value)
+        } catch (e) {
+          return e.message
         }
-      },
-      'that url doesn’t look quite right'
-    )
+      }
+    }, 'that url doesn’t look quite right')
     .max(2000, 'please use a shorter url')
