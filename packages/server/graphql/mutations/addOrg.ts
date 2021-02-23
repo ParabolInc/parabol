@@ -27,7 +27,7 @@ export default {
       description: 'The new team object with exactly 1 team member'
     },
     orgName: {
-      type: GraphQLString,
+      type: new GraphQLNonNull(GraphQLString),
       description: 'The name of the new team'
     }
   },

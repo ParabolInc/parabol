@@ -1,5 +1,5 @@
 import {NewTeamForm_organizations} from '../../../../__generated__/NewTeamForm_organizations.graphql'
-import React, {useEffect, useState} from 'react'
+import React, {useEffect, useState, ChangeEvent, FormEvent, FocusEvent} from 'react'
 import styled from '@emotion/styled'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
@@ -151,7 +151,7 @@ const NewTeamForm = (props: Props) => {
     validate('teamName')
   }, [fields.teamName])
 
-  const handleBlur = (e: React.FocusEvent<HTMLTextAreaElement | HTMLInputElement>) => {
+  const handleBlur = (e: FocusEvent<HTMLTextAreaElement | HTMLInputElement>) => {
     setDirty(e.target.name as FieldName)
   }
 
@@ -168,7 +168,7 @@ const NewTeamForm = (props: Props) => {
     }
   }
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const {value} = e.target
     const name = e.target.name as FieldName
     const field = fields[name]
@@ -181,7 +181,7 @@ const NewTeamForm = (props: Props) => {
     })
   }
 
-  const handleIsNewOrgChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleIsNewOrgChange = (e: ChangeEvent<HTMLInputElement>) => {
     const isNewOrg = e.target.value === 'true'
     setIsNewOrg(isNewOrg)
     setFields({
@@ -194,7 +194,7 @@ const NewTeamForm = (props: Props) => {
     })
   }
 
-  const onSubmit = (e: React.FormEvent) => {
+  const onSubmit = (e: FormEvent) => {
     e.preventDefault()
     if (submitting) return
     const fieldNames: FieldName[] = ['teamName']
