@@ -1,5 +1,5 @@
 import User from '../../database/types/User'
-import {IBackupUserQueryParams} from '../queries/generated/backupUserQuery'
+import {IInsertUserQueryParams} from '../queries/generated/insertUserQuery'
 
 const undefinedUserFieldsAndTheirDefaultPgValues = {
   newFeatureId: null,
@@ -15,8 +15,8 @@ const keyValues = Object.entries(
   undefinedUserFieldsAndTheirDefaultPgValues
 )
 
-const mapUsers = (users: User[]): IBackupUserQueryParams['users'] => {
-  const mappedUsers = []
+const mapUsers = (users: User[]): IInsertUserQueryParams['users'] => {
+  const mappedUsers = [] as any
   users.forEach(user => {
     const mappedUser = Object.assign({}, user)
     keyValues.forEach(([k, v]) => {
