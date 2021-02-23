@@ -1,15 +1,16 @@
 import {HttpResponse} from 'uWebSockets.js'
 
-const defaultParser = (buffer: Buffer) => JSON.parse(buffer.toString())
+type Json = null | boolean | number | string | Json[] | {[key: string]: Json}
+const defaultParser = <T>(buffer: Buffer): T => JSON.parse(buffer.toString())
 
-const parseBody = ({
+const parseBody = <T = Json>({
   res,
   parser = defaultParser
 }: {
   res: HttpResponse
-  parser?: (buffer: Buffer) => any
+  parser?: (buffer: Buffer) => T
 }) => {
-  return new Promise<JSON | Buffer | null>((resolve) => {
+  return new Promise<T | null>((resolve) => {
     let buffer: Buffer
     res.onData((ab, isLast) => {
       const curBuf = Buffer.from(ab)
