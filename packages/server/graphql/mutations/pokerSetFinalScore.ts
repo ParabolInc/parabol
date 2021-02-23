@@ -160,7 +160,7 @@ const pokerSetFinalScore = {
     stage.finalScore = finalScore
     // update stage in DB
     const updater = (estimateStage) => estimateStage.merge({finalScore})
-    await updateStage(meetingId, stageId, updater)
+    await updateStage(meetingId, stageId, 'ESTIMATE', updater)
     const data = {meetingId, stageId}
     publish(SubscriptionChannel.MEETING, meetingId, 'PokerSetFinalScoreSuccess', data, subOptions)
     return data

@@ -23,7 +23,7 @@ const removeVoteForUserId = async (userId: string, stageId: string, meetingId: s
           .nth(0)
       )
     })
-  return updateStage(meetingId, stageId, updater)
+  return updateStage(meetingId, stageId, 'ESTIMATE', updater)
 }
 
 const upsertVote = async (vote: EstimateUserScore, stageId: string, meetingId: string) => {
@@ -45,7 +45,7 @@ const upsertVote = async (vote: EstimateUserScore, stageId: string, meetingId: s
         )
       )
     })
-  return updateStage(meetingId, stageId, updater)
+  return updateStage(meetingId, stageId, 'ESTIMATE', updater)
 }
 
 const voteForPokerStory = {

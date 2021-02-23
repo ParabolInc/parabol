@@ -28,7 +28,7 @@ services:
       - parabol-network
   pgadmin:
     container_name: pgadmin_container
-    image: dpage/pgadmin4
+    image: dpage/pgadmin4:latest
     depends_on:
       - postgres
     env_file: ../.env

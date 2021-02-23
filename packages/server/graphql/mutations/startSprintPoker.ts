@@ -1,5 +1,3 @@
-import crypto from 'crypto'
-import stringify from 'fast-json-stable-stringify'
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {IStartSprintPokerOnMutationArguments, MeetingTypeEnum} from 'parabol-client/types/graphql'
@@ -11,6 +9,7 @@ import getPg from '../../postgres/getPg'
 import {insertTemplateRefQuery} from '../../postgres/queries/generated/insertTemplateRefQuery'
 import {insertTemplateScaleRefQuery} from '../../postgres/queries/generated/insertTemplateScaleRefQuery'
 import {getUserId, isTeamMember} from '../../utils/authorization'
+import getHashAndJSON from '../../utils/getHashAndJSON'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import {DataLoaderWorker, GQLContext} from '../graphql'
@@ -19,19 +18,11 @@ import createNewMeetingPhases from './helpers/createNewMeetingPhases'
 import {startSlackMeeting} from './helpers/notifySlack'
 import sendMeetingStartToSegment from './helpers/sendMeetingStartToSegment'
 
-const getHashAndJSON = (obj: any) => {
-  const str = stringify(obj)
-  const checksum = crypto.createHash('md5')
-  checksum.update(str)
-  const id = checksum.digest('base64')
-  return {id, str}
-}
-
 const freezeTemplateAsRef = async (templateId: string, dataLoader: DataLoaderWorker) => {
   const pg = getPg()
   const [template, dimensions] = await Promise.all([
     dataLoader.get('meetingTemplates').load(templateId),
-    dataLoader.get('dimensionsByTemplateId').load(templateId)
+    dataLoader.get('templateDimensionsByTemplateId').load(templateId)
   ])
   const {name: templateName} = template
   const uniqueScaleIds = Array.from(new Set(dimensions.map(({scaleId}) => scaleId)))

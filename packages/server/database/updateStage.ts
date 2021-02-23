@@ -5,7 +5,12 @@ import rMapIf from './rMapIf'
 // it is superior to mutating the `phases` object in JS and then pushing the whole object
 // because it eliminates the chance of a race
 
-const updateStage = async (meetingId: string, stageId: string, updater: (stage: any) => any) => {
+const updateStage = async (
+  meetingId: string,
+  stageId: string,
+  phaseType: string,
+  updater: (stage: any) => any
+) => {
   const r = await getRethink()
   const mapIf = rMapIf(r)
   return r
@@ -14,7 +19,7 @@ const updateStage = async (meetingId: string, stageId: string, updater: (stage: 
     .update((meeting) => ({
       phases: mapIf(
         meeting('phases'),
-        (phase) => phase('phaseType').eq('ESTIMATE'),
+        (phase) => phase('phaseType').eq(phaseType),
         (estimatePhase) =>
           estimatePhase.merge({
             stages: mapIf(estimatePhase('stages'), (stage) => stage('id').eq(stageId), updater)
