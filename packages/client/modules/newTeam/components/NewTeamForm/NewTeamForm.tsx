@@ -215,11 +215,6 @@ class NewTeamForm extends Component<Props, State> {
         this.validate('teamName')
       }
     )
-    // if (isNewOrg) {
-    //   setTimeout(() => {
-    //     this.newOrgInputRef.current && this.newOrgInputRef.current.focus()
-    //   })
-    // }
   }
 
   onSubmit = (e: React.FormEvent) => {
