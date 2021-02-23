@@ -1,4 +1,6 @@
 import * as crypto from 'crypto'
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
 import * as stringify from 'fast-json-stable-stringify'
 import {ColumnDefinitions, MigrationBuilder} from 'node-pg-migrate'
 import {r} from 'rethinkdb-ts'
@@ -74,7 +76,7 @@ export async function up(): Promise<void> {
   })
 
   const templateIdToTemplateRefId = {} as Record<string, string>
-  const dimensionIdToDimensionRefIdx = {} as Record<string, string>
+  const dimensionIdToDimensionRefIdx = {} as Record<string, number>
 
   // Handle PG updates
   await insertTemplateScaleRefQuery.run({templateScales}, pg)
