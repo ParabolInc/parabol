@@ -97,13 +97,13 @@ const NewMeetingAvatarGroup = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
   const {mediaRoom, meeting, allowVideo, peers, producers, consumers, room} = props
-  const {id: meetingId, team} = meeting
+  const {id: meetingId, team, meetingMembers} = meeting
   const {id: teamId, teamMembers} = team
   const isDesktop = useBreakpoint(Breakpoint.SINGLE_REFLECTION_COLUMN)
 
   // all connected teamMembers except self
   const connectedTeamMembers = useMemo(() => {
-    return teamMembers
+    return meetingMembers
       .filter((teamMember) => {
         return (
           teamMember.userId === viewerId ||
@@ -118,7 +118,7 @@ const NewMeetingAvatarGroup = (props: Props) => {
         ...tm,
         key: tm.userId
       }))
-  }, [teamMembers])
+  }, [meetingMembers])
   const overflowThreshold = isDesktop ? MAX_AVATARS_DESKTOP : MAX_AVATARS_MOBILE
   const visibleConnectedTeamMembers = connectedTeamMembers.slice(0, overflowThreshold)
   const hiddenTeamMemberCount = connectedTeamMembers.length - visibleConnectedTeamMembers.length
@@ -156,7 +156,7 @@ const NewMeetingAvatarGroup = (props: Props) => {
         return (
           <OverlappingBlock key={teamMember.child.id}>
             <NewMeetingAvatar
-              teamMember={teamMember.child}
+              teamMember={teamMember.child.teamMember}
               onTransitionEnd={teamMember.onTransitionEnd}
               status={isInit ? TransitionStatus.ENTERED : teamMember.status}
               peerProducers={peerProducers || []}
@@ -185,15 +185,37 @@ export default createFragmentContainer(NewMeetingAvatarGroup, {
       team {
         id
         teamMembers {
-          ...AddTeamMemberAvatarButton_teamMembers
           id
-          user {
-            isConnected
-            lastSeenAt
-            lastSeenAtURLs
-          }
-          userId
+          ...AddTeamMemberAvatarButton_teamMembers
+        }
+        #   id
+        #   user {
+        #     isConnected
+        #     lastSeenAt
+        #     lastSeenAtURLs
+        #   }
+        #   userId
+        #   ...NewMeetingAvatar_teamMember
+        # }
+      }
+      meetingMembers {
+        id
+        userId
+        user {
+          isConnected
+          lastSeenAt
+          lastSeenAtURLs
+          picture
+        }
+        # ...AddTeamMemberModal_meetingMembers
+        # ...AddTeamMemberAvatarButton_teamMembers
+        teamMember {
           ...NewMeetingAvatar_teamMember
+          id
+          createdAt
+          isSelf
+          picture
+          preferredName
         }
       }
     }
