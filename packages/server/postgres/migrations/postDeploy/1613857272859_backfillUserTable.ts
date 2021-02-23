@@ -14,7 +14,7 @@ export async function up(pgm: MigrationBuilder): Promise<void> {
 
   const doBackfill = async (
     usersByFieldChoice: ('createdAt' | 'updatedAt'),
-    afterTs?: Date
+    usersAfterTs?: Date
   ) => {
     let i = 0
     let foundUsers = false
@@ -23,19 +23,20 @@ export async function up(pgm: MigrationBuilder): Promise<void> {
     // todo: check for duplicate values for id or email in rethink users
 
     console.log('starting backfill pass...')
-    console.log('after ts:', afterTs, 'by:', usersByFieldChoice)
+    console.log('after ts:', usersAfterTs, 'by:', usersByFieldChoice)
     while (true) {
       console.log('i:', i)
       const offset = batchSize * i
       const rethinkUsers = await r
         .table('User')
         .orderBy(usersByFieldChoice)
-        .filter(row => row(usersByFieldChoice).gt(afterTs ?? r.minval))
+        .filter(row => row(usersByFieldChoice).gt(usersAfterTs ?? r.minval))
         .skip(offset)
         .limit(batchSize)
         .run()
       if (!rethinkUsers.length) { break }
       foundUsers = true
+      // todo: bring back backupUserQuery, as it's not the same as insert
       await catchAndLog(() => insertUser(rethinkUsers))
       i += 1
     }
