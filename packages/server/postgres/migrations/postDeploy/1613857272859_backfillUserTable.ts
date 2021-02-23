@@ -29,10 +29,11 @@ export async function up(pgm: MigrationBuilder): Promise<void> {
       const offset = batchSize * i
       const rethinkUsers = await r
         .table('User')
+        .between(usersAfterTs ?? r.minval, r.maxval, {index: usersByFieldChoice})
         .orderBy(usersByFieldChoice)
-        .filter(row => row(usersByFieldChoice).gt(usersAfterTs ?? r.minval))
         .skip(offset)
         .limit(batchSize)
+        .filter(row => row('email').eq('DELETED').not())
         .run()
       if (!rethinkUsers.length) { break }
       foundUsers = true
