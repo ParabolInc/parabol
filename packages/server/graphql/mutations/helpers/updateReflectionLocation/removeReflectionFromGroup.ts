@@ -17,16 +17,24 @@ const removeReflectionFromGroup = async (reflectionId, {dataLoader}) => {
     .get(oldReflectionGroupId)
     .run()
   const {sortOrder: oldSortOrder} = oldReflectionGroup
-  const maxSortOrder = await r
+  const reflectionGroups = await r
     .table('RetroReflectionGroup')
-    .getAll("1kHnE9uN5C", {index: 'meetingId'})('sortOrder')
-    .max()
-    .default(0)
+    .getAll(meetingId, {index: 'meetingId'})
+    .filter({isActive: true})
+    .orderBy('sortOrder')
     .run()
   const meeting = await dataLoader.get('newMeetings').load(meetingId)
 
   // RESOLUTION
-  const newSortOrder = oldSortOrder === maxSortOrder ? oldSortOrder + 1 : (oldSortOrder + (oldSortOrder + 1)) / 2
+  const nextReflectionGroupIndex =
+    reflectionGroups.findIndex(({id}) => id === oldReflectionGroup.id) + 1
+  let newSortOrder
+  if (nextReflectionGroupIndex >= reflectionGroups.length) {
+    newSortOrder = oldSortOrder + 1
+  } else {
+    const nextSortOrder = reflectionGroups[nextReflectionGroupIndex].sortOrder
+    newSortOrder = (oldSortOrder + nextSortOrder) / 2
+  }
   const reflectionGroup = new ReflectionGroup({meetingId, promptId, sortOrder: newSortOrder})
   await r
     .table('RetroReflectionGroup')

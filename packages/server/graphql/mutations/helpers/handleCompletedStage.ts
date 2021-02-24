@@ -29,40 +29,42 @@ const handleCompletedRetrospectiveStage = async (
     if (stage.phaseType === REFLECT) {
       const r = await getRethink()
       const now = new Date()
-      const reflectionGroups = await dataLoader
-        .get('retroReflectionGroupsByMeetingId')
-        .load(meeting.id)
-      const reflections = await r
-        .table('RetroReflection')
-        .getAll(meeting.id, {index: 'meetingId'})
-        .filter({isActive: true})
-        .orderBy('createdAt')
-        .run()
-      const {reflectionGroupMapping, autoGroupThreshold, nextThresh} = groupReflections(
-        reflections,
+
+      const [reflectionGroups, reflections] = await Promise.all([
+        dataLoader.get('retroReflectionGroupsByMeetingId').load(meeting.id),
+        r
+          .table('RetroReflection')
+          .getAll(meeting.id, {index: 'meetingId'})
+          .filter({isActive: true})
+          .orderBy('createdAt')
+          .run()
+      ])
+
+      const {reflectionGroupMapping} = groupReflections(
+        reflections.slice(),
         AUTO_GROUPING_THRESHOLD
       )
-      console.log(`autoGroupThreshold = ${autoGroupThreshold}; nextThresh = ${nextThresh}`)
 
-      reflectionGroups.sort((groupA, groupB) => {
+      const sortedReflectionGroups = reflectionGroups.slice().sort((groupA, groupB) => {
         const newGroupIdA = reflectionGroupMapping[groupA.id]
         const newGroupIdB = reflectionGroupMapping[groupB.id]
-        return newGroupIdA.localeCompare(newGroupIdB)
+        return newGroupIdA < newGroupIdB ? -1 : 1
       })
 
-      reflectionGroups.forEach(async (group, index) => {
-        group.sortOrder = index
-        await r
-          .table('RetroReflectionGroup')
-          .get(group.id)
-          .update({
-            sortOrder: index,
-            updatedAt: now
-          } as any)
-          .run()
-      })
+      await Promise.all(
+        sortedReflectionGroups.map((group, index) => {
+          group.sortOrder = index
+          r.table('RetroReflectionGroup')
+            .get(group.id)
+            .update({
+              sortOrder: index,
+              updatedAt: now
+            } as any)
+            .run()
+        })
+      )
 
-      data.reflectionGroups = reflectionGroups
+      data.reflectionGroups = sortedReflectionGroups
     }
 
     return {[stage.phaseType]: data}
