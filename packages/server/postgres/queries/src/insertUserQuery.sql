@@ -45,7 +45,7 @@
     "rol",
     "payLaterClickCount"
   ) VALUES :users
-  ON CONFLICT (id) DO UPDATE SET
+  ON CONFLICT (email) DO UPDATE SET
     email = EXCLUDED."email",
     "createdAt" = EXCLUDED."createdAt",
     "updatedAt" = EXCLUDED."updatedAt",

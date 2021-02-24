@@ -8,7 +8,7 @@ export const shorthands: ColumnDefinitions | undefined = undefined;
 
 export async function up(pgm: MigrationBuilder): Promise<void> {
   const r = await getRethink()
-  const batchSize = 5000
+  const batchSize = 1000
   const backfillStartTs = new Date()
   console.log('start ts:', backfillStartTs)
 
@@ -28,9 +28,10 @@ export async function up(pgm: MigrationBuilder): Promise<void> {
       console.log('i:', i)
       const offset = batchSize * i
       const rethinkUsers = await r
+        .db('actionProduction')
         .table('User')
         .between(usersAfterTs ?? r.minval, r.maxval, {index: usersByFieldChoice})
-        .orderBy(usersByFieldChoice)
+        .orderBy(usersByFieldChoice, {index: usersByFieldChoice})
         .skip(offset)
         .limit(batchSize)
         .filter(row => row('email').eq('DELETED').not())
