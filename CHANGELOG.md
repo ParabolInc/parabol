@@ -5,16 +5,130 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.0.0 2021-Feb-18
+
+### Fixes
+- User cannot delete prompts from retro templates
+- Non-meeting members do not get meeting summary emails (#4681)
+
+### Changed
+- Threaded comments are fully expanded (#4647)
+
+## 5.36.0 2021-Feb-16
+
+### Added
+
+- Release Sprint Poker (#4667)
+
+## 5.35.0 2021-Feb-10
+
+### Added
+
+- postgres-json-schema PG extension to dev docker-compose (#4660)
+
+### Fixed
+
+- Hyperlinks in discussion thread comments (#4655)
+- Poker Jira Filter includes all projects and avatars (#4663)
+- Template dialog select button (#4653)
+- Retro collapsing stack animation (#4643)
+
+### Changed
+
+- Logos & Static assets (#4645)
+- Meeting members are only added when they enter the meeting (#4611)
+
+## 5.34.0 2021-Feb-04
+
+### Added
+
+- New icebreakers in the icebreaker phase of a meeting (#4557)
+- Make poker card deck slideable (#4604)
+- Unique illustrations for default retro and poker meeting templates (#4642)
+- OrgUserAudit table for better tracking & reporting (#4582)
+- Postgres setup configurations for CI and prod (#4640)
+
+### Fixed
+
+- Retro column UI fixes (#4612)
+- Fixed various undefined type errors reported by Sentry (#4620, #4627)
+- Timeline events not scrolling (#4588)
+- New meeting joiner infinite loop (#4625)
+- Pinned agenda items removed on meeting end (#4641)
+
+## 5.33.1 2021-Jan-28
+
+### Fixed
+
+- Fixed replicated org users (#4541)
+- Fixed renderQuery failing to send error to Sentry (#4601)
+
+## 5.33.0 2021-Jan-27
+
+### Added
+
+- Adds a placeholder with example JQL when JQL search is turned on (#4576)
+- Added postgress to local dev environment allowing developers to run and manage postgres locally via docker-compose (#4580)
+
+### Changed
+
+- Shows the mock loading bars when a search is in progress. this is a little more jerky than ideal, but we need to show folks that a search is pending (#4576)
+
+### Fixed
+
+- Fixes a bug if JQL is turned on too fast (#4576)
+
+## 5.32.0 2021-Jan-20
+
+### Fixed
+
+- Fixed a bug where tasks didn’t update #4556
+- Fixed a bug with client tempId #4560
+- Fixed a bug with the group title error message #4562
+
+## 5.31.2 2021-Jan-14
+
+### Added
+
+- Making grouping columns responsive in retrospective meeting (#3614)
+
+### Changed
+
+- Links in discussion thread comments are now clickable links (#4345)
+- More intuitive template dialog with FAB button (#4128)
+- Preparation work for Slack migration (#4373)
+
+### Fixed
+
+- Sprint Poker meetings ended before Scoping phases shouldn't generate a summary (#4465)
+- Better UI for many Jira projects import (#4512)
+- Carousel scrolls to different meeting type after changing team (#4484)
+- CSV export is malformed (#4489)
+- Other performance improvements (#4488, #4506, #4513)
+
+## 5.30.0 2021-Jan-06
+
+### Changed
+
+- Guarantee unique ID for redis jobs (#4487)
+
+### Fixed
+
+- Retro meeting fixes & add new emojis (#4499)
+- Remove retro templates that have no prompts (#4486)
+
 ## 5.29.1 2020-Dec-23
 
 ### Fixed
 
 - Bug on non-poker meeting summary
+
 ## 5.29.0 2020-Dec-22
 
 ### Added
 
 - Support for multi-domain SAML (#4478)
+
 ### Changed
 
 - Upgrade to Webpack v5 (#4455, #4477)
@@ -22,6 +136,7 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 ### Fixed
 
 - Scale UI Fixups (#4472)
+
 ## 5.28.0 2020-Dec-17
 
 ### Added

@@ -6,7 +6,7 @@ import React from 'react'
 import styled from '@emotion/styled'
 import {Link} from 'react-router-dom'
 import {PALETTE} from '../../styles/paletteV2'
-import parabolLogo from '../../styles/theme/images/brand/logo.svg'
+import parabolLogo from '../../styles/theme/images/brand/logo-lockup-white.svg'
 
 const HeaderContainer = styled('div')({
   alignItems: 'center',

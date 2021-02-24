@@ -8,6 +8,8 @@ import {
   getDefaultKeyBinding
 } from 'draft-js'
 import React, {RefObject, Suspense, useRef} from 'react'
+import completeEntity from '../../utils/draftjs/completeEntity'
+import linkify from '../../utils/linkify'
 import {Card} from '../../types/constEnums'
 import {textTags} from '../../utils/constants'
 import entitizeText from '../../utils/draftjs/entitizeText'
@@ -21,8 +23,6 @@ import useCommentPlugins from './useCommentPlugins'
 const RootEditor = styled('div')({
   fontSize: Card.FONT_SIZE,
   lineHeight: Card.LINE_HEIGHT,
-  maxHeight: 84,
-  overflowY: 'auto',
   width: '100%'
 })
 
@@ -151,7 +151,7 @@ const CommentEditor = (props: Props) => {
     return 'not-handled'
   }
 
-  const onPastedText = (text): DraftHandleValue => {
+  const onPastedText = (text: string): DraftHandleValue => {
     if (text) {
       for (let i = 0; i < textTags.length; i++) {
         const tag = textTags[i]
@@ -163,6 +163,16 @@ const CommentEditor = (props: Props) => {
           }
         }
       }
+    }
+    const links = linkify.match(text)
+    const url = links && links[0].url.trim()
+    const trimmedText = text.trim()
+    if (url === trimmedText) {
+      const nextEditorState = completeEntity(editorState, 'LINK', {href: url}, trimmedText, {
+        keepSelection: true
+      })
+      setEditorState(nextEditorState)
+      return 'handled'
     }
     return 'not-handled'
   }
@@ -176,6 +186,11 @@ const CommentEditor = (props: Props) => {
     onSubmit()
   }
 
+  const handleBlur = (e) => {
+    if (renderModal || !onBlur) return
+    onBlur(e)
+  }
+
   const useFallback = isAndroid && !readOnly
   const showFallback = useFallback && !isRichDraft(editorState)
   return (
@@ -187,27 +202,28 @@ const CommentEditor = (props: Props) => {
             placeholder={placeholder}
             onBlur={onBlur}
             onKeyDown={onKeyDownFallback}
+            onPastedText={onPastedText}
             editorRef={editorRef}
           />
         </Suspense>
       ) : (
-        <Editor
-          spellCheck
-          blockStyleFn={blockStyleFn}
-          editorState={editorState}
-          handleBeforeInput={onBeforeInput}
-          handleKeyCommand={nextKeyCommand}
-          handlePastedText={onPastedText}
-          handleReturn={onReturn}
-          keyBindingFn={onKeyBindingFn}
-          onBlur={onBlur}
-          onFocus={onFocus}
-          onChange={onChange}
-          placeholder={placeholder}
-          readOnly={readOnly || (useFallback && !showFallback)}
-          ref={editorRef as any}
-        />
-      )}
+          <Editor
+            spellCheck
+            blockStyleFn={blockStyleFn}
+            editorState={editorState}
+            handleBeforeInput={onBeforeInput}
+            handleKeyCommand={nextKeyCommand}
+            handlePastedText={onPastedText}
+            handleReturn={onReturn}
+            keyBindingFn={onKeyBindingFn}
+            onBlur={handleBlur}
+            onFocus={onFocus}
+            onChange={onChange}
+            placeholder={placeholder}
+            readOnly={readOnly || (useFallback && !showFallback)}
+            ref={editorRef as any}
+          />
+        )}
       {renderModal && renderModal()}
     </RootEditor>
   )

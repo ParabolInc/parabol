@@ -61,7 +61,7 @@ export interface IAuthIdentity {
  */
 export const enum AuthIdentityTypeEnum {
   LOCAL = 'LOCAL',
-  GOOGLE = 'GOOGLE',
+  GOOGLE = 'GOOGLE'
 }
 
 /**
@@ -149,7 +149,7 @@ export const enum NewMeetingPhaseTypeEnum {
   discuss = 'discuss',
   SUMMARY = 'SUMMARY',
   SCOPE = 'SCOPE',
-  ESTIMATE = 'ESTIMATE',
+  ESTIMATE = 'ESTIMATE'
 }
 
 /**
@@ -361,7 +361,7 @@ export interface INewMeeting {
   /**
    * The meeting member of the viewer
    */
-  viewerMeetingMember: MeetingMember;
+  viewerMeetingMember: MeetingMember | null;
 }
 
 /**
@@ -490,7 +490,7 @@ export interface ISuggestedIntegration {
 export const enum TaskServiceEnum {
   github = 'github',
   jira = 'jira',
-  PARABOL = 'PARABOL',
+  PARABOL = 'PARABOL'
 }
 
 /**
@@ -1548,7 +1548,7 @@ export interface IThreadOnTaskArguments {
 export const enum ThreadSourceEnum {
   AGENDA_ITEM = 'AGENDA_ITEM',
   REFLECTION_GROUP = 'REFLECTION_GROUP',
-  STORY = 'STORY',
+  STORY = 'STORY'
 }
 
 /**
@@ -1700,7 +1700,7 @@ export const enum TaskStatusEnum {
   active = 'active',
   stuck = 'stuck',
   done = 'done',
-  future = 'future',
+  future = 'future'
 }
 
 /**
@@ -1886,7 +1886,7 @@ export interface ITeamMembersOnTeamArguments {
 export const enum MeetingTypeEnum {
   action = 'action',
   retrospective = 'retrospective',
-  poker = 'poker',
+  poker = 'poker'
 }
 
 /**
@@ -2108,7 +2108,7 @@ export interface IReflectTemplate {
 export const enum SharingScopeEnum {
   TEAM = 'TEAM',
   ORGANIZATION = 'ORGANIZATION',
-  PUBLIC = 'PUBLIC',
+  PUBLIC = 'PUBLIC'
 }
 
 /**
@@ -2366,7 +2366,7 @@ export interface ITemplateScaleValue {
 export const enum TierEnum {
   personal = 'personal',
   pro = 'pro',
-  enterprise = 'enterprise',
+  enterprise = 'enterprise'
 }
 
 /**
@@ -2668,7 +2668,7 @@ export interface IOrganizationUser {
  * The role of the org user
  */
 export const enum OrgUserRole {
-  BILLING_LEADER = 'BILLING_LEADER',
+  BILLING_LEADER = 'BILLING_LEADER'
 }
 
 export interface IOrgUserCount {
@@ -2922,7 +2922,7 @@ export const enum InvoiceLineItemEnum {
   ADDED_USERS = 'ADDED_USERS',
   INACTIVITY_ADJUSTMENTS = 'INACTIVITY_ADJUSTMENTS',
   OTHER_ADJUSTMENTS = 'OTHER_ADJUSTMENTS',
-  REMOVED_USERS = 'REMOVED_USERS',
+  REMOVED_USERS = 'REMOVED_USERS'
 }
 
 /**
@@ -2964,7 +2964,7 @@ export const enum InvoiceStatusEnum {
   PENDING = 'PENDING',
   PAID = 'PAID',
   FAILED = 'FAILED',
-  UPCOMING = 'UPCOMING',
+  UPCOMING = 'UPCOMING'
 }
 
 /**
@@ -3057,7 +3057,7 @@ export const enum SuggestedActionTypeEnum {
   tryTheDemo = 'tryTheDemo',
   tryRetroMeeting = 'tryRetroMeeting',
   createNewTeam = 'createNewTeam',
-  tryActionMeeting = 'tryActionMeeting',
+  tryActionMeeting = 'tryActionMeeting'
 }
 
 /**
@@ -3175,7 +3175,7 @@ export const enum TimelineEventEnum {
   actionComplete = 'actionComplete',
   joinedParabol = 'joinedParabol',
   createdTeam = 'createdTeam',
-  POKER_COMPLETE = 'POKER_COMPLETE',
+  POKER_COMPLETE = 'POKER_COMPLETE'
 }
 
 /**
@@ -3217,6 +3217,7 @@ export interface IMeetingMember {
 
   /**
    * true if present, false if absent, else null
+   * @deprecated "Members are checked in when they enter the meeting now & not created beforehand"
    */
   isCheckedIn: boolean | null;
   meetingId: string;
@@ -3302,7 +3303,7 @@ export interface INotification {
 export const enum NotificationStatusEnum {
   UNREAD = 'UNREAD',
   READ = 'READ',
-  CLICKED = 'CLICKED',
+  CLICKED = 'CLICKED'
 }
 
 /**
@@ -3315,7 +3316,7 @@ export const enum NotificationEnum {
   TEAM_INVITATION = 'TEAM_INVITATION',
   TEAM_ARCHIVED = 'TEAM_ARCHIVED',
   TASK_INVOLVES = 'TASK_INVOLVES',
-  MEETING_STAGE_TIME_LIMIT_END = 'MEETING_STAGE_TIME_LIMIT_END',
+  MEETING_STAGE_TIME_LIMIT_END = 'MEETING_STAGE_TIME_LIMIT_END'
 }
 
 /**
@@ -3368,6 +3369,7 @@ export interface IJiraRemoteProject {
   cloudId: string;
   key: string;
   name: string;
+  avatar: string;
   avatarUrls: IJiraRemoteAvatarUrls;
   projectCategory: IJiraRemoteProjectCategory;
   simplified: boolean;
@@ -3375,7 +3377,7 @@ export interface IJiraRemoteProject {
 }
 
 /**
- * A project fetched from Jira in real time
+ * The URLs for avatars. NOTE: If they are custom, an Authorization header is required!
  */
 export interface IJiraRemoteAvatarUrls {
   __typename: 'JiraRemoteAvatarUrls';
@@ -3492,11 +3494,6 @@ export interface ISlackIntegration {
   isActive: boolean;
 
   /**
-   * The access token to slack, only visible to the owner. Used as a fallback to botAccessToken
-   */
-  accessToken: string | null;
-
-  /**
    * the parabol bot user id
    */
   botUserId: string | null;
@@ -3547,7 +3544,7 @@ export interface ISlackIntegration {
   updatedAt: any;
 
   /**
-   * The user that the access token is attached to
+   * The id of the user that integrated Slack
    */
   userId: string;
 
@@ -3581,7 +3578,7 @@ export const enum SlackNotificationEventEnum {
   meetingStart = 'meetingStart',
   meetingEnd = 'meetingEnd',
   MEETING_STAGE_TIME_LIMIT_END = 'MEETING_STAGE_TIME_LIMIT_END',
-  MEETING_STAGE_TIME_LIMIT_START = 'MEETING_STAGE_TIME_LIMIT_START',
+  MEETING_STAGE_TIME_LIMIT_START = 'MEETING_STAGE_TIME_LIMIT_START'
 }
 
 /**
@@ -3596,7 +3593,7 @@ export const enum SlackNotificationEventTypeEnum {
   /**
    * notification that concerns a single member on the team
    */
-  member = 'member',
+  member = 'member'
 }
 
 /**
@@ -5184,7 +5181,7 @@ export interface ICustomPhaseItem {
  * The type of phase item
  */
 export const enum CustomPhaseItemTypeEnum {
-  retroPhaseItem = 'retroPhaseItem',
+  retroPhaseItem = 'retroPhaseItem'
 }
 
 /**
@@ -5282,7 +5279,7 @@ export interface IActionMeeting {
   /**
    * The action meeting member of the viewer
    */
-  viewerMeetingMember: IActionMeetingMember;
+  viewerMeetingMember: IActionMeetingMember | null;
 
   /**
    * A single agenda item
@@ -5337,6 +5334,7 @@ export interface IActionMeetingMember {
 
   /**
    * true if present, false if absent, else null
+   * @deprecated "Members are checked in when they enter the meeting now & not created beforehand"
    */
   isCheckedIn: boolean | null;
   meetingId: string;
@@ -5558,7 +5556,7 @@ export interface IRetrospectiveMeeting {
   /**
    * The retrospective meeting member of the viewer
    */
-  viewerMeetingMember: IRetrospectiveMeetingMember;
+  viewerMeetingMember: IRetrospectiveMeetingMember | null;
 
   /**
    * the threshold used to achieve the autogroup. Useful for model tuning. Serves as a flag if autogroup was used.
@@ -5644,7 +5642,7 @@ export interface IReflectionGroupsOnRetrospectiveMeetingArguments {
  */
 export const enum ReflectionGroupSortEnum {
   voteCount = 'voteCount',
-  stageOrder = 'stageOrder',
+  stageOrder = 'stageOrder'
 }
 
 /**
@@ -5660,6 +5658,7 @@ export interface IRetrospectiveMeetingMember {
 
   /**
    * true if present, false if absent, else null
+   * @deprecated "Members are checked in when they enter the meeting now & not created beforehand"
    */
   isCheckedIn: boolean | null;
   meetingId: string;
@@ -6683,7 +6682,7 @@ export interface IMassInvitationPayload {
 export const enum TeamInvitationErrorEnum {
   accepted = 'accepted',
   expired = 'expired',
-  notFound = 'notFound',
+  notFound = 'notFound'
 }
 
 export interface IVerifiedInvitationPayload {
@@ -6772,11 +6771,6 @@ export interface IMutation {
    * Add a new scale value for a scale in a poker template
    */
   addPokerTemplateScaleValue: IAddPokerTemplateScaleValuePayload;
-
-  /**
-   * Add or remove a reactji to a reflection
-   */
-  addReactjiToReflection: AddReactjiToReflectionPayload;
 
   /**
    * Add or remove a reactji from a reactable
@@ -6947,12 +6941,6 @@ export interface IMutation {
   endDraggingReflection: IEndDraggingReflectionPayload | null;
 
   /**
-   * Finish a new meeting
-   * @deprecated "Using more specfic end[meetingType] instead"
-   */
-  endNewMeeting: IEndNewMeetingPayload;
-
-  /**
    * Finish a retrospective meeting
    */
   endRetrospective: EndRetrospectivePayload;
@@ -7010,6 +6998,7 @@ export interface IMutation {
 
   /**
    * Check a member in as present or absent
+   * @deprecated "Members now join lazily and joining means they are present"
    */
   newMeetingCheckIn: INewMeetingCheckInPayload | null;
 
@@ -7170,6 +7159,11 @@ export interface IMutation {
   setCheckInEnabled: ISetCheckInEnabledPayload;
 
   /**
+   * Update the default Slack channel where notifications are sent
+   */
+  setDefaultSlackChannel: SetDefaultSlackChannelPayload;
+
+  /**
    * Set the role of a user
    */
   setOrgUserRole: SetOrgUserRolePayload | null;
@@ -7199,12 +7193,6 @@ export interface IMutation {
    * Start a new meeting
    */
   startCheckIn: StartCheckInPayload;
-
-  /**
-   * Start a new meeting
-   * @deprecated "Using more specfic start[meetingType] instead"
-   */
-  startNewMeeting: IStartNewMeetingPayload;
 
   /**
    * Start a new meeting
@@ -7353,6 +7341,11 @@ export interface IMutation {
    * Set the jira field that the poker dimension should map to
    */
   updateJiraDimensionField: UpdateJiraDimensionFieldPayload;
+
+  /**
+   * Create a meeting member for a user
+   */
+  joinMeeting: JoinMeetingPayload;
 }
 
 export interface IAcceptTeamInvitationOnMutationArguments {
@@ -7408,23 +7401,6 @@ export interface IAddPokerTemplateScaleOnMutationArguments {
 export interface IAddPokerTemplateScaleValueOnMutationArguments {
   scaleId: string;
   scaleValue: IAddTemplateScaleInput;
-}
-
-export interface IAddReactjiToReflectionOnMutationArguments {
-  /**
-   * The reflection getting the reaction
-   */
-  reflectionId: string;
-
-  /**
-   * the id of the reactji to add
-   */
-  reactji: string;
-
-  /**
-   * If true, remove the reaction, else add it
-   */
-  isRemove?: boolean | null;
 }
 
 export interface IAddReactjiToReactableOnMutationArguments {
@@ -7788,13 +7764,6 @@ export interface IEndDraggingReflectionOnMutationArguments {
   dragId?: string | null;
 }
 
-export interface IEndNewMeetingOnMutationArguments {
-  /**
-   * The meeting to end
-   */
-  meetingId: string;
-}
-
 export interface IEndRetrospectiveOnMutationArguments {
   /**
    * The meeting to end
@@ -8149,6 +8118,11 @@ export interface ISetCheckInEnabledOnMutationArguments {
   isEnabled: boolean;
 }
 
+export interface ISetDefaultSlackChannelOnMutationArguments {
+  slackChannelId: string;
+  teamId: string;
+}
+
 export interface ISetOrgUserRoleOnMutationArguments {
   /**
    * The org to affect
@@ -8223,18 +8197,6 @@ export interface IStartCheckInOnMutationArguments {
    * The team starting the meeting
    */
   teamId: string;
-}
-
-export interface IStartNewMeetingOnMutationArguments {
-  /**
-   * The team starting the meeting
-   */
-  teamId: string;
-
-  /**
-   * The base type of the meeting (action, retro, etc)
-   */
-  meetingType: MeetingTypeEnum;
 }
 
 export interface IStartRetrospectiveOnMutationArguments {
@@ -8546,6 +8508,10 @@ export interface IUpdateJiraDimensionFieldOnMutationArguments {
   meetingId: string;
 }
 
+export interface IJoinMeetingOnMutationArguments {
+  meetingId: string;
+}
+
 export interface IAcceptTeamInvitationPayload {
   __typename: 'AcceptTeamInvitationPayload';
   error: IStandardMutationError | null;
@@ -8722,22 +8688,6 @@ export interface IAddTemplateScaleInput {
 }
 
 /**
- * Return object for AddReactjiToReflectionPayload
- */
-export type AddReactjiToReflectionPayload =
-  | IErrorPayload
-  | IAddReactjiToReflectionSuccess;
-
-export interface IAddReactjiToReflectionSuccess {
-  __typename: 'AddReactjiToReflectionSuccess';
-
-  /**
-   * the reflection with the updated list of reactjis
-   */
-  reflection: IRetroReflection;
-}
-
-/**
  * Return object for AddReactjiToReactablePayload
  */
 export type AddReactjiToReactablePayload =
@@ -8758,7 +8708,7 @@ export interface IAddReactjiToReactableSuccess {
  */
 export const enum ReactableEnum {
   COMMENT = 'COMMENT',
-  REFLECTION = 'REFLECTION',
+  REFLECTION = 'REFLECTION'
 }
 
 export interface IAddReflectTemplatePayload {
@@ -8809,7 +8759,7 @@ export interface IAddFeatureFlagPayload {
 export const enum UserFlagEnum {
   video = 'video',
   jira = 'jira',
-  poker = 'poker',
+  poker = 'poker'
 }
 
 export interface IAddGitHubAuthPayload {
@@ -9157,7 +9107,7 @@ export interface INotifyTaskInvolves {
  */
 export const enum TaskInvolvementType {
   ASSIGNEE = 'ASSIGNEE',
-  MENTIONEE = 'MENTIONEE',
+  MENTIONEE = 'MENTIONEE'
 }
 
 export interface ICreateTaskInput {
@@ -9196,7 +9146,7 @@ export interface ICreateTaskInput {
 export const enum AreaEnum {
   meeting = 'meeting',
   teamDash = 'teamDash',
-  userDash = 'userDash',
+  userDash = 'userDash'
 }
 
 export interface ICreateUserPicturePutUrlPayload {
@@ -9403,7 +9353,7 @@ export interface IPokerMeeting {
   /**
    * The Poker meeting member of the viewer
    */
-  viewerMeetingMember: IPokerMeetingMember;
+  viewerMeetingMember: IPokerMeetingMember | null;
 
   /**
    * The number of comments generated in the meeting
@@ -9448,6 +9398,7 @@ export interface IPokerMeetingMember {
 
   /**
    * true if present, false if absent, else null
+   * @deprecated "Members are checked in when they enter the meeting now & not created beforehand"
    */
   isCheckedIn: boolean | null;
   meetingId: string;
@@ -9655,36 +9606,7 @@ export interface IRemoteReflectionDrag {
  */
 export const enum DragReflectionDropTargetTypeEnum {
   REFLECTION_GROUP = 'REFLECTION_GROUP',
-  REFLECTION_GRID = 'REFLECTION_GRID',
-}
-
-export interface IEndNewMeetingPayload {
-  __typename: 'EndNewMeetingPayload';
-  error: IStandardMutationError | null;
-
-  /**
-   * true if the meeting was killed (ended before reaching last stage)
-   */
-  isKill: boolean | null;
-  team: ITeam | null;
-  meeting: NewMeeting | null;
-
-  /**
-   * The ID of the suggestion to try a retro meeting, if tried
-   */
-  removedSuggestedActionId: string | null;
-  removedTaskIds: Array<string> | null;
-
-  /**
-   * An event that is important to the viewer, e.g. an ended meeting
-   */
-  timelineEvent: TimelineEvent | null;
-  updatedTaskIds: Array<string> | null;
-
-  /**
-   * Any tasks that were updated during the meeting
-   */
-  updatedTasks: Array<ITask> | null;
+  REFLECTION_GRID = 'REFLECTION_GRID'
 }
 
 /**
@@ -10381,6 +10303,27 @@ export interface ISetCheckInEnabledPayload {
   settings: TeamMeetingSettings | null;
 }
 
+/**
+ * Return object for SetDefaultSlackChannelPayload
+ */
+export type SetDefaultSlackChannelPayload =
+  | IErrorPayload
+  | ISetDefaultSlackChannelSuccess;
+
+export interface ISetDefaultSlackChannelSuccess {
+  __typename: 'SetDefaultSlackChannelSuccess';
+
+  /**
+   * The id of the slack channel that is now the default slack channel
+   */
+  slackChannelId: string;
+
+  /**
+   * The team member with the updated slack channel
+   */
+  teamMember: ITeamMember;
+}
+
 export type SetOrgUserRolePayload =
   | ISetOrgUserRoleAddedPayload
   | ISetOrgUserRoleRemovedPayload;
@@ -10461,14 +10404,6 @@ export interface IStartCheckInSuccess {
   meeting: IActionMeeting;
   meetingId: string;
   team: ITeam;
-}
-
-export interface IStartNewMeetingPayload {
-  __typename: 'StartNewMeetingPayload';
-  error: IStandardMutationError | null;
-  team: ITeam | null;
-  meetingId: string | null;
-  meeting: NewMeeting | null;
 }
 
 /**
@@ -10706,7 +10641,7 @@ export interface IUpdatePokerScopeItemInput {
  */
 export const enum AddOrDeleteEnum {
   ADD = 'ADD',
-  DELETE = 'DELETE',
+  DELETE = 'DELETE'
 }
 
 export interface IUpdateReflectionContentPayload {
@@ -11010,6 +10945,21 @@ export interface IUpdateJiraDimensionFieldSuccess {
   meeting: IPokerMeeting | null;
 }
 
+/**
+ * Return object for JoinMeetingPayload
+ */
+export type JoinMeetingPayload = IErrorPayload | IJoinMeetingSuccess;
+
+export interface IJoinMeetingSuccess {
+  __typename: 'JoinMeetingSuccess';
+  meetingId: string;
+
+  /**
+   * The meeting with the updated stages, if any
+   */
+  meeting: NewMeeting;
+}
+
 export interface ISubscription {
   __typename: 'Subscription';
   meetingSubscription: MeetingSubscriptionPayload;
@@ -11057,7 +11007,17 @@ export type MeetingSubscriptionPayload =
   | IPokerRevealVotesSuccess
   | IPokerResetDimensionSuccess
   | IPokerAnnounceDeckHoverSuccess
-  | IPokerSetFinalScoreSuccess;
+  | IPokerSetFinalScoreSuccess
+  | IJoinMeetingSuccess;
+
+export interface IAddReactjiToReflectionSuccess {
+  __typename: 'AddReactjiToReflectionSuccess';
+
+  /**
+   * the reflection with the updated list of reactjis
+   */
+  reflection: IRetroReflection;
+}
 
 export interface IUpdateDragLocationPayload {
   __typename: 'UpdateDragLocationPayload';
@@ -11108,6 +11068,35 @@ export interface IDisconnectSocketPayload {
    * The user that disconnected
    */
   user: IUser | null;
+}
+
+export interface IEndNewMeetingPayload {
+  __typename: 'EndNewMeetingPayload';
+  error: IStandardMutationError | null;
+
+  /**
+   * true if the meeting was killed (ended before reaching last stage)
+   */
+  isKill: boolean | null;
+  team: ITeam | null;
+  meeting: NewMeeting | null;
+
+  /**
+   * The ID of the suggestion to try a retro meeting, if tried
+   */
+  removedSuggestedActionId: string | null;
+  removedTaskIds: Array<string> | null;
+
+  /**
+   * An event that is important to the viewer, e.g. an ended meeting
+   */
+  timelineEvent: TimelineEvent | null;
+  updatedTaskIds: Array<string> | null;
+
+  /**
+   * Any tasks that were updated during the meeting
+   */
+  updatedTasks: Array<ITask> | null;
 }
 
 export interface IMeetingStageTimeLimitPayload {
@@ -11315,7 +11304,16 @@ export type TeamSubscriptionPayload =
   | IUpdateUserProfilePayload
   | IPersistJiraSearchQuerySuccess
   | IMovePokerTemplateScaleValueSuccess
-  | IUpdateJiraDimensionFieldSuccess;
+  | IUpdateJiraDimensionFieldSuccess
+  | ISetDefaultSlackChannelSuccess;
+
+export interface IStartNewMeetingPayload {
+  __typename: 'StartNewMeetingPayload';
+  error: IStandardMutationError | null;
+  team: ITeam | null;
+  meetingId: string | null;
+  meeting: NewMeeting | null;
+}
 
 export interface IRenamePokerTemplatePayload {
   __typename: 'RenamePokerTemplatePayload';

@@ -1,4 +1,4 @@
-import shortid from 'shortid'
+import generateUID from '../../generateUID'
 import JiraSearchQuery from './JiraSearchQuery'
 
 export interface AtlassianAuthInput {
@@ -43,7 +43,7 @@ export default class AtlassianAuth {
       userId
     } = input
 
-    this.id = id || shortid.generate()
+    this.id = id || generateUID()
     this.createdAt = createdAt || new Date()
     this.isActive = isActive ?? true
     this.accessToken = accessToken

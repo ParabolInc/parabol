@@ -1,10 +1,10 @@
 import {GraphQLNonNull} from 'graphql'
-import CreateUserPicturePutUrlPayload from '../types/CreateUserPicturePutUrlPayload'
+import validateAvatarUpload from '../../fileStorage/validateAvatarUpload'
+import generateUID from '../../generateUID'
 import {getUserId, isAuthenticated} from '../../utils/authorization'
 import getS3SignedPutUrl from '../../utils/getS3SignedPutUrl'
-import validateAvatarUpload from '../../fileStorage/validateAvatarUpload'
-import shortid from 'shortid'
 import standardError from '../../utils/standardError'
+import CreateUserPicturePutUrlPayload from '../types/CreateUserPicturePutUrlPayload'
 import ImageMetadataInput from '../types/ImageMetadataInput'
 
 const createUserPicturePutUrl = {
@@ -34,7 +34,7 @@ const createUserPicturePutUrl = {
     }
 
     // RESOLUTION
-    const imgId = shortid.generate()
+    const imgId = generateUID()
     const partialPath = `User/${userId}/picture/${imgId}.${ext}`
     const url = await getS3SignedPutUrl(contentType, contentLength, partialPath)
     let pngUrl

@@ -1,5 +1,6 @@
 // Calling this while the cwd is in dev is MUCH slower than calling it at the root dir.
 // Penalty goes away when debugging.
+require('./webpack/utils/dotenv')
 const path = require('path')
 const fs = require('fs')
 const {promisify} = require('util')
@@ -10,6 +11,8 @@ const rmdir = promisify(fs.rmdir)
 const unlink = promisify(fs.unlink)
 const PROJECT_ROOT = getProjectRoot()
 const TOOLBOX_ROOT = path.join(PROJECT_ROOT, 'scripts', 'toolbox')
+const pgMigrate = require('node-pg-migrate').default
+const cliPgmConfig = require('../packages/server/postgres/pgmConfig')
 
 const compileToolbox = () => {
   return new Promise((resolve) => {
@@ -32,30 +35,32 @@ const removeArtifacts = async () => {
 }
 
 const dev = async (maybeInit) => {
-  const isInit = !fs.existsSync(path.join(TOOLBOX_ROOT, 'migrateDB.js')) || maybeInit
+  const isInit = !fs.existsSync(path.join(TOOLBOX_ROOT, 'updateSchema.js')) || maybeInit
   const redis = new Redis(process.env.REDIS_URL)
+  const toolboxPromise = compileToolbox()
   if (isInit) {
     console.log('👋👋👋      Welcome to Parabol!      👋👋👋')
-    await Promise.all([
-      compileToolbox(),
-      removeArtifacts()
-    ])
+    await Promise.all([removeArtifacts()])
   }
 
   const buildDLL = require('./buildDll')()
   const clearRedis = redis.flushall()
-  const migrateDB = require('./toolbox/migrateDB')
+  const migrateRethinkDB = require('./migrate')()
+  const programmaticPgmConfig = {
+    dbClient: cliPgmConfig,
+    dir: path.join(PROJECT_ROOT, cliPgmConfig['migrations-dir']),
+    direction: 'up',
+    migrationsTable: cliPgmConfig['migrations-table']
+  }
+  const migratePG = pgMigrate(programmaticPgmConfig)
+  await toolboxPromise
   await require('./toolbox/updateSchema.js').default()
   if (isInit) {
     // technically, this is unsafe for SSR, but they're so rarely used that's fine
     await require('./compileRelay')()
   }
   // await compileServers()
-  await Promise.all([
-    clearRedis,
-    migrateDB,
-    buildDLL,
-  ])
+  await Promise.all([clearRedis, migrateRethinkDB, migratePG, buildDLL])
   redis.disconnect()
 }
 

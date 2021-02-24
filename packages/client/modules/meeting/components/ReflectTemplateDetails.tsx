@@ -8,6 +8,10 @@ import startStopContinueTemplate from '../../../../../static/images/illustration
 import workingStuckTemplate from '../../../../../static/images/illustrations/workingStuckTemplate.svg'
 import fourLsTemplate from '../../../../../static/images/illustrations/fourLsTemplate.svg'
 import gladSadMadTemplate from '../../../../../static/images/illustrations/gladSadMadTemplate.svg'
+import energyLevelsTemplate from '../../../../../static/images/illustrations/energyLevelsTemplate.svg'
+import threeLittlePigsTemplate from '../../../../../static/images/illustrations/threeLittlePigsTemplate.svg'
+import winningStreakTemplate from '../../../../../static/images/illustrations/winningStreakTemplate.svg'
+import mountainClimberTemplate from '../../../../../static/images/illustrations/mountainClimberTemplate.svg'
 import {PALETTE} from '../../../styles/paletteV2'
 import getTemplateList from '../../../utils/getTemplateList'
 import makeTemplateDescription from '../../../utils/makeTemplateDescription'
@@ -19,6 +23,7 @@ import RemoveTemplate from './RemoveTemplate'
 import TemplatePromptList from './TemplatePromptList'
 import TemplateSharing from './TemplateSharing'
 import {MeetingTypeEnum} from '../../../types/graphql'
+import SelectTemplate from './SelectTemplate'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
 import {Threshold} from '../../../types/constEnums'
@@ -48,6 +53,7 @@ const PromptEditor = styled('div')({
 const TemplateImage = styled('img')({
   margin: '0 auto',
   maxWidth: 360,
+  maxHeight: 200,
   padding: '16px 0 0',
   width: '100%'
 })
@@ -63,27 +69,30 @@ const FirstLine = styled('div')({
   display: 'flex'
 })
 
-const Scrollable = styled('div')({
+const Scrollable = styled('div')<{isActiveTemplate: boolean}>(({isActiveTemplate}) => ({
   display: 'flex',
   flexDirection: 'column',
   overflow: 'auto',
+  paddingBottom: isActiveTemplate ? undefined : 56,
   width: '100%'
-})
+}))
 
 interface Props {
   gotoTeamTemplates: () => void
   gotoPublicTemplates: () => void
+  closePortal: () => void
   settings: ReflectTemplateDetails_settings
 }
 
 const ReflectTemplateDetails = (props: Props) => {
-  const {gotoTeamTemplates, gotoPublicTemplates, settings} = props
-  const {teamTemplates, selectedTemplate, team} = settings
-  const {id: templateId, name: templateName, prompts} = selectedTemplate
+  const {gotoTeamTemplates, gotoPublicTemplates, closePortal, settings} = props
+  const {teamTemplates, team} = settings
+  const activeTemplate = settings.activeTemplate ?? settings.selectedTemplate
+  const {id: templateId, name: templateName, prompts} = activeTemplate
   const {id: teamId, orgId} = team
-  const lowestScope = getTemplateList(teamId, orgId, selectedTemplate)
-  const isOwner = selectedTemplate.teamId === teamId
-  const description = makeTemplateDescription(lowestScope, selectedTemplate)
+  const lowestScope = getTemplateList(teamId, orgId, activeTemplate)
+  const isOwner = activeTemplate.teamId === teamId
+  const description = makeTemplateDescription(lowestScope, activeTemplate)
   const templateCount = teamTemplates.length
   const atmosphere = useAtmosphere()
   const {onError, onCompleted, submitting, submitMutation} = useMutationProps()
@@ -99,12 +108,17 @@ const ReflectTemplateDetails = (props: Props) => {
     startStopContinueTemplate: startStopContinueTemplate,
     workingStuckTemplate: workingStuckTemplate,
     fourLsTemplate: fourLsTemplate,
-    gladSadMadTemplate: gladSadMadTemplate
+    gladSadMadTemplate: gladSadMadTemplate,
+    energyLevelsTemplate: energyLevelsTemplate,
+    mountainClimberTemplate: mountainClimberTemplate,
+    threeLittlePigsTemplate: threeLittlePigsTemplate,
+    winningStreakTemplate: winningStreakTemplate
   }
   const headerImg = defaultIllustrations[templateId] ? defaultIllustrations[templateId] : customTemplate
+  const isActiveTemplate = activeTemplate.id === settings.selectedTemplate.id
   return (
     <PromptEditor>
-      <Scrollable>
+      <Scrollable isActiveTemplate={isActiveTemplate}>
         <TemplateImage src={headerImg} />
         <TemplateHeader>
           <FirstLine>
@@ -135,8 +149,9 @@ const ReflectTemplateDetails = (props: Props) => {
         </TemplateHeader>
         <TemplatePromptList isOwner={isOwner} prompts={prompts} templateId={templateId} />
         {isOwner && <AddTemplatePrompt templateId={templateId} prompts={prompts} />}
+        <TemplateSharing teamId={teamId} template={activeTemplate} />
       </Scrollable>
-      <TemplateSharing teamId={teamId} template={selectedTemplate} />
+      {!isActiveTemplate && <SelectTemplate closePortal={closePortal} template={activeTemplate} teamId={teamId} />}
     </PromptEditor>
   )
 }
@@ -158,8 +173,13 @@ graphql`
 export default createFragmentContainer(ReflectTemplateDetails, {
   settings: graphql`
     fragment ReflectTemplateDetails_settings on RetrospectiveMeetingSettings {
+      activeTemplate {
+        ...ReflectTemplateDetailsTemplate @relay(mask: false)
+        ...SelectTemplate_template
+      }
       selectedTemplate {
         ...ReflectTemplateDetailsTemplate @relay(mask: false)
+        ...SelectTemplate_template
       }
       teamTemplates {
         ...EditableTemplateName_teamTemplates

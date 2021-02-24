@@ -12,7 +12,6 @@ import addPokerTemplateDimension from './mutations/addPokerTemplateDimension'
 import addPokerTemplateScale from './mutations/addPokerTemplateScale'
 import addPokerTemplateScaleValue from './mutations/addPokerTemplateScaleValue'
 import addReactjiToReactable from './mutations/addReactjiToReactable'
-import addReactjiToReflection from './mutations/addReactjiToReflection'
 import addReflectTemplate from './mutations/addReflectTemplate'
 import addReflectTemplatePrompt from './mutations/addReflectTemplatePrompt'
 import addSlackAuth from './mutations/addSlackAuth'
@@ -43,8 +42,9 @@ import editCommenting from './mutations/editCommenting'
 import editReflection from './mutations/editReflection'
 import editTask from './mutations/editTask'
 import emailPasswordReset from './mutations/emailPasswordReset'
+import endCheckIn from './mutations/endCheckIn'
 import endDraggingReflection from './mutations/endDraggingReflection'
-import endNewMeeting from './mutations/endNewMeeting'
+import endRetrospective from './mutations/endRetrospective'
 import endSprintPoker from './mutations/endSprintPoker'
 import flagReadyToAdvance from './mutations/flagReadyToAdvance'
 import inactivateUser from './mutations/inactivateUser'
@@ -54,50 +54,56 @@ import jiraCreateIssue from './mutations/jiraCreateIssue'
 import loginWithGoogle from './mutations/loginWithGoogle'
 import loginWithPassword from './mutations/loginWithPassword'
 import movePokerTemplateDimension from './mutations/movePokerTemplateDimension'
+import movePokerTemplateScaleValue from './mutations/movePokerTemplateScaleValue'
 import moveReflectTemplatePrompt from './mutations/moveReflectTemplatePrompt'
 import moveTeamToOrg from './mutations/moveTeamToOrg'
 import navigateMeeting from './mutations/navigateMeeting'
 import newMeetingCheckIn from './mutations/newMeetingCheckIn'
 import payLater from './mutations/payLater'
+import persistJiraSearchQuery from './mutations/persistJiraSearchQuery'
+import pokerAnnounceDeckHover from './mutations/pokerAnnounceDeckHover'
+import pokerResetDimension from './mutations/pokerResetDimension'
+import pokerRevealVotes from './mutations/pokerRevealVotes'
+import pokerSetFinalScore from './mutations/pokerSetFinalScore'
+import pokerTemplateDimensionUpdateDescription from './mutations/pokerTemplateDimensionUpdateDescription'
 import promoteNewMeetingFacilitator from './mutations/promoteNewMeetingFacilitator'
 import promoteToTeamLead from './mutations/promoteToTeamLead'
 import pushInvitation from './mutations/pushInvitation'
 import reflectTemplatePromptUpdateDescription from './mutations/reflectTemplatePromptUpdateDescription'
-import pokerTemplateDimensionUpdateDescription from './mutations/pokerTemplateDimensionUpdateDescription'
 import reflectTemplatePromptUpdateGroupColor from './mutations/reflectTemplatePromptUpdateGroupColor'
 import removeAgendaItem from './mutations/removeAgendaItem'
 import removeAtlassianAuth from './mutations/removeAtlassianAuth'
 import removeGitHubAuth from './mutations/removeGitHubAuth'
 import removeOrgUser from './mutations/removeOrgUser'
 import removePokerTemplate from './mutations/removePokerTemplate'
+import removePokerTemplateDimension from './mutations/removePokerTemplateDimension'
+import removePokerTemplateScale from './mutations/removePokerTemplateScale'
+import removePokerTemplateScaleValue from './mutations/removePokerTemplateScaleValue'
 import removeReflection from './mutations/removeReflection'
 import removeReflectTemplate from './mutations/removeReflectTemplate'
 import removeReflectTemplatePrompt from './mutations/removeReflectTemplatePrompt'
-import removePokerTemplateDimension from './mutations/removePokerTemplateDimension'
 import removeSlackAuth from './mutations/removeSlackAuth'
 import removeTeamMember from './mutations/removeTeamMember'
 import renameMeeting from './mutations/renameMeeting'
 import renameMeetingTemplate from './mutations/renameMeetingTemplate'
-import renameReflectTemplatePrompt from './mutations/renameReflectTemplatePrompt'
 import renamePokerTemplateDimension from './mutations/renamePokerTemplateDimension'
 import renamePokerTemplateScale from './mutations/renamePokerTemplateScale'
-import removePokerTemplateScale from './mutations/removePokerTemplateScale'
-import removePokerTemplateScaleValue from './mutations/removePokerTemplateScaleValue'
+import renameReflectTemplatePrompt from './mutations/renameReflectTemplatePrompt'
 import resetMeetingToStage from './mutations/resetMeetingToStage'
 import resetPassword from './mutations/resetPassword'
 import segmentEventTrack from './mutations/segmentEventTrack'
 import selectTemplate from './mutations/selectTemplate'
 import setAppLocation from './mutations/setAppLocation'
 import setCheckInEnabled from './mutations/setCheckInEnabled'
+import setDefaultSlackChannel from './mutations/setDefaultSlackChannel'
 import setNotificationStatus from './mutations/setNotificationStatus'
 import setOrgUserRole from './mutations/setOrgUserRole'
 import setPhaseFocus from './mutations/setPhaseFocus'
 import setSlackNotification from './mutations/setSlackNotification'
 import setStageTimer from './mutations/setStageTimer'
 import signUpWithPassword from './mutations/signUpWithPassword'
-import startDraggingReflection from './mutations/startDraggingReflection'
 import startCheckIn from './mutations/startCheckIn'
-import startNewMeeting from './mutations/startNewMeeting'
+import startDraggingReflection from './mutations/startDraggingReflection'
 import startRetrospective from './mutations/startRetrospective'
 import startSprintPoker from './mutations/startSprintPoker'
 import toggleAgendaList from './mutations/toggleAgendaList'
@@ -105,8 +111,10 @@ import updateAgendaItem from './mutations/updateAgendaItem'
 import updateCommentContent from './mutations/updateCommentContent'
 import updateCreditCard from './mutations/updateCreditCard'
 import updateDragLocation from './mutations/updateDragLocation'
+import updateJiraDimensionField from './mutations/updateJiraDimensionField'
 import updateNewCheckInQuestion from './mutations/updateNewCheckInQuestion'
 import updateOrg from './mutations/updateOrg'
+import updatePokerScope from './mutations/updatePokerScope'
 import updatePokerTemplateDimensionScale from './mutations/updatePokerTemplateDimensionScale'
 import updatePokerTemplateScaleValue from './mutations/updatePokerTemplateScaleValue'
 import updateReflectionContent from './mutations/updateReflectionContent'
@@ -121,18 +129,9 @@ import upgradeToPro from './mutations/upgradeToPro'
 import uploadOrgImage from './mutations/uploadOrgImage'
 import uploadUserImage from './mutations/uploadUserImage'
 import verifyEmail from './mutations/verifyEmail'
-import voteForReflectionGroup from './mutations/voteForReflectionGroup'
-import updatePokerScope from './mutations/updatePokerScope'
 import voteForPokerStory from './mutations/voteForPokerStory'
-import endCheckIn from './mutations/endCheckIn'
-import endRetrospective from './mutations/endRetrospective'
-import pokerRevealVotes from './mutations/pokerRevealVotes'
-import pokerResetDimension from './mutations/pokerResetDimension'
-import pokerAnnounceDeckHover from './mutations/pokerAnnounceDeckHover'
-import pokerSetFinalScore from './mutations/pokerSetFinalScore'
-import movePokerTemplateScaleValue from './mutations/movePokerTemplateScaleValue'
-import updateJiraDimensionField from './mutations/updateJiraDimensionField'
-import persistJiraSearchQuery from './mutations/persistJiraSearchQuery'
+import joinMeeting from './mutations/joinMeeting'
+import voteForReflectionGroup from './mutations/voteForReflectionGroup'
 
 interface Context extends InternalContext, GQLContext {}
 
@@ -148,10 +147,6 @@ export default new GraphQLObjectType<any, Context>({
       addPokerTemplateDimension,
       addPokerTemplateScale,
       addPokerTemplateScaleValue,
-
-      // DEPRECATED, delete after 4.25.0
-      addReactjiToReflection,
-
       addReactjiToReactable,
       addReflectTemplate,
       addReflectTemplatePrompt,
@@ -190,7 +185,6 @@ export default new GraphQLObjectType<any, Context>({
       editTask,
       endCheckIn,
       endDraggingReflection,
-      endNewMeeting,
       endRetrospective,
       flagReadyToAdvance,
       inactivateUser,
@@ -236,6 +230,7 @@ export default new GraphQLObjectType<any, Context>({
       selectTemplate,
       setAppLocation,
       setCheckInEnabled,
+      setDefaultSlackChannel,
       setOrgUserRole,
       setPhaseFocus,
       setStageTimer,
@@ -243,7 +238,6 @@ export default new GraphQLObjectType<any, Context>({
       signUpWithPassword,
       startDraggingReflection,
       startCheckIn,
-      startNewMeeting,
       startRetrospective,
       startSprintPoker,
       toggleAgendaList,
@@ -275,6 +269,7 @@ export default new GraphQLObjectType<any, Context>({
       pokerAnnounceDeckHover,
       pokerSetFinalScore,
       movePokerTemplateScaleValue,
-      updateJiraDimensionField
+      updateJiraDimensionField,
+      joinMeeting
     } as any)
 })

@@ -4,6 +4,13 @@ jobs:
     docker:
       - image: circleci/node:14.10
       - image: rethinkdb:2.4.0
+      - image: circleci/postgres:12.3
+        environment:
+          POSTGRES_PASSWORD: 'EcLtsBMRtra33jqUCQWtSZwt4zfGBzdUvJE74fzSxX'
+          POSTGRES_USER: 'parabol'
+          POSTGRES_DB: 'web'
+          POSTGRES_HOST: 'localhost'
+          POSTGRES_PORT: '5432'
       - image: redis:3.2.8
       - image: cypress/base:10
         environment:
@@ -69,12 +76,12 @@ jobs:
               cp $DEVOPS_WORKDIR/environments/cypress .env
               # cypress docker image has a bug, sideloading these mitigates it
               sudo apt-get update && sudo apt-get install xvfb libgtk2.0-0 libnotify-dev libgconf-2-4 libnss3 libxss1 libasound2
-              curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
-              sudo python get-pip.py
+              curl https://bootstrap.pypa.io/3.4/get-pip.py -o get-pip.py
+              sudo python get-pip.py pip==20.3.3
               sudo pip install rethinkdb==2.4.0
               rethinkdb-restore --force packages/cypress/fixtures/rdb_test.tar.gz
               node scripts/toolbox/softenDurability.js
-              yarn db:migrate
+              yarn db:migrate && yarn pg:migrate up
               yarn postdeploy
               # yarn test
             fi

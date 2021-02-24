@@ -3,7 +3,6 @@ import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import SwipeableViews from 'react-swipeable-views'
-import {Threshold} from '../../../types/constEnums'
 import Icon from '../../../components/Icon'
 import Tab from '../../../components/Tab/Tab'
 import Tabs from '../../../components/Tabs/Tabs'
@@ -74,9 +73,9 @@ interface Props {
 
 const PokerTemplateList = (props: Props) => {
   const {activeIdx, setActiveIdx, settings} = props
-  const {selectedTemplate, team, teamTemplates} = settings
+  const {team, teamTemplates} = settings
   const {id: teamId} = team
-  const {id: selectedTemplateId} = selectedTemplate
+  const activeTemplateId = settings.activeTemplate?.id ?? "-tmp"
 
   const gotoTeamTemplates = () => {
     setActiveIdx(0)
@@ -119,6 +118,7 @@ const PokerTemplateList = (props: Props) => {
           onClick={gotoPublicTemplates}
         />
       </StyledTabsBar>
+      <AddNewPokerTemplate teamId={teamId} pokerTemplates={teamTemplates} gotoTeamTemplates={gotoTeamTemplates} />
       <SwipeableViews
         enableMouseEvents
         index={activeIdx}
@@ -128,7 +128,7 @@ const PokerTemplateList = (props: Props) => {
       >
         <TabContents>
           <PokerTemplateListTeam
-            selectedTemplateId={selectedTemplateId}
+            activeTemplateId={activeTemplateId}
             showPublicTemplates={gotoPublicTemplates}
             teamTemplates={teamTemplates}
             teamId={teamId}
@@ -143,9 +143,6 @@ const PokerTemplateList = (props: Props) => {
         </TabContents>
       </SwipeableViews>
       {/* add a key to clear the error when they change */}
-      {teamTemplates.length < Threshold.MAX_POKER_TEAM_TEMPLATES && (
-        <AddNewPokerTemplate teamId={teamId} pokerTemplates={teamTemplates} gotoTeamTemplates={gotoTeamTemplates} />
-      )}
     </TemplateSidebar>
   )
 }
@@ -157,7 +154,7 @@ export default createFragmentContainer(PokerTemplateList, {
       team {
         id
       }
-      selectedTemplate {
+      activeTemplate {
         ...getTemplateList_template
         id
         teamId

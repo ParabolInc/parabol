@@ -29,6 +29,7 @@ export const getCardStackPadding = (count: number) => {
 }
 
 const Group = styled('div')<{staticReflectionCount: number}>(({staticReflectionCount}) => ({
+  height: 'max-content',
   position: 'relative',
   paddingTop: ElementWidth.REFLECTION_CARD_PADDING,
   paddingBottom: ElementWidth.REFLECTION_CARD_PADDING + getCardStackPadding(staticReflectionCount),
@@ -53,8 +54,8 @@ const ReflectionWrapper = styled('div')<{
     outline: 0,
     opacity: isHidden ? 0 : undefined,
     transform: `translateY(${translateY}px) scaleX(${scaleX})`,
-    zIndex: 3 - multiple,
-    transition: isHidden ? undefined : `transform ${Times.REFLECTION_DROP_DURATION}ms`
+    transition: isHidden ? undefined : `transform ${Times.REFLECTION_DROP_DURATION}ms`,
+    zIndex: 3 - multiple
   }
 })
 
@@ -74,6 +75,7 @@ const ReflectionGroup = (props: Props) => {
   const {isComplete} = localStage
   const {reflections, id: reflectionGroupId, titleIsUserDefined} = reflectionGroup
   const titleInputRef = useRef(null)
+  const expandedTitleInputRef = useRef(null)
   const headerRef = useRef<HTMLDivElement>(null)
   const staticReflections = useMemo(() => {
     return reflections.filter(
@@ -145,7 +147,7 @@ const ReflectionGroup = (props: Props) => {
               meeting={meeting}
               portalStatus={portalStatus}
               reflectionGroup={reflectionGroup}
-              titleInputRef={titleInputRef}
+              titleInputRef={expandedTitleInputRef}
             />
           }
           phaseRef={phaseRef}

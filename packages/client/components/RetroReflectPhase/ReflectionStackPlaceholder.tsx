@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import React, {forwardRef, Ref} from 'react'
 import {PALETTE} from '../../styles/paletteV2'
-import {Breakpoint, Card, ElementHeight, ElementWidth, Gutters} from '../../types/constEnums'
+import {Breakpoint, Card, ElementHeight,  ElementWidth,  Gutters} from '../../types/constEnums'
 
 interface Props {
   idx: number

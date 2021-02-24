@@ -61,9 +61,7 @@ const ActionMeeting = (props: Props) => {
     Object.values(phaseLookup).forEach((lazy) => lazy.preload())
   }, [])
   if (!safeRoute) return null
-  const {user} = viewerMeetingMember
-  const {featureFlags} = user
-  const {video: allowVideo} = featureFlags
+  const allowVideo = !!viewerMeetingMember?.user?.featureFlags?.video
   const localPhaseType = (localPhase && localPhase.phaseType) || NewMeetingPhaseTypeEnum.lobby
   const Phase = phaseLookup[localPhaseType] as PhaseComponent
   return (

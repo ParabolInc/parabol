@@ -57,7 +57,7 @@ const EstimateDimensionColumn = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
   const {meeting, stage} = props
-  const {facilitatorUserId, id: meetingId} = meeting
+  const {endedAt, facilitatorUserId, id: meetingId} = meeting
   const isFacilitator = viewerId === facilitatorUserId
   const {id: stageId, dimension} = stage
   const {name} = dimension
@@ -80,7 +80,7 @@ const EstimateDimensionColumn = (props: Props) => {
       <DimensionHeader>
         <DimensionName>{name}</DimensionName>
         {error && <StyledError>{error.message}</StyledError>}
-        {!isVoting && isFacilitator && <StyledLinkButton onClick={reset} palette={'blue'}>{'Team Revote'}</StyledLinkButton>}
+        {!isVoting && isFacilitator && !endedAt && <StyledLinkButton onClick={reset} palette={'blue'}>{'Team Revote'}</StyledLinkButton>}
       </DimensionHeader>
       {showVoting
         ? <PokerActiveVoting meeting={meeting} stage={stage} isClosing={isClosing} isInitialStageRender={isInitialStageRender} />
@@ -110,6 +110,7 @@ export default createFragmentContainer(
       ...PokerDiscussVoting_meeting
       facilitatorUserId
       id
+      endedAt
     }`,
 
   }

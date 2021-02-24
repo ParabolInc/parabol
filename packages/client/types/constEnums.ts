@@ -25,6 +25,7 @@ export const enum Breakpoint {
   NEW_MEETING_SELECTOR = 500,
   SINGLE_REFLECTION_COLUMN = 704, // (ReflectionWith + 16) * 2,
   DASH_BREAKPOINT_WIDEST = 1816, // (4*296) + (5*24) + (256*2) = 4 card cols, 4 col gutters, 2 sidebars
+  WIDER_SCREEN = 1600,
   VOTE_PHASE = 800
 }
 
@@ -82,10 +83,12 @@ export const enum ElementWidth {
   CONTROL_BAR_PADDING = 8,
   REFLECTION_CARD = 296,
   REFLECTION_CARD_PADDED = 296,
-  REFLECTION_CARD_PADDING = 6
+  REFLECTION_CARD_PADDING = 6,
+  REFLECTION_COLUMN = 320
 }
 
 export const enum ElementHeight {
+  REFLECTION_CARD = 44,
   REFLECTION_CARD_MAX = 104 // 4 lines (20px each) + (2 * 12px) vertical gutter
 }
 
@@ -161,7 +164,7 @@ export const enum MathEnum {
 }
 
 export const enum MeetingControlBarEnum {
-  HEIGHT = 56,
+  HEIGHT = 56
 }
 
 export const enum MeetingLabels {
@@ -179,7 +182,7 @@ export const enum PokerCards {
   // number of pixels from the middle of the circle below the fold to the middle of the card (0-2x innerHeight)
   RADIUS = 1200,
   // the % of the first & last card that sits below the fold (0-1)
-  MAX_HIDDEN = .35,
+  MAX_HIDDEN = 0.35,
   PASS_CARD = 'Pass',
   QUESTION_CARD = '?',
   DELETED_CARD = '#',
@@ -265,6 +268,7 @@ export const enum ServerChannel {
   GQL_EXECUTOR_REQUEST = 'gqlExRreq',
   GQL_EXECUTOR_RESPONSE = 'gqlExRes'
 }
+
 export const enum SubscriptionChannel {
   TASK = 'task',
   TEAM = 'team',
@@ -314,7 +318,7 @@ export const enum Threshold {
   MAX_REFLECTION_PROMPTS = 12,
   MAX_POKER_TEMPLATE_DIMENSIONS = 12,
   MAX_POKER_TEMPLATE_SCALES = 12,
-  MAX_POKER_SCALE_VALUES = 20,
+  MAX_POKER_SCALE_VALUES = 30,
   MAX_RETRO_TEAM_TEMPLATES = 20,
   MAX_POKER_TEAM_TEMPLATES = 20,
   MAX_REACTJIS = 12,
@@ -375,5 +379,4 @@ export const enum SprintPokerDefaults {
   JIRA_FIELD_COMMENT_LABEL = 'As Comment',
   JIRA_FIELD_NULL = '',
   JIRA_FIELD_NULL_LABEL = 'Do Not Update'
-
 }

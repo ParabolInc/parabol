@@ -16,6 +16,7 @@ import StyledError from '../../../../components/StyledError'
 import {PALETTE} from '../../../../styles/paletteV2'
 import {Layout} from '../../../../types/constEnums'
 import useEventCallback from '../../../../hooks/useEventCallback'
+import SetDefaultSlackChannelMutation from '~/mutations/SetDefaultSlackChannelMutation'
 
 const SlackNotificationListStyles = styled('div')({
   borderTop: `1px solid ${PALETTE.BORDER_LIGHTER}`,
@@ -78,6 +79,14 @@ const SlackNotificationList = (props: Props) => {
         return
       }
       submitMutation()
+      SetDefaultSlackChannelMutation(
+        atmosphere,
+        {slackChannelId, teamId},
+        {
+          onError,
+          onCompleted
+        }
+      )
       SetSlackNotificationMutation(
         atmosphere,
         {slackChannelId, slackNotificationEvents, teamId},
@@ -141,7 +150,6 @@ export default createFragmentContainer(SlackNotificationList, {
       teamMember(teamId: $teamId) {
         integrations {
           slack {
-            accessToken
             botAccessToken
             isActive
             slackUserId

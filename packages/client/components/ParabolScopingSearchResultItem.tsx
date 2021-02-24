@@ -1,25 +1,24 @@
-import graphql from 'babel-plugin-relay/macro'
 import styled from '@emotion/styled'
+import graphql from 'babel-plugin-relay/macro'
+import {convertToRaw} from 'draft-js'
 import React, {useRef} from 'react'
 import {createFragmentContainer} from 'react-relay'
+import useAtmosphere from '~/hooks/useAtmosphere'
+import useEditorState from '~/hooks/useEditorState'
+import useMutationProps from '~/hooks/useMutationProps'
+import useScrollIntoView from '~/hooks/useScrollIntoVIew'
+import useTaskChildFocus from '~/hooks/useTaskChildFocus'
+import DeleteTaskMutation from '~/mutations/DeleteTaskMutation'
+import UpdatePokerScopeMutation from '~/mutations/UpdatePokerScopeMutation'
+import UpdateTaskMutation from '~/mutations/UpdateTaskMutation'
+import {PALETTE} from '~/styles/paletteV2'
+import {AddOrDeleteEnum, AreaEnum, TaskServiceEnum} from '~/types/graphql'
+import convertToTaskContent from '~/utils/draftjs/convertToTaskContent'
+import isAndroid from '~/utils/draftjs/isAndroid'
+import {Threshold} from '../types/constEnums'
 import {ParabolScopingSearchResultItem_task} from '../__generated__/ParabolScopingSearchResultItem_task.graphql'
 import Checkbox from './Checkbox'
-import useAtmosphere from '~/hooks/useAtmosphere'
-import UpdatePokerScopeMutation from '~/mutations/UpdatePokerScopeMutation'
-import {AreaEnum, TaskServiceEnum} from '~/types/graphql'
-import {AddOrDeleteEnum} from '~/types/graphql'
-import useMutationProps from '~/hooks/useMutationProps'
-import {convertToRaw} from 'draft-js'
-import {PALETTE} from '~/styles/paletteV2'
 import TaskEditor from './TaskEditor/TaskEditor'
-import useTaskChildFocus from '~/hooks/useTaskChildFocus'
-import isAndroid from '~/utils/draftjs/isAndroid'
-import convertToTaskContent from '~/utils/draftjs/convertToTaskContent'
-import DeleteTaskMutation from '~/mutations/DeleteTaskMutation'
-import UpdateTaskMutation from '~/mutations/UpdateTaskMutation'
-import useScrollIntoView from '~/hooks/useScrollIntoVIew'
-import useEditorState from '~/hooks/useEditorState'
-import {Threshold} from '../types/constEnums'
 
 const Item = styled('div')<{isEditingThisItem: boolean}>(({isEditingThisItem}) => ({
   backgroundColor: isEditingThisItem ? PALETTE.BACKGROUND_BLUE_MAGENTA : 'transparent',
@@ -27,7 +26,7 @@ const Item = styled('div')<{isEditingThisItem: boolean}>(({isEditingThisItem}) =
   display: 'flex',
   paddingLeft: 16,
   paddingTop: 8,
-  paddingBottom: 8,
+  paddingBottom: 8
 }))
 
 const Task = styled('div')({
@@ -60,7 +59,9 @@ const ParabolScopingSearchResultItem = (props: Props) => {
   const {onCompleted, onError, submitMutation, submitting} = useMutationProps()
   const [editorState, setEditorState] = useEditorState(content)
   const editorRef = useRef<HTMLTextAreaElement>(null)
-  const {useTaskChild, addTaskChild, removeTaskChild, isTaskFocused} = useTaskChildFocus(serviceTaskId)
+  const {useTaskChild, addTaskChild, removeTaskChild, isTaskFocused} = useTaskChildFocus(
+    serviceTaskId
+  )
   const isEditingThisItem = !plaintextContent
 
   const updatePokerScope = () => {
@@ -160,6 +161,8 @@ export default createFragmentContainer(ParabolScopingSearchResultItem, {
       id
       content
       plaintextContent
+      # grab title so the optimistic updater can use it to update sidebar
+      title
       updatedAt
     }
   `

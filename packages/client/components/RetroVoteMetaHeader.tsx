@@ -103,7 +103,7 @@ const RetroVoteMetaHeader = (props: Props) => {
     MenuPosition.UPPER_RIGHT
   )
   const teamVotesRemaining = meeting.votesRemaining || 0
-  const myVotesRemaining = viewerMeetingMember.votesRemaining || 0
+  const myVotesRemaining = viewerMeetingMember?.votesRemaining || 0
   const isFacilitating = facilitatorUserId === viewerId && !endedAt
   return (
     <VoteMeta>

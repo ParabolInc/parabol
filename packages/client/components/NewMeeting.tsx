@@ -108,13 +108,10 @@ const useInnerWidth = () => {
   return innerWidth
 }
 
-const NEW_MEETING_ORDER = ['retrospective', 'action']
-const POKER_MEETING_ORDER = ['poker', 'retrospective', 'action']
 const NewMeeting = (props: Props) => {
   const {teamId, viewer, retry} = props
-  const {teams, featureFlags} = viewer
-  const {poker} = featureFlags
-  const newMeetingOrder = poker ? POKER_MEETING_ORDER : NEW_MEETING_ORDER
+  const {teams} = viewer
+  const newMeetingOrder = ['poker', 'retrospective', 'action']
 
   useStoreQueryRetry(retry)
   const {history} = useRouter()
@@ -137,7 +134,7 @@ const NewMeeting = (props: Props) => {
     const {lastMeetingType} = selectedTeam
     const meetingIdx = newMeetingOrder.indexOf(lastMeetingType)
     setIdx(meetingIdx)
-  }, [teamId])
+  }, [])
   if (!teamId || !selectedTeam) return null
   return (
     <NewMeetingBlock innerWidth={innerWidth} isDesktop={isDesktop}>
@@ -173,9 +170,6 @@ export default createFragmentContainer(NewMeeting, {
         lastMeetingType
         name
         tier
-      }
-      featureFlags {
-        poker
       }
     }
   `

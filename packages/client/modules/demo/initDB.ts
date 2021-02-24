@@ -125,7 +125,6 @@ const initSlackNotification = (userId) => ({
 const initSlackAuth = (userId) => ({
   __typename: 'SlackAuth',
   isActive: true,
-  accessToken: 'demoToken',
   botUserId: 'demoSlackBotId',
   botAccessToken: 'demoToken',
   defaultTeamChannelId: 'demoChannelId',
@@ -153,7 +152,7 @@ const initDemoTeamMember = ({id: userId, preferredName, picture}, idx) => {
     integrations: {
       atlassian: {isActive: true, accessToken: '123'},
       github: {isActive: true, accessToken: '123'},
-      slack: initSlackAuth(userId),
+      slack: initSlackAuth(userId)
     },
     suggestedIntegrations: {
       hasMore: true,
@@ -175,7 +174,6 @@ const initDemoMeetingMember = (user) => {
   return {
     __typename: 'RetrospectiveMeetingMember',
     id: toTeamMemberId(RetroDemo.MEETING_ID, user.id),
-    isCheckedIn: true,
     meetingId: RetroDemo.MEETING_ID,
     meetingType: RETROSPECTIVE,
     teamId: demoTeamId,

@@ -13,6 +13,7 @@ interface Props {
 const ScopePhaseAreaJira = (props: Props) => {
   const {gotoParabol, meeting} = props
   const {viewerMeetingMember} = meeting
+  if (!viewerMeetingMember) return null
   const {teamMember} = viewerMeetingMember
   const {integrations} = teamMember
   const {atlassian} = integrations

@@ -1,12 +1,13 @@
+
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {EditorState} from 'draft-js'
-import React, {useEffect, useMemo, useRef} from 'react'
+import React, {RefObject, useEffect, useMemo, useRef} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {PhaseItemColumn_prompt} from '~/__generated__/PhaseItemColumn_prompt.graphql'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import {MenuPosition} from '../../hooks/useCoords'
-import useRefState from '../../hooks/useRefState'
+import useForceUpdate from '../../hooks/useForceUpdate'
 import useTooltip from '../../hooks/useTooltip'
 import SetPhaseFocusMutation from '../../mutations/SetPhaseFocusMutation'
 import {DECELERATE} from '../../styles/animation'
@@ -136,7 +137,7 @@ interface Props {
   idx: number
   isDesktop: boolean
   meeting: PhaseItemColumn_meeting
-  phaseRef: React.RefObject<HTMLDivElement>
+  phaseRef: RefObject<HTMLDivElement>
   prompt: PhaseItemColumn_prompt
 }
 
@@ -156,8 +157,10 @@ const PhaseItemColumn = (props: Props) => {
   const hasFocusedRef = useRef(false)
   const phaseEditorRef = useRef<HTMLDivElement>(null)
   const stackTopRef = useRef<HTMLDivElement>(null)
-  const [cardsInFlightRef, setCardsInFlight] = useRefState<ReflectColumnCardInFlight[]>([])
+  const cardsInFlightRef = useRef<ReflectColumnCardInFlight[]>([])
+  const forceUpdateColumn = useForceUpdate()
   const isFacilitator = viewerId === facilitatorUserId
+
   useEffect(() => {
     hasFocusedRef.current = true
   }, [focusedPromptId])
@@ -220,12 +223,12 @@ const PhaseItemColumn = (props: Props) => {
                 isGroupingComplete={isComplete}
               >
                 <PhaseItemEditor
-                  dataCy={`phase-item-editor-${question}`}
                   cardsInFlightRef={cardsInFlightRef}
-                  setCardsInFlight={setCardsInFlight}
+                  dataCy={`phase-item-editor-${question}`}
                   phaseEditorRef={phaseEditorRef}
                   meetingId={meetingId}
                   nextSortOrder={nextSortOrder}
+                  forceUpdateColumn={forceUpdateColumn}
                   promptId={promptId}
                   stackTopRef={stackTopRef}
                 />

@@ -84,7 +84,6 @@ const query = graphql`
             ...ExportToCSV_threadSource @relay(mask: false)
           }
           meetingMembers {
-            isCheckedIn
             tasks {
               content
               createdAt
@@ -254,16 +253,13 @@ class ExportToCSV extends Component<Props> {
     const {meetingMembers, agendaItems} = newMeeting
 
     const rows = [] as CSVActionRow[]
-    const userStatus = {} as {[id: string]: 'present' | 'absent'}
     meetingMembers!.forEach((meetingMember) => {
-      const {isCheckedIn, tasks, user} = meetingMember
-      const status = isCheckedIn ? 'present' : 'absent'
+      const {tasks, user} = meetingMember
       const {preferredName} = user
-      userStatus[preferredName] = status
       if (tasks.length === 0) {
         rows.push({
           author: preferredName,
-          status,
+          status: 'present',
           agendaItem: '',
           type: 'Task',
           createdAt: '',
@@ -280,7 +276,7 @@ class ExportToCSV extends Component<Props> {
         const authorName = edge!.node!.createdByUser?.preferredName ?? 'Anonymous'
         rows.push({
           author: authorName,
-          status: userStatus[authorName],
+          status: 'present',
           agendaItem: agendaItem ? agendaItem.content : '',
           type: edge.node.__typename as ExportableTypeName,
           createdAt: edge.node.createdAt,
@@ -291,7 +287,7 @@ class ExportToCSV extends Component<Props> {
           const authorName = reply.createdByUser?.preferredName ?? 'Anonymous'
           rows.push({
             author: authorName,
-            status: userStatus[authorName],
+            status: 'present',
             agendaItem: agendaItem ? agendaItem.content : '',
             type: reply.__typename === 'Task' ? 'Task' : 'Reply',
             createdAt: reply.createdAt,
@@ -312,6 +308,8 @@ class ExportToCSV extends Component<Props> {
         return this.handleRetroMeeting(newMeeting)
       case 'poker':
         return this.handlePokerMeeting(newMeeting)
+      default:
+        return []
     }
   }
 
@@ -329,7 +327,7 @@ class ExportToCSV extends Component<Props> {
     const {endedAt, team, meetingType} = newMeeting
     const {name: teamName} = team
     const label = meetingType[0].toUpperCase() + meetingType.slice(1)
-    const parser = new Parser({withBOM: true})
+    const parser = new Parser({withBOM: true, eol: '\n'})
     const csv = parser.parse(rows)
     const date = new Date(endedAt!)
     const numDate = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`

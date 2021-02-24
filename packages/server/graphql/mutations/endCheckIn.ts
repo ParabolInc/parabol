@@ -4,12 +4,12 @@ import {MeetingMember, SuggestedActionTypeEnum} from 'parabol-client/types/graph
 import {AGENDA_ITEMS, DONE, LAST_CALL} from 'parabol-client/utils/constants'
 import getMeetingPhase from 'parabol-client/utils/getMeetingPhase'
 import findStageById from 'parabol-client/utils/meetings/findStageById'
-import shortid from 'shortid'
 import getRethink from '../../database/rethinkDriver'
 import AgendaItem from '../../database/types/AgendaItem'
 import MeetingAction from '../../database/types/MeetingAction'
 import Task from '../../database/types/Task'
 import TimelineEventCheckinComplete from '../../database/types/TimelineEventCheckinComplete'
+import generateUID from '../../generateUID'
 import archiveTasksForDB from '../../safeMutations/archiveTasksForDB'
 import removeSuggestedAction from '../../safeMutations/removeSuggestedAction'
 import {getUserId, isTeamMember} from '../../utils/authorization'
@@ -17,10 +17,10 @@ import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import {DataLoaderWorker, GQLContext} from '../graphql'
 import EndCheckInPayload from '../types/EndCheckInPayload'
+import sendMeetingEndToSegment from './helpers/endMeeting/sendMeetingEndToSegment'
 import sendNewMeetingSummary from './helpers/endMeeting/sendNewMeetingSummary'
 import {endSlackMeeting} from './helpers/notifySlack'
 import removeEmptyTasks from './helpers/removeEmptyTasks'
-import sendMeetingEndToSegment from './helpers/endMeeting/sendMeetingEndToSegment'
 
 type SortOrderTask = Pick<Task, 'id' | 'sortOrder'>
 const updateTaskSortOrders = async (userIds: string[], tasks: SortOrderTask[]) => {
@@ -28,7 +28,11 @@ const updateTaskSortOrders = async (userIds: string[], tasks: SortOrderTask[]) =
   const taskMax = await (r
     .table('Task')
     .getAll(r.args(userIds), {index: 'userId'})
-    .filter((task) => task('tags').contains('archived').not()) as any)
+    .filter((task) =>
+      task('tags')
+        .contains('archived')
+        .not()
+    ) as any)
     .max('sortOrder')('sortOrder')
     .default(0)
     .run()
@@ -75,8 +79,8 @@ const getPinnedAgendaItems = async (teamId: string) => {
 
 const clonePinnedAgendaItems = async (pinnedAgendaItems: AgendaItem[]) => {
   const r = await getRethink()
-  const formattedPinnedAgendaItems = pinnedAgendaItems.map((agendaItem) => {
-    const agendaItemId = `${agendaItem.teamId}::${shortid.generate()}`
+  const clonedPins = pinnedAgendaItems.map((agendaItem) => {
+    const agendaItemId = `${agendaItem.teamId}::${generateUID()}`
     return new AgendaItem({
       id: agendaItemId,
       content: agendaItem.content,
@@ -87,8 +91,10 @@ const clonePinnedAgendaItems = async (pinnedAgendaItems: AgendaItem[]) => {
       teamMemberId: agendaItem.teamMemberId
     })
   })
-
-  await r.table('AgendaItem').insert(formattedPinnedAgendaItems).run()
+  await r
+    .table('AgendaItem')
+    .insert(clonedPins)
+    .run()
 }
 
 const finishCheckInMeeting = async (meeting: MeetingAction, dataLoader: DataLoaderWorker) => {
@@ -111,9 +117,17 @@ const finishCheckInMeeting = async (meeting: MeetingAction, dataLoader: DataLoad
       .table('Task')
       .getAll(teamId, {index: 'teamId'})
       .filter({status: DONE})
-      .filter((task) => task('tags').contains('archived').not())
+      .filter((task) =>
+        task('tags')
+          .contains('archived')
+          .not()
+      )
       .run(),
-    r.table('AgendaItem').getAll(teamId, {index: 'teamId'}).filter({isActive: true}).run()
+    r
+      .table('AgendaItem')
+      .getAll(teamId, {index: 'teamId'})
+      .filter({isActive: true})
+      .run()
   ])
 
   const activeAgendaItemIds = activeAgendaItems.map(({id}) => id)
@@ -121,9 +135,9 @@ const finishCheckInMeeting = async (meeting: MeetingAction, dataLoader: DataLoad
   const meetingPhase = getMeetingPhase(phases)
   const pinnedAgendaItems = await getPinnedAgendaItems(teamId)
   const isKill = meetingPhase && ![AGENDA_ITEMS, LAST_CALL].includes(meetingPhase.phaseType)
+  if (!isKill) await clearAgendaItems(teamId)
   await Promise.all([
     isKill ? undefined : archiveTasksForDB(doneTasks, meetingId),
-    isKill ? undefined : clearAgendaItems(teamId),
     isKill ? undefined : clonePinnedAgendaItems(pinnedAgendaItems),
     updateTaskSortOrders(userIds, tasks),
     r
@@ -209,9 +223,10 @@ export default {
     }
 
     // remove any empty tasks
-    const [meetingMembers, team, removedTaskIds, result] = await Promise.all([
+    const [meetingMembers, team, teamMembers, removedTaskIds, result] = await Promise.all([
       dataLoader.get('meetingMembersByMeetingId').load(meetingId),
       dataLoader.get('teams').load(teamId),
+      dataLoader.get('teamMembersByTeamId').load(teamId),
       removeEmptyTasks(meetingId),
       finishCheckInMeeting(completedCheckIn, dataLoader)
     ])
@@ -219,17 +234,20 @@ export default {
     const updatedTaskIds = (result && result.updatedTaskIds) || []
     sendMeetingEndToSegment(completedCheckIn, meetingMembers as MeetingMember[])
     sendNewMeetingSummary(completedCheckIn, context).catch(console.log)
-    const events = meetingMembers.map(
-      (meetingMember) =>
+    const events = teamMembers.map(
+      (teamMember) =>
         new TimelineEventCheckinComplete({
-          userId: meetingMember.userId,
+          userId: teamMember.userId,
           teamId,
           orgId: team.orgId,
           meetingId
         })
     )
     const timelineEventId = events[0].id as string
-    await r.table('TimelineEvent').insert(events).run()
+    await r
+      .table('TimelineEvent')
+      .insert(events)
+      .run()
     if (team.isOnboardTeam) {
       const teamLeadUserId = await r
         .table('TeamMember')

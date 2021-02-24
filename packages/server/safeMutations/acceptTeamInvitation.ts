@@ -1,13 +1,11 @@
 import {InvoiceItemType} from 'parabol-client/types/constEnums'
 import {ITeam, NotificationEnum, NotificationStatusEnum} from 'parabol-client/types/graphql'
-import shortid from 'shortid'
 import adjustUserCount from '../billing/helpers/adjustUserCount'
 import getRethink from '../database/rethinkDriver'
 import OrganizationUser from '../database/types/OrganizationUser'
 import SuggestedActionCreateNewTeam from '../database/types/SuggestedActionCreateNewTeam'
 import User from '../database/types/User'
-import {DataLoaderWorker} from '../graphql/graphql'
-import addTeamMemberToMeetings from '../graphql/mutations/helpers/addTeamMemberToMeetings'
+import generateUID from '../generateUID'
 import getNewTeamLeadUserId from '../safeQueries/getNewTeamLeadUserId'
 import setUserTierForUserIds from '../utils/setUserTierForUserIds'
 import addTeamIdToTMS from './addTeamIdToTMS'
@@ -24,7 +22,7 @@ const handleFirstAcceptedInvitation = async (team): Promise<string | null> => {
       .table('SuggestedAction')
       .insert([
         {
-          id: shortid.generate(),
+          id: generateUID(),
           createdAt: now,
           priority: 3,
           removedAt: null,
@@ -34,7 +32,7 @@ const handleFirstAcceptedInvitation = async (team): Promise<string | null> => {
         },
         new SuggestedActionCreateNewTeam({userId: newTeamLeadUserId}),
         {
-          id: shortid.generate(),
+          id: generateUID(),
           createdAt: now,
           priority: 5,
           removedAt: null,
@@ -48,11 +46,7 @@ const handleFirstAcceptedInvitation = async (team): Promise<string | null> => {
   return newTeamLeadUserId
 }
 
-const acceptTeamInvitation = async (
-  teamId: string,
-  userId: string,
-  dataLoader: DataLoaderWorker
-) => {
+const acceptTeamInvitation = async (teamId: string, userId: string) => {
   const r = await getRethink()
   const now = new Date()
 
@@ -73,7 +67,7 @@ const acceptTeamInvitation = async (
   const {email, organizationUsers} = user
   const teamLeadUserIdWithNewActions = await handleFirstAcceptedInvitation(team)
   const userInOrg = !!organizationUsers.find((organizationUser) => organizationUser.orgId === orgId)
-  const [teamMember, invitationNotificationIds] = await Promise.all([
+  const [, invitationNotificationIds] = await Promise.all([
     insertNewTeamMember(userId, teamId),
     r
       .table('Notification')
@@ -111,9 +105,6 @@ const acceptTeamInvitation = async (
     }
     await setUserTierForUserIds([userId])
   }
-
-  // if a meeting is going on right now, add them
-  await addTeamMemberToMeetings(teamMember, teamId, dataLoader)
 
   // if accepted to team, don't count it towards the global denial count
   await r

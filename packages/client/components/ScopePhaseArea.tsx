@@ -40,22 +40,22 @@ const FullTab = styled(Tab)({
   // width: '30%'
 })
 
-const TabIcon = styled(Icon)({
-})
+const TabIcon = styled(Icon)({})
 
 const TabLabel = styled('div')({
   display: 'flex',
   justifyContent: 'center',
   alignItems: 'center',
   minWidth: 80,
-  whiteSpace: 'pre-wrap',
+  whiteSpace: 'pre-wrap'
 })
 
 const TabContents = styled('div')({
   display: 'flex',
   flexDirection: 'column',
   height: '100%',
-  position: 'relative'
+  position: 'relative',
+  overflow: 'hidden'
 })
 
 const containerStyle = {height: '100%'}
@@ -83,7 +83,7 @@ const ScopePhaseArea = (props: Props) => {
         <FullTab
           label={
             <TabLabel>
-              <JiraSVG />  Jira
+              <JiraSVG /> Jira
             </TabLabel>
           }
           onClick={gotoAddJira}
@@ -91,14 +91,14 @@ const ScopePhaseArea = (props: Props) => {
         <FullTab
           label={
             <TabLabel>
-              <TabIcon>{'public'}</TabIcon>  Parabol
+              <TabIcon>{'public'}</TabIcon> Parabol
             </TabLabel>
           }
           onClick={gotoParabol}
         />
       </StyledTabsBar>
       <SwipeableViews
-        enableMouseEvents
+        enableMouseEvents={false} // disable because this works even if a modal is on top of it
         index={activeIdx}
         onChangeIndex={onChangeIdx}
         containerStyle={containerStyle}

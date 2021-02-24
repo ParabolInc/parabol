@@ -5,15 +5,15 @@ import getRethink from '../../database/rethinkDriver'
 import MeetingRetrospective from '../../database/types/MeetingRetrospective'
 import MeetingSettingsRetrospective from '../../database/types/MeetingSettingsRetrospective'
 import Organization from '../../database/types/Organization'
+import RetroMeetingMember from '../../database/types/RetroMeetingMember'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import StartRetrospectivePayload from '../types/StartRetrospectivePayload'
-import createMeetingMembers from './helpers/createMeetingMembers'
 import createNewMeetingPhases from './helpers/createNewMeetingPhases'
-import sendMeetingStartToSegment from './helpers/sendMeetingStartToSegment'
 import {startSlackMeeting} from './helpers/notifySlack'
+import sendMeetingStartToSegment from './helpers/sendMeetingStartToSegment'
 
 export default {
   type: new GraphQLNonNull(StartRetrospectivePayload),
@@ -50,7 +50,13 @@ export default {
       .default(0)
       .run()
 
-    const phases = await createNewMeetingPhases(teamId, meetingCount, meetingType, dataLoader)
+    const phases = await createNewMeetingPhases(
+      viewerId,
+      teamId,
+      meetingCount,
+      meetingType,
+      dataLoader
+    )
     const organization = (await r
       .table('Team')
       .get(teamId)('orgId')
@@ -74,10 +80,11 @@ export default {
     })
 
     const meetingId = meeting.id
-    const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)
     const template = await dataLoader.get('meetingTemplates').load(selectedTemplateId)
-    const meetingMembers = createMeetingMembers(meeting, teamMembers)
-    await r.table('NewMeeting').insert(meeting).run()
+    await r
+      .table('NewMeeting')
+      .insert(meeting)
+      .run()
 
     // Disallow accidental starts (2 meetings within 2 seconds)
     const newActiveMeetings = await dataLoader.get('activeMeetingsByTeamId').load(teamId)
@@ -87,13 +94,26 @@ export default {
       return createdAt.getTime() > Date.now() - DUPLICATE_THRESHOLD
     })
     if (otherActiveMeeting) {
-      await r.table('NewMeeting').get(meetingId).delete().run()
+      await r
+        .table('NewMeeting')
+        .get(meetingId)
+        .delete()
+        .run()
       return {error: {message: 'Meeting already started'}}
     }
 
     await Promise.all([
-      r.table('MeetingMember').insert(meetingMembers).run(),
-      r.table('Team').get(teamId).update({lastMeetingType: meetingType}).run()
+      r
+        .table('MeetingMember')
+        .insert(
+          new RetroMeetingMember({meetingId, userId: viewerId, teamId, votesRemaining: totalVotes})
+        )
+        .run(),
+      r
+        .table('Team')
+        .get(teamId)
+        .update({lastMeetingType: meetingType})
+        .run()
     ])
 
     startSlackMeeting(meetingId, teamId, dataLoader).catch(console.log)

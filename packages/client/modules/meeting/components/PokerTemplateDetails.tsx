@@ -3,6 +3,8 @@ import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import customTemplate from '../../../../../static/images/illustrations/customTemplate.svg'
+import estimatedEffortTemplate from '../../../../../static/images/illustrations/estimatedEffortTemplate.svg'
+import wsjfTemplate from '../../../../../static/images/illustrations/wsjfTemplate.svg'
 import {PALETTE} from '../../../styles/paletteV2'
 import getTemplateList from '../../../utils/getTemplateList'
 import makeTemplateDescription from '../../../utils/makeTemplateDescription'
@@ -13,6 +15,7 @@ import RemoveTemplate from './RemoveTemplate'
 import TemplateSharing from './TemplateSharing'
 import TemplateDimensionList from './TemplateDimensionList'
 import {MeetingTypeEnum} from '../../../types/graphql'
+import SelectTemplate from './SelectTemplate'
 import AddPokerTemplateDimension from './AddPokerTemplateDimension'
 import {Threshold} from '../../../types/constEnums'
 import AddPokerTemplateMutation from '../../../mutations/AddPokerTemplateMutation'
@@ -40,11 +43,12 @@ const DimensionEditor = styled('div')({
   width: '100%'
 })
 
-const CreateTemplateImg = styled('img')({
+const TemplateImg = styled('img')({
   margin: '0 auto',
   maxWidth: 360,
+  maxHeight: 200,
   padding: '16px 0 0',
-  width: '100%'
+  width: '100%',
 })
 
 const Description = styled('div')({
@@ -58,27 +62,30 @@ const FirstLine = styled('div')({
   display: 'flex'
 })
 
-const Scrollable = styled('div')({
+const Scrollable = styled('div')<{isActiveTemplate: boolean}>(({isActiveTemplate}) => ({
   display: 'flex',
   flexDirection: 'column',
   overflow: 'auto',
+  paddingBottom: isActiveTemplate ? undefined : 56,
   width: '100%'
-})
+}))
 
 interface Props {
   gotoTeamTemplates: () => void
   gotoPublicTemplates: () => void
+  closePortal: () => void
   settings: PokerTemplateDetails_settings
 }
 
 const PokerTemplateDetails = (props: Props) => {
-  const {gotoTeamTemplates, gotoPublicTemplates, settings} = props
-  const {teamTemplates, selectedTemplate, team} = settings
-  const {id: templateId, name: templateName, dimensions} = selectedTemplate
+  const {gotoTeamTemplates, gotoPublicTemplates, closePortal, settings} = props
+  const {teamTemplates, team} = settings
+  const activeTemplate = settings.activeTemplate ?? settings.selectedTemplate
+  const {id: templateId, name: templateName, dimensions} = activeTemplate
   const {id: teamId, orgId} = team
-  const lowestScope = getTemplateList(teamId, orgId, selectedTemplate)
-  const isOwner = selectedTemplate.teamId === teamId
-  const description = makeTemplateDescription(lowestScope, selectedTemplate)
+  const lowestScope = getTemplateList(teamId, orgId, activeTemplate)
+  const isOwner = activeTemplate.teamId === teamId
+  const description = makeTemplateDescription(lowestScope, activeTemplate)
   const templateCount = teamTemplates.length
   const atmosphere = useAtmosphere()
   const {onError, onCompleted, submitting, submitMutation} = useMutationProps()
@@ -89,10 +96,16 @@ const PokerTemplateDetails = (props: Props) => {
     AddPokerTemplateMutation(atmosphere, {parentTemplateId: templateId, teamId}, {onError, onCompleted})
     gotoTeamTemplates()
   }
+  const defaultIllustrations = {
+    estimatedEffortTemplate: estimatedEffortTemplate,
+    wsjfTemplate: wsjfTemplate
+  }
+  const headerImg = defaultIllustrations[templateId] ? defaultIllustrations[templateId] : customTemplate
+  const isActiveTemplate = activeTemplate.id === settings.selectedTemplate.id
   return (
     <DimensionEditor>
-      <Scrollable>
-        <CreateTemplateImg src={customTemplate} />
+      <Scrollable isActiveTemplate={isActiveTemplate}>
+        <TemplateImg src={headerImg} />
         <TemplateHeader>
           <FirstLine>
             <EditableTemplateName
@@ -122,8 +135,9 @@ const PokerTemplateDetails = (props: Props) => {
         </TemplateHeader>
         <TemplateDimensionList isOwner={isOwner} dimensions={dimensions} templateId={templateId} />
         {isOwner && <AddPokerTemplateDimension templateId={templateId} dimensions={dimensions} />}
+        <TemplateSharing teamId={teamId} template={activeTemplate} />
       </Scrollable>
-      <TemplateSharing teamId={teamId} template={selectedTemplate} />
+      {!isActiveTemplate && <SelectTemplate closePortal={closePortal} template={activeTemplate} teamId={teamId} />}
     </DimensionEditor>
   )
 }
@@ -145,8 +159,13 @@ graphql`
 export default createFragmentContainer(PokerTemplateDetails, {
   settings: graphql`
     fragment PokerTemplateDetails_settings on PokerMeetingSettings {
+      activeTemplate {
+        ...PokerTemplateDetailsTemplate @relay(mask: false)
+        ...SelectTemplate_template
+      }
       selectedTemplate {
         ...PokerTemplateDetailsTemplate @relay(mask: false)
+        ...SelectTemplate_template
       }
       teamTemplates {
         ...EditableTemplateName_teamTemplates
