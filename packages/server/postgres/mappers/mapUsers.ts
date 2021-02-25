@@ -1,5 +1,6 @@
 import User from '../../database/types/User'
 import {IInsertUserQueryParams} from '../queries/generated/insertUserQuery'
+import getDeletedEmail from '../../utils/getDeletedEmail'
 
 const undefinedUserFieldsAndTheirDefaultPgValues = {
   newFeatureId: null,
@@ -8,20 +9,27 @@ const undefinedUserFieldsAndTheirDefaultPgValues = {
   segmentId: null,
   reasonRemoved: null,
   rol: null,
-  payLaterClickCount: 0
+  payLaterClickCount: 0,
+  featureFlags: [],
+  inactive: false
 }
-
-const keyValues = Object.entries(
-  undefinedUserFieldsAndTheirDefaultPgValues
-)
 
 const mapUsers = (users: User[]): IInsertUserQueryParams['users'] => {
   const mappedUsers = [] as any
   users.forEach(user => {
-    const mappedUser = Object.assign({}, user)
-    keyValues.forEach(([k, v]) => {
-      mappedUser[k] = user.hasOwnProperty(k) ? user[k] : v
-    })
+    const mappedUser = Object.assign(
+      {},
+      undefinedUserFieldsAndTheirDefaultPgValues,
+      user,
+      {
+        email: user.email === 'DELETED' ?
+          getDeletedEmail(user.id)
+          :
+          user.email.slice(0, 500),
+        preferredName: user.preferredName.slice(0, 100),
+      }
+    ) as IInsertUserQueryParams['users'][0]
+    if ((mappedUser.email as string).length === 500) { return }
     mappedUsers.push(mappedUser)
   })
   return mappedUsers

@@ -9,6 +9,7 @@ import DeleteUserPayload from '../types/DeleteUserPayload'
 import removeFromOrg from './helpers/removeFromOrg'
 import updateUser from '../../postgres/helpers/updateUser'
 import catchAndLog from '../../postgres/utils/catchAndLog'
+import getDeletedEmail from '../../utils/getDeletedEmail'
 
 export default {
   type: GraphQLNonNull(DeleteUserPayload),
@@ -79,7 +80,7 @@ export default {
         updateUser(
           {
             isRemoved: true,
-            email: `DELETED:${userId}:${new Date()}`,
+            email: getDeletedEmail(userId),
             reasonRemoved: validReason
           },
           userIdToDelete

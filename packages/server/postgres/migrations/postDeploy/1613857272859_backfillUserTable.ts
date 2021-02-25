@@ -8,7 +8,7 @@ export const shorthands: ColumnDefinitions | undefined = undefined;
 
 export async function up(pgm: MigrationBuilder): Promise<void> {
   const r = await getRethink()
-  const batchSize = 1000
+  const batchSize = 3000
   const backfillStartTs = new Date()
   console.log('start ts:', backfillStartTs)
 
@@ -18,9 +18,6 @@ export async function up(pgm: MigrationBuilder): Promise<void> {
   ) => {
     let i = 0
     let foundUsers = false
-    // todo: aghostuser has invalid value for `tms`
-    // todo: special case to account for rethink users with email DELETED
-    // todo: check for duplicate values for id or email in rethink users
 
     console.log('starting backfill pass...')
     console.log('after ts:', usersAfterTs, 'by:', usersByFieldChoice)
@@ -34,7 +31,6 @@ export async function up(pgm: MigrationBuilder): Promise<void> {
         .orderBy(usersByFieldChoice, {index: usersByFieldChoice})
         .skip(offset)
         .limit(batchSize)
-        .filter(row => row('email').eq('DELETED').not())
         .run()
       if (!rethinkUsers.length) { break }
       foundUsers = true
