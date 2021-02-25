@@ -9,7 +9,7 @@ interface Props {}
 
 const RetroLobbyHelpMenu = forwardRef((_props: Props, ref: any) => {
   const {closePortal} = ref
-  useSegmentTrack('Help Menu Open', {phaseType: 'lobby'})
+  useSegmentTrack('Help Menu Open', {phase: 'lobby'})
   return (
     <HelpMenuContent closePortal={closePortal}>
       <HelpMenuCopy>

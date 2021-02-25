@@ -12,7 +12,7 @@ interface Props {}
 
 const GroupHelpMenu = forwardRef((_props: Props, ref: any) => {
   const {closePortal} = ref
-  useSegmentTrack('Help Menu Open', {phaseType: 'group'})
+  useSegmentTrack('Help Menu Open', {phase: 'group'})
   return (
     <HelpMenuContent closePortal={closePortal}>
       <HelpMenuHeader>{phaseLabelLookup[GROUP]}</HelpMenuHeader>

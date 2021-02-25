@@ -5,7 +5,7 @@ import {NewMeetingPhaseTypeEnum} from '~/__generated__/ActionMeeting_meeting.gra
 import {CreditCardModalActionType} from '../modules/userDashboard/components/CreditCardModal/CreditCardModal'
 
 type Options = {
-  phaseType?: NewMeetingPhaseTypeEnum
+  phase?: NewMeetingPhaseTypeEnum
   actionType?: CreditCardModalActionType
 }
 

@@ -10,7 +10,7 @@ import {BezierCurve} from '~/types/constEnums'
 import {SORT_STEP} from '~/utils/constants'
 import dndNoise from '~/utils/dndNoise'
 import {CommentSendOrAdd_meeting} from '~/__generated__/CommentSendOrAdd_meeting.graphql'
-import {ThreadSourceEnum, CreateTaskInput} from '~/__generated__/CreateTaskMutation.graphql'
+import {ThreadSourceEnum} from '~/__generated__/CreateTaskMutation.graphql'
 import {DECELERATE} from '../styles/animation'
 import Icon from './Icon'
 import PlainButton from './PlainButton/PlainButton'
@@ -116,7 +116,7 @@ const CommentSendOrAdd = (props: Props) => {
       threadSortOrder: getMaxSortOrder() + SORT_STEP + dndNoise(),
       userId: viewerId,
       teamId
-    } as CreateTaskInput
+    } as const
     CreateTaskMutation(atmosphere, {newTask}, {})
     collapseAddTask()
     commitLocalUpdate(atmosphere, (store) => {

@@ -4,7 +4,6 @@ import {createFragmentContainer} from 'react-relay'
 import {ActionMeeting_meeting} from '~/__generated__/ActionMeeting_meeting.graphql'
 import useMeeting from '../hooks/useMeeting'
 import NewMeetingAvatarGroup from '../modules/meeting/components/MeetingAvatarGroup/NewMeetingAvatarGroup'
-import {ValueOf} from '../types/generics'
 import {NewMeetingPhaseTypeEnum} from '../__generated__/ActionMeeting_meeting.graphql'
 import lazyPreload, {LazyExoticPreload} from '../utils/lazyPreload'
 import ActionMeetingSidebar from './ActionMeetingSidebar'
@@ -35,8 +34,6 @@ const phaseLookup = {
   )
 } as Record<NewMeetingPhaseTypeEnum, LazyExoticPreload<any>>
 
-type PhaseComponent = ValueOf<typeof phaseLookup>
-
 export interface ActionMeetingPhaseProps {
   avatarGroup: ReactElement
   toggleSidebar: () => void
@@ -63,7 +60,7 @@ const ActionMeeting = (props: Props) => {
   if (!safeRoute) return null
   const allowVideo = !!viewerMeetingMember?.user?.featureFlags?.video
   const localPhaseType = (localPhase && localPhase.phaseType) || 'lobby'
-  const Phase = phaseLookup[localPhaseType] as PhaseComponent
+  const Phase = phaseLookup[localPhaseType]
   return (
     <MeetingStyles>
       <ResponsiveDashSidebar isOpen={showSidebar} onToggle={toggleSidebar}>

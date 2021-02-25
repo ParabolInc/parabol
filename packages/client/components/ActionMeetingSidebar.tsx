@@ -30,7 +30,7 @@ const ActionMeetingSidebar = (props: Props) => {
   const {agendaItems} = team
   const {phaseTypes} = settings
   const {facilitatorUserId, facilitatorStageId, localPhase, localStage, phases} = meeting
-  const localPhaseType: NewMeetingPhaseTypeEnum | '' = localPhase ? localPhase.phaseType : ''
+  const localPhaseType = localPhase ? localPhase.phaseType : ''
   const facilitatorStageRes = findStageById(phases, facilitatorStageId)
   const facilitatorPhaseType = facilitatorStageRes ? facilitatorStageRes.phase.phaseType : ''
   const isViewerFacilitator = facilitatorUserId === viewerId

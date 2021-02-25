@@ -12,7 +12,7 @@ interface Props {}
 
 const VoteHelpMenu = forwardRef((_props: Props, ref: any) => {
   const {closePortal} = ref
-  useSegmentTrack('Help Menu Open', {phaseType: 'vote'})
+  useSegmentTrack('Help Menu Open', {phase: 'vote'})
   return (
     <HelpMenuContent closePortal={closePortal}>
       <HelpMenuHeader>{phaseLabelLookup[VOTE]}</HelpMenuHeader>
