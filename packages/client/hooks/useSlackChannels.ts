@@ -25,7 +25,9 @@ const useSlackChannels = (
       let memberChannels
       if (!isSlackIMArray(publicChannelRes.channels)) {
         const {channels: publicChannels} = publicChannelRes
-        memberChannels = publicChannels.filter((channel) => channel.is_member)
+        memberChannels = publicChannels
+          .filter((channel) => channel.is_channel)
+          .sort((a, b) => (a.name > b.name ? 1 : -1))
       }
       if (slackIMRes.ok && isSlackIMArray(slackIMRes.channels)) {
         const {channels: ims} = slackIMRes
