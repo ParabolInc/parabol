@@ -10,7 +10,6 @@ import useMeeting from '../hooks/useMeeting'
 import LocalAtmosphere from '../modules/demo/LocalAtmosphere'
 import NewMeetingAvatarGroup from '../modules/meeting/components/MeetingAvatarGroup/NewMeetingAvatarGroup'
 import {RetroDemo} from '../types/constEnums'
-import {ValueOf} from '../types/generics'
 import lazyPreload, {LazyExoticPreload} from '../utils/lazyPreload'
 import MeetingControlBar from './MeetingControlBar'
 import MeetingStyles from './MeetingStyles'
@@ -34,8 +33,6 @@ const phaseLookup = {
     import(/* webpackChunkName: 'RetroDiscussPhase' */ './RetroDiscussPhase')
   )
 } as Record<NewMeetingPhaseTypeEnum, LazyExoticPreload<any>>
-
-type PhaseComponent = ValueOf<typeof phaseLookup>
 
 export interface RetroMeetingPhaseProps {
   toggleSidebar: () => void
@@ -63,8 +60,7 @@ const RetroMeeting = (props: Props) => {
   const {id: meetingId, showSidebar, viewerMeetingMember, localPhase} = meeting
   const allowVideo = !!viewerMeetingMember?.user?.featureFlags?.video
   const localPhaseType = localPhase?.phaseType
-
-  const Phase = phaseLookup[localPhaseType] as PhaseComponent
+  const Phase = phaseLookup[localPhaseType]
 
   const isDemoStageComplete =
     meetingId === RetroDemo.MEETING_ID

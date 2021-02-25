@@ -10,10 +10,6 @@ import graphql from 'babel-plugin-relay/macro'
 import {ParabolScopingSelectAllTasks_tasks} from '../__generated__/ParabolScopingSelectAllTasks_tasks.graphql'
 import useUnusedRecords from '~/hooks/useUnusedRecords'
 import getSelectAllTitle from '../utils/getSelectAllTitle'
-import {
-  UpdatePokerScopeMutationVariables,
-  UpdatePokerScopeItemInput
-} from '../__generated__/UpdatePokerScopeMutation.graphql'
 
 const Item = styled('div')({
   display: 'flex',
@@ -42,15 +38,18 @@ const ParabolScopingSelectAllTasks = (props: Props) => {
     submitMutation()
     const updateArr = allSelected ? Array.from(taskIds) : unusedTasks
     const action = allSelected ? 'DELETE' : 'ADD'
-    const updates = updateArr.map((serviceTaskId) => ({
-      service: 'PARABOL',
-      serviceTaskId,
-      action
-    })) as UpdatePokerScopeItemInput[]
+    const updates = updateArr.map(
+      (serviceTaskId) =>
+        ({
+          service: 'PARABOL',
+          serviceTaskId,
+          action
+        } as const)
+    )
     const variables = {
       meetingId,
       updates
-    } as UpdatePokerScopeMutationVariables
+    }
     UpdatePokerScopeMutation(atmosphere, variables, {onError, onCompleted})
   }
   if (tasks.length < 2) return null

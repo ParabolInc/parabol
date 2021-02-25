@@ -14,7 +14,7 @@ const linkLookup = {
 } as Record<MeetingTypeEnum, string>
 
 interface Props {
-  meetingType: string
+  meetingType: MeetingTypeEnum
 }
 
 const CheckInHelpMenu = forwardRef((props: Props, ref: any) => {

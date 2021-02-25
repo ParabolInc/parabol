@@ -1,59 +1,23 @@
 import getPubSub from './getPubSub'
-import {NotificationSubscriptionResponse} from '~/__generated__/NotificationSubscription.graphql'
-import {OrganizationSubscriptionResponse} from '~/__generated__/OrganizationSubscription.graphql'
-import {MeetingSubscriptionResponse} from '~/__generated__/MeetingSubscription.graphql'
-import {TaskSubscriptionResponse} from '~/__generated__/TaskSubscription.graphql'
-import {TeamSubscriptionResponse} from '~/__generated__/TeamSubscription.graphql'
+import {
+  MeetingSubscriptionPayload,
+  NotificationSubscriptionPayload,
+  OrganizationSubscriptionPayload,
+  TaskSubscriptionPayload,
+  TeamSubscriptionPayload
+} from 'parabol-client/types/graphql'
 
 export interface SubOptions {
   mutatorId?: string
   operationId?: string | null
 }
 
-type NotificationPayload =
-  | NotificationSubscriptionResponse['notificationSubscription']['__typename']
-  | 'AcceptTeamInvitationPayload'
-
-type OrganizationPayload =
-  | OrganizationSubscriptionResponse['organizationSubscription']['__typename']
-  | 'DowngradeToPersonalPayload'
-
-type MeetingPayload =
-  | MeetingSubscriptionResponse['meetingSubscription']['__typename']
-  | 'AutoGroupReflectionsPayload'
-  | 'DragEstimatingTaskSuccess'
-
-type TeamPayload =
-  | TeamSubscriptionResponse['teamSubscription']['__typename']
-  | 'AddPokerTemplatePayload'
-  | 'AddPokerTemplateDimensionPayload'
-  | 'AddPokerTemplateScalePayload'
-  | 'AddPokerTemplateScaleValuePayload'
-  | 'AddSlackAuthPayload'
-  | 'DowngradeToPersonalPayload'
-  | 'MovePokerTemplateDimensionPayload'
-  | 'PokerTemplateDimensionUpdateDescriptionPayload'
-  | 'ReflectTemplatePromptUpdateDescriptionPayload'
-  | 'RemoveAtlassianAuthPayload'
-  | 'RemoveGitHubAuthPayload'
-  | 'RemovePokerTemplatePayload'
-  | 'RemovePokerTemplateDimensionPayload'
-  | 'RemovePokerTemplateScalePayload'
-  | 'RemovePokerTemplateScalePayload'
-  | 'RemoveSlackAuthPayload'
-  | 'RenamePokerTemplateDimensionPayload'
-  | 'RenamePokerTemplateScalePayload'
-  | 'SetSlackNotificationPayload'
-  | 'StartSprintPokerSuccess'
-  | 'UpdatePokerTemplateDimensionScalePayload'
-  | 'UpdatePokerTemplateScaleValuePayload'
-
 interface SubTable {
-  notification: NotificationPayload
-  organization: OrganizationPayload
-  meeting: MeetingPayload
-  task: TaskSubscriptionResponse['taskSubscription']['__typename']
-  team: TeamPayload
+  notification: NotificationSubscriptionPayload['__typename']
+  organization: OrganizationSubscriptionPayload['__typename']
+  meeting: MeetingSubscriptionPayload['__typename']
+  task: TaskSubscriptionPayload['__typename']
+  team: TeamSubscriptionPayload['__typename']
 }
 
 const publish = <T extends keyof SubTable>(
