@@ -2,14 +2,8 @@ import {commitMutation} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import makeSuggestedIntegrationId from '../utils/makeSuggestedIntegrationId'
 import createProxyRecord from '../utils/relay/createProxyRecord'
-import Atmosphere from '../Atmosphere'
-import {LocalHandlers} from '../types/relayMutations'
-import {
-  CreateJiraTaskIntegrationMutationVariables,
-  CreateJiraTaskIntegrationMutation as TCreateJiraTaskIntegrationMutation
-} from '../__generated__/CreateJiraTaskIntegrationMutation.graphql'
-
-import {TaskIntegrationLink_integration} from '~/__generated__/TaskIntegrationLink_integration.graphql'
+import {StandardMutation} from '../types/relayMutations'
+import {CreateJiraTaskIntegrationMutation as TCreateJiraTaskIntegrationMutation} from '../__generated__/CreateJiraTaskIntegrationMutation.graphql'
 
 graphql`
   fragment CreateJiraTaskIntegrationMutation_task on CreateJiraTaskIntegrationPayload {
@@ -41,16 +35,10 @@ const mutation = graphql`
   }
 `
 
-interface IntegrationItem extends TaskIntegrationLink_integration {
-  cloudId: string
-  projectName?: string
-  updatedAt?: string
-}
-
-const CreateJiraTaskIntegrationMutation = (
-  atmosphere: Atmosphere,
-  variables: CreateJiraTaskIntegrationMutationVariables,
-  {onCompleted, onError}: LocalHandlers
+const CreateJiraTaskIntegrationMutation: StandardMutation<TCreateJiraTaskIntegrationMutation> = (
+  atmosphere,
+  variables,
+  {onCompleted, onError}
 ) => {
   return commitMutation<TCreateJiraTaskIntegrationMutation>(atmosphere, {
     mutation,
@@ -85,7 +73,7 @@ const CreateJiraTaskIntegrationMutation = (
           projectKey,
           projectName,
           service: 'jira'
-        } as IntegrationItem
+        } as const
         const id = makeSuggestedIntegrationId(nextItem)
         // the fallback is likely never used
         const latestIntegration =
@@ -111,7 +99,7 @@ const CreateJiraTaskIntegrationMutation = (
         issueKey: '?',
         cloudName: '',
         updatedAt: now.toJSON()
-      } as IntegrationItem
+      } as const
       const integration = createProxyRecord(store, 'TaskIntegrationJira', optimisticIntegration)
       task.setLinkedRecord(integration, 'integration')
     },

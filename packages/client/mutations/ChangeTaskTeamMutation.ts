@@ -1,14 +1,12 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
 import {ChangeTaskTeamMutation_task} from '~/__generated__/ChangeTaskTeamMutation_task.graphql'
-import Atmosphere from '../Atmosphere'
-import {LocalHandlers, SharedUpdater} from '../types/relayMutations'
+import {SharedUpdater, StandardMutation} from '../types/relayMutations'
 import getBaseRecord from '../utils/relay/getBaseRecord'
 import safeRemoveNodeFromUnknownConn from '../utils/relay/safeRemoveNodeFromUnknownConn'
 import updateProxyRecord from '../utils/relay/updateProxyRecord'
 import {
   ChangeTaskTeamMutation as TChangeTaskTeamMutation,
-  ChangeTaskTeamMutationVariables,
   ChangeTaskTeamMutationResponse
 } from '../__generated__/ChangeTaskTeamMutation.graphql'
 import handleUpsertTasks from './handlers/handleUpsertTasks'
@@ -54,10 +52,10 @@ export const changeTaskTeamTaskUpdater: SharedUpdater<ChangeTaskTeamMutation_tas
   handleUpsertTasks(task, store)
 }
 
-const ChangeTaskTeamMutation = (
-  atmosphere: Atmosphere,
-  variables: ChangeTaskTeamMutationVariables,
-  {onError, onCompleted}: LocalHandlers
+const ChangeTaskTeamMutation: StandardMutation<TChangeTaskTeamMutation> = (
+  atmosphere,
+  variables,
+  {onError, onCompleted}
 ) => {
   return commitMutation<TChangeTaskTeamMutation>(atmosphere, {
     mutation,

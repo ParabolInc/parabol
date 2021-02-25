@@ -27,7 +27,7 @@ const lookup = {
   UPCOMING: {
     label: 'Current Estimation'
   }
-} as Record<InvoiceStatusEnum, {label: string}>
+} as const
 
 interface Props {
   status: InvoiceStatusEnum

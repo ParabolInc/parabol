@@ -201,13 +201,13 @@ const initDemoOrg = () => {
   return {
     id: demoOrgId,
     name: 'Demo Organization',
-    tier: 'pro' as TierEnum,
+    tier: 'pro',
     orgUserCount: {
       activeUserCount: 5,
       inactiveUserCount: 0
     },
     showConversionModal: false
-  }
+  } as const
 }
 
 const initDemoTeam = (organization, teamMembers, newMeeting) => {

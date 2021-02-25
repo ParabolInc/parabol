@@ -1,11 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {Disposable} from 'relay-runtime'
-import {LocalHandlers} from '../types/relayMutations'
-import {
-  AddAtlassianAuthMutation as TAddAtlassianAuthMutation,
-  AddAtlassianAuthMutationVariables
-} from '../__generated__/AddAtlassianAuthMutation.graphql'
+import {StandardMutation} from '../types/relayMutations'
+import {AddAtlassianAuthMutation as TAddAtlassianAuthMutation} from '../__generated__/AddAtlassianAuthMutation.graphql'
 
 graphql`
   fragment AddAtlassianAuthMutation_team on AddAtlassianAuthPayload {
@@ -32,12 +28,11 @@ const mutation = graphql`
     }
   }
 `
-
-const AddAtlassianAuthMutation = (
+const AddAtlassianAuthMutation: StandardMutation<TAddAtlassianAuthMutation> = (
   atmosphere,
-  variables: AddAtlassianAuthMutationVariables,
-  {onError, onCompleted}: LocalHandlers
-): Disposable => {
+  variables,
+  {onError, onCompleted}
+) => {
   return commitMutation<TAddAtlassianAuthMutation>(atmosphere, {
     mutation,
     variables,

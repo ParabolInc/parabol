@@ -13,10 +13,7 @@ import useMutationProps from '../hooks/useMutationProps'
 import useRouter from '../hooks/useRouter'
 import SetNotificationStatusMutation from '../mutations/SetNotificationStatusMutation'
 import {ASSIGNEE, MENTIONEE} from '../utils/constants'
-import {
-  TaskInvolves_notification,
-  TaskStatusEnum
-} from '../__generated__/TaskInvolves_notification.graphql'
+import {TaskInvolves_notification} from '../__generated__/TaskInvolves_notification.graphql'
 import NotificationTemplate from './NotificationTemplate'
 
 const involvementWord = {
@@ -63,13 +60,13 @@ interface Props {
 
 const deletedTask = {
   content: convertToTaskContent('<<TASK DELETED>>'),
-  status: 'done' as TaskStatusEnum,
+  status: 'done',
   tags: [] as string[],
   user: {
     picture: null,
     preferredName: null
   }
-}
+} as const
 
 const TaskInvolves = (props: Props) => {
   const {notification} = props

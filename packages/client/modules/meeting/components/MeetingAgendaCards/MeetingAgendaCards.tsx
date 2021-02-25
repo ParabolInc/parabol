@@ -10,7 +10,6 @@ import useEventCallback from '../../../../hooks/useEventCallback'
 import useHotkey from '../../../../hooks/useHotkey'
 import CreateTaskMutation from '../../../../mutations/CreateTaskMutation'
 import {meetingGridMinWidth} from '../../../../styles/meeting'
-import {CreateTaskInput} from '~/__generated__/CreateTaskMutation.graphql'
 import {MeetingAgendaCards_tasks} from '../../../../__generated__/MeetingAgendaCards_tasks.graphql'
 
 const makePlaceholders = (
@@ -50,7 +49,7 @@ const MeetingAgendaCards = (props: Props) => {
       threadSource: reflectionGroupId ? 'REFLECTION_GROUP' : 'AGENDA_ITEM',
       userId: viewerId,
       teamId
-    } as CreateTaskInput
+    } as const
     CreateTaskMutation(atmosphere, {newTask}, {})
   })
   useHotkey('t', handleAddTask)

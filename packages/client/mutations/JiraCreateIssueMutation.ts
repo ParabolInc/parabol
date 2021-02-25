@@ -1,9 +1,7 @@
 import {commitMutation} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import Atmosphere from '../Atmosphere'
-import {LocalHandlers, SharedUpdater} from '../types/relayMutations'
+import {SharedUpdater, StandardMutation} from '../types/relayMutations'
 import {JiraCreateIssueMutation_meeting} from '~/__generated__/JiraCreateIssueMutation_meeting.graphql'
-import {JiraCreateIssueMutationVariables} from '~/__generated__/JiraCreateIssueMutation.graphql'
 import handleJiraCreateIssue from './handlers/handleJiraCreateIssue'
 import {JiraCreateIssueMutation as TJiraCreateIssueMutation} from '~/__generated__/JiraCreateIssueMutation.graphql'
 import UpdatePokerScopeMutation from './UpdatePokerScopeMutation'
@@ -55,10 +53,10 @@ export const jiraCreateIssueUpdater: SharedUpdater<JiraCreateIssueMutation_meeti
   handleJiraCreateIssue(payload, store)
 }
 
-const JiraCreateIssueMutation = (
-  atmosphere: Atmosphere,
-  variables: JiraCreateIssueMutationVariables,
-  {onCompleted, onError}: LocalHandlers
+const JiraCreateIssueMutation: StandardMutation<TJiraCreateIssueMutation> = (
+  atmosphere,
+  variables,
+  {onCompleted, onError}
 ) => {
   return commitMutation<TJiraCreateIssueMutation>(atmosphere, {
     mutation,

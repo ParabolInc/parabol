@@ -90,8 +90,8 @@ const DEFAULT_VIEWER = {
   picture: '',
   preferredName: '',
   email: '',
-  tier: 'personal' as TierLabel
-}
+  tier: 'personal'
+} as const
 
 const StandardHub = (props: Props) => {
   const {handleMenuClick, viewer} = props

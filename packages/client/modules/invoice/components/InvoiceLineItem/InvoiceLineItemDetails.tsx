@@ -22,7 +22,7 @@ const detailDescriptionMaker = {
       detail.endAt
     )}`
   }
-} as Record<InvoiceLineItemEnum, (detail: InvoiceLineItemDetails_details[0]) => string>
+} as const
 
 const Details = styled('div')({
   display: 'block'
@@ -61,7 +61,7 @@ const DetailsFill = styled('div')({
 
 interface Props {
   details: InvoiceLineItemDetails_details | null
-  type: InvoiceLineItemEnum
+  type: Exclude<InvoiceLineItemEnum, 'OTHER_ADJUSTMENTS'>
 }
 
 const InvoiceLineItemDetails = (props: Props) => {

@@ -3,11 +3,9 @@ import graphql from 'babel-plugin-relay/macro'
 import handleUpdateStageSort from './handlers/handleUpdateStageSort'
 import {DISCUSS} from '../utils/constants'
 import getInProxy from '../utils/relay/getInProxy'
-import Atmosphere from '../Atmosphere'
 import {DragDiscussionTopicMutation as IDragDiscussionTopicMutation} from '../__generated__/DragDiscussionTopicMutation.graphql'
-import {SharedUpdater} from '../types/relayMutations'
+import {SharedUpdater, SimpleMutation} from '../types/relayMutations'
 import {DragDiscussionTopicMutation_meeting} from '~/__generated__/DragDiscussionTopicMutation_meeting.graphql'
-import {DragDiscussionTopicMutationVariables} from '~/__generated__/DragDiscussionTopicMutation.graphql'
 
 graphql`
   fragment DragDiscussionTopicMutation_meeting on DragDiscussionTopicPayload {
@@ -37,11 +35,11 @@ export const dragDiscussionTopicMeetingUpdater: SharedUpdater<DragDiscussionTopi
   handleUpdateStageSort(store, meetingId, DISCUSS)
 }
 
-const DragDiscussionTopicMutation = (
-  atmosphere: Atmosphere,
-  variables: DragDiscussionTopicMutationVariables
+const DragDiscussionTopicMutation: SimpleMutation<IDragDiscussionTopicMutation> = (
+  atmosphere,
+  variables
 ) => {
-  commitMutation<IDragDiscussionTopicMutation>(atmosphere, {
+  return commitMutation<IDragDiscussionTopicMutation>(atmosphere, {
     mutation,
     variables,
     updater: (store) => {

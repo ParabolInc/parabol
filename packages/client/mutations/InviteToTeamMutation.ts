@@ -1,14 +1,10 @@
-import {
-  InviteToTeamMutation as TInviteToTeamMutation,
-  InviteToTeamMutationVariables
-} from '../__generated__/InviteToTeamMutation.graphql'
+import {InviteToTeamMutation as TInviteToTeamMutation} from '../__generated__/InviteToTeamMutation.graphql'
 import {InviteToTeamMutation_notification} from '../__generated__/InviteToTeamMutation_notification.graphql'
 import {commitMutation} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import {matchPath} from 'react-router'
-import {Disposable} from 'relay-runtime'
 import handleAddNotifications from './handlers/handleAddNotifications'
-import {LocalHandlers, OnNextHistoryContext} from '../types/relayMutations'
+import {OnNextHistoryContext, StandardMutation} from '../types/relayMutations'
 import AcceptTeamInvitationMutation from './AcceptTeamInvitationMutation'
 import handleRemoveSuggestedActions from './handlers/handleRemoveSuggestedActions'
 
@@ -98,11 +94,11 @@ export const inviteToTeamNotificationOnNext = (
   }
 }
 
-const InviteToTeamMutation = (
-  atmosphere: any,
-  variables: InviteToTeamMutationVariables,
-  {onError, onCompleted}: LocalHandlers = {}
-): Disposable => {
+const InviteToTeamMutation: StandardMutation<TInviteToTeamMutation> = (
+  atmosphere,
+  variables,
+  {onError, onCompleted}
+) => {
   return commitMutation<TInviteToTeamMutation>(atmosphere, {
     mutation,
     variables,

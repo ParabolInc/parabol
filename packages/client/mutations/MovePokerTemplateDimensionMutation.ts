@@ -4,7 +4,10 @@ import {Disposable} from 'relay-runtime'
 import Atmosphere from '../Atmosphere'
 import handleMovePokerTemplateDimension from './handlers/handleMovePokerTemplateDimension'
 import getInProxy from '../utils/relay/getInProxy'
-import {MovePokerTemplateDimensionMutationVariables} from '~/__generated__/MovePokerTemplateDimensionMutation.graphql'
+import {
+  MovePokerTemplateDimensionMutation as TMovePokerTemplateDimensionMutation,
+  MovePokerTemplateDimensionMutationVariables
+} from '~/__generated__/MovePokerTemplateDimensionMutation.graphql'
 
 interface Context {
   templateId: string
@@ -41,7 +44,7 @@ const MovePokerTemplateDimensionMutation = (
   variables: MovePokerTemplateDimensionMutationVariables,
   context: Context
 ): Disposable => {
-  return commitMutation(atmosphere, {
+  return commitMutation<TMovePokerTemplateDimensionMutation>(atmosphere, {
     mutation,
     variables,
     updater: (store) => {
