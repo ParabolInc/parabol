@@ -101,14 +101,14 @@ const loginWithGoogle = {
         isEmailVerified: email_verified !== 'false'
       })
       const newUser = new User({
+        // if a deleted user with the same id exists, generate a new id
+        id: deletedUser?.isRemoved ? `google-oauth2|${generateUID()}` : userId,
         preferredName,
         picture,
         email,
         identities: [identity],
         segmentId
       })
-      // if a deleted user with the same id exists, generate a new id
-      newUser.id = deletedUser && deletedUser.isRemoved ? `google-oauth2|${generateUID()}` : userId
       context.authToken = await bootstrapNewUser(newUser, !invitationToken)
       return {
         userId,
