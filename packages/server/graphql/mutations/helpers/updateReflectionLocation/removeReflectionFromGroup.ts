@@ -1,4 +1,5 @@
 import getGroupSmartTitle from 'parabol-client/utils/smartGroup/getGroupSmartTitle'
+import dndNoise from '../../../../../client/utils/dndNoise'
 import getRethink from '../../../../database/rethinkDriver'
 import ReflectionGroup from '../../../../database/types/ReflectionGroup'
 import updateSmartGroupTitle from './updateSmartGroupTitle'
@@ -12,36 +13,33 @@ const removeReflectionFromGroup = async (reflectionId, {dataLoader}) => {
     .run()
   if (!reflection) throw new Error('Reflection not found')
   const {reflectionGroupId: oldReflectionGroupId, meetingId, promptId} = reflection
-  const oldReflectionGroup = await r
-    .table('RetroReflectionGroup')
-    .get(oldReflectionGroupId)
-    .run()
+  const [oldReflectionGroup, reflectionGroups, meeting] = await Promise.all([
+    dataLoader.get('reflectionGroup').load(oldReflectionGroupId),
+    r
+      .table('RetroReflectionGroup')
+      .getAll(meetingId, {index: 'meetingId'})
+      .filter({isActive: true})
+      .orderBy('sortOrder')
+      .run(),
+    dataLoader.get('newMeetings').load(meetingId)
+  ])
+
   const {sortOrder: oldSortOrder} = oldReflectionGroup
-  const reflectionGroups = await r
-    .table('RetroReflectionGroup')
-    .getAll(meetingId, {index: 'meetingId'})
-    .filter({isActive: true})
-    .orderBy('sortOrder')
-    .run()
-  const meeting = await dataLoader.get('newMeetings').load(meetingId)
 
   // RESOLUTION
   const nextReflectionGroupIndex =
     reflectionGroups.findIndex(({id}) => id === oldReflectionGroup.id) + 1
   let newSortOrder
   if (nextReflectionGroupIndex >= reflectionGroups.length) {
-    newSortOrder = oldSortOrder + 1
+    newSortOrder = oldSortOrder + 1 + dndNoise()
   } else {
     const nextSortOrder = reflectionGroups[nextReflectionGroupIndex].sortOrder
-    newSortOrder = (oldSortOrder + nextSortOrder) / 2
+    newSortOrder = (oldSortOrder + nextSortOrder) / 2 + dndNoise()
   }
   const reflectionGroup = new ReflectionGroup({meetingId, promptId, sortOrder: newSortOrder})
-  await r
-    .table('RetroReflectionGroup')
-    .insert(reflectionGroup)
-    .run()
   const {id: reflectionGroupId} = reflectionGroup
   await r({
+    reflectionGroup: r.table('RetroReflectionGroup').insert(reflectionGroup),
     reflection: r
       .table('RetroReflection')
       .get(reflectionId)
