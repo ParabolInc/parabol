@@ -11,8 +11,12 @@ import encodeAuthToken from '../../utils/encodeAuthToken'
 import rateLimit from '../rateLimit'
 import VerifyEmailPayload from '../types/VerifyEmailPayload'
 import bootstrapNewUser from './helpers/bootstrapNewUser'
-import updateUser from '../../postgres/helpers/updateUser'
+import {
+  updateUserQuery,
+  IUpdateUserQueryParams
+} from '../../postgres/queries/generated/updateUserQuery'
 import catchAndLog from '../../postgres/utils/catchAndLog'
+import getPg from '../../postgres/getPg'
 
 export default {
   type: GraphQLNonNull(VerifyEmailPayload),
@@ -63,7 +67,16 @@ export default {
         // mutative
         localIdentity.isEmailVerified = true
         await Promise.all([
-          catchAndLog(() => updateUser({identities, updatedAt: now}, userId)),
+          catchAndLog(() =>
+            updateUserQuery.run(
+              ({
+                identities,
+                updatedAt: now,
+                ids: [userId]
+              } as unknown) as IUpdateUserQueryParams,
+              getPg()
+            )
+          ),
           db.write('User', userId, {identities, updatedAt: now})
         ])
       }

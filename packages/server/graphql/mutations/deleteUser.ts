@@ -7,8 +7,12 @@ import segmentIo from '../../utils/segmentIo'
 import {GQLContext} from '../graphql'
 import DeleteUserPayload from '../types/DeleteUserPayload'
 import removeFromOrg from './helpers/removeFromOrg'
-import updateUser from '../../postgres/helpers/updateUser'
+import {
+  updateUserQuery,
+  IUpdateUserQueryParams
+} from '../../postgres/queries/generated/updateUserQuery'
 import catchAndLog from '../../postgres/utils/catchAndLog'
+import getPg from '../../postgres/getPg'
 
 export default {
   type: GraphQLNonNull(DeleteUserPayload),
@@ -76,13 +80,14 @@ export default {
         reasonRemoved: validReason
       })
       catchAndLog(() =>
-        updateUser(
-          {
+        updateUserQuery.run(
+          ({
             isRemoved: true,
             email: `DELETED:${userId}:${new Date()}`,
-            reasonRemoved: validReason
-          },
-          userIdToDelete
+            reasonRemoved: validReason,
+            ids: [userIdToDelete]
+          } as unknown) as IUpdateUserQueryParams,
+          getPg()
         )
       )
     }, 30000)
