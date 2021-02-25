@@ -23,7 +23,7 @@ export async function up(pgm: MigrationBuilder): Promise<void> {
       "lastSeenAt" TIMESTAMP,
       "preferredName" VARCHAR(100) NOT NULL,
       tier "TierEnum" NOT NULL DEFAULT 'personal',
-      picture VARCHAR(255) NOT NULL,
+      picture text NOT NULL,
       tms VARCHAR(100)[] NOT NULL DEFAULT '{}',
       "featureFlags" VARCHAR(50)[] NOT NULL DEFAULT '{}',
       identities JSONB[] NOT NULL DEFAULT '{}',
