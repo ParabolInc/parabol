@@ -1,8 +1,45 @@
 /* eslint-disable @typescript-eslint/camelcase */
 import { MigrationBuilder, ColumnDefinitions } from 'node-pg-migrate';
 import getRethink from '../../../database/rethinkDriver'
-import insertUser from '../../helpers/insertUser'
+import {backupUserQuery} from '../../queries/generated/backupUserQuery'
 import catchAndLog from '../../utils/catchAndLog'
+import getPg from '../../getPg'
+import User from '../../../database/types/User'
+import {IBackupUserQueryParams} from '../../queries/generated/backupUserQuery'
+import getDeletedEmail from '../../../utils/getDeletedEmail'
+
+const undefinedUserFieldsAndTheirDefaultPgValues = {
+  newFeatureId: null,
+  overLimitCopy: null,
+  isRemoved: false,
+  segmentId: null,
+  reasonRemoved: null,
+  rol: null,
+  payLaterClickCount: 0,
+  featureFlags: [],
+  inactive: false
+}
+
+const mapUsers = (users: User[]): IBackupUserQueryParams['users'] => {
+  const mappedUsers = [] as any
+  users.forEach(user => {
+    const mappedUser = Object.assign(
+      {},
+      undefinedUserFieldsAndTheirDefaultPgValues,
+      user,
+      {
+        email: user.email === 'DELETED' ?
+          getDeletedEmail(user.id)
+          :
+          user.email.slice(0, 500),
+        preferredName: user.preferredName.slice(0, 100),
+      }
+    ) as IBackupUserQueryParams['users'][0]
+    if ((mappedUser.email as string).length === 500) { return }
+    mappedUsers.push(mappedUser)
+  })
+  return mappedUsers
+}
 
 export const shorthands: ColumnDefinitions | undefined = undefined;
 
@@ -35,7 +72,8 @@ export async function up(pgm: MigrationBuilder): Promise<void> {
       if (!rethinkUsers.length) { break }
       foundUsers = true
       // todo: bring back backupUserQuery, as it's not the same as insert
-      await catchAndLog(() => insertUser(rethinkUsers))
+      const pgUsers = mapUsers(rethinkUsers)
+      await catchAndLog(() => backupUserQuery.run({users: pgUsers}, getPg()))
       i += 1
     }
     return foundUsers
