@@ -6,14 +6,13 @@ import Atmosphere from '../Atmosphere'
 import {ClientRetrospectiveMeeting} from '../types/clientSchema'
 import {IReflectPhase} from '../types/graphql'
 import {SharedUpdater} from '../types/relayMutations'
-import {AUTO_GROUPING_THRESHOLD, REFLECT, VOTE} from '../utils/constants'
+import {REFLECT, VOTE} from '../utils/constants'
 import isInterruptingChickenPhase from '../utils/isInterruptingChickenPhase'
 import isViewerTyping from '../utils/isViewerTyping'
 import getBaseRecord from '../utils/relay/getBaseRecord'
 import getInProxy from '../utils/relay/getInProxy'
 import safeProxy from '../utils/relay/safeProxy'
 import {setLocalStageAndPhase} from '../utils/relay/updateLocalStage'
-import groupReflections from '../utils/smartGroup/groupReflections'
 import {
   NavigateMeetingMutation as TNavigateMeetingMutation,
   NavigateMeetingMutationVariables
@@ -148,8 +147,9 @@ export const navigateMeetingTeamUpdater: SharedUpdater<NavigateMeetingMutation_t
   }
 
   const reflectionGroups = meeting.getLinkedRecords('reflectionGroups')
-  const sortedReflectionGroups = reflectionGroups.slice().sort((a, b) =>
-    a.getValue('sortOrder') < b.getValue('sortOrder') ? -1 : 1)
+  const sortedReflectionGroups = reflectionGroups
+    .slice()
+    .sort((a, b) => (a.getValue('sortOrder') < b.getValue('sortOrder') ? -1 : 1))
   meeting.setLinkedRecords(sortedReflectionGroups, 'reflectionGroups')
 }
 
@@ -184,45 +184,14 @@ const NavigateMeetingMutation = (
         if (stage) {
           stage.setValue(true, 'isComplete')
           const phaseType = stage.getValue('phaseType')
-          if (phaseType === VOTE) {
+          if (phaseType === VOTE || phaseType === REFLECT) {
             // optimistically creating an array of temporary stages is difficult because they can become undefined
+            // same goes for sorting all the reflections based on entities
             // easier to just wait for the return value before advancing
             meeting.setValue(completedStageId, 'facilitatorStageId')
             if (completedStageId) {
               setLocalStageAndPhase(store, meetingId, completedStageId)
             }
-          }
-          if (phaseType === REFLECT) {
-            const reflectionGroups = meeting.getLinkedRecords('reflectionGroups')
-            if (!reflectionGroups) return
-            const reflections = reflectionGroups.reduce((filteredReflections, reflectionGroup) => {
-              const reflections = reflectionGroup.getLinkedRecords('reflections')
-              if (reflections && reflections.length !== 0) {
-                const entitiesRecords = reflections[0].getLinkedRecords('entities')
-                if (!entitiesRecords) return filteredReflections
-                const entities = entitiesRecords.map((entitiesRecord) => {
-                  return {
-                    lemma: entitiesRecord.getValue('lemma'),
-                    name: entitiesRecord.getValue('name'),
-                    salience: entitiesRecord.getValue('salience')
-                  }
-                })
-                const reflection = {
-                  entities: entities,
-                  reflectionGroupId: reflections[0].getValue('reflectionGroupId')
-                }
-                filteredReflections.push(reflection)
-              }
-              return filteredReflections
-            }, [] as any[])
-            const {reflectionGroupMapping} = groupReflections(reflections, AUTO_GROUPING_THRESHOLD)
-
-            const sortedReflectionGroups = reflectionGroups.sort((groupA, groupB) => {
-              const newGroupIdA = reflectionGroupMapping[groupA.getDataID()]
-              const newGroupIdB = reflectionGroupMapping[groupB.getDataID()]
-              return newGroupIdA.localeCompare(newGroupIdB)
-            })
-            meeting.setLinkedRecords(sortedReflectionGroups, 'reflectionGroups')
           }
         }
       }
