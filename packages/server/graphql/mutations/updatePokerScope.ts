@@ -66,7 +66,6 @@ const updatePokerScope = {
     }[]
     const estimatePhase = phases.find((phase) => phase.phaseType === 'ESTIMATE') as EstimatePhase
     let stages = estimatePhase.stages
-    // const allDimensions = await dataLoader.get('templateDimensionsByTemplateId').load(templateId)
     const templateRef = await getTemplateRefById(templateRefId)
 
     const {dimensions} = templateRef

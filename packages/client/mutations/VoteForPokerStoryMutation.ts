@@ -47,7 +47,6 @@ const VoteForPokerStoryMutation: StandardMutation<TVoteForPokerStoryMutation> = 
       const scores = stage.getLinkedRecords('scores') || []
       const existingScoreIdx = scores.findIndex((item) => item.getValue('userId') === viewerId)
       if (score) {
-        // return
         const dimensionRef = stage.getLinkedRecord('dimensionRef')
         if (!dimensionRef) return
         const scale = dimensionRef.getLinkedRecord('scale')
