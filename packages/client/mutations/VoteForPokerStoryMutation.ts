@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {IEstimateStage, ITemplateDimension, ITemplateScale} from '../types/graphql'
+import {IEstimateStage} from '../types/graphql'
 import {StandardMutation} from '../types/relayMutations'
 import createProxyRecord from '../utils/relay/createProxyRecord'
 import {VoteForPokerStoryMutation as TVoteForPokerStoryMutation} from '../__generated__/VoteForPokerStoryMutation.graphql'
@@ -42,31 +42,39 @@ const VoteForPokerStoryMutation: StandardMutation<TVoteForPokerStoryMutation> = 
       const {stageId, score} = variables
       const {viewerId} = atmosphere
       const stage = store.get<IEstimateStage>(stageId)
-      if (!stage) return
+      const viewer = store.getRoot().getLinkedRecord('viewer')
+      if (!stage || !viewer) return
       const scores = stage.getLinkedRecords('scores') || []
       const existingScoreIdx = scores.findIndex((item) => item.getValue('userId') === viewerId)
       if (score) {
-        const dimensionId = stage.getValue('dimensionId')
-        if (!dimensionId) return
-        const dimension = store.get<ITemplateDimension>(dimensionId)
-        if (!dimension) return
-        const scaleId = dimension.getValue('scaleId')
-        if (!scaleId) return
-        const scale = store.get<ITemplateScale>('scaleId')
+        const dimensionRef = stage.getLinkedRecord('dimensionRef')
+        if (!dimensionRef) return
+        const scale = dimensionRef.getLinkedRecord('scale')
         const scaleValues = scale?.getLinkedRecords('values')
         if (!scaleValues) return
         const scaleValue = scaleValues.find((value) => value.getValue('label') === score)
         if (!scaleValue) return
         const optimisticScore = createProxyRecord(store, 'EstimateUserScore', {
           userId: viewerId,
-          score
+          stageId,
+          label: score
         })
-        const nextScores = existingScoreIdx === -1 ? [...scores, optimisticScore] :
-          [...scores.slice(0, existingScoreIdx), optimisticScore, ...scores.slice(existingScoreIdx + 1)]
+        optimisticScore.setLinkedRecord(viewer, 'user')
+        const nextScores =
+          existingScoreIdx === -1
+            ? [...scores, optimisticScore]
+            : [
+              ...scores.slice(0, existingScoreIdx),
+              optimisticScore,
+              ...scores.slice(existingScoreIdx + 1)
+            ]
         stage.setLinkedRecords(nextScores, 'scores')
       } else {
         if (existingScoreIdx === -1) return
-        const nextScores = [...scores.slice(0, existingScoreIdx), ...scores.slice(existingScoreIdx + 1)]
+        const nextScores = [
+          ...scores.slice(0, existingScoreIdx),
+          ...scores.slice(existingScoreIdx + 1)
+        ]
         stage.setLinkedRecords(nextScores, 'scores')
       }
     },

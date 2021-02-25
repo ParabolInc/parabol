@@ -122,6 +122,7 @@ const PokerActiveVoting = (props: Props) => {
           <CheckIcon>check</CheckIcon>
         </MiniPokerCard>
         <PokerVotingAvatarGroup
+          stageId={stageId}
           scores={scores}
           isClosing={isClosing}
           isInitialStageRender={isInitialStageRender}
@@ -157,7 +158,6 @@ export default createFragmentContainer(PokerActiveVoting, {
   stage: graphql`
     fragment PokerActiveVoting_stage on EstimateStage {
       id
-      dimensionId
       scores {
         ...PokerVotingAvatarGroup_scores
         userId

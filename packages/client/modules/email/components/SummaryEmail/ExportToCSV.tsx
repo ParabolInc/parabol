@@ -65,7 +65,7 @@ const query = graphql`
               stages {
                 serviceTaskId
                 finalScore
-                dimension {
+                dimensionRef {
                   name
                 }
                 story {
@@ -188,8 +188,8 @@ class ExportToCSV extends Component<Props> {
     )!
     const stages = estimatePhase.stages!
     stages.forEach((stage) => {
-      const {finalScore, dimension, story, scores, serviceTaskId} = stage
-      const {name} = dimension
+      const {finalScore, dimensionRef, story, scores, serviceTaskId} = stage
+      const {name} = dimensionRef
       const [, issueKey] = getJiraCloudIdAndKey(serviceTaskId)
       const title = story?.title ?? issueKey
       const voteCount = scores.filter((score) => score.label !== PokerCards.PASS_CARD).length

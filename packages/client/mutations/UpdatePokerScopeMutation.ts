@@ -26,9 +26,9 @@ graphql`
             sortOrder
             isVoting
             creatorUserId
-            dimension {
+            dimensionRef {
               name
-              selectedScale {
+              scale {
                 values {
                   color
                   label
@@ -88,30 +88,31 @@ const UpdatePokerScopeMutation: StandardMutation<TUpdatePokerScopeMutation> = (
       ) as RecordProxy<IEstimatePhase>
       const stages = estimatePhase.getLinkedRecords('stages')
       const [firstStage] = stages
-      const dimensionIds = [] as string[]
+      const dimensionRefIds = [] as string[]
       if (firstStage) {
         const firstStageServiceTaskId = firstStage.getValue('serviceTaskId')
         const stagesForServiceTaskId = stages.filter(
           (stage) => stage.getValue('serviceTaskId') === firstStageServiceTaskId
         )
-        const prevDimensionIds = stagesForServiceTaskId.map((stage) =>
-          stage.getValue('dimensionId')
-        )
-        dimensionIds.push(...prevDimensionIds)
+        const prevDimensionRefIds = stagesForServiceTaskId.map((stage) => {
+          const dimensionRef = stage.getLinkedRecord('dimensionRef')
+          return dimensionRef?.getValue('id') ?? ''
+        })
+        dimensionRefIds.push(...prevDimensionRefIds)
       } else {
         const value = createProxyRecord(store, 'TemplateScaleValue', {
           color: PALETTE.BACKGROUND_GRAY,
           label: '#'
         })
-        const selectedScale = createProxyRecord(store, 'TemplateScale', {})
-        const dimensionId = clientTempId()
-        selectedScale.setLinkedRecords([value], 'values')
-        const dimension = createProxyRecord(store, 'TemplateDimension', {
-          id: dimensionId,
+        const scale = createProxyRecord(store, 'TemplateScaleRef', {})
+        scale.setLinkedRecords([value], 'values')
+        const dimensionRefId = clientTempId()
+        const dimensionRef = createProxyRecord(store, 'TemplateDimensionRef', {
+          id: dimensionRefId,
           name: 'Loading'
         })
-        dimension.setLinkedRecord(selectedScale, 'selectedScale')
-        dimensionIds.push(dimensionId)
+        dimensionRef.setLinkedRecord(scale, 'scale')
+        dimensionRefIds.push(dimensionRefId)
       }
       updates.forEach((update) => {
         const {service, serviceTaskId, action} = update
@@ -127,22 +128,24 @@ const UpdatePokerScopeMutation: StandardMutation<TUpdatePokerScopeMutation> = (
             name: 'Unknown',
             type: 'number'
           })
-
-          const newStages = dimensionIds.map((dimensionId) => {
+          const newStages = dimensionRefIds.map((dimensionRefId, dimensionRefIdx) => {
             const nextEstimateStage = createProxyRecord(store, 'EstimateStage', {
               creatorUserId: viewerId,
               service,
               serviceTaskId,
               sortOrder: lastSortOrder + 1,
               durations: undefined,
-              dimensionId,
+              dimensionRefIdx,
               teamId,
               meetingId
             })
+            const dimensionRef = store.get(dimensionRefId)
             nextEstimateStage.setLinkedRecords([], 'scores')
             nextEstimateStage.setLinkedRecords([], 'hoveringUsers')
             nextEstimateStage.setLinkedRecord(serviceField, 'serviceField')
-            nextEstimateStage.setLinkedRecord(store.get(dimensionId)!, 'dimension')
+            if (dimensionRef) {
+              nextEstimateStage.setLinkedRecord(dimensionRef, 'dimensionRef')
+            }
             const story = store.get(serviceTaskId)
             if (story) {
               nextEstimateStage.setLinkedRecord(story, 'story')
@@ -153,8 +156,6 @@ const UpdatePokerScopeMutation: StandardMutation<TUpdatePokerScopeMutation> = (
           const nextStages = [...estimatePhase.getLinkedRecords('stages'), ...newStages]
           estimatePhase.setLinkedRecords(nextStages, 'stages')
         } else if (action === 'DELETE') {
-          // const stagesToRemove = stages.filter((stage) => stage.getValue('serviceTaskId') === serviceTaskId)
-          // if (stagesToRemove.length > 0) {
           const nextStages = stages.filter(
             (stage) => stage.getValue('serviceTaskId') !== serviceTaskId
           )

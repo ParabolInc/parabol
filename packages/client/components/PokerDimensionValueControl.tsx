@@ -76,20 +76,20 @@ interface Props {
   stage: PokerDimensionValueControl_stage
 }
 
-
 const PokerDimensionValueControl = (props: Props) => {
   const {isFacilitator, placeholder, stage} = props
-  const {id: stageId, dimension, finalScoreError, meetingId, service, serviceField} = stage
+  const {id: stageId, dimensionRef, finalScoreError, meetingId, service, serviceField} = stage
   const finalScore = stage.finalScore || ''
   const {name: serviceFieldName, type: serviceFieldType} = serviceField
-  const {selectedScale} = dimension
-  const {values: scaleValues} = selectedScale
+  const {scale} = dimensionRef
+  const {values: scaleValues} = scale
   const inputRef = useRef<HTMLInputElement>(null)
   const atmosphere = useAtmosphere()
   const {submitMutation, submitting, error, onError, onCompleted} = useMutationProps()
   const [pendingScore, setPendingScore] = useState(finalScore)
   const lastServiceFieldNameRef = useRef(serviceFieldName)
-  const canUpdate = pendingScore !== finalScore || lastServiceFieldNameRef.current !== serviceFieldName
+  const canUpdate =
+    pendingScore !== finalScore || lastServiceFieldNameRef.current !== serviceFieldName
   useSetFinalScoreError(stageId, error)
 
   useLayoutEffect(() => {
@@ -107,7 +107,11 @@ const PokerDimensionValueControl = (props: Props) => {
     if (submitting || !canUpdate) return
     submitMutation()
     lastServiceFieldNameRef.current = serviceFieldName
-    PokerSetFinalScoreMutation(atmosphere, {finalScore: pendingScore, meetingId, stageId}, {onError, onCompleted})
+    PokerSetFinalScoreMutation(
+      atmosphere,
+      {finalScore: pendingScore, meetingId, stageId},
+      {onError, onCompleted}
+    )
   }
 
   useResizeFontForElement(inputRef, pendingScore, 12, 18)
@@ -151,36 +155,58 @@ const PokerDimensionValueControl = (props: Props) => {
   const textColor = scaleColor ? '#fff' : undefined
   const isFinal = !!finalScore && pendingScore === finalScore
   const handleLabelClick = () => inputRef.current!.focus()
-  const label = isDesktop ? finalScore ? 'Final Score' : 'Final Score (set by facilitator)' : 'Final Score'
+  const label = isDesktop
+    ? finalScore
+      ? 'Final Score'
+      : 'Final Score (set by facilitator)'
+    : 'Final Score'
   return (
     <ControlWrap>
       <Control>
         <MiniPokerCard canEdit={isFacilitator} color={scaleColor} isFinal={isFinal}>
-          <Input disabled={!isFacilitator} onKeyDown={onKeyDown} autoFocus={!finalScore} color={textColor} ref={inputRef} onChange={onChange} placeholder={placeholder} value={pendingScore} maxLength={3}></Input>
+          <Input
+            disabled={!isFacilitator}
+            onKeyDown={onKeyDown}
+            autoFocus={!finalScore}
+            color={textColor}
+            ref={inputRef}
+            onChange={onChange}
+            placeholder={placeholder}
+            value={pendingScore}
+            maxLength={3}
+          ></Input>
         </MiniPokerCard>
         {!isFacilitator && <Label>{label}</Label>}
-        {service === 'jira' && <PokerDimensionFinalScoreJiraPicker canUpdate={canUpdate} stage={stage} error={finalScoreError} submitScore={submitScore} clearError={clearError} inputRef={inputRef} isFacilitator={isFacilitator} />}
-        {service !== 'jira' && isFacilitator &&
+        {service === 'jira' && (
+          <PokerDimensionFinalScoreJiraPicker
+            canUpdate={canUpdate}
+            stage={stage}
+            error={finalScoreError}
+            submitScore={submitScore}
+            clearError={clearError}
+            inputRef={inputRef}
+            isFacilitator={isFacilitator}
+          />
+        )}
+        {service !== 'jira' && isFacilitator && (
           <>
-            {canUpdate
-              ? <>
+            {canUpdate ? (
+              <>
                 <StyledLinkButton onClick={submitScore}>{'Update'}</StyledLinkButton>
                 {finalScoreError && <ErrorMessage>{finalScoreError}</ErrorMessage>}
               </>
-              : <StyledLinkButton onClick={handleLabelClick}>{'Edit Score'}</StyledLinkButton>
-            }
+            ) : (
+                <StyledLinkButton onClick={handleLabelClick}>{'Edit Score'}</StyledLinkButton>
+              )}
           </>
-        }
-
+        )}
       </Control>
     </ControlWrap>
   )
 }
 
-export default createFragmentContainer(
-  PokerDimensionValueControl,
-  {
-    stage: graphql`
+export default createFragmentContainer(PokerDimensionValueControl, {
+  stage: graphql`
     fragment PokerDimensionValueControl_stage on EstimateStage {
       ...PokerDimensionFinalScoreJiraPicker_stage
       id
@@ -192,14 +218,14 @@ export default createFragmentContainer(
         type
       }
       service
-      dimension {
-        selectedScale {
+      dimensionRef {
+        scale {
           values {
             label
             color
           }
         }
       }
-    }`
-  }
-)
+    }
+  `
+})

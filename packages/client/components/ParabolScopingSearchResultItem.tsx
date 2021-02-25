@@ -36,7 +36,7 @@ const Task = styled('div')({
 
 const StyledTaskEditor = styled(TaskEditor)({
   width: '100%',
-  padding: '0 0',
+  paddingTop: 4,
   fontSize: '16px',
   lineHeight: 'normal',
   height: 'auto'

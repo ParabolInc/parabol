@@ -94,6 +94,7 @@ export default {
       dataLoader.get('teams').load(teamId),
       dataLoader.get('teamMembersByTeamId').load(teamId),
       removeEmptyTasks(meetingId),
+      // technically, this template could have mutated while the meeting was going on. but in practice, probably not
       dataLoader.get('meetingTemplates').load(templateId)
     ])
     endSlackMeeting(meetingId, teamId, dataLoader).catch(console.log)

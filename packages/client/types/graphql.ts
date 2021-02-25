@@ -1954,9 +1954,9 @@ export interface IJiraDimensionField {
   cloudId: string;
 
   /**
-   * The poker template dimension Id
+   * The immutable index of the dimension
    */
-  dimensionId: string;
+  dimensionName: number;
 
   /**
    * The project under the atlassian cloud the field lives in
@@ -4738,14 +4738,14 @@ export interface IEstimateStage {
   sortOrder: number;
 
   /**
-   * the dimensionId that corresponds to this stage
+   * The immutable index of the dimensionRef tied to this stage
    */
-  dimensionId: string;
+  dimensionRefIdx: number;
 
   /**
-   * the dimension related to this stage by dimension id
+   * The immutable dimension linked to this stage
    */
-  dimension: ITemplateDimension;
+  dimensionRef: ITemplateDimensionRef;
 
   /**
    * the final score, as defined by the facilitator
@@ -4793,6 +4793,57 @@ export interface IServiceField {
    * The field type, to be used for validation and analytics
    */
   type: string;
+}
+
+/**
+ * An immutable TemplateDimension
+ */
+export interface ITemplateDimensionRef {
+  __typename: 'TemplateDimensionRef';
+  id: string;
+
+  /**
+   * the order of the dimensions in the template
+   */
+  sortOrder: number;
+
+  /**
+   * The name of the dimension
+   */
+  name: string;
+
+  /**
+   * The md5 hash to resolve the immutable selected scale ref
+   */
+  scaleRefId: string;
+
+  /**
+   * scale used in this dimension
+   */
+  scale: ITemplateScaleRef;
+}
+
+/**
+ * An immutable version of TemplateScale to be shared across all users
+ */
+export interface ITemplateScaleRef {
+  __typename: 'TemplateScaleRef';
+
+  /**
+   * md5 hash
+   */
+  id: string;
+  createdAt: any;
+
+  /**
+   * The title of the scale used in the template
+   */
+  name: string;
+
+  /**
+   * The values used in this scale
+   */
+  values: Array<ITemplateScaleValue>;
 }
 
 /**
@@ -8485,7 +8536,7 @@ export interface IMovePokerTemplateScaleValueOnMutationArguments {
 }
 
 export interface IUpdateJiraDimensionFieldOnMutationArguments {
-  dimensionId: string;
+  dimensionName: string;
 
   /**
    * The jira field name that we should push estimates to
@@ -8503,7 +8554,7 @@ export interface IUpdateJiraDimensionFieldOnMutationArguments {
   projectKey: string;
 
   /**
-   * The meeting the update happend in. If present, can return a meeting object with updated serviceField
+   * The meeting the update happend in. Returns a meeting object with updated serviceField
    */
   meetingId: string;
 }
@@ -9376,9 +9427,15 @@ export interface IPokerMeeting {
   story: Story | null;
 
   /**
-   * The ID of the template used for the meeting
+   * The ID of the template used for the meeting. Note the underlying template could have changed!
+   * @deprecated "The underlying template could be mutated. Use templateRefId"
    */
   templateId: string;
+
+  /**
+   * The ID of the immutable templateRef used for the meeting
+   */
+  templateRefId: string;
 }
 
 export interface IStoryOnPokerMeetingArguments {

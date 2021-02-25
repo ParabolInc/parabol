@@ -102,7 +102,7 @@ const pokerRevealVotes = {
         // note that a race condition exists here. it's possible that i cast my vote after the meeting is fetched but before this update & that'll be overwritten
         scores
       })
-    await updateStage(meetingId, stageId, updater)
+    await updateStage(meetingId, stageId, 'ESTIMATE', updater)
     const data = {meetingId, stageId}
     publish(SubscriptionChannel.MEETING, meetingId, 'PokerRevealVotesSuccess', data, subOptions)
     return data

@@ -74,7 +74,13 @@ const PokerMeeting = new GraphQLObjectType<any, GQLContext>({
     },
     templateId: {
       type: GraphQLNonNull(GraphQLID),
-      description: 'The ID of the template used for the meeting'
+      deprecationReason: 'The underlying template could be mutated. Use templateRefId',
+      description:
+        'The ID of the template used for the meeting. Note the underlying template could have changed!'
+    },
+    templateRefId: {
+      type: GraphQLNonNull(GraphQLID),
+      description: 'The ID of the immutable templateRef used for the meeting'
     },
     viewerMeetingMember: {
       type: PokerMeetingMember,

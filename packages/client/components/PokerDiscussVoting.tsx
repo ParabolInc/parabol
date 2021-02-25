@@ -7,9 +7,9 @@ import useMutationProps from '../hooks/useMutationProps'
 import useSetFinalScoreError from '../hooks/useSetFinalScoreError'
 import PokerSetFinalScoreMutation from '../mutations/PokerSetFinalScoreMutation'
 import {PokerCards} from '../types/constEnums'
+import isSpecialPokerLabel from '../utils/isSpecialPokerLabel'
 import {PokerDiscussVoting_meeting} from '../__generated__/PokerDiscussVoting_meeting.graphql'
 import {PokerDiscussVoting_stage} from '../__generated__/PokerDiscussVoting_stage.graphql'
-import isSpecialPokerLabel from '../utils/isSpecialPokerLabel'
 import PokerDimensionValueControl from './PokerDimensionValueControl'
 import PokerVotingRow from './PokerVotingRow'
 
@@ -32,9 +32,9 @@ const PokerDiscussVoting = (props: Props) => {
   const {viewerId} = atmosphere
   const {meeting, stage, isInitialStageRender} = props
   const {id: meetingId, facilitatorUserId} = meeting
-  const {id: stageId, finalScore, dimension, scores} = stage
-  const {selectedScale} = dimension
-  const {values: scaleValues} = selectedScale
+  const {id: stageId, finalScore, dimensionRef, scores} = stage
+  const {scale} = dimensionRef
+  const {values: scaleValues} = scale
   useSetFinalScoreError(stageId, error)
   const {rows, topLabel} = useMemo(() => {
     const scoreObj = {} as {[label: string]: PokerDiscussVoting_stage['scores'][0][]}
@@ -50,14 +50,12 @@ const PokerDiscussVoting = (props: Props) => {
       }
     })
     const scoreLabels = Object.keys(scoreObj).sort((a, b) => {
-      return a === PokerCards.QUESTION_CARD ? - 1 :
-        a === PokerCards.PASS_CARD ? 1 :
-          a > b ? -1 : 1
+      return a === PokerCards.QUESTION_CARD ? -1 : a === PokerCards.PASS_CARD ? 1 : a > b ? -1 : 1
     })
     const rows = scoreLabels.map((label) => {
       return {
         key: label,
-        scaleValue: scaleValues.find((scaleValue) => scaleValue.label === label) || null,
+        scaleValue: scaleValues.find((scaleValue) => scaleValue.label === label)!,
         scores: scoreObj[label]
       }
     })
@@ -68,19 +66,36 @@ const PokerDiscussVoting = (props: Props) => {
   const isFacilitator = viewerId === facilitatorUserId
   return (
     <>
-      <PokerDimensionValueControl placeholder={isFacilitator ? topLabel : '?'} stage={stage} isFacilitator={isFacilitator} />
+      <PokerDimensionValueControl
+        placeholder={isFacilitator ? topLabel : '?'}
+        stage={stage}
+        isFacilitator={isFacilitator}
+      />
       <GroupedVotes>
         {rows.map(({scaleValue, scores, key}) => {
-          const label = scores[0]?.label
+          const {label} = scaleValue
           const canClick = isFacilitator && !isSpecialPokerLabel(label)
-          const setFinalScore = canClick ? () => {
-            // finalScore === label isn't 100% accurate because they could change the dimensionField & could still submit new info
-            if (submitting || !label || finalScore === label) return
-            submitMutation()
-            PokerSetFinalScoreMutation(atmosphere, {finalScore: label, meetingId, stageId}, {onError, onCompleted})
-          } : undefined
+          const setFinalScore = canClick
+            ? () => {
+              // finalScore === label isn't 100% accurate because they could change the dimensionField & could still submit new info
+              if (submitting || !label || finalScore === label) return
+              submitMutation()
+              PokerSetFinalScoreMutation(
+                atmosphere,
+                {finalScore: label, meetingId, stageId},
+                {onError, onCompleted}
+              )
+            }
+            : undefined
           return (
-            <PokerVotingRow key={key} scaleValue={scaleValue} scores={scores} setFinalScore={setFinalScore} isInitialStageRender={isInitialStageRender} />
+            <PokerVotingRow
+              key={key}
+              scaleValue={scaleValue}
+              scores={scores}
+              stageId={stageId}
+              setFinalScore={setFinalScore}
+              isInitialStageRender={isInitialStageRender}
+            />
           )
         })}
       </GroupedVotes>
@@ -88,18 +103,14 @@ const PokerDiscussVoting = (props: Props) => {
   )
 }
 
-
-
-export default createFragmentContainer(
-  PokerDiscussVoting,
-  {
-    stage: graphql`
+export default createFragmentContainer(PokerDiscussVoting, {
+  stage: graphql`
     fragment PokerDiscussVoting_stage on EstimateStage {
       ...PokerDimensionValueControl_stage
       id
       finalScore
-      dimension {
-        selectedScale {
+      dimensionRef {
+        scale {
           values {
             ...PokerVotingRow_scaleValue
             label
@@ -111,11 +122,12 @@ export default createFragmentContainer(
         ...PokerVotingRow_scores
         label
       }
-    }`,
-    meeting: graphql`
+    }
+  `,
+  meeting: graphql`
     fragment PokerDiscussVoting_meeting on PokerMeeting {
       id
       facilitatorUserId
-    }`
-  }
-)
+    }
+  `
+})

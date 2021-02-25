@@ -112,19 +112,6 @@ export const reflectPromptsByTemplateId = new LoaderMakerForeign(
   }
 )
 
-export const dimensionsByTemplateId = new LoaderMakerForeign(
-  'templateDimensions',
-  'templateId',
-  async (templateIds) => {
-    const r = await getRethink()
-    return r
-      .table('TemplateDimension')
-      .getAll(r.args(templateIds), {index: 'templateId'})
-      .orderBy('sortOrder')
-      .run()
-  }
-)
-
 export const massInvitationsByTeamMemberId = new LoaderMakerForeign(
   'massInvitations',
   'teamMemberId',
@@ -283,7 +270,6 @@ export const templateDimensionsByTemplateId = new LoaderMakerForeign(
     )
   }
 )
-
 export const timelineEventsByMeetingId = new LoaderMakerForeign(
   'timelineEvents',
   'meetingId',
