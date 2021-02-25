@@ -53,10 +53,10 @@ export async function up(): Promise<void> {
       dimensions: row('reduction')
     }))
     .run()) as {
-    id: string
-    name: string
-    dimensions: (TemplateDimension & {scale: TemplateScale})[]
-  }[]
+      id: string
+      name: string
+      dimensions: (TemplateDimension & {scale: TemplateScale})[]
+    }[]
 
   const uniqueScaleIdSet = new Set<string>()
   const uniqueScales = [] as TemplateScale[]
@@ -79,7 +79,10 @@ export async function up(): Promise<void> {
   const dimensionIdToDimensionRefIdx = {} as Record<string, number>
 
   // Handle PG updates
-  await insertTemplateScaleRefQuery.run({templateScales}, pg)
+  if (templateScales.length) {
+    await insertTemplateScaleRefQuery.run({templateScales}, pg)
+  }
+
   await Promise.all(
     dimensionsByTemplateId.map((group) => {
       const {id, name, dimensions} = group
