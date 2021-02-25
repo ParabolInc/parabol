@@ -97,18 +97,18 @@ const NewMeetingAvatarGroup = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
   const {mediaRoom, meeting, allowVideo, peers, producers, consumers, room} = props
-  const {id: meetingId, team} = meeting
+  const {id: meetingId, team, meetingMembers} = meeting
   const {id: teamId, teamMembers} = team
   const isDesktop = useBreakpoint(Breakpoint.SINGLE_REFLECTION_COLUMN)
 
   // all connected teamMembers except self
-  const connectedTeamMembers = useMemo(() => {
-    return teamMembers
-      .filter((teamMember) => {
+  const connectedMeetingMembers = useMemo(() => {
+    return meetingMembers
+      .filter((meetingMember) => {
         return (
-          teamMember.userId === viewerId ||
-          (teamMember.user.lastSeenAtURLs?.includes(`/meet/${meetingId}`) &&
-            teamMember.user.isConnected)
+          meetingMember.userId === viewerId ||
+          (meetingMember.user.lastSeenAtURLs?.includes(`/meet/${meetingId}`) &&
+            meetingMember.user.isConnected)
         )
       })
       .sort((a, b) =>
@@ -118,14 +118,15 @@ const NewMeetingAvatarGroup = (props: Props) => {
         ...tm,
         key: tm.userId
       }))
-  }, [teamMembers])
+  }, [meetingMembers])
   const overflowThreshold = isDesktop ? MAX_AVATARS_DESKTOP : MAX_AVATARS_MOBILE
-  const visibleConnectedTeamMembers = connectedTeamMembers.slice(0, overflowThreshold)
-  const hiddenTeamMemberCount = connectedTeamMembers.length - visibleConnectedTeamMembers.length
+  const visibleConnectedMeetingMembers = connectedMeetingMembers.slice(0, overflowThreshold)
+  const hiddenMeetingMemberCount =
+    connectedMeetingMembers.length - visibleConnectedMeetingMembers.length
   const allAvatars =
-    hiddenTeamMemberCount === 0
-      ? visibleConnectedTeamMembers
-      : visibleConnectedTeamMembers.concat(OVERFLOW_AVATAR as any)
+    hiddenMeetingMemberCount === 0
+      ? visibleConnectedMeetingMembers
+      : visibleConnectedMeetingMembers.concat(OVERFLOW_AVATAR as any)
   const tranChildren = useTransition(allAvatars)
   const isInit = useInitialRender()
   return (
@@ -137,28 +138,28 @@ const NewMeetingAvatarGroup = (props: Props) => {
         producers={producers}
       />
 
-      {tranChildren.map((teamMember) => {
-        if (teamMember.child.key === 'overflow') {
+      {tranChildren.map((meetingMember) => {
+        if (meetingMember.child.key === 'overflow') {
           return (
             <OverlappingBlock key={'overflow'}>
               <OverflowCount
-                status={isInit ? TransitionStatus.ENTERED : teamMember.status}
-                onTransitionEnd={teamMember.onTransitionEnd}
-              >{`+${hiddenTeamMemberCount}`}</OverflowCount>
+                status={isInit ? TransitionStatus.ENTERED : meetingMember.status}
+                onTransitionEnd={meetingMember.onTransitionEnd}
+              >{`+${hiddenMeetingMemberCount}`}</OverflowCount>
             </OverlappingBlock>
           )
         }
-        const userId = teamMember.child.userId
+        const userId = meetingMember.child.userId
         const isSelf = userId == viewerId
         const peerProducers = isSelf ? Object.values(producers) : []
         const peerConsumers = isSelf ? [] : getConsumersForPeer(userId, peers, consumers)
 
         return (
-          <OverlappingBlock key={teamMember.child.id}>
+          <OverlappingBlock key={meetingMember.child.id}>
             <NewMeetingAvatar
-              teamMember={teamMember.child}
-              onTransitionEnd={teamMember.onTransitionEnd}
-              status={isInit ? TransitionStatus.ENTERED : teamMember.status}
+              teamMember={meetingMember.child.teamMember}
+              onTransitionEnd={meetingMember.onTransitionEnd}
+              status={isInit ? TransitionStatus.ENTERED : meetingMember.status}
               peerProducers={peerProducers || []}
               peerConsumers={peerConsumers || []}
               mediaRoom={mediaRoom}
@@ -185,15 +186,21 @@ export default createFragmentContainer(NewMeetingAvatarGroup, {
       team {
         id
         teamMembers {
-          ...AddTeamMemberAvatarButton_teamMembers
           id
-          user {
-            isConnected
-            lastSeenAt
-            lastSeenAtURLs
-          }
-          userId
+          ...AddTeamMemberAvatarButton_teamMembers
+        }
+      }
+      meetingMembers {
+        id
+        userId
+        user {
+          isConnected
+          lastSeenAt
+          lastSeenAtURLs
+        }
+        teamMember {
           ...NewMeetingAvatar_teamMember
+          id
         }
       }
     }
