@@ -177,6 +177,7 @@ const initDemoMeetingMember = (user) => {
     meetingId: RetroDemo.MEETING_ID,
     meetingType: RETROSPECTIVE,
     teamId: demoTeamId,
+    teamMember: initDemoTeamMember(user, 0),
     tasks: [] as ITask[],
     user,
     userId: user.id,
@@ -397,13 +398,13 @@ const initDB = (botScript) => {
     user: users[idx]
   }))
   users.forEach((user, idx) => {
-    ; (user as any).teamMember = teamMembers[idx]
+    ;(user as any).teamMember = teamMembers[idx]
   })
   const org = initDemoOrg()
   const newMeeting = initNewMeeting(org, teamMembers, meetingMembers)
   const team = initDemoTeam(org, teamMembers, newMeeting)
   teamMembers.forEach((teamMember) => {
-    ; (teamMember as any).team = team
+    ;(teamMember as any).team = team
   })
   team.meetingSettings.team = team as any
   newMeeting.commentCount = 0
