@@ -1,14 +1,9 @@
 import {commitMutation} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import {Disposable} from 'relay-runtime'
-import Atmosphere from '../Atmosphere'
-import {CompletedHandler, ErrorHandler, SharedUpdater} from '../types/relayMutations'
+import {SharedUpdater, StandardMutation} from '../types/relayMutations'
 import handleRemovePokerTemplateDimension from './handlers/handleRemovePokerTemplateDimension'
 import {RemovePokerTemplateDimensionMutation_team} from '../__generated__/RemovePokerTemplateDimensionMutation_team.graphql'
-import {
-  RemovePokerTemplateDimensionMutation as IRemovePokerTemplateDimensionMutation,
-  RemovePokerTemplateDimensionMutationVariables
-} from '../__generated__/RemovePokerTemplateDimensionMutation.graphql'
+import {RemovePokerTemplateDimensionMutation as IRemovePokerTemplateDimensionMutation} from '../__generated__/RemovePokerTemplateDimensionMutation.graphql'
 import getInProxy from '~/utils/relay/getInProxy'
 
 graphql`
@@ -37,13 +32,11 @@ export const removePokerTemplateDimensionTeamUpdater: SharedUpdater<RemovePokerT
   handleRemovePokerTemplateDimension(dimensionId, teamId, store)
 }
 
-const RemovePokerTemplateDimensionMutation = (
-  atmosphere: Atmosphere,
-  variables: RemovePokerTemplateDimensionMutationVariables,
-  _context: {},
-  onError: ErrorHandler,
-  onCompleted: CompletedHandler
-): Disposable => {
+const RemovePokerTemplateDimensionMutation: StandardMutation<IRemovePokerTemplateDimensionMutation> = (
+  atmosphere,
+  variables,
+  {onError, onCompleted}
+) => {
   return commitMutation<IRemovePokerTemplateDimensionMutation>(atmosphere, {
     mutation,
     variables,
@@ -52,7 +45,7 @@ const RemovePokerTemplateDimensionMutation = (
     updater: (store) => {
       const payload = store.getRootField('removePokerTemplateDimension')
       if (!payload) return
-      removePokerTemplateDimensionTeamUpdater(payload as any, {atmosphere, store})
+      removePokerTemplateDimensionTeamUpdater(payload, {atmosphere, store})
     },
     optimisticUpdater: (store) => {
       const {dimensionId} = variables

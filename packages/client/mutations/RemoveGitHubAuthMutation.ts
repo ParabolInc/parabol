@@ -1,12 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {Disposable} from 'relay-runtime'
-import Atmosphere from '../Atmosphere'
-import {LocalHandlers} from '../types/relayMutations'
-import {
-  RemoveGitHubAuthMutationVariables,
-  RemoveGitHubAuthMutation as TRemoveGitHubAuthMutation
-} from '../__generated__/RemoveGitHubAuthMutation.graphql'
+import {StandardMutation} from '../types/relayMutations'
+import {RemoveGitHubAuthMutation as TRemoveGitHubAuthMutation} from '../__generated__/RemoveGitHubAuthMutation.graphql'
 
 graphql`
   fragment RemoveGitHubAuthMutation_team on RemoveGitHubAuthPayload {
@@ -31,11 +26,11 @@ const mutation = graphql`
   }
 `
 
-const RemoveGitHubAuthMutation = (
-  atmosphere: Atmosphere,
-  variables: RemoveGitHubAuthMutationVariables,
-  {onError, onCompleted}: LocalHandlers
-): Disposable => {
+const RemoveGitHubAuthMutation: StandardMutation<TRemoveGitHubAuthMutation> = (
+  atmosphere,
+  variables,
+  {onError, onCompleted}
+) => {
   return commitMutation<TRemoveGitHubAuthMutation>(atmosphere, {
     mutation,
     variables,

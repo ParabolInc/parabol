@@ -1,14 +1,10 @@
 import {commitMutation} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import {RecordProxy, RecordSourceSelectorProxy} from 'relay-runtime'
-import Atmosphere from '../Atmosphere'
 import handleUpdateAgendaItems from './handlers/handleUpdateAgendaItems'
-import {SharedUpdater} from '../types/relayMutations'
+import {SharedUpdater, StandardMutation} from '../types/relayMutations'
 import updateProxyRecord from '../utils/relay/updateProxyRecord'
-import {
-  UpdateAgendaItemMutationVariables,
-  UpdateAgendaItemMutation as TUpdateAgendaItemMutation
-} from '../__generated__/UpdateAgendaItemMutation.graphql'
+import {UpdateAgendaItemMutation as TUpdateAgendaItemMutation} from '../__generated__/UpdateAgendaItemMutation.graphql'
 import {UpdateAgendaItemMutation_team} from '~/__generated__/UpdateAgendaItemMutation_team.graphql'
 import {ActionMeeting_meeting} from '~/__generated__/ActionMeeting_meeting.graphql'
 import {AgendaItem_agendaItem} from '~/__generated__/AgendaItem_agendaItem.graphql'
@@ -75,11 +71,10 @@ export const updateAgendaItemUpdater: SharedUpdater<UpdateAgendaItemMutation_tea
   handleUpdateAgendaPhase(store, meetingId)
 }
 
-const UpdateAgendaItemMutation = (
-  atmosphere: Atmosphere,
-  variables: UpdateAgendaItemMutationVariables,
-  {onError, onCompleted, meetingId}: any = {}
-) => {
+const UpdateAgendaItemMutation: StandardMutation<
+  TUpdateAgendaItemMutation,
+  {meetingId: string | undefined}
+> = (atmosphere, variables, {meetingId}) => {
   const {updatedAgendaItem} = variables
   const [teamId] = updatedAgendaItem.id.split('::')
   return commitMutation<TUpdateAgendaItemMutation>(atmosphere, {
@@ -95,9 +90,7 @@ const UpdateAgendaItemMutation = (
       updateProxyRecord(proxyAgendaItem, updatedAgendaItem)
       handleUpdateAgendaItems(store, teamId)
       handleUpdateAgendaPhase(store, meetingId)
-    },
-    onCompleted,
-    onError
+    }
   })
 }
 

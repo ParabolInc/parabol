@@ -1,14 +1,9 @@
 import {commitMutation} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import {Disposable} from 'relay-runtime'
-import Atmosphere from '../Atmosphere'
-import {CompletedHandler, ErrorHandler, SharedUpdater} from '../types/relayMutations'
+import {SharedUpdater, StandardMutation} from '../types/relayMutations'
 import handleRemovePokerTemplateScale from './handlers/handleRemovePokerTemplateScale'
 import {RemovePokerTemplateScaleMutation_scale} from '../__generated__/RemovePokerTemplateScaleMutation_scale.graphql'
-import {
-  RemovePokerTemplateScaleMutation as IRemovePokerTemplateScaleMutation,
-  RemovePokerTemplateScaleMutationVariables
-} from '../__generated__/RemovePokerTemplateScaleMutation.graphql'
+import {RemovePokerTemplateScaleMutation as IRemovePokerTemplateScaleMutation} from '../__generated__/RemovePokerTemplateScaleMutation.graphql'
 import getInProxy from '~/utils/relay/getInProxy'
 
 graphql`
@@ -39,13 +34,11 @@ export const removePokerTemplateScaleTeamUpdater: SharedUpdater<RemovePokerTempl
   handleRemovePokerTemplateScale(scaleId, teamId, store)
 }
 
-const RemovePokerTemplateScaleMutation = (
-  atmosphere: Atmosphere,
-  variables: RemovePokerTemplateScaleMutationVariables,
-  _context: {},
-  onError: ErrorHandler,
-  onCompleted: CompletedHandler
-): Disposable => {
+const RemovePokerTemplateScaleMutation: StandardMutation<IRemovePokerTemplateScaleMutation> = (
+  atmosphere,
+  variables,
+  {onError, onCompleted}
+) => {
   return commitMutation<IRemovePokerTemplateScaleMutation>(atmosphere, {
     mutation,
     variables,

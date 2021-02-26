@@ -85,7 +85,7 @@ const TemplateDimensionItem = (props: Props) => {
       return
     }
     submitMutation()
-    RemovePokerTemplateDimensionMutation(atmosphere, {dimensionId}, {}, onError, onCompleted)
+    RemovePokerTemplateDimensionMutation(atmosphere, {dimensionId}, {onError, onCompleted})
   }
 
   return (
@@ -99,10 +99,10 @@ const TemplateDimensionItem = (props: Props) => {
       onMouseOver={onMouseEnter}
       onMouseOut={onMouseLeave}
     >
-      <RemoveDimensionIcon isHover={isHover} onClick={removeDimension} enabled={canRemove} >
+      <RemoveDimensionIcon isHover={isHover} onClick={removeDimension} enabled={canRemove}>
         cancel
       </RemoveDimensionIcon>
-      <DimensionAndDescription >
+      <DimensionAndDescription>
         <EditableTemplateDimension
           isOwner={isOwner}
           isEditingDescription={isEditingDescription}
@@ -113,7 +113,7 @@ const TemplateDimensionItem = (props: Props) => {
         />
       </DimensionAndDescription>
       <PokerTemplateScalePicker dimension={dimension} isOwner={isOwner} />
-    </DimensionItem >
+    </DimensionItem>
   )
 }
 export default createFragmentContainer(TemplateDimensionItem, {

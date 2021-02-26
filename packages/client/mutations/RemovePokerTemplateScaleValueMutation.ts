@@ -1,12 +1,7 @@
 import {commitMutation} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import {Disposable} from 'relay-runtime'
-import Atmosphere from '../Atmosphere'
-import {CompletedHandler, ErrorHandler} from '../types/relayMutations'
-import {
-  RemovePokerTemplateScaleValueMutation as IRemovePokerTemplateScaleValueMutation,
-  RemovePokerTemplateScaleValueMutationVariables
-} from '../__generated__/RemovePokerTemplateScaleValueMutation.graphql'
+import {StandardMutation} from '../types/relayMutations'
+import {RemovePokerTemplateScaleValueMutation as IRemovePokerTemplateScaleValueMutation} from '../__generated__/RemovePokerTemplateScaleValueMutation.graphql'
 import safeRemoveNodeFromArray from '~/utils/relay/safeRemoveNodeFromArray'
 
 graphql`
@@ -25,13 +20,11 @@ const mutation = graphql`
   }
 `
 
-const RemovePokerTemplateScaleValueMutation = (
-  atmosphere: Atmosphere,
-  variables: RemovePokerTemplateScaleValueMutationVariables,
-  _context: {},
-  onError: ErrorHandler,
-  onCompleted: CompletedHandler
-): Disposable => {
+const RemovePokerTemplateScaleValueMutation: StandardMutation<IRemovePokerTemplateScaleValueMutation> = (
+  atmosphere,
+  variables,
+  {onError, onCompleted}
+) => {
   return commitMutation<IRemovePokerTemplateScaleValueMutation>(atmosphere, {
     mutation,
     variables,
