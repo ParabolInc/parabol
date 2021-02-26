@@ -15,40 +15,41 @@ const undefinedUserFieldsAndTheirDefaultPgValues = {
   segmentId: null,
   reasonRemoved: null,
   rol: null,
+  // app doesn't allow following fields to be undefined, but found bad data anyway
+  inactive: false,
   payLaterClickCount: 0,
   featureFlags: [],
-  inactive: false
 }
 
-const mapUsers = (users: User[]): IBackupUserQueryParams['users'] => {
-  const mappedUsers = [] as any
+const cleanUsers = (users: User[]): IBackupUserQueryParams['users'] => {
+  const cleanedUsers = [] as any
   users.forEach(user => {
-    const mappedUser = Object.assign(
+    if (user.email.length > 500) {
+      return // bad actors were messing up unique constraint
+    } 
+    const cleanedUser = Object.assign(
       {},
       undefinedUserFieldsAndTheirDefaultPgValues,
       user,
       {
         email: user.email === 'DELETED' ?
-          getDeletedEmail(user.id)
-          :
-          user.email.slice(0, 500),
+          getDeletedEmail(user.id) : user.email,
         preferredName: user.preferredName.slice(0, 100),
       }
     ) as IBackupUserQueryParams['users'][0]
-    if ((mappedUser.email as string).length === 500) { return }
-    mappedUsers.push(mappedUser)
+    cleanedUsers.push(cleanedUser)
   })
-  return mappedUsers
+  return cleanedUsers
 }
 
 export const shorthands: ColumnDefinitions | undefined = undefined;
 
 export async function up(pgm: MigrationBuilder): Promise<void> {
   const r = await getRethink()
-  const batchSize = 3000
+  const batchSize = 3000 // doing 4000 or 5000 results in error relating to size of parameterized query
   const backfillStartTs = new Date()
   console.log('start ts:', backfillStartTs)
-
+  // todo: make `doBackfill` generic and reusable
   const doBackfill = async (
     usersByFieldChoice: ('createdAt' | 'updatedAt'),
     usersAfterTs?: Date
@@ -61,8 +62,7 @@ export async function up(pgm: MigrationBuilder): Promise<void> {
     while (true) {
       console.log('i:', i)
       const offset = batchSize * i
-      const rethinkUsers = await r
-        .db('actionProduction')
+      const rethinkUsers = await r.db('actionProduction')
         .table('User')
         .between(usersAfterTs ?? r.minval, r.maxval, {index: usersByFieldChoice})
         .orderBy(usersByFieldChoice, {index: usersByFieldChoice})
@@ -71,14 +71,13 @@ export async function up(pgm: MigrationBuilder): Promise<void> {
         .run()
       if (!rethinkUsers.length) { break }
       foundUsers = true
-      // todo: bring back backupUserQuery, as it's not the same as insert
-      const pgUsers = mapUsers(rethinkUsers)
+      const pgUsers = cleanUsers(rethinkUsers)
       await catchAndLog(() => backupUserQuery.run({users: pgUsers}, getPg()))
       i += 1
     }
     return foundUsers
   }
-
+  // todo: make `doBackfillAccountingForRaceConditions` generic and reusable
   const doBackfillAccountingForRaceConditions = async (
     usersByFieldChoice: ('createdAt' | 'updatedAt'),
     usersAfterTs?: Date

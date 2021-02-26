@@ -4,7 +4,6 @@ import User from '../types/User'
 export const up = async function(r: R) {
   // fix the first user (duplicated later) having a string for `tms` field
   await r
-    .db('actionProduction')
     .table('User')
     .getAll('love@parabol.co', {index: 'email'})
     .orderBy('createdAt')
@@ -108,7 +107,6 @@ export const up = async function(r: R) {
 
   try {
     const affectedEmails = (await r
-      .db('actionProduction')
       .table('User')
       .group('email')
       .count()
@@ -121,7 +119,6 @@ export const up = async function(r: R) {
     affectedEmails.forEach((email) => {
       allDuplicates.push(
         r
-          .db('actionProduction')
           .table('User')
           .getAll(email, {index: 'email'})
           .orderBy('createdAt')
@@ -160,7 +157,6 @@ export const up = async function(r: R) {
     await r(toUpdate)
       .forEach((update) => {
         return r
-          .db('actionProduction')
           .table('User')
           .get(update('id'))
           .update(
@@ -176,7 +172,6 @@ export const up = async function(r: R) {
       .run()
 
     await r
-      .db('actionProduction')
       .table('User')
       .getAll(r.args(toDeleteIds))
       .delete({returnChanges: true})
