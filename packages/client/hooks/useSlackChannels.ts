@@ -12,9 +12,10 @@ const useSlackChannels = (
     let isMounted = true
     const getChannels = async () => {
       const botManager = new SlackClientManager(slackAuth.botAccessToken!)
-      const [publicChannelRes, slackIMRes] = await Promise.all([
+      const [publicChannelRes, slackIMRes, privateChannelRes] = await Promise.all([
         botManager.getConversationList(),
-        botManager.getConversationList(['im'])
+        botManager.getConversationList(['im']),
+        botManager.getConversationList(['private_channel'])
       ])
       if (!isMounted) return
       if (!publicChannelRes.ok) {
@@ -22,21 +23,24 @@ const useSlackChannels = (
         return
       }
 
-      let memberChannels
+      let availableChannels
       if (!isSlackIMArray(publicChannelRes.channels)) {
         const {channels: publicChannels} = publicChannelRes
-        memberChannels = publicChannels
-          .filter((channel) => channel.is_channel)
-          .sort((a, b) => (a.name > b.name ? 1 : -1))
+        if (privateChannelRes.ok && privateChannelRes.channels.length) {
+          availableChannels = [...privateChannelRes.channels, ...publicChannels]
+        } else {
+          availableChannels = publicChannels
+        }
+        availableChannels.sort((a, b) => (a.name > b.name ? 1 : -1))
       }
       if (slackIMRes.ok && isSlackIMArray(slackIMRes.channels)) {
         const {channels: ims} = slackIMRes
         const botChannel = ims.find((im) => im.is_im && im.user === slackAuth.slackUserId) as any
         if (botChannel) {
-          memberChannels.unshift({...botChannel, name: '@Parabol'})
+          availableChannels.unshift({...botChannel, name: '@Parabol'})
         }
       }
-      setChannels(memberChannels)
+      setChannels(availableChannels)
     }
     getChannels().catch()
     return () => {
