@@ -40,11 +40,11 @@ const flagOverLimit = {
           updateUserQuery.run(
             ({
               overLimitCopy: copy,
-              ids: [userIds]
+              ids: userIds
             } as unknown) as IUpdateUserQueryParams,
             getPg()
           )
-      : () => clearOverLimitCopyQuery.run({ids: [userIds]}, getPg())
+      : () => clearOverLimitCopyQuery.run({ids: userIds}, getPg())
     await Promise.all([
       catchAndLog(pgQueryCb),
       db.writeMany('User', userIds, {overLimitCopy: copy || null})
