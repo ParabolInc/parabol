@@ -1,7 +1,8 @@
 import {GraphQLBoolean, GraphQLID, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
+import defaultJiraProjectAvatar from '../../utils/defaultJiraProjectAvatar'
+import {GQLContext} from '../graphql'
 import JiraRemoteAvatarUrls from './JiraRemoteAvatarUrls'
 import JiraRemoteProjectCategory from './JiraRemoteProjectCategory'
-import {GQLContext} from '../graphql'
 
 const JiraRemoteProject = new GraphQLObjectType<any, GQLContext>({
   name: 'JiraRemoteProject',
@@ -23,6 +24,12 @@ const JiraRemoteProject = new GraphQLObjectType<any, GQLContext>({
     },
     name: {
       type: GraphQLNonNull(GraphQLString)
+    },
+    avatar: {
+      type: GraphQLNonNull(GraphQLString),
+      resolve: ({avatar}) => {
+        return avatar || defaultJiraProjectAvatar
+      }
     },
     avatarUrls: {
       type: GraphQLNonNull(JiraRemoteAvatarUrls)

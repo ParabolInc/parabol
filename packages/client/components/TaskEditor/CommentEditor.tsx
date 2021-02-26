@@ -23,12 +23,10 @@ import useCommentPlugins from './useCommentPlugins'
 const RootEditor = styled('div')({
   fontSize: Card.FONT_SIZE,
   lineHeight: Card.LINE_HEIGHT,
-  maxHeight: 84,
-  overflowY: 'auto',
   width: '100%'
 })
 
-  const AndroidEditorFallback = lazyPreload(() =>
+const AndroidEditorFallback = lazyPreload(() =>
   import(/* webpackChunkName: 'AndroidEditorFallback' */ '../AndroidEditorFallback')
 )
 
@@ -133,10 +131,10 @@ const CommentEditor = (props: Props) => {
       ensureCommenting()
     }
     if (keyBindingFn) {
-    const result = keyBindingFn(e)
-    if (result) {
-      return result
-    }
+      const result = keyBindingFn(e)
+      if (result) {
+        return result
+      }
     }
     if (e.key === 'Escape') {
       e.preventDefault()
@@ -167,10 +165,10 @@ const CommentEditor = (props: Props) => {
       }
     }
     const links = linkify.match(text)
-    const url = links && links[0].url.trim()    
+    const url = links && links[0].url.trim()
     const trimmedText = text.trim()
-      if (url === trimmedText){
-        const nextEditorState = completeEntity(editorState, 'LINK', {href: url}, trimmedText, {
+    if (url === trimmedText) {
+      const nextEditorState = completeEntity(editorState, 'LINK', {href: url}, trimmedText, {
         keepSelection: true
       })
       setEditorState(nextEditorState)
@@ -186,6 +184,11 @@ const CommentEditor = (props: Props) => {
     if (e.key !== 'Enter' || e.shiftKey) return
     e.preventDefault()
     onSubmit()
+  }
+
+  const handleBlur = (e) => {
+    if (renderModal || !onBlur) return
+    onBlur(e)
   }
 
   const useFallback = isAndroid && !readOnly
@@ -204,23 +207,23 @@ const CommentEditor = (props: Props) => {
           />
         </Suspense>
       ) : (
-        <Editor
-          spellCheck
-          blockStyleFn={blockStyleFn}
-          editorState={editorState}
-          handleBeforeInput={onBeforeInput}
-          handleKeyCommand={nextKeyCommand}
-          handlePastedText={onPastedText}
-          handleReturn={onReturn}
-          keyBindingFn={onKeyBindingFn}
-          onBlur={onBlur}
-          onFocus={onFocus}
-          onChange={onChange}
-          placeholder={placeholder}
-          readOnly={readOnly || (useFallback && !showFallback)}
-          ref={editorRef as any}
-        />
-      )}
+          <Editor
+            spellCheck
+            blockStyleFn={blockStyleFn}
+            editorState={editorState}
+            handleBeforeInput={onBeforeInput}
+            handleKeyCommand={nextKeyCommand}
+            handlePastedText={onPastedText}
+            handleReturn={onReturn}
+            keyBindingFn={onKeyBindingFn}
+            onBlur={handleBlur}
+            onFocus={onFocus}
+            onChange={onChange}
+            placeholder={placeholder}
+            readOnly={readOnly || (useFallback && !showFallback)}
+            ref={editorRef as any}
+          />
+        )}
       {renderModal && renderModal()}
     </RootEditor>
   )

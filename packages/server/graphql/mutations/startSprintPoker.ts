@@ -2,18 +2,58 @@ import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {IStartSprintPokerOnMutationArguments, MeetingTypeEnum} from 'parabol-client/types/graphql'
 import getRethink from '../../database/rethinkDriver'
-import DimensionScaleMapping from '../../database/types/DimensionScaleMapping'
 import MeetingPoker from '../../database/types/MeetingPoker'
 import MeetingSettingsPoker from '../../database/types/MeetingSettingsPoker'
 import PokerMeetingMember from '../../database/types/PokerMeetingMember'
+import getPg from '../../postgres/getPg'
+import {insertTemplateRefQuery} from '../../postgres/queries/generated/insertTemplateRefQuery'
+import {insertTemplateScaleRefQuery} from '../../postgres/queries/generated/insertTemplateScaleRefQuery'
 import {getUserId, isTeamMember} from '../../utils/authorization'
+import getHashAndJSON from '../../utils/getHashAndJSON'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
-import {GQLContext} from '../graphql'
+import {DataLoaderWorker, GQLContext} from '../graphql'
 import StartSprintPokerPayload from '../types/StartSprintPokerPayload'
 import createNewMeetingPhases from './helpers/createNewMeetingPhases'
 import {startSlackMeeting} from './helpers/notifySlack'
 import sendMeetingStartToSegment from './helpers/sendMeetingStartToSegment'
+
+const freezeTemplateAsRef = async (templateId: string, dataLoader: DataLoaderWorker) => {
+  const pg = getPg()
+  const [template, dimensions] = await Promise.all([
+    dataLoader.get('meetingTemplates').load(templateId),
+    dataLoader.get('templateDimensionsByTemplateId').load(templateId)
+  ])
+  const {name: templateName} = template
+  const uniqueScaleIds = Array.from(new Set(dimensions.map(({scaleId}) => scaleId)))
+  const uniqueScales = await dataLoader.get('templateScales').loadMany(uniqueScaleIds)
+  const templateScales = uniqueScales.map(({name, values}) => {
+    const scale = {name, values}
+    const {id, str} = getHashAndJSON(scale)
+    return {id, scale: str}
+  })
+
+  const templateRef = {
+    name: templateName,
+    dimensions: dimensions.map((dimension) => {
+      const {name, scaleId} = dimension
+      const scaleIdx = uniqueScales.findIndex((scale) => scale.id === scaleId)
+      const templateScale = templateScales[scaleIdx]
+      const {id: scaleRefId} = templateScale
+      return {
+        name,
+        scaleRefId
+      }
+    })
+  }
+  const {id: templateRefId, str: templateRefStr} = getHashAndJSON(templateRef)
+  const ref = {id: templateRefId, template: templateRefStr}
+  await Promise.all([
+    insertTemplateScaleRefQuery.run({templateScales}, pg),
+    insertTemplateRefQuery.run({ref}, pg)
+  ])
+  return templateRefId
+}
 
 export default {
   type: new GraphQLNonNull(StartSprintPokerPayload),
@@ -61,14 +101,7 @@ export default {
       .get('meetingSettingsByType')
       .load({teamId, meetingType: MeetingTypeEnum.poker})) as MeetingSettingsPoker
     const {selectedTemplateId} = meetingSettings
-    const dimensions = await dataLoader.get('dimensionsByTemplateId').load(selectedTemplateId)
-    const dimensionScaleMapping = dimensions.map(
-      (dimension) =>
-        new DimensionScaleMapping({
-          dimensionId: dimension.id,
-          scaleId: dimension.scaleId
-        })
-    )
+    const templateRefId = await freezeTemplateAsRef(selectedTemplateId, dataLoader)
 
     const meeting = new MeetingPoker({
       teamId,
@@ -76,10 +109,12 @@ export default {
       phases,
       facilitatorUserId: viewerId,
       templateId: selectedTemplateId,
-      dimensionScaleMapping
+      templateRefId
     })
+
     const meetingId = meeting.id
     const template = await dataLoader.get('meetingTemplates').load(selectedTemplateId)
+
     await r
       .table('NewMeeting')
       .insert(meeting)

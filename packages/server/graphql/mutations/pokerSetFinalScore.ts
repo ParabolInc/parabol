@@ -5,20 +5,21 @@ import {
   NewMeetingPhaseTypeEnum,
   TaskServiceEnum
 } from 'parabol-client/types/graphql'
+import makeAppURL from 'parabol-client/utils/makeAppURL'
 import isPhaseComplete from 'parabol-client/utils/meetings/isPhaseComplete'
+import getJiraCloudIdAndKey from '../../../client/utils/getJiraCloudIdAndKey'
+import appOrigin from '../../appOrigin'
 import getRethink from '../../database/rethinkDriver'
 import EstimatePhase from '../../database/types/EstimatePhase'
 import MeetingPoker from '../../database/types/MeetingPoker'
 import updateStage from '../../database/updateStage'
+import getTemplateRefById from '../../postgres/queries/getTemplateRefById'
 import AtlassianServerManager from '../../utils/AtlassianServerManager'
 import {getUserId, isTeamMember} from '../../utils/authorization'
-import getJiraCloudIdAndKey from '../../../client/utils/getJiraCloudIdAndKey'
-import makeAppURL from 'parabol-client/utils/makeAppURL'
 import makeScoreJiraComment from '../../utils/makeScoreJiraComment'
 import publish from '../../utils/publish'
 import {GQLContext} from '../graphql'
 import PokerSetFinalScorePayload from '../types/PokerSetFinalScorePayload'
-import appOrigin from '../../appOrigin'
 
 const pokerSetFinalScore = {
   type: GraphQLNonNull(PokerSetFinalScorePayload),
@@ -57,6 +58,7 @@ const pokerSetFinalScore = {
       teamId,
       defaultFacilitatorUserId,
       facilitatorUserId,
+      templateRefId,
       name: meetingName
     } = meeting
     if (!isTeamMember(authToken, teamId)) {
@@ -97,9 +99,11 @@ const pokerSetFinalScore = {
 
     // RESOLUTION
     // update integration
-    const {creatorUserId, dimensionId, service, serviceTaskId} = stage
-    const dimension = await dataLoader.get('templateDimensions').load(dimensionId)
-    const {name: dimensionName} = dimension
+    const {creatorUserId, dimensionRefIdx, service, serviceTaskId} = stage
+    const templateRef = await getTemplateRefById(templateRefId)
+    const {dimensions} = templateRef
+    const dimensionRef = dimensions[dimensionRefIdx]
+    const {name: dimensionName} = dimensionRef
     if (service === TaskServiceEnum.jira) {
       const auth = await dataLoader.get('freshAtlassianAuth').load({teamId, userId: creatorUserId})
       if (!auth) {
@@ -112,7 +116,7 @@ const pokerSetFinalScore = {
       const jiraDimensionFields = team.jiraDimensionFields || []
       const dimensionField = jiraDimensionFields.find(
         (dimensionField) =>
-          dimensionField.dimensionId === dimensionId &&
+          dimensionField.dimensionName === dimensionName &&
           dimensionField.cloudId === cloudId &&
           dimensionField.projectKey === projectKey
       )
@@ -142,10 +146,12 @@ const pokerSetFinalScore = {
         .table('Task')
         .get(serviceTaskId)
         .update((row) => ({
-          estimates: row('estimates').default([]).append({
-            name: dimensionName,
-            label: finalScore
-          })
+          estimates: row('estimates')
+            .default([])
+            .append({
+              name: dimensionName,
+              label: finalScore
+            })
         }))
         .run()
     }
@@ -154,7 +160,7 @@ const pokerSetFinalScore = {
     stage.finalScore = finalScore
     // update stage in DB
     const updater = (estimateStage) => estimateStage.merge({finalScore})
-    await updateStage(meetingId, stageId, updater)
+    await updateStage(meetingId, stageId, 'ESTIMATE', updater)
     const data = {meetingId, stageId}
     publish(SubscriptionChannel.MEETING, meetingId, 'PokerSetFinalScoreSuccess', data, subOptions)
     return data

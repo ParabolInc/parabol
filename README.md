@@ -66,7 +66,14 @@ $ yarn && yarn build && yarn start
 
 - pgadmin is at [http://localhost:5050](http://localhost:5050)
 - Connect using `PGADMIN_DEFAULT_EMAIL` and `PGADMIN_DEFAULT_PASSWORD`
-- Click "Add New Server"
+- Click "Add New Server" and fill out the forms with your `.env` values
+  - General.name = POSTGRES_DB
+  - Connection.host = 'postgres' (hardcoded from docker-compose dev.yml, not from .env!)
+  - Connection.username = POSTGRES_USER
+  - Connection.password = POSTGRES_PASSWORD
+  - Connection.maintenanceDatabase = POSTGRES_DB
+  - Connection.port = POSTGRES_PORT
+
 - Fill out the form with values from your `.env`. Set the host to `postgres`
 
 ## Getting Involved

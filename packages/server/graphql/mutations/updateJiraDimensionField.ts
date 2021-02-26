@@ -2,6 +2,7 @@ import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getRethink from '../../database/rethinkDriver'
 import JiraDimensionField from '../../database/types/JiraDimensionField'
+import getTemplateRefById from '../../postgres/queries/getTemplateRefById'
 import AtlassianServerManager from '../../utils/AtlassianServerManager'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
@@ -12,8 +13,8 @@ const updateJiraDimensionField = {
   type: GraphQLNonNull(UpdateJiraDimensionFieldPayload),
   description: `Set the jira field that the poker dimension should map to`,
   args: {
-    dimensionId: {
-      type: GraphQLNonNull(GraphQLID)
+    dimensionName: {
+      type: GraphQLNonNull(GraphQLString)
     },
     fieldName: {
       type: GraphQLNonNull(GraphQLString),
@@ -30,12 +31,12 @@ const updateJiraDimensionField = {
     meetingId: {
       type: GraphQLNonNull(GraphQLID),
       description:
-        'The meeting the update happend in. If present, can return a meeting object with updated serviceField'
+        'The meeting the update happend in. Returns a meeting object with updated serviceField'
     }
   },
   resolve: async (
     _source,
-    {dimensionId, fieldName, meetingId, cloudId, projectKey},
+    {dimensionName, fieldName, meetingId, cloudId, projectKey},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) => {
     const r = await getRethink()
@@ -44,18 +45,19 @@ const updateJiraDimensionField = {
     const subOptions = {mutatorId, operationId}
 
     // VALIDATION
-    const dimension = await dataLoader.get('templateDimensions').load(dimensionId)
-    if (!dimension || dimension.removedAt) {
-      return {error: {message: 'Dimension not found'}}
-    }
-
     const meeting = await dataLoader.get('newMeetings').load(meetingId)
     if (!meeting) {
       return {error: {message: 'Invalid meetingId'}}
     }
-    const {teamId} = meeting
+    const {teamId, templateRefId} = meeting
     if (!isTeamMember(authToken, teamId)) {
       return {error: {message: 'Not on team'}}
+    }
+    const templateRef = await getTemplateRefById(templateRefId)
+    const {dimensions} = templateRef
+    const matchingDimension = dimensions.find((dimension) => dimension.name === dimensionName)
+    if (!matchingDimension) {
+      return {error: {message: 'Invalid dimension name'}}
     }
 
     // RESOLUTION
@@ -64,7 +66,7 @@ const updateJiraDimensionField = {
     const jiraDimensionFields = team.jiraDimensionFields || []
     const existingDimensionField = jiraDimensionFields.find(
       (dimensionField) =>
-        dimensionField.dimensionId === dimensionId &&
+        dimensionField.dimensionName === dimensionName &&
         dimensionField.cloudId === cloudId &&
         dimensionField.projectKey === projectKey
     )
@@ -87,7 +89,7 @@ const updateJiraDimensionField = {
       const type = schema.type as 'string' | 'number'
       jiraDimensionFields.push(
         new JiraDimensionField({
-          dimensionId,
+          dimensionName,
           fieldName,
           fieldId,
           cloudId,

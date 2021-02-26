@@ -1,11 +1,11 @@
 import {GraphQLID, GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
-import connectionDefinitions from '../connectionDefinitions'
-import {GQLContext} from '../graphql'
-import TemplateDimension from './TemplateDimension'
-import MeetingTemplate, {meetingTemplateFields} from './MeetingTemplate'
 import {MeetingTypeEnum} from 'parabol-client/types/graphql'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import standardError from '../../utils/standardError'
+import connectionDefinitions from '../connectionDefinitions'
+import {GQLContext} from '../graphql'
+import MeetingTemplate, {meetingTemplateFields} from './MeetingTemplate'
+import TemplateDimension from './TemplateDimension'
 
 const PokerTemplate = new GraphQLObjectType<any, GQLContext>({
   name: 'PokerTemplate',
@@ -18,7 +18,7 @@ const PokerTemplate = new GraphQLObjectType<any, GQLContext>({
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(TemplateDimension))),
       description: 'The dimensions that are part of this template',
       resolve: async ({id: templateId}, _args, {dataLoader}) => {
-        const dimensions = await dataLoader.get('dimensionsByTemplateId').load(templateId)
+        const dimensions = await dataLoader.get('templateDimensionsByTemplateId').load(templateId)
         const activeDimensions = dimensions.filter(({removedAt}) => !removedAt)
         return activeDimensions
       }
@@ -39,7 +39,7 @@ const PokerTemplate = new GraphQLObjectType<any, GQLContext>({
         if (!isTeamMember(authToken, teamId)) {
           return standardError(new Error('Team not found'), {userId: viewerId})
         }
-        const dimensions = await dataLoader.get('dimensionsByTemplateId').load(templateId)
+        const dimensions = await dataLoader.get('templateDimensionsByTemplateId').load(templateId)
         const dimension = dimensions.filter(({id}) => id === dimensionId)
         if (!dimension) {
           return standardError(new Error('Dimension not found'), {userId: viewerId})

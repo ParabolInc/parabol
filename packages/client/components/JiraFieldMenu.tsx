@@ -22,7 +22,8 @@ interface Props {
 
 const JiraFieldMenu = (props: Props) => {
   const {menuProps, viewer, stage} = props
-  const {meetingId, dimensionId, serviceField, serviceTaskId} = stage
+  const {meetingId, dimensionRef, serviceField, serviceTaskId} = stage
+  const {name: dimensionName} = dimensionRef
   const {name: serviceFieldName} = serviceField
   const isLoading = viewer === null
   const serverFields = viewer?.teamMember?.integrations.atlassian?.jiraFields ?? []
@@ -30,7 +31,13 @@ const JiraFieldMenu = (props: Props) => {
   const {portalStatus, isDropdown, closePortal} = menuProps
   const [cloudId, , projectKey] = getJiraCloudIdAndKey(serviceTaskId)
   const handleClick = (fieldName: string) => () => {
-    UpdateJiraDimensionFieldMutation(atmosphere, {dimensionId, fieldName, meetingId, cloudId, projectKey})
+    UpdateJiraDimensionFieldMutation(atmosphere, {
+      dimensionName,
+      fieldName,
+      meetingId,
+      cloudId,
+      projectKey
+    })
     closePortal()
   }
   const defaultActiveidx = useMemo(() => {
@@ -42,7 +49,11 @@ const JiraFieldMenu = (props: Props) => {
   }, [serviceFieldName, serverFields])
 
   if (serverFields.length === 0) {
-    const child = isLoading ? <MockJiraFieldList /> : <MenuItem key={'noResults'} label={'<<Cannot connect to Jira>>'} />
+    const child = isLoading ? (
+      <MockJiraFieldList />
+    ) : (
+        <MenuItem key={'noResults'} label={'<<Cannot connect to Jira>>'} />
+      )
     return (
       <Menu ariaLabel={'Loading'} portalStatus={portalStatus} isDropdown={isDropdown}>
         {child}
@@ -58,21 +69,22 @@ const JiraFieldMenu = (props: Props) => {
       defaultActiveIdx={defaultActiveidx}
     >
       {serverFields.map((fieldName) => {
-        return (
-          <MenuItem
-            key={fieldName}
-            label={fieldName}
-            onClick={handleClick(fieldName)}
-          />
-        )
+        return <MenuItem key={fieldName} label={fieldName} onClick={handleClick(fieldName)} />
       })}
       <MenuItemHR />
-      <MenuItem key={'__comment'} label={SprintPokerDefaults.JIRA_FIELD_COMMENT_LABEL} onClick={handleClick(SprintPokerDefaults.JIRA_FIELD_COMMENT)} />
-      <MenuItem key={'__null'} label={SprintPokerDefaults.JIRA_FIELD_NULL_LABEL} onClick={handleClick(SprintPokerDefaults.JIRA_FIELD_NULL)} />
+      <MenuItem
+        key={'__comment'}
+        label={SprintPokerDefaults.JIRA_FIELD_COMMENT_LABEL}
+        onClick={handleClick(SprintPokerDefaults.JIRA_FIELD_COMMENT)}
+      />
+      <MenuItem
+        key={'__null'}
+        label={SprintPokerDefaults.JIRA_FIELD_NULL_LABEL}
+        onClick={handleClick(SprintPokerDefaults.JIRA_FIELD_NULL)}
+      />
     </Menu>
   )
 }
-
 
 export default createFragmentContainer(JiraFieldMenu, {
   viewer: graphql`
@@ -87,12 +99,15 @@ export default createFragmentContainer(JiraFieldMenu, {
     }
   `,
   stage: graphql`
-  fragment JiraFieldMenu_stage on EstimateStage {
-    dimensionId
-    meetingId
-    serviceField {
-      name
+    fragment JiraFieldMenu_stage on EstimateStage {
+      dimensionRef {
+        name
+      }
+      meetingId
+      serviceField {
+        name
+      }
+      serviceTaskId
     }
-    serviceTaskId
-  }`
+  `
 })

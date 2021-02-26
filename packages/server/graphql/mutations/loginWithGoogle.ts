@@ -5,6 +5,7 @@ import AuthIdentityGoogle from '../../database/types/AuthIdentityGoogle'
 import AuthToken from '../../database/types/AuthToken'
 import User from '../../database/types/User'
 import db from '../../db'
+import generateUID from '../../generateUID'
 import encodeAuthToken from '../../utils/encodeAuthToken'
 import GoogleServerManager from '../../utils/GoogleServerManager'
 import standardError from '../../utils/standardError'
@@ -103,16 +104,22 @@ const loginWithGoogle = {
         }
       }
 
+      const userId = `google-oauth2|${sub}`
+      const deletedUser = await r
+        .table('User')
+        .get(userId)
+        .run()
+
       // it's a new user!
       const nickname = name || email.substring(0, email.indexOf('@'))
       const preferredName = nickname.length === 1 ? nickname.repeat(2) : nickname
-      const userId = `google-oauth2|${sub}`
       const identity = new AuthIdentityGoogle({
         id: sub,
         isEmailVerified: email_verified !== 'false'
       })
       const newUser = new User({
-        id: userId,
+        // if a deleted user with the same id exists, generate a new id
+        id: deletedUser?.isRemoved ? `google-oauth2|${generateUID()}` : userId,
         preferredName,
         picture,
         email,

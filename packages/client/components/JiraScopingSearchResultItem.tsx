@@ -24,12 +24,10 @@ const Item = styled('div')({
 const Issue = styled('div')({
   display: 'flex',
   flexDirection: 'column',
-  paddingLeft: 16,
+  paddingLeft: 16
 })
 
-const Title = styled('div')({
-
-})
+const Title = styled('div')({})
 
 const StyledLink = styled('a')({
   color: PALETTE.LINK_BLUE,
@@ -51,7 +49,7 @@ interface Props {
 
 const JiraScopingSearchResultItem = (props: Props) => {
   const {issue, meetingId, persistQuery, usedServiceTaskIds} = props
-  const {id: serviceTaskId, key, summary, url} = issue
+  const {id: serviceTaskId, key, title, url} = issue
   const isSelected = usedServiceTaskIds.has(serviceTaskId)
   const atmosphere = useAtmosphere()
   const {onCompleted, onError, submitMutation, submitting} = useMutationProps()
@@ -77,10 +75,10 @@ const JiraScopingSearchResultItem = (props: Props) => {
     }
   }
   return (
-    <Item onClick={onClick} >
+    <Item onClick={onClick}>
       <Checkbox active={isSelected || isTemp} disabled={disabled} />
       <Issue>
-        <Title>{summary}</Title>
+        <Title>{title}</Title>
         <StyledLink
           href={url}
           rel='noopener noreferrer'
@@ -95,15 +93,14 @@ const JiraScopingSearchResultItem = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(
-  JiraScopingSearchResultItem,
-  {
-    issue: graphql`
+export default createFragmentContainer(JiraScopingSearchResultItem, {
+  issue: graphql`
     fragment JiraScopingSearchResultItem_issue on JiraIssue {
       id
-      summary
+      # use title instead of summary so the optimistic updater will use it for the sidebar
+      title
       key
       url
-    }`
-  }
-)
+    }
+  `
+})

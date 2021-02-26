@@ -36,6 +36,12 @@ module.exports = {
       },
       '/intranet-graphql': {
         target: `http://localhost:${SOCKET_PORT}`,
+      },
+      '/sse': {
+        target: `http://localhost:${SOCKET_PORT}`,
+      },
+      '/sse-ping': {
+        target: `http://localhost:${SOCKET_PORT}`,
       }
     },
   },
