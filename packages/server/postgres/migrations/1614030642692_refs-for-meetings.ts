@@ -53,10 +53,10 @@ export async function up(): Promise<void> {
       dimensions: row('reduction')
     }))
     .run()) as {
-      id: string
-      name: string
-      dimensions: (TemplateDimension & {scale: TemplateScale})[]
-    }[]
+    id: string
+    name: string
+    dimensions: (TemplateDimension & {scale: TemplateScale})[]
+  }[]
 
   const uniqueScaleIdSet = new Set<string>()
   const uniqueScales = [] as TemplateScale[]
@@ -163,7 +163,7 @@ export async function up(): Promise<void> {
 }
 
 export async function down(pgm: MigrationBuilder): Promise<void> {
-  pgm.sql(`
+  await pgm.sql(`
     DELETE FROM "TemplateRef";
     DELETE FROM "TemplateScaleRef";
   `)
