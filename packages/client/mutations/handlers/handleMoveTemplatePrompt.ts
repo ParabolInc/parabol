@@ -1,8 +1,7 @@
 import {RecordSourceProxy} from 'relay-runtime'
-import IReflectTemplate from '../../../server/database/types/ReflectTemplate'
 
 const handleMoveTemplatePrompt = (store: RecordSourceProxy, templateId: string) => {
-  const template = store.get<IReflectTemplate>(templateId)
+  const template = store.get(templateId)
   if (!template) return
   const prompts = template.getLinkedRecords('prompts')
   if (!Array.isArray(prompts)) return

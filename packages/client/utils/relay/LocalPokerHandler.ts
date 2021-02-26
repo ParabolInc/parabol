@@ -1,5 +1,5 @@
 import {Handler} from 'relay-runtime/lib/store/RelayStoreTypes'
-import {TaskStatusEnum, TaskServiceEnum} from '~/__generated__/UpdateTaskMutation.graphql'
+import {TaskStatusEnum} from '~/__generated__/UpdateTaskMutation.graphql'
 import upperFirst from '../upperFirst'
 import createProxyRecord from './createProxyRecord'
 import toSearchQueryId from './toSearchQueryId'
@@ -25,7 +25,7 @@ const lookup = {
       statusFilters: ['active'] as TaskStatusEnum[]
     }
   }
-} as Record<TaskServiceEnum, {meetingPropertyName: SearchQueryMeetingPropName; defaultQuery: any}>
+} as const
 
 const initializeDefaultSearchQueries = (store, payload): void => {
   const meetingId = payload.dataID
