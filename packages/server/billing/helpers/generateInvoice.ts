@@ -1,6 +1,4 @@
 import {InvoiceItemType} from 'parabol-client/types/constEnums'
-import {InvoiceLineItemEnum} from '~/__generated__/InvoiceLineItem_item.graphql'
-import {InvoiceStatusEnum} from '~/__generated__/Invoice_viewer.graphql'
 import generateUID from '../../generateUID'
 import Stripe from 'stripe'
 import getRethink from '../../database/rethinkDriver'
@@ -14,6 +12,13 @@ import QuantityChangeLineItem from '../../database/types/QuantityChangeLineItem'
 import db from '../../db'
 import {fromEpochSeconds} from '../../utils/epochTime'
 import StripeManager from '../../utils/StripeManager'
+
+type InvoiceLineItemEnum =
+  | 'ADDED_USERS'
+  | 'INACTIVITY_ADJUSTMENTS'
+  | 'OTHER_ADJUSTMENTS'
+  | 'REMOVED_USERS'
+type InvoiceStatusEnum = 'FAILED' | 'PAID' | 'PENDING' | 'UPCOMING'
 
 interface InvoicesByStartTime {
   [start: string]: {

@@ -1,4 +1,4 @@
-import {ThreadSourceEnum} from '~/__generated__/AddCommentMutation.graphql'
+import {ThreadSourceEnum} from 'parabol-client/types/graphql'
 import extractTextFromDraftString from 'parabol-client/utils/draftjs/extractTextFromDraftString'
 import generateUID from '../../generateUID'
 import Reactji from './Reactji'

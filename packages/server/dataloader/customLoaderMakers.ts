@@ -63,13 +63,13 @@ export interface MeetingTemplateKey {
 }
 
 const reactableLoaders = [
-  {type: 'COMMENT' as ReactableEnum, loader: 'comments'},
-  {type: 'REFLECTION' as ReactableEnum, loader: 'retroReflections'}
+  {type: 'COMMENT', loader: 'comments'},
+  {type: 'REFLECTION', loader: 'retroReflections'}
 ] as const
 
 const threadableLoaders = [
-  {type: 'AGENDA_ITEM' as ThreadSourceEnum, loader: 'agendaItems'},
-  {type: 'REFLECTION_GROUP' as ThreadSourceEnum, loader: 'retroReflectionGroups'}
+  {type: 'AGENDA_ITEM', loader: 'agendaItems'},
+  {type: 'REFLECTION_GROUP', loader: 'retroReflectionGroups'}
 ] as const
 
 // export type LoaderMakerCustom<K, V, C = K> = (parent: RethinkDataLoader) => DataLoader<K, V, C>

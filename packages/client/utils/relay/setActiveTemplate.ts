@@ -1,5 +1,4 @@
 import {commitLocalUpdate} from 'react-relay'
-import ITeam from '../../../server/database/types/Team'
 import {MeetingTypeEnum} from '~/__generated__/NewMeeting_viewer.graphql'
 import Atmosphere from '../../Atmosphere'
 import {RecordSourceProxy} from 'relay-runtime'
@@ -10,7 +9,7 @@ const setActiveTemplateInRelayStore = (
   templateId: string | null,
   meetingType: MeetingTypeEnum
 ) => {
-  const team = store.get<ITeam>(teamId)
+  const team = store.get(teamId)
   if (!team) return
   const meetingSettings = team.getLinkedRecord('meetingSettings', {meetingType: meetingType})
   if (!meetingSettings) return

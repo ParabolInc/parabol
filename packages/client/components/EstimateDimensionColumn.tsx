@@ -52,7 +52,6 @@ interface Props {
   meeting: EstimateDimensionColumn_meeting
 }
 
-
 const EstimateDimensionColumn = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
@@ -68,11 +67,7 @@ const EstimateDimensionColumn = (props: Props) => {
   const reset = () => {
     if (submitting) return
     submitMutation()
-    PokerResetDimensionMutation(
-      atmosphere,
-      {meetingId, stageId},
-      {onError, onCompleted}
-    )
+    PokerResetDimensionMutation(atmosphere, {meetingId, stageId}, {onError, onCompleted})
   }
   const showVoting = isVoting || isClosing
   return (
@@ -80,20 +75,32 @@ const EstimateDimensionColumn = (props: Props) => {
       <DimensionHeader>
         <DimensionName>{name}</DimensionName>
         {error && <StyledError>{error.message}</StyledError>}
-        {!isVoting && isFacilitator && !endedAt && <StyledLinkButton onClick={reset} palette={'blue'}>{'Team Revote'}</StyledLinkButton>}
+        {!isVoting && isFacilitator && !endedAt && (
+          <StyledLinkButton onClick={reset} palette={'blue'}>
+            {'Team Revote'}
+          </StyledLinkButton>
+        )}
       </DimensionHeader>
-      {showVoting
-        ? <PokerActiveVoting meeting={meeting} stage={stage} isClosing={isClosing} isInitialStageRender={isInitialStageRender} />
-        : <PokerDiscussVoting meeting={meeting} stage={stage} isInitialStageRender={isInitialStageRender} />
-      }
+      {showVoting ? (
+        <PokerActiveVoting
+          meeting={meeting}
+          stage={stage}
+          isClosing={isClosing}
+          isInitialStageRender={isInitialStageRender}
+        />
+      ) : (
+        <PokerDiscussVoting
+          meeting={meeting}
+          stage={stage}
+          isInitialStageRender={isInitialStageRender}
+        />
+      )}
     </ColumnInner>
   )
 }
 
-export default createFragmentContainer(
-  EstimateDimensionColumn,
-  {
-    stage: graphql`
+export default createFragmentContainer(EstimateDimensionColumn, {
+  stage: graphql`
     fragment EstimateDimensionColumn_stage on EstimateStage {
       ...PokerActiveVoting_stage
       ...PokerDiscussVoting_stage
@@ -103,15 +110,14 @@ export default createFragmentContainer(
         name
       }
     }
-    `,
-    meeting: graphql`
+  `,
+  meeting: graphql`
     fragment EstimateDimensionColumn_meeting on PokerMeeting {
       ...PokerActiveVoting_meeting
       ...PokerDiscussVoting_meeting
       facilitatorUserId
       id
       endedAt
-    }`,
-
-  }
-)
+    }
+  `
+})

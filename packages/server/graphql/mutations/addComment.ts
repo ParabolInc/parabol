@@ -1,7 +1,6 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import {AddCommentMutationVariables} from '~/__generated__/AddCommentMutation.graphql'
-import {NewMeetingPhaseTypeEnum} from '~/__generated__/ActionMeeting_meeting.graphql'
+import {IAddCommentOnMutationArguments, NewMeetingPhaseTypeEnum} from 'parabol-client/types/graphql'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import normalizeRawDraftJS from 'parabol-client/validation/normalizeRawDraftJS'
 import getRethink from '../../database/rethinkDriver'
@@ -29,7 +28,7 @@ const addComment = {
   },
   resolve: async (
     _source,
-    {comment, meetingId}: AddCommentMutationVariables,
+    {comment, meetingId}: IAddCommentOnMutationArguments,
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) => {
     const r = await getRethink()
@@ -63,9 +62,13 @@ const addComment = {
       .insert(dbComment)
       .run()
 
-    const data = {commentId, meetingId}
+    const data = {commentId}
     const {phases, teamId} = meeting!
-    const threadablePhases = ['discuss', 'agendaitems', 'ESTIMATE'] as NewMeetingPhaseTypeEnum[]
+    const threadablePhases = [
+      NewMeetingPhaseTypeEnum.discuss,
+      NewMeetingPhaseTypeEnum.agendaitems,
+      NewMeetingPhaseTypeEnum.ESTIMATE
+    ]
     const containsThreadablePhase = phases.find(({phaseType}) =>
       threadablePhases.includes(phaseType)
     )!
