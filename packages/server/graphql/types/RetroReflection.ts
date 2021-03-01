@@ -84,13 +84,6 @@ const RetroReflection = new GraphQLObjectType<Reflection, GQLContext>({
         return dataLoader.get('newMeetings').load(meetingId)
       }
     },
-    phaseItem: {
-      type: new GraphQLNonNull(ReflectPrompt),
-      deprecationReason: 'use prompt',
-      resolve: ({promptId}, _args, {dataLoader}) => {
-        return dataLoader.get('reflectPrompts').load(promptId)
-      }
-    },
     plaintextContent: {
       description: 'The plaintext version of content',
       type: new GraphQLNonNull(GraphQLString)
@@ -98,7 +91,7 @@ const RetroReflection = new GraphQLObjectType<Reflection, GQLContext>({
     promptId: {
       type: new GraphQLNonNull(GraphQLID),
       description:
-        'The foreign key to link a reflection to its phaseItem. Immutable. For sorting, use phase item on the group.'
+        'The foreign key to link a reflection to its prompt. Immutable. For sorting, use prompt on the group.'
     },
     prompt: {
       type: new GraphQLNonNull(ReflectPrompt),
@@ -110,13 +103,6 @@ const RetroReflection = new GraphQLObjectType<Reflection, GQLContext>({
       type: GraphQLNonNull(GraphQLList(GraphQLNonNull(require('./Reactji').default))),
       description: 'All the reactjis for the given reflection',
       resolve: resolveReactjis
-    },
-    retroPhaseItemId: {
-      type: new GraphQLNonNull(GraphQLID),
-      deprecationReason: 'use promptId',
-      description:
-        'The foreign key to link a reflection to its phaseItem. Immutable. For sorting, use phase item on the group.',
-      resolve: ({promptId}) => promptId
     },
     reflectionGroupId: {
       type: new GraphQLNonNull(GraphQLID),
