@@ -1,7 +1,5 @@
-import {GraphQLID, GraphQLInterfaceType, GraphQLNonNull, GraphQLObjectType} from 'graphql'
-import {NotificationEnum as ENotificationEnum} from '~/__generated__/NotificationSubscription.graphql'
+import {GraphQLID, GraphQLInterfaceType, GraphQLNonNull} from 'graphql'
 import connectionDefinitions from '../connectionDefinitions'
-import {GQLContext} from '../graphql'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import NotificationEnum from './NotificationEnum'
 import NotificationMeetingStageTimeLimitEnd from './NotificationMeetingStageTimeLimitEnd'
@@ -55,7 +53,7 @@ const Notification = new GraphQLInterfaceType({
       TEAM_ARCHIVED: NotifyTeamArchived,
       TEAM_INVITATION: NotificationTeamInvitation,
       MEETING_STAGE_TIME_LIMIT_END: NotificationMeetingStageTimeLimitEnd
-    } as Record<ENotificationEnum, GraphQLObjectType<any, GQLContext>>
+    } as const
 
     return resolveTypeLookup[value.type]
   }

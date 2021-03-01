@@ -1,7 +1,6 @@
 import {GraphQLID, GraphQLNonNull, GraphQLInt, GraphQLString, GraphQLInterfaceType} from 'graphql'
 import {ThreadableConnection} from './Threadable'
 import resolveThread from '../resolvers/resolveThread'
-import {ThreadSourceEnum} from '../../../client/__generated__/TeamSubscription.graphql'
 import RetroReflectionGroup from './RetroReflectionGroup'
 import AgendaItem from './AgendaItem'
 import Story from './Story'
@@ -37,7 +36,7 @@ const ThreadSource = new GraphQLInterfaceType({
       REFLECTION_GROUP: RetroReflectionGroup,
       AGENDA_ITEM: AgendaItem,
       STORY: Story
-    } as Record<ThreadSourceEnum, any>
+    } as const
     return lookup[threadSourceType]
   }
 })
