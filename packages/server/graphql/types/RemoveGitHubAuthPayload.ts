@@ -11,10 +11,6 @@ const RemoveGitHubAuthPayload = new GraphQLObjectType<any, GQLContext>({
     error: {
       type: StandardMutationError
     },
-    authId: {
-      type: GraphQLID,
-      description: 'The ID of the authorization removed'
-    },
     teamId: {
       type: GraphQLID
     },

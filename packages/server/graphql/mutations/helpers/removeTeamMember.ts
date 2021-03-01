@@ -103,19 +103,7 @@ const removeTeamMember = async (
         },
         {returnChanges: true}
       )('changes')('new_val')
-      .default([]) as unknown) as Task[],
-    // not adjusting atlassian, if they join the team again, they'll be ready to go
-    changedProviders: r
-      .table('Provider')
-      .getAll(teamId, {index: 'teamId'})
-      .filter({userId, isActive: true})
-      .update(
-        {
-          isActive: false
-        },
-        {returnChanges: true}
-      )('changes')('new_val')
-      .default([])
+      .default([]) as unknown) as Task[]
   }).run()
 
   const reqlUpdater = (user) => ({

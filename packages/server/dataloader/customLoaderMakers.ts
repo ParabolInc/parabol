@@ -291,7 +291,7 @@ export const freshAtlassianAuth = (parent: RethinkDataLoader) => {
   )
 }
 
-export const gitHubAuth = (parent: RethinkDataLoader) => {
+export const githubAuth = (parent: RethinkDataLoader) => {
   return new DataLoader<
     {teamId: string; userId: string},
     GetGitHubAuthByUserIdTeamIdResult | null,

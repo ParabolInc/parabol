@@ -65,7 +65,7 @@ export default {
 
     // RESOLUTION
     const {userId, content: rawContentStr, meetingId} = task
-    const [viewerAuth, assigneeAuth] = await dataLoader.get('gitHubAuth').loadMany([
+    const [viewerAuth, assigneeAuth] = await dataLoader.get('githubAuth').loadMany([
       {teamId, userId: viewerId},
       {teamId, userId}
     ])

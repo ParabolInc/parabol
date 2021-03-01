@@ -1,7 +1,5 @@
 import {GraphQLObjectType} from 'graphql'
-import {GITHUB} from 'parabol-client/utils/constants'
 import toTeamMemberId from '../../../client/utils/relay/toTeamMemberId'
-import getRethink from '../../database/rethinkDriver'
 import {GQLContext} from '../graphql'
 import GitHubIntegration from './GitHubIntegration'
 import StandardMutationError from './StandardMutationError'
@@ -17,15 +15,8 @@ const AddGitHubAuthPayload = new GraphQLObjectType<any, GQLContext>({
     githubIntegration: {
       type: GitHubIntegration,
       description: 'The newly created auth',
-      resolve: async ({teamId, userId}) => {
-        const r = await getRethink()
-        return r
-          .table('Provider')
-          .getAll(teamId, {index: 'teamId'})
-          .filter({service: GITHUB, isActive: true, userId})
-          .nth(0)
-          .default(null)
-          .run()
+      resolve: async ({teamId, userId}, _args, {dataLoader}) => {
+        return dataLoader.get('githubAuth').load({teamId, userId})
       }
     },
     teamMember: {

@@ -29,7 +29,7 @@ const TeamMemberIntegrations = new GraphQLObjectType<any, GQLContext>({
       description: 'All things associated with a GitHub integration for a team member',
       resolve: async ({teamId, userId}, _args, {authToken, dataLoader}) => {
         if (!isTeamMember(authToken, teamId)) return null
-        return dataLoader.get('gitHubAuth').load({teamId, userId})
+        return dataLoader.get('githubAuth').load({teamId, userId})
       }
     },
     slack: {
