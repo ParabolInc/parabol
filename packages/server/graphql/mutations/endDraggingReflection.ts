@@ -8,8 +8,8 @@ import addReflectionToGroup from './helpers/updateReflectionLocation/addReflecti
 import removeReflectionFromGroup from './helpers/updateReflectionLocation/removeReflectionFromGroup'
 import standardError from '../../utils/standardError'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import {DragReflectionDropTargetTypeEnum as EDragReflectionDropTargetTypeEnum} from '~/__generated__/EndDraggingReflectionMutation_meeting.graphql'
 
+type TDragReflectionDropTargetTypeEnum = 'REFLECTION_GRID' | 'REFLECTION_GROUP'
 export default {
   description: 'Broadcast that the viewer stopped dragging a reflection',
   type: EndDraggingReflectionPayload,
@@ -41,7 +41,7 @@ export default {
       dragId
     }: {
       reflectionId: string
-      dropTargetType: EDragReflectionDropTargetTypeEnum
+      dropTargetType: TDragReflectionDropTargetTypeEnum
       dropTargetId: string
       dragId: string
     },

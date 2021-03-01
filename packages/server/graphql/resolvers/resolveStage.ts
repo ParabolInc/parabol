@@ -1,4 +1,4 @@
-import {NewMeetingPhaseTypeEnum} from '~/__generated__/ActionMeeting_meeting.graphql'
+import {NewMeetingPhaseTypeEnum} from '../../database/types/GenericMeetingPhase'
 
 const resolveStage = (phaseType: NewMeetingPhaseTypeEnum) => async (
   {meetingId, stageId},

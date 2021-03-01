@@ -1,7 +1,7 @@
 import {GraphQLInt} from 'graphql'
 import getRethink from '../../database/rethinkDriver'
+import {TierEnum} from '../../database/types/Invoice'
 import {requireSU} from '../../utils/authorization'
-import {TierEnum} from '../../../client/__generated__/Invoice_viewer.graphql'
 import OrgUserRole from '../types/OrgUserRole'
 
 export default {

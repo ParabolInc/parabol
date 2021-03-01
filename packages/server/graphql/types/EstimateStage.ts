@@ -8,8 +8,8 @@ import {
   GraphQLString
 } from 'graphql'
 import {SprintPokerDefaults} from '~/types/constEnums'
-import {NewMeetingPhaseTypeEnum} from '~/__generated__/ActionMeeting_meeting.graphql'
 import getJiraCloudIdAndKey from '../../../client/utils/getJiraCloudIdAndKey'
+import {NewMeetingPhaseTypeEnum} from '../../database/types/GenericMeetingPhase'
 import db from '../../db'
 import getRedis from '../../utils/getRedis'
 import {GQLContext} from '../graphql'

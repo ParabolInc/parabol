@@ -1,4 +1,4 @@
-import {ThreadSourceEnum} from '~/__generated__/TeamSubscription.graphql'
+import {ThreadSourceEnum} from '../../database/types/ThreadSource'
 
 const getThreadSourceType = (threadSource): ThreadSourceEnum => {
   if (threadSource.reflections) return 'REFLECTION_GROUP'

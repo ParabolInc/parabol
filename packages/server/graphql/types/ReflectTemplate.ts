@@ -1,9 +1,9 @@
 import {GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
-import {MeetingTypeEnum} from '~/__generated__/NewMeeting_viewer.graphql'
 import connectionDefinitions from '../connectionDefinitions'
 import {GQLContext} from '../graphql'
 import ReflectPrompt from './ReflectPrompt'
 import MeetingTemplate, {meetingTemplateFields} from './MeetingTemplate'
+import {MeetingTypeEnum} from '../../database/types/Meeting'
 
 const ReflectTemplate = new GraphQLObjectType<any, GQLContext>({
   name: 'ReflectTemplate',

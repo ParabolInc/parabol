@@ -1,4 +1,5 @@
 import {GraphQLID, GraphQLInt, GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
+import {MeetingTypeEnum} from '../../database/types/Meeting'
 import db from '../../db'
 import {GQLContext} from '../graphql'
 import connectionFromTemplateArray from '../queries/helpers/connectionFromTemplateArray'
@@ -7,7 +8,6 @@ import getScoredTemplates from '../queries/helpers/getScoredTemplates'
 import resolveSelectedTemplate from '../queries/helpers/resolveSelectedTemplate'
 import ReflectTemplate, {ReflectTemplateConnection} from './ReflectTemplate'
 import TeamMeetingSettings, {teamMeetingSettingsFields} from './TeamMeetingSettings'
-import {MeetingTypeEnum} from '~/__generated__/NewMeeting_viewer.graphql'
 
 const RetrospectiveMeetingSettings = new GraphQLObjectType<any, GQLContext>({
   name: 'RetrospectiveMeetingSettings',

@@ -3,9 +3,9 @@ import connectionDefinitions from '../connectionDefinitions'
 import {GQLContext} from '../graphql'
 import TemplateDimension from './TemplateDimension'
 import MeetingTemplate, {meetingTemplateFields} from './MeetingTemplate'
-import {MeetingTypeEnum} from '~/__generated__/NewMeeting_viewer.graphql'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import standardError from '../../utils/standardError'
+import {MeetingTypeEnum} from '../../database/types/Meeting'
 
 const PokerTemplate = new GraphQLObjectType<any, GQLContext>({
   name: 'PokerTemplate',

@@ -1,9 +1,10 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import {NewMeetingPhaseTypeEnum} from '~/__generated__/ActionMeeting_meeting.graphql'
 import findStageById from 'parabol-client/utils/meetings/findStageById'
 import getRethink from '../../database/rethinkDriver'
-import GenericMeetingPhase from '../../database/types/GenericMeetingPhase'
+import GenericMeetingPhase, {
+  NewMeetingPhaseTypeEnum
+} from '../../database/types/GenericMeetingPhase'
 import GenericMeetingStage from '../../database/types/GenericMeetingStage'
 import {getUserId} from '../../utils/authorization'
 import publish from '../../utils/publish'

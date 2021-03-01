@@ -1,4 +1,4 @@
-import {ReactableEnum} from '~/__generated__/AddReactjiToReactableMutation.graphql'
+import {ReactableEnum} from '../../database/types/Reactable'
 
 const getReactableType = (type: any): ReactableEnum => {
   return type.reflectionGroupId ? 'REFLECTION' : 'COMMENT'

@@ -1,5 +1,5 @@
 import {GraphQLNonNull, GraphQLObjectType} from 'graphql'
-import {MeetingTypeEnum} from '~/__generated__/NewMeeting_viewer.graphql'
+import {MeetingTypeEnum} from '../../database/types/Meeting'
 import {GQLContext} from '../graphql'
 import makeMutationPayload from './makeMutationPayload'
 import MeetingTemplate from './MeetingTemplate'

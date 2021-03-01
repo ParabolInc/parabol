@@ -1,6 +1,5 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import {SharingScopeEnum as ESharingScope} from '~/__generated__/OrganizationSubscription.graphql'
 import PokerTemplate from '../../database/types/PokerTemplate'
 import TemplateDimension from '../../database/types/TemplateDimension'
 import toTeamMemberId from '../../../client/utils/relay/toTeamMemberId'
@@ -13,6 +12,7 @@ import {GQLContext} from '../graphql'
 import SharingScopeEnum from '../types/SharingScopeEnum'
 import UpdateTemplateScopePayload from '../types/UpdateTemplateScopePayload'
 import sendTemplateEventToSegment from './helpers/sendTemplateEventToSegment'
+import {SharingScopeEnum as ESharingScope} from '../../database/types/MeetingTemplate'
 
 const updateTemplateScope = {
   type: GraphQLNonNull(UpdateTemplateScopePayload),

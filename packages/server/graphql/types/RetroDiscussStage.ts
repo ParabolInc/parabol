@@ -3,7 +3,7 @@ import NewMeetingStage, {newMeetingStageFields} from './NewMeetingStage'
 import RetroReflectionGroup from './RetroReflectionGroup'
 import {makeResolve} from '../resolvers'
 import {GQLContext} from '../graphql'
-import {NewMeetingPhaseTypeEnum} from '~/__generated__/ActionMeeting_meeting.graphql'
+import {NewMeetingPhaseTypeEnum} from '../../database/types/GenericMeetingPhase'
 
 const RetroDiscussStage = new GraphQLObjectType<any, GQLContext>({
   name: 'RetroDiscussStage',

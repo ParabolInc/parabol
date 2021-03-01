@@ -1,5 +1,5 @@
 import {GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql'
-import {NewMeetingPhaseTypeEnum} from '~/__generated__/ActionMeeting_meeting.graphql'
+import {NewMeetingPhaseTypeEnum} from '../../database/types/GenericMeetingPhase'
 import {GQLContext} from '../graphql'
 import AgendaItem from './AgendaItem'
 import NewMeetingStage, {newMeetingStageFields} from './NewMeetingStage'

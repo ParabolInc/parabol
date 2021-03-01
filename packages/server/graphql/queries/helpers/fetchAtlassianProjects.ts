@@ -2,7 +2,7 @@ import {DataLoaderWorker} from '../../graphql'
 import AtlassianServerManager from '../../../utils/AtlassianServerManager'
 import makeJiraProjectName from 'parabol-client/utils/makeJiraProjectName'
 import makeSuggestedIntegrationId from 'parabol-client/utils/makeSuggestedIntegrationId'
-import {TaskServiceEnum} from '~/__generated__/UpdateTaskMutation.graphql'
+import {TaskServiceEnum} from '../../../database/types/Task'
 
 const fetchAtlassianProjects = async (
   dataLoader: DataLoaderWorker,

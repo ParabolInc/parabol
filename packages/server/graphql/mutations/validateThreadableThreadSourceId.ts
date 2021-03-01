@@ -1,4 +1,4 @@
-import {ThreadSourceEnum} from '~/__generated__/AddCommentMutation.graphql'
+import {ThreadSourceEnum} from '../../database/types/ThreadSource'
 import {DataLoaderWorker} from '../graphql'
 
 const validateThreadableThreadSourceId = async (

@@ -1,7 +1,5 @@
 import {GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import {ThreadSourceEnum} from '~/__generated__/AddCommentMutation.graphql'
-import {NewMeetingPhaseTypeEnum} from '~/__generated__/ActionMeeting_meeting.graphql'
 import {CreateTaskMutationVariables} from '~/__generated__/CreateTaskMutation.graphql'
 import getTypeFromEntityMap from 'parabol-client/utils/draftjs/getTypeFromEntityMap'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
@@ -21,6 +19,8 @@ import CreateTaskInput from '../types/CreateTaskInput'
 import CreateTaskPayload from '../types/CreateTaskPayload'
 import getUsersToIgnore from './helpers/getUsersToIgnore'
 import validateThreadableThreadSourceId from './validateThreadableThreadSourceId'
+import {ThreadSourceEnum} from '../../database/types/ThreadSource'
+import {NewMeetingPhaseTypeEnum} from '../../database/types/GenericMeetingPhase'
 
 const validateTaskAgendaItemId = async (
   threadSource: ThreadSourceEnum | null,
