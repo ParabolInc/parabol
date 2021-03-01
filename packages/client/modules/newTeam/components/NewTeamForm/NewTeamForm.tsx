@@ -68,7 +68,7 @@ const StyledButton = styled(PrimaryButton)({
 const controlSize = 'medium'
 
 interface Props extends WithMutationProps, WithAtmosphereProps, RouteComponentProps<{}> {
-  isNewOrganization: boolean
+  isInitiallyNewOrg: boolean
   organizations: NewTeamForm_organizations
 }
 
@@ -87,8 +87,8 @@ type FieldName = 'orgName' | 'teamName'
 const DEFAULT_FIELD = {value: '', error: undefined, dirty: false}
 
 const NewTeamForm = (props: Props) => {
-  const {isNewOrganization, organizations} = props
-  const [isNewOrg, setIsNewOrg] = useState(isNewOrganization)
+  const {isInitiallyNewOrg, organizations} = props
+  const [isNewOrg, setIsNewOrg] = useState(isInitiallyNewOrg)
   const [orgId, setOrgId] = useState('')
   const [fields, setFields] = useState<Fields>({
     orgName: {...DEFAULT_FIELD},
