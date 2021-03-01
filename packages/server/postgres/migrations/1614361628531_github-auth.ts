@@ -25,8 +25,7 @@ export async function up(): Promise<void> {
     )
     .run()
   const auths = ghIntegrations.map(
-    ({accessToken, createdAt, id, isActive, providerUserName, teamId, updatedAt, userId}) => ({
-      id,
+    ({accessToken, createdAt, isActive, providerUserName, teamId, updatedAt, userId}) => ({
       accessToken,
       createdAt,
       updatedAt,
@@ -38,14 +37,14 @@ export async function up(): Promise<void> {
   )
   await client.query(`
     CREATE TABLE IF NOT EXISTS "GitHubAuth" (
-      "id" VARCHAR(100) PRIMARY KEY,
       "accessToken" VARCHAR(40) NOT NULL,
       "createdAt" TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
       "updatedAt" TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
       "isActive" BOOLEAN DEFAULT TRUE NOT NULL,
       "login" VARCHAR(200) NOT NULL,
       "teamId" VARCHAR(100) NOT NULL,
-      "userId" VARCHAR(100) NOT NULL
+      "userId" VARCHAR(100) NOT NULL,
+      PRIMARY KEY ("userId", "teamId")
     );
   `)
   if (auths.length) {

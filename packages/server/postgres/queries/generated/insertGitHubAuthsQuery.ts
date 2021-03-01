@@ -4,7 +4,6 @@ import {PreparedQuery} from '@pgtyped/query'
 /** 'InsertGitHubAuthsQuery' parameters type */
 export interface IInsertGitHubAuthsQueryParams {
   auths: Array<{
-    id: string | null | void
     accessToken: string | null | void
     createdAt: Date | null | void
     updatedAt: Date | null | void
@@ -31,35 +30,26 @@ const insertGitHubAuthsQueryIR: any = {
       name: 'auths',
       codeRefs: {
         defined: {a: 43, b: 47, line: 3, col: 9},
-        used: [{a: 255, b: 259, line: 6, col: 8}]
+        used: [{a: 245, b: 249, line: 6, col: 8}]
       },
       transform: {
         type: 'pick_array_spread',
-        keys: [
-          'id',
-          'accessToken',
-          'createdAt',
-          'updatedAt',
-          'isActive',
-          'login',
-          'teamId',
-          'userId'
-        ]
+        keys: ['accessToken', 'createdAt', 'updatedAt', 'isActive', 'login', 'teamId', 'userId']
       }
     }
   ],
   usedParamSet: {auths: true},
   statement: {
     body:
-      'INSERT INTO "GitHubAuth" ("id", "accessToken", "createdAt", "updatedAt", "isActive", "login", "teamId", "userId")\nVALUES :auths',
-    loc: {a: 133, b: 259, line: 5, col: 0}
+      'INSERT INTO "GitHubAuth" ("accessToken", "createdAt", "updatedAt", "isActive", "login", "teamId", "userId")\nVALUES :auths',
+    loc: {a: 129, b: 249, line: 5, col: 0}
   }
 }
 
 /**
  * Query generated from SQL:
  * ```
- * INSERT INTO "GitHubAuth" ("id", "accessToken", "createdAt", "updatedAt", "isActive", "login", "teamId", "userId")
+ * INSERT INTO "GitHubAuth" ("accessToken", "createdAt", "updatedAt", "isActive", "login", "teamId", "userId")
  * VALUES :auths
  * ```
  */
