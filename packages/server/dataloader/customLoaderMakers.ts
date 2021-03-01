@@ -1,12 +1,10 @@
 import DataLoader from 'dataloader'
 import {decode} from 'jsonwebtoken'
-import {MeetingTypeEnum} from '~/__generated__/NewMeeting_viewer.graphql'
-import {TaskStatusEnum, ThreadSourceEnum} from '~/__generated__/UpdateTaskMutation.graphql'
-import {ReactableEnum} from '~/__generated__/AddReactjiToReactableMutation.graphql'
 import promiseAllPartial from 'parabol-client/utils/promiseAllPartial'
 import {JiraGetIssueRes} from '../../client/utils/AtlassianManager'
 import getRethink, {RethinkSchema} from '../database/rethinkDriver'
 import AtlassianAuth from '../database/types/AtlassianAuth'
+import {ReactableEnum} from '../database/types/Reactable'
 import MeetingTemplate from '../database/types/MeetingTemplate'
 import {Reactable} from '../database/types/Reactable'
 import Task from '../database/types/Task'
@@ -16,6 +14,9 @@ import sendToSentry from '../utils/sendToSentry'
 import normalizeRethinkDbResults from './normalizeRethinkDbResults'
 import ProxiedCache from './ProxiedCache'
 import RethinkDataLoader from './RethinkDataLoader'
+import {TaskStatusEnum} from '../database/types/Task'
+import {ThreadSourceEnum} from '../database/types/ThreadSource'
+import {MeetingTypeEnum} from '../database/types/Meeting'
 
 type TeamUserKey = {teamId: string; userId: string}
 export interface JiraRemoteProjectKey {

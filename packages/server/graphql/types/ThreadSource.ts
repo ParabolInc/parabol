@@ -6,8 +6,6 @@ import AgendaItem from './AgendaItem'
 import Story from './Story'
 import getThreadSourceType from './getThreadSourceType'
 
-export type ThreadSourceEnum = 'AGENDA_ITEM' | 'REFLECTION_GROUP' | 'STORY'
-
 export const threadSourceFields = () => ({
   id: {
     type: GraphQLNonNull(GraphQLID),

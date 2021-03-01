@@ -7,7 +7,7 @@ import {
   GraphQLString
 } from 'graphql'
 import connectionDefinitions from '../connectionDefinitions'
-import {ThreadSourceEnum} from './ThreadSource'
+import {ThreadSourceEnum} from '../../database/types/ThreadSource'
 import {GQLContext} from '../graphql'
 import AgendaItem from './AgendaItem'
 import GraphQLISO8601Type from './GraphQLISO8601Type'

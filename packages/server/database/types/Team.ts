@@ -1,6 +1,7 @@
-import {MeetingTypeEnum, TierEnum} from '~/__generated__/NewMeeting_viewer.graphql'
 import generateUID from '../../generateUID'
+import {TierEnum} from './Invoice'
 import JiraDimensionField from './JiraDimensionField'
+import {MeetingTypeEnum} from './Meeting'
 
 interface Input {
   id?: string

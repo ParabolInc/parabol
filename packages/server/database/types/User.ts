@@ -1,7 +1,7 @@
 import {AuthTokenRole} from 'parabol-client/types/constEnums'
-import {TierEnum} from '../../../client/__generated__/Invoice_viewer.graphql'
 import generateUID from '../../generateUID'
 import AuthIdentity from './AuthIdentity'
+import {TierEnum} from './Invoice'
 
 interface Input {
   id?: string

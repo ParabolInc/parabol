@@ -1,8 +1,11 @@
 import generateUID from '../../generateUID'
-import {TimelineEventEnum} from '~/__generated__/TeamSubscription.graphql'
 
-// export type ScheduledJobType = 'MEETING_STAGE_TIME_LIMIT_END'
-
+export type TimelineEventEnum =
+  | 'POKER_COMPLETE'
+  | 'actionComplete'
+  | 'createdTeam'
+  | 'joinedParabol'
+  | 'retroComplete'
 interface Input {
   id?: string
   createdAt?: Date
