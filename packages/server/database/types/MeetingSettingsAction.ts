@@ -1,5 +1,5 @@
+import {NewMeetingPhaseTypeEnum} from './GenericMeetingPhase'
 import MeetingSettings from './MeetingSettings'
-import {NewMeetingPhaseTypeEnum} from '~/__generated__/ActionMeeting_meeting.graphql'
 interface Input {
   teamId: string
   id?: string

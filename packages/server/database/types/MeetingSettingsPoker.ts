@@ -1,6 +1,6 @@
-import {NewMeetingPhaseTypeEnum} from '~/__generated__/ActionMeeting_meeting.graphql'
 import MeetingSettings from './MeetingSettings'
 import JiraSearchQuery from './JiraSearchQuery'
+import {NewMeetingPhaseTypeEnum} from './GenericMeetingPhase'
 
 interface Input {
   teamId: string

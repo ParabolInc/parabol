@@ -1,6 +1,6 @@
-import {MeetingTypeEnum} from '~/__generated__/NewMeeting_viewer.graphql'
-import {NewMeetingPhaseTypeEnum} from '~/__generated__/ActionMeeting_meeting.graphql'
+import {MeetingTypeEnum} from './Meeting'
 import generateUID from '../../generateUID'
+import {NewMeetingPhaseTypeEnum} from './GenericMeetingPhase'
 
 interface Input {
   id?: string

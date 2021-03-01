@@ -1,6 +1,7 @@
-import {TierEnum} from '../../../client/__generated__/Invoice_viewer.graphql'
-import {OrgUserRole} from '../../../client/__generated__/OrgMemberRow_organizationUser.graphql'
 import generateUID from '../../generateUID'
+import {TierEnum} from './Invoice'
+
+export type OrgUserRole = 'BILLING_LEADER'
 interface Input {
   orgId: string
   userId: string

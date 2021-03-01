@@ -6,8 +6,8 @@ import {
   GraphQLObjectType,
   GraphQLString
 } from 'graphql'
-import {ThreadSourceEnum} from '~/__generated__/AddCommentMutation.graphql'
 import connectionDefinitions from '../connectionDefinitions'
+import {ThreadSourceEnum} from './ThreadSource'
 import {GQLContext} from '../graphql'
 import AgendaItem from './AgendaItem'
 import GraphQLISO8601Type from './GraphQLISO8601Type'

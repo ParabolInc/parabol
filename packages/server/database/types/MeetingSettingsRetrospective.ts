@@ -1,5 +1,5 @@
 import {MeetingSettingsThreshold} from '~/types/constEnums'
-import {NewMeetingPhaseTypeEnum} from '~/__generated__/ActionMeeting_meeting.graphql'
+import {NewMeetingPhaseTypeEnum} from './GenericMeetingPhase'
 import MeetingSettings from './MeetingSettings'
 
 interface Input {

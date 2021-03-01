@@ -1,6 +1,7 @@
-import {MeetingTypeEnum} from '~/__generated__/NewMeeting_viewer.graphql'
-import {SharingScopeEnum} from '~/__generated__/OrganizationSubscription.graphql'
 import generateUID from '../../generateUID'
+import {MeetingTypeEnum} from './Meeting'
+
+export type SharingScopeEnum = 'ORGANIZATION' | 'PUBLIC' | 'TEAM'
 
 interface Input {
   name: string
