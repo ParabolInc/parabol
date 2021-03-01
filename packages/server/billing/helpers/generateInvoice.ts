@@ -12,13 +12,8 @@ import QuantityChangeLineItem from '../../database/types/QuantityChangeLineItem'
 import db from '../../db'
 import {fromEpochSeconds} from '../../utils/epochTime'
 import StripeManager from '../../utils/StripeManager'
-
-type InvoiceLineItemEnum =
-  | 'ADDED_USERS'
-  | 'INACTIVITY_ADJUSTMENTS'
-  | 'OTHER_ADJUSTMENTS'
-  | 'REMOVED_USERS'
-type InvoiceStatusEnum = 'FAILED' | 'PAID' | 'PENDING' | 'UPCOMING'
+import {InvoiceStatusEnum} from '../../database/types/Invoice'
+import {InvoiceLineItemEnum} from '../../database/types/InvoiceLineItem'
 
 interface InvoicesByStartTime {
   [start: string]: {

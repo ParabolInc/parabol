@@ -1,6 +1,20 @@
-import {NewMeetingPhaseTypeEnum} from '~/__generated__/ActionMeeting_meeting.graphql'
 import generateUID from '../../generateUID'
 import GenericMeetingStage from './GenericMeetingStage'
+
+export type NewMeetingPhaseTypeEnum =
+  | 'ESTIMATE'
+  | 'SCOPE'
+  | 'SUMMARY'
+  | 'agendaitems'
+  | 'checkin'
+  | 'discuss'
+  | 'firstcall'
+  | 'group'
+  | 'lastcall'
+  | 'lobby'
+  | 'reflect'
+  | 'updates'
+  | 'vote'
 
 export default class GenericMeetingPhase {
   id = generateUID()

@@ -1,5 +1,5 @@
 import InvoiceLineItem from './InvoiceLineItem'
-import {InvoiceLineItemEnum} from '~/__generated__/InvoiceLineItem_item.graphql'
+import {InvoiceLineItemEnum} from './InvoiceLineItem'
 
 interface Input {
   amount: number

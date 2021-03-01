@@ -1,6 +1,7 @@
-import {MeetingTypeEnum} from '~/__generated__/NewMeeting_viewer.graphql'
 import generateUID from '../../generateUID'
 import GenericMeetingPhase from './GenericMeetingPhase'
+
+export type MeetingTypeEnum = 'poker' | 'retrospective' | 'action'
 
 interface Input {
   teamId: string

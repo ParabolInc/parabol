@@ -1,6 +1,11 @@
-import {InvoiceLineItemEnum} from '~/__generated__/InvoiceLineItem_item.graphql'
 import generateUID from '../../generateUID'
 import InvoiceLineItemDetail from './InvoiceLineItemDetail'
+
+export type InvoiceLineItemEnum =
+  | 'ADDED_USERS'
+  | 'INACTIVITY_ADJUSTMENTS'
+  | 'OTHER_ADJUSTMENTS'
+  | 'REMOVED_USERS'
 
 interface Input {
   id?: string
