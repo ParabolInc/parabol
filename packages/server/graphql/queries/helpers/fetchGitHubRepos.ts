@@ -1,8 +1,7 @@
-import getRethink from '../../../database/rethinkDriver'
-import GitHubServerManager from '../../../utils/GitHubServerManager'
 import {Omit} from 'parabol-client/types/generics'
 import {ISuggestedIntegrationGitHub} from 'parabol-client/types/graphql'
-import {GITHUB} from 'parabol-client/utils/constants'
+import GitHubServerManager from '../../../utils/GitHubServerManager'
+import {DataLoaderWorker} from '../../graphql'
 // import {GetReposQueryData} from 'parabol-client/utils/githubQueries/getRepos.graphql'
 
 namespace GetReposQueryData {
@@ -41,15 +40,8 @@ const getUniqueRepos = (
   return repos
 }
 
-const fetchGitHubRepos = async (teamId: string, userId: string) => {
-  const r = await getRethink()
-  const auth = await r
-    .table('Provider')
-    .getAll(teamId, {index: 'teamId'})
-    .filter({service: GITHUB, userId, isActive: true})
-    .nth(0)
-    .default(null)
-    .run()
+const fetchGitHubRepos = async (teamId: string, userId: string, dataLoader: DataLoaderWorker) => {
+  const auth = await dataLoader.get('githubAuth').load({teamId, userId})
   if (!auth) return []
   const {accessToken} = auth
   const manager = new GitHubServerManager(accessToken)

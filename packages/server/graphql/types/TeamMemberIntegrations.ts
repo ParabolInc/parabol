@@ -1,11 +1,9 @@
 import {GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql'
-import getRethink from '../../database/rethinkDriver'
 import {isTeamMember} from '../../utils/authorization'
 import {GQLContext} from '../graphql'
 import AtlassianIntegration from './AtlassianIntegration'
 import GitHubIntegration from './GitHubIntegration'
 import SlackIntegration from './SlackIntegration'
-
 const TeamMemberIntegrations = new GraphQLObjectType<any, GQLContext>({
   name: 'TeamMemberIntegrations',
   description: 'All the available integrations available for this team member',
@@ -29,16 +27,9 @@ const TeamMemberIntegrations = new GraphQLObjectType<any, GQLContext>({
     github: {
       type: GitHubIntegration,
       description: 'All things associated with a GitHub integration for a team member',
-      resolve: async ({teamId, userId}, _args, {authToken}) => {
+      resolve: async ({teamId, userId}, _args, {authToken, dataLoader}) => {
         if (!isTeamMember(authToken, teamId)) return null
-        const r = await getRethink()
-        return r
-          .table('Provider')
-          .getAll(teamId, {index: 'teamId'})
-          .filter({service: 'GitHubIntegration', isActive: true, userId})
-          .nth(0)
-          .default(null)
-          .run()
+        return dataLoader.get('githubAuth').load({teamId, userId})
       }
     },
     slack: {
