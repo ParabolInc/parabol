@@ -1,5 +1,4 @@
 import {GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql'
-import getGitHubAuthByUserIdTeamId from '../../postgres/queries/getGitHubAuthByUserIdTeamId'
 import {isTeamMember} from '../../utils/authorization'
 import {GQLContext} from '../graphql'
 import AtlassianIntegration from './AtlassianIntegration'
@@ -28,9 +27,9 @@ const TeamMemberIntegrations = new GraphQLObjectType<any, GQLContext>({
     github: {
       type: GitHubIntegration,
       description: 'All things associated with a GitHub integration for a team member',
-      resolve: async ({teamId, userId}, _args, {authToken}) => {
+      resolve: async ({teamId, userId}, _args, {authToken, dataLoader}) => {
         if (!isTeamMember(authToken, teamId)) return null
-        return getGitHubAuthByUserIdTeamId(userId, teamId)
+        return dataLoader.get('gitHubAuth').load({teamId, userId})
       }
     },
     slack: {

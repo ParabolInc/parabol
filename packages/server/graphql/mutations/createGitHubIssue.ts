@@ -3,7 +3,6 @@ import {stateToMarkdown} from 'draft-js-export-markdown'
 import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {ICreateGitHubIssueOnMutationArguments} from 'parabol-client/types/graphql'
-import {GITHUB} from 'parabol-client/utils/constants'
 import getRethink from '../../database/rethinkDriver'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import GitHubServerManager from '../../utils/GitHubServerManager'
@@ -66,14 +65,10 @@ export default {
 
     // RESOLUTION
     const {userId, content: rawContentStr, meetingId} = task
-    const providers = await r
-      .table('Provider')
-      .getAll(teamId, {index: 'teamId'})
-      .filter({service: GITHUB, isActive: true})
-      .run()
-
-    const viewerAuth = providers.find((provider) => provider.userId === viewerId)
-    const assigneeAuth = providers.find((provider) => provider.userId === userId)
+    const [viewerAuth, assigneeAuth] = await dataLoader.get('gitHubAuth').loadMany([
+      {teamId, userId: viewerId},
+      {teamId, userId}
+    ])
 
     if (!assigneeAuth || !assigneeAuth.isActive) {
       return standardError(
