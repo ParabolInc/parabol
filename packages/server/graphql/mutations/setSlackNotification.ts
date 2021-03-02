@@ -9,7 +9,7 @@ import SlackNotification, {
   SlackNotificationEventEnum as TSlackNotificationEventEnum
 } from '../../database/types/SlackNotification'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import SlackNotificationEventTypeEnum from '../types/SlackNotificationEventTypeEnum'
+import SlackNotificationEventEnum from '../types/SlackNotificationEventEnum'
 
 type SetSlackNotificationMutationVariables = {
   slackNotificationEvents: Array<TSlackNotificationEventEnum>
@@ -24,7 +24,7 @@ export default {
       type: GraphQLID
     },
     slackNotificationEvents: {
-      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(SlackNotificationEventTypeEnum)))
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(SlackNotificationEventEnum)))
     },
     teamId: {
       type: new GraphQLNonNull(GraphQLID)
