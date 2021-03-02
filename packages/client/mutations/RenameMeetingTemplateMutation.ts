@@ -1,7 +1,7 @@
 import {commitMutation} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import {StandardMutation} from '../types/relayMutations'
-import {RenameMeetingTemplateMutation} from '~/__generated__/RenameMeetingTemplateMutation.graphql'
+import {RenameMeetingTemplateMutation as TRenameMeetingTemplateMutation} from '~/__generated__/RenameMeetingTemplateMutation.graphql'
 
 graphql`
   fragment RenameMeetingTemplateMutation_meetingTemplate on RenameMeetingTemplatePayload {
@@ -19,12 +19,12 @@ const mutation = graphql`
   }
 `
 
-const RenameMeetingTemplateMutation: StandardMutation<RenameMeetingTemplateMutation> = (
+const RenameMeetingTemplateMutation: StandardMutation<TRenameMeetingTemplateMutation> = (
   atmosphere,
   variables,
   {onError, onCompleted}
 ) => {
-  return commitMutation<RenameMeetingTemplateMutation>(atmosphere, {
+  return commitMutation<TRenameMeetingTemplateMutation>(atmosphere, {
     mutation,
     variables,
     onCompleted,

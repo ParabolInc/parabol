@@ -1,7 +1,7 @@
 import {commitMutation} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import {StandardMutation} from '../types/relayMutations'
-import {RenameReflectTemplatePromptMutation} from '~/__generated__/RenameReflectTemplatePromptMutation.graphql'
+import {RenameReflectTemplatePromptMutation as TRenameReflectTemplatePromptMutation} from '~/__generated__/RenameReflectTemplatePromptMutation.graphql'
 
 graphql`
   fragment RenameReflectTemplatePromptMutation_team on RenameReflectTemplatePromptPayload {
@@ -22,12 +22,12 @@ const mutation = graphql`
   }
 `
 
-const RenameReflectTemplatePromptMutation: StandardMutation<RenameReflectTemplatePromptMutation> = (
+const RenameReflectTemplatePromptMutation: StandardMutation<TRenameReflectTemplatePromptMutation> = (
   atmosphere,
   variables,
   {onError, onCompleted}
 ) => {
-  return commitMutation(atmosphere, {
+  return commitMutation<TRenameReflectTemplatePromptMutation>(atmosphere, {
     mutation,
     variables,
     onCompleted,
