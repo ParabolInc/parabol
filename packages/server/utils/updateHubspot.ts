@@ -264,7 +264,7 @@ const upsertHubspotContact = async (
   )
   if (!String(res.status).startsWith('2')) {
     sendToSentry(new Error('HS upsertContact Fail'), {tags: {email, body}})
-    if (retryCount >= 3) return upsertHubspotContact(email, propertiesObj, retryCount + 1)
+    if (retryCount < 3) return upsertHubspotContact(email, propertiesObj, retryCount + 1)
   }
 }
 
