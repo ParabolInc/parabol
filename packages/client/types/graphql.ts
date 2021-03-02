@@ -3788,18 +3788,6 @@ export interface IReflectPhase {
   stages: Array<IGenericMeetingStage>;
 
   /**
-   * foreign key. use focusedPhaseItem
-   * @deprecated "use focusedPromptId"
-   */
-  focusedPhaseItemId: string | null;
-
-  /**
-   * the phase item that the facilitator wants the group to focus on
-   * @deprecated "use focusedPrompt"
-   */
-  focusedPhaseItem: IReflectPrompt | null;
-
-  /**
    * foreign key. use focusedPrompt
    */
   focusedPromptId: string | null;
@@ -4182,7 +4170,7 @@ export interface IRetroDiscussStage {
 }
 
 /**
- * A reflection created during the reflect phase of a retrospective
+ * A reflection group created during the group phase of a retrospective
  */
 export interface IRetroReflectionGroup {
   __typename: 'RetroReflectionGroup';
@@ -4226,11 +4214,6 @@ export interface IRetroReflectionGroup {
    * The retrospective meeting this reflection was created in
    */
   meeting: IRetrospectiveMeeting;
-
-  /**
-   * @deprecated "use prompt"
-   */
-  phaseItem: IReflectPrompt;
   prompt: IReflectPrompt;
 
   /**
@@ -4240,18 +4223,12 @@ export interface IRetroReflectionGroup {
   reflections: Array<IRetroReflection>;
 
   /**
-   * The foreign key to link a reflection group to its phaseItem. Immutable.
-   * @deprecated "use promptId"
-   */
-  retroPhaseItemId: string;
-
-  /**
    * Our auto-suggested title, to be compared to the actual title for analytics
    */
   smartTitle: string | null;
 
   /**
-   * The sort order of the reflection group in the phase item
+   * The sort order of the reflection group
    */
   sortOrder: number;
 
@@ -4372,26 +4349,15 @@ export interface IRetroReflection {
   meeting: IRetrospectiveMeeting;
 
   /**
-   * @deprecated "use prompt"
-   */
-  phaseItem: IReflectPrompt;
-
-  /**
    * The plaintext version of content
    */
   plaintextContent: string;
 
   /**
-   * The foreign key to link a reflection to its phaseItem. Immutable. For sorting, use phase item on the group.
+   * The foreign key to link a reflection to its prompt. Immutable. For sorting, use prompt on the group.
    */
   promptId: string;
   prompt: IReflectPrompt;
-
-  /**
-   * The foreign key to link a reflection to its phaseItem. Immutable. For sorting, use phase item on the group.
-   * @deprecated "use promptId"
-   */
-  retroPhaseItemId: string;
 
   /**
    * The foreign key to link a reflection to its group
@@ -5124,115 +5090,6 @@ export interface INotifyPromoteToOrgLeader {
    * *The userId that should see this notification
    */
   userId: string;
-}
-
-/**
- * A team-specific retro phase. Usually 3 or 4 exist per team, eg Good/Bad/Change, 4Ls, etc.
- */
-export interface IRetroPhaseItem {
-  __typename: 'RetroPhaseItem';
-
-  /**
-   * shortid
-   */
-  id: string;
-  createdAt: any;
-
-  /**
-   * @deprecated "Field has been deprecated because type is guranteed to be `retroPhaseItem`"
-   */
-  phaseItemType: CustomPhaseItemTypeEnum | null;
-
-  /**
-   * true if the phase item is currently used by the team, else false
-   */
-  isActive: boolean | null;
-
-  /**
-   * foreign key. use the team field
-   */
-  teamId: string;
-
-  /**
-   * The team that owns this reflectPrompt
-   */
-  team: ITeam | null;
-  updatedAt: any;
-
-  /**
-   * the order of the items in the template
-   */
-  sortOrder: number;
-
-  /**
-   * FK for template
-   */
-  templateId: string;
-
-  /**
-   * The template that this prompt belongs to
-   */
-  template: IReflectTemplate;
-
-  /**
-   * The title of the phase of the retrospective. Often a short version of the question
-   */
-  title: string;
-
-  /**
-   * The question to answer during the phase of the retrospective (eg What went well?)
-   */
-  question: string;
-
-  /**
-   * The description to the question for further context. A long version of the question.
-   */
-  description: string;
-
-  /**
-   * The color used to visually group a phase item.
-   */
-  groupColor: string;
-}
-
-export type CustomPhaseItem = IRetroPhaseItem;
-
-export interface ICustomPhaseItem {
-  __typename: 'CustomPhaseItem';
-
-  /**
-   * shortid
-   */
-  id: string;
-  createdAt: any;
-
-  /**
-   * @deprecated "Field has been deprecated because type is guranteed to be `retroPhaseItem`"
-   */
-  phaseItemType: CustomPhaseItemTypeEnum | null;
-
-  /**
-   * true if the phase item is currently used by the team, else false
-   */
-  isActive: boolean | null;
-
-  /**
-   * foreign key. use the team field
-   */
-  teamId: string;
-
-  /**
-   * The team that owns this reflectPrompt
-   */
-  team: ITeam | null;
-  updatedAt: any;
-}
-
-/**
- * The type of phase item
- */
-export const enum CustomPhaseItemTypeEnum {
-  retroPhaseItem = 'retroPhaseItem'
 }
 
 /**
@@ -9079,11 +8936,6 @@ export interface ICreateReflectionInput {
    * The prompt the reflection belongs to
    */
   promptId?: string | null;
-
-  /**
-   * The phase item the reflection belongs to
-   */
-  retroPhaseItemId?: string | null;
   sortOrder: number;
 }
 

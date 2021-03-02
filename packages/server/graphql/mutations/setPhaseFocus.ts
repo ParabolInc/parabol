@@ -53,7 +53,7 @@ const setPhaseFocus = {
 
     // RESOLUTION
     // mutative
-    phase.focusedPhaseItemId = focusedPromptId || null
+    phase.focusedPromptId = focusedPromptId || null
     await r
       .table('NewMeeting')
       .get(meetingId)
