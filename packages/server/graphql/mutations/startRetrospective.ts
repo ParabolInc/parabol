@@ -1,6 +1,5 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import {StartRetrospectiveMutationVariables} from '~/__generated__/StartRetrospectiveMutation.graphql'
 import getRethink from '../../database/rethinkDriver'
 import {MeetingTypeEnum} from '../../database/types/Meeting'
 import MeetingRetrospective from '../../database/types/MeetingRetrospective'
@@ -27,7 +26,7 @@ export default {
   },
   async resolve(
     _source,
-    {teamId}: StartRetrospectiveMutationVariables,
+    {teamId}: {teamId: string},
     {authToken, socketId: mutatorId, dataLoader}: GQLContext
   ) {
     const r = await getRethink()

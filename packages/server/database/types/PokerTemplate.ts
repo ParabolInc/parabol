@@ -1,5 +1,4 @@
-import {SharingScopeEnum} from '~/__generated__/OrganizationSubscription.graphql'
-import MeetingTemplate from './MeetingTemplate'
+import MeetingTemplate, {SharingScopeEnum} from './MeetingTemplate'
 
 interface Input {
   name: string

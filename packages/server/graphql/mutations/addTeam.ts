@@ -1,7 +1,6 @@
 import {GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel, Threshold} from 'parabol-client/types/constEnums'
 import {SuggestedActionTypeEnum} from '../../../client/types/constEnums'
-import {TierEnum} from '~/__generated__/NewMeeting_viewer.graphql'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import getRethink from '../../database/rethinkDriver'
 import AuthToken from '../../database/types/AuthToken'
@@ -17,6 +16,7 @@ import AddTeamPayload from '../types/AddTeamPayload'
 import NewTeamInput from '../types/NewTeamInput'
 import addTeamValidation from './helpers/addTeamValidation'
 import createTeamAndLeader from './helpers/createTeamAndLeader'
+import {TierEnum} from '../../database/types/Invoice'
 
 export default {
   type: new GraphQLNonNull(AddTeamPayload),

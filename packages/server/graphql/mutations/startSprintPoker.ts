@@ -1,6 +1,5 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import {StartSprintPokerMutationVariables} from '~/__generated__/StartSprintPokerMutation.graphql'
 import getRethink from '../../database/rethinkDriver'
 import {MeetingTypeEnum} from '../../database/types/Meeting'
 import MeetingPoker from '../../database/types/MeetingPoker'
@@ -66,7 +65,7 @@ export default {
   },
   async resolve(
     _source,
-    {teamId}: StartSprintPokerMutationVariables,
+    {teamId}: {teamId: string},
     {authToken, socketId: mutatorId, dataLoader}: GQLContext
   ) {
     const r = await getRethink()

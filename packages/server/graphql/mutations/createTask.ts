@@ -1,12 +1,11 @@
 import {GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import {CreateTaskMutationVariables} from '~/__generated__/CreateTaskMutation.graphql'
 import getTypeFromEntityMap from 'parabol-client/utils/draftjs/getTypeFromEntityMap'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import normalizeRawDraftJS from 'parabol-client/validation/normalizeRawDraftJS'
 import getRethink from '../../database/rethinkDriver'
 import NotificationTaskInvolves from '../../database/types/NotificationTaskInvolves'
-import Task from '../../database/types/Task'
+import Task, {TaskStatusEnum} from '../../database/types/Task'
 import TeamMember from '../../database/types/TeamMember'
 import generateUID from '../../generateUID'
 import {getUserId, isTeamMember} from '../../utils/authorization'
@@ -166,6 +165,22 @@ const handleAddTaskNotifications = async (
   })
 }
 
+export type CreateTaskInput = {
+  newTask: {
+    content?: string | null
+    plaintextContent?: string | null
+    meetingId?: string | null
+    threadId?: string | null
+    threadSource?: ThreadSourceEnum | null
+    threadSortOrder?: number | null
+    threadParentId?: string | null
+    sortOrder?: number | null
+    status: TaskStatusEnum
+    teamId: string
+    userId?: string | null
+  }
+}
+
 export default {
   type: GraphQLNonNull(CreateTaskPayload),
   description: 'Create a new task, triggering a CreateCard for other viewers',
@@ -181,7 +196,7 @@ export default {
   },
   async resolve(
     _source,
-    {newTask}: CreateTaskMutationVariables,
+    {newTask}: CreateTaskInput,
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) {
     const r = await getRethink()
