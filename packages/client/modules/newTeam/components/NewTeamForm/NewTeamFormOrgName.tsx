@@ -1,4 +1,4 @@
-import React, {ChangeEvent, FocusEvent} from 'react'
+import React, {ChangeEvent} from 'react'
 import BasicInput from '../../../../components/InputField/BasicInput'
 import Radio from '../../../../components/Radio/Radio'
 import {NewTeamFieldBlock} from './NewTeamForm'
@@ -9,13 +9,10 @@ interface Props {
   error: string | undefined
   isNewOrg: boolean
   onTypeChange: (e: ChangeEvent<HTMLInputElement>) => void
-
   onChange(e: ChangeEvent<HTMLInputElement>): void
-
   orgName: string
   placeholder: string
-
-  onBlur(e: FocusEvent<HTMLInputElement>): void
+  onBlur(): void
 }
 
 const NewTeamFormOrgName = (props: Props) => {

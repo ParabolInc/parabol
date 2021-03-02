@@ -1,20 +1,15 @@
 import {NewTeamForm_organizations} from '../../../../__generated__/NewTeamForm_organizations.graphql'
-import React, {useEffect, useState, ChangeEvent, FormEvent, FocusEvent} from 'react'
+import React, {useState, ChangeEvent, FormEvent} from 'react'
 import styled from '@emotion/styled'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import {RouteComponentProps, withRouter} from 'react-router-dom'
 import FieldLabel from '../../../../components/FieldLabel/FieldLabel'
 import Panel from '../../../../components/Panel/Panel'
 import PrimaryButton from '../../../../components/PrimaryButton'
 import Radio from '../../../../components/Radio/Radio'
-import withAtmosphere, {
-  WithAtmosphereProps
-} from '../../../../decorators/withAtmosphere/withAtmosphere'
 import NewTeamOrgPicker from '../../../team/components/NewTeamOrgPicker'
 import AddOrgMutation from '../../../../mutations/AddOrgMutation'
 import AddTeamMutation from '../../../../mutations/AddTeamMutation'
-import withMutationProps, {WithMutationProps} from '../../../../utils/relay/withMutationProps'
 import Legitity from '../../../../validation/Legitity'
 import teamNameValidation from '../../../../validation/teamNameValidation'
 import NewTeamFormBlock from './NewTeamFormBlock'
@@ -26,6 +21,7 @@ import linkify from '../../../../utils/linkify'
 import useMutationProps from '../../../../hooks/useMutationProps'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useRouter from '../../../../hooks/useRouter'
+import useForm from '../../../../hooks/useForm'
 
 const StyledForm = styled('form')({
   margin: 0,
@@ -67,40 +63,15 @@ const StyledButton = styled(PrimaryButton)({
 
 const controlSize = 'medium'
 
-interface Props extends WithMutationProps, WithAtmosphereProps, RouteComponentProps<{}> {
+interface Props {
   isInitiallyNewOrg: boolean
   organizations: NewTeamForm_organizations
 }
-
-interface Field {
-  dirty?: boolean
-  error: string | undefined
-  value: string
-}
-
-interface Fields {
-  orgName: Field
-  teamName: Field
-}
-
-type FieldName = 'orgName' | 'teamName'
-const DEFAULT_FIELD = {value: '', error: undefined, dirty: false}
 
 const NewTeamForm = (props: Props) => {
   const {isInitiallyNewOrg, organizations} = props
   const [isNewOrg, setIsNewOrg] = useState(isInitiallyNewOrg)
   const [orgId, setOrgId] = useState('')
-  const [fields, setFields] = useState<Fields>({
-    orgName: {...DEFAULT_FIELD},
-    teamName: {...DEFAULT_FIELD}
-  })
-  const {submitting, onError, error, onCompleted, submitMutation} = useMutationProps()
-  const atmosphere = useAtmosphere()
-  const {history} = useRouter()
-
-  const updateOrgId = (orgId: string) => {
-    setOrgId(orgId)
-  }
 
   const validateOrgName = () => {
     const rawOrgName = fields.orgName.value
@@ -123,99 +94,50 @@ const NewTeamForm = (props: Props) => {
     }
     return teamNameValidation(rawTeamName, teamNames)
   }
-
-  const validate = (name: FieldName) => {
-    const validators = {
-      teamName: validateTeamName,
-      orgName: validateOrgName
+  const {fields, onChange, setDirtyField, validateField} = useForm({
+    orgName: {
+      getDefault: () => '',
+      validate: validateOrgName
+    },
+    teamName: {
+      getDefault: () => '',
+      validate: validateTeamName
     }
-    const res: Legitity = validators[name]()
-    const field = fields[name]
-    if (res.error !== field.error) {
-      setFields({
-        ...fields,
-        [name]: {
-          ...field,
-          error: res.error
-        }
-      })
-    }
-    return res
+  })
+
+  const {submitting, onError, error, onCompleted, submitMutation} = useMutationProps()
+  const atmosphere = useAtmosphere()
+  const {history} = useRouter()
+
+  const updateOrgId = (orgId: string) => {
+    setOrgId(orgId)
   }
 
-  useEffect(() => {
-    validate('orgName')
-  }, [fields.orgName])
-
-  useEffect(() => {
-    validate('teamName')
-  }, [fields.teamName])
-
-  const handleBlur = (e: FocusEvent<HTMLTextAreaElement | HTMLInputElement>) => {
-    setDirty(e.target.name as FieldName)
-  }
-
-  const setDirty = (name: FieldName) => {
-    const field = fields[name]
-    if (!field.dirty) {
-      setFields({
-        ...fields,
-        [name]: {
-          ...field,
-          dirty: true
-        }
-      })
-    }
-  }
-
-  const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const {value} = e.target
-    const name = e.target.name as FieldName
-    const field = fields[name]
-    setFields({
-      ...fields,
-      [name]: {
-        ...field,
-        value
-      }
-    })
-  }
+  const handleBlur = () => setDirtyField()
 
   const handleIsNewOrgChange = (e: ChangeEvent<HTMLInputElement>) => {
     const isNewOrg = e.target.value === 'true'
     setIsNewOrg(isNewOrg)
-    setFields({
-      ...fields,
-      orgName: {
-        ...fields.orgName,
-        dirty: false,
-        error: undefined
-      }
-    })
   }
 
   const onSubmit = (e: FormEvent) => {
     e.preventDefault()
     if (submitting) return
-    const fieldNames: FieldName[] = ['teamName']
-    fieldNames.forEach(setDirty)
-    const fieldRes = fieldNames.map(validate)
-    const hasError = fieldRes.reduce((err: boolean, val) => err || !!val.error, false)
-    if (hasError) return
-    const [teamRes] = fieldRes
+    const {error: teamErr, value: teamName} = validateField('teamName')
+    if (teamErr) return
     if (isNewOrg) {
-      setDirty('orgName')
-      const {error, value: orgName} = validate('orgName')
-      if (error) return
+      setDirtyField('orgName')
+      const {error: orgErr, value: orgName} = validateField('orgName')
+      if (orgErr) return
       const newTeam = {
-        name: teamRes.value
+        name: teamName
       }
       const variables = {newTeam, orgName}
       submitMutation()
       AddOrgMutation(atmosphere, variables, {history, onError, onCompleted})
     } else {
       const newTeam = {
-        name: teamRes.value,
+        name: teamName,
         orgId
       }
       submitMutation()
@@ -252,7 +174,7 @@ const NewTeamForm = (props: Props) => {
           </NewTeamFormBlock>
           <NewTeamFormOrgName
             isNewOrg={isNewOrg}
-            onChange={handleInputChange}
+            onChange={onChange}
             onTypeChange={handleIsNewOrgChange}
             orgName={fields.orgName.value}
             dirty={!!fields.orgName.dirty}
@@ -263,7 +185,7 @@ const NewTeamForm = (props: Props) => {
           <NewTeamFormTeamName
             dirty={!!fields.teamName.dirty}
             error={fields.teamName.error}
-            onChange={handleInputChange}
+            onChange={onChange}
             teamName={fields.teamName.value}
             onBlur={handleBlur}
           />
@@ -278,7 +200,7 @@ const NewTeamForm = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(withAtmosphere(withRouter(withMutationProps(NewTeamForm))), {
+export default createFragmentContainer(NewTeamForm, {
   organizations: graphql`
     fragment NewTeamForm_organizations on Organization @relay(plural: true) {
       ...NewTeamOrgPicker_organizations

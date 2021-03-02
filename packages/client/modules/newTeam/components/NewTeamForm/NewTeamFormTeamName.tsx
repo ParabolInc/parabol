@@ -1,4 +1,4 @@
-import React, {ChangeEvent, FocusEvent} from 'react'
+import React, {ChangeEvent} from 'react'
 import styled from '@emotion/styled'
 import FieldLabel from '../../../../components/FieldLabel/FieldLabel'
 import BasicInput from '../../../../components/InputField/BasicInput'
@@ -21,7 +21,7 @@ interface Props {
 
   teamName: string
 
-  onBlur(e: FocusEvent<HTMLInputElement>): void
+  onBlur(): void
 }
 
 const NewTeamFormTeamName = (props: Props) => {
