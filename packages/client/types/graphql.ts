@@ -8076,7 +8076,7 @@ export interface ISetStageTimerOnMutationArguments {
 
 export interface ISetSlackNotificationOnMutationArguments {
   slackChannelId?: string | null;
-  slackNotificationEvents: Array<SlackNotificationEventTypeEnum>;
+  slackNotificationEvents: Array<SlackNotificationEventEnum>;
   teamId: string;
 }
 

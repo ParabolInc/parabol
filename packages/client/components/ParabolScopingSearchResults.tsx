@@ -13,7 +13,6 @@ import NewIntegrationRecordButton from './NewIntegrationRecordButton'
 import dndNoise from '~/utils/dndNoise'
 import CreateTaskMutation from '~/mutations/CreateTaskMutation'
 import useMutationProps from '~/hooks/useMutationProps'
-import {CreateTaskInput} from '../__generated__/CreateTaskMutation.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 
 const ResultScroller = styled('div')({
@@ -49,7 +48,7 @@ const ParabolScopingSearchResults = (props: Props) => {
       meetingId,
       userId: viewerId,
       teamId
-    } as CreateTaskInput
+    } as const
     CreateTaskMutation(atmosphere, {newTask}, {onError, onCompleted})
   }
 
