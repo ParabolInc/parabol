@@ -5,7 +5,7 @@ import {DataLoaderWorker} from '../graphql/graphql'
 import AtlassianServerManager from './AtlassianServerManager'
 
 const ensureJiraDimensionField = async (
-  requiredMappers: {cloudId: string; projectKey: string; issueKey: string; dimensionId: string}[],
+  requiredMappers: {cloudId: string; projectKey: string; issueKey: string; dimensionName: string}[],
   teamId: string,
   userId: string,
   dataLoader: DataLoaderWorker
@@ -13,12 +13,12 @@ const ensureJiraDimensionField = async (
   if (requiredMappers.length === 0) return
   const team = await dataLoader.get('teams').load(teamId)
   const currentMappers = team.jiraDimensionFields || []
-  const missingMappers = requiredMappers.filter(({cloudId, projectKey, dimensionId}) => {
+  const missingMappers = requiredMappers.filter(({cloudId, projectKey, dimensionName}) => {
     return !currentMappers.find((curMapper) => {
       return (
         curMapper.cloudId === cloudId &&
         curMapper.projectKey === projectKey &&
-        curMapper.dimensionId === dimensionId
+        curMapper.dimensionName === dimensionName
       )
     })
   })
@@ -32,14 +32,14 @@ const ensureJiraDimensionField = async (
   const manager = new AtlassianServerManager(accessToken)
   const newJiraDimensionFields = await Promise.all(
     missingMappers.map(async (mapper) => {
-      const {cloudId, projectKey, issueKey, dimensionId} = mapper
+      const {cloudId, projectKey, issueKey, dimensionName} = mapper
       const defaultField = await manager.getFirstValidJiraField(cloudId, fieldNamesToTry, issueKey)
       if (!defaultField) return null
       const {id: fieldId, name: fieldName, schema} = defaultField
       const fieldType = schema.type as 'string' | 'number'
       return new JiraDimensionField({
         cloudId,
-        dimensionId,
+        dimensionName,
         fieldId,
         fieldName,
         fieldType,
@@ -54,7 +54,9 @@ const ensureJiraDimensionField = async (
     .table('Team')
     .get(teamId)
     .update((team) => ({
-      jiraDimensionFields: team('jiraDimensionFields').default([]).union(fieldsToAdd)
+      jiraDimensionFields: team('jiraDimensionFields')
+        .default([])
+        .union(fieldsToAdd)
     }))
     .run()
 }

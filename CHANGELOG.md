@@ -5,6 +5,19 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.1.0 2021-Feb-25
+### Added
+- Robust message queue protocol (#4386)
+- Freeze poker templates for meeting duration (#4695)
+
+### Changed
+- Meeting avatars are populated from MeetingMembers (#4652)
+
+### Fixed
+- Google oauth deleted account recreation email missing (#4654)
+- Make SAML Issuer and AssertionConsumerServiceURL dynamic (#4679)
+- Add Scale Value button goes missing (#4694)
+
 ## 6.0.0 2021-Feb-18
 
 ### Fixes

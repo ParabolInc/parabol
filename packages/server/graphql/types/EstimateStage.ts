@@ -2,6 +2,7 @@ import {
   GraphQLBoolean,
   GraphQLFloat,
   GraphQLID,
+  GraphQLInt,
   GraphQLList,
   GraphQLNonNull,
   GraphQLObjectType,
@@ -10,7 +11,9 @@ import {
 import {SprintPokerDefaults} from '~/types/constEnums'
 import getJiraCloudIdAndKey from '../../../client/utils/getJiraCloudIdAndKey'
 import {NewMeetingPhaseTypeEnum} from '../../database/types/GenericMeetingPhase'
+import MeetingPoker from '../../database/types/MeetingPoker'
 import db from '../../db'
+import getTemplateRefById from '../../postgres/queries/getTemplateRefById'
 import getRedis from '../../utils/getRedis'
 import {GQLContext} from '../graphql'
 import EstimateUserScore from './EstimateUserScore'
@@ -18,7 +21,7 @@ import NewMeetingStage, {newMeetingStageFields} from './NewMeetingStage'
 import ServiceField from './ServiceField'
 import Story from './Story'
 import TaskServiceEnum from './TaskServiceEnum'
-import TemplateDimension from './TemplateDimension'
+import TemplateDimensionRef from './TemplateDimensionRef'
 import User from './User'
 
 const EstimateStage = new GraphQLObjectType<any, GQLContext>({
@@ -46,14 +49,26 @@ const EstimateStage = new GraphQLObjectType<any, GQLContext>({
     serviceField: {
       type: GraphQLNonNull(ServiceField),
       description: 'The field name used by the service for this dimension',
-      resolve: async ({dimensionId, service, serviceTaskId, teamId}, _args, {dataLoader}) => {
+      resolve: async (
+        {dimensionRefIdx, meetingId, service, serviceTaskId, teamId},
+        _args,
+        {dataLoader}
+      ) => {
         if (service === 'jira') {
+          const [meeting, team] = await Promise.all([
+            dataLoader.get('newMeetings').load(meetingId),
+            dataLoader.get('teams').load(teamId)
+          ])
+          const {templateRefId} = meeting
+          const templateRef = await getTemplateRefById(templateRefId)
+          const {dimensions} = templateRef
+          const dimensionRef = dimensions[dimensionRefIdx]
+          const {name: dimensionName} = dimensionRef
           const [cloudId, , projectKey] = getJiraCloudIdAndKey(serviceTaskId)
-          const team = await dataLoader.get('teams').load(teamId)
           const jiraDimensionFields = team.jiraDimensionFields || []
           const existingDimensionField = jiraDimensionFields.find(
             (field) =>
-              field.dimensionId === dimensionId &&
+              field.dimensionName === dimensionName &&
               field.cloudId === cloudId &&
               field.projectKey === projectKey
           )
@@ -70,15 +85,25 @@ const EstimateStage = new GraphQLObjectType<any, GQLContext>({
       type: new GraphQLNonNull(GraphQLFloat),
       description: 'The sort order for reprioritizing discussion topics'
     },
-    dimensionId: {
-      type: GraphQLNonNull(GraphQLID),
-      description: 'the dimensionId that corresponds to this stage'
+    dimensionRefIdx: {
+      type: GraphQLNonNull(GraphQLInt),
+      description: 'The immutable index of the dimensionRef tied to this stage'
     },
-    dimension: {
-      type: GraphQLNonNull(TemplateDimension),
-      description: 'the dimension related to this stage by dimension id',
-      resolve: async ({dimensionId}, _args, {dataLoader}) => {
-        return dataLoader.get('templateDimensions').load(dimensionId)
+    dimensionRef: {
+      type: GraphQLNonNull(TemplateDimensionRef),
+      description: 'The immutable dimension linked to this stage',
+      resolve: async ({meetingId, dimensionRefIdx}, _args, {dataLoader}) => {
+        const meeting = await dataLoader.get('newMeetings').load(meetingId)
+        const {templateRefId} = meeting as MeetingPoker
+        const templateRef = await getTemplateRefById(templateRefId)
+        const {dimensions} = templateRef
+        const {name, scaleRefId} = dimensions[dimensionRefIdx]
+        return {
+          name,
+          scaleRefId,
+          dimensionRefIdx,
+          meetingId
+        }
       }
     },
     finalScore: {

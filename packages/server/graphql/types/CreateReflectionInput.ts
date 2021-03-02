@@ -20,11 +20,6 @@ const CreateReflectionInput = new GraphQLInputObjectType({
       type: GraphQLID,
       description: 'The prompt the reflection belongs to'
     },
-    retroPhaseItemId: {
-      type: GraphQLID,
-      deprecationReason: 'use promptId',
-      description: 'The phase item the reflection belongs to'
-    },
     sortOrder: {
       type: new GraphQLNonNull(GraphQLFloat)
     }

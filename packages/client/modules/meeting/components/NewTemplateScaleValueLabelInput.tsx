@@ -1,20 +1,19 @@
-import React, {FormEvent, useEffect, useRef, useState} from 'react'
-import graphql from 'babel-plugin-relay/macro'
 import styled from '@emotion/styled'
-import {PALETTE} from '~/styles/paletteV2'
+import graphql from 'babel-plugin-relay/macro'
+import React, {FormEvent, useEffect, useRef, useState} from 'react'
 import {createFragmentContainer} from 'react-relay'
-import useMutationProps from '~/hooks/useMutationProps'
 import useAtmosphere from '~/hooks/useAtmosphere'
+import useMutationProps from '~/hooks/useMutationProps'
+import {PALETTE} from '~/styles/paletteV2'
+import Icon from '../../../components/Icon'
+import useScrollIntoView from '../../../hooks/useScrollIntoVIew'
 import AddPokerTemplateScaleValueMutation from '../../../mutations/AddPokerTemplateScaleValueMutation'
+import palettePickerOptions from '../../../styles/palettePickerOptions'
+import {ICON_SIZE} from '../../../styles/typographyV2'
+import isSpecialPokerLabel from '../../../utils/isSpecialPokerLabel'
+import Legitity from '../../../validation/Legitity'
 import {NewTemplateScaleValueLabelInput_scale} from '../../../__generated__/NewTemplateScaleValueLabelInput_scale.graphql'
 import EditableTemplateScaleValueColor from './EditableTemplateScaleValueColor'
-import palettePickerOptions from '../../../styles/palettePickerOptions'
-import Icon from '../../../components/Icon'
-import {ICON_SIZE} from '../../../styles/typographyV2'
-import Legitity from '../../../validation/Legitity'
-import useEventCallback from '../../../hooks/useEventCallback'
-import useScrollIntoView from '../../../hooks/useScrollIntoVIew'
-import isSpecialPokerLabel from '../../../utils/isSpecialPokerLabel'
 
 const Form = styled('form')({
   width: '100%',
@@ -61,13 +60,19 @@ const RemoveScaleValueIcon = styled(Icon)({
   lineHeight: '24px',
   marginLeft: 'auto',
   padding: 0,
-  textAlign: 'center',
+  textAlign: 'center'
 })
 
 const predictNextLabel = (values: NewTemplateScaleValueLabelInput_scale['values']) => {
-  const existingLabels = values.map(({label}) => label).filter((label) => !isSpecialPokerLabel(label))
+  const existingLabels = values
+    .map(({label}) => label)
+    .filter((label) => !isSpecialPokerLabel(label))
   const potentialNextLabel = Number(existingLabels[existingLabels.length - 1]) + 1
-  const isNextLabelValid = !isNaN(potentialNextLabel) ? (potentialNextLabel >= 0 && potentialNextLabel < 100 && !existingLabels.includes(String(potentialNextLabel))) : false
+  const isNextLabelValid = !isNaN(potentialNextLabel)
+    ? potentialNextLabel >= 0 &&
+    potentialNextLabel < 100 &&
+    !existingLabels.includes(String(potentialNextLabel))
+    : false
   return isNextLabelValid ? potentialNextLabel.toString() : 'Enter a new scale value'
 }
 interface Props {
@@ -80,11 +85,13 @@ const NewTemplateScaleValueLabelInput = (props: Props) => {
   const {error, onError, onCompleted, submitMutation, submitting} = useMutationProps()
   const {closeAdding, scale} = props
   const {id: scaleId, values} = scale
-  const [newScaleValueLabel, setNewScaleValueLabel] = useState("")
-  const [scaleValueColor, setScaleValueColor] = useState("")
+  const [newScaleValueLabel, setNewScaleValueLabel] = useState('')
+  const [scaleValueColor, setScaleValueColor] = useState('')
   const isEmpty = !newScaleValueLabel
   useEffect(() => {
-    const pickedColors = values.filter(({label}) => !isSpecialPokerLabel(label)).map(({color}) => color)
+    const pickedColors = values
+      .filter(({label}) => !isSpecialPokerLabel(label))
+      .map(({color}) => color)
     const hexColors = palettePickerOptions.map(({hex}) => hex)
     const lastColor = pickedColors[pickedColors.length - 1] || PALETTE.PROMPT_GREEN
     const availableNewColor = hexColors.find((hex) => !pickedColors.includes(hex)) || lastColor
@@ -115,11 +122,20 @@ const NewTemplateScaleValueLabelInput = (props: Props) => {
     return res
   }
 
-  const handleKeyDown = useEventCallback((e: React.KeyboardEvent) => {
+  const handleBlur = (e: React.FocusEvent) => {
+    if (!isEmpty) {
+      handleCreateNewLabel(e)
+    }
+    closeAdding()
+  }
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Escape') {
+      e.preventDefault()
+      e.stopPropagation()
       closeAdding()
     }
-  })
+  }
 
   const handleCreateNewLabel = (e: FormEvent) => {
     e.preventDefault()
@@ -130,7 +146,7 @@ const NewTemplateScaleValueLabelInput = (props: Props) => {
       color: scaleValueColor,
       label: newScaleValueLabel
     }
-    setNewScaleValueLabel("")
+    setNewScaleValueLabel('')
     AddPokerTemplateScaleValueMutation(
       atmosphere,
       {scaleId, scaleValue},
@@ -145,8 +161,10 @@ const NewTemplateScaleValueLabelInput = (props: Props) => {
   const placeholder = predictNextLabel(values)
   return (
     <NewScaleValueInput ref={ref}>
-      <EditableTemplateScaleValueColor scale={scale}
-        scaleValueColor={scaleValueColor} scaleValueLabel={newScaleValueLabel}
+      <EditableTemplateScaleValueColor
+        scale={scale}
+        scaleValueColor={scaleValueColor}
+        scaleValueLabel={newScaleValueLabel}
         setScaleValueColor={setScaleValueColor}
       />
       <Form onSubmit={handleCreateNewLabel}>
@@ -157,15 +175,14 @@ const NewTemplateScaleValueLabelInput = (props: Props) => {
             validate(e.target.value)
           }}
           placeholder={placeholder}
+          onBlur={handleBlur}
           onKeyDown={handleKeyDown}
           value={newScaleValueLabel}
           type='text'
         />
         {error && <StyledError>{error.message}</StyledError>}
       </Form>
-      <RemoveScaleValueIcon onClick={closeAdding}>
-        cancel
-      </RemoveScaleValueIcon>
+      <RemoveScaleValueIcon onClick={closeAdding}>cancel</RemoveScaleValueIcon>
     </NewScaleValueInput>
   )
 }

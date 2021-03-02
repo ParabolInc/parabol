@@ -190,6 +190,7 @@ const initDemoMeetingMember = (user) => {
     meetingId: RetroDemo.MEETING_ID,
     meetingType: RETROSPECTIVE,
     teamId: demoTeamId,
+    teamMember: initDemoTeamMember(user, 0),
     tasks: [] as ITask[],
     user,
     userId: user.id,

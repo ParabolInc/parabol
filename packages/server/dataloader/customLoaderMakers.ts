@@ -9,6 +9,9 @@ import MeetingTemplate from '../database/types/MeetingTemplate'
 import {Reactable} from '../database/types/Reactable'
 import Task from '../database/types/Task'
 import {ThreadSource} from '../database/types/ThreadSource'
+import getGitHubAuthByUserIdTeamId, {
+  GetGitHubAuthByUserIdTeamIdResult
+} from '../postgres/queries/getGitHubAuthByUserIdTeamId'
 import AtlassianServerManager from '../utils/AtlassianServerManager'
 import sendToSentry from '../utils/sendToSentry'
 import normalizeRethinkDbResults from './normalizeRethinkDbResults'
@@ -283,6 +286,26 @@ export const freshAtlassianAuth = (parent: RethinkDataLoader) => {
     {
       ...parent.dataLoaderOptions,
       cacheKeyFn: (key) => `${key.userId}:${key.teamId}`
+    }
+  )
+}
+
+export const githubAuth = (parent: RethinkDataLoader) => {
+  return new DataLoader<
+    {teamId: string; userId: string},
+    GetGitHubAuthByUserIdTeamIdResult | null,
+    string
+  >(
+    async (keys) => {
+      const results = await Promise.allSettled(
+        keys.map(async ({teamId, userId}) => getGitHubAuthByUserIdTeamId(userId, teamId))
+      )
+      const vals = results.map((result) => (result.status === 'fulfilled' ? result.value : null))
+      return vals
+    },
+    {
+      ...parent.dataLoaderOptions,
+      cacheKeyFn: ({teamId, userId}) => `${userId}:${teamId}`
     }
   )
 }

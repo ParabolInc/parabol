@@ -126,10 +126,6 @@ export type RethinkSchema = {
     type: PasswordResetRequest
     index: 'email' | 'ip' | 'token'
   }
-  Provider: {
-    type: any
-    index: 'providerUserId' | 'teamId'
-  }
   PushInvitation: {
     type: PushInvitation
     index: 'userId'

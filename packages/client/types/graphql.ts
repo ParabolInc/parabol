@@ -1954,9 +1954,9 @@ export interface IJiraDimensionField {
   cloudId: string;
 
   /**
-   * The poker template dimension Id
+   * The immutable index of the dimension
    */
-  dimensionId: string;
+  dimensionName: number;
 
   /**
    * The project under the atlassian cloud the field lives in
@@ -3788,18 +3788,6 @@ export interface IReflectPhase {
   stages: Array<IGenericMeetingStage>;
 
   /**
-   * foreign key. use focusedPhaseItem
-   * @deprecated "use focusedPromptId"
-   */
-  focusedPhaseItemId: string | null;
-
-  /**
-   * the phase item that the facilitator wants the group to focus on
-   * @deprecated "use focusedPrompt"
-   */
-  focusedPhaseItem: IReflectPrompt | null;
-
-  /**
    * foreign key. use focusedPrompt
    */
   focusedPromptId: string | null;
@@ -4182,7 +4170,7 @@ export interface IRetroDiscussStage {
 }
 
 /**
- * A reflection created during the reflect phase of a retrospective
+ * A reflection group created during the group phase of a retrospective
  */
 export interface IRetroReflectionGroup {
   __typename: 'RetroReflectionGroup';
@@ -4226,11 +4214,6 @@ export interface IRetroReflectionGroup {
    * The retrospective meeting this reflection was created in
    */
   meeting: IRetrospectiveMeeting;
-
-  /**
-   * @deprecated "use prompt"
-   */
-  phaseItem: IReflectPrompt;
   prompt: IReflectPrompt;
 
   /**
@@ -4240,18 +4223,12 @@ export interface IRetroReflectionGroup {
   reflections: Array<IRetroReflection>;
 
   /**
-   * The foreign key to link a reflection group to its phaseItem. Immutable.
-   * @deprecated "use promptId"
-   */
-  retroPhaseItemId: string;
-
-  /**
    * Our auto-suggested title, to be compared to the actual title for analytics
    */
   smartTitle: string | null;
 
   /**
-   * The sort order of the reflection group in the phase item
+   * The sort order of the reflection group
    */
   sortOrder: number;
 
@@ -4372,26 +4349,15 @@ export interface IRetroReflection {
   meeting: IRetrospectiveMeeting;
 
   /**
-   * @deprecated "use prompt"
-   */
-  phaseItem: IReflectPrompt;
-
-  /**
    * The plaintext version of content
    */
   plaintextContent: string;
 
   /**
-   * The foreign key to link a reflection to its phaseItem. Immutable. For sorting, use phase item on the group.
+   * The foreign key to link a reflection to its prompt. Immutable. For sorting, use prompt on the group.
    */
   promptId: string;
   prompt: IReflectPrompt;
-
-  /**
-   * The foreign key to link a reflection to its phaseItem. Immutable. For sorting, use phase item on the group.
-   * @deprecated "use promptId"
-   */
-  retroPhaseItemId: string;
 
   /**
    * The foreign key to link a reflection to its group
@@ -4738,14 +4704,14 @@ export interface IEstimateStage {
   sortOrder: number;
 
   /**
-   * the dimensionId that corresponds to this stage
+   * The immutable index of the dimensionRef tied to this stage
    */
-  dimensionId: string;
+  dimensionRefIdx: number;
 
   /**
-   * the dimension related to this stage by dimension id
+   * The immutable dimension linked to this stage
    */
-  dimension: ITemplateDimension;
+  dimensionRef: ITemplateDimensionRef;
 
   /**
    * the final score, as defined by the facilitator
@@ -4793,6 +4759,57 @@ export interface IServiceField {
    * The field type, to be used for validation and analytics
    */
   type: string;
+}
+
+/**
+ * An immutable TemplateDimension
+ */
+export interface ITemplateDimensionRef {
+  __typename: 'TemplateDimensionRef';
+  id: string;
+
+  /**
+   * the order of the dimensions in the template
+   */
+  sortOrder: number;
+
+  /**
+   * The name of the dimension
+   */
+  name: string;
+
+  /**
+   * The md5 hash to resolve the immutable selected scale ref
+   */
+  scaleRefId: string;
+
+  /**
+   * scale used in this dimension
+   */
+  scale: ITemplateScaleRef;
+}
+
+/**
+ * An immutable version of TemplateScale to be shared across all users
+ */
+export interface ITemplateScaleRef {
+  __typename: 'TemplateScaleRef';
+
+  /**
+   * md5 hash
+   */
+  id: string;
+  createdAt: any;
+
+  /**
+   * The title of the scale used in the template
+   */
+  name: string;
+
+  /**
+   * The values used in this scale
+   */
+  values: Array<ITemplateScaleValue>;
 }
 
 /**
@@ -5073,115 +5090,6 @@ export interface INotifyPromoteToOrgLeader {
    * *The userId that should see this notification
    */
   userId: string;
-}
-
-/**
- * A team-specific retro phase. Usually 3 or 4 exist per team, eg Good/Bad/Change, 4Ls, etc.
- */
-export interface IRetroPhaseItem {
-  __typename: 'RetroPhaseItem';
-
-  /**
-   * shortid
-   */
-  id: string;
-  createdAt: any;
-
-  /**
-   * @deprecated "Field has been deprecated because type is guranteed to be `retroPhaseItem`"
-   */
-  phaseItemType: CustomPhaseItemTypeEnum | null;
-
-  /**
-   * true if the phase item is currently used by the team, else false
-   */
-  isActive: boolean | null;
-
-  /**
-   * foreign key. use the team field
-   */
-  teamId: string;
-
-  /**
-   * The team that owns this reflectPrompt
-   */
-  team: ITeam | null;
-  updatedAt: any;
-
-  /**
-   * the order of the items in the template
-   */
-  sortOrder: number;
-
-  /**
-   * FK for template
-   */
-  templateId: string;
-
-  /**
-   * The template that this prompt belongs to
-   */
-  template: IReflectTemplate;
-
-  /**
-   * The title of the phase of the retrospective. Often a short version of the question
-   */
-  title: string;
-
-  /**
-   * The question to answer during the phase of the retrospective (eg What went well?)
-   */
-  question: string;
-
-  /**
-   * The description to the question for further context. A long version of the question.
-   */
-  description: string;
-
-  /**
-   * The color used to visually group a phase item.
-   */
-  groupColor: string;
-}
-
-export type CustomPhaseItem = IRetroPhaseItem;
-
-export interface ICustomPhaseItem {
-  __typename: 'CustomPhaseItem';
-
-  /**
-   * shortid
-   */
-  id: string;
-  createdAt: any;
-
-  /**
-   * @deprecated "Field has been deprecated because type is guranteed to be `retroPhaseItem`"
-   */
-  phaseItemType: CustomPhaseItemTypeEnum | null;
-
-  /**
-   * true if the phase item is currently used by the team, else false
-   */
-  isActive: boolean | null;
-
-  /**
-   * foreign key. use the team field
-   */
-  teamId: string;
-
-  /**
-   * The team that owns this reflectPrompt
-   */
-  team: ITeam | null;
-  updatedAt: any;
-}
-
-/**
- * The type of phase item
- */
-export const enum CustomPhaseItemTypeEnum {
-  retroPhaseItem = 'retroPhaseItem'
 }
 
 /**
@@ -8485,7 +8393,7 @@ export interface IMovePokerTemplateScaleValueOnMutationArguments {
 }
 
 export interface IUpdateJiraDimensionFieldOnMutationArguments {
-  dimensionId: string;
+  dimensionName: string;
 
   /**
    * The jira field name that we should push estimates to
@@ -8503,7 +8411,7 @@ export interface IUpdateJiraDimensionFieldOnMutationArguments {
   projectKey: string;
 
   /**
-   * The meeting the update happend in. If present, can return a meeting object with updated serviceField
+   * The meeting the update happend in. Returns a meeting object with updated serviceField
    */
   meetingId: string;
 }
@@ -9028,11 +8936,6 @@ export interface ICreateReflectionInput {
    * The prompt the reflection belongs to
    */
   promptId?: string | null;
-
-  /**
-   * The phase item the reflection belongs to
-   */
-  retroPhaseItemId?: string | null;
   sortOrder: number;
 }
 
@@ -9376,9 +9279,15 @@ export interface IPokerMeeting {
   story: Story | null;
 
   /**
-   * The ID of the template used for the meeting
+   * The ID of the template used for the meeting. Note the underlying template could have changed!
+   * @deprecated "The underlying template could be mutated. Use templateRefId"
    */
   templateId: string;
+
+  /**
+   * The ID of the immutable templateRef used for the meeting
+   */
+  templateRefId: string;
 }
 
 export interface IStoryOnPokerMeetingArguments {

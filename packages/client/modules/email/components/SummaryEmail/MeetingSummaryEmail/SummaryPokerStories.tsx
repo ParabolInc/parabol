@@ -1,10 +1,10 @@
 import graphql from 'babel-plugin-relay/macro'
 import {PALETTE} from 'parabol-client/styles/paletteV2'
+import {FONT_FAMILY} from 'parabol-client/styles/typographyV2'
+import getJiraCloudIdAndKey from 'parabol-client/utils/getJiraCloudIdAndKey'
 import {SummaryPokerStories_meeting} from 'parabol-client/__generated__/SummaryPokerStories_meeting.graphql'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
-import {FONT_FAMILY} from 'parabol-client/styles/typographyV2'
-import getJiraCloudIdAndKey from 'parabol-client/utils/getJiraCloudIdAndKey'
 import makeAppURL from '../../../../../utils/makeAppURL'
 import AnchorIfEmail from './AnchorIfEmail'
 import EmailBorderBottom from './EmailBorderBottom'
@@ -111,9 +111,6 @@ export default createFragmentContainer(SummaryPokerStories, {
             serviceTaskId
             story {
               title
-            }
-            dimension {
-              name
             }
           }
         }

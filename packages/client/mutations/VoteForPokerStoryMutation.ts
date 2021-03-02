@@ -49,24 +49,24 @@ const VoteForPokerStoryMutation: StandardMutation<TVoteForPokerStoryMutation> = 
       const {viewerId} = atmosphere
       const stage = store.get<Stage>(stageId)
       if (!stage) return
+      const viewer = store.getRoot().getLinkedRecord('viewer')
+      if (!stage || !viewer) return
       const scores = stage.getLinkedRecords('scores') || []
       const existingScoreIdx = scores.findIndex((item) => item.getValue('userId') === viewerId)
       if (score) {
-        const dimensionId = stage.getValue('dimensionId') as string
-        if (!dimensionId) return
-        const dimension = store.get(dimensionId)
-        if (!dimension) return
-        const scaleId = dimension.getValue('scaleId')
-        if (!scaleId) return
-        const scale = store.get('scaleId')
+        const dimensionRef = stage.getLinkedRecord('dimensionRef')
+        if (!dimensionRef) return
+        const scale = dimensionRef.getLinkedRecord('scale')
         const scaleValues = scale?.getLinkedRecords('values')
         if (!scaleValues) return
         const scaleValue = scaleValues.find((value) => value.getValue('label') === score)
         if (!scaleValue) return
         const optimisticScore = createProxyRecord(store, 'EstimateUserScore', {
           userId: viewerId,
-          score
+          stageId,
+          label: score
         })
+        optimisticScore.setLinkedRecord(viewer, 'user')
         const nextScores =
           existingScoreIdx === -1
             ? [...scores, optimisticScore]

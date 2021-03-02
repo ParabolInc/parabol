@@ -82,7 +82,9 @@ const addPokerTemplate = {
         parentTemplateId
       })
 
-      const dimensions = await dataLoader.get('dimensionsByTemplateId').load(parentTemplate.id)
+      const dimensions = await dataLoader
+        .get('templateDimensionsByTemplateId')
+        .load(parentTemplate.id)
       const activeDimensions = dimensions.filter(({removedAt}) => !removedAt)
       const newTemplateDimensions = activeDimensions.map((dimension) => {
         return new TemplateDimension({

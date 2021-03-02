@@ -26,7 +26,7 @@ graphql`
           jiraDimensionFields {
             cloudId
             projectKey
-            dimensionId
+            dimensionName
             fieldName
           }
         }
@@ -37,14 +37,14 @@ graphql`
 
 const mutation = graphql`
   mutation UpdateJiraDimensionFieldMutation(
-    $dimensionId: ID!
+    $dimensionName: String!
     $fieldName: String!
     $meetingId: ID!
     $cloudId: ID!
     $projectKey: ID!
   ) {
     updateJiraDimensionField(
-      dimensionId: $dimensionId
+      dimensionName: $dimensionName
       fieldName: $fieldName
       meetingId: $meetingId
       cloudId: $cloudId
@@ -68,7 +68,7 @@ const UpdateJiraDimensionFieldMutation: SimpleMutation<TUpdateJiraDimensionField
     mutation,
     variables,
     optimisticUpdater: (store) => {
-      const {meetingId, cloudId, dimensionId, fieldName, projectKey} = variables
+      const {meetingId, cloudId, dimensionName, fieldName, projectKey} = variables
       const meeting = store.get<PokerMeeting_meeting>(meetingId)
       if (!meeting) return
       const teamId = meeting.getValue('teamId')
@@ -79,7 +79,7 @@ const UpdateJiraDimensionFieldMutation: SimpleMutation<TUpdateJiraDimensionField
           atlassianTeamIntegration.getLinkedRecords('jiraDimensionFields') || []
         const existingField = jiraDimensionFields.find(
           (dimensionField) =>
-            dimensionField.getValue('dimensionId') === dimensionId &&
+            dimensionField.getValue('dimensionName') === dimensionName &&
             dimensionField.getValue('cloudId') === cloudId &&
             dimensionField.getValue('projectKey') === projectKey
         )
@@ -88,7 +88,7 @@ const UpdateJiraDimensionFieldMutation: SimpleMutation<TUpdateJiraDimensionField
         } else {
           const optimisticJiraDimensionField = createProxyRecord(store, 'JiraDimensionField', {
             fieldName,
-            dimensionId,
+            dimensionName,
             cloudId,
             projectKey
           })
@@ -101,9 +101,8 @@ const UpdateJiraDimensionFieldMutation: SimpleMutation<TUpdateJiraDimensionField
       const estimatePhase = phases.find((phase) => phase.getValue('phaseType') === 'ESTIMATE')!
       const stages = estimatePhase.getLinkedRecords('stages')
       stages.forEach((stage) => {
-        const serviceTaskId = stage.getValue('serviceTaskId') as string
-        const [stageCloudId] = getJiraCloudIdAndKey(serviceTaskId)
-        if (stage.getValue('dimensionId') === dimensionId && stageCloudId === cloudId) {
+        const [stageCloudId] = getJiraCloudIdAndKey(stage.getValue('serviceTaskId') as string)
+        if (stage.getValue('dimensionName') === dimensionName && stageCloudId === cloudId) {
           // the type being a number is just a guess
           const nextServiceField = createProxyRecord(store, 'ServiceField', {
             name: fieldName,

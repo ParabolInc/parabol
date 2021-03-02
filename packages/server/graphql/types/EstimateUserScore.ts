@@ -1,4 +1,5 @@
 import {GraphQLID, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
+import EstimateUserScoreId from '../../../client/shared/gqlIds/EstimateUserScoreId'
 import {GQLContext} from '../graphql'
 import User from './User'
 
@@ -11,7 +12,7 @@ const EstimateUserScore = new GraphQLObjectType<any, GQLContext>({
       type: GraphQLNonNull(GraphQLID),
       description: 'shortid',
       resolve: ({stageId, userId}) => {
-        return `score:${stageId}:${userId}`
+        return EstimateUserScoreId.join(stageId, userId)
       }
     },
     stageId: {

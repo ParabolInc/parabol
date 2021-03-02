@@ -64,7 +64,6 @@ export default createFragmentContainer(VideoAvatar, {
     fragment VideoAvatar_teamMember on TeamMember {
       isSelf
       picture
-      userId
     }
   `
 })

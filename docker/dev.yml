@@ -28,7 +28,7 @@ services:
       - parabol-network
   pgadmin:
     container_name: pgadmin_container
-    image: dpage/pgadmin4
+    image: dpage/pgadmin4:latest
     depends_on:
       - postgres
     env_file: ../.env
@@ -41,6 +41,7 @@ services:
     restart: unless-stopped
   redis:
     image: redis:latest
+    restart: unless-stopped
     ports:
       - "6379:6379"
     volumes:

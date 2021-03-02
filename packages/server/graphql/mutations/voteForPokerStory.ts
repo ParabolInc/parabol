@@ -6,6 +6,8 @@ import EstimatePhase from '../../database/types/EstimatePhase'
 import EstimateUserScore from '../../database/types/EstimateUserScore'
 import MeetingPoker from '../../database/types/MeetingPoker'
 import updateStage from '../../database/updateStage'
+import getTemplateRefById from '../../postgres/queries/getTemplateRefById'
+import getTemplateScaleRefById from '../../postgres/queries/getTemplateScaleRefById'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import {GQLContext} from '../graphql'
@@ -20,7 +22,7 @@ const removeVoteForUserId = async (userId: string, stageId: string, meetingId: s
           .nth(0)
       )
     })
-  return updateStage(meetingId, stageId, updater)
+  return updateStage(meetingId, stageId, 'ESTIMATE', updater)
 }
 
 const upsertVote = async (vote: EstimateUserScore, stageId: string, meetingId: string) => {
@@ -42,7 +44,7 @@ const upsertVote = async (vote: EstimateUserScore, stageId: string, meetingId: s
         )
       )
     })
-  return updateStage(meetingId, stageId, updater)
+  return updateStage(meetingId, stageId, 'ESTIMATE', updater)
 }
 
 const voteForPokerStory = {
@@ -75,7 +77,7 @@ const voteForPokerStory = {
     if (!meeting) {
       return {error: {message: 'Meeting not found'}}
     }
-    const {endedAt, phases, meetingType, teamId} = meeting
+    const {endedAt, phases, meetingType, teamId, templateRefId} = meeting
     if (!isTeamMember(authToken, teamId)) {
       return {error: {message: 'Not on the team'}}
     }
@@ -98,11 +100,13 @@ const voteForPokerStory = {
     }
 
     // RESOLUTION
-    const {dimensionId} = stage
-    const templateDimension = await dataLoader.get('templateDimensions').load(dimensionId)
-    const {scaleId} = templateDimension
-    const scale = await dataLoader.get('templateScales').load(scaleId)
-    const {values} = scale
+    const {dimensionRefIdx} = stage
+    const templateRef = await getTemplateRefById(templateRefId)
+    const {dimensions} = templateRef
+    const dimensionRef = dimensions[dimensionRefIdx]
+    const {scaleRefId} = dimensionRef
+    const scaleRef = await getTemplateScaleRefById(scaleRefId)
+    const {values} = scaleRef
     if (score) {
       // validate the score is a value on the scale
       const scoreValue = values.find((value) => value.label === score)

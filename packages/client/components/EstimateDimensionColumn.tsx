@@ -58,8 +58,8 @@ const EstimateDimensionColumn = (props: Props) => {
   const {meeting, stage} = props
   const {endedAt, facilitatorUserId, id: meetingId} = meeting
   const isFacilitator = viewerId === facilitatorUserId
-  const {id: stageId, dimension} = stage
-  const {name} = dimension
+  const {id: stageId, dimensionRef} = stage
+  const {name} = dimensionRef
   const {isVoting} = stage
   const {onError, onCompleted, submitMutation, error, submitting} = useMutationProps()
   const isClosing = useIsPokerVotingClosing(isVoting, stageId)
@@ -106,7 +106,7 @@ export default createFragmentContainer(EstimateDimensionColumn, {
       ...PokerDiscussVoting_stage
       id
       isVoting
-      dimension {
+      dimensionRef {
         name
       }
     }
