@@ -1,6 +1,6 @@
 import {GraphQLBoolean, GraphQLNonNull, GraphQLString} from 'graphql'
-import {SendClientSegmentEventMutationVariables} from '~/__generated__/SendClientSegmentEventMutation.graphql'
 import getRethink from '../../database/rethinkDriver'
+import {NewMeetingPhaseTypeEnum} from '../../database/types/GenericMeetingPhase'
 import {getUserId, isTeamMember, isUserBillingLeader} from '../../utils/authorization'
 import segmentIo from '../../utils/segmentIo'
 import standardError from '../../utils/standardError'
@@ -23,6 +23,18 @@ const extraOptionsCreator = {
       meetingCount
     }
   }
+}
+
+type SegmentEventTrackOptions = {
+  teamId?: string | null
+  orgId?: string | null
+  phase?: NewMeetingPhaseTypeEnum | null
+  eventId?: number | null
+  actionType?: string | null
+}
+type SendClientSegmentEventMutationVariables = {
+  event: string
+  options?: SegmentEventTrackOptions | null
 }
 
 export default {

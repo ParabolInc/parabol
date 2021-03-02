@@ -1,7 +1,6 @@
 import bcrypt from 'bcrypt'
 import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import {AuthenticationError, Security} from 'parabol-client/types/constEnums'
-import {SignUpWithPasswordMutationVariables} from '~/__generated__/SignUpWithPasswordMutation.graphql'
 import getRethink from '../../database/rethinkDriver'
 import createEmailVerification from '../../email/createEmailVerification'
 import createNewLocalUser from '../../utils/createNewLocalUser'
@@ -12,6 +11,13 @@ import rateLimit from '../rateLimit'
 import SignUpWithPasswordPayload from '../types/SignUpWithPasswordPayload'
 import attemptLogin from './helpers/attemptLogin'
 import bootstrapNewUser from './helpers/bootstrapNewUser'
+
+type SignUpWithPasswordMutationVariables = {
+  email: string
+  password: string
+  invitationToken?: string | null
+  segmentId?: string | null
+}
 
 const signUpWithPassword = {
   type: new GraphQLNonNull(SignUpWithPasswordPayload),

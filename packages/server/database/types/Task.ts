@@ -6,6 +6,7 @@ import {ThreadSourceEnum} from './ThreadSource'
 import TaskIntegrationGitHub from './TaskIntegrationGitHub'
 import TaskIntegrationJira from './TaskIntegrationJira'
 
+export type AreaEnum = 'meeting' | 'teamDash' | 'userDash'
 export type TaskStatusEnum = 'active' | 'stuck' | 'done' | 'future'
 export type TaskTagEnum = 'private' | 'archived'
 export type TaskServiceEnum = 'PARABOL' | 'github' | 'jira'

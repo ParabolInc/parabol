@@ -2,7 +2,6 @@ import {ContentState, convertFromRaw} from 'draft-js'
 import {stateToMarkdown} from 'draft-js-export-markdown'
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import {CreateJiraTaskIntegrationMutationVariables} from '~/__generated__/CreateJiraTaskIntegrationMutation.graphql'
 import getRethink from '../../database/rethinkDriver'
 import db from '../../db'
 import AtlassianServerManager from '../../utils/AtlassianServerManager'
@@ -13,6 +12,11 @@ import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import CreateJiraTaskIntegrationPayload from '../types/CreateJiraTaskIntegrationPayload'
 
+type CreateJiraTaskIntegrationMutationVariables = {
+  cloudId: string
+  taskId: string
+  projectKey: string
+}
 export default {
   name: 'CreateJiraTaskIntegration',
   type: CreateJiraTaskIntegrationPayload,

@@ -5,8 +5,12 @@ import {getUserId} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import {GQLContext} from '../graphql'
 import DeleteCommentPayload from '../types/DeleteCommentPayload'
-import {DeleteCommentMutationVariables} from '~/__generated__/DeleteCommentMutation.graphql'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
+
+type DeleteCommentMutationVariables = {
+  commentId: string
+  meetingId: string
+}
 
 const deleteComment = {
   type: GraphQLNonNull(DeleteCommentPayload),

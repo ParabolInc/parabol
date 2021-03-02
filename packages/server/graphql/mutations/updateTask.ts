@@ -1,11 +1,10 @@
 import {GraphQLNonNull} from 'graphql'
 import ms from 'ms'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import {UpdateTaskMutationVariables} from '~/__generated__/UpdateTaskMutation.graphql'
 import extractTextFromDraftString from 'parabol-client/utils/draftjs/extractTextFromDraftString'
 import normalizeRawDraftJS from 'parabol-client/validation/normalizeRawDraftJS'
 import getRethink from '../../database/rethinkDriver'
-import Task from '../../database/types/Task'
+import Task, {AreaEnum as TAreaEnum, TaskStatusEnum} from '../../database/types/Task'
 import TeamMember from '../../database/types/TeamMember'
 import generateUID from '../../generateUID'
 import {getUserId, isTeamMember} from '../../utils/authorization'
@@ -21,6 +20,18 @@ import publishChangeNotifications from './helpers/publishChangeNotifications'
 
 const DEBOUNCE_TIME = ms('5m')
 
+type UpdateTaskInput = {
+  id: string
+  content?: string | null
+  sortOrder?: number | null
+  status?: TaskStatusEnum | null
+  teamId?: string | null
+  userId?: string | null
+}
+type UpdateTaskMutationVariables = {
+  updatedTask: UpdateTaskInput
+  area?: TAreaEnum | null
+}
 export default {
   type: UpdateTaskPayload,
   description: 'Update a task with a change in content, ownership, or status',

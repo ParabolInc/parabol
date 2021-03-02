@@ -1,6 +1,5 @@
 import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import {UpdateReflectionGroupTitleMutationVariables} from '~/__generated__/UpdateReflectionGroupTitleMutation.graphql'
 import isPhaseComplete from 'parabol-client/utils/meetings/isPhaseComplete'
 import stringSimilarity from 'string-similarity'
 import getRethink from '../../database/rethinkDriver'
@@ -11,6 +10,10 @@ import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import UpdateReflectionGroupTitlePayload from '../types/UpdateReflectionGroupTitlePayload'
 
+type UpdateReflectionGroupTitleMutationVariables = {
+  title: string
+  reflectionGroupId: string
+}
 export default {
   type: UpdateReflectionGroupTitlePayload,
   description: 'Update the title of a reflection group',
