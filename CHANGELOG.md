@@ -7,6 +7,9 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
 ## 6.2.0 2021-Mar-03
 
+### Added
+- Sort the reflection groups on server side after REFLECT phase #4696
+
 ### Changed
 - Refactoring for CustomPhaseItem #4728
 - Migrate RethinkDB Provider table to GitHubAuth #4727
