@@ -13,29 +13,33 @@ const removeReflectionFromGroup = async (reflectionId, {dataLoader}) => {
     .run()
   if (!reflection) throw new Error('Reflection not found')
   const {reflectionGroupId: oldReflectionGroupId, meetingId, promptId} = reflection
-  const [oldReflectionGroup, reflectionGroups, meeting] = await Promise.all([
-    dataLoader.get('reflectionGroup').load(oldReflectionGroupId),
+  const [oldReflectionGroup, reflectionGroupsInColumn, meeting] = await Promise.all([
+    dataLoader.get('retroReflectionGroups').load(oldReflectionGroupId),
     r
       .table('RetroReflectionGroup')
       .getAll(meetingId, {index: 'meetingId'})
-      .filter({isActive: true})
+      .filter({isActive: true, promptId})
       .orderBy('sortOrder')
       .run(),
     dataLoader.get('newMeetings').load(meetingId)
   ])
 
-  const {sortOrder: oldSortOrder} = oldReflectionGroup
-
-  // RESOLUTION
-  const nextReflectionGroupIndex =
-    reflectionGroups.findIndex(({id}) => id === oldReflectionGroup.id) + 1
-  let newSortOrder
-  if (nextReflectionGroupIndex >= reflectionGroups.length) {
-    newSortOrder = oldSortOrder + 1 + dndNoise()
+  let newSortOrder = 1e6
+  const oldReflectionGroupIdx = reflectionGroupsInColumn.findIndex(
+    (group) => group.id === oldReflectionGroup.id
+  )
+  const sortOrderAtBottom =
+    reflectionGroupsInColumn[reflectionGroupsInColumn.length - 1]?.sortOrder + 1 + dndNoise() ?? 1e6
+  if (oldReflectionGroupIdx === -1 || reflection.promptId !== oldReflectionGroup.promptId) {
+    newSortOrder = sortOrderAtBottom
+  } else if (oldReflectionGroupIdx === reflectionGroupsInColumn.length - 1) {
+    newSortOrder = oldReflectionGroup.sortOrder + 1 + dndNoise()
   } else {
-    const nextSortOrder = reflectionGroups[nextReflectionGroupIndex].sortOrder
-    newSortOrder = (oldSortOrder + nextSortOrder) / 2 + dndNoise()
+    const {sortOrder: oldSortOrder} = oldReflectionGroup
+    const afterSortOrder = reflectionGroupsInColumn[oldReflectionGroupIdx + 1].sortOrder
+    newSortOrder = (oldSortOrder + afterSortOrder) / 2 + dndNoise()
   }
+
   const reflectionGroup = new ReflectionGroup({meetingId, promptId, sortOrder: newSortOrder})
   const {id: reflectionGroupId} = reflectionGroup
   await r({
