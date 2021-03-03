@@ -103,7 +103,6 @@ export const navigateMeetingTeamUpdater: SharedUpdater<NavigateMeetingMutation_t
     .getValue('id')!
   const meeting = store.get<ClientRetrospectiveMeeting>(meetingId)
   if (!meeting) return
-
   const viewerStageId = safeProxy(meeting)
     .getLinkedRecord('localStage')
     .getValue('id')
@@ -145,8 +144,8 @@ export const navigateMeetingTeamUpdater: SharedUpdater<NavigateMeetingMutation_t
       reflectPrompt?.setValue([], 'editorIds')
     })
   }
-
   const reflectionGroups = meeting.getLinkedRecords('reflectionGroups')
+  if (!reflectionGroups) return
   const sortedReflectionGroups = reflectionGroups
     .slice()
     .sort((a, b) => (a.getValue('sortOrder') < b.getValue('sortOrder') ? -1 : 1))
