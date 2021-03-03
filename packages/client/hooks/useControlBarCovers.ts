@@ -42,6 +42,7 @@ export const useCoverable = (
   parentRef?: RefObject<HTMLDivElement>,
   columnsRef?: RefObject<HTMLDivElement>
 ) => {
+  if (id === 'poker-thread') return true
   const updateCoverables = () => {
     const el = ref.current
     if (!el) return

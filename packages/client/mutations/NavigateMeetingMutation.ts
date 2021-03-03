@@ -147,6 +147,7 @@ export const navigateMeetingTeamUpdater: SharedUpdater<NavigateMeetingMutation_t
   }
 
   const reflectionGroups = meeting.getLinkedRecords('reflectionGroups')
+  if (!reflectionGroups) return
   const sortedReflectionGroups = reflectionGroups
     .slice()
     .sort((a, b) => (a.getValue('sortOrder') < b.getValue('sortOrder') ? -1 : 1))
