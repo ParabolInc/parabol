@@ -1,7 +1,7 @@
 import * as crypto from 'crypto'
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-import * as stringify from 'fast-json-stable-stringify'
+import * as _stringify from 'fast-json-stable-stringify'
 import {ColumnDefinitions, MigrationBuilder} from 'node-pg-migrate'
 import {r} from 'rethinkdb-ts'
 import {parse} from 'url'
@@ -22,6 +22,8 @@ export async function up(): Promise<void> {
     db: u.path.split('/')[1]
   }
   await r.connectPool(config)
+
+  const stringify = (_stringify as any).default || _stringify
 
   const getHashAndJSON = (obj: any) => {
     const str = stringify(obj)

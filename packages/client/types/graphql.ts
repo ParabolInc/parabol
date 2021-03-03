@@ -3437,7 +3437,7 @@ export interface IGitHubIntegration {
   __typename: 'GitHubIntegration';
 
   /**
-   * shortid
+   * composite key
    */
   id: string;
 
@@ -9913,11 +9913,6 @@ export interface IRemoveAtlassianAuthPayload {
 export interface IRemoveGitHubAuthPayload {
   __typename: 'RemoveGitHubAuthPayload';
   error: IStandardMutationError | null;
-
-  /**
-   * The ID of the authorization removed
-   */
-  authId: string | null;
   teamId: string | null;
 
   /**
