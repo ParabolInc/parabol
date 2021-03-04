@@ -26,6 +26,7 @@ const groupReflections = <T extends Reflection>(reflections: T[], groupingThresh
   )
   // replace the arrays with reflections
   const updatedReflections = [] as Partial<ReflectionCard_reflection>[]
+  const reflectionGroupMapping = {} as Record<string, string>
   const updatedGroups = (groupedArrays as any[]).map((group) => {
     // look up the reflection by its vector, put them all in the same group
     let reflectionGroupId = ''
@@ -34,7 +35,8 @@ const groupReflections = <T extends Reflection>(reflections: T[], groupingThresh
       const reflection = reflections[idx]
       reflectionGroupId = (reflectionGroupId || reflection.reflectionGroupId) as string
       return {
-        ...reflection,
+        entities: reflection.entities,
+        oldReflectionGroupId: reflection.reflectionGroupId,
         sortOrder,
         reflectionGroupId
       }
@@ -51,6 +53,11 @@ const groupReflections = <T extends Reflection>(reflections: T[], groupingThresh
     )
 
     updatedReflections.push(...groupedReflections)
+
+    groupedReflections.forEach((groupedReflection) => {
+      reflectionGroupMapping[groupedReflection.oldReflectionGroupId] = reflectionGroupId
+    })
+
     return {
       id: reflectionGroupId,
       smartTitle,
@@ -68,6 +75,7 @@ const groupReflections = <T extends Reflection>(reflections: T[], groupingThresh
     autoGroupThreshold: thresh,
     groups: updatedGroups,
     groupedReflections: updatedReflections,
+    reflectionGroupMapping,
     removedReflectionGroupIds,
     nextThresh
   }

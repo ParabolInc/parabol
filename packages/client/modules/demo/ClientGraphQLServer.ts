@@ -1258,6 +1258,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       // To reproduce, get to the discuss phase & quickly add a task before the bots do
       // the result is tasks == [undefined]
       // if a sleep is added, RetroDiscussPhase component is notified, but without, only MeetingAgendaCards is notified
+      // (I removed MeetingAgendaCards, mentioned in the comment line above, as it’s unused, TA)
       // honestly, no good idea what is going on here. don't even know if it's relay or react (or me)
       await sleep(100)
       return {createTask: data}

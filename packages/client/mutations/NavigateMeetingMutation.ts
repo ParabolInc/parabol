@@ -4,7 +4,7 @@ import {NavigateMeetingMutation_team} from '~/__generated__/NavigateMeetingMutat
 import Atmosphere from '../Atmosphere'
 import {ClientRetrospectiveMeeting} from '../types/clientSchema'
 import {SharedUpdater} from '../types/relayMutations'
-import {VOTE} from '../utils/constants'
+import {REFLECT, VOTE} from '../utils/constants'
 import isInterruptingChickenPhase from '../utils/isInterruptingChickenPhase'
 import isViewerTyping from '../utils/isViewerTyping'
 import getBaseRecord from '../utils/relay/getBaseRecord'
@@ -31,6 +31,9 @@ graphql`
     phaseComplete {
       reflect {
         emptyReflectionGroupIds
+        reflectionGroups {
+          sortOrder
+        }
       }
       group {
         emptyReflectionGroupIds
@@ -98,7 +101,6 @@ export const navigateMeetingTeamUpdater: SharedUpdater<NavigateMeetingMutation_t
     .getValue('id')!
   const meeting = store.get<ClientRetrospectiveMeeting>(meetingId)
   if (!meeting) return
-
   const viewerStageId = safeProxy(meeting)
     .getLinkedRecord('localStage')
     .getValue('id')
@@ -140,6 +142,12 @@ export const navigateMeetingTeamUpdater: SharedUpdater<NavigateMeetingMutation_t
       reflectPrompt?.setValue([], 'editorIds')
     })
   }
+  const reflectionGroups = meeting.getLinkedRecords('reflectionGroups')
+  if (!reflectionGroups) return
+  const sortedReflectionGroups = reflectionGroups
+    .slice()
+    .sort((a, b) => (a.getValue('sortOrder') < b.getValue('sortOrder') ? -1 : 1))
+  meeting.setLinkedRecords(sortedReflectionGroups, 'reflectionGroups')
 }
 
 const NavigateMeetingMutation = (
@@ -173,8 +181,9 @@ const NavigateMeetingMutation = (
         if (stage) {
           stage.setValue(true, 'isComplete')
           const phaseType = stage.getValue('phaseType')
-          if (phaseType === VOTE) {
+          if (phaseType === VOTE || phaseType === REFLECT) {
             // optimistically creating an array of temporary stages is difficult because they can become undefined
+            // same goes for sorting all the reflections based on entities
             // easier to just wait for the return value before advancing
             meeting.setValue(completedStageId, 'facilitatorStageId')
             if (completedStageId) {
