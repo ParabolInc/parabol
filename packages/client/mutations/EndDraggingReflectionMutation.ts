@@ -3,7 +3,7 @@ import {commitLocalUpdate, commitMutation} from 'react-relay'
 import {RecordProxy, RecordSourceSelectorProxy} from 'relay-runtime'
 import {EndDraggingReflectionMutation_meeting} from '~/__generated__/EndDraggingReflectionMutation_meeting.graphql'
 import {EndDraggingReflectionMutation as TEndDraggingReflectionMutation} from '~/__generated__/EndDraggingReflectionMutation.graphql'
-import {SharedUpdater, StandardMutation} from '../types/relayMutations'
+import {SharedUpdater, SimpleMutation} from '../types/relayMutations'
 import dndNoise from '../utils/dndNoise'
 import addNodeToArray from '../utils/relay/addNodeToArray'
 import clientTempId from '../utils/relay/clientTempId'
@@ -136,16 +136,13 @@ export const endDraggingReflectionMeetingOnNext = (payload, context) => {
   })
 }
 
-const EndDraggingReflectionMutation: StandardMutation<TEndDraggingReflectionMutation> = (
+const EndDraggingReflectionMutation: SimpleMutation<TEndDraggingReflectionMutation> = (
   atmosphere,
-  variables,
-  {onError, onCompleted}
+  variables
 ) => {
   return commitMutation<TEndDraggingReflectionMutation>(atmosphere, {
     mutation,
     variables,
-    onCompleted,
-    onError,
     updater: (store) => {
       const payload = store.getRootField('endDraggingReflection')
       if (!payload) return
