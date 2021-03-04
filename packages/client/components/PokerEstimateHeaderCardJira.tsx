@@ -31,7 +31,7 @@ const HeaderCard = styled('div')({
 const CardTitle = styled('h1')({
   fontSize: 16,
   lineHeight: '24px',
-  margin: 0
+  marginBottom: '10px'
 })
 
 const CardIcons = styled('div')({
@@ -52,7 +52,7 @@ const CardDescription = styled('div')<{isExpanded: boolean, maxHeight: number}>(
   fontSize: 14,
   margin: 0,
   maxHeight: isExpanded ? maxHeight : 30,
-  overflow: 'hidden',
+  overflowY: 'scroll',
   transition: 'all 300ms'
 }))
 
@@ -66,6 +66,7 @@ const StyledLink = styled('a')({
   display: 'flex',
   fontSize: 12,
   lineHeight: '20px',
+  marginTop: '10px',
   textDecoration: 'none'
 })
 
@@ -83,7 +84,7 @@ const PokerEstimateHeaderCardJira = (props: Props) => {
   const {serviceTaskId, story} = stage
   const [isExpanded, setIsExpanded] = useState(false)
   const descriptionRef = useRef<HTMLDivElement>(null)
-  const maxHeight = descriptionRef.current?.scrollHeight ?? 1000
+  const maxHeight = Math.min(descriptionRef.current?.scrollHeight ?? 300, 300)
   const toggleExpand = () => {
     setIsExpanded(!isExpanded)
   }
