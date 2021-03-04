@@ -23,7 +23,7 @@ import CommentorDetails from './CommentorDetails'
 
 const RetroReflectionGroup = new GraphQLObjectType<any, GQLContext>({
   name: 'RetroReflectionGroup',
-  description: 'A reflection created during the reflect phase of a retrospective',
+  description: 'A reflection group created during the group phase of a retrospective',
   interfaces: () => [ThreadSource],
   fields: () => ({
     ...threadSourceFields(),
@@ -64,13 +64,6 @@ const RetroReflectionGroup = new GraphQLObjectType<any, GQLContext>({
         return dataLoader.get('newMeetings').load(meetingId)
       }
     },
-    phaseItem: {
-      type: new GraphQLNonNull(ReflectPrompt),
-      deprecationReason: 'use prompt',
-      resolve: ({promptId}, _args, {dataLoader}) => {
-        return dataLoader.get('reflectPrompts').load(promptId)
-      }
-    },
     prompt: {
       type: new GraphQLNonNull(ReflectPrompt),
       resolve: ({promptId}, _args, {dataLoader}) => {
@@ -93,12 +86,6 @@ const RetroReflectionGroup = new GraphQLObjectType<any, GQLContext>({
         return filteredReflections
       }
     },
-    retroPhaseItemId: {
-      type: new GraphQLNonNull(GraphQLID),
-      deprecationReason: 'use promptId',
-      description: 'The foreign key to link a reflection group to its phaseItem. Immutable.',
-      resolve: ({promptId}) => promptId
-    },
     smartTitle: {
       type: GraphQLString,
       description: 'Our auto-suggested title, to be compared to the actual title for analytics',
@@ -106,7 +93,7 @@ const RetroReflectionGroup = new GraphQLObjectType<any, GQLContext>({
     },
     sortOrder: {
       type: new GraphQLNonNull(GraphQLFloat),
-      description: 'The sort order of the reflection group in the phase item'
+      description: 'The sort order of the reflection group'
     },
     tasks: {
       type: new GraphQLNonNull(GraphQLList(GraphQLNonNull(Task))),

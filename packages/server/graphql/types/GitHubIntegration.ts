@@ -1,7 +1,8 @@
 import {GraphQLBoolean, GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql'
-import GraphQLISO8601Type from './GraphQLISO8601Type'
+import GitHubIntegrationId from '../../../client/shared/gqlIds/GitHubIntegrationId'
 import {getUserId} from '../../utils/authorization'
 import {GQLContext} from '../graphql'
+import GraphQLISO8601Type from './GraphQLISO8601Type'
 
 const GitHubIntegration = new GraphQLObjectType<any, GQLContext>({
   name: 'GitHubIntegration',
@@ -9,7 +10,8 @@ const GitHubIntegration = new GraphQLObjectType<any, GQLContext>({
   fields: () => ({
     id: {
       type: new GraphQLNonNull(GraphQLID),
-      description: 'shortid'
+      description: 'composite key',
+      resolve: ({teamId, userId}) => GitHubIntegrationId.join(teamId, userId)
     },
     isActive: {
       description: 'true if an access token exists, else false',
@@ -26,8 +28,7 @@ const GitHubIntegration = new GraphQLObjectType<any, GQLContext>({
     },
     login: {
       type: new GraphQLNonNull(GraphQLID),
-      description: '*The GitHub login used for queries',
-      resolve: ({providerUserId}) => providerUserId
+      description: '*The GitHub login used for queries'
     },
     createdAt: {
       type: new GraphQLNonNull(GraphQLISO8601Type),

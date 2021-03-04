@@ -11,29 +11,15 @@ const ReflectPhase = new GraphQLObjectType<any, GQLContext>({
   interfaces: () => [NewMeetingPhase],
   fields: () => ({
     ...newMeetingPhaseFields(),
-    focusedPhaseItemId: {
-      deprecationReason: 'use focusedPromptId',
-      type: GraphQLID,
-      description: 'foreign key. use focusedPhaseItem'
-    },
-    focusedPhaseItem: {
-      type: ReflectPrompt,
-      deprecationReason: 'use focusedPrompt',
-      description: 'the phase item that the facilitator wants the group to focus on',
-      resolve: ({focusedPhaseItemId}, _args, {dataLoader}) => {
-        return dataLoader.get('reflectPrompts').load(focusedPhaseItemId)
-      }
-    },
     focusedPromptId: {
       type: GraphQLID,
-      description: 'foreign key. use focusedPrompt',
-      resolve: ({focusedPhaseItemId}) => focusedPhaseItemId
+      description: 'foreign key. use focusedPrompt'
     },
     focusedPrompt: {
       type: ReflectPrompt,
       description: 'the Prompt that the facilitator wants the group to focus on',
-      resolve: ({focusedPhaseItemId}, _args, {dataLoader}) => {
-        return dataLoader.get('reflectPrompts').load(focusedPhaseItemId)
+      resolve: ({focusedPromptId}, _args, {dataLoader}) => {
+        return dataLoader.get('reflectPrompts').load(focusedPromptId)
       }
     },
     promptTemplateId: {

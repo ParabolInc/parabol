@@ -5,6 +5,16 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.2.0 2021-Mar-03
+
+### Added
+- Sort the reflection groups on server side after REFLECT phase #4696
+
+### Changed
+- Refactoring for CustomPhaseItem #4728
+- Migrate RethinkDB Provider table to GitHubAuth #4727
+- We’ve updated palette values and added a new palette const enums #4658
+
 ## 6.1.0 2021-Feb-25
 ### Added
 - Robust message queue protocol (#4386)
@@ -20,7 +30,7 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
 ## 6.0.0 2021-Feb-18
 
-### Fixes
+### Fixed
 - User cannot delete prompts from retro templates
 - Non-meeting members do not get meeting summary emails (#4681)
 

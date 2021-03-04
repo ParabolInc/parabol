@@ -15,7 +15,6 @@ import NotifyPromoteToOrgLeader from './types/NotifyPromoteToOrgLeader'
 import PokerMeetingSettings from './types/PokerMeetingSettings'
 import PokerTemplate from './types/PokerTemplate'
 import ReflectPhase from './types/ReflectPhase'
-import RetroPhaseItem from './types/RetroPhaseItem'
 import RetrospectiveMeeting from './types/RetrospectiveMeeting'
 import RetrospectiveMeetingMember from './types/RetrospectiveMeetingMember'
 import RetrospectiveMeetingSettings from './types/RetrospectiveMeetingSettings'
@@ -50,7 +49,6 @@ const rootTypes = [
   EstimatePhase,
   NotificationTeamInvitation,
   NotifyPromoteToOrgLeader,
-  RetroPhaseItem,
   ActionMeeting,
   ActionMeetingMember,
   PokerMeetingSettings,

@@ -29,8 +29,6 @@ export const GROUP = 'group'
 export const VOTE = 'vote'
 export const DISCUSS = 'discuss'
 
-export const RETRO_PHASE_ITEM = 'retroPhaseItem' //deprecated!
-
 /* Columns */
 export const ACTIVE = 'active'
 export const STUCK = 'stuck'
@@ -49,6 +47,7 @@ export const AGENDA_ITEM = 'agendaItem'
 /* Sorting */
 export const SORT_STEP = 1
 export const DND_THROTTLE = 25
+export const AUTO_GROUPING_THRESHOLD = 0.25
 
 /* Areas */
 export const MEETING = 'meeting'
