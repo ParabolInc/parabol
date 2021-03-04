@@ -96,7 +96,7 @@ export default {
     const {accessToken} = viewerAuth || assigneeAuth
     const manager = new GitHubServerManager(accessToken)
 
-    const repoInfo = await manager.getRepoInfo(nameWithOwner, assigneeAuth.providerUserName)
+    const repoInfo = await manager.getRepoInfo(nameWithOwner, assigneeAuth.login)
     if ('message' in repoInfo) {
       return {error: repoInfo}
     }
