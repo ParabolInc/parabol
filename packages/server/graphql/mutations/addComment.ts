@@ -73,7 +73,7 @@ const addComment = {
       .insert(dbComment)
       .run()
 
-    const data = {commentId}
+    const data = {commentId, meetingId}
     const {phases, teamId} = meeting!
     const threadablePhases = ['discuss', 'agendaitems', 'ESTIMATE'] as NewMeetingPhaseTypeEnum[]
     const containsThreadablePhase = phases.find(({phaseType}) =>
