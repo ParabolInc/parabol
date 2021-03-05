@@ -10,7 +10,12 @@ import {DataLoaderWorker} from '../../graphql'
 import removeStagesFromMeetings from './removeStagesFromMeetings'
 import removeUserFromMeetingStages from './removeUserFromMeetingStages'
 import removeUserTms from '../../../postgres/queries/removeUserTms'
-
+import catchAndLog from '../../../postgres/utils/catchAndLog'
+import {
+  IUpdateTeamByTeamIdQueryParams,
+  updateTeamByTeamIdQuery
+} from '../../../postgres/queries/generated/updateTeamByTeamIdQuery'
+import getPg from '../../../postgres/getPg'
 interface Options {
   evictorUserId?: string
 }
@@ -39,11 +44,22 @@ const removeTeamMember = async (
 
   if (activeTeamMembers.length === 1) {
     // archive single-person teams
-    await r
-      .table('Team')
-      .get(teamId)
-      .update({isArchived: true})
-      .run()
+    await Promise.all([
+      r
+        .table('Team')
+        .get(teamId)
+        .update({isArchived: true})
+        .run(),
+      catchAndLog(() =>
+        updateTeamByTeamIdQuery.run(
+          {
+            isArchived: true,
+            id: teamId
+          } as IUpdateTeamByTeamIdQueryParams,
+          getPg()
+        )
+      )
+    ])
   } else if (isLead) {
     // assign new leader, remove old leader flag
     await r({
