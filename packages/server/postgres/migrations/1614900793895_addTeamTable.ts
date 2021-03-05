@@ -28,6 +28,8 @@ export async function up(pgm: MigrationBuilder): Promise<void> {
       CONSTRAINT "fk_createdBy"
         FOREIGN KEY("createdBy") REFERENCES "User"(id)
     );
+
+    CREATE INDEX "idx_Team_orgId" ON "Team"("orgId");
   `)
 }
 
