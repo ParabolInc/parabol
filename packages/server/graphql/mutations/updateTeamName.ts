@@ -7,6 +7,12 @@ import publish from '../../utils/publish'
 import teamNameValidation from 'parabol-client/validation/teamNameValidation'
 import standardError from '../../utils/standardError'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import catchAndLog from '../../postgres/utils/catchAndLog'
+import {
+  IUpdateTeamByTeamIdQueryParams,
+  updateTeamByTeamIdQuery
+} from '../../postgres/queries/generated/updateTeamByTeamIdQuery'
+import getPg from '../../postgres/getPg'
 
 export default {
   type: UpdateTeamNamePayload,
@@ -49,11 +55,22 @@ export default {
       name,
       updatedAt: now
     }
-    await r
-      .table('Team')
-      .get(teamId)
-      .update(dbUpdate)
-      .run()
+    await Promise.all([
+      r
+        .table('Team')
+        .get(teamId)
+        .update(dbUpdate)
+        .run(),
+      catchAndLog(() =>
+        updateTeamByTeamIdQuery.run(
+          {
+            ...dbUpdate,
+            id: teamId
+          } as IUpdateTeamByTeamIdQueryParams,
+          getPg()
+        )
+      )
+    ])
 
     const data = {teamId}
     publish(SubscriptionChannel.TEAM, teamId, 'UpdateTeamNamePayload', data, subOptions)

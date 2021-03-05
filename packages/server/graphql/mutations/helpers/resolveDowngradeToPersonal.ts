@@ -4,6 +4,12 @@ import segmentIo from '../../../utils/segmentIo'
 import setUserTierForOrgId from '../../../utils/setUserTierForOrgId'
 import setTierForOrgUsers from '../../../utils/setTierForOrgUsers'
 import StripeManager from '../../../utils/StripeManager'
+import catchAndLog from '../../../postgres/utils/catchAndLog'
+import {
+  IUpdateTeamByOrgIdQueryParams,
+  updateTeamByOrgIdQuery
+} from '../../../postgres/queries/generated/updateTeamByOrgIdQuery'
+import getPg from '../../../postgres/getPg'
 
 const resolveDowngradeToPersonal = async (
   orgId: string,
@@ -19,29 +25,43 @@ const resolveDowngradeToPersonal = async (
     console.log(e)
   }
 
-  const {teamIds} = await r({
-    org: r
-      .table('Organization')
-      .get(orgId)
-      .update({
-        tier: TierEnum.personal,
-        periodEnd: now,
-        stripeSubscriptionId: null,
-        updatedAt: now
-      }),
-    teamIds: (r
-      .table('Team')
-      .getAll(orgId, {index: 'orgId'})
-      .update(
+  const [rethinkResult] = await Promise.all([
+    r({
+      org: r
+        .table('Organization')
+        .get(orgId)
+        .update({
+          tier: TierEnum.personal,
+          periodEnd: now,
+          stripeSubscriptionId: null,
+          updatedAt: now
+        }),
+      teamIds: (r
+        .table('Team')
+        .getAll(orgId, {index: 'orgId'})
+        .update(
+          {
+            tier: TierEnum.personal,
+            isPaid: true,
+            updatedAt: now
+          },
+          {returnChanges: true}
+        )('changes')('new_val')('id')
+        .default([]) as unknown) as string[]
+    }).run(),
+    catchAndLog(() =>
+      updateTeamByOrgIdQuery.run(
         {
           tier: TierEnum.personal,
           isPaid: true,
-          updatedAt: now
-        },
-        {returnChanges: true}
-      )('changes')('new_val')('id')
-      .default([]) as unknown) as string[]
-  }).run()
+          updatedAt: now,
+          orgId
+        } as IUpdateTeamByOrgIdQueryParams,
+        getPg()
+      )
+    )
+  ])
+  const {teamIds} = rethinkResult
 
   await Promise.all([setUserTierForOrgId(orgId), setTierForOrgUsers(orgId)])
   segmentIo.track({
