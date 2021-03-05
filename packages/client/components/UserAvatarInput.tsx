@@ -1,7 +1,6 @@
 import styled from '@emotion/styled'
 import sanitizeSVG from '@mattkrick/sanitize-svg'
 import React, {Component} from 'react'
-import jpgWithoutEXIF from '~/utils/jpgWithoutEXIF'
 import withAtmosphere, {WithAtmosphereProps} from '../decorators/withAtmosphere/withAtmosphere'
 import withMutationProps, {WithMutationProps} from '../utils/relay/withMutationProps'
 import svgToPng from '../utils/svgToPng'
@@ -43,9 +42,6 @@ class UserAvatarInput extends Component<Props> {
     const {atmosphere, setDirty, submitting, onError, onCompleted, submitMutation} = this.props
     if (submitting) return
     setDirty()
-    if (file.type === 'image/jpeg') {
-      file = (await jpgWithoutEXIF(file)) as File
-    }
     if (file.size > 2 ** 20) {
       onError('File is too large (1MB Max)')
       return
@@ -63,12 +59,7 @@ class UserAvatarInput extends Component<Props> {
       }
     }
     submitMutation()
-    UploadUserImageMutation(
-      atmosphere,
-      {},
-      {onCompleted, onError},
-      {file}
-    )
+    UploadUserImageMutation(atmosphere, {}, {onCompleted, onError}, {file})
   }
 
   render() {
