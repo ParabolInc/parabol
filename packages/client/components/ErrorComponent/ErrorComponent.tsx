@@ -27,6 +27,21 @@ const ErrorComponent = (props: Props) => {
   const {error, eventId} = props
   console.error(error)
   const {modalPortal, openPortal, closePortal} = useModal()
+  const oldBrowserErrs = ['flatMap is not a function']
+
+  const handleClick = () => {
+    const url = 'https://browser-update.org/update-browser.html'
+    window.open(url)
+  }
+  const isOldBrowserErr = oldBrowserErrs.find((err) => error.message.includes(err))
+  if (isOldBrowserErr) {
+    return (
+      <ErrorBlock>
+        {"Oh no! You've found a bug because the browser you're using needs to be updated."}
+        {<Button onClick={handleClick}>Update now</Button>}
+      </ErrorBlock>
+    )
+  }
   return (
     <ErrorBlock>
       {'An error has occurred! We’ve alerted the developers. Try refreshing the page'}
