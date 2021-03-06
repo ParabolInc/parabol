@@ -3,6 +3,12 @@ import getRethink from '../database/rethinkDriver'
 import JiraDimensionField from '../database/types/JiraDimensionField'
 import {DataLoaderWorker} from '../graphql/graphql'
 import AtlassianServerManager from './AtlassianServerManager'
+import catchAndLog from '../postgres/utils/catchAndLog'
+import {
+  IMergeTeamJiraDimensionFieldsQueryParams,
+  mergeTeamJiraDimensionFieldsQuery
+} from '../postgres/queries/generated/mergeTeamJiraDimensionFieldsQuery'
+import getPg from '../postgres/getPg'
 
 const ensureJiraDimensionField = async (
   requiredMappers: {cloudId: string; projectKey: string; issueKey: string; dimensionName: string}[],
@@ -50,15 +56,26 @@ const ensureJiraDimensionField = async (
   const fieldsToAdd = newJiraDimensionFields.filter(Boolean)
   if (fieldsToAdd.length === 0) return
   const r = await getRethink()
-  await r
-    .table('Team')
-    .get(teamId)
-    .update((team) => ({
-      jiraDimensionFields: team('jiraDimensionFields')
-        .default([])
-        .union(fieldsToAdd)
-    }))
-    .run()
+  await Promise.all([
+    r
+      .table('Team')
+      .get(teamId)
+      .update((team) => ({
+        jiraDimensionFields: team('jiraDimensionFields')
+          .default([])
+          .union(fieldsToAdd)
+      }))
+      .run(),
+    catchAndLog(
+      () => mergeTeamJiraDimensionFieldsQuery.run(
+        {
+          jiraDimensionFields: fieldsToAdd,
+          id: teamId
+        } as unknown as IMergeTeamJiraDimensionFieldsQueryParams,
+        getPg()
+      )
+    )
+  ])
 }
 
 export default ensureJiraDimensionField
