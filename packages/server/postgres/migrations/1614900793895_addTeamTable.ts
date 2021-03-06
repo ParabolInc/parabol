@@ -18,7 +18,7 @@ export async function up(pgm: MigrationBuilder): Promise<void> {
       "createdBy" VARCHAR(100) NOT NULL,
       "isArchived" BOOLEAN NOT NULL DEFAULT FALSE,
       "isPaid" BOOLEAN NOT NULL DEFAULT TRUE,
-      "jiraDimensionFields" JSONB[],
+      "jiraDimensionFields" JSONB[] NOT NULL DEFAULT '{}',
       "lastMeetingType" "MeetingTypeEnum" NOT NULL DEFAULT 'retrospective',
       tier "TierEnum" NOT NULL,
       "orgId" VARCHAR(100) NOT NULL,

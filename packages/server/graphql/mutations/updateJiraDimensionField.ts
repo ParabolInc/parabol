@@ -8,6 +8,12 @@ import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import {GQLContext} from '../graphql'
 import UpdateJiraDimensionFieldPayload from '../types/UpdateJiraDimensionFieldPayload'
+import catchAndLog from '../../postgres/utils/catchAndLog'
+import {
+  IUpdateTeamByTeamIdQueryParams,
+  updateTeamByTeamIdQuery
+} from '../../postgres/queries/generated/updateTeamByTeamIdQuery'
+import getPg from '../../postgres/getPg'
 
 const updateJiraDimensionField = {
   type: GraphQLNonNull(UpdateJiraDimensionFieldPayload),
@@ -99,15 +105,28 @@ const updateJiraDimensionField = {
       )
     }
     const MAX_JIRA_DIMENSION_FIELDS = 100 // prevent a-holes from unbounded growth of the Team object
-    await r
-      .table('Team')
-      .get(teamId)
-      .update({
-        jiraDimensionFields: jiraDimensionFields.slice(
-          jiraDimensionFields.length - MAX_JIRA_DIMENSION_FIELDS
+    await Promise.all([
+      r
+        .table('Team')
+        .get(teamId)
+        .update({
+          jiraDimensionFields: jiraDimensionFields.slice(
+            jiraDimensionFields.length - MAX_JIRA_DIMENSION_FIELDS
+          )
+        })
+        .run(),
+      catchAndLog(() =>
+        updateTeamByTeamIdQuery.run(
+          {
+            jiraDimensionFields: jiraDimensionFields.slice(
+              jiraDimensionFields.length - MAX_JIRA_DIMENSION_FIELDS
+            ),
+            id: teamId
+          } as IUpdateTeamByTeamIdQueryParams,
+          getPg()
         )
-      })
-      .run()
+      )
+    ])
 
     publish(SubscriptionChannel.TEAM, teamId, 'UpdateJiraDimensionFieldSuccess', data, subOptions)
     return data
