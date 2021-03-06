@@ -52,6 +52,11 @@ const JoinMeetingMutation: StandardMutation<TJoinMeetingMutation> = (
       const teamMemberId = toTeamMemberId(teamId, viewerId)
       const teamMember = store.get<ITeamMember>(teamMemberId)
       if (!teamMember) return
+      const integrations = teamMember.getLinkedRecord('integrations')
+      if (!integrations) {
+        const tmpIntegrations = createProxyRecord(store, 'TeamMemberIntegration', {})
+        teamMember.setLinkedRecord(tmpIntegrations, 'integrations')
+      }
       const user = store.getRoot().getLinkedRecord('viewer')
       meetingMember.setLinkedRecord(teamMember, 'teamMember')
       meetingMember.setLinkedRecord(user, 'user')
