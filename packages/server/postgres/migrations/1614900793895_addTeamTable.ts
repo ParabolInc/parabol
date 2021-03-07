@@ -23,10 +23,7 @@ export async function up(pgm: MigrationBuilder): Promise<void> {
       tier "TierEnum" NOT NULL,
       "orgId" VARCHAR(100) NOT NULL,
       "isOnboardTeam" BOOLEAN NOT NULL DEFAULT FALSE,
-      "updatedAt" TIMESTAMP NOT NULL,
-
-      CONSTRAINT "fk_createdBy"
-        FOREIGN KEY("createdBy") REFERENCES "User"(id)
+      "updatedAt" TIMESTAMP NOT NULL
     );
 
     CREATE INDEX "idx_Team_orgId" ON "Team"("orgId");
