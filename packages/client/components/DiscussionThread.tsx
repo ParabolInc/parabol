@@ -55,8 +55,14 @@ const DiscussionThread = (props: Props) => {
   const editorRef = useRef<HTMLTextAreaElement>(null)
   const ref = useRef<HTMLDivElement>(null)
   const isExpanded =
-    useCoverable(`${meetingType}-thread`, ref, MeetingControlBarEnum.HEIGHT, meetingContentRef) ||
-    !!endedAt
+    useCoverable(
+      'threads',
+      ref,
+      MeetingControlBarEnum.HEIGHT,
+      meetingContentRef,
+      undefined,
+      meetingType
+    ) || !!endedAt
   return (
     <Wrapper isExpanded={isExpanded} isPokerMeeting={isPokerMeeting} ref={ref}>
       <DiscussionThreadList
