@@ -1,5 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
-import React, {useRef} from 'react'
+import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {phaseLabelLookup} from '../utils/meetings/lookups'
 import {PokerEstimatePhase_meeting} from '../__generated__/PokerEstimatePhase_meeting.graphql'
@@ -44,11 +44,10 @@ const PokerEstimatePhase = (props: Props) => {
   } = meeting
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const toggleDrawer = useRightDrawer(meetingId)
-  const meetingContentRef = useRef<HTMLDivElement>(null)
   if (!localStage) return null
   const {service} = localStage
   return (
-    <MeetingContent ref={meetingContentRef}>
+    <MeetingContent>
       <StyledMeetingHeaderAndPhase isOpen={isRightDrawerOpen} hideBottomBar={!!endedAt}>
         <MeetingTopBar
           avatarGroup={avatarGroup}
@@ -72,7 +71,6 @@ const PokerEstimatePhase = (props: Props) => {
           isDesktop={isDesktop}
           isOpen={isRightDrawerOpen}
           meeting={meeting}
-          meetingContentRef={meetingContentRef}
           onToggle={toggleDrawer}
         />
       </ResponsiveDashSidebar>
