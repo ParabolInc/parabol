@@ -1,11 +1,11 @@
 import {GraphQLNonNull} from 'graphql'
 import ms from 'ms'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import {ITeamMember, IUpdateTaskOnMutationArguments} from 'parabol-client/types/graphql'
 import extractTextFromDraftString from 'parabol-client/utils/draftjs/extractTextFromDraftString'
 import normalizeRawDraftJS from 'parabol-client/validation/normalizeRawDraftJS'
 import getRethink from '../../database/rethinkDriver'
-import Task from '../../database/types/Task'
+import Task, {AreaEnum as TAreaEnum, TaskStatusEnum} from '../../database/types/Task'
+import TeamMember from '../../database/types/TeamMember'
 import generateUID from '../../generateUID'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
@@ -20,6 +20,18 @@ import publishChangeNotifications from './helpers/publishChangeNotifications'
 
 const DEBOUNCE_TIME = ms('5m')
 
+type UpdateTaskInput = {
+  id: string
+  content?: string | null
+  sortOrder?: number | null
+  status?: TaskStatusEnum | null
+  teamId?: string | null
+  userId?: string | null
+}
+type UpdateTaskMutationVariables = {
+  updatedTask: UpdateTaskInput
+  area?: TAreaEnum | null
+}
 export default {
   type: UpdateTaskPayload,
   description: 'Update a task with a change in content, ownership, or status',
@@ -35,7 +47,7 @@ export default {
   },
   async resolve(
     _source,
-    {updatedTask}: IUpdateTaskOnMutationArguments,
+    {updatedTask}: UpdateTaskMutationVariables,
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) {
     const r = await getRethink()
@@ -131,7 +143,7 @@ export default {
         .filter({
           isNotRemoved: true
         })
-        .coerceTo('array') as unknown) as ITeamMember[]
+        .coerceTo('array') as unknown) as TeamMember[]
     }).run()
     // TODO: get users in the same location
     const usersToIgnore = await getUsersToIgnore(viewerId, teamId)

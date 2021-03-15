@@ -1,8 +1,11 @@
-import {TimelineEventEnum} from 'parabol-client/types/graphql'
 import generateUID from '../../generateUID'
 
-// export type ScheduledJobType = 'MEETING_STAGE_TIME_LIMIT_END'
-
+export type TimelineEventEnum =
+  | 'POKER_COMPLETE'
+  | 'actionComplete'
+  | 'createdTeam'
+  | 'joinedParabol'
+  | 'retroComplete'
 interface Input {
   id?: string
   createdAt?: Date

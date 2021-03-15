@@ -1,4 +1,3 @@
-import {TierEnum} from 'parabol-client/types/graphql'
 import getRethink from '../../../database/rethinkDriver'
 import {fromEpochSeconds} from '../../../utils/epochTime'
 import setUserTierForOrgId from '../../../utils/setUserTierForOrgId'
@@ -46,7 +45,7 @@ const upgradeToPro = async (orgId: string, source: string, email: string) => {
       .update({
         ...subscriptionFields,
         creditCard: getCCFromCustomer(customer),
-        tier: TierEnum.pro,
+        tier: 'pro',
         stripeId: customer.id,
         updatedAt: now
       }),
@@ -55,7 +54,7 @@ const upgradeToPro = async (orgId: string, source: string, email: string) => {
       .getAll(orgId, {index: 'orgId'})
       .update({
         isPaid: true,
-        tier: TierEnum.pro,
+        tier: 'pro',
         updatedAt: now
       })
   }).run()

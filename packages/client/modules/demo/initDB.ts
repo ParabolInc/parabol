@@ -1,17 +1,12 @@
 import {PALETTE} from '~/styles/paletteV2'
 import demoUserAvatar from '../../styles/theme/images/avatar-user.svg'
 import {MeetingSettingsThreshold, RetroDemo} from '../../types/constEnums'
-import {
-  IJiraRemoteProject,
-  IRetrospectiveMeeting,
-  IRetrospectiveMeetingSettings,
-  ISuggestedIntegrationGitHub,
-  ISuggestedIntegrationJira,
-  ITask,
-  SlackNotificationEventEnum,
-  TaskServiceEnum,
-  TierEnum
-} from '../../types/graphql'
+import RetrospectiveMeeting from '../../../server/database/types/MeetingRetrospective'
+import RetrospectiveMeetingSettings from '../../../server/database/types/MeetingSettingsRetrospective'
+import {TierEnum} from '~/__generated__/StandardHub_viewer.graphql'
+import ITask from '../../../server/database/types/Task'
+import {SlackNotificationEventEnum} from '~/__generated__/SlackNotificationList_viewer.graphql'
+import {TaskServiceEnum} from '~/__generated__/UpdateTaskMutation.graphql'
 import {CHECKIN, DISCUSS, GROUP, REFLECT, RETROSPECTIVE, VOTE} from '../../utils/constants'
 import getDemoAvatar from '../../utils/getDemoAvatar'
 import toTeamMemberId from '../../utils/relay/toTeamMemberId'
@@ -26,6 +21,24 @@ interface BaseUser {
   preferredName: string
   email: string
   picture: string
+}
+
+type IRetrospectiveMeeting = Omit<
+  RetrospectiveMeeting,
+  'summarySentAt' | 'createdAt' | 'endedAt'
+> & {
+  __typename: string
+  createdAt: string | Date
+  endedAt: string | Date | null
+  meetingMembers: any
+  team: any
+  settings: any
+  summarySentAt: string | Date | null
+  votesRemaining: number
+}
+
+type IRetrospectiveMeetingSettings = RetrospectiveMeetingSettings & {
+  team: any
 }
 
 const initMeetingSettings = () => {
@@ -54,7 +67,7 @@ export const JiraProjectKeyLookup = {
     cloudId: '123',
     cloudName: JiraDemoCloudName,
     avatar: 'foo',
-    service: TaskServiceEnum.jira
+    service: 'jira' as TaskServiceEnum
   },
   [JiraSecretKey]: {
     projectKey: JiraSecretKey,
@@ -62,7 +75,7 @@ export const JiraProjectKeyLookup = {
     cloudId: '123',
     cloudName: JiraDemoCloudName,
     avatar: 'foo',
-    service: TaskServiceEnum.jira
+    service: 'jira' as TaskServiceEnum
   }
 }
 
@@ -70,18 +83,18 @@ export const GitHubDemoKey = 'ParabolInc/ParabolDemo'
 export const GitHubProjectKeyLookup = {
   [GitHubDemoKey]: {
     nameWithOwner: GitHubDemoKey,
-    service: TaskServiceEnum.github
+    service: 'github' as TaskServiceEnum
   }
 }
 
-const makeSuggestedIntegrationJira = (key): ISuggestedIntegrationJira => ({
+const makeSuggestedIntegrationJira = (key) => ({
   __typename: 'SuggestedIntegrationJira',
   id: key,
-  remoteProject: {} as IJiraRemoteProject,
+  remoteProject: {},
   ...JiraProjectKeyLookup[key]
 })
 
-const makeSuggestedIntegrationGitHub = (nameWithOwner): ISuggestedIntegrationGitHub => ({
+const makeSuggestedIntegrationGitHub = (nameWithOwner) => ({
   __typename: 'SuggestedIntegrationGitHub',
   id: nameWithOwner,
   ...GitHubProjectKeyLookup[nameWithOwner]
@@ -115,7 +128,7 @@ const initDemoUser = ({preferredName, email, picture}: BaseUser, idx: number) =>
 const initSlackNotification = (userId) => ({
   __typename: 'SlackNotification',
   id: 'demoSlackNotification',
-  event: SlackNotificationEventEnum.MEETING_STAGE_TIME_LIMIT_START,
+  event: 'MEETING_STAGE_TIME_LIMIT_START' as SlackNotificationEventEnum,
   eventType: 'team',
   channelId: 'demoChannelId',
   userId,
@@ -189,13 +202,13 @@ const initDemoOrg = () => {
   return {
     id: demoOrgId,
     name: 'Demo Organization',
-    tier: TierEnum.pro,
+    tier: 'pro',
     orgUserCount: {
       activeUserCount: 5,
       inactiveUserCount: 0
     },
     showConversionModal: false
-  }
+  } as const
 }
 
 const initDemoTeam = (organization, teamMembers, newMeeting) => {
@@ -210,7 +223,7 @@ const initDemoTeam = (organization, teamMembers, newMeeting) => {
     name: demoTeamName,
     teamName: demoTeamName,
     orgId: demoOrgId,
-    tier: TierEnum.pro,
+    tier: 'pro' as TierEnum,
     teamId: demoTeamId,
     organization,
     meetingSettings: initMeetingSettings(),
@@ -259,7 +272,7 @@ const initPhases = (teamMembers) => {
           promptId: 'startId',
           question: 'Start',
           description: 'What new behaviors should we adopt?',
-          groupColor: PALETTE.PROMPT_GREEN
+          groupColor: PALETTE.PROMPT_CYAN
         },
         {
           id: 'stopId',
@@ -398,13 +411,13 @@ const initDB = (botScript) => {
     user: users[idx]
   }))
   users.forEach((user, idx) => {
-    ;(user as any).teamMember = teamMembers[idx]
+    ; (user as any).teamMember = teamMembers[idx]
   })
   const org = initDemoOrg()
   const newMeeting = initNewMeeting(org, teamMembers, meetingMembers)
   const team = initDemoTeam(org, teamMembers, newMeeting)
   teamMembers.forEach((teamMember) => {
-    ;(teamMember as any).team = team
+    ; (teamMember as any).team = team
   })
   team.meetingSettings.team = team as any
   newMeeting.commentCount = 0

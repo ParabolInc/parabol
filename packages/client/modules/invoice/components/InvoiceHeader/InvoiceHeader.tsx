@@ -7,7 +7,6 @@ import TierTag from '../../../../components/Tag/TierTag'
 import {PALETTE} from '../../../../styles/paletteV2'
 import defaultOrgAvatar from '../../../../styles/theme/images/avatar-organization.svg'
 import {Breakpoint} from '../../../../types/constEnums'
-import {TierEnum} from '../../../../types/graphql'
 
 const Header = styled('div')({
   alignItems: 'center',
@@ -74,7 +73,7 @@ const InvoiceHeader = (props: Props) => {
       </LogoPanel>
       <Info>
         <OrgName>{orgName}</OrgName>
-        {tier !== TierEnum.personal && <StyledTierTag tier={tier as TierEnum} />}
+        {tier !== 'personal' && <StyledTierTag tier={tier} />}
         {billingLeaderEmails.map((email) => (
           <Email key={`email${email}`}>{email}</Email>
         ))}

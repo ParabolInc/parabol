@@ -1,6 +1,6 @@
-import {TierEnum} from 'parabol-client/types/graphql'
 import generateUID from '../../generateUID'
 import CreditCard from './CreditCard'
+import {TierEnum} from './Invoice'
 
 interface Input {
   id?: string

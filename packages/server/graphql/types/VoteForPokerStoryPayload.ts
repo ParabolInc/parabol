@@ -1,5 +1,4 @@
 import {GraphQLNonNull, GraphQLObjectType} from 'graphql'
-import {NewMeetingPhaseTypeEnum} from '../../../client/types/graphql'
 import {GQLContext} from '../graphql'
 import EstimateStage from './EstimateStage'
 import makeMutationPayload from './makeMutationPayload'
@@ -10,7 +9,7 @@ export const VoteForPokerStorySuccess = new GraphQLObjectType<any, GQLContext>({
     stage: {
       type: GraphQLNonNull(EstimateStage),
       description: 'The stage that holds the updated scores',
-      resolve: resolveStage(NewMeetingPhaseTypeEnum.ESTIMATE)
+      resolve: resolveStage('ESTIMATE')
     }
   })
 })

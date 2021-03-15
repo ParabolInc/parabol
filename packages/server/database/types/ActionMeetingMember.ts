@@ -1,4 +1,3 @@
-import {MeetingTypeEnum} from 'parabol-client/types/graphql'
 import MeetingMember from './MeetingMember'
 
 interface Input {
@@ -11,6 +10,6 @@ interface Input {
 
 export default class ActionMeetingMember extends MeetingMember {
   constructor(input: Input) {
-    super({...input, meetingType: MeetingTypeEnum.action})
+    super({...input, meetingType: 'action'})
   }
 }

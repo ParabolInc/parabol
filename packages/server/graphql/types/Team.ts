@@ -7,11 +7,11 @@ import {
   GraphQLObjectType,
   GraphQLString
 } from 'graphql'
-import {ITeam} from 'parabol-client/types/graphql'
 import isTaskPrivate from 'parabol-client/utils/isTaskPrivate'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import getRethink from '../../database/rethinkDriver'
 import MassInvitationDB from '../../database/types/MassInvitation'
+import ITeam from '../../database/types/Team'
 import db from '../../db'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import standardError from '../../utils/standardError'
@@ -87,7 +87,10 @@ const Team = new GraphQLObjectType<ITeam, GQLContext>({
             .run()
         }
         const massInvitation = new MassInvitationDB({meetingId, teamMemberId})
-        await r.table('MassInvitation').insert(massInvitation, {conflict: 'replace'}).run()
+        await r
+          .table('MassInvitation')
+          .insert(massInvitation, {conflict: 'replace'})
+          .run()
         invitationTokens.length = 1
         invitationTokens[0] = massInvitation
         return massInvitation

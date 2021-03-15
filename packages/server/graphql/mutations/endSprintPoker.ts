@@ -1,10 +1,10 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import {MeetingMember, NewMeetingPhaseTypeEnum} from 'parabol-client/types/graphql'
 import getMeetingPhase from 'parabol-client/utils/getMeetingPhase'
 import findStageById from 'parabol-client/utils/meetings/findStageById'
 import getRethink from '../../database/rethinkDriver'
 import Meeting from '../../database/types/Meeting'
+import MeetingMember from '../../database/types/MeetingMember'
 import MeetingPoker from '../../database/types/MeetingPoker'
 import TimelineEventPokerComplete from '../../database/types/TimelineEventPokerComplete'
 import {getUserId, isSuperUser, isTeamMember} from '../../utils/authorization'
@@ -52,9 +52,7 @@ export default {
 
     // RESOLUTION
     // remove hovering data from redis
-    const estimatePhase = phases.find(
-      (phase) => phase.phaseType === NewMeetingPhaseTypeEnum.ESTIMATE
-    )!
+    const estimatePhase = phases.find((phase) => phase.phaseType === 'ESTIMATE')!
     const {stages: estimateStages} = estimatePhase
     if (estimateStages.length > 0) {
       const redisKeys = estimateStages.map((stage) => `pokerHover:${stage.id}`)
@@ -99,7 +97,7 @@ export default {
     ])
     endSlackMeeting(meetingId, teamId, dataLoader).catch(console.log)
     sendMeetingEndToSegment(completedMeeting, meetingMembers as MeetingMember[], template)
-    const isKill = phase.phaseType !== NewMeetingPhaseTypeEnum.ESTIMATE
+    const isKill = phase.phaseType !== 'ESTIMATE'
     if (!isKill) {
       sendNewMeetingSummary(completedMeeting, context).catch(console.log)
     }

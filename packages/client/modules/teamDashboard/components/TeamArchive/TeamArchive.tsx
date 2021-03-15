@@ -11,7 +11,6 @@ import {TeamArchive_viewer} from '~/__generated__/TeamArchive_viewer.graphql'
 import NullableTask from '../../../../components/NullableTask/NullableTask'
 import {PALETTE} from '../../../../styles/paletteV2'
 import {Layout, MathEnum} from '../../../../types/constEnums'
-import {AreaEnum} from '../../../../types/graphql'
 import getRallyLink from '../../../userDashboard/helpers/getRallyLink'
 import TeamArchiveHeader from '../TeamArchiveHeader/TeamArchiveHeader'
 
@@ -204,7 +203,7 @@ const TeamArchive = (props: Props) => {
               <NullableTask
                 dataCy={`archive-task`}
                 key={key}
-                area={AreaEnum.teamDash}
+                area='teamDash'
                 measure={measure}
                 task={task}
               />
@@ -294,8 +293,13 @@ export default createPaginationContainer(
     viewer: graphql`
       fragment TeamArchive_viewer on User {
         dashSearch
-        archivedTasks: tasks(first: $first, after: $after, userIds: $userIds, teamIds: $teamIds, archived: true)
-          @connection(key: "TeamArchive_archivedTasks", filters: ["userIds", "teamIds"]) {
+        archivedTasks: tasks(
+          first: $first
+          after: $after
+          userIds: $userIds
+          teamIds: $teamIds
+          archived: true
+        ) @connection(key: "TeamArchive_archivedTasks", filters: ["userIds", "teamIds"]) {
           edges {
             cursor
             node {

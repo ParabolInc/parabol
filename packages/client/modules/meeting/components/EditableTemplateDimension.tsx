@@ -37,7 +37,7 @@ const EditableTemplateDimension = (props: Props) => {
     const {error, value: name} = validate(rawDimensionName)
     if (error) return
     submitMutation()
-    RenamePokerTemplateDimensionMutation(atmosphere, {dimensionId, name}, {}, onError, onCompleted)
+    RenamePokerTemplateDimensionMutation(atmosphere, {dimensionId, name}, {onError, onCompleted})
   }
 
   const legitify = (value: string) => {
@@ -47,7 +47,8 @@ const EditableTemplateDimension = (props: Props) => {
       .max(100, 'That dimension name is probably long enough')
       .test((mVal) => {
         const isDupe = dimensions.find(
-          (dimension) => dimension.id !== dimensionId && dimension.name.toLowerCase() === mVal.toLowerCase()
+          (dimension) =>
+            dimension.id !== dimensionId && dimension.name.toLowerCase() === mVal.toLowerCase()
         )
         return isDupe ? 'That dimension already exists' : undefined
       })

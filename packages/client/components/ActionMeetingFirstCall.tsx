@@ -7,7 +7,6 @@ import AgendaShortcutHint from '../modules/meeting/components/AgendaShortcutHint
 import MeetingCopy from '../modules/meeting/components/MeetingCopy/MeetingCopy'
 import MeetingFacilitationHint from '../modules/meeting/components/MeetingFacilitationHint/MeetingFacilitationHint'
 import MeetingPhaseHeading from '../modules/meeting/components/MeetingPhaseHeading/MeetingPhaseHeading'
-import {NewMeetingPhaseTypeEnum} from '../types/graphql'
 import {AGENDA_ITEMS, AGENDA_ITEM_LABEL} from '../utils/constants'
 import {phaseLabelLookup} from '../utils/meetings/lookups'
 import {ActionMeetingFirstCall_meeting} from '../__generated__/ActionMeetingFirstCall_meeting.graphql'
@@ -38,9 +37,7 @@ const ActionMeetingFirstCall = (props: Props) => {
   const {preferredName} = facilitator
   const isFacilitating = facilitatorUserId === viewerId && !endedAt
   const phaseName = phaseLabelLookup[AGENDA_ITEMS]
-  const agendaItemPhase = phases.find(
-    (phase) => phase.phaseType === NewMeetingPhaseTypeEnum.agendaitems
-  )!
+  const agendaItemPhase = phases.find((phase) => phase.phaseType === 'agendaitems')!
   const {stages} = agendaItemPhase
   const agendaItemsCompleted = stages.filter((stage) => stage.isComplete).length
   return (
@@ -51,9 +48,7 @@ const ActionMeetingFirstCall = (props: Props) => {
           isMeetingSidebarCollapsed={!showSidebar}
           toggleSidebar={toggleSidebar}
         >
-          <PhaseHeaderTitle>
-            {phaseLabelLookup[NewMeetingPhaseTypeEnum.agendaitems]}
-          </PhaseHeaderTitle>
+          <PhaseHeaderTitle>{phaseLabelLookup.agendaitems}</PhaseHeaderTitle>
         </MeetingTopBar>
         <PhaseWrapper>
           <FirstCallWrapper>

@@ -5,11 +5,17 @@ import getRethink from '../../database/rethinkDriver'
 import standardError from '../../utils/standardError'
 import publish from '../../utils/publish'
 import {GQLContext} from '../graphql'
-import SlackNotification from '../../database/types/SlackNotification'
-import SlackNotificationEventEnum from '../types/SlackNotificationEventEnum'
-import {ISetSlackNotificationOnMutationArguments} from 'parabol-client/types/graphql'
+import SlackNotification, {
+  SlackNotificationEventEnum as TSlackNotificationEventEnum
+} from '../../database/types/SlackNotification'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import SlackNotificationEventEnum from '../types/SlackNotificationEventEnum'
 
+type SetSlackNotificationMutationVariables = {
+  slackNotificationEvents: Array<TSlackNotificationEventEnum>
+  slackChannelId?: string | null
+  teamId: string
+}
 export default {
   name: 'SetSlackNotification',
   type: new GraphQLNonNull(SetSlackNotificationPayload),
@@ -26,7 +32,7 @@ export default {
   },
   resolve: async (
     _source,
-    {slackChannelId, slackNotificationEvents, teamId}: ISetSlackNotificationOnMutationArguments,
+    {slackChannelId, slackNotificationEvents, teamId}: SetSlackNotificationMutationVariables,
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) => {
     const viewerId = getUserId(authToken)

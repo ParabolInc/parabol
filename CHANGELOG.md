@@ -5,6 +5,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.2.1 2021-Mar-04
+
+### Fixed
+- Fix an issue where app crashes on revealing votes if there are people who did not vote #4737
+
 ## 6.2.0 2021-Mar-03
 
 ### Added

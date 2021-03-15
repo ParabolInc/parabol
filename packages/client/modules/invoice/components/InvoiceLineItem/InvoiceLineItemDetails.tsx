@@ -3,18 +3,16 @@ import graphql from 'babel-plugin-relay/macro'
 import React, {useState} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {InvoiceLineItemDetails_details} from '~/__generated__/InvoiceLineItemDetails_details.graphql'
+import {InvoiceLineItemEnum} from '~/__generated__/InvoiceLineItem_item.graphql'
 import {PALETTE} from '../../../../styles/paletteV2'
 import {Breakpoint} from '../../../../types/constEnums'
-import {InvoiceLineItemEnum} from '../../../../types/graphql'
 import makeDateString from '../../../../utils/makeDateString'
 import invoiceLineFormat from '../../helpers/invoiceLineFormat'
 
 const detailDescriptionMaker = {
-  [InvoiceLineItemEnum.ADDED_USERS]: (detail: InvoiceLineItemDetails_details[0]) =>
-    `${detail.email} joined ${makeDateString(detail.startAt)}`,
-  [InvoiceLineItemEnum.REMOVED_USERS]: (detail: InvoiceLineItemDetails_details[0]) =>
-    `${detail.email} left ${makeDateString(detail.startAt)}`,
-  [InvoiceLineItemEnum.INACTIVITY_ADJUSTMENTS]: (detail: InvoiceLineItemDetails_details[0]) => {
+  ADDED_USERS: (detail) => `${detail.email} joined ${makeDateString(detail.startAt)}`,
+  REMOVED_USERS: (detail) => `${detail.email} left ${makeDateString(detail.startAt)}`,
+  INACTIVITY_ADJUSTMENTS: (detail) => {
     if (!detail.endAt) {
       return `${detail.email} has been paused since ${makeDateString(detail.startAt)}`
     } else if (!detail.startAt) {
@@ -24,7 +22,7 @@ const detailDescriptionMaker = {
       detail.endAt
     )}`
   }
-}
+} as const
 
 const Details = styled('div')({
   display: 'block'
@@ -63,7 +61,7 @@ const DetailsFill = styled('div')({
 
 interface Props {
   details: InvoiceLineItemDetails_details | null
-  type: InvoiceLineItemEnum
+  type: Exclude<InvoiceLineItemEnum, 'OTHER_ADJUSTMENTS'>
 }
 
 const InvoiceLineItemDetails = (props: Props) => {

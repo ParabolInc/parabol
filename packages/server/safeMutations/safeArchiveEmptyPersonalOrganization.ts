@@ -1,5 +1,4 @@
 import getRethink from '../database/rethinkDriver'
-import {TierEnum} from 'parabol-client/types/graphql'
 
 // Only does something if the organization is empty & not paid
 // safeArchiveTeam & downgradeToPersonal should be called before calling this
@@ -18,7 +17,7 @@ const safeArchiveEmptyPersonalOrganization = async (orgId: string) => {
     .table('Organization')
     .get(orgId)
     .run()
-  if (org.tier !== TierEnum.personal) return
+  if (org.tier !== 'personal') return
 
   await r
     .table('OrganizationUser')

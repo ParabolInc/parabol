@@ -19,7 +19,6 @@ import useBreakpoint from '~/hooks/useBreakpoint'
 import ResponsiveDashSidebar from './ResponsiveDashSidebar'
 import styled from '@emotion/styled'
 import useGotoStageId from '~/hooks/useGotoStageId'
-import {TaskServiceEnum} from '../types/graphql'
 import useRightDrawer from '~/hooks/useRightDrawer'
 
 const StyledMeetingHeaderAndPhase = styled(MeetingHeaderAndPhase)<{isOpen: boolean}>(
@@ -61,12 +60,8 @@ const PokerEstimatePhase = (props: Props) => {
           <PhaseHeaderTitle>{phaseLabelLookup.ESTIMATE}</PhaseHeaderTitle>
           <PhaseHeaderDescription>{'Estimate each story as a team'}</PhaseHeaderDescription>
         </MeetingTopBar>
-        {service === TaskServiceEnum.jira && (
-          <PokerEstimateHeaderCardJira stage={localStage as any} />
-        )}
-        {service === TaskServiceEnum.PARABOL && (
-          <PokerEstimateHeaderCardParabol stage={localStage as any} />
-        )}
+        {service === 'jira' && <PokerEstimateHeaderCardJira stage={localStage as any} />}
+        {service === 'PARABOL' && <PokerEstimateHeaderCardParabol stage={localStage as any} />}
         <PhaseWrapper>
           <EstimatePhaseArea gotoStageId={gotoStageId} meeting={meeting} />
         </PhaseWrapper>

@@ -5,7 +5,6 @@ import {createFragmentContainer} from 'react-relay'
 import {ActionSidebarAgendaItemsSection_meeting} from '../__generated__/ActionSidebarAgendaItemsSection_meeting.graphql'
 import useGotoStageId from '../hooks/useGotoStageId'
 import AgendaListAndInput from '../modules/teamDashboard/components/AgendaListAndInput/AgendaListAndInput'
-import {NewMeetingPhaseTypeEnum} from '../types/graphql'
 import MeetingSidebarPhaseItemChild from './MeetingSidebarPhaseItemChild'
 
 interface Props {
@@ -23,9 +22,7 @@ const ActionSidebarAgendaItemsSection = (props: Props) => {
   }
   // show agenda (no blur) at all times if the updates phase isNavigable
   // facilitator can click on updates nav item before completing all check-in stages
-  const updatesPhase = meeting.phases!.find(
-    (phase) => phase.phaseType === NewMeetingPhaseTypeEnum.updates
-  )!
+  const updatesPhase = meeting.phases!.find((phase) => phase.phaseType === 'updates')!
   const isUpdatesNavigable = updatesPhase && updatesPhase.stages![0].isNavigable
 
   return (

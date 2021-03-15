@@ -89,12 +89,12 @@ const EstimateDimensionColumn = (props: Props) => {
           isInitialStageRender={isInitialStageRender}
         />
       ) : (
-          <PokerDiscussVoting
-            meeting={meeting}
-            stage={stage}
-            isInitialStageRender={isInitialStageRender}
-          />
-        )}
+        <PokerDiscussVoting
+          meeting={meeting}
+          stage={stage}
+          isInitialStageRender={isInitialStageRender}
+        />
+      )}
     </ColumnInner>
   )
 }

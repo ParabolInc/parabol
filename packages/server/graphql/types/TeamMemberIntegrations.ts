@@ -1,4 +1,5 @@
 import {GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql'
+import TeamMemberIntegrationsId from '../../../client/shared/gqlIds/TeamMemberIntegrationsId'
 import {isTeamMember} from '../../utils/authorization'
 import {GQLContext} from '../graphql'
 import AtlassianIntegration from './AtlassianIntegration'
@@ -11,7 +12,7 @@ const TeamMemberIntegrations = new GraphQLObjectType<any, GQLContext>({
     id: {
       type: GraphQLNonNull(GraphQLID),
       description: 'composite',
-      resolve: ({teamId, userId}) => `integrations:${userId}:${teamId}`
+      resolve: ({teamId, userId}) => TeamMemberIntegrationsId.join(teamId, userId)
     },
     atlassian: {
       type: AtlassianIntegration,

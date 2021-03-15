@@ -6,7 +6,6 @@ import useGetUsedServiceTaskIds from '~/hooks/useGetUsedServiceTaskIds'
 import MockScopingList from '~/modules/meeting/components/MockScopingList'
 import useAtmosphere from '../hooks/useAtmosphere'
 import PersistJiraSearchQueryMutation from '../mutations/PersistJiraSearchQueryMutation'
-import {NewMeetingPhaseTypeEnum} from '../types/graphql'
 import {JiraScopingSearchResults_meeting} from '../__generated__/JiraScopingSearchResults_meeting.graphql'
 import {JiraScopingSearchResults_viewer} from '../__generated__/JiraScopingSearchResults_viewer.graphql'
 import IntegrationScopingNoResults from './IntegrationScopingNoResults'
@@ -33,7 +32,7 @@ const JiraScopingSearchResults = (props: Props) => {
   const [isEditing, setIsEditing] = useState(false)
   const atmosphere = useAtmosphere()
   const {id: meetingId, teamId, phases, jiraSearchQuery} = meeting
-  const estimatePhase = phases.find(({phaseType}) => phaseType === NewMeetingPhaseTypeEnum.ESTIMATE)
+  const estimatePhase = phases.find(({phaseType}) => phaseType === 'ESTIMATE')
   const usedServiceTaskIds = useGetUsedServiceTaskIds(estimatePhase)
   const handleAddIssueClick = () => setIsEditing(true)
 

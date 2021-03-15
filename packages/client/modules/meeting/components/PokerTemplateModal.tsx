@@ -4,7 +4,6 @@ import React, {useEffect, useState} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import DialogContainer from '../../../components/DialogContainer'
 import useAtmosphere from '../../../hooks/useAtmosphere'
-import {MeetingTypeEnum} from '../../../types/graphql'
 import getTemplateList from '../../../utils/getTemplateList'
 import {setActiveTemplate} from '../../../utils/relay/setActiveTemplate'
 import {PokerTemplateModal_pokerMeetingSettings} from '../../../__generated__/PokerTemplateModal_pokerMeetingSettings.graphql'
@@ -42,7 +41,7 @@ const PokerTemplateModal = (props: Props) => {
 
   const atmosphere = useAtmosphere()
   useEffect(() => {
-    setActiveTemplate(atmosphere, teamId, selectedTemplate.id, MeetingTypeEnum.poker)
+    setActiveTemplate(atmosphere, teamId, selectedTemplate.id, 'poker')
   }, [])
 
   return (
@@ -53,17 +52,17 @@ const PokerTemplateModal = (props: Props) => {
         setActiveIdx={setActiveIdx}
       />
 
-      {editingScaleId ?
-        <PokerTemplateScaleDetails team={team} /> :
+      {editingScaleId ? (
+        <PokerTemplateScaleDetails team={team} />
+      ) : (
         <PokerTemplateDetails
           settings={pokerMeetingSettings}
           gotoTeamTemplates={gotoTeamTemplates}
           gotoPublicTemplates={gotoPublicTemplates}
           closePortal={closePortal}
         />
-      }
-
-    </StyledDialogContainer >
+      )}
+    </StyledDialogContainer>
   )
 }
 export default createFragmentContainer(PokerTemplateModal, {

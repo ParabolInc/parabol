@@ -3,7 +3,6 @@ import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import ArchiveOrganization from '~/modules/teamDashboard/components/ArchiveTeam/ArchiveOrganization'
-import {TierEnum} from '~/types/graphql'
 import {OrgBillingDangerZone_organization} from '~/__generated__/OrgBillingDangerZone_organization.graphql'
 import Icon from '../../../../components/Icon'
 import Panel from '../../../../components/Panel/Panel'
@@ -48,7 +47,7 @@ const OrgBillingDangerZone = (props: Props) => {
   const {organization} = props
   const {isBillingLeader, tier} = organization
   if (!isBillingLeader) return null
-  const isPersonal = tier === TierEnum.personal
+  const isPersonal = tier === 'personal'
   return (
     <Panel label='Danger Zone'>
       <PanelRow>

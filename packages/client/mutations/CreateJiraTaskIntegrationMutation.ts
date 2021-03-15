@@ -1,15 +1,8 @@
 import {commitMutation} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import {
-  ICreateJiraTaskIntegrationOnMutationArguments,
-  ISuggestedIntegrationJira,
-  ISuggestedIntegrationQueryPayload,
-  TaskServiceEnum
-} from '../types/graphql'
 import makeSuggestedIntegrationId from '../utils/makeSuggestedIntegrationId'
 import createProxyRecord from '../utils/relay/createProxyRecord'
-import Atmosphere from '../Atmosphere'
-import {LocalHandlers} from '../types/relayMutations'
+import {StandardMutation} from '../types/relayMutations'
 import {CreateJiraTaskIntegrationMutation as TCreateJiraTaskIntegrationMutation} from '../__generated__/CreateJiraTaskIntegrationMutation.graphql'
 
 graphql`
@@ -42,10 +35,10 @@ const mutation = graphql`
   }
 `
 
-const CreateJiraTaskIntegrationMutation = (
-  atmosphere: Atmosphere,
-  variables: ICreateJiraTaskIntegrationOnMutationArguments,
-  {onCompleted, onError}: LocalHandlers
+const CreateJiraTaskIntegrationMutation: StandardMutation<TCreateJiraTaskIntegrationMutation> = (
+  atmosphere,
+  variables,
+  {onCompleted, onError}
 ) => {
   return commitMutation<TCreateJiraTaskIntegrationMutation>(atmosphere, {
     mutation,
@@ -62,15 +55,10 @@ const CreateJiraTaskIntegrationMutation = (
       if (!userId) return
       const user = store.get(userId)
       if (!user || !integration) return
-      const suggestedIntegrations = user.getLinkedRecord<ISuggestedIntegrationQueryPayload>(
-        'suggestedIntegrations',
-        {teamId}
-      )
+      const suggestedIntegrations = user.getLinkedRecord('suggestedIntegrations', {teamId})
       const projectKey = integration.getValue('projectKey')
       if (!suggestedIntegrations || !projectKey) return
-      const items = suggestedIntegrations.getLinkedRecords<ISuggestedIntegrationJira[] | null>(
-        'items'
-      )
+      const items = suggestedIntegrations.getLinkedRecords('items')
       if (!items) return
       const existingIntegration = items.find(
         (item) => item && item.getValue('projectKey') === projectKey
@@ -84,8 +72,8 @@ const CreateJiraTaskIntegrationMutation = (
           cloudId,
           projectKey,
           projectName,
-          service: TaskServiceEnum.jira
-        }
+          service: 'jira'
+        } as const
         const id = makeSuggestedIntegrationId(nextItem)
         // the fallback is likely never used
         const latestIntegration =
@@ -105,13 +93,13 @@ const CreateJiraTaskIntegrationMutation = (
       const task = store.get(taskId)
       if (!task) return
       const optimisticIntegration = {
-        service: TaskServiceEnum.jira,
+        service: 'jira',
         projectKey,
         cloudId,
         issueKey: '?',
         cloudName: '',
         updatedAt: now.toJSON()
-      }
+      } as const
       const integration = createProxyRecord(store, 'TaskIntegrationJira', optimisticIntegration)
       task.setLinkedRecord(integration, 'integration')
     },

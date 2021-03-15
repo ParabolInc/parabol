@@ -12,7 +12,8 @@ const DeckActivityPanel = styled('div')({
   height: '100%',
   position: 'absolute',
   right: 0,
-  width: 64
+  width: 64,
+  zIndex: 100 // show above dimension column
 })
 
 const PeekingAvatar = styled(PokerVotingAvatar)<{status?: TransitionStatus}>(({status}) => ({

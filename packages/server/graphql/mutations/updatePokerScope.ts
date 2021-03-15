@@ -1,6 +1,5 @@
 import {GraphQLID, GraphQLList, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel, Threshold} from 'parabol-client/types/constEnums'
-import {TaskServiceEnum} from '../../../client/types/graphql'
 import getJiraCloudIdAndKey from '../../../client/utils/getJiraCloudIdAndKey'
 import getRethink from '../../database/rethinkDriver'
 import EstimatePhase from '../../database/types/EstimatePhase'
@@ -93,7 +92,7 @@ const updatePokerScope = {
         stages.push(...newStages)
         const [cloudId, issueKey, projectKey] = getJiraCloudIdAndKey(serviceTaskId)
         const firstDimensionName = dimensions[0].name
-        if (service === TaskServiceEnum.jira) {
+        if (service === 'jira') {
           const existingMapper = requiredJiraMappers.find((mapper) => {
             // only attempt the first dimension. the other dimensions will default to comment
             return (

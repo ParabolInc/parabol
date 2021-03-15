@@ -7,7 +7,7 @@ import graphql from 'babel-plugin-relay/macro'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import {NullableTask_task} from '../../__generated__/NullableTask_task.graphql'
 import makeEmptyStr from '../../utils/draftjs/makeEmptyStr'
-import {AreaEnum, TaskStatusEnum} from '../../types/graphql'
+import {AreaEnum, TaskStatusEnum} from '~/__generated__/UpdateTaskMutation.graphql'
 
 interface Props {
   area: AreaEnum
@@ -59,8 +59,8 @@ const NullableTask = (props: Props) => {
       task={task}
     />
   ) : (
-      <NullCard className={className} preferredName={preferredName} />
-    )
+    <NullCard className={className} preferredName={preferredName} />
+  )
 }
 
 export default createFragmentContainer(NullableTask, {

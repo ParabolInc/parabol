@@ -9,7 +9,6 @@ import {Elevation} from '../styles/elevation'
 import makeMinWidthMediaQuery from '../utils/makeMinWidthMediaQuery'
 import DiscussionThreadInput from './DiscussionThreadInput'
 import DiscussionThreadList from './DiscussionThreadList'
-import {MeetingTypeEnum} from '~/types/graphql'
 
 const Wrapper = styled('div')<{isExpanded: boolean; isPokerMeeting?: boolean}>(
   ({isExpanded, isPokerMeeting}) => ({
@@ -41,7 +40,7 @@ const DiscussionThread = (props: Props) => {
   const {endedAt, meetingType, replyingToCommentId, threadSource} = meeting
   const thread = threadSource?.thread
   const commentors = threadSource?.commentors
-  const isPokerMeeting = meetingType === MeetingTypeEnum.poker
+  const isPokerMeeting = meetingType === 'poker'
   const preferredNames = useMemo(
     () => (commentors && commentors.map((commentor) => commentor.preferredName)) || null,
     [commentors]

@@ -1,6 +1,5 @@
 import {GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import {MeetingTypeEnum} from 'parabol-client/types/graphql'
 import {AGENDA_ITEMS} from 'parabol-client/utils/constants'
 import makeUpdateAgendaItemSchema from 'parabol-client/validation/makeUpdateAgendaItemSchema'
 import getRethink from '../../database/rethinkDriver'
@@ -61,7 +60,7 @@ export default {
       .run()
     const activeMeetings = await dataLoader.get('activeMeetingsByTeamId').load(teamId)
     const actionMeeting = activeMeetings.find(
-      (activeMeeting) => activeMeeting.meetingType === MeetingTypeEnum.action
+      (activeMeeting) => activeMeeting.meetingType === 'action'
     )
     const meetingId = actionMeeting?.id ?? null
     if (actionMeeting) {

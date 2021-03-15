@@ -4,7 +4,6 @@ import React, {useEffect, useState} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import DialogContainer from '../../../components/DialogContainer'
 import useAtmosphere from '../../../hooks/useAtmosphere'
-import {MeetingTypeEnum} from '../../../types/graphql'
 import getTemplateList from '../../../utils/getTemplateList'
 import {setActiveTemplate} from '../../../utils/relay/setActiveTemplate'
 import {ReflectTemplateModal_retroMeetingSettings} from '../../../__generated__/ReflectTemplateModal_retroMeetingSettings.graphql'
@@ -41,7 +40,7 @@ const ReflectTemplateModal = (props: Props) => {
 
   const atmosphere = useAtmosphere()
   useEffect(() => {
-    setActiveTemplate(atmosphere, teamId, selectedTemplate.id, MeetingTypeEnum.retrospective)
+    setActiveTemplate(atmosphere, teamId, selectedTemplate.id, 'retrospective')
   }, [])
 
   return (

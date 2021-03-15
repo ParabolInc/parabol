@@ -1,6 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {IReflectTemplate} from '../types/graphql'
 import {SharedUpdater, StandardMutation} from '../types/relayMutations'
 import getInProxy from '../utils/relay/getInProxy'
 import {RemoveReflectTemplateMutation as TRemoveReflectTemplateMutation} from '../__generated__/RemoveReflectTemplateMutation.graphql'
@@ -30,6 +29,8 @@ const mutation = graphql`
   }
 `
 
+type ReflectTemplate = NonNullable<RemoveReflectTemplateMutation_team['reflectTemplate']>
+
 export const removeReflectTemplateTeamUpdater: SharedUpdater<RemoveReflectTemplateMutation_team> = (
   payload,
   {store}
@@ -56,7 +57,7 @@ const RemoveReflectTemplateMutation: StandardMutation<TRemoveReflectTemplateMuta
     },
     optimisticUpdater: (store) => {
       const {templateId} = variables
-      const template = store.get<IReflectTemplate>(templateId)!
+      const template = store.get<ReflectTemplate>(templateId)!
       const teamId = template.getValue('teamId')
       handleRemoveReflectTemplate(templateId, teamId, store)
     }

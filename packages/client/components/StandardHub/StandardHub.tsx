@@ -7,12 +7,11 @@ import PlainButton from '~/components/PlainButton/PlainButton'
 import TierTag from '~/components/Tag/TierTag'
 import useRouter from '~/hooks/useRouter'
 import {TierLabel} from '~/types/constEnums'
-import {TierEnum} from '~/types/graphql'
 import WaveWhiteSVG from 'static/images/waveWhite.svg'
 import {APP_BAR_HEIGHT} from '../../styles/appbars'
 import {PALETTE} from '../../styles/paletteV2'
 import defaultUserAvatar from '../../styles/theme/images/avatar-user.svg'
-import {StandardHub_viewer} from '../../__generated__/StandardHub_viewer.graphql'
+import {StandardHub_viewer, TierEnum} from '../../__generated__/StandardHub_viewer.graphql'
 import Avatar from '../Avatar/Avatar'
 
 const StandardHubRoot = styled('div')({
@@ -91,8 +90,8 @@ const DEFAULT_VIEWER = {
   picture: '',
   preferredName: '',
   email: '',
-  tier: TierEnum.personal
-}
+  tier: 'personal'
+} as const
 
 const StandardHub = (props: Props) => {
   const {handleMenuClick, viewer} = props
@@ -116,7 +115,7 @@ const StandardHub = (props: Props) => {
           <Email>{email}</Email>
         </NameAndEmail>
       </User>
-      {tier === TierEnum.personal ? (
+      {tier === 'personal' ? (
         <Upgrade onClick={handleUpgradeClick}>
           <Icon>verified_user</Icon>
           <UpgradeCTA>

@@ -3,7 +3,6 @@ import React, {useMemo} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import TaskColumns from '../../../../components/TaskColumns/TaskColumns'
-import {AreaEnum} from '../../../../types/graphql'
 import toTeamMemberId from '../../../../utils/relay/toTeamMemberId'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import getSafeRegex from '~/utils/getSafeRegex'
@@ -41,7 +40,7 @@ const TeamColumnsContainer = (props: Props) => {
       myTeamMemberId={toTeamMemberId(teamId, viewerId)}
       tasks={filteredTasks}
       teamMemberFilterId={teamMemberFilterId}
-      area={AreaEnum.teamDash}
+      area='teamDash'
       teams={null}
     />
   )

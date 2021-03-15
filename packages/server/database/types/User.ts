@@ -1,7 +1,7 @@
 import {AuthTokenRole} from 'parabol-client/types/constEnums'
-import {TierEnum} from 'parabol-client/types/graphql'
 import generateUID from '../../generateUID'
 import AuthIdentity from './AuthIdentity'
+import {TierEnum} from './Invoice'
 
 interface Input {
   id?: string
@@ -82,6 +82,6 @@ export default class User {
     this.lastSeenAtURLs = lastSeenAtURLs ?? null
     this.preferredName = preferredName
     this.segmentId = segmentId ?? undefined
-    this.tier = tier ?? TierEnum.personal
+    this.tier = tier ?? 'personal'
   }
 }

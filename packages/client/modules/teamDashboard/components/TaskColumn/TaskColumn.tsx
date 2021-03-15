@@ -9,10 +9,10 @@ import withAtmosphere, {
 } from '../../../../decorators/withAtmosphere/withAtmosphere'
 import {PALETTE} from '../../../../styles/paletteV2'
 import {BezierCurve, DroppableType} from '../../../../types/constEnums'
-import {AreaEnum, TaskStatusEnum} from '../../../../types/graphql'
 import {TEAM_DASH, USER_DASH} from '../../../../utils/constants'
 import {taskStatusLabels} from '../../../../utils/taskStatus'
 import {TaskColumn_tasks} from '../../../../__generated__/TaskColumn_tasks.graphql'
+import {AreaEnum, TaskStatusEnum} from '~/__generated__/UpdateTaskMutation.graphql'
 import TaskColumnAddTask from './TaskColumnAddTask'
 import TaskColumnInner from './TaskColumnInner'
 

@@ -1,5 +1,4 @@
 import {GraphQLNonNull, GraphQLObjectType} from 'graphql'
-import {NewMeetingPhaseTypeEnum} from '../../../client/types/graphql'
 import {GQLContext} from '../graphql'
 import resolveStage from '../resolvers/resolveStage'
 import EstimateStage from './EstimateStage'
@@ -11,7 +10,7 @@ export const PokerSetFinalScoreSuccess = new GraphQLObjectType<any, GQLContext>(
     stage: {
       type: GraphQLNonNull(EstimateStage),
       description: 'The stage that holds the updated finalScore',
-      resolve: resolveStage(NewMeetingPhaseTypeEnum.ESTIMATE)
+      resolve: resolveStage('ESTIMATE')
     }
   })
 })

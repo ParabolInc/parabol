@@ -1,6 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
 import {readInlineData} from 'relay-runtime'
-import {MeetingTypeEnum} from '~/types/graphql'
 import isDemoRoute from '~/utils/isDemoRoute'
 import {useMeeting_meeting} from '~/__generated__/useMeeting_meeting.graphql'
 import {Breakpoint} from '../types/constEnums'
@@ -48,7 +47,7 @@ const useMeeting = (meetingRef: any) => {
   const handleGotoNext = useGotoNext(meeting, gotoStageId)
   const safeRoute = useMeetingLocalState(meeting)
   useResumeFacilitation(meeting)
-  useEndMeetingHotkey(meetingId, meetingType as MeetingTypeEnum)
+  useEndMeetingHotkey(meetingId, meetingType)
   useGotoNextHotkey(handleGotoNext.gotoNext)
   useGotoPrevHotkey(meeting, gotoStageId)
   // save a few cycles

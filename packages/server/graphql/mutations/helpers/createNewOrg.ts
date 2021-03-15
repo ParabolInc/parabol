@@ -1,4 +1,3 @@
-import {OrgUserRole, TierEnum} from 'parabol-client/types/graphql'
 import getRethink from '../../../database/rethinkDriver'
 import Organization from '../../../database/types/Organization'
 import OrganizationUser from '../../../database/types/OrganizationUser'
@@ -17,14 +16,14 @@ export default async function createNewOrg(
   const activeDomain = isCompanyDomain(userDomain) ? userDomain : undefined
   const org = new Organization({
     id: orgId,
-    tier: TierEnum.personal,
+    tier: 'personal',
     name: orgName,
     activeDomain
   })
   const orgUser = new OrganizationUser({
     orgId,
     userId: leaderUserId,
-    role: OrgUserRole.BILLING_LEADER,
+    role: 'BILLING_LEADER',
     tier: org.tier
   })
   await insertOrgUserAudit([orgId], leaderUserId, 'added')

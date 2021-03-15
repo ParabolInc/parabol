@@ -1,10 +1,9 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitLocalUpdate, commitMutation} from 'react-relay'
-import {Disposable, RecordProxy, RecordSourceSelectorProxy} from 'relay-runtime'
+import {RecordProxy, RecordSourceSelectorProxy} from 'relay-runtime'
 import {EndDraggingReflectionMutation_meeting} from '~/__generated__/EndDraggingReflectionMutation_meeting.graphql'
-import Atmosphere from '../Atmosphere'
-import {IEndDraggingReflectionOnMutationArguments} from '../types/graphql'
-import {LocalHandlers, SharedUpdater} from '../types/relayMutations'
+import {EndDraggingReflectionMutation as TEndDraggingReflectionMutation} from '~/__generated__/EndDraggingReflectionMutation.graphql'
+import {SharedUpdater, SimpleMutation} from '../types/relayMutations'
 import dndNoise from '../utils/dndNoise'
 import addNodeToArray from '../utils/relay/addNodeToArray'
 import clientTempId from '../utils/relay/clientTempId'
@@ -137,16 +136,13 @@ export const endDraggingReflectionMeetingOnNext = (payload, context) => {
   })
 }
 
-const EndDraggingReflectionMutation = (
-  atmosphere: Atmosphere,
-  variables: IEndDraggingReflectionOnMutationArguments,
-  {onError, onCompleted}: LocalHandlers = {}
-): Disposable => {
-  return commitMutation(atmosphere, {
+const EndDraggingReflectionMutation: SimpleMutation<TEndDraggingReflectionMutation> = (
+  atmosphere,
+  variables
+) => {
+  return commitMutation<TEndDraggingReflectionMutation>(atmosphere, {
     mutation,
     variables,
-    onCompleted,
-    onError,
     updater: (store) => {
       const payload = store.getRootField('endDraggingReflection')
       if (!payload) return

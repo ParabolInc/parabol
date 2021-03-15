@@ -10,7 +10,6 @@ import {ExportToCSVQuery} from 'parabol-client/__generated__/ExportToCSVQuery.gr
 import React, {Component} from 'react'
 import {fetchQuery} from 'react-relay'
 import {ExternalLinks, PokerCards} from '../../../../types/constEnums'
-import {NewMeetingPhaseTypeEnum} from '../../../../types/graphql'
 import getJiraCloudIdAndKey from '../../../../utils/getJiraCloudIdAndKey'
 import AnchorIfEmail from './MeetingSummaryEmail/AnchorIfEmail'
 import EmailBorderBottom from './MeetingSummaryEmail/EmailBorderBottom'
@@ -183,9 +182,7 @@ class ExportToCSV extends Component<Props> {
   handlePokerMeeting(meeting: Meeting) {
     const rows = [] as CSVPokerRow[]
     const {phases} = meeting
-    const estimatePhase = phases!.find(
-      (phase) => phase.phaseType === NewMeetingPhaseTypeEnum.ESTIMATE
-    )!
+    const estimatePhase = phases!.find((phase) => phase.phaseType === 'ESTIMATE')!
     const stages = estimatePhase.stages!
     stages.forEach((stage) => {
       const {finalScore, dimensionRef, story, scores, serviceTaskId} = stage

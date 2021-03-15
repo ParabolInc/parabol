@@ -1,14 +1,9 @@
 import {commitMutation} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import {Disposable} from 'relay-runtime'
-import Atmosphere from '../Atmosphere'
 import handleMovePokerTemplateDimension from './handlers/handleMovePokerTemplateDimension'
-import {IMovePokerTemplateDimensionOnMutationArguments} from '../types/graphql'
 import getInProxy from '../utils/relay/getInProxy'
-
-interface Context {
-  templateId: string
-}
+import {MovePokerTemplateDimensionMutation as TMovePokerTemplateDimensionMutation} from '~/__generated__/MovePokerTemplateDimensionMutation.graphql'
+import {StandardMutation} from '../types/relayMutations'
 
 graphql`
   fragment MovePokerTemplateDimensionMutation_team on MovePokerTemplateDimensionPayload {
@@ -36,12 +31,11 @@ export const movePokerTemplateDimensionTeamUpdater = (payload, {store}) => {
   handleMovePokerTemplateDimension(store, templateId)
 }
 
-const MovePokerTemplateDimensionMutation = (
-  atmosphere: Atmosphere,
-  variables: IMovePokerTemplateDimensionOnMutationArguments,
-  context: Context
-): Disposable => {
-  return commitMutation(atmosphere, {
+const MovePokerTemplateDimensionMutation: StandardMutation<
+  TMovePokerTemplateDimensionMutation,
+  {templateId: string}
+> = (atmosphere, variables, {templateId}) => {
+  return commitMutation<TMovePokerTemplateDimensionMutation>(atmosphere, {
     mutation,
     variables,
     updater: (store) => {
@@ -51,7 +45,6 @@ const MovePokerTemplateDimensionMutation = (
     },
     optimisticUpdater: (store) => {
       const {sortOrder, dimensionId} = variables
-      const {templateId} = context
       const dimension = store.get(dimensionId)
       if (!dimension) return
       dimension.setValue(sortOrder, 'sortOrder')

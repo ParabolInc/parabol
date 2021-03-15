@@ -1,8 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {Disposable} from 'relay-runtime'
-import {IAddGitHubAuthOnMutationArguments} from '../types/graphql'
-import {LocalHandlers} from '../types/relayMutations'
+import {StandardMutation} from '../types/relayMutations'
 import {AddGitHubAuthMutation as TAddGitHubAuthMutation} from '../__generated__/AddGitHubAuthMutation.graphql'
 
 graphql`
@@ -31,11 +29,11 @@ const mutation = graphql`
   }
 `
 
-const AddGitHubAuthMutation = (
+const AddGitHubAuthMutation: StandardMutation<TAddGitHubAuthMutation> = (
   atmosphere,
-  variables: IAddGitHubAuthOnMutationArguments,
-  {onError, onCompleted}: LocalHandlers
-): Disposable => {
+  variables,
+  {onError, onCompleted}
+) => {
   return commitMutation<TAddGitHubAuthMutation>(atmosphere, {
     mutation,
     variables,

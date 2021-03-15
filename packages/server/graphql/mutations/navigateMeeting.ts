@@ -11,7 +11,6 @@ import standardError from '../../utils/standardError'
 import Meeting from '../../database/types/Meeting'
 import removeScheduledJobs from './helpers/removeScheduledJobs'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import {MeetingTypeEnum} from '../../../client/types/graphql'
 
 export default {
   type: new GraphQLNonNull(NavigateMeetingPayload),
@@ -72,7 +71,7 @@ export default {
         // MUTATIVE
         stage.isComplete = true
         stage.endAt = now
-        if (meetingType !== MeetingTypeEnum.poker) {
+        if (meetingType !== 'poker') {
           stage.readyToAdvance = stage.readyToAdvance || []
           if (!stage.readyToAdvance.includes(facilitatorUserId)) {
             stage.readyToAdvance.push(facilitatorUserId)
