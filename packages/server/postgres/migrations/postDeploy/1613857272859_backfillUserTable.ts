@@ -59,7 +59,7 @@ export async function up(pgm: MigrationBuilder): Promise<void> {
 
     console.log('starting backfill pass...')
     console.log('after ts:', usersAfterTs, 'by:', usersByFieldChoice)
-    while (true) {
+    for (let i = 0; i < 1e5; i++) {
       console.log('i:', i)
       const offset = batchSize * i
       const rethinkUsers = await r.db('actionProduction')
@@ -73,7 +73,6 @@ export async function up(pgm: MigrationBuilder): Promise<void> {
       foundUsers = true
       const pgUsers = cleanUsers(rethinkUsers)
       await catchAndLog(() => backupUserQuery.run({users: pgUsers}, getPg()))
-      i += 1
     }
     return foundUsers
   }
