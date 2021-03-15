@@ -1,4 +1,3 @@
-import {NewMeetingPhaseTypeEnum} from '../../../client/types/graphql'
 import EstimateUserScore from './EstimateUserScore'
 import GenericMeetingStage from './GenericMeetingStage'
 
@@ -23,7 +22,7 @@ export default class EstimateStage extends GenericMeetingStage {
   scores: EstimateUserScore[]
   isVoting: boolean
   constructor(input: Input) {
-    super(NewMeetingPhaseTypeEnum.ESTIMATE, input.durations)
+    super('ESTIMATE', input.durations)
     const {creatorUserId, service, serviceTaskId, sortOrder, scores, dimensionRefIdx} = input
     this.creatorUserId = creatorUserId
     this.service = service

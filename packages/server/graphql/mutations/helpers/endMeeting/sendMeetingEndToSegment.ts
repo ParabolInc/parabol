@@ -1,6 +1,6 @@
-import {MeetingMember, NewMeetingPhaseTypeEnum} from 'parabol-client/types/graphql'
 import Meeting from '../../../../database/types/Meeting'
 import MeetingTemplate from '../../../../database/types/MeetingTemplate'
+import MeetingMember from '../../../../database/types/MeetingMember'
 import segmentIo from '../../../../utils/segmentIo'
 
 const sendMeetingEndToSegment = async (
@@ -16,7 +16,7 @@ const sendMeetingEndToSegment = async (
       userId,
       event: 'Meeting Completed',
       properties: {
-        hasIcebreaker: phases[0].phaseType === NewMeetingPhaseTypeEnum.checkin,
+        hasIcebreaker: phases[0].phaseType === 'checkin',
         // include wasFacilitator as a flag to handle 1 per meeting
         wasFacilitator,
         userIds: wasFacilitator ? presentMemberUserIds : undefined,

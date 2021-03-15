@@ -1,6 +1,5 @@
 import {GraphQLBoolean, GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import {SubscriptionChannel, Threshold} from 'parabol-client/types/constEnums'
-import {ReactableEnum as EReactableEnum} from 'parabol-client/types/graphql'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import getRethink from '../../database/rethinkDriver'
 import {Reactable} from '../../database/types/Reactable'
@@ -14,9 +13,9 @@ import getReactableType from '../types/getReactableType'
 import ReactableEnum from '../types/ReactableEnum'
 
 const tableLookup = {
-  [EReactableEnum.COMMENT]: 'Comment',
-  [EReactableEnum.REFLECTION]: 'RetroReflection'
-}
+  COMMENT: 'Comment',
+  REFLECTION: 'RetroReflection'
+} as const
 
 const addReactjiToReactable = {
   type: GraphQLNonNull(AddReactjiToReactablePayload),

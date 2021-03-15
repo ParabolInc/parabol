@@ -1,10 +1,11 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import {IAddCommentOnMutationArguments, NewMeetingPhaseTypeEnum} from 'parabol-client/types/graphql'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import normalizeRawDraftJS from 'parabol-client/validation/normalizeRawDraftJS'
 import getRethink from '../../database/rethinkDriver'
 import Comment from '../../database/types/Comment'
+import {NewMeetingPhaseTypeEnum} from '../../database/types/GenericMeetingPhase'
+import {ThreadSourceEnum} from '../../database/types/ThreadSource'
 import {getUserId} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import segmentIo from '../../utils/segmentIo'
@@ -12,6 +13,16 @@ import {GQLContext} from '../graphql'
 import AddCommentInput from '../types/AddCommentInput'
 import AddCommentPayload from '../types/AddCommentPayload'
 import validateThreadableThreadSourceId from './validateThreadableThreadSourceId'
+
+type AddCommentMutationVariables = {
+  comment: {
+    threadSource: ThreadSourceEnum
+    threadId: string
+    content: string
+    threadSortOrder: number
+  }
+  meetingId: string
+}
 
 const addComment = {
   type: GraphQLNonNull(AddCommentPayload),
@@ -28,7 +39,7 @@ const addComment = {
   },
   resolve: async (
     _source,
-    {comment, meetingId}: IAddCommentOnMutationArguments,
+    {comment, meetingId}: AddCommentMutationVariables,
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) => {
     const r = await getRethink()
@@ -57,15 +68,14 @@ const addComment = {
 
     const dbComment = new Comment({...comment, content, createdBy: viewerId})
     const {id: commentId, isAnonymous, threadParentId} = dbComment
-    await r.table('Comment').insert(dbComment).run()
+    await r
+      .table('Comment')
+      .insert(dbComment)
+      .run()
 
     const data = {commentId, meetingId}
     const {phases, teamId} = meeting!
-    const threadablePhases = [
-      NewMeetingPhaseTypeEnum.discuss,
-      NewMeetingPhaseTypeEnum.agendaitems,
-      NewMeetingPhaseTypeEnum.ESTIMATE
-    ]
+    const threadablePhases = ['discuss', 'agendaitems', 'ESTIMATE'] as NewMeetingPhaseTypeEnum[]
     const containsThreadablePhase = phases.find(({phaseType}) =>
       threadablePhases.includes(phaseType)
     )!

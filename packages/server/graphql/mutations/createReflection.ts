@@ -1,6 +1,5 @@
 import {GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import {NewMeetingPhaseTypeEnum} from 'parabol-client/types/graphql'
 import extractTextFromDraftString from 'parabol-client/utils/draftjs/extractTextFromDraftString'
 import isPhaseComplete from 'parabol-client/utils/meetings/isPhaseComplete'
 import getGroupSmartTitle from 'parabol-client/utils/smartGroup/getGroupSmartTitle'
@@ -50,7 +49,7 @@ export default {
     if (endedAt) {
       return {error: {message: 'Meeting already ended'}}
     }
-    if (isPhaseComplete(NewMeetingPhaseTypeEnum.group, phases)) {
+    if (isPhaseComplete('group', phases)) {
       return standardError(new Error('Meeting phase already completed'), {userId: viewerId})
     }
 
@@ -87,13 +86,13 @@ export default {
       group: r.table('RetroReflectionGroup').insert(reflectionGroup),
       reflection: r.table('RetroReflection').insert(reflection)
     }).run()
-    const groupPhase = phases.find((phase) => phase.phaseType === NewMeetingPhaseTypeEnum.group)!
+    const groupPhase = phases.find((phase) => phase.phaseType === 'group')!
     const {stages} = groupPhase
     const [groupStage] = stages
 
     let unlockedStageIds
     if (!groupStage.isNavigableByFacilitator) {
-      unlockedStageIds = unlockAllStagesForPhase(phases, NewMeetingPhaseTypeEnum.group, true)
+      unlockedStageIds = unlockAllStagesForPhase(phases, 'group', true)
       await r
         .table('NewMeeting')
         .get(meetingId)

@@ -1,4 +1,5 @@
 import {GraphQLEnumType} from 'graphql'
+import {MeetingTypeEnum as TMeetingTypeEnum} from '../../database/types/Meeting'
 
 const MeetingTypeEnum = new GraphQLEnumType({
   name: 'MeetingTypeEnum',
@@ -7,7 +8,7 @@ const MeetingTypeEnum = new GraphQLEnumType({
     action: {},
     retrospective: {},
     poker: {}
-  }
+  } as {[P in TMeetingTypeEnum]: any}
 })
 
 export default MeetingTypeEnum

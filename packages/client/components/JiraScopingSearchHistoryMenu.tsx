@@ -5,12 +5,10 @@ import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import useAtmosphere from '../hooks/useAtmosphere'
 import {MenuProps} from '../hooks/useMenu'
 import {PALETTE} from '../styles/paletteV2'
-import {IJiraSearchQuery} from '../types/graphql'
 import {JiraScopingSearchHistoryMenu_teamMember} from '../__generated__/JiraScopingSearchHistoryMenu_teamMember.graphql'
 import Menu from './Menu'
 import MenuItem from './MenuItem'
 import MenuItemLabel from './MenuItemLabel'
-
 
 const NoResults = styled(MenuItemLabel)({
   color: PALETTE.TEXT_GRAY,
@@ -21,11 +19,11 @@ const NoResults = styled(MenuItemLabel)({
 })
 
 const QueryString = styled('span')({
-  color: PALETTE.TEXT_GRAY,
+  color: PALETTE.TEXT_GRAY
 })
 
 const ProjectFilter = styled('span')({
-  color: PALETTE.TEXT_GRAY,
+  color: PALETTE.TEXT_GRAY
 })
 
 const StyledMenuItemLabel = styled(MenuItemLabel)({
@@ -59,22 +57,20 @@ const JiraScopingSearchHistoryMenu = (props: Props) => {
         <NoResults key='no-results'>No saved queries yet!</NoResults>
       )}
       {jiraSearchQueries.map((jiraSearchQuery) => {
-        const {id: queryId,
-          queryString,
-          isJQL,
-          projectKeyFilters
-        } = jiraSearchQuery
+        const {id: queryId, queryString, isJQL, projectKeyFilters} = jiraSearchQuery
         const selectQuery = () => {
           commitLocalUpdate(atmosphere, (store) => {
             const searchQueryId = `jiraSearchQuery:${meetingId}`
-            const jiraSearchQuery = store.get<IJiraSearchQuery>(searchQueryId)!
+            const jiraSearchQuery = store.get(searchQueryId)!
             jiraSearchQuery.setValue(isJQL, 'isJQL')
             jiraSearchQuery.setValue(queryString, 'queryString')
             jiraSearchQuery.setValue(projectKeyFilters as string[], 'projectKeyFilters')
           })
         }
         const queryStringLabel = isJQL ? queryString : `“${queryString}”`
-        const projectFilters = projectKeyFilters.map((filter) => filter.slice(filter.indexOf(':') + 1)).join(', ')
+        const projectFilters = projectKeyFilters
+          .map((filter) => filter.slice(filter.indexOf(':') + 1))
+          .join(', ')
         return (
           <MenuItem
             key={queryId}
@@ -91,7 +87,6 @@ const JiraScopingSearchHistoryMenu = (props: Props) => {
     </Menu>
   )
 }
-
 
 export default createFragmentContainer(JiraScopingSearchHistoryMenu, {
   teamMember: graphql`

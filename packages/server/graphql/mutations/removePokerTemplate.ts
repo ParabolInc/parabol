@@ -1,6 +1,5 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SprintPokerDefaults, SubscriptionChannel} from 'parabol-client/types/constEnums'
-import {MeetingTypeEnum} from 'parabol-client/types/graphql'
 import MeetingSettingsPoker from '../../database/types/MeetingSettingsPoker'
 import PokerTemplate from '../../database/types/PokerTemplate'
 import getRethink from '../../database/rethinkDriver'
@@ -39,13 +38,13 @@ const removePokerTemplate = {
       templates: (r
         .table('MeetingTemplate')
         .getAll(teamId, {index: 'teamId'})
-        .filter({isActive: true, type: MeetingTypeEnum.poker})
+        .filter({isActive: true, type: 'poker'})
         .orderBy('name')
         .coerceTo('array') as unknown) as PokerTemplate[],
       settings: (r
         .table('MeetingSettings')
         .getAll(teamId, {index: 'teamId'})
-        .filter({meetingType: MeetingTypeEnum.poker})
+        .filter({meetingType: 'poker'})
         .nth(0) as unknown) as MeetingSettingsPoker
     }).run()
 

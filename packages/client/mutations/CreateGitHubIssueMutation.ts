@@ -1,9 +1,7 @@
 import {CreateGitHubIssueMutation as TCreateGitHubIssueMutation} from '../__generated__/CreateGitHubIssueMutation.graphql'
 import {commitMutation} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import Atmosphere from '../Atmosphere'
-import {ICreateGitHubIssueOnMutationArguments, TaskServiceEnum} from '../types/graphql'
-import {LocalHandlers} from '../types/relayMutations'
+import {StandardMutation} from '../types/relayMutations'
 import createProxyRecord from '../utils/relay/createProxyRecord'
 
 graphql`
@@ -33,10 +31,10 @@ const mutation = graphql`
   }
 `
 
-const CreateGitHubIssueMutation = (
-  atmosphere: Atmosphere,
-  variables: ICreateGitHubIssueOnMutationArguments,
-  {onError, onCompleted}: LocalHandlers
+const CreateGitHubIssueMutation: StandardMutation<TCreateGitHubIssueMutation> = (
+  atmosphere,
+  variables,
+  {onError, onCompleted}
 ) => {
   return commitMutation<TCreateGitHubIssueMutation>(atmosphere, {
     mutation,
@@ -47,11 +45,11 @@ const CreateGitHubIssueMutation = (
       const task = store.get(taskId)
       if (!task) return
       const optimisticIntegration = {
-        service: TaskServiceEnum.github,
+        service: 'github',
         nameWithOwner,
         issueNumber: '?',
         updatedAt: now.toJSON()
-      }
+      } as const
       const integration = createProxyRecord(store, 'TaskIntegrationGitHub', optimisticIntegration)
       task.setLinkedRecord(integration, 'integration')
     },

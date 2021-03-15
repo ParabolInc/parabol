@@ -1,6 +1,5 @@
 import {GraphQLID, GraphQLInt, GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
-import {MeetingTypeEnum, NewMeetingPhaseTypeEnum} from '../../../client/types/graphql'
 import getJiraCloudIdAndKey from '../../../client/utils/getJiraCloudIdAndKey'
 import EstimatePhase from '../../database/types/EstimatePhase'
 import {getUserId} from '../../utils/authorization'
@@ -37,9 +36,7 @@ const PokerMeeting = new GraphQLObjectType<any, GQLContext>({
       type: GraphQLNonNull(PokerMeetingSettings),
       description: 'The settings that govern the Poker meeting',
       resolve: async ({teamId}, _args, {dataLoader}) => {
-        return dataLoader
-          .get('meetingSettingsByType')
-          .load({teamId, meetingType: MeetingTypeEnum.poker})
+        return dataLoader.get('meetingSettingsByType').load({teamId, meetingType: 'poker'})
       }
     },
     story: {
@@ -52,7 +49,7 @@ const PokerMeeting = new GraphQLObjectType<any, GQLContext>({
       },
       resolve: async ({phases, teamId}, {storyId: serviceTaskId}, {dataLoader}) => {
         const estimatePhase = phases.find(
-          (phase) => phase.phaseType === NewMeetingPhaseTypeEnum.ESTIMATE
+          (phase) => phase.phaseType === 'ESTIMATE'
         ) as EstimatePhase
         const {stages} = estimatePhase
         const stage = stages.find((stage) => stage.serviceTaskId === serviceTaskId)

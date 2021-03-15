@@ -8,7 +8,6 @@ import useForm from '../hooks/useForm'
 import {MenuProps} from '../hooks/useMenu'
 import {PALETTE} from '../styles/paletteV2'
 import {ICON_SIZE} from '../styles/typographyV2'
-import {IJiraSearchQuery} from '../types/graphql'
 import {JiraScopingSearchFilterMenu_viewer} from '../__generated__/JiraScopingSearchFilterMenu_viewer.graphql'
 import Checkbox from './Checkbox'
 import DropdownMenuLabel from './DropdownMenuLabel'
@@ -79,6 +78,10 @@ interface Props {
   error: Error | null
 }
 
+type JiraSearchQuery = NonNullable<
+  NonNullable<JiraScopingSearchFilterMenu_viewer['meeting']>['jiraSearchQuery']
+>
+
 const getValue = (item: {name: string}) => item.name.toLowerCase()
 
 const MAX_PROJECTS = 10
@@ -117,7 +120,7 @@ const JiraScopingSearchFilterMenu = (props: Props) => {
   const toggleJQL = () => {
     commitLocalUpdate(atmosphere, (store) => {
       const searchQueryId = `jiraSearchQuery:${meetingId}`
-      const jiraSearchQuery = store.get<IJiraSearchQuery>(searchQueryId)
+      const jiraSearchQuery = store.get(searchQueryId)
       // this might bork if the checkbox is ticked before the full query loads
       if (!jiraSearchQuery) return
       jiraSearchQuery.setValue(!isJQL, 'isJQL')
@@ -166,7 +169,7 @@ const JiraScopingSearchFilterMenu = (props: Props) => {
         const toggleProjectKeyFilter = () => {
           commitLocalUpdate(atmosphere, (store) => {
             const searchQueryId = `jiraSearchQuery:${meetingId}`
-            const jiraSearchQuery = store.get<IJiraSearchQuery>(searchQueryId)!
+            const jiraSearchQuery = store.get<JiraSearchQuery>(searchQueryId)!
             const projectKeyFiltersProxy = jiraSearchQuery.getValue('projectKeyFilters')!.slice()
             const keyIdx = projectKeyFiltersProxy.indexOf(globalProjectKey)
             if (keyIdx !== -1) {

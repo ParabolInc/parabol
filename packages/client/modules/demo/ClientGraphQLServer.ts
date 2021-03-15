@@ -6,19 +6,17 @@ import StrictEventEmitter from 'strict-event-emitter-types'
 import stringSimilarity from 'string-similarity'
 import {PALETTE} from '~/styles/paletteV2'
 import {MeetingSettingsThreshold, RetroDemo, SubscriptionChannel} from '../../types/constEnums'
-import {
-  DragReflectionDropTargetTypeEnum,
-  IDiscussPhase,
-  IGoogleAnalyzedEntity,
-  INewMeetingStage,
-  IReflectPhase,
-  IRetroReflection,
-  IRetroReflectionGroup,
-  ITask,
-  NewMeetingPhase,
-  NewMeetingPhaseTypeEnum,
-  ReactableEnum
-} from '../../types/graphql'
+import GoogleAnalyzedEntity from '../../../server/database/types/GoogleAnalyzedEntity'
+import DiscussPhase from '../../../server/database/types/DiscussPhase'
+import DiscussStage from '../../../server/database/types/DiscussStage'
+import ReflectPhase from '../../../server/database/types/ReflectPhase'
+import NewMeetingPhase from '../../../server/database/types/GenericMeetingPhase'
+import NewMeetingStage from '../../../server/database/types/GenericMeetingStage'
+import ITask from '../../../server/database/types/Task'
+import ReflectionGroup from '../../../server/database/types/ReflectionGroup'
+import Reflection from '../../../server/database/types/Reflection'
+import {ReactableEnum} from '~/__generated__/AddReactjiToReactableMutation.graphql'
+import {DragReflectionDropTargetTypeEnum} from '~/__generated__/EndDraggingReflectionMutation.graphql'
 import {DISCUSS, GROUP, REFLECT, TASK, TEAM, VOTE} from '../../utils/constants'
 import dndNoise from '../../utils/dndNoise'
 import extractTextFromDraftString from '../../utils/draftjs/extractTextFromDraftString'
@@ -44,22 +42,69 @@ import initDB, {
 } from './initDB'
 import LocalAtmosphere from './LocalAtmosphere'
 
-export type DemoReflection = Omit<
-  IRetroReflection,
-  'autoReflectionGroupId' | 'team' | 'reactjis' | 'retroPhaseItemId' | 'phaseItem'
-> & {
-  creatorId: string
+export type DemoReflection = Omit<Reflection, 'reactjis' | 'createdAt' | 'updatedAt'> & {
+  __typename: string
+  createdAt: string | Date
+  dragContext: any
+  editorIds: any
+  entities: any
+  groupColor: string
+  isEditing: any
+  isHumanTouched: boolean
+  isViewerCreator: boolean
+  meeting: any
+  prompt: any
   reactjis: any[]
   reflectionId: string
-  isHumanTouched: boolean
+  retroReflectionGroup: DemoReflectionGroup
+  updatedAt: string | Date
 }
 
-export type DemoReflectionGroup = Omit<
-  IRetroReflectionGroup,
-  'team' | 'reflections' | 'retroPhaseItemId' | 'phaseItem'
-> & {
+export type DemoReflectionGroup = Omit<ReflectionGroup, 'team' | 'createdAt' | 'updatedAt'> & {
+  __typename: string
+  commentCount: number
+  commentors: any
+  createdAt: string | Date
+  meeting: any
+  prompt: any
   reflectionGroupId: string
   reflections: DemoReflection[]
+  tasks: any
+  thread: any
+  titleIsUserDefined: boolean
+  updatedAt: string | Date
+  viewerVoteCount: number
+  voteCount: number
+  voterIds: any
+}
+
+export type IDiscussPhase = Omit<
+  DiscussPhase,
+  'readyToAdvance' | 'endAt' | 'startAt' | 'promptTemplateId'
+> & {
+  readyToAdvance: any
+  startAt: string | Date
+  endAt: string | Date
+}
+
+export type IReflectPhase = Omit<ReflectPhase, 'endAt' | 'startAt'> & {
+  startAt: string | Date
+  endAt: string | Date
+  focusedPromptId: string | null
+  reflectPrompts: any
+}
+
+export type IDiscussStage = Omit<DiscussStage, 'endAt' | 'startAt'> & {
+  startAt: string | Date
+  endAt: string | Date
+}
+export type INewMeetingStage = Omit<NewMeetingStage, 'endAt' | 'startAt'> & {
+  startAt: string | Date
+  endAt: string | Date
+}
+export type INewMeetingPhase = Omit<NewMeetingPhase, 'endAt' | 'startAt'> & {
+  startAt: string | Date
+  endAt: string | Date
 }
 
 export type DemoTask = Omit<ITask, 'agendaItem'>
@@ -79,7 +124,7 @@ interface DemoEvents {
 }
 
 interface GQLDemoEmitter {
-  new(): StrictEventEmitter<EventEmitter, DemoEvents>
+  new (): StrictEventEmitter<EventEmitter, DemoEvents>
 }
 
 const makeReflectionGroupThread = () => ({
@@ -123,7 +168,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
   getUnlockedStages(stageIds: string[]) {
     const unlockedStages = [] as INewMeetingStage[]
     this.db.newMeeting.phases!.forEach((phase) => {
-      ; (phase.stages as any).forEach((stage) => {
+      ;(phase.stages as any).forEach((stage) => {
         if (stageIds.includes(stage.id)) {
           unlockedStages.push(stage)
         }
@@ -313,7 +358,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
     },
     AddReactjiToReactableMutation: ({reactableId, reactableType, isRemove, reactji}, userId) => {
       const table =
-        reactableType === ReactableEnum.REFLECTION ? this.db.reflections : this.db.comments
+        (reactableType as ReactableEnum) === 'REFLECTION' ? this.db.reflections : this.db.comments
       const reactable = table.find(({id}) => id === reactableId)
       if (!reactable) return null
       const reactjiId = `${reactableId}:${reactji}`
@@ -399,13 +444,13 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       userId: string
     ) => {
       const now = new Date().toJSON()
-      const reflectPhase = this.db.newMeeting.phases![1] as IReflectPhase
+      const reflectPhase = (this.db.newMeeting.phases![1] as unknown) as IReflectPhase
       const prompt = reflectPhase.reflectPrompts.find((prompt) => prompt.id === promptId)
       const reflectionGroupId = groupId || this.getTempId('refGroup')
       const reflectionId = id || this.getTempId('ref')
       const normalizedContent = normalizeRawDraftJS(content)
       const plaintextContent = extractTextFromDraftString(normalizedContent)
-      let entities = [] as IGoogleAnalyzedEntity[]
+      let entities = [] as GoogleAnalyzedEntity[]
       if (userId !== demoViewerId) {
         entities = entityLookup[reflectionId].entities
       } else {
@@ -471,7 +516,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       this.db.reflections.push(reflection)
       const unlockedStageIds = unlockAllStagesForPhase(
         this.db.newMeeting.phases as any,
-        NewMeetingPhaseTypeEnum.group,
+        'group',
         true
       )
       const unlockedStages = this.getUnlockedStages(unlockedStageIds)
@@ -560,11 +605,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       }
       const remainingReflections = this.db.reflections.filter((reflection) => reflection.isActive)
       const unlockedStageIds = remainingReflections.length
-        ? unlockAllStagesForPhase(
-          this.db.newMeeting.phases as any,
-          NewMeetingPhaseTypeEnum.group,
-          true
-        )
+        ? unlockAllStagesForPhase(this.db.newMeeting.phases as any, 'group', true)
         : []
 
       const unlockedStages = this.getUnlockedStages(unlockedStageIds)
@@ -657,7 +698,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       let runBot = false
       if (completedStageId) {
         const completedStageRes = findStageById(phases, completedStageId)
-        const {stage} = completedStageRes!
+        const {stage} = completedStageRes! as any
         if (!stage.isComplete) {
           runBot = true
           stage.isComplete = true
@@ -727,9 +768,9 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       return {renameMeeting: data}
     },
     SetPhaseFocusMutation: ({focusedPromptId}, userId) => {
-      const reflectPhase = this.db.newMeeting.phases!.find(
+      const reflectPhase = (this.db.newMeeting.phases!.find(
         (phase) => phase.phaseType === REFLECT
-      ) as IReflectPhase
+      ) as unknown) as IReflectPhase
       reflectPhase.focusedPromptId = focusedPromptId || null
       const data = {
         meetingId: RetroDemo.MEETING_ID,
@@ -836,7 +877,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       )!
       const oldReflections = oldReflectionGroup.reflections!
       let failedDrop = false
-      if (dropTargetType === DragReflectionDropTargetTypeEnum.REFLECTION_GRID) {
+      if ((dropTargetType as DragReflectionDropTargetTypeEnum) === 'REFLECTION_GRID') {
         const {promptId} = reflection
         newReflectionGroupId = this.getTempId('group')
         const newReflectionGroup = {
@@ -888,7 +929,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
           })
         }
       } else if (
-        dropTargetType === DragReflectionDropTargetTypeEnum.REFLECTION_GROUP &&
+        (dropTargetType as DragReflectionDropTargetTypeEnum) === 'REFLECTION_GROUP' &&
         dropTargetId
       ) {
         // group
@@ -1127,12 +1168,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       }
       const phases = this.db.newMeeting.phases as any
       if (isUnlock !== undefined) {
-        unlockedStageIds = unlockAllStagesForPhase(
-          phases,
-          NewMeetingPhaseTypeEnum.discuss,
-          true,
-          isUnlock
-        )
+        unlockedStageIds = unlockAllStagesForPhase(phases, 'discuss', true, isUnlock)
       }
 
       const data = {
@@ -1355,9 +1391,9 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       return {updateTaskDueDate: data}
     },
     DragDiscussionTopicMutation: ({stageId, sortOrder}, userId) => {
-      const discussPhase = this.db.newMeeting.phases!.find(
+      const discussPhase = (this.db.newMeeting.phases!.find(
         (phase) => phase.phaseType === DISCUSS
-      ) as IDiscussPhase
+      ) as unknown) as IDiscussPhase
       const {stages} = discussPhase
       const draggedStage = stages.find((stage) => stage.id === stageId)!
       draggedStage.sortOrder = sortOrder
@@ -1376,9 +1412,11 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       return {dragDiscussionTopic: data}
     },
     EndRetrospectiveMutation: ({meetingId}, userId) => {
-      const phases = this.db.newMeeting.phases as NewMeetingPhase[]
+      const phases = (this.db.newMeeting.phases as unknown) as INewMeetingPhase[]
       const lastPhase = phases[phases.length - 1] as IDiscussPhase
-      const currentStage = lastPhase.stages.find((stage) => stage.startAt && !stage.endAt)
+      const currentStage = lastPhase.stages.find(
+        (stage) => stage.startAt && !stage.endAt
+      ) as IDiscussStage
       const now = new Date().toJSON()
       if (currentStage) {
         currentStage.isComplete = true

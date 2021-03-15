@@ -1,8 +1,5 @@
-import {Omit} from 'parabol-client/types/generics'
-import {ISuggestedIntegrationGitHub} from 'parabol-client/types/graphql'
 import GitHubServerManager from '../../../utils/GitHubServerManager'
 import {DataLoaderWorker} from '../../graphql'
-// import {GetReposQueryData} from 'parabol-client/utils/githubQueries/getRepos.graphql'
 
 namespace GetReposQueryData {
   export type ViewerOrganizationsNodes = any
@@ -65,7 +62,7 @@ const fetchGitHubRepos = async (teamId: string, userId: string, dataLoader: Data
     id: repo.nameWithOwner,
     service: 'github', // TaskServiceEnum.github
     nameWithOwner: repo.nameWithOwner
-  })) as Omit<ISuggestedIntegrationGitHub, '__typename'>[]
+  }))
 }
 
 export default fetchGitHubRepos

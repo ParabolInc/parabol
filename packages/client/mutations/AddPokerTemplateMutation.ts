@@ -1,7 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
 import {SprintPokerDefaults} from '~/types/constEnums'
-import {MeetingTypeEnum} from '../types/graphql'
 import {SharedUpdater, StandardMutation} from '../types/relayMutations'
 import createProxyRecord from '../utils/relay/createProxyRecord'
 import {setActiveTemplateInRelayStore} from '../utils/relay/setActiveTemplate'
@@ -39,7 +38,7 @@ export const addPokerTemplateTeamUpdater: SharedUpdater<AddPokerTemplateMutation
   const teamId = template.getValue('teamId')
   const team = store.get(teamId)
   if (!team) return
-  setActiveTemplateInRelayStore(store, teamId, templateId, MeetingTypeEnum.poker)
+  setActiveTemplateInRelayStore(store, teamId, templateId, 'poker')
 }
 
 const AddPokerTemplateMutation: StandardMutation<TAddPokerTemplateMutation> = (

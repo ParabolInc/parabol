@@ -7,7 +7,6 @@ import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import useCallbackRef from '~/hooks/useCallbackRef'
 import {RetroGroupPhase_meeting} from '~/__generated__/RetroGroupPhase_meeting.graphql'
-import {NewMeetingPhaseTypeEnum} from '../types/graphql'
 import {phaseLabelLookup} from '../utils/meetings/lookups'
 import GroupingKanban from './GroupingKanban'
 import MeetingContent from './MeetingContent'
@@ -37,7 +36,7 @@ const RetroGroupPhase = (props: Props) => {
           isMeetingSidebarCollapsed={!showSidebar}
           toggleSidebar={toggleSidebar}
         >
-          <PhaseHeaderTitle>{phaseLabelLookup[NewMeetingPhaseTypeEnum.group]}</PhaseHeaderTitle>
+          <PhaseHeaderTitle>{phaseLabelLookup.group}</PhaseHeaderTitle>
           <PhaseHeaderDescription>{'Drag cards to group by common topics'}</PhaseHeaderDescription>
         </MeetingTopBar>
         <PhaseWrapper>

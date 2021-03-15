@@ -8,7 +8,6 @@ import useBreakpoint from '../hooks/useBreakpoint'
 import useHideBodyScroll from '../hooks/useHideBodyScroll'
 import useThrottledEvent from '../hooks/useThrottledEvent'
 import {Breakpoint, Times} from '../types/constEnums'
-import {NewMeetingPhaseTypeEnum} from '../types/graphql'
 import PortalProvider from './AtmosphereProvider/PortalProvider'
 import GroupingKanbanColumn from './GroupingKanbanColumn'
 import ReflectWrapperMobile from './RetroReflectPhase/ReflectionWrapperMobile'
@@ -37,7 +36,7 @@ export type SwipeColumn = (offset: number) => void
 const GroupingKanban = (props: Props) => {
   const {meeting, phaseRef} = props
   const {reflectionGroups, phases} = meeting
-  const reflectPhase = phases.find((phase) => phase.phaseType === NewMeetingPhaseTypeEnum.reflect)!
+  const reflectPhase = phases.find((phase) => phase.phaseType === 'reflect')!
   const reflectPrompts = reflectPhase.reflectPrompts!
   const reflectPromptsCount = reflectPrompts.length
   const [callbackRef, columnsRef] = useCallbackRef()
@@ -63,8 +62,8 @@ const GroupingKanban = (props: Props) => {
     return isDesktop
       ? false
       : !!reflectionGroups.find((group) =>
-        group.reflections.find((reflection) => reflection.isViewerDragging)
-      )
+          group.reflections.find((reflection) => reflection.isViewerDragging)
+        )
   }, [isDesktop, reflectionGroups])
   const swipeColumn: SwipeColumn = useThrottledEvent((offset: number) => {
     const nextIdx = Math.min(reflectPromptsCount - 1, Math.max(0, activeIdx + offset))

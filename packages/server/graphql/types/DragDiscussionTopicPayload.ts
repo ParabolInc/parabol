@@ -1,5 +1,4 @@
 import {GraphQLObjectType} from 'graphql'
-import {NewMeetingPhaseTypeEnum} from '../../../client/types/graphql'
 import {GQLContext} from '../graphql'
 import {resolveNewMeeting} from '../resolvers'
 import resolveStage from '../resolvers/resolveStage'
@@ -19,7 +18,7 @@ const DragDiscussionTopicPayload = new GraphQLObjectType<any, GQLContext>({
     },
     stage: {
       type: RetroDiscussStage,
-      resolve: resolveStage(NewMeetingPhaseTypeEnum.discuss)
+      resolve: resolveStage('discuss')
     }
   })
 })

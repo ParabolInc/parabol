@@ -8,7 +8,6 @@ import useEditorState from '~/hooks/useEditorState'
 import useMutationProps from '~/hooks/useMutationProps'
 import AddReactjiToReactableMutation from '~/mutations/AddReactjiToReactableMutation'
 import UpdateCommentContentMutation from '~/mutations/UpdateCommentContentMutation'
-import {ReactableEnum} from '~/types/graphql'
 import convertToTaskContent from '~/utils/draftjs/convertToTaskContent'
 import isAndroid from '~/utils/draftjs/isAndroid'
 import isTempId from '~/utils/relay/isTempId'
@@ -79,7 +78,7 @@ const ThreadedCommentBase = (props: Props) => {
     AddReactjiToReactableMutation(
       atmosphere,
       {
-        reactableType: ReactableEnum.COMMENT,
+        reactableType: 'COMMENT',
         reactableId: commentId,
         isRemove,
         reactji: emojiId,

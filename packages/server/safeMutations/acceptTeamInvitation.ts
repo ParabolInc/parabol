@@ -1,8 +1,8 @@
 import {InvoiceItemType} from 'parabol-client/types/constEnums'
-import {ITeam, NotificationEnum, NotificationStatusEnum} from 'parabol-client/types/graphql'
 import adjustUserCount from '../billing/helpers/adjustUserCount'
 import getRethink from '../database/rethinkDriver'
 import OrganizationUser from '../database/types/OrganizationUser'
+import Team from '../database/types/Team'
 import SuggestedActionCreateNewTeam from '../database/types/SuggestedActionCreateNewTeam'
 import User from '../database/types/User'
 import generateUID from '../generateUID'
@@ -51,7 +51,7 @@ const acceptTeamInvitation = async (teamId: string, userId: string) => {
   const now = new Date()
 
   const {team, user} = await r({
-    team: (r.table('Team').get(teamId) as unknown) as ITeam,
+    team: (r.table('Team').get(teamId) as unknown) as Team,
     user: (r
       .table('User')
       .get(userId)
@@ -73,12 +73,12 @@ const acceptTeamInvitation = async (teamId: string, userId: string) => {
       .table('Notification')
       .getAll(userId, {index: 'userId'})
       .filter({
-        type: NotificationEnum.TEAM_INVITATION,
+        type: 'TEAM_INVITATION',
         teamId
       })
       .update(
         // not really clicked, but no longer important
-        {status: NotificationStatusEnum.CLICKED},
+        {status: 'CLICKED'},
         {returnChanges: true}
       )('changes')('new_val')('id')
       .default([])

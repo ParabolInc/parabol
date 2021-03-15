@@ -2,6 +2,11 @@ export const enum AppBar {
   HEIGHT = 56
 }
 
+export const enum AuthIdentityTypeEnum {
+  LOCAL = 'LOCAL',
+  GOOGLE = 'GOOGLE'
+}
+
 // https://github.com/material-components/material-components-web/blob/4844330e7836d9dc97798b47594ff0dbaac51227/packages/mdc-animation/_variables.scss
 export const enum BezierCurve {
   DECELERATE = 'cubic-bezier(0, 0, .2, 1)',
@@ -274,6 +279,14 @@ export const enum SubscriptionChannel {
   MEETING = 'meeting',
   NOTIFICATION = 'notification',
   ORGANIZATION = 'organization'
+}
+
+export const enum SuggestedActionTypeEnum {
+  inviteYourTeam = 'inviteYourTeam',
+  tryTheDemo = 'tryTheDemo',
+  tryRetroMeeting = 'tryRetroMeeting',
+  createNewTeam = 'createNewTeam',
+  tryActionMeeting = 'tryActionMeeting'
 }
 
 export const enum TaskStatus {

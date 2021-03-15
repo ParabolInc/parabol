@@ -11,7 +11,6 @@ import UpdateTaskMutation from '../mutations/UpdateTaskMutation'
 import {PALETTE} from '../styles/paletteV2'
 import {ICON_SIZE} from '../styles/typographyV2'
 import {DroppableType} from '../types/constEnums'
-import {AreaEnum, TaskStatusEnum} from '../types/graphql'
 import {ACTIVE, SORT_STEP} from '../utils/constants'
 import dndNoise from '../utils/dndNoise'
 import {TimelinePriorityTasks_viewer} from '../__generated__/TimelinePriorityTasks_viewer.graphql'
@@ -75,17 +74,17 @@ const TimelinePriorityTasks = (props: Props) => {
       sortOrder =
         (activeTasks[destination.index + offset].sortOrder +
           activeTasks[destination.index].sortOrder) /
-        2 +
+          2 +
         dndNoise()
     }
     const updatedTask = {id: draggableId, sortOrder}
-    UpdateTaskMutation(atmosphere, {updatedTask, area: AreaEnum.userDash}, {})
+    UpdateTaskMutation(atmosphere, {updatedTask, area: 'userDash'}, {})
   })
 
   if (activeTasks.length === 0) return <TimelineNoTasks />
   return (
     <DragDropContext onDragEnd={onDragEnd}>
-      <Droppable droppableId={TaskStatusEnum.active} type={DroppableType.TASK}>
+      <Droppable droppableId='active' type={DroppableType.TASK}>
         {(dropProvided: DroppableProvided) => (
           <TaskList>
             <PriorityTasksHeader>
@@ -94,7 +93,7 @@ const TimelinePriorityTasks = (props: Props) => {
             </PriorityTasksHeader>
             <PriorityTaskBody {...dropProvided.droppableProps} ref={dropProvided.innerRef}>
               {activeTasks.map((task, idx) => (
-                <DraggableTask key={task.id} area={AreaEnum.userDash} task={task} idx={idx} />
+                <DraggableTask key={task.id} area='userDash' task={task} idx={idx} />
               ))}
               {dropProvided.placeholder}
             </PriorityTaskBody>

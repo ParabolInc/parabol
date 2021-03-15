@@ -1,17 +1,12 @@
 import {commitMutation} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import {
-  AddOrDeleteEnum,
-  IJiraCreateIssueOnMutationArguments,
-  TaskServiceEnum
-} from '../types/graphql'
-import Atmosphere from '../Atmosphere'
-import {LocalHandlers, SharedUpdater} from '../types/relayMutations'
+import {SharedUpdater, StandardMutation} from '../types/relayMutations'
 import {JiraCreateIssueMutation_meeting} from '~/__generated__/JiraCreateIssueMutation_meeting.graphql'
 import handleJiraCreateIssue from './handlers/handleJiraCreateIssue'
 import {JiraCreateIssueMutation as TJiraCreateIssueMutation} from '~/__generated__/JiraCreateIssueMutation.graphql'
 import UpdatePokerScopeMutation from './UpdatePokerScopeMutation'
 import createProxyRecord from '~/utils/relay/createProxyRecord'
+import {UpdatePokerScopeMutationVariables} from '../__generated__/UpdatePokerScopeMutation.graphql'
 
 graphql`
   fragment JiraCreateIssueMutation_meeting on JiraCreateIssuePayload {
@@ -58,10 +53,10 @@ export const jiraCreateIssueUpdater: SharedUpdater<JiraCreateIssueMutation_meeti
   handleJiraCreateIssue(payload, store)
 }
 
-const JiraCreateIssueMutation = (
-  atmosphere: Atmosphere,
-  variables: IJiraCreateIssueOnMutationArguments,
-  {onCompleted, onError}: LocalHandlers
+const JiraCreateIssueMutation: StandardMutation<TJiraCreateIssueMutation> = (
+  atmosphere,
+  variables,
+  {onCompleted, onError}
 ) => {
   return commitMutation<TJiraCreateIssueMutation>(atmosphere, {
     mutation,
@@ -101,12 +96,12 @@ const JiraCreateIssueMutation = (
         meetingId,
         updates: [
           {
-            service: TaskServiceEnum.jira,
+            service: 'jira',
             serviceTaskId: jiraIssueId,
-            action: AddOrDeleteEnum.ADD
+            action: 'ADD'
           }
         ]
-      }
+      } as UpdatePokerScopeMutationVariables
       UpdatePokerScopeMutation(atmosphere, pokerScopeVariables, {onError, onCompleted})
     },
     onError

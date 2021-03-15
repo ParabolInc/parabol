@@ -2,7 +2,6 @@ import {ContentState, convertFromRaw} from 'draft-js'
 import {stateToMarkdown} from 'draft-js-export-markdown'
 import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import {ICreateGitHubIssueOnMutationArguments} from 'parabol-client/types/graphql'
 import getRethink from '../../database/rethinkDriver'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import GitHubServerManager from '../../utils/GitHubServerManager'
@@ -12,6 +11,10 @@ import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import CreateGitHubIssuePayload from '../types/CreateGitHubIssuePayload'
 
+type CreateGitHubIssueMutationVariables = {
+  nameWithOwner: string
+  taskId: string
+}
 export default {
   name: 'CreateGitHubIssue',
   type: CreateGitHubIssuePayload,
@@ -27,7 +30,7 @@ export default {
   },
   resolve: async (
     _source: any,
-    {nameWithOwner, taskId}: ICreateGitHubIssueOnMutationArguments,
+    {nameWithOwner, taskId}: CreateGitHubIssueMutationVariables,
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) => {
     const r = await getRethink()

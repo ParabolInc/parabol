@@ -4,7 +4,6 @@ import React, {ReactNode} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {PALETTE} from '../styles/paletteV2'
 import {Card} from '../types/constEnums'
-import {TaskServiceEnum} from '../types/graphql'
 import {TaskIntegrationLinkIntegrationJira} from '../__generated__/TaskIntegrationLinkIntegrationJira.graphql'
 import {TaskIntegrationLink_integration} from '../__generated__/TaskIntegrationLink_integration.graphql'
 import JiraIssueLink from './JiraIssueLink'
@@ -33,8 +32,12 @@ const TaskIntegrationLink = (props: Props) => {
   const {integration, dataCy, className, children, showJiraLabelPrefix} = props
   if (!integration) return null
   const {service} = integration
-  if (service === TaskServiceEnum.jira) {
-    const {issueKey, projectKey, cloudName} = integration as unknown as TaskIntegrationLinkIntegrationJira
+  if (service === 'jira') {
+    const {
+      issueKey,
+      projectKey,
+      cloudName
+    } = (integration as unknown) as TaskIntegrationLinkIntegrationJira
     return (
       <JiraIssueLink
         dataCy={`${dataCy}-jira-issue-link`}
@@ -46,7 +49,7 @@ const TaskIntegrationLink = (props: Props) => {
         showLabelPrefix={showJiraLabelPrefix}
       />
     )
-  } else if (service === TaskServiceEnum.github) {
+  } else if (service === 'github') {
     const {nameWithOwner, issueNumber} = integration
     const href =
       nameWithOwner === 'ParabolInc/ParabolDemo'

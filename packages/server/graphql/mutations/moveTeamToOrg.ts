@@ -1,10 +1,10 @@
 import {GraphQLID, GraphQLList, GraphQLNonNull, GraphQLString} from 'graphql'
 import {InvoiceItemType} from 'parabol-client/types/constEnums'
-import {ITeam, OrgUserRole} from 'parabol-client/types/graphql'
 import adjustUserCount from '../../billing/helpers/adjustUserCount'
 import getRethink from '../../database/rethinkDriver'
 import Notification from '../../database/types/Notification'
 import Organization from '../../database/types/Organization'
+import Team from '../../database/types/Team'
 import db from '../../db'
 import safeArchiveEmptyPersonalOrganization from '../../safeMutations/safeArchiveEmptyPersonalOrganization'
 import {getUserId, isSuperUser} from '../../utils/authorization'
@@ -16,7 +16,7 @@ const moveToOrg = async (teamId: string, orgId: string, authToken: any) => {
   const su = isSuperUser(authToken)
   // VALIDATION
   const {team, org} = await r({
-    team: (r.table('Team').get(teamId) as unknown) as ITeam,
+    team: (r.table('Team').get(teamId) as unknown) as Team,
     org: (r.table('Organization').get(orgId) as unknown) as Organization
   }).run()
   const {orgId: currentOrgId} = team
@@ -35,7 +35,7 @@ const moveToOrg = async (teamId: string, orgId: string, authToken: any) => {
     if (!newOrganizationUser) {
       return standardError(new Error('Not on organization'), {userId})
     }
-    const isBillingLeaderForOrg = newOrganizationUser.role === OrgUserRole.BILLING_LEADER
+    const isBillingLeaderForOrg = newOrganizationUser.role === 'BILLING_LEADER'
     if (!isBillingLeaderForOrg) {
       return standardError(new Error('Not organization leader'), {userId})
     }
@@ -45,7 +45,7 @@ const moveToOrg = async (teamId: string, orgId: string, authToken: any) => {
       .filter({orgId: currentOrgId, removedAt: null})
       .nth(0)
       .run()
-    const isBillingLeaderForTeam = oldOrganizationUser.role === OrgUserRole.BILLING_LEADER
+    const isBillingLeaderForTeam = oldOrganizationUser.role === 'BILLING_LEADER'
     if (!isBillingLeaderForTeam) {
       return standardError(new Error('Not organization leader'), {userId})
     }
@@ -60,11 +60,18 @@ const moveToOrg = async (teamId: string, orgId: string, authToken: any) => {
     notifications: (r
       .table('Notification')
       .filter({teamId})
-      .filter((notification) => notification('orgId').default(null).ne(null))
+      .filter((notification) =>
+        notification('orgId')
+          .default(null)
+          .ne(null)
+      )
       .update({orgId}) as unknown) as Notification[],
-    templates: r.table('MeetingTemplate').getAll(currentOrgId, {index: 'orgId'}).update({
-      orgId
-    }),
+    templates: r
+      .table('MeetingTemplate')
+      .getAll(currentOrgId, {index: 'orgId'})
+      .update({
+        orgId
+      }),
     team: (r
       .table('Team')
       .get(teamId)
@@ -72,7 +79,7 @@ const moveToOrg = async (teamId: string, orgId: string, authToken: any) => {
         orgId,
         isPaid: Boolean(org.stripeSubscriptionId),
         tier: org.tier
-      }) as unknown) as ITeam,
+      }) as unknown) as Team,
     newToOrgUserIds: (r
       .table('TeamMember')
       .getAll(teamId, {index: 'teamId'})

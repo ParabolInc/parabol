@@ -21,7 +21,7 @@ const InheritedStyles = styled('div')({
   fontSize: 20,
   fontWeight: 600,
   lineHeight: '24px',
-  paddingTop: "4px"
+  paddingTop: '4px'
 })
 
 const StyledEditableText = styled(EditableText)({
@@ -38,7 +38,7 @@ const EditableTemplateScaleName = (props: Props) => {
     const {error, value: name} = validate(rawName)
     if (error) return
     submitMutation()
-    RenamePokerTemplateScaleMutation(atmosphere, {scaleId, name}, {}, onError, onCompleted)
+    RenamePokerTemplateScaleMutation(atmosphere, {scaleId, name}, {onError, onCompleted})
   }
 
   const legitify = (value) => {
@@ -47,10 +47,11 @@ const EditableTemplateScaleName = (props: Props) => {
       .required('Please enter a scale name')
       .max(50, 'That scale name is probably long enough')
       .test((mVal) => {
-        const isDupe = !scales ? undefined : scales.find(
-          (scale) =>
-            scale.id !== scaleId && scale.name.toLowerCase() === mVal.toLowerCase()
-        )
+        const isDupe = !scales
+          ? undefined
+          : scales.find(
+              (scale) => scale.id !== scaleId && scale.name.toLowerCase() === mVal.toLowerCase()
+            )
         return isDupe ? 'That scale name is already taken' : undefined
       })
   }

@@ -2,15 +2,17 @@ import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import useGotoStageId from '~/hooks/useGotoStageId'
-import {PokerSidebarPhaseListItemChildren_meeting} from '~/__generated__/PokerSidebarPhaseListItemChildren_meeting.graphql'
-import {NewMeetingPhaseTypeEnum} from '../types/graphql'
+import {
+  NewMeetingPhaseTypeEnum,
+  PokerSidebarPhaseListItemChildren_meeting
+} from '~/__generated__/PokerSidebarPhaseListItemChildren_meeting.graphql'
 import MeetingSidebarTeamMemberStageItems from './MeetingSidebarTeamMemberStageItems'
 import PokerSidebarEstimateSection from './PokerSidebarEstimateSection'
 
 interface Props {
   gotoStageId: ReturnType<typeof useGotoStageId>
   handleMenuClick: () => void
-  phaseType: keyof typeof NewMeetingPhaseTypeEnum | string
+  phaseType: NewMeetingPhaseTypeEnum
   meeting: PokerSidebarPhaseListItemChildren_meeting
 }
 
@@ -18,7 +20,7 @@ const PokerSidebarPhaseListItemChildren = (props: Props) => {
   const {gotoStageId, handleMenuClick, phaseType, meeting} = props
   const {localPhase} = meeting
   const showCheckInSection = localPhase && localPhase.phaseType === phaseType
-  if (phaseType === NewMeetingPhaseTypeEnum.checkin && showCheckInSection) {
+  if (phaseType === 'checkin' && showCheckInSection) {
     return (
       <MeetingSidebarTeamMemberStageItems
         gotoStageId={gotoStageId}

@@ -1,6 +1,5 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import {MeetingTypeEnum} from 'parabol-client/types/graphql'
 import MeetingSettingsRetrospective from '../../database/types/MeetingSettingsRetrospective'
 import ReflectTemplate from '../../database/types/ReflectTemplate'
 import getRethink from '../../database/rethinkDriver'
@@ -39,13 +38,13 @@ const removeReflectTemplate = {
       templates: (r
         .table('MeetingTemplate')
         .getAll(teamId, {index: 'teamId'})
-        .filter({isActive: true, type: MeetingTypeEnum.retrospective})
+        .filter({isActive: true, type: 'retrospective'})
         .orderBy('name')
         .coerceTo('array') as unknown) as ReflectTemplate[],
       settings: (r
         .table('MeetingSettings')
         .getAll(teamId, {index: 'teamId'})
-        .filter({meetingType: MeetingTypeEnum.retrospective})
+        .filter({meetingType: 'retrospective'})
         .nth(0) as unknown) as MeetingSettingsRetrospective
     }).run()
 

@@ -11,9 +11,9 @@ const ReflectPhaseCompletePayload = new GraphQLObjectType<any, GQLContext>({
     },
     reflectionGroups: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(RetroReflectionGroup))),
-      description: 'The grouped reflections',
+      description: 'The grouped reflections'
     }
-  }),
+  })
 })
 
 export default ReflectPhaseCompletePayload

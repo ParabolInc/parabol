@@ -1,5 +1,5 @@
 import {GraphQLNonNull, GraphQLObjectType} from 'graphql'
-import {MeetingTypeEnum} from '../../../client/types/graphql'
+import {MeetingTypeEnum} from '../../database/types/Meeting'
 import {GQLContext} from '../graphql'
 import makeMutationPayload from './makeMutationPayload'
 import MeetingTemplate from './MeetingTemplate'
@@ -26,8 +26,12 @@ export const UpdateTemplateScopeSuccess = new GraphQLObjectType<any, GQLContext>
     settings: {
       type: GraphQLNonNull(TeamMeetingSettings),
       description: 'The settings that contain the teamTemplates array that was modified',
-      resolve: ({teamId, meetingType = MeetingTypeEnum.retrospective}, _args, {dataLoader}) => {
-        return dataLoader.get('meetingSettingsByType').load({teamId, meetingType: meetingType})
+      resolve: (
+        {teamId, meetingType = 'retrospective'}: {teamId: string; meetingType: MeetingTypeEnum},
+        _args,
+        {dataLoader}
+      ) => {
+        return dataLoader.get('meetingSettingsByType').load({teamId, meetingType})
       }
     }
   })

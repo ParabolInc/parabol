@@ -1,9 +1,8 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import {IStartSprintPokerOnMutationArguments, MeetingTypeEnum} from 'parabol-client/types/graphql'
 import getRethink from '../../database/rethinkDriver'
+import {MeetingTypeEnum} from '../../database/types/Meeting'
 import MeetingPoker from '../../database/types/MeetingPoker'
-import MeetingSettingsPoker from '../../database/types/MeetingSettingsPoker'
 import PokerMeetingMember from '../../database/types/PokerMeetingMember'
 import getPg from '../../postgres/getPg'
 import {insertTemplateRefQuery} from '../../postgres/queries/generated/insertTemplateRefQuery'
@@ -66,7 +65,7 @@ export default {
   },
   async resolve(
     _source,
-    {teamId}: IStartSprintPokerOnMutationArguments,
+    {teamId}: {teamId: string},
     {authToken, socketId: mutatorId, dataLoader}: GQLContext
   ) {
     const r = await getRethink()
@@ -97,9 +96,9 @@ export default {
       meetingType,
       dataLoader
     )
-    const meetingSettings = (await dataLoader
+    const meetingSettings = await dataLoader
       .get('meetingSettingsByType')
-      .load({teamId, meetingType: MeetingTypeEnum.poker})) as MeetingSettingsPoker
+      .load({teamId, meetingType: 'poker'})
     const {selectedTemplateId} = meetingSettings
     const templateRefId = await freezeTemplateAsRef(selectedTemplateId, dataLoader)
 

@@ -1,5 +1,4 @@
 import {GraphQLList, GraphQLString} from 'graphql'
-import {OrgUserRole, TierEnum} from 'parabol-client/types/graphql'
 import {months} from 'parabol-client/utils/makeDateString'
 import {Threshold} from '../../../../client/types/constEnums'
 import getRethink from '../../../database/rethinkDriver'
@@ -55,11 +54,15 @@ const sendUpcomingInvoiceEmails = {
 
     const organizations = await r
       .table('Organization')
-      .getAll(TierEnum.pro, {index: 'tier'})
+      .getAll('pro', {index: 'tier'})
       .filter((organization) =>
         r.and(
-          organization('periodEnd').le(periodEndThresh).default(false),
-          organization('upcomingInvoiceEmailSentAt').le(lastSentThresh).default(true)
+          organization('periodEnd')
+            .le(periodEndThresh)
+            .default(false),
+          organization('upcomingInvoiceEmailSentAt')
+            .le(lastSentThresh)
+            .default(true)
         )
       )
       .coerceTo('array')
@@ -71,18 +74,28 @@ const sendUpcomingInvoiceEmails = {
           .filter({removedAt: null, role: null})
           .coerceTo('array')
           .merge((organizationUser) => ({
-            user: r.table('User').get(organizationUser('userId')).pluck('preferredName', 'email')
+            user: r
+              .table('User')
+              .get(organizationUser('userId'))
+              .pluck('preferredName', 'email')
           }))
       }))
-      .filter((organization) => organization('newUsers').count().ge(1))
+      .filter((organization) =>
+        organization('newUsers')
+          .count()
+          .ge(1)
+      )
       .merge((organization) => ({
         billingLeaders: r
           .table('OrganizationUser')
           .getAll(organization('id'), {index: 'orgId'})
-          .filter({role: OrgUserRole.BILLING_LEADER, removedAt: null})
+          .filter({role: 'BILLING_LEADER', removedAt: null})
           .coerceTo('array')
           .merge((organizationUser) => ({
-            user: r.table('User').get(organizationUser('userId')).pluck('preferredName', 'email')
+            user: r
+              .table('User')
+              .get(organizationUser('userId'))
+              .pluck('preferredName', 'email')
           }))
       }))
       .coerceTo('array')

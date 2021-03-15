@@ -1,15 +1,10 @@
 import DataLoader from 'dataloader'
 import {decode} from 'jsonwebtoken'
-import {
-  MeetingTypeEnum,
-  ReactableEnum,
-  TaskStatusEnum,
-  ThreadSourceEnum
-} from 'parabol-client/types/graphql'
 import promiseAllPartial from 'parabol-client/utils/promiseAllPartial'
 import {JiraGetIssueRes} from '../../client/utils/AtlassianManager'
 import getRethink, {RethinkSchema} from '../database/rethinkDriver'
 import AtlassianAuth from '../database/types/AtlassianAuth'
+import {ReactableEnum} from '../database/types/Reactable'
 import MeetingTemplate from '../database/types/MeetingTemplate'
 import {Reactable} from '../database/types/Reactable'
 import Task from '../database/types/Task'
@@ -22,6 +17,10 @@ import sendToSentry from '../utils/sendToSentry'
 import normalizeRethinkDbResults from './normalizeRethinkDbResults'
 import ProxiedCache from './ProxiedCache'
 import RethinkDataLoader from './RethinkDataLoader'
+import {TaskStatusEnum} from '../database/types/Task'
+import {ThreadSourceEnum} from '../database/types/ThreadSource'
+import {MeetingTypeEnum} from '../database/types/Meeting'
+
 type TeamUserKey = {teamId: string; userId: string}
 export interface JiraRemoteProjectKey {
   accessToken: string
@@ -68,13 +67,13 @@ export interface MeetingTemplateKey {
 }
 
 const reactableLoaders = [
-  {type: ReactableEnum.COMMENT, loader: 'comments'},
-  {type: ReactableEnum.REFLECTION, loader: 'retroReflections'}
+  {type: 'COMMENT', loader: 'comments'},
+  {type: 'REFLECTION', loader: 'retroReflections'}
 ] as const
 
 const threadableLoaders = [
-  {type: ThreadSourceEnum.AGENDA_ITEM, loader: 'agendaItems'},
-  {type: ThreadSourceEnum.REFLECTION_GROUP, loader: 'retroReflectionGroups'}
+  {type: 'AGENDA_ITEM', loader: 'agendaItems'},
+  {type: 'REFLECTION_GROUP', loader: 'retroReflectionGroups'}
 ] as const
 
 // export type LoaderMakerCustom<K, V, C = K> = (parent: RethinkDataLoader) => DataLoader<K, V, C>
@@ -368,20 +367,20 @@ export const meetingSettingsByType = (parent: RethinkDataLoader) => {
   return new DataLoader<MeetingSettingsKey, RethinkSchema['MeetingSettings']['type'], string>(
     async (keys) => {
       const r = await getRethink()
-      const types = {} as {[meetingType: string]: string[]}
+      const types = {} as Record<MeetingTypeEnum, string[]>
       keys.forEach((key) => {
         const {meetingType} = key
         types[meetingType] = types[meetingType] || []
         types[meetingType].push(key.teamId)
       })
-      const entries = Object.entries(types)
+      const entries = Object.entries(types) as [MeetingTypeEnum, string[]][]
       const resultsByType = await Promise.all(
         entries.map((entry) => {
           const [meetingType, teamIds] = entry
           return r
             .table('MeetingSettings')
             .getAll(r.args(teamIds), {index: 'teamId'})
-            .filter({meetingType: meetingType as MeetingTypeEnum})
+            .filter({meetingType: meetingType})
             .run()
         })
       )
@@ -402,20 +401,20 @@ export const meetingTemplatesByType = (parent: RethinkDataLoader) => {
   return new DataLoader<MeetingTemplateKey, MeetingTemplate[], string>(
     async (keys) => {
       const r = await getRethink()
-      const types = {} as {[meetingType: string]: string[]}
+      const types = {} as Record<MeetingTypeEnum, string[]>
       keys.forEach((key) => {
         const {meetingType} = key
         types[meetingType] = types[meetingType] || []
         types[meetingType].push(key.teamId)
       })
-      const entries = Object.entries(types)
+      const entries = Object.entries(types) as [MeetingTypeEnum, string[]][]
       const resultsByType = await Promise.all(
         entries.map((entry) => {
           const [meetingType, teamIds] = entry
           return r
             .table('MeetingTemplate')
             .getAll(r.args(teamIds), {index: 'teamId'})
-            .filter({type: meetingType as MeetingTypeEnum, isActive: true})
+            .filter({type: meetingType, isActive: true})
             .run()
         })
       )

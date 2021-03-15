@@ -1,6 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {IPokerTemplate} from '../types/graphql'
 import {SharedUpdater, StandardMutation} from '../types/relayMutations'
 import getInProxy from '../utils/relay/getInProxy'
 import {RemovePokerTemplateMutation as TRemovePokerTemplateMutation} from '../__generated__/RemovePokerTemplateMutation.graphql'
@@ -39,6 +38,8 @@ export const removePokerTemplateTeamUpdater: SharedUpdater<RemovePokerTemplateMu
   handleRemovePokerTemplate(templateId, teamId, store)
 }
 
+type PokerTemplate = NonNullable<RemovePokerTemplateMutation_team['pokerTemplate']>
+
 const RemovePokerTemplateMutation: StandardMutation<TRemovePokerTemplateMutation> = (
   atmosphere,
   variables,
@@ -56,7 +57,7 @@ const RemovePokerTemplateMutation: StandardMutation<TRemovePokerTemplateMutation
     },
     optimisticUpdater: (store) => {
       const {templateId} = variables
-      const template = store.get<IPokerTemplate>(templateId)!
+      const template = store.get<PokerTemplate>(templateId)!
       const teamId = template.getValue('teamId')
       handleRemovePokerTemplate(templateId, teamId, store)
     }

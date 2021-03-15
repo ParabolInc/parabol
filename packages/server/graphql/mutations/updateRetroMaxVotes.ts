@@ -1,6 +1,5 @@
 import {GraphQLID, GraphQLInt, GraphQLNonNull} from 'graphql'
 import {MeetingSettingsThreshold, SubscriptionChannel} from 'parabol-client/types/constEnums'
-import {MeetingTypeEnum, NewMeetingPhaseTypeEnum} from 'parabol-client/types/graphql'
 import mode from 'parabol-client/utils/mode'
 import isPhaseComplete from 'parabol-client/utils/meetings/isPhaseComplete'
 import getRethink from '../../database/rethinkDriver'
@@ -39,7 +38,10 @@ const updateRetroMaxVotes = {
     const subOptions = {mutatorId, operationId}
 
     //AUTH
-    const meeting = (await r.table('NewMeeting').get(meetingId).run()) as MeetingRetrospective
+    const meeting = (await r
+      .table('NewMeeting')
+      .get(meetingId)
+      .run()) as MeetingRetrospective
 
     if (!meeting) {
       return {error: {message: 'Meeting not found'}}
@@ -54,7 +56,7 @@ const updateRetroMaxVotes = {
       maxVotesPerGroup: oldMaxVotesPerGroup
     } = meeting
 
-    if (meetingType !== MeetingTypeEnum.retrospective) {
+    if (meetingType !== 'retrospective') {
       return {error: {message: `Meeting not found`}}
     }
 
@@ -66,7 +68,7 @@ const updateRetroMaxVotes = {
       return standardError(new Error('Team not found'), {userId: viewerId})
     }
 
-    if (isPhaseComplete(NewMeetingPhaseTypeEnum.vote, phases)) {
+    if (isPhaseComplete('vote', phases)) {
       return standardError(new Error('Vote phase already completed'), {userId: viewerId})
     }
 
@@ -135,7 +137,7 @@ const updateRetroMaxVotes = {
       r
         .table('MeetingSettings')
         .getAll(teamId, {index: 'teamId'})
-        .filter({meetingType: MeetingTypeEnum.retrospective})
+        .filter({meetingType: 'retrospective'})
         .update({
           totalVotes,
           maxVotesPerGroup

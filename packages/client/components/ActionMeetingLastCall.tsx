@@ -10,7 +10,6 @@ import AgendaShortcutHint from '../modules/meeting/components/AgendaShortcutHint
 import MeetingCopy from '../modules/meeting/components/MeetingCopy/MeetingCopy'
 import MeetingFacilitationHint from '../modules/meeting/components/MeetingFacilitationHint/MeetingFacilitationHint'
 import MeetingPhaseHeading from '../modules/meeting/components/MeetingPhaseHeading/MeetingPhaseHeading'
-import {NewMeetingPhaseTypeEnum} from '../types/graphql'
 import {AGENDA_ITEM_LABEL} from '../utils/constants'
 import {phaseLabelLookup} from '../utils/meetings/lookups'
 import plural from '../utils/plural'
@@ -42,9 +41,7 @@ const ActionMeetingLastCall = (props: Props) => {
   const {submitting, onError, onCompleted, submitMutation} = useMutationProps()
   const {viewerId} = atmosphere
   const {endedAt, facilitator, facilitatorUserId, id: meetingId, phases, showSidebar} = meeting
-  const agendaItemPhase = phases.find(
-    (phase) => phase.phaseType === NewMeetingPhaseTypeEnum.agendaitems
-  )!
+  const agendaItemPhase = phases.find((phase) => phase.phaseType === 'agendaitems')!
   const {stages} = agendaItemPhase
   const agendaItemsCompleted = stages.filter((stage) => stage.isComplete).length
   const {preferredName} = facilitator
@@ -93,7 +90,7 @@ const ActionMeetingLastCall = (props: Props) => {
         isMeetingSidebarCollapsed={!showSidebar}
         toggleSidebar={toggleSidebar}
       >
-        <PhaseHeaderTitle>{phaseLabelLookup[NewMeetingPhaseTypeEnum.agendaitems]}</PhaseHeaderTitle>
+        <PhaseHeaderTitle>{phaseLabelLookup.agendaitems}</PhaseHeaderTitle>
       </MeetingTopBar>
       <ErrorBoundary>
         <LastCallWrapper>

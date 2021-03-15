@@ -16,7 +16,6 @@ import {
 import handleRemoveSuggestedActions from './handlers/handleRemoveSuggestedActions'
 import onMeetingRoute from '../utils/onMeetingRoute'
 import SetNotificationStatusMutation from './SetNotificationStatusMutation'
-import {NotificationStatusEnum} from '~/types/graphql'
 import handleRemoveReflectTemplate from './handlers/handleRemoveReflectTemplate'
 
 graphql`
@@ -72,7 +71,7 @@ const popTeamArchivedToast: OnNextHandler<ArchiveTeamMutation_team, OnNextHistor
             atmosphere,
             {
               notificationId,
-              status: NotificationStatusEnum.CLICKED
+              status: 'CLICKED'
             },
             {}
           )

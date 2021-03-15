@@ -2,7 +2,7 @@ import styled from '@emotion/styled'
 import React from 'react'
 import {PALETTE} from '../styles/paletteV2'
 import {ExternalLinks} from '../types/constEnums'
-import {MeetingTypeEnum} from '../types/graphql'
+import {MeetingTypeEnum} from '~/__generated__/NewMeeting_viewer.graphql'
 import HowToStepItem from './HowToStepItem'
 import IconLabel from './IconLabel'
 import LinkButton from './LinkButton'
@@ -31,8 +31,7 @@ const STEPS = {
 const LINKS = {
   retrospective: ExternalLinks.GETTING_STARTED_RETROS,
   action: ExternalLinks.GETTING_STARTED_CHECK_INS,
-  poker: ExternalLinks.GETTING_STARTED_SPRINT_POKER,
-
+  poker: ExternalLinks.GETTING_STARTED_SPRINT_POKER
 }
 
 const TITLES = {

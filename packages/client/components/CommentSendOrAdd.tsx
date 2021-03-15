@@ -7,10 +7,10 @@ import useAtmosphere from '~/hooks/useAtmosphere'
 import CreateTaskMutation from '~/mutations/CreateTaskMutation'
 import {PALETTE} from '~/styles/paletteV2'
 import {BezierCurve} from '~/types/constEnums'
-import {TaskStatusEnum, ThreadSourceEnum} from '~/types/graphql'
 import {SORT_STEP} from '~/utils/constants'
 import dndNoise from '~/utils/dndNoise'
 import {CommentSendOrAdd_meeting} from '~/__generated__/CommentSendOrAdd_meeting.graphql'
+import {ThreadSourceEnum} from '~/__generated__/CreateTaskMutation.graphql'
 import {DECELERATE} from '../styles/animation'
 import Icon from './Icon'
 import PlainButton from './PlainButton/PlainButton'
@@ -78,7 +78,7 @@ interface Props {
   meeting: CommentSendOrAdd_meeting
   threadSourceId: string
   threadParentId?: string
-  threadSource: string
+  threadSource: ThreadSourceEnum
   onSubmit: () => void
   dataCy: string
 }
@@ -107,16 +107,16 @@ const CommentSendOrAdd = (props: Props) => {
   const addTask = () => {
     const {viewerId} = atmosphere
     const newTask = {
-      status: TaskStatusEnum.active,
+      status: 'active',
       sortOrder: dndNoise(),
       meetingId,
       threadId: threadSourceId,
       threadParentId,
-      threadSource: threadSource as ThreadSourceEnum,
+      threadSource: threadSource,
       threadSortOrder: getMaxSortOrder() + SORT_STEP + dndNoise(),
       userId: viewerId,
       teamId
-    }
+    } as const
     CreateTaskMutation(atmosphere, {newTask}, {})
     collapseAddTask()
     commitLocalUpdate(atmosphere, (store) => {

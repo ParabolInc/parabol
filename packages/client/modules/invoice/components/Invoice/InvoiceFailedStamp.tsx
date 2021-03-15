@@ -1,5 +1,5 @@
 import React from 'react'
-import {InvoiceStatusEnum} from '../../../../types/graphql'
+import {InvoiceStatusEnum} from '~/__generated__/InvoiceRow_invoice.graphql'
 import styled from '@emotion/styled'
 import {PALETTE} from '../../../../styles/paletteV2'
 import {Breakpoint} from '../../../../types/constEnums'
@@ -29,7 +29,7 @@ interface Props {
 }
 const InvoiceFailedStamp = (props: Props) => {
   const {status} = props
-  if (status !== InvoiceStatusEnum.FAILED) return null
+  if (status !== 'FAILED') return null
 
   return <FailedStamp>{'Payment Failed'}</FailedStamp>
 }

@@ -8,7 +8,6 @@ import Icon from './Icon'
 import RetroPrompt from './RetroPrompt'
 import {Breakpoint} from '~/types/constEnums'
 import useBreakpoint from '~/hooks/useBreakpoint'
-import {NewMeetingPhaseTypeEnum} from '../types/graphql'
 
 const AddReflectionButton = styled(FlatButton)({
   border: 0,
@@ -105,7 +104,7 @@ const GroupingKanbanColumnHeader = (props: Props) => {
           {question}
         </Prompt>
         <ButtonGroup>
-          {phaseType === NewMeetingPhaseTypeEnum.group && (
+          {phaseType === 'group' && (
             <AddReflectionButton
               dataCy={`add-reflection-${question}`}
               aria-label={'Add a reflection'}

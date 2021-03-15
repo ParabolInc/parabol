@@ -14,7 +14,6 @@ import isAndroid from '~/utils/draftjs/isAndroid'
 import useAtmosphere from '../hooks/useAtmosphere'
 import UpdateTaskMutation from '../mutations/UpdateTaskMutation'
 import {ICON_SIZE} from '../styles/typographyV2'
-import {AreaEnum, ITask} from '../types/graphql'
 import convertToTaskContent from '../utils/draftjs/convertToTaskContent'
 import {PokerEstimateHeaderCardParabol_stage} from '../__generated__/PokerEstimateHeaderCardParabol_stage.graphql'
 import CardButton from './CardButton'
@@ -44,16 +43,18 @@ const CardIcons = styled('div')({
   display: 'flex'
 })
 
-const EditorWrapper = styled('div')<{isExpanded: boolean, maxHeight: number}>(({isExpanded, maxHeight}) => ({
-  color: PALETTE.TEXT_MAIN,
-  fontWeight: 'normal',
-  lineHeight: '20px',
-  fontSize: 14,
-  margin: 0,
-  maxHeight: isExpanded ? maxHeight : 38,
-  overflow: 'hidden',
-  transition: 'all 300ms'
-}))
+const EditorWrapper = styled('div')<{isExpanded: boolean; maxHeight: number}>(
+  ({isExpanded, maxHeight}) => ({
+    color: PALETTE.TEXT_MAIN,
+    fontWeight: 'normal',
+    lineHeight: '20px',
+    fontSize: 14,
+    margin: 0,
+    maxHeight: isExpanded ? maxHeight : 38,
+    overflow: 'hidden',
+    transition: 'all 300ms'
+  })
+)
 
 const StyledTaskIntegrationLink = styled(TaskIntegrationLink)({
   color: PALETTE.LINK_BLUE,
@@ -90,10 +91,12 @@ interface Props {
   stage: PokerEstimateHeaderCardParabol_stage
 }
 
+type Story = Required<NonNullable<NonNullable<PokerEstimateHeaderCardParabol_stage>['story']>>
+
 const PokerEstimateHeaderCardParabol = (props: Props) => {
   const {stage} = props
   const {story} = stage
-  const {content, id: taskId, teamId} = story as unknown as ITask
+  const {content, id: taskId, teamId} = story as Story
   const integration = story!.integration
   const atmosphere = useAtmosphere()
   const [isExpanded, setIsExpanded] = useState(false)
@@ -102,7 +105,12 @@ const PokerEstimateHeaderCardParabol = (props: Props) => {
   const editorRef = useRef<HTMLTextAreaElement>(null)
   const descriptionRef = useRef<HTMLDivElement>(null)
   const maxHeight = descriptionRef.current?.scrollHeight ?? 1000
-  useEffect(() => () => {setIsExpanded(false)}, [taskId])
+  useEffect(
+    () => () => {
+      setIsExpanded(false)
+    },
+    [taskId]
+  )
   const {useTaskChild} = useTaskChildFocus(taskId)
   const onBlur = () => {
     if (isAndroid) {
@@ -117,7 +125,7 @@ const PokerEstimateHeaderCardParabol = (props: Props) => {
         id: taskId,
         content: convertToTaskContent(value)
       }
-      UpdateTaskMutation(atmosphere, {updatedTask, area: AreaEnum.meeting}, {})
+      UpdateTaskMutation(atmosphere, {updatedTask, area: 'meeting'}, {})
       return
     }
     const nextContentState = editorState.getCurrentContent()
@@ -129,7 +137,7 @@ const PokerEstimateHeaderCardParabol = (props: Props) => {
       id: taskId,
       content: nextContent
     }
-    UpdateTaskMutation(atmosphere, {updatedTask, area: AreaEnum.meeting}, {})
+    UpdateTaskMutation(atmosphere, {updatedTask, area: 'meeting'}, {})
   }
   return (
     <>
@@ -170,13 +178,11 @@ const PokerEstimateHeaderCardParabol = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(
-  PokerEstimateHeaderCardParabol,
-  {
-    stage: graphql`
+export default createFragmentContainer(PokerEstimateHeaderCardParabol, {
+  stage: graphql`
     fragment PokerEstimateHeaderCardParabol_stage on EstimateStage {
       story {
-        ...on Task {
+        ... on Task {
           id
           title
           integration {
@@ -189,6 +195,5 @@ export default createFragmentContainer(
         }
       }
     }
-    `
-  }
-)
+  `
+})

@@ -1,7 +1,6 @@
 import {useLayoutEffect} from 'react'
 import {commitLocalUpdate} from 'react-relay'
 import {Breakpoint} from '~/types/constEnums'
-import {IPokerMeeting} from '~/types/graphql'
 import useAtmosphere from './useAtmosphere'
 import useBreakpoint from './useBreakpoint'
 
@@ -11,7 +10,7 @@ const useRightDrawer = (meetingId: string) => {
 
   const toggleDrawer = () => {
     commitLocalUpdate(atmosphere, (store) => {
-      const meeting = store.get<IPokerMeeting>(meetingId)
+      const meeting = store.get(meetingId)
       if (!meeting) return
       const isRightDrawerOpen = meeting.getValue('isRightDrawerOpen')
       const isCommentUnread = meeting.getValue('isCommentUnread')

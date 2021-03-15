@@ -10,7 +10,6 @@ import CommentingStatusText from './CommentingStatusText'
 import DiscussionThreadListEmptyState from './DiscussionThreadListEmptyState'
 import LabelHeading from './LabelHeading/LabelHeading'
 import ThreadedItem from './ThreadedItem'
-import {MeetingTypeEnum} from '~/types/graphql'
 
 const EmptyWrapper = styled('div')({
   alignItems: 'center',
@@ -62,7 +61,7 @@ const DiscussionThreadList = forwardRef((props: Props, ref: any) => {
   const isEmpty = threadables.length === 0
   useScrollThreadList(threadables, editorRef, ref, preferredNames)
   const HeaderBlock = () => {
-    if (meetingType === MeetingTypeEnum.poker) return null
+    if (meetingType === 'poker') return null
     return <Header>{'Discussion & Takeaway Tasks'}</Header>
   }
   if (isEmpty) {
@@ -70,7 +69,7 @@ const DiscussionThreadList = forwardRef((props: Props, ref: any) => {
       <EmptyWrapper>
         <HeaderBlock />
         <DiscussionThreadListEmptyState
-          hasTasks={meetingType !== MeetingTypeEnum.poker}
+          hasTasks={meetingType !== 'poker'}
           isEndedMeeting={!!endedAt}
         />
         <CommentingStatusBlock>

@@ -8,7 +8,6 @@ import NewMeetingCheckInPrompt from '../modules/meeting/components/MeetingCheckI
 import MeetingFacilitationHint from '../modules/meeting/components/MeetingFacilitationHint/MeetingFacilitationHint'
 import {PALETTE} from '../styles/paletteV2'
 import {ICON_SIZE} from '../styles/typographyV2'
-import {NewMeetingPhaseTypeEnum} from '../types/graphql'
 import findStageAfterId from '../utils/meetings/findStageAfterId'
 import {phaseLabelLookup} from '../utils/meetings/lookups'
 import Icon from './Icon'
@@ -65,7 +64,7 @@ const NewMeetingCheckIn = (props: Props) => {
           isMeetingSidebarCollapsed={!showSidebar}
           toggleSidebar={toggleSidebar}
         >
-          <PhaseHeaderTitle>{phaseLabelLookup[NewMeetingPhaseTypeEnum.checkin]}</PhaseHeaderTitle>
+          <PhaseHeaderTitle>{phaseLabelLookup.checkin}</PhaseHeaderTitle>
         </MeetingTopBar>
         <PhaseWrapper>
           <NewMeetingCheckInPrompt meeting={meeting} teamMember={teamMember} />

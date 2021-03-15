@@ -7,7 +7,6 @@ import {AgendaListAndInput_team} from '../../../../__generated__/AgendaListAndIn
 import useGotoStageId from '../../../../hooks/useGotoStageId'
 import AgendaInput from '../AgendaInput/AgendaInput'
 import AgendaList from '../AgendaList/AgendaList'
-import {NewMeetingPhaseTypeEnum} from '~/types/graphql'
 
 const RootStyles = styled('div')<{isMeeting: boolean | undefined; disabled: boolean}>(
   ({disabled, isMeeting}) => ({
@@ -37,13 +36,9 @@ interface Props {
   team: AgendaListAndInput_team
 }
 
-const getAgendaItems = (
-  meeting: AgendaListAndInput_meeting | null
-) => {
+const getAgendaItems = (meeting: AgendaListAndInput_meeting | null) => {
   if (!meeting) return null
-  const agendaItemsPhase = meeting.phases!.find(
-    (phase) => phase.phaseType === NewMeetingPhaseTypeEnum.agendaitems
-  )!
+  const agendaItemsPhase = meeting.phases!.find((phase) => phase.phaseType === 'agendaitems')!
   if (!agendaItemsPhase.stages) return null
   return agendaItemsPhase.stages.map((stage) => stage.agendaItem)
 }

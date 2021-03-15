@@ -1,12 +1,12 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import {MeetingTypeEnum, NewMeetingPhaseTypeEnum} from '../../../client/types/graphql'
 import toTeamMemberId from '../../../client/utils/relay/toTeamMemberId'
 import getRethink from '../../database/rethinkDriver'
 import rMapIf from '../../database/rMapIf'
 import ActionMeetingMember from '../../database/types/ActionMeetingMember'
 import CheckInPhase from '../../database/types/CheckInPhase'
 import CheckInStage from '../../database/types/CheckInStage'
+import {NewMeetingPhaseTypeEnum} from '../../database/types/GenericMeetingPhase'
 import Meeting from '../../database/types/Meeting'
 import MeetingRetrospective from '../../database/types/MeetingRetrospective'
 import PokerMeetingMember from '../../database/types/PokerMeetingMember'
@@ -21,9 +21,9 @@ import sendMeetingJoinToSegment from './helpers/sendMeetingJoinToSegment'
 
 const createMeetingMember = (meeting: Meeting, teamId: string, userId: string) => {
   switch (meeting.meetingType) {
-    case MeetingTypeEnum.action:
+    case 'action':
       return new ActionMeetingMember({teamId, userId, meetingId: meeting.id})
-    case MeetingTypeEnum.retrospective:
+    case 'retrospective':
       const {id: meetingId, totalVotes} = meeting as MeetingRetrospective
       return new RetroMeetingMember({
         teamId,
@@ -31,7 +31,7 @@ const createMeetingMember = (meeting: Meeting, teamId: string, userId: string) =
         meetingId,
         votesRemaining: totalVotes
       })
-    case MeetingTypeEnum.poker:
+    case 'poker':
       return new PokerMeetingMember({
         teamId,
         userId,
@@ -119,21 +119,17 @@ const joinMeeting = {
     }
 
     const appendToCheckin = async () => {
-      const checkInPhase = phases.find(
-        (phase) => phase.phaseType === NewMeetingPhaseTypeEnum.checkin
-      ) as CheckInPhase
+      const checkInPhase = phases.find((phase) => phase.phaseType === 'checkin') as CheckInPhase
       if (!checkInPhase) return
       const checkInStage = new CheckInStage(teamMemberId)
-      return addStageToPhase(checkInStage, NewMeetingPhaseTypeEnum.checkin)
+      return addStageToPhase(checkInStage, 'checkin')
     }
 
     const appendToUpdate = async () => {
-      const updatesPhase = phases.find(
-        (phase) => phase.phaseType === NewMeetingPhaseTypeEnum.updates
-      ) as UpdatesPhase
+      const updatesPhase = phases.find((phase) => phase.phaseType === 'updates') as UpdatesPhase
       if (!updatesPhase) return
       const updatesStage = new UpdatesStage(teamMemberId)
-      return addStageToPhase(updatesStage, NewMeetingPhaseTypeEnum.updates)
+      return addStageToPhase(updatesStage, 'updates')
     }
 
     // effort is taken here to run both at the same time

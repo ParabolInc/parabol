@@ -12,7 +12,7 @@ import useTaskChildFocus, {UseTaskChild} from '../../../../hooks/useTaskChildFoc
 import {cardFocusShadow, cardHoverShadow, cardShadow, Elevation} from '../../../../styles/elevation'
 import cardRootStyles from '../../../../styles/helpers/cardRootStyles'
 import {Card} from '../../../../types/constEnums'
-import {AreaEnum, TaskServiceEnum, TaskStatusEnum} from '../../../../types/graphql'
+import {AreaEnum, TaskServiceEnum, TaskStatusEnum} from '~/__generated__/UpdateTaskMutation.graphql'
 import isTaskArchived from '../../../../utils/isTaskArchived'
 import isTaskPrivate from '../../../../utils/isTaskPrivate'
 import isTempId from '../../../../utils/relay/isTempId'

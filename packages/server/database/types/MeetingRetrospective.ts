@@ -1,5 +1,3 @@
-import {MeetingTypeEnum} from 'parabol-client/types/graphql'
-
 import GenericMeetingPhase from './GenericMeetingPhase'
 import Meeting from './Meeting'
 
@@ -44,7 +42,7 @@ export default class MeetingRetrospective extends Meeting {
       meetingCount,
       phases,
       facilitatorUserId,
-      meetingType: MeetingTypeEnum.retrospective,
+      meetingType: 'retrospective',
       name: name ?? `Retro #${meetingCount + 1}`
     })
     this.totalVotes = totalVotes

@@ -1,4 +1,3 @@
-import {MeetingTypeEnum} from 'parabol-client/types/graphql'
 import {
   AGENDA_ITEMS,
   CHECKIN,
@@ -18,6 +17,7 @@ import CheckInStage from '../../../database/types/CheckInStage'
 import DiscussPhase from '../../../database/types/DiscussPhase'
 import EstimatePhase from '../../../database/types/EstimatePhase'
 import GenericMeetingPhase from '../../../database/types/GenericMeetingPhase'
+import {MeetingTypeEnum} from '../../../database/types/Meeting'
 import MeetingSettingsRetrospective from '../../../database/types/MeetingSettingsRetrospective'
 import ReflectPhase from '../../../database/types/ReflectPhase'
 import UpdatesPhase from '../../../database/types/UpdatesPhase'

@@ -7,7 +7,6 @@ import useScrollIntoView from '../../../hooks/useScrollIntoVIew'
 import {DECELERATE} from '../../../styles/animation'
 import textOverflow from '../../../styles/helpers/textOverflow'
 import {PALETTE} from '../../../styles/paletteV2'
-import {MeetingTypeEnum} from '../../../types/graphql'
 import makeTemplateDescription from '../../../utils/makeTemplateDescription'
 import {setActiveTemplate} from '../../../utils/relay/setActiveTemplate'
 import {PokerTemplateItem_template} from '../../../__generated__/PokerTemplateItem_template.graphql'
@@ -66,7 +65,7 @@ const PokerTemplateItem = (props: Props) => {
   useScrollIntoView(ref, isActive)
   const selectTemplate = () => {
     if (isActive) return
-    setActiveTemplate(atmosphere, teamId, templateId, MeetingTypeEnum.poker)
+    setActiveTemplate(atmosphere, teamId, templateId, 'poker')
     commitLocalUpdate(atmosphere, (store) => {
       store.get(teamId)?.setValue(null, 'editingScaleId')
     })

@@ -2,7 +2,6 @@ import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {RetroVotePhase_meeting} from '~/__generated__/RetroVotePhase_meeting.graphql'
-import {NewMeetingPhaseTypeEnum} from '../types/graphql'
 import {phaseLabelLookup} from '../utils/meetings/lookups'
 import GroupingKanban from './GroupingKanban'
 import MeetingContent from './MeetingContent'
@@ -34,7 +33,7 @@ const RetroVotePhase = (props: Props) => {
           isMeetingSidebarCollapsed={!showSidebar}
           toggleSidebar={toggleSidebar}
         >
-          <PhaseHeaderTitle>{phaseLabelLookup[NewMeetingPhaseTypeEnum.vote]}</PhaseHeaderTitle>
+          <PhaseHeaderTitle>{phaseLabelLookup.vote}</PhaseHeaderTitle>
           <PhaseHeaderDescription>
             {'Vote on the topics you want to discuss'}
           </PhaseHeaderDescription>
@@ -43,7 +42,7 @@ const RetroVotePhase = (props: Props) => {
           <RetroVoteMetaHeader meeting={meeting} />
           <StageTimerDisplay meeting={meeting} />
           <MeetingPhaseWrapper>
-            <GroupingKanban meeting={meeting} phaseRef={phaseRef}  />
+            <GroupingKanban meeting={meeting} phaseRef={phaseRef} />
           </MeetingPhaseWrapper>
         </PhaseWrapper>
       </MeetingHeaderAndPhase>

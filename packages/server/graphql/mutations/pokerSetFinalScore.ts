@@ -1,10 +1,5 @@
 import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import {SprintPokerDefaults, SubscriptionChannel} from 'parabol-client/types/constEnums'
-import {
-  MeetingTypeEnum,
-  NewMeetingPhaseTypeEnum,
-  TaskServiceEnum
-} from 'parabol-client/types/graphql'
 import makeAppURL from 'parabol-client/utils/makeAppURL'
 import isPhaseComplete from 'parabol-client/utils/meetings/isPhaseComplete'
 import getJiraCloudIdAndKey from '../../../client/utils/getJiraCloudIdAndKey'
@@ -12,10 +7,11 @@ import appOrigin from '../../appOrigin'
 import getRethink from '../../database/rethinkDriver'
 import EstimatePhase from '../../database/types/EstimatePhase'
 import MeetingPoker from '../../database/types/MeetingPoker'
+import {TaskServiceEnum} from '../../database/types/Task'
 import updateStage from '../../database/updateStage'
-import getTemplateRefById from '../../postgres/queries/getTemplateRefById'
 import AtlassianServerManager from '../../utils/AtlassianServerManager'
 import {getUserId, isTeamMember} from '../../utils/authorization'
+import getTemplateRefById from '../../postgres/queries/getTemplateRefById'
 import makeScoreJiraComment from '../../utils/makeScoreJiraComment'
 import publish from '../../utils/publish'
 import {GQLContext} from '../graphql'
@@ -67,10 +63,10 @@ const pokerSetFinalScore = {
     if (endedAt) {
       return {error: {message: 'Meeting has ended'}}
     }
-    if (meetingType !== MeetingTypeEnum.poker) {
+    if (meetingType !== 'poker') {
       return {error: {message: 'Not a poker meeting'}}
     }
-    if (isPhaseComplete(NewMeetingPhaseTypeEnum.ESTIMATE, phases)) {
+    if (isPhaseComplete('ESTIMATE', phases)) {
       return {error: {message: 'Estimate phase is already complete'}}
     }
     if (viewerId !== facilitatorUserId) {
@@ -85,9 +81,7 @@ const pokerSetFinalScore = {
     }
 
     // VALIDATION
-    const estimatePhase = phases.find(
-      (phase) => phase.phaseType === NewMeetingPhaseTypeEnum.ESTIMATE
-    )! as EstimatePhase
+    const estimatePhase = phases.find((phase) => phase.phaseType === 'ESTIMATE')! as EstimatePhase
     const {stages} = estimatePhase
     const stage = stages.find((stage) => stage.id === stageId)
     if (!stage) {
@@ -104,7 +98,7 @@ const pokerSetFinalScore = {
     const {dimensions} = templateRef
     const dimensionRef = dimensions[dimensionRefIdx]
     const {name: dimensionName} = dimensionRef
-    if (service === TaskServiceEnum.jira) {
+    if ((service as TaskServiceEnum) === 'jira') {
       const auth = await dataLoader.get('freshAtlassianAuth').load({teamId, userId: creatorUserId})
       if (!auth) {
         return {error: {message: 'User no longer has access to Atlassian'}}
