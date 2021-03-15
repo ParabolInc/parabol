@@ -10,6 +10,11 @@ export const up = async function (r) {
         .indexCreate('updatedAt')
         .run(),
     ])
+    await r
+      .db('actionProduction')
+      .table('User')
+      .indexWait()
+      .run()
   } catch(e) {
     console.log(e)
   }
