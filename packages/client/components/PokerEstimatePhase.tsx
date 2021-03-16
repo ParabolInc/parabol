@@ -10,7 +10,6 @@ import MeetingHeaderAndPhase from './MeetingHeaderAndPhase'
 import MeetingTopBar from './MeetingTopBar'
 import PhaseHeaderDescription from './PhaseHeaderDescription'
 import PhaseHeaderTitle from './PhaseHeaderTitle'
-import PhaseWrapper from './PhaseWrapper'
 import PokerEstimateHeaderCardJira from './PokerEstimateHeaderCardJira'
 import PokerEstimateHeaderCardParabol from './PokerEstimateHeaderCardParabol'
 import {PokerMeetingPhaseProps} from './PokerMeeting'
@@ -27,6 +26,23 @@ const StyledMeetingHeaderAndPhase = styled(MeetingHeaderAndPhase)<{isOpen: boole
     width: isOpen ? `calc(100% - ${DiscussionThreadEnum.WIDTH}px)` : '100%'
   })
 )
+
+const StoryAndEstimateWrapper = styled('div')({
+  display: 'flex',
+  flex: 1,
+  // This will turn scrolling on for the full height
+  // but will cause funky swiping on mobile
+  // if we don’t add this, then the voting column gets pushed down
+  // but at least it’s not in the way of the expanded, scrollable card
+  // overflow: 'auto',
+  flexDirection: 'column'
+})
+
+const EstimateAreaWrapper = styled('div')({
+  display: 'flex',
+  flex: 1,
+  flexDirection: 'column'
+})
 
 interface Props extends PokerMeetingPhaseProps {
   gotoStageId: ReturnType<typeof useGotoStageId>
@@ -55,11 +71,13 @@ const PokerEstimatePhase = (props: Props) => {
           <PhaseHeaderTitle>{phaseLabelLookup.ESTIMATE}</PhaseHeaderTitle>
           <PhaseHeaderDescription>{'Estimate each story as a team'}</PhaseHeaderDescription>
         </MeetingTopBar>
-        {service === TaskServiceEnum.jira && <PokerEstimateHeaderCardJira stage={localStage as any} />}
-        {service === TaskServiceEnum.PARABOL && <PokerEstimateHeaderCardParabol stage={localStage as any} />}
-        <PhaseWrapper>
-          <EstimatePhaseArea gotoStageId={gotoStageId} meeting={meeting} />
-        </PhaseWrapper>
+        <StoryAndEstimateWrapper>
+          {service === TaskServiceEnum.jira && <PokerEstimateHeaderCardJira stage={localStage as any} />}
+          {service === TaskServiceEnum.PARABOL && <PokerEstimateHeaderCardParabol stage={localStage as any} />}
+          <EstimateAreaWrapper>
+            <EstimatePhaseArea gotoStageId={gotoStageId} meeting={meeting} />
+          </EstimateAreaWrapper>
+        </StoryAndEstimateWrapper>
       </StyledMeetingHeaderAndPhase>
       <ResponsiveDashSidebar isOpen={isRightDrawerOpen} isRightDrawer onToggle={toggleDrawer}>
         <EstimatePhaseDiscussionDrawer

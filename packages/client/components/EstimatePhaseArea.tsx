@@ -35,11 +35,13 @@ const StepperDot = styled('div')<{isActive: boolean}>(({isActive}) => ({
   width: 8
 }))
 
-const SwipableEstimateItem = styled('div')({
+const SwipableEstimateItem = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   borderRadius: '8px 8px 0 0',
   background: PALETTE.BACKGROUND_REFLECTION,
-  height: '100%'
-})
+  flex: 1,
+  // There’s no need to add this paddingBottom if we don’t turn overflow auto on the container
+  paddingBottom: isDesktop ? 160 : 128
+}))
 
 const innerStyle = (isDesktop: boolean, hasSingleDimension: boolean) => {
   return {
@@ -80,6 +82,7 @@ const EstimatePhaseArea = (props: Props) => {
   }
 
   const slideContainer = {
+    display: 'flex',
     padding: isDesktop ? '0 8px' : '0 4px'
   }
 
@@ -106,7 +109,7 @@ const EstimatePhaseArea = (props: Props) => {
         style={innerStyle(isDesktop, hasSingleDimension)}
       >
         {dimensionStages.map((stage, idx) => (
-          <SwipableEstimateItem key={idx}>
+          <SwipableEstimateItem isDesktop={isDesktop} key={idx}>
             <EstimateDimensionColumn meeting={meeting} stage={stage} />
           </SwipableEstimateItem>
         ))}
