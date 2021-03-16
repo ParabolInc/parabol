@@ -10,12 +10,7 @@ import {GQLContext} from '../../graphql'
 import User from '../../types/User'
 import getRedis from '../../../utils/getRedis'
 import getListeningUserIds, {RedisCommand} from '../../../utils/getListeningUserIds'
-import {
-  updateUserQuery,
-  IUpdateUserQueryParams
-} from '../../../postgres/queries/generated/updateUserQuery'
-import catchAndLog from '../../../postgres/utils/catchAndLog'
-import getPg from '../../../postgres/getPg'
+import updateUser from '../../../postgres/queries/updateUser'
 
 export interface UserPresence {
   lastSeenAtURL: string | null
@@ -55,15 +50,12 @@ export default {
     const datesAreOnSameDay = now.toDateString() === lastSeenAt?.toDateString()
     if (!datesAreOnSameDay) {
       await Promise.all([
-        catchAndLog(() =>
-          updateUserQuery.run(
-            ({
-              inactive: false,
-              lastSeenAt: now,
-              ids: [userId]
-            } as unknown) as IUpdateUserQueryParams,
-            getPg()
-          )
+        updateUser(
+          {
+            inactive: false,
+            lastSeenAt: now
+          },
+          userId
         ),
         db.write('User', userId, {inactive: false, lastSeenAt: now})
       ])
