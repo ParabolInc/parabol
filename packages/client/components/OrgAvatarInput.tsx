@@ -7,6 +7,8 @@ import DialogTitle from './DialogTitle'
 import UploadOrgImageMutation from '~/mutations/UploadOrgImageMutation'
 import useMutationProps from '../hooks/useMutationProps'
 import useAtmosphere from '../hooks/useAtmosphere'
+import jpgWithoutEXIF from '../utils/jpgWithoutEXIF'
+import svgToPng from '../utils/svgToPng'
 
 const AvatarBlock = styled('div')({
   margin: '1.5rem auto',
@@ -43,16 +45,25 @@ const OrgAvatarInput = (props: Props) => {
   const atmosphere = useAtmosphere()
 
   const onSubmit = async (file: File) => {
+    if (submitting) return
+    if (file.type === 'image/jpeg') {
+      file = (await jpgWithoutEXIF(file)) as File
+    }
     if (file.size > 2 ** 20) {
       onError(new Error('File is too large (1MB Max)'))
       return
     }
-    const isSanitary = await sanitizeSVG(file)
-    if (!isSanitary) {
-      onError(new Error('xss'))
-      return
+    if (file.type === 'image/svg+xml') {
+      const isSanitary = await sanitizeSVG(file)
+      if (!isSanitary) {
+        onError(new Error('xss'))
+        return
+      }
+      const png = await svgToPng(file)
+      if (png) {
+        file = new File([png], file.name.slice(0, -3) + 'png', {type: png.type})
+      }
     }
-    if (submitting) return
     submitMutation()
     UploadOrgImageMutation(atmosphere, {orgId}, {onCompleted, onError}, {file})
   }
