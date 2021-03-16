@@ -3,7 +3,7 @@ import {ToolbarSelect, ToolbarSelectOption} from 'graphiql/dist/components/Toolb
 import 'graphiql/graphiql.css'
 import React, {useRef, useState} from 'react'
 import styled from '@emotion/styled'
-import logoMarkPrimary from '../../../../styles/theme/images/brand/parabol-lockup-h-dark.svg'
+import logoMarkPrimary from '../../../../styles/theme/images/brand/lockup_color_mark_dark_type.svg'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useAuthRoute from '../../../../hooks/useAuthRoute'
 import {AuthTokenRole, LocalStorageKey} from '../../../../types/constEnums'
