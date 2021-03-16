@@ -8,6 +8,7 @@ import DialogTitle from './DialogTitle'
 import UploadUserImageMutation from '../mutations/UploadUserImageMutation'
 import useMutationProps from '../hooks/useMutationProps'
 import useAtmosphere from '../hooks/useAtmosphere'
+import jpgWithoutEXIF from '~/utils/jpgWithoutEXIF'
 
 const AvatarBlock = styled('div')({
   margin: '1.5rem auto',
@@ -44,11 +45,13 @@ const UserAvatarInput = (props: Props) => {
 
   const onSubmit = async (file: File) => {
     if (submitting) return
+    if (file.type === 'image/jpeg') {
+      file = (await jpgWithoutEXIF(file)) as File
+    }
     if (file.size > 2 ** 20) {
       onError(new Error('File is too large (1MB Max)'))
       return
     }
-
     if (file.type === 'image/svg+xml') {
       const isSanitary = await sanitizeSVG(file)
       if (!isSanitary) {
