@@ -13,12 +13,7 @@ import {GQLContext} from '../graphql'
 import rateLimit from '../rateLimit'
 import LoginWithGooglePayload from '../types/LoginWithGooglePayload'
 import bootstrapNewUser from './helpers/bootstrapNewUser'
-import {
-  updateUserQuery,
-  IUpdateUserQueryParams
-} from '../../postgres/queries/generated/updateUserQuery'
-import catchAndLog from '../../postgres/utils/catchAndLog'
-import getPg from '../../postgres/getPg'
+import updateUser from '../../postgres/queries/updateUser'
 
 const loginWithGoogle = {
   type: new GraphQLNonNull(LoginWithGooglePayload),
@@ -84,15 +79,7 @@ const loginWithGoogle = {
           identities.push(googleIdentity) // mutative
           await Promise.all([
             db.write('User', viewerId, {identities}),
-            catchAndLog(() =>
-              updateUserQuery.run(
-                ({
-                  identities,
-                  ids: [viewerId]
-                } as unknown) as IUpdateUserQueryParams,
-                getPg()
-              )
-            )
+            updateUser({identities}, viewerId)
           ])
         }
         // MUTATIVE

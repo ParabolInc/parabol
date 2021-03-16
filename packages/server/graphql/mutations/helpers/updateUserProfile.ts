@@ -11,12 +11,7 @@ import segmentIo from '../../../utils/segmentIo'
 import publish from '../../../utils/publish'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import fetch from 'node-fetch'
-import {
-  updateUserQuery,
-  IUpdateUserQueryParams
-} from '../../../postgres/queries/generated/updateUserQuery'
-import catchAndLog from '../../../postgres/utils/catchAndLog'
-import getPg from '../../../postgres/getPg'
+import updateUser from '../../../postgres/queries/updateUser'
 
 const updateUserProfile = async (
   _source,
@@ -72,12 +67,7 @@ const updateUserProfile = async (
       .default([])
       .run() as unknown) as TeamMember[],
     db.write('User', userId, updates),
-    catchAndLog(() =>
-      updateUserQuery.run(
-        (Object.assign(updates, {ids: [userId]}) as unknown) as IUpdateUserQueryParams,
-        getPg()
-      )
-    )
+    updateUser(updates, userId)
   ])
   //
   // If we ever want to delete the previous profile images:
