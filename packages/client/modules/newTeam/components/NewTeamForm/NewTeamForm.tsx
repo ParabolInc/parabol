@@ -73,9 +73,8 @@ const NewTeamForm = (props: Props) => {
   const [isNewOrg, setIsNewOrg] = useState(isInitiallyNewOrg)
   const [orgId, setOrgId] = useState('')
 
-  const validateOrgName = () => {
-    const rawOrgName = fields.orgName.value
-    return new Legitity(rawOrgName)
+  const validateOrgName = (orgName: string) => {
+    return new Legitity(orgName)
       .trim()
       .required('Your new org needs a name!')
       .min(2, 'C’mon, you call that an organization?')
@@ -83,8 +82,7 @@ const NewTeamForm = (props: Props) => {
       .test((val) => (linkify.match(val) ? 'Try using a name, not a link!' : undefined))
   }
 
-  const validateTeamName = () => {
-    const rawTeamName = fields.teamName.value
+  const validateTeamName = (teamName: string) => {
     let teamNames: string[] = []
     if (!isNewOrg) {
       const org = organizations.find((org) => org.id === orgId)
@@ -92,7 +90,7 @@ const NewTeamForm = (props: Props) => {
         teamNames = org.teams.map((team) => team.name)
       }
     }
-    return teamNameValidation(rawTeamName, teamNames)
+    return teamNameValidation(teamName, teamNames)
   }
   const {fields, onChange, setDirtyField, validateField} = useForm({
     orgName: {
@@ -177,13 +175,11 @@ const NewTeamForm = (props: Props) => {
             onChange={onChange}
             onTypeChange={handleIsNewOrgChange}
             orgName={fields.orgName.value}
-            dirty={!!fields.orgName.dirty}
             error={fields.orgName.error}
             placeholder='My new organization'
             onBlur={handleBlur}
           />
           <NewTeamFormTeamName
-            dirty={!!fields.teamName.dirty}
             error={fields.teamName.error}
             onChange={onChange}
             teamName={fields.teamName.value}

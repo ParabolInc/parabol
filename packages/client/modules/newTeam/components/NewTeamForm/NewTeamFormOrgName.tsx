@@ -5,7 +5,6 @@ import {NewTeamFieldBlock} from './NewTeamForm'
 import NewTeamFormBlock from './NewTeamFormBlock'
 
 interface Props {
-  dirty: boolean
   error: string | undefined
   isNewOrg: boolean
   onTypeChange: (e: ChangeEvent<HTMLInputElement>) => void
@@ -16,7 +15,7 @@ interface Props {
 }
 
 const NewTeamFormOrgName = (props: Props) => {
-  const {dirty, error, isNewOrg, onChange, onTypeChange, orgName, placeholder, onBlur} = props
+  const {error, isNewOrg, onChange, onTypeChange, orgName, placeholder, onBlur} = props
   return (
     <NewTeamFormBlock>
       <Radio
@@ -29,7 +28,7 @@ const NewTeamFormOrgName = (props: Props) => {
       <NewTeamFieldBlock>
         <BasicInput
           disabled={!isNewOrg}
-          error={dirty ? (error as string) : undefined}
+          error={error}
           name='orgName'
           placeholder={placeholder}
           onBlur={onBlur}
