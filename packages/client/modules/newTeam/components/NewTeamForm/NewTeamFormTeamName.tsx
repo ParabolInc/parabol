@@ -19,23 +19,15 @@ interface Props {
   onChange(e: ChangeEvent<HTMLInputElement>): void
 
   teamName: string
-
-  onBlur(): void
 }
 
 const NewTeamFormTeamName = (props: Props) => {
-  const {error, onChange, onBlur, teamName} = props
+  const {error, onChange, teamName} = props
   return (
     <FormBlockInline>
       <FieldLabel fieldSize='medium' htmlFor='teamName' indent inline label='Team Name' />
       <NewTeamFieldBlock>
-        <BasicInput
-          error={error}
-          name='teamName'
-          onBlur={onBlur}
-          onChange={onChange}
-          value={teamName}
-        />
+        <BasicInput error={error} name='teamName' onChange={onChange} value={teamName} />
       </NewTeamFieldBlock>
     </FormBlockInline>
   )

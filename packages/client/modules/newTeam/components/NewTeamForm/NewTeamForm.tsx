@@ -92,7 +92,8 @@ const NewTeamForm = (props: Props) => {
     }
     return teamNameValidation(teamName, teamNames)
   }
-  const {fields, onChange, setDirtyField, validateField} = useForm({
+
+  const {fields, onChange, validateField} = useForm({
     orgName: {
       getDefault: () => '',
       validate: validateOrgName
@@ -111,8 +112,6 @@ const NewTeamForm = (props: Props) => {
     setOrgId(orgId)
   }
 
-  const handleBlur = () => setDirtyField()
-
   const handleIsNewOrgChange = (e: ChangeEvent<HTMLInputElement>) => {
     const isNewOrg = e.target.value === 'true'
     setIsNewOrg(isNewOrg)
@@ -124,7 +123,6 @@ const NewTeamForm = (props: Props) => {
     const {error: teamErr, value: teamName} = validateField('teamName')
     if (teamErr) return
     if (isNewOrg) {
-      setDirtyField('orgName')
       const {error: orgErr, value: orgName} = validateField('orgName')
       if (orgErr) return
       const newTeam = {
@@ -177,13 +175,11 @@ const NewTeamForm = (props: Props) => {
             orgName={fields.orgName.value}
             error={fields.orgName.error}
             placeholder='My new organization'
-            onBlur={handleBlur}
           />
           <NewTeamFormTeamName
             error={fields.teamName.error}
             onChange={onChange}
             teamName={fields.teamName.value}
-            onBlur={handleBlur}
           />
 
           <StyledButton size='large' waiting={submitting}>

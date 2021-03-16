@@ -11,11 +11,10 @@ interface Props {
   onChange(e: ChangeEvent<HTMLInputElement>): void
   orgName: string
   placeholder: string
-  onBlur(): void
 }
 
 const NewTeamFormOrgName = (props: Props) => {
-  const {error, isNewOrg, onChange, onTypeChange, orgName, placeholder, onBlur} = props
+  const {error, isNewOrg, onChange, onTypeChange, orgName, placeholder} = props
   return (
     <NewTeamFormBlock>
       <Radio
@@ -31,7 +30,6 @@ const NewTeamFormOrgName = (props: Props) => {
           error={error}
           name='orgName'
           placeholder={placeholder}
-          onBlur={onBlur}
           onChange={onChange}
           value={orgName}
         />
