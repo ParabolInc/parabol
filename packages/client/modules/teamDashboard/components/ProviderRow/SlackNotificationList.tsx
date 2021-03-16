@@ -109,7 +109,7 @@ const SlackNotificationList = (props: Props) => {
           teamId={teamId}
         />
       </TeamGroup>
-      {error && <StyledError>{error}</StyledError>}
+      {error && <StyledError>{error.message}</StyledError>}
       {TEAM_EVENTS.map((event) => {
         return (
           <SlackNotificationRow
@@ -125,7 +125,7 @@ const SlackNotificationList = (props: Props) => {
         <Heading>Private Notifications</Heading>
         {'@Parabol'}
       </UserGroup>
-      {error && <StyledError>{error}</StyledError>}
+      {error && <StyledError>{error.message}</StyledError>}
       {localPrivateChannelId &&
         USER_EVENTS.map((event) => {
           return (
