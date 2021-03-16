@@ -51,7 +51,7 @@ const SummaryHeader = (props: Props) => {
             <img
               crossOrigin=''
               alt='Parabol Logo'
-              src={`${ExternalLinks.EMAIL_CDN}mark-purple@3x.png`}
+              src={`${ExternalLinks.EMAIL_CDN}mark-color@3x.png`}
               height='32'
               width='34'
             />

@@ -2,7 +2,7 @@ import React from 'react'
 import {Link} from 'react-router-dom'
 import styled from '@emotion/styled'
 import {PALETTE} from '../../styles/paletteV2'
-import logoMarkPurple from '../../styles/theme/images/brand/mark-purple.svg'
+import logoMarkPurple from '../../styles/theme/images/brand/mark-color.svg'
 
 const RootBlock = styled('div')({
   alignItems: 'flex-end',
@@ -19,7 +19,8 @@ const Anchor = styled(Link)({
 })
 
 const Image = styled('img')({
-  display: 'block'
+  display: 'block',
+  width: 32
 })
 
 interface Props {
