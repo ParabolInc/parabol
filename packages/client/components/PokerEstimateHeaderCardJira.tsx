@@ -31,7 +31,7 @@ const HeaderCard = styled('div')({
 const CardTitle = styled('h1')({
   fontSize: 16,
   lineHeight: '24px',
-  marginBottom: '10px'
+  marginBottom: '8px'
 })
 
 const CardIcons = styled('div')({
@@ -52,7 +52,7 @@ const CardDescription = styled('div')<{isExpanded: boolean, maxHeight: number}>(
   fontSize: 14,
   margin: 0,
   maxHeight: isExpanded ? maxHeight : 30,
-  overflowY: 'scroll',
+  overflowY: 'auto',
   transition: 'all 300ms'
 }))
 

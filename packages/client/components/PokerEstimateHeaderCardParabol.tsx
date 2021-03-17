@@ -51,7 +51,7 @@ const EditorWrapper = styled('div')<{isExpanded: boolean, maxHeight: number}>(({
   fontSize: 14,
   margin: 0,
   maxHeight: isExpanded ? maxHeight : 38,
-  overflowY: 'scroll',
+  overflowY: 'auto',
   transition: 'all 300ms'
 }))
 
