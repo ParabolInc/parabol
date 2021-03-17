@@ -47,10 +47,8 @@ export const shorthands: ColumnDefinitions | undefined = undefined;
 export async function up(pgm: MigrationBuilder): Promise<void> {
   const r = await getRethink()
   const batchSize = 3000 // doing 4000 or 5000 results in error relating to size of parameterized query
-  const backfillStartTs = new Date()
   // todo: make `doBackfill` generic and reusable
   const doBackfill = async (
-    usersByFieldChoice: ('createdAt' | 'updatedAt'),
     usersAfterTs?: Date
   ) => {
     let i = 0
@@ -59,10 +57,10 @@ export async function up(pgm: MigrationBuilder): Promise<void> {
     for (let i = 0; i < 1e5; i++) {
       console.log('i:', i)
       const offset = batchSize * i
-      const rethinkUsers = await r.db('actionProduction')
+      const rethinkUsers = await r
         .table('User')
-        .between(usersAfterTs ?? r.minval, r.maxval, {index: usersByFieldChoice})
-        .orderBy(usersByFieldChoice, {index: usersByFieldChoice})
+        .between(usersAfterTs ?? r.minval, r.maxval, {index: 'updatedAt'})
+        .orderBy('updatedAt', {index: 'updatedAt'})
         .skip(offset)
         .limit(batchSize)
         .run()
@@ -75,13 +73,11 @@ export async function up(pgm: MigrationBuilder): Promise<void> {
   }
   // todo: make `doBackfillAccountingForRaceConditions` generic and reusable
   const doBackfillAccountingForRaceConditions = async (
-    usersByFieldChoice: ('createdAt' | 'updatedAt'),
     usersAfterTs?: Date
   ) => {
-    while (true) {
+    for (let i = 0; i < 1e5; i++) {
       const thisBackfillStartTs = new Date()
       const backfillFoundUsers = await doBackfill(
-        usersByFieldChoice,
         usersAfterTs
       )
       // await new Promise(resolve => setTimeout(resolve, 1000*60*2)) // update user while sleeping
@@ -90,8 +86,7 @@ export async function up(pgm: MigrationBuilder): Promise<void> {
     }
   }
 
-  await doBackfillAccountingForRaceConditions('createdAt')
-  await doBackfillAccountingForRaceConditions('updatedAt', backfillStartTs)
+  await doBackfillAccountingForRaceConditions()
   await r.getPoolMaster().drain()
   console.log('finished')
 }
