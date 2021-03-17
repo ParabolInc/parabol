@@ -7,18 +7,6 @@ graphql`
   fragment StartRetrospectiveMutation_team on StartRetrospectiveSuccess {
     meeting {
       id
-      createdBy
-      name
-      meetingMembers {
-        user {
-          id
-          preferredName
-        }
-      }
-    }
-    team {
-      ...TopBarMeetingsActiveMeetings @relay(mask: false)
-      lastMeetingType
     }
   }
 `
