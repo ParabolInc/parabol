@@ -4,12 +4,7 @@ import segmentIo from '../../../utils/segmentIo'
 import setUserTierForOrgId from '../../../utils/setUserTierForOrgId'
 import setTierForOrgUsers from '../../../utils/setTierForOrgUsers'
 import StripeManager from '../../../utils/StripeManager'
-import catchAndLog from '../../../postgres/utils/catchAndLog'
-import {
-  IUpdateTeamByOrgIdQueryParams,
-  updateTeamByOrgIdQuery
-} from '../../../postgres/queries/generated/updateTeamByOrgIdQuery'
-import getPg from '../../../postgres/getPg'
+import updateTeamByOrgId from '../../../postgres/queries/updateTeamByOrgId'
 
 const resolveDowngradeToPersonal = async (
   orgId: string,
@@ -49,16 +44,13 @@ const resolveDowngradeToPersonal = async (
         )('changes')('new_val')('id')
         .default([]) as unknown) as string[]
     }).run(),
-    catchAndLog(() =>
-      updateTeamByOrgIdQuery.run(
-        {
-          tier: TierEnum.personal,
-          isPaid: true,
-          updatedAt: now,
-          orgId
-        } as IUpdateTeamByOrgIdQueryParams,
-        getPg()
-      )
+    updateTeamByOrgId(
+      {
+        tier: TierEnum.personal,
+        isPaid: true,
+        updatedAt: now,
+      },
+      orgId
     )
   ])
   const {teamIds} = rethinkResult

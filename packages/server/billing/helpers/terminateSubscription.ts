@@ -1,11 +1,6 @@
 import stripe from '../stripe'
 import getRethink from '../../database/rethinkDriver'
-import catchAndLog from '../../postgres/utils/catchAndLog'
-import {
-  IUpdateTeamByOrgIdQueryParams,
-  updateTeamByOrgIdQuery
-} from '../../postgres/queries/generated/updateTeamByOrgIdQuery'
-import getPg from '../../postgres/getPg'
+import updateTeamByOrgId from '../../postgres/queries/updateTeamByOrgId'
 
 const terminateSubscription = async (orgId: string) => {
   const r = await getRethink()
@@ -32,15 +27,7 @@ const terminateSubscription = async (orgId: string) => {
         )('changes')(0)('old_val')
         .default(null) as unknown as string
     }).run(),
-    catchAndLog(() =>
-      updateTeamByOrgIdQuery.run(
-        {
-          isPaid: false,
-          orgId
-        } as IUpdateTeamByOrgIdQueryParams,
-        getPg()
-      )
-    )
+    updateTeamByOrgId({isPaid: false}, orgId)
   ])
   const {stripeSubscriptionId} = rethinkResult
 
