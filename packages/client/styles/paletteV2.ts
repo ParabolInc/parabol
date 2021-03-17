@@ -1,3 +1,9 @@
+
+// Deprecated!!
+// Do not use in new code
+// Refactor old code when there are LOC changes on a file using these constants
+// Use paletteV3.ts
+
 export const enum PALETTE {
   BACKGROUND_MAIN = '#F1F0FA', // SLATE_200
   BACKGROUND_PRIMARY = '#493272', // GRAPE_700

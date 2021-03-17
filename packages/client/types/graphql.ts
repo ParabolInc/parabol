@@ -7384,7 +7384,7 @@ export interface IAddOrgOnMutationArguments {
   /**
    * The name of the new team
    */
-  orgName?: string | null;
+  orgName: string;
 }
 
 export interface IAddTeamOnMutationArguments {

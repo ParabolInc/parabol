@@ -1,3 +1,13 @@
+// Note: Not all weight variants of the expanded palette are available.
+//       We only add variables when new variants are used in design.
+//       As a design choice, we use constraint when adding weights from the expanded palette.
+//       We try to only use the limited palette, but weighted variants
+//       can help with subtle color changes in states like hover, or disabled.
+//       The limited palette is here:
+//       https://www.figma.com/file/OA9NkpSTlHVqqRL9IE9KsF/Palette-v3?node-id=15%3A366
+//       The expanded palette is here:
+//       https://www.figma.com/file/OA9NkpSTlHVqqRL9IE9KsF/Palette-v3?node-id=15%3A2184
+
 export const enum PALETTE {
   AQUA_400 = '#55C0CF',
 
