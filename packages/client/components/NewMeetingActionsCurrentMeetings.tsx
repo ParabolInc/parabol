@@ -46,9 +46,7 @@ const NewMeetingActionsCurrentMeetings = (props: Props) => {
     {isDropdown: true}
   )
   const {activeMeetings} = team
-
   useSnacksForNewMeetings(activeMeetings)
-
   const meetingCount = activeMeetings.length
   const label = `${meetingCount} Active ${plural(meetingCount, 'Meeting')}`
   if (meetingCount === 0 && !isDesktop) return null
@@ -77,8 +75,8 @@ export default createFragmentContainer(NewMeetingActionsCurrentMeetings, {
         meetingType
         id
         createdAt
-        facilitator {
-          id
+        createdBy
+        createdByUser {
           preferredName
         }
         meetingType

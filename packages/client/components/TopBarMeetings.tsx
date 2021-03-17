@@ -47,8 +47,8 @@ graphql`
       ...SelectMeetingDropdown_meetings
       id
       createdAt
-      facilitator {
-        id
+      createdBy
+      createdByUser {
         preferredName
       }
       meetingType
