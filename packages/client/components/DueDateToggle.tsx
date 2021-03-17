@@ -7,7 +7,7 @@ import useTooltip from '~/hooks/useTooltip'
 import {MenuPosition} from '../hooks/useCoords'
 import useMenu from '../hooks/useMenu'
 import {UseTaskChild} from '../hooks/useTaskChildFocus'
-import {PALETTE} from '../styles/paletteV2'
+import {PALETTE} from '../styles/paletteV3'
 import {ICON_SIZE} from '../styles/typographyV2'
 import lazyPreload from '../utils/lazyPreload'
 import {shortMonths} from '../utils/makeDateString'
@@ -22,14 +22,14 @@ interface StyleProps {
   isPastDue?: boolean
 }
 
-const DUE_DATE_BG = PALETTE.BACKGROUND_MAIN
+const DUE_DATE_BG = PALETTE.SLATE_200
 const DUE_DATE_BG_HOVER = '#DCD9F2'
 const DUE_DATE_COLOR = '#65637A'
 const DUE_DATE_COLOR_HOVER = '#575569'
 
 const DUE_DATE_PAST_BG = '#FFE2E2'
 const DUE_DATE_PAST_BG_HOVER = '#FFB4B4'
-const DUE_DATE_PAST_COLOR = PALETTE.ERROR_MAIN
+const DUE_DATE_PAST_COLOR = PALETTE.TOMATO_500
 const DUE_DATE_PAST_COLOR_HOVER = '#E9222F'
 
 const DUE_DATE_SOON_BG = '#FFF0D1'

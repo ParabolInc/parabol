@@ -5,7 +5,7 @@ import React from 'react'
 import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import CreateTaskMutation from '~/mutations/CreateTaskMutation'
-import {PALETTE} from '~/styles/paletteV2'
+import {PALETTE} from '~/styles/paletteV3'
 import {BezierCurve} from '~/types/constEnums'
 import {SORT_STEP} from '~/utils/constants'
 import dndNoise from '~/utils/dndNoise'
@@ -31,7 +31,7 @@ const animateIn = keyframes`
 const SendIcon = styled(Icon)({
   animation: `${animateIn.toString()} 300ms ${DECELERATE} `,
   opacity: 1,
-  color: PALETTE.TEXT_BLUE,
+  color: PALETTE.SKY_500,
   fontSize: 32,
   padding: 8
 })
@@ -46,7 +46,7 @@ const AddIcon = styled(Icon)<{isExpanded: boolean}>(({isExpanded}) => ({
 const AddButton = styled(PlainButton)({
   alignItems: 'center',
   color: '#fff',
-  backgroundColor: PALETTE.BACKGROUND_BLUE,
+  backgroundColor: PALETTE.SKY_500,
   borderRadius: 16,
   display: 'flex',
   height: 32,
@@ -66,7 +66,7 @@ const ExpandedLabel = styled('div')<{isExpanded: boolean}>(({isExpanded}) => ({
 }))
 
 const ButtonGroup = styled('div')({
-  borderLeft: `1px solid ${PALETTE.BORDER_GRAY} `,
+  borderLeft: `1px solid ${PALETTE.SLATE_400} `,
   padding: 8,
   userSelect: 'none'
 })

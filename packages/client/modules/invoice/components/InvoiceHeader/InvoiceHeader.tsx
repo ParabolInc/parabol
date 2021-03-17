@@ -4,7 +4,7 @@ import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {InvoiceHeader_invoice} from '~/__generated__/InvoiceHeader_invoice.graphql'
 import TierTag from '../../../../components/Tag/TierTag'
-import {PALETTE} from '../../../../styles/paletteV2'
+import {PALETTE} from '../../../../styles/paletteV3'
 import defaultOrgAvatar from '../../../../styles/theme/images/avatar-organization.svg'
 import {Breakpoint} from '../../../../types/constEnums'
 
@@ -16,7 +16,7 @@ const Header = styled('div')({
 
 const LogoPanel = styled('div')({
   backgroundColor: '#FFFFFF',
-  border: `1px solid ${PALETTE.BORDER_MAIN_40}`,
+  border: `1px solid ${PALETTE.SLATE_500}`,
   borderRadius: 8,
   height: 64,
   padding: 8,

@@ -14,7 +14,7 @@ import RowInfo from '../../../../components/Row/RowInfo'
 import RowInfoCopy from '../../../../components/Row/RowInfoCopy'
 import {MenuPosition} from '../../../../hooks/useCoords'
 import useMenu from '../../../../hooks/useMenu'
-import {PALETTE} from '../../../../styles/paletteV2'
+import {PALETTE} from '../../../../styles/paletteV3'
 import {ICON_SIZE} from '../../../../styles/typographyV2'
 import {Breakpoint, Layout, Providers} from '../../../../types/constEnums'
 import useMutationProps, {MenuMutationProps} from '../../../../hooks/useMutationProps'
@@ -24,8 +24,8 @@ import SlackNotificationList from './SlackNotificationList'
 import useBreakpoint from '../../../../hooks/useBreakpoint'
 
 const StyledButton = styled(FlatButton)({
-  borderColor: PALETTE.BORDER_LIGHT,
-  color: PALETTE.TEXT_MAIN,
+  borderColor: PALETTE.SLATE_400,
+  color: PALETTE.SLATE_700,
   fontSize: 14,
   fontWeight: 600,
   minWidth: 36,
@@ -40,7 +40,7 @@ interface Props {
 }
 
 const MenuButton = styled(FlatButton)({
-  color: PALETTE.PRIMARY_MAIN,
+  color: PALETTE.GRAPE_700,
   fontSize: ICON_SIZE.MD18,
   height: 24,
   userSelect: 'none',
@@ -63,7 +63,7 @@ const ListAndMenu = styled('div')({
 const SlackLogin = styled('div')({})
 
 const ProviderName = styled('div')({
-  color: PALETTE.TEXT_MAIN,
+  color: PALETTE.SLATE_700,
   fontSize: 16,
   fontWeight: 600,
   lineHeight: '24px',

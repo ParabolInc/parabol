@@ -6,7 +6,7 @@ import useBreakpoint from '~/hooks/useBreakpoint'
 import {MenuPosition} from '~/hooks/useCoords'
 import useMenu from '~/hooks/useMenu'
 import {Elevation} from '~/styles/elevation'
-import {PALETTE} from '~/styles/paletteV2'
+import {PALETTE} from '~/styles/paletteV3'
 import {Breakpoint} from '~/types/constEnums'
 import plural from '~/utils/plural'
 import {NewMeetingActionsCurrentMeetings_team} from '~/__generated__/NewMeetingActionsCurrentMeetings_team.graphql'
@@ -17,7 +17,7 @@ import SelectMeetingDropdown from './SelectMeetingDropdown'
 import useSnacksForNewMeetings from '~/hooks/useSnacksForNewMeetings'
 
 const CurrentButton = styled(FlatButton)<{hasMeetings: boolean}>(({hasMeetings}) => ({
-  color: PALETTE.BACKGROUND_PINK,
+  color: PALETTE.ROSE_500,
   fontSize: 14,
   fontWeight: 600,
   padding: '4px 16px',

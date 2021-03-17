@@ -5,7 +5,7 @@ import {createFragmentContainer} from 'react-relay'
 import SwipeableViews from 'react-swipeable-views'
 import useBreakpoint from '~/hooks/useBreakpoint'
 import useGotoStageId from '~/hooks/useGotoStageId'
-import {PALETTE} from '~/styles/paletteV2'
+import {PALETTE} from '~/styles/paletteV3'
 import {Breakpoint} from '~/types/constEnums'
 import {EstimatePhaseArea_meeting} from '~/__generated__/EstimatePhaseArea_meeting.graphql'
 import DeckActivityAvatars from './DeckActivityAvatars'
@@ -27,7 +27,7 @@ const StepperDots = styled('div')({
 })
 
 const StepperDot = styled('div')<{isActive: boolean}>(({isActive}) => ({
-  backgroundColor: isActive ? PALETTE.TEXT_PURPLE : PALETTE.TEXT_GRAY,
+  backgroundColor: isActive ? PALETTE.GRAPE_700 : PALETTE.SLATE_600,
   borderRadius: '50%',
   height: 8,
   margin: '0 2px',
@@ -37,7 +37,7 @@ const StepperDot = styled('div')<{isActive: boolean}>(({isActive}) => ({
 
 const SwipableEstimateItem = styled('div')({
   borderRadius: '8px 8px 0 0',
-  background: PALETTE.BACKGROUND_REFLECTION,
+  background: PALETTE.SLATE_300,
   height: '100%'
 })
 

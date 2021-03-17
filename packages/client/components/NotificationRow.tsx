@@ -1,10 +1,10 @@
 import styled from '@emotion/styled'
 import React, {ReactNode, useState} from 'react'
 import {NotificationStatusEnum} from '../__generated__/NotificationDropdown_viewer.graphql'
-import {PALETTE} from '../styles/paletteV2'
+import {PALETTE} from '../styles/paletteV3'
 
 const Row = styled('div')<{isNew: boolean}>(({isNew}) => ({
-  background: isNew ? PALETTE.BACKGROUND_MAIN_DARKENED : '#fff',
+  background: isNew ? PALETTE.SLATE_300 : '#fff',
   cursor: 'default',
   display: 'flex',
   width: '100%'
@@ -13,7 +13,7 @@ const Row = styled('div')<{isNew: boolean}>(({isNew}) => ({
 const Avatar = styled('img')<{isParabol: boolean}>(({isParabol}) => ({
   background: '#fff',
   borderRadius: '100%',
-  border: isParabol ? `solid 1px ${PALETTE.BORDER_GRAY}` : undefined,
+  border: isParabol ? `solid 1px ${PALETTE.SLATE_400}` : undefined,
   height: 40,
   margin: 12,
   padding: isParabol ? 2 : undefined,
@@ -25,7 +25,7 @@ const NewDotColumn = styled('div')({
 })
 
 const Dot = styled('div')<{isNew: boolean}>(({isNew}) => ({
-  background: PALETTE.BACKGROUND_PINK,
+  background: PALETTE.ROSE_500,
   borderRadius: 10,
   height: 8,
   width: 8,

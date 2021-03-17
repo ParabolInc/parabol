@@ -4,7 +4,7 @@ import React, {useRef, useState} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import useBreakpoint from '~/hooks/useBreakpoint'
 import {Elevation} from '~/styles/elevation'
-import {PALETTE} from '~/styles/paletteV2'
+import {PALETTE} from '~/styles/paletteV3'
 import {Breakpoint} from '~/types/constEnums'
 import {DeepNonNullable} from '../types/generics'
 import {ICON_SIZE} from '../styles/typographyV2'
@@ -19,7 +19,7 @@ const HeaderCardWrapper = styled('div')<{isDesktop: boolean}>(({isDesktop}) => (
 }))
 
 const HeaderCard = styled('div')({
-  background: PALETTE.CONTROL_LIGHT,
+  background: PALETTE.WHITE,
   borderRadius: 4,
   boxShadow: Elevation.Z1,
   padding: '12px 16px',
@@ -46,7 +46,7 @@ const CardTitleWrapper = styled('div')({
 })
 
 const CardDescription = styled('div')<{isExpanded: boolean, maxHeight: number}>(({isExpanded, maxHeight}) => ({
-  color: PALETTE.TEXT_MAIN,
+  color: PALETTE.SLATE_700,
   fontWeight: 'normal',
   lineHeight: '20px',
   fontSize: 14,
@@ -62,7 +62,7 @@ const StyledIcon = styled(Icon)({
 })
 
 const StyledLink = styled('a')({
-  color: PALETTE.LINK_BLUE,
+  color: PALETTE.SKY_500,
   display: 'flex',
   fontSize: 12,
   lineHeight: '20px',

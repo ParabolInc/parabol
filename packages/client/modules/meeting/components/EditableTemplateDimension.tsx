@@ -6,13 +6,13 @@ import RenamePokerTemplateDimensionMutation from '../../../mutations/RenamePoker
 import EditableText from '../../../components/EditableText'
 import Legitity from '../../../validation/Legitity'
 import {EditableTemplateDimension_dimensions} from '../../../__generated__/EditableTemplateDimension_dimensions.graphql'
-import {PALETTE} from '~/styles/paletteV2'
+import {PALETTE} from '~/styles/paletteV3'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
 import useScrollIntoView from '../../../hooks/useScrollIntoVIew'
 
 const StyledEditableText = styled(EditableText)({
-  fontFamily: PALETTE.TEXT_MAIN,
+  fontFamily: PALETTE.SLATE_700,
   fontSize: 14,
   lineHeight: '24px',
   padding: 0

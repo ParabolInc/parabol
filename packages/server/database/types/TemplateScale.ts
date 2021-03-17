@@ -1,4 +1,4 @@
-import {PALETTE} from '../../../client/styles/paletteV2'
+import {PALETTE} from '../../../client/styles/paletteV3'
 import {PokerCards} from '../../../client/types/constEnums'
 import generateUID from '../../generateUID'
 import TemplateScaleValue from './TemplateScaleValue'
@@ -14,11 +14,11 @@ export interface TemplateScaleInput {
 }
 
 const questionMarkCard = new TemplateScaleValue({
-  color: PALETTE.POKER_QUESTION_CARD,
+  color: PALETTE.FUSCIA_400,
   label: PokerCards.QUESTION_CARD as string
 })
 const passCard = new TemplateScaleValue({
-  color: PALETTE.POKER_PASS_CARD,
+  color: PALETTE.GRAPE_500,
   label: PokerCards.PASS_CARD as string
 })
 

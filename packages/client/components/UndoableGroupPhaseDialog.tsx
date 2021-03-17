@@ -7,7 +7,7 @@ import DialogTitle from '~/components/DialogTitle'
 import PrimaryButton from '~/components/PrimaryButton'
 import FlatButton from '~/components/FlatButton'
 import styled from '@emotion/styled'
-import {PALETTE} from '~/styles/paletteV2'
+import {PALETTE} from '~/styles/paletteV3'
 
 interface Props {
   closePortal: () => void
@@ -23,7 +23,7 @@ const ButtonGroup = styled('div')({
 })
 
 const StyledButton = styled(FlatButton)({
-  color: PALETTE.TEXT_GRAY,
+  color: PALETTE.SLATE_600,
   fontWeight: 600,
   marginRight: 16
 })

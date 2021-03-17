@@ -5,12 +5,12 @@
 import React from 'react'
 import styled from '@emotion/styled'
 import {Link} from 'react-router-dom'
-import {PALETTE} from '../../styles/paletteV2'
+import {PALETTE} from '../../styles/paletteV3'
 import parabolLogo from '../../styles/theme/images/brand/logo-lockup-white.svg'
 
 const HeaderContainer = styled('div')({
   alignItems: 'center',
-  backgroundColor: PALETTE.PRIMARY_MAIN,
+  backgroundColor: PALETTE.GRAPE_700,
   color: '#FFFFFF',
   display: 'flex',
   flexDirection: 'row',

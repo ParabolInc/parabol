@@ -4,7 +4,7 @@ import useEventCallback from '~/hooks/useEventCallback'
 import usePortal from '../hooks/usePortal'
 import {DECELERATE} from '../styles/animation'
 import {navDrawerShadow} from '../styles/elevation'
-import {PALETTE} from '../styles/paletteV2'
+import {PALETTE} from '../styles/paletteV3'
 import {DiscussionThreadEnum, NavSidebar, ZIndex} from '../types/constEnums'
 import hideBodyScroll from '../utils/hideBodyScroll'
 import PlainButton from './PlainButton/PlainButton'
@@ -20,7 +20,7 @@ const SidebarAndScrim = styled('div')<{isRightDrawer: boolean; SIDEBAR_WIDTH: nu
   })
 )
 const Scrim = styled('div')<{x: number; SIDEBAR_WIDTH: number}>(({x, SIDEBAR_WIDTH}) => ({
-  background: PALETTE.BACKGROUND_FORCED_BACKDROP,
+  background: PALETTE.SLATE_900_32,
   height: '100%',
   left: 0,
   opacity: x / SIDEBAR_WIDTH,

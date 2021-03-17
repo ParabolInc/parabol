@@ -3,7 +3,7 @@ import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import useActiveTopTemplate from '../../../hooks/useActiveTopTemplate'
-import {PALETTE} from '../../../styles/paletteV2'
+import {PALETTE} from '../../../styles/paletteV3'
 import {ReflectTemplateListOrg_viewer} from '../../../__generated__/ReflectTemplateListOrg_viewer.graphql'
 import ReflectTemplateItem from './ReflectTemplateItem'
 const TemplateList = styled('ul')({
@@ -13,9 +13,9 @@ const TemplateList = styled('ul')({
 })
 
 const Message = styled('div')({
-  border: `1px dashed ${PALETTE.BORDER_GRAY}`,
+  border: `1px dashed ${PALETTE.SLATE_400}`,
   borderRadius: 4,
-  color: PALETTE.TEXT_GRAY,
+  color: PALETTE.SLATE_600,
   fontSize: 14,
   fontStyle: 'italic',
   lineHeight: '20px',

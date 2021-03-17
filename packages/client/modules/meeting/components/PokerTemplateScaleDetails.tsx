@@ -6,7 +6,7 @@ import FlatButton from '../../../components/FlatButton'
 import Icon from '../../../components/Icon'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import textOverflow from '../../../styles/helpers/textOverflow'
-import {PALETTE} from '../../../styles/paletteV2'
+import {PALETTE} from '../../../styles/paletteV3'
 import {FONT_FAMILY} from '../../../styles/typographyV2'
 import {PokerTemplateScaleDetails_team} from '../../../__generated__/PokerTemplateScaleDetails_team.graphql'
 import EditableTemplateScaleName from './EditableTemplateScaleName'
@@ -24,13 +24,13 @@ const ScaleHeader = styled('div')({
 
 const IconButton = styled(FlatButton)({
   alignItems: 'center',
-  color: PALETTE.TEXT_GRAY,
+  color: PALETTE.SLATE_600,
   height: 32,
   justifyContent: 'center',
   padding: 0,
   width: 32,
   ':hover, :focus, :active': {
-    color: PALETTE.TEXT_MAIN
+    color: PALETTE.SLATE_700
   }
 })
 
@@ -73,7 +73,7 @@ const ScaleDetailsTitle = styled('div')({
 
 const ScaleValues = styled('div')({
   ...textOverflow,
-  color: PALETTE.TEXT_GRAY,
+  color: PALETTE.SLATE_600,
   fontFamily: FONT_FAMILY.SANS_SERIF,
   fontSize: 12,
   lineHeight: '16px',

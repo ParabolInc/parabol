@@ -2,7 +2,7 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
-import {PALETTE} from '~/styles/paletteV2'
+import {PALETTE} from '~/styles/paletteV3'
 import relativeDate from '~/utils/date/relativeDate'
 import {ThreadedCommentHeader_comment} from '~/__generated__/ThreadedCommentHeader_comment.graphql'
 import CommentAuthorOptionsButton from './CommentAuthorOptionsButton'
@@ -11,7 +11,7 @@ import ThreadedItemHeaderDescription from './ThreadedItemHeaderDescription'
 import ThreadedReplyButton from './ThreadedReplyButton'
 
 const HeaderActions = styled('div')<{isViewerComment: boolean}>(({isViewerComment}) => ({
-  color: PALETTE.TEXT_GRAY,
+  color: PALETTE.SLATE_600,
   display: 'flex',
   fontWeight: 600,
   paddingRight: !isViewerComment ? 32 : 8

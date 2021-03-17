@@ -8,7 +8,7 @@ import useBreakpoint from '~/hooks/useBreakpoint'
 import useEditorState from '~/hooks/useEditorState'
 import useTaskChildFocus from '~/hooks/useTaskChildFocus'
 import {Elevation} from '~/styles/elevation'
-import {PALETTE} from '~/styles/paletteV2'
+import {PALETTE} from '~/styles/paletteV3'
 import {Breakpoint} from '~/types/constEnums'
 import isAndroid from '~/utils/draftjs/isAndroid'
 import useAtmosphere from '../hooks/useAtmosphere'
@@ -27,7 +27,7 @@ const HeaderCardWrapper = styled('div')<{isDesktop: boolean}>(({isDesktop}) => (
 
 const HeaderCard = styled('div')({
   alignItems: 'flex-start',
-  background: PALETTE.CONTROL_LIGHT,
+  background: PALETTE.WHITE,
   borderRadius: 4,
   boxShadow: Elevation.Z1,
   display: 'flex',
@@ -45,7 +45,7 @@ const CardIcons = styled('div')({
 
 const EditorWrapper = styled('div')<{isExpanded: boolean; maxHeight: number}>(
   ({isExpanded, maxHeight}) => ({
-    color: PALETTE.TEXT_MAIN,
+    color: PALETTE.SLATE_700,
     fontWeight: 'normal',
     lineHeight: '20px',
     fontSize: 14,
@@ -57,7 +57,7 @@ const EditorWrapper = styled('div')<{isExpanded: boolean; maxHeight: number}>(
 )
 
 const StyledTaskIntegrationLink = styled(TaskIntegrationLink)({
-  color: PALETTE.LINK_BLUE,
+  color: PALETTE.SKY_500,
   display: 'flex',
   fontSize: 12,
   lineHeight: '20px',
