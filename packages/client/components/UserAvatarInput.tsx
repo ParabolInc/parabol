@@ -1,18 +1,14 @@
 import styled from '@emotion/styled'
 import sanitizeSVG from '@mattkrick/sanitize-svg'
-import React, {Component} from 'react'
-import jpgWithoutEXIF from '~/utils/jpgWithoutEXIF'
-import withAtmosphere, {WithAtmosphereProps} from '../decorators/withAtmosphere/withAtmosphere'
-import withMutationProps, {WithMutationProps} from '../utils/relay/withMutationProps'
+import React from 'react'
 import svgToPng from '../utils/svgToPng'
 import Avatar from './Avatar/Avatar'
 import AvatarInput from './AvatarInput'
 import DialogTitle from './DialogTitle'
 import UploadUserImageMutation from '../mutations/UploadUserImageMutation'
-
-interface Props extends WithAtmosphereProps, WithMutationProps {
-  picture: string
-}
+import useMutationProps from '../hooks/useMutationProps'
+import useAtmosphere from '../hooks/useAtmosphere'
+import jpgWithoutEXIF from '~/utils/jpgWithoutEXIF'
 
 const AvatarBlock = styled('div')({
   margin: '1.5rem auto',
@@ -38,23 +34,28 @@ const StyledDialogTitle = styled(DialogTitle)({
   textAlign: 'center'
 })
 
-class UserAvatarInput extends Component<Props> {
-  onSubmit = async (file: File) => {
-    const {atmosphere, setDirty, submitting, onError, onCompleted, submitMutation} = this.props
+interface Props {
+  picture: string
+}
+
+const UserAvatarInput = (props: Props) => {
+  const {picture} = props
+  const {error, onCompleted, onError, submitMutation, submitting} = useMutationProps()
+  const atmosphere = useAtmosphere()
+
+  const onSubmit = async (file: File) => {
     if (submitting) return
-    setDirty()
     if (file.type === 'image/jpeg') {
       file = (await jpgWithoutEXIF(file)) as File
     }
     if (file.size > 2 ** 20) {
-      onError('File is too large (1MB Max)')
+      onError(new Error('File is too large (1MB Max)'))
       return
     }
-
     if (file.type === 'image/svg+xml') {
       const isSanitary = await sanitizeSVG(file)
       if (!isSanitary) {
-        onError('xss')
+        onError(new Error('xss'))
         return
       }
       const png = await svgToPng(file)
@@ -63,26 +64,18 @@ class UserAvatarInput extends Component<Props> {
       }
     }
     submitMutation()
-    UploadUserImageMutation(
-      atmosphere,
-      {},
-      {onCompleted, onError},
-      {file}
-    )
+    UploadUserImageMutation(atmosphere, {}, {onCompleted, onError}, {file})
   }
 
-  render() {
-    const {picture, dirty, error} = this.props
-    return (
-      <ModalBoundary>
-        <StyledDialogTitle>{'Upload a New Photo'}</StyledDialogTitle>
-        <AvatarBlock>
-          <Avatar picture={picture} size={96} />
-        </AvatarBlock>
-        <AvatarInput error={dirty ? (error as string) : undefined} onSubmit={this.onSubmit} />
-      </ModalBoundary>
-    )
-  }
+  return (
+    <ModalBoundary>
+      <StyledDialogTitle>{'Upload a New Photo'}</StyledDialogTitle>
+      <AvatarBlock>
+        <Avatar picture={picture} size={96} />
+      </AvatarBlock>
+      <AvatarInput error={error?.message} onSubmit={onSubmit} />
+    </ModalBoundary>
+  )
 }
 
-export default withAtmosphere(withMutationProps(UserAvatarInput))
+export default UserAvatarInput
