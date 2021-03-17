@@ -1,13 +1,15 @@
-import {ThreadSourceEnum} from 'parabol-client/types/graphql'
 import dndNoise from 'parabol-client/utils/dndNoise'
 import extractTextFromDraftString from 'parabol-client/utils/draftjs/extractTextFromDraftString'
 import getTagsFromEntityMap from 'parabol-client/utils/draftjs/getTagsFromEntityMap'
 import generateUID from '../../generateUID'
+import {ThreadSourceEnum} from './ThreadSource'
 import TaskIntegrationGitHub from './TaskIntegrationGitHub'
 import TaskIntegrationJira from './TaskIntegrationJira'
 
-export type TaskStatus = 'active' | 'stuck' | 'done' | 'future'
-export type TaskTag = 'private' | 'archived'
+export type AreaEnum = 'meeting' | 'teamDash' | 'userDash'
+export type TaskStatusEnum = 'active' | 'stuck' | 'done' | 'future'
+export type TaskTagEnum = 'private' | 'archived'
+export type TaskServiceEnum = 'PARABOL' | 'github' | 'jira'
 
 export interface TaskInput {
   id?: string
@@ -19,7 +21,7 @@ export interface TaskInput {
   meetingId?: string | null
   plaintextContent?: string
   sortOrder?: number | null
-  status: TaskStatus
+  status: TaskStatusEnum
   teamId: string
   threadId?: string | null
   threadParentId?: string | null
@@ -40,8 +42,8 @@ export default class Task {
   meetingId?: string
   plaintextContent: string
   sortOrder: number
-  status: TaskStatus
-  tags: TaskTag[]
+  status: TaskStatusEnum
+  tags: TaskTagEnum[]
   teamId: string
   threadId?: string
   threadParentId?: string
@@ -71,7 +73,7 @@ export default class Task {
       updatedAt
     } = input
     const {entityMap} = JSON.parse(content)
-    const tags = getTagsFromEntityMap<TaskTag>(entityMap)
+    const tags = getTagsFromEntityMap<TaskTagEnum>(entityMap)
     this.id = id || generateUID()
     this.threadId = threadId || undefined
     this.threadSource = threadSource || undefined

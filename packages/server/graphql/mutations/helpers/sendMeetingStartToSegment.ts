@@ -1,4 +1,3 @@
-import {NewMeetingPhaseTypeEnum} from 'parabol-client/types/graphql'
 import Meeting from '../../../database/types/Meeting'
 import MeetingTemplate from '../../../database/types/MeetingTemplate'
 import segmentIo from '../../../utils/segmentIo'
@@ -9,7 +8,7 @@ const sendMeetingStartToSegment = async (newMeeting: Meeting, template?: Meeting
     userId: facilitatorUserId,
     event: 'Meeting Started',
     properties: {
-      hasIcebreaker: phases[0].phaseType === NewMeetingPhaseTypeEnum.checkin,
+      hasIcebreaker: phases[0].phaseType === 'checkin',
       meetingType,
       meetingTemplateId: template?.id,
       meetingTemplateName: template?.name,

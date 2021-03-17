@@ -11,7 +11,6 @@ import {navItemRaised} from '../styles/elevation'
 import {PALETTE} from '../styles/paletteV2'
 import {ICON_SIZE} from '../styles/typographyV2'
 import {NavSidebar} from '../types/constEnums'
-import {NewMeetingPhaseTypeEnum} from '../types/graphql'
 import {DISCUSSION_TOPIC, SORT_STEP} from '../utils/constants'
 import dndNoise from '../utils/dndNoise'
 import Icon from './Icon'
@@ -61,7 +60,7 @@ const ScrollWrapper = styled('div')({
 const RetroSidebarDiscussSection = (props: Props) => {
   const {atmosphere, gotoStageId, handleMenuClick, meeting} = props
   const {localStage, facilitatorStageId, id: meetingId, phases, endedAt} = meeting
-  const discussPhase = phases!.find(({phaseType}) => phaseType === NewMeetingPhaseTypeEnum.discuss)!
+  const discussPhase = phases!.find(({phaseType}) => phaseType === 'discuss')!
   // assert that the discuss phase and its stages are non-null
   // since we render this component when the vote phase is complete
   // see: RetroSidebarPhaseListItemChildren.tsx

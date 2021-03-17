@@ -45,7 +45,7 @@ const ScopePhaseAreaAddJira = (props: Props) => {
   if (!viewerMeetingMember) return null
   const {teamMember} = viewerMeetingMember
   const {integrations} = teamMember
-  const hasAuth = integrations.atlassian?.isActive ?? false
+  const hasAuth = integrations?.atlassian?.isActive ?? false
 
   const importStories = () => {
     if (!hasAuth) {

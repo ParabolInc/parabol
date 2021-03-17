@@ -1,10 +1,8 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {RecordProxy} from 'relay-runtime'
 import {NavigateMeetingMutation_team} from '~/__generated__/NavigateMeetingMutation_team.graphql'
 import Atmosphere from '../Atmosphere'
 import {ClientRetrospectiveMeeting} from '../types/clientSchema'
-import {IReflectPhase} from '../types/graphql'
 import {SharedUpdater} from '../types/relayMutations'
 import {REFLECT, VOTE} from '../utils/constants'
 import isInterruptingChickenPhase from '../utils/isInterruptingChickenPhase'
@@ -136,7 +134,7 @@ export const navigateMeetingTeamUpdater: SharedUpdater<NavigateMeetingMutation_t
     if (!phases) return
     const reflectPhase = phases.find(
       (phase) => phase && phase.getValue('__typename') === 'ReflectPhase'
-    ) as RecordProxy<IReflectPhase>
+    )
     if (!reflectPhase) return
     const prompts = reflectPhase.getLinkedRecords('reflectPrompts')
     if (!prompts) return

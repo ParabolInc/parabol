@@ -1,6 +1,6 @@
 import {GraphQLID, GraphQLInt, GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
-import {TierEnum as TierEnumDB} from 'parabol-client/types/graphql'
 import getRethink from '../../database/rethinkDriver'
+import {TierEnum as ETierEnum} from '../../database/types/Invoice'
 import errorFilter from '../errorFilter'
 import {GQLContext} from '../graphql'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
@@ -170,10 +170,10 @@ const Company = new GraphQLObjectType<any, GQLContext>({
       type: GraphQLNonNull(TierEnum),
       async resolve({id: domain}, _args, {dataLoader}) {
         const organizations = await dataLoader.get('organizationsByActiveDomain').load(domain)
-        const tiers = organizations.map(({tier}) => tier)
-        if (tiers.includes(TierEnumDB.enterprise)) return TierEnumDB.enterprise
-        if (tiers.includes(TierEnumDB.pro)) return TierEnumDB.pro
-        return TierEnumDB.personal
+        const tiers: ETierEnum[] = organizations.map(({tier}) => tier)
+        if (tiers.includes('enterprise')) return 'enterprise'
+        if (tiers.includes('pro')) return 'pro'
+        return 'personal'
       }
     },
     userCount: {

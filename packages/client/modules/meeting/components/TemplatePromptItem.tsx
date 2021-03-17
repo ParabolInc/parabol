@@ -84,7 +84,7 @@ const TemplatePromptItem = (props: Props) => {
       return
     }
     submitMutation()
-    RemoveReflectTemplatePromptMutation(atmosphere, {promptId}, {}, onError, onCompleted)
+    RemoveReflectTemplatePromptMutation(atmosphere, {promptId}, {onError, onCompleted})
   }
 
   return (

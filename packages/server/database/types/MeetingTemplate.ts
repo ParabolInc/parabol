@@ -1,6 +1,7 @@
-import {MeetingTypeEnum} from 'parabol-client/types/graphql'
-import {SharingScopeEnum} from '../../../client/types/graphql'
 import generateUID from '../../generateUID'
+import {MeetingTypeEnum} from './Meeting'
+
+export type SharingScopeEnum = 'ORGANIZATION' | 'PUBLIC' | 'TEAM'
 
 interface Input {
   name: string
@@ -36,7 +37,7 @@ export default class MeetingTemplate {
     this.name = name
     this.teamId = teamId
     this.updatedAt = now
-    this.scope = scope || SharingScopeEnum.TEAM
+    this.scope = scope || 'TEAM'
     this.orgId = orgId
     this.parentTemplateId = parentTemplateId
     this.lastUsedAt = lastUsedAt ?? undefined

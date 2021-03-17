@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
-import React, {useRef, RefObject, useMemo, } from 'react'
-import { createFragmentContainer} from 'react-relay'
+import React, {useRef, RefObject, useMemo} from 'react'
+import {createFragmentContainer} from 'react-relay'
 import {DiscussionThread_viewer} from '~/__generated__/DiscussionThread_viewer.graphql'
 import {useCoverable} from '~/hooks/useControlBarCovers'
 import {Breakpoint, DiscussionThreadEnum, MeetingControlBarEnum} from '~/types/constEnums'
@@ -9,7 +9,6 @@ import {Elevation} from '../styles/elevation'
 import makeMinWidthMediaQuery from '../utils/makeMinWidthMediaQuery'
 import DiscussionThreadInput from './DiscussionThreadInput'
 import DiscussionThreadList from './DiscussionThreadList'
-import {MeetingTypeEnum} from '~/types/graphql'
 
 const Wrapper = styled('div')<{isExpanded: boolean; isPokerMeeting?: boolean}>(
   ({isExpanded, isPokerMeeting}) => ({
@@ -23,8 +22,7 @@ const Wrapper = styled('div')<{isExpanded: boolean; isPokerMeeting?: boolean}>(
     overflow: 'hidden',
     width: isPokerMeeting ? '100%' : 'calc(100% - 16px)',
     [makeMinWidthMediaQuery(Breakpoint.SIDEBAR_LEFT)]: {
-      height:
-        isExpanded || isPokerMeeting ? '100%' : `calc(100% - ${MeetingControlBarEnum.HEIGHT}px)`,
+      height: isExpanded ? '100%' : `calc(100% - ${MeetingControlBarEnum.HEIGHT}px)`,
       width: DiscussionThreadEnum.WIDTH
     }
   })
@@ -39,15 +37,10 @@ interface Props {
 const DiscussionThread = (props: Props) => {
   const {meetingContentRef, threadSourceId, viewer} = props
   const meeting = viewer.meeting!
-  const {
-    endedAt,
-    meetingType,
-    replyingToCommentId,
-    threadSource,
-  } = meeting
+  const {endedAt, meetingType, replyingToCommentId, threadSource} = meeting
   const thread = threadSource?.thread
   const commentors = threadSource?.commentors
-  const isPokerMeeting = meetingType === MeetingTypeEnum.poker
+  const isPokerMeeting = meetingType === 'poker'
   const preferredNames = useMemo(
     () => (commentors && commentors.map((commentor) => commentor.preferredName)) || null,
     [commentors]
@@ -61,9 +54,15 @@ const DiscussionThread = (props: Props) => {
   const listRef = useRef<HTMLDivElement>(null)
   const editorRef = useRef<HTMLTextAreaElement>(null)
   const ref = useRef<HTMLDivElement>(null)
-  // don't resize in a poker meeting as we do this in the parent
-  const coverableHeight = isPokerMeeting ? 0 : MeetingControlBarEnum.HEIGHT
-  const isExpanded = useCoverable('threads', ref, coverableHeight, meetingContentRef) || !!endedAt
+  const isExpanded =
+    useCoverable(
+      'threads',
+      ref,
+      MeetingControlBarEnum.HEIGHT,
+      meetingContentRef,
+      undefined,
+      meetingType
+    ) || !!endedAt
   return (
     <Wrapper isExpanded={isExpanded} isPokerMeeting={isPokerMeeting} ref={ref}>
       <DiscussionThreadList

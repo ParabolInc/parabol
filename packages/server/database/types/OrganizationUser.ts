@@ -1,5 +1,7 @@
-import {OrgUserRole, TierEnum} from 'parabol-client/types/graphql'
 import generateUID from '../../generateUID'
+import {TierEnum} from './Invoice'
+
+export type OrgUserRole = 'BILLING_LEADER'
 interface Input {
   orgId: string
   userId: string

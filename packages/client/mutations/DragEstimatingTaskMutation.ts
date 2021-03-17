@@ -1,9 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
 import {DragEstimatingTaskMutation_meeting} from '~/__generated__/DragEstimatingTaskMutation_meeting.graphql'
-import Atmosphere from '../Atmosphere'
-import {IDragEstimatingTaskOnMutationArguments} from '../types/graphql'
-import {SharedUpdater} from '../types/relayMutations'
+import {SharedUpdater, SimpleMutation} from '../types/relayMutations'
 import {DragEstimatingTaskMutation as IDragEstimatingTaskMutation} from '../__generated__/DragEstimatingTaskMutation.graphql'
 import handleUpdateStageSort from './handlers/handleUpdateStageSort'
 
@@ -33,11 +31,11 @@ export const dragEstimatingTaskMeetingUpdater: SharedUpdater<DragEstimatingTaskM
   handleUpdateStageSort(store, meetingId, 'ESTIMATE')
 }
 
-const DragEstimatingTaskMutation = (
-  atmosphere: Atmosphere,
-  variables: IDragEstimatingTaskOnMutationArguments
+const DragEstimatingTaskMutation: SimpleMutation<IDragEstimatingTaskMutation> = (
+  atmosphere,
+  variables
 ) => {
-  commitMutation<IDragEstimatingTaskMutation>(atmosphere, {
+  return commitMutation<IDragEstimatingTaskMutation>(atmosphere, {
     mutation,
     variables,
     updater: (store) => {

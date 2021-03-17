@@ -4,9 +4,8 @@ import {createFragmentContainer} from 'react-relay'
 import {ActionMeeting_meeting} from '~/__generated__/ActionMeeting_meeting.graphql'
 import useMeeting from '../hooks/useMeeting'
 import NewMeetingAvatarGroup from '../modules/meeting/components/MeetingAvatarGroup/NewMeetingAvatarGroup'
-import {ValueOf} from '../types/generics'
-import {NewMeetingPhaseTypeEnum} from '../types/graphql'
-import lazyPreload from '../utils/lazyPreload'
+import {NewMeetingPhaseTypeEnum} from '../__generated__/ActionMeeting_meeting.graphql'
+import lazyPreload, {LazyExoticPreload} from '../utils/lazyPreload'
 import ActionMeetingSidebar from './ActionMeetingSidebar'
 import MeetingArea from './MeetingArea'
 import MeetingControlBar from './MeetingControlBar'
@@ -18,24 +17,22 @@ interface Props {
 }
 
 const phaseLookup = {
-  [NewMeetingPhaseTypeEnum.checkin]: lazyPreload(() =>
+  checkin: lazyPreload(() =>
     import(/* webpackChunkName: 'NewMeetingCheckIn' */ './NewMeetingCheckIn')
   ),
-  [NewMeetingPhaseTypeEnum.updates]: lazyPreload(() =>
+  updates: lazyPreload(() =>
     import(/* webpackChunkName: 'ActionMeetingUpdates' */ './ActionMeetingUpdates')
   ),
-  [NewMeetingPhaseTypeEnum.firstcall]: lazyPreload(() =>
+  firstcall: lazyPreload(() =>
     import(/* webpackChunkName: 'ActionMeetingFirstCall' */ './ActionMeetingFirstCall')
   ),
-  [NewMeetingPhaseTypeEnum.agendaitems]: lazyPreload(() =>
+  agendaitems: lazyPreload(() =>
     import(/* webpackChunkName: 'ActionMeetingAgendaItems' */ './ActionMeetingAgendaItems')
   ),
-  [NewMeetingPhaseTypeEnum.lastcall]: lazyPreload(() =>
+  lastcall: lazyPreload(() =>
     import(/* webpackChunkName: 'ActionMeetingLastCall' */ './ActionMeetingLastCall')
   )
-}
-
-type PhaseComponent = ValueOf<typeof phaseLookup>
+} as Record<NewMeetingPhaseTypeEnum, LazyExoticPreload<any>>
 
 export interface ActionMeetingPhaseProps {
   avatarGroup: ReactElement
@@ -62,8 +59,8 @@ const ActionMeeting = (props: Props) => {
   }, [])
   if (!safeRoute) return null
   const allowVideo = !!viewerMeetingMember?.user?.featureFlags?.video
-  const localPhaseType = (localPhase && localPhase.phaseType) || NewMeetingPhaseTypeEnum.lobby
-  const Phase = phaseLookup[localPhaseType] as PhaseComponent
+  const localPhaseType = (localPhase && localPhase.phaseType) || 'lobby'
+  const Phase = phaseLookup[localPhaseType]
   return (
     <MeetingStyles>
       <ResponsiveDashSidebar isOpen={showSidebar} onToggle={toggleSidebar}>

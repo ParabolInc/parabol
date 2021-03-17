@@ -1,6 +1,6 @@
 import {GraphQLNonNull, GraphQLString} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import {SuggestedActionTypeEnum} from 'parabol-client/types/graphql'
+import {SuggestedActionTypeEnum} from '../../../client/types/constEnums'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import AuthToken from '../../database/types/AuthToken'
 import db from '../../db'
@@ -27,7 +27,7 @@ export default {
       description: 'The new team object with exactly 1 team member'
     },
     orgName: {
-      type: GraphQLString,
+      type: new GraphQLNonNull(GraphQLString),
       description: 'The name of the new team'
     }
   },

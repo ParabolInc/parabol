@@ -1,4 +1,3 @@
-import {MeetingTypeEnum} from 'parabol-client/types/graphql'
 import MeetingMember from './MeetingMember'
 
 interface Input {
@@ -14,7 +13,7 @@ export default class RetroMeetingMember extends MeetingMember {
   votesRemaining: number
   constructor(input: Input) {
     const {votesRemaining, ...superInput} = input
-    super({...superInput, meetingType: MeetingTypeEnum.retrospective})
+    super({...superInput, meetingType: 'retrospective'})
     this.votesRemaining = votesRemaining
   }
 }

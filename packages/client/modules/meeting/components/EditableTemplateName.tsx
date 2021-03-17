@@ -36,7 +36,7 @@ const EditableTemplateName = (props: Props) => {
     const {error, value: name} = validate(rawName)
     if (error) return
     submitMutation()
-    RenameMeetingTemplateMutation(atmosphere, {templateId, name}, {}, onError, onCompleted)
+    RenameMeetingTemplateMutation(atmosphere, {templateId, name}, {onError, onCompleted})
   }
 
   const legitify = (value) => {

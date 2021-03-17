@@ -108,7 +108,8 @@ const PokerSidebarEstimateSection = (props: Props) => {
                   const {stageIds, title, isActive, isComplete, isNavigable, finalScores} = summary
                   const [firstStageId] = stageIds
                   // the local user is at another stage than the facilitator stage
-                  const isUnsyncedFacilitatorStage = !inSync && stageIds.includes(facilitatorStageId)
+                  const isUnsyncedFacilitatorStage =
+                    !inSync && stageIds.includes(facilitatorStageId)
                   return (
                     <Draggable
                       key={firstStageId}

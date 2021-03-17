@@ -20,7 +20,6 @@ import {
   ElementWidth,
   MeetingControlBarEnum
 } from '../types/constEnums'
-import {NewMeetingPhaseTypeEnum} from '../types/graphql'
 import getNextSortOrder from '../utils/getNextSortOrder'
 import {SwipeColumn} from './GroupingKanban'
 import GroupingKanbanColumnHeader from './GroupingKanbanColumnHeader'
@@ -122,7 +121,7 @@ const GroupingKanbanColumn = (props: Props) => {
     filteredReflectionGroups,
     columnsRef
   )
-  const canAdd = phaseType === NewMeetingPhaseTypeEnum.group && !isComplete && !isAnyEditing
+  const canAdd = phaseType === 'group' && !isComplete && !isAnyEditing
 
   const onClick = () => {
     if (submitting || isAnyEditing) return

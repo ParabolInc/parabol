@@ -8,7 +8,7 @@ import {TransitionStatus} from '~/hooks/useTransition'
 import FlagReadyToAdvanceMutation from '~/mutations/FlagReadyToAdvanceMutation'
 import {PALETTE} from '~/styles/paletteV2'
 import {BezierCurve, Times} from '~/types/constEnums'
-import {NewMeetingPhaseTypeEnum} from '~/types/graphql'
+import {NewMeetingPhaseTypeEnum} from '../__generated__/BottomControlBarReady_meeting.graphql'
 import handleRightArrow from '~/utils/handleRightArrow'
 import {BottomControlBarReady_meeting} from '~/__generated__/BottomControlBarReady_meeting.graphql'
 import {MenuPosition} from '../hooks/useCoords'
@@ -44,11 +44,7 @@ const CheckIcon = styled(Icon)<{progress: number; isNext: boolean; isViewerReady
   })
 )
 
-const PHASE_REQUIRES_CONFIRM = new Set<string>([
-  NewMeetingPhaseTypeEnum.reflect,
-  NewMeetingPhaseTypeEnum.group,
-  NewMeetingPhaseTypeEnum.vote
-])
+const PHASE_REQUIRES_CONFIRM = new Set<NewMeetingPhaseTypeEnum>(['reflect', 'group', 'vote'])
 
 const BottomControlBarReady = (props: Props) => {
   const {
@@ -97,14 +93,14 @@ const BottomControlBarReady = (props: Props) => {
   }
   const onKeyDown = isNext
     ? handleRightArrow(() => {
-      gotoNext()
-    })
+        gotoNext()
+      })
     : undefined
   const icon = isNext ? 'arrow_forward' : 'check'
   const label = isNext ? 'Next' : 'Ready'
   const getDisabled = () => {
     if (!isNext) return false
-    if (phaseType === NewMeetingPhaseTypeEnum.reflect) {
+    if (phaseType === 'reflect') {
       return reflectionGroups?.length === 0 ?? true
     }
     return false

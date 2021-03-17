@@ -2,19 +2,19 @@ import styled from '@emotion/styled'
 import React, {ReactNode} from 'react'
 import {PALETTE} from '../styles/paletteV2'
 import {NavSidebar} from '../types/constEnums'
-import {NewMeetingPhaseTypeEnum} from '../types/graphql'
+import {NewMeetingPhaseTypeEnum} from '~/__generated__/NewMeetingSettingsToggleCheckIn_settings.graphql.ts'
 import {phaseIconLookup, phaseImageLookup, phaseLabelLookup} from '../utils/meetings/lookups'
 import Badge from './Badge/Badge'
 import Icon from './Icon'
 
-const NavListItem = styled('li')<{phaseType: string}>(({phaseType}) => ({
+const NavListItem = styled('li')<{phaseType: NewMeetingPhaseTypeEnum}>(({phaseType}) => ({
   fontWeight: 600,
   display: 'flex',
   flexDirection: 'column',
   margin: 0,
   // hack to work around broken flexbox
   // https://bugs.chromium.org/p/chromium/issues/detail?id=927066
-  minHeight: phaseType === NewMeetingPhaseTypeEnum.agendaitems ? 98 : 40
+  minHeight: phaseType === 'agendaitems' ? 98 : 40
 }))
 
 const NavItemIcon = styled(Icon)<{isUnsyncedFacilitatorPhase: boolean}>(
@@ -27,16 +27,18 @@ const NavItemIcon = styled(Icon)<{isUnsyncedFacilitatorPhase: boolean}>(
   })
 )
 
-const NavItemSVG = styled('div')<{isUnsyncedFacilitatorPhase: boolean}>(({isUnsyncedFacilitatorPhase}) => ({
-  height: 24,
-  margin: '0 16px',
-  width: 24,
-  '& svg': {
-    '& path': {
-      fill: isUnsyncedFacilitatorPhase ? PALETTE.EMPHASIS_WARM : PALETTE.TEXT_GRAY
+const NavItemSVG = styled('div')<{isUnsyncedFacilitatorPhase: boolean}>(
+  ({isUnsyncedFacilitatorPhase}) => ({
+    height: 24,
+    margin: '0 16px',
+    width: 24,
+    '& svg': {
+      '& path': {
+        fill: isUnsyncedFacilitatorPhase ? PALETTE.EMPHASIS_WARM : PALETTE.TEXT_GRAY
+      }
     }
-  }
-}))
+  })
+)
 
 const NavItemLabel = styled('span')({
   display: 'inline-block',
@@ -132,7 +134,7 @@ interface Props {
   isUnsyncedFacilitatorPhase: boolean
   isUnsyncedFacilitatorStage?: boolean
   phaseCount?: number | null
-  phaseType: string
+  phaseType: NewMeetingPhaseTypeEnum
 }
 
 const NewMeetingSidebarPhaseListItem = (props: Props) => {
@@ -162,11 +164,14 @@ const NewMeetingSidebarPhaseListItem = (props: Props) => {
         onClick={handleClick}
         title={label}
       >
-        {icon && <NavItemIcon isUnsyncedFacilitatorPhase={isUnsyncedFacilitatorPhase}>{icon}</NavItemIcon>}
-        {Image &&
+        {icon && (
+          <NavItemIcon isUnsyncedFacilitatorPhase={isUnsyncedFacilitatorPhase}>{icon}</NavItemIcon>
+        )}
+        {Image && (
           <NavItemSVG isUnsyncedFacilitatorPhase={isUnsyncedFacilitatorPhase}>
             <Image />
-          </NavItemSVG>}
+          </NavItemSVG>
+        )}
         <NavItemLabel>{label}</NavItemLabel>
         {showPhaseCount && (
           <PhaseCountBlock>

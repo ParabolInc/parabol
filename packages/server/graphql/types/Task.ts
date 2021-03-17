@@ -6,8 +6,8 @@ import {
   GraphQLObjectType,
   GraphQLString
 } from 'graphql'
-import {ThreadSourceEnum} from 'parabol-client/types/graphql'
 import connectionDefinitions from '../connectionDefinitions'
+import {ThreadSourceEnum} from '../../database/types/ThreadSource'
 import {GQLContext} from '../graphql'
 import AgendaItem from './AgendaItem'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
@@ -32,8 +32,12 @@ const Task = new GraphQLObjectType<any, GQLContext>({
     agendaItem: {
       type: AgendaItem,
       description: 'The agenda item that the task was created in, if any',
-      resolve: ({threadId, threadSource}, _args, {dataLoader}) => {
-        const agendaId = threadSource === ThreadSourceEnum.AGENDA_ITEM ? threadId : undefined
+      resolve: (
+        {threadId, threadSource}: {threadId: string; threadSource: ThreadSourceEnum},
+        _args,
+        {dataLoader}
+      ) => {
+        const agendaId = threadSource === 'AGENDA_ITEM' ? threadId : undefined
         return agendaId ? dataLoader.get('agendaItems').load(agendaId) : null
       }
     },

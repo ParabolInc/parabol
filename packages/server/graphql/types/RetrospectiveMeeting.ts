@@ -7,7 +7,6 @@ import {
   GraphQLNonNull,
   GraphQLObjectType
 } from 'graphql'
-import {MeetingTypeEnum, NewMeetingPhaseTypeEnum} from 'parabol-client/types/graphql'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import DiscussPhase from '../../database/types/DiscussPhase'
 import RetroMeetingMember from '../../database/types/RetroMeetingMember'
@@ -103,9 +102,7 @@ const RetrospectiveMeeting = new GraphQLObjectType<any, GQLContext>({
         } else if (sortBy === 'stageOrder') {
           const meeting = await dataLoader.get('newMeetings').load(meetingId)
           const {phases} = meeting
-          const discussPhase = phases.find(
-            (phase) => phase.phaseType === NewMeetingPhaseTypeEnum.discuss
-          ) as DiscussPhase
+          const discussPhase = phases.find((phase) => phase.phaseType === 'discuss') as DiscussPhase
           if (!discussPhase) return reflectionGroups
           const {stages} = discussPhase
           // for early terminations the stages may not exist
@@ -127,9 +124,7 @@ const RetrospectiveMeeting = new GraphQLObjectType<any, GQLContext>({
       type: new GraphQLNonNull(RetrospectiveMeetingSettings),
       description: 'The settings that govern the retrospective meeting',
       resolve: async ({teamId}, _args, {dataLoader}) => {
-        return dataLoader
-          .get('meetingSettingsByType')
-          .load({teamId, meetingType: MeetingTypeEnum.retrospective})
+        return dataLoader.get('meetingSettingsByType').load({teamId, meetingType: 'retrospective'})
       }
     },
     taskCount: {

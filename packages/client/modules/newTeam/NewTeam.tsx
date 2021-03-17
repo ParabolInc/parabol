@@ -74,7 +74,7 @@ const NewTeam = (props: Props) => {
   return (
     <NewTeamLayout>
       <NewTeamInner>
-        <NewTeamForm isNewOrganization={!defaultOrgId} organizations={organizations} />
+        <NewTeamForm isInitiallyNewOrg={!defaultOrgId} organizations={organizations} />
         {isDesktop && (
           <HelpLayout>
             <HelpBlock>

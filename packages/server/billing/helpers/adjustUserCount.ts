@@ -1,5 +1,4 @@
 import {InvoiceItemType} from 'parabol-client/types/constEnums'
-import {TierEnum} from 'parabol-client/types/graphql'
 import getRethink from '../../database/rethinkDriver'
 import InvoiceItemHook from '../../database/types/InvoiceItemHook'
 import Organization from '../../database/types/Organization'
@@ -157,7 +156,7 @@ export default async function adjustUserCount(
     )
     .run()
 
-  const proOrgs = paidOrgs.filter((org) => org.tier === TierEnum.pro)
+  const proOrgs = paidOrgs.filter((org) => org.tier === 'pro')
   handleEnterpriseOrgQuantityChanges(paidOrgs).catch()
   // personal & enterprise tiers do not follow the per-seat model
   if (proOrgs.length === 0) return
@@ -173,7 +172,7 @@ export default async function adjustUserCount(
   const hooks = proOrgs.map((org) => {
     return new InvoiceItemHook({
       stripeSubscriptionId: org.stripeSubscriptionId!,
-      isProrated: org.tier !== TierEnum.enterprise,
+      isProrated: org.tier !== 'enterprise',
       orgId: org.id,
       prorationDate,
       type,

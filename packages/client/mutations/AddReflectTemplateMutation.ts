@@ -1,6 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {MeetingTypeEnum} from '../types/graphql'
 import {SharedUpdater, StandardMutation} from '../types/relayMutations'
 import createProxyRecord from '../utils/relay/createProxyRecord'
 import {setActiveTemplateInRelayStore} from '../utils/relay/setActiveTemplate'
@@ -38,7 +37,7 @@ export const addReflectTemplateTeamUpdater: SharedUpdater<AddReflectTemplateMuta
   const teamId = template.getValue('teamId')
   const team = store.get(teamId)
   if (!team) return
-  setActiveTemplateInRelayStore(store, teamId, templateId, MeetingTypeEnum.retrospective)
+  setActiveTemplateInRelayStore(store, teamId, templateId, 'retrospective')
 }
 
 const AddReflectTemplateMutation: StandardMutation<TAddReflectTemplateMutation> = (

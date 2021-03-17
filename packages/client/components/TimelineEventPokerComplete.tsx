@@ -2,7 +2,6 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
-import {NewMeetingPhaseTypeEnum} from '../types/graphql'
 import plural from '../utils/plural'
 import {TimelineEventPokerComplete_timelineEvent} from '../__generated__/TimelineEventPokerComplete_timelineEvent.graphql'
 import CardsSVG from './CardsSVG'
@@ -26,23 +25,16 @@ const Link = styled(StyledLink)({
 const TimelineEventPokerComplete = (props: Props) => {
   const {timelineEvent} = props
   const {meeting, team} = timelineEvent
-  const {
-    id: meetingId,
-    name: meetingName,
-    commentCount,
-    phases
-  } = meeting
+  const {id: meetingId, name: meetingName, commentCount, phases} = meeting
   const {name: teamName} = team
-  const estimatePhase = phases.find((phase) => phase.phaseType === NewMeetingPhaseTypeEnum.ESTIMATE)!
+  const estimatePhase = phases.find((phase) => phase.phaseType === 'ESTIMATE')!
   const stages = estimatePhase.stages!
   const storyCount = new Set(stages.map(({serviceTaskId}) => serviceTaskId)).size
   return (
     <TimelineEventCard
       IconSVG={<CardsSVG />}
       timelineEvent={timelineEvent}
-      title={
-        <TimelineEventTitle>{`${meetingName} with ${teamName} Complete`}</TimelineEventTitle>
-      }
+      title={<TimelineEventTitle>{`${meetingName} with ${teamName} Complete`}</TimelineEventTitle>}
     >
       <TimelineEventBody>
         {'You voted on '}

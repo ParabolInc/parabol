@@ -1,18 +1,22 @@
 import generateUID from '../../generateUID'
 
 export const slackNotificationEventTypeLookup = {
-  meetingStart: 'team' as const,
-  meetingEnd: 'team' as const,
-  MEETING_STAGE_TIME_LIMIT_END: 'member' as const,
-  MEETING_STAGE_TIME_LIMIT_START: 'team' as const
-}
+  meetingStart: 'team',
+  meetingEnd: 'team',
+  MEETING_STAGE_TIME_LIMIT_END: 'member',
+  MEETING_STAGE_TIME_LIMIT_START: 'team'
+} as const
 
 export type SlackNotificationEvent = keyof typeof slackNotificationEventTypeLookup
+export type SlackNotificationEventEnum =
+  | 'MEETING_STAGE_TIME_LIMIT_END'
+  | 'MEETING_STAGE_TIME_LIMIT_START'
+  | 'meetingEnd'
+  | 'meetingStart'
 
 interface Input {
   event: SlackNotificationEvent
   channelId: string | null | undefined
-  // channelName: string
   teamId: string
   userId: string
   id?: string
@@ -22,7 +26,6 @@ export default class SlackNotification {
   id: string
   event: SlackNotificationEvent
   channelId: string | null
-  // channelName: string
   teamId: string
   userId: string
 
@@ -31,7 +34,6 @@ export default class SlackNotification {
     this.id = id || generateUID()
     this.event = event
     this.channelId = channelId || null
-    // this.channelName = channelName
     this.teamId = teamId
     this.userId = userId
   }

@@ -17,7 +17,6 @@ import UpdateAgendaItemMutation from '../../../../mutations/UpdateAgendaItemMuta
 import pinIcon from '../../../../styles/theme/images/icons/pin.svg'
 import unpinIcon from '../../../../styles/theme/images/icons/unpin.svg'
 import {ICON_SIZE} from '../../../../styles/typographyV2'
-import {NewMeetingPhaseTypeEnum} from '~/types/graphql'
 import findStageAfterId from '../../../../utils/meetings/findStageAfterId'
 
 const AgendaItemStyles = styled('div')({
@@ -73,12 +72,10 @@ const getItemProps = (
   }
   if (!meeting) return fallback
   const {facilitatorUserId, facilitatorStageId, localStage, localPhase, phases} = meeting
-  const agendaItemsPhase = phases.find(
-    (phase) => phase.phaseType === NewMeetingPhaseTypeEnum.agendaitems
-  )!
+  const agendaItemsPhase = phases.find((phase) => phase.phaseType === 'agendaitems')!
   const localStageId = (localStage && localStage.id) || ''
   const {phaseType} = localPhase
-  const {stages} = phaseType === NewMeetingPhaseTypeEnum.agendaitems ? localPhase : agendaItemsPhase
+  const {stages} = phaseType === 'agendaitems' ? localPhase : agendaItemsPhase
   if (!stages) return fallback
   const agendaItemStage = stages.find((stage) => stage.agendaItem?.id === agendaItemId)
   if (!agendaItemStage) return fallback

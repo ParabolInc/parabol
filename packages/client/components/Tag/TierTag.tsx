@@ -1,6 +1,6 @@
 import React from 'react'
 import {TierLabel} from '../../types/constEnums'
-import {TierEnum} from '../../types/graphql'
+import {TierEnum} from '../../__generated__/NewMeeting_viewer.graphql'
 import styled from '@emotion/styled'
 import {PALETTE} from '../../styles/paletteV2'
 import BaseTag from './BaseTag'
@@ -27,10 +27,10 @@ const EnterpriseTag = styled(BaseTag)({
 
 const TierTag = (props: Props) => {
   const {className, tier} = props
-  if (tier === TierEnum.personal)
+  if (tier === 'personal')
     return <PersonalTag className={className}>{TierLabel.PERSONAL}</PersonalTag>
-  if (tier === TierEnum.pro) return <ProTag className={className}>{TierLabel.PRO}</ProTag>
-  if (tier === TierEnum.enterprise)
+  if (tier === 'pro') return <ProTag className={className}>{TierLabel.PRO}</ProTag>
+  if (tier === 'enterprise')
     return <EnterpriseTag className={className}>{TierLabel.ENTERPRISE}</EnterpriseTag>
   return null
 }

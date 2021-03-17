@@ -1,5 +1,4 @@
 import graphql from 'babel-plugin-relay/macro'
-import {NewMeetingPhaseTypeEnum} from 'parabol-client/types/graphql'
 import plural from 'parabol-client/utils/plural'
 import {makePokerStats_meeting} from 'parabol-client/__generated__/makePokerStats_meeting.graphql'
 import {readInlineData} from 'react-relay'
@@ -26,9 +25,7 @@ const makePokerStats = (meetingRef: any) => {
   )
 
   const {meetingMembers, phases} = meeting
-  const estimatePhase = phases.find(
-    (phase) => phase.phaseType === NewMeetingPhaseTypeEnum.ESTIMATE
-  )!
+  const estimatePhase = phases.find((phase) => phase.phaseType === 'ESTIMATE')!
   const stages = estimatePhase.stages!
   const storyCount = new Set(stages.map((stage) => stage.serviceTaskId)).size
 

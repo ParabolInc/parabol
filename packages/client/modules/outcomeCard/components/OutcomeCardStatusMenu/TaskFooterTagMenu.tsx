@@ -18,7 +18,7 @@ import addContentTag from '../../../../utils/draftjs/addContentTag'
 import removeContentTag from '../../../../utils/draftjs/removeContentTag'
 import isTaskPrivate from '../../../../utils/isTaskPrivate'
 import {MenuMutationProps} from '../../../../hooks/useMutationProps'
-import {AreaEnum} from '../../../../types/graphql'
+import {AreaEnum} from '~/__generated__/UpdateTaskMutation.graphql'
 import {UseTaskChild} from '../../../../hooks/useTaskChildFocus'
 
 const statusItems = [TaskStatus.DONE, TaskStatus.ACTIVE, TaskStatus.STUCK, TaskStatus.FUTURE]

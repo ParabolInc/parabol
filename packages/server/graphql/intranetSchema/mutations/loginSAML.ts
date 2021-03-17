@@ -1,7 +1,6 @@
 import * as validator from '@authenio/samlify-node-xmllint'
 import base64url from 'base64url'
 import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
-import {TierEnum} from 'parabol-client/types/graphql'
 import getSSODomainFromEmail from 'parabol-client/utils/getSSODomainFromEmail'
 import querystring from 'querystring'
 import * as samlify from 'samlify'
@@ -95,7 +94,7 @@ const loginSAML = {
       email,
       preferredName: name,
       lastSeenAt: now,
-      tier: TierEnum.enterprise
+      tier: 'enterprise'
     })
 
     const authToken = await bootstrapNewUser(newUser, !isInvited)

@@ -1,7 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import {PALETTE} from 'parabol-client/styles/paletteV2'
 import {FONT_FAMILY} from 'parabol-client/styles/typographyV2'
-import {MeetingTypeEnum, NewMeetingPhaseTypeEnum} from 'parabol-client/types/graphql'
 import getJiraCloudIdAndKey from 'parabol-client/utils/getJiraCloudIdAndKey'
 import {SummaryPokerStories_meeting} from 'parabol-client/__generated__/SummaryPokerStories_meeting.graphql'
 import React from 'react'
@@ -48,10 +47,8 @@ interface Props {
 const SummaryPokerStories = (props: Props) => {
   const {isEmail, meeting} = props
   const {id: meetingId, phases, meetingType} = meeting
-  if (meetingType !== MeetingTypeEnum.poker) return null
-  const estimatePhase = phases?.find(
-    (phase) => phase?.phaseType === NewMeetingPhaseTypeEnum.ESTIMATE
-  )
+  if (meetingType !== 'poker') return null
+  const estimatePhase = phases?.find((phase) => phase?.phaseType === 'ESTIMATE')
   if (!estimatePhase) return null
   const stages = estimatePhase.stages!
   const usedServiceTaskIds = new Set<string>()
@@ -71,12 +68,12 @@ const SummaryPokerStories = (props: Props) => {
                 const urlPath = `/meet/${meetingId}/estimate/${usedServiceTaskIds.size}`
                 const to = isEmail
                   ? makeAppURL(origin, urlPath, {
-                    searchParams: {
-                      utm_source: 'summary email',
-                      utm_medium: 'email',
-                      utm_campaign: 'after-meeting'
-                    }
-                  })
+                      searchParams: {
+                        utm_source: 'summary email',
+                        utm_medium: 'email',
+                        utm_campaign: 'after-meeting'
+                      }
+                    })
                   : urlPath
                 return (
                   <tr style={rowStyle} key={id}>

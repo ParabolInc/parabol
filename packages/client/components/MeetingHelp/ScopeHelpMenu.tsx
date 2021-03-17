@@ -11,7 +11,7 @@ interface Props {}
 
 const ScopeHelpMenu = forwardRef((_props: Props, ref: any) => {
   const {closePortal} = ref
-  useSegmentTrack('Help Menu Open', {phase: 'SCOPE'})
+  useSegmentTrack('Help Menu Open', {phase: 'lobby'})
   return (
     <HelpMenuContent closePortal={closePortal}>
       <HelpMenuHeader>{phaseLabelLookup.SCOPE}</HelpMenuHeader>
@@ -22,7 +22,10 @@ const ScopeHelpMenu = forwardRef((_props: Props, ref: any) => {
       <HelpMenuCopy>
         To save time, you can complete this phase asynchronously, before inviting others
       </HelpMenuCopy>
-      <HelpMenuLink copy='Learn More' href={`${ExternalLinks.GETTING_STARTED_SPRINT_POKER}#scope`} />
+      <HelpMenuLink
+        copy='Learn More'
+        href={`${ExternalLinks.GETTING_STARTED_SPRINT_POKER}#scope`}
+      />
     </HelpMenuContent>
   )
 })

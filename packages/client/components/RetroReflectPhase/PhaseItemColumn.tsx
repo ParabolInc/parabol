@@ -1,4 +1,3 @@
-
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {EditorState} from 'draft-js'
@@ -13,7 +12,6 @@ import SetPhaseFocusMutation from '../../mutations/SetPhaseFocusMutation'
 import {DECELERATE} from '../../styles/animation'
 import {PALETTE} from '../../styles/paletteV2'
 import {BezierCurve, ElementWidth, Gutters} from '../../types/constEnums'
-import {NewMeetingPhaseTypeEnum} from '../../types/graphql'
 import getNextSortOrder from '../../utils/getNextSortOrder'
 import {PhaseItemColumn_meeting} from '../../__generated__/PhaseItemColumn_meeting.graphql'
 import RetroPrompt from '../RetroPrompt'
@@ -146,7 +144,7 @@ const PhaseItemColumn = (props: Props) => {
   const {id: promptId, editorIds, question, groupColor, description} = prompt
   const {id: meetingId, facilitatorUserId, localPhase, phases, reflectionGroups} = meeting
   const {id: phaseId, focusedPromptId} = localPhase
-  const groupPhase = phases.find((phase) => phase.phaseType === NewMeetingPhaseTypeEnum.group)!
+  const groupPhase = phases.find((phase) => phase.phaseType === 'group')!
   const {stages: groupStages} = groupPhase
   const [groupStage] = groupStages
   const {isComplete} = groupStage

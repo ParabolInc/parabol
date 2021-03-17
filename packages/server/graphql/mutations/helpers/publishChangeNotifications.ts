@@ -1,4 +1,3 @@
-import {NotificationEnum} from 'parabol-client/types/graphql'
 import {ASSIGNEE, MENTIONEE} from 'parabol-client/utils/constants'
 import getTypeFromEntityMap from 'parabol-client/utils/draftjs/getTypeFromEntityMap'
 import getRethink from '../../../database/rethinkDriver'
@@ -82,7 +81,7 @@ const publishChangeNotifications = async (
         .getAll(r.args(maybeInvolvedUserIds), {index: 'userId'})
         .filter({
           taskId: task.id,
-          type: NotificationEnum.TASK_INVOLVES
+          type: 'TASK_INVOLVES'
         })
         .run()) as NotificationTaskInvolves[]
       notificationsToAdd.push(...existingTaskNotifications)
