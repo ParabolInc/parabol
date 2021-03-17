@@ -23,7 +23,6 @@ export default class Meeting {
   createdAt = new Date()
   updatedAt = new Date()
   createdBy: string
-  defaultFacilitatorUserId: string
   endedAt: Date | undefined | null = undefined
   facilitatorStageId: string
   facilitatorUserId: string
@@ -47,7 +46,6 @@ export default class Meeting {
       showConversionModal
     } = input
     this.createdBy = facilitatorUserId
-    this.defaultFacilitatorUserId = facilitatorUserId
     this.facilitatorStageId = phases[0].stages[0].id
     this.facilitatorUserId = facilitatorUserId
     this.meetingCount = meetingCount

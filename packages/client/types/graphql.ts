@@ -285,17 +285,12 @@ export interface INewMeeting {
   /**
    * The id of the user that created the meeting
    */
-  createdBy: string | null;
+  createdBy: string;
 
   /**
    * The user that created the meeting
    */
-  createdByUser: IUser | null;
-
-  /**
-   * The userId of the desired facilitator (different form facilitatorUserId if disconnected)
-   */
-  defaultFacilitatorUserId: string;
+  createdByUser: IUser;
 
   /**
    * The timestamp the meeting officially ended
@@ -5121,17 +5116,12 @@ export interface IActionMeeting {
   /**
    * The id of the user that created the meeting
    */
-  createdBy: string | null;
+  createdBy: string;
 
   /**
    * The user that created the meeting
    */
-  createdByUser: IUser | null;
-
-  /**
-   * The userId of the desired facilitator (different form facilitatorUserId if disconnected)
-   */
-  defaultFacilitatorUserId: string;
+  createdByUser: IUser;
 
   /**
    * The timestamp the meeting officially ended
@@ -5412,17 +5402,12 @@ export interface IRetrospectiveMeeting {
   /**
    * The id of the user that created the meeting
    */
-  createdBy: string | null;
+  createdBy: string;
 
   /**
    * The user that created the meeting
    */
-  createdByUser: IUser | null;
-
-  /**
-   * The userId of the desired facilitator (different form facilitatorUserId if disconnected)
-   */
-  defaultFacilitatorUserId: string;
+  createdByUser: IUser;
 
   /**
    * The timestamp the meeting officially ended
@@ -9214,17 +9199,12 @@ export interface IPokerMeeting {
   /**
    * The id of the user that created the meeting
    */
-  createdBy: string | null;
+  createdBy: string;
 
   /**
    * The user that created the meeting
    */
-  createdByUser: IUser | null;
-
-  /**
-   * The userId of the desired facilitator (different form facilitatorUserId if disconnected)
-   */
-  defaultFacilitatorUserId: string;
+  createdByUser: IUser;
 
   /**
    * The timestamp the meeting officially ended
