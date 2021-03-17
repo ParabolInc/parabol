@@ -5,12 +5,7 @@ import setUserTierForOrgId from '../../../utils/setUserTierForOrgId'
 import setTierForOrgUsers from '../../../utils/setTierForOrgUsers'
 import StripeManager from '../../../utils/StripeManager'
 import getCCFromCustomer from './getCCFromCustomer'
-import catchAndLog from '../../../postgres/utils/catchAndLog'
-import {
-  IUpdateTeamByOrgIdQueryParams,
-  updateTeamByOrgIdQuery
-} from '../../../postgres/queries/generated/updateTeamByOrgIdQuery'
-import getPg from '../../../postgres/getPg'
+import updateTeamByOrgId from '../../../postgres/queries/updateTeamByOrgId'
 
 const upgradeToPro = async (orgId: string, source: string, email: string) => {
   const r = await getRethink()
@@ -66,16 +61,13 @@ const upgradeToPro = async (orgId: string, source: string, email: string) => {
           updatedAt: now
         })
     }).run(),
-    catchAndLog(() =>
-      updateTeamByOrgIdQuery.run(
-        {
-          isPaid: true,
-          tier: TierEnum.pro,
-          updatedAt: now,
-          orgId
-        } as IUpdateTeamByOrgIdQueryParams,
-        getPg()
-      )
+    updateTeamByOrgId(
+      {
+        isPaid: true,
+        tier: TierEnum.pro,
+        updatedAt: now,
+      },
+      orgId
     )
   ])
 

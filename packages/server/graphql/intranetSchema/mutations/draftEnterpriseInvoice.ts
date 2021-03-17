@@ -12,12 +12,7 @@ import {DataLoaderWorker, GQLContext} from '../../graphql'
 import hideConversionModal from '../../mutations/helpers/hideConversionModal'
 import setTierForOrgUsers from '../../../utils/setTierForOrgUsers'
 import DraftEnterpriseInvoicePayload from '../types/DraftEnterpriseInvoicePayload'
-import catchAndLog from '../../../postgres/utils/catchAndLog'
-import {
-  IUpdateTeamByOrgIdQueryParams,
-  updateTeamByOrgIdQuery
-} from '../../../postgres/queries/generated/updateTeamByOrgIdQuery'
-import getPg from '../../../postgres/getPg'
+import updateTeamByOrgId from '../../../postgres/queries/updateTeamByOrgId'
 
 const getBillingLeaderUser = async (
   email: string | null,
@@ -174,16 +169,13 @@ export default {
             updatedAt: now
           })
       }).run(),
-      catchAndLog(() =>
-        updateTeamByOrgIdQuery.run(
-          {
-            isPaid: true,
-            tier: TierEnum.enterprise,
-            updatedAt: now,
-            orgId
-          } as IUpdateTeamByOrgIdQueryParams,
-          getPg()
-        )
+      updateTeamByOrgId(
+        {
+          isPaid: true,
+          tier: TierEnum.enterprise,
+          updatedAt: now,
+        },
+        orgId
       )
     ])
 
