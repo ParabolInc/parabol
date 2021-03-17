@@ -26,7 +26,6 @@ const useMeeting = (meetingRef: any) => {
         ...useGotoNext_meeting
         ...useGotoPrev_meeting
         ...useMeetingLocalState_meeting
-        ...useResumeFacilitation_meeting
         ...useAutoCheckIn_meeting
         id
         meetingType
