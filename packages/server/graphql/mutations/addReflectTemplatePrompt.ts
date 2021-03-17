@@ -2,7 +2,7 @@ import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel, Threshold} from 'parabol-client/types/constEnums'
 import dndNoise from 'parabol-client/utils/dndNoise'
 import palettePickerOptions from '../../../client/styles/palettePickerOptions'
-import {PALETTE} from '../../../client/styles/paletteV2'
+import {PALETTE} from '../../../client/styles/paletteV3'
 import getRethink from '../../database/rethinkDriver'
 import RetrospectivePrompt from '../../database/types/RetrospectivePrompt'
 import {getUserId, isTeamMember} from '../../utils/authorization'
@@ -60,7 +60,7 @@ const addReflectTemplatePrompt = {
       sortOrder,
       question: `New prompt #${activePrompts.length + 1}`,
       description: '',
-      groupColor: availableNewColor?.hex ?? PALETTE.PROMPT_GREEN,
+      groupColor: availableNewColor?.hex ?? PALETTE.JADE_400,
       removedAt: null
     })
 
