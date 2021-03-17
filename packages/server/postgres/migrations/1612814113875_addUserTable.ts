@@ -17,10 +17,10 @@ export async function up(pgm: MigrationBuilder): Promise<void> {
     CREATE TABLE "User" (
       id VARCHAR(100) PRIMARY KEY,
       email "citext" UNIQUE NOT NULL,
-      "createdAt" TIMESTAMP NOT NULL,
-      "updatedAt" TIMESTAMP NOT NULL,
+      "createdAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+      "updatedAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
       "inactive" BOOLEAN NOT NULL DEFAULT FALSE,
-      "lastSeenAt" TIMESTAMP,
+      "lastSeenAt" TIMESTAMP WITH TIME ZONE,
       "preferredName" VARCHAR(100) NOT NULL,
       tier "TierEnum" NOT NULL DEFAULT 'personal',
       picture text NOT NULL,
