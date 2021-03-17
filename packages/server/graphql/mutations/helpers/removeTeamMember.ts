@@ -11,11 +11,9 @@ import removeStagesFromMeetings from './removeStagesFromMeetings'
 import removeUserFromMeetingStages from './removeUserFromMeetingStages'
 import removeUserTms from '../../../postgres/queries/removeUserTms'
 import catchAndLog from '../../../postgres/utils/catchAndLog'
-import {
-  IUpdateTeamByTeamIdQueryParams,
-  updateTeamByTeamIdQuery
-} from '../../../postgres/queries/generated/updateTeamByTeamIdQuery'
 import getPg from '../../../postgres/getPg'
+import updateTeamByTeamId from '../../../postgres/queries/updateTeamByTeamId'
+
 interface Options {
   evictorUserId?: string
 }
@@ -50,15 +48,7 @@ const removeTeamMember = async (
         .get(teamId)
         .update({isArchived: true})
         .run(),
-      catchAndLog(() =>
-        updateTeamByTeamIdQuery.run(
-          {
-            isArchived: true,
-            id: teamId
-          } as IUpdateTeamByTeamIdQueryParams,
-          getPg()
-        )
-      )
+      updateTeamByTeamId({isArchived: true}, teamId)
     ])
   } else if (isLead) {
     // assign new leader, remove old leader flag

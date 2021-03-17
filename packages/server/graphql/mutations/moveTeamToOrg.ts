@@ -9,12 +9,7 @@ import db from '../../db'
 import safeArchiveEmptyPersonalOrganization from '../../safeMutations/safeArchiveEmptyPersonalOrganization'
 import {getUserId, isSuperUser} from '../../utils/authorization'
 import standardError from '../../utils/standardError'
-import catchAndLog from '../../postgres/utils/catchAndLog'
-import {
-  IUpdateTeamByTeamIdQueryParams,
-  updateTeamByTeamIdQuery
-} from '../../postgres/queries/generated/updateTeamByTeamIdQuery'
-import getPg from '../../postgres/getPg'
+import updateTeamByTeamId from '../../postgres/queries/updateTeamByTeamId'
 
 const moveToOrg = async (teamId: string, orgId: string, authToken: any) => {
   const r = await getRethink()
@@ -101,16 +96,13 @@ const moveToOrg = async (teamId: string, orgId: string, authToken: any) => {
         })('userId')
         .coerceTo('array') as unknown) as string[]
     }).run(),
-    catchAndLog(() =>
-      updateTeamByTeamIdQuery.run(
-        {
-          orgId,
-          isPaid: Boolean(org.stripeSubscriptionId),
-          tier: org.tier,
-          id: teamId
-        } as IUpdateTeamByTeamIdQueryParams,
-        getPg()
-      )
+    updateTeamByTeamId(
+      {
+        orgId,
+        isPaid: Boolean(org.stripeSubscriptionId),
+        tier: org.tier
+      },
+      teamId
     )
   ])
   const {newToOrgUserIds} = rethinkResult

@@ -8,12 +8,7 @@ import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import {GQLContext} from '../graphql'
 import UpdateJiraDimensionFieldPayload from '../types/UpdateJiraDimensionFieldPayload'
-import catchAndLog from '../../postgres/utils/catchAndLog'
-import {
-  IUpdateTeamByTeamIdQueryParams,
-  updateTeamByTeamIdQuery
-} from '../../postgres/queries/generated/updateTeamByTeamIdQuery'
-import getPg from '../../postgres/getPg'
+import updateTeamByTeamId from '../../postgres/queries/updateTeamByTeamId'
 
 const updateJiraDimensionField = {
   type: GraphQLNonNull(UpdateJiraDimensionFieldPayload),
@@ -115,16 +110,13 @@ const updateJiraDimensionField = {
           )
         })
         .run(),
-      catchAndLog(() =>
-        updateTeamByTeamIdQuery.run(
-          {
-            jiraDimensionFields: jiraDimensionFields.slice(
-              jiraDimensionFields.length - MAX_JIRA_DIMENSION_FIELDS
-            ),
-            id: teamId
-          } as IUpdateTeamByTeamIdQueryParams,
-          getPg()
-        )
+      updateTeamByTeamId(
+        {
+          jiraDimensionFields: jiraDimensionFields.slice(
+            jiraDimensionFields.length - MAX_JIRA_DIMENSION_FIELDS
+          )
+        },
+        teamId
       )
     ])
 

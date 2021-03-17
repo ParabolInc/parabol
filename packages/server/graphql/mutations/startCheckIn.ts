@@ -12,12 +12,7 @@ import StartCheckInPayload from '../types/StartCheckInPayload'
 import createNewMeetingPhases from './helpers/createNewMeetingPhases'
 import {startSlackMeeting} from './helpers/notifySlack'
 import sendMeetingStartToSegment from './helpers/sendMeetingStartToSegment'
-import catchAndLog from '../../postgres/utils/catchAndLog'
-import {
-  IUpdateTeamByTeamIdQueryParams,
-  updateTeamByTeamIdQuery
-} from '../../postgres/queries/generated/updateTeamByTeamIdQuery'
-import getPg from '../../postgres/getPg'
+import updateTeamByTeamId from '../../postgres/queries/updateTeamByTeamId'
 
 export default {
   type: new GraphQLNonNull(StartCheckInPayload),
@@ -100,15 +95,7 @@ export default {
         .get(teamId)
         .update({lastMeetingType: meetingType})
         .run(),
-      catchAndLog(() =>
-        updateTeamByTeamIdQuery.run(
-          {
-            lastMeetingType: meetingType,
-            id: teamId
-          } as IUpdateTeamByTeamIdQueryParams,
-          getPg()
-        )
-      ),
+      updateTeamByTeamId({lastMeetingType: meetingType}, teamId),
       r
         .table('AgendaItem')
         .getAll(r.args(agendaItemIds))
