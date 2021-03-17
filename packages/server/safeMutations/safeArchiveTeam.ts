@@ -4,10 +4,7 @@ import db from '../db'
 import {removeUserTmsQuery} from '../postgres/queries/generated/removeUserTmsQuery'
 import getPg from '../postgres/getPg'
 import catchAndLog from '../postgres/utils/catchAndLog'
-import {
-  IUpdateTeamByTeamIdQueryParams,
-  updateTeamByTeamIdQuery
-} from '../postgres/queries/generated/updateTeamByTeamIdQuery'
+import updateTeamByTeamId from '../postgres/queries/updateTeamByTeamId'
 
 const safeArchiveTeam = async (teamId: string) => {
   const r = await getRethink()
@@ -51,15 +48,7 @@ const safeArchiveTeam = async (teamId: string) => {
         )('changes')('new_val')('id')
         .default([]) as unknown) as string[]
     }).run(),
-    catchAndLog(() =>
-      updateTeamByTeamIdQuery.run(
-        {
-          isArchived: true,
-          id: teamId
-        } as IUpdateTeamByTeamIdQueryParams,
-        getPg()
-      )
-    )
+    updateTeamByTeamId({isArchived: true}, teamId)
   ])
   return {...rethinkResult, users}
 }
