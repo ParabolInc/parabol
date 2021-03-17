@@ -24,7 +24,7 @@ const useResumeFacilitation = (meetingRef: any) => {
     if (createdBy === viewerId && facilitatorUserId !== viewerId) {
       PromoteNewMeetingFacilitatorMutation(atmosphere, {facilitatorUserId: viewerId, meetingId})
     }
-  }, [atmosphere, meeting])
+  }, [atmosphere])
 }
 
 export default useResumeFacilitation

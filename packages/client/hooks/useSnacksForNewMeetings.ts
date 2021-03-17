@@ -24,7 +24,7 @@ const useSnacksForNewMeetings = (meetings: TopBarMeetingsActiveMeetings['activeM
     const [snackedMeeting] = sortedMeetings
     if (!snackedMeeting) return
     const {id: meetingId, createdBy, createdByUser, name: meetingName} = snackedMeeting
-    const preferredName = createdByUser?.preferredName
+    const {preferredName} = createdByUser
     const isInit = createdBy === viewerId
     const name = isInit ? 'You' : preferredName
     atmosphere.eventEmitter.emit('addSnackbar', {

@@ -39,7 +39,7 @@ export const newMeetingFields = () => ({
     type: new GraphQLNonNull(require('./User').default),
     description: 'The user that created the meeting',
     resolve: ({createdBy}, _args, {dataLoader}: GQLContext) => {
-      return dataLoader.get('users').load(createdBy) || null
+      return dataLoader.get('users').load(createdBy)
     }
   },
   endedAt: {
