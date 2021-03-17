@@ -65,7 +65,7 @@ const innerStyle = {width: '100%', height: '100%'}
 
 const ScopePhaseArea = (props: Props) => {
   const {meeting} = props
-  const [activeIdx, setActiveIdx] = useState(1)
+  const [activeIdx, setActiveIdx] = useState(0)
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const gotoAddGitHub = () => {
     setActiveIdx(0)
