@@ -7,7 +7,7 @@ import {PromoteNewMeetingFacilitatorMutation as TPromoteNewMeetingFacilitatorMut
 graphql`
   fragment PromoteNewMeetingFacilitatorMutation_meeting on PromoteNewMeetingFacilitatorPayload {
     meeting {
-      defaultFacilitatorUserId
+      createdBy
       facilitatorUserId
       facilitator {
         # https://github.com/ParabolInc/parabol/issues/2984
@@ -72,7 +72,7 @@ const PromoteNewMeetingFacilitatorMutation: SimpleMutation<TPromoteNewMeetingFac
       const meeting = store.get(meetingId)
       if (!meeting) return
       meeting.setValue(facilitatorUserId, 'facilitatorUserId')
-      meeting.setValue(facilitatorUserId, 'defaultFacilitatorUserId')
+      meeting.setValue(facilitatorUserId, 'createdBy')
     },
     onCompleted: (res) => {
       const payload = res.promoteNewMeetingFacilitator

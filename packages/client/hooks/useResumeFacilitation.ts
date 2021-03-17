@@ -11,7 +11,7 @@ const useResumeFacilitation = (meetingRef: any) => {
     graphql`
       fragment useResumeFacilitation_meeting on NewMeeting @inline {
         id
-        defaultFacilitatorUserId
+        createdBy
         facilitatorUserId
       }
     `,
@@ -20,8 +20,8 @@ const useResumeFacilitation = (meetingRef: any) => {
 
   useEffect(() => {
     const {viewerId} = atmosphere
-    const {id: meetingId, defaultFacilitatorUserId, facilitatorUserId} = meeting
-    if (defaultFacilitatorUserId === viewerId && facilitatorUserId !== viewerId) {
+    const {id: meetingId, createdBy, facilitatorUserId} = meeting
+    if (createdBy === viewerId && facilitatorUserId !== viewerId) {
       PromoteNewMeetingFacilitatorMutation(atmosphere, {facilitatorUserId: viewerId, meetingId})
     }
   }, [atmosphere, meeting])
