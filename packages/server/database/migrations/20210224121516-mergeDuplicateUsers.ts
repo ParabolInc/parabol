@@ -8,7 +8,7 @@ export const up = async function(r: R) {
     .getAll('love@parabol.co', {index: 'email'})
     .orderBy('createdAt')
     .limit(1)
-    .update(row => ({tms: [row('tms')]}))
+    .update((row) => ({tms: [row('tms')]}))
     .run()
 
   const updateTeamMember = async (goodUserId: string, badUserId: string) => {
@@ -106,15 +106,23 @@ export const up = async function(r: R) {
   }
 
   try {
-    const affectedEmails = (await r
+    /*const affectedEmails = (await r
+      .db('actionProduction')
       .table('User')
       .group('email')
       .count()
       .ungroup()
       .filter((row) => row('reduction').gt(1))('group')
       .filter((row) => row.ne('DELETED'))
-      .run({arrayLimit: 200000})) as string[]
-    
+      .run({arrayLimit: 200000})) as string[]*/
+
+    // put emails in db to keep PII secret
+    const affectedEmails = await r
+      .table('DuplicateEmails')
+      .getField('email')
+      .coerceTo('array')
+      .run()
+
     const allDuplicates = [] as Promise<User[]>[]
     affectedEmails.forEach((email) => {
       allDuplicates.push(
