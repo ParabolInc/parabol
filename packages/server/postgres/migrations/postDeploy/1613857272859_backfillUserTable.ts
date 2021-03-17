@@ -48,7 +48,6 @@ export async function up(pgm: MigrationBuilder): Promise<void> {
   const r = await getRethink()
   const batchSize = 3000 // doing 4000 or 5000 results in error relating to size of parameterized query
   const backfillStartTs = new Date()
-  console.log('start ts:', backfillStartTs)
   // todo: make `doBackfill` generic and reusable
   const doBackfill = async (
     usersByFieldChoice: ('createdAt' | 'updatedAt'),
@@ -57,8 +56,6 @@ export async function up(pgm: MigrationBuilder): Promise<void> {
     let i = 0
     let foundUsers = false
 
-    console.log('starting backfill pass...')
-    console.log('after ts:', usersAfterTs, 'by:', usersByFieldChoice)
     for (let i = 0; i < 1e5; i++) {
       console.log('i:', i)
       const offset = batchSize * i
@@ -87,7 +84,6 @@ export async function up(pgm: MigrationBuilder): Promise<void> {
         usersByFieldChoice,
         usersAfterTs
       )
-      console.log('backfillFoundUsers?', backfillFoundUsers)
       // await new Promise(resolve => setTimeout(resolve, 1000*60*2)) // update user while sleeping
       if (!backfillFoundUsers) { break }
       usersAfterTs = thisBackfillStartTs
