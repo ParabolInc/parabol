@@ -2,27 +2,27 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
-import {PALETTE} from '~/styles/paletteV2'
-import Atmosphere from '../Atmosphere'
+import Atmosphere from '~/Atmosphere'
 import useAtmosphere from '../hooks/useAtmosphere'
-import {ParabolScopingSearchInput_meeting} from '../__generated__/ParabolScopingSearchInput_meeting.graphql'
+import {PALETTE} from '../styles/paletteV2'
+import {GitHubScopingSearchInput_meeting} from '../__generated__/GitHubScopingSearchInput_meeting.graphql'
 import Icon from './Icon'
-
-const Wrapper = styled('div')({
-  alignItems: 'center',
-  display: 'flex',
-  flex: 1
-})
 
 const SearchInput = styled('input')({
   appearance: 'none',
-  border: '1px solid transparent',
+  border: 'none',
   color: PALETTE.TEXT_MAIN,
   fontSize: 16,
   margin: 0,
   outline: 0,
   backgroundColor: 'transparent',
   width: '100%'
+})
+
+const Wrapper = styled('div')({
+  alignItems: 'center',
+  display: 'flex',
+  flex: 1
 })
 
 const ClearSearchIcon = styled(Icon)<{isEmpty: boolean}>(({isEmpty}) => ({
@@ -36,28 +36,32 @@ const setSearch = (atmosphere: Atmosphere, meetingId: string, value: string) => 
   commitLocalUpdate(atmosphere, (store) => {
     const meeting = store.get(meetingId)
     if (!meeting) return
-    const parabolSearchQuery = meeting.getLinkedRecord('parabolSearchQuery')!
-    parabolSearchQuery.setValue(value, 'queryString')
+    const githubSearchQuery = meeting.getLinkedRecord('githubSearchQuery')!
+    githubSearchQuery.setValue(value, 'queryString')
   })
 }
 
 interface Props {
-  meeting: ParabolScopingSearchInput_meeting
+  meeting: GitHubScopingSearchInput_meeting
 }
 
-const ParabolScopingSearchInput = (props: Props) => {
+const GitHubScopingSearchInput = (props: Props) => {
   const {meeting} = props
-  const {id: meetingId, parabolSearchQuery} = meeting
-  const {queryString} = parabolSearchQuery
+  const {id: meetingId, githubSearchQuery} = meeting
+  const {queryString} = githubSearchQuery
   const isEmpty = !queryString
   const atmosphere = useAtmosphere()
+  const placeholder = 'Search issues on GitHub'
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearch(atmosphere, meetingId, e.target.value)
+    const {value} = e.target
+    setSearch(atmosphere, meetingId, value)
   }
-  const clearSearch = () => setSearch(atmosphere, meetingId, '')
+  const clearSearch = () => {
+    setSearch(atmosphere, meetingId, '')
+  }
   return (
     <Wrapper>
-      <SearchInput value={queryString!} placeholder={'Search Parabol tasks'} onChange={onChange} />
+      <SearchInput value={queryString} placeholder={placeholder} onChange={onChange} />
       <ClearSearchIcon isEmpty={isEmpty} onClick={clearSearch}>
         close
       </ClearSearchIcon>
@@ -65,11 +69,11 @@ const ParabolScopingSearchInput = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(ParabolScopingSearchInput, {
+export default createFragmentContainer(GitHubScopingSearchInput, {
   meeting: graphql`
-    fragment ParabolScopingSearchInput_meeting on PokerMeeting {
+    fragment GitHubScopingSearchInput_meeting on PokerMeeting {
       id
-      parabolSearchQuery {
+      githubSearchQuery {
         queryString
       }
     }

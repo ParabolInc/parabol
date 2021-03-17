@@ -8,8 +8,10 @@ import {Breakpoint} from '~/types/constEnums'
 import {ScopePhaseArea_meeting} from '~/__generated__/ScopePhaseArea_meeting.graphql'
 import {Elevation} from '../styles/elevation'
 import {PALETTE} from '../styles/paletteV2'
+import GitHubSVG from './GitHubSVG'
 import Icon from './Icon'
 import JiraSVG from './JiraSVG'
+import ScopePhaseAreaGitHub from './ScopePhaseAreaGitHub'
 import ScopePhaseAreaJira from './ScopePhaseAreaJira'
 import ScopePhaseAreaParabolScoping from './ScopePhaseAreaParabolScoping'
 import Tab from './Tab/Tab'
@@ -63,13 +65,16 @@ const innerStyle = {width: '100%', height: '100%'}
 
 const ScopePhaseArea = (props: Props) => {
   const {meeting} = props
-  const [activeIdx, setActiveIdx] = useState(0)
+  const [activeIdx, setActiveIdx] = useState(1)
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
-  const gotoAddJira = () => {
+  const gotoAddGitHub = () => {
     setActiveIdx(0)
   }
-  const gotoParabol = () => {
+  const gotoAddJira = () => {
     setActiveIdx(1)
+  }
+  const gotoParabol = () => {
+    setActiveIdx(2)
   }
   const onChangeIdx = (idx, _fromIdx, props: {reason: string}) => {
     //very buggy behavior, probably linked to the vertical scrolling.
@@ -80,6 +85,14 @@ const ScopePhaseArea = (props: Props) => {
   return (
     <ScopingArea isDesktop={isDesktop}>
       <StyledTabsBar activeIdx={activeIdx}>
+        <FullTab
+          label={
+            <TabLabel>
+              <GitHubSVG /> GitHub
+            </TabLabel>
+          }
+          onClick={gotoAddGitHub}
+        />
         <FullTab
           label={
             <TabLabel>
@@ -105,10 +118,21 @@ const ScopePhaseArea = (props: Props) => {
         style={innerStyle}
       >
         <TabContents>
-          <ScopePhaseAreaJira gotoParabol={gotoParabol} meeting={meeting} />
+          <ScopePhaseAreaGitHub
+            isActive={activeIdx === 0}
+            gotoParabol={gotoParabol}
+            meeting={meeting}
+          />
         </TabContents>
         <TabContents>
-          <ScopePhaseAreaParabolScoping meeting={meeting} />
+          <ScopePhaseAreaJira
+            isActive={activeIdx === 1}
+            gotoParabol={gotoParabol}
+            meeting={meeting}
+          />
+        </TabContents>
+        <TabContents>
+          <ScopePhaseAreaParabolScoping isActive={activeIdx === 2} meeting={meeting} />
         </TabContents>
       </SwipeableViews>
     </ScopingArea>
@@ -126,6 +150,7 @@ export default createFragmentContainer(ScopePhaseArea, {
     fragment ScopePhaseArea_meeting on PokerMeeting {
       ...StageTimerDisplay_meeting
       ...StageTimerControl_meeting
+      ...ScopePhaseAreaGitHub_meeting
       ...ScopePhaseAreaJira_meeting
       ...ScopePhaseAreaParabolScoping_meeting
       endedAt
