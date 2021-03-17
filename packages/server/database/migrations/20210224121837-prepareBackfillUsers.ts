@@ -1,17 +1,10 @@
 export const up = async function (r) {
   try {
-    await Promise.all([
-      r
-        .table('User')
-        .indexCreate('createdAt')
-        .run(),
-      r
+    await r
         .table('User')
         .indexCreate('updatedAt')
-        .run(),
-    ])
+        .run()
     await r
-      .db('actionProduction')
       .table('User')
       .indexWait()
       .run()
@@ -22,16 +15,10 @@ export const up = async function (r) {
 
 export const down = async function (r) {
   try {
-    await Promise.all([
-      r
-        .table('User')
-        .indexDrop('createdAt')
-        .run(),
-      r
-        .table('User')
-        .indexDrop('updatedAt')
-        .run()
-    ])
+    await r
+      .table('User')
+      .indexDrop('updatedAt')
+      .run()
   } catch(e) {
     console.log(e)
   }
