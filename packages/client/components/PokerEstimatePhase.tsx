@@ -30,11 +30,8 @@ const StyledMeetingHeaderAndPhase = styled(MeetingHeaderAndPhase)<{isOpen: boole
 const StoryAndEstimateWrapper = styled('div')({
   display: 'flex',
   flex: 1,
-  // This will turn scrolling on for the full height
-  // but will cause funky swiping on mobile
-  // if we don’t add this, then the voting column gets pushed down
-  // but at least it’s not in the way of the expanded, scrollable card
-  // overflow: 'auto',
+  overflowY: 'auto',
+  overflowX: 'hidden',
   flexDirection: 'column'
 })
 
