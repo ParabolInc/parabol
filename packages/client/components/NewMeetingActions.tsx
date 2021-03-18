@@ -76,7 +76,7 @@ const NewMeetingActions = (props: Props) => {
 
   return (
     <ButtonBlock isDesktop={isDesktop}>
-      <NewMeetingActionsCurrentMeetings meetingType={meetingType} team={team} />
+      <NewMeetingActionsCurrentMeetings team={team} />
       {error && <StyledError>{error.message}</StyledError>}
       <StartButton size={'large'} onClick={onStartMeetingClick} waiting={submitting}>
         Start Meeting

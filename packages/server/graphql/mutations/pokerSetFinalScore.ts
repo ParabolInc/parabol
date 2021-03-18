@@ -52,7 +52,7 @@ const pokerSetFinalScore = {
       phases,
       meetingType,
       teamId,
-      defaultFacilitatorUserId,
+      createdBy,
       facilitatorUserId,
       templateRefId,
       name: meetingName
@@ -70,7 +70,7 @@ const pokerSetFinalScore = {
       return {error: {message: 'Estimate phase is already complete'}}
     }
     if (viewerId !== facilitatorUserId) {
-      if (viewerId !== defaultFacilitatorUserId) {
+      if (viewerId !== createdBy) {
         return {
           error: {message: 'Not meeting facilitator'}
         }

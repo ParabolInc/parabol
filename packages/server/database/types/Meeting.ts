@@ -22,7 +22,7 @@ export default class Meeting {
   isLegacy?: boolean // true if old version of action meeting
   createdAt = new Date()
   updatedAt = new Date()
-  defaultFacilitatorUserId: string
+  createdBy: string
   endedAt: Date | undefined | null = undefined
   facilitatorStageId: string
   facilitatorUserId: string
@@ -45,7 +45,7 @@ export default class Meeting {
       phases,
       showConversionModal
     } = input
-    this.defaultFacilitatorUserId = facilitatorUserId
+    this.createdBy = facilitatorUserId
     this.facilitatorStageId = phases[0].stages[0].id
     this.facilitatorUserId = facilitatorUserId
     this.meetingCount = meetingCount
