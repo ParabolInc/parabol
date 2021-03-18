@@ -35,22 +35,28 @@ const StepperDot = styled('div')<{isActive: boolean}>(({isActive}) => ({
   width: 8
 }))
 
-const SwipableEstimateItem = styled('div')({
-  borderRadius: '8px 8px 0 0',
+const SwipableEstimateItem = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   background: PALETTE.SLATE_300,
-  height: '100%'
-})
+  borderRadius: '8px 8px 0 0',
+  flex: 1,
+  // padding-bottom allows the content to scroll out from under
+  // the hand of poker cards and the meeting bottom bar
+  // on mobile the cards and bottom bar have less height
+  paddingBottom: isDesktop ? 8 * 19 : 8 * 12
+}))
 
 const innerStyle = (isDesktop: boolean, hasSingleDimension: boolean) => {
   return {
     height: '100%',
     margin: isDesktop ? '0 auto' : null,
-    maxWidth: hasSingleDimension
-      ? isDesktop ? 1536 : null
-      : isDesktop ? 1600 : null,
+    maxWidth: hasSingleDimension ? (isDesktop ? 1536 : null) : isDesktop ? 1600 : null,
     padding: hasSingleDimension
-      ? isDesktop ? '12px 8px 0' : '4px 4px 0'
-      : isDesktop ? '8px 40px 0' : '8px 16px 0',
+      ? isDesktop
+        ? '12px 8px 0'
+        : '4px 4px 0'
+      : isDesktop
+        ? '8px 40px 0'
+        : '8px 16px 0',
     width: '100%',
     overflow: 'visible'
   }
@@ -80,6 +86,7 @@ const EstimatePhaseArea = (props: Props) => {
   }
 
   const slideContainer = {
+    display: 'flex',
     padding: isDesktop ? '0 8px' : '0 4px'
   }
 
@@ -87,14 +94,15 @@ const EstimatePhaseArea = (props: Props) => {
 
   return (
     <EstimateArea ref={estimateAreaRef}>
-      {dimensionStages.length > 1 && <StepperDots>
-        {dimensionStages.map((_, idx) => {
-          return (
-            <StepperDot key={idx} isActive={idx === stageIdx} onClick={() => onChangeIdx(idx)} />
-          )
-        })}
-      </StepperDots>
-      }
+      {dimensionStages.length > 1 && (
+        <StepperDots>
+          {dimensionStages.map((_, idx) => {
+            return (
+              <StepperDot key={idx} isActive={idx === stageIdx} onClick={() => onChangeIdx(idx)} />
+            )
+          })}
+        </StepperDots>
+      )}
       <PokerCardDeck meeting={meeting} estimateAreaRef={estimateAreaRef} />
       <DeckActivityAvatars stage={localStage} />
       <SwipeableViews
@@ -106,7 +114,7 @@ const EstimatePhaseArea = (props: Props) => {
         style={innerStyle(isDesktop, hasSingleDimension)}
       >
         {dimensionStages.map((stage, idx) => (
-          <SwipableEstimateItem key={idx}>
+          <SwipableEstimateItem isDesktop={isDesktop} key={idx}>
             <EstimateDimensionColumn meeting={meeting} stage={stage} />
           </SwipableEstimateItem>
         ))}

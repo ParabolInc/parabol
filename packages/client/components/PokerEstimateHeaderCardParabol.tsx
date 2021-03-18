@@ -51,7 +51,7 @@ const EditorWrapper = styled('div')<{isExpanded: boolean; maxHeight: number}>(
     fontSize: 14,
     margin: 0,
     maxHeight: isExpanded ? maxHeight : 38,
-    overflow: 'hidden',
+    overflowY: 'auto',
     transition: 'all 300ms'
   })
 )
@@ -104,7 +104,7 @@ const PokerEstimateHeaderCardParabol = (props: Props) => {
   const [editorState, setEditorState] = useEditorState(content)
   const editorRef = useRef<HTMLTextAreaElement>(null)
   const descriptionRef = useRef<HTMLDivElement>(null)
-  const maxHeight = descriptionRef.current?.scrollHeight ?? 1000
+  const maxHeight = Math.min(descriptionRef.current?.scrollHeight ?? 300, 300)
   useEffect(
     () => () => {
       setIsExpanded(false)
