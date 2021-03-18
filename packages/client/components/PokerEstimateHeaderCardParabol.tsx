@@ -96,8 +96,7 @@ type Story = Required<NonNullable<NonNullable<PokerEstimateHeaderCardParabol_sta
 const PokerEstimateHeaderCardParabol = (props: Props) => {
   const {stage} = props
   const {story} = stage
-  const {content, id: taskId, teamId} = story as Story
-  const integration = story!.integration
+  const {content, id: taskId, teamId, integration} = story as Story
   const atmosphere = useAtmosphere()
   const [isExpanded, setIsExpanded] = useState(false)
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)

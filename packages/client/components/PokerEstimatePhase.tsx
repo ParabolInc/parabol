@@ -44,7 +44,7 @@ const PokerEstimatePhase = (props: Props) => {
   } = meeting
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const toggleDrawer = useRightDrawer(meetingId)
-  if (!localStage) return null
+  if (!localStage || !localStage.story) return null
   const {service} = localStage
   return (
     <MeetingContent>
@@ -60,8 +60,8 @@ const PokerEstimatePhase = (props: Props) => {
           <PhaseHeaderTitle>{phaseLabelLookup.ESTIMATE}</PhaseHeaderTitle>
           <PhaseHeaderDescription>{'Estimate each story as a team'}</PhaseHeaderDescription>
         </MeetingTopBar>
-        {service === 'jira' && <PokerEstimateHeaderCardJira stage={localStage as any} />}
-        {service === 'PARABOL' && <PokerEstimateHeaderCardParabol stage={localStage as any} />}
+        {service === 'jira' && <PokerEstimateHeaderCardJira stage={localStage} />}
+        {service === 'PARABOL' && <PokerEstimateHeaderCardParabol stage={localStage} />}
         <PhaseWrapper>
           <EstimatePhaseArea gotoStageId={gotoStageId} meeting={meeting} />
         </PhaseWrapper>
@@ -83,6 +83,9 @@ graphql`
     ...PokerEstimateHeaderCardJira_stage
     ...PokerEstimateHeaderCardParabol_stage
     service
+    story {
+      id
+    }
   }
 `
 export default createFragmentContainer(PokerEstimatePhase, {

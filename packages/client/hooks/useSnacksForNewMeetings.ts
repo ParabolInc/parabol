@@ -14,15 +14,14 @@ const useSnacksForNewMeetings = (meetings: TopBarMeetingsActiveMeetings['activeM
     const fiveMinsAgo = new Date(Date.now() - ms('5m'))
     const fiveSecsAgo = new Date(Date.now() - ms('5s'))
     const sortedMeetings = meetings
-      .filter(
-        (meeting) => {
-          if (dismissedMeetingIds.has(meeting.id)) return false
-          const createdAt = new Date(meeting.createdAt)
-          if (createdAt < fiveMinsAgo) return false
-          const {userId: facilitatorUserId} = fromTeamMemberId(meeting.facilitator.id)
-          if (facilitatorUserId === viewerId && createdAt > fiveSecsAgo) return false
-          return true
-        })
+      .filter((meeting) => {
+        if (dismissedMeetingIds.has(meeting?.id)) return false
+        const createdAt = new Date(meeting.createdAt)
+        if (createdAt < fiveMinsAgo) return false
+        const {userId: facilitatorUserId} = fromTeamMemberId(meeting.facilitator.id)
+        if (facilitatorUserId === viewerId && createdAt > fiveSecsAgo) return false
+        return true
+      })
       .sort((a, b) => (new Date(a.createdAt) < new Date(b.createdAt) ? -1 : 1))
     const [snackedMeeting] = sortedMeetings
     if (!snackedMeeting) return
