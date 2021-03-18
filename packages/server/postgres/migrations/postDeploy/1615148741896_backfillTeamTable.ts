@@ -8,7 +8,8 @@ import {IBackupTeamQueryParams, backupTeamQuery} from '../../queries/generated/b
 import {MeetingTypeEnum} from 'parabol-client/types/graphql'
 
 const undefinedTeamFieldsAndTheirDefaultValues = {
-  jiraDimensionFields: []
+  jiraDimensionFields: [],
+  isOnboardTeam: false
 }
 
 const cleanTeams = (teams: Team[]): IBackupTeamQueryParams['teams'] => {
