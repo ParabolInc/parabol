@@ -87,6 +87,5 @@ export async function up(pgm: MigrationBuilder): Promise<void> {
   }
 
   await doBackfillAccountingForRaceConditions()
-  await r.getPoolMaster().drain()
   console.log('finished')
 }
