@@ -107,7 +107,6 @@ export const up = async function(r: R) {
 
   try {
     /*const affectedEmails = (await r
-      .db('actionProduction')
       .table('User')
       .group('email')
       .count()

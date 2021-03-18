@@ -5,6 +5,7 @@ const getProjectRoot = require('./webpack/utils/getProjectRoot')
 const PROJECT_ROOT = getProjectRoot()
 const pgMigrate = require('node-pg-migrate').default
 require('rethinkdb-ts-migrate') // hack to be able to use files for migration files
+const getRethink = require('../packages/server/database/rethinkDriver').default
 
 const postDeployMigrate = async () => {
   const programmaticConfig = {
@@ -14,6 +15,8 @@ const postDeployMigrate = async () => {
     migrationsTable: pgmPostDeployConfig['migrations-table']
   }
   await Promise.all([pgMigrate(programmaticConfig)])
+  r = await getRethink()
+  await r.getPoolMaster().drain()
 }
 
 postDeployMigrate()
