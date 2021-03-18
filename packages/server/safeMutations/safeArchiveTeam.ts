@@ -1,10 +1,8 @@
 import getRethink from '../database/rethinkDriver'
 import Team from '../database/types/Team'
 import db from '../db'
-import {removeUserTmsQuery} from '../postgres/queries/generated/removeUserTmsQuery'
-import getPg from '../postgres/getPg'
-import catchAndLog from '../postgres/utils/catchAndLog'
 import updateTeamByTeamId from '../postgres/queries/updateTeamByTeamId'
+import removeUserTms from '../postgres/queries/removeUserTms'
 
 const safeArchiveTeam = async (teamId: string) => {
   const r = await getRethink()
@@ -18,7 +16,7 @@ const safeArchiveTeam = async (teamId: string) => {
     db.writeMany('User', userIds, (user) => ({
       tms: user('tms').difference([teamId])
     })),
-    catchAndLog(() => removeUserTmsQuery.run({ids: userIds, teamIds: [teamId]}, getPg()))
+    removeUserTms(teamId, userIds)
   ])
   const [rethinkResult] = await Promise.all([
     r({

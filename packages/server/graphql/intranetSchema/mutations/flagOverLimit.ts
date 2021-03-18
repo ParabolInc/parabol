@@ -3,13 +3,7 @@ import db from '../../../db'
 import {requireSU} from '../../../utils/authorization'
 import {GQLContext} from '../../graphql'
 import FlagOverLimitPayload from '../../types/FlagOverLimitPayload'
-import {
-  updateUserQuery,
-  IUpdateUserQueryParams
-} from '../../../postgres/queries/generated/updateUserQuery'
-import {clearOverLimitCopyQuery} from '../../../postgres/queries/generated/clearOverLimitCopyQuery'
-import catchAndLog from '../../../postgres/utils/catchAndLog'
-import getPg from '../../../postgres/getPg'
+import updateUser from '../../../postgres/queries/updateUser'
 
 const flagOverLimit = {
   type: FlagOverLimitPayload,
@@ -17,7 +11,8 @@ const flagOverLimit = {
   args: {
     copy: {
       type: GraphQLString,
-      description: 'The text body of the over limit message, null to remove the previous value'
+      description: 'The text body of the over limit message, null to remove the previous value',
+      defaultValue: ''
     },
     orgId: {
       type: new GraphQLNonNull(GraphQLID),
@@ -35,18 +30,8 @@ const flagOverLimit = {
 
     // RESOLUTION
     const userIds = organizationUsers.map(({userId}) => userId)
-    const pgQueryCb = copy
-      ? () =>
-          updateUserQuery.run(
-            ({
-              overLimitCopy: copy,
-              ids: userIds
-            } as unknown) as IUpdateUserQueryParams,
-            getPg()
-          )
-      : () => clearOverLimitCopyQuery.run({ids: userIds}, getPg())
     await Promise.all([
-      catchAndLog(pgQueryCb),
+      updateUser({overLimitCopy: copy}, userIds),
       db.writeMany('User', userIds, {overLimitCopy: copy || null})
     ])
     return {userIds}

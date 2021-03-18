@@ -9,10 +9,8 @@ import archiveTasksForDB from '../../../safeMutations/archiveTasksForDB'
 import {DataLoaderWorker} from '../../graphql'
 import removeStagesFromMeetings from './removeStagesFromMeetings'
 import removeUserFromMeetingStages from './removeUserFromMeetingStages'
-import {removeUserTmsQuery} from '../../../postgres/queries/generated/removeUserTmsQuery'
-import catchAndLog from '../../../postgres/utils/catchAndLog'
-import getPg from '../../../postgres/getPg'
 import updateTeamByTeamId from '../../../postgres/queries/updateTeamByTeamId'
+import removeUserTms from '../../../postgres/queries/removeUserTms'
 
 interface Options {
   evictorUserId?: string
@@ -119,7 +117,7 @@ const removeTeamMember = async (
 
   const [user] = await Promise.all([
     db.write('User', userId, reqlUpdater),
-    catchAndLog(() => removeUserTmsQuery.run({ids: [userId], teamIds: [teamId]}, getPg()))
+    removeUserTms(teamId, userId)
   ])
   let notificationId
   if (evictorUserId) {

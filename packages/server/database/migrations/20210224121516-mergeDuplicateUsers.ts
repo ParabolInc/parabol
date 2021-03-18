@@ -106,62 +106,22 @@ export const up = async function(r: R) {
   }
 
   try {
-    // hard coded bc we don't want to risk running the agg query in prod
-    // may need to get a fresh list before running backfill in prod
-    const affectedEmails = [
-      'a_ballon@outlook.com',
-      'anna.hambitzer@tii.ae',
-      'ba.wijsmuller@belastingdienst.nl',
-      'balqeshzulfaa@gmail.com',
-      'bart.philips1982@gmail.com',
-      'casper.van.der.does@mendix.com',
-      'charles.higby@perpetual.com.au',
-      'cm967j@att.com',
-      'dave.altig@atl.frb.org',
-      'dilara.goksel@ykteknoloji.com.tr',
-      'efrain.hernandezmendez.ctr@cvr.us.mil',
-      'f.roque@criteo.com',
-      'f@g2.com',
-      'georg.prassl@dccs.at',
-      'girsam.zolin@gmail.com',
-      'gramcharan@epo.org',
-      'hnguyen3@sdgecontractor.com',
-      'hucares64@gmail.com',
-      'jlewis-warren@northamptonshire.gov.uk',
-      'jnevres@gmail.com',
-      'johann.herunter@dccs.at',
-      'kristian.burfeindt@adesso.ch',
-      'kzoerhoff@rti.org',
-      'leonard.laduron@here.com',
-      'love@parabol.co',
-      'ngwako.moshobane@standardbank.co.za',
-      'nikolay_nikolaev@epam.com',
-      'rene.walsweer@postnl.nl',
-      'saadet.kutlu@koalay.com',
-      'sandra.franz@salt-solutions.de',
-      'sebastian.hohmann@bshg.com',
-      'sebastian.nyberg@gofore.com',
-      'sebastian.scheible@payback.net',
-      'stephan.meissner@dccs.at',
-      'sudersen.archakam@deliveryhero.com',
-      'sunil_singh1@homedepot.com',
-      'sven.elstermann@adp.com',
-      'thomas.wallner@dccs.at',
-      'valentin.stjepic-cosic@dccs.at',
-      'vijaywardhan.reddynysa@altusgroup.com',
-      'virenyadav100@gmail.com',
-      'wilbur.oghayon@lht-philippines.com',
-      'yeyipew526@diide.com'
-    ]
-    // const affectedEmails = (await r
-    //   .table('User')
-    //   .group('email')
-    //   .count()
-    //   .ungroup()
-    //   .filter((row) => row('reduction').gt(1))('group')
-    //   .filter((row) => row.ne('DELETED'))
-    //   .run({arrayLimit: 200000})) as string[]
-    // console.log('affected:', affectedEmails)
+    /*const affectedEmails = (await r
+      .db('actionProduction')
+      .table('User')
+      .group('email')
+      .count()
+      .ungroup()
+      .filter((row) => row('reduction').gt(1))('group')
+      .filter((row) => row.ne('DELETED'))
+      .run({arrayLimit: 200000})) as string[]*/
+
+    // put emails in db to keep PII secret
+    const affectedEmails = await r
+      .table('DuplicateEmails')
+      .getField('email')
+      .coerceTo('array')
+      .run()
 
     const allDuplicates = [] as Promise<User[]>[]
     affectedEmails.forEach((email) => {
