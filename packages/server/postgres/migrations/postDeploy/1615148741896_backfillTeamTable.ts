@@ -35,26 +35,21 @@ export const shorthands: ColumnDefinitions | undefined = undefined;
 export async function up(pgm: MigrationBuilder): Promise<void> {
   const r = await getRethink()
   const batchSize = 3000 // doing 4000 or 5000 results in error relating to size of parameterized query
-  const backfillStartTs = new Date()
-  console.log('start ts:', backfillStartTs)
   // todo: make `doBackfill` generic and reusable
   const doBackfill = async (
-    teamsByFieldChoice: ('createdAt' | 'updatedAt'),
     teamsAfterTs?: Date
   ) => {
     let i = 0
     let foundTeams = false
 
-    console.log('starting backfill pass...')
-    console.log('after ts:', teamsAfterTs, 'by:', teamsByFieldChoice)
     while (true) {
       console.log('i:', i)
       const offset = batchSize * i
       const rethinkTeams = await r.db('actionProduction')
         .table('Team')
         // todo: index on createdAt and updatedAt team fields
-        .between(teamsAfterTs ?? r.minval, r.maxval, {index: teamsByFieldChoice})
-        .orderBy(teamsByFieldChoice, {index: teamsByFieldChoice})
+        .between(teamsAfterTs ?? r.minval, r.maxval, {index: 'updatedAt'})
+        .orderBy('updatedAt', {index: 'updatedAt'})
         .skip(offset)
         .limit(batchSize)
         .run()
@@ -68,24 +63,20 @@ export async function up(pgm: MigrationBuilder): Promise<void> {
   }
   // todo: make `doBackfillAccountingForRaceConditions` generic and reusable
   const doBackfillAccountingForRaceConditions = async (
-    teamsByFieldChoice: ('createdAt' | 'updatedAt'),
     teamsAfterTs?: Date
   ) => {
     while (true) {
       const thisBackfillStartTs = new Date()
       const backfillFoundTeams = await doBackfill(
-        teamsByFieldChoice,
         teamsAfterTs
       )
-      console.log('backfillFoundTeams?', backfillFoundTeams)
       // await new Promise(resolve => setTimeout(resolve, 1000*60*2)) // update team while sleeping
       if (!backfillFoundTeams) { break }
       teamsAfterTs = thisBackfillStartTs
     }
   }
 
-  await doBackfillAccountingForRaceConditions('createdAt')
-  await doBackfillAccountingForRaceConditions('updatedAt', backfillStartTs)
+  await doBackfillAccountingForRaceConditions()
   await r.getPoolMaster().drain()
   console.log('finished')
 }
