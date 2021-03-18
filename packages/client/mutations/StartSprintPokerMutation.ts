@@ -7,6 +7,18 @@ graphql`
   fragment StartSprintPokerMutation_team on StartSprintPokerSuccess {
     meeting {
       id
+      createdBy
+      name
+      meetingMembers {
+        user {
+          id
+          preferredName
+        }
+      }
+    }
+    team {
+      ...TopBarMeetingsActiveMeetings @relay(mask: false)
+      lastMeetingType
     }
   }
 `
