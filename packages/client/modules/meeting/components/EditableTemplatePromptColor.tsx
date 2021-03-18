@@ -10,7 +10,7 @@ import {EditableTemplatePromptColor_prompts} from '~/__generated__/EditableTempl
 import PalettePicker from '../../../components/PalettePicker/PalettePicker'
 import {MenuPosition} from '../../../hooks/useCoords'
 import useMenu from '../../../hooks/useMenu'
-import {PALETTE} from '../../../styles/paletteV2'
+import {PALETTE} from '../../../styles/paletteV3'
 import {ICON_SIZE} from '../../../styles/typographyV2'
 
 interface Props {
@@ -45,7 +45,7 @@ const ColorBadge = styled('div')<{groupColor?: string}>(({groupColor}) => ({
 
 const DropdownIcon = styled(Icon)({
   bottom: 0,
-  color: PALETTE.TEXT_GRAY,
+  color: PALETTE.SLATE_600,
   fontSize: ICON_SIZE.MD18,
   height: 24,
   lineHeight: '24px',

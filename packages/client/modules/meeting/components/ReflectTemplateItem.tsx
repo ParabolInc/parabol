@@ -6,13 +6,13 @@ import useAtmosphere from '../../../hooks/useAtmosphere'
 import useScrollIntoView from '../../../hooks/useScrollIntoVIew'
 import {DECELERATE} from '../../../styles/animation'
 import textOverflow from '../../../styles/helpers/textOverflow'
-import {PALETTE} from '../../../styles/paletteV2'
+import {PALETTE} from '../../../styles/paletteV3'
 import makeTemplateDescription from '../../../utils/makeTemplateDescription'
 import {setActiveTemplate} from '../../../utils/relay/setActiveTemplate'
 import {ReflectTemplateItem_template} from '../../../__generated__/ReflectTemplateItem_template.graphql'
 
 const TemplateItem = styled('li')<{isActive: boolean}>(({isActive}) => ({
-  backgroundColor: isActive ? PALETTE.BACKGROUND_MAIN : undefined,
+  backgroundColor: isActive ? PALETTE.SLATE_200 : undefined,
   cursor: 'pointer',
   display: 'flex',
   fontSize: 14,
@@ -34,7 +34,7 @@ const TemplateItemDetails = styled('div')({
 
 const TemplateTitle = styled('div')({
   ...textOverflow,
-  color: PALETTE.TEXT_MAIN,
+  color: PALETTE.SLATE_700,
   fontSize: 16,
   fontWeight: 600,
   lineHeight: '24px'
@@ -42,7 +42,7 @@ const TemplateTitle = styled('div')({
 
 const TemplateDescription = styled('div')({
   ...textOverflow,
-  color: PALETTE.TEXT_GRAY,
+  color: PALETTE.SLATE_600,
   fontSize: 12,
   lineHeight: '16px'
 })

@@ -3,7 +3,7 @@ import graphql from 'babel-plugin-relay/macro'
 import React, {useEffect, useLayoutEffect, useRef, useState} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import useBreakpoint from '~/hooks/useBreakpoint'
-import {PALETTE} from '~/styles/paletteV2'
+import {PALETTE} from '~/styles/paletteV3'
 import {Breakpoint} from '~/types/constEnums'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
@@ -31,7 +31,7 @@ const Control = styled('div')({
 const Input = styled('input')<{color?: string}>(({color}) => ({
   background: 'none',
   border: 0,
-  color: color || PALETTE.TEXT_MAIN,
+  color: color || PALETTE.SLATE_700,
   display: 'block',
   fontSize: 18,
   fontWeight: 600,
@@ -58,7 +58,7 @@ const Label = styled('div')({
 })
 
 const StyledLinkButton = styled(LinkButton)({
-  color: PALETTE.LINK_BLUE,
+  color: PALETTE.SKY_500,
   fontSize: 14,
   fontWeight: 600,
   height: 40,
@@ -66,7 +66,7 @@ const StyledLinkButton = styled(LinkButton)({
   padding: '0 8px',
   ':hover,:focus,:active': {
     boxShadow: 'none',
-    color: PALETTE.LINK_BLUE_HOVER
+    color: PALETTE.SKY_600
   }
 })
 
@@ -196,8 +196,8 @@ const PokerDimensionValueControl = (props: Props) => {
                 {finalScoreError && <ErrorMessage>{finalScoreError}</ErrorMessage>}
               </>
             ) : (
-                <StyledLinkButton onClick={handleLabelClick}>{'Edit Score'}</StyledLinkButton>
-              )}
+              <StyledLinkButton onClick={handleLabelClick}>{'Edit Score'}</StyledLinkButton>
+            )}
           </>
         )}
       </Control>

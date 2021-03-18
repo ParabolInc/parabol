@@ -1,5 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
-import {PALETTE} from 'parabol-client/styles/paletteV2'
+import {PALETTE} from 'parabol-client/styles/paletteV3'
 import {FONT_FAMILY} from 'parabol-client/styles/typographyV2'
 import {RETRO_TOPIC_LABEL} from 'parabol-client/utils/constants'
 import plural from 'parabol-client/utils/plural'
@@ -11,7 +11,7 @@ import EmailBorderBottom from './EmailBorderBottom'
 import RetroTopic from './RetroTopic'
 
 const sectionHeading = {
-  color: PALETTE.TEXT_MAIN,
+  color: PALETTE.SLATE_700,
   fontFamily: FONT_FAMILY.SANS_SERIF,
   fontSize: 24,
   fontWeight: 600,

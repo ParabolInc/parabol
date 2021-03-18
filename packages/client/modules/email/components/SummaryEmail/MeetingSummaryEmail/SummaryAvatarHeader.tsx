@@ -1,12 +1,12 @@
 import graphql from 'babel-plugin-relay/macro'
-import {PALETTE} from 'parabol-client/styles/paletteV2'
+import {PALETTE} from 'parabol-client/styles/paletteV3'
 import {FONT_FAMILY} from 'parabol-client/styles/typographyV2'
 import {SummaryAvatarHeader_meetingMember} from 'parabol-client/__generated__/SummaryAvatarHeader_meetingMember.graphql'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 
 const presentLabelStyle = {
-  color: PALETTE.TEXT_GREEN,
+  color: PALETTE.JADE_400,
   fontFamily: FONT_FAMILY.SANS_SERIF,
   fontSize: '14px',
   fontStyle: 'italic',
@@ -24,7 +24,7 @@ const avatarStyles = {
 }
 
 const nameStyle = {
-  color: PALETTE.TEXT_MAIN,
+  color: PALETTE.SLATE_700,
   fontFamily: FONT_FAMILY.SANS_SERIF,
   fontSize: '20px',
   paddingTop: 4

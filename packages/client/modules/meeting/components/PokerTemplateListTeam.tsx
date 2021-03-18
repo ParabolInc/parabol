@@ -3,7 +3,7 @@ import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import useActiveTopTemplate from '../../../hooks/useActiveTopTemplate'
-import {PALETTE} from '../../../styles/paletteV2'
+import {PALETTE} from '../../../styles/paletteV3'
 import {PokerTemplateListTeam_teamTemplates} from '../../../__generated__/PokerTemplateListTeam_teamTemplates.graphql'
 import PokerTemplateItem from './PokerTemplateItem'
 
@@ -14,9 +14,9 @@ const TemplateList = styled('ul')({
 })
 
 const Message = styled('div')({
-  border: `1px dashed ${PALETTE.BORDER_GRAY}`,
+  border: `1px dashed ${PALETTE.SLATE_400}`,
   borderRadius: 4,
-  color: PALETTE.TEXT_GRAY,
+  color: PALETTE.SLATE_600,
   fontSize: 14,
   fontStyle: 'italic',
   lineHeight: '20px',
@@ -25,11 +25,11 @@ const Message = styled('div')({
 })
 
 const StyledLink = styled('span')({
-  color: PALETTE.LINK_BLUE,
+  color: PALETTE.SKY_500,
   cursor: 'pointer',
   outline: 0,
   ':hover, :focus, :active': {
-    color: PALETTE.LINK_BLUE_HOVER
+    color: PALETTE.SKY_600
   }
 })
 

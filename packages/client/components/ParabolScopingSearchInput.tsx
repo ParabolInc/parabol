@@ -6,7 +6,7 @@ import styled from '@emotion/styled'
 import Icon from './Icon'
 import Atmosphere from '../Atmosphere'
 import useAtmosphere from '../hooks/useAtmosphere'
-import {PALETTE} from '~/styles/paletteV2'
+import {PALETTE} from '~/styles/paletteV3'
 import {SearchQueryMeetingPropName} from '~/utils/relay/LocalPokerHandler'
 
 const Wrapper = styled('div')({
@@ -18,7 +18,7 @@ const Wrapper = styled('div')({
 const SearchInput = styled('input')({
   appearance: 'none',
   border: '1px solid transparent',
-  color: PALETTE.TEXT_MAIN,
+  color: PALETTE.SLATE_700,
   fontSize: 16,
   margin: 0,
   outline: 0,
@@ -27,7 +27,7 @@ const SearchInput = styled('input')({
 })
 
 const ClearSearchIcon = styled(Icon)<{isEmpty: boolean}>(({isEmpty}) => ({
-  color: PALETTE.TEXT_GRAY,
+  color: PALETTE.SLATE_600,
   cursor: 'pointer',
   padding: 12,
   visibility: isEmpty ? 'hidden' : undefined

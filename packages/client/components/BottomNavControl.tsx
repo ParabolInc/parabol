@@ -2,7 +2,7 @@ import styled from '@emotion/styled'
 import {TransitionStatus} from '~/hooks/useTransition'
 import {BezierCurve, ElementWidth} from '~/types/constEnums'
 import FlatButton, {FlatButtonProps} from './FlatButton'
-import {PALETTE} from '../styles/paletteV2'
+import {PALETTE} from '../styles/paletteV3'
 
 interface Props extends FlatButtonProps {
   confirming?: boolean
@@ -22,13 +22,13 @@ const BottomNavControl = styled(FlatButton)<Props>((props) => {
     opacity: confirming
       ? 0.5
       : status === TransitionStatus.MOUNTED || status === TransitionStatus.EXITING
-      ? 0
-      : 1,
+        ? 0
+        : 1,
     padding: 0,
     transformOrigin: 'center bottom',
     transition: `all 300ms ${BezierCurve.DECELERATE}`,
     ':hover,:focus,:active': {
-      backgroundColor: !visuallyDisabled ? PALETTE.BACKGROUND_MAIN_LIGHTENED : undefined
+      backgroundColor: !visuallyDisabled ? PALETTE.SLATE_100 : undefined
     }
   }
 })

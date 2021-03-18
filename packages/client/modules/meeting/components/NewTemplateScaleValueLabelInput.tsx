@@ -4,7 +4,7 @@ import React, {FormEvent, useEffect, useRef, useState} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useMutationProps from '~/hooks/useMutationProps'
-import {PALETTE} from '~/styles/paletteV2'
+import {PALETTE} from '~/styles/paletteV3'
 import Icon from '../../../components/Icon'
 import useScrollIntoView from '../../../hooks/useScrollIntoVIew'
 import AddPokerTemplateScaleValueMutation from '../../../mutations/AddPokerTemplateScaleValueMutation'
@@ -23,7 +23,7 @@ const Form = styled('form')({
 })
 
 const StyledError = styled('div')({
-  color: PALETTE.ERROR_MAIN,
+  color: PALETTE.TOMATO_500,
   fontSize: 14
 })
 
@@ -41,7 +41,7 @@ const ScaleValueInputBox = styled('input')({
   appearance: 'none',
   background: 'transparent',
   border: 'none',
-  color: PALETTE.TEXT_MAIN,
+  color: PALETTE.SLATE_700,
   fontSize: 14,
   lineHeight: '24px',
   margin: 0,
@@ -51,7 +51,7 @@ const ScaleValueInputBox = styled('input')({
 })
 
 const RemoveScaleValueIcon = styled(Icon)({
-  color: PALETTE.TEXT_GRAY,
+  color: PALETTE.SLATE_600,
   cursor: 'pointer',
   display: 'block',
   fontSize: ICON_SIZE.MD18,
@@ -93,7 +93,7 @@ const NewTemplateScaleValueLabelInput = (props: Props) => {
       .filter(({label}) => !isSpecialPokerLabel(label))
       .map(({color}) => color)
     const hexColors = palettePickerOptions.map(({hex}) => hex)
-    const lastColor = pickedColors[pickedColors.length - 1] || PALETTE.PROMPT_GREEN
+    const lastColor = pickedColors[pickedColors.length - 1] || PALETTE.JADE_400
     const availableNewColor = hexColors.find((hex) => !pickedColors.includes(hex)) || lastColor
     setScaleValueColor(availableNewColor)
   }, [scale])

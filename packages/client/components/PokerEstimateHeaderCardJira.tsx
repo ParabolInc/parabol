@@ -4,7 +4,7 @@ import React, {useRef, useState} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import useBreakpoint from '~/hooks/useBreakpoint'
 import {Elevation} from '~/styles/elevation'
-import {PALETTE} from '~/styles/paletteV2'
+import {PALETTE} from '~/styles/paletteV3'
 import {Breakpoint} from '~/types/constEnums'
 import {DeepNonNullable} from '../types/generics'
 import {ICON_SIZE} from '../styles/typographyV2'
@@ -19,7 +19,7 @@ const HeaderCardWrapper = styled('div')<{isDesktop: boolean}>(({isDesktop}) => (
 }))
 
 const HeaderCard = styled('div')({
-  background: PALETTE.CONTROL_LIGHT,
+  background: PALETTE.WHITE,
   borderRadius: 4,
   boxShadow: Elevation.Z1,
   padding: '12px 16px',
@@ -31,7 +31,7 @@ const HeaderCard = styled('div')({
 const CardTitle = styled('h1')({
   fontSize: 16,
   lineHeight: '24px',
-  margin: 0
+  margin: '0 0 8px'
 })
 
 const CardIcons = styled('div')({
@@ -41,18 +41,18 @@ const CardIcons = styled('div')({
 const CardTitleWrapper = styled('div')({
   display: 'flex',
   justifyContent: 'space-between',
-  alignItems: 'center',
+  alignItems: 'flex-start',
   width: '100%'
 })
 
 const CardDescription = styled('div')<{isExpanded: boolean, maxHeight: number}>(({isExpanded, maxHeight}) => ({
-  color: PALETTE.TEXT_MAIN,
+  color: PALETTE.SLATE_700,
   fontWeight: 'normal',
   lineHeight: '20px',
   fontSize: 14,
   margin: 0,
   maxHeight: isExpanded ? maxHeight : 30,
-  overflow: 'hidden',
+  overflowY: 'auto',
   transition: 'all 300ms'
 }))
 
@@ -62,10 +62,11 @@ const StyledIcon = styled(Icon)({
 })
 
 const StyledLink = styled('a')({
-  color: PALETTE.LINK_BLUE,
+  color: PALETTE.SKY_500,
   display: 'flex',
   fontSize: 12,
   lineHeight: '20px',
+  marginTop: '10px',
   textDecoration: 'none'
 })
 
@@ -83,7 +84,7 @@ const PokerEstimateHeaderCardJira = (props: Props) => {
   const {serviceTaskId, story} = stage
   const [isExpanded, setIsExpanded] = useState(false)
   const descriptionRef = useRef<HTMLDivElement>(null)
-  const maxHeight = descriptionRef.current?.scrollHeight ?? 1000
+  const maxHeight = Math.min(descriptionRef.current?.scrollHeight ?? 300, 300)
   const toggleExpand = () => {
     setIsExpanded(!isExpanded)
   }

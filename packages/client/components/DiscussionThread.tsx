@@ -22,8 +22,7 @@ const Wrapper = styled('div')<{isExpanded: boolean; isPokerMeeting?: boolean}>(
     overflow: 'hidden',
     width: isPokerMeeting ? '100%' : 'calc(100% - 16px)',
     [makeMinWidthMediaQuery(Breakpoint.SIDEBAR_LEFT)]: {
-      height:
-        isExpanded || isPokerMeeting ? '100%' : `calc(100% - ${MeetingControlBarEnum.HEIGHT}px)`,
+      height: isExpanded ? '100%' : `calc(100% - ${MeetingControlBarEnum.HEIGHT}px)`,
       width: DiscussionThreadEnum.WIDTH
     }
   })
@@ -55,9 +54,15 @@ const DiscussionThread = (props: Props) => {
   const listRef = useRef<HTMLDivElement>(null)
   const editorRef = useRef<HTMLTextAreaElement>(null)
   const ref = useRef<HTMLDivElement>(null)
-  // don't resize in a poker meeting as we do this in the parent
-  const coverableHeight = isPokerMeeting ? 0 : MeetingControlBarEnum.HEIGHT
-  const isExpanded = useCoverable('threads', ref, coverableHeight, meetingContentRef) || !!endedAt
+  const isExpanded =
+    useCoverable(
+      'threads',
+      ref,
+      MeetingControlBarEnum.HEIGHT,
+      meetingContentRef,
+      undefined,
+      meetingType
+    ) || !!endedAt
   return (
     <Wrapper isExpanded={isExpanded} isPokerMeeting={isPokerMeeting} ref={ref}>
       <DiscussionThreadList
