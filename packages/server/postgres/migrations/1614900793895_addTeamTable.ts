@@ -15,7 +15,7 @@ export async function up(pgm: MigrationBuilder): Promise<void> {
       id VARCHAR(100) PRIMARY KEY,
       name VARCHAR(100) NOT NULL,
       "createdAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
-      "createdBy" VARCHAR(100) NOT NULL,
+      "createdBy" VARCHAR(100),
       "isArchived" BOOLEAN NOT NULL DEFAULT FALSE,
       "isPaid" BOOLEAN NOT NULL DEFAULT TRUE,
       "jiraDimensionFields" JSONB[] NOT NULL DEFAULT '{}',
