@@ -12,7 +12,7 @@ const paletteColors = {
   white: '#FFFFFF'
 }
 
-// mix palete color with 15% black
+// mix palete color with ~15% black
 const hoverColors = {
   blue: PALETTE.SKY_600,
   dark: PALETTE.SLATE_800,
@@ -20,7 +20,7 @@ const hoverColors = {
   midGray: PALETTE.SLATE_700,
   red: PALETTE.TOMATO_800,
   warm: PALETTE.GOLD_700,
-  white: '#D9D9D9'
+  white: PALETTE.SLATE_300
 }
 
 export interface LinkButtonProps extends BaseButtonProps {

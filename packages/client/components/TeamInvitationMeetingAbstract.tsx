@@ -67,7 +67,7 @@ const AbstractSidebarHeading = styled('div')({
 })
 
 const AbstractSidebarLabel = styled('div')({
-  backgroundColor: '#BAB8CA',
+  backgroundColor: PALETTE.SLATE_400,
   borderRadius: 8,
   height: 8,
   marginLeft: 60,

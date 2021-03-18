@@ -16,6 +16,7 @@ export const enum PALETTE {
   FUSCIA_400 = '#DB70DB',
 
   GOLD_100 = '#FAEBD3',
+  GOLD_200 = '#FADC9E',
   GOLD_300 = '#FFCC63',
   GOLD_500 = '#DE8E02',
   GOLD_700 = '#855000',
@@ -57,10 +58,13 @@ export const enum PALETTE {
   SLATE_900_32 = '#1C1C2152', // SLATE_900 at 32% opacity
 
   TERRA_300 = '#FE975D',
+  TERRA_500 = '#D35D22',
 
   TOMATO_100 = '#FFE2E0',
+  TOMATO_200 = '#FFC1BD',
   TOMATO_500 = '#FD6157',
   TOMATO_600 = '#F23B31',
+  TOMATO_700 = '#D5211A',
   TOMATO_800 = '#9F201E',
 
   WHITE = '#FFFFFF'
