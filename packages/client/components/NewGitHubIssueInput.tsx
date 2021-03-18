@@ -2,11 +2,11 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {FormEvent, useEffect, useRef, useState} from 'react'
 import {createFragmentContainer} from 'react-relay'
-import useAtmosphere from '~/hooks/useAtmosphere'
+// import useAtmosphere from '~/hooks/useAtmosphere'
 import {MenuPosition} from '~/hooks/useCoords'
 import useMenu from '~/hooks/useMenu'
-import useMutationProps from '~/hooks/useMutationProps'
-import GitHubCreateIssueMutation from '~/mutations/GitHubCreateIssueMutation'
+// import useMutationProps from '~/hooks/useMutationProps'
+// import CreateGitHubIssueMutation from '~/mutations/CreateGitHubIssueMutation'
 import {PALETTE} from '~/styles/paletteV2'
 import {NewGitHubIssueInput_meeting} from '~/__generated__/NewGitHubIssueInput_meeting.graphql'
 import {NewGitHubIssueInput_viewer} from '~/__generated__/NewGitHubIssueInput_viewer.graphql'
@@ -87,15 +87,16 @@ interface Props {
 }
 
 const NewGitHubIssueInput = (props: Props) => {
-  const {isEditing, meeting, setIsEditing, viewer} = props
-  const {id: meetingId} = meeting
+  // const {isEditing, meeting, setIsEditing, viewer} = props
+  const {isEditing, setIsEditing, viewer} = props
+  // const {id: meetingId} = meeting
   if (!viewer) return null
   const {id: userId, team, teamMember} = viewer
   const {id: teamId} = team!
   const {suggestedIntegrations} = teamMember!
   const [newIssueText, setNewIssueText] = useState('')
-  const atmosphere = useAtmosphere()
-  const {onCompleted, onError} = useMutationProps()
+  // const atmosphere = useAtmosphere()
+  // const {onCompleted, onError} = useMutationProps()
   const {items} = suggestedIntegrations
   const suggestedIntegration = items && items[0]
   const nameWithOwner = suggestedIntegration?.nameWithOwner
@@ -117,13 +118,13 @@ const NewGitHubIssueInput = (props: Props) => {
       setIsEditing(false)
       return
     }
-    const variables = {
-      nameWithOwner: selectedNameWithOwner,
-      summary: newIssueText,
-      teamId,
-      meetingId
-    }
-    GitHubCreateIssueMutation(atmosphere, variables, {onError, onCompleted})
+    // const variables = {
+    //   nameWithOwner: selectedNameWithOwner,
+    //   summary: newIssueText,
+    //   teamId,
+    //   meetingId
+    // }
+    // CreateGitHubIssueMutation(atmosphere, variables, {onError, onCompleted})
     setNewIssueText('')
   }
 
