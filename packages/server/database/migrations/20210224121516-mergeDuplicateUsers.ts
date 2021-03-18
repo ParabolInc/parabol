@@ -167,22 +167,19 @@ export const up = async function(r: R) {
         return r
           .table('User')
           .get(update('id'))
-          .update(
-            {
-              email: update('email'),
-              picture: update('picture'),
-              tms: update('tms'),
-              identities: update('identities')
-            },
-            {returnChanges: true}
-          )
+          .update({
+            email: update('email'),
+            picture: update('picture'),
+            tms: update('tms'),
+            identities: update('identities')
+          })
       })
       .run()
 
     await r
       .table('User')
       .getAll(r.args(toDeleteIds))
-      .delete({returnChanges: true})
+      .delete()
       .run()
   } catch (e) {
     console.log(e)
