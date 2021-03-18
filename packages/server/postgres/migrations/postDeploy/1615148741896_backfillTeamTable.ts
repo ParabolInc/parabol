@@ -45,9 +45,8 @@ export async function up(pgm: MigrationBuilder): Promise<void> {
     while (true) {
       console.log('i:', i)
       const offset = batchSize * i
-      const rethinkTeams = await r.db('actionProduction')
+      const rethinkTeams = await r
         .table('Team')
-        // todo: index on createdAt and updatedAt team fields
         .between(teamsAfterTs ?? r.minval, r.maxval, {index: 'updatedAt'})
         .orderBy('updatedAt', {index: 'updatedAt'})
         .skip(offset)
