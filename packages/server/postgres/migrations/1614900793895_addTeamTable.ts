@@ -14,7 +14,7 @@ export async function up(pgm: MigrationBuilder): Promise<void> {
     CREATE TABLE "Team" (
       id VARCHAR(100) PRIMARY KEY,
       name VARCHAR(100) NOT NULL,
-      "createdAt" TIMESTAMP NOT NULL,
+      "createdAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
       "createdBy" VARCHAR(100) NOT NULL,
       "isArchived" BOOLEAN NOT NULL DEFAULT FALSE,
       "isPaid" BOOLEAN NOT NULL DEFAULT TRUE,
@@ -23,7 +23,7 @@ export async function up(pgm: MigrationBuilder): Promise<void> {
       tier "TierEnum" NOT NULL,
       "orgId" VARCHAR(100) NOT NULL,
       "isOnboardTeam" BOOLEAN NOT NULL DEFAULT FALSE,
-      "updatedAt" TIMESTAMP NOT NULL
+      "updatedAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
     );
 
     CREATE INDEX "idx_Team_orgId" ON "Team"("orgId");
