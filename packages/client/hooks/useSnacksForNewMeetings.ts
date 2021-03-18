@@ -1,13 +1,31 @@
 import ms from 'ms'
 import {useEffect, useState} from 'react'
+import {readInlineData} from 'relay-runtime'
 import useAtmosphere from '~/hooks/useAtmosphere'
+import graphql from 'babel-plugin-relay/macro'
 import useRouter from '~/hooks/useRouter'
-import {TopBarMeetingsActiveMeetings} from '~/__generated__/TopBarMeetingsActiveMeetings.graphql'
+import {useSnacksForNewMeetings_meetings} from '~/__generated__/useSnacksForNewMeetings_meetings.graphql'
 
-const useSnacksForNewMeetings = (meetings: TopBarMeetingsActiveMeetings['activeMeetings']) => {
+const useSnacksForNewMeetings = (meetingsRef: any) => {
   const [dismissedMeetingIds] = useState(() => new Set<string>())
   const atmosphere = useAtmosphere()
   const {history} = useRouter()
+  const meetings = meetingsRef.map((meetingRef) =>
+    readInlineData<useSnacksForNewMeetings_meetings>(
+      graphql`
+        fragment useSnacksForNewMeetings_meetings on NewMeeting @inline {
+          id
+          createdAt
+          createdBy
+          createdByUser {
+            preferredName
+          }
+          name
+        }
+      `,
+      meetingRef
+    )
+  )
   useEffect(() => {
     const {viewerId} = atmosphere
     const fiveMinsAgo = new Date(Date.now() - ms('5m'))

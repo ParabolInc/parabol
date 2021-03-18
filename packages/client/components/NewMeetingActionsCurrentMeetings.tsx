@@ -10,7 +10,6 @@ import {PALETTE} from '~/styles/paletteV2'
 import {Breakpoint} from '~/types/constEnums'
 import plural from '~/utils/plural'
 import {NewMeetingActionsCurrentMeetings_team} from '~/__generated__/NewMeetingActionsCurrentMeetings_team.graphql'
-import {MeetingTypeEnum} from '~/__generated__/NewMeeting_viewer.graphql'
 import FlatButton from './FlatButton'
 import Icon from './Icon'
 import SelectMeetingDropdown from './SelectMeetingDropdown'
@@ -34,7 +33,6 @@ const ForumIcon = styled(Icon)({
 })
 
 interface Props {
-  meetingType: MeetingTypeEnum
   team: NewMeetingActionsCurrentMeetings_team
 }
 
@@ -72,18 +70,8 @@ export default createFragmentContainer(NewMeetingActionsCurrentMeetings, {
       id
       activeMeetings {
         ...SelectMeetingDropdown_meetings
-        meetingType
+        ...useSnacksForNewMeetings_meetings
         id
-        createdAt
-        createdBy
-        createdByUser {
-          preferredName
-        }
-        meetingType
-        name
-        team {
-          name
-        }
       }
     }
   `

@@ -45,17 +45,8 @@ graphql`
   fragment TopBarMeetingsActiveMeetings on Team {
     activeMeetings {
       ...SelectMeetingDropdown_meetings
+      ...useSnacksForNewMeetings_meetings
       id
-      createdAt
-      createdBy
-      createdByUser {
-        preferredName
-      }
-      meetingType
-      name
-      team {
-        name
-      }
     }
     name
   }
