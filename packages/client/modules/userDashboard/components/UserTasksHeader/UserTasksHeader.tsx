@@ -10,7 +10,7 @@ import useMenu from '../../../../hooks/useMenu'
 import lazyPreload from '../../../../utils/lazyPreload'
 import styled from '@emotion/styled'
 import LinkButton from '~/components/LinkButton'
-import {PALETTE} from '~/styles/paletteV2'
+import {PALETTE} from '~/styles/paletteV3'
 import Checkbox from '~/components/Checkbox'
 import {ICON_SIZE} from '~/styles/typographyV2'
 import {useUserTaskFilters} from '~/utils/useUserTaskFilters'
@@ -44,12 +44,12 @@ const StyledDashFilterToggle = styled(DashFilterToggle)({
 })
 
 const StyledLinkButton = styled(LinkButton)({
-  color: PALETTE.TEXT_GRAY,
+  color: PALETTE.SLATE_600,
   flexShrink: 0,
   fontWeight: 600,
   margin: '4px 0',
   ':hover, :focus, :active': {
-    color: PALETTE.TEXT_MAIN
+    color: PALETTE.SLATE_700
   },
   [desktopBreakpoint]: {
     margin: 0

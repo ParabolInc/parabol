@@ -3,7 +3,7 @@ import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {TransitionStatus} from '~/hooks/useTransition'
-import {PALETTE} from '../styles/paletteV2'
+import {PALETTE} from '../styles/paletteV3'
 import {BezierCurve, PokerCards} from '../types/constEnums'
 import {PokerVotingAvatar_user} from '../__generated__/PokerVotingAvatar_user.graphql'
 import Avatar from './Avatar/Avatar'
@@ -16,7 +16,7 @@ const Wrapper = styled('div')<{idx: number, isColumn?: boolean}>(({idx, isColumn
 
 const StyledAvatar = styled(Avatar)<{status?: TransitionStatus, isInitialStageRender: boolean}>(({status, isInitialStageRender}) => ({
   opacity: isInitialStageRender ? undefined : (status === TransitionStatus.EXITING || status === TransitionStatus.MOUNTED) ? 0 : 1,
-  border: `${PokerCards.AVATAR_BORDER}px solid ${PALETTE.BORDER_MATCH_MEETING_COLUMN}`,
+  border: `${PokerCards.AVATAR_BORDER}px solid ${PALETTE.SLATE_300}`,
   transform: isInitialStageRender ? undefined : (status === TransitionStatus.EXITING || status === TransitionStatus.MOUNTED) ? 'scale(0)' : 'scale(1)',
   transition: `all 300ms ${BezierCurve.DECELERATE}`
 }))

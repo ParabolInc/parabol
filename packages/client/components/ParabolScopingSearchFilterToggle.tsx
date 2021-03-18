@@ -5,14 +5,14 @@ import {ParabolScopingSearchFilterToggle_meeting} from '../__generated__/Parabol
 import PlainButton from './PlainButton/PlainButton'
 import styled from '@emotion/styled'
 import Icon from './Icon'
-import {PALETTE} from '~/styles/paletteV2'
+import {PALETTE} from '~/styles/paletteV3'
 import {ICON_SIZE} from '~/styles/typographyV2'
 import useMenu from '~/hooks/useMenu'
 import {MenuPosition} from '~/hooks/useCoords'
 import ParabolScopingSearchFilterMenu from './ParabolScopingSearchFilterMenu'
 
 const FilterIcon = styled(Icon)({
-  color: PALETTE.TEXT_GRAY,
+  color: PALETTE.SLATE_600,
   fontSize: ICON_SIZE.MD24
 })
 

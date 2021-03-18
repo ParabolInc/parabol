@@ -1,12 +1,12 @@
 import React from 'react'
 import {Link} from 'react-router-dom'
 import styled from '@emotion/styled'
-import {PALETTE} from '../../styles/paletteV2'
+import {PALETTE} from '../../styles/paletteV3'
 import logoMarkPurple from '../../styles/theme/images/brand/mark-purple.svg'
 
 const RootBlock = styled('div')({
   alignItems: 'flex-end',
-  borderTop: `1px solid ${PALETTE.BACKGROUND_PRIMARY_10A}`,
+  borderTop: `1px solid ${PALETTE.SLATE_200}`,
   boxSizing: 'content-box',
   display: 'flex',
   padding: 8,

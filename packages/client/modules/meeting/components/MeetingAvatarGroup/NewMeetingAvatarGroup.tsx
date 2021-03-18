@@ -10,7 +10,7 @@ import useInitialRender from '../../../../hooks/useInitialRender'
 import useTransition, {TransitionStatus} from '../../../../hooks/useTransition'
 import {DECELERATE} from '../../../../styles/animation'
 import {meetingAvatarMediaQueries} from '../../../../styles/meeting'
-import {PALETTE} from '../../../../styles/paletteV2'
+import {PALETTE} from '../../../../styles/paletteV3'
 import {Breakpoint} from '../../../../types/constEnums'
 import MediaRoom from '../../../../utils/mediaRoom/MediaRoom'
 import {
@@ -34,7 +34,7 @@ const MeetingAvatarGroupRoot = styled('div')({
 })
 
 const OverlappingBlock = styled('div')({
-  backgroundColor: PALETTE.BACKGROUND_MAIN,
+  backgroundColor: PALETTE.SLATE_200,
   borderRadius: '100%',
   marginLeft: -8,
   padding: 2,
@@ -51,7 +51,7 @@ const OverlappingBlock = styled('div')({
 const OverflowCount = styled('div')<{status: TransitionStatus}>(({status}) => ({
   opacity: status === TransitionStatus.MOUNTED || status === TransitionStatus.EXITING ? 0 : 1,
   transition: `all 300ms ${DECELERATE}`,
-  backgroundColor: PALETTE.BACKGROUND_BLUE_LIGHT,
+  backgroundColor: PALETTE.SKY_400,
   borderRadius: '100%',
   color: '#FFFFFF',
   fontSize: 11,

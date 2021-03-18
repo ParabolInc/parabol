@@ -1,6 +1,6 @@
 import React, {useRef} from 'react'
 import styled from '@emotion/styled'
-import {PALETTE} from '../styles/paletteV2'
+import {PALETTE} from '../styles/paletteV3'
 import {NavSidebar} from '../types/constEnums'
 import useScrollIntoView from '../hooks/useScrollIntoVIew'
 
@@ -18,12 +18,12 @@ interface ItemRootProps {
 const ItemRoot = styled('div')<ItemRootProps>(
   ({isActive, isComplete, isDisabled, isDragging, onClick}) => ({
     backgroundColor: isActive
-      ? PALETTE.BACKGROUND_NAV_LIGHT_ACTIVE
+      ? PALETTE.SLATE_100
       : isDragging
-        ? PALETTE.BACKGROUND_NAV_LIGHT_HOVER
+        ? PALETTE.SLATE_100
         : 'transparent',
     borderRadius: '0 4px 4px 0',
-    color: PALETTE.TEXT_MAIN,
+    color: PALETTE.SLATE_700,
     display: 'flex',
     flexShrink: 0,
     fontSize: 14,
@@ -35,14 +35,14 @@ const ItemRoot = styled('div')<ItemRootProps>(
     userSelect: 'none',
     width: '100%',
     '&:hover': {
-      backgroundColor: onClick && !isActive ? PALETTE.BACKGROUND_NAV_LIGHT_HOVER : undefined,
+      backgroundColor: onClick && !isActive ? PALETTE.SLATE_100 : undefined,
       cursor: !isActive && onClick ? 'pointer' : undefined,
       opacity: !isDisabled ? 1 : undefined
     }
   }),
   ({isUnsyncedFacilitatorStage}) =>
     isUnsyncedFacilitatorStage && {
-      color: PALETTE.EMPHASIS_WARM,
+      color: PALETTE.ROSE_500,
       opacity: 1
     }
 )

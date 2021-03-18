@@ -1,7 +1,7 @@
 import React, {ReactNode} from 'react'
 import styled from '@emotion/styled'
 import Icon from './Icon'
-import {PALETTE} from '../styles/paletteV2'
+import {PALETTE} from '../styles/paletteV3'
 import {ICON_SIZE} from '../styles/typographyV2'
 
 const DropdownIcon = styled(Icon)({
@@ -11,14 +11,14 @@ const DropdownIcon = styled(Icon)({
 
 const Label = styled('div')({
   alignItems: 'center',
-  color: PALETTE.LINK_BLUE,
+  color: PALETTE.SKY_500,
   cursor: 'pointer',
   display: 'flex',
   fontSize: 14,
   fontWeight: 600,
   justifyContent: 'center',
   ':hover': {
-    color: PALETTE.LINK_BLUE_HOVER
+    color: PALETTE.SKY_600
   }
 })
 

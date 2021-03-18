@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import React from 'react'
-import {PALETTE} from '../styles/paletteV2'
+import {PALETTE} from '../styles/paletteV3'
 import {ExternalLinks} from '../types/constEnums'
 import {MeetingTypeEnum} from '~/__generated__/NewMeeting_viewer.graphql'
 import HowToStepItem from './HowToStepItem'
@@ -55,7 +55,7 @@ const HowToBlock = styled('div')({
 })
 
 const HowToTitle = styled('div')({
-  color: PALETTE.TEXT_MAIN,
+  color: PALETTE.SLATE_700,
   gridColumnStart: 2,
   fontSize: 24,
   fontWeight: 600,

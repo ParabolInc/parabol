@@ -1,4 +1,4 @@
-import {PALETTE} from '~/styles/paletteV2'
+import {PALETTE} from '~/styles/paletteV3'
 import demoUserAvatar from '../../styles/theme/images/avatar-user.svg'
 import {MeetingSettingsThreshold, RetroDemo} from '../../types/constEnums'
 import RetrospectiveMeeting from '../../../server/database/types/MeetingRetrospective'
@@ -272,21 +272,21 @@ const initPhases = (teamMembers) => {
           promptId: 'startId',
           question: 'Start',
           description: 'What new behaviors should we adopt?',
-          groupColor: PALETTE.PROMPT_CYAN
+          groupColor: PALETTE.JADE_400
         },
         {
           id: 'stopId',
           promptId: 'stopId',
           question: 'Stop',
           description: 'What existing behaviors should we cease doing?',
-          groupColor: PALETTE.PROMPT_RED
+          groupColor: PALETTE.TOMATO_500
         },
         {
           id: 'continueId',
           promptId: 'continueId',
           question: 'Continue',
           description: 'What current behaviors should we keep doing?',
-          groupColor: PALETTE.PROMPT_BLUE
+          groupColor: PALETTE.SKY_500
         }
       ],
       stages: [

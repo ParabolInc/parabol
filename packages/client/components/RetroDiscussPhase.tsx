@@ -7,7 +7,7 @@ import useBreakpoint from '~/hooks/useBreakpoint'
 import useCallbackRef from '~/hooks/useCallbackRef'
 import {RetroDiscussPhase_meeting} from '~/__generated__/RetroDiscussPhase_meeting.graphql'
 import EditorHelpModalContainer from '../containers/EditorHelpModalContainer/EditorHelpModalContainer'
-import {PALETTE} from '../styles/paletteV2'
+import {PALETTE} from '../styles/paletteV3'
 import {ICON_SIZE} from '../styles/typographyV2'
 import {Breakpoint} from '../types/constEnums'
 import {phaseLabelLookup} from '../utils/meetings/lookups'
@@ -41,7 +41,7 @@ const HeaderContainer = styled('div')({
 })
 
 const LabelContainer = styled(LabelHeading)<{isDesktop: boolean}>(({isDesktop}) => ({
-  background: PALETTE.BACKGROUND_MAIN,
+  background: PALETTE.SLATE_200,
   margin: '0 16px',
   padding: isDesktop ? '0 0 8px' : undefined,
   position: 'sticky',
@@ -79,7 +79,7 @@ const TopicHeading = styled('div')({
 
 const VoteMeta = styled('div')({
   alignItems: 'center',
-  backgroundColor: PALETTE.BACKGROUND_GRAY,
+  backgroundColor: PALETTE.SLATE_600,
   borderRadius: '5em',
   color: '#FFFFFF',
   display: 'flex',

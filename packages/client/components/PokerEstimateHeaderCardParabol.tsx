@@ -8,7 +8,7 @@ import useBreakpoint from '~/hooks/useBreakpoint'
 import useEditorState from '~/hooks/useEditorState'
 import useTaskChildFocus from '~/hooks/useTaskChildFocus'
 import {Elevation} from '~/styles/elevation'
-import {PALETTE} from '~/styles/paletteV2'
+import {PALETTE} from '~/styles/paletteV3'
 import {Breakpoint} from '~/types/constEnums'
 import isAndroid from '~/utils/draftjs/isAndroid'
 import useAtmosphere from '../hooks/useAtmosphere'
@@ -27,7 +27,7 @@ const HeaderCardWrapper = styled('div')<{isDesktop: boolean}>(({isDesktop}) => (
 
 const HeaderCard = styled('div')({
   alignItems: 'flex-start',
-  background: PALETTE.CONTROL_LIGHT,
+  background: PALETTE.WHITE,
   borderRadius: 4,
   boxShadow: Elevation.Z1,
   display: 'flex',
@@ -43,19 +43,21 @@ const CardIcons = styled('div')({
   display: 'flex'
 })
 
-const EditorWrapper = styled('div')<{isExpanded: boolean, maxHeight: number}>(({isExpanded, maxHeight}) => ({
-  color: PALETTE.TEXT_MAIN,
-  fontWeight: 'normal',
-  lineHeight: '20px',
-  fontSize: 14,
-  margin: 0,
-  maxHeight: isExpanded ? maxHeight : 38,
-  overflowY: 'auto',
-  transition: 'all 300ms'
-}))
+const EditorWrapper = styled('div')<{isExpanded: boolean; maxHeight: number}>(
+  ({isExpanded, maxHeight}) => ({
+    color: PALETTE.SLATE_700,
+    fontWeight: 'normal',
+    lineHeight: '20px',
+    fontSize: 14,
+    margin: 0,
+    maxHeight: isExpanded ? maxHeight : 38,
+    overflowY: 'auto',
+    transition: 'all 300ms'
+  })
+)
 
 const StyledTaskIntegrationLink = styled(TaskIntegrationLink)({
-  color: PALETTE.LINK_BLUE,
+  color: PALETTE.SKY_500,
   display: 'flex',
   fontSize: 12,
   lineHeight: '20px',
@@ -103,7 +105,12 @@ const PokerEstimateHeaderCardParabol = (props: Props) => {
   const editorRef = useRef<HTMLTextAreaElement>(null)
   const descriptionRef = useRef<HTMLDivElement>(null)
   const maxHeight = Math.min(descriptionRef.current?.scrollHeight ?? 300, 300)
-  useEffect(() => () => {setIsExpanded(false)}, [taskId])
+  useEffect(
+    () => () => {
+      setIsExpanded(false)
+    },
+    [taskId]
+  )
   const {useTaskChild} = useTaskChildFocus(taskId)
   const onBlur = () => {
     if (isAndroid) {

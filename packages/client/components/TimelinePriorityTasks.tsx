@@ -8,7 +8,7 @@ import withAtmosphere, {WithAtmosphereProps} from '../decorators/withAtmosphere/
 import useAtmosphere from '../hooks/useAtmosphere'
 import useEventCallback from '../hooks/useEventCallback'
 import UpdateTaskMutation from '../mutations/UpdateTaskMutation'
-import {PALETTE} from '../styles/paletteV2'
+import {PALETTE} from '../styles/paletteV3'
 import {ICON_SIZE} from '../styles/typographyV2'
 import {DroppableType} from '../types/constEnums'
 import {ACTIVE, SORT_STEP} from '../utils/constants'
@@ -22,8 +22,8 @@ interface Props extends WithAtmosphereProps {
 }
 
 const PriorityTasksHeader = styled('div')({
-  background: PALETTE.BACKGROUND_MAIN,
-  color: PALETTE.TEXT_GRAY,
+  background: PALETTE.SLATE_200,
+  color: PALETTE.SLATE_600,
   fontSize: 14,
   fontWeight: 600,
   paddingTop: 16,
@@ -74,7 +74,7 @@ const TimelinePriorityTasks = (props: Props) => {
       sortOrder =
         (activeTasks[destination.index + offset].sortOrder +
           activeTasks[destination.index].sortOrder) /
-          2 +
+        2 +
         dndNoise()
     }
     const updatedTask = {id: draggableId, sortOrder}

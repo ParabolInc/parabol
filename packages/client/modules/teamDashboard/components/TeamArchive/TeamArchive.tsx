@@ -9,7 +9,7 @@ import toTeamMemberId from '~/utils/relay/toTeamMemberId'
 import {TeamArchive_team} from '~/__generated__/TeamArchive_team.graphql'
 import {TeamArchive_viewer} from '~/__generated__/TeamArchive_viewer.graphql'
 import NullableTask from '../../../../components/NullableTask/NullableTask'
-import {PALETTE} from '../../../../styles/paletteV2'
+import {PALETTE} from '../../../../styles/paletteV3'
 import {Layout, MathEnum} from '../../../../types/constEnums'
 import getRallyLink from '../../../userDashboard/helpers/getRallyLink'
 import TeamArchiveHeader from '../TeamArchiveHeader/TeamArchiveHeader'
@@ -43,7 +43,7 @@ const Header = styled('div')({
 })
 
 const Border = styled('div')({
-  borderTop: `.0625rem solid ${PALETTE.BORDER_LIGHTER}`,
+  borderTop: `.0625rem solid ${PALETTE.SLATE_300}`,
   height: 1,
   width: '100%'
 })
@@ -71,7 +71,7 @@ const CardGrid = styled('div')({
 
 const EmptyMsg = styled('div')({
   backgroundColor: '#FFFFFF',
-  border: `1px solid ${PALETTE.BORDER_LIGHT}`,
+  border: `1px solid ${PALETTE.SLATE_400}`,
   borderRadius: 4,
   fontSize: 14,
   display: 'inline-block',
@@ -80,7 +80,7 @@ const EmptyMsg = styled('div')({
 })
 
 const LinkSpan = styled('div')({
-  color: PALETTE.BACKGROUND_TEAL
+  color: PALETTE.AQUA_400
 })
 
 interface Props {
@@ -100,11 +100,11 @@ const TeamArchive = (props: Props) => {
   const teamMemberFilteredTasks = useMemo(() => {
     const edges = teamMemberFilterId
       ? archivedTasks?.edges.filter((edge) => {
-          return (
-            edge.node.userId &&
-            toTeamMemberId(edge.node.teamId, edge.node.userId) === teamMemberFilterId
-          )
-        })
+        return (
+          edge.node.userId &&
+          toTeamMemberId(edge.node.teamId, edge.node.userId) === teamMemberFilterId
+        )
+      })
       : archivedTasks.edges
     return {...archivedTasks, edges: edges}
   }, [archivedTasks?.edges, teamMemberFilterId, teamMembers])

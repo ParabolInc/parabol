@@ -12,7 +12,7 @@ import energyLevelsTemplate from '../../../../../static/images/illustrations/ene
 import threeLittlePigsTemplate from '../../../../../static/images/illustrations/threeLittlePigsTemplate.svg'
 import winningStreakTemplate from '../../../../../static/images/illustrations/winningStreakTemplate.svg'
 import mountainClimberTemplate from '../../../../../static/images/illustrations/mountainClimberTemplate.svg'
-import {PALETTE} from '../../../styles/paletteV2'
+import {PALETTE} from '../../../styles/paletteV3'
 import getTemplateList from '../../../utils/getTemplateList'
 import makeTemplateDescription from '../../../utils/makeTemplateDescription'
 import {ReflectTemplateDetails_settings} from '../../../__generated__/ReflectTemplateDetails_settings.graphql'
@@ -58,7 +58,7 @@ const TemplateImage = styled('img')({
 })
 
 const Description = styled('div')({
-  color: PALETTE.TEXT_MAIN,
+  color: PALETTE.SLATE_700,
   fontSize: 14,
   lineHeight: '20px'
 })

@@ -8,7 +8,7 @@ import Icon from './Icon'
 import {shortDays, shortMonths} from '../utils/makeDateString'
 import DayPicker, {DayModifiers} from 'react-day-picker'
 import '../styles/daypicker.css'
-import {PALETTE} from '../styles/paletteV2'
+import {PALETTE} from '../styles/paletteV3'
 import roundDateToNearestHalfHour from '../utils/roundDateToNearestHalfHour'
 
 interface Props {
@@ -23,7 +23,7 @@ const Toggle = styled(DropdownMenuToggle)({
 })
 
 const StyledIcon = styled(Icon)({
-  color: PALETTE.TEXT_GRAY
+  color: PALETTE.SLATE_600
 })
 
 const NEXT_YEAR = new Date(Date.now() + ms('1y'))

@@ -15,13 +15,13 @@ import useAtmosphere from '../../../../hooks/useAtmosphere'
 import SetSlackNotificationMutation from '../../../../mutations/SetSlackNotificationMutation'
 import useSlackChannels from '../../../../hooks/useSlackChannels'
 import StyledError from '../../../../components/StyledError'
-import {PALETTE} from '../../../../styles/paletteV2'
+import {PALETTE} from '../../../../styles/paletteV3'
 import {Layout} from '../../../../types/constEnums'
 import useEventCallback from '../../../../hooks/useEventCallback'
 import SetDefaultSlackChannelMutation from '~/mutations/SetDefaultSlackChannelMutation'
 
 const SlackNotificationListStyles = styled('div')({
-  borderTop: `1px solid ${PALETTE.BORDER_LIGHTER}`,
+  borderTop: `1px solid ${PALETTE.SLATE_300}`,
   padding: Layout.ROW_GUTTER
 })
 

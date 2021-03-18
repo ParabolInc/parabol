@@ -7,7 +7,7 @@ import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import PlainButton from '~/components/PlainButton/PlainButton'
 import {TransitionStatus} from '~/hooks/useTransition'
-import {PALETTE} from '~/styles/paletteV2'
+import {PALETTE} from '~/styles/paletteV3'
 import {BezierCurve} from '~/types/constEnums'
 import {ReactjiCount_reactji} from '~/__generated__/ReactjiCount_reactji.graphql'
 // import emojiIndex from 'emoji-mart/dist-modern/utils/emoji-index/emoji-index'
@@ -26,7 +26,7 @@ const Parent = styled('div')<{status: TransitionStatus}>(({status}) => ({
 
 const Inner = styled(PlainButton)<{isViewerReactji: boolean}>(({isViewerReactji}) => ({
   alignItems: 'center',
-  color: isViewerReactji ? PALETTE.TEXT_BLUE : PALETTE.TEXT_GRAY,
+  color: isViewerReactji ? PALETTE.SKY_500 : PALETTE.SLATE_600,
   display: 'flex',
   height: 24,
   lineHeight: '24px',

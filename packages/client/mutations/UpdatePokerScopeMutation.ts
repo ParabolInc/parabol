@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {PALETTE} from '../styles/paletteV2'
+import {PALETTE} from '../styles/paletteV3'
 import {StandardMutation} from '../types/relayMutations'
 import clientTempId from '../utils/relay/clientTempId'
 import createProxyRecord from '../utils/relay/createProxyRecord'
@@ -103,7 +103,7 @@ const UpdatePokerScopeMutation: StandardMutation<TUpdatePokerScopeMutation> = (
         dimensionRefIds.push(...prevDimensionRefIds)
       } else {
         const value = createProxyRecord(store, 'TemplateScaleValue', {
-          color: PALETTE.BACKGROUND_GRAY,
+          color: PALETTE.SLATE_600,
           label: '#'
         })
         const scale = createProxyRecord(store, 'TemplateScaleRef', {})
