@@ -1,6 +1,7 @@
 import getRethink from '../database/rethinkDriver'
 import Team from '../database/types/Team'
 import db from '../db'
+import updateTeamByTeamId from '../postgres/queries/updateTeamByTeamId'
 import removeUserTms from '../postgres/queries/removeUserTms'
 
 const safeArchiveTeam = async (teamId: string) => {
@@ -17,34 +18,37 @@ const safeArchiveTeam = async (teamId: string) => {
     })),
     removeUserTms(teamId, userIds)
   ])
-  const result = await r({
-    team: (r
-      .table('Team')
-      .get(teamId)
-      .update(
-        {isArchived: true},
-        {returnChanges: true}
-      )('changes')(0)('new_val')
-      .default(null) as unknown) as Team | null,
-    invitations: (r
-      .table('TeamInvitation')
-      .getAll(teamId, {index: 'teamId'})
-      .filter({acceptedAt: null})
-      .update((invitation) => ({
-        expiresAt: r.min([invitation('expiresAt'), now])
-      })) as unknown) as null,
-    removedSuggestedActionIds: (r
-      .table('SuggestedAction')
-      .filter({teamId})
-      .update(
-        {
-          removedAt: now
-        },
-        {returnChanges: true}
-      )('changes')('new_val')('id')
-      .default([]) as unknown) as string[]
-  }).run()
-  return {...result, users}
+  const [rethinkResult] = await Promise.all([
+    r({
+      team: (r
+        .table('Team')
+        .get(teamId)
+        .update(
+          {isArchived: true},
+          {returnChanges: true}
+        )('changes')(0)('new_val')
+        .default(null) as unknown) as Team | null,
+      invitations: (r
+        .table('TeamInvitation')
+        .getAll(teamId, {index: 'teamId'})
+        .filter({acceptedAt: null})
+        .update((invitation) => ({
+          expiresAt: r.min([invitation('expiresAt'), now])
+        })) as unknown) as null,
+      removedSuggestedActionIds: (r
+        .table('SuggestedAction')
+        .filter({teamId})
+        .update(
+          {
+            removedAt: now
+          },
+          {returnChanges: true}
+        )('changes')('new_val')('id')
+        .default([]) as unknown) as string[]
+    }).run(),
+    updateTeamByTeamId({isArchived: true}, teamId)
+  ])
+  return {...rethinkResult, users}
 }
 
 export default safeArchiveTeam

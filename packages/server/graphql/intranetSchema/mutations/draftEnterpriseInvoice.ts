@@ -12,6 +12,7 @@ import {DataLoaderWorker, GQLContext} from '../../graphql'
 import hideConversionModal from '../../mutations/helpers/hideConversionModal'
 import setTierForOrgUsers from '../../../utils/setTierForOrgUsers'
 import DraftEnterpriseInvoicePayload from '../types/DraftEnterpriseInvoicePayload'
+import updateTeamByOrgId from '../../../postgres/queries/updateTeamByOrgId'
 
 const getBillingLeaderUser = async (
   email: string | null,
@@ -147,26 +148,36 @@ export default {
       plan
     )
 
-    await r({
-      updatedOrg: r
-        .table('Organization')
-        .get(orgId)
-        .update({
-          periodEnd: fromEpochSeconds(subscription.current_period_end),
-          periodStart: fromEpochSeconds(subscription.current_period_start),
-          stripeSubscriptionId: subscription.id,
-          tier: TierEnum.enterprise,
-          updatedAt: now
-        }),
-      teamIds: r
-        .table('Team')
-        .getAll(orgId, {index: 'orgId'})
-        .update({
+    await Promise.all([
+      r({
+        updatedOrg: r
+          .table('Organization')
+          .get(orgId)
+          .update({
+            periodEnd: fromEpochSeconds(subscription.current_period_end),
+            periodStart: fromEpochSeconds(subscription.current_period_start),
+            stripeSubscriptionId: subscription.id,
+            tier: TierEnum.enterprise,
+            updatedAt: now
+          }),
+        teamIds: r
+          .table('Team')
+          .getAll(orgId, {index: 'orgId'})
+          .update({
+            isPaid: true,
+            tier: TierEnum.enterprise,
+            updatedAt: now
+          })
+      }).run(),
+      updateTeamByOrgId(
+        {
           isPaid: true,
           tier: TierEnum.enterprise,
-          updatedAt: now
-        })
-    }).run()
+          updatedAt: now,
+        },
+        orgId
+      )
+    ])
 
     await Promise.all([
       setUserTierForOrgId(orgId),

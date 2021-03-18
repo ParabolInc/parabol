@@ -12,6 +12,7 @@ import StartCheckInPayload from '../types/StartCheckInPayload'
 import createNewMeetingPhases from './helpers/createNewMeetingPhases'
 import {startSlackMeeting} from './helpers/notifySlack'
 import sendMeetingStartToSegment from './helpers/sendMeetingStartToSegment'
+import updateTeamByTeamId from '../../postgres/queries/updateTeamByTeamId'
 
 export default {
   type: new GraphQLNonNull(StartCheckInPayload),
@@ -94,6 +95,7 @@ export default {
         .get(teamId)
         .update({lastMeetingType: meetingType})
         .run(),
+      updateTeamByTeamId({lastMeetingType: meetingType}, teamId),
       r
         .table('AgendaItem')
         .getAll(r.args(agendaItemIds))

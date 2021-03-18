@@ -9,6 +9,7 @@ import archiveTasksForDB from '../../../safeMutations/archiveTasksForDB'
 import {DataLoaderWorker} from '../../graphql'
 import removeStagesFromMeetings from './removeStagesFromMeetings'
 import removeUserFromMeetingStages from './removeUserFromMeetingStages'
+import updateTeamByTeamId from '../../../postgres/queries/updateTeamByTeamId'
 import removeUserTms from '../../../postgres/queries/removeUserTms'
 
 interface Options {
@@ -39,11 +40,14 @@ const removeTeamMember = async (
 
   if (activeTeamMembers.length === 1) {
     // archive single-person teams
-    await r
-      .table('Team')
-      .get(teamId)
-      .update({isArchived: true})
-      .run()
+    await Promise.all([
+      r
+        .table('Team')
+        .get(teamId)
+        .update({isArchived: true})
+        .run(),
+      updateTeamByTeamId({isArchived: true}, teamId)
+    ])
   } else if (isLead) {
     // assign new leader, remove old leader flag
     await r({

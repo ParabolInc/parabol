@@ -17,6 +17,7 @@ import StartSprintPokerPayload from '../types/StartSprintPokerPayload'
 import createNewMeetingPhases from './helpers/createNewMeetingPhases'
 import {startSlackMeeting} from './helpers/notifySlack'
 import sendMeetingStartToSegment from './helpers/sendMeetingStartToSegment'
+import updateTeamByTeamId from '../../postgres/queries/updateTeamByTeamId'
 
 const freezeTemplateAsRef = async (templateId: string, dataLoader: DataLoaderWorker) => {
   const pg = getPg()
@@ -145,7 +146,8 @@ export default {
         .table('Team')
         .get(teamId)
         .update({lastMeetingType: meetingType})
-        .run()
+        .run(),
+      updateTeamByTeamId({lastMeetingType: meetingType}, teamId)
     ])
     startSlackMeeting(meetingId, teamId, dataLoader).catch(console.log)
     sendMeetingStartToSegment(meeting, template)
