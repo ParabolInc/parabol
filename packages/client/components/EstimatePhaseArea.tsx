@@ -35,11 +35,15 @@ const StepperDot = styled('div')<{isActive: boolean}>(({isActive}) => ({
   width: 8
 }))
 
-const SwipableEstimateItem = styled('div')({
-  borderRadius: '8px 8px 0 0',
+const SwipableEstimateItem = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   background: PALETTE.BACKGROUND_REFLECTION,
-  height: '100%'
-})
+  borderRadius: '8px 8px 0 0',
+  flex: 1,
+  // padding-bottom allows the content to scroll out from under
+  // the hand of poker cards and the meeting bottom bar
+  // on mobile the cards and bottom bar have less height
+  paddingBottom: isDesktop ? (8 * 19) : (8 * 12)
+}))
 
 const innerStyle = (isDesktop: boolean, hasSingleDimension: boolean) => {
   return {
@@ -80,6 +84,7 @@ const EstimatePhaseArea = (props: Props) => {
   }
 
   const slideContainer = {
+    display: 'flex',
     padding: isDesktop ? '0 8px' : '0 4px'
   }
 
@@ -106,7 +111,7 @@ const EstimatePhaseArea = (props: Props) => {
         style={innerStyle(isDesktop, hasSingleDimension)}
       >
         {dimensionStages.map((stage, idx) => (
-          <SwipableEstimateItem key={idx}>
+          <SwipableEstimateItem isDesktop={isDesktop} key={idx}>
             <EstimateDimensionColumn meeting={meeting} stage={stage} />
           </SwipableEstimateItem>
         ))}
