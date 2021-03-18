@@ -31,7 +31,7 @@ const HeaderCard = styled('div')({
 const CardTitle = styled('h1')({
   fontSize: 16,
   lineHeight: '24px',
-  marginBottom: '8px'
+  margin: '0 0 8px'
 })
 
 const CardIcons = styled('div')({
@@ -41,7 +41,7 @@ const CardIcons = styled('div')({
 const CardTitleWrapper = styled('div')({
   display: 'flex',
   justifyContent: 'space-between',
-  alignItems: 'center',
+  alignItems: 'flex-start',
   width: '100%'
 })
 
