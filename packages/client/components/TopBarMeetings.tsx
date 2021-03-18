@@ -48,7 +48,6 @@ graphql`
       ...useSnacksForNewMeetings_meetings
       id
     }
-    name
   }
 `
 
