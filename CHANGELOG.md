@@ -5,6 +5,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.3.1 2021-Mar-19
+
+### Fixed
+- Fix broken suOrgCount query due to incorrect enum type
+
 ## 6.3.0 2021-Mar-18
 
 ### Fixed
