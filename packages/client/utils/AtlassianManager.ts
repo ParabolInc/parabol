@@ -607,7 +607,6 @@ export default abstract class AtlassianManager {
         }
       }
       if ('errors' in res) {
-        console.log(JSON.stringify(res))
         const fieldError = res.errors[fieldId]
         if (fieldError.includes('is not on the appropriate screen')) {
           throw new Error(
