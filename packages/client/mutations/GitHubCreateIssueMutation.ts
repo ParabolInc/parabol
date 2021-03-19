@@ -22,11 +22,11 @@ const mutation = graphql`
       teamId: $teamId
       meetingId: $meetingId
     ) {
-      # ... on ErrorPayload {
-      #   error {
-      #     message
-      #   }
-      # }
+      ... on ErrorPayload {
+        error {
+          message
+        }
+      }
       ...GitHubCreateIssueMutation_meeting @relay(mask: false)
     }
   }
