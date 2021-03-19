@@ -6,7 +6,7 @@ import {createFragmentContainer} from 'react-relay'
 import {MenuPosition} from '~/hooks/useCoords'
 import useMenu from '~/hooks/useMenu'
 // import useMutationProps from '~/hooks/useMutationProps'
-// import CreateGitHubIssueMutation from '~/mutations/CreateGitHubIssueMutation'
+// import CreateGitHubTaskIntegrationMutation from '~/mutations/CreateGitHubTaskIntegrationMutation'
 import {PALETTE} from '~/styles/paletteV2'
 import {NewGitHubIssueInput_meeting} from '~/__generated__/NewGitHubIssueInput_meeting.graphql'
 import {NewGitHubIssueInput_viewer} from '~/__generated__/NewGitHubIssueInput_viewer.graphql'
@@ -124,7 +124,7 @@ const NewGitHubIssueInput = (props: Props) => {
     //   teamId,
     //   meetingId
     // }
-    // CreateGitHubIssueMutation(atmosphere, variables, {onError, onCompleted})
+    // CreateGitHubTaskIntegrationMutation(atmosphere, variables, {onError, onCompleted})
     setNewIssueText('')
   }
 

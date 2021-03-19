@@ -9,15 +9,15 @@ import publish from '../../utils/publish'
 import segmentIo from '../../utils/segmentIo'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
-import CreateGitHubIssuePayload from '../types/CreateGitHubIssuePayload'
+import CreateGitHubTaskIntegrationPayload from '../types/CreateGitHubTaskIntegrationPayload'
 
-type CreateGitHubIssueMutationVariables = {
+type CreateGitHubTaskIntegrationMutationVariables = {
   nameWithOwner: string
   taskId: string
 }
 export default {
-  name: 'CreateGitHubIssue',
-  type: CreateGitHubIssuePayload,
+  name: 'CreateGitHubTaskIntegration',
+  type: CreateGitHubTaskIntegrationPayload,
   args: {
     taskId: {
       type: new GraphQLNonNull(GraphQLID),
@@ -30,7 +30,7 @@ export default {
   },
   resolve: async (
     _source: any,
-    {nameWithOwner, taskId}: CreateGitHubIssueMutationVariables,
+    {nameWithOwner, taskId}: CreateGitHubTaskIntegrationMutationVariables,
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) => {
     const r = await getRethink()
@@ -147,7 +147,13 @@ export default {
     const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)
     const data = {taskId}
     teamMembers.forEach(({userId}) => {
-      publish(SubscriptionChannel.TASK, userId, 'CreateGitHubIssuePayload', data, subOptions)
+      publish(
+        SubscriptionChannel.TASK,
+        userId,
+        'CreateGitHubTaskIntegrationPayload',
+        data,
+        subOptions
+      )
     })
     segmentIo.track({
       userId: viewerId,

@@ -6880,7 +6880,7 @@ export interface IMutation {
    * for troubleshooting by admins, create a JWT for a given userId
    */
   createImposterToken: ICreateImposterTokenPayload;
-  createGitHubIssue: ICreateGitHubIssuePayload | null;
+  createGitHubTaskIntegration: ICreateGitHubTaskIntegrationPayload | null;
   createJiraTaskIntegration: ICreateJiraTaskIntegrationPayload | null;
 
   /**
@@ -7593,7 +7593,7 @@ export interface ICreateImposterTokenOnMutationArguments {
   userId: string;
 }
 
-export interface ICreateGitHubIssueOnMutationArguments {
+export interface ICreateGitHubTaskIntegrationOnMutationArguments {
   /**
    * The id of the task to convert to a GH issue
    */
@@ -9015,8 +9015,8 @@ export interface ICreateImposterTokenPayload {
   user: IUser | null;
 }
 
-export interface ICreateGitHubIssuePayload {
-  __typename: 'CreateGitHubIssuePayload';
+export interface ICreateGitHubTaskIntegrationPayload {
+  __typename: 'CreateGitHubTaskIntegrationPayload';
   error: IStandardMutationError | null;
   task: ITask | null;
 }
@@ -11283,7 +11283,7 @@ export interface ISetOrgUserRoleRemovedPayload {
 
 export type TaskSubscriptionPayload =
   | IChangeTaskTeamPayload
-  | ICreateGitHubIssuePayload
+  | ICreateGitHubTaskIntegrationPayload
   | ICreateJiraTaskIntegrationPayload
   | ICreateTaskPayload
   | IDeleteTaskPayload
