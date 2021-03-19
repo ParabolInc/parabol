@@ -14,6 +14,7 @@ import StartRetrospectivePayload from '../types/StartRetrospectivePayload'
 import createNewMeetingPhases from './helpers/createNewMeetingPhases'
 import {startSlackMeeting} from './helpers/notifySlack'
 import sendMeetingStartToSegment from './helpers/sendMeetingStartToSegment'
+import updateTeamByTeamId from '../../postgres/queries/updateTeamByTeamId'
 
 export default {
   type: new GraphQLNonNull(StartRetrospectivePayload),
@@ -113,7 +114,8 @@ export default {
         .table('Team')
         .get(teamId)
         .update({lastMeetingType: meetingType})
-        .run()
+        .run(),
+      updateTeamByTeamId({lastMeetingType: meetingType}, teamId)
     ])
 
     startSlackMeeting(meetingId, teamId, dataLoader).catch(console.log)

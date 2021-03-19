@@ -11,6 +11,7 @@ import encodeAuthToken from '../../utils/encodeAuthToken'
 import rateLimit from '../rateLimit'
 import VerifyEmailPayload from '../types/VerifyEmailPayload'
 import bootstrapNewUser from './helpers/bootstrapNewUser'
+import updateUser from '../../postgres/queries/updateUser'
 
 export default {
   type: GraphQLNonNull(VerifyEmailPayload),
@@ -60,7 +61,16 @@ export default {
       if (!localIdentity.isEmailVerified) {
         // mutative
         localIdentity.isEmailVerified = true
-        await db.write('User', userId, {identities, updatedAt: now})
+        await Promise.all([
+          updateUser(
+            {
+              identities,
+              updatedAt: now
+            },
+            userId
+          ),
+          db.write('User', userId, {identities, updatedAt: now})
+        ])
       }
       return {authToken, userId}
     }
