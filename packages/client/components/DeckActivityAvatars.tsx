@@ -13,6 +13,7 @@ const DeckActivityPanel = styled('div')({
   // let things underneath this be clickable
   pointerEvents: 'none',
   right: 0,
+  top: 32, // stay below the header
   width: 64,
   zIndex: 100 // show above dimension column
 })

@@ -11,6 +11,7 @@ import SetPokerSpectateMutation from '../mutations/SetPokerSpectateMutation'
 import {PALETTE} from '../styles/paletteV3'
 import {EstimateDimensionColumn_meeting} from '../__generated__/EstimateDimensionColumn_meeting.graphql'
 import {EstimateDimensionColumn_stage} from '../__generated__/EstimateDimensionColumn_stage.graphql'
+import DeckActivityAvatars from './DeckActivityAvatars'
 import LinkButton from './LinkButton'
 import PokerActiveVoting from './PokerActiveVoting'
 import PokerDiscussVoting from './PokerDiscussVoting'
@@ -98,6 +99,7 @@ const EstimateDimensionColumn = (props: Props) => {
           </StyledLinkButton>
         )}
       </DimensionHeader>
+      <DeckActivityAvatars stage={stage} />
       {showVoting ? (
         <PokerActiveVoting
           meeting={meeting}
@@ -121,6 +123,7 @@ export default createFragmentContainer(EstimateDimensionColumn, {
     fragment EstimateDimensionColumn_stage on EstimateStage {
       ...PokerActiveVoting_stage
       ...PokerDiscussVoting_stage
+      ...DeckActivityAvatars_stage
       id
       isVoting
       dimensionRef {
