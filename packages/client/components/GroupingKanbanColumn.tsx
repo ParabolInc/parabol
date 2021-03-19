@@ -12,7 +12,7 @@ import {GroupingKanbanColumn_reflectionGroups} from '~/__generated__/GroupingKan
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
 import CreateReflectionMutation from '../mutations/CreateReflectionMutation'
-import {PALETTE} from '../styles/paletteV2'
+import {PALETTE} from '../styles/paletteV3'
 import {
   BezierCurve,
   Breakpoint,
@@ -20,7 +20,6 @@ import {
   ElementWidth,
   MeetingControlBarEnum
 } from '../types/constEnums'
-import {NewMeetingPhaseTypeEnum} from '../types/graphql'
 import getNextSortOrder from '../utils/getNextSortOrder'
 import {SwipeColumn} from './GroupingKanban'
 import GroupingKanbanColumnHeader from './GroupingKanbanColumnHeader'
@@ -32,7 +31,7 @@ const Column = styled('div')<{
   isLastColumn: boolean
 }>(({isLengthExpanded, isFirstColumn, isLastColumn}) => ({
   alignContent: 'flex-start',
-  background: PALETTE.BACKGROUND_REFLECTION,
+  background: PALETTE.SLATE_300,
   borderRadius: 8,
   display: 'flex',
   flex: 1,
@@ -122,7 +121,7 @@ const GroupingKanbanColumn = (props: Props) => {
     filteredReflectionGroups,
     columnsRef
   )
-  const canAdd = phaseType === NewMeetingPhaseTypeEnum.group && !isComplete && !isAnyEditing
+  const canAdd = phaseType === 'group' && !isComplete && !isAnyEditing
 
   const onClick = () => {
     if (submitting || isAnyEditing) return

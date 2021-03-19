@@ -1,7 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
-import {PALETTE} from 'parabol-client/styles/paletteV2'
+import {PALETTE} from 'parabol-client/styles/paletteV3'
 import {FONT_FAMILY} from 'parabol-client/styles/typographyV2'
-import {MeetingTypeEnum, NewMeetingPhaseTypeEnum} from 'parabol-client/types/graphql'
 import getJiraCloudIdAndKey from 'parabol-client/utils/getJiraCloudIdAndKey'
 import {SummaryPokerStories_meeting} from 'parabol-client/__generated__/SummaryPokerStories_meeting.graphql'
 import React from 'react'
@@ -11,7 +10,7 @@ import AnchorIfEmail from './AnchorIfEmail'
 import EmailBorderBottom from './EmailBorderBottom'
 
 const tableStyles = {
-  border: `1px solid ${PALETTE.BORDER_GRAY}`,
+  border: `1px solid ${PALETTE.SLATE_400}`,
   borderRadius: 8,
   borderSpacing: 0,
   marginTop: 24
@@ -22,13 +21,13 @@ const rowStyle = {
 }
 
 const titleStyle = (isLast: boolean) => ({
-  borderBottom: isLast ? undefined : `1px solid ${PALETTE.BORDER_GRAY}`,
+  borderBottom: isLast ? undefined : `1px solid ${PALETTE.SLATE_400}`,
   fontWeight: 600,
   paddingLeft: 16
 })
 
 const titleLinkStyle = {
-  color: PALETTE.TEXT_BLUE,
+  color: PALETTE.SKY_500,
   display: 'block',
   fontFamily: FONT_FAMILY.SANS_SERIF,
   fontWeight: 600,
@@ -36,7 +35,7 @@ const titleLinkStyle = {
 }
 
 const scoreStyle = (isLast: boolean) => ({
-  borderBottom: isLast ? undefined : `1px solid ${PALETTE.BORDER_GRAY}`,
+  borderBottom: isLast ? undefined : `1px solid ${PALETTE.SLATE_400}`,
   fontWeight: 600
 })
 
@@ -48,10 +47,8 @@ interface Props {
 const SummaryPokerStories = (props: Props) => {
   const {isEmail, meeting} = props
   const {id: meetingId, phases, meetingType} = meeting
-  if (meetingType !== MeetingTypeEnum.poker) return null
-  const estimatePhase = phases?.find(
-    (phase) => phase?.phaseType === NewMeetingPhaseTypeEnum.ESTIMATE
-  )
+  if (meetingType !== 'poker') return null
+  const estimatePhase = phases?.find((phase) => phase?.phaseType === 'ESTIMATE')
   if (!estimatePhase) return null
   const stages = estimatePhase.stages!
   const usedServiceTaskIds = new Set<string>()

@@ -5,11 +5,11 @@ import {createFragmentContainer} from 'react-relay'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
 import UpdatePokerScopeMutation from '../mutations/UpdatePokerScopeMutation'
-import {PALETTE} from '../styles/paletteV2'
+import {PALETTE} from '../styles/paletteV3'
 import {Threshold} from '../types/constEnums'
-import {AddOrDeleteEnum, TaskServiceEnum} from '../types/graphql'
 import isTempId from '../utils/relay/isTempId'
 import {JiraScopingSearchResultItem_issue} from '../__generated__/JiraScopingSearchResultItem_issue.graphql'
+import {UpdatePokerScopeMutationVariables} from '../__generated__/UpdatePokerScopeMutation.graphql'
 import Checkbox from './Checkbox'
 import Ellipsis from './Ellipsis/Ellipsis'
 
@@ -30,7 +30,7 @@ const Issue = styled('div')({
 const Title = styled('div')({})
 
 const StyledLink = styled('a')({
-  color: PALETTE.LINK_BLUE,
+  color: PALETTE.SKY_500,
   display: 'block',
   fontSize: 12,
   lineHeight: '20px',
@@ -62,12 +62,12 @@ const JiraScopingSearchResultItem = (props: Props) => {
       meetingId,
       updates: [
         {
-          service: TaskServiceEnum.jira,
+          service: 'jira',
           serviceTaskId,
-          action: isSelected ? AddOrDeleteEnum.DELETE : AddOrDeleteEnum.ADD
+          action: isSelected ? 'DELETE' : 'ADD'
         }
       ]
-    }
+    } as UpdatePokerScopeMutationVariables
     UpdatePokerScopeMutation(atmosphere, variables, {onError, onCompleted})
     if (!isSelected) {
       // if they are adding an item, then their search criteria must be good, so persist it

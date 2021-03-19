@@ -1,4 +1,5 @@
-import {ReactableEnum, ThreadSourceEnum} from '~/types/graphql'
+import {ReactableEnum} from '~/__generated__/AddReactjiToReactableMutation.graphql'
+import {ThreadSourceEnum} from '~/__generated__/UpdateTaskMutation.graphql'
 import {ACTIVE, DISCUSS, GROUP, REFLECT, VOTE} from '../../utils/constants'
 import extractTextFromDraftString from '../../utils/draftjs/extractTextFromDraftString'
 import makeDiscussionStage from '../../utils/makeDiscussionStage'
@@ -41,7 +42,7 @@ const addStageToBotScript = (stageId, db, reflectionGroupId) => {
   const {reflections} = reflectionGroup
   const stageTasks = [] as string[]
   const reactions = [] as {
-    reactableType: ReactableEnum.REFLECTION
+    reactableType: 'REFLECTION'
     reactableId: string
     reactji: string
   }[]
@@ -56,7 +57,7 @@ const addStageToBotScript = (stageId, db, reflectionGroupId) => {
     if (reactjis) {
       reactions.push(
         ...reactjis.map((reactji) => ({
-          reactableType: ReactableEnum.REFLECTION,
+          reactableType: 'REFLECTION' as ReactableEnum,
           reactableId: reflection.id,
           reactji
         }))
@@ -98,7 +99,7 @@ const addStageToBotScript = (stageId, db, reflectionGroupId) => {
               status: ACTIVE,
               threadId: reflectionGroupId,
               threadParentId: null,
-              threadSource: ThreadSourceEnum.REFLECTION_GROUP,
+              threadSource: 'REFLECTION_GROUP' as ThreadSourceEnum,
               threadSortOrder: idx
             }
           }
@@ -145,7 +146,7 @@ const addStageToBotScript = (stageId, db, reflectionGroupId) => {
         comment: {
           content: comment,
           threadId: reflectionGroupId,
-          threadSource: ThreadSourceEnum.REFLECTION_GROUP,
+          threadSource: 'REFLECTION_GROUP' as ThreadSourceEnum,
           threadSortOrder: 1
         }
       }

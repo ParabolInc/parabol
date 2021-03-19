@@ -1,7 +1,7 @@
-import {ThreadSourceEnum} from 'parabol-client/types/graphql'
 import extractTextFromDraftString from 'parabol-client/utils/draftjs/extractTextFromDraftString'
 import generateUID from '../../generateUID'
 import Reactji from './Reactji'
+import {ThreadSourceEnum} from './ThreadSource'
 
 export interface CommentInput {
   id?: string

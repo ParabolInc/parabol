@@ -7,7 +7,6 @@ import RemoteReflection from '../components/ReflectionGroup/RemoteReflection'
 import StartDraggingReflectionMutation from '../mutations/StartDraggingReflectionMutation'
 import UpdateDragLocationMutation from '../mutations/UpdateDragLocationMutation'
 import {Times} from '../types/constEnums'
-import {DragReflectionDropTargetTypeEnum} from '../types/graphql'
 import findDropZoneFromEvent from '../utils/findDropZoneFromEvent'
 import maybeStartReflectionScroll from '../utils/maybeStartReflectionScroll'
 import measureDroppableReflections from '../utils/measureDroppableReflections'
@@ -19,6 +18,7 @@ import getTargetGroupId from '../utils/retroGroup/getTargetGroupId'
 import handleDrop from '../utils/retroGroup/handleDrop'
 import updateClonePosition, {getDroppingStyles} from '../utils/retroGroup/updateClonePosition'
 import {DraggableReflectionCard_reflection} from '../__generated__/DraggableReflectionCard_reflection.graphql'
+import {DragReflectionDropTargetTypeEnum} from '~/__generated__/EndDraggingReflectionMutation_meeting.graphql'
 import useAtmosphere from './useAtmosphere'
 import useEventCallback from './useEventCallback'
 
@@ -151,7 +151,10 @@ const useDroppingDrag = (
               removeClone(reflectionId, setPortal)
             }
             commitLocalUpdate(atmosphere, (store) => {
-              store.get(reflectionId)!.setValue(false, 'isDropping').setValue(null, 'remoteDrag')
+              store
+                .get(reflectionId)!
+                .setValue(false, 'isDropping')
+                .setValue(null, 'remoteDrag')
             })
           },
           remoteDrag ? Times.REFLECTION_REMOTE_DROP_DURATION : Times.REFLECTION_DROP_DURATION
@@ -189,12 +192,12 @@ const useDragAndDrop = (
     drag.targets.length = 0
     drag.prevTargetId = ''
     const targetGroupId = getTargetGroupId(e)
-    const targetType =
+    const targetType: DragReflectionDropTargetTypeEnum | null =
       targetGroupId && reflectionGroupId !== targetGroupId
-        ? DragReflectionDropTargetTypeEnum.REFLECTION_GROUP
+        ? 'REFLECTION_GROUP'
         : !targetGroupId && reflectionCount > 0
-          ? DragReflectionDropTargetTypeEnum.REFLECTION_GRID
-          : null
+        ? 'REFLECTION_GRID'
+        : null
     handleDrop(atmosphere, reflectionId, drag, targetType, targetGroupId)
   })
 
@@ -257,9 +260,8 @@ const useDragAndDrop = (
     }
     if (!drag.clone) return
     drag.clientY = clientY
-    drag.clone.style.transform = `translate(${clientX - drag.cardOffsetX}px,${
-      clientY - drag.cardOffsetY
-    }px)`
+    drag.clone.style.transform = `translate(${clientX - drag.cardOffsetX}px,${clientY -
+      drag.cardOffsetY}px)`
     const dropZoneEl = findDropZoneFromEvent(e)
     if (dropZoneEl !== drag.dropZoneEl) {
       drag.dropZoneEl = dropZoneEl

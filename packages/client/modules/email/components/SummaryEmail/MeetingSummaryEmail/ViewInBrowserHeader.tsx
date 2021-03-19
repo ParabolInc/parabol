@@ -1,10 +1,10 @@
-import {PALETTE} from 'parabol-client/styles/paletteV2'
+import {PALETTE} from 'parabol-client/styles/paletteV3'
 import {FONT_FAMILY} from 'parabol-client/styles/typographyV2'
 import React from 'react'
 import {MeetingSummaryReferrer} from './MeetingSummaryEmail'
 
 const bannerLink = {
-  color: `${PALETTE.TEXT_GRAY} !important`,
+  color: `${PALETTE.SLATE_600} !important`,
   cursor: 'pointer',
   fontFamily: FONT_FAMILY.SANS_SERIF,
   fontSize: '11px',

@@ -1,9 +1,10 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import {NewMeetingPhaseTypeEnum} from 'parabol-client/types/graphql'
 import findStageById from 'parabol-client/utils/meetings/findStageById'
 import getRethink from '../../database/rethinkDriver'
-import GenericMeetingPhase from '../../database/types/GenericMeetingPhase'
+import GenericMeetingPhase, {
+  NewMeetingPhaseTypeEnum
+} from '../../database/types/GenericMeetingPhase'
 import GenericMeetingStage from '../../database/types/GenericMeetingStage'
 import {getUserId} from '../../utils/authorization'
 import publish from '../../utils/publish'
@@ -31,16 +32,9 @@ const resetMeetingToStage = {
     const viewerId = getUserId(authToken)
     const meeting = await dataLoader.get('newMeetings').load(meetingId)
     if (!meeting) return standardError(new Error('Meeting not found'), {userId: viewerId})
-    const {
-      defaultFacilitatorUserId,
-      facilitatorUserId,
-      phases,
-      teamId,
-      meetingType,
-      meetingCount
-    } = meeting
+    const {createdBy, facilitatorUserId, phases, teamId, meetingType, meetingCount} = meeting
     if (viewerId !== facilitatorUserId) {
-      if (viewerId !== defaultFacilitatorUserId)
+      if (viewerId !== createdBy)
         return standardError(new Error('Not meeting facilitator'), {userId: viewerId})
       return standardError(new Error('Not meeting facilitator anymore'), {userId: viewerId})
     }
@@ -54,7 +48,7 @@ const resetMeetingToStage = {
       return standardError(new Error('Stage has not started'), {userId: viewerId})
     if (!resetToStage.isComplete)
       return standardError(new Error('Stage has not finished'), {userId: viewerId})
-    if (resetToStage.phaseType !== NewMeetingPhaseTypeEnum.group)
+    if ((resetToStage.phaseType as NewMeetingPhaseTypeEnum) !== 'group')
       return standardError(new Error('Resetting to this stage type is not supported'), {
         userId: viewerId
       })

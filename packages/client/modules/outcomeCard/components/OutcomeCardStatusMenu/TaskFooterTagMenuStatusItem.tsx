@@ -7,7 +7,7 @@ import MenuItemDot from '../../../../components/MenuItemDot'
 import MenuItemLabel from '../../../../components/MenuItemLabel'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import UpdateTaskMutation from '../../../../mutations/UpdateTaskMutation'
-import {AreaEnum, TaskStatusEnum} from '../../../../types/graphql'
+import {AreaEnum, TaskStatusEnum} from '~/__generated__/UpdateTaskMutation.graphql'
 import {taskStatusColors, taskStatusLabels} from '../../../../utils/taskStatus'
 
 interface Props {

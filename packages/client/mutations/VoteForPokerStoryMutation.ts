@@ -1,9 +1,11 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {IEstimateStage} from '../types/graphql'
 import {StandardMutation} from '../types/relayMutations'
 import createProxyRecord from '../utils/relay/createProxyRecord'
-import {VoteForPokerStoryMutation as TVoteForPokerStoryMutation} from '../__generated__/VoteForPokerStoryMutation.graphql'
+import {
+  VoteForPokerStoryMutation as TVoteForPokerStoryMutation,
+  VoteForPokerStoryMutationResponse
+} from '../__generated__/VoteForPokerStoryMutation.graphql'
 
 graphql`
   fragment VoteForPokerStoryMutation_meeting on VoteForPokerStorySuccess {
@@ -30,6 +32,10 @@ const mutation = graphql`
   }
 `
 
+type Stage = NonNullable<
+  NonNullable<VoteForPokerStoryMutationResponse>['voteForPokerStory']['stage']
+>
+
 const VoteForPokerStoryMutation: StandardMutation<TVoteForPokerStoryMutation> = (
   atmosphere,
   variables,
@@ -41,7 +47,8 @@ const VoteForPokerStoryMutation: StandardMutation<TVoteForPokerStoryMutation> = 
     optimisticUpdater: (store) => {
       const {stageId, score} = variables
       const {viewerId} = atmosphere
-      const stage = store.get<IEstimateStage>(stageId)
+      const stage = store.get<Stage>(stageId)
+      if (!stage) return
       const viewer = store.getRoot().getLinkedRecord('viewer')
       if (!stage || !viewer) return
       const scores = stage.getLinkedRecords('scores') || []
@@ -64,10 +71,10 @@ const VoteForPokerStoryMutation: StandardMutation<TVoteForPokerStoryMutation> = 
           existingScoreIdx === -1
             ? [...scores, optimisticScore]
             : [
-              ...scores.slice(0, existingScoreIdx),
-              optimisticScore,
-              ...scores.slice(existingScoreIdx + 1)
-            ]
+                ...scores.slice(0, existingScoreIdx),
+                optimisticScore,
+                ...scores.slice(existingScoreIdx + 1)
+              ]
         stage.setLinkedRecords(nextScores, 'scores')
       } else {
         if (existingScoreIdx === -1) return

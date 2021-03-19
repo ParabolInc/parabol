@@ -2,7 +2,7 @@ import crypto from 'crypto'
 import promisify from 'es6-promisify'
 import {GraphQLID, GraphQLList, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel, Threshold} from 'parabol-client/types/constEnums'
-import {SuggestedActionTypeEnum} from 'parabol-client/types/graphql'
+import {SuggestedActionTypeEnum} from '../../../client/types/constEnums'
 import getRethink from '../../database/rethinkDriver'
 import NotificationTeamInvitation from '../../database/types/NotificationTeamInvitation'
 import TeamInvitation from '../../database/types/TeamInvitation'
@@ -57,7 +57,10 @@ export default {
       // RESOLUTION
       const subOptions = {mutatorId, operationId}
       const [users, team, inviter] = await Promise.all([
-        r.table('User').getAll(r.args(invitees), {index: 'email'}).run(),
+        r
+          .table('User')
+          .getAll(r.args(invitees), {index: 'email'})
+          .run(),
         dataLoader.get('teams').load(teamId),
         dataLoader.get('users').load(viewerId)
       ])
@@ -84,7 +87,10 @@ export default {
           token: tokens[idx]
         })
       })
-      await r.table('TeamInvitation').insert(teamInvitationsToInsert).run()
+      await r
+        .table('TeamInvitation')
+        .insert(teamInvitationsToInsert)
+        .run()
 
       // remove suggested action, if any
       let removedSuggestedActionId
@@ -109,7 +115,10 @@ export default {
         }
       })
       if (notificationsToInsert.length > 0) {
-        await r.table('Notification').insert(notificationsToInsert).run()
+        await r
+          .table('Notification')
+          .insert(notificationsToInsert)
+          .run()
       }
 
       const bestMeeting = await getBestInvitationMeeting(teamId, meetingId, dataLoader)

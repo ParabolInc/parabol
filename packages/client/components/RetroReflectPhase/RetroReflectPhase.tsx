@@ -5,7 +5,6 @@ import useCallbackRef from '~/hooks/useCallbackRef'
 import {RetroReflectPhase_meeting} from '~/__generated__/RetroReflectPhase_meeting.graphql'
 import useBreakpoint from '../../hooks/useBreakpoint'
 import {Breakpoint} from '../../types/constEnums'
-import {NewMeetingPhaseTypeEnum} from '../../types/graphql'
 import {phaseLabelLookup} from '../../utils/meetings/lookups'
 import MeetingContent from '../MeetingContent'
 import MeetingHeaderAndPhase from '../MeetingHeaderAndPhase'
@@ -41,7 +40,7 @@ const RetroReflectPhase = (props: Props) => {
           isMeetingSidebarCollapsed={!showSidebar}
           toggleSidebar={toggleSidebar}
         >
-          <PhaseHeaderTitle>{phaseLabelLookup[NewMeetingPhaseTypeEnum.reflect]}</PhaseHeaderTitle>
+          <PhaseHeaderTitle>{phaseLabelLookup.reflect}</PhaseHeaderTitle>
           <PhaseHeaderDescription>
             {'Add anonymous reflections for each prompt'}
           </PhaseHeaderDescription>

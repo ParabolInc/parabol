@@ -3,8 +3,7 @@ import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import useActiveTopTemplate from '../../../hooks/useActiveTopTemplate'
-import {PALETTE} from '../../../styles/paletteV2'
-import {MeetingTypeEnum} from '../../../types/graphql'
+import {PALETTE} from '../../../styles/paletteV3'
 import {ReflectTemplateListOrg_viewer} from '../../../__generated__/ReflectTemplateListOrg_viewer.graphql'
 import ReflectTemplateItem from './ReflectTemplateItem'
 const TemplateList = styled('ul')({
@@ -14,9 +13,9 @@ const TemplateList = styled('ul')({
 })
 
 const Message = styled('div')({
-  border: `1px dashed ${PALETTE.BORDER_GRAY}`,
+  border: `1px dashed ${PALETTE.SLATE_400}`,
   borderRadius: 4,
-  color: PALETTE.TEXT_GRAY,
+  color: PALETTE.SLATE_600,
   fontSize: 14,
   fontStyle: 'italic',
   lineHeight: '20px',
@@ -31,10 +30,10 @@ const ReflectTemplateListOrg = (props: Props) => {
   const {viewer} = props
   const team = viewer.team!
   const {id: teamId, meetingSettings} = team
-  const activeTemplateId = meetingSettings.activeTemplate?.id ?? "-tmp"
+  const activeTemplateId = meetingSettings.activeTemplate?.id ?? '-tmp'
   const organizationTemplates = meetingSettings.organizationTemplates!
   const {edges} = organizationTemplates
-  useActiveTopTemplate(edges, activeTemplateId, teamId, true, MeetingTypeEnum.retrospective)
+  useActiveTopTemplate(edges, activeTemplateId, teamId, true, 'retrospective')
 
   if (edges.length === 0) {
     return <Message>{'No other teams in your organization are sharing a template.'}</Message>
@@ -64,7 +63,8 @@ export default createFragmentContainer(ReflectTemplateListOrg, {
         id
         meetingSettings(meetingType: retrospective) {
           ... on RetrospectiveMeetingSettings {
-            organizationTemplates(first: 20) @connection(key: "ReflectTemplateListOrg_organizationTemplates") {
+            organizationTemplates(first: 20)
+              @connection(key: "ReflectTemplateListOrg_organizationTemplates") {
               edges {
                 node {
                   ...ReflectTemplateItem_template

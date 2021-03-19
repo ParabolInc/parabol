@@ -7,7 +7,7 @@ import Icon from '../../../components/Icon'
 import Tab from '../../../components/Tab/Tab'
 import Tabs from '../../../components/Tabs/Tabs'
 import {desktopSidebarShadow} from '../../../styles/elevation'
-import {PALETTE} from '../../../styles/paletteV2'
+import {PALETTE} from '../../../styles/paletteV3'
 import {ReflectTemplateList_settings} from '../../../__generated__/ReflectTemplateList_settings.graphql'
 import AddNewReflectTemplate from './AddNewReflectTemplate'
 import ReflectTemplateListOrgRoot from './ReflectTemplateListOrgRoot'
@@ -25,7 +25,7 @@ const TemplateSidebar = styled('div')({
 })
 
 const Label = styled('div')({
-  color: PALETTE.TEXT_MAIN,
+  color: PALETTE.SLATE_700,
   fontSize: 20,
   fontWeight: 600,
   lineHeight: '24px',
@@ -35,7 +35,7 @@ const Label = styled('div')({
 })
 
 const StyledTabsBar = styled(Tabs)({
-  boxShadow: `inset 0 -1px 0 ${PALETTE.BORDER_LIGHTER}`,
+  boxShadow: `inset 0 -1px 0 ${PALETTE.SLATE_300}`,
   flexShrink: 0
 })
 

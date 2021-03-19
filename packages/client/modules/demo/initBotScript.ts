@@ -1,5 +1,5 @@
 import {RetroDemo} from '~/types/constEnums'
-import {DragReflectionDropTargetTypeEnum} from '../../types/graphql'
+import {DragReflectionDropTargetTypeEnum} from '~/__generated__/EndDraggingReflectionMutation.graphql'
 import {demoTeamId} from './initDB'
 
 // 3 -> 1
@@ -318,7 +318,7 @@ const initBotScript = () => {
         botId: 'bot1',
         variables: {
           reflectionId: 'botRef3',
-          dropTargetType: DragReflectionDropTargetTypeEnum.REFLECTION_GROUP,
+          dropTargetType: 'REFLECTION_GROUP' as DragReflectionDropTargetTypeEnum,
           dropTargetId: 'botGroup1',
           dragId: 'botDrag1'
         }
@@ -383,7 +383,7 @@ const initBotScript = () => {
         botId: 'bot2',
         variables: {
           reflectionId: 'botRef4',
-          dropTargetType: DragReflectionDropTargetTypeEnum.REFLECTION_GROUP,
+          dropTargetType: 'REFLECTION_GROUP' as DragReflectionDropTargetTypeEnum,
           dropTargetId: 'botGroup1',
           dragId: 'botDrag2'
         }
@@ -448,7 +448,7 @@ const initBotScript = () => {
         botId: 'bot1',
         variables: {
           reflectionId: 'botRef7',
-          dropTargetType: DragReflectionDropTargetTypeEnum.REFLECTION_GROUP,
+          dropTargetType: 'REFLECTION_GROUP' as DragReflectionDropTargetTypeEnum,
           dropTargetId: 'botGroup8',
           dragId: 'botDrag3'
         }
@@ -522,7 +522,7 @@ const initBotScript = () => {
         botId: 'bot2',
         variables: {
           reflectionId: 'botRef5',
-          dropTargetType: DragReflectionDropTargetTypeEnum.REFLECTION_GROUP,
+          dropTargetType: 'REFLECTION_GROUP' as DragReflectionDropTargetTypeEnum,
           dropTargetId: 'botGroup8',
           dragId: 'botDrag4'
         }

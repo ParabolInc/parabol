@@ -1,12 +1,13 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {RecordProxy} from 'relay-runtime'
-import {PALETTE} from '../styles/paletteV2'
-import {IEstimatePhase, IPokerMeeting, NewMeetingPhaseTypeEnum} from '../types/graphql'
+import {PALETTE} from '../styles/paletteV3'
 import {StandardMutation} from '../types/relayMutations'
 import clientTempId from '../utils/relay/clientTempId'
 import createProxyRecord from '../utils/relay/createProxyRecord'
-import {UpdatePokerScopeMutation as TUpdatePokerScopeMutation} from '../__generated__/UpdatePokerScopeMutation.graphql'
+import {
+  UpdatePokerScopeMutation as TUpdatePokerScopeMutation,
+  UpdatePokerScopeMutationResponse
+} from '../__generated__/UpdatePokerScopeMutation.graphql'
 
 graphql`
   fragment UpdatePokerScopeMutation_meeting on UpdatePokerScopeSuccess {
@@ -68,6 +69,8 @@ const mutation = graphql`
   }
 `
 
+type Meeting = NonNullable<UpdatePokerScopeMutationResponse['updatePokerScope']['meeting']>
+
 const UpdatePokerScopeMutation: StandardMutation<TUpdatePokerScopeMutation> = (
   atmosphere,
   variables,
@@ -79,13 +82,12 @@ const UpdatePokerScopeMutation: StandardMutation<TUpdatePokerScopeMutation> = (
     optimisticUpdater: (store) => {
       const {viewerId} = atmosphere
       const {meetingId, updates} = variables
-      const meeting = store.get<IPokerMeeting>(meetingId)
+      const meeting = store.get<Meeting>(meetingId)
       if (!meeting) return
       const teamId = meeting.getValue('teamId') || ''
       const phases = meeting.getLinkedRecords('phases')
-      const estimatePhase = phases.find(
-        (phase) => phase.getValue('phaseType') === NewMeetingPhaseTypeEnum.ESTIMATE
-      ) as RecordProxy<IEstimatePhase>
+      const estimatePhase = phases.find((phase) => phase.getValue('phaseType') === 'ESTIMATE')
+      if (!estimatePhase) return
       const stages = estimatePhase.getLinkedRecords('stages')
       const [firstStage] = stages
       const dimensionRefIds = [] as string[]
@@ -97,11 +99,11 @@ const UpdatePokerScopeMutation: StandardMutation<TUpdatePokerScopeMutation> = (
         const prevDimensionRefIds = stagesForServiceTaskId.map((stage) => {
           const dimensionRef = stage.getLinkedRecord('dimensionRef')
           return dimensionRef?.getValue('id') ?? ''
-        })
+        }) as string[]
         dimensionRefIds.push(...prevDimensionRefIds)
       } else {
         const value = createProxyRecord(store, 'TemplateScaleValue', {
-          color: PALETTE.BACKGROUND_GRAY,
+          color: PALETTE.SLATE_600,
           label: '#'
         })
         const scale = createProxyRecord(store, 'TemplateScaleRef', {})

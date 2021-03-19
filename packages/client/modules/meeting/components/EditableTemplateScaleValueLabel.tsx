@@ -4,7 +4,7 @@ import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import EditableText from '../../../components/EditableText'
 import Legitity from '../../../validation/Legitity'
-import {PALETTE} from '~/styles/paletteV2'
+import {PALETTE} from '~/styles/paletteV3'
 import UpdatePokerTemplateScaleValueMutation from '~/mutations/UpdatePokerTemplateScaleValueMutation'
 import {EditableTemplateScaleValueLabel_scaleValue} from '~/__generated__/EditableTemplateScaleValueLabel_scaleValue.graphql'
 import {EditableTemplateScaleValueLabel_scale} from '~/__generated__/EditableTemplateScaleValueLabel_scale.graphql'
@@ -13,7 +13,7 @@ import useMutationProps from '../../../hooks/useMutationProps'
 import isSpecialPokerLabel from '../../../utils/isSpecialPokerLabel'
 
 const StyledEditableText = styled(EditableText)<{disabled: boolean | undefined}>(({disabled}) => ({
-  fontFamily: PALETTE.TEXT_MAIN,
+  fontFamily: PALETTE.SLATE_700,
   fontSize: 14,
   lineHeight: '24px',
   padding: 0,
@@ -41,7 +41,11 @@ const EditableTemplateScaleValueLabel = (props: Props) => {
 
     const oldScaleValue = {label, color}
     const newScaleValue = {label: newLabel, color}
-    UpdatePokerTemplateScaleValueMutation(atmosphere, {scaleId, oldScaleValue, newScaleValue}, {}, onError, onCompleted)
+    UpdatePokerTemplateScaleValueMutation(
+      atmosphere,
+      {scaleId, oldScaleValue, newScaleValue},
+      {onError, onCompleted}
+    )
   }
 
   const legitify = (value: string) => {
@@ -50,9 +54,13 @@ const EditableTemplateScaleValueLabel = (props: Props) => {
       .required('Please enter a value')
       .max(2, 'Value cannot be longer than 2 characters')
       .test((mVal) => {
-        const isDupe = mVal ? scale.values.find(
-          (aScaleValue) => aScaleValue.id !== scaleValueId && aScaleValue.label.toLowerCase() === mVal.toLowerCase()
-        ) : undefined
+        const isDupe = mVal
+          ? scale.values.find(
+            (aScaleValue) =>
+              aScaleValue.id !== scaleValueId &&
+              aScaleValue.label.toLowerCase() === mVal.toLowerCase()
+          )
+          : undefined
         return isDupe ? 'That value already exists' : undefined
       })
   }

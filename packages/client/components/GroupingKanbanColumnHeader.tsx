@@ -1,6 +1,6 @@
 import React, {MouseEvent} from 'react'
 import styled from '@emotion/styled'
-import {PALETTE} from '~/styles/paletteV2'
+import {PALETTE} from '~/styles/paletteV3'
 import FlatButton from './FlatButton'
 import {MenuPosition} from '~/hooks/useCoords'
 import useTooltip from '~/hooks/useTooltip'
@@ -8,7 +8,6 @@ import Icon from './Icon'
 import RetroPrompt from './RetroPrompt'
 import {Breakpoint} from '~/types/constEnums'
 import useBreakpoint from '~/hooks/useBreakpoint'
-import {NewMeetingPhaseTypeEnum} from '../types/graphql'
 
 const AddReflectionButton = styled(FlatButton)({
   border: 0,
@@ -30,14 +29,14 @@ const ButtonGroup = styled('div')({
 const ColumnColorDrop = styled('div')<{groupColor: string}>(({groupColor}) => ({
   backgroundColor: groupColor,
   borderRadius: '50%',
-  boxShadow: `0 0 0 1px ${PALETTE.BACKGROUND_MAIN}`,
+  boxShadow: `0 0 0 1px ${PALETTE.SLATE_200}`,
   marginRight: 8,
   height: 8,
   minWidth: 8
 }))
 
 const ColumnHeader = styled('div')({
-  color: PALETTE.TEXT_MAIN,
+  color: PALETTE.SLATE_700,
   display: 'flex',
   justifyContent: 'space-between',
   lineHeight: '24px',
@@ -105,7 +104,7 @@ const GroupingKanbanColumnHeader = (props: Props) => {
           {question}
         </Prompt>
         <ButtonGroup>
-          {phaseType === NewMeetingPhaseTypeEnum.group && (
+          {phaseType === 'group' && (
             <AddReflectionButton
               dataCy={`add-reflection-${question}`}
               aria-label={'Add a reflection'}

@@ -240,6 +240,19 @@ const backupOrganization = {
             notification: (r
               .table('Notification')
               .getAll(r.args(userIds), {index: 'userId'}) as any)
+              .filter((notification) =>
+                r.branch(
+                  notification('teamId')
+                    .default(null)
+                    .ne(null),
+                  r.args(teamIds).contains(notification('teamId')),
+                  notification('orgId')
+                    .default(null)
+                    .ne(null),
+                  r.args(orgIds).contains(notification('orgId')),
+                  true
+                )
+              )
               .coerceTo('array')
               .do((items) =>
                 r

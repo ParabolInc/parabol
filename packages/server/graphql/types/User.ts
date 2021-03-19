@@ -7,9 +7,7 @@ import {
   GraphQLObjectType,
   GraphQLString
 } from 'graphql'
-import {TierEnum as TierEnumType} from 'parabol-client/types/graphql'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
-import {OrgUserRole} from '../../../client/types/graphql'
 import getRethink from '../../database/rethinkDriver'
 import {getUserId, isSuperUser, isTeamMember} from '../../utils/authorization'
 import getDomainFromEmail from '../../utils/getDomainFromEmail'
@@ -96,7 +94,7 @@ const User = new GraphQLObjectType<any, GQLContext>({
       resolve: async ({id: userId}, _args, {dataLoader}) => {
         const organizationUsers = await dataLoader.get('organizationUsersByUserId').load(userId)
         return organizationUsers.some(
-          (organizationUser) => organizationUser.role === OrgUserRole.BILLING_LEADER
+          (organizationUser) => organizationUser.role === 'BILLING_LEADER'
         )
       }
     },
@@ -373,7 +371,7 @@ const User = new GraphQLObjectType<any, GQLContext>({
       resolve: async (source, _args, {dataLoader}) => {
         const organizationUsers = await dataLoader.get('organizationUsersByUserId').load(source.id)
         const isAnyMemberOfPaidOrg = organizationUsers.some(
-          (organizationUser) => organizationUser.tier !== TierEnumType.personal
+          (organizationUser) => organizationUser.tier !== 'personal'
         )
         if (isAnyMemberOfPaidOrg) return null
         return source.overLimitCopy

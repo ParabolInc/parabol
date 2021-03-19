@@ -1,5 +1,4 @@
 import {GraphQLID, GraphQLInt, GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
-import {IActionMeeting, MeetingTypeEnum} from 'parabol-client/types/graphql'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import {getUserId} from '../../utils/authorization'
 import filterTasksByMeeting from '../../utils/filterTasksByMeeting'
@@ -10,7 +9,7 @@ import AgendaItem from './AgendaItem'
 import NewMeeting, {newMeetingFields} from './NewMeeting'
 import Task from './Task'
 
-const ActionMeeting = new GraphQLObjectType<IActionMeeting, GQLContext>({
+const ActionMeeting = new GraphQLObjectType<any, GQLContext>({
   name: 'ActionMeeting',
   interfaces: () => [NewMeeting],
   description: 'An action meeting',
@@ -64,9 +63,7 @@ const ActionMeeting = new GraphQLObjectType<IActionMeeting, GQLContext>({
       type: new GraphQLNonNull(ActionMeetingSettings),
       description: 'The settings that govern the action meeting',
       resolve: async ({teamId}, _args, {dataLoader}) => {
-        return await dataLoader
-          .get('meetingSettingsByType')
-          .load({teamId, meetingType: MeetingTypeEnum.action})
+        return await dataLoader.get('meetingSettingsByType').load({teamId, meetingType: 'action'})
       }
     },
     taskCount: {

@@ -3,7 +3,7 @@ import React, {forwardRef, Ref} from 'react'
 import {TransitionStatus} from '~/hooks/useTransition'
 import EndCheckInMutation from '~/mutations/EndCheckInMutation'
 import EndRetrospectiveMutation from '~/mutations/EndRetrospectiveMutation'
-import {PALETTE} from '~/styles/paletteV2'
+import {PALETTE} from '~/styles/paletteV3'
 import useAtmosphere from '../hooks/useAtmosphere'
 import {MenuPosition} from '../hooks/useCoords'
 import useMutationProps from '../hooks/useMutationProps'
@@ -17,7 +17,7 @@ import BottomNavIconLabel from './BottomNavIconLabel'
 import Icon from './Icon'
 
 const FlagIcon = styled(Icon)({
-  color: PALETTE.BACKGROUND_BLUE,
+  color: PALETTE.SKY_500,
   height: 24
 })
 

@@ -34,7 +34,7 @@ const EditableTemplatePrompt = (props: Props) => {
     const {error, value: question} = validate(rawQuestion)
     if (error) return
     submitMutation()
-    RenameReflectTemplatePromptMutation(atmosphere, {promptId, question}, {}, onError, onCompleted)
+    RenameReflectTemplatePromptMutation(atmosphere, {promptId, question}, {onError, onCompleted})
   }
 
   const legitify = (value: string) => {

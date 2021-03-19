@@ -20,7 +20,7 @@ import {MenuPosition} from '../../../../hooks/useCoords'
 import useMenu from '../../../../hooks/useMenu'
 import {MenuMutationProps} from '../../../../hooks/useMutationProps'
 import {DECELERATE, fadeIn} from '../../../../styles/animation'
-import {PALETTE} from '../../../../styles/paletteV2'
+import {PALETTE} from '../../../../styles/paletteV3'
 import {ICON_SIZE} from '../../../../styles/typographyV2'
 import {AuthToken} from '../../../../types/AuthToken'
 import {Breakpoint, Providers} from '../../../../types/constEnums'
@@ -29,8 +29,8 @@ import withMutationProps, {WithMutationProps} from '../../../../utils/relay/with
 import {AtlassianProviderRow_viewer} from '../../../../__generated__/AtlassianProviderRow_viewer.graphql'
 
 const StyledButton = styled(FlatButton)({
-  borderColor: PALETTE.BORDER_LIGHT,
-  color: PALETTE.TEXT_MAIN,
+  borderColor: PALETTE.SLATE_400,
+  color: PALETTE.SLATE_700,
   fontSize: 14,
   fontWeight: 600,
   minWidth: 36,
@@ -61,7 +61,7 @@ const useFreshToken = (accessToken: string | undefined, retry: () => void) => {
 }
 
 const MenuButton = styled(FlatButton)({
-  color: PALETTE.PRIMARY_MAIN,
+  color: PALETTE.GRAPE_700,
   fontSize: ICON_SIZE.MD18,
   height: 24,
   userSelect: 'none',
@@ -96,7 +96,7 @@ const SiteAvatar = styled('img')<{idx: number}>(({idx}) => ({
 }))
 
 const ProviderName = styled('div')({
-  color: PALETTE.TEXT_MAIN,
+  color: PALETTE.SLATE_700,
   fontSize: 16,
   fontWeight: 600,
   lineHeight: '24px',

@@ -1,4 +1,3 @@
-import {TimelineEventEnum} from 'parabol-client/types/graphql'
 import TimelineEvent from './TimelineEvent'
 
 interface Input {
@@ -18,7 +17,7 @@ export default class TimelineEventPokerComplete extends TimelineEvent {
   constructor(input: Input) {
     super({
       ...input,
-      type: 'POKER_COMPLETE' as TimelineEventEnum
+      type: 'POKER_COMPLETE'
     })
     const {teamId, orgId, meetingId} = input
     this.teamId = teamId

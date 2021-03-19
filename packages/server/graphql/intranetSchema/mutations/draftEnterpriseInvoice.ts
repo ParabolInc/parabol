@@ -1,5 +1,4 @@
 import {GraphQLID, GraphQLInt, GraphQLNonNull} from 'graphql'
-import {OrgUserRole, TierEnum} from 'parabol-client/types/graphql'
 import getRethink from '../../../database/rethinkDriver'
 import User from '../../../database/types/User'
 import db from '../../../db'
@@ -42,13 +41,13 @@ const getBillingLeaderUser = async (
       .table('OrganizationUser')
       .getAll(userId, {index: 'userId'})
       .filter({removedAt: null, orgId})
-      .update({role: OrgUserRole.BILLING_LEADER})
+      .update({role: 'BILLING_LEADER'})
       .run()
     return user
   }
   const organizationUsers = await dataLoader.get('organizationUsersByOrgId').load(orgId)
   const billingLeaders = organizationUsers.filter(
-    (organizationUser) => organizationUser.role === OrgUserRole.BILLING_LEADER
+    (organizationUser) => organizationUser.role === 'BILLING_LEADER'
   )
   const billingLeaderUserIds = billingLeaders.map(({userId}) => userId)
   const billingLeaderUsers = await db.readMany('User', billingLeaderUserIds)
@@ -105,11 +104,11 @@ export default {
     }
 
     const {stripeId, stripeSubscriptionId, tier} = org
-    if (tier === TierEnum.enterprise) {
+    if (tier === 'enterprise') {
       return {error: {message: 'Org is already enterprise'}}
     }
     // TODO handle upgrade from PRO to ENTERPRISE
-    if (tier !== TierEnum.personal) {
+    if (tier !== 'personal') {
       return {error: {message: 'Upgrading from PRO not supported. requires PR'}}
     }
     if (stripeSubscriptionId) {
@@ -148,6 +147,7 @@ export default {
       plan
     )
 
+<<<<<<< HEAD
     await Promise.all([
       r({
         updatedOrg: r
@@ -178,6 +178,28 @@ export default {
         orgId
       )
     ])
+=======
+    await r({
+      updatedOrg: r
+        .table('Organization')
+        .get(orgId)
+        .update({
+          periodEnd: fromEpochSeconds(subscription.current_period_end),
+          periodStart: fromEpochSeconds(subscription.current_period_start),
+          stripeSubscriptionId: subscription.id,
+          tier: 'enterprise',
+          updatedAt: now
+        }),
+      teamIds: r
+        .table('Team')
+        .getAll(orgId, {index: 'orgId'})
+        .update({
+          isPaid: true,
+          tier: 'enterprise',
+          updatedAt: now
+        })
+    }).run()
+>>>>>>> master
 
     await Promise.all([
       setUserTierForOrgId(orgId),

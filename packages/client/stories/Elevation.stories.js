@@ -24,7 +24,7 @@
 //   backgroundColor: 'white',
 //   boxShadow: `${depth}`,
 //   borderRadius: '.125rem',
-//   color: '#82809A',
+//   color: 'gray',
 //   height: demoCardSize,
 //   padding: '1rem',
 //   width: demoCardSize,

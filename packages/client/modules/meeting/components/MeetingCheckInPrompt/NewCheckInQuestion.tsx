@@ -13,12 +13,11 @@ import {MenuPosition} from '../../../../hooks/useCoords'
 import useEditorState from '../../../../hooks/useEditorState'
 import useTooltip from '../../../../hooks/useTooltip'
 import UpdateNewCheckInQuestionMutation from '../../../../mutations/UpdateNewCheckInQuestionMutation'
-import {PALETTE} from '../../../../styles/paletteV2'
+import {PALETTE} from '../../../../styles/paletteV3'
 import {ICON_SIZE} from '../../../../styles/typographyV2'
-import {ICheckInPhase} from '../../../../types/graphql'
 
 const CogIcon = styled(Icon)({
-  color: PALETTE.TEXT_MAIN,
+  color: PALETTE.SLATE_700,
   cursor: 'pointer',
   display: 'block',
   height: 24,
@@ -58,7 +57,7 @@ const NewCheckInQuestion = (props: Props) => {
   const {meeting} = props
   const [isEditing, setIsEditing] = useState(false)
   const {id: meetingId, localPhase, facilitatorUserId} = meeting
-  const {checkInQuestion} = localPhase as ICheckInPhase
+  const {checkInQuestion} = localPhase
   const [editorState, setEditorState] = useEditorState(checkInQuestion)
   const updateQuestion = (nextEditorState: EditorState) => {
     const wasFocused = editorState.getSelection().getHasFocus()

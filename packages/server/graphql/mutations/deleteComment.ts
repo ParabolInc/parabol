@@ -5,8 +5,12 @@ import {getUserId} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import {GQLContext} from '../graphql'
 import DeleteCommentPayload from '../types/DeleteCommentPayload'
-import {IDeleteCommentOnMutationArguments} from 'parabol-client/types/graphql'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
+
+type DeleteCommentMutationVariables = {
+  commentId: string
+  meetingId: string
+}
 
 const deleteComment = {
   type: GraphQLNonNull(DeleteCommentPayload),
@@ -21,7 +25,7 @@ const deleteComment = {
   },
   resolve: async (
     _source,
-    {commentId, meetingId}: IDeleteCommentOnMutationArguments,
+    {commentId, meetingId}: DeleteCommentMutationVariables,
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) => {
     const r = await getRethink()

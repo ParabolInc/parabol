@@ -1,5 +1,5 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
-import {AuthIdentityTypeEnum} from 'parabol-client/types/graphql'
+import {AuthIdentityTypeEnum} from '../../../client/types/constEnums'
 import getRethink from '../../database/rethinkDriver'
 import AuthIdentityLocal from '../../database/types/AuthIdentityLocal'
 import AuthToken from '../../database/types/AuthToken'

@@ -1,10 +1,10 @@
 import styled from '@emotion/styled'
 import React from 'react'
-import {PALETTE} from '~/styles/paletteV2'
+import {PALETTE} from '~/styles/paletteV3'
 
 const Wrapper = styled('div')({
   alignItems: 'center',
-  background: PALETTE.BACKGROUND_GRAY,
+  background: PALETTE.SLATE_600,
   borderRadius: 4,
   color: '#fff',
   display: 'flex',

@@ -1,6 +1,6 @@
 import React from 'react'
 import styled from '@emotion/styled'
-import {PALETTE} from '../styles/paletteV2'
+import {PALETTE} from '../styles/paletteV3'
 import Icon from './Icon'
 
 interface Props {
@@ -11,7 +11,7 @@ interface Props {
 }
 
 const StyledIcon = styled(Icon)<{disabled: boolean | undefined}>(({disabled}) => ({
-  color: PALETTE.TEXT_GRAY,
+  color: PALETTE.SLATE_600,
   cursor: disabled ? 'not-allowed' : 'pointer',
   display: 'block',
   opacity: disabled ? 0.38 : 1,

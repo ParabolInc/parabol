@@ -3,14 +3,13 @@ import Parser from 'json2csv/lib/JSON2CSVParser' // only grab the sync parser
 import withAtmosphere, {
   WithAtmosphereProps
 } from 'parabol-client/decorators/withAtmosphere/withAtmosphere'
-import {PALETTE} from 'parabol-client/styles/paletteV2'
+import {PALETTE} from 'parabol-client/styles/paletteV3'
 import extractTextFromDraftString from 'parabol-client/utils/draftjs/extractTextFromDraftString'
 import withMutationProps, {WithMutationProps} from 'parabol-client/utils/relay/withMutationProps'
 import {ExportToCSVQuery} from 'parabol-client/__generated__/ExportToCSVQuery.graphql'
 import React, {Component} from 'react'
 import {fetchQuery} from 'react-relay'
 import {ExternalLinks, PokerCards} from '../../../../types/constEnums'
-import {NewMeetingPhaseTypeEnum} from '../../../../types/graphql'
 import getJiraCloudIdAndKey from '../../../../utils/getJiraCloudIdAndKey'
 import AnchorIfEmail from './MeetingSummaryEmail/AnchorIfEmail'
 import EmailBorderBottom from './MeetingSummaryEmail/EmailBorderBottom'
@@ -155,7 +154,7 @@ interface CSVActionRow {
 const label = 'Export to CSV'
 
 const iconLinkLabel = {
-  color: PALETTE.TEXT_MAIN,
+  color: PALETTE.SLATE_700,
   fontSize: '13px',
   paddingTop: 32
 }
@@ -183,9 +182,7 @@ class ExportToCSV extends Component<Props> {
   handlePokerMeeting(meeting: Meeting) {
     const rows = [] as CSVPokerRow[]
     const {phases} = meeting
-    const estimatePhase = phases!.find(
-      (phase) => phase.phaseType === NewMeetingPhaseTypeEnum.ESTIMATE
-    )!
+    const estimatePhase = phases!.find((phase) => phase.phaseType === 'ESTIMATE')!
     const stages = estimatePhase.stages!
     stages.forEach((stage) => {
       const {finalScore, dimensionRef, story, scores, serviceTaskId} = stage

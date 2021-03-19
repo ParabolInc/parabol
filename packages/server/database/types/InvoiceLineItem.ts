@@ -1,6 +1,11 @@
-import {InvoiceLineItemEnum} from 'parabol-client/types/graphql'
 import generateUID from '../../generateUID'
 import InvoiceLineItemDetail from './InvoiceLineItemDetail'
+
+export type InvoiceLineItemEnum =
+  | 'ADDED_USERS'
+  | 'INACTIVITY_ADJUSTMENTS'
+  | 'OTHER_ADJUSTMENTS'
+  | 'REMOVED_USERS'
 
 interface Input {
   id?: string

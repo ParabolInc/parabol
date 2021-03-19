@@ -1,9 +1,7 @@
 import {commitMutation} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
-import {Disposable} from 'relay-runtime'
-import Atmosphere from '../Atmosphere'
-import {CompletedHandler, ErrorHandler} from '../types/relayMutations'
-import {IRenamePokerTemplateScaleOnMutationArguments} from '../types/graphql'
+import {StandardMutation} from '../types/relayMutations'
+import {RenamePokerTemplateScaleMutation as TRenamePokerTemplateScaleMutation} from '~/__generated__/RenamePokerTemplateScaleMutation.graphql'
 
 graphql`
   fragment RenamePokerTemplateScaleMutation_scale on RenamePokerTemplateScalePayload {
@@ -21,14 +19,12 @@ const mutation = graphql`
   }
 `
 
-const RenamePokerTemplateScaleMutation = (
-  atmosphere: Atmosphere,
-  variables: IRenamePokerTemplateScaleOnMutationArguments,
-  _context: {},
-  onError: ErrorHandler,
-  onCompleted: CompletedHandler
-): Disposable => {
-  return commitMutation(atmosphere, {
+const RenamePokerTemplateScaleMutation: StandardMutation<TRenamePokerTemplateScaleMutation> = (
+  atmosphere,
+  variables,
+  {onError, onCompleted}
+) => {
+  return commitMutation<TRenamePokerTemplateScaleMutation>(atmosphere, {
     mutation,
     variables,
     onCompleted,

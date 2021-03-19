@@ -1,15 +1,16 @@
 import graphql from 'babel-plugin-relay/macro'
 import React, {ReactElement, Suspense} from 'react'
 import {createFragmentContainer} from 'react-relay'
-import {RetroMeeting_meeting} from '~/__generated__/RetroMeeting_meeting.graphql'
+import {
+  NewMeetingPhaseTypeEnum,
+  RetroMeeting_meeting
+} from '~/__generated__/RetroMeeting_meeting.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMeeting from '../hooks/useMeeting'
 import LocalAtmosphere from '../modules/demo/LocalAtmosphere'
 import NewMeetingAvatarGroup from '../modules/meeting/components/MeetingAvatarGroup/NewMeetingAvatarGroup'
 import {RetroDemo} from '../types/constEnums'
-import {ValueOf} from '../types/generics'
-import {NewMeetingPhaseTypeEnum} from '../types/graphql'
-import lazyPreload from '../utils/lazyPreload'
+import lazyPreload, {LazyExoticPreload} from '../utils/lazyPreload'
 import MeetingControlBar from './MeetingControlBar'
 import MeetingStyles from './MeetingStyles'
 import ResponsiveDashSidebar from './ResponsiveDashSidebar'
@@ -20,24 +21,18 @@ interface Props {
 }
 
 const phaseLookup = {
-  [NewMeetingPhaseTypeEnum.checkin]: lazyPreload(() =>
+  checkin: lazyPreload(() =>
     import(/* webpackChunkName: 'NewMeetingCheckIn' */ './NewMeetingCheckIn')
   ),
-  [NewMeetingPhaseTypeEnum.reflect]: lazyPreload(() =>
+  reflect: lazyPreload(() =>
     import(/* webpackChunkName: 'RetroReflectPhase' */ './RetroReflectPhase/RetroReflectPhase')
   ),
-  [NewMeetingPhaseTypeEnum.group]: lazyPreload(() =>
-    import(/* webpackChunkName: 'RetroGroupPhase' */ './RetroGroupPhase')
-  ),
-  [NewMeetingPhaseTypeEnum.vote]: lazyPreload(() =>
-    import(/* webpackChunkName: 'RetroVotePhase' */ './RetroVotePhase')
-  ),
-  [NewMeetingPhaseTypeEnum.discuss]: lazyPreload(() =>
+  group: lazyPreload(() => import(/* webpackChunkName: 'RetroGroupPhase' */ './RetroGroupPhase')),
+  vote: lazyPreload(() => import(/* webpackChunkName: 'RetroVotePhase' */ './RetroVotePhase')),
+  discuss: lazyPreload(() =>
     import(/* webpackChunkName: 'RetroDiscussPhase' */ './RetroDiscussPhase')
   )
-}
-
-type PhaseComponent = ValueOf<typeof phaseLookup>
+} as Record<NewMeetingPhaseTypeEnum, LazyExoticPreload<any>>
 
 export interface RetroMeetingPhaseProps {
   toggleSidebar: () => void
@@ -65,8 +60,7 @@ const RetroMeeting = (props: Props) => {
   const {id: meetingId, showSidebar, viewerMeetingMember, localPhase} = meeting
   const allowVideo = !!viewerMeetingMember?.user?.featureFlags?.video
   const localPhaseType = localPhase?.phaseType
-
-  const Phase = phaseLookup[localPhaseType] as PhaseComponent
+  const Phase = phaseLookup[localPhaseType]
 
   const isDemoStageComplete =
     meetingId === RetroDemo.MEETING_ID

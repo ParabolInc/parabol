@@ -1,6 +1,5 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {PokerCards, SubscriptionChannel} from 'parabol-client/types/constEnums'
-import {MeetingTypeEnum, NewMeetingPhaseTypeEnum} from 'parabol-client/types/graphql'
 import isPhaseComplete from 'parabol-client/utils/meetings/isPhaseComplete'
 import EstimatePhase from '../../database/types/EstimatePhase'
 import EstimateUserScore from '../../database/types/EstimateUserScore'
@@ -42,28 +41,21 @@ const pokerRevealVotes = {
     if (!meeting) {
       return {error: {message: 'Meeting not found'}}
     }
-    const {
-      endedAt,
-      phases,
-      meetingType,
-      teamId,
-      defaultFacilitatorUserId,
-      facilitatorUserId
-    } = meeting
+    const {endedAt, phases, meetingType, teamId, createdBy, facilitatorUserId} = meeting
     if (!isTeamMember(authToken, teamId)) {
       return {error: {message: 'Not on the team'}}
     }
     if (endedAt) {
       return {error: {message: 'Meeting has ended'}}
     }
-    if (meetingType !== MeetingTypeEnum.poker) {
+    if (meetingType !== 'poker') {
       return {error: {message: 'Not a poker meeting'}}
     }
-    if (isPhaseComplete(NewMeetingPhaseTypeEnum.ESTIMATE, phases)) {
+    if (isPhaseComplete('ESTIMATE', phases)) {
       return {error: {message: 'Estimate phase is already complete'}}
     }
     if (viewerId !== facilitatorUserId) {
-      if (viewerId !== defaultFacilitatorUserId) {
+      if (viewerId !== createdBy) {
         return {
           error: {message: 'Not meeting facilitator'}
         }
@@ -74,9 +66,7 @@ const pokerRevealVotes = {
     }
 
     // VALIDATION
-    const estimatePhase = phases.find(
-      (phase) => phase.phaseType === NewMeetingPhaseTypeEnum.ESTIMATE
-    )! as EstimatePhase
+    const estimatePhase = phases.find((phase) => phase.phaseType === 'ESTIMATE')! as EstimatePhase
     const {stages} = estimatePhase
     const stage = stages.find((stage) => stage.id === stageId)
     if (!stage) {

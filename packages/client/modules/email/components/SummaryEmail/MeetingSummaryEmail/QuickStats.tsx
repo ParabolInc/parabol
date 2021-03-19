@@ -1,5 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
-import {PALETTE} from 'parabol-client/styles/paletteV2'
+import {PALETTE} from 'parabol-client/styles/paletteV3'
 import {FONT_FAMILY} from 'parabol-client/styles/typographyV2'
 import {ACTION, RETROSPECTIVE} from 'parabol-client/utils/constants'
 import {QuickStats_meeting} from 'parabol-client/__generated__/QuickStats_meeting.graphql'
@@ -11,7 +11,7 @@ import makeRetroStats from './makeRetroStats'
 
 const statLabel = (idx, len) =>
 ({
-  color: PALETTE.TEXT_MAIN,
+  color: PALETTE.SLATE_700,
   fontFamily: FONT_FAMILY.SANS_SERIF,
   borderTopLeftRadius: idx === 0 ? 4 : 0,
   borderTopRightRadius: idx === len - 1 ? 4 : 0,
@@ -25,7 +25,7 @@ const descriptionLabel = (idx, len) =>
   fontFamily: FONT_FAMILY.SANS_SERIF,
   borderBottomLeftRadius: idx === 0 ? 4 : 0,
   borderBottomRightRadius: idx === len - 1 ? 4 : 0,
-  color: PALETTE.TEXT_GRAY,
+  color: PALETTE.SLATE_600,
   fontSize: 10,
   fontWeight: 600,
   paddingBottom: 12,
@@ -64,7 +64,7 @@ const QuickStats = (props: Props) => {
                 key={idx}
                 width='25%'
                 align='center'
-                bgcolor={stat.label ? PALETTE.BACKGROUND_MAIN : undefined}
+                bgcolor={stat.label ? PALETTE.SLATE_200 : undefined}
                 style={statLabel(idx, stats.length)}
               >
                 {stat.value}
@@ -79,7 +79,7 @@ const QuickStats = (props: Props) => {
                 key={idx}
                 width='25%'
                 align='center'
-                bgcolor={stat.label ? PALETTE.BACKGROUND_MAIN : undefined}
+                bgcolor={stat.label ? PALETTE.SLATE_200 : undefined}
                 style={descriptionLabel(idx, stats.length)}
               >
                 {stat.label}

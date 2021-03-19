@@ -1,4 +1,3 @@
-import {INewFeatureBroadcast} from 'parabol-client/types/graphql'
 import {r} from 'rethinkdb-ts'
 import MeetingMember from '../database/types/MeetingMember'
 import Organization from '../database/types/Organization'
@@ -101,7 +100,7 @@ export type RethinkSchema = {
     index: 'facilitatorUserId' | 'teamId' | 'templateId'
   }
   NewFeature: {
-    type: INewFeatureBroadcast
+    type: any
     index: ''
   }
   Notification: {

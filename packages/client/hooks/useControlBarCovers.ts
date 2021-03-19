@@ -1,5 +1,6 @@
 import {RefObject, useEffect} from 'react'
 import {BezierCurve, Breakpoint, DiscussionThreadEnum, NavSidebar} from '~/types/constEnums'
+import {MeetingTypeEnum} from '../__generated__/SummarySheet_meeting.graphql'
 import useResizeObserver from './useResizeObserver'
 
 interface ControlBarCoverable {
@@ -40,9 +41,11 @@ export const useCoverable = (
   ref: RefObject<HTMLDivElement>,
   height: number,
   parentRef?: RefObject<HTMLDivElement>,
-  columnsRef?: RefObject<HTMLDivElement>
+  columnsRef?: RefObject<HTMLDivElement>,
+  meetingType?: MeetingTypeEnum
 ) => {
   const updateCoverables = () => {
+    if (meetingType === 'poker') return
     const el = ref.current
     if (!el) return
     if (window.innerWidth < Breakpoint.SINGLE_REFLECTION_COLUMN) return
@@ -78,6 +81,7 @@ export const useCoverable = (
     }
   }, [])
 
+  if (meetingType === 'poker') return true
   return coverables[id]?.isExpanded ?? false
 }
 

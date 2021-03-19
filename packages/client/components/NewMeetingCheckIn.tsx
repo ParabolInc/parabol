@@ -6,9 +6,8 @@ import {NewMeetingCheckIn_meeting} from '~/__generated__/NewMeetingCheckIn_meeti
 import useAtmosphere from '../hooks/useAtmosphere'
 import NewMeetingCheckInPrompt from '../modules/meeting/components/MeetingCheckInPrompt/NewMeetingCheckInPrompt'
 import MeetingFacilitationHint from '../modules/meeting/components/MeetingFacilitationHint/MeetingFacilitationHint'
-import {PALETTE} from '../styles/paletteV2'
+import {PALETTE} from '../styles/paletteV3'
 import {ICON_SIZE} from '../styles/typographyV2'
-import {NewMeetingPhaseTypeEnum} from '../types/graphql'
 import findStageAfterId from '../utils/meetings/findStageAfterId'
 import {phaseLabelLookup} from '../utils/meetings/lookups'
 import Icon from './Icon'
@@ -32,7 +31,7 @@ const Hint = styled('div')({
 })
 
 const StyledIcon = styled(Icon)({
-  color: PALETTE.TEXT_GRAY,
+  color: PALETTE.SLATE_600,
   display: 'block',
   margin: '0 auto 4px',
   width: ICON_SIZE.MD24
@@ -65,7 +64,7 @@ const NewMeetingCheckIn = (props: Props) => {
           isMeetingSidebarCollapsed={!showSidebar}
           toggleSidebar={toggleSidebar}
         >
-          <PhaseHeaderTitle>{phaseLabelLookup[NewMeetingPhaseTypeEnum.checkin]}</PhaseHeaderTitle>
+          <PhaseHeaderTitle>{phaseLabelLookup.checkin}</PhaseHeaderTitle>
         </MeetingTopBar>
         <PhaseWrapper>
           <NewMeetingCheckInPrompt meeting={meeting} teamMember={teamMember} />

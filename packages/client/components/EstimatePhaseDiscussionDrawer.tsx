@@ -1,13 +1,12 @@
 import styled from '@emotion/styled'
-import React, {RefObject, useRef} from 'react'
+import React from 'react'
 import graphql from 'babel-plugin-relay/macro'
 import {createFragmentContainer} from 'react-relay'
-import {useCoverable} from '~/hooks/useControlBarCovers'
 import {desktopSidebarShadow} from '~/styles/elevation'
 import {EstimatePhaseDiscussionDrawer_meeting} from '~/__generated__/EstimatePhaseDiscussionDrawer_meeting.graphql'
-import {BezierCurve, DiscussionThreadEnum, MeetingControlBarEnum, ZIndex} from '../types/constEnums'
+import {BezierCurve, DiscussionThreadEnum, ZIndex} from '../types/constEnums'
 import DiscussionThreadRoot from './DiscussionThreadRoot'
-import {PALETTE} from '~/styles/paletteV2'
+import {PALETTE} from '~/styles/paletteV3'
 import LabelHeading from './LabelHeading/LabelHeading'
 import PlainButton from './PlainButton/PlainButton'
 import Icon from './Icon'
@@ -46,7 +45,7 @@ const ThreadColumn = styled('div')({
 })
 
 const CloseIcon = styled(Icon)({
-  color: PALETTE.TEXT_GRAY,
+  color: PALETTE.SLATE_600,
   cursor: 'pointer',
   fontSize: ICON_SIZE.MD24,
   '&:hover': {
@@ -56,7 +55,7 @@ const CloseIcon = styled(Icon)({
 
 const Header = styled('div')({
   alignItems: 'center',
-  borderBottom: `1px solid ${PALETTE.BORDER_LIGHTER}`,
+  borderBottom: `1px solid ${PALETTE.SLATE_300}`,
   display: 'flex',
   justifyContent: 'space-between',
   padding: '8px 8px 8px 12px',
@@ -77,20 +76,15 @@ interface Props {
   isOpen: boolean
   meeting: EstimatePhaseDiscussionDrawer_meeting
   onToggle: () => void
-  meetingContentRef: RefObject<HTMLDivElement>
 }
 
 const EstimatePhaseDiscussionDrawer = (props: Props) => {
-  const {isDesktop, isOpen, meeting, meetingContentRef, onToggle} = props
-  const {id: meetingId, endedAt, localStage} = meeting
+  const {isDesktop, isOpen, meeting, onToggle} = props
+  const {id: meetingId, localStage} = meeting
   const {serviceTaskId} = localStage
-  const ref = useRef<HTMLDivElement>(null)
-  const meetingControlBarBottom = 16
-  const coverableHeight = isDesktop ? MeetingControlBarEnum.HEIGHT + meetingControlBarBottom : 0
-  useCoverable('drawer', ref, coverableHeight, meetingContentRef) || !!endedAt
 
   return (
-    <Drawer isDesktop={isDesktop} isOpen={isOpen} ref={ref}>
+    <Drawer isDesktop={isDesktop} isOpen={isOpen}>
       <Header>
         <HeaderLabel>{'Discussion'}</HeaderLabel>
         <StyledCloseButton onClick={onToggle}>
@@ -98,11 +92,7 @@ const EstimatePhaseDiscussionDrawer = (props: Props) => {
         </StyledCloseButton>
       </Header>
       <ThreadColumn>
-        <DiscussionThreadRoot
-          meetingId={meetingId}
-          threadSourceId={serviceTaskId!}
-          meetingContentRef={ref}
-        />
+        <DiscussionThreadRoot meetingId={meetingId} threadSourceId={serviceTaskId!} />
       </ThreadColumn>
     </Drawer>
   )

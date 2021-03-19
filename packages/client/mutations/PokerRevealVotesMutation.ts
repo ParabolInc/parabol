@@ -9,6 +9,7 @@ graphql`
       isVoting
       scores {
         ...PokerVotingRow_scores
+        label
       }
     }
   }

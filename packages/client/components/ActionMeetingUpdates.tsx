@@ -3,7 +3,6 @@ import graphql from 'babel-plugin-relay/macro'
 import React, {useMemo} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import useAtmosphere from '../hooks/useAtmosphere'
-import {AreaEnum} from '../types/graphql'
 import isTaskPrivate from '../utils/isTaskPrivate'
 import toTeamMemberId from '../utils/relay/toTeamMemberId'
 import {ActionMeetingUpdates_meeting} from '../__generated__/ActionMeetingUpdates_meeting.graphql'
@@ -68,7 +67,7 @@ const ActionMeetingUpdates = (props: Props) => {
           <StyledColumnsWrapper>
             <InnerColumnsWrapper>
               <TaskColumns
-                area={AreaEnum.meeting}
+                area='meeting'
                 isMyMeetingSection={userId === viewerId}
                 meetingId={meetingId}
                 myTeamMemberId={toTeamMemberId(teamId, viewerId)}

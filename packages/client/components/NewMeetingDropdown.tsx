@@ -4,7 +4,7 @@ import DropdownToggleV2 from './DropdownToggleV2'
 import MenuToggleV2Text from './MenuToggleV2Text'
 import styled from '@emotion/styled'
 import {NewMeeting} from '../types/constEnums'
-import {PALETTE} from '~/styles/paletteV2'
+import {PALETTE} from '~/styles/paletteV3'
 
 interface Props {
   className?: string
@@ -20,7 +20,7 @@ const Dropdown = styled(DropdownToggleV2)({
   backgroundColor: '#fff',
   width: NewMeeting.CONTROLS_WIDTH,
   ':hover': {
-    backgroundColor: PALETTE.BACKGROUND_MAIN_LIGHTENED
+    backgroundColor: PALETTE.SLATE_100
   }
 })
 

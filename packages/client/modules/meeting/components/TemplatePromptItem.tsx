@@ -8,7 +8,7 @@ import useMutationProps from '~/hooks/useMutationProps'
 import {TemplatePromptItem_prompts} from '~/__generated__/TemplatePromptItem_prompts.graphql'
 import Icon from '../../../components/Icon'
 import RemoveReflectTemplatePromptMutation from '../../../mutations/RemoveReflectTemplatePromptMutation'
-import {PALETTE} from '../../../styles/paletteV2'
+import {PALETTE} from '../../../styles/paletteV3'
 import {ICON_SIZE} from '../../../styles/typographyV2'
 import {TemplatePromptItem_prompt} from '../../../__generated__/TemplatePromptItem_prompt.graphql'
 import EditableTemplateDescription from './EditableTemplateDescription'
@@ -32,7 +32,7 @@ const PromptItem = styled('div')<StyledProps & {isOwner: boolean}>(
   ({isOwner, isHover, isDragging}) => ({
     alignItems: 'flex-start',
     backgroundColor:
-      isOwner && (isHover || isDragging) ? PALETTE.BACKGROUND_MAIN_LIGHTENED : undefined,
+      isOwner && (isHover || isDragging) ? PALETTE.SLATE_100 : undefined,
     cursor: isOwner ? 'pointer' : undefined,
     display: 'flex',
     fontSize: 14,
@@ -43,7 +43,7 @@ const PromptItem = styled('div')<StyledProps & {isOwner: boolean}>(
 )
 
 const RemovePromptIcon = styled(Icon)<StyledProps>(({isHover}) => ({
-  color: PALETTE.TEXT_GRAY,
+  color: PALETTE.SLATE_600,
   cursor: 'pointer',
   display: 'block',
   fontSize: ICON_SIZE.MD18,
@@ -84,7 +84,7 @@ const TemplatePromptItem = (props: Props) => {
       return
     }
     submitMutation()
-    RemoveReflectTemplatePromptMutation(atmosphere, {promptId}, {}, onError, onCompleted)
+    RemoveReflectTemplatePromptMutation(atmosphere, {promptId}, {onError, onCompleted})
   }
 
   return (

@@ -1,6 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
 import {readInlineData} from 'relay-runtime'
-import {MeetingTypeEnum} from '~/types/graphql'
 import isDemoRoute from '~/utils/isDemoRoute'
 import {useMeeting_meeting} from '~/__generated__/useMeeting_meeting.graphql'
 import {Breakpoint} from '../types/constEnums'
@@ -17,7 +16,6 @@ import useHandleMenuClick from './useHandleMenuClick'
 import useMediaRoom from './useMediaRoom'
 import useMeetingLocalState from './useMeetingLocalState'
 import useMobileSidebarDefaultClosed from './useMobileSidebarDefaultClosed'
-import useResumeFacilitation from './useResumeFacilitation'
 import useToggleSidebar from './useToggleSidebar'
 
 const useMeeting = (meetingRef: any) => {
@@ -28,7 +26,6 @@ const useMeeting = (meetingRef: any) => {
         ...useGotoNext_meeting
         ...useGotoPrev_meeting
         ...useMeetingLocalState_meeting
-        ...useResumeFacilitation_meeting
         ...useAutoCheckIn_meeting
         id
         meetingType
@@ -47,8 +44,7 @@ const useMeeting = (meetingRef: any) => {
   const gotoStageId = useGotoStageId(meeting)
   const handleGotoNext = useGotoNext(meeting, gotoStageId)
   const safeRoute = useMeetingLocalState(meeting)
-  useResumeFacilitation(meeting)
-  useEndMeetingHotkey(meetingId, meetingType as MeetingTypeEnum)
+  useEndMeetingHotkey(meetingId, meetingType)
   useGotoNextHotkey(handleGotoNext.gotoNext)
   useGotoPrevHotkey(meeting, gotoStageId)
   // save a few cycles

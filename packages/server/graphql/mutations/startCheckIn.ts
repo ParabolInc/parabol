@@ -1,8 +1,8 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import {IStartCheckInOnMutationArguments, MeetingTypeEnum} from 'parabol-client/types/graphql'
 import getRethink from '../../database/rethinkDriver'
 import ActionMeetingMember from '../../database/types/ActionMeetingMember'
+import {MeetingTypeEnum} from '../../database/types/Meeting'
 import MeetingAction from '../../database/types/MeetingAction'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
@@ -25,7 +25,7 @@ export default {
   },
   async resolve(
     _source,
-    {teamId}: IStartCheckInOnMutationArguments,
+    {teamId}: {teamId: string},
     {authToken, socketId: mutatorId, dataLoader}: GQLContext
   ) {
     const r = await getRethink()

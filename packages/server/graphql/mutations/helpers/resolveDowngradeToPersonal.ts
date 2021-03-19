@@ -1,4 +1,3 @@
-import {TierEnum} from 'parabol-client/types/graphql'
 import getRethink from '../../../database/rethinkDriver'
 import segmentIo from '../../../utils/segmentIo'
 import setUserTierForOrgId from '../../../utils/setUserTierForOrgId'
@@ -26,7 +25,7 @@ const resolveDowngradeToPersonal = async (
         .table('Organization')
         .get(orgId)
         .update({
-          tier: TierEnum.personal,
+          tier: 'personal',
           periodEnd: now,
           stripeSubscriptionId: null,
           updatedAt: now
@@ -36,7 +35,7 @@ const resolveDowngradeToPersonal = async (
         .getAll(orgId, {index: 'orgId'})
         .update(
           {
-            tier: TierEnum.personal,
+            tier: 'personal',
             isPaid: true,
             updatedAt: now
           },
@@ -46,7 +45,7 @@ const resolveDowngradeToPersonal = async (
     }).run(),
     updateTeamByOrgId(
       {
-        tier: TierEnum.personal,
+        tier: 'personal',
         isPaid: true,
         updatedAt: now,
       },

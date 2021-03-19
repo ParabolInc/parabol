@@ -1,9 +1,8 @@
 import {DataLoaderWorker} from '../../graphql'
 import AtlassianServerManager from '../../../utils/AtlassianServerManager'
-import {Omit} from 'parabol-client/types/generics'
-import {ISuggestedIntegrationJira} from 'parabol-client/types/graphql'
 import makeJiraProjectName from 'parabol-client/utils/makeJiraProjectName'
 import makeSuggestedIntegrationId from 'parabol-client/utils/makeSuggestedIntegrationId'
+import {TaskServiceEnum} from '../../../database/types/Task'
 
 const fetchAtlassianProjects = async (
   dataLoader: DataLoaderWorker,
@@ -22,8 +21,8 @@ const fetchAtlassianProjects = async (
   }
 
   const cloudIds = sites.map((site) => site.id)
-  const atlassianProjects = [] as Omit<ISuggestedIntegrationJira, '__typename' | 'remoteProject'>[]
-  const service = 'jira' as any // TaskServiceEnum.jira
+  const atlassianProjects = [] as any
+  const service: TaskServiceEnum = 'jira'
   await manager.getProjects(cloudIds, (err, res) => {
     if (err) {
       console.error(err)

@@ -1,17 +1,17 @@
 import {GraphQLID, GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
-import {MeetingTypeEnum} from 'parabol-client/types/graphql'
-import {getUserId, isTeamMember} from '../../utils/authorization'
-import standardError from '../../utils/standardError'
 import connectionDefinitions from '../connectionDefinitions'
 import {GQLContext} from '../graphql'
-import MeetingTemplate, {meetingTemplateFields} from './MeetingTemplate'
 import TemplateDimension from './TemplateDimension'
+import MeetingTemplate, {meetingTemplateFields} from './MeetingTemplate'
+import {getUserId, isTeamMember} from '../../utils/authorization'
+import standardError from '../../utils/standardError'
+import {MeetingTypeEnum} from '../../database/types/Meeting'
 
 const PokerTemplate = new GraphQLObjectType<any, GQLContext>({
   name: 'PokerTemplate',
   description: 'The team-specific templates for sprint poker meeting',
   interfaces: () => [MeetingTemplate],
-  isTypeOf: ({type}) => type === MeetingTypeEnum.poker,
+  isTypeOf: ({type}) => (type as MeetingTypeEnum) === 'poker',
   fields: () => ({
     ...meetingTemplateFields(),
     dimensions: {

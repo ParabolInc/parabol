@@ -7,7 +7,7 @@ import useAtmosphere from '../hooks/useAtmosphere'
 import useIsInitializing from '../hooks/useIsInitializing'
 import useIsPokerVotingClosing from '../hooks/useIsPokerVotingClosing'
 import PokerResetDimensionMutation from '../mutations/PokerResetDimensionMutation'
-import {PALETTE} from '../styles/paletteV2'
+import {PALETTE} from '../styles/paletteV3'
 import {EstimateDimensionColumn_meeting} from '../__generated__/EstimateDimensionColumn_meeting.graphql'
 import {EstimateDimensionColumn_stage} from '../__generated__/EstimateDimensionColumn_stage.graphql'
 import LinkButton from './LinkButton'
@@ -41,7 +41,7 @@ const StyledLinkButton = styled(LinkButton)({
 })
 
 const StyledError = styled('div')({
-  color: PALETTE.ERROR_MAIN,
+  color: PALETTE.TOMATO_500,
   fontSize: 12,
   fontWeight: 600,
   paddingRight: 16
@@ -89,12 +89,12 @@ const EstimateDimensionColumn = (props: Props) => {
           isInitialStageRender={isInitialStageRender}
         />
       ) : (
-          <PokerDiscussVoting
-            meeting={meeting}
-            stage={stage}
-            isInitialStageRender={isInitialStageRender}
-          />
-        )}
+        <PokerDiscussVoting
+          meeting={meeting}
+          stage={stage}
+          isInitialStageRender={isInitialStageRender}
+        />
+      )}
     </ColumnInner>
   )
 }

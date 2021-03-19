@@ -5,7 +5,7 @@ import {createFragmentContainer} from 'react-relay'
 import usePokerAvatarOverflow from '~/hooks/userPokerAvatarOverflow'
 import useTransition from '../hooks/useTransition'
 import EstimateUserScoreId from '../shared/gqlIds/EstimateUserScoreId'
-import {PALETTE} from '../styles/paletteV2'
+import {PALETTE} from '../styles/paletteV3'
 import {PokerCards} from '../types/constEnums'
 import isTempId from '../utils/relay/isTempId'
 import {PokerVotingAvatarGroup_scores} from '../__generated__/PokerVotingAvatarGroup_scores.graphql'
@@ -13,7 +13,7 @@ import PokerVotingAvatar from './PokerVotingAvatar'
 import PokerVotingOverflow from './PokerVotingOverflow'
 
 const NoVotesHeaderLabel = styled('div')({
-  color: PALETTE.TEXT_GRAY,
+  color: PALETTE.SLATE_600,
   fontSize: 14,
   fontWeight: 600,
   lineHeight: '24px',

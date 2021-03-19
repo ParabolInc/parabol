@@ -1,7 +1,7 @@
 import bcrypt from 'bcrypt'
 import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import {Security, Threshold} from 'parabol-client/types/constEnums'
-import {AuthIdentityTypeEnum} from 'parabol-client/types/graphql'
+import {AuthIdentityTypeEnum} from '../../../client/types/constEnums'
 import getRethink from '../../database/rethinkDriver'
 import AuthIdentityLocal from '../../database/types/AuthIdentityLocal'
 import AuthToken from '../../database/types/AuthToken'

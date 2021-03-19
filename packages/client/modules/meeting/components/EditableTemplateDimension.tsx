@@ -6,13 +6,13 @@ import RenamePokerTemplateDimensionMutation from '../../../mutations/RenamePoker
 import EditableText from '../../../components/EditableText'
 import Legitity from '../../../validation/Legitity'
 import {EditableTemplateDimension_dimensions} from '../../../__generated__/EditableTemplateDimension_dimensions.graphql'
-import {PALETTE} from '~/styles/paletteV2'
+import {PALETTE} from '~/styles/paletteV3'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
 import useScrollIntoView from '../../../hooks/useScrollIntoVIew'
 
 const StyledEditableText = styled(EditableText)({
-  fontFamily: PALETTE.TEXT_MAIN,
+  fontFamily: PALETTE.SLATE_700,
   fontSize: 14,
   lineHeight: '24px',
   padding: 0
@@ -37,7 +37,7 @@ const EditableTemplateDimension = (props: Props) => {
     const {error, value: name} = validate(rawDimensionName)
     if (error) return
     submitMutation()
-    RenamePokerTemplateDimensionMutation(atmosphere, {dimensionId, name}, {}, onError, onCompleted)
+    RenamePokerTemplateDimensionMutation(atmosphere, {dimensionId, name}, {onError, onCompleted})
   }
 
   const legitify = (value: string) => {
@@ -47,7 +47,8 @@ const EditableTemplateDimension = (props: Props) => {
       .max(100, 'That dimension name is probably long enough')
       .test((mVal) => {
         const isDupe = dimensions.find(
-          (dimension) => dimension.id !== dimensionId && dimension.name.toLowerCase() === mVal.toLowerCase()
+          (dimension) =>
+            dimension.id !== dimensionId && dimension.name.toLowerCase() === mVal.toLowerCase()
         )
         return isDupe ? 'That dimension already exists' : undefined
       })

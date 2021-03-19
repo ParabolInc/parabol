@@ -7,7 +7,6 @@ import getScoredTemplates from '../queries/helpers/getScoredTemplates'
 import resolveSelectedTemplate from '../queries/helpers/resolveSelectedTemplate'
 import TeamMeetingSettings, {teamMeetingSettingsFields} from './TeamMeetingSettings'
 import PokerTemplate, {PokerTemplateConnection} from './PokerTemplate'
-import {MeetingTypeEnum} from 'parabol-client/types/graphql'
 
 const PokerMeetingSettings = new GraphQLObjectType<any, GQLContext>({
   name: 'PokerMeetingSettings',
@@ -30,7 +29,7 @@ const PokerMeetingSettings = new GraphQLObjectType<any, GQLContext>({
       resolve: async ({teamId}, _args, {dataLoader}) => {
         const templates = await dataLoader
           .get('meetingTemplatesByType')
-          .load({teamId, meetingType: MeetingTypeEnum.poker})
+          .load({teamId, meetingType: 'poker'})
         const scoredTemplates = await getScoredTemplates(templates, 0.9)
         return scoredTemplates
       }
@@ -53,9 +52,7 @@ const PokerMeetingSettings = new GraphQLObjectType<any, GQLContext>({
         const templates = await dataLoader.get('meetingTemplatesByOrgId').load(orgId)
         const organizationTemplates = templates.filter(
           (template) =>
-            template.scope !== 'TEAM' &&
-            template.teamId !== teamId &&
-            template.type === MeetingTypeEnum.poker
+            template.scope !== 'TEAM' && template.teamId !== teamId && template.type === 'poker'
         )
         const scoredTemplates = await getScoredTemplates(organizationTemplates, 0.8)
         return connectionFromTemplateArray(scoredTemplates, first, after)
@@ -75,7 +72,7 @@ const PokerMeetingSettings = new GraphQLObjectType<any, GQLContext>({
       },
       resolve: async ({teamId}, {first, after}, {dataLoader}) => {
         const [publicTemplates, team] = await Promise.all([
-          db.read('publicTemplates', MeetingTypeEnum.poker),
+          db.read('publicTemplates', 'poker'),
           dataLoader.get('teams').load(teamId)
         ])
         const {orgId} = team

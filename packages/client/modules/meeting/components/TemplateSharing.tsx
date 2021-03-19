@@ -6,7 +6,7 @@ import Icon from '../../../components/Icon'
 import {MenuPosition} from '../../../hooks/useCoords'
 import useMenu from '../../../hooks/useMenu'
 import useTooltip from '../../../hooks/useTooltip'
-import {PALETTE} from '../../../styles/paletteV2'
+import {PALETTE} from '../../../styles/paletteV3'
 import {ICON_SIZE} from '../../../styles/typographyV2'
 import lazyPreload from '../../../utils/lazyPreload'
 import {TemplateSharing_template} from '../../../__generated__/TemplateSharing_template.graphql'
@@ -19,7 +19,7 @@ const SelectSharingScopeDropdown = lazyPreload(() =>
 )
 
 const HR = styled('hr')({
-  backgroundColor: PALETTE.BORDER_LIGHT,
+  backgroundColor: PALETTE.SLATE_400,
   border: 'none',
   flexShrink: 0,
   height: 1,
@@ -29,7 +29,7 @@ const HR = styled('hr')({
 })
 
 const DropdownDecoratorIcon = styled(Icon)({
-  color: PALETTE.TEXT_GRAY,
+  color: PALETTE.SLATE_600,
   fontSize: ICON_SIZE.MD18,
   height: ICON_SIZE.MD24,
   lineHeight: ICON_SIZE.MD24,
@@ -48,7 +48,7 @@ const DropdownIcon = styled(Icon)({
 })
 
 const DropdownBlock = styled('div')<{disabled: boolean}>(({disabled}) => ({
-  color: PALETTE.TEXT_MAIN,
+  color: PALETTE.SLATE_700,
   cursor: disabled ? 'not-allowed' : 'pointer',
   alignItems: 'center',
   display: 'flex',
@@ -57,7 +57,7 @@ const DropdownBlock = styled('div')<{disabled: boolean}>(({disabled}) => ({
   margin: '8px auto 8px 0',
   userSelect: 'none',
   ':hover': {
-    color: disabled ? undefined : PALETTE.TEXT_MAIN_HOVER
+    color: disabled ? undefined : PALETTE.SLATE_900
   }
 }))
 
