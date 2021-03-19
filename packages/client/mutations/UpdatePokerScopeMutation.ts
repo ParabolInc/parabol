@@ -16,6 +16,7 @@ graphql`
         ...useMakeStageSummaries_phase
         ... on EstimatePhase {
           stages {
+            ...PokerEstimatePhaseStage
             ...PokerCardDeckStage
             ...EstimatePhaseAreaStage
             ...JiraFieldDimensionDropdown_stage

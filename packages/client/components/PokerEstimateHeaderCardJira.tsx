@@ -6,13 +6,13 @@ import useBreakpoint from '~/hooks/useBreakpoint'
 import {Elevation} from '~/styles/elevation'
 import {PALETTE} from '~/styles/paletteV3'
 import {Breakpoint} from '~/types/constEnums'
-import {DeepNonNullable} from '../types/generics'
 import {ICON_SIZE} from '../styles/typographyV2'
+import {DeepNonNullable} from '../types/generics'
+import getJiraCloudIdAndKey from '../utils/getJiraCloudIdAndKey'
 import {PokerEstimateHeaderCardJira_stage} from '../__generated__/PokerEstimateHeaderCardJira_stage.graphql'
 import CardButton from './CardButton'
 import Icon from './Icon'
 import IconLabel from './IconLabel'
-import getJiraCloudIdAndKey from '../utils/getJiraCloudIdAndKey'
 const HeaderCardWrapper = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   display: 'flex',
   padding: isDesktop ? '0px 16px 4px' : '0px 8px 4px'
@@ -45,16 +45,18 @@ const CardTitleWrapper = styled('div')({
   width: '100%'
 })
 
-const CardDescription = styled('div')<{isExpanded: boolean, maxHeight: number}>(({isExpanded, maxHeight}) => ({
-  color: PALETTE.SLATE_700,
-  fontWeight: 'normal',
-  lineHeight: '20px',
-  fontSize: 14,
-  margin: 0,
-  maxHeight: isExpanded ? maxHeight : 30,
-  overflowY: 'auto',
-  transition: 'all 300ms'
-}))
+const CardDescription = styled('div')<{isExpanded: boolean; maxHeight: number}>(
+  ({isExpanded, maxHeight}) => ({
+    color: PALETTE.SLATE_700,
+    fontWeight: 'normal',
+    lineHeight: '20px',
+    fontSize: 14,
+    margin: 0,
+    maxHeight: isExpanded ? maxHeight : 30,
+    overflowY: 'auto',
+    transition: 'all 300ms'
+  })
+)
 
 const StyledIcon = styled(Icon)({
   fontSize: ICON_SIZE.MD18,
@@ -73,8 +75,6 @@ const StyledLink = styled('a')({
 const StyledLabel = styled('span')({
   fontSize: 12
 })
-
-
 
 interface Props {
   stage: PokerEstimateHeaderCardJira_stage
@@ -106,7 +106,7 @@ const PokerEstimateHeaderCardJira = (props: Props) => {
     )
   }
   const {key, summary, descriptionHTML, url} = story as DeepNonNullable<typeof story>
-
+  console.log({story})
   return (
     <HeaderCardWrapper isDesktop={isDesktop}>
       <HeaderCard>
@@ -118,7 +118,12 @@ const PokerEstimateHeaderCardJira = (props: Props) => {
             </CardButton>
           </CardIcons>
         </CardTitleWrapper>
-        <CardDescription ref={descriptionRef} maxHeight={maxHeight} isExpanded={isExpanded} dangerouslySetInnerHTML={{__html: descriptionHTML}} />
+        <CardDescription
+          ref={descriptionRef}
+          maxHeight={maxHeight}
+          isExpanded={isExpanded}
+          dangerouslySetInnerHTML={{__html: descriptionHTML}}
+        />
         <StyledLink
           href={url}
           rel='noopener noreferrer'
@@ -133,20 +138,18 @@ const PokerEstimateHeaderCardJira = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(
-  PokerEstimateHeaderCardJira,
-  {
-    stage: graphql`
+export default createFragmentContainer(PokerEstimateHeaderCardJira, {
+  stage: graphql`
     fragment PokerEstimateHeaderCardJira_stage on EstimateStage {
       serviceTaskId
       story {
-        ...on JiraIssue {
+        ... on JiraIssue {
           key
           summary
           descriptionHTML
           url
         }
       }
-    }`
-  }
-)
+    }
+  `
+})
