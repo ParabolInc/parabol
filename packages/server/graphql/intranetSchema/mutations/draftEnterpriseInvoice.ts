@@ -147,7 +147,6 @@ export default {
       plan
     )
 
-<<<<<<< HEAD
     await Promise.all([
       r({
         updatedOrg: r
@@ -157,7 +156,7 @@ export default {
             periodEnd: fromEpochSeconds(subscription.current_period_end),
             periodStart: fromEpochSeconds(subscription.current_period_start),
             stripeSubscriptionId: subscription.id,
-            tier: TierEnum.enterprise,
+            tier: 'enterprise',
             updatedAt: now
           }),
         teamIds: r
@@ -165,41 +164,19 @@ export default {
           .getAll(orgId, {index: 'orgId'})
           .update({
             isPaid: true,
-            tier: TierEnum.enterprise,
+            tier: 'enterprise',
             updatedAt: now
           })
       }).run(),
       updateTeamByOrgId(
         {
           isPaid: true,
-          tier: TierEnum.enterprise,
+          tier: 'enterprise',
           updatedAt: now,
         },
         orgId
       )
     ])
-=======
-    await r({
-      updatedOrg: r
-        .table('Organization')
-        .get(orgId)
-        .update({
-          periodEnd: fromEpochSeconds(subscription.current_period_end),
-          periodStart: fromEpochSeconds(subscription.current_period_start),
-          stripeSubscriptionId: subscription.id,
-          tier: 'enterprise',
-          updatedAt: now
-        }),
-      teamIds: r
-        .table('Team')
-        .getAll(orgId, {index: 'orgId'})
-        .update({
-          isPaid: true,
-          tier: 'enterprise',
-          updatedAt: now
-        })
-    }).run()
->>>>>>> master
 
     await Promise.all([
       setUserTierForOrgId(orgId),
