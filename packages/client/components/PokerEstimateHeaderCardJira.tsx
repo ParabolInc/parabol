@@ -106,7 +106,6 @@ const PokerEstimateHeaderCardJira = (props: Props) => {
     )
   }
   const {key, summary, descriptionHTML, url} = story as DeepNonNullable<typeof story>
-  console.log({story})
   return (
     <HeaderCardWrapper isDesktop={isDesktop}>
       <HeaderCard>
