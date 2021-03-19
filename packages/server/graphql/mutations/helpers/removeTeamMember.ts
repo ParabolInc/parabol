@@ -10,8 +10,6 @@ import {DataLoaderWorker} from '../../graphql'
 import removeStagesFromMeetings from './removeStagesFromMeetings'
 import removeUserFromMeetingStages from './removeUserFromMeetingStages'
 import removeUserTms from '../../../postgres/queries/removeUserTms'
-import catchAndLog from '../../../postgres/utils/catchAndLog'
-import getPg from '../../../postgres/getPg'
 import updateTeamByTeamId from '../../../postgres/queries/updateTeamByTeamId'
 
 interface Options {

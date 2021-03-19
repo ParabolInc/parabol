@@ -2,8 +2,6 @@ import getRethink from '../database/rethinkDriver'
 import Team from '../database/types/Team'
 import db from '../db'
 import removeUserTms from '../postgres/queries/removeUserTms'
-import getPg from '../postgres/getPg'
-import catchAndLog from '../postgres/utils/catchAndLog'
 import updateTeamByTeamId from '../postgres/queries/updateTeamByTeamId'
 
 const safeArchiveTeam = async (teamId: string) => {
