@@ -1,6 +1,6 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel, Threshold} from 'parabol-client/types/constEnums'
-import {PALETTE} from '../../../client/styles/paletteV2'
+import {PALETTE} from '../../../client/styles/paletteV3'
 import getRethink from '../../database/rethinkDriver'
 import ReflectTemplate from '../../database/types/ReflectTemplate'
 import RetrospectivePrompt from '../../database/types/RetrospectivePrompt'
@@ -106,7 +106,7 @@ const addReflectTemplate = {
           {
             question: 'New prompt',
             description: '',
-            groupColor: PALETTE.PROMPT_GREEN
+            groupColor: PALETTE.JADE_400
           }
         ]
       }

@@ -7,7 +7,6 @@ graphql`
   fragment StartCheckInMutation_team on StartCheckInSuccess {
     meeting {
       id
-      defaultFacilitatorUserId
       name
       meetingMembers {
         user {

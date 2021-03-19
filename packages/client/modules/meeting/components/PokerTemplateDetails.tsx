@@ -5,7 +5,7 @@ import {createFragmentContainer} from 'react-relay'
 import customTemplate from '../../../../../static/images/illustrations/customTemplate.svg'
 import estimatedEffortTemplate from '../../../../../static/images/illustrations/estimatedEffortTemplate.svg'
 import wsjfTemplate from '../../../../../static/images/illustrations/wsjfTemplate.svg'
-import {PALETTE} from '../../../styles/paletteV2'
+import {PALETTE} from '../../../styles/paletteV3'
 import getTemplateList from '../../../utils/getTemplateList'
 import makeTemplateDescription from '../../../utils/makeTemplateDescription'
 import {PokerTemplateDetails_settings} from '../../../__generated__/PokerTemplateDetails_settings.graphql'
@@ -51,7 +51,7 @@ const TemplateImg = styled('img')({
 })
 
 const Description = styled('div')({
-  color: PALETTE.TEXT_MAIN,
+  color: PALETTE.SLATE_700,
   fontSize: 14,
   lineHeight: '20px'
 })

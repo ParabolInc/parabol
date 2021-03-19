@@ -32,16 +32,9 @@ const resetMeetingToStage = {
     const viewerId = getUserId(authToken)
     const meeting = await dataLoader.get('newMeetings').load(meetingId)
     if (!meeting) return standardError(new Error('Meeting not found'), {userId: viewerId})
-    const {
-      defaultFacilitatorUserId,
-      facilitatorUserId,
-      phases,
-      teamId,
-      meetingType,
-      meetingCount
-    } = meeting
+    const {createdBy, facilitatorUserId, phases, teamId, meetingType, meetingCount} = meeting
     if (viewerId !== facilitatorUserId) {
-      if (viewerId !== defaultFacilitatorUserId)
+      if (viewerId !== createdBy)
         return standardError(new Error('Not meeting facilitator'), {userId: viewerId})
       return standardError(new Error('Not meeting facilitator anymore'), {userId: viewerId})
     }

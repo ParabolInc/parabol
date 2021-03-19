@@ -6,7 +6,7 @@ import useUnusedRecords from '~/hooks/useUnusedRecords'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
 import UpdatePokerScopeMutation from '../mutations/UpdatePokerScopeMutation'
-import {PALETTE} from '../styles/paletteV2'
+import {PALETTE} from '../styles/paletteV3'
 import {Threshold} from '../types/constEnums'
 import getSelectAllTitle from '../utils/getSelectAllTitle'
 import {JiraScopingSelectAllIssues_issues} from '../__generated__/JiraScopingSelectAllIssues_issues.graphql'
@@ -30,7 +30,7 @@ const TitleAndError = styled('div')({
 })
 
 const ErrorMessage = styled('div')({
-  color: PALETTE.ERROR_MAIN,
+  color: PALETTE.TOMATO_500,
   fontWeight: 600
 })
 interface Props {
@@ -54,11 +54,11 @@ const JiraScopingSelectAllIssues = (props: Props) => {
     const limit = action === 'ADD' ? availableCountToAdd : 1e6
     const updates = updateArr.slice(0, limit).map(
       (serviceTaskId) =>
-        ({
-          service: 'jira',
-          serviceTaskId,
-          action
-        } as const)
+      ({
+        service: 'jira',
+        serviceTaskId,
+        action
+      } as const)
     )
 
     const variables = {

@@ -5,6 +5,23 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.3.0 2021-Mar-18
+
+### Fixed
+- Fix an issue where app crashes on revealing votes if there are people who did not vote #4747
+- Fix security issue #46 #4698
+- Fix user img upload #4746
+
+## 6.2.0 2021-Mar-03
+
+### Added
+- Provide feedback for old browser bugs #4752
+
+### Changed
+- TypeError: Cannot destructure property 'atlassian' of 'r' as it is undefined. #4736
+- Refactor gql2ts enums to unions #4693
+- Prevent Poker drawer from jumping up #4743
+
 ## 6.2.1 2021-Mar-04
 
 ### Fixed

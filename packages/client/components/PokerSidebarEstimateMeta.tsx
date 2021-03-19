@@ -2,7 +2,7 @@ import styled from '@emotion/styled'
 import React from 'react'
 import {MenuPosition} from '../hooks/useCoords'
 import useTooltip from '../hooks/useTooltip'
-import {PALETTE} from '../styles/paletteV2'
+import {PALETTE} from '../styles/paletteV3'
 import {BezierCurve} from '../types/constEnums'
 
 const EstimateMeta = styled('div')({
@@ -11,14 +11,14 @@ const EstimateMeta = styled('div')({
 })
 
 const EmptyProgressBar = styled('div')({
-  background: PALETTE.BACKGROUND_GRAY_50,
+  background: PALETTE.SLATE_400,
   borderRadius: 10,
   height: 4
 })
 
 const FilledProgressBar = styled(EmptyProgressBar)<{percent: number}>(({percent}) => ({
   position: 'absolute',
-  background: PALETTE.BACKGROUND_GREEN,
+  background: PALETTE.JADE_400,
   width: 24 * percent,
   top: 0,
   transition: `width 300ms ${BezierCurve.DECELERATE}`

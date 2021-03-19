@@ -7,9 +7,10 @@ import {ExternalLinks} from '../../../../types/constEnums'
 import EmptySpace from '../../components/EmptySpace/EmptySpace'
 import {emailFontFamily} from '../../styles'
 import EmailBorderBottom from './MeetingSummaryEmail/EmailBorderBottom'
+import {PALETTE} from 'parabol-client/styles/paletteV3'
 
 const message = {
-  color: '#444258',
+  color: PALETTE.SLATE_700,
   fontFamily: emailFontFamily,
   fontSize: '18px',
   lineHeight: '27px',
@@ -29,7 +30,7 @@ const meetingLinkBlock = {
 } as React.CSSProperties
 
 const meetingLink = {
-  color: '#329AE5',
+  color: PALETTE.SKY_500,
   textAlign: 'center'
 } as React.CSSProperties
 
@@ -41,7 +42,7 @@ const iconLinkBlock = {
   padding: '9px 8px'
 } as React.CSSProperties
 const iconLink = {
-  color: '#329AE5'
+  color: PALETTE.SKY_500
 } as React.CSSProperties
 
 const iconLinkIcon = {

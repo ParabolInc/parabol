@@ -3,7 +3,7 @@ import React from 'react'
 import useBreakpoint from '../hooks/useBreakpoint'
 import useRefreshInterval from '../hooks/useRefreshInterval'
 import {DECELERATE, fadeIn} from '../styles/animation'
-import {PALETTE} from '../styles/paletteV2'
+import {PALETTE} from '../styles/paletteV3'
 import {Breakpoint} from '../types/constEnums'
 import {countdown} from '../utils/date/relativeDate'
 
@@ -14,8 +14,8 @@ interface Props {
 const Gauge = styled('div')<{isTimeUp: boolean; isDesktop}>(({isTimeUp, isDesktop}) => ({
   alignItems: 'flex-end',
   animation: `${fadeIn.toString()} 300ms ${DECELERATE}`,
-  color: isTimeUp ? PALETTE.TEXT_MAIN : '#FFFFFF',
-  background: isTimeUp ? PALETTE.BACKGROUND_YELLOW : PALETTE.BACKGROUND_GREEN,
+  color: isTimeUp ? PALETTE.SLATE_700 : '#FFFFFF',
+  background: isTimeUp ? PALETTE.GOLD_300 : PALETTE.JADE_400,
   borderRadius: 4,
   display: 'flex',
   fontSize: isTimeUp ? 14 : 16,

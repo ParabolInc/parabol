@@ -1,6 +1,6 @@
-import React, {ReactNode, Ref,  RefObject, useMemo, useEffect} from 'react'
+import React, {ReactNode, Ref, RefObject, useMemo, useEffect} from 'react'
 import styled from '@emotion/styled'
-import {PALETTE} from '../../styles/paletteV2'
+import {PALETTE} from '../../styles/paletteV3'
 import {BBox} from '../../types/animations'
 import {RefCallbackInstance} from '../../types/generics'
 import {DragAttribute, ElementWidth, ZIndex} from '../../types/constEnums'
@@ -45,7 +45,7 @@ const ModalArea = styled('div')({
 
 const BackgroundBlock = styled('div')({
   position: 'absolute',
-  background: PALETTE.BACKGROUND_REFLECTION_STACK,
+  background: PALETTE.SLATE_700_80,
   borderRadius: 4,
   height: '100%',
   width: '100%',

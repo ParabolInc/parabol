@@ -11,7 +11,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {createFragmentContainer} from 'react-relay'
 import {InvoiceStatusEnum, Invoice_viewer} from '~/__generated__/Invoice_viewer.graphql'
 import styled from '@emotion/styled'
-import {PALETTE} from '../../../../styles/paletteV2'
+import {PALETTE} from '../../../../styles/paletteV3'
 import {Breakpoint} from '../../../../types/constEnums'
 import InvoiceFailedStamp from './InvoiceFailedStamp'
 import InvoiceTag from './InvoiceTag'
@@ -27,7 +27,7 @@ const chargeStatus = {
 } as Record<InvoiceStatusEnum, string>
 
 const AmountSection = styled('div')({
-  borderTop: `1px solid ${PALETTE.BORDER_INVOICE_SECTION}`,
+  borderTop: `1px solid ${PALETTE.SLATE_300}`,
   marginTop: 1,
   paddingTop: 16,
   paddingRight: 12,
@@ -56,14 +56,14 @@ const AmountLineSub = styled('div')({
 })
 
 const Wrap = styled('div')({
-  backgroundColor: PALETTE.BACKGROUND_MAIN,
+  backgroundColor: PALETTE.SLATE_200,
   overflow: 'hidden'
 })
 
 const InvoiceStyles = styled('div')({
   backgroundColor: 'white',
   boxShadow: Elevation.SHEET,
-  color: PALETTE.TEXT_MAIN,
+  color: PALETTE.SLATE_700,
   margin: '0 auto',
   maxWidth: 600,
   padding: 16,
@@ -76,7 +76,7 @@ const InvoiceStyles = styled('div')({
 
 const Panel = styled('div')({
   backgroundColor: '#FFFFFF',
-  border: `1px solid ${PALETTE.BORDER_MAIN_40}`,
+  border: `1px solid ${PALETTE.SLATE_500}`,
   borderRadius: 8,
   margin: `16px 0`,
   padding: `12px 0 12px 12px`,
@@ -89,7 +89,7 @@ const Panel = styled('div')({
 })
 
 const Label = styled('div')({
-  color: PALETTE.TEXT_INVOICE_LABEL,
+  color: PALETTE.SLATE_500,
   fontSize: 14,
   fontWeight: 600,
   textTransform: 'uppercase'
@@ -103,7 +103,7 @@ const Subject = styled('div')({
 })
 
 const SectionHeader = styled('div')({
-  borderBottom: `1px solid ${PALETTE.BORDER_INVOICE_SECTION}`,
+  borderBottom: `1px solid ${PALETTE.SLATE_300}`,
   marginTop: 12,
   paddingBottom: '.75rem',
 
@@ -129,7 +129,7 @@ const Heading = styled('div')({
 })
 
 const Meta = styled('div')<{isError?: boolean}>(({isError}) => ({
-  color: isError ? PALETTE.ERROR_MAIN : undefined,
+  color: isError ? PALETTE.TOMATO_500 : undefined,
   fontSize: 14
 }))
 
@@ -142,7 +142,7 @@ const PayURLText = styled('a')({
 })
 
 const CouponEmphasis = styled('span')({
-  color: PALETTE.EMPHASIS_WARM,
+  color: PALETTE.ROSE_500,
   fontWeight: 600
 })
 

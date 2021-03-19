@@ -1,4 +1,4 @@
-import {PALETTE} from 'parabol-client/styles/paletteV2'
+import {PALETTE} from 'parabol-client/styles/paletteV3'
 import React from 'react'
 import ReactDOMServer from 'react-dom/server'
 import emailTemplate from './emailTemplate'
@@ -32,7 +32,7 @@ const emailVerificationEmailCreator = (props: Props) => {
     bodyContent,
     title: subject,
     previewText: subject,
-    bgColor: PALETTE.BACKGROUND_MAIN
+    bgColor: PALETTE.SLATE_200
   })
 
   return {

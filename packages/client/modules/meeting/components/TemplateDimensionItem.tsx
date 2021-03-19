@@ -8,7 +8,7 @@ import useMutationProps from '~/hooks/useMutationProps'
 import RemovePokerTemplateDimensionMutation from '~/mutations/RemovePokerTemplateDimensionMutation'
 import {TemplateDimensionItem_dimensions} from '~/__generated__/TemplateDimensionItem_dimensions.graphql'
 import Icon from '../../../components/Icon'
-import {PALETTE} from '../../../styles/paletteV2'
+import {PALETTE} from '../../../styles/paletteV3'
 import {ICON_SIZE} from '../../../styles/typographyV2'
 import {TemplateDimensionItem_dimension} from '../../../__generated__/TemplateDimensionItem_dimension.graphql'
 import EditableTemplateDimension from './EditableTemplateDimension'
@@ -32,7 +32,7 @@ const DimensionItem = styled('div')<StyledProps & {isOwner: boolean}>(
   ({isOwner, isHover, isDragging}) => ({
     alignItems: 'center',
     backgroundColor:
-      isOwner && (isHover || isDragging) ? PALETTE.BACKGROUND_MAIN_LIGHTENED : undefined,
+      isOwner && (isHover || isDragging) ? PALETTE.SLATE_100 : undefined,
     cursor: isOwner ? 'pointer' : undefined,
     display: 'flex',
     fontSize: 14,
@@ -43,7 +43,7 @@ const DimensionItem = styled('div')<StyledProps & {isOwner: boolean}>(
 )
 
 const RemoveDimensionIcon = styled(Icon)<StyledProps>(({isHover, enabled}) => ({
-  color: PALETTE.TEXT_GRAY,
+  color: PALETTE.SLATE_600,
   cursor: 'pointer',
   display: 'block',
   fontSize: ICON_SIZE.MD18,

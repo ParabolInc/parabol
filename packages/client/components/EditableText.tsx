@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import React, {forwardRef, useEffect, useRef, useState} from 'react'
 import TextAreaAutoSize from 'react-textarea-autosize'
-import {PALETTE} from '../styles/paletteV2'
+import {PALETTE} from '../styles/paletteV3'
 import {FONT_FAMILY, ICON_SIZE} from '../styles/typographyV2'
 import Legitity from '../validation/Legitity'
 import Icon from './Icon'
@@ -22,20 +22,20 @@ const StaticBlock = styled('div')<{disabled: boolean | undefined}>(({disabled}) 
 }))
 
 const Placeholder = styled('div')({
-  color: PALETTE.TEXT_GRAY
+  color: PALETTE.SLATE_600
 })
 
 const StaticValue = styled('div')({
-  color: PALETTE.TEXT_MAIN
+  color: PALETTE.SLATE_700
 })
 
 const Error = styled('div')({
-  color: PALETTE.ERROR_MAIN,
+  color: PALETTE.TOMATO_500,
   fontSize: 14
 })
 
 const StyledIcon = styled(Icon)({
-  color: PALETTE.TEXT_GRAY,
+  color: PALETTE.SLATE_600,
   fontSize: ICON_SIZE.MD18,
   marginLeft: 8
 })
@@ -43,7 +43,7 @@ const StyledIcon = styled(Icon)({
 const Input = styled('input')({
   backgroundColor: 'transparent',
   border: 0,
-  color: PALETTE.TEXT_MAIN,
+  color: PALETTE.SLATE_700,
   display: 'block',
   fontSize: 'inherit',
   fontWeight: 'inherit',
@@ -56,7 +56,7 @@ const Input = styled('input')({
 const TextArea = styled(TextAreaAutoSize)({
   backgroundColor: 'transparent',
   border: 0,
-  color: PALETTE.TEXT_MAIN,
+  color: PALETTE.SLATE_700,
   display: 'block',
   fontSize: 'inherit',
   fontWeight: 'inherit',

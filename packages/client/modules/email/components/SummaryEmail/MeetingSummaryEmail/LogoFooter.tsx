@@ -1,4 +1,4 @@
-import {PALETTE} from 'parabol-client/styles/paletteV2'
+import {PALETTE} from 'parabol-client/styles/paletteV3'
 import {FONT_FAMILY} from 'parabol-client/styles/typographyV2'
 import React from 'react'
 import {ExternalLinks} from '../../../../../types/constEnums'
@@ -8,7 +8,7 @@ const logoStyle = {
 }
 
 const taglineStyle = {
-  color: PALETTE.TEXT_MAIN,
+  color: PALETTE.SLATE_700,
   fontFamily: FONT_FAMILY.SANS_SERIF,
   fontSize: 13,
   paddingTop: 8,

@@ -31,10 +31,16 @@ export const newMeetingFields = () => ({
     type: new GraphQLNonNull(GraphQLISO8601Type),
     description: 'The timestamp the meeting was created'
   },
-  defaultFacilitatorUserId: {
+  createdBy: {
     type: new GraphQLNonNull(GraphQLID),
-    description:
-      'The userId of the desired facilitator (different form facilitatorUserId if disconnected)'
+    description: 'The id of the user that created the meeting'
+  },
+  createdByUser: {
+    type: new GraphQLNonNull(require('./User').default),
+    description: 'The user that created the meeting',
+    resolve: ({createdBy}, _args, {dataLoader}: GQLContext) => {
+      return dataLoader.get('users').load(createdBy)
+    }
   },
   endedAt: {
     type: GraphQLISO8601Type,
