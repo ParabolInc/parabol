@@ -7396,6 +7396,11 @@ export interface IMutation {
    * Create a meeting member for a user
    */
   joinMeeting: JoinMeetingPayload;
+
+  /**
+   * Create an issue in GitHub
+   */
+  gitHubCreateIssue: GitHubCreateIssuePayload;
 }
 
 export interface IAcceptTeamInvitationOnMutationArguments {
@@ -8560,6 +8565,28 @@ export interface IUpdateJiraDimensionFieldOnMutationArguments {
 
 export interface IJoinMeetingOnMutationArguments {
   meetingId: string;
+}
+
+export interface IGitHubCreateIssueOnMutationArguments {
+  /**
+   * The id of the meeting where the Jira issue is being created
+   */
+  meetingId: string;
+
+  /**
+   * The owner/repo string
+   */
+  nameWithOwner: string;
+
+  /**
+   * The id of the team that is creating the issue
+   */
+  teamId: string;
+
+  /**
+   * The title of the GH issue
+   */
+  title: string;
 }
 
 export interface IAcceptTeamInvitationPayload {
@@ -11011,6 +11038,22 @@ export interface IJoinMeetingSuccess {
   meeting: NewMeeting;
 }
 
+/**
+ * Return object for GitHubCreateIssuePayload
+ */
+export type GitHubCreateIssuePayload =
+  | IErrorPayload
+  | IGitHubCreateIssueSuccess;
+
+export interface IGitHubCreateIssueSuccess {
+  __typename: 'GitHubCreateIssueSuccess';
+
+  /**
+   * The id of the meeting where the GitHub issue is being created
+   */
+  meetingId: string;
+}
+
 export interface ISubscription {
   __typename: 'Subscription';
   meetingSubscription: MeetingSubscriptionPayload;
@@ -11059,7 +11102,8 @@ export type MeetingSubscriptionPayload =
   | IPokerResetDimensionSuccess
   | IPokerAnnounceDeckHoverSuccess
   | IPokerSetFinalScoreSuccess
-  | IJoinMeetingSuccess;
+  | IJoinMeetingSuccess
+  | IGitHubCreateIssueSuccess;
 
 export interface IAddReactjiToReflectionSuccess {
   __typename: 'AddReactjiToReflectionSuccess';

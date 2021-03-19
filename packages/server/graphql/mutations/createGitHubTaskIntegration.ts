@@ -136,7 +136,6 @@ export default {
       .update({
         integration: {
           id: issueId,
-          // TaskServiceEnum.github
           service: 'github',
           issueNumber,
           nameWithOwner
