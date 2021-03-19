@@ -83,13 +83,12 @@ interface Props {
   isEditing: boolean
   meeting: NewGitHubIssueInput_meeting
   setIsEditing: (isEditing: boolean) => void
-  viewer: NewGitHubIssueInput_viewer | null
+  viewer: NewGitHubIssueInput_viewer
 }
 
 const NewGitHubIssueInput = (props: Props) => {
   const {isEditing, meeting, setIsEditing, viewer} = props
   const {id: meetingId} = meeting
-  if (!viewer) return null
   const {id: userId, team, teamMember} = viewer
   const {id: teamId} = team!
   const {suggestedIntegrations} = teamMember!

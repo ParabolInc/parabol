@@ -77,12 +77,14 @@ const GitHubScopingSearchResults = (props: Props) => {
         meetingId={meetingId}
       /> */}
       <ResultScroller>
-        <NewGitHubIssueInput
-          isEditing={isEditing}
-          meeting={meeting}
-          setIsEditing={setIsEditing}
-          viewer={viewer}
-        />
+        {viewer && (
+          <NewGitHubIssueInput
+            isEditing={isEditing}
+            meeting={meeting}
+            setIsEditing={setIsEditing}
+            viewer={viewer}
+          />
+        )}
         {/* {edges.map(({node}) => {
           return (
             <GitHubScopingSearchResultItem
@@ -122,6 +124,14 @@ export default createFragmentContainer(GitHubScopingSearchResults, {
     fragment GitHubScopingSearchResults_viewer on User {
       ...NewGitHubIssueInput_viewer
       teamMember(teamId: $teamId) {
+        suggestedIntegrations {
+          items {
+            ... on SuggestedIntegrationGitHub {
+              id
+              nameWithOwner
+            }
+          }
+        }
         integrations {
           github {
             githubSearchQueries {

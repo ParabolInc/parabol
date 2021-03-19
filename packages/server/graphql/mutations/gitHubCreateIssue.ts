@@ -1,5 +1,4 @@
 import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
-// import getRethink from '../../database/rethinkDriver'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import GitHubCreateIssuePayload from '../types/GitHubCreateIssuePayload'
@@ -39,9 +38,7 @@ const gitHubCreateIssue = {
     }: {meetingId: string; nameWithOwner: string; teamId: string; title: string},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) => {
-    // const r = await getRethink()
     const viewerId = getUserId(authToken)
-    // const now = new Date()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
 
@@ -51,6 +48,15 @@ const gitHubCreateIssue = {
     }
 
     // VALIDATION
+    const [viewerAuth, assigneeAuth] = await dataLoader.get('githubAuth').loadMany([
+      {teamId, userId: viewerId},
+      {teamId, userId: viewerId}
+    ])
+    if (!viewerAuth?.isActive) {
+      return standardError(new Error('The viewer does not have access to GitHub'), {
+        userId: viewerId
+      })
+    }
     const [repoOwner, repoName] = nameWithOwner.split('/')
     if (!repoOwner || !repoName) {
       return standardError(new Error(`${nameWithOwner} is not a valid repository`), {
@@ -59,15 +65,11 @@ const gitHubCreateIssue = {
     }
 
     // RESOLUTION
-    const [viewerAuth, assigneeAuth] = await dataLoader.get('githubAuth').loadMany([
-      {teamId, userId: viewerId},
-      {teamId, userId: viewerId}
-    ])
     const {accessToken} = viewerAuth || assigneeAuth
     const manager = new GitHubServerManager(accessToken)
     const repoInfo = await manager.getRepoInfo(nameWithOwner, assigneeAuth.login)
     if ('message' in repoInfo) {
-      return {error: repoInfo}
+      return standardError(new Error(repoInfo.message), {userId: viewerId})
     }
     if (!repoInfo.data || !repoInfo.data.repository || !repoInfo.data.user) {
       console.log(JSON.stringify(repoInfo))
@@ -80,12 +82,11 @@ const gitHubCreateIssue = {
     const {id: ghAssigneeId} = user
     const createIssueRes = await manager.createIssue({
       title,
-      body: '',
       repositoryId,
       assigneeIds: [ghAssigneeId]
     })
     if ('message' in createIssueRes) {
-      return {error: createIssueRes}
+      return standardError(new Error(createIssueRes.message), {userId: viewerId})
     }
 
     const data = {meetingId}
