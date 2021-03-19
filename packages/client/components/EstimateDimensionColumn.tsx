@@ -7,6 +7,7 @@ import useAtmosphere from '../hooks/useAtmosphere'
 import useIsInitializing from '../hooks/useIsInitializing'
 import useIsPokerVotingClosing from '../hooks/useIsPokerVotingClosing'
 import PokerResetDimensionMutation from '../mutations/PokerResetDimensionMutation'
+import SetPokerSpectateMutation from '../mutations/SetPokerSpectateMutation'
 import {PALETTE} from '../styles/paletteV3'
 import {EstimateDimensionColumn_meeting} from '../__generated__/EstimateDimensionColumn_meeting.graphql'
 import {EstimateDimensionColumn_stage} from '../__generated__/EstimateDimensionColumn_stage.graphql'
@@ -56,7 +57,8 @@ const EstimateDimensionColumn = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
   const {meeting, stage} = props
-  const {endedAt, facilitatorUserId, id: meetingId} = meeting
+  const {endedAt, facilitatorUserId, id: meetingId, viewerMeetingMember} = meeting
+  const isSpectating = viewerMeetingMember?.isSpectating
   const isFacilitator = viewerId === facilitatorUserId
   const {id: stageId, dimensionRef} = stage
   const {name} = dimensionRef
@@ -69,6 +71,11 @@ const EstimateDimensionColumn = (props: Props) => {
     submitMutation()
     PokerResetDimensionMutation(atmosphere, {meetingId, stageId}, {onError, onCompleted})
   }
+  const setSpectating = (isSpectating: boolean) => () => {
+    if (submitting) return
+    submitMutation()
+    SetPokerSpectateMutation(atmosphere, {meetingId, isSpectating}, {onError, onCompleted})
+  }
   const showVoting = isVoting || isClosing
   return (
     <ColumnInner>
@@ -78,6 +85,16 @@ const EstimateDimensionColumn = (props: Props) => {
         {!isVoting && isFacilitator && !endedAt && (
           <StyledLinkButton onClick={reset} palette={'blue'}>
             {'Team Revote'}
+          </StyledLinkButton>
+        )}
+        {isVoting && !endedAt && isSpectating && (
+          <StyledLinkButton onClick={setSpectating(false)} palette={'blue'}>
+            {'Let me vote!'}
+          </StyledLinkButton>
+        )}
+        {isVoting && !endedAt && !isSpectating && (
+          <StyledLinkButton onClick={setSpectating(true)} palette={'blue'}>
+            {'I don’t vote'}
           </StyledLinkButton>
         )}
       </DimensionHeader>
@@ -118,6 +135,9 @@ export default createFragmentContainer(EstimateDimensionColumn, {
       facilitatorUserId
       id
       endedAt
+      viewerMeetingMember {
+        isSpectating
+      }
     }
   `
 })

@@ -46,7 +46,8 @@ const PokerCardDeck = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
   const {meeting, estimateAreaRef} = props
-  const {id: meetingId, isRightDrawerOpen, localStage, showSidebar} = meeting
+  const {id: meetingId, isRightDrawerOpen, localStage, showSidebar, viewerMeetingMember} = meeting
+  const isSpectating = viewerMeetingMember?.isSpectating
   const stageId = localStage.id!
   const {dimensionRef} = localStage
   const scores = localStage.scores!
@@ -175,12 +176,13 @@ const PokerCardDeck = (props: Props) => {
     swipe.isSwipe = null
   })
   useEffect(() => {
-    if (maxSlide === 0 || isCollapsed) {
+    if (deckRef.current && (maxSlide === 0 || isCollapsed)) {
       swipe.translateX = 0
-      deckRef.current!.style.transform = ''
+      deckRef.current.style.transform = ''
     }
   }, [maxSlide, isCollapsed])
   // const transform = maxSlide > 0 && !isCollapsed ? `translateX(${swipe.translateX}px)` : undefined
+  if (isSpectating) return null
   return (
     <Deck
       ref={deckRef}
@@ -266,6 +268,9 @@ export default createFragmentContainer(PokerCardDeck, {
       }
       localStage {
         ...PokerCardDeckStage @relay(mask: false)
+      }
+      viewerMeetingMember {
+        isSpectating
       }
     }
   `
