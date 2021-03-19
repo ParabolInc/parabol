@@ -113,10 +113,8 @@ const NewGitHubIssueInput = (props: Props) => {
   const handleCreateNewIssue = (e: FormEvent) => {
     e.preventDefault()
     if (portalStatus !== PortalStatus.Exited || !selectedNameWithOwner) return
-    if (!newIssueText.length) {
-      setIsEditing(false)
-      return
-    }
+    setIsEditing(false)
+    if (!newIssueText.length) return
     const variables = {
       nameWithOwner: selectedNameWithOwner,
       title: newIssueText,
