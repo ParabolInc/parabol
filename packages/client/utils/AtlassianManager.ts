@@ -529,6 +529,12 @@ export default abstract class AtlassianManager {
     return this.get(`https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/field`) as JiraField[]
   }
 
+  async getFieldScreens(cloudId: string, fieldId: string) {
+    return this.get(
+      `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/field/${fieldId}/screens`
+    ) as any
+  }
+
   async addComment(cloudId: string, issueKey: string, body: object) {
     const payload = {
       body
@@ -601,6 +607,7 @@ export default abstract class AtlassianManager {
         }
       }
       if ('errors' in res) {
+        console.log(JSON.stringify(res))
         const fieldError = res.errors[fieldId]
         if (fieldError.includes('is not on the appropriate screen')) {
           throw new Error(
