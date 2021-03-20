@@ -28,8 +28,11 @@ const updatePokerScope = {
       description: 'The list of items to add/remove to the estimate phase'
     }
   },
-  resolve: async (_source, {meetingId, updates}, context: GQLContext) => {
-    const {authToken, dataLoader, socketId: mutatorId} = context
+  resolve: async (
+    _source,
+    {meetingId, updates},
+    {authToken, dataLoader, socketId: mutatorId}: GQLContext
+  ) => {
     const r = await getRethink()
     const redis = getRedis()
     const viewerId = getUserId(authToken)
