@@ -1,6 +1,7 @@
 import catchAndLog from '../../postgres/utils/catchAndLog'
 import {
   IUpdateTeamByTeamIdQueryParams,
+  IUpdateTeamByTeamIdQueryResult,
   updateTeamByTeamIdQuery
 } from '../../postgres/queries/generated/updateTeamByTeamIdQuery'
 import getPg from '../../postgres/getPg'
@@ -8,8 +9,8 @@ import getPg from '../../postgres/getPg'
 const updateTeamByTeamId = async (
   teamUpdates: Partial<IUpdateTeamByTeamIdQueryParams>,
   teamId: string
-) => {
-  await catchAndLog(() =>
+): Promise<IUpdateTeamByTeamIdQueryResult> => {
+  const result = await catchAndLog(() =>
     updateTeamByTeamIdQuery.run(
       {
         ...teamUpdates,
@@ -18,6 +19,7 @@ const updateTeamByTeamId = async (
       getPg()
     )
   )
+  return result[0]
 }
 
 export default updateTeamByTeamId

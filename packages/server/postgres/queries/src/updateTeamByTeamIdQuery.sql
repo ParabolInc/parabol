@@ -10,4 +10,5 @@ UPDATE "Team" SET
   "tier" = COALESCE(:tier, "tier"),
   "orgId" = COALESCE(:orgId, "orgId"),
   "updatedAt" = COALESCE(:updatedAt, "updatedAt")
-WHERE id = :id;
+WHERE id = :id
+RETURNING *;
