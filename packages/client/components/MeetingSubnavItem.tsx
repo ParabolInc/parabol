@@ -1,8 +1,8 @@
-import React, {useRef} from 'react'
 import styled from '@emotion/styled'
+import React, {ReactNode, useRef} from 'react'
+import useScrollIntoView from '../hooks/useScrollIntoVIew'
 import {PALETTE} from '../styles/paletteV3'
 import {NavSidebar} from '../types/constEnums'
-import useScrollIntoView from '../hooks/useScrollIntoVIew'
 
 const lineHeight = NavSidebar.SUB_LINE_HEIGHT
 
@@ -17,11 +17,7 @@ interface ItemRootProps {
 
 const ItemRoot = styled('div')<ItemRootProps>(
   ({isActive, isComplete, isDisabled, isDragging, onClick}) => ({
-    backgroundColor: isActive
-      ? PALETTE.SLATE_100
-      : isDragging
-        ? PALETTE.SLATE_100
-        : 'transparent',
+    backgroundColor: isActive ? PALETTE.SLATE_100 : isDragging ? PALETTE.SLATE_100 : 'transparent',
     borderRadius: '0 4px 4px 0',
     color: PALETTE.SLATE_700,
     display: 'flex',
@@ -74,7 +70,7 @@ interface Props {
   isDisabled: boolean
   isDragging: boolean
   isUnsyncedFacilitatorStage: boolean
-  label: string
+  children: ReactNode
   metaContent: any
   onClick: ((e: React.MouseEvent) => void) | undefined
 }
@@ -86,7 +82,7 @@ const MeetingSubnavItem = (props: Props) => {
     isDisabled,
     isDragging,
     isUnsyncedFacilitatorStage,
-    label,
+    children,
     metaContent,
     onClick
   } = props
@@ -102,7 +98,7 @@ const MeetingSubnavItem = (props: Props) => {
       isUnsyncedFacilitatorStage={isUnsyncedFacilitatorStage}
       onClick={!isDisabled ? onClick : undefined}
     >
-      <ItemLabel isComplete={isComplete}>{label}</ItemLabel>
+      <ItemLabel isComplete={isComplete}>{children}</ItemLabel>
       <ItemMeta>{metaContent}</ItemMeta>
     </ItemRoot>
   )

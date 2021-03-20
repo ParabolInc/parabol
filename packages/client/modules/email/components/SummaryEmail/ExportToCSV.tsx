@@ -9,8 +9,8 @@ import withMutationProps, {WithMutationProps} from 'parabol-client/utils/relay/w
 import {ExportToCSVQuery} from 'parabol-client/__generated__/ExportToCSVQuery.graphql'
 import React, {Component} from 'react'
 import {fetchQuery} from 'react-relay'
+import JiraServiceTaskId from '../../../../shared/gqlIds/JiraServiceTaskId'
 import {ExternalLinks, PokerCards} from '../../../../types/constEnums'
-import getJiraCloudIdAndKey from '../../../../utils/getJiraCloudIdAndKey'
 import AnchorIfEmail from './MeetingSummaryEmail/AnchorIfEmail'
 import EmailBorderBottom from './MeetingSummaryEmail/EmailBorderBottom'
 import {MeetingSummaryReferrer} from './MeetingSummaryEmail/MeetingSummaryEmail'
@@ -187,7 +187,7 @@ class ExportToCSV extends Component<Props> {
     stages.forEach((stage) => {
       const {finalScore, dimensionRef, story, scores, serviceTaskId} = stage
       const {name} = dimensionRef
-      const [, issueKey] = getJiraCloudIdAndKey(serviceTaskId)
+      const {issueKey} = JiraServiceTaskId.split(serviceTaskId)
       const title = story?.title ?? issueKey
       const voteCount = scores.filter((score) => score.label !== PokerCards.PASS_CARD).length
       rows.push({
