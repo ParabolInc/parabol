@@ -19,7 +19,7 @@ const resolveDowngradeToPersonal = async (
     console.log(e)
   }
 
-  const [rethinkResult] = await Promise.all([
+  const [, teamIds] = await Promise.all([
     r({
       org: r
         .table('Organization')
@@ -47,12 +47,11 @@ const resolveDowngradeToPersonal = async (
       {
         tier: 'personal',
         isPaid: true,
-        updatedAt: now,
+        updatedAt: now
       },
       orgId
     )
   ])
-  const {teamIds} = rethinkResult
 
   await Promise.all([setUserTierForOrgId(orgId), setTierForOrgUsers(orgId)])
   segmentIo.track({

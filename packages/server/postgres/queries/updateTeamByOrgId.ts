@@ -8,8 +8,8 @@ import getPg from '../../postgres/getPg'
 const updateTeamByOrgId = async (
   teamUpdates: Partial<IUpdateTeamByOrgIdQueryParams>,
   orgId: string
-): Promise<void> => {
-  await catchAndLog(() =>
+): Promise<string[]> => {
+  const teams = await catchAndLog(() =>
     updateTeamByOrgIdQuery.run(
       {
         ...teamUpdates,
@@ -18,6 +18,7 @@ const updateTeamByOrgId = async (
       getPg()
     )
   )
+  return teams.map(team => team.id)
 }
 
 export default updateTeamByOrgId
