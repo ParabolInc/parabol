@@ -1,35 +1,36 @@
+import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
-// import useAtmosphere from '../hooks/useAtmosphere'
+import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
+import useAtmosphere from '../hooks/useAtmosphere'
 import {MenuProps} from '../hooks/useMenu'
-// import {PALETTE} from '../styles/paletteV2'
+import {PALETTE} from '../styles/paletteV2'
 import {GitHubScopingSearchHistoryMenu_teamMember} from '../__generated__/GitHubScopingSearchHistoryMenu_teamMember.graphql'
 import Menu from './Menu'
-// import MenuItem from './MenuItem'
-// import MenuItemLabel from './MenuItemLabel'
+import MenuItem from './MenuItem'
+import MenuItemLabel from './MenuItemLabel'
 
-// const NoResults = styled(MenuItemLabel)({
-//   color: PALETTE.TEXT_GRAY,
-//   justifyContent: 'center',
-//   paddingLeft: 8,
-//   paddingRight: 8,
-//   fontStyle: 'italic'
-// })
+const NoResults = styled(MenuItemLabel)({
+  color: PALETTE.TEXT_GRAY,
+  justifyContent: 'center',
+  paddingLeft: 8,
+  paddingRight: 8,
+  fontStyle: 'italic'
+})
 
-// const QueryString = styled('span')({
-//   color: PALETTE.TEXT_GRAY
-// })
+const QueryString = styled('span')({
+  color: PALETTE.TEXT_GRAY
+})
 
-// const ProjectFilter = styled('span')({
-//   color: PALETTE.TEXT_GRAY
-// })
+const ProjectFilter = styled('span')({
+  color: PALETTE.TEXT_GRAY
+})
 
-// const StyledMenuItemLabel = styled(MenuItemLabel)({
-//   display: 'flex',
-//   flexDirection: 'column',
-//   alignItems: 'flex-start'
-// })
+const StyledMenuItemLabel = styled(MenuItemLabel)({
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'flex-start'
+})
 
 interface Props {
   menuProps: MenuProps
@@ -38,12 +39,11 @@ interface Props {
 }
 
 const GitHubScopingSearchHistoryMenu = (props: Props) => {
-  // const {menuProps, meetingId, teamMember} = props
-  const {menuProps} = props
-  // const {integrations} = teamMember
-  // const {github} = integrations
-  // const {githubSearchQueries} = github!
-  // const atmosphere = useAtmosphere()
+  const {menuProps, meetingId, teamMember} = props
+  const {integrations} = teamMember
+  const {github} = integrations
+  const {githubSearchQueries} = github!
+  const atmosphere = useAtmosphere()
   const {portalStatus, isDropdown, closePortal} = menuProps
   return (
     <Menu
@@ -53,7 +53,7 @@ const GitHubScopingSearchHistoryMenu = (props: Props) => {
       isDropdown={isDropdown}
       closePortal={closePortal}
     >
-      {/* {githubSearchQueries.length === 0 && (
+      {githubSearchQueries.length === 0 && (
         <NoResults key='no-results'>No saved queries yet!</NoResults>
       )}
       {githubSearchQueries.map((githubSearchQuery) => {
@@ -83,7 +83,7 @@ const GitHubScopingSearchHistoryMenu = (props: Props) => {
             onClick={selectQuery}
           />
         )
-      })} */}
+      })}
     </Menu>
   )
 }

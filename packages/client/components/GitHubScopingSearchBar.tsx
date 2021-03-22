@@ -22,7 +22,7 @@ const GitHubScopingSearchBar = (props: Props) => {
     <SearchBar>
       <GitHubScopingSearchHistoryToggle meeting={meeting} />
       <GitHubScopingSearchInput meeting={meeting} />
-      <GitHubScopingSearchFilterToggle meeting={meeting} />
+      <GitHubScopingSearchFilterToggle />
     </SearchBar>
   )
 }
