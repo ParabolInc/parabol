@@ -100,6 +100,7 @@ export const isOrgLeaderOfUser = async (authToken, userId) => {
   return uniques.size < total
 }
 
+// this function is not used anywhere
 export const isPaidTier = async (teamId) => {
   const r = await getRethink()
   const tier = await r

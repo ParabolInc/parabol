@@ -4,7 +4,6 @@ import getRethink from '../../database/rethinkDriver'
 import {MeetingTypeEnum} from '../../database/types/Meeting'
 import MeetingRetrospective from '../../database/types/MeetingRetrospective'
 import MeetingSettingsRetrospective from '../../database/types/MeetingSettingsRetrospective'
-import Organization from '../../database/types/Organization'
 import RetroMeetingMember from '../../database/types/RetroMeetingMember'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
@@ -15,6 +14,7 @@ import createNewMeetingPhases from './helpers/createNewMeetingPhases'
 import {startSlackMeeting} from './helpers/notifySlack'
 import sendMeetingStartToSegment from './helpers/sendMeetingStartToSegment'
 import updateTeamByTeamId from '../../postgres/queries/updateTeamByTeamId'
+import getTeamByTeamId from '../../postgres/queries/getTeamByTeamId'
 
 export default {
   type: new GraphQLNonNull(StartRetrospectivePayload),
@@ -58,11 +58,11 @@ export default {
       meetingType,
       dataLoader
     )
-    const organization = (await r
-      .table('Team')
-      .get(teamId)('orgId')
-      .do((orgId) => r.table('Organization').get(orgId))
-      .run()) as Organization
+    const team = await getTeamByTeamId(teamId)
+    const organization = await r
+      .table('Organization')
+      .get(team.orgId)
+      .run()
     const {showConversionModal} = organization
 
     const meetingSettings = (await dataLoader

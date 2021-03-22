@@ -10,16 +10,19 @@ import safeArchiveEmptyPersonalOrganization from '../../safeMutations/safeArchiv
 import {getUserId, isSuperUser} from '../../utils/authorization'
 import standardError from '../../utils/standardError'
 import updateTeamByTeamId from '../../postgres/queries/updateTeamByTeamId'
+import getTeamByTeamId from '../../postgres/queries/getTeamByTeamId'
 
 const moveToOrg = async (teamId: string, orgId: string, authToken: any) => {
   const r = await getRethink()
   // AUTH
   const su = isSuperUser(authToken)
   // VALIDATION
-  const {team, org} = await r({
-    team: (r.table('Team').get(teamId) as unknown) as Team,
-    org: (r.table('Organization').get(orgId) as unknown) as Organization
-  }).run()
+  const [{org}, team] = await Promise.all([
+    r({
+      org: (r.table('Organization').get(orgId) as unknown) as Organization
+    }).run(),
+    getTeamByTeamId(teamId)
+  ])
   const {orgId: currentOrgId} = team
   if (!su) {
     const userId = getUserId(authToken)
