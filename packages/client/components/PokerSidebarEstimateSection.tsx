@@ -43,10 +43,10 @@ const Title = styled('div')({
 })
 
 const Subtitle = styled('div')({
+  color: PALETTE.SLATE_500,
   fontSize: 11,
   fontWeight: 600,
-  color: PALETTE.SLATE_500,
-  lineHeight: '8px'
+  lineHeight: '12px'
 })
 
 const PokerSidebarEstimateSection = (props: Props) => {
@@ -127,7 +127,6 @@ const PokerSidebarEstimateSection = (props: Props) => {
                     title,
                     subtitle,
                     isActive,
-                    isComplete,
                     isNavigable,
                     finalScores
                   } = summary
@@ -156,7 +155,6 @@ const PokerSidebarEstimateSection = (props: Props) => {
                               metaContent={<PokerSidebarEstimateMeta finalScores={finalScores} />}
                               onClick={() => handleClick(stageIds)}
                               isActive={isActive}
-                              isComplete={isComplete}
                               isDisabled={!isNavigable}
                               isUnsyncedFacilitatorStage={isUnsyncedFacilitatorStage}
                             >
