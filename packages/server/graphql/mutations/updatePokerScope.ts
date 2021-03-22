@@ -10,6 +10,7 @@ import {getUserId, isTeamMember} from '../../utils/authorization'
 import ensureJiraDimensionField from '../../utils/ensureJiraDimensionField'
 import getRedis from '../../utils/getRedis'
 import publish from '../../utils/publish'
+import RedisLock from '../../utils/RedisLock'
 import {GQLContext} from '../graphql'
 import UpdatePokerScopeItemInput from '../types/UpdatePokerScopeItemInput'
 import UpdatePokerScopePayload from '../types/UpdatePokerScopePayload'
@@ -55,6 +56,10 @@ const updatePokerScope = {
     if (meetingType !== 'poker') {
       return {error: {message: 'Not a poker meeting'}}
     }
+
+    // lock the meeting while the scope is updating
+    const redisLock = new RedisLock(`meeting:${meetingId}`, 3000)
+    await redisLock.lock(10000)
 
     // RESOLUTION
     const requiredJiraMappers = [] as {
@@ -136,6 +141,7 @@ const updatePokerScope = {
       })
       .run()
 
+    await redisLock.unlock()
     const data = {meetingId}
     publish(SubscriptionChannel.MEETING, meetingId, 'UpdatePokerScopeSuccess', data, subOptions)
     return data
