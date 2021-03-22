@@ -1,9 +1,10 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
+import React, {forwardRef} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {Breakpoint} from '~/types/constEnums'
 import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
+import useAvatarsOverflow from '../../hooks/useAvatarsOverflow'
 import {DashboardAvatars_team} from '../../__generated__/DashboardAvatars_team.graphql'
 import AddTeamMemberAvatarButton from '../AddTeamMemberAvatarButton'
 import ErrorBoundary from '../ErrorBoundary'
@@ -33,18 +34,23 @@ const ItemBlock = styled('div')({
 })
 
 interface Props {
+  avatarsRef: any
   team: DashboardAvatars_team
 }
 
-const DashboardAvatars = (props: Props) => {
-  const {team} = props
+const DashboardAvatars = forwardRef((props: Props) => {
+  const {avatarsRef, team} = props
   const {id: teamId, isLead: isViewerLead, teamMembers} = team
+  const maxAvatars = useAvatarsOverflow(avatarsRef)
+  const overflowCount = teamMembers.length > maxAvatars ? teamMembers.length - maxAvatars + 1 : 0
+  const visibleAvatars =
+    overflowCount === 0 ? teamMembers : (teamMembers.slice(0, maxAvatars - 1) as any)
   return (
     <AvatarsList>
       <ItemBlock>
         <AddTeamMemberAvatarButton teamId={teamId} teamMembers={teamMembers} />
       </ItemBlock>
-      {teamMembers.map((teamMember) => {
+      {visibleAvatars.map((teamMember) => {
         return (
           <ItemBlock key={`dbAvatar${teamMember.id}`}>
             <ErrorBoundary>
@@ -53,9 +59,10 @@ const DashboardAvatars = (props: Props) => {
           </ItemBlock>
         )
       })}
+      {overflowCount !== 0 && <div>overflow!</div>}
     </AvatarsList>
   )
-}
+})
 
 export default createFragmentContainer(DashboardAvatars, {
   team: graphql`

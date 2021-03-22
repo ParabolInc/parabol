@@ -1,7 +1,7 @@
 import {ClassNames} from '@emotion/core'
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
+import React, {useRef} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {NavLink} from 'react-router-dom'
 import DashboardAvatars from '~/components/DashboardAvatars/DashboardAvatars'
@@ -96,12 +96,14 @@ const AvatarsAndAgendaToggle = styled('div')({
   display: 'flex',
   justifyContent: 'space-between',
   flexWrap: 'wrap',
+  border: '2px solid red',
+
   width: '100%',
   [desktopBreakpoint]: {
     display: 'flex',
     flexDirection: 'column',
-    alignItems: 'flex-end',
-    width: 'auto'
+    alignItems: 'flex-end'
+    // width: 'auto'
   }
 })
 
@@ -119,6 +121,7 @@ const TeamTasksHeader = (props: Props) => {
   const teamMemberFilterName =
     (teamMemberFilter && teamMemberFilter.preferredName) || 'All team members'
   const {name: orgName, id: orgId} = organization
+  const avatarsRef = useRef<HTMLDivElement>(null)
   const {togglePortal, menuProps, originRef, menuPortal} = useMenu(MenuPosition.UPPER_RIGHT, {
     isDropdown: true
   })
@@ -157,8 +160,8 @@ const TeamTasksHeader = (props: Props) => {
             </ClassNames>
           </TeamLinks>
         </TeamMeta>
-        <AvatarsAndAgendaToggle>
-          <DashboardAvatars team={team} />
+        <AvatarsAndAgendaToggle ref={avatarsRef}>
+          <DashboardAvatars team={team} avatarsRef={avatarsRef} />
           <AgendaToggle hideAgenda={hideAgenda} teamId={teamId} />
         </AvatarsAndAgendaToggle>
       </TeamHeaderAndAvatars>
