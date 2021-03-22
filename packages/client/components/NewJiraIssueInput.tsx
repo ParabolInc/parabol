@@ -113,8 +113,8 @@ const NewJiraIssueInput = (props: Props) => {
   const handleCreateNewIssue = (e: FormEvent) => {
     e.preventDefault()
     if (portalStatus !== PortalStatus.Exited || !selectedProjectKey || !cloudId) return
-    setIsEditing(false)
     if (!newIssueText.length) {
+      setIsEditing(false)
       return
     }
     const variables = {
