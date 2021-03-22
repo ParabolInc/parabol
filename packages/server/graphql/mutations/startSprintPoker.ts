@@ -1,5 +1,6 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import toTeamMemberId from '../../../client/utils/relay/toTeamMemberId'
 import getRethink from '../../database/rethinkDriver'
 import {MeetingTypeEnum} from '../../database/types/Meeting'
 import MeetingPoker from '../../database/types/MeetingPoker'
@@ -136,10 +137,20 @@ export default {
       return {error: {message: 'Meeting already started'}}
     }
 
+    const teamMemberId = toTeamMemberId(teamId, viewerId)
+    const teamMember = await dataLoader.get('teamMembers').load(teamMemberId)
+    const {isSpectatingPoker} = teamMember
     await Promise.all([
       r
         .table('MeetingMember')
-        .insert(new PokerMeetingMember({meetingId, userId: viewerId, teamId}))
+        .insert(
+          new PokerMeetingMember({
+            meetingId,
+            userId: viewerId,
+            teamId,
+            isSpectating: isSpectatingPoker
+          })
+        )
         .run(),
       r
         .table('Team')

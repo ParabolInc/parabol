@@ -1327,6 +1327,11 @@ export interface ITeamMember {
   isLead: boolean | null;
 
   /**
+   * true if the user prefers to not vote during a poker meeting
+   */
+  isSpectatingPoker: boolean;
+
+  /**
    * hide the agenda list on the dashboard
    */
   hideAgenda: boolean;
@@ -7269,6 +7274,11 @@ export interface IMutation {
    * Create a meeting member for a user
    */
   joinMeeting: JoinMeetingPayload;
+
+  /**
+   * Set whether the user is spectating poker meeting
+   */
+  setPokerSpectate: SetPokerSpectatePayload;
 }
 
 export interface IAcceptTeamInvitationOnMutationArguments {
@@ -8435,6 +8445,15 @@ export interface IJoinMeetingOnMutationArguments {
   meetingId: string;
 }
 
+export interface ISetPokerSpectateOnMutationArguments {
+  meetingId: string;
+
+  /**
+   * true if the viewer is spectating poker and does not want to vote. else false
+   */
+  isSpectating: boolean;
+}
+
 export interface IAcceptTeamInvitationPayload {
   __typename: 'AcceptTeamInvitationPayload';
   error: IStandardMutationError | null;
@@ -9341,6 +9360,11 @@ export interface IPokerMeetingMember {
    * The last time a meeting was updated (stage completed, finished, etc)
    */
   updatedAt: any;
+
+  /**
+   * true if the user is not voting and does not want their vote to count towards aggregates
+   */
+  isSpectating: boolean;
 }
 
 export interface IEditCommentingPayload {
@@ -10889,6 +10913,22 @@ export interface IJoinMeetingSuccess {
   meeting: NewMeeting;
 }
 
+/**
+ * Return object for SetPokerSpectatePayload
+ */
+export type SetPokerSpectatePayload = IErrorPayload | ISetPokerSpectateSuccess;
+
+export interface ISetPokerSpectateSuccess {
+  __typename: 'SetPokerSpectateSuccess';
+  meetingId: string;
+  userId: string;
+
+  /**
+   * The meeting member with the updated isSpectating value
+   */
+  meetingMember: IPokerMeetingMember;
+}
+
 export interface ISubscription {
   __typename: 'Subscription';
   meetingSubscription: MeetingSubscriptionPayload;
@@ -10937,7 +10977,8 @@ export type MeetingSubscriptionPayload =
   | IPokerResetDimensionSuccess
   | IPokerAnnounceDeckHoverSuccess
   | IPokerSetFinalScoreSuccess
-  | IJoinMeetingSuccess;
+  | IJoinMeetingSuccess
+  | ISetPokerSpectateSuccess;
 
 export interface IAddReactjiToReflectionSuccess {
   __typename: 'AddReactjiToReflectionSuccess';

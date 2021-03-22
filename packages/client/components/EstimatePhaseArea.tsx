@@ -8,7 +8,6 @@ import useGotoStageId from '~/hooks/useGotoStageId'
 import {PALETTE} from '~/styles/paletteV3'
 import {Breakpoint} from '~/types/constEnums'
 import {EstimatePhaseArea_meeting} from '~/__generated__/EstimatePhaseArea_meeting.graphql'
-import DeckActivityAvatars from './DeckActivityAvatars'
 import EstimateDimensionColumn from './EstimateDimensionColumn'
 import PokerCardDeck from './PokerCardDeck'
 
@@ -104,7 +103,6 @@ const EstimatePhaseArea = (props: Props) => {
         </StepperDots>
       )}
       <PokerCardDeck meeting={meeting} estimateAreaRef={estimateAreaRef} />
-      <DeckActivityAvatars stage={localStage} />
       <SwipeableViews
         containerStyle={containerStyle}
         enableMouseEvents
@@ -125,7 +123,6 @@ const EstimatePhaseArea = (props: Props) => {
 
 graphql`
   fragment EstimatePhaseAreaStage on EstimateStage {
-    ...DeckActivityAvatars_stage
     id
     serviceTaskId
   }
