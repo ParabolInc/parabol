@@ -10,7 +10,7 @@ const usePokerAvatarOverflow = (rowRef: RefObject<HTMLDivElement>) => {
     if (!el) return
     const {clientWidth: totalWidth} = el
     const lappedAvatarWidth = PokerCards.AVATAR_WIDTH - avatarOverlap
-    const maxAvatars = Math.floor((totalWidth / 8 - PokerCards.AVATAR_WIDTH) / lappedAvatarWidth)
+    const maxAvatars = Math.floor((totalWidth - PokerCards.AVATAR_WIDTH) / lappedAvatarWidth)
     setMaxAvatars(maxAvatars)
   }
   useLayoutEffect(checkOverflow, [])
