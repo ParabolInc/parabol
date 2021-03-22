@@ -8,7 +8,7 @@ const lineHeight = NavSidebar.SUB_LINE_HEIGHT
 
 interface ItemRootProps {
   isActive: boolean
-  isComplete: boolean
+  isComplete?: boolean
   isDisabled: boolean
   isDragging: boolean
   onClick: ((e: React.MouseEvent) => void) | undefined
@@ -17,6 +17,7 @@ interface ItemRootProps {
 
 const ItemRoot = styled('div')<ItemRootProps>(
   ({isActive, isComplete, isDisabled, isDragging, onClick}) => ({
+    alignItems: 'center',
     backgroundColor: isActive ? PALETTE.SLATE_100 : isDragging ? PALETTE.SLATE_100 : 'transparent',
     borderRadius: '0 4px 4px 0',
     color: PALETTE.SLATE_700,
@@ -43,11 +44,10 @@ const ItemRoot = styled('div')<ItemRootProps>(
     }
 )
 
-const ItemLabel = styled('div')<{isComplete: boolean}>(({isComplete}) => ({
+const ItemLabel = styled('div')<{isComplete?: boolean}>(({isComplete}) => ({
   color: 'inherit',
   fontSize: NavSidebar.SUB_FONT_SIZE,
   flex: 1,
-  lineHeight,
   paddingLeft: 56,
   textDecoration: isComplete ? 'line-through' : undefined,
   wordBreak: 'break-word',
@@ -66,7 +66,7 @@ const ItemMeta = styled('div')({
 
 interface Props {
   isActive: boolean
-  isComplete: boolean
+  isComplete?: boolean
   isDisabled: boolean
   isDragging: boolean
   isUnsyncedFacilitatorStage: boolean
