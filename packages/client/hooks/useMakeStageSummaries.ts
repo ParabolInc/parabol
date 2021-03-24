@@ -1,10 +1,35 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useMemo} from 'react'
 import {readInlineData} from 'react-relay'
-import getJiraCloudIdAndKey from '../utils/getJiraCloudIdAndKey'
-import {useMakeStageSummaries_phase} from '../__generated__/useMakeStageSummaries_phase.graphql'
+import JiraServiceTaskId from '../shared/gqlIds/JiraServiceTaskId'
+import {
+  TaskServiceEnum,
+  useMakeStageSummaries_phase
+} from '../__generated__/useMakeStageSummaries_phase.graphql'
 
-interface StageSummary {title: string, isComplete: boolean, isNavigable: boolean, isActive: boolean, sortOrder: number, stageIds: string[], finalScores: (string | null)[]}
+interface StageSummary {
+  title: string
+  subtitle: string
+  isComplete: boolean
+  isNavigable: boolean
+  isActive: boolean
+  sortOrder: number
+  stageIds: string[]
+  finalScores: (string | null)[]
+}
+
+const getIssueKey = (service: TaskServiceEnum, serviceTaskId: string) => {
+  switch (service) {
+    case 'jira':
+      return JiraServiceTaskId.split(serviceTaskId).issueKey
+    case 'PARABOL':
+      return ''
+    case 'github':
+      return serviceTaskId
+    default:
+      return ''
+  }
+}
 
 const useMakeStageSummaries = (phaseRef: any, localStageId: string) => {
   const estimatePhase = readInlineData<useMakeStageSummaries_phase>(
@@ -41,9 +66,14 @@ const useMakeStageSummaries = (phaseRef: any, localStageId: string) => {
         if (nextStage.serviceTaskId !== serviceTaskId) break
         batch.push(nextStage)
       }
-      const fallback = service === 'jira' ? getJiraCloudIdAndKey(serviceTaskId)[1] : 'Unknown Story'
+      const issueKey = getIssueKey(service, serviceTaskId)
+      const rawTitle = story?.title ?? null
+      const title = rawTitle ?? issueKey ?? 'Unknown Story'
+      const subtitle = rawTitle ? issueKey : ''
+
       summaries.push({
-        title: story?.title ?? fallback,
+        title,
+        subtitle,
         isComplete: batch.every(({isComplete}) => isComplete),
         isNavigable: batch.some(({isNavigable}) => isNavigable),
         isActive: !!batch.find(({id}) => id === localStageId),

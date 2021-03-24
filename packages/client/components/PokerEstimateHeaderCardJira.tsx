@@ -6,9 +6,9 @@ import useBreakpoint from '~/hooks/useBreakpoint'
 import {Elevation} from '~/styles/elevation'
 import {PALETTE} from '~/styles/paletteV3'
 import {Breakpoint} from '~/types/constEnums'
+import JiraServiceTaskId from '../shared/gqlIds/JiraServiceTaskId'
 import {ICON_SIZE} from '../styles/typographyV2'
 import {DeepNonNullable} from '../types/generics'
-import getJiraCloudIdAndKey from '../utils/getJiraCloudIdAndKey'
 import {PokerEstimateHeaderCardJira_stage} from '../__generated__/PokerEstimateHeaderCardJira_stage.graphql'
 import CardButton from './CardButton'
 import Icon from './Icon'
@@ -91,7 +91,7 @@ const PokerEstimateHeaderCardJira = (props: Props) => {
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   if (!story) {
     // Jira is down, show something
-    const [, issueKey] = getJiraCloudIdAndKey(serviceTaskId)
+    const {issueKey} = JiraServiceTaskId.split(serviceTaskId)
     return (
       <HeaderCardWrapper isDesktop={isDesktop}>
         <HeaderCard>

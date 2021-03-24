@@ -1,6 +1,6 @@
 import {GraphQLID, GraphQLInt, GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
-import getJiraCloudIdAndKey from '../../../client/utils/getJiraCloudIdAndKey'
+import JiraServiceTaskId from '../../../client/shared/gqlIds/JiraServiceTaskId'
 import EstimatePhase from '../../database/types/EstimatePhase'
 import {getUserId} from '../../utils/authorization'
 import {GQLContext} from '../graphql'
@@ -56,7 +56,7 @@ const PokerMeeting = new GraphQLObjectType<any, GQLContext>({
         if (!stage) return null
         const {creatorUserId, service} = stage
         if (service === 'jira') {
-          const [cloudId, issueKey] = getJiraCloudIdAndKey(serviceTaskId)
+          const {cloudId, issueKey} = JiraServiceTaskId.split(serviceTaskId)
           const res = await dataLoader
             .get('jiraIssue')
             .load({teamId, userId: creatorUserId, cloudId, issueKey})

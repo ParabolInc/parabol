@@ -1,4 +1,5 @@
 import AbortController from 'abort-controller'
+import JiraServiceTaskId from '../shared/gqlIds/JiraServiceTaskId'
 export interface JiraUser {
   self: string
   key: string
@@ -503,7 +504,7 @@ export default abstract class AtlassianManager {
             key,
             summary,
             cloudId,
-            id: `${cloudId}:${key}`,
+            id: JiraServiceTaskId.join(cloudId, key),
             description,
             descriptionHTML,
             cloudName: ''
