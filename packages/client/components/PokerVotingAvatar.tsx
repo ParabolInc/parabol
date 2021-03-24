@@ -52,7 +52,7 @@ export default createFragmentContainer(
   PokerVotingAvatar,
   {
     user: graphql`
-      fragment PokerVotingAvatar_user on User{
+      fragment PokerVotingAvatar_user on User {
         picture
       }`
   }

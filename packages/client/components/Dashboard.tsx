@@ -17,6 +17,11 @@ import StartMeetingFAB from './StartMeetingFAB'
 import StaticStartMeetingFAB from './StaticStartMeetingFAB'
 import SwipeableDashSidebar from './SwipeableDashSidebar'
 
+const MeetingsDashRoot = lazy(() =>
+  import(
+    /* webpackChunkName: 'MeetingsDashRoot' */ '../components/MeetingsDashRoot'
+  )
+)
 const UserDashboard = lazy(() =>
   import(
     /* webpackChunkName: 'UserDashboard' */ '../modules/userDashboard/components/UserDashboard/UserDashboard'
@@ -93,18 +98,19 @@ const Dashboard = (props: Props) => {
       {isDesktop ? (
         <DashTopBar viewer={viewer} toggle={toggle} />
       ) : (
-          <MobileDashTopBar viewer={viewer} toggle={toggle} />
-        )}
+        <MobileDashTopBar viewer={viewer} toggle={toggle} />
+      )}
       <DashPanel>
         {isDesktop ? (
           <DashSidebar viewer={viewer} isOpen={isOpen} />
         ) : (
-            <SwipeableDashSidebar isOpen={isOpen} onToggle={toggle}>
-              <MobileDashSidebar viewer={viewer} handleMenuClick={handleMenuClick} />
-            </SwipeableDashSidebar>
-          )}
+          <SwipeableDashSidebar isOpen={isOpen} onToggle={toggle}>
+            <MobileDashSidebar viewer={viewer} handleMenuClick={handleMenuClick} />
+          </SwipeableDashSidebar>
+        )}
         <DashMain>
           <Switch>
+            <Route path='/meetings' component={MeetingsDashRoot} />
             <Route path='/me' component={UserDashboard} />
             <Route path='/team/:teamId' component={TeamRoot} />
             <Route path='/newteam/:defaultOrgId?' component={NewTeam} />
