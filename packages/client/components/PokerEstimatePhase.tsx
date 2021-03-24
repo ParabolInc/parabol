@@ -101,9 +101,6 @@ graphql`
     ...PokerEstimateHeaderCardJira_stage
     ...PokerEstimateHeaderCardParabol_stage
     service
-    story {
-      id
-    }
   }
 `
 export default createFragmentContainer(PokerEstimatePhase, {
