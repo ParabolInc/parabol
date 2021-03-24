@@ -14,6 +14,7 @@ import isAndroid from '~/utils/draftjs/isAndroid'
 import useAtmosphere from '../hooks/useAtmosphere'
 import UpdateTaskMutation from '../mutations/UpdateTaskMutation'
 import {ICON_SIZE} from '../styles/typographyV2'
+import {DeepNonNullable} from '../types/generics'
 import convertToTaskContent from '../utils/draftjs/convertToTaskContent'
 import {PokerEstimateHeaderCardParabol_stage} from '../__generated__/PokerEstimateHeaderCardParabol_stage.graphql'
 import CardButton from './CardButton'
@@ -36,6 +37,17 @@ const HeaderCard = styled('div')({
   margin: '0 auto',
   width: '100%',
   position: 'relative'
+})
+
+const ErrorCard = styled('div')({
+  alignItems: 'flex-start',
+  background: PALETTE.WHITE,
+  borderRadius: 4,
+  boxShadow: Elevation.Z1,
+  padding: '12px 8px 12px 16px',
+  maxWidth: 1504, // matches widest dimension column 1600 - padding etc.
+  margin: '0 auto',
+  width: '100%'
 })
 
 const CardIcons = styled('div')({
@@ -87,20 +99,39 @@ const Content = styled('div')({
   paddingRight: 4
 })
 
+const CardTitle = styled('h1')({
+  fontSize: 16,
+  lineHeight: '24px',
+  margin: '0 0 8px'
+})
+
+const CardTitleWrapper = styled('div')({
+  display: 'flex',
+  justifyContent: 'space-between',
+  alignItems: 'flex-start',
+  width: '100%'
+})
+
+const CardDescription = styled('div')({
+  color: PALETTE.SLATE_700,
+  fontWeight: 'normal',
+  lineHeight: '20px',
+  fontSize: 14,
+  margin: 0,
+  height: '100%'
+})
+
 interface Props {
   stage: PokerEstimateHeaderCardParabol_stage
 }
 
-type Story = Required<NonNullable<NonNullable<PokerEstimateHeaderCardParabol_stage>['story']>>
-
 const PokerEstimateHeaderCardParabol = (props: Props) => {
   const {stage} = props
   const {story} = stage
-  const {content, id: taskId, teamId, integration} = story as Story
   const atmosphere = useAtmosphere()
   const [isExpanded, setIsExpanded] = useState(false)
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
-  const [editorState, setEditorState] = useEditorState(content)
+  const [editorState, setEditorState] = useEditorState(story?.content)
   const editorRef = useRef<HTMLTextAreaElement>(null)
   const descriptionRef = useRef<HTMLDivElement>(null)
   const maxHeight = Math.min(descriptionRef.current?.scrollHeight ?? 300, 300)
@@ -108,9 +139,25 @@ const PokerEstimateHeaderCardParabol = (props: Props) => {
     () => () => {
       setIsExpanded(false)
     },
-    [taskId]
+    [story?.id]
   )
-  const {useTaskChild} = useTaskChildFocus(taskId)
+  const {useTaskChild} = useTaskChildFocus(story?.id || '')
+  if (!story) {
+    // the Parabol task may have been removed
+    return (
+      <HeaderCardWrapper isDesktop={isDesktop}>
+        <ErrorCard>
+          <CardTitleWrapper>
+            <CardTitle>{`That story doesn't exist!`}</CardTitle>
+          </CardTitleWrapper>
+          <CardDescription>
+            {`The story may have been removed. If you want to vote on this story, try to re-add it.`}
+          </CardDescription>
+        </ErrorCard>
+      </HeaderCardWrapper>
+    )
+  }
+  const {content, id: taskId, teamId, integration} = story as DeepNonNullable<typeof story>
   const onBlur = () => {
     if (isAndroid) {
       const editorEl = editorRef.current
@@ -138,42 +185,41 @@ const PokerEstimateHeaderCardParabol = (props: Props) => {
     }
     UpdateTaskMutation(atmosphere, {updatedTask, area: 'meeting'}, {})
   }
+
   return (
-    <>
-      <HeaderCardWrapper isDesktop={isDesktop}>
-        <HeaderCard>
-          <Content>
-            <EditorWrapper
-              ref={descriptionRef}
-              isExpanded={isExpanded}
-              maxHeight={maxHeight}
-              onBlur={onBlur}
-            >
-              <StyledTaskEditor
-                dataCy={`task`}
-                editorRef={editorRef}
-                editorState={editorState}
-                setEditorState={setEditorState}
-                teamId={teamId}
-                useTaskChild={useTaskChild}
-              />
-            </EditorWrapper>
-            <StyledTaskIntegrationLink
+    <HeaderCardWrapper isDesktop={isDesktop}>
+      <HeaderCard>
+        <Content>
+          <EditorWrapper
+            ref={descriptionRef}
+            isExpanded={isExpanded}
+            maxHeight={maxHeight}
+            onBlur={onBlur}
+          >
+            <StyledTaskEditor
               dataCy={`task`}
-              integration={integration || null}
-              showJiraLabelPrefix={false}
-            >
-              <StyledIcon>launch</StyledIcon>
-            </StyledTaskIntegrationLink>
-          </Content>
-          <CardIcons>
-            <CardButton>
-              <IconLabel icon='unfold_more' onClick={() => setIsExpanded(!isExpanded)} />
-            </CardButton>
-          </CardIcons>
-        </HeaderCard>
-      </HeaderCardWrapper>
-    </>
+              editorRef={editorRef}
+              editorState={editorState}
+              setEditorState={setEditorState}
+              teamId={teamId}
+              useTaskChild={useTaskChild}
+            />
+          </EditorWrapper>
+          <StyledTaskIntegrationLink
+            dataCy={`task`}
+            integration={integration || null}
+            showJiraLabelPrefix={false}
+          >
+            <StyledIcon>launch</StyledIcon>
+          </StyledTaskIntegrationLink>
+        </Content>
+        <CardIcons>
+          <CardButton>
+            <IconLabel icon='unfold_more' onClick={() => setIsExpanded(!isExpanded)} />
+          </CardButton>
+        </CardIcons>
+      </HeaderCard>
+    </HeaderCardWrapper>
   )
 }
 

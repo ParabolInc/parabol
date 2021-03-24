@@ -19,6 +19,7 @@ import ResponsiveDashSidebar from './ResponsiveDashSidebar'
 import styled from '@emotion/styled'
 import useGotoStageId from '~/hooks/useGotoStageId'
 import useRightDrawer from '~/hooks/useRightDrawer'
+import ErrorBoundary from './ErrorBoundary'
 
 const StyledMeetingHeaderAndPhase = styled(MeetingHeaderAndPhase)<{isOpen: boolean}>(
   ({isOpen}) => ({
@@ -57,7 +58,7 @@ const PokerEstimatePhase = (props: Props) => {
   } = meeting
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const toggleDrawer = useRightDrawer(meetingId)
-  if (!localStage || !localStage.story) return null
+  if (!localStage) return null
   const {service} = localStage
   return (
     <MeetingContent>
@@ -74,8 +75,10 @@ const PokerEstimatePhase = (props: Props) => {
           <PhaseHeaderDescription>{'Estimate each story as a team'}</PhaseHeaderDescription>
         </MeetingTopBar>
         <StoryAndEstimateWrapper>
-          {service === 'jira' && <PokerEstimateHeaderCardJira stage={localStage} />}
-          {service === 'PARABOL' && <PokerEstimateHeaderCardParabol stage={localStage} />}
+          <ErrorBoundary>
+            {service === 'jira' && <PokerEstimateHeaderCardJira stage={localStage} />}
+            {service === 'PARABOL' && <PokerEstimateHeaderCardParabol stage={localStage} />}
+          </ErrorBoundary>
           <EstimateAreaWrapper>
             <EstimatePhaseArea gotoStageId={gotoStageId} meeting={meeting} />
           </EstimateAreaWrapper>
