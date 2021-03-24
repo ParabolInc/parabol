@@ -1,5 +1,4 @@
 import {r} from 'rethinkdb-ts'
-import MeetingMember from '../database/types/MeetingMember'
 import Organization from '../database/types/Organization'
 import SlackAuth from '../database/types/SlackAuth'
 import SlackNotification from '../database/types/SlackNotification'
@@ -7,6 +6,7 @@ import TeamInvitation from '../database/types/TeamInvitation'
 import TeamMember from '../database/types/TeamMember'
 import getRethinkConfig from './getRethinkConfig'
 import {R} from './stricterR'
+import ActionMeetingMember from './types/ActionMeetingMember'
 import AgendaItem from './types/AgendaItem'
 import AtlassianAuth from './types/AtlassianAuth'
 import Comment from './types/Comment'
@@ -30,9 +30,11 @@ import NotificationTeamArchived from './types/NotificationTeamArchived'
 import NotificationTeamInvitation from './types/NotificationTeamInvitation'
 import OrganizationUser from './types/OrganizationUser'
 import PasswordResetRequest from './types/PasswordResetRequest'
+import PokerMeetingMember from './types/PokerMeetingMember'
 import PushInvitation from './types/PushInvitation'
 import Reflection from './types/Reflection'
 import ReflectionGroup from './types/ReflectionGroup'
+import RetroMeetingMember from './types/RetroMeetingMember'
 import RetrospectivePrompt from './types/RetrospectivePrompt'
 import SAML from './types/SAML'
 import ScheduledJob from './types/ScheduledJob'
@@ -92,7 +94,7 @@ export type RethinkSchema = {
     index: 'teamId'
   }
   MeetingMember: {
-    type: MeetingMember
+    type: PokerMeetingMember | RetroMeetingMember | ActionMeetingMember
     index: 'meetingId' | 'teamId' | 'userId'
   }
   NewMeeting: {

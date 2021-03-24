@@ -1,5 +1,6 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import toTeamMemberId from '../../../client/utils/relay/toTeamMemberId'
 import getRethink from '../../database/rethinkDriver'
 import {MeetingTypeEnum} from '../../database/types/Meeting'
 import MeetingPoker from '../../database/types/MeetingPoker'
@@ -16,6 +17,7 @@ import StartSprintPokerPayload from '../types/StartSprintPokerPayload'
 import createNewMeetingPhases from './helpers/createNewMeetingPhases'
 import {startSlackMeeting} from './helpers/notifySlack'
 import sendMeetingStartToSegment from './helpers/sendMeetingStartToSegment'
+import updateTeamByTeamId from '../../postgres/queries/updateTeamByTeamId'
 
 const freezeTemplateAsRef = async (templateId: string, dataLoader: DataLoaderWorker) => {
   const pg = getPg()
@@ -135,16 +137,27 @@ export default {
       return {error: {message: 'Meeting already started'}}
     }
 
+    const teamMemberId = toTeamMemberId(teamId, viewerId)
+    const teamMember = await dataLoader.get('teamMembers').load(teamMemberId)
+    const {isSpectatingPoker} = teamMember
     await Promise.all([
       r
         .table('MeetingMember')
-        .insert(new PokerMeetingMember({meetingId, userId: viewerId, teamId}))
+        .insert(
+          new PokerMeetingMember({
+            meetingId,
+            userId: viewerId,
+            teamId,
+            isSpectating: isSpectatingPoker
+          })
+        )
         .run(),
       r
         .table('Team')
         .get(teamId)
         .update({lastMeetingType: meetingType})
-        .run()
+        .run(),
+      updateTeamByTeamId({lastMeetingType: meetingType}, teamId)
     ])
     startSlackMeeting(meetingId, teamId, dataLoader).catch(console.log)
     sendMeetingStartToSegment(meeting, template)

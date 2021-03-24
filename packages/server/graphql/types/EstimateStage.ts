@@ -9,7 +9,7 @@ import {
   GraphQLString
 } from 'graphql'
 import {SprintPokerDefaults} from '~/types/constEnums'
-import getJiraCloudIdAndKey from '../../../client/utils/getJiraCloudIdAndKey'
+import JiraServiceTaskId from '../../../client/shared/gqlIds/JiraServiceTaskId'
 import {NewMeetingPhaseTypeEnum} from '../../database/types/GenericMeetingPhase'
 import MeetingPoker from '../../database/types/MeetingPoker'
 import db from '../../db'
@@ -64,7 +64,7 @@ const EstimateStage = new GraphQLObjectType<any, GQLContext>({
           const {dimensions} = templateRef
           const dimensionRef = dimensions[dimensionRefIdx]
           const {name: dimensionName} = dimensionRef
-          const [cloudId, , projectKey] = getJiraCloudIdAndKey(serviceTaskId)
+          const {cloudId, projectKey} = JiraServiceTaskId.split(serviceTaskId)
           const jiraDimensionFields = team.jiraDimensionFields || []
           const existingDimensionField = jiraDimensionFields.find(
             (field) =>
@@ -146,7 +146,7 @@ const EstimateStage = new GraphQLObjectType<any, GQLContext>({
         'the story referenced in the stage. Either a Parabol Task or something similar from an integration. Null if fetching from service failed',
       resolve: async ({service, serviceTaskId, teamId, creatorUserId}, _args, {dataLoader}) => {
         if (service === 'jira') {
-          const [cloudId, issueKey] = getJiraCloudIdAndKey(serviceTaskId)
+          const {cloudId, issueKey} = JiraServiceTaskId.split(serviceTaskId)
           return dataLoader
             .get('jiraIssue')
             .load({cloudId, issueKey, teamId, userId: creatorUserId})

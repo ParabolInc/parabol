@@ -10,6 +10,7 @@ import segmentIo from '../../../utils/segmentIo'
 import addSeedTasks from './addSeedTasks'
 import createNewOrg from './createNewOrg'
 import createTeamAndLeader from './createTeamAndLeader'
+import insertUser from '../../../postgres/queries/insertUser'
 
 // no waiting necessary, it's just analytics
 const handleSegment = async (user: User, isInvited: boolean) => {
@@ -41,10 +42,14 @@ const bootstrapNewUser = async (newUser: User, isOrganic: boolean) => {
   const {id: userId, preferredName, email} = newUser
   const r = await getRethink()
   const joinEvent = new TimelineEventJoinedParabol({userId})
-  await r({
-    user: r.table('User').insert(newUser),
-    event: r.table('TimelineEvent').insert(joinEvent)
-  }).run()
+
+  await Promise.all([
+    r({
+      user: r.table('User').insert(newUser),
+      event: r.table('TimelineEvent').insert(joinEvent)
+    }).run(),
+    insertUser(newUser)
+  ])
 
   const tms = [] as string[]
   if (isOrganic) {
