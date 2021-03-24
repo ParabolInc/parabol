@@ -1,10 +1,10 @@
 import React, {ReactNode} from 'react'
 import styled from '@emotion/styled'
 import Icon from './Icon'
-import {PALETTE} from '~/styles/paletteV2'
+import {PALETTE} from '~/styles/paletteV3'
 
 const Banner = styled('div')({
-  border: `1px dashed ${PALETTE.BORDER_GRAY}`,
+  border: `1px dashed ${PALETTE.SLATE_400}`,
   borderRadius: 4,
   display: 'flex',
   fontSize: 14,
@@ -14,7 +14,7 @@ const Banner = styled('div')({
 })
 
 const StyledIcon = styled(Icon)({
-  color: PALETTE.TEXT_GRAY,
+  color: PALETTE.SLATE_600,
   marginRight: 16
 })
 

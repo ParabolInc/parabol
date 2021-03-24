@@ -1,11 +1,11 @@
 import styled from '@emotion/styled'
 import React from 'react'
-import {PALETTE} from '../styles/paletteV2'
+import {PALETTE} from '../styles/paletteV3'
 import Icon from './Icon'
 
 const Label = styled('span')({
   alignItems: 'center',
-  color: PALETTE.TEXT_MAIN,
+  color: PALETTE.SLATE_700,
   display: 'flex',
   fontSize: 15,
   lineHeight: '32px',
@@ -14,7 +14,7 @@ const Label = styled('span')({
 })
 
 const StyledIcon = styled(Icon)({
-  color: PALETTE.TEXT_GRAY,
+  color: PALETTE.SLATE_600,
   paddingRight: 12
 })
 

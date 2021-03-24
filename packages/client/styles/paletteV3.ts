@@ -1,3 +1,13 @@
+// Note: Not all weight variants of the expanded palette are available.
+//       We only add variables when new variants are used in design.
+//       As a design choice, we use constraint when adding weights from the expanded palette.
+//       We try to only use the limited palette, but weighted variants
+//       can help with subtle color changes in states like hover, or disabled.
+//       The limited palette is here:
+//       https://www.figma.com/file/OA9NkpSTlHVqqRL9IE9KsF/Palette-v3?node-id=15%3A366
+//       The expanded palette is here:
+//       https://www.figma.com/file/OA9NkpSTlHVqqRL9IE9KsF/Palette-v3?node-id=15%3A2184
+
 export const enum PALETTE {
   AQUA_400 = '#55C0CF',
 
@@ -6,6 +16,7 @@ export const enum PALETTE {
   FUSCIA_400 = '#DB70DB',
 
   GOLD_100 = '#FAEBD3',
+  GOLD_200 = '#FADC9E',
   GOLD_300 = '#FFCC63',
   GOLD_500 = '#DE8E02',
   GOLD_700 = '#855000',
@@ -47,10 +58,13 @@ export const enum PALETTE {
   SLATE_900_32 = '#1C1C2152', // SLATE_900 at 32% opacity
 
   TERRA_300 = '#FE975D',
+  TERRA_500 = '#D35D22',
 
   TOMATO_100 = '#FFE2E0',
+  TOMATO_200 = '#FFC1BD',
   TOMATO_500 = '#FD6157',
   TOMATO_600 = '#F23B31',
+  TOMATO_700 = '#D5211A',
   TOMATO_800 = '#9F201E',
 
   WHITE = '#FFFFFF'

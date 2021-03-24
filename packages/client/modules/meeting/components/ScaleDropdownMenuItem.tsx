@@ -3,7 +3,7 @@ import graphql from 'babel-plugin-relay/macro'
 import React, {forwardRef} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import textOverflow from '~/styles/helpers/textOverflow'
-import {PALETTE} from '~/styles/paletteV2'
+import {PALETTE} from '~/styles/paletteV3'
 import {FONT_FAMILY} from '~/styles/typographyV2'
 import Icon from '../../../components/Icon'
 import MenuItem from '../../../components/MenuItem'
@@ -40,7 +40,7 @@ const ScaleNameAndValues = styled('div')({
 
 const ScaleName = styled('div')({
   ...textOverflow,
-  color: PALETTE.TEXT_MAIN,
+  color: PALETTE.SLATE_700,
   display: 'flex',
   fontFamily: FONT_FAMILY.SANS_SERIF,
   fontSize: 16,
@@ -50,7 +50,7 @@ const ScaleName = styled('div')({
 
 const ScaleValues = styled('div')({
   ...textOverflow,
-  color: PALETTE.TEXT_GRAY,
+  color: PALETTE.SLATE_600,
   fontFamily: FONT_FAMILY.SANS_SERIF,
   fontSize: 12,
   lineHeight: '16px'

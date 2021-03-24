@@ -4,22 +4,22 @@ import React, {useRef, useState} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import useBreakpoint from '~/hooks/useBreakpoint'
 import {Elevation} from '~/styles/elevation'
-import {PALETTE} from '~/styles/paletteV2'
+import {PALETTE} from '~/styles/paletteV3'
 import {Breakpoint} from '~/types/constEnums'
-import {DeepNonNullable} from '../types/generics'
+import JiraServiceTaskId from '../shared/gqlIds/JiraServiceTaskId'
 import {ICON_SIZE} from '../styles/typographyV2'
+import {DeepNonNullable} from '../types/generics'
 import {PokerEstimateHeaderCardJira_stage} from '../__generated__/PokerEstimateHeaderCardJira_stage.graphql'
 import CardButton from './CardButton'
 import Icon from './Icon'
 import IconLabel from './IconLabel'
-import getJiraCloudIdAndKey from '../utils/getJiraCloudIdAndKey'
 const HeaderCardWrapper = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   display: 'flex',
   padding: isDesktop ? '0px 16px 4px' : '0px 8px 4px'
 }))
 
 const HeaderCard = styled('div')({
-  background: PALETTE.CONTROL_LIGHT,
+  background: PALETTE.WHITE,
   borderRadius: 4,
   boxShadow: Elevation.Z1,
   padding: '12px 16px',
@@ -31,7 +31,7 @@ const HeaderCard = styled('div')({
 const CardTitle = styled('h1')({
   fontSize: 16,
   lineHeight: '24px',
-  margin: 0
+  margin: '0 0 8px'
 })
 
 const CardIcons = styled('div')({
@@ -41,20 +41,22 @@ const CardIcons = styled('div')({
 const CardTitleWrapper = styled('div')({
   display: 'flex',
   justifyContent: 'space-between',
-  alignItems: 'center',
+  alignItems: 'flex-start',
   width: '100%'
 })
 
-const CardDescription = styled('div')<{isExpanded: boolean, maxHeight: number}>(({isExpanded, maxHeight}) => ({
-  color: PALETTE.TEXT_MAIN,
-  fontWeight: 'normal',
-  lineHeight: '20px',
-  fontSize: 14,
-  margin: 0,
-  maxHeight: isExpanded ? maxHeight : 30,
-  overflow: 'hidden',
-  transition: 'all 300ms'
-}))
+const CardDescription = styled('div')<{isExpanded: boolean; maxHeight: number}>(
+  ({isExpanded, maxHeight}) => ({
+    color: PALETTE.SLATE_700,
+    fontWeight: 'normal',
+    lineHeight: '20px',
+    fontSize: 14,
+    margin: 0,
+    maxHeight: isExpanded ? maxHeight : 30,
+    overflowY: 'auto',
+    transition: 'all 300ms'
+  })
+)
 
 const StyledIcon = styled(Icon)({
   fontSize: ICON_SIZE.MD18,
@@ -62,18 +64,17 @@ const StyledIcon = styled(Icon)({
 })
 
 const StyledLink = styled('a')({
-  color: PALETTE.LINK_BLUE,
+  color: PALETTE.SKY_500,
   display: 'flex',
   fontSize: 12,
   lineHeight: '20px',
+  marginTop: '10px',
   textDecoration: 'none'
 })
 
 const StyledLabel = styled('span')({
   fontSize: 12
 })
-
-
 
 interface Props {
   stage: PokerEstimateHeaderCardJira_stage
@@ -83,14 +84,14 @@ const PokerEstimateHeaderCardJira = (props: Props) => {
   const {serviceTaskId, story} = stage
   const [isExpanded, setIsExpanded] = useState(false)
   const descriptionRef = useRef<HTMLDivElement>(null)
-  const maxHeight = descriptionRef.current?.scrollHeight ?? 1000
+  const maxHeight = Math.min(descriptionRef.current?.scrollHeight ?? 300, 300)
   const toggleExpand = () => {
     setIsExpanded(!isExpanded)
   }
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   if (!story) {
     // Jira is down, show something
-    const [, issueKey] = getJiraCloudIdAndKey(serviceTaskId)
+    const {issueKey} = JiraServiceTaskId.split(serviceTaskId)
     return (
       <HeaderCardWrapper isDesktop={isDesktop}>
         <HeaderCard>
@@ -105,7 +106,6 @@ const PokerEstimateHeaderCardJira = (props: Props) => {
     )
   }
   const {key, summary, descriptionHTML, url} = story as DeepNonNullable<typeof story>
-
   return (
     <HeaderCardWrapper isDesktop={isDesktop}>
       <HeaderCard>
@@ -117,7 +117,12 @@ const PokerEstimateHeaderCardJira = (props: Props) => {
             </CardButton>
           </CardIcons>
         </CardTitleWrapper>
-        <CardDescription ref={descriptionRef} maxHeight={maxHeight} isExpanded={isExpanded} dangerouslySetInnerHTML={{__html: descriptionHTML}} />
+        <CardDescription
+          ref={descriptionRef}
+          maxHeight={maxHeight}
+          isExpanded={isExpanded}
+          dangerouslySetInnerHTML={{__html: descriptionHTML}}
+        />
         <StyledLink
           href={url}
           rel='noopener noreferrer'
@@ -132,20 +137,18 @@ const PokerEstimateHeaderCardJira = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(
-  PokerEstimateHeaderCardJira,
-  {
-    stage: graphql`
+export default createFragmentContainer(PokerEstimateHeaderCardJira, {
+  stage: graphql`
     fragment PokerEstimateHeaderCardJira_stage on EstimateStage {
       serviceTaskId
       story {
-        ...on JiraIssue {
+        ... on JiraIssue {
           key
           summary
           descriptionHTML
           url
         }
       }
-    }`
-  }
-)
+    }
+  `
+})

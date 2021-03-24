@@ -1,4 +1,4 @@
-import {PALETTE} from 'parabol-client/styles/paletteV2'
+import {PALETTE} from 'parabol-client/styles/paletteV3'
 import {MEETING_SUMMARY_LABEL} from 'parabol-client/utils/constants'
 import React from 'react'
 import appOrigin from '../appOrigin'
@@ -36,7 +36,7 @@ const newMeetingSummaryEmailCreator = async (props: Props) => {
     bodyContent,
     title: subject,
     previewText: subject,
-    bgColor: PALETTE.BACKGROUND_MAIN
+    bgColor: PALETTE.SLATE_200
   })
 
   return {

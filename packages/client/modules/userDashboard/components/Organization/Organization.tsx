@@ -14,7 +14,7 @@ import UserSettingsWrapper from '../UserSettingsWrapper/UserSettingsWrapper'
 import defaultOrgAvatar from '../../../../styles/theme/images/avatar-organization.svg'
 import OrganizationDetails from './OrganizationDetails'
 import OrganizationPage from './OrganizationPage'
-import {PALETTE} from '../../../../styles/paletteV2'
+import {PALETTE} from '../../../../styles/paletteV3'
 import useModal from '../../../../hooks/useModal'
 import useDocumentTitle from '../../../../hooks/useDocumentTitle'
 
@@ -28,7 +28,7 @@ const AvatarAndName = styled('div')({
 
 const OrgNameAndDetails = styled('div')({
   alignItems: 'flex-start',
-  color: PALETTE.TEXT_GRAY,
+  color: PALETTE.SLATE_600,
   display: 'flex',
   flex: 1,
   flexDirection: 'column',
@@ -45,7 +45,7 @@ const AvatarBlock = styled('div')({
 })
 
 const OrgNameBlock = styled('div')({
-  color: PALETTE.TEXT_MAIN,
+  color: PALETTE.SLATE_700,
   fontSize: 24,
   lineHeight: '36px'
 })

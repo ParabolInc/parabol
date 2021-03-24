@@ -10,7 +10,7 @@ import useForceUpdate from '../../hooks/useForceUpdate'
 import useTooltip from '../../hooks/useTooltip'
 import SetPhaseFocusMutation from '../../mutations/SetPhaseFocusMutation'
 import {DECELERATE} from '../../styles/animation'
-import {PALETTE} from '../../styles/paletteV2'
+import {PALETTE} from '../../styles/paletteV3'
 import {BezierCurve, ElementWidth, Gutters} from '../../types/constEnums'
 import getNextSortOrder from '../../utils/getNextSortOrder'
 import {PhaseItemColumn_meeting} from '../../__generated__/PhaseItemColumn_meeting.graphql'
@@ -30,7 +30,7 @@ const ColumnWrapper = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
 }))
 
 const ColumnHighlight = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
-  backgroundColor: PALETTE.BACKGROUND_REFLECTION,
+  backgroundColor: PALETTE.SLATE_300,
   borderRadius: 8,
   display: 'flex',
   flex: 1,
@@ -70,7 +70,7 @@ const ReflectionStackSection = styled('div')<{isDesktop: boolean}>(({isDesktop})
 }))
 
 const Description = styled('div')({
-  color: PALETTE.TEXT_MAIN,
+  color: PALETTE.SLATE_700,
   fontSize: 12,
   fontStyle: 'italic',
   fontWeight: 400,
@@ -87,7 +87,7 @@ const ColorSpacer = styled('div')({
 const ColumnColorDrop = styled('div')<{groupColor: string; isFocused: boolean}>(
   ({groupColor, isFocused}) => ({
     backgroundColor: groupColor,
-    boxShadow: `0 0 0 1px ${PALETTE.BACKGROUND_MAIN}`,
+    boxShadow: `0 0 0 1px ${PALETTE.SLATE_200}`,
     borderRadius: '50%',
     display: 'inline-block',
     verticalAlign: 'middle',

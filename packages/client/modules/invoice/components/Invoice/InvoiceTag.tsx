@@ -2,7 +2,7 @@ import React from 'react'
 import {InvoiceStatusEnum} from '~/__generated__/InvoiceRow_invoice.graphql'
 import styled from '@emotion/styled'
 import {Breakpoint} from '../../../../types/constEnums'
-import {PALETTE} from '../../../../styles/paletteV2'
+import {PALETTE} from '../../../../styles/paletteV3'
 import BaseTag from '../../../../components/Tag/BaseTag'
 
 const TagBlock = styled('div')({
@@ -16,8 +16,8 @@ const TagBlock = styled('div')({
 })
 
 const StyledBaseTag = styled(BaseTag)({
-  backgroundColor: PALETTE.BACKGROUND_MAIN,
-  color: PALETTE.TEXT_MAIN
+  backgroundColor: PALETTE.SLATE_200,
+  color: PALETTE.SLATE_700
 })
 
 const lookup = {

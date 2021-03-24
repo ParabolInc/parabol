@@ -2,7 +2,7 @@ import React from 'react'
 import {TierLabel} from '../../types/constEnums'
 import {TierEnum} from '../../__generated__/NewMeeting_viewer.graphql'
 import styled from '@emotion/styled'
-import {PALETTE} from '../../styles/paletteV2'
+import {PALETTE} from '../../styles/paletteV3'
 import BaseTag from './BaseTag'
 
 interface Props {
@@ -11,17 +11,17 @@ interface Props {
 }
 
 const PersonalTag = styled(BaseTag)({
-  backgroundColor: PALETTE.BACKGROUND_MAIN,
-  color: PALETTE.TEXT_MAIN
+  backgroundColor: PALETTE.SLATE_200,
+  color: PALETTE.SLATE_700
 })
 
 const ProTag = styled(BaseTag)({
-  backgroundColor: PALETTE.BACKGROUND_YELLOW,
-  color: PALETTE.TEXT_PURPLE
+  backgroundColor: PALETTE.GOLD_300,
+  color: PALETTE.GRAPE_700
 })
 
 const EnterpriseTag = styled(BaseTag)({
-  backgroundColor: PALETTE.BACKGROUND_BLUE,
+  backgroundColor: PALETTE.SKY_500,
   color: '#FFFFFF'
 })
 

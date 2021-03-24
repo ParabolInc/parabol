@@ -4,8 +4,8 @@ import {createFragmentContainer} from 'react-relay'
 import useAtmosphere from '../hooks/useAtmosphere'
 import {MenuProps} from '../hooks/useMenu'
 import UpdateJiraDimensionFieldMutation from '../mutations/UpdateJiraDimensionFieldMutation'
+import JiraServiceTaskId from '../shared/gqlIds/JiraServiceTaskId'
 import {SprintPokerDefaults} from '../types/constEnums'
-import getJiraCloudIdAndKey from '../utils/getJiraCloudIdAndKey'
 import {JiraFieldMenu_stage} from '../__generated__/JiraFieldMenu_stage.graphql'
 import {JiraFieldMenu_viewer} from '../__generated__/JiraFieldMenu_viewer.graphql'
 import Menu from './Menu'
@@ -29,7 +29,7 @@ const JiraFieldMenu = (props: Props) => {
   const serverFields = viewer?.teamMember?.integrations.atlassian?.jiraFields ?? []
   const atmosphere = useAtmosphere()
   const {portalStatus, isDropdown, closePortal} = menuProps
-  const [cloudId, , projectKey] = getJiraCloudIdAndKey(serviceTaskId)
+  const {cloudId, projectKey} = JiraServiceTaskId.split(serviceTaskId)
   const handleClick = (fieldName: string) => () => {
     UpdateJiraDimensionFieldMutation(atmosphere, {
       dimensionName,
@@ -52,8 +52,8 @@ const JiraFieldMenu = (props: Props) => {
     const child = isLoading ? (
       <MockJiraFieldList />
     ) : (
-        <MenuItem key={'noResults'} label={'<<Cannot connect to Jira>>'} />
-      )
+      <MenuItem key={'noResults'} label={'<<Cannot connect to Jira>>'} />
+    )
     return (
       <Menu ariaLabel={'Loading'} portalStatus={portalStatus} isDropdown={isDropdown}>
         {child}

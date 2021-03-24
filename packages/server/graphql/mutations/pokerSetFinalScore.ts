@@ -2,16 +2,16 @@ import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import {SprintPokerDefaults, SubscriptionChannel} from 'parabol-client/types/constEnums'
 import makeAppURL from 'parabol-client/utils/makeAppURL'
 import isPhaseComplete from 'parabol-client/utils/meetings/isPhaseComplete'
-import getJiraCloudIdAndKey from '../../../client/utils/getJiraCloudIdAndKey'
+import JiraServiceTaskId from '../../../client/shared/gqlIds/JiraServiceTaskId'
 import appOrigin from '../../appOrigin'
 import getRethink from '../../database/rethinkDriver'
 import EstimatePhase from '../../database/types/EstimatePhase'
 import MeetingPoker from '../../database/types/MeetingPoker'
 import {TaskServiceEnum} from '../../database/types/Task'
 import updateStage from '../../database/updateStage'
+import getTemplateRefById from '../../postgres/queries/getTemplateRefById'
 import AtlassianServerManager from '../../utils/AtlassianServerManager'
 import {getUserId, isTeamMember} from '../../utils/authorization'
-import getTemplateRefById from '../../postgres/queries/getTemplateRefById'
 import makeScoreJiraComment from '../../utils/makeScoreJiraComment'
 import publish from '../../utils/publish'
 import {GQLContext} from '../graphql'
@@ -52,7 +52,7 @@ const pokerSetFinalScore = {
       phases,
       meetingType,
       teamId,
-      defaultFacilitatorUserId,
+      createdBy,
       facilitatorUserId,
       templateRefId,
       name: meetingName
@@ -70,7 +70,7 @@ const pokerSetFinalScore = {
       return {error: {message: 'Estimate phase is already complete'}}
     }
     if (viewerId !== facilitatorUserId) {
-      if (viewerId !== defaultFacilitatorUserId) {
+      if (viewerId !== createdBy) {
         return {
           error: {message: 'Not meeting facilitator'}
         }
@@ -104,7 +104,7 @@ const pokerSetFinalScore = {
         return {error: {message: 'User no longer has access to Atlassian'}}
       }
       const {accessToken} = auth
-      const [cloudId, issueKey, projectKey] = getJiraCloudIdAndKey(serviceTaskId)
+      const {cloudId, issueKey, projectKey} = JiraServiceTaskId.split(serviceTaskId)
       const manager = new AtlassianServerManager(accessToken)
       const team = await dataLoader.get('teams').load(teamId)
       const jiraDimensionFields = team.jiraDimensionFields || []

@@ -11,7 +11,7 @@ import useGotoStageId from '~/hooks/useGotoStageId'
 import useInitialRender from '~/hooks/useInitialRender'
 import useLeft from '~/hooks/useLeft'
 import useTransition, {TransitionStatus} from '~/hooks/useTransition'
-import {PALETTE} from '~/styles/paletteV2'
+import {PALETTE} from '~/styles/paletteV3'
 import {BezierCurve, Breakpoint, ElementWidth, ZIndex} from '~/types/constEnums'
 import {NewMeetingPhaseTypeEnum} from '../__generated__/MeetingControlBar_meeting.graphql'
 import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
@@ -30,7 +30,7 @@ const Wrapper = styled('div')<{left: number}>(({left}) => ({
   backgroundColor: '#FFFFFF',
   bottom: 0,
   boxShadow: bottomBarShadow,
-  color: PALETTE.TEXT_GRAY,
+  color: PALETTE.SLATE_600,
   display: 'flex',
   flexWrap: 'nowrap',
   fontSize: 14,

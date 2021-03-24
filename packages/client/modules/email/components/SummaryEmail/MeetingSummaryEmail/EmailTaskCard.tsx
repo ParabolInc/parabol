@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {convertFromRaw, Editor, EditorState} from 'draft-js'
 import editorDecorators from 'parabol-client/components/TaskEditor/decorators'
-import {PALETTE} from 'parabol-client/styles/paletteV2'
+import {PALETTE} from 'parabol-client/styles/paletteV3'
 import {FONT_FAMILY} from 'parabol-client/styles/typographyV2'
 import {taskStatusColors} from 'parabol-client/utils/taskStatus'
 import {EmailTaskCard_task} from 'parabol-client/__generated__/EmailTaskCard_task.graphql'
@@ -14,12 +14,12 @@ interface Props {
 
 const contentStyle = {
   backgroundColor: '#FFFFFF',
-  borderColor: PALETTE.BORDER_LIGHT,
+  borderColor: PALETTE.SLATE_400,
   borderRadius: '4px',
   borderStyle: 'solid',
   borderWidth: '1px',
   boxSizing: 'content-box',
-  color: PALETTE.TEXT_MAIN,
+  color: PALETTE.SLATE_700,
   fontFamily: FONT_FAMILY.SANS_SERIF,
   fontSize: '14px',
   minHeight: '88px',

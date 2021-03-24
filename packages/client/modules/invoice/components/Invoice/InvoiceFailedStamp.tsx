@@ -1,11 +1,11 @@
 import React from 'react'
 import {InvoiceStatusEnum} from '~/__generated__/InvoiceRow_invoice.graphql'
 import styled from '@emotion/styled'
-import {PALETTE} from '../../../../styles/paletteV2'
+import {PALETTE} from '../../../../styles/paletteV3'
 import {Breakpoint} from '../../../../types/constEnums'
 
 const FailedStamp = styled('div')({
-  color: PALETTE.TEXT_RED,
+  color: PALETTE.TOMATO_600,
   fontSize: 40,
   fontWeight: 600,
   left: '50%',

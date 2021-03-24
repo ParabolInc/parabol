@@ -1,10 +1,10 @@
-import {PALETTE} from 'parabol-client/styles/paletteV2'
+import {PALETTE} from 'parabol-client/styles/paletteV3'
 import {FONT_FAMILY} from 'parabol-client/styles/typographyV2'
 import {MEETING_NAME} from 'parabol-client/utils/constants'
 import React from 'react'
 
 const promptStyle = {
-  color: PALETTE.TEXT_MAIN,
+  color: PALETTE.SLATE_700,
   fontFamily: FONT_FAMILY.SANS_SERIF,
   fontSize: 24,
   fontWeight: 600,
@@ -12,14 +12,14 @@ const promptStyle = {
 }
 
 const linkStyle = {
-  color: PALETTE.EMPHASIS_WARM,
+  color: PALETTE.ROSE_500,
   fontFamily: FONT_FAMILY.SANS_SERIF,
   fontWeight: 600,
   textDecoration: 'none'
 }
 
 const textStyle = {
-  color: PALETTE.TEXT_MAIN,
+  color: PALETTE.SLATE_700,
   fontFamily: FONT_FAMILY.SANS_SERIF,
   paddingTop: 4
 }
