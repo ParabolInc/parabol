@@ -46,6 +46,8 @@ const dev = async (maybeInit) => {
   const buildDLL = require('./buildDll')()
   const clearRedis = redis.flushall()
   const migrateRethinkDB = require('./migrate')()
+  // wait for the rethinkdb migration to happen n case the pg migration depends on it or closes the connection prematurely
+  await migrateRethinkDB
   const programmaticPgmConfig = {
     dbClient: cliPgmConfig,
     dir: path.join(PROJECT_ROOT, cliPgmConfig['migrations-dir']),
@@ -60,7 +62,7 @@ const dev = async (maybeInit) => {
     await require('./compileRelay')()
   }
   // await compileServers()
-  await Promise.all([clearRedis, migrateRethinkDB, migratePG, buildDLL])
+  await Promise.all([clearRedis, migratePG, buildDLL])
   redis.disconnect()
 }
 
