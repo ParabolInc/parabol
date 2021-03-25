@@ -7,6 +7,7 @@ import MeetingCard from './MeetingCard'
 import useBreakpoint from '../hooks/useBreakpoint'
 import {Breakpoint, Layout, NavSidebar, RightSidebar} from '../types/constEnums'
 import makeMinWidthMediaQuery from '../utils/makeMinWidthMediaQuery'
+import MeetingsDashEmpty from './MeetingsDashEmpty'
 
 interface Props {
   viewer: MeetingsDash_viewer
@@ -15,6 +16,8 @@ interface Props {
 const desktopDashWidestMediaQuery = makeMinWidthMediaQuery(Breakpoint.DASH_BREAKPOINT_WIDEST)
 
 const Wrapper = styled('div')({
+  display: 'flex',
+  height: '100%',
   margin: '0 auto',
   width: '100%',
   [desktopDashWidestMediaQuery]: {
@@ -23,9 +26,12 @@ const Wrapper = styled('div')({
   }
 })
 
-const InnerContainer = styled('div')<{maybeTabletPlus: boolean}>(({maybeTabletPlus}) => ({
+const InnerContainer = styled('div')<{maybeTabletPlus: boolean, hasMeetings: boolean}>(({maybeTabletPlus, hasMeetings}) => ({
+  alignContent: hasMeetings ? 'flex-start' : 'center',
   display: 'flex',
+  flex: 1,
   flexWrap: 'wrap',
+  height: '100%',
   margin: '0 auto',
   maxWidth: Layout.TASK_COLUMNS_MAX_WIDTH,
   padding: maybeTabletPlus ? '16px 0 0 16px' : '16px 16px 0',
@@ -40,10 +46,10 @@ const MeetingsDash = (props: Props) => {
   const maybeTabletPlus = useBreakpoint(Breakpoint.FUZZY_TABLET)
   return (
     <Wrapper>
-      <InnerContainer maybeTabletPlus={maybeTabletPlus}>
+      <InnerContainer hasMeetings={hasMeetings} maybeTabletPlus={maybeTabletPlus}>
         {hasMeetings
           ? <>{activeMeetings.map((meeting, idx) => <MeetingCard key={idx} meeting={meeting} />)}</>
-          : 'No meetings, yay! More focus time! But you can start one below if you need'
+          : <MeetingsDashEmpty />
         }
       </InnerContainer>
     </Wrapper>
