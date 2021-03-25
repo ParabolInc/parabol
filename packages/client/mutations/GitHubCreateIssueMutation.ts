@@ -5,7 +5,13 @@ import {GitHubCreateIssueMutation as TGitHubCreateIssueMutation} from '../__gene
 
 graphql`
   fragment GitHubCreateIssueMutation_meeting on GitHubCreateIssueSuccess {
-    gitHubIssueId
+    gitHubIssue {
+      id
+      url
+      nameWithOwner
+      title
+      description
+    }
     meetingId
     teamId
   }

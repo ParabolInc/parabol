@@ -3575,7 +3575,7 @@ export interface IGitHubIssue {
   __typename: 'GitHubIssue';
 
   /**
-   * TODO
+   * The id of the issue as found in GitHub
    */
   id: string;
 
@@ -11051,7 +11051,7 @@ export interface IGitHubCreateIssueSuccess {
   /**
    * The id of the issue from GitHub
    */
-  gitHubIssueId: string;
+  gitHubIssue: IGitHubIssue;
 
   /**
    * The id of the meeting where the GitHub issue is being created

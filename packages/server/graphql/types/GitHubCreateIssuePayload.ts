@@ -1,13 +1,14 @@
 import {GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import {GQLContext} from '../graphql'
+import GitHubIssue from './GitHubIssue'
 import makeMutationPayload from './makeMutationPayload'
 
 export const GitHubCreateIssueSuccess = new GraphQLObjectType<any, GQLContext>({
   name: 'GitHubCreateIssueSuccess',
   fields: () => ({
-    gitHubIssueId: {
-      type: GraphQLNonNull(GraphQLID),
-      description: 'The id of the issue from GitHub'
+    gitHubIssue: {
+      type: GraphQLNonNull(GitHubIssue),
+      description: 'The GitHub Issue that comes directly from GitHub'
     },
     meetingId: {
       type: GraphQLNonNull(GraphQLID),

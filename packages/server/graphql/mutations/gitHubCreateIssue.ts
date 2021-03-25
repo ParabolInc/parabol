@@ -96,9 +96,17 @@ const gitHubCreateIssue = {
     }
     const {createIssue} = payload
     const issue = createIssue.issue!
-    const {id: gitHubIssueId} = issue
+    const {id: gitHubIssueId, number: issueNumber} = issue
+    const url = `https://github.com/${nameWithOwner}/issues/${issueNumber}`
+    const gitHubIssue = {
+      id: gitHubIssueId,
+      summary: title,
+      url,
+      nameWithOwner,
+      description: ''
+    }
 
-    const data = {meetingId, teamId, gitHubIssueId}
+    const data = {meetingId, teamId, gitHubIssue}
     publish(SubscriptionChannel.MEETING, meetingId, 'GitHubCreateIssueSuccess', data, subOptions)
     return data
   }
