@@ -53,7 +53,7 @@ const executeGraphQL = async (req: GQLRequest) => {
   const variableValues = variables
   const source = query!
   let response: FormattedExecutionResult
-  if (isAdHoc) {
+  if (isAdHoc || process.env.DD_TRACE_ENABLED) {
     response = await graphql({schema, source, variableValues, contextValue})
   } else {
     const compiledQuery = docId
