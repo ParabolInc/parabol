@@ -3,6 +3,7 @@ import * as crypto from 'crypto'
 // @ts-ignore
 import * as _stringify from 'fast-json-stable-stringify'
 import {ColumnDefinitions, MigrationBuilder} from 'node-pg-migrate'
+import {Client} from 'pg'
 import {r} from 'rethinkdb-ts'
 import {parse} from 'url'
 import MeetingPoker from '../../database/types/MeetingPoker'
@@ -10,7 +11,7 @@ import TemplateDimension from '../../database/types/TemplateDimension'
 import TemplateScale from '../../database/types/TemplateScale'
 import {insertTemplateRefQuery} from '../../postgres/queries/generated/insertTemplateRefQuery'
 import {insertTemplateScaleRefQuery} from '../../postgres/queries/generated/insertTemplateScaleRefQuery'
-import getPg from '../getPg'
+import getPgConfig from '../getPgConfig'
 
 export const shorthands: ColumnDefinitions | undefined = undefined
 
@@ -32,7 +33,8 @@ export async function up(): Promise<void> {
     const id = checksum.digest('base64')
     return {id, str}
   }
-  const pg = getPg()
+  const client = new Client(getPgConfig())
+  await client.connect()
 
   const meetings = ((await r
     .table('NewMeeting')
@@ -82,7 +84,7 @@ export async function up(): Promise<void> {
 
   // Handle PG updates
   if (templateScales.length) {
-    await insertTemplateScaleRefQuery.run({templateScales}, pg)
+    await insertTemplateScaleRefQuery.run({templateScales}, client)
   }
 
   await Promise.all(
@@ -160,7 +162,7 @@ export async function up(): Promise<void> {
     })
     .run()
 
-  await pg.end()
+  await client.end()
   await r.getPoolMaster().drain()
 }
 
