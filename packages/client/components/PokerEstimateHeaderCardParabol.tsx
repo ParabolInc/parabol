@@ -135,13 +135,14 @@ const PokerEstimateHeaderCardParabol = (props: Props) => {
   const editorRef = useRef<HTMLTextAreaElement>(null)
   const descriptionRef = useRef<HTMLDivElement>(null)
   const maxHeight = Math.min(descriptionRef.current?.scrollHeight ?? 300, 300)
+  const storyId = story?.id ?? ''
   useEffect(
     () => () => {
       setIsExpanded(false)
     },
     [story?.id]
   )
-  const {useTaskChild} = useTaskChildFocus(story?.id || '')
+  const {useTaskChild} = useTaskChildFocus(storyId)
   if (!story) {
     // the Parabol task may have been removed
     return (
