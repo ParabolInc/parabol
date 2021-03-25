@@ -48,10 +48,7 @@ const gitHubCreateIssue = {
     }
 
     // VALIDATION
-    const [viewerAuth, assigneeAuth] = await dataLoader.get('githubAuth').loadMany([
-      {teamId, userId: viewerId},
-      {teamId, userId: viewerId}
-    ])
+    const viewerAuth = await dataLoader.get('githubAuth').load({teamId, userId: viewerId})
     if (!viewerAuth?.isActive) {
       return standardError(new Error('The viewer does not have access to GitHub'), {
         userId: viewerId
@@ -65,9 +62,9 @@ const gitHubCreateIssue = {
     }
 
     // RESOLUTION
-    const {accessToken} = viewerAuth || assigneeAuth
+    const {accessToken} = viewerAuth
     const manager = new GitHubServerManager(accessToken)
-    const repoInfo = await manager.getRepoInfo(nameWithOwner, assigneeAuth.login)
+    const repoInfo = await manager.getRepoInfo(nameWithOwner, viewerAuth.login)
     if ('message' in repoInfo) {
       return standardError(new Error(repoInfo.message), {userId: viewerId})
     }
