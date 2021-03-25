@@ -1,9 +1,9 @@
 import {EditorState} from 'draft-js'
-import React, {ChangeEvent,ClipboardEvent, RefObject, useEffect, useState} from 'react'
+import React, {ChangeEvent, ClipboardEvent, RefObject, useEffect, useState} from 'react'
 import styled from '@emotion/styled'
 import TextArea from 'react-textarea-autosize'
 import {Card, Gutters} from '../types/constEnums'
-import {PALETTE} from '../styles/paletteV2'
+import {PALETTE} from '../styles/paletteV3'
 
 interface Props {
   className?: string
@@ -20,7 +20,7 @@ interface Props {
 const TextAreaStyles = styled(TextArea)({
   backgroundColor: 'transparent',
   border: 0,
-  color: PALETTE.TEXT_MAIN,
+  color: PALETTE.SLATE_700,
   display: 'block',
   fontSize: Card.FONT_SIZE,
   lineHeight: Card.LINE_HEIGHT,
@@ -47,9 +47,9 @@ const AndroidEditorFallback = (props: Props) => {
   }
 
   const handlePaste = (e: ClipboardEvent) => {
-    if (onPastedText){
-      const clipboardData =  e.clipboardData
-      const pastedText = clipboardData.getData('Text');
+    if (onPastedText) {
+      const clipboardData = e.clipboardData
+      const pastedText = clipboardData.getData('Text')
       onPastedText(pastedText)
     }
   }

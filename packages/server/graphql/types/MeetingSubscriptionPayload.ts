@@ -23,6 +23,7 @@ import RemoveReflectionPayload from './RemoveReflectionPayload'
 import ResetMeetingToStagePayload from './ResetMeetingToStagePayload'
 import {SetAppLocationSuccess} from './SetAppLocationPayload'
 import SetPhaseFocusPayload from './SetPhaseFocusPayload'
+import {SetPokerSpectateSuccess} from './SetPokerSpectatePayload'
 import SetStageTimerPayload from './SetStageTimerPayload'
 import StartDraggingReflectionPayload from './StartDraggingReflectionPayload'
 import {UpdateCommentContentSuccess} from './UpdateCommentContentPayload'
@@ -71,7 +72,8 @@ const types = [
   PokerResetDimensionSuccess,
   PokerAnnounceDeckHoverSuccess,
   PokerSetFinalScoreSuccess,
-  JoinMeetingSuccess
+  JoinMeetingSuccess,
+  SetPokerSpectateSuccess
 ]
 
 export default graphQLSubscriptionType('MeetingSubscriptionPayload', types)

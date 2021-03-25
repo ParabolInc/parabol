@@ -1,13 +1,14 @@
 import {buttonShadow} from 'parabol-client/styles/elevation'
+import {PALETTE} from 'parabol-client/styles/paletteV3'
 
-export const emailBackgroundColor = '#F1F0FA'
+export const emailBackgroundColor = PALETTE.SLATE_200
 export const emailBodyColor = '#FFFFFF'
 export const emailFontFamily =
   '"IBM Plex Sans", -apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue", Arial, sans-serif'
 export const emailFontSize = '16px'
 
 export const emailPrimaryButtonStyle = {
-  backgroundColor: '#FD6157',
+  backgroundColor: PALETTE.TOMATO_500,
   backgroundImage: 'linear-gradient(to right, #ED4C56 0, #ED4C86 100%)',
   borderRadius: '4em',
   boxShadow: buttonShadow,
@@ -26,7 +27,7 @@ export const emailPrimaryButtonStyle = {
 }
 
 export const emailCopyStyle = {
-  color: '#444258',
+  color: PALETTE.SLATE_700,
   fontFamily: emailFontFamily,
   fontSize: '16px',
   fontWeight: 400,
@@ -39,7 +40,7 @@ export const emailCopyStyle = {
 export const emailLineHeight = 1.5
 
 export const emailLinkStyle = {
-  color: '#329AE5',
+  color: PALETTE.SKY_500,
   fontFamily: emailFontFamily,
   fontWeight: 600,
   textDecoration: 'none'
@@ -48,10 +49,10 @@ export const emailLinkStyle = {
 export const emailInnerMaxWidth = 536
 export const emailMaxWidth = 600
 
-export const emailRuleColor = '#DBD6E3'
+export const emailRuleColor = PALETTE.SLATE_300
 export const emailRuleHeight = '1px'
 export const emailRuleStyle = {
-  backgroundColor: '#DBD6E3',
+  backgroundColor: PALETTE.SLATE_300,
   border: '0px',
   height: '1px',
   margin: '0 auto'
@@ -66,8 +67,8 @@ export const emailTableBase = {
   width: '100%'
 } as const
 
-export const emailTextColor = '#444258'
-export const emailTextColorLight = '#82809A'
+export const emailTextColor = PALETTE.SLATE_700
+export const emailTextColorLight = PALETTE.SLATE_600
 
 export const headCSS = `
   @media only screen and (max-width: 620px) {

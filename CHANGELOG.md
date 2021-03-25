@@ -5,14 +5,44 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.4.0 2021-Mar-24
+
+### Added
+
+- Add jira issue key to left nav in sprint poker #4794
+- Add bugs animation to retro #4800
+- Add "i dont vote" button for poker spectators #4791
+- Add debug jira helper #4790
+- Add postgres postdeploy migration hook #4787
+- Add postgres writes for user and team table, backfill migrations #4787
+- Add new logo color #4763
+- Add new color pallette #4776
+- Add scollbar to story card in poker estimate phase #4755
+
+### Changed
+
+- Bump elliptic dependency from 6.5.3 to 6.5.4 #4758
+
+### Fixed
+
+- Fix issues preventing approval for our Slack app directory submission #4792
+- Fix poker subnav item styles #4798
+- Fix domain change in gmail causing login issues #4806
+- Fix selecting jira issue race condition #4719
+- Fix calendar first month available bug #4797
+- Fix non-integrated poker user can't see jira content #4793
+- Fix "just started" snackbar error when changing facilitators #4780
+
 ## 6.3.1 2021-Mar-19
 
 ### Fixed
+
 - Fix broken suOrgCount query due to incorrect enum type
 
 ## 6.3.0 2021-Mar-18
 
 ### Fixed
+
 - Fix an issue where app crashes on revealing votes if there are people who did not vote #4747
 - Fix security issue #46 #4698
 - Fix user img upload #4746
@@ -20,9 +50,11 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 ## 6.2.0 2021-Mar-03
 
 ### Added
+
 - Provide feedback for old browser bugs #4752
 
 ### Changed
+
 - TypeError: Cannot destructure property 'atlassian' of 'r' as it is undefined. #4736
 - Refactor gql2ts enums to unions #4693
 - Prevent Poker drawer from jumping up #4743
@@ -30,27 +62,34 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 ## 6.2.1 2021-Mar-04
 
 ### Fixed
+
 - Fix an issue where app crashes on revealing votes if there are people who did not vote #4737
 
 ## 6.2.0 2021-Mar-03
 
 ### Added
+
 - Sort the reflection groups on server side after REFLECT phase #4696
 
 ### Changed
+
 - Refactoring for CustomPhaseItem #4728
 - Migrate RethinkDB Provider table to GitHubAuth #4727
 - We’ve updated palette values and added a new palette const enums #4658
 
 ## 6.1.0 2021-Feb-25
+
 ### Added
+
 - Robust message queue protocol (#4386)
 - Freeze poker templates for meeting duration (#4695)
 
 ### Changed
+
 - Meeting avatars are populated from MeetingMembers (#4652)
 
 ### Fixed
+
 - Google oauth deleted account recreation email missing (#4654)
 - Make SAML Issuer and AssertionConsumerServiceURL dynamic (#4679)
 - Add Scale Value button goes missing (#4694)
@@ -58,10 +97,12 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 ## 6.0.0 2021-Feb-18
 
 ### Fixed
+
 - User cannot delete prompts from retro templates
 - Non-meeting members do not get meeting summary emails (#4681)
 
 ### Changed
+
 - Threaded comments are fully expanded (#4647)
 
 ## 5.36.0 2021-Feb-16

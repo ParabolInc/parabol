@@ -11,6 +11,7 @@ import Meeting from '../../database/types/Meeting'
 import MeetingRetrospective from '../../database/types/MeetingRetrospective'
 import PokerMeetingMember from '../../database/types/PokerMeetingMember'
 import RetroMeetingMember from '../../database/types/RetroMeetingMember'
+import TeamMember from '../../database/types/TeamMember'
 import UpdatesPhase from '../../database/types/UpdatesPhase'
 import UpdatesStage from '../../database/types/UpdatesStage'
 import {getUserId, isTeamMember} from '../../utils/authorization'
@@ -19,7 +20,8 @@ import {GQLContext} from '../graphql'
 import JoinMeetingPayload from '../types/JoinMeetingPayload'
 import sendMeetingJoinToSegment from './helpers/sendMeetingJoinToSegment'
 
-const createMeetingMember = (meeting: Meeting, teamId: string, userId: string) => {
+const createMeetingMember = (meeting: Meeting, teamMember: TeamMember) => {
+  const {userId, teamId, isSpectatingPoker} = teamMember
   switch (meeting.meetingType) {
     case 'action':
       return new ActionMeetingMember({teamId, userId, meetingId: meeting.id})
@@ -35,7 +37,8 @@ const createMeetingMember = (meeting: Meeting, teamId: string, userId: string) =
       return new PokerMeetingMember({
         teamId,
         userId,
-        meetingId: meeting.id
+        meetingId: meeting.id,
+        isSpectating: isSpectatingPoker
       })
     default:
       throw new Error('Invalid meeting type')
@@ -71,7 +74,9 @@ const joinMeeting = {
     if (!isTeamMember(authToken, teamId)) {
       return {error: {message: 'Not on the team'}}
     }
-    const meetingMember = createMeetingMember(meeting, teamId, viewerId)
+    const teamMemberId = toTeamMemberId(teamId, viewerId)
+    const teamMember = await dataLoader.get('teamMembers').load(teamMemberId)
+    const meetingMember = createMeetingMember(meeting, teamMember)
     const {errors} = await r
       .table('MeetingMember')
       .insert(meetingMember)
@@ -81,7 +86,6 @@ const joinMeeting = {
       return {error: {message: 'Already joined meeting'}}
     }
 
-    const teamMemberId = toTeamMemberId(teamId, viewerId)
     const mapIf = rMapIf(r)
 
     const addStageToPhase = (

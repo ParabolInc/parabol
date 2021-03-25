@@ -3,7 +3,7 @@ import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import useMutationProps from '~/hooks/useMutationProps'
-import {PALETTE} from '~/styles/paletteV2'
+import {PALETTE} from '~/styles/paletteV3'
 import useAtmosphere from '../hooks/useAtmosphere'
 import PokerRevealVotesMutation from '../mutations/PokerRevealVotesMutation'
 import {BezierCurve} from '../types/constEnums'
@@ -18,7 +18,7 @@ import RaisedButton from './RaisedButton'
 import TipBanner from './TipBanner'
 
 const CheckIcon = styled(Icon)({
-  color: PALETTE.TEXT_GREEN
+  color: PALETTE.JADE_400
 })
 
 const BannerWrap = styled('div')<{showTip: boolean}>(({showTip}) => ({
@@ -40,7 +40,7 @@ const RevealButtonBlock = styled('div')({
 const StyledError = styled('div')({
   paddingLeft: 8,
   fontSize: 14,
-  color: PALETTE.ERROR_MAIN,
+  color: PALETTE.TOMATO_500,
   fontWeight: 400
 })
 
@@ -130,17 +130,17 @@ const PokerActiveVoting = (props: Props) => {
       </PokerVotingRowBase>
       <RevealButtonBlock>
         {showRevealButton && (
-          <RevealButton onClick={reveal} color={PALETTE.TEXT_GRAY}>
+          <RevealButton onClick={reveal} color={PALETTE.SLATE_600}>
             <Progress
               radius={22}
               thickness={4}
-              stroke={PALETTE.BACKGROUND_GREEN}
+              stroke={PALETTE.JADE_400}
               progress={votePercent}
             />
-            <RevealButtonIcon color={allVotesIn ? PALETTE.TEXT_GREEN : PALETTE.BORDER_GRAY}>
+            <RevealButtonIcon color={allVotesIn ? PALETTE.JADE_400 : PALETTE.SLATE_400}>
               {'check'}
             </RevealButtonIcon>
-            <RevealLabel color={allVotesIn ? PALETTE.TEXT_GREEN : PALETTE.TEXT_GRAY}>
+            <RevealLabel color={allVotesIn ? PALETTE.JADE_400 : PALETTE.SLATE_600}>
               {'Reveal Votes'}
             </RevealLabel>
           </RevealButton>

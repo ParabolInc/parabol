@@ -7,7 +7,7 @@ import hasToken from '../utils/hasToken'
 import {meetingAvatarMediaQueries} from '../styles/meeting'
 import makeMinWidthMediaQuery from '../utils/makeMinWidthMediaQuery'
 import PlainButton from './PlainButton/PlainButton'
-import {PALETTE} from '~/styles/paletteV2'
+import {PALETTE} from '~/styles/paletteV3'
 import Icon from './Icon'
 import {ICON_SIZE} from '~/styles/typographyV2'
 
@@ -87,7 +87,7 @@ const Badge = styled('div')({
 })
 
 const BadgeDot = styled('div')<{isCommentUnread: boolean}>(({isCommentUnread}) => ({
-  backgroundColor: PALETTE.PROMPT_RED,
+  backgroundColor: PALETTE.TOMATO_500,
   border: '1px solid rgba(255, 255, 255, .65)',
   borderRadius: badgeSize,
   display: isCommentUnread ? 'flex' : 'none',
@@ -113,7 +113,7 @@ const ButtonContainer = styled('div')({
 
 const DiscussionButton = styled(PlainButton)({
   alignItems: 'center',
-  backgroundColor: PALETTE.TEXT_PURPLE,
+  backgroundColor: PALETTE.GRAPE_700,
   borderRadius: '50%',
   display: 'flex',
   padding: 7,

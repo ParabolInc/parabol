@@ -7,7 +7,7 @@ graphql`
   fragment StartSprintPokerMutation_team on StartSprintPokerSuccess {
     meeting {
       id
-      defaultFacilitatorUserId
+      createdBy
       name
       meetingMembers {
         user {

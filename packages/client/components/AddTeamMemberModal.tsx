@@ -3,7 +3,7 @@ import React, {useState} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useMutationProps from '~/hooks/useMutationProps'
-import {PALETTE} from '~/styles/paletteV2'
+import {PALETTE} from '~/styles/paletteV3'
 import {ICON_SIZE} from '~/styles/typographyV2'
 import styled from '@emotion/styled'
 import {AddTeamMemberModal_teamMembers} from '../__generated__/AddTeamMemberModal_teamMembers.graphql'
@@ -93,7 +93,7 @@ const StyledTip = styled('p')({
 
 const ErrorWrapper = styled('div')<{isWarning: boolean}>(({isWarning}) => ({
   alignItems: 'center',
-  color: isWarning ? PALETTE.WARNING_MAIN : PALETTE.ERROR_MAIN,
+  color: isWarning ? PALETTE.GOLD_500 : PALETTE.TOMATO_500,
   display: 'flex',
   padding: 8,
   marginTop: 8,
@@ -101,7 +101,7 @@ const ErrorWrapper = styled('div')<{isWarning: boolean}>(({isWarning}) => ({
 }))
 
 const StyledIcon = styled(Icon)<{isWarning: boolean}>(({isWarning}) => ({
-  color: isWarning ? PALETTE.WARNING_MAIN : PALETTE.ERROR_MAIN,
+  color: isWarning ? PALETTE.GOLD_500 : PALETTE.TOMATO_500,
   fontSize: ICON_SIZE.MD24,
   marginRight: 8
 }))

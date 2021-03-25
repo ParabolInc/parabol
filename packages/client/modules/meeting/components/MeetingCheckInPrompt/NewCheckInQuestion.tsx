@@ -13,11 +13,11 @@ import {MenuPosition} from '../../../../hooks/useCoords'
 import useEditorState from '../../../../hooks/useEditorState'
 import useTooltip from '../../../../hooks/useTooltip'
 import UpdateNewCheckInQuestionMutation from '../../../../mutations/UpdateNewCheckInQuestionMutation'
-import {PALETTE} from '../../../../styles/paletteV2'
+import {PALETTE} from '../../../../styles/paletteV3'
 import {ICON_SIZE} from '../../../../styles/typographyV2'
 
 const CogIcon = styled(Icon)({
-  color: PALETTE.TEXT_MAIN,
+  color: PALETTE.SLATE_700,
   cursor: 'pointer',
   display: 'block',
   height: 24,

@@ -6,7 +6,7 @@ import createProxyRecord from '../utils/relay/createProxyRecord'
 import {AddPokerTemplateScaleMutation as TAddPokerTemplateScaleMutation} from '../__generated__/AddPokerTemplateScaleMutation.graphql'
 import handleAddPokerTemplateScale from './handlers/handleAddPokerTemplateScale'
 import {PokerCards} from '../types/constEnums'
-import {PALETTE} from '../styles/paletteV2'
+import {PALETTE} from '../styles/paletteV3'
 
 graphql`
   fragment AddPokerTemplateScaleMutation_scale on AddPokerTemplateScalePayload {
@@ -71,11 +71,11 @@ const AddPokerTemplateScaleMutation: StandardMutation<
         proxyScale.setLinkedRecords(currentScaleValues, 'values')
       } else {
         const questionMarkCard = createProxyRecord(store, 'TemplateScaleValue', {
-          color: PALETTE.POKER_QUESTION_CARD,
+          color: PALETTE.FUSCIA_400,
           label: PokerCards.QUESTION_CARD,
         })
         const passCard = createProxyRecord(store, 'TemplateScaleValue', {
-          color: PALETTE.POKER_PASS_CARD,
+          color: PALETTE.GRAPE_500,
           label: PokerCards.PASS_CARD,
         })
         proxyScale.setLinkedRecords([questionMarkCard, passCard], 'values')

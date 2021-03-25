@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import React, {forwardRef} from 'react'
-import {PALETTE} from '~/styles/paletteV2'
+import {PALETTE} from '~/styles/paletteV3'
 import Icon from './Icon'
 
 const MenuToggleInner = styled('div')({
@@ -12,7 +12,7 @@ const MenuToggleInner = styled('div')({
 })
 
 const MenuToggleIcon = styled(Icon)({
-  color: PALETTE.TEXT_GRAY,
+  color: PALETTE.SLATE_600,
   padding: '0 16px'
 })
 

@@ -4,7 +4,7 @@ import ms from 'ms'
 import {Variables} from 'relay-runtime'
 import StrictEventEmitter from 'strict-event-emitter-types'
 import stringSimilarity from 'string-similarity'
-import {PALETTE} from '~/styles/paletteV2'
+import {PALETTE} from '~/styles/paletteV3'
 import {MeetingSettingsThreshold, RetroDemo, SubscriptionChannel} from '../../types/constEnums'
 import GoogleAnalyzedEntity from '../../../server/database/types/GoogleAnalyzedEntity'
 import DiscussPhase from '../../../server/database/types/DiscussPhase'
@@ -124,7 +124,7 @@ interface DemoEvents {
 }
 
 interface GQLDemoEmitter {
-  new (): StrictEventEmitter<EventEmitter, DemoEvents>
+  new(): StrictEventEmitter<EventEmitter, DemoEvents>
 }
 
 const makeReflectionGroupThread = () => ({
@@ -168,7 +168,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
   getUnlockedStages(stageIds: string[]) {
     const unlockedStages = [] as INewMeetingStage[]
     this.db.newMeeting.phases!.forEach((phase) => {
-      ;(phase.stages as any).forEach((stage) => {
+      ; (phase.stages as any).forEach((stage) => {
         if (stageIds.includes(stage.id)) {
           unlockedStages.push(stage)
         }
@@ -465,7 +465,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         createdAt: now,
         creatorId: userId,
         content: normalizedContent,
-        groupColor: PALETTE.PROMPT_GREEN,
+        groupColor: PALETTE.JADE_400,
         plaintextContent,
         dragContext: null,
         editorIds: [],

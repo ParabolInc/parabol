@@ -7,7 +7,7 @@ import {MenuPosition} from '../../../hooks/useCoords'
 import useMenu from '../../../hooks/useMenu'
 import useTooltip from '../../../hooks/useTooltip'
 import textOverflow from '../../../styles/helpers/textOverflow'
-import {PALETTE} from '../../../styles/paletteV2'
+import {PALETTE} from '../../../styles/paletteV3'
 import {FONT_FAMILY, ICON_SIZE} from '../../../styles/typographyV2'
 import lazyPreload from '../../../utils/lazyPreload'
 import {PokerTemplateScalePicker_dimension} from '../../../__generated__/PokerTemplateScalePicker_dimension.graphql'
@@ -20,7 +20,7 @@ const SelectScaleDropdown = lazyPreload(() =>
 )
 
 const DropdownIcon = styled(Icon)({
-  color: PALETTE.TEXT_MAIN,
+  color: PALETTE.SLATE_700,
   marginTop: 7,
   marginBottom: 5,
   marginRight: 16,
@@ -28,8 +28,8 @@ const DropdownIcon = styled(Icon)({
 })
 
 const DropdownBlock = styled('div')<{disabled: boolean}>(({disabled}) => ({
-  background: disabled ? PALETTE.BACKGROUND_MAIN : '#fff',
-  border: `1px solid ${PALETTE.BORDER_DROPDOWN}`,
+  background: disabled ? PALETTE.SLATE_200 : '#fff',
+  border: `1px solid ${PALETTE.SLATE_400}`,
   borderRadius: '30px',
   cursor: disabled ? 'not-allowed' : 'pointer',
   display: 'flex',

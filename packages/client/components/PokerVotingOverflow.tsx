@@ -2,7 +2,7 @@ import styled from '@emotion/styled'
 import React, {useRef} from 'react'
 import {TransitionStatus} from '~/hooks/useTransition'
 import useResizeFontForElement from '../hooks/useResizeFontForElement'
-import {PALETTE} from '../styles/paletteV2'
+import {PALETTE} from '../styles/paletteV3'
 import {BezierCurve, PokerCards} from '../types/constEnums'
 
 const Wrapper = styled('div')<{idx: number}>(({idx}) => ({
@@ -13,8 +13,8 @@ const Wrapper = styled('div')<{idx: number}>(({idx}) => ({
 
 const OverflowCount = styled('div')<{status?: TransitionStatus, isInitialStageRender: boolean}>(({status, isInitialStageRender}) => ({
   alignItems: 'center',
-  backgroundColor: PALETTE.BACKGROUND_BLUE_LIGHT,
-  border: `2px solid ${PALETTE.BORDER_MATCH_MEETING_COLUMN}`,
+  backgroundColor: PALETTE.SKY_400,
+  border: `2px solid ${PALETTE.SLATE_300}`,
   borderRadius: '50%',
   display: 'flex',
   height: PokerCards.AVATAR_WIDTH,

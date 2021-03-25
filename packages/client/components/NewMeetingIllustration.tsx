@@ -5,7 +5,7 @@ import {mod} from 'react-swipeable-views-core'
 import {virtualize} from 'react-swipeable-views-utils'
 import useBreakpoint from '../hooks/useBreakpoint'
 import {Elevation} from '../styles/elevation'
-import {PALETTE} from '../styles/paletteV2'
+import {PALETTE} from '../styles/paletteV3'
 import {Breakpoint, NewMeeting} from '../types/constEnums'
 
 const MeetingImage = styled('img')({
@@ -36,7 +36,7 @@ const TabContents = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
 
 const ImageWithPadding = styled('div')({
   background: '#fff',
-  border: `3px solid ${PALETTE.BORDER_ILLUSTRATION}`,
+  border: `3px solid ${PALETTE.GRAPE_600}`,
   boxShadow: Elevation.Z12,
   borderRadius: '8px',
   display: 'flex',

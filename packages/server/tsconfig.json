@@ -22,17 +22,18 @@
     ],
   },
   "include": [
-    "*"
+    "*",
+    "types/*.d.ts"
   ],
   "exclude": [
     "**/node_modules"
   ],
   "files": [
-    "types/modules.d.ts",
     "../client/modules/email/components/SummaryEmail/MeetingSummaryEmail/MeetingSummaryEmail.tsx",
     "graphql/queries/tasks.ts",
     "graphql/queries/archivedTasks.ts",
     "billing/debug.ts",
-    "server.ts"
+    "server.ts",
+    "debugJira.ts"
   ],
 }

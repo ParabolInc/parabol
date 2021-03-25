@@ -12,7 +12,7 @@ import {GroupingKanbanColumn_reflectionGroups} from '~/__generated__/GroupingKan
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
 import CreateReflectionMutation from '../mutations/CreateReflectionMutation'
-import {PALETTE} from '../styles/paletteV2'
+import {PALETTE} from '../styles/paletteV3'
 import {
   BezierCurve,
   Breakpoint,
@@ -31,7 +31,7 @@ const Column = styled('div')<{
   isLastColumn: boolean
 }>(({isLengthExpanded, isFirstColumn, isLastColumn}) => ({
   alignContent: 'flex-start',
-  background: PALETTE.BACKGROUND_REFLECTION,
+  background: PALETTE.SLATE_300,
   borderRadius: 8,
   display: 'flex',
   flex: 1,

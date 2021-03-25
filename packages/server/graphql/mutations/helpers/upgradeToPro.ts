@@ -4,6 +4,7 @@ import setUserTierForOrgId from '../../../utils/setUserTierForOrgId'
 import setTierForOrgUsers from '../../../utils/setTierForOrgUsers'
 import StripeManager from '../../../utils/StripeManager'
 import getCCFromCustomer from './getCCFromCustomer'
+import updateTeamByOrgId from '../../../postgres/queries/updateTeamByOrgId'
 
 const upgradeToPro = async (orgId: string, source: string, email: string) => {
   const r = await getRethink()
@@ -38,26 +39,36 @@ const upgradeToPro = async (orgId: string, source: string, email: string) => {
     }
   }
 
-  await r({
-    updatedOrg: r
-      .table('Organization')
-      .get(orgId)
-      .update({
-        ...subscriptionFields,
-        creditCard: getCCFromCustomer(customer),
-        tier: 'pro',
-        stripeId: customer.id,
-        updatedAt: now
-      }),
-    teamIds: r
-      .table('Team')
-      .getAll(orgId, {index: 'orgId'})
-      .update({
+  await Promise.all([
+    r({
+      updatedOrg: r
+        .table('Organization')
+        .get(orgId)
+        .update({
+          ...subscriptionFields,
+          creditCard: getCCFromCustomer(customer),
+          tier: 'pro',
+          stripeId: customer.id,
+          updatedAt: now
+        }),
+      teamIds: r
+        .table('Team')
+        .getAll(orgId, {index: 'orgId'})
+        .update({
+          isPaid: true,
+          tier: 'pro',
+          updatedAt: now
+        })
+    }).run(),
+    updateTeamByOrgId(
+      {
         isPaid: true,
         tier: 'pro',
-        updatedAt: now
-      })
-  }).run()
+        updatedAt: now,
+      },
+      orgId
+    )
+  ])
 
   await Promise.all([setUserTierForOrgId(orgId), setTierForOrgUsers(orgId)])
 }

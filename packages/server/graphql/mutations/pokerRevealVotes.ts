@@ -41,14 +41,7 @@ const pokerRevealVotes = {
     if (!meeting) {
       return {error: {message: 'Meeting not found'}}
     }
-    const {
-      endedAt,
-      phases,
-      meetingType,
-      teamId,
-      defaultFacilitatorUserId,
-      facilitatorUserId
-    } = meeting
+    const {endedAt, phases, meetingType, teamId, createdBy, facilitatorUserId} = meeting
     if (!isTeamMember(authToken, teamId)) {
       return {error: {message: 'Not on the team'}}
     }
@@ -62,7 +55,7 @@ const pokerRevealVotes = {
       return {error: {message: 'Estimate phase is already complete'}}
     }
     if (viewerId !== facilitatorUserId) {
-      if (viewerId !== defaultFacilitatorUserId) {
+      if (viewerId !== createdBy) {
         return {
           error: {message: 'Not meeting facilitator'}
         }
@@ -84,7 +77,8 @@ const pokerRevealVotes = {
     // add a pass card for everyone who was present but did not vote
     const {scores} = stage
     meetingMembers.forEach((meetingMember) => {
-      const {userId} = meetingMember
+      const {userId, isSpectating} = meetingMember
+      if (isSpectating) return
       const userScore = scores.find((score) => score.userId === userId)
       if (!userScore) {
         const passScore = new EstimateUserScore({userId, label: PokerCards.PASS_CARD as string})

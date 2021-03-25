@@ -7,6 +7,8 @@ import segmentIo from '../../utils/segmentIo'
 import {GQLContext} from '../graphql'
 import DeleteUserPayload from '../types/DeleteUserPayload'
 import removeFromOrg from './helpers/removeFromOrg'
+import getDeletedEmail from '../../utils/getDeletedEmail'
+import updateUser from '../../postgres/queries/updateUser'
 
 export default {
   type: GraphQLNonNull(DeleteUserPayload),
@@ -66,12 +68,21 @@ export default {
       }
     })
     // do this after 30 seconds so any segment API calls can still get the email
+
     setTimeout(() => {
       db.write('User', userIdToDelete, {
         isRemoved: true,
         email: 'DELETED',
         reasonRemoved: validReason
       })
+      updateUser(
+        {
+          isRemoved: true,
+          email: getDeletedEmail(userId),
+          reasonRemoved: validReason
+        },
+        userIdToDelete
+      )
     }, 30000)
     return {}
   }
