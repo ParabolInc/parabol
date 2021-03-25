@@ -28,15 +28,21 @@ const Wrapper = styled('div')({
 
 const InnerContainer = styled('div')<{maybeTabletPlus: boolean}>(({maybeTabletPlus}) => ({
   display: 'flex',
-  flex: 1,
   flexWrap: 'wrap',
+  margin: '0 auto auto',
+  maxWidth: Layout.TASK_COLUMNS_MAX_WIDTH,
+  padding: maybeTabletPlus ? '16px 0 0 16px' : '16px 16px 0',
+  width: '100%'
+}))
+
+const EmptyContainer = styled('div')({
+  display: 'flex',
+  flex: 1,
   height: '100%',
   margin: '0 auto',
   maxWidth: Layout.TASK_COLUMNS_MAX_WIDTH,
-  padding: maybeTabletPlus ? '16px 0 0 16px' : '16px 16px 0',
-  position: 'relative',
-  width: '100%'
-}))
+  position: 'relative'
+})
 
 const Squiggle = styled('img')({
   bottom: 80,
@@ -61,21 +67,21 @@ const MeetingsDash = (props: Props) => {
   const maybeBigDisplay = useBreakpoint(1900)
   return (
     <Wrapper>
-      <InnerContainer maybeTabletPlus={maybeTabletPlus}>
-        {hasMeetings
-          ? <>{activeMeetings.map((meeting, idx) => <MeetingCard key={idx} meeting={meeting} />)}</>
-          : <>
-            <MeetingsDashEmpty />
-            {maybeBigDisplay
-              ? <>
-                <Squiggle src={`${__STATIC_IMAGES__}/illustrations/blue-squiggle.svg`} />
-                <Flash src={`${__STATIC_IMAGES__}/illustrations/yellow-flash-line.svg`} />
-              </>
-              : null
-            }
-          </>
-        }
-      </InnerContainer>
+      {hasMeetings
+        ? <InnerContainer maybeTabletPlus={maybeTabletPlus}>
+          {activeMeetings.map((meeting, idx) => <MeetingCard key={idx} meeting={meeting} />)}
+        </InnerContainer>
+        : <EmptyContainer>
+          <MeetingsDashEmpty />
+          {maybeBigDisplay
+            ? <>
+              <Squiggle src={`${__STATIC_IMAGES__}/illustrations/blue-squiggle.svg`} />
+              <Flash src={`${__STATIC_IMAGES__}/illustrations/yellow-flash-line.svg`} />
+            </>
+            : null
+          }
+        </EmptyContainer>
+      }
     </Wrapper>
   )
 }
