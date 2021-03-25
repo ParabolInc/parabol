@@ -81,7 +81,7 @@ const DashTopBar = (props: Props) => {
   const {history} = useRouter()
   const teams = viewer?.teams ?? []
   const gotoHome = () => {
-    history.push('/me')
+    history.push('/meetings')
   }
   return (
     <Wrapper>

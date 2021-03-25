@@ -119,7 +119,7 @@ export const removeTeamMemberTeamOnNext: OnNextHandler<
     onTeamRoute(window.location.pathname, teamId) ||
     onMeetingRoute(window.location.pathname, meetingIds)
   ) {
-    history.push('/me')
+    history.push('/meetings')
   }
 }
 

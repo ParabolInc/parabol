@@ -34,7 +34,7 @@ const ResetPasswordMutation: StandardMutation<TResetPasswordMutation, HistoryLoc
       if (!uiError && !errors) {
         const {authToken} = resetPassword
         atmosphere.setAuthToken(authToken)
-        const nextUrl = getValidRedirectParam() || '/me'
+        const nextUrl = getValidRedirectParam() || '/meetings'
         history.push(nextUrl)
       }
     }

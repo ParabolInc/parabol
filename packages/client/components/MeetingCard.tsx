@@ -10,22 +10,25 @@ import {Card} from '../types/constEnums'
 import getMeetingPhase from '../utils/getMeetingPhase'
 import {phaseLabelLookup} from '../utils/meetings/lookups'
 import {MeetingCard_meeting} from '../__generated__/MeetingCard_meeting.graphql'
+import useBreakpoint from '../hooks/useBreakpoint'
+import {Breakpoint} from '../types/constEnums'
 // import {ICON_SIZE} from '../styles/typographyV2'
 // import Icon from './Icon'
 
-const CardWrapper = styled('div')({
+const CardWrapper = styled('div')<{maybeTabletPlus: boolean}>(({maybeTabletPlus}) => ({
   background: Card.BACKGROUND_COLOR,
   borderRadius: Card.BORDER_RADIUS,
   boxShadow: Elevation.CARD_SHADOW,
   cursor: 'pointer',
-  maxWidth: 320,
-  margin: 8,
+  flexShrink: 0,
+  maxWidth: '100%',
+  margin: maybeTabletPlus ? '0 16px 16px 0' : '0 0 16px',
   transition: `box-shadow 100ms ease-in`,
-  width: '100%',
+  width: maybeTabletPlus ? 320 : '100%',
   ':hover': {
     boxShadow: Elevation.CARD_SHADOW_HOVER
   }
-})
+}))
 
 const MeetingInfo = styled('div')({
   padding: '12px 16px'
@@ -61,7 +64,8 @@ const MeetingTypeLabel = styled('div')({
 const MeetingImg = styled('img')({
   borderRadius: `${Card.BORDER_RADIUS}px ${Card.BORDER_RADIUS}px 0 0`,
   display: 'block',
-  overflow: 'hidden'
+  overflow: 'hidden',
+  width: '100%'
 })
 
 interface Props {
@@ -99,9 +103,10 @@ const MeetingCard = (props: Props) => {
   }
   const meetingPhase = getMeetingPhase(phases)
   const meetingPhaseLabel = (meetingPhase && phaseLabelLookup[meetingPhase.phaseType]) || 'Complete'
+  const maybeTabletPlus = useBreakpoint(Breakpoint.FUZZY_TABLET)
 
   return (
-    <CardWrapper onClick={gotoMeeting}>
+    <CardWrapper maybeTabletPlus={maybeTabletPlus} onClick={gotoMeeting}>
       <MeetingImgWrapper>
         <MeetingTypeLabel>{MEETING_TYPE_LABEL[meetingType]}</MeetingTypeLabel>
         <MeetingImg src={ILLUSTRATIONS[meetingType]} />

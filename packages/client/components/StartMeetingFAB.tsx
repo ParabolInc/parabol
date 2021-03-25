@@ -75,8 +75,8 @@ const StartMeetingFAB = (props: Props) => {
   return (
     <Block>
       <Button onClick={onClick} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
-        <MeetingIcon isExpanded={isBig}>{'forum'}</MeetingIcon>
-        <MeetingLabel isExpanded={isBig}>{'Start New Meeting'}</MeetingLabel>
+        <MeetingIcon isExpanded={isBig}>{'add'}</MeetingIcon>
+        <MeetingLabel isExpanded={isBig}>{'Add Meeting'}</MeetingLabel>
       </Button>
     </Block>
   )

@@ -51,6 +51,16 @@ const getShowFAB = (location: NonNullable<RouteProps['location']>) => {
       strict: true
     }) ||
     !!matchPath(pathname, {
+      path: '/meetings/',
+      exact: true,
+      strict: true
+    }) ||
+    !!matchPath(pathname, {
+      path: '/meetings',
+      exact: true,
+      strict: true
+    }) ||
+    !!matchPath(pathname, {
       path: '/team/:teamId',
       exact: true,
       strict: false

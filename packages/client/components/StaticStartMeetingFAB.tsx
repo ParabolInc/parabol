@@ -54,8 +54,8 @@ const StartMeetingFAB = (props: Props) => {
   return (
     <Block>
       <Button onClick={onClick}>
-        <MeetingIcon>{'forum'}</MeetingIcon>
-        <MeetingLabel>{'Start New Meeting'}</MeetingLabel>
+        <MeetingIcon>{'add'}</MeetingIcon>
+        <MeetingLabel>{'Add Meeting'}</MeetingLabel>
       </Button>
     </Block>
   )

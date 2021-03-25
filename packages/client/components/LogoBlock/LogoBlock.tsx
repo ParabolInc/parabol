@@ -31,7 +31,7 @@ const LogoBlock = (props: Props) => {
   const {onClick} = props
   return (
     <RootBlock>
-      <Anchor title='My Dashboard' to='/me' onClick={onClick}>
+      <Anchor title='My Dashboard' to='/meetings' onClick={onClick}>
         <Image crossOrigin='' alt='Parabol' src={logoMarkPurple} />
       </Anchor>
     </RootBlock>

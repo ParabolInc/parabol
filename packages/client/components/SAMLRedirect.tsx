@@ -24,7 +24,7 @@ const SAMLRedirect = () => {
         setError(error || 'Error logging in')
       } else {
         atmosphere.setAuthToken(token)
-        history.replace('/me')
+        history.replace('/meetings')
       }
     }
   }, [])
