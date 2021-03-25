@@ -11,16 +11,15 @@ const useAvatarsOverflow = (
     const {current: parentEl} = parentRef
     if (!el || !parentEl) return
     const {clientWidth: avatarsWidth, scrollWidth, children} = el
+    const avatarsCount = children.length
     const {clientWidth: parentWidth} = parentEl
-    const avatarWidth = Math.ceil(scrollWidth / children.length)
-    if (avatarsWidth < scrollWidth) {
-      const newMaxAvatars = Math.floor(avatarsWidth / avatarWidth) - 1 // account for overflow avatar
+    const avatarWidth = Math.ceil(avatarsWidth / avatarsCount)
+    const newMaxAvatars = Math.floor(parentWidth / avatarWidth) - 1
+    if (newMaxAvatars > maxAvatars) {
+      setMaxAvatars(newMaxAvatars)
+    } else if (avatarsWidth < scrollWidth) {
+      const newMaxAvatars = Math.floor(avatarsWidth / avatarWidth) - 1
       setMaxAvatars(Math.max(newMaxAvatars, 1))
-    } else if (avatarsWidth < parentWidth) {
-      const newMaxAvatars = Math.floor(parentWidth / avatarWidth) - 1
-      if (newMaxAvatars !== maxAvatars) {
-        setMaxAvatars(newMaxAvatars)
-      }
     }
   }
   useLayoutEffect(checkOverflow, [])

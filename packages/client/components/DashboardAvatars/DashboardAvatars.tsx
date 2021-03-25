@@ -63,12 +63,11 @@ const OverflowCount = styled('div')({
 const DashboardAvatars = (props: Props) => {
   const {team} = props
   const {id: teamId, isLead: isViewerLead, teamMembers} = team
-  const test = [...teamMembers, ...teamMembers, ...teamMembers, ...teamMembers]
   const wrapperRef = useRef<HTMLDivElement>(null)
   const avatarsRef = useRef<HTMLDivElement>(null)
   const maxAvatars = useAvatarsOverflow(wrapperRef, avatarsRef)
-  const overflowCount = test.length > maxAvatars ? test.length - maxAvatars + 1 : 0
-  const visibleAvatars = overflowCount === 0 ? test : test.slice(0, maxAvatars - 1)
+  const overflowCount = teamMembers.length > maxAvatars ? teamMembers.length - maxAvatars + 1 : 0
+  const visibleAvatars = overflowCount === 0 ? teamMembers : teamMembers.slice(0, maxAvatars - 1)
   return (
     <AvatarsList ref={wrapperRef}>
       <ScrollContainer ref={avatarsRef}>
