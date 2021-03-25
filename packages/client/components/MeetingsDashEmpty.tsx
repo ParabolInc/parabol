@@ -13,11 +13,12 @@ const Wrapper = styled('div')({
   boxShadow: Elevation.Z1,
   display: 'flex',
   flexDirection: 'column',
-  margin: 'auto',
+  margin: '0 auto auto',
   maxWidth: '100%',
   padding: 24,
   [maybeTabletPlusMediaQuery]: {
     flexDirection: 'row',
+    margin: 'auto',
     padding: '56px 80px',
     width: 'auto'
   }
@@ -30,9 +31,11 @@ const Section = styled('div')({
 
 const Img = styled('img')({
   display: 'block',
-  margin: '0 auto 32px',
+  margin: '0 auto 24px',
+  width: 160,
   [maybeTabletPlusMediaQuery]: {
-    margin: '0 56px 0 0'
+    margin: '0 56px 0 0',
+    width: 'auto'
   }
 })
 

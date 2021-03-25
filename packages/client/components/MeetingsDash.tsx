@@ -26,8 +26,7 @@ const Wrapper = styled('div')({
   }
 })
 
-const InnerContainer = styled('div')<{maybeTabletPlus: boolean, hasMeetings: boolean}>(({maybeTabletPlus, hasMeetings}) => ({
-  alignContent: hasMeetings ? 'flex-start' : 'center',
+const InnerContainer = styled('div')<{maybeTabletPlus: boolean}>(({maybeTabletPlus}) => ({
   display: 'flex',
   flex: 1,
   flexWrap: 'wrap',
@@ -35,8 +34,23 @@ const InnerContainer = styled('div')<{maybeTabletPlus: boolean, hasMeetings: boo
   margin: '0 auto',
   maxWidth: Layout.TASK_COLUMNS_MAX_WIDTH,
   padding: maybeTabletPlus ? '16px 0 0 16px' : '16px 16px 0',
+  position: 'relative',
   width: '100%'
 }))
+
+const Squiggle = styled('img')({
+  bottom: 80,
+  display: 'block',
+  position: 'absolute',
+  right: 160
+})
+
+const Flash = styled('img')({
+  bottom: 56,
+  display: 'block',
+  position: 'absolute',
+  right: -32
+})
 
 const MeetingsDash = (props: Props) => {
   const {viewer} = props
@@ -44,12 +58,22 @@ const MeetingsDash = (props: Props) => {
   const activeMeetings = teams.flatMap((team) => team.activeMeetings)
   const hasMeetings = activeMeetings.length > 0
   const maybeTabletPlus = useBreakpoint(Breakpoint.FUZZY_TABLET)
+  const maybeBigDisplay = useBreakpoint(1900)
   return (
     <Wrapper>
-      <InnerContainer hasMeetings={hasMeetings} maybeTabletPlus={maybeTabletPlus}>
+      <InnerContainer maybeTabletPlus={maybeTabletPlus}>
         {hasMeetings
           ? <>{activeMeetings.map((meeting, idx) => <MeetingCard key={idx} meeting={meeting} />)}</>
-          : <MeetingsDashEmpty />
+          : <>
+            <MeetingsDashEmpty />
+            {maybeBigDisplay
+              ? <>
+                <Squiggle src={`${__STATIC_IMAGES__}/illustrations/blue-squiggle.svg`} />
+                <Flash src={`${__STATIC_IMAGES__}/illustrations/yellow-flash-line.svg`} />
+              </>
+              : null
+            }
+          </>
         }
       </InnerContainer>
     </Wrapper>
