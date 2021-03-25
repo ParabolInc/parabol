@@ -8569,7 +8569,7 @@ export interface IJoinMeetingOnMutationArguments {
 
 export interface IGitHubCreateIssueOnMutationArguments {
   /**
-   * The id of the meeting where the Jira issue is being created
+   * The id of the meeting where the GitHub issue is being created
    */
   meetingId: string;
 
@@ -11049,9 +11049,19 @@ export interface IGitHubCreateIssueSuccess {
   __typename: 'GitHubCreateIssueSuccess';
 
   /**
+   * The id of the issue from GitHub
+   */
+  gitHubIssueId: string;
+
+  /**
    * The id of the meeting where the GitHub issue is being created
    */
   meetingId: string;
+
+  /**
+   * The id of the team that is creating the GitHub issue
+   */
+  teamId: string;
 }
 
 export interface ISubscription {

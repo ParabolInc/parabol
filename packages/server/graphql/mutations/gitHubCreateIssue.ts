@@ -13,7 +13,7 @@ const gitHubCreateIssue = {
   args: {
     meetingId: {
       type: new GraphQLNonNull(GraphQLID),
-      description: 'The id of the meeting where the Jira issue is being created'
+      description: 'The id of the meeting where the GitHub issue is being created'
     },
     nameWithOwner: {
       type: new GraphQLNonNull(GraphQLString),
@@ -73,7 +73,7 @@ const gitHubCreateIssue = {
     }
     if (!repoInfo.data || !repoInfo.data.repository || !repoInfo.data.user) {
       console.log(JSON.stringify(repoInfo))
-      return {error: repoInfo.errors![0]}
+      return standardError(new Error(repoInfo.errors![0]), {userId: viewerId})
     }
     const {
       data: {repository, user}
@@ -88,8 +88,17 @@ const gitHubCreateIssue = {
     if ('message' in createIssueRes) {
       return standardError(new Error(createIssueRes.message), {userId: viewerId})
     }
+    const {data: payload} = createIssueRes
+    if (!payload || !payload.createIssue || !payload.createIssue.issue) {
+      return standardError(new Error('createIssueRes does not contain expected payload'), {
+        userId: viewerId
+      })
+    }
+    const {createIssue} = payload
+    const issue = createIssue.issue!
+    const {id: gitHubIssueId} = issue
 
-    const data = {meetingId}
+    const data = {meetingId, teamId, gitHubIssueId}
     publish(SubscriptionChannel.MEETING, meetingId, 'GitHubCreateIssueSuccess', data, subOptions)
     return data
   }
