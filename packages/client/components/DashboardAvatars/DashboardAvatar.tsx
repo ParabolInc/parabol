@@ -44,8 +44,6 @@ const LeaveTeamModal = lazyPreload(() =>
   )
 )
 
-export const dashAvatarWidth = 32
-
 const DashboardAvatar = (props: Props) => {
   const {isViewerLead, teamMember} = props
   const {isLead, picture} = teamMember
@@ -75,7 +73,7 @@ const DashboardAvatar = (props: Props) => {
         onClick={togglePortal}
         picture={picture || defaultUserAvatar}
         ref={originRef}
-        size={dashAvatarWidth}
+        size={32}
       />
       {menuPortal(
         <TeamMemberAvatarMenu

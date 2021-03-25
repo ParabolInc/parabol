@@ -1,7 +1,7 @@
 import {ClassNames} from '@emotion/core'
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {useRef} from 'react'
+import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {NavLink} from 'react-router-dom'
 import DashboardAvatars from '~/components/DashboardAvatars/DashboardAvatars'
@@ -118,7 +118,6 @@ const TeamTasksHeader = (props: Props) => {
   const teamMemberFilterName =
     (teamMemberFilter && teamMemberFilter.preferredName) || 'All team members'
   const {name: orgName, id: orgId} = organization
-  const avatarsRef = useRef<HTMLDivElement>(null)
   const {togglePortal, menuProps, originRef, menuPortal} = useMenu(MenuPosition.UPPER_RIGHT, {
     isDropdown: true
   })
@@ -157,8 +156,8 @@ const TeamTasksHeader = (props: Props) => {
             </ClassNames>
           </TeamLinks>
         </TeamMeta>
-        <AvatarsAndAgendaToggle ref={avatarsRef}>
-          <DashboardAvatars team={team} avatarsRef={avatarsRef} />
+        <AvatarsAndAgendaToggle>
+          <DashboardAvatars team={team} />
           <AgendaToggle hideAgenda={hideAgenda} teamId={teamId} />
         </AvatarsAndAgendaToggle>
       </TeamHeaderAndAvatars>
