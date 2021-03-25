@@ -50,6 +50,8 @@ export async function up(): Promise<void> {
   if (auths.length) {
     await insertGitHubAuthsQuery.run({auths}, client)
   }
+  await client.end()
+  await r.getPoolMaster().drain()
 }
 
 export async function down(pgm: MigrationBuilder): Promise<void> {

@@ -181,7 +181,7 @@ export const up = async function(r: R) {
       .delete()
       .run()
   } catch (e) {
-    console.log(e)
+    // console.log(e)
   }
 }
 
