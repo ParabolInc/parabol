@@ -74,8 +74,5 @@
       "pre-commit": "lerna run --concurrency 1 --stream precommit",
       "post-commit": "git update-index --again"
     }
-  },
-  "dependencies": {
-    "dd-trace": "^0.31.1"
   }
 }
