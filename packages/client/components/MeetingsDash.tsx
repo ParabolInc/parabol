@@ -5,17 +5,29 @@ import {createFragmentContainer} from 'react-relay'
 import {MeetingsDash_viewer} from '~/__generated__/MeetingsDash_viewer.graphql'
 import MeetingCard from './MeetingCard'
 import useBreakpoint from '../hooks/useBreakpoint'
-import {Breakpoint} from '../types/constEnums'
+import {Breakpoint, Layout, NavSidebar, RightSidebar} from '../types/constEnums'
+import makeMinWidthMediaQuery from '../utils/makeMinWidthMediaQuery'
 
 interface Props {
   viewer: MeetingsDash_viewer
 }
 
-const Wrapper = styled('div')<{maybeTabletPlus: boolean}>(({maybeTabletPlus}) => ({
+const desktopDashWidestMediaQuery = makeMinWidthMediaQuery(Breakpoint.DASH_BREAKPOINT_WIDEST)
+
+const Wrapper = styled('div')({
+  margin: '0 auto',
+  width: '100%',
+  [desktopDashWidestMediaQuery]: {
+    paddingLeft: NavSidebar.WIDTH,
+    paddingRight: RightSidebar.WIDTH
+  }
+})
+
+const InnerContainer = styled('div')<{maybeTabletPlus: boolean}>(({maybeTabletPlus}) => ({
   display: 'flex',
   flexWrap: 'wrap',
   margin: '0 auto',
-  maxWidth: 1600,
+  maxWidth: Layout.TASK_COLUMNS_MAX_WIDTH,
   padding: maybeTabletPlus ? '16px 0 0 16px' : '16px 16px 0',
   width: '100%'
 }))
@@ -27,11 +39,13 @@ const MeetingsDash = (props: Props) => {
   const hasMeetings = activeMeetings.length > 0
   const maybeTabletPlus = useBreakpoint(Breakpoint.FUZZY_TABLET)
   return (
-    <Wrapper maybeTabletPlus={maybeTabletPlus}>
-      {hasMeetings
-        ? <>{activeMeetings.map((meeting, idx) => <MeetingCard key={idx} meeting={meeting} />)}</>
-        : 'No meetings, yay! More focus time! But you can start one below if you need'
-      }
+    <Wrapper>
+      <InnerContainer maybeTabletPlus={maybeTabletPlus}>
+        {hasMeetings
+          ? <>{activeMeetings.map((meeting, idx) => <MeetingCard key={idx} meeting={meeting} />)}</>
+          : 'No meetings, yay! More focus time! But you can start one below if you need'
+        }
+      </InnerContainer>
     </Wrapper>
   )
 }
