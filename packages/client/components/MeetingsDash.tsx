@@ -41,6 +41,7 @@ const EmptyContainer = styled('div')({
   height: '100%',
   margin: '0 auto',
   maxWidth: Layout.TASK_COLUMNS_MAX_WIDTH,
+  padding: 16,
   position: 'relative'
 })
 
