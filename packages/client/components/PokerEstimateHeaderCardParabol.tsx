@@ -140,7 +140,7 @@ const PokerEstimateHeaderCardParabol = (props: Props) => {
     () => () => {
       setIsExpanded(false)
     },
-    [story?.id]
+    [storyId]
   )
   const {useTaskChild} = useTaskChildFocus(storyId)
   if (!story) {
