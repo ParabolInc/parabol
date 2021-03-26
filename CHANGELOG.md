@@ -33,6 +33,12 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 - Fix non-integrated poker user can't see jira content #4793
 - Fix "just started" snackbar error when changing facilitators #4780
 
+## 6.3.1 2021-Mar-19
+
+### Fixed
+
+- Fix broken suOrgCount query due to incorrect enum type
+
 ## 6.3.0 2021-Mar-18
 
 ### Fixed
