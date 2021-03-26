@@ -59,6 +59,9 @@ const executeGraphQL = async (req: GQLRequest) => {
     }; isAdHoc || process.env.DD_TRACE_ENABLED = ${isAdHoc || process.env.DD_TRACE_ENABLED}.`
   )
   if (isAdHoc || process.env.DD_TRACE_ENABLED) {
+    console.log(
+      `in executeGraphQL, going to execute the GraphQL query with GraphQL.js exeuction engine`
+    )
     response = await graphql({schema, source, variableValues, contextValue})
   } else {
     console.log(`in executeGraphQL, docId = ${docId}`)
