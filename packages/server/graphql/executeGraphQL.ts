@@ -53,18 +53,25 @@ const executeGraphQL = async (req: GQLRequest) => {
   const variableValues = variables
   const source = query!
   let response: FormattedExecutionResult
+  console.log(
+    `in executeGraphQL, isAdhoc = ${isAdHoc}; process.env.DD_TRACE_ENABLED = ${
+      process.env.DD_TRACE_ENABLED
+    }; isAdHoc || process.env.DD_TRACE_ENABLED = ${isAdHoc || process.env.DD_TRACE_ENABLED}.`
+  )
   if (isAdHoc || process.env.DD_TRACE_ENABLED) {
     response = await graphql({schema, source, variableValues, contextValue})
   } else {
     const compiledQuery = docId
       ? await queryCache.fromID(docId, schema)
       : queryCache.fromString(source, schema)
+    console.log(compiledQuery)
     if (compiledQuery) {
       response = ((await compiledQuery.query(
         rootValue,
         contextValue,
         variableValues
       )) as any) as FormattedExecutionResult
+      console.log(response.errors)
     } else {
       response = {errors: [new Error(`DocumentID not found: ${docId}`)] as any}
     }
