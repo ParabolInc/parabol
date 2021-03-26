@@ -21,12 +21,15 @@ export default class CompiledQueryCache {
       .get(docId)('query')
       .default(null)
       .run()
+    console.log(`in CompiledQueryCache.fromID, queryString = ${queryString}; PROD = ${PROD}`)
     if (!queryString && !PROD) {
       // try/catch block required for building the toolbox
       try {
         const queryMap = require('../../../queryMap.json')
         queryString = queryMap[docId]
       } catch (e) {
+        console.log('in CompiledQueryCache.fromID')
+        console.log(e)
         return undefined
       }
     }
