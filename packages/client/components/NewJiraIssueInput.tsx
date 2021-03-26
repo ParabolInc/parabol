@@ -49,7 +49,8 @@ const StyledLink = styled('a')({
 
 const Form = styled('form')({
   display: 'flex',
-  flexDirection: 'column'
+  flexDirection: 'column',
+  width: '100%'
 })
 
 const Item = styled('div')({
@@ -64,7 +65,8 @@ const Item = styled('div')({
 const Issue = styled('div')({
   display: 'flex',
   flexDirection: 'column',
-  paddingLeft: 16
+  paddingLeft: 16,
+  width: '100%'
 })
 
 const SearchInput = styled('input')({
