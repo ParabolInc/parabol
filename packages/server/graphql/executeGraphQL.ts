@@ -61,6 +61,7 @@ const executeGraphQL = async (req: GQLRequest) => {
   if (isAdHoc || process.env.DD_TRACE_ENABLED) {
     response = await graphql({schema, source, variableValues, contextValue})
   } else {
+    console.log(`in executeGraphQL, docId = ${docId}`)
     const compiledQuery = docId
       ? await queryCache.fromID(docId, schema)
       : queryCache.fromString(source, schema)

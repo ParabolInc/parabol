@@ -14,6 +14,8 @@ export default class CompiledQueryCache {
   }
   async fromID(docId: string, schema: GraphQLSchema) {
     const compiledQuery = this.store[docId]
+    console.log('In CompiledQueryCache.fromID, compiledQuery:')
+    console.log(compiledQuery)
     if (compiledQuery) return compiledQuery
     const r = await getRethink()
     let queryString = await r
