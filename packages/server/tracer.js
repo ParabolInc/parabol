@@ -1,3 +1,5 @@
 import tracer from 'dd-trace'
-tracer.init() // initialized in a different file to avoid hoisting.
+tracer.init({
+  enabled: process.env.DD_TRACE_ENABLED ?? false
+})
 export default tracer
