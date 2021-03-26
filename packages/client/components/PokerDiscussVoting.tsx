@@ -49,16 +49,16 @@ const PokerDiscussVoting = (props: Props) => {
         topLabel = label
       }
     })
-    const scoreLabels = Object.keys(scoreObj).sort((a, b) => {
-      return a === PokerCards.QUESTION_CARD ? -1 : a === PokerCards.PASS_CARD ? 1 : a > b ? -1 : 1
-    })
-    const rows = scoreLabels.map((label) => {
-      return {
-        key: label,
-        scaleValue: scaleValues.find((scaleValue) => scaleValue.label === label)!,
-        scores: scoreObj[label]
-      }
-    })
+    const scoreLabels = Object.keys(scoreObj)
+    const rows = scaleValues
+      .filter((scaleValue) => scoreLabels.find((label) => label === scaleValue.label))
+      .map((scaleValue) => {
+        return {
+          key: scaleValue.label,
+          scaleValue,
+          scores: scoreObj[scaleValue.label]
+        }
+      })
     const safeTopLabel = isSpecialPokerLabel(topLabel) ? PokerCards.QUESTION_CARD : topLabel
     return {rows, topLabel: safeTopLabel}
   }, [scores])
@@ -77,15 +77,15 @@ const PokerDiscussVoting = (props: Props) => {
           const canClick = isFacilitator && !isSpecialPokerLabel(label)
           const setFinalScore = canClick
             ? () => {
-              // finalScore === label isn't 100% accurate because they could change the dimensionField & could still submit new info
-              if (submitting || !label || finalScore === label) return
-              submitMutation()
-              PokerSetFinalScoreMutation(
-                atmosphere,
-                {finalScore: label, meetingId, stageId},
-                {onError, onCompleted}
-              )
-            }
+                // finalScore === label isn't 100% accurate because they could change the dimensionField & could still submit new info
+                if (submitting || !label || finalScore === label) return
+                submitMutation()
+                PokerSetFinalScoreMutation(
+                  atmosphere,
+                  {finalScore: label, meetingId, stageId},
+                  {onError, onCompleted}
+                )
+              }
             : undefined
           return (
             <PokerVotingRow
