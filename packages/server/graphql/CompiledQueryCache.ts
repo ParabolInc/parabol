@@ -14,8 +14,6 @@ export default class CompiledQueryCache {
   }
   async fromID(docId: string, schema: GraphQLSchema) {
     const compiledQuery = this.store[docId]
-    console.log('In CompiledQueryCache.fromID, compiledQuery:')
-    console.log(compiledQuery)
     if (compiledQuery) return compiledQuery
     const r = await getRethink()
     let queryString = await r
@@ -23,15 +21,12 @@ export default class CompiledQueryCache {
       .get(docId)('query')
       .default(null)
       .run()
-    console.log(`in CompiledQueryCache.fromID, queryString = ${queryString}; PROD = ${PROD}`)
     if (!queryString && !PROD) {
       // try/catch block required for building the toolbox
       try {
         const queryMap = require('../../../queryMap.json')
         queryString = queryMap[docId]
       } catch (e) {
-        console.log('in CompiledQueryCache.fromID')
-        console.log(e)
         return undefined
       }
     }

@@ -6,6 +6,7 @@
  */
 import {graphql} from 'graphql'
 import {FormattedExecutionResult} from 'graphql/execution/execute'
+import getRethink from '../database/rethinkDriver'
 import AuthToken from '../database/types/AuthToken'
 import PROD from '../PROD'
 import CompiledQueryCache from './CompiledQueryCache'
@@ -53,24 +54,26 @@ const executeGraphQL = async (req: GQLRequest) => {
   const variableValues = variables
   const source = query!
   let response: FormattedExecutionResult
-  if (isAdHoc || process.env.DD_TRACE_ENABLED === 'true') {
-    console.log(
-      `in executeGraphQL, going to execute the GraphQL query with GraphQL.js exeuction engine`
-    )
+  if (isAdHoc) {
     response = await graphql({schema, source, variableValues, contextValue})
+  } else if (docId && process.env.DD_TRACE_ENABLED === 'true') {
+    const r = await getRethink()
+    const queryString = await r
+      .table('QueryMap')
+      .get(docId)('query')
+      .default(null)
+      .run()
+    response = await graphql({schema, source: queryString, variableValues, contextValue})
   } else {
-    console.log(`in executeGraphQL, docId = ${docId}`)
     const compiledQuery = docId
       ? await queryCache.fromID(docId, schema)
       : queryCache.fromString(source, schema)
-    console.log(compiledQuery)
     if (compiledQuery) {
       response = ((await compiledQuery.query(
         rootValue,
         contextValue,
         variableValues
       )) as any) as FormattedExecutionResult
-      console.log(response.errors)
     } else {
       response = {errors: [new Error(`DocumentID not found: ${docId}`)] as any}
     }

@@ -12,12 +12,8 @@ interface PubSubPromiseMessage {
 
 const onMessage = async (_channel: string, message: string) => {
   const {jobId, request} = JSON.parse(message) as PubSubPromiseMessage
-  console.log(`in gqlExecutor, jobId = ${jobId}; request:`)
-  console.log(request)
   const executeGraphQL = require('../server/graphql/executeGraphQL').default
   const response = await executeGraphQL(request)
-  console.log("in gqlExecutor, response:")
-  console.log(response)
   publisher.publish(
     ServerChannel.GQL_EXECUTOR_RESPONSE,
     JSON.stringify({response, jobId})
