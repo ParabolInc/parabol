@@ -53,12 +53,7 @@ const executeGraphQL = async (req: GQLRequest) => {
   const variableValues = variables
   const source = query!
   let response: FormattedExecutionResult
-  console.log(
-    `in executeGraphQL, isAdhoc = ${isAdHoc}; process.env.DD_TRACE_ENABLED = ${
-      process.env.DD_TRACE_ENABLED
-    }; isAdHoc || process.env.DD_TRACE_ENABLED = ${isAdHoc || process.env.DD_TRACE_ENABLED}.`
-  )
-  if (isAdHoc || process.env.DD_TRACE_ENABLED) {
+  if (isAdHoc || process.env.DD_TRACE_ENABLED === 'true') {
     console.log(
       `in executeGraphQL, going to execute the GraphQL query with GraphQL.js exeuction engine`
     )
