@@ -63,7 +63,9 @@ const executeGraphQL = async (req: GQLRequest) => {
       .get(docId)('query')
       .default(null)
       .run()
-    console.log(`in executeGraphQL, queryString.length = ${queryString.length}`)
+    console.log(`in executeGraphQL, queryString= ${queryString}`)
+    console.log(`in executeGraphQL, variableValues = ${variableValues}`)
+    console.log(`in executeGraphQL, contextValue = ${contextValue}`)
     response = await graphql({schema, source: queryString, variableValues, contextValue})
   } else {
     const compiledQuery = docId
