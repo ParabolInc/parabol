@@ -86,7 +86,7 @@ const gitHubCreateIssue = {
       return standardError(new Error(createIssueRes.message), {userId: viewerId})
     }
     const {data: payload} = createIssueRes
-    if ('errors' in createIssueRes && createIssueRes?.errors) {
+    if (createIssueRes.errors) {
       return standardError(new Error(createIssueRes.errors[0].message), {userId: viewerId})
     }
     if (!payload || !payload.createIssue || !payload.createIssue.issue) {
