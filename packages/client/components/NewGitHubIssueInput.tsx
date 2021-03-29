@@ -15,6 +15,9 @@ import Checkbox from './Checkbox'
 import Icon from './Icon'
 import NewGitHubIssueMenu from './NewGitHubIssueMenu'
 import PlainButton from './PlainButton/PlainButton'
+import Legitity from '../validation/Legitity'
+import useForm from '../hooks/useForm'
+import StyledError from './StyledError'
 
 const StyledButton = styled(PlainButton)({
   alignItems: 'center',
@@ -69,7 +72,7 @@ const Issue = styled('div')({
   width: '100%'
 })
 
-const SearchInput = styled('input')({
+const NewIssueInput = styled('input')({
   appearance: 'none',
   background: 'transparent',
   border: 'none',
@@ -81,11 +84,24 @@ const SearchInput = styled('input')({
   width: '100%'
 })
 
+const Error = styled(StyledError)({
+  fontSize: 13,
+  textAlign: 'left',
+  width: '100%'
+})
+
 interface Props {
   isEditing: boolean
   meeting: NewGitHubIssueInput_meeting
   setIsEditing: (isEditing: boolean) => void
   viewer: NewGitHubIssueInput_viewer
+}
+
+const validateIssue = (issue: string) => {
+  return new Legitity(issue)
+    .trim()
+    .min(2, 'C’mon, you call that an issue?')
+    .max(2550, "Who's gonna read all that? Short and sweet please.")
 }
 
 const NewGitHubIssueInput = (props: Props) => {
@@ -94,17 +110,23 @@ const NewGitHubIssueInput = (props: Props) => {
   const {id: userId, team, teamMember} = viewer
   const {id: teamId} = team!
   const {suggestedIntegrations} = teamMember!
-  const [newIssueText, setNewIssueText] = useState('')
   const atmosphere = useAtmosphere()
   const {onCompleted, onError} = useMutationProps()
   const {items} = suggestedIntegrations
   const suggestedIntegration = items && items[0]
   const nameWithOwner = suggestedIntegration?.nameWithOwner
   const [selectedNameWithOwner, setSelectedNameWithOwner] = useState(nameWithOwner)
+  const {fields, onChange, validateField, setDirtyField} = useForm({
+    newIssue: {
+      getDefault: () => '',
+      validate: validateIssue
+    }
+  })
   const {originRef, menuPortal, menuProps, togglePortal, portalStatus} = useMenu(
     MenuPosition.UPPER_RIGHT
   )
   const ref = useRef<HTMLInputElement>(null)
+  const {dirty, error} = fields.newIssue
   useEffect(() => {
     if (portalStatus === PortalStatus.Exited) {
       ref.current && ref.current.focus()
@@ -114,16 +136,25 @@ const NewGitHubIssueInput = (props: Props) => {
   const handleCreateNewIssue = (e: FormEvent) => {
     e.preventDefault()
     if (portalStatus !== PortalStatus.Exited || !selectedNameWithOwner) return
+    const {newIssue: newIssueRes} = validateField()
+    const newIssue = newIssueRes.value as string
+    if (newIssueRes.error) {
+      setDirtyField()
+      return
+    }
     setIsEditing(false)
-    if (!newIssueText.length) return
+    fields.newIssue.resetValue()
+    if (!newIssue.length) {
+      fields.newIssue.dirty = false
+      return
+    }
     const variables = {
       nameWithOwner: selectedNameWithOwner,
-      title: newIssueText,
+      title: newIssue,
       teamId,
       meetingId
     }
     GitHubCreateIssueMutation(atmosphere, variables, {onError, onCompleted})
-    setNewIssueText('')
   }
 
   if (!isEditing) return null
@@ -133,14 +164,16 @@ const NewGitHubIssueInput = (props: Props) => {
         <Checkbox active />
         <Issue>
           <Form onSubmit={handleCreateNewIssue}>
-            <SearchInput
+            <NewIssueInput
               autoFocus
               onBlur={handleCreateNewIssue}
-              onChange={(e) => setNewIssueText(e.target.value)}
-              placeholder='New issue summary'
+              onChange={onChange}
+              name='newIssue'
+              placeholder='New issue title'
               ref={ref}
               type='text'
             />
+            {dirty && error && <Error>{error}</Error>}
           </Form>
           <StyledButton ref={originRef} onMouseDown={togglePortal}>
             <StyledLink>{selectedNameWithOwner}</StyledLink>
