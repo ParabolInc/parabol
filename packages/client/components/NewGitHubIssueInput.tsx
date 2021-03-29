@@ -100,8 +100,8 @@ interface Props {
 const validateIssue = (issue: string) => {
   return new Legitity(issue)
     .trim()
-    .min(2, 'C’mon, you call that an issue?')
-    .max(255, "Who's gonna read all that? Short and sweet please.")
+    .min(2, `C’mon, you call that an issue?`)
+    .max(255, `Who's gonna read all that? Short and sweet please.`)
 }
 
 const NewGitHubIssueInput = (props: Props) => {
