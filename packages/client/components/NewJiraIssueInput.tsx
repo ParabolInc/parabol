@@ -15,6 +15,9 @@ import NewJiraIssueMenu from './NewJiraIssueMenu'
 import PlainButton from './PlainButton/PlainButton'
 import Icon from './Icon'
 import {PortalStatus} from '../hooks/usePortal'
+import useForm from '../hooks/useForm'
+import Legitity from '../validation/Legitity'
+import StyledError from './StyledError'
 
 const StyledButton = styled(PlainButton)({
   alignItems: 'center',
@@ -69,7 +72,7 @@ const Issue = styled('div')({
   width: '100%'
 })
 
-const SearchInput = styled('input')({
+const NewIssueInput = styled('input')({
   appearance: 'none',
   background: 'transparent',
   border: 'none',
@@ -81,11 +84,24 @@ const SearchInput = styled('input')({
   width: '100%'
 })
 
+const Error = styled(StyledError)({
+  fontSize: 13,
+  textAlign: 'left',
+  width: '100%'
+})
+
 interface Props {
   isEditing: boolean
   meeting: NewJiraIssueInput_meeting
   setIsEditing: (isEditing: boolean) => void
   viewer: NewJiraIssueInput_viewer
+}
+
+const validateIssue = (issue: string) => {
+  return new Legitity(issue)
+    .trim()
+    .min(2, 'C’mon, you call that an issue?')
+    .max(254, "Who's gonna read all that? Short and sweet please.")
 }
 
 const NewJiraIssueInput = (props: Props) => {
@@ -94,7 +110,6 @@ const NewJiraIssueInput = (props: Props) => {
   const {id: userId, team, teamMember} = viewer
   const {id: teamId} = team!
   const {suggestedIntegrations} = teamMember!
-  const [newIssueText, setNewIssueText] = useState('')
   const atmosphere = useAtmosphere()
   const {onCompleted, onError} = useMutationProps()
   const {items} = suggestedIntegrations
@@ -105,6 +120,13 @@ const NewJiraIssueInput = (props: Props) => {
   const {originRef, menuPortal, menuProps, togglePortal, portalStatus} = useMenu(
     MenuPosition.UPPER_RIGHT
   )
+  const {fields, onChange, validateField, setDirtyField} = useForm({
+    newIssue: {
+      getDefault: () => '',
+      validate: validateIssue
+    }
+  })
+  const {dirty, error} = fields.newIssue
   const ref = useRef<HTMLInputElement>(null)
   useEffect(() => {
     if (portalStatus === PortalStatus.Exited) {
@@ -115,19 +137,26 @@ const NewJiraIssueInput = (props: Props) => {
   const handleCreateNewIssue = (e: FormEvent) => {
     e.preventDefault()
     if (portalStatus !== PortalStatus.Exited || !selectedProjectKey || !cloudId) return
-    if (!newIssueText.length) {
-      setIsEditing(false)
+    const {newIssue: newIssueRes} = validateField()
+    const newIssue = newIssueRes.value as string
+    if (newIssueRes.error) {
+      setDirtyField()
+      return
+    }
+    setIsEditing(false)
+    fields.newIssue.resetValue()
+    if (!newIssue.length) {
+      fields.newIssue.dirty = false
       return
     }
     const variables = {
       cloudId,
       projectKey: selectedProjectKey,
-      summary: newIssueText,
+      summary: newIssue,
       teamId,
       meetingId
     }
     JiraCreateIssueMutation(atmosphere, variables, {onError, onCompleted})
-    setNewIssueText('')
   }
 
   const handleSelectProjectKey = (projectKey: string) => {
@@ -141,14 +170,17 @@ const NewJiraIssueInput = (props: Props) => {
         <Checkbox active />
         <Issue>
           <Form onSubmit={handleCreateNewIssue}>
-            <SearchInput
+            <NewIssueInput
               autoFocus
+              {...fields.newIssue}
               onBlur={handleCreateNewIssue}
-              onChange={(e) => setNewIssueText(e.target.value)}
-              placeholder='New issue summary'
+              onChange={onChange}
+              name='newIssue'
+              placeholder='New issue title'
               ref={ref}
               type='text'
             />
+            {dirty && error && <Error>{error}</Error>}
           </Form>
           <StyledButton ref={originRef} onMouseDown={togglePortal}>
             <StyledLink>{selectedProjectKey}</StyledLink>

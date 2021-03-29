@@ -11049,7 +11049,7 @@ export interface IGitHubCreateIssueSuccess {
   __typename: 'GitHubCreateIssueSuccess';
 
   /**
-   * The id of the issue from GitHub
+   * The GitHub Issue that comes directly from GitHub
    */
   gitHubIssue: IGitHubIssue;
 
