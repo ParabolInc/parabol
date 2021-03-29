@@ -14,7 +14,6 @@ import isAndroid from '~/utils/draftjs/isAndroid'
 import useAtmosphere from '../hooks/useAtmosphere'
 import UpdateTaskMutation from '../mutations/UpdateTaskMutation'
 import {ICON_SIZE} from '../styles/typographyV2'
-import {DeepNonNullable} from '../types/generics'
 import convertToTaskContent from '../utils/draftjs/convertToTaskContent'
 import {PokerEstimateHeaderCardParabol_stage} from '../__generated__/PokerEstimateHeaderCardParabol_stage.graphql'
 import CardButton from './CardButton'
@@ -127,22 +126,23 @@ interface Props {
 
 const PokerEstimateHeaderCardParabol = (props: Props) => {
   const {stage} = props
-  const {story} = stage
+  const story = stage.story as Extract<typeof stage['story'], {__typename: 'Task'}> | null
+  const content = story?.content
+  const taskId = story?.id ?? ''
   const atmosphere = useAtmosphere()
   const [isExpanded, setIsExpanded] = useState(false)
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
-  const [editorState, setEditorState] = useEditorState(story?.content)
+  const [editorState, setEditorState] = useEditorState(content)
   const editorRef = useRef<HTMLTextAreaElement>(null)
   const descriptionRef = useRef<HTMLDivElement>(null)
   const maxHeight = Math.min(descriptionRef.current?.scrollHeight ?? 300, 300)
-  const storyId = story?.id ?? ''
   useEffect(
     () => () => {
       setIsExpanded(false)
     },
-    [storyId]
+    [taskId]
   )
-  const {useTaskChild} = useTaskChildFocus(storyId)
+  const {useTaskChild} = useTaskChildFocus(taskId)
   if (!story) {
     // the Parabol task may have been removed
     return (
@@ -152,13 +152,13 @@ const PokerEstimateHeaderCardParabol = (props: Props) => {
             <CardTitle>{`That story doesn't exist!`}</CardTitle>
           </CardTitleWrapper>
           <CardDescription>
-            {`The story may have been removed. If you want to vote on this story, try to re-add it.`}
+            {`The story was deleted. You can add another story in the Scope phase`}
           </CardDescription>
         </ErrorCard>
       </HeaderCardWrapper>
     )
   }
-  const {content, id: taskId, teamId, integration} = story as DeepNonNullable<typeof story>
+  const {teamId, integration} = story
   const onBlur = () => {
     if (isAndroid) {
       const editorEl = editorRef.current
@@ -229,6 +229,7 @@ export default createFragmentContainer(PokerEstimateHeaderCardParabol, {
     fragment PokerEstimateHeaderCardParabol_stage on EstimateStage {
       story {
         ... on Task {
+          __typename
           id
           title
           integration {
