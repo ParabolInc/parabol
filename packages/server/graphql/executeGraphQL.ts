@@ -5,11 +5,12 @@
   It IS used to transform a source stream into a response stream
  */
 import {graphql} from 'graphql'
+import {print} from 'graphql/language/printer'
 import {FormattedExecutionResult} from 'graphql/execution/execute'
-import getRethink from '../database/rethinkDriver'
 import AuthToken from '../database/types/AuthToken'
 import PROD from '../PROD'
 import CompiledQueryCache from './CompiledQueryCache'
+import DocumentCache from './DocumentCache'
 import getDataLoader from './getDataLoader'
 import getRateLimiter from './getRateLimiter'
 import privateSchema from './intranetSchema/intranetSchema'
@@ -31,6 +32,7 @@ export interface GQLRequest {
 }
 
 const queryCache = new CompiledQueryCache()
+const documentCache = new DocumentCache()
 
 const executeGraphQL = async (req: GQLRequest) => {
   const {
@@ -55,17 +57,10 @@ const executeGraphQL = async (req: GQLRequest) => {
   const source = query!
   let response: FormattedExecutionResult
   if (isAdHoc) {
-    console.log(`Goting to execute an adhoc query with GraphQL.js execution engine`)
     response = await graphql({schema, source, variableValues, contextValue})
   } else if (docId && process.env.DD_TRACE_ENABLED === 'true') {
-    const r = await getRethink()
-    const queryString = await r
-      .table('QueryMap')
-      .get(docId)('query')
-      .default(null)
-      .run()
-    console.log(`Goting to execute a non-adhoc query with GraphQL.js execution engine`)
-    response = await graphql({schema, source: queryString, variableValues, contextValue})
+    const document = await documentCache.fromID(docId)
+    response = await graphql({schema, source: print(document!), variableValues, contextValue})
   } else {
     const compiledQuery = docId
       ? await queryCache.fromID(docId, schema)
