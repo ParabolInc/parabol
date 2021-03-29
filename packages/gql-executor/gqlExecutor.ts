@@ -1,3 +1,5 @@
+import "./tracer"
+
 import Redis from 'ioredis'
 import {ServerChannel} from 'parabol-client/types/constEnums'
 
@@ -14,7 +16,6 @@ const onMessage = async (_channel: string, message: string) => {
   const {jobId, request} = JSON.parse(message) as PubSubPromiseMessage
   const executeGraphQL = require('../server/graphql/executeGraphQL').default
   const response = await executeGraphQL(request)
-  console.log(`in gqlExecutor.onMessage, response = ${JSON.stringify(response)}`)
   publisher.publish(
     ServerChannel.GQL_EXECUTOR_RESPONSE,
     JSON.stringify({response, jobId})
