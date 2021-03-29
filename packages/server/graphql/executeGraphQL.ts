@@ -55,6 +55,7 @@ const executeGraphQL = async (req: GQLRequest) => {
   const source = query!
   let response: FormattedExecutionResult
   if (isAdHoc) {
+    console.log(`Goting to execute an adhoc query with GraphQL.js execution engine`)
     response = await graphql({schema, source, variableValues, contextValue})
   } else if (docId && process.env.DD_TRACE_ENABLED === 'true') {
     const r = await getRethink()
@@ -63,12 +64,14 @@ const executeGraphQL = async (req: GQLRequest) => {
       .get(docId)('query')
       .default(null)
       .run()
+    console.log(`Goting to execute a non-adhoc query with GraphQL.js execution engine`)
     response = await graphql({schema, source: queryString, variableValues, contextValue})
   } else {
     const compiledQuery = docId
       ? await queryCache.fromID(docId, schema)
       : queryCache.fromString(source, schema)
     if (compiledQuery) {
+      console.log(`Goting to execute a non-adhoc query with GraphQL-JIT execution engine`)
       response = ((await compiledQuery.query(
         rootValue,
         contextValue,
