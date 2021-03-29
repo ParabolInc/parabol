@@ -113,7 +113,7 @@ const NewJiraIssueInput = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {onCompleted, onError} = useMutationProps()
   const {items} = suggestedIntegrations
-  const suggestedIntegration = items && items[0]
+  const suggestedIntegration = items?.find((item) => item.projectKey)
   const cloudId = suggestedIntegration?.cloudId
   const projectKey = suggestedIntegration?.projectKey
   const [selectedProjectKey, setSelectedProjectKey] = useState(projectKey)

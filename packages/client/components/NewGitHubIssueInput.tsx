@@ -113,7 +113,7 @@ const NewGitHubIssueInput = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {onCompleted, onError} = useMutationProps()
   const {items} = suggestedIntegrations
-  const suggestedIntegration = items && items[0]
+  const suggestedIntegration = items?.find((item) => item.nameWithOwner)
   const nameWithOwner = suggestedIntegration?.nameWithOwner
   const [selectedNameWithOwner, setSelectedNameWithOwner] = useState(nameWithOwner)
   const {fields, onChange, validateField, setDirtyField} = useForm({
