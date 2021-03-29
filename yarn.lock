@@ -6825,10 +6825,10 @@ dayjs@~1.8.24, dayjs@~1.8.25:
   resolved "https://registry.yarnpkg.com/dayjs/-/dayjs-1.8.35.tgz#67118378f15d31623f3ee2992f5244b887606888"
   integrity sha512-isAbIEenO4ilm6f8cpqvgjZCsuerDAz2Kb7ri201AiNn58aqXuaLJEnCtfIMdCvERZHNGRY5lDMTr/jdAnKSWQ==
 
-dd-trace@^0.31.1:
-  version "0.31.1"
-  resolved "https://registry.yarnpkg.com/dd-trace/-/dd-trace-0.31.1.tgz#36339d9998780c44bf13fc5c99145b935bcf18a4"
-  integrity sha512-JExKxwYmXOl4+CiBviUuVjq/OSh1qiu/fCEtkPyEiLuUdTkvXP4Tji+ZQdTctLMiwfVMUy3XwADgyzu8s0x5PA==
+dd-trace@^0.31.4:
+  version "0.31.4"
+  resolved "https://registry.yarnpkg.com/dd-trace/-/dd-trace-0.31.4.tgz#0b06ac74fd5cdac5a9c23167c6fbaa0feb0a982f"
+  integrity sha512-qh/M6TjesnAJDoS9PU3BxOGEHDaFxCpHwaGrf2LqwuB71t3dC2dCZgaLPjVkkjBbObbQ18ZnhWL9b53U4WKn6A==
   dependencies:
     "@types/node" "^10.12.18"
     axios "^0.21.1"
