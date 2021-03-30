@@ -28,6 +28,7 @@
   },
   "dependencies": {
     "parabol-client": "^6.4.0",
-    "parabol-server": "^6.4.0"
+    "parabol-server": "^6.4.0",
+    "dd-trace": "^0.31.4"
   }
 }
