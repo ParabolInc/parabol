@@ -5,7 +5,7 @@
   It IS used to transform a source stream into a response stream
  */
 import {graphql} from 'graphql'
-import {print} from 'graphql/language/printer'
+import {execute} from 'graphql/execution/execute'
 import {FormattedExecutionResult} from 'graphql/execution/execute'
 import AuthToken from '../database/types/AuthToken'
 import PROD from '../PROD'
@@ -60,7 +60,9 @@ const executeGraphQL = async (req: GQLRequest) => {
     response = await graphql({schema, source, variableValues, contextValue})
   } else if (docId && process.env.DD_TRACE_ENABLED === 'true') {
     const document = await documentCache.fromID(docId)
-    response = await graphql({schema, source: print(document!), variableValues, contextValue})
+    response = document
+      ? await execute({schema, document, variableValues, contextValue})
+      : {errors: [new Error(`Document ${docId} was not found in DocumentCache.`)] as any}
   } else {
     const compiledQuery = docId
       ? await queryCache.fromID(docId, schema)
