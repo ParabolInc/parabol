@@ -124,7 +124,7 @@ export default {
     }
 
     // The default channel could be anything: public, private, im, mpim. Only allow public channels or the @Parabol channel
-    // Using the slackUserId sends a DM to the user as @Parabol
+    // Using the slackUserId sends a DM to the user from @Parabol
     const teamChannelId = joinConvoRes.ok ? joinConvoRes.channel.id : slackUserId
 
     const [, slackAuthId] = await Promise.all([

@@ -21,7 +21,6 @@ const useSlackChannels = (
         console.error(publicChannelRes.error)
         return
       }
-
       let availableChannels
       const {channels: publicChannels} = publicChannelRes
       if (privateChannelRes.ok && privateChannelRes.channels.length) {

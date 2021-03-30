@@ -40,7 +40,7 @@ const setDefaultSlackChannel = {
     if (!channelInfo.ok && slackChannelId !== slackUserId) {
       return standardError(new Error(channelInfo.error), {userId: viewerId})
     }
-    if (channelInfo.ok && !channelInfo.channel.is_im) {
+    if (channelInfo.ok) {
       const {channel} = channelInfo
       const {id: channelId, is_member: isMember, is_archived: isArchived} = channel
       if (isArchived) {
