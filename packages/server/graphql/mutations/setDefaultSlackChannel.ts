@@ -37,10 +37,10 @@ const setDefaultSlackChannel = {
     const channelInfo = await manager.getConversationInfo(slackChannelId)
 
     // should either be a public / private channel or the slackUserId if messaging from @Parabol
-    if (!channelInfo.ok && slackChannelId !== slackUserId) {
-      return standardError(new Error(channelInfo.error), {userId: viewerId})
-    }
-    if (channelInfo.ok) {
+    if (slackChannelId !== slackUserId) {
+      if (!channelInfo.ok) {
+        return standardError(new Error(channelInfo.error), {userId: viewerId})
+      }
       const {channel} = channelInfo
       const {id: channelId, is_member: isMember, is_archived: isArchived} = channel
       if (isArchived) {
