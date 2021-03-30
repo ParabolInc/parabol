@@ -27,7 +27,6 @@ const MeetingsDashRoot = (props: Props) => {
       variables={{}}
       fetchPolicy={'store-or-network' as any}
       render={renderQuery(MeetingsDash, {size: LoaderSize.PANEL})}
-    // render={() => (<MeetingsDash />)}
     />
   )
 }
