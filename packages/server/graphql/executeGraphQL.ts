@@ -66,7 +66,6 @@ const executeGraphQL = async (req: GQLRequest) => {
       ? await queryCache.fromID(docId, schema)
       : queryCache.fromString(source, schema)
     if (compiledQuery) {
-      console.log(`Goting to execute a non-adhoc query with GraphQL-JIT execution engine`)
       response = ((await compiledQuery.query(
         rootValue,
         contextValue,
