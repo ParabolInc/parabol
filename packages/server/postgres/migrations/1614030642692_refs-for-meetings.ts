@@ -110,7 +110,7 @@ export async function up(): Promise<void> {
       // side effects!
       templateIdToTemplateRefId[id] = templateRefId
       const ref = {id: templateRefId, template: templateRefStr}
-      return insertTemplateRefQuery.run({ref}, pg)
+      return insertTemplateRefQuery.run({ref}, client)
     })
   )
 
