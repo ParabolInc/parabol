@@ -91,13 +91,8 @@ const loginWithGoogle = {
         }
       }
 
-      const userId = `google-oauth2|${sub}`
-      const deletedUser = await r
-        .table('User')
-        .get(userId)
-        .run()
-
       // it's a new user!
+      const userId = `google-oauth2|${generateUID()}`
       const nickname = name || email.substring(0, email.indexOf('@'))
       const preferredName = nickname.length === 1 ? nickname.repeat(2) : nickname
       const identity = new AuthIdentityGoogle({
@@ -105,8 +100,7 @@ const loginWithGoogle = {
         isEmailVerified: email_verified !== 'false'
       })
       const newUser = new User({
-        // if a deleted user with the same id exists, generate a new id
-        id: deletedUser?.isRemoved ? `google-oauth2|${generateUID()}` : userId,
+        id: userId,
         preferredName,
         picture,
         email,
