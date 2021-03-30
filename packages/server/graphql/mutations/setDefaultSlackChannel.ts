@@ -32,15 +32,16 @@ const setDefaultSlackChannel = {
     if (!slackAuth) {
       return standardError(new Error('Slack authentication not found'), {userId: viewerId})
     }
-    const {id: slackAuthId, botAccessToken, defaultTeamChannelId} = slackAuth
+    const {id: slackAuthId, botAccessToken, defaultTeamChannelId, slackUserId} = slackAuth
     const manager = new SlackServerManager(botAccessToken)
     const channelInfo = await manager.getConversationInfo(slackChannelId)
 
-    if (!channelInfo.ok) {
+    // should either be a public / private channel or the slackUserId if messaging from @Parabol
+    if (!channelInfo.ok && slackChannelId !== slackUserId) {
       return standardError(new Error(channelInfo.error), {userId: viewerId})
     }
-    const {channel} = channelInfo
-    if (!channel.is_im) {
+    if (channelInfo.ok && !channelInfo.channel.is_im) {
+      const {channel} = channelInfo
       const {id: channelId, is_member: isMember, is_archived: isArchived} = channel
       if (isArchived) {
         return standardError(new Error('Slack channel archived'), {userId: viewerId})
