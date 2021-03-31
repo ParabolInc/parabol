@@ -2,14 +2,14 @@ import styled from '@emotion/styled'
 import React from 'react'
 import {MenuPosition} from '../hooks/useCoords'
 import useTooltip from '../hooks/useTooltip'
-import {PALETTE} from '../styles/paletteV2'
+import {PALETTE} from '../styles/paletteV3'
 import {ICON_SIZE} from '../styles/typographyV2'
 import FlatButton from './FlatButton'
 import Icon from './Icon'
 
 const Button = styled(FlatButton)({
   alignItems: 'center',
-  color: PALETTE.TEXT_GRAY,
+  color: PALETTE.SLATE_600,
   height: 32,
   justifyContent: 'center',
   padding: 0,

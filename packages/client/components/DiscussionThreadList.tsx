@@ -5,7 +5,7 @@ import {DiscussionThreadList_meeting} from '~/__generated__/DiscussionThreadList
 import {DiscussionThreadList_threadables} from '~/__generated__/DiscussionThreadList_threadables.graphql'
 import useScrollThreadList from '~/hooks/useScrollThreadList'
 import styled from '@emotion/styled'
-import {PALETTE} from '../styles/paletteV2'
+import {PALETTE} from '../styles/paletteV3'
 import CommentingStatusText from './CommentingStatusText'
 import DiscussionThreadListEmptyState from './DiscussionThreadListEmptyState'
 import LabelHeading from './LabelHeading/LabelHeading'
@@ -34,7 +34,7 @@ const PusherDowner = styled('div')({
 })
 
 const Header = styled(LabelHeading)({
-  borderBottom: `1px solid ${PALETTE.BORDER_LIGHTER}`,
+  borderBottom: `1px solid ${PALETTE.SLATE_300}`,
   margin: '0 0 8px',
   padding: '6px 12px 12px',
   textTransform: 'none',

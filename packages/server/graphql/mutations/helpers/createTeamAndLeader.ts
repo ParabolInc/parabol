@@ -6,6 +6,9 @@ import Team from '../../../database/types/Team'
 import TimelineEventCreatedTeam from '../../../database/types/TimelineEventCreatedTeam'
 import addTeamIdToTMS from '../../../safeMutations/addTeamIdToTMS'
 import insertNewTeamMember from '../../../safeMutations/insertNewTeamMember'
+import catchAndLog from '../../../postgres/utils/catchAndLog'
+import {insertTeamQuery} from '../../../postgres/queries/generated/insertTeamQuery'
+import getPg from '../../../postgres/getPg'
 
 interface ValidNewTeam {
   id: string
@@ -37,6 +40,7 @@ export default async function createTeamAndLeader(userId: string, newTeam: Valid
   })
 
   await Promise.all([
+    catchAndLog(() => insertTeamQuery.run(verifiedTeam, getPg())),
     // insert team
     r
       .table('Team')

@@ -2,7 +2,7 @@ import styled from '@emotion/styled'
 import React from 'react'
 import {MenuPosition} from '~/hooks/useCoords'
 import useMenu from '~/hooks/useMenu'
-import {PALETTE} from '~/styles/paletteV2'
+import {PALETTE} from '~/styles/paletteV3'
 import lazyPreload from '~/utils/lazyPreload'
 import Icon from './Icon'
 import PlainButton from './PlainButton/PlainButton'
@@ -13,7 +13,7 @@ const CommentAuthorOptionsDropdown = lazyPreload(() =>
 
 const StyledButton = styled(PlainButton)({
   ':hover, :focus, :active': {
-    color: PALETTE.TEXT_MAIN
+    color: PALETTE.SLATE_700
   }
 })
 

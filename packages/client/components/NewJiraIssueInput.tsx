@@ -2,7 +2,7 @@ import React, {FormEvent, useEffect, useRef, useState} from 'react'
 import graphql from 'babel-plugin-relay/macro'
 import styled from '@emotion/styled'
 import Checkbox from './Checkbox'
-import {PALETTE} from '~/styles/paletteV2'
+import {PALETTE} from '~/styles/paletteV3'
 import {createFragmentContainer} from 'react-relay'
 import useMutationProps from '~/hooks/useMutationProps'
 import useAtmosphere from '~/hooks/useAtmosphere'
@@ -30,14 +30,14 @@ const StyledButton = styled(PlainButton)({
 })
 
 const StyledIcon = styled(Icon)({
-  color: PALETTE.LINK_BLUE,
+  color: PALETTE.SKY_500,
   fontSize: 20,
   padding: 0,
   alignContent: 'center'
 })
 
 const StyledLink = styled('a')({
-  color: PALETTE.LINK_BLUE,
+  color: PALETTE.SKY_500,
   display: 'block',
   fontSize: 12,
   lineHeight: '20px',
@@ -53,7 +53,7 @@ const Form = styled('form')({
 })
 
 const Item = styled('div')({
-  backgroundColor: PALETTE.BACKGROUND_BLUE_MAGENTA,
+  backgroundColor: PALETTE.SLATE_100,
   cursor: 'pointer',
   display: 'flex',
   paddingLeft: 16,
@@ -71,7 +71,7 @@ const SearchInput = styled('input')({
   appearance: 'none',
   background: 'transparent',
   border: 'none',
-  color: PALETTE.TEXT_MAIN,
+  color: PALETTE.SLATE_700,
   fontSize: 16,
   margin: 0,
   padding: 0,

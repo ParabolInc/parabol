@@ -4,7 +4,7 @@ import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {MenuPosition} from '../hooks/useCoords'
 import useMenu from '../hooks/useMenu'
-import {PALETTE} from '../styles/paletteV2'
+import {PALETTE} from '../styles/paletteV3'
 import {ICON_SIZE} from '../styles/typographyV2'
 import {JiraScopingSearchHistoryToggle_meeting} from '../__generated__/JiraScopingSearchHistoryToggle_meeting.graphql'
 import Icon from './Icon'
@@ -12,12 +12,12 @@ import JiraScopingSearchHistoryMenu from './JiraScopingSearchHistoryMenu'
 import PlainButton from './PlainButton/PlainButton'
 
 const SearchIcon = styled(Icon)({
-  color: PALETTE.TEXT_GRAY,
+  color: PALETTE.SLATE_600,
   fontSize: ICON_SIZE.MD24
 })
 
 const DropdownIcon = styled(Icon)({
-  color: PALETTE.TEXT_MAIN,
+  color: PALETTE.SLATE_700,
   fontSize: ICON_SIZE.MD18,
   marginLeft: -8
 })

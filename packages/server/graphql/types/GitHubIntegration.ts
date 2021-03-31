@@ -48,12 +48,11 @@ const GitHubIntegration = new GraphQLObjectType<any, GQLContext>({
       type: GraphQLNonNull(GraphQLList(GraphQLNonNull(GitHubSearchQuery))),
       description:
         'the list of suggested search queries, sorted by most recent. Guaranteed to be < 60 days old',
-      resolve: async ({id: githubAuthId, githubSearchQueries}) => {
+      resolve: async ({githubSearchQueries}) => {
         const expirationThresh = ms('60d')
         const thresh = new Date(Date.now() - expirationThresh)
-        const searchQueries = githubSearchQueries || []
-        const unexpiredQueries = searchQueries.filter((query) => query.lastUsedAt > thresh)
-        if (unexpiredQueries.length < searchQueries.length) {
+        const unexpiredQueries = githubSearchQueries.filter((query) => query.lastUsedAt > thresh)
+        if (unexpiredQueries.length < githubSearchQueries.length) {
           // TODO change to PG
           // const r = await getRethink()
           // await r
@@ -64,7 +63,6 @@ const GitHubIntegration = new GraphQLObjectType<any, GQLContext>({
           //   })
           //   .run()
         }
-        console.log({githubAuthId})
         return unexpiredQueries
       }
     },

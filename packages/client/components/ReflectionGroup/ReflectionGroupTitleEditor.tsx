@@ -5,7 +5,7 @@ import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import useMutationProps from '../../hooks/useMutationProps'
 import UpdateReflectionGroupTitleMutation from '../../mutations/UpdateReflectionGroupTitleMutation'
-import {PALETTE} from '../../styles/paletteV2'
+import {PALETTE} from '../../styles/paletteV3'
 import ui from '../../styles/ui'
 import {Card} from '../../types/constEnums'
 import {RETRO_TOPIC_LABEL} from '../../utils/constants'
@@ -61,7 +61,7 @@ const NameInput = styled('input')<{isExpanded: boolean; readOnly: boolean}>(
     ...ui.fieldSizeStyles.small,
     border: 0,
     boxShadow: 'none',
-    color: isExpanded ? '#FFFFFF' : PALETTE.TEXT_MAIN,
+    color: isExpanded ? '#FFFFFF' : PALETTE.SLATE_700,
     cursor: readOnly ? 'default' : 'text',
     fontSize,
     fontWeight: 600,

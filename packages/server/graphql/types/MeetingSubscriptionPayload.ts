@@ -11,6 +11,7 @@ import EditCommentingPayload from './EditCommentingPayload'
 import EditReflectionPayload from './EditReflectionPayload'
 import EndDraggingReflectionPayload from './EndDraggingReflectionPayload'
 import {FlagReadyToAdvanceSuccess} from './FlagReadyToAdvancePayload'
+import {GitHubCreateIssueSuccess} from './GitHubCreateIssuePayload'
 import JiraCreateIssuePayload from './JiraCreateIssuePayload'
 import {JoinMeetingSuccess} from './JoinMeetingPayload'
 import NewMeetingCheckInPayload from './NewMeetingCheckInPayload'
@@ -23,6 +24,7 @@ import RemoveReflectionPayload from './RemoveReflectionPayload'
 import ResetMeetingToStagePayload from './ResetMeetingToStagePayload'
 import {SetAppLocationSuccess} from './SetAppLocationPayload'
 import SetPhaseFocusPayload from './SetPhaseFocusPayload'
+import {SetPokerSpectateSuccess} from './SetPokerSpectatePayload'
 import SetStageTimerPayload from './SetStageTimerPayload'
 import StartDraggingReflectionPayload from './StartDraggingReflectionPayload'
 import {UpdateCommentContentSuccess} from './UpdateCommentContentPayload'
@@ -33,7 +35,6 @@ import UpdateReflectionContentPayload from './UpdateReflectionContentPayload'
 import UpdateReflectionGroupTitlePayload from './UpdateReflectionGroupTitlePayload'
 import {UpdateRetroMaxVotesSuccess} from './UpdateRetroMaxVotesPayload'
 import {VoteForPokerStorySuccess} from './VoteForPokerStoryPayload'
-import {GitHubCreateIssueSuccess} from './GitHubCreateIssuePayload'
 import VoteForReflectionGroupPayload from './VoteForReflectionGroupPayload'
 
 const types = [
@@ -73,7 +74,8 @@ const types = [
   PokerAnnounceDeckHoverSuccess,
   PokerSetFinalScoreSuccess,
   JoinMeetingSuccess,
-  GitHubCreateIssueSuccess
+  GitHubCreateIssueSuccess,
+  SetPokerSpectateSuccess
 ]
 
 export default graphQLSubscriptionType('MeetingSubscriptionPayload', types)

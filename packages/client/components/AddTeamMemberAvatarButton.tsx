@@ -12,7 +12,7 @@ import lazyPreload from '../utils/lazyPreload'
 import {AddTeamMemberAvatarButton_teamMembers} from '../__generated__/AddTeamMemberAvatarButton_teamMembers.graphql'
 import Icon from './Icon'
 import OutlinedButton from './OutlinedButton'
-import {PALETTE} from '~/styles/paletteV2'
+import {PALETTE} from '~/styles/paletteV3'
 
 interface Props extends WithAtmosphereProps {
   meetingId?: string
@@ -30,8 +30,8 @@ const AddButton = styled(OutlinedButton)<{isMeeting: boolean | undefined}>(
     padding: 0,
     width: 32,
     ':hover, :focus, :active': {
-      borderColor: PALETTE.LINK_BLUE_HOVER,
-      color: PALETTE.LINK_BLUE_HOVER
+      borderColor: PALETTE.SKY_600,
+      color: PALETTE.SKY_600
     }
   },
   ({isMeeting}) =>
@@ -88,13 +88,13 @@ const AddTeamMemberAvatarButton = (props: Props) => {
   const modal = isDemoRoute() ? (
     <AddTeamMemberModalDemo />
   ) : (
-      <AddTeamMemberModal
-        closePortal={closeModal}
-        meetingId={meetingId}
-        teamId={teamId}
-        teamMembers={teamMembers}
-      />
-    )
+    <AddTeamMemberModal
+      closePortal={closeModal}
+      meetingId={meetingId}
+      teamId={teamId}
+      teamMembers={teamMembers}
+    />
+  )
   return (
     <>
       <AddButton

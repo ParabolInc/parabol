@@ -4,14 +4,14 @@ import React from 'react'
 import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import Atmosphere from '~/Atmosphere'
 import useAtmosphere from '../hooks/useAtmosphere'
-import {PALETTE} from '../styles/paletteV2'
+import {PALETTE} from '../styles/paletteV3'
 import {JiraScopingSearchInput_meeting} from '../__generated__/JiraScopingSearchInput_meeting.graphql'
 import Icon from './Icon'
 
 const SearchInput = styled('input')({
   appearance: 'none',
   border: 'none',
-  color: PALETTE.TEXT_MAIN,
+  color: PALETTE.SLATE_700,
   fontSize: 16,
   margin: 0,
   outline: 0,
@@ -26,7 +26,7 @@ const Wrapper = styled('div')({
 })
 
 const ClearSearchIcon = styled(Icon)<{isEmpty: boolean}>(({isEmpty}) => ({
-  color: PALETTE.TEXT_GRAY,
+  color: PALETTE.SLATE_600,
   cursor: 'pointer',
   padding: 12,
   visibility: isEmpty ? 'hidden' : undefined

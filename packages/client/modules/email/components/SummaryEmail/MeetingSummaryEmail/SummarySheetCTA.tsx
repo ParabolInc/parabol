@@ -1,5 +1,5 @@
 import {buttonShadow} from 'parabol-client/styles/elevation'
-import {PALETTE} from 'parabol-client/styles/paletteV2'
+import {PALETTE} from 'parabol-client/styles/paletteV3'
 import {FONT_FAMILY} from 'parabol-client/styles/typographyV2'
 import React from 'react'
 import AnchorIfEmail from './AnchorIfEmail'
@@ -14,8 +14,8 @@ interface Props {
 const teamDashLabel = 'Go to Team Dashboard'
 
 const primaryButtonStyle = {
-  backgroundColor: PALETTE.BACKGROUND_ORANGE,
-  backgroundImage: PALETTE.GRADIENT_WARM,
+  backgroundColor: PALETTE.TOMATO_500,
+  backgroundImage: PALETTE.GRADIENT_TOMATO_600_ROSE_500,
   borderRadius: 32,
   boxShadow: buttonShadow,
   color: '#FFFFFF',

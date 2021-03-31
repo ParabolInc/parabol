@@ -70,7 +70,7 @@ const executeGraphQL = async (req: GQLRequest) => {
     }
   }
   if (!PROD && response.errors) {
-    console.trace({error: JSON.stringify(response.errors)})
+    console.trace({error: JSON.stringify(response)})
   }
   dataLoader.dispose()
   return response

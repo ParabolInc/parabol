@@ -1,9 +1,8 @@
+import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useEffect, useRef, useState} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {AgendaItem_meeting} from '~/__generated__/AgendaItem_meeting.graphql'
-import styled from '@emotion/styled'
-import {AgendaItem_agendaItem} from '../../../../__generated__/AgendaItem_agendaItem.graphql'
 import Avatar from '../../../../components/Avatar/Avatar'
 import IconButton from '../../../../components/IconButton'
 import MeetingSubnavItem from '../../../../components/MeetingSubnavItem'
@@ -18,6 +17,7 @@ import pinIcon from '../../../../styles/theme/images/icons/pin.svg'
 import unpinIcon from '../../../../styles/theme/images/icons/unpin.svg'
 import {ICON_SIZE} from '../../../../styles/typographyV2'
 import findStageAfterId from '../../../../utils/meetings/findStageAfterId'
+import {AgendaItem_agendaItem} from '../../../../__generated__/AgendaItem_agendaItem.graphql'
 
 const AgendaItemStyles = styled('div')({
   position: 'relative',
@@ -169,7 +169,6 @@ const AgendaItem = (props: Props) => {
         onMouseLeave={() => setIsHovering(false)}
       >
         <MeetingSubnavItem
-          label={content}
           metaContent={
             <IconBlock
               onClick={handleIconClick}
@@ -186,7 +185,9 @@ const AgendaItem = (props: Props) => {
           isComplete={isComplete}
           isDragging={isDragging}
           isUnsyncedFacilitatorStage={isUnsyncedFacilitatorStage}
-        />
+        >
+          {content}
+        </MeetingSubnavItem>
         <DeleteIconButton
           aria-label={'Remove this agenda topic'}
           disabled={!!endedAt}

@@ -7,7 +7,7 @@ graphql`
   fragment StartRetrospectiveMutation_team on StartRetrospectiveSuccess {
     meeting {
       id
-      defaultFacilitatorUserId
+      createdBy
       name
       meetingMembers {
         user {

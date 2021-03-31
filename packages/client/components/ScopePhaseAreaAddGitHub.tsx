@@ -4,7 +4,7 @@ import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
-import {PALETTE} from '../styles/paletteV2'
+import {PALETTE} from '../styles/paletteV3'
 import GitHubClientManager from '../utils/GitHubClientManager'
 import {ScopePhaseAreaAddGitHub_meeting} from '../__generated__/ScopePhaseAreaAddGitHub_meeting.graphql'
 import GitHubSVG from './GitHubSVG'
@@ -19,11 +19,11 @@ const AddGitHubArea = styled('div')({
 })
 
 const StyledLink = styled('span')({
-  color: PALETTE.LINK_BLUE,
+  color: PALETTE.SLATE_700,
   cursor: 'pointer',
   outline: 0,
   ':hover, :focus, :active': {
-    color: PALETTE.LINK_BLUE_HOVER
+    color: PALETTE.SKY_600
   },
   paddingTop: 24
 })

@@ -4,7 +4,7 @@ import React, {RefObject} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import useBreakpoint from '~/hooks/useBreakpoint'
 import {Breakpoint} from '~/types/constEnums'
-import {PALETTE} from '../styles/paletteV2'
+import {PALETTE} from '../styles/paletteV3'
 import {PokerDimensionFinalScoreJiraPicker_stage} from '../__generated__/PokerDimensionFinalScoreJiraPicker_stage.graphql'
 import JiraFieldDimensionDropdown from './JiraFieldDimensionDropdown'
 import LinkButton from './LinkButton'
@@ -42,7 +42,7 @@ const ErrorMessage = styled(StyledError)<{isDesktop: boolean}>(({isDesktop}) => 
 }))
 
 const StyledLinkButton = styled(LinkButton)({
-  color: PALETTE.LINK_BLUE,
+  color: PALETTE.SKY_500,
   fontSize: 14,
   fontWeight: 600,
   height: 40,
@@ -50,7 +50,7 @@ const StyledLinkButton = styled(LinkButton)({
   padding: '0 8px',
   ':hover,:focus,:active': {
     boxShadow: 'none',
-    color: PALETTE.LINK_BLUE_HOVER
+    color: PALETTE.SKY_600
   }
 })
 

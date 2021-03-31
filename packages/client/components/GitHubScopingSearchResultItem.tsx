@@ -5,7 +5,7 @@ import {createFragmentContainer} from 'react-relay'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
 import UpdatePokerScopeMutation from '../mutations/UpdatePokerScopeMutation'
-import {PALETTE} from '../styles/paletteV2'
+import {PALETTE} from '../styles/paletteV3'
 import {Threshold} from '../types/constEnums'
 import isTempId from '../utils/relay/isTempId'
 import {GitHubScopingSearchResultItem_issue} from '../__generated__/GitHubScopingSearchResultItem_issue.graphql'
@@ -30,7 +30,7 @@ const Issue = styled('div')({
 const Title = styled('div')({})
 
 const StyledLink = styled('a')({
-  color: PALETTE.LINK_BLUE,
+  color: PALETTE.SLATE_700,
   display: 'block',
   fontSize: 12,
   lineHeight: '20px',

@@ -18,7 +18,7 @@ import TierTag from '../../../../components/Tag/TierTag'
 import {MenuPosition} from '../../../../hooks/useCoords'
 import useRouter from '../../../../hooks/useRouter'
 import useTooltip from '../../../../hooks/useTooltip'
-import {PALETTE} from '../../../../styles/paletteV2'
+import {PALETTE} from '../../../../styles/paletteV3'
 import defaultOrgAvatar from '../../../../styles/theme/images/avatar-organization.svg'
 import {Breakpoint, TierLabel} from '../../../../types/constEnums'
 import plural from '../../../../utils/plural'
@@ -56,7 +56,7 @@ const StyledButton = styled(SecondaryButton)({
 })
 
 const StyledIcon = styled(Icon)({
-  color: PALETTE.TEXT_GRAY,
+  color: PALETTE.SLATE_600,
   fontSize: 18
 })
 

@@ -7,18 +7,25 @@ import useTransition, {TransitionStatus} from '../hooks/useTransition'
 import {DeckActivityAvatars_stage} from '../__generated__/DeckActivityAvatars_stage.graphql'
 import PokerVotingAvatar from './PokerVotingAvatar'
 
-
 const DeckActivityPanel = styled('div')({
   height: '100%',
   position: 'absolute',
+  // let things underneath this be clickable
+  pointerEvents: 'none',
   right: 0,
+  top: 32, // stay below the header
   width: 64,
   zIndex: 100 // show above dimension column
 })
 
 const PeekingAvatar = styled(PokerVotingAvatar)<{status?: TransitionStatus}>(({status}) => ({
   opacity: status === TransitionStatus.EXITING ? 0 : 1,
-  transform: status === TransitionStatus.MOUNTED ? `translate(64px)` : status === TransitionStatus.EXITING ? 'scale(0)' : undefined,
+  transform:
+    status === TransitionStatus.MOUNTED
+      ? `translate(64px)`
+      : status === TransitionStatus.EXITING
+        ? 'scale(0)'
+        : undefined
 }))
 
 interface Props {
@@ -54,17 +61,23 @@ const DeckActivityAvatars = (props: Props) => {
         const visibleScoreIdx = peekingUsers.findIndex((user) => user.id === userId)
         const displayIdx = visibleScoreIdx === -1 ? idx : visibleScoreIdx
         return (
-          <PeekingAvatar key={userId} status={status} onTransitionEnd={onTransitionEnd} user={child} idx={displayIdx} isColumn isInitialStageRender={false} />
+          <PeekingAvatar
+            key={userId}
+            status={status}
+            onTransitionEnd={onTransitionEnd}
+            user={child}
+            idx={displayIdx}
+            isColumn
+            isInitialStageRender={false}
+          />
         )
       })}
     </DeckActivityPanel>
   )
 }
 
-export default createFragmentContainer(
-  DeckActivityAvatars,
-  {
-    stage: graphql`
+export default createFragmentContainer(DeckActivityAvatars, {
+  stage: graphql`
     fragment DeckActivityAvatars_stage on EstimateStage {
       id
       hoveringUsers {
@@ -75,6 +88,6 @@ export default createFragmentContainer(
       scores {
         userId
       }
-    }`
-  }
-)
+    }
+  `
+})
