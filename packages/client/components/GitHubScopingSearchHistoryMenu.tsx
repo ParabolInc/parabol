@@ -4,15 +4,14 @@ import React from 'react'
 import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import useAtmosphere from '../hooks/useAtmosphere'
 import {MenuProps} from '../hooks/useMenu'
-import SearchQueryId from '../shared/gqlIds/SearchQueryId'
-import {PALETTE} from '../styles/paletteV3'
-import {JiraScopingSearchHistoryMenu_teamMember} from '../__generated__/JiraScopingSearchHistoryMenu_teamMember.graphql'
+import {PALETTE} from '../styles/paletteV2'
+import {GitHubScopingSearchHistoryMenu_teamMember} from '../__generated__/GitHubScopingSearchHistoryMenu_teamMember.graphql'
 import Menu from './Menu'
 import MenuItem from './MenuItem'
 import MenuItemLabel from './MenuItemLabel'
 
 const NoResults = styled(MenuItemLabel)({
-  color: PALETTE.SLATE_600,
+  color: PALETTE.TEXT_GRAY,
   justifyContent: 'center',
   paddingLeft: 8,
   paddingRight: 8,
@@ -20,11 +19,11 @@ const NoResults = styled(MenuItemLabel)({
 })
 
 const QueryString = styled('span')({
-  color: PALETTE.SLATE_600
+  color: PALETTE.TEXT_GRAY
 })
 
 const ProjectFilter = styled('span')({
-  color: PALETTE.SLATE_600
+  color: PALETTE.TEXT_GRAY
 })
 
 const StyledMenuItemLabel = styled(MenuItemLabel)({
@@ -35,41 +34,41 @@ const StyledMenuItemLabel = styled(MenuItemLabel)({
 
 interface Props {
   menuProps: MenuProps
-  teamMember: JiraScopingSearchHistoryMenu_teamMember
+  teamMember: GitHubScopingSearchHistoryMenu_teamMember
   meetingId: string
 }
 
-const JiraScopingSearchHistoryMenu = (props: Props) => {
+const GitHubScopingSearchHistoryMenu = (props: Props) => {
   const {menuProps, meetingId, teamMember} = props
   const {integrations} = teamMember
-  const {atlassian} = integrations
-  const {jiraSearchQueries} = atlassian!
+  const {github} = integrations
+  const {githubSearchQueries} = github!
   const atmosphere = useAtmosphere()
   const {portalStatus, isDropdown, closePortal} = menuProps
   return (
     <Menu
       keepParentFocus
-      ariaLabel={'Select a Jira search query'}
+      ariaLabel={'Select a GitHub search query'}
       portalStatus={portalStatus}
       isDropdown={isDropdown}
       closePortal={closePortal}
     >
-      {jiraSearchQueries.length === 0 && (
+      {githubSearchQueries.length === 0 && (
         <NoResults key='no-results'>No saved queries yet!</NoResults>
       )}
-      {jiraSearchQueries.map((jiraSearchQuery) => {
-        const {id: queryId, queryString, isJQL, projectKeyFilters} = jiraSearchQuery
+      {githubSearchQueries.map((githubSearchQuery) => {
+        const {id: queryId, queryString, isJQL, nameWithOwnerFilters} = githubSearchQuery
         const selectQuery = () => {
           commitLocalUpdate(atmosphere, (store) => {
-            const searchQueryId = SearchQueryId.join('jira', meetingId)
-            const jiraSearchQuery = store.get(searchQueryId)!
-            jiraSearchQuery.setValue(isJQL, 'isJQL')
-            jiraSearchQuery.setValue(queryString, 'queryString')
-            jiraSearchQuery.setValue(projectKeyFilters as string[], 'projectKeyFilters')
+            const searchQueryId = `githubSearchQuery:${meetingId}`
+            const githubSearchQuery = store.get(searchQueryId)!
+            githubSearchQuery.setValue(isJQL, 'isJQL')
+            githubSearchQuery.setValue(queryString, 'queryString')
+            githubSearchQuery.setValue(nameWithOwnerFilters as string[], 'nameWithOwnerFilters')
           })
         }
         const queryStringLabel = isJQL ? queryString : `“${queryString}”`
-        const projectFilters = projectKeyFilters
+        const filters = nameWithOwnerFilters
           .map((filter) => filter.slice(filter.indexOf(':') + 1))
           .join(', ')
         return (
@@ -78,7 +77,7 @@ const JiraScopingSearchHistoryMenu = (props: Props) => {
             label={
               <StyledMenuItemLabel>
                 <QueryString>{queryStringLabel}</QueryString>
-                {projectFilters && <ProjectFilter>{`in ${projectFilters}`}</ProjectFilter>}
+                {filters && <ProjectFilter>{`in ${filters}`}</ProjectFilter>}
               </StyledMenuItemLabel>
             }
             onClick={selectQuery}
@@ -89,16 +88,15 @@ const JiraScopingSearchHistoryMenu = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(JiraScopingSearchHistoryMenu, {
+export default createFragmentContainer(GitHubScopingSearchHistoryMenu, {
   teamMember: graphql`
-    fragment JiraScopingSearchHistoryMenu_teamMember on TeamMember {
+    fragment GitHubScopingSearchHistoryMenu_teamMember on TeamMember {
       integrations {
-        atlassian {
-          jiraSearchQueries {
+        github {
+          githubSearchQueries {
             id
             queryString
-            isJQL
-            projectKeyFilters
+            nameWithOwnerFilters
           }
         }
       }

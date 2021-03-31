@@ -6,11 +6,13 @@ import ParabolScopingSearchBar from './ParabolScopingSearchBar'
 import ParabolScopingSearchResultsRoot from './ParabolScopingSearchResultsRoot'
 
 interface Props {
+  isActive: boolean
   meeting: ScopePhaseAreaParabolScoping_meeting
 }
 
 const ScopePhaseAreaParabolScoping = (props: Props) => {
-  const {meeting} = props
+  const {isActive, meeting} = props
+  if (!isActive) return null
   return (
     <>
       <ParabolScopingSearchBar meeting={meeting} />

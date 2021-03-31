@@ -8,7 +8,13 @@ import ErrorComponent from './ErrorComponent/ErrorComponent'
 import JiraScopingSearchResults from './JiraScopingSearchResults'
 
 const query = graphql`
-  query JiraScopingSearchResultsRootQuery($teamId: ID!, $queryString: String, $isJQL: Boolean!, $projectKeyFilters: [ID!], $first: Int) {
+  query JiraScopingSearchResultsRootQuery(
+    $teamId: ID!
+    $queryString: String
+    $isJQL: Boolean!
+    $projectKeyFilters: [ID!]
+    $first: Int
+  ) {
     viewer {
       ...JiraScopingSearchResults_viewer
     }
@@ -30,7 +36,13 @@ const JiraScopingSearchResultsRoot = (props: Props) => {
     <QueryRenderer<JiraScopingSearchResultsRootQuery>
       environment={atmosphere}
       query={query}
-      variables={{teamId, queryString: normalizedQueryString, isJQL, projectKeyFilters: projectKeyFilters as string[], first: 100}}
+      variables={{
+        teamId,
+        queryString: normalizedQueryString,
+        isJQL,
+        projectKeyFilters: projectKeyFilters as string[],
+        first: 100
+      }}
       fetchPolicy={'store-or-network' as any}
       render={({props, error}) => {
         const viewer = props?.viewer ?? null

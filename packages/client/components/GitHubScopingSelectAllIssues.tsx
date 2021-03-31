@@ -6,10 +6,10 @@ import useUnusedRecords from '~/hooks/useUnusedRecords'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
 import UpdatePokerScopeMutation from '../mutations/UpdatePokerScopeMutation'
-import {PALETTE} from '../styles/paletteV3'
+import {PALETTE} from '../styles/paletteV2'
 import {Threshold} from '../types/constEnums'
 import getSelectAllTitle from '../utils/getSelectAllTitle'
-import {JiraScopingSelectAllIssues_issues} from '../__generated__/JiraScopingSelectAllIssues_issues.graphql'
+import {GitHubScopingSelectAllIssues_issues} from '../__generated__/GitHubScopingSelectAllIssues_issues.graphql'
 import Checkbox from './Checkbox'
 
 const Item = styled('div')({
@@ -29,16 +29,16 @@ const TitleAndError = styled('div')({
 })
 
 const ErrorMessage = styled('div')({
-  color: PALETTE.TOMATO_500,
+  color: PALETTE.ERROR_MAIN,
   fontWeight: 600
 })
 interface Props {
   meetingId: string
-  issues: JiraScopingSelectAllIssues_issues
+  issues: GitHubScopingSelectAllIssues_issues
   usedServiceTaskIds: Set<string>
 }
 
-const JiraScopingSelectAllIssues = (props: Props) => {
+const GitHubScopingSelectAllIssues = (props: Props) => {
   const {meetingId, usedServiceTaskIds, issues} = props
   const serviceTaskIds = issues.map((issueEdge) => issueEdge.node.id)
   const atmosphere = useAtmosphere()
@@ -54,7 +54,7 @@ const JiraScopingSelectAllIssues = (props: Props) => {
     const updates = updateArr.slice(0, limit).map(
       (serviceTaskId) =>
       ({
-        service: 'jira',
+        service: 'github',
         serviceTaskId,
         action
       } as const)
@@ -82,9 +82,9 @@ const JiraScopingSelectAllIssues = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(JiraScopingSelectAllIssues, {
+export default createFragmentContainer(GitHubScopingSelectAllIssues, {
   issues: graphql`
-    fragment JiraScopingSelectAllIssues_issues on JiraIssueEdge @relay(plural: true) {
+    fragment GitHubScopingSelectAllIssues_issues on GitHubIssueEdge @relay(plural: true) {
       node {
         id
       }

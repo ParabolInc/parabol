@@ -1066,6 +1066,7 @@ export type ThreadSource =
   | ITask
   | IAgendaItem
   | IJiraIssue
+  | IGitHubIssue
   | IRetroReflectionGroup;
 
 /**
@@ -1154,7 +1155,7 @@ export interface IThreadableEdge {
 /**
  * An entity that can be used in a poker meeting and receive estimates
  */
-export type Story = ITask | IJiraIssue;
+export type Story = ITask | IJiraIssue | IGitHubIssue;
 
 /**
  * An entity that can be used in a poker meeting and receive estimates
@@ -1765,24 +1766,34 @@ export interface IGitHubIntegration {
   id: string;
 
   /**
-   * true if an access token exists, else false
-   */
-  isActive: boolean;
-
-  /**
    * The access token to github. good forever
    */
   accessToken: string | null;
 
   /**
-   * *The GitHub login used for queries
-   */
-  login: string;
-
-  /**
    * The timestamp the provider was created
    */
   createdAt: any;
+
+  /**
+   * true if an access token exists, else false
+   */
+  isActive: boolean;
+
+  /**
+   * the list of suggested search queries, sorted by most recent. Guaranteed to be < 60 days old
+   */
+  githubSearchQueries: Array<IGitHubSearchQuery>;
+
+  /**
+   * A list of issues coming straight from the jira integration for a specific team member
+   */
+  issues: IGitHubIssueConnection;
+
+  /**
+   * *The GitHub login used for queries
+   */
+  login: string;
 
   /**
    * *The team that the token is linked to
@@ -1798,6 +1809,137 @@ export interface IGitHubIntegration {
    * The user that the access token is attached to
    */
   userId: string;
+}
+
+export interface IIssuesOnGitHubIntegrationArguments {
+  /**
+   * @default 100
+   */
+  first?: number | null;
+
+  /**
+   * the datetime cursor
+   */
+  after?: any | null;
+
+  /**
+   * A string of text to search for
+   */
+  queryString?: string | null;
+  nameWithOwnerFilters?: Array<string> | null;
+}
+
+/**
+ * A GitHub search query including all filters selected when the query was executed
+ */
+export interface IGitHubSearchQuery {
+  __typename: 'GitHubSearchQuery';
+
+  /**
+   * shortid
+   */
+  id: string;
+
+  /**
+   * The query string, either simple or JQL depending on the isJQL flag
+   */
+  queryString: string;
+
+  /**
+   * The list of repos selected as a filter. null if not set
+   */
+  nameWithOwnerFilters: Array<string>;
+
+  /**
+   * the time the search query was last used. Used for sorting
+   */
+  lastUsedAt: any;
+}
+
+/**
+ * A connection to a list of items.
+ */
+export interface IGitHubIssueConnection {
+  __typename: 'GitHubIssueConnection';
+
+  /**
+   * Page info with cursors coerced to ISO8601 dates
+   */
+  pageInfo: IPageInfoDateCursor | null;
+
+  /**
+   * A list of edges.
+   */
+  edges: Array<IGitHubIssueEdge>;
+
+  /**
+   * An error with the connection, if any
+   */
+  error: IStandardMutationError | null;
+}
+
+/**
+ * An edge in a connection.
+ */
+export interface IGitHubIssueEdge {
+  __typename: 'GitHubIssueEdge';
+
+  /**
+   * The item at the end of the edge
+   */
+  node: IGitHubIssue;
+  cursor: any | null;
+}
+
+/**
+ * The GitHub Issue that comes direct from GitHub
+ */
+export interface IGitHubIssue {
+  __typename: 'GitHubIssue';
+
+  /**
+   * TODO
+   */
+  id: string;
+
+  /**
+   * the comments and tasks created from the discussion
+   */
+  thread: IThreadableConnection;
+
+  /**
+   * A list of users currently commenting
+   */
+  commentors: Array<ICommentorDetails> | null;
+
+  /**
+   * Alias for summary used by the Story interface
+   */
+  title: string;
+
+  /**
+   * The url to access the issue
+   */
+  url: any;
+
+  /**
+   * The owner / repo of the issue as found in GitHub
+   */
+  nameWithOwner: string;
+
+  /**
+   * The stringified ADF of the jira issue description
+   */
+  description: string;
+}
+
+export interface IThreadOnGitHubIssueArguments {
+  first: number;
+
+  /**
+   * the incrementing sort order in string format
+   */
+  after?: string | null;
 }
 
 /**
