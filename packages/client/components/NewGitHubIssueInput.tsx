@@ -79,7 +79,7 @@ const NewIssueInput = styled('input')({
   color: PALETTE.TEXT_MAIN,
   fontSize: 16,
   margin: 0,
-  padding: 0,
+  padding: '0px 8px 0px 0px',
   outline: 0,
   width: '100%'
 })
@@ -98,10 +98,7 @@ interface Props {
 }
 
 const validateIssue = (issue: string) => {
-  return new Legitity(issue)
-    .trim()
-    .min(2, `C’mon, you call that an issue?`)
-    .max(255, `Who's gonna read all that? Short and sweet please.`)
+  return new Legitity(issue).trim().min(2, `C’mon, you call that an issue?`)
 }
 
 const NewGitHubIssueInput = (props: Props) => {
@@ -168,6 +165,7 @@ const NewGitHubIssueInput = (props: Props) => {
               autoFocus
               onBlur={handleCreateNewIssue}
               onChange={onChange}
+              maxLength={255}
               name='newIssue'
               placeholder='New issue title'
               ref={ref}
