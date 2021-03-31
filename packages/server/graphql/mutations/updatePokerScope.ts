@@ -1,6 +1,6 @@
 import {GraphQLID, GraphQLList, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel, Threshold} from 'parabol-client/types/constEnums'
-import getJiraCloudIdAndKey from '../../../client/utils/getJiraCloudIdAndKey'
+import JiraServiceTaskId from '../../../client/shared/gqlIds/JiraServiceTaskId'
 import getRethink from '../../database/rethinkDriver'
 import EstimatePhase from '../../database/types/EstimatePhase'
 import EstimateStage from '../../database/types/EstimateStage'
@@ -10,6 +10,7 @@ import {getUserId, isTeamMember} from '../../utils/authorization'
 import ensureJiraDimensionField from '../../utils/ensureJiraDimensionField'
 import getRedis from '../../utils/getRedis'
 import publish from '../../utils/publish'
+import RedisLock from '../../utils/RedisLock'
 import {GQLContext} from '../graphql'
 import UpdatePokerScopeItemInput from '../types/UpdatePokerScopeItemInput'
 import UpdatePokerScopePayload from '../types/UpdatePokerScopePayload'
@@ -56,6 +57,10 @@ const updatePokerScope = {
       return {error: {message: 'Not a poker meeting'}}
     }
 
+    // lock the meeting while the scope is updating
+    const redisLock = new RedisLock(`meeting:${meetingId}`, 3000)
+    await redisLock.lock(10000)
+
     // RESOLUTION
     const requiredJiraMappers = [] as {
       cloudId: string
@@ -90,7 +95,7 @@ const updatePokerScope = {
         )
         // MUTATIVE
         stages.push(...newStages)
-        const [cloudId, issueKey, projectKey] = getJiraCloudIdAndKey(serviceTaskId)
+        const {cloudId, issueKey, projectKey} = JiraServiceTaskId.split(serviceTaskId)
         const firstDimensionName = dimensions[0].name
         if (service === 'jira') {
           const existingMapper = requiredJiraMappers.find((mapper) => {
@@ -136,6 +141,7 @@ const updatePokerScope = {
       })
       .run()
 
+    await redisLock.unlock()
     const data = {meetingId}
     publish(SubscriptionChannel.MEETING, meetingId, 'UpdatePokerScopeSuccess', data, subOptions)
     return data

@@ -4,7 +4,7 @@ import React, {useState} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {InvoiceLineItemDetails_details} from '~/__generated__/InvoiceLineItemDetails_details.graphql'
 import {InvoiceLineItemEnum} from '~/__generated__/InvoiceLineItem_item.graphql'
-import {PALETTE} from '../../../../styles/paletteV2'
+import {PALETTE} from '../../../../styles/paletteV3'
 import {Breakpoint} from '../../../../types/constEnums'
 import makeDateString from '../../../../utils/makeDateString'
 import invoiceLineFormat from '../../helpers/invoiceLineFormat'
@@ -29,7 +29,7 @@ const Details = styled('div')({
 })
 
 const DetailsToggle = styled('div')({
-  color: PALETTE.EMPHASIS_COOL,
+  color: PALETTE.SKY_500,
   cursor: 'pointer',
   fontSize: 13,
   fontWeight: 600,

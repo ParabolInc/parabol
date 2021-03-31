@@ -41,9 +41,15 @@ const setDefaultSlackChannel = {
     }
     const {channel} = channelInfo
     if (!channel.is_im) {
-      const {is_archived: isArchived} = channel
+      const {id: channelId, is_member: isMember, is_archived: isArchived} = channel
       if (isArchived) {
         return standardError(new Error('Slack channel archived'), {userId: viewerId})
+      }
+      if (!isMember) {
+        const joinConvoRes = await manager.joinConversation(channelId)
+        if (!joinConvoRes.ok) {
+          return standardError(new Error('Unable to join slack channel'), {userId: viewerId})
+        }
       }
     }
 

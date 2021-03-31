@@ -10,7 +10,7 @@ import {MenuProps} from '../hooks/useMenu'
 import {MenuMutationProps} from '../hooks/useMutationProps'
 import CreateGitHubIssueMutation from '../mutations/CreateGitHubIssueMutation'
 import CreateJiraTaskIntegrationMutation from '../mutations/CreateJiraTaskIntegrationMutation'
-import {PALETTE} from '../styles/paletteV2'
+import {PALETTE} from '../styles/paletteV3'
 import {ICON_SIZE} from '../styles/typographyV2'
 import {TaskFooterIntegrateMenuList_suggestedIntegrations} from '../__generated__/TaskFooterIntegrateMenuList_suggestedIntegrations.graphql'
 import {TaskFooterIntegrateMenuList_task} from '../__generated__/TaskFooterIntegrateMenuList_task.graphql'
@@ -32,12 +32,12 @@ interface Props {
 }
 
 const SearchIcon = styled(Icon)({
-  color: PALETTE.TEXT_GRAY,
+  color: PALETTE.SLATE_600,
   fontSize: ICON_SIZE.MD18
 })
 
 const NoResults = styled(MenuItemLabel)({
-  color: PALETTE.TEXT_GRAY,
+  color: PALETTE.SLATE_600,
   justifyContent: 'center',
   paddingLeft: 8,
   paddingRight: 8,

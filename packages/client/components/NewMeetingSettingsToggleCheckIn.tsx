@@ -6,7 +6,7 @@ import {NewMeetingSettingsToggleCheckIn_settings} from '~/__generated__/NewMeeti
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
 import SetCheckInEnabledMutation from '../mutations/SetCheckInEnabledMutation'
-import {PALETTE} from '../styles/paletteV2'
+import {PALETTE} from '../styles/paletteV3'
 import {ICON_SIZE} from '../styles/typographyV2'
 import {NewMeeting} from '../types/constEnums'
 import Checkbox from './Checkbox'
@@ -18,16 +18,16 @@ const ButtonRow = styled(PlainButton)({
   padding: '12px 12px 12px 16px',
   width: NewMeeting.CONTROLS_WIDTH,
   background: '#fff',
-  border: `1px solid ${PALETTE.BORDER_DROPDOWN}`,
+  border: `1px solid ${PALETTE.SLATE_400}`,
   borderTop: 0,
   borderRadius: '0 0 4px 4px',
   ':hover': {
-    backgroundColor: PALETTE.BACKGROUND_MAIN_LIGHTENED
+    backgroundColor: PALETTE.SLATE_100
   }
 })
 
 const Label = styled('div')({
-  color: PALETTE.TEXT_MAIN,
+  color: PALETTE.SLATE_700,
   cursor: 'pointer',
   fontSize: 14,
   fontWeight: 600,
@@ -37,7 +37,7 @@ const Label = styled('div')({
 })
 
 const StyledCheckbox = styled(Checkbox)<{active: boolean}>(({active}) => ({
-  color: active ? PALETTE.LINK_BLUE : PALETTE.TEXT_MAIN,
+  color: active ? PALETTE.SKY_500 : PALETTE.SLATE_700,
   fontSize: ICON_SIZE.MD24,
   marginRight: 16,
   textAlign: 'center',

@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import React, {forwardRef, Ref} from 'react'
-import {PALETTE} from '~/styles/paletteV2'
+import {PALETTE} from '~/styles/paletteV3'
 import Icon from '../Icon'
 import LinkButton from '../LinkButton'
 
@@ -20,11 +20,11 @@ const StyledIcon = styled(Icon)({
 })
 
 const StyledLinkButton = styled(LinkButton)({
-  color: PALETTE.TEXT_GRAY,
+  color: PALETTE.SLATE_600,
   flexShrink: 0,
   fontWeight: 600,
   ':hover, :focus, :active': {
-    color: PALETTE.TEXT_MAIN
+    color: PALETTE.SLATE_700
   }
 })
 

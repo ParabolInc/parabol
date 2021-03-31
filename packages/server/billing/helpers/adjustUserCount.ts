@@ -13,6 +13,7 @@ import handleEnterpriseOrgQuantityChanges from './handleEnterpriseOrgQuantityCha
 import processInvoiceItemHook from './processInvoiceItemHook'
 import insertOrgUserAudit from '../../postgres/helpers/insertOrgUserAudit'
 import {OrganizationUserAuditEventTypeEnum} from '../../postgres/queries/generated/insertOrgUserAuditQuery'
+import updateUser from '../../postgres/queries/updateUser'
 
 const maybeUpdateOrganizationActiveDomain = async (orgId: string, userId: string) => {
   const r = await getRethink()
@@ -50,6 +51,7 @@ const changePause = (inactive: boolean) => async (_orgIds: string[], userId: str
     event: inactive ? 'Account Paused' : 'Account Unpaused'
   })
   return Promise.all([
+    updateUser({inactive}, userId),
     db.write('User', userId, {inactive}),
     r
       .table('OrganizationUser')

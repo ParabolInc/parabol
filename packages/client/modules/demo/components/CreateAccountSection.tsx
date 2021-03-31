@@ -1,7 +1,7 @@
 import EmailBorderBottom from '../../email/components/SummaryEmail/MeetingSummaryEmail/EmailBorderBottom'
 import {emailFontFamily, emailPrimaryButtonStyle, emailTableBase} from '../../email/styles'
 import React from 'react'
-import {PALETTE} from '~/styles/paletteV2'
+import {PALETTE} from '~/styles/paletteV3'
 import {ExternalLinks, LocalStorageKey} from '~/types/constEnums'
 
 const tableStyle = {
@@ -10,7 +10,7 @@ const tableStyle = {
 } as React.CSSProperties
 
 const textStyle = {
-  color: PALETTE.TEXT_MAIN,
+  color: PALETTE.SLATE_700,
   fontFamily: emailFontFamily
 } as React.CSSProperties
 const headingStyle = {
@@ -99,10 +99,10 @@ const CreateAccountSection = (props) => {
       to run <b>a real retrospective</b> with your team.
     </span>
   ) : (
-      <span>
-        to run <b>unlimited retrospectives</b> with your team.
-      </span>
-    )
+    <span>
+      to run <b>unlimited retrospectives</b> with your team.
+    </span>
+  )
   return (
     <>
       <tr data-cy={dataCy}>

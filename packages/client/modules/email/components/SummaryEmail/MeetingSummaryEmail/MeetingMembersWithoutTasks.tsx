@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import useEmailItemGrid from 'parabol-client/hooks/useEmailItemGrid'
-import {PALETTE} from 'parabol-client/styles/paletteV2'
+import {PALETTE} from 'parabol-client/styles/paletteV3'
 import {FONT_FAMILY} from 'parabol-client/styles/typographyV2'
 import {RETROSPECTIVE} from 'parabol-client/utils/constants'
 import {MeetingMembersWithoutTasks_meeting} from 'parabol-client/__generated__/MeetingMembersWithoutTasks_meeting.graphql'
@@ -10,7 +10,7 @@ import EmailBorderBottom from './EmailBorderBottom'
 import SummaryAvatarHeader from './SummaryAvatarHeader'
 
 const headerStyle = {
-  color: PALETTE.TEXT_MAIN,
+  color: PALETTE.SLATE_700,
   fontFamily: FONT_FAMILY.SANS_SERIF,
   fontSize: 18,
   fontWeight: 600,
@@ -38,7 +38,7 @@ const MeetingMembersWithoutTasks = (props: Props) => {
   const membersWithoutTasks = meetingMembers.filter(
     (member) =>
       ((member.tasks && member.tasks.length) || 0) +
-        ((member.doneTasks && member.doneTasks.length) || 0) ===
+      ((member.doneTasks && member.doneTasks.length) || 0) ===
       0
   )
   membersWithoutTasks.sort((a, b) =>

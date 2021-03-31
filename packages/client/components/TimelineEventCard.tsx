@@ -3,7 +3,7 @@ import graphql from 'babel-plugin-relay/macro'
 import React, {ReactNode} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {cardShadow} from '../styles/elevation'
-import {PALETTE} from '../styles/paletteV2'
+import {PALETTE} from '../styles/paletteV3'
 import {ICON_SIZE} from '../styles/typographyV2'
 import {TimelineEventCard_timelineEvent} from '../__generated__/TimelineEventCard_timelineEvent.graphql'
 import Icon from './Icon'
@@ -44,7 +44,7 @@ const CardTitleBlock = styled('div')({
 const EventIcon = styled(Icon)({
   alignSelf: 'flex-start',
   borderRadius: '100%',
-  color: PALETTE.TEXT_GRAY,
+  color: PALETTE.SLATE_600,
   display: 'block',
   fontSize: ICON_SIZE.MD24,
   height: 24,

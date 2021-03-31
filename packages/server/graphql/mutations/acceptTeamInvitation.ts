@@ -79,7 +79,7 @@ export default {
       // make sure that same invite can't be accepted at the same moment
       const ttl = 3000
       const redisLock = new RedisLock(`acceptTeamInvitation:${viewerId}:${orgId}`, ttl)
-      const lockTTL = await redisLock.lock()
+      const lockTTL = await redisLock.checkLock()
       if (lockTTL > 0) {
         return {
           error: {message: `You already called this ${ttl - lockTTL}ms ago!`}

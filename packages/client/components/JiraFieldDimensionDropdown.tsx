@@ -2,7 +2,7 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
-import {PALETTE} from '~/styles/paletteV2'
+import {PALETTE} from '~/styles/paletteV3'
 import {MenuPosition} from '../hooks/useCoords'
 import useMenu from '../hooks/useMenu'
 import {ICON_SIZE} from '../styles/typographyV2'
@@ -24,7 +24,7 @@ interface Props {
 }
 
 const Wrapper = styled(PlainButton)<{isFacilitator: boolean}>(({isFacilitator}) => ({
-  color: PALETTE.TEXT_MAIN,
+  color: PALETTE.SLATE_700,
   cursor: isFacilitator ? undefined : 'default',
   display: 'flex',
   paddingRight: isFacilitator ? undefined : 8,

@@ -12,7 +12,7 @@ import useScrollIntoView from '~/hooks/useScrollIntoVIew'
 import useTaskChildFocus from '~/hooks/useTaskChildFocus'
 import DeleteTaskMutation from '~/mutations/DeleteTaskMutation'
 import UpdateTaskMutation from '~/mutations/UpdateTaskMutation'
-import {PALETTE} from '~/styles/paletteV2'
+import {PALETTE} from '~/styles/paletteV3'
 import convertToTaskContent from '~/utils/draftjs/convertToTaskContent'
 import isAndroid from '~/utils/draftjs/isAndroid'
 import {Threshold} from '../types/constEnums'
@@ -22,7 +22,7 @@ import Checkbox from './Checkbox'
 import TaskEditor from './TaskEditor/TaskEditor'
 
 const Item = styled('div')<{isEditingThisItem: boolean}>(({isEditingThisItem}) => ({
-  backgroundColor: isEditingThisItem ? PALETTE.BACKGROUND_BLUE_MAGENTA : 'transparent',
+  backgroundColor: isEditingThisItem ? PALETTE.SLATE_100 : 'transparent',
   cursor: isEditingThisItem ? undefined : 'pointer',
   display: 'flex',
   paddingLeft: 16,

@@ -9,7 +9,7 @@ import useRouter from '~/hooks/useRouter'
 import {TierLabel} from '~/types/constEnums'
 import WaveWhiteSVG from 'static/images/waveWhite.svg'
 import {APP_BAR_HEIGHT} from '../../styles/appbars'
-import {PALETTE} from '../../styles/paletteV2'
+import {PALETTE} from '../../styles/paletteV3'
 import defaultUserAvatar from '../../styles/theme/images/avatar-user.svg'
 import {StandardHub_viewer, TierEnum} from '../../__generated__/StandardHub_viewer.graphql'
 import Avatar from '../Avatar/Avatar'
@@ -19,7 +19,7 @@ const StandardHubRoot = styled('div')({
   backgroundSize: '100%',
   backgroundPositionY: '101%',
   backgroundPositionX: '0',
-  backgroundImage: `url('${WaveWhiteSVG}'), linear-gradient(90deg, ${PALETTE.BACKGROUND_PRIMARY} 0%, ${PALETTE.BACKGROUND_DARK} 100%)`,
+  backgroundImage: `url('${WaveWhiteSVG}'), linear-gradient(90deg, ${PALETTE.GRAPE_700} 0%, ${PALETTE.SLATE_700} 100%)`,
   display: 'flex',
   flexDirection: 'column',
   minHeight: APP_BAR_HEIGHT,
@@ -46,7 +46,7 @@ const NameAndEmail = styled('div')({
 })
 
 const PreferredName = styled('div')({
-  color: PALETTE.TEXT_LIGHT,
+  color: PALETTE.SLATE_200,
   fontSize: 16,
   lineHeight: '24px',
   overflow: 'hidden',
@@ -61,7 +61,7 @@ const Email = styled('div')({
 
 const Upgrade = styled(PlainButton)({
   background: 'transparent',
-  color: PALETTE.BACKGROUND_YELLOW,
+  color: PALETTE.GOLD_300,
   display: 'flex',
   fontWeight: 600,
   paddingTop: 16,

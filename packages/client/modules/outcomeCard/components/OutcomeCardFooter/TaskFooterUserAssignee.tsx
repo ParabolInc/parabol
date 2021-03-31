@@ -8,7 +8,7 @@ import {MenuPosition} from '../../../../hooks/useCoords'
 import useMenu from '../../../../hooks/useMenu'
 import {UseTaskChild} from '../../../../hooks/useTaskChildFocus'
 import textOverflow from '../../../../styles/helpers/textOverflow'
-import {PALETTE} from '../../../../styles/paletteV2'
+import {PALETTE} from '../../../../styles/paletteV3'
 import avatarUser from '../../../../styles/theme/images/avatar-user.svg'
 import lazyPreload from '../../../../utils/lazyPreload'
 import {TaskFooterUserAssignee_task} from '../../../../__generated__/TaskFooterUserAssignee_task.graphql'
@@ -16,7 +16,7 @@ import Icon from '../../../../components/Icon'
 
 const label = {
   ...textOverflow,
-  color: PALETTE.TEXT_MAIN,
+  color: PALETTE.SLATE_700,
   display: 'block',
   flex: 1,
   fontSize: 12,
@@ -40,17 +40,17 @@ const AvatarButton = styled(BaseButton)({
     boxShadow: 'none'
   },
   ':hover > div,:focus > div': {
-    borderColor: PALETTE.BORDER_DARK,
-    color: PALETTE.TEXT_MAIN
+    borderColor: PALETTE.SLATE_700,
+    color: PALETTE.SLATE_700
   }
 })
 
 const Avatar = styled('div')<{cardIsActive: boolean; isAssigned: boolean}>(
   ({cardIsActive, isAssigned}) => ({
-    backgroundColor: isAssigned ? 'transparent' : PALETTE.TEXT_GRAY,
+    backgroundColor: isAssigned ? 'transparent' : PALETTE.SLATE_600,
     color: isAssigned ? 'transparent' : undefined,
     border: '1px solid transparent',
-    borderColor: cardIsActive ? PALETTE.BORDER_MAIN_50 : undefined,
+    borderColor: cardIsActive ? PALETTE.SLATE_500 : undefined,
     borderRadius: '100%',
     height: 28,
     marginLeft: -2,
@@ -71,7 +71,7 @@ const AvatarImage = styled('img')({
 
 const AvatarLabel = styled('div')({
   ...label,
-  color: PALETTE.TEXT_GRAY,
+  color: PALETTE.SLATE_600,
   flex: 1,
   minWidth: 0
 })
@@ -83,7 +83,7 @@ const TooltipToggle = styled('div')({
 const StyledIcon = styled(Icon)({
   alignContent: 'center',
   alignItems: 'center',
-  color: PALETTE.CONTROL_LIGHT,
+  color: PALETTE.WHITE,
   cursor: 'pointer',
   display: 'flex',
   fontSize: 22,

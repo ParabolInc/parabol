@@ -7,7 +7,7 @@ import useBreakpoint from '~/hooks/useBreakpoint'
 import {Breakpoint} from '~/types/constEnums'
 import {ScopePhaseArea_meeting} from '~/__generated__/ScopePhaseArea_meeting.graphql'
 import {Elevation} from '../styles/elevation'
-import {PALETTE} from '../styles/paletteV2'
+import {PALETTE} from '../styles/paletteV3'
 import GitHubSVG from './GitHubSVG'
 import Icon from './Icon'
 import JiraSVG from './JiraSVG'
@@ -33,7 +33,7 @@ const ScopingArea = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
 }))
 
 const StyledTabsBar = styled(Tabs)({
-  boxShadow: `inset 0 -1px 0 ${PALETTE.BORDER_LIGHTER}`,
+  boxShadow: `inset 0 -1px 0 ${PALETTE.SLATE_300}`,
   maxWidth: '100%'
 })
 

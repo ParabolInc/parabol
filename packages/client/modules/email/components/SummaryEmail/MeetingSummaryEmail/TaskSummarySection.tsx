@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import useEmailItemGrid from 'parabol-client/hooks/useEmailItemGrid'
-import {PALETTE} from 'parabol-client/styles/paletteV2'
+import {PALETTE} from 'parabol-client/styles/paletteV3'
 import {FONT_FAMILY} from 'parabol-client/styles/typographyV2'
 import {TaskSummarySection_tasks} from 'parabol-client/__generated__/TaskSummarySection_tasks.graphql'
 import React from 'react'
@@ -13,7 +13,7 @@ interface Props {
 }
 
 const taskTypeStyle = {
-  color: PALETTE.TEXT_MAIN,
+  color: PALETTE.SLATE_700,
   fontFamily: FONT_FAMILY.SANS_SERIF,
   fontSize: 14,
   fontWeight: 600,

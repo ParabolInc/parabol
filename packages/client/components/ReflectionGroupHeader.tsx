@@ -11,7 +11,7 @@ import {ReflectionGroupHeader_meeting} from '../__generated__/ReflectionGroupHea
 import plural from '../utils/plural'
 import {PortalStatus} from '../hooks/usePortal'
 import {ElementWidth, Gutters} from '../types/constEnums'
-import {PALETTE} from '../styles/paletteV2'
+import {PALETTE} from '../styles/paletteV3'
 import {ICON_SIZE} from '~/styles/typographyV2'
 import Icon from './Icon'
 
@@ -49,7 +49,7 @@ const IconGroup = styled('div')({
 })
 
 const PencilIcon = styled(Icon)<{isExpanded?: boolean}>(({isExpanded}) => ({
-  color: isExpanded ? '#FFFFFF' : PALETTE.TEXT_GRAY,
+  color: isExpanded ? '#FFFFFF' : PALETTE.SLATE_600,
   display: 'block',
   fontSize: ICON_SIZE.MD18,
   opacity: 0.5,
@@ -62,8 +62,8 @@ const PencilIcon = styled(Icon)<{isExpanded?: boolean}>(({isExpanded}) => ({
 }))
 
 const StyledTag = styled(BaseTag)<{dialogClosed: boolean}>(({dialogClosed}) => ({
-  backgroundColor: dialogClosed ? PALETTE.BACKGROUND_GRAY : '#FFFFFF',
-  color: dialogClosed ? '#FFFFFF' : PALETTE.TEXT_MAIN,
+  backgroundColor: dialogClosed ? PALETTE.SLATE_600 : '#FFFFFF',
+  color: dialogClosed ? '#FFFFFF' : PALETTE.SLATE_700,
   marginRight: 4
 }))
 

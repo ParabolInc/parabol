@@ -1,5 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
-import {PALETTE} from 'parabol-client/styles/paletteV2'
+import {PALETTE} from 'parabol-client/styles/paletteV3'
 import {FONT_FAMILY} from 'parabol-client/styles/typographyV2'
 import makeDateString from 'parabol-client/utils/makeDateString'
 import {SummaryHeader_meeting} from 'parabol-client/__generated__/SummaryHeader_meeting.graphql'
@@ -8,7 +8,7 @@ import {createFragmentContainer} from 'react-relay'
 import {ExternalLinks} from '../../../../../types/constEnums'
 
 const meetingSummaryLabel = {
-  color: PALETTE.TEXT_GRAY,
+  color: PALETTE.SLATE_600,
   fontFamily: FONT_FAMILY.SANS_SERIF,
   textTransform: 'uppercase',
   fontSize: '12px',
@@ -18,7 +18,7 @@ const meetingSummaryLabel = {
 } as React.CSSProperties
 
 const teamNameLabel = {
-  color: PALETTE.TEXT_MAIN,
+  color: PALETTE.SLATE_700,
   fontFamily: FONT_FAMILY.SANS_SERIF,
   fontSize: 36,
   fontWeight: 600,
@@ -26,7 +26,7 @@ const teamNameLabel = {
 } as React.CSSProperties
 
 const dateLabel = {
-  color: PALETTE.TEXT_GRAY,
+  color: PALETTE.SLATE_600,
   fontFamily: FONT_FAMILY.SANS_SERIF,
   fontSize: '15px',
   fontWeight: 400,
@@ -51,7 +51,7 @@ const SummaryHeader = (props: Props) => {
             <img
               crossOrigin=''
               alt='Parabol Logo'
-              src={`${ExternalLinks.EMAIL_CDN}mark-purple@3x.png`}
+              src={`${ExternalLinks.EMAIL_CDN}mark-color@3x.png`}
               height='32'
               width='34'
             />

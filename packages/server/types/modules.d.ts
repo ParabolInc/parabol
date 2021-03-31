@@ -28,3 +28,4 @@ interface HotMod extends NodeJS.Module {
 }
 
 declare let module: HotMod
+declare type Json = null | boolean | number | string | Json[] | {[key: string]: Json}

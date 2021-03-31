@@ -153,7 +153,7 @@ type ConversationType = 'public_channel' | 'private_channel' | 'im' | 'mpim'
 
 abstract class SlackManager {
   static SCOPE =
-    'incoming-webhook,channels:read,channels:join,chat:write,im:read,im:write,users:read,groups:read'
+    'incoming-webhook,channels:read,channels:join,chat:write,im:read,im:write,users:read'
   token: string
   abstract fetch: any
   // the any is for node until we can use tsc in nodeland

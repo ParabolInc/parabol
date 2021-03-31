@@ -15,13 +15,13 @@ import useAtmosphere from '../../../../hooks/useAtmosphere'
 import SetSlackNotificationMutation from '../../../../mutations/SetSlackNotificationMutation'
 import useSlackChannels from '../../../../hooks/useSlackChannels'
 import StyledError from '../../../../components/StyledError'
-import {PALETTE} from '../../../../styles/paletteV2'
+import {PALETTE} from '../../../../styles/paletteV3'
 import {Layout} from '../../../../types/constEnums'
 import useEventCallback from '../../../../hooks/useEventCallback'
 import SetDefaultSlackChannelMutation from '~/mutations/SetDefaultSlackChannelMutation'
 
 const SlackNotificationListStyles = styled('div')({
-  borderTop: `1px solid ${PALETTE.BORDER_LIGHTER}`,
+  borderTop: `1px solid ${PALETTE.SLATE_300}`,
   padding: Layout.ROW_GUTTER
 })
 
@@ -109,7 +109,7 @@ const SlackNotificationList = (props: Props) => {
           teamId={teamId}
         />
       </TeamGroup>
-      {error && <StyledError>{error}</StyledError>}
+      {error && <StyledError>{error.message}</StyledError>}
       {TEAM_EVENTS.map((event) => {
         return (
           <SlackNotificationRow
@@ -125,7 +125,7 @@ const SlackNotificationList = (props: Props) => {
         <Heading>Private Notifications</Heading>
         {'@Parabol'}
       </UserGroup>
-      {error && <StyledError>{error}</StyledError>}
+      {error && <StyledError>{error.message}</StyledError>}
       {localPrivateChannelId &&
         USER_EVENTS.map((event) => {
           return (

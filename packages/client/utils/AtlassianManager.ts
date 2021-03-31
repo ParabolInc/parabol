@@ -1,4 +1,5 @@
 import AbortController from 'abort-controller'
+import JiraServiceTaskId from '../shared/gqlIds/JiraServiceTaskId'
 export interface JiraUser {
   self: string
   key: string
@@ -503,7 +504,7 @@ export default abstract class AtlassianManager {
             key,
             summary,
             cloudId,
-            id: `${cloudId}:${key}`,
+            id: JiraServiceTaskId.join(cloudId, key),
             description,
             descriptionHTML,
             cloudName: ''
@@ -527,6 +528,12 @@ export default abstract class AtlassianManager {
 
   async getFields(cloudId: string) {
     return this.get(`https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/field`) as JiraField[]
+  }
+
+  async getFieldScreens(cloudId: string, fieldId: string) {
+    return this.get(
+      `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/field/${fieldId}/screens`
+    ) as any
   }
 
   async addComment(cloudId: string, issueKey: string, body: object) {

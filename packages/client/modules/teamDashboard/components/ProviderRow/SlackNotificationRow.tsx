@@ -71,7 +71,7 @@ const SlackNotificationRow = (props: Props) => {
         <Label>{label}</Label>
         <Toggle active={active} disabled={!localChannelId} onClick={onClick} />
       </Row>
-      {error && <StyledError>{error}</StyledError>}
+      {error && <StyledError>{error.message}</StyledError>}
     </>
   )
 }

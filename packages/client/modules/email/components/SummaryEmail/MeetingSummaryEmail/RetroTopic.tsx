@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import useEmailItemGrid from 'parabol-client/hooks/useEmailItemGrid'
-import {PALETTE} from 'parabol-client/styles/paletteV2'
+import {PALETTE} from 'parabol-client/styles/paletteV3'
 import {FONT_FAMILY, ICON_SIZE} from 'parabol-client/styles/typographyV2'
 import plural from 'parabol-client/utils/plural'
 import {RetroTopic_topic} from 'parabol-client/__generated__/RetroTopic_topic.graphql'
@@ -11,7 +11,7 @@ import AnchorIfEmail from './AnchorIfEmail'
 import EmailReflectionCard from './EmailReflectionCard'
 
 const topicThemeHeading = {
-  color: PALETTE.TEXT_MAIN,
+  color: PALETTE.SLATE_700,
   display: 'block',
   fontFamily: FONT_FAMILY.SANS_SERIF,
   fontSize: 16,
@@ -27,7 +27,7 @@ const votesBlock = {
 }
 
 const voteCountStyle = {
-  color: PALETTE.TEXT_GRAY,
+  color: PALETTE.SLATE_600,
   paddingLeft: 4,
   textDecoration: 'none'
 }
@@ -37,7 +37,7 @@ const imageStyle = {
 }
 
 const someCommentsLinkStyle = {
-  color: PALETTE.TEXT_BLUE,
+  color: PALETTE.SKY_500,
   display: 'block',
   fontFamily: FONT_FAMILY.SANS_SERIF,
   fontSize: 13,
@@ -47,7 +47,7 @@ const someCommentsLinkStyle = {
 
 const noCommentLinkStyle = {
   ...someCommentsLinkStyle,
-  color: PALETTE.TEXT_GRAY
+  color: PALETTE.SLATE_600
 }
 
 interface Props {
