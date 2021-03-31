@@ -1898,7 +1898,7 @@ export interface IGitHubIssue {
   __typename: 'GitHubIssue';
 
   /**
-   * TODO
+   * The id of the issue as found in GitHub
    */
   id: string;
 
@@ -6900,7 +6900,7 @@ export interface IMutation {
    * for troubleshooting by admins, create a JWT for a given userId
    */
   createImposterToken: ICreateImposterTokenPayload;
-  createGitHubIssue: ICreateGitHubIssuePayload | null;
+  createGitHubTaskIntegration: ICreateGitHubTaskIntegrationPayload | null;
   createJiraTaskIntegration: ICreateJiraTaskIntegrationPayload | null;
 
   /**
@@ -7418,6 +7418,11 @@ export interface IMutation {
   joinMeeting: JoinMeetingPayload;
 
   /**
+   * Create an issue in GitHub
+   */
+  gitHubCreateIssue: GitHubCreateIssuePayload;
+
+  /**
    * Set whether the user is spectating poker meeting
    */
   setPokerSpectate: SetPokerSpectatePayload;
@@ -7618,7 +7623,7 @@ export interface ICreateImposterTokenOnMutationArguments {
   userId: string;
 }
 
-export interface ICreateGitHubIssueOnMutationArguments {
+export interface ICreateGitHubTaskIntegrationOnMutationArguments {
   /**
    * The id of the task to convert to a GH issue
    */
@@ -8587,6 +8592,28 @@ export interface IJoinMeetingOnMutationArguments {
   meetingId: string;
 }
 
+export interface IGitHubCreateIssueOnMutationArguments {
+  /**
+   * The id of the meeting where the GitHub issue is being created
+   */
+  meetingId: string;
+
+  /**
+   * The owner/repo string
+   */
+  nameWithOwner: string;
+
+  /**
+   * The id of the team that is creating the issue
+   */
+  teamId: string;
+
+  /**
+   * The title of the GH issue
+   */
+  title: string;
+}
+
 export interface ISetPokerSpectateOnMutationArguments {
   meetingId: string;
 
@@ -9049,8 +9076,8 @@ export interface ICreateImposterTokenPayload {
   user: IUser | null;
 }
 
-export interface ICreateGitHubIssuePayload {
-  __typename: 'CreateGitHubIssuePayload';
+export interface ICreateGitHubTaskIntegrationPayload {
+  __typename: 'CreateGitHubTaskIntegrationPayload';
   error: IStandardMutationError | null;
   task: ITask | null;
 }
@@ -11056,6 +11083,32 @@ export interface IJoinMeetingSuccess {
 }
 
 /**
+ * Return object for GitHubCreateIssuePayload
+ */
+export type GitHubCreateIssuePayload =
+  | IErrorPayload
+  | IGitHubCreateIssueSuccess;
+
+export interface IGitHubCreateIssueSuccess {
+  __typename: 'GitHubCreateIssueSuccess';
+
+  /**
+   * The GitHub Issue that comes directly from GitHub
+   */
+  gitHubIssue: IGitHubIssue;
+
+  /**
+   * The id of the meeting where the GitHub issue is being created
+   */
+  meetingId: string;
+
+  /**
+   * The id of the team that is creating the GitHub issue
+   */
+  teamId: string;
+}
+
+/**
  * Return object for SetPokerSpectatePayload
  */
 export type SetPokerSpectatePayload = IErrorPayload | ISetPokerSpectateSuccess;
@@ -11120,6 +11173,7 @@ export type MeetingSubscriptionPayload =
   | IPokerAnnounceDeckHoverSuccess
   | IPokerSetFinalScoreSuccess
   | IJoinMeetingSuccess
+  | IGitHubCreateIssueSuccess
   | ISetPokerSpectateSuccess;
 
 export interface IAddReactjiToReflectionSuccess {
@@ -11344,7 +11398,7 @@ export interface ISetOrgUserRoleRemovedPayload {
 
 export type TaskSubscriptionPayload =
   | IChangeTaskTeamPayload
-  | ICreateGitHubIssuePayload
+  | ICreateGitHubTaskIntegrationPayload
   | ICreateJiraTaskIntegrationPayload
   | ICreateTaskPayload
   | IDeleteTaskPayload

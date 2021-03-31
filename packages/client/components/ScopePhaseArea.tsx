@@ -37,12 +37,9 @@ const StyledTabsBar = styled(Tabs)({
   maxWidth: '100%'
 })
 
-const FullTab = styled(Tab)({
-  // padding: '4px 0 8px',
-  // width: '30%'
+const TabIcon = styled(Icon)({
+  padding: '0px 4px'
 })
-
-const TabIcon = styled(Icon)({})
 
 const TabLabel = styled('div')({
   display: 'flex',
@@ -63,18 +60,19 @@ const TabContents = styled('div')({
 const containerStyle = {height: '100%'}
 const innerStyle = {width: '100%', height: '100%'}
 
+const tabs = [
+  {icon: <GitHubSVG />, label: 'GitHub'},
+  {icon: <JiraSVG />, label: 'Jira'},
+  {icon: 'public', label: 'Parabol'}
+]
+
 const ScopePhaseArea = (props: Props) => {
   const {meeting} = props
-  const [activeIdx, setActiveIdx] = useState(1)
+  const [activeIdx, setActiveIdx] = useState(0)
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
-  const gotoAddGitHub = () => {
-    setActiveIdx(0)
-  }
-  const gotoAddJira = () => {
-    setActiveIdx(1)
-  }
-  const gotoParabol = () => {
-    setActiveIdx(2)
+
+  const updateActiveIdx = (idx: number) => {
+    setActiveIdx(idx)
   }
   const onChangeIdx = (idx, _fromIdx, props: {reason: string}) => {
     //very buggy behavior, probably linked to the vertical scrolling.
@@ -85,30 +83,20 @@ const ScopePhaseArea = (props: Props) => {
   return (
     <ScopingArea isDesktop={isDesktop}>
       <StyledTabsBar activeIdx={activeIdx}>
-        <FullTab
-          label={
-            <TabLabel>
-              <GitHubSVG /> GitHub
-            </TabLabel>
-          }
-          onClick={gotoAddGitHub}
-        />
-        <FullTab
-          label={
-            <TabLabel>
-              <JiraSVG /> Jira
-            </TabLabel>
-          }
-          onClick={gotoAddJira}
-        />
-        <FullTab
-          label={
-            <TabLabel>
-              <TabIcon>{'public'}</TabIcon> Parabol
-            </TabLabel>
-          }
-          onClick={gotoParabol}
-        />
+        {tabs.map((tab, idx) => {
+          return (
+            <Tab
+              key={tab.label}
+              label={
+                <TabLabel>
+                  <TabIcon>{tab.icon}</TabIcon>
+                  {tab.label}
+                </TabLabel>
+              }
+              onClick={() => updateActiveIdx(idx)}
+            />
+          )
+        })}
       </StyledTabsBar>
       <SwipeableViews
         enableMouseEvents={false} // disable because this works even if a modal is on top of it
@@ -120,14 +108,14 @@ const ScopePhaseArea = (props: Props) => {
         <TabContents>
           <ScopePhaseAreaGitHub
             isActive={activeIdx === 0}
-            gotoParabol={gotoParabol}
+            gotoParabol={() => setActiveIdx(2)}
             meeting={meeting}
           />
         </TabContents>
         <TabContents>
           <ScopePhaseAreaJira
             isActive={activeIdx === 1}
-            gotoParabol={gotoParabol}
+            gotoParabol={() => setActiveIdx(2)}
             meeting={meeting}
           />
         </TabContents>

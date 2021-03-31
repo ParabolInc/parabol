@@ -59,8 +59,7 @@ const StyledCheckBox = styled(Checkbox)({
   marginLeft: -8,
   marginRight: 8
 })
-const StyledMenuItemLabel = styled(MenuItemLabel)({
-})
+const StyledMenuItemLabel = styled(MenuItemLabel)({})
 
 const FilterLabel = styled(DropdownMenuLabel)({
   borderBottom: 0
@@ -152,7 +151,9 @@ const GitHubScopingSearchFilterMenu = (props: Props) => {
           commitLocalUpdate(atmosphere, (store) => {
             const searchQueryId = SearchQueryId.join('github', meetingId)
             const githubSearchQuery = store.get<GitHubSearchQuery>(searchQueryId)!
-            const nameWithOwnerFiltersProxy = githubSearchQuery.getValue('nameWithOwnerFilters')!.slice()
+            const nameWithOwnerFiltersProxy = githubSearchQuery
+              .getValue('nameWithOwnerFilters')!
+              .slice()
             const keyIdx = nameWithOwnerFiltersProxy.indexOf(globalProjectKey)
             if (keyIdx !== -1) {
               nameWithOwnerFiltersProxy.splice(keyIdx, 1)
@@ -167,9 +168,7 @@ const GitHubScopingSearchFilterMenu = (props: Props) => {
             key={globalProjectKey}
             label={
               <StyledMenuItemLabel>
-                <StyledCheckBox
-                  active={nameWithOwnerFilters.includes(globalProjectKey)}
-                />
+                <StyledCheckBox active={nameWithOwnerFilters.includes(globalProjectKey)} />
                 <ProjectAvatar src={avatar} />
                 <TypeAheadLabel query={query} label={name} />
               </StyledMenuItemLabel>

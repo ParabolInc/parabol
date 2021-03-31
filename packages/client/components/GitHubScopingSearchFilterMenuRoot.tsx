@@ -20,7 +20,8 @@ interface Props {
 }
 
 const GitHubScopingSearchFilterMenuRoot = (props: Props) => {
-  const {menuProps, teamId, meetingId} = props
+  // const {menuProps, teamId, meetingId} = props
+  const {teamId, meetingId} = props
   const atmosphere = useAtmosphere()
   return (
     <QueryRenderer
@@ -28,9 +29,11 @@ const GitHubScopingSearchFilterMenuRoot = (props: Props) => {
       environment={atmosphere}
       query={query}
       fetchPolicy={'store-or-network' as any}
-      render={({props, error}) => {
-        const viewer = (props as any)?.viewer ?? null
-        return <GitHubScopingSearchFilterMenu viewer={viewer} error={error} menuProps={menuProps} />
+      // render={({props, error}) => {
+      render={() => {
+        // const viewer = (props as any)?.viewer ?? null
+        // return <GitHubScopingSearchFilterMenu viewer={viewer} error={error} menuProps={menuProps} />
+        return <GitHubScopingSearchFilterMenu />
       }}
     />
   )

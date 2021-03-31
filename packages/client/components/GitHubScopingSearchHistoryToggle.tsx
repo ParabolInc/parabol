@@ -7,7 +7,7 @@ import useMenu from '../hooks/useMenu'
 import {PALETTE} from '../styles/paletteV2'
 import {ICON_SIZE} from '../styles/typographyV2'
 import {GitHubScopingSearchHistoryToggle_meeting} from '../__generated__/GitHubScopingSearchHistoryToggle_meeting.graphql'
-import GitHubScopingSearchHistoryMenu from './GitHubScopingSearchHistoryMenu'
+// import GitHubScopingSearchHistoryMenu from './GitHubScopingSearchHistoryMenu'
 import Icon from './Icon'
 import PlainButton from './PlainButton/PlainButton'
 
@@ -34,26 +34,28 @@ interface Props {
 
 const GitHubScopingSearchHistoryToggle = (props: Props) => {
   const {meeting} = props
-  const {id: meetingId, viewerMeetingMember} = meeting
-  const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_LEFT, {
+  // const {id: meetingId, viewerMeetingMember} = meeting
+  const {viewerMeetingMember} = meeting
+  // const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_LEFT, {
+  const {togglePortal, originRef} = useMenu(MenuPosition.UPPER_LEFT, {
     loadingWidth: 200,
     noClose: true
   })
   if (!viewerMeetingMember) return null
-  const {teamMember} = viewerMeetingMember
+  // const {teamMember} = viewerMeetingMember
   return (
     <>
       <Toggle onClick={togglePortal} ref={originRef}>
         <SearchIcon>search</SearchIcon>
         <DropdownIcon>expand_more</DropdownIcon>
       </Toggle>
-      {menuPortal(
+      {/* {menuPortal(
         <GitHubScopingSearchHistoryMenu
           meetingId={meetingId}
           menuProps={menuProps}
           teamMember={teamMember}
         />
-      )}
+      )} */}
     </>
   )
 }

@@ -17,7 +17,7 @@ const GitHubIssue = new GraphQLObjectType<any, GQLContext>({
     ...storyFields(),
     id: {
       type: GraphQLNonNull(GraphQLID),
-      description: 'TODO'
+      description: 'The id of the issue as found in GitHub'
     },
     url: {
       type: GraphQLNonNull(GraphQLURLType),
