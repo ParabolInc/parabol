@@ -1,5 +1,8 @@
 import tracer from 'dd-trace'
-tracer.init()
+import PROD from '../server/PROD'
+if (PROD) {
+  tracer.init()
+}
 
 tracer.use('graphql', {
   hooks: {

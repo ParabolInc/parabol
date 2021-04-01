@@ -1,4 +1,4 @@
-import 'dd-trace/init'
+import tracer from 'dd-trace'
 
 import uws, {SHARED_COMPRESSOR} from 'uWebSockets.js'
 import stripeWebhookHandler from './billing/stripeWebhookHandler'
@@ -22,6 +22,10 @@ import staticFileHandler from './staticFileHandler'
 import SAMLHandler from './utils/SAMLHandler'
 import PROD from './PROD'
 import {r} from 'rethinkdb-ts'
+
+if (PROD) {
+  tracer.init()
+}
 
 const PORT = Number(PROD ? process.env.PORT : process.env.SOCKET_PORT)
 if (!PROD) {
