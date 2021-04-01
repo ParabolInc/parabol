@@ -11,14 +11,14 @@ const priorityScale = [
     isStarter: true,
     sortOrder: 0,
     values: [
-      {color: '#E55CA0', label: '?', value: -1, isSpecial: true},
-      {color: '#5CA0E5', label: 'P0', value: 1},
-      {color: '#5CA0E5', label: 'P1', value: 2},
-      {color: '#45E595', label: 'P2', value: 3},
-      {color: '#45E595', label: 'P3', value: 4},
-      {color: '#E59545', label: 'P4', value: 5},
-      {color: '#E59545', label: 'P5', value: 6},
-      {color: '#AC72E5', label: 'Pass', value: MAX_32_BIT_INTEGER, isSpecial: true}
+      {color: '#E55CA0', label: '?'},
+      {color: '#5CA0E5', label: 'P0'},
+      {color: '#5CA0E5', label: 'P1'},
+      {color: '#45E595', label: 'P2'},
+      {color: '#45E595', label: 'P3'},
+      {color: '#E59545', label: 'P4'},
+      {color: '#E59545', label: 'P5'},
+      {color: '#AC72E5', label: 'Pass'}
     ],
     teamId: 'aGhostTeam'
   }
