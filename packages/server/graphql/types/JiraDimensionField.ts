@@ -1,4 +1,4 @@
-import {GraphQLID, GraphQLInt, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
+import {GraphQLID, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
 import JiraDimensionFieldId from '../../../client/shared/gqlIds/JiraDimensionFieldId'
 import {GQLContext} from '../graphql'
 
@@ -16,8 +16,8 @@ const JiraDimensionField = new GraphQLObjectType<any, GQLContext>({
       description: 'The atlassian cloud that the field lives in'
     },
     dimensionName: {
-      type: GraphQLNonNull(GraphQLInt),
-      description: 'The immutable index of the dimension'
+      type: GraphQLNonNull(GraphQLString),
+      description: 'The name of the associated dimension'
     },
     projectKey: {
       type: GraphQLNonNull(GraphQLID),
@@ -28,7 +28,7 @@ const JiraDimensionField = new GraphQLObjectType<any, GQLContext>({
       description: 'The ID referring to the field name'
     },
     fieldName: {
-      type: GraphQLNonNull(GraphQLID),
+      type: GraphQLNonNull(GraphQLString),
       description: 'The field name in jira that the estimate is pushed to'
     },
     fieldType: {
