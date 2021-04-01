@@ -2367,7 +2367,7 @@ export interface IJiraDimensionField {
   cloudId: string;
 
   /**
-   * The immutable index of the dimension
+   * The name of the associated dimension
    */
   dimensionName: string;
 
