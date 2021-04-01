@@ -3,17 +3,14 @@ import * as Sentry from '@sentry/browser'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
+import useBreakpoint from '../hooks/useBreakpoint'
 import useRouter from '../hooks/useRouter'
-import {PALETTE} from '../styles/paletteV3'
 import {Elevation} from '../styles/elevation'
-import {Card} from '../types/constEnums'
+import {PALETTE} from '../styles/paletteV3'
+import {BezierCurve, Breakpoint, Card} from '../types/constEnums'
 import getMeetingPhase from '../utils/getMeetingPhase'
 import {phaseLabelLookup} from '../utils/meetings/lookups'
 import {MeetingCard_meeting} from '../__generated__/MeetingCard_meeting.graphql'
-import useBreakpoint from '../hooks/useBreakpoint'
-import {Breakpoint} from '../types/constEnums'
-// import {ICON_SIZE} from '../styles/typographyV2'
-// import Icon from './Icon'
 
 const CardWrapper = styled('div')<{maybeTabletPlus: boolean}>(({maybeTabletPlus}) => ({
   background: Card.BACKGROUND_COLOR,
@@ -23,7 +20,7 @@ const CardWrapper = styled('div')<{maybeTabletPlus: boolean}>(({maybeTabletPlus}
   flexShrink: 0,
   maxWidth: '100%',
   margin: maybeTabletPlus ? '0 16px 16px 0' : '0 0 16px',
-  transition: `box-shadow 100ms ease-in`,
+  transition: `box-shadow 100ms ${BezierCurve.DECELERATE}`,
   width: maybeTabletPlus ? 320 : '100%',
   ':hover': {
     boxShadow: Elevation.CARD_SHADOW_HOVER

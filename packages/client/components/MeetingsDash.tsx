@@ -1,16 +1,16 @@
-import graphql from 'babel-plugin-relay/macro'
 import styled from '@emotion/styled'
+import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {MeetingsDash_viewer} from '~/__generated__/MeetingsDash_viewer.graphql'
-import MeetingCard from './MeetingCard'
 import useBreakpoint from '../hooks/useBreakpoint'
 import {Breakpoint, Layout, NavSidebar, RightSidebar} from '../types/constEnums'
 import makeMinWidthMediaQuery from '../utils/makeMinWidthMediaQuery'
+import MeetingCard from './MeetingCard'
 import MeetingsDashEmpty from './MeetingsDashEmpty'
 
 interface Props {
-  viewer: MeetingsDash_viewer
+  viewer: MeetingsDash_viewer | null
 }
 
 const desktopDashWidestMediaQuery = makeMinWidthMediaQuery(Breakpoint.DASH_BREAKPOINT_WIDEST)
@@ -61,28 +61,31 @@ const Flash = styled('img')({
 
 const MeetingsDash = (props: Props) => {
   const {viewer} = props
-  const {teams} = viewer
+  const teams = viewer?.teams ?? []
   const activeMeetings = teams.flatMap((team) => team.activeMeetings)
   const hasMeetings = activeMeetings.length > 0
   const maybeTabletPlus = useBreakpoint(Breakpoint.FUZZY_TABLET)
   const maybeBigDisplay = useBreakpoint(1900)
+  if (!viewer) return null
   return (
     <Wrapper>
-      {hasMeetings
-        ? <InnerContainer maybeTabletPlus={maybeTabletPlus}>
-          {activeMeetings.map((meeting, idx) => <MeetingCard key={idx} meeting={meeting} />)}
+      {hasMeetings ? (
+        <InnerContainer maybeTabletPlus={maybeTabletPlus}>
+          {activeMeetings.map((meeting, idx) => (
+            <MeetingCard key={idx} meeting={meeting} />
+          ))}
         </InnerContainer>
-        : <EmptyContainer>
+      ) : (
+        <EmptyContainer>
           <MeetingsDashEmpty />
-          {maybeBigDisplay
-            ? <>
+          {maybeBigDisplay ? (
+            <>
               <Squiggle src={`${__STATIC_IMAGES__}/illustrations/blue-squiggle.svg`} />
               <Flash src={`${__STATIC_IMAGES__}/illustrations/yellow-flash-line.svg`} />
             </>
-            : null
-          }
+          ) : null}
         </EmptyContainer>
-      }
+      )}
     </Wrapper>
   )
 }

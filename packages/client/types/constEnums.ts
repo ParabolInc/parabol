@@ -90,7 +90,8 @@ export const enum ElementWidth {
   REFLECTION_CARD = 296,
   REFLECTION_CARD_PADDED = 296,
   REFLECTION_CARD_PADDING = 6,
-  REFLECTION_COLUMN = 320
+  REFLECTION_COLUMN = 320,
+  NEW_MEETING_FAB = 120
 }
 
 export const enum ElementHeight {
