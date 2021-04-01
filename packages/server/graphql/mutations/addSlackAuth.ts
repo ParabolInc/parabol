@@ -115,20 +115,17 @@ export default {
     const {response} = manager
     const slackUserId = response.authed_user.id
     const defaultChannelId = response.incoming_webhook.channel_id
-    const [joinConvoRes, userInfoRes, openDMRes] = await Promise.all([
+    const [joinConvoRes, userInfoRes] = await Promise.all([
       manager.joinConversation(defaultChannelId),
-      manager.getUserInfo(slackUserId),
-      manager.openDM(slackUserId)
+      manager.getUserInfo(slackUserId)
     ])
     if (!userInfoRes.ok) {
       return standardError(new Error(userInfoRes.error), {userId: viewerId})
     }
-    if (!openDMRes.ok) {
-      return standardError(new Error(openDMRes.error), {userId: viewerId})
-    }
 
     // The default channel could be anything: public, private, im, mpim. Only allow public channels or the @Parabol channel
-    const teamChannelId = joinConvoRes.ok ? joinConvoRes.channel.id : openDMRes.channel.id
+    // Using the slackUserId sends a DM to the user from @Parabol
+    const teamChannelId = joinConvoRes.ok ? joinConvoRes.channel.id : slackUserId
 
     const [, slackAuthId] = await Promise.all([
       upsertNotifications(viewerId, teamId, teamChannelId, defaultChannelId),
