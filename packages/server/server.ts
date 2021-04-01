@@ -1,5 +1,4 @@
-// Datadog APM, must be first import (disabled for now)
-import './tracer'
+import 'dd-trace/init'
 
 import uws, {SHARED_COMPRESSOR} from 'uWebSockets.js'
 import stripeWebhookHandler from './billing/stripeWebhookHandler'
