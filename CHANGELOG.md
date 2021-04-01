@@ -19,6 +19,7 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
 - Sort order of poker votes (#4821)
 - Add type safety to deleteUser (#4826)
+- Push to story points type mismatch (#4854)
 
 ## 6.4.0 2021-Mar-24
 

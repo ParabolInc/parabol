@@ -17,7 +17,7 @@ const JiraDimensionField = new GraphQLObjectType<any, GQLContext>({
     },
     dimensionName: {
       type: GraphQLNonNull(GraphQLString),
-      description: 'The immutable index of the dimension'
+      description: 'The name of the associated dimension'
     },
     projectKey: {
       type: GraphQLNonNull(GraphQLID),
