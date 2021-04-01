@@ -1,6 +1,6 @@
 import graphQLSubscriptionType from '../graphQLSubscriptionType'
 import ChangeTaskTeamPayload from './ChangeTaskTeamPayload'
-import CreateGitHubIssuePayload from './CreateGitHubIssuePayload'
+import CreateGitHubTaskIntegrationPayload from './CreateGitHubTaskIntegrationPayload'
 import CreateTaskPayload from './CreateTaskPayload'
 import DeleteTaskPayload from './DeleteTaskPayload'
 import EditTaskPayload from './EditTaskPayload'
@@ -12,7 +12,7 @@ import CreateJiraTaskIntegrationPayload from './CreateJiraTaskIntegrationPayload
 
 const types = [
   ChangeTaskTeamPayload,
-  CreateGitHubIssuePayload,
+  CreateGitHubTaskIntegrationPayload,
   CreateJiraTaskIntegrationPayload,
   CreateTaskPayload,
   DeleteTaskPayload,
