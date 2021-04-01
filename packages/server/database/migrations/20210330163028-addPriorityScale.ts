@@ -1,4 +1,6 @@
 import {R} from 'rethinkdb-ts'
+import {PokerCards} from 'parabol-client/types/constEnums'
+import {PALETTE} from 'parabol-client/styles/paletteV3'
 
 const MAX_32_BIT_INTEGER = Math.pow(2, 31) - 1
 const priorityScaleId = 'priorityScale'
@@ -11,14 +13,14 @@ const priorityScale = [
     isStarter: true,
     sortOrder: 0,
     values: [
-      {color: '#E55CA0', label: '?'},
-      {color: '#5CA0E5', label: 'P0'},
-      {color: '#5CA0E5', label: 'P1'},
-      {color: '#45E595', label: 'P2'},
-      {color: '#45E595', label: 'P3'},
-      {color: '#E59545', label: 'P4'},
-      {color: '#E59545', label: 'P5'},
-      {color: '#AC72E5', label: 'Pass'}
+      {color: PALETTE.FUSCIA_400, label: PokerCards.QUESTION_CARD},
+      {color: PALETTE.SKY_500, label: 'P0'},
+      {color: PALETTE.SKY_500, label: 'P1'},
+      {color: PALETTE.JADE_400, label: 'P2'},
+      {color: PALETTE.JADE_400, label: 'P3'},
+      {color: PALETTE.TERRA_300, label: 'P4'},
+      {color: PALETTE.TERRA_300, label: 'P5'},
+      {color: PALETTE.GRAPE_500, label: PokerCards.PASS_CARD}
     ],
     teamId: 'aGhostTeam'
   }
