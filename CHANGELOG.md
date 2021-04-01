@@ -5,6 +5,21 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.5.0 2021-Apr-01
+
+### Added
+
+- Create GH issue button in Sprint poker, currently hidden (#4799)
+- GitHub tab in Sprint Poker (#4777)
+### Removed
+
+- Removed IM scopes from Slack integration, per Slack feedback (#4844)
+
+### Fixed
+
+- Sort order of poker votes (#4821)
+- Add type safety to deleteUser (#4826)
+
 ## 6.4.0 2021-Mar-24
 
 ### Added

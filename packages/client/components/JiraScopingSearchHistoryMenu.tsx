@@ -4,6 +4,7 @@ import React from 'react'
 import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import useAtmosphere from '../hooks/useAtmosphere'
 import {MenuProps} from '../hooks/useMenu'
+import SearchQueryId from '../shared/gqlIds/SearchQueryId'
 import {PALETTE} from '../styles/paletteV3'
 import {JiraScopingSearchHistoryMenu_teamMember} from '../__generated__/JiraScopingSearchHistoryMenu_teamMember.graphql'
 import Menu from './Menu'
@@ -60,7 +61,7 @@ const JiraScopingSearchHistoryMenu = (props: Props) => {
         const {id: queryId, queryString, isJQL, projectKeyFilters} = jiraSearchQuery
         const selectQuery = () => {
           commitLocalUpdate(atmosphere, (store) => {
-            const searchQueryId = `jiraSearchQuery:${meetingId}`
+            const searchQueryId = SearchQueryId.join('jira', meetingId)
             const jiraSearchQuery = store.get(searchQueryId)!
             jiraSearchQuery.setValue(isJQL, 'isJQL')
             jiraSearchQuery.setValue(queryString, 'queryString')

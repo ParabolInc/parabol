@@ -11,7 +11,6 @@ import {Threshold} from '../types/constEnums'
 import getSelectAllTitle from '../utils/getSelectAllTitle'
 import {JiraScopingSelectAllIssues_issues} from '../__generated__/JiraScopingSelectAllIssues_issues.graphql'
 import Checkbox from './Checkbox'
-import {AddOrDeleteEnum} from '../__generated__/UpdatePokerScopeMutation.graphql'
 
 const Item = styled('div')({
   display: 'flex',
@@ -50,7 +49,7 @@ const JiraScopingSelectAllIssues = (props: Props) => {
     if (submitting) return
     submitMutation()
     const updateArr = allSelected === true ? serviceTaskIds : unusedServiceTaskIds
-    const action: AddOrDeleteEnum = allSelected === true ? 'DELETE' : 'ADD'
+    const action = allSelected === true ? 'DELETE' : 'ADD'
     const limit = action === 'ADD' ? availableCountToAdd : 1e6
     const updates = updateArr.slice(0, limit).map(
       (serviceTaskId) =>
@@ -73,7 +72,7 @@ const JiraScopingSelectAllIssues = (props: Props) => {
   return (
     <>
       <Item onClick={onClick}>
-        <Checkbox active={allSelected} onClick={() => console.log('click')} />
+        <Checkbox active={allSelected} />
         <TitleAndError>
           <Title>{title}</Title>
           {error && <ErrorMessage>{error.message}</ErrorMessage>}
