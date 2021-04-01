@@ -2,7 +2,6 @@ import {R} from 'rethinkdb-ts'
 import {PokerCards} from 'parabol-client/types/constEnums'
 import {PALETTE} from 'parabol-client/styles/paletteV3'
 
-const MAX_32_BIT_INTEGER = Math.pow(2, 31) - 1
 const priorityScaleId = 'priorityScale'
 const priorityScale = [
   {
