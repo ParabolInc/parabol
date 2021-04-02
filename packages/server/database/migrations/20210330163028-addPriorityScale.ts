@@ -10,7 +10,7 @@ const priorityScale = [
     updatedAt: new Date(),
     name: 'Priorities',
     isStarter: true,
-    sortOrder: 0,
+    sortOrder: 3,
     values: [
       {color: PALETTE.FUSCIA_400, label: PokerCards.QUESTION_CARD},
       {color: PALETTE.SKY_500, label: 'P0'},
