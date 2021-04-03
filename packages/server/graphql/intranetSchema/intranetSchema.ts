@@ -8,6 +8,7 @@ import rootTypes from '../rootTypes'
 import addNewFeature from './mutations/addNewFeature'
 import autopauseUsers from './mutations/autopauseUsers'
 import backupOrganization from './mutations/backupOrganization'
+import checkRethinkPgEquality from './mutations/checkRethinkPgEquality'
 import connectSocket from './mutations/connectSocket'
 import disconnectSocket from './mutations/disconnectSocket'
 import draftEnterpriseInvoice from './mutations/draftEnterpriseInvoice'
@@ -63,6 +64,7 @@ const mutation = new GraphQLObjectType<any, GQLContext>({
       addNewFeature,
       autopauseUsers,
       backupOrganization,
+      checkRethinkPgEquality,
       connectSocket,
       profileCPU,
       disconnectSocket,
