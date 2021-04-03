@@ -10,6 +10,14 @@ const tableResolvers = {
   // 'Team': 'teamResolver'
 } as {[key: string]: () => Promise<{[key: string]: any}>}
 
+const checkEqAndWriteOutput = async (
+  tableName: string,
+  fileLocation: string
+) => {
+  const errors = await tableResolvers[tableName]()
+  await fs.promises.writeFile(fileLocation, JSON.stringify(errors))
+}
+
 const checkRethinkPgEquality = {
   type: GraphQLNonNull(GraphQLString),
   description: 'check equality of a table between rethinkdb and postgres',
@@ -39,9 +47,8 @@ const checkRethinkPgEquality = {
       fileName
     )
     await fs.promises.mkdir(path.dirname(fileLocation), {recursive: true})
-    const errors = await tableResolvers[tableName]()
-    await fs.promises.writeFile(fileLocation, JSON.stringify(errors))
-    return `Please check ${fileName} for output results.`
+    checkEqAndWriteOutput(tableName, fileLocation)
+    return `Please check ${fileLocation} for output results, it will appear in a few mins.`
   }
 }
 

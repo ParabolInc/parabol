@@ -6,21 +6,28 @@ import {
 } from '../../postgres/queries/generated/getUsersByIdQuery'
 import getPg from '../../postgres/getPg'
 import lodash from 'lodash'
+import {EMAIL_LIMIT, PREFERRED_NAME_LIMIT} from '../constants/User'
 
-const vanillaFields = [
-  'preferredName',
-  'email',
-  'featureFlags',
-  'lastSeenAt',
-  'lastSeenAtURLs',
-  'updatedAt',
-  'picture',
-  'inactive',
-  'identities',
-  'createdAt',
-  'tier',
-  'tms'
-]
+const emailsAreEqual = (
+  rethinkEmail: string,
+  pgEmail: string
+): boolean => (
+  lodash.isEqual(rethinkEmail, pgEmail) ||
+    (rethinkEmail === 'DELETED' && pgEmail.startsWith('DELETED'))
+)
+
+const alwaysDefinedFieldsCustomResolvers = {
+  email: emailsAreEqual,
+  preferredName: undefined,
+  updatedAt: undefined,
+  picture: undefined,
+  identities: undefined,
+  createdAt: undefined,
+  tier: undefined,
+  tms: undefined
+} as {
+  [key: string]: ((rethinkValue: string, pgValue: string) => boolean) | undefined
+}
 
 /* if a field is allowed to be undefined in rethink,
  * what is its value in pg? */
@@ -30,15 +37,21 @@ const maybeUndefinedFieldsDefaultValues = {
   segmentId: null,
   reasonRemoved: null,
   isRemoved: false,
-  payLaterClickCount: 0
+  payLaterClickCount: 0,
+  featureFlags: [],
+  lastSeenAt: null,
+  lastSeenAtURLs: null,
+  inactive: false
+}
+
+interface IErrorEntry {
+  error: string | string[]
+  rethinkUser?: Partial<User>
+  pgUser?: Partial<IGetUsersByIdQueryResult>
 }
 
 interface IError {
-  [key: string]: {
-    error: string | string[]
-    rethinkUser: User
-    pgUser: IGetUsersByIdQueryResult
-  }
+  [key: string]: IErrorEntry
 }
 
 // MUTATIVE
@@ -48,18 +61,32 @@ const addNeFieldToErrors = (
   rethinkUser: User,
   pgUser: IGetUsersByIdQueryResult
 ) => {
-  const prevNeFields = errors[rethinkUser.id]?.error ?? []
-  errors[rethinkUser.id] = {
-    error: [...prevNeFields, neField],
-    rethinkUser,
-    pgUser
+  const userId = rethinkUser.id
+  const prevErrorEntry = errors[userId] ?? {
+    error: [],
+    rethinkUser: {},
+    pgUser: {}
+  } as IErrorEntry
+  errors[userId] = {
+    error: [
+      ...prevErrorEntry.error,
+      neField
+    ],
+    rethinkUser: {
+      ...prevErrorEntry.rethinkUser,
+      [neField]: rethinkUser[neField]
+    },
+    pgUser: {
+      ...prevErrorEntry.pgUser,
+      [neField]: pgUser[neField]
+    }
   }
 }
 
 const checkPair = async (rethinkUser: User, pgUser: IGetUsersByIdQueryResult, errors: IError) => {
-  for (const f of vanillaFields) {
+  for (const [f, customResolver] of Object.entries(alwaysDefinedFieldsCustomResolvers)) {
     const [rethinkValue, pgValue] = [rethinkUser[f], pgUser[f]]
-    if (!lodash.isEqual(rethinkValue, pgValue)) {
+    if (!lodash.isEqualWith(rethinkValue, pgValue, customResolver)) {
       addNeFieldToErrors(errors, f, rethinkUser, pgUser)
     }
   }
@@ -90,15 +117,22 @@ const checkUserEq = async (): Promise<IError> => {
       .orderBy('updatedAt', {index: 'updatedAt'})
       .skip(offset)
       .limit(batchSize)
+      .filter(row =>
+        (row('email').count() as any).le(
+          EMAIL_LIMIT
+        ).and(
+          (row('preferredName').count() as any).le(
+            PREFERRED_NAME_LIMIT
+          )
+        )
+      )
       .run()
     if (!rethinkUsers.length) {
       break
     }
 
     const userIds = rethinkUsers.map((u) => u.id)
-    console.log('user ids length:', userIds.length)
     const pgUsers = await getUsersByIdQuery.run({ids: userIds}, getPg())
-    console.log('pg users length:', pgUsers.length)
     const pgUsersById = {} as {
       [key: string]: IGetUsersByIdQueryResult
     }
@@ -111,7 +145,6 @@ const checkUserEq = async (): Promise<IError> => {
       if (!pgUser) {
         errors[rethinkUser.id] = {
           error: 'No pg user found for rethink user',
-          rethinkUser: rethinkUser
         }
         continue
       }

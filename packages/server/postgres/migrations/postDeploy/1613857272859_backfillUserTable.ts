@@ -7,6 +7,7 @@ import getPg from '../../getPg'
 import User from '../../../database/types/User'
 import {IBackupUserQueryParams} from '../../queries/generated/backupUserQuery'
 import getDeletedEmail from '../../../utils/getDeletedEmail'
+import {EMAIL_LIMIT, PREFERRED_NAME_LIMIT} from '../../constants/User'
 
 const undefinedUserFieldsAndTheirDefaultPgValues = {
   newFeatureId: null,
@@ -24,7 +25,7 @@ const undefinedUserFieldsAndTheirDefaultPgValues = {
 const cleanUsers = (users: User[]): IBackupUserQueryParams['users'] => {
   const cleanedUsers = [] as any
   users.forEach(user => {
-    if (user.email.length > 500) {
+    if (user.email.length > EMAIL_LIMIT) {
       return // bad actors were messing up unique constraint
     } 
     const cleanedUser = Object.assign(
@@ -34,7 +35,7 @@ const cleanUsers = (users: User[]): IBackupUserQueryParams['users'] => {
       {
         email: user.email === 'DELETED' ?
           getDeletedEmail(user.id) : user.email,
-        preferredName: user.preferredName.slice(0, 100),
+        preferredName: user.preferredName.slice(0, PREFERRED_NAME_LIMIT),
       }
     ) as IBackupUserQueryParams['users'][0]
     cleanedUsers.push(cleanedUser)
