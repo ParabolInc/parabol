@@ -4,8 +4,8 @@ import Task from './Task'
 import StandardMutationError from './StandardMutationError'
 import {GQLContext} from '../graphql'
 
-const CreateGitHubIssuePayload = new GraphQLObjectType<any, GQLContext>({
-  name: 'CreateGitHubIssuePayload',
+const CreateGitHubTaskIntegrationPayload = new GraphQLObjectType<any, GQLContext>({
+  name: 'CreateGitHubTaskIntegrationPayload',
   fields: () => ({
     error: {
       type: StandardMutationError
@@ -17,4 +17,4 @@ const CreateGitHubIssuePayload = new GraphQLObjectType<any, GQLContext>({
   })
 })
 
-export default CreateGitHubIssuePayload
+export default CreateGitHubTaskIntegrationPayload

@@ -1,13 +1,11 @@
-/* eslint-disable @typescript-eslint/camelcase */
-import { MigrationBuilder, ColumnDefinitions } from 'node-pg-migrate';
+import {ColumnDefinitions, MigrationBuilder} from 'node-pg-migrate'
 import getRethink from '../../../database/rethinkDriver'
-import {backupUserQuery} from '../../queries/generated/backupUserQuery'
-import catchAndLog from '../../utils/catchAndLog'
-import getPg from '../../getPg'
 import User from '../../../database/types/User'
-import {IBackupUserQueryParams} from '../../queries/generated/backupUserQuery'
 import getDeletedEmail from '../../../utils/getDeletedEmail'
 import {EMAIL_LIMIT, PREFERRED_NAME_LIMIT} from '../../constants/User'
+import getPg from '../../getPg'
+import {backupUserQuery, IBackupUserQueryParams} from '../../queries/generated/backupUserQuery'
+import catchAndLog from '../../utils/catchAndLog'
 
 const undefinedUserFieldsAndTheirDefaultPgValues = {
   newFeatureId: null,
@@ -19,40 +17,32 @@ const undefinedUserFieldsAndTheirDefaultPgValues = {
   // app doesn't allow following fields to be undefined, but found bad data anyway
   inactive: false,
   payLaterClickCount: 0,
-  featureFlags: [],
+  featureFlags: []
 }
 
 const cleanUsers = (users: User[]): IBackupUserQueryParams['users'] => {
   const cleanedUsers = [] as any
-  users.forEach(user => {
+  users.forEach((user) => {
     if (user.email.length > EMAIL_LIMIT) {
       return // bad actors were messing up unique constraint
-    } 
-    const cleanedUser = Object.assign(
-      {},
-      undefinedUserFieldsAndTheirDefaultPgValues,
-      user,
-      {
-        email: user.email === 'DELETED' ?
-          getDeletedEmail(user.id) : user.email,
-        preferredName: user.preferredName.slice(0, PREFERRED_NAME_LIMIT),
-      }
-    ) as IBackupUserQueryParams['users'][0]
+    }
+    const cleanedUser = Object.assign({}, undefinedUserFieldsAndTheirDefaultPgValues, user, {
+      email: user.email === 'DELETED' ? getDeletedEmail(user.id) : user.email,
+      preferredName: user.preferredName.slice(0, PREFERRED_NAME_LIMIT)
+    }) as IBackupUserQueryParams['users'][0]
     cleanedUsers.push(cleanedUser)
   })
   return cleanedUsers
 }
 
-export const shorthands: ColumnDefinitions | undefined = undefined;
+export const shorthands: ColumnDefinitions | undefined = undefined
 
 export async function up(pgm: MigrationBuilder): Promise<void> {
   const r = await getRethink()
   const batchSize = 3000 // doing 4000 or 5000 results in error relating to size of parameterized query
   // todo: make `doBackfill` generic and reusable
-  const doBackfill = async (
-    usersAfterTs?: Date
-  ) => {
-    let i = 0
+  const doBackfill = async (usersAfterTs?: Date) => {
+    const i = 0
     let foundUsers = false
 
     for (let i = 0; i < 1e5; i++) {
@@ -65,7 +55,9 @@ export async function up(pgm: MigrationBuilder): Promise<void> {
         .skip(offset)
         .limit(batchSize)
         .run()
-      if (!rethinkUsers.length) { break }
+      if (!rethinkUsers.length) {
+        break
+      }
       foundUsers = true
       const pgUsers = cleanUsers(rethinkUsers)
       await catchAndLog(() => backupUserQuery.run({users: pgUsers}, getPg()))
@@ -73,16 +65,14 @@ export async function up(pgm: MigrationBuilder): Promise<void> {
     return foundUsers
   }
   // todo: make `doBackfillAccountingForRaceConditions` generic and reusable
-  const doBackfillAccountingForRaceConditions = async (
-    usersAfterTs?: Date
-  ) => {
+  const doBackfillAccountingForRaceConditions = async (usersAfterTs?: Date) => {
     for (let i = 0; i < 1e5; i++) {
       const thisBackfillStartTs = new Date()
-      const backfillFoundUsers = await doBackfill(
-        usersAfterTs
-      )
+      const backfillFoundUsers = await doBackfill(usersAfterTs)
       // await new Promise(resolve => setTimeout(resolve, 1000*60*2)) // update user while sleeping
-      if (!backfillFoundUsers) { break }
+      if (!backfillFoundUsers) {
+        break
+      }
       usersAfterTs = thisBackfillStartTs
     }
   }

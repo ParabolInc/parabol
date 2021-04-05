@@ -1,7 +1,6 @@
 import {ConnectionHandler, RecordProxy, RecordSourceSelectorProxy} from 'relay-runtime'
-import {SearchQueryMeetingPropName} from '~/utils/relay/LocalPokerHandler'
-import toSearchQueryId from '~/utils/relay/toSearchQueryId'
 import toTeamMemberId from '~/utils/relay/toTeamMemberId'
+import SearchQueryId from '../../shared/gqlIds/SearchQueryId'
 import getJiraIssuesConn from '../connections/getJiraIssuesConn'
 
 const handleJiraCreateIssue = (payload: RecordProxy<any>, store: RecordSourceSelectorProxy) => {
@@ -14,7 +13,7 @@ const handleJiraCreateIssue = (payload: RecordProxy<any>, store: RecordSourceSel
   const teamMember = store.get(teamMemberId)
   const integrations = teamMember?.getLinkedRecord('integrations')
   const atlassian = integrations?.getLinkedRecord('atlassian')
-  const jiraSearchQueryId = toSearchQueryId(SearchQueryMeetingPropName.jira, meetingId)
+  const jiraSearchQueryId = SearchQueryId.join('jira', meetingId)
   const jiraSearchQuery = store.get(jiraSearchQueryId)
   const queryString = jiraSearchQuery?.getValue('queryString') as string | undefined
   const isJql = jiraSearchQuery?.getValue('isJql') as boolean | undefined

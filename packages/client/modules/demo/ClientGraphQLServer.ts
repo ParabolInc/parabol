@@ -391,7 +391,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       }
       return {addReactjiToReactable: data}
     },
-    CreateGitHubIssueMutation: ({taskId, nameWithOwner}, userId) => {
+    CreateGitHubTaskIntegrationMutation: ({taskId, nameWithOwner}, userId) => {
       const task = this.db.tasks.find((task) => task.id === taskId)
       // if the human deleted the task, exit fast
       if (!task) return null
@@ -406,14 +406,14 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       })
 
       const data = {
-        __typename: 'CreateGitHubIssuePayload',
+        __typename: 'CreateGitHubTaskIntegrationPayload',
         error: null,
         task
       }
       if (userId !== demoViewerId) {
         this.emit(TASK, data)
       }
-      return {createGitHubIssue: data}
+      return {createGitHubTaskIntegration: data}
     },
     CreateJiraTaskIntegrationMutation: ({projectKey, taskId}, userId) => {
       const task = this.db.tasks.find((task) => task.id === taskId)

@@ -47,7 +47,7 @@ const resolveDowngradeToPersonal = async (
       {
         tier: 'personal',
         isPaid: true,
-        updatedAt: now,
+        updatedAt: now
       },
       orgId
     )

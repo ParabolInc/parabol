@@ -8,7 +8,7 @@ import useFilteredItems from '../hooks/useFilteredItems'
 import useForm from '../hooks/useForm'
 import {MenuProps} from '../hooks/useMenu'
 import {MenuMutationProps} from '../hooks/useMutationProps'
-import CreateGitHubIssueMutation from '../mutations/CreateGitHubIssueMutation'
+import CreateGitHubTaskIntegrationMutation from '../mutations/CreateGitHubTaskIntegrationMutation'
 import CreateJiraTaskIntegrationMutation from '../mutations/CreateJiraTaskIntegrationMutation'
 import {PALETTE} from '../styles/paletteV3'
 import {ICON_SIZE} from '../styles/typographyV2'
@@ -130,7 +130,7 @@ const TaskFooterIntegrateMenu = (props: Props) => {
             const {nameWithOwner} = suggestedIntegration
             const variables = {nameWithOwner, taskId}
             submitMutation()
-            CreateGitHubIssueMutation(atmosphere, variables, {onError, onCompleted})
+            CreateGitHubTaskIntegrationMutation(atmosphere, variables, {onError, onCompleted})
           }
           return (
             <SuggestedIntegrationGitHubMenuItem

@@ -64,7 +64,7 @@ const upgradeToPro = async (orgId: string, source: string, email: string) => {
       {
         isPaid: true,
         tier: 'pro',
-        updatedAt: now,
+        updatedAt: now
       },
       orgId
     )

@@ -5,6 +5,22 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.5.0 2021-Apr-01
+
+### Added
+
+- Create GH issue button in Sprint poker, currently hidden (#4799)
+- GitHub tab in Sprint Poker (#4777)
+### Removed
+
+- Removed IM scopes from Slack integration, per Slack feedback (#4844)
+
+### Fixed
+
+- Sort order of poker votes (#4821)
+- Add type safety to deleteUser (#4826)
+- Push to story points type mismatch (#4854)
+
 ## 6.4.0 2021-Mar-24
 
 ### Added
@@ -32,6 +48,12 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 - Fix calendar first month available bug #4797
 - Fix non-integrated poker user can't see jira content #4793
 - Fix "just started" snackbar error when changing facilitators #4780
+
+## 6.3.1 2021-Mar-19
+
+### Fixed
+
+- Fix broken suOrgCount query due to incorrect enum type
 
 ## 6.3.0 2021-Mar-18
 
