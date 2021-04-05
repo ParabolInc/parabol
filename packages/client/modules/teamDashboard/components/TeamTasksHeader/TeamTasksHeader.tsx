@@ -1,7 +1,7 @@
 import {ClassNames} from '@emotion/core'
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
+import React, {useRef} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {NavLink} from 'react-router-dom'
 import DashboardAvatars from '~/components/DashboardAvatars/DashboardAvatars'
@@ -96,11 +96,11 @@ const AvatarsAndAgendaToggle = styled('div')({
   display: 'flex',
   justifyContent: 'space-between',
   flexWrap: 'wrap',
-  width: '100%',
   [desktopBreakpoint]: {
     display: 'flex',
     flexDirection: 'column',
-    alignItems: 'flex-end'
+    alignItems: 'flex-end',
+    width: '50%'
   }
 })
 
@@ -114,6 +114,7 @@ const TeamTasksHeader = (props: Props) => {
   const teamMember = viewer.teamMember!
   const {hideAgenda} = teamMember
   const {history} = useRouter()
+  const avatarsWrapperRef = useRef<HTMLDivElement>(null)
   const {organization, id: teamId, name: teamName, teamMemberFilter} = team
   const teamMemberFilterName =
     (teamMemberFilter && teamMemberFilter.preferredName) || 'All team members'
@@ -156,8 +157,8 @@ const TeamTasksHeader = (props: Props) => {
             </ClassNames>
           </TeamLinks>
         </TeamMeta>
-        <AvatarsAndAgendaToggle>
-          <DashboardAvatars team={team} />
+        <AvatarsAndAgendaToggle ref={avatarsWrapperRef}>
+          <DashboardAvatars team={team} wrapperRef={avatarsWrapperRef} />
           <AgendaToggle hideAgenda={hideAgenda} teamId={teamId} />
         </AvatarsAndAgendaToggle>
       </TeamHeaderAndAvatars>

@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {useRef} from 'react'
+import React, {RefObject, useRef} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {Breakpoint} from '~/types/constEnums'
 import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
@@ -16,19 +16,11 @@ const desktopBreakpoint = makeMinWidthMediaQuery(Breakpoint.SIDEBAR_LEFT)
 const AvatarsList = styled('div')({
   display: 'flex',
   justifyContent: 'flex-start',
-  overflow: 'auto',
   marginTop: 16,
-  width: '80%',
   [desktopBreakpoint]: {
     justifyContent: 'flex-end',
-    marginTop: 0,
-    overflow: 'visible'
+    marginTop: 0
   }
-})
-
-const ScrollContainer = styled('div')({
-  display: 'flex',
-  overflow: 'auto'
 })
 
 const ItemBlock = styled('div')({
@@ -43,6 +35,7 @@ const ItemBlock = styled('div')({
 
 interface Props {
   team: DashboardAvatars_team
+  wrapperRef: RefObject<HTMLDivElement>
 }
 
 const OverflowCount = styled('div')({
@@ -61,34 +54,31 @@ const OverflowCount = styled('div')({
 })
 
 const DashboardAvatars = (props: Props) => {
-  const {team} = props
+  const {team, wrapperRef} = props
   const {id: teamId, isLead: isViewerLead, teamMembers} = team
-  const wrapperRef = useRef<HTMLDivElement>(null)
   const avatarsRef = useRef<HTMLDivElement>(null)
   const maxAvatars = useAvatarsOverflow(wrapperRef, avatarsRef)
   const overflowCount = teamMembers.length > maxAvatars ? teamMembers.length - maxAvatars + 1 : 0
   const visibleAvatars = overflowCount === 0 ? teamMembers : teamMembers.slice(0, maxAvatars - 1)
   return (
-    <AvatarsList ref={wrapperRef}>
-      <ScrollContainer ref={avatarsRef}>
-        <ItemBlock>
-          <AddTeamMemberAvatarButton teamId={teamId} teamMembers={teamMembers} />
-        </ItemBlock>
-        {visibleAvatars.map((teamMember) => {
-          return (
-            <ItemBlock key={`dbAvatar${teamMember.id}`}>
-              <ErrorBoundary>
-                <DashboardAvatar isViewerLead={isViewerLead} teamMember={teamMember} />
-              </ErrorBoundary>
-            </ItemBlock>
-          )
-        })}
-        {overflowCount > 0 && (
-          <ItemBlock>
-            <OverflowCount>{`+${overflowCount}`}</OverflowCount>
+    <AvatarsList ref={avatarsRef}>
+      <ItemBlock>
+        <AddTeamMemberAvatarButton teamId={teamId} teamMembers={teamMembers} />
+      </ItemBlock>
+      {visibleAvatars.map((teamMember) => {
+        return (
+          <ItemBlock key={`dbAvatar${teamMember.id}`}>
+            <ErrorBoundary>
+              <DashboardAvatar isViewerLead={isViewerLead} teamMember={teamMember} />
+            </ErrorBoundary>
           </ItemBlock>
-        )}
-      </ScrollContainer>
+        )
+      })}
+      {overflowCount > 0 && (
+        <ItemBlock>
+          <OverflowCount>{`+${overflowCount}`}</OverflowCount>
+        </ItemBlock>
+      )}
     </AvatarsList>
   )
 }
