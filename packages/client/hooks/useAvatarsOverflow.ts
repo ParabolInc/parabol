@@ -10,16 +10,16 @@ const useAvatarsOverflow = (
     const {current: el} = avatarsRef
     const {current: wrapperEl} = wrapperRef
     if (!el || !wrapperEl) return
-    const {clientWidth: avatarsWidth, children} = el
+    const {clientWidth: avatarsWidth, children, scrollWidth} = el
+    const {clientWidth: wrapperWidth} = wrapperEl
     const avatarsCount = children.length
-    const {clientWidth: parentWidth} = wrapperEl
-    const avatarWidth = Math.ceil(avatarsWidth / avatarsCount)
-    const newMaxAvatars = Math.floor(parentWidth / avatarWidth) - 1
-    if (avatarsWidth > parentWidth) {
-      const newMaxAvatars = Math.floor(parentWidth / avatarWidth) - 1
-      setMaxAvatars(Math.max(newMaxAvatars, 1))
-    } else if (newMaxAvatars > maxAvatars) {
+    const avatarWidth = Math.ceil(scrollWidth / avatarsCount)
+    const newMaxAvatars = Math.floor(wrapperWidth / avatarWidth) - 1
+    if (newMaxAvatars > maxAvatars) {
       setMaxAvatars(newMaxAvatars)
+    } else if (scrollWidth > avatarsWidth) {
+      const newMaxAvatars = Math.floor(wrapperWidth / avatarWidth) - 1
+      setMaxAvatars(Math.max(newMaxAvatars, 1))
     }
   }
   useLayoutEffect(checkOverflow, [])
