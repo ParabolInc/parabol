@@ -46,18 +46,16 @@ const CardTitleWrapper = styled('div')({
   width: '100%'
 })
 
-const CardDescription = styled('div')<{isExpanded: boolean}>(
-  ({isExpanded}) => ({
-    color: PALETTE.SLATE_700,
-    fontWeight: 'normal',
-    lineHeight: '20px',
-    fontSize: 14,
-    margin: 0,
-    maxHeight: isExpanded ? '100%' : 30,
-    overflowY: 'auto',
-    transition: 'all 300ms'
-  })
-)
+const CardDescription = styled('div')<{isExpanded: boolean}>(({isExpanded}) => ({
+  color: PALETTE.SLATE_700,
+  fontWeight: 'normal',
+  lineHeight: '20px',
+  fontSize: 14,
+  margin: 0,
+  maxHeight: isExpanded ? 300 : 30,
+  overflowY: isExpanded ? 'auto' : 'hidden',
+  transition: 'all 300ms'
+}))
 
 const StyledIcon = styled(Icon)({
   fontSize: ICON_SIZE.MD18,

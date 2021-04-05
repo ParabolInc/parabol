@@ -54,18 +54,16 @@ const CardIcons = styled('div')({
   display: 'flex'
 })
 
-const EditorWrapper = styled('div')<{isExpanded: boolean; maxHeight: number}>(
-  ({isExpanded, maxHeight}) => ({
-    color: PALETTE.SLATE_700,
-    fontWeight: 'normal',
-    lineHeight: '20px',
-    fontSize: 14,
-    margin: 0,
-    maxHeight: isExpanded ? maxHeight : 38,
-    overflowY: 'auto',
-    transition: 'all 300ms'
-  })
-)
+const EditorWrapper = styled('div')<{isExpanded: boolean}>(({isExpanded}) => ({
+  color: PALETTE.SLATE_700,
+  fontWeight: 'normal',
+  lineHeight: '20px',
+  fontSize: 14,
+  margin: 0,
+  maxHeight: isExpanded ? 300 : 38,
+  overflowY: isExpanded ? 'auto' : 'hidden',
+  transition: 'all 300ms'
+}))
 
 const StyledTaskIntegrationLink = styled(TaskIntegrationLink)({
   color: PALETTE.SKY_500,
@@ -134,8 +132,6 @@ const PokerEstimateHeaderCardParabol = (props: Props) => {
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const [editorState, setEditorState] = useEditorState(content)
   const editorRef = useRef<HTMLTextAreaElement>(null)
-  const descriptionRef = useRef<HTMLDivElement>(null)
-  const maxHeight = Math.min(descriptionRef.current?.scrollHeight ?? 300, 300)
   useEffect(
     () => () => {
       setIsExpanded(false)
@@ -152,7 +148,7 @@ const PokerEstimateHeaderCardParabol = (props: Props) => {
             <CardTitle>{`That story doesn't exist!`}</CardTitle>
           </CardTitleWrapper>
           <CardDescription>
-            {`The story was deleted. You can add another story in the Scope phase`}
+            {`The story was deleted. You can add another story in the Scope phase.`}
           </CardDescription>
         </ErrorCard>
       </HeaderCardWrapper>
@@ -191,12 +187,7 @@ const PokerEstimateHeaderCardParabol = (props: Props) => {
     <HeaderCardWrapper isDesktop={isDesktop}>
       <HeaderCard>
         <Content>
-          <EditorWrapper
-            ref={descriptionRef}
-            isExpanded={isExpanded}
-            maxHeight={maxHeight}
-            onBlur={onBlur}
-          >
+          <EditorWrapper isExpanded={isExpanded} onBlur={onBlur}>
             <StyledTaskEditor
               dataCy={`task`}
               editorRef={editorRef}
