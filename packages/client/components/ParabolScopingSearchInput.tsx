@@ -1,13 +1,12 @@
+import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {createFragmentContainer, commitLocalUpdate} from 'react-relay'
-import {ParabolScopingSearchInput_meeting} from '../__generated__/ParabolScopingSearchInput_meeting.graphql'
-import styled from '@emotion/styled'
-import Icon from './Icon'
+import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
+import {PALETTE} from '~/styles/paletteV3'
 import Atmosphere from '../Atmosphere'
 import useAtmosphere from '../hooks/useAtmosphere'
-import {PALETTE} from '~/styles/paletteV3'
-import {SearchQueryMeetingPropName} from '~/utils/relay/LocalPokerHandler'
+import {ParabolScopingSearchInput_meeting} from '../__generated__/ParabolScopingSearchInput_meeting.graphql'
+import Icon from './Icon'
 
 const Wrapper = styled('div')({
   alignItems: 'center',
@@ -37,7 +36,7 @@ const setSearch = (atmosphere: Atmosphere, meetingId: string, value: string) => 
   commitLocalUpdate(atmosphere, (store) => {
     const meeting = store.get(meetingId)
     if (!meeting) return
-    const parabolSearchQuery = meeting.getLinkedRecord(SearchQueryMeetingPropName.parabol)!
+    const parabolSearchQuery = meeting.getLinkedRecord('parabolSearchQuery')!
     parabolSearchQuery.setValue(value, 'queryString')
   })
 }

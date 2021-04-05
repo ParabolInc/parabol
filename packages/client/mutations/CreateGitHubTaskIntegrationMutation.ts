@@ -1,11 +1,11 @@
-import {CreateGitHubIssueMutation as TCreateGitHubIssueMutation} from '../__generated__/CreateGitHubIssueMutation.graphql'
+import {CreateGitHubTaskIntegrationMutation as TCreateGitHubTaskIntegrationMutation} from '../__generated__/CreateGitHubTaskIntegrationMutation.graphql'
 import {commitMutation} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import {StandardMutation} from '../types/relayMutations'
 import createProxyRecord from '../utils/relay/createProxyRecord'
 
 graphql`
-  fragment CreateGitHubIssueMutation_task on CreateGitHubIssuePayload {
+  fragment CreateGitHubTaskIntegrationMutation_task on CreateGitHubTaskIntegrationPayload {
     task {
       integration {
         ... on TaskIntegrationGitHub {
@@ -21,22 +21,22 @@ graphql`
 `
 
 const mutation = graphql`
-  mutation CreateGitHubIssueMutation($nameWithOwner: String!, $taskId: ID!) {
-    createGitHubIssue(nameWithOwner: $nameWithOwner, taskId: $taskId) {
+  mutation CreateGitHubTaskIntegrationMutation($nameWithOwner: String!, $taskId: ID!) {
+    createGitHubTaskIntegration(nameWithOwner: $nameWithOwner, taskId: $taskId) {
       error {
         message
       }
-      ...CreateGitHubIssueMutation_task @relay(mask: false)
+      ...CreateGitHubTaskIntegrationMutation_task @relay(mask: false)
     }
   }
 `
 
-const CreateGitHubIssueMutation: StandardMutation<TCreateGitHubIssueMutation> = (
+const CreateGitHubTaskIntegrationMutation: StandardMutation<TCreateGitHubTaskIntegrationMutation> = (
   atmosphere,
   variables,
   {onError, onCompleted}
 ) => {
-  return commitMutation<TCreateGitHubIssueMutation>(atmosphere, {
+  return commitMutation<TCreateGitHubTaskIntegrationMutation>(atmosphere, {
     mutation,
     variables,
     optimisticUpdater: (store) => {
@@ -58,4 +58,4 @@ const CreateGitHubIssueMutation: StandardMutation<TCreateGitHubIssueMutation> = 
   })
 }
 
-export default CreateGitHubIssueMutation
+export default CreateGitHubTaskIntegrationMutation

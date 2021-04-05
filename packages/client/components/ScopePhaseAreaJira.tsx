@@ -6,14 +6,15 @@ import ScopePhaseAreaAddJira from './ScopePhaseAreaAddJira'
 import ScopePhaseAreaJiraScoping from './ScopePhaseAreaJiraScoping'
 
 interface Props {
+  isActive: boolean
   gotoParabol: () => void
   meeting: ScopePhaseAreaJira_meeting
 }
 
 const ScopePhaseAreaJira = (props: Props) => {
-  const {gotoParabol, meeting} = props
+  const {isActive, gotoParabol, meeting} = props
   const {viewerMeetingMember} = meeting
-  if (!viewerMeetingMember) return null
+  if (!viewerMeetingMember || !isActive) return null
   const {teamMember} = viewerMeetingMember
   const {integrations} = teamMember
   const hasAuth = integrations?.atlassian?.isActive ?? false

@@ -11,6 +11,7 @@ import EditCommentingPayload from './EditCommentingPayload'
 import EditReflectionPayload from './EditReflectionPayload'
 import EndDraggingReflectionPayload from './EndDraggingReflectionPayload'
 import {FlagReadyToAdvanceSuccess} from './FlagReadyToAdvancePayload'
+import {GitHubCreateIssueSuccess} from './GitHubCreateIssuePayload'
 import JiraCreateIssuePayload from './JiraCreateIssuePayload'
 import {JoinMeetingSuccess} from './JoinMeetingPayload'
 import NewMeetingCheckInPayload from './NewMeetingCheckInPayload'
@@ -73,6 +74,7 @@ const types = [
   PokerAnnounceDeckHoverSuccess,
   PokerSetFinalScoreSuccess,
   JoinMeetingSuccess,
+  GitHubCreateIssueSuccess,
   SetPokerSpectateSuccess
 ]
 
