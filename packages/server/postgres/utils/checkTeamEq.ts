@@ -6,8 +6,22 @@ import {
 import getRethink from '../../database/rethinkDriver'
 import getPg from '../../postgres/getPg'
 import lodash from 'lodash'
+import {
+  IAlwaysDefinedFieldsCustomResolvers,
+  IMaybeUndefinedFieldsDefaultValues,
+  IError,
+  AddNeFieldToErrors,
+  addNeFieldToErrors,
+  CustomResolver
+} from './checkEqBase'
 
-const namesAreEqual = (rethinkName: string, pgName: string): boolean =>
+type IErrorTeam = IError<Team, IGetTeamsByIdQueryResult>
+const addNeFieldToErrorsForTeam = addNeFieldToErrors as AddNeFieldToErrors<
+  Team,
+  IGetTeamsByIdQueryResult
+>
+
+const namesAreEqual: CustomResolver = (rethinkName, pgName) =>
   lodash.isEqual(rethinkName, pgName) || rethinkName.slice(0, 100) === pgName
 
 const alwaysDefinedFieldsCustomResolvers = {
@@ -18,78 +32,41 @@ const alwaysDefinedFieldsCustomResolvers = {
   tier: undefined,
   orgId: undefined,
   updatedAt: undefined
-} as {
-  [key: string]: ((rethinkValue: string, pgValue: string) => boolean) | undefined
-}
+} as IAlwaysDefinedFieldsCustomResolvers<Team>
 
 const maybeUndefinedFieldsDefaultValues = {
   jiraDimensionFields: [],
   lastMeetingType: 'retrospective',
   createdBy: null,
   isOnboardTeam: false
-}
+} as IMaybeUndefinedFieldsDefaultValues<Team>
 
-// MUTATIVE
-const addNeFieldToErrors = (
-  errors: IError,
-  neField: string,
+const checkPair = async (
   rethinkTeam: Team,
-  pgTeam: IGetTeamsByIdQueryResult
+  pgTeam: IGetTeamsByIdQueryResult,
+  errors: IErrorTeam
 ) => {
-  const teamId = rethinkTeam.id
-  const prevErrorEntry =
-    errors[teamId] ??
-    ({
-      error: [],
-      rethinkTeam: {},
-      pgTeam: {}
-    } as IErrorEntry)
-  errors[teamId] = {
-    error: [...prevErrorEntry.error, neField],
-    rethinkTeam: {
-      ...prevErrorEntry.rethinkTeam,
-      [neField]: rethinkTeam[neField]
-    },
-    pgTeam: {
-      ...prevErrorEntry.pgTeam,
-      [neField]: pgTeam[neField]
-    }
-  }
-}
-
-interface IErrorEntry {
-  error: string | string[]
-  rethinkTeam?: Partial<Team>
-  pgTeam?: Partial<IGetTeamsByIdQueryResult>
-}
-
-interface IError {
-  [key: string]: IErrorEntry
-}
-
-const checkPair = async (rethinkTeam: Team, pgTeam: IGetTeamsByIdQueryResult, errors: IError) => {
   for (const [f, customResolver] of Object.entries(alwaysDefinedFieldsCustomResolvers)) {
     const [rethinkValue, pgValue] = [rethinkTeam[f], pgTeam[f]]
     if (!lodash.isEqualWith(rethinkValue, pgValue, customResolver)) {
-      addNeFieldToErrors(errors, f, rethinkTeam, pgTeam)
+      addNeFieldToErrorsForTeam(errors, f, rethinkTeam, pgTeam)
     }
   }
   for (const [f, defaultValue] of Object.entries(maybeUndefinedFieldsDefaultValues)) {
     const [rethinkValue, pgValue] = [rethinkTeam[f], pgTeam[f]]
-    console.log(``)
     if (!lodash.isUndefined(rethinkValue)) {
       if (!lodash.isEqual(rethinkValue, pgValue)) {
-        addNeFieldToErrors(errors, f, rethinkTeam, pgTeam)
+        addNeFieldToErrorsForTeam(errors, f, rethinkTeam, pgTeam)
       }
     } else {
       if (!lodash.isEqual(pgValue, defaultValue)) {
-        addNeFieldToErrors(errors, f, rethinkTeam, pgTeam)
+        addNeFieldToErrorsForTeam(errors, f, rethinkTeam, pgTeam)
       }
     }
   }
 }
 
-const checkTeamEq = async (): Promise<IError> => {
+const checkTeamEq = async (): Promise<IErrorTeam> => {
   const errors = {}
   const batchSize = 3000
   const r = await getRethink()
