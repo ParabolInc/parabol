@@ -57,7 +57,7 @@ const ContactUsFooter = (props: Props) => {
         <tr>
           <td align='center' style={textStyle}>
             <a
-              href='https://focus.parabol.co/how-to-navigate-uncertainty-fc0dfaaf3830'
+              href='https://www.parabol.co/blog/agile-management-navigate-uncertainty'
               rel='noopener noreferrer'
               style={linkStyle}
               target='_blank'
