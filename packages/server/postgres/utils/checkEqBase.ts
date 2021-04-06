@@ -52,8 +52,8 @@ export async function checkTableEq<rethinkType, pgType>(
       break
     }
 
-    const teamIds = rethinkRows.map((t) => (t as WithId<rethinkType>).id) as string[]
-    const pgRows = await pgQuery.run({ids: teamIds}, getPg())
+    const ids = rethinkRows.map((t) => (t as WithId<rethinkType>).id) as string[]
+    const pgRows = await pgQuery.run({ids}, getPg())
     const pgRowsById = {} as {[key: string]: pgType}
     pgRows.forEach((pgRow) => {
       pgRowsById[(pgRow as WithId<pgType>).id] = pgRow
