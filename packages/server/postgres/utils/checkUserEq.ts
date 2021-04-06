@@ -8,12 +8,12 @@ import lodash from 'lodash'
 import {EMAIL_LIMIT, PREFERRED_NAME_LIMIT} from '../constants/User'
 import {CustomResolver, checkTableEq} from './checkEqBase'
 
-const emailsAreEqual: CustomResolver = (rethinkEmail, pgEmail): boolean =>
+const emailsAreEqual: CustomResolver = (rethinkEmail, pgEmail) =>
   lodash.isEqual(rethinkEmail, pgEmail) ||
   (rethinkEmail === 'DELETED' && pgEmail.startsWith('DELETED')) ||
   lodash.isEqual(rethinkEmail.slice(0, EMAIL_LIMIT), pgEmail)
 
-const preferredNamesAreEqual: CustomResolver = (rethinkPreferredName, pgPreferredName): boolean =>
+const preferredNamesAreEqual: CustomResolver = (rethinkPreferredName, pgPreferredName) =>
   lodash.isEqual(rethinkPreferredName, pgPreferredName) ||
   lodash.isEqual(rethinkPreferredName.slice(0, PREFERRED_NAME_LIMIT), pgPreferredName)
 

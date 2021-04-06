@@ -10,10 +10,7 @@ const tableResolvers = {
   // 'Team': 'teamResolver'
 } as {[key: string]: () => Promise<{[key: string]: any}>}
 
-const checkEqAndWriteOutput = async (
-  tableName: string,
-  fileLocation: string
-) => {
+const checkEqAndWriteOutput = async (tableName: string, fileLocation: string): Promise<void> => {
   const errors = await tableResolvers[tableName]()
   await fs.promises.writeFile(fileLocation, JSON.stringify(errors))
 }
