@@ -77,7 +77,8 @@ const pokerRevealVotes = {
     // add a pass card for everyone who was present but did not vote
     const {scores} = stage
     meetingMembers.forEach((meetingMember) => {
-      const {userId} = meetingMember
+      const {userId, isSpectating} = meetingMember
+      if (isSpectating) return
       const userScore = scores.find((score) => score.userId === userId)
       if (!userScore) {
         const passScore = new EstimateUserScore({userId, label: PokerCards.PASS_CARD as string})

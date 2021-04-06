@@ -21,7 +21,7 @@ import archiveTeam from './mutations/archiveTeam'
 import archiveTimelineEvent from './mutations/archiveTimelineEvent'
 import autoGroupReflections from './mutations/autoGroupReflections'
 import changeTaskTeam from './mutations/changeTaskTeam'
-import createGitHubIssue from './mutations/createGitHubIssue'
+import createGitHubTaskIntegration from './mutations/createGitHubTaskIntegration'
 import createImposterToken from './mutations/createImposterToken'
 import createJiraTaskIntegration from './mutations/createJiraTaskIntegration'
 import createMassInvitation from './mutations/createMassInvitation'
@@ -47,10 +47,12 @@ import endDraggingReflection from './mutations/endDraggingReflection'
 import endRetrospective from './mutations/endRetrospective'
 import endSprintPoker from './mutations/endSprintPoker'
 import flagReadyToAdvance from './mutations/flagReadyToAdvance'
+import gitHubCreateIssue from './mutations/gitHubCreateIssue'
 import inactivateUser from './mutations/inactivateUser'
 import invalidateSessions from './mutations/invalidateSessions'
 import inviteToTeam from './mutations/inviteToTeam'
 import jiraCreateIssue from './mutations/jiraCreateIssue'
+import joinMeeting from './mutations/joinMeeting'
 import loginWithGoogle from './mutations/loginWithGoogle'
 import loginWithPassword from './mutations/loginWithPassword'
 import movePokerTemplateDimension from './mutations/movePokerTemplateDimension'
@@ -99,6 +101,7 @@ import setDefaultSlackChannel from './mutations/setDefaultSlackChannel'
 import setNotificationStatus from './mutations/setNotificationStatus'
 import setOrgUserRole from './mutations/setOrgUserRole'
 import setPhaseFocus from './mutations/setPhaseFocus'
+import setPokerSpectate from './mutations/setPokerSpectate'
 import setSlackNotification from './mutations/setSlackNotification'
 import setStageTimer from './mutations/setStageTimer'
 import signUpWithPassword from './mutations/signUpWithPassword'
@@ -130,7 +133,6 @@ import uploadOrgImage from './mutations/uploadOrgImage'
 import uploadUserImage from './mutations/uploadUserImage'
 import verifyEmail from './mutations/verifyEmail'
 import voteForPokerStory from './mutations/voteForPokerStory'
-import joinMeeting from './mutations/joinMeeting'
 import voteForReflectionGroup from './mutations/voteForReflectionGroup'
 
 interface Context extends InternalContext, GQLContext {}
@@ -162,7 +164,7 @@ export default new GraphQLObjectType<any, Context>({
       changeTaskTeam,
       setNotificationStatus,
       createImposterToken,
-      createGitHubIssue,
+      createGitHubTaskIntegration,
       createJiraTaskIntegration,
       createMassInvitation,
       createOrgPicturePutUrl,
@@ -270,6 +272,8 @@ export default new GraphQLObjectType<any, Context>({
       pokerSetFinalScore,
       movePokerTemplateScaleValue,
       updateJiraDimensionField,
-      joinMeeting
+      joinMeeting,
+      gitHubCreateIssue,
+      setPokerSpectate
     } as any)
 })

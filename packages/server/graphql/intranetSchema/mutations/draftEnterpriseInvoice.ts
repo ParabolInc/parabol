@@ -172,7 +172,7 @@ export default {
         {
           isPaid: true,
           tier: 'enterprise',
-          updatedAt: now,
+          updatedAt: now
         },
         orgId
       )

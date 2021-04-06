@@ -1,10 +1,10 @@
 import graphql from 'babel-plugin-relay/macro'
 import {PALETTE} from 'parabol-client/styles/paletteV3'
 import {FONT_FAMILY} from 'parabol-client/styles/typographyV2'
-import getJiraCloudIdAndKey from 'parabol-client/utils/getJiraCloudIdAndKey'
 import {SummaryPokerStories_meeting} from 'parabol-client/__generated__/SummaryPokerStories_meeting.graphql'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
+import JiraServiceTaskId from '../../../../../shared/gqlIds/JiraServiceTaskId'
 import makeAppURL from '../../../../../utils/makeAppURL'
 import AnchorIfEmail from './AnchorIfEmail'
 import EmailBorderBottom from './EmailBorderBottom'
@@ -63,7 +63,7 @@ const SummaryPokerStories = (props: Props) => {
                 if (usedServiceTaskIds.has(serviceTaskId)) return null
                 usedServiceTaskIds.add(serviceTaskId)
                 const isLast = idx === stages.length - 1
-                const [, issueKey] = getJiraCloudIdAndKey(serviceTaskId)
+                const {issueKey} = JiraServiceTaskId.split(serviceTaskId)
                 const title = story?.title ?? issueKey
                 const urlPath = `/meet/${meetingId}/estimate/${usedServiceTaskIds.size}`
                 const to = isEmail

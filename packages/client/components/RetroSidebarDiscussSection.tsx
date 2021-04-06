@@ -142,14 +142,15 @@ const RetroSidebarDiscussSection = (props: Props) => {
                             <MeetingSubnavItem
                               key={stage.id}
                               isDragging={dragSnapshot.isDragging}
-                              label={title!}
                               metaContent={voteMeta}
                               onClick={() => handleClick(stage.id)}
                               isActive={localStage.id === stage.id}
                               isComplete={stage.isComplete}
                               isDisabled={!stage.isNavigable}
                               isUnsyncedFacilitatorStage={isUnsyncedFacilitatorStage}
-                            />
+                            >
+                              {title!}
+                            </MeetingSubnavItem>
                           </DraggableMeetingSubnavItem>
                         )
                       }}

@@ -1,7 +1,6 @@
 import {useEffect, useState} from 'react'
 import {SlackChannelDropdownChannels} from '../components/SlackChannelDropdown'
 import SlackClientManager from '../utils/SlackClientManager'
-import {isSlackIMArray} from '~/utils/isSlackIMArray.ts'
 
 const useSlackChannels = (
   slackAuth: {botAccessToken: string | null; slackUserId: string} | null
@@ -11,30 +10,31 @@ const useSlackChannels = (
     if (!slackAuth || !slackAuth.botAccessToken) return
     let isMounted = true
     const getChannels = async () => {
-      const botManager = new SlackClientManager(slackAuth.botAccessToken!)
-      const [publicChannelRes, slackIMRes] = await Promise.all([
+      const {botAccessToken, slackUserId} = slackAuth
+      const botManager = new SlackClientManager(botAccessToken!)
+      const [publicChannelRes, privateChannelRes] = await Promise.all([
         botManager.getConversationList(),
-        botManager.getConversationList(['im'])
+        botManager.getConversationList(['private_channel'])
       ])
       if (!isMounted) return
       if (!publicChannelRes.ok) {
         console.error(publicChannelRes.error)
         return
       }
-
-      let memberChannels
-      if (!isSlackIMArray(publicChannelRes.channels)) {
-        const {channels: publicChannels} = publicChannelRes
-        memberChannels = publicChannels.filter((channel) => channel.is_member)
+      let availableChannels
+      const {channels: publicChannels} = publicChannelRes
+      if (privateChannelRes.ok && privateChannelRes.channels.length) {
+        availableChannels = [...privateChannelRes.channels, ...publicChannels]
+      } else {
+        availableChannels = publicChannels
       }
-      if (slackIMRes.ok && isSlackIMArray(slackIMRes.channels)) {
-        const {channels: ims} = slackIMRes
-        const botChannel = ims.find((im) => im.is_im && im.user === slackAuth.slackUserId) as any
-        if (botChannel) {
-          memberChannels.unshift({...botChannel, name: '@Parabol'})
-        }
+      availableChannels.sort((a, b) => (a.name > b.name ? 1 : -1))
+      const botChannel = {
+        id: slackUserId,
+        name: '@Parabol'
       }
-      setChannels(memberChannels)
+      availableChannels.unshift({...botChannel, name: '@Parabol'})
+      setChannels(availableChannels)
     }
     getChannels().catch()
     return () => {

@@ -1,19 +1,14 @@
-import {
-  ConnectionHandler,
-  ReadOnlyRecordProxy,
-  RecordSourceSelectorProxy
-} from 'relay-runtime'
-import toSearchQueryId from '~/utils/relay/toSearchQueryId'
-import {SearchQueryMeetingPropName} from '~/utils/relay/LocalPokerHandler'
+import {ConnectionHandler, ReadOnlyRecordProxy, RecordSourceSelectorProxy} from 'relay-runtime'
+import SearchQueryId from '../../shared/gqlIds/SearchQueryId'
 
 const getScopingTasksConn = (
   store: RecordSourceSelectorProxy<any>,
   meetingId?: string | null,
   viewer?: ReadOnlyRecordProxy | null,
-  teamIds?: string[],
+  teamIds?: string[]
 ) => {
   if (!meetingId || !viewer) return null
-  const parabolSearchQueryId = toSearchQueryId(SearchQueryMeetingPropName.parabol, meetingId)
+  const parabolSearchQueryId = SearchQueryId.join('PARABOL', meetingId)
   const parabolSearchQuery = store.get(parabolSearchQueryId)
   if (!parabolSearchQuery) return null
   const queryString = parabolSearchQuery.getValue('queryString') as string

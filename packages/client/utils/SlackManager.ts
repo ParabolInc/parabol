@@ -3,17 +3,7 @@ interface ErrorResponse {
   error: string
 }
 
-export interface SlackIM {
-  created: number
-  id: string
-  is_im: true
-  is_org_shared: boolean
-  is_user_deleted: boolean
-  priority: number
-  user: string
-}
-
-export interface SlackPublicConversation {
+export interface SlackConversation {
   id: string
   name: string
   is_channel: boolean
@@ -67,20 +57,11 @@ export interface SlackPublicConversation {
   locale: string
 }
 
-type SlackConversation = SlackPublicConversation | SlackIM
-
 interface ConversationListResponse {
   ok: true
-  channels: SlackPublicConversation[] | SlackIM[]
+  channels: SlackConversation[]
 }
 interface ConversationJoinResponse {
-  ok: true
-  channel: {
-    id: string
-  }
-}
-
-interface ConversationOpenResponse {
   ok: true
   channel: {
     id: string
@@ -149,11 +130,10 @@ interface ConversationInfoResponse {
   channel: SlackConversation
 }
 
-type ConversationType = 'public_channel' | 'private_channel' | 'im' | 'mpim'
+type ConversationType = 'public_channel' | 'private_channel'
 
 abstract class SlackManager {
-  static SCOPE =
-    'incoming-webhook,channels:read,channels:join,chat:write,im:read,im:write,users:read,groups:read'
+  static SCOPE = 'incoming-webhook,channels:read,channels:join,chat:write,users:read'
   token: string
   abstract fetch: any
   // the any is for node until we can use tsc in nodeland
@@ -219,12 +199,6 @@ abstract class SlackManager {
   joinConversation(channelId: string) {
     return this.get<ConversationJoinResponse>(
       `https://slack.com/api/conversations.join?token=${this.token}&channel=${channelId}`
-    )
-  }
-
-  openDM(userId) {
-    return this.get<ConversationOpenResponse>(
-      `https://slack.com/api/conversations.open?token=${this.token}&users=${userId}`
     )
   }
 

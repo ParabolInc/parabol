@@ -1,10 +1,10 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
+import JiraServiceTaskId from '../shared/gqlIds/JiraServiceTaskId'
 import {SimpleMutation} from '../types/relayMutations'
-import getJiraCloudIdAndKey from '../utils/getJiraCloudIdAndKey'
 import createProxyRecord from '../utils/relay/createProxyRecord'
-import {UpdateJiraDimensionFieldMutation as TUpdateJiraDimensionFieldMutation} from '../__generated__/UpdateJiraDimensionFieldMutation.graphql'
 import {PokerMeeting_meeting} from '../__generated__/PokerMeeting_meeting.graphql'
+import {UpdateJiraDimensionFieldMutation as TUpdateJiraDimensionFieldMutation} from '../__generated__/UpdateJiraDimensionFieldMutation.graphql'
 
 graphql`
   fragment UpdateJiraDimensionFieldMutation_team on UpdateJiraDimensionFieldSuccess {
@@ -101,7 +101,9 @@ const UpdateJiraDimensionFieldMutation: SimpleMutation<TUpdateJiraDimensionField
       const estimatePhase = phases.find((phase) => phase.getValue('phaseType') === 'ESTIMATE')!
       const stages = estimatePhase.getLinkedRecords('stages')
       stages.forEach((stage) => {
-        const [stageCloudId] = getJiraCloudIdAndKey(stage.getValue('serviceTaskId') as string)
+        const {cloudId: stageCloudId} = JiraServiceTaskId.split(
+          stage.getValue('serviceTaskId') as string
+        )
         if (stage.getValue('dimensionName') === dimensionName && stageCloudId === cloudId) {
           // the type being a number is just a guess
           const nextServiceField = createProxyRecord(store, 'ServiceField', {

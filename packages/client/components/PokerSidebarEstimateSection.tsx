@@ -9,6 +9,7 @@ import useAtmosphere from '../hooks/useAtmosphere'
 import useMakeStageSummaries from '../hooks/useMakeStageSummaries'
 import DragEstimatingTaskMutation from '../mutations/DragEstimatingTaskMutation'
 import {navItemRaised} from '../styles/elevation'
+import {PALETTE} from '../styles/paletteV3'
 import {SORT_STEP} from '../utils/constants'
 import dndNoise from '../utils/dndNoise'
 import MeetingSidebarPhaseItemChild from './MeetingSidebarPhaseItemChild'
@@ -30,6 +31,22 @@ const ScrollWrapper = styled('div')({
   paddingBottom: 8,
   paddingRight: 8,
   height: '100%'
+})
+
+const Title = styled('div')({
+  fontSize: 14,
+  lineHeight: '20px',
+  wordBreak: 'break-word',
+  overflow: 'hidden',
+  textOverflow: 'ellipsis',
+  whiteSpace: 'pre'
+})
+
+const Subtitle = styled('div')({
+  color: PALETTE.SLATE_500,
+  fontSize: 11,
+  fontWeight: 600,
+  lineHeight: '12px'
 })
 
 const PokerSidebarEstimateSection = (props: Props) => {
@@ -105,7 +122,14 @@ const PokerSidebarEstimateSection = (props: Props) => {
             return (
               <ScrollWrapper ref={provided.innerRef}>
                 {stageSummaries!.map((summary, idx) => {
-                  const {stageIds, title, isActive, isComplete, isNavigable, finalScores} = summary
+                  const {
+                    stageIds,
+                    title,
+                    subtitle,
+                    isActive,
+                    isNavigable,
+                    finalScores
+                  } = summary
                   const [firstStageId] = stageIds
                   // the local user is at another stage than the facilitator stage
                   const isUnsyncedFacilitatorStage =
@@ -128,14 +152,17 @@ const PokerSidebarEstimateSection = (props: Props) => {
                             <MeetingSubnavItem
                               key={firstStageId}
                               isDragging={dragSnapshot.isDragging}
-                              label={title!}
                               metaContent={<PokerSidebarEstimateMeta finalScores={finalScores} />}
                               onClick={() => handleClick(stageIds)}
                               isActive={isActive}
-                              isComplete={isComplete}
                               isDisabled={!isNavigable}
                               isUnsyncedFacilitatorStage={isUnsyncedFacilitatorStage}
-                            />
+                            >
+                              <>
+                                <Title>{title!}</Title>
+                                {subtitle && <Subtitle>{subtitle}</Subtitle>}
+                              </>
+                            </MeetingSubnavItem>
                           </DraggableMeetingSubnavItem>
                         )
                       }}
