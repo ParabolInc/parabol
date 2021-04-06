@@ -56,10 +56,7 @@ const getPairNeFields = (rethinkTeam: Team, pgTeam: IGetTeamsByIdQueryResult): s
 
 const checkTeamEq = async () => {
   const r = await getRethink()
-  const rethinkQuery = r
-    .db('actionProduction')
-    .table('Team')
-    .orderBy('updatedAt', {index: 'updatedAt'})
+  const rethinkQuery = r.table('Team').orderBy('updatedAt', {index: 'updatedAt'})
   const errors = await checkTableEq<Team, IGetTeamsByIdQueryResult>(
     rethinkQuery,
     getTeamsByIdQuery,
