@@ -5,7 +5,7 @@ import createIssue from './githubQueries/createIssue.graphql'
 import getProfile from './githubQueries/getProfile.graphql'
 import getRepoInfo from './githubQueries/getRepoInfo.graphql'
 import getRepos from './githubQueries/getRepos.graphql'
-import {GetRepositoriesDocument} from '../../../typed-document-nodes'
+import {GetRepositoriesDocument} from '../types/typed-document-nodes'
 import {readFileSync} from 'fs'
 
 export interface GQLResponse<TData> {
