@@ -42,7 +42,7 @@ const fetchGitHubRepos = async (teamId: string, userId: string, dataLoader: Data
   if (!auth) return []
   const {accessToken} = auth
   const manager = new GitHubServerManager(accessToken)
-  const repos = await manager.getRepos()
+  const repos = await manager.getRepositories()
   if ('message' in repos) {
     console.error(repos)
     return []

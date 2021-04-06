@@ -1,9 +1,12 @@
 import {DocumentNode} from 'graphql-typed'
+import {buildSchema, execute} from 'graphql'
 import {ICreateIssueInput} from '../types/githubGraphql'
 import createIssue from './githubQueries/createIssue.graphql'
 import getProfile from './githubQueries/getProfile.graphql'
 import getRepoInfo from './githubQueries/getRepoInfo.graphql'
 import getRepos from './githubQueries/getRepos.graphql'
+import {GetRepositoriesDocument} from '../../../typed-document-nodes'
+import {readFileSync} from 'fs'
 
 export interface GQLResponse<TData> {
   data?: TData
@@ -20,6 +23,8 @@ type GitHubResponse<TData> = GQLResponse<TData> | GitHubCredentialError
 type DocResponse<T> = T extends DocumentNode<infer R> ? R : never
 type DocVariables = any
 // type DocVariables<T> = T extends DocumentNode<any, infer V> ? V : never
+
+const schema = buildSchema(readFileSync('../../server/utils/githubSchema.graphql', 'utf-8'))
 
 abstract class GitHubManager {
   static SCOPE = 'admin:org_hook,read:org,repo,user:email,write:repo_hook'
@@ -82,6 +87,14 @@ abstract class GitHubManager {
 
   async getRepos() {
     return this.query(getRepos)
+  }
+
+  async getRepositories() {
+    return await execute({
+      document: GetRepositoriesDocument,
+      schema,
+      variableValues: {}
+    })
   }
 
   async getRepoInfo(nameWithOwner: string, assigneeLogin: string) {
