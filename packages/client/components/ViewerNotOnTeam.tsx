@@ -1,20 +1,20 @@
-import {ViewerNotOnTeam_viewer} from '../__generated__/ViewerNotOnTeam_viewer.graphql'
+import graphql from 'babel-plugin-relay/macro'
 import React, {useEffect} from 'react'
 import {createFragmentContainer} from 'react-relay'
-import graphql from 'babel-plugin-relay/macro'
-import Ellipsis from './Ellipsis/Ellipsis'
-import PrimaryButton from './PrimaryButton'
-import AcceptTeamInvitationMutation from '../mutations/AcceptTeamInvitationMutation'
 import useAtmosphere from '../hooks/useAtmosphere'
-import InvitationCenteredCopy from './InvitationCenteredCopy'
-import InviteDialog from './InviteDialog'
-import DialogContent from './DialogContent'
-import InvitationDialogCopy from './InvitationDialogCopy'
-import DialogTitle from './DialogTitle'
-import TeamInvitationWrapper from './TeamInvitationWrapper'
-import useRouter from '../hooks/useRouter'
-import PushInvitationMutation from '../mutations/PushInvitationMutation'
 import useDocumentTitle from '../hooks/useDocumentTitle'
+import useRouter from '../hooks/useRouter'
+import AcceptTeamInvitationMutation from '../mutations/AcceptTeamInvitationMutation'
+import PushInvitationMutation from '../mutations/PushInvitationMutation'
+import {ViewerNotOnTeam_viewer} from '../__generated__/ViewerNotOnTeam_viewer.graphql'
+import DialogContent from './DialogContent'
+import DialogTitle from './DialogTitle'
+import Ellipsis from './Ellipsis/Ellipsis'
+import InvitationCenteredCopy from './InvitationCenteredCopy'
+import InvitationDialogCopy from './InvitationDialogCopy'
+import InviteDialog from './InviteDialog'
+import PrimaryButton from './PrimaryButton'
+import TeamInvitationWrapper from './TeamInvitationWrapper'
 
 interface Props {
   viewer: ViewerNotOnTeam_viewer
@@ -77,10 +77,10 @@ const ViewerNotOnTeam = (props: Props) => {
 export default createFragmentContainer(ViewerNotOnTeam, {
   viewer: graphql`
     fragment ViewerNotOnTeam_viewer on User {
-      meeting(meetingId: $meetingId) {
+      meeting(meetingId: $meetingId) @include(if: $meetingId) {
         meetingType
       }
-      team(teamId: $teamId) {
+      team(teamId: $teamId) @include(if: $teamId) {
         name
       }
       teamInvitation(teamId: $teamId, meetingId: $meetingId) {

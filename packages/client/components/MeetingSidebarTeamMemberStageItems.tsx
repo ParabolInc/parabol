@@ -1,4 +1,5 @@
 import styled from '@emotion/styled'
+import * as Sentry from '@sentry/browser'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
@@ -32,7 +33,8 @@ interface Props {
 
 const MeetingSidebarTeamMemberStageItems = (props: Props) => {
   const {gotoStageId, handleMenuClick, meeting} = props
-  const {facilitatorStageId, facilitatorUserId, localPhase, localStage} = meeting
+  const {id: meetingId, facilitatorStageId, facilitatorUserId, localPhase, localStage} = meeting
+  const {phaseType} = localPhase
   const localStageId = (localStage && localStage.id) || ''
   const gotoStage = (teamMemberId) => () => {
     const teamMemberStage =
@@ -56,7 +58,15 @@ const MeetingSidebarTeamMemberStageItems = (props: Props) => {
             isNavigableByFacilitator,
             isNavigable
           } = stage
-          const {picture, preferredName} = teamMember!
+          if (!teamMember) {
+            Sentry.captureException(
+              new Error(
+                `NO TEAM MEMBER WTF. ${teamMemberId}, ${phaseType}, ${stageId}, ${meetingId}`
+              )
+            )
+            return null
+          }
+          const {picture, preferredName} = teamMember
           const isLocalStage = localStageId === stageId
           const isFacilitatorStage = facilitatorStageId === stageId
           const isUnsyncedFacilitatorStage = isFacilitatorStage !== isLocalStage && !isLocalStage
@@ -108,6 +118,7 @@ graphql`
 export default createFragmentContainer(MeetingSidebarTeamMemberStageItems, {
   meeting: graphql`
     fragment MeetingSidebarTeamMemberStageItems_meeting on NewMeeting {
+      id
       facilitatorStageId
       facilitatorUserId
       id
