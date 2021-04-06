@@ -1,40 +1,79 @@
+import getPg from '../../postgres/getPg'
+import {PreparedQuery} from '@pgtyped/query'
+import {RTable, TableSchema} from '../../database/stricterR'
+
+type WithId<T> = T & {id: string}
+
 export type CustomResolver = (rethinkValue: string, pgValue: string) => boolean
-export type IAlwaysDefinedFieldsCustomResolvers<T> = {
-  [Property in keyof Partial<T>]: CustomResolver | undefined
-}
-export type IMaybeUndefinedFieldsDefaultValues<T> = {
-  [Property in keyof Partial<T>]: any
-}
-export interface IError<rethinkType, pgType> {
+interface IError<rethinkType, pgType> {
   [key: string]: {
     error: string | string[]
     rethinkRow?: Partial<rethinkType>
     pgRow?: Partial<pgType>
   }
 }
-export type AddNeFieldToErrors<rethinkType, pgType> = (
-  errors: IError<rethinkType, pgType>,
-  neField: string,
-  rethinkRow: rethinkType,
-  pgRow: pgType
-) => void
 
-export const addNeFieldToErrors = (errors, neField, rethinkRow, pgRow) => {
-  const id = rethinkRow.id
-  const prevErrorEntry = errors[id] ?? {
-    error: [],
-    rethinkRow: {},
-    pgRow: {}
+function addNeFieldsToErrors<rethinkType, pgType>(
+  errors: IError<rethinkType, pgType>,
+  neFields: string[],
+  rethinkRow: rethinkType,
+  pgRow: pgType,
+  rowId: string
+): void {
+  const rethinkNeFields = {}
+  const pgNeFields = {}
+  for (const neField of neFields) {
+    rethinkNeFields[neField] = rethinkRow[neField]
+    pgNeFields[neField] = pgRow[neField]
   }
-  errors[id] = {
-    error: [...prevErrorEntry.error, neField],
-    rethinkRow: {
-      ...prevErrorEntry.rethinkRow,
-      [neField]: rethinkRow[neField]
-    },
-    pgRow: {
-      ...prevErrorEntry.pgRow,
-      [neField]: pgRow[neField]
+  errors[rowId] = {
+    error: neFields,
+    rethinkRow: rethinkNeFields,
+    pgRow: pgNeFields
+  }
+}
+
+export async function checkTableEq<rethinkType, pgType>(
+  rethinkQuery: RTable<TableSchema>,
+  pgQuery: PreparedQuery<{ids: string[]}, pgType>,
+  getPairNeFieldsCb: (rethinkRow: rethinkType, pgRow: pgType) => string[]
+): Promise<IError<rethinkType, pgType>> {
+  const errors = {} as IError<rethinkType, pgType>
+  const batchSize = 3000
+
+  for (let i = 0; i < 1e5; i++) {
+    console.log(i)
+    const offset = batchSize * i
+    const rethinkRows = (await rethinkQuery
+      .skip(offset)
+      .limit(batchSize)
+      .run()) as rethinkType[]
+    if (!rethinkRows.length) {
+      break
+    }
+
+    const teamIds = rethinkRows.map((t) => (t as WithId<rethinkType>).id) as string[]
+    const pgRows = await pgQuery.run({ids: teamIds}, getPg())
+    const pgRowsById = {} as {[key: string]: pgType}
+    pgRows.forEach((pgRow) => {
+      pgRowsById[(pgRow as WithId<pgType>).id] = pgRow
+    })
+
+    for (const rethinkRow of rethinkRows) {
+      const id = (rethinkRow as WithId<rethinkType>).id
+      const pgRow = pgRowsById[id]
+      if (!pgRow) {
+        errors[id] = {
+          error: 'No pg row found for rethink row'
+        }
+        continue
+      }
+      const neFields = getPairNeFieldsCb(rethinkRow, pgRow)
+      if (neFields.length) {
+        addNeFieldsToErrors<rethinkType, pgType>(errors, neFields, rethinkRow, pgRow, id)
+      }
     }
   }
+
+  return errors
 }
