@@ -66,12 +66,12 @@ const ensureJiraDimensionField = async (
           .union(fieldsToAdd)
       }))
       .run(),
-    catchAndLog(
-      () => mergeTeamJiraDimensionFieldsQuery.run(
-        {
+    catchAndLog(() =>
+      mergeTeamJiraDimensionFieldsQuery.run(
+        ({
           jiraDimensionFields: fieldsToAdd,
           id: teamId
-        } as unknown as IMergeTeamJiraDimensionFieldsQueryParams,
+        } as unknown) as IMergeTeamJiraDimensionFieldsQueryParams,
         getPg()
       )
     )

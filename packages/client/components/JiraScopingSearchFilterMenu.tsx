@@ -6,6 +6,7 @@ import useAtmosphere from '../hooks/useAtmosphere'
 import useFilteredItems from '../hooks/useFilteredItems'
 import useForm from '../hooks/useForm'
 import {MenuProps} from '../hooks/useMenu'
+import SearchQueryId from '../shared/gqlIds/SearchQueryId'
 import {PALETTE} from '../styles/paletteV3'
 import {ICON_SIZE} from '../styles/typographyV2'
 import {JiraScopingSearchFilterMenu_viewer} from '../__generated__/JiraScopingSearchFilterMenu_viewer.graphql'
@@ -119,7 +120,7 @@ const JiraScopingSearchFilterMenu = (props: Props) => {
   const {portalStatus, isDropdown} = menuProps
   const toggleJQL = () => {
     commitLocalUpdate(atmosphere, (store) => {
-      const searchQueryId = `jiraSearchQuery:${meetingId}`
+      const searchQueryId = SearchQueryId.join('jira', meetingId)
       const jiraSearchQuery = store.get(searchQueryId)
       // this might bork if the checkbox is ticked before the full query loads
       if (!jiraSearchQuery) return
@@ -168,7 +169,7 @@ const JiraScopingSearchFilterMenu = (props: Props) => {
         const {id: globalProjectKey, avatar, name} = project
         const toggleProjectKeyFilter = () => {
           commitLocalUpdate(atmosphere, (store) => {
-            const searchQueryId = `jiraSearchQuery:${meetingId}`
+            const searchQueryId = SearchQueryId.join('jira', meetingId)
             const jiraSearchQuery = store.get<JiraSearchQuery>(searchQueryId)!
             const projectKeyFiltersProxy = jiraSearchQuery.getValue('projectKeyFilters')!.slice()
             const keyIdx = projectKeyFiltersProxy.indexOf(globalProjectKey)

@@ -4,11 +4,11 @@ import promiseAllPartial from 'parabol-client/utils/promiseAllPartial'
 import {JiraGetIssueRes} from '../../client/utils/AtlassianManager'
 import getRethink, {RethinkSchema} from '../database/rethinkDriver'
 import AtlassianAuth from '../database/types/AtlassianAuth'
-import {ReactableEnum} from '../database/types/Reactable'
+import {MeetingTypeEnum} from '../database/types/Meeting'
 import MeetingTemplate from '../database/types/MeetingTemplate'
-import {Reactable} from '../database/types/Reactable'
-import Task from '../database/types/Task'
-import {ThreadSource} from '../database/types/ThreadSource'
+import {Reactable, ReactableEnum} from '../database/types/Reactable'
+import Task, {TaskStatusEnum} from '../database/types/Task'
+import {ThreadSource, ThreadSourceEnum} from '../database/types/ThreadSource'
 import getGitHubAuthByUserIdTeamId, {
   GetGitHubAuthByUserIdTeamIdResult
 } from '../postgres/queries/getGitHubAuthByUserIdTeamId'
@@ -17,9 +17,6 @@ import sendToSentry from '../utils/sendToSentry'
 import normalizeRethinkDbResults from './normalizeRethinkDbResults'
 import ProxiedCache from './ProxiedCache'
 import RethinkDataLoader from './RethinkDataLoader'
-import {TaskStatusEnum} from '../database/types/Task'
-import {ThreadSourceEnum} from '../database/types/ThreadSource'
-import {MeetingTypeEnum} from '../database/types/Meeting'
 
 type TeamUserKey = {teamId: string; userId: string}
 export interface JiraRemoteProjectKey {
