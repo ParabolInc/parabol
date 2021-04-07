@@ -1,11 +1,18 @@
 import fetch from 'node-fetch'
 import GitHubManager from 'parabol-client/utils/GitHubManager'
 import {stringify} from 'querystring'
+import {getRepositories} from './githubQueries/getRepositories'
+import {GetRepositoriesQuery} from '../../client/types/typed-document-nodes'
 
 interface OAuth2Response {
   access_token: string
   error: any
   scope: string
+}
+
+type JSONResponse<T> = {
+  data?: T
+  errors?: Error[]
 }
 
 class GitHubServerManager extends GitHubManager {
@@ -46,6 +53,15 @@ class GitHubServerManager extends GitHubManager {
   fetch = fetch
   constructor(accessToken: string) {
     super(accessToken)
+  }
+  async getRepositories(): Promise<JSONResponse<GetRepositoriesQuery>> {
+    const body = JSON.stringify({query: getRepositories, variables: {}})
+    const res = await fetch('https://api.github.com/graphql', {
+      method: 'POST',
+      headers: this.headers,
+      body
+    })
+    return await res.json()
   }
 }
 
