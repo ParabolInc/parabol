@@ -5,12 +5,31 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.6.0 2021-Apr-07
+
+### Added
+
+- Add migration for priority scale (#4846)
+- Enable Datadog APM tracer (#4843)
+
+### Changed
+
+- Update link in Check-In summary email (#4858)
+- Meetings view style changes (#4849)
+
+### Fixed
+
+- Fix a typo in DragEstimatingTaskSuccess (#4850)
+- Fix meeting control bar width (#4852)
+- Fix types for fieldName and dimensionName in JiraDimensionField (#4854)
+
 ## 6.5.0 2021-Apr-01
 
 ### Added
 
 - Create GH issue button in Sprint poker, currently hidden (#4799)
 - GitHub tab in Sprint Poker (#4777)
+
 ### Removed
 
 - Removed IM scopes from Slack integration, per Slack feedback (#4844)
