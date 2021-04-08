@@ -12,6 +12,12 @@ import {ThreadSource, ThreadSourceEnum} from '../database/types/ThreadSource'
 import getGitHubAuthByUserIdTeamId, {
   GetGitHubAuthByUserIdTeamIdResult
 } from '../postgres/queries/getGitHubAuthByUserIdTeamId'
+import {
+  getTeamsByIdQuery,
+  IGetTeamsByIdQueryResult
+} from '../postgres/queries/generated/getTeamsByIdQUery'
+import getPg from '../postgres/getPg'
+import catchAndLog from '../postgres/utils/catchAndLog'
 import AtlassianServerManager from '../utils/AtlassianServerManager'
 import sendToSentry from '../utils/sendToSentry'
 import normalizeRethinkDbResults from './normalizeRethinkDbResults'
@@ -80,6 +86,19 @@ const threadableLoaders = [
 export const users = () => {
   return new ProxiedCache('User')
 }
+
+export const teams = (parent: RethinkDataLoader) =>
+  new DataLoader<string, IGetTeamsByIdQueryResult, string>(
+    async (teamIds) => {
+      const teams = (await catchAndLog(() =>
+        getTeamsByIdQuery.run({ids: teamIds as string[]}, getPg())
+      )) as IGetTeamsByIdQueryResult[]
+      return normalizeRethinkDbResults(teamIds, teams)
+    },
+    {
+      ...parent.dataLoaderOptions
+    }
+  )
 
 export const serializeUserTasksKey = (key: UserTasksKey) => {
   const {userIds, teamIds, first, after, archived, statusFilters, filterQuery} = key
