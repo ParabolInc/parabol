@@ -2,7 +2,7 @@ import fetch from 'node-fetch'
 import GitHubManager from 'parabol-client/utils/GitHubManager'
 import {stringify} from 'querystring'
 import {getRepositories} from './githubQueries/getRepositories'
-import {GetRepositoriesQuery} from '../../client/types/typed-document-nodes'
+import {GetRepositoriesQuery} from '../../server/types/typed-document-nodes'
 
 interface OAuth2Response {
   access_token: string

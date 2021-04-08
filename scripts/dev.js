@@ -1,6 +1,7 @@
 // Calling this while the cwd is in dev is MUCH slower than calling it at the root dir.
 // Penalty goes away when debugging.
 require('./webpack/utils/dotenv')
+const {exec} = require('child_process')
 const path = require('path')
 const fs = require('fs')
 const {promisify} = require('util')
@@ -38,11 +39,13 @@ const dev = async (maybeInit) => {
   const isInit = !fs.existsSync(path.join(TOOLBOX_ROOT, 'updateSchema.js')) || maybeInit
   const redis = new Redis(process.env.REDIS_URL)
   const toolboxPromise = compileToolbox()
+  exec('yarn graphql-codegen', (err) => {
+    if (err) console.error(`Error generating GitHub types: ${err}`)
+  })
   if (isInit) {
     console.log('👋👋👋      Welcome to Parabol!      👋👋👋')
     await Promise.all([removeArtifacts()])
   }
-
   const buildDLL = require('./buildDll')()
   const clearRedis = redis.flushall()
   const migrateRethinkDB = require('./migrate')()

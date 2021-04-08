@@ -1,7 +1,7 @@
 schema: packages/server/utils/githubSchema.graphql
-documents: packages/client/utils/githubQueries/*.graphql
+documents: packages/server/utils/githubQueries/*.ts
 generates:
-  ./packages/client/types/typed-document-nodes.ts:
+  ./packages/server/types/typed-document-nodes.ts:
     plugins:
       - typescript
       - typescript-operations
