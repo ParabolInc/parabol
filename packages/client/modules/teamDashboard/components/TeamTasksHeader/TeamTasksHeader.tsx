@@ -96,12 +96,11 @@ const AvatarsAndAgendaToggle = styled('div')({
   display: 'flex',
   justifyContent: 'space-between',
   flexWrap: 'wrap',
-  width: '100%',
   [desktopBreakpoint]: {
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'flex-end',
-    width: 'auto'
+    width: '50%'
   }
 })
 
