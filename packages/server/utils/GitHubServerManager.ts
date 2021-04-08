@@ -10,11 +10,15 @@ interface OAuth2Response {
   scope: string
 }
 
-type JSONResponse<T> = {
-  data?: T
-  errors?: Error[]
+interface GQLResponse<TData> {
+  data?: TData
+  errors?: any[]
 }
-
+interface GitHubCredentialError {
+  message: string
+  documentation_url: string
+}
+type GitHubResponse<TData> = GQLResponse<TData> | GitHubCredentialError
 class GitHubServerManager extends GitHubManager {
   static async init(code: string) {
     return GitHubServerManager.fetchToken(code)
@@ -51,17 +55,22 @@ class GitHubServerManager extends GitHubManager {
     return new GitHubServerManager(accessToken)
   }
   fetch = fetch
-  constructor(accessToken: string) {
-    super(accessToken)
-  }
-  async getRepositories(): Promise<JSONResponse<GetRepositoriesQuery>> {
-    const body = JSON.stringify({query: getRepositories, variables: {}})
+
+  private async serverPost<T>(body: string): Promise<GitHubResponse<T>> {
     const res = await fetch('https://api.github.com/graphql', {
       method: 'POST',
       headers: this.headers,
       body
     })
     return await res.json()
+  }
+  constructor(accessToken: string) {
+    super(accessToken)
+  }
+
+  async getRepositories() {
+    const body = JSON.stringify({query: getRepositories, variables: {}})
+    return this.serverPost<GetRepositoriesQuery>(body)
   }
 }
 

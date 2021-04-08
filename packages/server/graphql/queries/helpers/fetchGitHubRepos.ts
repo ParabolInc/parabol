@@ -43,6 +43,10 @@ const fetchGitHubRepos = async (teamId: string, userId: string, dataLoader: Data
   const {accessToken} = auth
   const manager = new GitHubServerManager(accessToken)
   const repos = await manager.getRepositories()
+  if ('message' in repos) {
+    console.error(repos)
+    return []
+  }
   if (Array.isArray(repos.errors)) {
     // TODO handle Oauth forbidden error
     console.error(repos.errors[0])
