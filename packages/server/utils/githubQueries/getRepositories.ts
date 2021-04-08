@@ -4,14 +4,16 @@ import {print} from 'graphql/language/printer'
 export const getRepositoriesQuery = gql`
   query getRepositories {
     viewer {
-      organizations(first: 100) {
+      organizations() {
         nodes {
-          repositories(first: 100, isLocked: false, orderBy: {field: UPDATED_AT, direction: DESC}) {
+          repositories(isLocked: false, orderBy: {field: UPDATED_AT, direction: DESC}) {
             ...repoFrag
+            nameWithOwner
+            viewerCanAdminister
           }
         }
       }
-      repositories(first: 100, isLocked: false, orderBy: {field: UPDATED_AT, direction: DESC}) {
+      repositories(isLocked: false, orderBy: {field: UPDATED_AT, direction: DESC}) {
         ...repoFrag
       }
     }
