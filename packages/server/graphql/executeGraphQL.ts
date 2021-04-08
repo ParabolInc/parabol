@@ -61,7 +61,7 @@ const executeGraphQL = async (req: GQLRequest) => {
   } else if (docId && process.env.DD_TRACE_ENABLED === 'true') {
     const document = await documentCache.fromID(docId)
     response = document
-      ? await execute({schema, document, variableValues, contextValue})
+      ? await execute({schema, document, variableValues, contextValue, rootValue})
       : {errors: [new Error(`Document ${docId} was not found in DocumentCache.`)] as any}
   } else {
     const compiledQuery = docId
