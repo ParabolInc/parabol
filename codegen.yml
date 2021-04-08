@@ -1,5 +1,5 @@
 schema: packages/server/utils/githubSchema.graphql
-documents: packages/server/utils/githubQueries/*.ts
+documents: packages/server/utils/githubQueries/*
 generates:
   ./packages/server/types/typed-document-nodes.ts:
     plugins:
