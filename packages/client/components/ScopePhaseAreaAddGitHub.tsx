@@ -19,7 +19,7 @@ const AddGitHubArea = styled('div')({
 })
 
 const StyledLink = styled('span')({
-  color: PALETTE.SLATE_700,
+  color: PALETTE.SKY_500,
   cursor: 'pointer',
   outline: 0,
   ':hover, :focus, :active': {

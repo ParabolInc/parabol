@@ -2367,9 +2367,9 @@ export interface IJiraDimensionField {
   cloudId: string;
 
   /**
-   * The immutable index of the dimension
+   * The name of the associated dimension
    */
-  dimensionName: number;
+  dimensionName: string;
 
   /**
    * The project under the atlassian cloud the field lives in
