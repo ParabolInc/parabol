@@ -8,8 +8,6 @@ export const getRepositoriesQuery = gql`
         nodes {
           repositories(isLocked: false, orderBy: {field: UPDATED_AT, direction: DESC}) {
             ...repoFrag
-            nameWithOwner
-            viewerCanAdminister
           }
         }
       }
