@@ -83,13 +83,12 @@ interface Props {
   isEditing: boolean
   meeting: NewJiraIssueInput_meeting
   setIsEditing: (isEditing: boolean) => void
-  viewer: NewJiraIssueInput_viewer | null
+  viewer: NewJiraIssueInput_viewer
 }
 
 const NewJiraIssueInput = (props: Props) => {
   const {isEditing, meeting, setIsEditing, viewer} = props
   const {id: meetingId} = meeting
-  if (!viewer) return null
   const {id: userId, team, teamMember} = viewer
   const {id: teamId} = team!
   const {suggestedIntegrations} = teamMember!

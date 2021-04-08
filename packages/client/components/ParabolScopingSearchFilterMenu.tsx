@@ -1,18 +1,17 @@
+import styled from '@emotion/styled'
+import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
-import graphql from 'babel-plugin-relay/macro'
-import {ParabolScopingSearchFilterMenu_meeting} from '../__generated__/ParabolScopingSearchFilterMenu_meeting.graphql'
-import {MenuProps} from '../hooks/useMenu'
-import Menu from './Menu'
-import {taskScopingStatusFilters} from '~/utils/constants'
-import MenuItem from './MenuItem'
-import MenuItemLabel from './MenuItemLabel'
-import Checkbox from './Checkbox'
-import styled from '@emotion/styled'
-import DropdownMenuLabel from './DropdownMenuLabel'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import {ParabolSearchQuery} from '~/types/clientSchema'
-import {SearchQueryMeetingPropName} from '~/utils/relay/LocalPokerHandler'
+import {taskScopingStatusFilters} from '~/utils/constants'
+import {MenuProps} from '../hooks/useMenu'
+import {ParabolScopingSearchFilterMenu_meeting} from '../__generated__/ParabolScopingSearchFilterMenu_meeting.graphql'
+import Checkbox from './Checkbox'
+import DropdownMenuLabel from './DropdownMenuLabel'
+import Menu from './Menu'
+import MenuItem from './MenuItem'
+import MenuItemLabel from './MenuItemLabel'
 
 const StyledCheckBox = styled(Checkbox)({
   marginLeft: -8,
@@ -42,17 +41,16 @@ const ParabolScopingSearchFilterMenu = (props: Props) => {
       isDropdown={isDropdown}
     >
       <FilterLabel>Filter by status:</FilterLabel>
-      {taskScopingStatusFilters.map(status => {
+      {taskScopingStatusFilters.map((status) => {
         const toggleStatusFilter = () => {
           commitLocalUpdate(atmosphere, (store) => {
             const meeting = store.get(meetingId)!
-            const parabolSearchQuery = meeting.getLinkedRecord<ParabolSearchQuery>(SearchQueryMeetingPropName.parabol)
+            const parabolSearchQuery = meeting.getLinkedRecord<ParabolSearchQuery>(
+              'parabolSearchQuery'
+            )
             const statusFiltersProxy = parabolSearchQuery.getValue('statusFilters').slice()
             const keyIdx = statusFiltersProxy.indexOf(status)
-            keyIdx !== -1 ?
-              statusFiltersProxy.splice(keyIdx, 1)
-              :
-              statusFiltersProxy.push(status)
+            keyIdx !== -1 ? statusFiltersProxy.splice(keyIdx, 1) : statusFiltersProxy.push(status)
             parabolSearchQuery.setValue(statusFiltersProxy, 'statusFilters')
           })
         }
@@ -61,9 +59,7 @@ const ParabolScopingSearchFilterMenu = (props: Props) => {
             key={status}
             label={
               <MenuItemLabel>
-                <StyledCheckBox
-                  active={statusFilters?.includes(status) ?? null} 
-                />
+                <StyledCheckBox active={statusFilters?.includes(status) ?? null} />
                 {status}
               </MenuItemLabel>
             }

@@ -77,12 +77,14 @@ const JiraScopingSearchResults = (props: Props) => {
         meetingId={meetingId}
       />
       <ResultScroller>
-        <NewJiraIssueInput
-          isEditing={isEditing}
-          meeting={meeting}
-          setIsEditing={setIsEditing}
-          viewer={viewer}
-        />
+        {viewer && (
+          <NewJiraIssueInput
+            isEditing={isEditing}
+            meeting={meeting}
+            setIsEditing={setIsEditing}
+            viewer={viewer}
+          />
+        )}
         {edges.map(({node}) => {
           return (
             <JiraScopingSearchResultItem

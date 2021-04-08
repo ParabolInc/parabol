@@ -47,7 +47,7 @@ const Wrapper = styled('div')<{left: number}>(({left}) => ({
     borderRadius: 4,
     bottom: 8,
     boxShadow: desktopBarShadow,
-    width: 'fit-content'
+    width: 'auto'
   }
 }))
 
