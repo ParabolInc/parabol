@@ -1,5 +1,3 @@
-import getPg from '../../postgres/getPg'
-import {PreparedQuery} from '@pgtyped/query'
 import {RTable, TableSchema} from '../../database/stricterR'
 
 type WithId<T> = T & {id: string}
@@ -35,7 +33,7 @@ function addNeFieldsToErrors<rethinkType, pgType>(
 
 export async function checkTableEq<rethinkType, pgType>(
   rethinkQuery: RTable<TableSchema>,
-  pgQuery: PreparedQuery<{ids: string[]}, pgType>,
+  pgQuery: (ids: string[]) => Promise<pgType[]>,
   getPairNeFieldsCb: (rethinkRow: rethinkType, pgRow: pgType) => string[]
 ): Promise<IError<rethinkType, pgType>> {
   const errors = {} as IError<rethinkType, pgType>
@@ -53,7 +51,7 @@ export async function checkTableEq<rethinkType, pgType>(
     }
 
     const ids = rethinkRows.map((t) => (t as WithId<rethinkType>).id) as string[]
-    const pgRows = await pgQuery.run({ids}, getPg())
+    const pgRows = await pgQuery(ids)
     const pgRowsById = {} as {[key: string]: pgType}
     pgRows.forEach((pgRow) => {
       pgRowsById[(pgRow as WithId<pgType>).id] = pgRow

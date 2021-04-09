@@ -1,8 +1,5 @@
 import Team from '../../database/types/Team'
-import {
-  getTeamsByIdQuery,
-  IGetTeamsByIdQueryResult
-} from '../../postgres/queries/generated/getTeamsByIdQuery'
+import getTeamsById, {IGetTeamsByIdResult} from '../../postgres/queries/getTeamsById'
 import getRethink from '../../database/rethinkDriver'
 import lodash from 'lodash'
 import {CustomResolver, checkTableEq} from './checkEqBase'
@@ -29,7 +26,7 @@ const maybeUndefinedFieldsDefaultValues = {
   [Property in keyof Partial<Team>]: any
 }
 
-const getPairNeFields = (rethinkTeam: Team, pgTeam: IGetTeamsByIdQueryResult): string[] => {
+const getPairNeFields = (rethinkTeam: Team, pgTeam: IGetTeamsByIdResult): string[] => {
   const neFields = [] as string[]
 
   for (const [f, customResolver] of Object.entries(alwaysDefinedFieldsCustomResolvers)) {
@@ -57,9 +54,9 @@ const getPairNeFields = (rethinkTeam: Team, pgTeam: IGetTeamsByIdQueryResult): s
 const checkTeamEq = async () => {
   const r = await getRethink()
   const rethinkQuery = r.table('Team').orderBy('updatedAt', {index: 'updatedAt'})
-  const errors = await checkTableEq<Team, IGetTeamsByIdQueryResult>(
+  const errors = await checkTableEq<Team, IGetTeamsByIdResult>(
     rethinkQuery,
-    getTeamsByIdQuery,
+    getTeamsById,
     getPairNeFields
   )
   return errors
