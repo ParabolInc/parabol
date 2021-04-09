@@ -12,11 +12,7 @@ import {ThreadSource, ThreadSourceEnum} from '../database/types/ThreadSource'
 import getGitHubAuthByUserIdTeamId, {
   GetGitHubAuthByUserIdTeamIdResult
 } from '../postgres/queries/getGitHubAuthByUserIdTeamId'
-import {
-  getTeamsByIdQuery,
-  IGetTeamsByIdQueryResult
-} from '../postgres/queries/generated/getTeamsByIdQuery'
-import getPg from '../postgres/getPg'
+import getTeamsById, {IGetTeamsByIdResult} from '../postgres/queries/getTeamsById'
 import catchAndLog from '../postgres/utils/catchAndLog'
 import AtlassianServerManager from '../utils/AtlassianServerManager'
 import sendToSentry from '../utils/sendToSentry'
@@ -88,11 +84,11 @@ export const users = () => {
 }
 
 export const teams = (parent: RethinkDataLoader) =>
-  new DataLoader<string, IGetTeamsByIdQueryResult, string>(
+  new DataLoader<string, IGetTeamsByIdResult, string>(
     async (teamIds) => {
       const teams = (await catchAndLog(() =>
-        getTeamsByIdQuery.run({ids: teamIds as string[]}, getPg())
-      )) as IGetTeamsByIdQueryResult[]
+        getTeamsById(teamIds as string[])
+      )) as IGetTeamsByIdResult[]
       return normalizeRethinkDbResults(teamIds, teams)
     },
     {
