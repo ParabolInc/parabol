@@ -4,10 +4,11 @@ import standardError from '../../../utils/standardError'
 import fs from 'fs'
 import path from 'path'
 import checkUserEq from '../../../postgres/utils/checkUserEq'
+import checkTeamEq from '../../../postgres/utils/checkTeamEq'
 
 const tableResolvers = {
-  User: checkUserEq
-  // 'Team': 'teamResolver'
+  User: checkUserEq,
+  Team: checkTeamEq
 } as {[key: string]: () => Promise<{[key: string]: any}>}
 
 const checkEqAndWriteOutput = async (tableName: string, fileLocation: string): Promise<void> => {
