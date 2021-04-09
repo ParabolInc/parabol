@@ -1,9 +1,6 @@
 import User from '../../database/types/User'
 import getRethink from '../../database/rethinkDriver'
-import {
-  getUsersByIdQuery,
-  IGetUsersByIdQueryResult
-} from '../../postgres/queries/generated/getUsersByIdQuery'
+import getUsersById, {IGetUsersByIdResult} from '../../postgres/queries/getUsersById'
 import lodash from 'lodash'
 import {EMAIL_LIMIT, PREFERRED_NAME_LIMIT} from '../constants/User'
 import {CustomResolver, checkTableEq} from './checkEqBase'
@@ -47,7 +44,7 @@ const maybeUndefinedFieldsDefaultValues = {
   [Property in keyof Partial<User>]: any
 }
 
-const getPairNeFields = (rethinkUser: User, pgUser: IGetUsersByIdQueryResult): string[] => {
+const getPairNeFields = (rethinkUser: User, pgUser: IGetUsersByIdResult): string[] => {
   const neFields = [] as string[]
 
   for (const [f, customResolver] of Object.entries(alwaysDefinedFieldsCustomResolvers)) {
@@ -75,9 +72,9 @@ const getPairNeFields = (rethinkUser: User, pgUser: IGetUsersByIdQueryResult): s
 const checkUserEq = async () => {
   const r = await getRethink()
   const rethinkQuery = r.table('User').orderBy('updatedAt', {index: 'updatedAt'})
-  const errors = await checkTableEq<User, IGetUsersByIdQueryResult>(
+  const errors = await checkTableEq<User, IGetUsersByIdResult>(
     rethinkQuery,
-    getUsersByIdQuery,
+    getUsersById,
     getPairNeFields
   )
   return errors
