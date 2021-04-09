@@ -15,7 +15,7 @@ import getGitHubAuthByUserIdTeamId, {
 import {
   getTeamsByIdQuery,
   IGetTeamsByIdQueryResult
-} from '../postgres/queries/generated/getTeamsByIdQUery'
+} from '../postgres/queries/generated/getTeamsByIdQuery'
 import getPg from '../postgres/getPg'
 import catchAndLog from '../postgres/utils/catchAndLog'
 import AtlassianServerManager from '../utils/AtlassianServerManager'
