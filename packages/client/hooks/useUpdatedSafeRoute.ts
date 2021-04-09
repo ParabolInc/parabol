@@ -2,6 +2,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {Dispatch, SetStateAction, useEffect, useRef} from 'react'
 import {readInlineData} from 'relay-runtime'
 import {useUpdatedSafeRoute_meeting} from '~/__generated__/useUpdatedSafeRoute_meeting.graphql'
+import findStageBeforeId from '../utils/meetings/findStageBeforeId'
 import findStageById from '../utils/meetings/findStageById'
 import fromStageIdToUrl from '../utils/meetings/fromStageIdToUrl'
 import updateLocalStage from '../utils/relay/updateLocalStage'
@@ -53,13 +54,19 @@ const useUpdatedSafeRoute = (setSafeRoute: Dispatch<SetStateAction<boolean>>, me
     // if the stage changes or the order of the stages changes, update the url
     const isNewLocalStageId = localStageId && localStageId !== oldLocalStageId
     const isUpdatedPhase = localStages !== oldLocalStages
+    let stageId = facilitatorStageId
     if (isNewLocalStageId || isUpdatedPhase) {
       if (isUpdatedPhase && !findStageById(phases, localStageId)) {
         // an item was removed and the local stage may be missing
-        updateLocalStage(atmosphere, meetingId, facilitatorStageId)
+        const tatorStageExists = findStageById(phases, facilitatorStageId)
+        if (!tatorStageExists) {
+          const prevStage = findStageBeforeId(oldMeeting.phases, localStageId)
+          const prevStageId = prevStage?.stage.id
+          if (prevStageId) stageId = prevStageId
+        }
+        updateLocalStage(atmosphere, meetingId, stageId)
       }
-
-      const nextPathname = fromStageIdToUrl(localStageId, meeting, facilitatorStageId)
+      const nextPathname = fromStageIdToUrl(localStageId, meeting, stageId)
       if (nextPathname !== location.pathname) {
         history.replace(nextPathname)
         // do not set as unsafe (repro: start meeting, end, start again)
