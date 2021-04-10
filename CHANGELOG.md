@@ -5,6 +5,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.6.1 2021-Apr-10
+
+### Fixed
+- Fixed an issue where GraphQL subscription fails to execute
+
+### Changed
+- Disabled the Easter Egg
+
 ## 6.6.0 2021-Apr-07
 
 ### Added
