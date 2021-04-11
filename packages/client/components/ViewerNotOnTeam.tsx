@@ -23,14 +23,11 @@ interface Props {
 const ViewerNotOnTeam = (props: Props) => {
   const {viewer} = props
   const {
-    meeting,
-    team,
     teamInvitation: {teamInvitation, meetingId, teamId}
   } = viewer
   const atmosphere = useAtmosphere()
   const {history} = useRouter()
   useDocumentTitle(`Invitation Required`, 'Invitation Required')
-
   useEffect(
     () => {
       if (teamInvitation) {
@@ -41,9 +38,7 @@ const ViewerNotOnTeam = (props: Props) => {
           {history, meetingId}
         )
         return
-      } else if (meeting) history.replace(`/meet/${meetingId}`)
-      else if (team) history.replace(`/team/${teamId}`)
-      else if (teamId) PushInvitationMutation(atmosphere, {meetingId, teamId})
+      } else if (teamId) PushInvitationMutation(atmosphere, {meetingId, teamId})
       return undefined
     },
     [
@@ -51,9 +46,7 @@ const ViewerNotOnTeam = (props: Props) => {
     ]
   )
 
-  if (teamInvitation || team) {
-    return null
-  }
+  if (teamInvitation) return null
   return (
     <TeamInvitationWrapper>
       <InviteDialog>
@@ -77,12 +70,6 @@ const ViewerNotOnTeam = (props: Props) => {
 export default createFragmentContainer(ViewerNotOnTeam, {
   viewer: graphql`
     fragment ViewerNotOnTeam_viewer on User {
-      meeting(meetingId: $meetingId) {
-        meetingType
-      }
-      team(teamId: $teamId) {
-        name
-      }
       teamInvitation(teamId: $teamId, meetingId: $meetingId) {
         teamInvitation {
           token
