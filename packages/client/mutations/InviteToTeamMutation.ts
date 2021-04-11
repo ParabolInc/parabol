@@ -4,7 +4,7 @@ import {commitMutation} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
 import {matchPath} from 'react-router'
 import handleAddNotifications from './handlers/handleAddNotifications'
-import {OnNextHistoryContext, StandardMutation} from '../types/relayMutations'
+import {LocalHandlers, OnNextHistoryContext, StandardMutation} from '../types/relayMutations'
 import AcceptTeamInvitationMutation from './AcceptTeamInvitationMutation'
 import handleRemoveSuggestedActions from './handlers/handleRemoveSuggestedActions'
 
@@ -94,7 +94,7 @@ export const inviteToTeamNotificationOnNext = (
   }
 }
 
-const InviteToTeamMutation: StandardMutation<TInviteToTeamMutation> = (
+const InviteToTeamMutation: StandardMutation<TInviteToTeamMutation, LocalHandlers> = (
   atmosphere,
   variables,
   {onError, onCompleted}
