@@ -1,5 +1,5 @@
-import {commitMutation} from 'react-relay'
 import graphql from 'babel-plugin-relay/macro'
+import {commitMutation} from 'react-relay'
 import {Disposable} from 'relay-runtime'
 import {LocalHandlers, OnNextHandler} from '../types/relayMutations'
 import {
@@ -7,8 +7,8 @@ import {
   PushInvitationMutationVariables
 } from '../__generated__/PushInvitationMutation.graphql'
 import {PushInvitationMutation_team} from '../__generated__/PushInvitationMutation_team.graphql'
-import InviteToTeamMutation from './InviteToTeamMutation'
 import DenyPushInvitationMutation from './DenyPushInvitationMutation'
+import InviteToTeamMutation from './InviteToTeamMutation'
 
 graphql`
   fragment PushInvitationMutation_team on PushInvitationPayload {
