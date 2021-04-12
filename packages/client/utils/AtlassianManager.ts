@@ -220,9 +220,23 @@ interface JiraField {
   untranslatedName: string
 }
 const MAX_REQUEST_TIME = 5000
+
+export type JiraPermissionScope =
+  | 'read:jira-user'
+  | 'read:jira-work'
+  | 'write:jira-work'
+  | 'offline_access'
+  | 'manage:jira-project'
+
 export default abstract class AtlassianManager {
   abstract fetch: typeof fetch
-  static SCOPE = 'read:jira-user read:jira-work write:jira-work offline_access'
+  static SCOPE: JiraPermissionScope[] = [
+    'read:jira-user',
+    'read:jira-work',
+    'write:jira-work',
+    'offline_access'
+  ]
+  static MANAGE_SCOPE: JiraPermissionScope[] = [...AtlassianManager.SCOPE, 'manage:jira-project']
   accessToken: string
   private readonly fetchWithTimeout: (
     url: string,
