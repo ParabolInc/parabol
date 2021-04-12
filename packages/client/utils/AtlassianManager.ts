@@ -633,4 +633,18 @@ export default abstract class AtlassianManager {
       throw new Error('Cannot update field in Jira')
     }
   }
+
+  async addFieldToDefaultScreen(cloudId: string, fieldId: string) {
+    return (await this.post(
+      `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/screens/addToDefault/${fieldId}`,
+      {}
+    )) as null | AtlassianError | JiraError
+  }
+
+  async getAllScreens(cloudId: string) {
+    return (await this.get(`https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/screens`)) as
+      | null
+      | AtlassianError
+      | JiraError
+  }
 }
