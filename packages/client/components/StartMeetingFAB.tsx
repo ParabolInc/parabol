@@ -3,7 +3,7 @@ import React, {useEffect, useRef, useState} from 'react'
 import useRouter from '~/hooks/useRouter'
 import {PALETTE} from '~/styles/paletteV3'
 import getTeamIdFromPathname from '~/utils/getTeamIdFromPathname'
-import {BezierCurve, ZIndex} from '../types/constEnums'
+import {BezierCurve, ElementWidth, ZIndex} from '../types/constEnums'
 import FloatingActionButton from './FloatingActionButton'
 import Icon from './Icon'
 
@@ -36,8 +36,8 @@ const MeetingLabel = styled('div')<{isExpanded: boolean}>(({isExpanded}) => ({
   fontWeight: 600,
   textAlign: 'start',
   transition: `all 300ms ${BezierCurve.DECELERATE}`,
-  transform: `translateX(${isExpanded ? '-4px' : '158px'})`,
-  width: isExpanded ? 158 : 0
+  transform: `translateX(${isExpanded ? -4 : ElementWidth.NEW_MEETING_FAB}px)`,
+  width: isExpanded ? ElementWidth.NEW_MEETING_FAB : 0
 }))
 
 interface Props { }
@@ -75,8 +75,8 @@ const StartMeetingFAB = (props: Props) => {
   return (
     <Block>
       <Button onClick={onClick} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
-        <MeetingIcon isExpanded={isBig}>{'forum'}</MeetingIcon>
-        <MeetingLabel isExpanded={isBig}>{'Start New Meeting'}</MeetingLabel>
+        <MeetingIcon isExpanded={isBig}>{'add'}</MeetingIcon>
+        <MeetingLabel isExpanded={isBig}>{'Add Meeting'}</MeetingLabel>
       </Button>
     </Block>
   )

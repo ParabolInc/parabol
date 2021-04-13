@@ -42,7 +42,7 @@ const NewMeetingBackButton = (props: Props) => {
   const BackButton = isDesktop ? BackButtonDesktop : BackButtonMobile
   const {history} = useRouter()
   const onClick = () => {
-    const nextRoute = sendToMe ? '/me' : `/team/${teamId}`
+    const nextRoute = sendToMe ? '/meetings' : `/team/${teamId}`
     history.push(nextRoute)
   }
   return (

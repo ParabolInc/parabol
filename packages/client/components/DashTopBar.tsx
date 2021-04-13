@@ -13,7 +13,6 @@ import Icon from './Icon'
 import PlainButton from './PlainButton/PlainButton'
 import TopBarAvatar from './TopBarAvatar'
 import TopBarHelp from './TopBarHelp'
-import TopBarMeetings from './TopBarMeetings'
 import TopBarNotifications from './TopBarNotifications'
 import TopBarSearch from './TopBarSearch'
 
@@ -79,9 +78,8 @@ const TopBarMain = styled('div')({
 const DashTopBar = (props: Props) => {
   const {toggle, viewer} = props
   const {history} = useRouter()
-  const teams = viewer?.teams ?? []
   const gotoHome = () => {
-    history.push('/me')
+    history.push('/meetings')
   }
   return (
     <Wrapper>
@@ -96,7 +94,6 @@ const DashTopBar = (props: Props) => {
         <TopBarIcons>
           <TopBarHelp />
           <TopBarNotifications viewer={viewer || null} />
-          <TopBarMeetings teams={teams} />
           <TopBarAvatar viewer={viewer || null} />
         </TopBarIcons>
       </TopBarMain>
@@ -111,9 +108,6 @@ export default createFragmentContainer(DashTopBar, {
       ...TopBarSearch_viewer
       ...TopBarNotifications_viewer
       picture
-      teams {
-        ...TopBarMeetings_teams
-      }
     }
   `
 })

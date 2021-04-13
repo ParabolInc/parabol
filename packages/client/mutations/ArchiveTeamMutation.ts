@@ -84,7 +84,7 @@ const popTeamArchivedToast: OnNextHandler<ArchiveTeamMutation_team, OnNextHistor
     onTeamRoute(window.location.pathname, teamId) ||
     onMeetingRoute(window.location.pathname, meetingIds)
   ) {
-    history && history.push('/me')
+    history && history.push('/meetings')
   }
 }
 
