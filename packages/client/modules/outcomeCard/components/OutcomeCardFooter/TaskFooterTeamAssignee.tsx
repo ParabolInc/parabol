@@ -14,6 +14,10 @@ import lazyPreload from '../../../../utils/lazyPreload'
 import {TaskFooterTeamAssignee_task} from '../../../../__generated__/TaskFooterTeamAssignee_task.graphql'
 
 const TooltipToggle = styled('div')({
+  width: '100%'
+})
+
+const ToggleButtonText = styled('div')({
   width: 'fit-content'
 })
 
@@ -61,18 +65,14 @@ const TaskFooterTeamAssignee = (props: Props) => {
   )
   return (
     <>
-      <TooltipToggle
-        ref={tipRef}
-        onClick={closeTooltip}
-        onMouseEnter={openTooltip}
-        onMouseLeave={closeTooltip}
-      >
+      <TooltipToggle onClick={closeTooltip} onMouseEnter={openTooltip} onMouseLeave={closeTooltip}>
         <TeamToggleButton
           aria-label='Assign this task to another team'
           onClick={canAssign ? togglePortal : undefined}
           onMouseEnter={TaskFooterTeamAssigneeMenuRoot.preload}
           ref={originRef}
         >
+          <ToggleButtonText ref={tipRef}>{teamName}</ToggleButtonText>
           {teamName}
         </TeamToggleButton>
       </TooltipToggle>
