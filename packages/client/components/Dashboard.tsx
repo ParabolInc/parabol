@@ -6,6 +6,7 @@ import {matchPath, Route, RouteProps, Switch} from 'react-router'
 import useBreakpoint from '~/hooks/useBreakpoint'
 import useRouter from '~/hooks/useRouter'
 import useSnackNag from '~/hooks/useSnackNag'
+import useSnacksForNewMeetings from '~/hooks/useSnacksForNewMeetings'
 import {Breakpoint} from '~/types/constEnums'
 import useSidebar from '../hooks/useSidebar'
 import {Dashboard_viewer} from '../__generated__/Dashboard_viewer.graphql'
@@ -86,11 +87,14 @@ const DashMain = styled('div')({
 
 const Dashboard = (props: Props) => {
   const {viewer} = props
+  const teams = viewer?.teams ?? []
+  const activeMeetings = teams.flatMap((team) => team.activeMeetings).filter(Boolean)
   const {isOpen, toggle, handleMenuClick} = useSidebar()
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const {location} = useRouter()
   const overLimitCopy = viewer?.overLimitCopy
   useSnackNag(overLimitCopy)
+  useSnacksForNewMeetings(activeMeetings)
   return (
     <DashLayout>
       {isDesktop ? (
@@ -132,6 +136,11 @@ export default createFragmentContainer(Dashboard, {
       ...DashTopBar_viewer
       ...DashSidebar_viewer
       overLimitCopy
+      teams {
+        activeMeetings {
+          ...useSnacksForNewMeetings_meetings
+        }
+      }
     }
   `
 })

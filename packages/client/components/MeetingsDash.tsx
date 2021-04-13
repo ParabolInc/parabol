@@ -2,6 +2,7 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
+import useDocumentTitle from '../hooks/useDocumentTitle'
 import {MeetingsDash_viewer} from '~/__generated__/MeetingsDash_viewer.graphql'
 import useBreakpoint from '../hooks/useBreakpoint'
 import {Breakpoint, Layout, NavSidebar, RightSidebar} from '../types/constEnums'
@@ -66,6 +67,7 @@ const MeetingsDash = (props: Props) => {
   const hasMeetings = activeMeetings.length > 0
   const maybeTabletPlus = useBreakpoint(Breakpoint.FUZZY_TABLET)
   const maybeBigDisplay = useBreakpoint(1900)
+  useDocumentTitle('Meetings | Parabol', 'Meetings')
   if (!viewer) return null
   return (
     <Wrapper>
@@ -90,13 +92,20 @@ const MeetingsDash = (props: Props) => {
   )
 }
 
+graphql`
+  fragment MeetingsDashActiveMeetings on Team {
+    activeMeetings {
+      ...MeetingCard_meeting
+      ...useSnacksForNewMeetings_meetings
+    }
+  }
+`
+
 export default createFragmentContainer(MeetingsDash, {
   viewer: graphql`
     fragment MeetingsDash_viewer on User {
       teams {
-        activeMeetings {
-          ...MeetingCard_meeting
-        }
+        ...MeetingsDashActiveMeetings @relay (mask: false)
       }
     }
   `
