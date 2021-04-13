@@ -8,7 +8,6 @@ import {AppBar} from '~/types/constEnums'
 import Icon from './Icon'
 import PlainButton from './PlainButton/PlainButton'
 import TopBarIcon from './TopBarIcon'
-import TopBarMeetings from './TopBarMeetings'
 import TopBarNotifications from './TopBarNotifications'
 import TopBarHelp from './TopBarHelp'
 
@@ -57,7 +56,6 @@ const Title = styled('div')({
 
 const MobileDashTopBar = (props: Props) => {
   const {toggle, viewer} = props
-  const teams = viewer?.teams ?? []
   const pageName = viewer?.pageName ?? 'Parabol'
   return (
     <Wrapper>
@@ -72,7 +70,6 @@ const MobileDashTopBar = (props: Props) => {
         {false && <TopBarIcon icon={'search'} />}
         <TopBarHelp />
         <TopBarNotifications viewer={viewer || null} />
-        <TopBarMeetings teams={teams} />
       </TopBarIcons>
     </Wrapper>
   )
@@ -83,9 +80,6 @@ export default createFragmentContainer(MobileDashTopBar, {
     fragment MobileDashTopBar_viewer on User {
       ...TopBarNotifications_viewer
       pageName
-      teams {
-        ...TopBarMeetings_teams
-      }
     }
   `
 })

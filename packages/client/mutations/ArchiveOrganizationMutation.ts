@@ -58,7 +58,7 @@ const popOrgArchivedToast: OnNextHandler<
         autoDismiss: 5,
         message: `${teamName} has been archived.`
       })
-      history && history.push('/me')
+      history && history.push('/meetings')
     }
   })
 }
@@ -110,7 +110,7 @@ const ArchiveOrganizationMutation: StandardMutation<
       if (payload) {
         popOrgArchivedToast(payload, {atmosphere, history})
       }
-      history.replace('/me')
+      history.replace('/meetings')
     },
     onError
   })
