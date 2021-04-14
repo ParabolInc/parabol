@@ -5,6 +5,15 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.7.0 2021-Apr-14
+
+### Added
+
+- Meetings view v1 (#4624, #4623)
+
+### Changed
+- Limit number of dashboard avatars (#4566)
+
 ## 6.6.1 2021-Apr-10
 
 ### Fixed
