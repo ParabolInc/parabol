@@ -90,11 +90,7 @@ const GitHubIntegration = new GraphQLObjectType<any, GQLContext>({
           descrption: 'A list of repos to restrict the search to'
         }
       },
-      resolve: async (
-        {teamId, userId, accessToken},
-        // {first, queryString, projectKeyFilters},
-        context
-      ) => {
+      resolve: async ({teamId, userId, accessToken}, {queryString}, context) => {
         const {authToken} = context
         const viewerId = getUserId(authToken)
         if (viewerId !== userId) {
@@ -108,11 +104,11 @@ const GitHubIntegration = new GraphQLObjectType<any, GQLContext>({
           return connectionFromTasks([], 0, err)
         }
         const manager = new GitHubServerManager(accessToken)
-        const issuesRes = await manager.getIssues('Add')
+        const issuesRes = await manager.getIssues(queryString)
         const {data} = issuesRes as any
         const {search} = data
         const {edges} = search
-        return edges.map((edge) => {
+        const mappedIssues = edges.map((edge) => {
           const {node} = edge
           const {id, title, url, repository} = node
           return {
@@ -122,6 +118,7 @@ const GitHubIntegration = new GraphQLObjectType<any, GQLContext>({
             nameWithOwner: repository.nameWithOwner
           }
         })
+        return mappedIssues
       }
     },
     login: {

@@ -3,7 +3,7 @@ import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {ScopePhaseAreaGitHub_meeting} from '../__generated__/ScopePhaseAreaGitHub_meeting.graphql'
-import ScopePhaseAreaAddGitHub from './ScopePhaseAreaAddGitHub'
+// import ScopePhaseAreaAddGitHub from './ScopePhaseAreaAddGitHub'
 import ScopePhaseAreaGitHubScoping from './ScopePhaseAreaGitHubScoping'
 
 // const ComingSoon = styled('div')({
@@ -20,14 +20,15 @@ interface Props {
 }
 
 const ScopePhaseAreaGitHub = (props: Props) => {
-  const {isActive, gotoParabol, meeting} = props
+  const {isActive, meeting} = props
   const {viewerMeetingMember} = meeting
   if (!viewerMeetingMember || !isActive) return null
   const {teamMember} = viewerMeetingMember
   const {integrations} = teamMember
   console.log({teamMember})
   const hasAuth = integrations?.github?.isActive ?? false
-  if (!hasAuth) return <ScopePhaseAreaAddGitHub gotoParabol={gotoParabol} meeting={meeting} />
+  if (!hasAuth) console.log('no auth!')
+  // return <ScopePhaseAreaAddGitHub gotoParabol={gotoParabol} meeting={meeting} />
   // return <ComingSoon>Coming Soon!</ComingSoon>
   return <ScopePhaseAreaGitHubScoping meeting={meeting} />
 }
