@@ -3,10 +3,8 @@ import {render} from 'react-dom'
 import Root from './Root'
 import './scrollIntoViewIfNeeded'
 import './types/modules.d'
-import LogRocket from 'logrocket'
 
 render(<Root />, document.getElementById('root'))
-LogRocket.init('reysou/parabol')
 if (__PRODUCTION__ && 'serviceWorker' in navigator) {
   window.addEventListener('load', async () => {
     navigator.serviceWorker.register('/sw.js', {scope: '/'}).catch(console.error)

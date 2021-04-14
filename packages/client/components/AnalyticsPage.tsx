@@ -1,6 +1,7 @@
 /// <reference types="@types/segment-analytics" />
 
 import * as Sentry from '@sentry/browser'
+import LogRocket from 'logrocket'
 import graphql from 'babel-plugin-relay/macro'
 import {useEffect, useRef} from 'react'
 import {fetchQuery} from 'react-relay'
@@ -61,8 +62,24 @@ const AnalyticsPage = () => {
       window.analytics = mockSnippet
     }
   }, [])
-  const [isSegmentLoaded] = useScript(`https://cdn.segment.com/analytics.js/v1/${key}/analytics.min.js`, {crossOrigin: true})
+  const [isSegmentLoaded] = useScript(
+    `https://cdn.segment.com/analytics.js/v1/${key}/analytics.min.js`,
+    {
+      crossOrigin: true
+    }
+  )
   const atmosphere = useAtmosphere()
+  useEffect(() => {
+    const email = window.localStorage.getItem(LocalStorageKey.EMAIL)
+    LogRocket.init(window.__ACTION__.logRocket, {
+      release: __APP_VERSION__
+    })
+    if (email) {
+      LogRocket.identify(atmosphere.viewerId, {
+        email
+      })
+    }
+  }, [])
 
   useEffect(() => {
     if (!isSegmentLoaded || !window.analytics) return
@@ -92,12 +109,14 @@ const AnalyticsPage = () => {
       const title = document.title || ''
       // This is the magic. Ignore everything after hitting the pipe
       const [pageName] = title.split(' | ')
-      window.analytics.page(pageName, {
-        referrer: makeHref(prevPathname),
-        title,
-        path: pathname,
-        url: href,
-      },
+      window.analytics.page(
+        pageName,
+        {
+          referrer: makeHref(prevPathname),
+          title,
+          path: pathname,
+          url: href
+        },
         // See: segmentIo.ts:28 for more information on the next line
         {integrations: {'Google Analytics': {clientId: getAnonymousId()}}}
       )
