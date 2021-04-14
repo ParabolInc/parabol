@@ -2,14 +2,15 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
-import useDocumentTitle from '../hooks/useDocumentTitle'
 import {MeetingsDash_viewer} from '~/__generated__/MeetingsDash_viewer.graphql'
+import blueSquiggle from '../../../static/images/illustrations/blue-squiggle.svg'
+import yellowFlashLine from '../../../static/images/illustrations/yellow-flash-line.svg'
 import useBreakpoint from '../hooks/useBreakpoint'
+import useDocumentTitle from '../hooks/useDocumentTitle'
 import {Breakpoint, Layout, NavSidebar, RightSidebar} from '../types/constEnums'
 import makeMinWidthMediaQuery from '../utils/makeMinWidthMediaQuery'
 import MeetingCard from './MeetingCard'
 import MeetingsDashEmpty from './MeetingsDashEmpty'
-
 interface Props {
   viewer: MeetingsDash_viewer | null
 }
@@ -82,8 +83,8 @@ const MeetingsDash = (props: Props) => {
           <MeetingsDashEmpty />
           {maybeBigDisplay ? (
             <>
-              <Squiggle src={`${__STATIC_IMAGES__}/illustrations/blue-squiggle.svg`} />
-              <Flash src={`${__STATIC_IMAGES__}/illustrations/yellow-flash-line.svg`} />
+              <Squiggle src={blueSquiggle} />
+              <Flash src={yellowFlashLine} />
             </>
           ) : null}
         </EmptyContainer>

@@ -1,9 +1,10 @@
 import styled from '@emotion/styled'
 import React from 'react'
-import {PALETTE} from '~/styles/paletteV3'
 import {Elevation} from '~/styles/elevation'
+import {PALETTE} from '~/styles/paletteV3'
 import {Breakpoint} from '~/types/constEnums'
 import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
+import plantAndCoffee from '../../../static/images/illustrations/plant-and-coffee.svg'
 
 const maybeTabletPlusMediaQuery = makeMinWidthMediaQuery(Breakpoint.FUZZY_TABLET)
 
@@ -60,7 +61,7 @@ const MeetingsDashEmpty = () => {
   return (
     <Wrapper>
       <Section>
-        <Img src={`${__STATIC_IMAGES__}/illustrations/plant-and-coffee.svg`} />
+        <Img src={plantAndCoffee} />
       </Section>
       <Section>
         <Heading>{'All caught up on meetings?'}</Heading>

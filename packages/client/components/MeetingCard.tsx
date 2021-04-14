@@ -3,6 +3,9 @@ import * as Sentry from '@sentry/browser'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
+import poker from '../../../static/images/illustrations/poker-mtg-color-bg.svg'
+import retrospective from '../../../static/images/illustrations/retro-mtg-color-bg.svg'
+import action from '../../../static/images/illustrations/standup-mtg-color-bg.svg'
 import useBreakpoint from '../hooks/useBreakpoint'
 import useRouter from '../hooks/useRouter'
 import {Elevation} from '../styles/elevation'
@@ -70,9 +73,9 @@ interface Props {
 }
 
 const ILLUSTRATIONS = {
-  retrospective: `${__STATIC_IMAGES__}/illustrations/retro-mtg-color-bg.svg`,
-  action: `${__STATIC_IMAGES__}/illustrations/standup-mtg-color-bg.svg`,
-  poker: `${__STATIC_IMAGES__}/illustrations/poker-mtg-color-bg.svg`
+  retrospective,
+  action,
+  poker
 }
 
 const MEETING_TYPE_LABEL = {
