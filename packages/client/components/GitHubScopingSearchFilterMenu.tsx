@@ -7,7 +7,7 @@ import useFilteredItems from '../hooks/useFilteredItems'
 import useForm from '../hooks/useForm'
 import {MenuProps} from '../hooks/useMenu'
 import SearchQueryId from '../shared/gqlIds/SearchQueryId'
-import {PALETTE} from '../styles/paletteV2'
+import {PALETTE} from '../styles/paletteV3'
 import {ICON_SIZE} from '../styles/typographyV2'
 import {GitHubScopingSearchFilterMenu_viewer} from '../__generated__/GitHubScopingSearchFilterMenu_viewer.graphql'
 import Checkbox from './Checkbox'
@@ -22,12 +22,12 @@ import TaskFooterIntegrateMenuSearch from './TaskFooterIntegrateMenuSearch'
 import TypeAheadLabel from './TypeAheadLabel'
 
 const SearchIcon = styled(Icon)({
-  color: PALETTE.TEXT_GRAY,
+  color: PALETTE.SLATE_600,
   fontSize: ICON_SIZE.MD18
 })
 
 const NoResults = styled(MenuItemLabel)({
-  color: PALETTE.TEXT_GRAY,
+  color: PALETTE.SLATE_600,
   justifyContent: 'center',
   paddingLeft: 8,
   paddingRight: 8,

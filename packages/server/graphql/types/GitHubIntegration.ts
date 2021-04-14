@@ -14,8 +14,9 @@ import GitHubServerManager from '../../utils/GitHubServerManager'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import connectionFromTasks from '../queries/helpers/connectionFromTasks'
-import {GitHubIssueConnection} from './GitHubIssue'
+// import {GitHubIssueConnection} from './GitHubIssue'
 import GitHubSearchQuery from './GitHubSearchQuery'
+import GitHubIssue from './GitHubIssue'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 
 const GitHubIntegration = new GraphQLObjectType<any, GQLContext>({
@@ -67,9 +68,10 @@ const GitHubIntegration = new GraphQLObjectType<any, GQLContext>({
       }
     },
     issues: {
-      type: new GraphQLNonNull(GitHubIssueConnection),
+      // type: new GraphQLNonNull(GitHubIssueConnection),
+      type: new GraphQLNonNull(GraphQLList(GitHubIssue)),
       description:
-        'A list of issues coming straight from the jira integration for a specific team member',
+        'A list of issues coming straight from the GitHub integration for a specific team member',
       args: {
         first: {
           type: GraphQLInt,
@@ -89,8 +91,8 @@ const GitHubIntegration = new GraphQLObjectType<any, GQLContext>({
         }
       },
       resolve: async (
-        {teamId, userId, accessToken, cloudIds},
-        {first, queryString, projectKeyFilters},
+        {teamId, userId, accessToken},
+        // {first, queryString, projectKeyFilters},
         context
       ) => {
         const {authToken} = context
@@ -106,27 +108,20 @@ const GitHubIntegration = new GraphQLObjectType<any, GQLContext>({
           return connectionFromTasks([], 0, err)
         }
         const manager = new GitHubServerManager(accessToken)
-        const projectKeyFiltersByCloudId = {}
-        if (projectKeyFilters?.length > 0) {
-          projectKeyFilters.forEach((globalProjectKey) => {
-            const [cloudId, projectKey] = globalProjectKey.split(':')
-            projectKeyFiltersByCloudId[cloudId] = projectKeyFiltersByCloudId[cloudId] || []
-            projectKeyFiltersByCloudId[cloudId].push(projectKey)
-          })
-        } else {
-          cloudIds.forEach((cloudId) => {
-            projectKeyFiltersByCloudId[cloudId] = []
-          })
-        }
-        console.log({manager, first, queryString})
-        return []
-        // const issueRes = await manager.getIssues(queryString, isJQL, projectKeyFiltersByCloudId)
-        // const {error, issues} = issueRes
-        // const mappedIssues = issues.map((issue) => ({
-        //   ...issue,
-        //   updatedAt: new Date()
-        // }))
-        // return connectionFromTasks(mappedIssues, first, error ? {message: error} : undefined)
+        const issuesRes = await manager.getIssues('Add')
+        const {data} = issuesRes as any
+        const {search} = data
+        const {edges} = search
+        return edges.map((edge) => {
+          const {node} = edge
+          const {id, title, url, repository} = node
+          return {
+            id,
+            title,
+            url,
+            nameWithOwner: repository.nameWithOwner
+          }
+        })
       }
     },
     login: {

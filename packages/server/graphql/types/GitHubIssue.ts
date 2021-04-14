@@ -42,7 +42,7 @@ const GitHubIssue = new GraphQLObjectType<any, GQLContext>({
       }
     },
     description: {
-      type: GraphQLNonNull(GraphQLString),
+      type: GraphQLString,
       description: 'The stringified ADF of the jira issue description',
       resolve: ({description}) => (description ? JSON.stringify(description) : '')
     }
