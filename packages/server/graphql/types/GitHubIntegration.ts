@@ -14,9 +14,8 @@ import GitHubServerManager from '../../utils/GitHubServerManager'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import connectionFromTasks from '../queries/helpers/connectionFromTasks'
-// import {GitHubIssueConnection} from './GitHubIssue'
+import {GitHubIssueConnection} from './GitHubIssue'
 import GitHubSearchQuery from './GitHubSearchQuery'
-import GitHubIssue from './GitHubIssue'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 
 const GitHubIntegration = new GraphQLObjectType<any, GQLContext>({
@@ -68,8 +67,7 @@ const GitHubIntegration = new GraphQLObjectType<any, GQLContext>({
       }
     },
     issues: {
-      // type: new GraphQLNonNull(GitHubIssueConnection),
-      type: new GraphQLNonNull(GraphQLList(GitHubIssue)),
+      type: new GraphQLNonNull(GitHubIssueConnection),
       description:
         'A list of issues coming straight from the GitHub integration for a specific team member',
       args: {
@@ -90,7 +88,7 @@ const GitHubIntegration = new GraphQLObjectType<any, GQLContext>({
           descrption: 'A list of repos to restrict the search to'
         }
       },
-      resolve: async ({teamId, userId, accessToken}, {queryString}, context) => {
+      resolve: async ({teamId, userId, accessToken}, {first, queryString}, context) => {
         const {authToken} = context
         const viewerId = getUserId(authToken)
         if (viewerId !== userId) {
@@ -104,21 +102,23 @@ const GitHubIntegration = new GraphQLObjectType<any, GQLContext>({
           return connectionFromTasks([], 0, err)
         }
         const manager = new GitHubServerManager(accessToken)
-        const issuesRes = await manager.getIssues(queryString)
-        const {data} = issuesRes as any
-        const {search} = data
-        const {edges} = search
+        const issuesRes = queryString
+          ? await manager.searchIssues(queryString)
+          : await manager.getIssues()
+        const {data, error} = issuesRes as any
+        const edges = queryString ? data.search.edges : data.viewer.issues.edges
         const mappedIssues = edges.map((edge) => {
           const {node} = edge
           const {id, title, url, repository} = node
           return {
             id,
-            title,
+            summary: title,
             url,
-            nameWithOwner: repository.nameWithOwner
+            nameWithOwner: repository.nameWithOwner,
+            updatedAt: new Date()
           }
         })
-        return mappedIssues
+        return connectionFromTasks(mappedIssues, first, error ? {message: error} : undefined)
       }
     },
     login: {

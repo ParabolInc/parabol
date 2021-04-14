@@ -1,8 +1,8 @@
-query getIssues($queryString: String!) {
-  search(query: $queryString, type: ISSUE, first: 10) {
-    edges {
-      node {
-        ... on Issue {
+query getIssues {
+  viewer {
+    issues(first: 10) {
+      edges {
+        node {
           id
           title
           url

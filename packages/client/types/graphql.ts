@@ -1786,7 +1786,7 @@ export interface IGitHubIntegration {
   githubSearchQueries: Array<IGitHubSearchQuery>;
 
   /**
-   * A list of issues coming straight from the jira integration for a specific team member
+   * A list of issues coming straight from the GitHub integration for a specific team member
    */
   issues: IGitHubIssueConnection;
 
@@ -1930,7 +1930,7 @@ export interface IGitHubIssue {
   /**
    * The stringified ADF of the jira issue description
    */
-  description: string;
+  description: string | null;
 }
 
 export interface IThreadOnGitHubIssueArguments {
