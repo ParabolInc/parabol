@@ -105,7 +105,7 @@ export default createFragmentContainer(MeetingsDash, {
   viewer: graphql`
     fragment MeetingsDash_viewer on User {
       teams {
-        ...MeetingsDashActiveMeetings @relay (mask: false)
+        ...MeetingsDashActiveMeetings @relay(mask: false)
       }
     }
   `
