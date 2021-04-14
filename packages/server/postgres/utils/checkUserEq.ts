@@ -69,13 +69,20 @@ const getPairNeFields = (rethinkUser: User, pgUser: IGetUsersByIdResult): string
   return neFields
 }
 
-const checkUserEq = async () => {
+const checkUserEq = async (
+  pageSize: number = 3000,
+  startPage: number = 0,
+  slice: boolean = false
+) => {
   const r = await getRethink()
   const rethinkQuery = r.table('User').orderBy('updatedAt', {index: 'updatedAt'})
   const errors = await checkTableEq<User, IGetUsersByIdResult>(
     rethinkQuery,
     getUsersById,
-    getPairNeFields
+    getPairNeFields,
+    pageSize,
+    startPage,
+    slice
   )
   return errors
 }

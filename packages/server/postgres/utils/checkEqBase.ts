@@ -34,17 +34,19 @@ function addNeFieldsToErrors<rethinkType, pgType>(
 export async function checkTableEq<rethinkType, pgType>(
   rethinkQuery: RTable<TableSchema>,
   pgQuery: (ids: string[]) => Promise<pgType[]>,
-  getPairNeFieldsCb: (rethinkRow: rethinkType, pgRow: pgType) => string[]
+  getPairNeFieldsCb: (rethinkRow: rethinkType, pgRow: pgType) => string[],
+  pageSize: number = 3000,
+  startPage: number = 0,
+  slice: boolean = false
 ): Promise<IError<rethinkType, pgType>> {
   const errors = {} as IError<rethinkType, pgType>
-  const batchSize = 3000
 
-  for (let i = 0; i < 1e5; i++) {
+  for (let i = startPage; i < 1e5; i++) {
     console.log(i)
-    const offset = batchSize * i
+    const offset = pageSize * i
     const rethinkRows = (await rethinkQuery
       .skip(offset)
-      .limit(batchSize)
+      .limit(pageSize)
       .run()) as rethinkType[]
     if (!rethinkRows.length) {
       break
@@ -71,6 +73,7 @@ export async function checkTableEq<rethinkType, pgType>(
         addNeFieldsToErrors<rethinkType, pgType>(errors, neFields, rethinkRow, pgRow, id)
       }
     }
+    if (slice) { break }
   }
 
   return errors

@@ -51,13 +51,20 @@ const getPairNeFields = (rethinkTeam: Team, pgTeam: IGetTeamsByIdResult): string
   return neFields
 }
 
-const checkTeamEq = async () => {
+const checkTeamEq = async (
+  pageSize: number = 3000,
+  startPage: number = 0,
+  slice: boolean = false
+) => {
   const r = await getRethink()
   const rethinkQuery = r.table('Team').orderBy('updatedAt', {index: 'updatedAt'})
   const errors = await checkTableEq<Team, IGetTeamsByIdResult>(
     rethinkQuery,
     getTeamsById,
-    getPairNeFields
+    getPairNeFields,
+    pageSize,
+    startPage,
+    slice
   )
   return errors
 }
