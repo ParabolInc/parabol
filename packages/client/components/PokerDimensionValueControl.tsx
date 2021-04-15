@@ -86,7 +86,6 @@ const useHandleFinalScoreError = ({error, serviceField, stageId}) => {
     const nextError = error?.message ?? ''
 
     if (
-      nextError &&
       nextError.includes(
         `Update failed! In Jira, add the field "${serviceField.name}" to the Issue screen.`
       )
