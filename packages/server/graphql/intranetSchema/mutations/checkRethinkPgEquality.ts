@@ -75,6 +75,7 @@ const checkRethinkPgEquality = {
     }
 
     // RESOLUTION
+    slice = slice ?? true
     if (slice) {
       const errors = await tableResolvers[tableName](
         pageSize,

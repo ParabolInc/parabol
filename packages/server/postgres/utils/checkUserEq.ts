@@ -3,7 +3,12 @@ import getRethink from '../../database/rethinkDriver'
 import getUsersById, {IGetUsersByIdResult} from '../../postgres/queries/getUsersById'
 import lodash from 'lodash'
 import {EMAIL_LIMIT, PREFERRED_NAME_LIMIT} from '../constants/User'
-import {CustomResolver, checkTableEq} from './checkEqBase'
+import {
+  CustomResolver,
+  checkTableEq,
+  AlwaysDefinedFieldsCustomResolvers,
+  MaybeUndefinedFieldsCustomResolversDefaultValues
+} from './checkEqBase'
 
 const emailsAreEqual: CustomResolver = (rethinkEmail, pgEmail) =>
   lodash.isEqual(rethinkEmail, pgEmail) ||
@@ -23,51 +28,22 @@ const alwaysDefinedFieldsCustomResolvers = {
   createdAt: undefined,
   tier: undefined,
   tms: undefined
-} as {
-  [Property in keyof Partial<User>]: CustomResolver | undefined
-}
+} as AlwaysDefinedFieldsCustomResolvers<User>
 
 /* if a field is allowed to be undefined in rethink,
  * what is its value in pg? */
-const maybeUndefinedFieldsDefaultValues = {
-  newFeatureId: null,
-  overLimitCopy: null,
-  segmentId: null,
-  reasonRemoved: null,
-  isRemoved: false,
-  payLaterClickCount: 0,
-  featureFlags: [],
-  lastSeenAt: null,
-  lastSeenAtURLs: null,
-  inactive: false
-} as {
-  [Property in keyof Partial<User>]: any
-}
-
-const getPairNeFields = (rethinkUser: User, pgUser: IGetUsersByIdResult): string[] => {
-  const neFields = [] as string[]
-
-  for (const [f, customResolver] of Object.entries(alwaysDefinedFieldsCustomResolvers)) {
-    const [rethinkValue, pgValue] = [rethinkUser[f], pgUser[f]]
-    if (!lodash.isEqualWith(rethinkValue, pgValue, customResolver)) {
-      neFields.push(f)
-    }
-  }
-  for (const [f, defaultValue] of Object.entries(maybeUndefinedFieldsDefaultValues)) {
-    const [rethinkValue, pgValue] = [rethinkUser[f], pgUser[f]]
-    if (!lodash.isUndefined(rethinkValue)) {
-      if (!lodash.isEqual(rethinkValue, pgValue)) {
-        neFields.push(f)
-      }
-    } else {
-      if (!lodash.isEqual(pgValue, defaultValue)) {
-        neFields.push(f)
-      }
-    }
-  }
-
-  return neFields
-}
+const maybeUndefinedFieldsCustomResolversDefaultValues = {
+  newFeatureId: [undefined, null],
+  overLimitCopy: [undefined, null],
+  segmentId: [undefined, null],
+  reasonRemoved: [undefined, null],
+  isRemoved: [undefined, false],
+  payLaterClickCount: [undefined, 0],
+  featureFlags: [undefined, []],
+  lastSeenAt: [undefined, null],
+  lastSeenAtURLs: [undefined, null],
+  inactive: [undefined, false]
+} as MaybeUndefinedFieldsCustomResolversDefaultValues<User>
 
 const checkUserEq = async (
   pageSize: number = 3000,
@@ -79,7 +55,8 @@ const checkUserEq = async (
   const errors = await checkTableEq<User, IGetUsersByIdResult>(
     rethinkQuery,
     getUsersById,
-    getPairNeFields,
+    alwaysDefinedFieldsCustomResolvers,
+    maybeUndefinedFieldsCustomResolversDefaultValues,
     pageSize,
     startPage,
     slice
