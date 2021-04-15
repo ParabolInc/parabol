@@ -42,7 +42,6 @@ export async function checkTableEq<rethinkType, pgType>(
   const errors = {} as IError<rethinkType, pgType>
 
   for (let i = startPage; i < 1e5; i++) {
-    console.log(i)
     const offset = pageSize * i
     const rethinkRows = (await rethinkQuery
       .skip(offset)
