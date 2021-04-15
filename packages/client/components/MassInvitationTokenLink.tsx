@@ -10,7 +10,7 @@ import useAtmosphere from '../hooks/useAtmosphere'
 import CopyShortLink from '../modules/meeting/components/CopyShortLink/CopyShortLink'
 import {PALETTE} from '../styles/paletteV3'
 import {Threshold} from '../types/constEnums'
-import makeHref from '../utils/makeHref'
+import getMassInvitationUrl from '../utils/getMassInvitationUrl'
 import {MassInvitationTokenLink_viewer} from '../__generated__/MassInvitationTokenLink_viewer.graphql'
 
 const StyledCopyShortLink = styled(CopyShortLink)({
@@ -58,7 +58,7 @@ const MassInvitationTokenLink = (props: Props) => {
   }, [])
   const displayToken = isTokenValid ? token : '············'
   const linkLabel = `${window.__ACTION__.prblIn}/${displayToken}`
-  const url = __PRODUCTION__ ? `https://${linkLabel}` : makeHref(`/invitation-link/${token}`)
+  const url = getMassInvitationUrl(displayToken)
   return (
     <StyledCopyShortLink
       icon='link'

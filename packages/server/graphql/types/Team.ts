@@ -25,12 +25,12 @@ import NewMeeting from './NewMeeting'
 import Organization from './Organization'
 import ReflectPrompt from './ReflectPrompt'
 import {TaskConnection} from './Task'
+import TeamIntegrations from './TeamIntegrations'
 import TeamInvitation from './TeamInvitation'
 import TeamMeetingSettings from './TeamMeetingSettings'
 import TeamMember from './TeamMember'
 import TemplateScale from './TemplateScale'
 import TierEnum from './TierEnum'
-import TeamIntegrations from './TeamIntegrations'
 
 const Team = new GraphQLObjectType<ITeam, GQLContext>({
   name: 'Team',
@@ -58,7 +58,7 @@ const Team = new GraphQLObjectType<ITeam, GQLContext>({
       description: 'The type of the last meeting run'
     },
     massInvitation: {
-      type: MassInvitation,
+      type: GraphQLNonNull(MassInvitation),
       args: {
         meetingId: {
           type: GraphQLID,

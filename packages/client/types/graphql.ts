@@ -2159,7 +2159,7 @@ export interface ITeam {
   /**
    * The hash and expiration for a token that allows anyone with it to join the team
    */
-  massInvitation: IMassInvitation | null;
+  massInvitation: IMassInvitation;
 
   /**
    * Integration details that are shared by all team members. Nothing user specific
