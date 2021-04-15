@@ -1,4 +1,4 @@
-import React, {useCallback} from 'react'
+import React from 'react'
 import {PALETTE} from '~/styles/paletteV3'
 import {ICON_SIZE} from '~/styles/typographyV2'
 import styled from '@emotion/styled'
@@ -65,33 +65,35 @@ const Label = styled('div')({
   fontWeight: 600
 })
 
-const useAddMissingJiraField = ({closePortal, teamId, finalScore, meetingId, stageId}: Props) => {
+const AddMissingJiraFieldModal = ({meetingId, stageId, teamId, finalScore, closePortal}: Props) => {
   const atmosphere = useAtmosphere()
   const mutationProps = useMutationProps()
 
-  /**
-   * Finally, when new field is added, update the story points
-   */
-  const onAddMissingJiraFieldCompleted = useCallback(() => {
-    PokerSetFinalScoreMutation(atmosphere, {finalScore, meetingId, stageId}, mutationProps)
-  }, [atmosphere, finalScore, meetingId, stageId, mutationProps])
+  const onFixItForMeClicked = () => {
+    if (mutationProps.submitting) return
 
-  /**
-   * When Atlassian auth is successfully updated, add a new field to a Jira configuration on behalf of the user
-   */
-  const onAddAtlassianAuthCompleted = useCallback(() => {
-    AddMissingJiraFieldMutation(
-      atmosphere,
-      {meetingId, stageId},
-      {onError: mutationProps.onError, onCompleted: onAddMissingJiraFieldCompleted}
-    )
-  }, [atmosphere, meetingId, stageId, mutationProps, onAddMissingJiraFieldCompleted])
+    /**
+     * Finally, when new field is added, update the story points
+     */
+    const onAddMissingJiraFieldCompleted = () => {
+      PokerSetFinalScoreMutation(atmosphere, {finalScore, meetingId, stageId}, mutationProps)
+    }
 
-  /**
-   * Executed when user successfully finishes the OAuth flow of Adding a new permission [jira:manage-project]
-   */
-  const onAtlassianOAuthCompleted = useCallback(
-    (code) => {
+    /**
+     * When Atlassian auth is successfully updated, add a new field to a Jira configuration on behalf of the user
+     */
+    const onAddAtlassianAuthCompleted = () => {
+      AddMissingJiraFieldMutation(
+        atmosphere,
+        {meetingId, stageId},
+        {onError: mutationProps.onError, onCompleted: onAddMissingJiraFieldCompleted}
+      )
+    }
+
+    /**
+     * Executed when user successfully finishes the OAuth flow of Adding a new permission [jira:manage-project]
+     */
+    const onAtlassianOAuthCompleted = (code) => {
       mutationProps.submitMutation()
 
       AddAtlassianAuthMutation(
@@ -99,31 +101,10 @@ const useAddMissingJiraField = ({closePortal, teamId, finalScore, meetingId, sta
         {code, teamId},
         {onError: mutationProps.onError, onCompleted: onAddAtlassianAuthCompleted}
       )
-    },
-    [mutationProps.submitMutation, teamId, onAddAtlassianAuthCompleted]
-  )
-
-  const askForManageProjectPermission = useCallback(() => {
-    if (mutationProps.submitting) {
-      return
     }
 
     AtlassianClientManager.openOAuth(onAtlassianOAuthCompleted, AtlassianManager.MANAGE_SCOPE)
-  }, [mutationProps.submitting, onAtlassianOAuthCompleted])
-
-  return {
-    cancel: closePortal,
-    addMissingJiraField: askForManageProjectPermission,
-    mutationProps
   }
-}
-
-const AddMissingJiraFieldModal = (props: Props) => {
-  const {
-    cancel,
-    addMissingJiraField,
-    mutationProps: {submitting, error}
-  } = useAddMissingJiraField(props)
 
   return (
     <StyledDialogContainer>
@@ -134,23 +115,27 @@ const AddMissingJiraFieldModal = (props: Props) => {
             {'You do not have this field configured in Jira, do you want us to fix add it for you?'}
           </StyledTip>
 
-          {error && (
+          {mutationProps.error && (
             <ErrorWrapper>
               <StyledIcon>
                 <Icon>{'error'}</Icon>
               </StyledIcon>
-              <Label>{error.message}</Label>
+              <Label>{mutationProps.error.message}</Label>
             </ErrorWrapper>
           )}
           <ButtonGroup>
-            <SecondaryButton onClick={cancel} size='medium' disabled={submitting}>
+            <SecondaryButton
+              onClick={closePortal}
+              size='medium'
+              disabled={mutationProps.submitting}
+            >
               Cancel
             </SecondaryButton>
             <StyledPrimaryButton
-              onClick={addMissingJiraField}
+              onClick={onFixItForMeClicked}
               size='medium'
-              waiting={submitting}
-              disabled={submitting}
+              waiting={mutationProps.submitting}
+              disabled={mutationProps.submitting}
             >
               Fix it for me
             </StyledPrimaryButton>
