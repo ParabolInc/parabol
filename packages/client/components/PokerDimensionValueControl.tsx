@@ -104,15 +104,7 @@ const useHandleFinalScoreError = ({error, serviceField, stageId}) => {
 
 const PokerDimensionValueControl = (props: Props) => {
   const {isFacilitator, placeholder, stage} = props
-  const {
-    id: stageId,
-    dimensionRef,
-    finalScoreError,
-    meetingId,
-    service,
-    serviceField,
-    teamId
-  } = stage
+  const {id: stageId, dimensionRef, finalScoreError, meetingId, service, serviceField} = stage
   const finalScore = stage.finalScore || ''
   const {name: serviceFieldName, type: serviceFieldType} = serviceField
   const {scale} = dimensionRef
@@ -248,10 +240,8 @@ const PokerDimensionValueControl = (props: Props) => {
       </Control>
       {addMissingJiraFieldModalPortal(
         <AddMissingJiraFieldModal
-          finalScore={finalScore}
-          stageId={stageId}
-          teamId={teamId}
-          meetingId={meetingId}
+          pendingScore={pendingScore}
+          stage={stage}
           closePortal={closeAddMissingJiraFieldModal}
         />
       )}
@@ -263,6 +253,7 @@ export default createFragmentContainer(PokerDimensionValueControl, {
   stage: graphql`
     fragment PokerDimensionValueControl_stage on EstimateStage {
       ...PokerDimensionFinalScoreJiraPicker_stage
+      ...AddMissingJiraFieldModal_stage
       id
       meetingId
       teamId

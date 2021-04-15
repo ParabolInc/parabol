@@ -1,4 +1,6 @@
 import React from 'react'
+import graphql from 'babel-plugin-relay/macro'
+import {createFragmentContainer} from 'react-relay'
 import {PALETTE} from '~/styles/paletteV3'
 import {ICON_SIZE} from '~/styles/typographyV2'
 import styled from '@emotion/styled'
@@ -15,13 +17,12 @@ import AddMissingJiraFieldMutation from '../mutations/AddMissingJiraFieldMutatio
 import AddAtlassianAuthMutation from '../mutations/AddAtlassianAuthMutation'
 import AtlassianClientManager from '../utils/AtlassianClientManager'
 import AtlassianManager from '../utils/AtlassianManager'
+import {AddMissingJiraFieldModal_stage} from '../__generated__/AddMissingJiraFieldModal_stage.graphql'
 
 interface Props {
   closePortal: () => void
-  meetingId: string
-  stageId: string
-  teamId: string
-  finalScore: string
+  pendingScore: string
+  stage: AddMissingJiraFieldModal_stage
 }
 
 const StyledDialogContainer = styled(DialogContainer)({
@@ -65,7 +66,8 @@ const Label = styled('div')({
   fontWeight: 600
 })
 
-const AddMissingJiraFieldModal = ({meetingId, stageId, teamId, finalScore, closePortal}: Props) => {
+const AddMissingJiraFieldModal = ({stage, pendingScore, closePortal}: Props) => {
+  const {meetingId, id: stageId, teamId} = stage
   const atmosphere = useAtmosphere()
   const mutationProps = useMutationProps()
 
@@ -76,7 +78,11 @@ const AddMissingJiraFieldModal = ({meetingId, stageId, teamId, finalScore, close
      * Finally, when new field is added, update the story points
      */
     const onAddMissingJiraFieldCompleted = () => {
-      PokerSetFinalScoreMutation(atmosphere, {finalScore, meetingId, stageId}, mutationProps)
+      PokerSetFinalScoreMutation(
+        atmosphere,
+        {finalScore: pendingScore, meetingId, stageId},
+        mutationProps
+      )
     }
 
     /**
@@ -146,4 +152,12 @@ const AddMissingJiraFieldModal = ({meetingId, stageId, teamId, finalScore, close
   )
 }
 
-export default AddMissingJiraFieldModal
+export default createFragmentContainer(AddMissingJiraFieldModal, {
+  stage: graphql`
+    fragment AddMissingJiraFieldModal_stage on EstimateStage {
+      id
+      meetingId
+      teamId
+    }
+  `
+})
