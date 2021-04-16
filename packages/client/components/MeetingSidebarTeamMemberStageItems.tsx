@@ -1,3 +1,4 @@
+import * as Sentry from '@sentry/browser'
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
@@ -32,7 +33,8 @@ interface Props {
 
 const MeetingSidebarTeamMemberStageItems = (props: Props) => {
   const {gotoStageId, handleMenuClick, meeting} = props
-  const {facilitatorStageId, facilitatorUserId, localPhase, localStage} = meeting
+  const {id: meetingId, facilitatorStageId, facilitatorUserId, localPhase, localStage} = meeting
+  const {phaseType} = localPhase
   const localStageId = (localStage && localStage.id) || ''
   const gotoStage = (teamMemberId) => () => {
     const teamMemberStage =
@@ -56,6 +58,14 @@ const MeetingSidebarTeamMemberStageItems = (props: Props) => {
             isNavigableByFacilitator,
             isNavigable
           } = stage
+          if (!teamMember) {
+            Sentry.captureException(
+              new Error(
+                `Team member is undefined. teamMemberId is ${teamMemberId}. phaseType is ${phaseType}. stageId is ${stageId}. meetingId is ${meetingId}. localStageId is ${localStageId}. stage is ${JSON.stringify(stage)}.`
+              )
+            )
+            return null
+          }
           const {picture, preferredName} = teamMember!
           const isLocalStage = localStageId === stageId
           const isFacilitatorStage = facilitatorStageId === stageId
