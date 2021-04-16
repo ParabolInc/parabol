@@ -1,7 +1,6 @@
 // Calling this while the cwd is in dev is MUCH slower than calling it at the root dir.
 // Penalty goes away when debugging.
 require('./webpack/utils/dotenv')
-const {exec} = require('child_process')
 const path = require('path')
 const fs = require('fs')
 const {promisify} = require('util')
@@ -14,6 +13,8 @@ const PROJECT_ROOT = getProjectRoot()
 const TOOLBOX_ROOT = path.join(PROJECT_ROOT, 'scripts', 'toolbox')
 const pgMigrate = require('node-pg-migrate').default
 const cliPgmConfig = require('../packages/server/postgres/pgmConfig')
+const {generate} = require('@graphql-codegen/cli')
+const yaml = require('js-yaml')
 
 const compileToolbox = () => {
   return new Promise((resolve) => {
@@ -39,9 +40,8 @@ const dev = async (maybeInit) => {
   const isInit = !fs.existsSync(path.join(TOOLBOX_ROOT, 'updateSchema.js')) || maybeInit
   const redis = new Redis(process.env.REDIS_URL)
   const toolboxPromise = compileToolbox()
-  exec('yarn graphql-codegen', (err) => {
-    if (err) console.error(`Error generating GitHub types: ${err}`)
-  })
+  const codegenDoc = yaml.load(fs.readFileSync('codegen.yml', 'utf8'))
+  generate(codegenDoc)
   if (isInit) {
     console.log('👋👋👋      Welcome to Parabol!      👋👋👋')
     await Promise.all([removeArtifacts()])
