@@ -1,8 +1,15 @@
+import {DocumentNode} from 'graphql-typed'
 import fetch from 'node-fetch'
 import GitHubManager from 'parabol-client/utils/GitHubManager'
 import {stringify} from 'querystring'
 import {getRepositories} from './githubQueries/getRepositories'
-import {GetRepositoriesQuery} from '../../server/types/typed-document-nodes'
+import {getIssues} from './githubQueries/getIssues'
+import {searchIssues} from './githubQueries/searchIssues'
+import {
+  GetRepositoriesQuery,
+  GetIssuesQuery,
+  SearchIssuesQuery
+} from '../../server/types/typed-document-nodes'
 
 interface OAuth2Response {
   access_token: string
@@ -10,7 +17,7 @@ interface OAuth2Response {
   scope: string
 }
 
-interface GQLResponse<TData> {
+export interface GQLResponse<TData> {
   data?: TData
   errors?: any[]
 }
@@ -19,6 +26,7 @@ interface GitHubCredentialError {
   documentation_url: string
 }
 type GitHubResponse<TData> = GQLResponse<TData> | GitHubCredentialError
+
 class GitHubServerManager extends GitHubManager {
   static async init(code: string) {
     return GitHubServerManager.fetchToken(code)
@@ -71,6 +79,16 @@ class GitHubServerManager extends GitHubManager {
   async getRepositories() {
     const body = JSON.stringify({query: getRepositories, variables: {}})
     return this.serverPost<GetRepositoriesQuery>(body)
+  }
+
+  async getIssues() {
+    const body = JSON.stringify({query: getIssues, variables: {}})
+    return this.serverPost<GetIssuesQuery>(body)
+  }
+
+  async searchIssues(queryString: string) {
+    const body = JSON.stringify({query: searchIssues, variables: {queryString}})
+    return this.serverPost<SearchIssuesQuery>(body)
   }
 }
 

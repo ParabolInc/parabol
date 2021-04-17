@@ -105,8 +105,18 @@ const GitHubIntegration = new GraphQLObjectType<any, GQLContext>({
         const issuesRes = queryString
           ? await manager.searchIssues(queryString)
           : await manager.getIssues()
-        const {data, error} = issuesRes as any
-        const edges = queryString ? data.search.edges : data.viewer.issues.edges
+
+        if ('message' in issuesRes) {
+          console.error(issuesRes)
+          return connectionFromTasks([], 0, issuesRes)
+        }
+        if (Array.isArray(issuesRes.errors)) {
+          console.error(issuesRes.errors[0])
+        }
+        const {data, errors} = issuesRes
+        if (!data) return connectionFromTasks([], 0)
+        const edges = 'search' in data ? data.search.edges : data.viewer.issues.edges
+        if (!edges || !edges.length) return connectionFromTasks([], 0)
         const mappedIssues = edges.map((edge) => {
           const {node} = edge
           const {id, title, url, repository} = node
@@ -118,7 +128,11 @@ const GitHubIntegration = new GraphQLObjectType<any, GQLContext>({
             updatedAt: new Date()
           }
         })
-        return connectionFromTasks(mappedIssues, first, error ? {message: error} : undefined)
+        return connectionFromTasks(
+          mappedIssues,
+          first,
+          errors ? {message: errors[0].message} : undefined
+        )
       }
     },
     login: {

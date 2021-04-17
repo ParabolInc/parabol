@@ -4,8 +4,6 @@ import createIssue from './githubQueries/createIssue.graphql'
 import getProfile from './githubQueries/getProfile.graphql'
 import getRepoInfo from './githubQueries/getRepoInfo.graphql'
 import getRepos from './githubQueries/getRepos.graphql'
-import getIssues from './githubQueries/getIssues.graphql'
-import searchIssues from './githubQueries/searchIssues.graphql'
 
 export interface GQLResponse<TData> {
   data?: TData
@@ -95,15 +93,6 @@ abstract class GitHubManager {
   async getProfile() {
     return this.query(getProfile)
   }
-
-  async getIssues() {
-    return this.query(getIssues)
-  }
-
-  async searchIssues(queryString: string) {
-    return this.query(searchIssues, {queryString})
-  }
-
   async createIssue(createIssueInput: ICreateIssueInput) {
     return this.mutate(createIssue, {input: createIssueInput} as any)
   }
