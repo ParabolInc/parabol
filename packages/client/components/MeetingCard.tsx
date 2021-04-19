@@ -9,6 +9,7 @@ import retrospective from '../../../static/images/illustrations/retro-mtg-color-
 import action from '../../../static/images/illustrations/standup-mtg-color-bg.svg'
 import useBreakpoint from '../hooks/useBreakpoint'
 import {MenuPosition} from '../hooks/useCoords'
+import useMeetingMemberAvatars from '../hooks/useMeetingMemberAvatars'
 import useMenu from '../hooks/useMenu'
 import useTooltip from '../hooks/useTooltip'
 import {Elevation} from '../styles/elevation'
@@ -17,10 +18,10 @@ import {BezierCurve, Breakpoint, Card} from '../types/constEnums'
 import getMeetingPhase from '../utils/getMeetingPhase'
 import {phaseLabelLookup} from '../utils/meetings/lookups'
 import {MeetingCard_meeting} from '../__generated__/MeetingCard_meeting.graphql'
+import AvatarList from './AvatarList'
 import CardButton from './CardButton'
 import IconLabel from './IconLabel'
 import MeetingCardOptionsMenuRoot from './MeetingCardOptionsMenuRoot'
-
 const CardWrapper = styled('div')<{maybeTabletPlus: boolean}>(({maybeTabletPlus}) => ({
   background: Card.BACKGROUND_COLOR,
   borderRadius: Card.BORDER_RADIUS,
@@ -105,6 +106,7 @@ const MEETING_TYPE_LABEL = {
 const MeetingCard = (props: Props) => {
   const {meeting} = props
   const {name, team, id: meetingId, meetingType, phases} = meeting
+  const connectedUsers = useMeetingMemberAvatars(meeting)
   if (!team) {
     // 95% sure there's a bug in relay causing this
     const errObj = {id: meetingId} as any
@@ -118,6 +120,7 @@ const MeetingCard = (props: Props) => {
   const meetingPhase = getMeetingPhase(phases)
   const meetingPhaseLabel = (meetingPhase && phaseLabelLookup[meetingPhase.phaseType]) || 'Complete'
   const maybeTabletPlus = useBreakpoint(Breakpoint.FUZZY_TABLET)
+
   const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT)
   const popTooltip = () => {
     openTooltip()
@@ -144,6 +147,7 @@ const MeetingCard = (props: Props) => {
             {teamName} • {meetingPhaseLabel}
           </Meta>
         </Link>
+        <AvatarList users={connectedUsers} size={24} />
       </MeetingInfo>
       {menuPortal(
         <MeetingCardOptionsMenuRoot
@@ -161,6 +165,7 @@ const MeetingCard = (props: Props) => {
 export default createFragmentContainer(MeetingCard, {
   meeting: graphql`
     fragment MeetingCard_meeting on NewMeeting {
+      ...useMeetingMemberAvatars_meeting
       id
       name
       meetingType
@@ -173,6 +178,11 @@ export default createFragmentContainer(MeetingCard, {
       team {
         id
         name
+      }
+      meetingMembers {
+        user {
+          ...AvatarListUser_user
+        }
       }
     }
   `

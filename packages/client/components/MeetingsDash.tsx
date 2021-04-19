@@ -64,7 +64,10 @@ const Flash = styled('img')({
 const MeetingsDash = (props: Props) => {
   const {viewer} = props
   const teams = viewer?.teams ?? []
-  const activeMeetings = teams.flatMap((team) => team.activeMeetings)
+  const activeMeetings = teams
+    .flatMap((team) => team.activeMeetings)
+    .filter(Boolean)
+    .sort((a, b) => (a.createdAt > b.createdAt ? -1 : 1))
   const hasMeetings = activeMeetings.length > 0
   const maybeTabletPlus = useBreakpoint(Breakpoint.FUZZY_TABLET)
   const maybeBigDisplay = useBreakpoint(1900)
@@ -98,6 +101,7 @@ graphql`
     activeMeetings {
       ...MeetingCard_meeting
       ...useSnacksForNewMeetings_meetings
+      createdAt
     }
   }
 `
