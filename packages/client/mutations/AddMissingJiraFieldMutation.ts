@@ -4,7 +4,7 @@ import {StandardMutation} from '../types/relayMutations'
 import {AddMissingJiraFieldMutation as TAddMissingJiraFieldMutation} from '../__generated__/AddMissingJiraFieldMutation.graphql'
 
 graphql`
-  fragment AddMissingJiraFieldMutation_part on AddMissingJiraFieldSuccess {
+  fragment AddMissingJiraFieldMutation_dimensionField on AddMissingJiraFieldSuccess {
     dimensionField {
       fieldId
     }
@@ -14,7 +14,7 @@ graphql`
 const mutation = graphql`
   mutation AddMissingJiraFieldMutation($meetingId: ID!, $stageId: ID!) {
     addMissingJiraField(meetingId: $meetingId, stageId: $stageId) {
-      ...AddMissingJiraFieldMutation_part @relay(mask: false)
+      ...AddMissingJiraFieldMutation_dimensionField @relay(mask: false)
     }
   }
 `
