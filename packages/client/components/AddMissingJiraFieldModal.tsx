@@ -118,7 +118,7 @@ const AddMissingJiraFieldModal = ({stage, pendingScore, closePortal}: Props) => 
       <DialogContent>
         <div>
           <StyledTip>
-            {'You do not have this field configured in Jira, do you want us to fix add it for you?'}
+            {'You do not have this field configured in Jira, do you want us to fix it for you?'}
           </StyledTip>
 
           {mutationProps.error && (
