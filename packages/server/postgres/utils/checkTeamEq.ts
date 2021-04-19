@@ -27,11 +27,7 @@ const maybeUndefinedFieldsCustomResolversDefaultValues = {
   lastMeetingType: [undefined, 'retrospective']
 } as MaybeUndefinedFieldsCustomResolversDefaultValues<Team>
 
-const checkTeamEq = async (
-  pageSize: number = 3000,
-  startPage: number = 0,
-  slice: boolean = false
-) => {
+const checkTeamEq = async (pageSize = 3000, startPage = 0) => {
   const r = await getRethink()
   const rethinkQuery = r.table('Team').orderBy('updatedAt', {index: 'updatedAt'})
   const errors = await checkTableEq<Team, IGetTeamsByIdResult>(
@@ -40,8 +36,7 @@ const checkTeamEq = async (
     alwaysDefinedFieldsCustomResolvers,
     maybeUndefinedFieldsCustomResolversDefaultValues,
     pageSize,
-    startPage,
-    slice
+    startPage
   )
   return errors
 }

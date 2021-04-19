@@ -10,22 +10,27 @@ export type AlwaysDefinedFieldsCustomResolvers<rethinkType> = {
 }
 
 export type MaybeUndefinedFieldsCustomResolversDefaultValues<rethinkType> = {
-  [Property in keyof Partial<rethinkType>]: [(CustomResolver | undefined), any]
+  [Property in keyof Partial<rethinkType>]: [CustomResolver | undefined, any]
 }
 
 interface IError<rethinkType, pgType> {
-  [key: string]: {
-    error: string | string[]
-    rethinkRow?: Partial<rethinkType>
-    pgRow?: Partial<pgType>
-  }
+  [key: string]:
+    | {
+        error: string | string[]
+        rethinkRow?: Partial<rethinkType>
+        pgRow?: Partial<pgType>
+      }
+    | number
+  recordsCompared: number
 }
 
-function getPairNeFields<rethinkType, pgType> (
+function getPairNeFields<rethinkType, pgType>(
   rethinkUser: rethinkType,
   pgUser: pgType,
   alwaysDefinedFieldsCustomResolvers: AlwaysDefinedFieldsCustomResolvers<rethinkType>,
-  maybeUndefinedFieldsCustomResolversDefaultValues: MaybeUndefinedFieldsCustomResolversDefaultValues<rethinkType>
+  maybeUndefinedFieldsCustomResolversDefaultValues: MaybeUndefinedFieldsCustomResolversDefaultValues<
+    rethinkType
+  >
 ): string[] {
   const neFields = [] as string[]
 
@@ -76,51 +81,45 @@ export async function checkTableEq<rethinkType, pgType>(
   rethinkQuery: RTable<TableSchema>,
   pgQuery: (ids: string[]) => Promise<pgType[]>,
   alwaysDefinedFieldsCustomResolvers: AlwaysDefinedFieldsCustomResolvers<rethinkType>,
-  maybeUndefinedFieldsCustomResolversDefaultValues: MaybeUndefinedFieldsCustomResolversDefaultValues<rethinkType>,
-  pageSize: number = 3000,
-  startPage: number = 0,
-  slice: boolean = false
+  maybeUndefinedFieldsCustomResolversDefaultValues: MaybeUndefinedFieldsCustomResolversDefaultValues<
+    rethinkType
+  >,
+  batchSize = 3000,
+  startPage = 0
 ): Promise<IError<rethinkType, pgType>> {
   const errors = {} as IError<rethinkType, pgType>
+  const offset = batchSize * startPage
+  const rethinkRows = (await rethinkQuery
+    .skip(offset)
+    .limit(batchSize)
+    .run()) as rethinkType[]
 
-  for (let i = startPage; i < 1e5; i++) {
-    const offset = pageSize * i
-    const rethinkRows = (await rethinkQuery
-      .skip(offset)
-      .limit(pageSize)
-      .run()) as rethinkType[]
-    if (!rethinkRows.length) {
-      break
-    }
+  const ids = rethinkRows.map((t) => (t as WithId<rethinkType>).id) as string[]
+  const pgRows = await pgQuery(ids)
+  const pgRowsById = {} as {[key: string]: pgType}
+  pgRows.forEach((pgRow) => {
+    pgRowsById[(pgRow as WithId<pgType>).id] = pgRow
+  })
 
-    const ids = rethinkRows.map((t) => (t as WithId<rethinkType>).id) as string[]
-    const pgRows = await pgQuery(ids)
-    const pgRowsById = {} as {[key: string]: pgType}
-    pgRows.forEach((pgRow) => {
-      pgRowsById[(pgRow as WithId<pgType>).id] = pgRow
-    })
-
-    for (const rethinkRow of rethinkRows) {
-      const id = (rethinkRow as WithId<rethinkType>).id
-      const pgRow = pgRowsById[id]
-      if (!pgRow) {
-        errors[id] = {
-          error: 'No pg row found for rethink row'
-        }
-        continue
+  for (const rethinkRow of rethinkRows) {
+    const id = (rethinkRow as WithId<rethinkType>).id
+    const pgRow = pgRowsById[id]
+    if (!pgRow) {
+      errors[id] = {
+        error: 'No pg row found for rethink row'
       }
-      const neFields = getPairNeFields<rethinkType, pgType>(
-        rethinkRow,
-        pgRow,
-        alwaysDefinedFieldsCustomResolvers,
-        maybeUndefinedFieldsCustomResolversDefaultValues
-      )
-      if (neFields.length) {
-        addNeFieldsToErrors<rethinkType, pgType>(errors, neFields, rethinkRow, pgRow, id)
-      }
+      continue
     }
-    if (slice) { break }
+    const neFields = getPairNeFields<rethinkType, pgType>(
+      rethinkRow,
+      pgRow,
+      alwaysDefinedFieldsCustomResolvers,
+      maybeUndefinedFieldsCustomResolversDefaultValues
+    )
+    if (neFields.length) {
+      addNeFieldsToErrors<rethinkType, pgType>(errors, neFields, rethinkRow, pgRow, id)
+    }
   }
-
+  errors.recordsCompared = rethinkRows.length
   return errors
 }
