@@ -2,8 +2,8 @@ import gql from 'graphql-tag'
 import {print} from 'graphql/language/printer'
 
 export const searchIssuesQuery = gql`
-  query searchIssues($queryString: String!) {
-    search(query: $queryString, type: ISSUE, first: 10) {
+  query searchIssues($queryString: String!, $first: Int) {
+    search(query: $queryString, type: ISSUE, first: $first) {
       edges {
         node {
           ...getIssuesNode

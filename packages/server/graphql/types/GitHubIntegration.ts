@@ -104,8 +104,8 @@ const GitHubIntegration = new GraphQLObjectType<any, GQLContext>({
         }
         const manager = new GitHubServerManager(accessToken)
         const issuesRes = queryString
-          ? await manager.searchIssues(queryString)
-          : await manager.getIssues()
+          ? await manager.searchIssues(queryString, first)
+          : await manager.getIssues(first)
         if ('message' in issuesRes) {
           console.error(issuesRes)
           return connectionFromTasks([], 0, issuesRes)

@@ -80,13 +80,13 @@ class GitHubServerManager extends GitHubManager {
     return this.serverPost<GetRepositoriesQuery>(body)
   }
 
-  async getIssues() {
-    const body = JSON.stringify({query: getIssues, variables: {}})
+  async getIssues(first = 10) {
+    const body = JSON.stringify({query: getIssues, variables: {first}})
     return this.serverPost<GetIssuesQuery>(body)
   }
 
-  async searchIssues(queryString: string) {
-    const body = JSON.stringify({query: searchIssues, variables: {queryString}})
+  async searchIssues(queryString: string, first = 10) {
+    const body = JSON.stringify({query: searchIssues, variables: {queryString, first}})
     return await this.serverPost<SearchIssuesQuery>(body)
   }
 }

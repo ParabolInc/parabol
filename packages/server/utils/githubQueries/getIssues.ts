@@ -2,9 +2,9 @@ import gql from 'graphql-tag'
 import {print} from 'graphql/language/printer'
 
 export const getIssuesQuery = gql`
-  query getIssues {
+  query getIssues($first: Int) {
     viewer {
-      issues(first: 10) {
+      issues(first: $first) {
         edges {
           node {
             ...getIssuesNode
