@@ -13,7 +13,7 @@ import {getUserId} from '../../utils/authorization'
 import GitHubServerManager from '../../utils/GitHubServerManager'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
-import connectionFromTasks from '../queries/helpers/connectionFromTasks'
+import connectionFromGitHubIssues from '../queries/helpers/connectionFromGitHubIssues'
 import {GitHubIssueConnection} from './GitHubIssue'
 import GitHubSearchQuery from './GitHubSearchQuery'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
@@ -92,15 +92,14 @@ const GitHubIntegration = new GraphQLObjectType<any, GQLContext>({
       resolve: async ({teamId, userId, accessToken}, {first, queryString}, context) => {
         const {authToken} = context
         const viewerId = getUserId(authToken)
-        if (viewerId !== userId) {
-          const err = new Error('Cannot access another team members issues')
+        if (viewerId !== userId || !accessToken) {
+          const err = new Error(
+            viewerId !== userId
+              ? 'Cannot access another team members issues'
+              : 'Not integrated with GitHub'
+          )
           standardError(err, {tags: {teamId, userId}, userId: viewerId})
-          return connectionFromTasks([], 0, err)
-        }
-        if (!accessToken) {
-          const err = new Error('Not integrated with GitHub')
-          standardError(err, {tags: {teamId, userId}, userId: viewerId})
-          return connectionFromTasks([], 0, err)
+          return connectionFromGitHubIssues([], 0, err)
         }
         const manager = new GitHubServerManager(accessToken)
         const issuesRes = queryString
@@ -108,15 +107,15 @@ const GitHubIntegration = new GraphQLObjectType<any, GQLContext>({
           : await manager.getIssues(first)
         if ('message' in issuesRes) {
           console.error(issuesRes)
-          return connectionFromTasks([], 0, issuesRes)
-        }
-        if (Array.isArray(issuesRes.errors)) {
-          console.error(issuesRes.errors[0])
+          return connectionFromGitHubIssues([], 0, issuesRes)
         }
         const {data, errors} = issuesRes
-        if (!data) return connectionFromTasks([], 0)
+        if (Array.isArray(errors)) {
+          console.error(errors[0])
+        }
+        if (!data) return connectionFromGitHubIssues([], 0)
         const edges = 'search' in data ? data.search.edges : data.viewer.issues.edges
-        if (!edges || !edges.length) return connectionFromTasks([], 0)
+        if (!edges || !edges.length) return connectionFromGitHubIssues([], 0)
         const mappedIssues = (edges as any)
           .filter((edge) => edge?.node?.id)
           .map((edge) => {
@@ -130,7 +129,7 @@ const GitHubIntegration = new GraphQLObjectType<any, GQLContext>({
               updatedAt: new Date()
             }
           })
-        return connectionFromTasks(
+        return connectionFromGitHubIssues(
           mappedIssues,
           first,
           errors ? {message: errors[0].message} : undefined
