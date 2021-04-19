@@ -1,4 +1,3 @@
-import {DocumentNode} from 'graphql-typed'
 import fetch from 'node-fetch'
 import GitHubManager from 'parabol-client/utils/GitHubManager'
 import {stringify} from 'querystring'
@@ -88,7 +87,7 @@ class GitHubServerManager extends GitHubManager {
 
   async searchIssues(queryString: string) {
     const body = JSON.stringify({query: searchIssues, variables: {queryString}})
-    return this.serverPost<SearchIssuesQuery>(body)
+    return await this.serverPost<SearchIssuesQuery>(body)
   }
 }
 

@@ -6,16 +6,18 @@ export const searchIssuesQuery = gql`
     search(query: $queryString, type: ISSUE, first: 10) {
       edges {
         node {
-          ... on Issue {
-            id
-            title
-            url
-            repository {
-              nameWithOwner
-            }
-          }
+          ...getIssuesNode
         }
       }
+    }
+  }
+
+  fragment getIssuesNode on Issue {
+    id
+    title
+    url
+    repository {
+      nameWithOwner
     }
   }
 `

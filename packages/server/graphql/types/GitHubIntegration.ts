@@ -17,6 +17,7 @@ import connectionFromTasks from '../queries/helpers/connectionFromTasks'
 import {GitHubIssueConnection} from './GitHubIssue'
 import GitHubSearchQuery from './GitHubSearchQuery'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
+import {GetIssuesNodeFragment} from '../../types/typed-document-nodes'
 
 const GitHubIntegration = new GraphQLObjectType<any, GQLContext>({
   name: 'GitHubIntegration',
@@ -105,7 +106,6 @@ const GitHubIntegration = new GraphQLObjectType<any, GQLContext>({
         const issuesRes = queryString
           ? await manager.searchIssues(queryString)
           : await manager.getIssues()
-
         if ('message' in issuesRes) {
           console.error(issuesRes)
           return connectionFromTasks([], 0, issuesRes)
@@ -117,17 +117,19 @@ const GitHubIntegration = new GraphQLObjectType<any, GQLContext>({
         if (!data) return connectionFromTasks([], 0)
         const edges = 'search' in data ? data.search.edges : data.viewer.issues.edges
         if (!edges || !edges.length) return connectionFromTasks([], 0)
-        const mappedIssues = edges.map((edge) => {
-          const {node} = edge
-          const {id, title, url, repository} = node
-          return {
-            id,
-            summary: title,
-            url,
-            nameWithOwner: repository.nameWithOwner,
-            updatedAt: new Date()
-          }
-        })
+        const mappedIssues = (edges as any)
+          .filter((edge) => edge?.node?.id)
+          .map((edge) => {
+            const {node} = edge
+            const {id, title, url, repository} = node as GetIssuesNodeFragment
+            return {
+              id,
+              summary: title,
+              url,
+              nameWithOwner: repository.nameWithOwner,
+              updatedAt: new Date()
+            }
+          })
         return connectionFromTasks(
           mappedIssues,
           first,
