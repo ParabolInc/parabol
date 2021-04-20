@@ -70,14 +70,16 @@ const AnalyticsPage = () => {
   )
   const atmosphere = useAtmosphere()
   useEffect(() => {
-    const email = window.localStorage.getItem(LocalStorageKey.EMAIL)
-    LogRocket.init(window.__ACTION__.logRocket, {
-      release: __APP_VERSION__
-    })
-    if (email) {
-      LogRocket.identify(atmosphere.viewerId, {
-        email
+    if (window.__ACTION__.logRocketEnabled) {
+      const email = window.localStorage.getItem(LocalStorageKey.EMAIL)
+      LogRocket.init(window.__ACTION__.logRocket, {
+        release: __APP_VERSION__
       })
+      if (email) {
+        LogRocket.identify(atmosphere.viewerId, {
+          email
+        })
+      }
     }
   }, [])
 
