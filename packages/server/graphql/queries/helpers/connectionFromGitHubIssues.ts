@@ -1,10 +1,10 @@
-import {GetIssuesNodeFragment} from '../../../types/typed-document-nodes'
+// import {GetIssuesNodeFragment} from '../../../types/typed-document-nodes'
 
-interface GitHubConnIssue extends GetIssuesNodeFragment {
-  updatedAt: Date
-}
+// interface GitHubConnIssue extends GetIssuesNodeFragment {
+//   updatedAt: Date
+// }
 
-const connectionFromGitHubIssues = <T extends {updatedAt: Date} = GitHubConnIssue>(
+const connectionFromGitHubIssues = <T extends {updatedAt: Date} = any>(
   issues: T[],
   first = 10,
   error?: {message: string}

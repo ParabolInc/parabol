@@ -19,7 +19,7 @@ import GitHubSearchQuery from './GitHubSearchQuery'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import {GetIssuesNodeFragment} from '../../types/typed-document-nodes'
 import fetchGitHubRepos from '../queries/helpers/fetchGitHubRepos'
-import GitHubRepo from './GitHubRepo'
+import {GitHubRepoConnection} from './GitHubRepo'
 
 const GitHubIntegration = new GraphQLObjectType<any, GQLContext>({
   name: 'GitHubIntegration',
@@ -143,9 +143,22 @@ const GitHubIntegration = new GraphQLObjectType<any, GQLContext>({
       description: '*The GitHub login used for queries'
     },
     repos: {
-      type: new GraphQLNonNull(GraphQLList(GitHubRepo)),
-      resolve: async ({teamId, userId}, _args, {dataLoader}) => {
-        return await fetchGitHubRepos(teamId, userId, dataLoader)
+      type: new GraphQLNonNull(GitHubRepoConnection),
+      description:
+        'A list of repos coming straight from the GitHub integration for a specific team member',
+      args: {
+        first: {
+          type: GraphQLInt,
+          defaultValue: 20
+        }
+      },
+      resolve: async ({teamId, userId}, {first}, {dataLoader}) => {
+        const repos = await fetchGitHubRepos(teamId, userId, dataLoader)
+        const mappedRepos = repos.map((repo) => ({
+          ...repo,
+          updatedAt: new Date()
+        }))
+        return connectionFromGitHubIssues(mappedRepos, first)
       }
     },
     teamId: {

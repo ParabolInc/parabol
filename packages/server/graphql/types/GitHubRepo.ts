@@ -44,6 +44,6 @@ const {connectionType, edgeType} = connectionDefinitions({
   })
 })
 
-export const GitHubIssueConnection = connectionType
-export const GitHubIssueEdge = edgeType
+export const GitHubRepoConnection = connectionType
+export const GitHubRepoEdge = edgeType
 export default GitHubRepo

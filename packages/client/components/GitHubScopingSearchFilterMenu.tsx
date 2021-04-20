@@ -82,55 +82,61 @@ const MAX_PROJECTS = 10
 const GitHubScopingSearchFilterMenu = (props: Props) => {
   // TODO replace projects
   const {menuProps, viewer} = props
-  console.log('🚀 ~ GitHubScopingSearchFilterMenu ~ viewer', viewer)
   const isLoading = viewer === null
-  const projects = viewer?.teamMember?.integrations.github?.projects ?? []
-  const meeting = viewer?.meeting ?? null
-  const meetingId = meeting?.id ?? ''
-  const githubSearchQuery = meeting?.githubSearchQuery ?? null
-  const nameWithOwnerFilters = githubSearchQuery?.nameWithOwnerFilters ?? []
-  const {fields, onChange} = useForm({
-    search: {
-      getDefault: () => ''
-    }
-  })
-  const {search} = fields
-  const {value} = search
-  const query = value.toLowerCase()
-  const showSearch = projects.length > MAX_PROJECTS
-  const queryFilteredProjects = useFilteredItems(query, projects, getValue)
-  const selectedAndFilteredProjects = useMemo(() => {
-    const selectedProjects = projects.filter((project) => nameWithOwnerFilters.includes(project.id))
-    const adjustedMax =
-      selectedProjects.length >= MAX_PROJECTS ? selectedProjects.length + 1 : MAX_PROJECTS
-    return Array.from(new Set([...selectedProjects, ...queryFilteredProjects])).slice(
-      0,
-      adjustedMax
-    )
-  }, [queryFilteredProjects])
+
+  const github = viewer?.teamMember?.integrations.github ?? []
+  const repos = github?.repos
+  if (!repos?.edges) {
+    return <div>nope!</div>
+  }
+  const {edges} = repos
+  const repoNames = edges.map((edge) => edge.node.nameWithOwner)
+  // const meeting = viewer?.meeting ?? null
+  // const meetingId = meeting?.id ?? ''
+  // const githubSearchQuery = meeting?.githubSearchQuery ?? null
+  // const nameWithOwnerFilters = githubSearchQuery?.nameWithOwnerFilters ?? []
+  // const {fields, onChange} = useForm({
+  //   search: {
+  //     getDefault: () => ''
+  //   }
+  // })
+  // const {search} = fields
+  // const {value} = search
+  // const query = value.toLowerCase()
+  // const showSearch = projects.length > MAX_PROJECTS
+  // const queryFilteredProjects = useFilteredItems(query, projects, getValue)
+  // const selectedAndFilteredProjects = useMemo(() => {
+  //   const selectedProjects = projects.filter((project) => nameWithOwnerFilters.includes(project.id))
+  //   const adjustedMax =
+  //     selectedProjects.length >= MAX_PROJECTS ? selectedProjects.length + 1 : MAX_PROJECTS
+  //   return Array.from(new Set([...selectedProjects, ...queryFilteredProjects])).slice(
+  //     0,
+  //     adjustedMax
+  //   )
+  // }, [queryFilteredProjects])
 
   const atmosphere = useAtmosphere()
   const {portalStatus, isDropdown} = menuProps
-  const toggleJQL = () => {
-    commitLocalUpdate(atmosphere, (store) => {
-      const searchQueryId = SearchQueryId.join('github', meetingId)
-      const githubSearchQuery = store.get(searchQueryId)
-      // this might bork if the checkbox is ticked before the full query loads
-      if (!githubSearchQuery) return
-      githubSearchQuery.setValue([], 'nameWithOwnerFilters')
-    })
-  }
+  // const toggleJQL = () => {
+  //   commitLocalUpdate(atmosphere, (store) => {
+  //     const searchQueryId = SearchQueryId.join('github', meetingId)
+  //     const githubSearchQuery = store.get(searchQueryId)
+  //     // this might bork if the checkbox is ticked before the full query loads
+  //     if (!githubSearchQuery) return
+  //     githubSearchQuery.setValue([], 'nameWithOwnerFilters')
+  //   })
+  // }
   return (
     <Menu
       keepParentFocus
       ariaLabel={'Define the GitHub search query'}
       portalStatus={portalStatus}
       isDropdown={isDropdown}
-      resetActiveOnChanges={[selectedAndFilteredProjects]}
+      // resetActiveOnChanges={[selectedAndFilteredProjects]}
     >
       {isLoading && <MockGitHubFieldList />}
-      {selectedAndFilteredProjects.length > 0 && <FilterLabel>Filter by project:</FilterLabel>}
-      {showSearch && (
+      {/* {selectedAndFilteredProjects.length > 0 && <FilterLabel>Filter by project:</FilterLabel>} */}
+      {/* {showSearch && (
         <SearchItem key='search'>
           <StyledMenuItemIcon>
             <SearchIcon>search</SearchIcon>
@@ -141,40 +147,40 @@ const GitHubScopingSearchFilterMenu = (props: Props) => {
             onChange={onChange}
           />
         </SearchItem>
-      )}
-      {(query && selectedAndFilteredProjects.length === 0 && !isLoading && (
+      )} */}
+      {/* {(query && selectedAndFilteredProjects.length === 0 && !isLoading && (
         <NoResults key='no-results'>No GitHub Projects found!</NoResults>
       )) ||
-        null}
-      {selectedAndFilteredProjects.map((project) => {
-        const {id: globalProjectKey, avatar, name} = project
-        const toggleProjectKeyFilter = () => {
-          commitLocalUpdate(atmosphere, (store) => {
-            const searchQueryId = SearchQueryId.join('github', meetingId)
-            const githubSearchQuery = store.get<GitHubSearchQuery>(searchQueryId)!
-            const nameWithOwnerFiltersProxy = githubSearchQuery
-              .getValue('nameWithOwnerFilters')!
-              .slice()
-            const keyIdx = nameWithOwnerFiltersProxy.indexOf(globalProjectKey)
-            if (keyIdx !== -1) {
-              nameWithOwnerFiltersProxy.splice(keyIdx, 1)
-            } else {
-              nameWithOwnerFiltersProxy.push(globalProjectKey)
-            }
-            githubSearchQuery.setValue(nameWithOwnerFiltersProxy, 'nameWithOwnerFilters')
-          })
-        }
+        null} */}
+      {repoNames.map((repoName) => {
+        // const {id: globalProjectKey, avatar, name} = project
+        // const toggleProjectKeyFilter = () => {
+        //   commitLocalUpdate(atmosphere, (store) => {
+        //     const searchQueryId = SearchQueryId.join('github', meetingId)
+        //     const githubSearchQuery = store.get<GitHubSearchQuery>(searchQueryId)!
+        //     const nameWithOwnerFiltersProxy = githubSearchQuery
+        //       .getValue('nameWithOwnerFilters')!
+        //       .slice()
+        //     const keyIdx = nameWithOwnerFiltersProxy.indexOf(globalProjectKey)
+        //     if (keyIdx !== -1) {
+        //       nameWithOwnerFiltersProxy.splice(keyIdx, 1)
+        //     } else {
+        //       nameWithOwnerFiltersProxy.push(globalProjectKey)
+        //     }
+        //     githubSearchQuery.setValue(nameWithOwnerFiltersProxy, 'nameWithOwnerFilters')
+        //   })
+        // }
         return (
           <MenuItem
-            key={globalProjectKey}
+            // key={globalProjectKey}
             label={
               <StyledMenuItemLabel>
-                <StyledCheckBox active={nameWithOwnerFilters.includes(globalProjectKey)} />
-                <ProjectAvatar src={avatar} />
-                <TypeAheadLabel query={query} label={name} />
+                {/* <StyledCheckBox active={nameWithOwnerFilters.includes(globalProjectKey)} /> */}
+                {/* <ProjectAvatar src={avatar} /> */}
+                <TypeAheadLabel query={''} label={repoName} />
               </StyledMenuItemLabel>
             }
-            onClick={toggleProjectKeyFilter}
+            // onClick={toggleProjectKeyFilter}
           />
         )
       })}
@@ -197,9 +203,19 @@ export default createFragmentContainer(GitHubScopingSearchFilterMenu, {
         integrations {
           github {
             login
-            repos {
-              id
-              nameWithOwner
+            # repos {
+            #   id
+            #   nameWithOwner
+            # }
+            repos(first: 30) @connection(key: "GitHubScopingSearchFilterMenu_repos") {
+              error {
+                message
+              }
+              edges {
+                node {
+                  nameWithOwner
+                }
+              }
             }
           }
         }
