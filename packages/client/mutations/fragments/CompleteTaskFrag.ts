@@ -4,6 +4,7 @@ graphql`
     id
     content
     plaintextContent
+    title
     createdAt
     createdBy
     createdByUser {

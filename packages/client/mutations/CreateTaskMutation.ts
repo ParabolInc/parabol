@@ -113,8 +113,9 @@ const CreateTaskMutation: StandardMutation<TCreateTaskMutation, OptionalHandlers
       const now = new Date().toJSON()
       const taskId = clientTempId(teamId)
       const viewer = store.getRoot().getLinkedRecord('viewer')
-      const plaintextContent = newTask.plaintextContent || (
-        newTask.content ? extractTextFromDraftString(newTask.content) : '')
+      const plaintextContent =
+        newTask.plaintextContent ||
+        (newTask.content ? extractTextFromDraftString(newTask.content) : '')
       const optimisticTask = {
         ...newTask,
         id: taskId,
@@ -125,6 +126,7 @@ const CreateTaskMutation: StandardMutation<TCreateTaskMutation, OptionalHandlers
         updatedAt: now,
         tags: [],
         content: newTask.content || makeEmptyStr(),
+        title: plaintextContent,
         plaintextContent
       }
       const task = createProxyRecord(store, 'Task', optimisticTask)
