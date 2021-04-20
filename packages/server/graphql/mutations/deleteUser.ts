@@ -64,6 +64,8 @@ export default {
       orgIds.map((orgId) => removeFromOrg(userIdToDelete, orgId, undefined, dataLoader))
     )
     const validReason = reason?.trim().slice(0, 2000) || 'No reason provided'
+    const cachedUser = await dataLoader.get('users').load(user.id)
+    cachedUser.isRemoved = true
     if (userId) {
       segmentIo.track({
         userId,
