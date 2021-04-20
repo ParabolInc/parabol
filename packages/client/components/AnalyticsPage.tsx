@@ -72,7 +72,7 @@ const AnalyticsPage = () => {
   useEffect(() => {
     if (window.__ACTION__.logRocketEnabled) {
       const email = window.localStorage.getItem(LocalStorageKey.EMAIL)
-      LogRocket.init(window.__ACTION__.logRocket, {
+      LogRocket.init(window.__ACTION__.logRocketId, {
         release: __APP_VERSION__
       })
       if (email) {

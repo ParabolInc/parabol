@@ -100,7 +100,7 @@ module.exports = {
         atlassian: process.env.ATLASSIAN_CLIENT_ID,
         github: process.env.GITHUB_CLIENT_ID,
         google: process.env.GOOGLE_OAUTH_CLIENT_ID,
-        logRocket: process.env.LOG_ROCKET_ID,
+        logRocketId: process.env.LOG_ROCKET_ID,
         logRocketEnabled: process.env.LOG_ROCKET_ENABLED,
         segment: process.env.SEGMENT_WRITE_KEY,
         sentry: process.env.SENTRY_DSN,
