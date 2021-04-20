@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {useRef, useState} from 'react'
+import React, {useState} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import useBreakpoint from '~/hooks/useBreakpoint'
 import {Elevation} from '~/styles/elevation'
@@ -22,6 +22,7 @@ const HeaderCard = styled('div')({
   background: PALETTE.WHITE,
   borderRadius: 4,
   boxShadow: Elevation.Z1,
+  height: '100%',
   padding: '12px 16px',
   maxWidth: 1504, // matches widest dimension column 1600 - padding etc.
   margin: '0 auto',
@@ -45,18 +46,16 @@ const CardTitleWrapper = styled('div')({
   width: '100%'
 })
 
-const CardDescription = styled('div')<{isExpanded: boolean; maxHeight: number}>(
-  ({isExpanded, maxHeight}) => ({
-    color: PALETTE.SLATE_700,
-    fontWeight: 'normal',
-    lineHeight: '20px',
-    fontSize: 14,
-    margin: 0,
-    maxHeight: isExpanded ? maxHeight : 30,
-    overflowY: 'auto',
-    transition: 'all 300ms'
-  })
-)
+const CardDescription = styled('div')<{isExpanded: boolean}>(({isExpanded}) => ({
+  color: PALETTE.SLATE_700,
+  fontWeight: 'normal',
+  lineHeight: '20px',
+  fontSize: 14,
+  margin: 0,
+  maxHeight: isExpanded ? 300 : 30,
+  overflowY: isExpanded ? 'auto' : 'hidden',
+  transition: 'all 300ms'
+}))
 
 const StyledIcon = styled(Icon)({
   fontSize: ICON_SIZE.MD18,
@@ -83,8 +82,6 @@ const PokerEstimateHeaderCardJira = (props: Props) => {
   const {stage} = props
   const {serviceTaskId, story} = stage
   const [isExpanded, setIsExpanded] = useState(false)
-  const descriptionRef = useRef<HTMLDivElement>(null)
-  const maxHeight = Math.min(descriptionRef.current?.scrollHeight ?? 300, 300)
   const toggleExpand = () => {
     setIsExpanded(!isExpanded)
   }
@@ -98,7 +95,7 @@ const PokerEstimateHeaderCardJira = (props: Props) => {
           <CardTitleWrapper>
             <CardTitle>{`Jira is Down!`}</CardTitle>
           </CardTitleWrapper>
-          <CardDescription ref={descriptionRef} maxHeight={maxHeight} isExpanded={isExpanded}>
+          <CardDescription isExpanded>
             {`Cannot connect to Jira. Voting will be disabled for ${issueKey}. If the problem persists, please reintegrate or remove the issue and add it again.`}
           </CardDescription>
         </HeaderCard>
@@ -118,8 +115,6 @@ const PokerEstimateHeaderCardJira = (props: Props) => {
           </CardIcons>
         </CardTitleWrapper>
         <CardDescription
-          ref={descriptionRef}
-          maxHeight={maxHeight}
           isExpanded={isExpanded}
           dangerouslySetInnerHTML={{__html: descriptionHTML}}
         />

@@ -125,6 +125,7 @@ const CreateTaskMutation: StandardMutation<TCreateTaskMutation, OptionalHandlers
         updatedAt: now,
         tags: [],
         content: newTask.content || makeEmptyStr(),
+        title: plaintextContent,
         plaintextContent
       }
       const task = createProxyRecord(store, 'Task', optimisticTask)

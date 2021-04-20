@@ -6,18 +6,18 @@ import {
   GraphQLObjectType,
   GraphQLString
 } from 'graphql'
-import connectionDefinitions from '../connectionDefinitions'
 import {ThreadSourceEnum} from '../../database/types/ThreadSource'
+import connectionDefinitions from '../connectionDefinitions'
 import {GQLContext} from '../graphql'
 import AgendaItem from './AgendaItem'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import PageInfoDateCursor from './PageInfoDateCursor'
 import Story, {storyFields} from './Story'
 import TaskEditorDetails from './TaskEditorDetails'
+import TaskEstimate from './TaskEstimate'
 import TaskIntegration from './TaskIntegration'
 import TaskStatusEnum from './TaskStatusEnum'
 import Team from './Team'
-import TaskEstimate from './TaskEstimate'
 import Threadable, {threadableFields} from './Threadable'
 import ThreadSource from './ThreadSource'
 
@@ -111,7 +111,7 @@ const Task = new GraphQLObjectType<any, GQLContext>({
       type: GraphQLNonNull(GraphQLString),
       description: 'The first block of the content',
       resolve: ({plaintextContent}) => {
-        const firstBreak = plaintextContent.indexOf('\n')
+        const firstBreak = plaintextContent.trim().indexOf('\n')
         const endIndex = firstBreak > -1 ? firstBreak : plaintextContent.length
         return plaintextContent.slice(0, endIndex)
       }

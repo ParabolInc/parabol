@@ -23,11 +23,11 @@ const getIssueKey = (service: TaskServiceEnum, serviceTaskId: string) => {
     case 'jira':
       return JiraServiceTaskId.split(serviceTaskId).issueKey
     case 'PARABOL':
-      return ''
+      return null
     case 'github':
       return serviceTaskId
     default:
-      return ''
+      return null
   }
 }
 
@@ -68,8 +68,8 @@ const useMakeStageSummaries = (phaseRef: any, localStageId: string) => {
       }
       const issueKey = getIssueKey(service, serviceTaskId)
       const rawTitle = story?.title ?? null
-      const title = rawTitle ?? issueKey ?? 'Unknown Story'
-      const subtitle = rawTitle ? issueKey : ''
+      const title = rawTitle ?? issueKey ?? '<Unknown Story>'
+      const subtitle = rawTitle ? issueKey ?? '' : ''
 
       summaries.push({
         title,
