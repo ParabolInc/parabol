@@ -18,6 +18,8 @@ import {GitHubIssueConnection} from './GitHubIssue'
 import GitHubSearchQuery from './GitHubSearchQuery'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import {GetIssuesNodeFragment} from '../../types/typed-document-nodes'
+import fetchGitHubRepos from '../queries/helpers/fetchGitHubRepos'
+import GitHubRepo from './GitHubRepo'
 
 const GitHubIntegration = new GraphQLObjectType<any, GQLContext>({
   name: 'GitHubIntegration',
@@ -139,6 +141,12 @@ const GitHubIntegration = new GraphQLObjectType<any, GQLContext>({
     login: {
       type: new GraphQLNonNull(GraphQLID),
       description: '*The GitHub login used for queries'
+    },
+    repos: {
+      type: new GraphQLNonNull(GraphQLList(GitHubRepo)),
+      resolve: async ({teamId, userId}, _args, {dataLoader}) => {
+        return await fetchGitHubRepos(teamId, userId, dataLoader)
+      }
     },
     teamId: {
       type: new GraphQLNonNull(GraphQLID),

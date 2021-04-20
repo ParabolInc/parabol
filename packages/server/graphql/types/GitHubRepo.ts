@@ -16,11 +16,11 @@ const GitHubRepo = new GraphQLObjectType<any, GQLContext>({
     nameWithOwner: {
       type: GraphQLNonNull(GraphQLID),
       description: 'The owner / repo of the issue as found in GitHub'
+    },
+    service: {
+      type: GraphQLNonNull(GraphQLString),
+      description: 'The owner / repo of the issue as found in GitHub'
     }
-    // service: {
-    //   type: GraphQLNonNull(GraphQLString),
-    //   description: 'The owner / repo of the issue as found in GitHub'
-    // },
   })
 })
 

@@ -1796,6 +1796,11 @@ export interface IGitHubIntegration {
   login: string;
 
   /**
+   * Test
+   */
+  repos: Array<IGitHubRepo | null>;
+
+  /**
    * *The team that the token is linked to
    */
   teamId: string;
@@ -1940,6 +1945,28 @@ export interface IThreadOnGitHubIssueArguments {
    * the incrementing sort order in string format
    */
   after?: string | null;
+}
+
+/**
+ * The GitHub Repo that we get directly from GitHub
+ */
+export interface IGitHubRepo {
+  __typename: 'GitHubRepo';
+
+  /**
+   * The id of the issue as found in GitHub
+   */
+  id: string;
+
+  /**
+   * The owner / repo of the issue as found in GitHub
+   */
+  nameWithOwner: string;
+
+  /**
+   * The owner / repo of the issue as found in GitHub
+   */
+  service: string;
 }
 
 /**

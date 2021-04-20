@@ -17,7 +17,7 @@ import Menu from './Menu'
 import MenuItem from './MenuItem'
 import MenuItemComponentAvatar from './MenuItemComponentAvatar'
 import MenuItemLabel from './MenuItemLabel'
-import MockGitHubFieldList from './MockGitHubFieldList'
+import MockGitHubFieldList from './MockJiraFieldList'
 import TaskFooterIntegrateMenuSearch from './TaskFooterIntegrateMenuSearch'
 import TypeAheadLabel from './TypeAheadLabel'
 
@@ -82,6 +82,7 @@ const MAX_PROJECTS = 10
 const GitHubScopingSearchFilterMenu = (props: Props) => {
   // TODO replace projects
   const {menuProps, viewer} = props
+  console.log('🚀 ~ GitHubScopingSearchFilterMenu ~ viewer', viewer)
   const isLoading = viewer === null
   const projects = viewer?.teamMember?.integrations.github?.projects ?? []
   const meeting = viewer?.meeting ?? null
@@ -196,6 +197,10 @@ export default createFragmentContainer(GitHubScopingSearchFilterMenu, {
         integrations {
           github {
             login
+            repos {
+              id
+              nameWithOwner
+            }
           }
         }
       }
