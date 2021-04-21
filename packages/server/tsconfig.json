@@ -30,6 +30,7 @@
     "graphql/queries/tasks.ts",
     "graphql/queries/archivedTasks.ts",
     "billing/debug.ts",
+    "hubspot/backfillHubSpot.ts",
     "server.ts",
     "debugJira.ts"
   ],
