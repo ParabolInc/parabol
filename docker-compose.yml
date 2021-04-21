@@ -43,14 +43,11 @@ services:
       - db
       - redis
       - postgres
-    volumes:
-      - app-data:/parabol/self-hosted
     networks:
       - parabol-network
 networks:
   parabol-network:
 volumes:
-  app-data: {}
   redis-data: {}
   rethink-data: {}
   postgres-data: {}
