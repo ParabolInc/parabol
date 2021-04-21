@@ -5,7 +5,7 @@
   "scripts": {
     "dokku": {
       "predeploy": "yarn db:migrate && yarn pg:migrate up",
-      "postdeploy": "yarn postdeploy"
+      "postdeploy": "yarn postdeploy && yarn postmigrate"
     }
   }
 }
