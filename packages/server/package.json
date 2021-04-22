@@ -85,6 +85,7 @@
     "@authenio/samlify-node-xmllint": "^1.0.1",
     "@gql2ts/from-schema": "^2.0.0-4",
     "@mattkrick/sanitize-svg": "0.3.1",
+    "@octokit/graphql": "^4.6.1",
     "@pgtyped/cli": "^0.9.0",
     "@pgtyped/query": "^0.9.0",
     "@sentry/integrations": "^5.8.0",
