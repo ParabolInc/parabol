@@ -3,6 +3,8 @@ import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {TransitionStatus} from '~/hooks/useTransition'
+import {MenuPosition} from '../hooks/useCoords'
+import useTooltip from '../hooks/useTooltip'
 import {BezierCurve} from '../types/constEnums'
 import {AvatarListUser_user} from '../__generated__/AvatarListUser_user.graphql'
 import Avatar from './Avatar/Avatar'
@@ -58,9 +60,19 @@ const AvatarListUser = (props: Props) => {
     onClick,
     borderColor
   } = props
-  const {picture} = user
+  const {picture, preferredName} = user
+  const {tooltipPortal, openTooltip, closeTooltip, originRef} = useTooltip<HTMLDivElement>(
+    MenuPosition.UPPER_CENTER
+  )
   return (
-    <Wrapper offset={offset} isColumn={isColumn} onClick={onClick}>
+    <Wrapper
+      ref={originRef}
+      offset={offset}
+      isColumn={isColumn}
+      onClick={onClick}
+      onMouseOver={openTooltip}
+      onMouseLeave={closeTooltip}
+    >
       <StyledAvatar
         className={className}
         status={status}
@@ -70,6 +82,7 @@ const AvatarListUser = (props: Props) => {
         isAnimated={isAnimated}
         borderColor={borderColor}
       />
+      {tooltipPortal(preferredName)}
     </Wrapper>
   )
 }
@@ -78,6 +91,7 @@ export default createFragmentContainer(AvatarListUser, {
   user: graphql`
     fragment AvatarListUser_user on User {
       picture
+      preferredName
     }
   `
 })
