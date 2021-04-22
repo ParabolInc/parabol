@@ -10,10 +10,25 @@ interface OAuth2Response {
   scope: string
 }
 
-interface GQLResponse<TData> {
-  data?: TData
-  errors?: any[]
+type GQLResponse<TData> = {
+  data: TData
+  errors?: [
+    {
+      message: string
+      path: [string]
+      extensions: {
+        [key: string]: any
+      }
+      locations: [
+        {
+          line: number
+          column: number
+        }
+      ]
+    }
+  ]
 }
+
 interface GitHubCredentialError {
   message: string
   documentation_url: string
@@ -56,6 +71,7 @@ class GitHubServerManager extends GitHubManager {
   }
   fetch = fetch
 
+  // TODO: update name to just post once we've moved the GH client manager methods to the server
   private async serverPost<T>(body: string): Promise<GitHubResponse<T>> {
     const res = await fetch('https://api.github.com/graphql', {
       method: 'POST',
