@@ -23,9 +23,7 @@ const StyledAvatar = styled(Avatar)<{
     : status === TransitionStatus.EXITING || status === TransitionStatus.MOUNTED
     ? 0
     : 1,
-  // TODO: refactor out the border from pokerCards if it's used for other things
   border: `2px solid ${borderColor}`,
-  // border: `${PokerCards.AVATAR_BORDER}px solid ${PALETTE.SLATE_300}`,
   transform: !isAnimated
     ? undefined
     : status === TransitionStatus.EXITING || status === TransitionStatus.MOUNTED
