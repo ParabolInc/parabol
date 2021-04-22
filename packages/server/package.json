@@ -18,7 +18,7 @@
     "precommit": "lint-staged",
     "lint": "eslint --fix ./**/*.ts",
     "postversion": "git push --follow-tags",
-    "tsgen:gh": "gql2ts utils/githubSchema.json -e $(pwd)/../client/types/configGH.js -o packages/client/types/githubGraphql.d.ts && eslint --fix 'packages/client/types/githubGraphql.d.ts'",
+    "tsgen:gh": "gql2ts utils/githubSchema.ts -e $(pwd)/../client/types/configGH.js -o packages/client/types/githubGraphql.d.ts && eslint --fix 'packages/client/types/githubGraphql.d.ts'",
     "tsgen:ghQuery": "graphql-typescript-definitions --schema-types-path . && eslint --fix 'packages/client/utils/githubQueries/**/*.d.ts' ",
     "typecheck": "yarn tsc --noEmit -p tsconfig.json"
   },
@@ -85,6 +85,7 @@
     "@authenio/samlify-node-xmllint": "^1.0.1",
     "@gql2ts/from-schema": "^2.0.0-4",
     "@mattkrick/sanitize-svg": "0.3.1",
+    "@octokit/graphql-schema": "^10.36.0",
     "@pgtyped/cli": "^0.9.0",
     "@pgtyped/query": "^0.9.0",
     "@sentry/integrations": "^5.8.0",
