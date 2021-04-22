@@ -59,7 +59,7 @@ const createSSR = (res: HttpResponse, req: HttpRequest) => {
     res.end()
     return
   }
-  res.writeHeader('cotent-type', 'text/html; charset=utf-8')
+  res.writeHeader('content-type', 'text/html; charset=utf-8')
   // no need for eTag since file is < 1 MTU
   if (acceptsBrotli(req)) {
     res.writeHeader('content-encoding', 'br').end(getBrotli())

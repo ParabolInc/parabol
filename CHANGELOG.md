@@ -5,6 +5,18 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.8.0 2021-Apr-21
+
+### Added
+
+- Validate new poker issues #4831
+- Poker avatars tooltip #4882
+
+### Fixed
+
+- Check if story and meeting exist #4786
+- Fix editing too bug #4879
+
 ## 6.7.0 2021-Apr-14
 
 ### Added

@@ -44,7 +44,6 @@ export const pushInvitationTeamOnNext: OnNextHandler<PushInvitationMutation_team
   if (!user || !team) return
   const {preferredName, email, id: userId} = user
   const {name: teamName, id: teamId} = team
-  const noop = () => {}
   atmosphere.eventEmitter.emit('addSnackbar', {
     autoDismiss: 0,
     key: `pushInvitation:${teamId}:${userId}`,
@@ -52,11 +51,7 @@ export const pushInvitationTeamOnNext: OnNextHandler<PushInvitationMutation_team
     action: {
       label: 'Accept',
       callback: () => {
-        InviteToTeamMutation(
-          atmosphere,
-          {meetingId, teamId, invitees: [email]},
-          {onError: noop, onCompleted: noop}
-        )
+        InviteToTeamMutation(atmosphere, {meetingId, teamId, invitees: [email]}, {})
       }
     },
     secondaryAction: {
