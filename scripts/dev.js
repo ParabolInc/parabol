@@ -14,7 +14,7 @@ const TOOLBOX_ROOT = path.join(PROJECT_ROOT, 'scripts', 'toolbox')
 const pgMigrate = require('node-pg-migrate').default
 const cliPgmConfig = require('../packages/server/postgres/pgmConfig')
 const {generate} = require('@graphql-codegen/cli')
-const yaml = require('js-yaml')
+const codegenSchema = require('../codegen.json')
 
 const compileToolbox = () => {
   return new Promise((resolve) => {
@@ -40,8 +40,7 @@ const dev = async (maybeInit) => {
   const isInit = !fs.existsSync(path.join(TOOLBOX_ROOT, 'updateSchema.js')) || maybeInit
   const redis = new Redis(process.env.REDIS_URL)
   const toolboxPromise = compileToolbox()
-  const codegenDoc = yaml.load(fs.readFileSync('codegen.yml', 'utf8'))
-  generate(codegenDoc)
+  generate(codegenSchema)
   if (isInit) {
     console.log('👋👋👋      Welcome to Parabol!      👋👋👋')
     await Promise.all([removeArtifacts()])
