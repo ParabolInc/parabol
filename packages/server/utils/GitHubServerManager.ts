@@ -29,6 +29,7 @@ type GQLResponse<TData> = {
   ]
 }
 
+// response if the credential is invalid https://docs.github.com/en/developers/apps/authenticating-with-github-apps#authenticating-as-a-github-app
 interface GitHubCredentialError {
   message: string
   documentation_url: string
