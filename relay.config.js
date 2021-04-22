@@ -19,7 +19,7 @@ module.exports = {
   exclude: [
     '**/lib/**',
     '**/node_modules/**',
-    '**/githubSchema.graphql',
+    '**/githubSchemaTypes.ts',
     '**/githubQueries/**',
     '**/__generated__/**'
   ],

@@ -7,12 +7,12 @@
         "*"
       ],
       "excludes": [
-        "githubSchema.graphql",
+        "githubSchemaTypes.ts",
         "./packages/client/utils/githubQueries"
       ]
     },
     "GitHub": {
-      "schemaPath": "./packages/server/utils/githubSchema.graphql",
+      "schemaPath": "./packages/server/utils/githubSchemaTypes.ts",
       "name": "GitHub GraphQL Schema",
       "includes": [
         "./packages/client/utils/githubQueries/*.graphql",

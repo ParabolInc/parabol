@@ -40,11 +40,11 @@ const dev = async (maybeInit) => {
   const isInit = !fs.existsSync(path.join(TOOLBOX_ROOT, 'updateSchema.js')) || maybeInit
   const redis = new Redis(process.env.REDIS_URL)
   const toolboxPromise = compileToolbox()
-  generate(codegenSchema)
   if (isInit) {
     console.log('👋👋👋      Welcome to Parabol!      👋👋👋')
     await Promise.all([removeArtifacts()])
   }
+  await generate(codegenSchema)
   const buildDLL = require('./buildDll')()
   const clearRedis = redis.flushall()
   const migrateRethinkDB = require('./migrate')()

@@ -23,8 +23,8 @@ const compile = (config, isSilent) => {
 }
 
 const prod = async (isDeploy) => {
-  generate(codegenSchema)
   console.log('🙏🙏🙏      Building Production Server      🙏🙏🙏')
+  await generate(codegenSchema)
   await compile(toolboxConfig, true)
   await require('./toolbox/updateSchema.js').default()
   await require('./compileRelay')()
