@@ -3,7 +3,7 @@ import {buildClientSchema, printSchema} from 'graphql'
 import fetch from 'node-fetch'
 
 const updateGitHubSchema = async () => {
-  const schemaPath = './githubSchemaTypes.ts'
+  const schemaPath = './githubSchema.graphql'
   const schemaJSONPath = './githubSchema.ts'
   const accessToken = 'foobar'
   const headers = {
