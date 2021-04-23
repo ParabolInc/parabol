@@ -1,7 +1,6 @@
-import gql from 'graphql-tag'
-import {print} from 'graphql/language/printer'
+import {gql} from '../getGQLInputStr'
 
-export const getIssuesQuery = gql`
+export const getIssues = gql`
   query getIssues($first: Int) {
     viewer {
       issues(first: $first) {
@@ -14,6 +13,7 @@ export const getIssuesQuery = gql`
     }
   }
   fragment getIssuesNode on Issue {
+    __typename
     id
     title
     url
@@ -22,5 +22,3 @@ export const getIssuesQuery = gql`
     }
   }
 `
-
-export const getIssues = print(getIssuesQuery)

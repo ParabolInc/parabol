@@ -16,7 +16,7 @@ interface OAuth2Response {
   scope: string
 }
 
-type GQLResponse<TData> = {
+export type GQLResponse<TData> = {
   data: TData
   errors?: [
     {

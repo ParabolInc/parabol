@@ -1,7 +1,6 @@
-import gql from 'graphql-tag'
-import {print} from 'graphql/language/printer'
+import {gql} from '../getGQLInputStr'
 
-export const searchIssuesQuery = gql`
+export const searchIssues = gql`
   query searchIssues($queryString: String!, $first: Int) {
     search(query: $queryString, type: ISSUE, first: $first) {
       edges {
@@ -13,6 +12,7 @@ export const searchIssuesQuery = gql`
   }
 
   fragment getIssuesNode on Issue {
+    __typename
     id
     title
     url
@@ -21,5 +21,3 @@ export const searchIssuesQuery = gql`
     }
   }
 `
-
-export const searchIssues = print(searchIssuesQuery)
