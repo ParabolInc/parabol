@@ -1066,7 +1066,6 @@ export type ThreadSource =
   | ITask
   | IAgendaItem
   | IJiraIssue
-  | IGitHubIssue
   | IRetroReflectionGroup;
 
 /**
@@ -1155,7 +1154,7 @@ export interface IThreadableEdge {
 /**
  * An entity that can be used in a poker meeting and receive estimates
  */
-export type Story = ITask | IJiraIssue | IGitHubIssue;
+export type Story = ITask | IJiraIssue;
 
 /**
  * An entity that can be used in a poker meeting and receive estimates
@@ -1915,21 +1914,6 @@ export interface IGitHubIssue {
   id: string;
 
   /**
-   * the comments and tasks created from the discussion
-   */
-  thread: IThreadableConnection;
-
-  /**
-   * A list of users currently commenting
-   */
-  commentors: Array<ICommentorDetails> | null;
-
-  /**
-   * Alias for summary used by the Story interface
-   */
-  title: string;
-
-  /**
    * The url to access the issue
    */
   url: any;
@@ -1940,18 +1924,9 @@ export interface IGitHubIssue {
   nameWithOwner: string;
 
   /**
-   * The stringified ADF of the jira issue description
+   * The title of the GitHub issue
    */
-  description: string | null;
-}
-
-export interface IThreadOnGitHubIssueArguments {
-  first: number;
-
-  /**
-   * the incrementing sort order in string format
-   */
-  after?: string | null;
+  title: string;
 }
 
 /**

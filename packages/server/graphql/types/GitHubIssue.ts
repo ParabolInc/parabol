@@ -5,16 +5,11 @@ import GraphQLISO8601Type from './GraphQLISO8601Type'
 import GraphQLURLType from './GraphQLURLType'
 import PageInfoDateCursor from './PageInfoDateCursor'
 import StandardMutationError from './StandardMutationError'
-import Story, {storyFields} from './Story'
-import ThreadSource from './ThreadSource'
 
 const GitHubIssue = new GraphQLObjectType<any, GQLContext>({
   name: 'GitHubIssue',
   description: 'The GitHub Issue that comes direct from GitHub',
-  interfaces: () => [Story, ThreadSource],
-  isTypeOf: ({nameWithOwner}) => !!nameWithOwner,
   fields: () => ({
-    ...storyFields(),
     id: {
       type: GraphQLNonNull(GraphQLID),
       description: 'The id of the issue as found in GitHub'
@@ -22,34 +17,15 @@ const GitHubIssue = new GraphQLObjectType<any, GQLContext>({
     url: {
       type: GraphQLNonNull(GraphQLURLType),
       description: 'The url to access the issue'
-      // resolve: ({cloudName, key}) => {
-      //   return `https://${cloudName}.atlassian.net/browse/${key}`
-      // }
     },
     nameWithOwner: {
       type: GraphQLNonNull(GraphQLID),
       description: 'The owner / repo of the issue as found in GitHub'
     },
-    // summary: {
-    //   type: GraphQLNonNull(GraphQLString),
-    //   description: 'The plaintext summary of the jira issue'
-    // },
     title: {
       type: GraphQLNonNull(GraphQLString),
-      description: 'Alias for summary used by the Story interface',
-      resolve: ({summary}) => {
-        return summary
-      }
-    },
-    description: {
-      type: GraphQLString,
-      description: 'The stringified ADF of the jira issue description',
-      resolve: ({description}) => (description ? JSON.stringify(description) : '')
+      description: 'The title of the GitHub issue'
     }
-    // descriptionHTML: {
-    //   type: GraphQLNonNull(GraphQLString),
-    //   description: 'The description converted into raw HTML'
-    // }
   })
 })
 

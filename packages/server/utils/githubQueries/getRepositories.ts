@@ -1,7 +1,5 @@
-import gql from 'graphql-tag'
-import {print} from 'graphql/language/printer'
-
-export const getRepositoriesQuery = gql`
+import {gql} from '../getGQLInputStr'
+export const getRepositories = gql`
   query getRepositories {
     viewer {
       organizations(first: 100) {
@@ -25,5 +23,3 @@ export const getRepositoriesQuery = gql`
     }
   }
 `
-
-export const getRepositories = print(getRepositoriesQuery)

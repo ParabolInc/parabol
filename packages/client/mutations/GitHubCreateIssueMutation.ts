@@ -10,7 +10,6 @@ graphql`
       url
       nameWithOwner
       title
-      description
     }
     meetingId
     teamId

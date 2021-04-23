@@ -10,16 +10,16 @@ import {
 import ms from 'ms'
 import GitHubIntegrationId from '../../../client/shared/gqlIds/GitHubIntegrationId'
 import {getUserId} from '../../utils/authorization'
-import GitHubServerManager from '../../utils/GitHubServerManager'
+import GitHubServerManager, {GQLResponse} from '../../utils/GitHubServerManager'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import connectionFromGitHubIssues from '../queries/helpers/connectionFromGitHubIssues'
 import {GitHubIssueConnection} from './GitHubIssue'
 import GitHubSearchQuery from './GitHubSearchQuery'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
-import {GetIssuesNodeFragment} from '../../types/typed-document-nodes'
 import fetchGitHubRepos from '../queries/helpers/fetchGitHubRepos'
 import {GitHubRepoConnection} from './GitHubRepo'
+import {Issue, GetIssuesQuery, SearchIssuesQuery} from '../../types/typed-document-nodes'
 
 const GitHubIntegration = new GraphQLObjectType<any, GQLContext>({
   name: 'GitHubIntegration',
@@ -104,37 +104,68 @@ const GitHubIntegration = new GraphQLObjectType<any, GQLContext>({
           return connectionFromGitHubIssues([], 0, err)
         }
         const manager = new GitHubServerManager(accessToken)
-        const issuesRes = queryString
-          ? await manager.searchIssues(queryString, first)
-          : await manager.getIssues(first)
-        if ('message' in issuesRes) {
-          console.error(issuesRes)
-          return connectionFromGitHubIssues([], 0, issuesRes)
-        }
-        const {data, errors} = issuesRes
-        if (Array.isArray(errors)) {
-          console.error(errors[0])
-        }
-        if (!data) return connectionFromGitHubIssues([], 0)
-        const edges = 'search' in data ? data.search.edges : data.viewer.issues.edges
-        if (!edges || !edges.length) return connectionFromGitHubIssues([], 0)
-        const mappedIssues = (edges as any)
-          .filter((edge) => edge?.node?.id)
-          .map((edge) => {
-            const {node} = edge
-            const {id, title, url, repository} = node as GetIssuesNodeFragment
-            return {
-              id,
-              summary: title,
-              url,
-              nameWithOwner: repository.nameWithOwner,
-              updatedAt: new Date()
+        type GitHubIssue = Pick<Issue, 'title' | 'id' | 'url' | 'updatedAt'> &
+          Record<'nameWithOwner', string>
+        const gitHubIssues = [] as GitHubIssue[]
+        let gitHubErrors: GQLResponse<GetIssuesQuery | SearchIssuesQuery>['errors']
+
+        if (queryString) {
+          const searchRes = await manager.searchIssues(queryString, first)
+          if ('message' in searchRes) {
+            console.error(searchRes)
+            return connectionFromGitHubIssues([], 0, searchRes)
+          }
+          const {data, errors} = searchRes
+          if (Array.isArray(errors)) {
+            console.error(errors[0])
+            gitHubErrors = errors
+          }
+          const edges = data.search.edges
+          if (!edges || !edges.length) return connectionFromGitHubIssues([], 0)
+          edges.forEach((edge) => {
+            if (edge?.node?.__typename === 'Issue') {
+              const {node} = edge
+              const {id, title, url, repository} = node
+              gitHubIssues.push({
+                id,
+                title,
+                url,
+                nameWithOwner: repository.nameWithOwner,
+                updatedAt: new Date()
+              })
             }
           })
+        } else {
+          const issuesRes = await manager.getIssues(first)
+          if ('message' in issuesRes) {
+            console.error(issuesRes)
+            return connectionFromGitHubIssues([], 0, issuesRes)
+          }
+          const {data, errors} = issuesRes
+          if (Array.isArray(errors)) {
+            console.error(errors[0])
+            gitHubErrors = errors
+          }
+          const edges = data.viewer.issues.edges
+          if (!edges || !edges.length) return connectionFromGitHubIssues([], 0)
+          edges.forEach((edge) => {
+            if (edge?.node?.__typename === 'Issue') {
+              const {node} = edge
+              const {id, title, url, repository} = node
+              gitHubIssues.push({
+                id,
+                title,
+                url,
+                nameWithOwner: repository.nameWithOwner,
+                updatedAt: new Date()
+              })
+            }
+          })
+        }
         return connectionFromGitHubIssues(
-          mappedIssues,
+          gitHubIssues,
           first,
-          errors ? {message: errors[0].message} : undefined
+          gitHubErrors ? {message: gitHubErrors[0].message} : undefined
         )
       }
     },
