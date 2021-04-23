@@ -19757,7 +19757,7 @@ export type GetIssuesQuery = {__typename?: 'Query'} & {
   }
 }
 
-export type GetIssuesNodeFragment = {__typename?: 'Issue'} & Pick<Issue, 'id' | 'title' | 'url'> & {
+export type GetIssuesNodeFragment = {__typename: 'Issue'} & Pick<Issue, 'id' | 'title' | 'url'> & {
     repository: {__typename?: 'Repository'} & Pick<Repository, 'nameWithOwner'>
   }
 
@@ -19830,6 +19830,7 @@ export const GetIssuesNodeFragmentDoc: DocumentNode<GetIssuesNodeFragment, unkno
       selectionSet: {
         kind: 'SelectionSet',
         selections: [
+          {kind: 'Field', name: {kind: 'Name', value: '__typename'}},
           {kind: 'Field', name: {kind: 'Name', value: 'id'}},
           {kind: 'Field', name: {kind: 'Name', value: 'title'}},
           {kind: 'Field', name: {kind: 'Name', value: 'url'}},
