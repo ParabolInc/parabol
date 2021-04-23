@@ -6,9 +6,9 @@ interface Options {
   }
 }
 
-const makeAppURL = (origin: string, pathname: string, options?: Options) => {
+const makeAppURL = (appOrigin: string, pathname: string, options?: Options) => {
   const searchParams = options?.searchParams ?? {} as Record<string, string>
-  const url = new URL(origin)
+  const url = new URL(appOrigin)
   url.pathname = pathname
   Object.entries(searchParams).forEach((entry) => {
     url.searchParams.append(...entry)
