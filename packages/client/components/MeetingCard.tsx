@@ -75,16 +75,20 @@ const MeetingImg = styled('img')({
   width: '100%'
 })
 
+const TopLine = styled('div')({
+  position: 'relative',
+  display: 'flex'
+})
 const Options = styled(CardButton)({
   position: 'absolute',
-  top: 4,
-  right: 4,
-  color: '#fff',
+  top: 0,
+  right: 0,
+  color: PALETTE.SLATE_700,
   height: 32,
   width: 32,
   opacity: 1,
   ':hover': {
-    backgroundColor: '#FFFFFF26'
+    backgroundColor: PALETTE.SLATE_200
   }
 })
 interface Props {
@@ -135,14 +139,20 @@ const MeetingCard = (props: Props) => {
     <CardWrapper maybeTabletPlus={maybeTabletPlus}>
       <MeetingImgWrapper>
         <MeetingTypeLabel>{MEETING_TYPE_LABEL[meetingType]}</MeetingTypeLabel>
-        <MeetingImg src={ILLUSTRATIONS[meetingType]} />
-        <Options ref={originRef} onClick={togglePortal}>
-          <IconLabel ref={tooltipRef} icon='more_vert' />
-        </Options>
+        <Link to={`/meet/${meetingId}`}>
+          <MeetingImg src={ILLUSTRATIONS[meetingType]} />
+        </Link>
       </MeetingImgWrapper>
       <MeetingInfo>
+        <TopLine>
+          <Link to={`/meet/${meetingId}`}>
+            <Name>{name}</Name>
+          </Link>
+          <Options ref={originRef} onClick={togglePortal}>
+            <IconLabel ref={tooltipRef} icon='more_vert' />
+          </Options>
+        </TopLine>
         <Link to={`/meet/${meetingId}`}>
-          <Name>{name}</Name>
           <Meta>
             {teamName} • {meetingPhaseLabel}
           </Meta>

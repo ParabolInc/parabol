@@ -11155,7 +11155,6 @@ export type MeetingSubscriptionPayload =
   | IPromoteNewMeetingFacilitatorPayload
   | IRemoveReflectionPayload
   | IResetMeetingToStagePayload
-  | ISetAppLocationSuccess
   | ISetPhaseFocusPayload
   | ISetStageTimerPayload
   | IStartDraggingReflectionPayload
@@ -11471,7 +11470,8 @@ export type TeamSubscriptionPayload =
   | IPersistJiraSearchQuerySuccess
   | IMovePokerTemplateScaleValueSuccess
   | IUpdateJiraDimensionFieldSuccess
-  | ISetDefaultSlackChannelSuccess;
+  | ISetDefaultSlackChannelSuccess
+  | ISetAppLocationSuccess;
 
 export interface IStartNewMeetingPayload {
   __typename: 'StartNewMeetingPayload';

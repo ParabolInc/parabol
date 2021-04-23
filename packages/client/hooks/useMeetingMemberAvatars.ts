@@ -30,10 +30,7 @@ const useMeetingMemberAvatars = (meetingRef: _FragmentRefs<string>) => {
     return meetingMembers
       .map(({user}) => user)
       .filter((user) => {
-        return (
-          user.id === viewerId ||
-          (user.lastSeenAtURLs?.includes(`/meet/${meetingId}`) && user.isConnected)
-        )
+        return user.lastSeenAtURLs?.includes(`/meet/${meetingId}`) && user.isConnected
       })
       .sort((a, b) => (a.id === viewerId ? -1 : a.lastSeenAt! < b.lastSeenAt! ? -1 : 1))
   }, [meetingMembers])
