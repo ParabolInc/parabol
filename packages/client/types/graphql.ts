@@ -1796,9 +1796,9 @@ export interface IGitHubIntegration {
   login: string;
 
   /**
-   * Test
+   * A list of repos coming straight from the GitHub integration for a specific team member
    */
-  repos: Array<IGitHubRepo | null>;
+  repos: IGitHubRepoConnection;
 
   /**
    * *The team that the token is linked to
@@ -1832,6 +1832,13 @@ export interface IIssuesOnGitHubIntegrationArguments {
    */
   queryString?: string | null;
   nameWithOwnerFilters?: Array<string> | null;
+}
+
+export interface IReposOnGitHubIntegrationArguments {
+  /**
+   * @default 20
+   */
+  first?: number | null;
 }
 
 /**
@@ -1945,6 +1952,41 @@ export interface IThreadOnGitHubIssueArguments {
    * the incrementing sort order in string format
    */
   after?: string | null;
+}
+
+/**
+ * A connection to a list of items.
+ */
+export interface IGitHubRepoConnection {
+  __typename: 'GitHubRepoConnection';
+
+  /**
+   * Page info with cursors coerced to ISO8601 dates
+   */
+  pageInfo: IPageInfoDateCursor | null;
+
+  /**
+   * A list of edges.
+   */
+  edges: Array<IGitHubRepoEdge>;
+
+  /**
+   * An error with the connection, if any
+   */
+  error: IStandardMutationError | null;
+}
+
+/**
+ * An edge in a connection.
+ */
+export interface IGitHubRepoEdge {
+  __typename: 'GitHubRepoEdge';
+
+  /**
+   * The item at the end of the edge
+   */
+  node: IGitHubRepo;
+  cursor: any | null;
 }
 
 /**

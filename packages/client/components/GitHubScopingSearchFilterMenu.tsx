@@ -75,45 +75,39 @@ type GitHubSearchQuery = NonNullable<
   NonNullable<GitHubScopingSearchFilterMenu_viewer['meeting']>['githubSearchQuery']
 >
 
-const getValue = (item: {name: string}) => item.name.toLowerCase()
+const getValue = (item: {nameWithOwner: string}) => item.nameWithOwner.toLowerCase()
 
-const MAX_PROJECTS = 10
+const MAX_REPOS = 10
 
 const GitHubScopingSearchFilterMenu = (props: Props) => {
-  // TODO replace projects
   const {menuProps, viewer} = props
   const isLoading = viewer === null
-
   const github = viewer?.teamMember?.integrations.github ?? []
-  const repos = github?.repos
-  if (!repos?.edges) {
-    return <div>nope!</div>
-  }
-  const {edges} = repos
-  const repoNames = edges.map((edge) => edge.node.nameWithOwner)
-  // const meeting = viewer?.meeting ?? null
-  // const meetingId = meeting?.id ?? ''
-  // const githubSearchQuery = meeting?.githubSearchQuery ?? null
-  // const nameWithOwnerFilters = githubSearchQuery?.nameWithOwnerFilters ?? []
-  // const {fields, onChange} = useForm({
-  //   search: {
-  //     getDefault: () => ''
-  //   }
-  // })
-  // const {search} = fields
-  // const {value} = search
-  // const query = value.toLowerCase()
-  // const showSearch = projects.length > MAX_PROJECTS
-  // const queryFilteredProjects = useFilteredItems(query, projects, getValue)
-  // const selectedAndFilteredProjects = useMemo(() => {
-  //   const selectedProjects = projects.filter((project) => nameWithOwnerFilters.includes(project.id))
-  //   const adjustedMax =
-  //     selectedProjects.length >= MAX_PROJECTS ? selectedProjects.length + 1 : MAX_PROJECTS
-  //   return Array.from(new Set([...selectedProjects, ...queryFilteredProjects])).slice(
-  //     0,
-  //     adjustedMax
-  //   )
-  // }, [queryFilteredProjects])
+  const edges = github?.repos?.edges
+  if (!edges) return <MockGitHubFieldList />
+  const repos = edges.map((edge) => edge.node)
+  const meeting = viewer?.meeting ?? null
+  const meetingId = meeting?.id ?? ''
+  const githubSearchQuery = meeting?.githubSearchQuery ?? null
+  // console.log('🚀 ~ GitHubScopingSearchFilterMenu ~ meeting', meeting)
+  const nameWithOwnerFilters = githubSearchQuery?.nameWithOwnerFilters ?? []
+  const {fields, onChange} = useForm({
+    search: {
+      getDefault: () => ''
+    }
+  })
+  const {search} = fields
+  const {value} = search
+  // console.log('🚀 ~ GitHubScopingSearchFilterMenu ~ value', value)
+  const query = value.toLowerCase()
+  const showSearch = repos.length > MAX_REPOS
+  // console.log('🚀 ~ GitHubScopingSearchFilterMenu ~ repos', query, repos)
+  const queryFilteredRepos = useFilteredItems(query, repos, getValue)
+  const selectedAndFilteredRepos = useMemo(() => {
+    const selectedRepos = repos.filter((repo) => nameWithOwnerFilters.includes(repo.id))
+    const adjustedMax = selectedRepos.length >= MAX_REPOS ? selectedRepos.length + 1 : MAX_REPOS
+    return Array.from(new Set([...selectedRepos, ...queryFilteredRepos])).slice(0, adjustedMax)
+  }, [queryFilteredRepos])
 
   const atmosphere = useAtmosphere()
   const {portalStatus, isDropdown} = menuProps
@@ -135,24 +129,23 @@ const GitHubScopingSearchFilterMenu = (props: Props) => {
       // resetActiveOnChanges={[selectedAndFilteredProjects]}
     >
       {isLoading && <MockGitHubFieldList />}
-      {/* {selectedAndFilteredProjects.length > 0 && <FilterLabel>Filter by project:</FilterLabel>} */}
-      {/* {showSearch && (
+      {showSearch && (
         <SearchItem key='search'>
           <StyledMenuItemIcon>
             <SearchIcon>search</SearchIcon>
           </StyledMenuItemIcon>
           <TaskFooterIntegrateMenuSearch
-            placeholder={'Search GitHub'}
+            placeholder={'Search GitHub Repos'}
             value={value}
             onChange={onChange}
           />
         </SearchItem>
-      )} */}
-      {/* {(query && selectedAndFilteredProjects.length === 0 && !isLoading && (
-        <NoResults key='no-results'>No GitHub Projects found!</NoResults>
+      )}
+      {(query && selectedAndFilteredRepos.length === 0 && !isLoading && (
+        <NoResults key='no-results'>No repos found!</NoResults>
       )) ||
-        null} */}
-      {repoNames.map((repoName) => {
+        null}
+      {repos.map((repo) => {
         // const {id: globalProjectKey, avatar, name} = project
         // const toggleProjectKeyFilter = () => {
         //   commitLocalUpdate(atmosphere, (store) => {
@@ -172,12 +165,12 @@ const GitHubScopingSearchFilterMenu = (props: Props) => {
         // }
         return (
           <MenuItem
-            // key={globalProjectKey}
+            key={repo.id}
             label={
               <StyledMenuItemLabel>
                 {/* <StyledCheckBox active={nameWithOwnerFilters.includes(globalProjectKey)} /> */}
                 {/* <ProjectAvatar src={avatar} /> */}
-                <TypeAheadLabel query={''} label={repoName} />
+                <TypeAheadLabel query={''} label={repo.nameWithOwner} />
               </StyledMenuItemLabel>
             }
             // onClick={toggleProjectKeyFilter}
@@ -213,6 +206,7 @@ export default createFragmentContainer(GitHubScopingSearchFilterMenu, {
               }
               edges {
                 node {
+                  id
                   nameWithOwner
                 }
               }
