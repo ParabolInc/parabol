@@ -9,6 +9,7 @@ import DeleteUserPayload from '../types/DeleteUserPayload'
 import removeFromOrg from './helpers/removeFromOrg'
 import getDeletedEmail from '../../utils/getDeletedEmail'
 import updateUser from '../../postgres/queries/updateUser'
+import {USER_REASON_REMOVED_LIMIT} from '../../postgres/constants'
 
 export default {
   type: GraphQLNonNull(DeleteUserPayload),
@@ -63,7 +64,7 @@ export default {
     await Promise.all(
       orgIds.map((orgId) => removeFromOrg(userIdToDelete, orgId, undefined, dataLoader))
     )
-    const validReason = reason?.trim().slice(0, 2000) || 'No reason provided'
+    const validReason = reason?.trim().slice(0, USER_REASON_REMOVED_LIMIT) || 'No reason provided'
     if (userId) {
       segmentIo.track({
         userId,

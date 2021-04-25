@@ -4,6 +4,7 @@ import {requireSU} from '../../../utils/authorization'
 import {GQLContext} from '../../graphql'
 import FlagOverLimitPayload from '../../types/FlagOverLimitPayload'
 import updateUser from '../../../postgres/queries/updateUser'
+import {USER_OVERLIMIT_COPY_LIMIT} from '../../../postgres/constants'
 
 const flagOverLimit = {
   type: FlagOverLimitPayload,
@@ -29,6 +30,7 @@ const flagOverLimit = {
     if (organizationUsers.length === 0) return {error: {message: 'OrgId has no members'}}
 
     // RESOLUTION
+    copy = copy.trim().slice(0, USER_OVERLIMIT_COPY_LIMIT)
     const userIds = organizationUsers.map(({userId}) => userId)
     await Promise.all([
       updateUser({overLimitCopy: copy}, userIds),

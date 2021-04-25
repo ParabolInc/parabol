@@ -2,10 +2,10 @@ import {ColumnDefinitions, MigrationBuilder} from 'node-pg-migrate'
 import getRethink from '../../../database/rethinkDriver'
 import User from '../../../database/types/User'
 import getDeletedEmail from '../../../utils/getDeletedEmail'
-import {EMAIL_LIMIT, PREFERRED_NAME_LIMIT} from '../../constants/User'
 import getPg from '../../getPg'
 import {backupUserQuery, IBackupUserQueryParams} from '../../queries/generated/backupUserQuery'
 import catchAndLog from '../../utils/catchAndLog'
+import {USER_EMAIL_LIMIT, USER_PREFERRED_NAME_LIMIT} from '../../constants'
 
 const undefinedUserFieldsAndTheirDefaultPgValues = {
   newFeatureId: null,
@@ -23,12 +23,12 @@ const undefinedUserFieldsAndTheirDefaultPgValues = {
 const cleanUsers = (users: User[]): IBackupUserQueryParams['users'] => {
   const cleanedUsers = [] as any
   users.forEach((user) => {
-    if (user.email.length > EMAIL_LIMIT) {
+    if (user.email.length > USER_EMAIL_LIMIT) {
       return // bad actors were messing up unique constraint
     }
     const cleanedUser = Object.assign({}, undefinedUserFieldsAndTheirDefaultPgValues, user, {
       email: user.email === 'DELETED' ? getDeletedEmail(user.id) : user.email,
-      preferredName: user.preferredName.slice(0, PREFERRED_NAME_LIMIT)
+      preferredName: user.preferredName.trim().slice(0, USER_PREFERRED_NAME_LIMIT)
     }) as IBackupUserQueryParams['users'][0]
     cleanedUsers.push(cleanedUser)
   })
