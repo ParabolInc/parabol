@@ -14,6 +14,7 @@ import RedisLock from '../../utils/RedisLock'
 import {GQLContext} from '../graphql'
 import UpdatePokerScopeItemInput from '../types/UpdatePokerScopeItemInput'
 import UpdatePokerScopePayload from '../types/UpdatePokerScopePayload'
+import getNextFacilitatorStageAfterStageRemoved from './helpers/getNextFacilitatorStageAfterStageRemoved'
 
 const updatePokerScope = {
   type: GraphQLNonNull(UpdatePokerScopePayload),
@@ -38,6 +39,7 @@ const updatePokerScope = {
     const viewerId = getUserId(authToken)
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
+    const now = new Date()
 
     //AUTH
     const meeting = (await dataLoader.get('newMeetings').load(meetingId)) as MeetingPoker
@@ -45,7 +47,8 @@ const updatePokerScope = {
       return {error: {message: `Meeting not found`}}
     }
 
-    const {endedAt, teamId, phases, meetingType, templateRefId} = meeting
+    const {endedAt, teamId, phases, meetingType, templateRefId, facilitatorStageId} = meeting
+    console.log('🚀 ~ meeting', meeting)
     if (endedAt) {
       return {error: {message: `Meeting already ended`}}
     }
@@ -117,6 +120,15 @@ const updatePokerScope = {
         }
       } else if (action === 'DELETE') {
         const stagesToRemove = stages.filter((stage) => stage.serviceTaskId === serviceTaskId)
+        const removingTatorStage = stagesToRemove.find((stage) => stage.id === facilitatorStageId)
+        if (removingTatorStage) {
+          const nextStage = getNextFacilitatorStageAfterStageRemoved(
+            facilitatorStageId,
+            removingTatorStage.id,
+            phases
+          )
+          meeting.facilitatorStageId = nextStage.id
+        }
         if (stagesToRemove.length > 0) {
           // MUTATIVE
           stages = stages.filter((stage) => stage.serviceTaskId !== serviceTaskId)
@@ -137,7 +149,9 @@ const updatePokerScope = {
       .table('NewMeeting')
       .get(meetingId)
       .update({
-        phases
+        facilitatorStageId: meeting.facilitatorStageId,
+        phases,
+        updatedAt: now
       })
       .run()
 

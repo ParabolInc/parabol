@@ -12,6 +12,7 @@ import {
 graphql`
   fragment UpdatePokerScopeMutation_meeting on UpdatePokerScopeSuccess {
     meeting {
+      facilitatorStageId
       phases {
         ...useMakeStageSummaries_phase
         ... on EstimatePhase {
