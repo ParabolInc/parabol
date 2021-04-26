@@ -127,6 +127,12 @@ const updatePokerScope = {
             removingTatorStage.id,
             phases
           )
+          for (const stage of stages) {
+            if (stage.id === nextStage.id) {
+              stage.startAt = now
+              break
+            }
+          }
           meeting.facilitatorStageId = nextStage.id
         }
         if (stagesToRemove.length > 0) {
