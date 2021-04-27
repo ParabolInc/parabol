@@ -5,10 +5,17 @@ export const getIssues = gql`
     viewer {
       issues(first: $first) {
         edges {
+          cursor
           node {
             ...getIssuesNode
           }
         }
+        pageInfo {
+          endCursor
+          hasNextPage
+          hasPreviousPage
+        }
+        totalCount
       }
     }
   }

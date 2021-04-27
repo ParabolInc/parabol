@@ -805,12 +805,12 @@ export interface IPageInfoDateCursor {
   /**
    * When paginating backwards, the cursor to continue.
    */
-  startCursor: any | null;
+  startCursor: string | null;
 
   /**
    * When paginating forwards, the cursor to continue.
    */
-  endCursor: any | null;
+  endCursor: string | null;
 }
 
 /**
@@ -1862,7 +1862,7 @@ export interface IGitHubIssueConnection {
   __typename: 'GitHubIssueConnection';
 
   /**
-   * Page info with cursors coerced to ISO8601 dates
+   * Page info with cursors as unique ids from GitHub
    */
   pageInfo: IPageInfoDateCursor | null;
 
@@ -1870,6 +1870,12 @@ export interface IGitHubIssueConnection {
    * A list of edges.
    */
   edges: Array<IGitHubIssueEdge>;
+
+  /**
+   * The total number of issues returned from the query
+   */
+  totalCount: number | null;
+  issueCount: number | null;
 
   /**
    * An error with the connection, if any
@@ -1887,7 +1893,7 @@ export interface IGitHubIssueEdge {
    * The item at the end of the edge
    */
   node: IGitHubIssue;
-  cursor: any | null;
+  cursor: string | null;
 }
 
 /**
@@ -1907,14 +1913,28 @@ export interface IGitHubIssue {
   url: any;
 
   /**
-   * The owner / repo of the issue as found in GitHub
+   * The repository that the issue belongs to
    */
-  nameWithOwner: string;
+  repository: IGitHubRepository;
 
   /**
    * The title of the GitHub issue
    */
   title: string;
+  totalCount: number | null;
+  issueCount: number | null;
+}
+
+/**
+ * A repository that comes directly from GitHub
+ */
+export interface IGitHubRepository {
+  __typename: 'GitHubRepository';
+
+  /**
+   * The owner / repo of the issue as found in GitHub
+   */
+  nameWithOwner: string;
 }
 
 /**

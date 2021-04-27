@@ -4,10 +4,17 @@ export const searchIssues = gql`
   query searchIssues($queryString: String!, $first: Int) {
     search(query: $queryString, type: ISSUE, first: $first) {
       edges {
+        cursor
         node {
           ...getIssuesNode
         }
       }
+      pageInfo {
+        endCursor
+        hasNextPage
+        hasPreviousPage
+      }
+      issueCount
     }
   }
 

@@ -128,7 +128,9 @@ export default createFragmentContainer(GitHubScopingSearchResults, {
           items {
             ... on SuggestedIntegrationGitHub {
               id
-              nameWithOwner
+              repository {
+                nameWithOwner
+              }
             }
           }
         }
