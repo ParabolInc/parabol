@@ -93,13 +93,13 @@ const GitHubIntegration = new GraphQLObjectType<any, GQLContext>({
         const {authToken} = context
         const viewerId = getUserId(authToken)
         if (viewerId !== userId || !accessToken) {
-          const err = new Error(
+          const error = new Error(
             viewerId !== userId
               ? 'Cannot access another team members issues'
               : 'Not integrated with GitHub'
           )
-          standardError(err, {tags: {teamId, userId}, userId: viewerId})
-          return connectionFromGitHubIssues([], 0, err)
+          standardError(error, {tags: {teamId, userId}, userId: viewerId})
+          return {error, edges: [], pageInfo: []}
         }
         const manager = new GitHubServerManager(accessToken)
         let gitHubErrors: GQLResponse<GetIssuesQuery | SearchIssuesQuery>['errors']
@@ -107,7 +107,11 @@ const GitHubIntegration = new GraphQLObjectType<any, GQLContext>({
           const searchRes = await manager.searchIssues(queryString, first)
           if ('message' in searchRes) {
             console.error(searchRes)
-            return connectionFromGitHubIssues([], 0, searchRes)
+            return {
+              error: {message: JSON.stringify(searchRes)},
+              edges: [],
+              pageInfo: {hasNextPage: false, hasPreviousPage: false}
+            }
           }
           const {data, errors} = searchRes
           if (Array.isArray(errors)) {
@@ -125,7 +129,11 @@ const GitHubIntegration = new GraphQLObjectType<any, GQLContext>({
           const issuesRes = await manager.getIssues(first)
           if ('message' in issuesRes) {
             console.error(issuesRes)
-            return connectionFromGitHubIssues([], 0, issuesRes)
+            return {
+              error: {message: JSON.stringify(issuesRes)},
+              edges: [],
+              pageInfo: {hasNextPage: false, hasPreviousPage: false}
+            }
           }
           const {data, errors} = issuesRes
           if (Array.isArray(errors)) {
