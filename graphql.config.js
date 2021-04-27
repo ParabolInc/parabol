@@ -4,7 +4,11 @@ module.exports = {
       schemaPath: './schema.graphql',
       name: 'Parabol GraphQL Schema',
       includes: ['*'],
-      excludes: ['githubSchema.graphql', './packages/client/utils/githubQueries']
+      excludes: [
+        'githubSchema.graphql',
+        './packages/client/utils/githubQueries/*',
+        'packages/server/utils/githubQueries/*'
+      ]
     },
     GitHub: {
       schemaPath: './packages/server/utils/githubSchema.graphql',
