@@ -80,6 +80,11 @@ const RevealButtonIcon = styled(Icon)<{color: string}>(({color}) => ({
   width: 40
 }))
 
+const MiniCardWrapper = styled('div')({
+  // This adds the gutter between the mini card and the avatars
+  marginRight: 16
+})
+
 interface Props {
   isClosing: boolean
   meeting: PokerActiveVoting_meeting
@@ -119,9 +124,11 @@ const PokerActiveVoting = (props: Props) => {
   return (
     <>
       <PokerVotingRowBase>
-        <MiniPokerCard>
-          <CheckIcon>check</CheckIcon>
-        </MiniPokerCard>
+        <MiniCardWrapper>
+          <MiniPokerCard>
+            <CheckIcon>check</CheckIcon>
+          </MiniPokerCard>
+        </MiniCardWrapper>
         <AvatarList
           users={isClosing ? [] : users}
           size={PokerCards.AVATAR_WIDTH as 46}

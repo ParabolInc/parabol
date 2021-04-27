@@ -38,19 +38,26 @@ const CardWrapper = styled('div')<{maybeTabletPlus: boolean}>(({maybeTabletPlus}
 }))
 
 const MeetingInfo = styled('div')({
-  padding: '12px 16px'
+  // tighter padding for options, meta, avatars
+  // keep a nice left edge
+  padding: '8px 8px 8px 16px'
 })
 
 const Name = styled('div')({
   color: PALETTE.SLATE_700,
   fontSize: 20,
-  lineHeight: '32px'
+  lineHeight: '24px',
+  // add right padding to keep a long name from falling under the options button
+  // add top and bottom padding to keep a single line at 32px to match the options button
+  padding: '4px 32px 4px 0'
 })
 
 const Meta = styled('div')({
   color: PALETTE.SLATE_600,
   fontSize: 14,
-  lineHeight: '24px'
+  lineHeight: '24px',
+  // partial grid bottom padding accounts for maybe avatar whitespace and offset
+  paddingBottom: '4px'
 })
 
 const MeetingImgWrapper = styled('div')({
@@ -91,6 +98,7 @@ const Options = styled(CardButton)({
     backgroundColor: PALETTE.SLATE_200
   }
 })
+
 interface Props {
   meeting: MeetingCard_meeting
 }
@@ -157,7 +165,7 @@ const MeetingCard = (props: Props) => {
             {teamName} • {meetingPhaseLabel}
           </Meta>
         </Link>
-        <AvatarList users={connectedUsers} size={24} />
+        <AvatarList users={connectedUsers} size={28} />
       </MeetingInfo>
       {menuPortal(
         <MeetingCardOptionsMenuRoot

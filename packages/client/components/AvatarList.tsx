@@ -8,9 +8,12 @@ import {AvatarList_users} from '../__generated__/AvatarList_users.graphql'
 import AvatarListUser from './AvatarListUser'
 import OverflowAvatar from './OverflowAvatar'
 
-const Wrapper = styled('div')<{minHeight: number}>(({minHeight}) => ({
+const Wrapper = styled('div')<{minHeight: number, size: number}>(({minHeight, size}) => ({
   alignItems: 'center',
   display: 'flex',
+  // This left margin accounts for the border on the avatar
+  // giving us tighter vertical alignment on the left edge
+  marginLeft: size >= 40 ? -3 : -2,
   position: 'relative',
   width: '100%',
   transition: `min-height 100ms ${BezierCurve.DECELERATE}`,
@@ -18,16 +21,23 @@ const Wrapper = styled('div')<{minHeight: number}>(({minHeight}) => ({
 }))
 
 const widthToOverlap = {
-  24: 10,
-  46: 10
+  28: 8,
+  46: 16
+}
+
+// hard coding for now until we have
+// a better solution for handling gutters
+// for a component that may not be there
+const sizeToHeightBump = {
+  28: 4,
+  46: 0
 }
 
 interface Props {
   users: AvatarList_users
   onUserClick?: (userId: string) => void
   onOverflowClick?: () => void
-  className?: string
-  size: 24 | 46
+  size: 28 | 46
   emptyEl?: ReactElement
   isAnimated?: boolean
   borderColor?: string
@@ -40,10 +50,9 @@ const AvatarList = (props: Props) => {
   const offsetSize = size - overlap
   const transitionChildren = useOverflowAvatars(rowRef, users, size, overlap)
   const showAnimated = isAnimated ?? true
-  // hardcoded 8px padding for now
-  const minHeight = transitionChildren.length === 0 ? 0 : size + 8
+  const minHeight = transitionChildren.length === 0 ? 0 : size + sizeToHeightBump[size]
   return (
-    <Wrapper ref={rowRef} minHeight={minHeight}>
+    <Wrapper ref={rowRef} minHeight={minHeight} size={size}>
       {transitionChildren.length === 0 && emptyEl}
       {transitionChildren.map(({onTransitionEnd, child, status, displayIdx}) => {
         const {id: userId} = child
