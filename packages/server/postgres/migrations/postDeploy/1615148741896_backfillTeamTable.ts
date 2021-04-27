@@ -19,7 +19,7 @@ const cleanTeams = (teams: Team[]): IBackupTeamQueryParams['teams'] => {
       lastMeetingType: team.lastMeetingType ?? MeetingTypeEnum.retrospective,
       updatedAt: team.updatedAt ?? new Date(),
       jiraDimensionFields: team.jiraDimensionFields ?? [],
-      name: team.name.trim().slice(0, TEAM_NAME_LIMIT)
+      name: team.name.slice(0, TEAM_NAME_LIMIT)
     })
     cleanedTeams.push(cleanedTeam)
   })

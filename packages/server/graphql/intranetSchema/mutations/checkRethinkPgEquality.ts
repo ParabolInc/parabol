@@ -19,11 +19,9 @@ const tableResolvers = {
 const checkEqAndWriteOutput = async (
   tableName: string,
   fileLocation: string,
-  pageSize?: number,
-  startPage?: number,
-  slice?: boolean
+  maxErrors: number = 10
 ): Promise<void> => {
-  const errors = await tableResolvers[tableName](pageSize, startPage, slice)
+  const errors = await tableResolvers[tableName](maxErrors)
   await fs.promises.writeFile(fileLocation, JSON.stringify(errors))
 }
 
@@ -35,15 +33,10 @@ const checkRethinkPgEquality = {
       type: GraphQLNonNull(GraphQLString),
       description: 'The table name to be compared'
     },
-    numberOfRecords: {
+    maxErrors: {
       type: GraphQLInt,
-      default: 3000,
-      description: 'The number of records requested'
-    },
-    startPage: {
-      type: GraphQLInt,
-      default: 0,
-      description: 'The "page" of where to start comparing within the dataset'
+      default: 10,
+      description: 'How many errors should be returned'
     },
     writeToFile: {
       type: GraphQLBoolean,
@@ -51,7 +44,7 @@ const checkRethinkPgEquality = {
       description: 'Whether the output should be written to file'
     }
   },
-  resolve: async (_source, {tableName, numberOfRecords, startPage, writeToFile}, {authToken}) => {
+  resolve: async (_source, {tableName, maxErrors, writeToFile}, {authToken}) => {
     // AUTH
     requireSU(authToken)
 
@@ -59,13 +52,10 @@ const checkRethinkPgEquality = {
     if (!tableResolvers.hasOwnProperty(tableName)) {
       return `That table name either doesn't exist or hasn't yet been implemented.`
     }
-    if (numberOfRecords && numberOfRecords > 3000) {
-      return `Number of records must not exceed 3000`
-    }
 
     // RESOLUTION
     if (!writeToFile) {
-      const errors = await tableResolvers[tableName](numberOfRecords, startPage)
+      const errors = await tableResolvers[tableName](maxErrors)
       return JSON.stringify(errors)
     }
     const fileName = `${tableName}-${new Date()}`
@@ -76,7 +66,7 @@ const checkRethinkPgEquality = {
       fileName
     )
     await fs.promises.mkdir(path.dirname(fileLocation), {recursive: true})
-    checkEqAndWriteOutput(tableName, fileLocation, numberOfRecords, startPage)
+    checkEqAndWriteOutput(tableName, fileLocation, maxErrors)
     return `Please check ${fileLocation} for output results, it will appear in a few mins.`
   }
 }

@@ -28,7 +28,7 @@ const cleanUsers = (users: User[]): IBackupUserQueryParams['users'] => {
     }
     const cleanedUser = Object.assign({}, undefinedUserFieldsAndTheirDefaultPgValues, user, {
       email: user.email === 'DELETED' ? getDeletedEmail(user.id) : user.email,
-      preferredName: user.preferredName.trim().slice(0, USER_PREFERRED_NAME_LIMIT)
+      preferredName: user.preferredName.slice(0, USER_PREFERRED_NAME_LIMIT)
     }) as IBackupUserQueryParams['users'][0]
     cleanedUsers.push(cleanedUser)
   })

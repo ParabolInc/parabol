@@ -1,54 +1,47 @@
 import {RTable, TableSchema} from '../../database/stricterR'
-import lodash from 'lodash'
+import areEqual from 'fbjs/lib/areEqual'
 
-type WithId<T> = T & {id: string}
-
-export type CustomResolver = (rethinkValue: string, pgValue: string) => boolean
-
-export type AlwaysDefinedFieldsCustomResolvers<rethinkType> = {
-  [Property in keyof Partial<rethinkType>]: CustomResolver | undefined
+interface DBDoc {
+  id: string
+  [key: string]: any
 }
+interface RethinkDoc extends DBDoc {}
+interface PGDoc extends DBDoc {}
 
-export type MaybeUndefinedFieldsCustomResolversDefaultValues<rethinkType> = {
-  [Property in keyof Partial<rethinkType>]: [CustomResolver | undefined, any]
-}
-
-interface IError<rethinkType, pgType> {
+interface IError {
   [key: string]:
     | {
         error: string | string[]
-        rethinkRow?: Partial<rethinkType>
-        pgRow?: Partial<pgType>
+        rethinkRow?: Partial<RethinkDoc>
+        pgRow?: Partial<PGDoc>
       }
     | number
-  recordsCompared: number
+  recordsCompared: number,
+  foundErrors: number
 }
 
-function getPairNeFields<rethinkType, pgType>(
-  rethinkUser: rethinkType,
-  pgUser: pgType,
-  alwaysDefinedFieldsCustomResolvers: AlwaysDefinedFieldsCustomResolvers<rethinkType>,
-  maybeUndefinedFieldsCustomResolversDefaultValues: MaybeUndefinedFieldsCustomResolversDefaultValues<
-    rethinkType
-  >
+function getPairNeFields(
+  rethinkRow: RethinkDoc,
+  pgRow: PGDoc,
+  alwaysDefinedFields: string[],
+  maybeUndefinedFieldsDefaultValues: {[key: string]: any}
 ): string[] {
   const neFields = [] as string[]
 
-  for (const [f, customResolver] of Object.entries(alwaysDefinedFieldsCustomResolvers)) {
-    const [rethinkValue, pgValue] = [rethinkUser[f], pgUser[f]]
-    if (!lodash.isEqualWith(rethinkValue, pgValue, customResolver as CustomResolver)) {
+  for (const f of alwaysDefinedFields) {
+    const [rethinkValue, pgValue] = [rethinkRow[f], pgRow[f]]
+    if (!areEqual(rethinkValue, pgValue)) {
       neFields.push(f)
     }
   }
-  for (const [f, tuple] of Object.entries(maybeUndefinedFieldsCustomResolversDefaultValues)) {
-    const [customResolver, defaultValue] = tuple as [CustomResolver, any]
-    const [rethinkValue, pgValue] = [rethinkUser[f], pgUser[f]]
-    if (!lodash.isUndefined(rethinkValue)) {
-      if (!lodash.isEqualWith(rethinkValue, pgValue, customResolver)) {
+  for (const [f, defaultValue] of Object.entries(maybeUndefinedFieldsDefaultValues)) {
+    const [rethinkValue, pgValue] = [rethinkRow[f], pgRow[f]]
+    if (rethinkValue !== undefined) {
+      if (!areEqual(rethinkValue, pgValue)) {
         neFields.push(f)
       }
     } else {
-      if (!lodash.isEqual(pgValue, defaultValue)) {
+      if (!areEqual(pgValue, defaultValue)) {
         neFields.push(f)
       }
     }
@@ -57,11 +50,11 @@ function getPairNeFields<rethinkType, pgType>(
   return neFields
 }
 
-function addNeFieldsToErrors<rethinkType, pgType>(
-  errors: IError<rethinkType, pgType>,
+function addNeFieldsToErrors(
+  errors: IError,
   neFields: string[],
-  rethinkRow: rethinkType,
-  pgRow: pgType,
+  rethinkRow: RethinkDoc,
+  pgRow: PGDoc,
   rowId: string
 ): void {
   const rethinkNeFields = {}
@@ -77,49 +70,68 @@ function addNeFieldsToErrors<rethinkType, pgType>(
   }
 }
 
-export async function checkTableEq<rethinkType, pgType>(
+export async function checkTableEq(
   rethinkQuery: RTable<TableSchema>,
-  pgQuery: (ids: string[]) => Promise<pgType[]>,
-  alwaysDefinedFieldsCustomResolvers: AlwaysDefinedFieldsCustomResolvers<rethinkType>,
-  maybeUndefinedFieldsCustomResolversDefaultValues: MaybeUndefinedFieldsCustomResolversDefaultValues<
-    rethinkType
-  >,
-  batchSize = 3000,
-  startPage = 0
-): Promise<IError<rethinkType, pgType>> {
-  const errors = {} as IError<rethinkType, pgType>
-  const offset = batchSize * startPage
-  const rethinkRows = (await rethinkQuery
-    .skip(offset)
-    .limit(batchSize)
-    .run()) as rethinkType[]
+  pgQuery: (ids: string[]) => Promise<PGDoc[]>,
+  alwaysDefinedFields: string[],
+  maybeUndefinedFieldsDefaultValues: {[key: string]: any},
+  maxErrors: number = 10
+): Promise<IError> {
+  const errors : IError = {
+    recordsCompared: 0,
+    foundErrors: 0
+  }
+  const batchSize = 3000
 
-  const ids = rethinkRows.map((t) => (t as WithId<rethinkType>).id) as string[]
-  const pgRows = await pgQuery(ids)
-  const pgRowsById = {} as {[key: string]: pgType}
-  pgRows.forEach((pgRow) => {
-    pgRowsById[(pgRow as WithId<pgType>).id] = pgRow
-  })
-
-  for (const rethinkRow of rethinkRows) {
-    const id = (rethinkRow as WithId<rethinkType>).id
-    const pgRow = pgRowsById[id]
-    if (!pgRow) {
-      errors[id] = {
-        error: 'No pg row found for rethink row'
-      }
-      continue
+  for (let i = 0; i < 1e5; i++) {
+    console.log(i)
+    const offset = batchSize * i
+    const rethinkRows = (await rethinkQuery
+      .skip(offset)
+      .limit(batchSize)
+      .run()) as RethinkDoc[]
+    if (!rethinkRows.length) {
+      break
     }
-    const neFields = getPairNeFields<rethinkType, pgType>(
-      rethinkRow,
-      pgRow,
-      alwaysDefinedFieldsCustomResolvers,
-      maybeUndefinedFieldsCustomResolversDefaultValues
-    )
-    if (neFields.length) {
-      addNeFieldsToErrors<rethinkType, pgType>(errors, neFields, rethinkRow, pgRow, id)
+
+    const ids = rethinkRows.map((t) => t.id)
+    const pgRows = await pgQuery(ids)
+    const pgRowsById = {} as {[key: string]: PGDoc}
+    pgRows.forEach((pgRow) => {
+      pgRowsById[pgRow.id] = pgRow
+    })
+
+    for (const rethinkRow of rethinkRows) {
+      const id = rethinkRow.id
+      const pgRow = pgRowsById[id]
+      errors.recordsCompared += 1
+
+      if (!pgRow) {
+        errors[id] = {
+          error: 'No pg row found for rethink row'
+        }
+        errors.foundErrors += 1
+        if (errors.foundErrors === maxErrors) {
+          return errors
+        }
+        continue
+      }
+      const neFields = getPairNeFields(
+        rethinkRow,
+        pgRow,
+        alwaysDefinedFields,
+        maybeUndefinedFieldsDefaultValues
+      )
+
+      if (neFields.length) {
+        addNeFieldsToErrors(errors, neFields, rethinkRow, pgRow, id)
+        errors.foundErrors += 1
+        if (errors.foundErrors === maxErrors) {
+          return errors
+        }
+      }
     }
   }
-  errors.recordsCompared = rethinkRows.length
+
   return errors
 }
