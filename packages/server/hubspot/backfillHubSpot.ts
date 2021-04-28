@@ -38,7 +38,6 @@ const upsertHubspotContact = async (
       value: normalize(propertiesObj[key])
     }))
   })
-  console.log(`going to call Hubspot for ${email} with body = ${body}`)
   const res = await fetch(
     `https://api.hubapi.com/contacts/v1/contact/createOrUpdate/email/${email}/?hapikey=${hapiKey}`,
     {
