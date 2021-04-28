@@ -38,6 +38,7 @@ const upsertHubspotContact = async (
       value: normalize(propertiesObj[key])
     }))
   })
+  console.log(`going to call Hubspot for ${email} with body = ${body}`)
   const res = await fetch(
     `https://api.hubapi.com/contacts/v1/contact/createOrUpdate/email/${email}/?hapikey=${hapiKey}`,
     {
@@ -63,11 +64,8 @@ const backfillHubSpot = async () => {
     .run()
 
   await Promise.all(
-    users.map(async ({email, id, isRemoved}) => {
-      const contact = {id}
-      if (isRemoved) {
-        Object.assign(contact, {isRemoved: isRemoved})
-      }
+    users.map(async ({email, id, tier}) => {
+      const contact = {id, tier}
       upsertHubspotContact(email, contact)
     })
   )

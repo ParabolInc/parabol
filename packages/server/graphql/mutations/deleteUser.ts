@@ -64,8 +64,12 @@ export default {
       orgIds.map((orgId) => removeFromOrg(userIdToDelete, orgId, undefined, dataLoader))
     )
     const validReason = reason?.trim().slice(0, 2000) || 'No reason provided'
-    const cachedUser = await dataLoader.get('users').load(user.id)
-    cachedUser.isRemoved = true
+
+    db.write('User', userIdToDelete, {
+      isRemoved: true,
+      reasonRemoved: validReason
+    })
+
     if (userId) {
       segmentIo.track({
         userId,
@@ -78,9 +82,7 @@ export default {
     // do this after 30 seconds so any segment API calls can still get the email
     setTimeout(() => {
       db.write('User', userIdToDelete, {
-        isRemoved: true,
-        email: 'DELETED',
-        reasonRemoved: validReason
+        email: 'DELETED'
       })
       updateUser(
         {
