@@ -81,17 +81,9 @@ const GitHubIntegration = new GraphQLObjectType<any, GQLContext>({
         queryString: {
           type: GraphQLString,
           description: 'A string of text to search for'
-        },
-        nameWithOwnerFilters: {
-          type: GraphQLList(GraphQLNonNull(GraphQLID)),
-          descrption: 'A list of repos to restrict the search to'
         }
       },
-      resolve: async (
-        {teamId, userId, accessToken},
-        {first = 50, nameWithOwnerFilters, queryString, after},
-        context
-      ) => {
+      resolve: async ({teamId, userId, accessToken}, {first = 50, queryString, after}, context) => {
         const {authToken} = context
         const viewerId = getUserId(authToken)
         if (viewerId !== userId || !accessToken) {
@@ -103,15 +95,8 @@ const GitHubIntegration = new GraphQLObjectType<any, GQLContext>({
           standardError(error, {tags: {teamId, userId}, userId: viewerId})
           return {error, edges: [], pageInfo: []}
         }
-        let completeQueryString = queryString
-        if (nameWithOwnerFilters.length) {
-          const nameWithOwnerPrefix = nameWithOwnerFilters.map((name) => `repo:${name}`).join(',')
-          completeQueryString = `${nameWithOwnerPrefix} ${completeQueryString}`
-        } else completeQueryString = `involves:@me ${completeQueryString}`
-        const dummyPrefix = 'sort:updated state:open'
-        completeQueryString = `${dummyPrefix} ${completeQueryString}`
         const manager = new GitHubServerManager(accessToken)
-        const searchRes = await manager.searchIssues(completeQueryString, first, after)
+        const searchRes = await manager.searchIssues(queryString, first, after)
         if ('message' in searchRes) {
           console.error(searchRes)
           return {
@@ -131,23 +116,6 @@ const GitHubIntegration = new GraphQLObjectType<any, GQLContext>({
           issueCount: data.search.issueCount
         }
         return searchIssues
-        // }
-        // else {
-        //   const issuesRes = await manager.getIssues(first, after)
-        //   if ('message' in issuesRes) {
-        //     console.error(issuesRes)
-        //     return {
-        //       error: {message: issuesRes.message},
-        //       edges: [],
-        //       pageInfo: {hasNextPage: false, hasPreviousPage: false}
-        //     }
-        //   }
-        //   const {data, errors} = issuesRes
-        //   if (Array.isArray(errors)) {
-        //     console.error(errors[0])
-        //   }
-        //   return data.viewer.issues
-        // }
       }
     },
     login: {

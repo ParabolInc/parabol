@@ -1862,7 +1862,7 @@ export interface IGitHubIssueConnection {
   __typename: 'GitHubIssueConnection';
 
   /**
-   * Page info with cursors as unique ids from GitHub
+   * Page info with cursors as unique ids straight from GitHub
    */
   pageInfo: IPageInfoDateCursor | null;
 
@@ -1870,12 +1870,6 @@ export interface IGitHubIssueConnection {
    * A list of edges.
    */
   edges: Array<IGitHubIssueEdge>;
-
-  /**
-   * The total number of issues returned from the query
-   */
-  totalCount: number | null;
-  issueCount: number | null;
 
   /**
    * An error with the connection, if any
@@ -1921,8 +1915,6 @@ export interface IGitHubIssue {
    * The title of the GitHub issue
    */
   title: string;
-  totalCount: number | null;
-  issueCount: number | null;
 }
 
 /**
