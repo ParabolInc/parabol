@@ -1,4 +1,4 @@
-import {GraphQLID, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
+import {GraphQLID, GraphQLInt, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
 import connectionDefinitions from '../connectionDefinitions'
 import {GQLContext} from '../graphql'
 import GraphQLURLType from './GraphQLURLType'
@@ -41,6 +41,10 @@ const {connectionType, edgeType} = connectionDefinitions({
     pageInfo: {
       type: PageInfoDateCursor,
       description: 'Page info with cursors as unique ids straight from GitHub'
+    },
+    issueCount: {
+      type: GraphQLNonNull(GraphQLInt),
+      description: 'The total number of issues returned from the GitHub query'
     },
     error: {
       type: StandardMutationError,

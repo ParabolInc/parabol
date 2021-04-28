@@ -19737,35 +19737,6 @@ export type ViewerHovercardContext = HovercardContext & {
   viewer: User
 }
 
-export type GetIssuesQueryVariables = Exact<{
-  first: Scalars['Int']
-  after?: Maybe<Scalars['String']>
-}>
-
-export type GetIssuesQuery = {__typename?: 'Query'} & {
-  viewer: {__typename?: 'User'} & {
-    issues: {__typename?: 'IssueConnection'} & Pick<IssueConnection, 'totalCount'> & {
-        edges?: Maybe<
-          Array<
-            Maybe<
-              {__typename?: 'IssueEdge'} & Pick<IssueEdge, 'cursor'> & {
-                  node?: Maybe<{__typename?: 'Issue'} & GetIssuesNodeFragment>
-                }
-            >
-          >
-        >
-        pageInfo: {__typename?: 'PageInfo'} & Pick<
-          PageInfo,
-          'endCursor' | 'hasNextPage' | 'hasPreviousPage'
-        >
-      }
-  }
-}
-
-export type GetIssuesNodeFragment = {__typename: 'Issue'} & Pick<Issue, 'id' | 'title' | 'url'> & {
-    repository: {__typename?: 'Repository'} & Pick<Repository, 'nameWithOwner'>
-  }
-
 export type GetRepositoriesQueryVariables = Exact<{[key: string]: never}>
 
 export type GetRepositoriesQuery = {__typename?: 'Query'} & {
@@ -19833,33 +19804,10 @@ export type SearchIssuesQuery = {__typename?: 'Query'} & {
     }
 }
 
-export const GetIssuesNodeFragmentDoc: DocumentNode<GetIssuesNodeFragment, unknown> = {
-  kind: 'Document',
-  definitions: [
-    {
-      kind: 'FragmentDefinition',
-      name: {kind: 'Name', value: 'getIssuesNode'},
-      typeCondition: {kind: 'NamedType', name: {kind: 'Name', value: 'Issue'}},
-      selectionSet: {
-        kind: 'SelectionSet',
-        selections: [
-          {kind: 'Field', name: {kind: 'Name', value: '__typename'}},
-          {kind: 'Field', name: {kind: 'Name', value: 'id'}},
-          {kind: 'Field', name: {kind: 'Name', value: 'title'}},
-          {kind: 'Field', name: {kind: 'Name', value: 'url'}},
-          {
-            kind: 'Field',
-            name: {kind: 'Name', value: 'repository'},
-            selectionSet: {
-              kind: 'SelectionSet',
-              selections: [{kind: 'Field', name: {kind: 'Name', value: 'nameWithOwner'}}]
-            }
-          }
-        ]
-      }
-    }
-  ]
-}
+export type GetIssuesNodeFragment = {__typename: 'Issue'} & Pick<Issue, 'id' | 'title' | 'url'> & {
+    repository: {__typename?: 'Repository'} & Pick<Repository, 'nameWithOwner'>
+  }
+
 export const RepoFragFragmentDoc: DocumentNode<RepoFragFragment, unknown> = {
   kind: 'Document',
   definitions: [
@@ -19887,98 +19835,31 @@ export const RepoFragFragmentDoc: DocumentNode<RepoFragFragment, unknown> = {
     }
   ]
 }
-export const GetIssuesDocument: DocumentNode<GetIssuesQuery, GetIssuesQueryVariables> = {
+export const GetIssuesNodeFragmentDoc: DocumentNode<GetIssuesNodeFragment, unknown> = {
   kind: 'Document',
   definitions: [
     {
-      kind: 'OperationDefinition',
-      operation: 'query',
-      name: {kind: 'Name', value: 'getIssues'},
-      variableDefinitions: [
-        {
-          kind: 'VariableDefinition',
-          variable: {kind: 'Variable', name: {kind: 'Name', value: 'first'}},
-          type: {kind: 'NonNullType', type: {kind: 'NamedType', name: {kind: 'Name', value: 'Int'}}}
-        },
-        {
-          kind: 'VariableDefinition',
-          variable: {kind: 'Variable', name: {kind: 'Name', value: 'after'}},
-          type: {kind: 'NamedType', name: {kind: 'Name', value: 'String'}}
-        }
-      ],
+      kind: 'FragmentDefinition',
+      name: {kind: 'Name', value: 'getIssuesNode'},
+      typeCondition: {kind: 'NamedType', name: {kind: 'Name', value: 'Issue'}},
       selectionSet: {
         kind: 'SelectionSet',
         selections: [
+          {kind: 'Field', name: {kind: 'Name', value: '__typename'}},
+          {kind: 'Field', name: {kind: 'Name', value: 'id'}},
+          {kind: 'Field', name: {kind: 'Name', value: 'title'}},
+          {kind: 'Field', name: {kind: 'Name', value: 'url'}},
           {
             kind: 'Field',
-            name: {kind: 'Name', value: 'viewer'},
+            name: {kind: 'Name', value: 'repository'},
             selectionSet: {
               kind: 'SelectionSet',
-              selections: [
-                {
-                  kind: 'Field',
-                  name: {kind: 'Name', value: 'issues'},
-                  arguments: [
-                    {
-                      kind: 'Argument',
-                      name: {kind: 'Name', value: 'first'},
-                      value: {kind: 'Variable', name: {kind: 'Name', value: 'first'}}
-                    },
-                    {
-                      kind: 'Argument',
-                      name: {kind: 'Name', value: 'after'},
-                      value: {kind: 'Variable', name: {kind: 'Name', value: 'after'}}
-                    }
-                  ],
-                  selectionSet: {
-                    kind: 'SelectionSet',
-                    selections: [
-                      {
-                        kind: 'Field',
-                        name: {kind: 'Name', value: 'edges'},
-                        selectionSet: {
-                          kind: 'SelectionSet',
-                          selections: [
-                            {kind: 'Field', name: {kind: 'Name', value: 'cursor'}},
-                            {
-                              kind: 'Field',
-                              name: {kind: 'Name', value: 'node'},
-                              selectionSet: {
-                                kind: 'SelectionSet',
-                                selections: [
-                                  {
-                                    kind: 'FragmentSpread',
-                                    name: {kind: 'Name', value: 'getIssuesNode'}
-                                  }
-                                ]
-                              }
-                            }
-                          ]
-                        }
-                      },
-                      {
-                        kind: 'Field',
-                        name: {kind: 'Name', value: 'pageInfo'},
-                        selectionSet: {
-                          kind: 'SelectionSet',
-                          selections: [
-                            {kind: 'Field', name: {kind: 'Name', value: 'endCursor'}},
-                            {kind: 'Field', name: {kind: 'Name', value: 'hasNextPage'}},
-                            {kind: 'Field', name: {kind: 'Name', value: 'hasPreviousPage'}}
-                          ]
-                        }
-                      },
-                      {kind: 'Field', name: {kind: 'Name', value: 'totalCount'}}
-                    ]
-                  }
-                }
-              ]
+              selections: [{kind: 'Field', name: {kind: 'Name', value: 'nameWithOwner'}}]
             }
           }
         ]
       }
-    },
-    ...GetIssuesNodeFragmentDoc.definitions
+    }
   ]
 }
 export const GetRepositoriesDocument: DocumentNode<

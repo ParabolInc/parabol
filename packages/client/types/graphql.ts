@@ -1825,7 +1825,6 @@ export interface IIssuesOnGitHubIntegrationArguments {
    * A string of text to search for
    */
   queryString?: string | null;
-  nameWithOwnerFilters?: Array<string> | null;
 }
 
 /**
@@ -1840,7 +1839,7 @@ export interface IGitHubSearchQuery {
   id: string;
 
   /**
-   * The query string, either simple or JQL depending on the isJQL flag
+   * The query string in GitHub format, e.g. is:issue is:open
    */
   queryString: string;
 
@@ -1870,6 +1869,7 @@ export interface IGitHubIssueConnection {
    * A list of edges.
    */
   edges: Array<IGitHubIssueEdge>;
+  issueCount: number | null;
 
   /**
    * An error with the connection, if any

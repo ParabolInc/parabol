@@ -8,12 +8,7 @@ import ErrorComponent from './ErrorComponent/ErrorComponent'
 import GitHubScopingSearchResults from './GitHubScopingSearchResults'
 
 const query = graphql`
-  query GitHubScopingSearchResultsRootQuery(
-    $teamId: ID!
-    $queryString: String
-    $nameWithOwnerFilters: [ID!]
-    $first: Int
-  ) {
+  query GitHubScopingSearchResultsRootQuery($teamId: ID!, $queryString: String, $first: Int) {
     viewer {
       ...GitHubScopingSearchResults_viewer
     }
@@ -28,7 +23,7 @@ const GitHubScopingSearchResultsRoot = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {meeting} = props
   const {teamId, githubSearchQuery} = meeting
-  const {queryString, nameWithOwnerFilters} = githubSearchQuery
+  const {queryString} = githubSearchQuery
   const normalizedQueryString = queryString.trim()
 
   return (
@@ -38,7 +33,6 @@ const GitHubScopingSearchResultsRoot = (props: Props) => {
       variables={{
         teamId,
         queryString: normalizedQueryString,
-        nameWithOwnerFilters: nameWithOwnerFilters as string[],
         first: 100
       }}
       fetchPolicy={'store-or-network' as any}
@@ -58,7 +52,6 @@ export default createFragmentContainer(GitHubScopingSearchResultsRoot, {
       teamId
       githubSearchQuery {
         queryString
-        nameWithOwnerFilters
       }
     }
   `
