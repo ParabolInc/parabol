@@ -1,5 +1,6 @@
 import {RTable, TableSchema} from '../../database/stricterR'
 import areEqual from 'fbjs/lib/areEqual'
+import getPg from '../getPg'
 
 interface DBDoc {
   id: string
@@ -9,15 +10,18 @@ interface RethinkDoc extends DBDoc {}
 interface PGDoc extends DBDoc {}
 
 interface IError {
-  [key: string]:
-    | {
-        error: string | string[]
-        rethinkRow?: Partial<RethinkDoc>
-        pgRow?: Partial<PGDoc>
-      }
-    | number
-  recordsCompared: number,
-  foundErrors: number
+  [key: string]: 
+    {
+      error: string[]
+      rethinkRow: Partial<RethinkDoc>
+      pgRow: Partial<PGDoc>
+    } | number | undefined | string[],
+  rethinkRecordsCompared: number,
+  foundErrors: number,
+  missingPgRows: string[],
+  extraPgRows: string[],
+  rethinkRowCount?: number,
+  pgRowCount?: number
 }
 
 function getPairNeFields(
@@ -70,50 +74,57 @@ function addNeFieldsToErrors(
   }
 }
 
+const getExtraPgRowIds = async (tableName: string): Promise<string[]> => {
+  const pg = getPg()
+  const queryRes = await pg.query(`
+    SELECT ARRAY_AGG("id") FROM "${tableName}"
+      WHERE "eqChecked" = '-infinity'::timestamptz;
+  `)
+  return queryRes.rows[0].array_agg
+}
+
 export async function checkTableEq(
+  tableName: string,
   rethinkQuery: RTable<TableSchema>,
-  pgQuery: (ids: string[]) => Promise<PGDoc[]>,
+  pgQuery: (update: {[key: string]: any}, ids: string[]) => Promise<PGDoc[]>,
   alwaysDefinedFields: string[],
   maybeUndefinedFieldsDefaultValues: {[key: string]: any},
   maxErrors: number = 10
 ): Promise<IError> {
   const errors : IError = {
-    recordsCompared: 0,
-    foundErrors: 0
+    rethinkRecordsCompared: 0,
+    foundErrors: 0,
+    missingPgRows: [],
+    extraPgRows: []
   }
   const batchSize = 3000
 
   for (let i = 0; i < 1e5; i++) {
-    console.log(i)
+    if (errors.foundErrors === maxErrors) { return errors }
+    
     const offset = batchSize * i
     const rethinkRows = (await rethinkQuery
       .skip(offset)
       .limit(batchSize)
       .run()) as RethinkDoc[]
-    if (!rethinkRows.length) {
-      break
-    }
+    if (!rethinkRows.length) { break }
 
     const ids = rethinkRows.map((t) => t.id)
-    const pgRows = await pgQuery(ids)
+    const pgRows = await pgQuery({eqChecked: new Date()}, ids)
     const pgRowsById = {} as {[key: string]: PGDoc}
     pgRows.forEach((pgRow) => {
       pgRowsById[pgRow.id] = pgRow
     })
 
     for (const rethinkRow of rethinkRows) {
+      if (errors.foundErrors === maxErrors) { return errors }
+      errors.rethinkRecordsCompared += 1
       const id = rethinkRow.id
       const pgRow = pgRowsById[id]
-      errors.recordsCompared += 1
 
       if (!pgRow) {
-        errors[id] = {
-          error: 'No pg row found for rethink row'
-        }
+        errors.missingPgRows.push(id)
         errors.foundErrors += 1
-        if (errors.foundErrors === maxErrors) {
-          return errors
-        }
         continue
       }
       const neFields = getPairNeFields(
@@ -126,12 +137,13 @@ export async function checkTableEq(
       if (neFields.length) {
         addNeFieldsToErrors(errors, neFields, rethinkRow, pgRow, id)
         errors.foundErrors += 1
-        if (errors.foundErrors === maxErrors) {
-          return errors
-        }
       }
     }
   }
-
+  errors.rethinkRowCount = errors.rethinkRecordsCompared
+  errors.extraPgRows = await getExtraPgRowIds(tableName)
+  errors.foundErrors += errors.extraPgRows.length
+  errors.pgRowCount = (errors.rethinkRowCount) -
+    (errors.missingPgRows.length) + (errors.extraPgRows.length)
   return errors
 }

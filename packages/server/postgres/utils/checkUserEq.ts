@@ -1,7 +1,7 @@
 import User from '../../database/types/User'
 import getRethink from '../../database/rethinkDriver'
-import getUsersById from '../../postgres/queries/getUsersById'
 import {checkTableEq} from './checkEqBase'
+import updateUser from '../queries/updateUser'
 
 const alwaysDefinedFields :
   (keyof Partial<User>)[] = 
@@ -38,8 +38,9 @@ const checkUserEq = async (maxErrors: number = 10) => {
   const rethinkQuery = r
     .table('User').orderBy('updatedAt', {index: 'updatedAt'})
   const errors = await checkTableEq(
+    'User',
     rethinkQuery,
-    getUsersById,
+    updateUser,
     alwaysDefinedFields,
     maybeUndefinedFieldsDefaultValues,
     maxErrors

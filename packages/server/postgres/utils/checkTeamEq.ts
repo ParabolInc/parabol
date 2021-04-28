@@ -1,7 +1,7 @@
 import Team from '../../database/types/Team'
-import getTeamsById from '../../postgres/queries/getTeamsById'
 import getRethink from '../../database/rethinkDriver'
 import {checkTableEq} from './checkEqBase'
+import updateTeamByTeamId from '../queries/updateTeamByTeamId'
 
 const alwaysDefinedFields: 
   (keyof Partial<Team>)[] = 
@@ -27,8 +27,9 @@ const checkTeamEq = async (maxErrors: number = 10) => {
   const rethinkQuery = r
     .table('Team').orderBy('updatedAt', {index: 'updatedAt'})
   const errors = await checkTableEq(
+    'Team',
     rethinkQuery,
-    getTeamsById,
+    updateTeamByTeamId,
     alwaysDefinedFields,
     maybeUndefinedFieldsDefaultValues,
     maxErrors
