@@ -10,17 +10,20 @@ interface RethinkDoc extends DBDoc {}
 interface PGDoc extends DBDoc {}
 
 interface IError {
-  [key: string]: 
-    {
-      error: string[]
-      rethinkRow: Partial<RethinkDoc>
-      pgRow: Partial<PGDoc>
-    } | number | undefined | string[],
-  rethinkRecordsCompared: number,
-  foundErrors: number,
-  missingPgRows: string[],
-  extraPgRows: string[],
-  rethinkRowCount?: number,
+  [key: string]:
+    | {
+        error: string[]
+        rethinkRow: Partial<RethinkDoc>
+        pgRow: Partial<PGDoc>
+      }
+    | number
+    | undefined
+    | string[]
+  rethinkRecordsCompared: number
+  foundErrors: number
+  missingPgRows: string[]
+  extraPgRows: string[]
+  rethinkRowCount?: number
   pgRowCount?: number
 }
 
@@ -86,12 +89,18 @@ const getExtraPgRowIds = async (tableName: string): Promise<string[]> => {
 export async function checkTableEq(
   tableName: string,
   rethinkQuery: RTable<TableSchema>,
-  pgQuery: (update: {[key: string]: any}, ids: string[]) => Promise<PGDoc[]>,
+  pgQuery: (
+    update: {
+      [key: string]: any
+      eqChecked: Date
+    },
+    ids: string[]
+  ) => Promise<PGDoc[]>,
   alwaysDefinedFields: string[],
   maybeUndefinedFieldsDefaultValues: {[key: string]: any},
-  maxErrors: number = 10
+  maxErrors = 10
 ): Promise<IError> {
-  const errors : IError = {
+  const errors: IError = {
     rethinkRecordsCompared: 0,
     foundErrors: 0,
     missingPgRows: [],
@@ -100,14 +109,18 @@ export async function checkTableEq(
   const batchSize = 3000
 
   for (let i = 0; i < 1e5; i++) {
-    if (errors.foundErrors === maxErrors) { return errors }
-    
+    if (errors.foundErrors === maxErrors) {
+      return errors
+    }
+
     const offset = batchSize * i
     const rethinkRows = (await rethinkQuery
       .skip(offset)
       .limit(batchSize)
       .run()) as RethinkDoc[]
-    if (!rethinkRows.length) { break }
+    if (!rethinkRows.length) {
+      break
+    }
 
     const ids = rethinkRows.map((t) => t.id)
     const pgRows = await pgQuery({eqChecked: new Date()}, ids)
@@ -117,7 +130,9 @@ export async function checkTableEq(
     })
 
     for (const rethinkRow of rethinkRows) {
-      if (errors.foundErrors === maxErrors) { return errors }
+      if (errors.foundErrors === maxErrors) {
+        return errors
+      }
       errors.rethinkRecordsCompared += 1
       const id = rethinkRow.id
       const pgRow = pgRowsById[id]
@@ -143,7 +158,7 @@ export async function checkTableEq(
   errors.rethinkRowCount = errors.rethinkRecordsCompared
   errors.extraPgRows = await getExtraPgRowIds(tableName)
   errors.foundErrors += errors.extraPgRows.length
-  errors.pgRowCount = (errors.rethinkRowCount) -
-    (errors.missingPgRows.length) + (errors.extraPgRows.length)
+  errors.pgRowCount =
+    errors.rethinkRowCount - errors.missingPgRows.length + errors.extraPgRows.length
   return errors
 }
