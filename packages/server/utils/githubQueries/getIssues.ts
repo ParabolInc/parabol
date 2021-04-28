@@ -1,9 +1,9 @@
 import {gql} from '../getGQLInputStr'
 
 export const getIssues = gql`
-  query getIssues($first: Int) {
+  query getIssues($first: Int!, $after: String) {
     viewer {
-      issues(first: $first) {
+      issues(first: $first, after: $after) {
         edges {
           cursor
           node {

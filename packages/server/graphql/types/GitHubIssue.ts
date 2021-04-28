@@ -40,7 +40,7 @@ const {connectionType, edgeType} = connectionDefinitions({
   connectionFields: () => ({
     pageInfo: {
       type: PageInfoDateCursor,
-      description: 'Page info with cursors as unique ids from GitHub'
+      description: 'Page info with cursors as unique ids straight from GitHub'
     },
     error: {
       type: StandardMutationError,

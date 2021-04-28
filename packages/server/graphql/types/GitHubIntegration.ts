@@ -10,14 +10,12 @@ import {
 import ms from 'ms'
 import GitHubIntegrationId from '../../../client/shared/gqlIds/GitHubIntegrationId'
 import {getUserId} from '../../utils/authorization'
-import GitHubServerManager, {GQLResponse} from '../../utils/GitHubServerManager'
+import GitHubServerManager from '../../utils/GitHubServerManager'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
-import connectionFromGitHubIssues from '../queries/helpers/connectionFromGitHubIssues'
 import {GitHubIssueConnection} from './GitHubIssue'
 import GitHubSearchQuery from './GitHubSearchQuery'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
-import {Issue, GetIssuesQuery, SearchIssuesQuery} from '../../types/typed-document-nodes'
 
 const GitHubIntegration = new GraphQLObjectType<any, GQLContext>({
   name: 'GitHubIntegration',
@@ -89,7 +87,11 @@ const GitHubIntegration = new GraphQLObjectType<any, GQLContext>({
           descrption: 'A list of repos to restrict the search to'
         }
       },
-      resolve: async ({teamId, userId, accessToken}, {first, queryString}, context) => {
+      resolve: async (
+        {teamId, userId, accessToken},
+        {first = 50, nameWithOwnerFilters, queryString, after},
+        context
+      ) => {
         const {authToken} = context
         const viewerId = getUserId(authToken)
         if (viewerId !== userId || !accessToken) {
@@ -101,47 +103,51 @@ const GitHubIntegration = new GraphQLObjectType<any, GQLContext>({
           standardError(error, {tags: {teamId, userId}, userId: viewerId})
           return {error, edges: [], pageInfo: []}
         }
+        let completeQueryString = queryString
+        if (nameWithOwnerFilters.length) {
+          const nameWithOwnerPrefix = nameWithOwnerFilters.map((name) => `repo:${name}`).join(',')
+          completeQueryString = `${nameWithOwnerPrefix} ${completeQueryString}`
+        } else completeQueryString = `involves:@me ${completeQueryString}`
+        const dummyPrefix = 'sort:updated state:open'
+        completeQueryString = `${dummyPrefix} ${completeQueryString}`
         const manager = new GitHubServerManager(accessToken)
-        let gitHubErrors: GQLResponse<GetIssuesQuery | SearchIssuesQuery>['errors']
-        if (queryString) {
-          const searchRes = await manager.searchIssues(queryString, first)
-          if ('message' in searchRes) {
-            console.error(searchRes)
-            return {
-              error: {message: JSON.stringify(searchRes)},
-              edges: [],
-              pageInfo: {hasNextPage: false, hasPreviousPage: false}
-            }
+        const searchRes = await manager.searchIssues(completeQueryString, first, after)
+        if ('message' in searchRes) {
+          console.error(searchRes)
+          return {
+            error: {message: searchRes.message},
+            edges: [],
+            pageInfo: {hasNextPage: false, hasPreviousPage: false}
           }
-          const {data, errors} = searchRes
-          if (Array.isArray(errors)) {
-            console.error(errors[0])
-            gitHubErrors = errors
-          }
-          const filteredEdges = data.search.edges?.filter((edge) => edge?.node?.__typename)
-          const searchIssues = {
-            edges: filteredEdges,
-            pageInfo: data.search.pageInfo,
-            issueCount: data.search.issueCount
-          }
-          return searchIssues
-        } else {
-          const issuesRes = await manager.getIssues(first)
-          if ('message' in issuesRes) {
-            console.error(issuesRes)
-            return {
-              error: {message: JSON.stringify(issuesRes)},
-              edges: [],
-              pageInfo: {hasNextPage: false, hasPreviousPage: false}
-            }
-          }
-          const {data, errors} = issuesRes
-          if (Array.isArray(errors)) {
-            console.error(errors[0])
-            gitHubErrors = errors
-          }
-          return data.viewer.issues
         }
+        const {data, errors} = searchRes
+        if (Array.isArray(errors)) {
+          console.error(errors[0])
+        }
+        const filteredEdges = data.search.edges?.filter((edge) => edge?.node?.__typename)
+        const searchIssues = {
+          edges: filteredEdges,
+          pageInfo: data.search.pageInfo,
+          issueCount: data.search.issueCount
+        }
+        return searchIssues
+        // }
+        // else {
+        //   const issuesRes = await manager.getIssues(first, after)
+        //   if ('message' in issuesRes) {
+        //     console.error(issuesRes)
+        //     return {
+        //       error: {message: issuesRes.message},
+        //       edges: [],
+        //       pageInfo: {hasNextPage: false, hasPreviousPage: false}
+        //     }
+        //   }
+        //   const {data, errors} = issuesRes
+        //   if (Array.isArray(errors)) {
+        //     console.error(errors[0])
+        //   }
+        //   return data.viewer.issues
+        // }
       }
     },
     login: {
