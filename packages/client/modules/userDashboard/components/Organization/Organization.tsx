@@ -70,7 +70,7 @@ const Organization = (props: Props) => {
   // trying to be somewhere they shouldn't be, using a Redirect borks the loading animation
   useEffect(() => {
     if (!organization) {
-      history.replace('/me')
+      history.replace('/meetings')
     }
   }, [history, organization])
   const {togglePortal, modalPortal} = useModal()

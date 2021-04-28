@@ -19,7 +19,7 @@ const handleAuthenticationRedirect: OnNextHandler<
     return
   }
   if (!team) {
-    history.push('/me')
+    history.push('/meetings')
     return
   }
   const {id: teamId, activeMeetings} = team

@@ -8,6 +8,7 @@ import {
   SharedUpdater,
   StandardMutation
 } from '../types/relayMutations'
+import extractTextFromDraftString from '../utils/draftjs/extractTextFromDraftString'
 import getTagsFromEntityMap from '../utils/draftjs/getTagsFromEntityMap'
 import ContentFilterHandler from '../utils/relay/ContentFilterHandler'
 import getInProxy from '../utils/relay/getInProxy'
@@ -131,6 +132,9 @@ const UpdateTaskMutation: StandardMutation<TUpdateTaskMutation, OptionalHandlers
         const {entityMap} = JSON.parse(content)
         const nextTags = getTagsFromEntityMap(entityMap)
         task.setValue(nextTags, 'tags')
+        const plaintextContent = extractTextFromDraftString(content)
+        task.setValue(plaintextContent, 'plaintextContent')
+        task.setValue(plaintextContent, 'title')
       }
       handleUpsertTasks(task as any, store)
     },

@@ -12,6 +12,7 @@ export const getClientKeys = () => {
     atlassian: process.env.ATLASSIAN_CLIENT_ID,
     github: process.env.GITHUB_CLIENT_ID,
     google: process.env.GOOGLE_OAUTH_CLIENT_ID,
+    logRocket: process.env.LOG_ROCKET,
     segment: process.env.SEGMENT_WRITE_KEY,
     sentry: process.env.SENTRY_DSN,
     slack: process.env.SLACK_CLIENT_ID,
@@ -59,7 +60,7 @@ const createSSR = (res: HttpResponse, req: HttpRequest) => {
     res.end()
     return
   }
-  res.writeHeader('cotent-type', 'text/html; charset=utf-8')
+  res.writeHeader('content-type', 'text/html; charset=utf-8')
   // no need for eTag since file is < 1 MTU
   if (acceptsBrotli(req)) {
     res.writeHeader('content-encoding', 'br').end(getBrotli())

@@ -1,12 +1,12 @@
 import createProxyRecord from './createProxyRecord'
 
-const getOptimisticTaskEditor = (store, userId, taskId, isEditing) => {
+const getOptimisticTaskEditor = (store, taskId, isEditing) => {
+  const viewer = store.getRoot().getLinkedRecord('viewer')
   const task = store.get(taskId)
-  const user = store.get(userId) || createProxyRecord(store, 'User', {id: userId})
   const payload = createProxyRecord(store, 'EditTaskMutationPayload', {
     isEditing
   })
-  return payload.setLinkedRecord(user, 'editor').setLinkedRecord(task, 'task')
+  return payload.setLinkedRecord(viewer, 'editor').setLinkedRecord(task, 'task')
 }
 
 export default getOptimisticTaskEditor

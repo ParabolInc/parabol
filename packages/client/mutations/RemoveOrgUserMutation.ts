@@ -169,7 +169,7 @@ export const removeOrgUserOrganizationOnNext = (payload, context) => {
     organization: {id: orgId}
   } = payload
   if (userId === viewerId && onExOrgRoute(pathname, orgId)) {
-    history.push('/me')
+    history.push('/meetings')
   }
 }
 
@@ -197,7 +197,7 @@ export const removeOrgUserNotificationOnNext: OnNextHandler<
       onTeamRoute(window.location.pathname, teamId) ||
       onMeetingRoute(window.location.pathname, meetingIds)
     ) {
-      history.push('/me')
+      history.push('/meetings')
       return
     }
   }

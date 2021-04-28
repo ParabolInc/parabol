@@ -16,7 +16,7 @@ graphql`
       }
     }
     team {
-      ...TopBarMeetingsActiveMeetings @relay(mask: false)
+      ...MeetingsDashActiveMeetings @relay(mask: false)
       lastMeetingType
     }
   }
