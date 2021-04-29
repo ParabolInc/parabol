@@ -80,6 +80,7 @@ abstract class GitHubManager {
     return this.post(body)
   }
 
+  // deprecated. Using getRepositories on the server now
   async getRepos() {
     return this.query(getRepos)
   }

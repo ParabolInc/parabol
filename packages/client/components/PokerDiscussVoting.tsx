@@ -97,7 +97,6 @@ const PokerDiscussVoting = (props: Props) => {
               key={key}
               scaleValue={scaleValue}
               scores={scores}
-              stageId={stageId}
               setFinalScore={setFinalScore}
               isInitialStageRender={isInitialStageRender}
             />

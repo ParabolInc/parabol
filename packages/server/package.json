@@ -18,7 +18,7 @@
     "precommit": "lint-staged",
     "lint": "eslint --fix ./**/*.ts",
     "postversion": "git push --follow-tags",
-    "tsgen:gh": "gql2ts utils/githubSchema.json -e $(pwd)/../client/types/configGH.js -o packages/client/types/githubGraphql.d.ts && eslint --fix 'packages/client/types/githubGraphql.d.ts'",
+    "tsgen:gh": "gql2ts utils/githubSchema.ts -e $(pwd)/../client/types/configGH.js -o packages/client/types/githubGraphql.d.ts && eslint --fix 'packages/client/types/githubGraphql.d.ts'",
     "tsgen:ghQuery": "graphql-typescript-definitions --schema-types-path . && eslint --fix 'packages/client/utils/githubQueries/**/*.d.ts' ",
     "typecheck": "yarn tsc --noEmit -p tsconfig.json"
   },

@@ -21,9 +21,11 @@ const getURLWithSAMLRequestParam = (destination: string, slug: string) => {
       <samlp:NameIDPolicy Format="urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress" AllowCreate="false"/>
   </samlp:AuthnRequest>
   `
-  const SAMLRequest = encodeURIComponent(zlib.deflateRawSync(template).toString('base64'))
+  const SAMLRequest = zlib.deflateRawSync(template).toString('base64')
   const url = new URL(destination)
+  // appending a SAMLRequest that is _not_ URI encoded
   url.searchParams.append('SAMLRequest', SAMLRequest)
+  // calling toString will URI encode everything for us!
   return url.toString()
 }
 
