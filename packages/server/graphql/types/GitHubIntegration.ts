@@ -105,10 +105,10 @@ const GitHubIntegration = new GraphQLObjectType<any, GQLContext>({
         }
         const {data, errors} = searchRes
         if (Array.isArray(errors)) console.error(errors[0])
-        const filteredEdges = data.search.edges?.filter((edge) => edge?.node?.__typename)
+        const edgesWithNode = data.search.edges?.filter((edge) => edge?.node?.__typename)
         const {pageInfo, issueCount} = data.search
         return {
-          edges: filteredEdges,
+          edges: edgesWithNode,
           pageInfo,
           issueCount
         }
