@@ -21,7 +21,7 @@ const visitDocFotPath = (path: string[], selectionSetNode: SelectionSetNode) => 
   findPathInDoc(path, selectionSetNode)
   return isPathInDoc
 }
-const filterErrorsForDocument = (document: DocumentNode, errors: GitHubGraphQLError[]) => {
+const filterErrorsForDocument = (document: DocumentNode, errors?: GitHubGraphQLError[] | null) => {
   if (!errors || !errors.length) return errors
   const {definitions} = document
   const operationNode = definitions.find(

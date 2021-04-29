@@ -45319,8 +45319,7 @@ export interface IGitHubIntegration {
    * The user that the access token is attached to
    */
   userId: string;
-  query: IXGitHubQuery | null;
-  mutation: IXGitHubMutation | null;
+  api: IGitHubApi | null;
 }
 
 export interface IIssuesOnGitHubIntegrationArguments {
@@ -54997,6 +54996,26 @@ export interface IRenamePokerTemplatePayload {
   __typename: 'RenamePokerTemplatePayload';
   error: IStandardMutationError | null;
   pokerTemplate: IPokerTemplate | null;
+}
+
+export interface IXGitHubErrorLocation {
+  __typename: '_xGitHubErrorLocation';
+  line: number;
+  column: number;
+}
+
+export interface IXGitHubError {
+  __typename: '_xGitHubError';
+  message: string;
+  locations: Array<IXGitHubErrorLocation> | null;
+  path: Array<string> | null;
+}
+
+export interface IGitHubApi {
+  __typename: 'GitHubApi';
+  errors: Array<IXGitHubError> | null;
+  query: IXGitHubQuery | null;
+  mutation: IXGitHubMutation | null;
 }
 
 // tslint:enable

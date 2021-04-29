@@ -1,9 +1,10 @@
 import AbortController from 'abort-controller'
 import {DocumentNode, print} from 'graphql'
 import fetch from 'node-fetch'
+import {Threshold} from '../../../client/types/constEnums'
 import sendToSentry from '../../utils/sendToSentry'
+import {GitHubExecutionResult} from './getRequestDataLoader'
 
-const MAX_REQUEST_TIME = 10000
 const executeGitHubFetch = async (
   document: DocumentNode,
   variables: Record<string, any>,
@@ -13,7 +14,7 @@ const executeGitHubFetch = async (
   const {signal} = controller
   const timeout = setTimeout(() => {
     controller.abort()
-  }, MAX_REQUEST_TIME)
+  }, Threshold.MAX_INTEGRATION_FETCH_TIME)
   try {
     const result = await fetch('https://api.github.com/graphql', {
       signal,
@@ -29,7 +30,20 @@ const executeGitHubFetch = async (
       })
     })
     clearTimeout(timeout)
-    return result.json()
+    const resJSON = await result.json()
+    if (!resJSON.data && !resJSON.errors) {
+      const message = String(resJSON.message) || JSON.stringify(resJSON)
+      return {
+        errors: [
+          {
+            type: 'GitHub Gateway Error',
+            message
+          }
+        ],
+        data: null
+      }
+    }
+    return resJSON as GitHubExecutionResult
   } catch (e) {
     sendToSentry(e)
     clearTimeout(timeout)
@@ -37,7 +51,7 @@ const executeGitHubFetch = async (
       errors: [
         {
           type: 'GitHub is down',
-          message: e.message
+          message: String(e.message)
         }
       ],
       data: null

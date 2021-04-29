@@ -7,6 +7,7 @@ import {
   RenameTypes,
   wrapSchema
 } from 'graphql-tools'
+import {Threshold} from '../../../client/types/constEnums'
 import getRequestDataLoader, {GitHubGraphQLError} from './getRequestDataLoader'
 import transformGitHubRequest from './transformGitHubRequest'
 
@@ -122,7 +123,7 @@ const addGitHubToSchema = (
           source.errorPromise = new Promise((resolve) => {
             const timeout = setTimeout(() => {
               resolve([{message: 'Error Resolution Timeout'}])
-            }, 10000)
+            }, Threshold.MAX_INTEGRATION_FETCH_TIME + 1000)
             source.resolveErrors = (errors: GitHubGraphQLError[]) => {
               clearTimeout(timeout)
               resolve(errors)

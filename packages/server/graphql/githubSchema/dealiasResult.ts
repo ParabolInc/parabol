@@ -1,8 +1,8 @@
 import {AliasMapper} from './mergeGQLDocuments'
 
-const dealiasResult = (data: Record<string, any>, aliasMapper: AliasMapper) => {
+const dealiasResult = (data: Record<string, any> | null, aliasMapper: AliasMapper) => {
   const usesAlias = Object.keys(aliasMapper).length > 0
-  if (!usesAlias) return data
+  if (!usesAlias || !data) return data
   const returnData = {
     ...data
   }

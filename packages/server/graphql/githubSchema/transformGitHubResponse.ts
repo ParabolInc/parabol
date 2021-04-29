@@ -1,4 +1,6 @@
-const transformGitHubResponse = (data: Record<string, string>, prefix: string) => {
+import {GitHubExecutionResult} from './getRequestDataLoader'
+
+const transformGitHubResponse = (response: GitHubExecutionResult, prefix: string) => {
   const prefixGitHub = (name: string) => `${prefix}${name}`
   const transformObject = (parent: Record<string, any>) => {
     Object.keys(parent).forEach((key) => {
@@ -14,7 +16,7 @@ const transformGitHubResponse = (data: Record<string, string>, prefix: string) =
       }
     })
   }
-  transformObject(data)
+  transformObject(response)
 }
 
 export default transformGitHubResponse

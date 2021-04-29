@@ -26,7 +26,7 @@ export interface GitHubGraphQLError {
   path?: string[]
 }
 
-interface GitHubExecutionResult {
+export interface GitHubExecutionResult {
   data: Record<string, unknown> | null
   errors?: GitHubGraphQLError[] | null
 }
