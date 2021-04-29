@@ -39,11 +39,12 @@ const addGitHubToSchema = (
   })
 
   const makeResolve = (isMutation: boolean) => async (
-    {accessToken, resolveErrors},
+    {accessToken, resolveErrors, errors},
     _args,
     context,
     info
   ) => {
+    if (errors) return null
     const {document, variables} = transformGitHubRequest(info, prefix)
     // Create a new dataloader whenever the context changes (once per execution)
     const ghDataLoader = getRequestDataLoader(context)
@@ -112,11 +113,21 @@ const addGitHubToSchema = (
             }
           }
           const accessToken = await resolveAccessToken(source, args, context, info)
-          return {accessToken, errors: []}
+          if (!accessToken) {
+            return {
+              errors: [
+                {
+                  message: 'No access token provided'
+                }
+              ]
+            }
+          }
+          return {accessToken}
         }
       },
       GitHubApi: {
         errors: (source) => {
+          if (source.errors) return source.errors
           if (source.errorPromise) {
             return source.errorPromise
           }
