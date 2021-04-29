@@ -45658,7 +45658,7 @@ export interface ITeam {
   /**
    * The hash and expiration for a token that allows anyone with it to join the team
    */
-  massInvitation: IMassInvitation | null;
+  massInvitation: IMassInvitation;
 
   /**
    * Integration details that are shared by all team members. Nothing user specific
@@ -54654,7 +54654,6 @@ export type MeetingSubscriptionPayload =
   | IPromoteNewMeetingFacilitatorPayload
   | IRemoveReflectionPayload
   | IResetMeetingToStagePayload
-  | ISetAppLocationSuccess
   | ISetPhaseFocusPayload
   | ISetStageTimerPayload
   | IStartDraggingReflectionPayload
@@ -54970,7 +54969,8 @@ export type TeamSubscriptionPayload =
   | IPersistJiraSearchQuerySuccess
   | IMovePokerTemplateScaleValueSuccess
   | IUpdateJiraDimensionFieldSuccess
-  | ISetDefaultSlackChannelSuccess;
+  | ISetDefaultSlackChannelSuccess
+  | ISetAppLocationSuccess;
 
 export interface IStartNewMeetingPayload {
   __typename: 'StartNewMeetingPayload';
