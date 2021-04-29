@@ -1869,7 +1869,11 @@ export interface IGitHubIssueConnection {
    * A list of edges.
    */
   edges: Array<IGitHubIssueEdge>;
-  issueCount: number | null;
+
+  /**
+   * The total number of issues returned from the GitHub query
+   */
+  issueCount: number;
 
   /**
    * An error with the connection, if any

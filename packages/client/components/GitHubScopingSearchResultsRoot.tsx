@@ -8,7 +8,12 @@ import ErrorComponent from './ErrorComponent/ErrorComponent'
 import GitHubScopingSearchResults from './GitHubScopingSearchResults'
 
 const query = graphql`
-  query GitHubScopingSearchResultsRootQuery($teamId: ID!, $queryString: String, $first: Int) {
+  query GitHubScopingSearchResultsRootQuery(
+    $teamId: ID!
+    $queryString: String!
+    $first: Int!
+    $after: String
+  ) {
     viewer {
       ...GitHubScopingSearchResults_viewer
     }
@@ -33,7 +38,7 @@ const GitHubScopingSearchResultsRoot = (props: Props) => {
       variables={{
         teamId,
         queryString: normalizedQueryString,
-        first: 100
+        first: 50
       }}
       fetchPolicy={'store-or-network' as any}
       render={({props, error}) => {
