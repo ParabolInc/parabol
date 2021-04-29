@@ -5,6 +5,17 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.9.0 2021-Apr-29
+
+### Added
+
+- Add LogRocket #4886
+- support addGitHubToSchema #4920
+
+### Fixed
+
+- Fix team invitation #4877
+
 ## 6.8.0 2021-Apr-21
 
 ### Added
