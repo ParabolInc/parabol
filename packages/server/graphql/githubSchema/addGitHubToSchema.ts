@@ -38,7 +38,7 @@ const addGitHubToSchema = (
   })
 
   const makeResolve = (isMutation: boolean) => async (source, args, context, info) => {
-    const {document, variables} = transformGitHubRequest(info)
+    const {document, variables} = transformGitHubRequest(info, prefix)
     const accessToken = await resolveAccessToken(source, args, context, info)
     // Create a new dataloader whenever the context changes (once per execution)
     const ghDataLoader = getRequestDataLoader(context)

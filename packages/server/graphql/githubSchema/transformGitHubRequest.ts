@@ -1,8 +1,6 @@
 import {FragmentDefinitionNode, GraphQLResolveInfo, visit} from 'graphql'
 
-const unprefixGitHub = (name: string) => name.slice(`_GitHub`.length)
-
-const transformGitHubRequest = (info: GraphQLResolveInfo) => {
+const transformGitHubRequest = (info: GraphQLResolveInfo, prefix: string) => {
   const usedVariables = new Set<string>()
   const usedFragmentSpreads = new Set<string>()
   const fragmentDefinitions = [] as FragmentDefinitionNode[]
@@ -59,7 +57,7 @@ const transformGitHubRequest = (info: GraphQLResolveInfo) => {
         ...node,
         name: {
           ...node.name,
-          value: unprefixGitHub(value)
+          value: value.slice(prefix.length)
         }
       }
     }
