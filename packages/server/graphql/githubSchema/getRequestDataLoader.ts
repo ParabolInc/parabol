@@ -2,6 +2,7 @@ import DataLoader from 'dataloader'
 import {DocumentNode} from 'graphql'
 import dealiasResult from './dealiasResult'
 import executeGitHubFetch from './executeGitHubFetch'
+import filterErrorsForDocument from './filterErrorsForDocument'
 import mergeGQLDocuments from './mergeGQLDocuments'
 import transformGitHubResponse from './transformGitHubResponse'
 
@@ -15,7 +16,21 @@ interface DataLoaderKey {
   }
 }
 
-type GitHubDataLoader = DataLoader<DataLoaderKey, any>
+export interface GitHubGraphQLError {
+  message: string
+  locations?: {
+    line: number
+    column: number
+  }[]
+  type?: string
+  path?: string[]
+}
+
+interface GitHubExecutionResult {
+  data: Record<string, unknown> | null
+  errors?: GitHubGraphQLError[] | null
+}
+type GitHubDataLoader = DataLoader<DataLoaderKey, GitHubExecutionResult>
 
 const queryDataLoaderWeakMap = new WeakMap<Record<string, unknown>, GitHubDataLoader>()
 
@@ -39,18 +54,21 @@ const batchFn = async (keys: readonly DataLoaderKey[]) => {
   const [firstKey] = keys
   const {options} = firstKey
   const {isMutation, prefix} = options
-  const results = [] as any[]
+  const results = [] as GitHubExecutionResult[]
   await Promise.all(
     Object.entries(execParamsByToken).map(async ([accessToken, execParams]) => {
       const {document, variables, aliasMappers} = mergeGQLDocuments(execParams, isMutation)
       const aliasedResult = await executeGitHubFetch(document, variables, accessToken)
       transformGitHubResponse(aliasedResult, prefix)
-      const {data} = aliasedResult
+      const {errors, data} = aliasedResult
 
       execParams.forEach((execParam, idx) => {
         const aliasMapper = aliasMappers[idx]
-        const {idx: resultsIdx} = execParam
-        results[resultsIdx] = dealiasResult(data, aliasMapper)
+        const {idx: resultsIdx, document} = execParam
+        results[resultsIdx] = {
+          data: dealiasResult(data, aliasMapper),
+          errors: filterErrorsForDocument(document, errors)
+        }
       })
     })
   )
@@ -60,7 +78,7 @@ const batchFn = async (keys: readonly DataLoaderKey[]) => {
 const getRequestDataLoader = (key: Record<any, any>) => {
   const existingDataLoader = queryDataLoaderWeakMap.get(key)
   if (existingDataLoader) return existingDataLoader
-  const newDataLoader = new DataLoader<DataLoaderKey, any>(batchFn, {
+  const newDataLoader = new DataLoader<DataLoaderKey, GitHubExecutionResult>(batchFn, {
     cache: false
   })
   queryDataLoaderWeakMap.set(key, newDataLoader)
