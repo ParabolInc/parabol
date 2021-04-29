@@ -1,12 +1,8 @@
-import {schema as rawSchema} from '@octokit/graphql-schema'
+import {mergeSchemas} from '@graphql-tools/merge'
+import {makeExecutableSchema} from '@graphql-tools/schema'
+import {RenameRootTypes, RenameTypes, wrapSchema} from '@graphql-tools/wrap'
+import {schema} from '@octokit/graphql-schema'
 import {GraphQLResolveInfo, GraphQLSchema} from 'graphql'
-import {
-  makeExecutableSchema,
-  mergeSchemas,
-  RenameRootTypes,
-  RenameTypes,
-  wrapSchema
-} from 'graphql-tools'
 import {Threshold} from '../../../client/types/constEnums'
 import getRequestDataLoader, {GitHubGraphQLError} from './getRequestDataLoader'
 import transformGitHubRequest from './transformGitHubRequest'
@@ -23,7 +19,7 @@ type ResolveAccessToken = (
 ) => string | Promise<string>
 
 const addGitHubToSchema = (
-  schema: GraphQLSchema,
+  parentSchema: GraphQLSchema,
   parentType: string,
   resolveAccessToken: ResolveAccessToken,
   options?: AddToGitHubOptions
@@ -32,7 +28,7 @@ const addGitHubToSchema = (
   const prefixGitHub = (name: string) => `${prefix}${name}`
   const transformedGitHubSchema = wrapSchema({
     schema: makeExecutableSchema({
-      typeDefs: rawSchema.idl
+      typeDefs: schema.idl
     }),
     createProxyingResolver: () => (parent, _args, _context, info) => parent[info.fieldName],
     transforms: [new RenameRootTypes(prefixGitHub), new RenameTypes(prefixGitHub)]
@@ -62,7 +58,7 @@ const addGitHubToSchema = (
   }
 
   return mergeSchemas({
-    schemas: [transformedGitHubSchema, schema],
+    schemas: [transformedGitHubSchema, parentSchema],
     typeDefs: `
       type ${prefix}ErrorLocation {
         line: Int!
