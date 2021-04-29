@@ -1,6 +1,8 @@
 import fetch from 'node-fetch'
 import GitHubManager from 'parabol-client/utils/GitHubManager'
 import {stringify} from 'querystring'
+import {getRepositories} from './githubQueries/getRepositories'
+import {GetRepositoriesQuery} from '../../server/types/typed-document-nodes'
 
 interface OAuth2Response {
   access_token: string
@@ -8,6 +10,31 @@ interface OAuth2Response {
   scope: string
 }
 
+type GQLResponse<TData> = {
+  data: TData
+  errors?: [
+    {
+      message: string
+      path: [string]
+      extensions: {
+        [key: string]: any
+      }
+      locations: [
+        {
+          line: number
+          column: number
+        }
+      ]
+    }
+  ]
+}
+
+// response if the credential is invalid https://docs.github.com/en/developers/apps/authenticating-with-github-apps#authenticating-as-a-github-app
+interface GitHubCredentialError {
+  message: string
+  documentation_url: string
+}
+type GitHubResponse<TData> = GQLResponse<TData> | GitHubCredentialError
 class GitHubServerManager extends GitHubManager {
   static async init(code: string) {
     return GitHubServerManager.fetchToken(code)
@@ -44,8 +71,23 @@ class GitHubServerManager extends GitHubManager {
     return new GitHubServerManager(accessToken)
   }
   fetch = fetch
+
+  // TODO: update name to just post once we've moved the GH client manager methods to the server
+  private async serverPost<T>(body: string): Promise<GitHubResponse<T>> {
+    const res = await fetch('https://api.github.com/graphql', {
+      method: 'POST',
+      headers: this.headers,
+      body
+    })
+    return await res.json()
+  }
   constructor(accessToken: string) {
     super(accessToken)
+  }
+
+  async getRepositories() {
+    const body = JSON.stringify({query: getRepositories, variables: {}})
+    return this.serverPost<GetRepositoriesQuery>(body)
   }
 }
 

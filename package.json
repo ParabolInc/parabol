@@ -51,6 +51,11 @@
   },
   "devDependencies": {
     "@babel/preset-env": "7.12.11",
+    "@graphql-codegen/cli": "^1.21.3",
+    "@graphql-codegen/typed-document-node": "^1.18.4",
+    "@graphql-codegen/typescript": "^1.21.1",
+    "@graphql-codegen/typescript-operations": "^1.17.15",
+    "@graphql-typed-document-node/core": "^3.1.0",
     "@sucrase/webpack-loader": "^2.0.0",
     "@types/jscodeshift": "^0.6.2",
     "@typescript-eslint/eslint-plugin": "4.10.0",
