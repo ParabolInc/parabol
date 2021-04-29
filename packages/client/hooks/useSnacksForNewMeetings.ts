@@ -32,6 +32,7 @@ const useSnacksForNewMeetings = (meetingsRef: any) => {
     const fiveSecsAgo = new Date(Date.now() - ms('5s'))
     const sortedMeetings = meetings
       .filter((meeting) => {
+        if (!meeting) return false
         if (dismissedMeetingIds.has(meeting.id)) return false
         const createdAt = new Date(meeting.createdAt)
         if (createdAt < fiveMinsAgo) return false

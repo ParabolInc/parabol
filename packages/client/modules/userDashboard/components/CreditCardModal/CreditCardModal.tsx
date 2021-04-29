@@ -44,9 +44,9 @@ const CreditCardModal = (props: Props) => {
     actionType === 'update'
       ? closePortal
       : () => {
-        onUpgrade?.()
-        setStatus('success')
-      }
+          onUpgrade?.()
+          setStatus('success')
+        }
   const onLater = (e: React.FormEvent) => {
     e.preventDefault()
     setStatus('later')
@@ -61,7 +61,7 @@ const CreditCardModal = (props: Props) => {
   if (status === 'later') return <UpgradeLater closePortal={closeLater} />
 
   return (
-    <Container>
+    <Container data-private>
       <DialogTitle>
         {actionType === 'update' ? 'Update Credit Card' : 'Upgrade to Pro'}
         {actionType !== 'update' && (

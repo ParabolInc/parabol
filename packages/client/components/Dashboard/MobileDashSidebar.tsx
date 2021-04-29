@@ -79,6 +79,12 @@ const MobileDashSidebar = (props: Props) => {
           <NavItemsWrap>
             <LeftDashNavItem
               onClick={handleMenuClick}
+              icon={'forum'}
+              href={'/meetings'}
+              label={'Meetings'}
+            />
+            <LeftDashNavItem
+              onClick={handleMenuClick}
               icon={'timeline'}
               href={'/me'}
               label={'Timeline'}

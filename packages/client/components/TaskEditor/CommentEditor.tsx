@@ -194,7 +194,7 @@ const CommentEditor = (props: Props) => {
   const useFallback = isAndroid && !readOnly
   const showFallback = useFallback && !isRichDraft(editorState)
   return (
-    <RootEditor data-cy={`${dataCy}-editor`}>
+    <RootEditor data-cy={`${dataCy}-editor`} data-private>
       {showFallback ? (
         <Suspense fallback={<div />}>
           <TaskEditorFallback
@@ -207,23 +207,23 @@ const CommentEditor = (props: Props) => {
           />
         </Suspense>
       ) : (
-          <Editor
-            spellCheck
-            blockStyleFn={blockStyleFn}
-            editorState={editorState}
-            handleBeforeInput={onBeforeInput}
-            handleKeyCommand={nextKeyCommand}
-            handlePastedText={onPastedText}
-            handleReturn={onReturn}
-            keyBindingFn={onKeyBindingFn}
-            onBlur={handleBlur}
-            onFocus={onFocus}
-            onChange={onChange}
-            placeholder={placeholder}
-            readOnly={readOnly || (useFallback && !showFallback)}
-            ref={editorRef as any}
-          />
-        )}
+        <Editor
+          spellCheck
+          blockStyleFn={blockStyleFn}
+          editorState={editorState}
+          handleBeforeInput={onBeforeInput}
+          handleKeyCommand={nextKeyCommand}
+          handlePastedText={onPastedText}
+          handleReturn={onReturn}
+          keyBindingFn={onKeyBindingFn}
+          onBlur={handleBlur}
+          onFocus={onFocus}
+          onChange={onChange}
+          placeholder={placeholder}
+          readOnly={readOnly || (useFallback && !showFallback)}
+          ref={editorRef as any}
+        />
+      )}
       {renderModal && renderModal()}
     </RootEditor>
   )
