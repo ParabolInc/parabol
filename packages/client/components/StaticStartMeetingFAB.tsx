@@ -4,7 +4,7 @@ import useRouter from '~/hooks/useRouter'
 import {PALETTE} from '~/styles/paletteV3'
 import getTeamIdFromPathname from '~/utils/getTeamIdFromPathname'
 import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
-import {Breakpoint, Layout, ZIndex} from '../types/constEnums'
+import {Breakpoint, ElementWidth, Layout, ZIndex} from '../types/constEnums'
 import FloatingActionButton from './FloatingActionButton'
 import Icon from './Icon'
 
@@ -39,7 +39,7 @@ const MeetingLabel = styled('div')({
   fontSize: 16,
   fontWeight: 600,
   textAlign: 'start',
-  width: 158
+  width: ElementWidth.NEW_MEETING_FAB
 })
 
 interface Props { }
@@ -54,8 +54,8 @@ const StartMeetingFAB = (props: Props) => {
   return (
     <Block>
       <Button onClick={onClick}>
-        <MeetingIcon>{'forum'}</MeetingIcon>
-        <MeetingLabel>{'Start New Meeting'}</MeetingLabel>
+        <MeetingIcon>{'add'}</MeetingIcon>
+        <MeetingLabel>{'Add Meeting'}</MeetingLabel>
       </Button>
     </Block>
   )

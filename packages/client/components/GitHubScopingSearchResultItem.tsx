@@ -49,7 +49,8 @@ interface Props {
 
 const GitHubScopingSearchResultItem = (props: Props) => {
   const {issue, meetingId, persistQuery, usedServiceTaskIds} = props
-  const {id: serviceTaskId, nameWithOwner, title, url} = issue
+  const {id: serviceTaskId, repository, title, url} = issue
+  const {nameWithOwner} = repository
   const isSelected = usedServiceTaskIds.has(serviceTaskId)
   const atmosphere = useAtmosphere()
   const {onCompleted, onError, submitMutation, submitting} = useMutationProps()
@@ -99,7 +100,9 @@ export default createFragmentContainer(GitHubScopingSearchResultItem, {
       id
       # use title instead of summary so the optimistic updater will use it for the sidebar
       title
-      nameWithOwner
+      repository {
+        nameWithOwner
+      }
       url
     }
   `

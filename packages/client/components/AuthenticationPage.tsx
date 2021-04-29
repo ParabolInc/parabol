@@ -19,7 +19,7 @@ const AuthenticationPage = (props: Props) => {
   useDocumentTitle('Sign Up for Free Online Retrospectives | Parabol', 'Sign Up')
   useCanonical(page)
   if (authObj) {
-    const nextUrl = getValidRedirectParam() || '/me'
+    const nextUrl = getValidRedirectParam() || '/meetings'
     // always replace otherwise they could get stuck in a back-button loop
     setTimeout(() => history.replace(nextUrl))
     return null

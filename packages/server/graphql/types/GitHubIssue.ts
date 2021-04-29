@@ -1,10 +1,10 @@
-import {GraphQLID, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
+import {GraphQLID, GraphQLInt, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
 import connectionDefinitions from '../connectionDefinitions'
 import {GQLContext} from '../graphql'
-import GraphQLISO8601Type from './GraphQLISO8601Type'
 import GraphQLURLType from './GraphQLURLType'
 import PageInfoDateCursor from './PageInfoDateCursor'
 import StandardMutationError from './StandardMutationError'
+import GitHubRepository from './GitHubRepository'
 
 const GitHubIssue = new GraphQLObjectType<any, GQLContext>({
   name: 'GitHubIssue',
@@ -18,9 +18,9 @@ const GitHubIssue = new GraphQLObjectType<any, GQLContext>({
       type: GraphQLNonNull(GraphQLURLType),
       description: 'The url to access the issue'
     },
-    nameWithOwner: {
-      type: GraphQLNonNull(GraphQLID),
-      description: 'The owner / repo of the issue as found in GitHub'
+    repository: {
+      type: GraphQLNonNull(GitHubRepository),
+      description: 'The repository that the issue belongs to'
     },
     title: {
       type: GraphQLNonNull(GraphQLString),
@@ -34,13 +34,17 @@ const {connectionType, edgeType} = connectionDefinitions({
   nodeType: GitHubIssue,
   edgeFields: () => ({
     cursor: {
-      type: GraphQLISO8601Type
+      type: GraphQLString
     }
   }),
   connectionFields: () => ({
     pageInfo: {
       type: PageInfoDateCursor,
-      description: 'Page info with cursors coerced to ISO8601 dates'
+      description: 'Page info with cursors as unique ids straight from GitHub'
+    },
+    issueCount: {
+      type: GraphQLNonNull(GraphQLInt),
+      description: 'The total number of issues returned from the GitHub query'
     },
     error: {
       type: StandardMutationError,

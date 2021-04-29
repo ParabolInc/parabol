@@ -21,7 +21,7 @@ const MeetingRoot = () => {
   const {meetingId} = params
   useEffect(() => {
     if (!meetingId) {
-      history.replace('/me')
+      history.replace('/meetings')
     }
   }, [])
   if (!meetingId) return null

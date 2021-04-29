@@ -10,10 +10,9 @@ import {
 import ms from 'ms'
 import GitHubIntegrationId from '../../../client/shared/gqlIds/GitHubIntegrationId'
 import {getUserId} from '../../utils/authorization'
-import GitHubServerManager, {GQLResponse} from '../../utils/GitHubServerManager'
+import GitHubServerManager from '../../utils/GitHubServerManager'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
-import connectionFromGitHubIssues from '../queries/helpers/connectionFromGitHubIssues'
 import {GitHubIssueConnection} from './GitHubIssue'
 import GitHubSearchQuery from './GitHubSearchQuery'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
@@ -75,98 +74,42 @@ const GitHubIntegration = new GraphQLObjectType<any, GQLContext>({
         'A list of issues coming straight from the GitHub integration for a specific team member',
       args: {
         first: {
-          type: GraphQLInt,
-          defaultValue: 100
+          type: GraphQLInt
         },
         after: {
-          type: GraphQLISO8601Type,
-          description: 'the datetime cursor'
+          type: GraphQLString,
+          description: 'a unique cursor id from GitHub'
         },
         queryString: {
           type: GraphQLString,
           description: 'A string of text to search for'
-        },
-        nameWithOwnerFilters: {
-          type: GraphQLList(GraphQLNonNull(GraphQLID)),
-          descrption: 'A list of repos to restrict the search to'
         }
       },
-      resolve: async ({teamId, userId, accessToken}, {first, queryString}, context) => {
-        const {authToken} = context
+      resolve: async ({teamId, userId, accessToken}, {first, queryString, after}, {authToken}) => {
         const viewerId = getUserId(authToken)
         if (viewerId !== userId || !accessToken) {
-          const err = new Error(
+          const error = new Error(
             viewerId !== userId
               ? 'Cannot access another team members issues'
               : 'Not integrated with GitHub'
           )
-          standardError(err, {tags: {teamId, userId}, userId: viewerId})
-          return connectionFromGitHubIssues([], 0, err)
+          standardError(error, {tags: {teamId, userId}, userId: viewerId})
+          return {error, edges: [], pageInfo: []}
         }
         const manager = new GitHubServerManager(accessToken)
-        type GitHubIssue = Pick<Issue, 'title' | 'id' | 'url' | 'updatedAt'> &
-          Record<'nameWithOwner', string>
-        const gitHubIssues = [] as GitHubIssue[]
-        let gitHubErrors: GQLResponse<GetIssuesQuery | SearchIssuesQuery>['errors']
-
-        if (queryString) {
-          const searchRes = await manager.searchIssues(queryString, first)
-          if ('message' in searchRes) {
-            console.error(searchRes)
-            return connectionFromGitHubIssues([], 0, searchRes)
+        const validQueryStr = queryString.replace(/is:pr/g, '')
+        const searchRes = await manager.searchIssues(validQueryStr, first, after)
+        if ('message' in searchRes) {
+          console.error(searchRes)
+          return {
+            error: {message: searchRes.message},
+            edges: [],
+            pageInfo: {hasNextPage: false, hasPreviousPage: false}
           }
-          const {data, errors} = searchRes
-          if (Array.isArray(errors)) {
-            console.error(errors[0])
-            gitHubErrors = errors
-          }
-          const edges = data.search.edges
-          if (!edges || !edges.length) return connectionFromGitHubIssues([], 0)
-          edges.forEach((edge) => {
-            if (edge?.node?.__typename === 'Issue') {
-              const {node} = edge
-              const {id, title, url, repository} = node
-              gitHubIssues.push({
-                id,
-                title,
-                url,
-                nameWithOwner: repository.nameWithOwner,
-                updatedAt: new Date()
-              })
-            }
-          })
-        } else {
-          const issuesRes = await manager.getIssues(first)
-          if ('message' in issuesRes) {
-            console.error(issuesRes)
-            return connectionFromGitHubIssues([], 0, issuesRes)
-          }
-          const {data, errors} = issuesRes
-          if (Array.isArray(errors)) {
-            console.error(errors[0])
-            gitHubErrors = errors
-          }
-          const edges = data.viewer.issues.edges
-          if (!edges || !edges.length) return connectionFromGitHubIssues([], 0)
-          edges.forEach((edge) => {
-            if (edge?.node?.__typename === 'Issue') {
-              const {node} = edge
-              const {id, title, url, repository} = node
-              gitHubIssues.push({
-                id,
-                title,
-                url,
-                nameWithOwner: repository.nameWithOwner,
-                updatedAt: new Date()
-              })
-            }
-          })
         }
-        return connectionFromGitHubIssues(
-          gitHubIssues,
-          first,
-          gitHubErrors ? {message: gitHubErrors[0].message} : undefined
-        )
+        const {data, errors} = searchRes
+        if (Array.isArray(errors)) console.error(errors[0])
+        return data.search
       }
     },
     login: {

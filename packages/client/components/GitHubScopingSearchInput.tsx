@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
+import React, {useEffect} from 'react'
 import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import Atmosphere from '~/Atmosphere'
 import useAtmosphere from '../hooks/useAtmosphere'
@@ -51,7 +51,11 @@ const GitHubScopingSearchInput = (props: Props) => {
   const {queryString} = githubSearchQuery
   const isEmpty = !queryString
   const atmosphere = useAtmosphere()
-  const placeholder = 'Search issues on GitHub'
+  useEffect(() => {
+    const defaultInput = 'is:issue is:open sort:updated involves:@me '
+    setSearch(atmosphere, meetingId, defaultInput)
+  }, [])
+
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const {value} = e.target
     setSearch(atmosphere, meetingId, value)
@@ -59,9 +63,10 @@ const GitHubScopingSearchInput = (props: Props) => {
   const clearSearch = () => {
     setSearch(atmosphere, meetingId, '')
   }
+
   return (
     <Wrapper>
-      <SearchInput value={queryString} placeholder={placeholder} onChange={onChange} />
+      <SearchInput autoFocus value={`is:issue${queryString.slice(8)}`} onChange={onChange} />
       <ClearSearchIcon isEmpty={isEmpty} onClick={clearSearch}>
         close
       </ClearSearchIcon>

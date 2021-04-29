@@ -5,7 +5,7 @@ import hasToken from '../utils/hasToken'
 
 const DemoCreateAccountPrimaryButton = (props: RouteComponentProps) => {
   const {history} = props
-  const path = hasToken() ? '/me' : '/create-account?from=demo'
+  const path = hasToken() ? '/meetings' : '/create-account?from=demo'
   const label = hasToken() ? 'My Dashboard' : 'Create Free Account'
   const handleClick = () => history.push(path)
   return (

@@ -64,12 +64,11 @@ export const createTaskTaskUpdater: SharedUpdater<CreateTaskMutation_task> = (pa
   const task = payload.getLinkedRecord('task')
   if (!task) return
   const taskId = task.getValue('id')
-  const userId = task.getValue('userId')
   const content = task.getValue('content')
   const rawContent = JSON.parse(content)
   const {blocks} = rawContent
   const isEditing = blocks.length === 0 || (blocks.length === 1 && blocks[0].text === '')
-  const editorPayload = getOptimisticTaskEditor(store, userId, taskId, isEditing)
+  const editorPayload = getOptimisticTaskEditor(store, taskId, isEditing)
   handleEditTask(editorPayload, store)
   handleUpsertTasks(task, store)
 }
@@ -113,8 +112,9 @@ const CreateTaskMutation: StandardMutation<TCreateTaskMutation, OptionalHandlers
       const now = new Date().toJSON()
       const taskId = clientTempId(teamId)
       const viewer = store.getRoot().getLinkedRecord('viewer')
-      const plaintextContent = newTask.plaintextContent || (
-        newTask.content ? extractTextFromDraftString(newTask.content) : '')
+      const plaintextContent =
+        newTask.plaintextContent ||
+        (newTask.content ? extractTextFromDraftString(newTask.content) : '')
       const optimisticTask = {
         ...newTask,
         id: taskId,
@@ -125,6 +125,7 @@ const CreateTaskMutation: StandardMutation<TCreateTaskMutation, OptionalHandlers
         updatedAt: now,
         tags: [],
         content: newTask.content || makeEmptyStr(),
+        title: plaintextContent,
         plaintextContent
       }
       const task = createProxyRecord(store, 'Task', optimisticTask)
@@ -132,7 +133,7 @@ const CreateTaskMutation: StandardMutation<TCreateTaskMutation, OptionalHandlers
         .setLinkedRecord(userId ? store.get(userId)! : null, 'user')
         .setLinkedRecord(viewer, 'createdByUser')
         .setLinkedRecords([], 'replies')
-      const editorPayload = getOptimisticTaskEditor(store, userId, taskId, isEditing)
+      const editorPayload = getOptimisticTaskEditor(store, taskId, isEditing)
       handleEditTask(editorPayload, store)
       handleUpsertTasks(task as any, store)
     },
