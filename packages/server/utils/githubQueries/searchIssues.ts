@@ -19,7 +19,6 @@ export const searchIssues = gql`
   }
 
   fragment getIssuesNode on Issue {
-    __typename
     id
     title
     url

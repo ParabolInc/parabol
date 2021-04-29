@@ -1,4 +1,4 @@
-import {GraphQLID, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
+import {GraphQLID, GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
 import {GQLContext} from '../graphql'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 
@@ -13,6 +13,11 @@ const GitHubSearchQuery = new GraphQLObjectType<any, GQLContext>({
     queryString: {
       type: GraphQLNonNull(GraphQLString),
       description: 'The query string in GitHub format, e.g. is:issue is:open'
+    },
+    nameWithOwnerFilters: {
+      type: GraphQLNonNull(GraphQLList(GraphQLNonNull(GraphQLID))),
+      description: 'The list of repos selected as a filter. null if not set',
+      resolve: ({nameWithOwnerFilters}) => nameWithOwnerFilters || []
     },
     lastUsedAt: {
       type: GraphQLNonNull(GraphQLISO8601Type),

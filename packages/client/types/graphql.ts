@@ -1811,15 +1811,12 @@ export interface IGitHubIntegration {
 }
 
 export interface IIssuesOnGitHubIntegrationArguments {
-  /**
-   * @default 100
-   */
   first?: number | null;
 
   /**
-   * the datetime cursor
+   * a unique cursor id from GitHub
    */
-  after?: any | null;
+  after?: string | null;
 
   /**
    * A string of text to search for

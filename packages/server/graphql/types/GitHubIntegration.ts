@@ -94,7 +94,8 @@ const GitHubIntegration = new GraphQLObjectType<any, GQLContext>({
           return {error, edges: [], pageInfo: []}
         }
         const manager = new GitHubServerManager(accessToken)
-        const searchRes = await manager.searchIssues(queryString, first, after)
+        const validQueryStr = queryString.replace(/is:pr/g, '')
+        const searchRes = await manager.searchIssues(validQueryStr, first, after)
         if ('message' in searchRes) {
           console.error(searchRes)
           return {
@@ -105,13 +106,7 @@ const GitHubIntegration = new GraphQLObjectType<any, GQLContext>({
         }
         const {data, errors} = searchRes
         if (Array.isArray(errors)) console.error(errors[0])
-        const edgesWithNode = data.search.edges?.filter((edge) => edge?.node?.__typename)
-        const {pageInfo, issueCount} = data.search
-        return {
-          edges: edgesWithNode,
-          pageInfo,
-          issueCount
-        }
+        return data.search
       }
     },
     login: {

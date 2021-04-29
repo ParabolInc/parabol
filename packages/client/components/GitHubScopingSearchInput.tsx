@@ -66,7 +66,7 @@ const GitHubScopingSearchInput = (props: Props) => {
 
   return (
     <Wrapper>
-      <SearchInput autoFocus value={queryString} onChange={onChange} />
+      <SearchInput autoFocus value={`is:issue${queryString.slice(8)}`} onChange={onChange} />
       <ClearSearchIcon isEmpty={isEmpty} onClick={clearSearch}>
         close
       </ClearSearchIcon>
