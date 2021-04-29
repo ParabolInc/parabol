@@ -71,20 +71,18 @@ const GitHubIntegration = new GraphQLObjectType<any, GQLContext>({
         'A list of issues coming straight from the GitHub integration for a specific team member',
       args: {
         first: {
-          type: GraphQLInt,
-          defaultValue: 100
+          type: GraphQLInt
         },
         after: {
-          type: GraphQLISO8601Type,
-          description: 'the datetime cursor'
+          type: GraphQLString,
+          description: 'a unique cursor id from GitHub'
         },
         queryString: {
           type: GraphQLString,
           description: 'A string of text to search for'
         }
       },
-      resolve: async ({teamId, userId, accessToken}, {first = 50, queryString, after}, context) => {
-        const {authToken} = context
+      resolve: async ({teamId, userId, accessToken}, {first, queryString, after}, {authToken}) => {
         const viewerId = getUserId(authToken)
         if (viewerId !== userId || !accessToken) {
           const error = new Error(
