@@ -1,3 +1,4 @@
+import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
@@ -17,15 +18,22 @@ interface Props {
   isInitialStageRender: boolean
 }
 
+const MiniCardWrapper = styled('div')({
+  // This adds the gutter between the mini card and the avatars
+  marginRight: 16
+})
+
 const PokerVotingRow = (props: Props) => {
   const {scaleValue, scores, setFinalScore, isInitialStageRender} = props
   const {label, color} = scaleValue
   const users = scores.map(({user}) => user)
   return (
     <PokerVotingRowBase>
-      <MiniPokerCard color={color} onClick={setFinalScore}>
-        {label}
-      </MiniPokerCard>
+      <MiniCardWrapper>
+        <MiniPokerCard color={color} onClick={setFinalScore}>
+          {label}
+        </MiniPokerCard>
+      </MiniCardWrapper>
       <AvatarList
         size={PokerCards.AVATAR_WIDTH as 46}
         users={users}
