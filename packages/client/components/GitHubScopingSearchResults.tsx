@@ -135,6 +135,7 @@ export default createPaginationContainer(
                   node {
                     ...GitHubScopingSearchResultItem_issue
                     id
+                    title
                   }
                 }
                 issueCount

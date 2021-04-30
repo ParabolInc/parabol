@@ -19786,7 +19786,7 @@ export type SearchIssuesQuery = {__typename?: 'Query'} & {
             {__typename?: 'SearchResultItemEdge'} & Pick<SearchResultItemEdge, 'cursor'> & {
                 node?: Maybe<
                   | {__typename?: 'App'}
-                  | ({__typename?: 'Issue'} & GetIssuesNodeFragment)
+                  | ({__typename?: 'Issue'} & IssueFragment)
                   | {__typename?: 'MarketplaceListing'}
                   | {__typename?: 'Organization'}
                   | {__typename?: 'PullRequest'}
@@ -19804,7 +19804,7 @@ export type SearchIssuesQuery = {__typename?: 'Query'} & {
     }
 }
 
-export type GetIssuesNodeFragment = {__typename?: 'Issue'} & Pick<Issue, 'id' | 'title' | 'url'> & {
+export type IssueFragment = {__typename?: 'Issue'} & Pick<Issue, 'id' | 'title' | 'url'> & {
     repository: {__typename?: 'Repository'} & Pick<Repository, 'nameWithOwner'>
   }
 
@@ -19835,12 +19835,12 @@ export const RepoFragFragmentDoc: DocumentNode<RepoFragFragment, unknown> = {
     }
   ]
 }
-export const GetIssuesNodeFragmentDoc: DocumentNode<GetIssuesNodeFragment, unknown> = {
+export const IssueFragmentDoc: DocumentNode<IssueFragment, unknown> = {
   kind: 'Document',
   definitions: [
     {
       kind: 'FragmentDefinition',
-      name: {kind: 'Name', value: 'getIssuesNode'},
+      name: {kind: 'Name', value: 'issue'},
       typeCondition: {kind: 'NamedType', name: {kind: 'Name', value: 'Issue'}},
       selectionSet: {
         kind: 'SelectionSet',
@@ -20065,7 +20065,7 @@ export const SearchIssuesDocument: DocumentNode<SearchIssuesQuery, SearchIssuesQ
                         selectionSet: {
                           kind: 'SelectionSet',
                           selections: [
-                            {kind: 'FragmentSpread', name: {kind: 'Name', value: 'getIssuesNode'}}
+                            {kind: 'FragmentSpread', name: {kind: 'Name', value: 'issue'}}
                           ]
                         }
                       }
@@ -20091,6 +20091,6 @@ export const SearchIssuesDocument: DocumentNode<SearchIssuesQuery, SearchIssuesQ
         ]
       }
     },
-    ...GetIssuesNodeFragmentDoc.definitions
+    ...IssueFragmentDoc.definitions
   ]
 }

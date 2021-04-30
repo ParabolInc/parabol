@@ -94,8 +94,7 @@ const GitHubIntegration = new GraphQLObjectType<any, GQLContext>({
           return {error, edges: [], pageInfo: []}
         }
         const manager = new GitHubServerManager(accessToken)
-        const validQueryStr = queryString.replace(/is:pr/g, '')
-        const searchRes = await manager.searchIssues(validQueryStr, first, after)
+        const searchRes = await manager.searchIssues(queryString, first, after)
         if ('message' in searchRes) {
           console.error(searchRes)
           return {
