@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useState} from 'react'
-import {createPaginationContainer} from 'react-relay'
+import {createFragmentContainer} from 'react-relay'
 // import useGetUsedServiceTaskIds from '~/hooks/useGetUsedServiceTaskIds'
 import MockScopingList from '~/modules/meeting/components/MockScopingList'
 // import useAtmosphere from '../hooks/useAtmosphere'
@@ -29,9 +29,8 @@ const GitHubScopingSearchResults = (props: Props) => {
   const github = viewer?.teamMember!.integrations.github ?? null
   const {githubSearchQuery} = meeting
   const {queryString} = githubSearchQuery
-  const issues = github?.issues ?? null
-  const edges = issues?.edges ?? null
-  const error = issues?.error ?? null
+  const errors = github?.api?.errors ?? null
+  const edges = github?.api?.query?.search?.edges ?? null
   const [isEditing, setIsEditing] = useState(false)
   // const atmosphere = useAtmosphere()
   // const {id: meetingId, teamId, phases, githubSearchQuery} = meeting
@@ -48,7 +47,7 @@ const GitHubScopingSearchResults = (props: Props) => {
     return (
       <>
         <IntegrationScopingNoResults
-          error={invalidQuery || error?.message}
+          error={invalidQuery || (errors && errors[0].message)}
           msg={invalidQuery ? invalidQuery : defaultErrMsg}
         />
         <NewIntegrationRecordButton onClick={handleAddIssueClick} labelText={'New Issue'} />
@@ -110,89 +109,157 @@ const GitHubScopingSearchResults = (props: Props) => {
   )
 }
 
-export default createPaginationContainer(
-  GitHubScopingSearchResults,
-  {
-    viewer: graphql`
-      fragment GitHubScopingSearchResults_viewer on User {
-        ...NewGitHubIssueInput_viewer
-        teamMember(teamId: $teamId) {
-          suggestedIntegrations {
-            items {
-              ... on SuggestedIntegrationGitHub {
-                id
-                nameWithOwner
-              }
+export default createFragmentContainer(GitHubScopingSearchResults, {
+  viewer: graphql`
+    fragment GitHubScopingSearchResults_viewer on User {
+      ...NewGitHubIssueInput_viewer
+      teamMember(teamId: $teamId) {
+        suggestedIntegrations {
+          items {
+            ... on SuggestedIntegrationGitHub {
+              id
+              nameWithOwner
             }
           }
-          integrations {
-            github {
-              issues(first: $first, after: $after, queryString: $queryString)
-                @connection(key: "GitHubScopingSearchResults_issues") {
-                error {
-                  message
+        }
+        integrations {
+          github {
+            api {
+              errors {
+                message
+                locations {
+                  line
+                  column
                 }
-                edges {
-                  ...GitHubScopingSelectAllIssues_issues
-                  node {
-                    ...GitHubScopingSearchResultItem_issue
-                    id
-                    title
+                path
+              }
+              query {
+                search(
+                  first: 10
+                  type: ISSUE
+                  query: "is:issue is:open sort:updated involves:@me"
+                ) {
+                  edges {
+                    node {
+                      __typename
+                      ... on _xGitHubIssue {
+                        title
+                      }
+                    }
                   }
                 }
-                issueCount
+              }
+              query {
+                viewer {
+                  bio
+                }
               }
             }
           }
         }
       }
-    `,
-    meeting: graphql`
-      fragment GitHubScopingSearchResults_meeting on PokerMeeting {
-        ...NewGitHubIssueInput_meeting
-        id
-        teamId
-        githubSearchQuery {
-          nameWithOwnerFilters
-          queryString
-        }
-        phases {
-          ...useGetUsedServiceTaskIds_phase
-          phaseType
-        }
+    }
+  `,
+  meeting: graphql`
+    fragment GitHubScopingSearchResults_meeting on PokerMeeting {
+      ...NewGitHubIssueInput_meeting
+      id
+      teamId
+      githubSearchQuery {
+        nameWithOwnerFilters
+        queryString
       }
-    `
-  },
-  {
-    direction: 'forward',
-    getConnectionFromProps(props) {
-      const {viewer} = props
-      return viewer?.teamMember?.integrations.github?.issues
-    },
-    getFragmentVariables(prevVars) {
-      return {
-        ...prevVars,
-        first: 50
+      phases {
+        ...useGetUsedServiceTaskIds_phase
+        phaseType
       }
-    },
-    getVariables(_props, {cursor}, fragmentVariables) {
-      return {
-        ...fragmentVariables,
-        first: 50,
-        after: cursor
-      }
-    },
-    query: graphql`
-      query GitHubScopingSearchResultsPaginationQuery(
-        $first: Int!
-        $after: String
-        $teamId: String!
-        $queryString: String!
-      ) {
-        viewer {
-          ...GitHubScopingSearchResults_viewer
-        }
-      }
-    `
-  }
-)
+    }
+  `
+})
+
+// export default createPaginationContainer(
+//   GitHubScopingSearchResults,
+//   {
+//     viewer: graphql`
+//       fragment GitHubScopingSearchResults_viewer on User {
+//         ...NewGitHubIssueInput_viewer
+//         teamMember(teamId: $teamId) {
+//           suggestedIntegrations {
+//             items {
+//               ... on SuggestedIntegrationGitHub {
+//                 id
+//                 nameWithOwner
+//               }
+//             }
+//           }
+//           integrations {
+//             github {
+//               issues(first: $first, after: $after, queryString: $queryString)
+//                 @connection(key: "GitHubScopingSearchResults_issues") {
+//                 error {
+//                   message
+//                 }
+//                 edges {
+//                   ...GitHubScopingSelectAllIssues_issues
+//                   node {
+//                     ...GitHubScopingSearchResultItem_issue
+//                     id
+//                     title
+//                   }
+//                 }
+//                 issueCount
+//               }
+//             }
+//           }
+//         }
+//       }
+//     `,
+//     meeting: graphql`
+//       fragment GitHubScopingSearchResults_meeting on PokerMeeting {
+//         ...NewGitHubIssueInput_meeting
+//         id
+//         teamId
+//         githubSearchQuery {
+//           nameWithOwnerFilters
+//           queryString
+//         }
+//         phases {
+//           ...useGetUsedServiceTaskIds_phase
+//           phaseType
+//         }
+//       }
+//     `
+//   },
+//   {
+//     direction: 'forward',
+//     getConnectionFromProps(props) {
+//       const {viewer} = props
+//       return viewer?.teamMember?.integrations.github?.issues
+//     },
+//     getFragmentVariables(prevVars) {
+//       return {
+//         ...prevVars,
+//         first: 50
+//       }
+//     },
+//     getVariables(_props, {cursor}, fragmentVariables) {
+//       return {
+//         ...fragmentVariables,
+//         first: 50,
+//         after: cursor
+//       }
+//     },
+//     query: graphql`
+//       query GitHubScopingSearchResultsPaginationQuery(
+//         $first: Int!
+//         $after: String
+//         $teamId: String!
+//         $queryString: String!
+//       ) {
+//         viewer {
+//           ...GitHubScopingSearchResults_viewer
+//         }
+//       }
+//     `
+//   }
+// )

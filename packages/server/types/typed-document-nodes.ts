@@ -19789,7 +19789,7 @@ export type SearchIssuesQuery = {__typename?: 'Query'} & {
                   | ({__typename?: 'Issue'} & IssueFragment)
                   | {__typename?: 'MarketplaceListing'}
                   | {__typename?: 'Organization'}
-                  | {__typename?: 'PullRequest'}
+                  | ({__typename?: 'PullRequest'} & PullRequestFragment)
                   | {__typename?: 'Repository'}
                   | {__typename?: 'User'}
                 >
@@ -19807,6 +19807,11 @@ export type SearchIssuesQuery = {__typename?: 'Query'} & {
 export type IssueFragment = {__typename?: 'Issue'} & Pick<Issue, 'id' | 'title' | 'url'> & {
     repository: {__typename?: 'Repository'} & Pick<Repository, 'nameWithOwner'>
   }
+
+export type PullRequestFragment = {__typename?: 'PullRequest'} & Pick<
+  PullRequest,
+  'id' | 'title' | 'url'
+> & {repository: {__typename?: 'Repository'} & Pick<Repository, 'nameWithOwner'>}
 
 export const RepoFragFragmentDoc: DocumentNode<RepoFragFragment, unknown> = {
   kind: 'Document',
@@ -19842,6 +19847,32 @@ export const IssueFragmentDoc: DocumentNode<IssueFragment, unknown> = {
       kind: 'FragmentDefinition',
       name: {kind: 'Name', value: 'issue'},
       typeCondition: {kind: 'NamedType', name: {kind: 'Name', value: 'Issue'}},
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {kind: 'Field', name: {kind: 'Name', value: 'id'}},
+          {kind: 'Field', name: {kind: 'Name', value: 'title'}},
+          {kind: 'Field', name: {kind: 'Name', value: 'url'}},
+          {
+            kind: 'Field',
+            name: {kind: 'Name', value: 'repository'},
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [{kind: 'Field', name: {kind: 'Name', value: 'nameWithOwner'}}]
+            }
+          }
+        ]
+      }
+    }
+  ]
+}
+export const PullRequestFragmentDoc: DocumentNode<PullRequestFragment, unknown> = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'FragmentDefinition',
+      name: {kind: 'Name', value: 'pullRequest'},
+      typeCondition: {kind: 'NamedType', name: {kind: 'Name', value: 'PullRequest'}},
       selectionSet: {
         kind: 'SelectionSet',
         selections: [
@@ -20065,7 +20096,8 @@ export const SearchIssuesDocument: DocumentNode<SearchIssuesQuery, SearchIssuesQ
                         selectionSet: {
                           kind: 'SelectionSet',
                           selections: [
-                            {kind: 'FragmentSpread', name: {kind: 'Name', value: 'issue'}}
+                            {kind: 'FragmentSpread', name: {kind: 'Name', value: 'issue'}},
+                            {kind: 'FragmentSpread', name: {kind: 'Name', value: 'pullRequest'}}
                           ]
                         }
                       }
@@ -20091,6 +20123,7 @@ export const SearchIssuesDocument: DocumentNode<SearchIssuesQuery, SearchIssuesQ
         ]
       }
     },
-    ...IssueFragmentDoc.definitions
+    ...IssueFragmentDoc.definitions,
+    ...PullRequestFragmentDoc.definitions
   ]
 }
