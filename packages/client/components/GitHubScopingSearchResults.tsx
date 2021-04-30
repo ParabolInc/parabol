@@ -3,16 +3,17 @@ import graphql from 'babel-plugin-relay/macro'
 import React, {useState} from 'react'
 import {createPaginationContainer} from 'react-relay'
 // import useGetUsedServiceTaskIds from '~/hooks/useGetUsedServiceTaskIds'
-// import MockScopingList from '~/modules/meeting/components/MockScopingList'
+import MockScopingList from '~/modules/meeting/components/MockScopingList'
 // import useAtmosphere from '../hooks/useAtmosphere'
 // import PersistGitHubSearchQueryMutation from '../mutations/PersistGitHubSearchQueryMutation'
 import {GitHubScopingSearchResults_meeting} from '../__generated__/GitHubScopingSearchResults_meeting.graphql'
 import {GitHubScopingSearchResults_viewer} from '../__generated__/GitHubScopingSearchResults_viewer.graphql'
 // import GitHubScopingSearchResultItem from './GitHubScopingSearchResultItem'
 // import GitHubScopingSelectAllIssues from './GitHubScopingSelectAllIssues'
-// import IntegrationScopingNoResults from './IntegrationScopingNoResults'
+import IntegrationScopingNoResults from './IntegrationScopingNoResults'
 import NewGitHubIssueInput from './NewGitHubIssueInput'
 import NewIntegrationRecordButton from './NewIntegrationRecordButton'
+import {gitHubQueryValidation} from '../validation/gitHubQueryValidation'
 
 const ResultScroller = styled('div')({
   overflow: 'auto'
@@ -25,10 +26,12 @@ interface Props {
 
 const GitHubScopingSearchResults = (props: Props) => {
   const {viewer, meeting} = props
-  // const github = viewer?.teamMember!.integrations.github ?? null
-  // const issues = github?.issues ?? null
-  // const edges = issues?.edges ?? null
-  // const error = issues?.error ?? null
+  const github = viewer?.teamMember!.integrations.github ?? null
+  const {githubSearchQuery} = meeting
+  const {queryString} = githubSearchQuery
+  const issues = github?.issues ?? null
+  const edges = issues?.edges ?? null
+  const error = issues?.error ?? null
   const [isEditing, setIsEditing] = useState(false)
   // const atmosphere = useAtmosphere()
   // const {id: meetingId, teamId, phases, githubSearchQuery} = meeting
@@ -38,17 +41,20 @@ const GitHubScopingSearchResults = (props: Props) => {
 
   // even though it's a little herky jerky, we need to give the user feedback that a search is pending
   // TODO fix flicker after viewer is present but edges isn't set
-  // if (!edges) {
-  //   return <MockScopingList />
-  // }
-  // if (edges.length === 0 && !isEditing) {
-  //   return (
-  //     <>
-  //       <IntegrationScopingNoResults error={error?.message} msg={'No issues match that query'} />
-  //       <NewIntegrationRecordButton onClick={handleAddIssueClick} labelText={'New Issue'} />
-  //     </>
-  //   )
-  // }
+  if (!edges) return <MockScopingList />
+  if (edges.length === 0 && !isEditing) {
+    const invalidQuery = gitHubQueryValidation(queryString)
+    const defaultErrMsg = 'No issues match that query'
+    return (
+      <>
+        <IntegrationScopingNoResults
+          error={invalidQuery || error?.message}
+          msg={invalidQuery ? invalidQuery : defaultErrMsg}
+        />
+        <NewIntegrationRecordButton onClick={handleAddIssueClick} labelText={'New Issue'} />
+      </>
+    )
+  }
 
   // const persistQuery = () => {
   //   const {queryString} = githubSearchQuery
@@ -121,10 +127,6 @@ export default createPaginationContainer(
           }
           integrations {
             github {
-              githubSearchQueries {
-                queryString
-                nameWithOwnerFilters
-              }
               issues(first: $first, after: $after, queryString: $queryString)
                 @connection(key: "GitHubScopingSearchResults_issues") {
                 error {
