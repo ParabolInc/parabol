@@ -26,11 +26,13 @@ const flagOverLimit = {
 
     // VALIDATION
     const organizationUsers = await dataLoader.get('organizationUsersByOrgId').load(orgId)
-
     if (organizationUsers.length === 0) return {error: {message: 'OrgId has no members'}}
 
+    if (copy.length > USER_OVERLIMIT_COPY_LIMIT) {
+      return {error: {message: `copy must be ${USER_OVERLIMIT_COPY_LIMIT} chars or less`}}
+    }
+
     // RESOLUTION
-    copy = copy.trim().slice(0, USER_OVERLIMIT_COPY_LIMIT)
     const userIds = organizationUsers.map(({userId}) => userId)
     await Promise.all([
       updateUser({overLimitCopy: copy}, userIds),
