@@ -95,7 +95,7 @@ export async function checkTableEq(
       eqChecked: Date
     },
     ids: string[]
-  ) => (Promise<PGDoc[] | null>),
+  ) => Promise<PGDoc[] | null>,
   alwaysDefinedFields: string[],
   maybeUndefinedFieldsDefaultValues: {[key: string]: any},
   maxErrors = 10
@@ -109,7 +109,7 @@ export async function checkTableEq(
   const batchSize = 3000
 
   for (let i = 0; i < 1e5; i++) {
-    if (errors.foundErrors === maxErrors) {
+    if (errors.foundErrors >= maxErrors) {
       return errors
     }
 
@@ -123,14 +123,14 @@ export async function checkTableEq(
     }
 
     const ids = rethinkRows.map((t) => t.id)
-    const pgRows = await pgQuery({eqChecked: new Date()}, ids) ?? []
+    const pgRows = (await pgQuery({eqChecked: new Date()}, ids)) ?? []
     const pgRowsById = {} as {[key: string]: PGDoc}
     pgRows.forEach((pgRow) => {
       pgRowsById[pgRow.id] = pgRow
     })
 
     for (const rethinkRow of rethinkRows) {
-      if (errors.foundErrors === maxErrors) {
+      if (errors.foundErrors >= maxErrors) {
         return errors
       }
       errors.rethinkRecordsCompared += 1
