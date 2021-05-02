@@ -22,19 +22,6 @@ const undefinedUserFieldsAndTheirDefaultPgValues = {
   featureFlags: []
 }
 
-const cleanUsers = (users: User[]): IBackupUserQueryParams['users'] => {
-  const cleanedUsers = [] as any
-  users.forEach((user) => {
-    const cleanedUser = Object.assign(
-      {},
-      undefinedUserFieldsAndTheirDefaultPgValues,
-      user
-    ) as IBackupUserQueryParams['users'][0]
-    cleanedUsers.push(cleanedUser)
-  })
-  return cleanedUsers
-}
-
 export async function up(pgm: MigrationBuilder): Promise<void> {
   const result = await pgm.db.query(`
     SELECT ARRAY_AGG("id") FROM "User"
@@ -49,7 +36,10 @@ export async function up(pgm: MigrationBuilder): Promise<void> {
     .table('User')
     .getAll(r.args(skippedUserIds))
     .run()
-  const skippedPgUsers = cleanUsers(skippedRethinkUsers)
+  const skippedPgUsers = skippedRethinkUsers.map(user => ({
+    ...undefinedUserFieldsAndTheirDefaultPgValues,
+    ...user
+  }))
   await catchAndLog(() => backupUserQuery.run({users: skippedPgUsers}, getPg()))
 }
 
