@@ -1,8 +1,8 @@
 import sendToSentry from '../../utils/sendToSentry'
 
-const catchAndLog = async (riskyFn: (...args: any[]) => Promise<any>): Promise<any> => {
+const catchAndLog = async <T extends (...args: any[]) => any>(riskyFn: T) => {
   try {
-    return await riskyFn()
+    return (await riskyFn()) as ReturnType<T>
   } catch (e) {
     sendToSentry(e, {tags: {migration: 'postgres'}})
   }

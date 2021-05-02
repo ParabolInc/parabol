@@ -95,7 +95,7 @@ export async function checkTableEq(
       eqChecked: Date
     },
     ids: string[]
-  ) => Promise<PGDoc[]>,
+  ) => (Promise<PGDoc[] | null>),
   alwaysDefinedFields: string[],
   maybeUndefinedFieldsDefaultValues: {[key: string]: any},
   maxErrors = 10
@@ -123,7 +123,7 @@ export async function checkTableEq(
     }
 
     const ids = rethinkRows.map((t) => t.id)
-    const pgRows = await pgQuery({eqChecked: new Date()}, ids)
+    const pgRows = await pgQuery({eqChecked: new Date()}, ids) ?? []
     const pgRowsById = {} as {[key: string]: PGDoc}
     pgRows.forEach((pgRow) => {
       pgRowsById[pgRow.id] = pgRow

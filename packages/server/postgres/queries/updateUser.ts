@@ -1,7 +1,6 @@
 import {
   updateUserQuery,
-  IUpdateUserQueryParams,
-  IUpdateUserQueryResult
+  IUpdateUserQueryParams
 } from './generated/updateUserQuery'
 import getPg from '../getPg'
 import catchAndLog from '../utils/catchAndLog'
@@ -14,7 +13,7 @@ interface UpdateUserQueryParams extends Omit<IUpdateUserQueryParams, 'identities
 const updateUser = async (
   update: Partial<UpdateUserQueryParams>,
   userIds: string | string[]
-): Promise<IUpdateUserQueryResult[]> => {
+) => {
   userIds = typeof userIds === 'string' ? [userIds] : userIds
   return await catchAndLog(() =>
     updateUserQuery.run(
