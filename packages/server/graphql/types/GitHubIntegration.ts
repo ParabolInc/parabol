@@ -68,25 +68,6 @@ const GitHubIntegration = new GraphQLObjectType<any, GQLContext>({
       type: new GraphQLNonNull(GraphQLID),
       description: '*The GitHub login used for queries'
     },
-    repos: {
-      type: new GraphQLNonNull(GitHubRepoConnection),
-      description:
-        'A list of repos coming straight from the GitHub integration for a specific team member',
-      args: {
-        first: {
-          type: GraphQLInt,
-          defaultValue: 20
-        }
-      },
-      resolve: async ({teamId, userId}, {first}, {dataLoader}) => {
-        const repos = await fetchGitHubRepos(teamId, userId, dataLoader)
-        const mappedRepos = repos.map((repo) => ({
-          ...repo,
-          updatedAt: new Date()
-        }))
-        return connectionFromTasks(mappedRepos, first)
-      }
-    },
     teamId: {
       type: new GraphQLNonNull(GraphQLID),
       description: '*The team that the token is linked to'

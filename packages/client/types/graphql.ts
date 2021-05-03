@@ -45300,11 +45300,6 @@ export interface IGitHubIntegration {
   login: string;
 
   /**
-   * A list of repos coming straight from the GitHub integration for a specific team member
-   */
-  repos: IGitHubRepoConnection;
-
-  /**
    * *The team that the token is linked to
    */
   teamId: string;
@@ -45319,13 +45314,6 @@ export interface IGitHubIntegration {
    */
   userId: string;
   api: IGitHubApi | null;
-}
-
-export interface IReposOnGitHubIntegrationArguments {
-  /**
-   * @default 20
-   */
-  first?: number | null;
 }
 
 /**
@@ -45353,63 +45341,6 @@ export interface IGitHubSearchQuery {
    * the time the search query was last used. Used for sorting
    */
   lastUsedAt: any;
-}
-
-/**
- * A connection to a list of items.
- */
-export interface IGitHubRepoConnection {
-  __typename: 'GitHubRepoConnection';
-
-  /**
-   * Page info with cursors coerced to ISO8601 dates
-   */
-  pageInfo: IPageInfoDateCursor | null;
-
-  /**
-   * A list of edges.
-   */
-  edges: Array<IGitHubRepoEdge>;
-
-  /**
-   * An error with the connection, if any
-   */
-  error: IStandardMutationError | null;
-}
-
-/**
- * An edge in a connection.
- */
-export interface IGitHubRepoEdge {
-  __typename: 'GitHubRepoEdge';
-
-  /**
-   * The item at the end of the edge
-   */
-  node: IGitHubRepo;
-  cursor: any | null;
-}
-
-/**
- * The GitHub Repo that we get directly from GitHub
- */
-export interface IGitHubRepo {
-  __typename: 'GitHubRepo';
-
-  /**
-   * The id of the issue as found in GitHub
-   */
-  id: string;
-
-  /**
-   * The owner / repo of the issue as found in GitHub
-   */
-  nameWithOwner: string;
-
-  /**
-   * The owner / repo of the issue as found in GitHub
-   */
-  service: string;
 }
 
 /**

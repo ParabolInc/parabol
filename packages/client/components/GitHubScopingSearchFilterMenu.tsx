@@ -153,26 +153,18 @@ const GitHubScopingSearchFilterMenu = (props: Props) => {
             const searchQueryId = SearchQueryId.join('github', meetingId)
             const githubSearchQuery = store.get<GitHubSearchQuery>(searchQueryId)!
             const nameWithOwnerFilters = githubSearchQuery.getValue('nameWithOwnerFilters')
-            if (isSelected) {
-              const newFilters = nameWithOwnerFilters.filter((name) => name !== nameWithOwner)
-              githubSearchQuery.setValue(newFilters, 'nameWithOwnerFilters')
-              // const keyIdx = nameWithOwnerFilters.indexOf(nameWithOwner)
-              // console.log("🚀 ~ commitLocalUpdate ~ keyIdx", keyIdx)
-            } else {
-              const newFilters = nameWithOwnerFilters.concat(nameWithOwner)
-              githubSearchQuery.setValue(newFilters, 'nameWithOwnerFilters')
-            }
-
-            // const nameWithOwnerFiltersProxy = githubSearchQuery
-            //   .getValue('nameWithOwnerFilters')!
-            //   .slice()
-            // const keyIdx = nameWithOwnerFiltersProxy.indexOf(globalProjectKey)
-            // if (keyIdx !== -1) {
-            //   nameWithOwnerFiltersProxy.splice(keyIdx, 1)
-            // } else {
-            //   nameWithOwnerFiltersProxy.push(globalProjectKey)
-            // }
-            // githubSearchQuery.setValue(nameWithOwnerFiltersProxy, 'nameWithOwnerFilters')
+            const newFilters = isSelected
+              ? nameWithOwnerFilters.filter((name) => name !== nameWithOwner)
+              : nameWithOwnerFilters.concat(nameWithOwner)
+            githubSearchQuery.setValue(newFilters, 'nameWithOwnerFilters')
+            const queryString = githubSearchQuery.getValue('queryString') as string
+            const queryWithoutRepos = queryString
+              .trim()
+              .split(' ')
+              .filter((str) => !str.includes('repo:'))
+            const newRepos = newFilters.map((name) => `repo:${name}`)
+            const newQueryStr = queryWithoutRepos.concat(newRepos).join(' ')
+            githubSearchQuery.setValue(newQueryStr, 'queryString')
           })
         }
         return (
@@ -201,6 +193,7 @@ export default createFragmentContainer(GitHubScopingSearchFilterMenu, {
         ... on PokerMeeting {
           githubSearchQuery {
             nameWithOwnerFilters
+            queryString
           }
         }
       }
@@ -217,7 +210,7 @@ export default createFragmentContainer(GitHubScopingSearchFilterMenu, {
                 path
               }
               query {
-                search(first: 50, type: REPOSITORY, query: "spanish/con") {
+                search(first: 50, type: REPOSITORY, query: $queryString) {
                   edges {
                     node {
                       __typename
