@@ -143,15 +143,11 @@ export default createFragmentContainer(GitHubScopingSearchResults, {
                     node {
                       __typename
                       ... on _xGitHubIssue {
+                        id
                         title
                       }
                     }
                   }
-                }
-              }
-              query {
-                viewer {
-                  bio
                 }
               }
             }

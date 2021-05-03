@@ -41,7 +41,6 @@ const GitHubScopingSearchFilterMenuRoot = (props: Props) => {
   )
 }
 
-// export default GitHubScopingSearchFilterMenuRoot
 export default createFragmentContainer(GitHubScopingSearchFilterMenuRoot, {
   meeting: graphql`
     fragment GitHubScopingSearchFilterMenuRoot_meeting on PokerMeeting {

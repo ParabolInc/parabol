@@ -1,11 +1,9 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {useMemo} from 'react'
+import React from 'react'
 import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import Atmosphere from '../Atmosphere'
 import useAtmosphere from '../hooks/useAtmosphere'
-import useFilteredItems from '../hooks/useFilteredItems'
-import useForm from '../hooks/useForm'
 import {MenuProps} from '../hooks/useMenu'
 import SearchQueryId from '../shared/gqlIds/SearchQueryId'
 import {PALETTE} from '../styles/paletteV3'
@@ -91,6 +89,7 @@ const GitHubScopingSearchFilterMenu = (props: Props) => {
   const {menuProps, viewer} = props
   const isLoading = viewer === null
   const github = viewer?.teamMember?.integrations.github ?? []
+  const atmosphere = useAtmosphere()
   const edges = github?.api?.query?.search?.edges
   if (!edges) return <MockGitHubFieldList />
   const repos = edges.map((edge) => edge.node)
@@ -99,7 +98,6 @@ const GitHubScopingSearchFilterMenu = (props: Props) => {
   const githubSearchQuery = meeting?.githubSearchQuery ?? null
   const nameWithOwnerFilters = githubSearchQuery?.nameWithOwnerFilters ?? []
   const reposQuery = githubSearchQuery?.reposQuery ?? ''
-  console.log('🚀 ~ GitHubScopingSearchFilterMenu ~ reposQuery', reposQuery)
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const {value} = e.target
@@ -108,8 +106,6 @@ const GitHubScopingSearchFilterMenu = (props: Props) => {
   }
 
   const showSearch = repos.length > MAX_REPOS
-
-  const atmosphere = useAtmosphere()
   const {portalStatus, isDropdown} = menuProps
   return (
     <Menu
@@ -165,7 +161,6 @@ const GitHubScopingSearchFilterMenu = (props: Props) => {
             label={
               <StyledMenuItemLabel>
                 <StyledCheckBox active={isSelected} />
-                {/* <ProjectAvatar src={avatar} /> */}
                 <TypeAheadLabel query={''} label={repo.nameWithOwner} />
               </StyledMenuItemLabel>
             }
@@ -186,6 +181,7 @@ export default createFragmentContainer(GitHubScopingSearchFilterMenu, {
           githubSearchQuery {
             nameWithOwnerFilters
             queryString
+            reposQuery
           }
         }
       }
@@ -213,29 +209,8 @@ export default createFragmentContainer(GitHubScopingSearchFilterMenu, {
                     }
                   }
                 }
-                query {
-                  viewer {
-                    ...Bio
-                  }
-                }
               }
             }
-            # login
-            # repos {
-            #   id
-            #   nameWithOwner
-            # }
-            # repos(first: 30) @connection(key: "GitHubScopingSearchFilterMenu_repos") {
-            #   error {
-            #     message
-            #   }
-            #   edges {
-            #     node {
-            #       id
-            #       nameWithOwner
-            #     }
-            #   }
-            # }
           }
         }
       }
