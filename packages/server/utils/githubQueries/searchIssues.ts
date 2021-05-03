@@ -6,7 +6,8 @@ export const searchIssues = gql`
       edges {
         cursor
         node {
-          ...getIssuesNode
+          ...issue
+          ...pullRequest
         }
       }
       pageInfo {
@@ -18,7 +19,16 @@ export const searchIssues = gql`
     }
   }
 
-  fragment getIssuesNode on Issue {
+  fragment issue on Issue {
+    id
+    title
+    url
+    repository {
+      nameWithOwner
+    }
+  }
+
+  fragment pullRequest on PullRequest {
     id
     title
     url

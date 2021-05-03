@@ -55,10 +55,8 @@ const useUpdatedSafeRoute = (setSafeRoute: Dispatch<SetStateAction<boolean>>, me
     const isUpdatedPhase = localStages !== oldLocalStages
     if (isNewLocalStageId || isUpdatedPhase) {
       if (isUpdatedPhase && !findStageById(phases, localStageId)) {
-        // an item was removed and the local stage may be missing
         updateLocalStage(atmosphere, meetingId, facilitatorStageId)
       }
-
       const nextPathname = fromStageIdToUrl(localStageId, meeting, facilitatorStageId)
       if (nextPathname !== location.pathname) {
         history.replace(nextPathname)

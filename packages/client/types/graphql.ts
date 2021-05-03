@@ -45295,11 +45295,6 @@ export interface IGitHubIntegration {
   githubSearchQueries: Array<IGitHubSearchQuery>;
 
   /**
-   * A list of issues coming straight from the GitHub integration for a specific team member
-   */
-  issues: IGitHubIssueConnection;
-
-  /**
    * *The GitHub login used for queries
    */
   login: string;
@@ -45324,20 +45319,6 @@ export interface IGitHubIntegration {
    */
   userId: string;
   api: IGitHubApi | null;
-}
-
-export interface IIssuesOnGitHubIntegrationArguments {
-  first?: number | null;
-
-  /**
-   * a unique cursor id from GitHub
-   */
-  after?: string | null;
-
-  /**
-   * A string of text to search for
-   */
-  queryString?: string | null;
 }
 
 export interface IReposOnGitHubIntegrationArguments {
@@ -45372,85 +45353,6 @@ export interface IGitHubSearchQuery {
    * the time the search query was last used. Used for sorting
    */
   lastUsedAt: any;
-}
-
-/**
- * A connection to a list of items.
- */
-export interface IGitHubIssueConnection {
-  __typename: 'GitHubIssueConnection';
-
-  /**
-   * Page info with cursors as unique ids straight from GitHub
-   */
-  pageInfo: IPageInfoDateCursor | null;
-
-  /**
-   * A list of edges.
-   */
-  edges: Array<IGitHubIssueEdge>;
-
-  /**
-   * The total number of issues returned from the GitHub query
-   */
-  issueCount: number;
-
-  /**
-   * An error with the connection, if any
-   */
-  error: IStandardMutationError | null;
-}
-
-/**
- * An edge in a connection.
- */
-export interface IGitHubIssueEdge {
-  __typename: 'GitHubIssueEdge';
-
-  /**
-   * The item at the end of the edge
-   */
-  node: IGitHubIssue;
-  cursor: string | null;
-}
-
-/**
- * The GitHub Issue that comes direct from GitHub
- */
-export interface IGitHubIssue {
-  __typename: 'GitHubIssue';
-
-  /**
-   * The id of the issue as found in GitHub
-   */
-  id: string;
-
-  /**
-   * The url to access the issue
-   */
-  url: any;
-
-  /**
-   * The repository that the issue belongs to
-   */
-  repository: IGitHubRepository;
-
-  /**
-   * The title of the GitHub issue
-   */
-  title: string;
-}
-
-/**
- * A repository that comes directly from GitHub
- */
-export interface IGitHubRepository {
-  __typename: 'GitHubRepository';
-
-  /**
-   * The owner / repo of the issue as found in GitHub
-   */
-  nameWithOwner: string;
 }
 
 /**
@@ -45727,7 +45629,7 @@ export interface ITeam {
   /**
    * The hash and expiration for a token that allows anyone with it to join the team
    */
-  massInvitation: IMassInvitation | null;
+  massInvitation: IMassInvitation;
 
   /**
    * Integration details that are shared by all team members. Nothing user specific
@@ -54677,6 +54579,45 @@ export interface IGitHubCreateIssueSuccess {
 }
 
 /**
+ * The GitHub Issue that comes direct from GitHub
+ */
+export interface IGitHubIssue {
+  __typename: 'GitHubIssue';
+
+  /**
+   * The id of the issue as found in GitHub
+   */
+  id: string;
+
+  /**
+   * The url to access the issue
+   */
+  url: any;
+
+  /**
+   * The repository that the issue belongs to
+   */
+  repository: IGitHubRepository;
+
+  /**
+   * The title of the GitHub issue
+   */
+  title: string;
+}
+
+/**
+ * A repository that comes directly from GitHub
+ */
+export interface IGitHubRepository {
+  __typename: 'GitHubRepository';
+
+  /**
+   * The owner / repo of the issue as found in GitHub
+   */
+  nameWithOwner: string;
+}
+
+/**
  * Return object for SetPokerSpectatePayload
  */
 export type SetPokerSpectatePayload = IErrorPayload | ISetPokerSpectateSuccess;
@@ -54723,7 +54664,6 @@ export type MeetingSubscriptionPayload =
   | IPromoteNewMeetingFacilitatorPayload
   | IRemoveReflectionPayload
   | IResetMeetingToStagePayload
-  | ISetAppLocationSuccess
   | ISetPhaseFocusPayload
   | ISetStageTimerPayload
   | IStartDraggingReflectionPayload
@@ -55039,7 +54979,8 @@ export type TeamSubscriptionPayload =
   | IPersistJiraSearchQuerySuccess
   | IMovePokerTemplateScaleValueSuccess
   | IUpdateJiraDimensionFieldSuccess
-  | ISetDefaultSlackChannelSuccess;
+  | ISetDefaultSlackChannelSuccess
+  | ISetAppLocationSuccess;
 
 export interface IStartNewMeetingPayload {
   __typename: 'StartNewMeetingPayload';

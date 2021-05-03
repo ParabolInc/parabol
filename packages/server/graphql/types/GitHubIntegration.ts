@@ -1,24 +1,20 @@
 import {
   GraphQLBoolean,
-  GraphQLID,
   GraphQLInt,
+  GraphQLID,
   GraphQLList,
   GraphQLNonNull,
-  GraphQLObjectType,
-  GraphQLString
+  GraphQLObjectType
 } from 'graphql'
 import ms from 'ms'
 import GitHubIntegrationId from '../../../client/shared/gqlIds/GitHubIntegrationId'
 import {getUserId} from '../../utils/authorization'
-import GitHubServerManager from '../../utils/GitHubServerManager'
-import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
-import {GitHubIssueConnection} from './GitHubIssue'
 import GitHubSearchQuery from './GitHubSearchQuery'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import fetchGitHubRepos from '../queries/helpers/fetchGitHubRepos'
 import {GitHubRepoConnection} from './GitHubRepo'
-import {Issue, GetIssuesQuery, SearchIssuesQuery} from '../../types/typed-document-nodes'
+import connectionFromTasks from '../queries/helpers/connectionFromTasks'
 
 const GitHubIntegration = new GraphQLObjectType<any, GQLContext>({
   name: 'GitHubIntegration',
@@ -68,50 +64,6 @@ const GitHubIntegration = new GraphQLObjectType<any, GQLContext>({
         return unexpiredQueries
       }
     },
-    issues: {
-      type: new GraphQLNonNull(GitHubIssueConnection),
-      description:
-        'A list of issues coming straight from the GitHub integration for a specific team member',
-      args: {
-        first: {
-          type: GraphQLInt
-        },
-        after: {
-          type: GraphQLString,
-          description: 'a unique cursor id from GitHub'
-        },
-        queryString: {
-          type: GraphQLString,
-          description: 'A string of text to search for'
-        }
-      },
-      resolve: async ({teamId, userId, accessToken}, {first, queryString, after}, {authToken}) => {
-        const viewerId = getUserId(authToken)
-        if (viewerId !== userId || !accessToken) {
-          const error = new Error(
-            viewerId !== userId
-              ? 'Cannot access another team members issues'
-              : 'Not integrated with GitHub'
-          )
-          standardError(error, {tags: {teamId, userId}, userId: viewerId})
-          return {error, edges: [], pageInfo: []}
-        }
-        const manager = new GitHubServerManager(accessToken)
-        const validQueryStr = queryString.replace(/is:pr/g, '')
-        const searchRes = await manager.searchIssues(validQueryStr, first, after)
-        if ('message' in searchRes) {
-          console.error(searchRes)
-          return {
-            error: {message: searchRes.message},
-            edges: [],
-            pageInfo: {hasNextPage: false, hasPreviousPage: false}
-          }
-        }
-        const {data, errors} = searchRes
-        if (Array.isArray(errors)) console.error(errors[0])
-        return data.search
-      }
-    },
     login: {
       type: new GraphQLNonNull(GraphQLID),
       description: '*The GitHub login used for queries'
@@ -132,7 +84,7 @@ const GitHubIntegration = new GraphQLObjectType<any, GQLContext>({
           ...repo,
           updatedAt: new Date()
         }))
-        return connectionFromGitHubIssues(mappedRepos, first)
+        return connectionFromTasks(mappedRepos, first)
       }
     },
     teamId: {

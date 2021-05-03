@@ -10,7 +10,7 @@ export enum TransitionStatus {
   EXITING
 }
 
-type Key = string | object | symbol
+type Key = string | symbol
 
 interface TransitionChild<T = {key: Key}> {
   child: T
