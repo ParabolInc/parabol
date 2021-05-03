@@ -83,7 +83,7 @@ const GitHubScopingSearchFilterMenu = (props: Props) => {
   const {menuProps, viewer} = props
   const isLoading = viewer === null
   const github = viewer?.teamMember?.integrations.github ?? []
-  const edges = github?.repos?.edges
+  const edges = github?.api?.query?.search?.edges
   if (!edges) return <MockGitHubFieldList />
   const repos = edges.map((edge) => edge.node)
   const meeting = viewer?.meeting ?? null
@@ -102,12 +102,12 @@ const GitHubScopingSearchFilterMenu = (props: Props) => {
   const query = value.toLowerCase()
   const showSearch = repos.length > MAX_REPOS
   // console.log('🚀 ~ GitHubScopingSearchFilterMenu ~ repos', query, repos)
-  const queryFilteredRepos = useFilteredItems(query, repos, getValue)
-  const selectedAndFilteredRepos = useMemo(() => {
-    const selectedRepos = repos.filter((repo) => nameWithOwnerFilters.includes(repo.id))
-    const adjustedMax = selectedRepos.length >= MAX_REPOS ? selectedRepos.length + 1 : MAX_REPOS
-    return Array.from(new Set([...selectedRepos, ...queryFilteredRepos])).slice(0, adjustedMax)
-  }, [queryFilteredRepos])
+  // const queryFilteredRepos = useFilteredItems(query, repos, getValue)
+  // const selectedAndFilteredRepos = useMemo(() => {
+  // const selectedRepos = repos.filter((repo) => nameWithOwnerFilters.includes(repo.id))
+  // const adjustedMax = selectedRepos.length >= MAX_REPOS ? selectedRepos.length + 1 : MAX_REPOS
+  // return Array.from(new Set([...selectedRepos, ...queryFilteredRepos])).slice(0, adjustedMax)
+  // }, [queryFilteredRepos])
 
   const atmosphere = useAtmosphere()
   const {portalStatus, isDropdown} = menuProps
@@ -141,39 +141,51 @@ const GitHubScopingSearchFilterMenu = (props: Props) => {
           />
         </SearchItem>
       )}
-      {(query && selectedAndFilteredRepos.length === 0 && !isLoading && (
+      {/* {(query && selectedAndFilteredRepos.length === 0 && !isLoading && (
         <NoResults key='no-results'>No repos found!</NoResults>
       )) ||
-        null}
+        null} */}
       {repos.map((repo) => {
-        // const {id: globalProjectKey, avatar, name} = project
-        // const toggleProjectKeyFilter = () => {
-        //   commitLocalUpdate(atmosphere, (store) => {
-        //     const searchQueryId = SearchQueryId.join('github', meetingId)
-        //     const githubSearchQuery = store.get<GitHubSearchQuery>(searchQueryId)!
-        //     const nameWithOwnerFiltersProxy = githubSearchQuery
-        //       .getValue('nameWithOwnerFilters')!
-        //       .slice()
-        //     const keyIdx = nameWithOwnerFiltersProxy.indexOf(globalProjectKey)
-        //     if (keyIdx !== -1) {
-        //       nameWithOwnerFiltersProxy.splice(keyIdx, 1)
-        //     } else {
-        //       nameWithOwnerFiltersProxy.push(globalProjectKey)
-        //     }
-        //     githubSearchQuery.setValue(nameWithOwnerFiltersProxy, 'nameWithOwnerFilters')
-        //   })
-        // }
+        const {nameWithOwner} = repo
+        const isSelected = nameWithOwnerFilters.includes(nameWithOwner)
+        const handleClick = () => {
+          commitLocalUpdate(atmosphere, (store) => {
+            const searchQueryId = SearchQueryId.join('github', meetingId)
+            const githubSearchQuery = store.get<GitHubSearchQuery>(searchQueryId)!
+            const nameWithOwnerFilters = githubSearchQuery.getValue('nameWithOwnerFilters')
+            if (isSelected) {
+              const newFilters = nameWithOwnerFilters.filter((name) => name !== nameWithOwner)
+              githubSearchQuery.setValue(newFilters, 'nameWithOwnerFilters')
+              // const keyIdx = nameWithOwnerFilters.indexOf(nameWithOwner)
+              // console.log("🚀 ~ commitLocalUpdate ~ keyIdx", keyIdx)
+            } else {
+              const newFilters = nameWithOwnerFilters.concat(nameWithOwner)
+              githubSearchQuery.setValue(newFilters, 'nameWithOwnerFilters')
+            }
+
+            // const nameWithOwnerFiltersProxy = githubSearchQuery
+            //   .getValue('nameWithOwnerFilters')!
+            //   .slice()
+            // const keyIdx = nameWithOwnerFiltersProxy.indexOf(globalProjectKey)
+            // if (keyIdx !== -1) {
+            //   nameWithOwnerFiltersProxy.splice(keyIdx, 1)
+            // } else {
+            //   nameWithOwnerFiltersProxy.push(globalProjectKey)
+            // }
+            // githubSearchQuery.setValue(nameWithOwnerFiltersProxy, 'nameWithOwnerFilters')
+          })
+        }
         return (
           <MenuItem
             key={repo.id}
             label={
               <StyledMenuItemLabel>
-                {/* <StyledCheckBox active={nameWithOwnerFilters.includes(globalProjectKey)} /> */}
+                <StyledCheckBox active={isSelected} />
                 {/* <ProjectAvatar src={avatar} /> */}
                 <TypeAheadLabel query={''} label={repo.nameWithOwner} />
               </StyledMenuItemLabel>
             }
-            // onClick={toggleProjectKeyFilter}
+            onClick={handleClick}
           />
         )
       })}
@@ -195,22 +207,50 @@ export default createFragmentContainer(GitHubScopingSearchFilterMenu, {
       teamMember(teamId: $teamId) {
         integrations {
           github {
+            api {
+              errors {
+                message
+                locations {
+                  line
+                  column
+                }
+                path
+              }
+              query {
+                search(first: 50, type: REPOSITORY, query: "spanish/con") {
+                  edges {
+                    node {
+                      __typename
+                      ... on _xGitHubRepository {
+                        id
+                        nameWithOwner
+                      }
+                    }
+                  }
+                }
+                query {
+                  viewer {
+                    ...Bio
+                  }
+                }
+              }
+            }
             login
             # repos {
             #   id
             #   nameWithOwner
             # }
-            repos(first: 30) @connection(key: "GitHubScopingSearchFilterMenu_repos") {
-              error {
-                message
-              }
-              edges {
-                node {
-                  id
-                  nameWithOwner
-                }
-              }
-            }
+            # repos(first: 30) @connection(key: "GitHubScopingSearchFilterMenu_repos") {
+            #   error {
+            #     message
+            #   }
+            #   edges {
+            #     node {
+            #       id
+            #       nameWithOwner
+            #     }
+            #   }
+            # }
           }
         }
       }

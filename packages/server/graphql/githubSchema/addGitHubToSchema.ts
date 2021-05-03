@@ -53,7 +53,7 @@ const addGitHubToSchema = (
         isMutation
       }
     })
-    resolveErrors(res.errors)
+    if (resolveErrors) resolveErrors(res.errors) // TODO: find out why resolveErrors is null
     return res.data
   }
 
