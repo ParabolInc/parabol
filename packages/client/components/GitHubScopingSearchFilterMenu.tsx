@@ -2,6 +2,7 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useMemo} from 'react'
 import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
+import Atmosphere from '../Atmosphere'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useFilteredItems from '../hooks/useFilteredItems'
 import useForm from '../hooks/useForm'
@@ -75,9 +76,16 @@ type GitHubSearchQuery = NonNullable<
   NonNullable<GitHubScopingSearchFilterMenu_viewer['meeting']>['githubSearchQuery']
 >
 
-const getValue = (item: {nameWithOwner: string}) => item.nameWithOwner.toLowerCase()
+const setSearch = (atmosphere: Atmosphere, meetingId: string, value: string) => {
+  commitLocalUpdate(atmosphere, (store) => {
+    const meeting = store.get(meetingId)
+    if (!meeting) return
+    const githubSearchQuery = meeting.getLinkedRecord('githubSearchQuery')!
+    githubSearchQuery.setValue(value, 'reposQuery')
+  })
+}
 
-const MAX_REPOS = 10
+const MAX_REPOS = 9 // TODO: change back to 10 once query is reloading
 
 const GitHubScopingSearchFilterMenu = (props: Props) => {
   const {menuProps, viewer} = props
@@ -89,37 +97,20 @@ const GitHubScopingSearchFilterMenu = (props: Props) => {
   const meeting = viewer?.meeting ?? null
   const meetingId = meeting?.id ?? ''
   const githubSearchQuery = meeting?.githubSearchQuery ?? null
-  // console.log('🚀 ~ GitHubScopingSearchFilterMenu ~ meeting', meeting)
   const nameWithOwnerFilters = githubSearchQuery?.nameWithOwnerFilters ?? []
-  const {fields, onChange} = useForm({
-    search: {
-      getDefault: () => ''
-    }
-  })
-  const {search} = fields
-  const {value} = search
-  // console.log('🚀 ~ GitHubScopingSearchFilterMenu ~ value', value)
-  const query = value.toLowerCase()
+  const reposQuery = githubSearchQuery?.reposQuery ?? ''
+  console.log('🚀 ~ GitHubScopingSearchFilterMenu ~ reposQuery', reposQuery)
+
+  const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const {value} = e.target
+    console.log('🚀 ~ onChange ~ value', value)
+    setSearch(atmosphere, meetingId, value)
+  }
+
   const showSearch = repos.length > MAX_REPOS
-  // console.log('🚀 ~ GitHubScopingSearchFilterMenu ~ repos', query, repos)
-  // const queryFilteredRepos = useFilteredItems(query, repos, getValue)
-  // const selectedAndFilteredRepos = useMemo(() => {
-  // const selectedRepos = repos.filter((repo) => nameWithOwnerFilters.includes(repo.id))
-  // const adjustedMax = selectedRepos.length >= MAX_REPOS ? selectedRepos.length + 1 : MAX_REPOS
-  // return Array.from(new Set([...selectedRepos, ...queryFilteredRepos])).slice(0, adjustedMax)
-  // }, [queryFilteredRepos])
 
   const atmosphere = useAtmosphere()
   const {portalStatus, isDropdown} = menuProps
-  // const toggleJQL = () => {
-  //   commitLocalUpdate(atmosphere, (store) => {
-  //     const searchQueryId = SearchQueryId.join('github', meetingId)
-  //     const githubSearchQuery = store.get(searchQueryId)
-  //     // this might bork if the checkbox is ticked before the full query loads
-  //     if (!githubSearchQuery) return
-  //     githubSearchQuery.setValue([], 'nameWithOwnerFilters')
-  //   })
-  // }
   return (
     <Menu
       keepParentFocus
@@ -135,8 +126,8 @@ const GitHubScopingSearchFilterMenu = (props: Props) => {
             <SearchIcon>search</SearchIcon>
           </StyledMenuItemIcon>
           <TaskFooterIntegrateMenuSearch
-            placeholder={'Search GitHub Repos'}
-            value={value}
+            placeholder={'Search your GitHub repos'}
+            value={reposQuery}
             onChange={onChange}
           />
         </SearchItem>
@@ -148,6 +139,7 @@ const GitHubScopingSearchFilterMenu = (props: Props) => {
       {repos.map((repo) => {
         const {nameWithOwner} = repo
         const isSelected = nameWithOwnerFilters.includes(nameWithOwner)
+
         const handleClick = () => {
           commitLocalUpdate(atmosphere, (store) => {
             const searchQueryId = SearchQueryId.join('github', meetingId)
@@ -210,7 +202,7 @@ export default createFragmentContainer(GitHubScopingSearchFilterMenu, {
                 path
               }
               query {
-                search(first: 50, type: REPOSITORY, query: $queryString) {
+                search(first: 50, type: REPOSITORY, query: "Parabol") {
                   edges {
                     node {
                       __typename
@@ -228,7 +220,7 @@ export default createFragmentContainer(GitHubScopingSearchFilterMenu, {
                 }
               }
             }
-            login
+            # login
             # repos {
             #   id
             #   nameWithOwner

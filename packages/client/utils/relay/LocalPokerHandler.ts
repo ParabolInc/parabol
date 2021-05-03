@@ -29,6 +29,7 @@ const defaults = [
     type: 'GitHubSearchQuery',
     defaultQuery: {
       queryString: '',
+      reposQuery: '',
       nameWithOwnerFilters: []
     }
   }

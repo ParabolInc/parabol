@@ -27,7 +27,7 @@ interface Props {
 
 const GitHubScopingSearchFilterToggle = (props: Props) => {
   const {meeting} = props
-  const {id: meetingId, teamId} = meeting
+  const {teamId} = meeting
   const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT, {
     loadingWidth: 200,
     noClose: true
@@ -40,7 +40,7 @@ const GitHubScopingSearchFilterToggle = (props: Props) => {
       {menuPortal(
         <GitHubScopingSearchFilterMenuRoot
           teamId={teamId}
-          meetingId={meetingId}
+          meeting={meeting}
           menuProps={menuProps}
         />
       )}
@@ -51,6 +51,7 @@ const GitHubScopingSearchFilterToggle = (props: Props) => {
 export default createFragmentContainer(GitHubScopingSearchFilterToggle, {
   meeting: graphql`
     fragment GitHubScopingSearchFilterToggle_meeting on PokerMeeting {
+      ...GitHubScopingSearchFilterMenuRoot_meeting
       id
       teamId
     }

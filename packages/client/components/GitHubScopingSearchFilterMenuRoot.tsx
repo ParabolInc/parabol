@@ -1,9 +1,10 @@
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
-import {QueryRenderer} from 'react-relay'
+import {createFragmentContainer, QueryRenderer} from 'react-relay'
 import useAtmosphere from '../hooks/useAtmosphere'
 import {MenuProps} from '../hooks/useMenu'
 import GitHubScopingSearchFilterMenu from './GitHubScopingSearchFilterMenu'
+import {GitHubScopingSearchFilterMenuRoot_meeting} from '../__generated__/GitHubScopingSearchFilterMenuRoot_meeting.graphql'
 
 const query = graphql`
   query GitHubScopingSearchFilterMenuRootQuery($teamId: ID!, $meetingId: ID!) {
@@ -16,14 +17,18 @@ const query = graphql`
 interface Props {
   menuProps: MenuProps
   teamId: string
-  meetingId: string
+  meeting: GitHubScopingSearchFilterMenuRoot_meeting
 }
 
 const GitHubScopingSearchFilterMenuRoot = (props: Props) => {
-  const {menuProps, teamId, meetingId} = props
+  const {menuProps, teamId, meeting} = props
+  const {id: meetingId, githubSearchQuery} = meeting
+  const {reposQuery} = githubSearchQuery
   const atmosphere = useAtmosphere()
+
   return (
     <QueryRenderer
+      // variables={{teamId, meetingId, reposQuery}}
       variables={{teamId, meetingId}}
       environment={atmosphere}
       query={query}
@@ -36,4 +41,14 @@ const GitHubScopingSearchFilterMenuRoot = (props: Props) => {
   )
 }
 
-export default GitHubScopingSearchFilterMenuRoot
+// export default GitHubScopingSearchFilterMenuRoot
+export default createFragmentContainer(GitHubScopingSearchFilterMenuRoot, {
+  meeting: graphql`
+    fragment GitHubScopingSearchFilterMenuRoot_meeting on PokerMeeting {
+      id
+      githubSearchQuery {
+        reposQuery
+      }
+    }
+  `
+})

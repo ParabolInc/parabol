@@ -14,6 +14,10 @@ const GitHubSearchQuery = new GraphQLObjectType<any, GQLContext>({
       type: GraphQLNonNull(GraphQLString),
       description: 'The query string in GitHub format, e.g. is:issue is:open'
     },
+    reposQuery: {
+      type: GraphQLNonNull(GraphQLString),
+      description: 'The query string used to search for GitHub repositories'
+    },
     nameWithOwnerFilters: {
       type: GraphQLNonNull(GraphQLList(GraphQLNonNull(GraphQLID))),
       description: 'The list of repos selected as a filter. null if not set',

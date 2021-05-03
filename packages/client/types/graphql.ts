@@ -45333,6 +45333,11 @@ export interface IGitHubSearchQuery {
   queryString: string;
 
   /**
+   * The query string used to search for GitHub repositories
+   */
+  reposQuery: string;
+
+  /**
    * The list of repos selected as a filter. null if not set
    */
   nameWithOwnerFilters: Array<string>;

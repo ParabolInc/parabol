@@ -1,20 +1,10 @@
-import {
-  GraphQLBoolean,
-  GraphQLInt,
-  GraphQLID,
-  GraphQLList,
-  GraphQLNonNull,
-  GraphQLObjectType
-} from 'graphql'
+import {GraphQLBoolean, GraphQLID, GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import ms from 'ms'
 import GitHubIntegrationId from '../../../client/shared/gqlIds/GitHubIntegrationId'
 import {getUserId} from '../../utils/authorization'
 import {GQLContext} from '../graphql'
 import GitHubSearchQuery from './GitHubSearchQuery'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
-import fetchGitHubRepos from '../queries/helpers/fetchGitHubRepos'
-import {GitHubRepoConnection} from './GitHubRepo'
-import connectionFromTasks from '../queries/helpers/connectionFromTasks'
 
 const GitHubIntegration = new GraphQLObjectType<any, GQLContext>({
   name: 'GitHubIntegration',
