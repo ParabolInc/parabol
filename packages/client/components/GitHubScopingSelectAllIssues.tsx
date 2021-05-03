@@ -84,7 +84,7 @@ const GitHubScopingSelectAllIssues = (props: Props) => {
 
 export default createFragmentContainer(GitHubScopingSelectAllIssues, {
   issues: graphql`
-    fragment GitHubScopingSelectAllIssues_issues on GitHubIssueEdge @relay(plural: true) {
+    fragment GitHubScopingSelectAllIssues_issues on _xGitHubIssueEdge @relay(plural: true) {
       node {
         id
       }
