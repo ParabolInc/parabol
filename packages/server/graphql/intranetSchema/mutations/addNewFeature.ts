@@ -26,8 +26,6 @@ const addNewFeature = {
     }
   },
   resolve: async (_source, {copy, url}, {authToken, dataLoader}) => {
-    sendToSentry(new Error('something bad happened'))
-
     const r = await getRethink()
     const redis = getRedis()
 
