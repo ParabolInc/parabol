@@ -25,9 +25,7 @@ const SearchIcon = styled(Icon)({
 })
 
 const StyledMenu = styled(Menu)({
-  minWidth: 450,
-  display: 'flex',
-  flexDirection: 'column'
+  minWidth: 450
 })
 
 const NoResults = styled(MenuItemLabel)({

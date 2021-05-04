@@ -16,7 +16,6 @@ const MockFieldLine = styled('div')<{delay: number}>(({delay}) => ({
   borderRadius: '20px',
   backgroundImage: `linear-gradient(90deg, ${PALETTE.SLATE_400} 0px, ${PALETTE.SLATE_200} 40px, ${PALETTE.SLATE_400} 80px)`,
   backgroundSize: 260,
-  margin: '16px 0px',
   width: '100%'
 }))
 export default MockFieldLine
