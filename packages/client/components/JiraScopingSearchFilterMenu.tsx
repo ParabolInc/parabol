@@ -18,7 +18,7 @@ import MenuItem from './MenuItem'
 import MenuItemComponentAvatar from './MenuItemComponentAvatar'
 import MenuItemHR from './MenuItemHR'
 import MenuItemLabel from './MenuItemLabel'
-import MockJiraFieldList from './MockJiraFieldList'
+import MockFieldList from './MockFieldList'
 import TaskFooterIntegrateMenuSearch from './TaskFooterIntegrateMenuSearch'
 import TypeAheadLabel from './TypeAheadLabel'
 
@@ -147,7 +147,7 @@ const JiraScopingSearchFilterMenu = (props: Props) => {
         onClick={toggleJQL}
       />
       <MenuItemHR />
-      {isLoading && <MockJiraFieldList />}
+      {isLoading && <MockFieldList />}
       {selectedAndFilteredProjects.length > 0 && <FilterLabel>Filter by project:</FilterLabel>}
       {showSearch && (
         <SearchItem key='search'>

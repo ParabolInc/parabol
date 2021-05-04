@@ -10,16 +10,13 @@ export const skeletonShine = keyframes`
     background-position: 180px;
   }
 `
-const MockJiraFieldLine = styled('div')<{delay: number}>(({delay}) => ({
+const MockFieldLine = styled('div')<{delay: number}>(({delay}) => ({
   animation: `${skeletonShine.toString()} 2400ms infinite linear ${delay}ms`,
   height: 16,
   borderRadius: '20px',
   backgroundImage: `linear-gradient(90deg, ${PALETTE.SLATE_400} 0px, ${PALETTE.SLATE_200} 40px, ${PALETTE.SLATE_400} 80px)`,
   backgroundSize: 260,
-  marginLeft: 16,
-  marginRight: 16,
-  marginTop: delay === 0 ? 8 : 16,
-  // With just the default Jira fields, this is how wide it ends up being
-  width: 162
+  margin: '16px 0px',
+  width: '100%'
 }))
-export default MockJiraFieldLine
+export default MockFieldLine

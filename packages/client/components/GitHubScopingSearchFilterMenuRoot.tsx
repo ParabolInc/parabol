@@ -22,8 +22,9 @@ interface Props {
 
 const GitHubScopingSearchFilterMenuRoot = (props: Props) => {
   const {menuProps, teamId, meeting} = props
-  const {id: meetingId, githubSearchQuery} = meeting
-  const {reposQuery} = githubSearchQuery
+  const {id: meetingId} = meeting
+  // const {id: meetingId, githubSearchQuery} = meeting
+  // const {reposQuery} = githubSearchQuery
   const atmosphere = useAtmosphere()
 
   return (

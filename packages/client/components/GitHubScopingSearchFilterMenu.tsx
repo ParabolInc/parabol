@@ -8,21 +8,27 @@ import {MenuProps} from '../hooks/useMenu'
 import SearchQueryId from '../shared/gqlIds/SearchQueryId'
 import {PALETTE} from '../styles/paletteV3'
 import {ICON_SIZE} from '../styles/typographyV2'
+import {_xGitHubRepositoryNode, IXGitHubRepository} from '../types/graphql'
 import {GitHubScopingSearchFilterMenu_viewer} from '../__generated__/GitHubScopingSearchFilterMenu_viewer.graphql'
 import Checkbox from './Checkbox'
-import DropdownMenuLabel from './DropdownMenuLabel'
 import Icon from './Icon'
 import Menu from './Menu'
 import MenuItem from './MenuItem'
 import MenuItemComponentAvatar from './MenuItemComponentAvatar'
 import MenuItemLabel from './MenuItemLabel'
-import MockGitHubFieldList from './MockJiraFieldList'
+import MockFieldList from './MockFieldList'
 import TaskFooterIntegrateMenuSearch from './TaskFooterIntegrateMenuSearch'
 import TypeAheadLabel from './TypeAheadLabel'
 
 const SearchIcon = styled(Icon)({
   color: PALETTE.SLATE_600,
   fontSize: ICON_SIZE.MD18
+})
+
+const StyledMenu = styled(Menu)({
+  minWidth: 450,
+  display: 'flex',
+  flexDirection: 'column'
 })
 
 const NoResults = styled(MenuItemLabel)({
@@ -48,21 +54,11 @@ const StyledMenuItemIcon = styled(MenuItemComponentAvatar)({
   top: 4
 })
 
-const ProjectAvatar = styled('img')({
-  height: 24,
-  width: 24,
-  marginRight: 8
-})
-
 const StyledCheckBox = styled(Checkbox)({
   marginLeft: -8,
   marginRight: 8
 })
 const StyledMenuItemLabel = styled(MenuItemLabel)({})
-
-const FilterLabel = styled(DropdownMenuLabel)({
-  borderBottom: 0
-})
 
 interface Props {
   menuProps: MenuProps
@@ -83,16 +79,11 @@ const setSearch = (atmosphere: Atmosphere, meetingId: string, value: string) => 
   })
 }
 
-const MAX_REPOS = 9 // TODO: change back to 10 once query is reloading
-
 const GitHubScopingSearchFilterMenu = (props: Props) => {
   const {menuProps, viewer} = props
   const isLoading = viewer === null
-  const github = viewer?.teamMember?.integrations.github ?? []
   const atmosphere = useAtmosphere()
-  const edges = github?.api?.query?.search?.edges
-  if (!edges) return <MockGitHubFieldList />
-  const repos = edges.map((edge) => edge.node)
+  const edges = viewer?.teamMember?.integrations.github?.api?.query?.search.edges ?? []
   const meeting = viewer?.meeting ?? null
   const meetingId = meeting?.id ?? ''
   const githubSearchQuery = meeting?.githubSearchQuery ?? null
@@ -101,41 +92,35 @@ const GitHubScopingSearchFilterMenu = (props: Props) => {
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const {value} = e.target
-    console.log('🚀 ~ onChange ~ value', value)
     setSearch(atmosphere, meetingId, value)
   }
 
-  const showSearch = repos.length > MAX_REPOS
   const {portalStatus, isDropdown} = menuProps
   return (
-    <Menu
+    <StyledMenu
       keepParentFocus
       ariaLabel={'Define the GitHub search query'}
       portalStatus={portalStatus}
       isDropdown={isDropdown}
-      // resetActiveOnChanges={[selectedAndFilteredProjects]}
     >
-      {isLoading && <MockGitHubFieldList />}
-      {showSearch && (
-        <SearchItem key='search'>
-          <StyledMenuItemIcon>
-            <SearchIcon>search</SearchIcon>
-          </StyledMenuItemIcon>
-          <TaskFooterIntegrateMenuSearch
-            placeholder={'Search your GitHub repos'}
-            value={reposQuery}
-            onChange={onChange}
-          />
-        </SearchItem>
-      )}
-      {/* {(query && selectedAndFilteredRepos.length === 0 && !isLoading && (
-        <NoResults key='no-results'>No repos found!</NoResults>
-      )) ||
-        null} */}
-      {repos.map((repo) => {
-        const {nameWithOwner} = repo
+      <SearchItem key='search'>
+        <StyledMenuItemIcon>
+          <SearchIcon>search</SearchIcon>
+        </StyledMenuItemIcon>
+        <TaskFooterIntegrateMenuSearch
+          placeholder={'Search your GitHub repos'}
+          value={reposQuery}
+          onChange={onChange}
+        />
+      </SearchItem>
+      {isLoading && <MockFieldList />}
+      {edges.length === 0 && !isLoading && <NoResults key='no-results'>No repos found!</NoResults>}
+      {edges.map((repo) => {
+        const {id: repoId, nameWithOwner} = repo?.node as Pick<
+          IXGitHubRepository,
+          'id' | 'nameWithOwner'
+        >
         const isSelected = nameWithOwnerFilters.includes(nameWithOwner)
-
         const handleClick = () => {
           commitLocalUpdate(atmosphere, (store) => {
             const searchQueryId = SearchQueryId.join('github', meetingId)
@@ -157,18 +142,18 @@ const GitHubScopingSearchFilterMenu = (props: Props) => {
         }
         return (
           <MenuItem
-            key={repo.id}
+            key={repoId}
             label={
               <StyledMenuItemLabel>
                 <StyledCheckBox active={isSelected} />
-                <TypeAheadLabel query={''} label={repo.nameWithOwner} />
+                <TypeAheadLabel query={''} label={nameWithOwner} />
               </StyledMenuItemLabel>
             }
             onClick={handleClick}
           />
         )
       })}
-    </Menu>
+    </StyledMenu>
   )
 }
 
@@ -201,8 +186,8 @@ export default createFragmentContainer(GitHubScopingSearchFilterMenu, {
                 search(first: 50, type: REPOSITORY, query: "Parabol") {
                   edges {
                     node {
-                      __typename
                       ... on _xGitHubRepository {
+                        __typename
                         id
                         nameWithOwner
                       }

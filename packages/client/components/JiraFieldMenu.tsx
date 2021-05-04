@@ -11,7 +11,7 @@ import {JiraFieldMenu_viewer} from '../__generated__/JiraFieldMenu_viewer.graphq
 import Menu from './Menu'
 import MenuItem from './MenuItem'
 import MenuItemHR from './MenuItemHR'
-import MockJiraFieldList from './MockJiraFieldList'
+import MockFieldList from './MockFieldList'
 
 interface Props {
   menuProps: MenuProps
@@ -50,7 +50,7 @@ const JiraFieldMenu = (props: Props) => {
 
   if (serverFields.length === 0) {
     const child = isLoading ? (
-      <MockJiraFieldList />
+      <MockFieldList />
     ) : (
       <MenuItem key={'noResults'} label={'<<Cannot connect to Jira>>'} />
     )
