@@ -22,8 +22,11 @@ const sendToSentry = async (error: Error, options: SentryOptions = {}) => {
   if (user && ip) {
     ;(user as any).ip_address = ip
   }
+  const stack = error.stack
+
   Sentry.withScope((scope) => {
     user && scope.setUser(user)
+    stack && scope.setExtra('stack', stack)
     if (tags) {
       Object.keys(tags).forEach((tag) => {
         scope.setTag(tag, String(tags[tag]))
