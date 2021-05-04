@@ -70,6 +70,15 @@ export default {
       reasonRemoved: validReason
     })
 
+    updateUser(
+      {
+        isRemoved: true,
+        email: getDeletedEmail(userId),
+        reasonRemoved: validReason
+      },
+      userIdToDelete
+    )
+
     if (userId) {
       segmentIo.track({
         userId,
