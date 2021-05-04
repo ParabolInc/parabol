@@ -4,6 +4,7 @@ import React, {useState} from 'react'
 import {createFragmentContainer} from 'react-relay'
 // import useGetUsedServiceTaskIds from '~/hooks/useGetUsedServiceTaskIds'
 import MockScopingList from '~/modules/meeting/components/MockScopingList'
+import {gitHubQueryValidation} from '../validation/gitHubQueryValidation'
 // import useAtmosphere from '../hooks/useAtmosphere'
 // import PersistGitHubSearchQueryMutation from '../mutations/PersistGitHubSearchQueryMutation'
 import {GitHubScopingSearchResults_meeting} from '../__generated__/GitHubScopingSearchResults_meeting.graphql'
@@ -13,7 +14,6 @@ import {GitHubScopingSearchResults_viewer} from '../__generated__/GitHubScopingS
 import IntegrationScopingNoResults from './IntegrationScopingNoResults'
 import NewGitHubIssueInput from './NewGitHubIssueInput'
 import NewIntegrationRecordButton from './NewIntegrationRecordButton'
-import {gitHubQueryValidation} from '../validation/gitHubQueryValidation'
 
 const ResultScroller = styled('div')({
   overflow: 'auto'
@@ -134,11 +134,7 @@ export default createFragmentContainer(GitHubScopingSearchResults, {
                 path
               }
               query {
-                search(
-                  first: 10
-                  type: ISSUE
-                  query: "is:issue is:open sort:updated involves:@me"
-                ) {
+                search(first: 10, type: ISSUE, query: $queryString) {
                   edges {
                     node {
                       __typename
