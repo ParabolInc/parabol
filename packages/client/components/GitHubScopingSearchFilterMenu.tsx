@@ -18,7 +18,6 @@ import MenuItemComponentAvatar from './MenuItemComponentAvatar'
 import MenuItemLabel from './MenuItemLabel'
 import MockFieldList from './MockFieldList'
 import TaskFooterIntegrateMenuSearch from './TaskFooterIntegrateMenuSearch'
-import TypeAheadLabel from './TypeAheadLabel'
 
 const SearchIcon = styled(Icon)({
   color: PALETTE.SLATE_600,
@@ -83,7 +82,7 @@ const GitHubScopingSearchFilterMenu = (props: Props) => {
   const {menuProps, viewer} = props
   const isLoading = viewer === null
   const atmosphere = useAtmosphere()
-  const edges = viewer?.teamMember?.integrations.github?.api?.query?.search.edges ?? []
+  const edges = viewer?.teamMember?.integrations?.github?.api?.query?.search.edges ?? []
   const meeting = viewer?.meeting ?? null
   const meetingId = meeting?.id ?? ''
   const githubSearchQuery = meeting?.githubSearchQuery ?? null
@@ -146,7 +145,7 @@ const GitHubScopingSearchFilterMenu = (props: Props) => {
             label={
               <StyledMenuItemLabel>
                 <StyledCheckBox active={isSelected} />
-                <TypeAheadLabel query={''} label={nameWithOwner} />
+                {nameWithOwner}
               </StyledMenuItemLabel>
             }
             onClick={handleClick}
