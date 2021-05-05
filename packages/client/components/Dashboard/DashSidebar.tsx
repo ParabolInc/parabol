@@ -64,6 +64,7 @@ const DashSidebar = (props: Props) => {
     <Nav isOpen={isOpen}>
       <Contents>
         <NavItemsWrap>
+          <NavItem icon={'forum'} href={'/meetings'} label={'Meetings'} />
           <NavItem icon={'timeline'} href={'/me'} label={'Timeline'} />
           <NavItem icon={'playlist_add_check'} href={'/me/tasks'} label={'Tasks'} />
         </NavItemsWrap>

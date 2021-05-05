@@ -6,13 +6,14 @@ import useMutationProps from '~/hooks/useMutationProps'
 import {PALETTE} from '~/styles/paletteV3'
 import useAtmosphere from '../hooks/useAtmosphere'
 import PokerRevealVotesMutation from '../mutations/PokerRevealVotesMutation'
-import {BezierCurve} from '../types/constEnums'
+import {BezierCurve, PokerCards} from '../types/constEnums'
 import {PokerActiveVoting_meeting} from '../__generated__/PokerActiveVoting_meeting.graphql'
 import {PokerActiveVoting_stage} from '../__generated__/PokerActiveVoting_stage.graphql'
+import AvatarList from './AvatarList'
 import CircularProgress from './CircularProgress'
 import Icon from './Icon'
 import MiniPokerCard from './MiniPokerCard'
-import PokerVotingAvatarGroup from './PokerVotingAvatarGroup'
+import PokerVotingNoVotes from './PokerVotingNoVotes'
 import PokerVotingRowBase from './PokerVotingRowBase'
 import RaisedButton from './RaisedButton'
 import TipBanner from './TipBanner'
@@ -79,6 +80,11 @@ const RevealButtonIcon = styled(Icon)<{color: string}>(({color}) => ({
   width: 40
 }))
 
+const MiniCardWrapper = styled('div')({
+  // This adds the gutter between the mini card and the avatars
+  marginRight: 16
+})
+
 interface Props {
   isClosing: boolean
   meeting: PokerActiveVoting_meeting
@@ -114,29 +120,27 @@ const PokerActiveVoting = (props: Props) => {
     submitMutation()
     PokerRevealVotesMutation(atmosphere, {meetingId, stageId}, {onError, onCompleted})
   }
-
+  const users = scores.map(({user}) => user)
   return (
     <>
       <PokerVotingRowBase>
-        <MiniPokerCard>
-          <CheckIcon>check</CheckIcon>
-        </MiniPokerCard>
-        <PokerVotingAvatarGroup
-          stageId={stageId}
-          scores={scores}
-          isClosing={isClosing}
-          isInitialStageRender={isInitialStageRender}
+        <MiniCardWrapper>
+          <MiniPokerCard>
+            <CheckIcon>check</CheckIcon>
+          </MiniPokerCard>
+        </MiniCardWrapper>
+        <AvatarList
+          users={isClosing ? [] : users}
+          size={PokerCards.AVATAR_WIDTH as 46}
+          isAnimated={!isInitialStageRender}
+          borderColor={PALETTE.SLATE_300}
+          emptyEl={<PokerVotingNoVotes />}
         />
       </PokerVotingRowBase>
       <RevealButtonBlock>
         {showRevealButton && (
           <RevealButton onClick={reveal} color={PALETTE.SLATE_600}>
-            <Progress
-              radius={22}
-              thickness={4}
-              stroke={PALETTE.JADE_400}
-              progress={votePercent}
-            />
+            <Progress radius={22} thickness={4} stroke={PALETTE.JADE_400} progress={votePercent} />
             <RevealButtonIcon color={allVotesIn ? PALETTE.JADE_400 : PALETTE.SLATE_400}>
               {'check'}
             </RevealButtonIcon>
@@ -159,8 +163,10 @@ export default createFragmentContainer(PokerActiveVoting, {
     fragment PokerActiveVoting_stage on EstimateStage {
       id
       scores {
-        ...PokerVotingAvatarGroup_scores
         userId
+        user {
+          ...AvatarList_users
+        }
       }
     }
   `,

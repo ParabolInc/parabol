@@ -48,6 +48,10 @@ $ yarn db:start
 $ yarn dev
 ```
 
+
+By default, the app will run at: http://localhost:3000/
+
+
 If `yarn db:start` failed and `localhost:5050` isn't working, a docker
 container, volume or image may be corrupted and need to be pruned.
 
@@ -67,6 +71,7 @@ $ yarn && yarn build && yarn start
 - pgadmin is at [http://localhost:5050](http://localhost:5050)
 - Connect using `PGADMIN_DEFAULT_EMAIL` and `PGADMIN_DEFAULT_PASSWORD`
 - Click "Add New Server" and fill out the forms with your `.env` values
+
   - General.name = POSTGRES_DB
   - Connection.host = 'postgres' (hardcoded from docker-compose dev.yml, not from .env!)
   - Connection.username = POSTGRES_USER
@@ -82,6 +87,10 @@ Parabol offers equity for qualified contributions.
 
 See [CONTRIBUTING.md](./CONTRIBUTING.md) for more information on how to
 get involved and how to get compensated.
+
+## Helpful VSCode extensions
+
+We use [GraphQL](https://marketplace.visualstudio.com/items?itemName=GraphQL.vscode-graphql) for IntelliSense and syntax highlighting.
 
 ## Releases
 

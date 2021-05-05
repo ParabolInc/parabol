@@ -5,7 +5,7 @@ const PokerVotingRowBase = styled('div')({
   display: 'flex',
   flexShrink: 0,
   minHeight: 56, // maintain tallest height, account for avatar group plus padding
-  padding: '6px 0 6px 16px' // 6px over 8px, account for overlapping 2px border of avatars
+  padding: '5px 0 5px 16px' // 5px instead of 8px, account for overlapping 3px border of avatars
 })
 
 export default PokerVotingRowBase

@@ -24,7 +24,7 @@ const NewMeetingSummary = (props: Props) => {
   const {history} = useRouter()
   useEffect(() => {
     if (!newMeeting) {
-      history.replace('/me')
+      history.replace('/meetings')
     }
   }, [history, newMeeting])
   if (!newMeeting) {

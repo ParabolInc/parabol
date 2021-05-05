@@ -5,12 +5,71 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.9.0 2021-Apr-29
+
+### Added
+
+- Add LogRocket #4886
+- support addGitHubToSchema #4920
+
+### Fixed
+
+- Fix team invitation #4877
+
+## 6.8.0 2021-Apr-21
+
+### Added
+
+- Validate new poker issues #4831
+- Poker avatars tooltip #4882
+
+### Fixed
+
+- Check if story and meeting exist #4786
+- Fix editing too bug #4879
+
+## 6.7.0 2021-Apr-14
+
+### Added
+
+- Meetings view v1 (#4624, #4623)
+
+### Changed
+- Limit number of dashboard avatars (#4566)
+
+## 6.6.1 2021-Apr-10
+
+### Fixed
+- Fixed an issue where GraphQL subscription fails to execute
+
+### Changed
+- Disabled the Easter Egg
+
+## 6.6.0 2021-Apr-07
+
+### Added
+
+- Add migration for priority scale (#4846)
+- Enable Datadog APM tracer (#4843)
+
+### Changed
+
+- Update link in Check-In summary email (#4858)
+- Meetings view style changes (#4849)
+
+### Fixed
+
+- Fix a typo in DragEstimatingTaskSuccess (#4850)
+- Fix meeting control bar width (#4852)
+- Fix types for fieldName and dimensionName in JiraDimensionField (#4854)
+
 ## 6.5.0 2021-Apr-01
 
 ### Added
 
 - Create GH issue button in Sprint poker, currently hidden (#4799)
 - GitHub tab in Sprint Poker (#4777)
+
 ### Removed
 
 - Removed IM scopes from Slack integration, per Slack feedback (#4844)

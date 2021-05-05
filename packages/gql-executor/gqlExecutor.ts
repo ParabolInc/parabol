@@ -1,3 +1,5 @@
+import "./tracer"
+
 import Redis from 'ioredis'
 import {ServerChannel} from 'parabol-client/types/constEnums'
 
