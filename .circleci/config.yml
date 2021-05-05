@@ -82,7 +82,7 @@ jobs:
               rethinkdb-restore --force packages/cypress/fixtures/rdb_test.tar.gz
               node scripts/toolbox/softenDurability.js
               yarn db:migrate && yarn pg:migrate up
-              yarn postdeploy
+              yarn postdeploy && yarn postmigrate
               # yarn test
             fi
       - run:
