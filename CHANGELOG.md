@@ -5,6 +5,29 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## 6.9.0 2021-Apr-29
+
+### Added
+
+- Add LogRocket #4886
+- support addGitHubToSchema #4920
+
+### Fixed
+
+- Fix team invitation #4877
+
+## 6.8.0 2021-Apr-21
+
+### Added
+
+- Validate new poker issues #4831
+- Poker avatars tooltip #4882
+
+### Fixed
+
+- Check if story and meeting exist #4786
+- Fix editing too bug #4879
+
 ## 6.7.0 2021-Apr-14
 
 ### Added

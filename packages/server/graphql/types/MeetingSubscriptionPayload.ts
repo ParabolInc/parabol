@@ -22,7 +22,6 @@ import {PokerSetFinalScoreSuccess} from './PokerSetFinalScorePayload'
 import PromoteNewMeetingFacilitatorPayload from './PromoteNewMeetingFacilitatorPayload'
 import RemoveReflectionPayload from './RemoveReflectionPayload'
 import ResetMeetingToStagePayload from './ResetMeetingToStagePayload'
-import {SetAppLocationSuccess} from './SetAppLocationPayload'
 import SetPhaseFocusPayload from './SetPhaseFocusPayload'
 import {SetPokerSpectateSuccess} from './SetPokerSpectatePayload'
 import SetStageTimerPayload from './SetStageTimerPayload'
@@ -56,7 +55,6 @@ const types = [
   PromoteNewMeetingFacilitatorPayload,
   RemoveReflectionPayload,
   ResetMeetingToStagePayload,
-  SetAppLocationSuccess,
   SetPhaseFocusPayload,
   SetStageTimerPayload,
   StartDraggingReflectionPayload,

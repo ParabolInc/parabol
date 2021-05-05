@@ -1,17 +1,18 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
+import {NewMeetingPhaseTypeEnum} from '~/__generated__/ActionMeeting_meeting.graphql'
+import {MeetingTypeEnum} from '~/__generated__/NewMeeting_viewer.graphql'
 import {StandardMutation} from '../types/relayMutations'
 import createProxyRecord from '../utils/relay/createProxyRecord'
 import toTeamMemberId from '../utils/relay/toTeamMemberId'
 import {JoinMeetingMutation as TJoinMeetingMutation} from '../__generated__/JoinMeetingMutation.graphql'
-import {NewMeetingPhaseTypeEnum} from '~/__generated__/ActionMeeting_meeting.graphql'
-import {MeetingTypeEnum} from '~/__generated__/NewMeeting_viewer.graphql'
 
 graphql`
   fragment JoinMeetingMutation_meeting on JoinMeetingSuccess {
     meeting {
       # probably a gross overfetch, but we can fix that later
       ...MeetingSelector_meeting
+      ...MeetingCard_meeting
     }
   }
 `

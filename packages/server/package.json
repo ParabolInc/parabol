@@ -3,7 +3,7 @@
   "description": "An open-source app for building smarter, more agile teams.",
   "author": "Parabol Inc. <love@parabol.com> (http://github.com/ParabolInc)",
   "license": "AGPL-3.0",
-  "version": "6.7.0",
+  "version": "6.9.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/ParabolInc/parabol"
@@ -18,7 +18,7 @@
     "precommit": "lint-staged",
     "lint": "eslint --fix ./**/*.ts",
     "postversion": "git push --follow-tags",
-    "tsgen:gh": "gql2ts utils/githubSchema.json -e $(pwd)/../client/types/configGH.js -o packages/client/types/githubGraphql.d.ts && eslint --fix 'packages/client/types/githubGraphql.d.ts'",
+    "tsgen:gh": "gql2ts utils/githubSchema.ts -e $(pwd)/../client/types/configGH.js -o packages/client/types/githubGraphql.d.ts && eslint --fix 'packages/client/types/githubGraphql.d.ts'",
     "tsgen:ghQuery": "graphql-typescript-definitions --schema-types-path . && eslint --fix 'packages/client/utils/githubQueries/**/*.d.ts' ",
     "typecheck": "yarn tsc --noEmit -p tsconfig.json"
   },
@@ -84,7 +84,11 @@
   "dependencies": {
     "@authenio/samlify-node-xmllint": "^1.0.1",
     "@gql2ts/from-schema": "^2.0.0-4",
+    "@graphql-tools/merge": "^6.2.13",
+    "@graphql-tools/schema": "^7.1.3",
+    "@graphql-tools/wrap": "^7.0.6",
     "@mattkrick/sanitize-svg": "0.3.1",
+    "@octokit/graphql-schema": "^10.36.0",
     "@pgtyped/cli": "^0.9.0",
     "@pgtyped/query": "^0.9.0",
     "@sentry/integrations": "^5.8.0",
@@ -119,7 +123,7 @@
     "node-fetch": "^2.6.0",
     "node-pg-migrate": "^5.9.0",
     "nodemailer": "^6.4.6",
-    "parabol-client": "^6.7.0",
+    "parabol-client": "^6.9.0",
     "pg": "^8.5.1",
     "pm2": "^4.4.1",
     "react": "^16.12.0",

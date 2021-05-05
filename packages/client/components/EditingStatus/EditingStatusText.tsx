@@ -54,7 +54,7 @@ const EditingStatusText = (props: Props) => {
     return (
       <span>
         {editor}
-        {' editing'}
+        {' is editing'}
         {isEditing ? ' too' : ''}
         <Ellipsis />
       </span>
@@ -64,21 +64,21 @@ const EditingStatusText = (props: Props) => {
     if (isEditing) {
       return (
         <span>
-          several are editing
+          several people are editing
           <Ellipsis />
         </span>
       )
     }
     return (
       <span>
-        {`${editorNames[0]} and ${editorNames[1]} editing`}
+        {`${editorNames[0]} and ${editorNames[1]} are editing`}
         <Ellipsis />
       </span>
     )
   }
   return (
     <span>
-      {'Several are editing'}
+      {'Several people are editing'}
       <Ellipsis />
     </span>
   )

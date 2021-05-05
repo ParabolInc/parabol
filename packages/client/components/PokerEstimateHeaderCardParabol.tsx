@@ -38,23 +38,32 @@ const HeaderCard = styled('div')({
   position: 'relative'
 })
 
+const ErrorCard = styled('div')({
+  alignItems: 'flex-start',
+  background: PALETTE.WHITE,
+  borderRadius: 4,
+  boxShadow: Elevation.Z1,
+  padding: '12px 8px 12px 16px',
+  maxWidth: 1504, // matches widest dimension column 1600 - padding etc.
+  margin: '0 auto',
+  width: '100%'
+})
+
 const CardIcons = styled('div')({
   alignItems: 'center',
   display: 'flex'
 })
 
-const EditorWrapper = styled('div')<{isExpanded: boolean; maxHeight: number}>(
-  ({isExpanded, maxHeight}) => ({
-    color: PALETTE.SLATE_700,
-    fontWeight: 'normal',
-    lineHeight: '20px',
-    fontSize: 14,
-    margin: 0,
-    maxHeight: isExpanded ? maxHeight : 38,
-    overflowY: 'auto',
-    transition: 'all 300ms'
-  })
-)
+const EditorWrapper = styled('div')<{isExpanded: boolean}>(({isExpanded}) => ({
+  color: PALETTE.SLATE_700,
+  fontWeight: 'normal',
+  lineHeight: '20px',
+  fontSize: 14,
+  margin: 0,
+  maxHeight: isExpanded ? 300 : 38,
+  overflowY: isExpanded ? 'auto' : 'hidden',
+  transition: 'all 300ms'
+}))
 
 const StyledTaskIntegrationLink = styled(TaskIntegrationLink)({
   color: PALETTE.SKY_500,
@@ -87,24 +96,42 @@ const Content = styled('div')({
   paddingRight: 4
 })
 
+const CardTitle = styled('h1')({
+  fontSize: 16,
+  lineHeight: '24px',
+  margin: '0 0 8px'
+})
+
+const CardTitleWrapper = styled('div')({
+  display: 'flex',
+  justifyContent: 'space-between',
+  alignItems: 'flex-start',
+  width: '100%'
+})
+
+const CardDescription = styled('div')({
+  color: PALETTE.SLATE_700,
+  fontWeight: 'normal',
+  lineHeight: '20px',
+  fontSize: 14,
+  margin: 0,
+  height: '100%'
+})
+
 interface Props {
   stage: PokerEstimateHeaderCardParabol_stage
 }
 
-type Story = Required<NonNullable<NonNullable<PokerEstimateHeaderCardParabol_stage>['story']>>
-
 const PokerEstimateHeaderCardParabol = (props: Props) => {
   const {stage} = props
-  const {story} = stage
-  const {content, id: taskId, teamId} = story as Story
-  const integration = story!.integration
+  const story = stage.story as Extract<typeof stage['story'], {__typename: 'Task'}> | null
+  const content = story?.content
+  const taskId = story?.id ?? ''
   const atmosphere = useAtmosphere()
   const [isExpanded, setIsExpanded] = useState(false)
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const [editorState, setEditorState] = useEditorState(content)
   const editorRef = useRef<HTMLTextAreaElement>(null)
-  const descriptionRef = useRef<HTMLDivElement>(null)
-  const maxHeight = Math.min(descriptionRef.current?.scrollHeight ?? 300, 300)
   useEffect(
     () => () => {
       setIsExpanded(false)
@@ -112,6 +139,22 @@ const PokerEstimateHeaderCardParabol = (props: Props) => {
     [taskId]
   )
   const {useTaskChild} = useTaskChildFocus(taskId)
+  if (!story) {
+    // the Parabol task may have been removed
+    return (
+      <HeaderCardWrapper isDesktop={isDesktop}>
+        <ErrorCard>
+          <CardTitleWrapper>
+            <CardTitle>{`That story doesn't exist!`}</CardTitle>
+          </CardTitleWrapper>
+          <CardDescription>
+            {`The story was deleted. You can add another story in the Scope phase.`}
+          </CardDescription>
+        </ErrorCard>
+      </HeaderCardWrapper>
+    )
+  }
+  const {teamId, integration} = story
   const onBlur = () => {
     if (isAndroid) {
       const editorEl = editorRef.current
@@ -139,42 +182,36 @@ const PokerEstimateHeaderCardParabol = (props: Props) => {
     }
     UpdateTaskMutation(atmosphere, {updatedTask, area: 'meeting'}, {})
   }
+
   return (
-    <>
-      <HeaderCardWrapper isDesktop={isDesktop}>
-        <HeaderCard>
-          <Content>
-            <EditorWrapper
-              ref={descriptionRef}
-              isExpanded={isExpanded}
-              maxHeight={maxHeight}
-              onBlur={onBlur}
-            >
-              <StyledTaskEditor
-                dataCy={`task`}
-                editorRef={editorRef}
-                editorState={editorState}
-                setEditorState={setEditorState}
-                teamId={teamId}
-                useTaskChild={useTaskChild}
-              />
-            </EditorWrapper>
-            <StyledTaskIntegrationLink
+    <HeaderCardWrapper isDesktop={isDesktop}>
+      <HeaderCard>
+        <Content>
+          <EditorWrapper isExpanded={isExpanded} onBlur={onBlur}>
+            <StyledTaskEditor
               dataCy={`task`}
-              integration={integration || null}
-              showJiraLabelPrefix={false}
-            >
-              <StyledIcon>launch</StyledIcon>
-            </StyledTaskIntegrationLink>
-          </Content>
-          <CardIcons>
-            <CardButton>
-              <IconLabel icon='unfold_more' onClick={() => setIsExpanded(!isExpanded)} />
-            </CardButton>
-          </CardIcons>
-        </HeaderCard>
-      </HeaderCardWrapper>
-    </>
+              editorRef={editorRef}
+              editorState={editorState}
+              setEditorState={setEditorState}
+              teamId={teamId}
+              useTaskChild={useTaskChild}
+            />
+          </EditorWrapper>
+          <StyledTaskIntegrationLink
+            dataCy={`task`}
+            integration={integration || null}
+            showJiraLabelPrefix={false}
+          >
+            <StyledIcon>launch</StyledIcon>
+          </StyledTaskIntegrationLink>
+        </Content>
+        <CardIcons>
+          <CardButton>
+            <IconLabel icon='unfold_more' onClick={() => setIsExpanded(!isExpanded)} />
+          </CardButton>
+        </CardIcons>
+      </HeaderCard>
+    </HeaderCardWrapper>
   )
 }
 
@@ -183,6 +220,7 @@ export default createFragmentContainer(PokerEstimateHeaderCardParabol, {
     fragment PokerEstimateHeaderCardParabol_stage on EstimateStage {
       story {
         ... on Task {
+          __typename
           id
           title
           integration {

@@ -34,7 +34,6 @@ export const editTaskTaskUpdater = (payload, store) => {
 
 const EditTaskMutation = (environment, taskId, isEditing, onCompleted?, onError?) => {
   if (isTempId(taskId)) return undefined
-  const {viewerId} = environment
   return commitMutation(environment, {
     mutation,
     variables: {taskId, isEditing},
@@ -44,7 +43,7 @@ const EditTaskMutation = (environment, taskId, isEditing, onCompleted?, onError?
       editTaskTaskUpdater(payload, store)
     },
     optimisticUpdater: (store) => {
-      const payload = getOptimisticTaskEditor(store, viewerId, taskId, isEditing)
+      const payload = getOptimisticTaskEditor(store, taskId, isEditing)
       handleEditTask(payload, store)
     },
     onCompleted,
