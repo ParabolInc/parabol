@@ -5,6 +5,7 @@ import Team from '../../../database/types/Team'
 import getPg from '../../getPg'
 import {backupTeamQuery, IBackupTeamQueryParams} from '../../queries/generated/backupTeamQuery'
 import catchAndLog from '../../utils/catchAndLog'
+import {TEAM_NAME_LIMIT} from '../../constants'
 
 const undefinedTeamFieldsAndTheirDefaultValues = {
   jiraDimensionFields: [],
@@ -18,7 +19,7 @@ const cleanTeams = (teams: Team[]): IBackupTeamQueryParams['teams'] => {
       lastMeetingType: team.lastMeetingType ?? MeetingTypeEnum.retrospective,
       updatedAt: team.updatedAt ?? new Date(),
       jiraDimensionFields: team.jiraDimensionFields ?? [],
-      name: team.name.slice(0, 100)
+      name: team.name.slice(0, TEAM_NAME_LIMIT)
     })
     cleanedTeams.push(cleanedTeam)
   })
